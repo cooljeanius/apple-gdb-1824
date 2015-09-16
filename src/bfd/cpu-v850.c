@@ -1,4 +1,4 @@
-/* BFD support for the NEC V850 processor
+/* cpu-v850.c: BFD support for the NEC V850 processor
    Copyright 1996, 1997, 1998, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
 
@@ -16,7 +16,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -27,16 +27,26 @@
 {  32, 32, 8, bfd_arch_v850, number, "v850", print, 2, default, \
      bfd_default_compatible, bfd_default_scan, next }
 
-#define NEXT NULL
+#ifndef NEXT
+# define NEXT NULL
+#endif /* !NEXT */
 
 static const bfd_arch_info_type arch_info_struct[] =
 {
-  N (bfd_mach_v850e1, "v850e1", FALSE, & arch_info_struct[1]),
-  N (bfd_mach_v850e,  "v850e",  FALSE, NULL)
+  N(bfd_mach_v850e1, "v850e1", FALSE, & arch_info_struct[1]),
+  N(bfd_mach_v850e,  "v850e",  FALSE, NULL)
 };
 
-#undef  NEXT
+#ifdef NEXT
+# undef NEXT
+#endif /* NEXT */
 #define NEXT & arch_info_struct[0]
 
 const bfd_arch_info_type bfd_v850_arch =
-  N (bfd_mach_v850, "v850", TRUE, NEXT);
+  N(bfd_mach_v850, "v850", TRUE, NEXT);
+
+#ifdef NEXT
+# undef NEXT
+#endif /* NEXT */
+
+/* EOF */

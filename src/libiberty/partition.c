@@ -1,4 +1,4 @@
-/* List implementation of a partition of consecutive integers.
+/* partition.c: List implementation of a partition of consecutive integers.
    Copyright (C) 2000, 2001 Free Software Foundation, Inc.
    Contributed by CodeSourcery, LLC.
 
@@ -40,15 +40,16 @@ static int elem_compare (const void *, const void *);
    element is in a class by itself.  */
 
 partition
-partition_new (int num_elements)
+partition_new(int num_elements)
 {
   int e;
-  
-  partition part = (partition) 
-    xmalloc (sizeof (struct partition_def) + 
-	     (num_elements - 1) * sizeof (struct partition_elem));
+
+  partition part = ((partition)
+                    xmalloc(sizeof(struct partition_def)
+                            + (((size_t)num_elements - 1UL)
+                               * sizeof(struct partition_elem))));
   part->num_elements = num_elements;
-  for (e = 0; e < num_elements; ++e) 
+  for (e = 0; e < num_elements; ++e)
     {
       part->elements[e].class_element = e;
       part->elements[e].next = &(part->elements[e]);
@@ -88,7 +89,7 @@ partition_union (partition part, int elem1, int elem2)
 
   /* Make sure ELEM1 is in the larger class of the two.  If not, swap
      them.  This way we always scan the shorter list.  */
-  if (elements[elem1].class_count < elements[elem2].class_count) 
+  if (elements[elem1].class_count < elements[elem2].class_count)
     {
       int temp = elem1;
       elem1 = elem2;
@@ -100,14 +101,14 @@ partition_union (partition part, int elem1, int elem2)
   e2 = &(elements[elem2]);
 
   /* Keep a count of the number of elements in the list.  */
-  elements[class_element].class_count 
+  elements[class_element].class_count
     += elements[e2->class_element].class_count;
 
   /* Update the class fields in elem2's class list.  */
   e2->class_element = class_element;
   for (p = e2->next; p != e2; p = p->next)
     p->class_element = class_element;
-  
+
   /* Splice ELEM2's class list into ELEM1's.  These are circular
      lists.  */
   old_next = e1->next;
@@ -120,7 +121,7 @@ partition_union (partition part, int elem1, int elem2)
 /* Compare elements ELEM1 and ELEM2 from array of integers, given a
    pointer to each.  Used to qsort such an array.  */
 
-static int 
+static int
 elem_compare (const void *elem1, const void *elem2)
 {
   int e1 = * (const int *) elem1;
@@ -137,46 +138,48 @@ elem_compare (const void *elem1, const void *elem2)
    class are sorted.  */
 
 void
-partition_print (partition part, FILE *fp)
+partition_print(partition part, FILE *fp)
 {
   char *done;
-  int num_elements = part->num_elements;
+  size_t num_elements = (size_t)part->num_elements;
   struct partition_elem *elements = part->elements;
   int *class_elements;
-  int e;
+  size_t e;
 
-  /* Flag the elements we've already printed.  */
-  done = (char *) xmalloc (num_elements);
-  memset (done, 0, num_elements);
+  /* Flag the elements we have already printed: */
+  done = (char *)xmalloc(num_elements);
+  memset(done, 0, num_elements);
 
-  /* A buffer used to sort elements in a class.  */
-  class_elements = (int *) xmalloc (num_elements * sizeof (int));
+  /* A buffer used to sort elements in a class: */
+  class_elements = (int *)xmalloc(num_elements * sizeof(int));
 
-  fputc ('[', fp);
-  for (e = 0; e < num_elements; ++e)
+  fputc('[', fp);
+  for (e = 0UL; e < num_elements; ++e)
     /* If we haven't printed this element, print its entire class.  */
-    if (! done[e]) 
+    if (! done[e])
       {
-	int c = e;
-	int count = elements[elements[e].class_element].class_count;
+	int c = (int)e;
+	int count = (int)elements[elements[e].class_element].class_count;
 	int i;
 
-      /* Collect the elements in this class.  */
+        /* Collect the elements in this class: */
 	for (i = 0; i < count; ++i) {
 	  class_elements[i] = c;
 	  done[c] = 1;
-	  c = elements[c].next - elements;
+	  c = (int)(elements[c].next - elements);
 	}
-	/* Sort them.  */
-	qsort ((void *) class_elements, count, sizeof (int), elem_compare);
-	/* Print them.  */
-	fputc ('(', fp);
-	for (i = 0; i < count; ++i) 
-	  fprintf (fp, i == 0 ? "%d" : " %d", class_elements[i]);
-	fputc (')', fp);
+	/* Sort them: */
+	qsort((void *)class_elements, (size_t)count, sizeof(int),
+              elem_compare);
+	/* Print them: */
+	fputc('(', fp);
+	for (i = 0; i < count; ++i)
+	  fprintf(fp, ((i == 0) ? "%d" : " %d"), class_elements[i]);
+	fputc(')', fp);
       }
-  fputc (']', fp);
+  fputc(']', fp);
 
-  free (done);
+  free(done);
 }
 
+/* EOF */

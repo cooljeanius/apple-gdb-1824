@@ -23,97 +23,97 @@
    have a copy of the license, write to the Free Software Foundation,
    59 Temple Place, Suite 330, Boston, MA 02111 USA. */
 
-#if !defined (_RLDEFS_H_)
+#if !defined(_RLDEFS_H_)
 #define _RLDEFS_H_
 
-#if defined (HAVE_CONFIG_H)
+#if defined(HAVE_CONFIG_H) && !defined(RL_READLINE_VERSION)
 #  include "config.h"
-#endif
+#endif /* HAVE_CONFIG_H && !RL_READLINE_VERSION */
 
 #include "rlstdc.h"
 
-#if defined (__MINGW32__)
+#if defined(__MINGW32__)
 #  define NO_TTY_DRIVER
-#elif defined (_POSIX_VERSION) && !defined (TERMIOS_MISSING)
+#elif defined(_POSIX_VERSION) && !defined(TERMIOS_MISSING)
 #  define TERMIOS_TTY_DRIVER
 #else
-#  if defined (HAVE_TERMIO_H)
+#  if defined(HAVE_TERMIO_H)
 #    define TERMIO_TTY_DRIVER
 #  else
 #    define NEW_TTY_DRIVER
-#  endif
-#endif
+#  endif /* HAVE_TERMIO_H */
+#endif /* __MINGW32__ || (_POSIX_VERSION && !TERMIOS_MISSING) */
 
 /* Posix macro to check file in statbuf for directory-ness.
    This requires that <sys/stat.h> be included before this test. */
-#if defined (S_IFDIR) && !defined (S_ISDIR)
+#if defined(S_IFDIR) && !defined(S_ISDIR)
 #  define S_ISDIR(m) (((m)&S_IFMT) == S_IFDIR)
-#endif
+#endif /* S_IFDIR && !S_ISDIR */
 
 /* Decide which flavor of the header file describing the C library
    string functions to include and include it. */
 
-#if defined (HAVE_STRING_H)
+#if defined(HAVE_STRING_H)
 #  include <string.h>
 #else /* !HAVE_STRING_H */
 #  include <strings.h>
 #endif /* !HAVE_STRING_H */
 
-#if !defined (strchr) && !defined (__STDC__)
-extern char *strchr (), *strrchr ();
+#if !defined(strchr) && !defined(__STDC__)
+extern char *strchr(), *strrchr();
 #endif /* !strchr && !__STDC__ */
 
-#if defined (PREFER_STDARG)
+#if defined(PREFER_STDARG)
 #  include <stdarg.h>
 #else
-#  if defined (PREFER_VARARGS)
+#  if defined(PREFER_VARARGS)
 #    include <varargs.h>
-#  endif
-#endif
+#  endif /* PREFER_VARARGS */
+#endif /* PREFER_STDARG */
 
-#if defined (HAVE_STRCASECMP)
+#if defined(HAVE_STRCASECMP)
 #define _rl_stricmp strcasecmp
 #define _rl_strnicmp strncasecmp
 #else
 extern int _rl_stricmp PARAMS((char *, char *));
 extern int _rl_strnicmp PARAMS((char *, char *, int));
-#endif
+#endif /* HAVE_STRCASECMP */
 
-#if defined (HAVE_STRPBRK)
+#if defined(HAVE_STRPBRK)
 #  define _rl_strpbrk(a,b)	strpbrk((a),(b))
 #else
 extern char *_rl_strpbrk PARAMS((const char *, const char *));
-#endif
+#endif /* HAVE_STRPBRK */
 
-#if !defined (emacs_mode)
+#if !defined(emacs_mode)
 #  define no_mode -1
 #  define vi_mode 0
 #  define emacs_mode 1
-#endif
+#endif /* !emacs_mode */
 
-#if !defined (RL_IM_INSERT)
+#if !defined(RL_IM_INSERT)
 #  define RL_IM_INSERT		1
 #  define RL_IM_OVERWRITE	0
 #
 #  define RL_IM_DEFAULT		RL_IM_INSERT
-#endif
+#endif /* !RL_IM_INSERT */
 
 /* If you cast map[key].function to type (Keymap) on a Cray,
    the compiler takes the value of map[key].function and
    divides it by 4 to convert between pointer types (pointers
    to functions and pointers to structs are different sizes).
    This is not what is wanted. */
-#if defined (CRAY)
+#if defined(CRAY)
 #  define FUNCTION_TO_KEYMAP(map, key)	(Keymap)((int)map[key].function)
 #  define KEYMAP_TO_FUNCTION(data)	(rl_command_func_t *)((int)(data))
 #else
-#  define FUNCTION_TO_KEYMAP(map, key)	(Keymap)(map[key].function)
-#  define KEYMAP_TO_FUNCTION(data)	(rl_command_func_t *)(data)
-#endif
+#  define FUNCTION_TO_KEYMAP(map, key)	__extension__ (Keymap)(map[key].function)
+#  define KEYMAP_TO_FUNCTION(data)	__extension__ (rl_command_func_t *)(data)
+#endif /* CRAY */
 
 #ifndef savestring
-#define savestring(x) strcpy ((char *)xmalloc (1 + strlen (x)), (x))
-#endif
+#define savestring(x) strcpy((char *)xmalloc(1UL + strlen(x)), (x))
+#endif /* !savestring */
 
 /* Possible values for _rl_bell_preference. */
 #define NO_BELL 0
@@ -138,19 +138,19 @@ extern char *_rl_strpbrk PARAMS((const char *, const char *));
 /* Default readline line buffer length. */
 #define DEFAULT_BUFFER_SIZE 256
 
-#if !defined (STREQ)
+#if !defined(STREQ)
 #define STREQ(a, b)	(((a)[0] == (b)[0]) && (strcmp ((a), (b)) == 0))
 #define STREQN(a, b, n)	(((n) == 0) ? (1) \
 				    : ((a)[0] == (b)[0]) && (strncmp ((a), (b), (n)) == 0))
-#endif
+#endif /* !STREQ */
 
-#if !defined (FREE)
-#  define FREE(x)	if (x) free (x)
-#endif
+#if !defined(FREE)
+#  define FREE(x)	if (x) free(x)
+#endif /* !FREE */
 
-#if !defined (SWAP)
+#if !defined(SWAP)
 #  define SWAP(s, e)  do { int t; t = s; s = e; e = t; } while (0)
-#endif
+#endif /* !SWAP */
 
 /* CONFIGURATION SECTION */
 #include "rlconf.h"

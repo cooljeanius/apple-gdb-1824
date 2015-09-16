@@ -1,4 +1,4 @@
-# stdint.m4 serial 29
+# stdint.m4 serial 30
 dnl# Copyright (C) 2001-2007, 2009 Free Software Foundation, Inc.
 dnl# This file is free software; the Free Software Foundation
 dnl# gives unlimited permission to copy and/or distribute it,
@@ -11,16 +11,19 @@ AC_DEFUN([gl_STDINT_H],
 [
   AC_PREREQ([2.59])dnl
 
+  dnl# for AC_INCLUDES_DEFAULT:
+  AC_REQUIRE([AC_HEADER_STDC])dnl
+
   dnl# Check for long long int and unsigned long long int.
   AC_REQUIRE([AC_TYPE_LONG_LONG_INT])
-  if test $ac_cv_type_long_long_int = yes; then
+  if test "x${ac_cv_type_long_long_int}" = "xyes"; then
     HAVE_LONG_LONG_INT=1
   else
     HAVE_LONG_LONG_INT=0
   fi
   AC_SUBST([HAVE_LONG_LONG_INT])
   AC_REQUIRE([AC_TYPE_UNSIGNED_LONG_LONG_INT])
-  if test $ac_cv_type_unsigned_long_long_int = yes; then
+  if test "x${ac_cv_type_unsigned_long_long_int}" = "xyes"; then
     HAVE_UNSIGNED_LONG_LONG_INT=1
   else
     HAVE_UNSIGNED_LONG_LONG_INT=0
@@ -28,8 +31,8 @@ AC_DEFUN([gl_STDINT_H],
   AC_SUBST([HAVE_UNSIGNED_LONG_LONG_INT])
 
   dnl# Check for <inttypes.h>.
-  dnl# AC_INCLUDES_DEFAULT defines $ac_cv_header_inttypes_h.
-  if test $ac_cv_header_inttypes_h = yes; then
+  dnl# AC_INCLUDES_DEFAULT defines ${ac_cv_header_inttypes_h}.
+  if test "x${ac_cv_header_inttypes_h}" = "xyes"; then
     HAVE_INTTYPES_H=1
   else
     HAVE_INTTYPES_H=0
@@ -37,8 +40,8 @@ AC_DEFUN([gl_STDINT_H],
   AC_SUBST([HAVE_INTTYPES_H])
 
   dnl# Check for <sys/types.h>.
-  dnl# AC_INCLUDES_DEFAULT defines $ac_cv_header_sys_types_h.
-  if test $ac_cv_header_sys_types_h = yes; then
+  dnl# AC_INCLUDES_DEFAULT defines ${ac_cv_header_sys_types_h}.
+  if test "x${ac_cv_header_sys_types_h}" = "xyes"; then
     HAVE_SYS_TYPES_H=1
   else
     HAVE_SYS_TYPES_H=0
@@ -46,15 +49,15 @@ AC_DEFUN([gl_STDINT_H],
   AC_SUBST([HAVE_SYS_TYPES_H])
 
   gl_CHECK_NEXT_HEADERS([stdint.h])
-  if test $ac_cv_header_stdint_h = yes; then
+  if test "x${ac_cv_header_stdint_h}" = "xyes"; then
     HAVE_STDINT_H=1
   else
     HAVE_STDINT_H=0
   fi
   AC_SUBST([HAVE_STDINT_H])
 
-  dnl# Now see whether we need a substitute <stdint.h>.
-  if test $ac_cv_header_stdint_h = yes; then
+  dnl# Now see whether we need a substitute <stdint.h> here:
+  if test "x${ac_cv_header_stdint_h}" = "xyes"; then
     AC_CACHE_CHECK([whether stdint.h conforms to C99],
       [gl_cv_header_working_stdint_h],
       [gl_cv_header_working_stdint_h=no
@@ -62,7 +65,7 @@ AC_DEFUN([gl_STDINT_H],
          AC_LANG_PROGRAM([[
 #define __STDC_LIMIT_MACROS 1 /* to make it work also in C++ mode */
 #define __STDC_CONSTANT_MACROS 1 /* to make it work also in C++ mode */
-#define _GL_JUST_INCLUDE_SYSTEM_STDINT_H 1 /* work if build isn't clean */
+#define _GL_JUST_INCLUDE_SYSTEM_STDINT_H 1 /* work if build is NOT clean */
 #include <stdint.h>
 /* Dragonfly defines WCHAR_MIN, WCHAR_MAX only in <wchar.h>.  */
 #if !(defined WCHAR_MIN && defined WCHAR_MAX)
@@ -230,6 +233,7 @@ struct s {
     STDINT_H=stdint.h
   fi
   AC_SUBST([STDINT_H])
+  AM_CONDITIONAL([GL_GENERATE_STDINT_H],[test -n "${STDINT_H}"])
 ])
 
 dnl# gl_STDINT_BITSIZEOF([TYPES],[INCLUDES])
@@ -240,18 +244,17 @@ AC_DEFUN([gl_STDINT_BITSIZEOF],
   dnl# - extra AH_TEMPLATE calls, so that autoheader knows what to put into
   dnl#   config.h.in,
   dnl# - extra AC_SUBST calls, so that the right substitutions are made.
-  AC_FOREACH([gltype],[$1],
-    [AH_TEMPLATE([BITSIZEOF_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]),
+  m4_foreach_w([gltype],[$1],[AH_TEMPLATE([BITSIZEOF_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]),
        [Define to the number of bits in type ']gltype['.])])
   for gltype in $1 ; do
     AC_CACHE_CHECK([for bit size of $gltype],[gl_cv_bitsizeof_${gltype}],
-      [AC_COMPUTE_INT([result], [sizeof ($gltype) * CHAR_BIT],
+      [AC_COMPUTE_INT([result],[sizeof ($gltype) * CHAR_BIT],
          [$2
-#include <limits.h>], [result=unknown])
+#include <limits.h>],[result=unknown])
        eval gl_cv_bitsizeof_${gltype}=\$result
       ])
     eval result=\$gl_cv_bitsizeof_${gltype}
-    if test ${result} = unknown; then
+    if test "x${result}" = "xunknown"; then
       dnl# Use a nonempty default, because some compilers, e.g. IRIX 5 cc,
       dnl# do a syntax check even on unused #if conditions & give an error
       dnl# on valid C code like this:
@@ -265,8 +268,7 @@ AC_DEFUN([gl_STDINT_BITSIZEOF],
     AC_DEFINE_UNQUOTED([BITSIZEOF_${GLTYPE}], [$result])
     eval BITSIZEOF_${GLTYPE}=\$result
   done
-  AC_FOREACH([gltype],[$1],
-    [AC_SUBST([BITSIZEOF_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]))])
+  m4_foreach_w([gltype],[$1],[AC_SUBST([BITSIZEOF_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]))])
 ])
 
 dnl# gl_CHECK_TYPES_SIGNED([TYPES],[INCLUDES])
@@ -278,8 +280,7 @@ AC_DEFUN([gl_CHECK_TYPES_SIGNED],
   dnl# - extra AH_TEMPLATE calls, so that autoheader knows what to put into
   dnl#   config.h.in,
   dnl# - extra AC_SUBST calls, so that the right substitutions are made.
-  AC_FOREACH([gltype],[$1],
-    [AH_TEMPLATE([HAVE_SIGNED_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]),
+  m4_foreach_w([gltype],[$1],[AH_TEMPLATE([HAVE_SIGNED_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]),
        [Define to 1 if ']gltype[' is a signed integer type.])])
   for gltype in $1 ; do
     AC_CACHE_CHECK([whether $gltype is signed], [gl_cv_type_${gltype}_signed],
@@ -292,14 +293,13 @@ AC_DEFUN([gl_CHECK_TYPES_SIGNED],
     eval result=\$gl_cv_type_${gltype}_signed
     GLTYPE=`echo $gltype | tr 'abcdefghijklmnopqrstuvwxyz ' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_'`
     if test "$result" = yes; then
-      AC_DEFINE_UNQUOTED([HAVE_SIGNED_${GLTYPE}], 1)
+      AC_DEFINE_UNQUOTED([HAVE_SIGNED_${GLTYPE}],[1])
       eval HAVE_SIGNED_${GLTYPE}=1
     else
       eval HAVE_SIGNED_${GLTYPE}=0
     fi
   done
-  AC_FOREACH([gltype], [$1],
-    [AC_SUBST([HAVE_SIGNED_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]))])
+  m4_foreach_w([gltype],[$1],[AC_SUBST([HAVE_SIGNED_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]))])
 ])
 
 dnl# gl_INTEGER_TYPE_SUFFIX(TYPES, INCLUDES)
@@ -311,8 +311,7 @@ AC_DEFUN([gl_INTEGER_TYPE_SUFFIX],
   dnl# - extra AH_TEMPLATE calls, so that autoheader knows what to put into
   dnl#   config.h.in,
   dnl# - extra AC_SUBST calls, so that the right substitutions are made.
-  AC_FOREACH([gltype],[$1],
-    [AH_TEMPLATE(translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_])[_SUFFIX],
+  m4_foreach_w([gltype],[$1],[AH_TEMPLATE(translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_])[_SUFFIX],
        [Define to l, ll, u, ul, ull, etc., as suitable for
         constants of type ']gltype['.])])
   for gltype in $1 ; do
@@ -326,15 +325,15 @@ AC_DEFUN([gl_INTEGER_TYPE_SUFFIX],
          glsufu=u
        fi
        for glsuf in "$glsufu" ${glsufu}l ${glsufu}ll ${glsufu}i64; do
-         case $glsuf in
-           '')  gltype1='int';;
-           l)	gltype1='long int';;
-           ll)	gltype1='long long int';;
-           i64)	gltype1='__int64';;
-           u)	gltype1='unsigned int';;
-           ul)	gltype1='unsigned long int';;
-           ull)	gltype1='unsigned long long int';;
-           ui64)gltype1='unsigned __int64';;
+         case ${glsuf} in
+           '')   gltype1='int';;
+           l)    gltype1='long int';;
+           ll)   gltype1='long long int';;
+           i64)  gltype1='__int64';;
+           u)    gltype1='unsigned int';;
+           ul)   gltype1='unsigned long int';;
+           ull)  gltype1='unsigned long long int';;
+           ui64) gltype1='unsigned __int64';;
          esac
          AC_COMPILE_IFELSE(
            [AC_LANG_PROGRAM([$2
@@ -346,12 +345,11 @@ AC_DEFUN([gl_INTEGER_TYPE_SUFFIX],
        done])
     GLTYPE=`echo $gltype | tr 'abcdefghijklmnopqrstuvwxyz ' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_'`
     eval result=\$gl_cv_type_${gltype}_suffix
-    test "$result" = no && result=
+    test "x${result}" = "xno" && result=""
     eval ${GLTYPE}_SUFFIX=\$result
-    AC_DEFINE_UNQUOTED([${GLTYPE}_SUFFIX], $result)
+    AC_DEFINE_UNQUOTED([${GLTYPE}_SUFFIX],[$result])
   done
-  AC_FOREACH([gltype], [$1],
-    [AC_SUBST(translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_])[_SUFFIX])])
+  m4_foreach_w([gltype],[$1],[AC_SUBST(translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_])[_SUFFIX])])
 ])
 
 dnl# gl_STDINT_INCLUDES

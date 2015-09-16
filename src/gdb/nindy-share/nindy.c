@@ -1,3 +1,4 @@
+/* nindy.c */
 /* This file is part of GDB.
 
    This program is free software; you can redistribute it and/or modify
@@ -52,31 +53,41 @@
  *	    and process it.
  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# define NOT_WARNING_ABOUT_CONFIG_H 1
+#endif /* HAVE_CONFIG_H */
 #include <stdio.h>
+#include <stdlib.h>
 #include "defs.h"
 #include "serial.h"
-#ifdef ANSI_PROTOTYPES
-#include <stdarg.h>
+#if defined(ANSI_PROTOTYPES) || defined (STDC_HEADERS) || defined (__STDC__) || defined (__GNUC__)
+# include <stdarg.h>
 #else
-#include <varargs.h>
-#endif
+# include <varargs.h>
+#endif /* ANSI_PROTOTYPES */
+
+#if defined (STDC_HEADERS) || defined (__STDC__) || defined (__GNUC__) || defined HAVE_UNISTD_H
+# include <unistd.h>
+#endif /* unix */
 
 #if !defined (HAVE_TERMIOS) && !defined (HAVE_TERMIO) && !defined (HAVE_SGTTY)
-#define HAVE_SGTTY
-#endif
+# define HAVE_SGTTY
+#endif /* !HAVE_TERMIOS && !HAVE_TERMIO && !HAVE_SGTTY */
 
 #ifdef HAVE_SGTTY
-#include <sys/ioctl.h>
-#endif
+# include <sys/ioctl.h>
+#endif /* HAVE_SGTTY */
 
 #include <sys/types.h>	/* Needed by file.h on Sys V */
 #include <sys/file.h>
 #include <signal.h>
 #include <sys/stat.h>
 
-#if 0
-#include "ttycntl.h"
-#endif
+#if 1
+# include "ttycntl.h"
+#endif /* 1 */
 #include "block_io.h"
 #include "gdb_wait.h"
 #include "env.h"
@@ -92,7 +103,7 @@ int quiet = 0;	/* 1 => stifle unnecessary messages */
 struct serial *nindy_serial;
 
 static int old_nindy = 0; /* 1 => use old (hex) communication protocol */
-static ninStrGet();
+static int ninStrGet();
 
 		/****************************
 		 *                          *
@@ -114,7 +125,7 @@ say (char *fmt, ...)
 #else
 say (va_alist)
      va_dcl
-#endif
+#endif /* ANSI_PROTOTYPES */
 {
   va_list args;
 #ifdef ANSI_PROTOTYPES
@@ -124,7 +135,7 @@ say (va_alist)
 
   va_start (args);
   fmt = va_arg (args, char *);
-#endif
+#endif /* ANSI_PROTOTYPES *//
 
   if (!quiet)
     {
@@ -148,15 +159,15 @@ say (va_alist)
 static char *
 exists( base, c1, c2, c3, env )
     char *base;		/* Base directory of path */
-    char *c1, *c2, *c3;	/* Components (subdirectories and/or file name) to be
-			 *	appended onto the base directory name.  One or
-			 *	more may be omitted by passing NULL pointers.
-			 */
-    int env;		/* If 1, '*base' is the name of an environment variable
-			 *	to be examined for the base directory name;
-			 *	otherwise, '*base' is the actual name of the
-			 *	base directory.
-			 */
+    char *c1, *c2, *c3; /* Components (subdirectories and/or file name) to be
+			             * appended onto the base directory name. One or
+			             * more may be omitted by passing NULL pointers.
+			             */
+    int env; /* If 1, '*base' is the name of an environment variable
+			  *	to be examined for the base directory name;
+			  *	otherwise, '*base' is the actual name of the
+			  *	base directory.
+			  */
 {
 	struct stat buf;/* For call to 'stat' -- never examined */
 	char *path;	/* Pointer to full pathname (malloc'd memory) */
@@ -166,20 +177,20 @@ exists( base, c1, c2, c3, env )
 
 	if ( env ){
 		base = getenv( base );
-		if ( base == NULL ){
+		if ( base == NULL ) {
 			return NULL;
 		}
 	}
 
 	len = strlen(base) + 4;
 			/* +4 for terminator and "/" before each component */
-	if ( c1 != NULL ){
+	if ( c1 != NULL ) {
 		len += strlen(c1);
 	}
-	if ( c2 != NULL ){
+	if ( c2 != NULL ) {
 		len += strlen(c2);
 	}
-	if ( c3 != NULL ){
+	if ( c3 != NULL ) {
 		len += strlen(c3);
 	}
 
@@ -311,7 +322,7 @@ getpkt(buf)
 			serial_write (nindy_serial, "+", 1);
 			return hdr[2];
 		}
-	
+
 		/* Bad checksum: report, send NAK, and re-receive
 		 */
 		fprintf(stderr, errfmt, cs_recv, cs_calc );
@@ -327,7 +338,7 @@ getpkt(buf)
  ******************************************************************************/
 
 /* This macro puts the character 'c' into the buffer pointed at by 'p',
- * and increments the pointer.  If 'c' is one of the 4 special characters
+ * and increments the pointer. If 'c' is one of the 4 special characters
  * in the transmission protocol, it is converted into a 2-character
  * escape sequence.
  */
@@ -339,7 +350,7 @@ getpkt(buf)
 		*p++ = c;					\
 	}
 
-static
+static int
 putpkt( msg, len )
     unsigned char *msg;	/* Command to be sent, without lead ^P (\020) or checksum */
     int len;	/* Number of bytes in message			*/
@@ -396,7 +407,7 @@ putpkt( msg, len )
 			serial_write (nindy_serial, "\020", 1);
 			serial_write (nindy_serial, buf, p - buf);
 		} else if ( ack == '+' ){
-			return;
+			return 1;
 		} else if ( ack == '-' ){
 			fprintf( stderr, "Remote NAK; resending\r\n" );
 			serial_write (nindy_serial, buf, p - buf);
@@ -404,6 +415,7 @@ putpkt( msg, len )
 			fprintf( stderr, "Bad ACK, ignored: <%c>\r\n", ack );
 		}
 	}
+	return 0;
 }
 
 
@@ -413,7 +425,7 @@ putpkt( msg, len )
  *	Send a message to a remote NINDY.  Check message status byte
  *	for error responses.  If no error, return NINDY reponse (if any).
  ******************************************************************************/
-static
+static int
 send( out, len, in )
     unsigned char *out;	/* Message to be sent to NINDY			*/
     int len;		/* Number of meaningful bytes in out buffer	*/
@@ -431,7 +443,7 @@ send( out, len, in )
 		"Unknown register name",			/* 6 */
 		"No such memory segment",			/* 7 */
 		"No breakpoint available",			/* 8 */
-		"Can't set requested baud rate",		/* 9 */
+		"Cannot set requested baud rate",	/* 9 */
 	};
 #	define NUMERRS	( sizeof(errmsg) / sizeof(errmsg[0]) )
 
@@ -453,6 +465,7 @@ send( out, len, in )
 		fprintf( stderr, fmt, status, errmsg[status] );
 		abort();
 	}
+	return 0;
 }
 
 		/************************
@@ -481,8 +494,8 @@ static struct baudrate baudtab[] = {
 
 /******************************************************************************
  * parse_baudrate:
- *	Look up the passed baud rate in the baudrate table.  If found, change
- *	our internal record of the current baud rate, but don't do anything
+ *	Look up the passed baud rate in the baudrate table. If found, change
+ *	our internal record of the current baud rate, but do NOT do anything
  *	about the tty just now.
  *
  *	Return pointer to baudrate structure on success, NULL on failure.
@@ -527,18 +540,19 @@ try_baudrate (serial, brp)
   serial_write (serial, "\020\0\0\001", 4);
 
   /* Anything but a quick '-', including error, eof, or timeout, means that
-     this baudrate doesn't work.  */
+     this baudrate does NOT work.  */
   return serial_readchar (serial, 1) == '-';
 }
 
 /******************************************************************************
  * autobaud:
  *	Get NINDY talking over the specified file descriptor at the specified
- *	baud rate.  First see if NINDY's already talking at 'baudrate'.  If
+ *	baud rate.  First see if NINDY is/was already talking at 'baudrate'. If
  *	not, run through all the legal baudrates in 'baudtab' until one works,
  *	and then tell NINDY to talk at 'baudrate' instead.
+ * Returns 0 by default.
  ******************************************************************************/
-static
+static int
 autobaud( serial, brp )
      struct serial *serial;
      struct baudrate *brp;
@@ -577,6 +591,7 @@ autobaud( serial, brp )
 
   /* Change our baud rate back to rate to which we just set NINDY.  */
   serial_setbaudrate (serial, brp->rate);
+	return 0;
 }
 
 		/**********************************
@@ -592,11 +607,12 @@ autobaud( serial, brp )
  * ninBaud:
  *	Ask NINDY to change the baud rate on its serial port.
  *	Assumes we know the baud rate at which NINDY's currently talking.
+ * Returns 0 by default
  ******************************************************************************/
-ninBaud( baudrate )
+int ninBaud( baudrate )
     char *baudrate;	/* Desired baud rate, as a string of ASCII decimal
-			 * digits.
-			 */
+			         * digits.
+			         */
 {
   unsigned char msg[100];
 
@@ -607,8 +623,8 @@ ninBaud( baudrate )
       char *p;		/* Pointer into buffer	*/
       unsigned char csum;	/* Calculated checksum	*/
 
-      /* Can't use putpkt() because after the baudrate change NINDY's
-	 ack/nak will look like gibberish.  */
+      /* Cannott use putpkt() because after the baudrate change NINDY's
+	   * ack/nak will look like gibberish.  */
 
       for (p=baudrate, csum=020+'z'; *p; p++)
 	{
@@ -619,11 +635,12 @@ ninBaud( baudrate )
     }
   else
     {
-      /* Can't use "send" because NINDY reply will be unreadable after
-	 baud rate change.  */
+      /* Cannot use "send" because NINDY reply will be unreadable after
+	   * baud rate change.  */
       sprintf( msg, "z%s", baudrate );
       putpkt( msg, strlen(msg)+1 );	/* "+1" to send terminator too */
     }
+	return 0;
 }
 
 /******************************************************************************
@@ -631,8 +648,9 @@ ninBaud( baudrate )
  *	Ask NINDY to delete the specified type of *hardware* breakpoint at
  *	the specified address.  If the 'addr' is -1, all breakpoints of
  *	the specified type are deleted.
+ * Returns 0 by default, 1 if old_nindy
  ***************************************************************************/
-ninBptDel( addr, type )
+int ninBptDel( addr, type )
     long addr;	/* Address in 960 memory	*/
     char type;	/* 'd' => data bkpt, 'i' => instruction breakpoint */
 {
@@ -640,7 +658,7 @@ ninBptDel( addr, type )
 
 	if ( old_nindy ){
 		OninBptDel( addr, type == 'd' ? 1 : 0 );
-		return;
+		return 1;
 	}
 
 	buf[0] = 'b';
@@ -652,6 +670,7 @@ ninBptDel( addr, type )
 		store_unsigned_integer (&buf[2], 4, addr);
 		send( buf, 6, NULL );
 	}
+	return 0;
 }
 
 
@@ -659,8 +678,9 @@ ninBptDel( addr, type )
  * ninBptSet:
  *	Ask NINDY to set the specified type of *hardware* breakpoint at
  *	the specified address.
+ * Returns 0 by default, 1 if old_nindy
  ******************************************************************************/
-ninBptSet( addr, type )
+int ninBptSet( addr, type )
     long addr;	/* Address in 960 memory	*/
     char type;	/* 'd' => data bkpt, 'i' => instruction breakpoint */
 {
@@ -668,7 +688,7 @@ ninBptSet( addr, type )
 
 	if ( old_nindy ){
 		OninBptSet( addr, type == 'd' ? 1 : 0 );
-		return;
+		return 1;
 	}
 
 
@@ -676,6 +696,7 @@ ninBptSet( addr, type )
 	buf[1] = type;
 	store_unsigned_integer (&buf[2], 4, addr);
 	send( buf, 6, NULL );
+	return 0;
 }
 
 
@@ -691,7 +712,7 @@ ninConnect( name, baudrate, brk, silent, old_protocol )
     char *name;		/* "/dev/ttyXX" to be opened			*/
     char *baudrate;/* baud rate: a string of ascii decimal digits (eg,"9600")*/
     int brk;		/* 1 => send break to tty first thing after opening it*/
-    int silent;		/* 1 => stifle unnecessary messages when talking to 
+    int silent;		/* 1 => stifle unnecessary messages when talking to
 			 *	this tty.
 			 */
     int old_protocol;
@@ -719,7 +740,7 @@ ninConnect( name, baudrate, brk, silent, old_protocol )
 #ifdef TIOCEXCL
 			/* Exclusive use mode (hp9000 does not support it) */
 			ioctl(nindy_serial->fd,TIOCEXCL,NULL);
-#endif
+#endif /* TIOCEXCL */
 			serial_raw (nindy_serial);
 
 			if (brk)
@@ -749,36 +770,40 @@ ninConnect( name, baudrate, brk, silent, old_protocol )
 
 #if 0
 
-/* Currently unused; shouldn't we be doing this on target_kill and
-perhaps target_mourn?  FIXME.  */
+/* Currently unused; should we not be doing this on target_kill and
+ * perhaps target_mourn?  FIXME.  */
 
 /******************************************************************************
  * ninGdbExit:
  *	Ask NINDY to leave GDB mode and print a NINDY prompt.
+ * Returns 0 by default, 1 if old_nindy
  ****************************************************************************/
-ninGdbExit()
+int ninGdbExit()
 {
 	if ( old_nindy ){
 		OninGdbExit();
-		return;
+		return 1;
 	}
         putpkt((unsigned char *) "E", 1 );
+	return 0;
 }
-#endif
+#endif /* 0 */
 
 /******************************************************************************
  * ninGo:
  *	Ask NINDY to start or continue execution of an application program
- *	in it's memory at the current ip.
+ *	in its memory at the current ip.
+ * Returns 0 by default, 1 if old_nindy
  ******************************************************************************/
-ninGo( step_flag )
+int ninGo( step_flag )
     int step_flag;	/* 1 => run in single-step mode */
 {
 	if ( old_nindy ){
 		OninGo( step_flag );
-		return;
+		return 1;
 	}
 	putpkt((unsigned char *) (step_flag ? "s" : "c"), 1 );
+	return 0;
 }
 
 
@@ -798,7 +823,7 @@ ninMemGet(ninaddr, hostaddr, len)
 
 	if ( old_nindy ){
 		OninMemGet(ninaddr, hostaddr, len);
-		return;
+		return 1;
 	}
 
 	for ( ; len > 0; len -= BUFSIZE ){
@@ -834,7 +859,7 @@ ninMemPut( ninaddr, hostaddr, len )
 
 	if ( old_nindy ){
 		OninMemPut( ninaddr, hostaddr, len );
-		return;
+		return 1;
 	}
 	for ( ; len > 0; len -= BUFSIZE ){
 		cnt = len > BUFSIZE ? BUFSIZE : len;
@@ -884,25 +909,28 @@ ninRegGet( regname )
  *	THIS ROUTINE CAN ONLY BE USED TO SET THE LOCAL, GLOBAL, AND
  *	ip/ac/pc/tc REGISTERS.
  *
+ * Returns 0 by default, 1 if old_nindy
+ *
  ******************************************************************************/
-ninRegPut( regname, val )
-    char *regname;	/* Register name recognized by NINDY, subject to the
-			 * above limitations.
-			 */
-    long val;		/* New contents of register, in host byte-order	*/
+int ninRegPut( regname, val )
+    char *regname; /* Register name recognized by NINDY, subject to the
+					* above limitations.
+					*/
+    long val; /* New contents of register, in host byte-order */
 {
 	unsigned char buf[20];
 	int len;
 
 	if ( old_nindy ){
 		OninRegPut( regname, val );
-		return;
+		return 1;
 	}
 
 	sprintf( buf, "U%s:", regname );
 	len = strlen(buf);
 	store_unsigned_integer (&buf[len], 4, val);
 	send( buf, len+4, NULL );
+	return 0;
 }
 
 /******************************************************************************
@@ -910,25 +938,28 @@ ninRegPut( regname, val )
  *	Get a dump of the contents of the entire 960 register set.  The
  *	individual registers appear in the dump in the following order:
  *
- *		pfp  sp   rip  r3   r4   r5   r6   r7 
- *		r8   r9   r10  r11  r12  r13  r14  r15 
- *		g0   g1   g2   g3   g4   g5   g6   g7 
- *		g8   g9   g10  g11  g12  g13  g14  fp 
+ *		pfp  sp   rip  r3   r4   r5   r6   r7
+ *		r8   r9   r10  r11  r12  r13  r14  r15
+ *		g0   g1   g2   g3   g4   g5   g6   g7
+ *		g8   g9   g10  g11  g12  g13  g14  fp
  *		pc   ac   ip   tc   fp0  fp1  fp2  fp3
  *
  *	Each individual register comprises exactly 4 bytes, except for
- *	fp0-fp3, which are 8 bytes.  All register values are in 960
+ *	fp0-fp3, which are 8 bytes. All register values are in 960
  *	(little-endian) byte order.
  *
+ * Returns 0 by default, 1 if old_nindy
+ *
  ******************************************************************************/
-ninRegsGet( regp )
+int ninRegsGet( regp )
     unsigned char *regp;		/* Where to place the register dump */
 {
 	if ( old_nindy ){
 		OninRegsGet( regp );
-		return;
+		return 1;
 	}
 	send( (unsigned char *) "r", 1, regp );
+	return 0;
 }
 
 
@@ -941,8 +972,10 @@ ninRegsGet( regp )
  * WARNING:
  *	All register values must be in 960 (little-endian) byte order.
  *
+ * Returns 0 by default, 1 if old_nindy
+ *
  ******************************************************************************/
-ninRegsPut( regp )
+int ninRegsPut( regp )
     char *regp;		/* Pointer to desired values of registers */
 {
 /* Number of bytes that we send to nindy.  I believe this is defined by
@@ -952,12 +985,13 @@ ninRegsPut( regp )
 
 	if ( old_nindy ){
 		OninRegsPut( regp );
-		return;
+		return 1;
 	}
 
 	buf[0] = 'R';
 	memcpy(buf+1,  regp, NINDY_REGISTER_BYTES );
 	send( buf, NINDY_REGISTER_BYTES+1, NULL );
+	return 0;
 }
 
 
@@ -965,14 +999,16 @@ ninRegsPut( regp )
  * ninReset:
  *      Ask NINDY to perform a soft reset; wait for the reset to complete.
  *
+ * Returns 0 by default, 1 if old_nindy, 2 under special circumstances
+ *
  ******************************************************************************/
-ninReset()
+int ninReset()
 {
 	unsigned char ack;
 
 	if ( old_nindy ){
 		OninReset();
-		return;
+		return 1;
 	}
 
 	while (1){
@@ -983,10 +1019,11 @@ ninReset()
 				break;		/* Resend */
 			}
 			if ( ack == '+' ){
-				return;
+				return 2;
 			}
 		}
 	}
+	return 0;
 }
 
 
@@ -997,8 +1034,10 @@ ninReset()
  *	srq arguments, perform the requested service, and send an "srq
  *	complete" message so NINDY will return control to the application.
  *
+ * Returns 0 by default, 1 if old_nindy
+ *
  ******************************************************************************/
-ninSrq()
+int ninSrq()
 {
   /* FIXME: Imposes arbitrary limits on lengths of pathnames and such.  */
 	unsigned char buf[BUFSIZE];
@@ -1010,7 +1049,7 @@ ninSrq()
 
 	if ( old_nindy ){
 		OninSrq();
-		return;
+		return 1;
 	}
 
 
@@ -1070,6 +1109,7 @@ ninSrq()
 	buf[0] = 'e';
 	store_unsigned_integer (&buf[1], 4, retcode);
 	send( buf, 5, NULL );
+	return 0;
 }
 
 
@@ -1114,18 +1154,17 @@ ninStopWhy( whyp, ipp, fpp, spp )
  *	Read a '\0'-terminated string of data out of the 960 memory space.
  *
  ******************************************************************************/
-static
-ninStrGet( ninaddr, hostaddr )
+static int ninStrGet(ninaddr, hostaddr)
      unsigned long ninaddr;	/* Address of string in NINDY memory space */
-     unsigned char *hostaddr;	/* Address of the buffer to which string should
-				 *	be copied.
-				 */
+     unsigned char *hostaddr; /* Address of the buffer to which string should
+				               * be copied. */
 {
 	unsigned char cmd[5];
 
 	cmd[0] = '"';
-	store_unsigned_integer (&cmd[1], 4, ninaddr);
-	send( cmd, 5, hostaddr );
+	store_unsigned_integer(&cmd[1], 4, ninaddr);
+	send(cmd, 5, hostaddr);
+	return 0;
 }
 
 #if 0
@@ -1140,15 +1179,16 @@ ninStrGet( ninaddr, hostaddr )
  *		<arch>	is the processor architecture: "KA", "KB", "MC", "CA" *
  *
  ******************************************************************************/
-int
-ninVersion( p )
+int ninVersion(p)
      unsigned char *p;		/* Where to place version string */
 {
 
-	if ( old_nindy ){
-		return OninVersion( p );
+	if (old_nindy) {
+		return OninVersion(p);
 	}
-	send((unsigned char *) "v", 1, p );
+	send((unsigned char *)"v", 1, p);
 	return strlen(p);
 }
 #endif /* 0 */
+
+/* EOF */

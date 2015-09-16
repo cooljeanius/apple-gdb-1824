@@ -1,4 +1,5 @@
-/* Native-dependent definitions for SuperH running NetBSD, for GDB.
+/* nm-nbsd.h
+   Native-dependent definitions for SuperH running NetBSD, for GDB.
    Copyright 2002 Free Software Foundation, Inc.
    Contributed by Wasabi Systems, Inc.
 

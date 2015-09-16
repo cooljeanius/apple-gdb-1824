@@ -81,17 +81,17 @@ static int vi_replace_count;
    attached to the command so that it is `redoable' with `.'. */
 static int vi_continued_command;
 static char *vi_insert_buffer;
-static int vi_insert_buffer_size;
+static size_t vi_insert_buffer_size;
 
-static int _rl_vi_last_command = 'i';	/* default `.' puts you in insert mode */
+static int _rl_vi_last_command = 'i'; /* default `.' puts you in insert mode */
 static int _rl_vi_last_repeat = 1;
 static int _rl_vi_last_arg_sign = 1;
 static int _rl_vi_last_motion;
-#if defined (HANDLE_MULTIBYTE)
+#if defined(HANDLE_MULTIBYTE)
 static char _rl_vi_last_search_mbchar[MB_LEN_MAX];
 #else
 static int _rl_vi_last_search_char;
-#endif
+#endif /* HANDLE_MULTIBYTE */
 static int _rl_vi_last_replacement;
 
 static int _rl_vi_last_key_before_insert;
@@ -109,16 +109,16 @@ static void _rl_vi_save_insert PARAMS((UNDO_LIST *));
 static int rl_digit_loop1 PARAMS((void));
 
 void
-_rl_vi_initialize_line ()
+_rl_vi_initialize_line(void)
 {
-  register int i;
+  register size_t i;
 
-  for (i = 0; i < sizeof (vi_mark_chars) / sizeof (int); i++)
+  for (i = 0UL; i < (sizeof(vi_mark_chars) / sizeof(int)); i++)
     vi_mark_chars[i] = -1;
 }
 
 void
-_rl_vi_reset_last ()
+_rl_vi_reset_last(void)
 {
   _rl_vi_last_command = 'i';
   _rl_vi_last_repeat = 1;
@@ -127,8 +127,7 @@ _rl_vi_reset_last ()
 }
 
 void
-_rl_vi_set_last (key, repeat, sign)
-     int key, repeat, sign;
+_rl_vi_set_last(int key, int repeat, int sign)
 {
   _rl_vi_last_command = key;
   _rl_vi_last_repeat = repeat;
@@ -137,28 +136,25 @@ _rl_vi_set_last (key, repeat, sign)
 
 /* Is the command C a VI mode text modification command? */
 int
-_rl_vi_textmod_command (c)
-     int c;
+_rl_vi_textmod_command(int c)
 {
-  return (member (c, vi_textmod));
+  return (member(c, vi_textmod));
 }
 
 static void
-_rl_vi_stuff_insert (count)
-     int count;
+_rl_vi_stuff_insert(int count)
 {
-  rl_begin_undo_group ();
+  rl_begin_undo_group();
   while (count--)
-    rl_insert_text (vi_insert_buffer);
-  rl_end_undo_group ();
+    rl_insert_text(vi_insert_buffer);
+  rl_end_undo_group();
 }
 
 /* Bound to `.'.  Called from command mode, so we know that we have to
    redo a text modification command.  The default for _rl_vi_last_command
    puts you back into insert mode. */
 int
-rl_vi_redo (count, c)
-     int count, c;
+rl_vi_redo(int count, int c)
 {
   int r;
 
@@ -193,7 +189,7 @@ rl_vi_undo (count, key)
 {
   return (rl_undo_command (count, key));
 }
-    
+
 /* Yank the nth arg from the previous line into this line at point. */
 int
 rl_vi_yank_arg (count, key)
@@ -237,17 +233,19 @@ rl_vi_fetch_history (count, c)
 
 /* Search again for the last thing searched for. */
 int
-rl_vi_search_again (count, key)
-     int count, key;
+rl_vi_search_again(int count, int key)
 {
   switch (key)
     {
     case 'n':
-      rl_noninc_reverse_search_again (count, key);
+      rl_noninc_reverse_search_again(count, key);
       break;
 
     case 'N':
-      rl_noninc_forward_search_again (count, key);
+      rl_noninc_forward_search_again(count, key);
+      break;
+
+    default:
       break;
     }
   return (0);
@@ -598,10 +596,10 @@ rl_vi_insertion_mode (count, key)
 }
 
 static void
-_rl_vi_save_insert (up)
-      UNDO_LIST *up;
+_rl_vi_save_insert(UNDO_LIST *up)
 {
-  int len, start, end;
+  size_t len;
+  int start, end;
 
   if (up == 0)
     {
@@ -612,54 +610,54 @@ _rl_vi_save_insert (up)
 
   start = up->start;
   end = up->end;
-  len = end - start + 1;
+  len = ((size_t)(end - start) + 1UL);
   if (len >= vi_insert_buffer_size)
     {
-      vi_insert_buffer_size += (len + 32) - (len % 32);
-      vi_insert_buffer = (char *)xrealloc (vi_insert_buffer, vi_insert_buffer_size);
+      vi_insert_buffer_size += ((len + 32UL) - (len % 32UL));
+      vi_insert_buffer = (char *)xrealloc(vi_insert_buffer,
+                                          (size_t)vi_insert_buffer_size);
     }
-  strncpy (vi_insert_buffer, rl_line_buffer + start, len - 1);
-  vi_insert_buffer[len-1] = '\0';
+  strncpy(vi_insert_buffer, (rl_line_buffer + start), (size_t)(len - 1UL));
+  vi_insert_buffer[len - 1] = '\0';
 }
-    
+
 void
-_rl_vi_done_inserting ()
+_rl_vi_done_inserting(void)
 {
   if (_rl_vi_doing_insert)
     {
       /* The `C', `s', and `S' commands set this. */
-      rl_end_undo_group ();
+      rl_end_undo_group();
       /* Now, the text between rl_undo_list->next->start and
 	 rl_undo_list->next->end is what was inserted while in insert
 	 mode.  It gets copied to VI_INSERT_BUFFER because it depends
 	 on absolute indices into the line which may change (though they
 	 probably will not). */
       _rl_vi_doing_insert = 0;
-      _rl_vi_save_insert (rl_undo_list->next);
+      _rl_vi_save_insert(rl_undo_list->next);
       vi_continued_command = 1;
     }
   else
     {
-      if (_rl_vi_last_key_before_insert == 'i' && rl_undo_list)
-        _rl_vi_save_insert (rl_undo_list);
+      if ((_rl_vi_last_key_before_insert == 'i') && rl_undo_list)
+        _rl_vi_save_insert(rl_undo_list);
       /* XXX - Other keys probably need to be checked. */
       else if (_rl_vi_last_key_before_insert == 'C')
-	rl_end_undo_group ();
+	rl_end_undo_group();
       while (_rl_undo_group_level > 0)
-	rl_end_undo_group ();
+	rl_end_undo_group();
       vi_continued_command = 0;
     }
 }
 
 int
-rl_vi_movement_mode (count, key)
-     int count, key;
+rl_vi_movement_mode(int count, int key)
 {
   if (rl_point > 0)
-    rl_backward_char (1, key);
+    rl_backward_char(1, key);
 
   _rl_keymap = vi_movement_keymap;
-  _rl_vi_done_inserting ();
+  _rl_vi_done_inserting();
   return (0);
 }
 
@@ -673,75 +671,74 @@ rl_vi_arg_digit (count, c)
     return (rl_digit_argument (count, c));
 }
 
-/* Change the case of the next COUNT characters. */
-#if defined (HANDLE_MULTIBYTE)
+/* Change the case of the next COUNT characters: */
+#if defined(HANDLE_MULTIBYTE)
 static int
-_rl_vi_change_mbchar_case (count)
-     int count;
+_rl_vi_change_mbchar_case(int count)
 {
   wchar_t wc;
-  char mb[MB_LEN_MAX+1];
-  int mblen;
+  char mb[MB_LEN_MAX + 1];
+  int mb_len;
   mbstate_t ps;
 
-  memset (&ps, 0, sizeof (mbstate_t));
-  if (_rl_adjust_point (rl_line_buffer, rl_point, &ps) > 0)
+  memset(&ps, 0, sizeof(mbstate_t));
+  if (_rl_adjust_point(rl_line_buffer, rl_point, &ps) > 0)
     count--;
-  while (count-- && rl_point < rl_end)
+  while (count-- && (rl_point < rl_end))
     {
-      mbrtowc (&wc, rl_line_buffer + rl_point, rl_end - rl_point, &ps);
-      if (iswupper (wc))
-	wc = towlower (wc);
-      else if (iswlower (wc))
-	wc = towupper (wc);
+      mbrtowc(&wc, (rl_line_buffer + rl_point),
+              (size_t)(rl_end - rl_point), &ps);
+      if (iswupper(wc))
+	wc = towlower(wc);
+      else if (iswlower(wc))
+	wc = towupper(wc);
       else
 	{
 	  /* Just skip over chars neither upper nor lower case */
-	  rl_forward_char (1, 0);
+	  rl_forward_char(1, 0);
 	  continue;
 	}
 
       /* Vi is kind of strange here. */
       if (wc)
 	{
-	  mblen = wctomb (mb, wc);
-	  if (mblen >= 0)
-	    mb[mblen] = '\0';
-	  rl_begin_undo_group ();
-	  rl_delete (1, 0);
-	  rl_insert_text (mb);
-	  rl_end_undo_group ();
-	  rl_vi_check ();
+	  mb_len = wctomb(mb, wc);
+	  if (mb_len >= 0)
+	    mb[mb_len] = '\0';
+	  rl_begin_undo_group();
+	  rl_delete(1, 0);
+	  rl_insert_text(mb);
+	  rl_end_undo_group();
+	  rl_vi_check();
 	}
       else
-        rl_forward_char (1, 0);
+        rl_forward_char(1, 0);
     }
 
   return 0;
 }
-#endif
+#endif /* HANDLE_MULTIBYTE */
 
 int
-rl_vi_change_case (count, ignore)
-     int count, ignore;
+rl_vi_change_case(int count, int ignore)
 {
   char c = 0;
 
-  /* Don't try this on an empty line. */
+  /* Do NOT try this on an empty line: */
   if (rl_point >= rl_end)
     return (0);
 
-#if defined (HANDLE_MULTIBYTE)
-  if (MB_CUR_MAX > 1 && rl_byte_oriented == 0)
-    return (_rl_vi_change_mbchar_case (count));
+#if defined(HANDLE_MULTIBYTE)
+  if ((MB_CUR_MAX > 1) && (rl_byte_oriented == 0))
+    return (_rl_vi_change_mbchar_case(count));
 #endif
 
-  while (count-- && rl_point < rl_end)
+  while (count-- && (rl_point < rl_end))
     {
-      if (_rl_uppercase_p (rl_line_buffer[rl_point]))
-	c = _rl_to_lower (rl_line_buffer[rl_point]);
-      else if (_rl_lowercase_p (rl_line_buffer[rl_point]))
-	c = _rl_to_upper (rl_line_buffer[rl_point]);
+      if (_rl_uppercase_p(rl_line_buffer[rl_point]))
+	c = (char)_rl_to_lower(rl_line_buffer[rl_point]);
+      else if (_rl_lowercase_p(rl_line_buffer[rl_point]))
+	c = (char)_rl_to_upper(rl_line_buffer[rl_point]);
       else
 	{
 	  /* Just skip over characters neither upper nor lower case. */
@@ -1074,7 +1071,7 @@ rl_vi_delete (count, key)
     end = rl_end;
 
   rl_kill_text (rl_point, end);
-  
+
   if (rl_point > 0 && rl_point == rl_end)
     rl_backward_char (1, key);
   return (0);
@@ -1098,10 +1095,9 @@ rl_vi_first_print (count, key)
 }
 
 int
-rl_vi_char_search (count, key)
-     int count, key;
+rl_vi_char_search(int count, int key)
 {
-#if defined (HANDLE_MULTIBYTE)
+#if defined(HANDLE_MULTIBYTE)
   static char *target;
   static int mb_len;
 #else
@@ -1109,24 +1105,24 @@ rl_vi_char_search (count, key)
 #endif
   static int orig_dir, dir;
 
-  if (key == ';' || key == ',')
-    dir = key == ';' ? orig_dir : -orig_dir;
+  if ((key == ';') || (key == ','))
+    dir = ((key == ';') ? orig_dir : -orig_dir);
   else
     {
       if (vi_redoing)
-#if defined (HANDLE_MULTIBYTE)
+#if defined(HANDLE_MULTIBYTE)
 	target = _rl_vi_last_search_mbchar;
 #else
-	target = _rl_vi_last_search_char;
+	target = (char)_rl_vi_last_search_char;
 #endif
       else
 	{
-#if defined (HANDLE_MULTIBYTE)
-	  mb_len = _rl_read_mbchar (_rl_vi_last_search_mbchar, MB_LEN_MAX);
+#if defined(HANDLE_MULTIBYTE)
+	  mb_len = _rl_read_mbchar(_rl_vi_last_search_mbchar, MB_LEN_MAX);
 	  target = _rl_vi_last_search_mbchar;
 #else
 	  RL_SETSTATE(RL_STATE_MOREINPUT);
-	  _rl_vi_last_search_char = target = rl_read_key ();
+	  _rl_vi_last_search_char = target = (char)rl_read_key();
 	  RL_UNSETSTATE(RL_STATE_MOREINPUT);
 #endif
 	}
@@ -1148,14 +1144,17 @@ rl_vi_char_search (count, key)
         case 'F':
           orig_dir = dir = BFIND;
           break;
+
+        default:
+          break;
         }
     }
 
-#if defined (HANDLE_MULTIBYTE)
-   return (_rl_char_search_internal (count, dir, target, mb_len));
+#if defined(HANDLE_MULTIBYTE)
+   return (_rl_char_search_internal(count, dir, target, mb_len));
 #else
-  return (_rl_char_search_internal (count, dir, target));
-#endif
+  return (_rl_char_search_internal(count, dir, target));
+#endif /* HANDLE_MULTIBYTE */
 }
 
 /* Match brackets */
@@ -1202,13 +1201,13 @@ rl_vi_match (ignore, key)
 	    pos--;
 	  else
 	    {
-	      pos = _rl_find_prev_mbchar (rl_line_buffer, pos, MB_FIND_ANY);
+	      pos = _rl_find_prev_mbchar(rl_line_buffer, pos, MB_FIND_ANY);
 	      if (tmp == pos)
 	        pos--;
 	    }
 	  if (pos >= 0)
 	    {
-	      int b = rl_vi_bracktype (rl_line_buffer[pos]);
+	      int b = rl_vi_bracktype(rl_line_buffer[pos]);
 	      if (b == -brack)
 		count--;
 	      else if (b == brack)
@@ -1216,7 +1215,7 @@ rl_vi_match (ignore, key)
 	    }
 	  else
 	    {
-	      rl_ding ();
+	      rl_ding();
 	      return -1;
 	    }
 	}

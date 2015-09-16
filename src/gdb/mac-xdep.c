@@ -1,23 +1,52 @@
-/* Top level support for Mac interface to GDB, the GNU debugger.
-   Copyright 1994, 1995, 1998, 2000, 2001 Free Software Foundation, Inc.
-   Contributed by Cygnus Support.  Written by Stan Shebs.
+/* mac-xdep.c: Top level support for Mac interface to GDB, the GNU debugger.
+ * Copyright 1994, 1995, 1998, 2000, 2001 Free Software Foundation, Inc.
+ * Contributed by Cygnus Support.  Written by Stan Shebs.
+ *
+ * This file is part of GDB.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.  */
 
-   This file is part of GDB.
+#ifdef __APPLE_API_EVOLVING
+# undef __APPLE_API_EVOLVING
+#endif /* __APPLE_API_EVOLVING */
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
+/* hack to deal with troublesome headers: */
+#ifndef _SYS_ACL_H
+# define _SYS_ACL_H 1
+struct _acl;
+typedef struct _acl *acl_t;
+#endif /* !_SYS_ACL_H */
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+/* try to deal with struct opacity: */
+#ifdef OPAQUE_TOOLBOX_STRUCTS
+# undef OPAQUE_TOOLBOX_STRUCTS
+# define OPAQUE_TOOLBOX_STRUCTS 0
+#endif  /* OPAQUE_TOOLBOX_STRUCTS */
+/* (does NOT seem to solve it...) */
 
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
+#ifdef OPAQUE_UPP_TYPES
+# undef OPAQUE_UPP_TYPES
+# define OPAQUE_UPP_TYPES 0
+#endif  /* OPAQUE_UPP_TYPES */
+
+#if !defined(__LP64__) || (defined(__LP64__) && !__LP64__)
+# if !defined(_MSC_VER)
+#  pragma options align=mac68k
+# endif /* !_MSC_VER */
+#endif /* !__LP64__ */
 
 #include "defs.h"
 #include "config/xm-mpw.h"
@@ -51,9 +80,7 @@
   cbuf[pstr[0]] = '\0';
 
 #define pascalify(STR) \
-#warning 64BIT: Check formatting arguments
-#warning 64BIT: Check formatting arguments
-  sprintf(tmpbuf, 64BIT_CHECKFORMAT_START" %s"64BIT_CHECKFORMAT_END, STR);  \
+  sprintf(tmpbuf, " %s", STR);  \
   tmpbuf[0] = strlen(STR);
 
 #include "gdbcmd.h"
@@ -69,37 +96,52 @@
 
 #include "mac-defs.h"
 
+#if !defined(NSInteger) && !defined(NSUInteger) && !defined(__OBJC__)
+# if (defined(__LP64__) && __LP64__) || \
+     (defined(TARGET_OS_EMBEDDED) && TARGET_OS_EMBEDDED) || \
+     (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE) || \
+     (defined(TARGET_OS_WIN32) && TARGET_OS_WIN32) || \
+     (defined(NS_BUILD_32_LIKE_64) && NS_BUILD_32_LIKE_64)
+typedef long NSInteger;
+typedef unsigned long NSUInteger;
+# else
+typedef int NSInteger;
+typedef unsigned int NSUInteger;
+# endif /* __LP64__ || TARGET_OS_EMBEDDED || TARGET_OS_IPHONE || TARGET_OS_WIN32 || NS_BUILD_32_LIKE_64 */
+#endif /* !NSInteger && !NSUInteger && !__OBJC__ */
+
+/* global variables: */
 NSInteger debug_openp = 0;
 
-/* This is true if we are running as a standalone application.  */
+/* This is true if we are running as a standalone application: */
+int mac_app;
 
-NSInteger mac_app;
-
-/* This is true if we are using WaitNextEvent.  */
-
+/* This is true if we are using WaitNextEvent: */
 NSInteger use_wne;
 
-/* This is true if we have Color Quickdraw.  */
-
+/* This is true if we have Color Quickdraw: */
 NSInteger has_color_qd;
 
-/* This is true if we are using Color Quickdraw. */
-
+/* This is true if we are using Color Quickdraw: */
 NSInteger use_color_qd;
 
 NSInteger inbackground;
 
 Rect dragrect =
-{-32000, -32000, 32000, 32000};
+{ -32000, -32000, 32000, 32000 };
 Rect sizerect;
 
 NSInteger sbarwid = 15;
 
-/* Globals for the console window. */
-
+/* Globals for the console window: */
 WindowPtr console_window;
 
+/* FIXME: the opacity of this struct is problematic: */
+#ifdef __HIOBJECT__
+ControlRef console_v_scrollbar;
+#else
 ControlHandle console_v_scrollbar;
+#endif /* __HIOBJECT__ */
 
 Rect console_v_scroll_rect;
 
@@ -107,65 +149,130 @@ TEHandle console_text;
 
 Rect console_text_rect;
 
-/* This will go away eventually. */
-gdb_has_a_terminal (void)
+/* prototypes for functions used only in this file: */
+extern int mac_init(void);
+extern int new_console_window(void);
+extern int mac_command_loop(void);
+extern int get_global_mouse(Point *);
+extern int adjust_cursor(Point, RgnHandle);
+extern int do_event(EventRecord *);
+extern int do_idle(void);
+extern int grow_window(WindowPtr, Point);
+extern int zoom_window(WindowPtr, Point, short);
+extern int resize_console_window(void);
+extern int close_window(WindowPtr);
+extern pascal void v_scroll_proc(ControlHandle, short);
+extern int do_mouse_down(WindowPtr, EventRecord *);
+extern int scroll_text(NSInteger, NSInteger);
+extern int activate_window(WindowPtr, NSInteger);
+extern int update_window(WindowPtr);
+extern int adjust_menus(void);
+extern int do_menu_command(long);
+extern int do_keyboard_command(NSInteger);
+extern int draw_console(void);
+extern int force_update(WindowPtr);
+extern int adjust_console_sizes(void);
+extern int adjust_console_scrollbars(void);
+extern int adjust_console_text(void);
+extern const char *filename_completion_function(char *, char *);
+
+/* This will go away eventually: */
+int gdb_has_a_terminal(void)
 {
   return 1;
 }
 
-mac_init (void)
+#if !defined(__THPRINT_H__) && !defined(SysEnvRec)
+struct SysEnvRec {
+  short environsVersion;
+  short machineType;
+  short systemVersion;
+  short processor;
+  Boolean hasFPU;
+  Boolean hasColorQD;
+  short keyBoardType;
+  short atDrvrVersNum;
+  short sysVRefNum;
+};
+typedef struct SysEnvRec SysEnvRec;
+#endif /* !__THPRINT_H__ && !SysEnvRec */
+
+#if !defined(__QUICKDRAW__) && !defined(qd)
+extern struct {
+  char privates[76];
+  long randSeed;
+  BitMap screenBits;
+  Cursor arrow;
+  Pattern dkGray;
+  Pattern ltGray;
+  Pattern gray;
+  Pattern black;
+  Pattern white;
+  GrafPtr thePort;
+} qd;
+#endif /* !__QUICKDRAW__ && !qd */
+
+int mac_init(void)
 {
   SysEnvRec se;
+#ifdef ALLOW_UNUSED_VARIABLES
   NSInteger eventloopdone = 0;
+#endif /* ALLOW_UNUSED_VARIABLES */
   char *str;
+#ifdef ALLOW_UNUSED_VARIABLES
   Boolean gotevent;
   Point mouse;
   EventRecord event;
   WindowPtr win;
   RgnHandle cursorRgn;
   NSInteger i;
+#endif /* ALLOW_UNUSED_VARIABLES */
   Handle menubar;
   MenuHandle menu;
   Handle siow_resource;
 
   mac_app = 0;
 
-  str = getenv ("DEBUG_GDB");
-  if (str != NULL && str[0] != '\0')
-    {
-      if (strcmp (str, "openp") == 0)
-	debug_openp = 1;
-    }
+  str = getenv("DEBUG_GDB");
+  if ((str != NULL) && (str[0] != '\0')) {
+      if (strcmp(str, "openp") == 0) {
+          debug_openp = 1;
+      }
+  }
 
-  /* Do NOT do anything if we are running under MPW. */
-  if (!StandAlone)
-    return;
+  /* Do NOT do anything if we are running under MPW: */
+  if (!StandAlone) {
+    return 0;
+  }
 
   /* Do NOT do anything if we are using SIOW. */
   /* This test requires that the siow 0 resource, as defined in
-     {RIncludes}siow.r, not be messed with. If it is, then the
-     standard Mac setup below will step on SIOW's Mac setup and
-     most likely crash the machine. */
-  siow_resource = GetResource ('siow', 0);
-  if (siow_resource != nil)
-    return;
+   * {RIncludes}siow.r, not be messed with. If it is, then the
+   * standard Mac setup below will step on SIOW's Mac setup and
+   * most likely crash the machine. */
+  siow_resource = GetResource('siow', (ResID)0);
+  if (siow_resource != nil) {
+    return 0;
+  }
 
   mac_app = 1;
 
-  /* Do the standard Mac environment setup. */
-  InitGraf (&QD (thePort));
-  InitFonts ();
-  FlushEvents (everyEvent, 0);
-  InitWindows ();
-  InitMenus ();
-  TEInit ();
-  InitDialogs (NULL);
-  InitCursor ();
+  /* Do the standard Mac environment setup: */
+#if defined(qd) || (defined(__QUICKDRAW__) && defined(QD) && defined(InitGraf))
+  InitGraf(&QD(thePort));
+#endif /* qd || (__QUICKDRAW__ && QD && InitGraf) */
+  InitFonts();
+  FlushEvents((EventMask)everyEvent, (EventMask)0U);
+  InitWindows();
+  InitMenus();
+  TEInit();
+  InitDialogs(NULL);
+  InitCursor();
 
-  /* Color Quickdraw is different from Classic QD. */
-  SysEnvirons (2, &se);
+  /* Color Quickdraw is different from Classic QD: */
+  SysEnvirons(2, &se);
   has_color_qd = se.hasColorQD;
-  /* Use it if we got it. */
+  /* Use it if we got it: */
   use_color_qd = has_color_qd;
 
   sizerect.top = 50;
@@ -173,921 +280,969 @@ mac_init (void)
   sizerect.bottom = 1000;
   sizerect.right = 1000;
 #if 0
-  sizerect.bottom = screenBits.bounds.bottom - screenBits.bounds.top;
-  sizerect.right = screenBits.bounds.right - screenBits.bounds.left;
+  sizerect.bottom = (screenBits.bounds.bottom - screenBits.bounds.top);
+  sizerect.right = (screenBits.bounds.right - screenBits.bounds.left);
 #endif /* 0 */
 
-  /* Set up the menus. */
-  menubar = GetNewMBar (mbMain);
-  SetMenuBar (menubar);
-  /* Add the DAs etc as usual. */
-  menu = GetMHandle (mApple);
-  if (menu != nil)
-    {
-      AddResMenu (menu, 'DRVR');
-    }
-  DrawMenuBar ();
+  /* Set up the menus: */
+  menubar = GetNewMBar((short)mbMain);
+  SetMenuBar(menubar);
+  /* Add the DAs etc as usual: */
+  menu = GetMenuHandle((MenuID)mApple);
+  if (menu != nil) {
+      AddResMenu(menu, 'DRVR');
+  }
+  DrawMenuBar();
 
-  new_console_window ();
+  new_console_window();
 }
 
-new_console_window (void)
+int new_console_window(void)
 {
-  /* Create the main window we are going to play in. */
-  if (has_color_qd)
-    console_window = GetNewCWindow (wConsole, NULL, (WindowPtr) - 1L);
-  else
-    console_window = GetNewWindow (wConsole, NULL, (WindowPtr) - 1L);
+  /* Create the main window we are going to play in: */
+  if (has_color_qd) {
+    console_window = GetNewCWindow((short)wConsole, NULL,
+                                   ((WindowPtr)-1L));
+  } else {
+    console_window = GetNewWindow((short)wConsole, NULL,
+                                  ((WindowPtr)-1L));
+  }
 
-  SetPort (console_window);
+  SetPort((GrafPtr)console_window);
   console_text_rect = console_window->portRect;
-  /* Leave 8 pixels of blank space, for aesthetic reasons and to
-     make it easier to select from the beginning of a line. */
+  /* Leave 8 pixels of blank space, for aesthetic reasons and to make it easier
+   * to select from the beginning of a line: */
   console_text_rect.left += 8;
-  console_text_rect.bottom -= sbarwid - 1;
-  console_text_rect.right -= sbarwid - 1;
-  console_text = TENew (&console_text_rect, &console_text_rect);
-  TESetSelect (0, 40000, console_text);
-  TEDelete (console_text);
-  TEAutoView (1, console_text);
+  console_text_rect.bottom -= (sbarwid - 1);
+  console_text_rect.right -= (sbarwid - 1);
+  console_text = TENew(&console_text_rect, &console_text_rect);
+  TESetSelect(0, 40000, console_text);
+  TEDelete(console_text);
+  TEAutoView((Boolean)1U, console_text);
 
   console_v_scroll_rect = console_window->portRect;
-  console_v_scroll_rect.bottom -= sbarwid - 1;
-  console_v_scroll_rect.left = console_v_scroll_rect.right - sbarwid;
+  console_v_scroll_rect.bottom -= (sbarwid - 1);
+  console_v_scroll_rect.left = (console_v_scroll_rect.right - sbarwid);
   console_v_scrollbar =
-    NewControl (console_window, &console_v_scroll_rect,
-		"\p", 1, 0, 0, 0, scrollBarProc, 0L);
+    NewControl(console_window, &console_v_scroll_rect,
+               "\p", (Boolean)1U, (SInt16)0, (SInt16)0, (SInt16)0,
+               (SInt16)scrollBarProc, 0L);
 
-  ShowWindow (console_window);
-  SelectWindow (console_window);
+  ShowWindow(console_window);
+  SelectWindow(console_window);
 }
 
-mac_command_loop (void)
+#if !defined(OSTrap) && !defined(ToolTrap) && !defined(__OSUTILS__)
+enum { OSTrap, ToolTrap };
+#endif /* !OSTrap && !ToolTrap */
+
+int mac_command_loop(void)
 {
+#ifdef ALLOW_UNUSED_VARIABLES
   SysEnvRec se;
+#endif /* ALLOW_UNUSED_VARIABLES */
   NSInteger eventloopdone = 0;
   Boolean gotevent;
   Point mouse;
   EventRecord event;
+#ifdef ALLOW_UNUSED_VARIABLES
   WindowPtr win;
+#endif /* ALLOW_UNUSED_VARIABLES */
   RgnHandle cursorRgn;
-  NSInteger i, tm;
+  NSInteger tm;
+#ifdef ALLOW_UNUSED_VARIABLES
+  NSInteger i;
   Handle menubar;
   MenuHandle menu;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
-  /* Figure out if the WaitNextEvent Trap is available.  */
+#ifdef ToolTrap
+  /* Figure out if the WaitNextEvent Trap is available: */
   use_wne =
-    (NGetTrapAddress (0x60, ToolTrap) != NGetTrapAddress (0x9f, ToolTrap));
+    (NGetTrapAddress(0x60, ToolTrap) != NGetTrapAddress(0x9f, ToolTrap));
+#else
+  use_wne = 0;
+#endif /* ToolTrap */
   /* Pass WaitNextEvent an empty region the first time through.  */
-  cursorRgn = NewRgn ();
-  /* Go into the main event-handling loop.  */
-  while (!eventloopdone)
-    {
-      /* Use WaitNextEvent if it is available, otherwise GetNextEvent.  */
-      if (use_wne)
-	{
-	  get_global_mouse (&mouse);
-	  adjust_cursor (mouse, cursorRgn);
-	  tm = GetCaretTime ();
-	  gotevent = WaitNextEvent (everyEvent, &event, tm, cursorRgn);
-	}
-      else
-	{
-	  SystemTask ();
-	  gotevent = GetNextEvent (everyEvent, &event);
-	}
-      /* First decide if the event is for a dialog or is just any old event. */
-      if (FrontWindow () != nil && IsDialogEvent (&event))
-	{
-	  short itemhit;
-	  DialogPtr dialog;
+  cursorRgn = NewRgn();
+  /* Go into the main event-handling loop: */
+  while (!eventloopdone) {
+      /* Use WaitNextEvent if it is available, otherwise GetNextEvent: */
+      if (use_wne) {
+          get_global_mouse(&mouse);
+          adjust_cursor(mouse, cursorRgn);
+          tm = GetCaretTime();
+          gotevent = WaitNextEvent((EventMask)everyEvent, &event,
+                                   (UInt32)tm, cursorRgn);
+      } else {
+          SystemTask();
+          gotevent = GetNextEvent((EventMask)everyEvent, &event);
+      }
+      /* First decide if the event is for a dialog or is just any old event: */
+      if ((FrontWindow() != nil) && IsDialogEvent(&event)) {
+          short itemhit;
+          DialogPtr dialog;
 
-	  /* Handle all the modeless dialogs here. */
-	  if (DialogSelect (&event, &dialog, &itemhit))
-	    {
-	    }
-	}
-      else if (gotevent)
-	{
-	  /* Make sure we have the right cursor before handling the event. */
-	  adjust_cursor (event.where, cursorRgn);
-	  do_event (&event);
-	}
-      else
-	{
-	  do_idle ();
-	}
-    }
+          /* Handle all the modeless dialogs here: */
+          if (DialogSelect(&event, &dialog, &itemhit)) {
+              /* (do nothing) */ ;
+          }
+      } else if (gotevent) {
+          /* Make sure we have the right cursor before handling the event: */
+          adjust_cursor(event.where, cursorRgn);
+          do_event(&event);
+      } else {
+          do_idle();
+      }
+  }
 }
 
-/* Collect the global coordinates of the mouse pointer.  */
-
-get_global_mouse (Point *mouse)
+/* Collect the global coordinates of the mouse pointer: */
+int get_global_mouse(Point *mouse)
 {
   EventRecord evt;
 
-  OSEventAvail (0, &evt);
+  OSEventAvail((short)0, &evt);
   *mouse = evt.where;
 }
 
-/* Change the cursor's appearance to be appropriate for the given mouse
-   location.  */
-
-adjust_cursor (Point mouse, RgnHandle region)
+/* Change cursor appearance to be appropriate for the given mouse location: */
+int adjust_cursor(Point mouse, RgnHandle region)
 {
+#if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+# pragma unused (mouse, region)
+#endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
+  /* do nothing, besides return: */
+  return 0;
 }
 
-/* Decipher an event, maybe do something with it.  */
-
-do_event (EventRecord *evt)
+/* Decipher an event, maybe do something with it: */
+int do_event(EventRecord *evt)
 {
   short part, err, rslt = 0;
   WindowPtr win;
+#ifdef ALLOW_UNUSED_VARIABLES
   Boolean hit;
+#endif /* ALLOW_UNUSED_VARIABLES */
   char key;
   Point pnt;
 
-  switch (evt->what)
-    {
+  switch (evt->what) {
     case mouseDown:
       /* See if the click happened in a special part of the screen. */
-      part = FindWindow (evt->where, &win);
-      switch (part)
-	{
-	case inMenuBar:
-	  adjust_menus ();
-	  do_menu_command (MenuSelect (evt->where));
-	  break;
-	case inSysWindow:
-	  SystemClick (evt, win);
-	  break;
-	case inContent:
-	  if (win != FrontWindow ())
-	    {
-	      /* Bring the clicked-on window to the front. */
-	      SelectWindow (win);
-	      /* Fix the menu to match the new front window. */
-	      adjust_menus ();
-	      /* We always want to discard the event now, since clicks in a
-	         windows are often irreversible actions. */
-	    }
-	  else
-	    /* Mouse clicks in the front window do something useful. */
-	    do_mouse_down (win, evt);
-	  break;
-	case inDrag:
-	  /* Standard drag behavior, no tricks necessary. */
-	  DragWindow (win, evt->where, &dragrect);
-	  break;
-	case inGrow:
-	  grow_window (win, evt->where);
-	  break;
-	case inZoomIn:
-	case inZoomOut:
-	  zoom_window (win, evt->where, part);
-	  break;
-	case inGoAway:
-	  close_window (win);
-	  break;
-	}
+      part = FindWindow(evt->where, &win);
+      switch (part) {
+          case inMenuBar:
+              adjust_menus();
+              do_menu_command(MenuSelect(evt->where));
+              break;
+          case inSysWindow:
+              SystemClick(evt, win);
+              break;
+          case inContent:
+              if (win != FrontWindow()) {
+                  /* Bring the clicked-on window to the front. */
+                  SelectWindow(win);
+                  /* Fix the menu to match the new front window. */
+                  adjust_menus();
+                  /* We always want to discard the event now, since clicks
+                   * in a window are often irreversible actions. */
+              } else {
+                  /* Mouse clicks on front window do something useful. */
+                  do_mouse_down(win, evt);
+              }
+              break;
+          case inDrag:
+              /* Standard drag behavior, no tricks necessary. */
+              DragWindow(win, evt->where, &dragrect);
+              break;
+          case inGrow:
+              grow_window(win, evt->where);
+              break;
+          case inZoomIn:
+          case inZoomOut:
+              zoom_window(win, evt->where, (short)part);
+              break;
+          case inGoAway:
+              close_window(win);
+              break;
+      } /* end "switch (part)" */
       break;
     case keyDown:
     case autoKey:
-      key = evt->message & charCodeMask;
-      /* Check for menukey equivalents. */
-      if (evt->modifiers & cmdKey)
-	{
-	  if (evt->what == keyDown)
-	    {
-	      adjust_menus ();
-	      do_menu_command (MenuKey (key));
-	    }
-	}
-      else
-	{
-	  if (evt->what == keyDown)
-	    {
-	      /* Random keypress, interpret it. */
-	      do_keyboard_command (key);
-	    }
-	}
+      key = (evt->message & charCodeMask);
+      /* Check for menukey equivalents: */
+      if (evt->modifiers & cmdKey) {
+          if (evt->what == keyDown) {
+              adjust_menus();
+              do_menu_command(MenuKey((CharParameter)key));
+          }
+      } else {
+          if (evt->what == keyDown) {
+              /* Random keypress, interpret it: */
+              do_keyboard_command(key);
+          }
+      }
       break;
     case activateEvt:
-      activate_window ((WindowPtr) evt->message, evt->modifiers & activeFlag);
+      activate_window((WindowPtr)evt->message,
+                      (evt->modifiers & activeFlag));
       break;
     case updateEvt:
-      update_window ((WindowPtr) evt->message);
+      update_window((WindowPtr)evt->message);
       break;
     case diskEvt:
-      /* Call DIBadMount in response to a diskEvt, so that the user can format
-         a floppy. (from DTS Sample) */
-      if (HiWord (evt->message) != noErr)
-	{
-	  SetPt (&pnt, 50, 50);
-	  err = DIBadMount (pnt, evt->message);
-	}
+      /* Call DIBadMount in response to a diskEvt, so that the user can
+       * format a floppy. (from DTS Sample) */
+      if (HiWord(evt->message) != noErr) {
+          SetPt(&pnt, (short)50, (short)50);
+          err = DIBadMount(pnt, evt->message);
+      }
       break;
     case app4Evt:
-      /* Grab only a single byte. */
-      switch ((evt->message >> 24) & 0xFF)
-	{
-	case 0xfa:
-	  break;
-	case 1:
-	  inbackground = !(evt->message & 1);
-	  activate_window (FrontWindow (), !inbackground);
-	  break;
-	}
+      /* Grab only a single byte: */
+      switch ((evt->message >> 24) & 0xFF) {
+          case 0xfa:
+              break;
+          case 1:
+              inbackground = !(evt->message & 1);
+              activate_window(FrontWindow(), !inbackground);
+              break;
+      } /* end "switch ((evt->message >> 24) & 0xFF)" */
       break;
     case kHighLevelEvent:
-      AEProcessAppleEvent (evt);
+      AEProcessAppleEvent(evt);
       break;
     case nullEvent:
-      do_idle ();
+      do_idle();
       rslt = 1;
       break;
     default:
       break;
-    }
+  } /* end "switch (evt->what)" */
   return rslt;
 }
 
-/* Do any idle-time activities. */
-
-do_idle (void)
+/* Do any idle-time activities: */
+int do_idle(void)
 {
-  TEIdle (console_text);
+  TEIdle(console_text);
 }
 
-grow_window (WindowPtr win, Point where)
+int grow_window(WindowPtr win, Point where)
 {
-#warning 64BIT: Inspect use of long
-#warning 64BIT: Inspect use of long
+#if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# warning "64BIT: Inspect use of long"
+#endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
   long winsize;
   NSInteger h, v;
   GrafPtr oldport;
 
-  winsize = GrowWindow (win, where, &sizerect);
-  /* Only do anything if it actually changed size. */
-  if (winsize != 0)
-    {
-      GetPort (&oldport);
-      SetPort (win);
-      if (win == console_window)
-	{
-	  EraseRect (&win->portRect);
-	  h = LoWord (winsize);
-	  v = HiWord (winsize);
-	  SizeWindow (win, h, v, 1);
-	  resize_console_window ();
-	}
-      SetPort (oldport);
-    }
+  winsize = GrowWindow(win, where, &sizerect);
+  /* Only do anything if it actually changed size: */
+  if (winsize != 0) {
+      GetPort(&oldport);
+      SetPort((GrafPtr)win);
+      if (win == console_window) {
+          EraseRect(&win->portRect);
+          h = LoWord(winsize);
+          v = HiWord(winsize);
+          SizeWindow(win, (short)h, (short)v, (Boolean)1U);
+          resize_console_window();
+      }
+      SetPort((GrafPtr)oldport);
+  }
 }
 
-zoom_window (WindowPtr win, Point where, short part)
+int zoom_window(WindowPtr win, Point where, short part)
 {
-  ZoomWindow (win, part, (win == FrontWindow ()));
-  if (win == console_window)
-    {
-      resize_console_window ();
-    }
+# if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+#  pragma unused (where)
+# endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
+  ZoomWindow(win, (WindowPartCode)part, (Boolean)(win == FrontWindow()));
+  if (win == console_window) {
+      resize_console_window();
+  }
 }
 
-resize_console_window (void)
+int resize_console_window(void)
 {
-  adjust_console_sizes ();
-  adjust_console_scrollbars ();
-  adjust_console_text ();
-  InvalRect (&console_window->portRect);
+  adjust_console_sizes();
+  adjust_console_scrollbars();
+  adjust_console_text();
+#if 0
+  InvalRect(&console_window->portRect);
+#endif /* 0 */
 }
 
-close_window (WindowPtr win)
+int close_window(WindowPtr win)
 {
+#if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+# pragma unused (win)
+#endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
+  /* do nothing, besides return: */
+  return 0;
 }
 
-pascal void
-v_scroll_proc (ControlHandle control, short part)
+pascal void v_scroll_proc(ControlHandle control, short part)
 {
   NSInteger oldval, amount = 0, newval;
-  NSInteger pagesize = ((*console_text)->viewRect.bottom - (*console_text)->viewRect.top) / (*console_text)->lineHeight;
-  if (part)
-    {
-      oldval = GetCtlValue (control);
-      switch (part)
-	{
-	case inUpButton:
-	  amount = 1;
-	  break;
-	case inDownButton:
-	  amount = -1;
-	  break;
-	case inPageUp:
-	  amount = pagesize;
-	  break;
-	case inPageDown:
-	  amount = -pagesize;
-	  break;
-	default:
-	  /* (should freak out) */
-	  break;
-	}
-      SetCtlValue (control, oldval - amount);
-      newval = GetCtlValue (control);
-      amount = oldval - newval;
-      if (amount)
-	TEScroll (0, amount * (*console_text)->lineHeight, console_text);
-    }
+  NSInteger pagesize = (((*console_text)->viewRect.bottom
+                         - (*console_text)->viewRect.top)
+                        / (*console_text)->lineHeight);
+  if (part) {
+      oldval = GetCtlValue(control);
+      switch (part) {
+          case inUpButton:
+              amount = 1;
+              break;
+          case inDownButton:
+              amount = -1;
+              break;
+          case inPageUp:
+              amount = pagesize;
+              break;
+          case inPageDown:
+              amount = -pagesize;
+              break;
+          default:
+              /* (should freak out) */
+              break;
+      } /* end "switch (part)" */
+      SetControlValue(control, (SInt16)(oldval - amount));
+      newval = GetCtlValue(control);
+      amount = (oldval - newval);
+      if (amount) {
+        TEScroll((short)0, (short)(amount * (*console_text)->lineHeight),
+                 console_text);
+      }
+  } /* end "if (part)" */
 }
 
-do_mouse_down (WindowPtr win, EventRecord * event)
+int do_mouse_down(WindowPtr win, EventRecord * event)
 {
   short part, value;
   Point mouse;
   ControlHandle control;
 
-  if (1 /*is_app_window(win) */ )
-    {
-      SetPort (win);
+  if (1/*is_app_window(win)*/) {
+      SetPort((GrafPtr)win);
       mouse = event->where;
-      GlobalToLocal (&mouse);
-      part = FindControl (mouse, win, &control);
-      if (control == console_v_scrollbar)
-	{
-	  switch (part)
-	    {
-	    case inThumb:
-	      value = GetCtlValue (control);
-	      part = TrackControl (control, mouse, nil);
-	      if (part)
-		{
-		  value -= GetCtlValue (control);
-		  if (value)
-		    TEScroll (0, value * (*console_text)->lineHeight,
-			      console_text);
-		}
-	      break;
-	    default:
-#if 0				/* do NOT deal with right now */
-# if 1				/* universal headers */
-	      value = TrackControl (control, mouse, (ControlActionUPP) v_scroll_proc);
+      GlobalToLocal(&mouse);
+      part = FindControl(mouse, win, &control);
+      if (control == console_v_scrollbar) {
+          switch (part) {
+            case inThumb:
+                value = GetCtlValue(control);
+                part = TrackControl(control, mouse, nil);
+		if (part) {
+                    value -= GetCtlValue(control);
+                    if (value) {
+                        TEScroll((short)0,
+                                 (short)(value * (*console_text)->lineHeight),
+                                 console_text);
+                    }
+		} /* end "if (part)" */
+		break;
+            default:
+#if 0		/* do NOT deal with right now */
+# if 1		/* universal headers */
+		value = TrackControl(control, mouse,
+                                     (ControlActionUPP)v_scroll_proc);
 # else
-	      value = TrackControl (control, mouse, (ProcPtr) v_scroll_proc);
+		value = TrackControl(control, mouse,
+                                     (ProcPtr)v_scroll_proc);
 # endif /* 1 */
 #endif /* 0 */
-	      break;
-	    }
-	}
-      else
-	{
-	  TEClick (mouse, 0, console_text);
-	}
-    }
+		 break;
+          } /* end "switch (part)" */
+      } else {
+          TEClick(mouse, (Boolean)0U, console_text);
+      }
+  }
 }
 
-scroll_text (NSInteger hlines, NSInteger vlines)
+int scroll_text(NSInteger hlines, NSInteger vlines)
 {
+#if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+# pragma unused (hlines, vlines)
+#endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
+  /* do nothing, besides return: */
+  return 0;
 }
 
-activate_window (WindowPtr win, NSInteger activate)
+int activate_window(WindowPtr win, NSInteger activate)
 {
   Rect grow_rect;
 
-  if (win == nil)
-    return;
-  /* It is convenient to make the activated window also be the
-     current GrafPort. */
-  if (activate)
-    SetPort (win);
+  if (win == nil) {
+    return 0;
+  }
+  /* It is convenient to make the active window also be the current GrafPort: */
+  if (activate) {
+    SetPort((GrafPtr)win);
+  }
   /* Activate the console window's scrollbar. */
-  if (win == console_window)
-    {
-      if (activate)
-	{
-	  TEActivate (console_text);
-	  /* Cause the grow icon to be redrawn at the next update. */
-	  grow_rect = console_window->portRect;
-	  grow_rect.top = grow_rect.bottom - sbarwid;
-	  grow_rect.left = grow_rect.right - sbarwid;
-	  InvalRect (&grow_rect);
-	}
-      else
-	{
-	  TEDeactivate (console_text);
-	  DrawGrowIcon (console_window);
-	}
-      HiliteControl (console_v_scrollbar, (activate ? 0 : 255));
-    }
+  if (win == console_window) {
+      if (activate) {
+	TEActivate (console_text);
+	/* Cause the grow icon to be redrawn at the next update: */
+	grow_rect = console_window->portRect;
+	grow_rect.top = (grow_rect.bottom - sbarwid);
+	grow_rect.left = (grow_rect.right - sbarwid);
+	InvalRect(&grow_rect);
+      } else {
+	TEDeactivate(console_text);
+	DrawGrowIcon(console_window);
+      }
+      HiliteControl(console_v_scrollbar,
+                    (ControlPartCode)(activate ? 0 : 255));
+  }
 }
 
-update_window (WindowPtr win)
+int update_window(WindowPtr win)
 {
   NSInteger controls = 1, growbox = 0;
   GrafPtr oldport;
 
   /* Set the updating window to be the current grafport. */
-  GetPort (&oldport);
-  SetPort (win);
-/*  recalc_depths();  */
-  BeginUpdate (win);
-  if (win == console_window)
-    {
-      draw_console ();
+  GetPort(&oldport);
+  SetPort((GrafPtr)win);
+#if 0
+  recalc_depths();
+#endif /* 0 */
+  BeginUpdate(win);
+  if (win == console_window) {
+      draw_console();
       controls = 1;
       growbox = 1;
-    }
-  if (controls)
-    UpdateControls (win, win->visRgn);
-  if (growbox)
-    DrawGrowIcon (win);
-  EndUpdate (win);
-  SetPort (oldport);
+  }
+  if (controls) {
+      UpdateControls(win, win->visRgn);
+  }
+  if (growbox) {
+      DrawGrowIcon(win);
+  }
+  EndUpdate(win);
+  SetPort((GrafPtr)oldport);
 }
 
-adjust_menus (void)
+int adjust_menus(void)
 {
+  /* do nothing, besides return: */
+  return 0;
 }
 
-#warning 64BIT: Inspect use of long
-#warning 64BIT: Inspect use of long
-do_menu_command (long which)
+#if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# warning "64BIT: Inspect use of long"
+#endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
+int do_menu_command(long which)
 {
   short menuid, menuitem;
+#ifdef ALLOW_UNUSED_VARIABLES
   short itemHit;
+#endif /* ALLOW_UNUSED_VARIABLES */
   Str255 daname;
   short daRefNum;
+#ifdef ALLOW_UNUSED_VARIABLES
+/* same condition as where this one is used: */
+# if 0
   Boolean handledbyda;
+# endif /* 0 */
   WindowPtr win;
   short ditem;
   NSInteger i;
+#endif /* ALLOW_UNUSED_VARIABLES */
   char cmdbuf[300];
 
   cmdbuf[0] = '\0';
-  menuid = HiWord (which);
-  menuitem = LoWord (which);
-  switch (menuid)
-    {
+  menuid = HiWord(which);
+  menuitem = LoWord(which);
+  switch (menuid) {
     case mApple:
-      switch (menuitem)
-	{
-	case miAbout:
-	  Alert (128, nil);
-	  break;
+      switch (menuitem) {
+        case miAbout:
+          Alert((SInt16)128, nil);
+          break;
 #if 0
-	case miHelp:
-	  /* (should pop up help info) */
-	  break;
+        case miHelp:
+          /* (should pop up help info) */
+          break;
 #endif /* 0 */
-	default:
-	  GetItem (GetMHandle (mApple), menuitem, daname);
-	  daRefNum = OpenDeskAcc (daname);
-	}
+        default:
+          GetMenuItemText(GetMenuHandle((MenuID)mApple),
+                          (MenuItemIndex)menuitem, daname);
+          daRefNum = OpenDeskAcc(daname);
+      } /* end "switch (menuitem)" */
       break;
     case mFile:
-      switch (menuitem)
-	{
-	case miFileNew:
-	  if (console_window == FrontWindow ())
-	    {
-	      close_window (console_window);
-	    }
-	  new_console_window ();
-	  break;
-	case miFileOpen:
-	  SysBeep (20);
-	  break;
-	case miFileQuit:
-	  ExitToShell ();
-	  break;
-	}
+      switch (menuitem) {
+        case miFileNew:
+          if (console_window == FrontWindow()) {
+            close_window(console_window);
+          }
+          new_console_window();
+          break;
+        case miFileOpen:
+          SysBeep((short)20);
+          break;
+        case miFileQuit:
+          ExitToShell();
+          break;
+      } /* end "switch (menuitem)" */
       break;
     case mEdit:
-      /* handledbyda = SystemEdit(menuitem-1); */
-      switch (menuitem)
-	{
-	case miEditCut:
-	  TECut (console_text);
-	  break;
-	case miEditCopy:
-	  TECopy (console_text);
-	  break;
-	case miEditPaste:
-	  TEPaste (console_text);
-	  break;
-	case miEditClear:
-	  TEDelete (console_text);
-	  break;
-	}
-      /* All of these operations need the same postprocessing. */
-      adjust_console_sizes ();
-      adjust_console_scrollbars ();
-      adjust_console_text ();
+#if 0
+      handledbyda = SystemEdit(menuitem - 1);
+#endif /* 0 */
+      switch (menuitem) {
+        case miEditCut:
+          TECut(console_text);
+          break;
+        case miEditCopy:
+          TECopy(console_text);
+          break;
+        case miEditPaste:
+          TEPaste(console_text);
+          break;
+        case miEditClear:
+          TEDelete(console_text);
+          break;
+      } /* end "switch (menuitem)" */
+      /* All of these operations need the same postprocessing: */
+      adjust_console_sizes();
+      adjust_console_scrollbars();
+      adjust_console_text();
       break;
     case mDebug:
-      switch (menuitem)
-	{
-	case miDebugTarget:
-#warning 64BIT: Check formatting arguments
-#warning 64BIT: Check formatting arguments
-	  sprintf (cmdbuf, 64BIT_CHECKFORMAT_START"target %s"64BIT_CHECKFORMAT_END, "remote");
-	  break;
-	case miDebugRun:
-#warning 64BIT: Check formatting arguments
-#warning 64BIT: Check formatting arguments
-	  sprintf (cmdbuf, 64BIT_CHECKFORMAT_START"run"64BIT_CHECKFORMAT_END);
-	  break;
-	case miDebugContinue:
-#warning 64BIT: Check formatting arguments
-#warning 64BIT: Check formatting arguments
-	  sprintf (cmdbuf, 64BIT_CHECKFORMAT_START"continue"64BIT_CHECKFORMAT_END);
-	  break;
-	case miDebugStep:
-#warning 64BIT: Check formatting arguments
-#warning 64BIT: Check formatting arguments
-	  sprintf (cmdbuf, 64BIT_CHECKFORMAT_START"step"64BIT_CHECKFORMAT_END);
-	  break;
-	case miDebugNext:
-#warning 64BIT: Check formatting arguments
-#warning 64BIT: Check formatting arguments
-	  sprintf (cmdbuf, 64BIT_CHECKFORMAT_START"next"64BIT_CHECKFORMAT_END);
-	  break;
-	}
+      switch (menuitem) {
+        case miDebugTarget:
+#if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# warning "64BIT: Check formatting arguments"
+#endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
+          sprintf(cmdbuf, "target %s", "remote");
+          break;
+        case miDebugRun:
+#if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# warning "64BIT: Check formatting arguments"
+#endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
+          sprintf(cmdbuf, "run");
+          break;
+        case miDebugContinue:
+#if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# warning "64BIT: Check formatting arguments"
+#endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
+          sprintf(cmdbuf, "continue");
+          break;
+        case miDebugStep:
+#if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# warning "64BIT: Check formatting arguments"
+#endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
+          sprintf(cmdbuf, "step");
+          break;
+        case miDebugNext:
+#if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# warning "64BIT: Check formatting arguments"
+#endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
+          sprintf(cmdbuf, "next");
+          break;
+      } /* end "switch (menuitem)" */
       break;
-    }
-  HiliteMenu (0);
+  } /* end "switch (menuid)" */
+  HiliteMenu((MenuID)0);
   /* Execute a command if one had been given. Do here because a command
-     may longjmp before we get a chance to unhilite the menu. */
-  if (strlen (cmdbuf) > 0)
-    execute_command (cmdbuf, 0);
+   * may longjmp before we get a chance to unhilite the menu. */
+  if (strlen(cmdbuf) > 0) {
+    execute_command(cmdbuf, 0);
+  }
 }
 
 char commandbuf[1000];
 
-do_keyboard_command (NSInteger key)
+int do_keyboard_command(NSInteger key)
 {
   NSInteger startpos, endpos, i, len;
   char *last_newline;
   char buf[10], *text_str, *command, *cmd_start;
   CharsHandle text;
 
-  if (key == '\015' || key == '\003')
-    {
-      text = TEGetText (console_text);
-      HLock ((Handle) text);
+  if ((key == '\015') || (key == '\003')) {
+      text = TEGetText(console_text);
+      HLock((Handle)text);
       text_str = *text;
       startpos = (*console_text)->selStart;
       endpos = (*console_text)->selEnd;
-      if (startpos != endpos)
-	{
-	  len = endpos - startpos;
-	  cmd_start = text_str + startpos;
+      if (startpos != endpos) {
+	len = (endpos - startpos);
+	cmd_start = (text_str + startpos);
+      } else {
+	for ((i = startpos - 1); (i >= 0); --i) {
+          if (text_str[i] == '\015') {
+            break;
+          }
 	}
-      else
-	{
-	  for (i = startpos - 1; i >= 0; --i)
-	    if (text_str[i] == '\015')
-	      break;
-	  last_newline = text_str + i;
-	  len = (text_str + startpos) - 1 - last_newline;
-	  cmd_start = last_newline + 1;
-	}
-      if (len > 1000)
+	last_newline = (text_str + i);
+	len = ((text_str + startpos) - 1 - last_newline);
+	cmd_start = (last_newline + 1);
+      }
+      if (len > 1000) {
 	len = 999;
-      if (len < 0)
+      }
+      if (len < 0) {
 	len = 0;
-      strncpy (commandbuf + 1, cmd_start, len);
-      commandbuf[1 + len] = 0;
-      command = commandbuf + 1;
-      HUnlock ((Handle) text);
-      commandbuf[0] = strlen (command);
+      }
+      strncpy((commandbuf + 1), cmd_start, (size_t)len);
+      commandbuf[(1 + len)] = 0;
+      command = (commandbuf + 1);
+      HUnlock((Handle)text);
+      commandbuf[0] = strlen(command);
 
-      /* Insert a newline and recalculate before doing any command. */
+      /* Insert a newline and recalculate before doing any command: */
       key = '\015';
-      TEKey (key, console_text);
-      TEInsert (buf, 1, console_text);
-      adjust_console_sizes ();
-      adjust_console_scrollbars ();
-      adjust_console_text ();
+      TEKey((CharParameter)key, console_text);
+      TEInsert(buf, 1, console_text);
+      adjust_console_sizes();
+      adjust_console_scrollbars();
+      adjust_console_text();
 
-      if (strlen (command) > 0)
-	{
-	  execute_command (command, 0);
-	  bpstat_do_actions (&stop_bpstat);
-	}
-    }
-  else
-    {
-      /* A self-inserting character. This includes delete.  */
-      TEKey (key, console_text);
-    }
+      if (strlen(command) > 0) {
+	execute_command(command, 0);
+	bpstat_do_actions(&stop_bpstat);
+      }
+  } else {
+      /* A self-inserting character. This includes delete: */
+      TEKey((CharParameter)key, console_text);
+  }
 }
 
-/* Draw all graphical stuff in the console window.  */
-
-draw_console (void)
+/* Draw all graphical stuff in the console window: */
+int draw_console(void)
 {
-  SetPort (console_window);
-  TEUpdate (&(console_window->portRect), console_text);
+  SetPort((GrafPtr)console_window);
+  TEUpdate(&(console_window->portRect), console_text);
 }
 
-/* Cause an update of a given window's entire contents.  */
-
-force_update (WindowPtr win)
+/* Cause an update of a given window's entire contents: */
+int force_update(WindowPtr win)
 {
   GrafPtr oldport;
 
-  if (win == nil)
-    return;
-  GetPort (&oldport);
-  SetPort (win);
-  EraseRect (&win->portRect);
-  InvalRect (&win->portRect);
-  SetPort (oldport);
+  if (win == nil) {
+    return 0;
+  }
+  GetPort(&oldport);
+  SetPort((GrafPtr)win);
+  EraseRect(&win->portRect);
+  InvalRect(&win->portRect);
+  SetPort((GrafPtr)oldport);
 }
 
-adjust_console_sizes (void)
+int adjust_console_sizes(void)
 {
   Rect tmprect;
 
   tmprect = console_window->portRect;
-  /* Move and size the scrollbar. */
-  MoveControl (console_v_scrollbar, tmprect.right - sbarwid, 0);
-  SizeControl (console_v_scrollbar, sbarwid + 1, tmprect.bottom - sbarwid + 1);
-  /* Move and size the text. */
+  /* Move and size the scrollbar: */
+  MoveControl(console_v_scrollbar, (SInt16)(tmprect.right - sbarwid),
+              (SInt16)0);
+  SizeControl(console_v_scrollbar, (SInt16)(sbarwid + 1),
+              (SInt16)(tmprect.bottom - sbarwid + 1));
+  /* Move and size the text: */
   tmprect.left += 7;
   tmprect.right -= sbarwid;
   tmprect.bottom -= sbarwid;
-  InsetRect (&tmprect, 1, 1);
+  InsetRect(&tmprect, (short)1, (short)1);
   (*console_text)->destRect = tmprect;
-  /* Fiddle bottom of viewrect to be even multiple of text lines. */
-  tmprect.bottom = tmprect.top
-    + ((tmprect.bottom - tmprect.top) / (*console_text)->lineHeight)
-    * (*console_text)->lineHeight;
+  /* Fiddle bottom of viewrect to be even multiple of text lines: */
+  tmprect.bottom = (tmprect.top
+                    + ((tmprect.bottom - tmprect.top)
+                       / (*console_text)->lineHeight)
+                    * (*console_text)->lineHeight);
   (*console_text)->viewRect = tmprect;
 }
 
-adjust_console_scrollbars (void)
+int adjust_console_scrollbars(void)
 {
   NSInteger lines, newmax, value;
 
   (*console_v_scrollbar)->contrlVis = 0;
   lines = (*console_text)->nLines;
-  newmax = lines - (((*console_text)->viewRect.bottom
-		     - (*console_text)->viewRect.top)
-		    / (*console_text)->lineHeight);
-  if (newmax < 0)
+  newmax = (lines - (((*console_text)->viewRect.bottom
+                      - (*console_text)->viewRect.top)
+                     / (*console_text)->lineHeight));
+  if (newmax < 0) {
     newmax = 0;
-  SetCtlMax (console_v_scrollbar, newmax);
-  value = ((*console_text)->viewRect.top - (*console_text)->destRect.top)
-    / (*console_text)->lineHeight;
-  SetCtlValue (console_v_scrollbar, value);
+  }
+  SetControlMaximum(console_v_scrollbar, (SInt16)newmax);
+  value = (((*console_text)->viewRect.top - (*console_text)->destRect.top)
+           / (*console_text)->lineHeight);
+  SetControlValue(console_v_scrollbar, (SInt16)value);
   (*console_v_scrollbar)->contrlVis = 0xff;
-  ShowControl (console_v_scrollbar);
+  ShowControl(console_v_scrollbar);
 }
 
-/* Scroll the TE record so that it is consistent with the scrollbar(s). */
-
-adjust_console_text (void)
+/* Scroll the TE record so that it is consistent with the scrollbar(s): */
+int adjust_console_text(void)
 {
-  TEScroll (((*console_text)->viewRect.left
-	     - (*console_text)->destRect.left)
-	    - 0 /* get h scroll value */ ,
-	    ((((*console_text)->viewRect.top - (*console_text)->destRect.top)
-	      / (*console_text)->lineHeight)
-	     - GetCtlValue (console_v_scrollbar))
-	    * (*console_text)->lineHeight,
+  TEScroll((short)(((*console_text)->viewRect.left
+                    - (*console_text)->destRect.left)
+                   - 0 /* get h scroll value */),
+           (short)(((((*console_text)->viewRect.top - (*console_text)->destRect.top)
+                     / (*console_text)->lineHeight)
+                    - GetCtlValue(console_v_scrollbar))
+                   * (*console_text)->lineHeight),
 	    console_text);
 }
 
-/* Readline substitute. */
-
-char *
-readline (char *prrompt)
+#ifndef _READLINE_H_
+/* Readline substitute: */
+char *readline(char *prrompt)
 {
-  return gdb_readline (prrompt);
+  return gdb_readline(prrompt);
 }
 
 char *rl_completer_word_break_characters;
 
 char *rl_completer_quote_characters;
 
-NSInteger (*rl_completion_entry_function) ();
+NSInteger (*rl_completion_entry_function)(const char *, int);
 
 NSInteger rl_point;
 
 char *rl_line_buffer;
 
 char *rl_readline_name;
+#endif /* !_READLINE_H_ */
 
-/* History substitute. */
-
-void
-add_history (char *buf)
+#ifndef _HISTORY_H_
+/* History substitute: */
+void add_history(char *buf)
 {
+  /* do nothing, besides return: */
+  return;
+}
+#endif /* !_HISTORY_H_ */
+
+void stifle_history(NSInteger n)
+{
+#if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+# pragma unused (n)
+#endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
+  /* do nothing, besides return: */
+  return;
 }
 
-void
-stifle_history (NSInteger n)
+NSInteger unstifle_history(void)
 {
+  /* do nothing, besides return: */
+  return 0;
 }
 
-NSInteger
-unstifle_history (void)
+#ifndef _HISTORY_H_
+NSInteger read_history(char *name)
 {
+  /* do nothing, besides return: */
+  return 0;
 }
 
-NSInteger
-read_history (char *name)
+NSInteger write_history(char *name)
 {
+  /* do nothing, besides return: */
+  return 0;
+}
+#endif /* !_HISTORY_H_ */
+
+
+NSInteger history_expand(char *x, char **y)
+{
+#if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+# pragma unused (x, y)
+#endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
+  /* do nothing, besides return: */
+  return 0;
 }
 
-NSInteger
-write_history (char *name)
+extern HIST_ENTRY *history_get(NSInteger xxx)
 {
-}
-
-NSInteger
-history_expand (char *x, char **y)
-{
-}
-
-extern HIST_ENTRY *
-history_get (NSInteger xxx)
-{
+#if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+# pragma unused (xxx)
+#endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
   return NULL;
 }
 
 NSInteger history_base;
 
-char *
-filename_completion_function (char *text, char *name)
+const char *filename_completion_function(char *text, char *name)
 {
+#if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+# pragma unused (text, name)
+#endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
   return "?";
 }
 
-char *
-tilde_expand (char *str)
+#ifndef _TILDE_H_
+char *tilde_expand(char *str)
 {
-  return xstrdup (str);
+  return xstrdup(str);
 }
+#endif /* !_TILDE_H_ */
 
-/* Modified versions of standard I/O. */
-
-#warning 64BIT: Check formatting arguments
+/* Modified versions of standard I/O: */
+#if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# warning "64BIT: Check formatting arguments"
+#endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
 #undef fprintf
-
-NSInteger
-hacked_fprintf (FILE * fp, const char *fmt,...)
+extern NSInteger hacked_fprintf(FILE *, const char *, ...);
+NSInteger hacked_fprintf(FILE * fp, const char *fmt, ...)
 {
   NSInteger ret;
   va_list ap;
 
   va_start (ap, fmt);
-  if (mac_app && (fp == stdout || fp == stderr))
-    {
+  if (mac_app && ((fp == stdout) || (fp == stderr))) {
       char buf[1000];
 
-      ret = vsprintf (buf, fmt, ap);
-      TEInsert (buf, strlen (buf), console_text);
-    }
-  else
-#warning 64BIT: Check formatting arguments
-#warning 64BIT: Check formatting arguments
-    ret = vfprintf (fp, 64BIT_CHECKFORMAT_STARTfmt64BIT_CHECKFORMAT_END, ap);
-  va_end (ap);
+      ret = vsprintf(buf, fmt, ap);
+      TEInsert(buf, (long)strlen(buf), console_text);
+  } else {
+#if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# warning "64BIT: Check formatting arguments"
+#endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
+    ret = vfprintf(fp, fmt, ap);
+  }
+  va_end(ap);
   return ret;
 }
 
-#warning 64BIT: Check formatting arguments
-#undef printf
-
-NSInteger
-hacked_printf (const char *fmt,...)
-{
-  NSInteger ret;
-  va_list ap;
-
-  va_start (ap, fmt);
-  ret = hacked_vfprintf (stdout, fmt, ap);
-  va_end (ap);
-  return ret;
-}
-
-#warning 64BIT: Check formatting arguments
+#if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# warning "64BIT: Check formatting arguments"
+#endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
 #undef vfprintf
-
-NSInteger
-hacked_vfprintf (FILE * fp, const char *format, va_list args)
+extern NSInteger hacked_vfprintf(FILE *, const char *, va_list);
+NSInteger hacked_vfprintf(FILE * fp, const char *format, va_list args)
 {
-  if (mac_app && (fp == stdout || fp == stderr))
-    {
+  if (mac_app && ((fp == stdout) || (fp == stderr))) {
       char buf[1000];
       NSInteger ret;
 
-      ret = vsprintf (buf, format, args);
-      TEInsert (buf, strlen (buf), console_text);
-      if (strchr (buf, '\n'))
-	{
-	  adjust_console_sizes ();
-	  adjust_console_scrollbars ();
-	  adjust_console_text ();
-	}
+      ret = vsprintf(buf, format, args);
+      TEInsert(buf, (long)strlen(buf), console_text);
+      if (strchr(buf, '\n')) {
+	adjust_console_sizes();
+        adjust_console_scrollbars();
+        adjust_console_text();
+      }
       return ret;
-    }
-  else
-#warning 64BIT: Check formatting arguments
-#warning 64BIT: Check formatting arguments
-    return vfprintf (fp, 64BIT_CHECKFORMAT_STARTformat64BIT_CHECKFORMAT_END, args);
+  } else {
+#if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# warning "64BIT: Check formatting arguments"
+#endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
+    return vfprintf(fp, format, args);
+  }
+}
+
+#if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# warning "64BIT: Check formatting arguments"
+#endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
+#undef printf
+extern NSInteger hacked_printf(const char *, ...);
+NSInteger hacked_printf(const char *fmt, ...)
+{
+  NSInteger ret;
+  va_list ap;
+
+  va_start(ap, fmt);
+  ret = hacked_vfprintf(stdout, fmt, ap);
+  va_end(ap);
+  return ret;
 }
 
 #undef fputs
-
-hacked_fputs (const char *s, FILE * fp)
+extern int hacked_fputs(const char *, FILE *);
+int hacked_fputs(const char *s, FILE * fp)
 {
-  if (mac_app && (fp == stdout || fp == stderr))
-    {
-      TEInsert (s, strlen (s), console_text);
-      if (strchr (s, '\n'))
-	{
-	  adjust_console_sizes ();
-	  adjust_console_scrollbars ();
-	  adjust_console_text ();
-	}
+  if (mac_app && ((fp == stdout) || (fp == stderr))) {
+      TEInsert(s, (long)strlen(s), console_text);
+      if (strchr(s, '\n')) {
+	adjust_console_sizes();
+	adjust_console_scrollbars();
+	adjust_console_text();
+      }
       return 0;
-    }
-  else
-    return fputs (s, fp);
+  } else {
+    return fputs(s, fp);
+  }
 }
 
 #undef fputc
-
-hacked_fputc (const char c, FILE * fp)
+extern int hacked_fputc(const char, FILE *);
+int hacked_fputc(const char c, FILE * fp)
 {
-  if (mac_app && (fp == stdout || fp == stderr))
-    {
+  if (mac_app && ((fp == stdout) || (fp == stderr))) {
       char buf[1];
 
       buf[0] = c;
-      TEInsert (buf, 1, console_text);
-      if (c == '\n')
-	{
-	  adjust_console_sizes ();
-	  adjust_console_scrollbars ();
-	  adjust_console_text ();
-	}
+      TEInsert(buf, 1, console_text);
+      if (c == '\n') {
+        adjust_console_sizes();
+        adjust_console_scrollbars();
+        adjust_console_text();
+      }
       return c;
-    }
-  else
-    return fputc (c, fp);
+  } else {
+    return fputc(c, fp);
+  }
 }
 
 #undef putc
-
-hacked_putc (const char c, FILE * fp)
+extern int hacked_putc(const char, FILE *);
+int hacked_putc(const char c, FILE * fp)
 {
-  if (mac_app && (fp == stdout || fp == stderr))
-    {
+  if (mac_app && ((fp == stdout) || (fp == stderr))) {
       char buf[1];
 
       buf[0] = c;
-      TEInsert (buf, 1, console_text);
-      if (c == '\n')
-	{
-	  adjust_console_sizes ();
-	  adjust_console_scrollbars ();
-	  adjust_console_text ();
-	}
+      TEInsert(buf, 1, console_text);
+      if (c == '\n') {
+        adjust_console_sizes();
+        adjust_console_scrollbars();
+        adjust_console_text();
+      }
       return c;
-    }
-  else
-    return fputc (c, fp);
+  } else {
+    return fputc(c, fp);
+  }
 }
 
 #undef fflush
-
-hacked_fflush (FILE * fp)
+extern int hacked_fflush(FILE *);
+int hacked_fflush(FILE * fp)
 {
-  if (mac_app && (fp == stdout || fp == stderr))
-    {
-      adjust_console_sizes ();
-      adjust_console_scrollbars ();
-      adjust_console_text ();
+  if (mac_app && ((fp == stdout) || (fp == stderr))) {
+      adjust_console_sizes();
+      adjust_console_scrollbars();
+      adjust_console_text();
       return 0;
-    }
-  return fflush (fp);
+  }
+  return fflush(fp);
 }
 
 #undef fgetc
-
-hacked_fgetc (FILE * fp)
+extern int hacked_fgetc(FILE *);
+int hacked_fgetc(FILE * fp)
 {
-  if (mac_app && (fp == stdin))
-    {
-      /* Catch any attempts to use this.  */
-      DebugStr ("\pShould not be reading from stdin!");
+  if (mac_app && (fp == stdin)) {
+      /* Catch any attempts to use this: */
+      DebugStr("\pShould not be reading from stdin!");
       return '\n';
-    }
-  return fgetc (fp);
+  }
+  return fgetc(fp);
 }
+
+#if !defined(__LP64__) || (defined(__LP64__) && !__LP64__)
+# if !defined(_MSC_VER)
+#  pragma options align=reset
+# endif /* !_MSC_VER */
+#endif /* !__LP64__ */
 
 /* EOF */

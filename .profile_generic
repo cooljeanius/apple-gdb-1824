@@ -1,0 +1,50 @@
+# Source me!
+
+echo "Hello from .profile_generic"
+
+if test -z "${INSTALLED_PRODUCT_ASIDES}"; then
+  export INSTALLED_PRODUCT_ASIDES=YES
+else
+  echo "INSTALLED_PRODUCT_ASIDES is already set to ${INSTALLED_PRODUCT_ASIDES}"
+fi
+export NEXT_ROOT=""
+if test -z "${RC_JASPER}"; then
+  export RC_JASPER=YES
+else
+  echo "RC_JASPER is already set to ${RC_JASPER}"
+fi
+if test -z "${RC_NONARCH_CFLAGS}"; then
+  export RC_NONARCH_CFLAGS="-pipe"
+else
+  echo "RC_NONARCH_CFLAGS is already set to ${RC_NONARCH_CFLAGS}"
+fi
+if test -z "${RC_PRIVATE}"; then
+  if test -d /private; then
+    export RC_PRIVATE=/private
+  else
+    echo "/private does not exist, not setting RC_PRIVATE"
+  fi
+else
+  echo "RC_PRIVATE is already set to ${RC_PRIVATE}"
+fi
+if test -z "${RC_XBS}"; then
+  export RC_XBS=YES
+else
+  echo "RC_XBS is already set to ${RC_XBS}"
+fi
+if test -z "${SEPARATE_STRIP}"; then
+  export SEPARATE_STRIP=YES
+else
+  echo "SEPARATE_STRIP is already set to ${SEPARATE_STRIP}"
+fi
+if test -z "${HOST_ARCHITECTURE}"; then
+  if test -x /usr/bin/arch; then
+    export HOST_ARCHITECTURE=`/usr/bin/arch`
+  else
+    echo "Unable to determine HOST_ARCHITECTURE"
+  fi
+else
+  echo "HOST_ARCHITECTURE is already set to ${HOST_ARCHITECTURE}"
+fi
+
+echo "We should be done setting environment variables now."

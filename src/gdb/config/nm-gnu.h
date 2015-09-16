@@ -1,4 +1,5 @@
-/* Common declarations for the GNU Hurd
+/* nm-gnu.h
+   Common declarations for the GNU Hurd
 
    Copyright 1995, 1996, 1998, 1999 Free Software Foundation, Inc.
 

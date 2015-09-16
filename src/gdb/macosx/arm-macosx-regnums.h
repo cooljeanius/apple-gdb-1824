@@ -1,10 +1,12 @@
+/* arm-macosx-regnums.h */
+
 #ifndef __GDB_ARM_MACOSX_REGNUMS_H__
 #define __GDB_ARM_MACOSX_REGNUMS_H__
 
 /* We assume that one of the two following header files will already
-   have been included prior to including this header file:
-   #include "arm-tdep.h"      (for gdb)
-   #include "arm-regnums.h"   (for gdbserver)
+ * have been included prior to including this header file:
+ * #include "arm-tdep.h"      (for gdb)
+ * #include "arm-regnums.h"   (for gdbserver)
  */
 
 #define ARM_MACOSX_FIRST_VFP_STABS_REGNUM 63

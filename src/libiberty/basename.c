@@ -1,5 +1,5 @@
-/* Return the basename of a pathname.
-   This file is in the public domain. */
+/* basename.c: Return the basename of a pathname.
+ * This file is in the public domain. */
 
 /*
 
@@ -13,25 +13,25 @@ Behavior is undefined if the pathname ends in a directory separator.
 */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include "ansidecl.h"
 #include "libiberty.h"
 #include "safe-ctype.h"
 
 #ifndef DIR_SEPARATOR
-#define DIR_SEPARATOR '/'
-#endif
+# define DIR_SEPARATOR '/'
+#endif /* !DIR_SEPARATOR */
 
-#if defined (_WIN32) || defined (__MSDOS__) || defined (__DJGPP__) || \
-  defined (__OS2__)
-#define HAVE_DOS_BASED_FILE_SYSTEM
-#ifndef DIR_SEPARATOR_2 
-#define DIR_SEPARATOR_2 '\\'
-#endif
-#endif
+#if defined(_WIN32) || defined(__MSDOS__) || defined(__DJGPP__) || \
+    defined(__OS2__)
+# define HAVE_DOS_BASED_FILE_SYSTEM
+# ifndef DIR_SEPARATOR_2
+#  define DIR_SEPARATOR_2 '\\'
+# endif /* !DIR_SEPARATOR_2 */
+#endif /* _WIN32 || __MSDOS__ || __DJGPP__ || __OS2__ */
 
-/* Define IS_DIR_SEPARATOR.  */
+/* Define IS_DIR_SEPARATOR: */
 #ifndef DIR_SEPARATOR_2
 # define IS_DIR_SEPARATOR(ch) ((ch) == DIR_SEPARATOR)
 #else /* DIR_SEPARATOR_2 */
@@ -40,23 +40,25 @@ Behavior is undefined if the pathname ends in a directory separator.
 #endif /* DIR_SEPARATOR_2 */
 
 char *
-basename (char *name)
+basename(char *name)
 {
   char *base;
 
-#if defined (HAVE_DOS_BASED_FILE_SYSTEM)
+#if defined(HAVE_DOS_BASED_FILE_SYSTEM)
   /* Skip over the disk name in MSDOS pathnames. */
-  if (ISALPHA (name[0]) && name[1] == ':') 
+  if (ISALPHA(name[0]) && (name[1] == ':'))
     name += 2;
-#endif
+#endif /* HAVE_DOS_BASED_FILE_SYSTEM */
 
   for (base = name; *name; name++)
     {
-      if (IS_DIR_SEPARATOR (*name))
+      if (IS_DIR_SEPARATOR(*name))
 	{
-	  base = name + 1;
+	  base = (name + 1);
 	}
     }
   return base;
 }
+
+/* EOF */
 

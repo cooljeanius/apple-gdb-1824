@@ -1,4 +1,4 @@
-/* Startup code for Insight.
+/* gdbtk-hooks.c: Startup code for Insight.
 
    Copyright 1994, 1995, 1996, 1997, 1998, 2000, 200, 2002, 2003, 2004 Free
    Software Foundation, Inc.
@@ -35,9 +35,9 @@
 #include "cli/cli-decode.h"
 
 #ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
+# define WIN32_LEAN_AND_MEAN
+# include <windows.h>
+#endif /* _WIN32 */
 
 /* tcl header files includes varargs.h unless HAS_STDARG is defined,
    but gdb uses stdarg.h, so make sure HAS_STDARG is defined.  */
@@ -260,7 +260,7 @@ gdbtk_read (struct ui_file *stream, char *buf, long sizeof_buf)
       /* Truncate the string if it is too big for the caller's buffer.  */
       if (actual_len >= sizeof_buf)
 	actual_len = sizeof_buf - 1;
-      
+
       memcpy (buf, gdbtk_interp->result, actual_len);
       buf[actual_len] = '\0';
       return actual_len;

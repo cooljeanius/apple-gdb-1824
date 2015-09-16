@@ -1,6 +1,6 @@
-/* 
+/* unixcomm.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -21,7 +21,7 @@
 #  define ERRNO_FOR_BLOCKED_IO EWOULDBLOCK
 #else
 #  define ERRNO_FOR_BLOCKED_IO EAGAIN
-#endif
+#endif /* BSD */
 
 /*
  *  Function: Unix_MatchValidSerialDevice
@@ -31,7 +31,7 @@
  *    Params:
  *       Input: name    Name of device going to be used
  *
- *   Returns: 
+ *   Returns:
  *          OK: Pointer to name of the device matched
  *       Error or unrecognised deivce: 0
  */
@@ -44,7 +44,7 @@ extern const char *Unix_MatchValidSerialDevice(const char *name);
  *    Params:
  *       Input: Nothing
  *
- *   Returns: 
+ *   Returns:
  *          OK: 0       Serial device not in use
  *       Error: -1      Serial device in use
  */
@@ -140,7 +140,7 @@ extern void Unix_ioctlNonBlocking(void);
  *                           include s=<val> and p=<val> separated by a
  *                           comma.
  *
- *   Returns: 
+ *   Returns:
  *       Output: *sername  - returns the device name of the chosen serial port
  *               *parname  - returns the device name of the chosen parallel port
  *               If either of these is NULL on return then the match failed.
@@ -156,7 +156,7 @@ extern void Unix_IsValidParallelDevice(
  *    Params:
  *       Input: Nothing
  *
- *   Returns: 
+ *   Returns:
  *          OK: 0       Parallel device not in use
  *       Error: -1      Parallel device in use
  */

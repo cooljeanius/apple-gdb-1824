@@ -16,68 +16,66 @@ Created: Monday, December 2, 1991 at 5:14 PM
 #define __SCRIPT__
 
 #ifndef __TYPES__
-#include <Types.h>
-#endif
+# include <Types.h>
+#endif /* !__TYPES__ */
 
 #ifndef __OSUTILS__
-#include <OSUtils.h>
-#endif
-
+# include <OSUtils.h>
+#endif /* !__OSUTILS__ */
 
 enum {
-
 
 /* Script System constants */
- smSystemScript = -1,				/*designates system script.*/
- smCurrentScript = -2,				/*designates current font script.*/
- smAllScripts = -3,					/*designates any script.*/
- smRoman = 0,						/*Roman*/
- smJapanese = 1,					/*Japanese*/
- smTradChinese = 2,					/*Traditional Chinese*/
- smKorean = 3,						/*Korean*/
- smArabic = 4,						/*Arabic*/
- smHebrew = 5,						/*Hebrew*/
- smGreek = 6,						/*Greek*/
- smCyrillic = 7,					/*Cyrillic*/
- smRSymbol = 8,						/*Right-left symbol*/
- smDevanagari = 9,					/*Devanagari*/
- smGurmukhi = 10,					/*Gurmukhi*/
- smGujarati = 11,					/*Gujarati*/
- smOriya = 12,						/*Oriya*/
- smBengali = 13,					/*Bengali*/
- smTamil = 14,						/*Tamil*/
- smTelugu = 15,						/*Telugu*/
- smKannada = 16						/*Kannada/Kanarese*/
+ smSystemScript = -1,	/*designates system script.*/
+ smCurrentScript = -2,	/*designates current font script.*/
+ smAllScripts = -3,		/*designates any script.*/
+ smRoman = 0,			/*Roman*/
+ smJapanese = 1,		/*Japanese*/
+ smTradChinese = 2,		/*Traditional Chinese*/
+ smKorean = 3,			/*Korean*/
+ smArabic = 4,			/*Arabic*/
+ smHebrew = 5,			/*Hebrew*/
+ smGreek = 6,			/*Greek*/
+ smCyrillic = 7,		/*Cyrillic*/
+ smRSymbol = 8,			/*Right-left symbol*/
+ smDevanagari = 9,		/*Devanagari*/
+ smGurmukhi = 10,		/*Gurmukhi*/
+ smGujarati = 11,		/*Gujarati*/
+ smOriya = 12,			/*Oriya*/
+ smBengali = 13,		/*Bengali*/
+ smTamil = 14,			/*Tamil*/
+ smTelugu = 15,			/*Telugu*/
+ smKannada = 16			/*Kannada/Kanarese*/
 };
 enum {
- smMalayalam = 17,					/*Malayalam*/
- smSinhalese = 18,					/*Sinhalese*/
- smBurmese = 19,					/*Burmese*/
- smKhmer = 20,						/*Khmer/Cambodian*/
- smThai = 21,						/*Thai*/
- smLaotian = 22,					/*Laotian*/
- smGeorgian = 23,					/*Georgian*/
- smArmenian = 24,					/*Armenian*/
- smSimpChinese = 25,				/*Simplified Chinese*/
- smTibetan = 26,					/*Tibetan*/
- smMongolian = 27,					/*Mongolian*/
- smGeez = 28,						/*Geez/Ethiopic*/
- smEthiopic = 28,					/*Synonym for smGeez*/
- smEastEurRoman = 29,				/*Synonym for smSlavic*/
- smVietnamese = 30,					/*Vietnamese*/
- smExtArabic = 31,					/*extended Arabic*/
- smUninterp = 32,					/*uninterpreted symbols, e.g. palette symbols*/
+ smMalayalam = 17,		/*Malayalam*/
+ smSinhalese = 18,		/*Sinhalese*/
+ smBurmese = 19,		/*Burmese*/
+ smKhmer = 20,			/*Khmer/Cambodian*/
+ smThai = 21,			/*Thai*/
+ smLaotian = 22,		/*Laotian*/
+ smGeorgian = 23,		/*Georgian*/
+ smArmenian = 24,		/*Armenian*/
+ smSimpChinese = 25,	/*Simplified Chinese*/
+ smTibetan = 26,		/*Tibetan*/
+ smMongolian = 27,		/*Mongolian*/
+ smGeez = 28,			/*Geez/Ethiopic*/
+ smEthiopic = 28,		/*Synonym for smGeez*/
+ smEastEurRoman = 29,	/*Synonym for smSlavic*/
+ smVietnamese = 30,		/*Vietnamese*/
+ smExtArabic = 31,		/*extended Arabic*/
+ smUninterp = 32,		/*uninterpreted symbols, e.g. palette symbols*/
 
 /*Obsolete names for script systems (kept for backward compatibility)*/
- smChinese = 2,						/*(use smTradChinese or smSimpChinese)*/
- smRussian = 7,						/*(old name for smCyrillic)*/
+ smChinese = 2,			/*(use smTradChinese or smSimpChinese)*/
+ smRussian = 7,			/*(old name for smCyrillic)*/
 
-/* smMaldivian = 25;         (no more smMaldivian!)*/
- smAmharic = 28						/*(old name for smGeez)*/
+/* smMaldivian = 25; */ /*(no more smMaldivian!)*/
+ smAmharic = 28			/*(old name for smGeez)*/
 };
 enum {
- smSlavic = 29,						/*(old name for smEastEurRoman)*/
- smSindhi = 31,						/*(old name for smExtArabic)*/
+ smSlavic = 29,			/*(old name for smEastEurRoman)*/
+ smSindhi = 31,			/*(old name for smExtArabic)*/
 
 /* Calendar Codes */
  calGregorian = 0,
@@ -204,11 +202,11 @@ enum {
  smTransKana1 = 4					/*1-byte Japanese Katakana*/
 };
 enum {
- smTransKana2 = 5,					/*2-byte Japanese Katakana*/
- smTransGana2 = 7,					/*2-byte Japanese Hiragana (no 1-byte Hiragana)*/
- smTransHangul2 = 8,				/*2-byte Korean Hangul*/
- smTransJamo2 = 9,					/*2-byte Korean Jamo*/
- smTransBopomofo2 = 10,				/*2-byte Chinese Bopomofo*/
+ smTransKana2 = 5,		/*2-byte Japanese Katakana*/
+ smTransGana2 = 7,		/*2-byte Japanese Hiragana (no 1-byte Hiragana)*/
+ smTransHangul2 = 8,	/*2-byte Korean Hangul*/
+ smTransJamo2 = 9,		/*2-byte Korean Jamo*/
+ smTransBopomofo2 = 10,	/*2-byte Chinese Bopomofo*/
 
 /* Transliterate target modifiers */
  smTransLower = 0x4000,				/*target becomes lowercase*/
@@ -239,9 +237,9 @@ enum {
  smBadScript = -2,					/*Bad script code passed to a routine*/
 
 /* Values for script redraw flag. */
- smRedrawChar = 0,					/*Redraw character only*/
- smRedrawWord = 1,					/*Redraw entire word (2-byte systems)*/
- smRedrawLine = -1,					/*Redraw entire line (bidirectional systems)*/
+ smRedrawChar = 0,			/*Redraw character only*/
+ smRedrawWord = 1,			/*Redraw entire word (2-byte systems)*/
+ smRedrawLine = -1,			/*Redraw entire line (bidirectional systems)*/
 
 /* GetEnvirons and SetEnvirons verbs */
  smVersion = 0,						/*Script Manager version number*/
@@ -271,8 +269,8 @@ enum {
  smRegionCode = 40,					/*Returns current region code (verXxx)*/
 
 /* GetScript and SetScript verbs.
-Note: Verbs private to script systems are negative, while
-those general across script systems are non-negative. */
+ * Note: Verbs private to script systems are negative, while
+ * those general across script systems are non-negative. */
  smScriptVersion = 0,				/*Script software version*/
  smScriptMunged = 2,				/*Script entry changed count*/
  smScriptEnabled = 4,				/*Script enabled flag*/
@@ -300,7 +298,7 @@ enum {
  smScriptFile = 42,					/*Script file name*/
  smScriptName = 44,					/*Script name*/
 
-/* There is a hole here for old Kanji private verbs 46-76 
+/* There is a hole here for old Kanji private verbs 46-76
 
  New for System 7.0: */
  smScriptMonoFondSize = 78,			/*default monospace FOND (hi) & size (lo)*/
@@ -320,17 +318,17 @@ enum {
 enum {
 
 /* New for System 7.0: */
- smKeyNextKybd = -4,				/* Switch to next keyboard in current keyscript */
- smKeySwapKybd = -5,				/* Switch to previously-used keyboard in current keyscript */
+ smKeyNextKybd = -4,		/* Switch to next keyboard in current keyscript */
+ smKeySwapKybd = -5, /* Switch to previously-used keyboard in current keyscript */
 
- smKeyDisableKybds = -6,			/* Disable keyboards not in system or Roman script */
- smKeyEnableKybds = -7,				/* Re-enable keyboards for all enabled scripts */
- smKeyToggleInline = -8,			/* Toggle inline input for current keyscript */
- smKeyToggleDirection = -9,			/* Toggle default line direction (TESysJust) */
- smKeyNextInputMethod = -10,		/* Switch to next input method in current keyscript */
- smKeySwapInputMethod = -11,		/* Switch to last-used input method in current keyscript */
+ smKeyDisableKybds = -6, /* Disable keyboards not in system or Roman script */
+ smKeyEnableKybds = -7,		/* Re-enable keyboards for all enabled scripts */
+ smKeyToggleInline = -8,	/* Toggle inline input for current keyscript */
+ smKeyToggleDirection = -9,	/* Toggle default line direction (TESysJust) */
+ smKeyNextInputMethod = -10, /* Switch to next input method in current keyscript */
+ smKeySwapInputMethod = -11, /* Switch to last-used input method in current keyscript */
 
- smKeyDisableKybdSwitch = -12,		/* Disable switching from the current keyboard */
+ smKeyDisableKybdSwitch = -12,	/* Disable switching from the current keyboard */
 
 
 /* Bits in the smScriptFlags word
@@ -354,9 +352,9 @@ enum {
  smfDualCaret = 30,					/*Use dual caret for mixed direction text*/
  smfNameTagEnab = 29,				/*Reserved for internal use*/
 
-/* Roman script constants 
+/* Roman script constants
 
- The following are here for backward compatibility, but should not be used. 
+ The following are here for backward compatibility, but should not be used.
  This information should be obtained using GetScript. */
  romanSysFond = 0x3FFF,				/*system font id number*/
  romanAppFond = 3,					/*application font id number*/
@@ -367,7 +365,7 @@ enum {
  smFondEnd = 0xC000,				/*past end of range at 48K*/
 
 /* Miscellaneous font equates. */
- smUprHalfCharSet = 0x80,			/*first char code in top half of std char set*/
+ smUprHalfCharSet = 0x80,		/*first char code in top half of std char set*/
 
 /* Character Set Extensions */
  diaeresisUprY = 0xD9,
@@ -415,81 +413,81 @@ enum {
  hachek = 0xFF,
 
 /* String2Date status values */
- fatalDateTime = 0x8000,			/*String2Date and String2Time mask to a fatal error*/
- longDateFound = 1,					/*String2Date mask to long date found*/
- leftOverChars = 2,					/*String2Date & Time mask to warn of left over characters*/
- sepNotIntlSep = 4,					/*String2Date & Time mask to warn of non-standard separators*/
- fieldOrderNotIntl = 8,				/*String2Date & Time mask to warn of non-standard field order*/
- extraneousStrings = 16,			/*String2Date & Time mask to warn of unparsable strings in text*/
- tooManySeps = 32,					/*String2Date & Time mask to warn of too many separators*/
- sepNotConsistent = 64,				/*String2Date & Time mask to warn of inconsistent separators*/
- tokenErr = 0x8100,					/*String2Date & Time mask for 'tokenizer err encountered'*/
+ fatalDateTime = 0x8000, /*String2Date and String2Time mask to a fatal error*/
+ longDateFound = 1,		/*String2Date mask to long date found*/
+ leftOverChars = 2,	/*String2Date & Time mask to warn of left over characters*/
+ sepNotIntlSep = 4,	/*String2Date & Time mask to warn of non-standard separators*/
+ fieldOrderNotIntl = 8, /*String2Date & Time mask to warn of non-standard field order*/
+ extraneousStrings = 16, /*String2Date & Time mask to warn of unparsable strings in text*/
+ tooManySeps = 32,	/*String2Date & Time mask to warn of too many separators*/
+ sepNotConsistent = 64, /*String2Date & Time mask to warn of inconsistent separators*/
+ tokenErr = 0x8100,	/*String2Date & Time mask for 'tokenizer err encountered'*/
  cantReadUtilities = 0x8200,
  dateTimeNotFound = 0x8400,
  dateTimeInvalid = 0x8800,
 
 /* TokenType values */
- tokenIntl = 4						/*the itl resource number of the tokenizer*/
+ tokenIntl = 4			/*the itl resource number of the tokenizer*/
 };
 enum {
- tokenEmpty = -1,					/*used internally as an empty flag*/
- tokenUnknown = 0,					/*chars that do not match a defined token type*/
- tokenWhite = 1,					/*white space*/
- tokenLeftLit = 2,					/*literal begin*/
- tokenRightLit = 3,					/*literal end*/
- tokenAlpha = 4,					/*alphabetic*/
- tokenNumeric = 5,					/*numeric*/
- tokenNewLine = 6,					/*new line*/
- tokenLeftComment = 7,				/*open comment*/
- tokenRightComment = 8,				/*close comment*/
- tokenLiteral = 9,					/*literal*/
- tokenEscape = 10,					/*character escape (e.g. '\' in "\n", "\t")*/
- tokenAltNum = 11,					/*alternate number (e.g. $B0-B9 in Arabic,Hebrew)*/
- tokenRealNum = 12,					/*real number*/
- tokenAltReal = 13,					/*alternate real number*/
- tokenReserve1 = 14,				/*reserved*/
- tokenReserve2 = 15,				/*reserved*/
- tokenLeftParen = 16,				/*open parenthesis*/
- tokenRightParen = 17,				/*close parenthesis*/
- tokenLeftBracket = 18				/*open square bracket*/
+ tokenEmpty = -1,		/*used internally as an empty flag*/
+ tokenUnknown = 0,		/*chars that do not match a defined token type*/
+ tokenWhite = 1,		/*white space*/
+ tokenLeftLit = 2,		/*literal begin*/
+ tokenRightLit = 3,		/*literal end*/
+ tokenAlpha = 4,		/*alphabetic*/
+ tokenNumeric = 5,		/*numeric*/
+ tokenNewLine = 6,		/*new line*/
+ tokenLeftComment = 7,	/*open comment*/
+ tokenRightComment = 8,	/*close comment*/
+ tokenLiteral = 9,		/*literal*/
+ tokenEscape = 10,		/*character escape (e.g. '\' in "\n", "\t")*/
+ tokenAltNum = 11,		/*alternate number (e.g. $B0-B9 in Arabic,Hebrew)*/
+ tokenRealNum = 12,		/*real number*/
+ tokenAltReal = 13,		/*alternate real number*/
+ tokenReserve1 = 14,	/*reserved*/
+ tokenReserve2 = 15,	/*reserved*/
+ tokenLeftParen = 16,	/*open parenthesis*/
+ tokenRightParen = 17,	/*close parenthesis*/
+ tokenLeftBracket = 18	/*open square bracket*/
 };
 enum {
- tokenRightBracket = 19,			/*close square bracket*/
- tokenLeftCurly = 20,				/*open curly bracket*/
- tokenRightCurly = 21,				/*close curly bracket*/
- tokenLeftEnclose = 22,				/*open guillemet*/
- tokenRightEnclose = 23,			/*close guillemet*/
+ tokenRightBracket = 19, /*close square bracket*/
+ tokenLeftCurly = 20,	/*open curly bracket*/
+ tokenRightCurly = 21,	/*close curly bracket*/
+ tokenLeftEnclose = 22,	/*open guillemet*/
+ tokenRightEnclose = 23, /*close guillemet*/
  tokenPlus = 24,
  tokenMinus = 25,
- tokenAsterisk = 26,				/*times/multiply*/
+ tokenAsterisk = 26,	/*times/multiply*/
  tokenDivide = 27,
- tokenPlusMinus = 28,				/*plus or minus symbol*/
+ tokenPlusMinus = 28,	/*plus or minus symbol*/
  tokenSlash = 29,
  tokenBackSlash = 30,
- tokenLess = 31,					/*less than symbol*/
- tokenGreat = 32,					/*greater than symbol*/
+ tokenLess = 31,		/*less than symbol*/
+ tokenGreat = 32,		/*greater than symbol*/
  tokenEqual = 33,
- tokenLessEqual2 = 34,				/*less than or equal, 2 characters (e.g. <=)*/
- tokenLessEqual1 = 35,				/*less than or equal, 1 character*/
- tokenGreatEqual2 = 36,				/*greater than or equal, 2 characters (e.g. >=)*/
- tokenGreatEqual1 = 37,				/*greater than or equal, 1 character*/
- token2Equal = 38					/*double equal (e.g. ==)*/
+ tokenLessEqual2 = 34,	/*less than or equal, 2 characters (e.g. <=)*/
+ tokenLessEqual1 = 35,	/*less than or equal, 1 character*/
+ tokenGreatEqual2 = 36,	/*greater than or equal, 2 characters (e.g. >=)*/
+ tokenGreatEqual1 = 37,	/*greater than or equal, 1 character*/
+ token2Equal = 38		/*double equal (e.g. ==)*/
 };
 enum {
- tokenColonEqual = 39,				/*colon equal*/
- tokenNotEqual = 40,				/*not equal, 1 character*/
- tokenLessGreat = 41,				/*less/greater, Pascal not equal (e.g. <>)*/
- tokenExclamEqual = 42,				/*exclamation equal, C not equal (e.g. !=)*/
- tokenExclam = 43,					/*exclamation point*/
- tokenTilde = 44,					/*centered tilde*/
+ tokenColonEqual = 39,	/*colon equal*/
+ tokenNotEqual = 40,	/*not equal, 1 character*/
+ tokenLessGreat = 41,	/*less/greater, Pascal not equal (e.g. <>)*/
+ tokenExclamEqual = 42,	/*exclamation equal, C not equal (e.g. !=)*/
+ tokenExclam = 43,		/*exclamation point*/
+ tokenTilde = 44,		/*centered tilde*/
  tokenComma = 45,
  tokenPeriod = 46,
- tokenLeft2Quote = 47,				/*open double quote*/
- tokenRight2Quote = 48,				/*close double quote*/
- tokenLeft1Quote = 49,				/*open single quote*/
- tokenRight1Quote = 50,				/*close single quote*/
- token2Quote = 51,					/*double quote*/
- token1Quote = 52,					/*single quote*/
+ tokenLeft2Quote = 47,	/*open double quote*/
+ tokenRight2Quote = 48,	/*close double quote*/
+ tokenLeft1Quote = 49,	/*open single quote*/
+ tokenRight1Quote = 50,	/*close single quote*/
+ token2Quote = 51,		/*double quote*/
+ token1Quote = 52,		/*single quote*/
  tokenSemicolon = 53,
  tokenPercent = 54,
  tokenCaret = 55,
@@ -498,19 +496,19 @@ enum {
  tokenAtSign = 58
 };
 enum {
- tokenBar = 59,						/*vertical bar*/
+ tokenBar = 59,			/*vertical bar*/
  tokenQuestion = 60,
- tokenPi = 61,						/*lower-case pi*/
- tokenRoot = 62,					/*square root symbol*/
- tokenSigma = 63,					/*capital sigma*/
- tokenIntegral = 64,				/*integral sign*/
+ tokenPi = 61,			/*lower-case pi*/
+ tokenRoot = 62,		/*square root symbol*/
+ tokenSigma = 63,		/*capital sigma*/
+ tokenIntegral = 64,	/*integral sign*/
  tokenMicro = 65,
- tokenCapPi = 66,					/*capital pi*/
+ tokenCapPi = 66,		/*capital pi*/
  tokenInfinity = 67,
  tokenColon = 68,
- tokenHash = 69,					/*e.g. #*/
+ tokenHash = 69,		/*e.g. #*/
  tokenDollar = 70,
- tokenNoBreakSpace = 71,			/*non-breaking space*/
+ tokenNoBreakSpace = 71, /*non-breaking space*/
  tokenFraction = 72,
  tokenIntlCurrency = 73,
  tokenLeftSingGuillemet = 74,
@@ -547,15 +545,15 @@ enum {
 };
 enum {
 
- curNumberPartsVersion = 1,			/*current version of NumberParts record*/
- fVNumber = 0,						/*first version of NumFormatString*/
+ curNumberPartsVersion = 1,	/*current version of NumberParts record*/
+ fVNumber = 0,				/*first version of NumFormatString*/
 
 /* Date equates */
- smallDateBit = 31,					/*Restrict valid date/time to range of Time global*/
- togChar12HourBit = 30,				/*If toggling hour by char, accept hours 1..12 only*/
- togCharZCycleBit = 29,				/*Modifier for togChar12HourBit: accept hours 0..11 only*/
- togDelta12HourBit = 28,			/*If toggling hour up/down, restrict to 12-hour range (am/pm)*/
- genCdevRangeBit = 27,				/*Restrict date/time to range used by genl CDEV*/
+ smallDateBit = 31,		/*Restrict valid date/time to range of Time global*/
+ togChar12HourBit = 30,	/*If toggling hour by char, accept hours 1..12 only*/
+ togCharZCycleBit = 29,	/*Modifier for togChar12HourBit: accept hours 0..11 only*/
+ togDelta12HourBit = 28, /*If toggling hour up/down, restrict to 12-hour range (am/pm)*/
+ genCdevRangeBit = 27,	/*Restrict date/time to range used by genl CDEV*/
  validDateFields = -1,
  maxDateField = 10,
 
@@ -587,7 +585,7 @@ enum {
  toggleErr4 = 8,
  toggleErr5 = 9,
 
-/* New constants for System 7.0:               
+/* New constants for System 7.0:
 
   Constants for truncWhere argument in TruncString and TruncText */
  smTruncEnd = 0,					/* Truncate at end */
@@ -600,12 +598,12 @@ enum {
 
 /*Constants for styleRunPosition argument in NPortionText, NDrawJust,
  NMeasureJust, NChar2Pixel, and NPixel2Char.*/
- smOnlyStyleRun = 0,				/* This is the only style run on the line */
- smLeftStyleRun = 1,				/* This is leftmost of multiple style runs on the line */
- smRightStyleRun = 2				/* This is rightmost of multiple style runs on the line */
+ smOnlyStyleRun = 0, /* This is the only style run on the line */
+ smLeftStyleRun = 1, /* This is leftmost of multiple style runs on the line */
+ smRightStyleRun = 2 /* This is rightmost of multiple style runs on the line */
 };
 enum {
- smMiddleStyleRun = 3				/* There are multiple style runs on the line and this 
+ smMiddleStyleRun = 3 /* There are multiple style runs on the line and this
  is neither the leftmost nor the rightmost. */
 };
 
@@ -769,8 +767,8 @@ struct TokenBlock {
  TokenType rightComment[4];
  TokenType escapeCode;				/*escape symbol code*/
  TokenType decimalCode;
- Handle itlResource;				/*handle to itl4 resource of current script*/
- long reserved[8];					/*must be zero!*/
+ Handle itlResource;	/*handle to itl4 resource of current script*/
+ long reserved[8];		/*must be zero!*/
 };
 
 typedef struct TokenBlock TokenBlock;
@@ -835,9 +833,9 @@ typedef union LongDateRec LongDateRec;
 typedef char DateDelta;
 
 struct TogglePB {
- long togFlags;						/*caller normally sets low word to dateStdMask=$7F*/
- ResType amChars;					/*from 'itl0', but uppercased*/
- ResType pmChars;					/*from 'itl0', but uppercased*/
+ long togFlags;		/*caller normally sets low word to dateStdMask=$7F*/
+ ResType amChars;	/*from 'itl0', but uppercased*/
+ ResType pmChars;	/*from 'itl0', but uppercased*/
  long reserved[4];
 };
 
@@ -871,21 +869,21 @@ struct NumFormatString {
 typedef struct NumFormatString NumFormatString;
 
 struct Itl4Rec {
- short flags;						/*reserved*/
- long resourceType;					/*contains 'itl4'*/
- short resourceNum;					/*resource ID*/
- short version;						/*version number*/
- long resHeader1;					/*reserved*/
- long resHeader2;					/*reserved*/
- short numTables;					/*number of tables, one-based*/
- long mapOffset;					/*offset to table that maps byte to token*/
- long strOffset;					/*offset to routine that copies canonical string*/
- long fetchOffset;					/*offset to routine that gets next byte of character*/
- long unTokenOffset;				/*offset to table that maps token to canonical string*/
- long defPartsOffset;				/*offset to default number parts table*/
- long resOffset6;					/*reserved*/
- long resOffset7;					/*reserved*/
- long resOffset8;					/*reserved*/
+ short flags;			/*reserved*/
+ long resourceType;		/*contains 'itl4'*/
+ short resourceNum;		/*resource ID*/
+ short version;			/*version number*/
+ long resHeader1;		/*reserved*/
+ long resHeader2;		/*reserved*/
+ short numTables;		/*number of tables, one-based*/
+ long mapOffset;		/*offset to table that maps byte to token*/
+ long strOffset;		/*offset to routine that copies canonical string*/
+ long fetchOffset;		/*offset to routine that gets next byte of character*/
+ long unTokenOffset;	/*offset to table that maps token to canonical string*/
+ long defPartsOffset;	/*offset to default number parts table*/
+ long resOffset6;		/*reserved*/
+ long resOffset7;		/*reserved*/
+ long resOffset8;		/*reserved*/
 };
 
 typedef struct Itl4Rec Itl4Rec;
@@ -893,30 +891,30 @@ typedef Itl4Rec *Itl4Ptr, **Itl4Handle;
 
 /* New NItl4Rec for System 7.0: */
 struct NItl4Rec {
- short flags;						/*reserved*/
- long resourceType;					/*contains 'itl4'*/
- short resourceNum;					/*resource ID*/
- short version;						/*version number*/
- short format;						/*format code*/
- short resHeader;					/*reserved*/
- long resHeader2;					/*reserved*/
- short numTables;					/*number of tables, one-based*/
- long mapOffset;					/*offset to table that maps byte to token*/
- long strOffset;					/*offset to routine that copies canonical string*/
- long fetchOffset;					/*offset to routine that gets next byte of character*/
- long unTokenOffset;				/*offset to table that maps token to canonical string*/
- long defPartsOffset;				/*offset to default number parts table*/
- long whtSpListOffset;				/*offset to white space code list*/
- long resOffset7;					/*reserved*/
- long resOffset8;					/*reserved*/
- short resLength1;					/*reserved*/
- short resLength2;					/*reserved*/
- short resLength3;					/*reserved*/
- short unTokenLength;				/*length of untoken table*/
- short defPartsLength;				/*length of default number parts table*/
- short whtSpListLength;				/*length of white space code list*/
- short resLength7;					/*reserved*/
- short resLength8;					/*reserved*/
+ short flags;			/*reserved*/
+ long resourceType;		/*contains 'itl4'*/
+ short resourceNum;		/*resource ID*/
+ short version;			/*version number*/
+ short format;			/*format code*/
+ short resHeader;		/*reserved*/
+ long resHeader2;		/*reserved*/
+ short numTables;		/*number of tables, one-based*/
+ long mapOffset;		/*offset to table that maps byte to token*/
+ long strOffset;		/*offset to routine that copies canonical string*/
+ long fetchOffset;		/*offset to routine that gets next byte of character*/
+ long unTokenOffset;	/*offset to table that maps token to canonical string*/
+ long defPartsOffset;	/*offset to default number parts table*/
+ long whtSpListOffset;	/*offset to white space code list*/
+ long resOffset7;		/*reserved*/
+ long resOffset8;		/*reserved*/
+ short resLength1;		/*reserved*/
+ short resLength2;		/*reserved*/
+ short resLength3;		/*reserved*/
+ short unTokenLength;	/*length of untoken table*/
+ short defPartsLength;	/*length of default number parts table*/
+ short whtSpListLength;	/*length of white space code list*/
+ short resLength7;		/*reserved*/
+ short resLength8;		/*reserved*/
 };
 
 typedef struct NItl4Rec NItl4Rec;
@@ -953,9 +951,9 @@ struct ScriptRunStatus {
 typedef struct ScriptRunStatus ScriptRunStatus;
 
 
-/* New types for System 7.0:                
+/* New types for System 7.0: */
 
-  type for truncWhere parameter in new TruncString, TruncText */
+/* type for truncWhere parameter in new TruncString, TruncText */
 typedef short TruncCode;
 
 /* type for styleRunPosition parameter in NPixel2Char etc. */
@@ -963,147 +961,149 @@ typedef short JustStyleCode;
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 pascal short FontScript(void)
- = {0x2F3C,0x8200,0x0000,0xA8B5}; 
+ = {0x2F3C,0x8200,0x0000,0xA8B5};
 pascal short IntlScript(void)
- = {0x2F3C,0x8200,0x0002,0xA8B5}; 
+ = {0x2F3C,0x8200,0x0002,0xA8B5};
 pascal void KeyScript(short code)
- = {0x2F3C,0x8002,0x0004,0xA8B5}; 
+ = {0x2F3C,0x8002,0x0004,0xA8B5};
 pascal short Font2Script(short fontNumber)
- = {0x2F3C,0x8202,0x0006,0xA8B5}; 
+ = {0x2F3C,0x8202,0x0006,0xA8B5};
 pascal long GetEnvirons(short verb)
- = {0x2F3C,0x8402,0x0008,0xA8B5}; 
+ = {0x2F3C,0x8402,0x0008,0xA8B5};
 pascal OSErr SetEnvirons(short verb,long param)
- = {0x2F3C,0x8206,0x000A,0xA8B5}; 
+ = {0x2F3C,0x8206,0x000A,0xA8B5};
 pascal long GetScript(short script,short verb)
- = {0x2F3C,0x8404,0x000C,0xA8B5}; 
+ = {0x2F3C,0x8404,0x000C,0xA8B5};
 pascal OSErr SetScript(short script,short verb,long param)
- = {0x2F3C,0x8208,0x000E,0xA8B5}; 
+ = {0x2F3C,0x8208,0x000E,0xA8B5};
 pascal short CharByte(Ptr textBuf,short textOffset)
- = {0x2F3C,0x8206,0x0010,0xA8B5}; 
+ = {0x2F3C,0x8206,0x0010,0xA8B5};
 pascal short CharType(Ptr textBuf,short textOffset)
- = {0x2F3C,0x8206,0x0012,0xA8B5}; 
+ = {0x2F3C,0x8206,0x0012,0xA8B5};
 pascal short Pixel2Char(Ptr textBuf,short textLen,short slop,short pixelWidth,
  Boolean *leadingEdge)
- = {0x2F3C,0x820E,0x0014,0xA8B5}; 
+ = {0x2F3C,0x820E,0x0014,0xA8B5};
 pascal short Char2Pixel(Ptr textBuf,short textLen,short slop,short offset,
  short direction)
- = {0x2F3C,0x820C,0x0016,0xA8B5}; 
+ = {0x2F3C,0x820C,0x0016,0xA8B5};
 pascal OSErr Transliterate(Handle srcHandle,Handle dstHandle,short target,
  long srcMask)
- = {0x2F3C,0x820E,0x0018,0xA8B5}; 
+ = {0x2F3C,0x820E,0x0018,0xA8B5};
 pascal void FindWord(Ptr textPtr,short textLength,short offset,Boolean leadingEdge,
  BreakTablePtr breaks,OffsetTable offsets)
- = {0x2F3C,0x8012,0x001A,0xA8B5}; 
+ = {0x2F3C,0x8012,0x001A,0xA8B5};
 pascal void HiliteText(Ptr textPtr,short textLength,short firstOffset,short secondOffset,
  OffsetTable offsets)
- = {0x2F3C,0x800E,0x001C,0xA8B5}; 
+ = {0x2F3C,0x800E,0x001C,0xA8B5};
 pascal void DrawJust(Ptr textPtr,short textLength,short slop)
- = {0x2F3C,0x8008,0x001E,0xA8B5}; 
+ = {0x2F3C,0x8008,0x001E,0xA8B5};
 pascal void MeasureJust(Ptr textPtr,short textLength,short slop,Ptr charLocs)
- = {0x2F3C,0x800C,0x0020,0xA8B5}; 
+ = {0x2F3C,0x800C,0x0020,0xA8B5};
 pascal Boolean ParseTable(CharByteTable table)
- = {0x2F3C,0x8204,0x0022,0xA8B5}; 
+ = {0x2F3C,0x8204,0x0022,0xA8B5};
 pascal short GetDefFontSize(void)
- = {0x3EB8,0x0BA8,0x6604,0x3EBC,0x000C}; 
+ = {0x3EB8,0x0BA8,0x6604,0x3EBC,0x000C};
 #define GetSysFont() (* (short*) 0x0BA6)
 #define GetAppFont() (* (short*) 0x0984)
 #define GetMBarHeight() (* (short*) 0x0BAA)
 #define GetSysJust() (* (short*) 0x0BAC)
 pascal void SetSysJust(short newJust)
- = {0x31DF,0x0BAC}; 
+ = {0x31DF,0x0BAC};
 pascal void ReadLocation(MachineLocation *loc)
- = {0x205F,0x203C,0x000C,0x00E4,0xA051}; 
+ = {0x205F,0x203C,0x000C,0x00E4,0xA051};
 pascal void WriteLocation(const MachineLocation *loc)
- = {0x205F,0x203C,0x000C,0x00E4,0xA052}; 
+ = {0x205F,0x203C,0x000C,0x00E4,0xA052};
 pascal void UprText(Ptr textPtr,short len)
- = {0x301F,0x205F,0xA054}; 
+ = {0x301F,0x205F,0xA054};
 pascal void LwrText(Ptr textPtr,short len)
- = {0x301F,0x205F,0xA056}; 
+ = {0x301F,0x205F,0xA056};
 
 /*  New for 7.0  */
 pascal void LowerText(Ptr textPtr,short len)
- = {0x301F,0x205F,0xA056}; 
+ = {0x301F,0x205F,0xA056};
 pascal void StripText(Ptr textPtr,short len)
- = {0x301F,0x205F,0xA256}; 
+ = {0x301F,0x205F,0xA256};
 pascal void UpperText(Ptr textPtr,short len)
- = {0x301F,0x205F,0xA456}; 
+ = {0x301F,0x205F,0xA456};
 pascal void StripUpperText(Ptr textPtr,short len)
- = {0x301F,0x205F,0xA656}; 
+ = {0x301F,0x205F,0xA656};
 
 pascal StyledLineBreakCode StyledLineBreak(Ptr textPtr,long textLen,long textStart,
  long textEnd,long flags,Fixed *textWidth,long *textOffset)
- = {0x2F3C,0x821C,0xFFFE,0xA8B5}; 
+ = {0x2F3C,0x821C,0xFFFE,0xA8B5};
 pascal void GetFormatOrder(FormatOrderPtr ordering,short firstFormat,short lastFormat,
  Boolean lineRight,Ptr rlDirProc,Ptr dirParam)
- = {0x2F3C,0x8012,0xFFFC,0xA8B5}; 
+ = {0x2F3C,0x8012,0xFFFC,0xA8B5};
 pascal TokenResults IntlTokenize(TokenBlockPtr tokenParam)
- = {0x2F3C,0x8204,0xFFFA,0xA8B5}; 
+ = {0x2F3C,0x8204,0xFFFA,0xA8B5};
 pascal OSErr InitDateCache(DateCachePtr theCache)
- = {0x2F3C,0x8204,0xFFF8,0xA8B5}; 
+ = {0x2F3C,0x8204,0xFFF8,0xA8B5};
 pascal String2DateStatus String2Date(Ptr textPtr,long textLen,DateCachePtr theCache,
  long *lengthUsed,LongDateRec *dateTime)
- = {0x2F3C,0x8214,0xFFF6,0xA8B5}; 
+ = {0x2F3C,0x8214,0xFFF6,0xA8B5};
 pascal String2DateStatus String2Time(Ptr textPtr,long textLen,DateCachePtr theCache,
  long *lengthUsed,LongDateRec *dateTime)
- = {0x2F3C,0x8214,0xFFF4,0xA8B5}; 
+ = {0x2F3C,0x8214,0xFFF4,0xA8B5};
 pascal void LongDate2Secs(const LongDateRec *lDate,LongDateTime *lSecs)
- = {0x2F3C,0x8008,0xFFF2,0xA8B5}; 
+ = {0x2F3C,0x8008,0xFFF2,0xA8B5};
 pascal void LongSecs2Date(LongDateTime *lSecs,LongDateRec *lDate)
- = {0x2F3C,0x8008,0xFFF0,0xA8B5}; 
+ = {0x2F3C,0x8008,0xFFF0,0xA8B5};
 pascal ToggleResults ToggleDate(LongDateTime *lSecs,LongDateField field,
  DateDelta delta,short ch,const TogglePB *params)
- = {0x2F3C,0x820E,0xFFEE,0xA8B5}; 
+ = {0x2F3C,0x820E,0xFFEE,0xA8B5};
 pascal FormatStatus Str2Format(ConstStr255Param inString,const NumberParts *partsTable,
  NumFormatString *outString)
- = {0x2F3C,0x820C,0xFFEC,0xA8B5}; 
+ = {0x2F3C,0x820C,0xFFEC,0xA8B5};
 pascal FormatStatus Format2Str(const NumFormatString *myCanonical,const NumberParts *partsTable,
  Str255 outString,TripleInt positions)
- = {0x2F3C,0x8210,0xFFEA,0xA8B5}; 
+ = {0x2F3C,0x8210,0xFFEA,0xA8B5};
 pascal FormatStatus FormatX2Str(extended80 x,const NumFormatString *myCanonical,
  const NumberParts *partsTable,Str255 outString)
- = {0x2F3C,0x8210,0xFFE8,0xA8B5}; 
+ = {0x2F3C,0x8210,0xFFE8,0xA8B5};
 pascal FormatStatus FormatStr2X(ConstStr255Param source,const NumFormatString *myCanonical,
  const NumberParts *partsTable,extended80 *x)
- = {0x2F3C,0x8210,0xFFE6,0xA8B5}; 
+ = {0x2F3C,0x8210,0xFFE6,0xA8B5};
 pascal Fixed PortionText(Ptr textPtr,long textLen)
- = {0x2F3C,0x8408,0x0024,0xA8B5}; 
+ = {0x2F3C,0x8408,0x0024,0xA8B5};
 pascal ScriptRunStatus FindScriptRun(Ptr textPtr,long textLen,long *lenUsed)
- = {0x2F3C,0x820C,0x0026,0xA8B5}; 
+ = {0x2F3C,0x820C,0x0026,0xA8B5};
 pascal long VisibleLength(Ptr textPtr,long textLen)
- = {0x2F3C,0x8408,0x0028,0xA8B5}; 
+ = {0x2F3C,0x8408,0x0028,0xA8B5};
 pascal short ValidDate(const LongDateRec *vDate,long flags,LongDateTime *newSecs)
- = {0x2F3C,0x820C,0xFFE4,0xA8B5}; 
+ = {0x2F3C,0x820C,0xFFE4,0xA8B5};
 
 /*  New for 7.0  */
 pascal void NFindWord(Ptr textPtr,short textLength,short offset,Boolean leadingEdge,
  NBreakTablePtr nbreaks,OffsetTable offsets)
- = {0x2F3C,0x8012,0xFFE2,0xA8B5}; 
+ = {0x2F3C,0x8012,0xFFE2,0xA8B5};
 pascal short TruncString(short width,Str255 theString,TruncCode truncWhere)
- = {0x2F3C,0x8208,0xFFE0,0xA8B5}; 
+ = {0x2F3C,0x8208,0xFFE0,0xA8B5};
 pascal short TruncText(short width,Ptr textPtr,short *length,TruncCode truncWhere)
- = {0x2F3C,0x820C,0xFFDE,0xA8B5}; 
+ = {0x2F3C,0x820C,0xFFDE,0xA8B5};
 pascal short ReplaceText(Handle baseText,Handle substitutionText,Str15 key)
- = {0x2F3C,0x820C,0xFFDC,0xA8B5}; 
+ = {0x2F3C,0x820C,0xFFDC,0xA8B5};
 pascal short NPixel2Char(Ptr textBuf,long textLen,Fixed slop,Fixed pixelWidth,
  Boolean *leadingEdge,Fixed *widthRemaining,JustStyleCode styleRunPosition,
  Point numer,Point denom)
- = {0x2F3C,0x8222,0x002E,0xA8B5}; 
+ = {0x2F3C,0x8222,0x002E,0xA8B5};
 pascal short NChar2Pixel(Ptr textBuf,long textLen,Fixed slop,long offset,
  short direction,JustStyleCode styleRunPosition,Point numer,Point denom)
- = {0x2F3C,0x821C,0x0030,0xA8B5}; 
+ = {0x2F3C,0x821C,0x0030,0xA8B5};
 pascal void NDrawJust(Ptr textPtr,long textLength,Fixed slop,JustStyleCode styleRunPosition,
  Point numer,Point denom)
- = {0x2F3C,0x8016,0x0032,0xA8B5}; 
+ = {0x2F3C,0x8016,0x0032,0xA8B5};
 pascal void NMeasureJust(Ptr textPtr,long textLength,Fixed slop,Ptr charLocs,
  JustStyleCode styleRunPosition,Point numer,Point denom)
- = {0x2F3C,0x801A,0x0034,0xA8B5}; 
+ = {0x2F3C,0x801A,0x0034,0xA8B5};
 pascal Fixed NPortionText(Ptr textPtr,long textLen,JustStyleCode styleRunPosition,
  Point numer,Point denom)
- = {0x2F3C,0x8412,0x0036,0xA8B5}; 
+ = {0x2F3C,0x8412,0x0036,0xA8B5};
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__SCRIPT__ */
+
+/* EOF */

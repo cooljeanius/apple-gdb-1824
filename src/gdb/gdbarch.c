@@ -53,23 +53,23 @@
 
 /* Static function declarations */
 
-static void alloc_gdbarch_data (struct gdbarch *);
+static void alloc_gdbarch_data(struct gdbarch *);
 
 /* Non-zero if we want to trace architecture code.  */
 
 #ifndef GDBARCH_DEBUG
-#define GDBARCH_DEBUG 0
-#endif
+# define GDBARCH_DEBUG 0
+#endif /* !GDBARCH_DEBUG */
 int gdbarch_debug = GDBARCH_DEBUG;
 static void
-show_gdbarch_debug (struct ui_file *file, int from_tty,
-                    struct cmd_list_element *c, const char *value)
+show_gdbarch_debug(struct ui_file *file, int from_tty,
+                   struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("Architecture debugging is %s.\n"), value);
+  fprintf_filtered(file, _("Architecture debugging is %s.\n"), value);
 }
 
 static const char *
-pformat (const struct floatformat *format)
+pformat(const struct floatformat *format)
 {
   if (format == NULL)
     return "(null)";
@@ -391,13 +391,13 @@ gdbarch_alloc (const struct gdbarch_info *info,
 
   /* Create an obstack for allocating all the per-architecture memory,
      then use that to allocate the architecture vector.  */
-  struct obstack *obstack = XMALLOC (struct obstack);
-  obstack_init (obstack);
-  current_gdbarch = obstack_alloc (obstack, sizeof (*current_gdbarch));
-  memset (current_gdbarch, 0, sizeof (*current_gdbarch));
+  struct obstack *obstack = XMALLOC(struct obstack);
+  obstack_init(obstack);
+  current_gdbarch = (struct gdbarch *)obstack_alloc(obstack, sizeof(*current_gdbarch));
+  memset(current_gdbarch, 0, sizeof(*current_gdbarch));
   current_gdbarch->obstack = obstack;
 
-  alloc_gdbarch_data (current_gdbarch);
+  alloc_gdbarch_data(current_gdbarch);
 
   current_gdbarch->tdep = tdep;
 
@@ -3975,7 +3975,7 @@ struct gdbarch_swap_registry
   struct gdbarch_swap_registration *registrations;
 };
 
-struct gdbarch_swap_registry gdbarch_swap_registry = 
+struct gdbarch_swap_registry gdbarch_swap_registry =
 {
   0, NULL,
 };
@@ -4052,8 +4052,7 @@ current_gdbarch_swap_in_hack (struct gdbarch *new_gdbarch)
 }
 
 
-/* Keep a registry of the architectures known by GDB. */
-
+/* Keep a registry of the architectures known by GDB: */
 struct gdbarch_registration
 {
   enum bfd_architecture bfd_architecture;
@@ -4066,15 +4065,15 @@ struct gdbarch_registration
 static struct gdbarch_registration *gdbarch_registry = NULL;
 
 static void
-append_name (const char ***buf, int *nr, const char *name)
+append_name(const char ***buf, int *nr, const char *name)
 {
-  *buf = xrealloc (*buf, sizeof (char**) * (*nr + 1));
+  *buf = (const char **)xrealloc(*buf, sizeof(char **) * (*nr + 1));
   (*buf)[*nr] = name;
   *nr += 1;
 }
 
 const char **
-gdbarch_printable_names (void)
+gdbarch_printable_names(void)
 {
   /* Accumulate a list of names based on the registed list of
      architectures. */
@@ -4249,25 +4248,25 @@ find_arch_by_info (struct gdbarch *old_gdbarch, struct gdbarch_info info)
   if (new_gdbarch->initialized_p)
     {
       struct gdbarch_list **list;
-      struct gdbarch_list *this;
+      struct gdbarch_list *thislist;
       if (gdbarch_debug)
-	fprintf_unfiltered (gdb_stdlog, "find_arch_by_info: "
-			    "Previous architecture 0x%08lx (%s) selected\n",
-			    (long) new_gdbarch,
-			    new_gdbarch->bfd_arch_info->printable_name);
+	fprintf_unfiltered(gdb_stdlog, "find_arch_by_info: "
+			   "Previous architecture 0x%08lx (%s) selected\n",
+			   (long)new_gdbarch,
+			   new_gdbarch->bfd_arch_info->printable_name);
       /* Find the existing arch in the list.  */
       for (list = &rego->arches;
-	   (*list) != NULL && (*list)->gdbarch != new_gdbarch;
+	   ((*list) != NULL) && ((*list)->gdbarch != new_gdbarch);
 	   list = &(*list)->next);
-      /* It had better be in the list of architectures.  */
-      gdb_assert ((*list) != NULL && (*list)->gdbarch == new_gdbarch);
-      /* Unlink THIS.  */
-      this = (*list);
-      (*list) = this->next;
-      /* Insert THIS at the front.  */
-      this->next = rego->arches;
-      rego->arches = this;
-      /* Return it.  */
+      /* It had better be in the list of architectures: */
+      gdb_assert((*list) != NULL && (*list)->gdbarch == new_gdbarch);
+      /* Unlink THISLIST: */
+      thislist = (*list);
+      (*list) = thislist->next;
+      /* Insert THISLIST at the front: */
+      thislist->next = rego->arches;
+      rego->arches = thislist;
+      /* Return it: */
       return new_gdbarch;
     }
 
@@ -4277,20 +4276,20 @@ find_arch_by_info (struct gdbarch *old_gdbarch, struct gdbarch_info info)
 			"New architecture 0x%08lx (%s) selected\n",
 			(long) new_gdbarch,
 			new_gdbarch->bfd_arch_info->printable_name);
-  
+
   /* Insert the new architecture into the front of the architecture
      list (keep the list sorted Most Recently Used).  */
   {
-    struct gdbarch_list *this = XMALLOC (struct gdbarch_list);
-    this->next = rego->arches;
-    this->gdbarch = new_gdbarch;
-    rego->arches = this;
-  }    
+    struct gdbarch_list *thislist = XMALLOC(struct gdbarch_list);
+    thislist->next = rego->arches;
+    thislist->gdbarch = new_gdbarch;
+    rego->arches = thislist;
+  }
 
   /* Check that the newly installed architecture is valid.  Plug in
      any post init values.  */
   new_gdbarch->dump_tdep = rego->dump_tdep;
-  verify_gdbarch (new_gdbarch);
+  verify_gdbarch(new_gdbarch);
   new_gdbarch->initialized_p = 1;
 
   /* Initialize any per-architecture swap areas.  This phase requires

@@ -1,4 +1,4 @@
-/* Support for mmalloc using system malloc()
+/* check-sup.c: Support for mmalloc using system malloc()
 
 This file is part of the GNU C Library.
 
@@ -14,7 +14,7 @@ Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
 License along with the GNU C Library; see the file COPYING.LIB.  If
-not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+not, write to the Free Software Foundation, Inc., 59 Temple Pl., Suite 330,
 Boston, MA 02111-1307, USA.  */
 
 #include <stdlib.h>
@@ -41,49 +41,42 @@ struct hdr
   unsigned long int magic; /* Magic number to check header integrity.  */
 };
 
-static void checkhdr PARAMS ((struct mdesc *, CONST struct hdr *));
-static void mfree_check PARAMS ((PTR, PTR));
-static PTR mmalloc_check PARAMS ((PTR, size_t));
-static PTR mrealloc_check PARAMS ((PTR, PTR, size_t));
+static void checkhdr PARAMS((struct mdesc *, CONST struct hdr *));
+static void mfree_check PARAMS((PTR, PTR));
+static PTR mmalloc_check PARAMS((PTR, size_t));
+static PTR mrealloc_check PARAMS((PTR, PTR, size_t));
 
 /* Check the magicword and magicbyte, and if either is corrupted then
    call the emergency abort function specified for the heap in use. */
-
 static void
-checkhdr (mdp, hdr)
-  struct mdesc *mdp;
-  CONST struct hdr *hdr;
+checkhdr(struct mdesc *mdp, CONST struct hdr *hdr)
 {
-  if (hdr -> magic != MAGICWORD ||
-      ((char *) &hdr[1])[hdr -> size] != MAGICBYTE)
+  if ((hdr->magic != MAGICWORD) ||
+      (((char *)&hdr[1])[hdr->size] != MAGICBYTE))
     {
-      (*mdp -> abortfunc)();
+      (*mdp->abortfunc)();
     }
 }
 
 static void
-mfree_check (md, ptr)
-  PTR md;
-  PTR ptr;
+mfree_check(PTR md, PTR ptr)
 {
-  struct hdr *hdr = ((struct hdr *) ptr) - 1;
-  struct mdesc *mdp = (struct mdesc *) md;
-  
-  checkhdr (mdp, hdr);
+  struct hdr *hdr = (((struct hdr *)ptr) - 1);
+  struct mdesc *mdp = (struct mdesc *)md;
+
+  checkhdr(mdp, hdr);
   hdr->magic = MAGICWORDFREE;
-  mfree (mdp->child, (PTR) hdr);
+  mfree(mdp->child, (PTR)hdr);
 }
 
 static PTR
-mmalloc_check (md, size)
-  PTR md;
-  size_t size;
+mmalloc_check(PTR md, size_t size)
 {
   struct hdr *hdr;
-  struct mdesc *mdp = (struct mdesc *) md;
-  size_t nbytes = sizeof (struct hdr) + size + 1;
+  struct mdesc *mdp = (struct mdesc *)md;
+  size_t nbytes = (sizeof(struct hdr) + size + 1);
 
-  hdr = (struct hdr *) mmalloc (mdp->child, nbytes);
+  hdr = (struct hdr *)mmalloc(mdp->child, nbytes);
   if (hdr != NULL)
     {
       hdr->size = size;
@@ -91,37 +84,34 @@ mmalloc_check (md, size)
       hdr++;
       *((char *) hdr + size) = MAGICBYTE;
     }
-  return ((PTR) hdr);
+  return ((PTR)hdr);
 }
 
 static PTR
-mrealloc_check (md, ptr, size)
-  PTR md;
-  PTR ptr;
-  size_t size;
+mrealloc_check(PTR md, PTR ptr, size_t size)
 {
-  struct hdr *hdr = ((struct hdr *) ptr) - 1;
-  struct mdesc *mdp = (struct mdesc *) md;
-  size_t nbytes = sizeof (struct hdr) + size + 1;
+  struct hdr *hdr = (((struct hdr *)ptr) - 1);
+  struct mdesc *mdp = (struct mdesc *)md;
+  size_t nbytes = (sizeof(struct hdr) + size + 1);
 
-  checkhdr (mdp, hdr);
-  hdr = (struct hdr *) mrealloc (mdp->child, (PTR) hdr, nbytes);
+  checkhdr(mdp, hdr);
+  hdr = (struct hdr *)mrealloc(mdp->child, (PTR)hdr, nbytes);
   if (hdr != NULL)
     {
       hdr->size = size;
       hdr++;
-      *((char *) hdr + size) = MAGICBYTE;
+      *((char *)hdr + size) = MAGICBYTE;
     }
-  return ((PTR) hdr);
+  return ((PTR)hdr);
 }
 
 struct mdesc *
-mmalloc_check_create (struct mdesc *child)
+mmalloc_check_create(struct mdesc *child)
 {
   struct mdesc *ret = NULL;
 
-  ret = (struct mdesc *) malloc (sizeof (struct mdesc));
-  memset ((char *) ret, 0, sizeof (struct mdesc));
+  ret = (struct mdesc *)malloc(sizeof(struct mdesc));
+  memset((char *)ret, 0, sizeof(struct mdesc));
 
   ret->child = child;
 
@@ -130,8 +120,11 @@ mmalloc_check_create (struct mdesc *child)
   ret->mrealloc_hook = mrealloc_check;
   ret->abortfunc = abort;
 
-  if (child != NULL)
+  if (child != NULL) {
     ret->flags = child->flags;
+  }
 
   return ret;
 }
+
+/* EOF */

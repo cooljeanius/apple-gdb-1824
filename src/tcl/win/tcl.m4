@@ -1,3 +1,7 @@
+# tcl.m4
+# (as this file is Windows-specific, it cannot necessarily be made to match
+# other tcl.m4 files in this repository)
+
 #------------------------------------------------------------------------
 # SC_PATH_TCLCONFIG --
 #
@@ -20,8 +24,8 @@
 AC_DEFUN([SC_PATH_TCLCONFIG],[
     AC_MSG_CHECKING([the location of tclConfig.sh])
 
-    if test -d ../../tcl8.4$1/win;  then
-	TCL_BIN_DIR_DEFAULT=../../tcl8.4$1/win
+    if test -d ../../tcl8.4${1}/win;  then
+	TCL_BIN_DIR_DEFAULT=../../tcl8.4${1}/win
     elif test -d ../../tcl8.4/win;  then
 	TCL_BIN_DIR_DEFAULT=../../tcl8.4/win
     else
@@ -29,14 +33,14 @@ AC_DEFUN([SC_PATH_TCLCONFIG],[
     fi
     
     AC_ARG_WITH([tcl],[AS_HELP_STRING([--with-tcl=DIR],[use Tcl 8.4 binaries from DIR])],
-	    TCL_BIN_DIR=$withval, TCL_BIN_DIR=`cd $TCL_BIN_DIR_DEFAULT; pwd`)
+	    TCL_BIN_DIR=${withval}, TCL_BIN_DIR=`cd $TCL_BIN_DIR_DEFAULT; pwd`)
     if test ! -d $TCL_BIN_DIR; then
 	AC_MSG_ERROR([Tcl directory $TCL_BIN_DIR does not exist])
     fi
     if test ! -f $TCL_BIN_DIR/tclConfig.sh; then
 	AC_MSG_ERROR([There is no tclConfig.sh in $TCL_BIN_DIR:  perhaps you did not specify the Tcl *build* directory (not the toplevel Tcl directory) or you forgot to configure Tcl?])
     fi
-    AC_MSG_RESULT([$TCL_BIN_DIR/tclConfig.sh])
+    AC_MSG_RESULT([${TCL_BIN_DIR}/tclConfig.sh])
 ])
 
 #------------------------------------------------------------------------
@@ -60,8 +64,8 @@ AC_DEFUN([SC_PATH_TCLCONFIG],[
 AC_DEFUN([SC_PATH_TKCONFIG],[
     AC_MSG_CHECKING([the location of tkConfig.sh])
 
-    if test -d ../../tk8.4$1/win;  then
-	TK_BIN_DIR_DEFAULT=../../tk8.4$1/win
+    if test -d ../../tk8.4${1}/win;  then
+	TK_BIN_DIR_DEFAULT=../../tk8.4${1}/win
     elif test -d ../../tk8.4/win;  then
 	TK_BIN_DIR_DEFAULT=../../tk8.4/win
     else

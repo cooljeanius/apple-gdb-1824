@@ -1,4 +1,5 @@
-/* Native support for GNU/Linux, for GDB, the GNU debugger.
+/* nm-linux.h
+   Native support for GNU/Linux, for GDB, the GNU debugger.
    Copyright (C) 2004 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -28,5 +29,5 @@
 /* Override copies of {fetch,store}_inferior_registers in `infptrace.c'.  */
 #define FETCH_INFERIOR_REGISTERS
 
-#endif
+#endif /* !PA_NM_LINUX_H */
 

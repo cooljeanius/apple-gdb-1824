@@ -1,4 +1,5 @@
-/* Native support for i386 running Solaris 2.
+/* nm-i386sol2.h
+   Native support for i386 running Solaris 2.
    Copyright 1998, 1999, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -37,7 +38,7 @@
 #define TARGET_REGION_SIZE_OK_FOR_HW_WATCHPOINT(SIZE) 1
 
 /* When a hardware watchpoint fires off the PC will be left at the
-   instruction following the one which caused the watchpoint.  
+   instruction following the one which caused the watchpoint.
    It will *NOT* be necessary for GDB to step over the watchpoint. */
 #define HAVE_CONTINUABLE_WATCHPOINT 1
 

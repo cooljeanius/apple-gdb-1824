@@ -75,7 +75,7 @@ invert_case_line (count, key)
     }
   else
     direction = 1;
-      
+
   /* Find the end of the range to modify. */
   end = start + (count * direction);
 
@@ -110,3 +110,5 @@ invert_case_line (count, key)
   /* Move point to on top of the last character changed. */
   rl_point = end - direction;
 }
+
+/* EOF */

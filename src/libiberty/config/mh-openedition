@@ -1,3 +1,4 @@
+# mh-openedition
+
 HDEFINES = -D_ALL_SOURCE -DLE370
 CC=c89
-

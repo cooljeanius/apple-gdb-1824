@@ -1,8 +1,8 @@
-/* An expandable hash tables datatype.  
-   Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004
-   Free Software Foundation, Inc.
-   Contributed by Vladimir Makarov (vmakarov@cygnus.com).
-
+/* hashtab.c: An expandable hash tables datatype.
+ * Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004
+ * Free Software Foundation, Inc.
+ * Contributed by Vladimir Makarov <vmakarov@cygnus.com>.  */
+/*
 This file is part of the libiberty library.
 Libiberty is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
@@ -16,7 +16,7 @@ Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
 License along with libiberty; see the file COPYING.LIB.  If
-not, write to the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+not, write to the Free Software Foundation, Inc., 51 Franklin St., 5th Floor,
 Boston, MA 02110-1301, USA.  */
 
 /* This package implements basic hash table functionality.  It is possible
@@ -33,26 +33,30 @@ Boston, MA 02110-1301, USA.  */
    the old table to the new table. */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 
 #include <sys/types.h>
 
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 #ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+# include <string.h>
+#endif /* HAVE_STRING_H */
 #ifdef HAVE_MALLOC_H
-#include <malloc.h>
-#endif
+# include <malloc.h>
+#else
+# ifdef HAVE_MALLOC_MALLOC_H
+#  include <malloc/malloc.h>
+# endif /* HAVE_MALLOC_MALLOC_H */
+#endif /* HAVE_MALLOC_H */
 #ifdef HAVE_LIMITS_H
-#include <limits.h>
-#endif
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
 #ifdef HAVE_STDINT_H
-#include <stdint.h>
-#endif
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
 
 #include <stdio.h>
 
@@ -61,17 +65,17 @@ Boston, MA 02110-1301, USA.  */
 #include "hashtab.h"
 
 #ifndef CHAR_BIT
-#define CHAR_BIT 8
-#endif
+# define CHAR_BIT 8
+#endif /* !CHAR_BIT */
 
-static unsigned int higher_prime_index (unsigned long);
-static hashval_t htab_mod_1 (hashval_t, hashval_t, hashval_t, int);
-static hashval_t htab_mod (hashval_t, htab_t);
-static hashval_t htab_mod_m2 (hashval_t, htab_t);
-static hashval_t hash_pointer (const void *);
-static int eq_pointer (const void *, const void *);
-static int htab_expand (htab_t);
-static PTR *find_empty_slot_for_expand (htab_t, hashval_t);
+static unsigned int higher_prime_index(unsigned long);
+static hashval_t htab_mod_1(hashval_t, hashval_t, hashval_t, int);
+static hashval_t htab_mod(hashval_t, htab_t);
+static hashval_t htab_mod_m2(hashval_t, htab_t);
+static hashval_t hash_pointer(const void *);
+static int eq_pointer(const void *, const void *);
+static int htab_expand(htab_t);
+static PTR *find_empty_slot_for_expand(htab_t, hashval_t);
 
 /* At some point, we could make these be NULL, and modify the
    hash-table routines to handle NULL specially; that would avoid
@@ -85,41 +89,55 @@ htab_eq htab_eq_pointer = eq_pointer;
    code to divide by a constant, we want to be able to use the same algorithm
    all the time.  All of these inverses (are implied to) have bit 32 set.
 
-   For the record, here's the function that computed the table; it's a 
+   For the record, here is the function that computed the table; it is a
    vastly simplified version of the function of the same name from gcc.  */
 
-#if 0
-unsigned int
-ceil_log2 (unsigned int x)
+#if (defined(__GNUC__) || defined(HAVE_UNSIGNED_LONG_LONG)) && \
+    (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) && \
+    !defined(__STRICT_ANSI__)
+# if !defined(__MATH__)
+#  if defined(HAVE_MATH_H)
+#   include <math.h> /* for ldexp() */
+#  endif /* HAVE_MATH_H */
+# endif /* !__MATH__ */
+
+extern unsigned int choose_multiplier(unsigned int, unsigned int *,
+                                      unsigned char *);
+
+static unsigned int
+ceil_log2(unsigned int x)
 {
   int i;
   for (i = 31; i >= 0 ; --i)
     if (x > (1u << i))
-      return i+1;
-  abort ();
+      return (i + 1);
+  abort();
 }
 
 unsigned int
-choose_multiplier (unsigned int d, unsigned int *mlp, unsigned char *shiftp)
+choose_multiplier(unsigned int d, unsigned int *mlp, unsigned char *shiftp)
 {
   unsigned long long mhigh;
   double nx;
-  int lgup, post_shift;
+  int lgup;
+# ifdef ALLOW_UNUSED_VARIABLES
+  int post_shift;
+# endif /* ALLOW_UNUSED_VARIABLES */
   int pow, pow2;
   int n = 32, precision = 32;
 
-  lgup = ceil_log2 (d);
-  pow = n + lgup;
-  pow2 = n + lgup - precision;
+  lgup = ceil_log2(d);
+  pow = (n + lgup);
+  pow2 = (n + lgup - precision);
 
-  nx = ldexp (1.0, pow) + ldexp (1.0, pow2);
-  mhigh = nx / d;
+  nx = (ldexp(1.0, pow) + ldexp(1.0, pow2));
+  mhigh = (unsigned long long)(nx / d);
 
-  *shiftp = lgup - 1;
+  *shiftp = (lgup - 1);
   *mlp = mhigh;
-  return mhigh >> 32;
+  return (mhigh >> 32);
 }
-#endif
+#endif /* (gcc || HAVE_UNSIGNED_LONG_LONG) && c99+ && !__STRICT_ANSI__ */
 
 struct prime_ent
 {
@@ -246,7 +264,7 @@ htab_mod_1 (hashval_t x, hashval_t y, hashval_t inv, int shift)
     {
       hashval_t t1, t2, t3, t4, q, r;
 
-      t1 = ((ull)x * inv) >> 32;
+      t1 = (hashval_t)(((ull)x * inv) >> 32);
       t2 = x - t1;
       t3 = t2 >> 1;
       t4 = t1 + t3;
@@ -255,28 +273,26 @@ htab_mod_1 (hashval_t x, hashval_t y, hashval_t inv, int shift)
 
       return r;
     }
-#endif
+#endif /* UNSIGNED_64BIT_TYPE */
 
-  /* Otherwise just use the native division routines.  */
-  return x % y;
+  /* Otherwise just use the native division routines: */
+  return (x % y);
 }
 
-/* Compute the primary hash for HASH given HTAB's current size.  */
-
+/* Compute the primary hash for HASH given HTAB's current size: */
 static inline hashval_t
-htab_mod (hashval_t hash, htab_t htab)
+htab_mod(hashval_t hash, htab_t htab)
 {
   const struct prime_ent *p = &prime_tab[htab->size_prime_index];
-  return htab_mod_1 (hash, p->prime, p->inv, p->shift);
+  return htab_mod_1(hash, p->prime, p->inv, (int)p->shift);
 }
 
-/* Compute the secondary hash for HASH given HTAB's current size.  */
-
+/* Compute the secondary hash for HASH given HTAB's current size: */
 static inline hashval_t
-htab_mod_m2 (hashval_t hash, htab_t htab)
+htab_mod_m2(hashval_t hash, htab_t htab)
 {
   const struct prime_ent *p = &prime_tab[htab->size_prime_index];
-  return 1 + htab_mod_1 (hash, p->prime - 2, p->inv_m2, p->shift);
+  return (1 + htab_mod_1(hash, (p->prime - 2), p->inv_m2, (int)p->shift));
 }
 
 /* This function creates table with length slightly longer than given
@@ -285,27 +301,31 @@ htab_mod_m2 (hashval_t hash, htab_t htab)
    created hash table, or NULL if memory allocation fails.  */
 
 htab_t
-htab_create_alloc (size_t size, htab_hash hash_f, htab_eq eq_f,
-                   htab_del del_f, htab_alloc alloc_f, htab_free free_f)
+htab_create_alloc(size_t size, htab_hash hash_f, htab_eq eq_f,
+                  htab_del del_f, htab_alloc alloc_f, htab_free free_f)
 {
   htab_t result;
   unsigned int size_prime_index;
 
-  size_prime_index = higher_prime_index (size);
+  size_prime_index = higher_prime_index(size);
   size = prime_tab[size_prime_index].prime;
 
-  result = (htab_t) (*alloc_f) (1, sizeof (struct htab));
+  result = (htab_t)(*alloc_f)(1, sizeof(struct htab));
   if (result == NULL)
     return NULL;
   result->size = size;
-  result->entries = (PTR *) (*alloc_f) (size, sizeof (PTR));
+  result->entries = (PTR *)(*alloc_f)(size, sizeof(PTR));
   if (result->entries == NULL)
     {
       if (free_f != NULL)
-	(*free_f) (result);
+	(*free_f)(result);
       return NULL;
     }
-  result->size = size;
+#ifndef __clang_analyzer__
+  if (result->size != size) {
+    result->size = size;
+  }
+#endif /* !__clang_analyzer__ */
   result->size_prime_index = size_prime_index;
   result->hash_f = hash_f;
   result->eq_f = eq_f;
@@ -345,14 +365,18 @@ htab_create_alloc_ex (size_t size, htab_hash hash_f, htab_eq eq_f,
   if (result == NULL)
     return NULL;
   result->size = size;
-  result->entries = (PTR *) (*alloc_f) (alloc_arg, size, sizeof (PTR));
+  result->entries = (PTR *)(*alloc_f)(alloc_arg, size, sizeof(PTR));
   if (result->entries == NULL)
     {
       if (free_f != NULL)
-	(*free_f) (alloc_arg, result);
+	(*free_f)(alloc_arg, result);
       return NULL;
     }
-  result->size = size;
+#ifndef __clang_analyzer__
+  if (result->size != size) {
+    result->size = size;
+  }
+#endif /* !__clang_analyzer__ */
   result->size_prime_index = size_prime_index;
   result->hash_f = hash_f;
   result->eq_f = eq_f;
@@ -407,44 +431,46 @@ htab_try_create (size_t size, htab_hash hash_f, htab_eq eq_f, htab_del del_f)
    Naturally the hash table must already exist. */
 
 void
-htab_delete (htab_t htab)
+htab_delete(htab_t htab)
 {
-  size_t size = htab_size (htab);
+  size_t size = htab_size(htab);
   PTR *entries = htab->entries;
   int i;
 
   if (htab->del_f)
-    for (i = size - 1; i >= 0; i--)
-      if (entries[i] != HTAB_EMPTY_ENTRY && entries[i] != HTAB_DELETED_ENTRY)
-	(*htab->del_f) (entries[i]);
+    for (i = (int)(size - 1UL); i >= 0; i--)
+      if ((entries[i] != HTAB_EMPTY_ENTRY)
+          && (entries[i] != HTAB_DELETED_ENTRY))
+	(*htab->del_f)(entries[i]);
 
   if (htab->free_f != NULL)
     {
-      (*htab->free_f) (entries);
-      (*htab->free_f) (htab);
+      (*htab->free_f)(entries);
+      (*htab->free_f)(htab);
     }
   else if (htab->free_with_arg_f != NULL)
     {
-      (*htab->free_with_arg_f) (htab->alloc_arg, entries);
-      (*htab->free_with_arg_f) (htab->alloc_arg, htab);
+      (*htab->free_with_arg_f)(htab->alloc_arg, entries);
+      (*htab->free_with_arg_f)(htab->alloc_arg, htab);
     }
 }
 
 /* This function clears all entries in the given hash table.  */
 
 void
-htab_empty (htab_t htab)
+htab_empty(htab_t htab)
 {
-  size_t size = htab_size (htab);
+  size_t size = htab_size(htab);
   PTR *entries = htab->entries;
   int i;
 
   if (htab->del_f)
-    for (i = size - 1; i >= 0; i--)
-      if (entries[i] != HTAB_EMPTY_ENTRY && entries[i] != HTAB_DELETED_ENTRY)
-	(*htab->del_f) (entries[i]);
+    for (i = (int)(size - 1UL); i >= 0; i--)
+      if ((entries[i] != HTAB_EMPTY_ENTRY)
+          && (entries[i] != HTAB_DELETED_ENTRY))
+	(*htab->del_f)(entries[i]);
 
-  memset (entries, 0, size * sizeof (PTR));
+  memset(entries, 0, (size * sizeof(PTR)));
 }
 
 /* Similar to htab_find_slot, but without several unwanted side effects:
@@ -455,30 +481,30 @@ htab_empty (htab_t htab)
    HASH is the hash value for the element to be inserted.  */
 
 static PTR *
-find_empty_slot_for_expand (htab_t htab, hashval_t hash)
+find_empty_slot_for_expand(htab_t htab, hashval_t hash)
 {
-  hashval_t index = htab_mod (hash, htab);
-  size_t size = htab_size (htab);
-  PTR *slot = htab->entries + index;
+  hashval_t hindex = htab_mod(hash, htab);
+  size_t size = htab_size(htab);
+  PTR *slot = (htab->entries + hindex);
   hashval_t hash2;
 
   if (*slot == HTAB_EMPTY_ENTRY)
     return slot;
   else if (*slot == HTAB_DELETED_ENTRY)
-    abort ();
+    abort();
 
-  hash2 = htab_mod_m2 (hash, htab);
+  hash2 = htab_mod_m2(hash, htab);
   for (;;)
     {
-      index += hash2;
-      if (index >= size)
-	index -= size;
+      hindex += hash2;
+      if (hindex >= size)
+	hindex -= size;
 
-      slot = htab->entries + index;
+      slot = (htab->entries + hindex);
       if (*slot == HTAB_EMPTY_ENTRY)
 	return slot;
       else if (*slot == HTAB_DELETED_ENTRY)
-	abort ();
+	abort();
     }
 }
 
@@ -559,32 +585,32 @@ htab_expand (htab_t htab)
    element.  It cannot be used to insert or delete an element.  */
 
 PTR
-htab_find_with_hash (htab_t htab, const PTR element, hashval_t hash)
+htab_find_with_hash(htab_t htab, const PTR element, hashval_t hash)
 {
-  hashval_t index, hash2;
+  hashval_t hash_index, hash2;
   size_t size;
   PTR entry;
 
   htab->searches++;
-  size = htab_size (htab);
-  index = htab_mod (hash, htab);
+  size = htab_size(htab);
+  hash_index = htab_mod(hash, htab);
 
-  entry = htab->entries[index];
+  entry = htab->entries[hash_index];
   if (entry == HTAB_EMPTY_ENTRY
-      || (entry != HTAB_DELETED_ENTRY && (*htab->eq_f) (entry, element)))
+      || (entry != HTAB_DELETED_ENTRY && (*htab->eq_f)(entry, element)))
     return entry;
 
-  hash2 = htab_mod_m2 (hash, htab);
+  hash2 = htab_mod_m2(hash, htab);
   for (;;)
     {
       htab->collisions++;
-      index += hash2;
-      if (index >= size)
-	index -= size;
+      hash_index += hash2;
+      if (hash_index >= size)
+	hash_index -= size;
 
-      entry = htab->entries[index];
+      entry = htab->entries[hash_index];
       if (entry == HTAB_EMPTY_ENTRY
-	  || (entry != HTAB_DELETED_ENTRY && (*htab->eq_f) (entry, element)))
+	  || (entry != HTAB_DELETED_ENTRY && (*htab->eq_f)(entry, element)))
 	return entry;
     }
 }
@@ -607,11 +633,11 @@ htab_find (htab_t htab, const PTR element)
    allocation fails.  */
 
 PTR *
-htab_find_slot_with_hash (htab_t htab, const PTR element,
-                          hashval_t hash, enum insert_option insert)
+htab_find_slot_with_hash(htab_t htab, const PTR element,
+                         hashval_t hash, enum insert_option insert)
 {
   PTR *first_deleted_slot;
-  hashval_t index, hash2;
+  hashval_t arr_index, hash2;
   size_t size;
   PTR entry;
 
@@ -623,37 +649,37 @@ htab_find_slot_with_hash (htab_t htab, const PTR element,
       size = htab_size (htab);
     }
 
-  index = htab_mod (hash, htab);
+  arr_index = htab_mod (hash, htab);
 
   htab->searches++;
   first_deleted_slot = NULL;
 
-  entry = htab->entries[index];
+  entry = htab->entries[arr_index];
   if (entry == HTAB_EMPTY_ENTRY)
     goto empty_entry;
   else if (entry == HTAB_DELETED_ENTRY)
-    first_deleted_slot = &htab->entries[index];
+    first_deleted_slot = &htab->entries[arr_index];
   else if ((*htab->eq_f) (entry, element))
-    return &htab->entries[index];
-      
+    return &htab->entries[arr_index];
+
   hash2 = htab_mod_m2 (hash, htab);
   for (;;)
     {
       htab->collisions++;
-      index += hash2;
-      if (index >= size)
-	index -= size;
-      
-      entry = htab->entries[index];
+      arr_index += hash2;
+      if (arr_index >= size)
+	arr_index -= size;
+
+      entry = htab->entries[arr_index];
       if (entry == HTAB_EMPTY_ENTRY)
 	goto empty_entry;
       else if (entry == HTAB_DELETED_ENTRY)
 	{
 	  if (!first_deleted_slot)
-	    first_deleted_slot = &htab->entries[index];
+	    first_deleted_slot = &htab->entries[arr_index];
 	}
       else if ((*htab->eq_f) (entry, element))
-	return &htab->entries[index];
+	return &htab->entries[arr_index];
     }
 
  empty_entry:
@@ -668,7 +694,7 @@ htab_find_slot_with_hash (htab_t htab, const PTR element,
     }
 
   htab->n_elements++;
-  return &htab->entries[index];
+  return &htab->entries[arr_index];
 }
 
 /* Like htab_find_slot_with_hash, but compute the hash value from the
@@ -740,7 +766,7 @@ htab_traverse_noresize (htab_t htab, htab_trav callback, PTR info)
 {
   PTR *slot;
   PTR *limit;
-  
+
   slot = htab->entries;
   limit = slot + htab_size (htab);
 
@@ -795,10 +821,10 @@ htab_collisions (htab_t htab)
    prime numbers or the appropriate identity.  This was the best one.
    I don't remember exactly what constituted "best", except I was
    looking at bucket-length distributions mostly.
-   
+
    So it should be very good at hashing identifiers, but might not be
    as good at arbitrary strings.
-   
+
    I'll add that it thoroughly trounces the hash functions recommended
    for this use at http://burtleburtle.net/bob/hash/index.html, both
    on speed and bucket distribution.  I haven't tried it against the
@@ -836,16 +862,16 @@ For every delta with one or two bit set, and the deltas of all three
   have at least 1/4 probability of changing.
 * If mix() is run forward, every bit of c will change between 1/3 and
   2/3 of the time.  (Well, 22/100 and 78/100 for some 2-bit deltas.)
-mix() was built out of 36 single-cycle latency instructions in a 
+mix() was built out of 36 single-cycle latency instructions in a
   structure that could supported 2x parallelism, like so:
-      a -= b; 
+      a -= b;
       a -= c; x = (c>>13);
       b -= c; a ^= x;
       b -= a; x = (a<<8);
       c -= a; b ^= x;
       c -= b; x = (b>>13);
       ...
-  Unfortunately, superscalar Pentiums and Sparcs can't take advantage 
+  Unfortunately, superscalar Pentiums and Sparcs can't take advantage
   of that parallelism.  They've also turned some of those single-cycle
   latency instructions into multi-cycle latency instructions.  Still,
   this is the fastest good hash I could find.  There were about 2^^68
@@ -895,16 +921,16 @@ acceptable.  Do NOT use for cryptographic purposes.
 */
 
 hashval_t
-iterative_hash (const PTR k_in /* the key */,
-                register size_t  length /* the length of the key */,
-                register hashval_t initval /* the previous hash, or
-                                              an arbitrary value */)
+iterative_hash(const PTR k_in /* the key */,
+               register size_t length /* the length of the key */,
+               register hashval_t initval /* the previous hash, or
+                                             an arbitrary value */)
 {
   register const unsigned char *k = (const unsigned char *)k_in;
-  register hashval_t a,b,c,len;
+  register hashval_t a, b, c, len;
 
-  /* Set up the internal state */
-  len = length;
+  /* Set up the internal state: */
+  len = (hashval_t)length;
   a = b = 0x9e3779b9;  /* the golden ratio; an arbitrary value */
   c = initval;           /* the previous hash value */
 
@@ -913,18 +939,18 @@ iterative_hash (const PTR k_in /* the key */,
   /* On a little-endian machine, if the data is 4-byte aligned we can hash
      by word for better speed.  This gives nondeterministic results on
      big-endian machines.  */
-  if (sizeof (hashval_t) == 4 && (((size_t)k)&3) == 0)
-    while (len >= 12)    /* aligned */
+  if (sizeof(hashval_t) == 4 && (((size_t)k) & 3) == 0)
+    while ((len >= 12U) && (len > 0U) && (len < UINT_MAX))    /* aligned */
       {
-	a += *(hashval_t *)(k+0);
-	b += *(hashval_t *)(k+4);
-	c += *(hashval_t *)(k+8);
-	mix(a,b,c);
-	k += 12; len -= 12;
+	a += *(hashval_t *)(k + 0);
+	b += *(hashval_t *)(k + 4);
+	c += *(hashval_t *)(k + 8);
+	mix(a, b, c);
+	k += 12; len -= 12U;
       }
   else /* unaligned */
-#endif
-    while (len >= 12)
+#endif /* !WORDS_BIGENDIAN */
+    while ((len >= 12U) && (len > 0U) && (len < UINT_MAX))
       {
 	a += (k[0] +((hashval_t)k[1]<<8) +((hashval_t)k[2]<<16) +((hashval_t)k[3]<<24));
 	b += (k[4] +((hashval_t)k[5]<<8) +((hashval_t)k[6]<<16) +((hashval_t)k[7]<<24));
@@ -935,23 +961,26 @@ iterative_hash (const PTR k_in /* the key */,
 
   /*------------------------------------- handle the last 11 bytes */
   c += length;
-  switch(len)              /* all the case statements fall through */
+  switch (len)              /* all the case statements fall through */
     {
-    case 11: c+=((hashval_t)k[10]<<24);
-    case 10: c+=((hashval_t)k[9]<<16);
-    case 9 : c+=((hashval_t)k[8]<<8);
+    case 11: c += ((hashval_t)k[10] << 24);
+    case 10: c += ((hashval_t)k[9] << 16);
+    case 9: c += ((hashval_t)k[8] << 8);
       /* the first byte of c is reserved for the length */
-    case 8 : b+=((hashval_t)k[7]<<24);
-    case 7 : b+=((hashval_t)k[6]<<16);
-    case 6 : b+=((hashval_t)k[5]<<8);
-    case 5 : b+=k[4];
-    case 4 : a+=((hashval_t)k[3]<<24);
-    case 3 : a+=((hashval_t)k[2]<<16);
-    case 2 : a+=((hashval_t)k[1]<<8);
-    case 1 : a+=k[0];
-      /* case 0: nothing left to add */
+    case 8: b += ((hashval_t)k[7] << 24);
+    case 7: b += ((hashval_t)k[6] << 16);
+    case 6: b += ((hashval_t)k[5] << 8);
+    case 5: b += k[4];
+    case 4: a += ((hashval_t)k[3] << 24);
+    case 3: a += ((hashval_t)k[2] << 16);
+    case 2: a += ((hashval_t)k[1] << 8);
+    case 1: a += k[0];
+    case 0: a += 0; /* nothing left to add */
+    default:;
     }
   mix(a,b,c);
   /*-------------------------------------------- report the result */
   return c;
 }
+
+/* EOF */

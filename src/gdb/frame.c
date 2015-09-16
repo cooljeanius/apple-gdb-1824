@@ -1,4 +1,4 @@
-/* Cache and manage frames for GDB, the GNU debugger.
+/* frame.c: Cache and manage frames for GDB, the GNU debugger.
 
    Copyright 1986, 1987, 1989, 1991, 1994, 1995, 1996, 1998, 2000,
    2001, 2002, 2003, 2004 Free Software Foundation, Inc.
@@ -85,21 +85,21 @@ struct frame_info
     int p;
     CORE_ADDR value;
   } prev_pc;
-  
+
   /* Cached copy of the previous frame's function address.  */
   struct
   {
     CORE_ADDR addr;
     int p;
   } prev_func;
-  
+
   /* This frame's ID.  */
   struct
   {
     int p;
     struct frame_id value;
   } this_id;
-  
+
   /* The frame's high-level base methods, and corresponding cache.
      The high level base methods are selected based on the frame's
      debug info.  */
@@ -299,7 +299,7 @@ get_frame_id (struct frame_info *fi)
 }
 
 struct frame_id
-frame_unwind_id (struct frame_info *next_frame)
+frame_unwind_id(struct frame_info *next_frame)
 {
   /* Use prev_frame, and not get_prev_frame.  The latter will truncate
      the frame chain, leading to this function unintentionally
@@ -311,18 +311,21 @@ frame_unwind_id (struct frame_info *next_frame)
      the caller of "next_frame".  If "next_frame" is an
      INLINED_FRAME, we need to back up at least one more level.  */
 
-  if (get_frame_type (next_frame) == INLINED_FRAME)
-    return frame_unwind_id (get_prev_frame_1 (next_frame));
+  if (get_frame_type(next_frame) == INLINED_FRAME)
+    return frame_unwind_id(get_prev_frame_1(next_frame));
   else
-    return get_frame_id (get_prev_frame_1 (next_frame));
+    return get_frame_id(get_prev_frame_1(next_frame));
   /* APPLE LOCAL end subroutine inlining  */
 }
 
-const struct frame_id null_frame_id; /* All zeros.  */
+/* All zeros: */
+const struct frame_id null_frame_id = {
+  0UL, 0UL, 0UL, 0U, 0U, 0U
+};
 
 struct frame_id
-frame_id_build_special (CORE_ADDR stack_addr, CORE_ADDR code_addr,
-                        CORE_ADDR special_addr)
+frame_id_build_special(CORE_ADDR stack_addr, CORE_ADDR code_addr,
+                       CORE_ADDR special_addr)
 {
   struct frame_id id = null_frame_id;
   id.stack_addr = stack_addr;
@@ -335,7 +338,7 @@ frame_id_build_special (CORE_ADDR stack_addr, CORE_ADDR code_addr,
 }
 
 struct frame_id
-frame_id_build (CORE_ADDR stack_addr, CORE_ADDR code_addr)
+frame_id_build(CORE_ADDR stack_addr, CORE_ADDR code_addr)
 {
   struct frame_id id = null_frame_id;
   id.stack_addr = stack_addr;
@@ -346,7 +349,7 @@ frame_id_build (CORE_ADDR stack_addr, CORE_ADDR code_addr)
 }
 
 struct frame_id
-frame_id_build_wild (CORE_ADDR stack_addr)
+frame_id_build_wild(CORE_ADDR stack_addr)
 {
   struct frame_id id = null_frame_id;
   id.stack_addr = stack_addr;
@@ -355,7 +358,7 @@ frame_id_build_wild (CORE_ADDR stack_addr)
 }
 
 int
-frame_id_p (struct frame_id l)
+frame_id_p(struct frame_id l)
 {
   int p;
   /* The frame is valid iff it has a valid stack address.  */
@@ -384,7 +387,7 @@ frame_id_eq (struct frame_id l, struct frame_id r)
      program has jumped to a NULL function address.  The NULL
      function is (correctly) determined to be frameless, so the only
      way to distinguish the two frames is by the value of $pc.  But
-     if 0 is treated as a wild-card, this will fail.  
+     if 0 is treated as a wild-card, this will fail.
      HOWEVER, if both are zero, then we need to match, 'cause in this
      case we are probably doing "dunno where this function is".  */
   else if (l.code_addr != r.code_addr)
@@ -441,19 +444,19 @@ frame_find_by_id (struct frame_id id)
 
   /* ZERO denotes the null frame, let the caller decide what to do
      about it.  Should it instead return get_current_frame()?  */
-  if (!frame_id_p (id))
+  if (!frame_id_p(id))
     return NULL;
 
-  for (frame = get_current_frame ();
+  for (frame = get_current_frame();
        frame != NULL;
-       frame = get_prev_frame (frame))
+       frame = get_prev_frame(frame))
     {
-      struct frame_id this = get_frame_id (frame);
-      if (frame_id_eq (id, this))
-	/* An exact match.  */
+      struct frame_id this_frame = get_frame_id(frame);
+      if (frame_id_eq(id, this_frame))
+	/* An exact match: */
 	return frame;
-      if (frame_id_inner (id, this))
-	/* Gone to far.  */
+      if (frame_id_inner(id, this_frame))
+	/* Gone too far: */
 	return NULL;
       /* Either we're not yet gone far enough out along the frame
          chain (inner(this,id)), or we're comparing frameless functions
@@ -484,7 +487,7 @@ frame_pc_unwind (struct frame_info *this_frame)
 	     determine the value of registers in THIS frame, and hence
 	     the value of this frame's PC (resume address).  A typical
 	     implementation is no more than:
-	   
+
 	     frame_unwind_register (this_frame, ISA_PC_REGNUM, buf);
 	     return extract_unsigned_integer (buf, size of ISA_PC_REGNUM);
 
@@ -529,25 +532,25 @@ frame_func_unwind (struct frame_info *fi)
 }
 
 CORE_ADDR
-get_frame_func (struct frame_info *fi)
+get_frame_func(struct frame_info *fi)
 {
-  return frame_func_unwind (fi->next);
+  return frame_func_unwind(fi->next);
 }
 
 static int
-do_frame_register_read (void *src, int regnum, gdb_byte *buf)
+do_frame_register_read(void *src, int regnum, gdb_byte *buf)
 {
-  frame_register_read (src, regnum, buf);
+  frame_register_read((struct frame_info *)src, regnum, buf);
   return 1;
 }
 
 struct regcache *
-frame_save_as_regcache (struct frame_info *this_frame)
+frame_save_as_regcache(struct frame_info *this_frame)
 {
-  struct regcache *regcache = regcache_xmalloc (current_gdbarch);
-  struct cleanup *cleanups = make_cleanup_regcache_xfree (regcache);
-  regcache_save (regcache, do_frame_register_read, this_frame);
-  discard_cleanups (cleanups);
+  struct regcache *regcache = regcache_xmalloc(current_gdbarch);
+  struct cleanup *cleanups = make_cleanup_regcache_xfree(regcache);
+  regcache_save(regcache, do_frame_register_read, this_frame);
+  discard_cleanups(cleanups);
   return regcache;
 }
 
@@ -579,19 +582,19 @@ frame_pop (struct frame_info *this_frame)
      (arguably a bug in the target code mind).  */
   /* Now copy those saved registers into the current regcache.
      Here, regcache_cpy() calls regcache_restore().  */
-  regcache_cpy (current_regcache, scratch);
-  do_cleanups (cleanups);
+  regcache_cpy(current_regcache, scratch);
+  do_cleanups(cleanups);
 
   /* We've made right mess of GDB's local state, just discard
      everything.  */
-  flush_cached_frames ();
+  flush_cached_frames();
 }
 
 void
-frame_register_unwind (struct frame_info *frame, int regnum,
-		       /* APPLE LOCAL variable opt states.  */
-		       enum opt_state *optimizedp, enum lval_type *lvalp,
-		       CORE_ADDR *addrp, int *realnump, gdb_byte *bufferp)
+frame_register_unwind(struct frame_info *frame, int regnum,
+		      /* APPLE LOCAL variable opt states.  */
+		      enum opt_state *optimizedp, enum lval_type *lvalp,
+		      CORE_ADDR *addrp, int *realnump, gdb_byte *bufferp)
 {
   if (frame_debug)
     {
@@ -862,9 +865,9 @@ frame_obstack_zalloc (unsigned long size)
    sentinel frame fails, the function still returns a stack frame.  */
 
 static int
-unwind_to_current_frame (struct ui_out *ui_out, void *args)
+unwind_to_current_frame(struct ui_out *ui_out, void *args)
 {
-  struct frame_info *frame = get_prev_frame (args);
+  struct frame_info *frame = get_prev_frame((struct frame_info *)args);
   /* A sentinel frame can fail to unwind, e.g., because its PC value
      lands in somewhere like start.  */
   if (frame == NULL)
@@ -874,7 +877,7 @@ unwind_to_current_frame (struct ui_out *ui_out, void *args)
 }
 
 struct frame_info *
-get_current_frame (void)
+get_current_frame(void)
 {
   /* First check, and report, the lack of registers.  Having GDB
      report "No stack!" or "No memory" when the target doesn't even
@@ -992,46 +995,46 @@ select_frame (struct frame_info *fi)
       /* APPLE LOCAL begin Inform users about debugging optimized code  */
       func_sym = find_pc_function (get_frame_pc (fi));
       if (func_sym)
-	currently_inside_optimized_code = 
+	currently_inside_optimized_code =
 	                              TYPE_OPTIMIZED (SYMBOL_TYPE (func_sym));
       else
 	currently_inside_optimized_code = 0;
       /* APPLE LOCAL end Inform users about debugging optimized code  */
     }
 }
-	
+
 /* Create an arbitrary (i.e. address specified by user) or innermost frame.
    Always returns a non-NULL value.  */
 
 struct frame_info *
-create_new_frame (CORE_ADDR addr, CORE_ADDR pc)
+create_new_frame(CORE_ADDR addr, CORE_ADDR pc)
 {
   struct frame_info *fi;
 
   if (frame_debug)
     {
-      fprintf_unfiltered (gdb_stdlog,
-			  "{ create_new_frame (addr=0x%s, pc=0x%s) ",
-			  paddr_nz (addr), paddr_nz (pc));
+      fprintf_unfiltered(gdb_stdlog,
+			 "{ create_new_frame (addr=0x%s, pc=0x%s) ",
+			 paddr_nz(addr), paddr_nz(pc));
     }
 
-  fi = frame_obstack_zalloc (sizeof (struct frame_info));
+  fi = (struct frame_info*)frame_obstack_zalloc(sizeof(struct frame_info));
 
-  fi->next = create_sentinel_frame (current_regcache);
+  fi->next = create_sentinel_frame(current_regcache);
 
   /* Select/initialize both the unwind function and the frame's type
      based on the PC.  */
-  fi->unwind = frame_unwind_find_by_frame (fi->next, &fi->prologue_cache);
+  fi->unwind = frame_unwind_find_by_frame(fi->next, &fi->prologue_cache);
 
   fi->this_id.p = 1;
-  deprecated_update_frame_base_hack (fi, addr);
-  deprecated_update_frame_pc_hack (fi, pc);
+  deprecated_update_frame_base_hack(fi, addr);
+  deprecated_update_frame_pc_hack(fi, pc);
 
   if (frame_debug)
     {
-      fprintf_unfiltered (gdb_stdlog, "-> ");
-      fprint_frame (gdb_stdlog, fi);
-      fprintf_unfiltered (gdb_stdlog, " }\n");
+      fprintf_unfiltered(gdb_stdlog, "-> ");
+      fprint_frame(gdb_stdlog, fi);
+      fprintf_unfiltered(gdb_stdlog, " }\n");
     }
 
   return fi;
@@ -1042,7 +1045,7 @@ create_new_frame (CORE_ADDR addr, CORE_ADDR pc)
    frame chain and onto the sentinel frame.  */
 
 struct frame_info *
-get_next_frame (struct frame_info *this_frame)
+get_next_frame(struct frame_info *this_frame)
 {
   if (this_frame->level > 0)
     return this_frame->next;
@@ -1050,44 +1053,41 @@ get_next_frame (struct frame_info *this_frame)
     return NULL;
 }
 
-/* Observer for the target_changed event.  */
-
+/* Observer for the target_changed event: */
 void
-frame_observer_target_changed (struct target_ops *target)
+frame_observer_target_changed(struct target_ops *target ATTRIBUTE_UNUSED)
 {
-  flush_cached_frames ();
+  flush_cached_frames();
 }
 
-/* Flush the entire frame cache.  */
-
+/* Flush the entire frame cache: */
 void
-flush_cached_frames (void)
+flush_cached_frames(void)
 {
-  /* Since we can't really be sure what the first object allocated was */
-  obstack_free (&frame_cache_obstack, 0);
-  obstack_init (&frame_cache_obstack);
+  /* Since we cannot really be sure what the first object allocated was: */
+  obstack_free(&frame_cache_obstack, 0);
+  obstack_init(&frame_cache_obstack);
 
   current_frame = NULL;		/* Invalidate cache */
   select_frame (NULL);
-  annotate_frames_invalid ();
+  annotate_frames_invalid();
   if (frame_debug)
-    fprintf_unfiltered (gdb_stdlog, "{ flush_cached_frames () }\n");
+    fprintf_unfiltered(gdb_stdlog, "{ flush_cached_frames () }\n");
   /* APPLE LOCAL begin subroutine inlining  */
-  flush_inlined_subroutine_frames ();
+  flush_inlined_subroutine_frames();
   /* APPLE LOCAL begin subroutine inlining  */
 }
 
-/* Flush the frame cache, and start a new one if necessary.  */
-
+/* Flush the frame cache, and start a new one if necessary: */
 void
-reinit_frame_cache (void)
+reinit_frame_cache(void)
 {
-  flush_cached_frames ();
+  flush_cached_frames();
 
-  /* FIXME: The inferior_ptid test is wrong if there is a corefile.  */
-  if (PIDGET (inferior_ptid) != 0)
+  /* FIXME: The inferior_ptid test is wrong if there is a corefile: */
+  if (PIDGET(inferior_ptid) != 0)
     {
-      select_frame (get_current_frame ());
+      select_frame(get_current_frame());
     }
 }
 
@@ -1158,7 +1158,7 @@ get_prev_frame_1 (struct frame_info *this_frame)
   /* APPLE LOCAL begin subroutine inlining  */
   /* Check that this and the next frame are not identical.  If they
      are, there is most likely a stack cycle.  As with the inner-than
-     test above, avoid comparing the inner-most and sentinel frames. 
+     test above, avoid comparing the inner-most and sentinel frames.
      Addendum:  They are NOT necessarily a cycle if both frames are for
      inlined function calls.  */
   /* APPLE LOCAL: Drop the "corrupt stack?" language -- this error is almost
@@ -1329,13 +1329,13 @@ get_prev_frame (struct frame_info *this_frame)
      pcsqh register (space register for the instruction at the head of the
      instruction queue) cannot be written directly; the only way to set it
      is to branch to code that is in the target space.  In order to implement
-     frame dummies on HPUX, the called function is made to jump back to where 
-     the inferior was when the user function was called.  If gdb was inside 
-     the main function when we created the dummy frame, the dummy frame will 
-     point inside the main function.  
+     frame dummies on HPUX, the called function is made to jump back to where
+     the inferior was when the user function was called.  If gdb was inside
+     the main function when we created the dummy frame, the dummy frame will
+     point inside the main function.
      Addendum:  If we're inside an inlined subroutine frame for a function
-     that was inlined into 'main', then inside_main_func might be true and 
-     it would still be correct to unwind (out of the inlined subroutine's 
+     that was inlined into 'main', then inside_main_func might be true and
+     it would still be correct to unwind (out of the inlined subroutine's
      frame).  */
   if (this_frame->level >= 0
       && get_frame_type (this_frame) != DUMMY_FRAME
@@ -1382,7 +1382,7 @@ get_prev_frame (struct frame_info *this_frame)
      That should provide a far better stopper than the current
      heuristics.  */
   /* NOTE: tausq/2004-10-09: this is needed if, for example, the compiler
-     applied tail-call optimizations to main so that a function called 
+     applied tail-call optimizations to main so that a function called
      from main returns directly to the caller of main.  Since we don't
      stop at main, we should at least stop at the entry point of the
      application.  */
@@ -1415,9 +1415,9 @@ get_prev_frame (struct frame_info *this_frame)
       if (this_frame->level > 1)
         {
            struct minimal_symbol *minsym;
-           minsym = lookup_minimal_symbol_by_pc 
+           minsym = lookup_minimal_symbol_by_pc
                (frame_pc_unwind (get_next_frame (get_next_frame (this_frame))));
-          if (minsym && strcmp (SYMBOL_LINKAGE_NAME (minsym), 
+          if (minsym && strcmp (SYMBOL_LINKAGE_NAME (minsym),
                                 "trap_from_kernel") == 0)
             {
               trap_from_kernel = 1;
@@ -1626,7 +1626,7 @@ get_frame_type (struct frame_info *frame)
   if (frame->unwind == NULL)
     /* Initialize the frame's unwinder because that's what
        provides the frame's type.  */
-    frame->unwind = frame_unwind_find_by_frame (frame->next, 
+    frame->unwind = frame_unwind_find_by_frame (frame->next,
 						&frame->prologue_cache);
   return frame->unwind->type;
 }
@@ -1654,7 +1654,7 @@ refine_prologue_limit (CORE_ADDR pc, CORE_ADDR lim_pc, int max_skip_non_prologue
 	 So, if we have two source lines in a row that are
 	 on the SAME line, then we don't advance the prologue_sal.  */
       int prev_line = prologue_sal.line;
-      
+
       /* Handle the case in which compiler's optimizer/scheduler
          has moved instructions into the prologue.  We scan ahead
 	 in the function looking for address ranges whose corresponding
@@ -1710,12 +1710,12 @@ deprecated_update_frame_pc_hack (struct frame_info *frame, CORE_ADDR pc)
 }
 
 void
-deprecated_update_frame_base_hack (struct frame_info *frame, CORE_ADDR base)
+deprecated_update_frame_base_hack(struct frame_info *frame, CORE_ADDR base)
 {
   if (frame_debug)
-    fprintf_unfiltered (gdb_stdlog,
-			"{ deprecated_update_frame_base_hack (frame=%d,base=0x%s) }\n",
-			frame->level, paddr_nz (base));
+    fprintf_unfiltered(gdb_stdlog,
+                       "{ deprecated_update_frame_base_hack (frame=%d,base=0x%s) }\n",
+                       frame->level, paddr_nz(base));
   /* See comment in "frame.h".  */
   frame->this_id.value.stack_addr = base;
 }
@@ -1723,38 +1723,38 @@ deprecated_update_frame_base_hack (struct frame_info *frame, CORE_ADDR base)
 /* Memory access methods.  */
 
 void
-get_frame_memory (struct frame_info *this_frame, CORE_ADDR addr,
-		  gdb_byte *buf, int len)
+get_frame_memory(struct frame_info *this_frame, CORE_ADDR addr,
+		 gdb_byte *buf, int len)
 {
-  read_memory (addr, buf, len);
+  read_memory(addr, buf, len);
 }
 
 LONGEST
-get_frame_memory_signed (struct frame_info *this_frame, CORE_ADDR addr,
-			 int len)
+get_frame_memory_signed(struct frame_info *this_frame, CORE_ADDR addr,
+                        int len)
 {
-  return read_memory_integer (addr, len);
+  return read_memory_integer(addr, len);
 }
 
 ULONGEST
-get_frame_memory_unsigned (struct frame_info *this_frame, CORE_ADDR addr,
-			   int len)
+get_frame_memory_unsigned(struct frame_info *this_frame, CORE_ADDR addr,
+			  int len)
 {
-  return read_memory_unsigned_integer (addr, len);
+  return read_memory_unsigned_integer(addr, len);
 }
 
 int
-safe_frame_unwind_memory (struct frame_info *this_frame,
-			  CORE_ADDR addr, gdb_byte *buf, int len)
+safe_frame_unwind_memory(struct frame_info *this_frame,
+			 CORE_ADDR addr, gdb_byte *buf, int len)
 {
   /* NOTE: deprecated_read_memory_nobpt returns zero on success!  */
-  return !deprecated_read_memory_nobpt (addr, buf, len);
+  return !deprecated_read_memory_nobpt(addr, buf, len);
 }
 
 /* Architecture method.  */
 
 struct gdbarch *
-get_frame_arch (struct frame_info *this_frame)
+get_frame_arch(struct frame_info *this_frame)
 {
   return current_gdbarch;
 }
@@ -1762,31 +1762,31 @@ get_frame_arch (struct frame_info *this_frame)
 /* Stack pointer methods.  */
 
 CORE_ADDR
-get_frame_sp (struct frame_info *this_frame)
+get_frame_sp(struct frame_info *this_frame)
 {
-  return frame_sp_unwind (this_frame->next);
+  return frame_sp_unwind(this_frame->next);
 }
 
 CORE_ADDR
-frame_sp_unwind (struct frame_info *next_frame)
+frame_sp_unwind(struct frame_info *next_frame)
 {
   /* Normality - an architecture that provides a way of obtaining any
      frame inner-most address.  */
-  if (gdbarch_unwind_sp_p (current_gdbarch))
-    return gdbarch_unwind_sp (current_gdbarch, next_frame);
+  if (gdbarch_unwind_sp_p(current_gdbarch))
+    return gdbarch_unwind_sp(current_gdbarch, next_frame);
   /* Things are looking grim.  If it's the inner-most frame and there
      is a TARGET_READ_SP, then that can be used.  */
-  if (next_frame->level < 0 && TARGET_READ_SP_P ())
-    return TARGET_READ_SP ();
+  if ((next_frame->level < 0) && TARGET_READ_SP_P())
+    return TARGET_READ_SP();
   /* Now things are really are grim.  Hope that the value returned by
      the SP_REGNUM register is meaningful.  */
   if (SP_REGNUM >= 0)
     {
       ULONGEST sp;
-      frame_unwind_unsigned_register (next_frame, SP_REGNUM, &sp);
+      frame_unwind_unsigned_register(next_frame, SP_REGNUM, &sp);
       return sp;
     }
-  internal_error (__FILE__, __LINE__, _("Missing unwind SP method"));
+  internal_error(__FILE__, __LINE__, _("Missing unwind SP method"));
 }
 
 extern initialize_file_ftype _initialize_frame; /* -Wmissing-prototypes */
@@ -1795,15 +1795,16 @@ static struct cmd_list_element *set_backtrace_cmdlist;
 static struct cmd_list_element *show_backtrace_cmdlist;
 
 static void
-set_backtrace_cmd (char *args, int from_tty)
+set_backtrace_cmd(char *args, int from_tty)
 {
-  help_list (set_backtrace_cmdlist, "set backtrace ", -1, gdb_stdout);
+  help_list(set_backtrace_cmdlist, "set backtrace ",
+            (enum command_class)-1, gdb_stdout);
 }
 
 static void
-show_backtrace_cmd (char *args, int from_tty)
+show_backtrace_cmd(char *args, int from_tty)
 {
-  cmd_show_list (show_backtrace_cmdlist, from_tty, "");
+  cmd_show_list(show_backtrace_cmdlist, from_tty, "");
 }
 
 /* APPLE LOCAL begin subroutine inlining  */
@@ -1820,9 +1821,9 @@ inlined_frame_prev_register (struct frame_info *next_frame,
 			     int *realnump,
 			     gdb_byte *valuep)
 {
-  next_frame->unwind->prev_register (next_frame->next, 
+  next_frame->unwind->prev_register (next_frame->next,
 				     &next_frame->prologue_cache,
-				     prev_regnum, optimized, lvalp, addrp, 
+				     prev_regnum, optimized, lvalp, addrp,
 				     realnump, valuep);
 }
 /* APPLE LOCAL end subroutine inlining  */

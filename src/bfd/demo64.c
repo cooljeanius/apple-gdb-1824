@@ -1,8 +1,8 @@
-/* BFD backend for demonstration 64-bit a.out binaries.
-   Copyright 1990, 1991, 1992, 1993, 1994, 2001
-   Free Software Foundation, Inc.
-   Written by Cygnus Support.
-
+/* demo64.c: BFD backend for demonstration 64-bit a.out binaries.
+ * Copyright 1990, 1991, 1992, 1993, 1994, 2001
+ * Free Software Foundation, Inc.
+ * Written by Cygnus Support.  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #define ARCH_SIZE 64
 
@@ -27,4 +27,14 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #define MY(OP) CONCAT2 (demo_64_,OP)
 
 #define TARGETNAME  "demo64"
+
+/* this needs to go after the usage of the CONCAT* macro mentioned above,
+ * but before any other headers are included, or prototypes for functions
+ * are declared: */
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ && !__clang__ */
+
 #include "aoutf1.h"
+
+/* EOF */

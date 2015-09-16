@@ -23,23 +23,24 @@
 #include "libbfd.h"
 #include "libnlm.h"
 
-/* Make an NLM object.  We just need to allocate the backend
-   information.  */
-
+/* Make an NLM object.  We just need to allocate the backend info: */
 bfd_boolean
-nlm_mkobject (bfd * abfd)
+nlm_mkobject(bfd * abfd)
 {
-  bfd_size_type amt = sizeof (struct nlm_obj_tdata);
+  bfd_size_type amt = sizeof(struct nlm_obj_tdata);
 
-  nlm_tdata (abfd) = bfd_zalloc (abfd, amt);
-  if (nlm_tdata (abfd) == NULL)
+  nlm_tdata(abfd) = (struct nlm_obj_tdata *)bfd_zalloc(abfd, amt);
+  if (nlm_tdata(abfd) == NULL) {
     return FALSE;
+  }
 
-  if (nlm_architecture (abfd) != bfd_arch_unknown)
-    bfd_default_set_arch_mach (abfd, nlm_architecture (abfd),
-			       nlm_machine (abfd));
+  if (nlm_architecture(abfd) != bfd_arch_unknown) {
+    bfd_default_set_arch_mach(abfd, nlm_architecture(abfd),
+                              nlm_machine(abfd));
+  }
 
-  /* Since everything is done at close time, do we need any initialization ?  */
+  /* Since everything is done at close time, do we need any
+   * initialization?  */
   return TRUE;
 }
 

@@ -351,15 +351,15 @@ struct simple_object_elf_attributes
 /* See if we have an ELF file.  */
 
 static void *
-simple_object_elf_match (unsigned char header[SIMPLE_OBJECT_MATCH_HEADER_LEN],
-			 int descriptor, off_t offset,
-			 const char *segment_name ATTRIBUTE_UNUSED,
-			 const char **errmsg, int *err)
+simple_object_elf_match(unsigned char header[SIMPLE_OBJECT_MATCH_HEADER_LEN],
+                        int descriptor, off_t offset,
+                        const char *segment_name ATTRIBUTE_UNUSED,
+                        const char **errmsg, int *err)
 {
   unsigned char ei_data;
   unsigned char ei_class;
   const struct elf_type_functions *type_functions;
-  unsigned char ehdr[sizeof (Elf64_External_Ehdr)];
+  unsigned char ehdr[sizeof(Elf64_External_Ehdr)];
   struct simple_object_elf_read *eor;
 
   if (header[EI_MAG0] != ELFMAG0
@@ -385,7 +385,7 @@ simple_object_elf_match (unsigned char header[SIMPLE_OBJECT_MATCH_HEADER_LEN],
   switch (ei_class)
     {
     case ELFCLASS32:
-      type_functions = (ei_data == ELFDATA2LSB
+      type_functions = ((ei_data == ELFDATA2LSB)
 			? &elf_little_32_functions
 			: &elf_big_32_functions);
       break;
@@ -396,11 +396,11 @@ simple_object_elf_match (unsigned char header[SIMPLE_OBJECT_MATCH_HEADER_LEN],
       *err = 0;
       return NULL;
 #else
-      type_functions = (ei_data == ELFDATA2LSB
+      type_functions = ((ei_data == ELFDATA2LSB)
 			? &elf_little_64_functions
 			: &elf_big_64_functions);
       break;
-#endif
+#endif /* !UNSIGNED_64BIT_TYPE */
 
     default:
       *errmsg = "unrecognized ELF size";
@@ -408,11 +408,11 @@ simple_object_elf_match (unsigned char header[SIMPLE_OBJECT_MATCH_HEADER_LEN],
       return NULL;
     }
 
-  if (!simple_object_internal_read (descriptor, offset, ehdr, sizeof ehdr,
-				    errmsg, err))
+  if (!simple_object_internal_read(descriptor, offset, ehdr, sizeof(ehdr),
+				   errmsg, err))
     return NULL;
 
-  eor = XNEW (struct simple_object_elf_read);
+  eor = XNEW(struct simple_object_elf_read);
   eor->type_functions = type_functions;
   eor->ei_data = ei_data;
   eor->ei_class = ei_class;
@@ -431,23 +431,24 @@ simple_object_elf_match (unsigned char header[SIMPLE_OBJECT_MATCH_HEADER_LEN],
   if ((eor->shnum == 0 || eor->shstrndx == SHN_XINDEX)
       && eor->shoff != 0)
     {
-      unsigned char shdr[sizeof (Elf64_External_Shdr)];
+      unsigned char shdr[sizeof(Elf64_External_Shdr)];
 
-      /* Object file has more than 0xffff sections.  */
-
-      if (!simple_object_internal_read (descriptor, offset + eor->shoff, shdr,
-					(ei_class == ELFCLASS32
-					 ? sizeof (Elf32_External_Shdr)
-					 : sizeof (Elf64_External_Shdr)),
-					errmsg, err))
+      /* Object file has more than 0xffff sections: */
+      if (!simple_object_internal_read(descriptor,
+                                       (offset + (off_t)eor->shoff), shdr,
+                                       ((ei_class == ELFCLASS32)
+                                        ? sizeof(Elf32_External_Shdr)
+                                        : sizeof(Elf64_External_Shdr)),
+                                       errmsg, err))
 	{
-	  XDELETE (eor);
+	  XDELETE(eor);
 	  return NULL;
 	}
 
       if (eor->shnum == 0)
-	eor->shnum = ELF_FETCH_FIELD (type_functions, ei_class, Shdr,
-				      shdr, sh_size, Elf_Addr);
+	eor->shnum = ((unsigned int)
+                      ELF_FETCH_FIELD(type_functions, ei_class, Shdr,
+                                      shdr, sh_size, Elf_Addr));
 
       if (eor->shstrndx == SHN_XINDEX)
 	{
@@ -482,17 +483,15 @@ simple_object_elf_match (unsigned char header[SIMPLE_OBJECT_MATCH_HEADER_LEN],
   return (void *) eor;
 }
 
-/* Find all sections in an ELF file.  */
-
+/* Find all sections in an ELF file: */
 static const char *
-simple_object_elf_find_sections (simple_object_read *sobj,
-				 int (*pfn) (void *, const char *,
-					     off_t offset, off_t length),
-				 void *data,
-				 int *err)
+simple_object_elf_find_sections(simple_object_read *sobj,
+                                int (*pfn)(void *, const char *,
+                                           off_t offset, off_t length),
+                                void *data, int *err)
 {
   struct simple_object_elf_read *eor =
-    (struct simple_object_elf_read *) sobj->data;
+    (struct simple_object_elf_read *)sobj->data;
   const struct elf_type_functions *type_functions = eor->type_functions;
   unsigned char ei_class = eor->ei_class;
   size_t shdr_size;
@@ -505,40 +504,39 @@ simple_object_elf_find_sections (simple_object_read *sobj,
   unsigned char *names;
   unsigned int i;
 
-  shdr_size = (ei_class == ELFCLASS32
-	       ? sizeof (Elf32_External_Shdr)
-	       : sizeof (Elf64_External_Shdr));
+  shdr_size = ((ei_class == ELFCLASS32)
+	       ? sizeof(Elf32_External_Shdr)
+	       : sizeof(Elf64_External_Shdr));
 
   /* Read the section headers.  We skip section 0, which is not a
      useful section.  */
 
   shnum = eor->shnum;
-  shdrs = XNEWVEC (unsigned char, shdr_size * (shnum - 1));
+  shdrs = XNEWVEC(unsigned char, (shdr_size * (shnum - 1)));
 
-  if (!simple_object_internal_read (sobj->descriptor,
-				    sobj->offset + eor->shoff + shdr_size,
-				    shdrs,
-				    shdr_size * (shnum - 1),
-				    &errmsg, err))
+  if (!simple_object_internal_read(sobj->descriptor,
+                                   (sobj->offset + (off_t)(eor->shoff
+                                                           + shdr_size)),
+                                   shdrs, (shdr_size * (shnum - 1U)),
+                                   &errmsg, err))
     {
-      XDELETEVEC (shdrs);
+      XDELETEVEC(shdrs);
       return errmsg;
     }
 
-  /* Read the section names.  */
-
-  shstrhdr = shdrs + (eor->shstrndx - 1) * shdr_size;
-  name_size = ELF_FETCH_FIELD (type_functions, ei_class, Shdr,
-			       shstrhdr, sh_size, Elf_Addr);
-  shstroff = ELF_FETCH_FIELD (type_functions, ei_class, Shdr,
-			      shstrhdr, sh_offset, Elf_Addr);
-  names = XNEWVEC (unsigned char, name_size);
-  if (!simple_object_internal_read (sobj->descriptor,
-				    sobj->offset + shstroff,
-				    names, name_size, &errmsg, err))
+  /* Read the section names: */
+  shstrhdr = (shdrs + ((eor->shstrndx - 1U) * shdr_size));
+  name_size = (size_t)ELF_FETCH_FIELD(type_functions, ei_class, Shdr,
+                                      shstrhdr, sh_size, Elf_Addr);
+  shstroff = (off_t)ELF_FETCH_FIELD(type_functions, ei_class, Shdr,
+                                    shstrhdr, sh_offset, Elf_Addr);
+  names = XNEWVEC(unsigned char, name_size);
+  if (!simple_object_internal_read(sobj->descriptor,
+                                   (sobj->offset + shstroff),
+				   names, name_size, &errmsg, err))
     {
-      XDELETEVEC (names);
-      XDELETEVEC (shdrs);
+      XDELETEVEC(names);
+      XDELETEVEC(shdrs);
       return errmsg;
     }
 
@@ -862,16 +860,16 @@ simple_object_elf_write_to_file (simple_object_write *sobj, int descriptor,
       while (new_sh_offset > sh_offset)
 	{
 	  unsigned char zeroes[16];
-	  size_t write;
+	  size_t write_amt;
 
-	  memset (zeroes, 0, sizeof zeroes);
-	  write = new_sh_offset - sh_offset;
-	  if (write > sizeof zeroes)
-	    write = sizeof zeroes;
-	  if (!simple_object_internal_write (descriptor, sh_offset, zeroes,
-					     write, &errmsg, err))
+	  memset(zeroes, 0, sizeof(zeroes));
+	  write_amt = (new_sh_offset - sh_offset);
+	  if (write_amt > sizeof(zeroes))
+	    write_amt = sizeof(zeroes);
+	  if (!simple_object_internal_write(descriptor, sh_offset, zeroes,
+                                            write_amt, &errmsg, err))
 	    return errmsg;
-	  sh_offset += write;
+	  sh_offset += write_amt;
 	}
 
       sh_size = 0;
@@ -951,3 +949,5 @@ const struct simple_object_functions simple_object_elf_functions =
   simple_object_elf_write_to_file,
   simple_object_elf_release_write
 };
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* BFD backend for CRIS a.out binaries.
+/* aout-cris.c: BFD backend for CRIS a.out binaries.
    Copyright 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
    Contributed by Axis Communications AB.
    Written by Hans-Peter Nilsson.
@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* See info in the file PORTING for documentation of these macros and
    functions.  Beware; some of the information there is outdated.  */
@@ -68,6 +68,13 @@
    the tokens.  */
 #define MY(OP) CONCAT2 (cris_aout_,OP)
 #define NAME(x, y) CONCAT3 (cris_aout,_32_,y)
+
+/* this needs to go after the usage of the CONCAT* macro mentioned above,
+ * but before any other headers are included, or prototypes for functions
+ * are declared: */
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ && !__clang__ */
 
 #include "bfd.h"
 

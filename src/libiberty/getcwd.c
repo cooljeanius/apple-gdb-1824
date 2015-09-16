@@ -1,5 +1,6 @@
-/* Emulate getcwd using getwd.
-   This function is in the public domain. */
+/* getcwd.c
+ * Emulate getcwd using getwd.
+ * This function is in the public domain. */
 
 /*
 
@@ -7,45 +8,71 @@
 
 Copy the absolute pathname for the current working directory into
 @var{pathname}, which is assumed to point to a buffer of at least
-@var{len} bytes, and return a pointer to the buffer.  If the current
-directory's path doesn't fit in @var{len} characters, the result is
-@code{NULL} and @code{errno} is set.  If @var{pathname} is a null pointer,
-@code{getcwd} will obtain @var{len} bytes of space using
+@var{len} bytes, and return a pointer to the buffer. If the current
+directory's path does NOT fit in @var{len} characters, then the result is
+@code{NULL} and @code{errno} is set. If @var{pathname} is a null pointer,
+then @code{getcwd} will obtain @var{len} bytes of space using
 @code{malloc}.
 
 @end deftypefn
 
 */
 
+/* includes: */
 #include "config.h"
 
 #ifdef HAVE_SYS_PARAM_H
-#include <sys/param.h>
-#endif
+# include <sys/param.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "getcwd.c expects <sys/param.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_PARAM_H */
 #include <errno.h>
 #ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+# include <string.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "getcwd.c expects <string.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STRING_H */
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "getcwd.c expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STDLIB_H */
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "getcwd.c expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_UNISTD_H */
 
-extern char *getwd ();
+/* prototypes: */
+#if !defined(_UNISTD_H_)
+extern char *getcwd(char *buf, size_t len);
+#endif /* !_UNISTD_H_ */
+#if !defined(_SYS_ERRNO_H_) && !defined(errno)
 extern int errno;
+#endif /* !_SYS_ERRNO_H_ && !errno */
 
+/* defines */
 #ifndef MAXPATHLEN
-#define MAXPATHLEN 1024
-#endif
+# define MAXPATHLEN 1024
+#endif /* !MAXPATHLEN */
 
-char *
-getcwd (char *buf, size_t len)
+/* actual function: */
+char *getcwd(char *buf, size_t len)
 {
   char ourbuf[MAXPATHLEN];
   char *result;
 
-  result = getwd (ourbuf);
+  result = getwd(ourbuf);
   if (result) {
-    if (strlen (ourbuf) >= len) {
+    if (strlen(ourbuf) >= len) {
       errno = ERANGE;
       return 0;
     }
@@ -56,7 +83,9 @@ getcwd (char *buf, size_t len)
 	   return 0;
        }
     }
-    strcpy (buf, ourbuf);
+    strcpy(buf, ourbuf);
   }
   return buf;
 }
+
+/* EOF */

@@ -1,31 +1,36 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
-originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
 * revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
 * with significant contributions from:
   Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
 <HTML>
 <HEAD>
-<TITLE>Release NoticeBlueGnu Testing Framework
-Version 2.0.3</TITLE>
-<META NAME="description" CONTENT="Release NoticeBlueGnu Testing Framework
-Version 2.0.3">
+<TITLE>BlueGnu Release Notice</TITLE>
+<META NAME="description" CONTENT="BlueGnu Release Notice">
 <META NAME="keywords" CONTENT="READMEdvi">
 <META NAME="resource-type" CONTENT="document">
 <META NAME="distribution" CONTENT="global">
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
 <LINK REL="STYLESHEET" HREF="READMEdvi.css">
+
 </HEAD>
+
 <BODY >
-
-<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
- SRC="/tools/latex2html-98.1p1/icons.gif/next_motif_gr.gif"> 
+<!--Navigation Panel-->
+<IMG WIDTH="81" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next_inactive"
+ SRC="file:/opt/local/share/lib/latex2html/icons/nx_grp_g.png"> 
 <IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
- SRC="/tools/latex2html-98.1p1/icons.gif/up_motif_gr.gif"> 
+ SRC="file:/opt/local/share/lib/latex2html/icons/up_g.png"> 
 <IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
- SRC="/tools/latex2html-98.1p1/icons.gif/previous_motif_gr.gif">   <BR>
-<BR> <P>
-
+ SRC="file:/opt/local/share/lib/latex2html/icons/prev_g.png">   
+<BR>
+<BR>
+<BR>
 <!--End of Navigation Panel-->
 
 <P>
@@ -36,20 +41,12 @@ Version 2.0.3">
 BlueGnu Testing Framework
 <BR>
 Version 2.0.3</H1>
-<P ALIGN="CENTER"><STRONG>Jan-Willem Neurdenburg
-<BR>
-jotOmega dsc
-<BR>
-56 Brigham Hill Road
-<BR>
-Grafton&nbsp;MA&nbsp;&nbsp;01519-1135
-<BR>
-neurdenburgj@acm.org
-<BR>
-Tel: (508) 839-0276
-<BR>
-Fax: (508) 839-7267</STRONG></P>
-<P ALIGN="LEFT"></P>
+<DIV>
+
+<P ALIGN="CENTER"><STRONG>Jan-Willem Neurdenburg</STRONG></P>
+<P ALIGN="CENTER"><I>jotOmega dsc</I></P>
+<P ALIGN="LEFT"><SMALL>56 Brigham Hill Road</SMALL></P>
+</DIV>
 
 <P>
 
@@ -62,36 +59,44 @@ front end for all tests. Beyond this, BlueGnu offers several
 advantages for testing:
 
 <P>
+
 <UL>
-<P>
 <LI>The flexibility and consistency of the BlueGnu framework makes it
 easy to write tests for any program, with the exception of GUI
 applications.
 
 <P>
+</LI>
 <LI>BlueGnu provides a layer of abstraction, which makes all tests
 (if correctly written) portable to any host or target where a program
 must be tested.
 
 <P>
+</LI>
 <LI>BlueGnu is written in [incr Tcl], which in turn is based on Tcl
 (Tool Command Language). The framework comprises two parts:
-<DL COMPACT>
-<DT>1.
-<DD>the testing framework,
-<DT>2.
-<DD>the test-suites or test-sets themselves.
-</DL>
+
+<OL>
+<LI>the testing framework,
+</LI>
+<LI>the test-suites or test-sets themselves.
+</LI>
+</OL>
+
 <P>
+</LI>
 <LI>BlueGnu will work with any Tcl based interpreter as long as
 [incr Tcl] has been included. You can include 'expect', 'Tk', and/or
 other extensions.
 
 <P>
+</LI>
 <LI>Includes DejaGnu release 1.6
 
 <P>
+</LI>
 </UL>
+
 <P>
 
 <H1><A NAME="SECTION00020000000000000000">
@@ -101,10 +106,14 @@ The following modules should have been installed, before you can
 install and/or use BlueGnu:
 
 <P>
+
 <UL>
 <LI>Tcl release 8.0 or higher,
+</LI>
 <LI>incr Tcl release 3.0 or higher.
+</LI>
 </UL>
+
 <P>
 Any other extensions that is compatible with Tcl release 8.0 can be used
 as well.
@@ -126,34 +135,43 @@ The top-level directories are listed below:
 
 <P>
 <DL>
-<DT><STRONG>lib:</STRONG>
+<DT><STRONG>lib:</STRONG></DT>
 <DD>the packages and procedures that make the BlueGnu and
 DejaGnu testing framework. This also includes the default target
 definition files.
+
 <P>
-<DT><STRONG>testsets:</STRONG>
+</DD>
+<DT><STRONG>testsets:</STRONG></DT>
 <DD>the BlueGnu test-suites and test examples. It contains
 the following subdirectories.
 
 <P>
 <DL>
-<DT><STRONG>BlueGnu:</STRONG>
+<DT><STRONG>BlueGnu:</STRONG></DT>
 <DD>test scripts to test the testing framework itself.
+
 <P>
-<DT><STRONG>examples:</STRONG>
+</DD>
+<DT><STRONG>examples:</STRONG></DT>
 <DD>test suite and test script examples.
 
 <P>
-<DT><STRONG>config, lib, tools:</STRONG>
+</DD>
+<DT><STRONG>config, lib, tools:</STRONG></DT>
 <DD>currently empty, but can be used for
 test-set dependent configuration files, library files, and tools.
+</DD>
 </DL>
+
 <P>
-<DT><STRONG>config:</STRONG>
+</DD>
+<DT><STRONG>config:</STRONG></DT>
 <DD>currently empty.
 
 <P>
-<DT><STRONG>doc:</STRONG>
+</DD>
+<DT><STRONG>doc:</STRONG></DT>
 <DD>the DejaGnu texinfo source and the documentation in
 'info', 'dvi', 'ps', and 'pdf' representation, respectively
 dejagnu.info*, dejagnu.dvi, dejagnu.ps, and dejagnu.pdf. A DejaGnu man
@@ -166,20 +184,25 @@ the T<SMALL>E</SMALL>X version (README.tex) of this document as well as the 'dvi
 notice.html, and notice.pdf.
 
 <P>
-<DT><STRONG>testsuite:</STRONG>
+</DD>
+<DT><STRONG>testsuite:</STRONG></DT>
 <DD>contains a mixture of DejaGnu and BlueGnu test
 scripts.
 
 <P>
-<DT><STRONG>contrib:</STRONG>
+</DD>
+<DT><STRONG>contrib:</STRONG></DT>
 <DD>contains examples how DejaGnu is used at Cygnus.
 
 <P>
-<DT><STRONG>example:</STRONG>
+</DD>
+<DT><STRONG>example:</STRONG></DT>
 <DD>contains a full DejaGnu test framework example for testing the program 'calc' which is also included.
 
 <P>
+</DD>
 </DL>
+
 <P>
 
 <H1><A NAME="SECTION00040000000000000000">
@@ -189,17 +212,27 @@ Installation and use under Unix</A>
 <P>
 Before you can install and use BlueGnu you need to have installed the
 following three packages:
+
 <UL>
 <LI>Tcl version 8.0.3
+</LI>
 <LI>Tk version 8.0.3
+</LI>
 <LI>incr Tcl version 3.0.1
-</UL>The source for these packages should all be located in one directory.
+</LI>
+</UL>
+The source for these packages should all be located in one directory.
 The subdirectory in the directory should be:
+
 <UL>
 <LI>tcl8.0.3
+</LI>
 <LI>tk8.0.3
+</LI>
 <LI>itcl3.0.1
+</LI>
 </UL>
+
 <P>
 The following examples use the command `./configure
 -prefix=/tools/...`. This will install all packages in a directory
@@ -240,6 +273,7 @@ the packages:
 % mkdir /tools/itcl3.0.1
 % make install
 </PRE>
+
 <P>
 
 <H2><A NAME="SECTION00042000000000000000">
@@ -257,14 +291,21 @@ directory ``TckTk''. This will create the directory
 % mkdir /tools/bluegnu2.0.3
 % make install
 </PRE>
+
 <P>
 This will install BlueGnu in the directories:
+
 <UL>
 <LI>/tools/bluegnu2.0.3/bin
+</LI>
 <LI>/tools/bluegnu2.0.3/lib/bluegnu
+</LI>
 <LI>/tools/bluegnu2.0.3/info
+</LI>
 <LI>/tools/bluegnu2.0.3/man
+</LI>
 </UL>
+
 <P>
 
 <H2><A NAME="SECTION00043000000000000000">
@@ -282,6 +323,7 @@ start running some tests. You can go into the BlueGnu source directory
 % bluegnu ts_002
 % bluegnu ts_003
 </PRE>
+
 <P>
 The above test result should all be PASS. The following test will give
 a result UNKNOWN, because no pass/fail instruction have been given.
@@ -290,6 +332,7 @@ a result UNKNOWN, because no pass/fail instruction have been given.
 <PRE>
 % bluegnu tc001
 </PRE>
+
 <P>
 The last test you can run will fail in its simple form:
 
@@ -297,6 +340,7 @@ The last test you can run will fail in its simple form:
 <PRE>
 % bluegnu tc002
 </PRE>
+
 <P>
 But will pass if you execute the test as follows:
 
@@ -304,6 +348,7 @@ But will pass if you execute the test as follows:
 <PRE>
 % bluegnu tc002[English]
 </PRE>
+
 <P>
 This is because the test scripts need a test case identifier to find
 the correct benchmark code.
@@ -330,7 +375,8 @@ command line:
 % cd bluegnu2.0.3/testsets
 % bluegnu examples/tc002[English=B] \
 &gt; "examples/tc002[Dutch=B]={MSG=Hallo Wereld}"
-</PRE>This may be useful for simple tests but when you want to write more
+</PRE>
+This may be useful for simple tests but when you want to write more
 complex test-suite scripts you would like some more flexibility, so two
 procedures were introduced, which are shown in test-suite ts<code>_</code>002. This
 makes writing rather complex so the procedures have become part of
@@ -346,50 +392,83 @@ Changes like this will be made in the future!
 Future Enhancements</A>
 </H1>
 The following enhancements are being planned:
+
 <UL>
 <LI>Target code will be made into a class with methods 'start',
 'load', 'exit', and 'version'. Instead of the current
-'&lt;target&gt;<code>_</code>start', '&lt;target&gt;<code>_</code>load', '&lt;target&gt;<code>_</code>exit', and
-'&lt;target&gt;<code>_</code>version', which have been taken from DejaGnu.
+'<IMG
+ WIDTH="19" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img1.png"
+ ALT="$&lt;$">target<IMG
+ WIDTH="19" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img2.png"
+ ALT="$&gt;$"><code>_</code>start', '<IMG
+ WIDTH="19" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img1.png"
+ ALT="$&lt;$">target<IMG
+ WIDTH="19" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img2.png"
+ ALT="$&gt;$"><code>_</code>load', '<IMG
+ WIDTH="19" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img1.png"
+ ALT="$&lt;$">target<IMG
+ WIDTH="19" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img2.png"
+ ALT="$&gt;$"><code>_</code>exit', and
+'<IMG
+ WIDTH="19" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img1.png"
+ ALT="$&lt;$">target<IMG
+ WIDTH="19" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img2.png"
+ ALT="$&gt;$"><code>_</code>version', which have been taken from DejaGnu.
 
 <P>
+</LI>
 <LI>Procedures will be created that make it easy to test WEB
 application from the framework.
 
 <P>
+</LI>
 <LI>Other enhancements will be made depending on the use of the
 framework in testing different applications.
+</LI>
 </UL>
 <H1><A NAME="SECTION00070000000000000000">
-  About this document ... </A>
-</H1> 
+About this document ...</A>
+</H1>
  <STRONG>Release Notice
 <BR>
 BlueGnu Testing Framework
 <BR>
 Version 2.0.3</STRONG><P>
 This document was generated using the
-<A HREF="http://www-dsed.llnl.gov/files/programs/unix/latex2html/manual/"><STRONG>LaTeX</STRONG>2<tt>HTML</tt></A> translator Version 98.1p1 release (March 2nd, 1998)
+<A HREF="http://www.latex2html.org/"><STRONG>LaTeX</STRONG>2<tt>HTML</tt></A> translator Version 2008 (1.71)
 <P>
-Copyright &#169; 1993, 1994, 1995, 1996, 1997,
+Copyright &#169; 1993, 1994, 1995, 1996,
 <A HREF="http://cbl.leeds.ac.uk/nikos/personal.html">Nikos Drakos</A>, 
 Computer Based Learning Unit, University of Leeds.
+<BR>
+Copyright &#169; 1997, 1998, 1999,
+<A HREF="http://www.maths.mq.edu.au/~ross/">Ross Moore</A>, 
+Mathematics Department, Macquarie University, Sydney.
 <P>
 The command line arguments were: <BR>
- <STRONG>latex2html</STRONG> <tt>-t BlueGnu Release Notice -split 0 READMEdvi.tex</tt>.
+ <STRONG>latex2html</STRONG> <TT>-t 'BlueGnu Release Notice' -split 0 READMEdvi.tex</TT>
 <P>
-The translation was initiated by Jan-Willem Neurdenburg on 1999-09-19<HR>
-<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
- SRC="/tools/latex2html-98.1p1/icons.gif/next_motif_gr.gif"> 
+The translation was initiated by Eric Gallager on 2015-06-04<HR>
+<!--Navigation Panel-->
+<IMG WIDTH="81" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next_inactive"
+ SRC="file:/opt/local/share/lib/latex2html/icons/nx_grp_g.png"> 
 <IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
- SRC="/tools/latex2html-98.1p1/icons.gif/up_motif_gr.gif"> 
+ SRC="file:/opt/local/share/lib/latex2html/icons/up_g.png"> 
 <IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
- SRC="/tools/latex2html-98.1p1/icons.gif/previous_motif_gr.gif">   <BR>
-
+ SRC="file:/opt/local/share/lib/latex2html/icons/prev_g.png">   
+<BR>
 <!--End of Navigation Panel-->
 <ADDRESS>
-<I>Jan-Willem Neurdenburg <BR>
-1999-09-19</I>
+Eric Gallager
+2015-06-04
 </ADDRESS>
 </BODY>
 </HTML>

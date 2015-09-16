@@ -1,4 +1,4 @@
-/* Pascal language support routines for GDB, the GNU debugger.
+/* p-lang.c: Pascal language support routines for GDB, the GNU debugger.
 
    Copyright 2000, 2002, 2003, 2004, 2005 Free Software Foundation,
    Inc.
@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   Foundation, Inc., 59 Temple Pl. Suite 330, Boston, MA 02111-1307, USA */
 
 /* This file is derived from c-lang.c */
 
@@ -32,8 +32,8 @@
 #include "valprint.h"
 #include "value.h"
 #include <ctype.h>
- 
-extern void _initialize_pascal_language (void);
+
+extern void _initialize_pascal_language(void);
 
 
 /* Determines if type TYPE is a pascal string type.
@@ -55,8 +55,8 @@ is_pascal_string_type (struct type *type,int *length_pos,
     {
       /* Old Borland type pascal strings from Free Pascal Compiler.  */
       /* Two fields: length and st.  */
-      if (TYPE_NFIELDS (type) == 2 
-          && strcmp (TYPE_FIELDS (type)[0].name, "length") == 0 
+      if (TYPE_NFIELDS (type) == 2
+          && strcmp (TYPE_FIELDS (type)[0].name, "length") == 0
           && strcmp (TYPE_FIELDS (type)[1].name, "st") == 0)
         {
           if (length_pos)
@@ -157,27 +157,41 @@ pascal_printchar (int c, struct ui_file *stream)
    had to stop before printing LENGTH characters, or if FORCE_ELLIPSES.  */
 
 void
-pascal_printstr (struct ui_file *stream, const gdb_byte *string,
-		 unsigned int length, int width, int force_ellipses)
+pascal_printstr(struct ui_file *stream, const gdb_byte *string,
+                unsigned int length, int width, int force_ellipses)
 {
   unsigned int i;
   unsigned int things_printed = 0;
   int in_quotes = 0;
   int need_comma = 0;
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic warning "-Wtraditional"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
   /* If the string was not truncated due to `set print elements', and
-     the last byte of it is a null, we don't print that, in traditional C
-     style.  */
-  if ((!force_ellipses) && length > 0 && string[length - 1] == '\0')
+   * the last byte of it is a null, we do NOT print that, in traditional C
+   * style: */
+  if ((!force_ellipses) && (length > 0) && (string[length - 1] == '\0'))
     length--;
 
   if (length == 0)
     {
-      fputs_filtered ("''", stream);
+      fputs_filtered("''", stream);
       return;
     }
 
-  for (i = 0; i < length && things_printed < print_max; ++i)
+  /* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
+  for (i = 0; (i < length) && (things_printed < print_max); ++i)
     {
       /* Position of the character we are examining
          to see whether it is repeated.  */
@@ -267,18 +281,18 @@ pascal_printstr (struct ui_file *stream, const gdb_byte *string,
    in output depending upon what the compiler and debugging format
    support.  We will probably have to re-examine the issue when gdb
    starts taking it's fundamental type information directly from the
-   debugging information supplied by the compiler.  fnf@cygnus.com */
+   debugging information supplied by the compiler.  <fnf@cygnus.com> */
 
 /* Note there might be some discussion about the choosen correspondance
    because it mainly reflects Free Pascal Compiler setup for now PM */
 
 
 struct type *
-pascal_create_fundamental_type (struct objfile *objfile, int typeid)
+pascal_create_fundamental_type(struct objfile *objfile, int ptypeid)
 {
   struct type *type = NULL;
 
-  switch (typeid)
+  switch (ptypeid)
     {
     default:
       /* FIXME:  For now, if we are asked to produce a type not in this
@@ -288,7 +302,7 @@ pascal_create_fundamental_type (struct objfile *objfile, int typeid)
       type = init_type (TYPE_CODE_INT,
 			TARGET_INT_BIT / TARGET_CHAR_BIT,
 			0, "<?type?>", objfile);
-      warning (_("internal error: no Pascal fundamental type %d"), typeid);
+      warning(_("internal error: no Pascal fundamental type %d"), ptypeid);
       break;
     case FT_VOID:
       type = init_type (TYPE_CODE_VOID,
@@ -420,7 +434,7 @@ const struct op_print pascal_op_print_tab[] =
   {"^", UNOP_IND, PREC_SUFFIX, 1},
   {"@", UNOP_ADDR, PREC_PREFIX, 0},
   {"sizeof", UNOP_SIZEOF, PREC_PREFIX, 0},
-  {NULL, 0, 0, 0}
+  {NULL, (enum exp_opcode)0, (enum precedence)0, 0}
 };
 
 struct type **const (pascal_builtin_types[]) =
@@ -481,7 +495,9 @@ const struct language_defn pascal_language_defn =
 };
 
 void
-_initialize_pascal_language (void)
+_initialize_pascal_language(void)
 {
-  add_language (&pascal_language_defn);
+  add_language(&pascal_language_defn);
 }
+
+/* EOF */

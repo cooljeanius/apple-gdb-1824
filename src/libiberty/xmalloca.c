@@ -1,4 +1,4 @@
-/* Safe automatic memory allocation with out of memory checking.
+/* xmalloca.c: Safe automatic memory allocation w/OOM checking.
    Copyright (C) 2003, 2006-2007, 2009-2012 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2003.
 
@@ -13,26 +13,50 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>  */
 
 #include <config.h>
 
-/* Specification.  */
-#include "xmalloca.h"
+#if 0
+/* Specification: */
+# include "xmalloca.h"
+#else
+# if defined(PROTOTYPES) || defined(__PROTOTYPES) || defined(__STDC__)
+#  if defined(HAVE_ALLOCA) && HAVE_ALLOCA
+extern void *xmmalloca(size_t);
+#  endif /* HAVE_ALLOCA */
+# endif /* PROTOTYPES || __PROTOTYPES || __STDC__ */
+#endif /* 0 || 1 */
 
-#include "xalloc.h"
+#if 0
+# include "xalloc.h"
+#else
+# include "malloca.h"
+# ifndef XALLOC_H_
+#  if defined(PROTOTYPES) || defined(__PROTOTYPES) || defined(__STDC__)
+#   if defined(HAVE_ALLOCA) && HAVE_ALLOCA
+extern void xalloc_die(void);
+#   endif /* HAVE_ALLOCA */
+#  endif /* PROTOTYPES || __PROTOTYPES || __STDC__ */
+# endif /* !XALLOC_H_ */
+#endif /* 0 */
 
-#if HAVE_ALLOCA
-
+#if defined(HAVE_ALLOCA) && HAVE_ALLOCA
 void *
-xmmalloca (size_t n)
+xmmalloca(size_t n)
 {
   void *p;
 
-  p = mmalloca (n);
-  if (p == NULL)
-    xalloc_die ();
+  p = mmalloca(n);
+  if (p == NULL) {
+    xalloc_die();
+  }
   return p;
 }
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && defined(XALLOC_H_)
+#  warning "Useless..."
+# endif /* __GNUC__ && !__STRICT_ANSI__ && XALLOC_H_ */
+#endif /* HAVE_ALLOCA */
 
-#endif
+/* EOF */

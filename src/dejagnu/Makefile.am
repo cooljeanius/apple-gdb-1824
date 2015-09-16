@@ -1,21 +1,22 @@
+## automake Makefile for dejagnu
 ## Process this file with automake to generate Makefile.in
 
 ACLOCAL_AMFLAGS = -I./m4 --install
 
-AUTOMAKE_OPTIONS = 1.4 dejagnu -Wno-portability subdir-objects
+AUTOMAKE_OPTIONS = 1.11.6 gnits dejagnu -Wno-portability subdir-objects
 
 # Install all the associated data files
 EXTRA_DIST = MAINTAINERS runtest site.tmpl
 
-SUBDIRS = doc testsuite example .
+SUBDIRS = doc testsuite example . contrib/bluegnu2.0.3
 
-# Install the bourne shell script driver in the bindir
+# Install the bourne shell script driver in the bindir:
 bin_SCRIPTS = runtest
 
-# Install the header
+# Install the header:
 include_HEADERS = dejagnu.h
 
-# Install the main DejaGnu expect file in the datadir
+# Install the main DejaGnu expect file in the datadir:
 pkgdata_SCRIPTS = runtest.exp \
   lib/debugger.exp lib/dejagnu.exp lib/dg.exp lib/framework.exp \
   lib/ftp.exp lib/kermit.exp lib/libgloss.exp lib/remote.exp \
@@ -182,18 +183,21 @@ TLCSH = @TCLSH@
 # renamed because the old variable overrode the default Automake one:
 RUNTESTDEFAULTFLAGSLOCAL = --srcdir $(srcdir)/testsuite RUNTEST=$(RUNTESTLOCAL)
 RUNTESTLOCAL = ` \
-  if [ -f ${srcdir}/runtest$(EXEEXT) ] ; then \
+  if [ -f ${srcdir}/runtest$(EXEEXT) ]; then \
     echo ${srcdir}/runtest$(EXEEXT); \
-  else echo "ERROR: runtest not found" ; exit 1; fi`
+  else echo "ERROR: runtest not found"; exit 1; fi`
 
-AM_CXXFLAGS = -I$(top_srcdir) -ggdb
+AM_CXXFLAGS = -I$(top_srcdir) -ggdb -Wall
+AM_CFLAGS = -Wall -Wc++-compat -std=gnu89 -DHAVE_CONFIG_H
 
 OFILES = testglue.o stub-loader.o
 
 ALL_OFILES = $(OFILES) i960glue.o
 
-CLEANFILES = x.log x.sum site.bak setval.tmp $(ALL_OFILES)
-DISTCLEANFILES = xXx.log xXx.sum testrun.log testrun.sum
+CLEANFILES = x.log x.sum site.bak setval.tmp $(ALL_OFILES) *~
+DISTCLEANFILES = xXx.log xXx.sum testrun.log testrun.sum .DS_Store \
+  contrib/.DS_Store autoscan.log
+MAINTAINERCLEANFILES = configure.scan
 
 CFILES = testglue.c stub-loader.c i960glue.c
 
@@ -213,24 +217,27 @@ check-DEJAGNU-local:
 	@echo "Do nothing here, because we do NOT want to run the tests twice"
 .PHONY: check-DEJAGNU-local
 
-testglue.o: testglue.c
-	$(CC) $(CFLAGS) -o testglue.o -c testglue.c
+testglue.o: testglue.c config.h
+	$(CC) $(CFLAGS) $(AM_CFLAGS) -o testglue.o -c testglue.c
 
-stub-loader.o: stub-loader.c
-	$(CC) $(CFLAGS) -o stub-loader.o -c stub-loader.c
+stub-loader.o: stub-loader.c config.h dejagnu.h
+	$(CC) $(CFLAGS) $(AM_CFLAGS) -o stub-loader.o -c stub-loader.c
 
 i960glue.o: i960glue.c
-	$(CC) $(CFLAGS) -o i960glue.o -c i960glue.c
+	$(CC) $(CFLAGS) $(AM_CFLAGS) -o i960glue.o -c i960glue.c
 
 all: $(OFILES)
 .PHONY: all
+
+configure.scan: mostlyclean
+	autoscan || touch $@
 
 # Since we do (did) NOT use SUBDIRS, we have to manually clean the sub
 # directories.
 # We do (did) NOT use SUBDIRS, so the example or test cases do (did) NOT
 # get built by default for a "make all".
 clean-local: Makefile
-	for my_subdir in `echo doc testsuite example`; do \
+	for my_subdir in `echo doc testsuite example contrib/bluegnu2.0.3`; do \
 	  if test -e $${my_subdir}/Makefile; then \
 	    cd $${my_subdir} && $(MAKE) clean-local; \
 	  fi; \
@@ -241,7 +248,28 @@ clean-local: Makefile
 .PHONY: -c
 
 distclean-local: config.status Makefile
+	-rm -fr autom4te.cache || rmdir autom4te.cache
+	-if test -e doc/Makefile; then \
+	  cd doc && $(MAKE) distclean-local; \
+	fi
 .PHONY: distclean-local
+
+realclean: config.status Makefile
+	-if test -e doc/Makefile; then \
+	  cd doc && $(MAKE) realclean; \
+	  if test -d doc/autom4te.cache; then \
+	    rm -fr doc/autom4te.cache || rmdir doc/autom4te.cache; \
+	  fi; \
+	fi
+.PHONY: realclean
+
+maintainer-clean-local: realclean
+	-if test -e doc/Makefile; then \
+	  cd doc && $(MAKE) maintainer-clean-local; \
+	elif test -d doc/autom4te.cache; then \
+	  rm -fr doc/autom4te.cache || rmdir doc/autom4te.cache; \
+	fi
+.PHONY: maintainer-clean-local
 
 # Set ourselves up to build a RedHat package
 tarball: overview.html overview.ps overview.pdf

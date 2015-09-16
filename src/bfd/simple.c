@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -25,76 +25,77 @@
 #include "bfdlink.h"
 
 static bfd_boolean
-simple_dummy_warning (struct bfd_link_info *link_info ATTRIBUTE_UNUSED,
-		      const char *warning ATTRIBUTE_UNUSED,
-		      const char *symbol ATTRIBUTE_UNUSED,
-		      bfd *abfd ATTRIBUTE_UNUSED,
-		      asection *section ATTRIBUTE_UNUSED,
-		      bfd_vma address ATTRIBUTE_UNUSED)
+simple_dummy_warning(struct bfd_link_info *link_info ATTRIBUTE_UNUSED,
+                     const char *warning ATTRIBUTE_UNUSED,
+                     const char *symbol ATTRIBUTE_UNUSED,
+                     bfd *abfd ATTRIBUTE_UNUSED,
+                     asection *section ATTRIBUTE_UNUSED,
+                     bfd_vma address ATTRIBUTE_UNUSED)
 {
   return TRUE;
 }
 
 static bfd_boolean
-simple_dummy_undefined_symbol (struct bfd_link_info *link_info ATTRIBUTE_UNUSED,
-			       const char *name ATTRIBUTE_UNUSED,
-			       bfd *abfd ATTRIBUTE_UNUSED,
-			       asection *section ATTRIBUTE_UNUSED,
-			       bfd_vma address ATTRIBUTE_UNUSED,
-			       bfd_boolean fatal ATTRIBUTE_UNUSED)
+simple_dummy_undefined_symbol(struct bfd_link_info *link_info ATTRIBUTE_UNUSED,
+                              const char *name ATTRIBUTE_UNUSED,
+                              bfd *abfd ATTRIBUTE_UNUSED,
+                              asection *section ATTRIBUTE_UNUSED,
+                              bfd_vma address ATTRIBUTE_UNUSED,
+                              bfd_boolean fatal ATTRIBUTE_UNUSED)
 {
   return TRUE;
 }
 
 static bfd_boolean
-simple_dummy_reloc_overflow (struct bfd_link_info *link_info ATTRIBUTE_UNUSED,
-			     struct bfd_link_hash_entry *entry ATTRIBUTE_UNUSED,
-			     const char *name ATTRIBUTE_UNUSED,
-			     const char *reloc_name ATTRIBUTE_UNUSED,
-			     bfd_vma addend ATTRIBUTE_UNUSED,
-			     bfd *abfd ATTRIBUTE_UNUSED,
-			     asection *section ATTRIBUTE_UNUSED,
-			     bfd_vma address ATTRIBUTE_UNUSED)
+simple_dummy_reloc_overflow(struct bfd_link_info *link_info ATTRIBUTE_UNUSED,
+                            struct bfd_link_hash_entry *entry ATTRIBUTE_UNUSED,
+                            const char *name ATTRIBUTE_UNUSED,
+                            const char *reloc_name ATTRIBUTE_UNUSED,
+                            bfd_vma addend ATTRIBUTE_UNUSED,
+                            bfd *abfd ATTRIBUTE_UNUSED,
+                            asection *section ATTRIBUTE_UNUSED,
+                            bfd_vma address ATTRIBUTE_UNUSED)
 {
   return TRUE;
 }
 
 static bfd_boolean
-simple_dummy_reloc_dangerous (struct bfd_link_info *link_info ATTRIBUTE_UNUSED,
-			      const char *message ATTRIBUTE_UNUSED,
-			      bfd *abfd ATTRIBUTE_UNUSED,
-			      asection *section ATTRIBUTE_UNUSED,
-			      bfd_vma address ATTRIBUTE_UNUSED)
+simple_dummy_reloc_dangerous(struct bfd_link_info *link_info ATTRIBUTE_UNUSED,
+                             const char *message ATTRIBUTE_UNUSED,
+                             bfd *abfd ATTRIBUTE_UNUSED,
+                             asection *section ATTRIBUTE_UNUSED,
+                             bfd_vma address ATTRIBUTE_UNUSED)
 {
   return TRUE;
 }
 
 static bfd_boolean
-simple_dummy_unattached_reloc (struct bfd_link_info *link_info ATTRIBUTE_UNUSED,
-			       const char *name ATTRIBUTE_UNUSED,
-			       bfd *abfd ATTRIBUTE_UNUSED,
-			       asection *section ATTRIBUTE_UNUSED,
-			       bfd_vma address ATTRIBUTE_UNUSED)
+simple_dummy_unattached_reloc(struct bfd_link_info *link_info ATTRIBUTE_UNUSED,
+                              const char *name ATTRIBUTE_UNUSED,
+                              bfd *abfd ATTRIBUTE_UNUSED,
+                              asection *section ATTRIBUTE_UNUSED,
+                              bfd_vma address ATTRIBUTE_UNUSED)
 {
   return TRUE;
 }
 
 static bfd_boolean
-simple_dummy_multiple_definition (struct bfd_link_info *link_info ATTRIBUTE_UNUSED,
-				  const char *name ATTRIBUTE_UNUSED,
-				  bfd *obfd ATTRIBUTE_UNUSED,
-				  asection *osec ATTRIBUTE_UNUSED,
-				  bfd_vma oval ATTRIBUTE_UNUSED,
-				  bfd *nbfd ATTRIBUTE_UNUSED,
-				  asection *nsec ATTRIBUTE_UNUSED,
-				  bfd_vma nval ATTRIBUTE_UNUSED)
+simple_dummy_multiple_definition(struct bfd_link_info *link_info ATTRIBUTE_UNUSED,
+                                 const char *name ATTRIBUTE_UNUSED,
+                                 bfd *obfd ATTRIBUTE_UNUSED,
+                                 asection *osec ATTRIBUTE_UNUSED,
+                                 bfd_vma oval ATTRIBUTE_UNUSED,
+                                 bfd *nbfd ATTRIBUTE_UNUSED,
+                                 asection *nsec ATTRIBUTE_UNUSED,
+                                 bfd_vma nval ATTRIBUTE_UNUSED)
 {
   return TRUE;
 }
 
 static void
-simple_dummy_einfo (const char *fmt ATTRIBUTE_UNUSED, ...)
+simple_dummy_einfo(const char *fmt ATTRIBUTE_UNUSED, ...)
 {
+  return;
 }
 
 struct saved_output_info
@@ -104,15 +105,14 @@ struct saved_output_info
 };
 
 static void
-simple_save_output_info (bfd *abfd ATTRIBUTE_UNUSED,
-			 asection *section,
-			 void *ptr)
+simple_save_output_info(bfd *abfd ATTRIBUTE_UNUSED, asection *section,
+                        void *ptr)
 {
-  struct saved_output_info *output_info = ptr;
+  struct saved_output_info *output_info = (struct saved_output_info *)ptr;
   output_info[section->index].offset = section->output_offset;
   output_info[section->index].section = section->output_section;
-  if ((section->flags & SEC_DEBUGGING) != 0
-      || section->output_section == NULL)
+  if (((section->flags & SEC_DEBUGGING) != 0)
+      || (section->output_section == NULL))
     {
       section->output_offset = 0;
       section->output_section = section;
@@ -120,11 +120,10 @@ simple_save_output_info (bfd *abfd ATTRIBUTE_UNUSED,
 }
 
 static void
-simple_restore_output_info (bfd *abfd ATTRIBUTE_UNUSED,
-			    asection *section,
-			    void *ptr)
+simple_restore_output_info(bfd *abfd ATTRIBUTE_UNUSED, asection *section,
+                           void *ptr)
 {
-  struct saved_output_info *output_info = ptr;
+  struct saved_output_info *output_info = (struct saved_output_info *)ptr;
   section->output_offset = output_info[section->index].offset;
   section->output_section = output_info[section->index].section;
 }
@@ -149,30 +148,29 @@ DESCRIPTION
 */
 
 bfd_byte *
-bfd_simple_get_relocated_section_contents (bfd *abfd,
-					   asection *sec,
-					   bfd_byte *outbuf,
-					   asymbol **symbol_table)
+bfd_simple_get_relocated_section_contents(bfd *abfd, asection *sec,
+                                          bfd_byte *outbuf,
+                                          asymbol **symbol_table)
 {
   struct bfd_link_info link_info;
   struct bfd_link_order link_order;
   struct bfd_link_callbacks callbacks;
   bfd_byte *contents, *data;
-  int storage_needed;
+  long int storage_needed;
   void *saved_offsets;
 
-  if (! (sec->flags & SEC_RELOC))
+  if (!(sec->flags & SEC_RELOC))
     {
-      bfd_size_type amt = sec->rawsize > sec->size ? sec->rawsize : sec->size;
-      bfd_size_type size = sec->rawsize ? sec->rawsize : sec->size;
+      bfd_size_type amt = ((sec->rawsize > sec->size) ? sec->rawsize : sec->size);
+      bfd_size_type size = (sec->rawsize ? sec->rawsize : sec->size);
 
       if (outbuf == NULL)
-	contents = bfd_malloc (amt);
+	contents = (bfd_byte *)bfd_malloc(amt);
       else
 	contents = outbuf;
 
       if (contents)
-	bfd_get_section_contents (abfd, sec, contents, 0, size);
+	bfd_get_section_contents(abfd, sec, contents, 0, size);
 
       return contents;
     }
@@ -180,11 +178,11 @@ bfd_simple_get_relocated_section_contents (bfd *abfd,
   /* In order to use bfd_get_relocated_section_contents, we need
      to forge some data structures that it expects.  */
 
-  /* Fill in the bare minimum number of fields for our purposes.  */
-  memset (&link_info, 0, sizeof (link_info));
+  /* Fill in the bare minimum number of fields for our purposes: */
+  memset(&link_info, 0, sizeof(link_info));
   link_info.input_bfds = abfd;
 
-  link_info.hash = _bfd_generic_link_hash_table_create (abfd);
+  link_info.hash = _bfd_generic_link_hash_table_create(abfd);
   link_info.callbacks = &callbacks;
   callbacks.warning = simple_dummy_warning;
   callbacks.undefined_symbol = simple_dummy_undefined_symbol;
@@ -194,7 +192,7 @@ bfd_simple_get_relocated_section_contents (bfd *abfd,
   callbacks.multiple_definition = simple_dummy_multiple_definition;
   callbacks.einfo = simple_dummy_einfo;
 
-  memset (&link_order, 0, sizeof (link_order));
+  memset(&link_order, 0, sizeof(link_order));
   link_order.next = NULL;
   link_order.type = bfd_indirect_link_order;
   link_order.offset = 0;
@@ -204,7 +202,7 @@ bfd_simple_get_relocated_section_contents (bfd *abfd,
   data = NULL;
   if (outbuf == NULL)
     {
-      data = bfd_malloc (sec->size);
+      data = (bfd_byte *)bfd_malloc(sec->size);
       if (data == NULL)
 	return NULL;
       outbuf = data;
@@ -219,39 +217,43 @@ bfd_simple_get_relocated_section_contents (bfd *abfd,
      section->output_offset to equal section->vma, which we do by setting
      section->output_section to point back to section.  Save the original
      output offset and output section to restore later.  */
-  saved_offsets = malloc (sizeof (struct saved_output_info)
-			  * abfd->section_count);
+  saved_offsets = malloc(sizeof(struct saved_output_info)
+			 * abfd->section_count);
   if (saved_offsets == NULL)
     {
       if (data)
-	free (data);
+	free(data);
       return NULL;
     }
-  bfd_map_over_sections (abfd, simple_save_output_info, saved_offsets);
+  bfd_map_over_sections(abfd, simple_save_output_info, saved_offsets);
 
   if (symbol_table == NULL)
     {
-      _bfd_generic_link_add_symbols (abfd, &link_info);
+      _bfd_generic_link_add_symbols(abfd, &link_info);
 
-      storage_needed = bfd_get_symtab_upper_bound (abfd);
-      symbol_table = bfd_malloc (storage_needed);
-      bfd_canonicalize_symtab (abfd, symbol_table);
+      storage_needed = bfd_get_symtab_upper_bound(abfd);
+      symbol_table = (asymbol **)bfd_malloc((bfd_size_type)storage_needed);
+      bfd_canonicalize_symtab(abfd, symbol_table);
     }
   else
-    storage_needed = 0;
+    storage_needed = 0L;
 
-  contents = bfd_get_relocated_section_contents (abfd,
-						 &link_info,
-						 &link_order,
-						 outbuf,
-						 0,
-						 symbol_table);
-  if (contents == NULL && data != NULL)
-    free (data);
+  if (storage_needed == 0L) {
+    ; /* (do nothing) */
+  }
 
-  bfd_map_over_sections (abfd, simple_restore_output_info, saved_offsets);
-  free (saved_offsets);
+  contents = bfd_get_relocated_section_contents(abfd, &link_info,
+                                                &link_order, outbuf, 0,
+                                                symbol_table);
+  if ((contents == NULL) && (data != NULL)) {
+    free(data);
+  }
 
-  _bfd_generic_link_hash_table_free (link_info.hash);
+  bfd_map_over_sections(abfd, simple_restore_output_info, saved_offsets);
+  free(saved_offsets);
+
+  _bfd_generic_link_hash_table_free(link_info.hash);
   return contents;
 }
+
+/* End of simple.c */

@@ -43,7 +43,9 @@
 
 #define STRDXOFF  0
 #define TYPEOFF   4
-#define OTHEROFF  5
+#ifndef OTHEROFF
+# define OTHEROFF  5
+#endif /* !OTHEROFF */
 #define DESCOFF   6
 #define VALOFF    8
 #define STABSIZE  12
@@ -112,32 +114,32 @@ struct stab_section_info
 };
 
 
-/* The function to create a new entry in the header file hash table.  */
-
+/* The function to create a new entry in the header file hash table: */
 static struct bfd_hash_entry *
-stab_link_includes_newfunc (struct bfd_hash_entry *entry,
-			    struct bfd_hash_table *table,
-			    const char *string)
+stab_link_includes_newfunc(struct bfd_hash_entry *entry,
+                           struct bfd_hash_table *table,
+                           const char *string)
 {
   struct stab_link_includes_entry *ret =
-    (struct stab_link_includes_entry *) entry;
+    (struct stab_link_includes_entry *)entry;
 
   /* Allocate the structure if it has not already been allocated by a
-     subclass.  */
-  if (ret == NULL)
-    ret = bfd_hash_allocate (table,
-			     sizeof (struct stab_link_includes_entry));
+   * subclass: */
+  if (ret == NULL) {
+    ret = (struct stab_link_includes_entry *)bfd_hash_allocate(table,
+                                                               (unsigned int)sizeof(struct stab_link_includes_entry));
+  }
   if (ret == NULL)
     return NULL;
 
-  /* Call the allocation method of the superclass.  */
+  /* Call the allocation method of the superclass: */
   ret = ((struct stab_link_includes_entry *)
-	 bfd_hash_newfunc ((struct bfd_hash_entry *) ret, table, string));
+	 bfd_hash_newfunc((struct bfd_hash_entry *)ret, table, string));
   if (ret)
-    /* Set local fields.  */
+    /* Set local fields: */
     ret->totals = NULL;
 
-  return (struct bfd_hash_entry *) ret;
+  return (struct bfd_hash_entry *)ret;
 }
 
 /* This function is called for each input file from the add_symbols
@@ -160,9 +162,8 @@ _bfd_link_section_stabs (bfd *abfd,
   bfd_size_type stroff, next_stroff, skip;
   bfd_size_type *pstridx;
 
-  if (stabsec->size == 0
-      || stabstrsec->size == 0)
-    /* This file does not contain stabs debugging information.  */
+  if ((stabsec->size == 0) || (stabstrsec->size == 0))
+    /* This file does not contain stabs debugging information: */
     return TRUE;
 
   if (stabsec->size % STABSIZE != 0)
@@ -187,18 +188,17 @@ _bfd_link_section_stabs (bfd *abfd,
 
   if (sinfo->stabstr == NULL)
     {
-      /* Initialize the stabs information we need to keep track of.  */
+      /* Initialize the stabs information we need to keep track of: */
       first = TRUE;
-      sinfo->strings = _bfd_stringtab_init ();
+      sinfo->strings = _bfd_stringtab_init();
       if (sinfo->strings == NULL)
 	goto error_return;
-      /* Make sure the first byte is zero.  */
-      (void) _bfd_stringtab_add (sinfo->strings, "", TRUE, TRUE);
-      if (! bfd_hash_table_init_n (&sinfo->includes,
-				   stab_link_includes_newfunc,
-				   251))
+      /* Make sure the first byte is zero: */
+      (void)_bfd_stringtab_add(sinfo->strings, "", TRUE, TRUE);
+      if (! bfd_hash_table_init_n(&sinfo->includes,
+                                  stab_link_includes_newfunc, 251))
 	goto error_return;
-      sinfo->stabstr = bfd_make_section_anyway (abfd, ".stabstr");
+      sinfo->stabstr = bfd_make_section_anyway(abfd, ".stabstr");
       if (sinfo->stabstr == NULL)
 	goto error_return;
       sinfo->stabstr->flags |= (SEC_HAS_CONTENTS | SEC_READONLY
@@ -207,23 +207,23 @@ _bfd_link_section_stabs (bfd *abfd,
 
   /* Initialize the information we are going to store for this .stab
      section.  */
-  count = stabsec->size / STABSIZE;
+  count = (stabsec->size / STABSIZE);
 
-  amt = sizeof (struct stab_section_info);
+  amt = sizeof(struct stab_section_info);
   amt += (count - 1) * sizeof (bfd_size_type);
-  *psecinfo = bfd_alloc (abfd, amt);
+  *psecinfo = bfd_alloc(abfd, amt);
   if (*psecinfo == NULL)
     goto error_return;
 
-  secinfo = (struct stab_section_info *) *psecinfo;
+  secinfo = (struct stab_section_info *)*psecinfo;
   secinfo->excls = NULL;
   stabsec->rawsize = stabsec->size;
   secinfo->cumulative_skips = NULL;
-  memset (secinfo->stridxs, 0, (size_t) count * sizeof (bfd_size_type));
+  memset(secinfo->stridxs, 0, (size_t)count * sizeof(bfd_size_type));
 
   /* Read the stabs information from abfd.  */
-  if (!bfd_malloc_and_get_section (abfd, stabsec, &stabbuf)
-      || !bfd_malloc_and_get_section (abfd, stabstrsec, &stabstrbuf))
+  if (!bfd_malloc_and_get_section(abfd, stabsec, &stabbuf)
+      || !bfd_malloc_and_get_section(abfd, stabstrsec, &stabstrbuf))
     goto error_return;
 
   /* Look through the stabs symbols, work out the new string indices,
@@ -233,10 +233,10 @@ _bfd_link_section_stabs (bfd *abfd,
      -split-by-reloc/-split-by-file is used.  We must keep track of
      each stab section's place in the single concatenated string
      table.  */
-  next_stroff = pstring_offset ? *pstring_offset : 0;
+  next_stroff = (pstring_offset ? *pstring_offset : 0);
   skip = 0;
 
-  symend = stabbuf + stabsec->size;
+  symend = (stabbuf + stabsec->size);
   for (sym = stabbuf, pstridx = secinfo->stridxs;
        sym < symend;
        sym += STABSIZE, ++pstridx)
@@ -256,54 +256,54 @@ _bfd_link_section_stabs (bfd *abfd,
 	  /* Special type 0 stabs indicate the offset to the next
 	     string table.  We only copy the very first one.  */
 	  stroff = next_stroff;
-	  next_stroff += bfd_get_32 (abfd, sym + 8);
+	  next_stroff += bfd_get_32(abfd, sym + 8);
 	  if (pstring_offset)
 	    *pstring_offset = next_stroff;
 	  if (! first)
 	    {
-	      *pstridx = (bfd_size_type) -1;
+	      *pstridx = (bfd_size_type)-1;
 	      ++skip;
 	      continue;
 	    }
 	  first = FALSE;
 	}
 
-      /* Store the string in the hash table, and record the index.  */
-      symstroff = stroff + bfd_get_32 (abfd, sym + STRDXOFF);
+      /* Store the string in the hash table, and record the index: */
+      symstroff = (stroff + bfd_get_32(abfd, (sym + STRDXOFF)));
       if (symstroff >= stabstrsec->size)
 	{
 	  (*_bfd_error_handler)
 	    (_("%B(%A+0x%lx): Stabs entry has invalid string index."),
-	     abfd, stabsec, (long) (sym - stabbuf));
-	  bfd_set_error (bfd_error_bad_value);
+	     abfd, stabsec, (long)(sym - stabbuf));
+	  bfd_set_error(bfd_error_bad_value);
 	  goto error_return;
 	}
-      string = (char *) stabstrbuf + symstroff;
-      *pstridx = _bfd_stringtab_add (sinfo->strings, string, TRUE, TRUE);
+      string = ((char *)stabstrbuf + symstroff);
+      *pstridx = _bfd_stringtab_add(sinfo->strings, string, TRUE, TRUE);
 
       /* An N_BINCL symbol indicates the start of the stabs entries
 	 for a header file.  We need to scan ahead to the next N_EINCL
 	 symbol, ignoring nesting, adding up all the characters in the
 	 symbol names, not including the file numbers in types (the
 	 first number after an open parenthesis).  */
-      if (type == (int) N_BINCL)
+      if (type == (int)N_BINCL)
 	{
 	  bfd_vma sum_chars;
 	  bfd_vma num_chars;
 	  bfd_vma buf_len = 0;
-	  char * symb;
-	  char * symb_rover;
+	  char *symb;
+	  char *symb_rover;
 	  int nest;
-	  bfd_byte * incl_sym;
-	  struct stab_link_includes_entry * incl_entry;
-	  struct stab_link_includes_totals * t;
+	  bfd_byte *incl_sym;
+	  struct stab_link_includes_entry *incl_entry;
+	  struct stab_link_includes_totals *t;
 	  struct stab_excl_list * ne;
 
 	  symb = symb_rover = NULL;
 	  sum_chars = num_chars = 0;
 	  nest = 0;
 
-	  for (incl_sym = sym + STABSIZE;
+	  for (incl_sym = (sym + STABSIZE);
 	       incl_sym < symend;
 	       incl_sym += STABSIZE)
 	    {
@@ -312,41 +312,40 @@ _bfd_link_section_stabs (bfd *abfd,
 	      incl_type = incl_sym[TYPEOFF];
 	      if (incl_type == 0)
 		break;
-	      else if (incl_type == (int) N_EXCL)
+	      else if (incl_type == (int)N_EXCL)
 		continue;
-	      else if (incl_type == (int) N_EINCL)
+	      else if (incl_type == (int)N_EINCL)
 		{
 		  if (nest == 0)
 		    break;
 		  --nest;
 		}
-	      else if (incl_type == (int) N_BINCL)
+	      else if (incl_type == (int)N_BINCL)
 		++nest;
 	      else if (nest == 0)
 		{
 		  const char *str;
 
-		  str = ((char *) stabstrbuf
-			 + stroff
-			 + bfd_get_32 (abfd, incl_sym + STRDXOFF));
+		  str = ((char *)stabstrbuf + stroff
+			 + bfd_get_32(abfd, (incl_sym + STRDXOFF)));
 		  for (; *str != '\0'; str++)
 		    {
 		      if (num_chars >= buf_len)
 			{
-			  buf_len += 32 * 1024;
-			  symb = bfd_realloc (symb, buf_len);
+			  buf_len += (32 * 1024);
+			  symb = (char *)bfd_realloc(symb, buf_len);
 			  if (symb == NULL)
 			    goto error_return;
-			  symb_rover = symb + num_chars;
+			  symb_rover = (symb + num_chars);
 			}
-		      * symb_rover ++ = * str;
-		      sum_chars += *str;
+		      *symb_rover ++ = *str;
+		      sum_chars += (bfd_vma)*str;
 		      num_chars ++;
 		      if (*str == '(')
 			{
-			  /* Skip the file number.  */
+			  /* Skip the file number: */
 			  ++str;
-			  while (ISDIGIT (*str))
+			  while (ISDIGIT(*str))
 			    ++str;
 			  --str;
 			}
@@ -354,30 +353,30 @@ _bfd_link_section_stabs (bfd *abfd,
 		}
 	    }
 
-	  BFD_ASSERT (num_chars == (bfd_vma) (symb_rover - symb));
+	  BFD_ASSERT(num_chars == (bfd_vma)(symb_rover - symb));
 
 	  /* If we have already included a header file with the same
 	     value, then replaced this one with an N_EXCL symbol.  */
-	  incl_entry = (struct stab_link_includes_entry * )
-	    bfd_hash_lookup (&sinfo->includes, string, TRUE, TRUE);
+	  incl_entry = (struct stab_link_includes_entry *)
+	    bfd_hash_lookup(&sinfo->includes, string, TRUE, TRUE);
 	  if (incl_entry == NULL)
 	    goto error_return;
 
 	  for (t = incl_entry->totals; t != NULL; t = t->next)
-	    if (t->sum_chars == sum_chars
-		&& t->num_chars == num_chars
-		&& memcmp (t->symb, symb, num_chars) == 0)
+	    if ((t->sum_chars == sum_chars)
+		&& (t->num_chars == num_chars)
+		&& (memcmp(t->symb, symb, (size_t)num_chars) == 0))
 	      break;
 
 	  /* Record this symbol, so that we can set the value
 	     correctly.  */
-	  amt = sizeof *ne;
-	  ne = bfd_alloc (abfd, amt);
+	  amt = sizeof(*ne);
+	  ne = (struct stab_excl_list *)bfd_alloc (abfd, amt);
 	  if (ne == NULL)
 	    goto error_return;
-	  ne->offset = sym - stabbuf;
+	  ne->offset = (bfd_size_type)(sym - stabbuf);
 	  ne->val = sum_chars;
-	  ne->type = (int) N_BINCL;
+	  ne->type = (int)N_BINCL;
 	  ne->next = secinfo->excls;
 	  secinfo->excls = ne;
 
@@ -385,12 +384,14 @@ _bfd_link_section_stabs (bfd *abfd,
 	    {
 	      /* This is the first time we have seen this header file
 		 with this set of stabs strings.  */
-	      t = bfd_hash_allocate (&sinfo->includes, sizeof *t);
+	      t = (struct stab_link_includes_totals *)bfd_hash_allocate(&sinfo->includes,
+                                                                        (unsigned int)sizeof(*t));
 	      if (t == NULL)
 		goto error_return;
 	      t->sum_chars = sum_chars;
 	      t->num_chars = num_chars;
-	      t->symb = bfd_realloc (symb, num_chars); /* Trim data down.  */
+              /* Trim down the data: */
+	      t->symb = (const char *)bfd_realloc(symb, num_chars);
 	      t->next = incl_entry->totals;
 	      incl_entry->totals = t;
 	    }
@@ -430,7 +431,7 @@ _bfd_link_section_stabs (bfd *abfd,
 		    ++nest;
 		  else if (incl_type == (int) N_EXCL)
 		    /* Keep existing exclusion marks.  */
-		    continue;   
+		    continue;
 		  else if (nest == 0)
 		    {
 		      *incl_pstridx = (bfd_size_type) -1;
@@ -467,8 +468,8 @@ _bfd_link_section_stabs (bfd *abfd,
       bfd_size_type i, offset;
       bfd_size_type *pskips;
 
-      amt = count * sizeof (bfd_size_type);
-      secinfo->cumulative_skips = bfd_alloc (abfd, amt);
+      amt = (count * sizeof(bfd_size_type));
+      secinfo->cumulative_skips = (bfd_size_type *)bfd_alloc(abfd, amt);
       if (secinfo->cumulative_skips == NULL)
 	goto error_return;
 
@@ -503,11 +504,9 @@ _bfd_link_section_stabs (bfd *abfd,
 */
 
 bfd_boolean
-_bfd_discard_section_stabs (bfd *abfd,
-			    asection *stabsec,
-			    void * psecinfo,
-			    bfd_boolean (*reloc_symbol_deleted_p) (bfd_vma, void *),
-			    void * cookie)
+_bfd_discard_section_stabs(bfd *abfd, asection *stabsec, void * psecinfo,
+                           bfd_boolean (*reloc_symbol_deleted_p)(bfd_vma, void *),
+                           void * cookie)
 {
   bfd_size_type count, amt;
   struct stab_section_info *secinfo;
@@ -518,18 +517,18 @@ _bfd_discard_section_stabs (bfd *abfd,
   int deleting;
 
   if (stabsec->size == 0)
-    /* This file does not contain stabs debugging information.  */
+    /* This file does not contain stabs debugging information: */
     return FALSE;
 
-  if (stabsec->size % STABSIZE != 0)
+  if ((stabsec->size % STABSIZE) != 0)
     /* Something is wrong with the format of these stab symbols.
-       Don't try to optimize them.  */
+     * Do NOT try to optimize them.  */
     return FALSE;
 
-  if ((stabsec->output_section != NULL
-       && bfd_is_abs_section (stabsec->output_section)))
+  if ((stabsec->output_section != NULL)
+       && bfd_is_abs_section(stabsec->output_section))
     /* At least one of the sections is being discarded from the
-       link, so we should just ignore them.  */
+     * link, so we should just ignore them: */
     return FALSE;
 
   /* We should have initialized our data in _bfd_link_stab_sections.
@@ -538,62 +537,62 @@ _bfd_discard_section_stabs (bfd *abfd,
   if (psecinfo == NULL)
     return FALSE;
 
-  count = stabsec->rawsize / STABSIZE;
-  secinfo = (struct stab_section_info *) psecinfo;
+  count = (stabsec->rawsize / STABSIZE);
+  secinfo = (struct stab_section_info *)psecinfo;
 
-  /* Read the stabs information from abfd.  */
-  if (!bfd_malloc_and_get_section (abfd, stabsec, &stabbuf))
+  /* Read the stabs information from abfd: */
+  if (!bfd_malloc_and_get_section(abfd, stabsec, &stabbuf))
     goto error_return;
 
   /* Look through the stabs symbols and discard any information for
-     discarded functions.  */
+   * discarded functions: */
   skip = 0;
   deleting = -1;
 
-  symend = stabbuf + stabsec->rawsize;
+  symend = (stabbuf + stabsec->rawsize);
   for (sym = stabbuf, pstridx = secinfo->stridxs;
        sym < symend;
        sym += STABSIZE, ++pstridx)
     {
       int type;
 
-      if (*pstridx == (bfd_size_type) -1)
-	/* This stab was deleted in a previous pass.  */
+      if (*pstridx == (bfd_size_type)-1)
+	/* This stab was deleted in a previous pass: */
 	continue;
 
       type = sym[TYPEOFF];
 
-      if (type == (int) N_FUN)
+      if (type == (int)N_FUN)
 	{
-	  int strx = bfd_get_32 (abfd, sym + STRDXOFF);
+	  int strx = (int)bfd_get_32(abfd, (sym + STRDXOFF));
 
 	  if (strx == 0)
 	    {
 	      if (deleting)
 		{
 		  skip++;
-		  *pstridx = -1;
+		  *pstridx = (bfd_size_type)-1;
 		}
 	      deleting = -1;
 	      continue;
 	    }
 	  deleting = 0;
-	  if ((*reloc_symbol_deleted_p) (sym + VALOFF - stabbuf, cookie))
+	  if ((*reloc_symbol_deleted_p)((bfd_vma)(sym + VALOFF - stabbuf), cookie))
 	    deleting = 1;
 	}
 
       if (deleting == 1)
 	{
-	  *pstridx = -1;
+	  *pstridx = (bfd_size_type)-1;
 	  skip++;
 	}
       else if (deleting == -1)
 	{
-	  /* Outside of a function.  Check for deleted variables.  */
-	  if (type == (int) N_STSYM || type == (int) N_LCSYM)
-	    if ((*reloc_symbol_deleted_p) (sym + VALOFF - stabbuf, cookie))
+	  /* Outside of a function.  Check for deleted variables: */
+	  if ((type == (int)N_STSYM) || (type == (int)N_LCSYM))
+	    if ((*reloc_symbol_deleted_p)((bfd_vma)(sym + VALOFF - stabbuf), cookie))
 	      {
-		*pstridx = -1;
+		*pstridx = (bfd_size_type)-1;
 		skip ++;
 	      }
 	  /* We should also check for N_GSYM entries which reference a
@@ -620,8 +619,8 @@ _bfd_discard_section_stabs (bfd *abfd,
 
       if (secinfo->cumulative_skips == NULL)
 	{
-	  amt = count * sizeof (bfd_size_type);
-	  secinfo->cumulative_skips = bfd_alloc (abfd, amt);
+	  amt = (count * sizeof(bfd_size_type));
+	  secinfo->cumulative_skips = (bfd_size_type *)bfd_alloc(abfd, amt);
 	  if (secinfo->cumulative_skips == NULL)
 	    goto error_return;
 	}
@@ -663,37 +662,39 @@ _bfd_write_section_stabs (bfd *output_bfd,
   bfd_byte *sym, *tosym, *symend;
   bfd_size_type *pstridx;
 
-  secinfo = (struct stab_section_info *) *psecinfo;
+  secinfo = (struct stab_section_info *)*psecinfo;
 
-  if (secinfo == NULL)
-    return bfd_set_section_contents (output_bfd, stabsec->output_section,
-				     contents, stabsec->output_offset,
-				     stabsec->size);
+  if (secinfo == NULL) {
+    return bfd_set_section_contents(output_bfd, stabsec->output_section,
+                                    contents,
+                                    (file_ptr)stabsec->output_offset,
+                                    stabsec->size);
+  }
 
-  /* Handle each N_BINCL entry.  */
+  /* Handle each N_BINCL entry: */
   for (e = secinfo->excls; e != NULL; e = e->next)
     {
       bfd_byte *excl_sym;
 
-      BFD_ASSERT (e->offset < stabsec->rawsize);
+      BFD_ASSERT(e->offset < stabsec->rawsize);
       excl_sym = contents + e->offset;
-      bfd_put_32 (output_bfd, e->val, excl_sym + VALOFF);
-      excl_sym[TYPEOFF] = e->type;
+      bfd_put_32(output_bfd, e->val, (excl_sym + VALOFF));
+      excl_sym[TYPEOFF] = (bfd_byte)e->type;
     }
 
-  /* Copy over all the stabs symbols, omitting the ones we don't want,
+  /* Copy over all the stabs symbols, omitting the ones we do NOT want,
      and correcting the string indices for those we do want.  */
   tosym = contents;
-  symend = contents + stabsec->rawsize;
+  symend = (contents + stabsec->rawsize);
   for (sym = contents, pstridx = secinfo->stridxs;
        sym < symend;
        sym += STABSIZE, ++pstridx)
     {
-      if (*pstridx != (bfd_size_type) -1)
+      if (*pstridx != (bfd_size_type)-1)
 	{
 	  if (tosym != sym)
-	    memcpy (tosym, sym, STABSIZE);
-	  bfd_put_32 (output_bfd, *pstridx, tosym + STRDXOFF);
+	    memcpy(tosym, sym, (size_t)STABSIZE);
+	  bfd_put_32(output_bfd, *pstridx, tosym + STRDXOFF);
 
 	  if (sym[TYPEOFF] == 0)
 	    {
@@ -723,28 +724,28 @@ _bfd_write_section_stabs (bfd *output_bfd,
 /* Write out the .stabstr section.  */
 
 bfd_boolean
-_bfd_write_stab_strings (bfd *output_bfd, struct stab_info *sinfo)
+_bfd_write_stab_strings(bfd *output_bfd, struct stab_info *sinfo)
 {
-  if (bfd_is_abs_section (sinfo->stabstr->output_section))
-    /* The section was discarded from the link.  */
+  if (bfd_is_abs_section(sinfo->stabstr->output_section))
+    /* The section was discarded from the link: */
     return TRUE;
 
-  BFD_ASSERT ((sinfo->stabstr->output_offset
-	       + _bfd_stringtab_size (sinfo->strings))
-	      <= sinfo->stabstr->output_section->size);
+  BFD_ASSERT((sinfo->stabstr->output_offset
+              + _bfd_stringtab_size(sinfo->strings))
+             <= sinfo->stabstr->output_section->size);
 
-  if (bfd_seek (output_bfd,
-		(file_ptr) (sinfo->stabstr->output_section->filepos
-			    + sinfo->stabstr->output_offset),
-		SEEK_SET) != 0)
+  if (bfd_seek(output_bfd,
+               (file_ptr)(sinfo->stabstr->output_section->filepos
+                          + (file_ptr)sinfo->stabstr->output_offset),
+               SEEK_SET) != 0)
     return FALSE;
 
-  if (! _bfd_stringtab_emit (output_bfd, sinfo->strings))
+  if (! _bfd_stringtab_emit(output_bfd, sinfo->strings))
     return FALSE;
 
-  /* We no longer need the stabs information.  */
-  _bfd_stringtab_free (sinfo->strings);
-  bfd_hash_table_free (&sinfo->includes);
+  /* We no longer need the stabs information: */
+  _bfd_stringtab_free(sinfo->strings);
+  bfd_hash_table_free(&sinfo->includes);
 
   return TRUE;
 }
@@ -754,31 +755,37 @@ _bfd_write_stab_strings (bfd *output_bfd, struct stab_info *sinfo)
    or -1 if the address refers to a stab which has been removed.  */
 
 bfd_vma
-_bfd_stab_section_offset (asection *stabsec,
-			  void * psecinfo,
-			  bfd_vma offset)
+_bfd_stab_section_offset(asection *stabsec, void * psecinfo,
+                         bfd_vma offset)
 {
   struct stab_section_info *secinfo;
 
-  secinfo = (struct stab_section_info *) psecinfo;
+  secinfo = (struct stab_section_info *)psecinfo;
 
   if (secinfo == NULL)
     return offset;
 
   if (offset >= stabsec->rawsize)
-    return offset - stabsec->rawsize + stabsec->size;
+    return (offset - stabsec->rawsize + stabsec->size);
 
   if (secinfo->cumulative_skips)
     {
       bfd_vma i;
 
-      i = offset / STABSIZE;
+      i = (offset / STABSIZE);
 
-      if (secinfo->stridxs [i] == (bfd_size_type) -1)
-	return (bfd_vma) -1;
+      if (secinfo->stridxs[i] == (bfd_size_type)-1) {
+	return (bfd_vma)-1;
+      }
 
-      return offset - secinfo->cumulative_skips [i];
+      return (offset - secinfo->cumulative_skips[i]);
     }
 
   return offset;
 }
+
+#ifdef OTHEROFF
+# undef OTHEROFF
+#endif /* OTHEROFF */
+
+/* EOF */

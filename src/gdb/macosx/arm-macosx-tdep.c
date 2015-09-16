@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* arm-macosx-tdep.c
+   Mac OS X support for ARM targets for GDB, the GNU debugger.
    Copyright 2005
    Free Software Foundation, Inc.
 
@@ -31,13 +32,17 @@
 #ifndef GDB_TM_FILE
 # define GDB_TM_FILE "config/arm/tm-arm-macosx.h"
 #else
-# warning GDB_TM_FILE already defined.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "GDB_TM_FILE already defined."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* !GDB_TM_FILE */
 
 #ifndef DEFAULT_BFD_ARCH
 # define DEFAULT_BFD_ARCH bfd_arm_arch
 #else
-# warning DEFAULT_BFD_ARCH already defined.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "DEFAULT_BFD_ARCH already defined."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* !DEFAULT_BFD_ARCH */
 
 #ifdef HAVE_CONFIG_H
@@ -94,8 +99,12 @@
 #include "arm-macosx-regnums.h"
 #include "arm-macosx-tdep.h"
 #include "arm-macosx-thread-status.h"
-#include "config/arm/tm-arm-macosx.h"
-#include "tm-arm-macosx.h"
+#ifndef _TM_ARM_MACOSX_H_
+# include "config/arm/tm-arm-macosx.h"
+#endif /* !_TM_ARM_MACOSX_H_ */
+#ifndef __GDB_TM_ARM_MACOSX_H__
+# include "tm-arm-macosx.h"
+#endif /* !__GDB_TM_ARM_MACOSX_H__ */
 
 #ifdef HAVE_MALLOC_H
 # include <malloc.h>
@@ -103,7 +112,9 @@
 # ifdef HAVE_MALLOC_MALLOC_H
 #  include <malloc/malloc.h>
 # else
-#  warning arm-macosx-tdep.c expects a malloc-related header to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "arm-macosx-tdep.c wants to include a malloc-related header."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_MALLOC_MALLOC_H */
 #endif /* HAVE_MALLOC_H */
 
@@ -112,14 +123,16 @@
 /* A boolean indicating if we must use software single stepping. Some
  * targets may not support using IMVA mismatching for a variety of reasons,
  * and some remote targets may not implement the "s" packet.  */
-static enum gdb_osabi arm_mach_o_osabi_sniffer_use_dyld_hint (bfd *abfd);
-static void arm_macosx_init_abi (struct gdbarch_info info,
-                                 struct gdbarch *gdbarch);
+static enum gdb_osabi arm_mach_o_osabi_sniffer_use_dyld_hint(bfd *abfd);
+static void arm_macosx_init_abi(struct gdbarch_info info,
+                                struct gdbarch *gdbarch);
 
-static void arm_macosx_init_abi_v6 (struct gdbarch_info info,
-                                    struct gdbarch *gdbarch);
+static void arm_macosx_init_abi_v6(struct gdbarch_info info,
+                                   struct gdbarch *gdbarch);
 
-/* Built in type for displaying ARM PSR and FPSCR register contents.  */
+extern void _initialize_arm_macosx_tdep(void);
+
+/* Built in type for displaying ARM PSR and FPSCR register contents: */
 struct type *builtin_type_arm_psr = NULL;
 struct type *builtin_type_arm_fpscr = NULL;
 
@@ -211,8 +224,8 @@ static register_info_t g_reginfo_arm_vfpv1[] =
   { "d14",  0, &builtin_type_ieee_double_little },
   { "d15",  0, &builtin_type_ieee_double_little }
 };
-const uint32_t g_reginfo_arm_vfpv1_count = sizeof(g_reginfo_arm_vfpv1)/
-					   sizeof(register_info_t);
+const uint32_t g_reginfo_arm_vfpv1_count = (sizeof(g_reginfo_arm_vfpv1)
+                                            / sizeof(register_info_t));
 
 /* VFPv3 registers.  */
 static register_info_t g_reginfo_arm_vfpv3[] =
@@ -338,32 +351,33 @@ static register_info_t g_reginfo_arm_vfpv3[] =
   { "q14",  0, &builtin_type_vec128 },
   { "q15",  0, &builtin_type_vec128 }
 };
-const uint32_t g_reginfo_arm_vfpv3_count = sizeof(g_reginfo_arm_vfpv3)/
-					   sizeof(register_info_t);
+const uint32_t g_reginfo_arm_vfpv3_count = (sizeof(g_reginfo_arm_vfpv3)
+                                            / sizeof(register_info_t));
 
 
 /* Add PSR and FPSCR built in types for displaying register contents as
    bitfields.  */
 static struct type *
-build_builtin_type_arm_psr_mode_enum (void)
+build_builtin_type_arm_psr_mode_enum(void)
 {
   static struct gdbtypes_enum_info mode_enums[] = {
-    {"usr",	0x10 },
-    {"fiq",	0x11 },
-    {"irq",	0x12 },
-    {"svc",	0x13 },
-    {"dbg",	0x15 },	/* XScale debug mode.  */
-    {"abt",	0x17 },
-    {"und",	0x1d },
-    {"sys",	0x1f }
+    { "usr",	0x10 },
+    { "fiq",	0x11 },
+    { "irq",	0x12 },
+    { "svc",	0x13 },
+    { "dbg",	0x15 },	/* XScale debug mode.  */
+    { "abt",	0x17 },
+    { "und",	0x1d },
+    { "sys",	0x1f }
   };
-  uint32_t num_mode_enums = sizeof (mode_enums)/sizeof (mode_enums[0]);
-  return build_builtin_enum ("_arm_ext_psr_mode_enum", 4,
-			     TYPE_FLAG_UNSIGNED, mode_enums, num_mode_enums);
+  uint32_t num_mode_enums = (sizeof(mode_enums) / sizeof(mode_enums[0]));
+  return build_builtin_enum("_arm_ext_psr_mode_enum", 4,
+			    TYPE_FLAG_UNSIGNED, mode_enums,
+                            num_mode_enums);
 }
 
 static struct type *
-build_builtin_type_arm_psr (void)
+build_builtin_type_arm_psr(void)
 {
   struct gdbtypes_bitfield_info psr_bitfields[] = {
     /* Print entire value first and use the void data pointer
@@ -384,16 +398,17 @@ build_builtin_type_arm_psr (void)
     {"i",	builtin_type_uint32,   7,  7 },
     {"f",	builtin_type_uint32,   6,  6 },
     {"t",	builtin_type_uint32,   5,  5 },
-    {"mode",    build_builtin_type_arm_psr_mode_enum (),   4,  0 },
+    {"mode",    build_builtin_type_arm_psr_mode_enum(),   4,  0 },
   };
 
-  uint32_t num_psr_bitfields = sizeof (psr_bitfields)/sizeof (psr_bitfields[0]);
-  return build_builtin_bitfield ("_arm_ext_psr", 4,
+  uint32_t num_psr_bitfields = (sizeof(psr_bitfields)
+                                / sizeof(psr_bitfields[0]));
+  return build_builtin_bitfield("_arm_ext_psr", 4,
 				psr_bitfields, num_psr_bitfields);
 }
 
 static struct type *
-build_builtin_type_arm_fpscr (void)
+build_builtin_type_arm_fpscr(void)
 {
   struct gdbtypes_bitfield_info fpscr_bitfields[] = {
     /* Print entire value first and use the void data pointer
@@ -424,21 +439,20 @@ build_builtin_type_arm_fpscr (void)
     {"dzc",     builtin_type_uint32,   1,  1 },
     {"ioc",     builtin_type_uint32,   0,  0 }
   };
-  uint32_t num_fpscr_bitfields = sizeof (fpscr_bitfields)/
-				 sizeof (fpscr_bitfields[0]);
-  return build_builtin_bitfield ("_arm_ext_fpscr", 4,
+  uint32_t num_fpscr_bitfields = (sizeof(fpscr_bitfields)
+                                  / sizeof(fpscr_bitfields[0]));
+  return build_builtin_bitfield("_arm_ext_fpscr", 4,
 				fpscr_bitfields, num_fpscr_bitfields);
 }
 
 
-enum gdb_osabi
-arm_host_osabi ()
+enum gdb_osabi arm_host_osabi(void)
 {
   host_basic_info_data_t info;
   mach_msg_type_number_t count;
 
   count = HOST_BASIC_INFO_COUNT;
-  host_info (mach_host_self (), HOST_BASIC_INFO, (host_info_t) & info, &count);
+  host_info(mach_host_self(), HOST_BASIC_INFO, (host_info_t)&info, &count);
 
   if (info.cpu_type == BFD_MACH_O_CPU_TYPE_ARM)
     {
@@ -458,41 +472,40 @@ arm_host_osabi ()
   return GDB_OSABI_UNKNOWN;
 }
 
-enum gdb_osabi
-arm_set_osabi_from_host_info ()
+enum gdb_osabi arm_set_osabi_from_host_info(void)
 {
   struct gdbarch_info info;
-  gdbarch_info_init (&info);
-  gdbarch_info_fill (current_gdbarch, &info);
-  info.byte_order = gdbarch_byte_order (current_gdbarch);
-  info.osabi = arm_host_osabi ();
+  gdbarch_info_init(&info);
+  gdbarch_info_fill(current_gdbarch, &info);
+  info.byte_order = gdbarch_byte_order(current_gdbarch);
+  info.osabi = arm_host_osabi();
 
   switch (info.osabi)
     {
       case GDB_OSABI_DARWIN:
-    info.bfd_arch_info = bfd_lookup_arch (bfd_arch_arm, 0);
+    info.bfd_arch_info = bfd_lookup_arch(bfd_arch_arm, 0);
         break;
       case GDB_OSABI_DARWINV6:
-        info.bfd_arch_info = bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_6);
+        info.bfd_arch_info = bfd_lookup_arch(bfd_arch_arm, bfd_mach_arm_6);
         break;
       case GDB_OSABI_DARWINV7:
-        info.bfd_arch_info = bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_7);
+        info.bfd_arch_info = bfd_lookup_arch(bfd_arch_arm, bfd_mach_arm_7);
         break;
       case GDB_OSABI_DARWINV7F:
-        info.bfd_arch_info = bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_7f);
+        info.bfd_arch_info = bfd_lookup_arch(bfd_arch_arm, bfd_mach_arm_7f);
         break;
       case GDB_OSABI_DARWINV7K:
-        info.bfd_arch_info = bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_7k);
+        info.bfd_arch_info = bfd_lookup_arch(bfd_arch_arm, bfd_mach_arm_7k);
         break;
       case GDB_OSABI_DARWINV7S:
-        info.bfd_arch_info = bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_7s);
+        info.bfd_arch_info = bfd_lookup_arch(bfd_arch_arm, bfd_mach_arm_7s);
         break;
       default:
-        warning ("Unrecognized osabi %d in arm_set_osabi_from_host_info", (int) info.osabi);
+        warning("Unrecognized osabi %d in arm_set_osabi_from_host_info", (int)info.osabi);
     }
 
   if (info.osabi != GDB_OSABI_UNKNOWN)
-    gdbarch_update_p (info);
+    gdbarch_update_p(info);
   return TARGET_OSABI;
 }
 
@@ -503,13 +516,12 @@ arm_set_osabi_from_host_info ()
    OSABI from dyld (in the case of attaching to a process) and prefer that.  */
 
 static enum gdb_osabi
-arm_mach_o_osabi_sniffer (bfd *abfd)
+arm_mach_o_osabi_sniffer(bfd *abfd)
 {
   enum gdb_osabi ret;
 
   /* If we have a thin (non-fat) file, the one slice that exists
-   * determines the osabi.
-   */
+   * determines the osabi. */
 
   if (strcmp (bfd_get_target (abfd), "mach-o-le") == 0)
     {
@@ -534,8 +546,7 @@ arm_mach_o_osabi_sniffer (bfd *abfd)
     }
 
   /* If there is an exact match between the abfd slices and the
-   * loaded dyld, that slice is the one to use.
-   */
+   * loaded dyld, that slice is the one to use. */
 
   ret = arm_mach_o_osabi_sniffer_use_dyld_hint (abfd);
   if (ret == GDB_OSABI_DARWINV6 || ret == GDB_OSABI_DARWIN ||
@@ -544,8 +555,7 @@ arm_mach_o_osabi_sniffer (bfd *abfd)
     return ret;
 
   /* Iterate over the available slices, pick the best match based
-   * on the host cpu type / cpu subtype.
-   */
+   * on the host cpu type / cpu subtype. */
 
   if (bfd_check_format (abfd, bfd_archive))
     {
@@ -567,11 +577,10 @@ arm_mach_o_osabi_sniffer (bfd *abfd)
             {
               /* The details here are derived from xnu's
                * bsd/dev/arm/kern_machdep.c::grade_binary()
-			   */
+               */
 
               /* If this an armv7k host, do NOT use any of the
-               * armv7{,f,s} slices.
-			   */
+               * armv7{,f,s} slices. */
               if (host_osabi == GDB_OSABI_DARWINV7K
                   && (cur == GDB_OSABI_DARWINV7
                       || cur == GDB_OSABI_DARWINV7F
@@ -582,8 +591,7 @@ arm_mach_o_osabi_sniffer (bfd *abfd)
 
               /* If this is an armv7s host, avoid using the armv7f
                * slice because the errata for that proc. are NOT
-               * needed on this system
-			   */
+               * needed on this system: */
               if (host_osabi == GDB_OSABI_DARWINV7S
                    && cur == GDB_OSABI_DARWINV7F)
                 {
@@ -594,8 +602,7 @@ arm_mach_o_osabi_sniffer (bfd *abfd)
                * GDB_OSABI constants - but armv7k is a bit of a
                * wrinkle; except on an armv7k system this is never
                * a best slice to pick. If we have any other armv7
-               * variant as the current "best", keep it.
-			   */
+               * variant as the current "best", keep it. */
               if (cur == GDB_OSABI_DARWINV7K
                   && (best == GDB_OSABI_DARWINV7
                       || best == GDB_OSABI_DARWINV7F
@@ -605,8 +612,7 @@ arm_mach_o_osabi_sniffer (bfd *abfd)
                 }
 
               /* On an armv7 host, do NOT try to use armv7f or armv7s
-               * slices.
-			   */
+               * slices: */
               if (host_osabi == GDB_OSABI_DARWINV7
                   && (cur == GDB_OSABI_DARWINV7F
                       || cur == GDB_OSABI_DARWINV7S))
@@ -614,14 +620,15 @@ arm_mach_o_osabi_sniffer (bfd *abfd)
                   continue;
                 }
 
-            if (cur > best && cur < host_osabi)
-            best = cur;
-        }
+              if ((cur > best) && (cur < host_osabi)) {
+                best = cur;
+              }
+            }
         }
       return best;
     }
 
-  if (!bfd_check_format (abfd, bfd_object))
+  if (!bfd_check_format(abfd, bfd_object))
     return GDB_OSABI_UNKNOWN;
 
   return GDB_OSABI_UNKNOWN;
@@ -632,47 +639,48 @@ arm_mach_o_osabi_sniffer (bfd *abfd)
  * prefer the osabi of the actually-loaded dyld when we can.  */
 
 static enum gdb_osabi
-arm_mach_o_osabi_sniffer_use_dyld_hint (bfd *abfd)
+arm_mach_o_osabi_sniffer_use_dyld_hint(bfd *abfd)
 {
+  bfd *nbfd;
   if (osabi_seen_in_attached_dyld == GDB_OSABI_UNKNOWN)
     return GDB_OSABI_UNKNOWN;
 
-  bfd *nbfd = NULL;
+  nbfd = (bfd *)NULL;
   for (;;)
     {
       const bfd_arch_info_type *arch_info;
-      nbfd = bfd_openr_next_archived_file (abfd, nbfd);
+      nbfd = bfd_openr_next_archived_file(abfd, nbfd);
 
       if (nbfd == NULL)
         break;
-      if (!bfd_check_format (nbfd, bfd_object))
+      if (!bfd_check_format(nbfd, bfd_object))
         continue;
-      arch_info = bfd_get_arch_info (nbfd);
+      arch_info = bfd_get_arch_info(nbfd);
 
       if (arch_info->arch == bfd_arch_arm)
 	{
-	  if (arch_info->mach == bfd_mach_arm_4T
-	      && osabi_seen_in_attached_dyld == GDB_OSABI_DARWIN)
+	  if ((arch_info->mach == bfd_mach_arm_4T)
+	      && (osabi_seen_in_attached_dyld == GDB_OSABI_DARWIN))
 	    return GDB_OSABI_DARWIN;
 
-	  if (arch_info->mach == bfd_mach_arm_6
-	      && osabi_seen_in_attached_dyld == GDB_OSABI_DARWINV6)
+	  if ((arch_info->mach == bfd_mach_arm_6)
+	      && (osabi_seen_in_attached_dyld == GDB_OSABI_DARWINV6))
 	    return GDB_OSABI_DARWINV6;
 
-	  if (arch_info->mach == bfd_mach_arm_7
-	      && osabi_seen_in_attached_dyld == GDB_OSABI_DARWINV7)
+	  if ((arch_info->mach == bfd_mach_arm_7)
+	      && (osabi_seen_in_attached_dyld == GDB_OSABI_DARWINV7))
 	    return GDB_OSABI_DARWINV7;
 
-	  if (arch_info->mach == bfd_mach_arm_7f
-	      && osabi_seen_in_attached_dyld == GDB_OSABI_DARWINV7F)
+	  if ((arch_info->mach == bfd_mach_arm_7f)
+	      && (osabi_seen_in_attached_dyld == GDB_OSABI_DARWINV7F))
 	    return GDB_OSABI_DARWINV7F;
 
-	  if (arch_info->mach == bfd_mach_arm_7s
-	      && osabi_seen_in_attached_dyld == GDB_OSABI_DARWINV7S)
+	  if ((arch_info->mach == bfd_mach_arm_7s)
+	      && (osabi_seen_in_attached_dyld == GDB_OSABI_DARWINV7S))
 	    return GDB_OSABI_DARWINV7S;
 
-	  if (arch_info->mach == bfd_mach_arm_7k
-	      && osabi_seen_in_attached_dyld == GDB_OSABI_DARWINV7K)
+	  if ((arch_info->mach == bfd_mach_arm_7k)
+	      && (osabi_seen_in_attached_dyld == GDB_OSABI_DARWINV7K))
 	    return GDB_OSABI_DARWINV7K;
 	}
     }
@@ -681,18 +689,18 @@ arm_mach_o_osabi_sniffer_use_dyld_hint (bfd *abfd)
 }
 
 int
-arm_macosx_in_switch_glue (CORE_ADDR pc)
+arm_macosx_in_switch_glue(CORE_ADDR pc)
 {
   int retval;
   char *name;
 
-  retval = find_pc_partial_function (pc, &name,  NULL, NULL);
+  retval = find_pc_partial_function(pc, &name,  NULL, NULL);
   if (retval)
     {
-      if (strstr (name, "__switch") == name)
+      if (strstr(name, "__switch") == name)
 	{
-	  char *end = name + strlen ("__switch");
-	  int len = strlen (end);
+	  char *end = (name + strlen("__switch"));
+	  size_t len = strlen(end);
 	  if ((len == 1 && *end == '8')
 	      || (len == 2
 		  && ((*end == 'u' && *(end + 1) == '8')
@@ -718,7 +726,7 @@ arm_macosx_in_switch_glue (CORE_ADDR pc)
            *
            * So basically below we just check for any symbol that
            * contains ".island" or "$island".
-		   */
+           */
 
           const char *island = strstr (name, "island");
           if (island && island > name)
@@ -736,10 +744,10 @@ arm_macosx_in_switch_glue (CORE_ADDR pc)
 arm_macosx_tdep_inf_status_t arm_macosx_tdep_inf_status = { (CORE_ADDR)-1 };
 
 int
-arm_macosx_keep_going (CORE_ADDR stop_pc)
+arm_macosx_keep_going(CORE_ADDR stop_pc_param)
 {
   int result = 0;
-  if (stop_pc == arm_macosx_tdep_inf_status.macosx_half_step_pc)
+  if (stop_pc_param == arm_macosx_tdep_inf_status.macosx_half_step_pc)
     {
       /* Half way through a 32 bit thumb inst HW single step.  */
       result = 1;
@@ -749,31 +757,30 @@ arm_macosx_keep_going (CORE_ADDR stop_pc)
       /* We are doing a step over.  */
 
       /* See if we are in the ARM/Thumb __switchXXX functions. If we are... */
-      if (arm_macosx_in_switch_glue (stop_pc))
+      if (arm_macosx_in_switch_glue(stop_pc_param))
 	result = 1;
     }
 
   return result;
 }
 
-void *
-arm_macosx_save_thread_inferior_status ()
+void *arm_macosx_save_thread_inferior_status(void)
 {
-  /* See if we have anything relevant to save?  */
-  if (arm_macosx_tdep_inf_status.macosx_half_step_pc == (CORE_ADDR)-1)
-    return NULL;
-
   arm_macosx_tdep_inf_status_t *tdep_inf_status;
 
-  tdep_inf_status = XMALLOC (arm_macosx_tdep_inf_status_t);
+  /* See if we have anything relevant to save?  */
+  if (arm_macosx_tdep_inf_status.macosx_half_step_pc == (CORE_ADDR)-1L)
+    return NULL;
+
+  tdep_inf_status = XMALLOC(arm_macosx_tdep_inf_status_t);
   if (tdep_inf_status)
     tdep_inf_status->macosx_half_step_pc =
-				arm_macosx_tdep_inf_status.macosx_half_step_pc;
+      arm_macosx_tdep_inf_status.macosx_half_step_pc;
   return tdep_inf_status;
 }
 
 void
-arm_macosx_restore_thread_inferior_status (void *tdep_inf_status)
+arm_macosx_restore_thread_inferior_status(void *tdep_inf_status)
 {
   if (tdep_inf_status != NULL)
     {
@@ -783,19 +790,19 @@ arm_macosx_restore_thread_inferior_status (void *tdep_inf_status)
 }
 
 void
-arm_macosx_free_thread_inferior_status (void *tdep_inf_status)
+arm_macosx_free_thread_inferior_status(void *tdep_inf_status)
 {
-  xfree (tdep_inf_status);
+  xfree(tdep_inf_status);
 }
 
-/* Get the ith function argument for the current function.  */
+/* Get the ith function argument for the current function: */
 CORE_ADDR
-arm_fetch_pointer_argument (struct frame_info *frame, int argi,
-                            struct type *type)
+arm_fetch_pointer_argument(struct frame_info *frame, int argi,
+                           struct type *type)
 {
   CORE_ADDR addr;
 
-  addr = get_frame_register_unsigned (frame, argi);
+  addr = get_frame_register_unsigned(frame, argi);
 
   return addr;
 }
@@ -807,104 +814,106 @@ arm_fetch_pointer_argument (struct frame_info *frame, int argi,
 /* Print interesting information about the floating point processor
    (if present) or emulator.  */
 static void
-arm_macosx_print_float_info_vfp (struct gdbarch *gdbarch,
-				 struct ui_file *file,
-				 struct frame_info *frame, const char *args)
+arm_macosx_print_float_info_vfp(struct gdbarch *gdbarch,
+                                struct ui_file *file,
+                                struct frame_info *frame, const char *args)
 {
-  static const char* enabled_strings[2] = {"disabled", "enabled"};
-  static const char* Rmode_strings[4] = {
+  static const char *enabled_strings[2] = {"disabled", "enabled"};
+  static const char *Rmode_strings[4] = {
     "Round to nearest (RN) mode",
     "Round towards plus infinity (RP) mode",
     "Round towards minus infinity (RM) mode",
     "Round towards zero (RZ) mode"
   };
-  uint32_t fpscr = read_register (ARM_VFP_REGNUM_FPSCR);
+  uint32_t fpscr = (uint32_t)read_register(ARM_VFP_REGNUM_FPSCR);
   uint32_t b;
-  printf (_("VFP fpscr = 0x%8.8x\n"), fpscr);
-  printf (_("     N = %u  Set if comparison produces a less than result\n"),
-	  bit (fpscr, 31));
-  printf (_("     Z = %u  Set if comparison produces an equal result\n"),
-	  bit (fpscr, 30));
-  printf (_("     C = %u  Set if comparison produces an equal, greater "
-	  "than, or unordered result\n"),
-	  bit (fpscr, 29));
-  printf (_("     V = %u  Set if comparison produces an unordered result\n"),
-	  bit (fpscr, 28));
-  b = bit (fpscr, 25);
-  printf (_("    DN = %u  default NaN mode %s\n"), b, enabled_strings[b]);
-  b = bit (fpscr, 24);
-  printf (_("    Fz = %u  flush-to-zero mode %s\n"), b, enabled_strings[b]);
-  b = bits (fpscr, 22, 23);
-  printf (_(" Rmode = %u  %s\n"), b, Rmode_strings[b]);
-  printf (_("Stride = %u\n"), bits (fpscr, 20, 21));
-  printf (_("   LEN = %u\n"), bits (fpscr, 16, 18));
-  printf (_("   IDE = %u  Input Subnormal exception\n"), bit (fpscr, 15));
-  printf (_("   IXE = %u  Inexact exception\n"), bit (fpscr, 12));
-  printf (_("   UFE = %u  Underflow exception\n"), bit (fpscr, 11));
-  printf (_("   OFE = %u  Overflow exception\n"), bit (fpscr, 10));
-  printf (_("   DZE = %u  Division by Zero exception\n"), bit (fpscr, 9));
-  printf (_("   IOE = %u  Invalid Operation exception\n"), bit (fpscr, 8));
-  printf (_("   IDC = %u  Input Subnormal cumulative\n"), bit (fpscr, 7));
-  printf (_("   IXC = %u  Inexact cumulative\n"), bit (fpscr, 4));
-  printf (_("   UFC = %u  Underflow cumulative\n"), bit (fpscr, 3));
-  printf (_("   OFC = %u  Overflow cumulative\n"), bit (fpscr, 2));
-  printf (_("   DZC = %u  Division by Zero cumulative\n"), bit (fpscr, 1));
-  printf (_("   IOC = %u  Invalid Operation cumulative\n"), bit (fpscr, 0));
+  printf(_("VFP fpscr = 0x%8.8x\n"), fpscr);
+  printf(_("     N = %u  Set if comparison produces a less than result\n"),
+	 bit(fpscr, 31));
+  printf(_("     Z = %u  Set if comparison produces an equal result\n"),
+	 bit(fpscr, 30));
+  printf(_("     C = %u  Set if comparison produces an equal, greater "
+	 "than, or unordered result\n"),
+	 bit(fpscr, 29));
+  printf(_("     V = %u  Set if comparison produces an unordered result\n"),
+	 bit(fpscr, 28));
+  b = bit(fpscr, 25);
+  printf(_("    DN = %u  default NaN mode %s\n"), b, enabled_strings[b]);
+  b = bit(fpscr, 24);
+  printf(_("    Fz = %u  flush-to-zero mode %s\n"), b, enabled_strings[b]);
+  b = bits(fpscr, 22, 23);
+  printf(_(" Rmode = %u  %s\n"), b, Rmode_strings[b]);
+  printf(_("Stride = %u\n"), bits(fpscr, 20, 21));
+  printf(_("   LEN = %u\n"), bits(fpscr, 16, 18));
+  printf(_("   IDE = %u  Input Subnormal exception\n"), bit(fpscr, 15));
+  printf(_("   IXE = %u  Inexact exception\n"), bit(fpscr, 12));
+  printf(_("   UFE = %u  Underflow exception\n"), bit(fpscr, 11));
+  printf(_("   OFE = %u  Overflow exception\n"), bit(fpscr, 10));
+  printf(_("   DZE = %u  Division by Zero exception\n"), bit(fpscr, 9));
+  printf(_("   IOE = %u  Invalid Operation exception\n"), bit(fpscr, 8));
+  printf(_("   IDC = %u  Input Subnormal cumulative\n"), bit(fpscr, 7));
+  printf(_("   IXC = %u  Inexact cumulative\n"), bit(fpscr, 4));
+  printf(_("   UFC = %u  Underflow cumulative\n"), bit(fpscr, 3));
+  printf(_("   OFC = %u  Overflow cumulative\n"), bit(fpscr, 2));
+  printf(_("   DZC = %u  Division by Zero cumulative\n"), bit(fpscr, 1));
+  printf(_("   IOC = %u  Invalid Operation cumulative\n"), bit(fpscr, 0));
 }
 
 static void
-arm_macosx_pseudo_register_read_vfpv1 (struct gdbarch *gdbarch,
-				       struct regcache *regcache, int reg,
-				       gdb_byte *buf)
+arm_macosx_pseudo_register_read_vfpv1(struct gdbarch *gdbarch,
+				      struct regcache *regcache, int reg,
+				      gdb_byte *buf)
 {
-  int s_reg_lsw = 2 * (reg - ARM_VFPV1_PSEUDO_REGNUM_D0) + ARM_VFP_REGNUM_S0;
-  int s_reg_msw = s_reg_lsw + 1;
-  regcache_cooked_read (regcache, s_reg_lsw, buf);
-  regcache_cooked_read (regcache, s_reg_msw, buf + 4);
+  int s_reg_lsw = ((2 * (reg - ARM_VFPV1_PSEUDO_REGNUM_D0))
+                   + ARM_VFP_REGNUM_S0);
+  int s_reg_msw = (s_reg_lsw + 1);
+  regcache_cooked_read(regcache, s_reg_lsw, buf);
+  regcache_cooked_read(regcache, s_reg_msw, (buf + 4));
 }
 
 static void
-arm_macosx_pseudo_register_write_vfpv1 (struct gdbarch *gdbarch,
-				        struct regcache *regcache, int reg,
-					const gdb_byte *buf)
-{
-  int s_reg_lsw = 2 * (reg - ARM_VFPV1_PSEUDO_REGNUM_D0) + ARM_VFP_REGNUM_S0;
-  int s_reg_msw = s_reg_lsw + 1;
-  regcache_cooked_write (regcache, s_reg_lsw, buf);
-  regcache_cooked_write (regcache, s_reg_msw, buf + 4);
-}
-
-static void
-arm_macosx_pseudo_register_read_vfpv3 (struct gdbarch *gdbarch,
+arm_macosx_pseudo_register_write_vfpv1(struct gdbarch *gdbarch,
 				       struct regcache *regcache, int reg,
-				       gdb_byte *buf)
+                                       const gdb_byte *buf)
+{
+  int s_reg_lsw = ((2 * (reg - ARM_VFPV1_PSEUDO_REGNUM_D0))
+                   + ARM_VFP_REGNUM_S0);
+  int s_reg_msw = (s_reg_lsw + 1);
+  regcache_cooked_write(regcache, s_reg_lsw, buf);
+  regcache_cooked_write(regcache, s_reg_msw, buf + 4);
+}
+
+static void
+arm_macosx_pseudo_register_read_vfpv3(struct gdbarch *gdbarch,
+				      struct regcache *regcache, int reg,
+				      gdb_byte *buf)
 {
   int s_reg_lsw = 0;
   int s_reg_msw = 0;
   int regno;
   int stride_byte_size = 0;
-  if (reg >= ARM_VFPV3_PSEUDO_REGNUM_D0 && reg <= ARM_VFPV3_PSEUDO_REGNUM_D15)
+  if ((reg >= ARM_VFPV3_PSEUDO_REGNUM_D0) && (reg <= ARM_VFPV3_PSEUDO_REGNUM_D15))
     {
       /* D0- D15 overlap with the values for S0 - S31 where 2 consecutive S
          registers make up a D register.  */
-      int d = reg - ARM_VFPV3_PSEUDO_REGNUM_D0;
-      s_reg_lsw = 2 * d + ARM_VFP_REGNUM_S0;
-      s_reg_msw = s_reg_lsw + 1;
+      int d = (reg - ARM_VFPV3_PSEUDO_REGNUM_D0);
+      s_reg_lsw = (2 * d + ARM_VFP_REGNUM_S0);
+      s_reg_msw = (s_reg_lsw + 1);
 
       /* Set the stride byte size to be 4 as each pseudo consecutive S register
          is 4 bytes in size.  */
       stride_byte_size = 4;
     }
-  else if (reg >= ARM_SIMD_PSEUDO_REGNUM_Q0 &&
-	   reg <= ARM_SIMD_PSEUDO_REGNUM_Q15)
+  else if ((reg >= ARM_SIMD_PSEUDO_REGNUM_Q0) &&
+	   (reg <= ARM_SIMD_PSEUDO_REGNUM_Q15))
     {
-      int q = reg - ARM_SIMD_PSEUDO_REGNUM_Q0;
+      int q = (reg - ARM_SIMD_PSEUDO_REGNUM_Q0);
       if (q < 8)
 	{
 	  /* Q0-Q7 overlap with the values for S0-S31 where 4 consecutive S
 	     registers make up a Q register.  */
-	  s_reg_lsw = 4 * q + ARM_VFP_REGNUM_S0;
-	  s_reg_msw = s_reg_lsw + 3;
+	  s_reg_lsw = (4 * q + ARM_VFP_REGNUM_S0);
+	  s_reg_msw = (s_reg_lsw + 3);
 	  /* Set the stride byte size to be 4 as each pseudo Q register will
 	     overlap 4 4 byte consecutive S registers.  */
 	  stride_byte_size = 4;
@@ -913,69 +922,69 @@ arm_macosx_pseudo_register_read_vfpv3 (struct gdbarch *gdbarch,
 	{
 	  /* Q8-Q15 overlap with the values for D15-D31 where 2 consecutive D
 	     registers make up a Q register.  */
-	  s_reg_lsw = 2 * (q - 8) + ARM_VFPV3_REGNUM_D16;
-	  s_reg_msw = s_reg_lsw + 1;
+	  s_reg_lsw = (2 * (q - 8) + ARM_VFPV3_REGNUM_D16);
+	  s_reg_msw = (s_reg_lsw + 1);
 	  /* Set the stride byte size to be 8 as each pseudo Q register will
 	     overlap 2 8 byte consecutive D registers.  */
 	  stride_byte_size = 8;
 	}
     }
 
-  for (regno=s_reg_lsw; regno<=s_reg_msw; regno++)
-    regcache_cooked_read (regcache, regno,
+  for (regno = s_reg_lsw; regno <= s_reg_msw; regno++)
+    regcache_cooked_read(regcache, regno,
+			 (buf + (stride_byte_size * (regno - s_reg_lsw))));
+}
+
+static void
+arm_macosx_pseudo_register_write_vfpv3(struct gdbarch *gdbarch,
+                                       struct regcache *regcache, int reg,
+                                       const gdb_byte *buf)
+{
+  int s_reg_lsw = 0;
+  int s_reg_msw = 0;
+  int regno;
+  int stride_byte_size = 0;
+  if ((reg >= ARM_VFPV3_PSEUDO_REGNUM_D0) && (reg <= ARM_VFPV3_PSEUDO_REGNUM_D15))
+    {
+      /* D0- D15 overlap with the values for S0 - S31 where 2 consecutive S
+         registers make up a D register.  */
+      int d = (reg - ARM_VFPV3_PSEUDO_REGNUM_D0);
+      s_reg_lsw = (2 * d + ARM_VFP_REGNUM_S0);
+      s_reg_msw = (s_reg_lsw + 1);
+
+      /* Set the stride byte size to be 4 as each pseudo consecutive S register
+         is 4 bytes in size.  */
+      stride_byte_size = 4;
+    }
+  else if ((reg >= ARM_SIMD_PSEUDO_REGNUM_Q0) &&
+	   (reg <= ARM_SIMD_PSEUDO_REGNUM_Q15))
+    {
+      int q = (reg - ARM_SIMD_PSEUDO_REGNUM_Q0);
+      if (q < 8)
+	{
+	  /* Q0-Q7 overlap with the values for S0-S31 where 4 consecutive S
+	     registers make up a Q register.  */
+	  s_reg_lsw = (4 * q + ARM_VFP_REGNUM_S0);
+	  s_reg_msw = (s_reg_lsw + 3);
+	  /* Set the stride byte size to be 4 as each pseudo Q register will
+	     overlap 4 4 byte consecutive S registers.  */
+	  stride_byte_size = 4;
+	}
+      else
+	{
+	  /* Q8-Q15 overlap with the values for D15-D31 where 2 consecutive D
+	     registers make up a Q register.  */
+	  s_reg_lsw = (2 * (q - 8) + ARM_VFPV3_REGNUM_D16);
+	  s_reg_msw = (s_reg_lsw + 1);
+	  /* Set the stride byte size to be 8 as each pseudo Q register will
+	     overlap 2 8 byte consecutive D registers.  */
+	  stride_byte_size = 8;
+	}
+    }
+
+  for (regno = s_reg_lsw; regno <= s_reg_msw; regno++)
+    regcache_cooked_write(regcache, regno,
 			  buf + (stride_byte_size * (regno - s_reg_lsw)));
-}
-
-static void
-arm_macosx_pseudo_register_write_vfpv3 (struct gdbarch *gdbarch,
-					struct regcache *regcache, int reg,
-					const gdb_byte *buf)
-{
-  int s_reg_lsw = 0;
-  int s_reg_msw = 0;
-  int regno;
-  int stride_byte_size = 0;
-  if (reg >= ARM_VFPV3_PSEUDO_REGNUM_D0 && reg <= ARM_VFPV3_PSEUDO_REGNUM_D15)
-    {
-      /* D0- D15 overlap with the values for S0 - S31 where 2 consecutive S
-         registers make up a D register.  */
-      int d = reg - ARM_VFPV3_PSEUDO_REGNUM_D0;
-      s_reg_lsw = 2 * d + ARM_VFP_REGNUM_S0;
-      s_reg_msw = s_reg_lsw + 1;
-
-      /* Set the stride byte size to be 4 as each pseudo consecutive S register
-         is 4 bytes in size.  */
-      stride_byte_size = 4;
-    }
-  else if (reg >= ARM_SIMD_PSEUDO_REGNUM_Q0 &&
-	   reg <= ARM_SIMD_PSEUDO_REGNUM_Q15)
-    {
-      int q = reg - ARM_SIMD_PSEUDO_REGNUM_Q0;
-      if (q < 8)
-	{
-	  /* Q0-Q7 overlap with the values for S0-S31 where 4 consecutive S
-	     registers make up a Q register.  */
-	  s_reg_lsw = 4 * q + ARM_VFP_REGNUM_S0;
-	  s_reg_msw = s_reg_lsw + 3;
-	  /* Set the stride byte size to be 4 as each pseudo Q register will
-	     overlap 4 4 byte consecutive S registers.  */
-	  stride_byte_size = 4;
-	}
-      else
-	{
-	  /* Q8-Q15 overlap with the values for D15-D31 where 2 consecutive D
-	     registers make up a Q register.  */
-	  s_reg_lsw = 2 * (q - 8) + ARM_VFPV3_REGNUM_D16;
-	  s_reg_msw = s_reg_lsw + 1;
-	  /* Set the stride byte size to be 8 as each pseudo Q register will
-	     overlap 2 8 byte consecutive D registers.  */
-	  stride_byte_size = 8;
-	}
-    }
-
-  for (regno=s_reg_lsw; regno<=s_reg_msw; regno++)
-    regcache_cooked_write (regcache, regno,
-			   buf + (stride_byte_size * (regno - s_reg_lsw)));
 }
 
 /* This is cribbed from arm-tdep.c. I do NOT want to add all the mach-o
@@ -993,16 +1002,16 @@ arm_macosx_pseudo_register_write_vfpv3 (struct gdbarch *gdbarch,
 	MSYMBOL_INFO (msym) = (char *) (((long) MSYMBOL_INFO (msym))	\
 					| 0x80000000)
 static void
-arm_macosx_dbx_make_msymbol_special (int16_t desc, struct minimal_symbol *msym)
+arm_macosx_dbx_make_msymbol_special(int16_t desc, struct minimal_symbol *msym)
 {
   if (desc & GDB_N_ARM_THUMB_DEF)
-    MSYMBOL_SET_SPECIAL (msym);
+    MSYMBOL_SET_SPECIAL(msym);
 }
 
 /* Convert a dbx stab register number (from `r' declaration) to a gdb
    REGNUM. */
 int
-arm_macosx_stab_reg_to_regnum (int num)
+arm_macosx_stab_reg_to_regnum(int num)
 {
   int regnum;
 
@@ -1027,8 +1036,8 @@ arm_macosx_stab_reg_to_regnum (int num)
 */
 
 char *
-arm_throw_catch_find_typeinfo (struct frame_info *curr_frame,
-                               int exception_type)
+arm_throw_catch_find_typeinfo(struct frame_info *curr_frame,
+                              int exception_type)
 {
   struct minimal_symbol *typeinfo_sym = NULL;
   ULONGEST typeinfo_ptr;
@@ -1036,10 +1045,9 @@ arm_throw_catch_find_typeinfo (struct frame_info *curr_frame,
 
   if (exception_type == EX_EVENT_THROW)
     {
-      frame_unwind_unsigned_register (curr_frame,
-                                      ARM_R0_REGNUM + 1,
-                                      &typeinfo_ptr);
-      typeinfo_sym = lookup_minimal_symbol_by_pc (typeinfo_ptr);
+      frame_unwind_unsigned_register(curr_frame, (ARM_R0_REGNUM + 1),
+                                     &typeinfo_ptr);
+      typeinfo_sym = lookup_minimal_symbol_by_pc(typeinfo_ptr);
 
     }
   else
@@ -1050,17 +1058,16 @@ arm_throw_catch_find_typeinfo (struct frame_info *curr_frame,
          FIXME: we need to get the runtime to keep this so we are NOT relying on
          the particular layout of the __cxa_exception...
          Anyway, then the first field of __cxa_exception is the type object. */
-      ULONGEST type_obj_addr = 0;
+      ULONGEST type_obj_addr = 0UL;
 
-      frame_unwind_unsigned_register (curr_frame,
-                                      ARM_R0_REGNUM,
-                                      &typeinfo_ptr);
+      frame_unwind_unsigned_register(curr_frame, ARM_R0_REGNUM,
+                                     &typeinfo_ptr);
 
       /* This is also a bit bogus. We assume that an unsigned integer is the
          same size as an address on our system.  */
       if (safe_read_memory_unsigned_integer
           (typeinfo_ptr - 44, 4, &type_obj_addr))
-        typeinfo_sym = lookup_minimal_symbol_by_pc (type_obj_addr);
+        typeinfo_sym = lookup_minimal_symbol_by_pc(type_obj_addr);
     }
 
   if (!typeinfo_sym)
@@ -1069,74 +1076,75 @@ arm_throw_catch_find_typeinfo (struct frame_info *curr_frame,
   typeinfo_str =
     typeinfo_sym->ginfo.language_specific.cplus_specific.demangled_name;
   if ((typeinfo_str == NULL)
-      || (strstr (typeinfo_str, "typeinfo for ") != typeinfo_str))
+      || (strstr(typeinfo_str, "typeinfo for ") != typeinfo_str))
     return NULL;
 
-  return typeinfo_str + strlen ("typeinfo for ");
+  return typeinfo_str + strlen("typeinfo for ");
 }
 
 static void
-arm_macosx_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
+arm_macosx_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  /* We actually don't have any software float registers, so lets remove
-     the float info printer so we do NOT crash on "info float" commands.  */
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  /* We actually do NOT have any software float registers, so let us remove
+   * the float info printer so we do NOT crash on "info float" commands: */
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
   tdep->fp_model = ARM_FLOAT_NONE;
   tdep->vfp_version = ARM_VFP_UNSUPPORTED;
 
-  set_gdbarch_print_float_info (gdbarch, NULL);
-  set_gdbarch_stab_reg_to_regnum (gdbarch, arm_macosx_stab_reg_to_regnum);
+  set_gdbarch_print_float_info(gdbarch, NULL);
+  set_gdbarch_stab_reg_to_regnum(gdbarch, arm_macosx_stab_reg_to_regnum);
 
-  set_gdbarch_skip_trampoline_code (gdbarch, macosx_skip_trampoline_code);
+  set_gdbarch_skip_trampoline_code(gdbarch, macosx_skip_trampoline_code);
 
-  set_gdbarch_in_solib_return_trampoline (gdbarch,
-                                          macosx_in_solib_return_trampoline);
-  set_gdbarch_fetch_pointer_argument (gdbarch, arm_fetch_pointer_argument);
+  set_gdbarch_in_solib_return_trampoline(gdbarch,
+                                         macosx_in_solib_return_trampoline);
+  set_gdbarch_fetch_pointer_argument(gdbarch, arm_fetch_pointer_argument);
 
-  set_gdbarch_num_regs (gdbarch, ARM_MACOSX_NUM_REGS);
+  set_gdbarch_num_regs(gdbarch, ARM_MACOSX_NUM_REGS);
 
-  set_gdbarch_dbx_make_msymbol_special (gdbarch, arm_macosx_dbx_make_msymbol_special);
+  set_gdbarch_dbx_make_msymbol_special(gdbarch, arm_macosx_dbx_make_msymbol_special);
 
-  if (get_arm_single_step_mode () == arm_single_step_mode_auto)
-    {
-     /* I do NOT believe that any ARMv4 devices will be able to use our hardware
-      * single stepping methods, but we should check on this once we get
-      * some.  */
-}
+  if (get_arm_single_step_mode() == arm_single_step_mode_auto) {
+     /* I do NOT believe that any ARMv4 devices will be able to use our
+      * hardware single stepping methods, but we should check on this
+      * once we get some. */ ;
+  }
 }
 
 static struct type *
-arm_macosx_register_type_vfpv1 (struct gdbarch *gdbarch, int regnum)
+arm_macosx_register_type_vfpv1(struct gdbarch *gdbarch, int regnum)
 {
-  /* APPLE LOCAL: Use register info table.   */
-  if (regnum < g_reginfo_arm_vfpv1_count && g_reginfo_arm_vfpv1[regnum].type)
+  /* APPLE LOCAL: Use register info table: */
+  if (((uint32_t)regnum < g_reginfo_arm_vfpv1_count)
+      && g_reginfo_arm_vfpv1[regnum].type)
     return *g_reginfo_arm_vfpv1[regnum].type;
   return builtin_type_int32;
 }
 
 static struct type *
-arm_macosx_register_type_vfpv3 (struct gdbarch *gdbarch, int regnum)
+arm_macosx_register_type_vfpv3(struct gdbarch *gdbarch, int regnum)
 {
-  /* APPLE LOCAL: Use register info table.   */
-  if (regnum < g_reginfo_arm_vfpv3_count && g_reginfo_arm_vfpv3[regnum].type)
+  /* APPLE LOCAL: Use register info table: */
+  if (((uint32_t)regnum < g_reginfo_arm_vfpv3_count)
+      && g_reginfo_arm_vfpv3[regnum].type)
     return *g_reginfo_arm_vfpv3[regnum].type;
   return builtin_type_int32;
 }
 
 /* Return the ARM register name corresponding to register REGNUM.  */
 static const char *
-arm_macosx_register_name_vfpv1 (int regnum)
+arm_macosx_register_name_vfpv1(int regnum)
 {
-  if (regnum < g_reginfo_arm_vfpv1_count)
+  if ((uint32_t)regnum < g_reginfo_arm_vfpv1_count)
     return g_reginfo_arm_vfpv1[regnum].name;
   return NULL;
 }
 
 /* Return the ARM register name corresponding to register REGNUM.  */
 static const char *
-arm_macosx_register_name_vfpv3 (int regnum)
+arm_macosx_register_name_vfpv3(int regnum)
 {
-  if (regnum < g_reginfo_arm_vfpv3_count)
+  if ((uint32_t)regnum < g_reginfo_arm_vfpv3_count)
     return g_reginfo_arm_vfpv3[regnum].name;
   return NULL;
 }
@@ -1145,19 +1153,19 @@ arm_macosx_register_name_vfpv3 (int regnum)
    register N.  */
 
 static int
-arm_macosx_register_byte_vfpv1 (int regnum)
+arm_macosx_register_byte_vfpv1(int regnum)
 {
-  /* APPLE LOCAL: Use register info table.   */
-  if (regnum < g_reginfo_arm_vfpv1_count)
+  /* APPLE LOCAL: Use register info table: */
+  if ((uint32_t)regnum < g_reginfo_arm_vfpv1_count)
     return g_reginfo_arm_vfpv1[regnum].offset;
   return 0;
 }
 
 static int
-arm_macosx_register_byte_vfpv3 (int regnum)
+arm_macosx_register_byte_vfpv3(int regnum)
 {
-  /* APPLE LOCAL: Use register info table.   */
-  if (regnum < g_reginfo_arm_vfpv3_count)
+  /* APPLE LOCAL: Use register info table: */
+  if ((uint32_t)regnum < g_reginfo_arm_vfpv3_count)
     return g_reginfo_arm_vfpv3[regnum].offset;
   return 0;
 }
@@ -1219,20 +1227,18 @@ arm_macosx_init_abi_v6 (struct gdbarch_info info, struct gdbarch *gdbarch)
       uint32_t num_hw_bkpts = 0;
       size_t num_hw_bkpts_len = sizeof(num_hw_bkpts);
       if (sysctlbyname("hw.optional.breakpoint", &num_hw_bkpts,
-		       &num_hw_bkpts_len, NULL, 0) == 0)
-	{
-	  if (num_hw_bkpts > 0)
-	    set_gdbarch_software_single_step (gdbarch, NULL);
-}
-      else
-	{
-	  /* Use hardware single stepping by default for armv6.  */
-	  set_gdbarch_software_single_step (gdbarch, NULL);
-	}
+		       &num_hw_bkpts_len, NULL, 0) == 0) {
+	  if (num_hw_bkpts > 0) {
+	    set_gdbarch_software_single_step(gdbarch, NULL);
+          }
+      } else {
+	  /* Use hardware single stepping by default for armv6: */
+	  set_gdbarch_software_single_step(gdbarch, NULL);
+      }
 #else
       /* Assume we have a remote connection to debugserver which can now
-         do single stepping.  */
-      set_gdbarch_software_single_step (gdbarch, NULL);
+       * do single stepping: */
+      set_gdbarch_software_single_step(gdbarch, NULL);
 #endif /* NM_NEXTSTEP */
     }
 }
@@ -1282,20 +1288,21 @@ arm_macosx_init_abi_v7 (struct gdbarch_info info, struct gdbarch *gdbarch)
       uint32_t num_hw_bkpts = 0;
       size_t num_hw_bkpts_len = sizeof(num_hw_bkpts);
       if (sysctlbyname("hw.optional.breakpoint", &num_hw_bkpts,
-		       &num_hw_bkpts_len, NULL, 0) == 0)
-	{
-	  if (num_hw_bkpts > 0)
-	    set_gdbarch_software_single_step (gdbarch, NULL);
-	}
-      else
-	{
-	  /* Use hardware single stepping by default for armv7.  */
+		       &num_hw_bkpts_len, NULL, 0) == 0) {
+	  if (num_hw_bkpts > 0) {
+	    set_gdbarch_software_single_step(gdbarch, NULL);
+          }
+      } else {
+	  /* Use hardware single stepping by default for armv7. */
+# if 0
 	  /* Disable hardware single stepping on armv7 for now due to
-	     some issues with our current silicon where the debug registers
-	     weren't hooked up.
-	  set_gdbarch_software_single_step (gdbarch, NULL);
-	  */
-	}
+	   * some issues with our current silicon where the debug registers
+	   * were NOT hooked up. */
+	  set_gdbarch_software_single_step(gdbarch, NULL);
+# else
+          ;
+# endif /* 0 */
+      }
 #else
       /* Assume we have a remote connection to debugserver which can now
          do single stepping.  */
@@ -1305,28 +1312,28 @@ arm_macosx_init_abi_v7 (struct gdbarch_info info, struct gdbarch *gdbarch)
 }
 
 void
-_initialize_arm_macosx_tdep ()
+_initialize_arm_macosx_tdep(void)
 {
   uint32_t i;
 
-  /* Initialize ARM PSR and FPSCR built in types.  */
-  builtin_type_arm_psr = build_builtin_type_arm_psr ();
-  builtin_type_arm_fpscr = build_builtin_type_arm_fpscr ();
+  /* Initialize ARM PSR and FPSCR built in types: */
+  builtin_type_arm_psr = build_builtin_type_arm_psr();
+  builtin_type_arm_fpscr = build_builtin_type_arm_fpscr();
 
   /* Calculcate the offsets to be used by arm_macosx_register_byte_vfpv1.  */
   g_reginfo_arm_vfpv1[0].offset = 0;
-  for (i=1; i<g_reginfo_arm_vfpv1_count; i++)
+  for (i = 1; i < g_reginfo_arm_vfpv1_count; i++)
     {
-      if (g_reginfo_arm_vfpv1[i-1].type)
+      if (g_reginfo_arm_vfpv1[i - 1].type)
 	g_reginfo_arm_vfpv1[i].offset = g_reginfo_arm_vfpv1[i-1].offset +
                                  TYPE_LENGTH (*g_reginfo_arm_vfpv1[i-1].type);
     }
 
   /* Calculcate the offsets to be used by arm_macosx_register_byte_vfpv3.  */
   g_reginfo_arm_vfpv3[0].offset = 0;
-  for (i=1; i<g_reginfo_arm_vfpv3_count; i++)
+  for (i = 1; i<g_reginfo_arm_vfpv3_count; i++)
     {
-      if (g_reginfo_arm_vfpv3[i-1].type)
+      if (g_reginfo_arm_vfpv3[i - 1].type)
 	g_reginfo_arm_vfpv3[i].offset = g_reginfo_arm_vfpv3[i-1].offset +
                                  TYPE_LENGTH (*g_reginfo_arm_vfpv3[i-1].type);
     }
@@ -1335,46 +1342,47 @@ _initialize_arm_macosx_tdep ()
      code into there so we can be sure all the initializations happen in the
      right order, etc.  */
 
-  /* register_gdbarch_init (bfd_arch_arm, arm_gdbarch_init); */
+#if 0
+  register_gdbarch_init(bfd_arch_arm, arm_gdbarch_init);
+#endif /* 0 */
 
-  gdbarch_register_osabi_sniffer (bfd_arch_unknown, bfd_target_mach_o_flavour,
-                                  arm_mach_o_osabi_sniffer);
+  gdbarch_register_osabi_sniffer(bfd_arch_unknown, bfd_target_mach_o_flavour,
+                                 arm_mach_o_osabi_sniffer);
 
-  gdbarch_register_osabi (bfd_arch_arm,
-			  0,
-			  GDB_OSABI_DARWIN,
-                          arm_macosx_init_abi);
+  gdbarch_register_osabi(bfd_arch_arm, 0,
+			 GDB_OSABI_DARWIN,
+                         arm_macosx_init_abi);
 
-  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_4T))->arch,
-			  bfd_mach_arm_4T,
-			  GDB_OSABI_DARWIN,
-                          arm_macosx_init_abi);
+  gdbarch_register_osabi((bfd_lookup_arch(bfd_arch_arm, bfd_mach_arm_4T))->arch,
+			 bfd_mach_arm_4T,
+			 GDB_OSABI_DARWIN,
+                         arm_macosx_init_abi);
 
-  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_6))->arch,
-			  bfd_mach_arm_6,
-                          GDB_OSABI_DARWINV6,
-			  arm_macosx_init_abi_v6);
+  gdbarch_register_osabi((bfd_lookup_arch(bfd_arch_arm, bfd_mach_arm_6))->arch,
+			 bfd_mach_arm_6,
+                         GDB_OSABI_DARWINV6,
+			 arm_macosx_init_abi_v6);
 
-  /* Use the ARM_MACOSX_INIT_ABI_V6 function for armv7 as well.  */
-  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_7))->arch,
-			  bfd_mach_arm_7,
-                          GDB_OSABI_DARWINV7,
-			  arm_macosx_init_abi_v7);
+  /* Use the ARM_MACOSX_INIT_ABI_V6 function for armv7 as well: */
+  gdbarch_register_osabi((bfd_lookup_arch(bfd_arch_arm, bfd_mach_arm_7))->arch,
+			 bfd_mach_arm_7,
+                         GDB_OSABI_DARWINV7,
+			 arm_macosx_init_abi_v7);
 
-  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_7f))->arch,
-			  bfd_mach_arm_7f,
-                          GDB_OSABI_DARWINV7F,
-			  arm_macosx_init_abi_v7);
+  gdbarch_register_osabi((bfd_lookup_arch(bfd_arch_arm, bfd_mach_arm_7f))->arch,
+			 bfd_mach_arm_7f,
+                         GDB_OSABI_DARWINV7F,
+			 arm_macosx_init_abi_v7);
 
-  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_7k))->arch,
-			  bfd_mach_arm_7k,
-                          GDB_OSABI_DARWINV7K,
-			  arm_macosx_init_abi_v7);
+  gdbarch_register_osabi((bfd_lookup_arch(bfd_arch_arm, bfd_mach_arm_7k))->arch,
+			 bfd_mach_arm_7k,
+                         GDB_OSABI_DARWINV7K,
+			 arm_macosx_init_abi_v7);
 
-  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_7s))->arch,
-			  bfd_mach_arm_7s,
-                          GDB_OSABI_DARWINV7S,
-			  arm_macosx_init_abi_v7);
+  gdbarch_register_osabi((bfd_lookup_arch(bfd_arch_arm, bfd_mach_arm_7s))->arch,
+			 bfd_mach_arm_7s,
+                         GDB_OSABI_DARWINV7S,
+			 arm_macosx_init_abi_v7);
 
 }
 

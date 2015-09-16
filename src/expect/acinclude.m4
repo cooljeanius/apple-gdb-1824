@@ -9,10 +9,10 @@ dnl# copy to ./m4
 
 dnl# CYGNUS LOCAL: This gets the right posix flag for gcc
 AC_DEFUN([CY_AC_TCL_LYNX_POSIX],
-[AC_REQUIRE([AC_PROG_CC])
-AC_REQUIRE([AC_PROG_CPP])
-AC_REQUIRE([AC_PROG_EGREP])
-# Do actual checking for LynxOS now
+[AC_REQUIRE([AC_PROG_CC])dnl
+AC_REQUIRE([AC_PROG_CPP])dnl
+AC_REQUIRE([AC_PROG_EGREP])dnl
+# Do the actual checking for LynxOS now:
 AC_MSG_CHECKING([if running LynxOS])
 AC_CACHE_VAL([ac_cv_os_lynx],
 [AC_EGREP_CPP([LynxOSthing],
@@ -35,52 +35,53 @@ if test "x${ac_cv_os_lynx}" = "xyes" ; then
    * -X is for the old "cc" and "gcc" (based on 1.42).
    * -mposix is for the new gcc (at least 2.5.8).
    */
-  #if defined(__GNUC__) && __GNUC__ >= 2
+  #if defined(__GNUC__) && (__GNUC__ >= 2)
   choke me
   #endif /* __GNUC__ >= 2 */
   ]])],[ac_cv_c_posix_flag=" -mposix"],[ac_cv_c_posix_flag=" -X"])])
-  CC="$CC $ac_cv_c_posix_flag"
-  AC_MSG_RESULT([$ac_cv_c_posix_flag])
+  CC="${CC} ${ac_cv_c_posix_flag}"
+  AC_MSG_RESULT([${ac_cv_c_posix_flag}])
   else
   AC_MSG_RESULT([no])
 fi
-])
+])dnl
 
-#
+dnl########################################################################
 # Sometimes the native compiler is a bogus stub for gcc or /usr/ucb/cc.
 # This makes configure think it is cross compiling. If --target was NOT
 # used, then we cannot configure, so something is wrong. We do NOT use the
 # cache here because if somebody fixes their compiler install, we want this
 # to work.
 AC_DEFUN([CY_AC_C_WORKS],
-[# If we cannot compile and link a trivial program, we cannot expect
-# anything to work
-AC_MSG_CHECKING([whether the compiler ($CC) actually works])
+[# If we cannot compile and link a trivial program, then we cannot expect
+# anything to work:
+AC_MSG_CHECKING([whether the compiler (${CC}) actually works])
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[]],[[/* do NOT need anything here */]])],
         [c_compiles=yes],[c_compiles=no])
-# Now do linking test
-AC_LINK_IFELSE([AC_LANG_SOURCE([[
+# Now do the linking test:
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <stdio.h>
 ]],[[
 int main(void) {
     return 0;
 }
 ]])],
-        [c_links=yes],[c_links=no])
+        [c_links=yes],[c_links=no])dnl
 
-if test x"${c_compiles}" = x"no" ; then
-  # error out
+if test x"${c_compiles}" = x"no"; then
+  # error out:
   AC_MSG_ERROR([the native compiler is broken and will NOT compile.])
 fi
 
-if test x"${c_links}" = x"no" ; then
+if test x"${c_links}" = x"no"; then
   AC_MSG_RESULT([ ])
-  # Might fail even if it actually works, so just warn
+  # Might fail even if it actually works, so just warn instead of erroring:
   AC_MSG_WARN([the native linker might be broken.])
+  # (although I hope I have fixed it...)
 else
   AC_MSG_RESULT([yes])
 fi
-])
+])dnl
 
 AC_DEFUN([CY_AC_PATH_TCLH],[
 #
@@ -93,10 +94,13 @@ AC_DEFUN([CY_AC_PATH_TCLH],[
 no_tcl=true
 AC_MSG_CHECKING([for Tcl private headers])
 AC_MSG_RESULT([ ])
-AC_ARG_WITH([tclinclude],[AS_HELP_STRING([--with-tclinclude],[directory where tcl private headers are])],[with_tclinclude=${withval}])
+AC_ARG_WITH([tclinclude],
+            [AS_HELP_STRING([--with-tclinclude],
+                            [directory where tcl private headers are])],
+            [with_tclinclude=${withval}])
 AC_CACHE_VAL([ac_cv_c_tclh],[
 # first check to see if --with-tclinclude was specified
-if test x"${with_tclinclude}" != x ; then
+if test x"${with_tclinclude}" != x""; then
   if test -f ${with_tclinclude}/tclInt.h ; then
     ac_cv_c_tclh=`(cd ${with_tclinclude}; pwd)`
   elif test -f ${with_tclinclude}/generic/tclInt.h ; then
@@ -173,14 +177,14 @@ if test x"${ac_cv_c_tclh}" != x ; then
     # in it.
     TCLHDIR="${ac_cv_c_tclh}"
     TCLHDIRDASHI="-I${ac_cv_c_tclh}"
-    TCL_LIBRARY=`echo $TCLHDIR | sed -e 's/generic//'`library
+    TCL_LIBRARY=`echo ${TCLHDIR} | sed -e 's/generic//'`library
   fi
 fi
 
-AC_SUBST([TCLHDIR])
-AC_SUBST([TCLHDIRDASHI])
-AC_SUBST([TCL_LIBRARY])
-])
+AC_SUBST([TCLHDIR])dnl
+AC_SUBST([TCLHDIRDASHI])dnl
+AC_SUBST([TCL_LIBRARY])dnl
+])dnl
 
 
 AC_DEFUN([CY_AC_PATH_TCLCONFIG],[
@@ -190,10 +194,12 @@ AC_DEFUN([CY_AC_PATH_TCLCONFIG],[
 # the alternative search directory is invoked by --with-tclconfig
 #
 
-if test x"${no_tcl}" = x ; then
+if test x"${no_tcl}" = x""; then
   # we reset no_tcl in case something fails here
   no_tcl=true
-  AC_ARG_WITH([tclconfig],[AS_HELP_STRING([--with-tclconfig],[directory containing tcl configuration (tclConfig.sh)])],
+  AC_ARG_WITH([tclconfig],
+         [AS_HELP_STRING([--with-tclconfig],
+                 [directory containing tcl configuration (tclConfig.sh)])],
          [with_tclconfig=${withval}])
   AC_MSG_CHECKING([for Tcl configuration])
   AC_CACHE_VAL([ac_cv_c_tclconfig],[
@@ -251,34 +257,39 @@ changequote(,)
   fi
 changequote([,])
   ])
-  if test x"${ac_cv_c_tclconfig}" = x ; then
+  if test x"${ac_cv_c_tclconfig}" = x""; then
     TCLCONFIG="# no Tcl configs found"
     AC_MSG_WARN([Cannot find Tcl configuration definitions])
   else
-    no_tcl=
+    no_tcl=""
     TCLCONFIG=${ac_cv_c_tclconfig}/tclConfig.sh
-    AC_MSG_RESULT([found $TCLCONFIG])
+    AC_MSG_RESULT([found ${TCLCONFIG}])
   fi
 fi
-])
+])dnl
 
 # Defined as a separate macro so we do NOT have to cache the values
 # from PATH_TCLCONFIG (because this can also be cached).
 AC_DEFUN([CY_AC_LOAD_TCLCONFIG],[
     AC_REQUIRE([CY_AC_PATH_TCLCONFIG])
-    . $TCLCONFIG
+    if test ! -z "${TCLCONFIG}"; then
+      if test -f "${TCLCONFIG}"; then
+        AC_MSG_NOTICE([sourcing ${TCLCONFIG}])
+        . ${TCLCONFIG}
+      fi
+    fi
 
-    AC_SUBST([TCL_DEFS])
-    AC_SUBST([TCL_SHLIB_LD])
-# Tcl defines TCL_SHLIB_SUFFIX but TCL_SHARED_LIB_SUFFIX then looks for it
-# as just SHLIB_SUFFIX. How bizarre.
-    SHLIB_SUFFIX=$TCL_SHLIB_SUFFIX
-    AC_SUBST([SHLIB_SUFFIX])
-    AC_SUBST([TCL_LD_FLAGS])
-    AC_SUBST([TCL_RANLIB])
-    AC_SUBST([TCL_BUILD_LIB_SPEC])
-    AC_SUBST([TCL_LIB_SPEC])
-])
+    AC_SUBST([TCL_DEFS])dnl
+    AC_SUBST([TCL_SHLIB_LD])dnl
+    # Tcl defines TCL_SHLIB_SUFFIX but TCL_SHARED_LIB_SUFFIX then looks
+    # for it as just SHLIB_SUFFIX. How bizarre.
+    SHLIB_SUFFIX="${TCL_SHLIB_SUFFIX}"
+    AC_SUBST([SHLIB_SUFFIX])dnl
+    AC_SUBST([TCL_LD_FLAGS])dnl
+    AC_SUBST([TCL_RANLIB])dnl
+    AC_SUBST([TCL_BUILD_LIB_SPEC])dnl
+    AC_SUBST([TCL_LIB_SPEC])dnl
+])dnl
 
 # Warning: Tk definitions are very similar to Tcl definitions but
 # are not precisely the same. There are a couple of differences,
@@ -309,10 +320,13 @@ AC_DEFUN([CY_AC_PATH_TKH],[
 
 AC_MSG_CHECKING([for Tk private headers])
 AC_MSG_RESULT([ ])
-AC_ARG_WITH([tkinclude],[AS_HELP_STRING([--with-tkinclude],[directory where tk private headers are])],[with_tkinclude=${withval}])
+AC_ARG_WITH([tkinclude],
+            [AS_HELP_STRING([--with-tkinclude],
+                            [directory where tk private headers are])],
+            [with_tkinclude=${withval}])
 AC_CACHE_VAL([ac_cv_c_tkh],[
-# first check to see if --with-tkinclude was specified
-if test x"${with_tkinclude}" != x ; then
+# first check to see if --with-tkinclude was specified:
+if test x"${with_tkinclude}" != x""; then
   if test -f ${with_tkinclude}/tk.h ; then
     ac_cv_c_tkh=`(cd ${with_tkinclude}; pwd)`
   elif test -f ${with_tkinclude}/generic/tk.h ; then
@@ -387,8 +401,8 @@ else
   no_tk=true
 fi
 
-AC_SUBST([TKHDIRDASHI])
-])
+AC_SUBST([TKHDIRDASHI])dnl
+])dnl
 
 
 AC_DEFUN([CY_AC_PATH_TKCONFIG],[
@@ -398,16 +412,18 @@ AC_DEFUN([CY_AC_PATH_TKCONFIG],[
 # the alternative search directory is invoked by --with-tkconfig
 #
 
-if test x"${no_tk}" = x ; then
-  # we reset no_tk in case something fails here
+if test x"${no_tk}" = x""; then
+  # we reset no_tk in case something fails here:
   no_tk=true
-  AC_ARG_WITH([tkconfig],[AS_HELP_STRING([--with-tkconfig],[directory containing tk configuration (tkConfig.sh)])],
+  AC_ARG_WITH([tkconfig],
+         [AS_HELP_STRING([--with-tkconfig],
+                 [directory containing tk configuration (tkConfig.sh)])],
          [with_tkconfig=${withval}])
   AC_MSG_CHECKING([for Tk configuration])
   AC_CACHE_VAL([ac_cv_c_tkconfig],[
 
   # First check to see if --with-tkconfig was specified.
-  if test x"${with_tkconfig}" != x ; then
+  if test x"${with_tkconfig}" != x""; then
     if test -f "${with_tkconfig}/tkConfig.sh" ; then
       ac_cv_c_tkconfig=`(cd ${with_tkconfig}; pwd)`
     else
@@ -459,46 +475,48 @@ changequote([,])
     TKCONFIG="# no Tk configs found"
     AC_MSG_WARN([Cannot find Tk configuration definitions])
   else
-    no_tk=
+    no_tk=""
     TKCONFIG=${ac_cv_c_tkconfig}/tkConfig.sh
     AC_MSG_RESULT([found $TKCONFIG])
   fi
 fi
-
-])
+])dnl
 
 # Defined as a separate macro so we do NOT have to cache the values
 # from PATH_TKCONFIG (because this can also be cached).
 AC_DEFUN([CY_AC_LOAD_TKCONFIG],[
     AC_REQUIRE([CY_AC_PATH_TKCONFIG])
-    if test -f "$TKCONFIG" ; then
-      AC_MSG_NOTICE([sourcing $TKCONFIG])
-      . $TKCONFIG
+    if test ! -z "${TKCONFIG}"; then
+      if test -f "${TKCONFIG}"; then
+        AC_MSG_NOTICE([sourcing ${TKCONFIG}])
+        . ${TKCONFIG}
+      fi
     fi
 
-    AC_SUBST([TK_VERSION])
-    AC_SUBST([TK_DEFS])
-    AC_SUBST([TK_XINCLUDES])
-    AC_SUBST([TK_XLIBSW])
-    AC_SUBST([TK_BUILD_LIB_SPEC])
-    AC_SUBST([TK_LIB_SPEC])
-])
+    AC_SUBST([TK_VERSION])dnl
+    AC_SUBST([TK_DEFS])dnl
+    AC_SUBST([TK_XINCLUDES])dnl
+    AC_SUBST([TK_XLIBSW])dnl
+    AC_SUBST([TK_BUILD_LIB_SPEC])dnl
+    AC_SUBST([TK_LIB_SPEC])dnl
+])dnl
 
 # check for Itcl headers. 
 
 AC_DEFUN([CY_AC_PATH_ITCLH],[
-AC_MSG_CHECKING([for Itcl private headers. srcdir=${srcdir}])
-if test x"${ac_cv_c_itclh}" = x ; then
+AC_MSG_CHECKING([for Itcl private headers, while using "${srcdir}" as srcdir])
+if test x"${ac_cv_c_itclh}" = x""; then
   for i in ${srcdir}/../itcl ${srcdir}/../../itcl ${srcdir}/../../../itcl ; do
-    if test -f $i/itcl/generic/itcl.h ; then
-      ac_cv_c_itclh=`(cd $i/itcl/generic; pwd)`
+    if test -f ${i}/itcl/generic/itcl.h ; then
+      ac_cv_c_itclh=`(cd ${i}/itcl/generic; pwd)`
       break
     fi
   done
 fi
-if test x"${ac_cv_c_itclh}" = x ; then
+if test x"${ac_cv_c_itclh}" = x""; then
   ITCLHDIR="# no Itcl private headers found"
   ITCLLIB="# no Itcl private headers found"
+  AC_MSG_RESULT([ ])
   AC_MSG_WARN([Cannot find Itcl private headers])
   no_itcl=true
 else
@@ -507,9 +525,9 @@ else
   ITCLLIB="../itcl/src/libitcl.a"
 fi
 
-AC_SUBST([ITCLHDIR])
-AC_SUBST([ITCLLIB])
-])
+AC_SUBST([ITCLHDIR])dnl
+AC_SUBST([ITCLLIB])dnl
+])dnl
 
 # Check to see if we are running under Cygwin32, without using
 # AC_CANONICAL_*. If so, set output variable CYGWIN to "yes".
@@ -519,33 +537,33 @@ dnl# CY_AC_CYGWIN([])
 dnl# You might think we can do this by checking for a cygwin32-specific
 dnl# cpp define.
 AC_DEFUN([CY_AC_CYGWIN],
-[# Check for Cygwin
+[# Check for Cygwin:
 AC_CACHE_CHECK([for Cygwin32 environment],[ac_cv_cygwin32],
 [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[]],[[int main () { return __CYGWIN__; }]])],
 [ac_cv_cygwin32=yes],[ac_cv_cygwin32=no])
 rm -f conftest*])
-CYGWIN=
-test "$ac_cv_cygwin32" = yes && CYGWIN=yes
+CYGWIN=""
+test "${ac_cv_cygwin32}" = yes && CYGWIN=yes
 # done with Cygwin test
-])
+])dnl
 
-# Check to see if we are running under Win32, without using
-# AC_CANONICAL_*. If so, set output variable EXEEXT to ".exe".
-# Otherwise set it to "".
+# Check to see if we are running under Win32, without(?) using
+# AC_CANONICAL_* (why without it? I needed it so I added it back). If so,
+# set output variable EXEEXT to ".exe". Otherwise set it to "".
 
 dnl# CY_AC_EXEEXT([])
 dnl# This knows we add .exe if we are building in the Cygwin32
 dnl# environment. But if we are not, then it compiles a test program
 dnl# to see if there is a suffix for executables.
 AC_DEFUN([CY_AC_EXEEXT],[
-AC_REQUIRE([AC_EXEEXT])
-AC_REQUIRE([AC_PROG_CC])
-AC_REQUIRE([AC_PROG_CPP])
-AC_REQUIRE([AC_PROG_GREP])
-AC_REQUIRE([AC_PROG_SED])
-AC_REQUIRE([AC_CANONICAL_TARGET])
-AC_REQUIRE([CY_AC_CYGWIN])
-# Do actual checking now
+AC_REQUIRE([AC_EXEEXT])dnl
+AC_REQUIRE([AC_PROG_CC])dnl
+AC_REQUIRE([AC_PROG_CPP])dnl
+AC_REQUIRE([AC_PROG_GREP])dnl
+AC_REQUIRE([AC_PROG_SED])dnl
+AC_REQUIRE([AC_CANONICAL_TARGET])dnl
+AC_REQUIRE([CY_AC_CYGWIN])dnl
+# Do the actual checking now:
 AC_MSG_CHECKING([for executable suffix])
 AC_CACHE_VAL([ac_cv_exeext],
 [case "${host_vendor}" in
@@ -566,7 +584,7 @@ EOF
 # getting thrown into the mix
 OLD_CFLAGS=${CFLAGS}
 unset CFLAGS
-${CC-cc} -o ac_c_test $CFLAGS $CPPFLAGS $LDFLAGS ac_c_test.c $LIBS 1>&5
+${CC-cc} -o ac_c_test ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} ac_c_test.c ${LIBS} 1>&5
 ac_cv_exeext=`ls ac_c_test.* | grep -v ac_c_test.c | sed -e s/ac_c_test//`
 CFLAGS=${OLD_CFLAGS}
 rm -rf ac_c_test*])
@@ -575,9 +593,9 @@ fi
 EXEEXT=""
 test x"${ac_cv_exeext}" != xno && EXEEXT=${ac_cv_exeext}
 AC_MSG_RESULT([${ac_cv_exeext}])
-AC_SUBST([EXEEXT])
+AC_SUBST([EXEEXT])dnl
 # Done with exeext check
-])
+])dnl
 
 # Check for inttypes.h. On some older systems there is a
 # conflict with the definitions of int8_t, int16_t, int32_t
@@ -597,5 +615,5 @@ AC_MSG_RESULT([$ac_cv_inttypes_h])
 if test x"${ac_cv_inttypes_h}" = x"yes"; then
   AC_DEFINE([HAVE_INTTYPES_H],[1],[Define to 1 if you have the inttypes.h header])
 fi
-])
+])dnl
 

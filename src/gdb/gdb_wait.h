@@ -1,4 +1,4 @@
-/* Standard wait macros.
+/* Standard wait macros; replacement/complement for <sys/wait.h>.
    Copyright 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -53,7 +53,7 @@
 #ifndef	WIFSTOPPED
 #ifdef IBM6000
 
-/* Unfortunately, the above comment (about being compatible in all Unix 
+/* Unfortunately, the above comment (about being compatible in all Unix
    systems) is not quite correct for AIX, sigh.  And AIX 3.2 can generate
    status words like 0x57c (sigtrap received after load), and gdb would
    choke on it. */

@@ -1,4 +1,4 @@
-/* C preprocessor macro expansion commands for GDB.
+/* macrocmd.c: C preprocessor macro expansion commands for GDB.
    Copyright 2002 Free Software Foundation, Inc.
    Contributed by Red Hat, Inc.
 
@@ -33,11 +33,10 @@
 static struct cmd_list_element *macrolist;
 
 static void
-macro_command (char *arg, int from_tty)
+macro_command(char *arg, int from_tty)
 {
-  printf_unfiltered
-    ("\"macro\" must be followed by the name of a macro command.\n");
-  help_list (macrolist, "macro ", -1, gdb_stdout);
+  printf_unfiltered("\"macro\" must be followed by the name of a macro command.\n");
+  help_list(macrolist, "macro ", (enum command_class)-1, gdb_stdout);
 }
 
 
@@ -46,11 +45,11 @@ macro_command (char *arg, int from_tty)
 
 
 static void
-macro_expand_command (char *exp, int from_tty)
+macro_expand_command(char *exp, int from_tty)
 {
   struct macro_scope *ms = NULL;
   char *expanded = NULL;
-  struct cleanup *cleanup_chain = make_cleanup (free_current_contents, &ms);
+  struct cleanup *cleanup_chain = make_cleanup(free_current_contents, &ms);
   make_cleanup (free_current_contents, &expanded);
 
   /* You know, when the user doesn't specify any expression, it would be
@@ -140,7 +139,7 @@ info_macro_command (char *name, int from_tty)
   struct macro_scope *ms = NULL;
   struct cleanup *cleanup_chain = make_cleanup (free_current_contents, &ms);
   struct macro_definition *d;
-  
+
   if (! name || ! *name)
     error (_("You must follow the `info macro' command with the name"
            " of the macro\n"
@@ -198,26 +197,25 @@ info_macro_command (char *name, int from_tty)
    things.  */
 static struct macro_table *user_macros;
 
-static void
-macro_define_command (char *exp, int from_tty)
+static void ATTR_NORETURN
+macro_define_command(char *exp, int from_tty)
 {
-  error (_("Command not implemented yet."));
+  error(_("Command not implemented yet."));
 }
 
 
-static void
-macro_undef_command (char *exp, int from_tty)
+static void ATTR_NORETURN
+macro_undef_command(char *exp, int from_tty)
 {
-  error (_("Command not implemented yet."));
+  error(_("Command not implemented yet."));
 }
 
 
-static void
-macro_list_command (char *exp, int from_tty)
+static void ATTR_NORETURN
+macro_list_command(char *exp, int from_tty)
 {
-  error (_("Command not implemented yet."));
+  error(_("Command not implemented yet."));
 }
-
 
 
 /* Initializing the `macrocmd' module.  */
@@ -266,13 +264,15 @@ For example:\n\
   (gdb) macro define MIN(x,y) ((x) < (y) ? (x) : (y))"),
 	   &macrolist);
 
-  add_cmd ("undef", no_class, macro_undef_command, _("\
+  add_cmd("undef", no_class, macro_undef_command, _("\
 Remove the definition of the C/C++ preprocessor macro with the given name."),
-	   &macrolist);
+          &macrolist);
 
-  add_cmd ("list", no_class, macro_list_command,
-	   _("List all the macros defined using the `macro define' command."),
-	   &macrolist);
+  add_cmd("list", no_class, macro_list_command,
+	  _("List all the macros defined using the `macro define' command."),
+	  &macrolist);
 
-  user_macros = new_macro_table (0, 0);
+  user_macros = new_macro_table(0, 0);
 }
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Parameters for execution on a Sun, for GDB, the GNU debugger.
+/* tm-sun3.h
+   Parameters for execution on a Sun, for GDB, the GNU debugger.
    Copyright 1986, 1987, 1989, 1992, 1993, 1994, 1996, 2000
    Free Software Foundation, Inc.
 
@@ -23,7 +24,7 @@
 #define TM_SUN3_H
 
 /* Sun3 status includes fpflags, which shows whether the FPU has been used
-   by the process, and whether the FPU was done with an instruction or 
+   by the process, and whether the FPU was done with an instruction or
    was interrupted in the middle of a long instruction.  See
    <machine/reg.h>.  */
 /*                      a&d, pc,sr, fp, fpstat, fpflags   */
@@ -77,10 +78,10 @@
 
 #define GET_LONGJMP_TARGET(ADDR) m68k_get_longjmp_target(ADDR)
 
-/* If sun3 pcc says that a parameter is a short, it's a short.  */
+/* If sun3 pcc says that a parameter is a short, it is a short.  */
 #define BELIEVE_PCC_PROMOTION_TYPE
 
-/* Can't define BELIEVE_PCC_PROMOTION for SunOS /bin/cc of SunOS 4.1.1.
+/* Cannot define BELIEVE_PCC_PROMOTION for SunOS /bin/cc of SunOS 4.1.1.
    Apparently Sun fixed this for the sparc but not the sun3.  */
 
 /* The code which tries to deal with this bug is never harmful on a sun3.  */

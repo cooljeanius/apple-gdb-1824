@@ -1,4 +1,5 @@
-/* Macro definitions for Power PC running embedded ABI under the simulator.
+/* tm-ppc-sim.h
+   Macro definitions for Power PC running embedded ABI under the simulator.
    Copyright 1995 Free Software Foundation, Inc.
 
    This file is part of GDB.

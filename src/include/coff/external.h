@@ -1,20 +1,20 @@
-/* external.h  -- External COFF structures
-   
+/* coff/external.h  -- External COFF structures
+
    Copyright 2001 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2 of the License, or
    (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #ifndef COFF_EXTERNAL_H
 #define COFF_EXTERNAL_H
@@ -33,9 +33,9 @@ struct external_filehdr
     char f_flags[2];	/* flags			*/
   };
 
-#define	FILHDR	struct external_filehdr
-#define	FILHSZ	20
-#endif
+# define FILHDR struct external_filehdr
+# define FILHSZ 20
+#endif /* !DO_NOT_DEFINE_FILHDR */
 
 #ifndef DO_NOT_DEFINE_AOUTHDR
 /********************** AOUT "OPTIONAL HEADER" **********************/
@@ -53,9 +53,9 @@ typedef struct external_aouthdr
   }
 AOUTHDR;
 
-#define AOUTHDRSZ 28
-#define AOUTSZ 28
-#endif
+# define AOUTHDRSZ 28
+# define AOUTSZ 28
+#endif /* !DO_NOT_DEFINE_AOUTHDR */
 
 #ifndef DO_NOT_DEFINE_SCNHDR
 /********************** SECTION HEADER **********************/
@@ -74,16 +74,16 @@ struct external_scnhdr
     char s_flags[4];	/* flags				*/
   };
 
-#define	SCNHDR	struct external_scnhdr
-#define	SCNHSZ	40
+# define SCNHDR struct external_scnhdr
+# define SCNHSZ 40
 
 /* Names of "special" sections.  */
 
-#define _TEXT	 ".text"
-#define _DATA	 ".data"
-#define _BSS	 ".bss"
-#define _COMMENT ".comment"
-#define _LIB     ".lib"
+# define _TEXT	  ".text"
+# define _DATA	  ".data"
+# define _BSS	  ".bss"
+# define _COMMENT ".comment"
+# define _LIB     ".lib"
 #endif /* not DO_NOT_DEFINE_SCNHDR */
 
 #ifndef DO_NOT_DEFINE_LINENO
@@ -91,8 +91,9 @@ struct external_scnhdr
 /********************** LINE NUMBERS **********************/
 
 #ifndef L_LNNO_SIZE
-#error  L_LNNO_SIZE needs to be defined
-#endif
+ # error L_LNNO_SIZE needs to be defined
+/* (either "2" or "4", depending on arch) */
+#endif /* !L_LNNO_SIZE */
 
 /* 1 line number entry for every "breakpointable" source line in a section.
    Line numbers are grouped on a per function basis; first entry in a function
@@ -112,14 +113,14 @@ struct external_lineno
 #define	LINENO	struct external_lineno
 #define	LINESZ	(4 + L_LNNO_SIZE)
 
-#if L_LNNO_SIZE == 4
-#define GET_LINENO_LNNO(abfd, ext)      H_GET_32 (abfd,      (ext->l_lnno))
-#define PUT_LINENO_LNNO(abfd, val, ext) H_PUT_32 (abfd, val, (ext->l_lnno))
-#endif
-#if L_LNNO_SIZE == 2
-#define GET_LINENO_LNNO(abfd, ext)      H_GET_16 (abfd,      (ext->l_lnno))
-#define PUT_LINENO_LNNO(abfd, val, ext) H_PUT_16 (abfd, val, (ext->l_lnno))
-#endif
+#if defined(L_LLNO_SIZE) && (L_LNNO_SIZE == 4)
+# define GET_LINENO_LNNO(abfd, ext)      H_GET_32 (abfd,      (ext->l_lnno))
+# define PUT_LINENO_LNNO(abfd, val, ext) H_PUT_32 (abfd, val, (ext->l_lnno))
+#endif /* L_LNNO_SIZE == 4 */
+#if defined(L_LLNO_SIZE) && (L_LNNO_SIZE == 2)
+# define GET_LINENO_LNNO(abfd, ext)      H_GET_16 (abfd,      (ext->l_lnno))
+# define PUT_LINENO_LNNO(abfd, val, ext) H_PUT_16 (abfd, val, (ext->l_lnno))
+#endif /* L_LNNO_SIZE == 2 */
 
 #endif /* not DO_NOT_DEFINE_LINENO */
 
@@ -132,7 +133,7 @@ struct external_lineno
 #endif
 #define E_DIMNUM	4	/* # array dimensions in auxiliary entry */
 
-struct external_syment 
+struct external_syment
 {
   union
   {
@@ -153,7 +154,7 @@ struct external_syment
 };
 
 #define	SYMENT	struct external_syment
-#define	SYMESZ	18	
+#define	SYMESZ	18
 
 #ifndef N_BTMASK
 #define N_BTMASK	0xf
@@ -180,7 +181,7 @@ union external_auxent
   struct
   {
     char x_tagndx[4];		/* str, un, or enum tag indx */
-    
+
     union
     {
       struct
@@ -188,11 +189,11 @@ union external_auxent
 	char  x_lnno[2]; /* declaration line number */
 	char  x_size[2]; /* str/union/array size */
       } x_lnsz;
-      
+
       char x_fsize[4];	/* size of function */
-      
+
     } x_misc;
-    
+
     union
     {
       struct 		/* if ISFCN, tag, or .bb */
@@ -200,30 +201,30 @@ union external_auxent
 	char x_lnnoptr[4];	/* ptr to fcn line # */
 	char x_endndx[4];	/* entry ndx past block end */
       } x_fcn;
-      
+
       struct 		/* if ISARY, up to 4 dimen. */
       {
 	char x_dimen[E_DIMNUM][2];
       } x_ary;
-      
+
     } x_fcnary;
-    
+
     char x_tvndx[2];	/* tv index */
-    
+
   } x_sym;
-  
+
   union
   {
     char x_fname[E_FILNMLEN];
-    
+
     struct
     {
       char x_zeroes[4];
       char x_offset[4];
     } x_n;
-    
+
   } x_file;
-  
+
   struct
   {
     char x_scnlen[4];	/* section length */
@@ -233,9 +234,9 @@ union external_auxent
     char x_checksum[4];		   /* section COMDAT checksum	      */
     char x_associated[2];	   /* COMDAT associated section index */
     char x_comdat[1];		   /* COMDAT selection number	      */
-#endif    
+#endif
   } x_scn;
-  
+
   struct
   {
     char x_tvfill[4];	/* tv fill value */
@@ -252,3 +253,5 @@ union external_auxent
 #endif /* not DO_NOT_DEFINE_AUXENT */
 
 #endif /* COFF_EXTERNAL_H */
+
+/* EOF */

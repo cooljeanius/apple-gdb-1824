@@ -1,3 +1,4 @@
+# sparclynx.mt
 # Host: Sparc running LynxOS
 
 XM_CLIBS= -lbsd

@@ -46,7 +46,7 @@ SHLIB_LIBSUFF='so'
 SHLIB_LIBVERSION='$(SHLIB_LIBSUFF)'
 
 PROGNAME=`basename $0`
-USAGE="$PROGNAME [-C compiler] -c host_cpu -o host_os -v host_vendor"
+USAGE="${PROGNAME} [-C compiler] -c host_cpu -o host_os -v host_vendor"
 
 while [ $# -gt 0 ]; do
 	case "$1" in
@@ -146,7 +146,14 @@ darwin*|macosx*)
 	SHLIB_LIBSUFF='dylib'
 
 	SHOBJ_LDFLAGS='-dynamiclib'
-	SHLIB_XLDFLAGS='-arch_only `/usr/bin/arch` -install_name $(libdir)/$@ -current_version $(SHLIB_MAJOR)$(SHLIB_MINOR) -compatibility_version $(SHLIB_MAJOR) -v'
+    if test "x${HOST_ARCHITECTURE}" != "x"; then
+        test -n "${HOST_ARCHITECTURE}"
+        SHLIB_XLDFLAGS='-arch ${HOST_ARCHITECTURE} -install_name $(libdir)/$@ -current_version $(SHLIB_MAJOR)$(SHLIB_MINOR) -compatibility_version $(SHLIB_MAJOR)'
+    else
+        test -z "${HOST_ARCHITECTURE}"
+        SHLIB_XLDFLAGS='-arch_only `/usr/bin/arch` -install_name $(libdir)/$@ -current_version $(SHLIB_MAJOR)$(SHLIB_MINOR) -compatibility_version $(SHLIB_MAJOR)'
+    fi
+	SHLIB_EXTRA_XLDFLAGS='-v'
 
 	SHLIB_LIBS='-lSystem -lncurses'
 	;;
@@ -288,7 +295,7 @@ hpux9*)
 #
 #	SHLIB_XLDFLAGS='+b $(libdir)'
 #	SHLIB_LIBSUFF='sl'
-#	SHLIB_LIBVERSION='$(SHLIB_LIBSUFF).$(SHLIB_MAJOR)'	
+#	SHLIB_LIBVERSION='$(SHLIB_LIBSUFF).$(SHLIB_MAJOR)'
 
 	;;
 
@@ -318,7 +325,7 @@ hpux10*)
 #
 #	SHLIB_XLDFLAGS='+b $(libdir)'
 #	SHLIB_LIBSUFF='sl'
-#	SHLIB_LIBVERSION='$(SHLIB_LIBSUFF).$(SHLIB_MAJOR)'	
+#	SHLIB_LIBVERSION='$(SHLIB_LIBSUFF).$(SHLIB_MAJOR)'
 
 	;;
 
@@ -338,7 +345,7 @@ hpux11*)
 	SHOBJ_STATUS=unsupported
 	SHLIB_STATUS=unsupported
 
-	# If you are using the HP ANSI C compiler, you can uncomment and use
+	# If you use the HP ANSI C compiler, you can uncomment and use
 	# this code (I have not tested it)
 #	SHOBJ_STATUS=supported
 #	SHLIB_STATUS=supported
@@ -349,7 +356,7 @@ hpux11*)
 #
 #	SHLIB_XLDFLAGS='+b $(libdir)'
 #	SHLIB_LIBSUFF='sl'
-#	SHLIB_LIBVERSION='$(SHLIB_LIBSUFF).$(SHLIB_MAJOR)'	
+#	SHLIB_LIBVERSION='$(SHLIB_LIBSUFF).$(SHLIB_MAJOR)'
 
 	;;
 
@@ -400,7 +407,7 @@ sysv5uw7*)
 
 	SHLIB_LIBVERSION='$(SHLIB_LIBSUFF).$(SHLIB_MAJOR)'
 	;;
-	
+
 dgux*-*gcc*)
 	SHOBJ_CFLAGS=-fpic
 	SHOBJ_LD='${CC}'

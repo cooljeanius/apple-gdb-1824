@@ -1,0 +1,7 @@
+\input texinfo
+@ignore
+\internalpagesizes{46\baselineskip}{6in}{-.25in}{-.25in}{\bindingoffset}{36pt}%
+@end ignore
+@c %**start of header
+@setfilename autogen.info
+@include agdoc.texi

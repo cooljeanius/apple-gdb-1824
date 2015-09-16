@@ -1,4 +1,5 @@
-/* Parameters for execution on a Sun, for GDB, the GNU debugger.
+/* xm-sun3.h
+   Parameters for execution on a Sun, for GDB, the GNU debugger.
    Copyright 1986, 1987, 1989, 1996 Free Software Foundation, Inc.
 
    This file is part of GDB.

@@ -22,9 +22,17 @@
 #ifndef INF_CHILD_H
 #define INF_CHILD_H
 
+#include "symtab.h"
+#include "target.h"
+
+extern int inf_child_enable_exception_callback(enum exception_event_kind k,
+                                               int enable);
+
 /* Create a prototype child target.  The client can override it with
    local methods.  */
 
-extern struct target_ops *inf_child_target (void);
+extern struct target_ops *inf_child_target(void);
 
-#endif
+#endif /* !INF_CHILD_H */
+
+/* EOF */

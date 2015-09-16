@@ -1,5 +1,7 @@
-/* BFD library support routines for the Microchip PIC architecture.
-   Copyright (C) 1997 Klee Dienes <klee@mit.edu>
+/* cpu-pic.c
+ * BFD library support routines for the Microchip PIC architecture.
+ */
+/* Copyright (C) 1997 Klee Dienes <klee@mit.edu>
 
 This file is part of BFD, the Binary File Descriptor library.
 
@@ -68,3 +70,5 @@ const bfd_arch_info_type bfd_pic16_arch =
   bfd_default_scan,
   0,
 };
+
+/* EOF */

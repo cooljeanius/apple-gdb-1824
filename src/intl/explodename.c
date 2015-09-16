@@ -1,4 +1,5 @@
-/* Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+/* explodename.c
+   Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
    Contributed by Ulrich Drepper <drepper@gnu.ai.mit.edu>, 1995.
 
    This program is free software; you can redistribute it and/or modify
@@ -18,35 +19,45 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning explodename.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning explodename.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning explodename.c expects <stdlib.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "explodename.c expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H */
 
 #if defined HAVE_STRING_H || defined _LIBC
 # include <string.h>
-#elif defined HAVE_STRINGS_H
-# include <strings.h>
 #else
-# warning explodename.c expects either <string.h> or <strings.h> to be included.
-#endif
+# if defined HAVE_STRINGS_H
+#  include <strings.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "explodename.c expects either <string.h> or <strings.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H || _LIBC */
 
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning explodename.c expects <sys/types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "explodename.c expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
 
 #include "loadinfo.h"
 
-/* On some strange systems still no definition of NULL is found. Sigh!  */
+/* On some strange systems still no definition of NULL is found. Sigh! */
 #ifndef NULL
 # if defined __STDC__ && __STDC__
-#  define NULL ((void *) 0)
+#  define NULL ((void *)0)
 # else
 #  define NULL 0
 # endif /* __STDC__ && __STDC__ */
@@ -54,18 +65,11 @@
 
 /* @@ end of prolog @@ */
 
-int
-_nl_explode_name (name, language, modifier, territory, codeset,
-		  normalized_codeset, special, sponsor, revision)
-     char *name;
-     const char **language;
-     const char **modifier;
-     const char **territory;
-     const char **codeset;
-     const char **normalized_codeset;
-     const char **special;
-     const char **sponsor;
-     const char **revision;
+int _nl_explode_name(char *name, const char **language,
+                     const char **modifier, const char **territory,
+                     const char **codeset, const char **normalized_codeset,
+                     const char **special, const char **sponsor,
+                     const char **revision)
 {
   enum { undecided, xpg, cen } syntax;
   char *cp;
@@ -89,111 +93,113 @@ _nl_explode_name (name, language, modifier, territory, codeset,
 	 && cp[0] != '+' && cp[0] != ',')
     ++cp;
 
-  if (*language == cp)
-    /* This does not make sense: language has to be specified.  Use
-       this entry as it is without exploding.  Perhaps it is an alias.  */
-    cp = strchr (*language, '\0');
-  else if (cp[0] == '_')
-    {
+  if (*language == cp) {
+    /* This does not make sense: language has to be specified. Use
+     * this entry as it is without exploding. Perhaps it is an alias: */
+    cp = strchr(*language, '\0');
+  } else if (cp[0] == '_') {
       /* Next is the territory.  */
       cp[0] = '\0';
       *territory = ++cp;
 
-      while (cp[0] != '\0' && cp[0] != '.' && cp[0] != '@'
-	     && cp[0] != '+' && cp[0] != ',' && cp[0] != '_')
+      while ((cp[0] != '\0') && (cp[0] != '.') && (cp[0] != '@')
+	     && (cp[0] != '+') && (cp[0] != ',') && (cp[0] != '_')) {
 	++cp;
+      }
 
       mask |= TERRITORY;
 
-      if (cp[0] == '.')
-	{
-	  /* Next is the codeset.  */
+      if (cp[0] == '.') {
+	  /* Next is the codeset: */
 	  syntax = xpg;
 	  cp[0] = '\0';
 	  *codeset = ++cp;
 
-	  while (cp[0] != '\0' && cp[0] != '@')
+	  while ((cp[0] != '\0') && (cp[0] != '@')) {
 	    ++cp;
+          }
 
 	  mask |= XPG_CODESET;
 
-	  if (*codeset != cp && (*codeset)[0] != '\0')
-	    {
-	      *normalized_codeset = _nl_normalize_codeset (*codeset,
-							   cp - *codeset);
-	      if (strcmp (*codeset, *normalized_codeset) == 0)
-		free ((char *) *normalized_codeset);
-	      else
+	  if ((*codeset != cp) && ((*codeset)[0] != '\0')) {
+	      *normalized_codeset =
+                _nl_normalize_codeset((const unsigned char *)*codeset,
+                                      (size_t)(cp - *codeset));
+	      if (strcmp(*codeset, *normalized_codeset) == 0) {
+		free((char *)*normalized_codeset);
+	      } else {
 		mask |= XPG_NORM_CODESET;
-	    }
-	}
-    }
+              }
+          }
+      }
+  }
 
-  if (cp[0] == '@' || (syntax != xpg && cp[0] == '+'))
-    {
-      /* Next is the modifier.  */
-      syntax = cp[0] == '@' ? xpg : cen;
+  if ((cp[0] == '@') || ((syntax != xpg) && (cp[0] == '+'))) {
+      /* Next is the modifier: */
+      syntax = ((cp[0] == '@') ? xpg : cen);
       cp[0] = '\0';
       *modifier = ++cp;
 
-      while (syntax == cen && cp[0] != '\0' && cp[0] != '+'
-	     && cp[0] != ',' && cp[0] != '_')
+      while ((syntax == cen) && (cp[0] != '\0') && (cp[0] != '+')
+	     && (cp[0] != ',') && (cp[0] != '_')) {
 	++cp;
+      }
 
-      mask |= XPG_MODIFIER | CEN_AUDIENCE;
-    }
+      mask |= (XPG_MODIFIER | CEN_AUDIENCE);
+  }
 
-  if (syntax != xpg && (cp[0] == '+' || cp[0] == ',' || cp[0] == '_'))
-    {
+  if ((syntax != xpg) &&
+      ((cp[0] == '+') || (cp[0] == ',') || (cp[0] == '_'))) {
       syntax = cen;
 
-      if (cp[0] == '+')
-	{
- 	  /* Next is special application (CEN syntax).  */
+      if (cp[0] == '+') {
+ 	  /* Next is special application (CEN syntax): */
 	  cp[0] = '\0';
 	  *special = ++cp;
 
-	  while (cp[0] != '\0' && cp[0] != ',' && cp[0] != '_')
+	  while ((cp[0] != '\0') && (cp[0] != ',') && (cp[0] != '_')) {
 	    ++cp;
+          }
 
 	  mask |= CEN_SPECIAL;
-	}
+      }
 
-      if (cp[0] == ',')
-	{
- 	  /* Next is sponsor (CEN syntax).  */
+      if (cp[0] == ',') {
+ 	  /* Next is sponsor (CEN syntax): */
 	  cp[0] = '\0';
 	  *sponsor = ++cp;
 
-	  while (cp[0] != '\0' && cp[0] != '_')
+	  while ((cp[0] != '\0') && (cp[0] != '_')) {
 	    ++cp;
+          }
 
 	  mask |= CEN_SPONSOR;
-	}
+      }
 
-      if (cp[0] == '_')
-	{
- 	  /* Next is revision (CEN syntax).  */
+      if (cp[0] == '_') {
+ 	  /* Next is revision (CEN syntax): */
 	  cp[0] = '\0';
 	  *revision = ++cp;
 
 	  mask |= CEN_REVISION;
-	}
-    }
+      }
+  }
 
   /* For CEN syntax values it might be important to have the
-     separator character in the file name, not for XPG syntax.  */
-  if (syntax == xpg)
-    {
-      if (*territory != NULL && (*territory)[0] == '\0')
+   * separator character in the file name, not for XPG syntax: */
+  if (syntax == xpg) {
+      if ((*territory != NULL) && ((*territory)[0] == '\0')) {
 	mask &= ~TERRITORY;
-
-      if (*codeset != NULL && (*codeset)[0] == '\0')
+      }
+      if ((*codeset != NULL) && ((*codeset)[0] == '\0')) {
 	mask &= ~XPG_CODESET;
-
-      if (*modifier != NULL && (*modifier)[0] == '\0')
+      }
+      if ((*modifier != NULL) && ((*modifier)[0] == '\0')) {
 	mask &= ~XPG_MODIFIER;
-    }
+      }
+  }
 
   return mask;
 }
+
+/* EOF */

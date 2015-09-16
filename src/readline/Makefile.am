@@ -17,6 +17,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 ACLOCAL_AMFLAGS = -I m4 --install
 
+AUTOMAKE_OPTIONS = 1.11.6 dejagnu gnits no-dist
+
 SUBDIRS = . doc shlib examples
 
 RL_LIBRARY_VERSION = @LIBVERSION@
@@ -55,7 +57,7 @@ infodir = @infodir@
 
 man3dir = $(mandir)/man3
 
-# Support an alternate destination root directory for package building
+# Support an alternate destination root directory for package building:
 DESTDIR =
 
 # Programs to make tags files.
@@ -65,7 +67,8 @@ my_CTAGS = ctags -tw
 CFLAGS = @CFLAGS@
 SHOBJ_CFLAGS = @SHOBJ_CFLAGS@
 
-LOCAL_CFLAGS = @LOCAL_CFLAGS@ -DRL_LIBRARY_VERSION='"$(RL_LIBRARY_VERSION)"'
+VERS_FLAG = -DRL_LIBRARY_VERSION='"$(RL_LIBRARY_VERSION)"'
+LOCAL_CFLAGS = @LOCAL_CFLAGS@ $(VERS_FLAG)
 CPPFLAGS = @CPPFLAGS@
 
 DEFS = @DEFS@
@@ -78,13 +81,19 @@ TERMCAP_LIB = @TERMCAP_LIB@
 # For libraries which include headers from other libraries.
 AM_CPPFLAGS = -I. -I$(srcdir)
 
+# architecture flags:
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+
+# now combine all the flags:
 XCCFLAGS = $(DEFS) $(LOCAL_DEFS) $(CPPFLAGS) $(INCLUDES) $(AM_CPPFLAGS)
-CCFLAGS = $(XCCFLAGS) $(LOCAL_CFLAGS) $(CFLAGS) $(SHOBJ_CFLAGS)
+JUST_CFLAGS = $(LOCAL_CFLAGS) $(CFLAGS) $(SHOBJ_CFLAGS)
+CCFLAGS = $(XCCFLAGS) $(JUST_CFLAGS) $(C_ARCHFLAGS)
 
 # could(?) add -Werror here
 GCC_LINT_FLAGS = -ansi -Wall -Wshadow -Wpointer-arith -Wcast-qual \
 		 -Wwrite-strings -Wstrict-prototypes \
-		 -Wmissing-prototypes -Wno-implicit -pedantic
+		 -Wmissing-prototypes -Wno-implicit -pedantic \
+		 -Wold-style-definition -Wc++-compat -Wmissing-declarations
 GCC_LINT_CFLAGS = $(XCCFLAGS) $(GCC_LINT_FLAGS) @CFLAGS@ @LOCAL_CFLAGS@
 
 .c.o:
@@ -152,17 +161,28 @@ all: config.status $(TARGETS)
 # Hack: should not be treated as targets in the first place
 .PHONY: -c -m 644
 
-everything: config.status all examples
+everything: config.status all @MAINT@ examples
 
 static: $(STATIC_LIBS)
 
-libreadline.a: $(OBJECTS) $(XMALLOCOBJ)
+libreadline.a: $(OBJECTS) $(HISTOBJ) $(TILDEOBJ) $(XMALLOCOBJ) ${LIBOBJDIR}compat$U.o ${LIBOBJDIR}malloc$U.o ${LIBOBJDIR}realloc$U.o
 	$(RM) $@
+	test -e ./Makefile && $(MAKE) ./compat.o ./malloc.o ./realloc.o
+	if test -e $(srcdir)/compat.o -a ! -e compat.o; then \
+	  cp -v $(srcdir)/compat.o compat.o; \
+	fi
+	if test -e $(srcdir)/malloc.o -a ! -e malloc.o; then \
+	  cp -v $(srcdir)/malloc.o malloc.o; \
+	fi
+	if test -e $(srcdir)/realloc.o -a ! -e realloc.o; then \
+	  cp -v $(srcdir)/realloc.o realloc.o; \
+	fi
 	$(AR) $(ARFLAGS) $@ $(OBJECTS)
 	-test -n "$(RANLIB)" && $(RANLIB) $@
 
-libhistory.a: $(HISTOBJ) $(XMALLOCOBJ)
+libhistory.a: $(HISTOBJ) $(XMALLOCOBJ) ${LIBOBJDIR}malloc$U.o ${LIBOBJDIR}realloc$U.o @MAINT@ Makefile
 	$(RM) $@
+	test -e Makefile && test -w . && $(MAKE) ./malloc.o ./realloc.o
 	$(AR) $(ARFLAGS) $@ $(HISTOBJ) $(XMALLOCOBJ)
 	-test -n "$(RANLIB)" && $(RANLIB) $@
 
@@ -188,7 +208,7 @@ am_Makefile am_makefile: config.status $(srcdir)/Makefile.in
 
 Makefiles makefiles: config.status $(srcdir)/Makefile.in
 	@for mf in $(CREATED_MAKEFILES); do \
-		CONFIG_FILES=$$mf CONFIG_HEADERS= $(SHELL) ./config.status ; \
+	  CONFIG_FILES=$${mf} CONFIG_HEADERS="" $(SHELL) ./config.status; \
 	done
 
 am_config.status: configure
@@ -199,12 +219,12 @@ am_config.h: config.status stamp-h
 .PHONY: am_config.h
 
 stamp-h: config.status $(srcdir)/config.h.in
-	CONFIG_FILES= CONFIG_HEADERS=config.h ./config.status
-	echo > $@
+	CONFIG_FILES="" CONFIG_HEADERS=config.h ./config.status
+	echo "" > $@
 
 shared:	force
 	-test -d shlib || mkdir shlib
-	-( cd shlib ; ${MAKE} ${MFLAGS} all )
+	-( cd shlib; ${MAKE} ${MFLAGS} all )
 
 documentation: force
 	-test -d doc || mkdir doc
@@ -218,12 +238,12 @@ force:
 
 install-headers: installdirs ${INSTALLED_HEADERS}
 	for f in ${INSTALLED_HEADERS}; do \
-		$(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(includedir)/readline ; \
+	$(INSTALL_DATA) $(srcdir)/$${f} $(DESTDIR)$(includedir)/readline; \
 	done
 
 uninstall-headers:
-	-test -n "$(includedir)" && cd $(DESTDIR)$(includedir)/readline && \
-		${RM} ${INSTALLED_HEADERS}
+	-test -n "$(includedir)" && cd $(DESTDIR)$(includedir)/readline \
+	  && ${RM} ${INSTALLED_HEADERS}
 
 maybe-uninstall-headers: uninstall-headers
 
@@ -260,8 +280,8 @@ uninstall-local: uninstall-headers
 	-test -n "$(DESTDIR)$(libdir)" && cd $(DESTDIR)$(libdir) && \
 		${RM} libreadline.a libreadline.old libhistory.a libhistory.old $(SHARED_LIBS)
 	-( if test -d doc ; then \
-		cd doc && \
-		${MAKE} ${MFLAGS} infodir=$(infodir) DESTDIR=${DESTDIR} $@; \
+	     cd doc && \
+	     ${MAKE} ${MFLAGS} infodir=$(infodir) DESTDIR=${DESTDIR} $@; \
 	  fi )
 	-( cd shlib; ${MAKE} ${MFLAGS} DESTDIR=${DESTDIR} uninstall )
 
@@ -282,22 +302,26 @@ tags-local: force
 clean-local: config.status force
 	$(RM) $(OBJECTS) $(STATIC_LIBS)
 	$(RM) readline readline.exe
-	-( cd shlib && $(MAKE) $(MFLAGS) $@ )
-	-( cd doc && $(MAKE) $(MFLAGS) $@ )
-	-( cd examples && $(MAKE) $(MFLAGS) $@ )
+	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
 
 mostlyclean-local: clean-local config.status
-	-( cd shlib && $(MAKE) $(MFLAGS) $@ )
-	-( cd doc && $(MAKE) $(MFLAGS) $@ )
-	-( cd examples && $(MAKE) $(MFLAGS) $@ )
+	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
 
 distclean-local maintainer-clean-local: clean-local config.status
-	-( cd shlib && $(MAKE) $(MFLAGS) $@ )
-	-( cd doc && $(MAKE) $(MFLAGS) $@ )
-	-( cd examples && $(MAKE) $(MFLAGS) $@ )
+	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
 	$(RM) Makefile
 	$(RM) $(CREATED_CONFIGURE)
 	$(RM) $(CREATED_TAGS)
+	$(RM) -r autom4te.cache || rmdir autom4te.cache
+
+CLEANFILES = *~
+DISTCLEANFILES = .DS_Store
 
 info dvi:
 	-( cd doc && $(MAKE) $(MFLAGS) $@ )
@@ -307,11 +331,11 @@ check:
 installcheck-local:
 
 dist-local: force
-	@echo Readline distributions are created using $(srcdir)/support/mkdist.
-	@echo Here is a sample of the necessary commands:
-	@echo bash $(srcdir)/support/mkdist -m $(srcdir)/MANIFEST -s $(srcdir) -r $(RL_LIBRARY_NAME) $(RL_LIBRARY_VERSION)
-	@echo tar cf $(RL_LIBRARY_NAME)-${RL_LIBRARY_VERSION}.tar ${RL_LIBRARY_NAME}-$(RL_LIBRARY_VERSION)
-	@echo gzip $(RL_LIBRARY_NAME)-$(RL_LIBRARY_VERSION).tar
+	@echo "Readline distributions are created using $(srcdir)/support/mkdist."
+	@echo "Here is a sample of the necessary commands:"
+	@echo "bash $(srcdir)/support/mkdist -m $(srcdir)/MANIFEST -s $(srcdir) -r $(RL_LIBRARY_NAME) $(RL_LIBRARY_VERSION)"
+	@echo "tar cf $(RL_LIBRARY_NAME)-${RL_LIBRARY_VERSION}.tar ${RL_LIBRARY_NAME}-$(RL_LIBRARY_VERSION)"
+	@echo "gzip $(RL_LIBRARY_NAME)-$(RL_LIBRARY_VERSION).tar"
 
 NSLIBTOOL = cc -dynamiclib
 SYSTEM_FRAMEWORK = -framework System -lcurses
@@ -329,36 +353,37 @@ FRAMEWORK_LIB = -F$(BINUTILS_FRAMEWORKS) -L$(BINUTILS_FRAMEWORKS) -F$(LIBIBERTY_
 
 stamp-framework-headers:
 	$(RM) -f stamp-framework stamp-framework-headers
-	$(RM) -rf $(FRAMEWORK).framework
-	mkdir -p $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
-	mkdir -p $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
-	ln -s Versions/Current/Headers $(FRAMEWORK).framework/Headers
-	ln -s Versions/Current/PrivateHeaders $(FRAMEWORK).framework/PrivateHeaders
-	ln -s A $(FRAMEWORK).framework/Versions/Current
-	cp -p $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
-	cp -p *.h $(FRAMEWORK).framework/Versions/Current/Headers/
+	$(RM) -rfv $(FRAMEWORK).framework
+	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
+	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
+	$(LN_S) -v Versions/Current/Headers $(FRAMEWORK).framework/Headers
+	$(LN_S) -v Versions/Current/PrivateHeaders $(FRAMEWORK).framework/PrivateHeaders
+	$(LN_S) -v A $(FRAMEWORK).framework/Versions/Current
+	cp -pv $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
+	cp -pv *.h $(FRAMEWORK).framework/Versions/Current/Headers/
 	touch stamp-framework-headers
 
 stamp-framework: $(FRAMEWORK_OFILES)
 	$(RM) -f stamp-framework-headers
 	$(MAKE) stamp-framework-headers
-	mkdir -p $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
-	ln -s Versions/Current/Resources $(FRAMEWORK).framework/Resources
-	mkdir -p $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
+	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
+	$(LN_S) -v Versions/Current/Resources $(FRAMEWORK).framework/Resources
+	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
 
-	set -e; if [ "$(FRAMEWORK_SUFFIX)" != "" ]; then \
-		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
-		ln -s $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
-		ln -s Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX); \
-		ln -s Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
-		ln -s $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK); \
+	set -ex; \
+	if [ "x$(FRAMEWORK_SUFFIX)" != "x" ]; then \
+	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
+	    $(LN_S) -v $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
+	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX); \
+	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
+	    $(LN_S) -v $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK); \
 	else \
-		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE)  -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
-		ln -s Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
+	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE)  -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
+	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
 	fi
 	touch stamp-framework
 
-# Dependencies
+# Dependencies:
 bind.o: ansi_stdlib.h posixstat.h
 bind.o: rldefs.h ${BUILD_DIR}/config.h rlconf.h
 bind.o: readline.h keymaps.h rltypedefs.h chardefs.h tilde.h rlstdc.h

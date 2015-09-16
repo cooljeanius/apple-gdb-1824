@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-xdep.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -47,20 +47,22 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "regcache.h"
 #include "xm-macosx.h"
 
+#include "macosx-xdep.h"
+
 #include <sys/ttycom.h>
 #include <sys/ioctl.h>
 
 void
-macosx_resize_window (int *lines_per_page, int *chars_per_line)
+macosx_resize_window(int *lines_per_page, int *chars_per_line)
 {
   int new_lines_per_page = UINT_MAX;
   int new_chars_per_line = UINT_MAX;
   int ret;
 
-  if (isatty (fileno (stdout)))
+  if (isatty(fileno(stdout)))
     {
       struct winsize window_size;
-      ret = ioctl (fileno (stdout), TIOCGWINSZ, &window_size);
+      ret = ioctl(fileno(stdout), TIOCGWINSZ, &window_size);
       if (ret == 0)
         {
           new_lines_per_page = window_size.ws_row;
@@ -68,19 +70,20 @@ macosx_resize_window (int *lines_per_page, int *chars_per_line)
         }
     }
 
-  if ((*lines_per_page != UINT_MAX) && (*lines_per_page != 0))
+  if (((unsigned int)*lines_per_page != UINT_MAX)
+      && (*lines_per_page != 0))
     {
       *lines_per_page = new_lines_per_page;
     }
 
-  if ((*chars_per_line != UINT_MAX) && (*chars_per_line != 0))
+  if (((unsigned int)*chars_per_line != UINT_MAX)
+      && (*chars_per_line != 0))
     {
       *chars_per_line = new_chars_per_line;
     }
 
-  set_screen_size ();
-  set_width ();
+  set_screen_size();
+  set_width();
 }
 
 /* EOF */
-

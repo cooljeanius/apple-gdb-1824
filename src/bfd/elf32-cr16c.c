@@ -27,14 +27,14 @@
 
 #define USE_REL	1	/* CR16C uses REL relocations instead of RELA.  */
 
-/* The following definition is based on EMPTY_HOWTO macro, 
+/* The following definition is based on EMPTY_HOWTO macro,
    but also initiates the "name" field in HOWTO struct.  */
 #define ONLY_NAME_HOWTO(C) \
   HOWTO ((C), 0, 0, 0, FALSE, 0, complain_overflow_dont, NULL, \
 	  STRINGX(C), FALSE, 0, 0, FALSE)
 
 /* reloc_map_index array maps CRASM relocation type into a BFD
-   relocation enum. The array's indices are synchronized with 
+   relocation enum. The array's indices are synchronized with
    RINDEX_16C_* indices, created in include/elf/cr16c.h.
    The array is used in:
    1. elf32-cr16c.c : elf_cr16c_reloc_type_lookup().
@@ -129,11 +129,10 @@ static reloc_howto_type elf_howto_table[] =
 };
 
 
-/* Code to turn a code_type into a howto ptr, uses the above howto table.  */
-
+/* Code to turn a code_type into a howto ptr, uses the above howto table: */
 static reloc_howto_type *
-elf_cr16c_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
-			     bfd_reloc_code_real_type code)
+elf_cr16c_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                            bfd_reloc_code_real_type code)
 {
   unsigned int i;
 
@@ -141,21 +140,25 @@ elf_cr16c_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
     {
       if (code == reloc_map_index[i].bfd_reloc_enum)
 	{
-	  /* printf ("CR16C Relocation Type is - %x\n", code); */
-	  return & elf_howto_table[i];
+#ifdef DEBUG
+	  printf("CR16C Relocation Type is - %x\n", code);
+#endif /* DEBUG */
+	  return &elf_howto_table[i];
 	}
     }
 
-  /* printf ("This relocation Type is not supported - %x\n", code); */
+#ifdef DEBUG
+  printf("This relocation Type is not supported - %x\n", code);
+#endif /* DEBUG */
   return 0;
 }
 
-static void
-elf_cr16c_info_to_howto (bfd *abfd ATTRIBUTE_UNUSED,
-			 arelent *cache_ptr ATTRIBUTE_UNUSED,
-			 Elf_Internal_Rela *dst ATTRIBUTE_UNUSED)
+static void ATTRIBUTE_NORETURN
+elf_cr16c_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED,
+                        arelent *cache_ptr ATTRIBUTE_UNUSED,
+                        Elf_Internal_Rela *dst ATTRIBUTE_UNUSED)
 {
-  abort ();
+  abort();
 }
 
 static void
@@ -451,26 +454,26 @@ cr16c_elf_final_link_relocate (reloc_howto_type *howto,
       switch (size)
 	{
 	case R_S_16C_04:	/* word1(4-7).  */
-	  if ((value - 32) > 32 || value < 2)
+	  if (((value - 32) > 32) || (value < 2))
 	    return bfd_reloc_overflow;
 	  value >>= 1;
 	  value--;
 	  value &= 0xF;
 	  value <<= 4;
 	  value |= left_val;
-	  bfd_put_8 (abfd, (bfd_vma) value, (unsigned char *) data + octets);
+	  bfd_put_8(abfd, (bfd_vma)value, (unsigned char *)data + octets);
 	  break;
 
 	case R_S_16C_08:    /* word1(0-3,8-11).  */
-	  if (value > 255 || value < -256 || value == 0x80)
+	  if ((value > 255) || (value < -256) || (value == 0x80))
 	    return bfd_reloc_overflow;
 	  value &= 0x1FF;
 	  value >>= 1;
-	  sword = value & 0x000F;
-	  sword |= (value & 0x00F0) << 4;
+	  sword = (value & 0x000F);
+	  sword |= ((value & 0x00F0) << 4);
 	  sword |= left_val;
-	  bfd_put_16 (abfd, (bfd_vma) sword,
-		      (unsigned char *) data + octets);
+	  bfd_put_16(abfd, (bfd_vma)sword,
+		     (unsigned char *)data + octets);
 	  break;
 
 	case R_S_16C_16:    /* word2.  */
@@ -876,13 +879,12 @@ elf32_cr16c_section_from_bfd_section (bfd *abfd ATTRIBUTE_UNUSED,
   return TRUE;
 }
 
-/* Handle the special CR16C section numbers that a symbol may use.  */
-
+/* Handle the special CR16C section numbers that a symbol may use: */
 static void
-elf32_cr16c_symbol_processing (bfd *abfd ATTRIBUTE_UNUSED,
-			       asymbol *asym)
+elf32_cr16c_symbol_processing(bfd *abfd ATTRIBUTE_UNUSED,
+                              asymbol *asym)
 {
-  elf_symbol_type *elfsym = (elf_symbol_type *) asym;
+  elf_symbol_type *elfsym = (elf_symbol_type *)asym;
   unsigned int indx;
 
   indx = elfsym->internal_elf_sym.st_shndx;
@@ -923,6 +925,8 @@ elf32_cr16c_symbol_processing (bfd *abfd ATTRIBUTE_UNUSED,
       asym->section = &cr16c_elf_ncom_section;
       asym->value = elfsym->internal_elf_sym.st_size;
       break;
+    default:
+      break;
     }
 }
 
@@ -943,14 +947,16 @@ elf32_cr16c_add_symbol_hook (bfd *abfd,
   switch (indx)
     {
     case SHN_CR16C_FCOMMON:
-      *secp = bfd_make_section_old_way (abfd, ".fcommon");
+      *secp = bfd_make_section_old_way(abfd, ".fcommon");
       (*secp)->flags |= SEC_IS_COMMON;
       *valp = sym->st_size;
       break;
     case SHN_CR16C_NCOMMON:
-      *secp = bfd_make_section_old_way (abfd, ".ncommon");
+      *secp = bfd_make_section_old_way(abfd, ".ncommon");
       (*secp)->flags |= SEC_IS_COMMON;
       *valp = sym->st_size;
+      break;
+    default:
       break;
     }
 

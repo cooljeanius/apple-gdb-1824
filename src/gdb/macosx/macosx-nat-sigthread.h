@@ -1,3 +1,7 @@
+/*
+ * macosx-nat-sigthread.h
+ */
+
 #ifndef __GDB_MACOSX_NAT_SIGTHREAD_H__
 #define __GDB_MACOSX_NAT_SIGTHREAD_H__
 
@@ -28,13 +32,18 @@ struct macosx_signal_thread_status
 typedef struct macosx_signal_thread_message macosx_signal_thread_message;
 typedef struct macosx_signal_thread_status macosx_signal_thread_status;
 
-void macosx_signal_thread_debug (FILE *f,
-                                 struct macosx_signal_thread_status *s);
-void macosx_signal_thread_debug_status (FILE *f, WAITSTATUS status);
+extern void sigthread_debug_re(const char *fmt, ...)
+  ATTR_FORMAT(gnu_printf, 1, 2);
 
-void macosx_signal_thread_init (macosx_signal_thread_status *s);
+void macosx_signal_thread_debug(FILE *f,
+                                struct macosx_signal_thread_status *s);
+void macosx_signal_thread_debug_status(FILE *f, WAITSTATUS status);
 
-void macosx_signal_thread_create (macosx_signal_thread_status *s, int pid);
-void macosx_signal_thread_destroy (macosx_signal_thread_status *s);
+void macosx_signal_thread_init(macosx_signal_thread_status *s);
+
+void macosx_signal_thread_create(macosx_signal_thread_status *s, int pid);
+void macosx_signal_thread_destroy(macosx_signal_thread_status *s);
 
 #endif /* __GDB_MACOSX_NAT_SIGTHREAD_H__ */
+
+/* EOF */

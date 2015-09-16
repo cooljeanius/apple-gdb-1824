@@ -49,11 +49,12 @@ all:
 
 check:	site.exp all
 	rootme=`pwd`; export rootme; \
-	srcdir=${srcdir} ; export srcdir ; \
-	EXPECT=${EXPECT} ; export EXPECT ; \
-	if [ -f $${rootme}/../../expect/expect ] ; then  \
-	   TCL_LIBRARY=`echo @TCLHDIR@ | sed -e 's/-I//' -e 's/generic/library/'` ; \
-	   export TCL_LIBRARY ; fi ; \
+	srcdir=${srcdir}; export srcdir; \
+	EXPECT=${EXPECT}; export EXPECT; \
+	if [ -f $${rootme}/../../expect/expect ]; then  \
+	   TCL_LIBRARY=`echo @TCLHDIR@ | sed -e 's/-I//' -e 's/generic/library/'`; \
+	   export TCL_LIBRARY; fi; \
+	PATH=${PATH}:../:${srcdir}/..; export PATH; \
 	${BLUEGNU} ${BLUEGNUFLAGS} BLUEGNU=${BLUEGNU} --tool bluegnu --srcdir ${srcdir}
 
 site.exp: ./config.status Makefile
@@ -75,9 +76,10 @@ site.exp: ./config.status Makefile
 			-e '1,/^## All variables above are.*##/ d' >> site.exp
 	-@rm -f ./tmp?
 
-clean mostlyclean:
+clean-local clean mostlyclean:
 	-rm -f \#* *~ core *.o a.out xgdb *.x
 	-rm -f [Ee]rrs tags mklog ${OBJS} ${PROG} x.* xXx.*
+.PHONY: clean-local clean mostlyclean
 
 distclean maintainer-clean realclean: clean
 	-rm -f Makefile
@@ -85,12 +87,15 @@ distclean maintainer-clean realclean: clean
 	-rm -f calc.h calc.log calc.plog calc.psum confdefs.h
 	-rm -f calc.sum site.exp
 	-rm -rf tmpdir
+	-rm -fr autom4te.cache || rmdir autom4te.cache
+	-find . -name .DS_Store -delete 2>&1
+.PHONY: distclean maintainer-clean realclean
 
 Makefile: $(srcdir)/Makefile.in $(host_makefile_frag) config.status
 	@echo "Rebuilding the Makefile..."
 	$(SHELL) ./config.status
 
-configure: $(srcdir)/configure.in $(srcdir)/Makefile.in $(srcdir)/../aclocal.m4
+configure: $(srcdir)/configure.ac $(srcdir)/Makefile.in $(srcdir)/../aclocal.m4
 	@echo "Rebuilding configure..."
 	@cd ${srcdir} ;\
 	autoconf --localdir=${srcdir}/..

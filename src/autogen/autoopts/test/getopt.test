@@ -1,0 +1,668 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+#
+# getopt.test ---  test getopt_long argument processing
+#
+# Time-stamp:        "2012-01-29 13:29:54 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+#
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+
+. ./defs
+
+set -x
+PS4='>${FUNCNAME:-go}> '
+
+CC="${CC} ${CFLAGS} ${INC}"
+CFLAGS=''
+INC=''
+export AUTOGEN_TEMPL_DIRS=${TMPDIR}
+
+compile_getopt() {
+  run_ag opts -b${testname}-bn ${testname}.def || \
+    failure "AutoGen could not process ${testname}.def #${1}"
+
+  # Remove the variable comments so we can test against the expected result
+  #
+  ${SED} '2,/and the template file/d
+      /\$''Id.*\$/d
+      /Last template edit:/d' getopt-test_${testname}.c \
+	> ${testname}${1}-getopt.c
+
+  # Finally, compile this thing:
+  #
+  ${CC} ${CFLAGS} -c ${testname}${1}-getopt.c || \
+    failure "could not compile ${testname}1-getopt.c"
+
+  ${SED} "${sed_omit_license}"'
+	/Packaged by /d
+	s@^Report .* bugs to.*"@\\n"@
+	s@^please send bug.*"@\\n"@
+	s@\\n\\n\\n\\$@\\n\\n\\@
+	s@\(and the flag character\.\\n.\)n\\$@\1@' ${testname}${1}-getopt.c \
+         >  ${testname}${1}-res.c
+  cmp -s ${testname}${1}-base.c ${testname}${1}-res.c || { set +x ; \
+    failure "`diff -c ${testname}${1}-base.c ${testname}${1}-res.c`" ; }
+}
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+#  Fix up a test-specific include directory:
+#
+# The getopt template presumes that everything has been installed.
+# However, we have to work with the local stuff.  So, remove the
+# "autoopts-config" probing and replace with local stuff:
+#
+go_init()
+{
+  mkdir -p ${TMPDIR}/autoopts
+
+  CFLAGS="-I${TMPDIR}"
+  LDFLAGS="${LDFLAGS} ${LIB}"
+  export CFLAGS LDFLAGS TMPDIR
+
+  aolib=`find ${top_builddir}/autoopts -type f -name libopts.a`
+  case " ${LDFLAGS} " in
+  *' -lgen '* ) aolib=${aolib}\ -lgen ;;
+  esac
+
+  cd ${top_srcdir}/autoopts/tpl
+  cp *.* ${TMPDIR}/.
+  chmod u+w ${TMPDIR}/*
+
+  cd ${top_builddir}/autoopts/tpl
+  cp *.* ${TMPDIR}/.
+  chmod u+w ${TMPDIR}/*
+
+  cd ${builddir}/testdir
+  ${SED} -e "/^cflags=/s@=.*@='-I${TMPDIR}/autoopts -I${top_builddir}'@" \
+    -e "/^ldflags=/s@=.*@='${aolib}'@" \
+    ${TMPDIR}/usage.tlib > ${TMPDIR}/usage.tlib-XX
+  mv -f ${TMPDIR}/usage.tlib-XX ${TMPDIR}/usage.tlib
+
+  # In order to compile correctly, we have to temporarily install the options.h
+  # header in our TMPDIR.  We also must find that header first.  Tweak CFLAGS:
+  #
+  DESTdestdir=${TMPDIR}/autoopts \
+  top_builddir=${top_builddir} \
+    CONFIG_SHELL="${SHELL}" \
+    ${SHELLX} -x ${top_srcdir}/autoopts/install-hook.sh
+  AUTOGEN_TEMPL_DIRS=${TMPDIR}
+  export AUTOGEN_TEMPL_DIRS
+}
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+go_samples() {
+
+echo "creating ${testname}.def in `pwd`"
+
+cat >> ${testname}.def <<_EOF_
+AutoGen definitions getopt;
+
+prog-name  = "test_${testname}";
+prog-title = "Test AutoOpts for ${testname}";
+test-main  = 'yes';
+config-header = 'config.h';
+
+settable;
+version = '1.2.3';
+help-value = 'h';
+gnu-usage;
+no-libopts;
+
+copyright = {
+    date  = "2003-2012";
+    owner = "Odyssey Computing Concepts, Inc.";
+    author= "Bruce Korb";
+    eaddr = "bkorb@gnu.org";
+    type  = lgpl;
+};
+
+flag = {
+    name = "option";
+    descrip = "The option option descrip";
+    value = 'o';
+    arg_type = string; arg_default = 'opt init';
+};
+
+flag = {
+    name = "second";
+    descrip = "The second option descrip";
+    value = 's';
+    arg_type = string; arg_default = '020';
+};
+
+flag = {
+   name    = no_val;
+   descrip = 'option with no flag';
+   value   = 'F'; /* REMOVE */
+   flags-must = max_val;
+};
+
+flag = {
+   name    = max_val;
+   descrip = 'option with max ct';
+   value   = 'X'; /* REMOVE */
+   max     = '5';
+};
+
+flag = {
+   name    = min2_val;
+   descrip = 'option with min ct';
+   value   = 'M'; /* REMOVE */
+   max     = '50';
+   flags-cant = max_val;
+   min     = '5';
+};
+
+flag = {
+   name    = min_val;
+   descrip = 'option with min ct';
+   value   = '2'; /* REMOVE */
+   max     = '50';
+   min     = '5';
+};
+_EOF_
+
+# # # # # # # # # # BASE-1 OUTPUT FILE # # # # # # # # #
+
+echo creating ${testname}1-base.c
+
+cat > ${testname}1-base.c <<\_EndOfSample_
+#include "getopt-test_getopt.h"
+
+#include <sys/types.h>
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include "getopt-bn.h"
+
+#ifndef DIRCH
+#  if defined(_WIN32) && !defined(__CYGWIN__)
+#    define DIRCH                  '\\'
+#  else
+#    define DIRCH                  '/'
+#  endif
+#endif
+/*
+ *  Option flag character list
+ */
+static char z_opts[] = "o:s:FXM2hv";
+
+/*
+ *  AutoOpts library replacement routines:
+ */
+void
+optionUsage (tOptions* pOptions, int status)
+{
+  if (status != 0)
+    fprintf (stderr, _("Try `%s -h' for more information.\n"),
+             test_getoptOptions.pzProgName);
+  else
+    {
+      fputs (_("test_getopt - Test AutoOpts for getopt - Ver. 1.2.3\n\
+USAGE:  test_getopt { -<flag> [<val>] }...\n\n\
+   -o str     The option option descrip\n\
+   -s str     The second option descrip\n\
+   -F         option with no flag\n\
+   -X         option with max ct\n\
+   -M         option with min ct\n\
+   -2         option with min ct\n\
+   -v         Output version information and exit\n\
+   -h         Display extended usage information and exit\n\n\
+\n"), stdout);
+    }
+
+  exit (status);
+}
+
+void
+optionPrintVersion(
+    tOptions*   pOptions,
+    tOptDesc*   pOptDesc )
+{
+  char const * pz_by =
+    _("test_getopt 1.2.3\n\
+Written by Bruce Korb.\n\n\
+copyright (c) 2003-2012 Odyssey Computing Concepts, Inc.\n\
+This is free software; see the source for copying conditions.  There is NO\n\
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n");
+
+  fputs (pz_by, stdout);
+  exit (EXIT_SUCCESS);
+}
+
+/*
+ *  If an option appears more often than is allowed, ...
+ */
+static void
+usage_too_many (tOptDesc* pOptDesc)
+{
+  char const * pz =
+    _("test_getopt error: the '%s' option appears more than %d times\n");
+  fprintf (stderr, pz, pOptDesc->pz_Name, pOptDesc->optMaxCt);
+  USAGE(EXIT_FAILURE);
+}
+
+/*
+ *  There is at least one option that must appear.
+ */
+static void
+usage_too_few (tOptDesc* pOptDesc)
+{
+  char const * pz =
+    _("test_getopt error: the '%s' option must appear %d times\n");
+  fprintf (stderr, pz, pOptDesc->pz_Name, pOptDesc->optMinCt);
+  USAGE(EXIT_FAILURE);
+}
+
+/*
+ *  There is at least one pair of options that may not appear together
+ *  on the command line.
+ */
+static void
+usage_cannot (char const* pz_what, char const* pz_cant)
+{
+  char const * pz =
+    _("test_getopt error: the `%s' option conflicts with the `%s' option.\n");
+  fprintf (stderr, pz, pz_what, pz_cant);
+  USAGE(EXIT_FAILURE);
+}
+
+/*
+ *  There is at least one pair of options that are required to appear
+ *  together on the command line.
+ */
+static void
+usage_must (char const* pz_what, char const* pz_must)
+{
+  char const * pz =
+    _("test_getopt error: the `%s' option requires the `%s' option.\n");
+  fprintf (stderr, pz, pz_what, pz_must);
+  USAGE(EXIT_FAILURE);
+}
+
+/*
+ *  Process the options for the "test_getopt" program.
+ *  This function was generated to use the getopt(3posix) function.
+ *  There are 8 options for this program,
+ * including "help (usage)" and "version".
+ */
+int
+process_test_getopt_opts (int argc, char** argv)
+{
+  {
+    char * pz_prog = strrchr (argv[0], DIRCH);
+    /*
+     * This violates the const-ness of the pzProgName field.
+     * The const-ness is to prevent accidents.  This is not accidental.
+     */
+    char ** pp = (char **)(void *)&(test_getoptOptions.pzProgName);
+
+    if (pz_prog != NULL)
+      pz_prog++;
+    else
+      pz_prog = argv[0];
+    *pp = pz_prog;
+  }
+
+  for (;;) {
+    switch (getopt (argc, argv, z_opts)) {
+    case  -1: goto leave_processing;
+    case   0: break;
+
+    case VALUE_OPT_OPTION:
+      if (HAVE_OPT( OPTION ))
+        usage_too_many (&DESC(OPTION));
+      SET_OPT_OPTION(optarg);
+      break;
+
+    case VALUE_OPT_SECOND:
+      if (HAVE_OPT( SECOND ))
+        usage_too_many (&DESC(SECOND));
+      SET_OPT_SECOND(optarg);
+      break;
+
+    case VALUE_OPT_NO_VAL:
+      if (HAVE_OPT( NO_VAL ))
+        usage_too_many (&DESC(NO_VAL));
+      SET_OPT_NO_VAL;
+      break;
+
+    case VALUE_OPT_MAX_VAL:
+      if (DESC(MAX_VAL).optOccCt++ >= DESC(MAX_VAL).optMaxCt)
+        usage_too_many (&DESC(MAX_VAL));
+      SET_OPT_MAX_VAL;
+      break;
+
+    case VALUE_OPT_MIN2_VAL:
+      if (DESC(MIN2_VAL).optOccCt++ >= DESC(MIN2_VAL).optMaxCt)
+        usage_too_many (&DESC(MIN2_VAL));
+      SET_OPT_MIN2_VAL;
+      break;
+
+    case VALUE_OPT_MIN_VAL:
+      if (DESC(MIN_VAL).optOccCt++ >= DESC(MIN_VAL).optMaxCt)
+        usage_too_many (&DESC(MIN_VAL));
+      SET_OPT_MIN_VAL;
+      break;
+
+    case VALUE_OPT_HELP:
+      USAGE(EXIT_SUCCESS);
+      /* NOTREACHED */
+
+    case VALUE_OPT_VERSION:
+      optionPrintVersion (&test_getoptOptions, &DESC(VERSION));
+      /* NOTREACHED */
+
+    default:
+      USAGE(EXIT_FAILURE);
+    }
+  } leave_processing:;
+
+  if (HAVE_OPT( NO_VAL )) {
+    if (! HAVE_OPT( MAX_VAL ))
+      usage_must (DESC(NO_VAL).pz_Name, DESC(MAX_VAL).pz_Name);
+  }
+
+  if (HAVE_OPT( MIN2_VAL )) {
+    if (HAVE_OPT( MAX_VAL ))
+      usage_cannot (DESC(MIN2_VAL).pz_Name, DESC(MAX_VAL).pz_Name);
+    if (DESC(MIN2_VAL).optOccCt < DESC(MIN2_VAL).optMinCt)
+      usage_too_few (&DESC(MIN2_VAL));
+  }
+  else
+    usage_too_few (&DESC(MIN2_VAL));
+
+  if (DESC(MIN_VAL).optOccCt < DESC(MIN_VAL).optMinCt)
+    usage_too_few (&DESC(MIN_VAL));
+
+  return 0;
+}
+_EndOfSample_
+
+# # # # # # # # # # BASE-2 OUTPUT FILE # # # # # # # # #
+
+echo creating ${testname}2-base.c
+
+cat > ${testname}2-base.c <<\_EndOfSample_
+#include "getopt-test_getopt.h"
+
+#include <sys/types.h>
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <getopt.h>
+#include "getopt-bn.h"
+
+#ifndef DIRCH
+#  if defined(_WIN32) && !defined(__CYGWIN__)
+#    define DIRCH                  '\\'
+#  else
+#    define DIRCH                  '/'
+#  endif
+#endif
+
+/*
+ *  getopt_long option descriptor
+ */
+static struct option a_long_opts[] = {
+  { "option",            1, NULL, VALUE_OPT_OPTION },
+  { "second",            1, NULL, VALUE_OPT_SECOND },
+  { "no_val",            0, NULL, VALUE_OPT_NO_VAL },
+  { "max_val",           0, NULL, VALUE_OPT_MAX_VAL },
+  { "min2_val",          0, NULL, VALUE_OPT_MIN2_VAL },
+  { "min_val",           0, NULL, VALUE_OPT_MIN_VAL },
+  { "help",              0, NULL, VALUE_OPT_HELP },
+  { "version",           0, NULL, VALUE_OPT_VERSION },
+  { NULL,                0, NULL, 0 }
+};
+
+/*
+ *  Option flag character list
+ */
+static char z_opts[] = "o:s:h";
+
+/*
+ *  AutoOpts library replacement routines:
+ */
+void
+optionUsage (tOptions* pOptions, int status)
+{
+  if (status != 0)
+    fprintf (stderr, _("Try `%s --help' for more information.\n"),
+             test_getoptOptions.pzProgName);
+  else
+    {
+      fputs (_("test_getopt - Test AutoOpts for getopt - Ver. 1.2.3\n\
+USAGE:  test_getopt { -<flag> [<val>] | --<name>[{=| }<val>] }...\n\n\
+   -o, --option=str           The option option descrip\n\
+   -s, --second=str           The second option descrip\n\
+       --no-val               option with no flag\n\
+       --max-val              option with max ct\n\
+       --min2-val             option with min ct\n\
+       --min-val              option with min ct\n\
+       --version              Output version information and exit\n\
+   -h, --help                 Display extended usage information and exit\n\n\
+Options are specified by doubled hyphens and their name or by a single\n\
+hyphen and the flag character.\n\
+\n"), stdout);
+    }
+
+  exit (status);
+}
+
+void
+optionPrintVersion(
+    tOptions*   pOptions,
+    tOptDesc*   pOptDesc )
+{
+  char const * pz_by =
+    _("test_getopt 1.2.3\n\
+Written by Bruce Korb.\n\n\
+copyright (c) 2003-2012 Odyssey Computing Concepts, Inc.\n\
+This is free software; see the source for copying conditions.  There is NO\n\
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n");
+
+  fputs (pz_by, stdout);
+  exit (EXIT_SUCCESS);
+}
+
+/*
+ *  If an option appears more often than is allowed, ...
+ */
+static void
+usage_too_many (tOptDesc* pOptDesc)
+{
+  char const * pz =
+    _("test_getopt error: the '%s' option appears more than %d times\n");
+  fprintf (stderr, pz, pOptDesc->pz_Name, pOptDesc->optMaxCt);
+  USAGE(EXIT_FAILURE);
+}
+
+/*
+ *  There is at least one option that must appear.
+ */
+static void
+usage_too_few (tOptDesc* pOptDesc)
+{
+  char const * pz =
+    _("test_getopt error: the '%s' option must appear %d times\n");
+  fprintf (stderr, pz, pOptDesc->pz_Name, pOptDesc->optMinCt);
+  USAGE(EXIT_FAILURE);
+}
+
+/*
+ *  There is at least one pair of options that may not appear together
+ *  on the command line.
+ */
+static void
+usage_cannot (char const* pz_what, char const* pz_cant)
+{
+  char const * pz =
+    _("test_getopt error: the `%s' option conflicts with the `%s' option.\n");
+  fprintf (stderr, pz, pz_what, pz_cant);
+  USAGE(EXIT_FAILURE);
+}
+
+/*
+ *  There is at least one pair of options that are required to appear
+ *  together on the command line.
+ */
+static void
+usage_must (char const* pz_what, char const* pz_must)
+{
+  char const * pz =
+    _("test_getopt error: the `%s' option requires the `%s' option.\n");
+  fprintf (stderr, pz, pz_what, pz_must);
+  USAGE(EXIT_FAILURE);
+}
+
+/*
+ *  Process the options for the "test_getopt" program.
+ *  This function was generated to use the getopt_long(3GNU) function.
+ *  There are 8 options for this program,
+ * including "help (usage)" and "version".
+ */
+int
+process_test_getopt_opts (int argc, char** argv)
+{
+  {
+    char * pz_prog = strrchr (argv[0], DIRCH);
+    /*
+     * This violates the const-ness of the pzProgName field.
+     * The const-ness is to prevent accidents.  This is not accidental.
+     */
+    char ** pp = (char **)(void *)&(test_getoptOptions.pzProgName);
+
+    if (pz_prog != NULL)
+      pz_prog++;
+    else
+      pz_prog = argv[0];
+    *pp = pz_prog;
+  }
+
+  for (;;) {
+    switch (getopt_long (argc, argv, z_opts, a_long_opts, NULL)) {
+    case  -1: goto leave_processing;
+    case   0: break;
+
+    case VALUE_OPT_OPTION:
+      if (HAVE_OPT( OPTION ))
+        usage_too_many (&DESC(OPTION));
+      SET_OPT_OPTION(optarg);
+      break;
+
+    case VALUE_OPT_SECOND:
+      if (HAVE_OPT( SECOND ))
+        usage_too_many (&DESC(SECOND));
+      SET_OPT_SECOND(optarg);
+      break;
+
+    case VALUE_OPT_NO_VAL:
+      if (HAVE_OPT( NO_VAL ))
+        usage_too_many (&DESC(NO_VAL));
+      SET_OPT_NO_VAL;
+      break;
+
+    case VALUE_OPT_MAX_VAL:
+      if (DESC(MAX_VAL).optOccCt++ >= DESC(MAX_VAL).optMaxCt)
+        usage_too_many (&DESC(MAX_VAL));
+      SET_OPT_MAX_VAL;
+      break;
+
+    case VALUE_OPT_MIN2_VAL:
+      if (DESC(MIN2_VAL).optOccCt++ >= DESC(MIN2_VAL).optMaxCt)
+        usage_too_many (&DESC(MIN2_VAL));
+      SET_OPT_MIN2_VAL;
+      break;
+
+    case VALUE_OPT_MIN_VAL:
+      if (DESC(MIN_VAL).optOccCt++ >= DESC(MIN_VAL).optMaxCt)
+        usage_too_many (&DESC(MIN_VAL));
+      SET_OPT_MIN_VAL;
+      break;
+
+    case VALUE_OPT_HELP:
+      USAGE(EXIT_SUCCESS);
+      /* NOTREACHED */
+
+    case VALUE_OPT_VERSION:
+      optionPrintVersion (&test_getoptOptions, &DESC(VERSION));
+      /* NOTREACHED */
+
+    default:
+      USAGE(EXIT_FAILURE);
+    }
+  } leave_processing:;
+
+  if (HAVE_OPT( NO_VAL )) {
+    if (! HAVE_OPT( MAX_VAL ))
+      usage_must (DESC(NO_VAL).pz_Name, DESC(MAX_VAL).pz_Name);
+  }
+
+  if (HAVE_OPT( MIN2_VAL )) {
+    if (HAVE_OPT( MAX_VAL ))
+      usage_cannot (DESC(MIN2_VAL).pz_Name, DESC(MAX_VAL).pz_Name);
+    if (DESC(MIN2_VAL).optOccCt < DESC(MIN2_VAL).optMinCt)
+      usage_too_few (&DESC(MIN2_VAL));
+  }
+  else
+    usage_too_few (&DESC(MIN2_VAL));
+
+  if (DESC(MIN_VAL).optOccCt < DESC(MIN_VAL).optMinCt)
+    usage_too_few (&DESC(MIN_VAL));
+
+  return 0;
+}
+_EndOfSample_
+}
+
+# # # # # # # # # # RESULTS TESTING # # # # # # # # #
+
+go_init
+go_samples
+compile_getopt 1
+
+grep 'getopt_long' /usr/include/getopt.h >/dev/null && {
+    CFLAGS="${CFLAGS} -D_GNU_SOURCE=1"
+    ${SED} '/REMOVE/d;$a\
+long-opts;\
+version-value;
+' ${testname}.def > ${testname}2.def
+    mv -f ${testname}2.def ${testname}.def
+
+    compile_getopt 2
+}
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of getopt.test

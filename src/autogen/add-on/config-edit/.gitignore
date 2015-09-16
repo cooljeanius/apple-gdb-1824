@@ -1,0 +1,6 @@
+/config_edit.stamp
+/daemon
+/daemon-opts.[ch]
+/*.o
+/edit-daemon-conf.[ch]
+*~

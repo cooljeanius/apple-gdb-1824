@@ -85,7 +85,7 @@ enum
   I_mipsisa32r2,
   I_mipsisa64,
   I_mipsisa64r2,
-  I_sb1,
+  I_sb1/*,*/
 };
 
 #define NN(index) (&arch_info_struct[(index) + 1])

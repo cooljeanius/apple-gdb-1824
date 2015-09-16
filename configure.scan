@@ -16,11 +16,15 @@ AC_PROG_LEX
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
+AC_PROG_OBJC
+AC_PROG_OBJCXX
 AC_PROG_RANLIB
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lintl':
-AC_CHECK_LIB([intl], [main])
+# FIXME: Replace `main' with a function in `-lgmp':
+AC_CHECK_LIB([gmp], [main])
+# FIXME: Replace `main' with a function in `-lmpfr':
+AC_CHECK_LIB([mpfr], [main])
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h mach/mach.h stddef.h stdlib.h string.h sys/file.h sys/ioctl.h sys/param.h termios.h unistd.h])
@@ -41,7 +45,5 @@ AC_CONFIG_FILES([Makefile
                  libcheckpoint/Makefile
                  macsbug/Makefile
                  macsbug/gdb_plugin_support/Makefile])
-AC_CONFIG_SUBDIRS([binutils-gdb
-                   macgdb
-                   src])
+AC_CONFIG_SUBDIRS([src])
 AC_OUTPUT

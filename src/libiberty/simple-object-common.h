@@ -14,7 +14,7 @@ Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
 License along with libiberty; see the file COPYING.LIB.  If not,
-write to the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+write to the Free Software Foundation, Inc., 51 Franklin St., 5th Floor,
 Boston, MA 02110-1301, USA.  */
 
 /* Forward reference.  */
@@ -175,28 +175,27 @@ simple_object_internal_write (int descriptor, off_t offset,
 __extension__ typedef UNSIGNED_64BIT_TYPE ulong_type;
 #else
 typedef unsigned long ulong_type;
-#endif
+#endif /* UNSIGNED_64BIT_TYPE */
 
-/* Fetch a big-endian 16-bit value.  */
-
+/* Fetch a big-endian 16-bit value: */
 static inline unsigned short
-simple_object_fetch_big_16 (const unsigned char *buf)
+simple_object_fetch_big_16(const unsigned char *buf)
 {
-  return ((unsigned short) buf[0] << 8) | (unsigned short) buf[1];
+  return (unsigned short)(((unsigned short)buf[0] << 8)
+                          | (unsigned short)buf[1]);
 }
 
-/* Fetch a little-endian 16-bit value.  */
-
+/* Fetch a little-endian 16-bit value: */
 static inline unsigned short
-simple_object_fetch_little_16 (const unsigned char *buf)
+simple_object_fetch_little_16(const unsigned char *buf)
 {
-  return ((unsigned short) buf[1] << 8) | (unsigned short) buf[0];
+  return (unsigned short)(((unsigned short)buf[1] << 8)
+                          | (unsigned short)buf[0]);
 }
 
 /* Fetch a big-endian 32-bit value.  */
-
 static inline unsigned int
-simple_object_fetch_big_32 (const unsigned char *buf)
+simple_object_fetch_big_32(const unsigned char *buf)
 {
   return (((unsigned int) buf[0] << 24)
 	  | ((unsigned int) buf[1] << 16)
@@ -263,7 +262,7 @@ simple_object_fetch_little_64 (const unsigned char *buf)
 	  | (ulong_type) buf[0]);
 }
 
-#endif
+#endif /* UNSIGNED_64BIT_TYPE */
 
 /* Store a big-endian 16-bit value.  */
 
@@ -305,20 +304,18 @@ simple_object_set_little_32 (unsigned char *buf, unsigned int val)
   buf[0] = val & 0xff;
 }
 
-/* Store a big-endian 32-bit value coming in as a ulong_type.  */
-
+/* Store a big-endian 32-bit value coming in as a ulong_type: */
 static inline void
-simple_object_set_big_32_ulong (unsigned char *buf, ulong_type val)
+simple_object_set_big_32_ulong(unsigned char *buf, ulong_type val)
 {
-  simple_object_set_big_32 (buf, val);
+  simple_object_set_big_32(buf, (unsigned int)val);
 }
 
-/* Store a little-endian 32-bit value coming in as a ulong_type.  */
-
+/* Store a little-endian 32-bit value coming in as a ulong_type: */
 static inline void
-simple_object_set_little_32_ulong (unsigned char *buf, ulong_type val)
+simple_object_set_little_32_ulong(unsigned char *buf, ulong_type val)
 {
-  simple_object_set_little_32 (buf, val);
+  simple_object_set_little_32(buf, (unsigned int)val);
 }
 
 #ifdef UNSIGNED_64BIT_TYPE
@@ -353,4 +350,6 @@ simple_object_set_little_64 (unsigned char *buf, ulong_type val)
   buf[0] = val & 0xff;
 }
 
-#endif
+#endif /* UNSIGNED_64BIT_TYPE */
+
+/* EOF */

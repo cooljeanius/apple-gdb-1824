@@ -1,4 +1,4 @@
-/* 
+/*
  * tclUnixSock.c --
  *
  *	This file contains Unix-specific socket related code.
@@ -25,14 +25,14 @@
  * For example HP-UX 10.20 has SYS_NMLN == 9,  while gethostbyname()
  * can return a fully qualified name from DNS of up to 255 bytes.
  *
- * Fix suggested by Viktor Dukhovni (viktor@esm.com)
+ * Fix suggested by Viktor Dukhovni <viktor@esm.com>
  */
 
-#if defined(SYS_NMLN) && SYS_NMLEN >= 256
-#define TCL_HOSTNAME_LEN SYS_NMLEN
+#if defined(SYS_NMLN) && (SYS_NMLEN >= 256)
+# define TCL_HOSTNAME_LEN SYS_NMLEN
 #else
-#define TCL_HOSTNAME_LEN 256
-#endif
+# define TCL_HOSTNAME_LEN 256
+#endif /* SYS_NMLN >= 256 */
 
 
 /*
@@ -53,7 +53,7 @@ TCL_DECLARE_MUTEX(hostMutex)
  *
  * Results:
  *	A string containing the network name for this machine, or
- *	an empty string if we can't figure out the name.  The caller 
+ *	an empty string if we can't figure out the name.  The caller
  *	must not modify or free this string.
  *
  * Side effects:
@@ -68,9 +68,10 @@ Tcl_GetHostName()
 #ifndef NO_UNAME
     struct utsname u;
     struct hostent *hp;
+    void *outbuf;
 #else
     char buffer[sizeof(hostname)];
-#endif
+#endif /* !NO_UNAME */
     CONST char *native;
 
     Tcl_MutexLock(&hostMutex);
@@ -81,7 +82,11 @@ Tcl_GetHostName()
 
     native = NULL;
 #ifndef NO_UNAME
-    (VOID *) memset((VOID *) &u, (int) 0, sizeof(struct utsname));
+    outbuf =
+        (VOID *)memset((VOID *)&u, (int)0, sizeof(struct utsname));
+    if (outbuf == NULL) {
+        ; /* ??? */
+    }
     if (uname(&u) > -1) {				/* INTL: Native. */
         hp = gethostbyname(u.nodename);			/* INTL: Native. */
 	if (hp == NULL) {

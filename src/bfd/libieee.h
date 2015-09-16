@@ -1,4 +1,4 @@
-/* IEEE-695 object file formats:  definitions internal to BFD.
+/* libieee.h: IEEE-695 object file formats:  definitions internal to BFD.
    Copyright 1990, 1991, 1992, 1994, 1996, 2001, 2002
    Free Software Foundation, Inc.
    Written by Cygnus Support.  Mostly Steve Chamberlain's fault.

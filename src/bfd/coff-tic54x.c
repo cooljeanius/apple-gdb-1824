@@ -1,7 +1,7 @@
-/* BFD back-end for TMS320C54X coff binaries.
+/* coff-tic54x.c: BFD back-end for TMS320C54X coff binaries.
    Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
-   Contributed by Timothy Wall (twall@cygnus.com)
+   Contributed by Timothy Wall <twall@cygnus.com>
 
    This file is part of BFD, the Binary File Descriptor library.
 
@@ -53,64 +53,61 @@ static bfd_boolean ticoff_bfd_is_local_label_name
    longwords are MSW first.  For example, 0x12345678 is encoded 0x5678 in the
    first word and 0x1234 in the second.  When looking at the data as stored in
    the COFF file, you would see the octets ordered as 0x78, 0x56, 0x34, 0x12.
-   Don't bother with 64-bits, as there aren't any.  */
+   Do NOT bother with 64-bits, as there are NOT any.  */
 
 static bfd_vma
-tic54x_getl32 (const void *p)
+tic54x_getl32(const void *p)
 {
-  const bfd_byte *addr = p;
+  const bfd_byte *addr = (const bfd_byte *)p;
   unsigned long v;
 
-  v  = (unsigned long) addr[2];
-  v |= (unsigned long) addr[3] << 8;
-  v |= (unsigned long) addr[0] << 16;
-  v |= (unsigned long) addr[1] << 24;
+  v  = (unsigned long)addr[2];
+  v |= ((unsigned long)addr[3] << 8);
+  v |= ((unsigned long)addr[0] << 16);
+  v |= ((unsigned long)addr[1] << 24);
   return v;
 }
 
 static void
 tic54x_putl32 (bfd_vma data, void *p)
 {
-  bfd_byte *addr = p;
-  addr[2] = data & 0xff;
-  addr[3] = (data >>  8) & 0xff;
-  addr[0] = (data >> 16) & 0xff;
-  addr[1] = (data >> 24) & 0xff;
+  bfd_byte *addr = (bfd_byte *)p;
+  addr[2] = (data & 0xff);
+  addr[3] = ((data >> 8) & 0xff);
+  addr[0] = ((data >> 16) & 0xff);
+  addr[1] = ((data >> 24) & 0xff);
 }
 
 static bfd_signed_vma
-tic54x_getl_signed_32 (const void *p)
+tic54x_getl_signed_32(const void *p)
 {
-  const bfd_byte *addr = p;
+  const bfd_byte *addr = (const bfd_byte *)p;
   unsigned long v;
 
-  v  = (unsigned long) addr[2];
-  v |= (unsigned long) addr[3] << 8;
-  v |= (unsigned long) addr[0] << 16;
-  v |= (unsigned long) addr[1] << 24;
+  v  = (unsigned long)addr[2];
+  v |= ((unsigned long)addr[3] << 8);
+  v |= ((unsigned long)addr[0] << 16);
+  v |= ((unsigned long)addr[1] << 24);
 #define COERCE32(x) \
-  ((bfd_signed_vma) (long) (((unsigned long) (x) ^ 0x80000000) - 0x80000000))
-  return COERCE32 (v);
+  ((bfd_signed_vma)(long)(((unsigned long)(x) ^ 0x80000000) - 0x80000000))
+  return COERCE32(v);
 }
 
 #define coff_get_section_load_page bfd_ticoff_get_section_load_page
 #define coff_set_section_load_page bfd_ticoff_set_section_load_page
 
 void
-bfd_ticoff_set_section_load_page (sect, page)
-  asection *sect;
-  int page;
+bfd_ticoff_set_section_load_page(asection *sect, int page)
 {
-  sect->lma = (sect->lma & ADDR_MASK) | PG_TO_FLAG(page);
+  sect->lma = ((sect->lma & ADDR_MASK) | PG_TO_FLAG(page));
 }
 
 int
-bfd_ticoff_get_section_load_page (sect)
-  asection *sect;
+bfd_ticoff_get_section_load_page(asection *sect)
 {
   int page;
 
-  /* Provide meaningful defaults for predefined sections.  */
+  /* Provide meaningful defaults for predefined sections: */
   if (sect == &bfd_com_section)
     page = PG_DATA;
 
@@ -126,35 +123,27 @@ bfd_ticoff_get_section_load_page (sect)
 }
 
 /* Set the architecture appropriately.  Allow unkown architectures
-   (e.g. binary).  */
-
+ * (e.g. binary).  */
 static bfd_boolean
-tic54x_set_arch_mach (abfd, arch, machine)
-     bfd *abfd;
-     enum bfd_architecture arch;
-     unsigned long machine;
+tic54x_set_arch_mach(bfd *abfd, enum bfd_architecture arch,
+                     unsigned long machine)
 {
-  if (arch == bfd_arch_unknown)
+  if (arch == bfd_arch_unknown) {
     arch = bfd_arch_tic54x;
-
-  else if (arch != bfd_arch_tic54x)
+  } else if (arch != bfd_arch_tic54x) {
     return FALSE;
+  }
 
-  return bfd_default_set_arch_mach (abfd, arch, machine);
+  return bfd_default_set_arch_mach(abfd, arch, machine);
 }
 
 static bfd_reloc_status_type
-tic54x_relocation (abfd, reloc_entry, symbol, data, input_section,
-                   output_bfd, error_message)
-  bfd *abfd ATTRIBUTE_UNUSED;
-  arelent *reloc_entry;
-  asymbol *symbol ATTRIBUTE_UNUSED;
-  PTR data ATTRIBUTE_UNUSED;
-  asection *input_section;
-  bfd *output_bfd;
-  char **error_message ATTRIBUTE_UNUSED;
+tic54x_relocation(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
+                  asymbol *symbol ATTRIBUTE_UNUSED,
+                  PTR data ATTRIBUTE_UNUSED, asection *input_section,
+                  bfd *output_bfd, char **error_message ATTRIBUTE_UNUSED)
 {
-  if (output_bfd != (bfd *) NULL)
+  if (output_bfd != (bfd *)NULL)
     {
       /* This is a partial relocation, and we want to apply the
  	 relocation to the reloc entry rather than the raw data.
@@ -231,12 +220,10 @@ reloc_howto_type tic54x_howto_table[] =
 #define coff_bfd_reloc_type_lookup tic54x_coff_reloc_type_lookup
 
 /* For the case statement use the code values used tc_gen_reloc (defined in
-   bfd/reloc.c) to map to the howto table entries.  */
-
+ * bfd/reloc.c) to map to the howto table entries.  */
 reloc_howto_type *
-tic54x_coff_reloc_type_lookup (abfd, code)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+tic54x_coff_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                              bfd_reloc_code_real_type code)
 {
   switch (code)
     {
@@ -255,33 +242,31 @@ tic54x_coff_reloc_type_lookup (abfd, code)
     case BFD_RELOC_32:
       return &tic54x_howto_table[12];
     default:
-      return (reloc_howto_type *) NULL;
+      return (reloc_howto_type *)NULL;
     }
 }
 
 /* Code to turn a r_type into a howto ptr, uses the above howto table.
-   Called after some initial checking by the tic54x_rtype_to_howto fn below.  */
-
+ * Called after some initial checking by the tic54x_rtype_to_howto function
+ * below: */
 static void
-tic54x_lookup_howto (internal, dst)
-     arelent *internal;
-     struct internal_reloc *dst;
+tic54x_lookup_howto(arelent *internal, struct internal_reloc *dst)
 {
   unsigned i;
-  int bank = (dst->r_symndx == -1) ? HOWTO_BANK : 0;
+  int bank = ((dst->r_symndx == -1) ? HOWTO_BANK : 0);
 
-  for (i = 0; i < sizeof tic54x_howto_table/sizeof tic54x_howto_table[0]; i++)
+  for (i = 0U; i < (sizeof(tic54x_howto_table) / sizeof(tic54x_howto_table[0])); i++)
     {
       if (tic54x_howto_table[i].type == dst->r_type)
 	{
-	  internal->howto = tic54x_howto_table + i + bank;
+	  internal->howto = (tic54x_howto_table + i + bank);
 	  return;
 	}
     }
 
-  (*_bfd_error_handler) (_("Unrecognized reloc type 0x%x"),
-			 (unsigned int) dst->r_type);
-  abort ();
+  (*_bfd_error_handler)(_("Unrecognized reloc type 0x%x"),
+                        (unsigned int)dst->r_type);
+  abort();
 }
 
 #define RELOC_PROCESSING(RELENT,RELOC,SYMS,ABFD,SECT)\
@@ -290,22 +275,20 @@ tic54x_lookup_howto (internal, dst)
 #define coff_rtype_to_howto coff_tic54x_rtype_to_howto
 
 static reloc_howto_type *
-coff_tic54x_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     asection *sec;
-     struct internal_reloc *rel;
-     struct coff_link_hash_entry *h ATTRIBUTE_UNUSED;
-     struct internal_syment *sym ATTRIBUTE_UNUSED;
-     bfd_vma *addendp;
+coff_tic54x_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
+                           struct internal_reloc *rel,
+                           struct coff_link_hash_entry *h ATTRIBUTE_UNUSED,
+                           struct internal_syment *sym ATTRIBUTE_UNUSED,
+                           bfd_vma *addendp)
 {
   arelent genrel;
 
-  if (rel->r_symndx == -1 && addendp != NULL)
+  if ((rel->r_symndx == -1) && (addendp != NULL))
     {
       /* This is a TI "internal relocation", which means that the relocation
 	 amount is the amount by which the current section is being relocated
 	 in the output section.  */
-      *addendp = (sec->output_section->vma + sec->output_offset) - sec->vma;
+      *addendp = ((sec->output_section->vma + sec->output_offset) - sec->vma);
     }
 
   tic54x_lookup_howto (&genrel, rel);
@@ -313,13 +296,11 @@ coff_tic54x_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
   return genrel.howto;
 }
 
-/* Replace the stock _bfd_coff_is_local_label_name to recognize TI COFF local
-   labels.  */
-
+/* Replace the stock _bfd_coff_is_local_label_name to recognize TI COFF
+ * local labels: */
 static bfd_boolean
-ticoff_bfd_is_local_label_name (abfd, name)
-  bfd *abfd ATTRIBUTE_UNUSED;
-  const char *name;
+ticoff_bfd_is_local_label_name(bfd *abfd ATTRIBUTE_UNUSED,
+                               const char *name)
 {
   if (TICOFF_LOCAL_LABEL_P(name))
     return TRUE;
@@ -330,12 +311,10 @@ ticoff_bfd_is_local_label_name (abfd, name)
 
 /* Clear the r_reserved field in relocs.  */
 #define SWAP_OUT_RELOC_EXTRA(abfd,src,dst) \
-  do \
-    { \
+  do { \
       dst->r_reserved[0] = 0; \
       dst->r_reserved[1] = 0; \
-    } \
-  while (0)
+  } while (0)
 
 /* Customize coffcode.h; the default coff_ functions are set up to use COFF2;
    coff_bad_format_hook uses BADMAG, so set that for COFF2.  The COFF1
@@ -345,24 +324,16 @@ ticoff_bfd_is_local_label_name (abfd, name)
 #include "coffcode.h"
 
 static bfd_boolean
-tic54x_set_section_contents (abfd, section, location, offset, bytes_to_do)
-     bfd *abfd;
-     sec_ptr section;
-     const PTR location;
-     file_ptr offset;
-     bfd_size_type bytes_to_do;
+tic54x_set_section_contents(bfd *abfd, sec_ptr section, const PTR location,
+                            file_ptr offset, bfd_size_type bytes_to_do)
 {
-  return coff_set_section_contents (abfd, section, location,
-                                    offset, bytes_to_do);
+  return coff_set_section_contents(abfd, section, location,
+                                   offset, bytes_to_do);
 }
 
 static void
-tic54x_reloc_processing (relent, reloc, symbols, abfd, section)
-     arelent *relent;
-     struct internal_reloc *reloc;
-     asymbol **symbols;
-     bfd *abfd;
-     asection *section;
+tic54x_reloc_processing(arelent *relent, struct internal_reloc *reloc,
+                        asymbol **symbols, bfd *abfd, asection *section)
 {
   asymbol *ptr;
 
@@ -370,7 +341,7 @@ tic54x_reloc_processing (relent, reloc, symbols, abfd, section)
 
   if (reloc->r_symndx != -1)
     {
-      if (reloc->r_symndx < 0 || reloc->r_symndx >= obj_conv_table_size (abfd))
+      if ((reloc->r_symndx < 0) || (reloc->r_symndx >= obj_conv_table_size(abfd)))
         {
           (*_bfd_error_handler)
             (_("%B: warning: illegal symbol index %ld in relocs"),
@@ -676,3 +647,5 @@ const bfd_target tic54x_coff2_beh_vec =
 
     COFF_SWAP_TABLE
   };
+
+/* EOF */

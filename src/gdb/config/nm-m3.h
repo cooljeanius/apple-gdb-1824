@@ -1,4 +1,5 @@
-/* Mach 3.0 common definitions and global vars.
+/* nm-m3.h
+   Mach 3.0 common definitions and global vars.
 
    Copyright 1992, 1993, 1994, 1996 Free Software Foundation, Inc.
 

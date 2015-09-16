@@ -1,5 +1,7 @@
-/* Target definitions for VAX systems for GDB.
-   Copyright 1986, 1987, 1989, 1991, 1993, 1994, 1996, 1998, 1999, 2000, 2002
+/* tm-vax.h
+ * Target definitions for VAX systems for GDB.
+ */
+/* Copyright 1986, 1987, 1989, 1991, 1993, 1994, 1996, 1998-2000, 2002
    Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -29,3 +31,5 @@
 extern CORE_ADDR vax_frame_args_address_correct (struct frame_info *);
 
 #endif /* TM_VAX_H */
+
+/* EOF */

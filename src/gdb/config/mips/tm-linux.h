@@ -1,4 +1,5 @@
-/* Target-dependent definitions for GNU/Linux MIPS.
+/* tm-linux.h
+   Target-dependent definitions for GNU/Linux MIPS.
 
    Copyright 2001, 2002, 2004 Free Software Foundation, Inc.
 
@@ -25,9 +26,9 @@
 /* GNU/Linux MIPS has __SIGRTMAX == 127.  */
 
 #ifndef REALTIME_LO
-#define REALTIME_LO 32
-#define REALTIME_HI 128
-#endif
+# define REALTIME_LO 32
+# define REALTIME_HI 128
+#endif /* !REALTIME_LO */
 
 #include "config/tm-linux.h"
 
@@ -36,3 +37,5 @@
 int mips_linux_in_dynsym_resolve_code (CORE_ADDR pc);
 
 #endif /* TM_MIPSLINUX_H */
+
+/* EOF */

@@ -162,17 +162,17 @@ static int filename_per_symbol = 0;	/* Once per symbol, at start of line.  */
 #ifndef BFD64
 static char value_format[] = "%08lx";
 #else
-#if BFD_HOST_64BIT_LONG
+# if BFD_HOST_64BIT_LONG
 static char value_format[] = "%016lx";
-#else
-/* We don't use value_format for this case.  */
-#endif
-#endif
+# else
+/* We do NOT use value_format for this case.  */
+# endif /* BFD_HOST_64BIT_LONG */
+#endif /* !BFD64 */
 #ifdef BFD64
-static int print_width = 16;
+static size_t print_width = 16UL;
 #else
-static int print_width = 8;
-#endif
+static size_t print_width = 8UL;
+#endif /* BFD64 */
 static int print_radix = 16;
 /* Print formats for printing stab info.  */
 static char other_format[] = "%02x";
@@ -218,12 +218,12 @@ static struct option long_options[] =
 
 /* Some error-reporting functions.  */
 
-static void
-usage (FILE *stream, int status)
+static ATTRIBUTE_NORETURN void
+usage(FILE *stream, int status)
 {
-  fprintf (stream, _("Usage: %s [option(s)] [file(s)]\n"), program_name);
-  fprintf (stream, _(" List symbols in [file(s)] (a.out by default).\n"));
-  fprintf (stream, _(" The options are:\n\
+  fprintf(stream, _("Usage: %s [option(s)] [file(s)]\n"), program_name);
+  fprintf(stream, _(" List symbols in [file(s)] (a.out by default).\n"));
+  fprintf(stream, _(" The options are:\n\
   -a, --debug-syms       Display debugger-only symbols\n\
   -A, --print-file-name  Print name of the input file before every symbol\n\
   -B                     Same as --format=bsd\n\
@@ -349,18 +349,18 @@ get_symbol_type (unsigned int type)
    demangling it if requested.  */
 
 static void
-print_symname (const char *format, const char *name, bfd *abfd)
+print_symname(const char *format_string, const char *name, bfd *abfd)
 {
   if (do_demangle && *name)
     {
-      char *res = demangle (abfd, name);
+      char *res = demangle(abfd, name);
 
-      printf (format, res);
-      free (res);
+      printf(format_string, res);
+      free(res);
       return;
     }
 
-  printf (format, name);
+  printf(format_string, name);
 }
 
 static void
@@ -392,23 +392,22 @@ print_symdef_entry (bfd *abfd)
 }
 
 /* Choose which symbol entries to print;
-   compact them downward to get rid of the rest.
-   Return the number of symbols to be printed.  */
-
+ * compact them downward to get rid of the rest.
+ * Return the number of symbols to be printed.  */
 static long
-filter_symbols (bfd *abfd, bfd_boolean dynamic, void *minisyms,
-		long symcount, unsigned int size)
+filter_symbols(bfd *abfd, bfd_boolean is_dynamic, void *minisyms,
+               long symcount, unsigned int size)
 {
   bfd_byte *from, *fromend, *to;
   asymbol *store;
 
-  store = bfd_make_empty_symbol (abfd);
+  store = bfd_make_empty_symbol(abfd);
   if (store == NULL)
-    bfd_fatal (bfd_get_filename (abfd));
+    bfd_fatal(bfd_get_filename(abfd));
 
-  from = (bfd_byte *) minisyms;
-  fromend = from + symcount * size;
-  to = (bfd_byte *) minisyms;
+  from = (bfd_byte *)minisyms;
+  fromend = (from + ((size_t)symcount * size));
+  to = (bfd_byte *)minisyms;
 
   for (; from < fromend; from += size)
     {
@@ -417,51 +416,53 @@ filter_symbols (bfd *abfd, bfd_boolean dynamic, void *minisyms,
 
       PROGRESS (1);
 
-      sym = bfd_minisymbol_to_symbol (abfd, dynamic, (const void *) from, store);
-      if (sym == NULL)
-	bfd_fatal (bfd_get_filename (abfd));
+      sym = bfd_minisymbol_to_symbol(abfd, is_dynamic, (const void *)from,
+                                     store);
+      if (sym == NULL) {
+	bfd_fatal(bfd_get_filename(abfd));
+      }
 
-      if (undefined_only)
-	keep = bfd_is_und_section (sym->section);
-      else if (external_only)
-	keep = ((sym->flags & BSF_GLOBAL) != 0
-		|| (sym->flags & BSF_WEAK) != 0
-		|| bfd_is_und_section (sym->section)
-		|| bfd_is_com_section (sym->section));
-      else
+      if (undefined_only) {
+	keep = bfd_is_und_section(sym->section);
+      } else if (external_only) {
+	keep = (((sym->flags & BSF_GLOBAL) != 0)
+		|| ((sym->flags & BSF_WEAK) != 0)
+		|| bfd_is_und_section(sym->section)
+		|| bfd_is_com_section(sym->section));
+      } else {
 	keep = 1;
+      }
 
-      if (keep
-	  && ! print_debug_syms
-	  && (sym->flags & BSF_DEBUGGING) != 0)
+      if (keep && ! print_debug_syms
+	  && ((sym->flags & BSF_DEBUGGING) != 0)) {
+	keep = 0;
+      }
+
+      if (keep && sort_by_size
+	  && (bfd_is_abs_section(sym->section)
+	      || bfd_is_und_section(sym->section)))
 	keep = 0;
 
-      if (keep
-	  && sort_by_size
-	  && (bfd_is_abs_section (sym->section)
-	      || bfd_is_und_section (sym->section)))
-	keep = 0;
-
-      if (keep
-	  && defined_only)
+      if (keep && defined_only)
 	{
-	  if (bfd_is_und_section (sym->section))
+	  if (bfd_is_und_section(sym->section)) {
 	    keep = 0;
+          }
 	}
 
-      if (keep
-	  && bfd_is_target_special_symbol (abfd, sym)
-	  && ! allow_special_symbols)
+      if (keep && bfd_is_target_special_symbol(abfd, sym)
+	  && ! allow_special_symbols) {
 	keep = 0;
+      }
 
       if (keep)
 	{
-	  memcpy (to, from, size);
+	  memcpy(to, from, size);
 	  to += size;
 	}
     }
 
-  return (to - (bfd_byte *) minisyms) / size;
+  return (long)((size_t)(to - (bfd_byte *)minisyms) / size);
 }
 
 /* These globals are used to pass information into the sorting
@@ -657,35 +658,35 @@ size_forward2 (const void *P_x, const void *P_y)
    size.  */
 
 static long
-sort_symbols_by_size (bfd *abfd, bfd_boolean dynamic, void *minisyms,
-		      long symcount, unsigned int size,
-		      struct size_sym **symsizesp)
+sort_symbols_by_size(bfd *abfd, bfd_boolean is_dynamic, void *minisyms,
+                     long symcount, unsigned int size,
+                     struct size_sym **symsizesp)
 {
   struct size_sym *symsizes;
   bfd_byte *from, *fromend;
   asymbol *sym = NULL;
   asymbol *store_sym, *store_next;
 
-  qsort (minisyms, symcount, size, size_forward1);
+  qsort(minisyms, (size_t)symcount, size, size_forward1);
 
   /* We are going to return a special set of symbols and sizes to
      print.  */
-  symsizes = xmalloc (symcount * sizeof (struct size_sym));
+  symsizes = (struct size_sym *)xmalloc((size_t)symcount * sizeof(struct size_sym));
   *symsizesp = symsizes;
 
   /* Note that filter_symbols has already removed all absolute and
      undefined symbols.  Here we remove all symbols whose size winds
      up as zero.  */
-  from = (bfd_byte *) minisyms;
-  fromend = from + symcount * size;
+  from = (bfd_byte *)minisyms;
+  fromend = (from + ((size_t)symcount * size));
 
   store_sym = sort_x;
   store_next = sort_y;
 
   if (from < fromend)
     {
-      sym = bfd_minisymbol_to_symbol (abfd, dynamic, (const void *) from,
-				      store_sym);
+      sym = bfd_minisymbol_to_symbol(abfd, is_dynamic, (const void *)from,
+                                     store_sym);
       if (sym == NULL)
 	bfd_fatal (bfd_get_filename (abfd));
     }
@@ -699,36 +700,36 @@ sort_symbols_by_size (bfd *abfd, bfd_boolean dynamic, void *minisyms,
 
       if (from + size < fromend)
 	{
-	  next = bfd_minisymbol_to_symbol (abfd,
-					   dynamic,
-					   (const void *) (from + size),
-					   store_next);
+	  next = bfd_minisymbol_to_symbol(abfd, is_dynamic,
+                                          (const void *)(from + size),
+                                          store_next);
 	  if (next == NULL)
-	    bfd_fatal (bfd_get_filename (abfd));
+	    bfd_fatal(bfd_get_filename(abfd));
 	}
       else
 	next = NULL;
 
-      sec = bfd_get_section (sym);
+      sec = bfd_get_section(sym);
 
-      if (bfd_get_flavour (abfd) == bfd_target_elf_flavour)
-	sz = ((elf_symbol_type *) sym)->internal_elf_sym.st_size;
-      else if (bfd_is_com_section (sec))
+      if (bfd_get_flavour(abfd) == bfd_target_elf_flavour)
+	sz = ((elf_symbol_type *)sym)->internal_elf_sym.st_size;
+      else if (bfd_is_com_section(sec))
 	sz = sym->value;
       else
 	{
-	  if (from + size < fromend
-	      && sec == bfd_get_section (next))
-	    sz = valueof (next) - valueof (sym);
-	  else
-	    sz = (bfd_get_section_vma (abfd, sec)
-		  + bfd_section_size (abfd, sec)
-		  - valueof (sym));
+	  if (((from + size) < fromend)
+	      && (sec == bfd_get_section(next))) {
+	    sz = (valueof(next) - valueof(sym));
+	  } else {
+	    sz = (bfd_get_section_vma(abfd, sec)
+		  + bfd_section_size(abfd, sec)
+		  - valueof(sym));
+          }
 	}
 
       if (sz != 0)
 	{
-	  symsizes->minisym = (const void *) from;
+	  symsizes->minisym = (const void *)from;
 	  symsizes->size = sz;
 	  ++symsizes;
 	}
@@ -740,10 +741,11 @@ sort_symbols_by_size (bfd *abfd, bfd_boolean dynamic, void *minisyms,
       store_next = temp;
     }
 
-  symcount = symsizes - *symsizesp;
+  symcount = (symsizes - *symsizesp);
 
-  /* We must now sort again by size.  */
-  qsort ((void *) *symsizesp, symcount, sizeof (struct size_sym), size_forward2);
+  /* We must now sort again by size: */
+  qsort((void *)*symsizesp, (size_t)symcount, sizeof(struct size_sym),
+        size_forward2);
 
   return symcount;
 }
@@ -754,7 +756,7 @@ sort_symbols_by_size (bfd *abfd, bfd_boolean dynamic, void *minisyms,
 static void
 get_relocs (bfd *abfd, asection *sec, void *dataarg)
 {
-  struct get_relocs_info *data = (struct get_relocs_info *) dataarg;
+  struct get_relocs_info *data = (struct get_relocs_info *)dataarg;
 
   *data->secs = sec;
 
@@ -767,15 +769,15 @@ get_relocs (bfd *abfd, asection *sec, void *dataarg)
     {
       long relsize;
 
-      relsize = bfd_get_reloc_upper_bound (abfd, sec);
+      relsize = bfd_get_reloc_upper_bound(abfd, sec);
       if (relsize < 0)
-	bfd_fatal (bfd_get_filename (abfd));
+	bfd_fatal(bfd_get_filename(abfd));
 
-      *data->relocs = xmalloc (relsize);
-      *data->relcount = bfd_canonicalize_reloc (abfd, sec, *data->relocs,
-						data->syms);
+      *data->relocs = (arelent **)xmalloc((size_t)relsize);
+      *data->relcount = bfd_canonicalize_reloc(abfd, sec, *data->relocs,
+                                               data->syms);
       if (*data->relcount < 0)
-	bfd_fatal (bfd_get_filename (abfd));
+	bfd_fatal(bfd_get_filename(abfd));
     }
 
   ++data->secs;
@@ -783,26 +785,25 @@ get_relocs (bfd *abfd, asection *sec, void *dataarg)
   ++data->relcount;
 }
 
-/* Print a single symbol.  */
-
+/* Print a single symbol: */
 static void
-print_symbol (bfd *abfd, asymbol *sym, bfd_vma ssize, bfd *archive_bfd)
+print_symbol(bfd *abfd, asymbol *sym, bfd_vma ssize, bfd *archive_bfd)
 {
   symbol_info syminfo;
-  struct extended_symbol_info info;
+  struct extended_symbol_info ext_syminfo;
 
-  PROGRESS (1);
+  PROGRESS(1);
 
-  format->print_symbol_filename (archive_bfd, abfd);
+  format->print_symbol_filename(archive_bfd, abfd);
 
-  bfd_get_symbol_info (abfd, sym, &syminfo);
-  info.sinfo = &syminfo;
-  info.ssize = ssize;
-  if (bfd_get_flavour (abfd) == bfd_target_elf_flavour)
-    info.elfinfo = (elf_symbol_type *) sym;
+  bfd_get_symbol_info(abfd, sym, &syminfo);
+  ext_syminfo.sinfo = &syminfo;
+  ext_syminfo.ssize = ssize;
+  if (bfd_get_flavour(abfd) == bfd_target_elf_flavour)
+    ext_syminfo.elfinfo = (elf_symbol_type *)sym;
   else
-    info.elfinfo = NULL;
-  format->print_symbol_info (&info, abfd);
+    ext_syminfo.elfinfo = NULL;
+  format->print_symbol_info(&ext_syminfo, abfd);
 
   if (line_numbers)
     {
@@ -812,28 +813,28 @@ print_symbol (bfd *abfd, asymbol *sym, bfd_vma ssize, bfd *archive_bfd)
       unsigned int lineno;
 
       /* We need to get the canonical symbols in order to call
-         bfd_find_nearest_line.  This is inefficient, but, then, you
-         don't have to use --line-numbers.  */
-      if (abfd != lineno_cache_bfd && syms != NULL)
+       * bfd_find_nearest_line.  This is inefficient, but, then, you
+       * do NOT have to use --line-numbers.  */
+      if ((abfd != lineno_cache_bfd) && (syms != NULL))
 	{
-	  free (syms);
+	  free(syms);
 	  syms = NULL;
 	}
       if (syms == NULL)
 	{
 	  long symsize;
 
-	  symsize = bfd_get_symtab_upper_bound (abfd);
+	  symsize = bfd_get_symtab_upper_bound(abfd);
 	  if (symsize < 0)
-	    bfd_fatal (bfd_get_filename (abfd));
-	  syms = xmalloc (symsize);
-	  symcount = bfd_canonicalize_symtab (abfd, syms);
+	    bfd_fatal(bfd_get_filename(abfd));
+	  syms = (asymbol **)xmalloc((size_t)symsize);
+	  symcount = bfd_canonicalize_symtab(abfd, syms);
 	  if (symcount < 0)
-	    bfd_fatal (bfd_get_filename (abfd));
+	    bfd_fatal(bfd_get_filename(abfd));
 	  lineno_cache_bfd = abfd;
 	}
 
-      if (bfd_is_und_section (bfd_get_section (sym)))
+      if (bfd_is_und_section(bfd_get_section(sym)))
 	{
 	  static asection **secs;
 	  static arelent ***relocs;
@@ -859,23 +860,23 @@ print_symbol (bfd *abfd, asymbol *sym, bfd_vma ssize, bfd *archive_bfd)
 
 	  if (relocs == NULL)
 	    {
-	      struct get_relocs_info info;
+	      struct get_relocs_info relinfo;
 
 	      seccount = bfd_count_sections (abfd);
 
-	      secs = xmalloc (seccount * sizeof *secs);
-	      relocs = xmalloc (seccount * sizeof *relocs);
-	      relcount = xmalloc (seccount * sizeof *relcount);
+	      secs = (asection **)xmalloc(seccount * sizeof(*secs));
+	      relocs = (arelent ***)xmalloc(seccount * sizeof(*relocs));
+	      relcount = (long *)xmalloc(seccount * sizeof(*relcount));
 
-	      info.secs = secs;
-	      info.relocs = relocs;
-	      info.relcount = relcount;
-	      info.syms = syms;
-	      bfd_map_over_sections (abfd, get_relocs, (void *) &info);
+	      relinfo.secs = secs;
+	      relinfo.relocs = relocs;
+	      relinfo.relcount = relcount;
+	      relinfo.syms = syms;
+	      bfd_map_over_sections(abfd, get_relocs, (void *)&relinfo);
 	      lineno_cache_rel_bfd = abfd;
 	    }
 
-	  symname = bfd_asymbol_name (sym);
+	  symname = bfd_asymbol_name(sym);
 	  for (i = 0; i < seccount; i++)
 	    {
 	      long j;
@@ -921,7 +922,7 @@ print_symbol (bfd *abfd, asymbol *sym, bfd_vma ssize, bfd *archive_bfd)
 /* Print the symbols when sorting by size.  */
 
 static void
-print_size_symbols (bfd *abfd, bfd_boolean dynamic,
+print_size_symbols (bfd *abfd, bfd_boolean is_dynamic,
 		    struct size_sym *symsizes, long symcount,
 		    bfd *archive_bfd)
 {
@@ -939,7 +940,7 @@ print_size_symbols (bfd *abfd, bfd_boolean dynamic,
       asymbol *sym;
       bfd_vma ssize;
 
-      sym = bfd_minisymbol_to_symbol (abfd, dynamic, from->minisym, store);
+      sym = bfd_minisymbol_to_symbol (abfd, is_dynamic, from->minisym, store);
       if (sym == NULL)
 	bfd_fatal (bfd_get_filename (abfd));
 
@@ -956,36 +957,34 @@ print_size_symbols (bfd *abfd, bfd_boolean dynamic,
 
 /* Print the symbols.  If ARCHIVE_BFD is non-NULL, it is the archive
    containing ABFD.  */
-
 static void
-print_symbols (bfd *abfd, bfd_boolean dynamic, void *minisyms, long symcount,
-	       unsigned int size, bfd *archive_bfd)
+print_symbols(bfd *abfd, bfd_boolean is_dynamic, void *minisyms,
+              long symcount, unsigned int size, bfd *archive_bfd)
 {
   asymbol *store;
   bfd_byte *from, *fromend;
 
-  store = bfd_make_empty_symbol (abfd);
+  store = bfd_make_empty_symbol(abfd);
   if (store == NULL)
-    bfd_fatal (bfd_get_filename (abfd));
+    bfd_fatal (bfd_get_filename(abfd));
 
-  from = (bfd_byte *) minisyms;
-  fromend = from + symcount * size;
+  from = (bfd_byte *)minisyms;
+  fromend = (from + ((size_t)symcount * size));
   for (; from < fromend; from += size)
     {
       asymbol *sym;
 
-      sym = bfd_minisymbol_to_symbol (abfd, dynamic, from, store);
+      sym = bfd_minisymbol_to_symbol(abfd, is_dynamic, from, store);
       if (sym == NULL)
-	bfd_fatal (bfd_get_filename (abfd));
+	bfd_fatal(bfd_get_filename(abfd));
 
-      print_symbol (abfd, sym, (bfd_vma) 0, archive_bfd);
+      print_symbol(abfd, sym, (bfd_vma)0UL, archive_bfd);
     }
 }
 
-/* If ARCHIVE_BFD is non-NULL, it is the archive containing ABFD.  */
-
+/* If ARCHIVE_BFD is non-NULL, then it is the archive containing ABFD: */
 static void
-display_rel_file (bfd *abfd, bfd *archive_bfd)
+display_rel_file(bfd *abfd, bfd *archive_bfd)
 {
   long symcount;
   void *minisyms;
@@ -994,66 +993,66 @@ display_rel_file (bfd *abfd, bfd *archive_bfd)
 
   if (! dynamic)
     {
-      if (!(bfd_get_file_flags (abfd) & HAS_SYMS))
+      if (!(bfd_get_file_flags(abfd) & HAS_SYMS))
 	{
-	  non_fatal (_("%s: no symbols"), bfd_get_filename (abfd));
+	  non_fatal(_("%s: no symbols"), bfd_get_filename(abfd));
 	  return;
 	}
     }
 
-  symcount = bfd_read_minisymbols (abfd, dynamic, &minisyms, &size);
+  symcount = bfd_read_minisymbols(abfd, dynamic, &minisyms, &size);
   if (symcount < 0)
-    bfd_fatal (bfd_get_filename (abfd));
+    bfd_fatal(bfd_get_filename(abfd));
 
   if (symcount == 0)
     {
-      non_fatal (_("%s: no symbols"), bfd_get_filename (abfd));
+      non_fatal(_("%s: no symbols"), bfd_get_filename(abfd));
       return;
     }
 
-  if (show_synthetic && size == sizeof (asymbol *))
+  if (show_synthetic && (size == sizeof(asymbol *)))
     {
       asymbol *synthsyms;
       long synth_count;
       asymbol **static_syms = NULL;
       asymbol **dyn_syms = NULL;
-      long static_count = 0;
-      long dyn_count = 0;
+      long static_count = 0L;
+      long dyn_count = 0L;
 
       if (dynamic)
 	{
 	  dyn_count = symcount;
-	  dyn_syms = minisyms;
+	  dyn_syms = (asymbol **)minisyms;
 	}
       else
 	{
-	  long storage = bfd_get_dynamic_symtab_upper_bound (abfd);
+	  long storage = bfd_get_dynamic_symtab_upper_bound(abfd);
 
 	  static_count = symcount;
-	  static_syms = minisyms;
+	  static_syms = (asymbol **)minisyms;
 
 	  if (storage > 0)
 	    {
-	      dyn_syms = xmalloc (storage);
-	      dyn_count = bfd_canonicalize_dynamic_symtab (abfd, dyn_syms);
+	      dyn_syms = (asymbol **)xmalloc((size_t)storage);
+	      dyn_count = bfd_canonicalize_dynamic_symtab(abfd, dyn_syms);
 	      if (dyn_count < 0)
-		bfd_fatal (bfd_get_filename (abfd));
+		bfd_fatal (bfd_get_filename(abfd));
 	    }
 	}
-      synth_count = bfd_get_synthetic_symtab (abfd, static_count, static_syms,
-					      dyn_count, dyn_syms, &synthsyms);
+      synth_count = bfd_get_synthetic_symtab(abfd, static_count, static_syms,
+					     dyn_count, dyn_syms, &synthsyms);
       if (synth_count > 0)
 	{
 	  asymbol **symp;
 	  void *new_mini;
 	  long i;
 
-	  new_mini = xmalloc ((symcount + synth_count + 1) * sizeof (*symp));
-	  symp = new_mini;
-	  memcpy (symp, minisyms, symcount * sizeof (*symp));
+	  new_mini = xmalloc(((size_t)(symcount + synth_count) + 1UL) * sizeof(*symp));
+	  symp = (asymbol **)new_mini;
+	  memcpy(symp, minisyms, ((size_t)symcount * sizeof(*symp)));
 	  symp += symcount;
 	  for (i = 0; i < synth_count; i++)
-	    *symp++ = synthsyms + i;
+	    *symp++ = (synthsyms + i);
 	  *symp = 0;
 	  minisyms = new_mini;
 	  symcount += synth_count;
@@ -1071,23 +1070,23 @@ display_rel_file (bfd *abfd, bfd *archive_bfd)
     {
       sort_bfd = abfd;
       sort_dynamic = dynamic;
-      sort_x = bfd_make_empty_symbol (abfd);
-      sort_y = bfd_make_empty_symbol (abfd);
-      if (sort_x == NULL || sort_y == NULL)
-	bfd_fatal (bfd_get_filename (abfd));
+      sort_x = bfd_make_empty_symbol(abfd);
+      sort_y = bfd_make_empty_symbol(abfd);
+      if ((sort_x == NULL) || (sort_y == NULL))
+	bfd_fatal(bfd_get_filename(abfd));
 
       if (! sort_by_size)
-	qsort (minisyms, symcount, size,
-	       sorters[sort_numerically][reverse_sort]);
+	qsort(minisyms, (size_t)symcount, size,
+	      sorters[sort_numerically][reverse_sort]);
       else
-	symcount = sort_symbols_by_size (abfd, dynamic, minisyms, symcount,
-					 size, &symsizes);
+	symcount = sort_symbols_by_size(abfd, dynamic, minisyms, symcount,
+                                        size, &symsizes);
     }
 
   if (! sort_by_size)
-    print_symbols (abfd, dynamic, minisyms, symcount, size, archive_bfd);
+    print_symbols(abfd, dynamic, minisyms, symcount, size, archive_bfd);
   else
-    print_size_symbols (abfd, dynamic, symsizes, symcount, archive_bfd);
+    print_size_symbols(abfd, dynamic, symsizes, symcount, archive_bfd);
 
   free (minisyms);
 }
@@ -1117,23 +1116,23 @@ display_archive (bfd *file)
 	  break;
 	}
 
-      if (bfd_check_format_matches (arfile, bfd_object, &matching))
+      if (bfd_check_format_matches(arfile, bfd_object, &matching))
 	{
 	  char buf[30];
 
-	  bfd_sprintf_vma (arfile, buf, (bfd_vma) -1);
-	  print_width = strlen (buf);
-	  format->print_archive_member (bfd_get_filename (file),
-					bfd_get_filename (arfile));
-	  display_rel_file (arfile, file);
+	  bfd_sprintf_vma(arfile, buf, (bfd_vma)-1L);
+	  print_width = strlen(buf);
+	  format->print_archive_member(bfd_get_filename(file),
+                                       bfd_get_filename(arfile));
+	  display_rel_file(arfile, file);
 	}
       else
 	{
-	  bfd_nonfatal (bfd_get_filename (arfile));
-	  if (bfd_get_error () == bfd_error_file_ambiguously_recognized)
+	  bfd_nonfatal(bfd_get_filename(arfile));
+	  if (bfd_get_error() == bfd_error_file_ambiguously_recognized)
 	    {
-	      list_matching_formats (matching);
-	      free (matching);
+	      list_matching_formats(matching);
+	      free(matching);
 	    }
 	}
 
@@ -1155,48 +1154,48 @@ display_archive (bfd *file)
 }
 
 static bfd_boolean
-display_file (char *filename)
+display_file(char *filename)
 {
   bfd_boolean retval = TRUE;
   bfd *file;
   char **matching;
 
-  if (get_file_size (filename) < 1)
+  if (get_file_size(filename) < 1)
     return FALSE;
 
-  file = bfd_openr (filename, target);
+  file = bfd_openr(filename, target);
   if (file == NULL)
     {
-      bfd_nonfatal (filename);
+      bfd_nonfatal(filename);
       return FALSE;
     }
 
-  if (bfd_check_format (file, bfd_archive))
+  if (bfd_check_format(file, bfd_archive))
     {
-      display_archive (file);
+      display_archive(file);
     }
-  else if (bfd_check_format_matches (file, bfd_object, &matching))
+  else if (bfd_check_format_matches(file, bfd_object, &matching))
     {
       char buf[30];
 
-      bfd_sprintf_vma (file, buf, (bfd_vma) -1);
-      print_width = strlen (buf);
-      format->print_object_filename (filename);
-      display_rel_file (file, NULL);
+      bfd_sprintf_vma(file, buf, (bfd_vma)-1L);
+      print_width = strlen(buf);
+      format->print_object_filename(filename);
+      display_rel_file(file, NULL);
     }
   else
     {
-      bfd_nonfatal (filename);
-      if (bfd_get_error () == bfd_error_file_ambiguously_recognized)
+      bfd_nonfatal(filename);
+      if (bfd_get_error() == bfd_error_file_ambiguously_recognized)
 	{
-	  list_matching_formats (matching);
-	  free (matching);
+	  list_matching_formats(matching);
+	  free(matching);
 	}
       retval = FALSE;
     }
 
-  if (!bfd_close (file))
-    bfd_fatal (filename);
+  if (!bfd_close(file))
+    bfd_fatal(filename);
 
   lineno_cache_bfd = NULL;
   lineno_cache_rel_bfd = NULL;
@@ -1220,17 +1219,17 @@ print_object_filename_bsd (char *filename)
 }
 
 static void
-print_object_filename_sysv (char *filename)
+print_object_filename_sysv(char *filename)
 {
   if (undefined_only)
-    printf (_("\n\nUndefined symbols from %s:\n\n"), filename);
+    printf(_("\n\nUndefined symbols from %s:\n\n"), filename);
   else
-    printf (_("\n\nSymbols from %s:\n\n"), filename);
-  if (print_width == 8)
-    printf (_("\
+    printf(_("\n\nSymbols from %s:\n\n"), filename);
+  if (print_width == 8UL)
+    printf(_("\
 Name                  Value   Class        Type         Size     Line  Section\n\n"));
   else
-    printf (_("\
+    printf(_("\
 Name                  Value           Class        Type         Size             Line  Section\n\n"));
 }
 
@@ -1271,17 +1270,17 @@ print_archive_member_bsd (char *archive ATTRIBUTE_UNUSED,
 }
 
 static void
-print_archive_member_sysv (char *archive, const char *filename)
+print_archive_member_sysv(char *archive, const char *filename)
 {
   if (undefined_only)
-    printf (_("\n\nUndefined symbols from %s[%s]:\n\n"), archive, filename);
+    printf(_("\n\nUndefined symbols from %s[%s]:\n\n"), archive, filename);
   else
-    printf (_("\n\nSymbols from %s[%s]:\n\n"), archive, filename);
-  if (print_width == 8)
-    printf (_("\
+    printf(_("\n\nSymbols from %s[%s]:\n\n"), archive, filename);
+  if (print_width == 8UL)
+    printf(_("\
 Name                  Value   Class        Type         Size     Line  Section\n\n"));
   else
-    printf (_("\
+    printf(_("\
 Name                  Value           Class        Type         Size             Line  Section\n\n"));
 }
 
@@ -1333,43 +1332,42 @@ print_symbol_filename_posix (bfd *archive_bfd, bfd *abfd)
 /* Print a symbol value.  */
 
 static void
-print_value (bfd *abfd ATTRIBUTE_UNUSED, bfd_vma val)
+print_value(bfd *abfd ATTRIBUTE_UNUSED, bfd_vma val)
 {
-#if ! defined (BFD64) || BFD_HOST_64BIT_LONG
-  printf (value_format, val);
+#if ! defined(BFD64) || BFD_HOST_64BIT_LONG
+  printf(value_format, val);
 #else
   /* We have a 64 bit value to print, but the host is only 32 bit.  */
   if (print_radix == 16)
-    bfd_fprintf_vma (abfd, stdout, val);
+    bfd_fprintf_vma(abfd, stdout, val);
   else
     {
       char buf[30];
       char *s;
 
-      s = buf + sizeof buf;
+      s = (buf + sizeof(buf));
       *--s = '\0';
       while (val > 0)
 	{
-	  *--s = (val % print_radix) + '0';
-	  val /= print_radix;
+	  *--s = (char)(((int)val % print_radix) + '0');
+	  val /= (bfd_vma)print_radix;
 	}
-      while ((buf + sizeof buf - 1) - s < 16)
+      while ((buf + sizeof(buf) - 1) - s < 16)
 	*--s = '0';
-      printf ("%s", s);
+      printf("%s", s);
     }
 #endif
 }
 
-/* Print a line of information about a symbol.  */
-
+/* Print a line of information about a symbol: */
 static void
-print_symbol_info_bsd (struct extended_symbol_info *info, bfd *abfd)
+print_symbol_info_bsd(struct extended_symbol_info *ext_syminfo, bfd *abfd)
 {
-  if (bfd_is_undefined_symclass (SYM_TYPE (info)))
+  if (bfd_is_undefined_symclass(SYM_TYPE(ext_syminfo)))
     {
-      if (print_width == 16)
-	printf ("        ");
-      printf ("        ");
+      if (print_width == 16UL)
+	printf("        ");
+      printf("        ");
     }
   else
     {
@@ -1378,95 +1376,95 @@ print_symbol_info_bsd (struct extended_symbol_info *info, bfd *abfd)
 	 (weird) special case where both flags are defined, in which case we
 	 print both values.  This conforms to documented behaviour.  */
       if (sort_by_size && !print_size)
-	print_value (abfd, SYM_SIZE (info));
+	print_value (abfd, SYM_SIZE (ext_syminfo));
       else
-	print_value (abfd, SYM_VALUE (info));
+	print_value (abfd, SYM_VALUE (ext_syminfo));
 
-      if (print_size && SYM_SIZE (info))
+      if (print_size && SYM_SIZE (ext_syminfo))
 	{
 	  printf (" ");
-	  print_value (abfd, SYM_SIZE (info));
+	  print_value (abfd, SYM_SIZE (ext_syminfo));
 	}
     }
 
-  printf (" %c", SYM_TYPE (info));
+  printf (" %c", SYM_TYPE (ext_syminfo));
 
-  if (SYM_TYPE (info) == '-')
+  if (SYM_TYPE (ext_syminfo) == '-')
     {
       /* A stab.  */
       printf (" ");
-      printf (other_format, SYM_STAB_OTHER (info));
+      printf (other_format, SYM_STAB_OTHER (ext_syminfo));
       printf (" ");
-      printf (desc_format, SYM_STAB_DESC (info));
-      printf (" %5s", SYM_STAB_NAME (info));
+      printf (desc_format, SYM_STAB_DESC (ext_syminfo));
+      printf (" %5s", SYM_STAB_NAME (ext_syminfo));
     }
-  print_symname (" %s", SYM_NAME (info), abfd);
+  print_symname (" %s", SYM_NAME (ext_syminfo), abfd);
 }
 
 static void
-print_symbol_info_sysv (struct extended_symbol_info *info, bfd *abfd)
+print_symbol_info_sysv(struct extended_symbol_info *ext_syminfo, bfd *abfd)
 {
-  print_symname ("%-20s|", SYM_NAME (info), abfd);
+  print_symname("%-20s|", SYM_NAME(ext_syminfo), abfd);
 
-  if (bfd_is_undefined_symclass (SYM_TYPE (info)))
+  if (bfd_is_undefined_symclass(SYM_TYPE(ext_syminfo)))
     {
-      if (print_width == 8)
-	printf ("        ");
+      if (print_width == 8UL)
+	printf("        ");
       else
-	printf ("                ");
+	printf("                ");
     }
   else
-    print_value (abfd, SYM_VALUE (info));
+    print_value(abfd, SYM_VALUE(ext_syminfo));
 
-  printf ("|   %c  |", SYM_TYPE (info));
+  printf("|   %c  |", SYM_TYPE(ext_syminfo));
 
-  if (SYM_TYPE (info) == '-')
+  if (SYM_TYPE (ext_syminfo) == '-')
     {
       /* A stab.  */
-      printf ("%18s|  ", SYM_STAB_NAME (info));		/* (C) Type.  */
-      printf (desc_format, SYM_STAB_DESC (info));	/* Size.  */
+      printf ("%18s|  ", SYM_STAB_NAME (ext_syminfo));		/* (C) Type.  */
+      printf (desc_format, SYM_STAB_DESC (ext_syminfo));	/* Size.  */
       printf ("|     |");				/* Line, Section.  */
     }
   else
     {
       /* Type, Size, Line, Section */
-      if (info->elfinfo)
+      if (ext_syminfo->elfinfo)
 	printf ("%18s|",
-		get_symbol_type (ELF_ST_TYPE (info->elfinfo->internal_elf_sym.st_info)));
+		get_symbol_type (ELF_ST_TYPE (ext_syminfo->elfinfo->internal_elf_sym.st_info)));
       else
 	printf ("                  |");
 
-      if (SYM_SIZE (info))
-	print_value (abfd, SYM_SIZE (info));
+      if (SYM_SIZE (ext_syminfo))
+	print_value (abfd, SYM_SIZE (ext_syminfo));
       else
 	{
-	  if (print_width == 8)
-	    printf ("        ");
+	  if (print_width == 8UL)
+	    printf("        ");
 	  else
-	    printf ("                ");
+	    printf("                ");
 	}
 
-      if (info->elfinfo)
-	printf("|     |%s", info->elfinfo->symbol.section->name);
+      if (ext_syminfo->elfinfo)
+	printf("|     |%s", ext_syminfo->elfinfo->symbol.section->name);
       else
 	printf("|     |");
     }
 }
 
 static void
-print_symbol_info_posix (struct extended_symbol_info *info, bfd *abfd)
+print_symbol_info_posix (struct extended_symbol_info *ext_syminfo, bfd *abfd)
 {
-  print_symname ("%s ", SYM_NAME (info), abfd);
-  printf ("%c ", SYM_TYPE (info));
+  print_symname ("%s ", SYM_NAME (ext_syminfo), abfd);
+  printf ("%c ", SYM_TYPE (ext_syminfo));
 
-  if (bfd_is_undefined_symclass (SYM_TYPE (info)))
+  if (bfd_is_undefined_symclass (SYM_TYPE (ext_syminfo)))
     printf ("        ");
   else
     {
-      print_value (abfd, SYM_VALUE (info));
+      print_value (abfd, SYM_VALUE (ext_syminfo));
       printf (" ");
-      if (SYM_SIZE (info))
-	print_value (abfd, SYM_SIZE (info));
+      if (SYM_SIZE (ext_syminfo))
+	print_value (abfd, SYM_SIZE (ext_syminfo));
     }
 }
 
@@ -1530,14 +1528,14 @@ main (int argc, char **argv)
 	  /* Ignored for HP/UX compatibility.  */
 	  break;
 	case 'f':
-	  set_output_format (optarg);
+	  set_output_format(optarg);
 	  break;
 	case 'g':
 	  external_only = 1;
 	  break;
 	case 'H':
 	case 'h':
-	  usage (stdout, 0);
+	  usage(stdout, 0);
 	case 'l':
 	  line_numbers = 1;
 	  break;
@@ -1589,12 +1587,12 @@ main (int argc, char **argv)
 	  break;
 
 	default:
-	  usage (stderr, 1);
+	  usage(stderr, 1);
 	}
     }
 
   if (show_version)
-    print_version ("nm");
+    print_version("nm");
 
   if (sort_by_size && undefined_only)
     {
@@ -1620,17 +1618,21 @@ main (int argc, char **argv)
 	retval++;
     }
 
-  END_PROGRESS (program_name);
+  END_PROGRESS(program_name);
 
 #ifdef HAVE_SBRK
   if (show_stats)
     {
-      char *lim = (char *) sbrk (0);
+      char *lim = (char *)sbrk(0);
 
-      non_fatal (_("data size %ld"), (long) (lim - (char *) &environ));
+      non_fatal(_("data size %ld"), (long)(lim - (char *)&environ));
     }
-#endif
+#endif /* HAVE_SBRK */
 
-  exit (retval);
+  exit(retval);
+#if !defined(__clang__)
   return retval;
+#endif /* !__clang__ */
 }
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* Internal type definitions for GDB.
+/* gdbtypes.h: Internal type definitions for GDB.
 
    Copyright 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
    2001, 2002, 2003, 2004 Free Software Foundation, Inc.
@@ -177,9 +177,11 @@ enum type_code
    alias for TYPE_CODE_STRUCT.  This is for DWARF, which has a distinct
    "class" attribute.  Perhaps we should actually have a separate TYPE_CODE
    so that we can print "class" or "struct" depending on what the debug
-   info said.  It's not clear we should bother.  */
-
+   info said.  It was not clear if we should bother...  */
 #define TYPE_CODE_CLASS TYPE_CODE_STRUCT
+/* FIXME: some locations in the code check against both, as if they had
+ * different values, which provokes -Wlogical-op warnings with recent
+ * versions of gcc... */
 
 /* Some bits for the type's flags word, and macros to test them. */
 
@@ -212,7 +214,7 @@ enum type_code
 #define TYPE_FLAG_TARGET_STUB	(1 << 3)
 #define TYPE_TARGET_STUB(t)	(TYPE_FLAGS (t) & TYPE_FLAG_TARGET_STUB)
 
-/* Static type.  If this is set, the corresponding type had 
+/* Static type.  If this is set, the corresponding type had
  * a static modifier.
  * Note: This may be unnecessary, since static data members
  * are indicated by other means (bitpos == -1)
@@ -266,7 +268,7 @@ enum type_code
    resides in instruction memory, even if its address (in the extended
    flat address space) does not reflect this.
 
-   Similarly, if TYPE_FLAG_DATA is set, then an object of the 
+   Similarly, if TYPE_FLAG_DATA is set, then an object of the
    corresponding type resides in the data memory space, even if
    this is not indicated by its (flat address space) address.
 
@@ -311,9 +313,9 @@ enum type_code
    to represent all Ada types---especially those whose size depends on
    dynamic quantities.  Therefore, the GNAT Ada compiler includes
    extra information in the form of additional type definitions
-   connected by naming conventions.  This flag indicates that the 
-   type is an ordinary (unencoded) GDB type that has been created from 
-   the necessary run-time information, and does not need further 
+   connected by naming conventions.  This flag indicates that the
+   type is an ordinary (unencoded) GDB type that has been created from
+   the necessary run-time information, and does not need further
    interpretation. Optionally marks ordinary, fixed-size GDB type. */
 
 #define TYPE_FLAG_FIXED_INSTANCE (1 << 15)
@@ -322,7 +324,7 @@ enum type_code
    AND it is treated by the compiler as a "function pointer".  */
 #define TYPE_FLAG_APPLE_CLOSURE (1 << 16)
 
-/* APPLE LOCAL: This is a restrict qualifier on the type, similar to 
+/* APPLE LOCAL: This is a restrict qualifier on the type, similar to
    const or volatile.  */
 #define TYPE_FLAG_RESTRICT (1 << 17)
 #define TYPE_RESTRICT(t)	(TYPE_INSTANCE_FLAGS (t) & TYPE_FLAG_RESTRICT)
@@ -343,13 +345,58 @@ enum array_bound_type
   BOUND_CANNOT_BE_DETERMINED
 };
 
+/* un-nested for C++ usage: */
+struct field
+{
+  union field_location
+  {
+    /* Position of this field, counting in bits from start of
+     * containing structure.
+     * For BITS_BIG_ENDIAN=1 targets, it is the bit offset to the MSB.
+     * For BITS_BIG_ENDIAN=0 targets, it is the bit offset to the LSB.
+     * For a range bound or enum value, this is the value itself. */
+
+    int bitpos;
+
+    /* For a static field, if TYPE_FIELD_STATIC_HAS_ADDR then physaddr
+     * is the location (in the target) of the static field.
+     * Otherwise, physname is the mangled label of the static field. */
+
+    CORE_ADDR physaddr;
+    char *physname;
+  }
+  loc;
+
+  /* For a function or member type, this is 1 if the argument is marked
+   * artificial.  Artificial arguments should not be shown to the user: */
+  unsigned int artificial : 1;
+
+  /* This flag is zero for non-static fields, 1 for fields whose location
+   * is specified by the label loc.physname, and 2 for fields whose
+   * location is specified by loc.physaddr: */
+  unsigned int static_kind : 2;
+
+  /* Size of this field, in bits, or zero if not packed.
+   * For an unpacked field, the field's type's length
+   * says how many bytes the field occupies: */
+  unsigned int bitsize : 29;
+
+  /* In a struct or union type, type of this field.
+   * In a function or member type, type of this argument.
+   * In an array type, the domain-type of the array: */
+  struct type *type;
+
+  /* Name of field, value or argument.
+   * NULL for range bounds, array domains, and member function
+   * arguments: */
+  char *name;
+};
+
 /* This structure is space-critical.
    Its layout has been tweaked to reduce the space used.  */
-
 struct main_type
 {
-  /* Code for kind of type */
-
+  /* Code for kind of type: */
   ENUM_BITFIELD(type_code) code : 8;
 
   /* Array bounds.  These fields appear at this location because
@@ -401,17 +448,14 @@ struct main_type
 
   struct type *target_type;
 
-  /* Flags about this type.  */
-
+  /* Flags about this type: */
   int flags : 30;
 
   /* The byte-order of the type.  Uses the same values as the byte
      order stored in the gdbarch structure. */
-
   unsigned int byte_order : 2;
 
-  /* Number of fields described for this type */
-
+  /* Number of fields described for this type: */
   short nfields;
 
   /* Field number of the virtual function table pointer in
@@ -420,7 +464,6 @@ struct main_type
      fill_in_vptr_fieldno should be called to find it if possible.
 
      Unused if this type does not have virtual functions.  */
-
   short vptr_fieldno;
 
   /* For structure and union types, a description of each field.
@@ -438,61 +481,10 @@ struct main_type
      allows all types to have the same size, which is useful
      because we can allocate the space for a type before
      we know what to put in it.  */
-
-  struct field
-  {
-    union field_location
-    {
-      /* Position of this field, counting in bits from start of
-	 containing structure.
-	 For BITS_BIG_ENDIAN=1 targets, it is the bit offset to the MSB.
-	 For BITS_BIG_ENDIAN=0 targets, it is the bit offset to the LSB.
-	 For a range bound or enum value, this is the value itself. */
-
-      int bitpos;
-
-      /* For a static field, if TYPE_FIELD_STATIC_HAS_ADDR then physaddr
-	 is the location (in the target) of the static field.
-	 Otherwise, physname is the mangled label of the static field. */
-
-      CORE_ADDR physaddr;
-      char *physname;
-    }
-    loc;
-
-    /* For a function or member type, this is 1 if the argument is marked
-       artificial.  Artificial arguments should not be shown to the
-       user.  */
-    unsigned int artificial : 1;
-
-    /* This flag is zero for non-static fields, 1 for fields whose location
-       is specified by the label loc.physname, and 2 for fields whose location
-       is specified by loc.physaddr.  */
-
-    unsigned int static_kind : 2;
-
-    /* Size of this field, in bits, or zero if not packed.
-       For an unpacked field, the field's type's length
-       says how many bytes the field occupies.  */
-
-    unsigned int bitsize : 29;
-
-    /* In a struct or union type, type of this field.
-       In a function or member type, type of this argument.
-       In an array type, the domain-type of the array.  */
-
-    struct type *type;
-
-    /* Name of field, value or argument.
-       NULL for range bounds, array domains, and member function
-       arguments.  */
-
-    char *name;
-
-  } *fields;
+  struct field *fields;
 
   /* For types with virtual functions (TYPE_CODE_STRUCT), VPTR_BASETYPE
-     is the base class which defined the virtual function table pointer.  
+     is the base class which defined the virtual function table pointer.
 
      For types that are pointer to member types (TYPE_CODE_MEMBER),
      VPTR_BASETYPE is the type that this pointer is a member of.
@@ -501,11 +493,9 @@ struct main_type
      type that contains the method.
 
      Unused otherwise.  */
-
   struct type *vptr_basetype;
 
-  /* Slot to point to additional language-specific fields of this type.  */
-
+  /* Slot to point to additional language-specific fields of this type: */
   union type_specific
   {
     /* CPLUS_STUFF is for TYPE_CODE_STRUCT.  It is initialized to point to
@@ -571,14 +561,14 @@ struct type
      the other choice would be to make it consistently in units of
      HOST_CHAR_BIT.  However, this would still fail to address
      machines based on a ternary or decimal representation.  */
-  
+
   /* APPLE LOCAL: I changed length from an unsigned int to an int.
-     I need to be able to mark the length as "uncertain", which I do
-     by reversing the sign.  See the comments in front of 
-     objc_invalidate_class in objc-lang.c for more details.
-     I doubt we'll ever get a struct whose length overflows 
-     a signed integer so for all practical purposes this should
-     be fine.  */
+   * I need to be able to mark the length as "uncertain", which I do
+   * by reversing the sign.  See the comments in front of
+   * objc_invalidate_class in objc-lang.c for more details.
+   * I doubt we will ever get a struct whose length overflows
+   * a signed integer so for all practical purposes this should
+   * be fine.  */
   int length;
 
   /* Core type, shared by a group of qualified types.  */
@@ -593,8 +583,102 @@ struct type
 enum runtime_type
   {
     CPLUS_RUNTIME,
-    OBJC_RUNTIME,
+    OBJC_RUNTIME/*,*/
   };
+
+/* for use later: */
+struct fn_field
+{
+  /* If is_stub is clear, this is the mangled name which we can
+   * look up to find the address of the method (FIXME: it would
+   * be cleaner to have a pointer to the struct symbol here
+   * instead).  */
+
+  /* If is_stub is set, this is the portion of the mangled
+   * name which specifies the arguments.  For example, "ii",
+   * if there are two int arguments, or "" if there are no
+   * arguments.  See gdb_mangle_name for the conversion from this
+   * format to the one used if is_stub is clear.  */
+
+  char *physname;
+
+  /* The function type for the method.
+   * (This comment used to say "The return value of the method",
+   * but that is wrong. The function type
+   * is expected here, i.e. something with TYPE_CODE_FUNC,
+   * and *not* the return-value type). */
+
+  struct type *type;
+
+  /* For virtual functions.
+   * First baseclass that defines this virtual function.   */
+
+  struct type *fcontext;
+
+  /* Attributes:*/
+  unsigned int is_const:1;
+  unsigned int is_volatile:1;
+  unsigned int is_private:1;
+  unsigned int is_protected:1;
+  unsigned int is_public:1;
+  unsigned int is_abstract:1;
+  unsigned int is_static:1;
+  unsigned int is_final:1;
+  unsigned int is_synchronized:1;
+  unsigned int is_native:1;
+  unsigned int is_artificial:1;
+
+  /* A stub method only has some fields valid (but they are enough
+   * to reconstruct the rest of the fields).  */
+  unsigned int is_stub:1;
+
+  /* C++ method that is inlined: */
+  unsigned int is_inlined:1;
+
+  /* Unused: */
+  unsigned int dummy:3;
+
+  /* Index into that baseclass's virtual function table,
+   * minus 2; else if static: VOFFSET_STATIC; else: 0.  */
+  unsigned int voffset:16;
+
+#define VOFFSET_STATIC 1
+};
+
+/* likewise, un-nested for C++ usage: */
+struct fn_fieldlist
+{
+  /* The overloaded name: */
+  char *name;
+
+  /* The number of methods with this name: */
+  int length;
+
+  /* The list of methods: */
+  struct fn_field *fn_fields;
+};
+
+/* likewise: */
+struct template_arg
+{
+  char *name;
+  struct type *type;
+};
+
+/* likewise: */
+struct runtime_info
+{
+  short has_vtable;
+  struct type *primary_base;
+  struct type **virtual_base_list;
+};
+
+/* likewise: */
+struct local_type_info
+{
+  char *file;
+  int line;
+};
 
 struct cplus_struct_type
   {
@@ -618,7 +702,7 @@ struct cplus_struct_type
     /* The "declared_type" field contains a code saying how the
        user really declared this type, e.g., "class s", "union s",
        "struct s".
-       The 3 above things come out from the C++ compiler looking like classes, 
+       The 3 above things come out from the C++ compiler looking like classes,
        but we keep track of the real declaration so we can give
        the correct information on "ptype". (Note: TEMPLATE may not
        belong in this list...)  */
@@ -675,105 +759,21 @@ struct cplus_struct_type
 
        fn_fieldlists points to an array of nfn_fields of these. */
 
-    struct fn_fieldlist
-      {
+    struct fn_fieldlist *fn_fieldlists;
 
-	/* The overloaded name.  */
-
-	char *name;
-
-	/* The number of methods with this name.  */
-
-	int length;
-
-	/* The list of methods.  */
-
-	struct fn_field
-	  {
-
-	    /* If is_stub is clear, this is the mangled name which we can
-	       look up to find the address of the method (FIXME: it would
-	       be cleaner to have a pointer to the struct symbol here
-	       instead).  */
-
-	    /* If is_stub is set, this is the portion of the mangled
-	       name which specifies the arguments.  For example, "ii",
-	       if there are two int arguments, or "" if there are no
-	       arguments.  See gdb_mangle_name for the conversion from this
-	       format to the one used if is_stub is clear.  */
-
-	    char *physname;
-
-	    /* The function type for the method.
-	       (This comment used to say "The return value of the method",
-	       but that's wrong. The function type 
-	       is expected here, i.e. something with TYPE_CODE_FUNC,
-	       and *not* the return-value type). */
-
-	    struct type *type;
-
-	    /* For virtual functions.
-	       First baseclass that defines this virtual function.   */
-
-	    struct type *fcontext;
-
-	    /* Attributes. */
-
-	    unsigned int is_const:1;
-	    unsigned int is_volatile:1;
-	    unsigned int is_private:1;
-	    unsigned int is_protected:1;
-	    unsigned int is_public:1;
-	    unsigned int is_abstract:1;
-	    unsigned int is_static:1;
-	    unsigned int is_final:1;
-	    unsigned int is_synchronized:1;
-	    unsigned int is_native:1;
-	    unsigned int is_artificial:1;
-
-	    /* A stub method only has some fields valid (but they are enough
-	       to reconstruct the rest of the fields).  */
-	    unsigned int is_stub:1;
-
-	    /* C++ method that is inlined */
-	    unsigned int is_inlined:1;
-
-	    /* Unused.  */
-	    unsigned int dummy:3;
-
-	    /* Index into that baseclass's virtual function table,
-	       minus 2; else if static: VOFFSET_STATIC; else: 0.  */
-
-	    unsigned int voffset:16;
-
-#define VOFFSET_STATIC 1
-
-	  }
-	 *fn_fields;
-
-      }
-     *fn_fieldlists;
-
-    /* If this "struct type" describes a template, then it 
+    /* If this "struct type" describes a template, then it
      * has arguments. "template_args" points to an array of
      * template arg descriptors, of length "ntemplate_args".
      * The only real information in each of these template arg descriptors
      * is a name. "type" will typically just point to a "struct type" with
-     * the placeholder TYPE_CODE_TEMPLATE_ARG type.
-     */
+     * the placeholder TYPE_CODE_TEMPLATE_ARG type.  */
     short ntemplate_args;
-    struct template_arg
-      {
-	char *name;
-	struct type *type;
-      }
-     *template_args;
+    struct template_arg *template_args;
 
     /* If this "struct type" describes a template, it has a list
      * of instantiations. "instantiations" is a pointer to an array
      * of type's, one representing each instantiation. There
-     * are "ninstantiations" elements in this array.
-     */
+     * are "ninstantiations" elements in this array.  */
     short ninstantiations;
     struct type **instantiations;
 
@@ -787,31 +787,18 @@ struct cplus_struct_type
      *
      * Fields in structure pointed to:
      * ->HAS_VTABLE : 0 => no virtual table, 1 => vtable present
-     * 
+     *
      * ->PRIMARY_BASE points to the first non-virtual base class that has
      * a virtual table.
      *
      * ->VIRTUAL_BASE_LIST points to a list of struct type * pointers that
-     * point to the type information for all virtual bases among this type's
-     * ancestors.
-     */
-    struct runtime_info
-      {
-	short has_vtable;
-	struct type *primary_base;
-	struct type **virtual_base_list;
-      }
-     *runtime_ptr;
+     * point to the type information for all virtual bases among the
+     * ancestors of this type.  */
+    struct runtime_info *runtime_ptr;
 
     /* Pointer to information about enclosing scope, if this is a
-     * local type.  If it is not a local type, this is NULL
-     */
-    struct local_type_info
-      {
-	char *file;
-	int line;
-      }
-     *localtype_ptr;
+     * local type.  If it is not a local type, then this is NULL: */
+    struct local_type_info *localtype_ptr;
   };
 
 /* Struct used in computing virtual base list */
@@ -828,7 +815,7 @@ struct badness_vector
     int *rank;
   };
 
-/* APPLE LOCAL BEGIN: Helper function type defintions for easily 
+/* APPLE LOCAL BEGIN: Helper function type defintions for easily
    building bitfield built in types.  */
 struct gdbtypes_enum_info
   {
@@ -879,13 +866,13 @@ extern void allocate_cplus_struct_type (struct type *);
    But check_typedef does set the TYPE_LENGTH of the TYPEDEF type,
    so you only have to call check_typedef once.  Since allocate_value
    calls check_typedef, TYPE_LENGTH (VALUE_TYPE (X)) is safe.  */
-/* APPLE LOCAL: Like with TYPE_FIELD_BITPOS for an ObjC class you can't
+/* APPLE LOCAL: Like with TYPE_FIELD_BITPOS for an ObjC class you cannot
    actually trust the debug info for ivar offsets OR type lengths for
    objc classes.  I set the length to -1, and then test it here,
    and return the actual value if not -1, or I fix it up and
    return the fixed up value.  I also need an ASSIGN version.  */
 #define TYPE_LENGTH_ASSIGN(thistype) (thistype)->length
-#define TYPE_LENGTH(thistype) (TYPE_LENGTH_ASSIGN(thistype) < 0 \
+#define TYPE_LENGTH(thistype) ((TYPE_LENGTH_ASSIGN(thistype) < 0) \
 			       ? objc_fixup_class_length(thistype)  \
 			       : TYPE_LENGTH_ASSIGN(thistype))
 
@@ -923,6 +910,13 @@ extern void allocate_cplus_struct_type (struct type *);
 
 /* C++ */
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Waddress"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 #define TYPE_VPTR_BASETYPE(thistype) TYPE_MAIN_TYPE(thistype)->vptr_basetype
 #define TYPE_DOMAIN_TYPE(thistype) TYPE_MAIN_TYPE(thistype)->vptr_basetype
 #define TYPE_VPTR_FIELDNO(thistype) TYPE_MAIN_TYPE(thistype)->vptr_fieldno
@@ -934,7 +928,7 @@ extern void allocate_cplus_struct_type (struct type *);
 #define TYPE_DECLARED_TYPE(thistype) TYPE_CPLUS_SPECIFIC_NONULL(thistype)->declared_type
 #define	TYPE_TYPE_SPECIFIC(thistype) TYPE_MAIN_TYPE(thistype)->type_specific
 #define TYPE_CPLUS_SPECIFIC(thistype) TYPE_MAIN_TYPE(thistype)->type_specific.cplus_stuff
-#define TYPE_CPLUS_SPECIFIC_NONULL(thistype) (TYPE_CPLUS_SPECIFIC(thistype) != NULL ? \
+#define TYPE_CPLUS_SPECIFIC_NONULL(thistype) ((TYPE_CPLUS_SPECIFIC(thistype) != NULL) ? \
   TYPE_CPLUS_SPECIFIC(thistype) : &cplus_struct_default)
 #define TYPE_FLOATFORMAT(thistype) TYPE_MAIN_TYPE(thistype)->type_specific.floatformat
 #define TYPE_BASECLASS(thistype,index) TYPE_MAIN_TYPE(thistype)->fields[index].type
@@ -968,7 +962,7 @@ extern void allocate_cplus_struct_type (struct type *);
    go fix it on readin, but that would be slow.  Instead I want to intercept
    reading the bitpos & just fix it up on demand.  To do that I need to separate
    assigning the BITPOS from reading it.  */
-#define TYPE_FIELD_BITPOS_ASSIGN(thistype, n) FIELD_BITPOS(TYPE_FIELD(thistype,n)) 
+#define TYPE_FIELD_BITPOS_ASSIGN(thistype, n) FIELD_BITPOS(TYPE_FIELD(thistype,n))
 #define TYPE_FIELD_BITPOS(thistype, n) \
   (FIELD_BITPOS(TYPE_FIELD(thistype,n)) < 0 \
    ? objc_fixup_ivar_offset(thistype,n) \
@@ -1054,17 +1048,24 @@ extern void allocate_cplus_struct_type (struct type *);
 #define TYPE_LOCALTYPE_FILE(thistype) (TYPE_CPLUS_SPECIFIC_NONULL(thistype)->localtype_ptr->file)
 #define TYPE_LOCALTYPE_LINE(thistype) (TYPE_CPLUS_SPECIFIC_NONULL(thistype)->localtype_ptr->line)
 
-/* APPLE LOCAL: A struct type is opaque (a declaration only, no definition 
+/* APPLE LOCAL: A struct type is opaque (a declaration only, no definition
    available) if it has no subelements (NFIELDS==0) *or* if it has a non-zero
    length.  This latter part comes in to play if you define a struct with no
    elements, e.g. 'struct POSITION { };' - that type will have a length of 1
-   (at least by gcc's current behavior) and is a definition, 
+   (at least by gcc's current behavior) and is a definition,
    not just a declaration.  */
 
-#define TYPE_IS_OPAQUE(thistype) (((TYPE_CODE (thistype) == TYPE_CODE_STRUCT) ||        \
-                                   (TYPE_CODE (thistype) == TYPE_CODE_UNION))        && \
-                                  (TYPE_NFIELDS (thistype) == 0 && TYPE_LENGTH (thistype) == 0) && \
-                                  (TYPE_CPLUS_SPECIFIC_NONULL (thistype) && (TYPE_NFN_FIELDS (thistype) == 0)))
+#define TYPE_IS_OPAQUE(thistype) (((TYPE_CODE(thistype) == TYPE_CODE_STRUCT) ||        \
+                                   (TYPE_CODE(thistype) == TYPE_CODE_UNION))        && \
+                                  ((TYPE_NFIELDS(thistype) == 0) && (TYPE_LENGTH(thistype) == 0)) && \
+                                  (TYPE_CPLUS_SPECIFIC_NONULL(thistype) && (TYPE_NFN_FIELDS(thistype) == 0)))
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 struct builtin_type
 {
@@ -1315,7 +1316,7 @@ extern int address_space_name_to_int (char *);
 
 extern const char *address_space_int_to_name (int);
 
-extern struct type *make_type_with_address_space (struct type *type, 
+extern struct type *make_type_with_address_space (struct type *type,
 						  int space_identifier);
 
 extern struct type *lookup_member_type (struct type *, struct type *);
@@ -1409,9 +1410,9 @@ extern int count_virtual_fns (struct type *);
  * typeinfo pointer, and dup base info pointer */
 #define HP_ACC_VFUNC_START        4
 
-/* (Negative) Offset where virtual base offset entries begin 
+/* (Negative) Offset where virtual base offset entries begin
  * in the virtual table. Skips over metavtable pointer and
- * the self-offset entry. 
+ * the self-offset entry.
  * NOTE: NEGATE THIS BEFORE USING! The virtual base offsets
  * appear before the address point of the vtable (the slot
  * pointed to by the object's vtable pointer), i.e. at lower
@@ -1489,14 +1490,14 @@ extern void maintenance_print_type (char *, int);
    when the array type was constructed.  */
 extern void cleanup_undefined_arrays (void);
 
-/* APPLE LOCAL BEGIN: Helper functions for easily building bitfield 
+/* APPLE LOCAL BEGIN: Helper functions for easily building bitfield
    built in types.  */
-extern struct type *build_builtin_enum (const char *name, uint32_t size, 
-					int flags, struct gdbtypes_enum_info *, 
+extern struct type *build_builtin_enum (const char *name, uint32_t size,
+					int flags, struct gdbtypes_enum_info *,
 					uint32_t n);
 
-extern struct type *build_builtin_bitfield (const char *name, uint32_t size, 
-					    struct gdbtypes_bitfield_info *, 
+extern struct type *build_builtin_bitfield (const char *name, uint32_t size,
+					    struct gdbtypes_bitfield_info *,
 					    uint32_t n);
 extern struct type *get_closure_dynamic_type (struct value *in_value);
 extern struct value *get_closure_implementation_fn (struct value *);
@@ -1509,3 +1510,5 @@ int ftype_has_debug_info_p (struct type *type);
 struct type *remove_all_typedefs (struct type *type);
 
 #endif /* GDBTYPES_H */
+
+/* EOF */

@@ -4,6 +4,8 @@
 
 #include "efence.h"
 
+#include "ansidecl.h" /* for ATTRIBUTE_NORETURN */
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -28,78 +30,77 @@
 static void
 printNumber(ef_number number, ef_number base)
 {
-	char		buffer[NUMBER_BUFFER_SIZE];
-	char *		s = &buffer[NUMBER_BUFFER_SIZE];
-	int		size;
+	char buffer[NUMBER_BUFFER_SIZE];
+	char *s = &buffer[NUMBER_BUFFER_SIZE];
+	size_t size;
 
 	do {
-		ef_number	digit;
+		ef_number digit;
 
-		if ( --s == buffer )
+		if (--s == buffer) {
 			EF_Abort("Internal error printing number.");
+        }
 
-		digit = number % base;
+		digit = (number % base);
 
-		if ( digit < 10 )
-			*s = '0' + digit;
-		else
-			*s = 'a' + digit - 10;
+		if (digit < 10) {
+			*s = (char)('0' + (char)digit);
+		} else {
+			*s = (char)('a' + (char)digit - 10);
+        }
 
-	} while ( (number /= base) > 0 );
+	} while ((number /= base) > 0);
 
-	size = &buffer[NUMBER_BUFFER_SIZE] - s;
+	size = (size_t)(&buffer[NUMBER_BUFFER_SIZE] - s);
 
-	if ( size > 0 )
+	if (size > 0) {
 		write(2, s, size);
+    }
 }
 
 static void
 vprint(const char * pattern, va_list args)
 {
-	static const char	bad_pattern[] =
+	static const char bad_pattern[] =
 	 "\nBad pattern specifier %%%c in EF_Print().\n";
-	const char *	s = pattern;
-	char		c;
+	const char *s = pattern;
+	char c_char;
 
-	while ( (c = *s++) != '\0' ) {
-		if ( c == '%' ) {
-			c = *s++;
-			switch ( c ) {
+	while ((c_char = *s++) != '\0') {
+		if (c_char == '%') {
+			c_char = *s++;
+			switch (c_char) {
 			case '%':
-				(void) write(2, &c, 1);
+				(void)write(2, &c_char, 1);
 				break;
 			case 'a':
-				/*
-				 * Print an address passed as a void pointer.
+				/* Print an address passed as a void pointer.
 				 * The type of ef_number must be set so that
 				 * it is large enough to contain all of the
-				 * bits of a void pointer.
-				 */
-				printNumber(
-				 (ef_number)va_arg(args, void *)
-				,0x10);
+				 * bits of a void pointer.  */
+				printNumber((ef_number)va_arg(args, void *), 0x10);
 				break;
 			case 's':
 				{
-					const char *	string;
-					size_t		length;
+					const char *string;
+					size_t length;
 
 					string = va_arg(args, char *);
 					length = strlen(string);
 
-					(void) write(2, string, length);
+					(void)write(2, string, length);
 				}
 				break;
 			case 'd':
 				{
 					int	n = va_arg(args, int);
 
-					if ( n < 0 ) {
-						char	c = '-';
-						write(2, &c, 1);
+					if (n < 0) {
+						char ch = '-';
+						write(2, &ch, 1);
 						n = -n;
 					}
-					printNumber(n, 10);
+					printNumber((ef_number)n, 10);
 				}
 				break;
 			case 'x':
@@ -107,24 +108,24 @@ vprint(const char * pattern, va_list args)
 				break;
 			case 'c':
 				{
-					char	c = va_arg(args, int);
+					char ch = (char)va_arg(args, int);
 
-					(void) write(2, &c, 1);
+					(void)write(2, &ch, 1);
 				}
 				break;
 			default:
 				{
-					EF_Print(bad_pattern, c);
+					EF_Print(bad_pattern, c_char);
 				}
 
 			}
-		}
-		else
-			(void) write(2, &c, 1);
+		} else {
+			(void)write(2, &c_char, 1);
+        }
 	}
 }
 
-void
+void ATTRIBUTE_NORETURN
 EF_Abort(const char * pattern, ...)
 {
 	va_list	args;
@@ -137,17 +138,15 @@ EF_Abort(const char * pattern, ...)
 
 	va_end(args);
 
-	/*
-	 * I use kill(getpid(), SIGILL) instead of abort() because some
+	/* I use kill(getpid(), SIGILL) instead of abort() because some
 	 * mis-guided implementations of abort() flush stdio, which can
-	 * cause malloc() or free() to be called.
-	 */
+	 * cause malloc() or free() to be called: */
 	kill(getpid(), SIGILL);
-	/* Just in case something handles SIGILL and returns, exit here. */
+	/* Just in case something handles SIGILL and returns, exit here: */
 	_exit(-1);
 }
 
-void
+void ATTRIBUTE_NORETURN
 EF_Exit(const char * pattern, ...)
 {
 	va_list	args;
@@ -160,10 +159,8 @@ EF_Exit(const char * pattern, ...)
 
 	va_end(args);
 
-	/*
-	 * I use _exit() because the regular exit() flushes stdio,
-	 * which may cause malloc() or free() to be called.
-	 */
+	/* I use _exit() because the regular exit() flushes stdio,
+	 * which may cause malloc() or free() to be called: */
 	_exit(-1);
 }
 

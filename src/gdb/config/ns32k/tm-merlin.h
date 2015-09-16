@@ -1,4 +1,5 @@
-/* Definitions to target GDB to a merlin under utek 2.1
+/* tm-merlin.h
+   Definitions to target GDB to a merlin under utek 2.1
    Copyright 1986, 1987, 1989, 1991, 1993 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -32,7 +33,7 @@ extern CORE_ADDR merlin_skip_prologue (CORE_ADDR);
 #define SKIP_PROLOGUE(pc) (merlin_skip_prologue (pc))
 
 /* Immediately after a function call, return the saved pc.
-   Can't always go through the frames for this because on some machines
+   Cannot always go through the frames for this because on some machines
    the new frame is not set up until the new function executes
    some instructions.  */
 
@@ -141,9 +142,9 @@ extern CORE_ADDR merlin_skip_prologue (CORE_ADDR);
    : builtin_type_int)
 
 /* Store the address of the place in which to copy the structure the
-   subroutine will return.  This is called from call_function.
+   subroutine will return. This is called from call_function.
 
-   On this machine this is a no-op, as gcc doesn't run on it yet.
+   On this machine this is a no-op, as gcc does NOT run on it yet.
    This calling convention is not used. */
 
 #define STORE_STRUCT_RETURN(ADDR, SP)
@@ -223,7 +224,7 @@ extern int merlin_frame_num_args (struct frame_info *fi);
   (frame_saved_regs).regs[PC_REGNUM] = (frame_info)->frame + 4;	\
   (frame_saved_regs).regs[FP_REGNUM]				\
      = read_memory_integer ((frame_info)->frame, 4); }
-
+
 
 /* Things needed for making the inferior call functions.  */
 
@@ -284,3 +285,5 @@ extern int merlin_frame_num_args (struct frame_info *fi);
   flip_bytes (&flipped, 4);					\
   *((int *) (((char *) dummyname)+CALL_DUMMY_NARGS)) = flipped;	\
 }
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* 32-bit ELF support for ARM new abi option.
+/* elfarm-nabi.c: 32-bit ELF support for ARM new abi option.
    Copyright 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 
    This file is part of BFD, the Binary File Descriptor library.
@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307 */
 
 #include "elf/arm.h"
 #include "bfd.h"
@@ -24,8 +24,8 @@
 #include "elf-bfd.h"
 
 #ifndef NUM_ELEM
-#define NUM_ELEM(a)  (sizeof (a) / (sizeof (a)[0]))
-#endif
+# define NUM_ELEM(a)  (sizeof(a) / (sizeof(a)[0]))
+#endif /* !NUM_ELEM */
 
 #define USE_REL	1
 
@@ -41,16 +41,15 @@
 #define ARM_ELF_OS_ABI_VERSION		ELFOSABI_ARM
 
 static reloc_howto_type * elf32_arm_reloc_type_lookup
-  PARAMS ((bfd * abfd, bfd_reloc_code_real_type code));
+  PARAMS((bfd * abfd, bfd_reloc_code_real_type code));
 static bfd_boolean elf32_arm_nabi_grok_prstatus
-  PARAMS ((bfd *abfd, Elf_Internal_Note *note));
+  PARAMS((bfd *abfd, Elf_Internal_Note *note));
 static bfd_boolean elf32_arm_nabi_grok_psinfo
-  PARAMS ((bfd *abfd, Elf_Internal_Note *note));
+  PARAMS((bfd *abfd, Elf_Internal_Note *note));
 
 /* Note: code such as elf32_arm_reloc_type_lookup expect to use e.g.
    R_ARM_PC24 as an index into this, and find the R_ARM_PC24 HOWTO
    in that slot.  */
-
 static reloc_howto_type elf32_arm_howto_table[] =
 {
   /* No relocation */
@@ -583,17 +582,15 @@ static reloc_howto_type elf32_arm_thm_pc9_howto =
 	 TRUE);			/* pcrel_offset */
 
 static void elf32_arm_info_to_howto
-  PARAMS ((bfd *, arelent *, Elf_Internal_Rela *));
+  PARAMS((bfd *, arelent *, Elf_Internal_Rela *));
 
 static void
-elf32_arm_info_to_howto (abfd, bfd_reloc, elf_reloc)
-     bfd * abfd ATTRIBUTE_UNUSED;
-     arelent * bfd_reloc;
-     Elf_Internal_Rela * elf_reloc;
+elf32_arm_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *bfd_reloc,
+                        Elf_Internal_Rela *elf_reloc)
 {
   unsigned int r_type;
 
-  r_type = ELF32_R_TYPE (elf_reloc->r_info);
+  r_type = ELF32_R_TYPE(elf_reloc->r_info);
 
   switch (r_type)
     {
@@ -641,7 +638,13 @@ static const struct elf32_arm_reloc_map elf32_arm_reloc_map[] =
     {BFD_RELOC_ARM_OFFSET_IMM,       R_ARM_ABS12},
     {BFD_RELOC_ARM_THUMB_OFFSET,     R_ARM_THM_ABS5},
     {BFD_RELOC_THUMB_PCREL_BRANCH23, R_ARM_THM_PC22},
+#ifdef BFD_RELOC_ARM_COPY
     {BFD_RELOC_ARM_COPY,             R_ARM_COPY},
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(__STDC__)
+#  warning "elf32_arm_reloc_map is missing a member"
+# endif /* __GNUC__ && !__STRICT_ANSI__ && !__STDC__ */
+#endif /* BFD_RELOC_ARM_COPY */
     {BFD_RELOC_ARM_GLOB_DAT,         R_ARM_GLOB_DAT},
     {BFD_RELOC_ARM_JUMP_SLOT,        R_ARM_JUMP_SLOT},
     {BFD_RELOC_ARM_RELATIVE,         R_ARM_RELATIVE},
@@ -652,9 +655,8 @@ static const struct elf32_arm_reloc_map elf32_arm_reloc_map[] =
   };
 
 static reloc_howto_type *
-elf32_arm_reloc_type_lookup (abfd, code)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+elf32_arm_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                            bfd_reloc_code_real_type code)
 {
   unsigned int i;
 
@@ -683,9 +685,7 @@ elf32_arm_reloc_type_lookup (abfd, code)
 
 /* Support for core dump NOTE sections */
 static bfd_boolean
-elf32_arm_nabi_grok_prstatus (abfd, note)
-     bfd *abfd;
-     Elf_Internal_Note *note;
+elf32_arm_nabi_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 {
   int offset;
   size_t raw_size;
@@ -715,9 +715,7 @@ elf32_arm_nabi_grok_prstatus (abfd, note)
 }
 
 static bfd_boolean
-elf32_arm_nabi_grok_psinfo (abfd, note)
-     bfd *abfd;
-     Elf_Internal_Note *note;
+elf32_arm_nabi_grok_psinfo(bfd *abfd, Elf_Internal_Note *note)
 {
   switch (note->descsz)
     {
@@ -750,3 +748,5 @@ elf32_arm_nabi_grok_psinfo (abfd, note)
 #define elf_backend_grok_psinfo		elf32_arm_nabi_grok_psinfo
 
 #include "elf32-arm.h"
+
+/* EOF */

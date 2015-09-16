@@ -1,0 +1,6 @@
+*.cache
+*.log
+!libtoolconf.a
+!toolconf.dll
+*.tar.gz
+multi-ice-server-*.*/*

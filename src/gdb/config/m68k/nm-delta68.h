@@ -1,4 +1,5 @@
-/* Macro definitions for a Motorola Delta Series sysV68 R3V7.1.
+/* nm-delta68.h
+   Macro definitions for a Motorola Delta Series sysV68 R3V7.1.
    Copyright 1993, 1998 Free Software Foundation, Inc.
 
    This file is part of GDB.

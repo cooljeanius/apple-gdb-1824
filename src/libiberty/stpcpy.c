@@ -1,4 +1,4 @@
-/* Implement the stpcpy function.
+/* stpcpy.c: Implement the stpcpy function.
    Copyright (C) 2003 Free Software Foundation, Inc.
    Written by Kaveh R. Ghazi <ghazi@caip.rutgers.edu>.
 
@@ -32,12 +32,14 @@ Copies the string @var{src} into @var{dst}.  Returns a pointer to
 #include <ansidecl.h>
 #include <stddef.h>
 
-extern size_t strlen (const char *);
-extern PTR memcpy (PTR, const PTR, size_t);
+extern size_t strlen(const char *);
+extern PTR memcpy(PTR, const PTR, size_t);
 
 char *
-stpcpy (char *dst, const char *src)
+stpcpy(char *dst, const char *src)
 {
-  const size_t len = strlen (src);
-  return (char *) memcpy (dst, src, len + 1) + len;
+  const size_t len = strlen(src);
+  return (char *)memcpy(dst, src, len + 1) + len;
 }
+
+/* EOF */

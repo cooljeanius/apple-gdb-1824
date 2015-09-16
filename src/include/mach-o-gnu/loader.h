@@ -1,4 +1,4 @@
-/* Mach-O support for BFD.
+/* mach-o[-gnu]/loader.h: Mach-O support for BFD.
    Copyright 2011, 2012
    Free Software Foundation, Inc.
 
@@ -20,21 +20,25 @@
    MA 02110-1301, USA.  */
 
 #ifndef _MACH_O_LOADER_H
-#define _MACH_O_LOADER_H
+#define _MACH_O_LOADER_H 1
 
-/* Constants for header. */
-
+/* Constants for header: */
 typedef enum bfd_mach_o_mach_header_magic
 {
-  BFD_MACH_O_MH_MAGIC    = 0xfeedface,
-  BFD_MACH_O_MH_CIGAM    = 0xcefaedfe,
+  BFD_MACH_O_MH_MAGIC = 0xfeedface,
+  BFD_MACH_O_MH_CIGAM = 0xcefaedfe,
   BFD_MACH_O_MH_MAGIC_64 = 0xfeedfacf,
   BFD_MACH_O_MH_CIGAM_64 = 0xcffaedfe
 }
 bfd_mach_o_mach_header_magic;
 
-#define BFD_MACH_O_CPU_IS64BIT 0x1000000
+/* Capability bits in cpu type: */
+#define BFD_MACH_O_CPU_ARCH_MASK  0xff000000
+#define BFD_MACH_O_CPU_ARCH_ABI64 0x01000000
+#define BFD_MACH_O_CPU_IS64BIT    0x01000000
 
+#ifndef _ENUM_BFD_MACH_O_CPU_TYPE_DEFINED
+# define _ENUM_BFD_MACH_O_CPU_TYPE_DEFINED 1
 typedef enum bfd_mach_o_cpu_type
 {
   BFD_MACH_O_CPU_TYPE_VAX = 1,
@@ -53,7 +57,14 @@ typedef enum bfd_mach_o_cpu_type
   BFD_MACH_O_CPU_TYPE_X86_64 = (BFD_MACH_O_CPU_TYPE_I386 | BFD_MACH_O_CPU_IS64BIT)
 }
 bfd_mach_o_cpu_type;
+#endif /* !_ENUM_BFD_MACH_O_CPU_TYPE_DEFINED */
 
+/* Capability bits in cpu subtype.  */
+#define BFD_MACH_O_CPU_SUBTYPE_MASK  0xff000000
+#define BFD_MACH_O_CPU_SUBTYPE_LIB64 0x80000000
+
+#ifndef _ENUM_BFD_MACH_O_CPU_SUBTYPE_DEFINED
+# define _ENUM_BFD_MACH_O_CPU_SUBTYPE_DEFINED 1
 typedef enum bfd_mach_o_cpu_subtype
 {
   /* i386.  */
@@ -68,7 +79,10 @@ typedef enum bfd_mach_o_cpu_subtype
   BFD_MACH_O_CPU_SUBTYPE_ARM_V7 = 9
 }
 bfd_mach_o_cpu_subtype;
+#endif /* !_ENUM_BFD_MACH_O_CPU_SUBTYPE_DEFINED */
 
+#ifndef _ENUM_BFD_MACH_O_FILETYPE_DEFINED
+# define _ENUM_BFD_MACH_O_FILETYPE_DEFINED 1
 typedef enum bfd_mach_o_filetype
 {
   BFD_MACH_O_MH_OBJECT      = 0x01,
@@ -84,7 +98,10 @@ typedef enum bfd_mach_o_filetype
   BFD_MACH_O_MH_KEXT_BUNDLE = 0x0b
 }
 bfd_mach_o_filetype;
+#endif /* !_ENUM_BFD_MACH_O_FILETYPE_DEFINED */
 
+#ifndef _ENUM_BFD_MACH_O_HEADER_FLAGS_DEFINED
+# define _ENUM_BFD_MACH_O_HEADER_FLAGS_DEFINED 1
 typedef enum bfd_mach_o_header_flags
 {
   BFD_MACH_O_MH_NOUNDEFS		= 0x0000001,
@@ -114,10 +131,13 @@ typedef enum bfd_mach_o_header_flags
   BFD_MACH_O_MH_NO_HEAP_EXECUTION       = 0x1000000
 }
 bfd_mach_o_header_flags;
-
+#endif /* !_ENUM_BFD_MACH_O_HEADER_FLAGS_DEFINED */
+
 /* Load command constants.  */
 #define BFD_MACH_O_LC_REQ_DYLD 0x80000000
 
+#ifndef _ENUM_BFD_MACH_O_LOAD_COMMAND_TYPE_DEFINED
+# define _ENUM_BFD_MACH_O_LOAD_COMMAND_TYPE_DEFINED 1
 typedef enum bfd_mach_o_load_command_type
 {
   BFD_MACH_O_LC_SEGMENT = 0x1,		/* File segment to be mapped.  */
@@ -169,10 +189,13 @@ typedef enum bfd_mach_o_load_command_type
   BFD_MACH_O_LC_DYLIB_CODE_SIGN_DRS = 0x2b /* DRs from dylibs.  */
 }
 bfd_mach_o_load_command_type;
-
+#endif /* !_ENUM_BFD_MACH_O_LOAD_COMMAND_TYPE_DEFINED */
+
 /* Section constants.  */
 /* Constants for the type of a section.  */
 
+#ifndef _ENUM_BFD_MACH_O_SECTION_TYPE_DEFINED
+# define _ENUM_BFD_MACH_O_SECTION_TYPE_DEFINED 1
 typedef enum bfd_mach_o_section_type
 {
   /* Regular section.  */
@@ -241,6 +264,7 @@ typedef enum bfd_mach_o_section_type
   BFD_MACH_O_S_LAZY_DYLIB_SYMBOL_POINTERS = 0x10
 }
 bfd_mach_o_section_type;
+#endif /* !_ENUM_BFD_MACH_O_SECTION_TYPE_DEFINED */
 
 /* The flags field of a section structure is separated into two parts a section
    type and section attributes.  The section types are mutually exclusive (it
@@ -271,7 +295,10 @@ typedef enum bfd_mach_o_section_attribute
   /* Section contains some machine instructions.  */
   BFD_MACH_O_S_ATTR_SOME_INSTRUCTIONS = 0x00000400,
 
-  /* A debug section.  */
+  /* A debug section.
+   * FIXME: there are discrepancies between which enum this is in,
+   * depending on whether we use the bfd_mach_o_section_type enum from
+   * this file or not. */
   BFD_MACH_O_S_ATTR_DEBUG             = 0x02000000,
 
   /* Used with i386 stubs.  */
@@ -332,7 +359,64 @@ bfd_mach_o_section_attribute;
 #define BFD_MACH_O_INDIRECT_SYM_LOCAL			0x80000000
 #define BFD_MACH_O_INDIRECT_SYM_ABS			0x40000000
 
-/* Constants for DATA_IN_CODE entries.  */
+/* Constants for dyld info rebase.  */
+#define BFD_MACH_O_REBASE_OPCODE_MASK     0xf0
+#define BFD_MACH_O_REBASE_IMMEDIATE_MASK  0x0f
+
+/* The rebase opcodes.  */
+#define BFD_MACH_O_REBASE_OPCODE_DONE                               0x00
+#define BFD_MACH_O_REBASE_OPCODE_SET_TYPE_IMM                       0x10
+#define BFD_MACH_O_REBASE_OPCODE_SET_SEGMENT_AND_OFFSET_ULEB        0x20
+#define BFD_MACH_O_REBASE_OPCODE_ADD_ADDR_ULEB                      0x30
+#define BFD_MACH_O_REBASE_OPCODE_ADD_ADDR_IMM_SCALED                0x40
+#define BFD_MACH_O_REBASE_OPCODE_DO_REBASE_IMM_TIMES                0x50
+#define BFD_MACH_O_REBASE_OPCODE_DO_REBASE_ULEB_TIMES               0x60
+#define BFD_MACH_O_REBASE_OPCODE_DO_REBASE_ADD_ADDR_ULEB            0x70
+#define BFD_MACH_O_REBASE_OPCODE_DO_REBASE_ULEB_TIMES_SKIPPING_ULEB 0x80
+
+/* The rebase type.  */
+#define BFD_MACH_O_REBASE_TYPE_POINTER            1
+#define BFD_MACH_O_REBASE_TYPE_TEXT_ABSOLUTE32    2
+#define BFD_MACH_O_REBASE_TYPE_TEXT_PCREL32       3
+
+/* Constants for dyld info bind.  */
+#define BFD_MACH_O_BIND_OPCODE_MASK    0xf0
+#define BFD_MACH_O_BIND_IMMEDIATE_MASK 0x0f
+
+/* The bind opcodes.  */
+#define BFD_MACH_O_BIND_OPCODE_DONE                   	      	 0x00
+#define BFD_MACH_O_BIND_OPCODE_SET_DYLIB_ORDINAL_IMM  	      	 0x10
+#define BFD_MACH_O_BIND_OPCODE_SET_DYLIB_ORDINAL_ULEB 	      	 0x20
+#define BFD_MACH_O_BIND_OPCODE_SET_DYLIB_SPECIAL_IMM  	      	 0x30
+#define BFD_MACH_O_BIND_OPCODE_SET_SYMBOL_TRAILING_FLAGS_IMM 	 0x40
+#define BFD_MACH_O_BIND_OPCODE_SET_TYPE_IMM                  	 0x50
+#define BFD_MACH_O_BIND_OPCODE_SET_ADDEND_SLEB               	 0x60
+#define BFD_MACH_O_BIND_OPCODE_SET_SEGMENT_AND_OFFSET_ULEB   	 0x70
+#define BFD_MACH_O_BIND_OPCODE_ADD_ADDR_ULEB                 	 0x80
+#define BFD_MACH_O_BIND_OPCODE_DO_BIND                       	 0x90
+#define BFD_MACH_O_BIND_OPCODE_DO_BIND_ADD_ADDR_ULEB         	 0xa0
+#define BFD_MACH_O_BIND_OPCODE_DO_BIND_ADD_ADDR_IMM_SCALED   	 0xb0
+#define BFD_MACH_O_BIND_OPCODE_DO_BIND_ULEB_TIMES_SKIPPING_ULEB 0xc0
+
+/* The bind types.  */
+#define BFD_MACH_O_BIND_TYPE_POINTER            1
+#define BFD_MACH_O_BIND_TYPE_TEXT_ABSOLUTE32    2
+#define BFD_MACH_O_BIND_TYPE_TEXT_PCREL32       3
+
+/* The special dylib.  */
+#define BFD_MACH_O_BIND_SPECIAL_DYLIB_SELF             0
+#define BFD_MACH_O_BIND_SPECIAL_DYLIB_MAIN_EXECUTABLE -1
+#define BFD_MACH_O_BIND_SPECIAL_DYLIB_FLAT_LOOKUP     -2
+
+/* Constants for dyld info export.  */
+#define BFD_MACH_O_EXPORT_SYMBOL_FLAGS_KIND_MASK            0x03
+#define BFD_MACH_O_EXPORT_SYMBOL_FLAGS_KIND_REGULAR         0x00
+#define BFD_MACH_O_EXPORT_SYMBOL_FLAGS_KIND_THREAD_LOCAL    0x01
+#define BFD_MACH_O_EXPORT_SYMBOL_FLAGS_WEAK_DEFINITION      0x04
+#define BFD_MACH_O_EXPORT_SYMBOL_FLAGS_REEXPORT             0x08
+#define BFD_MACH_O_EXPORT_SYMBOL_FLAGS_STUB_AND_RESOLVER    0x10
+
+/* Constants for DATA_IN_CODE entries: */
 typedef enum bfd_mach_o_data_in_code_entry_kind
 {
   BFD_MACH_O_DICE_KIND_DATA         = 0x0001, /* Data */
@@ -342,8 +426,7 @@ typedef enum bfd_mach_o_data_in_code_entry_kind
   BFD_MACH_O_DICE_ABS_JUMP_TABLES32 = 0x0005  /* Absolute jump table.  */
 } bfd_mach_o_data_in_code_entry_kind;
 
-/* Thread constants.  */
-
+/* Thread constants: */
 typedef enum bfd_mach_o_ppc_thread_flavour
 {
   BFD_MACH_O_PPC_THREAD_STATE      = 1,
@@ -356,7 +439,10 @@ typedef enum bfd_mach_o_ppc_thread_flavour
 }
 bfd_mach_o_ppc_thread_flavour;
 
-/* Defined in <mach/i386/thread_status.h> */
+#ifndef _ENUM_BFD_MACH_O_I386_THREAD_FLAVOUR_DEFINED
+# define _ENUM_BFD_MACH_O_I386_THREAD_FLAVOUR_DEFINED 1
+/* Defined in <mach/i386/thread_status.h>, except without the "BFD_MACH_O_"
+ * prefix in front of it: */
 typedef enum bfd_mach_o_i386_thread_flavour
 {
   BFD_MACH_O_x86_THREAD_STATE32    = 1,
@@ -374,5 +460,8 @@ typedef enum bfd_mach_o_i386_thread_flavour
   BFD_MACH_O_x86_THREAD_STATE_NONE = 13
 }
 bfd_mach_o_i386_thread_flavour;
+#endif /* !_ENUM_BFD_MACH_O_I386_THREAD_FLAVOUR_DEFINED */
 
 #endif /* _MACH_O_LOADER_H */
+
+/* EOF */

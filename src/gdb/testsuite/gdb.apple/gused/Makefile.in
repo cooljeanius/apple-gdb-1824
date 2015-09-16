@@ -1,3 +1,5 @@
+# Makefile for gused part of gdb.apple part of testsuite
+
 VPATH = @srcdir@
 srcdir = @srcdir@
 
@@ -16,32 +18,33 @@ uninstall: force
 installcheck:
 check:
 
+# 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:
-	-rm -f *~ core *.o
-	-rm -f $(EXECUTABLES)
-	if [ x"${SUBDIRS}" != x ] ; then \
+	-rm -fv *~ core *.o
+	-rm -fv $(EXECUTABLES)
+	if [ x"${SUBDIRS}" != x"" ]; then \
 	    for dir in ${SUBDIRS}; \
 	    do \
-		    echo "$$dir:"; \
-		    if [ -d $$dir ]; then \
-			    (cd $$dir; $(MAKE) clean); \
+		    echo "$${dir}:"; \
+		    if [ -d $${dir} ]; then \
+			    (cd $${dir}; $(MAKE) clean); \
 		    fi; \
-	    done ; \
-	else true; fi
+	    done; \
+	else echo "no subdirs to recurse into for target '$@'"; fi
 
 distclean maintainer-clean realclean: clean
 	-rm -f Makefile config.status config.log
-	-rm -f *-init.exp
-	-rm -fr *.log summary detail *.plog *.sum *.psum site.*
-	if [ x"${SUBDIRS}" != x ] ; then \
+	-rm -fv *-init.exp
+	-rm -frv *.log summary detail *.plog *.sum *.psum site.*
+	if [ x"${SUBDIRS}" != x"" ]; then \
 	    for dir in ${SUBDIRS}; \
 	    do \
-		    echo "$$dir:"; \
-		    if [ -d $$dir ]; then \
-			    (cd $$dir; $(MAKE) distclean); \
+		    echo "$${dir}:"; \
+		    if [ -d $${dir} ]; then \
+			    (cd $${dir}; $(MAKE) distclean); \
 		    fi; \
-	    done ; \
-	else true; fi
+	    done; \
+	else echo "no subdirs to recurse into for target '$@'"; fi
 
-Makefile: $(srcdir)/Makefile.in $(srcdir)/configure.in
+Makefile: $(srcdir)/Makefile.in $(srcdir)/configure.ac
 	$(SHELL) ./config.status --recheck

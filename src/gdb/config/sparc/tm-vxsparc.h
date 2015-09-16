@@ -1,4 +1,5 @@
-/* Target machine description for VxWorks sparc's, for GDB, the GNU debugger.
+/* tm-vxsparc.h
+   Target machine description for VxWorks sparc's, for GDB, the GNU debugger.
    Copyright 1993, 1999 Free Software Foundation, Inc.
    Contributed by Cygnus Support.
 
@@ -30,4 +31,6 @@
 
 /* Number of registers in a ptrace_getfpregs call. */
 
-/* #define VX_SIZE_FPREGS (don't know how many) */
+/* #define VX_SIZE_FPREGS (do NOT know how many) */
+
+/* EOF */

@@ -1,8 +1,9 @@
-/* Disassembler interface for targets using CGEN. -*- C -*-
+/* frv-dis.c: Disassembler interface for targets using CGEN. -*- C -*-
    CGEN: Cpu tools GENerator
 
-   THIS FILE IS MACHINE GENERATED WITH CGEN.
-   - the resultant file is machine generated, cgen-dis.in isn't
+   THIS FILE WAS ORIGINALLY MACHINE GENERATED WITH CGEN.
+   - the resultant file was machine generated, cgen-dis.in is NOT.
+     (but re-cgen-erating these files is broken, so just edit manually for now...)
 
    Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2005
    Free Software Foundation, Inc.
@@ -70,7 +71,7 @@ print_at (CGEN_CPU_DESC cd ATTRIBUTE_UNUSED,
   disassemble_info *info = (disassemble_info *) dis_info;
 
   (*info->fprintf_func) (info->stream, "@");
-}  
+}
 
 static void
 print_spr (CGEN_CPU_DESC cd,
@@ -399,7 +400,7 @@ frv_cgen_print_operand (CGEN_CPU_DESC cd,
   }
 }
 
-cgen_print_fn * const frv_cgen_print_handlers[] = 
+cgen_print_fn * const frv_cgen_print_handlers[] =
 {
   print_insn_normal,
 };
@@ -597,7 +598,7 @@ print_insn (CGEN_CPU_DESC cd,
       int length;
       unsigned long insn_value_cropped;
 
-#ifdef CGEN_VALIDATE_INSN_SUPPORTED 
+#ifdef CGEN_VALIDATE_INSN_SUPPORTED
       /* Not needed as insn shouldn't be in hash lists if not supported.  */
       /* Supported by this cpu?  */
       if (! frv_cgen_insn_supported (cd, insn))
@@ -615,7 +616,7 @@ print_insn (CGEN_CPU_DESC cd,
          relevant part from the buffer. */
       if ((unsigned) (CGEN_INSN_BITSIZE (insn) / 8) < buflen &&
 	  (unsigned) (CGEN_INSN_BITSIZE (insn) / 8) <= sizeof (unsigned long))
-	insn_value_cropped = bfd_get_bits (buf, CGEN_INSN_BITSIZE (insn), 
+	insn_value_cropped = bfd_get_bits (buf, CGEN_INSN_BITSIZE (insn),
 					   info->endian == BFD_ENDIAN_BIG);
       else
 	insn_value_cropped = insn_value;
@@ -733,20 +734,20 @@ print_insn_frv (bfd_vma pc, disassemble_info *info)
   arch = info->arch;
   if (arch == bfd_arch_unknown)
     arch = CGEN_BFD_ARCH;
-   
+
   /* There's no standard way to compute the machine or isa number
      so we leave it to the target.  */
 #ifdef CGEN_COMPUTE_MACH
-  mach = CGEN_COMPUTE_MACH (info);
+  mach = CGEN_COMPUTE_MACH(info);
 #else
   mach = info->mach;
-#endif
+#endif /* CGEN_COMPUTE_MACH */
 
 #ifdef CGEN_COMPUTE_ISA
-  isa = CGEN_COMPUTE_ISA (info);
+  isa = CGEN_COMPUTE_ISA(info);
 #else
-  isa = info->insn_sets;
-#endif
+  isa = (int)(intptr_t)info->insn_sets;
+#endif /* CGEN_COMPUTE_ISA */
 
   /* If we've switched cpu's, try to find a handle we've used before */
   if (cd
@@ -765,7 +766,7 @@ print_insn_frv (bfd_vma pc, disassemble_info *info)
 	      break;
 	    }
 	}
-    } 
+    }
 
   /* If we haven't initialized yet, initialize the opcode table.  */
   if (! cd)

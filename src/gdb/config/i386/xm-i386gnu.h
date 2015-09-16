@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on the GNU Hurd on an Intel 386
+/* xm-i386gnu.h
+   Definitions to make GDB run on the GNU Hurd on an Intel 386
    Copyright 1986, 1987, 1989, 1991, 1996, 2000
    Free Software Foundation, Inc.
 

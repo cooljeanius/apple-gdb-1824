@@ -1,4 +1,4 @@
-/* General window behavior.
+/* tui-wingeneral.c: General window behavior.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation,
    Inc.
@@ -55,32 +55,32 @@ tui_refresh_win (struct tui_gen_win_info * win_info)
     }
   else if (win_info->type == CMD_WIN)
     {
-      /* Do nothing */
+      ; /* Do nothing */
     }
   else
     {
-      if (win_info->handle != (WINDOW *) NULL)
-	wrefresh (win_info->handle);
+      if (win_info->handle != (WINDOW *)NULL)
+	wrefresh(win_info->handle);
     }
 
   return;
 }
 
 
-/* Function to delete the curses window, checking for NULL.   */
+/* Function to delete the curses window, checking for NULL:  */
 void
-tui_delete_win (WINDOW * window)
+tui_delete_win(WINDOW * window)
 {
-  if (window != (WINDOW *) NULL)
-    delwin (window);
+  if (window != (WINDOW *)NULL)
+    delwin(window);
 
   return;
 }
 
 
-/* Draw a border arround the window.  */
+/* Draw a border arround the window: */
 void
-box_win (struct tui_gen_win_info * win_info, int highlight_flag)
+box_win(struct tui_gen_win_info *win_info, int highlight_flag)
 {
   if (win_info && win_info->handle)
     {
@@ -93,18 +93,18 @@ box_win (struct tui_gen_win_info * win_info, int highlight_flag)
       else
         attrs = tui_border_attrs;
 
-      wattron (win, attrs);
+      wattron(win, attrs);
 #ifdef HAVE_WBORDER
-      wborder (win, tui_border_vline, tui_border_vline,
-               tui_border_hline, tui_border_hline,
-               tui_border_ulcorner, tui_border_urcorner,
-               tui_border_llcorner, tui_border_lrcorner);
+      wborder(win, tui_border_vline, tui_border_vline,
+              tui_border_hline, tui_border_hline,
+              tui_border_ulcorner, tui_border_urcorner,
+              tui_border_llcorner, tui_border_lrcorner);
 #else
-      box (win, tui_border_vline, tui_border_hline);
-#endif
+      box(win, tui_border_vline, tui_border_hline);
+#endif /* HAVE_WBORDER */
       if (win_info->title)
-        mvwaddstr (win, 0, 3, win_info->title);
-      wattroff (win, attrs);
+        mvwaddstr(win, 0, 3, win_info->title);
+      wattroff(win, attrs);
     }
 }
 

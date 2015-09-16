@@ -1,8 +1,8 @@
-/* sysdep.h -- handle host dependencies for the BFD library
-   Copyright 1995, 1996, 1997, 1998, 1999, 2000, 2001
-   Free Software Foundation, Inc.
-   Written by Cygnus Support.
-
+/* sysdep.h -- handle host dependencies for the BFD library.
+ * Copyright 1995, 1996, 1997, 1998, 1999, 2000, 2001
+ * Free Software Foundation, Inc.
+ * Written by Cygnus Support.  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -17,41 +17,85 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #ifndef BFD_SYSDEP_H
 #define BFD_SYSDEP_H
 
-#include "ansidecl.h"
+#if defined(PACKAGE) && defined(PACKAGE_BUGREPORT) && \
+    defined(PACKAGE_NAME) && defined(PACKAGE_STRING) && \
+    defined(PACKAGE_TARNAME) && defined(PACKAGE_URL) && \
+    defined(PACKAGE_VERSION) && defined(VERSION)
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && \
+     !defined(__BFD_MACH_O_C__)
+ #  warning "sysdep.h should be included in lieu of config.h"
+# endif /* __GNUC__ && !__STRICT_ANSI__ && !__BFD_MACH_O_C__ */
+#endif /* PACKAGE and similar */
 
-#include "config.h"
+#ifdef HAVE_CONFIG_H
+# if !defined(__CONFIG_H__) || !defined(__BFD_CONFIG_H__)
+#  include "config.h"
+# else
+#  ifdef _INCLUDING_CONFIG_H
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #    warning "the config.h from ../intl might have already been included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
+#  else
+#   ifdef _APPLE_GDB_TOP_SRC_CONFIG_H
+#    if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #     warning "the config.h from our parent directory might have already been included."
+#    endif /* __GNUC__ && !__STRICT_ANSI__ */
+#   else
+#    if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(__BFD_CONFIG_H__)
+ #     warning "config.h might have already been included and it might have been a different one."
+#    endif /* __GNUC__ && !__STRICT_ANSI__ && !__BFD_CONFIG_H__ */
+#   endif /* _APPLE_GDB_TOP_SRC_CONFIG_H */
+#  endif /* _INCLUDING_CONFIG_H */
+# endif /* !__CONFIG_H__ || !__BFD_CONFIG_H__ */
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning sysdep.h expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_CONFIG_H */
+
+#include "ansidecl.h"
 
 #ifdef HAVE_STDDEF_H
 # include <stddef.h>
 #else
-# warning sysdep.h expects <stddef.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "sysdep.h expects <stddef.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDDEF_H */
 
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning sysdep.h expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "sysdep.h expects <stdio.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning sysdep.h expects <sys/types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "sysdep.h expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #else
-# warning sysdep.h expects <sys/stat.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "sysdep.h expects <sys/stat.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_STAT_H */
 
 #ifdef HAVE_ERRNO_H
 # include <errno.h>
 #else
-# warning sysdep.h expects <errno.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "sysdep.h expects <errno.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_ERRNO_H */
 #if !(defined(errno) || defined(_MSC_VER) && defined(_INC_ERRNO))
 extern int errno;
@@ -67,8 +111,8 @@ extern int errno;
 #  ifdef HAVE_STRINGS_H
 #   include <strings.h>
 #  else
-extern char *strchr ();
-extern char *strrchr ();
+extern char *strchr();
+extern char *strrchr();
 #  endif /* HAVE_STRINGS_H */
 # endif /* HAVE_STRING_H */
 #endif /* STRING_WITH_STRINGS */
@@ -76,7 +120,9 @@ extern char *strrchr ();
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning sysdep.h expects <stdlib.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "sysdep.h expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H */
 
 #ifdef HAVE_MALLOC_H
@@ -85,7 +131,9 @@ extern char *strrchr ();
 # ifdef HAVE_MALLOC_MALLOC_H
 #  include <malloc/malloc.h>
 # else
-#  warning sysdep.h expects a malloc-related header to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #   warning "sysdep.h expects a malloc-related header to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_MALLOC_MALLOC_H */
 #endif /* HAVE_MALLOC_H */
 
@@ -99,7 +147,9 @@ extern char *strrchr ();
 #  ifdef HAVE_TIME_H
 #   include <time.h>
 #  else
-#   warning sysdep.h expects a time-related header to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #     warning "sysdep.h expects a time-related header to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_TIME_H */
 # endif /* HAVE_SYS_TIME_H */
 #endif /* TIME_WITH_SYS_TIME */
@@ -107,8 +157,18 @@ extern char *strrchr ();
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning sysdep.h expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "sysdep.h expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
+
+#ifdef HAVE_SYS_RESOURCE_H
+# include <sys/resource.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "sysdep.h expects <sys/resource.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_RESOURCE_H */
 
 #ifdef USE_BINARY_FOPEN
 # include "fopen-bin.h"
@@ -122,7 +182,9 @@ extern char *strrchr ();
 # ifdef HAVE_SYS_FILE_H
 #  include <sys/file.h>
 # else
-#  warning sysdep.h expects a file-related header to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #   warning "sysdep.h expects a file-related header to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_SYS_FILE_H */
 #endif /* HAVE_FCNTL_H */
 
@@ -149,59 +211,62 @@ extern char *strrchr ();
 #include "filenames.h"
 
 #if !HAVE_DECL_FFS
-extern int ffs (int);
+extern int ffs(int);
 #endif /* !HAVE_DECL_FFS */
 
 #if !HAVE_DECL_FREE
-extern void free ();
+extern void free();
 #endif /* !HAVE_DECL_FREE */
 
 #if !HAVE_DECL_GETENV
-extern char *getenv ();
+extern char *getenv();
 #endif /* !HAVE_DECL_GETENV */
 
 #if !HAVE_DECL_MALLOC
-extern PTR malloc ();
+extern PTR malloc();
 #endif /* !HAVE_DECL_MALLOC */
 
 #if !HAVE_DECL_REALLOC
-extern PTR realloc ();
+extern PTR realloc();
 #endif /* !HAVE_DECL_REALLOC */
 
 #if !HAVE_DECL_STPCPY
-extern char *stpcpy (char *__dest, const char *__src);
+extern char *stpcpy(char *__dest, const char *__src);
 #endif /* !HAVE_DECL_STPCPY */
 
 #if !HAVE_DECL_STRSTR
-extern char *strstr ();
+extern char *strstr();
 #endif /* !HAVE_DECL_STRSTR */
 
 #ifdef HAVE_FTELLO
 # if !HAVE_DECL_FTELLO
-extern off_t ftello (FILE *stream);
+extern off_t ftello(FILE *stream);
 # endif /* !HAVE_DECL_FTELLO */
 #endif /* HAVE_FTELLO */
 
 #ifdef HAVE_FTELLO64
 # if !HAVE_DECL_FTELLO64
-extern off64_t ftello64 (FILE *stream);
+extern off64_t ftello64(FILE *stream);
 # endif /* !HAVE_DECL_FTELLO64 */
 #endif /* HAVE_FTELLO64 */
 
 #ifdef HAVE_FSEEKO
 # if !HAVE_DECL_FSEEKO
-extern int fseeko (FILE *stream, off_t offset, int whence);
+extern int fseeko(FILE *stream, off_t offset, int whence);
 # endif /* !HAVE_DECL_FSEEKO */
 #endif /* HAVE_FSEEKO */
 
 #ifdef HAVE_FSEEKO64
 # if !HAVE_DECL_FSEEKO64
-extern int fseeko64 (FILE *stream, off64_t offset, int whence);
+extern int fseeko64(FILE *stream, off64_t offset, int whence);
 # endif /* !HAVE_DECL_FSEEKO64 */
 #endif /* HAVE_FSEEKO64 */
 
-/* Define offsetof for those systems which lack it */
+#if !HAVE_DECL_STRNLEN
+size_t strnlen(const char *, size_t);
+#endif /* !HAVE_DECL_STRNLEN */
 
+/* Define offsetof for those systems which lack it: */
 #ifndef offsetof
 # define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 #endif /* !offsetof */
@@ -210,20 +275,22 @@ extern int fseeko64 (FILE *stream, off64_t offset, int whence);
 # ifdef HAVE_LIBINTL_H
 #  include <libintl.h>
 # else
-#  warning sysdep.h expects <libintl.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #   warning "sysdep.h expects <libintl.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_LIBINTL_H */
 /* Note the use of dgetext() and PACKAGE here, rather than gettext().
-
-   This is because the code in this directory is used to build a library which
-   will be linked with code in other directories to form programs.  We want to
-   maintain a seperate translation file for this directory however, rather
-   than being forced to merge it with that of any program linked to libbfd.
-   This is a library, so it cannot depend on the catalog currently loaded.
-
-   In order to do this, we have to make sure that when we extract messages we
-   use the OPCODES domain rather than the domain of the program that included
-   the bfd library, (eg OBJDUMP).  Hence we use dgettext (PACKAGE, String)
-   and define PACKAGE to be 'bfd'.  (See the code in configure).  */
+ *
+ * This is because the code in this directory is used to build a library which
+ * will be linked with code in other directories to form programs.  We want to
+ * maintain a seperate translation file for this directory however, rather
+ * than being forced to merge it with that of any program linked to libbfd.
+ * This is a library, so it cannot depend on the catalog currently loaded.
+ *
+ * In order to do this, we have to make sure that when we extract messages we
+ * use the OPCODES domain rather than the domain of the program that included
+ * the bfd library, (eg OBJDUMP).  Hence we use dgettext (PACKAGE, String)
+ * and define PACKAGE to be 'bfd'.  (See the code in configure).  */
 # define _(String) dgettext (PACKAGE, String)
 # ifdef gettext_noop
 #  define N_(String) gettext_noop (String)
@@ -256,3 +323,5 @@ extern int fseeko64 (FILE *stream, off64_t offset, int whence);
 #endif /* ENABLE_NLS */
 
 #endif /* ! defined (BFD_SYSDEP_H) */
+
+/* EOF */

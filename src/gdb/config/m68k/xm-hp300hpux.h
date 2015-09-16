@@ -1,4 +1,5 @@
-/* Parameters for HP 9000 model 320 hosting, for GDB, the GNU debugger.
+/* xm-hp300hpux.h
+   Parameters for HP 9000 model 320 hosting, for GDB, the GNU debugger.
    Copyright 1986, 1987, 1989, 1992, 1993, 1994, 1995, 1996
    Free Software Foundation, Inc.
 

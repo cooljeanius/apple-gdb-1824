@@ -8,23 +8,23 @@
 #include "zutil.h"
 #ifndef Z_SOLO
 #  include "gzguts.h"
-#endif
+#endif /* !Z_SOLO */
 
 #ifndef NO_DUMMY_DECL
 struct internal_state      {int dummy;}; /* for buggy compilers */
-#endif
+#endif /* !NO_DUMMY_DECL */
 
 z_const char * const z_errmsg[10] = {
-"need dictionary",     /* Z_NEED_DICT       2  */
-"stream end",          /* Z_STREAM_END      1  */
-"",                    /* Z_OK              0  */
-"file error",          /* Z_ERRNO         (-1) */
-"stream error",        /* Z_STREAM_ERROR  (-2) */
-"data error",          /* Z_DATA_ERROR    (-3) */
-"insufficient memory", /* Z_MEM_ERROR     (-4) */
-"buffer error",        /* Z_BUF_ERROR     (-5) */
-"incompatible version",/* Z_VERSION_ERROR (-6) */
-""};
+(char *)"need dictionary",     /* Z_NEED_DICT       2  */
+(char *)"stream end",          /* Z_STREAM_END      1  */
+(char *)"",                    /* Z_OK              0  */
+(char *)"file error",          /* Z_ERRNO         (-1) */
+(char *)"stream error",        /* Z_STREAM_ERROR  (-2) */
+(char *)"data error",          /* Z_DATA_ERROR    (-3) */
+(char *)"insufficient memory", /* Z_MEM_ERROR     (-4) */
+(char *)"buffer error",        /* Z_BUF_ERROR     (-5) */
+(char *)"incompatible version",/* Z_VERSION_ERROR (-6) */
+(char *)""};
 
 
 const char * ZEXPORT zlibVersion()

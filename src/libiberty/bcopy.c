@@ -9,15 +9,17 @@ Copies @var{length} bytes from memory region @var{in} to region
 
 */
 
+#include "libiberty_deprecated.h"
+
 #include <stddef.h>
 
 void
-bcopy (const void *src, void *dest, size_t len)
+bcopy(const void *src, void *dest, size_t len)
 {
   if (dest < src)
     {
-      const char *firsts = src;
-      char *firstd = dest;
+      const char *firsts = (const char *)src;
+      char *firstd = (char *)dest;
       while (len--)
 	*firstd++ = *firsts++;
     }
@@ -29,3 +31,5 @@ bcopy (const void *src, void *dest, size_t len)
         *lastd-- = *lasts--;
     }
 }
+
+/* EOF */

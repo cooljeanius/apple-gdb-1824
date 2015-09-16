@@ -1,0 +1,171 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# library.test     ---  test library options
+#
+# Time-stamp:        "2011-08-07 17:29:11 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+DEND=\<\<'- _DESC_END_'
+
+cat > ${testname}-libopts.def <<- _EODefs_
+	flag = { name = zzyzx-opts;
+	  documentation;
+	  lib-name = zzyzx;
+	  descrip = ${DEND}
+		This option introduces the options for the
+		zzyzx library.
+		_DESC_END_;
+	};
+	flag = {
+	  name  = library;
+	  value = c;
+	  ifdef = LIBOPTS;
+	  descrip = "library test";
+	  doc   = mumble;
+	};
+	_EODefs_
+
+cat > ${testname}-lib.def <<- _EODefs_
+
+	AutoGen definitions options;
+
+	prog-name  = ${testname};
+	prog-title = lib-${testname};
+	config-header = 'config.h';
+
+	library;
+	#include ${testname}-libopts.def
+	_EODefs_
+
+cat > ${testname}-prog.def <<- _EOF_
+
+	AutoGen definitions options;
+
+	prog-name  = test-lib-prog;
+	prog-title = 'Test ${testname} Program';
+	config-header = 'config.h';
+
+	flag = {
+	  name  = program;
+	  value = p;
+	  descrip = "${testname} program test";
+	  doc   = stumble;
+	};
+
+	#include ${testname}-libopts.def
+	_EOF_
+
+echo ${AG_L} ${testname}-lib.def
+${AG_L} ${testname}-lib.def || \
+  failure AutoGen could not process ${testname}-lib.def
+
+echo ${AG_L} ${testname}-prog.def
+${AG_L} ${testname}-prog.def || \
+  failure AutoGen could not process ${testname}-prog.def
+
+for f in lib prog
+do
+  ${SED} -e '1,/include <autoopts\/options.h>/d' \
+      -e '/endif .* AUTOOPTS_.*_H_GUARD/,$d' \
+      -e 's/near line [0-9]*/near line XXX/' \
+      ${testname}-${f}.h > ${testname}-${f}.h-res || \
+   failure could not sed ${testname}-${f}.h
+done
+
+# # # # # # # # # # TEST PROGRAM # # # # # # # # # #
+
+cat > ${testname}-lib.c <<- _EOCode_
+	#include <stdlib.h>
+	#define LIBOPTS
+	#include "${testname}-lib.h"
+	void check_library_opt( void );
+	void check_library_opt( void ) {
+	  if (HAVE_OPT(LIBRARY)) return;
+	  exit( EXIT_FAILURE ); }
+	_EOCode_
+test $? -eq 0 || failure cannot create ${testname}-lib.c
+
+${CC} ${CFLAGS} ${INC} -o ${testname}-lib.o -c ${testname}-lib.c
+test $? -eq 0 || failure cannot compile ${testname}-lib.c
+
+cat > ${testname}-main.c <<- _EOCode_
+	#include <stdio.h>
+	#include <stdlib.h>
+	#define LIBOPTS
+	#include "${testname}-prog.c"
+	extern void check_library_opt( void );
+	int main( int argc, char** argv ) {
+	  (void)optionProcess( &test_lib_progOptions, argc, argv );
+	  check_library_opt();
+	  return EXIT_SUCCESS; }
+	_EOCode_
+
+${CC} ${CFLAGS} ${INC} -o ${testname} ${testname}-main.c ${testname}-lib.o ${LIB}
+test $? -eq 0 || failure cannot compile ${testname}-main.c
+
+./${testname} -c || failure library option not detected
+
+# # # # # # # # # # HELP OUTPUT # # # # # # # # # #
+
+./${testname} -? | clean_help > ${testname}.help-sample
+
+clean_help > ${testname}.help-base <<- _EOHelp_
+test-lib-prog - Test library Program
+USAGE:  library [ -<flag> ]...
+  Flg Arg Option-Name    Description
+   -p no  program        library program test
+
+This option introduces the options for the
+zzyzx library.
+
+  Flg Arg Option-Name    Description
+   -c no  library        library test
+
+version and help options:
+
+  Flg Arg Option-Name    Description
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+
+	_EOHelp_
+
+cmp ${testname}.help-* || \
+  failure "help output mismatch:
+`diff ${testname}.help-*`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## End:
+
+# end of library.test

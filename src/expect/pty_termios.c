@@ -48,12 +48,16 @@ extern char *TclGetRegError();
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning pty_termios.c expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "pty_termios.c expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
 #else
-# warning pty_termios.c expects <inttypes.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "pty_termios.c expects <inttypes.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_INTTYPES_H */
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -64,7 +68,9 @@ extern char *TclGetRegError();
 # ifdef HAVE_STDLIB_H
 #  include <stdlib.h>
 # else
-#  warning pty_termios.c expects <stdlib.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "pty_termios.c expects <stdlib.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_STDLIB_H */
 #endif /* NO_STDLIB_H */
 
@@ -72,7 +78,7 @@ extern char *TclGetRegError();
 # include <sys/sysmacros.h>
 #else
 # if defined(__GNUC__) && defined(ANSI_PROTOTYPES) && defined(PROTOTYPES) && defined(__PROTOTYPES)
-#  warning pty_termios.c expects <sys/sysmacros.h> to be included.
+#  warning "pty_termios.c expects <sys/sysmacros.h> to be included."
 # endif /* __GNUC__ && ANSI_PROTOTYPES && PROTOTYPES && __PROTOTYPES */
 #endif /* HAVE_SYSMACROS_H */
 
@@ -80,7 +86,7 @@ extern char *TclGetRegError();
 # include <sys/ptyio.h>
 #else
 # if defined(__GNUC__) && defined(HAVE_PTYTRAP)
-#  warning pty_termios.c expects <sys/ptyio.h> to be included.
+#  warning "pty_termios.c expects <sys/ptyio.h> to be included."
 # endif /* __GNUC__ && HAVE_PTYTRAP */
 #endif /* HAVE_PTYTRAP || HAVE_SYS_PTYIO_H */
 
@@ -92,7 +98,9 @@ extern char *TclGetRegError();
 # ifdef HAVE_FCNTL_H
 #  include <fcntl.h>
 # else
-#  warning pty_termios.c expects either <sys/fcntl.h> or <fcntl.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "pty_termios.c expects either <sys/fcntl.h> or <fcntl.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_FCNTL_H */
 #endif /* HAVE_SYS_FCNTL_H */
 
@@ -100,7 +108,7 @@ extern char *TclGetRegError();
 # include <sys/strpty.h>
 #else
 # if defined(__GNUC__) && defined(_SEQUENT_)
-#  warning pty_termios.c expects <sys/strpty.h> to be included.
+#  warning "pty_termios.c expects <sys/strpty.h> to be included."
 # endif /* __GNUC__ && _SEQUENT_ */
 #endif /* _SEQUENT_ && HAVE_SYS_STRPTY_H */
 
@@ -108,7 +116,7 @@ extern char *TclGetRegError();
 # include <sys/stropts.h>
 #else
 # if defined(__GNUC__) && defined(HAVE_PTMX) && !defined(__CYGWIN__) && !defined(__BSD__) && !defined(__APPLE__)
-#  warning pty_termios.c expects <sys/stropts.h> to be included.
+#  warning "pty_termios.c expects <sys/stropts.h> to be included."
 # endif /* __GNUC__ && HAVE_PTMX && !__CYGWIN__ && !__BSD__ && !__APPLE__ */
 #endif /* HAVE_PTMX && !__CYGWIN__ && HAVE_SYS_STROPTS_H */
 
@@ -314,10 +322,11 @@ char *s;	/* stty args */
 {
 	if (request == GET_TTYTYPE) {
 #ifdef HAVE_TCSETATTR
-		if (-1 == tcgetattr(fd, &exp_tty_original)) {
+		if (-1 == tcgetattr(fd, &exp_tty_original))
 #else
-		if (-1 == ioctl(fd, TCGETS, (char *)&exp_tty_original)) {
+		if (-1 == ioctl(fd, TCGETS, (char *)&exp_tty_original))
 #endif /* HAVE_TCSETATTR */
+		{
 			knew_dev_tty = FALSE;
 			exp_dev_tty = -1;
 		}
@@ -415,7 +424,11 @@ getptymaster()
 	} else if (grantpt(master)) {
 		static char buf[500];
 		exp_pty_error = buf;
-		sprintf(exp_pty_error,"grantpt(%d) failed - likely reason is that your system administrator (in a rage of blind passion to rid the system of security holes) removed setuid from the utility used internally by grantpt to change pty permissions. Tell your system admin to reestablish setuid on the utility. Get the utility name by running Expect under truss or trace.");
+		sprintf(exp_pty_error,
+				"grantpt(%d) failed - likely reason is that your system administrator (in a rage of blind passion to rid the system of security holes) removed setuid from the utility used internally by grantpt to change pty permissions. "
+				"Tell your system admin to reestablish setuid on the utility. "
+				"Get the utility name by running Expect under truss or trace.",
+				master);
 		close(master);
 		return(-1);
 	}
@@ -784,5 +797,7 @@ int fd;
 void
 exp_pty_exit()
 {
-	/* a stub so we can do weird things on the cray */
+	return; /* a stub so we can do weird things on the cray */
 }
+
+/* EOF */

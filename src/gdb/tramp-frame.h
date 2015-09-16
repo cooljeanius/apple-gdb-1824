@@ -1,4 +1,4 @@
-/* Signal trampoline unwinder.
+/* tramp-frame.h: Signal trampoline unwinder.
 
    Copyright 2004, 2005 Free Software Foundation, Inc.
 
@@ -43,7 +43,7 @@ struct trad_frame_cache;
 
 /* Magic instruction that to mark the end of the signal trampoline
    instruction sequence.  */
-#define TRAMP_SENTINEL_INSN ((LONGEST) -1)
+#define TRAMP_SENTINEL_INSN ((LONGEST)-1L)
 
 struct tramp_frame
 {
@@ -59,7 +59,7 @@ struct tramp_frame
      instruction matching INSN[0] is the trampoline's "func" address.
      The instruction sequence is terminated by
      TRAMP_SENTINEL_INSN.  */
-  int insn_size;
+  size_t insn_size;
   struct
   {
     ULONGEST bytes;
@@ -67,13 +67,15 @@ struct tramp_frame
   } insn[16];
   /* Initialize a trad-frame cache corresponding to the tramp-frame.
      FUNC is the address of the instruction TRAMP[0] in memory.  */
-  void (*init) (const struct tramp_frame *self,
-		struct frame_info *next_frame,
-		struct trad_frame_cache *this_cache,
-		CORE_ADDR func);
+  void (*init)(const struct tramp_frame *self,
+               struct frame_info *next_frame,
+               struct trad_frame_cache *this_cache,
+               CORE_ADDR func);
 };
 
-void tramp_frame_prepend_unwinder (struct gdbarch *gdbarch,
-				   const struct tramp_frame *tramp);
+void tramp_frame_prepend_unwinder(struct gdbarch *gdbarch,
+                                  const struct tramp_frame *tramp);
 
-#endif
+#endif /* !TRAMP_FRAME_H */
+
+/* EOf */

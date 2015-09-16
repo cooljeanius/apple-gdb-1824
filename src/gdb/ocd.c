@@ -1132,7 +1132,7 @@ static void
 bdm_update_flash_command (char *args, int from_tty)
 {
   int status, pktlen;
-  struct cleanup *old_chain; 
+  struct cleanup *old_chain;
   void (*store_registers_tmp) (int);
 
   if (!ocd_desc)
@@ -1158,13 +1158,15 @@ bdm_update_flash_command (char *args, int from_tty)
 
   ocd_do_command (OCD_EXIT_MON, &status, &pktlen);
 
-/*  discard_cleanups (old_chain); */
+#if 0
+  discard_cleanups(old_chain);
+#endif /* 0 */
 }
 
 extern initialize_file_ftype _initialize_remote_ocd; /* -Wmissing-prototypes */
 
 void
-_initialize_remote_ocd (void)
+_initialize_remote_ocd(void)
 {
   extern struct cmd_list_element *cmdlist;
   static struct cmd_list_element *ocd_cmd_list = NULL;
@@ -1177,11 +1179,13 @@ Show timeout value for remote read."), NULL,
 			   &setlist, &showlist);
 
   /* FIXME: i18n: What documentation?  */
-  add_prefix_cmd ("ocd", class_obscure, bdm_command, (""), &ocd_cmd_list,
-		  "ocd ", 0, &cmdlist);
+  add_prefix_cmd("ocd", class_obscure, bdm_command, (""), &ocd_cmd_list,
+		 "ocd ", 0, &cmdlist);
 
   /* FIXME: i18n: what documentation? */
-  add_cmd ("reset", class_obscure, bdm_reset_command, (""), &ocd_cmd_list);
-  add_cmd ("restart", class_obscure, bdm_restart_command, (""), &ocd_cmd_list);
-  add_cmd ("update-flash", class_obscure, bdm_update_flash_command, (""), &ocd_cmd_list);
+  add_cmd("reset", class_obscure, bdm_reset_command, (""), &ocd_cmd_list);
+  add_cmd("restart", class_obscure, bdm_restart_command, (""), &ocd_cmd_list);
+  add_cmd("update-flash", class_obscure, bdm_update_flash_command, (""), &ocd_cmd_list);
 }
+
+/* EOF */

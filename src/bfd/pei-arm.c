@@ -21,11 +21,15 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #include "sysdep.h"
 
 #ifndef TARGET_LITTLE_SYM
-#define TARGET_LITTLE_SYM  armpei_little_vec
-#define TARGET_LITTLE_NAME "pei-arm-little"
-#define TARGET_BIG_SYM     armpei_big_vec
-#define TARGET_BIG_NAME    "pei-arm-big"
-#endif
+# define TARGET_LITTLE_SYM  armpei_little_vec
+# define TARGET_LITTLE_NAME "pei-arm-little"
+# define TARGET_BIG_SYM     armpei_big_vec
+# define TARGET_BIG_NAME    "pei-arm-big"
+#endif /* !TARGET_LITTLE_SYM */
+
+#ifndef PEI_ARM_C
+# define PEI_ARM_C
+#endif /* !PEI_ARM_C */
 
 #define COFF_IMAGE_WITH_PE
 #define COFF_WITH_PE
@@ -33,3 +37,5 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #define COFF_LONG_SECTION_NAMES
 
 #include "coff-arm.c"
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* Simple implementation of vsprintf for systems without it.
+/* vsprintf.c: Simple implementation of vsprintf for systems without it.
    Highly system-dependent, but should work on most "traditional"
    implementations of stdio; newer ones should already have vsprintf.
    Written by Per Bothner of Cygnus Support.
@@ -31,26 +31,31 @@ the executable file might be covered by the GNU General Public License. */
 #include <stdio.h>
 #undef vsprintf
 
-#if defined _IOSTRG && defined _IOWRT
-
+#if defined(_IOSTRG) && defined(_IOWRT)
 int
-vsprintf (char *buf, const char *format, va_list ap)
+vsprintf(char *buf, const char *format, va_list ap)
 {
   FILE b;
   int ret;
-#ifdef VMS
-  b->_flag = _IOWRT|_IOSTRG;
+# ifdef VMS
+  b->_flag = (_IOWRT | _IOSTRG);
   b->_ptr = buf;
   b->_cnt = 12000;
-#else
-  b._flag = _IOWRT|_IOSTRG;
+# else
+  b._flag = (_IOWRT | _IOSTRG);
   b._ptr = buf;
   b._cnt = 12000;
-#endif
+# endif
   ret = _doprnt(format, ap, &b);
   putc('\0', &b);
   return ret;
-
 }
+#else
+# if !defined(_IOFBF) && !defined(_IOLBF) && !defined(_IONBF)
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "Your <stdio.h> is missing the defines required for this file."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ && _STDIO_H_ */
+# endif /* !_IOFBF !_IOLBF && !_IONBF */
+#endif /* _IOSTRG && _IOWRT */
 
-#endif
+/* EOF */

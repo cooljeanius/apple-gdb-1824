@@ -135,11 +135,12 @@ struct linenumber
    then attached into the 'stash' at 'stash->lastUnit'.  */
 
 static struct dwarf1_unit*
-alloc_dwarf1_unit (struct dwarf1_debug* stash)
+alloc_dwarf1_unit(struct dwarf1_debug* stash)
 {
-  bfd_size_type amt = sizeof (struct dwarf1_unit);
+  bfd_size_type amt = sizeof(struct dwarf1_unit);
 
-  struct dwarf1_unit* x = bfd_zalloc (stash->abfd, amt);
+  struct dwarf1_unit *x = (struct dwarf1_unit *)bfd_zalloc(stash->abfd,
+                                                           amt);
   x->prev = stash->lastUnit;
   stash->lastUnit = x;
 
@@ -150,11 +151,12 @@ alloc_dwarf1_unit (struct dwarf1_debug* stash)
    attached into 'aUnit' at 'aUnit->func_list'.  */
 
 static struct dwarf1_func *
-alloc_dwarf1_func (struct dwarf1_debug* stash, struct dwarf1_unit* aUnit)
+alloc_dwarf1_func(struct dwarf1_debug* stash, struct dwarf1_unit* aUnit)
 {
-  bfd_size_type amt = sizeof (struct dwarf1_func);
+  bfd_size_type amt = sizeof(struct dwarf1_func);
 
-  struct dwarf1_func* x = bfd_zalloc (stash->abfd, amt);
+  struct dwarf1_func *x = (struct dwarf1_func *)bfd_zalloc(stash->abfd,
+                                                           amt);
   x->prev = aUnit->func_list;
   aUnit->func_list = x;
 
@@ -204,10 +206,10 @@ parse_die (bfd *             abfd,
       /* Parse the attribute based on its form.  This section
          must handle all dwarf1 forms, but need only handle the
 	 actual attributes that we care about.  */
-      attr = bfd_get_16 (abfd, (bfd_byte *) xptr);
+      attr = bfd_get_16(abfd, (bfd_byte *)xptr);
       xptr += 2;
 
-      switch (FORM_FROM_ATTR (attr))
+      switch (FORM_FROM_ATTR(attr))
 	{
 	case FORM_DATA2:
 	  xptr += 2;
@@ -215,10 +217,10 @@ parse_die (bfd *             abfd,
 	case FORM_DATA4:
 	case FORM_REF:
 	  if (attr == AT_sibling)
-	    aDieInfo->sibling = bfd_get_32 (abfd, (bfd_byte *) xptr);
+	    aDieInfo->sibling = bfd_get_32(abfd, (bfd_byte *)xptr);
 	  else if (attr == AT_stmt_list)
 	    {
-	      aDieInfo->stmt_list_offset = bfd_get_32 (abfd, (bfd_byte *) xptr);
+	      aDieInfo->stmt_list_offset = bfd_get_32(abfd, (bfd_byte *)xptr);
 	      aDieInfo->has_stmt_list = 1;
 	    }
 	  xptr += 4;
@@ -228,22 +230,24 @@ parse_die (bfd *             abfd,
 	  break;
 	case FORM_ADDR:
 	  if (attr == AT_low_pc)
-	    aDieInfo->low_pc = bfd_get_32 (abfd, (bfd_byte *) xptr);
+	    aDieInfo->low_pc = bfd_get_32(abfd, (bfd_byte *)xptr);
 	  else if (attr == AT_high_pc)
-	    aDieInfo->high_pc = bfd_get_32 (abfd, (bfd_byte *) xptr);
+	    aDieInfo->high_pc = bfd_get_32(abfd, (bfd_byte *)xptr);
 	  xptr += 4;
 	  break;
 	case FORM_BLOCK2:
-	  xptr += 2 + bfd_get_16 (abfd, (bfd_byte *) xptr);
+	  xptr += 2 + bfd_get_16(abfd, (bfd_byte *)xptr);
 	  break;
 	case FORM_BLOCK4:
-	  xptr += 4 + bfd_get_32 (abfd, (bfd_byte *) xptr);
+	  xptr += 4 + bfd_get_32(abfd, (bfd_byte *)xptr);
 	  break;
 	case FORM_STRING:
 	  if (attr == AT_name)
 	    aDieInfo->name = xptr;
-	  xptr += strlen (xptr) + 1;
+	  xptr += strlen(xptr) + 1;
 	  break;
+        default:
+          break;
 	}
     }
 
@@ -270,7 +274,7 @@ parse_line_table (struct dwarf1_debug* stash, struct dwarf1_unit* aUnit)
 	return FALSE;
 
       size = msec->rawsize ? msec->rawsize : msec->size;
-      stash->line_section = bfd_alloc (stash->abfd, size);
+      stash->line_section = (char *)bfd_alloc(stash->abfd, size);
 
       if (! stash->line_section)
 	return FALSE;
@@ -303,11 +307,12 @@ parse_line_table (struct dwarf1_debug* stash, struct dwarf1_unit* aUnit)
 
       /* How many line entrys?
 	 10 = 4 (line number) + 2 (pos in line) + 4 (address in line).  */
-      aUnit->line_count = (tblend - xptr) / 10;
+      aUnit->line_count = ((tblend - xptr) / 10);
 
-      /* Allocate an array for the entries.  */
-      amt = sizeof (struct linenumber) * aUnit->line_count;
-      aUnit->linenumber_table = bfd_alloc (stash->abfd, amt);
+      /* Allocate an array for the entries: */
+      amt = (sizeof(struct linenumber) * aUnit->line_count);
+      aUnit->linenumber_table = (struct linenumber *)bfd_alloc(stash->abfd,
+                                                               amt);
 
       for (eachLine = 0; eachLine < aUnit->line_count; eachLine++)
 	{
@@ -439,15 +444,13 @@ dwarf1_unit_find_nearest_line (struct dwarf1_debug* stash,
    Return TRUE if the line is found without error.  */
 
 bfd_boolean
-_bfd_dwarf1_find_nearest_line (bfd *abfd,
-			       asection *section,
-			       asymbol **symbols ATTRIBUTE_UNUSED,
-			       bfd_vma offset,
-			       const char **filename_ptr,
-			       const char **functionname_ptr,
-			       unsigned int *linenumber_ptr)
+_bfd_dwarf1_find_nearest_line(bfd *abfd, asection *section,
+			      asymbol **symbols ATTRIBUTE_UNUSED,
+			      bfd_vma offset, const char **filename_ptr,
+			      const char **functionname_ptr,
+			      unsigned int *linenumber_ptr)
 {
-  struct dwarf1_debug *stash = elf_tdata (abfd)->dwarf1_find_line_info;
+  struct dwarf1_debug *stash = elf_tdata(abfd)->dwarf1_find_line_info;
 
   struct dwarf1_unit* eachUnit;
 
@@ -461,10 +464,10 @@ _bfd_dwarf1_find_nearest_line (bfd *abfd,
   if (! stash)
     {
       asection *msec;
-      bfd_size_type size = sizeof (struct dwarf1_debug);
+      bfd_size_type size = sizeof(struct dwarf1_debug);
 
-      stash = elf_tdata (abfd)->dwarf1_find_line_info
-	= bfd_zalloc (abfd, size);
+      stash = elf_tdata(abfd)->dwarf1_find_line_info
+	= (struct dwarf1_debug *)bfd_zalloc(abfd, size);
 
       if (! stash)
 	return FALSE;
@@ -477,7 +480,7 @@ _bfd_dwarf1_find_nearest_line (bfd *abfd,
 	return FALSE;
 
       size = msec->rawsize ? msec->rawsize : msec->size;
-      stash->debug_section = bfd_alloc (abfd, size);
+      stash->debug_section = (char *)bfd_alloc(abfd, size);
 
       if (! stash->debug_section)
 	return FALSE;

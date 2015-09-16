@@ -1,4 +1,5 @@
-/* libthread_db helper functions for the remote server for GDB.
+/* proc-service.c
+   libthread_db helper functions for the remote server for GDB.
    Copyright 2002, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -34,12 +35,12 @@
 #define GDB_FPREGSET_T elf_fpregset_t
 
 #ifndef HAVE_ELF_FPREGSET_T
-/* Make sure we have said types.  Not all platforms bring in <linux/elf.h>
+/* Make sure we have said types. Not all platforms bring in <linux/elf.h>
    via <sys/procfs.h>.  */
-#ifdef HAVE_LINUX_ELF_H   
-#include <linux/elf.h>    
-#endif
-#endif
+# ifdef HAVE_LINUX_ELF_H
+#  include <linux/elf.h>
+# endif /* HAVE_LINUX_ELF_H */
+#endif /* !HAVE_ELF_FPREGSET_T */
 
 #include "../gdb_proc_service.h"
 
@@ -49,8 +50,8 @@ typedef const void *gdb_ps_write_buf_t;
 typedef size_t gdb_ps_size_t;
 
 #ifdef HAVE_LINUX_REGSETS
-#define HAVE_REGSETS
-#endif
+# define HAVE_REGSETS
+#endif /* HAVE_REGSETS */
 
 #ifdef HAVE_REGSETS
 static struct regset_info *
@@ -67,10 +68,10 @@ gregset_info(void)
 
   return &target_regsets[i];
 }
-#endif
+#endif /* HAVE_REGSETS */
 
 /* Search for the symbol named NAME within the object named OBJ within
-   the target process PH.  If the symbol is found the address of the
+   the target process PH. If the symbol is found the address of the
    symbol is stored in SYM_ADDR.  */
 
 ps_err_e
@@ -118,8 +119,9 @@ ps_lgetregs (gdb_ps_prochandle_t ph, lwpid_t lwpid, prgregset_t gregset)
 
   process = (struct process_info *) find_inferior_id (&all_processes,
 						      lwpid);
-  if (process == NULL)
-    return PS_ERR;
+	if (process == NULL) {
+		return PS_ERR;
+	}
 
   reg_inferior = get_process_thread (process);
   save_inferior = current_inferior;
@@ -132,7 +134,7 @@ ps_lgetregs (gdb_ps_prochandle_t ph, lwpid_t lwpid, prgregset_t gregset)
   return PS_OK;
 #else
   return PS_ERR;
-#endif
+#endif /* HAVE_REGSETS */
 }
 
 /* Set the general registers of LWP LWPID within the target process PH
@@ -167,7 +169,7 @@ ps_lsetfpregs (gdb_ps_prochandle_t ph, lwpid_t lwpid,
   return PS_ERR;
 }
 
-/* Return overall process id of the target PH.  Special for GNU/Linux
+/* Return overall process id of the target PH. Special for GNU/Linux
    -- not used on Solaris.  */
 
 pid_t
@@ -176,4 +178,4 @@ ps_getpid (gdb_ps_prochandle_t ph)
   return ph->pid;
 }
 
-
+/* EOF */

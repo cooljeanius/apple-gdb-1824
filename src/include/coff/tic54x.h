@@ -1,18 +1,18 @@
-/* TI COFF information for Texas Instruments TMS320C54X.
-   This file customizes the settings in coff/ti.h. 
-   
+/* tic54x.h: TI COFF information for Texas Instruments TMS320C54X.
+   This file customizes the settings in coff/ti.h.
+
    Copyright 2000, 2001 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2 of the License, or
    (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
@@ -39,7 +39,7 @@
    c2x, c5x and most c54x devices have 16-bit addresses, but the c548 has
    23-bit program addresses.  Make sure the page flags don't interfere.
    These flags are used by GDB to identify the destination page for
-   addresses. 
+   addresses.
 */
 
 /* Recognized load pages (by common convention).  */
@@ -49,7 +49,9 @@
 
 /** Indicate whether the given storage class requires a page flag.  */
 #define NEEDS_PAGE(X) ((X)==C_EXT)
-#define PAGE_MASK       0xFF000000
+#ifndef PAGE_MASK
+# define PAGE_MASK       0xFF000000
+#endif /* !PAGE_MASK */
 #define ADDR_MASK       0x00FFFFFF
 #define PG_TO_FLAG(p)   (((unsigned long)(p) & 0xFF) << 24)
 #define FLAG_TO_PG(f)   (((f) >> 24) & 0xFF)
@@ -57,3 +59,5 @@
 #include "coff/ti.h"
 
 #endif /* COFF_TIC54X_H */
+
+/* EOF */

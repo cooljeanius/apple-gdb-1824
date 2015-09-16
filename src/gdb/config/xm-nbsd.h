@@ -1,4 +1,5 @@
-/* Host-dependent definitions for any CPU running NetBSD.
+/* xm-nbsd.h
+   Host-dependent definitions for any CPU running NetBSD.
    Copyright 1993, 1994, 1995, 1996, 1999 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -18,7 +19,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* Include this to get things like NGROUPS which <limits.h> doesn't
+/* Include this to get things like NGROUPS which <limits.h> does NOT
    define on some systems. */
 #include <sys/param.h>
 

@@ -1,4 +1,5 @@
-/* Native-dependent definitions for LynxOS.
+/* nm-lynx.h
+   Native-dependent definitions for LynxOS.
 
    Copyright 1993, 1994, 1995, 1996, 1999, 2000, 2003 Free Software
    Foundation, Inc.

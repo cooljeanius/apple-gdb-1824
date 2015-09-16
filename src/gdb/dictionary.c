@@ -1,5 +1,5 @@
-/* Routines for name->symbol lookups in GDB.
-   
+/* dictionary.c: Routines for name->symbol lookups in GDB.
+
    Copyright 2003 Free Software Foundation, Inc.
 
    Contributed by David Carlton <carlton@bactrian.org> and by Kealia,
@@ -45,7 +45,7 @@
    is:
 
    * Add a new element DICT_<IMPL> to dict_type.
-   
+
    * Create a new structure dictionary_<impl>.  If your new
    implementation is a variant of an existing one, make sure that
    their structs have the same initial data members.  Define accessor
@@ -84,7 +84,7 @@
    * Define a function dict_<op> that looks up <op> in the dict_vector
    and calls the appropriate function.  Add a declaration for
    dict_<op> to dictionary.h.
-   
+
 */
 
 /* An enum representing the various implementations of dictionaries.
@@ -349,38 +349,40 @@ static void expand_hashtable (struct dictionary *dict);
    initialized from SYMBOL_LIST.  */
 
 struct dictionary *
-dict_create_hashed (struct obstack *obstack,
-		    const struct pending *symbol_list)
+dict_create_hashed(struct obstack *obstack,
+		   const struct pending *symbol_list)
 {
   struct dictionary *retval;
   int nsyms = 0, nbuckets, i;
   struct symbol **buckets;
   const struct pending *list_counter;
 
-  retval = obstack_alloc (obstack, sizeof (struct dictionary));
-  DICT_VECTOR (retval) = &dict_hashed_vector;
+  retval = (struct dictionary *)obstack_alloc(obstack,
+                                              sizeof(struct dictionary));
+  DICT_VECTOR(retval) = &dict_hashed_vector;
 
-  /* Calculate the number of symbols, and allocate space for them.  */
+  /* Calculate the number of symbols, and allocate space for them: */
   for (list_counter = symbol_list;
        list_counter != NULL;
        list_counter = list_counter->next)
     {
       nsyms += list_counter->nsyms;
     }
-  nbuckets = DICT_HASHTABLE_SIZE (nsyms);
-  DICT_HASHED_NBUCKETS (retval) = nbuckets;
-  buckets = obstack_alloc (obstack, nbuckets * sizeof (struct symbol *));
-  memset (buckets, 0, nbuckets * sizeof (struct symbol *));
-  DICT_HASHED_BUCKETS (retval) = buckets;
+  nbuckets = DICT_HASHTABLE_SIZE(nsyms);
+  DICT_HASHED_NBUCKETS(retval) = nbuckets;
+  buckets = ((struct symbol **)
+             obstack_alloc(obstack, nbuckets * sizeof(struct symbol *)));
+  memset(buckets, 0, nbuckets * sizeof(struct symbol *));
+  DICT_HASHED_BUCKETS(retval) = buckets;
 
-  /* Now fill the buckets.  */
+  /* Now fill the buckets: */
   for (list_counter = symbol_list;
        list_counter != NULL;
        list_counter = list_counter->next)
     {
       for (i = list_counter->nsyms - 1; i >= 0; --i)
 	{
-	  insert_symbol_hashed (retval, list_counter->symbol[i]);
+	  insert_symbol_hashed(retval, list_counter->symbol[i]);
 	}
     }
 
@@ -393,16 +395,17 @@ dict_create_hashed (struct obstack *obstack,
    it.  */
 
 extern struct dictionary *
-dict_create_hashed_expandable (void)
+dict_create_hashed_expandable(void)
 {
   struct dictionary *retval;
 
-  retval = xmalloc (sizeof (struct dictionary));
-  DICT_VECTOR (retval) = &dict_hashed_expandable_vector;
-  DICT_HASHED_NBUCKETS (retval) = DICT_EXPANDABLE_INITIAL_CAPACITY;
-  DICT_HASHED_BUCKETS (retval) = xcalloc (DICT_EXPANDABLE_INITIAL_CAPACITY,
-					  sizeof (struct symbol *));
-  DICT_HASHED_EXPANDABLE_NSYMS (retval) = 0;
+  retval = (struct dictionary *)xmalloc(sizeof(struct dictionary));
+  DICT_VECTOR(retval) = &dict_hashed_expandable_vector;
+  DICT_HASHED_NBUCKETS(retval) = DICT_EXPANDABLE_INITIAL_CAPACITY;
+  DICT_HASHED_BUCKETS(retval) =
+    (struct symbol **)xcalloc(DICT_EXPANDABLE_INITIAL_CAPACITY,
+                              sizeof(struct symbol *));
+  DICT_HASHED_EXPANDABLE_NSYMS(retval) = 0;
 
   return retval;
 }
@@ -413,27 +416,29 @@ dict_create_hashed_expandable (void)
    that they're found in SYMBOL_LIST.  */
 
 struct dictionary *
-dict_create_linear (struct obstack *obstack,
-		    const struct pending *symbol_list)
+dict_create_linear(struct obstack *obstack,
+		   const struct pending *symbol_list)
 {
   struct dictionary *retval;
   int nsyms = 0, i, j;
   struct symbol **syms;
   const struct pending *list_counter;
 
-  retval = obstack_alloc (obstack, sizeof (struct dictionary));
-  DICT_VECTOR (retval) = &dict_linear_vector;
+  retval = (struct dictionary *)obstack_alloc(obstack,
+                                              sizeof(struct dictionary));
+  DICT_VECTOR(retval) = &dict_linear_vector;
 
-  /* Calculate the number of symbols, and allocate space for them.  */
+  /* Calculate the number of symbols, and allocate space for them: */
   for (list_counter = symbol_list;
        list_counter != NULL;
        list_counter = list_counter->next)
     {
       nsyms += list_counter->nsyms;
     }
-  DICT_LINEAR_NSYMS (retval) = nsyms;
-  syms = obstack_alloc (obstack, nsyms * sizeof (struct symbol *));
-  DICT_LINEAR_SYMS (retval) = syms;
+  DICT_LINEAR_NSYMS(retval) = nsyms;
+  syms = ((struct symbol **)
+          obstack_alloc(obstack, nsyms * sizeof(struct symbol *)));
+  DICT_LINEAR_SYMS(retval) = syms;
 
   /* Now fill in the symbols.  Start filling in from the back, so as
      to preserve the original order of the symbols.  */
@@ -458,18 +463,18 @@ dict_create_linear (struct obstack *obstack,
    it.  */
 
 struct dictionary *
-dict_create_linear_expandable (void)
+dict_create_linear_expandable(void)
 {
   struct dictionary *retval;
 
-  retval = xmalloc (sizeof (struct dictionary));
-  DICT_VECTOR (retval) = &dict_linear_expandable_vector;
-  DICT_LINEAR_NSYMS (retval) = 0;
-  DICT_LINEAR_EXPANDABLE_CAPACITY (retval)
+  retval = (struct dictionary *)xmalloc(sizeof(struct dictionary));
+  DICT_VECTOR(retval) = &dict_linear_expandable_vector;
+  DICT_LINEAR_NSYMS(retval) = 0;
+  DICT_LINEAR_EXPANDABLE_CAPACITY(retval)
     = DICT_EXPANDABLE_INITIAL_CAPACITY;
-  DICT_LINEAR_SYMS (retval)
-    = xmalloc (DICT_LINEAR_EXPANDABLE_CAPACITY (retval)
-	       * sizeof (struct symbol *));
+  DICT_LINEAR_SYMS(retval) =
+    (struct symbol **)xmalloc(DICT_LINEAR_EXPANDABLE_CAPACITY(retval)
+                              * sizeof(struct symbol *));
 
   return retval;
 }
@@ -533,7 +538,7 @@ dict_size (const struct dictionary *dict)
 {
   return (DICT_VECTOR (dict))->size (dict);
 }
- 
+
 /* Now come functions (well, one function, currently) that are
    implemented generically by means of the vtable.  Typically, they're
    rarely used.  */
@@ -554,16 +559,16 @@ dict_empty (struct dictionary *dict)
 /* Generic functions, where appropriate.  */
 
 static void
-free_obstack (struct dictionary *dict)
+free_obstack(struct dictionary *dict)
 {
-  /* Do nothing!  */
+  return; /* Do nothing!  */
 }
 
-static void
-add_symbol_nonexpandable (struct dictionary *dict, struct symbol *sym)
+static void ATTR_NORETURN
+add_symbol_nonexpandable(struct dictionary *dict, struct symbol *sym)
 {
-  internal_error (__FILE__, __LINE__,
-		  _("dict_add_symbol: non-expandable dictionary"));
+  internal_error(__FILE__, __LINE__,
+		 _("dict_add_symbol: non-expandable dictionary"));
 }
 
 /* Functions for DICT_HASHED and DICT_HASHED_EXPANDABLE.  */
@@ -583,7 +588,7 @@ iterator_next_hashed (struct dict_iterator *iterator)
   struct symbol *next;
 
   next = DICT_ITERATOR_CURRENT (iterator)->hash_next;
-  
+
   if (next == NULL)
     return iterator_hashed_advance (iterator);
   else
@@ -603,7 +608,7 @@ iterator_hashed_advance (struct dict_iterator *iterator)
   for (i = DICT_ITERATOR_INDEX (iterator) + 1; i < nbuckets; ++i)
     {
       struct symbol *sym = DICT_HASHED_BUCKET (dict, i);
-      
+
       if (sym != NULL)
 	{
 	  DICT_ITERATOR_INDEX (iterator) = i;
@@ -629,7 +634,7 @@ iter_name_first_hashed (const struct dictionary *dict,
   /* Loop through the symbols in the given bucket, breaking when SYM
      first matches.  If SYM never matches, it will be set to NULL;
      either way, we have the right return value.  */
-  
+
   for (sym = DICT_HASHED_BUCKET (dict, hash_index);
        sym != NULL;
        sym = sym->hash_next)
@@ -643,7 +648,7 @@ iter_name_first_hashed (const struct dictionary *dict,
 	{
 	  break;
 	}
-	
+
     }
 
   DICT_ITERATOR_CURRENT (iterator) = sym;
@@ -722,17 +727,19 @@ size_hashed_expandable (const struct dictionary *dict)
 }
 
 static void
-expand_hashtable (struct dictionary *dict)
+expand_hashtable(struct dictionary *dict)
 {
-  int old_nbuckets = DICT_HASHED_NBUCKETS (dict);
-  struct symbol **old_buckets = DICT_HASHED_BUCKETS (dict);
-  int new_nbuckets = 2*old_nbuckets + 1;
-  struct symbol **new_buckets = xcalloc (new_nbuckets,
-					 sizeof (struct symbol *));
+  int old_nbuckets = DICT_HASHED_NBUCKETS(dict);
+  struct symbol **old_buckets = DICT_HASHED_BUCKETS(dict);
+  int new_nbuckets = ((2 * old_nbuckets) + 1);
+  struct symbol **new_buckets;
   int i;
 
-  DICT_HASHED_NBUCKETS (dict) = new_nbuckets;
-  DICT_HASHED_BUCKETS (dict) = new_buckets;
+  new_buckets = (struct symbol **)xcalloc(new_nbuckets,
+                                          sizeof(struct symbol *));
+
+  DICT_HASHED_NBUCKETS(dict) = new_nbuckets;
+  DICT_HASHED_BUCKETS(dict) = new_buckets;
 
   for (i = 0; i < old_nbuckets; ++i) {
     struct symbol *sym, *next_sym;
@@ -808,7 +815,7 @@ iter_name_next_linear (const char *name, struct dict_iterator *iterator)
     }
 
   DICT_ITERATOR_INDEX (iterator) = i;
-  
+
   return retval;
 }
 
@@ -818,30 +825,31 @@ size_linear (const struct dictionary *dict)
   return DICT_LINEAR_NSYMS (dict);
 }
 
-/* Functions only for DICT_LINEAR_EXPANDABLE.  */
-
+/* Functions only for DICT_LINEAR_EXPANDABLE: */
 static void
-free_linear_expandable (struct dictionary *dict)
+free_linear_expandable(struct dictionary *dict)
 {
-  xfree (DICT_LINEAR_SYMS (dict));
-  xfree (dict);
+  xfree(DICT_LINEAR_SYMS(dict));
+  xfree(dict);
 }
 
 
 static void
-add_symbol_linear_expandable (struct dictionary *dict,
-			      struct symbol *sym)
+add_symbol_linear_expandable(struct dictionary *dict,
+			     struct symbol *sym)
 {
-  int nsyms = ++DICT_LINEAR_NSYMS (dict);
+  int nsyms = ++DICT_LINEAR_NSYMS(dict);
 
-  /* Do we have enough room?  If not, grow it.  */
-  if (nsyms > DICT_LINEAR_EXPANDABLE_CAPACITY (dict)) {
-    DICT_LINEAR_EXPANDABLE_CAPACITY (dict) *= 2;
-    DICT_LINEAR_SYMS (dict)
-      = xrealloc (DICT_LINEAR_SYMS (dict),
-		  DICT_LINEAR_EXPANDABLE_CAPACITY (dict)
-		  * sizeof (struct symbol *));
+  /* Do we have enough room?  If not, then grow it: */
+  if (nsyms > DICT_LINEAR_EXPANDABLE_CAPACITY(dict)) {
+    DICT_LINEAR_EXPANDABLE_CAPACITY(dict) *= 2;
+    DICT_LINEAR_SYMS(dict) =
+      (struct symbol **)xrealloc(DICT_LINEAR_SYMS(dict),
+                                 (DICT_LINEAR_EXPANDABLE_CAPACITY(dict)
+                                  * sizeof(struct symbol *)));
   }
 
-  DICT_LINEAR_SYM (dict, nsyms - 1) = sym;
+  DICT_LINEAR_SYM(dict, (nsyms - 1)) = sym;
 }
+
+/* EOF */

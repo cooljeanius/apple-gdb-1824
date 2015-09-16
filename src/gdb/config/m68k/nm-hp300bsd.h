@@ -1,4 +1,5 @@
-/* Parameters for Hewlett-Packard 9000/300 native support under bsd.
+/* nm-hp300bsd.h
+   Parameters for Hewlett-Packard 9000/300 native support under bsd.
    Copyright 1986, 1987, 1989, 1991, 1992, 1993
    Free Software Foundation, Inc.
 

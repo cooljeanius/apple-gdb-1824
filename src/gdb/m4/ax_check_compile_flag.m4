@@ -1,10 +1,11 @@
-# ===========================================================================
+#==========================================================================
 #   http://www.gnu.org/software/autoconf-archive/ax_check_compile_flag.html
-# ===========================================================================
+#==========================================================================
 #
 # SYNOPSIS
 #
-#   AX_CHECK_COMPILE_FLAG(FLAG, [ACTION-SUCCESS], [ACTION-FAILURE], [EXTRA-FLAGS])
+#   AX_CHECK_COMPILE_FLAG([FLAG],[ACTION-SUCCESS],[ACTION-FAILURE],
+#                         [EXTRA-FLAGS])
 #
 # DESCRIPTION
 #
@@ -14,9 +15,10 @@
 #   ACTION-SUCCESS/ACTION-FAILURE are shell commands to execute on
 #   success/failure.
 #
-#   If EXTRA-FLAGS is defined, it is added to the current language's default
-#   flags (e.g. CFLAGS) when the check is done.  The check is thus made with
-#   the flags: "CFLAGS EXTRA-FLAGS FLAG".  This can for example be used to
+#   If EXTRA-FLAGS is defined, it is added to the current default
+#   flags for the current default language (e.g. CFLAGS) when the check
+#   is done. The check is thus made with the flags:
+#   "CFLAGS EXTRA-FLAGS FLAG".  This can for example be used to
 #   force the compiler to issue an error when a bad flag is given.
 #
 #   NOTE: Implementation based on AX_CFLAGS_GCC_OPTION. Please keep this
@@ -34,8 +36,8 @@
 #
 #   This program is distributed in the hope that it will be useful, but
 #   WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-#   Public License for more details.
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU GPL
+#   for more details.
 #
 #   You should have received a copy of the GNU General Public License along
 #   with this program. If not, see <http://www.gnu.org/licenses/>.
@@ -53,7 +55,7 @@
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
-dnl# serial 2
+dnl# serial 3
 
 AC_DEFUN([AX_CHECK_COMPILE_FLAG],
 [AC_PREREQ([2.59])dnl# for _AC_LANG_PREFIX

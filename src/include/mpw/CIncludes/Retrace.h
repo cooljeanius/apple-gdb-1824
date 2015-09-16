@@ -15,13 +15,12 @@ Created: Sunday, January 6, 1991 at 9:51 PM
 #define __RETRACE__
 
 #ifndef __TYPES__
-#include <Types.h>
-#endif
+# include <Types.h>
+#endif /* !__TYPES__ */
 
 #ifndef __OSUTILS__
-#include <OSUtils.h>
-#endif
-
+# include <OSUtils.h>
+#endif /* !__OSUTILS__ */
 
 typedef pascal void (*VBLProcPtr)(void);
 
@@ -38,28 +37,30 @@ typedef struct VBLTask VBLTask;
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 #define GetVBLQHdr() ((QHdrPtr) 0x0160)
 #pragma parameter __D0 SlotVInstall(__A0,__D0)
 pascal OSErr SlotVInstall(QElemPtr vblBlockPtr,short theSlot)
-    = 0xA06F; 
+    = 0xA06F;
 #pragma parameter __D0 SlotVRemove(__A0,__D0)
 pascal OSErr SlotVRemove(QElemPtr vblBlockPtr,short theSlot)
-    = 0xA070; 
+    = 0xA070;
 #pragma parameter __D0 AttachVBL(__D0)
 pascal OSErr AttachVBL(short theSlot)
-    = 0xA071; 
+    = 0xA071;
 #pragma parameter __D0 DoVBLTask(__D0)
 pascal OSErr DoVBLTask(short theSlot)
-    = 0xA072; 
+    = 0xA072;
 #pragma parameter __D0 VInstall(__A0)
 pascal OSErr VInstall(QElemPtr vblTaskPtr)
-    = 0xA033; 
+    = 0xA033;
 #pragma parameter __D0 VRemove(__A0)
 pascal OSErr VRemove(QElemPtr vblTaskPtr)
-    = 0xA034; 
+    = 0xA034;
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__RETRACE__ */
+
+/* EOF */

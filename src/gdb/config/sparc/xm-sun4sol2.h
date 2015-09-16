@@ -1,4 +1,5 @@
-/* Macro definitions for running gdb on a Sun 4 running Solaris 2.
+/* xm-sun4sol2.h
+   Macro definitions for running gdb on a Sun 4 running Solaris 2.
    Copyright 1989, 1992, 1993, 1994, 1995, 1996, 1998, 2000
    Free Software Foundation, Inc.
 
@@ -27,11 +28,13 @@
 #undef	DO_DEFERRED_STORES
 #undef	CLEAR_DEFERRED_STORES
 
-/* solaris doesn't have siginterrupt, though it has sigaction; however,
+/* solaris does NOT have siginterrupt, though it has sigaction; however,
    in this case siginterrupt would just be setting the default. */
 #define NO_SIGINTERRUPT
 
 /* On sol2.7, <curses.h> emits a bunch of 'macro redefined'
-   warnings, which makes autoconf think curses.h doesn't
-   exist.  Compensate for that here. */
+   warnings, which makes autoconf think curses.h does NOT
+   exist. Compensate for that here. */
 #define HAVE_CURSES_H 1
+
+/* EOF */

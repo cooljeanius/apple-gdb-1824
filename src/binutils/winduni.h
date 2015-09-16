@@ -21,40 +21,126 @@
 
 #include "ansidecl.h"
 
+#ifndef WINDUNI_H
+#define WINDUNI_H 1
+
 /* This header file declares the types and functions we use for
    unicode support in windres.  Our unicode support is very limited at
    present.
 
-   We don't put this stuff in windres.h so that winduni.c doesn't have
+   We do NOT put this stuff in windres.h so that winduni.c does NOT have
    to include windres.h.  winduni.c needs to includes windows.h, and
    that would conflict with the definitions of Windows macros we
    already have in windres.h.  */
 
-/* We use this type to hold a unicode character.  */
+/* Use bfd_size_type to ensure a sufficient number of bits: */
+#ifndef DEFINED_RC_UINT_TYPE
+# define DEFINED_RC_UINT_TYPE 1
+typedef bfd_size_type rc_uint_type;
+#endif /* !DEFINED_RC_UINT_TYPE */
 
+/* We use this type to hold a unicode character: */
 typedef unsigned short unichar;
 
-/* Escape character translations.  */
+/* Escape character translations: */
+#define ESCAPE_A  007
+#define ESCAPE_B  010
+#define ESCAPE_F  014
+#define ESCAPE_N  012
+#define ESCAPE_R  015
+#define ESCAPE_T  011
+#define ESCAPE_V  013
 
-#define ESCAPE_A (007)
-#define ESCAPE_B (010)
-#define ESCAPE_F (014)
-#define ESCAPE_N (012)
-#define ESCAPE_R (015)
-#define ESCAPE_T (011)
-#define ESCAPE_V (013)
+/* Convert an ASCII string to a unicode string: */
+extern void unicode_from_ascii_old PARAMS((int *, unichar **,
+                                           const char *));
+extern void unicode_from_ascii PARAMS((rc_uint_type *, unichar **,
+                                       const char *));
 
-/* Convert an ASCII string to a unicode string.  */
+/* Convert an unicode string to an ASCII string: */
+extern void ascii_from_unicode PARAMS((rc_uint_type *, const unichar *,
+                                       char **));
 
-extern void unicode_from_ascii
-  PARAMS ((int *, unichar **, const char *));
+/* Duplicate a unicode string by using res_alloc: */
+extern unichar *unichar_dup PARAMS((const unichar *));
 
-/* Print a unicode string to a file.  */
+/* Duplicate a unicode string by using res_alloc and make it uppercase: */
+extern unichar *unichar_dup_uppercase PARAMS((const unichar *));
 
-extern void unicode_print PARAMS ((FILE *, const unichar *, int));
+/* The count of unichar elements: */
+extern rc_uint_type unichar_len PARAMS((const unichar *));
+
+/* Print a unicode string to a file: */
+extern void unicode_print PARAMS((FILE *, const unichar *, int));
+
+/* Print a ascii string to a file: */
+extern void ascii_print PARAMS((FILE *, const char *, rc_uint_type));
+
+/* Print a quoted unicode string to a file: */
+extern void unicode_print_quoted PARAMS((FILE *, const unichar *,
+                                         rc_uint_type));
+
+#ifndef CP_UTF8
+# define CP_UTF7 65000 /* UTF-7 translation.  */
+# define CP_UTF8 65001 /* UTF-8 translation.  */
+#endif /* !CP_UTF8 */
+
+#ifndef CP_UTF16
+# define CP_UTF16 65002 /* UTF-16 translation.  */
+#endif /* !CP_UTF16 */
+
+#ifndef CP_ACP
+# define CP_ACP 0 /* Default to ANSI code page.  */
+#endif /* !CP_ACP */
+
+#ifndef CP_OEM
+# define CP_OEM 1 /* Default OEM code page. */
+#endif /* !CP_OEM */
+
+/* Specifies the default codepage to be used for unicode
+ * transformations.  By default this is CP_ACP: */
+extern rc_uint_type wind_default_codepage;
+
+/* Specifies the currently used codepage for unicode
+ * transformations.  By default this is CP_ACP: */
+extern rc_uint_type wind_current_codepage;
+
+typedef struct wind_language_t
+{
+  unsigned id;
+  unsigned doscp;
+  unsigned wincp;
+  const char *name;
+  const char *country;
+} wind_language_t;
+
+extern const wind_language_t *wind_find_language_by_id PARAMS((unsigned));
+extern int unicode_is_valid_codepage PARAMS((rc_uint_type));
+
+typedef struct local_iconv_map
+{
+  rc_uint_type codepage;
+  const char *iconv_name;
+} local_iconv_map;
+
+extern const local_iconv_map *wind_find_codepage_info PARAMS((unsigned));
+
+/* Convert an Codepage string to a unicode string: */
+extern void unicode_from_codepage PARAMS((rc_uint_type *, unichar **,
+                                          const char *, rc_uint_type));
+extern void unicode_from_ascii_len PARAMS((rc_uint_type *, unichar **,
+                                           const char *, rc_uint_type));
+
+/* Convert an unicode string to an codepage string: */
+extern void codepage_from_unicode PARAMS((rc_uint_type *, const unichar *,
+                                          char **, rc_uint_type));
 
 /* Windres support routine called by unicode_from_ascii.  This is both
    here and in windres.h.  It should probably be in a separate header
    file, but it hardly seems worth it for one function.  */
 
-extern PTR res_alloc PARAMS ((size_t));
+extern PTR res_alloc PARAMS((size_t));
+
+#endif /* !WINDUNI_H */
+
+/* EOF */

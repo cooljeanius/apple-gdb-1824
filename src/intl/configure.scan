@@ -3,25 +3,26 @@
 
 AC_PREREQ([2.69])
 AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
-AC_CONFIG_SRCDIR([acconfig.h])
+AC_CONFIG_SRCDIR([acconfig_obsolete.h])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_INSTALL
 AC_PROG_RANLIB
 
 # Checks for libraries.
 
 # Checks for header files.
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([argz.h fcntl.h langinfo.h libintl.h limits.h locale.h malloc.h nl_types.h stddef.h stdlib.h string.h strings.h sys/param.h unistd.h])
+AC_CHECK_HEADERS([argz.h fcntl.h langinfo.h libintl.h limits.h locale.h malloc.h nl_types.h stddef.h stdlib.h string.h strings.h sys/param.h unistd.h wchar.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
 AC_C_INLINE
+AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
 
 # Checks for library functions.

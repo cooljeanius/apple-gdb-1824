@@ -1,5 +1,5 @@
-#                                               -*- Autoconf -*-
-# Process this file with autoconf to produce a configure script.
+dnl#                                               -*- Autoconf -*-
+dnl# Process this file with autoconf to produce a configure script.
 
 AC_INIT([minizip],[1.2.8],[bugzilla.redhat.com])
 AC_CONFIG_SRCDIR([minizip.c])
@@ -8,24 +8,39 @@ AC_CONFIG_AUX_DIR([../..])
 AC_CONFIG_MACRO_DIR([../../m4])
 AC_CANONICAL_TARGET
 AC_SYS_LARGEFILE
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([1.11.6 foreign no-dist])
 AM_MAINTAINER_MODE
 AC_PROG_MKDIR_P
 
-# libtool
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
+
+# libtool stuff:
 AC_PROG_CXX
 AC_DEFUN([AC_REQUIRE_RANLIB],[
-  AC_REQUIRE([AC_PROG_RANLIB])
-])
+  AC_REQUIRE([AC_PROG_RANLIB])dnl
+])dnl
 AC_REQUIRE_RANLIB
-LT_INIT([win32-dll])
-LT_LANG([C])
-LT_LANG([Windows Resource])
+LT_INIT([win32-dll])dnl
+LT_LANG([C])dnl
+LT_LANG([Windows Resource])dnl
+LT_PREREQ([2.4.6])dnl
 
 AC_MSG_CHECKING([whether to build example programs])
-AC_ARG_ENABLE([demos],[AS_HELP_STRING([--enable-demos],[build example programs])])
-AM_CONDITIONAL([COND_DEMOS],[test "$enable_demos" = yes])
-if test "${enable_demos}" = yes
+AC_ARG_ENABLE([demos],
+              [AS_HELP_STRING([--enable-demos],[build example programs])])
+AM_CONDITIONAL([COND_DEMOS],[test "x${enable_demos}" = "xyes"])
+if test "x${enable_demos}" = "xyes"
 then
 	AC_MSG_RESULT([yes])
 else
@@ -43,7 +58,7 @@ AM_CONDITIONAL([WIN32],[test "${WIN32}" = "yes"])
 AC_EXEEXT
 
 # Checks for libraries.
-AC_CHECK_LIB([z],[gzopen])
+AC_CHECK_LIB([z],[gzopen])dnl
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h stddef.h stdio.h utime.h])
@@ -61,8 +76,13 @@ AC_TYPE_UINT64_T
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_MKTIME
-AC_CHECK_FUNCS([memset mkdir utime])
+AC_CHECK_FUNCS([memset mkdir utime])dnl
 
-# Output
+# Output.
 AC_CONFIG_FILES([Makefile minizip.pc])
+AC_CONFIG_COMMANDS([top_original],[
+if test ! -e ../../Makefile.am || test -e ../../Makefile_orig.in; then
+  (test -x ../../configure.sh && pushd ../.. && sh ./configure.sh && popd)
+fi
+],[])
 AC_OUTPUT

@@ -1,8 +1,8 @@
-/* Access for application keys in mmap'd malloc managed region.
-   Copyright 1992 Free Software Foundation, Inc.
-
-   Contributed by Fred Fish at Cygnus Support.   fnf@cygnus.com
-
+/* keys.c: Access for application keys in mmap'd malloc managed region.
+ * Copyright 1992 Free Software Foundation, Inc.
+ *
+ * Contributed by Fred Fish at Cygnus Support.  <fnf@cygnus.com>  */
+/*
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -17,7 +17,7 @@ Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
 License along with the GNU C Library; see the file COPYING.LIB.  If
-not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+not, write to the Free Software Foundation, Inc., 59 Temple Pl., Suite 330,
 Boston, MA 02111-1307, USA.  */
 
 /* This module provides access to some keys that the application can use to
@@ -34,39 +34,38 @@ Boston, MA 02111-1307, USA.  */
 #include "mmprivate.h"
 
 int
-mmalloc_setkey (md, keynum, key)
-  PTR md;     
-  int keynum;
-  PTR key;
+mmalloc_setkey(PTR md, int keynum, PTR key)
 {
   struct mdesc *mdp = (struct mdesc *) md;
   int result = 0;
 
   if (mdp->child != NULL)
-    return mmalloc_setkey (mdp->child, keynum, key);
+    {
+      return mmalloc_setkey(mdp->child, keynum, key);
+    }
 
   if ((mdp != NULL) && (keynum >= 0) && (keynum < MMALLOC_KEYS))
     {
-      mdp -> keys [keynum] = key;
+      mdp->keys[keynum] = key;
       result++;
     }
   return (result);
 }
 
 PTR
-mmalloc_getkey (md, keynum)
-  PTR md;     
-  int keynum;
+mmalloc_getkey(PTR md, int keynum)
 {
-  struct mdesc *mdp = (struct mdesc *) md;
+  struct mdesc *mdp = (struct mdesc *)md;
   PTR keyval = NULL;
 
   if (mdp->child != NULL)
-    return mmalloc_getkey (mdp->child, keynum);
+    return mmalloc_getkey(mdp->child, keynum);
 
   if ((mdp != NULL) && (keynum >= 0) && (keynum < MMALLOC_KEYS))
     {
-      keyval = mdp -> keys [keynum];
+      keyval = mdp->keys[keynum];
     }
   return (keyval);
 }
+
+/* EOF */

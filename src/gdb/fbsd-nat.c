@@ -1,4 +1,4 @@
-/* Native-dependent code for FreeBSD.
+/* fbsd-nat.c: Native-dependent code for FreeBSD.
 
    Copyright 2002, 2003, 2004 Free Software Foundation, Inc.
 
@@ -109,7 +109,7 @@ fbsd_find_memory_regions (int (*func) (CORE_ADDR, unsigned long,
     error (_("Couldn't open %s."), mapfilename);
 
   if (info_verbose)
-    fprintf_filtered (gdb_stdout, 
+    fprintf_filtered (gdb_stdout,
 		      "Reading memory regions from %s\n", mapfilename);
 
   /* Now iterate until end-of-file.  */
@@ -123,8 +123,8 @@ fbsd_find_memory_regions (int (*func) (CORE_ADDR, unsigned long,
 
       if (info_verbose)
 	{
-	  fprintf_filtered (gdb_stdout, 
-			    "Save segment, %ld bytes at 0x%s (%c%c%c)\n", 
+	  fprintf_filtered (gdb_stdout,
+			    "Save segment, %ld bytes at 0x%s (%c%c%c)\n",
 			    size, paddr_nz (start),
 			    read ? 'r' : '-',
 			    write ? 'w' : '-',

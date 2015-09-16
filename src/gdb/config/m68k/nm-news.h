@@ -1,4 +1,5 @@
-/* Parameters for execution on a Sony/NEWS, for GDB, the GNU debugger.
+/* nm-news.h
+   Parameters for execution on a Sony/NEWS, for GDB, the GNU debugger.
    Copyright 1987, 1989, 1992, 1996 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -25,3 +26,5 @@
 typedef int pid_t;
 
 #endif /* NM_NEWS_H */
+
+/* EOF */

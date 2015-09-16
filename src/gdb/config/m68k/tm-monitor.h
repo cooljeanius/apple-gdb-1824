@@ -1,4 +1,4 @@
-/* Target machine definitions for a generic m68k monitor/emulator.
+/* tm-monitor.h: Target machine defs for a generic m68k monitor/emulator.
    Copyright 1986, 1987, 1989, 1993, 1994, 1995, 1996, 1998, 1999, 2003
    Free Software Foundation, Inc.
 
@@ -22,9 +22,9 @@
 /* The definitions here are appropriate for several embedded m68k-based
    targets, including IDP (rom68k), BCC (cpu32bug), and EST's emulator.  */
 
-/* GCC is probably the only compiler used on this configuration.  So
-   get this right even if the code which detects gcc2_compiled. is
-   still broken.  */
+/* GCC is probably the only compiler used on this configuration.
+ * So get this right even if the code which detects gcc2_compiled. is
+ * still broken.  */
 
 #define BELIEVE_PCC_PROMOTION 1
 
@@ -32,8 +32,12 @@
 
 #define DECR_PC_AFTER_BREAK 0
 
-/* No float registers.  */
+/* No float registers. */
 
-/*#define NUM_REGS 18 */
+#if !defined(NUM_REGS) && 0
+# define NUM_REGS 18
+#endif /* !NUM_REGS && 0 */
 
-/* FIXME, should do GET_LONGJMP_TARGET for newlib.  */
+/* FIXME, should do GET_LONGJMP_TARGET for newlib. */
+
+/* EOF */

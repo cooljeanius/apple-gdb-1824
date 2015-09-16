@@ -1,4 +1,4 @@
-/* Reading symbol files from memory.
+/* symfile-mem.c: Reading symbol files from memory.
 
    Copyright 1986, 1987, 1989, 1991, 1994, 1995, 1996, 1998, 2000,
    2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
@@ -221,5 +221,7 @@ Give an expression for the address of the file's shared object file header."),
 
   /* Want to know of each new inferior so that its vsyscall info can
      be extracted.  */
-  observer_attach_inferior_created (add_vsyscall_page);
+  observer_attach_inferior_created(add_vsyscall_page);
 }
+
+/* EOF */

@@ -28,7 +28,8 @@ MACOSX_FILES = \
 	macosx-nat.o \
 	$(MACH_EXC_SERVER_PREFACE)excServer.o \
 	$(MACH_EXC_SERVER_PREFACE)excUser.o \
-	darwin-kernel.o
+	darwin-kernel.o \
+	macosx-nat-utils.o
 
 IA86_FILES = i386-macosx-nat-exec.o i386-nat.o
 
@@ -53,7 +54,11 @@ CFM_LIBS =
 
 # APPLE LOCAL - Allow more than 256 streams to be open at a time.
 
-MH_CFLAGS += -DUSE_PTHREADS=1 -Wall -Wimplicit -D_DARWIN_UNLIMITED_STREAMS -mmacosx-version-min=10.6
+MH_CFLAGS += -DUSE_PTHREADS=1 -D_DARWIN_UNLIMITED_STREAMS -mmacosx-version-min=10.6
+
+## FIXME: MH_CFLAGS is NOT the place to put warning flags; so put the ones
+## that used to be in there in this unused variable temporarily instead:
+MH_WARN_CFLAGS = -Wall -Wimplicit
 
 XM_CLIBS = -framework Security
 

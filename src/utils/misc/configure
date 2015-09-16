@@ -600,6 +600,8 @@ LDFLAGS
 CFLAGS
 CC
 configdirs
+target_subdirs
+host_subdirs
 target_dependent
 srcname
 srctrigger
@@ -1895,15 +1897,31 @@ test -n "$target_alias" &&
   program_prefix=${target_alias}-
 
 srctrigger=Makefile.in
-srcname="Misc utilities"
+srcname="MiscUtilities"
 target_dependent=true
 
 
 
 
 # per-host:
+case "${host}" in
+  *dos*)
+    host_subdirs=doschk
+    ;;
+  *)
+    ;;
+esac
+
 
 # per-target:
+case "${target}" in
+  *dos*)
+    target_subdirs=doschk
+    ;;
+  *)
+    ;;
+esac
+
 
 configdirs="doschk"
 

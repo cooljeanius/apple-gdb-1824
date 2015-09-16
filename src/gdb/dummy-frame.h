@@ -19,7 +19,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (DUMMY_FRAME_H)
+#if !defined(DUMMY_FRAME_H)
 #define DUMMY_FRAME_H 1
 
 struct frame_info;
@@ -40,12 +40,18 @@ struct frame_id;
    be expanded so that it knowns the lower/upper extent of the dummy
    frame's code.  */
 
-extern void dummy_frame_push (struct regcache *regcache,
-			      const struct frame_id *dummy_id);
+extern void dummy_frame_push(struct regcache *regcache,
+			     const struct frame_id *dummy_id);
+
+extern int dummy_frame_sniffer(const struct frame_unwind *self,
+                               struct frame_info *next_frame,
+                               void **this_prologue_cache);
 
 /* If the PC falls in a dummy frame, return a dummy frame
    unwinder.  */
 
 extern const struct frame_unwind *const dummy_frame_unwind;
 
-#endif /* !defined (DUMMY_FRAME_H)  */
+#endif /* !defined(DUMMY_FRAME_H)  */
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* Definitions for reading symbol files into GDB.
+/* symfile.h: Definitions for reading symbol files into GDB.
 
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
    1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
@@ -65,12 +65,20 @@ struct psymbol_allocation_list
   int size;
 };
 
+/* un-nested for C++ usage: */
+struct other_sections
+{
+  CORE_ADDR addr;
+  char *name;
+  int sectindex;
+};
+
 /* Define an array of addresses to accommodate non-contiguous dynamic
    loading of modules.  This is for use when entering commands, so we
    can keep track of the section names until we read the file and can
    map them to bfd sections.  This structure is also used by solib.c
    to communicate the section addresses in shared objects to
-   symbol_file_add ().  */
+   symbol_file_add().  */
 
 struct section_addr_info
 {
@@ -79,13 +87,8 @@ struct section_addr_info
   size_t num_sections;
   /* APPLE LOCAL */
   int addrs_are_offsets;
-  /* Sections whose names are file format dependent. */
-  struct other_sections
-  {
-    CORE_ADDR addr;
-    char *name;
-    int sectindex;
-  } other[1];
+  /* Sections whose names are file format dependent: */
+  struct other_sections other[1];
 };
 
 /* Structure to keep track of symbol reading functions for various
@@ -93,7 +96,6 @@ struct section_addr_info
 
 struct sym_fns
 {
-
   /* BFD flavour that we handle, or (as a special kludge, see
      xcoffread.c, (enum bfd_flavour)-1 for xcoff).  */
 
@@ -140,18 +142,18 @@ struct sym_fns
      chain.  */
 
   struct sym_fns *next;
-
 };
 
-/* The default version of sym_fns.sym_offsets for readers that don't
-   do anything special.  */
+extern void place_section(bfd *abfd, asection *sect, void *obj);
 
-extern void default_symfile_offsets (struct objfile *objfile,
-				     struct section_addr_info *);
+/* The default version of sym_fns.sym_offsets for readers that do NOT
+ * do anything special.  */
+extern void default_symfile_offsets(struct objfile *objfile,
+                                    struct section_addr_info *);
 
 
-extern void extend_psymbol_list (struct psymbol_allocation_list *,
-				 struct objfile *);
+extern void extend_psymbol_list(struct psymbol_allocation_list *,
+                                struct objfile *);
 
 /* Add any kind of symbol to a psymbol_allocation_list.  */
 
@@ -193,7 +195,7 @@ extern void new_symfile_objfile (struct objfile *, int, int);
 
 extern struct objfile *symbol_file_add (const char *, int,
 					struct section_addr_info *, int, int);
- 
+
 /* APPLE LOCAL: Use this one for editing in place...  */
 extern struct objfile *symbol_file_add_using_objfile (struct objfile *,
 						      const char *, int,
@@ -211,7 +213,7 @@ extern struct section_addr_info *alloc_section_addr_info (size_t
 
 /* Return a freshly allocated copy of ADDRS.  The section names, if
    any, are also freshly allocated copies of those in ADDRS.  */
-extern struct section_addr_info *(copy_section_addr_info 
+extern struct section_addr_info *(copy_section_addr_info
                                   (struct section_addr_info *addrs));
 
 /* Build (allocate and populate) a section_addr_info struct from an
@@ -343,20 +345,21 @@ extern void dwarf2_build_frame_info (struct objfile *);
 extern void dwarf2_kext_psymtab_to_symtab (struct partial_symtab *);
 extern void dwarf2_debug_map_psymtab_to_symtab (struct partial_symtab *);
 /* APPLE LOCAL: Scanning pubtypes tables for psymbols.  */
-extern void dwarf2_scan_pubtype_for_psymbols (struct partial_symtab *, 
+extern void dwarf2_scan_pubtype_for_psymbols (struct partial_symtab *,
 					      struct objfile *, enum language);
 /*  APPLE LOCAL debug inlined section  */
-extern void dwarf2_scan_inlined_section_for_psymbols (struct partial_symtab *, 
-						      struct objfile *, 
+extern void dwarf2_scan_inlined_section_for_psymbols (struct partial_symtab *,
+						      struct objfile *,
 						      enum language);
 
 /* From dbxread.c */
 
-extern struct bfd *open_bfd_from_oso (struct partial_symtab *pst, int *cached);
-extern void clear_containing_archive_cache (void);
-extern void close_bfd_or_archive (bfd *abfd);
+extern struct bfd *open_bfd_from_oso(struct partial_symtab *pst, int *cached);
+extern void oso_scan_partial_symtab(struct partial_symtab *pst);
+extern void clear_containing_archive_cache(void);
+extern void close_bfd_or_archive(bfd *abfd);
 
-struct nlist_rec 
+struct nlist_rec
 {
   char *name;
   CORE_ADDR addr;
@@ -388,11 +391,13 @@ extern void elfmdebug_build_psymtabs (struct objfile *,
 				      const struct ecoff_debug_swap *,
 				      asection *);
 
-extern bfd *symfile_bfd_open_safe (const char *filename, int mainline, 
+extern int symfile_bfd_open_helper(void *v);
+
+extern bfd *symfile_bfd_open_safe (const char *filename, int mainline,
 				   enum gdb_osabi osabi);
 
-int reread_symbols_for_objfile (struct objfile *objfile, 
-				long new_modtime, 
+int reread_symbols_for_objfile (struct objfile *objfile,
+				long new_modtime,
 				enum gdb_osabi osabi,
                                 struct objfile **next);
 
@@ -401,20 +406,29 @@ extern struct objfile *symbol_file_add_bfd_safe
  int mainline, int flags, int symflags, CORE_ADDR mapaddr, const char *prefix,
  char *kext_bundle);
 
+extern int symbol_file_add_bfd_helper(void *v);
+
 extern struct objfile *symbol_file_add_bfd_using_objfile
 (struct objfile *, bfd *abfd, int from_tty, struct section_addr_info *addrs,
  struct section_offsets *offsets,
  int mainline, int flags, int symflags, CORE_ADDR mapaddr, const char *prefix);
 
-/* APPLE LOCAL: pick the slice of a fat file matching the current arch.  */
+/* APPLE LOCAL: pick the slice of a fat file matching the current arch: */
 bfd *open_bfd_matching_arch (bfd *archive_bfd, bfd_format expected_format,
 			     enum gdb_osabi osabi);
 
-struct objfile *symbol_file_add_with_addrs_or_offsets_using_objfile (struct objfile *, bfd *, int, struct section_addr_info *, struct section_offsets *, int, int, int, int, CORE_ADDR, const char *, char *);
+extern void append_psymbols_as_msymbols(struct objfile *objfile);
 
-struct objfile * symbol_file_add_name_with_addrs_or_offsets (const char *name, int from_tty, struct section_addr_info *addrs, struct section_offsets *offsets, int num_offsets, int mainline, int flags, int symflags, CORE_ADDR mapaddr, const char *prefix, char *kext_bundle);
+void replace_psymbols_with_correct_psymbols(struct objfile *exe_obj);
 
-struct section_offsets * convert_sect_addrs_to_offsets_via_on_disk_file (struct section_addr_info *sect_addrs, const char *file, int *num_offsets);
+struct objfile *symbol_file_add_with_addrs_or_offsets_using_objfile(struct objfile *, bfd *, int, struct section_addr_info *, struct section_offsets *, int, int, int, int, CORE_ADDR, const char *, char *);
 
+struct objfile *symbol_file_add_name_with_addrs_or_offsets(const char *name, int from_tty, struct section_addr_info *addrs, struct section_offsets *offsets, int num_offsets, int mainline, int flags, int symflags, CORE_ADDR mapaddr, const char *prefix, char *kext_bundle);
+
+struct section_offsets *convert_sect_addrs_to_offsets_via_on_disk_file(struct section_addr_info *sect_addrs, const char *file, int *num_offsets);
+
+/* APPLE LOCAL begin remove symbol file */
+struct objfile *find_objfile(const char *name);
+/* APPLE LOCAL end remove symbol file */
 
 #endif /* !defined(SYMFILE_H) */

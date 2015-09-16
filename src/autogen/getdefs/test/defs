@@ -1,0 +1,86 @@
+#! /bin/echo this_file_should_be_sourced,_not_executed
+#  -*- Mode: Shell-script -*-
+#
+# defs --- define the environment for autogen tests.
+#
+# Author:            Bruce Korb <bkorb@gnu.org>
+# Time-stamp:        "2011-02-02 12:04:19 bkorb"
+##
+##  This file is part of AutoGen.
+##  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoGen is free software: you can redistribute it and/or modify it
+##  under the terms of the GNU General Public License as published by the
+##  Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
+##
+##  AutoGen is distributed in the hope that it will be useful, but
+##  WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+##  See the GNU General Public License for more details.
+##
+##  You should have received a copy of the GNU General Public License along
+##  with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Make sure srcdir is an absolute path.  Supply the variable
+# if it does not exist.  We want to be able to run the tests
+# stand-alone!!
+#
+srcdir=${srcdir-.}
+if test ! -d $srcdir ; then
+    echo "defs: installation error" 1>&2
+    exit 1
+fi
+
+#  IF the source directory is a Unix or a DOS root directory, ...
+#
+case "$srcdir" in
+    /* | [A-Za-z]:\\*) ;;
+    *) srcdir=`\cd $srcdir && pwd` ;;
+esac
+
+lo_dir=`cd ../../autoopts && pwd`
+test -d ${lo_dir}/.libs && lo_dir=${lo_dir}/.libs
+LD_LIBRARY_PATH=${lo_dir}:${LD_LIBRARY_PATH-/dev/null}
+export LD_LIBRARY_PATH
+
+for SED in `exec 2>/dev/null;which gsed` \
+  /bin/xpg4/bin/sed \
+  `which sed` \
+  /bin/sed \
+  /usr/bin/sed
+do test -x "${SED}" && break ; done
+
+progname=`echo "$0" | ${SED} 's,^.*/,,'`
+testname=`echo "$progname" | ${SED} 's,\..*$,,'`
+testsubdir=${testsubdir-testdir}
+
+# User can set VERBOSE to prevent output redirection
+case x$VERBOSE in
+    xNO | xno | x0 | x)
+        exec > /dev/null 2>&1
+        rm -rf $testsubdir
+        ;;
+esac
+
+test -d $testsubdir || mkdir $testsubdir
+cd $testsubdir
+if test $? != 0 ; then
+    echo "Cannot make or change into $testsubdir"
+    exit 1
+fi
+
+echo "=== Running $progname"
+
+# A standard failure function
+failure()
+{
+  cd ${testsubdir}
+  test -d ../FAILURES || mkdir ../FAILURES
+  l=`echo *`
+  ( \cd ../FAILURES ; rm -f $l )
+  mv -f * ../FAILURES
+  echo "$*"
+  exit 1
+}
+# defs ends here

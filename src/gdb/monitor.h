@@ -1,4 +1,4 @@
-/* Definitions for remote debugging interface for ROM monitors.
+/* monitor.h: Definitions for remote debugging interface for ROM monitors.
    Copyright 1990, 1991, 1992, 1994, 1995, 1996, 1997, 1998, 1999, 2000
    Free Software Foundation, Inc.
    Contributed by Cygnus Support. Written by Rob Savoye for Cygnus.
@@ -23,6 +23,8 @@
 
 #ifndef MONITOR_H
 #define MONITOR_H
+
+#include "ansidecl.h"
 
 struct target_waitstatus;
 struct serial;
@@ -116,9 +118,9 @@ struct monitor_ops
     char *cmd_end;		/* optional command terminator */
     struct target_ops *target;	/* target operations */
     int stopbits;		/* number of stop bits */
-    char **regnames;		/* array of register names in ascii */
-                                /* deprecated: use regname instead */
-    const char *(*regname) (int index); 
+    char **regnames /* array of register names in ascii; deprecated: */
+      ATTRIBUTE_DEPRECATED_FOR(regname); /* use regname instead */
+    const char *(*regname)(int index);
                                 /* function for dynamic regname array */
     int num_breakpoints;	/* If set_break != NULL, number of supported
 				   breakpoints */

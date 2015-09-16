@@ -28,10 +28,14 @@ MACOSX_FILES = \
 	macosx-nat.o \
 	excServer.o \
 	excUser.o \
-	macosx-nat-utils.o
+	macosx-nat-utils.o \
+	darwin-kernel.o
 
 
 ARM_FILES = arm-macosx-nat-exec.o 
+
+SIM_OBS = remote-sim.o
+SIM = ../sim/arm/libsim.a
 
 NAT_FILE = nm-arm-macosx.h
 
@@ -45,7 +49,11 @@ MH_CFLAGS = -I$(srcdir)/macosx
 
 # APPLE LOCAL - Allow more than 256 streams to be open at a time.
 
-MH_CFLAGS += -DUSE_PTHREADS=1 -Wall -Wimplicit -D_DARWIN_UNLIMITED_STREAMS -miphoneos-version-min=5.0
+MH_CFLAGS += -DUSE_PTHREADS=1 -D_DARWIN_UNLIMITED_STREAMS -miphoneos-version-min=4.3
+
+## FIXME: MH_CFLAGS is NOT the place to put warning flags; so put the ones
+## that used to be in there in this unused variable temporarily instead:
+MH_WARN_CFLAGS = -Wall -Wimplicit
 
 CFM_CFLAGS = -DWITH_CFM=0
 

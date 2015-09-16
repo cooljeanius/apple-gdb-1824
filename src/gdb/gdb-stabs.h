@@ -1,4 +1,4 @@
-/* Definitions for symbol-reading containing "stabs", for GDB.
+/* gdb-stabs.h: Definitions for symbol-reading containing "stabs", for GDB.
    Copyright 1992, 1993, 1995, 1996, 1997, 1999, 2000
    Free Software Foundation, Inc.
    Contributed by Cygnus Support.  Written by John Gilmore.
@@ -30,7 +30,7 @@
 #define GDBSTABS_H
 
 /* The stab_section_info chain remembers info from the ELF symbol table,
-   while psymtabs are being built for the other symbol tables in the 
+   while psymtabs are being built for the other symbol tables in the
    objfile.  It is destroyed at the complation of psymtab-reading.
    Any info that was used from it has been copied into psymtabs.  */
 

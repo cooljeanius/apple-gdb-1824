@@ -1,4 +1,4 @@
-/* Utility to pick a temporary filename prefix.
+/* make-temp-file.c: Utility to pick a temporary filename prefix.
    Copyright (C) 1996, 1997, 1998, 2001 Free Software Foundation, Inc.
 
 This file is part of the libiberty library.
@@ -43,7 +43,10 @@ Boston, MA 02110-1301, USA.  */
 #endif
 
 #include "libiberty.h"
-extern int mkstemps (char *, int);
+extern const char *choose_tmpdir(void);
+#if defined(HAVE_DECL_MKSTEMPS) && !HAVE_DECL_MKSTEMPS
+extern int mkstemps(char *, int);
+#endif /* !HAVE_DECL_MKSTEMPS */
 
 /* '/' works just fine on MS-DOS based systems.  */
 #ifndef DIR_SEPARATOR
@@ -84,7 +87,7 @@ static char *memoized_tmpdir;
 
 /*
 
-@deftypefn Replacement char* choose_tmpdir ()
+@deftypefn Replacement const char* choose_tmpdir ()
 
 Returns a pointer to a directory path suitable for creating temporary
 files in.
@@ -93,40 +96,40 @@ files in.
 
 */
 
-char *
-choose_tmpdir (void)
+const char *
+choose_tmpdir(void)
 {
   const char *base = 0;
   char *tmpdir;
-  unsigned int len;
+  size_t len;
 
   if (memoized_tmpdir)
     return memoized_tmpdir;
 
-  base = try_dir (getenv ("TMPDIR"), base);
-  base = try_dir (getenv ("TMP"), base);
-  base = try_dir (getenv ("TEMP"), base);
+  base = try_dir(getenv("TMPDIR"), base);
+  base = try_dir(getenv("TMP"), base);
+  base = try_dir(getenv("TEMP"), base);
 
 #ifdef P_tmpdir
-  base = try_dir (P_tmpdir, base);
-#endif
+  base = try_dir(P_tmpdir, base);
+#endif /* P_tmpdir */
 
   /* Try /var/tmp, /usr/tmp, then /tmp.  */
-  base = try_dir (vartmp, base);
-  base = try_dir (usrtmp, base);
-  base = try_dir (tmp, base);
- 
+  base = try_dir(vartmp, base);
+  base = try_dir(usrtmp, base);
+  base = try_dir(tmp, base);
+
   /* If all else fails, use the current directory!  */
   if (base == 0)
     base = ".";
 
-  /* Append DIR_SEPARATOR to the directory we've chosen
+  /* Append DIR_SEPARATOR to the directory we have chosen
      and return it.  */
-  len = strlen (base);
-  tmpdir = XNEWVEC (char, len + 2);
-  strcpy (tmpdir, base);
+  len = strlen(base);
+  tmpdir = XNEWVEC(char, (len + 2UL));
+  strcpy(tmpdir, base);
   tmpdir[len] = DIR_SEPARATOR;
-  tmpdir[len+1] = '\0';
+  tmpdir[len + 1UL] = '\0';
 
   memoized_tmpdir = tmpdir;
   return tmpdir;
@@ -145,33 +148,34 @@ string is @code{malloc}ed, and the temporary file has been created.
 */
 
 char *
-make_temp_file (const char *suffix)
+make_temp_file(const char *suffix)
 {
-  const char *base = choose_tmpdir ();
+  const char *base = choose_tmpdir();
   char *temp_filename;
-  int base_len, suffix_len;
+  size_t base_len, suffix_len;
   int fd;
 
   if (suffix == 0)
     suffix = "";
 
-  base_len = strlen (base);
-  suffix_len = strlen (suffix);
+  base_len = strlen(base);
+  suffix_len = strlen(suffix);
 
-  temp_filename = XNEWVEC (char, base_len
-			   + TEMP_FILE_LEN
-			   + suffix_len + 1);
-  strcpy (temp_filename, base);
-  strcpy (temp_filename + base_len, TEMP_FILE);
-  strcpy (temp_filename + base_len + TEMP_FILE_LEN, suffix);
+  temp_filename = XNEWVEC(char, (base_len + TEMP_FILE_LEN
+                                 + suffix_len + 1UL));
+  strcpy(temp_filename, base);
+  strcpy((temp_filename + base_len), TEMP_FILE);
+  strcpy((temp_filename + base_len + TEMP_FILE_LEN), suffix);
 
-  fd = mkstemps (temp_filename, suffix_len);
+  fd = mkstemps(temp_filename, (int)suffix_len);
   /* If mkstemps failed, then something bad is happening.  Maybe we should
      issue a message about a possible security attack in progress?  */
   if (fd == -1)
-    abort ();
-  /* Similarly if we can not close the file.  */
-  if (close (fd))
-    abort ();
+    abort();
+  /* Similarly if we can not close the file: */
+  if (close(fd))
+    abort();
   return temp_filename;
 }
+
+/* EOF */

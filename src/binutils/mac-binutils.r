@@ -1,6 +1,10 @@
-/* Resources for GNU binutils. */
+/* mac-binutils.r: Rez resources for GNU binutils. */
 
 #include "SysTypes.r"
+
+#ifndef VERSION_STRING
+# define VERSION_STRING "6.3.50-20050815 (Apple version gdb-1824)"
+#endif /* !VERSION_STRING */
 
 /* Version resources. */
 

@@ -1,0 +1,127 @@
+#! /bin/ksh
+#  -*- Mode: Shell-script -*-
+# daemon.test --- test functionality of `for' function
+#
+# Time-stamp:        "2011-02-02 12:00:31 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+tdir=$( (mktemp -d $PWD/.daemon-XXXXXX.d) 2>/dev/null)
+test -z "${tdir}" && {
+  tdir=$PWD/.daemon-$$.d
+  rm -rf ${tdir}
+  mkdir ${tdir} || exit 1
+}
+
+ag=`cd .. >/dev/null ; pwd`/autogen
+
+case $- in
+*x* ) setcmd="set -ex" ;;
+*   ) setcmd='set -e' ;;
+esac
+cd ${tdir}
+
+exec 5> daemon-results
+
+cat > daemon.tpl <<_EOF_
+[= AutoGen5 Template =]
+This is from the [=  (shell "echo $$")  =] server.
+_EOF_
+
+run_thrice() {
+  $setcmd
+  sleep 1
+  for f in 1 2 3
+  do (
+    cat > ${1} <<_EOF_
+AutoGen Definitions daemon.tpl;
+hello = yes;
+_EOF_
+
+    sleep 1
+
+    cat >&5 < ${2}
+    ) &
+  done
+  sleep 1
+}
+
+do_run() {
+  $setcmd
+  $cmd &
+  pid=$!
+
+  while test ! -S ${1} -a ! -p ${1}
+  do print -u2 No ${1}. Must delay.
+     ( ps -p ${pid} > /dev/null 2>&1 ) || {
+        print -u2 "autogen has gone away"
+        exit 1
+     }
+     sleep 1
+  done
+
+  run_thrice "$@"
+  ps -fp $pid
+
+  kill -HUP ${pid} || \
+    kill -TERM ${pid} || \
+      kill -KILL ${pid}
+}
+
+( ${ag} --daemon daemon-io --help > /dev/null 2>&1 ) || exit 0
+
+cmd="${ag} --daemon daemon-io  -b dmn"
+do_run daemon-io-in daemon-io-out
+
+tmp=$(echo ${tdir} | ${SED} 's,.*/\.,,;s/\.d$//')
+pipe=$PWD/${tmp}
+
+cmd="${ag} --daemon unix:${pipe}  -b dmn"
+do_run ${tmp} ${tmp}
+
+sleep 2
+exec 5>&-
+cat daemon-results
+cd ..
+rm -rf ${tdir}
+
+# No daemon-io-in. Must delay.
+# UID        PID  PPID  C STIME TTY        TIME CMD
+# bkorb    18431 18427  3 18:18 pts/1  00:00:00 /home/bkorb/ag/ag/agen5/.libs/lt
+# AutoGen aborting on signal 1 (Hangup) in state OPTIONS
+# No daemon-w0QjvL. Must delay.
+# ./daemon.test[71]: cannot create daemon-w0QjvL: No such device or address
+# ./daemon.test[71]: cannot create daemon-w0QjvL: No such device or address
+# ./daemon.test[71]: cannot create daemon-w0QjvL: No such device or address
+# UID        PID  PPID  C STIME TTY        TIME CMD
+# bkorb    18466 18427  3 18:18 pts/1  00:00:00 /home/bkorb/ag/ag/agen5/.libs/lt
+# AutoGen aborting on signal 1 (Hangup) in state OPTIONS
+
+# This is from the 18427 server.
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of daemon.test

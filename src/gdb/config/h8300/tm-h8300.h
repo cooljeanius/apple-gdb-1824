@@ -1,4 +1,5 @@
-/* Parameters for execution on a H8/300 series machine.
+/* tm-h8300.h
+   Parameters for execution on a H8/300 series machine.
    Copyright 1992, 1993, 1994, 1996, 1998, 1999, 2000
    Free Software Foundation, Inc.
 

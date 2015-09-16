@@ -23,6 +23,11 @@
 /* Contributed by Steve Chamberlain: sac@cygnus.com  */
 
 #define DONTDECLARE_MALLOC
+
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "libiberty.h"
 #include "defparse.h"
 #include "dlltool.h"
@@ -60,10 +65,10 @@ int linenumber;
 "TERMINSTANCE"	{ return TERMINSTANCE;}
 "TERMGLOBAL"	{ return TERMGLOBAL;}
 
-[0-9][x0-9A-Fa-f]* { yylval.number = strtol (yytext,0,0); 
+[0-9][x0-9A-Fa-f]* { yylval.number = strtol (yytext,0,0);
 		return NUMBER; }
 
-(@)?[A-Za-z$:\-\_?][A-Za-z0-9/$:\-\_@?]* { 	
+(@)?[A-Za-z$:\-\_?][A-Za-z0-9/$:\-\_@?]* {
 		yylval.id =  xstrdup (yytext);
 		return ID;
 		}
@@ -90,7 +95,9 @@ int linenumber;
 "@"	 	{ return '@';}
 ","		{ return ',';}
 %%
+
+/* `dummy comment' // (fixes syntax highlighting) */
 #ifndef yywrap
 /* Needed for lex, though not flex. */
 int yywrap(void) { return 1; }
-#endif
+#endif /* !yywrap */

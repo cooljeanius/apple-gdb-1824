@@ -1,4 +1,4 @@
-/* 
+/*
  * tclPreserve.c --
  *
  *	This file contains a collection of procedures that are used
@@ -35,8 +35,8 @@ typedef struct {
 } Reference;
 
 static Reference *refArray;	/* First in array of references. */
-static int spaceAvl = 0;	/* Total number of structures available
-				 * at *firstRefPtr. */
+static size_t spaceAvl = 0UL;	/* Total number of structures available
+                                 * at *firstRefPtr. */
 static int inUse = 0;		/* Count of structures currently in use
 				 * in refArray. */
 #define INITIAL_SIZE 2
@@ -95,11 +95,11 @@ PreserveExitProc(clientData)
     ClientData clientData;		/* NULL -Unused. */
 {
     Tcl_MutexLock(&preserveMutex);
-    if (spaceAvl != 0) {
+    if (spaceAvl != 0UL) {
         ckfree((char *) refArray);
         refArray = (Reference *) NULL;
         inUse = 0;
-        spaceAvl = 0;
+        spaceAvl = 0UL;
     }
     Tcl_MutexUnlock(&preserveMutex);
 }
@@ -150,7 +150,7 @@ Tcl_Preserve(clientData)
      */
 
     if (inUse == spaceAvl) {
-	if (spaceAvl == 0) {
+	if (spaceAvl == 0UL) {
             Tcl_CreateExitHandler((Tcl_ExitProc *) PreserveExitProc,
                     (ClientData) NULL);
 	    refArray = (Reference *) ckalloc((unsigned)
@@ -159,13 +159,13 @@ Tcl_Preserve(clientData)
 	} else {
 	    Reference *new;
 
-	    new = (Reference *) ckalloc((unsigned)
-		    (2*spaceAvl*sizeof(Reference)));
-	    memcpy((VOID *) new, (VOID *) refArray,
-                    spaceAvl*sizeof(Reference));
-	    ckfree((char *) refArray);
+	    new = (Reference *)ckalloc((unsigned)
+		    (2UL * spaceAvl * sizeof(Reference)));
+	    memcpy((VOID *)new, (VOID *)refArray,
+                    (spaceAvl * sizeof(Reference)));
+	    ckfree((char *)refArray);
 	    refArray = new;
-	    spaceAvl *= 2;
+	    spaceAvl *= 2UL;
 	}
     }
 
@@ -320,7 +320,7 @@ Tcl_EventuallyFree(clientData, freeProc)
  * TclHandleCreate --
  *
  *	Allocate a handle that contains enough information to determine
- *	if an arbitrary malloc'd block has been deleted.  This is 
+ *	if an arbitrary malloc'd block has been deleted.  This is
  *	used to avoid the more time-expensive algorithm of Tcl_Preserve().
  *
  * Results:
@@ -408,7 +408,7 @@ TclHandleFree(handle)
  * TclHandlePreserve --
  *
  *	Declare an interest in the arbitrary malloc'd block associated
- *	with the handle.  
+ *	with the handle.
  *
  * Results:
  *	The return value is the handle argument, with its ref count
@@ -463,7 +463,7 @@ TclHandlePreserve(handle)
  *
  *---------------------------------------------------------------------------
  */
- 
+
 void
 TclHandleRelease(handle)
     TclHandle handle;		/* Unregister interest in the block of
@@ -487,4 +487,4 @@ TclHandleRelease(handle)
 	ckfree((char *) handlePtr);
     }
 }
-    
+

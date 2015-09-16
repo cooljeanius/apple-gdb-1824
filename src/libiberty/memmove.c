@@ -1,4 +1,4 @@
-/* Wrapper to implement ANSI C's memmove using BSD's bcopy. */
+/* memmove.c: Wrapper to implement ANSI C's memmove using BSD's bcopy. */
 /* This function is in the public domain.  --Per Bothner. */
 
 /*
@@ -23,3 +23,5 @@ memmove (PTR s1, const PTR s2, size_t n)
   bcopy (s2, s1, n);
   return s1;
 }
+
+/* EOF */

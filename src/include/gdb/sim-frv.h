@@ -1,6 +1,8 @@
-/* This file defines the interface between the FR-V simulator and GDB.
+/* sim-frv.h
+ * This file defines the interface between the FR-V simulator and GDB.
+ */
 
-   Copyright 2003 Free Software Foundation, Inc.
+/* Copyright 2003 Free Software Foundation, Inc.
 
    Contributed by Red Hat.
 
@@ -26,7 +28,7 @@
 
 #ifdef __cplusplus
 extern "C" { // }
-#endif
+#endif /* __cplusplus */
 
 enum sim_frv_regs
 {
@@ -37,9 +39,9 @@ enum sim_frv_regs
   SIM_FRV_PC_REGNUM   = 128,
 
   /* An FR-V architecture may have up to 4096 special purpose registers
-     (SPRs).  In order to determine a specific constant used to access
+     (SPRs). In order to determine a specific constant used to access
      a particular SPR, one of the H_SPR_ prefixed offsets defined in
-     opcodes/frv-desc.h should be added to SIM_FRV_SPR0_REGNUM.  So,
+     opcodes/frv-desc.h should be added to SIM_FRV_SPR0_REGNUM. So,
      for example, the number that GDB uses to fetch the link register
      from the simulator is (SIM_FRV_SPR0_REGNUM + H_SPR_LR).  */
   SIM_FRV_SPR0_REGNUM = 129,
@@ -48,6 +50,8 @@ enum sim_frv_regs
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !SIM_FRV_H */
+
+/* EOF */

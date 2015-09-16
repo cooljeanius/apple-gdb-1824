@@ -1,4 +1,4 @@
-/* Perform non-arithmetic operations on values, for GDB.
+/* valops.c: Perform non-arithmetic operations on values, for GDB.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
@@ -254,9 +254,9 @@ allocate_space_in_inferior (int len)
    and return a value that is a pointer to the allocated space. */
 
 struct value *
-value_allocate_space_in_inferior (int len)
+value_allocate_space_in_inferior(int len)
 {
-  return value_from_longest (builtin_type_void_data_ptr, target_allocate_memory (len));
+  return value_from_longest(builtin_type_void_data_ptr, target_allocate_memory(len));
 }
 
 /* Cast value ARG2 to type TYPE and return as a value.
@@ -268,8 +268,8 @@ value_allocate_space_in_inferior (int len)
    type back in place before returning.  value_cast does check_typedef,
    which loses typedef info.  */
 
-struct value *
-value_cast_1 (struct type *type, struct value *arg2)
+static struct value *
+value_cast_1(struct type *type, struct value *arg2)
 {
   enum type_code code1;
   enum type_code code2;
@@ -278,63 +278,65 @@ value_cast_1 (struct type *type, struct value *arg2)
 
   int convert_to_boolean = 0;
 
-  if (value_type (arg2) == type)
+  if (value_type(arg2) == type)
     return arg2;
 
-  CHECK_TYPEDEF (type);
-  code1 = TYPE_CODE (type);
-  /* APPLE LOCAL: Don't call COERCE_REF on a reference,
-   since when we cast it later on when we print it,
-   we will print the address of the beginning of the
-   structure, not the address...  */
+  CHECK_TYPEDEF(type);
+  code1 = TYPE_CODE(type);
+  /* APPLE LOCAL: Do NOT call COERCE_REF on a reference, since when we cast
+   * it later on when we print it, we will print the address of the
+   * beginning of the structure, not the address...  */
   if (code1 != TYPE_CODE_REF)
-    arg2 = coerce_ref (arg2);
+    arg2 = coerce_ref(arg2);
   /* END APPLE LOCAL */
-  type2 = check_typedef (value_type (arg2));
+  type2 = check_typedef(value_type(arg2));
 
   /* A cast to an undetermined-length array_type, such as (TYPE [])OBJECT,
      is treated like a cast to (TYPE [N])OBJECT,
      where N is sizeof(OBJECT)/sizeof(TYPE). */
   if (code1 == TYPE_CODE_ARRAY)
     {
-      struct type *element_type = TYPE_TARGET_TYPE (type);
-      unsigned element_length = TYPE_LENGTH (check_typedef (element_type));
-      if (element_length > 0
-	&& TYPE_ARRAY_UPPER_BOUND_TYPE (type) == BOUND_CANNOT_BE_DETERMINED)
+      struct type *element_type = TYPE_TARGET_TYPE(type);
+      unsigned element_length = TYPE_LENGTH(check_typedef(element_type));
+      if ((element_length > 0)
+	&& TYPE_ARRAY_UPPER_BOUND_TYPE(type) == BOUND_CANNOT_BE_DETERMINED)
 	{
-	  struct type *range_type = TYPE_INDEX_TYPE (type);
-	  int val_length = TYPE_LENGTH (type2);
+	  struct type *range_type = TYPE_INDEX_TYPE(type);
+	  int val_length = TYPE_LENGTH(type2);
 	  LONGEST low_bound, high_bound, new_length;
-	  if (get_discrete_bounds (range_type, &low_bound, &high_bound) < 0)
+	  if (get_discrete_bounds(range_type, &low_bound, &high_bound) < 0)
 	    low_bound = 0, high_bound = 0;
-	  new_length = val_length / element_length;
-	  if (val_length % element_length != 0)
-	    warning (_("array element type size does not divide object size in cast"));
+	  new_length = (val_length / element_length);
+	  if ((val_length % element_length) != 0)
+	    warning(_("array element type size does not divide object size in cast"));
 	  /* FIXME-type-allocation: need a way to free this type when we are
 	     done with it.  */
-	  range_type = create_range_type ((struct type *) NULL,
-					  TYPE_TARGET_TYPE (range_type),
-					  low_bound,
-					  new_length + low_bound - 1);
-	  deprecated_set_value_type (arg2, create_array_type ((struct type *) NULL,
-							      element_type, range_type));
+	  range_type = create_range_type((struct type *)NULL,
+					 TYPE_TARGET_TYPE(range_type),
+					 (int)low_bound,
+					 (int)((new_length + low_bound)
+                                               - 1L));
+	  deprecated_set_value_type(arg2,
+                                    create_array_type((struct type *)NULL,
+                                                      element_type,
+                                                      range_type));
 	  return arg2;
 	}
     }
 
   if (current_language->c_style_arrays &&
-      (TYPE_CODE (type2) == TYPE_CODE_ARRAY ||
-       TYPE_CODE (type2) == TYPE_CODE_STRING))	/* a string is an array */
-    arg2 = value_coerce_array (arg2);
+      (TYPE_CODE(type2) == TYPE_CODE_ARRAY ||
+       TYPE_CODE(type2) == TYPE_CODE_STRING))	/* a string is an array */
+    arg2 = value_coerce_array(arg2);
 
-  if (TYPE_CODE (type2) == TYPE_CODE_FUNC)
-    arg2 = value_coerce_function (arg2);
+  if (TYPE_CODE(type2) == TYPE_CODE_FUNC)
+    arg2 = value_coerce_function(arg2);
 
-  type2 = check_typedef (value_type (arg2));
-  code2 = TYPE_CODE (type2);
+  type2 = check_typedef(value_type(arg2));
+  code2 = TYPE_CODE(type2);
 
   if (code1 == TYPE_CODE_COMPLEX)
-    return cast_into_complex (type, arg2);
+    return cast_into_complex(type, arg2);
   if (code1 == TYPE_CODE_BOOL)
     {
       code1 = TYPE_CODE_INT;
@@ -350,46 +352,46 @@ value_cast_1 (struct type *type, struct value *arg2)
 
   if (code1 == TYPE_CODE_STRUCT
       && code2 == TYPE_CODE_STRUCT
-      && TYPE_NAME (type) != 0)
+      && TYPE_NAME(type) != 0)
     {
       /* Look in the type of the source to see if it contains the
          type of the target as a superclass.  If so, we'll need to
          offset the object in addition to changing its type.  */
-      struct value *v = search_struct_field (type_name_no_tag (type),
-					 arg2, 0, type2, 1);
+      struct value *v = search_struct_field(type_name_no_tag(type),
+                                            arg2, 0, type2, 1);
       if (v)
 	{
-	  deprecated_set_value_type (v, type);
+	  deprecated_set_value_type(v, type);
 	  return v;
 	}
     }
   if (code1 == TYPE_CODE_FLT && scalar)
-    return value_from_double (type, value_as_double (arg2));
+    return value_from_double(type, value_as_double(arg2));
   else if ((code1 == TYPE_CODE_INT || code1 == TYPE_CODE_ENUM
 	    || code1 == TYPE_CODE_RANGE)
 	   && (scalar || code2 == TYPE_CODE_PTR))
     {
       LONGEST longest;
 
-      if (deprecated_hp_som_som_object_present	/* if target compiled by HP aCC */
+      if (deprecated_hp_som_som_object_present /* if target compiled by HP aCC */
 	  && (code2 == TYPE_CODE_PTR))
 	{
 	  unsigned int *ptr;
 	  struct value *retvalp;
 
-	  switch (TYPE_CODE (TYPE_TARGET_TYPE (type2)))
+	  switch (TYPE_CODE(TYPE_TARGET_TYPE(type2)))
 	    {
 	      /* With HP aCC, pointers to data members have a bias */
 	    case TYPE_CODE_MEMBER:
-	      retvalp = value_from_longest (type, value_as_long (arg2));
+	      retvalp = value_from_longest(type, value_as_long(arg2));
 	      /* force evaluation */
-	      ptr = (unsigned int *) value_contents (retvalp);
+	      ptr = (unsigned int *)value_contents(retvalp);
 	      *ptr &= ~0x20000000;	/* zap 29th bit to remove bias */
 	      return retvalp;
 
 	      /* While pointers to methods don't really point to a function */
 	    case TYPE_CODE_METHOD:
-	      error (_("Pointers to methods not supported with HP aCC"));
+	      error(_("Pointers to methods not supported with HP aCC"));
 
 	    default:
 	      break;		/* fall out and go to normal handling */
@@ -403,14 +405,14 @@ value_cast_1 (struct type *type, struct value *arg2)
          sees a cast as a simple reinterpretation of the pointer's
          bits.  */
       if (code2 == TYPE_CODE_PTR)
-        longest = extract_unsigned_integer (value_contents (arg2),
-                                            TYPE_LENGTH (type2));
+        longest = extract_unsigned_integer(value_contents(arg2),
+                                           TYPE_LENGTH(type2));
       else
-        longest = value_as_long (arg2);
-      return value_from_longest (type, convert_to_boolean ?
-				 (LONGEST) (longest ? 1 : 0) : longest);
+        longest = value_as_long(arg2);
+      return value_from_longest(type, convert_to_boolean ?
+                                (LONGEST)(longest ? 1L : 0L) : longest);
     }
-  else if (code1 == TYPE_CODE_PTR && (code2 == TYPE_CODE_INT  ||
+  else if (code1 == TYPE_CODE_PTR && (code2 == TYPE_CODE_INT ||
 				      code2 == TYPE_CODE_ENUM ||
 				      code2 == TYPE_CODE_RANGE))
     {
@@ -426,16 +428,16 @@ value_cast_1 (struct type *type, struct value *arg2)
 
       int addr_bit = TARGET_ADDR_BIT;
 
-      LONGEST longest = value_as_long (arg2);
-      if (addr_bit < sizeof (LONGEST) * HOST_CHAR_BIT)
+      LONGEST longest = value_as_long(arg2);
+      if (addr_bit < (int)(sizeof(LONGEST) * HOST_CHAR_BIT))
 	{
-	  if (longest >= ((LONGEST) 1 << addr_bit)
-	      || longest <= -((LONGEST) 1 << addr_bit))
-	    warning (_("value truncated"));
+	  if (longest >= ((LONGEST)1L << addr_bit)
+	      || longest <= -((LONGEST)1L << addr_bit))
+	    warning(_("value truncated"));
 	}
-      return value_from_longest (type, longest);
+      return value_from_longest(type, longest);
     }
-  else if (TYPE_LENGTH (type) == TYPE_LENGTH (type2))
+  else if (TYPE_LENGTH(type) == TYPE_LENGTH(type2))
     {
       if ((code1 == TYPE_CODE_PTR && code2 == TYPE_CODE_PTR)
       /* APPLE LOCAL - handle the case where we're casting up or
@@ -621,29 +623,40 @@ value_fetch_lazy (struct value *val)
   return 0;
 }
 
+/* We have a separate variable for making fromval volatile, so ignore these
+ * warnings about it: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wclobbered"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* Store the contents of FROMVAL into the location of TOVAL.
-   Return a new value with the location of TOVAL and contents of FROMVAL.  */
-
+ * Return a new value w/the location of TOVAL and contents of FROMVAL: */
 struct value *
-value_assign (struct value *toval, struct value *fromval)
+value_assign(struct value *toval, struct value *fromval)
 {
   struct type *type;
   struct value *val;
   struct frame_id old_frame;
   int old_frame_level;
 
-  if (!deprecated_value_modifiable (toval))
-    error (_("Left operand of assignment is not a modifiable lvalue."));
+  volatile const struct value *vol_fromval = (volatile const struct value *)fromval;
 
-  toval = coerce_ref (toval);
+  if (!deprecated_value_modifiable(toval))
+    error(_("Left operand of assignment is not a modifiable lvalue."));
 
-  type = value_type (toval);
-  if (VALUE_LVAL (toval) != lval_internalvar)
-    fromval = value_cast (type, fromval);
+  toval = coerce_ref(toval);
+
+  type = value_type(toval);
+  /* vol_fromval should work as a replacement for fromval here, at least
+   * as arguments to the functions: */
+  if (VALUE_LVAL(toval) != lval_internalvar)
+    fromval = value_cast(type, (struct value *)vol_fromval);
   else
-    fromval = coerce_array (fromval);
-  CHECK_TYPEDEF (type);
+    fromval = coerce_array((struct value *)vol_fromval);
+  CHECK_TYPEDEF(type);
 
   /* Since modifying a register can trash the frame chain, and modifying memory
      can trash the frame cache, we save the old frame and then restore the new
@@ -654,16 +667,16 @@ value_assign (struct value *toval, struct value *fromval)
      we can cause a call to error to occur when executing frame_find_by_id.
      If error is called, it will abort the current command or macro prematurely
      and cause things to fail.  */
-  old_frame_level = frame_relative_level (deprecated_selected_frame);
+  old_frame_level = frame_relative_level(deprecated_selected_frame);
   if (old_frame_level > 0)
-    old_frame = get_frame_id (deprecated_selected_frame);
+    old_frame = get_frame_id(deprecated_selected_frame);
 
-  switch (VALUE_LVAL (toval))
+  switch (VALUE_LVAL(toval))
     {
     case lval_internalvar:
-      set_internalvar (VALUE_INTERNALVAR (toval), fromval);
-      val = value_copy (VALUE_INTERNALVAR (toval)->value);
-      val = value_change_enclosing_type (val, value_enclosing_type (fromval));
+      set_internalvar(VALUE_INTERNALVAR(toval), fromval);
+      val = value_copy(VALUE_INTERNALVAR(toval)->value);
+      val = value_change_enclosing_type(val, value_enclosing_type (fromval));
       set_value_embedded_offset (val, value_embedded_offset (fromval));
       set_value_pointed_to_offset (val, value_pointed_to_offset (fromval));
       return val;
@@ -760,51 +773,51 @@ value_assign (struct value *toval, struct value *fromval)
 	    {
 	      int offset;
 	      for (reg_offset = value_reg, offset = 0;
-		   offset + register_size (current_gdbarch, reg_offset) <= value_offset (toval);
+		   (offset + register_size(current_gdbarch, reg_offset)) <= value_offset(toval);
 		   reg_offset++);
-	      byte_offset = value_offset (toval) - offset;
+	      byte_offset = (value_offset(toval) - offset);
 	    }
 
 	    /* Compute the number of register aligned values that need
 	       to be copied.  */
-	    if (value_bitsize (toval))
-	      amount_to_copy = byte_offset + 1;
+	    if (value_bitsize(toval))
+	      amount_to_copy = (byte_offset + 1);
 	    else
-	      amount_to_copy = byte_offset + TYPE_LENGTH (type);
+	      amount_to_copy = (byte_offset + TYPE_LENGTH(type));
 
-	    /* And a bounce buffer.  Be slightly over generous.  */
-	    buffer = alloca (amount_to_copy + MAX_REGISTER_SIZE);
+	    /* And a bounce buffer.  Be slightly over generous: */
+	    buffer = (gdb_byte*)alloca(amount_to_copy + MAX_REGISTER_SIZE);
 
-	    /* Copy it in.  */
+	    /* Copy it in: */
 	    for (regno = reg_offset, amount_copied = 0;
 		 amount_copied < amount_to_copy;
-		 amount_copied += register_size (current_gdbarch, regno), regno++)
-	      frame_register_read (frame, regno, buffer + amount_copied);
+		 amount_copied += register_size(current_gdbarch, regno), regno++)
+	      frame_register_read(frame, regno, (buffer + amount_copied));
 
-	    /* Modify what needs to be modified.  */
-	    if (value_bitsize (toval))
-	      modify_field (buffer + byte_offset,
-			    value_as_long (fromval),
-			    value_bitpos (toval), value_bitsize (toval));
+	    /* Modify what needs to be modified: */
+	    if (value_bitsize(toval))
+	      modify_field((buffer + byte_offset),
+			   value_as_long(fromval),
+			   value_bitpos(toval), value_bitsize(toval));
 	    else
-	      memcpy (buffer + byte_offset, value_contents (fromval),
-		      TYPE_LENGTH (type));
+	      memcpy((buffer + byte_offset), value_contents(fromval),
+		     TYPE_LENGTH(type));
 
 	    /* Copy it out.  */
 	    for (regno = reg_offset, amount_copied = 0;
 		 amount_copied < amount_to_copy;
-		 amount_copied += register_size (current_gdbarch, regno), regno++)
-	      put_frame_register (frame, regno, buffer + amount_copied);
+		 amount_copied += register_size(current_gdbarch, regno), regno++)
+	      put_frame_register(frame, regno, (buffer + amount_copied));
 
 	  }
 	if (deprecated_register_changed_hook)
-	  deprecated_register_changed_hook (-1);
-	observer_notify_target_changed (&current_target);
+	  deprecated_register_changed_hook(-1);
+	observer_notify_target_changed(&current_target);
 	break;
       }
 
     default:
-      error (_("Left operand of assignment is not an lvalue."));
+      error(_("Left operand of assignment is not an lvalue."));
     }
 
   /* Assigning to the stack pointer, frame pointer, and other
@@ -812,14 +825,14 @@ value_assign (struct value *toval, struct value *fromval)
      cause the frame cache to be out of date.  Assigning to memory
      also can.  We just do this on all assignments to registers or
      memory, for simplicity's sake; I doubt the slowdown matters.  */
-  switch (VALUE_LVAL (toval))
+  switch (VALUE_LVAL(toval))
     {
     case lval_memory:
     case lval_register:
       /* APPLE LOCAL literal register setting */
     case lval_register_literal:
 
-      reinit_frame_cache ();
+      reinit_frame_cache();
 
       /* Having destoroyed the frame cache, restore the selected frame.  */
 
@@ -883,25 +896,31 @@ value_assign (struct value *toval, struct value *fromval)
   return val;
 }
 
-/* Extend a value VAL to COUNT repetitions of its type.  */
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
+/* Extend a value VAL to COUNT repetitions of its type: */
 struct value *
-value_repeat (struct value *arg1, int count)
+value_repeat(struct value *arg1, int count)
 {
   struct value *val;
 
-  if (VALUE_LVAL (arg1) != lval_memory)
-    error (_("Only values in memory can be extended with '@'."));
+  if (VALUE_LVAL(arg1) != lval_memory)
+    error(_("Only values in memory can be extended with '@'."));
   if (count < 1)
-    error (_("Invalid number %d of repetitions."), count);
+    error(_("Invalid number %d of repetitions."), count);
 
-  val = allocate_repeat_value (value_enclosing_type (arg1), count);
+  val = allocate_repeat_value(value_enclosing_type(arg1), count);
 
-  read_memory (VALUE_ADDRESS (arg1) + value_offset (arg1),
-	       value_contents_all_raw (val),
-	       TYPE_LENGTH (value_enclosing_type (val)));
-  VALUE_LVAL (val) = lval_memory;
-  VALUE_ADDRESS (val) = VALUE_ADDRESS (arg1) + value_offset (arg1);
+  read_memory(VALUE_ADDRESS(arg1) + value_offset(arg1),
+	      value_contents_all_raw(val),
+	      TYPE_LENGTH(value_enclosing_type(val)));
+  VALUE_LVAL(val) = lval_memory;
+  VALUE_ADDRESS(val) = VALUE_ADDRESS(arg1) + value_offset(arg1);
 
   return val;
 }
@@ -1082,7 +1101,7 @@ value_ind (struct value *arg1)
    don't currently enforce any restriction on their types). */
 
 struct value *
-value_array (int lowbound, int highbound, struct value **elemvec)
+value_array(int lowbound, int highbound, struct value **elemvec)
 {
   int nelem;
   int idx;
@@ -1095,33 +1114,34 @@ value_array (int lowbound, int highbound, struct value **elemvec)
   /* Validate that the bounds are reasonable and that each of the elements
      have the same size. */
 
-  nelem = highbound - lowbound + 1;
+  nelem = (highbound - lowbound + 1);
   if (nelem <= 0)
     {
-      error (_("bad array bounds (%d, %d)"), lowbound, highbound);
+      error(_("bad array bounds (%d, %d)"), lowbound, highbound);
     }
-  typelength = TYPE_LENGTH (value_enclosing_type (elemvec[0]));
+  typelength = TYPE_LENGTH(value_enclosing_type(elemvec[0]));
   for (idx = 1; idx < nelem; idx++)
     {
-      if (TYPE_LENGTH (value_enclosing_type (elemvec[idx])) != typelength)
+      if (TYPE_LENGTH(value_enclosing_type(elemvec[idx])) != (long)typelength)
 	{
-	  error (_("array elements must all be the same size"));
+	  error(_("array elements must all be the same size"));
 	}
     }
 
-  rangetype = create_range_type ((struct type *) NULL, builtin_type_int,
-				 lowbound, highbound);
-  arraytype = create_array_type ((struct type *) NULL,
-			      value_enclosing_type (elemvec[0]), rangetype);
+  rangetype = create_range_type((struct type *)NULL, builtin_type_int,
+                                lowbound, highbound);
+  arraytype = create_array_type((struct type *)NULL,
+                                value_enclosing_type(elemvec[0]),
+                                rangetype);
 
   if (!current_language->c_style_arrays)
     {
-      val = allocate_value (arraytype);
+      val = allocate_value(arraytype);
       for (idx = 0; idx < nelem; idx++)
 	{
-	  memcpy (value_contents_all_raw (val) + (idx * typelength),
-		  value_contents_all (elemvec[idx]),
-		  typelength);
+	  memcpy((value_contents_all_raw(val) + (idx * typelength)),
+		 value_contents_all(elemvec[idx]),
+		 typelength);
 	}
       return val;
     }
@@ -1131,17 +1151,16 @@ value_array (int lowbound, int highbound, struct value **elemvec)
      local buffer in which to collect each value and then write all the
      bytes in one operation? */
 
-  addr = allocate_space_in_inferior (nelem * typelength);
+  addr = allocate_space_in_inferior(nelem * typelength);
   for (idx = 0; idx < nelem; idx++)
     {
-      write_memory (addr + (idx * typelength),
-		    value_contents_all (elemvec[idx]),
-		    typelength);
+      write_memory((addr + (idx * typelength)),
+		   value_contents_all(elemvec[idx]),
+		   typelength);
     }
 
-  /* Create the array type and set up an array value to be evaluated lazily. */
-
-  val = value_at_lazy (arraytype, addr);
+  /* Create the array type & set up an array value to be evaluated lazily: */
+  val = value_at_lazy(arraytype, addr);
   return (val);
 }
 
@@ -1171,21 +1190,22 @@ static struct string_in_child *string_table[STRING_HASH_TABLE_SIZE];
    The comments for value_string say the input to that might have
    embedded NULLS, so we need to handle that case as well.  h*/
 
-unsigned int
-inferior_string_hash (const char *string, int len)
+static unsigned int
+inferior_string_hash(const char *string, int len)
 {
-  unsigned int hash = 0;
+  unsigned int hash = 0U;
   int i;
   for (i = 0; i < len; i++)
-    hash = hash * 67 + string[i] - 113;
+    hash = ((hash * 67U) + string[i] - 113U);
   return hash;
 }
 
 static CORE_ADDR
-allocate_string_in_inferior (char *str, int len)
+allocate_string_in_inferior(char *str, int len)
 {
   struct string_in_child *ptr;
-  unsigned int hash = inferior_string_hash (str, len) % STRING_HASH_TABLE_SIZE;
+  unsigned int hash;
+  hash = (inferior_string_hash(str, len) % STRING_HASH_TABLE_SIZE);
 
   if (string_table[hash] != NULL)
     {
@@ -1195,20 +1215,20 @@ allocate_string_in_inferior (char *str, int len)
 	    {
 	      /* Note, use memcmp here because the strings
 		 in value_string may have embedded nulls.  */
-	      if (memcmp (str, ptr->str, len) == 0)
+	      if (memcmp(str, ptr->str, len) == 0)
 		  return ptr->addr;
 	    }
 	}
     }
 
-  ptr = (struct string_in_child *) xmalloc (sizeof (struct string_in_child));
+  ptr = (struct string_in_child *)xmalloc(sizeof(struct string_in_child));
   ptr->len = len;
 
-  ptr->str = xmalloc (len);
-  memcpy (ptr->str, str, len);
+  ptr->str = (char *)xmalloc(len);
+  memcpy(ptr->str, str, len);
 
-  ptr->addr = allocate_space_in_inferior (len);
-  write_memory (ptr->addr, (gdb_byte *) ptr->str, len);
+  ptr->addr = allocate_space_in_inferior(len);
+  write_memory(ptr->addr, (gdb_byte *)ptr->str, len);
 
   if (string_table[hash] == NULL)
     {
@@ -1224,11 +1244,10 @@ allocate_string_in_inferior (char *str, int len)
   return ptr->addr;
 }
 
-/* This clears out the string pool, and the strings we've allocated on
-   the gdb side.  */
-
+/* This clears out the string pool, and the strings we have allocated on
+ * the gdb side.  */
 void
-value_clear_inferior_string_pool ()
+value_clear_inferior_string_pool(void)
 {
   struct string_in_child *free_me, *ptr;
   int i;
@@ -1559,11 +1578,11 @@ search_struct_field (char *name, struct value *arg1, int offset,
  * conventions.  */
 
 void
-find_rt_vbase_offset (struct type *type, struct type *basetype,
-		      const gdb_byte *valaddr, int offset, int *boffset_p,
-		      int *skip_p)
+find_rt_vbase_offset(struct type *type, struct type *basetype,
+		     const gdb_byte *valaddr, int offset, int *boffset_p,
+		     int *skip_p)
 {
-  int boffset;			/* offset of virtual base */
+  off_t boffset;			/* offset of virtual base */
   int index;			/* displacement to use in virtual table */
   int skip;
 
@@ -1576,13 +1595,14 @@ find_rt_vbase_offset (struct type *type, struct type *basetype,
    * subobject share the primary virtual table.  */
 
   boffset = 0;
-  pbc = TYPE_PRIMARY_BASE (type);
+  pbc = TYPE_PRIMARY_BASE(type);
   if (pbc)
     {
-      find_rt_vbase_offset (pbc, basetype, valaddr, offset, &boffset, &skip);
+      find_rt_vbase_offset(pbc, basetype, valaddr, offset,
+                           (int *)&boffset, &skip);
       if (skip < 0)
 	{
-	  *boffset_p = boffset;
+	  *boffset_p = (int)boffset;
 	  *skip_p = -1;
 	  return;
 	}
@@ -1593,22 +1613,22 @@ find_rt_vbase_offset (struct type *type, struct type *basetype,
 
   /* Find the index of the virtual base according to HP/Taligent
      runtime spec. (Depth-first, left-to-right.)  */
-  index = virtual_base_index_skip_primaries (basetype, type);
+  index = virtual_base_index_skip_primaries(basetype, type);
 
   if (index < 0)
     {
-      *skip_p = skip + virtual_base_list_length_skip_primaries (type);
+      *skip_p = (skip + virtual_base_list_length_skip_primaries(type));
       *boffset_p = 0;
       return;
     }
 
   /* pai: FIXME -- 32x64 possible problem */
   /* First word (4 bytes) in object layout is the vtable pointer */
-  vtbl = *(CORE_ADDR *) (valaddr + offset);
+  vtbl = *(CORE_ADDR *)(valaddr + offset);
 
   /* Before the constructor is invoked, things are usually zero'd out. */
   if (vtbl == 0)
-    error (_("Couldn't find virtual table -- object may not be constructed yet."));
+    error(_("Couldn't find virtual table -- object may not be constructed yet."));
 
 
   /* Find virtual base's offset -- jump over entries for primary base
@@ -1621,10 +1641,11 @@ find_rt_vbase_offset (struct type *type, struct type *basetype,
      & use long type */
 
   /* epstein : FIXME -- added param for overlay section. May not be correct */
-  vp = value_at (builtin_type_int, vtbl + 4 * (-skip - index - HP_ACC_VBASE_START));
-  boffset = value_as_long (vp);
+  vp = value_at(builtin_type_int,
+                (vtbl + (4 * (-skip - index - HP_ACC_VBASE_START))));
+  boffset = value_as_long(vp);
   *skip_p = -1;
-  *boffset_p = boffset;
+  *boffset_p = (int)boffset;
   return;
 }
 
@@ -1677,16 +1698,16 @@ search_struct_method (char *name, struct value **arg1p,
 	  else
 	    while (j >= 0)
 	      {
-		if (!typecmp (TYPE_FN_FIELD_STATIC_P (f, j),
-			      TYPE_VARARGS (TYPE_FN_FIELD_TYPE (f, j)),
-			      TYPE_NFIELDS (TYPE_FN_FIELD_TYPE (f, j)),
-			      TYPE_FN_FIELD_ARGS (f, j), args))
+		if (!typecmp(TYPE_FN_FIELD_STATIC_P(f, j),
+			     TYPE_VARARGS(TYPE_FN_FIELD_TYPE(f, j)),
+			     TYPE_NFIELDS(TYPE_FN_FIELD_TYPE(f, j)),
+			     TYPE_FN_FIELD_ARGS(f, j), args))
 		  {
-		    if (TYPE_FN_FIELD_VIRTUAL_P (f, j))
-		      return value_virtual_fn_field (arg1p, f, j, type, offset);
-		    if (TYPE_FN_FIELD_STATIC_P (f, j) && static_memfuncp)
+		    if (TYPE_FN_FIELD_VIRTUAL_P(f, j))
+		      return value_virtual_fn_field(arg1p, f, j, type, offset);
+		    if (TYPE_FN_FIELD_STATIC_P(f, j) && static_memfuncp)
 		      *static_memfuncp = 1;
-		    v = value_fn_field (arg1p, f, j, type, offset);
+		    v = value_fn_field(arg1p, f, j, type, offset);
 		    if (v != NULL)
 		      return v;
 		  }
@@ -2070,17 +2091,18 @@ find_overload_match (struct type **arg_types, int nargs, char *name, int method,
 
       if (!obj_type_name || !*obj_type_name)
         {
-          struct type *obj_type = value_type (obj);
+          struct type *obj_type = value_type(obj);
+          struct type *target_type;
           if (!obj_type)
-            error ("Could not get the type of obj in find_overload_match.");
+            error("Could not get the type of obj in find_overload_match.");
 
-          struct type *target_type = TYPE_TARGET_TYPE (obj_type);
-	  if (TYPE_CODE (obj_type) == TYPE_CODE_PTR)
+          target_type = TYPE_TARGET_TYPE(obj_type);
+	  if (TYPE_CODE(obj_type) == TYPE_CODE_PTR)
             {
               if (!target_type)
-                error ("Could not get target type of obj in find_overload_match.");
+                error("Could not get target type of obj in find_overload_match.");
 
-              obj_type_name = TYPE_NAME (target_type);
+              obj_type_name = TYPE_NAME(target_type);
             }
 
           if (!obj_type_name || !*obj_type_name)
@@ -2293,19 +2315,19 @@ find_oload_champ_namespace_loop (struct type **arg_types, int nargs,
      because this overload mechanism only gets called if there's a
      function symbol to start off with.)  */
 
-  old_cleanups = make_cleanup (xfree, *oload_syms);
-  old_cleanups = make_cleanup (xfree, *oload_champ_bv);
-  new_namespace = alloca (namespace_len + 1);
-  strncpy (new_namespace, qualified_name, namespace_len);
+  old_cleanups = make_cleanup(xfree, *oload_syms);
+  old_cleanups = make_cleanup(xfree, *oload_champ_bv);
+  new_namespace = (char *)alloca(namespace_len + 1UL);
+  strncpy(new_namespace, qualified_name, namespace_len);
   new_namespace[namespace_len] = '\0';
-  new_oload_syms = make_symbol_overload_list (func_name,
-					      new_namespace);
+  new_oload_syms = make_symbol_overload_list(func_name,
+					     new_namespace);
   while (new_oload_syms[num_fns])
     ++num_fns;
 
-  new_oload_champ = find_oload_champ (arg_types, nargs, 0, num_fns,
-				      NULL, new_oload_syms,
-				      &new_oload_champ_bv);
+  new_oload_champ = find_oload_champ(arg_types, nargs, 0, num_fns,
+				     NULL, new_oload_syms,
+				     &new_oload_champ_bv);
 
   /* Case 1: We found a good match.  Free earlier matches (if any),
      and return it.  Case 2: We didn't find a good match, but we're
@@ -2374,25 +2396,25 @@ find_oload_champ (struct type **arg_types, int nargs, int method,
 
       if (method)
 	{
-	  nparms = TYPE_NFIELDS (TYPE_FN_FIELD_TYPE (fns_ptr, ix));
+	  nparms = TYPE_NFIELDS(TYPE_FN_FIELD_TYPE(fns_ptr, ix));
 	}
       else
 	{
-	  /* If it's not a method, this is the proper place */
-	  nparms=TYPE_NFIELDS(SYMBOL_TYPE(oload_syms[ix]));
+	  /* If it is not a method, then this is the proper place: */
+	  nparms = TYPE_NFIELDS(SYMBOL_TYPE(oload_syms[ix]));
 	}
 
-      /* Prepare array of parameter types */
-      parm_types = (struct type **) xmalloc (nparms * (sizeof (struct type *)));
+      /* Prepare array of parameter types: */
+      parm_types = (struct type **)xmalloc(nparms * (sizeof(struct type *)));
       for (jj = 0; jj < nparms; jj++)
 	parm_types[jj] = (method
-			  ? (TYPE_FN_FIELD_ARGS (fns_ptr, ix)[jj].type)
-			  : TYPE_FIELD_TYPE (SYMBOL_TYPE (oload_syms[ix]), jj));
+			  ? (TYPE_FN_FIELD_ARGS(fns_ptr, ix)[jj].type)
+			  : TYPE_FIELD_TYPE(SYMBOL_TYPE(oload_syms[ix]), jj));
 
       /* Compare parameter types to supplied argument types.  Skip THIS for
          static methods.  */
-      bv = rank_function (parm_types, nparms, arg_types + static_offset,
-			  nargs - static_offset);
+      bv = rank_function(parm_types, nparms, (arg_types + static_offset),
+                         (nargs - static_offset));
 
       if (!*oload_champ_bv)
 	{
@@ -2493,56 +2515,70 @@ destructor_name_p (const char *name, const struct type *type)
   return 0;
 }
 
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Waddress"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* Helper function for check_field: Given TYPE, a structure/union,
    return 1 if the component named NAME from the ultimate
    target structure/union is defined, otherwise, return 0. */
-
 static int
-check_field_in (struct type *type, const char *name)
+check_field_in(struct type *type, const char *name)
 {
   int i;
 
-  for (i = TYPE_NFIELDS (type) - 1; i >= TYPE_N_BASECLASSES (type); i--)
+  for (i = (TYPE_NFIELDS(type) - 1); i >= TYPE_N_BASECLASSES(type); i--)
     {
-      char *t_field_name = TYPE_FIELD_NAME (type, i);
-      if (t_field_name && (strcmp_iw (t_field_name, name) == 0))
+      char *t_field_name = TYPE_FIELD_NAME(type, i);
+      if (t_field_name && (strcmp_iw(t_field_name, name) == 0))
 	return 1;
     }
 
   /* C++: If it was not found as a data field, then try to
      return it as a pointer to a method.  */
 
-  /* Destructors are a special case.  */
-  if (destructor_name_p (name, type))
+  /* Destructors are a special case: */
+  if (destructor_name_p(name, type))
     {
       int m_index, f_index;
 
-      return get_destructor_fn_field (type, &m_index, &f_index);
+      return get_destructor_fn_field(type, &m_index, &f_index);
     }
 
-  for (i = TYPE_NFN_FIELDS (type) - 1; i >= 0; --i)
+  for (i = (TYPE_NFN_FIELDS(type) - 1); i >= 0; --i)
     {
-      if (strcmp_iw (TYPE_FN_FIELDLIST_NAME (type, i), name) == 0)
+      if (strcmp_iw(TYPE_FN_FIELDLIST_NAME(type, i), name) == 0)
 	return 1;
     }
 
-  for (i = TYPE_N_BASECLASSES (type) - 1; i >= 0; i--)
+  for (i = (TYPE_N_BASECLASSES(type) - 1); i >= 0; i--)
     {
       /* APPLE LOCAL: see the comment about opaque types in
 	 check_typedef.  If the baseclass is opaque, then we
 	 need to call check_typedef to resolve it to the real
 	 type.  */
-      struct type *baseclass = TYPE_BASECLASS (type, i);
-      if (TYPE_STUB (baseclass) || TYPE_IS_OPAQUE (baseclass))
-	CHECK_TYPEDEF (baseclass);
+      struct type *baseclass = TYPE_BASECLASS(type, i);
+      if (TYPE_STUB(baseclass) || TYPE_IS_OPAQUE(baseclass))
+	CHECK_TYPEDEF(baseclass);
 
-      if (check_field_in (baseclass, name))
+      if (check_field_in(baseclass, name))
 	return 1;
       /* END APPLE LOCAL */
     }
 
   return 0;
 }
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 
 /* C++: Given ARG1, a value of type (pointer to a)* structure/union,
@@ -3039,26 +3075,26 @@ value_slice (struct value *array, int lowbound, int length)
     }
   else
     {
-      struct type *element_type = TYPE_TARGET_TYPE (array_type);
-      LONGEST offset
-	= (lowbound - lowerbound) * TYPE_LENGTH (check_typedef (element_type));
-      slice_type = create_array_type ((struct type *) NULL, element_type,
-				      slice_range_type);
-      TYPE_CODE (slice_type) = TYPE_CODE (array_type);
-      slice = allocate_value (slice_type);
-      if (value_lazy (array))
-	set_value_lazy (slice, 1);
+      struct type *element_type = TYPE_TARGET_TYPE(array_type);
+      LONGEST offset =
+        (lowbound - lowerbound) * TYPE_LENGTH(check_typedef(element_type));
+      slice_type = create_array_type((struct type *)NULL, element_type,
+				     slice_range_type);
+      TYPE_CODE(slice_type) = TYPE_CODE(array_type);
+      slice = allocate_value(slice_type);
+      if (value_lazy(array))
+	set_value_lazy(slice, 1);
       else
-	memcpy (value_contents_writeable (slice),
-		value_contents (array) + offset,
-		TYPE_LENGTH (slice_type));
-      if (VALUE_LVAL (array) == lval_internalvar)
-	VALUE_LVAL (slice) = lval_internalvar_component;
+	memcpy(value_contents_writeable(slice),
+               (value_contents(array) + offset),
+               TYPE_LENGTH(slice_type));
+      if (VALUE_LVAL(array) == lval_internalvar)
+	VALUE_LVAL(slice) = lval_internalvar_component;
       else
-	VALUE_LVAL (slice) = VALUE_LVAL (array);
-      VALUE_ADDRESS (slice) = VALUE_ADDRESS (array);
-      VALUE_FRAME_ID (slice) = VALUE_FRAME_ID (array);
-      set_value_offset (slice, value_offset (array) + offset);
+	VALUE_LVAL(slice) = VALUE_LVAL(array);
+      VALUE_ADDRESS(slice) = VALUE_ADDRESS(array);
+      VALUE_FRAME_ID(slice) = VALUE_FRAME_ID(array);
+      set_value_offset(slice, (int)(value_offset(array) + offset));
     }
   return slice;
 }
@@ -3128,55 +3164,59 @@ struct thread_is_safe_args
 };
 
 static int
-do_check_is_thread_unsafe (void *argptr)
+do_check_is_thread_unsafe(void *argptr)
 {
-  struct thread_is_safe_args *args = (struct thread_is_safe_args *) argptr;
+  struct thread_is_safe_args *args = (struct thread_is_safe_args *)argptr;
   struct frame_info *fi;
   struct thread_info *tp = args->tp;
 
   if (tp != NULL)
-    switch_to_thread (tp->ptid);
+    switch_to_thread(tp->ptid);
 
   /* Look up the stack to make sure none of the malloc
      calls that might hold the malloc lock are present.
      We aren't going to crawl the whole stack, but just look
      up a few levels.  */
 
-  fi = get_current_frame ();
+  fi = get_current_frame();
   if (!fi)
     return -1;
 
-  while (frame_relative_level (fi) < args->stack_depth)
+  while (frame_relative_level(fi) < args->stack_depth)
     {
       CORE_ADDR pc;
       char *sym_name;
 
-      pc = get_frame_pc (fi);
+      pc = get_frame_pc(fi);
 
-
-      if (find_pc_partial_function (pc, &sym_name, NULL, NULL))
+      if (find_pc_partial_function(pc, &sym_name, NULL, NULL))
         {
           int i;
-	  int len;
+	  size_t len;
 
 	  if (sym_name == NULL)
 	    continue;
 
-	  len = strlen (sym_name);
+	  len = strlen(sym_name);
+
+          if (len > 0UL) {
+            ; /* ??? */
+          }
+
           for (i = 0; i < args->npatterns ; i++)
             {
-              if (regexec (&args->unsafe_functions[i], sym_name, 0, 0, 0) == 0)
+              if (regexec(&args->unsafe_functions[i], sym_name, 0, 0, 0) == 0)
                 {
 		  struct cleanup *list_cleanup;
-		  list_cleanup = make_cleanup_ui_out_tuple_begin_end (uiout, "bad_thread");
-                  ui_out_text (uiout, "Unsafe to call functions on thread ");
-		  ui_out_field_int (uiout, "thread", pid_to_thread_id (inferior_ptid));
-		  ui_out_text (uiout, ": ");
-                  ui_out_field_fmt (uiout, "problem", "function: %s on stack",
-                                    sym_name);
-		  ui_out_text (uiout, "\n");
+		  list_cleanup = make_cleanup_ui_out_tuple_begin_end(uiout, "bad_thread");
+                  ui_out_text(uiout, "Unsafe to call functions on thread ");
+		  ui_out_field_int(uiout, "thread", pid_to_thread_id(inferior_ptid));
+		  ui_out_text(uiout, ": ");
+                  ui_out_field_fmt(uiout, "problem", "function: %s on stack",
+                                   sym_name);
+		  ui_out_text(uiout, "\n");
                   (args->unsafe_p)++;
-		  do_cleanups (list_cleanup);
+		  do_cleanups(list_cleanup);
 		  goto found_it;
                 }
             }
@@ -3200,55 +3240,55 @@ do_check_is_thread_unsafe (void *argptr)
    first 5 frames of the stack for the thread pointed to by TP.  */
 
 static int
-safe_check_is_thread_unsafe (struct thread_info *tp, void *data)
+safe_check_is_thread_unsafe(struct thread_info *tp, void *data)
 {
-  struct thread_is_safe_args *args = (struct thread_is_safe_args *) data;
-  args->tp = tp;
+  struct thread_is_safe_args *args = (struct thread_is_safe_args *)data;
   struct cleanup *old_chain;
+  args->tp = tp;
 
-  old_chain = make_cleanup_restore_current_thread (inferior_ptid, 0);
+  old_chain = make_cleanup_restore_current_thread(inferior_ptid, 0);
 
-  catch_errors ((catch_errors_ftype *) do_check_is_thread_unsafe, args,
-		"", RETURN_MASK_ERROR);
+  catch_errors((catch_errors_ftype *)do_check_is_thread_unsafe, args,
+               "", RETURN_MASK_ERROR);
 
-  do_cleanups (old_chain);
+  do_cleanups(old_chain);
 
   return 0;
 }
 
-/* Check whether it is safe to call functions.  If scheduler locking
-   is turned off, we just check whether it is safe to call on the current
-   thread, but if it is turned on we check for all threads.  */
+#ifdef NM_NEXTSTEP
+extern void macosx_prune_threads(thread_array_t, unsigned int);
+#endif /* NM_NEXTSTEP */
 
+/* Check whether it is safe to call functions.  If scheduler locking
+ * is turned off, we just check whether it is safe to call on the current
+ * thread, but if it is turned on we check for all threads.  */
 int
-check_safe_call (regex_t unsafe_functions[],
-		 int npatterns,
-		 int stack_depth,
-		 enum check_which_threads which_threads)
+check_safe_call(regex_t unsafe_functions[], int npatterns, int stack_depth,
+                enum check_which_threads which_threads)
 {
   struct thread_is_safe_args args;
-  struct frame_id old_frame_id = get_frame_id (deprecated_safe_get_selected_frame ());
+  struct frame_id old_frame_id = get_frame_id(deprecated_safe_get_selected_frame());
 
   args.unsafe_p = 0;
   args.unsafe_functions = unsafe_functions;
   args.npatterns = npatterns;
   args.stack_depth = stack_depth;
 
-  if (which_threads == CHECK_CURRENT_THREAD
-      || (which_threads == CHECK_SCHEDULER_VALUE && !scheduler_lock_on_p ()))
-    safe_check_is_thread_unsafe (NULL, &args);
+  if ((which_threads == CHECK_CURRENT_THREAD)
+      || ((which_threads == CHECK_SCHEDULER_VALUE) && !scheduler_lock_on_p()))
+    safe_check_is_thread_unsafe(NULL, &args);
   else
     {
       struct cleanup *old_cleanups;
-      old_cleanups = make_cleanup_restore_current_thread (inferior_ptid, 0);
+      old_cleanups = make_cleanup_restore_current_thread(inferior_ptid, 0);
 
-      /* Remove all the dead threads from the gdb thread list
-	 before iterating over them.  This prevents unnecessary warnings.  */
+      /* Remove all the dead threads from the gdb thread list before
+       * iterating over them.  This prevents unnecessary warnings: */
 #ifdef NM_NEXTSTEP
-      extern void macosx_prune_threads (thread_array_t, unsigned int);
-      macosx_prune_threads (NULL, 0);
+      macosx_prune_threads(NULL, 0);
 #else
-      prune_threads ();
+      prune_threads();
 #endif /* NM_NEXTSTEP */
       iterate_over_threads (safe_check_is_thread_unsafe, &args);
       do_cleanups (old_cleanups);

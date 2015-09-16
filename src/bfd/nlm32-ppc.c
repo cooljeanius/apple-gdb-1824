@@ -532,22 +532,23 @@ static reloc_howto_type nlm_powerpc_howto =
 	 0xffffffff,		/* Dest mask.  */
 	 FALSE);		/* PC rel_offset.  */
 
-/* Read a PowerPC NLM reloc.  */
-
+/* Read a PowerPC NLM reloc: */
 static bfd_boolean
-nlm_powerpc_read_reloc (bfd *abfd,
-			nlmNAME (symbol_type) *sym,
-			asection **secp,
-			arelent *rel)
+nlm_powerpc_read_reloc(bfd *abfd, nlmNAME(symbol_type) *sym,
+                       asection **secp, arelent *rel)
 {
+#ifdef NDEBUG /* i.e. Release */
+  bfd_byte temp[8];
+#else
   bfd_byte temp[4];
+#endif /* NDEBUG */
   bfd_vma val;
   const char *name;
 
-  if (bfd_bread (temp, (bfd_size_type) sizeof (temp), abfd) != sizeof (temp))
+  if (bfd_bread(temp, (bfd_size_type)sizeof(temp), abfd) != sizeof(temp))
     return FALSE;
 
-  val = bfd_get_32 (abfd, temp);
+  val = bfd_get_32(abfd, temp);
 
   /* The value is a word offset into either the code or data segment.
      This is the location which needs to be adjusted.
@@ -571,7 +572,7 @@ nlm_powerpc_read_reloc (bfd *abfd,
       name = NLM_CODE_NAME;
       val &=~ NLM_HIBIT;
     }
-  *secp = bfd_get_section_by_name (abfd, name);
+  *secp = bfd_get_section_by_name(abfd, name);
 
   if (sym == NULL)
     {
@@ -582,12 +583,12 @@ nlm_powerpc_read_reloc (bfd *abfd,
 	  name = NLM_CODE_NAME;
 	  val &=~ (NLM_HIBIT >> 1);
 	}
-      rel->sym_ptr_ptr = bfd_get_section_by_name (abfd, name)->symbol_ptr_ptr;
+      rel->sym_ptr_ptr = bfd_get_section_by_name(abfd, name)->symbol_ptr_ptr;
     }
 
-  rel->howto   = & nlm_powerpc_howto;
-  rel->address = val << 2;
-  rel->addend  = 0;
+  rel->howto = &nlm_powerpc_howto;
+  rel->address = (val << 2);
+  rel->addend = 0;
 
   return TRUE;
 }
@@ -606,63 +607,65 @@ nlm_powerpc_mangle_relocs (bfd *abfd ATTRIBUTE_UNUSED,
   return TRUE;
 }
 
-/* Read a PowerPC NLM import record */
-
+/* Read a PowerPC NLM import record: */
 static bfd_boolean
-nlm_powerpc_read_import (bfd * abfd, nlmNAME (symbol_type) * sym)
+nlm_powerpc_read_import(bfd *abfd, nlmNAME(symbol_type) * sym)
 {
-  struct nlm_relent *nlm_relocs;	/* Relocation records for symbol.  */
+  struct nlm_relent *nlm_relocs;    /* Relocation records for symbol.  */
   bfd_size_type rcount;			/* Number of relocs.  */
   bfd_byte temp[NLM_TARGET_LONG_SIZE];	/* Temporary 32-bit value.  */
   unsigned char symlength;		/* Length of symbol name.  */
   char *name;
 
-  if (bfd_bread (& symlength, (bfd_size_type) sizeof (symlength), abfd)
-      != sizeof (symlength))
+  if (bfd_bread(& symlength, (bfd_size_type)sizeof(symlength), abfd)
+      != sizeof(symlength))
     return FALSE;
-  sym -> symbol.the_bfd = abfd;
-  name = bfd_alloc (abfd, (bfd_size_type) symlength + 1);
+  sym->symbol.the_bfd = abfd;
+  name = (char *)bfd_alloc(abfd, (bfd_size_type)symlength + 1);
   if (name == NULL)
     return FALSE;
-  if (bfd_bread (name, (bfd_size_type) symlength, abfd) != symlength)
+  if (bfd_bread(name, (bfd_size_type)symlength, abfd) != symlength)
     return FALSE;
   name[symlength] = '\0';
-  sym -> symbol.name = name;
-  sym -> symbol.flags = 0;
-  sym -> symbol.value = 0;
-  sym -> symbol.section = bfd_und_section_ptr;
-  if (bfd_bread (temp, (bfd_size_type) sizeof (temp), abfd)
-      != sizeof (temp))
+  sym->symbol.name = name;
+  sym->symbol.flags = 0;
+  sym->symbol.value = 0;
+  sym->symbol.section = bfd_und_section_ptr;
+  if (bfd_bread(temp, (bfd_size_type)sizeof(temp), abfd)
+      != sizeof(temp))
     return FALSE;
-  rcount = H_GET_32 (abfd, temp);
-  nlm_relocs = bfd_alloc (abfd, rcount * sizeof (struct nlm_relent));
+  rcount = H_GET_32(abfd, temp);
+  nlm_relocs = (struct nlm_relent *)bfd_alloc(abfd, rcount * sizeof(struct nlm_relent));
   if (nlm_relocs == NULL)
     return FALSE;
-  sym -> relocs = nlm_relocs;
-  sym -> rcnt = 0;
-  while (sym -> rcnt < rcount)
+  sym->relocs = nlm_relocs;
+  sym->rcnt = 0;
+  while (sym->rcnt < rcount)
     {
       asection *section;
 
-      if (! nlm_powerpc_read_reloc (abfd, sym, &section, &nlm_relocs -> reloc))
+      if (! nlm_powerpc_read_reloc(abfd, sym, &section, &nlm_relocs->reloc))
 	return FALSE;
-      nlm_relocs -> section = section;
+      nlm_relocs->section = section;
       nlm_relocs++;
-      sym -> rcnt++;
+      sym->rcnt++;
     }
   return TRUE;
 }
 
 #ifndef OLDFORMAT
 
-/* Write a PowerPC NLM reloc.  */
-
+/* Write a PowerPC NLM reloc: */
 static bfd_boolean
-nlm_powerpc_write_import (bfd * abfd, asection * sec, arelent * rel)
+nlm_powerpc_write_import(bfd *abfd, asection *sec, arelent *rel)
 {
   asymbol *sym;
   bfd_vma val;
+#ifdef NDEBUG /* i.e. Release */
+  bfd_byte temp[8];
+#else
   bfd_byte temp[4];
+#endif /* NDEBUG */
 
   /* PowerPC NetWare only supports one kind of reloc.  */
   if (rel->addend != 0
@@ -840,17 +843,15 @@ nlm_powerpc_write_import (bfd * abfd, asection * sec, arelent * rel)
    necessary, and the index never gets reset.  */
 
 static bfd_boolean
-nlm_powerpc_write_external (bfd *abfd,
-			    bfd_size_type count,
-			    asymbol *sym,
-			    struct reloc_and_sec *relocs)
+nlm_powerpc_write_external(bfd *abfd, bfd_size_type count, asymbol *sym,
+			   struct reloc_and_sec *relocs)
 {
   unsigned int i;
   bfd_byte len;
   unsigned char temp[NLM_TARGET_LONG_SIZE];
 #ifdef OLDFORMAT
   static int indx;
-#endif
+#endif /* OLDFORMAT */
 
   len = strlen (sym->name);
   if ((bfd_bwrite (&len, (bfd_size_type) sizeof (bfd_byte), abfd)

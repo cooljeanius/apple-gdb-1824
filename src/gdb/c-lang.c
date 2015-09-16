@@ -1,4 +1,4 @@
-/* C language support routines for GDB, the GNU debugger.
+/* c-lang.c: C language support routines for GDB, the GNU debugger.
 
    Copyright 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2002,
    2003, 2004, 2005 Free Software Foundation, Inc.
@@ -35,8 +35,8 @@
 #include "demangle.h"
 #include "cp-support.h"
 
-extern void _initialize_c_language (void);
-static void c_emit_char (int c, struct ui_file * stream, int quoter);
+extern void _initialize_c_language(void);
+static void c_emit_char(int c, struct ui_file * stream, int quoter);
 
 /* Print the character C on STREAM as part of the contents of a literal
    string whose delimiter is QUOTER.  Note that that format for printing
@@ -86,28 +86,42 @@ c_printchar (int c, struct ui_file *stream)
    printing LENGTH characters, or if FORCE_ELLIPSES.  */
 
 void
-c_printstr (struct ui_file *stream, const gdb_byte *string,
-	    unsigned int length, int width, int force_ellipses)
+c_printstr(struct ui_file *stream, const gdb_byte *string,
+           unsigned int length, int width, int force_ellipses)
 {
   unsigned int i;
-  unsigned int things_printed = 0;
+  unsigned int things_printed = 0U;
   int in_quotes = 0;
   int need_comma = 0;
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic warning "-Wtraditional"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
   /* If the string was not truncated due to `set print elements', and
-     the last byte of it is a null, we don't print that, in traditional C
-     style.  */
+   * the last byte of it is a null, we do NOT print that, in traditional C
+   * style: */
   if (!force_ellipses
-      && length > 0
-      && (extract_unsigned_integer (string + (length - 1) * width, width)
+      && (length > 0)
+      && (extract_unsigned_integer(string + (length - 1) * width, width)
           == '\0'))
     length--;
 
   if (length == 0)
     {
-      fputs_filtered ("\"\"", stream);
+      fputs_filtered("\"\"", stream);
       return;
     }
+
+  /* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
   for (i = 0; i < length && things_printed < print_max; ++i)
     {
@@ -122,17 +136,18 @@ c_printstr (struct ui_file *stream, const gdb_byte *string,
 
       if (need_comma)
 	{
-	  fputs_filtered (", ", stream);
+	  fputs_filtered(", ", stream);
 	  need_comma = 0;
 	}
 
-      current_char = extract_unsigned_integer (string + i * width, width);
+      current_char =
+        (unsigned long)extract_unsigned_integer(string + i * width, width);
 
       rep1 = i + 1;
       reps = 1;
-      while (rep1 < length
-	     && extract_unsigned_integer (string + rep1 * width, width)
-	     == current_char)
+      while ((rep1 < length)
+	     && (extract_unsigned_integer(string + rep1 * width, width)
+                 == current_char))
 	{
 	  ++rep1;
 	  ++reps;
@@ -203,14 +218,14 @@ c_printstr (struct ui_file *stream, const gdb_byte *string,
    in output depending upon what the compiler and debugging format
    support.  We will probably have to re-examine the issue when gdb
    starts taking its fundamental type information directly from the
-   debugging information supplied by the compiler.  fnf@cygnus.com */
+   debugging information supplied by the compiler.  <fnf@cygnus.com> */
 
 struct type *
-c_create_fundamental_type (struct objfile *objfile, int typeid)
+c_create_fundamental_type(struct objfile *objfile, int ctypeid)
 {
   struct type *type = NULL;
 
-  switch (typeid)
+  switch (ctypeid)
     {
     default:
       /* FIXME:  For now, if we are asked to produce a type not in this
@@ -220,7 +235,7 @@ c_create_fundamental_type (struct objfile *objfile, int typeid)
       type = init_type (TYPE_CODE_INT,
 			TARGET_INT_BIT / TARGET_CHAR_BIT,
 			0, "<?type?>", objfile);
-      warning (_("internal error: no C/C++ fundamental type %d"), typeid);
+      warning (_("internal error: no C/C++ fundamental type %d"), ctypeid);
       break;
     case FT_VOID:
       type = init_type (TYPE_CODE_VOID,
@@ -403,7 +418,7 @@ scanning_macro_expansion (void)
 }
 
 
-void 
+void
 finished_macro_expansion (void)
 {
   /* There'd better be something to pop back to, and we better have
@@ -462,7 +477,7 @@ c_preprocess_and_parse (void)
   else
     {
       expression_macro_lookup_func = null_macro_lookup;
-      expression_macro_lookup_baton = 0;      
+      expression_macro_lookup_baton = 0;
     }
 
   gdb_assert (! macro_original_text);
@@ -511,7 +526,7 @@ const struct op_print c_op_print_tab[] =
   {"sizeof ", UNOP_SIZEOF, PREC_PREFIX, 0},
   {"++", UNOP_PREINCREMENT, PREC_PREFIX, 0},
   {"--", UNOP_PREDECREMENT, PREC_PREFIX, 0},
-  {NULL, 0, 0, 0}
+  {NULL, (enum exp_opcode)0, (enum precedence)0, 0}
 };
 
 enum c_primitive_types {
@@ -732,10 +747,12 @@ const struct language_defn minimal_language_defn =
 };
 
 void
-_initialize_c_language (void)
+_initialize_c_language(void)
 {
-  add_language (&c_language_defn);
-  add_language (&cplus_language_defn);
-  add_language (&asm_language_defn);
-  add_language (&minimal_language_defn);
+  add_language(&c_language_defn);
+  add_language(&cplus_language_defn);
+  add_language(&asm_language_defn);
+  add_language(&minimal_language_defn);
 }
+
+/* EOF */

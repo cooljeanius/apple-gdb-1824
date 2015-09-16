@@ -1,4 +1,4 @@
-/* Support for printing Pascal types for GDB, the GNU debugger.
+/* p-typeprint.c: Support printing Pascal types in GDB, the GNU debugger.
    Copyright 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -16,9 +16,9 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   Foundation, 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA */
 
-/* This file is derived from p-typeprint.c */
+/* This file is derived from p-typeprint.c (i.e. itself?) */
 
 #include "defs.h"
 #include "gdb_obstack.h"
@@ -291,7 +291,7 @@ pascal_type_print_varspec_prefix (struct type *type, struct ui_file *stream,
     case TYPE_CODE_TYPEDEF:
     case TYPE_CODE_TEMPLATE:
       /* These types need no prefix.  They are listed here so that
-         gcc -Wall will reveal any types that haven't been handled.  */
+         gcc -Wall will reveal any types that have NOT been handled.  */
       break;
     default:
       error (_("type not handled in pascal_type_print_varspec_prefix()"));

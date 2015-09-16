@@ -1,4 +1,5 @@
-/* Target machine description for VxWorks MIPS's, for GDB, the GNU debugger.
+/* tm-vxmips.h
+   Target machine description for VxWorks MIPS's, for GDB, the GNU debugger.
    Copyright 1996, 1999 Free Software Foundation, Inc.
    Contributed by Cygnus Support.
 
@@ -27,3 +28,5 @@
 /* Number of registers in a ptrace_getregs call. */
 
 #define VX_NUM_REGS (NUM_REGS)
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Target machine description for SGI Iris under Irix 6.x, for GDB.
+/* tm-irix6.h
+   Target machine description for SGI Iris under Irix 6.x, for GDB.
 
    Copyright 2001, 2002 Free Software Foundation, Inc.
 
@@ -111,3 +112,5 @@
 
 /* Undefine those methods which have been multiarched.  */
 #undef REGISTER_VIRTUAL_TYPE
+
+/* EOF */

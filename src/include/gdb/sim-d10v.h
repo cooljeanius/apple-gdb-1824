@@ -1,6 +1,8 @@
-/* This file defines the interface between the d10v simulator and gdb.
+/* sim-d10v.h
+ * This file defines the interface between the d10v simulator and gdb.
+ */
 
-   Copyright 1999, 2002 Free Software Foundation, Inc.
+/* Copyright 1999, 2002 Free Software Foundation, Inc.
 
 This file is part of GDB.
 
@@ -23,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 #ifdef __cplusplus
 extern "C" { // }
-#endif
+#endif /* __cplusplus */
 
 /* GDB interprets addresses as:
 
@@ -40,7 +42,7 @@ extern "C" { // }
    0x02xxxxxx: Physical data memory segment        (On-chip data memory)
 
    The following translate a virtual DMAP/IMAP offset into a physical
-   memory segment assigning the translated address to PHYS.  Since a
+   memory segment assigning the translated address to PHYS. Since a
    memory access may cross a page boundrary the number of bytes for
    which the translation is applicable (or 0 for an invalid virtual
    offset) is returned. */
@@ -125,7 +127,7 @@ enum sim_d10v_regs
   SIM_D10V_DMAP3_REGNUM,
   SIM_D10V_TS2_DMAP_REGNUM
 };
-  
+
 enum
 {
   SIM_D10V_NR_R_REGS = 16,
@@ -137,6 +139,8 @@ enum
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !SIM_D10V_H */
+
+/* EOF */

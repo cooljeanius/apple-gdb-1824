@@ -1,4 +1,4 @@
-/* Implement the xstrndup function.
+/* xstrndup.c: Implement the xstrndup function.
    Copyright (C) 2005 Free Software Foundation, Inc.
    Written by Kaveh R. Ghazi <ghazi@caip.rutgers.edu>.
 
@@ -31,30 +31,33 @@ always NUL terminated.
 */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include <sys/types.h>
 #ifdef HAVE_STRING_H
-#include <string.h>
+# include <string.h>
 #else
 # ifdef HAVE_STRINGS_H
 #  include <strings.h>
-# endif
-#endif
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H */
 #include "ansidecl.h"
 #include "libiberty.h"
 
 char *
-xstrndup (const char *s, size_t n)
+xstrndup(const char *s, size_t n)
 {
   char *result;
-  size_t len = strlen (s);
+  size_t len = strlen(s);
 
-  if (n < len)
+  if (n < len) {
     len = n;
+  }
 
-  result = XNEWVEC (char, len + 1);
+  result = XNEWVEC(char, len + 1);
 
   result[len] = '\0';
-  return (char *) memcpy (result, s, len);
+  return (char *)memcpy(result, s, len);
 }
+
+/* EOF */

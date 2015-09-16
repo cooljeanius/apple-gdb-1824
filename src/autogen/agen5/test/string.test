@@ -1,0 +1,247 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# string.test --- test string formation rules
+#
+# Time-stamp:        "2011-11-24 09:12:38 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+# ----------------------------------------------------------------------
+
+. ./defs
+
+#  There are five different things we need to examine:
+#
+#  1.  That the autogen internal string.
+#  2.  What we expect that string to contain.
+#  3.  What is generated as the "C" representation
+#  4.  What is generated for raw shell strings
+#  5.  What is generated for "cooked" shell strings
+#
+#  We will compare all these things by generating a C program that
+#  will test the various strings and a shell script to invoke the
+#  program with the two shell string formats for arguments.
+#  The program will also write out the expected string value.
+#  That value will be compared with what autogen wrote out
+#  as its internal value.
+#
+#  All this stuff must be generated carefully.
+#  Specifically, the '${testname}' expressions need to
+#  be expanded in certain parts of the output file.
+#  In those areas, the eof marker must *not* be quoted.
+#  In other places (e.g., where defining the strings),
+#  rather than hassle with understanding shell quoting rules,
+#  instead we *will* quote the EOF marker to avoid
+#  any shell interpretation at all!!
+#
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating $testname.tpl
+exec 4> $testname.tpl
+cat >&4 <<_EOF_
+[= AutoGen5 Template c sh =]
+[=
+
+CASE (suffix)  =][=
+
+  ==  c
+
+=]#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
+#ifndef STDOUT_FILENO
+#  define STDOUT_FILENO 1
+#endif[=
+
+
+  ;;  Create a file containing nothing but the
+  ;;  autogen internal contents of the string
+  ;;
+  (out-push-new "${testname}.raw")
+
+  =][=string=][=
+
+  (out-pop)
+
+=]
+_EOF_
+
+test -z "$LINENO" && LINENO=`
+    grep -n FIND-THIS-LINE-NUMBER $0 | sed 's/:.*//'` # close enough
+printf '\nchar zTestFile[] = "%s";\n#line %s\n' \
+    ${testname}.raw `expr $LINENO + 4` >&4
+
+cat >&4 <<'_EOF_'
+char zGened[]  = [=(c-string  (get "string"))=];
+char zKrGen[]  = [=(kr-string (get "string"))=];
+char zExpect[] = "'\f\r\b\v\t\a\n\n"
+       "\\f\\r\\b\\v\\t\\a\\n\n"
+       "\"Wow!\"  This'll be \\hard\\'\n"
+       "#endif /* .\n"
+       "and it'll be a \"hassle\"."
+       "\001\002\003\177\n'";
+#define expectSize ((int)(sizeof(zExpect) - 1))
+int checkStr( char* pz, char const* pzWhat );
+int checkStr( char* pz, char const* pzWhat )
+{
+    static char const zNotMatch[] =
+        "%s generated string mismatches at offset %d of %d\n"
+        "Expected char: 0x%02X  saw char: 0x%02X\n"
+        "Expected string:\n==>%s<==\n\n"
+        "Generated string:\n-->%s<--\n\n";
+
+    char* pzE = zExpect;
+    char* pzR = pz;
+    int   ix  = strlen( pz );
+    int   res = 0;
+
+    if (ix != expectSize) {
+        fprintf( stderr, "%s is %d bytes, not %d\n", pzWhat, ix, expectSize );
+        res = 1;
+    }
+
+    for (ix = 0; ix < expectSize; ix++) {
+        if (*(pzE++) != *(pzR++)) {
+            fprintf(stderr, zNotMatch, pzWhat, ix, expectSize,
+                    (unsigned)pzE[-1], (unsigned)pzR[-1], zExpect, pz);
+            return 1;
+        }
+    }
+    if (*pzE != '\0') {
+        fputs( "compile error: expected string too long\n", stderr);
+        res = 1;
+    } else if (*pzR != '\0') {
+        fprintf(stderr, "%s has %d residual characters:\n==>%s<==\n",
+                pzWhat, (int)strlen(pzR), pzR);
+        res = 1;
+    }
+    return res;
+}
+
+
+int main( int argc, char** argv )
+{
+    int  resCode = 0;
+
+    /*
+     *  Write out the expected value to a file.
+     *  The "cmp" program will compare it with the
+     *  internal version autogen wrote out itself.
+     */
+    write( STDOUT_FILENO, zExpect, sizeof( zExpect )-1);
+    close( STDOUT_FILENO );
+
+    if (sizeof( zGened ) != sizeof( zExpect )) {
+        fputs( "Expected and generated string sizes do not match.\n",
+               stderr );
+        resCode = 1;
+    }
+
+    if (strlen( zGened ) != sizeof( zGened )-1) {
+        fputs( "The generated string contains a NUL.\n", stderr );
+        resCode++;
+    }
+
+    if (checkStr( zGened,  "'C' program" ))
+        resCode++;
+
+    if (checkStr( zKrGen,  "K&R 'C' program" ))
+        resCode++;
+
+    if (checkStr( argv[1], "Raw shell" ))
+        resCode++;
+
+    if (checkStr( argv[2], "Cooked shell" ))
+        resCode++;
+
+    return resCode;
+}[=
+
+  == sh
+
+=]#! /bin/sh
+set -x
+_EOF_
+
+cat 1>&4 <<_EOF_
+./${testname} [=(raw-shell-str (get "string"))
+           =] [=(shell-str (get "string"))=] > ${testname}.out
+res=\$?
+cmp ${testname}.out ${testname}.raw > /dev/null 2>&1
+
+if [ \$? -ne 0 ]
+then
+  echo the AutoGen internal content did not match expectations
+  res=\`expr \$res + 1\`
+fi
+if [ \$res -eq 0 ]
+then
+  echo All string comparisons pass
+else
+  echo There were \$res string test failures
+  exit \$res
+fi[=
+
+ESAC
+
+=]
+_EOF_
+exec 4>&-
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo creating $testname.def
+echo "autogen definitions $testname.tpl;" > $testname.def
+cat >> $testname.def <<'_EOF_'
+
+string =
+    "'\f\r\b\v\t\a\n
+"
+    '\f\r\b\v\t\a\n
+'
+    '"Wow!"  This\'ll be \\hard\\\'
+\#endif /* .
+'
+    "and it'll be a \"hassle\"."
+    "\001\x02\X03\177\n'";
+
+_EOF_
+
+# # # # # # # # # # RUN THE TESTS # # # # # # # # # # #
+
+SHELL=${SHELL-/bin/sh}
+
+run_ag x $testname.def || failure autogen failed
+
+compile
+
+chmod +x *.sh
+
+./${testname}.sh || failure strings do not match
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of string.test

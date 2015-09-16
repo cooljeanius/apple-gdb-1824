@@ -1,7 +1,7 @@
-/* Copyright 1998, 1999, 2000, 2001, 2002, 2003
-   Free Software Foundation, Inc.
-   Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
-
+/* cpu-ia64-opc.c: Copyright 1998, 1999, 2000, 2001, 2002, 2003
+ * Free Software Foundation, Inc.
+ * Contributed by David Mosberger-Tang <davidm@hpl.hp.com>  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* Logically, this code should be part of libopcode but since some of
    the operand insertion/extraction functions help bfd to implement
@@ -27,40 +27,44 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 
    --davidm Mon Apr 13 22:14:02 1998 */
 
+#ifndef _BFD_CPU_IA64_C
+# error "this file should only be compiled when included from cpu-ia64.c"
+#endif /* !_BFD_CPU_IA64_C */
+
 #include "../opcodes/ia64-opc.h"
 
-#define NELEMS(a)  ((int) (sizeof (a) / sizeof ((a)[0])))
+#define NELEMS(a)  ((int)(sizeof(a) / sizeof((a)[0])))
 
 static const char*
-ins_rsvd (const struct ia64_operand *self ATTRIBUTE_UNUSED,
+ins_rsvd(const struct ia64_operand *self ATTRIBUTE_UNUSED,
+	 ia64_insn value ATTRIBUTE_UNUSED, ia64_insn *code ATTRIBUTE_UNUSED)
+{
+  return "internal error---this should never happen";
+}
+
+static const char*
+ext_rsvd(const struct ia64_operand *self ATTRIBUTE_UNUSED,
+	 ia64_insn code ATTRIBUTE_UNUSED, ia64_insn *valuep ATTRIBUTE_UNUSED)
+{
+  return "internal error---this should never happen";
+}
+
+static const char*
+ins_const(const struct ia64_operand *self ATTRIBUTE_UNUSED,
 	  ia64_insn value ATTRIBUTE_UNUSED, ia64_insn *code ATTRIBUTE_UNUSED)
 {
-  return "internal error---this shouldn't happen";
+  return 0;
 }
 
 static const char*
-ext_rsvd (const struct ia64_operand *self ATTRIBUTE_UNUSED,
+ext_const(const struct ia64_operand *self ATTRIBUTE_UNUSED,
 	  ia64_insn code ATTRIBUTE_UNUSED, ia64_insn *valuep ATTRIBUTE_UNUSED)
 {
-  return "internal error---this shouldn't happen";
-}
-
-static const char*
-ins_const (const struct ia64_operand *self ATTRIBUTE_UNUSED,
-	   ia64_insn value ATTRIBUTE_UNUSED, ia64_insn *code ATTRIBUTE_UNUSED)
-{
   return 0;
 }
 
 static const char*
-ext_const (const struct ia64_operand *self ATTRIBUTE_UNUSED,
-	   ia64_insn code ATTRIBUTE_UNUSED, ia64_insn *valuep ATTRIBUTE_UNUSED)
-{
-  return 0;
-}
-
-static const char*
-ins_reg (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
+ins_reg(const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 {
   if (value >= 1u << self->field[0].bits)
     return "register number out of range";
@@ -70,7 +74,7 @@ ins_reg (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 }
 
 static const char*
-ext_reg (const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
+ext_reg(const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
 {
   *valuep = ((code >> self->field[0].shift)
 	     & ((1u << self->field[0].bits) - 1));
@@ -78,7 +82,7 @@ ext_reg (const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
 }
 
 static const char*
-ins_immu (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
+ins_immu(const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 {
   ia64_insn new = 0;
   int i;
@@ -97,7 +101,7 @@ ins_immu (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 }
 
 static const char*
-ext_immu (const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
+ext_immu(const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
 {
   BFD_HOST_U_64_BIT value = 0;
   int i, bits = 0, total = 0;
@@ -159,31 +163,31 @@ ins_imms_scaled (const struct ia64_operand *self, ia64_insn value,
 }
 
 static const char*
-ext_imms_scaled (const struct ia64_operand *self, ia64_insn code,
-		 ia64_insn *valuep, int scale)
+ext_imms_scaled(const struct ia64_operand *self, ia64_insn code,
+                ia64_insn *valuep, int scale)
 {
   int i, bits = 0, total = 0;
-  BFD_HOST_64_BIT val = 0, sign;
+  BFD_HOST_64_BIT val = 0L, sign;
 
-  for (i = 0; i < NELEMS (self->field) && self->field[i].bits; ++i)
+  for (i = 0; i < NELEMS(self->field) && self->field[i].bits; ++i)
     {
       bits = self->field[i].bits;
-      val |= ((code >> self->field[i].shift)
-	      & ((((BFD_HOST_U_64_BIT) 1) << bits) - 1)) << total;
+      val |= (((code >> self->field[i].shift)
+               & ((((BFD_HOST_U_64_BIT)1) << bits) - 1)) << total);
       total += bits;
     }
   /* sign extend: */
-  sign = (BFD_HOST_64_BIT) 1 << (total - 1);
-  val = (val ^ sign) - sign;
+  sign = ((BFD_HOST_64_BIT)1 << (total - 1));
+  val = ((val ^ sign) - sign);
 
   *valuep = (val << scale);
   return 0;
 }
 
 static const char*
-ins_imms (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
+ins_imms(const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 {
-  return ins_imms_scaled (self, value, code, 0);
+  return ins_imms_scaled(self, value, code, 0);
 }
 
 static const char*
@@ -270,18 +274,24 @@ ins_cimmu (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 }
 
 static const char*
-ext_cimmu (const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
+ext_cimmu(const struct ia64_operand *self, ia64_insn code,
+          ia64_insn *valuep)
 {
   const char *result;
   ia64_insn mask;
 
-  mask = (((ia64_insn) 1) << self->field[0].bits) - 1;
-  result = ext_immu (self, code, valuep);
+  mask = ((((ia64_insn)1) << self->field[0].bits) - 1);
+  result = ext_immu(self, code, valuep);
   if (!result)
     {
       mask = (((ia64_insn) 1) << self->field[0].bits) - 1;
       *valuep ^= mask;
     }
+
+  if (mask != code) {
+    ;
+  }
+
   return result;
 }
 
@@ -339,17 +349,19 @@ ins_cnt2c (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 }
 
 static const char*
-ext_cnt2c (const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
+ext_cnt2c(const struct ia64_operand *self, ia64_insn code,
+          ia64_insn *valuep)
 {
   ia64_insn value;
 
-  value = (code >> self->field[0].shift) & 0x3;
+  value = ((code >> self->field[0].shift) & 0x3);
   switch (value)
     {
-    case 0: value =  0; break;
-    case 1: value =  7; break;
+    case 0: value = 0; break;
+    case 1: value = 7; break;
     case 2: value = 15; break;
     case 3: value = 16; break;
+    default: break;
     }
   *valuep = value;
   return 0;
@@ -374,27 +386,30 @@ ins_inc3 (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
     case 16:	value = 0; break;
     default:	return "count must be +/- 1, 4, 8, or 16";
     }
-  *code |= (sign | value) << self->field[0].shift;
+  *code |= ((sign | value) << self->field[0].shift);
   return 0;
 }
 
 static const char*
-ext_inc3 (const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
+ext_inc3(const struct ia64_operand *self, ia64_insn code,
+         ia64_insn *valuep)
 {
   BFD_HOST_64_BIT val;
   int negate;
 
-  val = (code >> self->field[0].shift) & 0x7;
-  negate = val & 0x4;
+  val = ((code >> self->field[0].shift) & 0x7);
+  negate = (int)(val & 0x4);
   switch (val & 0x3)
     {
     case 0: val = 16; break;
-    case 1: val =  8; break;
-    case 2: val =  4; break;
-    case 3: val =  1; break;
+    case 1: val = 8; break;
+    case 2: val = 4; break;
+    case 3: val = 1; break;
+    default: break;
     }
-  if (negate)
+  if (negate) {
     val = -val;
+  }
 
   *valuep = val;
   return 0;
@@ -586,3 +601,5 @@ const struct ia64_operand elf64_ia64_operands[IA64_OPND_COUNT] =
     { ABS, ins_const, ext_const, 0, {{0, 0}}, 0,		/* LDXMOV */
       "ldxmov target" },
   };
+
+/* EOF */

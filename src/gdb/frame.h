@@ -64,6 +64,8 @@
 
    */
 
+#include "ansidecl.h"
+
 /* APPLE LOCAL variable opt states.  */
 #include "value.h"
 
@@ -103,7 +105,7 @@ struct frame_id
      lifetime of the frame.  While the PC (a.k.a. resume address)
      changes as the function is executed, this code address cannot.
      Typically, it is set to the address of the entry point of the
-     frame's function (as returned by frame_func_unwind().  
+     frame's function (as returned by frame_func_unwind().
 
      This field is valid only if code_addr_p is true.  Otherwise, this
      frame is considered to have a wildcard code address, i.e. one that
@@ -112,8 +114,8 @@ struct frame_id
 
   /* The frame's special address.  This shall be constant through out the
      lifetime of the frame.  This is used for architectures that may have
-     frames that do not change the stack but are still distinct and have 
-     some form of distinct identifier (e.g. the ia64 which uses a 2nd 
+     frames that do not change the stack but are still distinct and have
+     some form of distinct identifier (e.g. the ia64 which uses a 2nd
      stack for registers).  This field is treated as unordered - i.e. will
      not be used in frame ordering comparisons such as frame_id_inner().
 
@@ -134,8 +136,8 @@ struct frame_id
    B is inner-to A).  The relationships: !eq(A,B); !eq(B,A);
    !inner(A,B); !inner(B,A); all hold.
 
-   This is because, while B is inner-to A, B is not strictly inner-to A.  
-   Being stackless, they have an identical .stack_addr value, and differ 
+   This is because, while B is inner-to A, B is not strictly inner-to A.
+   Being stackless, they have an identical .stack_addr value, and differ
    only by their unordered .code_addr and/or .special_addr values.
 
    Because frame_id_inner is only used as a safety net (e.g.,
@@ -203,7 +205,10 @@ extern void fprint_frame_id (struct ui_file *file, struct frame_id id);
 /* On demand, create the inner most frame using information found in
    the inferior.  If the inner most frame can't be created, throw an
    error.  */
-extern struct frame_info *get_current_frame (void);
+extern struct frame_info *get_current_frame(void);
+
+/* Goes with the ones that follow this: */
+extern void frame_observer_target_changed(struct target_ops *);
 
 /* Invalidates the frame cache (this function should have been called
    invalidate_cached_frames).
@@ -218,8 +223,8 @@ extern struct frame_info *get_current_frame (void);
    selected frame back to current frame (for when the inferior
    resumes) and one that does not (for when the user modifies the
    target invalidating the frame cache).  */
-extern void flush_cached_frames (void);
-extern void reinit_frame_cache (void);
+extern void flush_cached_frames(void);
+extern void reinit_frame_cache(void);
 
 /* On demand, create the selected frame and then return it.  If the
    selected frame can not be created, this function prints then throws
@@ -401,7 +406,7 @@ extern enum frame_type get_frame_type (struct frame_info *);
    value.  */
 extern void frame_register_unwind (struct frame_info *frame, int regnum,
 				   /* APPLE LOCAL variable opt states.  */
-				   enum opt_state *optimizedp, 
+				   enum opt_state *optimizedp,
 				   enum lval_type *lvalp,
 				   CORE_ADDR *addrp, int *realnump,
 				   gdb_byte *valuep);
@@ -499,16 +504,16 @@ extern struct gdbarch *get_frame_arch (struct frame_info *this_frame);
 
 /* Values for the source flag to be used in print_frame_info_base().  */
 enum print_what
-  { 
+  {
     /* Print only the source line, like in stepi. */
-    SRC_LINE = -1, 
+    SRC_LINE = -1,
     /* Print only the location, i.e. level, address (sometimes)
        function, args, file, line, line num. */
     LOCATION,
     /* Print both of the above. */
-    SRC_AND_LOC, 
+    SRC_AND_LOC,
     /* Print location only, but always include the address. */
-    LOC_AND_ADDRESS 
+    LOC_AND_ADDRESS
   };
 
 /* Allocate additional space for appendices to a struct frame_info.
@@ -583,9 +588,10 @@ extern void show_stack_frame (struct frame_info *);
 extern void print_frame_info (struct frame_info *, int print_level,
 			      enum print_what print_what, int args);
 
-extern struct frame_info *block_innermost_frame (struct block *);
+extern struct frame_info *block_innermost_frame(struct block *);
 
-extern int deprecated_pc_in_call_dummy (CORE_ADDR pc);
+extern int deprecated_pc_in_call_dummy(CORE_ADDR pc)
+  ATTRIBUTE_DEPRECATED;
 
 /* FIXME: cagney/2003-02-02: Should be deprecated or replaced with a
    function called get_frame_register_p().  This slightly weird (and
@@ -611,7 +617,8 @@ extern void args_info (char *, int);
 
 extern void locals_info (char *, int);
 
-extern void (*deprecated_selected_frame_level_changed_hook) (int);
+extern void (*deprecated_selected_frame_level_changed_hook)(int)
+  ATTRIBUTE_DEPRECATED;
 
 extern void return_command (char *, int);
 
@@ -640,7 +647,7 @@ extern void return_command (char *, int);
 
    Take care!  */
 
-extern struct frame_info *deprecated_selected_frame;
+extern struct frame_info *deprecated_selected_frame ATTRIBUTE_DEPRECATED;
 
 /* NOTE: drow/2003-09-06:
 
@@ -654,7 +661,8 @@ extern struct frame_info *deprecated_selected_frame;
    This function calls get_selected_frame if the inferior should have a
    frame, or returns NULL otherwise.  */
 
-extern struct frame_info *deprecated_safe_get_selected_frame (void);
+extern struct frame_info *deprecated_safe_get_selected_frame(void)
+  ATTRIBUTE_DEPRECATED;
 
 /* Create a frame using the specified BASE and PC.  */
 
@@ -665,8 +673,9 @@ extern struct frame_info *create_new_frame (CORE_ADDR base, CORE_ADDR pc);
    the initial frame create.  This puts things back in sync.
 
    This replaced: frame->pc = ....; */
-extern void deprecated_update_frame_pc_hack (struct frame_info *frame,
-					     CORE_ADDR pc);
+extern void deprecated_update_frame_pc_hack(struct frame_info *frame,
+					    CORE_ADDR pc)
+  ATTRIBUTE_DEPRECATED;
 
 /* FIXME: cagney/2002-12-18: Has the frame's base changed?  Or to be
    more exact, was that initial guess at the frame's base as returned
@@ -675,8 +684,9 @@ extern void deprecated_update_frame_pc_hack (struct frame_info *frame,
    correct from the outset.
 
    This replaced: frame->frame = ....; */
-extern void deprecated_update_frame_base_hack (struct frame_info *frame,
-					       CORE_ADDR base);
+extern void deprecated_update_frame_base_hack(struct frame_info *frame,
+					      CORE_ADDR base)
+  ATTRIBUTE_DEPRECATED;
 
 /* APPLE LOCAL begin */
 /* See comments in frame_info (). */

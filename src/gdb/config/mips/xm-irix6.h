@@ -1,4 +1,5 @@
-/* Definitions for irix6 hosting support.
+/* xm-irix6.h
+   Definitions for irix6 hosting support.
 
    Copyright 2001 Free Software Foundation, Inc.
 
@@ -20,3 +21,5 @@
    Boston, MA 02111-1307, USA.  */
 
 #include "mips/xm-irix5.h"
+
+/* EOF */

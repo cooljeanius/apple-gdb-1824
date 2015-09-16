@@ -1,4 +1,4 @@
-/* HP PA-RISC SOM object file format:  definitions internal to BFD.
+/* som.h: HP PA-RISC SOM object file format: definitions internal to BFD.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1998, 2000, 2001,
    2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
@@ -27,19 +27,23 @@
 
 #include "libhppa.h"
 
-/* We want reloc.h to provide PA 2.0 defines.  */
+/* We want reloc.h to provide PA 2.0 defines: */
 #define PA_2_0
 
 #include <a.out.h>
 #include <lst.h>
 #include <ar.h>
 
-/* The SOM BFD backend doesn't currently use anything from these
-   two include files, but it's likely to need them in the future.  */
+/* The SOM BFD backend does NOT currently use anything from these
+   two include files, but it is likely to need them in the future: */
 #ifdef R_DLT_REL
-#include <shl.h>
-#include <dl.h>
-#endif
+# include <shl.h>
+# include <dl.h>
+#endif /* R_DLT_REL */
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 #if defined(HOST_HPPABSD) || defined (HOST_HPPAOSF)
 /* BSD uses a completely different scheme for object file identification.
@@ -165,7 +169,7 @@ struct som_subspace_dictionary_record
   unsigned int initialization_length;
   unsigned int subspace_start;
   unsigned int subspace_length;
-  unsigned int reserved2 : 5;   
+  unsigned int reserved2 : 5;
   unsigned int alignment :27;
   union name_pt name;
   int fixup_request_index;
@@ -266,4 +270,9 @@ bfd_boolean  bfd_som_attach_aux_hdr            (bfd *, int, char *);
 int **       hppa_som_gen_reloc_type           (bfd *, int, int, enum hppa_reloc_field_selector_type_alt, int, asymbol *);
 bfd_boolean  bfd_som_attach_compilation_unit   (bfd *, const char *, const char *, const char *, const char *);
 
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 #endif /* _SOM_H */
+
+/* EOF */

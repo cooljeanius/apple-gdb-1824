@@ -1,4 +1,5 @@
-/* Target-dependent definitions for FreeBSD/Alpha.
+/* tm-fbsd.h
+   Target-dependent definitions for FreeBSD/Alpha.
    Copyright 2000, 2001, 2002 Free Software Foundation, Inc.
 
    This file is part of GDB.

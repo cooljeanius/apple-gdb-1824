@@ -1,0 +1,107 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# expr.test --- [= % name (sprintf "%%-18s" "%s") =] expression
+#
+# Time-stamp:      "2011-12-15 12:52:48 bkorb"
+# Author:          Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # TEMPLATE & DEFINITIONS FILES # # # # # # # # #
+#
+#  We construct this by pulling down the sources from the
+#  AutoGen source directory.  We will also copy out the same
+#  commands as are used there.  ${top_srcdir} is a full path.
+#
+cp ${top_srcdir}/agen5/snarf.tpl ${top_srcdir}/agen5/exp*.c \
+   ${top_srcdir}/agen5/func*.c ${top_srcdir}/agen5/agShell.c ${TMPDIR}/.
+f=`fgrep '#ifdef DEBUG_ENABLED' ${top_srcdir}/agen5/expr.ini`
+test -n "$f" && {
+    DEBUG_ENABLED=true
+    export DEBUG_ENABLED
+}
+
+exec 3> ${TMPDIR}/${testname}.sh
+cat  >&3 <<- _EOF_
+	GDexe=${GDexe}
+	CLexe=${CLexe}
+	srcdir=`pwd`
+	export GDexe CLexe srcdir
+	cd ${TMPDIR}
+	set -e
+	_EOF_
+
+if ${VERBOSE}
+then
+    cat  >&3 <<- _EOF_
+	PS4='>${testname}-\${FUNCNAME-mkexp}> '
+	set -x
+	run_ag()
+	{
+	    tfile=ag-\${1}-$$.log
+	    tag="-MF${testname}-stamp-\${1} --trace=every --trace-out=\${tfile}"
+	    shift
+	    ${AGexe} -L${top_srcdir}/autoopts/tpl \${tag} "\$@"
+	}
+	_EOF_
+else
+    cat  >&3 <<- _EOF_
+	run_ag()
+	{
+	    tag="-MF${testname}-stamp-\${1}"
+	    shift
+	    echo ${AGexe} "\$@"
+	    ${AGexe} -L${top_srcdir}/autoopts/tpl \${tag} "\$@"
+	}
+	_EOF_
+fi
+
+${SED} -n '/^make_exprini()/,/^[}]$/p' ${top_srcdir}/agen5/bootstrap.dir | \
+  ${SED} 's/rm -f /echo rm -f/' >&3
+cat >&3 <<- _EOF_
+	make_exprini
+	${SED} "${sed_omit_license}" expr.ini > \${srcdir}/expr.res
+	${SED} "${sed_omit_license}" ${top_srcdir}/agen5/expr.ini \
+	    > \${srcdir}/expr.base
+	_EOF_
+exec 3>&-
+
+#  Remove the lines that *will* be different, always...
+#
+${SHELLX} ${TMPDIR}/${testname}.sh || failure "${testname}.sh failed"
+
+test -s expr.res || \
+  failure "${testname} test produced no output"
+
+cmp expr.base expr.res || \
+  failure "`diff -c expr.base expr.res`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of expr.test

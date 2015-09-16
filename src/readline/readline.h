@@ -20,7 +20,7 @@
    have a copy of the license, write to the Free Software Foundation,
    59 Temple Place, Suite 330, Boston, MA 02111 USA. */
 
-#if !defined (_READLINE_H_)
+#if !defined(_READLINE_H_)
 #define _READLINE_H_
 
 #ifdef __cplusplus
@@ -40,9 +40,21 @@ extern "C" {
 #endif /* READLINE_LIBRARY */
 
 /* Hex-encoded Readline version number. */
-#define RL_READLINE_VERSION	0x0403		/* Readline 4.3 */
-#define RL_VERSION_MAJOR	4
-#define RL_VERSION_MINOR	3
+#ifndef RL_READLINE_VERSION
+# define RL_READLINE_VERSION	0x0403		/* Readline 4.3 */
+#else
+# define RL_READLINE_VERSION_PREDEFINED RL_READLINE_VERSION
+#endif /* !RL_READLINE_VERSION */
+#ifndef RL_VERSION_MAJOR
+# define RL_VERSION_MAJOR	4
+#else
+# define RL_VERSION_MAJOR_PREDEFINED RL_VERSION_MAJOR
+#endif /* !RL_READLINE_MAJOR */
+#ifndef RL_VERSION_MINOR
+# define RL_VERSION_MINOR	3
+#else
+# define RL_VERSION_MINOR_PREDEFINED RL_VERSION_MINOR
+#endif /* !RL_READLINE_MINOR */
 
 /* Readline data structures. */
 
@@ -172,7 +184,7 @@ extern int rl_yank_last_arg PARAMS((int, int));
 /* Not available unless __CYGWIN__ is defined. */
 #ifdef __CYGWIN__
 extern int rl_paste_from_clipboard PARAMS((int, int));
-#endif
+#endif /* __CYGWIN__ */
 
 /* Bindable commands for incremental searching. */
 extern int rl_reverse_search_history PARAMS((int, int));
@@ -358,11 +370,11 @@ extern int rl_clear_message PARAMS((void));
 extern int rl_reset_line_state PARAMS((void));
 extern int rl_crlf PARAMS((void));
 
-#if (defined (__STDC__) || defined (__cplusplus)) && defined (USE_VARARGS) && defined (PREFER_STDARG)
-extern int rl_message (const char *, ...)  __attribute__((__format__ (printf, 1, 2)));
+#if (defined(__STDC__) || defined(__cplusplus)) && defined(USE_VARARGS) && defined(PREFER_STDARG)
+extern int rl_message(const char *, ...)  __attribute__((__format__(printf, 1, 2)));
 #else
-extern int rl_message ();
-#endif
+extern int rl_message PARAMS((void));
+#endif /* (__STDC__ || __cplusplus) && USE_VARARGS && PREFER_STDARG */
 
 extern int rl_show_char PARAMS((int));
 
@@ -443,7 +455,7 @@ extern int crlf PARAMS((void));
 extern char **completion_matches PARAMS((char *, rl_compentry_func_t *));
 extern char *username_completion_function PARAMS((const char *, int));
 extern char *filename_completion_function PARAMS((const char *, int));
-#endif
+#endif /* 0 */
 
 /* **************************************************************** */
 /*								    */
@@ -474,7 +486,7 @@ extern int rl_insert_mode;
 extern const char *rl_readline_name;
 
 /* The prompt readline uses.  This is set from the argument to
-   readline (), and should not be assigned to directly. */
+   readline(), and should not be assigned to directly. */
 extern char *rl_prompt;
 
 /* The line buffer that is in use. */
@@ -517,11 +529,11 @@ extern FILE *rl_instream;
 extern FILE *rl_outstream;
 
 /* If non-zero, then this is the address of a function to call just
-   before readline_internal () prints the first prompt. */
+   before readline_internal() prints the first prompt. */
 extern rl_hook_func_t *rl_startup_hook;
 
 /* If non-zero, this is the address of a function to call just before
-   readline_internal_setup () returns and readline_internal starts
+   readline_internal_setup() returns and readline_internal starts
    reading input characters. */
 extern rl_hook_func_t *rl_pre_input_hook;
 
@@ -573,8 +585,8 @@ extern int rl_catch_signals;
 extern int rl_catch_sigwinch;
 
 /* Completion variables. */
-/* Pointer to the generator function for completion_matches ().
-   NULL means to use rl_filename_completion_function (), the default
+/* Pointer to the generator function for completion_matches().
+   NULL means to use rl_filename_completion_function(), the default
    filename completer. */
 extern rl_compentry_func_t *rl_completion_entry_function;
 
@@ -794,6 +806,8 @@ extern int rl_restore_state PARAMS((struct readline_state *));
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
 #endif /* _READLINE_H_ */
+
+/* EOF */

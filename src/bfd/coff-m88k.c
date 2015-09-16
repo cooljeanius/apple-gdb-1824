@@ -40,28 +40,19 @@ static void reloc_processing
 #define GET_SCNHDR_NRELOC H_GET_32
 #define GET_SCNHDR_NLNNO  H_GET_32
 
-/* On coff-m88k, local labels start with '@'.  */
-
+/* On coff-m88k, local labels start with '@': */
 #define coff_bfd_is_local_label_name m88k_is_local_label_name
 
 static bfd_boolean
-m88k_is_local_label_name (abfd, name)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     const char *name;
+m88k_is_local_label_name(bfd *abfd ATTRIBUTE_UNUSED, const char *name)
 {
-  return name[0] == '@';
+  return (name[0] == '@');
 }
 
 static bfd_reloc_status_type
-m88k_special_reloc (abfd, reloc_entry, symbol, data,
-		    input_section, output_bfd, error_message)
-     bfd *abfd;
-     arelent *reloc_entry;
-     asymbol *symbol;
-     PTR data;
-     asection *input_section;
-     bfd *output_bfd;
-     char **error_message ATTRIBUTE_UNUSED;
+m88k_special_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+                   PTR data, asection *input_section, bfd *output_bfd,
+                   char **error_message ATTRIBUTE_UNUSED)
 {
   reloc_howto_type *howto = reloc_entry->howto;
 
@@ -69,7 +60,7 @@ m88k_special_reloc (abfd, reloc_entry, symbol, data,
     {
     case R_HVRT16:
     case R_LVRT16:
-      if (output_bfd != (bfd *) NULL)
+      if (output_bfd != (bfd *)NULL)
 	{
 	  /* This is a partial relocation, and we want to apply the
 	     relocation to the reloc entry rather than the raw data.
@@ -233,26 +224,24 @@ static reloc_howto_type howto_table[] =
 	 TRUE),				/* pcrel_offset */
 };
 
-/* Code to turn an external r_type into a pointer to an entry in the
-   above howto table.  */
+/* Code to turn an external r_type into a pointer to an entry in the above
+ * howto table: */
 static void
-rtype2howto (cache_ptr, dst)
-     arelent *cache_ptr;
-     struct internal_reloc *dst;
+rtype2howto(arelent *cache_ptr, struct internal_reloc *dst)
 {
-  if (dst->r_type >= R_PCR16L && dst->r_type <= R_VRT32)
+  if ((dst->r_type >= R_PCR16L) && (dst->r_type <= R_VRT32))
     {
-      cache_ptr->howto = howto_table + dst->r_type - R_PCR16L;
+      cache_ptr->howto = (howto_table + dst->r_type - R_PCR16L);
     }
   else
     {
-      BFD_ASSERT (0);
+      BFD_ASSERT(0);
     }
 }
 
 #define RTYPE2HOWTO(cache_ptr, dst) rtype2howto (cache_ptr, dst)
 
-/* Code to swap in the reloc offset */
+/* Code to swap in the reloc offset: */
 #define SWAP_IN_RELOC_OFFSET  H_GET_16
 #define SWAP_OUT_RELOC_OFFSET H_PUT_16
 
@@ -260,19 +249,15 @@ rtype2howto (cache_ptr, dst)
   reloc_processing(relent, reloc, symbols, abfd, section)
 
 static void
-reloc_processing (relent, reloc, symbols, abfd, section)
-     arelent *relent;
-     struct internal_reloc *reloc;
-     asymbol **symbols;
-     bfd *abfd;
-     asection *section;
+reloc_processing(arelent *relent, struct internal_reloc *reloc,
+                 asymbol **symbols, bfd *abfd, asection *section)
 {
   relent->address = reloc->r_vaddr;
-  rtype2howto (relent, reloc);
+  rtype2howto(relent, reloc);
 
-  if (((int) reloc->r_symndx) > 0)
+  if (((int)reloc->r_symndx) > 0)
     {
-      relent->sym_ptr_ptr = symbols + obj_convert (abfd)[reloc->r_symndx];
+      relent->sym_ptr_ptr = (symbols + obj_convert(abfd)[reloc->r_symndx]);
     }
   else
     {
@@ -288,4 +273,7 @@ reloc_processing (relent, reloc, symbols, abfd, section)
 
 #undef coff_write_armap
 
-CREATE_BIG_COFF_TARGET_VEC (m88kbcs_vec, "coff-m88kbcs", 0, 0, '_', NULL, COFF_SWAP_TABLE)
+CREATE_BIG_COFF_TARGET_VEC(m88kbcs_vec, "coff-m88kbcs", 0, 0, '_', NULL,
+                           COFF_SWAP_TABLE)
+
+/* EOF */

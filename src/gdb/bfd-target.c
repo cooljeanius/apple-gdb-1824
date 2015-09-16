@@ -1,4 +1,4 @@
-/* Very simple "bfd" target, for GDB, the GNU debugger.
+/* bfd-target.c: Very simple "bfd" target, for GDB, the GNU debugger.
 
    Copyright 2003, 2005 Free Software Foundation, Inc.
 
@@ -34,52 +34,52 @@ struct section_closure
 };
 
 static void
-add_to_section_table (struct bfd *abfd, struct bfd_section *asect,
-		      void *closure)
+add_to_section_table(struct bfd *abfd, struct bfd_section *asect,
+                     void *closure)
 {
-  struct section_closure *pp = closure;
+  struct section_closure *pp = (struct section_closure *)closure;
   flagword aflag;
 
   /* NOTE: cagney/2003-10-22: Is this pruning useful?  */
-  aflag = bfd_get_section_flags (abfd, asect);
+  aflag = bfd_get_section_flags(abfd, asect);
   if (!(aflag & SEC_ALLOC))
     return;
-  if (bfd_section_size (abfd, asect) == 0)
+  if (bfd_section_size(abfd, asect) == 0)
     return;
   pp->end->bfd = abfd;
   pp->end->the_bfd_section = asect;
-  pp->end->addr = bfd_section_vma (abfd, asect);
-  pp->end->endaddr = pp->end->addr + bfd_section_size (abfd, asect);
+  pp->end->addr = bfd_section_vma(abfd, asect);
+  pp->end->endaddr = (pp->end->addr + bfd_section_size(abfd, asect));
   pp->end++;
 }
 
 void
-build_target_sections_from_bfd (struct target_ops *targ, struct bfd *abfd)
+build_target_sections_from_bfd(struct target_ops *targ, struct bfd *abfd)
 {
   unsigned count;
   struct section_table *start;
   struct section_closure cl;
 
-  count = bfd_count_sections (abfd);
-  target_resize_to_sections (targ, count);
+  count = bfd_count_sections(abfd);
+  target_resize_to_sections(targ, count);
   start = targ->to_sections;
   cl.end = targ->to_sections;
-  bfd_map_over_sections (abfd, add_to_section_table, &cl);
-  gdb_assert (cl.end - start <= count);
+  bfd_map_over_sections(abfd, add_to_section_table, &cl);
+  gdb_assert((cl.end - start) <= (ptrdiff_t)count);
 }
 
 LONGEST
-target_bfd_xfer_partial (struct target_ops *ops,
-			 enum target_object object,
-			 const char *annex, gdb_byte *readbuf,
-			 const gdb_byte *writebuf,
-			 ULONGEST offset, LONGEST len)
+target_bfd_xfer_partial(struct target_ops *ops,
+                        enum target_object object,
+                        const char *annex, gdb_byte *readbuf,
+                        const gdb_byte *writebuf,
+                        ULONGEST offset, LONGEST len)
 {
   switch (object)
     {
     case TARGET_OBJECT_MEMORY:
       {
-	struct section_table *s = target_section_by_addr (ops, offset);
+	struct section_table *s = target_section_by_addr(ops, offset);
 	if (s == NULL)
 	  return -1;
 	/* If the length extends beyond the section, truncate it.  Be
@@ -101,7 +101,7 @@ target_bfd_xfer_partial (struct target_ops *ops,
 	    && !bfd_set_section_contents (s->bfd, s->the_bfd_section,
 					  writebuf, offset - s->addr, len))
 	  return -1;
-#endif
+#endif /* 1 */
 	return len;
       }
     default:
@@ -110,11 +110,11 @@ target_bfd_xfer_partial (struct target_ops *ops,
 }
 
 void
-target_bfd_xclose (struct target_ops *t, int quitting)
+target_bfd_xclose(struct target_ops *t, int quitting)
 {
-  bfd_close (t->to_data);
-  xfree (t->to_sections);
-  xfree (t);
+  bfd_close((bfd *)t->to_data);
+  xfree(t->to_sections);
+  xfree(t);
 }
 
 struct target_ops *

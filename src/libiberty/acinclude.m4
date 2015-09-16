@@ -1,16 +1,29 @@
+dnl# libiberty/acinclude.m4                                -*- Autoconf -*-
+
 sinclude(../config/acx.m4)
 sinclude(../config/no-executables.m4)
+sinclude(../config/picflag.m4)
+sinclude(../config/warnings.m4)
+sinclude(m4/libiberty.m4)
 
 dnl# See whether strncmp reads past the end of its string parameters.
 dnl# On some versions of SunOS4 at least, strncmp reads a word at a time
 dnl# but erroneously reads past the end of strings.  This can cause
 dnl# a SEGV in some cases.
 AC_DEFUN([libiberty_AC_FUNC_STRNCMP],
-[
+[AC_REQUIRE([AC_HEADER_STDC])dnl
 AC_CACHE_CHECK([for working strncmp],[ac_cv_func_strncmp_works],
 [AC_RUN_IFELSE([AC_LANG_SOURCE([[
 /* Test by Jim Wilson and Kaveh Ghazi.
-   Check whether strncmp reads past the end of its string parameters. */
+ * Check whether strncmp reads past the end of its string parameters. */
+#if defined(HAVE_STDLIB_H) && !defined(exit)
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H && !exit */
+
+#if defined(HAVE_STRING_H) && (!defined(strlen) || !defined(strcpy))
+# include <string.h>
+#endif /* HAVE_STRING_H && (!strlen || !strcpy) */
+
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif /* HAVE_SYS_TYPES_H */
@@ -28,59 +41,63 @@ AC_CACHE_CHECK([for working strncmp],[ac_cv_func_strncmp_works],
 #  define MAP_ANON MAP_ANONYMOUS
 # else
 #  define MAP_ANON MAP_FILE
-# endif
-#endif
+# endif /* MAP_ANONYMOUS */
+#endif /* !MAP_ANON */
 
 #ifndef MAP_FILE
 # define MAP_FILE 0
-#endif
+#endif /* !MAP_FILE */
 #ifndef O_RDONLY
 # define O_RDONLY 0
-#endif
+#endif /* !O_RDONLY */
 
 #define MAP_LEN 0x10000
 
-main ()
+int main(void)
 {
 #if defined(HAVE_MMAP) || defined(HAVE_MMAP_ANYWHERE)
   char *p;
   int dev_zero;
 
-  dev_zero = open ("/dev/zero", O_RDONLY);
-  if (dev_zero < 0)
-    exit (1);
+  dev_zero = open("/dev/zero", O_RDONLY);
+  if (dev_zero < 0) {
+    exit(1);
+  }
   
-  p = (char *) mmap (0, MAP_LEN, PROT_READ|PROT_WRITE,
-		     MAP_ANON|MAP_PRIVATE, dev_zero, 0);
-  if (p == (char *)-1)
-    p = (char *) mmap (0, MAP_LEN, PROT_READ|PROT_WRITE,
-		       MAP_ANON|MAP_PRIVATE, -1, 0);
-  if (p == (char *)-1)
-    exit (2);
-  else
-    {
+  p = (char *)mmap(0, MAP_LEN, (PROT_READ | PROT_WRITE),
+		   (MAP_ANON | MAP_PRIVATE), dev_zero, 0);
+  if (p == (char *)-1) {
+    p = (char *)mmap(0, MAP_LEN, (PROT_READ | PROT_WRITE),
+		     (MAP_ANON | MAP_PRIVATE), -1, 0);
+  }
+  if (p == (char *)-1) {
+    exit(2);
+  } else {
       char *string = "__si_type_info";
-      char *q = (char *) p + MAP_LEN - strlen (string) - 2;
-      char *r = (char *) p + 0xe;
+      char *q = ((char *)p + MAP_LEN - strlen(string) - 2);
+      char *r = ((char *)p + 0xe);
 
-      strcpy (q, string);
-      strcpy (r, string);
-      strncmp (r, q, 14);
-    }
+      strcpy(q, string);
+      strcpy(r, string);
+      strncmp(r, q, 14);
+  }
 #endif /* HAVE_MMAP || HAVE_MMAP_ANYWHERE */
-  exit (0);
+  exit(0);
+  return 0;
 }
 ]])],[ac_cv_func_strncmp_works=yes],[ac_cv_func_strncmp_works=no],
   [ac_cv_func_strncmp_works=no])
 rm -f core core.* *.core])
-if test $ac_cv_func_strncmp_works = no ; then
+if test "x${ac_cv_func_strncmp_works}" = "xno"; then
   AC_LIBOBJ([strncmp])
 fi
-])
+AC_CHECK_DECLS([strncmp])dnl
+])dnl
 
 dnl# See if errno must be declared even when <errno.h> is included.
 AC_DEFUN([libiberty_AC_DECLARE_ERRNO],
-[AC_CACHE_CHECK([whether errno must be declared],[libiberty_cv_declare_errno],
+[AC_CACHE_CHECK([whether errno must be declared],
+                [libiberty_cv_declare_errno],
 [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #include <errno.h>
 ]],[[
@@ -88,11 +105,11 @@ int x = errno;
 ]])],
 [libiberty_cv_declare_errno=no],
 [libiberty_cv_declare_errno=yes])])
-if test $libiberty_cv_declare_errno = yes
-then AC_DEFINE([NEED_DECLARATION_ERRNO],[1],
-  [Define if errno must be declared even when <errno.h> is included.])
+if test "x${libiberty_cv_declare_errno}" = "xyes"; then
+  AC_DEFINE([NEED_DECLARATION_ERRNO],[1],
+    [Define if errno must be declared even when <errno.h> is included.])
 fi
-])
+])dnl
 
 dnl# See whether we need a declaration for a function.
 AC_DEFUN([libiberty_NEED_DECLARATION],
@@ -132,21 +149,21 @@ fi
 # unreliable that GCC has decided to use it only when being compiled
 # by GCC. This is the part of AC_FUNC_ALLOCA that calculates the
 # information alloca.c needs.
-AC_DEFUN([libiberty_AC_FUNC_C_ALLOCA],
-[AC_REQUIRE([AC_PROG_CPP])
+AC_DEFUN([libiberty_AC_FUNC_C_ALLOCA],[
+AC_REQUIRE([AC_PROG_CPP])
 AC_REQUIRE([AC_PROG_EGREP])
 AC_CACHE_CHECK([whether alloca needs Cray hooks],[ac_cv_os_cray],
-[AC_EGREP_CPP([webecray],
-[#if defined(CRAY) && ! defined(CRAY2)
+[AC_EGREP_CPP([webecray],[
+#if defined(CRAY) && !defined(CRAY2)
 webecray
 #else
 wenotbecray
-#endif
+#endif /* CRAY && !CRAY2 */
 ],[ac_cv_os_cray=yes],[ac_cv_os_cray=no])])
-if test $ac_cv_os_cray = yes; then
+if test "x${ac_cv_os_cray}" = "xyes"; then
   for ac_func in _getb67 GETB67 getb67; do
-    AC_CHECK_FUNC([$ac_func], 
-      [AC_DEFINE_UNQUOTED([CRAY_STACKSEG_END],[$ac_func], 
+    AC_CHECK_FUNC([${ac_func}], 
+      [AC_DEFINE_UNQUOTED([CRAY_STACKSEG_END],[${ac_func}], 
   [Define to one of _getb67, GETB67, getb67 for Cray-2 and Cray-YMP
    systems. This function is required for alloca.c support on those
    systems.])  break])
@@ -155,32 +172,38 @@ fi
 
 AC_CACHE_CHECK([stack direction for C alloca],[ac_cv_c_stack_direction],
 [AC_RUN_IFELSE([AC_LANG_SOURCE([[
-find_stack_direction ()
+#if defined(HAVE_STDLIB_H) && !defined(exit)
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H && !exit */
+
+int find_stack_direction(void)
 {
   static char *addr = 0;
   auto char dummy;
-  if (addr == 0)
-    {
+  if (addr == 0) {
       addr = &dummy;
-      return find_stack_direction ();
-    }
-  else
-    return (&dummy > addr) ? 1 : -1;
+      return find_stack_direction();
+  } else {
+      return ((&dummy > addr) ? 1 : -1);
+  }
 }
-main ()
+
+int main(void)
 {
-  exit (find_stack_direction() < 0);
-}]])], 
+  exit(find_stack_direction() < 0);
+  return 0;
+}
+  ]])], 
   [ac_cv_c_stack_direction=1],
   [ac_cv_c_stack_direction=-1],
   [ac_cv_c_stack_direction=0])])
-AC_DEFINE_UNQUOTED([STACK_DIRECTION],[$ac_cv_c_stack_direction],
+AC_DEFINE_UNQUOTED([STACK_DIRECTION],[${ac_cv_c_stack_direction}],
   [Define if you know the direction of stack growth for your system;
    otherwise it will be automatically deduced at run-time.
         STACK_DIRECTION > 0 => grows toward higher addresses
         STACK_DIRECTION < 0 => grows toward lower addresses
         STACK_DIRECTION = 0 => direction of growth unknown])
-])
+])dnl
 
 # AC_LANG_FUNC_LINK_TRY(C)(FUNCTION)
 # ----------------------------------
@@ -197,36 +220,38 @@ AC_DEFINE_UNQUOTED([STACK_DIRECTION],[$ac_cv_c_stack_direction],
 # main that affects the exit status.
 #
 m4_define([AC_LANG_FUNC_LINK_TRY(C)],
-[AC_LANG_PROGRAM(
-[/* System header to define __stub macros and hopefully few prototypes,
-    which can conflict with char $1 (); below.
-    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
-    <limits.h> exists even on freestanding compilers.  Under hpux,
-    including <limits.h> includes <sys/time.h> and causes problems
-    checking for functions defined therein.  */
-#if defined (__STDC__) && !defined (_HPUX_SOURCE)
+[AC_LANG_PROGRAM([[
+/* System header to define __stub macros and hopefully few prototypes,
+ *  which can conflict with char $1 (); below.
+ *  Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+ *  <limits.h> exists even on freestanding compilers.  Under hpux,
+ *  including <limits.h> includes <sys/time.h> and causes problems
+ *  checking for functions defined therein.  */
+#if defined(__STDC__) && !defined(_HPUX_SOURCE)
 # include <limits.h>
 #else
 # include <assert.h>
-#endif
+#endif /* __STDC__ && !_HPUX_SOURCE */
 /* Override any gcc2 internal prototype to avoid an error.  */
 #ifdef __cplusplus
 extern "C"
 {
-#endif
+#endif /* __cplusplus */
 /* We use char because int might match the return type of a gcc2
    builtin and then its argument prototype would still apply.  */
 char $1 ();
 /* The GNU C library defines this for functions which it implements
-    to always fail with ENOSYS.  Some functions are actually named
-    something starting with __ and the normal name is an alias.  */
-#if defined (__stub_$1) || defined (__stub___$1)
+ *  to always fail with ENOSYS. Some functions are actually named
+ *  something starting with __ and the normal name is an alias. */
+#if defined(__stub_$1) || defined(__stub___$1)
 choke me
 #else
-char (*f) () = $1;
-#endif
+char (*f)() = $1;
+#endif /* __stub_$1 || __stub___$1 */
 #ifdef __cplusplus
 }
-#endif
-],[return f != $1;])])
+#endif /* __cplusplus */
+]],[[
+return f != $1;
+]])])dnl
 

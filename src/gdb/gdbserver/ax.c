@@ -1,4 +1,5 @@
-/* Agent expression code for remote server.
+/* ax.c
+   Agent expression code for remote server.
    Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -25,7 +26,7 @@ static void ax_vdebug (const char *, ...) ATTRIBUTE_PRINTF (1, 2);
 
 #ifdef IN_PROCESS_AGENT
 int debug_agent = 0;
-#endif
+#endif /* IN_PROCESS_AGENT */
 
 static void
 ax_vdebug (const char *fmt, ...)
@@ -736,12 +737,12 @@ compile_bytecodes (struct agent_expr *aexpr)
 
 	default:
 	  ax_debug ("Agent expression op 0x%x not recognized\n", op);
-	  /* Don't struggle on, things will just get worse.  */
+	  /* Do NOT struggle on, things will just get worse.  */
 	  return expr_eval_unrecognized_opcode;
 	}
 
       /* This catches errors that occur in target-specific code
-	 emission.  */
+       * emission.  */
       if (emit_error)
 	{
 	  ax_debug ("Error %d while emitting code for %s\n",
@@ -757,12 +758,13 @@ compile_bytecodes (struct agent_expr *aexpr)
     {
       int written = 0;
 
-      if (aentry->goto_pc < 0)
-	continue;
+		if (aentry->goto_pc < 0) {
+			continue;
+		}
 
       /* Find the location that we are going to, and call back into
-	 target-specific code to write the actual address or
-	 displacement.  */
+       * target-specific code to write the actual address or
+       * displacement.  */
       for (aentry2 = bytecode_address_table; aentry2; aentry2 = aentry2->next)
 	{
 	  if (aentry2->pc == aentry->goto_pc)
@@ -777,7 +779,7 @@ compile_bytecodes (struct agent_expr *aexpr)
 	    }
 	}
 
-      /* Error out if we didn't find a destination.  */
+      /* Error out if we did NOT find a destination.  */
       if (!written)
 	{
 	  ax_debug ("Destination of goto %d not found\n",
@@ -789,7 +791,7 @@ compile_bytecodes (struct agent_expr *aexpr)
   return expr_eval_no_error;
 }
 
-#endif
+#endif /* !IN_PROCESS_AGENT (?) (really far up) */
 
 /* Make printf-type calls using arguments supplied from the host.  We
    need to parse the format string ourselves, and call the formatting
@@ -866,7 +868,7 @@ ax_printf (CORE_ADDR fn, CORE_ADDR chan, const char *format,
 	    }
 #else
 	    error (_("long long not supported in agent printf"));
-#endif
+#endif /* CC_HAS_LONG_LONG && PRINTF_HAS_LONG_LONG */
 	case int_arg:
 	  {
 	    int val = args[i];
@@ -1276,7 +1278,7 @@ gdb_eval_agent_expr (struct eval_agent_expr_context *ctx,
 	  {
 	    int nargs, slen, i;
 	    CORE_ADDR fn = 0, chan = 0;
-	    /* Can't have more args than the entire size of the stack.  */
+	    /* Cannot have more args than the entire size of the stack.  */
 	    ULONGEST args[STACK_MAX];
 	    char *format;
 
@@ -1319,13 +1321,13 @@ gdb_eval_agent_expr (struct eval_agent_expr_context *ctx,
 	case gdb_agent_op_trace16:
 	  ax_debug ("Agent expression op 0x%x valid, but not handled",
 		    op);
-	  /* If ever GDB generates any of these, we don't have the
+	  /* If ever GDB generates any of these, we do NOT have the
 	     option of ignoring.  */
 	  return 1;
 
 	default:
 	  ax_debug ("Agent expression op 0x%x not recognized", op);
-	  /* Don't struggle on, things will just get worse.  */
+	  /* Do NOT struggle on, things will just get worse.  */
 	  return expr_eval_unrecognized_opcode;
 	}
 
@@ -1346,3 +1348,5 @@ gdb_eval_agent_expr (struct eval_agent_expr_context *ctx,
 		gdb_agent_op_name (op), sp, phex_nz (top, 0));
     }
 }
+
+/* EOF */

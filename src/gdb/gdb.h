@@ -1,4 +1,4 @@
-/* Library interface into GDB.
+/* gdb.h: Library interface into GDB.
    Copyright 1999, 2001
    Free Software Foundation, Inc.
 
@@ -47,18 +47,24 @@ enum gdb_rc {
 
 /* Print the specified breakpoint on GDB_STDOUT. (Eventually this
    function will ``print'' the object on ``output''). */
-enum gdb_rc gdb_breakpoint_query (struct ui_out *uiout, int bnum,
-				  char **error_message);
+enum gdb_rc gdb_breakpoint_query(struct ui_out *uiout, int bnum,
+				 char **error_message);
 
 /* Create a breakpoint at ADDRESS (a GDB source and line). */
-enum gdb_rc gdb_breakpoint (char *address, char *condition,
-			    int hardwareflag, int tempflag,
-			    /* APPLE LOCAL future breakpoints */
-			    int futureflag,
-			    int thread, int ignore_count,
-			    /* APPLE LOCAL breakpoints */
-			    int *indices, char *requested_shlib,
-			    char **error_message);
+enum gdb_rc gdb_breakpoint(char *address, char *condition,
+			   int hardwareflag, int tempflag,
+			   /* APPLE LOCAL future breakpoints */
+			   int futureflag,
+			   int thread, int ignore_count,
+			   /* APPLE LOCAL breakpoints */
+			   int *indices, char *requested_shlib,
+			   char **error_message);
+
+/* The equivalent FSF version of the previous: */
+enum gdb_rc fsf_gdb_breakpoint(char *address, char *condition,
+                               int hardwareflag, int tempflag,
+                               int thread, int ignore_count,
+                               char **error_message);
 
 /* Switch thread and print notification. */
 enum gdb_rc gdb_thread_select (struct ui_out *uiout, char *tidstr,
@@ -73,3 +79,5 @@ enum gdb_rc gdb_list_thread_ids (struct ui_out *uiout,
 				 char **error_message);
 
 #endif /* !GDB_H */
+
+/* EOF */

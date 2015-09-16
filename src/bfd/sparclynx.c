@@ -1,4 +1,4 @@
-/* BFD support for Sparc binaries under LynxOS.
+/* sparclynx.c: BFD support for Sparc binaries under LynxOS.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1997, 1998, 2000,
    2001, 2002, 2003, 2005 Free Software Foundation, Inc.
 
@@ -16,13 +16,27 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic warning "-Wtraditional"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 /* Do not "beautify" the CONCAT* macro args.  Traditional C will not
-   remove whitespace added here, and thus will fail to concatenate
-   the tokens.  */
+ * remove whitespace added here, and thus will fail to concatenate
+ * the tokens: */
 #define MY(OP) CONCAT2 (sparclynx_aout_,OP)
 #define TARGETNAME "a.out-sparc-lynx"
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -68,11 +82,9 @@ static bfd_boolean NAME (aout,sparclynx_write_object_contents) PARAMS ((bfd *));
    @end table  */
 
 void
-NAME(lynx,set_arch_mach) (abfd, machtype)
-     bfd *abfd;
-     unsigned long machtype;
+NAME(lynx,set_arch_mach)(bfd *abfd, unsigned long machtype)
 {
-  /* Determine the architecture and machine type of the object file.  */
+  /* Determine the architecture and machine type of the object file: */
   enum bfd_architecture arch;
   unsigned long machine;
 
@@ -130,40 +142,36 @@ NAME(lynx,set_arch_mach) (abfd, machtype)
   NAME(lynx,set_arch_mach) (ABFD, N_MACHTYPE (EXEC)); \
   choose_reloc_size(ABFD);
 
-/* Determine the size of a relocation entry, based on the architecture.  */
-
+/* Determine the size of a relocation entry, based on the architecture: */
 static void
-choose_reloc_size (abfd)
-     bfd *abfd;
+choose_reloc_size(bfd *abfd)
 {
-  switch (bfd_get_arch (abfd))
+  switch (bfd_get_arch(abfd))
     {
     case bfd_arch_sparc:
     case bfd_arch_a29k:
-      obj_reloc_entry_size (abfd) = RELOC_EXT_SIZE;
+      obj_reloc_entry_size(abfd) = RELOC_EXT_SIZE;
       break;
     default:
-      obj_reloc_entry_size (abfd) = RELOC_STD_SIZE;
+      obj_reloc_entry_size(abfd) = RELOC_STD_SIZE;
       break;
     }
 }
 
 /* Write an object file in LynxOS format.
-  Section contents have already been written.  We write the
-  file header, symbols, and relocation.  */
-
+ * Section contents have already been written.  We write the
+ * file header, symbols, and relocation.  */
 static bfd_boolean
-NAME(aout,sparclynx_write_object_contents) (abfd)
-     bfd *abfd;
+NAME(aout,sparclynx_write_object_contents)(bfd *abfd)
 {
   struct external_exec exec_bytes;
-  struct internal_exec *execp = exec_hdr (abfd);
+  struct internal_exec *execp = exec_hdr(abfd);
 
   /* Magic number, maestro, please!  */
-  switch (bfd_get_arch (abfd))
+  switch (bfd_get_arch(abfd))
     {
     case bfd_arch_m68k:
-      switch (bfd_get_mach (abfd))
+      switch (bfd_get_mach(abfd))
 	{
 	case bfd_mach_m68010:
 	  N_SET_MACHTYPE (*execp, M_68010);
@@ -197,13 +205,12 @@ NAME(aout,sparclynx_write_object_contents) (abfd)
 }
 
 #define MY_set_sizes sparclynx_set_sizes
-static bfd_boolean sparclynx_set_sizes PARAMS ((bfd *));
+static bfd_boolean sparclynx_set_sizes PARAMS((bfd *));
 
 static bfd_boolean
-sparclynx_set_sizes (abfd)
-     bfd *abfd;
+sparclynx_set_sizes(bfd *abfd)
 {
-  switch (bfd_get_arch (abfd))
+  switch (bfd_get_arch(abfd))
     {
     default:
       return FALSE;

@@ -22,6 +22,8 @@
 #ifndef SERIAL_H
 #define SERIAL_H
 
+#include "ansidecl.h"
+
 struct ui_file;
 
 /* For most routines, if a failure is indicated, then errno should be
@@ -34,8 +36,8 @@ typedef void *serial_ttystate;
 struct serial;
 
 /* Try to open NAME.  Returns a new `struct serial *' on success, NULL
-   on failure. Note that some open calls can block and, if possible, 
-   should be  written to be non-blocking, with calls to ui_look_hook 
+   on failure. Note that some open calls can block and, if possible,
+   should be  written to be non-blocking, with calls to ui_look_hook
    so they can be cancelled. An async interface for open could be
    added to GDB if necessary.  */
 
@@ -63,7 +65,7 @@ enum serial_rc {
   SERIAL_ERROR = -1,	/* General error.  */
   SERIAL_TIMEOUT = -2,	/* Timeout or data-not-ready during read.
 			   Unfortunately, through
-			   deprecated_ui_loop_hook (), this can also
+			   deprecated_ui_loop_hook(), this can also
 			   be a QUIT indication.  */
   SERIAL_EOF = -3	/* General end-of-file or remote target
 			   connection closed, indication.  Includes
@@ -79,7 +81,7 @@ extern int serial_write (struct serial *scb, const char *str, int len);
 
 /* Write a printf style string onto the serial port.  */
 
-extern void serial_printf (struct serial *desc, 
+extern void serial_printf (struct serial *desc,
 			   const char *,...) ATTR_FORMAT (printf, 2, 3);
 
 /* Allow pending output to drain.  */
@@ -161,12 +163,12 @@ extern int serial_is_async_p (struct serial *scb);
 typedef void (serial_event_ftype) (struct serial *scb, void *context);
 extern void serial_async (struct serial *scb, serial_event_ftype *handler, void *context);
 
-/* Provide direct access to the underlying FD (if any) used to
-   implement the serial device.  This interface is clearly
-   deprecated. Will call internal_error() if the operation isn't
-   applicable to the current serial device.  */
-
-extern int deprecated_serial_fd (struct serial *scb);
+/* Provide direct access to the underlying FD (if any) used to implement
+ * the serial device.  This interface is clearly deprecated.  It will call
+ * internal_error() if the operation is NOT applicable to the current
+ * serial device: */
+extern int deprecated_serial_fd(struct serial *scb)
+  ATTRIBUTE_DEPRECATED;
 
 /* Trace/debug mechanism.
 

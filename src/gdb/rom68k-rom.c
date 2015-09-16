@@ -1,4 +1,4 @@
-/* Remote target glue for the ROM68K ROM monitor.
+/* rom68k-rom.c: Remote target glue for the ROM68K ROM monitor.
    Copyright 1988, 1991, 1992, 1993, 1994, 1995, 1998, 1999, 2000, 2001
    Free Software Foundation, Inc.
 
@@ -29,7 +29,7 @@
 
 #include "m68k-tdep.h"
 
-static void rom68k_open (char *args, int from_tty);
+static void rom68k_open(char *args, int from_tty);
 
 /* Return true if C is a hex digit.
    We can't use isxdigit here: that is affected by the current locale;
@@ -160,7 +160,7 @@ rom68k_supply_register (char *regname, int regnamelen, char *val, int vallen)
    either. So, typing "info reg sp" becomes a "r30".  */
 
 static const char *
-rom68k_regname (int index) 
+rom68k_regname (int index)
 {
 
   static char *regnames[] =
@@ -169,8 +169,8 @@ rom68k_regname (int index)
     "A0", "A1", "A2", "A3", "A4", "A5", "A6", "ISP",
     "SR", "PC"
   };
-  
-  if ((index >= (sizeof (regnames) / sizeof(regnames[0]))) 
+
+  if ((index >= (sizeof (regnames) / sizeof(regnames[0])))
        || (index < 0) || (index >= NUM_REGS))
     return NULL;
   else
@@ -241,18 +241,18 @@ init_rom68k_cmds (void)
 }				/* init_rom68k_cmds */
 
 static void
-rom68k_open (char *args, int from_tty)
+rom68k_open(char *args, int from_tty)
 {
-  monitor_open (args, &rom68k_cmds, from_tty);
+  monitor_open(args, &rom68k_cmds, from_tty);
 }
 
 extern initialize_file_ftype _initialize_rom68k; /* -Wmissing-prototypes */
 
 void
-_initialize_rom68k (void)
+_initialize_rom68k(void)
 {
-  init_rom68k_cmds ();
-  init_monitor_ops (&rom68k_ops);
+  init_rom68k_cmds();
+  init_monitor_ops(&rom68k_ops);
 
   rom68k_ops.to_shortname = "rom68k";
   rom68k_ops.to_longname = "Rom68k debug monitor for the IDP Eval board";
@@ -260,5 +260,7 @@ _initialize_rom68k (void)
 Specify the serial device it is connected to (e.g. /dev/ttya).";
   rom68k_ops.to_open = rom68k_open;
 
-  add_target (&rom68k_ops);
+  add_target(&rom68k_ops);
 }
+
+/* EOF */

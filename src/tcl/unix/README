@@ -140,4 +140,4 @@ The Tcl test suite is very sensitive to proper implementation of
 ANSI C library procedures such as sprintf and sscanf.  If the test
 suite generates errors, most likely they are due to non-conformance
 of your system's ANSI C library;  such problems are unlikely to
-affect any real applications so it's probably safe to ignore them.
+affect any real applications so it is probably safe to ignore them.

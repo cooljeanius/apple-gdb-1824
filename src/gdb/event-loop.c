@@ -1,4 +1,4 @@
-/* Event loop machinery for GDB, the GNU debugger.
+/* event-loop.c: Event loop machinery for GDB, the GNU debugger.
    Copyright 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
    Written by Elena Zannoni <ezannoni@cygnus.com> of Cygnus Solutions.
 
@@ -26,12 +26,12 @@
 #include "ui-out.h"
 
 #ifdef HAVE_POLL
-#if defined (HAVE_POLL_H)
-#include <poll.h>
-#elif defined (HAVE_SYS_POLL_H)
-#include <sys/poll.h>
-#endif
-#endif
+# if defined(HAVE_POLL_H)
+#  include <poll.h>
+# elif defined(HAVE_SYS_POLL_H)
+#  include <sys/poll.h>
+# endif /* HAVE_POLL_H || HAVE_SYS_POLL_H */
+#endif /* HAVE_POLL */
 
 #include <sys/types.h>
 #include "gdb_string.h"
@@ -50,12 +50,12 @@ typedef struct gdb_event gdb_event;
    be called.  We have 2 queues, one for file handlers that we listen
    to in the event loop, and one for the file handlers+events that are
    APPLE LOCAL begin async
-   ready. 
+   ready.
 
    File events are all handled through the procedure
    handle_file_event.  Its duty is to invoke the handler associated
    with the file descriptor whose state change generated the event,
-   plus doing other cleanups and such. 
+   plus doing other cleanups and such.
 
    Other event types can be created, and added to the event queue by
    using gdb_queue_event.  */
@@ -95,7 +95,7 @@ file_handler;
    asyn_signal_handler for each interesting signal. */
 typedef struct async_signal_handler
   {
-    int ready;			/* If ready, call this handler from the main event loop, 
+    int ready;			/* If ready, call this handler from the main event loop,
 				   using invoke_async_handler. */
     struct async_signal_handler *next_handler;	/* Ptr to next handler */
     sig_handler_func *proc;	/* Function to call to do the work */
@@ -104,10 +104,10 @@ typedef struct async_signal_handler
 async_signal_handler;
 
 
-/* Event queue:  
-   - the first event in the queue is the head of the queue. 
+/* Event queue:
+   - the first event in the queue is the head of the queue.
    It will be the next to be serviced.
-   - the last event in the queue 
+   - the last event in the queue
 
    Events can be inserted at the front of the queue or at the end of
    the queue.  Events will be extracted from the queue for processing
@@ -137,25 +137,27 @@ event_queue;
 
 /* Do we use poll or select ? */
 #ifdef HAVE_POLL
-#define USE_POLL 1
+# define USE_POLL 1
 #else
-#define USE_POLL 0
+# define USE_POLL 0
 #endif /* HAVE_POLL */
 
 /* APPLE LOCAL begin poll disable */
-/* Don't use poll() until we've had time to vet all the poll() code
+#ifdef __APPLE__
+/* Do NOT use poll() until we have had time to vet all the poll() code
    paths and ensured no new bugs or performance problems are
    introduced by using it instead of select().  */
-#undef USE_POLL
-#define USE_POLL 0
+# undef USE_POLL
+# define USE_POLL 0
+#endif /* __APPLE__ */
 /* APPLE LOCAL end poll disable */
 
 static unsigned char use_poll = USE_POLL;
 
 #ifdef USE_WIN32API
-#include <windows.h>
-#include <io.h>
-#endif
+# include <windows.h>
+# include <io.h>
+#endif /* USE_WIN32API */
 
 static struct
   {
@@ -168,7 +170,7 @@ static struct
 
     /* Timeout in milliseconds for calls to poll(). */
     int poll_timeout;
-#endif
+#endif /* HAVE_POLL */
 
     /* Masks to be used in the next call to select.
        Bits are set in response to calls to create_file_handler. */
@@ -260,7 +262,7 @@ gdb_queue_event (event_handler_func proc, void *data, queue_position position)
 }
 /* APPLE LOCAL end async */
 
-/* Insert an event object into the gdb event queue at 
+/* Insert an event object into the gdb event queue at
    the specified position.
    POSITION can be head or tail, with values TAIL, HEAD.
    EVENT_PTR points to the event to be inserted into the queue.
@@ -301,7 +303,7 @@ static gdb_event *
 gdb_create_event (event_handler_func proc, void *data)
 {
   gdb_event *new_event;
-  
+
   new_event = (gdb_event *) xmalloc (sizeof (gdb_event));
   new_event->proc = proc;
   new_event->data = data;
@@ -315,42 +317,43 @@ gdb_create_event (event_handler_func proc, void *data)
    handle_file_event, which will in turn invoke the one that was
    associated to FD when it was registered with the event loop. */
 static gdb_event *
-create_file_event (int fd)
+create_file_event(int fd)
 {
   /* APPLE LOCAL async */
-  return gdb_create_event (handle_file_event, (void *) fd);
+  return gdb_create_event(handle_file_event, (void *)(intptr_t)fd);
 }
 
 /* APPLE LOCAL begin event queue printing */
 /* This function is used for debugging.  */
-void 
-print_event_queue ()
+void
+print_event_queue(void)
 {
   gdb_event *event_ptr;
   file_handler *file_ptr;
 
-  printf ("*** Printing event queue\n");
-  printf ("    Async status: %d\n", check_async_ready());
-  printf ("*** File Descriptors are: \n");
+  printf("*** Printing event queue\n");
+  printf("    Async status: %d\n", check_async_ready());
+  printf("*** File Descriptors are: \n");
   for (file_ptr = gdb_notifier.first_file_handler; file_ptr != NULL;
        file_ptr = file_ptr->next_file)
     {
-      printf ("    FD:  %d\n", (int) file_ptr->fd);
+      printf("    FD:  %d\n", (int) file_ptr->fd);
     }
 
-  
-  printf ("*** Event queue is:\n");
+
+  printf("*** Event queue is:\n");
   for (event_ptr = event_queue.first_event; event_ptr != NULL;
        event_ptr = event_ptr->next_event)
     {
-      printf ("    File Descriptor: %d, Handler: 0x%lx\n",
-	      (int) event_ptr->data, (unsigned long) event_ptr->proc);
-      if ((unsigned long) event_ptr->proc == (unsigned long) handle_file_event)
+      printf("    File Descriptor: %d, Handler: 0x%lx\n",
+	     (int)(intptr_t)event_ptr->data,
+             (unsigned long)event_ptr->proc);
+      if ((unsigned long)event_ptr->proc == (unsigned long)handle_file_event)
 	{
 	  for (file_ptr = gdb_notifier.first_file_handler; file_ptr != NULL;
 	       file_ptr = file_ptr->next_file)
 	    {
-	      if (file_ptr->fd == (int) event_ptr->data)
+	      if (file_ptr->fd == (int)(intptr_t)event_ptr->data)
 		{
 		  printf ("     - File Event, handler is 0x%lx\n",
 			  (unsigned long) file_ptr->proc);
@@ -366,7 +369,7 @@ print_event_queue ()
    or an asynchronous event handler can be invoked in response to
    the reception of a signal.
    If an event was processed (either way), 1 is returned otherwise
-   0 is returned.   
+   0 is returned.
    Scan the queue from head to tail, processing therefore the high
    priority events first, by invoking the associated event handler
    procedure. */
@@ -382,9 +385,9 @@ process_event (void)
      are ready. These would be the result of invoking any of the
      signal handlers. */
 
-  if (check_async_ready ())
+  if (check_async_ready())
     {
-      invoke_async_signal_handler ();
+      invoke_async_signal_handler();
       return 1;
     }
 
@@ -442,29 +445,29 @@ process_event (void)
    occurs catch_errors() which calls this function returns zero. */
 
 int
-gdb_do_one_event (void *data)
+gdb_do_one_event(void *data)
 {
   /* Any events already waiting in the queue? */
-  if (process_event ())
+  if (process_event())
     {
       return 1;
     }
 
   /* Are any timers that are ready? If so, put an event on the queue. */
-  poll_timers ();
+  poll_timers();
 
   /* Wait for a new event.  If gdb_wait_for_event returns -1,
      we should get out because this means that there are no
      event sources left. This will make the event loop stop,
      and the application exit. */
 
-  if (gdb_wait_for_event () < 0)
+  if (gdb_wait_for_event() < 0)
     {
       return -1;
     }
 
   /* Handle any new events occurred while waiting. */
-  if (process_event ())
+  if (process_event())
     {
       return 1;
     }
@@ -478,7 +481,7 @@ gdb_do_one_event (void *data)
    from the command loop. */
 
 void
-start_event_loop (void)
+start_event_loop(void)
 {
   /* Loop until there is nothing to do. This is the entry point to the
      event loop engine. gdb_do_one_event, called via catch_errors()
@@ -490,12 +493,12 @@ start_event_loop (void)
     {
       int gdb_result;
 
-      uiout = interp_ui_out (current_interp ());
-      
-      gdb_result = catch_errors (gdb_do_one_event, 0, "", RETURN_MASK_ALL);
+      uiout = interp_ui_out(current_interp());
+
+      gdb_result = catch_errors(gdb_do_one_event, 0, "", RETURN_MASK_ALL);
       if (gdb_result < 0)
 	break;
-                
+
       /* If we long-jumped out of do_one_event, we probably
          didn't get around to resetting the prompt, which leaves
          readline in a messed-up state.  Reset it here. */
@@ -503,7 +506,7 @@ start_event_loop (void)
       if (gdb_result == 0)
 	{
 	  /* APPLE LOCAL whack-a-FIXME */
-	  display_gdb_prompt (0);
+	  display_gdb_prompt(0);
 	  /* This call looks bizarre, but it is required.  If the user
 	     entered a command that caused an error,
 	     after_char_processing_hook won't be called from
@@ -511,7 +514,7 @@ start_event_loop (void)
 	     won't work, since we want this function to be called
 	     after a new prompt is printed.  */
 	  if (after_char_processing_hook)
-	    (*after_char_processing_hook) ();
+	    (*after_char_processing_hook)();
 	  /* Maybe better to set a flag to be checked somewhere as to
 	     whether display the prompt or not. */
 	}
@@ -527,48 +530,48 @@ start_event_loop (void)
    doesn't have to know implementation details about the use of poll
    vs. select. */
 void
-add_file_handler (int fd, handler_func * proc, gdb_client_data client_data)
+add_file_handler(int fd, handler_func * proc, gdb_client_data client_data)
 {
 #ifdef HAVE_POLL
   struct pollfd fds;
-#endif
+#endif /* HAVE_POLL */
 
   if (use_poll)
     {
 #ifdef HAVE_POLL
-      /* Check to see if poll () is usable. If not, we'll switch to
+      /* Check to see if poll() is usable.  If not, we shall switch to
          use select. This can happen on systems like
          m68k-motorola-sys, `poll' cannot be used to wait for `stdin'.
          On m68k-motorola-sysv, tty's are not stream-based and not
          `poll'able. */
       fds.fd = fd;
       fds.events = POLLIN;
-      if (poll (&fds, 1, 0) == 1 && (fds.revents & POLLNVAL))
+      if ((poll(&fds, 1, 0) == 1) && (fds.revents & POLLNVAL))
 	use_poll = 0;
 #else
-      internal_error (__FILE__, __LINE__,
-		      _("use_poll without HAVE_POLL"));
+      internal_error(__FILE__, __LINE__,
+		     _("use_poll without HAVE_POLL"));
 #endif /* HAVE_POLL */
     }
   if (use_poll)
     {
 #ifdef HAVE_POLL
-      create_file_handler (fd, POLLIN, proc, client_data);
+      create_file_handler(fd, POLLIN, proc, client_data);
 #else
-      internal_error (__FILE__, __LINE__,
-		      _("use_poll without HAVE_POLL"));
-#endif
+      internal_error(__FILE__, __LINE__,
+		     _("use_poll without HAVE_POLL"));
+#endif /* HAVE_POLL */
     }
   else
-    create_file_handler (fd, GDB_READABLE | GDB_EXCEPTION, proc, client_data);
+    create_file_handler(fd, GDB_READABLE | GDB_EXCEPTION, proc, client_data);
 }
 
 /* Add a file handler/descriptor to the list of descriptors we are
-   interested in.  
-   FD is the file descriptor for the file/stream to be listened to.  
+   interested in.
+   FD is the file descriptor for the file/stream to be listened to.
    For the poll case, MASK is a combination (OR) of
    POLLIN, POLLRDNORM, POLLRDBAND, POLLPRI, POLLOUT, POLLWRNORM,
-   POLLWRBAND: these are the events we are interested in. If any of them 
+   POLLWRBAND: these are the events we are interested in. If any of them
    occurs, proc should be called.
    For the select case, MASK is a combination of READABLE, WRITABLE, EXCEPTION.
    PROC is the procedure that will be called when an event occurs for
@@ -591,7 +594,7 @@ create_file_handler (int fd, int mask, handler_func * proc, gdb_client_data clie
      change the data associated with it. */
   if (file_ptr == NULL)
     {
-      file_ptr = (file_handler *) xmalloc (sizeof (file_handler));
+      file_ptr = (file_handler *)xmalloc(sizeof(file_handler));
       file_ptr->fd = fd;
       file_ptr->ready_mask = 0;
       file_ptr->next_file = gdb_notifier.first_file_handler;
@@ -603,39 +606,39 @@ create_file_handler (int fd, int mask, handler_func * proc, gdb_client_data clie
 	  gdb_notifier.num_fds++;
 	  if (gdb_notifier.poll_fds)
 	    gdb_notifier.poll_fds =
-	      (struct pollfd *) xrealloc (gdb_notifier.poll_fds,
-					  (gdb_notifier.num_fds
-					   * sizeof (struct pollfd)));
+	      (struct pollfd *)xrealloc(gdb_notifier.poll_fds,
+                                        (gdb_notifier.num_fds
+                                         * sizeof(struct pollfd)));
 	  else
 	    gdb_notifier.poll_fds =
-	      (struct pollfd *) xmalloc (sizeof (struct pollfd));
+	      (struct pollfd *)xmalloc(sizeof(struct pollfd));
 	  (gdb_notifier.poll_fds + gdb_notifier.num_fds - 1)->fd = fd;
 	  (gdb_notifier.poll_fds + gdb_notifier.num_fds - 1)->events = mask;
 	  (gdb_notifier.poll_fds + gdb_notifier.num_fds - 1)->revents = 0;
 #else
-	  internal_error (__FILE__, __LINE__,
-			  _("use_poll without HAVE_POLL"));
+	  internal_error(__FILE__, __LINE__,
+			 _("use_poll without HAVE_POLL"));
 #endif /* HAVE_POLL */
 	}
       else
 	{
 	  if (mask & GDB_READABLE)
-	    FD_SET (fd, &gdb_notifier.check_masks[0]);
+	    FD_SET(fd, &gdb_notifier.check_masks[0]);
 	  else
-	    FD_CLR (fd, &gdb_notifier.check_masks[0]);
+	    FD_CLR(fd, &gdb_notifier.check_masks[0]);
 
 	  if (mask & GDB_WRITABLE)
-	    FD_SET (fd, &gdb_notifier.check_masks[1]);
+	    FD_SET(fd, &gdb_notifier.check_masks[1]);
 	  else
-	    FD_CLR (fd, &gdb_notifier.check_masks[1]);
+	    FD_CLR(fd, &gdb_notifier.check_masks[1]);
 
 	  if (mask & GDB_EXCEPTION)
-	    FD_SET (fd, &gdb_notifier.check_masks[2]);
+	    FD_SET(fd, &gdb_notifier.check_masks[2]);
 	  else
-	    FD_CLR (fd, &gdb_notifier.check_masks[2]);
+	    FD_CLR(fd, &gdb_notifier.check_masks[2]);
 
 	  if (gdb_notifier.num_fds <= fd)
-	    gdb_notifier.num_fds = fd + 1;
+	    gdb_notifier.num_fds = (fd + 1);
 	}
     }
 
@@ -644,20 +647,19 @@ create_file_handler (int fd, int mask, handler_func * proc, gdb_client_data clie
   file_ptr->mask = mask;
 }
 
-/* Remove the file descriptor FD from the list of monitored fd's: 
+/* Remove the file descriptor FD from the list of monitored fd's:
    i.e. we don't care anymore about events on the FD. */
 void
-delete_file_handler (int fd)
+delete_file_handler(int fd)
 {
   file_handler *file_ptr, *prev_ptr = NULL;
   int i;
 #ifdef HAVE_POLL
   int j;
   struct pollfd *new_poll_fds;
-#endif
+#endif /* HAVE_POLL */
 
-  /* Find the entry for the given file. */
-
+  /* Find the entry for the given file: */
   for (file_ptr = gdb_notifier.first_file_handler; file_ptr != NULL;
        file_ptr = file_ptr->next_file)
     {
@@ -675,7 +677,7 @@ delete_file_handler (int fd)
          one we want to get rid of. */
 
       new_poll_fds =
-	(struct pollfd *) xmalloc ((gdb_notifier.num_fds - 1) * sizeof (struct pollfd));
+	(struct pollfd *)xmalloc((gdb_notifier.num_fds - 1) * sizeof(struct pollfd));
 
       for (i = 0, j = 0; i < gdb_notifier.num_fds; i++)
 	{
@@ -687,22 +689,22 @@ delete_file_handler (int fd)
 	      j++;
 	    }
 	}
-      xfree (gdb_notifier.poll_fds);
+      xfree(gdb_notifier.poll_fds);
       gdb_notifier.poll_fds = new_poll_fds;
       gdb_notifier.num_fds--;
 #else
-      internal_error (__FILE__, __LINE__,
-		      _("use_poll without HAVE_POLL"));
+      internal_error(__FILE__, __LINE__,
+		     _("use_poll without HAVE_POLL"));
 #endif /* HAVE_POLL */
     }
   else
     {
       if (file_ptr->mask & GDB_READABLE)
-	FD_CLR (fd, &gdb_notifier.check_masks[0]);
+	FD_CLR(fd, &gdb_notifier.check_masks[0]);
       if (file_ptr->mask & GDB_WRITABLE)
-	FD_CLR (fd, &gdb_notifier.check_masks[1]);
+	FD_CLR(fd, &gdb_notifier.check_masks[1]);
       if (file_ptr->mask & GDB_EXCEPTION)
-	FD_CLR (fd, &gdb_notifier.check_masks[2]);
+	FD_CLR(fd, &gdb_notifier.check_masks[2]);
 
       /* Find current max fd. */
 
@@ -720,7 +722,7 @@ delete_file_handler (int fd)
 	}
     }
 
-  /* Deactivate the file descriptor, by clearing its mask, 
+  /* Deactivate the file descriptor, by clearing its mask,
      so that it will not fire again. */
 
   file_ptr->mask = 0;
@@ -745,16 +747,16 @@ delete_file_handler (int fd)
    event in the front of the event queue. */
 static void
 /* APPLE LOCAL async */
-handle_file_event (void *data)
+handle_file_event(void *data)
 {
   /* APPLE LOCAL async */
-  int event_file_desc = (int) data;
+  int event_file_desc = (int)(intptr_t)data;
   file_handler *file_ptr;
   int mask;
 #ifdef HAVE_POLL
   int error_mask;
   int error_mask_returned;
-#endif
+#endif /* HAVE_POLL */
 
   /* Search the file handler list to find one that matches the fd in
      the event. */
@@ -776,9 +778,9 @@ handle_file_event (void *data)
 	  if (use_poll)
 	    {
 #ifdef HAVE_POLL
-	      error_mask = POLLHUP | POLLERR | POLLNVAL;
-	      mask = (file_ptr->ready_mask & file_ptr->mask) |
-		(file_ptr->ready_mask & error_mask);
+	      error_mask = (POLLHUP | POLLERR | POLLNVAL);
+	      mask = ((file_ptr->ready_mask & file_ptr->mask)
+                      | (file_ptr->ready_mask & error_mask));
 	      error_mask_returned = mask & error_mask;
 
 	      if (error_mask_returned != 0)
@@ -790,21 +792,21 @@ handle_file_event (void *data)
 		  if (error_mask_returned & POLLERR)
 		    printf_unfiltered (_("Error detected on fd %d\n"), file_ptr->fd);
 		  if (error_mask_returned & POLLNVAL)
-		    printf_unfiltered (_("Invalid or non-`poll'able fd %d\n"), file_ptr->fd);
+		    printf_unfiltered(_("Invalid or non-`poll'able fd %d\n"), file_ptr->fd);
 		  file_ptr->error = 1;
 		}
 	      else
 		file_ptr->error = 0;
 #else
-	      internal_error (__FILE__, __LINE__,
-			      _("use_poll without HAVE_POLL"));
+	      internal_error(__FILE__, __LINE__,
+			     _("use_poll without HAVE_POLL"));
 #endif /* HAVE_POLL */
 	    }
 	  else
 	    {
 	      if (file_ptr->ready_mask & GDB_EXCEPTION)
 		{
-		  printf_unfiltered (_("Exception condition detected on fd %d\n"), file_ptr->fd);
+		  printf_unfiltered(_("Exception condition detected on fd %d\n"), file_ptr->fd);
 		  file_ptr->error = 1;
 		}
 	      else
@@ -829,9 +831,9 @@ handle_file_event (void *data)
    function does not support sockets under Windows, so we do not want
    to use gdb_select in ser-base.c.  */
 
-static int 
-gdb_select (int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
-	    struct timeval *timeout)
+static int
+gdb_select(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
+	   struct timeval *timeout)
 {
 #ifdef USE_WIN32API
   HANDLE handles[MAXIMUM_WAIT_OBJECTS];
@@ -850,63 +852,61 @@ gdb_select (int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
       /* There is no support yet for WRITEFDS.  At present, this isn't
 	 used by GDB -- but we do not want to silently ignore WRITEFDS
 	 if something starts using it.  */
-      gdb_assert (!FD_ISSET (fd, writefds));
-      if (FD_ISSET (fd, readfds))
+      gdb_assert(!FD_ISSET(fd, writefds));
+      if (FD_ISSET(fd, readfds))
 	{
-	  gdb_assert (num_handles < MAXIMUM_WAIT_OBJECTS);
-	  handles[num_handles++] = (HANDLE) _get_osfhandle (fd);
+	  gdb_assert(num_handles < MAXIMUM_WAIT_OBJECTS);
+	  handles[num_handles++] = (HANDLE)_get_osfhandle(fd);
 	}
     }
-  event = WaitForMultipleObjects (num_handles,
-				  handles,
-				  FALSE,
-				  timeout 
-				  ? (timeout->tv_sec * 1000 + timeout->tv_usec)
-				  : INFINITE);
+  event = WaitForMultipleObjects(num_handles, handles, FALSE,
+				 (timeout
+                                  ? (timeout->tv_sec * 1000 + timeout->tv_usec)
+                                  : INFINITE));
   /* EVENT can only be a value in the WAIT_ABANDONED_0 range if the
      HANDLES included an abandoned mutex.  Since GDB doesn't use
      mutexes, that should never occur.  */
-  gdb_assert (!(WAIT_ABANDONED_0 <= event
-		&& event < WAIT_ABANDONED_0 + num_handles));
+  gdb_assert(!((WAIT_ABANDONED_0 <= event)
+               && (event < (WAIT_ABANDONED_0 + num_handles))));
   if (event == WAIT_FAILED)
     return -1;
   if (event == WAIT_TIMEOUT)
     return 0;
   /* Run through the READFDS, clearing bits corresponding to descriptors
      for which input is unavailable.  */
-  num_ready = num_handles; 
+  num_ready = num_handles;
   h = handles[event - WAIT_OBJECT_0];
   for (fd = 0; fd < n; ++fd)
     {
       HANDLE fd_h;
-      if (!FD_ISSET (fd, readfds))
+      if (!FD_ISSET(fd, readfds))
 	continue;
-      fd_h = (HANDLE) _get_osfhandle (fd);
+      fd_h = (HANDLE)_get_osfhandle(fd);
       /* This handle might be ready, even though it wasn't the handle
 	 returned by WaitForMultipleObjects.  */
-      if (fd_h != h && WaitForSingleObject (fd_h, 0) != WAIT_OBJECT_0)
+      if ((fd_h != h) && (WaitForSingleObject(fd_h, 0) != WAIT_OBJECT_0))
 	{
-	  FD_CLR (fd, readfds);
+	  FD_CLR(fd, readfds);
 	  --num_ready;
 	}
     }
   /* We never report any descriptors available for writing or with
-     exceptional conditions.  */ 
-  FD_ZERO (writefds);
-  FD_ZERO (exceptfds);
+     exceptional conditions.  */
+  FD_ZERO(writefds);
+  FD_ZERO(exceptfds);
 
   return num_ready;
 #else
-  return select (n, readfds, writefds, exceptfds, timeout);
-#endif
+  return select(n, readfds, writefds, exceptfds, timeout);
+#endif /* USE_WIN32API */
 }
 
-/* Called by gdb_do_one_event to wait for new events on the 
-   monitored file descriptors. Queue file events as they are 
-   detected by the poll. 
-   If there are no events, this function will block in the 
+/* Called by gdb_do_one_event to wait for new events on the
+   monitored file descriptors. Queue file events as they are
+   detected by the poll.
+   If there are no events, this function will block in the
    call to poll.
-   Return -1 if there are no files descriptors to monitor, 
+   Return -1 if there are no files descriptors to monitor,
    otherwise return 0. */
 static int
 gdb_wait_for_event (void)
@@ -945,12 +945,12 @@ gdb_wait_for_event (void)
       gdb_notifier.ready_masks[0] = gdb_notifier.check_masks[0];
       gdb_notifier.ready_masks[1] = gdb_notifier.check_masks[1];
       gdb_notifier.ready_masks[2] = gdb_notifier.check_masks[2];
-      num_found = gdb_select (gdb_notifier.num_fds,
-			      &gdb_notifier.ready_masks[0],
-			      &gdb_notifier.ready_masks[1],
-			      &gdb_notifier.ready_masks[2],
-			      gdb_notifier.timeout_valid
-			      ? &gdb_notifier.select_timeout : NULL);
+      num_found = gdb_select(gdb_notifier.num_fds,
+			     &gdb_notifier.ready_masks[0],
+			     &gdb_notifier.ready_masks[1],
+			     &gdb_notifier.ready_masks[2],
+			     (gdb_notifier.timeout_valid
+                              ? &gdb_notifier.select_timeout : NULL));
 
       /* Clear the masks after an error from select. */
       if (num_found == -1)
@@ -1037,11 +1037,11 @@ gdb_wait_for_event (void)
 }
 
 
-/* Create an asynchronous handler, allocating memory for it. 
+/* Create an asynchronous handler, allocating memory for it.
    Return a pointer to the newly created handler.
-   This pointer will be used to invoke the handler by 
+   This pointer will be used to invoke the handler by
    invoke_async_signal_handler.
-   PROC is the function to call with CLIENT_DATA argument 
+   PROC is the function to call with CLIENT_DATA argument
    whenever the handler is invoked. */
 async_signal_handler *
 create_async_signal_handler (sig_handler_func * proc, gdb_client_data client_data)
@@ -1123,7 +1123,7 @@ invoke_async_signal_handler (void)
   return;
 }
 
-/* Delete an asynchronous handler (ASYNC_HANDLER_PTR). 
+/* Delete an asynchronous handler (ASYNC_HANDLER_PTR).
    Free the space allocated for it.  */
 void
 delete_async_signal_handler (async_signal_handler ** async_handler_ptr)
@@ -1157,14 +1157,14 @@ check_async_ready (void)
 }
 
 /* APPLE LOCAL begin sigint_taken_p */
+extern void *sigint_token;
 /* Test and clear the sigint pending flag */
-int 
+int
 sigint_taken_p (void)
 {
-  extern void *sigint_token;
-  if (((struct async_signal_handler *) sigint_token)->ready)
+  if (((struct async_signal_handler *)sigint_token)->ready)
     {
-      ((struct async_signal_handler *) sigint_token)->ready = 0;
+      ((struct async_signal_handler *)sigint_token)->ready = 0;
       return 1;
     }
   else return 0;
@@ -1312,16 +1312,16 @@ handle_timer_event (void *dummy)
    procedures associated with all that have expired. Update the
    timeout for the select() or poll() as well. */
 static void
-poll_timers (void)
+poll_timers(void)
 {
   struct timeval time_now, delta;
   gdb_event *event_ptr;
 
   if (timer_list.first_timer != NULL)
     {
-      gettimeofday (&time_now, NULL);
+      gettimeofday(&time_now, NULL);
       delta.tv_sec = timer_list.first_timer->when.tv_sec - time_now.tv_sec;
-      delta.tv_usec = timer_list.first_timer->when.tv_usec - time_now.tv_usec;
+      delta.tv_usec = (timer_list.first_timer->when.tv_usec - time_now.tv_usec);
       /* borrow? */
       if (delta.tv_usec < 0)
 	{
@@ -1332,21 +1332,21 @@ poll_timers (void)
       /* Oops it expired already. Tell select / poll to return
          immediately. (Cannot simply test if delta.tv_sec is negative
          because time_t might be unsigned.)  */
-      if (timer_list.first_timer->when.tv_sec < time_now.tv_sec
-	  || (timer_list.first_timer->when.tv_sec == time_now.tv_sec
+      if ((timer_list.first_timer->when.tv_sec < time_now.tv_sec)
+	  || ((timer_list.first_timer->when.tv_sec == time_now.tv_sec)
 	      && timer_list.first_timer->when.tv_usec < time_now.tv_usec))
 	{
 	  delta.tv_sec = 0;
 	  delta.tv_usec = 0;
 	}
 
-      if (delta.tv_sec == 0 && delta.tv_usec == 0)
+      if ((delta.tv_sec == 0) && (delta.tv_usec == 0))
 	{
-	  event_ptr = (gdb_event *) xmalloc (sizeof (gdb_event));
+	  event_ptr = (gdb_event *)xmalloc(sizeof(gdb_event));
 	  event_ptr->proc = handle_timer_event;
 	  /* APPLE LOCAL async */
-	  event_ptr->data = (void *) timer_list.first_timer->timer_id;
-	  async_queue_event (event_ptr, TAIL);
+	  event_ptr->data = (void *)(intptr_t)timer_list.first_timer->timer_id;
+	  async_queue_event(event_ptr, TAIL);
 	}
 
       /* Now we need to update the timeout for select/ poll, because we
@@ -1354,10 +1354,10 @@ poll_timers (void)
       if (use_poll)
 	{
 #ifdef HAVE_POLL
-	  gdb_notifier.poll_timeout = delta.tv_sec * 1000;
+	  gdb_notifier.poll_timeout = (delta.tv_sec * 1000);
 #else
-	  internal_error (__FILE__, __LINE__,
-			  _("use_poll without HAVE_POLL"));
+	  internal_error(__FILE__, __LINE__,
+			 _("use_poll without HAVE_POLL"));
 #endif /* HAVE_POLL */
 	}
       else
@@ -1370,3 +1370,5 @@ poll_timers (void)
   else
     gdb_notifier.timeout_valid = 0;
 }
+
+/* EOF */

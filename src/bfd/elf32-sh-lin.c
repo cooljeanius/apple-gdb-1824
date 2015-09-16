@@ -1,5 +1,7 @@
-/* Hitachi SH specific support for 32-bit Linux
-   Copyright 2000, 2001 Free Software Foundation, Inc.
+/* elf32-sh-lin.c
+ * Hitachi SH specific support for 32-bit Linux
+ */
+/* Copyright 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of BFD, the Binary File Descriptor library.
 
@@ -88,24 +90,25 @@ elf32_shlin_grok_psinfo (abfd, note)
     }
 
   /* Note that for some reason, a spurious space is tacked
-     onto the end of the args in some (at least one anyway)
-     implementations, so strip it off if it exists.  */
+   * onto the end of the args in some (at least one anyway)
+   * implementations, so strip it off if it exists.
+   */
 
   {
     char *command = elf_tdata (abfd)->core_command;
     int n = strlen (command);
 
-    if (0 < n && command[n - 1] == ' ')
-      command[n - 1] = '\0';
+	  if (0 < n && command[n - 1] == ' ') {
+		  command[n - 1] = '\0';
+	  }
   }
 
   return true;
 }
-
 
 #define elf_backend_grok_prstatus	elf32_shlin_grok_prstatus
 #define elf_backend_grok_psinfo		elf32_shlin_grok_psinfo
 
-
-
 #include "elf32-sh.c"
+
+/* EOF */

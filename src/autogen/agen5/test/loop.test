@@ -1,0 +1,78 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# loop.test --- test FOR loop
+#
+# Time-stamp:        "2010-06-26 16:04:59 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating ${testname}.tpl
+limit=32
+cat > ${testname}.tpl <<-  _EOTPL_
+	[= AutoGen5 Template test =]
+	${testname} Test
+	[= (define ix 0) (define ct ${limit}) =][=
+
+	WHILE (< ix ct) =][=
+	  (set! ix (+ ix 1)) =][=
+      (sprintf "test %2d of %2d:  %s\n"
+                ix ct (tpl-file-line "%2\$d")) =][=
+	ENDWHILE
+
+	=]End ${testname} Test
+	_EOTPL_
+
+# # # # # # # # # # EXPECTED OUTPUT FILE # # # # # # #
+set -x
+echo creating ${testname}.base
+
+# this is the output we should expect to see
+#
+exec 3> ${testname}.base
+echo "${testname} Test" >&3
+ix=1
+while test $ix -le $limit
+do  printf "test %2d of ${limit}:  7\n" $ix
+    ix=`expr $ix + 1`
+done >&3
+echo "End ${testname} Test" >&3
+exec 3>&-
+
+run_ag x --base=${testname} --no-def --override=${testname}.tpl || \
+   failure autogen failed
+
+cmp -s ${testname}.base ${testname}.test || \
+   failure "unexpected output: `diff ${testname}.base ${testname}.test`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of loop.test

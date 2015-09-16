@@ -1,4 +1,4 @@
-/* Extended regular expression matching and search library,
+/* regex.c: Extended regular expression matching and search library,
    version 0.12.
    (Implements POSIX draft P1003.2/D11.2, except for some of the
    internationalization features.)
@@ -31,14 +31,16 @@
   #pragma alloca
 #endif /* _AIX && !__GNUC__ && !REGEX_MALLOC */
 
-#undef	_GNU_SOURCE
-#define _GNU_SOURCE
+#undef _GNU_SOURCE
+#define _GNU_SOURCE 1
 
 #ifndef INSIDE_RECURSION
 # ifdef HAVE_CONFIG_H
 #  include "config.h"
 # else
-#  warning regex.c expects "config.h" to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning regex.c expects "config.h" to be included.
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_CONFIG_H */
 #endif /* !INSIDE_RECURSION */
 
@@ -50,18 +52,24 @@
 #  ifdef HAVE_STDDEF_H
 #   include <stddef.h>
 #  else
-#   warning regex.c expects <stddef.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <stddef.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_STDDEF_H */
 # else
 #  ifdef HAVE_SYS_TYPES_H
-/* We need this for `regex.h', and perhaps for the Emacs include files.  */
+/* We need this for `regex.h', and perhaps for the Emacs include files: */
 #   include <sys/types.h>
 #  else
-#   warning regex.c expects <sys/types.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <sys/types.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_SYS_TYPES_H */
 # endif /* STDC_HEADERS && !emacs */
 
-# define WIDE_CHAR_SUPPORT (HAVE_WCTYPE_H && HAVE_WCHAR_H && HAVE_BTOWC)
+# ifndef WIDE_CHAR_SUPPORT
+#  define WIDE_CHAR_SUPPORT (HAVE_WCTYPE_H && HAVE_WCHAR_H && HAVE_BTOWC)
+# endif /* !WIDE_CHAR_SUPPORT */
 
 /* For platform which support the ISO C amendement 1 functionality we
    support user defined character classes.  */
@@ -70,12 +78,16 @@
 #  ifdef HAVE_WCHAR_H
 #   include <wchar.h>
 #  else
-#   warning regex.c expects <wchar.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <wchar.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_WCHAR_H */
 #  ifdef HAVE_WCTYPE_H
 #   include <wctype.h>
 #  else
-#   warning regex.c expects <wctype.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <wctype.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_WCTYPE_H */
 # endif /* _LIBC || WIDE_CHAR_SUPPORT */
 
@@ -107,27 +119,36 @@
 #  ifdef HAVE_LOCALE_LOCALEINFO_H
 #   include <locale/localeinfo.h>
 #  else
-#   warning regex.c expects <locale/localeinfo.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <locale/localeinfo.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_LOCALE_LOCALEINFO_H */
 #  ifdef HAVE_LOCALE_ELEM_HASH_H
 #   include <locale/elem-hash.h>
 #  else
-#   warning regex.c expects <locale/elem-hash.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <locale/elem-hash.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_LOCALE_ELEM_HASH_H */
 #  ifdef HAVE_LANGINFO_H
 #   include <langinfo.h>
 #  else
-#   warning regex.c expects <langinfo.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <langinfo.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_LANGINFO_H */
 #  ifdef HAVE_LOCALE_COLL_LOOKUP_H
 #   include <locale/coll-lookup.h>
 #  else
-#   warning regex.c expects <locale/coll-lookup.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <locale/coll-lookup.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_LOCALE_COLL_LOOKUP_H */
 # endif /* _LIBC */
 
-/* This is for other GNU distributions with internationalized messages.  */
-# if (HAVE_LIBINTL_H && ENABLE_NLS) || defined _LIBC
+/* This is for other GNU distributions with internationalized messages: */
+# if ((defined(HAVE_LIBINTL_H) && HAVE_LIBINTL_H) && \
+      (defined(ENABLE_NLS) && ENABLE_NLS)) || defined _LIBC
 #  include <libintl.h>
 #  ifdef _LIBC
 #   undef gettext
@@ -141,7 +162,7 @@
 /* This define is so xgettext can find the internationalizable
    strings.  */
 #  define gettext_noop(String) String
-# endif
+# endif /* !gettext_noop */
 
 /* The `emacs' switch turns on certain matching commands
    that make sense only in Emacs. */
@@ -181,13 +202,13 @@ char *realloc ();
 #  ifndef INHIBIT_STRING_HEADER
 #   if defined HAVE_STRING_H || defined STDC_HEADERS || defined _LIBC
 #    include <string.h>
-#    ifndef bzero
+#    if !defined(bzero) && (!defined(HAVE_BZERO) || !defined(HAVE_DECL_BZERO))
 #     ifndef _LIBC
 #      define bzero(s, n)	(memset (s, '\0', n), (s))
 #     else
 #      define bzero(s, n)	__bzero (s, n)
 #     endif /* !_LIBC */
-#    endif /* !bzero */
+#    endif /* !bzero && (!HAVE_BZERO || !HAVE_DECL_BZERO) */
 #   else
 #    include <strings.h>
 #    ifndef memcmp
@@ -218,7 +239,9 @@ char *realloc ();
 # if defined _LIBC || HAVE_LIMITS_H
 #  include <limits.h>
 # else
-#  warning regex.c expects <limits.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "regex.c expects <limits.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* _LIBC || HAVE_LIMITS_H */
 
 # ifndef MB_LEN_MAX
@@ -232,7 +255,9 @@ char *realloc ();
 # if defined(HAVE_CTYPE_H) || defined(STDC_HEADERS) || defined(__STDC__) || defined(_LIBC)
 #  include <ctype.h>
 # else
-#  warning regex.c expects <ctype.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "regex.c expects <ctype.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_CTYPE_H || STDC_HEADERS || __STDC__ || _LIBC */
 
 /* Jim Meyering writes:
@@ -371,7 +396,9 @@ typedef unsigned long int uintptr_t;
 #    if HAVE_ALLOCA_H
 #     include <alloca.h>
 #    else
-#     warning regex.c expects <alloca.h> to be included.
+#     if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#      warning "regex.c expects <alloca.h> to be included."
+#     endif /* __GNUC__ && !__STRICT_ANSI__ */
 #    endif /* HAVE_ALLOCA_H */
 #   endif /* not __GNUC__ */
 
@@ -674,7 +701,7 @@ typedef enum
 #   define INSIDE_RECURSION
 #   include "regex.c"
 #   undef INSIDE_RECURSION
-#  endif
+#  endif /* MBS_SUPPORT */
 #  define BYTE
 #  define INSIDE_RECURSION
 #  include "regex.c"
@@ -696,8 +723,8 @@ typedef enum
 # else /* BYTE */
 #  define STORE_NUMBER(destination, number)				\
   do {									\
-    (destination)[0] = (number) & 0377;					\
-    (destination)[1] = (number) >> 8;					\
+    (destination)[0] = ((number) & 0377);				\
+    (destination)[1] = ((number) >> 8);					\
   } while (0)
 # endif /* WCHAR */
 
@@ -739,7 +766,7 @@ PREFIX(extract_number) (int *dest, UCHAR_T *source)
 #  else /* BYTE */
   int temp = SIGN_EXTEND_CHAR (*(source + 1));
   *dest = *source & 0377;
-  *dest += temp << 8;
+  *dest += (temp << 8);
 #  endif /* WCHAR */
 }
 
@@ -792,14 +819,18 @@ PREFIX(extract_number_and_incr) (int *destination, UCHAR_T **source)
 #   ifdef HAVE_STDIO_H
 #    include <stdio.h>
 #   else
-#    warning regex.c expects <stdio.h> to be included.
+#    if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#     warning "regex.c expects <stdio.h> to be included."
+#    endif /* __GNUC__ && !__STRICT_ANSI__ */
 #   endif /* HAVE_STDIO_H */
 
 /* It is useful to test things that ``must'' be true when debugging.  */
 #   ifdef HAVE_ASSERT_H
 #    include <assert.h>
 #   else
-#    warning regex.c expects <assert.h> to be included.
+#    if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#     warning "regex.c expects <assert.h> to be included."
+#    endif /* __GNUC__ && !__STRICT_ANSI__ */
 #   endif /* HAVE_ASSERT_H */
 
 static int debug;
@@ -1603,7 +1634,7 @@ typedef struct
    Assumes the variable `fail_stack'. Probably should only
    be called from within `PUSH_FAILURE_POINT'.  */
 # define PUSH_FAILURE_INT(item)					\
-  fail_stack.stack[fail_stack.avail++].integer = (item)
+  fail_stack.stack[fail_stack.avail++].integer = (int)(item)
 
 /* Push a fail_stack_elt_t value onto the failure stack.
    Assumes the variable `fail_stack'. Probably should only
@@ -1670,7 +1701,8 @@ typedef struct
     DEBUG_PRINT1 ("\n");						\
 									\
     if (1)								\
-      for (this_reg = lowest_active_reg; this_reg <= highest_active_reg; \
+      for (this_reg = lowest_active_reg;                                \
+           (this_reg <= highest_active_reg) && (this_reg < ULONG_MAX);  \
 	   this_reg++)							\
 	{								\
 	  DEBUG_PRINT2 ("  Pushing reg: %lu\n", this_reg);		\
@@ -1725,7 +1757,7 @@ typedef struct
 #   define NUM_NONREG_ITEMS 5 /* Includes failure point id.  */
 #  else
 #   define NUM_NONREG_ITEMS 4
-#  endif
+#  endif /* DEBUG */
 
 /* We push at most this many items on the stack.  */
 /* We used to use (num_regs - 1), which is the number of registers
@@ -1797,7 +1829,8 @@ typedef struct
   DEBUG_PRINT2 ("  Popping  low active reg: %ld\n", low_reg);		\
 									\
   if (1)								\
-    for (this_reg = high_reg; this_reg >= low_reg; this_reg--)		\
+    for (this_reg = high_reg; (this_reg >= low_reg) && (this_reg > 0UL);\
+         this_reg--)                                                    \
       {									\
 	DEBUG_PRINT2 ("    Popping reg: %ld\n", this_reg);		\
 									\
@@ -1866,21 +1899,20 @@ typedef union
    for the subexpressions which we are currently inside.  Also records
    that those subexprs have matched.  */
 #  define SET_REGS_MATCHED()						\
-  do									\
-    {									\
-      if (!set_regs_matched_done)					\
-	{								\
-	  active_reg_t r;						\
-	  set_regs_matched_done = 1;					\
-	  for (r = lowest_active_reg; r <= highest_active_reg; r++)	\
-	    {								\
-	      MATCHED_SOMETHING (reg_info[r])				\
-		= EVER_MATCHED_SOMETHING (reg_info[r])			\
-		= 1;							\
-	    }								\
-	}								\
-    }									\
-  while (0)
+  do {									\
+    if (!set_regs_matched_done)                                         \
+      {                                                                 \
+        active_reg_t r;                                                 \
+        set_regs_matched_done = 1;					\
+        for (r = lowest_active_reg;                                     \
+             (r <= highest_active_reg) && (r < ULONG_MAX); r++)         \
+          {								\
+            MATCHED_SOMETHING(reg_info[r])				\
+              = EVER_MATCHED_SOMETHING(reg_info[r])			\
+              = 1;							\
+          }								\
+      }                                                                 \
+  } while (0)
 # endif /* not DEFINED_ONCE */
 
 /* Registers are set to a sentinel when they have NOT yet matched.  */
@@ -2059,7 +2091,7 @@ static reg_errcode_t byte_compile_range (unsigned int range_start,
    reset the pointers that pointed into the old block to point to the
    correct places in the new one.  If extending the buffer results in it
    being larger than MAX_BUF_SIZE, then flag memory exhausted.  */
-#  if __BOUNDED_POINTERS__
+#  if defined(__BOUNDED_POINTERS__) && __BOUNDED_POINTERS__
 #   define SET_HIGH_BOUND(P) (__ptrhigh (P) = __ptrlow (P) + bufp->allocated)
 #   define MOVE_BUFFER_POINTER(P) \
   (__ptrlow (P) += incr, SET_HIGH_BOUND (P), __ptrvalue (P) += incr)
@@ -2131,7 +2163,7 @@ static reg_errcode_t byte_compile_range (unsigned int range_start,
     /* If the buffer moved, move all the pointers into it.  */		\
     if (old_buffer != COMPILED_BUFFER_VAR)				\
       {									\
-	int incr = COMPILED_BUFFER_VAR - old_buffer;			\
+	int incr = (int)(COMPILED_BUFFER_VAR - old_buffer);		\
 	MOVE_BUFFER_POINTER (b);					\
 	MOVE_BUFFER_POINTER (begalt);					\
 	if (fixup_alt_jump)						\
@@ -2225,13 +2257,13 @@ typedef struct
 /* This should NOT happen but some implementation might still have this
    problem. Use a reasonable default value.  */
 #    define CHAR_CLASS_MAX_LENGTH 256
-#   endif
+#   endif /* CHARCLASS_NAME_MAX */
 
 #   ifdef _LIBC
 #    define IS_CHAR_CLASS(string) __wctype (string)
 #   else
 #    define IS_CHAR_CLASS(string) wctype (string)
-#   endif
+#   endif /* _LIBC */
 #  else
 #   define CHAR_CLASS_MAX_LENGTH  6 /* Namely, `xdigit'.  */
 
@@ -2242,7 +2274,7 @@ typedef struct
     || STREQ (string, "space") || STREQ (string, "print")		\
     || STREQ (string, "punct") || STREQ (string, "graph")		\
     || STREQ (string, "cntrl") || STREQ (string, "blank"))
-#  endif
+#  endif /* _LIBC || WIDE_CHAR_SUPPORT */
 # endif /* DEFINED_ONCE */
 
 # ifndef MATCH_MAY_ALLOCATE
@@ -2968,10 +3000,12 @@ PREFIX(regex_compile) (const char *ARG_PREFIX(pattern),
 #  ifdef HAVE_LOCALE_WEIGHTWC_H
 #   include <locale/weightwc.h>
 #  else
-#   warning regex.c expects <locale/weightwc.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <locale/weightwc.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_LOCALE_WEIGHTWC_H */
 
-			    if(delim == '=')
+			    if (delim == '=')
 			      {
 				/* We push the index for equivalence class.  */
 				cp = (wint_t*)str;
@@ -3257,7 +3291,7 @@ PREFIX(regex_compile) (const char *ARG_PREFIX(pattern),
                         if ((c == ':' && *p == ']') || p == pend)
                           break;
 			if (c1 < CHAR_CLASS_MAX_LENGTH)
-			  str[c1++] = c;
+			  str[c1++] = (char)c;
 			else
 			  /* This is in any case an invalid class name.  */
 			  str[0] = '\0';
@@ -3430,7 +3464,9 @@ PREFIX(regex_compile) (const char *ARG_PREFIX(pattern),
 #  ifdef HAVE_LOCALE_WEIGHT_H
 #   include <locale/weight.h>
 #  else
-#   warning regex.c expects <locale/weight.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <locale/weight.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_LOCALE_WEIGHT_H */
 
 			    table = (const int32_t *)
@@ -3815,12 +3851,14 @@ PREFIX(regex_compile) (const char *ARG_PREFIX(pattern),
                    groups were inside this one.  */
                 if (this_group_regnum <= MAX_REGNUM)
                   {
-		    UCHAR_T *inner_group_loc
-                      = COMPILED_BUFFER_VAR + COMPILE_STACK_TOP.inner_group_offset;
+		    UCHAR_T *inner_group_loc =
+                      (COMPILED_BUFFER_VAR
+                       + COMPILE_STACK_TOP.inner_group_offset);
 
-                    *inner_group_loc = regnum - this_group_regnum;
-                    BUF_PUSH_3 (stop_memory, this_group_regnum,
-                                regnum - this_group_regnum);
+                    *inner_group_loc = (UCHAR_T)(regnum
+                                                 - this_group_regnum);
+                    BUF_PUSH_3(stop_memory, this_group_regnum,
+                               (regnum - this_group_regnum));
                   }
               }
               break;
@@ -4016,10 +4054,10 @@ PREFIX(regex_compile) (const char *ARG_PREFIX(pattern),
                             We insert this at the beginning of the loop
                             so that if we fail during matching, we will
                             reinitialize the bounds.  */
-                         PREFIX(insert_op2) (set_number_at, laststart,
-					     b - laststart,
-					     upper_bound - 1, b);
-                         b += 1 + 2 * OFFSET_ADDRESS_SIZE;
+                         PREFIX(insert_op2)(set_number_at, laststart,
+					    (int)(b - laststart),
+					    (upper_bound - 1), b);
+                         b += (1 + (2 * OFFSET_ADDRESS_SIZE));
                        }
                    }
                 pending_exact = 0;
@@ -4142,7 +4180,7 @@ PREFIX(regex_compile) (const char *ARG_PREFIX(pattern),
               /* You might think it would be useful for \ to mean
                  not to translate; but if we do NOT translate it
                  it will never match anything.  */
-              c = TRANSLATE (c);
+              c = (UCHAR_T)TRANSLATE(c);
               goto normal_char;
             }
           break;
@@ -4213,17 +4251,17 @@ PREFIX(regex_compile) (const char *ARG_PREFIX(pattern),
     BUF_PUSH (succeed);
 
 #ifdef WCHAR
-  free (pattern);
-  free (mbs_offset);
-  free (is_binary);
+  free(pattern);
+  free(mbs_offset);
+  free(is_binary);
 #endif /* WCHAR */
-  free (compile_stack.stack);
+  free(compile_stack.stack);
 
   /* We have succeeded; set the length of the buffer.  */
 #ifdef WCHAR
-  bufp->used = (uintptr_t) b - (uintptr_t) COMPILED_BUFFER_VAR;
+  bufp->used = ((uintptr_t)b - (uintptr_t)COMPILED_BUFFER_VAR);
 #else
-  bufp->used = b - bufp->buffer;
+  bufp->used = (unsigned long int)(b - bufp->buffer);
 #endif /* WCHAR */
 
 #ifdef DEBUG
@@ -4284,10 +4322,10 @@ PREFIX(regex_compile) (const char *ARG_PREFIX(pattern),
 /* ifdef WCHAR, integer parameter is 1 wchar_t.  */
 
 static void
-PREFIX(store_op1) (re_opcode_t op, UCHAR_T *loc, int arg)
+PREFIX(store_op1)(re_opcode_t op, UCHAR_T *loc, int arg)
 {
-  *loc = (UCHAR_T) op;
-  STORE_NUMBER (loc + 1, arg);
+  *loc = (UCHAR_T)op;
+  STORE_NUMBER((loc + 1), arg);
 }
 
 
@@ -4295,11 +4333,11 @@ PREFIX(store_op1) (re_opcode_t op, UCHAR_T *loc, int arg)
 /* ifdef WCHAR, integer parameter is 1 wchar_t.  */
 
 static void
-PREFIX(store_op2) (re_opcode_t op, UCHAR_T *loc, int arg1, int arg2)
+PREFIX(store_op2)(re_opcode_t op, UCHAR_T *loc, int arg1, int arg2)
 {
-  *loc = (UCHAR_T) op;
-  STORE_NUMBER (loc + 1, arg1);
-  STORE_NUMBER (loc + 1 + OFFSET_ADDRESS_SIZE, arg2);
+  *loc = (UCHAR_T)op;
+  STORE_NUMBER((loc + 1), arg1);
+  STORE_NUMBER((loc + 1 + OFFSET_ADDRESS_SIZE), arg2);
 }
 
 
@@ -4382,11 +4420,11 @@ PREFIX(at_endline_loc_p) (const CHAR_T *p, const CHAR_T *pend,
    false if it is not.  */
 
 static boolean
-group_in_compile_stack (compile_stack_type compile_stack, regnum_t regnum)
+group_in_compile_stack(compile_stack_type compile_stack, regnum_t regnum)
 {
   int this_element;
 
-  for (this_element = compile_stack.avail - 1;
+  for (this_element = (int)(compile_stack.avail - 1U);
        this_element >= 0;
        this_element--)
     if (compile_stack.stack[this_element].regnum == regnum)
@@ -4497,14 +4535,14 @@ wcs_compile_range (CHAR_T range_start_char, const CHAR_T **p_ptr,
    `regex_compile' itself.  */
 
 static reg_errcode_t
-byte_compile_range (unsigned int range_start_char, const char **p_ptr,
-                    const char *pend, RE_TRANSLATE_TYPE translate,
-                    reg_syntax_t syntax, unsigned char *b)
+byte_compile_range(unsigned int range_start_char, const char **p_ptr,
+                   const char *pend, RE_TRANSLATE_TYPE translate,
+                   reg_syntax_t syntax, unsigned char *b)
 {
-  unsigned this_char;
+  unsigned int this_char;
   const char *p = *p_ptr;
   reg_errcode_t ret;
-#  if _LIBC
+#  if defined(_LIBC) && _LIBC
   const unsigned char *collseq;
   unsigned int start_colseq;
   unsigned int end_colseq;
@@ -4522,7 +4560,7 @@ byte_compile_range (unsigned int range_start_char, const char **p_ptr,
   /* Report an error if the range is empty and the syntax prohibits this.  */
   ret = syntax & RE_NO_EMPTY_RANGES ? REG_ERANGE : REG_NOERROR;
 
-#  if _LIBC
+#  if defined(_LIBC) && _LIBC
   collseq = (const unsigned char *) _NL_CURRENT (LC_COLLATE,
 						 _NL_COLLATE_COLLSEQMB);
 
@@ -4530,7 +4568,7 @@ byte_compile_range (unsigned int range_start_char, const char **p_ptr,
   end_colseq = collseq[(unsigned char) TRANSLATE (p[0])];
   for (this_char = 0; this_char <= (unsigned char) -1; ++this_char)
     {
-      unsigned int this_colseq = collseq[(unsigned char) TRANSLATE (this_char)];
+      unsigned int this_colseq = collseq[(unsigned char)TRANSLATE(this_char)];
 
       if (start_colseq <= this_colseq && this_colseq <= end_colseq)
 	{
@@ -4542,7 +4580,7 @@ byte_compile_range (unsigned int range_start_char, const char **p_ptr,
   /* Here we see why `this_char' has to be larger than an `unsigned
      char' -- we would otherwise go into an infinite loop, since all
      characters <= 0xff.  */
-  range_start_char = TRANSLATE (range_start_char);
+  range_start_char = (unsigned int)TRANSLATE(range_start_char);
   /* TRANSLATE(p[0]) is casted to char (not unsigned char) in TRANSLATE,
      and some compilers cast it to int implicitly, so following for_loop
      may fall to (almost) infinite loop.
@@ -4550,9 +4588,10 @@ byte_compile_range (unsigned int range_start_char, const char **p_ptr,
      To avoid this, we cast p[0] to unsigned int and truncate it.  */
   end_char = ((unsigned)TRANSLATE(p[0]) & ((1 << BYTEWIDTH) - 1));
 
-  for (this_char = range_start_char; this_char <= end_char; ++this_char)
+  for (this_char = range_start_char;
+       (this_char <= end_char) && (this_char < UINT_MAX); ++this_char)
     {
-      SET_LIST_BIT (TRANSLATE (this_char));
+      SET_LIST_BIT(TRANSLATE(this_char));
       ret = REG_NOERROR;
     }
 #  endif /* _LIBC */
@@ -4747,7 +4786,7 @@ PREFIX(re_compile_fastmap) (struct re_pattern_buffer *bufp)
 
 	    /* ... except perhaps newline.  */
 	    if (!(bufp->syntax & RE_DOT_NEWLINE))
-	      fastmap['\n'] = fastmap_newline;
+	      fastmap['\n'] = (char)fastmap_newline;
 
 	    /* Return if we have already set `can_be_null'; if we have,
 	       then the fastmap is irrelevant. Something is wrong here.  */
@@ -5034,27 +5073,27 @@ weak_alias (__re_search_2, re_search_2)
 # define MAX_ALLOCA_SIZE	2000
 
 # define FREE_WCS_BUFFERS() \
-  do {									      \
-    if (size1 > MAX_ALLOCA_SIZE)					      \
-      {									      \
-	free (wcs_string1);						      \
-	free (mbs_offset1);						      \
-      }									      \
-    else								      \
-      {									      \
-	FREE_VAR (wcs_string1);						      \
-	FREE_VAR (mbs_offset1);						      \
-      }									      \
-    if (size2 > MAX_ALLOCA_SIZE) 					      \
-      {									      \
-	free (wcs_string2);						      \
-	free (mbs_offset2);						      \
-      }									      \
-    else								      \
-      {									      \
-	FREE_VAR (wcs_string2);						      \
-	FREE_VAR (mbs_offset2);						      \
-      }									      \
+  do {									  \
+    if (size1 > MAX_ALLOCA_SIZE)					  \
+      {									  \
+	free (wcs_string1);						  \
+	free (mbs_offset1);						  \
+      }									  \
+    else								  \
+      {									  \
+	FREE_VAR (wcs_string1);						  \
+	FREE_VAR (mbs_offset1);						  \
+      }									  \
+    if (size2 > MAX_ALLOCA_SIZE) 					  \
+      {									  \
+	free (wcs_string2);						  \
+	free (mbs_offset2);						  \
+      }									  \
+    else								  \
+      {									  \
+	FREE_VAR (wcs_string2);						  \
+	FREE_VAR (mbs_offset2);						  \
+      }									  \
   } while (0)
 
 #endif /* WCHAR */
@@ -5604,8 +5643,8 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
 			  struct re_registers *regs, int stop)
 #endif /* BYTE */
 {
-  /* General temporaries.  */
-  int mcnt;
+  /* General temporaries: */
+  long mcnt;
   UCHAR_T *p1;
 #ifdef WCHAR
   /* They hold whether each wchar_t is binary data or not.  */
@@ -5777,9 +5816,9 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
 
   /* The starting position is bogus.  */
 #ifdef WCHAR
-  if (pos < 0 || pos > csize1 + csize2)
+  if ((pos < 0) || (pos > (csize1 + csize2)))
 #else /* BYTE */
-  if (pos < 0 || pos > size1 + size2)
+  if ((pos < 0) || (pos > (size1 + size2)))
 #endif
     {
       FREE_VARIABLES ();
@@ -5866,8 +5905,8 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
       csize1 = 0;
 #endif /* WCHAR */
     }
-  end1 = string1 + size1;
-  end2 = string2 + size2;
+  end1 = (string1 + size1);
+  end2 = (string2 + size2);
 
   /* Compute where to stop matching, within the two strings.  */
 #ifdef WCHAR
@@ -5893,13 +5932,13 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
 #else
   if (stop <= size1)
     {
-      end_match_1 = string1 + stop;
+      end_match_1 = (string1 + stop);
       end_match_2 = string2;
     }
   else
     {
       end_match_1 = end1;
-      end_match_2 = string2 + stop - size1;
+      end_match_2 = (string2 + stop - size1);
     }
 #endif /* WCHAR */
 
@@ -5929,14 +5968,14 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
       return -1;
     }
 #else
-  if (size1 > 0 && pos <= size1)
+  if ((size1 > 0) && (pos <= size1))
     {
-      d = string1 + pos;
+      d = (string1 + pos);
       dend = end_match_1;
     }
   else
     {
-      d = string2 + pos - size1;
+      d = (string2 + pos - size1);
       dend = end_match_2;
     }
 #endif /* WCHAR */
@@ -6028,7 +6067,7 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
             } /* d != end_match_2 */
 
 	succeed_label:
-          DEBUG_PRINT1 ("Accepting match.\n");
+          DEBUG_PRINT1("Accepting match.\n");
           /* If caller wants register contents data back, do it.  */
           if (regs && !bufp->no_sub)
 	    {
@@ -6037,12 +6076,12 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
                 { /* No. So allocate them with malloc. We need one
                      extra element beyond `num_regs' for the `-1' marker
                      GNU code uses.  */
-                  regs->num_regs = MAX (RE_NREGS, num_regs + 1);
-                  regs->start = TALLOC (regs->num_regs, regoff_t);
-                  regs->end = TALLOC (regs->num_regs, regoff_t);
+                  regs->num_regs = (unsigned)MAX(RE_NREGS, (num_regs + 1));
+                  regs->start = TALLOC(regs->num_regs, regoff_t);
+                  regs->end = TALLOC(regs->num_regs, regoff_t);
                   if (regs->start == NULL || regs->end == NULL)
 		    {
-		      FREE_VARIABLES ();
+		      FREE_VARIABLES();
 		      return -2;
 		    }
                   bufp->regs_allocated = REGS_REALLOCATE;
@@ -6051,14 +6090,14 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
                 { /* Yes. If we need more elements than were already
                      allocated, reallocate them. If we need fewer, just
                      leave it alone.  */
-                  if (regs->num_regs < num_regs + 1)
+                  if (regs->num_regs < (num_regs + 1))
                     {
-                      regs->num_regs = num_regs + 1;
-                      RETALLOC (regs->start, regs->num_regs, regoff_t);
-                      RETALLOC (regs->end, regs->num_regs, regoff_t);
+                      regs->num_regs = (unsigned int)(num_regs + 1U);
+                      RETALLOC(regs->start, regs->num_regs, regoff_t);
+                      RETALLOC(regs->end, regs->num_regs, regoff_t);
                       if (regs->start == NULL || regs->end == NULL)
 			{
-			  FREE_VARIABLES ();
+			  FREE_VARIABLES();
 			  return -2;
 			}
                     }
@@ -6111,7 +6150,8 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
                  we (re)allocated the registers, this is the case,
                  because we always allocate enough to have at least one
                  -1 at the end.  */
-              for (mcnt = num_regs; (unsigned) mcnt < regs->num_regs; mcnt++)
+              for (mcnt = (long)num_regs; (unsigned)mcnt < regs->num_regs;
+                   mcnt++)
                 regs->start[mcnt] = regs->end[mcnt] = -1;
 	    } /* regs && !bufp->no_sub */
 
@@ -6133,10 +6173,10 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
 			    : string2 - size1);
 #endif /* WCHAR */
 
-          DEBUG_PRINT2 ("Returning %d from re_match_2.\n", mcnt);
+          DEBUG_PRINT2("Returning %d from re_match_2.\n", mcnt);
 
-          FREE_VARIABLES ();
-          return mcnt;
+          FREE_VARIABLES();
+          return (int)mcnt;
         }
 
       /* Otherwise match next pattern command.  */
@@ -6191,14 +6231,12 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
 	    }
 	  else
 	    {
-	      do
-		{
-		  PREFETCH ();
+	      do {
+		  PREFETCH();
 		  if (*d++ != (CHAR_T) *p++) goto fail;
-		}
-	      while (--mcnt);
+              } while (--mcnt);
 	    }
-	  SET_REGS_MATCHED ();
+	  SET_REGS_MATCHED();
           break;
 
 
@@ -6212,7 +6250,7 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
               || (bufp->syntax & RE_DOT_NOT_NULL && TRANSLATE (*d) == '\000'))
 	    goto fail;
 
-          SET_REGS_MATCHED ();
+          SET_REGS_MATCHED();
           DEBUG_PRINT2 ("  Matched `%ld'.\n", (long int) *d);
           d++;
 	  break;
@@ -6232,11 +6270,11 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
 	    uint32_t nrules;
 # endif /* _LIBC */
 #endif /* WCHAR */
-	    boolean negate = (re_opcode_t) *(p - 1) == charset_not;
+	    boolean negate = ((re_opcode_t)(*(p - 1)) == charset_not);
 
-            DEBUG_PRINT2 ("EXECUTING charset%s.\n", negate ? "_not" : "");
-	    PREFETCH ();
-	    c = TRANSLATE (*d); /* The character to match.  */
+            DEBUG_PRINT2("EXECUTING charset%s.\n", negate ? "_not" : "");
+	    PREFETCH();
+	    c = (UCHAR_T)TRANSLATE(*d); /* The character to match.  */
 #ifdef WCHAR
 # ifdef _LIBC
 	    nrules = _NL_CURRENT_WORD (LC_COLLATE, _NL_COLLATE_NRULES);
@@ -6389,7 +6427,9 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
 #  ifdef HAVE_LOCALE_WEIGHTWC_H
 #   include <locale/weightwc.h>
 #  else
-#   warning regex.c expects <locale/weightwc.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <locale/weightwc.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_LOCALE_WEIGHTWC_H */
 
 		table = (const int32_t *)
@@ -6619,9 +6659,9 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
 	    p += 1 + *p;
 
 	    if (!negate) goto fail;
-#undef WORK_BUFFER_SIZE
+# undef WORK_BUFFER_SIZE
 #endif /* WCHAR */
-	    SET_REGS_MATCHED ();
+	    SET_REGS_MATCHED();
             d++;
 	    break;
 	  }
@@ -6633,15 +6673,15 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
            matched within the group is recorded (in the internal
            registers data structure) under the register number.  */
         case start_memory:
-	  DEBUG_PRINT3 ("EXECUTING start_memory %ld (%ld):\n",
-			(long int) *p, (long int) p[1]);
+	  DEBUG_PRINT3("EXECUTING start_memory %ld (%ld):\n",
+                       (long int)(*p), (long int)p[1]);
 
           /* Find out if this group can match the empty string.  */
-	  p1 = p;		/* To send to group_match_null_string_p.  */
+	  p1 = p;	/* To send to group_match_null_string_p.  */
 
-          if (REG_MATCH_NULL_STRING_P (reg_info[*p]) == MATCH_NULL_UNSET_VALUE)
-            REG_MATCH_NULL_STRING_P (reg_info[*p])
-              = PREFIX(group_match_null_string_p) (&p1, pend, reg_info);
+          if (REG_MATCH_NULL_STRING_P(reg_info[*p]) == MATCH_NULL_UNSET_VALUE)
+            REG_MATCH_NULL_STRING_P(reg_info[*p]) =
+              PREFIX(group_match_null_string_p)(&p1, pend, reg_info);
 
           /* Save the position in the string where we were the last time
              we were at this open-group operator in case the group is
@@ -6870,13 +6910,13 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
 		/* Compare that many; failure if mismatch, else move
                    past them.  */
 		if (translate
-                    ? PREFIX(bcmp_translate) (d, d2, mcnt, translate)
-                    : memcmp (d, d2, mcnt*sizeof(UCHAR_T)))
+                    ? PREFIX(bcmp_translate)(d, d2, (int)mcnt, translate)
+                    : memcmp(d, d2, ((size_t)mcnt * sizeof(UCHAR_T))))
 		  goto fail;
 		d += mcnt, d2 += mcnt;
 
 		/* Do this because we've match some characters.  */
-		SET_REGS_MATCHED ();
+		SET_REGS_MATCHED();
 	      }
 	  }
 	  break;
@@ -7199,8 +7239,12 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
                register from the stack, since lowest will == highest in
                `pop_failure_point'.  */
             active_reg_t dummy_low_reg, dummy_high_reg;
-            UCHAR_T *pdummy = NULL;
-            const CHAR_T *sdummy = NULL;
+            UCHAR_T *pdummy = (UCHAR_T *)NULL;
+            const CHAR_T *sdummy = (const CHAR_T *)pdummy;
+
+            if (sdummy == NULL) {
+              ; /* this just silences '-Wunused-but-set-variable' */
+            }
 
             DEBUG_PRINT1 ("EXECUTING pop_failure_jump.\n");
             POP_FAILURE_POINT (sdummy, pdummy,
@@ -7268,19 +7312,19 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
           EXTRACT_NUMBER (mcnt, p + OFFSET_ADDRESS_SIZE);
           DEBUG_PRINT2 ("EXECUTING succeed_n %d.\n", mcnt);
 
-          assert (mcnt >= 0);
+          assert(mcnt >= 0);
           /* Originally, this is how many times we HAVE to succeed.  */
           if (mcnt > 0)
             {
                mcnt--;
 	       p += OFFSET_ADDRESS_SIZE;
-               STORE_NUMBER_AND_INCR (p, mcnt);
+               STORE_NUMBER_AND_INCR(p, mcnt);
 #ifdef _LIBC
-               DEBUG_PRINT3 ("  Setting %p to %d.\n", p - OFFSET_ADDRESS_SIZE
-			     , mcnt);
+               DEBUG_PRINT3("  Setting %p to %d.\n",
+                            (p - OFFSET_ADDRESS_SIZE), mcnt);
 #else
-               DEBUG_PRINT3 ("  Setting 0x%x to %d.\n", p - OFFSET_ADDRESS_SIZE
-			     , mcnt);
+               DEBUG_PRINT3("  Setting 0x%x to %d.\n",
+                            (p - OFFSET_ADDRESS_SIZE), mcnt);
 #endif /* _LIBC */
             }
 	  else if (mcnt == 0)
@@ -7311,14 +7355,14 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
           if (mcnt)
             {
                mcnt--;
-               STORE_NUMBER (p + OFFSET_ADDRESS_SIZE, mcnt);
+               STORE_NUMBER((p + OFFSET_ADDRESS_SIZE), mcnt);
 
 #ifdef _LIBC
-               DEBUG_PRINT3 ("  Setting %p to %d.\n", p + OFFSET_ADDRESS_SIZE,
-			     mcnt);
+               DEBUG_PRINT3("  Setting %p to %d.\n",
+                            (p + OFFSET_ADDRESS_SIZE), mcnt);
 #else
-               DEBUG_PRINT3 ("  Setting 0x%x to %d.\n", p + OFFSET_ADDRESS_SIZE,
-			     mcnt);
+               DEBUG_PRINT3("  Setting 0x%x to %d.\n",
+                            (p + OFFSET_ADDRESS_SIZE), mcnt);
 #endif /* _LIBC */
 	       goto unconditional_jump;
             }
@@ -7335,11 +7379,11 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
             p1 = p + mcnt;
             EXTRACT_NUMBER_AND_INCR (mcnt, p);
 #ifdef _LIBC
-            DEBUG_PRINT3 ("  Setting %p to %d.\n", p1, mcnt);
+            DEBUG_PRINT3("  Setting %p to %d.\n", p1, mcnt);
 #else
-            DEBUG_PRINT3 ("  Setting 0x%x to %d.\n", p1, mcnt);
+            DEBUG_PRINT3("  Setting 0x%x to %d.\n", p1, mcnt);
 #endif /* _LIBC */
-	    STORE_NUMBER (p1, mcnt);
+	    STORE_NUMBER(p1, mcnt);
             break;
           }
 
@@ -7439,7 +7483,7 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
 	  d++;
 	  if (SYNTAX (d[-1]) != (enum syntaxcode) mcnt)
 	    goto fail;
-          SET_REGS_MATCHED ();
+          SET_REGS_MATCHED();
 	  break;
 
 	case notsyntaxspec:
@@ -7456,7 +7500,7 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
 	  d++;
 	  if (SYNTAX (d[-1]) == (enum syntaxcode) mcnt)
 	    goto fail;
-	  SET_REGS_MATCHED ();
+	  SET_REGS_MATCHED();
           break;
 
 #else /* not emacs */
@@ -7465,16 +7509,16 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
 	  PREFETCH ();
           if (!WORDCHAR_P (d))
             goto fail;
-	  SET_REGS_MATCHED ();
+	  SET_REGS_MATCHED();
           d++;
 	  break;
 
 	case notwordchar:
-          DEBUG_PRINT1 ("EXECUTING non-Emacs notwordchar.\n");
-	  PREFETCH ();
-	  if (WORDCHAR_P (d))
+          DEBUG_PRINT1("EXECUTING non-Emacs notwordchar.\n");
+	  PREFETCH();
+	  if (WORDCHAR_P(d))
             goto fail;
-          SET_REGS_MATCHED ();
+          SET_REGS_MATCHED();
           d++;
 	  break;
 #endif /* not emacs */
@@ -7737,8 +7781,8 @@ PREFIX(common_op_match_null_string_p) (UCHAR_T **p, UCHAR_T *end,
       /* Have to set this here in case we are checking a group which
          contains a group and a back reference to it.  */
 
-      if (REG_MATCH_NULL_STRING_P (reg_info[reg_no]) == MATCH_NULL_UNSET_VALUE)
-        REG_MATCH_NULL_STRING_P (reg_info[reg_no]) = ret;
+      if (REG_MATCH_NULL_STRING_P(reg_info[reg_no]) == MATCH_NULL_UNSET_VALUE)
+        REG_MATCH_NULL_STRING_P(reg_info[reg_no]) = (unsigned int)ret;
 
       if (!ret)
         return false;
@@ -7919,11 +7963,12 @@ int
 # ifdef _LIBC
 weak_function
 # endif /* _LIBC */
-re_exec (const char *s)
+re_exec(const char *s)
 {
-  const int len = strlen (s);
+  const size_t len = strlen(s);
   return
-    0 <= re_search (&re_comp_buf, s, len, 0, len, (struct re_registers *) 0);
+    (0 <= re_search(&re_comp_buf, s, (const int)len, 0, (const int)len,
+                    (struct re_registers *)0));
 }
 
 #endif /* _REGEX_RE_COMP */
@@ -7995,7 +8040,7 @@ regcomp (regex_t *preg, const char *pattern, int cflags)
 
       /* Map uppercase characters to corresponding lowercase ones.  */
       for (i = 0; i < CHAR_SET_SIZE; i++)
-        preg->translate[i] = ISUPPER (i) ? TOLOWER (i) : i;
+        preg->translate[i] = (char)(ISUPPER(i) ? TOLOWER(i) : i);
     }
   else
     preg->translate = NULL;
@@ -8019,7 +8064,7 @@ regcomp (regex_t *preg, const char *pattern, int cflags)
   if (MB_CUR_MAX != 1)
     ret = wcs_regex_compile (pattern, strlen (pattern), syntax, preg);
   else
-# endif
+# endif /* MBS_SUPPORT */
     ret = byte_regex_compile (pattern, strlen (pattern), syntax, preg);
 
   /* POSIX does NOT distinguish between an unmatched open-group and an
@@ -8061,14 +8106,14 @@ weak_alias (__regcomp, regcomp)
    We return 0 if we find a match and REG_NOMATCH if not.  */
 
 int
-regexec (const regex_t *preg, const char *string, size_t nmatch,
-         regmatch_t pmatch[], int eflags)
+regexec(const regex_t *preg, const char *string, size_t nmatch,
+        regmatch_t pmatch[], int eflags)
 {
   int ret;
   struct re_registers regs;
   regex_t private_preg;
-  int len = strlen (string);
-  boolean want_reg_info = !preg->no_sub && nmatch > 0;
+  size_t len = strlen(string);
+  boolean want_reg_info = (!preg->no_sub && (nmatch > 0));
 
   private_preg = *preg;
 
@@ -8082,17 +8127,17 @@ regexec (const regex_t *preg, const char *string, size_t nmatch,
 
   if (want_reg_info)
     {
-      regs.num_regs = nmatch;
-      regs.start = TALLOC (nmatch * 2, regoff_t);
+      regs.num_regs = (unsigned int)nmatch;
+      regs.start = TALLOC((nmatch * 2), regoff_t);
       if (regs.start == NULL)
-        return (int) REG_NOMATCH;
-      regs.end = regs.start + nmatch;
+        return (int)REG_NOMATCH;
+      regs.end = (regs.start + nmatch);
     }
 
-  /* Perform the searching operation.  */
-  ret = re_search (&private_preg, string, len,
-                   /* start: */ 0, /* range: */ len,
-                   want_reg_info ? &regs : (struct re_registers *) 0);
+  /* Perform the searching operation: */
+  ret = re_search(&private_preg, string, (int)len,
+                  /* start: */ 0, /* range: */ (int)len,
+                  (want_reg_info ? &regs : (struct re_registers *)0));
 
   /* Copy the register information to the POSIX structure.  */
   if (want_reg_info)
@@ -8238,28 +8283,28 @@ weak_alias (__regfree, regfree)
 #undef GET_UNSIGNED_NUMBER
 #undef FREE_STACK_RETURN
 
-# undef POINTER_TO_OFFSET
-# undef MATCHING_IN_FRST_STRING
-# undef PREFETCH
-# undef AT_STRINGS_BEG
-# undef AT_STRINGS_END
-# undef WORDCHAR_P
-# undef FREE_VAR
-# undef FREE_VARIABLES
-# undef NO_HIGHEST_ACTIVE_REG
-# undef NO_LOWEST_ACTIVE_REG
+#undef POINTER_TO_OFFSET
+#undef MATCHING_IN_FRST_STRING
+#undef PREFETCH
+#undef AT_STRINGS_BEG
+#undef AT_STRINGS_END
+#undef WORDCHAR_P
+#undef FREE_VAR
+#undef FREE_VARIABLES
+#undef NO_HIGHEST_ACTIVE_REG
+#undef NO_LOWEST_ACTIVE_REG
 
-# undef CHAR_T
-# undef UCHAR_T
-# undef COMPILED_BUFFER_VAR
-# undef OFFSET_ADDRESS_SIZE
-# undef CHAR_CLASS_SIZE
-# undef PREFIX
-# undef ARG_PREFIX
-# undef PUT_CHAR
-# undef BYTE
-# undef WCHAR
+#undef CHAR_T
+#undef UCHAR_T
+#undef COMPILED_BUFFER_VAR
+#undef OFFSET_ADDRESS_SIZE
+#undef CHAR_CLASS_SIZE
+#undef PREFIX
+#undef ARG_PREFIX
+#undef PUT_CHAR
+#undef BYTE
+#undef WCHAR
 
-# define DEFINED_ONCE
+#define DEFINED_ONCE
 
 /* EOF */

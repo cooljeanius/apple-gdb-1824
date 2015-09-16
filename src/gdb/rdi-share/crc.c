@@ -1,6 +1,6 @@
-/* 
+/* crc.c
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -136,7 +136,7 @@ unsigned int crc32(unsigned char *address, unsigned int size, unsigned int crc)
     /* byte loop */
     crc = (((crc >> 8) & 0x00FFFFFF) ^
            crc32table[(crc ^ *address++) & 0x000000FF]);
-#endif
+#endif /* 0 */
 
   return(crc);
 }
@@ -162,7 +162,7 @@ unsigned int crc32(unsigned char *address, unsigned int size, unsigned int crc)
 static const unsigned int crctableA[16] = {
 #else
 static const unsigned short crctableA[16] = {
-#endif
+#endif /* __ARM */
                                              0x0000,
                                              0x1081,
                                              0x2102,
@@ -186,7 +186,7 @@ static const unsigned short crctableA[16] = {
 static const unsigned int crctableB[16] = {
 #else
 static const unsigned short crctableB[16] = {
-#endif
+#endif /* __ARM */
                                              0x0000,
                                              0x1189,
                                              0x2312,
@@ -250,7 +250,7 @@ unsigned int elf_hash(const unsigned char *name)
 
   return(h);
 }
-#endif
+#endif /* 0 */
 
 /**********************************************************************/
 

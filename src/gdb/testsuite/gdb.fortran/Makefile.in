@@ -1,4 +1,5 @@
 # Makefile for regression testing the GNU debugger.
+# This subdir is specifically for testing the Fortran aspects of it
 # Copyright 1992, 1993, 1994, 1995, 1996, 1999, 2001, 2003, 2004
 # Free Software Foundation, Inc.
 
@@ -16,7 +17,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+# Foundation, Inc., 59 Temple Place Suite 330, Boston, MA 02111-1307, USA.
 
 VPATH = @srcdir@
 srcdir = @srcdir@
@@ -26,9 +27,10 @@ EXECUTABLES =
 all info install-info dvi install uninstall installcheck check:
 	@echo "Nothing to be done for $@..."
 
+# 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:
-	-rm -f *~ *.o *.ci
-	-rm -f core ${EXECUTABLES}
+	-rm -fv *~ *.o *.ci
+	-rm -fv core ${EXECUTABLES}
 
 distclean maintainer-clean realclean: clean
 	-rm -f Makefile config.status config.log

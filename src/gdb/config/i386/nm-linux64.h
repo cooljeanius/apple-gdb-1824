@@ -1,4 +1,5 @@
-/* Native support for GNU/Linux x86-64.
+/* nm-linux64.h
+   Native support for GNU/Linux x86-64.
 
    Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 

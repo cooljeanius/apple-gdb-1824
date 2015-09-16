@@ -1,0 +1,12 @@
+		     README for multi-ice server for gdb
+		Updated 28, July, 2014 by Eric Gallager
+
+See the html files in the ./doc/ subdir for more information about ARM
+multi-ice. This was taken from the eCos website:
+
+http://ecos.sourceware.org/multi-ice.html
+
+(this is for editing this file with GNU emacs)
+Local Variables:
+mode: text
+End:

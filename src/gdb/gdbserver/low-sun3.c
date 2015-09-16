@@ -1,4 +1,5 @@
-/* Low level interface to ptrace, for the remote server for GDB.
+/* low-sun3.c
+   Low level interface to ptrace, for the remote server for GDB.
    Copyright 1986, 1987, 1993, 1994, 1995, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -138,13 +139,15 @@ myresume (int step, int signal)
 {
   errno = 0;
   ptrace (step ? PTRACE_SINGLESTEP : PTRACE_CONT, inferior_pid, 1, signal);
-  if (errno)
-    perror_with_name ("ptrace");
+	if (errno) {
+		perror_with_name ("ptrace");
+	}
 }
 
-/* Fetch one or more registers from the inferior.  REGNO == -1 to get
-   them all.  We actually fetch more than requested, when convenient,
-   marking them as valid so we won't fetch them again.  */
+/* Fetch one or more registers from the inferior. REGNO == -1 to get
+ * them all. We actually fetch more than requested, when convenient,
+ * marking them as valid so we will NOT fetch them again.
+ */
 
 void
 fetch_inferior_registers (int ignored)
@@ -157,13 +160,13 @@ fetch_inferior_registers (int ignored)
 #ifdef FP0_REGNUM
   ptrace (PTRACE_GETFPREGS, inferior_pid,
 	  (PTRACE_ARG3_TYPE) & inferior_fp_registers);
-#endif
+#endif /* FP0_REGNUM */
 
   memcpy (registers, &inferior_registers, 16 * 4);
 #ifdef FP0_REGNUM
   memcpy (&registers[REGISTER_BYTE (FP0_REGNUM)], &inferior_fp_registers,
 	  sizeof inferior_fp_registers.fps_regs);
-#endif
+#endif /* FP0_REGNUM */
   *(int *) &registers[REGISTER_BYTE (PS_REGNUM)] = inferior_registers.r_ps;
   *(int *) &registers[REGISTER_BYTE (PC_REGNUM)] = inferior_registers.r_pc;
 #ifdef FP0_REGNUM
@@ -171,7 +174,7 @@ fetch_inferior_registers (int ignored)
     (&registers[REGISTER_BYTE (FPC_REGNUM)],
      &inferior_fp_registers.fps_control,
      sizeof inferior_fp_registers - sizeof inferior_fp_registers.fps_regs);
-#endif
+#endif /* FP0_REGNUM */
 }
 
 /* Store our register values back into the inferior.
@@ -189,7 +192,7 @@ store_inferior_registers (int ignored)
   memcpy (&inferior_fp_registers,
 	  &registers[REGISTER_BYTE (FP0_REGNUM)],
 	  sizeof inferior_fp_registers.fps_regs);
-#endif
+#endif /* FP0_REGNUM */
   inferior_registers.r_ps = *(int *) &registers[REGISTER_BYTE (PS_REGNUM)];
   inferior_registers.r_pc = *(int *) &registers[REGISTER_BYTE (PC_REGNUM)];
 
@@ -198,14 +201,14 @@ store_inferior_registers (int ignored)
 	  &registers[REGISTER_BYTE (FPC_REGNUM)],
 	  (sizeof inferior_fp_registers
 	   - sizeof inferior_fp_registers.fps_regs));
-#endif
+#endif /* FP0_REGNUM */
 
   ptrace (PTRACE_SETREGS, inferior_pid,
 	  (PTRACE_ARG3_TYPE) & inferior_registers);
 #if FP0_REGNUM
   ptrace (PTRACE_SETFPREGS, inferior_pid,
 	  (PTRACE_ARG3_TYPE) & inferior_fp_registers);
-#endif
+#endif /* FP0_REGNUM */
 }
 
 /* NOTE! I tried using PTRACE_READDATA, etc., to read and write memory

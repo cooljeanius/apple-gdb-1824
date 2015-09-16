@@ -126,4 +126,6 @@ struct pex_funcs
 extern struct pex_obj *pex_init_common (int, const char *, const char *,
 					const struct pex_funcs *);
 
-#endif
+#endif /* !PEX_COMMON_H */
+
+/* EOF */

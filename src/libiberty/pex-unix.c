@@ -89,25 +89,25 @@ static pid_t pex_wait (struct pex_obj *, pid_t, int *, struct pex_time *);
 #ifdef HAVE_WAIT4
 
 static pid_t
-pex_wait (struct pex_obj *obj ATTRIBUTE_UNUSED, pid_t pid, int *status,
-	  struct pex_time *time)
+pex_wait(struct pex_obj *obj ATTRIBUTE_UNUSED, pid_t pid, int *status,
+	 struct pex_time *ptime)
 {
   pid_t ret;
   struct rusage r;
 
-#ifdef HAVE_WAITPID
-  if (time == NULL)
-    return waitpid (pid, status, 0);
-#endif
+# ifdef HAVE_WAITPID
+  if (ptime == NULL)
+    return waitpid(pid, status, 0);
+# endif /* HAVE_WAITPID */
 
-  ret = wait4 (pid, status, 0, &r);
+  ret = wait4(pid, status, 0, &r);
 
-  if (time != NULL)
+  if (ptime != NULL)
     {
-      time->user_seconds = r.ru_utime.tv_sec;
-      time->user_microseconds= r.ru_utime.tv_usec;
-      time->system_seconds = r.ru_stime.tv_sec;
-      time->system_microseconds= r.ru_stime.tv_usec;
+      ptime->user_seconds = (unsigned long)r.ru_utime.tv_sec;
+      ptime->user_microseconds= (unsigned long)r.ru_utime.tv_usec;
+      ptime->system_seconds = (unsigned long)r.ru_stime.tv_sec;
+      ptime->system_microseconds= (unsigned long)r.ru_stime.tv_usec;
     }
 
   return ret;
@@ -121,10 +121,10 @@ pex_wait (struct pex_obj *obj ATTRIBUTE_UNUSED, pid_t pid, int *status,
 
 static pid_t
 pex_wait (struct pex_obj *obj ATTRIBUTE_UNUSED, pid_t pid, int *status,
-	  struct pex_time *time)
+	  struct pex_time *ptime)
 {
-  if (time != NULL)
-    memset (time, 0, sizeof (struct pex_time));
+  if (ptime != NULL)
+    memset (ptime, 0, sizeof (struct pex_time));
   return waitpid (pid, status, 0);
 }
 
@@ -132,12 +132,12 @@ pex_wait (struct pex_obj *obj ATTRIBUTE_UNUSED, pid_t pid, int *status,
 
 static pid_t
 pex_wait (struct pex_obj *obj ATTRIBUTE_UNUSED, pid_t pid, int *status,
-	  struct pex_time *time)
+	  struct pex_time *ptime)
 {
   struct rusage r1, r2;
   pid_t ret;
 
-  if (time == NULL)
+  if (ptime == NULL)
     return waitpid (pid, status, 0);
 
   getrusage (RUSAGE_CHILDREN, &r1);
@@ -148,20 +148,20 @@ pex_wait (struct pex_obj *obj ATTRIBUTE_UNUSED, pid_t pid, int *status,
 
   getrusage (RUSAGE_CHILDREN, &r2);
 
-  time->user_seconds = r2.ru_utime.tv_sec - r1.ru_utime.tv_sec;
-  time->user_microseconds = r2.ru_utime.tv_usec - r1.ru_utime.tv_usec;
+  ptime->user_seconds = r2.ru_utime.tv_sec - r1.ru_utime.tv_sec;
+  ptime->user_microseconds = r2.ru_utime.tv_usec - r1.ru_utime.tv_usec;
   if (r2.ru_utime.tv_usec < r1.ru_utime.tv_usec)
     {
-      --time->user_seconds;
-      time->user_microseconds += 1000000;
+      --ptime->user_seconds;
+      ptime->user_microseconds += 1000000;
     }
 
-  time->system_seconds = r2.ru_stime.tv_sec - r1.ru_stime.tv_sec;
-  time->system_microseconds = r2.ru_stime.tv_usec - r1.ru_stime.tv_usec;
+  ptime->system_seconds = r2.ru_stime.tv_sec - r1.ru_stime.tv_sec;
+  ptime->system_microseconds = r2.ru_stime.tv_usec - r1.ru_stime.tv_usec;
   if (r2.ru_stime.tv_usec < r1.ru_stime.tv_usec)
     {
-      --time->system_seconds;
-      time->system_microseconds += 1000000;
+      --ptime->system_seconds;
+      ptime->system_microseconds += 1000000;
     }
 
   return ret;
@@ -176,11 +176,11 @@ struct status_list
   struct status_list *next;
   pid_t pid;
   int status;
-  struct pex_time time;
+  struct pex_time ptime;
 };
 
 static pid_t
-pex_wait (struct pex_obj *obj, pid_t pid, int *status, struct pex_time *time)
+pex_wait (struct pex_obj *obj, pid_t pid, int *status, struct pex_time *ptime)
 {
   struct status_list **pp;
 
@@ -194,8 +194,8 @@ pex_wait (struct pex_obj *obj, pid_t pid, int *status, struct pex_time *time)
 
 	  p = *pp;
 	  *status = p->status;
-	  if (time != NULL)
-	    *time = p->time;
+	  if (ptime != NULL)
+	    *ptime = p->ptime;
 	  *pp = p->next;
 	  free (p);
 	  return pid;
@@ -211,7 +211,7 @@ pex_wait (struct pex_obj *obj, pid_t pid, int *status, struct pex_time *time)
       struct rusage r1, r2;
 #endif
 
-      if (time != NULL)
+      if (ptime != NULL)
 	{
 #ifdef HAVE_GETRUSAGE
 	  getrusage (RUSAGE_CHILDREN, &r1);
@@ -223,7 +223,7 @@ pex_wait (struct pex_obj *obj, pid_t pid, int *status, struct pex_time *time)
       cpid = wait (status);
 
 #ifdef HAVE_GETRUSAGE
-      if (time != NULL && cpid >= 0)
+      if (ptime != NULL && cpid >= 0)
 	{
 	  getrusage (RUSAGE_CHILDREN, &r2);
 
@@ -247,16 +247,16 @@ pex_wait (struct pex_obj *obj, pid_t pid, int *status, struct pex_time *time)
 
       if (cpid < 0 || cpid == pid)
 	{
-	  if (time != NULL)
-	    *time = pt;
+	  if (ptime != NULL)
+	    *ptime = pt;
 	  return cpid;
 	}
 
       psl = XNEW (struct status_list);
       psl->pid = cpid;
       psl->status = *status;
-      if (time != NULL)
-	psl->time = pt;
+      if (ptime != NULL)
+	psl->ptime = pt;
       psl->next = (struct status_list *) obj->sysdep;
       obj->sysdep = (void *) psl;
     }
@@ -358,17 +358,17 @@ pex_unix_exec_child (struct pex_obj *obj, int flags, const char *executable,
   pid_t pid;
   /* We declare these to be volatile to avoid warnings from gcc about
      them being clobbered by vfork.  */
-  volatile int sleep_interval;
+  volatile unsigned int sleep_interval;
   volatile int retries;
 
-  sleep_interval = 1;
+  sleep_interval = 1U;
   pid = -1;
   for (retries = 0; retries < 4; ++retries)
     {
       pid = vfork ();
       if (pid >= 0)
 	break;
-      sleep (sleep_interval);
+      sleep(sleep_interval);
       sleep_interval *= 2;
     }
 
@@ -455,19 +455,18 @@ pex_unix_exec_child (struct pex_obj *obj, int flags, const char *executable,
     }
 }
 
-/* Wait for a child process to complete.  */
-
+/* Wait for a child process to complete: */
 static int
-pex_unix_wait (struct pex_obj *obj, long pid, int *status,
-	       struct pex_time *time, int done, const char **errmsg,
-	       int *err)
+pex_unix_wait(struct pex_obj *obj, long pid, int *status,
+	      struct pex_time *ptime, int done, const char **errmsg,
+	      int *err)
 {
   /* If we are cleaning up when the caller didn't retrieve process
      status for some reason, encourage the process to go away.  */
   if (done)
-    kill (pid, SIGTERM);
+    kill((pid_t)pid, SIGTERM);
 
-  if (pex_wait (obj, pid, status, time) < 0)
+  if (pex_wait(obj, (pid_t)pid, status, ptime) < 0)
     {
       *err = errno;
       *errmsg = "wait";
@@ -496,18 +495,22 @@ pex_unix_fdopenr (struct pex_obj *obj ATTRIBUTE_UNUSED, int fd,
 }
 
 static void
-pex_unix_cleanup (struct pex_obj *obj ATTRIBUTE_UNUSED)
+pex_unix_cleanup(struct pex_obj *obj ATTRIBUTE_UNUSED)
 {
-#if !defined (HAVE_WAIT4) && !defined (HAVE_WAITPID)
+#if !defined(HAVE_WAIT4) && !defined(HAVE_WAITPID)
   while (obj->sysdep != NULL)
     {
       struct status_list *this;
       struct status_list *next;
 
-      this = (struct status_list *) obj->sysdep;
+      this = (struct status_list *)obj->sysdep;
       next = this->next;
-      free (this);
-      obj->sysdep = (void *) next;
+      free(this);
+      obj->sysdep = (void *)next;
     }
-#endif
+#else
+  return;
+#endif /* !HAVE_WAIT4 && !HAVE_WAITPID */
 }
+
+/* EOF */

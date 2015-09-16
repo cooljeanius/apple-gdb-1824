@@ -1,5 +1,5 @@
-/* Copyright 2012 Free Software Foundation, Inc.
-   
+/* syslex_wrap.c: Copyright 2012 Free Software Foundation, Inc.
+
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 3, or (at your option)
@@ -19,7 +19,16 @@
    the compiler.  */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+# include <config.h>
+#endif /* HAVE_CONFIG_H */
+/* in case these got re-defined on us: */
+#ifdef malloc
+# undef malloc
+#endif /* malloc */
+#ifdef realloc
+# undef realloc
+#endif /* realloc */
 
 #include "syslex.c"
+
+/* End of syslex_wrap.c */

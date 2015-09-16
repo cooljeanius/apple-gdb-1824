@@ -1,4 +1,4 @@
-/* Message catalogs for internationalization.
+/* lib[gnu]intl.h: Message catalogs for internationalization.
    Copyright (C) 1995-1997, 2000-2003 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify it
@@ -17,7 +17,7 @@
    USA.  */
 
 #ifndef _LIBINTL_H
-#define _LIBINTL_H	1
+#define _LIBINTL_H 1
 
 #include <locale.h>
 
@@ -59,7 +59,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 
 /* We redirect the functions to those prefixed with "libintl_".  This is
@@ -122,12 +122,14 @@ static inline char *gettext (const char *__msgid)
   return libintl_gettext (__msgid);
 }
 #else
-#ifdef _INTL_REDIRECT_MACROS
-# define gettext libintl_gettext
-#endif
+# ifdef _INTL_REDIRECT_MACROS
+#  ifndef gettext
+#   define gettext libintl_gettext
+#  endif /* !gettext */
+# endif /* _INTL_REDIRECT_MACROS */
 extern char *gettext _INTL_PARAMS ((const char *__msgid))
        _INTL_ASM (libintl_gettext);
-#endif
+#endif /* _INTL_REDIRECT_INLINE */
 
 /* Look up MSGID in the DOMAINNAME message catalog for the current
    LC_MESSAGES locale.  */
@@ -138,13 +140,15 @@ static inline char *dgettext (const char *__domainname, const char *__msgid)
   return libintl_dgettext (__domainname, __msgid);
 }
 #else
-#ifdef _INTL_REDIRECT_MACROS
-# define dgettext libintl_dgettext
-#endif
+# ifdef _INTL_REDIRECT_MACROS
+#  ifndef dgettext
+#   define dgettext libintl_dgettext
+#  endif /* !dgettext */
+# endif /* _INTL_REDIRECT_MACROS */
 extern char *dgettext _INTL_PARAMS ((const char *__domainname,
 				     const char *__msgid))
        _INTL_ASM (libintl_dgettext);
-#endif
+#endif /* _INTL_REDIRECT_INLINE */
 
 /* Look up MSGID in the DOMAINNAME message catalog for the current CATEGORY
    locale.  */
@@ -165,6 +169,34 @@ extern char *dcgettext _INTL_PARAMS ((const char *__domainname,
 				      int __category))
        _INTL_ASM (libintl_dcgettext);
 #endif
+
+/* Look up MSGID in the DOMAINNAME message catalog for the current
+ * CATEGORY locale and, if PLURAL is nonzero, search over string
+ * depending on the plural form determined by N.  */
+#ifdef _INTL_REDIRECT_INLINE
+extern char *libintl_dcigettext(const char *__domainname,
+                                const char *__msgid1, const char *__msgid2,
+                                int __plural, unsigned long int __n,
+                                int __category);
+static inline char *dcigettext(const char *__domainname,
+                               const char *__msgid1, const char *__msgid2,
+                               int __plural, unsigned long int __n,
+                               int __category);
+{
+  return libintl_dcigettext(__domainname, __msgid1, __msgid2, __plural,
+                            __n, __category);
+}
+#else
+# ifdef _INTL_REDIRECT_MACROS
+#  define dcigettext libintl_dcigettext
+# endif /* _INTL_REDIRECT_MACROS */
+extern char *dcigettext _INTL_PARAMS((const char *__domainname,
+                                      const char *__msgid1,
+                                      const char *__msgid2,
+                                      int __plural, unsigned long int __n,
+                                      int __category))
+       _INTL_ASM(libintl_dcigettext);
+#endif /* _INTL_REDIRECT_INLINE */
 
 
 /* Similar to `gettext' but select the plural form corresponding to the
@@ -298,12 +330,14 @@ extern char *bind_textdomain_codeset _INTL_PARAMS ((const char *__domainname,
    instead of "/").  */
 #define libintl_set_relocation_prefix libintl_set_relocation_prefix
 extern void
-       libintl_set_relocation_prefix _INTL_PARAMS ((const char *orig_prefix,
-						    const char *curr_prefix));
+       libintl_set_relocation_prefix _INTL_PARAMS((const char *orig_prefix,
+                                                   const char *curr_prefix));
 
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif /* libintl.h */
+#endif /* lib[gnu]intl.h */
+
+/* EOF */

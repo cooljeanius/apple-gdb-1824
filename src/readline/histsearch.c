@@ -22,23 +22,23 @@
 
 #define READLINE_LIBRARY
 
-#if defined (HAVE_CONFIG_H)
+#if defined(HAVE_CONFIG_H)
 #  include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
-#if defined (HAVE_STDLIB_H)
+#if defined(HAVE_STDLIB_H)
 #  include <stdlib.h>
 #else
 #  include "ansi_stdlib.h"
 #endif /* HAVE_STDLIB_H */
 
-#if defined (HAVE_UNISTD_H)
-#  ifdef _MINIX
+#if defined(HAVE_UNISTD_H)
+#  if defined(_MINIX) || (defined(HAVE_SYS_TYPES_H) && !defined(_SYS_TYPES_H_))
 #    include <sys/types.h>
-#  endif
+#  endif /* _MINIX || (HAVE_SYS_TYPES_H && !_SYS_TYPES_H_) */
 #  include <unistd.h>
-#endif
+#endif /* HAVE_UNISTD_H */
 
 #include "history.h"
 #include "histlib.h"
@@ -60,61 +60,59 @@ static int history_search_internal PARAMS((const char *, int, int));
    returned. */
 
 static int
-history_search_internal (string, direction, anchored)
-     const char *string;
-     int direction, anchored;
+history_search_internal(const char *string, int direction, int anchored)
 {
   register int i, reverse;
   register char *line;
   register int line_index;
-  int string_len;
+  size_t string_len;
   HIST_ENTRY **the_history; 	/* local */
 
   i = history_offset;
   reverse = (direction < 0);
 
-  /* Take care of trivial cases first. */
-  if (string == 0 || *string == '\0')
+  /* Take care of trivial cases first: */
+  if ((string == 0) || (*string == '\0'))
     return (-1);
 
-  if (!history_length || ((i == history_length) && !reverse))
+  if (!history_length || ((i == (int)history_length) && !reverse))
     return (-1);
 
-  if (reverse && (i == history_length))
+  if (reverse && (i == (int)history_length))
     i--;
 
 #define NEXT_LINE() do { if (reverse) i--; else i++; } while (0)
 
-  the_history = history_list ();
-  string_len = strlen (string);
+  the_history = history_list();
+  string_len = strlen(string);
   while (1)
     {
       /* Search each line in the history list for STRING. */
 
       /* At limit for direction? */
-      if ((reverse && i < 0) || (!reverse && i == history_length))
+      if ((reverse && i < 0) || (!reverse && i == (int)history_length))
 	return (-1);
 
       line = the_history[i]->line;
-      line_index = strlen (line);
+      line_index = (int)strlen(line);
 
       /* If STRING is longer than line, no match. */
-      if (string_len > line_index)
+      if ((int)string_len > line_index)
 	{
-	  NEXT_LINE ();
+	  NEXT_LINE();
 	  continue;
 	}
 
       /* Handle anchored searches first. */
       if (anchored == ANCHORED_SEARCH)
 	{
-	  if (STREQN (string, line, string_len))
+	  if (STREQN(string, line, string_len))
 	    {
 	      history_offset = i;
 	      return (0);
 	    }
 
-	  NEXT_LINE ();
+	  NEXT_LINE();
 	  continue;
 	}
 
@@ -125,7 +123,7 @@ history_search_internal (string, direction, anchored)
 
 	  while (line_index >= 0)
 	    {
-	      if (STREQN (string, line + line_index, string_len))
+	      if (STREQN(string, (line + line_index), string_len))
 		{
 		  history_offset = i;
 		  return (line_index);
@@ -137,12 +135,12 @@ history_search_internal (string, direction, anchored)
 	{
 	  register int limit;
 
-	  limit = line_index - string_len + 1;
+	  limit = (line_index - (int)string_len + 1);
 	  line_index = 0;
 
 	  while (line_index < limit)
 	    {
-	      if (STREQN (string, line + line_index, string_len))
+	      if (STREQN(string, (line + line_index), string_len))
 		{
 		  history_offset = i;
 		  return (line_index);
@@ -150,46 +148,40 @@ history_search_internal (string, direction, anchored)
 	      line_index++;
 	    }
 	}
-      NEXT_LINE ();
+      NEXT_LINE();
     }
 }
 
-/* Do a non-anchored search for STRING through the history in DIRECTION. */
+/* Do a non-anchored search for STRING through the history in DIRECTION: */
 int
-history_search (string, direction)
-     const char *string;
-     int direction;
+history_search(const char *string, int direction)
 {
-  return (history_search_internal (string, direction, NON_ANCHORED_SEARCH));
+  return (history_search_internal(string, direction, NON_ANCHORED_SEARCH));
 }
 
-/* Do an anchored search for string through the history in DIRECTION. */
+/* Do an anchored search for string through the history in DIRECTION: */
 int
-history_search_prefix (string, direction)
-     const char *string;
-     int direction;
+history_search_prefix(const char *string, int direction)
 {
-  return (history_search_internal (string, direction, ANCHORED_SEARCH));
+  return (history_search_internal(string, direction, ANCHORED_SEARCH));
 }
 
 /* Search for STRING in the history list.  DIR is < 0 for searching
    backwards.  POS is an absolute index into the history list at
    which point to begin searching. */
 int
-history_search_pos (string, dir, pos)
-     const char *string;
-     int dir, pos;
+history_search_pos(const char *string, int dir, int pos)
 {
   int ret, old;
 
-  old = where_history ();
-  history_set_pos (pos);
-  if (history_search (string, dir) == -1)
+  old = where_history();
+  history_set_pos(pos);
+  if (history_search(string, dir) == -1)
     {
-      history_set_pos (old);
+      history_set_pos(old);
       return (-1);
     }
-  ret = where_history ();
-  history_set_pos (old);
+  ret = where_history();
+  history_set_pos(old);
   return ret;
 }

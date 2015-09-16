@@ -1,6 +1,6 @@
 /* exp_clib.c - top-level functions in the expect C library, libexpect.a
 
-Written by: Don Libes, libes@cme.nist.gov, NIST, 12/3/90
+Written by: Don Libes, <libes@cme.nist.gov>, NIST, 12/3/90
 
 Design and implementation of this program was paid for by U.S. tax
 dollars.  Therefore it is public domain.  However, the author and NIST
@@ -13,7 +13,9 @@ would appreciate credit if this program or parts of it are used.
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
 #else
-# warning exp_clib.c expects <inttypes.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "exp_clib.c expects <inttypes.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_INTTYPES_H */
 #include <sys/types.h>
 #include <sys/ioctl.h>
@@ -21,7 +23,9 @@ would appreciate credit if this program or parts of it are used.
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning exp_clib.c expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "exp_clib.c expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
 #ifdef TIME_WITH_SYS_TIME
@@ -34,7 +38,9 @@ would appreciate credit if this program or parts of it are used.
 #  if HAVE_TIME_H
 #   include <time.h>
 #  else
-#   warning exp_clib.c expects a time-related header to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "exp_clib.c expects a time-related header to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_TIME_H */
 # endif /* HAVE_SYS_TIME_H */
 #endif /* TIME_WITH_SYS_TIME */
@@ -47,7 +53,9 @@ would appreciate credit if this program or parts of it are used.
 #   if HAVE_TERMIO_H
 #    include <termio.h>
 #   else
-#    warning exp_clib.c expects either <termios.h> or <termio.h> to be included.
+#    if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#     warning "exp_clib.c expects either <termios.h> or <termio.h> to be included."
+#    endif /* __GNUC__ && !__STRICT_ANSI__ */
 #   endif /* HAVE_TERMIO_H */
 #  endif /* HAVE_TERMIOS */
 # endif /* !TCSETCTTY */
@@ -59,7 +67,9 @@ would appreciate credit if this program or parts of it are used.
 # ifdef HAVE_FCNTL_H
 #  include <fcntl.h>
 # else
-#  warning exp_clib.c expects either <sys/fcntl.h> or <fcntl.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "exp_clib.c expects either <sys/fcntl.h> or <fcntl.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_FCNTL_H */
 #endif /* HAVE_SYS_FCNTL_H */
 
@@ -69,13 +79,16 @@ would appreciate credit if this program or parts of it are used.
 #  undef TIOCCONS
 # endif /* SRIOCSREDIR */
 #else
-# if defined(__GNUC__) && defined(SRIOCSREDIR)
-#  warning exp_clib.c expects <sys/strredir.h> to be included.
-# endif /* __GNUC__ && SRIOCSREDIR */
+# if defined(__GNUC__) && defined(SRIOCSREDIR) && !defined(__STRICT_ANSI__)
+#  warning "exp_clib.c expects <sys/strredir.h> to be included."
+# endif /* __GNUC__ && SRIOCSREDIR && !__STRICT_ANSI__ */
 #endif /* HAVE_STRREDIR_H */
 
 #include <signal.h>
-/*#include <memory.h> - deprecated - ANSI C moves them into string.h */
+#if defined(HAVE_MEMORY_H) && !defined(HAVE_STRING_H) && \
+    (!defined(__STDC__) || !defined(__STRICT_ANSI__))
+# include <memory.h> /* deprecated - ANSI C moves them into <string.h> */
+#endif /* HAVE_MEMORY_H && !HAVE_STRING_H && (!__STDC__ || !__STRICT_ANSI__) */
 #include "string.h"
 
 #include <errno.h>
@@ -211,7 +224,7 @@ char *argv[];	/* some compiler complains about **argv? */
 {
 	int cc;
 	int errorfd;	/* place to stash fileno(stderr) in child */
-			/* while we are setting up new stderr */
+					/* while we are setting up new stderr */
 	int ttyfd;
 	int sync_fds[2];
 	int sync2_fds[2];
@@ -420,10 +433,11 @@ when trapping, see below in child half of fork */
 	/* 4.3+BSD way to acquire controlling terminal */
 	/* according to Stevens - Adv. Prog..., p 642 */
 # ifdef __QNX__ /* posix in general */
-	if (tcsetct(0, getpid()) == -1) {
+	if (tcsetct(0, getpid()) == -1)
 # else
-	if (ioctl(0,TIOCSCTTY,(char *)0) < 0) {
+	if (ioctl(0, TIOCSCTTY, (char *)0) < 0)
 # endif /* __QNX__ */
+	{
 		restore_error_fd
 		fprintf(stderr,"failed to get controlling terminal using TIOCSCTTY");
 		exit(-1);
@@ -525,9 +539,13 @@ when trapping, see below in child half of fork */
 	close(sync_fds[1]);
 
 	/* wait for master to let us go on */
-	/* debuglog("child: waiting for go ahead from parent\r\n"); */
+#if defined(DEBUG) && defined(debuglog)
+	debuglog("child: waiting for go ahead from parent\r\n");
+#endif /* DEBUG && debuglog */
 
-/*	close(master);	/* force master-side close so we can read */
+#if 0
+	close(master);	/* force master-side close so we can read */
+#endif /* 0 */
 	cc = read(sync2_fds[0],&sync_byte,1);
 	if (cc == -1) {
 		restore_error_fd
@@ -611,7 +629,7 @@ char *s;
 int c;
 {
 	char *s2 = s;	/* points to place in original string to put */
-			/* next non-null character */
+					/* next non-null character */
 	int count = 0;
 	int i;
 
@@ -722,7 +740,7 @@ int timeout;
 		}
 #endif /* 0 */
 		i_read_errno = errno;	/* errno can be overwritten by the */
-					/* time we return */
+								/* time we return */
 	}
 	exp_reading = FALSE;
 
@@ -1221,3 +1239,5 @@ exp_disconnect()
 #endif /* POSIX */
 	return(0);
 }
+
+/* EOF */

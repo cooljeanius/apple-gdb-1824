@@ -1,25 +1,28 @@
-/* Remote target communications for serial-line targets in custom GDB protocol
-   Copyright 1999 Free Software Foundation, Inc.
+/* remote.h: Remote target communications for serial-line targets in custom
+ * GDB protocol
+ * Copyright 1999 Free Software Foundation, Inc.  */
+/*
+This file is part of GDB.
 
-   This file is part of GDB.
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330,
+Boston, MA 02111-1307, USA.  */
 
 #ifndef REMOTE_H
 #define REMOTE_H
+
+#include "ansidecl.h"
 
 #include <sys/time.h>
 
@@ -30,7 +33,7 @@
    FOREVER, wait forever rather than timing out; this is used while
    the target is executing user code.  */
 
-extern void getpkt (char *buf, long sizeof_buf, int forever);
+extern void getpkt(char *buf, long sizeof_buf, int forever);
 
 /* Send a packet to the remote machine, with error checking.  The data
    of the packet is in BUF.  The string in BUF can be at most PBUFSIZ
@@ -38,11 +41,10 @@ extern void getpkt (char *buf, long sizeof_buf, int forever);
    we are debugging (remote_debug) and want to print the sent packet
    as a string */
 
-extern int putpkt (char *buf);
+extern int putpkt(char *buf);
 
-/* Send HEX encoded string to the target console. (gdb_stdtarg) */
-
-extern void remote_console_output (char *);
+/* Send HEX encoded string to the target console (gdb_stdtarg): */
+extern void remote_console_output(char *);
 
 
 /* FIXME: cagney/1999-09-20: The remote cisco stuff in remote.c needs
@@ -50,23 +52,29 @@ extern void remote_console_output (char *);
    that can happen, a remote protocol stack framework needs to be
    implemented. */
 
-extern void remote_cisco_objfile_relocate (bfd_signed_vma text_off,
-					   bfd_signed_vma data_off,
-					   bfd_signed_vma bss_off);
+extern void remote_cisco_objfile_relocate(bfd_signed_vma text_off,
+					  bfd_signed_vma data_off,
+					  bfd_signed_vma bss_off);
 
-extern void async_remote_interrupt_twice (void *arg);
+extern void async_remote_interrupt_twice(void *arg);
 
-extern int remote_write_bytes (CORE_ADDR memaddr, const gdb_byte *myaddr, 
-			       int len);
+extern int remote_write_bytes(CORE_ADDR memaddr, const gdb_byte *myaddr,
+                              int len);
 
-extern int remote_read_bytes (CORE_ADDR memaddr, char *myaddr, int len);
+extern int remote_read_bytes(CORE_ADDR memaddr, char *myaddr, int len);
 
-extern void (*deprecated_target_resume_hook) (void);
-extern void (*deprecated_target_wait_loop_hook) (void);
+extern void (*deprecated_target_resume_hook)(void)
+  ATTRIBUTE_DEPRECATED;
+extern void (*deprecated_target_wait_loop_hook)(void)
+  ATTRIBUTE_DEPRECATED;
 
-void dump_packets_command (char *unused, int fromtty);
+extern void dump_packets_command(char *unused, int fromtty);
 
-CORE_ADDR remote_macosx_get_all_image_infos_addr ();
+extern CORE_ADDR remote_macosx_get_all_image_infos_addr(void);
+
+extern void remote_macosx_create_inferior(char *exec_file, char *allargs,
+                                          char **env, int from_tty);
+extern void remote_macosx_attach(char *args, int from_tty);
 
 
 /* APPLE LOCAL
@@ -74,7 +82,7 @@ CORE_ADDR remote_macosx_get_all_image_infos_addr ();
    and we track how many remote protocol packets were used to complete
    that command.
    The remote protocol can have multiple commands "in flight" at once
-   and we don't have access to those nested structures here in remote.c.
+   and we do NOT have access to those nested structures here in remote.c.
    So we use a simple stack mechanism where CURRENT_REMOTE_STATS points
    to the currently active mi command and mi-main.c is responsible for
    updating this as we start/finish mi commands.  */
@@ -105,4 +113,6 @@ struct remote_stats {
 extern uint64_t total_packets_sent;
 extern uint64_t total_packets_received;
 
-#endif
+#endif /* !REMOTE_H */
+
+/* EOF */

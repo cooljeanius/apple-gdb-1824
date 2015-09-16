@@ -1,4 +1,5 @@
-/* Handle aliases for locale names.
+/* localealias.c
+   Handle aliases for locale names.
    Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
    Written by Ulrich Drepper <drepper@gnu.ai.mit.edu>, 1995.
 
@@ -19,28 +20,46 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning localealias.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning localealias.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_CTYPE_H
 # include <ctype.h>
 #else
-# warning localealias.c expects <ctype.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "localealias.c expects <ctype.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CTYPE_H */
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning localealias.c expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "localealias.c expects <stdio.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning localealias.c expects <sys/types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "localealias.c expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
+
+#ifndef PARAMS
+# if __STDC__ || defined __GNUC__ || defined __SUNPRO_C || defined __cplusplus || __PROTOTYPES
+#  define PARAMS(args) args
+# else
+#  define PARAMS(args) ()
+# endif /* __STDC__ */
+#endif /* !PARAMS */
 
 #ifdef __GNUC__
 # define alloca __builtin_alloca
-# define HAVE_ALLOCA 1
+# ifndef HAVE_ALLOCA
+#  define HAVE_ALLOCA 1
+# endif /* !HAVE_ALLOCA */
 #else
 # if defined HAVE_ALLOCA_H || defined _LIBC
 #  include <alloca.h>
@@ -49,7 +68,7 @@
  #pragma alloca
 #  else
 #   ifndef alloca
-char *alloca ();
+char *alloca PARAMS((size_t size));
 #   endif /* !alloca */
 #  endif /* _AIX */
 # endif /* HAVE_ALLOCA_H || _LIBC */
@@ -58,28 +77,30 @@ char *alloca ();
 #if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-char *getenv ();
+char *getenv PARAMS((const char *envvar));
 # ifdef HAVE_MALLOC_H
 #  include <malloc.h>
 # else
 #  ifdef HAVE_MALLOC_MALLOC_H
 #   include <malloc/malloc.h>
 #  else
-void free ();
+void free PARAMS((void *buffer));
 #  endif /* HAVE_MALLOC_MALLOC_H */
 # endif /* HAVE_MALLOC_H */
 #endif /* STDC_HEADERS || _LIBC || HAVE_STDLIB_H */
 
 #if defined HAVE_STRING_H || defined _LIBC
 # ifndef _GNU_SOURCE
-#  define _GNU_SOURCE	1
+#  define _GNU_SOURCE 1
 # endif /* !_GNU_SOURCE */
 # include <string.h>
-#elif defined HAVE_STRINGS_H
-# include <strings.h>
-# ifndef memcpy
-#  define memcpy(Dst, Src, Num) bcopy (Src, Dst, Num)
-# endif /* !memcpy */
+#else
+# if defined HAVE_STRINGS_H
+#  include <strings.h>
+#  ifndef memcpy
+#   define memcpy(Dst, Src, Num) bcopy(Src, Dst, Num)
+#  endif /* !memcpy */
+# endif /* HAVE_STRINGS_H */
 #endif /* HAVE_STRING_H || _LIBC */
 #if !HAVE_STRCHR && !defined _LIBC
 # ifndef strchr
@@ -99,14 +120,14 @@ void free ();
 # define strcasecmp __strcasecmp
 
 # define mempcpy __mempcpy
-# define HAVE_MEMPCPY	1
+# define HAVE_MEMPCPY 1
 
 /* We need locking here since we can be called from different places.  */
 # ifdef HAVE_BITS_LIBC_LOCK_H
 #  include <bits/libc-lock.h>
 # endif /* HAVE_BITS_LIBC_LOCK_H */
 
-__libc_lock_define_initialized (static, lock);
+__libc_lock_define_initialized(static, lock);
 #endif /* _LIBC */
 
 
@@ -122,27 +143,27 @@ struct block_list
   void *address;
   struct block_list *next;
 };
-# define ADD_BLOCK(list, addr)						      \
-  do {									      \
-    struct block_list *newp = (struct block_list *) malloc (sizeof (*newp));  \
-    /* If we cannot get a free block we cannot add the new element to	      \
-       the list.  */							      \
-    if (newp != NULL) {							      \
-      newp->address = (addr);						      \
-      newp->next = (list);						      \
-      (list) = newp;							      \
-    }									      \
+# define ADD_BLOCK(list, addr)						  \
+  do {									  \
+    struct block_list *newp = (struct block_list *)malloc(sizeof(*newp)); \
+    /* If we cannot get a free block we cannot add the new element to	  \
+     * the list.  */							  \
+    if (newp != NULL) {							  \
+      newp->address = (addr);						  \
+      newp->next = (list);						  \
+      (list) = newp;							  \
+    }									  \
   } while (0)
-# define FREE_BLOCKS(list)						      \
-  do {									      \
-    while (list != NULL) {						      \
-      struct block_list *old = list;					      \
-      list = list->next;						      \
-      free (old);							      \
-    }									      \
+# define FREE_BLOCKS(list)						  \
+  do {									  \
+    while (list != NULL) {						  \
+      struct block_list *old = list;					  \
+      list = list->next;						  \
+      free(old);							  \
+    }									  \
   } while (0)
 # undef alloca
-# define alloca(size) (malloc (size))
+# define alloca(size) (malloc(size))
 #endif	/* have alloca */
 
 
@@ -161,17 +182,15 @@ static size_t nmap = 0;
 static size_t maxmap = 0;
 
 
-/* Prototypes for local functions.  */
-static size_t read_alias_file PARAMS ((const char *fname, int fname_len))
+/* Prototypes for local functions: */
+static size_t read_alias_file PARAMS((const char *fname, int fname_len))
      internal_function;
-static void extend_alias_table PARAMS ((void));
-static int alias_compare PARAMS ((const struct alias_map *map1,
-				  const struct alias_map *map2));
+static void extend_alias_table PARAMS((void));
+static int alias_compare PARAMS((const struct alias_map *map1,
+                                 const struct alias_map *map2));
 
 
-const char *
-_nl_expand_alias (name)
-    const char *name;
+const char *_nl_expand_alias(const char *name)
 {
   static const char *locale_alias_path = LOCALE_ALIAS_PATH;
   struct alias_map *retval;
@@ -179,52 +198,51 @@ _nl_expand_alias (name)
   size_t added;
 
 #ifdef _LIBC
-  __libc_lock_lock (lock);
+  __libc_lock_lock(lock);
 #endif /* _LIBC */
 
-  do
-    {
+  do {
       struct alias_map item;
 
       item.alias = name;
 
-      if (nmap > 0)
-	retval = (struct alias_map *) bsearch (&item, map, nmap,
-					       sizeof (struct alias_map),
-					       (int (*) PARAMS ((const void *,
-								 const void *))
-						) alias_compare);
-      else
+      if (nmap > 0) {
+	retval =
+          (struct alias_map *)bsearch(&item, map, nmap, sizeof(struct alias_map),
+                                      (int (*)PARAMS((const void *, const void *)))alias_compare);
+      } else {
 	retval = NULL;
+      }
 
-      /* We really found an alias. Return the value.  */
-      if (retval != NULL)
-	{
+      /* We really found an alias. Return the value: */
+      if (retval != NULL) {
 	  result = retval->value;
 	  break;
-	}
+      }
 
       /* Perhaps we can find another alias file.  */
       added = 0;
-      while (added == 0 && locale_alias_path[0] != '\0')
-	{
+      while ((added == 0) && (locale_alias_path[0] != '\0')) {
 	  const char *start;
 
-	  while (locale_alias_path[0] == ':')
+	  while (locale_alias_path[0] == ':') {
 	    ++locale_alias_path;
+          }
 	  start = locale_alias_path;
 
-	  while (locale_alias_path[0] != '\0' && locale_alias_path[0] != ':')
+	  while ((locale_alias_path[0] != '\0') && (locale_alias_path[0] != ':')) {
 	    ++locale_alias_path;
+          }
 
-	  if (start < locale_alias_path)
-	    added = read_alias_file (start, locale_alias_path - start);
-	}
-    }
-  while (added != 0);
+	  if (start < locale_alias_path) {
+	    added = read_alias_file(start,
+                                    (int)(locale_alias_path - start));
+          }
+      }
+  } while (added != 0);
 
 #ifdef _LIBC
-  __libc_lock_unlock (lock);
+  __libc_lock_unlock(lock);
 #endif /* _LIBC */
 
   return result;
@@ -233,9 +251,7 @@ _nl_expand_alias (name)
 
 static size_t
 internal_function
-read_alias_file (fname, fname_len)
-     const char *fname;
-     int fname_len;
+read_alias_file(const char *fname, int fname_len)
 {
 #ifndef HAVE_ALLOCA
   struct block_list *block_list = NULL;
@@ -245,25 +261,25 @@ read_alias_file (fname, fname_len)
   size_t added;
   static const char aliasfile[] = "/locale.alias";
 
-  full_fname = (char *) alloca (fname_len + sizeof aliasfile);
-  ADD_BLOCK (block_list, full_fname);
-#ifdef HAVE_MEMPCPY
-  mempcpy (mempcpy (full_fname, fname, fname_len),
-	   aliasfile, sizeof aliasfile);
+  full_fname = (char *)alloca((size_t)fname_len + sizeof(aliasfile));
+  ADD_BLOCK(block_list, full_fname);
+#if defined(HAVE_MEMPCPY) && HAVE_MEMPCPY && defined(HAVE_DECL_MEMPCPY) && HAVE_DECL_MEMPCPY
+  mempcpy(mempcpy(full_fname, fname, (size_t)fname_len),
+          aliasfile, sizeof(aliasfile));
 #else
-  memcpy (full_fname, fname, fname_len);
-  memcpy (&full_fname[fname_len], aliasfile, sizeof aliasfile);
-#endif /* HAVE_MEMPCPY */
+  memcpy(full_fname, fname, (size_t)fname_len);
+  memcpy(&full_fname[fname_len], aliasfile, sizeof(aliasfile));
+#endif /* HAVE_MEMPCPY && HAVE_DECL_MEMPCPY */
 
-  fp = fopen (full_fname, "r");
+  fp = fopen(full_fname, "r");
   if (fp == NULL)
     {
-      FREE_BLOCKS (block_list);
+      FREE_BLOCKS(block_list);
       return 0;
     }
 
   added = 0;
-  while (!feof (fp))
+  while (!feof(fp))
     {
       /* It is a reasonable approach to use a fix buffer here because
 	 a) we are only interested in the first two fields
@@ -275,40 +291,41 @@ read_alias_file (fname, fname_len)
       unsigned char *value;
       unsigned char *cp;
 
-      if (fgets (buf, sizeof buf, fp) == NULL)
-	/* EOF reached.  */
+      if (fgets((char *)buf, (int)sizeof(buf), fp) == NULL) {
+	/* EOF reached: */
 	break;
+      }
 
       /* Possibly not the whole line fits into the buffer. Ignore
-	 the rest of the line.  */
-      if (strchr (buf, '\n') == NULL)
-	{
+       * the rest of the line: */
+      if (strchr((const char *)buf, '\n') == NULL) {
 	  char altbuf[BUFSIZ];
-	  do
-	    if (fgets (altbuf, sizeof altbuf, fp) == NULL)
+	  do {
+	    if (fgets(altbuf, (int)sizeof(altbuf), fp) == NULL) {
 	      /* Make sure the inner loop will be left. The outer loop
 		 will exit at the `feof' test.  */
 	      break;
-	  while (strchr (altbuf, '\n') == NULL);
-	}
+            }
+	  } while (strchr(altbuf, '\n') == NULL);
+      }
 
       cp = buf;
-      /* Ignore leading white space.  */
-      while (isspace (cp[0]))
+      /* Ignore leading white space: */
+      while (isspace(cp[0]))
 	++cp;
 
-      /* A leading '#' signals a comment line.  */
-      if (cp[0] != '\0' && cp[0] != '#')
+      /* A leading '#' signals a comment line: */
+      if ((cp[0] != '\0') && (cp[0] != '#'))
 	{
 	  alias = cp++;
-	  while (cp[0] != '\0' && !isspace (cp[0]))
+	  while ((cp[0] != '\0') && !isspace(cp[0]))
 	    ++cp;
-	  /* Terminate alias name.  */
+	  /* Terminate alias name: */
 	  if (cp[0] != '\0')
 	    *cp++ = '\0';
 
-	  /* Now look for the beginning of the value.  */
-	  while (isspace (cp[0]))
+	  /* Now look for the beginning of the value: */
+	  while (isspace(cp[0]))
 	    ++cp;
 
 	  if (cp[0] != '\0')
@@ -317,7 +334,7 @@ read_alias_file (fname, fname_len)
 	      size_t value_len;
 
 	      value = cp++;
-	      while (cp[0] != '\0' && !isspace (cp[0]))
+	      while ((cp[0] != '\0') && !isspace(cp[0]))
 		++cp;
 	      /* Terminate value.  */
 	      if (cp[0] == '\n')
@@ -331,19 +348,24 @@ read_alias_file (fname, fname_len)
 	      else if (cp[0] != '\0')
 		*cp++ = '\0';
 
-	      if (nmap >= maxmap)
-		extend_alias_table ();
+              if (cp == NULL) {
+                ; /* do nothing; just silence clang */
+              }
 
-	      alias_len = strlen (alias) + 1;
-	      value_len = strlen (value) + 1;
+	      if (nmap >= maxmap) {
+		extend_alias_table();
+              }
 
-	      if (string_space_act + alias_len + value_len > string_space_max)
+	      alias_len = (strlen((const char *)alias) + 1UL);
+	      value_len = (strlen((const char *)value) + 1UL);
+
+	      if ((string_space_act + alias_len + value_len) > string_space_max)
 		{
 		  /* Increase size of memory pool.  */
 		  size_t new_size = (string_space_max
-				     + (alias_len + value_len > 1024
-					? alias_len + value_len : 1024));
-		  char *new_pool = (char *) realloc (string_space, new_size);
+				     + (((alias_len + value_len) > 1024)
+					? (alias_len + value_len) : 1024));
+		  char *new_pool = (char *)realloc(string_space, new_size);
 		  if (new_pool == NULL)
 		    {
 		      FREE_BLOCKS (block_list);
@@ -353,12 +375,14 @@ read_alias_file (fname, fname_len)
 		  string_space_max = new_size;
 		}
 
-	      map[nmap].alias = memcpy (&string_space[string_space_act],
-					alias, alias_len);
+	      map[nmap].alias =
+                (const char *)memcpy(&string_space[string_space_act],
+                                     alias, alias_len);
 	      string_space_act += alias_len;
 
-	      map[nmap].value = memcpy (&string_space[string_space_act],
-					value, value_len);
+	      map[nmap].value =
+                (const char *)memcpy(&string_space[string_space_act],
+                                     value, value_len);
 	      string_space_act += value_len;
 
 	      ++nmap;
@@ -371,27 +395,28 @@ read_alias_file (fname, fname_len)
      errors.  --drepper  */
   fclose (fp);
 
-  if (added > 0)
-    qsort (map, nmap, sizeof (struct alias_map),
-	   (int (*) PARAMS ((const void *, const void *))) alias_compare);
+  if (added > 0) {
+    qsort(map, nmap, sizeof(struct alias_map),
+          (int (*)PARAMS((const void *, const void *)))alias_compare);
+  }
 
-  FREE_BLOCKS (block_list);
+  FREE_BLOCKS(block_list);
   return added;
 }
 
 
-static void
-extend_alias_table ()
+static void extend_alias_table(void)
 {
   size_t new_size;
   struct alias_map *new_map;
 
-  new_size = maxmap == 0 ? 100 : 2 * maxmap;
-  new_map = (struct alias_map *) realloc (map, (new_size
-						* sizeof (struct alias_map)));
-  if (new_map == NULL)
-    /* Simply do NOT extend: we do NOT have any more core.  */
+  new_size = ((maxmap == 0) ? 100 : (2 * maxmap));
+  new_map = (struct alias_map *)realloc(map, (new_size
+                                              * sizeof(struct alias_map)));
+  if (new_map == NULL) {
+    /* Simply do NOT extend: we do NOT have any more core: */
     return;
+  }
 
   map = new_map;
   maxmap = new_size;
@@ -399,48 +424,51 @@ extend_alias_table ()
 
 
 #ifdef _LIBC
-static void __attribute__ ((unused))
-free_mem (void)
+static void __attribute__((unused)) free_mem(void)
 {
-  if (string_space != NULL)
-    free (string_space);
-  if (map != NULL)
-    free (map);
+  if (string_space != NULL) {
+    free(string_space);
+  }
+  if (map != NULL) {
+    free(map);
+  }
 }
-text_set_element (__libc_subfreeres, free_mem);
+text_set_element(__libc_subfreeres, free_mem);
 #endif /* _LIBC */
 
 
 static int
-alias_compare (map1, map2)
-     const struct alias_map *map1;
-     const struct alias_map *map2;
+alias_compare(const struct alias_map *map1, const struct alias_map *map2)
 {
 #if defined _LIBC || defined HAVE_STRCASECMP
-  return strcasecmp (map1->alias, map2->alias);
+  return strcasecmp(map1->alias, map2->alias);
 #else
-  const unsigned char *p1 = (const unsigned char *) map1->alias;
-  const unsigned char *p2 = (const unsigned char *) map2->alias;
+  const unsigned char *p1 = (const unsigned char *)map1->alias;
+  const unsigned char *p2 = (const unsigned char *)map2->alias;
   unsigned char c1, c2;
 
-  if (p1 == p2)
+  if (p1 == p2) {
     return 0;
+  }
 
-  do
-    {
+  do {
       /* I know this seems to be odd but the tolower() function in
-	 some systems libc cannot handle nonalpha characters.  */
-      c1 = isupper (*p1) ? tolower (*p1) : *p1;
-      c2 = isupper (*p2) ? tolower (*p2) : *p2;
-      if (c1 == '\0')
+       * some systems libc cannot handle nonalpha characters: */
+      c1 = (isupper(*p1) ? tolower(*p1) : *p1);
+      c2 = (isupper(*p2) ? tolower(*p2) : *p2);
+      if (c1 == '\0') {
 	break;
+      }
       ++p1;
       ++p2;
-    }
-  while (c1 == c2);
+  } while (c1 == c2);
 
-  return c1 - c2;
+  return (c1 - c2);
 #endif /* _LIBC || HAVE_STRCASECMP */
 }
+
+#ifdef HAVE_ALLOCA
+# undef HAVE_ALLOCA
+#endif /* HAVE_ALLOCA */
 
 /* EOF */

@@ -1,5 +1,5 @@
 /* APPLE LOCAL file checkpoints */
-/* Checkpoints for GDB.
+/* checkpoint.c: Checkpoints for GDB.
    Copyright 2005
    Free Software Foundation, Inc.
 
@@ -32,30 +32,39 @@
 #include "regcache.h"
 #include "inferior.h"
 
-extern void re_execute_command (char *args, int from_tty);
-extern void rollback_stop (void);
+extern void re_execute_command(char *args, int from_tty);
+extern void rollback_stop(void);
 
 #include <dlfcn.h>
+#include <libintl.h>
 
 #include "checkpoint.h"
+
+/* keep this condition the same as in the 2 places below: */
+#ifdef NM_NEXTSTEP /* in lieu of target vectory */
+/* has protos for fork_memcache_put() and direct_memcache_get() in it: */
+# include "macosx-nat-inferior.h"
+#endif /* NM_NEXTSTEP */
 
 #define LIBCHECKPOINT_NAME "/usr/libexec/gdb/libcheckpoint.dylib"
 #define CP_FORK_NAME "_gdbcp_fork"
 #define CP_CG_SAVE_NAME "_gdbcp_cg_save"
 #define CP_CG_ROLLBACK_NAME "_gdbcp_cg_rollback"
 
-void prune_checkpoint_list (void);
-void delete_checkpoint (struct checkpoint *);
-static void sigterm_handler (int signo);
+void prune_checkpoint_list(void);
+void delete_checkpoint(struct checkpoint *);
+static void sigterm_handler(int signo);
+extern void _initialize_checkpoint(void);
 
 extern struct checkpoint *rx_cp;
 
-/* True when we want to create a checkpoint at every stop.  */
-
+/* This is also declared later below: */
+#if !defined(__cplusplus) && defined(ALLOW_DUPLICATE_DECLS)
+/* True when we want to create a checkpoint at every stop: */
 int auto_checkpointing;
+#endif /* !__cplusplus && ALLOW_DUPLICATE_DECLS */
 
-/* This is the maximum number of checkpoints we want to retain.  */
-
+/* This is the maximum number of checkpoints we want to retain: */
 int max_checkpoints = 50;
 
 /* True when we want libraries, frameworks, and other special
@@ -67,54 +76,53 @@ int forking_checkpoints = 1;
 
 /* Memory cache stuff.  */
 
-/* Get a block from the inferior and save it.  */
-
+/* Get a block from the inferior and save it: */
 void
-memcache_get (struct checkpoint *cp, ULONGEST addr, int len)
+memcache_get(struct checkpoint *cp, ULONGEST addr, int len)
 {
   struct memcache *mc;
   int actual;
 
-  mc = (struct memcache *) xmalloc (sizeof (struct memcache));
+  mc = (struct memcache *)xmalloc(sizeof(struct memcache));
   mc->startaddr = addr;
   mc->len = len;
-  mc->cache = (gdb_byte *) xmalloc (len);
+  mc->cache = (gdb_byte *)xmalloc(len);
 
   mc->next = cp->mem;
   cp->mem = mc;
 
-  actual = target_read_partial (&current_target, TARGET_OBJECT_MEMORY,
-				NULL, mc->cache, addr, len);
-  /*  printf ("cached %d (orig %d) bytes at 0x%llx\n", actual, len, addr); */
+  actual = (int)target_read_partial(&current_target, TARGET_OBJECT_MEMORY,
+                                    NULL, mc->cache, addr, len);
+#if defined(DEBUG) || defined(_DEBUG)
+  printf("cached %d (orig %d) bytes at 0x%llx\n", actual, len, addr);
+#endif /* DEBUG || _DEBUG */
 
-  mc->cache = (gdb_byte *) xrealloc (mc->cache, actual);
+  mc->cache = (gdb_byte *)xrealloc(mc->cache, actual);
 
   mc->len = actual;
 }
 
 void
-memcache_put (struct checkpoint *cp)
+memcache_put(struct checkpoint *cp)
 {
   struct memcache *mc;
 
   for (mc = cp->mem; mc != NULL; mc = mc->next)
-    target_write_partial (&current_target, TARGET_OBJECT_MEMORY,
-			  NULL, mc->cache, mc->startaddr, mc->len);
+    target_write_partial(&current_target, TARGET_OBJECT_MEMORY,
+			 NULL, mc->cache, mc->startaddr, mc->len);
 
 #ifdef NM_NEXTSTEP /* in lieu of target vectory */
  {
-   void fork_memcache_put (struct checkpoint *);
    if (cp->pid != 0)
-     fork_memcache_put (cp);
+     fork_memcache_put(cp);
  }
 #endif /* NM_NEXTSTEP */
 }
 
-/* The count of checkpoints that have been created so far.  */
-
+/* The count of checkpoints that have been created so far: */
 int checkpoint_count = 1;
 
-/* List of all checkpoints.  */
+/* List of all checkpoints: */
 struct checkpoint *checkpoint_list;
 struct checkpoint *last_checkpoint;
 
@@ -143,35 +151,35 @@ int rolled_back = 0;
 
 int auto_checkpointing = 0;
 
-/* This is true when we are running the inferior as part of function calls.  */
-
+/* True if we are running the inferior as part of function calls: */
 int inferior_call_checkpoints;
 
 int warned_cpfork = 0;
 
-/* Use inferior's dlopen() to bring in some helper functions.  */
-
+/* Use inferior's dlopen() to bring in some helper functions: */
 void
-load_helpers ()
+load_helpers(void)
 {
   struct value *dlfn, *args[2], *val;
   long rslt;
 
-  args[0] = value_string (LIBCHECKPOINT_NAME, strlen(LIBCHECKPOINT_NAME) + 1);
-  args[0] = value_coerce_array (args[0]);
-  args[1] = value_from_longest (builtin_type_int, (LONGEST) RTLD_NOW);
-  if (lookup_minimal_symbol ("dlopen", 0, 0)
-      && (dlfn = find_function_in_inferior ("dlopen", builtin_type_int)))
+  args[0] = value_string(LIBCHECKPOINT_NAME,
+                         (strlen(LIBCHECKPOINT_NAME) + 1UL));
+  args[0] = value_coerce_array(args[0]);
+  args[1] = value_from_longest(builtin_type_int, (LONGEST)RTLD_NOW);
+  if (lookup_minimal_symbol("dlopen", 0, 0)
+      && (dlfn = find_function_in_inferior("dlopen", builtin_type_int)))
     {
-      val = call_function_by_hand_expecting_type (dlfn,
-						  builtin_type_int, 2, args, 1);
-      rslt = value_as_long (val);
+      val = call_function_by_hand_expecting_type(dlfn,
+						 builtin_type_int, 2,
+                                                 args, 1);
+      rslt = (long)value_as_long(val);
       if (rslt == 0)
-	warning ("dlopen of checkpoint library returned NULL");
+	warning("dlopen of checkpoint library returned NULL");
     }
   else
     {
-      warning ("dlopen not found, libcheckpoint functions not loaded");
+      warning("dlopen not found, libcheckpoint functions not loaded");
     }
 }
 
@@ -183,51 +191,51 @@ load_helpers ()
    but not harmful either.  */
 
 static void
-create_checkpoint_command (char *args, int from_tty)
+create_checkpoint_command(char *args ATTRIBUTE_UNUSED,
+                          int from_tty ATTRIBUTE_UNUSED)
 {
   struct checkpoint *cp;
 
   if (!target_has_execution)
     {
-      error ("Cannot create checkpoints before the program has run.");
+      error("Cannot create checkpoints before the program has run.");
       return;
     }
 
-  cp = create_checkpoint ();
+  cp = create_checkpoint();
 
   if (cp)
     cp->type = manual;
 
   if (cp)
-    printf ("Checkpoint %d created\n", cp->number);
+    printf("Checkpoint %d created\n", cp->number);
   else
-    printf ("Checkpoint creation failed.\n");
+    printf("Checkpoint creation failed.\n");
 }
 
 struct checkpoint *
-create_checkpoint ()
+create_checkpoint(void)
 {
   struct checkpoint *cp;
 
   if (!target_has_execution)
     return NULL;
 
-  cp = collect_checkpoint ();
+  cp = collect_checkpoint();
 
-  return finish_checkpoint (cp);
+  return finish_checkpoint(cp);
 }
 
-/* Create a content-less checkpoint.  */
-
+/* Create a content-less checkpoint: */
 struct checkpoint *
-start_checkpoint ()
+start_checkpoint(void)
 {
   struct checkpoint *cp;
 
-  cp = (struct checkpoint *) xmalloc (sizeof (struct checkpoint));
-  memset (cp, 0, sizeof (struct checkpoint));
+  cp = (struct checkpoint *)xmalloc(sizeof(struct checkpoint));
+  memset(cp, 0, sizeof(struct checkpoint));
 
-  cp->regs = regcache_xmalloc (current_gdbarch);
+  cp->regs = regcache_xmalloc(current_gdbarch);
   cp->mem = NULL;
 
   cp->pid = 0;
@@ -239,28 +247,28 @@ int warned_cg = 0;
 static int checkpoint_initialized = 0;
 
 void
-checkpoint_clear_inferior ()
+checkpoint_clear_inferior(void)
 {
   checkpoint_initialized = 0;
 }
 
 struct checkpoint *
-collect_checkpoint ()
+collect_checkpoint(void)
 {
   struct checkpoint *cp;
   struct value *forkfn;
   struct value *val;
-  int retval;
+  long retval;
 
-  cp = start_checkpoint ();
+  cp = start_checkpoint();
 
-  /* Always collect the registers directly.  */
-  regcache_cpy (cp->regs, current_regcache);
+  /* Always collect the registers directly: */
+  regcache_cpy(cp->regs, current_regcache);
 
   if (!checkpoint_initialized)
     {
-      load_helpers ();
-      signal (SIGTERM, sigterm_handler);
+      load_helpers();
+      signal(SIGTERM, sigterm_handler);
       checkpoint_initialized = 1;
     }
 
@@ -273,18 +281,21 @@ collect_checkpoint ()
 
     /* (It would seem more logical to use cp->number here, but it hasn't been
        assigned yet - revisit this issue later.)  */
-    arg = value_from_longest (builtin_type_int, (LONGEST) checkpoint_count);
-    if (lookup_minimal_symbol (CP_CG_SAVE_NAME, 0, 0)
-	&& (cgfn = find_function_in_inferior (CP_CG_SAVE_NAME, builtin_type_int)))
+    arg = value_from_longest(builtin_type_int, (LONGEST)checkpoint_count);
+    if (lookup_minimal_symbol(CP_CG_SAVE_NAME, 0, 0)
+	&& (cgfn = find_function_in_inferior(CP_CG_SAVE_NAME, builtin_type_int)))
       {
-	val = call_function_by_hand_expecting_type (cgfn,
-						    builtin_type_int, 1, &arg, 1);
+	val = call_function_by_hand_expecting_type(cgfn,
+						   builtin_type_int, 1, &arg, 1);
+        if (val == NULL) {
+          ; /* ??? */
+        }
       }
     else
       {
 	if (!warned_cg)
 	  {
-	    warning (CP_CG_SAVE_NAME " not found");
+	    warning(CP_CG_SAVE_NAME " not found");
 	    warned_cg = 1;
 	  }
       }
@@ -294,12 +305,12 @@ collect_checkpoint ()
     {
       /* (The following should be target-specific) */
       if (lookup_minimal_symbol(CP_FORK_NAME, 0, 0)
-	  && (forkfn = find_function_in_inferior (CP_FORK_NAME, builtin_type_int)))
+	  && (forkfn = find_function_in_inferior(CP_FORK_NAME, builtin_type_int)))
 	{
-	  val = call_function_by_hand_expecting_type (forkfn,
-						      builtin_type_int, 0, NULL, 1);
+	  val = call_function_by_hand_expecting_type(forkfn,
+						     builtin_type_int, 0, NULL, 1);
 
-	  retval = value_as_long (val);
+	  retval = (long)value_as_long(val);
 
 	  /* Keep the pid around, only dig through fork when rolling back.  */
 	  cp->pid = retval;
@@ -308,7 +319,7 @@ collect_checkpoint ()
 	{
 	  if (!warned_cpfork)
 	    {
-	      warning (CP_FORK_NAME " not found, falling back to memory reads to make checkpoints");
+	      warning(CP_FORK_NAME " not found, falling back to memory reads to make checkpoints");
 	      warned_cpfork = 1;
 	    }
 	}
@@ -316,9 +327,8 @@ collect_checkpoint ()
 
 #ifdef NM_NEXTSTEP /* in lieu of target vectory */
   {
-    void direct_memcache_get (struct checkpoint *);
     if (cp->pid == 0)
-      direct_memcache_get (cp);
+      direct_memcache_get(cp);
   }
 #endif /* NM_NEXTSTEP */
 
@@ -326,11 +336,11 @@ collect_checkpoint ()
 }
 
 struct checkpoint *
-finish_checkpoint (struct checkpoint *cp)
+finish_checkpoint(struct checkpoint *cp)
 {
   cp->number = checkpoint_count++;
 
-  /* Link into the end of the list.  */
+  /* Link into the end of the list: */
   if (last_checkpoint)
     {
       last_checkpoint->next = cp;
@@ -351,12 +361,12 @@ finish_checkpoint (struct checkpoint *cp)
   cp->lprev = current_checkpoint;
   current_checkpoint = cp;
 
-  /* If we're on the original no-rollback line of execution, record
+  /* If we are on the original no-rollback line of execution, record
      this checkpoint as the most recent.  */
   if (!rolled_back)
     original_latest_checkpoint = cp;
 
-  prune_checkpoint_list ();
+  prune_checkpoint_list();
 
   return cp;
 }
@@ -368,18 +378,17 @@ finish_checkpoint (struct checkpoint *cp)
 
 /* The algorithm here is not especially efficient, and should be
    redone if we expect to keep hundreds of checkpoints around.  */
-
 void
-prune_checkpoint_list ()
+prune_checkpoint_list(void)
 {
   int i, n, numcp, numtokeep;
   struct checkpoint *cp2, **todel;
 
-  /* Don't do anything if no limits on checkpointing.  */
+  /* Do NOT do anything if no limits on checkpointing: */
   if (max_checkpoints < 0)
     return;
 
-  /* Count the checkpoints we have right now.  */
+  /* Count the checkpoints we have right now: */
   numcp = 0;
   for (cp2 = checkpoint_list; cp2 != NULL; cp2 = cp2->next)
     ++numcp;
@@ -399,7 +408,7 @@ prune_checkpoint_list ()
       cp2->keep = 1;
       ++numtokeep;
     }
-  /* Now scan last-to-first in general list.  */
+  /* Now scan last-to-first in general list: */
   for (cp2 = last_checkpoint; cp2 != NULL; cp2 = cp2->prev)
     {
       if (cp2->keep)
@@ -412,8 +421,8 @@ prune_checkpoint_list ()
   /* Now collect the checkpoints we want to delete. Handle as a
      temporarily-allocated array of checkpoints to delete so we do NOT
      get confused by all the pointer churn.  */
-  n = numcp - numtokeep;
-  todel = (struct checkpoint **) xmalloc (n * sizeof (struct checkpoint *));
+  n = (numcp - numtokeep);
+  todel = (struct checkpoint **)xmalloc(n * sizeof(struct checkpoint *));
   i = 0;
   for (cp2 = checkpoint_list; cp2 != NULL; cp2 = cp2->next)
     {
@@ -421,25 +430,25 @@ prune_checkpoint_list ()
 	todel[i++] = cp2;
     }
   for (i = 0; i < n; ++i)
-    delete_checkpoint (todel[i]);
-  xfree (todel);
+    delete_checkpoint(todel[i]);
+  xfree(todel);
 }
 
-int
-checkpoint_compare (struct checkpoint *cp1, struct checkpoint *cp2)
-{
-  int regcache_compare (struct regcache *rc1, struct regcache *rc2);
+extern int regcache_compare(struct regcache *rc1, struct regcache *rc2);
 
-  if (regcache_compare (cp1->regs, cp2->regs) == 0)
+int
+checkpoint_compare(struct checkpoint *cp1, struct checkpoint *cp2)
+{
+  if (regcache_compare(cp1->regs, cp2->regs) == 0)
     return 0;
 
   return 1;
 }
 
-/* This is called from infrun.c:normal_stop() to auto-generate checkpoints.  */
-
+/* This is called from infrun.c:normal_stop() to auto-generate
+ * checkpoints: */
 void
-maybe_create_checkpoint ()
+maybe_create_checkpoint(void)
 {
   struct checkpoint *tmpcp, *lastcp;
 
@@ -450,7 +459,7 @@ maybe_create_checkpoint ()
     return;
   if (inferior_call_checkpoints)
     return;
-  /* Oddly, we can end up here even after the program has exited.  */
+  /* Oddly, we can end up here even after the program has exited: */
   if (!target_has_execution)
     return;
 
@@ -458,27 +467,27 @@ maybe_create_checkpoint ()
 
   lastcp = current_checkpoint;
 
-  tmpcp = collect_checkpoint ();
+  tmpcp = collect_checkpoint();
 
-#if 0 /* used for re-execution */
+#ifdef DO_REEXECUTION /* used for re-execution */
   for (cp = checkpoint_list; cp != NULL; cp = cp->next)
-    if (checkpoint_compare (cp, tmpcp))
+    if (checkpoint_compare(cp, tmpcp))
       {
 	current_checkpoint = cp;
 	if (rx_cp && lastcp)
 	  current_checkpoint->immediate_prev = lastcp;
 	return;
       }
-#endif /* 0 */
+#endif /* DO_REEXECUTION */
 
-  finish_checkpoint (tmpcp);
+  finish_checkpoint(tmpcp);
 
   tmpcp->type = autogen;
 
-  /*
-  if ((rx_cp && lastcp) || step_range_end == 1)
+#if defined(DEBUG) || defined(_DEBUG) || defined(lint) || 1
+  if ((rx_cp && lastcp) || (step_range_end == 1))
     current_checkpoint->immediate_prev = lastcp;
-  */
+#endif /* DEBUG || _DEBUG || lint || 1 */
 
   collecting_checkpoint = 0;
 }
@@ -489,23 +498,24 @@ maybe_create_checkpoint ()
    policy needs more thought, for instance about the right thing to do
    when one stops at a breakpoint and then single-steps for a
    while.  */
-
 void
-begin_inferior_call_checkpoints()
+begin_inferior_call_checkpoints(void)
 {
-  if (!collecting_checkpoint)
+  if (!collecting_checkpoint) {
     inferior_call_checkpoints = 1;
+  }
 }
 
 void
-end_inferior_call_checkpoints()
+end_inferior_call_checkpoints(void)
 {
-  if (!collecting_checkpoint)
+  if (!collecting_checkpoint) {
     inferior_call_checkpoints = 0;
+  }
 }
 
 static void
-rollback_to_checkpoint_command (char *args, int from_tty)
+rollback_to_checkpoint_command(char *args, int from_tty ATTRIBUTE_UNUSED)
 {
   char *p;
   int num = 1;
@@ -513,37 +523,36 @@ rollback_to_checkpoint_command (char *args, int from_tty)
 
   if (!checkpoint_list)
     {
-      error ("No checkpoints to roll back to!\n");
+      error("No checkpoints to roll back to!\n");
       return;
     }
 
   if (args)
     {
       p = args;
-      num = atoi (p);
+      num = atoi(p);
     }
 
-  cp = find_checkpoint (num);
+  cp = find_checkpoint(num);
 
   if (cp == NULL)
     {
-      error ("checkpoint %d not found\n", num);
+      error("checkpoint %d not found\n", num);
       return;
     }
 
-  rollback_to_checkpoint (cp);
+  rollback_to_checkpoint(cp);
 }
 
-/* Given a checkpoint, make it the current state.  */
-
+/* Given a checkpoint, make it the current state: */
 void
-rollback_to_checkpoint (struct checkpoint *cp)
+rollback_to_checkpoint(struct checkpoint *cp)
 {
-  regcache_cpy (current_regcache, cp->regs);
+  regcache_cpy(current_regcache, cp->regs);
 
-  memcache_put (cp);
+  memcache_put(cp);
 
-  /* Prevent a bit of recursion.  */
+  /* Prevent a bit of recursion: */
   rolling_back = 1;
 
   /* This bit calls a function to roll CoreGraphics windows back to a
@@ -551,18 +560,21 @@ rollback_to_checkpoint (struct checkpoint *cp)
   if (subsystem_checkpointing) {
     struct value *cgfn, *arg, *val;
 
-    arg = value_from_longest (builtin_type_int, (LONGEST) cp->number);
-    if (lookup_minimal_symbol (CP_CG_ROLLBACK_NAME, 0, 0)
-	&& (cgfn = find_function_in_inferior (CP_CG_ROLLBACK_NAME, builtin_type_int)))
+    arg = value_from_longest(builtin_type_int, (LONGEST)cp->number);
+    if (lookup_minimal_symbol(CP_CG_ROLLBACK_NAME, 0, 0)
+	&& (cgfn = find_function_in_inferior(CP_CG_ROLLBACK_NAME, builtin_type_int)))
       {
-	val = call_function_by_hand_expecting_type (cgfn,
-						    builtin_type_int, 1, &arg, 1);
+	val = call_function_by_hand_expecting_type(cgfn,
+						   builtin_type_int, 1, &arg, 1);
+        if (val == NULL) {
+          ; /* ??? */
+        }
       }
     else
       {
 	if (!warned_cg)
 	  {
-	    warning (CP_CG_ROLLBACK_NAME " not found");
+	    warning(CP_CG_ROLLBACK_NAME " not found");
 	    warned_cg = 1;
 	  }
       }
@@ -570,12 +582,12 @@ rollback_to_checkpoint (struct checkpoint *cp)
 
   current_checkpoint = cp;
 
-  flush_cached_frames ();
+  flush_cached_frames();
 
   /* Rolling back is a lot like a normal stop, in that we want to tell
      the user where we are, etc, but different because it's not the
      consequence of a resume.  */
-  rollback_stop ();
+  rollback_stop();
 
   rolling_back = 0;
 
@@ -583,10 +595,9 @@ rollback_to_checkpoint (struct checkpoint *cp)
   rolled_back = (cp != original_latest_checkpoint);
 }
 
-/* Find a checkpoint given its number.  */
-
+/* Find a checkpoint given its number: */
 struct checkpoint *
-find_checkpoint (int num)
+find_checkpoint(int num)
 {
   struct checkpoint *cp;
 
@@ -601,26 +612,27 @@ find_checkpoint (int num)
 }
 
 /* static */ void
-checkpoints_info (char *args, int from_tty)
+checkpoints_info(char *args ATTRIBUTE_UNUSED,
+                 int from_tty ATTRIBUTE_UNUSED)
 {
   struct checkpoint *cp;
 
   for (cp = checkpoint_list; cp != NULL; cp = cp->next)
     {
-      print_checkpoint_info (cp);
+      print_checkpoint_info(cp);
     }
 }
 
 void
-print_checkpoint_info (struct checkpoint *cp)
+print_checkpoint_info(struct checkpoint *cp)
 {
   gdb_byte reg_buf[MAX_REGISTER_SIZE];
   LONGEST pc;
   struct symtab_and_line sal;
 
-  regcache_cooked_read (cp->regs, PC_REGNUM, reg_buf);
-  pc = *((LONGEST *) reg_buf);
-  sal = find_pc_line (pc, 0);
+  regcache_cooked_read(cp->regs, PC_REGNUM, reg_buf);
+  pc = *((LONGEST *)reg_buf);
+  sal = find_pc_line(pc, 0);
 
   if (cp->pid != 0)
     printf("[%d] ", cp->pid);
@@ -637,73 +649,72 @@ print_checkpoint_info (struct checkpoint *cp)
       printf("[%d/%d] ", tot, blocks);
     }
 
-  printf ("%c%c%c%d: pc=0x%s",
-	  cp->type,
-	  (current_checkpoint == cp ? '*' : ' '),
-	  (original_latest_checkpoint == cp ? '!' : ' '),
-	  cp->number, paddr_nz (pc));
+  printf("%c%c%c%d: pc=0x%s",
+	 cp->type,
+	 ((current_checkpoint == cp) ? '*' : ' '),
+	 ((original_latest_checkpoint == cp) ? '!' : ' '),
+	 cp->number, paddr_nz(pc));
 
-  printf (" (");
+  printf(" (");
   if (cp->lprev)
-    printf ("%d", cp->lprev->number);
+    printf("%d", cp->lprev->number);
   else
-    printf (" ");
-  printf ("<-)");
-  printf (" (->");
+    printf(" ");
+  printf("<-)");
+  printf(" (->");
   if (cp->lnext)
-    printf ("%d", cp->lnext->number);
+    printf("%d", cp->lnext->number);
   else
-    printf (" ");
-  printf (")");
+    printf(" ");
+  printf(")");
 
   if (sal.symtab)
     {
-      printf (" -- ");
-      print_source_lines (sal.symtab, sal.line, 1, 0);
+      printf(" -- ");
+      print_source_lines(sal.symtab, sal.line, 1, 0);
     }
   else
     {
-      printf ("\n");
+      printf("\n");
     }
 }
 
 /* Checkpoint commands.  */
 
 static void
-undo_command (char *args, int from_tty)
+undo_command(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
   if (current_checkpoint == NULL)
-    error ("No current checkpoint");
+    error("No current checkpoint");
   else if (current_checkpoint->lprev == NULL)
-    error ("No previous checkpoint to roll back to");
+    error("No previous checkpoint to roll back to");
   else
-    rollback_to_checkpoint (current_checkpoint->lprev);
+    rollback_to_checkpoint(current_checkpoint->lprev);
 }
 
 static void
-redo_command (char *args, int from_tty)
+redo_command(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
   if (current_checkpoint == NULL)
-    error ("No current checkpoint");
+    error("No current checkpoint");
   else if (current_checkpoint->lnext == NULL)
-    error ("No next checkpoint to roll forward to");
+    error("No next checkpoint to roll forward to");
   else
-    rollback_to_checkpoint (current_checkpoint->lnext);
+    rollback_to_checkpoint(current_checkpoint->lnext);
 }
 
 static void
-now_command (char *args, int from_tty)
+now_command(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
   if (original_latest_checkpoint == NULL)
-    error ("No original latest checkpoint");
+    error("No original latest checkpoint");
 
-  rollback_to_checkpoint (original_latest_checkpoint);
+  rollback_to_checkpoint(original_latest_checkpoint);
 }
 
-/* Given a checkpoint, scrub it out of the system.  */
-
+/* Given a checkpoint, scrub it out of the system: */
 void
-delete_checkpoint (struct checkpoint *cp)
+delete_checkpoint(struct checkpoint *cp)
 {
   struct checkpoint *cpi;
   struct memcache *mc;
@@ -737,16 +748,16 @@ delete_checkpoint (struct checkpoint *cp)
 
   for (mc = cp->mem; mc != NULL; mc = mc->next)
     {
-      /* (should dealloc caches) */
+      ; /* (should dealloc caches) */
     }
 
   if (cp->pid)
     {
-      kill (cp->pid, 9);
+      kill(cp->pid, 9);
     }
 
-  /* flagging for debugging purposes */
-  cp->type = 'D';
+  /* flagging for debugging purposes: */
+  cp->type = (enum cp_type)'D';
 }
 
 /* Call FUNCTION on each of the checkpoints whose numbers are given in
@@ -792,7 +803,7 @@ map_checkpoint_numbers (char *args, void (*function) (struct checkpoint *))
 static void
 delete_checkpoint_command (char *args, int from_tty)
 {
-  dont_repeat ();
+  dont_repeat();
 
   if (args == 0)
     {
@@ -811,9 +822,9 @@ delete_checkpoint_command (char *args, int from_tty)
 
 }
 
-#if 0 /* comment out for now */
+#ifdef BUILD_COMMENTED_OUT_CODE /* comment out for now */
 static void
-reverse_step_command (char *args, int from_tty)
+reverse_step_command(char *args, int from_tty)
 {
   struct checkpoint *cp, *prev;
   gdb_byte reg_buf[MAX_REGISTER_SIZE];
@@ -822,13 +833,13 @@ reverse_step_command (char *args, int from_tty)
 
   if (current_checkpoint == NULL)
     {
-      printf ("no cp!\n");
+      printf("no cp!\n");
       return;
     }
 
   if (current_checkpoint->immediate_prev == NULL)
     {
-      /* re-execute to find old state */
+      ; /* re-execute to find old state */
     }
 
   if (current_checkpoint->immediate_prev)
@@ -837,15 +848,15 @@ reverse_step_command (char *args, int from_tty)
       prev = cp->immediate_prev;
       while (prev)
 	{
-	  regcache_cooked_read (cp->regs, PC_REGNUM, reg_buf);
-	  pc = *((LONGEST *) reg_buf);
-	  sal = find_pc_line (pc, 0);
-	  regcache_cooked_read (prev->regs, PC_REGNUM, reg_buf);
-	  prev_pc = *((LONGEST *) reg_buf);
-	  prev_sal = find_pc_line (prev_pc, 0);
+	  regcache_cooked_read(cp->regs, PC_REGNUM, reg_buf);
+	  pc = *((LONGEST *)reg_buf);
+	  sal = find_pc_line(pc, 0);
+	  regcache_cooked_read(prev->regs, PC_REGNUM, reg_buf);
+	  prev_pc = *((LONGEST *)reg_buf);
+	  prev_sal = find_pc_line(prev_pc, 0);
 	  if (prev_sal.line != sal.line)
 	    {
-	      rollback_to_checkpoint (cp);
+	      rollback_to_checkpoint(cp);
 	      return;
 	    }
 	  cp = prev;
@@ -856,43 +867,42 @@ reverse_step_command (char *args, int from_tty)
 	      return;
 	    }
 	}
-      printf ("no prev line found\n");
+      printf("no prev line found\n");
     }
   else
     printf("no cp?\n");
 }
 
 static void
-reverse_stepi_command (char *args, int from_tty)
+reverse_stepi_command(char *args, int from_tty)
 {
   if (current_checkpoint == NULL)
     {
-      printf ("no cp!\n");
+      printf("no cp!\n");
       return;
     }
 
   if (current_checkpoint->immediate_prev == NULL)
     {
-      /* re-execute to find old state */
+      ; /* re-execute to find old state */
     }
 
   if (current_checkpoint->immediate_prev)
-    rollback_to_checkpoint (current_checkpoint->immediate_prev);
+    rollback_to_checkpoint(current_checkpoint->immediate_prev);
   else
     printf("no cp?\n");
 }
-#endif /* 0 */
+#endif /* BUILD_COMMENTED_OUT_CODE */
 
-/* Clear out all accumulated checkpoint stuff.  */
-
+/* Clear out all accumulated checkpoint stuff: */
 void
-clear_all_checkpoints ()
+clear_all_checkpoints(void)
 {
   struct checkpoint *cp;
 
   for (cp = checkpoint_list; cp != NULL; cp = cp->next)
     {
-      delete_checkpoint (cp);
+      delete_checkpoint(cp);
     }
   checkpoint_list = last_checkpoint = NULL;
   current_checkpoint = NULL;
@@ -902,89 +912,84 @@ clear_all_checkpoints ()
 }
 
 void
-set_max_checkpoints (char *args, int from_tty,
-		     struct cmd_list_element *c)
+set_max_checkpoints(char *args ATTRIBUTE_UNUSED,
+                    int from_tty ATTRIBUTE_UNUSED,
+		    struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
-  prune_checkpoint_list ();
+  prune_checkpoint_list();
 }
 
-/* Catch SIGTERM so we can be sure to get rid of any checkpoint forks that are
-   hanging around.  */
-
-static void
-sigterm_handler (int signo)
+/* Catch SIGTERM so we can be sure to get rid of any checkpoint forks that
+ * are hanging around: */
+static void ATTR_NORETURN
+sigterm_handler(int signo ATTRIBUTE_UNUSED)
 {
   struct checkpoint *cp;
 
-  printf ("Handling sigterm, killing all checkpoint forks.");
+  printf("Handling sigterm, killing all checkpoint forks.");
 
   /* Note that we do NOT need anything more than the kills, because GDB
      as a whole is about to go away.  */
   for (cp = checkpoint_list; cp != NULL; cp = cp->next)
     {
       if (cp->pid)
-	kill (cp->pid, 9);
+	kill(cp->pid, 9);
     }
-  exit (0);
+  exit(0);
 }
 
 void
-_initialize_checkpoint (void)
+_initialize_checkpoint(void)
 {
+  add_com("create-checkpoint", class_obscure, create_checkpoint_command,
+          "create a checkpoint");
+  add_com_alias("cc", "create-checkpoint", class_obscure, 1);
+  add_com("rollback", class_obscure, rollback_to_checkpoint_command,
+	  "roll back to a checkpoint");
+  add_com("undo", class_obscure, undo_command,
+	  "back to last checkpoint");
+  add_com("redo", class_obscure, redo_command,
+	  "forward to next checkpoint");
+  add_com("now", class_obscure, now_command,
+	  "go to latest original execution line");
+#if defined(__WORKING_ON_AGAIN) /* ifdef-ed out until working on again */
+  add_com("rs", class_obscure, reverse_step_command,
+	  "reverse-step by one line");
+  add_com("rsi", class_obscure, reverse_stepi_command,
+	  "reverse-step by one instruction");
+  add_com("rx", class_obscure, re_execute_command,
+	  "execute up to a given place");
+#endif /* __WORKING_ON_AGAIN */
 
-
-  add_com ("create-checkpoint", class_obscure, create_checkpoint_command,
-	   "create a checkpoint");
-  add_com_alias ("cc", "create-checkpoint", class_obscure, 1);
-  add_com ("rollback", class_obscure, rollback_to_checkpoint_command,
-	   "roll back to a checkpoint");
-  add_com ("undo", class_obscure, undo_command,
-	   "back to last checkpoint");
-  add_com ("redo", class_obscure, redo_command,
-	   "forward to next checkpoint");
-  add_com ("now", class_obscure, now_command,
-	   "go to latest original execution line");
-#if 0 /* commented out until working on again */
-  add_com ("rs", class_obscure, reverse_step_command,
-	   "reverse-step by one line");
-  add_com ("rsi", class_obscure, reverse_stepi_command,
-	   "reverse-step by one instruction");
-  add_com ("rx", class_obscure, re_execute_command,
-	   "execute up to a given place");
-#endif /* 0 */
-
-  add_cmd ("checkpoints", class_obscure, delete_checkpoint_command, _("\
+  add_cmd("checkpoints", class_obscure, delete_checkpoint_command, _("\
 Delete specified checkpoints.\n\
 Arguments are checkpoint numbers, separated by spaces.\n\
 No argument means delete all checkpoints."),
-	   &deletelist);
+          &deletelist);
 
-  add_info ("checkpoints", checkpoints_info, "help");
+  add_info("checkpoints", checkpoints_info, "help");
 
-  add_setshow_boolean_cmd ("checkpointing", class_support, &auto_checkpointing, _("\
+  add_setshow_boolean_cmd("checkpointing", class_support, &auto_checkpointing, _("\
 Set automatic creation of checkpoints."), _("\
 Show automatic creation of checkpoints."), NULL,
-			   NULL,
-			   NULL,
-			   &setlist, &showlist);
-  add_setshow_zinteger_cmd ("max-checkpoints", class_support, &max_checkpoints, _("\
+                          NULL, NULL,
+                          &setlist, &showlist);
+  add_setshow_zinteger_cmd("max-checkpoints", class_support, &max_checkpoints, _("\
 Set the maximum number of checkpoints allowed (-1 == unlimited)."), _("\
 Show the maximum number of checkpoints allowed (-1 == unlimited)."), NULL,
-			   set_max_checkpoints,
+                           set_max_checkpoints,
 			   NULL,
 			   &setlist, &showlist);
-  add_setshow_boolean_cmd ("subsystem-checkpointing", class_support, &subsystem_checkpointing, _("\
+  add_setshow_boolean_cmd("subsystem-checkpointing", class_support, &subsystem_checkpointing, _("\
 Set checkpointing of subsystems."), _("\
 Show checkpointing of subsystems."), NULL,
-			   NULL,
-			   NULL,
-			   &setlist, &showlist);
-  add_setshow_boolean_cmd ("forking-checkpoints", class_support, &forking_checkpoints, _("\
+                          NULL, NULL,
+                          &setlist, &showlist);
+  add_setshow_boolean_cmd("forking-checkpoints", class_support, &forking_checkpoints, _("\
 Set forking to create checkpoints."), _("\
 Show forking to create checkpoints."), NULL,
-			   NULL,
-			   NULL,
-			   &setlist, &showlist);
+                          NULL, NULL,
+                          &setlist, &showlist);
 }
 
 /* EOF */

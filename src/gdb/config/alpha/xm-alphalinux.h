@@ -1,4 +1,5 @@
-/* Host definitions for GDB running on an Alpha under GNU/Linux.
+/* xm-alphalinux.h
+   Host definitions for GDB running on an Alpha under GNU/Linux.
 
    Copyright 1996, 2001, 2002 Free Software Foundation, Inc.
 

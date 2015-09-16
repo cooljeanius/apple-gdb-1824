@@ -153,11 +153,12 @@ extern void gdbscm_dynwind_xfree (void *ptr);
 
 extern int gdbscm_is_procedure (SCM proc);
 
-/* GDB smobs, from scm-smob.c */
+/* GDB smobs, from scm-gsmob.c */
 
 /* All gdb smobs must contain one of the following as the first member:
    gdb_smob, chained_gdb_smob, or eqable_gdb_smob.
 
+<<<<<<< HEAD
    The next,prev members of chained_gdb_smob allow for chaining gsmobs
    together so that, for example, when an objfile is deleted we can clean up
    all smobs that reference it.
@@ -165,14 +166,34 @@ extern int gdbscm_is_procedure (SCM proc);
    The containing_scm member of eqable_gdb_smob allows for returning the
    same gsmob instead of creating a new one, allowing them to be eq?-able.
 
-   IMPORTANT: chained_gdb_smob and eqable_gdb-smob are a "subclasses" of
+=======
+   Chained GDB smobs should have chained_gdb_smob as their first member.  The
+   next,prev members of chained_gdb_smob allow for chaining gsmobs together so
+   that, for example, when an objfile is deleted we can clean up all smobs that
+   reference it.
+
+   Eq-able GDB smobs should have eqable_gdb_smob as their first member.  The
+   containing_scm member of eqable_gdb_smob allows for returning the same gsmob
+   instead of creating a new one, allowing them to be eq?-able.
+
+   All other smobs should have gdb_smob as their first member.
+   FIXME: dje/2014-05-26: gdb_smob was useful during early development as a
+   "baseclass" for all gdb smobs.  If it's still unused by gdb 8.0 delete it.
+>>>>>>> e0ce22ee5feb0d1682ac7365358abd9c23fc4033
+
+   IMPORTANT: chained_gdb_smob and eqable_gdb-smob are "subclasses" of
    gdb_smob.  The layout of chained_gdb_smob,eqable_gdb_smob must match
    gdb_smob as if it is a subclass.  To that end we use macro GDB_SMOB_HEAD
    to ensure this.  */
 
-#define GDB_SMOB_HEAD					\
-  /* Property list for externally added fields.  */	\
-  SCM properties;
+#ifdef MY_BRANCH_IS_HEAD
+# define GDB_SMOB_HEAD					\
+   /* Property list for externally added fields: */	\
+   SCM properties;
+#else
+# define GDB_SMOB_HEAD \
+   int empty_base_class;
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 
 typedef struct
 {
@@ -222,12 +243,16 @@ extern void gdbscm_init_chained_gsmob (chained_gdb_smob *base);
 extern void gdbscm_init_eqable_gsmob (eqable_gdb_smob *base,
 				      SCM containing_scm);
 
+#ifdef MY_BRANCH_IS_HEAD
 extern SCM gdbscm_mark_gsmob (gdb_smob *base);
 
 extern SCM gdbscm_mark_chained_gsmob (chained_gdb_smob *base);
 
 extern SCM gdbscm_mark_eqable_gsmob (eqable_gdb_smob *base);
 
+#else
+/* ??? */
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 extern void gdbscm_add_objfile_ref (struct objfile *objfile,
 				    const struct objfile_data *data_key,
 				    chained_gdb_smob *g_smob);
@@ -274,15 +299,25 @@ extern SCM gdbscm_make_type_error (const char *subr, int arg_pos,
 extern SCM gdbscm_make_invalid_object_error (const char *subr, int arg_pos,
 					     SCM bad_value, const char *error);
 
+#ifdef MY_BRANCH_IS_HEAD
 extern SCM gdbscm_invalid_object_error (const char *subr, int arg_pos,
 					SCM bad_value, const char *error)
+#else
+extern void gdbscm_invalid_object_error (const char *subr, int arg_pos,
+					 SCM bad_value, const char *error)
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
    ATTRIBUTE_NORETURN;
 
 extern SCM gdbscm_make_out_of_range_error (const char *subr, int arg_pos,
 					   SCM bad_value, const char *error);
 
+#ifdef MY_BRANCH_IS_HEAD
 extern SCM gdbscm_out_of_range_error (const char *subr, int arg_pos,
 				      SCM bad_value, const char *error)
+#else
+extern void gdbscm_out_of_range_error (const char *subr, int arg_pos,
+				       SCM bad_value, const char *error)
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
    ATTRIBUTE_NORETURN;
 
 extern SCM gdbscm_make_misc_error (const char *subr, int arg_pos,
@@ -307,7 +342,12 @@ extern excp_matcher_func gdbscm_memory_error_p;
 extern SCM gdbscm_make_memory_error (const char *subr, const char *msg,
 				     SCM args);
 
+#ifdef MY_BRANCH_IS_HEAD
 extern SCM gdbscm_memory_error (const char *subr, const char *msg, SCM args);
+#else
+extern void gdbscm_memory_error (const char *subr, const char *msg, SCM args)
+  ATTRIBUTE_NORETURN;
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 
 /* scm-safe-call.c */
 
@@ -441,9 +481,13 @@ extern char *gdbscm_scm_to_string (SCM string, size_t *lenp,
 extern SCM gdbscm_scm_from_string (const char *string, size_t len,
 				   const char *charset, int strict);
 
+#ifdef MY_BRANCH_IS_HEAD
 extern char *gdbscm_scm_to_target_string_unsafe (SCM string, size_t *lenp,
 						 struct gdbarch *gdbarch);
 
+#else
+/* ??? */
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 /* scm-symbol.c */
 
 extern int syscm_is_symbol (SCM scm);

@@ -1,6 +1,6 @@
-/* 
+/* params.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -25,7 +25,7 @@
 
 #ifndef TARGET
 # include "host.h"
-#endif
+#endif /* !TARGET */
 
 /* A single parameter, with tag */
 typedef struct Parameter {
@@ -164,7 +164,7 @@ bool Angel_ReadParamConfigMessage( const unsigned char *buffer,
  *
  *   Params:
  *              Input: buffer   where to read from
- *             In/Out: options  the parameter options block to read to, 
+ *             In/Out: options  the parameter options block to read to,
  *                                which must be set up on entry with a valid
  *                                array, and the size of the array in
  *                                num_parameters.  Each param_list must

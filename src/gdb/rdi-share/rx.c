@@ -1,6 +1,6 @@
-/* 
+/* rx.c
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -26,7 +26,7 @@
 #include "buffers.h"
 #ifdef TARGET
 #  include "devdriv.h"
-#endif
+#endif /* TARGET */
 #include "logging.h"
 
 static re_status unexp_stx(struct re_state *rxstate);
@@ -70,7 +70,7 @@ re_status Angel_RxEngine(unsigned char new_ch, struct data_packet *packet,
     new_ch &= ~serial_ESCAPE;
 #ifdef DO_TRACE
     __rt_trace("rxe-echar-%2x ", new_ch);
-#endif
+#endif  /* DO_TRACE */
     rxstate->rx_state &= ~RST_ESC;
   }
   else if ( (1 << new_ch) & rxstate->config->esc_set )
@@ -80,7 +80,7 @@ re_status Angel_RxEngine(unsigned char new_ch, struct data_packet *packet,
     {
 #ifdef DO_TRACE
       __rt_trace("rxe-esc ");
-#endif
+#endif /* DO_TRACE */
       rxstate->rx_state |= RST_ESC;
       return RS_IN_PKT;
     }
@@ -89,7 +89,7 @@ re_status Angel_RxEngine(unsigned char new_ch, struct data_packet *packet,
       /*
        * must be a normal packet so do some unexpected etx/stx checking
        * we haven't been told to escape or received an escape so unless
-       * we are expecting an stx or etx then we can take the unexpected 
+       * we are expecting an stx or etx then we can take the unexpected
        * stx/etx trap
        */
       if ((new_ch == (rxstate->config->stx)) && (rxstate->rx_state != RST_STX))
@@ -103,11 +103,11 @@ re_status Angel_RxEngine(unsigned char new_ch, struct data_packet *packet,
   {
     /*
      * do this to speed up the common case, no real penalty for
-     * other cases 
+     * other cases
      */
 #ifdef DO_TRACE
     __rt_trace("rxe-dat ");
-#endif
+#endif /* DO_TRACE */
 
     rxstate->crc = crc32(&new_ch, 1, rxstate->crc);
     (packet->data)[rxstate->index++] = (unsigned int)new_ch & 0xff;
@@ -146,9 +146,9 @@ re_status Angel_RxEngine(unsigned char new_ch, struct data_packet *packet,
       rxstate->rx_state = RST_LEN;
       rxstate->error = RE_OKAY;
       rxstate->field_c = 0; /* set up here for the length that follows */
-#ifdef DO_TRACE 
+#ifdef DO_TRACE
       __rt_trace("rxe-type-%2x ", packet->type);
-#endif
+#endif /* DO_TRACE */
       rxstate->crc = crc32(&new_ch, 1, rxstate->crc);
 
       return RS_IN_PKT;
@@ -168,7 +168,7 @@ re_status Angel_RxEngine(unsigned char new_ch, struct data_packet *packet,
         packet->len |= new_ch;
 #ifdef DO_TRACE
         __rt_trace("rxe-len-%4x\n", packet->len);
-#endif
+#endif /* DO_TRACE */
 
         /* check that the length is ok */
         if (packet->len == 0)
@@ -213,7 +213,7 @@ re_status Angel_RxEngine(unsigned char new_ch, struct data_packet *packet,
       /* dummy case (dealt with earlier) */
 #ifdef ASSERTIONS_ENABLED
       __rt_warning("ERROR: hit RST_dat in switch\n");
-#endif
+#endif /* ASSERTIONS_ENABLED */
       rxstate->rx_state = RST_STX;
       rxstate->error = RE_INTERNAL;
       return RS_BAD_PKT;
@@ -232,7 +232,7 @@ re_status Angel_RxEngine(unsigned char new_ch, struct data_packet *packet,
         rxstate->rx_state = RST_ETX;
 #ifdef DO_TRACE
         __rt_trace("rxe-rcrc-%8x ", packet->crc);
-#endif
+#endif /* DO_TRACE */
       }
 
       return RS_IN_PKT;
@@ -245,13 +245,13 @@ re_status Angel_RxEngine(unsigned char new_ch, struct data_packet *packet,
           int c;
 # ifdef DO_TRACE
           __rt_trace("\n");
-# endif
+# endif /* DO_TRACE */
           __rt_info("RXE Data =");
           for (c=0; c < packet->len; c++)
             __rt_info("%02x", packet->data[c]);
-          __rt_info("\n"); 
+          __rt_info("\n");
         }
-#endif
+#endif /* DEBUG && !NO_PKT_DATA */
 
         /* check crc */
         if (rxstate->crc == packet->crc)
@@ -265,7 +265,7 @@ re_status Angel_RxEngine(unsigned char new_ch, struct data_packet *packet,
         {
 #ifdef ASSERTIONS_ENABLED
           __rt_warning("Bad crc, rx calculates it should be 0x%x\n", rxstate->crc);
-#endif
+#endif /* ASSERTIONS_ENABLED */
           rxstate->rx_state = RST_STX;
           rxstate->error = RE_CRC;
           return RS_BAD_PKT;
@@ -283,7 +283,7 @@ re_status Angel_RxEngine(unsigned char new_ch, struct data_packet *packet,
     default:
 #ifdef ASSERTIONS_ENABLED
       __rt_warning("ERROR fell through rxengine\n");
-#endif
+#endif /* ASSERTIONS_ENABLED */
       rxstate->rx_state = RST_STX;
       rxstate->error = RE_INTERNAL;
       return RS_BAD_PKT;
@@ -294,7 +294,7 @@ static re_status unexp_stx(struct re_state *rxstate)
 {
 #ifdef ASSERTIONS_ENABLED
   __rt_warning("Unexpected stx\n");
-#endif
+#endif /* ASSERTIONS_ENABLED */
   rxstate->crc = startCRC32;
   rxstate->index = 0;
   rxstate->rx_state = RST_TYP;
@@ -307,7 +307,7 @@ static re_status unexp_etx(struct re_state *rxstate)
 {
 #ifdef ASSERTIONS_ENABLED
   __rt_warning("Unexpected etx, rxstate: index= 0x%2x, field_c=0x%2x, state=0x%2x\n", rxstate->index, rxstate->field_c, rxstate->rx_state);
-#endif
+#endif /* ASSERTIONS_ENABLED */
   rxstate->crc = 0;
   rxstate->index = 0;
   rxstate->rx_state = RST_STX;
@@ -318,7 +318,7 @@ static re_status unexp_etx(struct re_state *rxstate)
 
 /*
  * This can be used as the buffer allocation callback for the rx engine,
- * and makes use of angel_DD_GetBuffer() [in devdrv.h]. 
+ * and makes use of angel_DD_GetBuffer() [in devdrv.h].
  *
  * Saves duplicating this callback function in every device driver that
  * uses the rx engine.
@@ -326,33 +326,28 @@ static re_status unexp_etx(struct re_state *rxstate)
  * Note that this REQUIRES that the device id is installed as ba_data
  * in the rx engine config structure for the driver.
  */
-bool angel_DD_RxEng_BufferAlloc( struct data_packet *packet, void *cb_data )
+bool angel_DD_RxEng_BufferAlloc(struct data_packet *packet, void *cb_data)
 {
 #ifdef TARGET
     DeviceID devid = (DeviceID)cb_data;
 #else
     IGNORE(cb_data);
-#endif
+#endif /* TARGET */
 
-    if ( packet->type < DC_NUM_CHANNELS )
-    {
+    if (packet->type < DC_NUM_CHANNELS) {
         /* request a buffer down from the channels layer */
 #ifdef TARGET
-        packet->data = angel_DD_GetBuffer( devid, packet->type,
-                                           packet->len              );
+        packet->data = angel_DD_GetBuffer(devid, packet->type, packet->len);
 #else
-        packet->data = malloc(packet->len);
-#endif
-        if ( packet->data == NULL )
+        packet->data = (unsigned char *)malloc((size_t)packet->len);
+#endif /* TARGET */
+	if (packet->data == NULL) {
            return FALSE;
-        else
-        {
+        } else {
             packet->buf_len = packet->len;
             return TRUE;
         }
-    }
-    else
-    {
+    } else {
         /* bad type field */
         return FALSE;
     }

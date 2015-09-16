@@ -1,0 +1,7 @@
+1.  If you are reconfiguring this product, you _must_ use the config/
+    bootstrap script.  The standard "configure" script is edited to
+    produce a working script.
+
+2.  If you have pulled the sources from GIT, there are a number of files
+    that are required to build, but not part of the archive.  The needed
+    sources are contained within a shar archive named "noag-boot.sh".

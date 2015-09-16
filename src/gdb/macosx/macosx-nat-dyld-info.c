@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-nat-dyld-info.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002, 2004
    Free Software Foundation, Inc.
 
@@ -130,14 +130,15 @@ dyld_reason_string (dyld_objfile_reason r)
 }
 
 void
-dyld_check_entry (struct dyld_objfile_entry *e)
+dyld_check_entry(struct dyld_objfile_entry *e ATTRIBUTE_UNUSED)
 {
+  return;
 }
 
 int
-dyld_objfile_entry_in_shared_cache (struct dyld_objfile_entry *e)
+dyld_objfile_entry_in_shared_cache(struct dyld_objfile_entry *e)
 {
-  if (e != NULL && e->dyld_valid)
+  if ((e != NULL) && e->dyld_valid)
     {
       /* Read the mach header for this entry if it already hasn't been read.
          We can tell if the entry hasn't been read yet by looking at the magic
@@ -145,8 +146,8 @@ dyld_objfile_entry_in_shared_cache (struct dyld_objfile_entry *e)
 	 DYLD_OBJFILE_ENTRY_CLEAR) then we haven't read it yet.  */
       if (e->mem_header.magic == 0)
        target_read_mach_header (e->dyld_addr, &e->mem_header);
-      
-      /* The high bit of the flags member from the in memory version of the 
+
+      /* The high bit of the flags member from the in memory version of the
          mach_header declares if this mach image is in the shared cache.  */
       if (e->mem_header.flags & 0x80000000)
 	return 1;
@@ -165,7 +166,8 @@ dyld_objfile_entry_osabi (const struct dyld_objfile_entry *e)
 	 field and if it is set to zero (which gets done by
 	 DYLD_OBJFILE_ENTRY_CLEAR) then we haven't read it yet.  */
       if (e->mem_header.magic == 0)
-       target_read_mach_header (e->dyld_addr, &e->mem_header);
+       target_read_mach_header(e->dyld_addr,
+                               (struct mach_header *)&e->mem_header);
 
       if (e->mem_header.cputype == BFD_MACH_O_CPU_TYPE_ARM)
 	{
@@ -176,7 +178,7 @@ dyld_objfile_entry_osabi (const struct dyld_objfile_entry *e)
 
 	      case BFD_MACH_O_CPU_SUBTYPE_ARM_7:
 		return GDB_OSABI_DARWINV7;
-		    
+
 	      case BFD_MACH_O_CPU_SUBTYPE_ARM_7F:
 		return GDB_OSABI_DARWINV7F;
 
@@ -199,11 +201,11 @@ dyld_objfile_entry_osabi (const struct dyld_objfile_entry *e)
 }
 
 void
-dyld_objfile_entry_clear (struct dyld_objfile_entry *e)
+dyld_objfile_entry_clear(struct dyld_objfile_entry *e)
 {
   e->prefix = NULL;
 
-  memset (&e->mem_header, 0, sizeof(e->mem_header));
+  memset(&e->mem_header, 0, sizeof(e->mem_header));
 
   e->dyld_name = NULL;
   e->dyld_name_valid = 0;
@@ -216,7 +218,7 @@ dyld_objfile_entry_clear (struct dyld_objfile_entry *e)
 
 #if WITH_CFM
   e->cfm_container = 0;
-#endif
+#endif /* WITH_CFM */
 
   e->user_name = NULL;
 
@@ -248,7 +250,7 @@ dyld_objfile_entry_clear (struct dyld_objfile_entry *e)
 
   e->load_flag = -1;
 
-  e->reason = 0;
+  e->reason = (enum dyld_objfile_reason)0;
 
   e->allocated = 0;
 }
@@ -311,8 +313,8 @@ dyld_objfile_info_free (struct dyld_objfile_info *i)
 }
 
 int
-dyld_objfile_entry_compare (struct dyld_objfile_entry *a,
-                            struct dyld_objfile_entry *b)
+dyld_objfile_entry_compare(struct dyld_objfile_entry *a,
+                           struct dyld_objfile_entry *b)
 {
 #define COMPARE_SCALAR(field) { \
   if (a->field != b->field) { \
@@ -339,7 +341,7 @@ dyld_objfile_entry_compare (struct dyld_objfile_entry *a,
   COMPARE_SCALAR (mem_header.ncmds);
   COMPARE_SCALAR (mem_header.sizeofcmds);
   COMPARE_SCALAR (mem_header.flags);
-  
+
   COMPARE_STRING (dyld_name);
   COMPARE_SCALAR (dyld_name_valid);
 
@@ -391,8 +393,8 @@ dyld_objfile_entry_compare (struct dyld_objfile_entry *a,
 }
 
 int
-dyld_objfile_info_compare (struct dyld_objfile_info *a,
-                           struct dyld_objfile_info *b)
+dyld_objfile_info_compare(struct dyld_objfile_info *a,
+                          struct dyld_objfile_info *b)
 {
   int i;
 
@@ -438,19 +440,20 @@ dyld_objfile_info_copy_entries (struct dyld_objfile_info *d,
 }
 
 void
-dyld_objfile_info_copy (struct dyld_objfile_info *d,
-                        struct dyld_objfile_info *s)
+dyld_objfile_info_copy(struct dyld_objfile_info *d,
+                       struct dyld_objfile_info *s)
 {
-  dyld_objfile_info_init (d);
+  dyld_objfile_info_init(d);
   if (s->maxents == 0)
     {
       return;
     }
-  d->entries = xmalloc (s->maxents * sizeof (struct dyld_objfile_entry));
+  d->entries = ((struct dyld_objfile_entry *)
+                xmalloc(s->maxents * sizeof(struct dyld_objfile_entry)));
   d->nents = s->nents;
   d->maxents = s->maxents;
-  memcpy (d->entries, s->entries,
-          s->nents * sizeof (struct dyld_objfile_entry));
+  memcpy(d->entries, s->entries,
+         s->nents * sizeof(struct dyld_objfile_entry));
 }
 
 /* Return the next free dyld_objfile_entry structure, or grow the
@@ -463,7 +466,7 @@ dyld_objfile_info_copy (struct dyld_objfile_info *d,
    I *think* it would be OK... */
 
 struct dyld_objfile_entry *
-dyld_objfile_entry_alloc (struct dyld_objfile_info *i)
+dyld_objfile_entry_alloc(struct dyld_objfile_info *i)
 {
   struct dyld_objfile_entry *e = NULL;
 
@@ -473,22 +476,24 @@ dyld_objfile_entry_alloc (struct dyld_objfile_info *i)
     }
   else
     {
-      i->maxents = (i->nents > 0) ? (i->nents * 2) : 16;
+      i->maxents = ((i->nents > 0) ? (i->nents * 2) : 16);
       if (i->entries == NULL)
         {
-          i->entries =
-            xmalloc (i->maxents * sizeof (struct dyld_objfile_entry));
+          i->entries = ((struct dyld_objfile_entry *)
+                        xmalloc(i->maxents
+                                * sizeof(struct dyld_objfile_entry)));
         }
       else
         {
-          i->entries =
-            xrealloc (i->entries,
-                      i->maxents * sizeof (struct dyld_objfile_entry));
+          i->entries = ((struct dyld_objfile_entry *)
+                        xrealloc(i->entries,
+                                 (i->maxents
+                                  * sizeof(struct dyld_objfile_entry))));
         }
       e = &i->entries[i->nents++];
     }
 
-  dyld_objfile_entry_clear (e);
+  dyld_objfile_entry_clear(e);
   e->allocated = 1;
 
   return e;
@@ -508,16 +513,17 @@ dyld_objfile_entry_alloc (struct dyld_objfile_info *i)
    according to D, it will return NULL. */
 
 const char *
-dyld_entry_filename (const struct dyld_objfile_entry *e,
-                     const struct dyld_path_info *d, 
-                     enum dyld_entry_filename_type type)
+dyld_entry_filename(const struct dyld_objfile_entry *e,
+                    const struct dyld_path_info *d,
+                    enum dyld_entry_filename_type type)
 {
-  CHECK_FATAL (e != NULL);
-  CHECK_FATAL (e->allocated);
-
   const char *name = NULL;
   char *resolved = NULL;
   int name_is_absolute = 0;
+  char buf[PATH_MAX];
+
+  CHECK_FATAL(e != NULL);
+  CHECK_FATAL(e->allocated);
 
   if (e->text_name != NULL)
     {
@@ -537,16 +543,16 @@ dyld_entry_filename (const struct dyld_objfile_entry *e,
       name_is_absolute = 1;
     }
 
-  if ((name == NULL || type == DYLD_ENTRY_FILENAME_USER
-       || type == DYLD_ENTRY_FILENAME_LOADED)
-      && e->user_name != NULL)
+  if (((name == NULL) || (type == DYLD_ENTRY_FILENAME_USER)
+       || (type == DYLD_ENTRY_FILENAME_LOADED))
+      && (e->user_name != NULL))
     {
       name = e->user_name;
       name_is_absolute = 1;
     }
 
-  if ((name == NULL || type == DYLD_ENTRY_FILENAME_LOADED)
-      && e->loaded_name != NULL)
+  if (((name == NULL) || (type == DYLD_ENTRY_FILENAME_LOADED))
+      && (e->loaded_name != NULL))
     {
       name = e->loaded_name;
       name_is_absolute = 1;
@@ -562,16 +568,15 @@ dyld_entry_filename (const struct dyld_objfile_entry *e,
     return name;
 
 
-  resolved = dyld_resolve_image (d, name);
+  resolved = dyld_resolve_image(d, name);
   if (resolved == NULL)
     return name;
 
-  char buf[PATH_MAX];
-  resolved = realpath (resolved, buf);
+  resolved = realpath(resolved, buf);
   if (resolved == NULL)
     return name;
 
-  name = xstrdup (resolved);
+  name = xstrdup(resolved);
 
   return name;
 }
@@ -608,7 +613,7 @@ dyld_entry_string (struct dyld_objfile_entry *e, int print_basenames)
   char *ret;
   int maxlen = 0;
 
-  dyld_entry_info (e, print_basenames, &name, &objname, &symname, 
+  dyld_entry_info (e, print_basenames, &name, &objname, &symname,
 		   NULL, NULL, NULL,
                    &addr, &slide, &prefix);
 
@@ -831,19 +836,19 @@ dyld_entry_info (struct dyld_objfile_entry *e, int print_basenames,
 
     }
 
-  if (e->objfile == NULL && !e->loaded_from_memory)
+  if ((e->objfile == NULL) && !e->loaded_from_memory)
     {
       const char *s;
       const char *tmp;
       int namelen;
-      s = dyld_entry_filename (e, NULL, 0);
+      s = dyld_entry_filename(e, NULL, (enum dyld_entry_filename_type)0);
       if (s == NULL)
         {
           s = "[UNKNOWN]";
         }
       if (!print_basenames)
         {
-          tmp = strrchr (s, '/');
+          tmp = strrchr(s, '/');
           if (tmp == NULL)
             {
               tmp = s;
@@ -860,17 +865,17 @@ dyld_entry_info (struct dyld_objfile_entry *e, int print_basenames,
 
       if (tmp != NULL)
         {
-          namelen = strlen (tmp) + 1;
-          *name = xmalloc (namelen);
-          memcpy (*name, tmp, namelen);
+          namelen = (strlen(tmp) + 1UL);
+          *name = (char *)xmalloc(namelen);
+          memcpy(*name, tmp, namelen);
         }
     }
 
-  if (e->prefix != NULL && e->prefix[0] != '\0')
+  if ((e->prefix != NULL) && (e->prefix[0] != '\0'))
     {
-      int prefixlen = strlen (e->prefix) + 1;
-      *prefix = xmalloc (prefixlen);
-      memcpy (*prefix, e->prefix, prefixlen);
+      size_t prefixlen = (strlen(e->prefix) + 1UL);
+      *prefix = (char *)xmalloc(prefixlen);
+      memcpy(*prefix, e->prefix, prefixlen);
     }
 
 }
@@ -989,7 +994,8 @@ dyld_shlib_info_basename_length (struct dyld_objfile_info *s,
           continue;
         }
 
-      name = dyld_entry_filename (j, NULL, 0);
+      name = dyld_entry_filename(j, NULL,
+                                 (enum dyld_entry_filename_type)0);
       if (name == NULL)
         {
           if (baselen < 1)
@@ -1035,9 +1041,10 @@ dyld_shlib_info_basename_length (struct dyld_objfile_info *s,
       {
 
         struct dyld_objfile_entry tentry;
-        dyld_convert_entry (objfile, &tentry);
+        dyld_convert_entry(objfile, &tentry);
 
-        name = dyld_entry_filename (&tentry, NULL, 0);
+        name = dyld_entry_filename(&tentry, NULL,
+                                   (enum dyld_entry_filename_type)0);
         if (name == NULL)
           {
             if (baselen < 1)
@@ -1099,7 +1106,8 @@ dyld_entry_shlib_num_matches (int shlibnum, char *args, int verbose)
 }
 
 void
-dyld_print_entry_info (struct dyld_objfile_entry *j, int shlibnum, int baselen)
+dyld_print_entry_info(struct dyld_objfile_entry *j, int shlibnum,
+                      size_t baselen)
 {
   char *name;
   char *objname;
@@ -1119,49 +1127,49 @@ dyld_print_entry_info (struct dyld_objfile_entry *j, int shlibnum, int baselen)
   const char *ptr;
   struct cleanup *list_cleanup;
 
-  dyld_entry_info (j, 1, &name, &objname, &symname, 
-		   &auxobjname, &auxsymname, &dsymobjname,
-                   &addr, &slide, &prefix);
+  dyld_entry_info(j, 1, &name, &objname, &symname,
+		  &auxobjname, &auxsymname, &dsymobjname,
+                  &addr, &slide, &prefix);
 
   if (name == NULL)
     {
-      fname = savestring ("-", strlen ("-"));
+      fname = savestring("-", strlen("-"));
       is_framework = 0;
       is_bundle = 0;
     }
   else
     {
-      dyld_library_basename (name, &tfname, &tfnamelen, &is_framework,
-                             &is_bundle);
-      fname = savestring (tfname, tfnamelen);
-      xfree ((char *) tfname);
+      dyld_library_basename(name, &tfname, &tfnamelen, &is_framework,
+                            &is_bundle);
+      fname = savestring(tfname, tfnamelen);
+      xfree((char *)tfname);
     }
 
   if (j->dyld_valid)
     {
-      snprintf (addrbuf, 24, "0x%s", paddr_nz (j->dyld_addr));
+      snprintf(addrbuf, 24, "0x%s", paddr_nz (j->dyld_addr));
     }
   else
     {
-      strcpy (addrbuf, "-");
+      strcpy(addrbuf, "-");
     }
 
-  if (baselen < strlen (fname))
+  if (baselen < strlen(fname))
     {
-      baselen = strlen (fname);
+      baselen = strlen(fname);
     }
 
-  list_cleanup = make_cleanup_ui_out_list_begin_end (uiout, "shlib-info");
+  list_cleanup = make_cleanup_ui_out_list_begin_end(uiout, "shlib-info");
   if (shlibnum < 10)
-    ui_out_text (uiout, "  ");
+    ui_out_text(uiout, "  ");
   else if (shlibnum < 100)
-    ui_out_text (uiout, " ");
+    ui_out_text(uiout, " ");
 
   ui_out_field_int (uiout, "num", shlibnum);
   ui_out_spaces (uiout, 1);
 
-  ui_out_field_string (uiout, "name", fname);
-  ui_out_spaces (uiout, baselen - strlen (fname) + 1);
+  ui_out_field_string(uiout, "name", fname);
+  ui_out_spaces(uiout, baselen - strlen(fname) + 1);
 
   ptr = is_framework ? "F" : (is_bundle ? "B" : "-");
   ui_out_field_string (uiout, "kind", ptr);
@@ -1171,7 +1179,7 @@ dyld_print_entry_info (struct dyld_objfile_entry *j, int shlibnum, int baselen)
   ui_out_spaces (uiout, 1);
 
   ui_out_field_string (uiout, "dyld-addr", addrbuf);
-  /* For a 64-bit program, the number 10 here is not correct.  
+  /* For a 64-bit program, the number 10 here is not correct.
      I don't want to change the formatting for all 32-bit but
      make sure ui_out_spaces gets a non-negative value.  */
   if (strlen (addrbuf) < 10)
@@ -1179,7 +1187,7 @@ dyld_print_entry_info (struct dyld_objfile_entry *j, int shlibnum, int baselen)
   ui_out_spaces (uiout, 1);
 
   ptr = dyld_reason_string (j->reason);
-  /* For a 64-bit program, the number 11 here is not correct.  
+  /* For a 64-bit program, the number 11 here is not correct.
      I don't want to change the formatting for all 32-bit but
      make sure ui_out_spaces gets a non-negative value.  */
   if (strlen (ptr) < 11)
@@ -1453,25 +1461,25 @@ dyld_print_shlib_info (struct dyld_objfile_info *s, unsigned int reason_mask,
   struct objfile *objfile, *temp;
   int i;
 
-  baselen = dyld_shlib_info_basename_length (s, reason_mask);
+  baselen = dyld_shlib_info_basename_length(s, reason_mask);
   if (baselen < 12)
     {
       baselen = 12;
     }
 
-  basepad = xmalloc (baselen + 1);
-  memset (basepad, ' ', baselen);
+  basepad = (char *)xmalloc(baselen + 1);
+  memset(basepad, ' ', baselen);
   basepad[baselen] = '\0';
 
   if (header)
-    ui_out_text_fmt (uiout,
-                     "%s                            Requested State Current State\n"
-                     "Num Basename%s  Type Address         Reason | | Source     \n"
-                     "  | |%s            | |                    | | | |          \n",
-                     basepad + 12, basepad + 12, basepad + 12);
+    ui_out_text_fmt(uiout,
+                    "%s                            Requested State Current State\n"
+                    "Num Basename%s  Type Address         Reason | | Source     \n"
+                    "  | |%s            | |                    | | | |          \n",
+                    basepad + 12, basepad + 12, basepad + 12);
 
   if (args != NULL)
-    dyld_entry_shlib_num_matches (-1, args, 1);
+    dyld_entry_shlib_num_matches(-1, args, 1);
 
   /* First, print all objfiles managed by the dyld_objfile_entry code, in
      order. */
@@ -1499,20 +1507,19 @@ dyld_print_shlib_info (struct dyld_objfile_info *s, unsigned int reason_mask,
 
       if ((args == NULL) || dyld_entry_shlib_num_matches (shlibnum, args, 0))
         {
-          dyld_print_entry_info (j, shlibnum, baselen);
+          dyld_print_entry_info(j, shlibnum, baselen);
         }
     }
 
-  /* Then, print all the remaining objfiles. */
-
-  ALL_OBJFILES_SAFE (objfile, temp)
+  /* Then, print all the remaining objfiles: */
+  ALL_OBJFILES_SAFE(objfile, temp)
     {
       int found = 0;
       struct dyld_objfile_entry *j;
-      
+
       /* Don't print out the dSYM files here.  They are printed with
 	 the objfile in dyld_print_entry_info above.  */
-      
+
       if (objfile->separate_debug_objfile_backlink != NULL)
 	{
 	  found = 1;
@@ -1530,15 +1537,15 @@ dyld_print_shlib_info (struct dyld_objfile_info *s, unsigned int reason_mask,
 
       if (!found)
 	{
-	  
+
 	  struct dyld_objfile_entry tentry;
 	  shlibnum++;
-	  
+
 	  if (!(reason_mask & dyld_reason_user))
 	    {
 	      continue;
 	    }
-	  
+
 	  if (args == NULL || dyld_entry_shlib_num_matches (shlibnum, args, 0))
 	    {
 	      dyld_convert_entry (objfile, &tentry);
@@ -1570,3 +1577,4 @@ dyld_next_allocated_shlib (struct dyld_objfile_info *info, int n)
     }
 }
 
+/* EOF */

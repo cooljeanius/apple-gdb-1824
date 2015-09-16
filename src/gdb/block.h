@@ -1,29 +1,39 @@
-/* Code dealing with blocks for GDB.
-
-   Copyright 2003 Free Software Foundation, Inc.
-
-   This file is part of GDB.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
+/* block.h: Code dealing with blocks for GDB.
+ *
+ * Copyright 2003 Free Software Foundation, Inc.
+ *
+ * This file is part of GDB.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA. */
 
 #ifndef BLOCK_H
 #define BLOCK_H
 
-/* Opaque declarations.  */
+#if !defined(DEFS_H) && !defined(CORE_ADDR)
+# include "defs.h"
+#endif /* !DEFS_H && !CORE_ADDR */
 
+#if !defined(CORE_ADDR) && !defined(CORE_ADDR_DEFINED)
+# include "bfd.h"
+/* An address in the program being debugged. Host byte order: */
+typedef bfd_vma CORE_ADDR;
+# define CORE_ADDR_DEFINED 1
+#endif /* !CORE_ADDR && !CORE_ADDR_DEFINED */
+
+/* Opaque declarations: */
 struct symbol;
 struct symtab;
 struct block_namespace_info;
@@ -31,7 +41,7 @@ struct using_direct;
 struct obstack;
 struct dictionary;
 
-/* APPLE LOCAL begin address ranges  */
+/* APPLE LOCAL begin address ranges: */
 struct address_range
 {
   CORE_ADDR startaddr;
@@ -44,6 +54,15 @@ struct address_range_list
   struct address_range *ranges;
 };
 /* APPLE LOCAL end address ranges  */
+
+/* temporary, until I am ready to deal with all of the fallout that would
+ * result from fixing these warnings in this header: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 /* All of the name-scope contours of the program
    are represented by `struct block' objects.
@@ -73,7 +92,6 @@ struct address_range_list
 
 struct block
 {
-
   /* Addresses in the executable code that are in this block.  */
 
   CORE_ADDR startaddr;
@@ -105,8 +123,7 @@ struct block
 
   struct dictionary *dict;
 
-  /* Used for language-specific info.  */
-
+  /* Used for language-specific info: */
   union
   {
     struct
@@ -114,7 +131,7 @@ struct block
       /* Contains information about namespace-related info relevant to
 	 this block: using directives and the current namespace
 	 scope.  */
-      
+
       struct block_namespace_info *namespace;
     }
     cplus_specific;
@@ -141,6 +158,14 @@ struct block
 #define BLOCK_GCC_COMPILED(bl)	(bl)->gcc_compile_flag
 #define BLOCK_DICT(bl)		(bl)->dict
 #define BLOCK_NAMESPACE(bl)   (bl)->language_specific.cplus_specific.namespace
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 /* APPLE LOCAL begin address ranges  */
 #define BLOCK_RANGES(bl)        (bl)->ranges
 #define BLOCK_RANGE_START(bl,i)  (bl)->ranges->ranges[i].startaddr
@@ -193,7 +218,7 @@ extern void block_set_scope (struct block *block, const char *scope,
 extern struct using_direct *block_using (const struct block *block);
 
 extern void block_set_using (struct block *block,
-			     struct using_direct *using,
+			     struct using_direct *,
 			     struct obstack *obstack);
 
 extern const struct block *block_static_block (const struct block *block);
@@ -211,3 +236,5 @@ extern CORE_ADDR block_highest_pc (const struct block *bl);
 /* APPLE LOCAL end address ranges  */
 
 #endif /* BLOCK_H */
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Macro definitions for Motorola 680x0 running under LynxOS.
+/* tm-m68klynx.h
+   Macro definitions for Motorola 680x0 running under LynxOS.
    Copyright 1993 Free Software Foundation, Inc.
 
    This file is part of GDB.

@@ -41,7 +41,7 @@
 #include "infcall.h"
 #include "frv-tdep.h"
 
-extern void _initialize_frv_tdep (void);
+extern void _initialize_frv_tdep(void);
 
 static gdbarch_init_ftype frv_gdbarch_init;
 
@@ -149,7 +149,7 @@ new_variant (void)
 
   var = xmalloc (sizeof (*var));
   memset (var, 0, sizeof (*var));
-  
+
   var->frv_abi = FRV_ABI_EABI;
   var->num_gprs = 64;
   var->num_fprs = 64;
@@ -158,7 +158,7 @@ new_variant (void)
 
   /* By default, don't supply any general-purpose or floating-point
      register names.  */
-  var->register_names 
+  var->register_names
     = (char **) xmalloc ((frv_num_regs + frv_num_pseudo_regs)
                          * sizeof (char *));
   for (r = 0; r < frv_num_regs + frv_num_pseudo_regs; r++)
@@ -170,7 +170,7 @@ new_variant (void)
   var->register_names[pc_regnum] = "pc";
   var->register_names[lr_regnum] = "lr";
   var->register_names[lcr_regnum] = "lcr";
-     
+
   var->register_names[psr_regnum] = "psr";
   var->register_names[ccr_regnum] = "ccr";
   var->register_names[cccr_regnum] = "cccr";
@@ -799,7 +799,7 @@ frv_analyze_prologue (CORE_ADDR pc, struct frame_info *next_frame,
 	     sthi GRk, @(fp, s)
 	 P KKKKKK 1010001 000010 SSSSSSSSSSSS = 0x01442000
 	 0 000000 1111111 111111 000000000000 = 0x01fff000
-             .    .   .    .   .    .   .   . 
+             .    .   .    .   .    .   .   .
          And for 8-bit values, we use STB instructions.
 	     stbi GRk, @(fp, s)
 	 P KKKKKK 1010000 000010 SSSSSSSSSSSS = 0x01402000

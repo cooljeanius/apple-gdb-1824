@@ -14,6 +14,7 @@ Attempted to merge into Apple's gdb fork by cooljeanius:
 https://github.com/cooljeanius/apple-gdb-1824
 
 Feel free to fork and submit pull requests.
+(Just beware that I will probably never respond to any of them...)
 
 Tested on:
 * 10.6.8
@@ -21,8 +22,11 @@ Tested on:
 Building
 --------
 
+Feel free to set the CFLAGS or arguments passed to configure however you
+want; I am just keeping them as they originally were in this file:
+
     export CFLAGS="-Wno-format"
-    ./configure --with-x --disable-werror --enable-carbon-framework --enable-debug-symbols-framework --disable-opts-test --enable-64-bit-bfd --prefix=$(pwd)/dist
+    ./configure --with-x --disable-werror --enable-carbon-framework --enable-debug-symbols-framework --enable-64-bit-bfd --prefix=$(pwd)/dist
     make
     make install
 

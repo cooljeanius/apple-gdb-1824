@@ -1,0 +1,104 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# leave.test --- test return/next/break functionality
+#
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (C) 1992-2013 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILES # # # # # # # # #
+
+echo creating $testname.tlib
+cat > $testname.tlib <<'_EOF_'
+[= AutoGen5 Template test =]
+[= RETURN =]
+BOGUS
+_EOF_
+
+echo creating $testname.tpl
+cat > $testname.tpl <<_EOF_
+[= AutoGen5 Template test =]
+[=
+INVOKE  macro
+=][=
+DEFINE macro =][=
+
+FOR value    =][=
+  IF (= 1 (for-index)) =][= BREAK =][= ENDIF =]
+BOGUS
+[= ENDFOR =][=
+
+FOR value    =][=
+  CASE (for-index) =][=
+  == 4       =][=
+  *          =][= CONTINUE =][=
+  ESAC       =][= (for-index) =] Okay.[=
+  INCLUDE "$testname.tlib" =][=
+
+  RETURN      \=]
+
+BOGUS
+[= ENDFOR =][= ENDDEF =]
+_EOF_
+
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo creating $testname.def
+cat > $testname.def <<_EOF_
+autogen definitions $testname;
+
+value[1] = first;
+value[2] = secondary;
+value[4] = tertiary;
+value[6] = last;
+
+_EOF_
+
+# this is the output we should expect to see
+echo 4 Okay. > $testname.samp
+
+run_ag x $testname.def || \
+  failure "autogen failed"
+set -x
+cmp -s $testname.samp $testname.test || \
+  failure "`diff $testname.samp $testname.test`"
+
+# # # # # # # # # # TEMPLATE FILES # # # # # # # # #
+
+echo creating $testname.tlib
+cat > $testname.tlib <<'_EOF_'
+[= AutoGen5 Template test =]
+[= BREAK =]
+BOGUS
+_EOF_
+
+run_ag x -b $testname-bad $testname.def 2>/dev/null && \
+  failure "processed broken template"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of leave.test

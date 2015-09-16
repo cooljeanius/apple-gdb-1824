@@ -22,6 +22,10 @@
 /* We might put this in a library someday so it could be dynamically
    loaded, but for now it is not necessary.  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "bfd.h"
 #include "bfdver.h"
 #include "libiberty.h"
@@ -32,17 +36,23 @@
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #else
-# warning bucomm.c expects <sys/stat.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "bucomm.c expects <sys/stat.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_STAT_H */
 #ifdef HAVE_TIME_H
 # include <time.h>		/* ctime, maybe time_t */
 #else
-# warning bucomm.c expects <time.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "bucomm.c expects <time.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_TIME_H */
 #ifdef HAVE_ASSERT_H
 # include <assert.h>
 #else
-# warning bucomm.c expects <assert.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "bucomm.c expects <assert.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_ASSERT_H */
 
 #ifndef HAVE_TIME_T_IN_TIME_H
@@ -182,6 +192,7 @@ endian_string (enum bfd_endian endian)
     {
     case BFD_ENDIAN_BIG: return "big endian";
     case BFD_ENDIAN_LITTLE: return "little endian";
+    case BFD_ENDIAN_UNKNOWN: /* fall through */
     default: return "endianness unknown";
     }
 }
@@ -242,45 +253,45 @@ display_target_list (void)
    architectures down).  */
 
 static int
-display_info_table (int first, int last)
+display_info_table(int first, int last)
 {
   int t;
   int a;
   int ret = 1;
   char *dummy_name;
 
-  /* Print heading of target names.  */
-  printf ("\n%*s", (int) LONGEST_ARCH, " ");
+  /* Print heading of target names: */
+  printf("\n%*s", (int)LONGEST_ARCH, " ");
   for (t = first; t < last && bfd_target_vector[t]; t++)
-    printf ("%s ", bfd_target_vector[t]->name);
-  putchar ('\n');
+    printf("%s ", bfd_target_vector[t]->name);
+  putchar('\n');
 
-  dummy_name = make_temp_file (NULL);
-  for (a = (int) bfd_arch_obscure + 1; a < (int) bfd_arch_last; a++)
-    if (strcmp (bfd_printable_arch_mach (a, 0), "UNKNOWN!") != 0)
+  dummy_name = make_temp_file(NULL);
+  for (a = ((int)bfd_arch_obscure + 1); a < (int)bfd_arch_last; a++)
+    if (strcmp(bfd_printable_arch_mach((enum bfd_architecture)a, 0), "UNKNOWN!") != 0)
       {
-	printf ("%*s ", (int) LONGEST_ARCH - 1,
-		bfd_printable_arch_mach (a, 0));
+	printf("%*s ", ((int)LONGEST_ARCH - 1),
+               bfd_printable_arch_mach((enum bfd_architecture)a, 0));
 	for (t = first; t < last && bfd_target_vector[t]; t++)
 	  {
 	    const bfd_target *p = bfd_target_vector[t];
 	    bfd_boolean ok = TRUE;
-	    bfd *abfd = bfd_openw (dummy_name, p->name);
+	    bfd *abfd = bfd_openw(dummy_name, p->name);
 
 	    if (abfd == NULL)
 	      {
-		bfd_nonfatal (p->name);
+		bfd_nonfatal(p->name);
                 ret = 0;
 		ok = FALSE;
 	      }
 
 	    if (ok)
 	      {
-		if (! bfd_set_format (abfd, bfd_object))
+		if (! bfd_set_format(abfd, bfd_object))
 		  {
-		    if (bfd_get_error () != bfd_error_invalid_operation)
+		    if (bfd_get_error() != bfd_error_invalid_operation)
                       {
-		        bfd_nonfatal (p->name);
+		        bfd_nonfatal(p->name);
                         ret = 0;
                       }
 		    ok = FALSE;
@@ -289,35 +300,34 @@ display_info_table (int first, int last)
 
 	    if (ok)
 	      {
-		if (! bfd_set_arch_mach (abfd, a, 0))
+		if (! bfd_set_arch_mach(abfd, (enum bfd_architecture)a, 0))
 		  ok = FALSE;
 	      }
 
 	    if (ok)
-	      printf ("%s ", p->name);
+	      printf("%s ", p->name);
 	    else
 	      {
-		int l = strlen (p->name);
+		size_t l = strlen(p->name);
 		while (l--)
-		  putchar ('-');
-		putchar (' ');
+		  putchar('-');
+		putchar(' ');
 	      }
 	    if (abfd != NULL)
-	      bfd_close_all_done (abfd);
+	      bfd_close_all_done(abfd);
 	  }
-	putchar ('\n');
+	putchar('\n');
       }
-  unlink (dummy_name);
-  free (dummy_name);
+  unlink(dummy_name);
+  free(dummy_name);
 
   return ret;
 }
 
-/* Print tables of all the target-architecture combinations that
-   BFD has been configured to support.  */
-
+/* Print tables of all the target-architecture combinations that BFD has
+ * been configured to support: */
 static int
-display_target_tables (void)
+display_target_tables(void)
 {
   int t;
   int columns;
@@ -325,9 +335,9 @@ display_target_tables (void)
   char *colum;
 
   columns = 0;
-  colum = getenv ("COLUMNS");
+  colum = getenv("COLUMNS");
   if (colum != NULL)
-    columns = atoi (colum);
+    columns = atoi(colum);
   if (columns == 0)
     columns = 80;
 
@@ -336,13 +346,14 @@ display_target_tables (void)
     {
       int oldt = t, wid;
 
-      wid = LONGEST_ARCH + strlen (bfd_target_vector[t]->name) + 1;
+      wid = (int)(LONGEST_ARCH + strlen(bfd_target_vector[t]->name) + 1);
       ++t;
-      while (wid < columns && bfd_target_vector[t] != NULL)
+      while ((wid < columns) && (bfd_target_vector[t] != NULL))
 	{
 	  int newwid;
 
-	  newwid = wid + strlen (bfd_target_vector[t]->name) + 1;
+	  newwid = (int)((size_t)wid + strlen(bfd_target_vector[t]->name)
+                         + (size_t)1UL);
 	  if (newwid >= columns)
 	    break;
 	  wid = newwid;
@@ -398,51 +409,50 @@ print_arelt_descr (FILE *file, bfd *abfd, bfd_boolean verbose)
   fprintf (file, "%s\n", bfd_get_filename (abfd));
 }
 
-/* Return the name of a temporary file in the same directory as FILENAME.  */
-
+/* Return the name of a temporary file in the same dir as FILENAME: */
 char *
 make_tempname (char *filename)
 {
-  static char template[] = "stXXXXXX";
+  static char template_string[] = "stXXXXXX";
   char *tmpname;
-  char *slash = strrchr (filename, '/');
+  char *slash = strrchr(filename, '/');
 
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
   {
     /* We could have foo/bar\\baz, or foo\\bar, or d:bar.  */
-    char *bslash = strrchr (filename, '\\');
-    if (slash == NULL || (bslash != NULL && bslash > slash))
+    char *bslash = strrchr(filename, '\\');
+    if ((slash == NULL) || ((bslash != NULL) && (bslash > slash)))
       slash = bslash;
-    if (slash == NULL && filename[0] != '\0' && filename[1] == ':')
-      slash = filename + 1;
+    if ((slash == NULL) && (filename[0] != '\0') && (filename[1] == ':'))
+      slash = (filename + 1);
   }
-#endif
+#endif /* HAVE_DOS_BASED_FILE_SYSTEM */
 
-  if (slash != (char *) NULL)
+  if (slash != (char *)NULL)
     {
       char c;
 
       c = *slash;
       *slash = 0;
-      tmpname = xmalloc (strlen (filename) + sizeof (template) + 2);
-      strcpy (tmpname, filename);
+      tmpname = (char *)xmalloc(strlen(filename) + sizeof(template_string) + 2);
+      strcpy(tmpname, filename);
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
       /* If tmpname is "X:", appending a slash will make it a root
 	 directory on drive X, which is NOT the same as the current
 	 directory on drive X.  */
-      if (tmpname[1] == ':' && tmpname[2] == '\0')
-	strcat (tmpname, ".");
-#endif
-      strcat (tmpname, "/");
-      strcat (tmpname, template);
-      mktemp (tmpname);
+      if ((tmpname[1] == ':') && (tmpname[2] == '\0'))
+	strcat(tmpname, ".");
+#endif /* HAVE_DOS_BASED_FILE_SYSTEM */
+      strcat(tmpname, "/");
+      strcat(tmpname, template_string);
+      mktemp(tmpname);
       *slash = c;
     }
   else
     {
-      tmpname = xmalloc (sizeof (template));
-      strcpy (tmpname, template);
-      mktemp (tmpname);
+      tmpname = (char *)xmalloc(sizeof(template_string));
+      strcpy(tmpname, template_string);
+      mktemp(tmpname);
     }
   return tmpname;
 }
@@ -456,10 +466,10 @@ parse_vma (const char *s, const char *arg)
   bfd_vma ret;
   const char *end;
 
-  ret = bfd_scan_vma (s, &end, 0);
+  ret = bfd_scan_vma(s, &end, 0);
 
   if (*end != '\0')
-    fatal (_("%s: bad number: %s"), arg, s);
+    fatal(_("%s: bad number: %s"), arg, s);
 
   return ret;
 }
@@ -498,28 +508,30 @@ bfd_get_archive_filename (bfd *abfd)
   static char *buf;
   size_t needed;
 
-  assert (abfd != NULL);
+  assert(abfd != NULL);
 
   if (!abfd->my_archive)
-    return bfd_get_filename (abfd);
+    return bfd_get_filename(abfd);
 
-  needed = (strlen (bfd_get_filename (abfd->my_archive))
-	    + strlen (bfd_get_filename (abfd)) + 3);
+  needed = (strlen(bfd_get_filename(abfd->my_archive))
+	    + strlen(bfd_get_filename(abfd)) + 3);
   if (needed > curr)
     {
       if (curr)
-	free (buf);
-      curr = needed + (needed >> 1);
-      buf = bfd_malloc (curr);
-      /* If we can't malloc, fail safe by returning just the file name.
+	free(buf);
+      curr = (needed + (needed >> 1));
+      buf = (char *)bfd_malloc(curr);
+      /* If we cannot malloc, fail safe by returning just the file name.
 	 This function is only used when building error messages.  */
       if (!buf)
 	{
 	  curr = 0;
-	  return bfd_get_filename (abfd);
+	  return bfd_get_filename(abfd);
 	}
     }
-  sprintf (buf, "%s(%s)", bfd_get_filename (abfd->my_archive),
-	   bfd_get_filename (abfd));
+  sprintf(buf, "%s(%s)", bfd_get_filename(abfd->my_archive),
+          bfd_get_filename(abfd));
   return buf;
 }
+
+/* EOF */

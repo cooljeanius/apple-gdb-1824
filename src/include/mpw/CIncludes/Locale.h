@@ -1,21 +1,21 @@
 /*
-	Locale.h - Localization
-	
-	Copyright Apple Computer, Inc.  1988, 1990
-	All rights reserved.
-	
-*/
+ *	Locale.h - Localization
+ *
+ *	Copyright Apple Computer, Inc.  1988, 1990
+ *	All rights reserved.
+ *
+ */
 
 #ifndef __LOCALE__
 #define __LOCALE__
 
-/* 
+/*
  *   Declarations
  */
- 
-#ifndef NULL 
-#define NULL 0
-#endif
+
+#ifndef NULL
+# define NULL 0
+#endif /* !NULL */
 
 #define LC_ALL        1 /* entire locale */
 #define LC_COLLATE    2 /* strcoll and strxfrm functions */
@@ -48,17 +48,19 @@ struct lconv {
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 /*
  *  functions
  */
- 
+
 char *setlocale (int category, const char *locale);
 struct lconv *localeconv (void);
 
 #ifdef __cplusplus
 }
-#endif
- 
-#endif __LOCALE__
+#endif /* __cplusplus */
+
+#endif /* !__LOCALE__ */
+
+/* EOF */

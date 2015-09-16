@@ -4,3 +4,4 @@ Makefile
 core
 *.o
 a.out
+cygwinports.com/*

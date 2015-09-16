@@ -74,24 +74,28 @@ enum bfd_link_common_skip_ar_aymbols
   bfd_link_common_skip_all
 };
 
+/* used in the struct after this; see comment in there for more info: */
+struct bfd_link_hash_common_entry
+{
+  unsigned int alignment_power;	/* Alignment.  */
+  asection *section;		/* Symbol section.  */
+};
+
 /* The linking routines use a hash table which uses this structure for
    its elements.  */
-
 struct bfd_link_hash_entry
 {
-  /* Base hash table entry structure.  */
+  /* Base hash table entry structure: */
   struct bfd_hash_entry root;
 
-  /* Type of this entry.  */
+  /* Type of this entry: */
   enum bfd_link_hash_type type;
 
-  /* A union of information depending upon the type.  */
-  union
-    {
+  /* A union of information depending upon the type: */
+  union {
       /* Nothing is kept for bfd_hash_new.  */
       /* bfd_link_hash_undefined, bfd_link_hash_undefweak.  */
-      struct
-	{
+      struct {
 	  /* Undefined and common symbols are kept in a linked list through
 	     this field.  This field is present in all of the union element
 	     so that we don't need to remove entries from the list when we
@@ -116,22 +120,19 @@ struct bfd_link_hash_entry
 	  bfd *weak;		/* BFD weak symbol was found in.  */
 	} undef;
       /* bfd_link_hash_defined, bfd_link_hash_defweak.  */
-      struct
-	{
+      struct {
 	  struct bfd_link_hash_entry *next;
 	  asection *section;	/* Symbol section.  */
 	  bfd_vma value;	/* Symbol value.  */
-	} def;
+      } def;
       /* bfd_link_hash_indirect, bfd_link_hash_warning.  */
-      struct
-	{
+      struct {
 	  struct bfd_link_hash_entry *next;
 	  struct bfd_link_hash_entry *link;	/* Real symbol.  */
 	  const char *warning;	/* Warning (bfd_link_hash_warning only).  */
-	} i;
+      } i;
       /* bfd_link_hash_common.  */
-      struct
-	{
+      struct {
 	  struct bfd_link_hash_entry *next;
 	  /* The linker needs to know three things about common
 	     symbols: the size, the alignment, and the section in
@@ -142,14 +143,10 @@ struct bfd_link_hash_entry
 	     directly because we don't want to increase the size of
 	     the union; this structure is a major space user in the
 	     linker.  */
-	  struct bfd_link_hash_common_entry
-	    {
-	      unsigned int alignment_power;	/* Alignment.  */
-	      asection *section;		/* Symbol section.  */
-	    } *p;
+	  struct bfd_link_hash_common_entry *p;
 	  bfd_size_type size;	/* Common symbol size.  */
-	} c;
-    } u;
+      } c;
+  } u;
 };
 
 /* This is the link hash table.  It is a derived class of
@@ -663,6 +660,8 @@ struct bfd_elf_version_expr
 #define BFD_ELF_VERSION_CXX_TYPE	2
 #define BFD_ELF_VERSION_JAVA_TYPE	4
   unsigned int mask : 3;
+  /* '-Wpadded': */
+  unsigned int padding : 27;
 };
 
 struct bfd_elf_version_expr_head

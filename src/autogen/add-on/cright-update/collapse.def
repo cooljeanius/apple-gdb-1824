@@ -1,0 +1,56 @@
+/* -*- Mode: conf -*- */
+/**
+ * \file collapse.def
+ *
+ *  This file is part of cright-update.
+ *  Copyright (C) 1992-2013 Bruce Korb - all rights reserved
+ *
+ * cright-update is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * cright-update is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+autogen definitions fsm;
+
+type    = loop;
+method  = case;
+prefix  = cyr;
+cookie  = 'char * list';
+
+event   = year, comma, comma_seq, hyphen, end;
+comma   = ',';
+hyphen  = '-';
+comma_seq = ', --> -';
+end     = '*NUL*';
+
+state   = have_year, need_year, next_year, comma_end, start_seq, new_seq;
+
+transition =
+{ tst = init;        tev = year;       next = have_year; ttype = initialize;},
+
+{ tst = have_year;   tev = end;        next = done;      ttype = finish;    },
+{ tst = have_year;   tev = comma;      next = need_year; ttype = add_comma; },
+{ tst = have_year;   tev = comma_seq;  next = start_seq; ttype = hyphenate; },
+{ tst = have_year;   tev = hyphen;     next = next_year; ttype = hyphenate; },
+
+{ tst = need_year;   tev = year;       next = have_year; ttype = add_year;  },
+
+{ tst = next_year;   tev = year;       next = comma_end; ttype = add_year;  },
+{ tst = comma_end;   tev = comma;      next = need_year; ttype = add_comma; },
+{ tst = comma_end;   tev = comma_seq;  next = need_year; ttype = hyphenate; },
+{ tst = comma_end;   tev = end;        next = done;      ttype = finish;    },
+
+{ tst = start_seq;   tev = year;       next = new_seq;   ttype = add_year;  },
+{ tst = new_seq;     tev = end;        next = done;      ttype = finish;    },
+{ tst = new_seq;     tev = comma_seq;  next = start_seq; ttype = rem_year;  },
+{ tst = new_seq;     tev = hyphen;     next = start_seq; ttype = rem_year;  },
+{ tst = new_seq;     tev = comma;      next = need_year; ttype = add_comma; };

@@ -89,7 +89,7 @@ extern enum gdb_osabi gdbarch_osabi (struct gdbarch *gdbarch);
 /* Number of bits in a char or unsigned char for the target machine.
    Just like CHAR_BIT in <limits.h> but describes the target machine.
    v:TARGET_CHAR_BIT:int:char_bit::::8 * sizeof (char):8::0:
-  
+
    Number of bits in a short or unsigned short for the target machine. */
 
 extern int gdbarch_short_bit (struct gdbarch *gdbarch);
@@ -197,10 +197,10 @@ extern void set_gdbarch_long_double_format (struct gdbarch *gdbarch, const struc
    address in GDB have the same size and "look the same".  For such a
    target, you need only set TARGET_PTR_BIT / ptr_bit and TARGET_ADDR_BIT
    / addr_bit will be set from it.
-  
+
    If TARGET_PTR_BIT and TARGET_ADDR_BIT are different, you'll probably
    also need to set POINTER_TO_ADDRESS and ADDRESS_TO_POINTER as well.
-  
+
    ptr_bit is the size of a pointer on the target */
 
 extern int gdbarch_ptr_bit (struct gdbarch *gdbarch);
@@ -488,11 +488,12 @@ extern void set_gdbarch_register_type (struct gdbarch *gdbarch, gdbarch_register
 #endif
 #endif
 
-extern int gdbarch_deprecated_register_byte_p (struct gdbarch *gdbarch);
-#if !defined (GDB_TM_FILE) && defined (DEPRECATED_REGISTER_BYTE_P)
-#error "Non multi-arch definition of DEPRECATED_REGISTER_BYTE"
-#endif
-#if !defined (DEPRECATED_REGISTER_BYTE_P)
+extern int gdbarch_deprecated_register_byte_p(struct gdbarch *gdbarch)
+  ATTRIBUTE_DEPRECATED;
+#if !defined(GDB_TM_FILE) && defined(DEPRECATED_REGISTER_BYTE_P)
+# error "Non multi-arch definition of DEPRECATED_REGISTER_BYTE"
+#endif /* !GDB_TM_FILE && DEPRECATED_REGISTER_BYTE_P */
+#if !defined(DEPRECATED_REGISTER_BYTE_P)
 #define DEPRECATED_REGISTER_BYTE_P() (gdbarch_deprecated_register_byte_p (current_gdbarch))
 #endif
 
@@ -1220,10 +1221,10 @@ extern void set_gdbarch_smash_text_address (struct gdbarch *gdbarch, gdbarch_sma
 
 /* FIXME/cagney/2001-01-18: This should be split in two.  A target method that indicates if
    the target needs software single step.  An ISA method to implement it.
-  
+
    FIXME/cagney/2001-01-18: This should be replaced with something that inserts breakpoints
    using the breakpoint system instead of blatting memory directly (as with rs6000).
-  
+
    FIXME/cagney/2001-01-18: The logic is backwards.  It should be asking if the target can
    single step.  If not, then implement single step using breakpoints. */
 

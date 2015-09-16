@@ -1,8 +1,8 @@
-/* DWARF 2 Expression Evaluator.
+/* dwarf2expr.c: DWARF 2 Expression Evaluator.
 
    Copyright 2001, 2002, 2003, 2005 Free Software Foundation, Inc.
 
-   Contributed by Daniel Berlin (dan@dberlin.org)
+   Contributed by Daniel Berlin <dan@dberlin.org>
 
    This file is part of GDB.
 
@@ -36,77 +36,73 @@
 
 /* Local prototypes.  */
 
-static void execute_stack_op (struct dwarf_expr_context *,
-			      gdb_byte *, gdb_byte *, int eh_frame_p,
-                              struct dwarf2_address_translation *addr_translation);
+static void execute_stack_op(struct dwarf_expr_context *,
+			     gdb_byte *, gdb_byte *, int eh_frame_p,
+                             struct dwarf2_address_translation *addr_translation);
 
-/* Create a new context for the expression evaluator.  */
-
+/* Create a new context for the expression evaluator: */
 struct dwarf_expr_context *
-new_dwarf_expr_context (void)
+new_dwarf_expr_context(void)
 {
   struct dwarf_expr_context *retval;
-  retval = xcalloc (1, sizeof (struct dwarf_expr_context));
+  retval = (struct dwarf_expr_context *)xcalloc(1, sizeof(struct dwarf_expr_context));
   retval->stack_len = 0;
   retval->stack_allocated = 10;
-  retval->stack = xmalloc (retval->stack_allocated * sizeof (CORE_ADDR));
+  retval->stack = (CORE_ADDR *)xmalloc(retval->stack_allocated
+                                       * sizeof(CORE_ADDR));
   retval->num_pieces = 0;
   retval->pieces = 0;
   return retval;
 }
 
-/* Release the memory allocated to CTX.  */
-
+/* Release the memory allocated to CTX: */
 void
-free_dwarf_expr_context (struct dwarf_expr_context *ctx)
+free_dwarf_expr_context(struct dwarf_expr_context *ctx)
 {
-  xfree (ctx->stack);
-  xfree (ctx->pieces);
-  xfree (ctx);
+  xfree(ctx->stack);
+  xfree(ctx->pieces);
+  xfree(ctx);
 }
 
 /* Expand the memory allocated to CTX's stack to contain at least
    NEED more elements than are currently used.  */
 
 static void
-dwarf_expr_grow_stack (struct dwarf_expr_context *ctx, size_t need)
+dwarf_expr_grow_stack(struct dwarf_expr_context *ctx, size_t need)
 {
-  if (ctx->stack_len + need > ctx->stack_allocated)
+  if ((ctx->stack_len + need) > (size_t)ctx->stack_allocated)
     {
-      size_t newlen = ctx->stack_len + need + 10;
-      ctx->stack = xrealloc (ctx->stack,
-			     newlen * sizeof (CORE_ADDR));
+      size_t newlen = (ctx->stack_len + need + 10UL);
+      ctx->stack = (CORE_ADDR *)xrealloc(ctx->stack,
+                                         (newlen * sizeof(CORE_ADDR)));
       ctx->stack_allocated = newlen;
     }
 }
 
-/* Push VALUE onto CTX's stack.  */
-
+/* Push VALUE onto CTX's stack: */
 void
-dwarf_expr_push (struct dwarf_expr_context *ctx, CORE_ADDR value)
+dwarf_expr_push(struct dwarf_expr_context *ctx, CORE_ADDR value)
 {
-  dwarf_expr_grow_stack (ctx, 1);
+  dwarf_expr_grow_stack(ctx, 1);
   ctx->stack[ctx->stack_len++] = value;
 }
 
-/* Pop the top item off of CTX's stack.  */
-
+/* Pop the top item off of CTX's stack: */
 void
-dwarf_expr_pop (struct dwarf_expr_context *ctx)
+dwarf_expr_pop(struct dwarf_expr_context *ctx)
 {
   if (ctx->stack_len <= 0)
-    error (_("dwarf expression stack underflow"));
+    error(_("dwarf expression stack underflow"));
   ctx->stack_len--;
 }
 
-/* Retrieve the N'th item on CTX's stack.  */
-
+/* Retrieve the N'th item on CTX's stack: */
 CORE_ADDR
-dwarf_expr_fetch (struct dwarf_expr_context *ctx, int n)
+dwarf_expr_fetch(struct dwarf_expr_context *ctx, int n)
 {
   if (ctx->stack_len < n)
-     error (_("Asked for position %d of stack, stack only has %d elements on it."),
-	    n, ctx->stack_len);
+     error(_("Asked for position %d of stack, stack only has %d elements on it."),
+	   n, ctx->stack_len);
   return ctx->stack[ctx->stack_len - (1 + n)];
 
 }
@@ -114,20 +110,22 @@ dwarf_expr_fetch (struct dwarf_expr_context *ctx, int n)
 /* Add a new piece to CTX's piece list.  */
 /* APPLE LOCAL variable initialized status  */
 void
-add_piece (struct dwarf_expr_context *ctx,
-           int in_reg, CORE_ADDR value, ULONGEST size)
+add_piece(struct dwarf_expr_context *ctx,
+          int in_reg, CORE_ADDR value, ULONGEST size)
 {
   struct dwarf_expr_piece *p;
 
   ctx->num_pieces++;
 
   if (ctx->pieces)
-    ctx->pieces = xrealloc (ctx->pieces,
-                            (ctx->num_pieces
-                             * sizeof (struct dwarf_expr_piece)));
+    ctx->pieces =
+      ((struct dwarf_expr_piece *)
+       xrealloc(ctx->pieces,
+                (ctx->num_pieces * sizeof(struct dwarf_expr_piece))));
   else
-    ctx->pieces = xmalloc (ctx->num_pieces
-                           * sizeof (struct dwarf_expr_piece));
+    ctx->pieces =
+      ((struct dwarf_expr_piece *)
+       xmalloc(ctx->num_pieces * sizeof(struct dwarf_expr_piece)));
 
   p = &ctx->pieces[ctx->num_pieces - 1];
   p->in_reg = in_reg;
@@ -138,25 +136,27 @@ add_piece (struct dwarf_expr_context *ctx,
 /* Add a new piece to CTX's piece list.  */
 /* APPLE LOCAL variable initialized status  */
 void
-add_bits_piece (struct dwarf_expr_context *ctx,
-           int in_reg, CORE_ADDR value, uint64_t bitmask,
-           int offset_in_bits, ULONGEST size)
+add_bits_piece(struct dwarf_expr_context *ctx,
+               int in_reg, CORE_ADDR value, uint64_t bitmask,
+               int offset_in_bits, ULONGEST size)
 {
   struct dwarf_expr_piece *p;
 
   ctx->num_pieces++;
 
   if (ctx->pieces)
-    ctx->pieces = xrealloc (ctx->pieces,
-                            (ctx->num_pieces
-                             * sizeof (struct dwarf_expr_piece)));
+    ctx->pieces =
+      ((struct dwarf_expr_piece *)
+       xrealloc(ctx->pieces,
+                (ctx->num_pieces * sizeof(struct dwarf_expr_piece))));
   else
-    ctx->pieces = xmalloc (ctx->num_pieces
-                           * sizeof (struct dwarf_expr_piece));
+    ctx->pieces =
+      ((struct dwarf_expr_piece *)
+       xmalloc(ctx->num_pieces * sizeof(struct dwarf_expr_piece)));
 
   p = &ctx->pieces[ctx->num_pieces - 1];
   p->in_reg = in_reg;
-  p->value = (value & bitmask) >> offset_in_bits;
+  p->value = ((value & bitmask) >> offset_in_bits);
   p->size = size;
 }
 
@@ -289,9 +289,9 @@ signed_address_type (void)
    evaluate the expression between OP_PTR and OP_END.  */
 
 static void
-execute_stack_op (struct dwarf_expr_context *ctx,
-		  gdb_byte *op_ptr, gdb_byte *op_end, int eh_frame_p,
-                  struct dwarf2_address_translation *addr_translation)
+execute_stack_op(struct dwarf_expr_context *ctx,
+		 gdb_byte *op_ptr, gdb_byte *op_end, int eh_frame_p,
+                 struct dwarf2_address_translation *addr_translation)
 {
   ctx->in_reg = 0;
   /* APPLE LOCAL variable initialized status.  */
@@ -299,7 +299,7 @@ execute_stack_op (struct dwarf_expr_context *ctx,
 
   while (op_ptr < op_end)
     {
-      enum dwarf_location_atom op = *op_ptr++;
+      enum dwarf_location_atom op = (enum dwarf_location_atom)(*op_ptr++);
       CORE_ADDR result;
       ULONGEST uoffset, reg;
       LONGEST offset;
@@ -432,32 +432,32 @@ execute_stack_op (struct dwarf_expr_context *ctx,
 	case DW_OP_reg30:
 	case DW_OP_reg31:
 	  /* APPLE LOCAL begin variable initialized status  */
-	  if (op_ptr != op_end 
-	      && *op_ptr != DW_OP_piece 
-	      && *op_ptr != DW_OP_APPLE_uninit)
+	  if ((op_ptr != op_end)
+	      && (*op_ptr != DW_OP_piece)
+	      && (*op_ptr != DW_OP_APPLE_uninit))
 	  /* APPLE LOCAL end variable initialized status  */
-	    error (_("DWARF-2 expression error: DW_OP_reg operations must be "
-		   "used either alone or in conjuction with DW_OP_piece."));
+	    error(_("DWARF-2 expression error: DW_OP_reg operations must be "
+		  "used either alone or in conjuction with DW_OP_piece."));
 
 	  result = op - DW_OP_reg0;
-          result = dwarf2_frame_adjust_regnum (current_gdbarch, result, 
-                                               eh_frame_p);
+          result = dwarf2_frame_adjust_regnum(current_gdbarch, (int)result,
+                                              eh_frame_p);
 	  ctx->in_reg = 1;
 
 	  break;
 
 	case DW_OP_regx:
-	  op_ptr = read_uleb128 (op_ptr, op_end, &reg);
+	  op_ptr = read_uleb128(op_ptr, op_end, &reg);
 	  /* APPLE LOCAL begin variable initialized status  */
-	  if (op_ptr != op_end 
-	      && *op_ptr != DW_OP_piece
-	      && *op_ptr != DW_OP_APPLE_uninit)
+	  if ((op_ptr != op_end)
+	      && (*op_ptr != DW_OP_piece)
+	      && (*op_ptr != DW_OP_APPLE_uninit))
 	  /* APPLE LOCAL end variable initialized status  */
-	    error (_("DWARF-2 expression error: DW_OP_reg operations must be "
-		   "used either alone or in conjuction with DW_OP_piece."));
+	    error(_("DWARF-2 expression error: DW_OP_reg operations must be "
+		  "used either alone or in conjuction with DW_OP_piece."));
 
-          result = dwarf2_frame_adjust_regnum (current_gdbarch, reg, 
-                                               eh_frame_p);
+          result = dwarf2_frame_adjust_regnum(current_gdbarch, (int)reg,
+                                              eh_frame_p);
 	  ctx->in_reg = 1;
 	  break;
 
@@ -495,19 +495,20 @@ execute_stack_op (struct dwarf_expr_context *ctx,
 	case DW_OP_breg31:
 	  {
 	    op_ptr = read_sleb128 (op_ptr, op_end, &offset);
-            reg = dwarf2_frame_adjust_regnum (current_gdbarch, op - DW_OP_breg0,
-                                              eh_frame_p);
-	    result = (ctx->read_reg) (ctx->baton, reg);
+            reg = dwarf2_frame_adjust_regnum(current_gdbarch,
+                                             (op - DW_OP_breg0),
+                                             eh_frame_p);
+	    result = (ctx->read_reg)(ctx->baton, (int)reg);
 	    result += offset;
 	  }
 	  break;
 	case DW_OP_bregx:
 	  {
-	    op_ptr = read_uleb128 (op_ptr, op_end, &reg);
-            reg = dwarf2_frame_adjust_regnum (current_gdbarch, reg, 
-                                               eh_frame_p);
-	    op_ptr = read_sleb128 (op_ptr, op_end, &offset);
-	    result = (ctx->read_reg) (ctx->baton, reg);
+	    op_ptr = read_uleb128(op_ptr, op_end, &reg);
+            reg = dwarf2_frame_adjust_regnum(current_gdbarch, (int)reg,
+                                             eh_frame_p);
+	    op_ptr = read_sleb128(op_ptr, op_end, &offset);
+	    result = (ctx->read_reg)(ctx->baton, (int)reg);
 	    result += offset;
 	  }
 	  break;
@@ -517,7 +518,7 @@ execute_stack_op (struct dwarf_expr_context *ctx,
 	    size_t datalen;
 	    unsigned int before_stack_len;
 
-	    op_ptr = read_sleb128 (op_ptr, op_end, &offset);
+	    op_ptr = read_sleb128(op_ptr, op_end, &offset);
 	    /* Rather than create a whole new context, we simply
 	       record the stack length before execution, then reset it
 	       afterwards, effectively erasing whatever the recursive
@@ -526,18 +527,18 @@ execute_stack_op (struct dwarf_expr_context *ctx,
 	    /* FIXME: cagney/2003-03-26: This code should be using
                get_frame_base_address(), and then implement a dwarf2
                specific this_base method.  */
-	    (ctx->get_frame_base) (ctx->baton, &datastart, &datalen);
-	    dwarf_expr_eval (ctx, datastart, datalen, eh_frame_p, addr_translation);
-	    result = dwarf_expr_fetch (ctx, 0);
+	    (ctx->get_frame_base)(ctx->baton, &datastart, &datalen);
+	    dwarf_expr_eval(ctx, datastart, datalen, eh_frame_p, addr_translation);
+	    result = dwarf_expr_fetch(ctx, 0);
 	    if (ctx->in_reg)
-	      result = (ctx->read_reg) (ctx->baton, result);
+	      result = (ctx->read_reg)(ctx->baton, (int)result);
 	    result = result + offset;
 	    ctx->stack_len = before_stack_len;
 	    ctx->in_reg = 0;
 	  }
 	  break;
 	case DW_OP_dup:
-	  result = dwarf_expr_fetch (ctx, 0);
+	  result = dwarf_expr_fetch(ctx, 0);
 	  break;
 
 	case DW_OP_drop:
@@ -546,11 +547,11 @@ execute_stack_op (struct dwarf_expr_context *ctx,
 
 	case DW_OP_pick:
 	  offset = *op_ptr++;
-	  result = dwarf_expr_fetch (ctx, offset);
+	  result = dwarf_expr_fetch(ctx, (int)offset);
 	  break;
 
 	case DW_OP_over:
-	  result = dwarf_expr_fetch (ctx, 1);
+	  result = dwarf_expr_fetch(ctx, 1);
 	  break;
 
 	case DW_OP_rot:
@@ -747,9 +748,9 @@ execute_stack_op (struct dwarf_expr_context *ctx,
 	case DW_OP_bra:
 	  offset = extract_signed_integer (op_ptr, 2);
 	  op_ptr += 2;
-	  if (dwarf_expr_fetch (ctx, 0) != 0)
+	  if (dwarf_expr_fetch(ctx, 0) != 0)
 	    op_ptr += offset;
-	  dwarf_expr_pop (ctx);
+	  dwarf_expr_pop(ctx);
 	  goto no_push;
 
 	case DW_OP_nop:
@@ -757,12 +758,13 @@ execute_stack_op (struct dwarf_expr_context *ctx,
 
         case DW_OP_swap:
           {
-            CORE_ADDR result1 = dwarf_expr_fetch (ctx, 0);
-            dwarf_expr_pop (ctx);
-            CORE_ADDR result2 = dwarf_expr_fetch (ctx, 0);
-            dwarf_expr_pop (ctx);
-            dwarf_expr_push (ctx, result1);
-            dwarf_expr_push (ctx, result2);
+            CORE_ADDR result1 = dwarf_expr_fetch(ctx, 0);
+            CORE_ADDR result2;
+            dwarf_expr_pop(ctx);
+            result2 = dwarf_expr_fetch(ctx, 0);
+            dwarf_expr_pop(ctx);
+            dwarf_expr_push(ctx, result1);
+            dwarf_expr_push(ctx, result2);
           }
           goto no_push;
 
@@ -772,7 +774,7 @@ execute_stack_op (struct dwarf_expr_context *ctx,
             CORE_ADDR addr_or_regnum;
 
             /* APPLE LOCAL: DW_OP_piece requires that a register or address
-               be pushed on the stack.  The dwarf_expr_pop () call below will 
+               be pushed on the stack.  The dwarf_expr_pop () call below will
                error() if the stack doesn't have something there.
                (NB: The standard allows for a DW_OP_piece operator with NO
                 location specified -- this would indicate a variable which
@@ -788,7 +790,7 @@ execute_stack_op (struct dwarf_expr_context *ctx,
 	       specified, then they have another one or two DW_OP_piece
 	       operators specifying additional data.  Here is an example:
 
-         TAG_variable [31]  
+         TAG_variable [31]
           AT_name( "loffset" )
           AT_decl_file( 0x01 )
           AT_decl_line( 0x75 )
@@ -798,7 +800,7 @@ execute_stack_op (struct dwarf_expr_context *ctx,
              0x0003ad58 - 0x0003b050: reg20, piece 0x0004, reg21, piece 0x0004, piece 0x0008, reg21 , piece 0x0004
              0x0003b050 - 0x0003b118: reg20, piece 0x0004, reg21, piece 0x0004 )
 
-               As a hack, instead of error()ing out here, we will recgonize 
+               As a hack, instead of error()ing out here, we will recgonize
                that we're facing this broken debug info from the compiler
                and stop evaluating this expression at this point.  We've
                already retrieved the full variable location by now.  */
@@ -820,22 +822,24 @@ execute_stack_op (struct dwarf_expr_context *ctx,
 	/* APPLE LOCAL begin variable initialized status  */
 	case DW_OP_APPLE_uninit:
 #if 0
-          /* gcc-4.2 is not outputting trustworthy DW_OP_APPLE_uninit flags; 
+          /* gcc-4.2 is not outputting trustworthy DW_OP_APPLE_uninit flags;
              ignore them for now.  */
 	  ctx->var_status = 0;
 	  /* If the variable is uninitialized, throw an error instead of
 	     trying to evaluate it.  */
-	  throw_error (GENERIC_ERROR, "Variable is currently uninitialized.");
-#endif
+	  throw_error(GENERIC_ERROR, "Variable is currently uninitialized.");
+#endif /* 0 */
 	  goto no_push;
 	/* APPLE LOCAL end variable initialized status  */
 
 	default:
-	  error (_("Unhandled dwarf expression opcode 0x%x"), op);
+	  error(_("Unhandled dwarf expression opcode 0x%x"), op);
 	}
 
-      /* Most things push a result value.  */
-      dwarf_expr_push (ctx, result);
+      /* Most things push a result value: */
+      dwarf_expr_push(ctx, result);
     no_push:;
     }
 }
+
+/* EOF */

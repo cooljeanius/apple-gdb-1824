@@ -1,4 +1,5 @@
-/* Native support for i386.
+/* nm-i386sco.h
+   Native support for i386.
    Copyright 1986, 1987, 1989, 1992, 1994, 1998, 2000
    Free Software Foundation, Inc.
    Changes for 80386 by Pace Willisson (pace@prep.ai.mit.edu), July 1988.

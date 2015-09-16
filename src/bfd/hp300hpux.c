@@ -1,8 +1,8 @@
-/* BFD backend for hp-ux 9000/300
-   Copyright 1990, 1991, 1993, 1994, 1995, 1997, 1999, 2000, 2001, 2002,
-   2003, 2004 Free Software Foundation, Inc.
-   Written by Glenn Engel.
-
+/* hp300hpux.c: BFD backend for hp-ux 9000/300
+ * Copyright 1990, 1991, 1993, 1994, 1995, 1997, 1999, 2000, 2001, 2002,
+ * 2003, 2004 Free Software Foundation, Inc.
+ * Written by Glenn Engel. */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
 /*
     hpux native  ------------> |               |
@@ -126,7 +127,7 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 /***********************************************/
 /* provide overrides for routines in this file */
 /***********************************************/
-/* these don't use MY because that causes problems within JUMP_TABLE
+/* these do NOT use MY because that causes problems within JUMP_TABLE
    (CONCAT2 winds up being expanded recursively, which ANSI C compilers
    will not do).  */
 #define MY_canonicalize_symtab hp300hpux_canonicalize_symtab
@@ -183,7 +184,9 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #define HP_RLENGTH_BYTE		0x00
 #define HP_RLENGTH_WORD		0x01
 #define HP_RLENGTH_LONG		0x02
-#define HP_RLENGTH_ALIGN	0x03
+#ifndef HP_RLENGTH_ALIGN
+# define HP_RLENGTH_ALIGN	0x03
+#endif /* !HP_RLENGTH_ALIGN */
 
 #define NAME(x,y) CONCAT3 (hp300hpux,_32_,y)
 #define ARCH_SIZE 32
@@ -192,28 +195,35 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #define BMAGIC HPUX_DOT_O_MAGIC
 #define QMAGIC 0314
 
+/* this needs to go after the usage of the CONCAT* macro mentioned above,
+ * but before any other headers are included, or prototypes for functions
+ * are declared: */
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ && !__clang__ */
+
 #include "aoutx.h"
 
-static const bfd_target * MY (callback)
-  PARAMS ((bfd *));
-static bfd_boolean MY (write_object_contents)
-  PARAMS ((bfd *));
+static const bfd_target *MY(callback)
+  PARAMS((bfd *));
+static bfd_boolean MY(write_object_contents)
+  PARAMS((bfd *));
 static void convert_sym_type
-  PARAMS ((struct external_nlist *, aout_symbol_type *, bfd *));
+  PARAMS((struct external_nlist *, aout_symbol_type *, bfd *));
 
-bfd_boolean MY (slurp_symbol_table)
-  PARAMS ((bfd *));
-void MY (swap_std_reloc_in)
-  PARAMS ((bfd *, struct hp300hpux_reloc *, arelent *, asymbol **,
-	   bfd_size_type));
-bfd_boolean MY (slurp_reloc_table)
-  PARAMS ((bfd *, sec_ptr, asymbol **));
-long MY (canonicalize_symtab)
-  PARAMS ((bfd *, asymbol **));
-long MY (get_symtab_upper_bound)
-  PARAMS ((bfd *));
-long MY (canonicalize_reloc)
-  PARAMS ((bfd *, sec_ptr, arelent **, asymbol **));
+bfd_boolean MY(slurp_symbol_table)
+  PARAMS((bfd *));
+void MY(swap_std_reloc_in)
+  PARAMS((bfd *, struct hp300hpux_reloc *, arelent *, asymbol **,
+          bfd_size_type));
+bfd_boolean MY(slurp_reloc_table)
+  PARAMS((bfd *, sec_ptr, asymbol **));
+long MY(canonicalize_symtab)
+  PARAMS((bfd *, asymbol **));
+long MY(get_symtab_upper_bound)
+  PARAMS((bfd *));
+long MY(canonicalize_reloc)
+  PARAMS((bfd *, sec_ptr, arelent **, asymbol **));
 
 /* Since the hpux symbol table has nlist elements interspersed with
    strings and we need to insert som strings for secondary symbols, we
@@ -224,81 +234,80 @@ long MY (canonicalize_reloc)
 #define SYM_EXTRA_BYTES   1024
 
 /* Set parameters about this a.out file that are machine-dependent.
-   This routine is called from some_aout_object_p just before it returns.  */
+ * This routine is called from some_aout_object_p before it returns: */
 static const bfd_target *
-MY (callback) (abfd)
-     bfd *abfd;
+MY(callback)(bfd *abfd)
 {
-  struct internal_exec *execp = exec_hdr (abfd);
+  struct internal_exec *execp = exec_hdr(abfd);
 
-  /* Calculate the file positions of the parts of a newly read aout header */
-  obj_textsec (abfd)->size = N_TXTSIZE (*execp);
+  /* Calculate file positions of the parts of a newly-read aout header: */
+  obj_textsec(abfd)->size = N_TXTSIZE(*execp);
 
-  /* The virtual memory addresses of the sections */
-  obj_textsec (abfd)->vma = N_TXTADDR (*execp);
-  obj_datasec (abfd)->vma = N_DATADDR (*execp);
-  obj_bsssec (abfd)->vma = N_BSSADDR (*execp);
+  /* The virtual memory addresses of the sections: */
+  obj_textsec(abfd)->vma = N_TXTADDR(*execp);
+  obj_datasec(abfd)->vma = N_DATADDR(*execp);
+  obj_bsssec(abfd)->vma = N_BSSADDR(*execp);
 
-  obj_textsec (abfd)->lma = obj_textsec (abfd)->vma;
-  obj_datasec (abfd)->lma = obj_datasec (abfd)->vma;
-  obj_bsssec (abfd)->lma = obj_bsssec (abfd)->vma;
+  obj_textsec(abfd)->lma = obj_textsec(abfd)->vma;
+  obj_datasec(abfd)->lma = obj_datasec(abfd)->vma;
+  obj_bsssec(abfd)->lma = obj_bsssec(abfd)->vma;
 
-  /* The file offsets of the sections */
-  obj_textsec (abfd)->filepos = N_TXTOFF (*execp);
-  obj_datasec (abfd)->filepos = N_DATOFF (*execp);
+  /* The file offsets of the sections: */
+  obj_textsec(abfd)->filepos = N_TXTOFF(*execp);
+  obj_datasec(abfd)->filepos = N_DATOFF(*execp);
 
-  /* The file offsets of the relocation info */
-  obj_textsec (abfd)->rel_filepos = N_TRELOFF (*execp);
-  obj_datasec (abfd)->rel_filepos = N_DRELOFF (*execp);
+  /* The file offsets of the relocation info: */
+  obj_textsec(abfd)->rel_filepos = N_TRELOFF(*execp);
+  obj_datasec(abfd)->rel_filepos = N_DRELOFF(*execp);
 
-  /* The file offsets of the string table and symbol table.  */
-  obj_sym_filepos (abfd) = N_SYMOFF (*execp);
-  obj_str_filepos (abfd) = N_STROFF (*execp);
+  /* The file offsets of the string table and symbol table: */
+  obj_sym_filepos(abfd) = N_SYMOFF(*execp);
+  obj_str_filepos(abfd) = N_STROFF(*execp);
 
-  /* Determine the architecture and machine type of the object file.  */
+  /* Determine the architecture and machine type of the object file: */
 #ifdef SET_ARCH_MACH
-  SET_ARCH_MACH (abfd, *execp);
+  SET_ARCH_MACH(abfd, *execp);
 #else
-  bfd_default_set_arch_mach (abfd, DEFAULT_ARCH, 0);
-#endif
+  bfd_default_set_arch_mach(abfd, DEFAULT_ARCH, 0);
+#endif /* SET_ARCH_MACH */
 
-  if (obj_aout_subformat (abfd) == gnu_encap_format)
+  if (obj_aout_subformat(abfd) == gnu_encap_format)
     {
-      /* The file offsets of the relocation info */
-      obj_textsec (abfd)->rel_filepos = N_GNU_TRELOFF (*execp);
-      obj_datasec (abfd)->rel_filepos = N_GNU_DRELOFF (*execp);
+      /* The file offsets of the relocation info: */
+      obj_textsec(abfd)->rel_filepos = N_GNU_TRELOFF(*execp);
+      obj_datasec(abfd)->rel_filepos = N_GNU_DRELOFF(*execp);
 
-      /* The file offsets of the string table and symbol table.  */
-      obj_sym_filepos (abfd) = N_GNU_SYMOFF (*execp);
-      obj_str_filepos (abfd) = (obj_sym_filepos (abfd) + execp->a_syms);
+      /* The file offsets of the string table and symbol table: */
+      obj_sym_filepos(abfd) = N_GNU_SYMOFF(*execp);
+      obj_str_filepos(abfd) = (obj_sym_filepos(abfd) + execp->a_syms);
 
-      abfd->flags |= HAS_LINENO | HAS_DEBUG | HAS_SYMS | HAS_LOCALS;
-      bfd_get_symcount (abfd) = execp->a_syms / 12;
-      obj_symbol_entry_size (abfd) = 12;
-      obj_reloc_entry_size (abfd) = RELOC_STD_SIZE;
+      abfd->flags |= (HAS_LINENO | HAS_DEBUG | HAS_SYMS | HAS_LOCALS);
+      bfd_get_symcount(abfd) = (execp->a_syms / 12);
+      obj_symbol_entry_size(abfd) = 12;
+      obj_reloc_entry_size(abfd) = RELOC_STD_SIZE;
     }
 
   return abfd->xvec;
 }
 
+/* FIXME: move this to a relevant header file: */
 extern bfd_boolean aout_32_write_syms
-  PARAMS ((bfd * abfd));
+  PARAMS((bfd * abfd));
 
 static bfd_boolean
-MY (write_object_contents) (abfd)
-     bfd *abfd;
+MY(write_object_contents)(bfd *abfd)
 {
   struct external_exec exec_bytes;
-  struct internal_exec *execp = exec_hdr (abfd);
+  struct internal_exec *execp = exec_hdr(abfd);
   bfd_size_type text_size;	/* dummy vars */
   file_ptr text_end;
 
-  memset (&exec_bytes, 0, sizeof (exec_bytes));
+  memset(&exec_bytes, 0, sizeof(exec_bytes));
 
-  obj_reloc_entry_size (abfd) = RELOC_STD_SIZE;
+  obj_reloc_entry_size(abfd) = RELOC_STD_SIZE;
 
-  if (adata (abfd).magic == undecided_magic)
-    NAME (aout,adjust_sizes_and_vmas) (abfd, &text_size, &text_end);
+  if (adata(abfd).magic == undecided_magic)
+    NAME(aout,adjust_sizes_and_vmas)(abfd, &text_size, &text_end);
   execp->a_syms = 0;
 
   execp->a_entry = bfd_get_start_address (abfd);
@@ -354,12 +363,9 @@ MY (write_object_contents) (abfd)
 
 /* convert the hp symbol type to be the same as aout64.h usage so we */
 /* can piggyback routines in aoutx.h.                                */
-
 static void
-convert_sym_type (sym_pointer, cache_ptr, abfd)
-     struct external_nlist *sym_pointer ATTRIBUTE_UNUSED;
-     aout_symbol_type *cache_ptr;
-     bfd *abfd ATTRIBUTE_UNUSED;
+convert_sym_type(struct external_nlist *sym_pointer ATTRIBUTE_UNUSED,
+                 aout_symbol_type *cache_ptr, bfd *abfd ATTRIBUTE_UNUSED)
 {
   int name_type;
   int new_type;
@@ -451,23 +457,21 @@ DESCRIPTION
 */
 
 void
-NAME (aout,swap_exec_header_in) (abfd, raw_bytes, execp)
-     bfd *abfd;
-     struct external_exec *raw_bytes;
-     struct internal_exec *execp;
+NAME (aout,swap_exec_header_in)(bfd *abfd, struct external_exec *raw_bytes,
+                                struct internal_exec *execp)
 {
-  struct external_exec *bytes = (struct external_exec *) raw_bytes;
+  struct external_exec *bytes = (struct external_exec *)raw_bytes;
 
   /* The internal_exec structure has some fields that are unused in this
      configuration (IE for i960), so ensure that all such uninitialized
      fields are zero'd out.  There are places where two of these structs
      are memcmp'd, and thus the contents do matter. */
-  memset (execp, 0, sizeof (struct internal_exec));
+  memset(execp, 0, sizeof(struct internal_exec));
   /* Now fill in fields in the execp, from the bytes in the raw data.  */
-  execp->a_info = H_GET_32 (abfd, bytes->e_info);
-  execp->a_text = GET_WORD (abfd, bytes->e_text);
-  execp->a_data = GET_WORD (abfd, bytes->e_data);
-  execp->a_bss = GET_WORD (abfd, bytes->e_bss);
+  execp->a_info = H_GET_32(abfd, bytes->e_info);
+  execp->a_text = GET_WORD(abfd, bytes->e_text);
+  execp->a_data = GET_WORD(abfd, bytes->e_data);
+  execp->a_bss = GET_WORD(abfd, bytes->e_bss);
   execp->a_syms = GET_WORD (abfd, bytes->e_syms);
   execp->a_entry = GET_WORD (abfd, bytes->e_entry);
   execp->a_trsize = GET_WORD (abfd, bytes->e_trsize);
@@ -535,8 +539,7 @@ NAME (aout,swap_exec_header_in) (abfd, raw_bytes, execp)
 */
 
 bfd_boolean
-MY (slurp_symbol_table) (abfd)
-     bfd *abfd;
+MY(slurp_symbol_table)(bfd *abfd)
 {
   bfd_size_type symbol_bytes;
   struct external_nlist *syms;
@@ -635,18 +638,15 @@ MY (slurp_symbol_table) (abfd)
       }
   }
 
-  obj_aout_symbols (abfd) = cached;
+  obj_aout_symbols(abfd) = cached;
 
   return TRUE;
 }
 
 void
-MY (swap_std_reloc_in) (abfd, bytes, cache_ptr, symbols, symcount)
-     bfd *abfd;
-     struct hp300hpux_reloc *bytes;
-     arelent *cache_ptr;
-     asymbol **symbols;
-     bfd_size_type symcount ATTRIBUTE_UNUSED;
+MY (swap_std_reloc_in)(bfd *abfd, struct hp300hpux_reloc *bytes,
+                       arelent *cache_ptr, asymbol **symbols,
+                       bfd_size_type symcount ATTRIBUTE_UNUSED)
 {
   int r_index;
   int r_extern = 0;
@@ -654,8 +654,8 @@ MY (swap_std_reloc_in) (abfd, bytes, cache_ptr, symbols, symcount)
   int r_pcrel = 0;
   struct aoutdata *su = &(abfd->tdata.aout_data->a);
 
-  cache_ptr->address = H_GET_32 (abfd, bytes->r_address);
-  r_index = H_GET_16 (abfd, bytes->r_index);
+  cache_ptr->address = H_GET_32(abfd, bytes->r_address);
+  r_index = H_GET_16(abfd, bytes->r_index);
 
   switch (bytes->r_type[0])
     {
@@ -711,19 +711,16 @@ MY (swap_std_reloc_in) (abfd, bytes, cache_ptr, symbols, symcount)
       /* The GNU linker assumes any offset from beginning of section */
       /* is already incorporated into the image while the HP linker  */
       /* adds this in later.  Add it in now...                       */
-      MOVE_ADDRESS (-cache_ptr->address);
+      MOVE_ADDRESS(-cache_ptr->address);
     }
   else
     {
-      MOVE_ADDRESS (0);
+      MOVE_ADDRESS(0);
     }
 }
 
 bfd_boolean
-MY (slurp_reloc_table) (abfd, asect, symbols)
-     bfd *abfd;
-     sec_ptr asect;
-     asymbol **symbols;
+MY (slurp_reloc_table)(bfd *abfd, sec_ptr asect, asymbol **symbols)
 {
   bfd_size_type count;
   bfd_size_type reloc_size;
@@ -803,58 +800,52 @@ doit:
 /************************************************************************/
 
 long aout_32_canonicalize_symtab
-  PARAMS ((bfd * abfd, asymbol ** location));
+  PARAMS((bfd * abfd, asymbol ** location));
 long aout_32_get_symtab_upper_bound
-  PARAMS ((bfd * abfd));
+  PARAMS((bfd * abfd));
 long aout_32_canonicalize_reloc
-  PARAMS ((bfd * abfd, sec_ptr section, arelent ** relptr,
-	   asymbol ** symbols));
+  PARAMS((bfd * abfd, sec_ptr section, arelent ** relptr,
+	  asymbol ** symbols));
 
 long
-MY (canonicalize_symtab) (abfd, location)
-     bfd *abfd;
-     asymbol **location;
+MY(canonicalize_symtab)(bfd *abfd, asymbol **location)
 {
-  unsigned int counter = 0;
+  unsigned int counter = 0U;
   aout_symbol_type *symbase;
 
-  if (obj_aout_subformat (abfd) == gnu_encap_format)
-    return aout_32_canonicalize_symtab (abfd, location);
+  if (obj_aout_subformat(abfd) == gnu_encap_format)
+    return aout_32_canonicalize_symtab(abfd, location);
 
-  if (!MY (slurp_symbol_table) (abfd))
+  if (!MY(slurp_symbol_table)(abfd))
     return -1;
 
-  for (symbase = obj_aout_symbols (abfd); counter++ < bfd_get_symcount (abfd);)
-    *(location++) = (asymbol *) (symbase++);
+  for (symbase = obj_aout_symbols(abfd); counter++ < bfd_get_symcount(abfd);)
+    *(location++) = (asymbol *)(symbase++);
   *location++ = 0;
-  return bfd_get_symcount (abfd);
+  return bfd_get_symcount(abfd);
 }
 
 long
-MY (get_symtab_upper_bound) (abfd)
-     bfd *abfd;
+MY(get_symtab_upper_bound)(bfd *abfd)
 {
-  if (obj_aout_subformat (abfd) == gnu_encap_format)
-    return aout_32_get_symtab_upper_bound (abfd);
-  if (!MY (slurp_symbol_table) (abfd))
+  if (obj_aout_subformat(abfd) == gnu_encap_format)
+    return aout_32_get_symtab_upper_bound(abfd);
+  if (!MY(slurp_symbol_table)(abfd))
     return -1;
 
-  return (bfd_get_symcount (abfd) + 1) * (sizeof (aout_symbol_type *));
+  return (bfd_get_symcount(abfd) + 1) * (sizeof(aout_symbol_type *));
 }
 
 long
-MY (canonicalize_reloc) (abfd, section, relptr, symbols)
-     bfd *abfd;
-     sec_ptr section;
-     arelent **relptr;
-     asymbol **symbols;
+MY(canonicalize_reloc)(bfd *abfd, sec_ptr section, arelent **relptr,
+                       asymbol **symbols)
 {
   arelent *tblptr = section->relocation;
   unsigned int count;
-  if (obj_aout_subformat (abfd) == gnu_encap_format)
-    return aout_32_canonicalize_reloc (abfd, section, relptr, symbols);
+  if (obj_aout_subformat(abfd) == gnu_encap_format)
+    return aout_32_canonicalize_reloc(abfd, section, relptr, symbols);
 
-  if (!(tblptr || MY (slurp_reloc_table) (abfd, section, symbols)))
+  if (!(tblptr || MY(slurp_reloc_table)(abfd, section, symbols)))
     return -1;
 
   if (section->flags & SEC_CONSTRUCTOR)
@@ -881,3 +872,9 @@ MY (canonicalize_reloc) (abfd, section, relptr, symbols)
 }
 
 #include "aout-target.h"
+
+#ifdef HP_RLENGTH_ALIGN
+# undef HP_RLENGTH_ALIGN
+#endif /* HP_RLENGTH_ALIGN */
+
+/* EOF */

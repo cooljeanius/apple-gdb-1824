@@ -1,6 +1,6 @@
-/* Program to load an image into the SPARClite monitor board
-   Copyright 1993, 1994, 1995 Free Software Foundation, Inc.
-
+/* aload.c: Program to load an image into the SPARClite monitor board
+ * Copyright 1993, 1994, 1995 Free Software Foundation, Inc.  */
+/*
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
@@ -26,23 +26,51 @@ ie: aload hello /dev/ttya
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning aload.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning aload.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning aload.c expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "aload.c expects <stdio.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
+
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "aload.c expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STDLIB_H */
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# ifdef HAVE_STRINGS_H
+#  include <strings.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "aload.c expects a string-related header to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H */
 
 #include "ansidecl.h"
 
 #if (defined(ANSI_PROTOTYPES) || defined(__PROTOTYPES)) && defined(HAVE_STDARG_H)
 # include <stdarg.h>
-#elif defined(HAVE_VARARGS_H)
-# include <varargs.h>
 #else
-# warning aload.c expects either <stdarg.h> or <varargs.h> to be included.
+# if defined(HAVE_VARARGS_H)
+#  include <varargs.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "aload.c expects <stdarg.h> or <varargs.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_VARARGS_H */
 #endif /* (ANSI_PROTOTYPES || __PROTOTYPES) && HAVE_STDARG_H */
 
 #include "libiberty.h"
@@ -51,36 +79,47 @@ ie: aload hello /dev/ttya
 #ifdef HAVE_ERRNO_H
 # include <errno.h>
 #else
-# warning aload.c expects <errno.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "aload.c expects <errno.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_ERRNO_H */
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning aload.c expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "aload.c expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 #ifdef HAVE_FCNTL_H
 # include <fcntl.h>
 #else
-# warning aload.c expects <fcntl.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "aload.c expects <fcntl.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_FCNTL_H */
 
 #ifndef HAVE_TERMIOS
-# error you lose
+# error "you lose for not having termios"
 #endif /* !HAVE_TERMIOS */
 
 #if defined(HAVE_TERMIOS)
 # include <termios.h>
-#elif defined(HAVE_TERMIO)
-# include <termio.h>
-#elif defined(HAVE_SGTTY)
-# include <sgtty.h>
 #else
-# warning Not including a serial-port-related header.
-#endif /* HAVE_TERMIOS || HAVE_TERMIO || HAVE_SGTTY */
+# if defined(HAVE_TERMIO)
+#  include <termio.h>
+# else
+#  if defined(HAVE_SGTTY)
+#   include <sgtty.h>
+#  else
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "Not including a serial-port-related header."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
+#  endif /* HAVE_SGTTY */
+# endif /* HAVE_TERMIO */
+#endif /* HAVE_TERMIOS */
 #define min(A, B) (((A) < (B)) ? (A) : (B))
 
-/* Where the code goes by default. */
-
+/* Where the code goes by default: */
 #ifndef LOAD_ADDRESS
 # define LOAD_ADDRESS 0x40000000
 #endif /* !LOAD_ADDRESS */
@@ -88,17 +127,17 @@ ie: aload hello /dev/ttya
 int quiet = 0;
 
 static void
-usage ()
+usage(void)
 {
-  fprintf (stderr, "usage: aload [-q] file device\n");
-  exit (1);
+  fprintf(stderr, "usage: aload [-q] file device\n");
+  exit(1);
 }
 
 static void
 #if defined(ANSI_PROTOTYPES) || defined(__PROTOTYPES)
-sys_error (char *msg, ...)
+sys_error(const char *msg, ...)
 #else
-sys_error (va_alist)
+sys_error(va_alist)
      va_dcl
 #endif /* ANSI_PROTOTYPES || __PROTOTYPES */
 {
@@ -106,95 +145,104 @@ sys_error (va_alist)
   va_list args;
 
 #if defined(ANSI_PROTOTYPES) || defined(__PROTOTYPES)
-  va_start (args, msg);
+  va_start(args, msg);
 #else
-  va_start (args);
+  va_start(args);
 #endif /* ANSI_PROTOTYPES || __PROTOTYPES */
 
 #if defined(ANSI_PROTOTYPES) || defined(__PROTOTYPES)
-  vfprintf (stderr, msg, args);
+  vfprintf(stderr, msg, args);
 #else
   {
     char *msg1;
 
-    msg1 = va_arg (args, char *);
-    vfprintf (stderr, msg1, args);
+    msg1 = va_arg(args, char *);
+    vfprintf(stderr, msg1, args);
   }
 #endif /* ANSI_PROTOTYPES || __PROTOTYPES */
-  va_end (args);
+  va_end(args);
 
-  fprintf (stderr, ": %s\n", strerror(e));
-  exit (1);
+  fprintf(stderr, ": %s\n", strerror(e));
+  exit(1);
 }
 
 static void
 #if defined(ANSI_PROTOTYPES) || defined(__PROTOTYPES)
-error (char *msg, ...)
+error(const char *msg, ...)
 #else
-error (va_alist)
+error(va_alist)
      va_dcl
 #endif /* ANSI_PROTOTYPES || __PROTOTYPES */
 {
   va_list args;
 
 #if defined(ANSI_PROTOTYPES) || defined(__PROTOTYPES)
-  va_start (args, msg);
+  va_start(args, msg);
 #else
-  va_start (args);
+  va_start(args);
 #endif /* ANSI_PROTOTYPES || __PROTOTYPES */
 
 #if defined(ANSI_PROTOTYPES) || defined(__PROTOTYPES)
-  vfprintf (stderr, msg, args);
+  vfprintf(stderr, msg, args);
 #else
   {
     char *msg1;
 
-    msg1 = va_arg (args, char *);
-    vfprintf (stderr, msg1, args);
+    msg1 = va_arg(args, char *);
+    vfprintf(stderr, msg1, args);
   }
 #endif /* ANSI_PROTOTYPES || __PROTOTYPES */
-  va_end (args);
+  va_end(args);
 
-  fputc ('\n', stderr);
-  exit (1);
+  fputc('\n', stderr);
+  exit(1);
 }
 
 static int ttyfd;
 
 static void
-sendex (outtxt, outlen, intxt, inlen, id)
+#if defined(ANSI_PROTOTYPES) || defined(__PROTOTYPES)
+sendex(unsigned char *outtxt, size_t outlen,
+       unsigned char *intxt, size_t inlen, const char *id)
+#else
+sendex(outtxt, outlen, intxt, inlen, id)
      unsigned char *outtxt;
      int outlen;
      unsigned char *intxt;
      int inlen;
      char *id;
+#endif /* ANSI_PROTOTYPES || __PROTOTYPES */
 {
   char buf[100];
-  int cc;
+  ssize_t cc;
 
   if (outlen > 0)
     {
-      cc = write (ttyfd, outtxt, outlen);
-      if (cc != outlen)
-	sys_error ("Write %s failed", id);
+      cc = write(ttyfd, outtxt, outlen);
+      if ((size_t)cc != outlen)
+	sys_error("Write %s failed", id);
     }
 
   if (inlen > 0)
     {
-      cc = read (ttyfd, buf, inlen);	/* Get reply */
-      if (cc != inlen)
-	sys_error ("Read %s reply failed", id);
-      if (bcmp (buf, intxt, inlen) != 0)
-	error ("Bad reply to %s", id);
+      cc = read(ttyfd, buf, inlen); /* Get reply */
+      if ((size_t)cc != inlen)
+	sys_error("Read %s reply failed", id);
+      if (bcmp(buf, intxt, inlen) != 0)
+	error("Bad reply to %s", id);
     }
 }
 
 extern int optind;
 
 int
-main (argc, argv)
+#if defined(ANSI_PROTOTYPES) || defined(__PROTOTYPES)
+main(int argc, char **argv)
+#else
+main(argc, argv)
      int argc;
      char **argv;
+#endif /* ANSI_PROTOTYPES || __PROTOTYPES */
 {
   struct termios termios;
   asection *section;
@@ -202,7 +250,7 @@ main (argc, argv)
   unsigned long entry;
   int c;
 
-  while ((c = getopt (argc, argv, "q")) != EOF)
+  while ((c = getopt(argc, argv, "q")) != EOF)
     {
       switch (c)
 	{
@@ -219,66 +267,65 @@ main (argc, argv)
   if (argc != 2)
     usage();
 
-  pbfd = bfd_openr (argv[0], 0);
+  pbfd = bfd_openr(argv[0], 0);
 
   if (pbfd == NULL)
-    sys_error ("Open of PROG failed");
+    sys_error("Open of PROG failed");
 
 /* setup the tty. Must be raw, no flow control, 9600 baud */
 
-  ttyfd = open (argv[1], O_RDWR);
+  ttyfd = open(argv[1], O_RDWR);
   if (ttyfd == -1)
-    sys_error ("Open of TTY failed");
+    sys_error("Open of TTY failed");
 
   if (tcgetattr(ttyfd, &termios))
-    sys_error ("tcgetattr failed");
+    sys_error("tcgetattr failed");
 
   termios.c_iflag = 0;
   termios.c_oflag = 0;
-  termios.c_cflag = CS8 | CREAD | CLOCAL;
+  termios.c_cflag = (CS8 | CREAD | CLOCAL);
   termios.c_lflag = 0;
   termios.c_cc[VMIN] = 1;
   termios.c_cc[VTIME] = 0;
 
-  if (cfsetospeed (&termios, B9600)
-      || cfsetispeed (&termios, B9600))
-    sys_error ("cfset{i|o}speed failed");
+  if (cfsetospeed(&termios, B9600) || cfsetispeed(&termios, B9600))
+    sys_error("cfset{i|o}speed failed");
 
-  if (tcsetattr (ttyfd, TCSANOW, &termios))
-    sys_error ("tcsetattr failed");
+  if (tcsetattr(ttyfd, TCSANOW, &termios))
+    sys_error("tcsetattr failed");
 
-  /* The char is documented as 0xaa, \252 is portable octal form.   */
-  sendex("", 1, "\252", 1, "alive?");
-  sendex ("U", 1, "U", 1, "alive");
+  /* The char is documented as 0xaa, \252 is portable octal form: */
+  sendex((unsigned char *)"", 1, (unsigned char *)"\252", 1, "alive?");
+  sendex((unsigned char *)"U", 1, (unsigned char *)"U", 1, "alive");
   if (!quiet)
-    printf ("[SPARClite appears to be alive]\n");
+    printf("[SPARClite appears to be alive]\n");
 
-  if (!bfd_check_format (pbfd, bfd_object))
-    error ("It doesn't seem to be an object file");
+  if (!bfd_check_format(pbfd, bfd_object))
+    error("It does NOT seem to be an object file");
 
   for (section = pbfd->sections; section; section = section->next)
     {
-      if (bfd_get_section_flags (pbfd, section) & SEC_ALLOC)
+      if (bfd_get_section_flags(pbfd, section) & SEC_ALLOC)
 	{
 	  bfd_vma section_address;
 	  unsigned long section_size;
 	  const char *section_name;
 
-	  section_name = bfd_get_section_name (pbfd, section);
+	  section_name = bfd_get_section_name(pbfd, section);
 
-	  section_address = bfd_get_section_vma (pbfd, section);
+	  section_address = bfd_get_section_vma(pbfd, section);
 	  /* Adjust sections from a.out files, since they do NOT
 	     carry their addresses with.  */
-	  if (bfd_get_flavour (pbfd) == bfd_target_aout_flavour)
+	  if (bfd_get_flavour(pbfd) == bfd_target_aout_flavour)
 	    section_address += LOAD_ADDRESS;
-	  section_size = bfd_section_size (pbfd, section);
+	  section_size = (unsigned long)bfd_section_size(pbfd, section);
 
 	  if (!quiet)
-	    printf ("[Loading section %s at %lx (%ld bytes)]\n",
-		    section_name, section_address, section_size);
+	    printf("[Loading section %s at %lx (%ld bytes)]\n",
+                   section_name, section_address, section_size);
 
-	  /* Text, data or lit */
-	  if (bfd_get_section_flags (pbfd, section) & SEC_LOAD)
+	  /* Text, data, or lit: */
+	  if (bfd_get_section_flags(pbfd, section) & SEC_LOAD)
 	    {
 	      file_ptr fptr;
 
@@ -287,30 +334,34 @@ main (argc, argv)
 	      while (section_size > 0)
 		{
 		  char buffer[1024];
-		  int count, i;
+		  size_t count, i;
 		  unsigned char checksum;
 		  static char inds[] = "|/-\\";
 		  static int k = 0;
 
-		  count = min (section_size, 1024);
+		  count = (size_t)min(section_size, 1024UL);
 
-		  bfd_get_section_contents (pbfd, section, buffer, fptr,
-					    count);
+		  bfd_get_section_contents(pbfd, section, buffer, fptr,
+                                           (bfd_size_type)count);
 
-		  checksum = 0;
-		  for (i = 0; i < count; i++)
-		    checksum += buffer[i];
+		  checksum = 0U;
+		  for (i = 0UL; i < count; i++)
+		    checksum += (unsigned char)buffer[i];
 
 		  if (!quiet)
 		    {
-		      printf ("\r%c", inds[k++ % 4]);
-		      fflush (stdout);
+		      printf("\r%c", inds[k++ % 4]);
+		      fflush(stdout);
 		    }
 
-		  sendex ("\001", 1, "Z", 1, "load command");
-		  sendex (&section_address, 4, NULL, 0, "load address");
-		  sendex (&count, 4, NULL, 0, "program size");
-		  sendex (buffer, count, &checksum, 1, "program");
+		  sendex((unsigned char *)"\001", 1, (unsigned char *)"Z",
+                         1, "load command");
+		  sendex((unsigned char *)&section_address, 4, NULL, 0,
+                         "load address");
+		  sendex((unsigned char *)&count, 4, NULL, 0,
+                         "program size");
+		  sendex((unsigned char *)buffer, count, &checksum, 1,
+                         "program");
 
 		  section_address += count;
 		  fptr += count;
@@ -320,20 +371,21 @@ main (argc, argv)
 	  else			/* BSS */
 	    {
 	      if (!quiet)
-		printf ("Not loading BSS \n");
+		printf("Not loading BSS \n");
 	    }
 	}
     }
 
-  entry = bfd_get_start_address (pbfd);
+  entry = (unsigned long)bfd_get_start_address(pbfd);
 
   if (!quiet)
-    printf ("[Starting %s at 0x%lx]\n", argv[0], entry);
+    printf("[Starting %s at 0x%lx]\n", argv[0], entry);
 
-  sendex ("\003", 1, NULL, 0, "exec command");
-  sendex (&entry, 4, "U", 1, "program start");
+  sendex((unsigned char *)"\003", 1, NULL, 0, "exec command");
+  sendex((unsigned char *)&entry, 4, (unsigned char *)"U", 1,
+         "program start");
 
-  exit (0);
+  exit(0);
 }
 
 /* EOF */

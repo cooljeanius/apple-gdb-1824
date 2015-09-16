@@ -2,7 +2,7 @@ dnl#                                               -*- Autoconf -*-
 dnl# Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([bluegnu-example-calc],[2.0.3],[])
+AC_INIT([bluegnu-example-calc],[2.0.3],[neurdenburgj@acm.org])
 AC_CONFIG_SRCDIR([calc.c])
 AC_CONFIG_HEADERS([calc.h])
 

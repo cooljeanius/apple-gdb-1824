@@ -40,22 +40,22 @@
 #include "gdb_ptrace.h"
 
 #ifdef HAVE_SYS_FILE_H
-#include <sys/file.h>
-#endif
+# include <sys/file.h>
+#endif /* HAVE_SYS_FILE_H */
 
-#if !defined (FETCH_INFERIOR_REGISTERS)
-#include <sys/user.h>		/* Probably need to poke the user structure */
+#if !defined(FETCH_INFERIOR_REGISTERS)
+# include <sys/user.h>	  /* Probably need to poke the user structure */
 #endif /* !FETCH_INFERIOR_REGISTERS */
 
-#if !defined (CHILD_XFER_MEMORY)
-static void udot_info (char *, int);
-#endif
+#if !defined(CHILD_XFER_MEMORY)
+static void udot_info(char *, int);
+#endif /* !CHILD_XFER_MEMORY */
 
-void _initialize_infptrace (void);
+void _initialize_infptrace(void);
 
 
 int
-call_ptrace (int request, int pid, PTRACE_ARG3_TYPE addr, int data)
+call_ptrace(int request, int pid, PTRACE_ARG3_TYPE addr, int data)
 {
   return ptrace (request, pid, addr, data);
 }
@@ -313,10 +313,10 @@ store_inferior_registers (int regnum)
 
 /* Set an upper limit on alloca.  */
 #ifndef GDB_MAX_ALLOCA
-#define GDB_MAX_ALLOCA 0x1000
-#endif
+# define GDB_MAX_ALLOCA 0x1000
+#endif /* !GDB_MAX_ALLOCA */
 
-#if !defined (CHILD_XFER_MEMORY)
+#if !defined(CHILD_XFER_MEMORY)
 /* NOTE! I tried using PTRACE_READDATA, etc., to read and write memory
    in the NEW_SUN_PTRACE case.  It ought to be straightforward.  But
    it appears that writing did not write the data that I specified.  I
@@ -345,7 +345,7 @@ child_xfer_memory (CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
   PTRACE_TYPE_RET *buffer;
   struct cleanup *old_chain = NULL;
 
-#ifdef PT_IO
+# ifdef PT_IO
   /* OpenBSD 3.1, NetBSD 1.6 and FreeBSD 5.0 have a new PT_IO request
      that promises to be much more efficient in reading and writing
      data in the traced process's address space.  */
@@ -374,7 +374,7 @@ child_xfer_memory (CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
 	return piod.piod_len;
       }
   }
-#endif
+# endif /* PT_IO */
 
   /* Allocate buffer of that many longwords.  */
   if (len < GDB_MAX_ALLOCA)
@@ -394,7 +394,7 @@ child_xfer_memory (CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
       if (addr != memaddr || len < (int) sizeof (PTRACE_TYPE_RET))
 	{
 	  /* Need part of initial word -- fetch it.  */
-	  buffer[0] = ptrace (PT_READ_I, PIDGET (inferior_ptid), 
+	  buffer[0] = ptrace (PT_READ_I, PIDGET (inferior_ptid),
 			      (PTRACE_TYPE_ARG3) addr, 0);
 	}
 
@@ -414,14 +414,14 @@ child_xfer_memory (CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
       for (i = 0; i < count; i++, addr += sizeof (PTRACE_TYPE_RET))
 	{
 	  errno = 0;
-	  ptrace (PT_WRITE_D, PIDGET (inferior_ptid), 
+	  ptrace (PT_WRITE_D, PIDGET (inferior_ptid),
 		  (PTRACE_TYPE_ARG3) addr, buffer[i]);
 	  if (errno)
 	    {
 	      /* Using the appropriate one (I or D) is necessary for
 	         Gould NP1, at least.  */
 	      errno = 0;
-	      ptrace (PT_WRITE_I, PIDGET (inferior_ptid), 
+	      ptrace (PT_WRITE_I, PIDGET (inferior_ptid),
 		      (PTRACE_TYPE_ARG3) addr, buffer[i]);
 	    }
 	  if (errno)
@@ -456,18 +456,18 @@ child_xfer_memory (CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
 static void
 udot_info (char *dummy1, int dummy2)
 {
-#if defined (KERNEL_U_SIZE)
+# if defined(KERNEL_U_SIZE)
   long udot_off;			/* Offset into user struct */
   int udot_val;			/* Value from user struct at udot_off */
   char mess[128];		/* For messages */
-#endif
+# endif /* KERNEL_U_SIZE */
 
   if (!target_has_execution)
     {
       error (_("The program is not being run."));
     }
 
-#if !defined (KERNEL_U_SIZE)
+# if !defined(KERNEL_U_SIZE)
 
   /* Adding support for this command is easy.  Typically you just add a
      routine, called "kernel_u_size" that returns the size of the user
@@ -475,7 +475,7 @@ udot_info (char *dummy1, int dummy2)
      config file "#define KERNEL_U_SIZE kernel_u_size()" */
   error (_("Don't know how large ``struct user'' is in this version of gdb."));
 
-#else
+# else
 
   for (udot_off = 0; udot_off < KERNEL_U_SIZE; udot_off += sizeof (udot_val))
     {
@@ -499,16 +499,18 @@ udot_info (char *dummy1, int dummy2)
     }
   printf_filtered ("\n");
 
-#endif
+# endif /* !KERNEL_U_SIZE */
 }
-#endif /* !defined (CHILD_XFER_MEMORY).  */
+#endif /* !defined(CHILD_XFER_MEMORY).  */
 
 
 void
-_initialize_infptrace (void)
+_initialize_infptrace(void)
 {
-#if !defined (CHILD_XFER_MEMORY)
-  add_info ("udot", udot_info,
-	    _("Print contents of kernel ``struct user'' for current child."));
-#endif
+#if !defined(CHILD_XFER_MEMORY)
+  add_info("udot", udot_info,
+	   _("Print contents of kernel ``struct user'' for current child."));
+#endif /* !CHILD_XFER_MEMORY */
 }
+
+/* EOF */

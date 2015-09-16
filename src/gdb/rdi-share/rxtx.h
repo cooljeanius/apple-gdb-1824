@@ -1,6 +1,6 @@
-/* 
+/* rxtx.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -28,7 +28,7 @@
 # include "angel.h"
 #else
 # include "host.h"
-#endif
+#endif /* TARGET */
 
 #include "devclnt.h"
 
@@ -104,7 +104,7 @@ typedef void (*fc_cb_func)(char fc_char, void *cb_data);
 
 
 /*
- * Purpose: typedef for the function to alloc the data buffer 
+ * Purpose: typedef for the function to alloc the data buffer
  *
  *  Params:
  *          In/Out: packet    the data packet: len and type will be set on
@@ -118,7 +118,7 @@ typedef void (*fc_cb_func)(char fc_char, void *cb_data);
  *                              for given type
  *
  * This callback should attempt to acquire a buffer for the data portion
- * of the packet which is currently being received, based on the len and 
+ * of the packet which is currently being received, based on the len and
  * type fields supplied in packet.
  *
  * angel_DD_RxEng_BufferAlloc() is supplied for use as this callback,
@@ -133,7 +133,7 @@ typedef bool (*BufferAlloc_CB_Fn)(struct data_packet *packet, void *cb_data);
  * fc_set and esc_set are bitmaps, e.g. bit 3 == charcode 3 == ASCII ETX.
  * Thus any of the first 32 charcodes can be set for flow control or to
  * be escaped.
- * 
+ *
  * Note that esc_set should include all of fc_set, and should have bits
  * set for stx, etx and esc, as a minimum.
  *
@@ -209,7 +209,7 @@ re_status Angel_RxEngine(unsigned char new_ch, struct data_packet *packet,
 
 /*
  * This can be used as the buffer allocation callback for the rx engine,
- * and will make use of angel_DD_GetBuffer() [in devdrv.h]. 
+ * and will make use of angel_DD_GetBuffer() [in devdrv.h].
  *
  * Saves duplicating this callback function in every device driver that
  * uses the rx engine.
@@ -232,7 +232,7 @@ bool angel_DD_RxEng_BufferAlloc( struct data_packet *packet, void *cb_data );
  */
 
 void Angel_TxEngineInit(const struct re_config   *config,
-                        const struct data_packet *packet, 
+                        const struct data_packet *packet,
                         struct te_state    *state);
 
 /*
@@ -246,7 +246,7 @@ void Angel_TxEngineInit(const struct re_config   *config,
  *                                   be set on entry!
  *             In/Out: state        internal state, intially set by
  *                                   angel_TxEngineStart()
- *             Output: tx_ch        the character to be transmitted 
+ *             Output: tx_ch        the character to be transmitted
  *                                   (NOT SET if return code is TS_IDLE)
  *
  *            Returns: te_status (see above)
@@ -255,7 +255,6 @@ void Angel_TxEngineInit(const struct re_config   *config,
 te_status Angel_TxEngine(const struct data_packet  *packet,
                          struct te_state *state,
                          unsigned char *tx_ch);
-
 
 
 #endif /* !defined(angel_rxtx_h) */

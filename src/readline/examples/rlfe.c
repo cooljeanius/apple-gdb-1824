@@ -1,7 +1,7 @@
 /* A front-end using readline to "cook" input lines for Kawa.
  *
  * Copyright (C) 1999  Per Bothner
- * 
+ *
  * This front-end program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as published
  * by the Free Software Foundation; either version 2, or (at your option)
@@ -46,7 +46,7 @@
 
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
 #include <fcntl.h>
@@ -76,29 +76,29 @@
 #endif
 
 #ifndef COMMAND
-#define COMMAND "/bin/sh"
-#endif
+# define COMMAND "/bin/sh"
+#endif /* !COMMAND */
 #ifndef COMMAND_ARGS
-#define COMMAND_ARGS COMMAND
-#endif
+# define COMMAND_ARGS COMMAND
+#endif /* !COMMAND_ARGS */
 
 #ifndef HAVE_MEMMOVE
-#ifndef memmove
+# ifndef memmove
 #  if __GNUC__ > 1
 #    define memmove(d, s, n)	__builtin_memcpy(d, s, n)
 #  else
 #    define memmove(d, s, n)	memcpy(d, s, n)
-#  endif
-#else
+#  endif /* gcc 2+ */
+# else
 #  define memmove(d, s, n)	memcpy(d, s, n)
-#endif
-#endif
+# endif /* !memmove */
+#endif /* !HAVE_MEMMOVE */
 
 #define APPLICATION_NAME "Rlfe"
 
 #ifndef errno
 extern int errno;
-#endif
+#endif /* !errno */
 
 extern int optind;
 extern char *optarg;
@@ -130,13 +130,13 @@ static FILE *logfile = NULL;
 
 #ifdef DEBUG
 FILE *debugfile = NULL;
-#define DPRINT0(FMT) (fprintf(debugfile, FMT), fflush(debugfile))
-#define DPRINT1(FMT, V1) (fprintf(debugfile, FMT, V1), fflush(debugfile))
-#define DPRINT2(FMT, V1, V2) (fprintf(debugfile, FMT, V1, V2), fflush(debugfile))
+# define DPRINT0(FMT) (fprintf(debugfile, FMT), fflush(debugfile))
+# define DPRINT1(FMT, V1) (fprintf(debugfile, FMT, V1), fflush(debugfile))
+# define DPRINT2(FMT, V1, V2) (fprintf(debugfile, FMT, V1, V2), fflush(debugfile))
 #else
-#define DPRINT0(FMT) /* Do nothing */
-#define DPRINT1(FMT, V1) /* Do nothing */
-#define DPRINT2(FMT, V1, V2) /* Do nothing */
+# define DPRINT0(FMT) /* Do nothing */
+# define DPRINT1(FMT, V1) /* Do nothing */
+# define DPRINT2(FMT, V1, V2) /* Do nothing */
 #endif
 
 struct termios orig_term;
@@ -149,13 +149,13 @@ static char *rlfe_filename_completion_function __P((const char *, int));
 static pid_t child = -1;
 
 static void
-sig_child (int signo)
+sig_child(int signo)
 {
   int status;
-  wait (&status);
-  DPRINT0 ("(Child process died.)\n");
+  wait(&status);
+  DPRINT0("(Child process died.)\n");
   tcsetattr(STDIN_FILENO, TCSANOW, &orig_term);
-  exit (0);
+  exit(0);
 }
 
 volatile int propagate_sigwinch = 0;
@@ -164,7 +164,7 @@ volatile int propagate_sigwinch = 0;
  * propagate window size changes from input file descriptor to
  * master side of pty.
  */
-void sigwinch_handler(int signal) { 
+void sigwinch_handler(int signal) {
    propagate_sigwinch = 1;
 }
 
@@ -176,7 +176,7 @@ void sigwinch_handler(int signal) {
  * Once the slave pty has been opened, you are responsible to free *name.
  */
 
-int get_master_pty(char **name) { 
+int get_master_pty(char **name) {
    int i, j;
    /* default to returning error */
    int master = -1;
@@ -227,7 +227,7 @@ int get_master_pty(char **name) {
  * Otherwise, it has returned the slave file descriptor.
  */
 
-int get_slave_pty(char *name) { 
+int get_slave_pty(char *name) {
    struct group *gptr;
    gid_t gid;
    int slave = -1;
@@ -459,9 +459,9 @@ main(int argc, char** argv)
 	fprintf (stderr, "%s: warning: could not open log file %s: %s\n",
 			 progname, logfname, strerror (errno));
     }
-    
+
   rl_readline_name = appname;
-  
+
 #ifdef DEBUG
   debugfile = fopen("LOG", "w");
 #endif
@@ -497,7 +497,7 @@ main(int argc, char** argv)
     }
 
   if (child == 0)
-    { 
+    {
       int slave;  /* file descriptor for slave pty */
 
       /* We are in the child process */
@@ -517,7 +517,7 @@ main(int argc, char** argv)
        * not work correctly unless there is a session group leader
        * and process group leader (which a session group leader
        * automatically is). This also disassociates us from our old
-       * controlling tty. 
+       * controlling tty.
        */
       if (setsid() < 0)
 	{
@@ -604,8 +604,8 @@ main(int argc, char** argv)
   rl_instream = fdopen (master, "r");
   rl_getc_function = my_rl_getc;
 
-  rl_prep_term_function = null_prep_terminal; 
-  rl_deprep_term_function = null_deprep_terminal; 
+  rl_prep_term_function = null_prep_terminal;
+  rl_deprep_term_function = null_deprep_terminal;
   rl_callback_handler_install (prompt, line_handler);
 
 #if 1
@@ -967,7 +967,7 @@ rlfe_filename_completion_function (text, state)
         STRDUP (filename, text);
       else
 	{
-	  filename = malloc(1); 
+	  filename = malloc(1);
 	  if (filename == 0)
 	    return ((char *)NULL);
 	  filename[0] = '\0';
@@ -1023,20 +1023,22 @@ rlfe_filename_completion_function (text, state)
 	  closedir (directory);
 	  directory = 0;
 	}
-      FREE (dirname);
-      FREE (filename);
-      FREE (ud);
+      FREE(dirname);
+      FREE(filename);
+      FREE(ud);
       dirname = filename = ud = 0;
       return ((char *)NULL);
     }
 
-  if (ud == 0 || (ud[0] == '.' && ud[1] == '\0'))
-    temp = strdup (dentry->d_name);
+  if ((ud == 0) || ((ud[0] == '.') && (ud[1] == '\0')))
+    temp = strdup(dentry->d_name);
   else
     {
-      temp = malloc (1 + udlen + strlen (dentry->d_name));
-      strcpy (temp, ud);
-      strcpy (temp + udlen, dentry->d_name);
+      temp = malloc(1 + udlen + strlen(dentry->d_name));
+      strcpy(temp, ud);
+      strcpy(temp + udlen, dentry->d_name);
     }
   return (temp);
 }
+
+/* EOF */

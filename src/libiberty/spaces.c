@@ -1,4 +1,4 @@
-/* Allocate memory region filled with spaces.
+/* spaces.c: Allocate memory region filled with spaces.
    Copyright (C) 1991 Free Software Foundation, Inc.
 
 This file is part of the libiberty library.
@@ -30,22 +30,22 @@ valid until at least the next call.
 */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include "ansidecl.h"
 #include "libiberty.h"
 
-#if VMS
-#include <stdlib.h>
-#include <unixlib.h>
+#if defined(VMS) && VMS
+# include <stdlib.h>
+# include <unixlib.h>
 #else
-/* For systems with larger pointers than ints, these must be declared.  */
-extern PTR malloc (size_t);
-extern void free (PTR);
-#endif
+/* For systems with larger pointers than ints, these must be declared: */
+extern PTR malloc(size_t);
+extern void free(PTR);
+#endif /* VMS */
 
 const char *
-spaces (int count)
+spaces(int count)
 {
   register char *t;
   static char *buf;
@@ -55,18 +55,19 @@ spaces (int count)
     {
       if (buf)
 	{
-	  free (buf);
+	  free(buf);
 	}
-      buf = (char *) malloc (count + 1);
-      if (buf == (char *) 0)
+      buf = (char *)malloc((size_t)count + 1UL);
+      if (buf == (char *)0)
 	return 0;
-      for (t = buf + count ; t != buf ; )
+      for (t = (buf + count); t != buf; )
 	{
 	  *--t = ' ';
 	}
       maxsize = count;
       buf[count] = '\0';
     }
-  return (const char *) (buf + maxsize - count);
+  return (const char *)(buf + maxsize - count);
 }
 
+/* EOF */

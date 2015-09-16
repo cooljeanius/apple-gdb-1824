@@ -1,4 +1,4 @@
-/* Startup code for Insight
+/* gdbtk.c: Startup code for Insight
    Copyright 1994, 1995, 1996, 1997, 1998, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
 
@@ -34,9 +34,9 @@
 #include "exceptions.h"
 
 #if defined(_WIN32) || defined(__CYGWIN__)
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
+# define WIN32_LEAN_AND_MEAN
+# include <windows.h>
+#endif /* _WIN32 || __CYGWIN__ */
 
 /* tcl header files includes varargs.h unless HAS_STDARG is defined,
    but gdb uses stdarg.h, so make sure HAS_STDARG is defined.  */
@@ -58,8 +58,8 @@
 #include "gdbcmd.h"
 
 #ifdef __CYGWIN32__
-#include <sys/cygwin.h>		/* for cygwin32_attach_handle_to_fd */
-#endif
+# include <sys/cygwin.h>	/* for cygwin32_attach_handle_to_fd */
+#endif /* __CYGWIN32__ */
 
 extern void _initialize_gdbtk (void);
 
@@ -120,7 +120,7 @@ static char *gdbtk_source_filename = NULL;
 
 int gdbtk_disable_fputs = 1;
 
-static const char *argv0; 
+static const char *argv0;
 
 #ifndef _WIN32
 
@@ -165,13 +165,13 @@ void
 close_bfds ()
 {
   struct objfile *o;
-  
+
   ALL_OBJFILES (o)
     {
       if (o->obfd != NULL)
 	bfd_cache_close (o->obfd);
     }
-  
+
   if (exec_bfd != NULL)
     bfd_cache_close (exec_bfd);
 }
@@ -179,8 +179,8 @@ close_bfds ()
 #endif /* _WIN32 */
 
 
-/* TclDebug (const char *fmt, ...) works just like printf() but 
- * sends the output to the GDB TK debug window. 
+/* TclDebug (const char *fmt, ...) works just like printf() but
+ * sends the output to the GDB TK debug window.
  * Not for normal use; just a convenient tool for debugging
  */
 
@@ -490,7 +490,7 @@ gdbtk_init (void)
   xasprintf (&s, "%d", inhibit_gdbinit);
   Tcl_SetVar2 (gdbtk_interp, "GDBStartup", "inhibit_prefs", s, TCL_GLOBAL_ONLY);
   free(s);
-   
+
   /* Note: Tcl_SetVar2() treats the value as read-only (making a
      copy).  Unfortunately it does not mark the parameter as
      ``const''. */
@@ -620,7 +620,7 @@ gdbtk_find_main";
 
   /* now enable gdbtk to parse the output from gdb */
   gdbtk_disable_fputs = 0;
-    
+
   if (Tcl_GlobalEval (gdbtk_interp, (char *) script) != TCL_OK)
     {
       const char *msg;
@@ -727,7 +727,7 @@ tk_command (char *cmd, int from_tty)
   char *result;
   struct cleanup *old_chain;
 
-  /* Catch case of no argument, since this will make the tcl interpreter 
+  /* Catch case of no argument, since this will make the tcl interpreter
      dump core. */
   if (cmd == NULL)
     error_no_arg ("tcl command to interpret");

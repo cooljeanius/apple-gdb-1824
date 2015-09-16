@@ -15,11 +15,9 @@ AC_PROG_LN_S
 AC_PROG_RANLIB
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lm':
-AC_CHECK_LIB([m], [main])
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h inttypes.h malloc.h sgtty.h stdlib.h sys/file.h sys/ioctl.h sys/time.h termio.h termios.h unistd.h utmp.h])
+AC_CHECK_HEADERS([fcntl.h inttypes.h malloc.h sgtty.h stdlib.h string.h strings.h sys/file.h sys/ioctl.h sys/time.h termio.h termios.h unistd.h utmp.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
@@ -33,7 +31,6 @@ AC_HEADER_MAJOR
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([alarm dup2 gethostname gettimeofday isascii memmove memset pow select strchr strcspn strrchr strstr])
 
-AC_CONFIG_FILES([Makefile
-                 example/Makefile])
+AC_CONFIG_FILES([Makefile])
 AC_CONFIG_SUBDIRS([testsuite])
 AC_OUTPUT

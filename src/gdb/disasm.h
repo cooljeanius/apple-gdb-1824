@@ -1,4 +1,4 @@
-/* Disassemble support for GDB.
+/* disasm.h: Disassemble support for GDB.
    Copyright 2002 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -24,20 +24,23 @@
 struct ui_out;
 struct ui_file;
 
-extern void gdb_disassembly (struct ui_out *uiout,
-			     CORE_ADDR low, CORE_ADDR high,
-			     int mixed_source_and_assembly,
-			     int how_many);
+extern void gdb_disassembly(struct ui_out *uiout,
+			    CORE_ADDR low, CORE_ADDR high,
+			    int mixed_source_and_assembly,
+			    int how_many);
 
 /* Print the instruction at address MEMADDR in debugged memory, on
    STREAM.  Returns length of the instruction, in bytes.  */
 
-extern int gdb_print_insn (CORE_ADDR memaddr, struct ui_file *stream);
+extern int gdb_print_insn(CORE_ADDR memaddr, struct ui_file *stream);
 
-extern int find_pc_offset (CORE_ADDR start, CORE_ADDR *result, int offset, int funclimit, int peeklimit);
+extern int find_pc_offset(CORE_ADDR start, CORE_ADDR *result, int offset,
+                          int funclimit, int peeklimit);
 
-/* APPLE LOCAL: Use this to truncate the symbolic name in disassembly output.  It is set
-   in printcmd.c, and used in disasm.c  */
+/* APPLE LOCAL: Use this to truncate the symbolic name in disassembly
+ * output.  It is set in printcmd.c, and used in disasm.c  */
 extern int disassembly_name_length;
 
-#endif
+#endif /* !DISASM_H */
+
+/* EOF */

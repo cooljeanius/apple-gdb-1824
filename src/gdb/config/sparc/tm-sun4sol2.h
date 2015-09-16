@@ -1,4 +1,5 @@
-/* Macro definitions for GDB for a Sun 4 running Solaris 2
+/* tm-sun4sol2.h
+   Macro definitions for GDB for a Sun 4 running Solaris 2
    Copyright 1989, 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000
    Free Software Foundation, Inc.
 
@@ -40,9 +41,9 @@
    ucbsigvechandler.  */
 #define SIGCONTEXT_PC_OFFSET 44
 
-#if 0	/* FIXME Setjmp/longjmp are not as well doc'd in SunOS 5.x yet */
+#if 0 /* FIXME Setjmp/longjmp are not as well documented in SunOS 5.x yet */
 
-/* Offsets into jmp_buf.  Not defined by Sun, but at least documented in a
+/* Offsets into jmp_buf. Not defined by Sun, but at least documented in a
    comment in <machine/setjmp.h>! */
 
 #define JB_ELEMENT_SIZE 4	/* Size of each element in jmp_buf */
@@ -57,10 +58,10 @@
 #define JB_O0 7
 #define JB_WBCNT 8
 
-/* Figure out where the longjmp will land.  We expect that we have just entered
-   longjmp and haven't yet setup the stack frame, so the args are still in the
-   output regs.  %o0 (O0_REGNUM) points at the jmp_buf structure from which we
-   extract the pc (JB_PC) that we will land at.  The pc is copied into ADDR.
+/* Figure out where the longjmp will land. We expect that we have just entered
+   longjmp and have NOT yet setup the stack frame, so the args are still in the
+   output regs. %o0 (O0_REGNUM) points at the jmp_buf structure from which we
+   extract the pc (JB_PC) that we will land at. The pc is copied into ADDR.
    This routine returns true on success */
 
 extern int get_longjmp_target (CORE_ADDR *);
@@ -80,3 +81,5 @@ extern char *sunpro_static_transform_name (char *);
 
 /* Enable handling of shared libraries for a.out executables.  */
 #define HANDLE_SVR4_EXEC_EMULATORS
+
+/* EOF */

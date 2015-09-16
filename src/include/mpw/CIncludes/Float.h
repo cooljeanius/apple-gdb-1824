@@ -2,7 +2,7 @@
 
 	Float.h
 	Characteristics of floating-point types
-	
+
 	Copyright Apple Computer,Inc.  1987-1990
 	All rights reserved
 
@@ -11,7 +11,6 @@
 
 #ifndef __FLOAT__
 #define __FLOAT__
-
 
 #define	DBL_DIG				15
 #define	DBL_MANT_DIG		53
@@ -56,7 +55,7 @@
 #define LDBL_MAX			(*(long double *)(_LDBL_MAX+1))
 #define LDBL_MIN			(*(long double *)(_LDBL_MIN+1))
 
-#endif
+#endif /* mc68881 */
 
 extern int _DBL_EPSILON[];
 extern int _DBL_MAX[];
@@ -68,4 +67,6 @@ extern short _LDBL_EPSILON[];
 extern short _LDBL_MAX[];
 extern short _LDBL_MIN[];
 
-#endif
+#endif /* !__FLOAT__ */
+
+/* EOF */

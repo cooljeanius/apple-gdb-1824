@@ -27,10 +27,12 @@
 #include "c-lang.h"
 
 int
-m2_val_print (struct type *type, const gdb_byte *valaddr, int embedded_offset,
-	      CORE_ADDR address, struct ui_file *stream, int format,
-	      int deref_ref, int recurse, enum val_prettyprint pretty)
+m2_val_print(struct type *type, const gdb_byte *valaddr, int embedded_offset,
+	     CORE_ADDR address, struct ui_file *stream, int format,
+	     int deref_ref, int recurse, enum val_prettyprint pretty)
 {
-  return (c_val_print (type, valaddr, 0, address, stream, format, deref_ref,
-		       recurse, pretty));
+  return (c_val_print(type, valaddr, 0, address, stream, format, deref_ref,
+		      recurse, pretty));
 }
+
+/* EOF */

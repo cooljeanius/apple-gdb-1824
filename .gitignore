@@ -28,3 +28,7 @@ BuildRoot/*
 Logs/*
 Symbols/*
 Roots/*
+
+# no longer keeping these as submodules:
+binutils-gdb/*
+macgdb/*

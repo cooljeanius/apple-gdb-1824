@@ -28,29 +28,52 @@
 #if defined(HAVE_CONFIG_H)
 # include "config.h"
 #else
-# warning rl.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning rl.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning rl.c expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "rl.c expects <stdio.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning rl.c expects <stdlib.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "rl.c expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H */
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning rl.c expects <sys/types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "rl.c expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#else
+# if defined(HAVE_GETOPT_H)
+#  include <getopt.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "rl.c wants to include a header with a declaration of getopt."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_GETOPT_H */
+#endif /* HAVE_UNISTD_H */
 
 #include "posixstat.h"
 
+#ifndef READLINE_LIBRARY
+# define READLINE_LIBRARY 1
+#endif /* !READLINE_LIBRARY */
+
 #if defined(READLINE_LIBRARY)
-# include "readline.h"
+# include "readline.h" /* needed for rl_num_chars_to_read */
 # include "history.h"
 #else
 # include <readline/readline.h>
@@ -68,11 +91,11 @@ static char *progname;
 static char *deftext;
 
 static int
-set_deftext ()
+set_deftext()
 {
   if (deftext)
     {
-      rl_insert_text (deftext);
+      rl_insert_text(deftext);
       deftext = (char *)NULL;
       rl_startup_hook = (rl_hook_func_t *)NULL;
     }
@@ -82,12 +105,12 @@ set_deftext ()
 static void
 usage()
 {
-  fprintf (stderr, "%s: usage: %s [-p prompt] [-u unit] [-d default] [-n nchars]\n",
-		progname, progname);
+  fprintf(stderr, "%s: usage: %s [-p prompt] [-u unit] [-d default] [-n nchars]\n",
+          progname, progname);
 }
 
 int
-main (argc, argv)
+main(argc, argv)
      int argc;
      char **argv;
 {
@@ -97,10 +120,11 @@ main (argc, argv)
   FILE *ifp;
 
   progname = strrchr(argv[0], '/');
-  if (progname == 0)
+  if (progname == 0) {
     progname = argv[0];
-  else
+  } else {
     progname++;
+  }
 
   /* defaults */
   prompt = "readline$ ";
@@ -118,8 +142,8 @@ main (argc, argv)
 	  fd = atoi(optarg);
 	  if (fd < 0)
 	    {
-	      fprintf (stderr, "%s: bad file descriptor `%s'\n", progname, optarg);
-	      exit (2);
+	      fprintf(stderr, "%s: bad file descriptor `%s'\n", progname, optarg);
+	      exit(2);
 	    }
 	  break;
 	case 'd':
@@ -129,39 +153,44 @@ main (argc, argv)
 	  nch = atoi(optarg);
 	  if (nch < 0)
 	    {
-	      fprintf (stderr, "%s: bad value for -n: `%s'\n", progname, optarg);
-	      exit (2);
+	      fprintf(stderr, "%s: bad value for -n: `%s'\n", progname, optarg);
+	      exit(2);
 	    }
 	  break;
 	default:
-	  usage ();
-	  exit (2);
+	  usage();
+	  exit(2);
 	}
     }
 
   if (fd != 0)
     {
-      if (fstat (fd, &sb) < 0)
+      if (fstat(fd, &sb) < 0)
 	{
-	  fprintf (stderr, "%s: %d: bad file descriptor\n", progname, fd);
-	  exit (1);
+	  fprintf(stderr, "%s: %d: bad file descriptor\n", progname, fd);
+	  exit(1);
 	}
-      ifp = fdopen (fd, "r");
+      ifp = fdopen(fd, "r");
       rl_instream = ifp;
     }
 
-  if (deftext && *deftext)
+  if (deftext && *deftext) {
     rl_startup_hook = set_deftext;
+  }
 
-  if (nch > 0)
+  if (nch > 0) {
     rl_num_chars_to_read = nch;
+  }
 
-  temp = readline (prompt);
+  temp = readline(prompt);
 
-  /* Test for EOF. */
-  if (temp == 0)
-    exit (1);
+  /* Test for EOF: */
+  if (temp == 0) {
+    exit(1);
+  }
 
-  printf ("%s\n", temp);
-  exit (0);
+  printf("%s\n", temp);
+  exit(0);
 }
+
+/* EOF */

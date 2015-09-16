@@ -1,3 +1,4 @@
+/* m68klinux.h */
 /* Linux dumps "struct task_struct" at the end of the core-file.  This
    structure is currently 2512 bytes long, but we allow up to 4096
    bytes to allow for some future growth.  */

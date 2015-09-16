@@ -1,4 +1,4 @@
-/* Dbg_cf.h.in.  Generated from configure.ac by autoheader.  */
+/* Dbg_cf.h.in.  Generated from Dbgconfig.in by autoheader.  */
 
 
 /* This file is only to be included by the Debugger itself. */
@@ -163,7 +163,7 @@
    <sysmacros.h>. */
 #undef MAJOR_IN_SYSMACROS
 
-/* Define to 1 if you have no <stdlib.h> header. */
+/* Define to 1 if you have no <stdlib.h> header */
 #undef NO_STDLIB_H
 
 /* Define to the address where bug reports for this package should be sent. */

@@ -1,0 +1,93 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# make.test --- test makefile script manufacture
+#
+# Time-stamp:        "2010-06-26 16:04:55 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating ${testname}.tpl
+cat > ${testname}.tpl <<'_EOF_'
+[= AutoGen5 Template
+
+=]
+== This source:
+[=
+
+  (out-push-new)
+
+=]
+foo=`pwd` && ls -l $foo
+bar=$foo continue=command \
+make macros: $(MAKE) $* $@ $< $% $?
+shell vars:  ${MAKE} $# $F ${?} ${*} $$
+[=
+(define txt (out-pop #t))
+(set! txt (string-append txt "\n== converts to:\n\n"
+          (makefile-script txt)))
+txt
+=]
+_EOF_
+
+# # # # # # # SAMPLE OUTPUT FILE # # # # # #
+
+echo creating ${testname}.out in `pwd`
+# this is the output we should expect to see
+cat > ${testname}.samp <<'_EOF_'
+== This source:
+
+foo=`pwd` && ls -l $foo
+bar=$foo continue=command \
+make macros: $(MAKE) $* $@ $< $% $?
+shell vars:  ${MAKE} $# $F ${?} ${*} $$
+
+== converts to:
+
+	foo=`pwd` && ls -l $$foo ; \
+	bar=$$foo continue=command \
+	make macros: $(MAKE) $* $@ $< $% $? ; \
+	shell vars:  $${MAKE} $$# $$F $${?} $${*} $$$$
+_EOF_
+
+# # # # # # # RUN AUTOGEN # # # # # #
+
+run_ag x -T ${testname}.tpl --no-def > ${testname}.test || \
+  failure autogen failed
+
+# # # # # # # TEST RESULTS # # # # # #
+
+cmp -s ${testname}.samp ${testname}.test || \
+  failure "`diff ${testname}.samp ${testname}.test`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of make.test

@@ -1,4 +1,5 @@
-/* Provide relocatable packages.
+/* relocatable.h
+   Provide relocatable packages.
    Copyright (C) 2003 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2003.
 
@@ -14,7 +15,7 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301,
+   Foundation, Inc., 51 Franklin Street - 5th Floor, Boston, MA 02110-1301,
    USA.  */
 
 #ifndef _RELOCATABLE_H
@@ -38,12 +39,12 @@
    prefixes should be directory names without trailing slash (i.e. use ""
    instead of "/").  */
 extern RELOCATABLE_DLL_EXPORTED void
-       set_relocation_prefix (const char *orig_prefix,
-			      const char *curr_prefix);
+       set_relocation_prefix(const char *orig_prefix,
+                             const char *curr_prefix);
 
 /* Returns the pathname, relocated according to the current installation
    directory.  */
-extern const char * relocate (const char *pathname);
+extern const char *relocate(const char *pathname);
 
 /* Memory management: relocate() leaks memory, because it has to construct
    a fresh pathname.  If this is a problem because your program calls
@@ -52,10 +53,10 @@ extern const char * relocate (const char *pathname);
 /* Convenience function:
    Computes the current installation prefix, based on the original
    installation prefix, the original installation directory of a particular
-   file, and the current pathname of this file.  Returns NULL upon failure.  */
-extern const char * compute_curr_prefix (const char *orig_installprefix,
-					 const char *orig_installdir,
-					 const char *curr_pathname);
+   file, & the current pathname of this file. Returns NULL upon failure: */
+extern const char * compute_curr_prefix(const char *orig_installprefix,
+                                        const char *orig_installdir,
+                                        const char *curr_pathname);
 
 #else
 
@@ -65,3 +66,5 @@ extern const char * compute_curr_prefix (const char *orig_installprefix,
 #endif
 
 #endif /* _RELOCATABLE_H */
+
+/* EOF */

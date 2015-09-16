@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>File Version</key>
+	<string>1</string>
+	<key>wchar_t *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>&quot;{(char *) formatUnicodeString((long *) $VAR, sizeof($VAR[0]), (int) $ID)}:s&quot;</string>
+	</dict>
+	<key>wchar_t</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>&apos;{(char *) formatUnicodeCharacter((long)$VAR, (int) $ID)}:s&apos;</string>
+	</dict>
+</dict>
+</plist>

@@ -26,7 +26,7 @@
 #include "command.h"
 #include "gdbcmd.h"
 
-extern void _initialize_complaints (void);
+extern void _initialize_complaints(void);
 
 /* Should each complaint message be self explanatory, or should we assume that
    a series of complaints is being produced?  */
@@ -49,8 +49,7 @@ enum complaint_series {
   SUBSEQUENT_MESSAGE
 };
 
-/* Structure to manage complaints about symbol file contents.  */
-
+/* Structure to manage complaints about symbol file contents: */
 struct complain
 {
   const char *file;
@@ -91,8 +90,7 @@ struct complaints
 
 static struct complain complaint_sentinel;
 
-/* The symbol table complaint table.  */
-
+/* The symbol table complaint table: */
 static struct explanation symfile_explanations[] = {
   { "During symbol reading, ", "." },
   { "During symbol reading...", "..."},
@@ -108,14 +106,13 @@ static struct complaints symfile_complaint_book = {
 };
 struct complaints *symfile_complaints = &symfile_complaint_book;
 
-/* Wrapper function to, on-demand, fill in a complaints object.  */
-
+/* Wrapper function to, on-demand, fill in a complaints object: */
 static struct complaints *
-get_complaints (struct complaints **c)
+get_complaints(struct complaints **c)
 {
   if ((*c) != NULL)
     return (*c);
-  (*c) = XMALLOC (struct complaints);
+  (*c) = XMALLOC(struct complaints);
   (*c)->root = &complaint_sentinel;
   (*c)->series = ISOLATED_MESSAGE;
   (*c)->explanation = NULL;
@@ -123,8 +120,8 @@ get_complaints (struct complaints **c)
 }
 
 static struct complain *
-find_complaint (struct complaints *complaints, const char *file,
-		int line, const char *fmt)
+find_complaint(struct complaints *complaints, const char *file,
+               int line, const char *fmt)
 {
   struct complain *complaint;
 
@@ -136,14 +133,13 @@ find_complaint (struct complaints *complaints, const char *file,
        complaint != NULL;
        complaint = complaint->next)
     {
-      if (complaint->fmt == fmt
-	  && complaint->file == file
-	  && complaint->line == line)
+      if ((complaint->fmt == fmt) && (complaint->file == file)
+	  && (complaint->line == line))
 	return complaint;
     }
 
-  /* Oops not seen before, fill in a new complaint.  */
-  complaint = XMALLOC (struct complain);
+  /* Oops not seen before, fill in a new complaint: */
+  complaint = XMALLOC(struct complain);
   complaint->fmt = fmt;
   complaint->file = file;
   complaint->line = line;
@@ -161,51 +157,51 @@ find_complaint (struct complaints *complaints, const char *file,
    before we stop whining about it?  Default is no whining at all,
    since so many systems have ill-constructed symbol files.  */
 
-static unsigned int stop_whining = 0;
+static unsigned int stop_whining = 0U;
 
 /* Print a complaint, and link the complaint block into a chain for
    later handling.  */
 
-static void ATTR_FORMAT (printf, 4, 0)
-vcomplaint (struct complaints **c, const char *file, int line, const char *fmt,
-	    va_list args)
+static void ATTR_FORMAT(printf, 4, 0)
+vcomplaint(struct complaints **c, const char *file, int line, const char *fmt,
+	   va_list args)
 {
-  struct complaints *complaints = get_complaints (c);
-  struct complain *complaint = find_complaint (complaints, file, line, fmt);
+  struct complaints *complaints = get_complaints(c);
+  struct complain *complaint = find_complaint(complaints, file, line, fmt);
   enum complaint_series series;
-  gdb_assert (complaints != NULL);
+  gdb_assert(complaints != NULL);
 
   complaint->counter++;
-  if (complaint->counter > stop_whining)
+  if ((unsigned int)complaint->counter > stop_whining)
     return;
 
   if (info_verbose)
     series = SUBSEQUENT_MESSAGE;
   else
-    series = complaints->series;
+    series = (enum complaint_series)complaints->series;
 
   if (complaint->file != NULL)
-    internal_vwarning (complaint->file, complaint->line, complaint->fmt, args);
+    internal_vwarning(complaint->file, complaint->line, complaint->fmt, args);
   else if (deprecated_warning_hook)
-    (*deprecated_warning_hook) (complaint->fmt, args);
+    (*deprecated_warning_hook)(complaint->fmt, args);
   else
     {
       if (complaints->explanation == NULL)
-	/* A [v]warning() call always appends a newline.  */
-	vwarning (complaint->fmt, args);
+	/* A [v]warning() call always appends a newline: */
+	vwarning(complaint->fmt, args);
       else
 	{
 	  char *msg;
 	  struct cleanup *cleanups;
-	  msg = xstrvprintf (complaint->fmt, args);
-	  cleanups = make_cleanup (xfree, msg);
-	  wrap_here ("");
+	  msg = xstrvprintf(complaint->fmt, args);
+	  cleanups = make_cleanup(xfree, msg);
+	  wrap_here("");
 	  if (series != SUBSEQUENT_MESSAGE)
-	    begin_line ();
+	    begin_line();
 	  /* XXX: i18n */
-	  fprintf_filtered (gdb_stderr, "%s%s%s",
-			    complaints->explanation[series].prefix, msg,
-			    complaints->explanation[series].postfix);
+	  fprintf_filtered(gdb_stderr, "%s%s%s",
+			   complaints->explanation[series].prefix, msg,
+			   complaints->explanation[series].postfix);
 	  /* Force a line-break after any isolated message.  For the
              other cases, clear_complaints() takes care of any missing
              trailing newline, the wrap_here() is just a hint.  */
@@ -214,10 +210,10 @@ vcomplaint (struct complaints **c, const char *file, int line, const char *fmt,
 	       Unfortunately that function doesn't track GDB_STDERR and
 	       consequently will sometimes supress a line when it
 	       shouldn't.  */
-	    fputs_filtered ("\n", gdb_stderr);
+	    fputs_filtered("\n", gdb_stderr);
 	  else
-	    wrap_here ("");
-	  do_cleanups (cleanups);
+	    wrap_here("");
+	  do_cleanups(cleanups);
 	}
     }
 
@@ -238,26 +234,26 @@ vcomplaint (struct complaints **c, const char *file, int line, const char *fmt,
      Presumably GDB will not be sending so many complaints that this
      becomes a performance hog.  */
 
-  gdb_flush (gdb_stderr);
+  gdb_flush(gdb_stderr);
 }
 
 void
-complaint (struct complaints **complaints, const char *fmt, ...)
+complaint(struct complaints **complaints, const char *fmt, ...)
 {
   va_list args;
-  va_start (args, fmt);
-  vcomplaint (complaints, NULL/*file*/, 0/*line*/, fmt, args);
-  va_end (args);
+  va_start(args, fmt);
+  vcomplaint(complaints, NULL/*file*/, 0/*line*/, fmt, args);
+  va_end(args);
 }
 
 void
-internal_complaint (struct complaints **complaints, const char *file,
-		    int line, const char *fmt, ...)
+internal_complaint(struct complaints **complaints, const char *file,
+		   int line, const char *fmt, ...)
 {
   va_list args;
-  va_start (args, fmt);
-  vcomplaint (complaints, file, line, fmt, args);
-  va_end (args);
+  va_start(args, fmt);
+  vcomplaint(complaints, file, line, fmt, args);
+  va_end(args);
 }
 
 /* Clear out / initialize all complaint counters that have ever been
@@ -269,9 +265,9 @@ internal_complaint (struct complaints **complaints, const char *file,
    enough context for the user to figure it out.  */
 
 void
-clear_complaints (struct complaints **c, int less_verbose, int noisy)
+clear_complaints(struct complaints **c, int less_verbose, int noisy)
 {
-  struct complaints *complaints = get_complaints (c);
+  struct complaints *complaints = get_complaints(c);
   struct complain *p;
 
   for (p = complaints->root; p != NULL; p = p->next)
@@ -295,10 +291,10 @@ clear_complaints (struct complaints **c, int less_verbose, int noisy)
       /* It would be really nice to use begin_line() here.
          Unfortunately that function doesn't track GDB_STDERR and
          consequently will sometimes supress a line when it shouldn't.  */
-      fputs_unfiltered ("\n", gdb_stderr);
+      fputs_unfiltered("\n", gdb_stderr);
       break;
     default:
-      internal_error (__FILE__, __LINE__, _("bad switch"));
+      internal_error(__FILE__, __LINE__, _("bad switch"));
     }
 
   if (!less_verbose)
@@ -310,20 +306,22 @@ clear_complaints (struct complaints **c, int less_verbose, int noisy)
 }
 
 static void
-complaints_show_value (struct ui_file *file, int from_tty,
-		       struct cmd_list_element *cmd, const char *value)
+complaints_show_value(struct ui_file *file, int from_tty,
+		      struct cmd_list_element *cmd, const char *value)
 {
-  fprintf_filtered (file, _("Max number of complaints about incorrect"
-			    " symbols is %s.\n"),
-		    value);
+  fprintf_filtered(file, _("Max number of complaints about incorrect"
+                           " symbols is %s.\n"),
+		   value);
 }
 
 void
-_initialize_complaints (void)
+_initialize_complaints(void)
 {
-  add_setshow_uinteger_cmd ("complaints", class_support, &stop_whining, _("\
+  add_setshow_uinteger_cmd("complaints", class_support, &stop_whining, _("\
 Set max number of complaints about incorrect symbols."), _("\
 Show max number of complaints about incorrect symbols."), NULL,
-			    NULL, complaints_show_value,
-			    &setlist, &showlist);
+                           NULL, complaints_show_value,
+                           &setlist, &showlist);
 }
+
+/* EOF */

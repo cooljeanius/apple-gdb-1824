@@ -3,22 +3,30 @@
 
 AC_PREREQ([2.69])
 AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
+AC_CONFIG_SRCDIR([decomment.tproj/decomment.c])
+AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
-AC_PROG_INSTALL
 AC_PROG_CC
+AC_PROG_INSTALL
 
 # Checks for libraries.
 
 # Checks for header files.
+AC_CHECK_HEADERS([strings.h sys/param.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 
 # Checks for library functions.
+AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
+AC_CHECK_FUNCS([getcwd])
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile
+                 decomment.tproj/Makefile
+                 relpath.tproj/Makefile])
 AC_CONFIG_SUBDIRS([amd-udi
                    misc
+                   msdos
                    sparclite
                    spu
                    wince])

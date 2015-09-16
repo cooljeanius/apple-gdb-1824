@@ -1,4 +1,5 @@
-/* Parameters for execution on a z8000 series machine.
+/* tm-z8k.h
+   Parameters for execution on a z8000 series machine.
    Copyright 1992, 1993, 1994, 1998, 1999, 2000, 2001
    Free Software Foundation, Inc.
 
@@ -42,7 +43,7 @@ extern CORE_ADDR z8k_skip_prologue (CORE_ADDR ip);
 
 
 /* Immediately after a function call, return the saved pc.
-   Can't always go through the frames for this because on some machines
+   Cannot always go through the frames for this because on some machines
    the new frame is not set up until the new function executes
    some instructions.  */
 
@@ -155,7 +156,8 @@ extern int z8k_saved_pc_after_call (struct frame_info *frame);
    as a CORE_ADDR (or an expression that can be used as one).  */
 
 #define DEPRECATED_EXTRACT_STRUCT_VALUE_ADDRESS(REGBUF) (*(CORE_ADDR *)(REGBUF))
-
+
+
 /* Describe the pointer in each stack frame to the previous stack frame
    (its caller).  */
 
@@ -188,7 +190,7 @@ extern CORE_ADDR z8k_frame_saved_pc (struct frame_info *frame);
 /* Set VAL to the number of args passed to frame described by FI.
    Can set VAL to -1, meaning no way to tell.  */
 
-/* We can't tell how many args there are
+/* We cannot tell how many args there are
    now that the C compiler delays popping them.  */
 #if !defined (FRAME_NUM_ARGS)
 #define FRAME_NUM_ARGS(fi) (-1)
@@ -201,7 +203,7 @@ extern CORE_ADDR z8k_frame_saved_pc (struct frame_info *frame);
 struct frame_info;
 extern void z8k_frame_init_saved_regs (struct frame_info *);
 #define FRAME_INIT_SAVED_REGS(fi) z8k_frame_init_saved_regs (fi)
-
+
 
 /* Things needed for making the inferior call functions.
    It seems like every m68k based machine has almost identical definitions

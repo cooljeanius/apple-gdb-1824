@@ -24,8 +24,12 @@ TDEPFILES = \
 	macosx-nat-dyld-info.o \
 	macosx-nat-dyld-process.o \
 	macosx-nat-dyld-io.o \
+	macosx-nat-inferior.o \
 	macosx-nat-utils.o
 
 DEPRECATED_TM_FILE = tm-arm-macosx.h
 
 CFM_CFLAGS = -DWITH_CFM=0
+
+SIM_OBS = remote-sim.o
+SIM = ../sim/arm/libsim.a

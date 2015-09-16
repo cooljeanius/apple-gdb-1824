@@ -1,7 +1,10 @@
-#                                               -*- Autoconf -*-
-# Process this file with autoconf to produce a configure script.
+dnl#                                               -*- Autoconf -*-
+dnl# Process this file with autoconf to produce a configure script.
 
-AC_INIT([insight-plugins],[1.0],[])
+AC_PREREQ([2.13])dnl
+AC_INIT([insight-plugins],[1.0],[keiths@redhat.com])
+dnl# bug report address is last person to touch this directory
+dnl# according to the ChangeLog in this directory
 AC_CONFIG_SRCDIR([Make-rules])
 AC_CONFIG_AUX_DIR([../../..])
 AC_CONFIG_MACRO_DIR([../../m4])
@@ -13,52 +16,70 @@ AC_EXEEXT
 AC_PROG_CC
 AC_PROG_MAKE_SET
 
-# Automake
-AM_INIT_AUTOMAKE([foreign dejagnu -Wall])
+# Automake:
+AM_INIT_AUTOMAKE([1.11.6 foreign no-dist dejagnu -Wall -Wno-obsolete])
 AM_MAINTAINER_MODE
 
-# Find Tcl, Tk, etc
+dnl########################################################################
+dnl# Port to Automake 1.11.
+dnl# This section can be removed once we assume Automake 1.14 or later.
+: ${AM_DEFAULT_VERBOSITY=1}
+: ${AM_V=${AM_DEFAULT_VERBOSITY}}
+: ${AM_DEFAULT_V=${AM_DEFAULT_VERBOSITY}}
+dnl# now subst:
+AC_SUBST([AM_V])dnl
+AM_SUBST_NOTMAKE([AM_V])dnl
+AC_SUBST([AM_DEFAULT_V])dnl
+AM_SUBST_NOTMAKE([AM_DEFAULT_V])dnl
+AC_SUBST([AM_DEFAULT_VERBOSITY])dnl
+
+# Find Tcl, Tk, and things related to them:
 CYG_AC_PATH_TCLCONFIG
 CYG_AC_LOAD_TCLCONFIG
 CYG_AC_PATH_TKCONFIG
 CYG_AC_LOAD_TKCONFIG
 CYG_AC_PATH_TCLH
 CYG_AC_PATH_TKH
-AC_SUBST([TCL_DBGX])
+AC_SUBST([TCL_DBGX])dnl
 
-# Make sure TCL_SHLIB_SUFFIX is set
-if test x$TCL_SHLIB_SUFFIX = x ; then
+# Make sure TCL_SHLIB_SUFFIX is set:
+if test "x${TCL_SHLIB_SUFFIX}" = "x"; then
   case "${host}" in
     *cygwin*) TCL_SHLIB_SUFFIX=".dll" ;;
     *darwin*) TCL_SHLIB_SUFFIX=".dylib" ;;
     *) TCL_SHILB_SUFFIX=".so" ;;
   esac
 fi
-AC_SUBST([TCL_SHLIB_SUFFIX])
+AC_SUBST([TCL_SHLIB_SUFFIX])dnl
 
-# Since we are not(?) using autoconf > 2.1x, we cannot use AC_CONFIG_FILES.
+dnl# Since we are not(?) (read as "*were* not") using autoconf > 2.1x,
+dnl# we cannot ("*could* not") use AC_CONFIG_FILES here (yet):
 make_subdirs=""
+dnl# (uh, actually, we are now, and we can now... prereq is now set
+dnl# explicitly above to make sure...)
 
-# See if -mwin32 works for cygwin
+# See if -mwin32 works for cygwin:
 case "${host}" in
   *cygwin*)
     ocflags=${CFLAGS}
     CFLAGS="${CFLAGS} -mwin32"
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],[],[CFLAGS="${ocflags}"])
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+                      [],[CFLAGS="${ocflags}"])
     ;;
   *) ;;
 esac
 
-# note toplevel plugin build directory
+# Note the toplevel plugin build directory:
 plugin_builddir=`pwd`
+AC_SUBST([plugin_builddir])dnl
 
-#
-# Plugins
-#
+#############
+## Plugins ##
+#############
 
-# Supported hosts
+# Check the supported hosts.
 
-# Only supported/tested on linux, solaris, cygwin
+# Only supported/tested on linux, solaris, cygwin:
 supported=yes
 case "${host}" in
   *cygwin*) ;;
@@ -67,25 +88,25 @@ case "${host}" in
   *) supported=no ;;
 esac
 
-# Host-specific configury
+# Host-specific configury:
 case "${host}" in
   *cygwin*)
-    AC_CHECK_TOOL([NM],[nm],[nm])
-    AC_CHECK_TOOL([AS],[as],[as])
-    AC_CHECK_TOOL([LD],[ld],[ld])
+    AC_CHECK_TOOLS([NM],[nm gnm],[nm])
+    AC_CHECK_TOOLS([AS],[as gas],[as])
+    AC_CHECK_TOOLS([LD],[ld gld ld.bfd ld.gold gold],[ld])
     AC_MSG_CHECKING(["for libcygwin.a"])
-    LIBCYGWIN_A=`$CC -print-file-name=libcygwin.a`
-    AC_MSG_RESULT([$LIBCYGWIN_A])
-    AC_SUBST([LIBCYGWIN_A])
-    AC_CHECK_TOOL([DLLTOOL],[dlltool])
+    LIBCYGWIN_A=`${CC} -print-file-name=libcygwin.a`
+    AC_MSG_RESULT([${LIBCYGWIN_A}])
+    AC_SUBST([LIBCYGWIN_A])dnl
+    AC_CHECK_TOOLS([DLLTOOL],[dlltool gdlltool])
     ;;
   *)
     AM_PROG_AS
     ;;
 esac
 
-# Plugins supported by this configuration
-if test x${supported} = xyes; then
+# Plugins supported by this configuration:
+if test "x${supported}" = "xyes"; then
   plugins="rhabout"
   case "${target}" in
     *cygwin*) ;;
@@ -95,13 +116,16 @@ if test x${supported} = xyes; then
       ;;
   esac
 
-  for i in $plugins ; do
-    make_subdirs="${make_subdirs} $i"
+  for i in ${plugins}; do
+    make_subdirs="${make_subdirs} ${i}"
   done
 fi
+AC_SUBST([make_subdirs])dnl
 
-AC_SUBST([make_subdirs])
-AC_SUBST([plugin_builddir])
-
-AC_CONFIG_FILES([Makefile rhabout/Makefile:rhabout/Makefile.in:Make-rules rhabout/rhabout.tcl intel-pentium/Makefile:intel-pentium/Makefile.in:Make-rules intel-pentium/intel-pentium.tcl])
+# Output:
+AC_CONFIG_FILES([Makefile \
+  rhabout/Makefile:rhabout/Makefile.in:Make-rules \
+  rhabout/rhabout.tcl \
+  intel-pentium/Makefile:intel-pentium/Makefile.in:Make-rules \
+  intel-pentium/intel-pentium.tcl])dnl
 AC_OUTPUT

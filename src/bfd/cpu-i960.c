@@ -28,14 +28,11 @@ static bfd_boolean scan_960_mach
 static const bfd_arch_info_type *compatible
   PARAMS ((const bfd_arch_info_type *, const bfd_arch_info_type *));
 
-/* This routine is provided a string, and tries to work out if it
-   could possibly refer to the i960 machine pointed at in the
-   info_struct pointer */
-
+/* This routine is provided a string, and tries to work out if it could
+ * possibly refer to the i960 machine pointed at in the info_struct
+ * pointer: */
 static bfd_boolean
-scan_960_mach (ap, string)
-     const bfd_arch_info_type *ap;
-     const char *string;
+scan_960_mach(const bfd_arch_info_type *ap, const char *string)
 {
   unsigned long machine;
   int fail_because_not_80960 = FALSE;
@@ -111,16 +108,12 @@ scan_960_mach (ap, string)
   return FALSE;
 }
 
-/* This routine is provided two arch_infos and works out the i960
-   machine which would be compatible with both and returns a pointer
-   to its info structure */
-
+/* This routine is provided two arch_infos and works out the i960 machine
+ * which would be compatible with both, and then returns a pointer to its
+ * info structure: */
 static const bfd_arch_info_type *
-compatible (a,b)
-     const bfd_arch_info_type *a;
-     const bfd_arch_info_type *b;
+compatible(const bfd_arch_info_type *a, const bfd_arch_info_type *b)
 {
-
   /* The i960 has distinct subspecies which may not interbreed:
 	CORE CA
 	CORE KA KB MC XA

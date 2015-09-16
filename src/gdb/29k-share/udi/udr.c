@@ -1,4 +1,5 @@
-/* This module supports sending and receiving data objects over a
+/* udr.c
+   This module supports sending and receiving data objects over a
    socket conection.
 
    Copyright 1993 Free Software Foundation, Inc.
@@ -14,14 +15,14 @@
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 static char udr_c[]="@(#)udr.c	2.8  Daniel Mann";
 static char udr_c_AMD[]="@(#)udr.c	2.3, AMD";
-/* 
+/*
 *	All data is serialised into a character stream,
 *	and de-serialised back into the approproiate objects.
 ********************************************************************** HISTORY
@@ -33,8 +34,8 @@ static char udr_c_AMD[]="@(#)udr.c	2.3, AMD";
 #include <sys/types.h>
 
 /* This used to say sys/fcntl.h, but the only systems I know of that
-   require that are old (pre-4.3, at least) BSD systems, which we
-   probably don't need to worry about.  */
+ * require that are old (pre-4.3, at least) BSD systems, which we
+ * probably do NOT need to worry about.  */
 #include <fcntl.h>
 
 #include <sys/socket.h>
@@ -67,8 +68,8 @@ int	size;
     udrs->getbytes = udrs->buff;	/* set the buffer to the start */
     udrs->putbytes = udrs->buff;
     udrs->putend = udrs->buff;
-    udrs->udr_op = -1;			/* don't know the direction */
-    udrs->previous_op = -1;		/* don't know the direction */
+    udrs->udr_op = -1;			/* do NOT know the direction */
+    udrs->previous_op = -1;		/* do NOT know the direction */
     udrs->bufsize = size;
     return 0;
 }
@@ -401,7 +402,7 @@ int	size;
     	    {  fprintf(stderr,"ERROR, udr_readnow() too few bytes in stream\n");
 	       return -1;		/* return error code */
     	    }
-    	}		
+    	}
     }
     else
     {	udr_errno =  UDIErrorIPCInternal;
@@ -417,7 +418,7 @@ UDR*	udrs;
 int	size;
 {
     char*   align;
-    int	    offset;	
+    int	    offset;
 
     align = udr_getpos(udrs);
     offset = size - ((int)align & (size -1));
@@ -425,3 +426,5 @@ int	size;
     if(offset) udr_setpos(udrs, align + offset);
 }
 #endif /* __GO32__ */
+
+/* EOF */

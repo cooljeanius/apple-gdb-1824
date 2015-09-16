@@ -1,4 +1,5 @@
-/* Expression parsing and evaluation for plural form selection.
+/* plural-exp.h
+   Expression parsing and evaluation for plural form selection.
    Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
    Written by Ulrich Drepper <drepper@cygnus.com>, 2000.
 
@@ -14,7 +15,7 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301,
+   Foundation, Inc., 51 Franklin Street - 5th Floor, Boston, MA 02110-1301,
    USA.  */
 
 #ifndef _PLURAL_EXP_H
@@ -30,11 +31,11 @@
 
 #ifndef internal_function
 # define internal_function
-#endif
+#endif /* !internal_function */
 
 #ifndef attribute_hidden
 # define attribute_hidden
-#endif
+#endif /* !attribute_hidden */
 
 
 /* This is the representation of the expressions to determine the
@@ -109,18 +110,20 @@ struct parse_args
 # define EXTRACT_PLURAL_EXPRESSION extract_plural_expression
 #endif
 
-extern void FREE_EXPRESSION PARAMS ((struct expression *exp))
+extern void FREE_EXPRESSION PARAMS((struct expression *exp))
      internal_function;
-extern int PLURAL_PARSE PARAMS ((void *arg));
+extern int PLURAL_PARSE PARAMS((void *arg));
 extern struct expression GERMANIC_PLURAL attribute_hidden;
-extern void EXTRACT_PLURAL_EXPRESSION PARAMS ((const char *nullentry,
-					       struct expression **pluralp,
-					       unsigned long int *npluralsp))
+extern void EXTRACT_PLURAL_EXPRESSION PARAMS((const char *nullentry,
+                                              struct expression **pluralp,
+                                              unsigned long int *npluralsp))
      internal_function;
 
-#if !defined (_LIBC) && !defined (IN_LIBINTL)
-extern unsigned long int plural_eval PARAMS ((struct expression *pexp,
-					      unsigned long int n));
-#endif
+#if !defined(_LIBC) && !defined(IN_LIBINTL)
+extern unsigned long int plural_eval PARAMS((struct expression *pexp,
+                                             unsigned long int n));
+#endif /* !_LIBC && !IN_LIBINTL */
 
 #endif /* _PLURAL_EXP_H */
+
+/* EOF */

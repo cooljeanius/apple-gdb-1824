@@ -1,4 +1,5 @@
-/* Host-dependent definitions for Sparc running LynxOS, for GDB.
+/* xm-sparclynx.h
+   Host-dependent definitions for Sparc running LynxOS, for GDB.
    Copyright 1993 Free Software Foundation, Inc.
 
    This file is part of GDB.

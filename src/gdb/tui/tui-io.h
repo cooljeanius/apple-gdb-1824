@@ -1,4 +1,4 @@
-/* TUI support I/O functions.
+/* tui-io.h: TUI support I/O functions.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2004 Free Software
    Foundation, Inc.

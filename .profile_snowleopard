@@ -15,12 +15,20 @@ fi
 export RC_RELEASE=SnowLeopard
 export RC_TARGET_CONFIG=MacOSX
 export RC_XBS=YES
-if test -z "$SDKROOT" -a -d /Developer/SDKs/MacOSX10.6.sdk; then
-  if test -x /Developer/SDKs/MacOSX10.6.sdk/usr/bin/mig -a -x /Developer/SDKs/MacOSX10.6.sdk/usr/libexec/migcom; then
-    export SDKROOT=/Developer/SDKs/MacOSX10.6.sdk
-  else
-    echo "Not setting SDKROOT because that will mess up mig."
+if test -d /Developer/SDKs/MacOSX10.6.sdk; then
+  if test -z "${SDKROOT}"; then
+    if test -x /Developer/SDKs/MacOSX10.6.sdk/usr/bin/mig -a -x /Developer/SDKs/MacOSX10.6.sdk/usr/libexec/migcom; then
+      export SDKROOT=/Developer/SDKs/MacOSX10.6.sdk
+    else
+      echo "Not setting SDKROOT because that will mess up mig."
+    fi
   fi
+  if test -z "${SDKROOT_FOR_BUILD}"; then
+    export SDKROOT_FOR_BUILD=/Developer/SDKs/MacOSX10.6.sdk
+  fi
+fi
+if test -z "${MAKEFILEPATH}" -a -d /Developer/Makefiles; then
+  export MAKEFILEPATH=/Developer/Makefiles
 fi
 export SEPARATE_STRIP=YES
 export UNAME_RELEASE=10.8.0
@@ -29,6 +37,17 @@ if test -x /usr/bin/arch; then
   export HOST_ARCHITECTURE=`/usr/bin/arch`
 else
   export HOST_ARCHITECTURE=i386
+fi
+# Some subdirs in src/gdb are controlled by these:
+if test -z "${build_gdbserver}"; then
+  # only build if not already set:
+  export build_gdbserver=yes
+fi
+# never build:
+export build_nlm=no
+if test -z "${build_rdi_share}"; then
+  # only build if not already set:
+  export build_rdi_share=yes
 fi
 
 echo "We should be done setting environment variables for Snow Leopard now."

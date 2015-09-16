@@ -1,4 +1,4 @@
-/* Extended support for using signal values.
+/* strsignal.c: Extended support for using signal values.
    Written by Fred Fish.  fnf@cygnus.com
    This file is in the public domain.  */
 
@@ -284,21 +284,21 @@ BUGS
 */
 
 static void
-init_signal_tables (void)
+init_signal_tables(void)
 {
   const struct signal_info *eip;
-  int nbytes;
+  size_t nbytes;
 
   /* If we haven't already scanned the signal_table once to find the maximum
      signal value, then go find it now. */
 
   if (num_signal_names == 0)
     {
-      for (eip = signal_table; eip -> name != NULL; eip++)
+      for (eip = signal_table; eip->name != NULL; eip++)
 	{
-	  if (eip -> value >= num_signal_names)
+	  if (eip->value >= num_signal_names)
 	    {
-	      num_signal_names = eip -> value + 1;
+	      num_signal_names = eip->value + 1;
 	    }
 	}
     }
@@ -308,13 +308,13 @@ init_signal_tables (void)
 
   if (signal_names == NULL)
     {
-      nbytes = num_signal_names * sizeof (char *);
-      if ((signal_names = (const char **) malloc (nbytes)) != NULL)
+      nbytes = ((size_t)num_signal_names * sizeof(char *));
+      if ((signal_names = (const char **)malloc(nbytes)) != NULL)
 	{
-	  memset (signal_names, 0, nbytes);
-	  for (eip = signal_table; eip -> name != NULL; eip++)
+	  memset(signal_names, 0, nbytes);
+	  for (eip = signal_table; eip->name != NULL; eip++)
 	    {
-	      signal_names[eip -> value] = eip -> name;
+	      signal_names[eip->value] = eip->name;
 	    }
 	}
     }
@@ -326,20 +326,18 @@ init_signal_tables (void)
 
   if (sys_siglist == NULL)
     {
-      nbytes = num_signal_names * sizeof (char *);
-      if ((sys_siglist = (const char **) malloc (nbytes)) != NULL)
+      nbytes = num_signal_names * sizeof(char *);
+      if ((sys_siglist = (const char **)malloc(nbytes)) != NULL)
 	{
-	  memset (sys_siglist, 0, nbytes);
+	  memset(sys_siglist, 0, nbytes);
 	  sys_nsig = num_signal_names;
-	  for (eip = signal_table; eip -> name != NULL; eip++)
+	  for (eip = signal_table; eip->name != NULL; eip++)
 	    {
-	      sys_siglist[eip -> value] = eip -> msg;
+	      sys_siglist[eip->value] = eip->msg;
 	    }
 	}
     }
-
-#endif
-
+#endif /* !HAVE_SYS_SIGLIST */
 }
 
 
@@ -435,7 +433,7 @@ strsignal (int signo)
       /* In range, and a valid message.  Just return the message. */
       msg = (const char *) sys_siglist[signo];
     }
-  
+
   return (msg);
 }
 
@@ -547,46 +545,41 @@ followed by a newline.
 */
 
 #ifndef HAVE_PSIGNAL
-
 void
-psignal (unsigned signo, char *message)
+psignal(unsigned signo, char *message)
 {
   if (signal_names == NULL)
     {
-      init_signal_tables ();
+      init_signal_tables();
     }
   if ((signo <= 0) || (signo >= sys_nsig))
     {
-      fprintf (stderr, "%s: unknown signal\n", message);
+      fprintf(stderr, "%s: unknown signal\n", message);
     }
   else
     {
-      fprintf (stderr, "%s: %s\n", message, sys_siglist[signo]);
+      fprintf(stderr, "%s: %s\n", message, sys_siglist[signo]);
     }
 }
+#endif /* !HAVE_PSIGNAL */
 
-#endif	/* ! HAVE_PSIGNAL */
 
-
-/* A simple little main that does nothing but print all the signal translations
-   if MAIN is defined and this file is compiled and linked. */
-
+/* A simple little main that does nothing but print all the signal
+ * translations if MAIN is defined and this file is compiled and linked: */
 #ifdef MAIN
-
-#include <stdio.h>
-
+# include <stdio.h>
 int
-main (void)
+main(void)
 {
   int signo;
   int maxsigno;
   const char *name;
   const char *msg;
 
-  maxsigno = signo_max ();
-  printf ("%d entries in names table.\n", num_signal_names);
-  printf ("%d entries in messages table.\n", sys_nsig);
-  printf ("%d is max useful index.\n", maxsigno);
+  maxsigno = signo_max();
+  printf("%d entries in names table.\n", num_signal_names);
+  printf("%d entries in messages table.\n", sys_nsig);
+  printf("%d is max useful index.\n", maxsigno);
 
   /* Keep printing values until we get to the end of *both* tables, not
      *either* table.  Note that knowing the maximum useful index does *not*
@@ -595,14 +588,15 @@ main (void)
 
   for (signo = 0; signo <= maxsigno; signo++)
     {
-      name = strsigno (signo);
-      name = (name == NULL) ? "<NULL>" : name;
-      msg = strsignal (signo);
-      msg = (msg == NULL) ? "<NULL>" : msg;
-      printf ("%-4d%-18s%s\n", signo, name, msg);
+      name = strsigno(signo);
+      name = ((name == NULL) ? "<NULL>" : name);
+      msg = strsignal(signo);
+      msg = ((msg == NULL) ? "<NULL>" : msg);
+      printf("%-4d%-18s%s\n", signo, name, msg);
     }
 
   return 0;
 }
+#endif /* MAIN */
 
-#endif
+/* EOF */

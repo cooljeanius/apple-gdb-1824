@@ -36,7 +36,9 @@
 #include "coff/internal.h"
 #include "../bfd/libcoff.h"
 
-/*#define FOOP1 1 */
+#if 0
+# define FOOP1 1
+#endif /* 0 */
 
 static int addrsize;
 static char *toolname;
@@ -89,18 +91,17 @@ static void prescan (struct coff_ofile *);
 static void show_usage (FILE *, int);
 extern int main (int, char **);
 
-static FILE *file;
 static bfd *abfd;
 static int debug = 0;
 static int quick = 0;
 static int noprescan = 0;
 static struct coff_ofile *tree;
-/* Obsolete ??
-   static int absolute_p;
- */
+/* Obsolete?? */
+#ifdef OBSOLETE_YES
+static int absolute_p;
+#endif /* OBSOLETE_YES */
 
 static int segmented_p;
-static int code;
 
 static int ids1[20000];
 static int ids2[20000];
@@ -127,8 +128,9 @@ get_ordinary_id (int x)
   ids1[x] = base1++;
   return ids1[x];
 }
+
 static char *
-section_translate (char *n)
+section_translate(char *n)
 {
   if (strcmp (n, ".text") == 0)
     return "P";
@@ -143,7 +145,7 @@ section_translate (char *n)
 
 static
 char *
-strip_suffix (char *name)
+strip_suffix(char *name)
 {
   int i;
   char *res;
@@ -174,11 +176,14 @@ checksum (FILE *file, unsigned char *ptr, int size, int code)
   for (j = 0; j < bytes; j++)
     sum += ptr[j];
 
-  /* Glue on a checksum too.  */
+  /* Glue on a checksum too: */
   ptr[bytes] = ~sum;
-  fwrite (ptr, bytes + 1, 1, file);
+  fwrite(ptr, bytes + 1, 1, file);
 }
 
+#if !defined(code)
+static int code;
+#endif /* !code */
 
 static void
 writeINT (int n, unsigned char *ptr, int *idx, int size, FILE *file)
@@ -192,8 +197,8 @@ writeINT (int n, unsigned char *ptr, int *idx, int size, FILE *file)
 
   if (byte > 240)
     {
-      /* Lets write out that record and do another one.  */
-      checksum (file, ptr, *idx, code | 0x1000);
+      /* Let us write out that record and do another one: */
+      checksum (file, ptr, *idx, (code | 0x1000));
       *idx = 16;
       byte = *idx / 8;
     }
@@ -288,18 +293,22 @@ static char *rname_h8300[] =
   "ER0", "ER1", "ER2", "ER3", "ER4", "ER5", "ER6", "ER7", "PC", "CCR"
 };
 
-static void
-wr_tr (void)
-{
-  /* The TR block is not normal - it doesn't have any contents.  */
+/* Avoid declaring this as a global until we absolutely need to: */
+#if !defined(file)
+static FILE *file;
+#endif /* !file */
 
+static void
+wr_tr(void)
+{
+  /* The TR block is not normal - it does NOT have any contents: */
   static char b[] =
     {
-      0xff,			/* IT */
-      0x03,			/* RL */
-      0xfd,			/* CS */
+      0xff,		/* IT */
+      0x03,		/* RL */
+      0xfd,		/* CS */
     };
-  fwrite (b, 1, sizeof (b), file);
+  fwrite(b, 1, sizeof(b), file);
 }
 
 static void
@@ -317,8 +326,8 @@ wr_un (struct coff_ofile *ptr, struct coff_sfile *sfile, int first,
     un.format = FORMAT_OM;
   un.spare1 = 0;
 
-  /* Don't count the abs section.  */
-  un.nsections = ptr->nsections - 1;
+  /* Do NOT count the abs section: */
+  un.nsections = (ptr->nsections - 1);
 
   un.nextdefs = 0;
   un.nextrefs = 0;
@@ -341,16 +350,16 @@ wr_un (struct coff_ofile *ptr, struct coff_sfile *sfile, int first,
   un.linker = "L_GX00";
   un.lcd = DATE;
   un.name = sfile->name;
-  sysroff_swap_un_out (file, &un);
+  sysroff_swap_un_out(file, &un);
 }
 
 static void
-wr_hd (struct coff_ofile *p)
+wr_hd(struct coff_ofile *p)
 {
   struct IT_hd hd;
 
   hd.spare1 = 0;
-  if (bfd_get_file_flags (abfd) & EXEC_P)
+  if (bfd_get_file_flags(abfd) & EXEC_P)
     hd.mt = MTYPE_ABS_LM;
   else
     hd.mt = MTYPE_OMS_OR_LMS;
@@ -361,7 +370,7 @@ wr_hd (struct coff_ofile *p)
   hd.code = 0;			/* Always ASCII */
   hd.ver = "0200";		/* Version 2.00 */
 
-  switch (bfd_get_arch (abfd))
+  switch (bfd_get_arch(abfd))
     {
     case bfd_arch_h8300:
       hd.au = 8;
@@ -369,7 +378,7 @@ wr_hd (struct coff_ofile *p)
       hd.spcsz = 32;
       hd.segsz = 0;
       hd.segsh = 0;
-      switch (bfd_get_mach (abfd))
+      switch (bfd_get_mach(abfd))
 	{
 	case bfd_mach_h8300:
 	  hd.cpu = "H8300";
@@ -407,39 +416,38 @@ wr_hd (struct coff_ofile *p)
       rnames = rname_sh;
       break;
     default:
-      abort ();
+      abort();
     }
 
-  if (! bfd_get_file_flags(abfd) & EXEC_P)
-    {
+  /* not sure how to fix the warning from '-Wparentheses' here, as I cannot
+   * tell what the original author was going for: */
+  if (! bfd_get_file_flags(abfd) & EXEC_P) {
       hd.ep = 0;
-    }
-  else
-    {
+  } else {
       hd.ep = 1;
       hd.uan = 0;
       hd.sa = 0;
       hd.sad = 0;
-      hd.address = bfd_get_start_address (abfd);
-    }
+      hd.address = bfd_get_start_address(abfd);
+  }
 
   hd.os = "";
   hd.sys = "";
-  hd.mn = strip_suffix (bfd_get_filename (abfd));
+  hd.mn = strip_suffix(bfd_get_filename(abfd));
 
-  sysroff_swap_hd_out (file, &hd);
+  sysroff_swap_hd_out(file, &hd);
 }
 
 
 static void
-wr_sh (struct coff_ofile *p ATTRIBUTE_UNUSED, struct coff_section *sec)
+wr_sh(struct coff_ofile *p ATTRIBUTE_UNUSED, struct coff_section *sec)
 {
   struct IT_sh sh;
   sh.unit = 0;
   sh.section = sec->number;
 #ifdef FOOP1
   sh.section = 0;
-#endif
+#endif /* FOOP1 */
   sysroff_swap_sh_out (file, &sh);
 }
 
@@ -786,7 +794,7 @@ walk_tree_type_1 (struct coff_sfile *sfile, struct coff_symbol *symbol,
       {
 	struct IT_dar dar;
 	int j;
-	int dims = 1;		/* Only output one dimension at a time.  */
+	int dims = 1;		/* Only output one dimension at a time. */
 
 	dar.dims = dims;
 	dar.variable = nints (dims);
@@ -809,7 +817,7 @@ walk_tree_type_1 (struct coff_sfile *sfile, struct coff_symbol *symbol,
 	    dar.max_variable[j] = 0;
 	    dar.max[j] = type->u.array.dim;
 	    dar.min_variable[j] = 0;
-	    dar.min[j] = 1;	/* Why isn't this 0 ? */
+	    dar.min[j] = 1;	/* Why is this NOT 0 instead? */
 	  }
 	walk_tree_type_1 (sfile, symbol, type->u.array.array_of, nest + 1);
 	sysroff_swap_dar_out (file, &dar);
@@ -860,47 +868,46 @@ walk_tree_type_1 (struct coff_sfile *sfile, struct coff_symbol *symbol,
       break;
 
     default:
-      abort ();
+      abort();
     }
 }
 
-/* Obsolete ?
-   static void
-   dty_start ()
-   {
-   struct IT_dty dty;
-   dty.end = 0;
-   dty.neg = 0x1001;
-   dty.spare = 0;
-   sysroff_swap_dty_out (file, &dty);
-   }
+#if defined(ENABLE_OBSOLETE_AND_COMMENTED_OUT_PARTS)
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "this code should NOT be reached"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+static void dty_start(void)
+{
+	struct IT_dty dty;
+	dty.end = 0;
+	dty.neg = 0x1001;
+	dty.spare = 0;
+	sysroff_swap_dty_out(file, &dty);
+}
 
-   static void
-   dty_stop ()
-   {
-   struct IT_dty dty;
-   dty.end = 0;
-   dty.neg = 0x1001;
-   dty.end = 1;
-   sysroff_swap_dty_out (file, &dty);
-   }
+static void dty_stop(void)
+{
+	struct IT_dty dty;
+	dty.end = 0;
+	dty.neg = 0x1001;
+	dty.end = 1;
+	sysroff_swap_dty_out(file, &dty);
+}
 
-
-   static void
-   dump_tree_structure (sfile, symbol, type, nest)
-   struct coff_sfile *sfile;
-   struct coff_symbol *symbol;
-   struct coff_type *type;
-   int nest;
-   {
-   if (symbol->type->type == coff_function_type)
-   {
-
-
-   }
-
-   }
- */
+/* this confused me for a second because it was originally using
+ * an old, pre-ANSI, K&R-style function declaration: */
+static void dump_tree_structure(struct coff_sfile *sfile,
+				struct coff_symbol *symbol,
+				struct coff_type *type, int nest)
+{
+  if (nest == 0) {
+    /* (dummy condition) */ ;
+  }
+  if (symbol->type->type == coff_function_type) {
+    /* FIXME: put something here */ ;
+  }
+}
+#endif /* ENABLE_OBSOLETE_AND_COMMENTED_OUT_PARTS */
 
 static void
 walk_tree_type (struct coff_sfile *sfile, struct coff_symbol *symbol,
@@ -1063,7 +1070,7 @@ walk_tree_symbol (struct coff_sfile *sfile, struct coff_section *section ATTRIBU
       dsy.section = symbol->where->section->number;
 #ifdef FOOP
       dsy.section = 0;
-#endif
+#endif /* FOOP */
       break;
 
     case coff_where_member_of_struct:
@@ -1131,7 +1138,7 @@ walk_tree_symbol (struct coff_sfile *sfile, struct coff_section *section ATTRIBU
   switch (symbol->visible->type)
     {
     case coff_vis_common:
-      /* We do this 'cause common C symbols are treated as extdefs.  */
+      /* We do this because common C symbols are treated as extdefs. */
     case coff_vis_ext_def:
     case coff_vis_ext_ref:
       dsy.ename = symbol->name;
@@ -1417,46 +1424,46 @@ wr_cs (void)
      heres one I prepared earlier.  */
   static char b[] =
     {
-    0x80,			/* IT */
-    0x21,			/* RL */
-    0x00,			/* number of chars in variable length part */
-    0x80,			/* hd */
-    0x00,			/* hs */
-    0x80,			/* un */
-    0x00,			/* us */
-    0x80,			/* sc */
-    0x00,			/* ss */
-    0x80,			/* er */
-    0x80,			/* ed */
-    0x80,			/* sh */
-    0x80,			/* ob */
-    0x80,			/* rl */
-    0x80,			/* du */
-    0x80,			/* dps */
-    0x80,			/* dsy */
-    0x80,			/* dty */
-    0x80,			/* dln */
-    0x80,			/* dso */
-    0x80,			/* dus */
-    0x00,			/* dss */
-    0x80,			/* dbt */
-    0x00,			/* dpp */
-    0x80,			/* dfp */
-    0x80,			/* den */
-    0x80,			/* dds */
-    0x80,			/* dar */
-    0x80,			/* dpt */
-    0x00,			/* dul */
-    0x00,			/* dse */
-    0x00,			/* dot */
-    0xDE			/* CS */
+    0x80,	/* IT */
+    0x21,	/* RL */
+    0x00,	/* number of chars in variable length part */
+    0x80,	/* hd */
+    0x00,	/* hs */
+    0x80,	/* un */
+    0x00,	/* us */
+    0x80,	/* sc */
+    0x00,	/* ss */
+    0x80,	/* er */
+    0x80,	/* ed */
+    0x80,	/* sh */
+    0x80,	/* ob */
+    0x80,	/* rl */
+    0x80,	/* du */
+    0x80,	/* dps */
+    0x80,	/* dsy */
+    0x80,	/* dty */
+    0x80,	/* dln */
+    0x80,	/* dso */
+    0x80,	/* dus */
+    0x00,	/* dss */
+    0x80,	/* dbt */
+    0x00,	/* dpp */
+    0x80,	/* dfp */
+    0x80,	/* den */
+    0x80,	/* dds */
+    0x80,	/* dar */
+    0x80,	/* dpt */
+    0x00,	/* dul */
+    0x00,	/* dse */
+    0x00,	/* dot */
+    0xDE	/* CS */
   };
   fwrite (b, 1, sizeof (b), file);
 }
 
 /* Write out the SC records for a unit.  Create an SC
    for all the sections which appear in the output file, even
-   if there isn't an equivalent one on the input.  */
+   if there is NOT an equivalent one on the input.  */
 
 static int
 wr_sc (struct coff_ofile *ptr, struct coff_sfile *sfile)
@@ -1500,7 +1507,7 @@ wr_sc (struct coff_ofile *ptr, struct coff_sfile *sfile)
     }
 
   /* Now output all the section info, and fake up some stuff for sections
-     we don't have.  */
+   * we do NOT have.  */
   for (i = 1; i < total_sec; i++)
     {
       struct IT_sc sc;
@@ -1512,8 +1519,8 @@ wr_sc (struct coff_ofile *ptr, struct coff_sfile *sfile)
 
       if (!symbol)
 	{
-	  /* Don't have a symbol set aside for this section, which means
-	     that nothing in this file does anything for the section.  */
+	  /* Do NOT have a symbol set aside for this section, which means
+	   * that nothing in this file does anything for the section.  */
 	  sc.format = !(bfd_get_file_flags (abfd) & EXEC_P);
 	  sc.addr = 0;
 	  sc.length = 0;
@@ -1544,7 +1551,7 @@ wr_sc (struct coff_ofile *ptr, struct coff_sfile *sfile)
       sc.mode = 3;
       sc.spare = 0;
       sc.segadd = 0;
-      sc.spare1 = 0;		/* If not zero, then it doesn't work.  */
+      sc.spare1 = 0;		/* If not zero, then it does NOT work. */
       sc.name = section_translate (name);
 
       if (strlen (sc.name) == 1)
@@ -1580,8 +1587,7 @@ wr_er (struct coff_ofile *ptr, struct coff_sfile *sfile ATTRIBUTE_UNUSED,
   int idx = 0;
   struct coff_symbol *sym;
 
-  if (first)
-    {
+  if (first) {
       for (sym = ptr->symbol_list_head; sym; sym = sym->next_in_ofile_list)
 	{
 	  if (sym->visible->type == coff_vis_ext_ref)
@@ -1684,8 +1690,8 @@ align (int x)
   return (x + 3) & ~3;
 }
 
-/* Find all the common variables and turn them into
-   ordinary defs - dunno why, but thats what hitachi does with 'em.  */
+/* Find all the common variables and turn them into ordinary defs.
+ * I dunno why, but that is (was) what Hitachi does with them. */
 
 static void
 prescan (struct coff_ofile *tree)
@@ -1725,7 +1731,7 @@ show_usage (FILE *file, int status)
   -n --noprescan   Do not perform a scan to convert commons into defs\n\
   -d --debug       Display information about what is being done\n\
   -h --help        Display this information\n\
-  -v --version     Print the program's version number\n"));
+  -v --version     Print the version number of the program\n"));
 
   if (status == 0)
     fprintf (file, _("Report bugs to %s\n"), REPORT_BUGS_TO);
@@ -1749,12 +1755,12 @@ main (int ac, char **av)
   char *input_file;
   char *output_file;
 
-#if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES)
-  setlocale (LC_MESSAGES, "");
-#endif
-#if defined (HAVE_SETLOCALE)
-  setlocale (LC_CTYPE, "");
-#endif
+#if defined(HAVE_SETLOCALE) && defined(HAVE_LC_MESSAGES)
+  setlocale(LC_MESSAGES, "");
+#endif /* HAVE_SETLOCALE && HAVE_LC_MESSAGES */
+#if defined(HAVE_SETLOCALE)
+  setlocale(LC_CTYPE, "");
+#endif /* HAVE_SETLOCALE */
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
@@ -1821,13 +1827,12 @@ main (int ac, char **av)
 
   if (!output_file)
     {
-      /* Take a .o off the input file and stick on a .obj.  If
-         it doesn't end in .o, then stick a .obj on anyway */
+      /* Take a .o off the input file and stick on a .obj.
+       * If it does NOT end in .o, then stick a .obj on anyway: */
+      int len = strlen(input_file);
 
-      int len = strlen (input_file);
-
-      output_file = xmalloc (len + 5);
-      strcpy (output_file, input_file);
+      output_file = (char *)xmalloc(len + 5);
+      strcpy(output_file, input_file);
 
       if (len > 3
 	  && output_file[len - 2] == '.'
@@ -1876,3 +1881,5 @@ main (int ac, char **av)
   wr_module (tree);
   return 0;
 }
+
+/* EOF */

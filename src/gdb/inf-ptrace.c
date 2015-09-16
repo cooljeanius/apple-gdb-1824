@@ -1,4 +1,4 @@
-/* Low-level child interface to ptrace.
+/* inf-ptrace.c: Low-level child interface to ptrace.
 
    Copyright 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996,
    1998, 1999, 2000, 2001, 2002, 2004, 2005
@@ -721,14 +721,16 @@ inf_ptrace_store_registers (int regnum)
    particular register is stored.  */
 
 struct target_ops *
-inf_ptrace_trad_target (CORE_ADDR (*register_u_offset)(int))
+inf_ptrace_trad_target(CORE_ADDR (*register_u_offset)(int))
 {
   struct target_ops *t = inf_ptrace_target();
 
-  gdb_assert (register_u_offset);
+  gdb_assert(register_u_offset);
   inf_ptrace_register_u_offset = register_u_offset;
   t->to_fetch_registers = inf_ptrace_fetch_registers;
   t->to_store_registers = inf_ptrace_store_registers;
 
   return t;
 }
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on a mips box under 4.3bsd.
+/* nm-news-mips.h
+   Definitions to make GDB run on a mips box under 4.3bsd.
    Copyright 1986, 1987, 1989, 1993, 1996 Free Software Foundation, Inc.
    Contributed by Per Bothner(bothner@cs.wisc.edu) at U.Wisconsin
    and by Alessandro Forin(af@cs.cmu.edu) at CMU
@@ -30,9 +31,9 @@
 
 #define REGISTER_U_ADDR(addr, blockend, regno) 		\
 	if (regno < 38) addr = (NBPG*UPAGES) + (regno - 38)*sizeof(int);\
-	else addr = 0;		/* ..somewhere in the pcb */
+	else addr = 0;		/* ...somewhere in the pcb */
 
-/* Kernel is a bit tenacious about sharing text segments, disallowing bpts.  */
+/* Kernel is a bit tenacious about sharing text segments, disallowing bpts. */
 #define	ONE_PROCESS_WRITETEXT
 
 #include "mips/nm-mips.h"

@@ -1,3 +1,5 @@
+/* gdb_thread_db.h -*- C -*- */
+
 #ifdef HAVE_THREAD_DB_H
 #include <thread_db.h>
 #else

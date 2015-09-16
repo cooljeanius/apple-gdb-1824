@@ -168,10 +168,10 @@ Tcl_Interp *interp;
 	 * maintain our own static version */
 
 	static int nextid = 0;
-	char *nextidstr = Tcl_GetVar2(interp,"tcl::history","nextid",0);
+	char *nextidstr = (char *)Tcl_GetVar2(interp, "tcl::history", "nextid", 0);
 	if (nextidstr) {
-		/* intentionally ignore failure */
-		(void) sscanf(nextidstr,"%d",&nextid);
+		/* intentionally ignore failure: */
+		(void)sscanf(nextidstr, "%d", &nextid);
 	}
 	return ++nextid;
 #endif /* TCL_MAJOR_VERSION < 8 */
@@ -217,16 +217,11 @@ ignore_procs(interp,s)
 Tcl_Interp *interp;
 char *s;		/* function name */
 {
-	return ((s[0] == 'p') &&
-		(s[1] == 'r') &&
-		(s[2] == 'o') &&
-		(s[3] == 'm') &&
-		(s[4] == 'p') &&
-		(s[5] == 't') &&
-		((s[6] == '1') ||
-		 (s[6] == '2')) &&
-		(s[7] == '\0')
-	       );
+	return ((s[0] == 'p') && (s[1] == 'r') && (s[2] == 'o')
+			&& (s[3] == 'm') && (s[4] == 'p') && (s[5] == 't')
+			&& ((s[6] == '1')
+				|| (s[6] == '2'))
+			&& (s[7] == '\0'));
 }
 
 /* handle an error from Tcl_Eval or Tcl_EvalFile */
@@ -240,7 +235,7 @@ int check_for_nostack;
 	/* if errorInfo has something, print it */
 	/* else use what is in interp->result */
 
-	msg = Tcl_GetVar(interp,"errorInfo",TCL_GLOBAL_ONLY);
+	msg = (char *)Tcl_GetVar(interp,"errorInfo",TCL_GLOBAL_ONLY);
 	if (!msg) msg = interp->result;
 	else if (check_for_nostack) {
 		/* suppress errorInfo if generated via */
@@ -441,6 +436,7 @@ char **argv;
 		exp_argv0,user_version,exp_version);
 	exp_exit(interp,1);
 	/*NOTREACHED*/
+	return(TCL_ERROR);
 }
 
 static char init_auto_path[] = "lappend auto_path $exp_library $exp_exec_library";
@@ -475,8 +471,8 @@ Tcl_Interp *interp;
 		exp_getpid = getpid();
 		exp_init_pty();
 		exp_init_pty_exit();
-		exp_init_tty(); /* do this only now that we have looked at */
-				/* original tty state */
+		exp_init_tty(); /* do this only now that we have looked at
+						 * original tty state */
 		exp_init_stdio();
 		exp_init_sig();
 		exp_init_event();
@@ -562,7 +558,7 @@ char **argv;
 			exp_cmdlinecmds = TRUE;
 			rc = Tcl_Eval(interp,optarg);
 			if (rc != TCL_OK) {
-			    errorlog("%s\r\n",exp_cook(Tcl_GetVar(interp,"errorInfo",TCL_GLOBAL_ONLY),(int *)0));
+			    errorlog("%s\r\n",exp_cook((char *)Tcl_GetVar(interp,"errorInfo",TCL_GLOBAL_ONLY),(int *)0));
 			}
 			break;
 		case 'd': exp_is_debugging = TRUE;
@@ -642,7 +638,7 @@ char **argv;
 					if (errno == 0) {
 						msg = "could not read - odd file name?";
 					} else {
-						msg = Tcl_ErrnoMsg(errno);
+						msg = (char *)Tcl_ErrnoMsg(errno);
 					}
 					errorlog("%s: %s\r\n",exp_cmdfilename,msg);
 					exp_exit(interp,1);
@@ -676,7 +672,8 @@ char **argv;
 		debuglog("set argv0 \"%s\"\r\n",exp_argv0);
 	}
 
-	args = Tcl_Merge(argc-optind,argv+optind);
+	args = Tcl_Merge((argc - optind),
+                         (CONST84 char * CONST *)(argv + optind));
 	debuglog("set argv \"%s\"\r\n",args);
 	Tcl_SetVar(interp,"argv",args,0);
 	ckfree(args);

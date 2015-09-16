@@ -1,6 +1,53 @@
+## -*-makefile-*-
+## Cygwin-specific setup.
+## Some portions taken from ICU, Copyright (c) 2001-2010, IBM Corporation &
+## others. All Rights Reserved.
+
 EXTRA_TARGET_HOST_ALL_MODULES=maybe-all-libtermcap
 EXTRA_TARGET_HOST_INSTALL_MODULES=maybe-install-libtermcap
 
 all-gdb: maybe-all-libtermcap
 
 install-gdb: maybe-all-libtermcap
+
+## Flags for position independent code:
+SHAREDLIBCFLAGS = 
+SHAREDLIBCXXFLAGS = 
+SHAREDLIBCPPFLAGS = -DPIC
+
+## Additional flags when building libraries and with threads:
+THREADSCPPFLAGS = -D_REENTRANT
+LIBCPPFLAGS =
+
+## Shared library options:
+LD_SOOPTIONS= -Wl,-Bsymbolic
+
+## Compiler switch to embed a runtime search path:
+LD_RPATH=	
+LD_RPATH_PRE=	-Wl,-rpath,
+
+## Compiler switch to embed a library name:
+LD_SONAME =
+
+## Shared object suffix:
+SO = dll
+## Non-shared intermediate object suffix:
+STATIC_O = ao
+## To have an import library is better on Cygwin:
+IMPORT_LIB_EXT = .dll.a
+
+##  Bind internal references
+
+# LDflags that pkgdata will use
+BIR_LDFLAGS= -Wl,-Bsymbolic
+
+# Dependencies [i.e. map files] for the final library
+BIR_DEPS=
+
+# Environment variable to set a runtime search path
+LDLIBRARYPATH_ENVVAR = PATH
+
+# The type of assembly to write for generating an object file
+GENCCODE_ASSEMBLY=-a gcc-cygwin
+
+## End Cygwin-specific setup

@@ -1,4 +1,5 @@
-/* Parameters for execution on a WDC 65816 machine.
+/* tm-w65.h
+   Parameters for execution on a WDC 65816 machine.
    Copyright (C) 1995 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -44,7 +45,7 @@ extern CORE_ADDR w65_skip_prologue ();
 
 
 /* Immediately after a function call, return the saved pc.
-   Can't always go through the frames for this because on some machines
+   Cannot always go through the frames for this because on some machines
    the new frame is not set up until the new function executes
    some instructions.
 

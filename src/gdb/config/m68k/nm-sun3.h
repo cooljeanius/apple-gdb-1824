@@ -1,4 +1,5 @@
-/* Native-only definitions for Sun-3 for GDB, the GNU debugger.
+/* nm-sun3.h
+   Native-only definitions for Sun-3 for GDB, the GNU debugger.
    Copyright 1986, 1987, 1989, 1991, 1992, 1996
    Free Software Foundation, Inc.
 

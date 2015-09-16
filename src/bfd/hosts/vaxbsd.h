@@ -1,3 +1,5 @@
+/* vaxbsd.h */
+
 #define	NO_CORE_COMMAND		/* No command name in core file */
 
 #undef	ALIGN			/* They use it, we use it too */

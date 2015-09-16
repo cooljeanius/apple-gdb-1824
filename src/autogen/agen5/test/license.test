@@ -1,0 +1,114 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# license.test --- test license functionality
+#
+# Time-stamp:        "2010-06-26 16:05:08 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating ${testname}.tpl
+cat > ${testname}.tpl <<_EOF_
+[= AutoGen5 template test =]
+/*
+[= (license "${testname}" "${testname}" "Auto-Gen" " *  " ) =]
+ */
+_EOF_
+
+# # # # # # # # # # LICENSE FILE # # # # # # # # #
+
+echo creating ${testname}.lic
+cat > ${testname}.lic <<'_EOF_'
+This is a bogus license granted by %2$s for %1$s.
+Use it in good health
+_EOF_
+
+# # # # # # # # # # EXTEND FILES TO PAGESIZE # # # # # # # # #
+
+cat > ${testname}-extend.c <<- _EOF_
+	#define HAVE_CONFIG_H 1
+	#include "config.h"
+	#include "compat/compat.h"
+
+	int main( int argc, char** argv ) {
+	char z_tail[] = "=]\n */\n";
+	long offset = 0L - (sizeof(z_tail) - 1);
+	struct stat sb;
+	char* file;
+	size_t sz;
+	FILE* fp;
+
+	file = *++argv;
+	fp = fopen(file, "a");
+	if (fp == NULL) return 1;
+	if (stat(file, &sb) != 0) return 1;
+	sz = 0x2000 - (sb.st_size & 0x1FFFUL);
+	while (sz > 0) { putc( '\n', fp ); sz--; }
+	fclose(fp);
+
+	file = *++argv;
+	fp = fopen( file, "r+" );
+	if (fp == NULL) return 1;
+	if (stat(file, &sb) != 0) return 1;
+	fseek(fp, offset, SEEK_END);
+	sz = 0x2000 - (sb.st_size & 0x1FFFUL);
+	while (sz > 0) { putc( '\n', fp ); sz--; }
+	fputs(z_tail, fp);
+	fclose(fp);
+
+	return 0; }
+	_EOF_
+
+Csrc=${testname}-extend
+compile
+
+./${testname}-extend ${testname}.lic ${testname}.tpl || \
+  failure "Could not extend license/template files to 8KB"
+ls -l ${testname}.???
+
+# # # # # # # # # # EXPECTED OUTPUT FILE # # # # # # #
+set -x
+echo creating ${testname}.out
+# this is the output we should expect to see
+cat > ${testname}.out <<_EOF_
+/*
+ *  This is a bogus license granted by Auto-Gen for ${testname}.
+ *  Use it in good health
+ */
+_EOF_
+
+run_ag x -b ${testname} --no-def -T ${testname}.tpl || \
+    failure autogen failed
+cmp -s ${testname}.test ${testname}.out || failure unexpected output
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of license.test

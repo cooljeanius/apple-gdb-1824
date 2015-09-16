@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on an Alpha box under GNU/Linux.  The
+/* tm-alphalinux.h
+   Definitions to make GDB run on an Alpha box under GNU/Linux.  The
    definitions here are used when the _target_ system is running
    GNU/Linux.
 

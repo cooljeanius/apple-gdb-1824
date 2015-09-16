@@ -1,0 +1,15 @@
+This is a simple XCode data viewer plugin, based on some Apple sample code.
+
+It is intended to allow you to view the content of 16-bit and or 32-bit unicode strings in XCode.
+
+The 16-bit support is handy if you're using cross-platform code which treats "unicode" strings as utf-16 or UCS2 strings.
+
+The 32-bit support is handy if you're dealing with unix-style code which passes around 32-bit wchar_t based strings.
+
+For more information, see:
+
+- http://www.elegantchaos.com/projects/unicode-formatter.
+
+See also Apple's documentation here:
+
+- http://developer.apple.com/mac/library/documentation/DeveloperTools/Conceptual/XcodeDebugging/220-Viewing_Variables_and_Memory/variables_and_memory.html#//apple_ref/doc/uid/TP40007057-CH9-SW5

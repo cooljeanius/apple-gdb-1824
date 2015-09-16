@@ -1,0 +1,95 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# get.test --- test get functionality
+#
+# Time-stamp:        "2011-03-06 15:26:30 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating $testname.tpl
+cat > $testname.tpl <<_EOF_
+[= AutoGen5 template test =]
+[=
+
+IF (not (exist? "foo.bar.baz"))  =][=
+  (error "foo.bar.baz does, too, exist!")   =][=
+
+ELIF (not (= "mumble" (get "foo.bar.baz"))) =][=
+  (error (sprintf "We got the wrong baz.  We got:  %s"
+         (get "foo.bar.baz")))   =][=
+ELSE
+      =]A OK[=
+ENDIF =][=
+
+- bogus "\nA OK2" =][=
+- foo   "\nBOGUS" =]
+[= (get "fuz-zy") =]
+[= (get "fuz_zy") =]
+[= (get "fuz^zy") =]
+[= (get-c-name    "fuz-zy") =]
+[= (get-up-name   "fuz-zy") =]
+[= (get-down-name "fuz-zy") =]
+_EOF_
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo creating $testname.def
+cat > $testname.def <<_EOF_
+AutoGen definitions $testname;
+
+foo = { bar = { nada = nothing; }; };
+foo = { bar = { baz  = mumble;  }; };  /* this is the one */
+foo = { bar = { baz  = grumble; }; };
+fuz-zy = Mum-Ble;
+_EOF_
+
+# # # # # # # # # # EXPECTED OUTPUT FILE # # # # # # #
+set -x
+echo creating $testname.out
+# this is the output we should expect to see
+cat > $testname.out <<'_EOF_'
+A OK
+A OK2
+Mum-Ble
+Mum-Ble
+Mum-Ble
+Mum_Ble
+MUM_BLE
+mum_ble
+_EOF_
+
+run_ag x $testname.def || failure autogen failed
+cmp -s $testname.test $testname.out || failure unexpected output
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of get.test

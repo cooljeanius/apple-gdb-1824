@@ -1,25 +1,36 @@
-/* Implementation of the bindtextdomain(3) function
-   Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+/* bindtextdom.c: Implementation of the bindtextdomain(3) function
+ * Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning bindtextdomain.c expects "config.h" to be included.
-#endif
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning bindtextdomain.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_CONFIG_H */
+
+#ifndef PARAMS
+# if __STDC__ || defined __GNUC__ || defined __SUNPRO_C || defined __cplusplus || __PROTOTYPES
+#  define PARAMS(args) args
+# else
+#  define PARAMS(args) ()
+# endif /* __STDC__ */
+#endif /* !PARAMS */
 
 #if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
 # include <stdlib.h>
@@ -27,16 +38,29 @@
 # ifdef HAVE_MALLOC_H
 #  include <malloc.h>
 # else
-void free ();
+#  ifdef HAVE_MALLOC_MALLOC_H
+#   include <malloc/malloc.h>
+#  else
+void free PARAMS((void *));
+#  endif /* HAVE_MALLOC_MALLOC_H */
 # endif /* HAVE_MALLOC_H */
 #endif /* HAVE_STDLIB_H */
 
-#if defined HAVE_STRING_H || defined _LIBC
+#if defined STDC_HEADERS || (defined(__STDC__) && __STDC__) || \
+    (defined(HAVE_STDIO_H) && defined(HAVE_STDDEF_H))
+# include <stdio.h>
+# include <stddef.h>
+# if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199409L)) || defined(HAVE_WCHAR_H)
+#  include <wchar.h>
+# endif /* STDC NA1+ || HAVE_WCHAR_H */
+#endif /* STDC_HEADERS || __STDC__ || (HAVE_STDIO_H && HAVE_STDDEF_H) */
+
+#if defined HAVE_STRING_H || defined _LIBC || defined STDC_HEADERS
 # include <string.h>
 #elif defined HAVE_STRINGS_H
 # include <strings.h>
 # ifndef memcpy
-#  define memcpy(Dst, Src, Num) bcopy (Src, Dst, Num)
+#  define memcpy(Dst, Src, Num) bcopy(Src, Dst, Num)
 # endif /* !memcpy */
 #endif /* HAVE_STRING_H || _LIBC */
 
@@ -57,127 +81,124 @@ extern const char _nl_default_dirname[];
 extern struct binding *_nl_domain_bindings;
 
 
-/* Names for the libintl functions are a problem.  They must not clash
-   with existing names and they should follow ANSI C.  But this source
-   code is also used in GNU C Library where the names have a __
-   prefix.  So we have to make a difference here.  */
+/* Names for the libintl functions are a problem. They must not clash
+ * with existing names and they should follow ANSI C. But this source
+ * code is also used in GNU C Library where the names have a __
+ * prefix. So we have to make a difference here.  */
 #ifdef _LIBC
 # define BINDTEXTDOMAIN __bindtextdomain
 # ifndef strdup
-#  define strdup(str) __strdup (str)
+#  define strdup(str) __strdup(str)
 # endif /* !strdup */
 #else
 # define BINDTEXTDOMAIN bindtextdomain__
 #endif /* _LIBC */
 
 /* Specify that the DOMAINNAME message catalog will be found
-   in DIRNAME rather than in the system locale data base.  */
-char *
-BINDTEXTDOMAIN (domainname, dirname)
-     const char *domainname;
-     const char *dirname;
+ * in DIRNAME rather than in the system locale data base.  */
+char *BINDTEXTDOMAIN(const char *domainname, const char *dirname)
 {
   struct binding *binding;
 
-  /* Some sanity checks.  */
-  if (domainname == NULL || domainname[0] == '\0')
+  /* Some sanity checks: */
+  if ((domainname == NULL) || (domainname[0] == '\0'))
     return NULL;
 
-  for (binding = _nl_domain_bindings; binding != NULL; binding = binding->next)
-    {
-      int compare = strcmp (domainname, binding->domainname);
-      if (compare == 0)
-	/* We found it!  */
-	break;
-      if (compare < 0)
-	{
-	  /* It is not in the list.  */
+  for ((binding = _nl_domain_bindings); (binding != NULL);
+       (binding = binding->next)) {
+      int compare = strcmp(domainname, binding->domainname);
+      if (compare == 0) {
+	  /* We found it!  */
+	  break;
+      }
+      if (compare < 0) {
+	  /* It is not in the list: */
 	  binding = NULL;
 	  break;
-	}
-    }
+      }
+  }
 
   if (dirname == NULL)
-    /* The current binding has be to returned.  */
-    return binding == NULL ? (char *) _nl_default_dirname : binding->dirname;
+    /* The current binding has be to returned: */
+    return ((binding == NULL) ? (char *)_nl_default_dirname : binding->dirname);
 
   if (binding != NULL)
     {
       /* The domain is already bound. If the new value and the old
 	 one are equal we simply do nothing. Otherwise replace the
 	 old binding.  */
-      if (strcmp (dirname, binding->dirname) != 0)
+      if (strcmp(dirname, binding->dirname) != 0)
 	{
 	  char *new_dirname;
 
-	  if (strcmp (dirname, _nl_default_dirname) == 0)
-	    new_dirname = (char *) _nl_default_dirname;
+	  if (strcmp(dirname, _nl_default_dirname) == 0)
+	    new_dirname = (char *)_nl_default_dirname;
 	  else
 	    {
 #if defined _LIBC || defined HAVE_STRDUP
-	      new_dirname = strdup (dirname);
+	      new_dirname = strdup(dirname);
 	      if (new_dirname == NULL)
 		return NULL;
 #else
-	      size_t len = strlen (dirname) + 1;
-	      new_dirname = (char *) malloc (len);
+	      size_t len = (strlen(dirname) + 1UL);
+	      new_dirname = (char *)malloc(len);
 	      if (new_dirname == NULL)
 		return NULL;
 
-	      memcpy (new_dirname, dirname, len);
+	      memcpy(new_dirname, dirname, len);
 #endif /* _LIBC || HAVE_STRDUP */
 	    }
 
 	  if (binding->dirname != _nl_default_dirname)
-	    free (binding->dirname);
+	    free(binding->dirname);
 
 	  binding->dirname = new_dirname;
 	}
     }
   else
     {
-      /* We have to create a new binding.  */
+      /* We have to create a new binding: */
 #if !defined _LIBC && !defined HAVE_STRDUP
       size_t len;
 #endif /* !_LIBC && !HAVE_STRDUP */
       struct binding *new_binding =
-	(struct binding *) malloc (sizeof (*new_binding));
+	(struct binding *)malloc(sizeof(*new_binding));
 
       if (new_binding == NULL)
 	return NULL;
 
 #if defined _LIBC || defined HAVE_STRDUP
-      new_binding->domainname = strdup (domainname);
+      new_binding->domainname = strdup(domainname);
       if (new_binding->domainname == NULL)
 	return NULL;
 #else
-      len = strlen (domainname) + 1;
-      new_binding->domainname = (char *) malloc (len);
+      len = (strlen(domainname) + 1UL);
+      new_binding->domainname = (char *)malloc(len);
       if (new_binding->domainname == NULL)
 	return NULL;
-      memcpy (new_binding->domainname, domainname, len);
+      memcpy(new_binding->domainname, domainname, len);
 #endif /* _LIBC || HAVE_STRDUP */
 
-      if (strcmp (dirname, _nl_default_dirname) == 0)
-	new_binding->dirname = (char *) _nl_default_dirname;
+      if (strcmp(dirname, _nl_default_dirname) == 0)
+	new_binding->dirname = (char *)_nl_default_dirname;
       else
 	{
 #if defined _LIBC || defined HAVE_STRDUP
-	  new_binding->dirname = strdup (dirname);
+	  new_binding->dirname = strdup(dirname);
 	  if (new_binding->dirname == NULL)
 	    return NULL;
 #else
-	  len = strlen (dirname) + 1;
-	  new_binding->dirname = (char *) malloc (len);
+	  len = (strlen(dirname) + 1UL);
+	  new_binding->dirname = (char *)malloc(len);
 	  if (new_binding->dirname == NULL)
 	    return NULL;
-	  memcpy (new_binding->dirname, dirname, len);
+	  memcpy(new_binding->dirname, dirname, len);
 #endif /* _LIBC || HAVE_STRDUP */
 	}
 
-      /* Now enqueue it.  */
-      if (_nl_domain_bindings == NULL
-	  || strcmp (domainname, _nl_domain_bindings->domainname) < 0)
+      /* Now enqueue it: */
+      if ((_nl_domain_bindings == NULL)
+	  || (strcmp(domainname, _nl_domain_bindings->domainname) < 0))
 	{
 	  new_binding->next = _nl_domain_bindings;
 	  _nl_domain_bindings = new_binding;
@@ -185,8 +206,8 @@ BINDTEXTDOMAIN (domainname, dirname)
       else
 	{
 	  binding = _nl_domain_bindings;
-	  while (binding->next != NULL
-		 && strcmp (domainname, binding->next->domainname) > 0)
+	  while ((binding->next != NULL)
+		 && (strcmp(domainname, binding->next->domainname) > 0))
 	    binding = binding->next;
 
 	  new_binding->next = binding->next;
@@ -201,7 +222,7 @@ BINDTEXTDOMAIN (domainname, dirname)
 
 #ifdef _LIBC
 /* Alias for function name in GNU C Library.  */
-weak_alias (__bindtextdomain, bindtextdomain);
+weak_alias(__bindtextdomain, bindtextdomain);
 #endif /* _LIBC */
 
 /* EOF */

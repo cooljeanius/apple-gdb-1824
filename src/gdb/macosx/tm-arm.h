@@ -1,4 +1,4 @@
-/* Definitions to target GDB to ARM targets.
+/* tm-arm.h: Definitions to target GDB to ARM targets.
    Copyright 1986, 1987, 1988, 1989, 1991, 1993, 1994, 1995, 1996, 1997,
    1998, 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 
@@ -28,3 +28,5 @@
 # define VARIABLES_INSIDE_BLOCK(desc, gcc_p) (!(gcc_p))
 
 #endif /* TM_ARM_H */
+
+/* EOF */

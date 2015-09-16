@@ -1,5 +1,5 @@
 /* APPLE LOCAL file fix and continue */
-/* Fix and Continue support for gdb
+/* fix-and-continue.c: Fix and Continue support for gdb
 
    Copyright 2003, 2004 Free Software Foundation, Inc.
 
@@ -60,35 +60,35 @@
 #include "filenames.h"
 
 #if defined (TARGET_I386)
-#include "i386-tdep.h"
-#endif
+# include "i386-tdep.h"
+#endif /* TARGET_I386 */
 
 #ifdef MACOSX_DYLD
-#include "macosx-nat-dyld-process.h"
-#endif
+# include "macosx-nat-dyld-process.h"
+#endif /* MACOSX_DYLD */
 
 
-/* A list of all active threads, and the functions those threads
-   have currently executing which are in the fixed object file.
-   This information is only useful at the point of fix-up, where
-   we're looking for restriction violations and reporting the
-   state of the stack to the UI.  */
-
-struct active_threads {
+/* A list of all active threads, and the functions those threads have
+ * currently executing which are in the fixed object file.
+ * This information is only useful at the point of fix-up, where we are
+ * looking for restriction violations and reporting the state of the stack
+ * to the UI: */
+struct active_threads
+{
   int num;
   struct active_func *active_func_chain;
   CORE_ADDR pc;
   struct active_threads *next;
 };
 
-/* The structure for a single function that is active at the
-   time of the fix request. */
-
-struct active_func {
+/* The structure for a single function that is active at the time of the
+ * fix request: */
+struct active_func
+{
   struct active_func * next;
   struct symbol * sym;
 
-  // The following are right out of the struct frame_info
+  /* The following are right out of the struct frame_info: */
   int level, line;
   CORE_ADDR addr, fp;
   const char *file, *dir;
@@ -100,8 +100,8 @@ struct active_func {
    The Apple implementation of this does all of its syntax checking
    before loading the file, so this isn't nearly as necessary.  In
    fact, I don't think it's of any use to me at all.  */
-
-struct fixeddatum {
+struct fixeddatum
+{
   CORE_ADDR addr;
   int size;
   int oldval, newval;       /* old and new values of the datum */
@@ -114,8 +114,8 @@ struct fixeddatum {
    The Apple implementation of this does all of its syntax checking
    before loading the file, so this isn't nearly as necessary.  In
    fact, I don't think it's of any use to me at all.  */
-
-struct obsoletedsym {
+struct obsoletedsym
+{
   struct minimal_symbol * oldmsym, *newmsym;
   struct symbol * oldsym, *newsym;
   struct obsoletedsym * next;
@@ -125,13 +125,13 @@ struct obsoletedsym {
    acts as the token o' data that is passed around all the functions
    as we're handling a fix request.  */
 
-struct fixinfo {
-
+struct fixinfo
+{
   /* Source, bundle, and object filenames.  Probably unnecessary to store both
-     full name and the basename, but we seem to be recomputing that 
+     full name and the basename, but we seem to be recomputing that
      in several places, so I'll stash it here.  The "basename" variants
      are just pointers into the middle of the "filename" malloced memory;
-     only free the "filename" versions. 
+     only free the "filename" versions.
 
      The object filenames ("foo.o") are used only to communicate with ZeroLink,
      which only knows about object files.
@@ -168,7 +168,7 @@ struct fixinfo {
 
   /* The most recently fixed .o file we've loaded for this file (i.e.
      a user "fixes" a single source file multiple times; this stores
-     the current version.)  
+     the current version.)
 
      NB: This is really just the tail of the fixed_object_files
      linked list, but the HP implementation did their link lists
@@ -179,7 +179,7 @@ struct fixinfo {
 
   /* The fixinfo structure is built up as we're doing the initial scan
      of the proposed object file, and if we error out half-way through,
-     we need to recognize a half-finished structure.  
+     we need to recognize a half-finished structure.
 
      FIXME: I should do something cleaner here, but a simple cleanup
      to remove the fixinfo struct in the case of an error would be
@@ -239,145 +239,143 @@ struct file_static_fixups {
 
 
 
-static void get_fixed_file (struct fixinfo *);
+static void get_fixed_file(struct fixinfo *);
 
-static int load_fixed_objfile (const char *);
+static int load_fixed_objfile(const char *);
 
-static void do_final_fix_fixups (struct fixinfo *curfixinfo);
+static void do_final_fix_fixups(struct fixinfo *curfixinfo);
 
-static void redirect_file_statics (struct fixinfo *);
+static void redirect_file_statics(struct fixinfo *);
 
-static void find_new_static_symbols (struct fixinfo *, struct file_static_fixups *, int);
+static void find_new_static_symbols(struct fixinfo *, struct file_static_fixups *, int);
 
-static void find_orig_static_symbols (struct fixinfo *, struct file_static_fixups *, int);
+static void find_orig_static_symbols(struct fixinfo *, struct file_static_fixups *, int);
 
-static void redirect_statics (struct file_static_fixups *, int);
+static void redirect_statics(struct file_static_fixups *, int);
 
-static int find_and_parse_nonlazy_ptr_sect (struct fixinfo *, struct file_static_fixups **);
+static int find_and_parse_nonlazy_ptr_sect(struct fixinfo *, struct file_static_fixups **);
 
-static struct objfile ** build_list_of_objfiles_to_update (struct fixinfo *);
+static struct objfile **build_list_of_objfiles_to_update(struct fixinfo *);
 
-static void redirect_old_function (struct fixinfo *, struct symbol *, struct symbol *, int);
+static void redirect_old_function(struct fixinfo *, struct symbol *, struct symbol *, int);
 
-CORE_ADDR decode_fix_and_continue_trampoline (CORE_ADDR);
+CORE_ADDR decode_fix_and_continue_trampoline(CORE_ADDR);
 
-static int in_active_func (const char *, struct active_threads *);
+static int in_active_func(const char *, struct active_threads *);
 
-static struct active_func *create_current_active_funcs_list (const char *);
+static struct active_func *create_current_active_funcs_list(const char *);
 
-void do_final_fix_fixups_global_syms (struct block *newglobals, struct objfile *oldobj, struct fixinfo *curfixinfo);
+void do_final_fix_fixups_global_syms(struct block *newglobals, struct objfile *oldobj, struct fixinfo *curfixinfo);
 
-static void do_final_fix_fixups_static_syms (struct block *newstatics, struct objfile *oldobj, struct fixinfo *curfixinfo);
+static void do_final_fix_fixups_static_syms(struct block *newstatics, struct objfile *oldobj, struct fixinfo *curfixinfo);
 
-static void pre_load_and_check_file (struct fixinfo *);
+static void pre_load_and_check_file(struct fixinfo *);
 
-static void force_psymtab_expansion (struct objfile *, const char *, const char *);
+static void force_psymtab_expansion(struct objfile *, const char *, const char *);
 
-static void expand_all_objfile_psymtabs (struct objfile *);
+static void expand_all_objfile_psymtabs(struct objfile *);
 
-static void free_active_threads_struct (struct active_threads *);
+static void free_active_threads_struct(struct active_threads *);
 
-static struct active_threads * create_current_threads_list (const char *);
+static struct active_threads *create_current_threads_list(const char *);
 
-static struct fixinfo *get_fixinfo_for_new_request (const char *);
+static struct fixinfo *get_fixinfo_for_new_request(const char *);
 
-int file_exists_p (const char *);
+int file_exists_p(const char *);
 
-static void do_pre_load_checks (struct fixinfo *, struct objfile *);
+static void do_pre_load_checks(struct fixinfo *, struct objfile *);
 
-static void check_restrictions_globals (struct fixinfo *, struct objfile *);
+static void check_restrictions_globals(struct fixinfo *, struct objfile *);
 
-static void check_restrictions_statics (struct fixinfo *, struct objfile *);
+static void check_restrictions_statics(struct fixinfo *, struct objfile *);
 
-static void check_restrictions_locals (struct fixinfo *, struct objfile *);
+static void check_restrictions_locals(struct fixinfo *, struct objfile *);
 
-static void check_restrictions_function (const char *, int, struct block *, 
-                                         struct block *);
+static void check_restrictions_function(const char *, int, struct block *,
+                                        struct block *);
 
-static int sym_is_argument (struct symbol *);
+static int sym_is_argument(struct symbol *);
 
-static int sym_is_local (struct symbol *);
+static int sym_is_local(struct symbol *);
 
-static void free_half_finished_fixinfo (struct fixinfo *);
+static void free_half_finished_fixinfo(struct fixinfo *);
 
-static void mark_previous_fixes_obsolete (struct fixinfo *);
+static void mark_previous_fixes_obsolete(struct fixinfo *);
 
-static const char *getbasename (const char *);
+static const char *getbasename(const char *);
 
-static void print_active_functions (struct fixinfo *);
+static void print_active_functions(struct fixinfo *);
 
-static struct symtab *find_symtab_by_name (struct objfile *, const char *);
+static struct symtab *find_symtab_by_name(struct objfile *, const char *);
 
 
-static struct symbol *search_for_coalesced_symbol (struct objfile *, 
-                                                   struct symbol *);
+static struct symbol *search_for_coalesced_symbol(struct objfile *,
+                                                  struct symbol *);
 
-static void restore_language (void *);
+static void restore_language(void *);
 
-static struct cleanup *set_current_language (const char *);
+static struct cleanup *set_current_language(const char *);
 
-static void find_original_object_file_name (struct fixinfo *);
+static void find_original_object_file_name(struct fixinfo *);
 
-static struct objfile *find_original_object_file (struct fixinfo *);
+static struct objfile *find_original_object_file(struct fixinfo *);
 
-static struct symtab *find_original_symtab (struct fixinfo *);
+static struct symtab *find_original_symtab(struct fixinfo *);
 
-static struct partial_symtab *find_original_psymtab (struct fixinfo *);
+static struct partial_symtab *find_original_psymtab(struct fixinfo *);
 
-static struct objfile *raise_objfile_load_level (struct objfile *);
+static struct objfile *raise_objfile_load_level(struct objfile *);
 
+extern void _initialize_fix(void);
 
 
 int fix_and_continue_debug_flag = 0;
 
 #ifndef TARGET_ADDRESS_BYTES
-#define TARGET_ADDRESS_BYTES (TARGET_LONG_BIT / TARGET_CHAR_BIT)
-#endif
+# define TARGET_ADDRESS_BYTES (TARGET_LONG_BIT / TARGET_CHAR_BIT)
+#endif /* !TARGET_ADDRESS_BYTES */
 
 static void
-fix_command (char *args, int from_tty)
+fix_command(char *args, int from_tty)
 {
   char **argv;
   char *source_filename, *bundle_filename;
   struct cleanup *cleanups;
   const char *usage = "Usage: fix bundle-filename source-filename [object-filename]";
 
-  if (!args || args[0] == '\0')
-    error ("%s", usage);
+  if (!args || (args[0] == '\0'))
+    error("%s", usage);
 
-  argv = buildargv (args);
-  cleanups = make_cleanup_freeargv (argv);
+  argv = buildargv(args);
+  cleanups = make_cleanup_freeargv(argv);
 
-  /* Two required arguments.  */
+  /* Two required arguments: */
+  if ((argv[0] == NULL) || (strlen(argv[0]) == 0) ||
+      (argv[1] == NULL) || (strlen(argv[1]) == 0))
+    error("%s", usage);
 
-  if (argv[0] == NULL || strlen (argv[0]) == 0 ||
-      argv[1] == NULL || strlen (argv[1]) == 0)
-    error ("%s", usage);
-
-  /* An optional third argument.  */
-
-  if (argv[2] != NULL && 
-      (strlen (argv[2]) == 0 || argv[3] != NULL))
-    error ("%s", usage);
+  /* An optional third argument: */
+  if ((argv[2] != NULL) &&
+      ((strlen(argv[2]) == 0) || (argv[3] != NULL)))
+    error("%s", usage);
 
   bundle_filename = argv[0];
   source_filename = argv[1];
 
-  if (!source_filename || strlen (source_filename) == 0 ||
-      !bundle_filename || strlen (bundle_filename) == 0)
+  if (!source_filename || (strlen(source_filename) == 0) ||
+      !bundle_filename || (strlen(bundle_filename) == 0))
     error ("%s", usage);
 
   /* Ignore the third argument:  Object file name
-     This was needed for ZeroLink suport back when ZeroLink existed.  */
+   * This was needed for ZeroLink suport back when ZeroLink existed: */
+  fix_command_1(source_filename, bundle_filename, NULL);
 
-  fix_command_1 (source_filename, bundle_filename, NULL);
-
-  if (!ui_out_is_mi_like_p (uiout) && from_tty)
+  if (!ui_out_is_mi_like_p(uiout) && from_tty)
     {
-      printf_filtered ("Fix succeeded.\n");
+      printf_filtered("Fix succeeded.\n");
     }
-      
-  do_cleanups (cleanups);
+
+  do_cleanups(cleanups);
 }
 
 
@@ -403,7 +401,7 @@ fix_command_1 (const char *source_filename,
 
   if (bundle_filename && *bundle_filename == '\0')
     bundle_filename = NULL;
-  
+
   /* Don't realpath() the source filename or the object filename.
      In the case of the source filename, this has to match the stabs generated
      by gcc, which aren't realpathed.
@@ -417,7 +415,7 @@ fix_command_1 (const char *source_filename,
   source_filename = tilde_expand (source_filename);
   if (source_filename == NULL)
     error ("Source filename not found.");
-  
+
   fn = tilde_expand (bundle_filename);
   if (fn)
     {
@@ -432,7 +430,7 @@ fix_command_1 (const char *source_filename,
     error ("Bundle filename '%s' not found.", bundle_filename);
   if (bundle_filename == NULL)
     error ("Bundle filename not found.");
-  
+
   if (solib_filename)
     {
       /* Maybe we were passed in just the tail end of the name, e.g.
@@ -493,7 +491,7 @@ fix_command_1 (const char *source_filename,
 
   pre_load_and_check_file (cur);
 
-  get_fixed_file (cur); 
+  get_fixed_file (cur);
 
   mark_previous_fixes_obsolete (cur);
 
@@ -508,7 +506,7 @@ fix_command_1 (const char *source_filename,
    make sure their msymbols and symbols are marked obsolete.  */
 
 static void
-mark_previous_fixes_obsolete (struct fixinfo *cur)
+mark_previous_fixes_obsolete(struct fixinfo *cur)
 {
   struct fixedobj *fo;
   struct minimal_symbol *msym;
@@ -516,58 +514,67 @@ mark_previous_fixes_obsolete (struct fixinfo *cur)
 
   for (fo = cur->fixed_object_files; fo != NULL; fo = fo->next)
     {
-      fo_objfile = find_objfile_by_name (fo->bundle_filename, 1);
+      fo_objfile = find_objfile_by_name(fo->bundle_filename, 1);
       if (fo_objfile == NULL)
         {
-          warning ("fixed object file entry for '%s' has a NULL objfile ptr!  "
-                   "Will try continuing", fo->bundle_filename);
+          warning("fixed object file entry for '%s' has a NULL objfile ptr!  "
+                  "Will try continuing", fo->bundle_filename);
           continue;
         }
 
-      /* Don't mark the file we just loaded as obsolete.
-         This means that mark_previous_fixes_obsolete() must be run
-         after get_fixed_file().  */
+      /* Do NOT mark the file we just loaded as obsolete.
+       * This means that mark_previous_fixes_obsolete() must be run
+       * after get_fixed_file().  */
 
       if (fo == cur->most_recent_fix)
         continue;
 
-      /* Mark all minsyms obsolete except for global data - we'll leave
-         that up to the global-data-redirecting code to handle over in
-         redirect_statics().  */
+      /* Mark all minsyms obsolete except for global data - we shall leave
+       * that up to the global-data-redirecting code to handle over in
+       * redirect_statics(): */
+      ALL_OBJFILE_MSYMBOLS(fo_objfile, msym)
+        {
+          if ((MSYMBOL_TYPE(msym) != mst_data) &&
+              (MSYMBOL_TYPE(msym) != mst_bss) &&
+              (MSYMBOL_TYPE(msym) != mst_file_data) &&
+              (MSYMBOL_TYPE(msym) != mst_file_bss))
+            {
+              MSYMBOL_OBSOLETED(msym) = 1;
+            }
+        }
 
-      ALL_OBJFILE_MSYMBOLS (fo_objfile, msym)
-        if (MSYMBOL_TYPE (msym) != mst_data && 
-            MSYMBOL_TYPE (msym) != mst_bss && 
-            MSYMBOL_TYPE (msym) != mst_file_data && 
-            MSYMBOL_TYPE (msym) != mst_file_bss)
+      {
+        int i;
+        struct dict_iterator j;
+        struct symbol *sym;
+        struct symtab *st;
+        struct partial_symtab *pst;
+
+        ALL_OBJFILE_SYMTABS_INCL_OBSOLETED(fo_objfile, st)
           {
-            MSYMBOL_OBSOLETED (msym) = 1;
+            if (st->primary == 1) {
+              for (i = 0; i < BLOCKVECTOR_NBLOCKS(BLOCKVECTOR(st)); i++) {
+                ALL_BLOCK_SYMBOLS(BLOCKVECTOR_BLOCK(BLOCKVECTOR(st), i), j, sym)
+                  {
+                    if ((SYMBOL_DOMAIN(sym) != VAR_DOMAIN) ||
+                        (SYMBOL_CLASS(sym) != LOC_STATIC))
+                      {
+                        SYMTAB_OBSOLETED(st) = 51;
+                      }
+                  }
+              }
+            }
           }
 
-      int i;
-      struct dict_iterator j;
-      struct symbol *sym;
-      struct symtab *st;
-      struct partial_symtab *pst;
-
-      ALL_OBJFILE_SYMTABS_INCL_OBSOLETED (fo_objfile, st)
-        {
-          if (st->primary == 1)
-            for (i = 0; i < BLOCKVECTOR_NBLOCKS (BLOCKVECTOR (st)); i++)
-              ALL_BLOCK_SYMBOLS (BLOCKVECTOR_BLOCK (BLOCKVECTOR (st), i), j, sym)
-                if (SYMBOL_DOMAIN (sym) != VAR_DOMAIN ||
-                    SYMBOL_CLASS (sym) != LOC_STATIC)
-                  SYMTAB_OBSOLETED (st) = 51;
-        }
-
-      ALL_OBJFILE_PSYMTABS (fo_objfile, pst)
-        {
-          PSYMTAB_OBSOLETED (pst) = 51;
-        }
+        ALL_OBJFILE_PSYMTABS(fo_objfile, pst)
+          {
+            PSYMTAB_OBSOLETED(pst) = 51;
+          }
+      }
     }
 
-    PSYMTAB_OBSOLETED (find_original_psymtab (cur)) = 51;
-    SYMTAB_OBSOLETED (find_original_symtab (cur)) = 51;
+  PSYMTAB_OBSOLETED(find_original_psymtab(cur)) = 51;
+  SYMTAB_OBSOLETED(find_original_symtab(cur)) = 51;
 }
 
 /* Given a source filename, either find an existing fixinfo record
@@ -580,7 +587,7 @@ get_fixinfo_for_new_request (const char *source_filename)
   struct fixinfo *i, *prev = NULL;
 
   /* Let's scan over the list to make sure there aren't any half-allocated
-     fixinfo structures.  FIXME, this is obviously a hack; see the 
+     fixinfo structures.  FIXME, this is obviously a hack; see the
      documentation for the fixinfo->complete variable at the top of
      the file about why I haven't solved this yet.  */
 
@@ -629,55 +636,55 @@ get_fixinfo_for_new_request (const char *source_filename)
 }
 
 static void
-free_half_finished_fixinfo (struct fixinfo *f)
+free_half_finished_fixinfo(struct fixinfo *f)
 {
 
   if (f->fixed_object_files != NULL)
     {
-      warning ("free_half_finished_fixinfo: incomplete fixinfo was too complete");
+      warning("free_half_finished_fixinfo: incomplete fixinfo was too complete");
       return;
     }
 
   if (f->src_filename != NULL)
-    xfree ((char *) f->src_filename);
+    xfree((char *)f->src_filename);
   if (f->bundle_filename != NULL)
-    xfree ((char *) f->bundle_filename);
+    xfree((char *)f->bundle_filename);
   if (f->active_functions != NULL)
-    free_active_threads_struct (f->active_functions);
+    free_active_threads_struct(f->active_functions);
   if (f->original_objfile_filename != NULL)
-    xfree ((char *) f->original_objfile_filename);
+    xfree((char *)f->original_objfile_filename);
 
-  xfree (f);
+  xfree(f);
 }
 
 /* Returns xmalloc()'ed string from dlerror, or NULL if no error message
    is available.  Caller must xfree() returned memory.  */
 
 static char *
-get_dlerror_message ()
+get_dlerror_message(void)
 {
   char dyld_errmsg[MAXPATHLEN * 3];
-  dyld_errmsg[0] = '\0';
   struct value *ref_to_dlerror;
   struct value *retval;
   CORE_ADDR dlerror_msg_addr;
-  ref_to_dlerror = find_function_in_inferior ("dlerror",
-                                              builtin_type_voidptrfuncptr);
-  retval = call_function_by_hand_expecting_type (ref_to_dlerror,
+  dyld_errmsg[0] = '\0';
+  ref_to_dlerror = find_function_in_inferior("dlerror",
+                                             builtin_type_voidptrfuncptr);
+  retval = call_function_by_hand_expecting_type(ref_to_dlerror,
                                    builtin_type_void_data_ptr, 0, NULL, 1);
-  dlerror_msg_addr = value_as_address (retval);
+  dlerror_msg_addr = value_as_address(retval);
   if (dlerror_msg_addr != 0)
     {
-      read_memory_string (dlerror_msg_addr, dyld_errmsg, 
-                          sizeof (dyld_errmsg) - 1);
+      read_memory_string(dlerror_msg_addr, dyld_errmsg,
+                         sizeof(dyld_errmsg) - 1);
       if (dyld_errmsg[0] != '\0')
         {
           char *c;
-          dyld_errmsg[sizeof (dyld_errmsg) - 1] = '\0';
-          c = dyld_errmsg + strlen (dyld_errmsg) - 1;
-          if (*c == '\r' || *c == '\n')
+          dyld_errmsg[sizeof(dyld_errmsg) - 1] = '\0';
+          c = (dyld_errmsg + strlen(dyld_errmsg) - 1);
+          if ((*c == '\r') || (*c == '\n'))
             *c = '\0';
-          return xstrdup (dyld_errmsg);
+          return xstrdup(dyld_errmsg);
         }
     }
   return NULL;
@@ -697,16 +704,16 @@ get_fixed_file (struct fixinfo *cur)
 
   int loaded_ok;
 
-  /* Allocate a new fixedobj object for the .o file we're about to load,
+  /* Allocate a new fixedobj object for the .o file we are about to load,
      add it to the end of the CUR list of .o files. */
 
-  fixedobj = xmalloc (sizeof (struct fixedobj));
+  fixedobj = (struct fixedobj *)xmalloc(sizeof(struct fixedobj));
   fixedobj->bundle_filename = cur->bundle_filename;
   fixedobj->firstdatum = NULL;
   fixedobj->lastdatum = NULL;
   fixedobj->obsoletedsym = NULL;
   fixedobj->next = NULL;
-  
+
   /* FIXME: leak of fixedobj if load_fixed_objfile() errors out.  */
 
   loaded_ok = load_fixed_objfile (fixedobj->bundle_filename);
@@ -763,11 +770,11 @@ get_fixed_file (struct fixinfo *cur)
 /* Get the final filename component of a pathname.
    Returns a pointer into the middle of NAME, or a pointer to NAME.
    So don't go around trying to deallocate the value returned here.  */
-   
+
 static const char *
-getbasename (const char *name)
+getbasename(const char *name)
 {
-  const char *p = strrchr (name, '/');
+  const char *p = strrchr(name, '/');
   if (p)
     return (p + 1);
   else
@@ -786,40 +793,46 @@ getbasename (const char *name)
 */
 
 static int
-load_fixed_objfile (const char *name)
+load_fixed_objfile(const char *name)
 {
   struct value **libraryvec, *val, **args;
   int i, librarylen;
   struct value *ref_to_dlopen;
 
-  ref_to_dlopen = find_function_in_inferior ("dlopen", 
-                                              builtin_type_voidptrfuncptr);
+  ref_to_dlopen = find_function_in_inferior("dlopen",
+                                            builtin_type_voidptrfuncptr);
+#if defined(HAVE_STRNLEN)
+  librarylen = strnlen(name, (size_t)PATH_MAX);
+#else
+  librarylen = min(strlen(name), (size_t)PATH_MAX);
+#endif /* HAVE_STRNLEN */
+  libraryvec =
+    (struct value **)alloca(sizeof(struct value *) * (librarylen + 2UL));
+  for (i = 0; i < (librarylen + 1); i++)
+    libraryvec[i] = value_from_longest(builtin_type_char, name[i]);
 
-  librarylen = strlen (name);
-  libraryvec = (struct value **) 
-                    alloca (sizeof (struct value *) * (librarylen + 2));
-  for (i = 0; i < librarylen + 1; i++)
-    libraryvec [i] = value_from_longest (builtin_type_char, name[i]);
-
-  args = (struct value **) alloca (sizeof (struct value *) * 3);
-  args[0] = value_array (0, librarylen, libraryvec);
-  args[1] = value_from_longest (builtin_type_int, RTLD_LOCAL | RTLD_NOW);
+  args = (struct value **)alloca(sizeof(struct value *) * 3UL);
+  args[0] = value_array(0, librarylen, libraryvec);
+  args[1] = value_from_longest(builtin_type_int, RTLD_LOCAL | RTLD_NOW);
   args[2] = NULL;
-  val = call_function_by_hand_expecting_type 
-         (ref_to_dlopen, builtin_type_void_data_ptr, 2, args, 1);
+  val =
+    call_function_by_hand_expecting_type(ref_to_dlopen,
+                                         builtin_type_void_data_ptr, 2,
+                                         args, 1);
 
-  if (value_as_address (val) == 0)  /* dlopen returns NULL on failed load.  */
+  /* dlopen returns NULL on failed load: */
+  if (value_as_address(val) == 0)
     return 0;
 
   return 1;
 }
 
 /* Step through a newly loaded object file's symbols looking for
-   functions that need to be redirected and such.  
+   functions that need to be redirected and such.
    FIXME: Do something with file-static indirect data in the new .o file
    to point to the original objfile.  Somehow.  */
 
-static void 
+static void
 do_final_fix_fixups (struct fixinfo *cur)
 {
   struct objfile *most_recent_fix_objfile;
@@ -830,9 +843,9 @@ do_final_fix_fixups (struct fixinfo *cur)
   struct cleanup *cleanups;
   int i;
 
-  most_recent_fix_objfile = find_objfile_by_name 
+  most_recent_fix_objfile = find_objfile_by_name
                                   (cur->most_recent_fix->bundle_filename, 1);
-   
+
   objfiles_to_update = build_list_of_objfiles_to_update (cur);
   cleanups = make_cleanup (xfree, objfiles_to_update);
 
@@ -879,11 +892,11 @@ redirect_file_statics (struct fixinfo *cur)
   struct cleanup *wipe;
   int indirect_entry_count;
 
-  indirect_entry_count = find_and_parse_nonlazy_ptr_sect (cur, 
+  indirect_entry_count = find_and_parse_nonlazy_ptr_sect (cur,
                                                        &indirect_entries);
   if (indirect_entries == NULL || indirect_entry_count == 0)
     return;
-  
+
   wipe = make_cleanup (xfree, indirect_entries);
 
   find_new_static_symbols (cur, indirect_entries, indirect_entry_count);
@@ -891,14 +904,14 @@ redirect_file_statics (struct fixinfo *cur)
   find_orig_static_symbols (cur, indirect_entries, indirect_entry_count);
 
   redirect_statics (indirect_entries, indirect_entry_count);
-  
+
   do_cleanups (wipe);
 }
 
 static void
-find_new_static_symbols (struct fixinfo *cur, 
-                         struct file_static_fixups *indirect_entries,
-                         int indirect_entry_count)
+find_new_static_symbols(struct fixinfo *cur,
+                        struct file_static_fixups *indirect_entries,
+                        int indirect_entry_count)
 {
   struct symtab *symtab;
   struct block *b;
@@ -907,23 +920,23 @@ find_new_static_symbols (struct fixinfo *cur,
   struct dict_iterator i;
   struct objfile *most_recent_fix_objfile;
 
-  most_recent_fix_objfile = find_objfile_by_name 
-                                  (cur->most_recent_fix->bundle_filename, 1);
+  most_recent_fix_objfile =
+    find_objfile_by_name(cur->most_recent_fix->bundle_filename, 1);
 
    for (j = 0; j < indirect_entry_count; j++)
      {
        CORE_ADDR addr = indirect_entries[j].value;
        int matched = 0;
- 
+
        ALL_OBJFILE_SYMTABS (most_recent_fix_objfile, symtab)
          {
            if (symtab->primary != 1)
              continue;
- 
+
            b = BLOCKVECTOR_BLOCK (BLOCKVECTOR (symtab), STATIC_BLOCK);
            ALL_BLOCK_SYMBOLS (b, i, sym)
              {
-               if (SYMBOL_CLASS (sym) == LOC_STATIC && 
+               if (SYMBOL_CLASS (sym) == LOC_STATIC &&
                    SYMBOL_VALUE_ADDRESS (sym) == addr)
                  {
                    indirect_entries[j].new_sym = sym;
@@ -933,11 +946,11 @@ find_new_static_symbols (struct fixinfo *cur,
              }
            if (!matched)
              {
- 
+
                b = BLOCKVECTOR_BLOCK (BLOCKVECTOR (symtab), GLOBAL_BLOCK);
                ALL_BLOCK_SYMBOLS (b, i, sym)
                  {
-                   if (SYMBOL_CLASS (sym) == LOC_STATIC && 
+                   if (SYMBOL_CLASS (sym) == LOC_STATIC &&
                        SYMBOL_VALUE_ADDRESS (sym) == addr)
                     {
                        indirect_entries[j].new_sym = sym;
@@ -946,7 +959,7 @@ find_new_static_symbols (struct fixinfo *cur,
                      }
                  }
               }
- 
+
            if (matched)
              {
                indirect_entries[j].new_msym =
@@ -959,7 +972,7 @@ find_new_static_symbols (struct fixinfo *cur,
 }
 
 static void
-find_orig_static_symbols (struct fixinfo *cur, 
+find_orig_static_symbols (struct fixinfo *cur,
                           struct file_static_fixups *indirect_entries,
                           int indirect_entry_count)
 {
@@ -1002,14 +1015,14 @@ find_orig_static_symbols (struct fixinfo *cur,
           if (new_sym == NULL)
             continue;
 
-          orig_sym = lookup_block_symbol (static_bl, 
+          orig_sym = lookup_block_symbol (static_bl,
                                           SYMBOL_PRINT_NAME (new_sym),
-                                          SYMBOL_LINKAGE_NAME (new_sym), 
+                                          SYMBOL_LINKAGE_NAME (new_sym),
                                           SYMBOL_DOMAIN (new_sym));
           if (orig_sym == NULL)
-            orig_sym = lookup_block_symbol (global_bl, 
+            orig_sym = lookup_block_symbol (global_bl,
                                             SYMBOL_PRINT_NAME (new_sym),
-                                            SYMBOL_LINKAGE_NAME (new_sym), 
+                                            SYMBOL_LINKAGE_NAME (new_sym),
                                             SYMBOL_DOMAIN (new_sym));
 
           /* For C++ coalesced symbols, expand the scope of the search to
@@ -1020,13 +1033,13 @@ find_orig_static_symbols (struct fixinfo *cur,
           if (orig_sym)
             {
               indirect_entries[i].original_sym = orig_sym;
-              indirect_entries[i].original_msym = 
-                   lookup_minimal_symbol (SYMBOL_LINKAGE_NAME (orig_sym), 
+              indirect_entries[i].original_msym =
+                   lookup_minimal_symbol (SYMBOL_LINKAGE_NAME (orig_sym),
                                           NULL, f_objfile);
-              if (indirect_entries[i].original_msym == NULL && 
+              if (indirect_entries[i].original_msym == NULL &&
                   fix_and_continue_debug_flag)
                 {
-                  printf_unfiltered ("DEBUG: Found orig sym but unable to find orig msym for %s\n", 
+                  printf_unfiltered ("DEBUG: Found orig sym but unable to find orig msym for %s\n",
                                      SYMBOL_LINKAGE_NAME (orig_sym));
                 }
 
@@ -1042,9 +1055,9 @@ find_orig_static_symbols (struct fixinfo *cur,
    fixed file's symbol/msymbol for that static, and unobsoletes the original
    file's symbol/msymbol.  */
 
-static void 
-redirect_statics (struct file_static_fixups *indirect_entries, 
-                  int indirect_entry_count)
+static void
+redirect_statics(struct file_static_fixups *indirect_entries,
+                 int indirect_entry_count)
 {
   int i;
   gdb_byte buf[TARGET_ADDRESS_BYTES];
@@ -1053,65 +1066,59 @@ redirect_statics (struct file_static_fixups *indirect_entries,
     {
       if (fix_and_continue_debug_flag)
         {
-          if (indirect_entries[i].addr == (CORE_ADDR) NULL)
-            printf_filtered
-               ("DEBUG: Static entry addr for file static #%d was zero.\n", i);
-          if (indirect_entries[i].value == (CORE_ADDR) NULL)
-            printf_filtered
-                ("DEBUG: Destination addr for file static #%d was zero.\n", i);
+          if (indirect_entries[i].addr == (CORE_ADDR)(uintptr_t)NULL)
+            printf_filtered("DEBUG: Static entry addr for file static #%d was zero.\n", i);
+          if (indirect_entries[i].value == (CORE_ADDR)(uintptr_t)NULL)
+            printf_filtered("DEBUG: Destination addr for file static #%d was zero.\n", i);
           if (indirect_entries[i].new_sym == NULL)
-            printf_filtered 
-                   ("DEBUG: Could not find new symbol for static #%d\n", i);
+            printf_filtered("DEBUG: Could not find new symbol for static #%d\n", i);
           if (indirect_entries[i].new_msym == NULL)
-            printf_filtered 
-                 ("DEBUG: Could not find new msymbol for static #%d\n", i);
+            printf_filtered("DEBUG: Could not find new msymbol for static #%d\n", i);
           if (indirect_entries[i].original_sym == NULL)
-            printf_filtered 
-                 ("DEBUG: Could not find original symbol for static #%d\n", i);
+            printf_filtered("DEBUG: Could not find original symbol for static #%d\n", i);
           if (indirect_entries[i].original_msym == NULL)
-            printf_filtered 
-                 ("DEBUG: Could not find original msymbol for static #%d\n", i);
+            printf_filtered("DEBUG: Could not find original msymbol for static #%d\n", i);
         }
 
-      if (indirect_entries[i].new_sym == NULL || 
+      if (indirect_entries[i].new_sym == NULL ||
           indirect_entries[i].original_sym == NULL ||
-          indirect_entries[i].new_msym == NULL || 
+          indirect_entries[i].new_msym == NULL ||
           indirect_entries[i].original_msym == NULL)
         continue;
-      if (indirect_entries[i].value == (CORE_ADDR) NULL || 
-          indirect_entries[i].addr == (CORE_ADDR) NULL)
+      if (indirect_entries[i].value == (CORE_ADDR)(uintptr_t)NULL
+          || indirect_entries[i].addr == (CORE_ADDR)(uintptr_t)NULL)
         continue;
 
-      if (SYMBOL_VALUE_ADDRESS (indirect_entries[i].original_msym) == 0
-          || SYMBOL_VALUE_ADDRESS (indirect_entries[i].new_msym) == 0)
+      if (SYMBOL_VALUE_ADDRESS(indirect_entries[i].original_msym) == 0
+          || SYMBOL_VALUE_ADDRESS(indirect_entries[i].new_msym) == 0)
         continue;
 
-      store_unsigned_integer (buf, TARGET_ADDRESS_BYTES, 
-                        SYMBOL_VALUE_ADDRESS (indirect_entries[i].original_msym));
-      write_memory (indirect_entries[i].addr, buf, TARGET_ADDRESS_BYTES);
+      store_unsigned_integer(buf, TARGET_ADDRESS_BYTES,
+                        SYMBOL_VALUE_ADDRESS(indirect_entries[i].original_msym));
+      write_memory(indirect_entries[i].addr, buf, TARGET_ADDRESS_BYTES);
 
-      SYMBOL_OBSOLETED (indirect_entries[i].original_sym) = 0;
-      MSYMBOL_OBSOLETED (indirect_entries[i].original_msym) = 0;
-      SYMBOL_OBSOLETED (indirect_entries[i].new_sym) = 1;
-      MSYMBOL_OBSOLETED (indirect_entries[i].new_msym) = 1;
-      
+      SYMBOL_OBSOLETED(indirect_entries[i].original_sym) = 0;
+      MSYMBOL_OBSOLETED(indirect_entries[i].original_msym) = 0;
+      SYMBOL_OBSOLETED(indirect_entries[i].new_sym) = 1;
+      MSYMBOL_OBSOLETED(indirect_entries[i].new_msym) = 1;
+
       if (fix_and_continue_debug_flag)
-        printf_filtered ("DEBUG: Redirected file static %s from 0x%s to 0x%s\n",
-          SYMBOL_PRINT_NAME (indirect_entries[i].original_sym),
-          paddr_nz (SYMBOL_VALUE_ADDRESS (indirect_entries[i].new_msym)),
-          paddr_nz (SYMBOL_VALUE_ADDRESS (indirect_entries[i].original_msym)));
+        printf_filtered("DEBUG: Redirected file static %s from 0x%s to 0x%s\n",
+          SYMBOL_PRINT_NAME(indirect_entries[i].original_sym),
+          paddr_nz(SYMBOL_VALUE_ADDRESS(indirect_entries[i].new_msym)),
+          paddr_nz(SYMBOL_VALUE_ADDRESS(indirect_entries[i].original_msym)));
     }
 }
 
 
 /* The indirect addresses are in a separate segment/section,
-   (__IMPORT, __pointers on x86; __DATA, __nl_symbol_ptr on ppc).  
-   Find them, put them in an (xmalloced) array of file_static_fixups, 
+   (__IMPORT, __pointers on x86; __DATA, __nl_symbol_ptr on ppc).
+   Find them, put them in an (xmalloced) array of file_static_fixups,
    and return the number of them.  */
 
 static int
-find_and_parse_nonlazy_ptr_sect (struct fixinfo *cur, 
-                                 struct file_static_fixups **indirect_entries)
+find_and_parse_nonlazy_ptr_sect(struct fixinfo *cur,
+                                struct file_static_fixups **indirect_entries)
 {
   struct objfile *most_recent_fix_objfile;
   struct obj_section *indirect_ptr_section, *j;
@@ -1122,20 +1129,20 @@ find_and_parse_nonlazy_ptr_sect (struct fixinfo *cur,
   gdb_byte *buf;
   struct cleanup *wipe;
   int i;
-  
+
   *indirect_entries = NULL;
   indirect_ptr_section = NULL;
-  most_recent_fix_objfile = find_objfile_by_name 
-                               (cur->most_recent_fix->bundle_filename, 1);
+  most_recent_fix_objfile =
+    find_objfile_by_name(cur->most_recent_fix->bundle_filename, 1);
 
 
-  ALL_OBJFILE_OSECTIONS (most_recent_fix_objfile, j)
-    if (strcmp ("LC_SEGMENT.__IMPORT.__pointers", 
-                bfd_section_name (most_recent_fix_objfile->obfd, 
-                                  j->the_bfd_section)) == 0
-        || strcmp ("LC_SEGMENT.__DATA.__nl_symbol_ptr", 
-                   bfd_section_name (most_recent_fix_objfile->obfd, 
-                                   j->the_bfd_section)) == 0)
+  ALL_OBJFILE_OSECTIONS(most_recent_fix_objfile, j)
+    if ((strcmp("LC_SEGMENT.__IMPORT.__pointers",
+                bfd_section_name(most_recent_fix_objfile->obfd,
+                                 j->the_bfd_section)) == 0)
+        || (strcmp("LC_SEGMENT.__DATA.__nl_symbol_ptr",
+                   bfd_section_name(most_recent_fix_objfile->obfd,
+                                    j->the_bfd_section)) == 0))
       {
         indirect_ptr_section = j;
         break;
@@ -1146,27 +1153,29 @@ find_and_parse_nonlazy_ptr_sect (struct fixinfo *cur,
 
   indirect_ptr_section_start = indirect_ptr_section->addr;
 
-  indirect_ptr_section_size = 
-           indirect_ptr_section->endaddr - indirect_ptr_section->addr;
+  indirect_ptr_section_size =
+           (indirect_ptr_section->endaddr - indirect_ptr_section->addr);
 
   if (indirect_ptr_section_size == 0)
     return 0;
 
   if (indirect_ptr_section_size % TARGET_ADDRESS_BYTES != 0)
-    error ("Incorrect non-lazy symbol pointer section size!");
+    error("Incorrect non-lazy symbol pointer section size!");
 
-  nl_symbol_ptr_count = indirect_ptr_section_size / TARGET_ADDRESS_BYTES;
-  *indirect_entries = (struct file_static_fixups *) xmalloc 
-                   (sizeof (struct file_static_fixups) * nl_symbol_ptr_count);
+  nl_symbol_ptr_count = (int)(indirect_ptr_section_size
+                              / TARGET_ADDRESS_BYTES);
+  *indirect_entries = ((struct file_static_fixups *)
+                       xmalloc(sizeof(struct file_static_fixups)
+                               * nl_symbol_ptr_count));
 
-  buf = xmalloc (nl_symbol_ptr_count * TARGET_ADDRESS_BYTES);
-  wipe = make_cleanup (xfree, buf);
+  buf = (gdb_byte *)xmalloc(nl_symbol_ptr_count * TARGET_ADDRESS_BYTES);
+  wipe = make_cleanup(xfree, buf);
 
   /* The following code to read an array of ints from the target and convert
      them to host order is from symfile.c:read_target_long_array.  */
 
-  read_memory (indirect_ptr_section_start, buf,
-               nl_symbol_ptr_count * TARGET_ADDRESS_BYTES);
+  read_memory(indirect_ptr_section_start, buf,
+              nl_symbol_ptr_count * TARGET_ADDRESS_BYTES);
 
   /* Some of these entries will point to objects outside the current object
      file, in which case we're not interested in them.  */
@@ -1185,7 +1194,7 @@ find_and_parse_nonlazy_ptr_sect (struct fixinfo *cur,
       if (asect == NULL || asect->objfile != most_recent_fix_objfile)
         continue;
 
-      (*indirect_entries)[actual_entry_count].addr = 
+      (*indirect_entries)[actual_entry_count].addr =
                          indirect_ptr_section_start + i * TARGET_ADDRESS_BYTES;
       (*indirect_entries)[actual_entry_count].value = destination_address;
       (*indirect_entries)[actual_entry_count].new_sym = NULL;
@@ -1220,7 +1229,7 @@ build_list_of_objfiles_to_update (struct fixinfo *cur)
       count++;
     }
 
-  old_objfiles = (struct objfile **) 
+  old_objfiles = (struct objfile **)
                    xmalloc (sizeof (struct objfile *) * count);
 
   old_objfiles[0] = find_original_object_file (cur);
@@ -1243,8 +1252,8 @@ build_list_of_objfiles_to_update (struct fixinfo *cur)
    and stomp on that function's prologue if found.  */
 
 void
-do_final_fix_fixups_global_syms (struct block *newglobals, 
-                                 struct objfile *oldobj, 
+do_final_fix_fixups_global_syms (struct block *newglobals,
+                                 struct objfile *oldobj,
                                  struct fixinfo *curfixinfo)
 {
   struct symtab *oldsymtab;
@@ -1252,11 +1261,11 @@ do_final_fix_fixups_global_syms (struct block *newglobals,
   struct block *oldblock;
   struct symbol *oldsym = NULL;
   struct dict_iterator j;
-  struct symbol *cursym, *newsym;         
+  struct symbol *cursym, *newsym;
 
   ALL_BLOCK_SYMBOLS (newglobals, j, cursym)
     {
-      newsym = lookup_block_symbol (newglobals, SYMBOL_PRINT_NAME (cursym), 
+      newsym = lookup_block_symbol (newglobals, SYMBOL_PRINT_NAME (cursym),
                                  SYMBOL_LINKAGE_NAME (cursym), VAR_DOMAIN);
       /* Ignore type definitions. */
       if (!newsym || SYMBOL_CLASS (newsym) == LOC_TYPEDEF)
@@ -1277,8 +1286,8 @@ do_final_fix_fixups_global_syms (struct block *newglobals,
           oldblock = BLOCKVECTOR_BLOCK (oldbv, GLOBAL_BLOCK);
           if (oldblock != newglobals)
             {
-              oldsym = lookup_block_symbol (oldblock, 
-                             SYMBOL_PRINT_NAME (cursym), 
+              oldsym = lookup_block_symbol (oldblock,
+                             SYMBOL_PRINT_NAME (cursym),
                              SYMBOL_LINKAGE_NAME (cursym), VAR_DOMAIN);
               if (oldsym)
                 break;
@@ -1292,15 +1301,15 @@ do_final_fix_fixups_global_syms (struct block *newglobals,
           {
           if (fix_and_continue_debug_flag)
             printf_filtered ("DEBUG: fixed up global %s "
-                         "(newaddr 0x%s, oldaddr 0x%s)\n", 
-                         SYMBOL_PRINT_NAME (newsym), 
+                         "(newaddr 0x%s, oldaddr 0x%s)\n",
+                         SYMBOL_PRINT_NAME (newsym),
 			/* APPLE LOCAL begin address ranges  */
-                        paddr_nz (BLOCK_LOWEST_PC (SYMBOL_BLOCK_VALUE (newsym))), 
+                        paddr_nz (BLOCK_LOWEST_PC (SYMBOL_BLOCK_VALUE (newsym))),
                         paddr_nz (BLOCK_LOWEST_PC (SYMBOL_BLOCK_VALUE (oldsym))));
 	                /* APPLE LOCAL end address ranges  */
 
           redirect_old_function (curfixinfo, newsym, oldsym,
-                                  in_active_func (SYMBOL_LINKAGE_NAME (cursym), 
+                                  in_active_func (SYMBOL_LINKAGE_NAME (cursym),
                                               curfixinfo->active_functions));
           }
 
@@ -1308,8 +1317,8 @@ do_final_fix_fixups_global_syms (struct block *newglobals,
 }
 
 static void
-do_final_fix_fixups_static_syms (struct block *newstatics, 
-                                 struct objfile *oldobj, 
+do_final_fix_fixups_static_syms (struct block *newstatics,
+                                 struct objfile *oldobj,
                                  struct fixinfo *curfixinfo)
 {
   struct symtab *oldsymtab;
@@ -1317,7 +1326,7 @@ do_final_fix_fixups_static_syms (struct block *newstatics,
   struct block *oldblock;
   struct symbol *oldsym = NULL;
   struct dict_iterator j;
-  struct symbol *cursym, *newsym;         
+  struct symbol *cursym, *newsym;
   struct objfile *original_objfile = find_original_object_file (curfixinfo);
 
   if (!oldobj)
@@ -1332,7 +1341,7 @@ do_final_fix_fixups_static_syms (struct block *newstatics,
         continue;
 
       /* FIXME - skip over non-function syms */
-      if (SYMBOL_TYPE (newsym) == NULL 
+      if (SYMBOL_TYPE (newsym) == NULL
           || TYPE_CODE (SYMBOL_TYPE (newsym)) != TYPE_CODE_FUNC)
         continue;
 
@@ -1348,8 +1357,8 @@ do_final_fix_fixups_static_syms (struct block *newstatics,
           oldblock = BLOCKVECTOR_BLOCK (oldbv, STATIC_BLOCK);
           if (oldblock != newstatics)
             {
-              oldsym = lookup_block_symbol (oldblock, 
-                            SYMBOL_PRINT_NAME (cursym), 
+              oldsym = lookup_block_symbol (oldblock,
+                            SYMBOL_PRINT_NAME (cursym),
                             SYMBOL_LINKAGE_NAME (cursym), VAR_DOMAIN);
               if (oldsym)
                 break;
@@ -1360,7 +1369,7 @@ do_final_fix_fixups_static_syms (struct block *newstatics,
            arbitrary symtab.  Try expanding the search scope a bit.  */
         if (!oldsym)
           {
-            oldsym = search_for_coalesced_symbol 
+            oldsym = search_for_coalesced_symbol
                              (original_objfile, newsym);
             if (oldsym == newsym)
               oldsym = NULL;
@@ -1374,15 +1383,15 @@ do_final_fix_fixups_static_syms (struct block *newstatics,
           {
             if (fix_and_continue_debug_flag)
               printf_filtered ("DEBUG: fixed up static %s "
-                         "(newaddr 0x%s, oldaddr 0x%s)\n", 
-                         SYMBOL_PRINT_NAME (newsym), 
+                         "(newaddr 0x%s, oldaddr 0x%s)\n",
+                         SYMBOL_PRINT_NAME (newsym),
 			/* APPLE LOCAL begin address ranges  */
-                        paddr_nz (BLOCK_LOWEST_PC (SYMBOL_BLOCK_VALUE (newsym))), 
+                        paddr_nz (BLOCK_LOWEST_PC (SYMBOL_BLOCK_VALUE (newsym))),
                         paddr_nz (BLOCK_LOWEST_PC (SYMBOL_BLOCK_VALUE (oldsym))));
 	                /* APPLE LOCAL end address ranges  */
 
             redirect_old_function (curfixinfo, newsym, oldsym,
-                         in_active_func (SYMBOL_LINKAGE_NAME (cursym), 
+                         in_active_func (SYMBOL_LINKAGE_NAME (cursym),
                                         curfixinfo->active_functions));
           }
     }
@@ -1392,9 +1401,9 @@ do_final_fix_fixups_static_syms (struct block *newstatics,
    Maybe it shouldn't be. */
 
 static void
-free_objfile_cleanup (void *obj)
+free_objfile_cleanup(void *obj)
 {
-  free_objfile (obj);
+  free_objfile((struct objfile *)obj);
 }
 
 /* Before we load an objfile via dyld, load it into gdb and check that
@@ -1402,16 +1411,17 @@ free_objfile_cleanup (void *obj)
    a good bit of the fixinfo structure as we do our job. */
 
 static void
-pre_load_and_check_file (struct fixinfo *cur)
+pre_load_and_check_file(struct fixinfo *cur)
 {
   bfd *object_bfd;
   struct objfile *new_objfile;
   struct cleanup *cleanups;
 
-  object_bfd = symfile_bfd_open_safe (cur->bundle_filename, 0, GDB_OSABI_UNKNOWN);
-  new_objfile = symbol_file_add_bfd_safe (object_bfd, 0, 0, 0, 0, 0, 
-                                          OBJF_SYM_ALL, (CORE_ADDR) NULL, NULL,
-                                          NULL);
+  object_bfd = symfile_bfd_open_safe(cur->bundle_filename, 0, GDB_OSABI_UNKNOWN);
+  new_objfile = symbol_file_add_bfd_safe(object_bfd, 0, 0, 0, 0, 0,
+                                         OBJF_SYM_ALL,
+                                         (CORE_ADDR)(uintptr_t)NULL, NULL,
+                                         NULL);
 
   /* We need all of the debug symbols for the pre-loaded objfile;
      override any load-rules that might have affected it.  */
@@ -1463,7 +1473,7 @@ create_current_threads_list (const char *source_filename)
   for (tp = thread_list; tp; tp = tp->next)
     {
       snprintf (buf, 79, "%d", tp->num);
-      rc = gdb_thread_select (null_uiout, buf, 0, 0); 
+      rc = gdb_thread_select (null_uiout, buf, 0, 0);
 
       if (((int) rc < 0 && (enum return_reason) rc == RETURN_ERROR) ||
           ((int) rc >= 0 && rc == GDB_RC_FAIL))
@@ -1479,12 +1489,12 @@ create_current_threads_list (const char *source_filename)
         {
           if (head == NULL)
             {
-              i = head = (struct active_threads *) xmalloc 
+              i = head = (struct active_threads *) xmalloc
                                               (sizeof (struct active_threads));
             }
            else
              {
-               i->next = (struct active_threads *) xmalloc 
+               i->next = (struct active_threads *) xmalloc
                                               (sizeof (struct active_threads));
                i = i->next;
              }
@@ -1503,7 +1513,7 @@ create_current_threads_list (const char *source_filename)
    a parameter to a function that is currently on the stack.
    When this is called, the following things should already have been done:
 
-     cur->original_objfile_filename and cur->canonical_source_filename are 
+     cur->original_objfile_filename and cur->canonical_source_filename are
      initialized
 
      cur->active_functions is initialized for all threads
@@ -1537,7 +1547,7 @@ create_current_threads_list (const char *source_filename)
 static void
 do_pre_load_checks (struct fixinfo *cur, struct objfile *new_objfile)
 {
-  if (cur->original_objfile_filename == NULL || 
+  if (cur->original_objfile_filename == NULL ||
       cur->canonical_source_filename == NULL)
     {
       internal_error (__FILE__, __LINE__, "do_pre_load_checks: "
@@ -1568,27 +1578,28 @@ check_restrictions_globals (struct fixinfo *cur, struct objfile *newobj)
   char *old_type, *new_type;
   struct cleanup *wipe;
 
-  ALL_OBJFILE_SYMTABS_INCL_OBSOLETED (newobj, newsymtab)
+  ALL_OBJFILE_SYMTABS_INCL_OBSOLETED(newobj, newsymtab)
     {
+      struct dict_iterator i;
+
       if (newsymtab->primary != 1)
         continue;
 
-      struct dict_iterator i;
-      newblock = BLOCKVECTOR_BLOCK (BLOCKVECTOR (newsymtab), GLOBAL_BLOCK);
-      ALL_BLOCK_SYMBOLS (newblock, i, sym)
+      newblock = BLOCKVECTOR_BLOCK(BLOCKVECTOR(newsymtab), GLOBAL_BLOCK);
+      ALL_BLOCK_SYMBOLS(newblock, i, sym)
         {
-          sym_source_name = SYMBOL_PRINT_NAME (sym);
-          sym_linkage_name = SYMBOL_LINKAGE_NAME (sym);
-          newsym = lookup_block_symbol (newblock, sym_source_name, 
-                                        sym_linkage_name, VAR_DOMAIN);
+          sym_source_name = SYMBOL_PRINT_NAME(sym);
+          sym_linkage_name = SYMBOL_LINKAGE_NAME(sym);
+          newsym = lookup_block_symbol(newblock, sym_source_name,
+                                       sym_linkage_name, VAR_DOMAIN);
           oldsym = NULL;
-          if (newsym && (SYMBOL_CLASS (newsym) != LOC_TYPEDEF))
+          if (newsym && (SYMBOL_CLASS(newsym) != LOC_TYPEDEF))
             {
-              ALL_OBJFILE_SYMTABS_INCL_OBSOLETED (oldobj, oldsymtab)
+              ALL_OBJFILE_SYMTABS_INCL_OBSOLETED(oldobj, oldsymtab)
                 {
-                   oldblock = BLOCKVECTOR_BLOCK 
-                                      (BLOCKVECTOR (oldsymtab), GLOBAL_BLOCK);
-                   oldsym = lookup_block_symbol (oldblock, sym_source_name, 
+                   oldblock = BLOCKVECTOR_BLOCK(BLOCKVECTOR(oldsymtab),
+                                                GLOBAL_BLOCK);
+                   oldsym = lookup_block_symbol(oldblock, sym_source_name,
                                              sym_linkage_name, VAR_DOMAIN);
                    if (oldsym)
                      break;
@@ -1600,17 +1611,17 @@ check_restrictions_globals (struct fixinfo *cur, struct objfile *newobj)
             continue;
 
           /* Functions have class LOC_BLOCK.  */
-          if (TYPE_CODE (SYMBOL_TYPE (oldsym)) == TYPE_CODE_FUNC && 
+          if (TYPE_CODE (SYMBOL_TYPE (oldsym)) == TYPE_CODE_FUNC &&
               TYPE_CODE (SYMBOL_TYPE (newsym)) != TYPE_CODE_FUNC)
             error ("Changing function '%s' to a variable is not supported.",
                    SYMBOL_PRINT_NAME (oldsym));
 
-          if (TYPE_CODE (SYMBOL_TYPE (oldsym)) != TYPE_CODE_FUNC && 
+          if (TYPE_CODE (SYMBOL_TYPE (oldsym)) != TYPE_CODE_FUNC &&
               TYPE_CODE (SYMBOL_TYPE (newsym)) == TYPE_CODE_FUNC)
             error ("Changing variable '%s' to a function is not supported.",
                    SYMBOL_PRINT_NAME (oldsym));
 
-          if (TYPE_CODE (SYMBOL_TYPE (oldsym)) == TYPE_CODE_FUNC && 
+          if (TYPE_CODE (SYMBOL_TYPE (oldsym)) == TYPE_CODE_FUNC &&
               TYPE_CODE (SYMBOL_TYPE (newsym)) == TYPE_CODE_FUNC)
             continue;
 
@@ -1620,7 +1631,7 @@ check_restrictions_globals (struct fixinfo *cur, struct objfile *newobj)
           make_cleanup (xfree, new_type);
           if (strcmp (old_type, new_type) != 0)
             error ("Changing the type of global variable '%s'"
-                 " from '%s' to '%s' is not supported.",     
+                 " from '%s' to '%s' is not supported.",
                  SYMBOL_PRINT_NAME (oldsym), old_type, new_type);
 
           do_cleanups (wipe);
@@ -1630,53 +1641,54 @@ check_restrictions_globals (struct fixinfo *cur, struct objfile *newobj)
 }
 
 static void
-check_restrictions_statics (struct fixinfo *cur, struct objfile *newobj)
+check_restrictions_statics(struct fixinfo *cur, struct objfile *newobj)
 {
   struct block *newblock;
   struct symtab *newsymtab;
   struct symbol *oldsym, *newsym, *sym;
-  const char *sym_source_name, *sym_linkage_name;  
-  struct objfile *original_objfile = find_original_object_file (cur);
+  const char *sym_source_name, *sym_linkage_name;
+  struct objfile *original_objfile = find_original_object_file(cur);
 
-  ALL_OBJFILE_SYMTABS_INCL_OBSOLETED (newobj, newsymtab)
+  ALL_OBJFILE_SYMTABS_INCL_OBSOLETED(newobj, newsymtab)
     {
+      struct dict_iterator i;
+
       if (newsymtab->primary != 1)
         continue;
 
-      struct dict_iterator i;
-      newblock = BLOCKVECTOR_BLOCK (BLOCKVECTOR (newsymtab), STATIC_BLOCK);
-      ALL_BLOCK_SYMBOLS (newblock, i, sym)
+      newblock = BLOCKVECTOR_BLOCK(BLOCKVECTOR(newsymtab), STATIC_BLOCK);
+      ALL_BLOCK_SYMBOLS(newblock, i, sym)
         {
           /* Notably: Skip STRUCT_DOMAIN until I can think of checks for
              it.  */
-          if (SYMBOL_DOMAIN (sym) != VAR_DOMAIN &&
-              SYMBOL_DOMAIN (sym) != METHODS_DOMAIN)
+          if ((SYMBOL_DOMAIN(sym) != VAR_DOMAIN)
+              && (SYMBOL_DOMAIN(sym) != METHODS_DOMAIN))
             continue;
 
-          sym_source_name = SYMBOL_PRINT_NAME (sym);
-          sym_linkage_name = SYMBOL_LINKAGE_NAME (sym);
-          newsym = lookup_block_symbol (newblock, sym_source_name,      
-                                      sym_linkage_name, SYMBOL_DOMAIN (sym));
+          sym_source_name = SYMBOL_PRINT_NAME(sym);
+          sym_linkage_name = SYMBOL_LINKAGE_NAME(sym);
+          newsym = lookup_block_symbol(newblock, sym_source_name,
+                                       sym_linkage_name, SYMBOL_DOMAIN(sym));
 
 
           /* This should be impossible. */
-          /* Actually, it can happen.  If you're fixing a C++ program
-             but some of the files don't end in ".cp" or ".cxx" or ".C",
+          /* Actually, it can happen.  If you are fixing a C++ program
+             but some of the files do NOT end in ".cp" or ".cxx" or ".C",
              gdb's mangling will be disabled.  The mangled sym name is passed
-             to lookup_symbol() and it won't match anything.
+             to lookup_symbol() and it will NOT match anything.
              A reasonable workaround at this point would be to try setting
              the current language to language_cplus and re-executing this
              function... */
 
           /* FIXME: This error message is a hack.  */
           if (newsym == NULL)
-            error ("No symbol found for '%s'.  "
-                   "Could this be a C++ application whose source filenames end in '.c'?", 
-                    sym_source_name);
+            error("No symbol found for '%s'.  "
+                  "Could this be a C++ application whose source filenames end in '.c'?",
+                   sym_source_name);
 
-          if (SYMBOL_CLASS (newsym) == LOC_CONST)
+          if (SYMBOL_CLASS(newsym) == LOC_CONST)
             continue;
-          if (TYPE_CODE (SYMBOL_TYPE (newsym)) == TYPE_CODE_FUNC)
+          if (TYPE_CODE(SYMBOL_TYPE(newsym)) == TYPE_CODE_FUNC)
             continue;
 
           /* For now, ignore all of the OBJC internal labels
@@ -1685,8 +1697,8 @@ check_restrictions_statics (struct fixinfo *cur, struct objfile *newobj)
               _OBJC_INSTANCE_VARIABLES, _OBJC_METACLASS, _OBJC_METH_VAR_NAME,
               _OBJC_METH_VAR_TYPE, _OBJC_SELECTOR_REFERENCES, et al)
 	     These may prove to be useful to check later on, but
-	     I haven't thought this through yet, and I suspect only 
-             _OBJC_INSTANCE_METHODS and _OBJC_INSTANCE_VARIABLES will 
+	     I haven't thought this through yet, and I suspect only
+             _OBJC_INSTANCE_METHODS and _OBJC_INSTANCE_VARIABLES will
              be of use.  */
           if (strncmp (sym_linkage_name, "_OBJC_", 6) == 0)
             continue;
@@ -1695,14 +1707,14 @@ check_restrictions_statics (struct fixinfo *cur, struct objfile *newobj)
                                   SYMBOL_DOMAIN (newsym), NULL, NULL);
 
           /* oldsym == newsym, so we didn't find the symbol in the symtabs.
-             Try a bit more searching before we assume it's a new symbol.  
+             Try a bit more searching before we assume it's a new symbol.
              This can easily happen in C++ where the symbol may be a coalesced
              sym in a symtab that hasn't been expanded from a psymtab yet.  */
-          if (oldsym == newsym && 
+          if (oldsym == newsym &&
               (SYMBOL_CLASS (newsym) == LOC_STATIC ||
                SYMBOL_CLASS (newsym) == LOC_INDIRECT))
             {
-              oldsym = search_for_coalesced_symbol 
+              oldsym = search_for_coalesced_symbol
                                (original_objfile, newsym);
                   /* We didn't find a matching minsym in the objfile
                      (app, library, etc.) that we're fixing.  This should
@@ -1730,7 +1742,7 @@ check_restrictions_statics (struct fixinfo *cur, struct objfile *newobj)
                   TYPE_CODE (SYMBOL_TYPE (oldsym)) == TYPE_CODE_UNDEF)
                 {
                   warning ("Type code for '%s' unresolvable, "
-                           "skipping type change checks.", 
+                           "skipping type change checks.",
                               SYMBOL_PRINT_NAME (oldsym));
                   continue;
                 }
@@ -1738,7 +1750,7 @@ check_restrictions_statics (struct fixinfo *cur, struct objfile *newobj)
                   TYPE_CODE (SYMBOL_TYPE (newsym)) == TYPE_CODE_UNDEF)
                 {
                   warning ("Type code for '%s' unresolvable, "
-                           "skipping type change checks.", 
+                           "skipping type change checks.",
                               SYMBOL_PRINT_NAME (newsym));
                   continue;
                 }
@@ -1749,7 +1761,7 @@ check_restrictions_statics (struct fixinfo *cur, struct objfile *newobj)
               make_cleanup (xfree, new_type);
               if (strcmp (old_type, new_type) != 0)
                 error ("Changing the type of file static variable '%s'"
-                     " from '%s' to '%s' is not supported.", 
+                     " from '%s' to '%s' is not supported.",
                      SYMBOL_PRINT_NAME (oldsym), old_type, new_type);
 
               do_cleanups (wipe);
@@ -1798,7 +1810,7 @@ check_restrictions_locals (struct fixinfo *cur, struct objfile *newobj)
                 {
                   oldblock = BLOCKVECTOR_BLOCK (oldbv, j);
                   if (BLOCK_FUNCTION (oldblock) != NULL &&
-                      SYMBOL_MATCHES_NATURAL_NAME (BLOCK_FUNCTION (oldblock), 
+                      SYMBOL_MATCHES_NATURAL_NAME (BLOCK_FUNCTION (oldblock),
                                                    funcname))
                     {
                       check_restrictions_function (funcname, active,
@@ -1815,9 +1827,9 @@ check_restrictions_locals (struct fixinfo *cur, struct objfile *newobj)
              another symtab within the same objfile ("C++").  */
           if (!foundmatch)
             {
-              oldsym = search_for_coalesced_symbol (oldobj, 
+              oldsym = search_for_coalesced_symbol (oldobj,
                                                 BLOCK_FUNCTION (newblock));
-              if (oldsym) 
+              if (oldsym)
                 {
                   oldblock = SYMBOL_BLOCK_VALUE (oldsym);
                   if (oldblock != newblock)
@@ -1830,7 +1842,7 @@ check_restrictions_locals (struct fixinfo *cur, struct objfile *newobj)
 }
 
 static void
-check_restrictions_function (const char *funcname, int active, 
+check_restrictions_function (const char *funcname, int active,
                              struct block *oldblock, struct block *newblock)
 {
   int newfunc_args, oldfunc_args;
@@ -1859,7 +1871,7 @@ check_restrictions_function (const char *funcname, int active,
 
 
   /* Count # of args, locals in old and new blocks.  */
- 
+
   oldfunc_args = oldfunc_locals = 0;
   ALL_BLOCK_SYMBOLS (oldblock, i, oldsym)
     {
@@ -1868,7 +1880,7 @@ check_restrictions_function (const char *funcname, int active,
       else if (sym_is_local (oldsym))
         oldfunc_locals++;
     }
- 
+
   newfunc_args = newfunc_locals = 0;
   ALL_BLOCK_SYMBOLS (newblock, i, newsym)
     {
@@ -1884,7 +1896,7 @@ check_restrictions_function (const char *funcname, int active,
 
   if (active && oldfunc_locals != newfunc_locals)
     error ("Changing number of local variables from %d to %d for function '%s'"
-           " while active on the stack is not supported.", 
+           " while active on the stack is not supported.",
            oldfunc_locals, newfunc_locals, funcname);
 
 
@@ -1915,7 +1927,7 @@ check_restrictions_function (const char *funcname, int active,
         {
           error ("In function '%s', argument '%s' changed from "
                  "type '%s' to type '%s', which is not supported.",
-                 funcname, SYMBOL_PRINT_NAME (oldsym), 
+                 funcname, SYMBOL_PRINT_NAME (oldsym),
                  old_type_name, new_type_name);
         }
     }
@@ -1947,7 +1959,7 @@ sym_is_local (struct symbol *s)
    searched for as well. */
 
 static void
-force_psymtab_expansion (struct objfile *obj, const char *source_fn, 
+force_psymtab_expansion (struct objfile *obj, const char *source_fn,
                          const char *alt_source_fn)
 {
   struct partial_symtab *ps;
@@ -1982,7 +1994,7 @@ expand_all_objfile_psymtabs (struct objfile *obj)
 }
 
 
-/* Returns 1 if the file is found.  0 if error or not found.  
+/* Returns 1 if the file is found.  0 if error or not found.
    Directories return 0.  Soft-links are transversed by stat; use
    lstat if we need to differentiate between a soft-link and the
    file it points to.  */
@@ -2050,26 +2062,27 @@ create_current_active_funcs_list (const char *source_filename)
       sal = find_pc_line (get_frame_pc (fi), 0);
       if (sal.symtab == NULL)
         continue;
- 
+
       if ((!strcmp (source_filename, sal.symtab->filename)) ||
           (!strcmp (getbasename (source_filename),
 		    getbasename (sal.symtab->filename))))
         {
           sym = find_pc_function (get_frame_pc (fi));
-          if (sym != 0) 
+          if (sym != 0)
             {
-              func = xmalloc (sizeof (struct active_func));
-              func->level = frame_relative_level (fi);
+              func = ((struct active_func *)
+                      xmalloc(sizeof(struct active_func)));
+              func->level = frame_relative_level(fi);
               func->line = sal.line;
-              func->file = xstrdup (sal.symtab->filename);
+              func->file = xstrdup(sal.symtab->filename);
               if (sal.symtab->dirname)
-                func->dir = xstrdup (sal.symtab->dirname);
+                func->dir = xstrdup(sal.symtab->dirname);
               else
                 func->dir = NULL;
-              func->fp = get_frame_base (fi);
-              func->addr = get_frame_pc (fi);
+              func->fp = get_frame_base(fi);
+              func->addr = get_frame_pc(fi);
 
-              /* The following copies (and the related free()s in 
+              /* The following copies (and the related free()s in
                  free_active_threads_struct()) should not be necessary, except
                  that in some circumstances we seem to be accidentally picking
                  up the pre-loaded test objfile, which gets freed shortly
@@ -2079,7 +2092,7 @@ create_current_active_funcs_list (const char *source_filename)
               memcpy (func->sym, sym, sizeof (struct symbol));
               SYMBOL_LINKAGE_NAME (func->sym) = xstrdup (SYMBOL_LINKAGE_NAME (sym));
               if (SYMBOL_CPLUS_DEMANGLED_NAME(sym))
-                SYMBOL_CPLUS_DEMANGLED_NAME (func->sym) = 
+                SYMBOL_CPLUS_DEMANGLED_NAME (func->sym) =
                       xstrdup (SYMBOL_CPLUS_DEMANGLED_NAME (sym));
 
               if (function_chain == NULL)
@@ -2111,15 +2124,15 @@ in_active_func (const char *name, struct active_threads *threads)
 }
 
 /* Redirect a function to its new definition, update the gdb
-   symbols so the now-obsolete ones are marked as such.  
+   symbols so the now-obsolete ones are marked as such.
    This function assumes that checks have already been made to
    assure that the function is large enough to contain the
    trampoline, and that the PC isn't presently in the middle
    of the code we're overwriting.  */
 
 static void
-redirect_old_function (struct fixinfo *fixinfo, struct symbol *new_sym, 
-                       struct symbol *old_sym, int active)
+redirect_old_function(struct fixinfo *fixinfo, struct symbol *new_sym,
+                      struct symbol *old_sym, int active)
 {
   CORE_ADDR oldfuncstart, oldfuncend, newfuncstart, fixup_addr;
   struct minimal_symbol *msym;
@@ -2137,57 +2150,64 @@ redirect_old_function (struct fixinfo *fixinfo, struct symbol *new_sym,
     }
   /* APPLE LOCAL end address ranges  */
 
-  oldfuncstart = BLOCK_START (SYMBOL_BLOCK_VALUE (old_sym));
-  oldfuncend = BLOCK_END (SYMBOL_BLOCK_VALUE (old_sym));
-  newfuncstart = BLOCK_START (SYMBOL_BLOCK_VALUE (new_sym));
+  oldfuncstart = BLOCK_START(SYMBOL_BLOCK_VALUE(old_sym));
+  oldfuncend = BLOCK_END(SYMBOL_BLOCK_VALUE(old_sym));
+  newfuncstart = BLOCK_START(SYMBOL_BLOCK_VALUE(new_sym));
 
-  fixup_addr = oldfuncstart; 
+  fixup_addr = oldfuncstart;
 
-#if defined (TARGET_I386)
-  unsigned char buf[6];
-  uint32_t relative_offset;
+#if defined(TARGET_I386)
+  {
+    unsigned char buf[6];
+    uint32_t relative_offset;
 
-  buf[0] = 0xe9;  /* jmp <imm32-relative-addr> */
-  buf[5] = 0xcc;  /* int 3 */
-  relative_offset = (uint32_t) newfuncstart - (oldfuncstart + 5);
-  /* Use '4' instead of TARGET_ADDRESS_BYTES because 0xe9 is a 32-bit 
-     eip/rip relative displacement, not an address.  */
-  store_unsigned_integer (buf + 1, 4, relative_offset);
-  target_write_memory (oldfuncstart, buf, 6);
-#endif
+    buf[0] = 0xe9;  /* jmp <imm32-relative-addr> */
+    buf[5] = 0xcc;  /* int 3 */
+    relative_offset = (uint32_t)((uint32_t)newfuncstart
+                                 - (oldfuncstart + 5U));
+    /* Use '4' instead of TARGET_ADDRESS_BYTES because 0xe9 is a 32-bit
+     * eip/rip relative displacement, not an address.  */
+    store_unsigned_integer(buf + 1, 4, relative_offset);
+    target_write_memory(oldfuncstart, buf, 6);
+  }
+#endif /* TARGET_I386 */
 
-  SYMBOL_OBSOLETED (old_sym) = 1;
-  msym = lookup_minimal_symbol_by_pc (oldfuncstart);
+  SYMBOL_OBSOLETED(old_sym) = 1;
+  msym = lookup_minimal_symbol_by_pc(oldfuncstart);
   if (msym)
-    MSYMBOL_OBSOLETED (msym) = 1;
-  obsoletedsym = xmalloc (sizeof (struct obsoletedsym)); 
+    MSYMBOL_OBSOLETED(msym) = 1;
+  obsoletedsym = ((struct obsoletedsym *)
+                  xmalloc(sizeof(struct obsoletedsym)));
   obsoletedsym->oldsym = old_sym;
   obsoletedsym->newsym = new_sym;
   obsoletedsym->oldmsym = msym;
-  msym = lookup_minimal_symbol_by_pc (newfuncstart);
+  msym = lookup_minimal_symbol_by_pc(newfuncstart);
   obsoletedsym->newmsym = msym;
   if (fixinfo->most_recent_fix->obsoletedsym == NULL)
-    obsoletedsym->next = NULL; 
+    obsoletedsym->next = NULL;
   else
     obsoletedsym->next = fixinfo->most_recent_fix->obsoletedsym;
   fixinfo->most_recent_fix->obsoletedsym = obsoletedsym;
+
+  /* Use some unused variables: */
+  if (oldfuncend == fixup_addr) {
+    return; /* else fall off the end; matters little either way... */
+  }
 }
 
 
-  /* Detect a Fix and Continue trampoline.
-     Returns 0 if this is not a F&C trampoline; returns the
-     destination address if it is.  */
+/* Detect a Fix and Continue trampoline.
+   Returns 0 if this is not a F&C trampoline; returns the
+   destination address if it is.  */
 
 CORE_ADDR
-decode_fix_and_continue_trampoline (CORE_ADDR pc)
+decode_fix_and_continue_trampoline(CORE_ADDR pc)
 {
-#if defined (TARGET_I386)
-
-  /* Detect the x86 F&C trampoline sequence.  */
-
+#if defined(TARGET_I386)
+  /* Detect the x86 F&C trampoline sequence: */
   unsigned char buf[6];
   uint32_t relative_offset;
-  target_read_memory (pc, buf, 6);
+  target_read_memory(pc, buf, 6);
 
   /* jmp <32-bit-relative-addr> */
   if (buf[0] != 0xe9)
@@ -2196,13 +2216,13 @@ decode_fix_and_continue_trampoline (CORE_ADDR pc)
   /* int 3 */
   if (buf[5] != 0xcc)
     return 0;
-  
-  relative_offset = extract_unsigned_integer (buf + 1, 4);
+
+  relative_offset = (uint32_t)extract_unsigned_integer(buf + 1, 4);
   pc += 5;  /* the relative offset is computed from next instruction */
-  return pc + relative_offset;
+  return (pc + relative_offset);
 #else
   return 0;
-#endif
+#endif /* TARGET_I386 */
 }
 
 /* Print all of the functions that are currently on the stack which
@@ -2220,13 +2240,13 @@ print_active_functions (struct fixinfo *cur)
   if (!ui_out_is_mi_like_p (uiout))
     return;
 
-  uiout_cleanup = 
+  uiout_cleanup =
       make_cleanup_ui_out_list_begin_end (uiout, "replaced-functions");
-  
+
   for (th = cur->active_functions; th != NULL; th = th->next)
     {
       struct cleanup *uiout_one_thread_cleanup;
-      uiout_one_thread_cleanup = 
+      uiout_one_thread_cleanup =
            make_cleanup_ui_out_tuple_begin_end (uiout, NULL);
       ui_out_field_int (uiout, "thread-id", th->num);
       make_cleanup_ui_out_list_begin_end (uiout, "replaced");
@@ -2259,9 +2279,9 @@ print_active_functions (struct fixinfo *cur)
    version of the function, but do not update the PIC base register, the
    function will soon crash.
 
-   The function that contains the new $pc setting is passed to 
+   The function that contains the new $pc setting is passed to
    update_picbase_register as NEW_FUN.
-   
+
    The correct thread should be selected before update_picbase_register is
    called.
 
@@ -2270,27 +2290,27 @@ print_active_functions (struct fixinfo *cur)
 void
 update_picbase_register (struct symbol *new_fun)
 {
-#if defined (TARGET_I386)
-
-  /* x86_64 doesn't use an instruction sequence to set up a pic base register;
-     it has rip-relative addressing.  */
-  if (gdbarch_lookup_osabi (exec_bfd) == GDB_OSABI_DARWIN64)
-    return;
-
-  /* Find & update the x86 PIC base register if one is used. */
-
+#if defined(TARGET_I386)
   enum i386_regnum pic_base_reg;
   CORE_ADDR pic_base_value;
-  if (i386_find_picbase_setup (BLOCK_START (SYMBOL_BLOCK_VALUE (new_fun)),
-                               &pic_base_value, &pic_base_reg))
+
+  /* x86_64 does NOT use an instruction sequence to set up a pic base
+   * register; it has rip-relative addressing: */
+  if (gdbarch_lookup_osabi(exec_bfd) == GDB_OSABI_DARWIN64)
+    return;
+
+  /* Find & update the x86 PIC base register if one is used: */
+  if (i386_find_picbase_setup(BLOCK_START(SYMBOL_BLOCK_VALUE(new_fun)),
+                              &pic_base_value, &pic_base_reg))
     {
       if (fix_and_continue_debug_flag)
-        printf_filtered ("DEBUG: updating picbase in register %d to 0x%s\n", 
-                         pic_base_reg, paddr_nz (pic_base_value));
-      write_register (pic_base_reg, pic_base_value);
+        printf_filtered("DEBUG: updating picbase in register %d to 0x%s\n",
+                        pic_base_reg, paddr_nz(pic_base_value));
+      write_register(pic_base_reg, pic_base_value);
     }
-
-#endif
+#else
+  return;
+#endif /* TARGET_I386 */
 }
 
 static struct symtab *
@@ -2320,11 +2340,11 @@ find_symtab_by_name (struct objfile *obj, const char *name)
 
    So when searching for a symbol with static visibility, if we don't
    find it in the original symtab, it might be one of these coalesced
-   symbols and we need to search all the symtabs in the objfile.  
+   symbols and we need to search all the symtabs in the objfile.
 
    No special concern is needed for the ZeroLink case -- in that case,
    each source file symtab is its own objfile, and each one will have its
-   own copy of all these coalesced items.  
+   own copy of all these coalesced items.
 
    FIXME: I'm searching the minsyms right now, but it would be more
    reliable to base this off of the partial symtabs.  symtab.c
@@ -2419,7 +2439,7 @@ find_original_object_file_name (struct fixinfo *cur)
       {
         /* FIXME: The cond is to guard against a probably bug in the Apple
            gdb sources where we have two psymtabs, 2003-03-17/jmolenda */
-        if (ps->texthigh != 0 && 
+        if (ps->texthigh != 0 &&
             (strcmp (ps->objfile->name, cur->bundle_filename) != 0))
           {
             PSYMTAB_TO_SYMTAB (ps);
@@ -2434,7 +2454,7 @@ find_original_object_file_name (struct fixinfo *cur)
   error ("Unable to find original source file %s.  "
          "Target built without debugging symbols?", cur->src_basename);
 }
-  
+
 static struct objfile *
 find_original_object_file (struct fixinfo *cur)
 {
@@ -2466,7 +2486,7 @@ find_original_psymtab (struct fixinfo *cur)
       return pst;
 
   error ("Unable to find original source file '%s'!  "
-         "Target compiled without debug information?", 
+         "Target compiled without debug information?",
          cur->canonical_source_filename);
 }
 
@@ -2474,7 +2494,7 @@ find_original_psymtab (struct fixinfo *cur)
    already, and return a pointer to the (potentially new) objfile.
    When the symbol load level is raised a new objfile is created,
    so be sure to not hold on to a pointer to the old one.  Either re-find
-   the objfile, or use the return value of this function.  
+   the objfile, or use the return value of this function.
    When the objfile's load level is raised from e.g. OBJF_SYM_EXTERN,
    the new OBJF_SYM_ALL objfile will have the usual psymtabs set up and
    ready for the usual expansions.  */
@@ -2491,49 +2511,47 @@ raise_objfile_load_level (struct objfile *obj)
   wipe = make_cleanup (xfree, (char *) name);
 
   objfile_set_load_state (obj, OBJF_SYM_ALL, 1);
- 
+
   obj = find_objfile_by_name (name, 1);
   do_cleanups (wipe);
   return (obj);
 }
 
 /* This function returns 1 if fix and continue is supported, 0 if it
-   isn't supported, and -1 if it is unable to make the determination. */
-
+ * is NOT supported, and -1 if it is unable to make the determination. */
 int
-fix_and_continue_supported (void)
+fix_and_continue_supported(void)
 {
-  /* Don't have a binary specified OR we've attached to a process and
-     exec_bfd hasn't been set up for us. */
-
+  /* Do NOT have a binary specified OR we have attached to a process and
+   * exec_bfd has NOT been set up for us: */
   if (exec_bfd == NULL)
     return -1;
 
   /* gdb looks mostly correct for x86_64 at this point but we need some
-     fixes from other components before we can enable this.  */
-  if (gdbarch_lookup_osabi (exec_bfd) == GDB_OSABI_DARWIN64)
+   * fixes from other components before we can enable this: */
+  if (gdbarch_lookup_osabi(exec_bfd) == GDB_OSABI_DARWIN64)
     return 0;
 
-  /* Not supported on ARM, neither remote nor native.  */
-#if defined (TARGET_ARM)
+  /* Not supported on ARM, neither remote nor native: */
+#if defined(TARGET_ARM)
   return 0;
-#endif
+#endif /* TARGET_ARM */
 
-  /* No longer supported on ppc */
-#if defined (TARGET_POWERPC)
+  /* No longer supported on ppc: */
+#if defined(TARGET_POWERPC)
   return 0;
-#endif
+#endif /* TARGET_POWERPC */
 
   return 1;
 }
 
 void
-_initialize_fix (void)
+_initialize_fix(void)
 {
   struct cmd_list_element *c;
 
-  c = add_com ("fix", class_files, fix_command, "Bring in a fixed objfile.");
-  set_cmd_completer (c, filename_completer);
+  c = add_com("fix", class_files, fix_command, "Bring in a fixed objfile.");
+  set_cmd_completer(c, filename_completer);
 
   add_setshow_boolean_cmd ("fix-and-continue", class_obscure,
 			   &fix_and_continue_debug_flag, _("\
@@ -2542,3 +2560,5 @@ Show if GDB prints debug information while Fix and Continuing."), NULL,
 			   NULL, NULL,
 			   &setdebuglist, &showdebuglist);
 }
+
+/* EOF */

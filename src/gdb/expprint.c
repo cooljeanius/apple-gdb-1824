@@ -1,4 +1,4 @@
-/* Print in infix form a struct expression.
+/* expprint.c: Print in infix form a struct expression.
 
    Copyright 1986, 1988, 1989, 1991, 1992, 1993, 1994, 1995, 1996, 1997,
    1998, 1999, 2000, 2003 Free Software Foundation, Inc.
@@ -33,14 +33,14 @@
 #include "block.h"
 
 #ifdef HAVE_CTYPE_H
-#include <ctype.h>
-#endif
+# include <ctype.h>
+#endif /* HAVE_CTYPE_H */
 
 void
-print_expression (struct expression *exp, struct ui_file *stream)
+print_expression(struct expression *exp, struct ui_file *stream)
 {
   int pc = 0;
-  print_subexp (exp, &pc, stream, PREC_NULL);
+  print_subexp(exp, &pc, stream, PREC_NULL);
 }
 
 /* Print the subexpression of EXP that starts in position POS, on STREAM.
@@ -172,54 +172,56 @@ print_subexp_standard (struct expression *exp, int *pos,
       return;
 
     case OP_STRING:
-      nargs = longest_to_int (exp->elts[pc + 1].longconst);
-      (*pos) += 3 + BYTES_TO_EXP_ELEM (nargs + 1);
+      nargs = longest_to_int(exp->elts[pc + 1].longconst);
+      (*pos) += 3 + BYTES_TO_EXP_ELEM(nargs + 1);
       /* LA_PRINT_STRING will print using the current repeat count threshold.
          If necessary, we can temporarily set it to zero, or pass it as an
          additional parameter to LA_PRINT_STRING.  -fnf */
-      LA_PRINT_STRING (stream, &exp->elts[pc + 2].string, nargs, 1, 0);
+      LA_PRINT_STRING(stream, (const gdb_byte *)&exp->elts[pc + 2].string,
+                      nargs, 1, 0);
       return;
 
     case OP_BITSTRING:
-      nargs = longest_to_int (exp->elts[pc + 1].longconst);
-      (*pos)
-	+= 3 + BYTES_TO_EXP_ELEM ((nargs + HOST_CHAR_BIT - 1) / HOST_CHAR_BIT);
-      fprintf_unfiltered (stream, "B'<unimplemented>'");
+      nargs = longest_to_int(exp->elts[pc + 1].longconst);
+      (*pos) +=
+        3 + BYTES_TO_EXP_ELEM((nargs + HOST_CHAR_BIT - 1) / HOST_CHAR_BIT);
+      fprintf_unfiltered(stream, "B'<unimplemented>'");
       return;
 
     case OP_OBJC_NSSTRING:	/* Objective-C Foundation Class NSString constant.  */
-      nargs = longest_to_int (exp->elts[pc + 1].longconst);
-      (*pos) += 3 + BYTES_TO_EXP_ELEM (nargs + 1);
-      fputs_filtered ("@\"", stream);
-      LA_PRINT_STRING (stream, &exp->elts[pc + 2].string, nargs, 1, 0);
-      fputs_filtered ("\"", stream);
+      nargs = longest_to_int(exp->elts[pc + 1].longconst);
+      (*pos) += (3 + BYTES_TO_EXP_ELEM(nargs + 1));
+      fputs_filtered("@\"", stream);
+      LA_PRINT_STRING(stream, (const gdb_byte *)&exp->elts[pc + 2].string,
+                      nargs, 1, 0);
+      fputs_filtered("\"", stream);
       return;
 
     case OP_OBJC_MSGCALL:
       {			/* Objective C message (method) call.  */
 	char *selector;
 	(*pos) += 3;
-	nargs = longest_to_int (exp->elts[pc + 2].longconst);
-	fprintf_unfiltered (stream, "[");
-	print_subexp (exp, pos, stream, PREC_SUFFIX);
-	if (0 == target_read_string (exp->elts[pc + 1].longconst,
-				     &selector, 1024, NULL))
+	nargs = longest_to_int(exp->elts[pc + 2].longconst);
+	fprintf_unfiltered(stream, "[");
+	print_subexp(exp, pos, stream, PREC_SUFFIX);
+	if (0 == target_read_string(exp->elts[pc + 1].longconst,
+				    &selector, 1024, NULL))
 	  {
-	    error (_("bad selector"));
+	    error(_("bad selector"));
 	    return;
 	  }
 	if (nargs)
 	  {
 	    char *s, *nextS;
-	    s = alloca (strlen (selector) + 1);
-	    strcpy (s, selector);
+	    s = (char *)alloca(strlen(selector) + 1UL);
+	    strcpy(s, selector);
 	    for (tem = 0; tem < nargs; tem++)
 	      {
-		nextS = strchr (s, ':');
+		nextS = strchr(s, ':');
 		*nextS = '\0';
-		fprintf_unfiltered (stream, " %s: ", s);
-		s = nextS + 1;
-		print_subexp (exp, pos, stream, PREC_ABOVE_COMMA);
+		fprintf_unfiltered(stream, " %s: ", s);
+		s = (nextS + 1);
+		print_subexp(exp, pos, stream, PREC_ABOVE_COMMA);
 	      }
 	  }
 	else
@@ -249,7 +251,7 @@ print_subexp_standard (struct expression *exp, int *pos,
 	     a simple string, revert back to array printing.  Note that
 	     the last expression element is an explicit null terminator
 	     byte, which doesn't get printed. */
-	  tempstr = alloca (nargs);
+	  tempstr = (char *)alloca(nargs);
 	  pc += 4;
 	  while (tem < nargs)
 	    {
@@ -263,14 +265,15 @@ print_subexp_standard (struct expression *exp, int *pos,
 	      else
 		{
 		  tempstr[tem++] =
-		    longest_to_int (exp->elts[pc + 2].longconst);
+		    longest_to_int(exp->elts[pc + 2].longconst);
 		  pc += 4;
 		}
 	    }
 	}
       if (tem > 0)
 	{
-	  LA_PRINT_STRING (stream, tempstr, nargs - 1, 1, 0);
+	  LA_PRINT_STRING(stream, (const gdb_byte *)tempstr, (nargs - 1),
+                          1, 0);
 	  (*pos) = pc;
 	}
       else
@@ -789,7 +792,7 @@ dump_raw_expression (struct expression *exp, struct ui_file *stream,
 }
 
 /* Dump the subexpression of prefix expression EXP whose operator is at
-   position ELT onto STREAM.  Returns the position of the next 
+   position ELT onto STREAM.  Returns the position of the next
    subexpression in EXP.  */
 
 int
@@ -815,7 +818,7 @@ dump_subexp (struct expression *exp, struct ui_file *stream, int elt)
 }
 
 /* Dump the operands of prefix expression EXP whose opcode is at
-   position ELT onto STREAM.  Returns the position of the next 
+   position ELT onto STREAM.  Returns the position of the next
    subexpression in EXP.  */
 
 static int
@@ -827,7 +830,7 @@ dump_subexp_body (struct expression *exp, struct ui_file *stream, int elt)
 /* Default value for subexp_body in exp_descriptor vector.  */
 
 int
-dump_subexp_body_standard (struct expression *exp, 
+dump_subexp_body_standard (struct expression *exp,
 			   struct ui_file *stream, int elt)
 {
   int opcode = exp->elts[elt++].opcode;
@@ -1046,23 +1049,25 @@ dump_subexp_body_standard (struct expression *exp,
 }
 
 void
-dump_prefix_expression (struct expression *exp, struct ui_file *stream)
+dump_prefix_expression(struct expression *exp, struct ui_file *stream)
 {
   int elt;
 
-  fprintf_filtered (stream, "Dump of expression @ ");
-  gdb_print_host_address (exp, stream);
-  fputs_filtered (", after conversion to prefix form:\nExpression: `", stream);
+  fprintf_filtered(stream, "Dump of expression @ ");
+  gdb_print_host_address(exp, stream);
+  fputs_filtered(", after conversion to prefix form:\nExpression: `", stream);
   if (exp->elts[0].opcode != OP_TYPE)
-    print_expression (exp, stream);
+    print_expression(exp, stream);
   else
-    fputs_filtered ("Type printing not yet supported....", stream);
-  fprintf_filtered (stream, "'\n\tLanguage %s, %d elements, %ld bytes each.\n",
-		    exp->language_defn->la_name, exp->nelts,
-		    (long) sizeof (union exp_element));
-  fputs_filtered ("\n", stream);
+    fputs_filtered("Type printing not yet supported....", stream);
+  fprintf_filtered(stream, "'\n\tLanguage %s, %d elements, %ld bytes each.\n",
+		   exp->language_defn->la_name, exp->nelts,
+		   (long)sizeof(union exp_element));
+  fputs_filtered("\n", stream);
 
   for (elt = 0; elt < exp->nelts;)
-    elt = dump_subexp (exp, stream, elt);
-  fputs_filtered ("\n", stream);
+    elt = dump_subexp(exp, stream, elt);
+  fputs_filtered("\n", stream);
 }
+
+/* EOF */

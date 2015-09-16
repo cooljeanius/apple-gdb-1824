@@ -1,4 +1,5 @@
-/* Parameters for execution on a Motorola m68k running NetBSD, for GDB.
+/* xm-nbsd.h
+   Parameters for execution on a Motorola m68k running NetBSD, for GDB.
    Copyright 1996 Free Software Foundation, Inc.
 
    This file is part of GDB.

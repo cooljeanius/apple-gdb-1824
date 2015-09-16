@@ -1,4 +1,4 @@
-# APPLE LOCAL file Darwin
+# APPLE LOCAL file (i386/macosx.mt) for Darwin
 # Target: IA86 running Mac OS X
 
 MT_CFLAGS = \

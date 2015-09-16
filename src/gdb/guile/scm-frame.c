@@ -130,6 +130,7 @@ frscm_inferior_frame_map (struct inferior *inferior)
   return htab;
 }
 
+#ifdef MY_BRANCH_IS_HEAD
 /* The smob "mark" function for <gdb:frame>.  */
 
 static SCM
@@ -141,6 +142,8 @@ frscm_mark_frame_smob (SCM self)
   return gdbscm_mark_eqable_gsmob (&f_smob->base);
 }
 
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 /* The smob "free" function for <gdb:frame>.  */
 
 static size_t
@@ -1061,7 +1064,10 @@ gdbscm_initialize_frames (void)
 {
   frame_smob_tag
     = gdbscm_make_smob_type (frame_smob_name, sizeof (frame_smob));
+#ifdef MY_BRANCH_IS_HEAD
   scm_set_smob_mark (frame_smob_tag, frscm_mark_frame_smob);
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
   scm_set_smob_free (frame_smob_tag, frscm_free_frame_smob);
   scm_set_smob_print (frame_smob_tag, frscm_print_frame_smob);
 

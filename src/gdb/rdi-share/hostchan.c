@@ -1,4 +1,4 @@
-/*
+/* hostchan.c
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
  *
  * This software may be freely used, copied, modified, and distributed
@@ -142,13 +142,13 @@ static void DummyCallback(Packet *packet, void *state)
 {
     ChannelID chan;
     const char fmt[] = "Unexpected read on channel %u, length %d\n";
-    char fmtbuf[sizeof(fmt) + 24];
+    char fmtbuf[(sizeof(fmt) + 24)];
 
     UNUSED(state);
 
     chan = *(packet->pk_buffer);
     sprintf(fmtbuf, fmt, chan, packet->pk_length);
-    printf(fmtbuf);
+    printf("%s", fmtbuf);
 
     /*
      * junk this packet
@@ -451,8 +451,8 @@ static AdpErrs ChannelWrite(
     unsigned char *cptr;
 
 #ifdef DEBUG
-    printf( "Adp_ChannelWrite(%d, %x)\n", chan, packet );
-#endif
+    printf("Adp_ChannelWrite(%d, %x)\n", chan, packet);
+#endif /* DEBUG */
 
     if (deviceToUse == NULL)
         return adp_device_not_open;
@@ -463,7 +463,12 @@ static AdpErrs ChannelWrite(
     /*
      * fill in the channels header at the start of this buffer
      */
-    ch = channels + chan;
+    ch = (channels + chan);
+    if (ch != NULL) {
+      ; /* (ok) */
+    } else {
+      ; /* FIXME: do something here */
+    }
     cptr = packet->pk_buffer;
     *cptr++ = chan;
     *cptr = 0;
@@ -497,9 +502,9 @@ static AdpErrs send_resend_msg(DeviceID devid) {
   packet->pk_buffer[CF_CHANNEL_BYTE_POS] = CI_PRIVATE;
   packet->pk_buffer[CF_HOME_SEQ_BYTE_POS] = HomeSeq;
   packet->pk_buffer[CF_OPPO_SEQ_BYTE_POS] = OppoSeq;
-  packet->pk_buffer[CF_FLAGS_BYTE_POS] = CF_RELIABLE | CF_RESEND;
+  packet->pk_buffer[CF_FLAGS_BYTE_POS] = (CF_RELIABLE | CF_RESEND);
   packet->pk_length = CF_DATA_BYTE_POS;
-  return DevSW_Write(deviceToUse, packet, devid);
+  return DevSW_Write(deviceToUse, packet, (DevChanID)devid);
 }
 
 static AdpErrs check_seq(unsigned char msg_home, unsigned char msg_oppo) {
@@ -510,7 +515,7 @@ static AdpErrs check_seq(unsigned char msg_home, unsigned char msg_oppo) {
    * check if we have got an ack for anything and if so remove it from the
    * queue
    */
-  if (msg_home == (unsigned char)(OppoSeq+1)) {
+  if (msg_home == (unsigned char)(OppoSeq + 1)) {
     /*
      * arrived in sequence can increment our opposing seq number and remove
      * the relevant packet from our queue
@@ -645,75 +650,73 @@ static void unfake_bad_line_tx( void )
 static struct timeval time_now;
 static struct timeval time_lastalive;
 
-static void async_process_dbug_read( const AsyncMode mode,
-                                     bool *const finished  )
+static void async_process_dbug_read(const AsyncMode mode, bool *const finished)
 {
     Packet *packet;
     unsigned int msg_home, msg_oppo;
     AdpErrs adp_err;
 
     adp_err = DevSW_Read(deviceToUse, DC_DBUG, &packet,
-                         mode == async_block_on_read    );
+                         mode == async_block_on_read);
 
 #ifdef FAKE_BAD_LINE_RX
-    adp_err = fake_bad_line_rx( packet, adp_err );
-#endif
+    adp_err = fake_bad_line_rx(packet, adp_err);
+#endif /* FAKE_BAD_LINE_RX */
 
     if (adp_err == adp_bad_packet) {
         /* We got a bad packet, ask for a resend, send a resend message */
 #ifdef DEBUG
         printf("received a bad packet\n");
-#endif
+#endif /* DEBUG */
         send_resend_msg(DC_DBUG);
-    }
-    else if (packet != NULL)
-    {
+    } else if (packet != NULL) {
         /* update the heartbeat clock */
         gettimeofday(&time_lastalive, NULL);
 
-            /*
-             * we got a live one here - were we waiting for it?
-             */
-        if (mode == async_block_on_read)
+	/*
+	 * we got a live one here - were we waiting for it?
+	 */
+	if (mode == async_block_on_read) {
            /* not any more */
            *finished = TRUE;
+	}
 #ifdef RETRANS
 
         if (packet->pk_length < CF_DATA_BYTE_POS) {
-            /* we've got a packet with no header information! */
+            /* we have got a packet with no header information! */
             printf("ERROR: packet with no transport header\n");
             send_resend_msg(DC_DBUG);
-        }
-        else {
-#ifdef RET_DEBUG
+        } else {
+# ifdef RET_DEBUG
             unsigned int c;
-#endif
+# endif /* RET_DEBUG */
             /*
              * TODO: Check to see if its acknowledgeing anything, remove
-             * those packets it is from the queue.  If its a retrans add the
+             * those packets it is from the queue.  If it is a retrans, add the
              * packets to the queue
              */
             msg_home = packet->pk_buffer[CF_HOME_SEQ_BYTE_POS];
             msg_oppo = packet->pk_buffer[CF_OPPO_SEQ_BYTE_POS];
-#ifdef RET_DEBUG
+# ifdef RET_DEBUG
             printf("msg seq numbers are hseq 0x%x oseq 0x%x\n",
                    msg_home, msg_oppo);
-            for (c=0;c<packet->pk_length;c++)
+	    for ((c = 0); (c < packet->pk_length); c++) {
                printf("%02.2x", packet->pk_buffer[c]);
+	    }
             printf("\n");
-#endif
+# endif /* RET_DEBUG */
             /* now was it a resend request? */
             if ((packet->pk_buffer[CF_FLAGS_BYTE_POS])
                 & CF_RESEND) {
-                /* we've been asked for a resend so we had better resend */
+                /* we have been asked for a resend, so we had better resend */
                 /*
-                 * I don't think we can use a resend as acknowledgement for
-                 * anything so lets not do this for the moment
+                 * I do NOT think we can use a resend as acknowledgement for
+                 * anything, so let us NOT do this for the moment:
                  * check_seq(msg_home, msg_oppo);
                  */
-#ifdef RET_DEBUG
+# ifdef RET_DEBUG
                 printf("received a resend request\n");
-#endif
+# endif /* RET_DEBUG */
                 if (HomeSeq != msg_oppo) {
                     int found = FALSE;
                     /* need to resend from msg_oppo +1 upwards */
@@ -732,8 +735,7 @@ static void async_process_dbug_read( const AsyncMode mode,
                     if (!found) {
                         panic("trying to resend non-existent packets\n");
                     }
-                }
-                else if (OppoSeq != msg_home) {
+                } else if (OppoSeq != msg_home) {
                     /*
                      * send a resend request telling the target where we think
                      * the world is at
@@ -741,41 +743,40 @@ static void async_process_dbug_read( const AsyncMode mode,
                     DevSW_FreePacket(packet);
                     send_resend_msg(DC_DBUG);
                 }
-            }
-            else {
-                /* not a resend request, lets check the sequence numbers */
+            } else {
+                /* not a resend request, let us check the sequence numbers */
 
                 if ((packet->pk_buffer[CF_CHANNEL_BYTE_POS] != CI_HBOOT) &&
                     (packet->pk_buffer[CF_CHANNEL_BYTE_POS] != CI_TBOOT)) {
-                    adp_err = check_seq(msg_home, msg_oppo);
+                    adp_err = check_seq((unsigned char)msg_home,
+					(unsigned char)msg_oppo);
                     if (adp_err == adp_seq_low) {
                         /* we have already received this packet so discard */
                         DevSW_FreePacket(packet);
-                    }
-                    else if (adp_err == adp_seq_high) {
+                    } else if (adp_err == adp_seq_high) {
                         /*
                          * we must have missed a packet somewhere, discard this
                          * packet and tell the target where we are
                          */
                         DevSW_FreePacket(packet);
                         send_resend_msg(DC_DBUG);
-                    }
-                    else
+                    } else {
                        /*
                         * now pass the packet to whoever is waiting for it
                         */
                        FireCallback(packet);
-                }
-                else
+		    }
+                } else {
                    FireCallback(packet);
+		}
             }
         }
 #else
-        /*
-             * now pass the packet to whoever is waiting for it
-             */
+	/*
+	 * now pass the packet to whoever is waiting for it
+	 */
         FireCallback(packet);
-#endif
+#endif /* RETRANS */
     }
 }
 

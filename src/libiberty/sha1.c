@@ -30,16 +30,16 @@
 #include <stddef.h>
 #include <string.h>
 
-#if USE_UNLOCKED_IO
+#if defined(USE_UNLOCKED_IO) && USE_UNLOCKED_IO
 # include "unlocked-io.h"
-#endif
+#endif /* USE_UNLOCKED_IO */
 
 #ifdef WORDS_BIGENDIAN
 # define SWAP(n) (n)
 #else
 # define SWAP(n) \
     (((n) << 24) | (((n) & 0xff00) << 8) | (((n) >> 8) & 0xff00) | ((n) >> 24))
-#endif
+#endif /* WORDS_BIGENDIAN */
 
 #define BLOCKSIZE 4096
 #if BLOCKSIZE % 64 != 0
@@ -199,69 +199,71 @@ sha1_buffer (const char *buffer, size_t len, void *resblock)
 }
 
 void
-sha1_process_bytes (const void *buffer, size_t len, struct sha1_ctx *ctx)
+sha1_process_bytes(const void *buffer, size_t len, struct sha1_ctx *ctx)
 {
   /* When we already have some bits in our internal buffer concatenate
      both inputs first.  */
   if (ctx->buflen != 0)
     {
       size_t left_over = ctx->buflen;
-      size_t add = 128 - left_over > len ? len : 128 - left_over;
+      size_t add = (((128UL - left_over) > len)
+                    ? len : (128UL - left_over));
 
-      memcpy (&((char *) ctx->buffer)[left_over], buffer, add);
+      memcpy(&((char *)ctx->buffer)[left_over], buffer, add);
       ctx->buflen += add;
 
       if (ctx->buflen > 64)
 	{
-	  sha1_process_block (ctx->buffer, ctx->buflen & ~63, ctx);
+	  sha1_process_block(ctx->buffer,
+                             (ctx->buflen & (sha1_uint32)(~63)), ctx);
 
 	  ctx->buflen &= 63;
-	  /* The regions in the following copy operation cannot overlap.  */
-	  memcpy (ctx->buffer,
-		  &((char *) ctx->buffer)[(left_over + add) & ~63],
-		  ctx->buflen);
+	  /* The regions in the following copy operation cannot overlap: */
+	  memcpy(ctx->buffer,
+		 &((char *)ctx->buffer)[(left_over + add) & (size_t)(~63)],
+		 (size_t)ctx->buflen);
 	}
 
-      buffer = (const char *) buffer + add;
+      buffer = ((const char *)buffer + add);
       len -= add;
     }
 
   /* Process available complete blocks.  */
-  if (len >= 64)
+  if (len >= 64UL)
     {
-#if !_STRING_ARCH_unaligned
-# define alignof(type) offsetof (struct { char c; type x; }, x)
-# define UNALIGNED_P(p) (((size_t) p) % alignof (sha1_uint32) != 0)
+#if !defined(_STRING_ARCH_unaligned) || !_STRING_ARCH_unaligned
+# define alignof(type) offsetof(struct { char c; type x; }, x)
+# define UNALIGNED_P(p) (((size_t)p) % alignof(sha1_uint32) != 0)
       if (UNALIGNED_P (buffer))
-	while (len > 64)
+	while ((len > 64UL) && (len > 0UL) && (len < ULONG_MAX))
 	  {
-	    sha1_process_block (memcpy (ctx->buffer, buffer, 64), 64, ctx);
-	    buffer = (const char *) buffer + 64;
-	    len -= 64;
+	    sha1_process_block(memcpy(ctx->buffer, buffer, 64), 64, ctx);
+	    buffer = ((const char *)buffer + 64);
+	    len -= 64UL;
 	  }
       else
-#endif
+#endif /* !_STRING_ARCH_unaligned */
 	{
-	  sha1_process_block (buffer, len & ~63, ctx);
-	  buffer = (const char *) buffer + (len & ~63);
+	  sha1_process_block(buffer, (len & (size_t)(~63)), ctx);
+	  buffer = ((const char *)buffer + (len & (size_t)(~63)));
 	  len &= 63;
 	}
     }
 
-  /* Move remaining bytes in internal buffer.  */
-  if (len > 0)
+  /* Move remaining bytes in internal buffer: */
+  if (len > 0UL)
     {
       size_t left_over = ctx->buflen;
 
-      memcpy (&((char *) ctx->buffer)[left_over], buffer, len);
+      memcpy(&((char *)ctx->buffer)[left_over], buffer, len);
       left_over += len;
-      if (left_over >= 64)
+      if (left_over >= 64UL)
 	{
-	  sha1_process_block (ctx->buffer, 64, ctx);
-	  left_over -= 64;
-	  memcpy (ctx->buffer, &ctx->buffer[16], left_over);
+	  sha1_process_block(ctx->buffer, 64, ctx);
+	  left_over -= 64UL;
+	  memcpy(ctx->buffer, &ctx->buffer[16], left_over);
 	}
-      ctx->buflen = left_over;
+      ctx->buflen = (sha1_uint32)left_over;
     }
 }
 
@@ -413,3 +415,5 @@ sha1_process_block (const void *buffer, size_t len, struct sha1_ctx *ctx)
       e = ctx->E += e;
     }
 }
+
+/* EOF */

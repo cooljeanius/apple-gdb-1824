@@ -1,0 +1,148 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# directives.test --- test definition directives
+#
+# Time-stamp:        "2011-02-02 12:09:10 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+mkdir ${testname}.dir
+mkdir ${testname}.dir/subdir
+LDIR=`pwd`/${testname}.dir
+export LDIR
+
+echo creating ${testname}.dir/subdir/${testname}.tpl
+cat > ${testname}.dir/subdir/${testname}.tpl <<'_EOF_'
+[= AutoGen5 Template test =]
+Irrelevant [=foo=].
+_EOF_
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo creating ${testname}.inc
+${SED} 's/^ *[0-9]*: //' > ${testname}.inc <<_EOF_
+      1: autogen definitions ${testname};
+      2: 
+      3: #option templ-dir \$LDIR/subdir
+      4: 
+      5: /*
+      6: #define COMMENT
+      7: #ifdef COMMENT
+      8: # error error in comment
+      9:  */
+     10: 
+     11: #ifdef MUMBLE
+     12: #  define MORE
+     13: #else
+     14: #  define FUMBLE
+     15: #endif
+_EOF_
+
+echo creating ${testname}.def
+${SED} 's/^ *[0-9]*: //' > ${testname}.def <<_EOF_
+      1: autogen definitions ${testname};
+      2: 
+      3: #include ${testname}.inc
+      4: 
+      5: #ifdef FUMBLE
+      6: #  error  we fumbled mumble
+      7: #endif
+      8: 
+      9: #ifndef MORE
+     10: #  error  we fumbled more
+     11: #endif
+     12: 
+     13: #if (FOO == 1)
+     14: #  error we got iffed
+     15: #elif (FOO == 0)
+     16: #  error we got FOO zeroed
+     17: #else
+     18: #  error we got lost
+     19: #endif
+     20: 
+     21: #shell
+     22: 
+     23: echo "#line 1 shelltext"
+     24: echo "foo = bar;"
+     25: 
+     26: #endshell
+     27: 
+     28: #define FUMBLE
+     29: #undef  MORE
+     30: 
+     31: #ifndef FUMBLE
+     32: #  error  we goofed fumble
+     33: #endif
+     34: 
+     35: #ifdef MORE
+     36: #  error  we mumbled more
+     37: #endif
+_EOF_
+
+# # # # # # # # # # EXPECTED OUTPUT FILE # # # # # # #
+
+echo creating ${testname}.base
+# this is the output we should expect to see
+cat > ${testname}.base <<_EOF_
+Irrelevant bar.
+_EOF_
+
+agopts="-DMUMBLE -DFOO=1"
+MORE=DOITWRONG
+
+run_ag x1 ${agopts} ${testname}.def
+test $? -eq 0 || failure ${agopts}-1 failed
+cmp -s ${testname}.base ${testname}.test || \
+  failure "`diff ${testname}.base ${testname}.test`"
+
+echo '#assert `echo true`' >> ${testname}.inc
+run_ag x2 ${agopts} ${testname}.def
+test $? -eq 0 || failure ${agopts}-2 failed
+
+echo '#assert `echo false`' >> ${testname}.inc
+run_ag x3 ${agopts} ${testname}.def
+test $? -ne 0 || failure ${agopts}-3 failed
+
+${FGREP} -v '#assert' ${testname}.inc > ${testname}2.inc
+mv -f ${testname}2.inc ${testname}.inc
+
+echo '#assert (version-compare > autogen-version "5.8.4")' >> ${testname}.inc
+run_ag x4 ${agopts} ${testname}.def
+test $? -eq 0 || failure ${agopts}-4 failed
+
+echo '#assert (version-compare < autogen-version "5.8.4.63")' >> ${testname}.inc
+run_ag x5 ${agopts} ${testname}.def
+test $? -ne 0 || failure ${agopts}-5 failed
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of directives.test

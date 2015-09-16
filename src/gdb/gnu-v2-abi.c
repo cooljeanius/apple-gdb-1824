@@ -1,4 +1,4 @@
-/* Abstraction of GNU v2 abi.
+/* gnu-v2-abi.c: Abstraction of GNU v2 abi.
 
    Copyright 2001, 2002, 2003, 2005 Free Software Foundation, Inc.
 
@@ -37,31 +37,31 @@
 
 struct cp_abi_ops gnu_v2_abi_ops;
 
-static int vb_match (struct type *, int, struct type *);
+static int vb_match(struct type *, int, struct type *);
 
 static enum dtor_kinds
-gnuv2_is_destructor_name (const char *name)
+gnuv2_is_destructor_name(const char *name)
 {
-  if ((name[0] == '_' && is_cplus_marker (name[1]) && name[2] == '_')
-      || strncmp (name, "__dt__", 6) == 0)
+  if (((name[0] == '_') && is_cplus_marker(name[1]) && (name[2] == '_'))
+      || (strncmp(name, "__dt__", 6) == 0))
     return complete_object_dtor;
   else
-    return 0;
+    return (enum dtor_kinds)0;
 }
 
 static enum ctor_kinds
-gnuv2_is_constructor_name (const char *name)
+gnuv2_is_constructor_name(const char *name)
 {
-  if ((name[0] == '_' && name[1] == '_'
-       && (isdigit (name[2]) || strchr ("Qt", name[2])))
-      || strncmp (name, "__ct__", 6) == 0)
+  if (((name[0] == '_') && (name[1] == '_')
+       && (isdigit(name[2]) || strchr("Qt", name[2])))
+      || (strncmp(name, "__ct__", 6) == 0))
     return complete_object_ctor;
   else
-    return 0;
+    return (enum ctor_kinds)0;
 }
 
 static int
-gnuv2_is_vtable_name (const char *name)
+gnuv2_is_vtable_name(const char *name)
 {
   return (((name)[0] == '_'
 	   && (((name)[1] == 'V' && (name)[2] == 'T')
@@ -72,9 +72,9 @@ gnuv2_is_vtable_name (const char *name)
 }
 
 static int
-gnuv2_is_operator_name (const char *name)
+gnuv2_is_operator_name(const char *name)
 {
-  return strncmp (name, "operator", 8) == 0;
+  return (strncmp(name, "operator", 8) == 0);
 }
 
 
@@ -153,24 +153,26 @@ gnuv2_virtual_fn_field (struct value **arg1p, struct fn_field * f, int j,
   else
     {
       /* Handle the case where the vtbl field points directly to a structure. */
-      vtbl = value_add (vtbl, vi);
-      entry = value_ind (vtbl);
+      vtbl = value_add(vtbl, vi);
+      entry = value_ind(vtbl);
     }
 
-  entry_type = check_typedef (value_type (entry));
+  entry_type = check_typedef(value_type(entry));
 
-  if (TYPE_CODE (entry_type) == TYPE_CODE_STRUCT)
+  if (TYPE_CODE(entry_type) == TYPE_CODE_STRUCT)
     {
-      /* Move the `this' pointer according to the virtual function table. */
-      set_value_offset (arg1, value_offset (arg1) + value_as_long (value_field (entry, 0)));
+      /* Move the `this' pointer according to the virtual function table: */
+      set_value_offset(arg1,
+                       (int)(value_offset(arg1)
+                             + value_as_long(value_field(entry, 0))));
 
-      if (!value_lazy (arg1))
+      if (!value_lazy(arg1))
 	{
-	  set_value_lazy (arg1, 1);
-	  value_fetch_lazy (arg1);
+	  set_value_lazy(arg1, 1);
+	  value_fetch_lazy(arg1);
 	}
 
-      vfn = value_field (entry, 2);
+      vfn = value_field(entry, 2);
     }
   else if (TYPE_CODE (entry_type) == TYPE_CODE_PTR)
     vfn = entry;
@@ -212,14 +214,14 @@ gnuv2_value_rtti_type (struct value *v, int *full, int *top, int *using_enc)
      the vtables properly for G++ compiled stuff.  Also, I'll be using
      the type info functions, which are always right.  Deal with it
      until then.
-     JCI - This pretty much useless.  This gets the "true" type 
-     correctly when there is single inheritance - but in all such  
-     cases that I could find gdb already knows that.  In cases 
-     where this points INTO the object (like non-virtual diamond 
-     graphs) the demangled name is something like OUTER::INNER 
-     and this is not a symbol gdb can resolve, so we fail & return 
-     NULL anyway.  Seems like this really isn't going to work till 
-     we actually call the RTTI function & parse it. 
+     JCI - This pretty much useless.  This gets the "true" type
+     correctly when there is single inheritance - but in all such
+     cases that I could find gdb already knows that.  In cases
+     where this points INTO the object (like non-virtual diamond
+     graphs) the demangled name is something like OUTER::INNER
+     and this is not a symbol gdb can resolve, so we fail & return
+     NULL anyway.  Seems like this really isn't going to work till
+     we actually call the RTTI function & parse it.
 */
 
   /* If the type has no vptr fieldno, try to get it filled in */
@@ -365,13 +367,13 @@ gnuv2_baseclass_offset (struct type *type, int index,
          in the fields.  */
       for (i = n_baseclasses; i < len; i++)
 	{
-	  if (vb_match (type, i, basetype))
+	  if (vb_match(type, i, basetype))
 	    {
-	      CORE_ADDR addr
-	      = unpack_pointer (TYPE_FIELD_TYPE (type, i),
-				valaddr + (TYPE_FIELD_BITPOS (type, i) / 8));
+	      CORE_ADDR addr =
+                unpack_pointer(TYPE_FIELD_TYPE(type, i),
+                               valaddr + (TYPE_FIELD_BITPOS(type, i) / 8));
 
-	      return addr - (LONGEST) address;
+	      return (int)(addr - (LONGEST)address);
 	    }
 	}
       /* Not in the fields, so try looking through the baseclasses.  */
@@ -408,9 +410,11 @@ init_gnuv2_ops (void)
 extern initialize_file_ftype _initialize_gnu_v2_abi; /* -Wmissing-prototypes */
 
 void
-_initialize_gnu_v2_abi (void)
+_initialize_gnu_v2_abi(void)
 {
-  init_gnuv2_ops ();
-  register_cp_abi (&gnu_v2_abi_ops);
-  set_cp_abi_as_auto_default (gnu_v2_abi_ops.shortname);
+  init_gnuv2_ops();
+  register_cp_abi(&gnu_v2_abi_ops);
+  set_cp_abi_as_auto_default(gnu_v2_abi_ops.shortname);
 }
+
+/* EOF */

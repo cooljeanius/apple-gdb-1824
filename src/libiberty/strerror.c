@@ -1,4 +1,4 @@
-/* Extended support for using errno values.
+/* strerror.c: Extended support for using errno values.
    Written by Fred Fish.  fnf@cygnus.com
    This file is in the public domain.  --Per Bothner.  */
 
@@ -10,9 +10,9 @@
    incompatible with our later declaration, perhaps by using const
    attributes.  So we hide the declaration in errno.h (if any) using a
    macro. */
-#define sys_nerr sys_nerr__
-#define sys_errlist sys_errlist__
-#endif
+# define sys_nerr sys_nerr__
+# define sys_errlist sys_errlist__
+#endif /* HAVE_SYS_ERRLIST */
 
 #include "ansidecl.h"
 #include "libiberty.h"
@@ -21,29 +21,29 @@
 #include <errno.h>
 
 #ifdef HAVE_SYS_ERRLIST
-#undef sys_nerr
-#undef sys_errlist
-#endif
+# undef sys_nerr
+# undef sys_errlist
+#endif /* HAVE_SYS_ERRLIST */
 
 /*  Routines imported from standard C runtime libraries. */
 
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
+# include <stdlib.h>
 #else
-extern PTR malloc ();
-#endif
+extern PTR malloc();
+#endif /* HAVE_STDLIB_H */
 
 #ifdef HAVE_STRING_H
-#include <string.h>
+# include <string.h>
 #else
-extern PTR memset ();
-#endif
+extern PTR memset();
+#endif /* HAVE_STRING_H */
 
 #ifndef MAX
 #  define MAX(a,b) ((a) > (b) ? (a) : (b))
-#endif
+#endif /* !MAX */
 
-static void init_error_tables (void);
+static void init_error_tables(void);
 
 /* Translation table for errno values.  See intro(2) in most UNIX systems
    Programmers Reference Manuals.
@@ -62,14 +62,14 @@ struct error_info
   const char *const name;	/* The equivalent symbolic value */
 #ifndef HAVE_SYS_ERRLIST
   const char *const msg;	/* Short message about this value */
-#endif
+#endif /* HAVE_SYS_ERRLIST */
 };
 
 #ifndef HAVE_SYS_ERRLIST
 #   define ENTRY(value, name, msg)	{value, name, msg}
 #else
 #   define ENTRY(value, name, msg)	{value, name}
-#endif
+#endif /* HAVE_SYS_ERRLIST */
 
 static const struct error_info error_table[] =
 {
@@ -444,7 +444,7 @@ static const struct error_info error_table[] =
    lies outside the range of sys_errlist[].  */
 static struct { int value; const char *name, *msg; }
   evmserr = { EVMSERR, "EVMSERR", "VMS-specific error" };
-#endif
+#endif /* EVMSERR */
 
 /* Translation table allocated and initialized at runtime.  Indexed by the
    errno value to find the equivalent symbolic value. */
@@ -462,17 +462,21 @@ static int num_error_names = 0;
 
 #ifndef HAVE_SYS_ERRLIST
 
-#define sys_nerr sys_nerr__
-#define sys_errlist sys_errlist__
+# define sys_nerr sys_nerr__
+# define sys_errlist sys_errlist__
 static int sys_nerr;
 static const char **sys_errlist;
 
 #else
 
+# ifndef sys_nerr
 extern int sys_nerr;
+# endif /* !sys_nerr */
+# ifndef sys_errlist
 extern char *sys_errlist[];
+# endif /* !sys_errlist */
 
-#endif
+#endif /* !HAVE_SYS_ERRLIST */
 
 /*
 
@@ -503,21 +507,21 @@ BUGS
 */
 
 static void
-init_error_tables (void)
+init_error_tables(void)
 {
   const struct error_info *eip;
-  int nbytes;
+  size_t nbytes;
 
   /* If we haven't already scanned the error_table once to find the maximum
      errno value, then go find it now. */
 
   if (num_error_names == 0)
     {
-      for (eip = error_table; eip -> name != NULL; eip++)
+      for (eip = error_table; eip->name != NULL; eip++)
 	{
-	  if (eip -> value >= num_error_names)
+	  if (eip->value >= num_error_names)
 	    {
-	      num_error_names = eip -> value + 1;
+	      num_error_names = (eip->value + 1);
 	    }
 	}
     }
@@ -527,13 +531,13 @@ init_error_tables (void)
 
   if (error_names == NULL)
     {
-      nbytes = num_error_names * sizeof (char *);
-      if ((error_names = (const char **) malloc (nbytes)) != NULL)
+      nbytes = ((size_t)num_error_names * sizeof(char *));
+      if ((error_names = (const char **)malloc(nbytes)) != NULL)
 	{
-	  memset (error_names, 0, nbytes);
-	  for (eip = error_table; eip -> name != NULL; eip++)
+	  memset(error_names, 0, nbytes);
+	  for (eip = error_table; eip->name != NULL; eip++)
 	    {
-	      error_names[eip -> value] = eip -> name;
+	      error_names[eip->value] = eip->name;
 	    }
 	}
     }
@@ -545,20 +549,18 @@ init_error_tables (void)
 
   if (sys_errlist == NULL)
     {
-      nbytes = num_error_names * sizeof (char *);
-      if ((sys_errlist = (const char **) malloc (nbytes)) != NULL)
+      nbytes = (num_error_names * sizeof(char *));
+      if ((sys_errlist = (const char **)malloc(nbytes)) != NULL)
 	{
-	  memset (sys_errlist, 0, nbytes);
+	  memset(sys_errlist, 0, nbytes);
 	  sys_nerr = num_error_names;
-	  for (eip = error_table; eip -> name != NULL; eip++)
+	  for (eip = error_table; eip->name != NULL; eip++)
 	    {
-	      sys_errlist[eip -> value] = eip -> msg;
+	      sys_errlist[eip->value] = eip->msg;
 	    }
 	}
     }
-
-#endif
-
+#endif /* !HAVE_SYS_ERRLIST */
 }
 
 /*
@@ -623,45 +625,42 @@ next call to @code{strerror}.
 */
 
 char *
-strerror (int errnoval)
+strerror(int errnoval)
 {
   const char *msg;
   static char buf[32];
 
-#ifndef HAVE_SYS_ERRLIST
-
+# ifndef HAVE_SYS_ERRLIST
   if (error_names == NULL)
     {
-      init_error_tables ();
+      init_error_tables();
     }
-
-#endif
+# endif /* !HAVE_SYS_ERRLIST */
 
   if ((errnoval < 0) || (errnoval >= sys_nerr))
     {
-#ifdef EVMSERR
+# ifdef EVMSERR
       if (errnoval == evmserr.value)
 	msg = evmserr.msg;
       else
-#endif
+# endif /* EVMSERR */
       /* Out of range, just return NULL */
       msg = NULL;
     }
   else if ((sys_errlist == NULL) || (sys_errlist[errnoval] == NULL))
     {
-      /* In range, but no sys_errlist or no entry at this index. */
-      sprintf (buf, "Error %d", errnoval);
+      /* In range, but no sys_errlist or no entry at this index: */
+      sprintf(buf, "Error %d", errnoval);
       msg = buf;
     }
   else
     {
-      /* In range, and a valid message.  Just return the message. */
-      msg = (char *) sys_errlist[errnoval];
+      /* In range, and a valid message.  Just return the message: */
+      msg = (char *)sys_errlist[errnoval];
     }
-  
+
   return (msg);
 }
-
 #endif	/* ! HAVE_STRERROR */
 
 
@@ -689,14 +688,14 @@ valid until the next call to @code{strerrno}.
 */
 
 const char *
-strerrno (int errnoval)
+strerrno(int errnoval)
 {
   const char *name;
   static char buf[32];
 
   if (error_names == NULL)
     {
-      init_error_tables ();
+      init_error_tables();
     }
 
   if ((errnoval < 0) || (errnoval >= num_error_names))
@@ -705,15 +704,15 @@ strerrno (int errnoval)
       if (errnoval == evmserr.value)
 	name = evmserr.name;
       else
-#endif
+#endif /* EVMSERR */
       /* Out of range, just return NULL */
       name = NULL;
     }
   else if ((error_names == NULL) || (error_names[errnoval] == NULL))
     {
       /* In range, but no error_names or no entry at this index. */
-      sprintf (buf, "Error %d", errnoval);
-      name = (const char *) buf;
+      sprintf(buf, "Error %d", errnoval);
+      name = (const char *)buf;
     }
   else
     {
@@ -757,10 +756,10 @@ strtoerrno (const char *name)
       if (errnoval == num_error_names)
 	{
 #ifdef EVMSERR
-	  if (strcmp (name, evmserr.name) == 0)
+	  if (strcmp(name, evmserr.name) == 0)
 	    errnoval = evmserr.value;
 	  else
-#endif
+#endif /* EVMSERR */
 	  errnoval = 0;
 	}
     }
@@ -768,26 +767,23 @@ strtoerrno (const char *name)
 }
 
 
-/* A simple little main that does nothing but print all the errno translations
-   if MAIN is defined and this file is compiled and linked. */
-
+/* A simple little main that does nothing but print all the errno
+ * translations if MAIN is defined and this file is compiled and linked: */
 #ifdef MAIN
-
-#include <stdio.h>
-
+# include <stdio.h>
 int
-main (void)
+main(void)
 {
   int errn;
   int errnmax;
   const char *name;
   const char *msg;
-  char *strerror ();
+  char *strerror();
 
-  errnmax = errno_max ();
-  printf ("%d entries in names table.\n", num_error_names);
-  printf ("%d entries in messages table.\n", sys_nerr);
-  printf ("%d is max useful index.\n", errnmax);
+  errnmax = errno_max();
+  printf("%d entries in names table.\n", num_error_names);
+  printf("%d entries in messages table.\n", sys_nerr);
+  printf("%d is max useful index.\n", errnmax);
 
   /* Keep printing values until we get to the end of *both* tables, not
      *either* table.  Note that knowing the maximum useful index does *not*
@@ -796,14 +792,15 @@ main (void)
 
   for (errn = 0; errn <= errnmax; errn++)
     {
-      name = strerrno (errn);
-      name = (name == NULL) ? "<NULL>" : name;
-      msg = strerror (errn);
-      msg = (msg == NULL) ? "<NULL>" : msg;
-      printf ("%-4d%-18s%s\n", errn, name, msg);
+      name = strerrno(errn);
+      name = ((name == NULL) ? "<NULL>" : name);
+      msg = strerror(errn);
+      msg = ((msg == NULL) ? "<NULL>" : msg);
+      printf("%-4d%-18s%s\n", errn, name, msg);
     }
 
   return 0;
 }
+#endif /* MAIN */
 
-#endif
+/* EOF */

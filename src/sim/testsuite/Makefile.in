@@ -177,6 +177,6 @@ Makefile : Makefile.in config.status
 config.status: $(srcdir)/configure
 	$(SHELL) ./config.status --recheck
 # FIXME: Requires --enable-maintainer-mode, which one could add, but
-# it's provided by automake.  Maybe switch to automake someday.
-#$(srcdir)/configure: @MAINT@ $(srcdir)/configure.in
-#	cd $(srcdir) && autoconf
+# it is provided by a macro from automake. Maybe move to automake someday.
+$(srcdir)/configure: @MAINT@ $(srcdir)/configure.ac
+	cd $(srcdir) && autoconf

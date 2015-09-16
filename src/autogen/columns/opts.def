@@ -1,0 +1,331 @@
+/* -*- Mode: conf -*- */
+
+autogen definitions options;
+
+/*
+ *  Time-stamp:        "2012-01-29 13:32:36 bkorb"
+ *
+ *  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+ *
+ *  AutoGen is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AutoGen is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+copyright = {
+    date   = "1999-2012";
+    type   = gpl;
+    owner  = "Bruce Korb";
+    eaddr  = 'autogen-users@lists.sourceforge.net';
+};
+
+prog-name      = "columns";
+prog-title     = "Columnize Input Text";
+package        = 'GNU AutoGen';
+homerc         = '.', '$HOME';
+environrc;
+long-opts;
+
+version = "1.2";
+
+export = <<- EOExport
+	#include "config.h"
+	#include <ctype.h>
+	#include <errno.h>
+	#include <stdarg.h>
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <string.h>
+	EOExport;
+
+include = "[= AutoGen5 Template =]";
+include = "#include <errno.h>";
+
+flag = {
+    name        = width;
+    value       = W;
+    arg-type    = number;
+    arg-default = 79;
+    arg-name    = num;
+    arg-range   = '16->4095';
+    descrip     = "Maximum Line Width";
+    doc         = <<- _EODoc_
+	This option specifies the full width of the output line,
+	including any start-of-line indentation.  The output will fill
+	each line as completely as possible, unless the column width has
+	been explicitly specified.  If the maximum width is less than
+	the length of the widest input, you will get a single column
+	of output.
+	_EODoc_;
+};
+
+flag = {
+    name        = columns;
+    value       = c;
+    arg-type    = number;
+    arg-default = 0;
+    arg-name    = count;
+    arg-range   = '1->2048';
+    descrip     = "Desired number of columns";
+    doc         = <<- _EODoc_
+	Use this option to specify exactly how many columns to produce.
+	If that many columns will not fit within @var{line_width}, then
+	the count will be reduced to the number that fit.
+	_EODoc_;
+};
+
+flag = {
+    name        = col_width;
+    value       = w;
+    arg-type    = number;
+    arg-default = 0;
+    arg-name    = num;
+    arg-range   = '1->2048';
+    descrip     = "Set width of each column";
+    doc         = <<- _EODoc_
+	Use this option to specify exactly how many characters are to be
+	allocated for each column.  If it is narrower than the widest entry,
+	it will be over-ridden with the required width.
+	_EODoc_;
+};
+
+flag = {
+    name        = spread;
+    arg-type    = number;
+    arg-default = 0;
+    arg-name    = num;
+    arg-range   = '1->1024';
+    descrip     = "maximum spread added to column width";
+    doc         = <<- _EODoc_
+	Use this option to specify exactly how many characters may be
+	added to each column.  It allows you to prevent columns from
+	becoming too far apart.
+	_EODoc_;
+};
+
+flag = {
+    name        = fill;
+    descrip     = "Fill lines with input";
+    flags-cant  = spread, col_width, by_columns;
+    doc         = <<- _EODoc_
+	Instead of columnizing the input text, fill the output lines
+	with the input lines.  Blank lines on input will cause a
+	blank line in the output, unless the output is sorted.
+	With sorted output, blank lines are ignored.
+	_EODoc_;
+};
+
+flag = {
+    name        = indent;
+    value       = I;
+    arg-type    = string;
+    arg-name    = l-pfx;
+    descrip     = "Line prefix or indentation";
+    doc         = <<- _EODoc_
+	If a number, then this many spaces will be inserted at the start of
+	every line.  Otherwise, it is a line prefix that will be inserted
+	at the start of every line.
+	_EODoc_;
+};
+
+flag = {
+    name        = first_indent;
+    arg-type    = string;
+    flags_must  = indent;
+    arg-name    = l-pfx;
+    descrip     = "First line prefix";
+    doc         = <<- _EODoc_
+	If a number, then this many spaces will be inserted at the start of
+	the first line.  Otherwise, it is a line prefix that will be inserted
+	at the start of that line.  If its length exceeds "indent", then it
+	will be emitted on a line by itself, suffixed by any line separation
+	string.  For example:
+
+	@example
+	$ columns --first='#define TABLE' -c 2 -I4 --line=' \' <<_EOF_
+	one
+	two
+	three
+	four
+	_EOF_
+	#define TABLE \
+	    one   two \
+	    three four
+	@end example
+	_EODoc_; // '
+};
+
+flag = {
+    name        = tab_width;
+    arg-type    = number;
+    arg-default = 8;
+    arg-name    = num;
+    descrip     = "tab width";
+    doc         = <<- _EODoc_
+	If an indentation string contains tabs, then this value is used to
+	compute the ending column of the prefix string.
+	_EODoc_;
+};
+
+flag = {
+    name        = sort;
+    value       = s;
+    arg-type    = string;
+    arg-optional;
+    arg-name    = key-pat;
+    descrip     = "Sort input text";
+    doc         = <<- _EODoc_
+	Causes the input text to be sorted.  If an argument is supplied,
+	it is presumed to be a pattern and the sort is based upon the
+	matched text.  If the pattern starts with or consists of
+	an asterisk (@code{*}), then the sort is case insensitive.
+	_EODoc_;
+};
+
+flag = {
+    name        = format;
+    value       = f;
+    arg-type    = string;
+    arg-name    = fmt-str;
+    descrip     = "Formatting string for each input";
+    doc         = <<- _EODoc_
+	If you need to reformat each input text, the argument to this
+	option is interpreted as an @code{sprintf(3)} format that is used
+	to produce each output entry.
+	_EODoc_;
+};
+
+flag = {
+    name        = separation;
+    value       = S;
+    arg-type    = string;
+    arg-name    = sep-str;
+    descrip     = "Separation string - follows all but last";
+    doc         = <<- _EODoc_
+	Use this option if, for example, you wish a comma to appear after
+	each entry except the last.
+	_EODoc_;
+};
+
+flag = {
+    name        = line_separation;
+    arg-type    = string;
+    arg-name    = sep-str;
+    descrip     = "string at end of all lines but last";
+    doc         = <<- _EODoc_
+	Use this option if, for example, you wish a backslash to appear at
+	the end of every line, except the last.
+	_EODoc_;
+};
+
+flag = {
+    name        = ending;
+    arg-type    = string;
+    arg-name    = end-str;
+    descrip     = "string at end of last line";
+    doc         = <<- _EODoc_
+	This option puts the specified string at the end of the output.
+	_EODoc_;
+};
+
+flag = {
+    name        = by_columns;
+    descrip     = "Print entries in column order";
+    doc         = <<- _EODoc_
+	Normally, the entries are printed out in order by rows and then columns.
+	This option will cause the entries to be ordered within columns.
+	The final column, instead of the final row, may be shorter than the
+	others.
+	_EODoc_;
+};
+
+#ifdef LATER
+flag = {
+    name        = page_len;
+    arg-type    = number;
+    arg-name    = num;
+    descrip     = "Page Length";
+    doc         = <<- _EODoc_
+	This many lines will be printed before a form feed is emitted.
+	The 'by_columns' ordering will wrap columns within a page.
+	_EODoc_;
+};
+#endif
+
+include =
+  '#define OPEN_ERROR_FMT      ([=
+  (string-table-add-ref opt-strs
+  "Error %d (%s) opening %s\n")=])';
+
+flag = {
+    name        = input;
+    value       = i;
+    arg-type    = string;
+    arg-name    = file;
+    descrip     = "Input file (if not stdin)";
+    flag-code   = <<- _EODoc_
+	    FILE* fp = freopen(
+	        pOptDesc->optArg.argString, "r" FOPEN_BINARY_FLAG, stdin);
+
+	    if (fp == (FILE*)NULL) {
+	        fprintf(stderr, OPEN_ERROR_FMT, errno, strerror(errno),
+	                pOptDesc->optArg.argString);
+	        USAGE(EXIT_FAILURE);
+	    }
+	_EODoc_;
+    doc         = <<- _EODoc_
+	This program normally runs as a @code{filter}, reading from standard
+	input, columnizing and writing to standard out.  This option redirects
+	input to a file.
+	_EODoc_;
+};
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *  Program Documentation
+ */
+option-doc-format = texi;
+
+/* prog_man_descrip = -- unchanged; */
+
+doc-section = {
+    ds-type     = "SEE ALSO";
+    ds-format   = texi;
+    ds-text     = <<- _EndOfMan_
+	This program is documented more fully in the Columns section
+	of the Add-On chapter in the @code{AutoGen} Info system documentation.
+	_EndOfMan_;
+};
+
+prog_descrip = <<- _EndOfMan_
+	This program was designed for the purpose of generating compact,
+	columnized tables.  It will read a list of text items from standard
+	in or a specified input file and produce a columnized listing of
+	all the non-blank lines.  Leading white space on each line is
+	preserved, but trailing white space is stripped.  Methods of
+	applying per-entry and per-line embellishments are provided.
+	See the formatting and separation arguments below.
+
+	This program is used by AutoGen to help clean up and organize
+	its output.
+
+	See @file{autogen/agen5/fsm.tpl} and the generated output
+	@file{pseudo-fsm.h}.
+
+	This function was not implemented as an expression function because
+	either it would have to be many expression functions, or a provision
+	would have to be added to provide options to expression functions.
+	Maybe not a bad idea, but it is not being implemented at the moment.
+
+	A side benefit is that you can use it outside of @code{autogen} to
+	columnize input, a la the @code{ls} command.
+	_EndOfMan_;

@@ -16,16 +16,14 @@ Created: Thursday, September 12, 1991 at 11:06 AM
 #define __TERMINALTOOLS__
 
 #ifndef __DIALOGS__
-#include <Dialogs.h>
-#endif
+# include <Dialogs.h>
+#endif /* !__DIALOGS__ */
 
 #ifndef __TERMINALS__
-#include <Terminals.h>
-#endif
-
+# include <Terminals.h>
+#endif /* !__TERMINALS__ */
 
 enum {
-
 
 #define tdefType 'tdef'
 #define tvalType 'tval'
@@ -111,6 +109,6 @@ struct TMSetupStruct {
 typedef struct TMSetupStruct TMSetupStruct;
 typedef TMSetupStruct *TMSetupPtr;
 
+#endif /* !__TERMINALTOOLS__ */
 
-
-#endif
+/* EOF */

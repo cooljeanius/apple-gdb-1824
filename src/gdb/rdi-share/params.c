@@ -1,6 +1,6 @@
-/* 
+/* params.c
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -103,7 +103,7 @@ const ParameterConfig *Angel_MatchParams( const ParameterOptions *requested,
         {
 #ifdef ASSERTIONS_ENABLED
             __rt_warning( "option %x not supported\n", req_type );
-#endif
+#endif /* ASSERTIONS_ENABLED */
             return NULL;
         }
 
@@ -124,7 +124,7 @@ const ParameterConfig *Angel_MatchParams( const ParameterOptions *requested,
 #ifdef DEBUG
                     __rt_info( "chose value %d for option %x\n",
                                req_list->option[j], req_type );
-#endif
+#endif /* DEBUG */
                     match = TRUE;
                     chosen_config.param[i].type = req_type;
                     chosen_config.param[i].value = req_list->option[j];
@@ -136,7 +136,7 @@ const ParameterConfig *Angel_MatchParams( const ParameterOptions *requested,
         {
 #ifdef ASSERTIONS_ENABLED
             __rt_warning( "no match found for option %x\n", req_type );
-#endif
+#endif /* ASSERTIONS_ENABLED */
             return NULL;
         }
     }

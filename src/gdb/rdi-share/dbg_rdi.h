@@ -1,6 +1,6 @@
-/* 
+/* dbg_rdi.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -508,4 +508,6 @@ struct RDIProcVec {
     rdi_targetisdead    *targetisdead;
 };
 
-#endif
+#endif /* !dbg_rdi__h */
+
+/* EOF */

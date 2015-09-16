@@ -1,7 +1,7 @@
-/* BFD support for the ia64 architecture.
-   Copyright 1998, 1999, 2000, 2002 Free Software Foundation, Inc.
-   Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
-
+/* cpu-ia64.c: BFD support for the ia64 architecture.
+ * Copyright 1998, 1999, 2000, 2002 Free Software Foundation, Inc.
+ * Contributed by David Mosberger-Tang <davidm@hpl.hp.com>  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,11 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
+
+#ifndef _BFD_CPU_IA64_C
+# define _BFD_CPU_IA64_C 1
+#endif /* !_BFD_CPU_IA64_C */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -34,7 +38,7 @@ const bfd_arch_info_type bfd_ia64_elf32_arch =
     3,	/* log2 of section alignment */
     TRUE, /* the one and only */
     bfd_default_compatible,
-    bfd_default_scan ,
+    bfd_default_scan,
     0,
   };
 
@@ -50,8 +54,14 @@ const bfd_arch_info_type bfd_ia64_arch =
     3,	/* log2 of section alignment */
     TRUE, /* the one and only */
     bfd_default_compatible,
-    bfd_default_scan ,
+    bfd_default_scan,
     &bfd_ia64_elf32_arch,
   };
 
 #include "cpu-ia64-opc.c"
+
+#ifdef _BFD_CPU_IA64_C
+# undef _BFD_CPU_IA64_C
+#endif /* _BFD_CPU_IA64_C */
+
+/* EOF */

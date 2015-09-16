@@ -34,7 +34,7 @@
 #include "objfiles.h"
 #include "regcache.h"
 
-#include "ppc-macosx-regs.h"
+/* we already included "ppc-macosx-regs.h" once */
 
 static inline void
 supply_unsigned_int (int regnum, unsigned int val)
@@ -58,15 +58,15 @@ static inline void
 regcache_raw_supply_uint32_raw (int regnum, unsigned int *uint32_ptr)
 {
   gdb_byte *uint32_bytes = (gdb_byte *)uint32_ptr;
-  
+
   if (register_size (current_gdbarch, regnum) == 4)
     regcache_raw_supply (current_regcache, regnum, uint32_bytes);
   else if (register_size (current_gdbarch, regnum) == 8)
     {
-      gdb_byte buf[8] = { 0, 0, 0, 0, 
-			  uint32_bytes[0], 
-			  uint32_bytes[1], 
-			  uint32_bytes[2], 
+      gdb_byte buf[8] = { 0, 0, 0, 0,
+			  uint32_bytes[0],
+			  uint32_bytes[1],
+			  uint32_bytes[2],
 			  uint32_bytes[3]};
       regcache_raw_supply (current_regcache, regnum, buf);
     }
@@ -76,17 +76,16 @@ regcache_raw_supply_uint32_raw (int regnum, unsigned int *uint32_ptr)
 
 
 static inline void
-collect_unsigned_int (int regnum, unsigned int *addr)
+collect_unsigned_int(int regnum, unsigned int *addr)
 {
   gdb_byte buf[8];
-  regcache_raw_collect (current_regcache, regnum, buf);
-  if (register_size (current_gdbarch, regnum) == 4)
-    *addr = extract_unsigned_integer (buf, 4);
-  else if (register_size (current_gdbarch, regnum) ==
-           8)
-    *addr = extract_unsigned_integer (buf + 4, 4);
+  regcache_raw_collect(current_regcache, regnum, buf);
+  if (register_size(current_gdbarch, regnum) == 4)
+    *addr = (unsigned int)extract_unsigned_integer(buf, 4);
+  else if (register_size(current_gdbarch, regnum) == 8)
+    *addr = (unsigned int)extract_unsigned_integer((buf + 4), 4);
   else
-    internal_error (__FILE__, __LINE__, "unknown size for register");
+    internal_error(__FILE__, __LINE__, "unknown size for register");
 }
 
 /* Some registers may be 32 bits wide, but our internal data structures
@@ -95,15 +94,15 @@ collect_unsigned_int (int regnum, unsigned int *addr)
    already in the correct byte order and that the target 64 bit value is
    big endian.  */
 static inline void
-regcache_raw_collect_uint32_raw (int regnum, unsigned int *uint32_ptr)
+regcache_raw_collect_uint32_raw(int regnum, unsigned int *uint32_ptr)
 {
   gdb_byte *uint32_bytes = (gdb_byte *)uint32_ptr;
-  
+
   if (register_size (current_gdbarch, regnum) == 4)
     regcache_raw_collect (current_regcache, regnum, uint32_bytes);
   else if (register_size (current_gdbarch, regnum) == 8)
     {
-      gdb_byte buf[8] = { 0 }; 
+      gdb_byte buf[8] = { 0 };
       regcache_raw_collect (current_regcache, regnum, buf);
       uint32_bytes[0] = buf[4];
       uint32_bytes[1] = buf[5];
@@ -116,13 +115,13 @@ regcache_raw_collect_uint32_raw (int regnum, unsigned int *uint32_ptr)
 
 
 static inline void
-supply_unsigned_int_64 (int regnum, unsigned long long val)
+supply_unsigned_int_64(int regnum, unsigned long long val)
 {
   gdb_byte buf[8];
-  store_unsigned_integer (buf, 8, val);
-  if (register_size (current_gdbarch, regnum) != 8)
-    internal_error (__FILE__, __LINE__, "incorrect size for register");
-  regcache_raw_supply (current_regcache, regnum, buf);
+  store_unsigned_integer(buf, 8, (ULONGEST)val);
+  if (register_size(current_gdbarch, regnum) != 8)
+    internal_error(__FILE__, __LINE__, "incorrect size for register");
+  regcache_raw_supply(current_regcache, regnum, buf);
 }
 
 static inline void
@@ -163,7 +162,7 @@ ppc_macosx_fetch_gp_registers_raw (gdb_ppc_thread_state_t *gp_regs)
 
   for (i = 0; i < PPC_MACOSX_NUM_GP_REGS; i++)
     {
-      regcache_raw_supply_uint32_raw (PPC_MACOSX_FIRST_GP_REGNUM + i, 
+      regcache_raw_supply_uint32_raw (PPC_MACOSX_FIRST_GP_REGNUM + i,
 					&gp_regs->gpregs[i]);
     }
 
@@ -337,28 +336,28 @@ ppc_macosx_fetch_fp_registers_raw (gdb_ppc_thread_fpstate_t *fp_regs)
   int i;
   PPC_MACOSX_FP_REGISTER_TYPE *fpr = fp_regs->fpregs;
   for (i = 0; i < PPC_MACOSX_NUM_FP_REGS; i++)
-    regcache_raw_supply (current_regcache, PPC_MACOSX_FIRST_FP_REGNUM + i, 
+    regcache_raw_supply (current_regcache, PPC_MACOSX_FIRST_FP_REGNUM + i,
 			 &fpr[i]);
 
   regcache_raw_supply_uint32_raw (PPC_MACOSX_FPSCR_REGNUM, &fp_regs->fpscr);
 }
 
 void
-ppc_macosx_store_fp_registers (gdb_ppc_thread_fpstate_t *fp_regs)
+ppc_macosx_store_fp_registers(gdb_ppc_thread_fpstate_t *fp_regs)
 {
   int i;
-  unsigned char buf[sizeof (PPC_MACOSX_FP_REGISTER_TYPE)];
+  unsigned char buf[sizeof(PPC_MACOSX_FP_REGISTER_TYPE)];
 
   PPC_MACOSX_FP_REGISTER_TYPE *fpr = fp_regs->fpregs;
   for (i = 0; i < PPC_MACOSX_NUM_FP_REGS; i++)
     {
-      regcache_raw_collect (current_regcache, PPC_MACOSX_FIRST_FP_REGNUM + i, buf);
-      fpr[i] =
-        deprecated_extract_floating (buf,
-                                     sizeof (PPC_MACOSX_FP_REGISTER_TYPE));
+      regcache_raw_collect(current_regcache, PPC_MACOSX_FIRST_FP_REGNUM + i, buf);
+      fpr[i] = ((PPC_MACOSX_FP_REGISTER_TYPE)
+                deprecated_extract_floating(buf,
+                                            sizeof(PPC_MACOSX_FP_REGISTER_TYPE)));
     }
   fp_regs->fpscr_pad = 0;
-  collect_unsigned_int (PPC_MACOSX_FPSCR_REGNUM, &fp_regs->fpscr);
+  collect_unsigned_int(PPC_MACOSX_FPSCR_REGNUM, &fp_regs->fpscr);
 }
 
 void
@@ -367,9 +366,9 @@ ppc_macosx_store_fp_registers_raw (gdb_ppc_thread_fpstate_t *fp_regs)
   int i;
   PPC_MACOSX_FP_REGISTER_TYPE *fpr = fp_regs->fpregs;
   for (i = 0; i < PPC_MACOSX_NUM_FP_REGS; i++)
-    regcache_raw_collect (current_regcache, PPC_MACOSX_FIRST_FP_REGNUM + i, 
+    regcache_raw_collect (current_regcache, PPC_MACOSX_FIRST_FP_REGNUM + i,
 			  &fpr[i]);
-	
+
   fp_regs->fpscr_pad = 0;
   regcache_raw_collect_uint32_raw (PPC_MACOSX_FPSCR_REGNUM, &fp_regs->fpscr);
 }
@@ -398,12 +397,12 @@ ppc_macosx_fetch_vp_registers_raw (gdb_ppc_thread_vpstate_t *vp_regs)
 {
   int i;
   for (i = 0; i < PPC_MACOSX_NUM_VP_REGS; i++)
-    regcache_raw_supply (current_regcache, PPC_MACOSX_FIRST_VP_REGNUM + i, 
+    regcache_raw_supply (current_regcache, PPC_MACOSX_FIRST_VP_REGNUM + i,
 			 &vp_regs->save_vr[i]);
 
-  regcache_raw_supply_uint32_raw (PPC_MACOSX_VSCR_REGNUM, 
+  regcache_raw_supply_uint32_raw (PPC_MACOSX_VSCR_REGNUM,
 				  (unsigned int *)&vp_regs->save_vscr[3]);
-/* regcache_raw_supply_uint32_raw (PPC_MACOSX_VRSAVE_REGNUM, 
+/* regcache_raw_supply_uint32_raw (PPC_MACOSX_VRSAVE_REGNUM,
 				   &vp_regs->save_vrvalid); */
 }
 
@@ -415,18 +414,20 @@ ppc_macosx_store_vp_registers (gdb_ppc_thread_vpstate_t *vp_regs)
 
   for (i = 0; i < PPC_MACOSX_NUM_VP_REGS; i++)
     {
-      regcache_raw_collect (current_regcache, PPC_MACOSX_FIRST_VP_REGNUM + i, buf);
+      regcache_raw_collect(current_regcache,
+                           (PPC_MACOSX_FIRST_VP_REGNUM + i), buf);
       for (j = 0; j < 4; j++)
         {
           vp_regs->save_vr[i][j] =
-            extract_unsigned_integer (buf + (j * 4), 4);
+            (unsigned long)extract_unsigned_integer((buf + (j * 4)), 4);
         }
     }
-  memset (&vp_regs->save_vscr, 0, sizeof (vp_regs->save_vscr));
-  regcache_raw_collect (current_regcache, PPC_MACOSX_VSCR_REGNUM, &vp_regs->save_vscr[3]);
-  memset (&vp_regs->save_pad5, 0, sizeof (vp_regs->save_pad5));
+  memset(&vp_regs->save_vscr, 0, sizeof(vp_regs->save_vscr));
+  regcache_raw_collect (current_regcache, PPC_MACOSX_VSCR_REGNUM,
+                        &vp_regs->save_vscr[3]);
+  memset(&vp_regs->save_pad5, 0, sizeof(vp_regs->save_pad5));
   vp_regs->save_vrvalid = 0xffffffff;
-  memset (&vp_regs->save_pad6, 0, sizeof (vp_regs->save_pad6));
+  memset(&vp_regs->save_pad6, 0, sizeof(vp_regs->save_pad6));
 }
 
 void
@@ -435,11 +436,11 @@ ppc_macosx_store_vp_registers_raw (gdb_ppc_thread_vpstate_t *vp_regs)
   int i;
   for (i = 0; i < PPC_MACOSX_NUM_VP_REGS; i++)
     {
-      regcache_raw_collect (current_regcache, PPC_MACOSX_FIRST_VP_REGNUM + i, 
+      regcache_raw_collect (current_regcache, PPC_MACOSX_FIRST_VP_REGNUM + i,
 			    &vp_regs->save_vr[i]);
     }
   memset (&vp_regs->save_vscr, 0, sizeof (vp_regs->save_vscr));
-  regcache_raw_collect_uint32_raw (PPC_MACOSX_VSCR_REGNUM, 
+  regcache_raw_collect_uint32_raw (PPC_MACOSX_VSCR_REGNUM,
 				   (unsigned int *)&vp_regs->save_vscr[3]);
   memset (&vp_regs->save_pad5, 0, sizeof (vp_regs->save_pad5));
   vp_regs->save_vrvalid = 0xffffffff;
@@ -492,3 +493,5 @@ ppc_macosx_stab_reg_to_regnum (int num)
     }
   return regnum;
 }
+
+/* EOF */

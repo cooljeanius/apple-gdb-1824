@@ -137,11 +137,11 @@ fix_argv (char * const *argvec)
 	     space ends in a backslash (such as in the case of -iprefix arg
 	     passed to cpp). The resulting quoted strings gets misinterpreted
 	     by the command interpreter -- it thinks that the ending quote
-	     is escaped by the trailing backslash and things get confused. 
+	     is escaped by the trailing backslash and things get confused.
 	     We handle this case by escaping the trailing backslash, provided
 	     it was not escaped in the first place.  */
-	  if (len > 1 
-	      && argv[i][len-1] == '\\' 
+	  if (len > 1
+	      && argv[i][len-1] == '\\'
 	      && argv[i][len-2] != '\\')
 	    {
 	      trailing_backslash = 1;
@@ -438,3 +438,5 @@ pex_win32_fdopenr (struct pex_obj *obj ATTRIBUTE_UNUSED, int fd,
 {
   return fdopen (fd, binary ? "rb" : "r");
 }
+
+/* EOF */

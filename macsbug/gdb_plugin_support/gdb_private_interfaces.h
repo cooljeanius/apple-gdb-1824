@@ -12,6 +12,8 @@
 #ifndef __GDB_PRIVATE_INTERFACES_H__
 #define __GDB_PRIVATE_INTERFACES_H__
 
+#include "ansidecl.h"
+
 #include "gdb.h"
 #include "defs.h"
 
@@ -87,12 +89,15 @@ typedef struct {				/* initialized by or initial value...	*/
     struct ui_file *gdb_stderr;			/* event_top.c: gdb_setup_readline()	*/
     struct ui_out *uiout;			/* cli_out.c: _initialize_cli_out()	*/
     void (*rl_completion_display_matches_hook)(char **, int, int); /* NULL		*/
-    //int query_hook(char *format, va_list ap);	/* NULL					*/
+#if 0
+    int query_hook(char *format, va_list ap);	/* NULL					*/
+#endif /* 0 */
     void (*rl_startup_hook)(void);		/* NULL					*/
     char *(*command_line_input_hook)(char *, int, char *); /* NULL 			*/
     void (*help_command)(char *, int);		/* gdb command definition		*/
-    void (*deprecated_set_hook)(struct cmd_list_element *);/* NULL			*/
-    
+    void (*deprecated_set_hook)(struct cmd_list_element *)
+        ATTRIBUTE_DEPRECATED;                   /* NULL			*/
+
     char input_handler_defined;			/* these tell us when above are defined	*/
     char gdb_stdout_defined;
     char gdb_stderr_defined;
@@ -100,15 +105,17 @@ typedef struct {				/* initialized by or initial value...	*/
     char insn_printf_defined;
     char uiout_defined;
     char rl_completion_display_matches_hook_defined;
-    //char query_hook_defined;
+#if 0
+    char query_hook_defined;
+#endif /* 0 */
     char rl_startup_hook_defined;
     char command_line_input_hook_defined;
     char help_command_defined;
     char deprecated_set_hook_defined;
-    
+
     /* The following fields are carried in this global struct to support multiple	*/
     /* instances of the plugin library to communicate with one another.			*/
-    
+
     void *plugin_global_data;			/* global data for all plugin instances	*/
     struct Plugin_Pvt_Data *pvt_data_list;	/* list of private channels		*/
 } Gdb_Global_Data;
@@ -206,7 +213,7 @@ extern void (*rl_getc_function)();		/* raw terminal char input  		*/
 
 extern void (*rl_redisplay_function)();	    	/* called to echo readline chrs & prompt*/
 extern char *rl_display_prompt;			/* readline display prompt if not NULL	*/
-extern char *rl_prompt;				/* primary readline prompt		*/ 
+extern char *rl_prompt;				/* primary readline prompt		*/
 
 extern FILE *rl_instream;			/* the input stream			*/
 extern FILE *rl_outstream;			/* the output stream			*/

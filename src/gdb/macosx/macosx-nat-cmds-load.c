@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-nat-cmds-load.c
+   Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -36,8 +37,11 @@
 #include <sys/stat.h>
 #include <grp.h>
 #include <dlfcn.h>
+#include <libintl.h>
 
 #include <mach-o/dyld.h>
+
+#include "macosx-nat-cmds-load.h"
 
 struct plugin_state
 {
@@ -52,108 +56,115 @@ static struct plugin_state pstate;
 
 static int debug_plugins_flag = 0;
 
+extern void _initialize_load_plugin(void);
+
+extern void **_plugin_private_data(char *plugin_name);
+
 void
-load_plugin (char *arg, int from_tty)
+load_plugin(char *arg, int from_tty)
 {
-  void (*fptr) () = NULL;
+  void (*fptr)(void) = NULL;
   char *init_func_name = "init_from_gdb";
   char *p, path[PATH_MAX + 1];
   struct stat sb;
 
   if (arg == NULL)
     {
-      error ("Usage: load-plugin <plugin>");
+      error("Usage: load-plugin <plugin>");
       return;
     }
 
-  strcpy (path, p = tilde_expand (arg));
-  xfree (p);
+  strcpy(path, p = tilde_expand(arg));
+  xfree(p);
 
-  if (stat (path, &sb) != 0)
-    error ("GDB plugin \"%s\" not found.", path);
+  if (stat(path, &sb) != 0)
+    error("GDB plugin \"%s\" not found.", path);
 
   /* If gdb is running as setgid, check that the plugin is also setgid
      (to the same gid) to avoid a privilege escalation.  */
 
-  if (getgid () != getegid ())
+  if (getgid() != getegid())
     {
       /* Same setgid as gdb itself?  */
-      if (getegid () != sb.st_gid || (sb.st_mode & S_ISGID) == 0)
+      if ((getegid() != sb.st_gid) || ((sb.st_mode & S_ISGID) == 0))
         {
           struct group *gr;
           char *grpname = "";
-          gr = getgrgid (getegid ());
-          if (gr && gr->gr_name != NULL)
+          gr = getgrgid(getegid());
+          if (gr && (gr->gr_name != NULL))
             grpname = gr->gr_name;
-          error ("GDB plugin \"%s\" must be setgid %s to be loaded.", path,
-                  grpname);
+          error("GDB plugin \"%s\" must be setgid %s to be loaded.", path,
+                grpname);
         }
     }
 
-  /* dyld won't let a setgid program like gdb load a plugin by relative
-     path.  */
-  if (!IS_ABSOLUTE_PATH (path))
-    error ("Usage: load-plugin FULL-PATHNAME\n"
-           "Relative pathnames ('%s') are not permitted.", path);
+  /* dyld will NOT let a setgid program like gdb load a plugin by relative
+   * path.  */
+  if (!IS_ABSOLUTE_PATH(path))
+    error("Usage: load-plugin FULL-PATHNAME\n"
+          "Relative pathnames ('%s') are not permitted.", path);
 
   if (debug_plugins_flag)
     {
-      printf_unfiltered ("Loading GDB module from \"%s\"\n", arg);
+      printf_unfiltered("Loading GDB module from \"%s\"\n", arg);
     }
 
   {
+    void *ret;
     if (debug_plugins_flag)
       {
-        printf_unfiltered ("Linking GDB module from \"%s\"\n", path);
+        printf_unfiltered("Linking GDB module from \"%s\"\n", path);
       }
 
-    void *ret = dlopen (path, RTLD_LOCAL | RTLD_NOW);
+    ret = dlopen(path, (RTLD_LOCAL | RTLD_NOW));
     if (ret == NULL)
       {
-        error ("Unable to dlopen plugin \"%s\", reason: %s",
-               path, dlerror ());
+        error("Unable to dlopen plugin \"%s\", reason: %s",
+              path, dlerror());
       }
-    fptr = dlsym (ret, init_func_name);
+    fptr = (void (*)(void))dlsym(ret, init_func_name);
     if (fptr == NULL)
       {
-        dlclose (ret);
-        error ("Unable to locate symbol '%s' in module.", init_func_name);
+        dlclose(ret);
+        error("Unable to locate symbol '%s' in module.", init_func_name);
       }
   }
 
   if (debug_plugins_flag)
     {
-      printf_unfiltered ("Calling '%s' in \"%s\"\n", init_func_name, path);
+      printf_unfiltered("Calling '%s' in \"%s\"\n", init_func_name, path);
     }
 
-  CHECK_FATAL (fptr != NULL);
+  CHECK_FATAL(fptr != NULL);
 
-  /* Make sure the names and data arrays are updated BEFORE calling 
+  /* Make sure the names and data arrays are updated BEFORE calling
      init_func_name() so that the plugin can use _plugin_private_data()  */
 
-  pstate.plugin_data =
-    xrealloc (pstate.plugin_data, (pstate.num + 1) * sizeof (void *));
+  pstate.plugin_data = ((void **)
+                        xrealloc(pstate.plugin_data,
+                                 (pstate.num + 1) * sizeof(void *)));
   pstate.plugin_data[pstate.num] = NULL;
 
-  pstate.names = xrealloc (pstate.names, (pstate.num + 1) * sizeof (char *));
-  pstate.names[pstate.num] = xstrdup (path);
+  pstate.names = (char **)xrealloc(pstate.names,
+                                   (pstate.num + 1) * sizeof(char *));
+  pstate.names[pstate.num] = xstrdup(path);
   pstate.num++;
 
-  (*fptr) ();
+  (*fptr)();
 }
 
 void
-info_plugins_command (char *arg, int from_tty)
+info_plugins_command(char *arg, int from_tty)
 {
   size_t i;
-  for (i = 0; i < pstate.num; i++)
+  for (i = 0UL; i < pstate.num; i++)
     {
-      printf_unfiltered ("%s\n", pstate.names[i]);
+      printf_unfiltered("%s\n", pstate.names[i]);
     }
 }
 
 void
-_initialize_load_plugin (void)
+_initialize_load_plugin(void)
 {
   struct cmd_list_element *cmd;
 
@@ -161,28 +172,30 @@ _initialize_load_plugin (void)
   pstate.num = 0;
   pstate.plugin_data = NULL;
 
-  cmd = add_cmd ("load-plugin", class_obscure, load_plugin,
-                 "Usage: load-plugin <plugin>\n"
-                 "Load a plugin from the specified path.", &cmdlist);
-  set_cmd_completer (cmd, filename_completer);
-  /* cmd->completer_word_break_characters = gdb_completer_filename_word_break_characters; *//* FIXME */
+  cmd = add_cmd("load-plugin", class_obscure, load_plugin,
+                "Usage: load-plugin <plugin>\n"
+                "Load a plugin from the specified path.", &cmdlist);
+  set_cmd_completer(cmd, filename_completer);
+#if 0
+  cmd->completer_word_break_characters = gdb_completer_filename_word_break_characters; /* FIXME */
+#endif /* 0 */
 
-  add_setshow_boolean_cmd ("plugins", class_obscure,
-			   &debug_plugins_flag, _("\
+  add_setshow_boolean_cmd("plugins", class_obscure,
+			  &debug_plugins_flag, _("\
 Set if tracing of plugin loading is enabled"), _("\
 Show if tracing of plugin loading is enabled"), NULL,
-			   NULL, NULL,
-			   &setdebuglist, &showdebuglist);
+			  NULL, NULL,
+			  &setdebuglist, &showdebuglist);
 
-  add_info ("plugins", info_plugins_command, "Show current plug-ins state.");
+  add_info("plugins", info_plugins_command, "Show current plug-ins state.");
 }
 
-/* Search for a loaded plugin by name and return a pointer to it's private data
-   slot allocated for plugin use.  Return NULL if plugin is not loaded.
+/* Search for a loaded plugin by name and return a pointer to its private data
+   slot allocated for plugin use. Return NULL if plugin is not loaded.
    If NULL is passed for a plugin name then a pointer to a global data pointer
    is returned.  */
 void **
-_plugin_private_data (char *plugin_name)
+_plugin_private_data(char *plugin_name)
 {
   size_t i;
   char *p;
@@ -192,16 +205,18 @@ _plugin_private_data (char *plugin_name)
 
   for (i = 0; i < pstate.num; i++)
     {
-      p = strrchr (pstate.names[i], '/');
+      p = strrchr(pstate.names[i], '/');
       if (p)
         {
-          if (strcmp (plugin_name, p + 1) != 0)
+          if (strcmp(plugin_name, p + 1) != 0)
             continue;
         }
-      else if (strcmp (plugin_name, pstate.names[i]) != 0)
+      else if (strcmp(plugin_name, pstate.names[i]) != 0)
         continue;
       return &pstate.plugin_data[i];
     }
 
   return NULL;
 }
+
+/* EOF */

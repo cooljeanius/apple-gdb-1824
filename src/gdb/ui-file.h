@@ -55,7 +55,7 @@ typedef void (ui_file_put_ftype) (struct ui_file *stream, ui_file_put_method_fty
 extern void set_ui_file_put (struct ui_file *stream, ui_file_put_ftype * put);
 
 typedef void (ui_file_delete_ftype) (struct ui_file * stream);
-extern void set_ui_file_data (struct ui_file *stream, void *data, ui_file_delete_ftype * delete);
+extern void set_ui_file_data (struct ui_file *stream, void *data, ui_file_delete_ftype *);
 
 extern void *ui_file_data (struct ui_file *file);
 

@@ -1,3 +1,5 @@
+/* memchr.c */
+
 /*
 
 @deftypefn Supplemental void* memchr (const void *@var{s}, int @var{c}, size_t @var{n})
@@ -21,7 +23,7 @@ PTR
 memchr (register const PTR src_void, int c, size_t length)
 {
   const unsigned char *src = (const unsigned char *)src_void;
-  
+
   while (length-- > 0)
   {
     if (*src == c)
@@ -30,3 +32,5 @@ memchr (register const PTR src_void, int c, size_t length)
   }
   return NULL;
 }
+
+/* EOF */

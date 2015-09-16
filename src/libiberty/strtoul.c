@@ -1,4 +1,4 @@
-/*
+/* strtoul.c
  * Copyright (c) 1990 Regents of the University of California.
  * All rights reserved.
  *
@@ -85,8 +85,8 @@ strtoul(const char *nptr, char **endptr, register int base)
 	}
 	if (base == 0)
 		base = c == '0' ? 8 : 10;
-	cutoff = (unsigned long)ULONG_MAX / (unsigned long)base;
-	cutlim = (unsigned long)ULONG_MAX % (unsigned long)base;
+	cutoff = ((unsigned long)ULONG_MAX / (unsigned long)base);
+	cutlim = (int)((unsigned long)ULONG_MAX % (unsigned long)base);
 	for (acc = 0, any = 0;; c = *s++) {
 		if (ISDIGIT(c))
 			c -= '0';
@@ -100,8 +100,8 @@ strtoul(const char *nptr, char **endptr, register int base)
 			any = -1;
 		else {
 			any = 1;
-			acc *= base;
-			acc += c;
+			acc *= (unsigned long)base;
+			acc += (unsigned long)c;
 		}
 	}
 	if (any < 0) {
@@ -113,3 +113,5 @@ strtoul(const char *nptr, char **endptr, register int base)
 		*endptr = (char *) (any ? s - 1 : nptr);
 	return (acc);
 }
+
+/* EOF */

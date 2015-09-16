@@ -73,6 +73,7 @@ static SCM internal_keyword;
 
 /* Administrivia for breakpoint smobs.  */
 
+#ifdef MY_BRANCH_IS_HEAD
 /* The smob "mark" function for <gdb:breakpoint>.  */
 
 static SCM
@@ -89,6 +90,8 @@ bpscm_mark_breakpoint_smob (SCM self)
   return gdbscm_mark_gsmob (&bp_smob->base);
 }
 
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 /* The smob "free" function for <gdb:breakpoint>.  */
 
 static size_t
@@ -1095,6 +1098,7 @@ Return #t if the breakpoint is enabled." },
 Set the breakpoint's enabled state.\n\
 \n\
   Arguments: <gdb:breakpoint boolean" },
+  /* missing angle-brace, or not? */
 
   { "breakpoint-silent?", 1, 0, 0, gdbscm_breakpoint_silent_p,
     "\
@@ -1184,7 +1188,10 @@ gdbscm_initialize_breakpoints (void)
 {
   breakpoint_smob_tag
     = gdbscm_make_smob_type (breakpoint_smob_name, sizeof (breakpoint_smob));
+#ifdef MY_BRANCH_IS_HEAD
   scm_set_smob_mark (breakpoint_smob_tag, bpscm_mark_breakpoint_smob);
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
   scm_set_smob_free (breakpoint_smob_tag, bpscm_free_breakpoint_smob);
   scm_set_smob_print (breakpoint_smob_tag, bpscm_print_breakpoint_smob);
 

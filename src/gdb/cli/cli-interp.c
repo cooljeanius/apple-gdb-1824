@@ -1,4 +1,4 @@
-/* CLI Definitions for GDB, the GNU debugger.
+/* cli-interp.c: CLI Definitions for GDB, the GNU debugger.
 
    Copyright 2002, 2003 Free Software Foundation, Inc.
 
@@ -34,14 +34,15 @@
 #include "cli-cmds.h"
 #include "exceptions.h"
 
+/* These are the ui_out and the interpreter for the console interpreter: */
 struct ui_out *cli_uiout;
 
-/* These are the ui_out and the interpreter for the console interpreter.  */
-
 /* Longjmp-safe wrapper for "execute_command".  */
-/* APPLE LOCAL Make globally visible */
-struct gdb_exception safe_execute_command (struct ui_out *uiout,
-						  char *command, int from_tty);
+/* APPLE LOCAL Make globally visible: */
+struct gdb_exception safe_execute_command(struct ui_out *uiout,
+                                          char *command, int from_tty);
+
+extern int cli_quoted_interpreter_resume(void *data);
 
 struct captured_execute_command_args
 {
@@ -110,17 +111,18 @@ cli_interpreter_exec (void *data, const char *command_str)
 
   /* FIXME: cagney/2003-02-01: Need to const char *propogate
      safe_execute_command.  */
-  char *str = strcpy (alloca (strlen (command_str) + 1), command_str);
+  char *str = strcpy((char *)alloca(strlen(command_str) + 1UL),
+                     command_str);
 
   /* APPLE_LOCAL begin cli */
   /* We don't need old_stream because we actually change the
      interpreters when we do interpreter exec, then swap them back.
      This code assumes that the interpreter is still the one that is
      exec'ing in the cli interpreter, and we are just faking it up.  */
-  /* Also, the FSF code forces cli_uiout here, but we want 
+  /* Also, the FSF code forces cli_uiout here, but we want
      the person who set the interpreter to get the uiout right for that
      according to their lights.  If you don't do that, then you can't share
-     the cli_interpreter_exec between the console & console-quoted 
+     the cli_interpreter_exec between the console & console-quoted
      interpreters.  */
   result = safe_execute_command (uiout, str, 1);
   /* APPLE_LOCAL end cli */
@@ -153,13 +155,11 @@ safe_execute_command (struct ui_out *uiout, char *command, int from_tty)
 }
 
 /* APPLE LOCAL begin console-quoted interpreter */
-/* This is the only new function needed for the 
-   console-quoted interpreter.  This outputs console text in 
-   an mi-quoted form, so an mi-parser won't be fooled by spurious
-   * at beginning of line goofs...  */
-
+/* This is the only new function needed for the console-quoted interpreter.
+ * This outputs console text in an mi-quoted form, so an mi-parser will
+ * NOT be fooled by spurious * at beginning of line goofs...  */
 int
-cli_quoted_interpreter_resume (void *data)
+cli_quoted_interpreter_resume(void *data)
 {
   static struct ui_file *quoted_stdout = NULL;
   static struct ui_file *quoted_stderr = NULL;
@@ -220,7 +220,7 @@ _initialize_cli_interp (void)
   struct ui_out *tmp_ui_out;
   struct ui_file *raw_stdout;
   /* APPLE LOCAL end console-quoted interpreter */
-  
+
   /* Create a default uiout builder for the CLI.  */
   cli_uiout = cli_out_new (gdb_stdout);
   cli_interp = interp_new (INTERP_CONSOLE, NULL, cli_uiout, &procs);

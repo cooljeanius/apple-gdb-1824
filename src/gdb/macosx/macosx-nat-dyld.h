@@ -1,3 +1,7 @@
+/*
+ * macosx-nat-dyld.h
+ */
+
 #ifndef __GDB_MACOSX_NAT_DYLD_H__
 #define __GDB_MACOSX_NAT_DYLD_H__
 
@@ -6,7 +10,7 @@
 #include "macosx-nat-threads.h"
 
 #include <mach/machine.h>       /* cpu_type_t, cpu_subtype_t */
-#include <mach-o/loader.h>      /* struct mach_header, struct load_command */
+#include <mach-o/loader.h>   /* struct mach_header, struct load_command */
 
 struct objfile;
 struct target_waitstatus;
@@ -32,11 +36,11 @@ struct pre_run_memory_map {
 
 /* Imported definitions from <mach/machine.h> which may not be available on
    older systems.  */
-typedef int                     gdb_integer_t;
+typedef int                 gdb_integer_t;
 typedef gdb_integer_t       gdb_cpu_type_t;
 #define GDB_CPU_ARCH_ABI64  0x01000000
-#define GDB_CPU_TYPE_X86            ((gdb_cpu_type_t) 7)
-#define GDB_CPU_TYPE_X86_64         (GDB_CPU_TYPE_X86 | GDB_CPU_ARCH_ABI64)
+#define GDB_CPU_TYPE_X86    ((gdb_cpu_type_t)7)
+#define GDB_CPU_TYPE_X86_64 (GDB_CPU_TYPE_X86 | GDB_CPU_ARCH_ABI64)
 
 enum macosx_dyld_thread_state
 {
@@ -54,7 +58,6 @@ struct dyld_cache_range
 
 struct macosx_dyld_thread_status
 {
-
   CORE_ADDR dyld_image_infos;
   unsigned long dyld_version;
   CORE_ADDR dyld_notify;
@@ -76,7 +79,7 @@ struct macosx_dyld_thread_status
   CORE_ADDR dyld_slide;
   const char *dyld_name;
 
-  /* The dyld mach header as found in inferior memory.  */
+  /* The dyld mach header as found in inferior memory: */
   struct mach_header dyld_mem_header;
   /* When we are attaching to a process and dyld has slid (e.g. when attaching
      to something running under Rosetta translation, there is a native dyld
@@ -96,51 +99,67 @@ struct macosx_dyld_thread_status
 };
 typedef struct macosx_dyld_thread_status macosx_dyld_thread_status;
 
-void dyld_debug (const char *fmt, ...); /* ...duplicate symbol(?) */
+void dyld_debug(const char *fmt, ...)
+  ATTR_FORMAT(gnu_printf, 1, 2);
+/* ...duplicate symbol(?) */
 
-void dyld_print_status_info (macosx_dyld_thread_status *s, unsigned int mask,
-                             char *args);
-int dyld_objfile_set_load_state (struct objfile *o, int load_state);
-void macosx_clear_start_breakpoint ();
-void macosx_set_start_breakpoint (macosx_dyld_thread_status *s,
-                                  bfd *exec_bfd);
-void macosx_init_addresses (macosx_dyld_thread_status *s);
-int macosx_dyld_init (macosx_dyld_thread_status *s, bfd *exec_bfd);
-int macosx_solib_add (const char *filename, int from_tty,
-                      struct target_ops *targ, int loadsyms);
-void macosx_dyld_thread_init (macosx_dyld_thread_status *s);
-void macosx_add_shared_symbol_files ();
-void macosx_init_dyld_from_core ();
-void macosx_dyld_create_inferior_hook (CORE_ADDR all_image_info_addr);
+void dyld_print_status_info(macosx_dyld_thread_status *s, unsigned int mask,
+                            char *args);
+int dyld_objfile_set_load_state(struct objfile *o, int load_state);
+void macosx_clear_start_breakpoint(void);
+void macosx_set_start_breakpoint(macosx_dyld_thread_status *s,
+                                 bfd *exec_bfd);
+void macosx_init_addresses(macosx_dyld_thread_status *s);
+int macosx_dyld_init(macosx_dyld_thread_status *s, bfd *exec_bfd);
+void macosx_dyld_remove_libraries(struct macosx_dyld_thread_status *,
+                                  struct dyld_objfile_entry *entries,
+                                  int num);
+void macosx_dyld_add_libraries(struct macosx_dyld_thread_status *,
+                               struct dyld_objfile_entry *entries,
+                               int num);
+int macosx_solib_add(const char *filename, int from_tty,
+                     struct target_ops *targ, int loadsyms);
+void macosx_dyld_thread_init(macosx_dyld_thread_status *s);
+void macosx_dyld_thread_clear(macosx_dyld_thread_status *s);
+void macosx_add_shared_symbol_files(void);
+void macosx_init_dyld_from_core(void);
+int macosx_locate_dyld_static(macosx_dyld_thread_status *s,
+                              CORE_ADDR *value);
+void macosx_dyld_create_inferior_hook(CORE_ADDR all_image_info_addr);
 
-void macosx_init_dyld (struct macosx_dyld_thread_status *s,
-                       struct objfile *o, bfd *abfd);
-void macosx_init_dyld_symfile (struct objfile *o, bfd *abfd);
-enum gdb_osabi macosx_get_osabi_from_dyld_entry (bfd *abfd);
-void macosx_dyld_mourn_inferior (void);
+void macosx_init_dyld(struct macosx_dyld_thread_status *s,
+                      struct objfile *o, bfd *abfd);
+void macosx_init_dyld_symfile(struct objfile *o, bfd *abfd);
+enum gdb_osabi macosx_get_osabi_from_dyld_entry(bfd *abfd);
+void macosx_dyld_mourn_inferior(void);
 
-int target_is_remote ();
-int target_is_kdp_remote ();
-int macosx_dyld_update (int dyldonly);
-int dyld_lookup_and_bind_function (char *name);
-void update_section_tables_dyld (struct dyld_objfile_info *s);
-void update_section_tables ();
-char *dyld_fix_path (const char *path);
+int target_is_remote(void);
+int target_is_kdp_remote(void);
+int macosx_dyld_update(int dyldonly);
+int dyld_lookup_and_bind_function(char *name);
+void update_section_tables_dyld(struct dyld_objfile_info *s);
+void update_section_tables(void);
+char *dyld_fix_path(const char *path);
 
-void macosx_set_malloc_inited (int new_val);
-int macosx_get_malloc_inited (void);
-struct section_offsets *get_sectoffs_for_shared_cache_dylib (struct dyld_objfile_entry *, CORE_ADDR);
-int target_read_mach_header (CORE_ADDR addr,
+void macosx_set_malloc_inited(int new_val);
+int macosx_get_malloc_inited(void);
+struct section_offsets *get_sectoffs_for_shared_cache_dylib(struct dyld_objfile_entry *,
+                                                            CORE_ADDR);
+int target_read_mach_header(CORE_ADDR addr,
                             struct mach_header *mh);
-int target_get_mach_header_size (struct mach_header *mh);
-int target_read_load_command (CORE_ADDR addr,
-                                    struct load_command *load_cmd);
-int target_read_uuid (CORE_ADDR addr, unsigned char *uuid);
+int target_read_minimal_segment_32(CORE_ADDR addr,
+                                   struct segment_command *s);
+int target_read_minimal_segment_64(CORE_ADDR addr,
+                                   struct segment_command_64 *s);
+int target_get_mach_header_size(struct mach_header *mh);
+int target_read_load_command(CORE_ADDR addr,
+                             struct load_command *load_cmd);
+int target_read_uuid(CORE_ADDR addr, unsigned char *uuid);
 
 /* From macosx-nat-dyld.c.  */
 extern struct cmd_list_element *setshliblist;
 extern struct cmd_list_element *showshliblist;
 
-
-
 #endif /* __GDB_MACOSX_NAT_DYLD_H__ */
+
+/* EOF */

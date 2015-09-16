@@ -1,4 +1,5 @@
-/* HPPA PA-RISC machine native support for Lites, for GDB.
+/* nm-hppao.h
+   HPPA PA-RISC machine native support for Lites, for GDB.
    Copyright 1995 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -45,13 +46,15 @@
 #define FETCH_INFERIOR_REGISTERS
 
 /* attach/detach works to some extent under BSD and HPUX.  So long
-   as the process you're attaching to isn't blocked waiting on io,
-   blocked waiting on a signal, or in a system call things work 
+   as the process you are attaching to is NOT blocked waiting on io,
+   blocked waiting on a signal, or in a system call things work
    fine.  (The problems in those cases are related to the fact that
-   the kernel can't provide complete register information for the
+   the kernel cannot provide complete register information for the
    target process...  Which really pisses off GDB.)  */
 
 #define ATTACH_DETACH
 
 #define EMULATOR_BASE 0x90100000
 #define EMULATOR_END  0x90200000
+
+/* EOF */

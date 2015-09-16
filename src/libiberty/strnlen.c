@@ -1,4 +1,4 @@
-/* Portable version of strnlen.
+/* strnlen.c: Portable version of strnlen.
    This function is in the public domain.  */
 
 /*
@@ -16,10 +16,12 @@ past the first @var{maxlen} characters in the string.  If there is no
 
 #include "config.h"
 
+#include "libiberty.h"
+
 #include <stddef.h>
 
 size_t
-strnlen (const char *s, size_t maxlen)
+strnlen(const char *s, size_t maxlen)
 {
   size_t i;
 
@@ -28,3 +30,5 @@ strnlen (const char *s, size_t maxlen)
       break;
   return i;
 }
+
+/* EOF */

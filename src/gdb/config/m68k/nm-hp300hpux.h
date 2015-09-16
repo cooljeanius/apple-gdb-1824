@@ -1,4 +1,6 @@
-/* Parameters for native support on HP 9000 model 320, for GDB, the GNU debugger.
+/* nm-hp300hpux.h
+   Parameters for native support on HP 9000 model 320, for GDB,
+   the GNU debugger.
    Copyright 1986, 1987, 1989, 1992, 1993, 1996
    Free Software Foundation, Inc.
 

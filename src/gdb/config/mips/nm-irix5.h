@@ -1,4 +1,5 @@
-/* Definitions for native support of irix5.
+/* nm-irix5.h
+   Definitions for native support of irix5.
 
    Copyright 1993, 1996, 1998, 1999, 2000 Free Software Foundation, Inc.
 
@@ -32,11 +33,11 @@
 #define TARGET_HAS_HARDWARE_WATCHPOINTS
 
 /* TARGET_CAN_USE_HARDWARE_WATCHPOINT is now defined to go through
-   the target vector.  For Irix5, procfs_can_use_hw_watchpoint()
+   the target vector. For Irix5, procfs_can_use_hw_watchpoint()
    should be invoked.  */
 
 /* When a hardware watchpoint fires off the PC will be left at the
-   instruction which caused the watchpoint.  It will be necessary for
+   instruction which caused the watchpoint. It will be necessary for
    GDB to step over the watchpoint. */
 
 #define STOPPED_BY_WATCHPOINT(W) \
@@ -59,3 +60,5 @@ extern int procfs_set_watchpoint (ptid_t, CORE_ADDR, int, int, int);
       addr = regno;					\
   else							\
       addr = regno + NSIG_HNDLRS;	/* Skip over signal handlers */
+
+/* EOF */

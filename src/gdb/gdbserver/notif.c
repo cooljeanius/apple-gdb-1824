@@ -1,4 +1,5 @@
-/* Notification to GDB.
+/* notif.c
+   Notification to GDB.
    Copyright (C) 1989-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -48,6 +49,16 @@
    # 3 is done by function 'handle_notif_ack'.  */
 
 #include "notif.h"
+#include "remote-utils.h"
+
+#ifndef xsnprintf
+# include "libiberty.h"
+#endif /* !xsnprintf */
+
+/* if that was not where it was, try a different header: */
+#ifndef xsnprintf
+# include "common-utils.h" /* in ../common */
+#endif /* !xsnprintf */
 
 static struct notif_server *notifs[] =
 {
@@ -165,3 +176,5 @@ initialize_notif (void)
     notifs[i]->queue
       = QUEUE_alloc (notif_event_p, notif_event_xfree);
 }
+
+/* EOF */

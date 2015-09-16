@@ -1,3 +1,7 @@
+/*
+ * bits-tst.c
+ */
+
 # 2 "bits-tst.c"
 
 /* Drive the bit test routines */
@@ -341,7 +345,7 @@ main (argc, argv)
 #if defined (DO_BIT_TESTS)
   printf ("Checking BIT*\n");
   errors += check_bits (0, bit_tests);
-#endif
+#endif /* DO_BIT_TESTS */
 
 
 #if defined (DO_MASK_TESTS)
@@ -350,7 +354,7 @@ main (argc, argv)
 
   printf ("Checking MASKED*\n");
   errors += check_bits (1, mask_tests);
-#endif
+#endif /* DO_MASK_TESTS */
 
 
 #if defined (DO_LSMASK_TESTS)
@@ -359,7 +363,7 @@ main (argc, argv)
 
   printf ("Checking LSMASKED*\n");
   errors += check_bits (1, lsmask_tests);
-#endif
+#endif /* DO_LSMASK_TESTS */
 
 
 #if defined (DO_MSMASK_TESTS)
@@ -368,7 +372,7 @@ main (argc, argv)
 
   printf ("Checking MSMASKED*\n");
   errors += check_bits (1, msmask_tests);
-#endif
+#endif /* DO_MSMASK_TESTS */
 
 
   printf ("Checking EXTRACTED*\n");
@@ -406,3 +410,5 @@ main (argc, argv)
 
   return errors != 0;
 }
+
+/* EOF */

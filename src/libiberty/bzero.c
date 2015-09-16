@@ -12,12 +12,16 @@ is deprecated in favor of @code{memset}.
 
 */
 
+#include "libiberty_deprecated.h"
+
 #include <stddef.h>
 
 extern void *memset(void *, int, size_t);
 
 void
-bzero (void *to, size_t count)
+bzero(void *to, size_t count)
 {
-  memset (to, 0, count);
+  memset(to, 0, count);
 }
+
+/* EOF */

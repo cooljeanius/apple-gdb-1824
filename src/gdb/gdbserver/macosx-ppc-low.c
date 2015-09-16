@@ -75,14 +75,15 @@ ppc_macosx_fetch_gp_registers_64 (gdb_ppc_thread_state_64_t *gp_regs)
 }
 
 void
-ppc_macosx_fetch_fp_registers (gdb_ppc_thread_fpstate_t *fp_regs)
+ppc_macosx_fetch_fp_registers(gdb_ppc_thread_fpstate_t *fp_regs)
 {
+  return;
 }
 
 void
-ppc_macosx_fetch_vp_registers (gdb_ppc_thread_vpstate_t *vp_regs)
+ppc_macosx_fetch_vp_registers(gdb_ppc_thread_vpstate_t *vp_regs)
 {
-
+  return;
 }
 
 /* Read register values from the inferior process.
@@ -187,14 +188,15 @@ ppc_macosx_store_gp_registers_64 (gdb_ppc_thread_state_64_t *gp_regs)
 }
 
 void
-ppc_macosx_store_fp_registers (gdb_ppc_thread_fpstate_t *fp_regs)
+ppc_macosx_store_fp_registers(gdb_ppc_thread_fpstate_t *fp_regs)
 {
+  return;
 }
 
 void
-ppc_macosx_store_vp_registers (gdb_ppc_thread_vpstate_t *vp_regs)
+ppc_macosx_store_vp_registers(gdb_ppc_thread_vpstate_t *vp_regs)
 {
-
+  return;
 }
 
 /* Store our register values back into the inferior.
@@ -285,6 +287,7 @@ ppc_single_step_thread (thread_t thread, int on)
 int
 ppc_clear_single_step (thread_t thread)
 {
+  return 0; /* return something to silence warning */
 }
 
 struct macosx_target_ops the_low_target =
@@ -294,3 +297,5 @@ struct macosx_target_ops the_low_target =
   ppc_single_step_thread,
   ppc_clear_single_step
 };
+
+/* EOF */

@@ -1,9 +1,9 @@
-/* An abstract string datatype.
-   Copyright (C) 1998, 1999, 2000, 2002, 2004 Free Software Foundation, Inc.
-   Contributed by Mark Mitchell (mark@markmitchell.com).
+/* dyn-string.c: An abstract string datatype.
+   Copyright (C) 1998-2000, 2002, 2004 Free Software Foundation, Inc.
+   Contributed by Mark Mitchell <mark@markmitchell.com>.
 
 This file is part of GNU CC.
-   
+
 GNU CC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
@@ -29,18 +29,18 @@ the Free Software Foundation, 51 Franklin Street - Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
 
 #ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+# include <string.h>
+#endif /* HAVE_STRING_H */
 
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 
 #include "libiberty.h"
 #include "dyn-string.h"
@@ -50,25 +50,25 @@ Boston, MA 02110-1301, USA.  */
    embedded in another object.  The contents of of the string itself
    are still dynamically allocated.  The string initially is capable
    of holding at least SPACE characeters, including the terminating
-   NUL.  If SPACE is 0, it will silently be increated to 1.  
+   NUL.  If SPACE is 0, it will silently be increated to 1.
 
    If RETURN_ON_ALLOCATION_FAILURE is defined and memory allocation
    fails, returns 0.  Otherwise returns 1.  */
 
 int
-dyn_string_init (struct dyn_string *ds_struct_ptr, int space)
+dyn_string_init(struct dyn_string *ds_struct_ptr, int space)
 {
-  /* We need at least one byte in which to store the terminating NUL.  */
+  /* We need at least one byte in which to store the terminating NUL: */
   if (space == 0)
     space = 1;
 
 #ifdef RETURN_ON_ALLOCATION_FAILURE
-  ds_struct_ptr->s = (char *) malloc (space);
+  ds_struct_ptr->s = (char *)malloc(space);
   if (ds_struct_ptr->s == NULL)
     return 0;
 #else
-  ds_struct_ptr->s = XNEWVEC (char, space);
-#endif
+  ds_struct_ptr->s = XNEWVEC(char, (size_t)space);
+#endif /* RETURN_ON_ALLOCATION_FAILURE */
   ds_struct_ptr->allocated = space;
   ds_struct_ptr->length = 0;
   ds_struct_ptr->s[0] = '\0';
@@ -82,33 +82,32 @@ dyn_string_init (struct dyn_string *ds_struct_ptr, int space)
    defined and memory allocation fails, returns NULL.  Otherwise
    returns the newly allocated string.  */
 
-dyn_string_t 
-dyn_string_new (int space)
+dyn_string_t
+dyn_string_new(int space)
 {
   dyn_string_t result;
 #ifdef RETURN_ON_ALLOCATION_FAILURE
-  result = (dyn_string_t) malloc (sizeof (struct dyn_string));
+  result = (dyn_string_t)malloc(sizeof(struct dyn_string));
   if (result == NULL)
     return NULL;
-  if (!dyn_string_init (result, space))
+  if (!dyn_string_init(result, space))
     {
-      free (result);
+      free(result);
       return NULL;
     }
 #else
-  result = XNEW (struct dyn_string);
-  dyn_string_init (result, space);
-#endif
+  result = XNEW(struct dyn_string);
+  dyn_string_init(result, space);
+#endif /* RETURN_ON_ALLOCATION_FAILURE */
   return result;
 }
 
-/* Free the memory used by DS.  */
-
-void 
-dyn_string_delete (dyn_string_t ds)
+/* Free the memory used by DS: */
+void
+dyn_string_delete(dyn_string_t ds)
 {
-  free (ds->s);
-  free (ds);
+  free(ds->s);
+  free(ds);
 }
 
 /* Returns the contents of DS in a buffer allocated with malloc.  It
@@ -116,27 +115,27 @@ dyn_string_delete (dyn_string_t ds)
    DS is then set to the empty string.  Deletes DS itself.  */
 
 char*
-dyn_string_release (dyn_string_t ds)
+dyn_string_release(dyn_string_t ds)
 {
-  /* Store the old buffer.  */
+  /* Store the old buffer: */
   char* result = ds->s;
-  /* The buffer is no longer owned by DS.  */
+  /* The buffer is no longer owned by DS: */
   ds->s = NULL;
-  /* Delete DS.  */
-  free (ds);
-  /* Return the old buffer.  */
+  /* Delete DS: */
+  free(ds);
+  /* Return the old buffer: */
   return result;
 }
 
 /* Increase the capacity of DS so it can hold at least SPACE
    characters, plus the terminating NUL.  This function will not (at
-   present) reduce the capacity of DS.  Returns DS on success. 
+   present) reduce the capacity of DS.  Returns DS on success.
 
    If RETURN_ON_ALLOCATION_FAILURE is defined and a memory allocation
    operation fails, deletes DS and returns NULL.  */
 
-dyn_string_t 
-dyn_string_resize (dyn_string_t ds, int space)
+dyn_string_t
+dyn_string_resize(dyn_string_t ds, int space)
 {
   int new_allocated = ds->allocated;
 
@@ -146,32 +145,31 @@ dyn_string_resize (dyn_string_t ds, int space)
   /* Increase allocation by factors of two.  */
   while (space > new_allocated)
     new_allocated *= 2;
-    
+
   if (new_allocated != ds->allocated)
     {
       ds->allocated = new_allocated;
       /* We actually need more space.  */
 #ifdef RETURN_ON_ALLOCATION_FAILURE
-      ds->s = (char *) realloc (ds->s, ds->allocated);
+      ds->s = (char *)realloc(ds->s, ds->allocated);
       if (ds->s == NULL)
 	{
 	  free (ds);
 	  return NULL;
 	}
 #else
-      ds->s = XRESIZEVEC (char, ds->s, ds->allocated);
-#endif
+      ds->s = XRESIZEVEC(char, ds->s, (size_t)ds->allocated);
+#endif /* RETURN_ON_ALLOCATION_FAILURE */
     }
 
   return ds;
 }
 
-/* Sets the contents of DS to the empty string.  */
-
+/* Sets the contents of DS to the empty string: */
 void
-dyn_string_clear (dyn_string_t ds)
+dyn_string_clear(dyn_string_t ds)
 {
-  /* A dyn_string always has room for at least the NUL terminator.  */
+  /* A dyn_string always has room for at least the NUL terminator: */
   ds->s[0] = '\0';
   ds->length = 0;
 }
@@ -181,17 +179,17 @@ dyn_string_clear (dyn_string_t ds)
    RETURN_ON_ALLOCATION_FAILURE, deletes DEST and returns 0.  */
 
 int
-dyn_string_copy (dyn_string_t dest, dyn_string_t src)
+dyn_string_copy(dyn_string_t dest, dyn_string_t src)
 {
   if (dest == src)
-    abort ();
+    abort();
 
-  /* Make room in DEST.  */
-  if (dyn_string_resize (dest, src->length) == NULL)
+  /* Make room in DEST: */
+  if (dyn_string_resize(dest, src->length) == NULL)
     return 0;
-  /* Copy DEST into SRC.  */
-  strcpy (dest->s, src->s);
-  /* Update the size of DEST.  */
+  /* Copy DEST into SRC: */
+  strcpy(dest->s, src->s);
+  /* Update the size of DEST: */
   dest->length = src->length;
   return 1;
 }
@@ -201,16 +199,16 @@ dyn_string_copy (dyn_string_t dest, dyn_string_t src)
    and returns 0.  */
 
 int
-dyn_string_copy_cstr (dyn_string_t dest, const char *src)
+dyn_string_copy_cstr(dyn_string_t dest, const char *src)
 {
-  int length = strlen (src);
+  size_t length = strlen(src);
   /* Make room in DEST.  */
-  if (dyn_string_resize (dest, length) == NULL)
+  if (dyn_string_resize(dest, (int)length) == NULL)
     return 0;
-  /* Copy DEST into SRC.  */
-  strcpy (dest->s, src);
-  /* Update the size of DEST.  */
-  dest->length = length;
+  /* Copy DEST into SRC: */
+  strcpy(dest->s, src);
+  /* Update the size of DEST: */
+  dest->length = (int)length;
   return 1;
 }
 
@@ -220,9 +218,9 @@ dyn_string_copy_cstr (dyn_string_t dest, const char *src)
    returns 0.  */
 
 int
-dyn_string_prepend (dyn_string_t dest, dyn_string_t src)
+dyn_string_prepend(dyn_string_t dest, dyn_string_t src)
 {
-  return dyn_string_insert (dest, 0, src);
+  return dyn_string_insert(dest, 0, src);
 }
 
 /* Inserts SRC, a NUL-terminated string, at the beginning of DEST.
@@ -230,9 +228,9 @@ dyn_string_prepend (dyn_string_t dest, dyn_string_t src)
    if RETURN_ON_ALLOCATION_FAILURE, deletes DEST and returns 0. */
 
 int
-dyn_string_prepend_cstr (dyn_string_t dest, const char *src)
+dyn_string_prepend_cstr(dyn_string_t dest, const char *src)
 {
-  return dyn_string_insert_cstr (dest, 0, src);
+  return dyn_string_insert_cstr(dest, 0, src);
 }
 
 /* Inserts SRC into DEST starting at position POS.  DEST is expanded
@@ -241,21 +239,21 @@ dyn_string_prepend_cstr (dyn_string_t dest, const char *src)
    and returns 0.  */
 
 int
-dyn_string_insert (dyn_string_t dest, int pos, dyn_string_t src)
+dyn_string_insert(dyn_string_t dest, int pos, dyn_string_t src)
 {
   int i;
 
   if (src == dest)
-    abort ();
+    abort();
 
-  if (dyn_string_resize (dest, dest->length + src->length) == NULL)
+  if (dyn_string_resize(dest, (dest->length + src->length)) == NULL)
     return 0;
-  /* Make room for the insertion.  Be sure to copy the NUL.  */
+  /* Make room for the insertion.  Be sure to copy the NUL: */
   for (i = dest->length; i >= pos; --i)
     dest->s[i + src->length] = dest->s[i];
-  /* Splice in the new stuff.  */
-  strncpy (dest->s + pos, src->s, src->length);
-  /* Compute the new length.  */
+  /* Splice in the new stuff: */
+  strncpy((dest->s + pos), src->s, (size_t)src->length);
+  /* Compute the new length: */
   dest->length += src->length;
   return 1;
 }
@@ -266,20 +264,20 @@ dyn_string_insert (dyn_string_t dest, int pos, dyn_string_t src)
    and returns 0.  */
 
 int
-dyn_string_insert_cstr (dyn_string_t dest, int pos, const char *src)
+dyn_string_insert_cstr(dyn_string_t dest, int pos, const char *src)
 {
   int i;
-  int length = strlen (src);
+  size_t leng = strlen(src);
 
-  if (dyn_string_resize (dest, dest->length + length) == NULL)
+  if (dyn_string_resize(dest, (int)((size_t)dest->length + leng)) == NULL)
     return 0;
-  /* Make room for the insertion.  Be sure to copy the NUL.  */
+  /* Make room for the insertion.  Be sure to copy the NUL: */
   for (i = dest->length; i >= pos; --i)
-    dest->s[i + length] = dest->s[i];
-  /* Splice in the new stuff.  */
-  strncpy (dest->s + pos, src, length);
-  /* Compute the new length.  */
-  dest->length += length;
+    dest->s[(size_t)i + leng] = dest->s[i];
+  /* Splice in the new stuff: */
+  strncpy((dest->s + pos), src, leng);
+  /* Compute the new length: */
+  dest->length += leng;
   return 1;
 }
 
@@ -288,32 +286,32 @@ dyn_string_insert_cstr (dyn_string_t dest, int pos, const char *src)
    RETURN_ON_ALLOCATION_FAILURE, deletes DEST and returns 0.  */
 
 int
-dyn_string_insert_char (dyn_string_t dest, int pos, int c)
+dyn_string_insert_char(dyn_string_t dest, int pos, int c)
 {
   int i;
 
-  if (dyn_string_resize (dest, dest->length + 1) == NULL)
+  if (dyn_string_resize(dest, (dest->length + 1)) == NULL)
     return 0;
-  /* Make room for the insertion.  Be sure to copy the NUL.  */
+  /* Make room for the insertion.  Be sure to copy the NUL: */
   for (i = dest->length; i >= pos; --i)
     dest->s[i + 1] = dest->s[i];
-  /* Add the new character.  */
-  dest->s[pos] = c;
-  /* Compute the new length.  */
+  /* Add the new character: */
+  dest->s[pos] = (char)c;
+  /* Compute the new length: */
   ++dest->length;
   return 1;
 }
-     
+
 /* Append S to DS, resizing DS if necessary.  Returns 1 on success.
    On failure, if RETURN_ON_ALLOCATION_FAILURE, deletes DEST and
    returns 0.  */
 
 int
-dyn_string_append (dyn_string_t dest, dyn_string_t s)
+dyn_string_append(dyn_string_t dest, dyn_string_t s)
 {
-  if (dyn_string_resize (dest, dest->length + s->length) == 0)
+  if (dyn_string_resize(dest, dest->length + s->length) == 0)
     return 0;
-  strcpy (dest->s + dest->length, s->s);
+  strcpy(dest->s + dest->length, s->s);
   dest->length += s->length;
   return 1;
 }
@@ -323,15 +321,15 @@ dyn_string_append (dyn_string_t dest, dyn_string_t s)
    deletes DEST and returns 0.  */
 
 int
-dyn_string_append_cstr (dyn_string_t dest, const char *s)
+dyn_string_append_cstr(dyn_string_t dest, const char *s)
 {
-  int len = strlen (s);
+  size_t len = strlen(s);
 
   /* The new length is the old length plus the size of our string, plus
      one for the null at the end.  */
-  if (dyn_string_resize (dest, dest->length + len) == NULL)
+  if (dyn_string_resize(dest, (int)((size_t)dest->length + len)) == NULL)
     return 0;
-  strcpy (dest->s + dest->length, s);
+  strcpy((dest->s + dest->length), s);
   dest->length += len;
   return 1;
 }
@@ -340,16 +338,16 @@ dyn_string_append_cstr (dyn_string_t dest, const char *s)
    if RETURN_ON_ALLOCATION_FAILURE, deletes DEST and returns 0.  */
 
 int
-dyn_string_append_char (dyn_string_t dest, int c)
+dyn_string_append_char(dyn_string_t dest, int c)
 {
-  /* Make room for the extra character.  */
-  if (dyn_string_resize (dest, dest->length + 1) == NULL)
+  /* Make room for the extra character: */
+  if (dyn_string_resize(dest, dest->length + 1) == NULL)
     return 0;
-  /* Append the character; it will overwrite the old NUL.  */
-  dest->s[dest->length] = c;
-  /* Add a new NUL at the end.  */
+  /* Append the character; it will overwrite the old NUL: */
+  dest->s[dest->length] = (char)c;
+  /* Add a new NUL at the end: */
   dest->s[dest->length + 1] = '\0';
-  /* Update the length.  */
+  /* Update the length: */
   ++(dest->length);
   return 1;
 }
@@ -368,10 +366,10 @@ dyn_string_substring (dyn_string_t dest, dyn_string_t src,
   int length = end - start;
 
   if (start > end || start > src->length || end > src->length)
-    abort ();
+    abort();
 
   /* Make room for the substring.  */
-  if (dyn_string_resize (dest, length) == NULL)
+  if (dyn_string_resize(dest, length) == NULL)
     return 0;
   /* Copy the characters in the substring,  */
   for (i = length; --i >= 0; )
@@ -384,14 +382,15 @@ dyn_string_substring (dyn_string_t dest, dyn_string_t src,
   return 1;
 }
 
-/* Returns non-zero if DS1 and DS2 have the same contents.  */
-
+/* Returns non-zero if DS1 and DS2 have the same contents: */
 int
-dyn_string_eq (dyn_string_t ds1, dyn_string_t ds2)
+dyn_string_eq(dyn_string_t ds1, dyn_string_t ds2)
 {
-  /* If DS1 and DS2 have different lengths, they must not be the same.  */
+  /* If DS1 and DS2 have different lengths, they must not be the same: */
   if (ds1->length != ds2->length)
     return 0;
   else
-    return !strcmp (ds1->s, ds2->s);
+    return !strcmp(ds1->s, ds2->s);
 }
+
+/* EOF */

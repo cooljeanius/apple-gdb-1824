@@ -79,15 +79,15 @@ oasys_slurp_symbol_table (bfd *const abfd)
 
   /* Buy enough memory for all the symbols and all the names.  */
   amt = abfd->symcount;
-  amt *= sizeof (asymbol);
-  data->symbols = bfd_alloc (abfd, amt);
+  amt *= sizeof(asymbol);
+  data->symbols = (asymbol *)bfd_alloc(abfd, amt);
 
   amt = data->symbol_string_length;
 #ifdef UNDERSCORE_HACK
-  /* Buy 1 more char for each symbol to keep the underscore in.  */
+  /* Buy 1 more char for each symbol to keep the underscore in: */
   amt += abfd->symcount;
-#endif
-  data->strings = bfd_alloc (abfd, amt);
+#endif /* UNDERSCORE_HACK */
+  data->strings = (char *)bfd_alloc(abfd, amt);
 
   if (!data->symbols || !data->strings)
     return FALSE;
@@ -208,10 +208,9 @@ oasys_canonicalize_symtab (bfd *abfd, asymbol **location)
   return abfd->symcount;
 }
 
-/* Archive stuff.  */
-
+/* Archive stuff: */
 static const bfd_target *
-oasys_archive_p (bfd *abfd)
+oasys_archive_p(bfd *abfd)
 {
   oasys_archive_header_type header;
   oasys_extarchive_header_type header_ext;
@@ -219,47 +218,45 @@ oasys_archive_p (bfd *abfd)
   file_ptr filepos;
   bfd_size_type amt;
 
-  amt = sizeof (header_ext);
-  if (bfd_seek (abfd, (file_ptr) 0, 0) != 0
-      || bfd_bread ((void *) &header_ext, amt, abfd) != amt)
+  amt = sizeof(header_ext);
+  if (bfd_seek(abfd, (file_ptr)0, 0) != 0
+      || bfd_bread((void *)&header_ext, amt, abfd) != amt)
     {
-      if (bfd_get_error () != bfd_error_system_call)
-	bfd_set_error (bfd_error_wrong_format);
+      if (bfd_get_error() != bfd_error_system_call)
+	bfd_set_error(bfd_error_wrong_format);
       return NULL;
     }
 
-  header.version = H_GET_32 (abfd, header_ext.version);
-  header.mod_count = H_GET_32 (abfd, header_ext.mod_count);
-  header.mod_tbl_offset = H_GET_32 (abfd, header_ext.mod_tbl_offset);
-  header.sym_tbl_size = H_GET_32 (abfd, header_ext.sym_tbl_size);
-  header.sym_count = H_GET_32 (abfd, header_ext.sym_count);
-  header.sym_tbl_offset = H_GET_32 (abfd, header_ext.sym_tbl_offset);
-  header.xref_count = H_GET_32 (abfd, header_ext.xref_count);
-  header.xref_lst_offset = H_GET_32 (abfd, header_ext.xref_lst_offset);
+  header.version = H_GET_32(abfd, header_ext.version);
+  header.mod_count = H_GET_32(abfd, header_ext.mod_count);
+  header.mod_tbl_offset = H_GET_32(abfd, header_ext.mod_tbl_offset);
+  header.sym_tbl_size = H_GET_32(abfd, header_ext.sym_tbl_size);
+  header.sym_count = H_GET_32(abfd, header_ext.sym_count);
+  header.sym_tbl_offset = H_GET_32(abfd, header_ext.sym_tbl_offset);
+  header.xref_count = H_GET_32(abfd, header_ext.xref_count);
+  header.xref_lst_offset = H_GET_32(abfd, header_ext.xref_lst_offset);
 
-  /* There isn't a magic number in an Oasys archive, so the best we
+  /* There is NOT a magic number in an Oasys archive, so the best we
      can do to verify reasonableness is to make sure that the values in
      the header are too weird.  */
 
-  if (header.version > 10000
-      || header.mod_count > 10000
-      || header.sym_count > 100000
-      || header.xref_count > 100000)
+  if ((header.version > 10000) || (header.mod_count > 10000)
+      || (header.sym_count > 100000) || (header.xref_count > 100000))
     return NULL;
 
-  /* That all worked, let's buy the space for the header and read in
+  /* That all worked; let us buy the space for the header and read in
      the headers.  */
   {
     oasys_ar_data_type *ar;
     oasys_module_info_type *module;
     oasys_module_table_type record;
 
-    amt = sizeof (oasys_ar_data_type);
-    ar = bfd_alloc (abfd, amt);
+    amt = sizeof(oasys_ar_data_type);
+    ar = (oasys_ar_data_type *)bfd_alloc(abfd, amt);
 
     amt = header.mod_count;
-    amt *= sizeof (oasys_module_info_type);
-    module = bfd_alloc (abfd, amt);
+    amt *= sizeof(oasys_module_info_type);
+    module = (oasys_module_info_type *)bfd_alloc(abfd, amt);
 
     if (!ar || !module)
       return NULL;
@@ -271,35 +268,35 @@ oasys_archive_p (bfd *abfd)
     filepos = header.mod_tbl_offset;
     for (i = 0; i < header.mod_count; i++)
       {
-	if (bfd_seek (abfd, filepos, SEEK_SET) != 0)
+	if (bfd_seek(abfd, filepos, SEEK_SET) != 0)
 	  return NULL;
 
-	/* There are two ways of specifying the archive header.  */
+	/* There are two ways of specifying the archive header: */
 	  {
 	    oasys_extmodule_table_type_b_type record_ext;
 
-	    amt = sizeof (record_ext);
-	    if (bfd_bread ((void *) &record_ext, amt, abfd) != amt)
+	    amt = sizeof(record_ext);
+	    if (bfd_bread((void *)&record_ext, amt, abfd) != amt)
 	      return NULL;
 
-	    record.mod_size = H_GET_32 (abfd, record_ext.mod_size);
-	    record.file_offset = H_GET_32 (abfd, record_ext.file_offset);
+	    record.mod_size = H_GET_32(abfd, record_ext.mod_size);
+	    record.file_offset = H_GET_32(abfd, record_ext.file_offset);
 
-	    record.dep_count = H_GET_32 (abfd, record_ext.dep_count);
-	    record.depee_count = H_GET_32 (abfd, record_ext.depee_count);
-	    record.sect_count = H_GET_32 (abfd, record_ext.sect_count);
-	    record.module_name_size = H_GET_32 (abfd,
-						record_ext.mod_name_length);
+	    record.dep_count = H_GET_32(abfd, record_ext.dep_count);
+	    record.depee_count = H_GET_32(abfd, record_ext.depee_count);
+	    record.sect_count = H_GET_32(abfd, record_ext.sect_count);
+	    record.module_name_size = H_GET_32(abfd,
+                                               record_ext.mod_name_length);
 
 	    amt = record.module_name_size;
-	    module[i].name = bfd_alloc (abfd, amt + 1);
+	    module[i].name = (char *)bfd_alloc(abfd, amt + 1);
 	    if (!module[i].name)
 	      return NULL;
-	    if (bfd_bread ((void *) module[i].name, amt, abfd) != amt)
+	    if (bfd_bread((void *)module[i].name, amt, abfd) != amt)
 	      return NULL;
 	    module[i].name[record.module_name_size] = 0;
-	    filepos += (sizeof (record_ext)
-			+ record.dep_count * 4
+	    filepos += (sizeof(record_ext)
+			+ (record.dep_count * 4)
 			+ record.module_name_size + 1);
 	  }
 
@@ -312,11 +309,11 @@ oasys_archive_p (bfd *abfd)
 }
 
 static bfd_boolean
-oasys_mkobject (bfd *abfd)
+oasys_mkobject(bfd *abfd)
 {
-  bfd_size_type amt = sizeof (oasys_data_type);
+  bfd_size_type amt = sizeof(oasys_data_type);
 
-  abfd->tdata.oasys_obj_data = bfd_alloc (abfd, amt);
+  abfd->tdata.oasys_obj_data = (oasys_data_type *)bfd_alloc(abfd, amt);
 
   return abfd->tdata.oasys_obj_data != NULL;
 }
@@ -380,15 +377,15 @@ oasys_slurp_section_data (bfd *const abfd)
 	    data->sections[record.data.relb & RELOCATION_SECT_BITS];
 	    bfd_vma dst_offset;
 
-	    per = oasys_per_section (section);
+	    per = oasys_per_section(section);
 
 	    if (! per->initialized)
 	      {
-		per->data = bfd_zalloc (abfd, section->size);
+		per->data = (bfd_byte *)bfd_zalloc(abfd, section->size);
 		if (!per->data)
 		  return FALSE;
 		per->reloc_tail_ptr
-		  = (oasys_reloc_type **) &section->relocation;
+		  = (oasys_reloc_type **)&section->relocation;
 		per->had_vma = FALSE;
 		per->initialized = TRUE;
 		section->reloc_count = 0;
@@ -433,12 +430,12 @@ oasys_slurp_section_data (bfd *const abfd)
 		  }
 		else
 		  {
-		    for (relbit = 1; count-- != 0 && src < end_src; relbit <<= 1)
+		    for (relbit = 1; (count-- != 0) && (src < end_src); relbit <<= 1)
 		      {
 			if (relbit & mod_byte)
 			  {
 			    unsigned char reloc = *src;
-			    /* This item needs to be relocated.  */
+			    /* This item needs to be relocated: */
 			    switch (reloc & RELOCATION_TYPE_BITS)
 			      {
 			      case RELOCATION_TYPE_ABS:
@@ -446,34 +443,35 @@ oasys_slurp_section_data (bfd *const abfd)
 
 			      case RELOCATION_TYPE_REL:
 				{
-				  /* Relocate the item relative to the section.  */
+				  /* Relocate the item relative to the section: */
 				  oasys_reloc_type *r;
 
-				  amt = sizeof (oasys_reloc_type);
-				  r = bfd_alloc (abfd, amt);
+				  amt = sizeof(oasys_reloc_type);
+				  r = (oasys_reloc_type *)bfd_alloc(abfd,
+                                                                    amt);
 				  if (!r)
 				    return FALSE;
 				  *(per->reloc_tail_ptr) = r;
 				  per->reloc_tail_ptr = &r->next;
 				  r->next = NULL;
-				  /* Reference to undefined symbol.  */
+				  /* Reference to undefined symbol: */
 				  src++;
-				  /* There is no symbol.  */
+				  /* There is no symbol: */
 				  r->symbol = 0;
-				  /* Work out the howto.  */
-				  abort ();
-				  r->relent.address = dst_ptr - dst_base_ptr;
+				  /* Work out the howto: */
+				  abort();
+				  r->relent.address = (dst_ptr - dst_base_ptr);
 				  r->relent.howto = &howto_table[reloc >> 6];
 				  r->relent.sym_ptr_ptr = NULL;
 				  section->reloc_count++;
 
 				  /* Fake up the data to look like
-				     it's got the -ve pc in it, this
+				     it has got the -ve pc in it; this
 				     makes it much easier to convert
 				     into other formats.  This is done
 				     by hitting the addend.  */
 				  if (r->relent.howto->pc_relative)
-				    r->relent.addend -= dst_ptr - dst_base_ptr;
+				    r->relent.addend -= (dst_ptr - dst_base_ptr);
 				}
 				break;
 
@@ -481,38 +479,41 @@ oasys_slurp_section_data (bfd *const abfd)
 				{
 				  oasys_reloc_type *r;
 
-				  amt = sizeof (oasys_reloc_type);
-				  r = bfd_alloc (abfd, amt);
+				  amt = sizeof(oasys_reloc_type);
+				  r = (oasys_reloc_type *)bfd_alloc(abfd,
+                                                                    amt);
 				  if (!r)
 				    return FALSE;
 				  *(per->reloc_tail_ptr) = r;
 				  per->reloc_tail_ptr = &r->next;
 				  r->next = NULL;
-				  /* Reference to undefined symbol.  */
+				  /* Reference to undefined symbol: */
 				  src++;
-				  /* Get symbol number.  */
-				  r->symbol = (src[0] << 8) | src[1];
-				  /* Work out the howto.  */
-				  abort ();
+				  /* Get symbol number: */
+				  r->symbol = ((src[0] << 8) | src[1]);
+				  /* Work out the howto: */
+				  abort();
 
 				  r->relent.addend = 0;
-				  r->relent.address = dst_ptr - dst_base_ptr;
+				  r->relent.address = (dst_ptr - dst_base_ptr);
 				  r->relent.howto = &howto_table[reloc >> 6];
 				  r->relent.sym_ptr_ptr = NULL;
 				  section->reloc_count++;
 
 				  src += 2;
 				  /* Fake up the data to look like
-				     it's got the -ve pc in it, this
+				     it has got the -ve pc in it; this
 				     makes it much easier to convert
 				     into other formats.  This is done
 				     by hitting the addend.  */
 				  if (r->relent.howto->pc_relative)
-				    r->relent.addend -= dst_ptr - dst_base_ptr;
+				    r->relent.addend -= (dst_ptr - dst_base_ptr);
 				}
 				break;
 			      case RELOCATION_TYPE_COM:
-				BFD_FAIL ();
+				BFD_FAIL();
+                              default:
+                                break;
 			      }
 			  }
 			*dst_ptr++ = *src++;
@@ -534,13 +535,15 @@ oasys_slurp_section_data (bfd *const abfd)
 
 }
 
-#define MAX_SECS 16
+#ifndef MAX_SECS
+# define MAX_SECS 16
+#endif /* !MAX_SECS */
 
 static const bfd_target *
-oasys_object_p (bfd *abfd)
+oasys_object_p(bfd *abfd)
 {
   oasys_data_type *oasys;
-  oasys_data_type *save = OASYS_DATA (abfd);
+  oasys_data_type *save = OASYS_DATA(abfd);
   bfd_boolean loop = TRUE;
   bfd_boolean had_usefull = FALSE;
 
@@ -583,15 +586,15 @@ oasys_object_p (bfd *abfd)
 	    char *buffer;
 	    unsigned int section_number;
 
-	    if (record.section.header.length != sizeof (record.section))
+	    if (record.section.header.length != sizeof(record.section))
 	      goto fail;
 
-	    buffer = bfd_alloc (abfd, (bfd_size_type) 3);
+	    buffer = (char *)bfd_alloc(abfd, (bfd_size_type)3);
 	    if (!buffer)
 	      goto fail;
 	    section_number = record.section.relb & RELOCATION_SECT_BITS;
-	    sprintf (buffer, "%u", section_number);
-	    s = bfd_make_section (abfd, buffer);
+	    sprintf(buffer, "%u", section_number);
+	    s = bfd_make_section(abfd, buffer);
 	    oasys->sections[section_number] = s;
 	    switch (record.section.relb & RELOCATION_TYPE_BITS)
 	      {
@@ -600,17 +603,20 @@ oasys_object_p (bfd *abfd)
 		break;
 	      case RELOCATION_TYPE_UND:
 	      case RELOCATION_TYPE_COM:
-		BFD_FAIL ();
+		BFD_FAIL();
+              default:
+                break;
 	      }
 
-	    s->size = H_GET_32 (abfd, record.section.value);
-	    s->vma = H_GET_32 (abfd, record.section.vma);
+	    s->size = H_GET_32(abfd, record.section.value);
+	    s->vma = H_GET_32(abfd, record.section.vma);
 	    s->flags = 0;
 	    had_usefull = TRUE;
 	  }
 	  break;
 	case oasys_record_is_data_enum:
-	  oasys->first_data_record = bfd_tell (abfd) - record.header.length;
+	  oasys->first_data_record = (bfd_tell(abfd)
+                                      - record.header.length);
 	case oasys_record_is_debug_enum:
 	case oasys_record_is_module_enum:
 	case oasys_record_is_named_section_enum:
@@ -625,19 +631,19 @@ oasys_object_p (bfd *abfd)
     }
   oasys->symbols = NULL;
 
-  /* Oasys support several architectures, but I can't see a simple way
-     to discover which one is in a particular file - we'll guess.  */
-  bfd_default_set_arch_mach (abfd, bfd_arch_m68k, 0);
+  /* Oasys support several architectures, but I cannot see a simple way
+   * to discover which one is in a particular file - we shall guess: */
+  bfd_default_set_arch_mach(abfd, bfd_arch_m68k, 0);
   if (abfd->symcount != 0)
     abfd->flags |= HAS_SYMS;
 
-  /* We don't know if a section has data until we've read it.  */
-  oasys_slurp_section_data (abfd);
+  /* We do NOT know if a section has data until we have read it: */
+  oasys_slurp_section_data(abfd);
 
   return abfd->xvec;
 
 fail:
-  (void) bfd_release (abfd, oasys);
+  (void)bfd_release(abfd, oasys);
   abfd->tdata.oasys_obj_data = save;
   return NULL;
 }
@@ -655,45 +661,46 @@ oasys_get_symbol_info (bfd *ignore_abfd ATTRIBUTE_UNUSED,
 }
 
 static void
-oasys_print_symbol (bfd *abfd, void * afile, asymbol *symbol, bfd_print_symbol_type how)
+oasys_print_symbol(bfd *abfd, void * afile, asymbol *symbol, bfd_print_symbol_type how)
 {
-  FILE *file = (FILE *) afile;
+  FILE *file = (FILE *)afile;
 
   switch (how)
     {
     case bfd_print_symbol_name:
     case bfd_print_symbol_more:
-      fprintf (file, "%s", symbol->name);
+      fprintf(file, "%s", symbol->name);
       break;
     case bfd_print_symbol_all:
       {
-	const char *section_name = symbol->section == NULL ?
-	(const char *) "*abs" : symbol->section->name;
+	const char *section_name = ((symbol->section == NULL)
+                                    ? (const char *)"*abs"
+                                    : symbol->section->name);
 
-	bfd_print_symbol_vandf (abfd, (void *) file, symbol);
+	bfd_print_symbol_vandf(abfd, (void *)file, symbol);
 
-	fprintf (file, " %-5s %s",
-		 section_name,
-		 symbol->name);
+	fprintf(file, " %-5s %s", section_name, symbol->name);
       }
+      break;
+    default:
       break;
     }
 }
 
 static bfd_boolean
-oasys_new_section_hook (bfd *abfd, asection *newsect)
+oasys_new_section_hook(bfd *abfd, asection *newsect)
 {
-  newsect->used_by_bfd = bfd_alloc (abfd, (bfd_size_type) sizeof (oasys_per_section_type));
+  newsect->used_by_bfd = bfd_alloc(abfd, (bfd_size_type)sizeof(oasys_per_section_type));
   if (!newsect->used_by_bfd)
     return FALSE;
-  oasys_per_section (newsect)->data = NULL;
-  oasys_per_section (newsect)->section = newsect;
-  oasys_per_section (newsect)->offset = 0;
-  oasys_per_section (newsect)->initialized = FALSE;
+  oasys_per_section(newsect)->data = NULL;
+  oasys_per_section(newsect)->section = newsect;
+  oasys_per_section(newsect)->offset = 0;
+  oasys_per_section(newsect)->initialized = FALSE;
   newsect->alignment_power = 1;
 
-  /* Turn the section string into an index.  */
-  sscanf (newsect->name, "%u", &newsect->target_index);
+  /* Turn the section string into an index: */
+  sscanf(newsect->name, "%u", (unsigned int *)&newsect->target_index);
 
   return TRUE;
 }
@@ -772,16 +779,15 @@ oasys_write_record (bfd *abfd,
 }
 
 
-/* Write out all the symbols.  */
-
+/* Write out all the symbols: */
 static bfd_boolean
-oasys_write_syms (bfd *abfd)
+oasys_write_syms(bfd *abfd)
 {
   unsigned int count;
-  asymbol **generic = bfd_get_outsymbols (abfd);
-  unsigned int index = 0;
+  asymbol **generic = bfd_get_outsymbols(abfd);
+  unsigned int uindex = 0U;
 
-  for (count = 0; count < bfd_get_symcount (abfd); count++)
+  for (count = 0; count < bfd_get_symcount(abfd); count++)
     {
       oasys_symbol_record_type symbol;
       asymbol *const g = generic[count];
@@ -789,77 +795,76 @@ oasys_write_syms (bfd *abfd)
       char *dst = symbol.name;
       unsigned int l = 0;
 
-      if (bfd_is_com_section (g->section))
+      if (bfd_is_com_section(g->section))
 	{
 	  symbol.relb = RELOCATION_TYPE_COM;
-	  H_PUT_16 (abfd, index, symbol.refno);
-	  index++;
+	  H_PUT_16(abfd, uindex, symbol.refno);
+	  uindex++;
 	}
-      else if (bfd_is_abs_section (g->section))
+      else if (bfd_is_abs_section(g->section))
 	{
 	  symbol.relb = RELOCATION_TYPE_ABS;
-	  H_PUT_16 (abfd, 0, symbol.refno);
+	  H_PUT_16(abfd, 0, symbol.refno);
 	}
-      else if (bfd_is_und_section (g->section))
+      else if (bfd_is_und_section(g->section))
 	{
 	  symbol.relb = RELOCATION_TYPE_UND;
-	  H_PUT_16 (abfd, index, symbol.refno);
+	  H_PUT_16 (abfd, uindex, symbol.refno);
 	  /* Overload the value field with the output index number */
-	  index++;
+	  uindex++;
 	}
       else if (g->flags & BSF_DEBUGGING)
-	/* Throw it away.  */
+	/* Throw it away: */
 	continue;
       else
 	{
 	  if (g->section == NULL)
 	    /* Sometime, the oasys tools give out a symbol with illegal
-	       bits in it, we'll output it in the same broken way.  */
-	    symbol.relb = RELOCATION_TYPE_REL | 0;
+	       bits in it, we shall output it in the same broken way.  */
+	    symbol.relb = (RELOCATION_TYPE_REL | 0);
 	  else
-	    symbol.relb = RELOCATION_TYPE_REL | g->section->output_section->target_index;
+	    symbol.relb = (RELOCATION_TYPE_REL | g->section->output_section->target_index);
 
-	  H_PUT_16 (abfd, 0, symbol.refno);
+	  H_PUT_16(abfd, 0, symbol.refno);
 	}
 
 #ifdef UNDERSCORE_HACK
       if (src[l] == '_')
 	dst[l++] = '.';
-#endif
+#endif /* UNDERSCORE_HACK */
       while (src[l])
 	{
 	  dst[l] = src[l];
 	  l++;
 	}
 
-      H_PUT_32 (abfd, g->value, symbol.value);
+      H_PUT_32(abfd, g->value, symbol.value);
 
       if (g->flags & BSF_LOCAL)
 	{
-	  if (! oasys_write_record (abfd,
-				    oasys_record_is_local_enum,
-				    (oasys_record_union_type *) & symbol,
-				    offsetof (oasys_symbol_record_type,
-					      name[0]) + l))
+	  if (! oasys_write_record(abfd,
+				   oasys_record_is_local_enum,
+				   (oasys_record_union_type *)&symbol,
+				   offsetof(oasys_symbol_record_type,
+                                            name[0]) + l))
 	    return FALSE;
 	}
       else
 	{
-	  if (! oasys_write_record (abfd,
-				    oasys_record_is_symbol_enum,
-				    (oasys_record_union_type *) & symbol,
-				    offsetof (oasys_symbol_record_type,
-					      name[0]) + l))
+	  if (! oasys_write_record(abfd,
+				   oasys_record_is_symbol_enum,
+				   (oasys_record_union_type *)&symbol,
+				   offsetof(oasys_symbol_record_type,
+                                            name[0]) + l))
 	    return FALSE;
 	}
-      g->value = index - 1;
+      g->value = (uindex - 1U);
     }
 
   return TRUE;
 }
 
-/* Write a section header for each section.  */
-
+/* Write a section header for each section: */
 static bfd_boolean
 oasys_write_sections (bfd *abfd)
 {
@@ -1045,22 +1050,21 @@ oasys_write_object_contents (bfd *abfd)
    not a byte image, but a record stream.  */
 
 static bfd_boolean
-oasys_set_section_contents (bfd *abfd,
-			    sec_ptr section,
-			    const void * location,
-			    file_ptr offset,
-			    bfd_size_type count)
+oasys_set_section_contents(bfd *abfd, sec_ptr section,
+                           const void *location, file_ptr offset,
+                           bfd_size_type count)
 {
   if (count != 0)
     {
-      if (oasys_per_section (section)->data == NULL)
+      if (oasys_per_section(section)->data == NULL)
 	{
-	  oasys_per_section (section)->data = bfd_alloc (abfd, section->size);
-	  if (!oasys_per_section (section)->data)
+	  oasys_per_section(section)->data = (bfd_byte *)bfd_alloc(abfd,
+                                                                   section->size);
+	  if (!oasys_per_section(section)->data)
 	    return FALSE;
 	}
-      (void) memcpy ((void *) (oasys_per_section (section)->data + offset),
-		     location, (size_t) count);
+      (void)memcpy((void *)(oasys_per_section(section)->data + offset),
+                   location, (size_t)count);
     }
   return TRUE;
 }
@@ -1074,10 +1078,10 @@ oasys_set_section_contents (bfd *abfd,
    hold them all plus all the cached symbol entries.  */
 
 static asymbol *
-oasys_make_empty_symbol (bfd *abfd)
+oasys_make_empty_symbol(bfd *abfd)
 {
-  bfd_size_type amt = sizeof (oasys_symbol_type);
-  oasys_symbol_type *new = bfd_zalloc (abfd, amt);
+  bfd_size_type amt = sizeof(oasys_symbol_type);
+  oasys_symbol_type *new = (oasys_symbol_type *)bfd_zalloc(abfd, amt);
 
   if (!new)
     return NULL;
@@ -1252,3 +1256,9 @@ const bfd_target oasys_vec =
 
   NULL
 };
+
+#ifdef MAX_SECS
+# undef MAX_SECS
+#endif /* MAX_SECS */
+
+/* EOF */

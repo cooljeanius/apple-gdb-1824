@@ -1,4 +1,5 @@
-/* Macro definitions for GDB on an S390.
+/* tm-s390.h
+   Macro definitions for GDB on an S390.
    Copyright 2001 Free Software Foundation, Inc.
    Contributed by D.J. Barrow (djbarrow@de.ibm.com,barrow_dj@yahoo.com)
    for IBM Deutschland Entwicklung GmbH, IBM Corporation.

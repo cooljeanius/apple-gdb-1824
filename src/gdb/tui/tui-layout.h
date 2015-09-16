@@ -1,4 +1,4 @@
-/* TUI layout window management.
+/* tui-layout.h: TUI layout window management.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2004 Free Software
    Foundation, Inc.

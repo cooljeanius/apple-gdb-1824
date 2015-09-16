@@ -5,15 +5,19 @@
 
 #include "gzguts.h"
 
+#ifndef lseek
+# include <unistd.h>
+#endif /* !lseek */
+
 #if defined(_WIN32) && !defined(__BORLANDC__)
-#  define LSEEK _lseeki64
+# define LSEEK _lseeki64
 #else
-#if defined(_LARGEFILE64_SOURCE) && _LFS64_LARGEFILE-0
+# if defined(_LARGEFILE64_SOURCE) && _LFS64_LARGEFILE-0
 #  define LSEEK lseek64
-#else
+# else
 #  define LSEEK lseek
-#endif
-#endif
+# endif /* _LARGEFILE64_SOURCE && _LFS64_LARGEFILE-0 */
+#endif /* _WIN32 && !__BORLANDC__ */
 
 /* Local functions */
 local void gz_reset OF((gz_statep));
@@ -22,14 +26,15 @@ local gzFile gz_open OF((const void *, int, const char *));
 #if defined UNDER_CE
 
 /* Map the Windows error number in ERROR to a locale-dependent error message
-   string and return a pointer to it.  Typically, the values for ERROR come
-   from GetLastError.
-
-   The string pointed to shall not be modified by the application, but may be
-   overwritten by a subsequent call to gz_strwinerror
-
-   The gz_strwinerror function does not change the current setting of
-   GetLastError. */
+ * string and return a pointer to it. Typically, the values for ERROR come
+ * from GetLastError.
+ *
+ * The string pointed to shall not be modified by the application, but may be
+ * overwritten by a subsequent call to gz_strwinerror
+ *
+ * The gz_strwinerror function does not change the current setting of
+ * GetLastError.
+ */
 char ZLIB_INTERNAL *gz_strwinerror (error)
      DWORD error;
 {
@@ -444,7 +449,8 @@ z_off_t ZEXPORT gzseek(file, offset, whence)
     z_off64_t ret;
 
     ret = gzseek64(file, (z_off64_t)offset, whence);
-    return ret == (z_off_t)ret ? (z_off_t)ret : -1;
+    return ((ret == (z_off_t)ret) ? (z_off_t)ret : -1); /* clang says:		  */
+						/* "Both operands to '==' always have the same value" */
 }
 
 /* -- see zlib.h -- */
@@ -471,7 +477,8 @@ z_off_t ZEXPORT gztell(file)
     z_off64_t ret;
 
     ret = gztell64(file);
-    return ret == (z_off_t)ret ? (z_off_t)ret : -1;
+    return ((ret == (z_off_t)ret) ? (z_off_t)ret : -1); /* clang says:		  */
+						/* "Both operands to '==' always have the same value" */
 }
 
 /* -- see zlib.h -- */
@@ -504,7 +511,8 @@ z_off_t ZEXPORT gzoffset(file)
     z_off64_t ret;
 
     ret = gzoffset64(file);
-    return ret == (z_off_t)ret ? (z_off_t)ret : -1;
+    return ((ret == (z_off_t)ret) ? (z_off_t)ret : -1); /* clang says:		  */
+						/* "Both operands to '==' always have the same value" */
 }
 
 /* -- see zlib.h -- */

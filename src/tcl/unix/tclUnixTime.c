@@ -17,12 +17,16 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning Not including "config.h"
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning Not including "config.h"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 #ifdef HAVE_LOCALE_H
 # include <locale.h>
 #else
-# warning tclUnixTime.c expects <locale.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "tclUnixTime.c expects <locale.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LOCALE_H */
 #ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -30,7 +34,9 @@
 #elif defined(HAVE_TIME_H)
 # include <time.h>
 #else
-# warning Not including <time.h>
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "Not including <time.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* TIME_WITH_SYS_TIME || HAVE_TIME_H */
 #define TM_YEAR_BASE 1900
 #define IsLeapYear(x)   ((x % 4 == 0) && (x % 100 != 0 || x % 400 == 0))
@@ -60,7 +66,7 @@ static struct tm *ThreadSafeGMTime _ANSI_ARGS_(( CONST time_t* ));
 static struct tm *ThreadSafeLocalTime _ANSI_ARGS_(( CONST time_t* ));
 
 /*
- *-----------------------------------------------------------------------------
+ *-------------------------------------------------------------------------
  *
  * TclpGetSeconds --
  *
@@ -73,17 +79,17 @@ static struct tm *ThreadSafeLocalTime _ANSI_ARGS_(( CONST time_t* ));
  * Side effects:
  *	None.
  *
- *-----------------------------------------------------------------------------
+ *-------------------------------------------------------------------------
  */
 
 unsigned long
 TclpGetSeconds()
 {
-    return time((time_t *) NULL);
+    return (unsigned long)time((time_t *)NULL);
 }
 
 /*
- *-----------------------------------------------------------------------------
+ *-------------------------------------------------------------------------
  *
  * TclpGetClicks --
  *
@@ -98,7 +104,7 @@ TclpGetSeconds()
  * Side effects:
  *	None.
  *
- *-----------------------------------------------------------------------------
+ *-------------------------------------------------------------------------
  */
 
 unsigned long
@@ -110,14 +116,14 @@ TclpGetClicks()
 #else
     struct timeval date;
     struct timezone tz;
-#endif
+#endif /* NO_GETTOD */
 
 #ifdef NO_GETTOD
-    now = (unsigned long) times(&dummy);
+    now = (unsigned long)times(&dummy);
 #else
     gettimeofday(&date, &tz);
-    now = date.tv_sec*1000000 + date.tv_usec;
-#endif
+    now = (unsigned long)((date.tv_sec * 1000000L) + date.tv_usec);
+#endif /* NO_GETTOD */
 
     return now;
 }
@@ -155,11 +161,14 @@ TclpGetTimeZone (currentTime)
      */
 
 #if defined(HAVE_TM_TZADJ)
-#	undef HAVE_TM_TZADJ /* temporary hack to get to compile on my machine */
-#endif
+# undef HAVE_TM_TZADJ /* temporary hack to get to compile on my machine */
+# ifndef HAD_TM_TZADJ
+#  define HAD_TM_TZADJ 1
+# endif /* !HAD_TM_TZADJ */
+#endif /* HAVE_TM_TZADJ */
 
 #if defined(HAVE_TM_TZADJ)
-#   define TCL_GOT_TIMEZONE
+# define TCL_GOT_TIMEZONE
     time_t      curTime = (time_t) currentTime;
     struct tm  *timeDataPtr = ThreadSafeLocalTime(&curTime);
     int         timeZone;
@@ -171,22 +180,28 @@ TclpGetTimeZone (currentTime)
 
     return timeZone;
 #else
-#	warning We do not have tm_tzadj in struct tm.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(__STDC__)
+#  ifdef HAD_TM_TZADJ
+#   warning "We cannot use tm_tzadj from struct tm."
+#  else
+#   warning "We do not have tm_tzadj in struct tm."
+#  endif /* HAD_TM_TZADJ */
+# endif /* __GNUC__ && !__STRICT_ANSI__ && !__STDC__ */
 #endif /* HAVE_TM_TZADJ */
 
-#if defined(HAVE_TM_GMTOFF) && !defined (TCL_GOT_TIMEZONE)
+#if defined(HAVE_TM_GMTOFF) && !defined(TCL_GOT_TIMEZONE)
 #   define TCL_GOT_TIMEZONE
-    time_t     curTime = (time_t) currentTime;
+    time_t     curTime = (time_t)currentTime;
     struct tm *timeDataPtr = ThreadSafeLocalTime(&curTime);
     int        timeZone;
 
-    timeZone = -(timeDataPtr->tm_gmtoff / 60);
+    timeZone = (int)(-(timeDataPtr->tm_gmtoff / 60));
     if (timeDataPtr->tm_isdst) {
         timeZone += 60;
     }
 
     return timeZone;
-#endif
+#endif /* HAVE_TM_GMTOFF && !TCL_GOT_TIMEZONE */
 
 #if defined(USE_DELTA_FOR_TZ)
 #define TCL_GOT_TIMEZONE 1

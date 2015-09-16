@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on Mach 3 on an National ns32k
+/* xm-ns32km3.h
+   Definitions to make GDB run on Mach 3 on an National ns32k
    Copyright (C) 1986, 1987, 1989, 1991 Free Software Foundation, Inc.
 
    This file is part of GDB.

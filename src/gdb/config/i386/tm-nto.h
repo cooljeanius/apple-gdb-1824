@@ -1,5 +1,6 @@
-/* QNX Neutrino target header.
- 
+/* tm-nto.h
+   QNX Neutrino target header.
+
    Copyright 2003, 2004 Free Software Foundation, Inc.
 
    This code was donated by QNX Software Systems Ltd.

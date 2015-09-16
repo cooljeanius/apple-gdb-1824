@@ -1,5 +1,5 @@
 /* Support for printing Ada types for GDB, the GNU debugger.
-   Copyright 1986, 1988, 1989, 1991, 1997, 1998, 1999, 2000, 
+   Copyright 1986, 1988, 1989, 1991, 1997, 1998, 1999, 2000,
    2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of GDB.
@@ -39,67 +39,69 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "gdb_string.h"
 #include <errno.h>
 
-static int print_record_field_types (struct type *, struct type *,
-				     struct ui_file *, int, int);
+static int print_record_field_types(struct type *, struct type *,
+				    struct ui_file *, int, int);
 
-static void print_array_type (struct type *, struct ui_file *, int, int);
+static void print_array_type(struct type *, struct ui_file *, int, int);
 
-static void print_choices (struct type *, int, struct ui_file *,
-			   struct type *);
+static void print_choices(struct type *, int, struct ui_file *,
+			  struct type *);
 
-static void print_range (struct type *, struct ui_file *);
+extern void ada_typedef_print(struct type *, struct symbol *,
+                              struct ui_file *);
 
-static void print_range_bound (struct type *, char *, int *,
-			       struct ui_file *);
+static void print_range(struct type *, struct ui_file *);
+
+static void print_range_bound(struct type *, char *, int *,
+			      struct ui_file *);
 
 static void
-print_dynamic_range_bound (struct type *, const char *, int,
-			   const char *, struct ui_file *);
+print_dynamic_range_bound(struct type *, const char *, int,
+			  const char *, struct ui_file *);
 
-static void print_range_type_named (char *, struct ui_file *);
+static void print_range_type_named(char *, struct ui_file *);
 
 
-
 static char *name_buffer;
-static int name_buffer_len;
+static size_t name_buffer_len;
 
 /* The (decoded) Ada name of TYPE.  This value persists until the
    next call.  */
 
 static char *
-decoded_type_name (struct type *type)
+decoded_type_name(struct type *the_type)
 {
-  if (ada_type_name (type) == NULL)
+  if (ada_type_name(the_type) == NULL)
     return NULL;
   else
     {
-      char *raw_name = ada_type_name (type);
+      char *raw_name = ada_type_name(the_type);
       char *s, *q;
 
-      if (name_buffer == NULL || name_buffer_len <= strlen (raw_name))
+      if ((name_buffer == NULL) || (name_buffer_len <= strlen(raw_name)))
 	{
-	  name_buffer_len = 16 + 2 * strlen (raw_name);
-	  name_buffer = xrealloc (name_buffer, name_buffer_len);
+	  name_buffer_len = (16UL + 2UL * strlen(raw_name));
+	  name_buffer = (char *)xrealloc(name_buffer, name_buffer_len);
 	}
-      strcpy (name_buffer, raw_name);
+      strcpy(name_buffer, raw_name);
 
-      s = (char *) strstr (name_buffer, "___");
+      s = (char *)strstr(name_buffer, "___");
       if (s != NULL)
 	*s = '\0';
 
-      s = name_buffer + strlen (name_buffer) - 1;
-      while (s > name_buffer && (s[0] != '_' || s[-1] != '_'))
+      s = (name_buffer + strlen(name_buffer) - 1);
+      while ((s > name_buffer) && ((s[0] != '_') || (s[-1] != '_')))
 	s -= 1;
 
       if (s == name_buffer)
 	return name_buffer;
 
-      if (!islower (s[1]))
+      if (!islower(s[1]))
 	return NULL;
 
       for (s = q = name_buffer; *s != '\0'; q += 1)
 	{
-	  if (s[0] == '_' && s[1] == '_')
+	  if ((s[0] == '_') && (s[1] == '_'))
 	    {
 	      *q = '.';
 	      s += 2;
@@ -121,27 +123,27 @@ decoded_type_name (struct type *type)
    NEW is the new name for a type TYPE.  */
 
 void
-ada_typedef_print (struct type *type, struct symbol *new,
-		   struct ui_file *stream)
+ada_typedef_print(struct type *the_type, struct symbol *newsym,
+		  struct ui_file *stream)
 {
    /* XXX: type_sprint */
-  fprintf_filtered (stream, "type %.*s is ",
-		    ada_name_prefix_len (SYMBOL_PRINT_NAME (new)),
-		    SYMBOL_PRINT_NAME (new));
-  type_print (type, "", stream, 1);
+  fprintf_filtered(stream, "type %.*s is ",
+		   ada_name_prefix_len(SYMBOL_PRINT_NAME(newsym)),
+		   SYMBOL_PRINT_NAME(newsym));
+  type_print(the_type, "", stream, 1);
 }
 
 /* Print range type TYPE on STREAM.  */
 
 static void
-print_range (struct type *type, struct ui_file *stream)
+print_range(struct type *the_type, struct ui_file *stream)
 {
   struct type *target_type;
-  target_type = TYPE_TARGET_TYPE (type);
+  target_type = TYPE_TARGET_TYPE(the_type);
   if (target_type == NULL)
-    target_type = type;
+    target_type = the_type;
 
-  switch (TYPE_CODE (target_type))
+  switch (TYPE_CODE(target_type))
     {
     case TYPE_CODE_RANGE:
     case TYPE_CODE_INT:
@@ -154,7 +156,7 @@ print_range (struct type *type, struct ui_file *stream)
       break;
     }
 
-  if (TYPE_NFIELDS (type) < 2)
+  if (TYPE_NFIELDS(the_type) < 2)
     {
       /* A range needs at least 2 bounds to be printed.  If there are less
          than 2, just print the type name instead of the range itself.
@@ -162,21 +164,21 @@ print_range (struct type *type, struct ui_file *stream)
 
          Note that if the name is not defined, then we don't print anything.
        */
-      fprintf_filtered (stream, "%.*s",
-			ada_name_prefix_len (TYPE_NAME (type)),
-			TYPE_NAME (type));
+      fprintf_filtered(stream, "%.*s",
+                       ada_name_prefix_len(TYPE_NAME(the_type)),
+                       TYPE_NAME(the_type));
     }
   else
     {
       /* We extract the range type bounds respectively from the first element
          and the last element of the type->fields array */
-      const LONGEST lower_bound = (LONGEST) TYPE_LOW_BOUND (type);
+      const LONGEST lower_bound = (LONGEST)TYPE_LOW_BOUND(the_type);
       const LONGEST upper_bound =
-	(LONGEST) TYPE_FIELD_BITPOS (type, TYPE_NFIELDS (type) - 1);
+	(LONGEST)TYPE_FIELD_BITPOS(the_type, TYPE_NFIELDS(the_type) - 1);
 
-      ada_print_scalar (target_type, lower_bound, stream);
-      fprintf_filtered (stream, " .. ");
-      ada_print_scalar (target_type, upper_bound, stream);
+      ada_print_scalar(target_type, lower_bound, stream);
+      fprintf_filtered(stream, " .. ");
+      ada_print_scalar(target_type, upper_bound, stream);
     }
 }
 
@@ -230,31 +232,31 @@ print_range_bound (struct type *type, char *bounds, int *n,
    "___U") according to the ___XD conventions.  */
 
 static void
-print_dynamic_range_bound (struct type *type, const char *name, int name_len,
-			   const char *suffix, struct ui_file *stream)
+print_dynamic_range_bound(struct type *type, const char *name, int name_len,
+			  const char *suffix, struct ui_file *stream)
 {
   static char *name_buf = NULL;
-  static size_t name_buf_len = 0;
+  static size_t name_buf_len = 0UL;
   LONGEST B;
   int OK;
 
-  GROW_VECT (name_buf, name_buf_len, name_len + strlen (suffix) + 1);
-  strncpy (name_buf, name, name_len);
-  strcpy (name_buf + name_len, suffix);
+  GROW_VECT(name_buf, name_buf_len, (name_len + strlen(suffix) + 1UL),
+            char);
+  strncpy(name_buf, name, name_len);
+  strcpy((name_buf + name_len), suffix);
 
-  B = get_int_var_value (name_buf, &OK);
+  B = get_int_var_value(name_buf, &OK);
   if (OK)
-    ada_print_scalar (type, B, stream);
+    ada_print_scalar(type, B, stream);
   else
-    fprintf_filtered (stream, "?");
+    fprintf_filtered(stream, "?");
 }
 
-/* Print the range type named NAME.  */
-
+/* Print the range type named NAME: */
 static void
-print_range_type_named (char *name, struct ui_file *stream)
+print_range_type_named(char *name, struct ui_file *stream)
 {
-  struct type *raw_type = ada_find_any_type (name);
+  struct type *raw_type = ada_find_any_type(name);
   struct type *base_type;
   char *subtype_info;
 
@@ -328,31 +330,29 @@ print_enum_type (struct type *type, struct ui_file *stream)
   fprintf_filtered (stream, ")");
 }
 
-/* Print representation of Ada fixed-point type TYPE on STREAM.  */
-
+/* Print representation of Ada fixed-point type TYPE on STREAM: */
 static void
-print_fixed_point_type (struct type *type, struct ui_file *stream)
+print_fixed_point_type(struct type *type, struct ui_file *stream)
 {
-  DOUBLEST delta = ada_delta (type);
-  DOUBLEST small = ada_fixed_to_float (type, 1.0);
+  DOUBLEST delta = ada_delta(type);
+  DOUBLEST small = ada_fixed_to_float(type, (LONGEST)1.0f);
 
-  if (delta < 0.0)
-    fprintf_filtered (stream, "delta ??");
+  if (delta < 0.0f)
+    fprintf_filtered(stream, "delta ??");
   else
     {
-      fprintf_filtered (stream, "delta %g", (double) delta);
+      fprintf_filtered(stream, "delta %g", (double)delta);
       if (delta != small)
-	fprintf_filtered (stream, " <'small = %g>", (double) small);
+	fprintf_filtered(stream, " <'small = %g>", (double)small);
     }
 }
 
-/* Print representation of special VAX floating-point type TYPE on STREAM.  */
-
+/* Print representation of special VAX floating-point type TYPE on STREAM: */
 static void
-print_vax_floating_point_type (struct type *type, struct ui_file *stream)
+print_vax_floating_point_type(struct type *type, struct ui_file *stream)
 {
-  fprintf_filtered (stream, "<float format %c>",
-		    ada_vax_float_type_suffix (type));
+  fprintf_filtered(stream, "<float format %c>",
+		   ada_vax_float_type_suffix(type));
 }
 
 /* Print simple (constrained) array type TYPE on STREAM.  LEVEL is the
@@ -835,28 +835,30 @@ ada_print_type (struct type *type0, char *varstring, struct ui_file *stream,
 	  }
 	break;
       case TYPE_CODE_FLT:
-	fprintf_filtered (stream, "<%d-byte float>", TYPE_LENGTH (type));
+	fprintf_filtered(stream, "<%d-byte float>", TYPE_LENGTH(type));
 	break;
       case TYPE_CODE_ENUM:
 	if (show < 0)
-	  fprintf_filtered (stream, "(...)");
+	  fprintf_filtered(stream, "(...)");
 	else
-	  print_enum_type (type, stream);
+	  print_enum_type(type, stream);
 	break;
       case TYPE_CODE_STRUCT:
-	if (ada_is_array_descriptor_type (type))
-	  print_array_type (type, stream, show, level);
-	else if (ada_is_bogus_array_descriptor (type))
-	  fprintf_filtered (stream,
-			    "array (?) of ? (<mal-formed descriptor>)");
+	if (ada_is_array_descriptor_type(type))
+	  print_array_type(type, stream, show, level);
+	else if (ada_is_bogus_array_descriptor(type))
+	  fprintf_filtered(stream,
+			   "array (?) of ? (<mal-formed descriptor>)");
 	else
-	  print_record_type (type, stream, show, level);
+	  print_record_type(type, stream, show, level);
 	break;
       case TYPE_CODE_UNION:
-	print_unchecked_union_type (type, stream, show, level);
+	print_unchecked_union_type(type, stream, show, level);
 	break;
       case TYPE_CODE_FUNC:
-	print_func_type (type, stream, varstring);
+	print_func_type(type, stream, varstring);
 	break;
       }
 }
+
+/* EOF */

@@ -1636,7 +1636,9 @@ int x;
 	case EXP_CONTINUE:		return EXP_TCLCNTEXP;
 	case EXP_CONTINUE_TIMER:	return EXP_TCLCNTTIMER;
 	case EXP_TCL_RETURN:		return EXP_TCLRETTCL;
+	default: break;
 	}
+	return 0;
 }
 
 /* map from EXP_ style return value to TCL_ style return values */
@@ -1652,7 +1654,9 @@ int x;
 	case EXP_TCLCNTEXP:		return EXP_CONTINUE;
 	case EXP_TCLCNTTIMER:		return EXP_CONTINUE_TIMER;
 	case EXP_TCLRETTCL:		return EXP_TCL_RETURN;
+	default: break;
 	}
+	return TCL_OK;
 }
 
 /* returns # of chars read or (non-positive) error of form EXP_XXX */
@@ -1725,9 +1729,9 @@ char *var;
 {
 	char *val;
 
-	if (NULL != (val = Tcl_GetVar(interp,var,0 /* local */)))
+	if (NULL != (val = (char *)Tcl_GetVar(interp, var, 0 /* local */)))
 		return(val);
-	return(Tcl_GetVar(interp,var,TCL_GLOBAL_ONLY));
+	return (char *)Tcl_GetVar(interp, var, TCL_GLOBAL_ONLY);
 }
 
 static int
@@ -1786,6 +1790,7 @@ int cmdtype;
 	case EXP_CMD_BG: return("expect_background");
 	case EXP_CMD_BEFORE: return("expect_before");
 	case EXP_CMD_AFTER: return("expect_after");
+	default: return("unhandled expect command type");
 	}
 #ifdef LINT
 	return("unknown expect command");
@@ -2400,12 +2405,12 @@ error:
 				char value[20];
 
 				time(&current_time);
-				elapsed_time = current_time - start_time;
-				elapsed_time_total = current_time - start_time_total;
-				sprintf(value,"%d",elapsed_time);
+				elapsed_time = (current_time - start_time);
+				elapsed_time_total = (current_time - start_time_total);
+				sprintf(value, "%d", (int)elapsed_time);
 				out("seconds",value);
-				sprintf(value,"%d",elapsed_time_total);
-				out("seconds_total",value);
+				sprintf(value, "%d", (int)elapsed_time_total);
+				out("seconds_total", value);
 
 				/* deprecated */
 				exp_timestamp(interp,&current_time,EXPECT_OUT);

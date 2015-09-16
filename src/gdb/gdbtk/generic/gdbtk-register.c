@@ -1,4 +1,4 @@
-/* Tcl/Tk command definitions for Insight - Registers
+/* gdbtk-register.c: Tcl/Tk command definitions for Insight - Registers
    Copyright 2001, 2002, 2004 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -121,9 +121,9 @@ gdb_register_info (ClientData clientData, Tcl_Interp *interp, int objc,
   int index;
   void *argp;
   void (*func)(int, void *);
-  static const char *commands[] = {"changed", "name", "size", "value", "type", 
+  static const char *commands[] = {"changed", "name", "size", "value", "type",
 			     "format", "group", "grouplist", NULL};
-  enum commands_enum { REGINFO_CHANGED, REGINFO_NAME, REGINFO_SIZE, REGINFO_VALUE, 
+  enum commands_enum { REGINFO_CHANGED, REGINFO_NAME, REGINFO_SIZE, REGINFO_VALUE,
 		       REGINFO_TYPE, REGINFO_FORMAT, REGINFO_GROUP, REGINFO_GROUPLIST };
 
   if (objc < 2)
@@ -138,7 +138,7 @@ gdb_register_info (ClientData clientData, Tcl_Interp *interp, int objc,
       result_ptr->flags |= GDBTK_IN_TCL_RESULT;
       return TCL_ERROR;
     }
-  
+
   /* Skip the option */
   objc -= 2;
   objv += 2;
@@ -211,19 +211,19 @@ get_register_size (int regnum, void *arg)
 
 static void
 get_register_types (int regnum, void *arg)
-{ 
+{
   struct type *reg_vtype;
   int i,n;
 
   reg_vtype = register_type (current_gdbarch, regnum);
-  
+
   if (TYPE_CODE (reg_vtype) == TYPE_CODE_UNION)
     {
       n = TYPE_NFIELDS (reg_vtype);
       /* limit to 16 types */
-      if (n > 16) 
+      if (n > 16)
 	n = 16;
-      
+
       for (i = 0; i < n; i++)
 	{
 	  Tcl_Obj *ar[3], *list;
@@ -234,7 +234,7 @@ get_register_types (int regnum, void *arg)
 	  if (TYPE_CODE (TYPE_FIELD_TYPE (reg_vtype, i)) == TYPE_CODE_FLT)
 	    ar[2] = Tcl_NewStringObj ("float", -1);
 	  else
-	    ar[2] = Tcl_NewStringObj ("int", -1);	    
+	    ar[2] = Tcl_NewStringObj ("int", -1);
 	  list = Tcl_NewListObj (3, ar);
 	  Tcl_ListObjAppendElement (gdbtk_interp, result_ptr->obj_ptr, list);
 	  xfree (buff);
@@ -250,7 +250,7 @@ get_register_types (int regnum, void *arg)
       if (TYPE_CODE (reg_vtype) == TYPE_CODE_FLT)
 	ar[2] = Tcl_NewStringObj ("float", -1);
       else
-	ar[2] = Tcl_NewStringObj ("int", -1);	    
+	ar[2] = Tcl_NewStringObj ("int", -1);
       list = Tcl_NewListObj (3, ar);
       xfree (buff);
       Tcl_ListObjAppendElement (gdbtk_interp, result_ptr->obj_ptr, list);
@@ -271,11 +271,11 @@ get_register (int regnum, void *arg)
   struct ui_file *stb;
   long dummy;
   char *res;
- 
+
   format = regformat[regnum];
   if (format == 0)
     format = 'x';
-  
+
   reg_vtype = regtype[regnum];
   if (reg_vtype == NULL)
     reg_vtype = register_type (current_gdbarch, regnum);
@@ -289,7 +289,7 @@ get_register (int regnum, void *arg)
       return;
     }
 
-  frame_register (get_selected_frame (NULL), regnum, &optim, &lval, 
+  frame_register (get_selected_frame (NULL), regnum, &optim, &lval,
 		  &addr, &realnum, buffer);
 
   if (optim)
@@ -322,7 +322,7 @@ get_register (int regnum, void *arg)
   else
     {
       if ((TYPE_CODE (reg_vtype) == TYPE_CODE_UNION)
-	  && (strcmp (FIELD_NAME (TYPE_FIELD (reg_vtype, 0)), 
+	  && (strcmp (FIELD_NAME (TYPE_FIELD (reg_vtype, 0)),
 		      REGISTER_NAME (regnum)) == 0))
 	{
 	  val_print (FIELD_TYPE (TYPE_FIELD (reg_vtype, 0)), buffer, 0, 0,
@@ -332,7 +332,7 @@ get_register (int regnum, void *arg)
 	val_print (reg_vtype, buffer, 0, 0,
 		   stb, format, 1, 0, Val_pretty_default);
     }
-  
+
   res = ui_file_xstrdup (stb, &dummy);
 
   if (result_ptr->flags & GDBTK_MAKES_LIST)
@@ -393,7 +393,7 @@ map_arg_registers (Tcl_Interp *interp, int objc, Tcl_Obj **objv,
 	      || *(REGISTER_NAME (regnum)) == '\0')
 	    continue;
 	  func (regnum, argp);
-	}      
+	}
       return TCL_OK;
     }
 
@@ -478,7 +478,7 @@ gdb_regformat (ClientData clientData, Tcl_Interp *interp,
   if (Tcl_GetIntFromObj (interp, objv[0], &regno) != TCL_OK)
     return TCL_ERROR;
 
-  type = (struct type *)strtol (Tcl_GetStringFromObj (objv[1], NULL), NULL, 16);  
+  type = (struct type *)strtol (Tcl_GetStringFromObj (objv[1], NULL), NULL, 16);
   fm = (int)*(Tcl_GetStringFromObj (objv[2], NULL));
 
   if (regno >= NUM_REGS + NUM_PSEUDO_REGS)
@@ -486,7 +486,7 @@ gdb_regformat (ClientData clientData, Tcl_Interp *interp,
       gdbtk_set_result (interp, "Register number %d too large", regno);
       return TCL_ERROR;
     }
-  
+
   regformat[regno] = fm;
   regtype[regno] = type;
 
@@ -538,7 +538,7 @@ gdb_reggroup (ClientData clientData, Tcl_Interp *interp,
       Tcl_WrongNumArgs (interp, 0, objv, "gdb_reginfo group groupname");
       return TCL_ERROR;
     }
-  
+
   groupname = Tcl_GetStringFromObj (objv[0], NULL);
   if (groupname == NULL)
     {

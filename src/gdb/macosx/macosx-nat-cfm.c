@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-nat-cfm.c
+   Mac OS X cfm support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -176,10 +177,10 @@ cfm_update (task_t task, struct dyld_objfile_info *info)
   /* The cfm_status was initialized with a set of symbol addresses but
      if CarbonCore slid since then, or the slide wasn't yet seen when
      the cfm_status was initialized, then we will be reading CFM information
-     from an incorrect location.  
+     from an incorrect location.
      So this is a double-check that the address seen when we initialized the
      cfm_status remain the same.  This should be true, of course... but we're
-     still seeing cases (unreproducible by us) where gdb is getting a bogus CFM 
+     still seeing cases (unreproducible by us) where gdb is getting a bogus CFM
      runtime address and crashing on non-CFM apps.  */
 
   doublecheck = lookup_minimal_symbol_by_pc (cfm_cookie);
@@ -194,7 +195,7 @@ cfm_update (task_t task, struct dyld_objfile_info *info)
 
   cfm_context = tmpbuf;
 
-  /* No valid context - don't give the following code a chance to do 
+  /* No valid context - don't give the following code a chance to do
      something wrong.  */
   if (cfm_context == 0)
     return -1;
@@ -214,7 +215,7 @@ cfm_update (task_t task, struct dyld_objfile_info *info)
      this before we try to allocate a huge chunk of memory.  */
   if (n_container_ids > 10000)
     {
-      warning ("gdb tried to read %d CFM container IDs; disregarding", 
+      warning ("gdb tried to read %d CFM container IDs; disregarding",
                (int) n_container_ids);
       return -1;
     }
@@ -339,8 +340,8 @@ cfm_fetch_universe_info (struct cfm_parser *parser,
       return -1;
     }
 
-  ret = target_read (&current_target, TARGET_OBJECT_MEMORY, NULL, buf, 
-                     addr, parser->universe_length); 
+  ret = target_read (&current_target, TARGET_OBJECT_MEMORY, NULL, buf,
+                     addr, parser->universe_length);
   if (ret < 0)
     {
       return -1;
@@ -399,8 +400,8 @@ cfm_fetch_container_info (struct cfm_parser *parser,
 
   info->name[0] = name_length;
 
-  ret = target_read (&current_target, TARGET_OBJECT_MEMORY, NULL,
-                     &info->name[1], name_addr, name_length);
+  ret = target_read(&current_target, TARGET_OBJECT_MEMORY, NULL,
+                    (gdb_byte *)&info->name[1], name_addr, name_length);
   if (ret < 0)
     return CFM_INTERNAL_ERROR;
 
@@ -453,31 +454,31 @@ cfm_fetch_connection_info (struct cfm_parser *parser,
 }
 
 long
-cfm_parse_section_info (struct cfm_parser *parser,
-                        unsigned char *buf,
-                        size_t len, NCFragSectionInfo *info)
+cfm_parse_section_info(struct cfm_parser *parser,
+                       unsigned char *buf,
+                       size_t len, NCFragSectionInfo *info)
 {
-  if (parser->section_total_length_offset + 4 > len)
+  if ((parser->section_total_length_offset + 4) > len)
     {
       return -1;
     }
 
-  info->length = bfd_getb32 (buf + parser->section_total_length_offset);
+  info->length = bfd_getb32(buf + parser->section_total_length_offset);
 
   return 0;
 }
 
 long
-cfm_parse_instance_info (struct cfm_parser *parser,
-                         unsigned char *buf,
-                         size_t len, NCFragInstanceInfo *info)
+cfm_parse_instance_info(struct cfm_parser *parser,
+                        unsigned char *buf,
+                        size_t len, NCFragInstanceInfo *info)
 {
-  if (parser->instance_address_offset + 4 > len)
+  if ((parser->instance_address_offset + 4) > len)
     {
       return -1;
     }
 
-  info->address = bfd_getb32 (buf + parser->instance_address_offset);
+  info->address = bfd_getb32(buf + parser->instance_address_offset);
 
   return 0;
 }
@@ -578,3 +579,5 @@ cfm_fetch_container_section_info (struct cfm_parser *parser,
 
   return CFM_NO_ERROR;
 }
+
+/* EOF */

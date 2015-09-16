@@ -1,4 +1,4 @@
-/* Copyright (C) 1987-2002 Free Software Foundation, Inc.
+/* fileman.c: Copyright (C) 1987-2002 Free Software Foundation, Inc.
 
    This file is part of the GNU Readline Library, a library for
    reading lines of text with interactive input and history editing.
@@ -25,36 +25,48 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning fileman.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning fileman.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning fileman.c expects <sys/types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "fileman.c expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
 #ifdef HAVE_SYS_FILE_H
 # include <sys/file.h>
 #else
-# warning fileman.c expects <sys/file.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "fileman.c expects <sys/file.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_FILE_H */
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #else
-# warning fileman.c expects <sys/stat.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "fileman.c expects <sys/stat.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_STAT_H */
 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning fileman.c expects unistd.h to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "fileman.c expects unistd.h to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
 #include <fcntl.h>
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning fileman.c expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "fileman.c expects <stdio.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 #include <errno.h>
 
@@ -64,15 +76,32 @@
 # if defined(HAVE_STRINGS_H)
 #  include <strings.h>
 # else
-#  warning fileman.c expects either string.h or strings.h to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "fileman.c expects either string.h or strings.h to be included"
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_STRINGS_H */
 #endif /* !HAVE_STRING_H */
 
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning fileman.c expects stdlib.h to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "fileman.c expects stdlib.h to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H */
+
+#ifdef TIME_WITH_SYS_TIME
+# include <time.h>
+# include <sys/time.h>
+#else
+# ifdef HAVE_TIME_H
+#  include <time.h>
+# else
+#  ifdef HAVE_SYS_TIME_H
+#   include <sys/time.h>
+#  endif /* HAVE_SYS_TIME_H */
+# endif /* HAVE_TIME_H */
+#endif /* TIME_WITH_SYS_TIME */
 
 #ifdef READLINE_LIBRARY
 # include "readline.h"
@@ -83,7 +112,7 @@
 #endif /* READLINE_LIBRARY */
 
 /* Why is there a prototype for this here? */
-extern char *xmalloc ();
+extern char *xmalloc();
 
 /* The names of functions that actually do the manipulation. */
 int com_list PARAMS((char *));
@@ -121,8 +150,12 @@ COMMAND commands[] = {
 };
 
 /* Forward declarations. */
-char *stripwhite ();
-COMMAND *find_command ();
+char *stripwhite();
+COMMAND *find_command();
+int initialize_readline();
+int execute_line PARAMS((char *));
+int valid_argument PARAMS((char *, char *));
+int too_dangerous PARAMS((char *));
 
 /* The name of this program, as taken from argv[0]. */
 char *progname;
@@ -131,30 +164,27 @@ char *progname;
 int done;
 
 char *
-dupstr (s)
-     char *s;
+dupstr(char *s)
 {
   char *r;
 
-  r = xmalloc (strlen (s) + 1);
-  strcpy (r, s);
+  r = (char *)xmalloc(strlen(s) + 1UL);
+  strcpy(r, s);
   return (r);
 }
 
-int main (argc, argv)
-     int argc;
-     char **argv;
+int main(int argc, char **argv)
 {
   char *line, *s;
 
   progname = argv[0];
 
-  initialize_readline ();	/* Bind our completer. */
+  initialize_readline();	/* Bind our completer. */
 
   /* Loop reading and executing lines until the user quits. */
   for ( ; done == 0; )
     {
-      line = readline ("FileMan: ");
+      line = readline("FileMan: ");
 
       if (!line)
         break;
@@ -162,22 +192,22 @@ int main (argc, argv)
       /* Remove leading and trailing whitespace from the line.
          Then, if there is anything left, add it to the history list
          and execute it. */
-      s = stripwhite (line);
+      s = stripwhite(line);
 
       if (*s)
         {
-          add_history (s);
-          execute_line (s);
+          add_history(s);
+          execute_line(s);
         }
 
-      free (line);
+      free(line);
     }
-  exit (0);
+  exit(0);
 }
 
-/* Execute a command line. */
+/* Execute a command line: */
 int
-execute_line (line)
+execute_line(line)
      char *line;
 {
   register int i;
@@ -263,13 +293,15 @@ char **fileman_completion PARAMS((const char *, int, int));
 /* Tell the GNU Readline library how to complete. We want to try to complete
    on command names if this is the first word in the line, or on filenames
    if not. */
-int initialize_readline ()
+int initialize_readline()
 {
   /* Allow conditional parsing of the ~/.inputrc file. */
   rl_readline_name = "FileMan";
 
   /* Tell the completer that we want a crack first. */
   rl_attempted_completion_function = fileman_completion;
+
+  return 0;
 }
 
 /* Attempt to complete on the contents of TEXT. START and END bound the
@@ -299,12 +331,11 @@ fileman_completion (text, start, end)
    to start from scratch; without any state (i.e. STATE == 0), then we
    start at the top of the list. */
 char *
-command_generator (text, state)
-     const char *text;
-     int state;
+command_generator(const char *text, int state)
 {
-  static int list_index, len;
-  char *name;
+  static int list_index;
+  static size_t len;
+  char *name = (char *)NULL;
 
   /* If this is a new word to complete, initialize now. This includes
      saving the length of TEXT for efficiency, and initializing the index
@@ -312,17 +343,15 @@ command_generator (text, state)
   if (!state)
     {
       list_index = 0;
-      len = strlen (text);
+      len = strlen(text);
     }
 
   /* Return the next name which partially matches from the command list. */
-	/* Turned this assignment into an equality comparison; if that was wrong,
-	 * use double parentheses instead. */
-  while (name == commands[list_index].name)
+  while ((name = commands[list_index].name))
     {
       list_index++;
 
-      if (strncmp (name, text, len) == 0)
+      if (strncmp(name, text, len) == 0)
         return (dupstr(name));
     }
 
@@ -336,68 +365,67 @@ command_generator (text, state)
 /*                                                                  */
 /* **************************************************************** */
 
-/* String to pass to system ().  This is for the LIST, VIEW and RENAME
+/* String to pass to system().  This is for the LIST, VIEW and RENAME
    commands. */
 static char syscom[1024];
 
 /* List the file(s) named in arg. */
-int com_list (arg)
+int com_list(arg)
      char *arg;
 {
   if (!arg)
     arg = "";
 
-  sprintf (syscom, "ls -FClg %s", arg);
-  return (system (syscom));
+  sprintf(syscom, "ls -FClg %s", arg);
+  return (system(syscom));
 }
 
-int com_view (arg)
+int com_view(arg)
      char *arg;
 {
-  if (!valid_argument ("view", arg))
+  if (!valid_argument("view", arg))
     return 1;
 
 #if defined(__MSDOS__)
   /* more.com does NOT grok slashes in pathnames */
-  sprintf (syscom, "less %s", arg);
+  sprintf(syscom, "less %s", arg);
 #else
-  sprintf (syscom, "more %s", arg);
+  sprintf(syscom, "more %s", arg);
 #endif /* __MSDOS__ */
-  return (system (syscom));
+  return (system(syscom));
 }
 
-int com_rename (arg)
+int com_rename(arg)
      char *arg;
 {
-  too_dangerous ("rename");
+  too_dangerous("rename");
   return (1);
 }
 
-int com_stat (arg)
+int com_stat(arg)
      char *arg;
 {
   struct stat finfo;
 
-  if (!valid_argument ("stat", arg))
+  if (!valid_argument("stat", arg))
     return (1);
 
-  if (stat (arg, &finfo) == -1)
+  if (stat(arg, &finfo) == -1)
     {
-      perror (arg);
+      perror(arg);
       return (1);
     }
 
-  printf ("Statistics for `%s':\n", arg);
+  printf("Statistics for `%s':\n", arg);
 
-  printf ("%s has %d link%s, and is %d byte%s in length.\n",
-	  arg,
-          finfo.st_nlink,
-          (finfo.st_nlink == 1) ? "" : "s",
-          finfo.st_size,
-          (finfo.st_size == 1) ? "" : "s");
-  printf ("Inode Last Change at: %s", ctime (&finfo.st_ctime));
-  printf ("      Last access at: %s", ctime (&finfo.st_atime));
-  printf ("    Last modified at: %s", ctime (&finfo.st_mtime));
+  printf("%s has %d link%s, and is %d byte%s in length.\n",
+	 arg, finfo.st_nlink,
+         ((finfo.st_nlink == 1) ? "" : "s"),
+         (int)finfo.st_size,
+         ((finfo.st_size == 1) ? "" : "s"));
+  printf("Inode Last Change at: %s", ctime(&finfo.st_ctime));
+  printf("      Last access at: %s", ctime(&finfo.st_atime));
+  printf("    Last modified at: %s", ctime(&finfo.st_mtime));
   return (0);
 }
 
@@ -449,38 +477,38 @@ int com_help (arg)
 }
 
 /* Change to the directory ARG. */
-int com_cd (arg)
+int com_cd(arg)
      char *arg;
 {
-  if (chdir (arg) == -1)
+  if (chdir(arg) == -1)
     {
-      perror (arg);
+      perror(arg);
       return 1;
     }
 
-  com_pwd ("");
+  com_pwd("");
   return (0);
 }
 
 /* Print out the current working directory. */
-int com_pwd (ignore)
+int com_pwd(ignore)
      char *ignore;
 {
   char dir[1024], *s;
 
-  s = getcwd (dir, sizeof(dir) - 1);
+  s = getcwd(dir, sizeof(dir) - 1);
   if (s == 0)
     {
-      printf ("Error getting pwd: %s\n", dir);
+      printf("Error getting pwd: %s\n", dir);
       return 1;
     }
 
-  printf ("Current directory is %s\n", dir);
+  printf("Current directory is %s\n", dir);
   return 0;
 }
 
 /* The user wishes to quit using this program.  Just set DONE non-zero. */
-int com_quit (arg)
+int com_quit(arg)
      char *arg;
 {
   done = 1;
@@ -488,7 +516,7 @@ int com_quit (arg)
 }
 
 /* Function which tells you that you cannot do this. */
-int too_dangerous (caller)
+int too_dangerous(caller)
      char *caller;
 {
   fprintf (stderr,
@@ -500,14 +528,16 @@ int too_dangerous (caller)
 /* Return non-zero if ARG is a valid argument for CALLER, else print
    an error message and return zero. */
 int
-valid_argument (caller, arg)
+valid_argument(caller, arg)
      char *caller, *arg;
 {
   if (!arg || !*arg)
     {
-      fprintf (stderr, "%s: Argument required.\n", caller);
+      fprintf(stderr, "%s: Argument required.\n", caller);
       return (0);
     }
 
   return (1);
 }
+
+/* EOF */

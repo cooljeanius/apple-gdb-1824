@@ -1,0 +1,68 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# stress.test --- stress test
+#
+## Time-stamp:      "2011-03-06 15:26:25 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating ${testname}.tpl
+cat > ${testname}.tpl <<_EOF_
+[= AutoGen5 template test =]
+Entry Count = [= (count "entry") =].
+_EOF_
+
+# # # # # # # # # # EXPECTED OUTPUT FILE # # # # # # #
+set -x
+echo creating ${testname}.samp
+ecount=${STRESS_COUNT:-1000}
+# this is the output we should expect to see
+echo "Entry Count = ${ecount}." > ${testname}.samp
+
+(
+  set +x
+  echo "AutoGen Definitions ${testname};"
+  idx=1
+  while test $idx -le ${ecount}
+  do
+    echo "entry = { value = 'val-${idx}'; depth = '${idx}'; const = xx; };"
+    idx=`expr $idx + 1`
+  done
+) | run_ag x -b ${testname} -
+test $? -eq 0 || failure autogen failed
+
+cmp -s ${testname}.test ${testname}.samp || \
+	failure "`diff ${testname}.test ${testname}.samp`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of stress.test

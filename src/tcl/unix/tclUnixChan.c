@@ -1,4 +1,4 @@
-/* 
+/*
  * tclUnixChan.c
  *
  *	Common channel driver for Unix channels based on files, command
@@ -288,7 +288,7 @@ static int		TtyParseMode _ANSI_ARGS_((Tcl_Interp *interp,
 static void		TtySetAttributes _ANSI_ARGS_((int fd,
 			    TtyAttrs *ttyPtr));
 static int		TtySetOptionProc _ANSI_ARGS_((ClientData instanceData,
-			    Tcl_Interp *interp, CONST char *optionName, 
+			    Tcl_Interp *interp, CONST char *optionName,
 			    CONST char *value));
 #endif	/* SUPPORTS_TTY */
 static int		WaitForConnect _ANSI_ARGS_((TcpState *statePtr,
@@ -610,9 +610,9 @@ FileSeekProc(instanceData, offset, mode, errorCodePtr)
 	*errorCodePtr = errno;
 	return -1;
     }
- 
+
     newLoc = TclOSseek(fsPtr->fd, (Tcl_SeekOffset) offset, mode);
- 
+
     /*
      * Check for expressability in our return type, and roll-back otherwise.
      */
@@ -716,7 +716,7 @@ FileWatchProc(instanceData, mask)
  *
  * Results:
  *	Returns TCL_OK with the fd in handlePtr, or TCL_ERROR if
- *	there is no handle for the specified direction. 
+ *	there is no handle for the specified direction.
  *
  * Side effects:
  *	None.
@@ -740,7 +740,7 @@ FileGetHandleProc(instanceData, direction, handlePtr)
     }
 }
 
-#ifdef SUPPORTS_TTY 
+#ifdef SUPPORTS_TTY
 
 /*
  *----------------------------------------------------------------------
@@ -771,9 +771,9 @@ TtyCloseProc(instanceData, interp)
 #endif /* TTYFLUSH */
 #if 0
     /*
-     * TIP#35 agreed to remove the unsave so that TCL could be used as a 
-     * simple stty. 
-     * It would be cleaner to remove all the stuff related to 
+     * TIP#35 agreed to remove the unsave so that TCL could be used as a
+     * simple stty.
+     * It would be cleaner to remove all the stuff related to
      *	  TtyState.stateUpdated
      *	  TtyState.savedState
      * Then the structure TtyState would be the same as FileState.
@@ -879,7 +879,7 @@ TtyModemStatusStr(status, dsPtr)
  *----------------------------------------------------------------------
  */
 
-static int		
+static int
 TtySetOptionProc(instanceData, interp, optionName, value)
     ClientData instanceData;	/* File state. */
     Tcl_Interp *interp;		/* For error reporting - can be NULL. */
@@ -1090,7 +1090,7 @@ TtySetOptionProc(instanceData, interp, optionName, value)
  *----------------------------------------------------------------------
  */
 
-static int		
+static int
 TtyGetOptionProc(instanceData, interp, optionName, dsPtr)
     ClientData instanceData;	/* File state. */
     Tcl_Interp *interp;		/* For error reporting - can be NULL. */
@@ -1467,7 +1467,7 @@ TtyGetAttributes(fd, ttyPtr)
  *
  * TtySetAttributes --
  *
- *	Set the current attributes of the specified serial device. 
+ *	Set the current attributes of the specified serial device.
  *
  * Results:
  *	None.
@@ -1654,7 +1654,7 @@ TtyParseMode(interp, mode, speedPtr, parityPtr, dataPtr, stopPtr)
  *
  * TtyInit --
  *
- *	Given file descriptor that refers to a serial port, 
+ *	Given file descriptor that refers to a serial port,
  *	initialize the serial port to a set of sane values so that
  *	Tcl can talk to a device located on the serial port.
  *	Note that no initialization happens if the initialize flag
@@ -1796,7 +1796,7 @@ TclpOpenFileChannel(interp, pathPtr, mode, permissions)
 
     if (fd < 0) {
 	if (interp != (Tcl_Interp *) NULL) {
-	    Tcl_AppendResult(interp, "couldn't open \"", 
+	    Tcl_AppendResult(interp, "couldn't open \"",
 		    Tcl_GetString(pathPtr), "\": ",
 		    Tcl_PosixError(interp), (char *) NULL);
 	}
@@ -1825,7 +1825,7 @@ TclpOpenFileChannel(interp, pathPtr, mode, permissions)
 	translation = "auto crlf";
 	channelTypePtr = &ttyChannelType;
 	fsPtr = TtyInit(fd, 1);
-    } else 
+    } else
 #endif	/* SUPPORTS_TTY */
     {
 	translation = NULL;
@@ -2414,7 +2414,7 @@ TcpWatchProc(instanceData, mask)
  *
  * Results:
  *	Returns TCL_OK with the fd in handlePtr, or TCL_ERROR if
- *	there is no handle for the specified direction. 
+ *	there is no handle for the specified direction.
  *
  * Side effects:
  *	None.
@@ -2515,9 +2515,9 @@ CreateSocket(interp, port, host, server, myaddr, myport, async)
 		sizeof(struct sockaddr));
 	if (status != -1) {
 	    status = listen(sock, SOMAXCONN);
-	} 
+	}
     } else {
-	if (myaddr != NULL || myport != 0) { 
+	if (myaddr != NULL || myport != 0) {
 	    curState = 1;
 	    (void) setsockopt(sock, SOL_SOCKET, SO_REUSEADDR,
 		    (char *) &curState, sizeof(curState));
@@ -3091,7 +3091,7 @@ Tcl_GetOpenFile(interp, string, forWriting, checkUsage, filePtr)
 
     Tcl_AppendResult(interp, "\"", string,
 	    "\" cannot be used to get a FILE *", (char *) NULL);
-    return TCL_ERROR;	     
+    return TCL_ERROR;
 }
 
 /*
@@ -3156,8 +3156,12 @@ TclUnixWaitForFile(fd, mask, timeout)
 	timeoutPtr = &blockTime;
 	blockTime.tv_sec = 0;
 	blockTime.tv_usec = 0;
+    abortTime.sec = 0L;
+    abortTime.usec = 0L;
     } else {
 	timeoutPtr = NULL;
+    abortTime.sec = 0L;
+    abortTime.usec = 0L;
     }
 
     /*
@@ -3165,11 +3169,11 @@ TclUnixWaitForFile(fd, mask, timeout)
      */
 
     if (fd >= FD_SETSIZE) {
-	panic("TclWaitForFile can't handle file id %d", fd);
+	panic("TclWaitForFile cannot handle file id %d", fd);
     }
     memset((VOID *) readyMasks, 0, 3*MASK_SIZE*sizeof(fd_mask));
-    index = fd/(NBBY*sizeof(fd_mask));
-    bit = 1 << (fd%(NBBY*sizeof(fd_mask)));
+    index = (int)((size_t)fd / (NBBY * sizeof(fd_mask)));
+    bit = (1 << ((size_t)fd % (NBBY * sizeof(fd_mask))));
 
     /*
      * Loop in a mini-event loop of our own, waiting for either the

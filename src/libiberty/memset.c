@@ -1,4 +1,4 @@
-/* memset
+/* memset.c
    This implementation is in the public domain.  */
 
 /*
@@ -16,10 +16,12 @@ Sets the first @var{count} bytes of @var{s} to the constant byte
 #include <stddef.h>
 
 PTR
-memset (PTR dest, register int val, register size_t len)
+memset(PTR dest, register int val, register size_t len)
 {
   register unsigned char *ptr = (unsigned char*)dest;
   while (len-- > 0)
-    *ptr++ = val;
+    *ptr++ = (unsigned char)val;
   return dest;
 }
+
+/* EOF */

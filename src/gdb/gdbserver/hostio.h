@@ -1,4 +1,5 @@
-/* Host file transfer support for gdbserver.
+/* hostio.h
+   Host file transfer support for gdbserver.
    Copyright (C) 1993-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -26,3 +27,5 @@ extern int handle_vFile (char *, int, int *);
 extern void hostio_last_error_from_errno (char *own_buf);
 
 #endif /* HOSTIO_H */
+
+/* EOF */

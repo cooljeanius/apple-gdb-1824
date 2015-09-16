@@ -1,4 +1,5 @@
-/* OS dependent parts of libintl.
+/* osdep.c
+   OS dependent parts of libintl.
    Copyright (C) 2001-2002 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify it
@@ -13,12 +14,14 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301,
+   Foundation, Inc., 51 Franklin Street - 5th Floor, Boston, MA 02110-1301,
    USA.  */
 
 #if defined __EMX__
 # include "os2compat.c"
 #else
-/* Avoid AIX compiler warning.  */
-typedef int dummy;
-#endif
+/* Avoid AIX compiler warning: */
+typedef int osdep_c_dummy_t;
+#endif /* __EMX__ */
+
+/* EOF */

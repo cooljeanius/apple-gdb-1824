@@ -18,43 +18,45 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-/* This is needed to pick up the NAN macro on some systems.  */
-#define _GNU_SOURCE
+#ifndef _GNU_SOURCE
+/* This is needed to pick up the NAN macro on some systems: */
+# define _GNU_SOURCE 1
+#endif /* !_GNU_SOURCE */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 
 #include <math.h>
 
 #ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+# include <string.h>
+#endif /* HAVE_STRING_H */
 
 /* On some platforms, <float.h> provides DBL_QNAN.  */
 #ifdef STDC_HEADERS
-#include <float.h>
-#endif
+# include <float.h>
+#endif /* STDC_HEADERS */
 
 #include "ansidecl.h"
 #include "libiberty.h"
 #include "floatformat.h"
 
 #ifndef INFINITY
-#ifdef HUGE_VAL
-#define INFINITY HUGE_VAL
-#else
-#define INFINITY (1.0 / 0.0)
-#endif
-#endif
+# ifdef HUGE_VAL
+#  define INFINITY HUGE_VAL
+# else
+#  define INFINITY (1.0 / 0.0)
+# endif /* HUGE_VAL */
+#endif /* !INFINITY */
 
 #ifndef NAN
-#ifdef DBL_QNAN
-#define NAN DBL_QNAN
-#else
-#define NAN (0.0 / 0.0)
-#endif
-#endif
+# ifdef DBL_QNAN
+#  define NAN DBL_QNAN
+# else
+#  define NAN (0.0 / 0.0)
+# endif /* DBL_QNAN */
+#endif /* !NAN */
 
 static unsigned long get_field (const unsigned char *,
                                 enum floatformat_byteorders,
@@ -71,9 +73,9 @@ floatformat_always_valid (const struct floatformat *fmt ATTRIBUTE_UNUSED,
   return 1;
 }
 
-/* The odds that CHAR_BIT will be anything but 8 are low enough that I'm not
-   going to bother with trying to muck around with whether it is defined in
-   a system header, what we do if not, etc.  */
+/* The odds that CHAR_BIT will be anything but 8 are low enough that I am
+ * not going to bother with trying to muck around with whether it is
+ * defined in a system header, what we do if not, and so on:  */
 #define FLOATFORMAT_CHAR_BIT 8
 
 /* floatformats for IEEE single and double, big and little endian.  */
@@ -108,7 +110,6 @@ const struct floatformat floatformat_ieee_double_little =
 
 /* floatformat for IEEE double, little endian byte order, with big endian word
    ordering, as on the ARM.  */
-
 const struct floatformat floatformat_ieee_double_littlebyte_bigword =
 {
   floatformat_littlebyte_bigword, 64, 0, 1, 11, 1023, 2047, 12, 52,
@@ -118,7 +119,6 @@ const struct floatformat floatformat_ieee_double_littlebyte_bigword =
 };
 
 /* floatformat for VAX.  Not quite IEEE, but close enough.  */
-
 const struct floatformat floatformat_vax_f =
 {
   floatformat_vax, 32, 0, 1, 8, 129, 0, 9, 23,
@@ -251,8 +251,8 @@ const struct floatformat floatformat_ia64_quad_little =
 
 
 #ifndef min
-#define min(a, b) ((a) < (b) ? (a) : (b))
-#endif
+# define min(a, b) ((a) < (b) ? (a) : (b))
+#endif /* !min */
 
 /* Extract a field which starts at START and is LEN bits long.  DATA and
    TOTAL_LEN are the thing we are extracting it from, in byteorder ORDER.  */
@@ -276,9 +276,8 @@ get_field (const unsigned char *data, enum floatformat_byteorders order,
 
   lo_bit = start % FLOATFORMAT_CHAR_BIT;
   hi_bit = min (lo_bit + len, FLOATFORMAT_CHAR_BIT);
-  
-  do
-    {
+
+  do {
       unsigned int shifted = *(data + cur_byte) >> lo_bit;
       unsigned int bits = hi_bit - lo_bit;
       unsigned int mask = (1 << bits) - 1;
@@ -288,16 +287,14 @@ get_field (const unsigned char *data, enum floatformat_byteorders order,
       cur_byte += nextbyte;
       lo_bit = 0;
       hi_bit = min (len, FLOATFORMAT_CHAR_BIT);
-    }
-  while (len != 0);
+  } while (len != 0);
 
   return result;
 }
-  
-/* Convert from FMT to a double.
-   FROM is the address of the extended float.
-   Store the double in *TO.  */
 
+/* Convert from FMT to a double.
+ * FROM is the address of the extended float.
+ * Store the double in *TO.  */
 void
 floatformat_to_double (const struct floatformat *fmt,
                        const void *from, double *to)
@@ -308,30 +305,30 @@ floatformat_to_double (const struct floatformat *fmt,
   unsigned long mant;
   unsigned int mant_bits, mant_off;
   int mant_bits_left;
-  int special_exponent;		/* It's a NaN, denorm or zero */
+  int special_exponent;		/* It is a NaN, denorm or zero */
 
   exponent = get_field (ufrom, fmt->byteorder, fmt->totalsize,
 			fmt->exp_start, fmt->exp_len);
 
-  /* If the exponent indicates a NaN, we don't have information to
+  /* If the exponent indicates a NaN, we do NOT have information to
      decide what to do.  So we handle it like IEEE, except that we
-     don't try to preserve the type of NaN.  FIXME.  */
+     do NOT try to preserve the type of NaN.  FIXME.  */
   if ((unsigned long) exponent == fmt->exp_nan)
     {
-      int nan;
+      int is_a_nan;
 
       mant_off = fmt->man_start;
       mant_bits_left = fmt->man_len;
-      nan = 0;
+      is_a_nan = 0;
       while (mant_bits_left > 0)
 	{
-	  mant_bits = min (mant_bits_left, 32);
+	  mant_bits = min((unsigned int)mant_bits_left, 32U);
 
-	  if (get_field (ufrom, fmt->byteorder, fmt->totalsize,
-			 mant_off, mant_bits) != 0)
+	  if (get_field(ufrom, fmt->byteorder, fmt->totalsize,
+                        mant_off, mant_bits) != 0)
 	    {
 	      /* This is a NaN.  */
-	      nan = 1;
+	      is_a_nan = 1;
 	      break;
 	    }
 
@@ -346,12 +343,12 @@ floatformat_to_double (const struct floatformat *fmt,
 	 conjunction with the GNU/C99 extension for hexadecimal
 	 floating point constants and will issue a warning when
 	 compiling with -pedantic.  */
-      if (nan)
+      if (is_a_nan)
 	dto = NAN;
       else
 	dto = INFINITY;
 
-      if (get_field (ufrom, fmt->byteorder, fmt->totalsize, fmt->sign_start, 1))
+      if (get_field(ufrom, fmt->byteorder, fmt->totalsize, fmt->sign_start, 1))
 	dto = -dto;
 
       *to = dto;
@@ -361,11 +358,11 @@ floatformat_to_double (const struct floatformat *fmt,
 
   mant_bits_left = fmt->man_len;
   mant_off = fmt->man_start;
-  dto = 0.0;
+  dto = 0.0f;
 
-  special_exponent = exponent == 0 || (unsigned long) exponent == fmt->exp_nan;
+  special_exponent = ((exponent == 0) || ((unsigned long)exponent == fmt->exp_nan));
 
-  /* Don't bias zero's, denorms or NaNs.  */
+  /* Do NOT bias zeroes, denorms, or NaNs.  */
   if (!special_exponent)
     exponent -= fmt->exp_bias;
 
@@ -378,7 +375,7 @@ floatformat_to_double (const struct floatformat *fmt,
   if (!special_exponent)
     {
       if (fmt->intbit == floatformat_intbit_no)
-	dto = ldexp (1.0, exponent);
+	dto = ldexp(1.0f, exponent);
       else
 	exponent++;
     }
@@ -392,14 +389,12 @@ floatformat_to_double (const struct floatformat *fmt,
 
       /* Handle denormalized numbers.  FIXME: What should we do for
 	 non-IEEE formats?  */
-      if (special_exponent && exponent == 0 && mant != 0)
-	dto += ldexp ((double)mant,
-		      (- fmt->exp_bias
-		       - mant_bits
-		       - (mant_off - fmt->man_start)
-		       + 1));
-      else
-	dto += ldexp ((double)mant, exponent - mant_bits);
+      if (special_exponent && (exponent == 0) && (mant != 0)) {
+	dto += ldexp((double)mant,
+                     (int)(0 - fmt->exp_bias - mant_bits
+                           - (mant_off - fmt->man_start) + 1));
+      } else
+	dto += ldexp((double)mant, (int)(exponent - mant_bits));
       if (exponent != 0)
 	exponent -= mant_bits;
       mant_off += mant_bits;
@@ -440,26 +435,23 @@ put_field (unsigned char *data, enum floatformat_byteorders order,
 
   lo_bit = start % FLOATFORMAT_CHAR_BIT;
   hi_bit = min (lo_bit + len, FLOATFORMAT_CHAR_BIT);
-  
-  do
-    {
-      unsigned char *byte_ptr = data + cur_byte;
-      unsigned int bits = hi_bit - lo_bit;
-      unsigned int mask = ((1 << bits) - 1) << lo_bit;
-      *byte_ptr = (*byte_ptr & ~mask) | ((stuff_to_put << lo_bit) & mask);
+
+  do {
+      unsigned char *byte_ptr = (data + cur_byte);
+      unsigned int bits = (hi_bit - lo_bit);
+      unsigned int mask = (((1 << bits) - 1) << lo_bit);
+      *byte_ptr = (unsigned char)((*byte_ptr & ~mask) | ((stuff_to_put << lo_bit) & mask));
       stuff_to_put >>= bits;
       len -= bits;
       cur_byte += nextbyte;
       lo_bit = 0;
-      hi_bit = min (len, FLOATFORMAT_CHAR_BIT);
-    }
-  while (len != 0);
+      hi_bit = min(len, FLOATFORMAT_CHAR_BIT);
+  } while (len != 0);
 }
 
 /* The converse: convert the double *FROM to an extended float
-   and store where TO points.  Neither FROM nor TO have any alignment
-   restrictions.  */
-
+ * and store where TO points.  Neither FROM nor TO have any alignment
+ * restrictions.  */
 void
 floatformat_from_double (const struct floatformat *fmt,
                          const double *from, void *to)
@@ -469,36 +461,39 @@ floatformat_from_double (const struct floatformat *fmt,
   double mant;
   unsigned int mant_bits, mant_off;
   int mant_bits_left;
-  unsigned char *uto = (unsigned char *) to;
+  unsigned char *uto = (unsigned char *)to;
 
   dfrom = *from;
   memset (uto, 0, fmt->totalsize / FLOATFORMAT_CHAR_BIT);
 
   /* If negative, set the sign bit.  */
-  if (dfrom < 0)
+  if (dfrom < (double)0.0f)
     {
-      put_field (uto, fmt->byteorder, fmt->totalsize, fmt->sign_start, 1, 1);
+      put_field(uto, fmt->byteorder, fmt->totalsize, fmt->sign_start, 1, 1);
       dfrom = -dfrom;
     }
 
-  if (dfrom == 0)
+  /* FIXME: '-Wfloat-equal': */
+  if (dfrom == (double)0.0f)
     {
-      /* 0.0.  */
+      /* 0 */
       return;
     }
 
+  /* FIXME: '-Wfloat-equal': */
   if (dfrom != dfrom)
     {
       /* NaN.  */
       put_field (uto, fmt->byteorder, fmt->totalsize, fmt->exp_start,
 		 fmt->exp_len, fmt->exp_nan);
-      /* Be sure it's not infinity, but NaN value is irrelevant.  */
+      /* Be sure it is not infinity, but NaN value is irrelevant.  */
       put_field (uto, fmt->byteorder, fmt->totalsize, fmt->man_start,
 		 32, 1);
       return;
     }
 
-  if (dfrom + dfrom == dfrom)
+  /* FIXME: '-Wfloat-equal': */
+  if ((dfrom + dfrom) == dfrom)
     {
       /* This can only happen for an infinite value (or zero, which we
 	 already handled above).  */
@@ -508,9 +503,9 @@ floatformat_from_double (const struct floatformat *fmt,
     }
 
   mant = frexp (dfrom, &exponent);
-  if (exponent + fmt->exp_bias - 1 > 0)
-    put_field (uto, fmt->byteorder, fmt->totalsize, fmt->exp_start,
-	       fmt->exp_len, exponent + fmt->exp_bias - 1);
+  if ((exponent + fmt->exp_bias - 1) > 0)
+    put_field(uto, fmt->byteorder, fmt->totalsize, fmt->exp_start,
+              fmt->exp_len, (unsigned long)(exponent + fmt->exp_bias - 1));
   else
     {
       /* Handle a denormalized number.  FIXME: What should we do for
@@ -525,9 +520,9 @@ floatformat_from_double (const struct floatformat *fmt,
   while (mant_bits_left > 0)
     {
       unsigned long mant_long;
-      mant_bits = mant_bits_left < 32 ? mant_bits_left : 32;
+      mant_bits = ((mant_bits_left < 32) ? mant_bits_left : 32);
 
-      mant *= 4294967296.0;
+      mant *= (double)4294967296.0f;
       mant_long = (unsigned long)mant;
       mant -= mant_long;
 
@@ -544,7 +539,7 @@ floatformat_from_double (const struct floatformat *fmt,
 	{
 	  /* The bits we want are in the most significant MANT_BITS bits of
 	     mant_long.  Move them to the least significant.  */
-	  mant_long >>= 32 - mant_bits;
+	  mant_long >>= (32 - mant_bits);
 	}
 
       put_field (uto, fmt->byteorder, fmt->totalsize,
@@ -554,15 +549,15 @@ floatformat_from_double (const struct floatformat *fmt,
     }
 }
 
-/* Return non-zero iff the data at FROM is a valid number in format FMT.  */
-
+/* Return non-zero iff the data at FROM is a valid number in format FMT: */
 int
 floatformat_is_valid (const struct floatformat *fmt, const void *from)
 {
-  /* APPLE LOCAL: If our caller couldn't find a format, don't
-     crash.  */
-  if (fmt == NULL)
+  /* APPLE LOCAL: If our caller failed find a format, then resist the urge
+   * to crash: */
+  if (fmt == NULL) {
     return 0;
+  }
   /* END APPLE LOCAL */
 
   return fmt->is_valid (fmt, from);
@@ -570,68 +565,84 @@ floatformat_is_valid (const struct floatformat *fmt, const void *from)
 
 
 #ifdef IEEE_DEBUG
-
-#include <stdio.h>
-
-/* This is to be run on a host which uses IEEE floating point.  */
-
+# include <stdio.h> /* for printf() */
+/* This is to be run on a host which uses IEEE floating point: */
 void
 ieee_test (double n)
 {
   double result;
+# if IEEE_DEBUG > 1
+  printf("Testing value %.20g\n", n);
+# endif /* IEEE_DEBUG > 1 */
 
-  floatformat_to_double (&floatformat_ieee_double_little, &n, &result);
-  if ((n != result && (! isnan (n) || ! isnan (result)))
-      || (n < 0 && result >= 0)
-      || (n >= 0 && result < 0))
-    printf ("Differ(to): %.20g -> %.20g\n", n, result);
+  floatformat_to_double(&floatformat_ieee_double_little, &n, &result);
+  /* FIXME: '-Wfloat-equal': */
+  if (((n != result) && (! isnan((float)n) || ! isnan((float)result)))
+      || ((n < 0) && (result >= 0))
+      || ((n >= 0) && (result < 0)))
+    printf("Differ(to): %.20g -> %.20g\n", n, result);
 
-  floatformat_from_double (&floatformat_ieee_double_little, &n, &result);
-  if ((n != result && (! isnan (n) || ! isnan (result)))
-      || (n < 0 && result >= 0)
-      || (n >= 0 && result < 0))
-    printf ("Differ(from): %.20g -> %.20g\n", n, result);
+  floatformat_from_double(&floatformat_ieee_double_little, &n, &result);
+  /* FIXME: '-Wfloat-equal': */
+  if (((n != result) && (! isnan((float)n) || ! isnan((float)result)))
+      || ((n < 0) && (result >= 0))
+      || ((n >= 0) && (result < 0)))
+    printf("Differ(from): %.20g -> %.20g\n", n, result);
 
-#if 0
+# if IEEE_DEBUG > 1
   {
     char exten[16];
+    long double ex;
 
-    floatformat_from_double (&floatformat_m68881_ext, &n, exten);
-    floatformat_to_double (&floatformat_m68881_ext, exten, &result);
-    if (n != result)
-      printf ("Differ(to+from): %.20g -> %.20g\n", n, result);
-  }
-#endif
+    floatformat_from_double(&floatformat_m68881_ext, &n, exten);
+    floatformat_to_double(&floatformat_m68881_ext, exten, &result);
+    /* FIXME: '-Wfloat-equal': */
+    if ((n != result) && (! isnan((float)n) || ! isnan((float)result))) {
+      printf("Differ(to+from): %.20g -> %.20g\n", n, result);
+    }
 
-#if IEEE_DEBUG > 1
-  /* This is to be run on a host which uses 68881 format.  */
-  {
-    long double ex = *(long double *)exten;
-    if (ex != n)
-      printf ("Differ(from vs. extended): %.20g\n", n);
+    /* This is to be run on a host which uses 68881 format: */
+#  if defined(m68881) || defined(__HAVE_68881__) || \
+      (defined(NUMREGBYTES) && (NUMREGBYTES == 180)) || \
+      (defined(FPS_UNUSED) && defined(FPS_IDLE) && defined(FPS_BUSY)) || \
+      (defined(FPIS_BUFSIZ) && (FPIS_BUFSIZ == 0xc0)) || \
+      (defined(VX_CONV_FROM_68881) && defined(VX_CONV_TO_68881))
+    ex = *(long double *)exten;
+    /* FIXME: '-Wfloat-equal': */
+    if (ex != n) {
+      printf("Differ(from vs. extended): %.20g vs. %.20g\n", n, ex);
+    }
+#  else
+    ex = n;
+    if (ex > 0.0f) {
+      return;
+    }
+#  endif /* various checks for the 68881 format */
   }
-#endif
+# endif /* IEEE_DEBUG > 1 */
 }
 
 int
-main (void)
+main(void)
 {
-  ieee_test (0.0);
-  ieee_test (0.5);
-  ieee_test (256.0);
-  ieee_test (0.12345);
-  ieee_test (234235.78907234);
-  ieee_test (-512.0);
-  ieee_test (-0.004321);
-  ieee_test (1.2E-70);
-  ieee_test (1.2E-316);
-  ieee_test (4.9406564584124654E-324);
-  ieee_test (- 4.9406564584124654E-324);
-  ieee_test (- 0.0);
-  ieee_test (- INFINITY);
-  ieee_test (- NAN);
-  ieee_test (INFINITY);
-  ieee_test (NAN);
+  ieee_test(0.0f);
+  ieee_test(0.5f);
+  ieee_test(256.0f);
+  ieee_test(0.12345f);
+  ieee_test(234235.78907234f);
+  ieee_test(-512.0f);
+  ieee_test(-0.004321f);
+  ieee_test(1.2E-70f); /* '-Woverflow' (clang says '-Wliteral-range') */
+  ieee_test(1.2E-316f); /* '-Woverflow' (or '-Wliteral-range') */
+  ieee_test(4.9406564584124654E-324f); /* '-Woverflow' */
+  ieee_test(- 4.9406564584124654E-324f); /* '-Woverflow' */
+  ieee_test(- 0.0f);
+  ieee_test(- INFINITY);
+  ieee_test(- NAN);
+  ieee_test(INFINITY);
+  ieee_test(NAN);
   return 0;
 }
-#endif
+#endif /* IEEE_DEBUG */
+
+/* EOF */

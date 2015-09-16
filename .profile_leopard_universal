@@ -12,8 +12,21 @@ export RC_OS=macos
 export RC_PRIVATE=/private
 export RC_RELEASE=Leopard
 export RC_XBS=YES
+export SDKROOT_FOR_BUILD=/Developer/SDKs/MacOSX10.5.sdk
 export SEPARATE_STRIP=YES
-export UNAME_RELEASE=9.6
+export UNAME_RELEASE=9.8.0
 export UNAME_SYSNAME=Darwin
+if test -x /usr/bin/arch; then
+  export HOST_ARCHITECTURE=`/usr/bin/arch`
+else
+  export HOST_ARCHITECTURE=i386
+fi
+if test -z "${RC_CROSS_ARCHS}"; then
+  if test "x${HOST_ARCHITECTURE}" = "xi386"; then
+    export RC_CROSS_ARCHS="ppc"
+  elif test "x${HOST_ARCHITECTURE}" = "xppc"; then
+    export RC_CROSS_ARCHS="i386"
+  fi
+fi
 
 echo "We should be done setting universal environment variables for Leopard now."

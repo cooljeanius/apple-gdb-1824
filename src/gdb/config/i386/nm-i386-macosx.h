@@ -1,7 +1,9 @@
-/* Macro definitions for GDB on an Intel i386 running SVR4.
-   Copyright (C) 1991, 1994 Free Software Foundation, Inc.
-   Written by Fred Fish at Cygnus Support (fnf@cygnus.com)
-
+/* nm-i386-macosx.h
+ * Macro definitions for GDB on an Intel i386 running Mac OSX
+ * (previosly SVR4).
+ * Copyright (C) 1991, 1994 Free Software Foundation, Inc.
+ * Written by Fred Fish at Cygnus Support (fnf@cygnus.com). */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -16,31 +18,31 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
 #ifndef NM_I386NEXT_H
 #define NM_I386NEXT_H
 
 #ifdef HAVE_X86_DEBUG_STATE32_T
 
-/* Mac OS X supports the i386 hardware debugging registers.  */
-#define I386_USE_GENERIC_WATCHPOINTS
+/* Mac OS X supports the i386 hardware debugging registers: */
+#define I386_USE_GENERIC_WATCHPOINTS 1
 
 #include "i386/nm-i386.h"
 
-/* BUT... the i386 kdp target does not support watchpoints, and if we 
-   try to set them we'll get awkward errors.  The nm-i386.h code 
-   unconditionally turns on the HW watchpoints by overriding the 
-   target_whatever macros.  We override these definitions so we can
-   properly route the calls through the target vector, and so keep
-   them out of the kdp side.  */
-/* The only one we don't override is TARGET_REGION_OK_FOR_HW_WATCHPOINT.
-   That isn't actually a target vector entry, but rather it is a way to
-   override the one-argument target vector entry 
-     to_region_size_ok_for_hw_watchpoint
-   with a version that takes two arguments.  Somebody was getting a little
-   lazy when they put this in.  */
-
+/* BUT... the i386 kdp target does not support watchpoints, and if we
+ * try to set them, we will then get awkward errors. The nm-i386.h code
+ * unconditionally turns on the HW watchpoints by overriding the
+ * target_whatever macros.  We override these definitions so we can
+ * properly route the calls through the target vector, and so keep
+ * them out of the kdp side.  */
+/* The only one we do NOT override is TARGET_REGION_OK_FOR_HW_WATCHPOINT.
+ * That is NOT actually a target vector entry, but rather it is a way to
+ * override the one-argument target vector entry, i.e.
+ *    to_region_size_ok_for_hw_watchpoint
+ * with a version that takes two arguments. Somebody was getting a little
+ * lazy when they put this in. */
 #undef STOPPED_BY_WATCHPOINT
 #undef TARGET_CAN_USE_HARDWARE_WATCHPOINT
 #undef HAVE_CONTINUABLE_WATCHPOINT
@@ -67,8 +69,7 @@ extern unsigned long i386_macosx_dr_get_status (void);
   i386_macosx_dr_get_status ()
 
 /* Define this so we can skip the page-protection style watchpoints
-   set up over in nm-macosx.h.  */
-
+ * set up over in nm-macosx.h: */
 #define MACOSX_ACTUAL_HARDWARE_WATCHPOINTS_ARE_SUPPORTED 1
 
 #endif /* HAVE_X86_DEBUG_STATE32_T */
@@ -77,3 +78,5 @@ extern unsigned long i386_macosx_dr_get_status (void);
 #define TARGET_NATIVE
 
 #endif /* NM_I386NEXT_H */
+
+/* EOF */

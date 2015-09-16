@@ -1,4 +1,5 @@
-/* Defines needed when configuring for "none".
+/* tm-none.h
+   Defines needed when configuring for "none".
    Copyright 1993, 1998 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -18,7 +19,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* This define is needed so that "gcc -MM" doesn't get errors and fail on
+/* This define is needed so that "gcc -MM" does NOT get errors and fail on
    source files that use the value of INNER_THAN in preprocessor lines. */
 
 #define INNER_THAN(lhs,rhs) ((lhs) < (rhs))

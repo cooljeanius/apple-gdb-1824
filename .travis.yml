@@ -1,0 +1,21 @@
+language: C
+
+before_install:
+  - "sudo apt-get update"
+
+install:
+  # Prerequisites
+  - "sudo apt-get install autogen gobjc gobjc++ gobjc-multilib gobjc++-multilib libobjc2 libopts25 libopts25-dev texinfo flex flex-doc binutils binutils-dev binutils-multiarch pax binutils-gold libcurses-perl dejagnu expect expect-dev libexpect-perl guile-1.8 guile-1.8-dev guile-1.8-libs tclreadline m4 xutils-dev libgcj-common ecj-gcj gfortran gfortran-multilib gccgo gccgo-multilib libdmalloc-dev libdmalloc5 gnulib fastjar java-gcj-compat gcj-jdk gdb gdbserver autopoint gperf help2man libextutils-f77-perl"
+
+# set up env
+before_script: test -e ./.profile_generic && source ./.profile_generic && env | uniq | sort | uniq
+
+# try to build
+script: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd && make && make check
+
+compiler:
+  - clang
+  - gcc
+
+after_success: pwd
+after_failure: find . -name config.log | xargs cat

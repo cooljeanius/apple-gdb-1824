@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on an encore under umax 4.2
+/* tm-umax.h
+   Definitions to make GDB run on an encore under umax 4.2
    Copyright 1987, 1989, 1991, 1993 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -38,7 +39,7 @@ extern CORE_ADDR umax_skip_prologue (CORE_ADDR);
 #define SKIP_PROLOGUE(pc) (umax_skip_prologue (pc))
 
 /* Immediately after a function call, return the saved pc.
-   Can't always go through the frames for this because on some machines
+   Cannot always go through the frames for this because on some machines
    the new frame is not set up until the new function executes
    some instructions.  */
 
@@ -166,7 +167,7 @@ extern CORE_ADDR umax_skip_prologue (CORE_ADDR);
 /* Store the address of the place in which to copy the structure the
    subroutine will return.  This is called from call_function.
 
-   On this machine this is a no-op, because gcc isn't used on it
+   On this machine this is a no-op, because gcc is NOT used on it
    yet.  So this calling convention is not used. */
 
 #define STORE_STRUCT_RETURN(ADDR, SP)
@@ -296,3 +297,5 @@ extern int umax_frame_num_args (struct frame_info *fi);
 	flip_bytes (&flipped, 4);				\
 	*((int *) (((char *) dummyname)+CALL_DUMMY_NARGS)) = flipped;	\
 }
+
+/* EOF */

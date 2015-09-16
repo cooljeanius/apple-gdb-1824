@@ -1,4 +1,4 @@
-/* TUI window generic functions.
+/* tui-win.h: TUI window generic functions.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2004 Free Software
    Foundation, Inc.
@@ -54,6 +54,8 @@ extern int tui_update_variables (void);
 extern void tui_update_gdb_sizes (void);
 
 /* Create or get the TUI command list.  */
-struct cmd_list_element **tui_get_cmd_list ();
+struct cmd_list_element **tui_get_cmd_list (void);
 
-#endif
+#endif /* !TUI_WIN_H */
+
+/* EOF */

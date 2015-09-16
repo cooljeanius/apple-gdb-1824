@@ -2,7 +2,7 @@
    Copyright 1995, 1996, 1998, 1999, 2000, 2001
    Free Software Foundation, Inc.
    Contributed by Cygnus Support.  Written by Steve Chamberlain
-   (sac@cygnus.com).
+   <sac@cygnus.com>.
 
    This file is part of GDB.
 

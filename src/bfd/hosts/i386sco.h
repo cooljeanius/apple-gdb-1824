@@ -1,3 +1,4 @@
+/* i386sco.h */
 /* Core file stuff.  At least some, perhaps all, of the following
    defines work on many more systems than just SCO.  */
 

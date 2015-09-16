@@ -27,19 +27,37 @@ struct stat {
   long    st_spare4[2];
 };
 
-#define S_IFMT	0170000L
-#define S_IFDIR	0040000L
-#define S_IFREG 0100000L
-#define S_IREAD    0400
-#define S_IWRITE   0200
-#define S_IEXEC    0100
+#ifndef S_IFMT
+# define S_IFMT		0170000L
+#endif /* !S_IFMT */
+#ifndef S_IFDIR
+# define S_IFDIR	0040000L
+#endif /* !S_IFDIR */
+#ifndef S_IFREG
+# define S_IFREG	0100000L
+#endif /* !S_IFREG */
+#ifndef S_IREAD
+# define S_IREAD    0400
+#endif /* !S_IREAD */
+#ifndef S_IWRITE
+# define S_IWRITE   0200
+#endif /* !S_IWRITE */
+#ifndef S_IEXEC
+# define S_IEXEC    0100
+#endif /* !S_IEXEC */
 
-#define S_IFIFO 010000  /* FIFO special */
-#define S_IFCHR 020000  /* character special */
-#define S_IFBLK 030000  /* block special */
+#ifndef S_IFIFO
+# define S_IFIFO	010000  /* FIFO special */
+#endif /* !S_IFIFO */
+#ifndef S_IFCHR
+# define S_IFCHR	020000  /* character special */
+#endif /* !S_IFCHR */
+#ifndef S_IFBLK
+# define S_IFBLK	030000  /* block special */
+#endif /* !S_IFBLK */
 
-int stat (char *path, struct stat *buf);
-int fstat (int fd, struct stat *buf);
+int stat(char *path, struct stat *buf);
+int fstat(int fd, struct stat *buf);
 
 #endif /* __SYS_STAT_H___ */
 

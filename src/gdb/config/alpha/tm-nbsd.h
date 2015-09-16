@@ -1,4 +1,5 @@
-/* Target-dependent definitions for NetBSD/Alpha.
+/* tm-nbsd.h
+   Target-dependent definitions for NetBSD/Alpha.
 
    Copyright 2002, 2004 Free Software Foundation, Inc.
 

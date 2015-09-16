@@ -1,4 +1,4 @@
-/* Select target systems and architectures at runtime for GDB.
+/* target.c: Select target systems and architectures at runtime for GDB.
 
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
    1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
@@ -40,7 +40,7 @@
 #include "event-loop.h"
 #include "memattr.h"
 #include "gdbcore.h"
-#include "objc-lang.h"  /* for objc_clear_selector_to_implementation_cache */
+#include "objc-lang.h" /* for objc_clear_selector_to_implementation_cache */
 #include "checkpoint.h" /* for checkpoint_clear_inferior */
 #include "ui-out.h"
 #include "dis-asm.h"
@@ -48,129 +48,129 @@
 #include "exceptions.h"
 #include "exec.h"
 
-static void target_info (char *, int);
+static void target_info(char *, int);
 
-static void maybe_kill_then_attach (char *, int);
+static void maybe_kill_then_attach(char *, int);
 
-static void kill_or_be_killed (int);
+static void kill_or_be_killed(int);
 
-static void default_terminal_info (char *, int);
+static void default_terminal_info(char *, int);
 
-static int default_region_size_ok_for_hw_watchpoint (int);
+static int default_region_size_ok_for_hw_watchpoint(int);
 
-static int nosymbol (char *, CORE_ADDR *);
+static int nosymbol(char *, CORE_ADDR *);
 
-static void tcomplain (void);
+static void tcomplain(void);
 
-static int nomemory (CORE_ADDR, char *, int, int, struct target_ops *);
+static int nomemory(CORE_ADDR, char *, int, int, struct target_ops *);
 
-static int return_zero (void);
+static int return_zero(void);
 
-static int return_one (void);
+static int return_one(void);
 
-static int return_minus_one (void);
+static int return_minus_one(void);
 
-void target_ignore (void);
+void target_ignore(void);
 
-static void target_command (char *, int);
+static void target_command(char *, int);
 
-static struct target_ops *find_default_run_target (char *);
+static struct target_ops *find_default_run_target(char *);
 
-static void nosupport_runtime (void);
+static void nosupport_runtime(void);
 
-static LONGEST default_xfer_partial (struct target_ops *ops,
-				     enum target_object object,
-				     const char *annex, gdb_byte *readbuf,
-				     const gdb_byte *writebuf,
-				     ULONGEST offset, LONGEST len);
-
-static LONGEST current_xfer_partial (struct target_ops *ops,
-				     enum target_object object,
-				     const char *annex, gdb_byte *readbuf,
-				     const gdb_byte *writebuf,
-				     ULONGEST offset, LONGEST len);
-
-static LONGEST target_xfer_partial (struct target_ops *ops,
+static LONGEST default_xfer_partial(struct target_ops *ops,
 				    enum target_object object,
-				    const char *annex,
-				    void *readbuf, const void *writebuf,
+				    const char *annex, gdb_byte *readbuf,
+				    const gdb_byte *writebuf,
 				    ULONGEST offset, LONGEST len);
 
-static void init_dummy_target (void);
+static LONGEST current_xfer_partial(struct target_ops *ops,
+				    enum target_object object,
+				    const char *annex, gdb_byte *readbuf,
+				    const gdb_byte *writebuf,
+				    ULONGEST offset, LONGEST len);
+
+static LONGEST target_xfer_partial(struct target_ops *ops,
+				   enum target_object object,
+				   const char *annex,
+				   void *readbuf, const void *writebuf,
+				   ULONGEST offset, LONGEST len);
+
+static void init_dummy_target(void);
 
 static struct target_ops debug_target;
 
-static void debug_to_open (char *, int);
+static void debug_to_open(char *, int);
 
-static void debug_to_close (int);
+static void debug_to_close(int);
 
-static void debug_to_attach (char *, int);
+static void debug_to_attach(char *, int);
 
-static void debug_to_detach (char *, int);
+static void debug_to_detach(char *, int);
 
-static void debug_to_disconnect (char *, int);
+static void debug_to_disconnect(char *, int);
 
-static void debug_to_resume (ptid_t, int, enum target_signal);
+static void debug_to_resume(ptid_t, int, enum target_signal);
 
-static ptid_t debug_to_wait (ptid_t, struct target_waitstatus *, gdb_client_data client_data);
+static ptid_t debug_to_wait(ptid_t, struct target_waitstatus *, gdb_client_data client_data);
 
-static void debug_to_fetch_registers (int);
+static void debug_to_fetch_registers(int);
 
-static void debug_to_store_registers (int);
+static void debug_to_store_registers(int);
 
-static void debug_to_prepare_to_store (void);
+static void debug_to_prepare_to_store(void);
 
-static void debug_to_files_info (struct target_ops *);
+static void debug_to_files_info(struct target_ops *);
 
-static int debug_to_insert_breakpoint (CORE_ADDR, gdb_byte *);
+static int debug_to_insert_breakpoint(CORE_ADDR, gdb_byte *);
 
-static int debug_to_remove_breakpoint (CORE_ADDR, gdb_byte *);
+static int debug_to_remove_breakpoint(CORE_ADDR, gdb_byte *);
 
-static int debug_to_can_use_hw_breakpoint (int, int, int);
+static int debug_to_can_use_hw_breakpoint(int, int, int);
 
-static int debug_to_insert_hw_breakpoint (CORE_ADDR, gdb_byte *);
+static int debug_to_insert_hw_breakpoint(CORE_ADDR, gdb_byte *);
 
-static int debug_to_remove_hw_breakpoint (CORE_ADDR, gdb_byte *);
+static int debug_to_remove_hw_breakpoint(CORE_ADDR, gdb_byte *);
 
-static int debug_to_insert_watchpoint (CORE_ADDR, int, int);
+static int debug_to_insert_watchpoint(CORE_ADDR, int, int);
 
-static int debug_to_remove_watchpoint (CORE_ADDR, int, int);
+static int debug_to_remove_watchpoint(CORE_ADDR, int, int);
 
-static int debug_to_stopped_by_watchpoint (void);
+static int debug_to_stopped_by_watchpoint(void);
 
-static int debug_to_stopped_data_address (struct target_ops *, CORE_ADDR *);
+static int debug_to_stopped_data_address(struct target_ops *, CORE_ADDR *);
 
-static int debug_to_region_size_ok_for_hw_watchpoint (int);
+static int debug_to_region_size_ok_for_hw_watchpoint(int);
 
-static void debug_to_terminal_init (void);
+static void debug_to_terminal_init(void);
 
-static void debug_to_terminal_inferior (void);
+static void debug_to_terminal_inferior(void);
 
-static void debug_to_terminal_ours_for_output (void);
+static void debug_to_terminal_ours_for_output(void);
 
-static void debug_to_terminal_save_ours (void);
+static void debug_to_terminal_save_ours(void);
 
-static void debug_to_terminal_ours (void);
+static void debug_to_terminal_ours(void);
 
-static void debug_to_terminal_info (char *, int);
+static void debug_to_terminal_info(char *, int);
 
-static void debug_to_kill (void);
+static void debug_to_kill(void);
 
-static void debug_to_load (char *, int);
+static void debug_to_load(char *, int);
 
-static int debug_to_lookup_symbol (char *, CORE_ADDR *);
+static int debug_to_lookup_symbol(char *, CORE_ADDR *);
 
-static void debug_to_mourn_inferior (void);
+static void debug_to_mourn_inferior(void);
 
-static int debug_to_can_run (void);
+static int debug_to_can_run(void);
 
-static void debug_to_notice_signals (ptid_t);
+static void debug_to_notice_signals(ptid_t);
 
-static int debug_to_thread_alive (ptid_t);
+static int debug_to_thread_alive(ptid_t);
 
-static char *debug_to_pid_to_str (ptid_t);
+static char *debug_to_pid_to_str(ptid_t);
 
-static void debug_to_stop (void);
+static void debug_to_stop(void);
 
 /* NOTE: cagney/2004-09-29: Many targets reference this variable in
    wierd and mysterious ways.  Putting the variable here lets those
@@ -192,8 +192,7 @@ unsigned target_struct_allocsize;
 
 static struct target_ops dummy_target;
 
-/* Top of target stack.  */
-
+/* Top of target stack: */
 static struct target_ops *target_stack;
 
 /* The target structure we are currently using to talk to a process
@@ -201,8 +200,7 @@ static struct target_ops *target_stack;
 
 struct target_ops current_target;
 
-/* Command list for target.  */
-
+/* Command list for target: */
 static struct cmd_list_element *targetlist = NULL;
 
 /* Nonzero if we are debugging an attached outside process
@@ -214,7 +212,7 @@ int attach_flag;
    executable when reading memory.  */
 
 static int trust_readonly = 0;
-int set_trust_readonly (int newval)
+int set_trust_readonly(int newval)
 {
   int oldval = trust_readonly;
   trust_readonly = newval;
@@ -222,12 +220,12 @@ int set_trust_readonly (int newval)
 }
 
 /* set_trust_readonly() takes an int but the cleanup func must take a void*
-   so we use this trampoline func to avoid sizeof int == sizeof void* 
+   so we use this trampoline func to avoid sizeof int == sizeof void*
    confusions.  */
 void
-set_trust_readonly_cleanup (void *new)
+set_trust_readonly_cleanup(void *newone)
 {
-  set_trust_readonly ((int) new);
+  set_trust_readonly((int)(intptr_t)newone);
 }
 
 /* Non-zero if we want to see trace of target level stuff.  */
@@ -235,13 +233,13 @@ set_trust_readonly_cleanup (void *new)
 static int targetdebug = 0;
 static int debug_target_writes = 0;
 static void
-show_targetdebug (struct ui_file *file, int from_tty,
-		  struct cmd_list_element *c, const char *value)
+show_targetdebug(struct ui_file *file, int from_tty,
+		 struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("Target debugging is %s.\n"), value);
+  fprintf_filtered(file, _("Target debugging is %s.\n"), value);
 }
 
-static void setup_target_debug (void);
+static void setup_target_debug(void);
 
 DCACHE *target_dcache;
 
@@ -252,109 +250,111 @@ int gdb_override_async = 0;
 /* The user just typed 'target' without the name of a target.  */
 
 static void
-target_command (char *arg, int from_tty)
+target_command(char *arg, int from_tty)
 {
-  fputs_filtered ("Argument required (target name).  Try `help target'\n",
-		  gdb_stdout);
+  fputs_filtered("Argument required (target name).  Try `help target'\n",
+                 gdb_stdout);
 }
 
-/* Add a possible target architecture to the list.  */
-
+/* Add a possible target architecture to the list: */
 void
-add_target (struct target_ops *t)
+add_target(struct target_ops *t)
 {
-  /* Provide default values for all "must have" methods.  */
+  /* Provide default values for all "must have" methods: */
   if (t->to_xfer_partial == NULL)
     t->to_xfer_partial = default_xfer_partial;
 
   if (!target_structs)
     {
       target_struct_allocsize = DEFAULT_ALLOCSIZE;
-      target_structs = (struct target_ops **) xmalloc
-	(target_struct_allocsize * sizeof (*target_structs));
+      target_structs = ((struct target_ops **)
+                        xmalloc(target_struct_allocsize
+                                * sizeof(*target_structs)));
     }
   if (target_struct_size >= target_struct_allocsize)
     {
       target_struct_allocsize *= 2;
-      target_structs = (struct target_ops **)
-	xrealloc ((char *) target_structs,
-		  target_struct_allocsize * sizeof (*target_structs));
+      target_structs = ((struct target_ops **)
+                        xrealloc((char *)target_structs,
+                                 (target_struct_allocsize
+                                  * sizeof(*target_structs))));
     }
   target_structs[target_struct_size++] = t;
 
   if (targetlist == NULL)
-    add_prefix_cmd ("target", class_run, target_command, _("\
+    add_prefix_cmd("target", class_run, target_command, _("\
 Connect to a target machine or process.\n\
 The first argument is the type or protocol of the target machine.\n\
 Remaining arguments are interpreted by the target protocol.  For more\n\
 information on the arguments for a particular protocol, type\n\
 `help target ' followed by the protocol name."),
-		    &targetlist, "target ", 0, &cmdlist);
-  add_cmd (t->to_shortname, no_class, t->to_open, t->to_doc, &targetlist);
+                   &targetlist, "target ", 0, &cmdlist);
+  add_cmd(t->to_shortname, no_class, t->to_open, t->to_doc, &targetlist);
 }
 
 /* Stub functions */
 
 void
-target_ignore (void)
+target_ignore(void)
 {
+  return;
 }
 
 void
-target_load (char *arg, int from_tty)
+target_load(char *arg, int from_tty)
 {
-  dcache_invalidate (target_dcache);
-  (*current_target.to_load) (arg, from_tty);
+  dcache_invalidate(target_dcache);
+  (*current_target.to_load)(arg, from_tty);
 }
 
 static int
-nomemory (CORE_ADDR memaddr, char *myaddr, int len, int write,
-	  struct target_ops *t)
+nomemory(CORE_ADDR memaddr, char *myaddr, int len, int write,
+	 struct target_ops *t)
 {
-  errno = EIO;			/* Can't read/write this location */
+  errno = EIO;			/* Cannot read/write this location */
   return 0;			/* No bytes handled */
 }
 
-static void
-tcomplain (void)
+static void ATTR_NORETURN
+tcomplain(void)
 {
-  error (_("You can't do that when your target is `%s'"),
-	 current_target.to_shortname);
+  error(_("You cannot do that when your target is `%s'"),
+        current_target.to_shortname);
 }
 
-void
-noprocess (void)
+void ATTR_NORETURN
+noprocess(void)
 {
-  error (_("You can't do that without a process to debug."));
+  error(_("You cannot do that without a process to debug."));
 }
 
 static int
-nosymbol (char *name, CORE_ADDR *addrp)
+nosymbol(char *name, CORE_ADDR *addrp)
 {
   return 1;			/* Symbol does not exist in target env */
 }
 
-static void
-nosupport_runtime (void)
+static void ATTR_NORETURN
+nosupport_runtime(void)
 {
-  if (ptid_equal (inferior_ptid, null_ptid))
-    noprocess ();
+  if (ptid_equal(inferior_ptid, null_ptid))
+    noprocess();
   else
-    error (_("No run-time support for this"));
+    error(_("No run-time support for this"));
 }
 
 
 static void
-default_terminal_info (char *args, int from_tty)
+default_terminal_info(char *args, int from_tty)
 {
-  printf_unfiltered (_("No saved terminal information.\n"));
+  printf_unfiltered(_("No saved terminal information.\n"));
 }
 
 static int
-default_setup_safe_print (struct cleanup **ret_cleanup)
+default_setup_safe_print(struct cleanup **ret_cleanup)
 {
   struct cleanup *tmp;
-  tmp = make_cleanup (null_cleanup, NULL);
+  tmp = make_cleanup(null_cleanup, NULL);
   if (ret_cleanup != NULL)
     *ret_cleanup = tmp;
   return 1;
@@ -365,25 +365,25 @@ default_setup_safe_print (struct cleanup **ret_cleanup)
    the target, and the operation should be attempted.  */
 
 static void
-kill_or_be_killed (int from_tty)
+kill_or_be_killed(int from_tty)
 {
   if (target_has_execution)
     {
-      printf_unfiltered (_("You are already running a program:\n"));
-      target_files_info ();
-      if (query ("Kill it? "))
+      printf_unfiltered(_("You are already running a program:\n"));
+      target_files_info();
+      if (query("Kill it? "))
 	{
-	  target_kill ();
+	  target_kill();
 	  if (target_has_execution)
-	    error (_("Killing the program did not help."));
+	    error(_("Killing the program did not help."));
 	  return;
 	}
       else
 	{
-	  error (_("Program not killed."));
+	  error(_("Program not killed."));
 	}
     }
-  tcomplain ();
+  tcomplain();
 }
 
 static void
@@ -415,12 +415,12 @@ maybe_kill_then_create_inferior (char *exec, char *args, char **env,
 
 /* APPLE LOCAL make globally visible */
 void
-update_current_target (void)
+update_current_target(void)
 {
   struct target_ops *t;
 
   /* First, reset curren'ts contents.  */
-  memset (&current_target, 0, sizeof (current_target));
+  memset(&current_target, 0, sizeof(current_target));
 
 #define INHERIT(FIELD, TARGET) \
       if (!current_target.FIELD) \
@@ -428,108 +428,108 @@ update_current_target (void)
 
   for (t = target_stack; t; t = t->beneath)
     {
-      INHERIT (to_shortname, t);
-      INHERIT (to_longname, t);
-      INHERIT (to_doc, t);
-      INHERIT (to_open, t);
-      INHERIT (to_close, t);
-      INHERIT (to_attach, t);
-      INHERIT (to_post_attach, t);
-      INHERIT (to_detach, t);
-      INHERIT (to_disconnect, t);
-      INHERIT (to_resume, t);
-      INHERIT (to_wait, t);
-      INHERIT (to_fetch_registers, t);
-      INHERIT (to_store_registers, t);
-      INHERIT (to_prepare_to_store, t);
-      INHERIT (deprecated_xfer_memory, t);
-      INHERIT (to_files_info, t);
-      INHERIT (to_insert_breakpoint, t);
-      INHERIT (to_remove_breakpoint, t);
-      INHERIT (to_can_use_hw_breakpoint, t);
-      INHERIT (to_insert_hw_breakpoint, t);
-      INHERIT (to_remove_hw_breakpoint, t);
-      INHERIT (to_insert_watchpoint, t);
-      INHERIT (to_remove_watchpoint, t);
-      INHERIT (to_stopped_data_address, t);
-      INHERIT (to_stopped_by_watchpoint, t);
-      INHERIT (to_have_continuable_watchpoint, t);
-      INHERIT (to_region_size_ok_for_hw_watchpoint, t);
-      INHERIT (to_terminal_init, t);
-      INHERIT (to_terminal_inferior, t);
-      INHERIT (to_terminal_ours_for_output, t);
-      INHERIT (to_terminal_ours, t);
-      INHERIT (to_terminal_save_ours, t);
-      INHERIT (to_terminal_info, t);
-      INHERIT (to_kill, t);
-      INHERIT (to_load, t);
-      INHERIT (to_lookup_symbol, t);
-      INHERIT (to_create_inferior, t);
-      INHERIT (to_post_startup_inferior, t);
-      INHERIT (to_acknowledge_created_inferior, t);
-      INHERIT (to_insert_fork_catchpoint, t);
-      INHERIT (to_remove_fork_catchpoint, t);
-      INHERIT (to_insert_vfork_catchpoint, t);
-      INHERIT (to_remove_vfork_catchpoint, t);
-      INHERIT (to_follow_fork, t);
-      INHERIT (to_insert_exec_catchpoint, t);
-      INHERIT (to_remove_exec_catchpoint, t);
-      INHERIT (to_reported_exec_events_per_exec_call, t);
-      INHERIT (to_has_exited, t);
-      INHERIT (to_mourn_inferior, t);
-      INHERIT (to_can_run, t);
-      INHERIT (to_notice_signals, t);
-      INHERIT (to_thread_alive, t);
-      INHERIT (to_find_new_threads, t);
-      INHERIT (to_pid_to_str, t);
-      INHERIT (to_extra_thread_info, t);
-      INHERIT (to_stop, t);
+      INHERIT(to_shortname, t);
+      INHERIT(to_longname, t);
+      INHERIT(to_doc, t);
+      INHERIT(to_open, t);
+      INHERIT(to_close, t);
+      INHERIT(to_attach, t);
+      INHERIT(to_post_attach, t);
+      INHERIT(to_detach, t);
+      INHERIT(to_disconnect, t);
+      INHERIT(to_resume, t);
+      INHERIT(to_wait, t);
+      INHERIT(to_fetch_registers, t);
+      INHERIT(to_store_registers, t);
+      INHERIT(to_prepare_to_store, t);
+      INHERIT(deprecated_xfer_memory, t);
+      INHERIT(to_files_info, t);
+      INHERIT(to_insert_breakpoint, t);
+      INHERIT(to_remove_breakpoint, t);
+      INHERIT(to_can_use_hw_breakpoint, t);
+      INHERIT(to_insert_hw_breakpoint, t);
+      INHERIT(to_remove_hw_breakpoint, t);
+      INHERIT(to_insert_watchpoint, t);
+      INHERIT(to_remove_watchpoint, t);
+      INHERIT(to_stopped_data_address, t);
+      INHERIT(to_stopped_by_watchpoint, t);
+      INHERIT(to_have_continuable_watchpoint, t);
+      INHERIT(to_region_size_ok_for_hw_watchpoint, t);
+      INHERIT(to_terminal_init, t);
+      INHERIT(to_terminal_inferior, t);
+      INHERIT(to_terminal_ours_for_output, t);
+      INHERIT(to_terminal_ours, t);
+      INHERIT(to_terminal_save_ours, t);
+      INHERIT(to_terminal_info, t);
+      INHERIT(to_kill, t);
+      INHERIT(to_load, t);
+      INHERIT(to_lookup_symbol, t);
+      INHERIT(to_create_inferior, t);
+      INHERIT(to_post_startup_inferior, t);
+      INHERIT(to_acknowledge_created_inferior, t);
+      INHERIT(to_insert_fork_catchpoint, t);
+      INHERIT(to_remove_fork_catchpoint, t);
+      INHERIT(to_insert_vfork_catchpoint, t);
+      INHERIT(to_remove_vfork_catchpoint, t);
+      INHERIT(to_follow_fork, t);
+      INHERIT(to_insert_exec_catchpoint, t);
+      INHERIT(to_remove_exec_catchpoint, t);
+      INHERIT(to_reported_exec_events_per_exec_call, t);
+      INHERIT(to_has_exited, t);
+      INHERIT(to_mourn_inferior, t);
+      INHERIT(to_can_run, t);
+      INHERIT(to_notice_signals, t);
+      INHERIT(to_thread_alive, t);
+      INHERIT(to_find_new_threads, t);
+      INHERIT(to_pid_to_str, t);
+      INHERIT(to_extra_thread_info, t);
+      INHERIT(to_stop, t);
       /* Do not inherit to_xfer_partial.  */
-      INHERIT (to_rcmd, t);
+      INHERIT(to_rcmd, t);
       /* APPLE LOCAL exception catchpoints */
-      INHERIT (to_find_exception_catchpoints, t);
-      INHERIT (to_enable_exception_callback, t);
-      INHERIT (to_get_current_exception_event, t);
-      INHERIT (to_pid_to_exec_file, t);
-      INHERIT (to_stratum, t);
-      INHERIT (to_has_all_memory, t);
-      INHERIT (to_has_memory, t);
-      INHERIT (to_has_stack, t);
-      INHERIT (to_has_registers, t);
-      INHERIT (to_has_execution, t);
-      INHERIT (to_has_thread_control, t);
-      INHERIT (to_sections, t);
-      INHERIT (to_sections_end, t);
-      INHERIT (to_can_async_p, t);
-      INHERIT (to_is_async_p, t);
-      INHERIT (to_async, t);
+      INHERIT(to_find_exception_catchpoints, t);
+      INHERIT(to_enable_exception_callback, t);
+      INHERIT(to_get_current_exception_event, t);
+      INHERIT(to_pid_to_exec_file, t);
+      INHERIT(to_stratum, t);
+      INHERIT(to_has_all_memory, t);
+      INHERIT(to_has_memory, t);
+      INHERIT(to_has_stack, t);
+      INHERIT(to_has_registers, t);
+      INHERIT(to_has_execution, t);
+      INHERIT(to_has_thread_control, t);
+      INHERIT(to_sections, t);
+      INHERIT(to_sections_end, t);
+      INHERIT(to_can_async_p, t);
+      INHERIT(to_is_async_p, t);
+      INHERIT(to_async, t);
       /* APPLE LOCAL remove to_async_mask_value */
-      INHERIT (to_find_memory_regions, t);
-      INHERIT (to_make_corefile_notes, t);
+      INHERIT(to_find_memory_regions, t);
+      INHERIT(to_make_corefile_notes, t);
       /* APPLE LOCAL to_bind_function */
-      INHERIT (to_bind_function, t);
+      INHERIT(to_bind_function, t);
       /* APPLE LOCAL to_get_thread_name */
-      INHERIT (to_get_thread_name, t);
+      INHERIT(to_get_thread_name, t);
       /* APPLE LOCAL to_get_thread_id_str */
-      INHERIT (to_get_thread_id_str, t);
+      INHERIT(to_get_thread_id_str, t);
       /* APPLE LOCAL safe call check */
-      INHERIT (to_check_safe_call, t);
+      INHERIT(to_check_safe_call, t);
       /* APPLE LOCAL safe_print_setup */
-      INHERIT (to_setup_safe_print, t);
+      INHERIT(to_setup_safe_print, t);
       /* APPLE LOCAL objfile loaded check */
-      INHERIT (to_check_is_objfile_loaded, t);
+      INHERIT(to_check_is_objfile_loaded, t);
       /* APPLE LOCAL: Loading shared libraries */
-      INHERIT (to_load_solib, t);
+      INHERIT(to_load_solib, t);
       /* APPLE LOCAL allocate memory in inferior */
-	INHERIT (to_allocate_memory, t);
+      INHERIT(to_allocate_memory, t);
       /* APPLE LOCAL complex step support.  */
-      INHERIT (to_keep_going, t);
+      INHERIT(to_keep_going, t);
       /* APPLE LOCAL target specific inferior_status support.  */
-      INHERIT (to_save_thread_inferior_status, t);
-      INHERIT (to_restore_thread_inferior_status, t);
-      INHERIT (to_free_thread_inferior_status, t);
-      
-      INHERIT (to_magic, t);
+      INHERIT(to_save_thread_inferior_status, t);
+      INHERIT(to_restore_thread_inferior_status, t);
+      INHERIT(to_free_thread_inferior_status, t);
+
+      INHERIT(to_magic, t);
     }
 #undef INHERIT
 
@@ -541,210 +541,112 @@ update_current_target (void)
   if (!current_target.field)               \
     current_target.field = value
 
-  de_fault (to_open, 
-	    (void (*) (char *, int)) 
-	    tcomplain);
-  de_fault (to_close, 
-	    (void (*) (int)) 
-	    target_ignore);
-  de_fault (to_attach, 
-	    maybe_kill_then_attach);
-  de_fault (to_post_attach, 
-	    (void (*) (int)) 
-	    target_ignore);
-  de_fault (to_detach, 
-	    (void (*) (char *, int)) 
-	    target_ignore);
-  de_fault (to_disconnect, 
-	    (void (*) (char *, int)) 
-	    tcomplain);
-  de_fault (to_resume, 
-	    (void (*) (ptid_t, int, enum target_signal)) 
-	    noprocess);
-  de_fault (to_wait, 
-	    /* APPLE LOCAL gdb client data */
-	    (ptid_t (*) (ptid_t, struct target_waitstatus *, gdb_client_data client_data)) 
-	    noprocess);
-  de_fault (to_fetch_registers, 
-	    (void (*) (int)) 
-	    target_ignore);
-  de_fault (to_store_registers, 
-	    (void (*) (int)) 
-	    noprocess);
-  de_fault (to_prepare_to_store, 
-	    (void (*) (void)) 
-	    noprocess);
-  de_fault (deprecated_xfer_memory, 
-	    (int (*) (CORE_ADDR, gdb_byte *, int, int, struct mem_attrib *, struct target_ops *)) 
-	    nomemory);
-  de_fault (to_files_info, 
-	    (void (*) (struct target_ops *)) 
-	    target_ignore);
-  de_fault (to_insert_breakpoint, 
-	    memory_insert_breakpoint);
-  de_fault (to_remove_breakpoint, 
-	    memory_remove_breakpoint);
-  de_fault (to_can_use_hw_breakpoint,
-	    (int (*) (int, int, int))
-	    return_zero);
-  de_fault (to_insert_hw_breakpoint,
-	    (int (*) (CORE_ADDR, gdb_byte *))
-	    return_minus_one);
-  de_fault (to_remove_hw_breakpoint,
-	    (int (*) (CORE_ADDR, gdb_byte *))
-	    return_minus_one);
-  de_fault (to_insert_watchpoint,
-	    (int (*) (CORE_ADDR, int, int))
-	    return_minus_one);
-  de_fault (to_remove_watchpoint,
-	    (int (*) (CORE_ADDR, int, int))
-	    return_minus_one);
-  de_fault (to_stopped_by_watchpoint,
-	    (int (*) (void))
-	    return_zero);
-  de_fault (to_stopped_data_address,
-	    (int (*) (struct target_ops *, CORE_ADDR *))
-	    return_zero);
-  de_fault (to_region_size_ok_for_hw_watchpoint,
-	    default_region_size_ok_for_hw_watchpoint);
-  de_fault (to_terminal_init, 
-	    (void (*) (void)) 
-	    target_ignore);
-  de_fault (to_terminal_inferior, 
-	    (void (*) (void)) 
-	    target_ignore);
-  de_fault (to_terminal_ours_for_output, 
-	    (void (*) (void)) 
-	    target_ignore);
-  de_fault (to_terminal_ours, 
-	    (void (*) (void)) 
-	    target_ignore);
-  de_fault (to_terminal_save_ours, 
-	    (void (*) (void)) 
-	    target_ignore);
-  de_fault (to_terminal_info, 
-	    default_terminal_info);
-  de_fault (to_kill, 
-	    (void (*) (void)) 
-	    noprocess);
-  de_fault (to_load, 
-	    (void (*) (char *, int)) 
-	    tcomplain);
-  de_fault (to_lookup_symbol, 
-	    (int (*) (char *, CORE_ADDR *)) 
-	    nosymbol);
-  de_fault (to_create_inferior, 
-	    maybe_kill_then_create_inferior);
-  de_fault (to_post_startup_inferior, 
-	    (void (*) (ptid_t)) 
-	    target_ignore);
-  de_fault (to_acknowledge_created_inferior, 
-	    (void (*) (int)) 
-	    target_ignore);
-  de_fault (to_insert_fork_catchpoint, 
-	    (void (*) (int)) 
-	    tcomplain);
-  de_fault (to_remove_fork_catchpoint, 
-	    (int (*) (int)) 
-	    tcomplain);
-  de_fault (to_insert_vfork_catchpoint, 
-	    (void (*) (int)) 
-	    tcomplain);
-  de_fault (to_remove_vfork_catchpoint, 
-	    (int (*) (int)) 
-	    tcomplain);
-  de_fault (to_follow_fork,
-	    (int (*) (int)) 
-	    target_ignore);
-  de_fault (to_insert_exec_catchpoint, 
-	    (void (*) (int)) 
-	    tcomplain);
-  de_fault (to_remove_exec_catchpoint, 
-	    (int (*) (int)) 
-	    tcomplain);
-  de_fault (to_reported_exec_events_per_exec_call, 
-	    (int (*) (void)) 
-	    return_one);
-  de_fault (to_has_exited, 
-	    (int (*) (int, int, int *)) 
-	    return_zero);
-  de_fault (to_mourn_inferior, 
-	    (void (*) (void)) 
-	    noprocess);
-  de_fault (to_can_run, 
-	    return_zero);
-  de_fault (to_notice_signals, 
-	    (void (*) (ptid_t)) 
-	    target_ignore);
-  de_fault (to_thread_alive, 
-	    (int (*) (ptid_t)) 
-	    return_zero);
-  de_fault (to_find_new_threads, 
-	    (void (*) (void)) 
-	    target_ignore);
-  de_fault (to_extra_thread_info, 
-	    (char *(*) (struct thread_info *)) 
-	    return_zero);
-  de_fault (to_stop, 
-	    (void (*) (void)) 
-	    target_ignore);
+  de_fault(to_open, (void (*)(char *, int))tcomplain);
+  de_fault(to_close, (void (*)(int))target_ignore);
+  de_fault(to_attach, maybe_kill_then_attach);
+  de_fault(to_post_attach, (void (*)(int))target_ignore);
+  de_fault(to_detach, (void (*)(char *, int))target_ignore);
+  de_fault(to_disconnect, (void (*)(char *, int))tcomplain);
+  de_fault(to_resume,
+           (void (*)(ptid_t, int, enum target_signal))noprocess);
+  de_fault(to_wait,
+	   /* APPLE LOCAL gdb client data */
+	   (ptid_t (*)(ptid_t, struct target_waitstatus *,
+                       gdb_client_data client_data))noprocess);
+  de_fault(to_fetch_registers, (void (*)(int))target_ignore);
+  de_fault(to_store_registers, (void (*)(int))noprocess);
+  de_fault(to_prepare_to_store, (void (*)(void))noprocess);
+  de_fault(deprecated_xfer_memory,
+	   (int (*)(CORE_ADDR, gdb_byte *, int, int, struct mem_attrib *,
+                    struct target_ops *))nomemory);
+  de_fault(to_files_info,
+	   (void (*)(struct target_ops *))target_ignore);
+  de_fault(to_insert_breakpoint, memory_insert_breakpoint);
+  de_fault(to_remove_breakpoint, memory_remove_breakpoint);
+  de_fault(to_can_use_hw_breakpoint, (int (*)(int, int, int))return_zero);
+  de_fault(to_insert_hw_breakpoint,
+           (int (*)(CORE_ADDR, gdb_byte *))return_minus_one);
+  de_fault(to_remove_hw_breakpoint,
+	   (int (*)(CORE_ADDR, gdb_byte *))return_minus_one);
+  de_fault(to_insert_watchpoint,
+           (int (*)(CORE_ADDR, int, int))return_minus_one);
+  de_fault(to_remove_watchpoint,
+           (int (*)(CORE_ADDR, int, int))return_minus_one);
+  de_fault(to_stopped_by_watchpoint, (int (*)(void))return_zero);
+  de_fault(to_stopped_data_address,
+           (int (*)(struct target_ops *, CORE_ADDR *))return_zero);
+  de_fault(to_region_size_ok_for_hw_watchpoint,
+           default_region_size_ok_for_hw_watchpoint);
+  de_fault(to_terminal_init, (void (*)(void))target_ignore);
+  de_fault(to_terminal_inferior, (void (*)(void))target_ignore);
+  de_fault(to_terminal_ours_for_output, (void (*)(void)) target_ignore);
+  de_fault(to_terminal_ours, (void (*)(void))target_ignore);
+  de_fault(to_terminal_save_ours, (void (*)(void))target_ignore);
+  de_fault(to_terminal_info, default_terminal_info);
+  de_fault(to_kill, (void (*)(void))noprocess);
+  de_fault(to_load, (void (*)(char *, int))tcomplain);
+  de_fault(to_lookup_symbol, (int (*)(char *, CORE_ADDR *))nosymbol);
+  de_fault(to_create_inferior, maybe_kill_then_create_inferior);
+  de_fault(to_post_startup_inferior, (void (*)(ptid_t))target_ignore);
+  de_fault(to_acknowledge_created_inferior, (void (*)(int))target_ignore);
+  de_fault(to_insert_fork_catchpoint, (void (*)(int))tcomplain);
+  de_fault(to_remove_fork_catchpoint, (int (*)(int))tcomplain);
+  de_fault(to_insert_vfork_catchpoint, (void (*)(int))tcomplain);
+  de_fault(to_remove_vfork_catchpoint, (int (*)(int))tcomplain);
+  de_fault(to_follow_fork, (int (*)(int))target_ignore);
+  de_fault(to_insert_exec_catchpoint, (void (*)(int))tcomplain);
+  de_fault(to_remove_exec_catchpoint, (int (*)(int))tcomplain);
+  de_fault(to_reported_exec_events_per_exec_call,
+	   (int (*)(void))return_one);
+  de_fault(to_has_exited, (int (*)(int, int, int *))return_zero);
+  de_fault(to_mourn_inferior, (void (*)(void))noprocess);
+  de_fault(to_can_run, return_zero);
+  de_fault(to_notice_signals, (void (*)(ptid_t))target_ignore);
+  de_fault(to_thread_alive, (int (*)(ptid_t))return_zero);
+  de_fault(to_find_new_threads, (void (*)(void))target_ignore);
+  de_fault(to_extra_thread_info,
+           (char *(*)(struct thread_info *))return_zero);
+  de_fault(to_stop, (void (*)(void))target_ignore);
   current_target.to_xfer_partial = default_xfer_partial;
-  de_fault (to_rcmd, 
-	    (void (*) (char *, struct ui_file *)) 
-	    tcomplain);
-  de_fault (to_enable_exception_callback, 
-	    /* APPLE LOCAL return int */
-	    (int (*) (enum exception_event_kind, int)) 
-	    nosupport_runtime);
+  de_fault(to_rcmd, (void (*)(char *, struct ui_file *))tcomplain);
+  de_fault(to_enable_exception_callback,
+	   /* APPLE LOCAL return int */
+	   (int (*)(enum exception_event_kind, int))
+	   nosupport_runtime);
   /* APPLE LOCAL begin exception catchpoints */
-  de_fault (to_find_exception_catchpoints, 
-	    (struct symtabs_and_lines * (*) (enum exception_event_kind, struct objfile *)) 
-	    nosupport_runtime);
+  de_fault(to_find_exception_catchpoints,
+	   (struct symtabs_and_lines *(*)(enum exception_event_kind, struct objfile *))
+	   nosupport_runtime);
   /* APPLE LOCAL end exception catchpoints */
-  de_fault (to_get_current_exception_event, 
-	    (struct exception_event_record * (*) (void)) 
-	    nosupport_runtime);
-  de_fault (to_pid_to_exec_file, 
-	    (char *(*) (int)) 
-	    return_zero);
-  de_fault (to_can_async_p, 
-	    (int (*) (void)) 
-	    return_zero);
-  de_fault (to_is_async_p, 
-	    (int (*) (void)) 
-	    return_zero);
-  de_fault (to_async, 
-	    (void (*) (void (*) (enum inferior_event_type, void*), void*)) 
-	    target_ignore);
+  de_fault(to_get_current_exception_event,
+	   (struct exception_event_record *(*)(void))nosupport_runtime);
+  de_fault(to_pid_to_exec_file, (char *(*)(int))return_zero);
+  de_fault(to_can_async_p, (int (*)(void))return_zero);
+  de_fault(to_is_async_p, (int (*)(void))return_zero);
+  de_fault(to_async,
+	   (void (*)(void (*)(enum inferior_event_type, void*), void*))
+	   target_ignore);
   /* APPLE LOCAL begin target */
-  de_fault (to_pid_to_str,
-           (char * (*) (ptid_t))
-           normal_pid_to_str);
-  de_fault (to_get_thread_name,
-           (char * (*) (ptid_t))
-           return_zero);
-  de_fault (to_get_thread_id_str,
-           (char * (*) (ptid_t))
-           return_zero);
-  de_fault (to_bind_function,
-           (int (*) (char *)) return_one);
-  de_fault (to_check_safe_call,
-           (int (*) (char *)) return_one);
-  de_fault (to_setup_safe_print,
-           default_setup_safe_print);
+  de_fault(to_pid_to_str, (char *(*)(ptid_t))normal_pid_to_str);
+  de_fault(to_get_thread_name, (char *(*)(ptid_t))return_zero);
+  de_fault(to_get_thread_id_str, (char *(*)(ptid_t))return_zero);
+  de_fault(to_bind_function, (int (*)(char *))return_one);
+  de_fault(to_check_safe_call,
+           (int (*)(int, enum check_which_threads))return_one);
+  de_fault(to_setup_safe_print, default_setup_safe_print);
   /* APPLE LOCAL alloc memory in inferior */
-  de_fault (to_allocate_memory, allocate_space_in_inferior_malloc);
-  de_fault (to_check_is_objfile_loaded,
-           (int (*) (struct objfile *)) return_one);
-  /* APPLE LOCAL: How to load a shared library.  */
-  de_fault (to_load_solib, (struct value * (*) (char *, char *)) return_zero);
-  /* APPLE LOCAL complex step support.  */
-  de_fault (to_keep_going, (int (*) (CORE_ADDR)) return_zero);
-  
+  de_fault(to_allocate_memory, allocate_space_in_inferior_malloc);
+  de_fault(to_check_is_objfile_loaded,
+           (int (*)(struct objfile *))return_one);
+  /* APPLE LOCAL: How to load a shared library: */
+  de_fault(to_load_solib, (struct value *(*)(char *, char *))return_zero);
+  /* APPLE LOCAL complex step support: */
+  de_fault(to_keep_going, (int (*)(CORE_ADDR))return_zero);
+
   /* APPLE LOCAL target specific inferior_status support.  */
-  de_fault (to_save_thread_inferior_status, (void *(*)()) return_zero);
-  de_fault (to_restore_thread_inferior_status, (void (*)(void *)) target_ignore);
-  de_fault (to_free_thread_inferior_status, (void (*)(void *)) target_ignore);
+  de_fault(to_save_thread_inferior_status, (void *(*)(void))return_zero);
+  de_fault(to_restore_thread_inferior_status, (void (*)(void *))target_ignore);
+  de_fault(to_free_thread_inferior_status, (void (*)(void *))target_ignore);
 
   /* APPLE LOCAL end target */
 #undef de_fault
@@ -755,21 +657,21 @@ update_current_target (void)
   current_target.beneath = target_stack;
 
   /* APPLE LOCAL: Some data values seem to have crept into the target
-     structure.  But the inherit method doesn't work for data values, 
-     since there is no way to say a target layer doesn't provide the 
-     value.  So we will pull them off the top target...  
+     structure.  But the inherit method doesn't work for data values,
+     since there is no way to say a target layer doesn't provide the
+     value.  So we will pull them off the top target...
      FIXME: So far I have only done it for async_mask_value (the only
      one I care about at present.  Go back & check all the others as well.  */
 
   current_target.to_async_mask_value = target_stack->to_async_mask_value;
 
-  /* APPLE LOCAL:  Call setup_target_debug () here.  FSF does it over
+  /* APPLE LOCAL:  Call setup_target_debug() here.  FSF does it over
      in push_target, but we have other ways to get to this function
      (e.g. from dyld_shlibs_updated()) so we need to set it here or
      the debug setting can be dropped.  */
 
   if (targetdebug)
-    setup_target_debug ();
+    setup_target_debug();
 }
 
 /* Push a new target type into the stack of the existing target accessors,
@@ -821,9 +723,9 @@ push_target (struct target_ops *t)
   t->beneath = (*cur);
   (*cur) = t;
 
-  update_current_target ();
+  update_current_target();
 
-  /* APPLE LOCAL: Don't call setup_target_debug() here -- do it in 
+  /* APPLE LOCAL: Don't call setup_target_debug() here -- do it in
      update_current_target().  It's important that setup_target_debug()
      not be called twice or gdb will infiloop in debug target mode.  */
 
@@ -835,7 +737,7 @@ push_target (struct target_ops *t)
    Return how many times it was removed (0 or 1).  */
 
 int
-unpush_target (struct target_ops *t)
+unpush_target(struct target_ops *t)
 {
   struct target_ops **cur;
   struct target_ops *tmp;
@@ -893,7 +795,7 @@ pop_target (void)
    read.  */
 
 int
-target_read_string (CORE_ADDR memaddr, char **string, int len, int *errnop)
+target_read_string(CORE_ADDR memaddr, char **string, int len, int *errnop)
 {
   int tlen, origlen, offset, i;
   gdb_byte buf[4];
@@ -901,21 +803,25 @@ target_read_string (CORE_ADDR memaddr, char **string, int len, int *errnop)
   char *buffer;
   int buffer_allocated;
   char *bufptr;
-  unsigned int nbytes_read = 0;
+  unsigned int nbytes_read = 0U;
 
-  /* Small for testing.  */
+  /* Small for testing: */
   buffer_allocated = 4;
-  buffer = xmalloc (buffer_allocated);
+  buffer = (char *)xmalloc(buffer_allocated);
   bufptr = buffer;
 
   origlen = len;
 
+  if (!(origlen > 0)) {
+    ; /* ??? */
+  }
+
   while (len > 0)
     {
-      tlen = MIN (len, 4 - (memaddr & 3));
-      offset = memaddr & 3;
+      tlen = MIN((size_t)len, (4UL - (memaddr & 3UL)));
+      offset = (memaddr & 3U);
 
-      errcode = target_read_memory (memaddr & ~3, buf, sizeof buf);
+      errcode = target_read_memory((memaddr & ~3), buf, sizeof(buf));
       if (errcode != 0)
 	{
 	  /* The transfer request might have crossed the boundary to an
@@ -923,18 +829,18 @@ target_read_string (CORE_ADDR memaddr, char **string, int len, int *errnop)
 	     a single byte.  */
 	  tlen = 1;
 	  offset = 0;
-	  errcode = target_read_memory (memaddr, buf, 1);
+	  errcode = target_read_memory(memaddr, buf, 1);
 	  if (errcode != 0)
 	    goto done;
 	}
 
-      if (bufptr - buffer + tlen > buffer_allocated)
+      if ((bufptr - buffer + tlen) > buffer_allocated)
 	{
 	  unsigned int bytes;
-	  bytes = bufptr - buffer;
+	  bytes = (bufptr - buffer);
 	  buffer_allocated *= 2;
-	  buffer = xrealloc (buffer, buffer_allocated);
-	  bufptr = buffer + bytes;
+	  buffer = (char *)xrealloc(buffer, buffer_allocated);
+	  bufptr = (buffer + bytes);
 	}
 
       for (i = 0; i < tlen; i++)
@@ -942,7 +848,7 @@ target_read_string (CORE_ADDR memaddr, char **string, int len, int *errnop)
 	  *bufptr++ = buf[i + offset];
 	  if (buf[i + offset] == '\000')
 	    {
-	      nbytes_read += i + 1;
+	      nbytes_read += (i + 1);
 	      goto done;
 	    }
 	}
@@ -978,19 +884,19 @@ target_section_by_addr (struct target_ops *target, CORE_ADDR addr)
    value are just as for target_xfer_partial.  */
 
 static LONGEST
-memory_xfer_partial (struct target_ops *ops, void *readbuf, 
-                     const void *writebuf, ULONGEST memaddr, LONGEST len)
+memory_xfer_partial(struct target_ops *ops, void *readbuf,
+                    const void *writebuf, ULONGEST memaddr, LONGEST len)
 {
   LONGEST res;
-  int reg_len;
+  size_t reg_len;
   struct mem_region *region;
 
-  /* Zero length requests are ok and require no work.  */
-  if (len == 0)
+  /* Zero length requests are ok and require no work: */
+  if (len == 0L)
     return 0;
 
-  /* Try the executable file, if "trust-readonly-sections" is set.  */
-  if (readbuf != NULL && trust_readonly)
+  /* Try the executable file, if "trust-readonly-sections" is set: */
+  if ((readbuf != NULL) && trust_readonly)
     {
       struct obj_section *osect;
       LONGEST retval;
@@ -1003,23 +909,25 @@ memory_xfer_partial (struct target_ops *ops, void *readbuf,
 	 value and if we couldn't read anything, I let the generic
 	 code have a try.  */
 
-      osect = find_pc_sect_in_ordered_sections (memaddr, NULL);
-      if (osect != NULL
-	  && (bfd_get_section_flags (osect->the_bfd_section->owner, osect->the_bfd_section)
+      osect = find_pc_sect_in_ordered_sections(memaddr, NULL);
+      if ((osect != NULL)
+	  && (bfd_get_section_flags(osect->the_bfd_section->owner,
+                                    osect->the_bfd_section)
 	      & SEC_READONLY))
 	{
-	  retval = xfer_memory (memaddr, readbuf, len, 0, NULL, ops);
+	  retval = xfer_memory(memaddr, (gdb_byte *)readbuf, (int)len, 0,
+                               (struct mem_attrib *)NULL, ops);
 	  if (retval > 0)
 	    return retval;
 	}
     }
 
-  /* Try GDB's internal data cache.  */
-  region = lookup_mem_region (memaddr);
-  if (memaddr + len < region->hi)
-    reg_len = len;
+  /* Try GDB's internal data cache: */
+  region = lookup_mem_region(memaddr);
+  if ((memaddr + len) < region->hi)
+    reg_len = (size_t)len;
   else
-    reg_len = region->hi - memaddr;
+    reg_len = (size_t)(region->hi - memaddr);
 
   switch (region->attrib.mode)
     {
@@ -1033,27 +941,30 @@ memory_xfer_partial (struct target_ops *ops, void *readbuf,
 	return -1;
       break;
 
-      /* APPLE LOCAL: Don't touch memory regions.  */
+      /* APPLE LOCAL: Do NOT touch memory regions.  */
     case MEM_NONE:
       return -1;
       break;
+
+    case MEM_RW: /* fall through to: */
+    default:
+      break;
     }
 
-  /* APPLE LOCAL: We use -1 to mean "caching temporarily disabled.  */
-  if (region->attrib.cache == 1 && !only_read_from_live_memory)
+  /* APPLE LOCAL: We use -1 to mean "caching temporarily disabled: */
+  if ((region->attrib.cache == 1) && !only_read_from_live_memory)
     {
       /* FIXME drow/2006-08-09: This call discards OPS, so the raw
 	 memory request will start back at current_target.  */
       if (readbuf != NULL)
-	res = dcache_xfer_memory (target_dcache, memaddr, readbuf,
-				  reg_len, 0);
+	res = dcache_xfer_memory(target_dcache, memaddr,
+                                 (gdb_byte *)readbuf, reg_len, 0);
       else
-	/* FIXME drow/2006-08-09: If we're going to preserve const
+	/* FIXME drow/2006-08-09: If we are going to preserve const
 	   correctness dcache_xfer_memory should take readbuf and
 	   writebuf.  */
-	res = dcache_xfer_memory (target_dcache, memaddr,
-				  (void *) writebuf,
-				  reg_len, 1);
+	res = dcache_xfer_memory(target_dcache, memaddr,
+				 (gdb_byte *)writebuf, reg_len, 1);
       if (res <= 0)
 	return -1;
       else
@@ -1070,16 +981,15 @@ memory_xfer_partial (struct target_ops *ops, void *readbuf,
      delegate other bits to the target below it.  So, we must
      manually try all targets.  */
 
-  do
-    {
-      res = ops->to_xfer_partial (ops, TARGET_OBJECT_MEMORY, NULL,
-				  readbuf, writebuf, memaddr, len);
-      if (res > 0)
-	return res;
+  do {
+    res = ops->to_xfer_partial(ops, TARGET_OBJECT_MEMORY,
+                               (const char *)NULL, (gdb_byte *)readbuf,
+                               (const gdb_byte *)writebuf, memaddr, len);
+    if (res > 0)
+      return res;
 
-      ops = ops->beneath;
-    }
-  while (ops != NULL);
+    ops = ops->beneath;
+  } while (ops != NULL);
 
   /* If we still haven't got anything, return the last error.  We
      give up.  */
@@ -1087,20 +997,20 @@ memory_xfer_partial (struct target_ops *ops, void *readbuf,
 }
 
 static LONGEST
-target_xfer_partial (struct target_ops *ops,
-		     enum target_object object, const char *annex,
-		     void *readbuf, const void *writebuf,
-		     ULONGEST offset, LONGEST len)
+target_xfer_partial(struct target_ops *ops,
+		    enum target_object object, const char *annex,
+		    void *readbuf, const void *writebuf,
+		    ULONGEST offset, LONGEST len)
 {
   LONGEST retval;
 
-  gdb_assert (ops->to_xfer_partial != NULL);
+  gdb_assert(ops->to_xfer_partial != NULL);
 
   /* If this is a memory transfer, let the memory-specific code
      have a look at it instead.  Memory transfers are more
      complicated.  */
   if (object == TARGET_OBJECT_MEMORY)
-    retval = memory_xfer_partial (ops, readbuf, writebuf, offset, len);
+    retval = memory_xfer_partial(ops, readbuf, writebuf, offset, len);
   else
     {
       enum target_object raw_object = object;
@@ -1110,63 +1020,67 @@ target_xfer_partial (struct target_ops *ops,
       if (raw_object == TARGET_OBJECT_RAW_MEMORY)
 	raw_object = TARGET_OBJECT_MEMORY;
 
-      retval = ops->to_xfer_partial (ops, raw_object, annex, readbuf,
-				     writebuf, offset, len);
+      retval = ops->to_xfer_partial(ops, raw_object, annex,
+                                    (gdb_byte *)readbuf,
+                                    (const gdb_byte *)writebuf, offset,
+                                    len);
     }
 
   if (debug_target_writes && writebuf)
     {
-      fprintf_filtered (gdb_stdlog, "%s:target_xfer_partial write to addr 0x%s %d bytes: ",
-                        ops->to_shortname, paddr_nz (offset), (int) len);
-      int count = 0;
-      while (count < len && count < 32)
-         fprintf_unfiltered (gdb_stdlog, "%02x", ((uint8_t *) writebuf)[count++] & 0xff);
-      if (count == 32 && len != 32)
-        fprintf_unfiltered (gdb_stdlog, "...");
-      fprintf_unfiltered (gdb_stdlog, "\n");
+      int count;
+      fprintf_filtered(gdb_stdlog, "%s:target_xfer_partial write to addr 0x%s %d bytes: ",
+                       ops->to_shortname, paddr_nz(offset), (int)len);
+      count = 0;
+      while ((count < len) && (count < 32))
+         fprintf_unfiltered(gdb_stdlog, "%02x",
+                            (((uint8_t *)writebuf)[count++] & 0xff));
+      if ((count == 32) && (len != 32))
+        fprintf_unfiltered(gdb_stdlog, "...");
+      fprintf_unfiltered(gdb_stdlog, "\n");
     }
 
   if (targetdebug)
     {
       const unsigned char *myaddr = NULL;
 
-      fprintf_unfiltered (gdb_stdlog,
-			  "%s:target_xfer_partial (%d, %s, 0x%lx,  0x%lx,  0x%s, %s) = %s",
-			  ops->to_shortname,
-			  (int) object,
-			  (annex ? annex : "(null)"),
-			  (long) readbuf, (long) writebuf,
-			  paddr_nz (offset), paddr_d (len), paddr_d (retval));
+      fprintf_unfiltered(gdb_stdlog,
+			 "%s:target_xfer_partial (%d, %s, 0x%lx,  0x%lx,  0x%s, %s) = %s",
+			 ops->to_shortname,
+			 (int)object,
+			 (annex ? annex : "(null)"),
+			 (long)readbuf, (long)writebuf,
+			 paddr_nz(offset), paddr_d(len), paddr_d(retval));
 
       if (readbuf)
-	myaddr = readbuf;
+	myaddr = (const unsigned char *)readbuf;
       if (writebuf)
-	myaddr = writebuf;
-      if (retval > 0 && myaddr != NULL)
+	myaddr = (const unsigned char *)writebuf;
+      if ((retval > 0) && (myaddr != NULL))
 	{
 	  int i;
 
-	  fputs_unfiltered (", bytes =", gdb_stdlog);
+	  fputs_unfiltered(", bytes =", gdb_stdlog);
 	  for (i = 0; i < retval; i++)
 	    {
-	      if ((((long) &(myaddr[i])) & 0xf) == 0)
+	      if ((((long)&(myaddr[i])) & 0xf) == 0)
 		{
-		  if (targetdebug < 2 && i > 0)
+		  if ((targetdebug < 2) && (i > 0))
 		    {
-		      fprintf_unfiltered (gdb_stdlog, " ...");
+		      fprintf_unfiltered(gdb_stdlog, " ...");
 		      break;
 		    }
                   /* Only introduce line breaks if we're printing a large
                      buffer.  For 8 bytes or less, put it on the same line.  */
                   if (retval > 8)
-		    fprintf_unfiltered (gdb_stdlog, "\n");
+		    fprintf_unfiltered(gdb_stdlog, "\n");
 		}
 
-	      fprintf_unfiltered (gdb_stdlog, " %02x", myaddr[i] & 0xff);
+	      fprintf_unfiltered(gdb_stdlog, " %02x", (myaddr[i] & 0xff));
 	    }
 	}
 
-      fputc_unfiltered ('\n', gdb_stdlog);
+      fputc_unfiltered('\n', gdb_stdlog);
     }
   return retval;
 }
@@ -1183,10 +1097,10 @@ target_xfer_partial (struct target_ops *ops,
    it makes no progress, and then return how much was transferred). */
 
 int
-target_read_memory (CORE_ADDR memaddr, gdb_byte *myaddr, int len)
+target_read_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len)
 {
-  if (target_read (&current_target, TARGET_OBJECT_MEMORY, NULL,
-		   myaddr, memaddr, len) == len)
+  if (target_read(&current_target, TARGET_OBJECT_MEMORY, NULL,
+		  myaddr, memaddr, len) == len)
     return 0;
   else
     return EIO;
@@ -1207,30 +1121,30 @@ int
 target_stopped_data_address_p (struct target_ops *target)
 {
   if (target->to_stopped_data_address
-      == (int (*) (struct target_ops *, CORE_ADDR *)) return_zero)
+      == (int (*)(struct target_ops *, CORE_ADDR *))return_zero)
     return 0;
-  if (target->to_stopped_data_address == debug_to_stopped_data_address
+  if ((target->to_stopped_data_address == debug_to_stopped_data_address)
       && (debug_target.to_stopped_data_address
-	  == (int (*) (struct target_ops *, CORE_ADDR *)) return_zero))
+	  == (int (*)(struct target_ops *, CORE_ADDR *))return_zero))
     return 0;
   return 1;
 }
-#endif
+#endif /* !target_stopped_data_address_p */
 
 static void
-show_trust_readonly (struct ui_file *file, int from_tty,
-		     struct cmd_list_element *c, const char *value)
+show_trust_readonly(struct ui_file *file, int from_tty,
+		    struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("\
+  fprintf_filtered(file, _("\
 Mode for reading from readonly sections is %s.\n"),
-		    value);
+                   value);
 }
 
 /* More generic transfers.  */
 
 static LONGEST
 default_xfer_partial (struct target_ops *ops, enum target_object object,
-		      const char *annex, gdb_byte *readbuf, 
+		      const char *annex, gdb_byte *readbuf,
 		      const gdb_byte *writebuf, ULONGEST offset, LONGEST len)
 {
   if (object == TARGET_OBJECT_MEMORY
@@ -1242,19 +1156,20 @@ default_xfer_partial (struct target_ops *ops, enum target_object object,
       errno = 0;
       if (writebuf != NULL)
 	{
-	  void *buffer = xmalloc (len);
-	  struct cleanup *cleanup = make_cleanup (xfree, buffer);
-	  memcpy (buffer, writebuf, len);
-	  xfered = ops->deprecated_xfer_memory (offset, buffer, len,
-						1/*write*/, NULL, ops);
-	  do_cleanups (cleanup);
+	  void *buffer = xmalloc((size_t)len);
+	  struct cleanup *cleanup = make_cleanup(xfree, buffer);
+	  memcpy(buffer, writebuf, len);
+	  xfered = ops->deprecated_xfer_memory(offset, (gdb_byte *)buffer,
+                                               (int)len, 1/*write*/, NULL,
+                                               ops);
+	  do_cleanups(cleanup);
 	}
       if (readbuf != NULL)
-	xfered = ops->deprecated_xfer_memory (offset, readbuf, len, 0/*read*/,
-					      NULL, ops);
+	xfered = ops->deprecated_xfer_memory(offset, readbuf, (int)len,
+                                             0/*read*/, NULL, ops);
       if (xfered > 0)
 	return xfered;
-      else if (xfered == 0 && errno == 0)
+      else if ((xfered == 0) && (errno == 0))
 	/* "deprecated_xfer_memory" uses 0, cross checked against
            ERRNO as one indication of an error.  */
 	return 0;
@@ -1378,46 +1293,46 @@ target_write_with_progress (struct target_ops *ops,
 /* Memory transfer methods.  */
 
 void
-get_target_memory (struct target_ops *ops, CORE_ADDR addr, gdb_byte *buf,
-		   LONGEST len)
+get_target_memory(struct target_ops *ops, CORE_ADDR addr, gdb_byte *buf,
+		  LONGEST len)
 {
-  if (target_read (ops, TARGET_OBJECT_MEMORY, NULL, buf, addr, len)
+  if (target_read(ops, TARGET_OBJECT_MEMORY, NULL, buf, addr, len)
       != len)
-    memory_error (EIO, addr);
+    memory_error(EIO, addr);
 }
 
 ULONGEST
-get_target_memory_unsigned (struct target_ops *ops,
-			    CORE_ADDR addr, int len)
+get_target_memory_unsigned(struct target_ops *ops,
+			   CORE_ADDR addr, int len)
 {
-  char buf[sizeof (ULONGEST)];
+  char buf[sizeof(ULONGEST)];
 
-  gdb_assert (len <= sizeof (buf));
-  get_target_memory (ops, addr, buf, len);
-  return extract_unsigned_integer (buf, len);
+  gdb_assert((size_t)len <= sizeof(buf));
+  get_target_memory(ops, addr, (gdb_byte *)buf, len);
+  return extract_unsigned_integer((const gdb_byte *)buf, len);
 }
 
 static void
-target_info (char *args, int from_tty)
+target_info(char *args, int from_tty)
 {
   struct target_ops *t;
   int has_all_mem = 0;
 
   if (symfile_objfile != NULL)
-    printf_unfiltered (_("Symbols from \"%s\".\n"), symfile_objfile->name);
+    printf_unfiltered(_("Symbols from \"%s\".\n"), symfile_objfile->name);
 
   /* APPLE LOCAL hooks */
 #ifdef FILES_INFO_HOOK
-  if (FILES_INFO_HOOK ())
+  if (FILES_INFO_HOOK())
     return;
-#endif
+#endif /* FILES_INFO_HOOK */
 
   for (t = target_stack; t != NULL; t = t->beneath)
     {
       if (!t->to_has_memory)
 	continue;
 
-      if ((int) (t->to_stratum) <= (int) dummy_stratum)
+      if ((int)(t->to_stratum) <= (int)dummy_stratum)
 	continue;
       if (has_all_mem)
 	printf_unfiltered (_("\tWhile running this, GDB does not access memory from...\n"));
@@ -1465,7 +1380,7 @@ target_kill (void)
 void
 target_detach (char *args, int from_tty)
 {
-  /* Make sure to turn off debugger mode - 
+  /* Make sure to turn off debugger mode -
      we will let the target run a bit before killing it.  */
   do_hand_call_cleanups (ALL_CLEANUPS);
   (current_target.to_detach) (args, from_tty);
@@ -1487,18 +1402,18 @@ target_async_mask (int mask)
 
 /* APPLE LOCAL begin async */
 void
-gdb_set_async_override (void *on)
+gdb_set_async_override(void *on)
 {
-  gdb_override_async = (int) on;
+  gdb_override_async = (int)(intptr_t)on;
 }
 
 /* do_restore_target_async_mask is a convenience function to use
    in make_cleanup to restore the state of the async mask. */
- 
+
 void
-do_restore_target_async_mask (int mask)
+do_restore_target_async_mask(int mask)
 {
-  target_async_mask (mask);
+  target_async_mask(mask);
 }
 /* APPLE LOCAL end async */
 
@@ -1728,35 +1643,35 @@ find_target_beneath (struct target_ops *t)
 }
 
 
+
+extern int show_breakpoint_hit_counts;
+
 /* The inferior process has died.  Long live the inferior!  */
-
 void
-generic_mourn_inferior (void)
+generic_mourn_inferior(void)
 {
-  extern int show_breakpoint_hit_counts;
-
   inferior_ptid = null_ptid;
   attach_flag = 0;
-  breakpoint_init_inferior (inf_exited);
-  registers_changed ();
+  breakpoint_init_inferior(inf_exited);
+  registers_changed();
 
-  value_clear_inferior_string_pool ();
-  checkpoint_clear_inferior ();
+  value_clear_inferior_string_pool();
+  checkpoint_clear_inferior();
 
-  reopen_exec_file ();
-  reinit_frame_cache ();
+  reopen_exec_file();
+  reinit_frame_cache();
 
   /* It is confusing to the user for ignore counts to stick around
      from previous runs of the inferior.  So clear them.  */
   /* However, it is more confusing for the ignore counts to disappear when
      using hit counts.  So don't clear them if we're counting hits.  */
   if (!show_breakpoint_hit_counts)
-    breakpoint_clear_ignore_counts ();
+    breakpoint_clear_ignore_counts();
 
-  reinitialize_objc ();
+  reinitialize_objc();
 
   if (deprecated_detach_hook)
-    deprecated_detach_hook ();
+    deprecated_detach_hook();
 }
 
 /* Helper function for child_wait and the Lynx derivatives of child_wait.
@@ -1768,19 +1683,19 @@ store_waitstatus (struct target_waitstatus *ourstatus, int hoststatus)
 #ifdef CHILD_SPECIAL_WAITSTATUS
   /* CHILD_SPECIAL_WAITSTATUS should return nonzero and set *OURSTATUS
      if it wants to deal with hoststatus.  */
-  if (CHILD_SPECIAL_WAITSTATUS (ourstatus, hoststatus))
+  if (CHILD_SPECIAL_WAITSTATUS(ourstatus, hoststatus))
     return;
-#endif
+#endif /* CHILD_SPECIAL_WAITSTATUS */
 
   if (WIFEXITED (hoststatus))
     {
       ourstatus->kind = TARGET_WAITKIND_EXITED;
-      ourstatus->value.integer = WEXITSTATUS (hoststatus);
+      ourstatus->value.integer = WEXITSTATUS(hoststatus);
     }
-  else if (!WIFSTOPPED (hoststatus))
+  else if (!WIFSTOPPED(hoststatus))
     {
       ourstatus->kind = TARGET_WAITKIND_SIGNALLED;
-      ourstatus->value.sig = target_signal_from_host (WTERMSIG (hoststatus));
+      ourstatus->value.sig = target_signal_from_host(WTERMSIG(hoststatus));
     }
   else
     {
@@ -1806,79 +1721,84 @@ normal_pid_to_str (ptid_t ptid)
 }
 
 
-static struct disassemble_info gdb_disassemble_info_noprint 
+static struct disassemble_info gdb_disassemble_info_noprint
                               (struct gdbarch *gdbarch, struct ui_file *file);
-int length_of_this_instruction (CORE_ADDR memaddr);
+int length_of_this_instruction(CORE_ADDR memaddr);
 
 /* Like target_read_memory, but slightly different parameters.  */
 static int
-dis_asm_read_memory_noprint (bfd_vma memaddr, gdb_byte *myaddr, 
-                             unsigned int len, struct disassemble_info *info)
+dis_asm_read_memory_noprint(bfd_vma memaddr, gdb_byte *myaddr,
+                            unsigned int len, struct disassemble_info *info)
 {
-  return target_read_memory (memaddr, myaddr, len);
+  return target_read_memory(memaddr, myaddr, len);
 }
 
 /* Like memory_error with slightly different parameters.  */
 static void
-dis_asm_memory_error_noprint (int status, bfd_vma memaddr,
-                              struct disassemble_info *info)
+dis_asm_memory_error_noprint(int status, bfd_vma memaddr,
+                             struct disassemble_info *info)
 {
-  memory_error (status, memaddr);
+  memory_error(status, memaddr);
 }
 
 /* Like print_address with slightly different parameters.  */
 static void
-dis_asm_print_address_noprint (bfd_vma addr, struct disassemble_info *info)
+dis_asm_print_address_noprint(bfd_vma addr, struct disassemble_info *info)
 {
+  return;
 }
 
-static int ATTR_FORMAT (printf, 2, 3)
-fprintf_disasm_noprint (void *stream, const char *format, ...)
+static int ATTR_FORMAT(printf, 2, 3)
+fprintf_disasm_noprint(void *stream, const char *format, ...)
 {
   va_list args;
-  va_start (args, format);
-  va_end (args);
+  va_start(args, format);
+  va_end(args);
   return 0;
 }
 
 static struct disassemble_info
-gdb_disassemble_info_noprint (struct gdbarch *gdbarch, struct ui_file *file)
+gdb_disassemble_info_noprint(struct gdbarch *gdbarch, struct ui_file *file)
 {
   struct disassemble_info di;
-  init_disassemble_info (&di, file, fprintf_disasm_noprint);
+  init_disassemble_info(&di, file, fprintf_disasm_noprint);
   di.flavour = bfd_target_unknown_flavour;
   di.memory_error_func = dis_asm_memory_error_noprint;
   di.print_address_func = dis_asm_print_address_noprint;
   di.read_memory_func = dis_asm_read_memory_noprint;
-  di.arch = gdbarch_bfd_arch_info (gdbarch)->arch;
-  di.mach = gdbarch_bfd_arch_info (gdbarch)->mach;
-  di.endian = gdbarch_byte_order (gdbarch);
-  disassemble_init_for_target (&di);
+  di.arch = gdbarch_bfd_arch_info(gdbarch)->arch;
+  di.mach = gdbarch_bfd_arch_info(gdbarch)->mach;
+  di.endian = (enum bfd_endian)gdbarch_byte_order(gdbarch);
+  disassemble_init_for_target(&di);
   return di;
 }
 
-int 
-length_of_this_instruction (CORE_ADDR memaddr)
+int
+length_of_this_instruction(CORE_ADDR memaddr)
 {
   static struct ui_stream *stb = NULL;
+  struct disassemble_info di;
   if (stb == NULL)
-    stb = ui_out_stream_new (uiout); 
-  struct disassemble_info di = gdb_disassemble_info_noprint (current_gdbarch, 
-                                                            stb->stream);
-  return TARGET_PRINT_INSN (memaddr, &di);
+    stb = ui_out_stream_new(uiout);
+   di = gdb_disassemble_info_noprint(current_gdbarch, stb->stream);
+  return TARGET_PRINT_INSN(memaddr, &di);
 }
 
-/* Error-catcher for target_find_memory_regions */
-static int dummy_find_memory_regions (int (*ignore1) (), void *ignore2)
+/* Error-catcher for target_find_memory_regions: */
+static int dummy_find_memory_regions(int (*ignore1)(CORE_ADDR unused01,
+                                                    unsigned long uu02,
+                                                    int uu03, int uu04,
+                                                    int uu05, void *uu06),
+                                     void *ignore2)
 {
-  error (_("No target."));
+  error(_("No target."));
   return 0;
 }
 
 /* Error-catcher for target_make_corefile_notes */
-static char * dummy_make_corefile_notes (bfd *ignore1, int *ignore2)
+static char *dummy_make_corefile_notes(bfd *ignore1, int *ignore2)
 {
-  error (_("No target."));
+  error(_("No target."));
   return NULL;
 }
 
@@ -1886,7 +1806,7 @@ static char * dummy_make_corefile_notes (bfd *ignore1, int *ignore2)
    vector.  */
 
 static void
-init_dummy_target (void)
+init_dummy_target(void)
 {
   dummy_target.to_shortname = "None";
   dummy_target.to_longname = "None";
@@ -1902,86 +1822,86 @@ init_dummy_target (void)
 }
 
 static void
-debug_to_open (char *args, int from_tty)
+debug_to_open(char *args, int from_tty)
 {
-  debug_target.to_open (args, from_tty);
+  debug_target.to_open(args, from_tty);
 
-  fprintf_unfiltered (gdb_stdlog, "target_open (%s, %d)\n", args, from_tty);
+  fprintf_unfiltered(gdb_stdlog, "target_open (%s, %d)\n", args, from_tty);
 }
 
 static void
-debug_to_close (int quitting)
+debug_to_close(int quitting)
 {
-  target_close (&debug_target, quitting);
-  fprintf_unfiltered (gdb_stdlog, "target_close (%d)\n", quitting);
+  target_close(&debug_target, quitting);
+  fprintf_unfiltered(gdb_stdlog, "target_close (%d)\n", quitting);
 }
 
 void
-target_close (struct target_ops *targ, int quitting)
+target_close(struct target_ops *targ, int quitting)
 {
   if (targ->to_xclose != NULL)
-    targ->to_xclose (targ, quitting);
+    targ->to_xclose(targ, quitting);
   else if (targ->to_close != NULL)
-    targ->to_close (quitting);
+    targ->to_close(quitting);
 }
 
 static void
-debug_to_attach (char *args, int from_tty)
+debug_to_attach(char *args, int from_tty)
 {
-  debug_target.to_attach (args, from_tty);
+  debug_target.to_attach(args, from_tty);
 
-  fprintf_unfiltered (gdb_stdlog, "target_attach (%s, %d)\n", args, from_tty);
+  fprintf_unfiltered(gdb_stdlog, "target_attach (%s, %d)\n", args, from_tty);
 }
 
 
 static void
-debug_to_post_attach (int pid)
+debug_to_post_attach(int pid)
 {
-  debug_target.to_post_attach (pid);
+  debug_target.to_post_attach(pid);
 
-  fprintf_unfiltered (gdb_stdlog, "target_post_attach (%d)\n", pid);
+  fprintf_unfiltered(gdb_stdlog, "target_post_attach (%d)\n", pid);
 }
 
 static void
-debug_to_detach (char *args, int from_tty)
+debug_to_detach(char *args, int from_tty)
 {
-  debug_target.to_detach (args, from_tty);
+  debug_target.to_detach(args, from_tty);
 
-  fprintf_unfiltered (gdb_stdlog, "target_detach (%s, %d)\n", args, from_tty);
+  fprintf_unfiltered(gdb_stdlog, "target_detach (%s, %d)\n", args, from_tty);
 }
 
 static void
-debug_to_disconnect (char *args, int from_tty)
+debug_to_disconnect(char *args, int from_tty)
 {
-  debug_target.to_disconnect (args, from_tty);
+  debug_target.to_disconnect(args, from_tty);
 
-  fprintf_unfiltered (gdb_stdlog, "target_disconnect (%s, %d)\n",
-		      args, from_tty);
+  fprintf_unfiltered(gdb_stdlog, "target_disconnect (%s, %d)\n",
+		     args, from_tty);
 }
 
 static void
-debug_to_resume (ptid_t ptid, int step, enum target_signal siggnal)
+debug_to_resume(ptid_t ptid, int step, enum target_signal siggnal)
 {
-  debug_target.to_resume (ptid, step, siggnal);
+  debug_target.to_resume(ptid, step, siggnal);
 
-  fprintf_unfiltered (gdb_stdlog, "target_resume (%d, %s, %s)\n", PIDGET (ptid),
-		      step ? "step" : "continue",
-		      target_signal_to_name (siggnal));
+  fprintf_unfiltered(gdb_stdlog, "target_resume (%d, %s, %s)\n", PIDGET(ptid),
+		     (step ? "step" : "continue"),
+		     target_signal_to_name(siggnal));
 }
 
 static ptid_t
 /* APPLE LOCAL gdb client data */
-debug_to_wait (ptid_t ptid, struct target_waitstatus *status, gdb_client_data client_data)
+debug_to_wait(ptid_t ptid, struct target_waitstatus *status, gdb_client_data client_data)
 {
   ptid_t retval;
 
   /* APPLE LOCAL gdb client data */
-  retval = debug_target.to_wait (ptid, status, client_data);
+  retval = debug_target.to_wait(ptid, status, client_data);
 
-  fprintf_unfiltered (gdb_stdlog,
-		      "target_wait (%d, status) = %d,   ", PIDGET (ptid),
-		      PIDGET (retval));
-  fprintf_unfiltered (gdb_stdlog, "status->kind = ");
+  fprintf_unfiltered(gdb_stdlog,
+		     "target_wait (%d, status) = %d,   ", PIDGET(ptid),
+		     PIDGET(retval));
+  fprintf_unfiltered(gdb_stdlog, "status->kind = ");
   switch (status->kind)
     {
     case TARGET_WAITKIND_EXITED:
@@ -2034,174 +1954,174 @@ debug_print_register (const char * func, int regno)
       unsigned char buf[MAX_REGISTER_SIZE];
       deprecated_read_register_gen (regno, buf);
       fprintf_unfiltered (gdb_stdlog, " = ");
-      for (i = 0; i < register_size (current_gdbarch, regno); i++)
+      for (i = 0; i < register_size(current_gdbarch, regno); i++)
 	{
-	  fprintf_unfiltered (gdb_stdlog, "%02x", buf[i]);
+	  fprintf_unfiltered(gdb_stdlog, "%02x", buf[i]);
 	}
-      if (register_size (current_gdbarch, regno) <= sizeof (LONGEST))
+      if ((size_t)register_size(current_gdbarch, regno) <= sizeof(LONGEST))
 	{
-	  fprintf_unfiltered (gdb_stdlog, " 0x%s %s",
-			      paddr_nz (read_register (regno)),
-			      paddr_d (read_register (regno)));
+	  fprintf_unfiltered(gdb_stdlog, " 0x%s %s",
+			     paddr_nz(read_register(regno)),
+			     paddr_d(read_register(regno)));
 	}
     }
-  fprintf_unfiltered (gdb_stdlog, "\n");
+  fprintf_unfiltered(gdb_stdlog, "\n");
 }
 
 static void
-debug_to_fetch_registers (int regno)
+debug_to_fetch_registers(int regno)
 {
-  debug_target.to_fetch_registers (regno);
-  debug_print_register ("target_fetch_registers", regno);
+  debug_target.to_fetch_registers(regno);
+  debug_print_register("target_fetch_registers", regno);
 }
 
 static void
-debug_to_store_registers (int regno)
+debug_to_store_registers(int regno)
 {
-  debug_target.to_store_registers (regno);
-  debug_print_register ("target_store_registers", regno);
-  fprintf_unfiltered (gdb_stdlog, "\n");
+  debug_target.to_store_registers(regno);
+  debug_print_register("target_store_registers", regno);
+  fprintf_unfiltered(gdb_stdlog, "\n");
 }
 
 static void
-debug_to_prepare_to_store (void)
+debug_to_prepare_to_store(void)
 {
-  debug_target.to_prepare_to_store ();
+  debug_target.to_prepare_to_store();
 
-  fprintf_unfiltered (gdb_stdlog, "target_prepare_to_store ()\n");
+  fprintf_unfiltered(gdb_stdlog, "target_prepare_to_store ()\n");
 }
 
 static int
-deprecated_debug_xfer_memory (CORE_ADDR memaddr, bfd_byte *myaddr, int len,
-			      int write, struct mem_attrib *attrib,
-			      struct target_ops *target)
+deprecated_debug_xfer_memory(CORE_ADDR memaddr, bfd_byte *myaddr, int len,
+			     int write, struct mem_attrib *attrib,
+			     struct target_ops *target)
 {
   int retval;
 
-  retval = debug_target.deprecated_xfer_memory (memaddr, myaddr, len, write,
-						attrib, target);
+  retval = debug_target.deprecated_xfer_memory(memaddr, myaddr, len, write,
+                                               attrib, target);
 
   /* FIXME-32x64--assumes memaddr fits in unsigned long. */
   /* APPLE LOCAL: fixed via paddr_nz.  */
-  fprintf_unfiltered (gdb_stdlog,
-		      "target_xfer_memory (0x%s, xxx, %d, %s, xxx) = %d",
-		      paddr_nz (memaddr),
-		      len, write ? "write" : "read", retval);
+  fprintf_unfiltered(gdb_stdlog,
+		     "target_xfer_memory (0x%s, xxx, %d, %s, xxx) = %d",
+		     paddr_nz(memaddr),
+		     len, (write ? "write" : "read"), retval);
 
   if (retval > 0)
     {
       int i;
 
-      fputs_unfiltered (", bytes =", gdb_stdlog);
+      fputs_unfiltered(", bytes =", gdb_stdlog);
       for (i = 0; i < retval; i++)
 	{
-	  if ((((long) &(myaddr[i])) & 0xf) == 0)
+	  if ((((long)&(myaddr[i])) & 0xf) == 0)
 	    {
-	      if (targetdebug < 2 && i > 0)
+	      if ((targetdebug < 2) && (i > 0))
 		{
-		  fprintf_unfiltered (gdb_stdlog, " ...");
+		  fprintf_unfiltered(gdb_stdlog, " ...");
 		  break;
 		}
               /* Only introduce line breaks if we're printing a large
                  buffer.  For 8 bytes or less, put it on the same line.  */
               if (retval > 8)
-	        fprintf_unfiltered (gdb_stdlog, "\n");
+	        fprintf_unfiltered(gdb_stdlog, "\n");
 	    }
 
-	  fprintf_unfiltered (gdb_stdlog, " %02x", myaddr[i] & 0xff);
+	  fprintf_unfiltered(gdb_stdlog, " %02x", myaddr[i] & 0xff);
 	}
     }
 
-  fputc_unfiltered ('\n', gdb_stdlog);
+  fputc_unfiltered('\n', gdb_stdlog);
 
   return retval;
 }
 
 static void
-debug_to_files_info (struct target_ops *target)
+debug_to_files_info(struct target_ops *target)
 {
-  debug_target.to_files_info (target);
+  debug_target.to_files_info(target);
 
-  fprintf_unfiltered (gdb_stdlog, "target_files_info (xxx)\n");
+  fprintf_unfiltered(gdb_stdlog, "target_files_info (xxx)\n");
 }
 
 static int
-debug_to_insert_breakpoint (CORE_ADDR addr, gdb_byte *save)
+debug_to_insert_breakpoint(CORE_ADDR addr, gdb_byte *save)
 {
   int retval;
 
-  retval = debug_target.to_insert_breakpoint (addr, save);
+  retval = debug_target.to_insert_breakpoint(addr, save);
 
   /* FIXME-32x64--assumes maddr fits in unsigned long. */
   /* APPLE LOCAL:  Fixed - paddr_nz addr.  */
-  fprintf_unfiltered (gdb_stdlog,
-		      "target_insert_breakpoint (0x%s, xxx) = %ld\n",
-		      paddr_nz (addr),
-		      (unsigned long) retval);
+  fprintf_unfiltered(gdb_stdlog,
+		     "target_insert_breakpoint (0x%s, xxx) = %ld\n",
+		     paddr_nz(addr),
+		     (unsigned long)retval);
   return retval;
 }
 
 static int
-debug_to_remove_breakpoint (CORE_ADDR addr, gdb_byte *save)
+debug_to_remove_breakpoint(CORE_ADDR addr, gdb_byte *save)
 {
   int retval;
 
-  retval = debug_target.to_remove_breakpoint (addr, save);
+  retval = debug_target.to_remove_breakpoint(addr, save);
 
   /* FIXME-32x64--assumes addr fits in unsigned long. */
   /* APPLE LOCAL:  Fixed - paddr_nz addr.  */
-  fprintf_unfiltered (gdb_stdlog,
-		      "target_remove_breakpoint (0x%s, xxx) = %ld\n",
-		      paddr_nz (addr),
-		      (unsigned long) retval);
+  fprintf_unfiltered(gdb_stdlog,
+		     "target_remove_breakpoint (0x%s, xxx) = %ld\n",
+		     paddr_nz(addr),
+		     (unsigned long)retval);
   return retval;
 }
 
 static int
-debug_to_can_use_hw_breakpoint (int type, int cnt, int from_tty)
+debug_to_can_use_hw_breakpoint(int type, int cnt, int from_tty)
 {
   int retval;
 
-  retval = debug_target.to_can_use_hw_breakpoint (type, cnt, from_tty);
+  retval = debug_target.to_can_use_hw_breakpoint(type, cnt, from_tty);
 
-  fprintf_unfiltered (gdb_stdlog,
-		      "target_can_use_hw_breakpoint (%ld, %ld, %ld) = %ld\n",
-		      (unsigned long) type,
-		      (unsigned long) cnt,
-		      (unsigned long) from_tty,
-		      (unsigned long) retval);
+  fprintf_unfiltered(gdb_stdlog,
+		     "target_can_use_hw_breakpoint (%ld, %ld, %ld) = %ld\n",
+		     (unsigned long)type,
+		     (unsigned long)cnt,
+		     (unsigned long)from_tty,
+		     (unsigned long)retval);
   return retval;
 }
 
 static int
-debug_to_region_size_ok_for_hw_watchpoint (int byte_count)
+debug_to_region_size_ok_for_hw_watchpoint(int byte_count)
 {
   CORE_ADDR retval;
 
-  retval = debug_target.to_region_size_ok_for_hw_watchpoint (byte_count);
+  retval = debug_target.to_region_size_ok_for_hw_watchpoint(byte_count);
 
-  fprintf_unfiltered (gdb_stdlog,
-		      "TARGET_REGION_SIZE_OK_FOR_HW_WATCHPOINT (%ld) = 0x%lx\n",
-		      (unsigned long) byte_count,
-		      (unsigned long) retval);
-  return retval;
+  fprintf_unfiltered(gdb_stdlog,
+		     "TARGET_REGION_SIZE_OK_FOR_HW_WATCHPOINT (%ld) = 0x%lx\n",
+		     (unsigned long)byte_count,
+		     (unsigned long)retval);
+  return (int)retval;
 }
 
 static int
-debug_to_stopped_by_watchpoint (void)
+debug_to_stopped_by_watchpoint(void)
 {
   int retval;
 
-  retval = debug_target.to_stopped_by_watchpoint ();
+  retval = debug_target.to_stopped_by_watchpoint();
 
-  fprintf_unfiltered (gdb_stdlog,
-		      "STOPPED_BY_WATCHPOINT () = %ld\n",
-		      (unsigned long) retval);
+  fprintf_unfiltered(gdb_stdlog,
+		     "STOPPED_BY_WATCHPOINT () = %ld\n",
+		     (unsigned long)retval);
   return retval;
 }
 
 static int
-debug_to_stopped_data_address (struct target_ops *target, CORE_ADDR *addr)
+debug_to_stopped_data_address(struct target_ops *target, CORE_ADDR *addr)
 {
   int retval;
 
@@ -2478,144 +2398,144 @@ debug_to_has_exited (int pid, int wait_status, int *exit_status)
 }
 
 static void
-debug_to_mourn_inferior (void)
+debug_to_mourn_inferior(void)
 {
-  debug_target.to_mourn_inferior ();
+  debug_target.to_mourn_inferior();
 
-  fprintf_unfiltered (gdb_stdlog, "target_mourn_inferior ()\n");
+  fprintf_unfiltered(gdb_stdlog, "target_mourn_inferior ()\n");
 }
 
 static int
-debug_to_can_run (void)
+debug_to_can_run(void)
 {
   int retval;
 
-  retval = debug_target.to_can_run ();
+  retval = debug_target.to_can_run();
 
-  fprintf_unfiltered (gdb_stdlog, "target_can_run () = %d\n", retval);
+  fprintf_unfiltered(gdb_stdlog, "target_can_run () = %d\n", retval);
 
   return retval;
 }
 
 static void
-debug_to_notice_signals (ptid_t ptid)
+debug_to_notice_signals(ptid_t ptid)
 {
-  debug_target.to_notice_signals (ptid);
+  debug_target.to_notice_signals(ptid);
 
-  fprintf_unfiltered (gdb_stdlog, "target_notice_signals (%d)\n",
-                      PIDGET (ptid));
+  fprintf_unfiltered(gdb_stdlog, "target_notice_signals (%d)\n",
+                     PIDGET(ptid));
 }
 
 static int
-debug_to_thread_alive (ptid_t ptid)
+debug_to_thread_alive(ptid_t ptid)
 {
   int retval;
 
-  retval = debug_target.to_thread_alive (ptid);
+  retval = debug_target.to_thread_alive(ptid);
 
-  fprintf_unfiltered (gdb_stdlog, "target_thread_alive (%d) = %d\n",
-		      PIDGET (ptid), retval);
+  fprintf_unfiltered(gdb_stdlog, "target_thread_alive (%d) = %d\n",
+		     PIDGET(ptid), retval);
 
   return retval;
 }
 
 static void
-debug_to_find_new_threads (void)
+debug_to_find_new_threads(void)
 {
-  debug_target.to_find_new_threads ();
+  debug_target.to_find_new_threads();
 
-  fputs_unfiltered ("target_find_new_threads ()\n", gdb_stdlog);
+  fputs_unfiltered("target_find_new_threads ()\n", gdb_stdlog);
 }
 
 /* APPLE LOCAL begin target */
 static char *
-debug_to_pid_to_str (pid)
-     ptid_t pid;
+debug_to_pid_to_str(ptid_t pid)
 {
   char *retval;
 
-  retval = debug_target.to_pid_to_str (pid);
+  retval = debug_target.to_pid_to_str(pid);
 
-  fprintf_unfiltered (gdb_stdlog, "target_thread_alive (%d) = %s\n", PIDGET (pid), retval);
+  fprintf_unfiltered(gdb_stdlog, "target_thread_alive (%d) = %s\n",
+                     PIDGET(pid), retval);
 
   return retval;
 }
 /* APPLE LOCAL end target */
 
 static void
-debug_to_stop (void)
+debug_to_stop(void)
 {
-  debug_target.to_stop ();
+  debug_target.to_stop();
 
-  fprintf_unfiltered (gdb_stdlog, "target_stop ()\n");
+  fprintf_unfiltered(gdb_stdlog, "target_stop ()\n");
 }
 
 static void
-debug_to_rcmd (char *command,
-	       struct ui_file *outbuf)
+debug_to_rcmd(char *command, struct ui_file *outbuf)
 {
-  debug_target.to_rcmd (command, outbuf);
-  fprintf_unfiltered (gdb_stdlog, "target_rcmd (%s, ...)\n", command);
+  debug_target.to_rcmd(command, outbuf);
+  fprintf_unfiltered(gdb_stdlog, "target_rcmd (%s, ...)\n", command);
 }
 
 /* APPLE LOCAL begin exception catchpoints */
 static struct symtabs_and_lines *
-debug_to_find_exception_catchpoints (enum exception_event_kind kind, struct objfile *objfile)
+debug_to_find_exception_catchpoints(enum exception_event_kind kind,
+                                    struct objfile *objfile)
 {
   struct symtabs_and_lines *result;
-  result = debug_target.to_find_exception_catchpoints (kind, objfile);
-  fprintf_unfiltered (gdb_stdlog,
-		      "target find_exception_catchpoints (%d) (%s)\n",
-		      kind, objfile->name);
+  result = debug_target.to_find_exception_catchpoints(kind, objfile);
+  fprintf_unfiltered(gdb_stdlog,
+		     "target find_exception_catchpoints (%d) (%s)\n",
+		     kind, objfile->name);
   return result;
 }
 /* APPLE LOCAL end exception catchpoints */
 
 /* APPLE LOCAL accept/return int */
 int
-debug_to_enable_exception_callback (enum exception_event_kind kind, int enable)
+debug_to_enable_exception_callback(enum exception_event_kind kind, int enable)
 {
   int result;
-  result = debug_target.to_enable_exception_callback (kind, enable);
-  fprintf_unfiltered (gdb_stdlog,
-		      "target get_exception_callback_sal (%d, %d)\n",
-		      kind, enable);
+  result = debug_target.to_enable_exception_callback(kind, enable);
+  fprintf_unfiltered(gdb_stdlog,
+		     "target get_exception_callback_sal (%d, %d)\n",
+		     kind, enable);
   return result;
 }
 
 static struct exception_event_record *
-debug_to_get_current_exception_event (void)
+debug_to_get_current_exception_event(void)
 {
   struct exception_event_record *result;
-  result = debug_target.to_get_current_exception_event ();
-  fprintf_unfiltered (gdb_stdlog, "target get_current_exception_event ()\n");
+  result = debug_target.to_get_current_exception_event();
+  fprintf_unfiltered(gdb_stdlog, "target get_current_exception_event ()\n");
   return result;
 }
 
 static char *
-debug_to_pid_to_exec_file (int pid)
+debug_to_pid_to_exec_file(int pid)
 {
   char *exec_file;
 
-  exec_file = debug_target.to_pid_to_exec_file (pid);
+  exec_file = debug_target.to_pid_to_exec_file(pid);
 
-  fprintf_unfiltered (gdb_stdlog, "target_pid_to_exec_file (%d) = %s\n",
-		      /* APPLE LOCAL null exec file */
-		      pid, exec_file ? exec_file : "[NULL]");
- 
+  fprintf_unfiltered(gdb_stdlog, "target_pid_to_exec_file (%d) = %s\n",
+		     /* APPLE LOCAL null exec file */
+		     pid, exec_file ? exec_file : "[NULL]");
+
   return exec_file;
 }
 
 /* APPLE LOCAL begin objfile loaded check */
 static int
-debug_check_is_objfile_loaded (struct objfile *objfile)
+debug_check_is_objfile_loaded(struct objfile *objfile)
 {
-  int retval = debug_target.to_check_is_objfile_loaded (objfile);
+  int retval = debug_target.to_check_is_objfile_loaded(objfile);
 
   if (objfile == NULL)
-    fprintf_unfiltered (gdb_stdlog, "dyld_is_objfile_loaded (NULL) == %d\n", retval);
+    fprintf_unfiltered(gdb_stdlog, "dyld_is_objfile_loaded (NULL) == %d\n", retval);
   else if (objfile->name)
-    fprintf_unfiltered (gdb_stdlog, "dyld_is_objfile_loaded (\"%s\") == %d\n", objfile->name, retval);
+    fprintf_unfiltered(gdb_stdlog, "dyld_is_objfile_loaded (\"%s\") == %d\n", objfile->name, retval);
 
   return retval;
 }
@@ -2623,16 +2543,16 @@ debug_check_is_objfile_loaded (struct objfile *objfile)
 
 /* APPLE LOCAL begin objfile loading */
 static struct value *
-debug_load_solib (char *path, char *flags)
+debug_load_solib(char *path, char *flags)
 {
-  struct value *retval = debug_target.to_load_solib (path, flags);
+  struct value *retval = debug_target.to_load_solib(path, flags);
 
   if (path == NULL)
-    fprintf_unfiltered (gdb_stdlog, "load_solib (NULL) == 0x%s\n", 
-			paddr_nz (value_as_address (retval)));
+    fprintf_unfiltered(gdb_stdlog, "load_solib (NULL) == 0x%s\n",
+                       paddr_nz(value_as_address(retval)));
   else if (path)
-    fprintf_unfiltered (gdb_stdlog, "load_solib (\"%s\",\"%s\") == 0x%s\n", path, flags,
-			paddr_nz (value_as_address (retval)));
+    fprintf_unfiltered(gdb_stdlog, "load_solib (\"%s\",\"%s\") == 0x%s\n", path, flags,
+                       paddr_nz(value_as_address(retval)));
 
   return retval;
 }
@@ -2640,52 +2560,50 @@ debug_load_solib (char *path, char *flags)
 
 /* APPLE LOCAL complex step support.  */
 static int
-debug_keep_going (CORE_ADDR stop_pc)
+debug_keep_going(CORE_ADDR stop_pc)
 {
-  int retval = debug_target.to_keep_going (stop_pc);
+  int retval = debug_target.to_keep_going(stop_pc);
 
-  fprintf_unfiltered (gdb_stdlog, "target_keep_going (0x%s) == %d\n", 
-		      paddr (stop_pc), retval);
+  fprintf_unfiltered(gdb_stdlog, "target_keep_going (0x%s) == %d\n",
+		     paddr(stop_pc), retval);
   return retval;
 
 }
 
-/* APPLE LOCAL target specific inferior_status support.  */
+/* APPLE LOCAL target specific inferior_status support: */
 static void *
-debug_save_thread_inferior_status ()
+debug_save_thread_inferior_status(void)
 {
-  void *retval = debug_target.to_save_thread_inferior_status ();
+  void *retval = debug_target.to_save_thread_inferior_status();
 
-  fprintf_unfiltered (gdb_stdlog, 
-		      "target_save_thread_inferior_status () == %p\n", 
-		      retval);
+  fprintf_unfiltered(gdb_stdlog,
+		     "target_save_thread_inferior_status() == %p\n",
+		     retval);
   return retval;
 
 }
 static void
-debug_restore_thread_inferior_status (void *p)
+debug_restore_thread_inferior_status(void *p)
 {
-  debug_target.to_restore_thread_inferior_status (p);
+  debug_target.to_restore_thread_inferior_status(p);
 
-  fprintf_unfiltered (gdb_stdlog, 
-		      "target_restore_thread_inferior_status (%p)\n", p);
-
+  fprintf_unfiltered(gdb_stdlog,
+		     "target_restore_thread_inferior_status (%p)\n", p);
 }
 
 static void
-debug_free_thread_inferior_status (void *p)
+debug_free_thread_inferior_status(void *p)
 {
-  debug_target.to_free_thread_inferior_status (p);
+  debug_target.to_free_thread_inferior_status(p);
 
-  fprintf_unfiltered (gdb_stdlog, 
-		      "target_free_thread_inferior_status (%p)\n", p);
-
+  fprintf_unfiltered(gdb_stdlog,
+		     "target_free_thread_inferior_status (%p)\n", p);
 }
 
 static void
-setup_target_debug (void)
+setup_target_debug(void)
 {
-  memcpy (&debug_target, &current_target, sizeof debug_target);
+  memcpy(&debug_target, &current_target, sizeof(debug_target));
 
   current_target.to_open = debug_to_open;
   current_target.to_close = debug_to_close;
@@ -2746,11 +2664,11 @@ setup_target_debug (void)
   current_target.to_restore_thread_inferior_status = debug_restore_thread_inferior_status;
   current_target.to_free_thread_inferior_status = debug_free_thread_inferior_status;
   current_target.to_rcmd = debug_to_rcmd;
-  current_target.to_find_exception_catchpoints 
+  current_target.to_find_exception_catchpoints
     = debug_to_find_exception_catchpoints;
-  current_target.to_enable_exception_callback 
+  current_target.to_enable_exception_callback
     = debug_to_enable_exception_callback;
-  current_target.to_get_current_exception_event 
+  current_target.to_get_current_exception_event
     = debug_to_get_current_exception_event;
   current_target.to_pid_to_exec_file = debug_to_pid_to_exec_file;
 
@@ -2763,60 +2681,60 @@ Shows the entire stack of targets currently in use (including the exec-file,\n\
 core-file, and process, if any), as well as the symbol file name.";
 
 static void
-do_monitor_command (char *cmd,
-		 int from_tty)
+do_monitor_command(char *cmd, int from_tty)
 {
   if ((current_target.to_rcmd
-       == (void (*) (char *, struct ui_file *)) tcomplain)
-      || (current_target.to_rcmd == debug_to_rcmd
+       == (void (*)(char *, struct ui_file *))tcomplain)
+      || ((current_target.to_rcmd == debug_to_rcmd)
 	  && (debug_target.to_rcmd
-	      == (void (*) (char *, struct ui_file *)) tcomplain)))
-    error (_("\"monitor\" command not supported by this target."));
-  target_rcmd (cmd, gdb_stdtarg);
+	      == (void (*)(char *, struct ui_file *))tcomplain)))
+    error(_("\"monitor\" command not supported by this target."));
+  target_rcmd(cmd, gdb_stdtarg);
 }
 
 void
-initialize_targets (void)
+initialize_targets(void)
 {
-  init_dummy_target ();
-  push_target (&dummy_target);
+  init_dummy_target();
+  push_target(&dummy_target);
 
-  add_info ("target", target_info, targ_desc);
-  add_info ("files", target_info, targ_desc);
+  add_info("target", target_info, targ_desc);
+  add_info("files", target_info, targ_desc);
 
-  add_setshow_zinteger_cmd ("target", class_maintenance, &targetdebug, _("\
+  add_setshow_zinteger_cmd("target", class_maintenance, &targetdebug, _("\
 Set target debugging."), _("\
 Show target debugging."), _("\
 When non-zero, target debugging is enabled.  Higher numbers are more\n\
 verbose.  Changes do not take effect until the next \"run\" or \"target\"\n\
 command."),
-			    NULL,
-			    show_targetdebug,
-			    &setdebuglist, &showdebuglist);
+			   NULL,
+			   show_targetdebug,
+                           &setdebuglist, &showdebuglist);
 
-  add_setshow_zinteger_cmd ("target-writes", class_maintenance, &debug_target_writes, _("\
+  add_setshow_zinteger_cmd("target-writes", class_maintenance, &debug_target_writes, _("\
 Set target writes debugging."), _("\
 Show target writes debugging."), _("\
 When non-zero, target write debugging is enabled.  Higher numbers are more\n\
 verbose.  Changes do not take effect until the next \"run\" or \"target\"\n\
 command."),
-			    NULL,
-			    NULL,
-			    &setdebuglist, &showdebuglist);
+			   NULL, NULL,
+			   &setdebuglist, &showdebuglist);
 
-  add_setshow_boolean_cmd ("trust-readonly-sections", class_support,
-			   &trust_readonly, _("\
+  add_setshow_boolean_cmd("trust-readonly-sections", class_support,
+			  &trust_readonly, _("\
 Set mode for reading from readonly sections."), _("\
 Show mode for reading from readonly sections."), _("\
 When this mode is on, memory reads from readonly sections (such as .text)\n\
 will be read from the object file instead of from the target.  This will\n\
 result in significant performance improvement for remote targets."),
-			   NULL,
-			   show_trust_readonly,
-			   &setlist, &showlist);
+			  NULL,
+			  show_trust_readonly,
+			  &setlist, &showlist);
 
-  add_com ("monitor", class_obscure, do_monitor_command,
-	   _("Send a command to the remote monitor (remote targets only)."));
+  add_com("monitor", class_obscure, do_monitor_command,
+	  _("Send a command to the remote monitor (remote targets only)."));
 
-  target_dcache = dcache_init ();
+  target_dcache = dcache_init();
 }
+
+/* EOF */

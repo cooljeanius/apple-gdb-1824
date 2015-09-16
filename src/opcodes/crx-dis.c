@@ -1,4 +1,4 @@
-/* Disassembler code for CRX.
+/* crx-dis.c: Disassembler code for CRX.
    Copyright 2004, 2005 Free Software Foundation, Inc.
    Contributed by Tomer Levi, NSC, Israel.
    Written by Tomer Levi.
@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "dis-asm.h"
 #include "sysdep.h"
@@ -59,9 +59,9 @@ cinv_entry;
 /* CRX 'cinv' options.  */
 const cinv_entry crx_cinvs[] =
 {
-  {"[i]", 2}, {"[i,u]", 3}, {"[d]", 4}, {"[d,u]", 5}, 
-  {"[d,i]", 6}, {"[d,i,u]", 7}, {"[b]", 8}, 
-  {"[b,i]", 10}, {"[b,i,u]", 11}, {"[b,d]", 12}, 
+  {"[i]", 2}, {"[i,u]", 3}, {"[d]", 4}, {"[d,u]", 5},
+  {"[d,i]", 6}, {"[d,i,u]", 7}, {"[b]", 8},
+  {"[b,i]", 10}, {"[b,i,u]", 11}, {"[b,d]", 12},
   {"[b,d,u]", 13}, {"[b,d,i]", 14}, {"[b,d,i,u]", 15}
 };
 
@@ -75,7 +75,7 @@ typedef enum REG_ARG_TYPE
     /* CO-Processor register (c<N>).  */
     COP_ARG,
     /* CO-Processor special register (cs<N>).  */
-    COPS_ARG 
+    COPS_ARG
   }
 REG_ARG_TYPE;
 
@@ -533,8 +533,8 @@ print_arg (argument *a, bfd_vma memaddr, struct disassemble_info *info)
 
       else if (INST_HAS_REG_LIST)
         {
-	  REG_ARG_TYPE reg_arg_type = IS_INSN_TYPE (COP_REG_INS) ? 
-				 COP_ARG : IS_INSN_TYPE (COPS_REG_INS) ? 
+	  REG_ARG_TYPE reg_arg_type = IS_INSN_TYPE (COP_REG_INS) ?
+				 COP_ARG : IS_INSN_TYPE (COPS_REG_INS) ?
 				 COPS_ARG : (instruction->flags & USER_REG) ?
 				 USER_REG_ARG : REG_ARG;
 
@@ -704,41 +704,38 @@ get_words_at_PC (bfd_vma memaddr, struct disassemble_info *info)
   bfd_vma mem;
 
   for (i = 0, mem = memaddr; i < 3; i++, mem += 2)
-    words[i] = get_word_at_PC (mem, info);
+    words[i] = get_word_at_PC(mem, info);
 
   allWords =
-    ((ULONGLONG) words[0] << 32) + ((unsigned long) words[1] << 16) + words[2];
+    (((ULONGLONG)words[0] << 32) + ((unsigned long)words[1] << 16) + words[2]);
 }
 
-/* Prints the instruction by calling print_arguments after proper matching.  */
-
+/* Prints the instruction by calling print_arguments after proper matching: */
 int
-print_insn_crx (memaddr, info)
-     bfd_vma memaddr;
-     struct disassemble_info *info;
+print_insn_crx(bfd_vma memaddr, struct disassemble_info *info)
 {
   int is_decoded;     /* Nonzero means instruction has a match.  */
 
-  /* Initialize global variables.  */
+  /* Initialize global variables: */
   cst4flag = 0;
   size_changed = 0;
 
-  /* Retrieve the encoding from current memory location.  */
-  get_words_at_PC (memaddr, info);
-  /* Find a matching opcode in table.  */
-  is_decoded = match_opcode ();
-  /* If found, print the instruction's mnemonic and arguments.  */
-  if (is_decoded > 0 && (words[0] << 16 || words[1]) != 0)
+  /* Retrieve the encoding from current memory location: */
+  get_words_at_PC(memaddr, info);
+  /* Find a matching opcode in table: */
+  is_decoded = match_opcode();
+  /* If found, print the instruction's mnemonic and arguments: */
+  if ((is_decoded > 0) && (((words[0] << 16) || words[1]) != 0))
     {
-      info->fprintf_func (info->stream, "%s", instruction->mnemonic);
-      if ((currInsn.nargs = get_number_of_operands ()) != 0)
-	info->fprintf_func (info->stream, "\t");
-      make_instruction ();
-      print_arguments (&currInsn, memaddr, info);
+      info->fprintf_func(info->stream, "%s", instruction->mnemonic);
+      if ((currInsn.nargs = get_number_of_operands()) != 0)
+	info->fprintf_func(info->stream, "\t");
+      make_instruction();
+      print_arguments(&currInsn, memaddr, info);
       return currInsn.size;
     }
 
-  /* No match found.  */
-  info->fprintf_func (info->stream,"%s ",ILLEGAL);
+  /* No match found: */
+  info->fprintf_func(info->stream, "%s ", ILLEGAL);
   return 2;
 }

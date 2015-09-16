@@ -101,6 +101,7 @@ static unsigned long gdbscm_exception_count = 0;
 
 /* Administrivia for exception smobs.  */
 
+#ifdef MY_BRANCH_IS_HEAD
 /* The smob "mark" function for <gdb:exception>.  */
 
 static SCM
@@ -114,6 +115,8 @@ exscm_mark_exception_smob (SCM self)
   return gdbscm_mark_gsmob (&e_smob->base);
 }
 
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 /* The smob "print" function for <gdb:exception>.  */
 
 static int
@@ -332,7 +335,11 @@ gdbscm_make_invalid_object_error (const char *subr, int arg_pos, SCM bad_value,
 /* Throw an invalid-object error.
    OBJECT is the name of the kind of object that is invalid.  */
 
+#ifdef MY_BRANCH_IS_HEAD
 SCM
+#else
+void
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 gdbscm_invalid_object_error (const char *subr, int arg_pos, SCM bad_value,
 			     const char *object)
 {
@@ -356,7 +363,11 @@ gdbscm_make_out_of_range_error (const char *subr, int arg_pos, SCM bad_value,
 /* Throw an out-of-range error.
    This is the standard Guile out-of-range exception.  */
 
+#ifdef MY_BRANCH_IS_HEAD
 SCM
+#else
+void
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 gdbscm_out_of_range_error (const char *subr, int arg_pos, SCM bad_value,
 			   const char *error)
 {
@@ -387,7 +398,11 @@ gdbscm_make_memory_error (const char *subr, const char *msg, SCM args)
 
 /* Throw a gdb:memory-error exception.  */
 
+#ifdef MY_BRANCH_IS_HEAD
 SCM
+#else
+void
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 gdbscm_memory_error (const char *subr, const char *msg, SCM args)
 {
   SCM exception = gdbscm_make_memory_error (subr, msg, args);
@@ -667,7 +682,10 @@ gdbscm_initialize_exceptions (void)
 {
   exception_smob_tag = gdbscm_make_smob_type (exception_smob_name,
 					      sizeof (exception_smob));
+#ifdef MY_BRANCH_IS_HEAD
   scm_set_smob_mark (exception_smob_tag, exscm_mark_exception_smob);
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
   scm_set_smob_print (exception_smob_tag, exscm_print_exception_smob);
 
   gdbscm_define_functions (exception_functions, 1);

@@ -1,0 +1,47 @@
+#! /bin/echo this_file_must_be_sourced,_not_executed
+
+## pkg-env.in --    create a native package
+## Time-stamp:      "2010-07-16 15:21:11 bkorb"
+##
+##  This file is part of AutoGen.
+##  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoGen is free software: you can redistribute it and/or modify it
+##  under the terms of the GNU General Public License as published by the
+##  Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
+##
+##  AutoGen is distributed in the hope that it will be useful, but
+##  WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+##  See the GNU General Public License for more details.
+##
+##  You should have received a copy of the GNU General Public License along
+##  with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+set -a
+
+prefix="@prefix@"
+builddir="@abs_builddir@"
+srcdir="@abs_srcdir@"
+top_builddir="@abs_top_builddir@"
+top_srcdir="@abs_top_srcdir@"
+PACKAGE="@PACKAGE@"
+PACKAGE_BUGREPORT="@PACKAGE_BUGREPORT@"
+PACKAGE_NAME="@PACKAGE_NAME@"
+PACKAGE_STRING="@PACKAGE_STRING@"
+PACKAGE_TARNAME="@PACKAGE_TARNAME@"
+PACKAGE_VERSION="@PACKAGE_VERSION@"
+. ${top_srcdir}/VERSION
+AGexe="@AGexe@"
+CLexe="@CLexe@"
+
+set +a
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+## pkg-env.in ends here

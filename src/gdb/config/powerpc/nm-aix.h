@@ -1,4 +1,5 @@
-/* IBM PowerPC native-dependent macros for GDB, the GNU debugger.
+/* nm-aix.h
+   IBM PowerPC native-dependent macros for GDB, the GNU debugger.
    Copyright 1995, 1996 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -20,3 +21,4 @@
 
 #include "rs6000/nm-rs6000.h"
 
+/* EOF */

@@ -2,7 +2,7 @@
 
 libtool
 Makefile
-Makefile.orig
+Makefile*orig
 *.o
 *.dylib
 config.cache
@@ -13,3 +13,6 @@ lib.exp
 dltest.marker
 *libs/*
 *.lo
+tclConfig.sh
+SCRPtcl.*
+prototype

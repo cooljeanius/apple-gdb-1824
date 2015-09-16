@@ -1,0 +1,102 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# heredef.test --- definition reference testing
+#
+# Time-stamp:        "2011-02-02 12:09:38 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+${SED} 's/^ *[0-9]*:  //' > ${testname}.tpl <<\_EOF_
+ 1:  <= AutoGen5 template test =>
+ 2:  <=
+ 3:  
+ 4:  (if (not (= (get "string1") (get "string2")))
+ 5:      (error (sprintf "`%s' <> `%s'"
+ 6:                      (get "string1") (get "string2") ))  )
+ 7:  
+ 8:  =><=
+ 9:  
+10:  (if (not (= (get "string2") (get "string3")))
+11:      (error (sprintf "`%s' <> `%s'"
+12:                      (get "string1") (get "string2") ))  )
+13:  =>OKAY:  <= (c-string (get "string3")) =>
+14:  FROM:  string1 extracted <= (def-file-line "string1") =>
+15:         string2 extracted
+16:  <=  (def-file-line "string2" c-file-line-fmt) =>
+17:         string3 extracted <=
+18:  (def-file-line "string3" "From %1$s on line %2$d") =>
+_EOF_
+
+# # # # # # # # # # SAMPLE FILE # # # # # # # # #
+cat > ${testname}.sample <<\_EOF_
+OKAY:  "\"`Testing'"
+FROM:  string1 extracted from heredef.def line 11
+       string2 extracted
+#line 15 "heredef.def"
+
+       string3 extracted From heredef.def on line 18
+_EOF_
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+# Create the files we need in the test environment
+echo "AutoGen definitions ${testname};" > ${testname}.def
+${SED} 's/^ *[0-9]*:  //' >> ${testname}.def <<\_EOF_
+ 2:  #ifdef BOGUS
+ 3:  /* Line 3 */
+ 4:  #else
+ 5:  #ifdef WRONG
+ 6:  /* line 6 */
+ 7:  #endif
+ 8:  #endif
+ 9:  /* line 9 */
+10:  string1 = <<- AG_EOF
+11:  	"`Testing'
+12:  	AG_EOF; /* " */
+13:  /* line 13 */
+14:  string2 = <<- AG_EOF
+15:  "`Testing'
+16:  AG_EOF; /* " */
+17:  
+18:  string3 = "\"`Testing'";  /* line 18 */
+19:  
+_EOF_
+
+run_ag x ${testname}.def || failure ${testname} AutoGen failed
+
+if cmp ${testname}.test ${testname}.sample
+then cleanup
+else failure "`diff ${testname}.sample ${testname}.test`"
+fi
+
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of heredef.test

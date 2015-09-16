@@ -18,15 +18,13 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  
-
-
+   Boston, MA 02111-1307, USA.
  */
 
 
-/* 
+/*
    Much of this file (in particular the SWI stuff) is based on code by
-   David Taylor (djt1000@uk.ac.cam.hermes).
+   David Taylor <djt1000@uk.ac.cam.hermes>.
 
    I hacked on and simplified it by removing a lot of sexy features he
    had added, and some of the (unix specific) workarounds he'd done
@@ -34,7 +32,7 @@
    in GDB, not in a remote-foo thing .  I also made it conform more to
    the doc I have; which may be wrong.
 
-   Steve Chamberlain (sac@cygnus.com).
+   Steve Chamberlain <sac@cygnus.com>.
  */
 
 
@@ -57,8 +55,8 @@
 #include "arm-tdep.h"
 
 #ifdef HAVE_TIME_H
-#include <time.h>
-#endif
+# include <time.h>
+#endif /* HAVE_TIME_H */
 
 extern struct target_ops remote_rdp_ops;
 static struct serial *io;
@@ -175,7 +173,7 @@ static char *commandline = NULL;
 
 static int
 remote_rdp_xfer_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len,
-				 int write, 
+				 int write,
 				 struct mem_attrib *attrib,
 				 struct target_ops *target);
 
@@ -563,8 +561,8 @@ rdp_fetch_one_fpu_register (int mask, char *buf)
     }
   else
     {
-      /* There are 12 bytes long 
-         !! fixme about endianness 
+      /* There are 12 bytes long
+         !! fixme about endianness
        */
       int dummy;		/* I've seen these come back as four words !! */
       send_rdp ("bbw-SWWWWZ", RDP_COPRO_READ, FPU_COPRO_NUMBER, mask, buf + 0, buf + 4, buf + 8, &dummy);
@@ -599,8 +597,8 @@ rdp_store_one_fpu_register (int mask, char *buf)
     }
   else
     {
-      /* There are 12 bytes long 
-         !! fixme about endianness 
+      /* There are 12 bytes long
+         !! fixme about endianness
        */
       int dummy = 0;
       /* I've seen these come as four words, not the three advertized !! */

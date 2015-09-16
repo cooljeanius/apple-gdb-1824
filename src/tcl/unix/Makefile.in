@@ -34,6 +34,7 @@ bindir			= @bindir@
 libdir			= @libdir@
 includedir		= @includedir@
 mandir			= @mandir@
+datarootdir		= @datarootdir@
 
 # The following definition can be set to non-null for special systems
 # like AFS with replication. It allows the pathnames used for installation
@@ -80,16 +81,24 @@ TCL_PACKAGE_PATH	= @TCL_PACKAGE_PATH@
 # Libraries built with optimization switches have this additional extension
 TCL_DBGX		= @TCL_DBGX@
 
-# warning flags
+# Architectures:
+BUILD_ARCHITECTURE 	= @BUILD_ARCHITECTURE@
+HOST_ARCHITECTURE 	= @HOST_ARCHITECTURE@
+TARGET_ARCHITECTURE 	= @TARGET_ARCHITECTURE@
+C_ARCHFLAGS		= -arch $(HOST_ARCHITECTURE)
+
+# warning flags:
 CFLAGS_WARNING		= @CFLAGS_WARNING@
 
-# The default switches for optimization or debugging
+# The default switches for optimization or debugging:
 CFLAGS_DEBUG		= @CFLAGS_DEBUG@
 CFLAGS_OPTIMIZE		= @CFLAGS_OPTIMIZE@
 
 # To change compiler switches, for example to change from optimization to
 # debugging symbols, change the following line:
-CFLAGS			= @CFLAGS@ @CFLAGS_DEFAULT@
+CFLAGS			= @CFLAGS@ @CFLAGS_DEFAULT@ 
+## CFLAGS should be override-able, so add a separate variable:
+ALL_CFLAGS 		= $(CFLAGS) $(C_ARCHFLAGS) $(CFLAGS_WARNING)
 
 # Flags to pass to the linker
 LDFLAGS_DEBUG		= @LDFLAGS_DEBUG@
@@ -107,7 +116,7 @@ MATH_FLAGS		=
 MATH_LIBS		= @MATH_LIBS@
 
 # If you use the setenv, putenv, or unsetenv procedures to modify
-# environment variables in your application and you'd like those
+# environment variables in your application and you would like those
 # modifications to appear in the "env" Tcl variable, switch the
 # comments on the two lines below so that Tcl provides these
 # procedures instead of your standard C library.
@@ -150,6 +159,7 @@ NO_DEPRECATED_FLAGS	=
 # Some versions of make, like SGI's, use the following variable to
 # determine which shell to use for executing commands:
 SHELL			= /bin/sh
+# (feel free to add additional flags to the shell command for debugging)
 
 # Tcl used to let the configure script choose which program to use
 # for installing, but there are just too many different versions of
@@ -172,9 +182,9 @@ INSTALL_DATA		= ${INSTALL} -m 644
 TCL_EXE			= tclsh
 
 # The symbols below provide support for dynamic loading and shared
-# libraries.  See configure.in for a description of what the
+# libraries.  See configure.ac for a description of what the
 # symbols mean.  The values of the symbols are normally set by the
-# configure script.  You shouldn't normally need to modify any of
+# configure script.  You should NOT normally need to modify any of
 # these definitions by hand.
 
 STLIB_LD		= @STLIB_LD@
@@ -196,9 +206,9 @@ LD_SEARCH_FLAGS	= @LD_SEARCH_FLAGS@
 
 # The following symbol is defined to "$(DLTEST_TARGETS)" if dynamic
 # loading is available;  this causes everything in the "dltest"
-# subdirectory to be built when making "tcltest.  If dynamic loading
-# isn't available, configure defines this symbol to an empty string,
-# in which case the shared libraries aren't built.
+# subdirectory to be built when making "tcltest. If dynamic loading
+# is NOT available, configure defines this symbol to an empty string,
+# in which case the shared libraries are NOT built.
 BUILD_DLTEST		= @BUILD_DLTEST@
 
 TCL_LIB_FILE		= @TCL_LIB_FILE@
@@ -234,7 +244,8 @@ UNIX_DIR		= $(TOP_DIR)/unix
 MAC_OSX_DIR		= $(TOP_DIR)/macosx
 # Must be absolute because of the cd dltest $(DLTEST_DIR)/configure below.
 DLTEST_DIR		= @TCL_SRC_DIR@/unix/dltest
-# Must be absolute to so the corresponding tcltest's tcl_library is absolute.
+# Must be absolute to so the corresponding tcltest's tcl_library
+# is absolute.
 TCL_BUILDTIME_LIBRARY	= @TCL_SRC_DIR@/library
 
 CC			= @CC@
@@ -244,8 +255,8 @@ CC			= @CC@
 MKLINKS_FLAGS           = @MKLINKS_FLAGS@
 
 #----------------------------------------------------------------
-# The information below is usually usable as is.  The configure
-# script won't modify it and it only exists to make working
+# The information below is usually usable as is. The configure
+# script will NOT modify it and it only exists to make working
 # around selected rare system configurations easier.
 #----------------------------------------------------------------
 
@@ -253,27 +264,30 @@ GDB			= gdb
 DDD			= ddd
 
 #----------------------------------------------------------------
-# The information below should be usable as is.  The configure
-# script won't modify it and you shouldn't need to modify it
+# The information below should be usable as is. The configure
+# script will NOT modify it and you should NOT need to modify it
 # either.
 #----------------------------------------------------------------
 
 
 CC_SWITCHES = ${CFLAGS} ${CFLAGS_WARNING} ${SHLIB_CFLAGS} \
 -I${GENERIC_DIR} -I${SRC_DIR} \
-${AC_FLAGS} ${MATH_FLAGS} ${GENERIC_FLAGS} ${PROTO_FLAGS} ${MEM_DEBUG_FLAGS} \
-${COMPILE_DEBUG_FLAGS} ${NO_DEPRECATED_FLAGS} ${ENV_FLAGS} \
+${AC_FLAGS} ${MATH_FLAGS} ${GENERIC_FLAGS} ${PROTO_FLAGS} \
+${MEM_DEBUG_FLAGS} ${COMPILE_DEBUG_FLAGS} ${NO_DEPRECATED_FLAGS} \
+${ENV_FLAGS} ${C_ARCHFLAGS} \
 -DTCL_SHLIB_EXT=\"${SHLIB_SUFFIX}\"
 
 STUB_CC_SWITCHES = ${CFLAGS} ${CFLAGS_WARNING} ${SHLIB_CFLAGS} \
 -I${GENERIC_DIR} -I${SRC_DIR} \
-${AC_FLAGS} ${MATH_FLAGS} ${GENERIC_FLAGS} ${PROTO_FLAGS} ${MEM_DEBUG_FLAGS} \
-${COMPILE_DEBUG_FLAGS} ${ENV_FLAGS} -DTCL_SHLIB_EXT=\"${SHLIB_SUFFIX}\"
+${AC_FLAGS} ${MATH_FLAGS} ${GENERIC_FLAGS} ${PROTO_FLAGS} \
+${MEM_DEBUG_FLAGS} ${COMPILE_DEBUG_FLAGS} \
+${ENV_FLAGS} ${C_ARCHFLAGS} \
+-DTCL_SHLIB_EXT=\"${SHLIB_SUFFIX}\"
 
 LIBS		= @DL_LIBS@ @LIBS@ $(MATH_LIBS)
 
 DEPEND_SWITCHES	= ${CFLAGS} -I${GENERIC_DIR} -I${SRC_DIR} \
-${AC_FLAGS} ${MATH_FLAGS} \
+${AC_FLAGS} ${MATH_FLAGS} ${C_ARCHFLAGS} \
 ${GENERIC_FLAGS} ${PROTO_FLAGS} ${MEM_DEBUG_FLAGS} \
 -DTCL_SHLIB_EXT=\"${SHLIB_SUFFIX}\"
 
@@ -419,8 +433,8 @@ DL_SRCS = \
 MAC_OSX_SRCS = \
 	$(MAC_OSX_DIR)/tclMacOSXBundle.c
 
-# Note: don't include DL_SRCS or MAC_OSX_SRCS in SRCS: most of those
-# files won't compile on the current machine, and they will cause
+# Note: do NOT include DL_SRCS or MAC_OSX_SRCS in SRCS: most of those
+# files will NOT compile on the current machine, and they will cause
 # problems for things like "make depend".
 
 SRCS = $(GENERIC_SRCS) $(UNIX_SRCS) $(STUB_SRCS)
@@ -456,8 +470,8 @@ objs: ${OBJS}
 
 
 tclsh: ${TCLSH_OBJS} ${TCL_LIB_FILE}
-	${CC} ${LDFLAGS} ${TCLSH_OBJS} @TCL_BUILD_LIB_SPEC@ ${LIBS} \
-		${CC_SEARCH_FLAGS} -o tclsh
+	${CC} ${CFLAGS} ${LDFLAGS} ${TCLSH_OBJS} @TCL_BUILD_LIB_SPEC@ \
+	  ${LIBS} ${CC_SEARCH_FLAGS} ${C_ARCHFLAGS} -o tclsh
 
 # Resetting the LIB_RUNTIME_DIR below is required so that
 # the generated tcltest executable gets the build directory
@@ -469,11 +483,11 @@ tcltest: ${TCLTEST_OBJS} ${TCL_LIB_FILE} ${BUILD_DLTEST}
 
 tcltest-real:
 	${CC} ${LDFLAGS} ${TCLTEST_OBJS} @TCL_BUILD_LIB_SPEC@ ${LIBS} \
-		${CC_SEARCH_FLAGS} -o tcltest
+	  ${CC_SEARCH_FLAGS} ${C_ARCHFLAGS} -o tcltest
 
 # Note, in the target below TCL_LIBRARY needs to be set or else
-# "make test" won't work in the case where the compilation directory
-# isn't the same as the source directory.
+# "make test" will NOT work in the case where the compilation directory
+# is NOT the same as the source directory.
 # Specifying TESTFLAGS on the command line is the standard way to pass
 # args to tcltest, ie:
 #	% make test TESTFLAGS="-verbose bps -file fileName.test"
@@ -528,10 +542,12 @@ topDirName:
 	@cd $(TOP_DIR); pwd
 
 # The following target generates the file generic/tclDate.c 
-# from the yacc grammar found in generic/tclGetDate.y.  This is
+# from the yacc grammar found in generic/tclGetDate.y. This is
 # only run by hand as yacc is not available in all environments.
+# Furthermore, using the wrong yacc can lead to compile errors in the
+# resulting .c file.
 # The name of the .c file is different than the name of the .y file
-# so that make doesn't try to automatically regenerate the .c file.
+# so that make does NOT try to automatically regenerate the .c file.
 
 gendate:
 	yacc -l $(GENERIC_DIR)/tclGetDate.y
@@ -563,10 +579,11 @@ install-strip:
 # some ranlibs write to current directory, and this might not always be
 # possible (e.g. if installing as root).
 
+# FIXME(?): pathnames can be troublesome, check quoting
 install-binaries: binaries
-	@for i in $(LIB_INSTALL_DIR) $(BIN_INSTALL_DIR) ; \
+	@for i in "$(LIB_INSTALL_DIR)" "$(BIN_INSTALL_DIR)" ; \
 	    do \
-	    if [ ! -d $$i ] ; then \
+	    if [ ! -d "$$i" ] ; then \
 		echo "Making directory $$i"; \
 		mkdir -p $$i; \
 		chmod 755 $$i; \
@@ -577,7 +594,7 @@ install-binaries: binaries
 	    chmod +x $(SRC_DIR)/install-sh; \
 	    fi
 	@echo "Installing $(LIB_FILE) to $(LIB_INSTALL_DIR)/"
-	@@INSTALL_LIB@
+	@INSTALL_LIB@
 	@chmod 555 $(LIB_INSTALL_DIR)/$(LIB_FILE)
 	@if test "$(TCL_BUILD_EXP_FILE)" != ""; then \
 	    echo "Installing $(TCL_EXP_FILE) to $(LIB_INSTALL_DIR)/"; \
@@ -594,9 +611,9 @@ install-binaries: binaries
 	fi
 
 install-libraries: libraries
-	@for i in $(INCLUDE_INSTALL_DIR) $(SCRIPT_INSTALL_DIR); \
+	@for i in "$(INCLUDE_INSTALL_DIR)" "$(SCRIPT_INSTALL_DIR)"; \
 	    do \
-	    if [ ! -d $$i ] ; then \
+	    if [ ! -d "$$i" ] ; then \
 		echo "Making directory $$i"; \
 		mkdir -p $$i; \
 		chmod 755 $$i; \
@@ -703,22 +720,32 @@ install-doc: doc
 Makefile: $(UNIX_DIR)/Makefile.in $(DLTEST_DIR)/Makefile.in
 	$(SHELL) config.status
 
+am--refresh:
+	@true
+.PHONY: am--refresh
+
 clean:
 	rm -f *.a *.o libtcl* core errs *~ \#* TAGS *.E a.out \
 		errors tclsh tcltest lib.exp
-	cd dltest ; $(MAKE) clean
+	if test -f dltest/Makefile; then \
+	  cd dltest && $(MAKE) clean; \
+	fi
 
 distclean: clean
-	rm -rf Makefile config.status config.cache config.log tclConfig.sh \
-		$(PACKAGE).* prototype
-	cd dltest ; $(MAKE) distclean
+	rm -rf config.status config.cache config.log tclConfig.sh \
+		$(PACKAGE).* prototype .DS_Store *.dSYM
+	if test -f dltest/Makefile; then \
+	  cd dltest && $(MAKE) distclean; \
+	fi
+	-rm -f Makefile
+	-rm -rf autom4te.cache || rmdir autom4te.cache
 
 depend:
 	makedepend -- $(DEPEND_SWITCHES) -- $(SRCS)
 
-# Test binaries.  The rules for tclTestInit.o and xtTestInit.o are
-# complicated because they are compiled from tclAppInit.c.  Can't use
-# the "-o" option because this doesn't work on some strange compilers
+# Test binaries. The rules for tclTestInit.o and xtTestInit.o are
+# complicated because they are compiled from tclAppInit.c. Cannot use
+# the "-o" option because this does NOT work on some strange compilers
 # (e.g. UnixWare).
 
 tclTestInit.o: $(UNIX_DIR)/tclAppInit.c
@@ -801,7 +828,7 @@ tclCmdMZ.o: $(GENERIC_DIR)/tclCmdMZ.c
 	$(CC) -c $(CC_SWITCHES) $(GENERIC_DIR)/tclCmdMZ.c
 
 tclDate.o: $(GENERIC_DIR)/tclDate.c
-	$(CC) -c $(CC_SWITCHES) $(GENERIC_DIR)/tclDate.c
+	$(CC) -c $(CC_SWITCHES) -Wno-unused-label $(GENERIC_DIR)/tclDate.c
 
 tclCompCmds.o: $(GENERIC_DIR)/tclCompCmds.c
 	$(CC) -c $(CC_SWITCHES) $(GENERIC_DIR)/tclCompCmds.c
@@ -1018,7 +1045,7 @@ tclUnixTime.o: $(UNIX_DIR)/tclUnixTime.c
 
 # REDHAT LOCAL
 
-# Don't burn a TCL_LIBRARY path into tclUnixInit.o.
+# Do NOT burn a TCL_LIBRARY path into tclUnixInit.o.
 # We need Tcl to be location independent and a compiled
 # in path just masks problems with the search algo.
 
@@ -1029,7 +1056,8 @@ tclUnixTime.o: $(UNIX_DIR)/tclUnixTime.c
 
 # END REDHAT LOCAL
 
-tclUnixInit.o: $(UNIX_DIR)/tclUnixInit.c $(GENERIC_DIR)/tclInitScript.h tclConfig.sh
+tclUnixInit.o: $(UNIX_DIR)/tclUnixInit.c $(GENERIC_DIR)/tclInt.h \
+  $(GENERIC_DIR)/tclPort.h $(GENERIC_DIR)/tclInitScript.h tclConfig.sh
 	$(CC) -c $(CC_SWITCHES) -DTCL_LIBRARY=\"\" \
 		-DTCL_PACKAGE_PATH="\"${TCL_PACKAGE_PATH}\"" \
 		$(UNIX_DIR)/tclUnixInit.c
@@ -1127,8 +1155,8 @@ genstubs:
 #
 
 checkstubs:
-	-@for i in `nm -p $(TCL_LIB_FILE) | awk '$$2 ~ /T/ { print $$3 }' \
-		| sort -n`; do \
+	-@for i in `nm -p $(TCL_LIB_FILE) 2>/dev/null | awk '$$2 ~ /T/ { print $$3 }' \
+		| sort -n | uniq`; do \
 		match=0; \
 		for j in $(TCL_DECLS); do \
 		    if [ `grep -c $$i $$j` -gt 0 ]; then \
@@ -1142,11 +1170,12 @@ checkstubs:
 # Target to check that all public APIs which are not command
 # implementations have an entry in section three of the distributed
 # manpages.
+# WARNING: this target takes a long time to run
 #
 
 checkdoc:
-	-@for i in `nm -p $(TCL_LIB_FILE) | awk '$$3 ~ /Tcl_/ { print $$3 }' \
-		| grep -v 'Cmd$$' | sort -n`; do \
+	-@for i in `nm -p $(TCL_LIB_FILE) 2>/dev/null | awk '$$3 ~ /Tcl_/ { print $$3 }' \
+		| grep -v 'Cmd$$' | sort -n | uniq`; do \
 		match=0; \
 		for j in $(TOP_DIR)/doc/*.3; do \
 		    if [ `grep '\-' $$j | grep -c $$i` -gt 0 ]; then \
@@ -1169,10 +1198,10 @@ checkuchar:
 #
 
 checkexports: $(TCL_LIB_FILE)
-	-nm -p $(TCL_LIB_FILE) | awk '$$2 ~ /[TDB]/ { print $$3 }' | sort -n | grep -v '^[Tt]cl'
+	-nm -p $(TCL_LIB_FILE) 2>/dev/null | awk '$$2 ~ /[TDB]/ { print $$3 }' | sort -n | uniq | grep -v '^[Tt]cl'
 
 #
-# Target to create a Tcl RPM for Linux.  Requires that you be on a Linux
+# Target to create a Tcl RPM for Linux. Requires that you be on a Linux
 # system.
 #
 
@@ -1201,8 +1230,8 @@ DISTROOT = /tmp/dist
 DISTNAME = tcl${VERSION}${PATCH_LEVEL}
 ZIPNAME	 = tcl${MAJOR_VERSION}${MINOR_VERSION}${PATCH_LEVEL}-src.zip
 DISTDIR	 = $(DISTROOT)/$(DISTNAME)
-$(UNIX_DIR)/configure: $(UNIX_DIR)/configure.in
-	autoconf $(UNIX_DIR)/configure.in > $(UNIX_DIR)/configure
+$(UNIX_DIR)/configure: $(UNIX_DIR)/configure.ac
+	autoconf $(UNIX_DIR)/configure.ac > $(UNIX_DIR)/configure
 
 dist: $(UNIX_DIR)/configure mklinks
 	rm -rf $(DISTDIR)
@@ -1210,13 +1239,13 @@ dist: $(UNIX_DIR)/configure mklinks
 	cp -p $(UNIX_DIR)/*.c $(UNIX_DIR)/*.h $(DISTDIR)/unix
 	cp $(UNIX_DIR)/Makefile.in $(DISTDIR)/unix
 	chmod 664 $(DISTDIR)/unix/Makefile.in
-	cp $(UNIX_DIR)/configure $(UNIX_DIR)/configure.in \
+	cp $(UNIX_DIR)/configure $(UNIX_DIR)/configure.ac \
 		$(UNIX_DIR)/tcl.m4 $(UNIX_DIR)/aclocal.m4 \
 		$(UNIX_DIR)/tclConfig.sh.in $(UNIX_DIR)/install-sh \
 		$(UNIX_DIR)/README $(UNIX_DIR)/ldAix $(UNIX_DIR)/tcl.spec \
 		$(UNIX_DIR)/mkLinks \
 		$(DISTDIR)/unix
-	chmod 775 $(DISTDIR)/unix/configure $(DISTDIR)/unix/configure.in
+	chmod 775 $(DISTDIR)/unix/configure $(DISTDIR)/unix/configure.ac
 	chmod 775 $(DISTDIR)/unix/ldAix
 	chmod +x $(DISTDIR)/unix/install-sh
 	mkdir $(DISTDIR)/generic
@@ -1251,7 +1280,7 @@ dist: $(UNIX_DIR)/configure mklinks
 		$(DISTDIR)/tests
 	mkdir $(DISTDIR)/win
 	cp $(TOP_DIR)/win/Makefile.in $(DISTDIR)/win
-	cp $(TOP_DIR)/win/configure.in $(TOP_DIR)/win/configure \
+	cp $(TOP_DIR)/win/configure.ac $(TOP_DIR)/win/configure \
 		$(TOP_DIR)/win/tclConfig.sh.in \
 		$(TOP_DIR)/win/tcl.m4 $(TOP_DIR)/win/aclocal.m4 \
 		$(DISTDIR)/win
@@ -1292,7 +1321,7 @@ dist: $(UNIX_DIR)/configure mklinks
 		$(DISTDIR)/unix/dltest
 	mkdir $(DISTDIR)/tools
 	cp -p $(TOP_DIR)/tools/Makefile.in $(TOP_DIR)/tools/README \
-		$(TOP_DIR)/tools/configure $(TOP_DIR)/tools/configure.in \
+		$(TOP_DIR)/tools/configure $(TOP_DIR)/tools/configure.ac \
 		$(TOP_DIR)/tools/*.tcl $(TOP_DIR)/tools/man2tcl.c \
 		$(TOP_DIR)/tools/tcl.wse.in $(TOP_DIR)/tools/*.bmp \
 		$(TOP_DIR)/tools/tcl.hpj.in \
@@ -1314,7 +1343,7 @@ alldist: dist
 # The target below is similar to "alldist" except it works for patch
 # releases.  It is needed because patch releases are peculiar: the
 # patch designation appears in the name of the compressed file
-# (e.g. tcl8.0p1.tar.gz) but the extracted source directory doesn't
+# (e.g. tcl8.0p1.tar.gz) but the extracted source directory does NOT
 # include the patch designation (e.g. tcl8.0).
 #
 
@@ -1329,8 +1358,8 @@ allpatch: dist
 
 #
 # This target creates the HTML folder for Tcl & Tk and places it
-# in DISTDIR/html.  It uses the tcltk-man2html.tcl tool from
-# the Tcl group's tool workspace.  It depends on the Tcl & Tk being
+# in DISTDIR/html. It uses the tcltk-man2html.tcl tool from
+# the Tcl group's tool workspace. It depends on the Tcl & Tk being
 # in directories called tcl8.3 & tk8.3 up two directories from the
 # TOOL_DIR.
 #
@@ -1342,7 +1371,7 @@ html:
 #
 # Target to create a Macintosh version of the distribution.  This will
 # do a normal distribution and then massage the output to prepare it
-# for moving to the Mac platform.  This requires a few scripts and
+# for moving to the Mac platform. This requires a few scripts and
 # programs found only in the Tcl group's tool workspace.
 #
 

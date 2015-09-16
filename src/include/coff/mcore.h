@@ -15,7 +15,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* This file holds definitions specific to the MCore COFF/PE ABI. */
 
@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #define L_LNNO_SIZE 2
 #include "coff/external.h"
 
-#define	MCOREMAGIC	0xb00  /* I just made this up */ 
+#define	MCOREMAGIC	0xb00  /* I just made this up */
 
 #define MCOREBADMAG(x) (((x).f_magic != MCOREMAGIC))
 
@@ -53,7 +53,7 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 
 /* Define some NT default values. */
 #define NT_SECTION_ALIGNMENT 0x1000
-#define NT_FILE_ALIGNMENT    0x200  
+#define NT_FILE_ALIGNMENT    0x200
 #define NT_DEF_RESERVE       0x100000
 #define NT_DEF_COMMIT        0x1000
 

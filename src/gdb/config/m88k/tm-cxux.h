@@ -1,4 +1,5 @@
-/* Target definitions for m88k running Harris CX/UX.
+/* tm-cxux.h
+   Target definitions for m88k running Harris CX/UX.
    Copyright 1993, 1994 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -48,7 +49,7 @@ X_REGISTER_RAW_TYPE;
 
 #undef SHIFT_INST_REGS
 
-/* Extended registers are treated as 16 bytes by Harris' OS's. 
+/* Extended registers are treated as 16 bytes by Harris' OS's.
    We treat them as 16 bytes here for consistency's sake.  */
 
 #undef REGISTER_RAW_SIZE
@@ -60,3 +61,5 @@ X_REGISTER_RAW_TYPE;
    ? (((GP_REGS) * REGISTER_RAW_SIZE(0)) + \
       (((N) - XFP_REGNUM) * REGISTER_RAW_SIZE(XFP_REGNUM))) \
    : ((N) * REGISTER_RAW_SIZE(0)))
+
+/* EOF */

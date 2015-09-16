@@ -7,7 +7,7 @@ double func_over_signal_thrower (double, float, const char *);
 int signal_thrower (int);
 void myhandler (int);
 
-main (int argc, char **argv, char **envp)
+int main (int argc, char **argv, char **envp)
 {
   int ret;
   char *sret;
@@ -17,7 +17,7 @@ main (int argc, char **argv, char **envp)
 
 }
 
-/* Throw a signal while down on the stack, make sure we can find 
+/* Throw a signal while down on the stack, make sure we can find
    our way through _sigtramp() and get all the necessary information
    out of the sigcontext struct to backtrace our way out. */
 

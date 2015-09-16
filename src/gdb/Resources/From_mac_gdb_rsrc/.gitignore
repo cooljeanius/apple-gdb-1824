@@ -1,0 +1,5 @@
+# ignore Resources that are basically unreadable as binary:
+DITL/*
+MBAR/*
+MENU/*
+SIZE/*

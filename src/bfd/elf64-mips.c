@@ -1629,137 +1629,130 @@ static reloc_howto_type elf_mips_gnu_rela16_s2 =
 	 0x0000ffff,		/* dst_mask */
 	 TRUE);			/* pcrel_offset */
 
-/* Swap in a MIPS 64-bit Rel reloc.  */
-
+/* Swap in a MIPS 64-bit Rel reloc: */
 static void
-mips_elf64_swap_reloc_in (bfd *abfd, const Elf64_Mips_External_Rel *src,
-			  Elf64_Mips_Internal_Rela *dst)
+mips_elf64_swap_reloc_in(bfd *abfd, const Elf64_Mips_External_Rel *src,
+			 Elf64_Mips_Internal_Rela *dst)
 {
-  dst->r_offset = H_GET_64 (abfd, src->r_offset);
-  dst->r_sym = H_GET_32 (abfd, src->r_sym);
-  dst->r_ssym = H_GET_8 (abfd, src->r_ssym);
-  dst->r_type3 = H_GET_8 (abfd, src->r_type3);
-  dst->r_type2 = H_GET_8 (abfd, src->r_type2);
-  dst->r_type = H_GET_8 (abfd, src->r_type);
+  dst->r_offset = H_GET_64(abfd, src->r_offset);
+  dst->r_sym = (unsigned long)H_GET_32(abfd, src->r_sym);
+  dst->r_ssym = H_GET_8(abfd, src->r_ssym);
+  dst->r_type3 = H_GET_8(abfd, src->r_type3);
+  dst->r_type2 = H_GET_8(abfd, src->r_type2);
+  dst->r_type = H_GET_8(abfd, src->r_type);
   dst->r_addend = 0;
 }
 
-/* Swap in a MIPS 64-bit Rela reloc.  */
-
+/* Swap in a MIPS 64-bit Rela reloc: */
 static void
-mips_elf64_swap_reloca_in (bfd *abfd, const Elf64_Mips_External_Rela *src,
-			   Elf64_Mips_Internal_Rela *dst)
+mips_elf64_swap_reloca_in(bfd *abfd, const Elf64_Mips_External_Rela *src,
+			  Elf64_Mips_Internal_Rela *dst)
 {
-  dst->r_offset = H_GET_64 (abfd, src->r_offset);
-  dst->r_sym = H_GET_32 (abfd, src->r_sym);
-  dst->r_ssym = H_GET_8 (abfd, src->r_ssym);
-  dst->r_type3 = H_GET_8 (abfd, src->r_type3);
-  dst->r_type2 = H_GET_8 (abfd, src->r_type2);
-  dst->r_type = H_GET_8 (abfd, src->r_type);
-  dst->r_addend = H_GET_S64 (abfd, src->r_addend);
+  dst->r_offset = H_GET_64(abfd, src->r_offset);
+  dst->r_sym = (unsigned long)H_GET_32(abfd, src->r_sym);
+  dst->r_ssym = H_GET_8(abfd, src->r_ssym);
+  dst->r_type3 = H_GET_8(abfd, src->r_type3);
+  dst->r_type2 = H_GET_8(abfd, src->r_type2);
+  dst->r_type = H_GET_8(abfd, src->r_type);
+  dst->r_addend = H_GET_S64(abfd, src->r_addend);
 }
 
-/* Swap out a MIPS 64-bit Rel reloc.  */
-
+/* Swap out a MIPS 64-bit Rel reloc: */
 static void
-mips_elf64_swap_reloc_out (bfd *abfd, const Elf64_Mips_Internal_Rela *src,
-			   Elf64_Mips_External_Rel *dst)
+mips_elf64_swap_reloc_out(bfd *abfd, const Elf64_Mips_Internal_Rela *src,
+			  Elf64_Mips_External_Rel *dst)
 {
-  H_PUT_64 (abfd, src->r_offset, dst->r_offset);
-  H_PUT_32 (abfd, src->r_sym, dst->r_sym);
-  H_PUT_8 (abfd, src->r_ssym, dst->r_ssym);
-  H_PUT_8 (abfd, src->r_type3, dst->r_type3);
-  H_PUT_8 (abfd, src->r_type2, dst->r_type2);
-  H_PUT_8 (abfd, src->r_type, dst->r_type);
+  H_PUT_64(abfd, src->r_offset, dst->r_offset);
+  H_PUT_32(abfd, src->r_sym, dst->r_sym);
+  H_PUT_8(abfd, src->r_ssym, dst->r_ssym);
+  H_PUT_8(abfd, src->r_type3, dst->r_type3);
+  H_PUT_8(abfd, src->r_type2, dst->r_type2);
+  H_PUT_8(abfd, src->r_type, dst->r_type);
 }
 
-/* Swap out a MIPS 64-bit Rela reloc.  */
-
+/* Swap out a MIPS 64-bit Rela reloc: */
 static void
-mips_elf64_swap_reloca_out (bfd *abfd, const Elf64_Mips_Internal_Rela *src,
-			    Elf64_Mips_External_Rela *dst)
+mips_elf64_swap_reloca_out(bfd *abfd, const Elf64_Mips_Internal_Rela *src,
+			   Elf64_Mips_External_Rela *dst)
 {
-  H_PUT_64 (abfd, src->r_offset, dst->r_offset);
-  H_PUT_32 (abfd, src->r_sym, dst->r_sym);
-  H_PUT_8 (abfd, src->r_ssym, dst->r_ssym);
-  H_PUT_8 (abfd, src->r_type3, dst->r_type3);
-  H_PUT_8 (abfd, src->r_type2, dst->r_type2);
-  H_PUT_8 (abfd, src->r_type, dst->r_type);
-  H_PUT_S64 (abfd, src->r_addend, dst->r_addend);
+  H_PUT_64(abfd, src->r_offset, dst->r_offset);
+  H_PUT_32(abfd, src->r_sym, dst->r_sym);
+  H_PUT_8(abfd, src->r_ssym, dst->r_ssym);
+  H_PUT_8(abfd, src->r_type3, dst->r_type3);
+  H_PUT_8(abfd, src->r_type2, dst->r_type2);
+  H_PUT_8(abfd, src->r_type, dst->r_type);
+  H_PUT_S64(abfd, src->r_addend, dst->r_addend);
 }
 
-/* Swap in a MIPS 64-bit Rel reloc.  */
-
+/* Swap in a MIPS 64-bit Rel reloc: */
 static void
-mips_elf64_be_swap_reloc_in (bfd *abfd, const bfd_byte *src,
-			     Elf_Internal_Rela *dst)
+mips_elf64_be_swap_reloc_in(bfd *abfd, const bfd_byte *src,
+			    Elf_Internal_Rela *dst)
 {
   Elf64_Mips_Internal_Rela mirel;
 
-  mips_elf64_swap_reloc_in (abfd,
-			    (const Elf64_Mips_External_Rel *) src,
-			    &mirel);
+  mips_elf64_swap_reloc_in(abfd,
+			   (const Elf64_Mips_External_Rel *)src,
+			   &mirel);
 
   dst[0].r_offset = mirel.r_offset;
-  dst[0].r_info = ELF64_R_INFO (mirel.r_sym, mirel.r_type);
+  dst[0].r_info = ELF64_R_INFO(mirel.r_sym, mirel.r_type);
   dst[0].r_addend = 0;
   dst[1].r_offset = mirel.r_offset;
-  dst[1].r_info = ELF64_R_INFO (mirel.r_ssym, mirel.r_type2);
+  dst[1].r_info = ELF64_R_INFO(mirel.r_ssym, mirel.r_type2);
   dst[1].r_addend = 0;
   dst[2].r_offset = mirel.r_offset;
-  dst[2].r_info = ELF64_R_INFO (STN_UNDEF, mirel.r_type3);
+  dst[2].r_info = ELF64_R_INFO(STN_UNDEF, mirel.r_type3);
   dst[2].r_addend = 0;
 }
 
-/* Swap in a MIPS 64-bit Rela reloc.  */
-
+/* Swap in a MIPS 64-bit Rela reloc: */
 static void
-mips_elf64_be_swap_reloca_in (bfd *abfd, const bfd_byte *src,
-			      Elf_Internal_Rela *dst)
+mips_elf64_be_swap_reloca_in(bfd *abfd, const bfd_byte *src,
+			     Elf_Internal_Rela *dst)
 {
   Elf64_Mips_Internal_Rela mirela;
 
-  mips_elf64_swap_reloca_in (abfd,
-			     (const Elf64_Mips_External_Rela *) src,
-			     &mirela);
+  mips_elf64_swap_reloca_in(abfd,
+			    (const Elf64_Mips_External_Rela *)src,
+			    &mirela);
 
   dst[0].r_offset = mirela.r_offset;
-  dst[0].r_info = ELF64_R_INFO (mirela.r_sym, mirela.r_type);
+  dst[0].r_info = ELF64_R_INFO(mirela.r_sym, mirela.r_type);
   dst[0].r_addend = mirela.r_addend;
   dst[1].r_offset = mirela.r_offset;
-  dst[1].r_info = ELF64_R_INFO (mirela.r_ssym, mirela.r_type2);
+  dst[1].r_info = ELF64_R_INFO(mirela.r_ssym, mirela.r_type2);
   dst[1].r_addend = 0;
   dst[2].r_offset = mirela.r_offset;
-  dst[2].r_info = ELF64_R_INFO (STN_UNDEF, mirela.r_type3);
+  dst[2].r_info = ELF64_R_INFO(STN_UNDEF, mirela.r_type3);
   dst[2].r_addend = 0;
 }
 
-/* Swap out a MIPS 64-bit Rel reloc.  */
-
+/* Swap out a MIPS 64-bit Rel reloc: */
 static void
-mips_elf64_be_swap_reloc_out (bfd *abfd, const Elf_Internal_Rela *src,
-			      bfd_byte *dst)
+mips_elf64_be_swap_reloc_out(bfd *abfd, const Elf_Internal_Rela *src,
+			     bfd_byte *dst)
 {
   Elf64_Mips_Internal_Rela mirel;
 
   mirel.r_offset = src[0].r_offset;
   BFD_ASSERT(src[0].r_offset == src[1].r_offset);
 
-  mirel.r_type = ELF64_MIPS_R_TYPE (src[0].r_info);
-  mirel.r_sym = ELF64_R_SYM (src[0].r_info);
-  mirel.r_type2 = ELF64_MIPS_R_TYPE (src[1].r_info);
-  mirel.r_ssym = ELF64_MIPS_R_SSYM (src[1].r_info);
-  mirel.r_type3 = ELF64_MIPS_R_TYPE (src[2].r_info);
+  mirel.r_type = ELF64_MIPS_R_TYPE(src[0].r_info);
+  mirel.r_sym = (unsigned long)ELF64_R_SYM(src[0].r_info);
+  mirel.r_type2 = ELF64_MIPS_R_TYPE(src[1].r_info);
+  mirel.r_ssym = ELF64_MIPS_R_SSYM(src[1].r_info);
+  mirel.r_type3 = ELF64_MIPS_R_TYPE(src[2].r_info);
 
-  mips_elf64_swap_reloc_out (abfd, &mirel,
-			     (Elf64_Mips_External_Rel *) dst);
+  mips_elf64_swap_reloc_out(abfd, &mirel,
+			    (Elf64_Mips_External_Rel *)dst);
 }
 
 /* Swap out a MIPS 64-bit Rela reloc.  */
 
 static void
-mips_elf64_be_swap_reloca_out (bfd *abfd, const Elf_Internal_Rela *src,
-			       bfd_byte *dst)
+mips_elf64_be_swap_reloca_out(bfd *abfd, const Elf_Internal_Rela *src,
+			      bfd_byte *dst)
 {
   Elf64_Mips_Internal_Rela mirela;
 
@@ -1767,8 +1760,8 @@ mips_elf64_be_swap_reloca_out (bfd *abfd, const Elf_Internal_Rela *src,
   BFD_ASSERT(src[0].r_offset == src[1].r_offset);
   BFD_ASSERT(src[0].r_offset == src[2].r_offset);
 
-  mirela.r_type = ELF64_MIPS_R_TYPE (src[0].r_info);
-  mirela.r_sym = ELF64_R_SYM (src[0].r_info);
+  mirela.r_type = ELF64_MIPS_R_TYPE(src[0].r_info);
+  mirela.r_sym = (unsigned long)ELF64_R_SYM(src[0].r_info);
   mirela.r_addend = src[0].r_addend;
   BFD_ASSERT(src[1].r_addend == 0);
   BFD_ASSERT(src[2].r_addend == 0);
@@ -2317,33 +2310,34 @@ mips_elf64_canonicalize_reloc (bfd *abfd, sec_ptr section,
 }
 
 static long
-mips_elf64_canonicalize_dynamic_reloc (bfd *abfd, arelent **storage,
-				       asymbol **syms)
+mips_elf64_canonicalize_dynamic_reloc(bfd *abfd, arelent **storage,
+				      asymbol **syms)
 {
-  bfd_boolean (*slurp_relocs) (bfd *, asection *, asymbol **, bfd_boolean);
+  bfd_boolean (*slurp_relocs)(bfd *, asection *, asymbol **, bfd_boolean);
   asection *s;
   long ret;
 
-  if (elf_dynsymtab (abfd) == 0)
+  if (elf_dynsymtab(abfd) == 0)
     {
-      bfd_set_error (bfd_error_invalid_operation);
+      bfd_set_error(bfd_error_invalid_operation);
       return -1;
     }
 
-  slurp_relocs = get_elf_backend_data (abfd)->s->slurp_reloc_table;
+  slurp_relocs = get_elf_backend_data(abfd)->s->slurp_reloc_table;
   ret = 0;
   for (s = abfd->sections; s != NULL; s = s->next)
     {
-      if (elf_section_data (s)->this_hdr.sh_link == elf_dynsymtab (abfd)
-	  && (elf_section_data (s)->this_hdr.sh_type == SHT_REL
-	      || elf_section_data (s)->this_hdr.sh_type == SHT_RELA))
+      if ((elf_section_data(s)->this_hdr.sh_link == elf_dynsymtab(abfd))
+	  && ((elf_section_data(s)->this_hdr.sh_type == SHT_REL)
+	      || (elf_section_data(s)->this_hdr.sh_type == SHT_RELA)))
 	{
 	  arelent *p;
 	  long count, i;
 
-	  if (! (*slurp_relocs) (abfd, s, syms, TRUE))
+	  if (! (*slurp_relocs)(abfd, s, syms, TRUE))
 	    return -1;
-	  count = s->size / elf_section_data (s)->this_hdr.sh_entsize * 3;
+	  count = (long)(s->size
+                         / elf_section_data(s)->this_hdr.sh_entsize * 3L);
 	  p = s->relocation;
 	  for (i = 0; i < count; i++)
 	    *storage++ = p++;
@@ -2363,35 +2357,35 @@ mips_elf64_canonicalize_dynamic_reloc (bfd *abfd, arelent **storage,
    generic code seems to depend on this.  */
 
 static bfd_boolean
-mips_elf64_slurp_one_reloc_table (bfd *abfd, asection *asect,
-				  Elf_Internal_Shdr *rel_hdr,
-				  bfd_size_type reloc_count,
-				  arelent *relents, asymbol **symbols,
-				  bfd_boolean dynamic)
+mips_elf64_slurp_one_reloc_table(bfd *abfd, asection *asect,
+				 Elf_Internal_Shdr *rel_hdr,
+				 bfd_size_type reloc_count,
+				 arelent *relents, asymbol **symbols,
+				 bfd_boolean dynamic)
 {
   void *allocated;
   bfd_byte *native_relocs;
   arelent *relent;
   bfd_vma i;
-  int entsize;
+  size_t entsize;
   bfd_boolean rela_p;
 
-  allocated = bfd_malloc (rel_hdr->sh_size);
+  allocated = bfd_malloc(rel_hdr->sh_size);
   if (allocated == NULL)
     return FALSE;
 
-  if (bfd_seek (abfd, rel_hdr->sh_offset, SEEK_SET) != 0
-      || (bfd_bread (allocated, rel_hdr->sh_size, abfd)
+  if ((bfd_seek(abfd, rel_hdr->sh_offset, SEEK_SET) != 0)
+      || (bfd_bread(allocated, rel_hdr->sh_size, abfd)
 	  != rel_hdr->sh_size))
     goto error_return;
 
-  native_relocs = allocated;
+  native_relocs = (bfd_byte *)allocated;
 
-  entsize = rel_hdr->sh_entsize;
-  BFD_ASSERT (entsize == sizeof (Elf64_Mips_External_Rel)
-	      || entsize == sizeof (Elf64_Mips_External_Rela));
+  entsize = (size_t)rel_hdr->sh_entsize;
+  BFD_ASSERT((entsize == sizeof(Elf64_Mips_External_Rel))
+	     || (entsize == sizeof(Elf64_Mips_External_Rela)));
 
-  if (entsize == sizeof (Elf64_Mips_External_Rel))
+  if (entsize == sizeof(Elf64_Mips_External_Rel))
     rela_p = FALSE;
   else
     rela_p = TRUE;
@@ -2503,20 +2497,20 @@ mips_elf64_slurp_one_reloc_table (bfd *abfd, asection *asect,
 	  if ((abfd->flags & (EXEC_P | DYNAMIC)) == 0 || dynamic)
 	    relent->address = rela.r_offset;
 	  else
-	    relent->address = rela.r_offset - asect->vma;
+	    relent->address = (rela.r_offset - asect->vma);
 
 	  relent->addend = rela.r_addend;
 
-	  relent->howto = mips_elf64_rtype_to_howto (type, rela_p);
+	  relent->howto = mips_elf64_rtype_to_howto(type, rela_p);
 
 	  ++relent;
 	}
     }
 
-  asect->reloc_count += (relent - relents) / 3;
+  asect->reloc_count += (unsigned int)((relent - relents) / 3U);
 
   if (allocated != NULL)
-    free (allocated);
+    free(allocated);
 
   return TRUE;
 
@@ -2573,31 +2567,29 @@ mips_elf64_slurp_reloc_table (bfd *abfd, asection *asect,
 	return TRUE;
 
       rel_hdr = &d->this_hdr;
-      reloc_count = NUM_SHDR_ENTRIES (rel_hdr);
+      reloc_count = NUM_SHDR_ENTRIES(rel_hdr);
       rel_hdr2 = NULL;
       reloc_count2 = 0;
     }
 
-  /* Allocate space for 3 arelent structures for each Rel structure.  */
-  amt = (reloc_count + reloc_count2) * 3 * sizeof (arelent);
-  relents = bfd_alloc (abfd, amt);
+  /* Allocate space for 3 arelent structures for each Rel structure: */
+  amt = (reloc_count + reloc_count2) * 3 * sizeof(arelent);
+  relents = (arelent *)bfd_alloc(abfd, amt);
   if (relents == NULL)
     return FALSE;
 
-  /* The slurp_one_reloc_table routine increments reloc_count.  */
+  /* The slurp_one_reloc_table routine increments reloc_count: */
   asect->reloc_count = 0;
 
-  if (! mips_elf64_slurp_one_reloc_table (abfd, asect,
-					  rel_hdr, reloc_count,
-					  relents,
-					  symbols, dynamic))
+  if (! mips_elf64_slurp_one_reloc_table(abfd, asect, rel_hdr, reloc_count,
+					 relents, symbols, dynamic))
     return FALSE;
   if (d->rel_hdr2 != NULL)
     {
-      if (! mips_elf64_slurp_one_reloc_table (abfd, asect,
-					      rel_hdr2, reloc_count2,
-					      relents + reloc_count * 3,
-					      symbols, dynamic))
+      if (! mips_elf64_slurp_one_reloc_table(abfd, asect,
+					     rel_hdr2, reloc_count2,
+					     (relents + reloc_count * 3),
+					     symbols, dynamic))
 	return FALSE;
     }
 
@@ -2605,17 +2597,16 @@ mips_elf64_slurp_reloc_table (bfd *abfd, asection *asect,
   return TRUE;
 }
 
-/* Write out the relocations.  */
-
+/* Write out the relocations: */
 static void
-mips_elf64_write_relocs (bfd *abfd, asection *sec, void *data)
+mips_elf64_write_relocs(bfd *abfd, asection *sec, void *data)
 {
-  bfd_boolean *failedp = data;
+  bfd_boolean *failedp = (bfd_boolean *)data;
   int count;
   Elf_Internal_Shdr *rel_hdr;
   unsigned int idx;
 
-  /* If we have already failed, don't do anything.  */
+  /* If we have already failed, then do NOT do anything: */
   if (*failedp)
     return;
 
@@ -2671,18 +2662,17 @@ mips_elf64_write_relocs (bfd *abfd, asection *sec, void *data)
 }
 
 static void
-mips_elf64_write_rel (bfd *abfd, asection *sec,
-		      Elf_Internal_Shdr *rel_hdr,
-		      int *count, void *data)
+mips_elf64_write_rel(bfd *abfd, asection *sec, Elf_Internal_Shdr *rel_hdr,
+                     int *count, void *data)
 {
-  bfd_boolean *failedp = data;
+  bfd_boolean *failedp = (bfd_boolean *)data;
   Elf64_Mips_External_Rel *ext_rel;
   unsigned int idx;
   asymbol *last_sym = 0;
   int last_sym_idx = 0;
 
-  rel_hdr->sh_size = rel_hdr->sh_entsize * *count;
-  rel_hdr->contents = bfd_alloc (abfd, rel_hdr->sh_size);
+  rel_hdr->sh_size = (rel_hdr->sh_entsize * *count);
+  rel_hdr->contents = (unsigned char *)bfd_alloc(abfd, rel_hdr->sh_size);
   if (rel_hdr->contents == NULL)
     {
       *failedp = TRUE;
@@ -2764,23 +2754,22 @@ mips_elf64_write_rel (bfd *abfd, asection *sec,
       mips_elf64_swap_reloc_out (abfd, &int_rel, ext_rel);
     }
 
-  BFD_ASSERT (ext_rel - (Elf64_Mips_External_Rel *) rel_hdr->contents
-	      == *count);
+  BFD_ASSERT((ext_rel - (Elf64_Mips_External_Rel *)rel_hdr->contents)
+             == *count);
 }
 
 static void
-mips_elf64_write_rela (bfd *abfd, asection *sec,
-		       Elf_Internal_Shdr *rela_hdr,
-		       int *count, void *data)
+mips_elf64_write_rela(bfd *abfd, asection *sec,
+                      Elf_Internal_Shdr *rela_hdr, int *count, void *data)
 {
-  bfd_boolean *failedp = data;
+  bfd_boolean *failedp = (bfd_boolean *)data;
   Elf64_Mips_External_Rela *ext_rela;
   unsigned int idx;
   asymbol *last_sym = 0;
   int last_sym_idx = 0;
 
-  rela_hdr->sh_size = rela_hdr->sh_entsize * *count;
-  rela_hdr->contents = bfd_alloc (abfd, rela_hdr->sh_size);
+  rela_hdr->sh_size = (rela_hdr->sh_entsize * *count);
+  rela_hdr->contents = (unsigned char *)bfd_alloc(abfd, rela_hdr->sh_size);
   if (rela_hdr->contents == NULL)
     {
       *failedp = TRUE;
@@ -2863,32 +2852,31 @@ mips_elf64_write_rela (bfd *abfd, asection *sec,
       mips_elf64_swap_reloca_out (abfd, &int_rela, ext_rela);
     }
 
-  BFD_ASSERT (ext_rela - (Elf64_Mips_External_Rela *) rela_hdr->contents
-	      == *count);
+  BFD_ASSERT(ext_rela - (Elf64_Mips_External_Rela *)rela_hdr->contents
+	     == *count);
 }
 
-/* Set the right machine number for a MIPS ELF file.  */
-
+/* Set the right machine number for a MIPS ELF file: */
 static bfd_boolean
-mips_elf64_object_p (bfd *abfd)
+mips_elf64_object_p(bfd *abfd)
 {
   unsigned long mach;
 
   /* Irix 6 is broken.  Object file symbol tables are not always
      sorted correctly such that local symbols precede global symbols,
      and the sh_info field in the symbol table is not always right.  */
-  if (elf64_mips_irix_compat (abfd) != ict_none)
-    elf_bad_symtab (abfd) = TRUE;
+  if (elf64_mips_irix_compat(abfd) != ict_none)
+    elf_bad_symtab(abfd) = TRUE;
 
-  mach = _bfd_elf_mips_mach (elf_elfheader (abfd)->e_flags);
-  bfd_default_set_arch_mach (abfd, bfd_arch_mips, mach);
+  mach = _bfd_elf_mips_mach((flagword)elf_elfheader(abfd)->e_flags);
+  bfd_default_set_arch_mach(abfd, bfd_arch_mips, mach);
   return TRUE;
 }
 
 /* Depending on the target vector we generate some version of Irix
    executables or "normal" MIPS ELF ABI executables.  */
 static irix_compat_t
-elf64_mips_irix_compat (bfd *abfd)
+elf64_mips_irix_compat(bfd *abfd)
 {
   if ((abfd->xvec == &bfd_elf64_bigmips_vec)
       || (abfd->xvec == &bfd_elf64_littlemips_vec))
@@ -2911,10 +2899,10 @@ elf64_mips_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 
       case 480:		/* Linux/MIPS - N64 kernel */
 	/* pr_cursig */
-	elf_tdata (abfd)->core_signal = bfd_get_16 (abfd, note->descdata + 12);
+	elf_tdata(abfd)->core_signal = (int)bfd_get_16(abfd, note->descdata + 12);
 
 	/* pr_pid */
-	elf_tdata (abfd)->core_pid = bfd_get_32 (abfd, note->descdata + 32);
+	elf_tdata(abfd)->core_pid = (int)bfd_get_32(abfd, note->descdata + 32);
 
 	/* pr_reg */
 	offset = 112;
@@ -2948,10 +2936,10 @@ elf64_mips_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
      implementations, so strip it off if it exists.  */
 
   {
-    char *command = elf_tdata (abfd)->core_command;
-    int n = strlen (command);
+    char *command = elf_tdata(abfd)->core_command;
+    size_t n = strlen(command);
 
-    if (0 < n && command[n - 1] == ' ')
+    if ((0UL < n) && (command[n - 1] == ' '))
       command[n - 1] = '\0';
   }
 

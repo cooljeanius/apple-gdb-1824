@@ -15,10 +15,6 @@ Created: Wednesday, November 27, 1991 at 11:28 AM
 #ifndef __FINDER__
 #define __FINDER__
 
-
-
-
-
 /* make only the following consts avaiable to resource files that include this file */
 
 #define kCustomIconResource -16455			/* Custom icon family resource ID */
@@ -69,6 +65,6 @@ kRequiresSwitchLaunch = $20*/
 #define kIsInvisible 0x4000
 #define kIsAlias 0x8000
 
+#endif /* !__FINDER__ */
 
-
-#endif
+/* EOF */

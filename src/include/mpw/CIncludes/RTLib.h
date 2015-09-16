@@ -15,12 +15,12 @@ Created: Friday, August 2, 1991 at 3:45 PM
 #define __RTLib__
 
 #ifndef __TYPES__
-#include <Types.h>
-#endif
+# include <Types.h>
+#endif /* !__TYPES__ */
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 /*		Error Codes		*/
 
@@ -64,18 +64,18 @@ typedef struct RTGetJTAddrParam RTGetJTAddrParam;
 /*		RTState Definition		*/
 
 struct RTState {
-	unsigned short	fVersion;				/* run-time version */
-	void*				fSP;						/* SP: &-of user return address */
-	void*				fJTAddr;					/* PC: &-of called jump table entry */
-	long				fRegisters[15];		/* registers D0-D7 and A0-A6 when */
-													/*		_LoadSeg was called */
-	short				fSegNo;					/*	segment number */
-	ResType			fSegType;				/*	segment type (normally 'CODE') */
-	long				fSegSize;				/*	segment size */
-	Boolean			fSegInCore;				/*	true if segment is in memory */
-	Boolean			fReserved1;				/* (reserved for future use) */
-	OSErr				fOSErr;					/*	error number */
-	long				fReserved2;				/* (reserved for future use) */
+	unsigned short	fVersion;			/* run-time version */
+	void*				fSP;			/* SP: &-of user return address */
+	void*				fJTAddr;		/* PC: &-of called jump table entry */
+	long				fRegisters[15];	/* registers D0-D7 and A0-A6 when */
+										/*		_LoadSeg was called */
+	short				fSegNo;			/*	segment number */
+	ResType			fSegType;			/*	segment type (normally 'CODE') */
+	long				fSegSize;		/*	segment size */
+	Boolean			fSegInCore;			/*	true if segment is in memory */
+	Boolean			fReserved1;			/* (reserved for future use) */
+	OSErr				fOSErr;			/*	error number */
+	long				fReserved2;		/* (reserved for future use) */
 };
 
 typedef struct RTState RTState;
@@ -83,8 +83,8 @@ typedef struct RTState RTState;
 
 /*		Version Definitions		*/
 
-#define	kVersion32bit			0xFFFF			
-#define	kVersion16bit			0x0000					
+#define	kVersion32bit			0xFFFF
+#define	kVersion16bit			0x0000
 
 
 /*		User Handler Definition		*/
@@ -121,7 +121,8 @@ pascal OSErr Runtime (RTPB* runtime_parms);
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
 #endif	/* __RTLib__ */
 
+/* EOF */

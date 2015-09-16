@@ -126,7 +126,7 @@ coff_i860_reloc (bfd *abfd,
   return bfd_reloc_continue;
 }
 
-/* This is just a temporary measure until we teach bfd to generate 
+/* This is just a temporary measure until we teach bfd to generate
    these relocations.  */
 
 static bfd_reloc_status_type
@@ -622,14 +622,14 @@ i860_reloc_processing (arelent *cache_ptr, struct internal_reloc *dst,
 #define coff_bfd_reloc_type_lookup	coff_i860_reloc_type_lookup
 
 #define RELOC_PROCESSING(relent, reloc, symbols, abfd, section) \
-  i860_reloc_processing (relent, reloc, symbols, abfd, section)
+  i860_reloc_processing(relent, reloc, symbols, abfd, section)
 
 #include "coffcode.h"
 
 static const bfd_target *
 i3coff_object_p(bfd *a)
 {
-  return coff_object_p (a);
+  return coff_object_p(a);
 }
 
 const bfd_target
@@ -637,13 +637,13 @@ const bfd_target
   TARGET_SYM =
 #else
   i860coff_vec =
-#endif
+#endif /* TARGET_SYM */
 {
 #ifdef TARGET_NAME
   TARGET_NAME,
 #else
-  "coff-i860",			/* name */
-#endif
+  (char *)"coff-i860",			/* name */
+#endif /* TARGET_NAME */
   bfd_target_coff_flavour,
   BFD_ENDIAN_LITTLE,		/* data byte order is little */
   BFD_ENDIAN_LITTLE,		/* header byte order is little */

@@ -30,13 +30,14 @@
 void error (const char *, ...) ATTRIBUTE_PRINTF_1;
 void warn (const char *, ...) ATTRIBUTE_PRINTF_1;
 
-#if __STDC_VERSION__ >= 199901L || (defined(__GNUC__) && __GNUC__ >= 2)
-/* We can't use any bfd types here since readelf may define BFD64 and
+#if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || \
+    (defined(__GNUC__) && (__GNUC__ >= 2))
+/* We cannot use any bfd types here since readelf may define BFD64 and
    objdump may not.  */
-#define HOST_WIDEST_INT	long long
+# define HOST_WIDEST_INT long long
 #else
-#define HOST_WIDEST_INT long
-#endif
+# define HOST_WIDEST_INT long
+#endif /* c99 || gcc 2+ */
 typedef unsigned HOST_WIDEST_INT elf_vma;
 
 extern void (*byte_put) (unsigned char *, elf_vma, int);

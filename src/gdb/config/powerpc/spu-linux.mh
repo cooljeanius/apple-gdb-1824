@@ -1,3 +1,4 @@
+# spu-linux.mh
 # Target: Cell BE (PowerPC64 + SPU)
 
 # This implements a 'pseudo-native' GDB running on the

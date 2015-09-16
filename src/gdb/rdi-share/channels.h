@@ -1,6 +1,6 @@
-/* 
+/* channels.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -149,7 +149,7 @@ void angel_ChannelReleaseBuffer(p_Buffer buffer);
  *
  *   Params:
  *              Input: devid         Device to use, or CH_DEFAULT_DEV
- *                     chanid        Channel to use for tx 
+ *                     chanid        Channel to use for tx
  *                     buffer        Pointer to data to send
  *                     len           Length of data to send
  *             Output: -
@@ -175,7 +175,7 @@ ChanError angel_ChannelSend(DeviceID devid, ChannelID chanid,
  *
  *   Params:
  *              Input: devid         Device to use, or CH_DEFAULT_DEV
- *                     chanid        Channel to use for tx 
+ *                     chanid        Channel to use for tx
  *                     buffer        Pointer to data to send
  *                     len           Length of data to send
  *                     callback      Function to call on completion
@@ -198,13 +198,13 @@ ChanError angel_ChannelSend(DeviceID devid, ChannelID chanid,
 
 typedef void (*ChanTx_CB_Fn)(ChannelID  chanid,         /* which channel  */
                              void      *callback_data); /* as supplied... */
-                             
+
 
 ChanError angel_ChannelSendAsync(          DeviceID      devid,
                                            ChannelID     chanid,
                                      const p_Buffer      buffer,
-                                           unsigned      len, 
-                                           ChanTx_CB_Fn  callback, 
+                                           unsigned      len,
+                                           ChanTx_CB_Fn  callback,
                                            void         *callback_data);
 
 
@@ -233,7 +233,7 @@ ChanError angel_ChannelSendAsync(          DeviceID      devid,
  */
 ChanError angel_ChannelRead(DeviceID      devid,
                             ChannelID     chanid,
-                            p_Buffer     *buffer, 
+                            p_Buffer     *buffer,
                             unsigned     *len);
 
 
@@ -275,7 +275,7 @@ typedef void (*ChanRx_CB_Fn)(DeviceID   devID,   /* ID of receiving device  */
 
 ChanError angel_ChannelReadAsync(DeviceID      devid,
                                  ChannelID     chanid,
-                                 ChanRx_CB_Fn  callback, 
+                                 ChanRx_CB_Fn  callback,
                                  void         *callback_data);
 
 
@@ -300,7 +300,7 @@ ChanError angel_ChannelReadAsync(DeviceID      devid,
  * Other side effects: -
  *
  * Register an asynchronous read across all devices.  This is a 'fallback',
- * which will be superseded (temporarily) by a registered reader or blocking 
+ * which will be superseded (temporarily) by a registered reader or blocking
  * read on a specific device.
  */
 
@@ -337,7 +337,7 @@ ChanError angel_ChannelReadAll(         ChannelID     chanid,
  */
 ChanError angel_ChannelSendThenRead(DeviceID      devid,
                                     ChannelID     chanid,
-                                    p_Buffer     *buffer, 
+                                    p_Buffer     *buffer,
                                     unsigned     *len);
 
 

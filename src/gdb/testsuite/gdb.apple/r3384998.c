@@ -6,7 +6,7 @@ static void func2(void (*f)(void))
 {
   func1(f);
 }
-main()
+int main()
 {
   func2(0);
 }

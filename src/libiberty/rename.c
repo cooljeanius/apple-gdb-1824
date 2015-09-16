@@ -1,4 +1,4 @@
-/* rename -- rename a file
+/* rename.c -- rename a file
    This function is in the public domain. */
 
 /*
@@ -14,23 +14,25 @@ exists, it is removed.
 
 #include "ansidecl.h"
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include <errno.h>
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
 
 int
-rename (const char *zfrom, const char *zto)
+rename(const char *zfrom, const char *zto)
 {
-  if (link (zfrom, zto) < 0)
+  if (link(zfrom, zto) < 0)
     {
       if (errno != EEXIST)
 	return -1;
-      if (unlink (zto) < 0
-	  || link (zfrom, zto) < 0)
+      if ((unlink(zto) < 0)
+	  || (link(zfrom, zto) < 0))
 	return -1;
     }
-  return unlink (zfrom);
+  return unlink(zfrom);
 }
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Native-dependent definitions for Sparc running SVR4.
+/* nm-sun4sol2.h
+   Native-dependent definitions for Sparc running SVR4.
    Copyright 1994, 1996, 1997, 1999, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -33,7 +34,7 @@
 #define PRSVADDR_BROKEN
 
 /* gdb wants to use the prgregset_t interface rather than
-   the gregset_t interface, partly because that's what's
+   the gregset_t interface, partly because that is what was
    used in core-sol2.c */
 
 #define GDB_GREGSET_T prgregset_t
@@ -49,7 +50,7 @@
 #define TARGET_CAN_USE_HARDWARE_WATCHPOINT(TYPE, CNT, OT) 1
 
 /* When a hardware watchpoint fires off the PC will be left at the
-   instruction following the one which caused the watchpoint.  
+   instruction following the one which caused the watchpoint.
    It will *NOT* be necessary for GDB to step over the watchpoint. */
 #define HAVE_CONTINUABLE_WATCHPOINT
 

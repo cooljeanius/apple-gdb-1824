@@ -1,0 +1,472 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# shell.test ---  test shell program attribute
+#                    make sure that when it is not specified
+#                    then option processing consumes all args.
+#
+# Time-stamp:        "2012-01-29 18:34:23 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo "creating ${testname}.def in `pwd`"
+
+ testname="${testname}"       \
+test_main="${test_main}"    \
+ argument="reg-arg [ ... ]" \
+long_opts=true  \
+${SHELLX} ${stdopts} option: second || failure "Could not run stdopts.def"
+
+echo ${AG_L} ${testname}.def
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process
+
+compile "-?"
+
+# # # # # # # # # # HELP OUTPUT FILE # # # # # # # # #
+
+echo creating ${testname}.hlp
+clean_help > ${testname}.hlp <<'_EOF_'
+test_shell - Test AutoOpts for shell
+USAGE:  shell [ -<flag> [<val>] | --<name>[{=| }<val>] ]... \
+		reg-arg [ ... ]
+  Flg Arg Option-Name    Description
+   -o Str option         The option option descrip
+   -s no  second         The second option descrip
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+
+Options are specified by doubled hyphens and their name or by a single
+hyphen and the flag character.
+_EOF_
+
+cmp -s ${testname}.h*lp || \
+  failure "`diff ${testname}.hlp ${testname}.help`"
+
+./${testname} -X 2> /dev/null && \
+  failure ${testname} should not accept bogus options
+
+./${testname} -o 2> /dev/null && \
+  failure ${testname} should not accept missing options argument
+
+./${testname} 2> /dev/null && \
+  failure ${testname} must have an argument
+
+# # # # # # # # # # SHELL OUTPUT FILE # # # # # # # # #
+
+echo creating ${testname}.out
+cat > ${testname}.out <<_EOF_
+OPTION_CT=3
+export OPTION_CT
+TEST_SHELL_OPTION='opt-arg'
+export TEST_SHELL_OPTION
+TEST_SHELL_SECOND=1 # 0x1
+export TEST_SHELL_SECOND
+_EOF_
+
+./${testname} -o opt-arg -s a1 a2 > ${testname}.test || \
+  failure ${testname} did not handle its options
+
+cmp -s ${testname}.test ${testname}.out || \
+  failure "`diff ${testname}.out ${testname}.test`"
+
+${SED} '/test-main/s/yes/optionParseShell/' ${testname}.def > XX
+mv -f XX ${testname}.def
+
+echo ${AG_L} ${testname}.def
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process
+
+sedcmd='/Note that.*is only useful/,/will be regenerated/d'
+compile "-?"
+
+# # # # # # # # # # HELP OUTPUT FILE # # # # # # # # #
+
+echo creating ${testname}.hlp
+clean_help > ${testname}.hlp <<'_EOF_'
+genshellopt - Generate Shell Option Processing Script - Ver. 1
+USAGE:  shell [ -<flag> [<val>] | --<name>[{=| }<val>] ]...
+  Flg Arg Option-Name    Description
+   -o Str script         Output Script File
+   -s Str shell          Shell name (follows "#!" magic)
+				- disabled as --no-shell
+				- enabled by default
+   -v opt version        Output version information and exit
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+
+Options are specified by doubled hyphens and their name or by a single
+hyphen and the flag character.
+
+Note that ``shell'' is only useful if the output file does not already
+exist.  If it does, then the shell name and optional first argument will
+be extracted from the script file.
+
+If the script file already exists and contains Automated Option Processing
+text, the second line of the file through the ending tag will be replaced
+by the newly generated text.  The first ``#!''  line will be regenerated.
+
+= = = = = = = =
+
+This incarnation of genshell will produce
+a shell script to parse the options for test_shell:
+
+test_shell - Test AutoOpts for shell
+USAGE:  test_shell [ -<flag> [<val>] | --<name>[{=| }<val>] ]... \
+		reg-arg [ ... ]
+  Flg Arg Option-Name    Description
+   -o Str option         The option option descrip
+   -s no  second         The second option descrip
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+
+Options are specified by doubled hyphens and their name or by a single
+hyphen and the flag character.
+_EOF_
+
+while IFS='' read -r line
+do
+  test "X${line}" = X || {
+    echo "$line"
+    continue
+  }
+  IFS='' read -r line || break
+  case "${line}" in
+  'please send bug '* ) ;;
+  * ) echo "${nl}${line}" ;;
+  esac
+done < ${testname}.help > ${testname}.HELP2
+mv -f ${testname}.HELP2 ${testname}.help
+files=${testname}.hlp\ ${testname}.help
+cmp -s ${files} || \
+  failure "script generator help output mismatch: `diff -c ${files}`"
+
+# # # # # # # # # # SCRIPT OUTPUT FILE # # # # # # # # #
+
+echo creating ${testname}.sht
+exec 3> ${testname}.sht
+echo "#! ${SHELL}" >&3
+cat >&3 <<'_EOF_'
+#
+TEST_SHELL_LONGUSAGE_TEXT='test_shell - Test AutoOpts for shell
+USAGE:  test_shell [ -<flag> [<val>] | --<name>[{=| }<val>] ]... \
+		reg-arg [ ... ]
+  Flg Arg Option-Name    Description
+   -o Str option         The option option descrip
+   -s no  second         The second option descrip
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+
+Options are specified by doubled hyphens and their name or by a single
+hyphen and the flag character.'
+
+TEST_SHELL_USAGE_TEXT='test_shell - Test AutoOpts for shell
+USAGE:  test_shell [ -<flag> [<val>] | --<name>[{=| }<val>] ]... \
+		reg-arg [ ... ]
+  Flg Arg Option-Name    Description
+   -o Str option         The option option descrip
+   -s no  second         The second option descrip
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+
+Options are specified by doubled hyphens and their name or by a single
+hyphen and the flag character.'
+
+
+TEST_SHELL_OPTION=${TEST_SHELL_OPTION}
+TEST_SHELL_OPTION_set=false
+export TEST_SHELL_OPTION
+
+TEST_SHELL_SECOND=${TEST_SHELL_SECOND}
+TEST_SHELL_SECOND_set=false
+export TEST_SHELL_SECOND
+
+OPT_PROCESS=true
+OPT_ARG=$1
+while ${OPT_PROCESS} && [ $# -gt 0 ]
+do
+    OPT_ELEMENT=''
+    OPT_ARG_VAL=''
+
+    case "${OPT_ARG}" in
+    -- )
+        OPT_PROCESS=false
+        shift
+        ;;
+    --* )
+        OPT_CODE=`echo "X${OPT_ARG}"|sed 's/^X-*//'`
+        shift
+        OPT_ARG=$1
+        case "${OPT_CODE}" in *=* )
+            OPT_ARG_VAL=`echo "${OPT_CODE}"|sed 's/^[^=]*=//'`
+            OPT_CODE=`echo "${OPT_CODE}"|sed 's/=.*$//'` ;; esac
+        case "${OPT_CODE}" in
+        'op' | \
+        'opt' | \
+        'opti' | \
+        'optio' | \
+        'option' )
+            if [ -n "${TEST_SHELL_OPTION}" ] && ${TEST_SHELL_OPTION_set} ; then
+                echo Error:  duplicate OPTION option >&2
+                echo "$TEST_SHELL_USAGE_TEXT"
+                exit 1 ; fi
+            TEST_SHELL_OPTION_set=true
+            OPT_NAME='OPTION'
+            OPT_ARG_NEEDED=YES
+            ;;
+
+        'se' | \
+        'sec' | \
+        'seco' | \
+        'secon' | \
+        'second' )
+            if [ -n "${TEST_SHELL_SECOND}" ] && ${TEST_SHELL_SECOND_set} ; then
+                echo Error:  duplicate SECOND option >&2
+                echo "$TEST_SHELL_USAGE_TEXT"
+                exit 1 ; fi
+            TEST_SHELL_SECOND_set=true
+            OPT_NAME='SECOND'
+            eval TEST_SHELL_SECOND${OPT_ELEMENT}=true
+            export TEST_SHELL_SECOND${OPT_ELEMENT}
+            OPT_ARG_NEEDED=NO
+            ;;
+
+        'he' | \
+        'hel' | \
+        'help' )
+            echo "$TEST_SHELL_LONGUSAGE_TEXT"
+            exit 0
+            ;;
+
+        'mo' | \
+        'mor' | \
+        'more' | \
+        'more-' | \
+        'more-h' | \
+        'more-he' | \
+        'more-hel' | \
+        'more-help' )
+            echo "$TEST_SHELL_LONGUSAGE_TEXT" | ${PAGER-more}
+            exit 0
+            ;;
+
+        * )
+            echo Unknown option: "${OPT_CODE}" >&2
+            echo "$TEST_SHELL_USAGE_TEXT"
+            exit 1
+            ;;
+        esac
+
+        case "${OPT_ARG_NEEDED}" in
+        NO )
+            OPT_ARG_VAL=''
+            ;;
+        YES )
+            if [ -z "${OPT_ARG_VAL}" ]
+            then
+                if [ $# -eq 0 ]
+                then
+                    echo No argument provided for ${OPT_NAME} option >&2
+                    echo "$TEST_SHELL_USAGE_TEXT"
+                    exit 1
+                fi
+                OPT_ARG_VAL=${OPT_ARG}
+                shift
+                OPT_ARG=$1
+            fi
+            ;;
+        OK )
+            if [ -z "${OPT_ARG_VAL}" ] && [ $# -gt 0 ]
+            then
+                case "${OPT_ARG}" in -* ) ;; * )
+                    OPT_ARG_VAL=${OPT_ARG}
+                    shift
+                    OPT_ARG=$1 ;; esac
+            fi
+            ;;
+        esac
+        ;;
+
+    -* )
+        OPT_CODE=`echo "X${OPT_ARG}" | sed 's/X-\(.\).*/\1/'`
+        OPT_ARG=` echo "X${OPT_ARG}" | sed 's/X-.//'`
+        case "${OPT_CODE}" in
+        'o' )
+            if [ -n "${TEST_SHELL_OPTION}" ] && ${TEST_SHELL_OPTION_set} ; then
+                echo Error:  duplicate OPTION option >&2
+                echo "$TEST_SHELL_USAGE_TEXT"
+                exit 1 ; fi
+            TEST_SHELL_OPTION_set=true
+            OPT_NAME='OPTION'
+            OPT_ARG_NEEDED=YES
+            ;;
+
+        's' )
+            if [ -n "${TEST_SHELL_SECOND}" ] && ${TEST_SHELL_SECOND_set} ; then
+                echo Error:  duplicate SECOND option >&2
+                echo "$TEST_SHELL_USAGE_TEXT"
+                exit 1 ; fi
+            TEST_SHELL_SECOND_set=true
+            OPT_NAME='SECOND'
+            eval TEST_SHELL_SECOND${OPT_ELEMENT}=true
+            export TEST_SHELL_SECOND${OPT_ELEMENT}
+            OPT_ARG_NEEDED=NO
+            ;;
+
+        '?' )
+            echo "$TEST_SHELL_LONGUSAGE_TEXT"
+            exit 0
+            ;;
+
+        '!' )
+            echo "$TEST_SHELL_LONGUSAGE_TEXT" | ${PAGER-more}
+            exit 0
+            ;;
+
+        * )
+            echo Unknown flag: "${OPT_CODE}" >&2
+            echo "$TEST_SHELL_USAGE_TEXT"
+            exit 1
+            ;;
+        esac
+
+        case "${OPT_ARG_NEEDED}" in
+        NO )
+            if [ -n "${OPT_ARG}" ]
+            then
+                OPT_ARG=-${OPT_ARG}
+            else
+                shift
+                OPT_ARG=$1
+            fi
+            ;;
+        YES )
+            if [ -n "${OPT_ARG}" ]
+            then
+                OPT_ARG_VAL=${OPT_ARG}
+            else
+                if [ $# -eq 0 ]
+                then
+                    echo No argument provided for ${OPT_NAME} option >&2
+                    echo "$TEST_SHELL_USAGE_TEXT"
+                    exit 1
+                fi
+                shift
+                OPT_ARG_VAL=$1
+            fi
+            shift
+            OPT_ARG=$1
+            ;;
+        OK )
+            if [ -n "${OPT_ARG}" ]
+            then
+                OPT_ARG_VAL=${OPT_ARG}
+                shift
+                OPT_ARG=$1
+            else
+                shift
+                if [ $# -gt 0 ]
+                then
+                    case "$1" in -* ) ;; * )
+                        OPT_ARG_VAL=$1
+                        shift ;; esac
+                    OPT_ARG=$1
+                fi
+            fi
+            ;;
+        esac
+        ;;
+
+    * )
+         OPT_PROCESS=false
+         ;;
+    esac
+    if [ -n "${OPT_ARG_VAL}" ]
+    then
+        eval TEST_SHELL_${OPT_NAME}${OPT_ELEMENT}="'${OPT_ARG_VAL}'"
+        export TEST_SHELL_${OPT_NAME}${OPT_ELEMENT}
+    fi
+done
+unset OPT_PROCESS || :
+unset OPT_ELEMENT || :
+unset OPT_ARG     || :
+unset OPT_ARG_NEEDED || :
+unset OPT_NAME    || :
+unset OPT_CODE    || :
+unset OPT_ARG_VAL || :
+
+# # # # # # # # # #
+#
+#  END OF AUTOMATED OPTION PROCESSING
+#
+# # # # # # # # # # -- do not modify this marker --
+
+env | grep '^TEST_SHELL_'
+_EOF_
+exec 3>&-
+
+# # # # # # # # # # SCRIPT OUTPUT TESTING # # # # # # # # #
+
+rm -f ${testname}.sh
+./${testname} -o ${testname}.sh
+
+sedcmd='2,9d'
+grep -F 'Packaged by '  ${testname}.sh >/dev/null && {
+    sedcmd=${sedcmd}${nl}'/^Packaged by /d
+    /^Report .* bugs to /d
+    /and the flag character\.$/s/$/'"'/"
+}
+
+${SED} "$sedcmd"  ${testname}.sh > XXX
+mv -f XXX ${testname}.sh
+cmp -s ${testname}.sh* || \
+  failure "`diff ${testname}.sh ${testname}.sht`"
+
+# # # # # # # # # # SCRIPT PROCESSING TEST # # # # # # # # #
+
+chmod +x ${testname}.sh
+./${testname}.sh  --opt opt-arg -s a1 a2 | sort > ${testname}.test || \
+  failure ${testname} did not handle its options
+
+sort > ${testname}.out <<_EOF_
+TEST_SHELL_OPTION=opt-arg
+TEST_SHELL_SECOND=true
+_EOF_
+
+cmp -s ${testname}.out ${testname}.test || \
+  failure "`diff ${testname}.out ${testname}.test`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## End:
+
+# end of shell.test

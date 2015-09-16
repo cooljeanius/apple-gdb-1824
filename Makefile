@@ -8,7 +8,7 @@ BINUTILS_VERSION = 2.13-20021117
 BINUTILS_RC_VERSION = 46
 
 # Uncomment line below for debugging shell commands
-#SHELL = /bin/sh -x
+SHELL = /bin/sh -ex
 
 .PHONY: all clean configure build install installsrc installhdrs headers \
 	build-core build-binutils build-gdb \
@@ -29,7 +29,8 @@ SUBDIRS = src bin macsbug libcheckpoint
 # the platform-variables.make file exists.
 
 OS=MACOS
-SYSTEM_DEVELOPER_TOOLS_DOC_DIR=/Applications/Xcode.app/Contents/Developer/Documentation/DocSets/com.apple.ADC_Reference_Library.DeveloperTools.docset/Contents/Resources/Documents/documentation/DeveloperTools
+XCODE_APP_CONTENTS_DIR=/Applications/Xcode.app/Contents
+SYSTEM_DEVELOPER_TOOLS_DOC_DIR=$(XCODE_APP_CONTENTS_DIR)/Developer/Documentation/DocSets/com.apple.ADC_Reference_Library.DeveloperTools.docset/Contents/Resources/Documents/documentation/DeveloperTools
 
 
 ifndef RC_ARCHS
@@ -129,12 +130,14 @@ BINUTILS_HEADERS = $(BINUTILS_FRAMEWORK)/Headers
 INTL_FRAMEWORK = $(BINUTILS_BUILD_ROOT)/usr/lib/libintl.dylib
 INTL_HEADERS = $(BINUTILS_BUILD_ROOT)/usr/include
 
-export SDKROOT_FOR_BUILD = $(shell xcodebuild -version -sdk macosx Path | head -1)
+ifndef SDKROOT_FOR_BUILD
+export SDKROOT_FOR_BUILD = $(shell xcodebuild -version -sdk macosx Path 2>/dev/null | head -1)
+endif
 
 export AR       = $(shell xcrun -find ar)
-export CC       = $(shell xcrun -find clang)
+export CC       = $(shell (xcrun -find clang 2>/dev/null || xcrun -find gcc))
 export CPP      = $(shell xcrun -find cpp) -I$(SDKROOT_FOR_BUILD)/usr/include
-export CXX      = $(shell xcrun -find clang++)
+export CXX      = $(shell (xcrun -find clang++ 2>/dev/null || xcrun -find g++))
 export LD       = $(shell xcrun -find ld)
 export LIBTOOL  = $(shell xcrun -find libtool)
 export MAKE     = $(shell xcrun -find make)
@@ -142,12 +145,12 @@ export NM       = $(shell xcrun -find nm)
 export RANLIB   = $(shell xcrun -find ranlib)
 export TAR      = $(shell xcrun -find gnutar)
 
-export CC_FOR_BUILD      = $(shell xcrun -find clang)
+export CC_FOR_BUILD      = $(shell (xcrun -find clang 2>/dev/null || xcrun -find gcc))
 export CCFLAGS_FOR_BUILD = -I$(SDKROOT_FOR_BUILD)/usr/include
 export LDFLAGS_FOR_BUILD = -isysroot $(SDKROOT_FOR_BUILD)
 
 ifndef CDEBUGFLAGS
-CDEBUGFLAGS = -g -Os -funwind-tables -fasynchronous-unwind-tables -D_DARWIN_UNLIMITED_STREAMS -Wno-format-security -Wno-format-nonliteral 
+CDEBUGFLAGS = -ggdb -Os -funwind-tables -fasynchronous-unwind-tables -D_DARWIN_UNLIMITED_STREAMS -Wno-format-security -Wno-format-nonliteral 
 endif
 
 CFLAGS = $(CDEBUGFLAGS) $(RC_CFLAGS)
@@ -201,13 +204,16 @@ CONFIG_ENABLE_GDBTK=--enable-gdbtk=no
 CONFIG_ENABLE_GDBMI=--enable-gdbmi
 CONFIG_ENABLE_BUILD_WARNINGS=--enable-build-warnings --disable-werror
 CONFIG_ENABLE_TUI=--disable-tui
-CONFIG_ALL_BFD_TARGETS=--enable-targets
+CONFIG_ALL_BFD_TARGETS=--enable-targets#=all
+CONFIG_ALL_BFD_APPLE_TARGETS=--enable-targets=m68k-apple-aux,powerpc-apple-rhapsody,arm-apple-darwin,i386-apple-darwin,x86_64-apple-darwin,powerpc-apple-macos,powerpc64-apple-darwin,powerpc64-apple-macos
 CONFIG_64_BIT_BFD=--enable-64-bit-bfd
 CONFIG_WITH_MMAP=--with-mmap
 CONFIG_ENABLE_SHARED=--disable-shared
-CONFIG_MAINTAINER_MODE=
+CONFIG_MAINTAINER_MODE=#--enable-maintainer-mode
+CONFIG_SILENT_RULES=
+CONFIG_DEP_TRACK=--disable-dependency-tracking
 CONFIG_BUILD=--build=$(BUILD_ARCH)
-CONFIG_OTHER_OPTIONS?=--disable-serial-configure --disable-opts-test --with-x --enable-carbon-framework --enable-debug-symbols-framework
+CONFIG_OTHER_OPTIONS?=--disable-serial-configure --with-x --enable-carbon-framework --enable-debug-symbols-framework
 
 ifneq ($(findstring macosx,$(CANONICAL_ARCHS))$(findstring darwin,$(CANONICAL_ARCHS)),)
 CC = clang -arch $(HOST_ARCHITECTURE)
@@ -249,11 +255,11 @@ CONFIGURE_OPTIONS = $(filter-out ,\
 	$(CONFIG_ENABLE_BUILD_WARNINGS) \
 	$(CONFIG_ENABLE_TUI) \
 	$(CONFIG_ALL_BFD_TARGETS) \
-	$(CONFIG_ALL_BFD_TARGETS) \
 	$(CONFIG_64_BIT_BFD) \
 	$(CONFIG_WITH_MMAP) \
 	$(CONFIG_ENABLE_SHARED) \
 	$(CONFIG_MAINTAINER_MODE) \
+	$(CONFIG_DEP_TRACK) \
 	$(CONFIG_BUILD) \
 	$(CONFIG_OTHER_OPTIONS))
 
@@ -727,13 +733,15 @@ install-gdb-macosx: install-gdb-macosx-common
 		cp $(DSTROOT)/$(LIBEXEC_GDB_DIR)/gdb-$${target} $(SYMROOT)/$(LIBEXEC_GDB_DIR)/gdb-$${target}; \
 	done
 
-# When this target is invoked, NATIVE is the binary that we will be outputting
-# and HOSTCOMBOS are the binaries that will be combined into that. For instance,
+# When this target is invoked, NATIVE is the binary that we will be
+# outputting and HOSTCOMBOS are the binaries that will be combined into
+# that. For instance,
 #
 # HOSTCOMBOS == i386-apple-darwin--i386-apple-darwin x86_64-apple-darwin--x86_64-apple-darwin powerpc-apple-darwin--i386-apple-darwin
 # NATIVE == i386-apple-darwin
 
-# NATIVE i386 is a special case where we add the x86_64-apple-darwin variant manually.
+# NATIVE i386 is a special case where we add the x86_64-apple-darwin
+# variant manually.
 
 install-gdb-fat: install-gdb-macosx-common
 	lipo -create $(patsubst %,$(OBJROOT)/%/gdb/gdb,$(HOSTCOMBOS)) \
@@ -758,17 +766,24 @@ install-binutils-macosx:
 		strip -S -o $(DSTROOT)/$(LIBEXEC_BINUTILS_DIR)/$${instname} $(SYMROOT)/$(LIBEXEC_BINUTILS_DIR)/$${instname}; \
 	done
 
+# "procmod" was a new group (2005-09-27) which was not initially present on
+# all the systems, so we use a '-' prefix on that loop for now so that the
+# errors do NOT halt the build. 
 install-chmod-macosx:
-	set -e; for dstroot in $(SYMROOT) $(DSTROOT); do \
+	set -e; if [ `whoami` = 'root' ]; then \
+		for dstroot in $(SYMROOT) $(DSTROOT); do \
 			chown -R root:wheel $${dstroot}; \
 			chmod -R  u=rwX,g=rX,o=rX $${dstroot}; \
 			chmod a+x $${dstroot}/$(LIBEXEC_GDB_DIR)/*; \
 			chmod a+x $${dstroot}/$(DEVEXEC_DIR)/*; \
-		done
-	-set -e; for dstroot in $(SYMROOT) $(DSTROOT); do \
+		done; \
+	fi
+	-set -e; if [ `whoami` = 'root' ]; then \
+		for dstroot in $(SYMROOT) $(DSTROOT); do \
 			chgrp procmod $${dstroot}/$(LIBEXEC_GDB_DIR)/gdb* && chmod g+s $${dstroot}/$(LIBEXEC_GDB_DIR)/gdb*; \
 			chgrp procmod $${dstroot}/$(LIBEXEC_GDB_DIR)/plugins/MacsBug/MacsBug_plugin && chmod g+s $${dstroot}/$(LIBEXEC_GDB_DIR)/plugins/MacsBug/MacsBug_plugin; \
-		done
+		done; \
+	fi
 
 install-chmod-macosx-noprocmod:
 	set -e; for dstroot in $(SYMROOT) $(DSTROOT); do \
@@ -784,15 +799,25 @@ install-source:
 	$(TAR) --exclude=CVS --exclude=.svn -C $(SRCROOT) -cf - . | $(TAR) -C $(DSTROOT)/$(SOURCE_DIR) -xf -
 
 all: build
-	unset CPP && $(MAKE) -C src
+	if test -e src/Makefile; then unset CPP && $(MAKE) -C src; fi
 
-clean:
-	unset CPP && $(MAKE) -i -C src clean
+mostlyclean:
+	if test -e src/Makefile; then \
+	  unset CPP && $(MAKE) -i -C src mostlyclean; fi
+clean: mostlyclean
+	if test -e src/Makefile; then \
+	  unset CPP && $(MAKE) -i -C src clean; fi
 	$(RM) -r $(OBJROOT)
 	$(RM) *~
 	$(RM) .DS_Store
 	$(RM) -r autom4te.cache
 	$(RM) autoscan.log
+
+distclean: clean
+	if test -e src/Makefile; then \
+	  unset CPP && $(MAKE) -i -C src distclean; fi
+	$(RM) configure config.log
+.PHONY: mostlyclean distclean
 
 check-args:
 ifneq (,$(filter-out i386-apple-darwin, $(filter-out powerpc-apple-darwin, $(filter-out x86_64-apple-darwin, $(filter-out arm-apple-darwin, $(CANONICAL_ARCHS))))))
@@ -943,3 +968,7 @@ update-ChangeLog:
 	    fi
 
 EXTRA_DIST += .last-cl-gen
+
+## so subdirs can use automake:
+am--refresh:
+	@:

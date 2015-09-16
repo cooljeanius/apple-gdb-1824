@@ -1,5 +1,5 @@
 /* Machine independent support for QNX Neutrino /proc (process file system)
-   for GDB.  Written by Colin Burgess at QNX Software Systems Limited. 
+   for GDB.  Written by Colin Burgess at QNX Software Systems Limited.
 
    Copyright 2003 Free Software Foundation, Inc.
 
@@ -45,7 +45,7 @@
 #include "regcache.h"
 
 #define NULL_PID		0
-#define _DEBUG_FLAG_TRACE	(_DEBUG_FLAG_TRACE_EXEC|_DEBUG_FLAG_TRACE_RD|\
+#define _DEBUG_FLAG_TRACE  (_DEBUG_FLAG_TRACE_EXEC|_DEBUG_FLAG_TRACE_RD|\
 		_DEBUG_FLAG_TRACE_WR|_DEBUG_FLAG_TRACE_MODIFY)
 
 static struct target_ops procfs_ops;
@@ -119,7 +119,7 @@ procfs_is_nto_target (bfd *abfd)
 }
 
 /* This is called when we call 'target procfs <arg>' from the (gdb) prompt.
-   For QNX6 (nto), the only valid arg will be a QNX node string, 
+   For QNX6 (nto), the only valid arg will be a QNX node string,
    eg: "/net/some_node".  If arg is not a valid QNX node, we will
    default to local.  */
 static void

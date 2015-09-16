@@ -1,4 +1,5 @@
-/* Host definitions for a Sun 4, for GDB, the GNU debugger.
+/* xm-solaris.h
+   Host definitions for a Sun 4, for GDB, the GNU debugger.
    Copyright 1996
    Free Software Foundation, Inc.
 
@@ -20,3 +21,5 @@
    Boston, MA 02111-1307, USA.  */
 
 #define HOST_BYTE_ORDER LITTLE_ENDIAN
+
+/* EOF */

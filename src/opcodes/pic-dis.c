@@ -1,3 +1,4 @@
+/* pic-dis.c */
 /* Copyright (C) 1997 Klee Dienes <klee@mit.edu>.
 
 This program is free software; you can redistribute it and/or modify
@@ -68,7 +69,7 @@ int print_insn_pic14 (bfd_vma addr, struct disassemble_info *info)
   unsigned char buf[2];
   unsigned int i;
   int status;
-  
+
   status = info->read_memory_func (addr, buf, 2, info);
   if (status != 0) {
     info->memory_error_func (status, addr, info);
@@ -155,16 +156,16 @@ int print_insn_pic14 (bfd_vma addr, struct disassemble_info *info)
   case 1:
     fprintf (stream, "%s %02x,%d", pic14_z01_instr_names[(i >> 10) & 3], i & 0x7f, (i >> 7) & 7);
     return 2;
-    
+
   case 2:
     fprintf (stream, "%s %04x", (i & 0x800 ? "goto" : "call"), i & 0x7ff);
     return 2;
-    
+
   case 3:
     fprintf (stream, "%s %02x", pic14_z11_instr_names[(i >> 8) & 0xf], i & 0xff);
     return 2;
   }
-  
+
   return 2;
 }
 
@@ -175,7 +176,7 @@ int print_insn_pic12 (bfd_vma addr, struct disassemble_info *info)
   unsigned char buf[2];
   unsigned int i;
   int status;
-  
+
   status = info->read_memory_func (addr, buf, 2, info);
   if (status != 0) {
     info->memory_error_func (status, addr, info);
@@ -183,7 +184,7 @@ int print_insn_pic12 (bfd_vma addr, struct disassemble_info *info)
   }
   i= (((unsigned int) buf[1]) << 8) + (((unsigned int) buf[0]) << 0);
 
-  
+
   if (addr == 0xfff) {
     fprintf (stream, "config CP=%s, WDTE=%s, OSC=%s",
 	     (i & 0x8 ? "off" : "on"),
@@ -261,3 +262,5 @@ int print_insn_pic12 (bfd_vma addr, struct disassemble_info *info)
   fprintf (stream, "???");
   return 2;
 }
+
+/* EOF */

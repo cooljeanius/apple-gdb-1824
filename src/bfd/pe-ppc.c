@@ -1,6 +1,6 @@
-/* BFD back-end for PowerPC PECOFF files.
-   Copyright 1995, 1996, 1999, 2001 Free Software Foundation, Inc.
-
+/* pe-ppc.c: BFD back-end for PowerPC PECOFF files.
+ * Copyright 1995, 1996, 1999, 2001 Free Software Foundation, Inc.  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,9 @@ Boston, MA 02110-1301, USA.  */
 #include "bfd.h"
 #include "sysdep.h"
 
-#define E_FILENMLEN     18
+#ifndef E_FILENMLEN
+# define E_FILENMLEN     18
+#endif /* !E_FILENMLEN */
 
 #define PPC_PE
 
@@ -40,4 +42,14 @@ Boston, MA 02110-1301, USA.  */
 /* FIXME: This target no longer works.  Search for POWERPC_LE_PE in
    coff-ppc.c and peigen.c.  */
 
+#ifndef ppc_bfd_coff_final_link
+# define ppc_bfd_coff_final_link ppc_bfd_pe_final_link
+#endif /* !ppc_bfd_coff_final_link */
+
 #include "coff-ppc.c"
+
+#ifdef E_FILENMLEN
+# undef E_FILENMLEN
+#endif /* E_FILENMLEN */
+
+/* EOF */

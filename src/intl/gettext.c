@@ -1,4 +1,5 @@
-/* Implementation of gettext(3) function.
+/* gettext.c
+   Implementation of gettext(3) function.
    Copyright (C) 1995, 1997 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
@@ -18,7 +19,9 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning gettext.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning gettext.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef _LIBC
@@ -26,16 +29,18 @@
 # ifdef HAVE_STDDEF_H
 #  include <stddef.h>
 # else
-#  warning gettext.c expects <stddef.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "gettext.c expects <stddef.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_STDDEF_H */
 #else
 # if defined STDC_HEADERS || defined HAVE_STDLIB_H
-#  include <stdlib.h>		/* Just for NULL.  */
+#  include <stdlib.h> /* Just for NULL.  */
 # else
 #  ifdef HAVE_STRING_H
 #   include <string.h>
 #  else
-#   define NULL ((void *) 0)
+#   define NULL ((void *)0)
 #  endif /* HAVE_STRING_H */
 # endif /* STDC_HEADERS || HAVE_STDLIB_H */
 #endif /* _LIBC */
@@ -63,16 +68,14 @@
 /* Look up MSGID in the current default message catalog for the current
    LC_MESSAGES locale.  If not found, returns MSGID itself (the default
    text).  */
-char *
-GETTEXT (msgid)
-     const char *msgid;
+char *GETTEXT(const char *msgid)
 {
-  return DGETTEXT (NULL, msgid);
+  return DGETTEXT(NULL, msgid);
 }
 
 #ifdef _LIBC
-/* Alias for function name in GNU C Library.  */
-weak_alias (__gettext, gettext);
+/* Alias for function name in GNU C Library: */
+weak_alias(__gettext, gettext);
 #endif /* _LIBC */
 
 /* EOF */

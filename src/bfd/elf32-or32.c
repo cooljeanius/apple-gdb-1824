@@ -167,11 +167,10 @@ or32_elf_consth_reloc (bfd *abfd ATTRIBUTE_UNUSED,
 
   ret = bfd_reloc_ok;
 
-  if (bfd_is_und_section (symbol->section)
-      && output_bfd == NULL)
+  if (bfd_is_und_section(symbol->section) && (output_bfd == NULL))
     ret = bfd_reloc_undefined;
 
-  if (bfd_is_com_section (symbol->section))
+  if (bfd_is_com_section(symbol->section))
     relocation = 0;
   else
     relocation = symbol->value;
@@ -180,11 +179,11 @@ or32_elf_consth_reloc (bfd *abfd ATTRIBUTE_UNUSED,
   relocation += symbol->section->output_offset;
   relocation += reloc_entry->addend;
 
-  if (reloc_entry->address > bfd_get_section_limit (abfd, input_section))
+  if (reloc_entry->address > bfd_get_section_limit(abfd, input_section))
     return bfd_reloc_outofrange;
 
-  /* Save the information, and let LO16 do the actual relocation.  */
-  n = bfd_malloc (sizeof *n);
+  /* Save the information, and let LO16 do the actual relocation: */
+  n = (struct or32_consth *)bfd_malloc(sizeof *n);
   if (n == NULL)
     return bfd_reloc_outofrange;
   n->addr = (bfd_byte *) data + reloc_entry->address;

@@ -1,8 +1,8 @@
-/* BFD PowerPC CPU definition
-   Copyright 1994, 1995, 1996, 2000, 2001, 2002, 2003
-   Free Software Foundation, Inc.
-   Contributed by Ian Lance Taylor, Cygnus Support.
-
+/* cpu-powerpc.c: BFD PowerPC CPU definition
+ * Copyright 1994, 1995, 1996, 2000, 2001, 2002, 2003
+ * Free Software Foundation, Inc.
+ * Contributed by Ian Lance Taylor, Cygnus Support.  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -17,29 +17,31 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
 #include "libbfd.h"
 
-/* The common PowerPC architecture is compatible with the RS/6000.  */
-
+/* The common PowerPC architecture is compatible with the RS/6000: */
 static const bfd_arch_info_type *powerpc_compatible
-  PARAMS ((const bfd_arch_info_type *, const bfd_arch_info_type *));
+  PARAMS((const bfd_arch_info_type *, const bfd_arch_info_type *));
+
+#if defined(__GNUC__) && (__GNUC__ >= 4)
+ # pragma GCC diagnostic ignored "-Wswitch-enum"
+#endif /* gcc 4+ */
 
 static const bfd_arch_info_type *
-powerpc_compatible (a,b)
-     const bfd_arch_info_type *a;
-     const bfd_arch_info_type *b;
+powerpc_compatible(const bfd_arch_info_type *a,
+                   const bfd_arch_info_type *b)
 {
-  BFD_ASSERT (a->arch == bfd_arch_powerpc);
+  BFD_ASSERT(a->arch == bfd_arch_powerpc);
   switch (b->arch)
     {
     default:
       return NULL;
     case bfd_arch_powerpc:
-      return bfd_default_compatible (a, b);
+      return bfd_default_compatible(a, b);
     case bfd_arch_rs6000:
       if (b->mach == bfd_mach_rs6k)
 	return a;
@@ -48,6 +50,9 @@ powerpc_compatible (a,b)
   /*NOTREACHED*/
 }
 
+#ifdef __clang__
+extern const bfd_arch_info_type bfd_powerpc_archs[];
+#endif /* __clang__ */
 const bfd_arch_info_type bfd_powerpc_archs[] =
 {
 #if BFD_DEFAULT_TARGET_SIZE == 64

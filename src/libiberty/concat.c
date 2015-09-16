@@ -1,4 +1,4 @@
-/* Concatenate variable number of strings.
+/* concat.c: Concatenate variable number of strings.
    Copyright (C) 1991, 1994, 2001 Free Software Foundation, Inc.
    Written by Fred Fish @ Cygnus Support
 
@@ -138,32 +138,32 @@ char *libiberty_concat_ptr;
 /* @undocumented concat_copy2 */
 
 char *
-concat_copy2 (const char *first, ...)
+concat_copy2(const char *first, ...)
 {
-  VA_OPEN (args, first);
-  VA_FIXEDARG (args, const char *, first);
-  vconcat_copy (libiberty_concat_ptr, first, args);
-  VA_CLOSE (args);
+  VA_OPEN(args, first);
+  VA_FIXEDARG(args, const char *, first);
+  vconcat_copy(libiberty_concat_ptr, first, args);
+  VA_CLOSE(args);
 
   return libiberty_concat_ptr;
 }
 
 char *
-concat (const char *first, ...)
+concat(const char *first, ...)
 {
   char *newstr;
 
-  /* First compute the size of the result and get sufficient memory.  */
-  VA_OPEN (args, first);
-  VA_FIXEDARG (args, const char *, first);
-  newstr = XNEWVEC (char, vconcat_length (first, args) + 1);
-  VA_CLOSE (args);
+  /* First compute the size of the result and get sufficient memory: */
+  VA_OPEN(args, first);
+  VA_FIXEDARG(args, const char *, first);
+  newstr = XNEWVEC(char, (vconcat_length(first, args) + 1UL));
+  VA_CLOSE(args);
 
-  /* Now copy the individual pieces to the result string. */
-  VA_OPEN (args, first);
-  VA_FIXEDARG (args, const char *, first);
-  vconcat_copy (newstr, first, args);
-  VA_CLOSE (args);
+  /* Now copy the individual pieces to the result string: */
+  VA_OPEN(args, first);
+  VA_FIXEDARG(args, const char *, first);
+  vconcat_copy(newstr, first, args);
+  VA_CLOSE(args);
 
   return newstr;
 }
@@ -210,23 +210,25 @@ reconcat (char *optr, const char *first, ...)
 }
 
 #ifdef MAIN
-#define NULLP (char *)0
+# define NULLP (char *)0
 
 /* Simple little test driver. */
 
-#include <stdio.h>
+# include <stdio.h>
 
 int
-main (void)
+main(void)
 {
-  printf ("\"\" = \"%s\"\n", concat (NULLP));
-  printf ("\"a\" = \"%s\"\n", concat ("a", NULLP));
-  printf ("\"ab\" = \"%s\"\n", concat ("a", "b", NULLP));
-  printf ("\"abc\" = \"%s\"\n", concat ("a", "b", "c", NULLP));
-  printf ("\"abcd\" = \"%s\"\n", concat ("ab", "cd", NULLP));
-  printf ("\"abcde\" = \"%s\"\n", concat ("ab", "c", "de", NULLP));
-  printf ("\"abcdef\" = \"%s\"\n", concat ("", "a", "", "bcd", "ef", NULLP));
+  printf("\"\" = \"%s\"\n", concat(NULLP));
+  printf("\"a\" = \"%s\"\n", concat("a", NULLP));
+  printf("\"ab\" = \"%s\"\n", concat("a", "b", NULLP));
+  printf("\"abc\" = \"%s\"\n", concat("a", "b", "c", NULLP));
+  printf("\"abcd\" = \"%s\"\n", concat("ab", "cd", NULLP));
+  printf("\"abcde\" = \"%s\"\n", concat("ab", "c", "de", NULLP));
+  printf("\"abcdef\" = \"%s\"\n", concat("", "a", "", "bcd", "ef", NULLP));
   return 0;
 }
 
-#endif
+#endif /* MAIN */
+
+/* EOF */

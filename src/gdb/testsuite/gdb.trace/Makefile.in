@@ -1,3 +1,5 @@
+# Makefile for gdb.trace part of testsuite
+
 VPATH = @srcdir@
 srcdir = @srcdir@
 
@@ -6,10 +8,11 @@ srcdir = @srcdir@
 all info install-info dvi install uninstall installcheck check:
 	@echo "Nothing to be done for $@..."
 
+# 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:
 	-rm -f actions circ collection limits
-	-rm -f *.o *.diff *~ *.bad core sh3 hppa mn10300
-	-rm -rf *.dSYM
+	-rm -fv *.o *.diff *~ *.bad core sh3 hppa mn10300
+	-rm -rfv *.dSYM
 
 distclean maintainer-clean realclean: clean
 	-rm -f Makefile config.status config.log

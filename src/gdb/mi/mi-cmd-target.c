@@ -1,4 +1,4 @@
-/* MI Command Set - target commands.
+/* mi-cmd-target.c: MI Command Set - target commands.
    Copyright (C) 2007, 2008, 2009 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -14,17 +14,16 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>  */
 
 #include "defs.h"
 #include "mi-cmds.h"
 #include "mi-getopt.h"
 #include "remote.h"
 
-/* Get a file from the target.  */
-
+/* Get a file from the target: */
 void
-mi_cmd_target_file_get (char *command, char **argv, int argc)
+mi_cmd_target_file_get(char *command, char **argv, int argc)
 {
   int optind = 0;
   char *optarg;
@@ -35,20 +34,19 @@ mi_cmd_target_file_get (char *command, char **argv, int argc)
   };
   static const char *prefix = "mi_cmd_target_file_get";
 
-  if (mi_getopt (prefix, argc, argv, opts, &optind, &optarg) != -1
-      || optind != argc - 2)
-    error (_("mi_cmd_target_file_get: Usage: REMOTE_FILE LOCAL_FILE"));
+  if ((mi_getopt(prefix, argc, argv, opts, &optind, &optarg) != -1)
+      || (optind != (argc - 2)))
+    error(_("mi_cmd_target_file_get: Usage: REMOTE_FILE LOCAL_FILE"));
 
   remote_file = argv[optind];
   local_file = argv[optind + 1];
 
-  remote_file_get (remote_file, local_file, 0);
+  remote_file_get(remote_file, local_file, 0);
 }
 
-/* Send a file to the target.  */
-
+/* Send a file to the target: */
 void
-mi_cmd_target_file_put (char *command, char **argv, int argc)
+mi_cmd_target_file_put(char *command, char **argv, int argc)
 {
   int optind = 0;
   char *optarg;
@@ -59,20 +57,19 @@ mi_cmd_target_file_put (char *command, char **argv, int argc)
   };
   static const char *prefix = "mi_cmd_target_file_put";
 
-  if (mi_getopt (prefix, argc, argv, opts, &optind, &optarg) != -1
-      || optind != argc - 2)
-    error (_("mi_cmd_target_file_put: Usage: LOCAL_FILE REMOTE_FILE"));
+  if ((mi_getopt(prefix, argc, argv, opts, &optind, &optarg) != -1)
+      || (optind != (argc - 2)))
+    error(_("mi_cmd_target_file_put: Usage: LOCAL_FILE REMOTE_FILE"));
 
   local_file = argv[optind];
   remote_file = argv[optind + 1];
 
-  remote_file_put (local_file, remote_file, 0);
+  remote_file_put(local_file, remote_file, 0);
 }
 
-/* Delete a file on the target.  */
-
+/* Delete a file on the target: */
 void
-mi_cmd_target_file_delete (char *command, char **argv, int argc)
+mi_cmd_target_file_delete(char *command, char **argv, int argc)
 {
   int optind = 0;
   char *optarg;
@@ -83,12 +80,13 @@ mi_cmd_target_file_delete (char *command, char **argv, int argc)
   };
   static const char *prefix = "mi_cmd_target_file_delete";
 
-  if (mi_getopt (prefix, argc, argv, opts, &optind, &optarg) != -1
-      || optind != argc - 1)
-    error (_("mi_cmd_target_file_delete: Usage: REMOTE_FILE"));
+  if ((mi_getopt(prefix, argc, argv, opts, &optind, &optarg) != -1)
+      || (optind != (argc - 1)))
+    error(_("mi_cmd_target_file_delete: Usage: REMOTE_FILE"));
 
   remote_file = argv[optind];
 
-  remote_file_delete (remote_file, 0);
+  remote_file_delete(remote_file, 0);
 }
 
+/* EOF */

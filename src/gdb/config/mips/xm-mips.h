@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on a mips box under 4.3bsd.
+/* xm-mips.h
+   Definitions to make GDB run on a mips box under 4.3bsd.
    Copyright 1986, 1987, 1989, 1993, 1994, 1995, 1996, 1998
    Free Software Foundation, Inc.
    Contributed by Per Bothner(bothner@cs.wisc.edu) at U.Wisconsin
@@ -23,24 +24,23 @@
 
 #ifdef ultrix
 /* Needed for DECstation core files.  */
-#include <machine/param.h>
-#define KERNEL_U_ADDR UADDR
-
+# include <machine/param.h>
+# define KERNEL_U_ADDR UADDR
 /* Native Ultrix cc has broken long long support.  */
-#ifndef __GNUC__
-#undef CC_HAS_LONG_LONG
-#endif
-#endif
+# ifndef __GNUC__
+#  undef CC_HAS_LONG_LONG
+# endif /* !__GNUC__ */
+#endif /* ultrix */
 
 #if ! defined (__GNUC__) && ! defined (offsetof)
-#define offsetof(TYPE, MEMBER) ((unsigned long) &((TYPE *)0)->MEMBER)
-#endif
+# define offsetof(TYPE, MEMBER) ((unsigned long) &((TYPE *)0)->MEMBER)
+#endif /* !__GNUC__ && !offsetof */
 
 /* Only used for core files on DECstations.
-   First four registers at u.u_ar0 are saved arguments, and
-   there is no r0 saved.   Float registers are saved
-   in u_pcb.pcb_fpregs, not relative to u.u_ar0.  */
-
+ * First four registers at u.u_ar0 are saved arguments, and
+ * there is no r0 saved.  Float registers are saved
+ * in u_pcb.pcb_fpregs, not relative to u.u_ar0.
+ */
 #define REGISTER_U_ADDR(addr, blockend, regno) 		\
 	{ \
 	  if (regno < FP0_REGNUM) \
@@ -54,6 +54,8 @@
 #define	ONE_PROCESS_WRITETEXT
 
 /* HAVE_SGTTY also works, last we tried.
-
-   But we have termios, at least as of Ultrix 4.2A, so use it.  */
+ *
+ * But we have termios, at least as of Ultrix 4.2A, so use it. */
 #define HAVE_TERMIOS
+
+/* EOF */

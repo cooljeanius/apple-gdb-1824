@@ -47,7 +47,7 @@ extern int rl_visible_stats;
 #endif /* VISIBLE_STATS */
 
 /* readline.c */
-extern int rl_line_buffer_len;
+extern size_t rl_line_buffer_len;
 extern int rl_arg_sign;
 extern int rl_visible_prompt_length;
 extern int readline_echoing_p;
@@ -170,7 +170,7 @@ extern void _rl_output_character_function PARAMS((int));
 #else
 extern int _rl_output_character_function PARAMS((int));
 #endif
-extern void _rl_output_some_chars PARAMS((const char *, int));
+extern void _rl_output_some_chars PARAMS((const char *, size_t));
 extern int _rl_backspace PARAMS((int));
 extern void _rl_enable_meta_key PARAMS((void));
 extern void _rl_control_keypad PARAMS((int));

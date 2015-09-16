@@ -54,11 +54,10 @@ struct sec_flags_struct
   int vflags_always;
   flagword flags_always;	/* Flags we set always.  */
   int vflags_hassize;
-  flagword flags_hassize;	/* Flags we set if the section has a size > 0.  */
+  flagword flags_hassize; /* Flags we set if the section has a size > 0  */
 };
 
-/* These flags are deccrtl/vaxcrtl (openVMS 6.2 VAX) compatible.  */
-
+/* These flags are deccrtl/vaxcrtl (openVMS 6.2 VAX) compatible: */
 static struct sec_flags_struct vax_section_flags[] =
   {
     { VAX_CODE_NAME,
@@ -192,7 +191,7 @@ vms_esecflag_by_name (struct sec_flags_struct *section_flags,
   return section_flags[i].vflags_always;
 }
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 
 struct flagdescstruct { char *name; flagword value; };
 
@@ -223,13 +222,12 @@ flag2str (struct flagdescstruct * flagdesc, flagword flags)
 
 /* Input routines.  */
 
-/* Process GSD/EGSD record
-   return 0 on success, -1 on error.  */
-
+/* Process GSD/EGSD record.
+ * Return 0 on success, -1 on error.  */
 int
-_bfd_vms_slurp_gsd (bfd * abfd, int objtype)
+_bfd_vms_slurp_gsd(bfd * abfd, int objtype)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   static struct flagdescstruct gpsflagdesc[] =
     {
       { "PIC", 0x0001 },
@@ -258,7 +256,7 @@ _bfd_vms_slurp_gsd (bfd * abfd, int objtype)
       { "NORM", 0x0040 },
       { NULL, 0 }
     };
-#endif
+#endif /* VMS_DEBUG */
 
   int gsd_type, gsd_size;
   asection *section;
@@ -271,42 +269,44 @@ _bfd_vms_slurp_gsd (bfd * abfd, int objtype)
   unsigned long align_addr;
   static unsigned int psect_idx = 0;
 
-#if VMS_DEBUG
-  vms_debug (2, "GSD/EGSD (%d/%x)\n", objtype, objtype);
-#endif
+  gsd_size = 0;
+
+#if defined(VMS_DEBUG) && VMS_DEBUG
+  vms_debug(2, "GSD/EGSD (%d/%x)\n", objtype, objtype);
+#endif /* VMS_DEBUG */
 
   switch (objtype)
     {
     case EOBJ_S_C_EGSD:
-      PRIV (vms_rec) += 8;	/* Skip type, size, l_temp.  */
-      PRIV (rec_size) -= 8;
+      PRIV(vms_rec) += 8;	/* Skip type, size, l_temp.  */
+      PRIV(rec_size) -= 8;
       break;
     case OBJ_S_C_GSD:
-      PRIV (vms_rec) += 1;
-      PRIV (rec_size) -= 1;
+      PRIV(vms_rec) += 1;
+      PRIV(rec_size) -= 1;
       break;
     default:
       return -1;
     }
 
-  /* Calculate base address for each section.  */
+  /* Calculate base address for each section: */
   base_addr = 0L;
 
   abfd->symcount = 0;
 
-  while (PRIV (rec_size) > 0)
+  while (PRIV(rec_size) > 0)
     {
-      vms_rec = PRIV (vms_rec);
+      vms_rec = PRIV(vms_rec);
 
       if (objtype == OBJ_S_C_GSD)
 	gsd_type = *vms_rec;
       else
 	{
-	  _bfd_vms_get_header_values (abfd, vms_rec, &gsd_type, &gsd_size);
+	  _bfd_vms_get_header_values(abfd, vms_rec, &gsd_type, &gsd_size);
 	  gsd_type += EVAX_OFFSET;
 	}
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
       vms_debug (3, "gsd_type %d\n", gsd_type);
 #endif
 
@@ -317,7 +317,7 @@ _bfd_vms_slurp_gsd (bfd * abfd, int objtype)
 	    /* Program section definition.  */
 	    asection *old_section = 0;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	    vms_debug (4, "GSD_S_C_PSC\n");
 #endif
 	    /* If this section isn't a bfd section.  */
@@ -393,8 +393,8 @@ _bfd_vms_slurp_gsd (bfd * abfd, int objtype)
 		  }
 		else if (section->size > old_section->size)
 		  {
-		    section->contents = bfd_realloc (old_section->contents,
-						     section->size);
+		    section->contents = (unsigned char *)bfd_realloc(old_section->contents,
+                                                                     section->size);
 		    if (section->contents == NULL)
 		      {
 			bfd_set_error (bfd_error_no_memory);
@@ -404,19 +404,19 @@ _bfd_vms_slurp_gsd (bfd * abfd, int objtype)
 	      }
 	    else
 	      {
-		section->contents = bfd_zmalloc (section->size);
+		section->contents = (unsigned char *)bfd_zmalloc(section->size);
 		if (section->contents == NULL)
 		  {
 		    bfd_set_error (bfd_error_no_memory);
 		    return -1;
 		  }
 	      }
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	    vms_debug (4, "gsd psc %d (%s, flags %04x=%s) ",
 		       section->index, name, old_flags, flag2str (gpsflagdesc, old_flags));
 	    vms_debug (4, "%d bytes at 0x%08lx (mem %p)\n",
 		       section->size, section->vma, section->contents);
-#endif
+#endif /* VMS_DEBUG */
 
 	    gsd_size = vms_rec[8] + 9;
 
@@ -426,7 +426,7 @@ _bfd_vms_slurp_gsd (bfd * abfd, int objtype)
 
 	case GSD_S_C_EPM:
 	case GSD_S_C_EPMW:
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	  vms_debug (4, "gsd epm\n");
 #endif
 	  /* Fall through.  */
@@ -436,8 +436,8 @@ _bfd_vms_slurp_gsd (bfd * abfd, int objtype)
 	    int name_offset = 0, value_offset = 0;
 
 	    /* Symbol specification (definition or reference).  */
-#if VMS_DEBUG
-	    vms_debug (4, "GSD_S_C_SYM(W)\n");
+#if defined(VMS_DEBUG) && VMS_DEBUG
+	    vms_debug(4, "GSD_S_C_SYM(W)\n");
 #endif
 	    old_flags = bfd_getl16 (vms_rec + 2);
 	    new_flags = BSF_NO_FLAGS;
@@ -445,8 +445,7 @@ _bfd_vms_slurp_gsd (bfd * abfd, int objtype)
 	    if (old_flags & GSY_S_M_WEAK)
 	      new_flags |= BSF_WEAK;
 
-	    switch (gsd_type)
-	      {
+	    switch (gsd_type) {
 	      case GSD_S_C_EPM:
 		name_offset = 11;
 		value_offset = 5;
@@ -471,11 +470,14 @@ _bfd_vms_slurp_gsd (bfd * abfd, int objtype)
 		  name_offset = 5;
 		value_offset = 6;
 		break;
-	      }
+              default:
+                break;
+	    } /* end "switch (gsd_type)" */
 
-	    /* Save symbol in vms_symbol_table.  */
-	    entry = _bfd_vms_enter_symbol
-	      (abfd, _bfd_vms_save_counted_string (vms_rec + name_offset));
+	    /* Save symbol in vms_symbol_table: */
+	    entry
+              = _bfd_vms_enter_symbol(abfd,
+                                      _bfd_vms_save_counted_string(vms_rec + name_offset));
 	    if (entry == NULL)
 	      {
 		bfd_set_error (bfd_error_no_memory);
@@ -496,7 +498,7 @@ _bfd_vms_slurp_gsd (bfd * abfd, int objtype)
 		  psect = vms_rec[value_offset-1];
 
 		symbol->section = (asection *) (size_t) psect;
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 		vms_debug (4, "gsd sym def #%d (%s, %d [%p], %04x=%s)\n", abfd->symcount,
 			   symbol->name, (int)symbol->section, symbol->section, old_flags, flag2str (gsyflagdesc, old_flags));
 #endif
@@ -505,7 +507,7 @@ _bfd_vms_slurp_gsd (bfd * abfd, int objtype)
 	      {
 		/* Symbol reference.  */
 		symbol->section = bfd_make_section (abfd, BFD_UND_SECTION_NAME);
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 		vms_debug (4, "gsd sym ref #%d (%s, %s [%p], %04x=%s)\n",
 			   abfd->symcount, symbol->name, symbol->section->name,
 			   symbol->section, old_flags, flag2str (gsyflagdesc, old_flags));
@@ -520,52 +522,52 @@ _bfd_vms_slurp_gsd (bfd * abfd, int objtype)
 
 	case GSD_S_C_PRO:
 	case GSD_S_C_PROW:
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	  vms_debug (4, "gsd pro\n");
 #endif
 	  break;
 	case GSD_S_C_IDC:
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	  vms_debug (4, "gsd idc\n");
 #endif
 	  break;
 	case GSD_S_C_ENV:
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	  vms_debug (4, "gsd env\n");
 #endif
 	  break;
 	case GSD_S_C_LSY:
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	  vms_debug (4, "gsd lsy\n");
 #endif
 	  break;
 	case GSD_S_C_LEPM:
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	  vms_debug (4, "gsd lepm\n");
 #endif
 	  break;
 	case GSD_S_C_LPRO:
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	  vms_debug (4, "gsd lpro\n");
 #endif
 	  break;
 	case GSD_S_C_SPSC:
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	  vms_debug (4, "gsd spsc\n");
 #endif
 	  break;
 	case GSD_S_C_SYMV:
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	  vms_debug (4, "gsd symv\n");
 #endif
 	  break;
 	case GSD_S_C_EPMV:
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	  vms_debug (4, "gsd epmv\n");
 #endif
 	  break;
 	case GSD_S_C_PROV:
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	  vms_debug (4, "gsd prov\n");
 #endif
 	  break;
@@ -591,10 +593,10 @@ _bfd_vms_slurp_gsd (bfd * abfd, int objtype)
 	      base_addr += (align_addr - (base_addr % align_addr));
 	    section->vma = (bfd_vma)base_addr;
 	    base_addr += section->size;
-	    section->contents = bfd_zmalloc (section->size);
+	    section->contents = (unsigned char *)bfd_zmalloc(section->size);
 	    if (section->contents == NULL)
 	      return -1;
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	    vms_debug (4, "egsd psc %d (%s, flags %04x=%s) ",
 		       section->index, name, old_flags, flag2str (gpsflagdesc, old_flags));
 	    vms_debug (4, "%d bytes at 0x%08lx (mem %p)\n",
@@ -626,7 +628,7 @@ _bfd_vms_slurp_gsd (bfd * abfd, int objtype)
 
 		symbol->value = bfd_getl64 (vms_rec + 8);
 		symbol->section = (asection *) ((unsigned long) bfd_getl32 (vms_rec + 28));
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 		vms_debug (4, "egsd sym def #%d (%s, %d, %04x=%s)\n", abfd->symcount,
 			   symbol->name, (int) symbol->section, old_flags,
 			   flag2str (gsyflagdesc, old_flags));
@@ -636,7 +638,7 @@ _bfd_vms_slurp_gsd (bfd * abfd, int objtype)
 	      {
 		/* Symbol reference.  */
 		symbol->name = _bfd_vms_save_counted_string (vms_rec + 8);
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 		vms_debug (4, "egsd sym ref #%d (%s, %04x=%s)\n", abfd->symcount,
 			  symbol->name, old_flags, flag2str (gsyflagdesc, old_flags));
 #endif
@@ -645,27 +647,27 @@ _bfd_vms_slurp_gsd (bfd * abfd, int objtype)
 
 	    symbol->flags = new_flags;
 
-	    /* Save symbol in vms_symbol_table.  */
-	    entry = (vms_symbol_entry *) bfd_hash_lookup (PRIV (vms_symbol_table),
-							  symbol->name,
-							  TRUE, FALSE);
+	    /* Save symbol in vms_symbol_table: */
+	    entry = (vms_symbol_entry *)bfd_hash_lookup(PRIV(vms_symbol_table),
+                                                        symbol->name,
+                                                        TRUE, FALSE);
 	    if (entry == NULL)
 	      {
-		bfd_set_error (bfd_error_no_memory);
+		bfd_set_error(bfd_error_no_memory);
 		return -1;
 	      }
 
 	    if (entry->symbol != NULL)
 	      {
 		/* FIXME ?, DEC C generates this.  */
-#if VMS_DEBUG
-		vms_debug (4, "EGSD_S_C_SYM: duplicate \"%s\"\n", symbol->name);
-#endif
+#if defined(VMS_DEBUG) && VMS_DEBUG
+		vms_debug(4, "EGSD_S_C_SYM: duplicate \"%s\"\n", symbol->name);
+#endif /* VMS_DEBUG */
 	      }
 	    else
 	      {
 		entry->symbol = symbol;
-		PRIV (gsd_sym_count)++;
+		PRIV(gsd_sym_count)++;
 		abfd->symcount++;
 	      }
 	  }
@@ -675,13 +677,13 @@ _bfd_vms_slurp_gsd (bfd * abfd, int objtype)
 	  break;
 
 	default:
-	  (*_bfd_error_handler) (_("unknown gsd/egsd subtype %d"), gsd_type);
-	  bfd_set_error (bfd_error_bad_value);
+	  (*_bfd_error_handler)(_("unknown gsd/egsd subtype %d"), gsd_type);
+	  bfd_set_error(bfd_error_bad_value);
 	  return -1;
 	}
 
-      PRIV (rec_size) -= gsd_size;
-      PRIV (vms_rec) += gsd_size;
+      PRIV(rec_size) -= gsd_size;
+      PRIV(vms_rec) += gsd_size;
     }
 
   if (abfd->symcount > 0)
@@ -705,13 +707,13 @@ _bfd_vms_write_gsd (bfd *abfd, int objtype ATTRIBUTE_UNUSED)
   char *sname;
   flagword new_flags, old_flags;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (2, "vms_write_gsd (%p, %d)\n", abfd, objtype);
 #endif
 
   /* Output sections.  */
   section = abfd->sections;
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (3, "%d sections found\n", abfd->section_count);
 #endif
 
@@ -725,7 +727,7 @@ _bfd_vms_write_gsd (bfd *abfd, int objtype ATTRIBUTE_UNUSED)
 
   while (section != 0)
     {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
       vms_debug (3, "Section #%d %s, %d bytes\n", section->index, section->name, (int)section->size);
 #endif
 
@@ -743,7 +745,7 @@ _bfd_vms_write_gsd (bfd *abfd, int objtype ATTRIBUTE_UNUSED)
       /* Create dummy sections to keep consecutive indices.  */
       while (section->index - last_index > 1)
 	{
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	  vms_debug (3, "index %d, last %d\n", section->index, last_index);
 #endif
 	  _bfd_vms_output_begin (abfd, EGSD_S_C_PSC, -1);
@@ -800,7 +802,7 @@ _bfd_vms_write_gsd (bfd *abfd, int objtype ATTRIBUTE_UNUSED)
     }
 
   /* Output symbols.  */
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (3, "%d symbols found\n", abfd->symcount);
 #endif
 

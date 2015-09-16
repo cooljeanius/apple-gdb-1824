@@ -52,9 +52,9 @@ lbasename (const char *name)
 
 #if defined (HAVE_DOS_BASED_FILE_SYSTEM)
   /* Skip over a possible disk name.  */
-  if (ISALPHA (name[0]) && name[1] == ':') 
+  if (ISALPHA (name[0]) && name[1] == ':')
     name += 2;
-#endif
+#endif /* HAVE_DOS_BASED_FILE_SYSTEM */
 
   for (base = name; *name; name++)
     if (IS_DIR_SEPARATOR (*name))
@@ -62,3 +62,5 @@ lbasename (const char *name)
 
   return base;
 }
+
+/* EOF */

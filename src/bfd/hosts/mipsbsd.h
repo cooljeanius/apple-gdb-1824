@@ -1,3 +1,5 @@
+/* mipsbsd.h */
+
 #include <machine/param.h>
 #include <machine/vmparam.h>
 #undef ALIGN

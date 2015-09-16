@@ -1,0 +1,197 @@
+[=  AutoGen5 Template  -*- Mode: shell-script -*-
+
+ help-text
+
+# This file is part of AutoGen.
+# AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+#
+# AutoGen is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# AutoGen is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+=][= INCLUDE "tpl-config.tlib" =][=
+
+ ;; This template is designed to emit help text from the current set
+ ;; of option definitions.
+ ;;
+ (make-tmp-dir)
+ (out-push-new (shellf "echo ${tmp_dir}/%s.def" (get "prog-name")))
+ (define emit-def (lambda (vname)
+   (if (exist? vname)
+       (sprintf "\n%s = %s;" vname (kr-string (get vname))) ) ))
+=]
+AutoGen Definitions options.tpl;
+no-libopts;
+[=
+
+FOR var IN  prog-name  prog-title  argument
+            environrc  export      homerc         include
+            long-opts  rcfile      version        detail
+            explain    package     preserve-case  prog-desc
+            opts-ptr   gnu-usage   reorder-args   usage-opt
+
+            version-value   help-value  more-help-value
+            save-opts-value usage-value load-opts-value
+  =][=
+  (emit-def (get "var"))    =][=
+ENDFOR var IN ....          =][=
+
+IF (exist? "config-header") =]
+config-header = '[= prog-name =]-config.h';[=
+ENDIF                       =][=
+
+FOR copyright               =]
+copyright = {[=
+
+  FOR var IN  date owner type text author eaddr
+    =][=
+    (emit-def (get "var"))  =][=
+  ENDFOR var IN ....        =]
+};[=
+ENDFOR copyright            =]
+
+main = { main-type = shell-process; };
+[=
+
+FOR flag
+
+=]
+flag = {[=
+
+  FOR var IN name descrip value max min must-set enable disable enabled
+             ifdef ifndef no-preset settable equivalence documentation
+             immediate immed-disable also
+             arg-type arg-optional arg-default default arg-range
+             stack-arg unstack-arg
+    =][=
+    (emit-def (get "var"))  =][=
+  ENDFOR var IN ....        =][=
+
+  IF (exist? "keyword")     =]
+    keyword = '[=    (join "', '" (stack "keyword")) =]';[=
+  ENDIF  keyword exists     =][=
+
+  IF (exist? "flags-must")  =]
+    flags-must = '[= (join "', '" (stack "flags-must")) =]';[=
+  ENDIF  flags-must exists  =][=
+
+  IF (exist? "flags-cant")  =]
+    flags-cant = '[= (join "', '" (stack "flags-cant")) =]';[=
+  ENDIF  flags-cant exists  =]
+};[=
+
+ENDFOR flag                 =][=
+
+(out-pop)
+(out-push-new)             \=]
+{
+    # redirect stdout for safty's sake
+    inc_list="-I${PWD} -I[=(. inc-dir)=]"
+    cfg_ldflags="[=(. libs)=]"
+    cfg_cflags=${CFLAGS}
+    exe=${tmp_dir}/[= prog-name =]
+[= # START-BUILDTREE-ISMS:
+
+#  The following code is sedded away in install-hook.sh.
+#  The goal is to remove build tree-isms when installing this file.
+
+\=]
+    test -z "${top_builddir}" && ldflags='' || \
+        ldflags=`exec 2>/dev/null
+            find ${top_builddir}/autoopts -name libopts.a | head -1`
+
+    test -f "${ldflags}" || {
+        ldflags='[=(. lib-dir)=]/libopts.a'
+        test -f "${ldflags}" || die "Cannot locate libopts.a"
+    }
+    ldflags="$ldflags ${cfg_ldflags}"
+    test -d "${top_builddir}" && \
+        inc_list="-I${top_builddir} -I${top_builddir}/autoopts ${inc_list}"
+    test -d "${top_srcdir}" && \
+        inc_list="-I${top_srcdir}/autoopts ${inc_list}"
+
+[= # END-BUILDTREE-ISMS the following code is for installed version:
+
+    test -x "${AGexe}" || die "AGexe is invalid:  ${AGexe}"
+    aocfg=`dirname ${AGexe}`/autoopts-config
+    test -x "$aocfg" || die "missing $ag"
+    ldflags="${cfg_ldflags} `${aocfg} ldflags`"
+    cfg_cflags="${cfg_cflags} `${aocfg} cflags`"
+
+# END-INSTALL-ONLY-CODE \=]
+[= IF (exist? "config-header") \=]
+    inc_list="-I${tmp_dir} ${inc_list}"
+    while :
+    do
+        h='[= config-header =]'
+        test -f "$h" && break
+        hdr=$h
+        h=`basename "${hdr}"`
+        test -f "$h" && break
+        g=$h
+        d=`pwd`
+
+        while :
+        do
+            d=`dirname $d`
+            test "X$d" = X/ && die "cannot locate [= config-header =]"
+            h="$d/$g"
+            test -f "$h" && break
+            h="$d/$hdr"
+            test -f "$h" && break
+        done
+        break
+    done
+    cp "${h}" ${exe}-config.h
+[= ENDIF \=]
+    flags="-DTEST_[= (string-upcase! (string->c-name! (get "prog-name")))
+        =]_OPTS=1 ${inc_list} ${cfg_cflags}"
+    cd ${tmp_dir}
+    ${AGexe} -Toptions.tpl [= prog-name =].def || \
+        die "Cannot gen [= prog-name =]"
+    cd -
+    ${CC:-cc} ${flags} -g -o TMPexe$$ ${exe}.c ${ldflags} || \
+        die cannot compile ${exe}.c
+    mv -f TMPexe$$ ${exe}
+} 1>&2
+${exe} [=
+
+  (if (== (get "usage-type") "short")
+      (if (exist? "usage-opt")
+          (if (exist? "long-opts")
+              "--usage"
+              (string-append "-" (get "usage-value" "u"))
+          )
+          "--give-me-short-usage 2>&1 | sed -e '/: illegal option /d'"
+      )
+      (if (exist? "long-opts")
+          "--help"
+          (string-append "-" (get "help-value" "?"))
+   )  )   =] || \
+  die "cannot obtain ${exe} help in ${tmp_dir}"[=
+
+(shell (out-pop #t))
+
+=]
+[=
+
+## Local Variables:
+## Mode: shell-script
+## indent-tabs-mode:       nil
+## sh-basic-offset:          4
+## sh-indent-after-do:       4
+## sh-indentation:           4
+## sh-indent-for-case-label: 0
+## sh-indent-for-case-alt:   4
+## End:
+
+# end of usage.tlib \=]

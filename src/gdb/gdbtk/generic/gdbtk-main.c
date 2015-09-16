@@ -1,4 +1,4 @@
-/* Main function for gdb with insight.  
+/* gdbtk-main.c: Main function for gdb with insight.
 
    Copyright 2002 Free Software Foundation, Inc.
 
@@ -25,13 +25,15 @@
 #include "gdb_string.h"
 
 int
-main (int argc, char **argv)
+main(int argc, char **argv)
 {
   struct captured_main_args args;
-  memset (&args, 0, sizeof args);
+  memset(&args, 0, sizeof(args));
   args.argc = argc;
   args.argv = argv;
   args.use_windows = 1;
   args.interpreter_p = "insight";
-  return gdb_main (&args);
+  return gdb_main(&args);
 }
+
+/* EOF */

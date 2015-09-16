@@ -1,6 +1,6 @@
-/* 
+/* dbg_conf.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -43,12 +43,14 @@ typedef struct Dbg_ConfigBlock {
 
 typedef struct Dbg_HostosInterface Dbg_HostosInterface;
 /* This structure allows access by the (host-independent) C-library support
-   module of armulator or pisd (armos.c) to host-dependent functions for
-   which there is no host-independent interface.  Its contents are unknown
-   to the debugger toolbox.
-   The assumption is that, in a windowed system, fputc(stderr) for example
-   may not achieve the desired effect of the character appearing in some
-   window.
+ * module of armulator or pisd (armos.c) to host-dependent functions for
+ * which there is no host-independent interface. Its contents are unknown
+ * to the debugger toolbox.
+ * The assumption is that, in a windowed system, fputc(stderr) for example
+ * may not achieve the desired effect of the character appearing in some
+ * window.
  */
 
-#endif
+#endif /* !Dbg_Conf__h */
+
+/* EOF */

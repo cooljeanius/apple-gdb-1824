@@ -493,15 +493,15 @@ _bfd_sparc_elf_mkobject (bfd *abfd)
 }
 
 static void
-sparc_put_word_32 (bfd *bfd, bfd_vma val, void *ptr)
+sparc_put_word_32(bfd *abfd, bfd_vma val, void *ptr)
 {
-  bfd_put_32 (bfd, val, ptr);
+  bfd_put_32(abfd, val, ptr);
 }
 
 static void
-sparc_put_word_64 (bfd *bfd, bfd_vma val, void *ptr)
+sparc_put_word_64(bfd *abfd, bfd_vma val, void *ptr)
 {
-  bfd_put_64 (bfd, val, ptr);
+  bfd_put_64(abfd, val, ptr);
 }
 
 static void
@@ -519,44 +519,44 @@ sparc_elf_append_rela_64 (bfd *abfd ATTRIBUTE_UNUSED,
 }
 
 static void
-sparc_elf_append_rela_32 (bfd *abfd, asection *s, Elf_Internal_Rela *rel)
+sparc_elf_append_rela_32(bfd *abfd, asection *s, Elf_Internal_Rela *rel)
 {
   Elf32_External_Rela *loc32;
 
-  loc32 = (Elf32_External_Rela *) s->contents;
+  loc32 = (Elf32_External_Rela *)s->contents;
   loc32 += s->reloc_count++;
-  bfd_elf32_swap_reloca_out (abfd, rel, (bfd_byte *) loc32);
+  bfd_elf32_swap_reloca_out(abfd, rel, (bfd_byte *)loc32);
 }
 
 static bfd_vma
-sparc_elf_r_info_64 (Elf_Internal_Rela *in_rel ATTRIBUTE_UNUSED,
-		     bfd_vma index ATTRIBUTE_UNUSED,
-		     bfd_vma type ATTRIBUTE_UNUSED)
+sparc_elf_r_info_64(Elf_Internal_Rela *in_rel ATTRIBUTE_UNUSED,
+		    bfd_vma unused_index ATTRIBUTE_UNUSED,
+		    bfd_vma type ATTRIBUTE_UNUSED)
 {
-  return ELF64_R_INFO (index,
-		       (in_rel ?
-			ELF64_R_TYPE_INFO (ELF64_R_TYPE_DATA (in_rel->r_info),
-					   type) : type));
+  return ELF64_R_INFO(unused_index,
+		      (in_rel ?
+                       ELF64_R_TYPE_INFO(ELF64_R_TYPE_DATA(in_rel->r_info),
+                                         type) : type));
 }
 
 static bfd_vma
-sparc_elf_r_info_32 (Elf_Internal_Rela *in_rel ATTRIBUTE_UNUSED,
-		     bfd_vma index, bfd_vma type)
+sparc_elf_r_info_32(Elf_Internal_Rela *in_rel ATTRIBUTE_UNUSED,
+		    bfd_vma input_index, bfd_vma type)
 {
-  return ELF32_R_INFO (index, type);
+  return ELF32_R_INFO(input_index, type);
 }
 
 static bfd_vma
-sparc_elf_r_symndx_64 (bfd_vma r_info)
+sparc_elf_r_symndx_64(bfd_vma r_info)
 {
-  bfd_vma r_symndx = ELF32_R_SYM (r_info);
+  bfd_vma r_symndx = ELF32_R_SYM(r_info);
   return (r_symndx >> 24);
 }
 
 static bfd_vma
-sparc_elf_r_symndx_32 (bfd_vma r_info)
+sparc_elf_r_symndx_32(bfd_vma r_info)
 {
-  return ELF32_R_SYM (r_info);
+  return ELF32_R_SYM(r_info);
 }
 
 /* PLT/GOT stuff */
@@ -602,12 +602,12 @@ sparc32_plt_entry_build (bfd *output_bfd, asection *splt, bfd_vma offset,
 #define PLT64_LARGE_THRESHOLD	32768
 
 static int
-sparc64_plt_entry_build (bfd *output_bfd, asection *splt, bfd_vma offset,
-			 bfd_vma max, bfd_vma *r_offset)
+sparc64_plt_entry_build(bfd *output_bfd, asection *splt, bfd_vma offset,
+                        bfd_vma max, bfd_vma *r_offset)
 {
   unsigned char *entry = splt->contents + offset;
   const unsigned int nop = SPARC_NOP;
-  int index;
+  int i_index;
 
   if (offset < (PLT64_LARGE_THRESHOLD * PLT64_ENTRY_SIZE))
     {
@@ -615,20 +615,20 @@ sparc64_plt_entry_build (bfd *output_bfd, asection *splt, bfd_vma offset,
 
       *r_offset = offset;
 
-      index = (offset / PLT64_ENTRY_SIZE);
+      i_index = (offset / PLT64_ENTRY_SIZE);
 
-      sethi = 0x03000000 | (index * PLT64_ENTRY_SIZE);
-      ba = 0x30680000
-	| (((splt->contents + PLT64_ENTRY_SIZE) - (entry + 4)) / 4 & 0x7ffff);
+      sethi = (0x03000000 | (i_index * PLT64_ENTRY_SIZE));
+      ba = (0x30680000
+            | (((splt->contents + PLT64_ENTRY_SIZE) - (entry + 4)) / 4 & 0x7ffff));
 
-      bfd_put_32 (output_bfd, (bfd_vma) sethi, entry);
-      bfd_put_32 (output_bfd, (bfd_vma) ba,    entry + 4);
-      bfd_put_32 (output_bfd, (bfd_vma) nop,   entry + 8);
-      bfd_put_32 (output_bfd, (bfd_vma) nop,   entry + 12);
-      bfd_put_32 (output_bfd, (bfd_vma) nop,   entry + 16);
-      bfd_put_32 (output_bfd, (bfd_vma) nop,   entry + 20);
-      bfd_put_32 (output_bfd, (bfd_vma) nop,   entry + 24);
-      bfd_put_32 (output_bfd, (bfd_vma) nop,   entry + 28);
+      bfd_put_32(output_bfd, (bfd_vma)sethi, entry);
+      bfd_put_32(output_bfd, (bfd_vma)ba, (entry + 4));
+      bfd_put_32(output_bfd, (bfd_vma)nop, (entry + 8));
+      bfd_put_32(output_bfd, (bfd_vma)nop, (entry + 12));
+      bfd_put_32(output_bfd, (bfd_vma)nop, (entry + 16));
+      bfd_put_32(output_bfd, (bfd_vma)nop, (entry + 20));
+      bfd_put_32(output_bfd, (bfd_vma)nop, (entry + 24));
+      bfd_put_32(output_bfd, (bfd_vma)nop, (entry + 28));
     }
   else
     {
@@ -638,8 +638,8 @@ sparc64_plt_entry_build (bfd *output_bfd, asection *splt, bfd_vma offset,
       const int insn_chunk_size = (6 * 4);
       const int ptr_chunk_size = (1 * 8);
       const int entries_per_block = 160;
-      const int block_size = entries_per_block * (insn_chunk_size
-						  + ptr_chunk_size);
+      const int block_size = (entries_per_block * (insn_chunk_size
+                                                   + ptr_chunk_size));
 
       /* Entries 32768 and higher are grouped into blocks of 160.
 	 The blocks are further subdivided into 160 sequences of
@@ -650,33 +650,32 @@ sparc64_plt_entry_build (bfd *output_bfd, asection *splt, bfd_vma offset,
       offset -= (PLT64_LARGE_THRESHOLD * PLT64_ENTRY_SIZE);
       max -= (PLT64_LARGE_THRESHOLD * PLT64_ENTRY_SIZE);
 
-      block = offset / block_size;
-      last_block = max / block_size;
+      block = (offset / block_size);
+      last_block = (max / block_size);
       if (block != last_block)
 	{
 	  chunks_this_block = 160;
 	}
       else
 	{
-	  last_ofs = max % block_size;
-	  chunks_this_block = last_ofs / (insn_chunk_size + ptr_chunk_size);
+	  last_ofs = (max % block_size);
+	  chunks_this_block = (last_ofs / (insn_chunk_size + ptr_chunk_size));
 	}
 
-      ofs = offset % block_size;
+      ofs = (offset % block_size);
 
-      index = (PLT64_LARGE_THRESHOLD +
-	       (block * 160) +
-	       (ofs / insn_chunk_size));
+      i_index = (PLT64_LARGE_THRESHOLD + (block * 160) +
+                 (ofs / insn_chunk_size));
 
-      ptr = splt->contents
-	+ (PLT64_LARGE_THRESHOLD * PLT64_ENTRY_SIZE)
-	+ (block * block_size)
-	+ (chunks_this_block * insn_chunk_size)
-	+ (ofs / insn_chunk_size) * ptr_chunk_size;
+      ptr = (splt->contents
+             + (PLT64_LARGE_THRESHOLD * PLT64_ENTRY_SIZE)
+             + (block * block_size)
+             + (chunks_this_block * insn_chunk_size)
+             + (ofs / insn_chunk_size) * ptr_chunk_size);
 
-      *r_offset = (bfd_vma) (ptr - splt->contents);
+      *r_offset = (bfd_vma)(ptr - splt->contents);
 
-      ldx = 0xc25be000 | ((ptr - (entry+4)) & 0x1fff);
+      ldx = (0xc25be000 | ((ptr - (entry+4)) & 0x1fff));
 
       /* mov %o7,%g5
 	 call .+8
@@ -684,17 +683,17 @@ sparc64_plt_entry_build (bfd *output_bfd, asection *splt, bfd_vma offset,
 	 ldx [%o7+P],%g1
 	 jmpl %o7+%g1,%g1
 	 mov %g5,%o7  */
-      bfd_put_32 (output_bfd, (bfd_vma) 0x8a10000f, entry);
-      bfd_put_32 (output_bfd, (bfd_vma) 0x40000002, entry + 4);
-      bfd_put_32 (output_bfd, (bfd_vma) SPARC_NOP,  entry + 8);
-      bfd_put_32 (output_bfd, (bfd_vma) ldx,        entry + 12);
-      bfd_put_32 (output_bfd, (bfd_vma) 0x83c3c001, entry + 16);
-      bfd_put_32 (output_bfd, (bfd_vma) 0x9e100005, entry + 20);
+      bfd_put_32(output_bfd, (bfd_vma)0x8a10000f, entry);
+      bfd_put_32(output_bfd, (bfd_vma)0x40000002, (entry + 4));
+      bfd_put_32(output_bfd, (bfd_vma)SPARC_NOP, (entry + 8));
+      bfd_put_32(output_bfd, (bfd_vma)ldx, (entry + 12));
+      bfd_put_32(output_bfd, (bfd_vma)0x83c3c001, (entry + 16));
+      bfd_put_32(output_bfd, (bfd_vma)0x9e100005, (entry + 20));
 
-      bfd_put_64 (output_bfd, (bfd_vma) (splt->contents - (entry + 4)), ptr);
+      bfd_put_64(output_bfd, (bfd_vma)(splt->contents - (entry + 4)), ptr);
     }
 
-  return index - 4;
+  return (i_index - 4);
 }
 
 #define SPARC_ELF_PUT_WORD(htab, bfd, val, ptr)	\
@@ -730,15 +729,16 @@ sparc64_plt_entry_build (bfd *output_bfd, asection *splt, bfd_vma offset,
 /* Create an entry in an SPARC ELF linker hash table.  */
 
 static struct bfd_hash_entry *
-link_hash_newfunc (struct bfd_hash_entry *entry,
-		   struct bfd_hash_table *table, const char *string)
+link_hash_newfunc(struct bfd_hash_entry *entry,
+                  struct bfd_hash_table *table, const char *string)
 {
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
   if (entry == NULL)
     {
-      entry = bfd_hash_allocate (table,
-				 sizeof (struct _bfd_sparc_elf_link_hash_entry));
+      entry = ((struct bfd_hash_entry *)
+               bfd_hash_allocate(table,
+                                 sizeof(struct _bfd_sparc_elf_link_hash_entry)));
       if (entry == NULL)
 	return entry;
     }
@@ -967,6 +967,8 @@ sparc_elf_tls_transition (struct bfd_link_info *info, bfd *abfd,
       return R_SPARC_TLS_LE_HIX22;
     case R_SPARC_TLS_LDM_LO10:
       return R_SPARC_TLS_LE_LOX10;
+    default:
+      break;
     }
 
   return r_type;
@@ -1033,31 +1035,33 @@ _bfd_sparc_elf_check_relocs (bfd *abfd, struct bfd_link_info *info,
 
       /* Compatibility with old R_SPARC_REV32 reloc conflicting
 	 with R_SPARC_TLS_GD_HI22.  */
-      if (! ABI_64_P (abfd) && ! checked_tlsgd)
+      if (! ABI_64_P(abfd) && ! checked_tlsgd)
 	switch (r_type)
 	  {
 	  case R_SPARC_TLS_GD_HI22:
 	    {
 	      const Elf_Internal_Rela *relt;
 
-	      for (relt = rel + 1; relt < rel_end; relt++)
-		if (ELF32_R_TYPE (relt->r_info) == R_SPARC_TLS_GD_LO10
-		    || ELF32_R_TYPE (relt->r_info) == R_SPARC_TLS_GD_ADD
-		    || ELF32_R_TYPE (relt->r_info) == R_SPARC_TLS_GD_CALL)
+	      for (relt = (rel + 1); relt < rel_end; relt++)
+		if ((ELF32_R_TYPE(relt->r_info) == R_SPARC_TLS_GD_LO10)
+		    || (ELF32_R_TYPE(relt->r_info) == R_SPARC_TLS_GD_ADD)
+		    || (ELF32_R_TYPE(relt->r_info) == R_SPARC_TLS_GD_CALL))
 		  break;
 	      checked_tlsgd = TRUE;
-	      _bfd_sparc_elf_tdata (abfd)->has_tlsgd = relt < rel_end;
+	      _bfd_sparc_elf_tdata(abfd)->has_tlsgd = (relt < rel_end);
 	    }
 	    break;
 	  case R_SPARC_TLS_GD_LO10:
 	  case R_SPARC_TLS_GD_ADD:
 	  case R_SPARC_TLS_GD_CALL:
 	    checked_tlsgd = TRUE;
-	    _bfd_sparc_elf_tdata (abfd)->has_tlsgd = TRUE;
+	    _bfd_sparc_elf_tdata(abfd)->has_tlsgd = TRUE;
 	    break;
+          default:
+            break;
 	  }
 
-      r_type = sparc_elf_tls_transition (info, abfd, r_type, h == NULL);
+      r_type = sparc_elf_tls_transition(info, abfd, r_type, h == NULL);
       switch (r_type)
 	{
 	case R_SPARC_TLS_LDM_HI22:
@@ -2728,6 +2732,8 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 		  if (h->dynindx == -1)
 		    skip = TRUE, relocate = TRUE;
 		  break;
+                default:
+                  break;
 		}
 
 	      if (skip)
@@ -2840,20 +2846,22 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	      case R_SPARC_TLS_GD_LO10:
 		r_type = R_SPARC_TLS_IE_LO10;
 		break;
+              default:
+                break;
 	      }
 
 	  if (r_type == R_SPARC_TLS_LE_HIX22)
 	    {
-	      relocation = tpoff (info, relocation);
+	      relocation = tpoff(info, relocation);
 	      break;
 	    }
 	  if (r_type == R_SPARC_TLS_LE_LOX10)
 	    {
 	      /* Change add into xor.  */
-	      relocation = tpoff (info, relocation);
-	      bfd_put_32 (output_bfd, (bfd_get_32 (input_bfd,
-						   contents + rel->r_offset)
-				       | 0x80182000), contents + rel->r_offset);
+	      relocation = tpoff(info, relocation);
+	      bfd_put_32(output_bfd,
+                         (bfd_get_32(input_bfd, (contents + rel->r_offset))
+                          | 0x80182000), (contents + rel->r_offset));
 	      break;
 	    }
 

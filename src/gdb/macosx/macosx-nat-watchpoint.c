@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-nat-watchpoint.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -43,6 +43,9 @@
 
 #include <mach/mach_vm.h>
 
+/* TODO: convert references to HPUX in this file to refer to Mac OS X
+ * instead, when relevant... */
+
 extern macosx_inferior_status *macosx_status;
 
 /* Our implementation of hardware watchpoints involves making memory
@@ -85,27 +88,29 @@ static struct
 }
 memory_page_dictionary;
 
-static memory_page_t *get_dictionary_entry_of_page (int pid,
-                                                    CORE_ADDR page_start);
+static memory_page_t *get_dictionary_entry_of_page(int pid,
+                                                   CORE_ADDR page_start);
 
-static void remove_dictionary_entry_of_page (int pid, memory_page_t * page);
+static void remove_dictionary_entry_of_page(int pid, memory_page_t *page);
+
+extern void _initialize_macosx_nat_watchpoint(void);
 
 static void
-require_memory_page_dictionary (void)
+require_memory_page_dictionary(void)
 {
   int i;
 
-  /* Is the memory page dictionary ready for use?  If so, we're done. */
-  if (memory_page_dictionary.page_count >= (LONGEST) 0)
+  /* Is the memory page dictionary ready for use?  If so, we are done: */
+  if (memory_page_dictionary.page_count >= (LONGEST)0L)
     return;
 
-  /* Else, initialize it. */
-  memory_page_dictionary.page_count = (LONGEST) 0;
+  /* Else, initialize it: */
+  memory_page_dictionary.page_count = (LONGEST)0L;
   memory_page_dictionary.page_size = 4096;
 
   for (i = 0; i < MEMORY_PAGE_DICTIONARY_BUCKET_COUNT; i++)
     {
-      memory_page_dictionary.buckets[i].page_start = (CORE_ADDR) 0;
+      memory_page_dictionary.buckets[i].page_start = (CORE_ADDR)0UL;
       memory_page_dictionary.buckets[i].reference_count = 0;
       memory_page_dictionary.buckets[i].next = NULL;
       memory_page_dictionary.buckets[i].previous = NULL;
@@ -113,11 +118,10 @@ require_memory_page_dictionary (void)
 }
 
 /* Write-protect the memory page that starts at this address.
-
-   Returns the original permissions of the page.
- */
+ *
+ * Returns the original permissions of the page: */
 static int
-write_protect_page (int pid, CORE_ADDR page_start)
+write_protect_page(int pid ATTRIBUTE_UNUSED, CORE_ADDR page_start)
 {
   mach_vm_address_t r_start;
   mach_vm_size_t r_size;
@@ -130,10 +134,10 @@ write_protect_page (int pid, CORE_ADDR page_start)
 
   r_start = page_start;
   r_info_size = VM_REGION_BASIC_INFO_COUNT_64;
-  kret = mach_vm_region (macosx_status->task, &r_start, &r_size,
-			 VM_REGION_BASIC_INFO_64,
-			 (vm_region_info_t) & r_data, &r_info_size,
-			 &r_object_name);
+  kret = mach_vm_region(macosx_status->task, &r_start, &r_size,
+                        VM_REGION_BASIC_INFO_64,
+                        (vm_region_info_t)&r_data, &r_info_size,
+                        &r_object_name);
   if (kret != KERN_SUCCESS)
     return -1;
   if (r_start != page_start)
@@ -142,9 +146,8 @@ write_protect_page (int pid, CORE_ADDR page_start)
   if (memory_page_dictionary.page_protections_allowed)
     {
 
-      kret =
-        mach_vm_protect (macosx_status->task, r_start, 4096, 0,
-			 r_data.protection & ~VM_PROT_WRITE);
+      kret = mach_vm_protect(macosx_status->task, r_start, 4096, 0,
+                             (r_data.protection & ~VM_PROT_WRITE));
       if (kret != KERN_SUCCESS)
         return -1;
     }
@@ -153,26 +156,29 @@ write_protect_page (int pid, CORE_ADDR page_start)
 }
 
 /* Unwrite-protect the memory page that starts at this address, restoring
-   (what we must assume are) its original permissions.
- */
+ * (what we must assume are) its original permissions: */
 static void
-unwrite_protect_page (int pid, CORE_ADDR page_start, int original_permissions)
+unwrite_protect_page(int pid ATTRIBUTE_UNUSED, CORE_ADDR page_start,
+                     int original_permissions)
 {
   kern_return_t kret;
-  kret =
-    mach_vm_protect (macosx_status->task, page_start, 4096, 0,
-                original_permissions);
+  kret = mach_vm_protect(macosx_status->task, page_start, 4096, 0,
+                         original_permissions);
+
+  /* This conditional is just to silence '-Wunused-but-set-variable': */
+  if (kret != KERN_SUCCESS) {
+    return;
+  }
 }
 
 
 /* Memory page-protections are used to implement "hardware" watchpoints
-   on HP-UX.
-
-   For every memory page that is currently being watched (i.e., that
-   presently should be write-protected), write-protect it.
- */
+ * on HP-UX; and we do likewise on Mac OS X, apparently...
+ *
+ * For every memory page that is currently being watched (i.e., that
+ * presently should be write-protected), write-protect it: */
 void
-macosx_enable_page_protection_events (int pid)
+macosx_enable_page_protection_events(int pid)
 {
   int bucket;
 
@@ -186,20 +192,19 @@ macosx_enable_page_protection_events (int pid)
       while (page != NULL)
         {
           page->original_permissions =
-            write_protect_page (pid, page->page_start);
+            write_protect_page(pid, page->page_start);
           page = page->next;
         }
     }
 }
 
 /* Memory page-protections are used to implement "hardware" watchpoints
-   on HP-UX.
-
-   For every memory page that is currently being watched (i.e., that
-   presently is or should be write-protected), un-write-protect it.
- */
+ * on HP-UX; and we do likewise on Mac OS X, apparently...
+ *
+ * For every memory page that is currently being watched (i.e., that
+ * presently is or should be write-protected), un-write-protect it: */
 void
-macosx_disable_page_protection_events (int pid)
+macosx_disable_page_protection_events(int pid)
 {
   int bucket;
 
@@ -210,8 +215,8 @@ macosx_disable_page_protection_events (int pid)
       page = memory_page_dictionary.buckets[bucket].next;
       while (page != NULL)
         {
-          unwrite_protect_page (pid, page->page_start,
-                                page->original_permissions);
+          unwrite_protect_page(pid, page->page_start,
+                               page->original_permissions);
           page = page->next;
         }
     }
@@ -232,7 +237,7 @@ macosx_disable_page_protection_events (int pid)
    from the TYPE that is passed to hppa_remove_hw_watchpoint.)
  */
 static int
-hppa_insert_hw_watchpoint (int pid, CORE_ADDR start, LONGEST len, int type)
+hppa_insert_hw_watchpoint(int pid, CORE_ADDR start, LONGEST len, int type)
 {
   CORE_ADDR page_start;
   int dictionary_was_empty;
@@ -241,27 +246,26 @@ hppa_insert_hw_watchpoint (int pid, CORE_ADDR start, LONGEST len, int type)
   LONGEST range_size_in_pages;
 
   if (type != 0)
-    error ("read or access hardware watchpoints not supported on HP-UX");
+    error("read or access hardware watchpoints not supported on HP-UX");
 
-  /* Examine all pages in the address range. */
-  require_memory_page_dictionary ();
+  /* Examine all pages in the address range: */
+  require_memory_page_dictionary();
 
-  dictionary_was_empty = (memory_page_dictionary.page_count == (LONGEST) 0);
+  dictionary_was_empty = (memory_page_dictionary.page_count == (LONGEST)0);
 
   page_size = memory_page_dictionary.page_size;
-  page_start = (start / page_size) * page_size;
+  page_start = ((start / page_size) * page_size);
   range_size_in_pages =
-    ((LONGEST) len + (LONGEST) page_size - 1) / (LONGEST) page_size;
+    (((LONGEST)len + (LONGEST)page_size - 1L) / (LONGEST)page_size);
 
   for (page_id = 0; page_id < range_size_in_pages;
        page_id++, page_start += page_size)
     {
       memory_page_t *page;
 
-      /* This gets the page entered into the dictionary if it was
-         not already entered.
-       */
-      page = get_dictionary_entry_of_page (pid, page_start);
+      /* This gets the page entered into the dictionary if it was not
+       * already entered: */
+      page = get_dictionary_entry_of_page(pid, page_start);
       page->reference_count++;
     }
 
@@ -271,7 +275,7 @@ hppa_insert_hw_watchpoint (int pid, CORE_ADDR start, LONGEST len, int type)
      When a protected page is accessed by user code, HP-UX raises a SIGBUS.
      Fine.
 
-     But when kernel code accesses the page, it doesn't give a SIGBUS.
+     But when kernel code accesses the page, it does NOT give a SIGBUS.
      Rather, the system call that touched the page fails, with errno=EFAULT.
      Not good for us.
 
@@ -295,8 +299,12 @@ hppa_insert_hw_watchpoint (int pid, CORE_ADDR start, LONGEST len, int type)
    */
 #if 0
   if (dictionary_was_empty)
-    hppa_enable_syscall_events (pid);
-#endif
+    hppa_enable_syscall_events(pid);
+#else
+  if (dictionary_was_empty) {
+    ; /* do nothing; just silence '-Wunused-but-set-variable' */
+  }
+#endif /* 0 */
 
   return 1;
 }
@@ -309,8 +317,8 @@ hppa_insert_hw_watchpoint (int pid, CORE_ADDR start, LONGEST len, int type)
    watchpoints.
  */
 static int
-hppa_remove_hw_watchpoint (int pid, CORE_ADDR start, LONGEST len,
-                           enum bptype type)
+hppa_remove_hw_watchpoint(int pid, CORE_ADDR start, LONGEST len,
+                          enum bptype type)
 {
   CORE_ADDR page_start;
   int dictionary_is_empty;
@@ -319,46 +327,49 @@ hppa_remove_hw_watchpoint (int pid, CORE_ADDR start, LONGEST len,
   LONGEST range_size_in_pages;
 
   if (type != 0)
-    error ("read or access hardware watchpoints not supported on HP-UX");
+    error("read or access hardware watchpoints not supported on HP-UX");
 
-  /* Examine all pages in the address range. */
-  require_memory_page_dictionary ();
+  /* Examine all pages in the address range: */
+  require_memory_page_dictionary();
 
   page_size = memory_page_dictionary.page_size;
-  page_start = (start / page_size) * page_size;
+  page_start = ((start / page_size) * page_size);
   range_size_in_pages =
-    ((LONGEST) len + (LONGEST) page_size - 1) / (LONGEST) page_size;
+    (((LONGEST)len + (LONGEST)page_size - 1L) / (LONGEST)page_size);
 
   for (page_id = 0; page_id < range_size_in_pages;
        page_id++, page_start += page_size)
     {
       memory_page_t *page;
 
-      page = get_dictionary_entry_of_page (pid, page_start);
+      page = get_dictionary_entry_of_page(pid, page_start);
       page->reference_count--;
 
-      /* Was this the last reference of this page?  If so, then we
-         must scrub the entry from the dictionary, and also restore
-         the page's original permissions.
-       */
+      /* Was this the last reference of this page?  If so, then we must
+       * scrub the entry from the dictionary, and also restore the original
+       * permissions for the page: */
       if (page->reference_count == 0)
-        remove_dictionary_entry_of_page (pid, page);
+        remove_dictionary_entry_of_page(pid, page);
     }
 
-  dictionary_is_empty = (memory_page_dictionary.page_count == (LONGEST) 0);
+  dictionary_is_empty = (memory_page_dictionary.page_count == (LONGEST)0L);
 
   /* If write protections are currently disallowed, then that implies that
      wait_for_inferior believes that the inferior is within a system call.
-     Since we want to see both syscall entry and return, it's clearly not
+     Since we want to see both syscall entry and return, it is clearly not
      good to disable syscall events in this state!
 
-     ??rehrauer: Yeah, it'd be better if we had a specific flag that said,
+     ??rehrauer: Yeah, it would be better if we had a specific flag that said,
      "inferior is between syscall events now".  Oh well.
    */
 #if 0
   if (dictionary_is_empty && memory_page_dictionary.page_protections_allowed)
-    hppa_disable_syscall_events (pid);
-#endif
+    hppa_disable_syscall_events(pid);
+#else
+  if (dictionary_is_empty) {
+    ; /* do nothing; just silence '-Wunused-but-set-variable' */
+  }
+#endif /* 0 */
 
   return 1;
 }
@@ -374,29 +385,30 @@ hppa_remove_hw_watchpoint (int pid, CORE_ADDR start, LONGEST len,
    hardware support.
  */
 int
-macosx_can_use_hw_watchpoint (int type, int cnt, int ot)
+macosx_can_use_hw_watchpoint(int type, int cnt ATTRIBUTE_UNUSED,
+                             int ot ATTRIBUTE_UNUSED)
 {
   return (type == bp_hardware_watchpoint);
 }
 
 int
-macosx_region_ok_for_hw_watchpoint (CORE_ADDR start, LONGEST len)
+macosx_region_ok_for_hw_watchpoint(CORE_ADDR start ATTRIBUTE_UNUSED,
+                                   LONGEST len ATTRIBUTE_UNUSED)
 {
   return 1;
 }
 
 /* Given the starting address of a memory page, hash it to a bucket in
-   the memory page dictionary. */
-
+ * the memory page dictionary: */
 static int
-get_dictionary_bucket_of_page (CORE_ADDR page_start)
+get_dictionary_bucket_of_page(CORE_ADDR page_start)
 {
   CORE_ADDR hash;
 
   hash = (page_start / memory_page_dictionary.page_size);
-  hash = hash % MEMORY_PAGE_DICTIONARY_BUCKET_COUNT;
+  hash = (hash % MEMORY_PAGE_DICTIONARY_BUCKET_COUNT);
 
-  return hash;
+  return (int)hash;
 }
 
 /* Given a memory page's starting address, get (i.e., find an existing
@@ -405,19 +417,18 @@ get_dictionary_bucket_of_page (CORE_ADDR page_start)
    count of 0 (if the page was newly-added to the dictionary).  */
 
 static memory_page_t *
-get_dictionary_entry_of_page (int pid, CORE_ADDR page_start)
+get_dictionary_entry_of_page(int pid, CORE_ADDR page_start)
 {
   int bucket;
-  memory_page_t *page = NULL;
-  memory_page_t *previous_page = NULL;
+  memory_page_t *page = (memory_page_t *)NULL;
+  memory_page_t *previous_page = (memory_page_t *)NULL;
 
-  /* We're going to be using the dictionary now, than-kew. */
-  require_memory_page_dictionary ();
+  /* We are going to be using the dictionary now, than-kew: */
+  require_memory_page_dictionary();
 
-  /* Try to find an existing dictionary entry for this page.  Hash
-     on the page's starting address. */
-
-  bucket = get_dictionary_bucket_of_page (page_start);
+  /* Try to find an existing dictionary entry for this page.  Hash on the
+   * starting address of the page: */
+  bucket = get_dictionary_bucket_of_page(page_start);
   page = &memory_page_dictionary.buckets[bucket];
   while (page != NULL)
     {
@@ -427,22 +438,21 @@ get_dictionary_entry_of_page (int pid, CORE_ADDR page_start)
       page = page->next;
     }
 
-  /* Did we find a dictionary entry for this page?  If not, then
-     add it to the dictionary now. */
-
+  /* Did we find a dictionary entry for this page?  If not, then add it
+   * to the dictionary now: */
   if (page == NULL)
     {
-      /* Create a new entry. */
-      page = (memory_page_t *) xmalloc (sizeof (memory_page_t));
+      /* Create a new entry: */
+      page = (memory_page_t *)xmalloc(sizeof(memory_page_t));
       page->page_start = page_start;
       page->reference_count = 0;
       page->next = NULL;
       page->previous = NULL;
 
-      /* We'll write-protect the page now, if that's allowed. */
-      page->original_permissions = write_protect_page (pid, page_start);
+      /* We will write-protect the page now, if that is allowed: */
+      page->original_permissions = write_protect_page(pid, page_start);
 
-      /* Add the new entry to the dictionary. */
+      /* Add the new entry to the dictionary: */
       page->previous = previous_page;
       previous_page->next = page;
 
@@ -453,51 +463,53 @@ get_dictionary_entry_of_page (int pid, CORE_ADDR page_start)
 }
 
 static void
-remove_dictionary_entry_of_page (int pid, memory_page_t * page)
+remove_dictionary_entry_of_page(int pid, memory_page_t * page)
 {
-  /* Restore the page's original permissions. */
-  unwrite_protect_page (pid, page->page_start, page->original_permissions);
+  /* Restore the page's original permissions: */
+  unwrite_protect_page(pid, page->page_start, page->original_permissions);
 
-  /* Kick the page out of the dictionary. */
+  /* Kick the page out of the dictionary: */
   if (page->previous != NULL)
     page->previous->next = page->next;
   if (page->next != NULL)
     page->next->previous = page->previous;
 
-  /* Just in case someone retains a handle to this after it's freed. */
-  page->page_start = (CORE_ADDR) 0;
+  /* Just in case someone retains a handle to this after it is freed: */
+  page->page_start = (CORE_ADDR)0UL;
 
   memory_page_dictionary.page_count--;
 
-  xfree (page);
+  xfree(page);
 }
 
 int
-macosx_insert_watchpoint (CORE_ADDR addr, size_t len, int type)
+macosx_insert_watchpoint(CORE_ADDR addr, size_t len, int type)
 {
-  return hppa_insert_hw_watchpoint (PIDGET (inferior_ptid), addr, len, type);
+  return hppa_insert_hw_watchpoint(PIDGET(inferior_ptid), addr, len, type);
 }
 
 int
-macosx_remove_watchpoint (CORE_ADDR addr, size_t len, int type)
+macosx_remove_watchpoint(CORE_ADDR addr, size_t len, int type)
 {
-  return hppa_remove_hw_watchpoint (PIDGET (inferior_ptid), addr, len, type);
+  return hppa_remove_hw_watchpoint(PIDGET(inferior_ptid), addr, len,
+                                   (enum bptype)type);
 }
 
-int macosx_stopped_by_watchpoint
-  (struct target_waitstatus *w, int stop_signal,
-   int stepped_after_stopped_by_watchpoint)
+int
+macosx_stopped_by_watchpoint(struct target_waitstatus *w, int stop_signal,
+                             int stepped_after_stopped_by_watchpoint)
 {
-  return
-    ((w->kind == TARGET_WAITKIND_STOPPED)
-     && (stop_signal == TARGET_EXC_BAD_ACCESS)
-     && (!stepped_after_stopped_by_watchpoint)
-     && bpstat_have_active_hw_watchpoints ());
+  return ((w->kind == TARGET_WAITKIND_STOPPED)
+          && (stop_signal == TARGET_EXC_BAD_ACCESS)
+          && (!stepped_after_stopped_by_watchpoint)
+          && bpstat_have_active_hw_watchpoints());
 }
 
 void
-_initialize_macosx_nat_watchpoint (void)
+_initialize_macosx_nat_watchpoint(void)
 {
-  memory_page_dictionary.page_count = (LONGEST) - 1;
+  memory_page_dictionary.page_count = (LONGEST)-1L;
   memory_page_dictionary.page_protections_allowed = 1;
 }
+
+/* EOF */

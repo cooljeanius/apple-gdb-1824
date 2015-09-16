@@ -1,0 +1,7 @@
+*libs/*
+*.lo
+Makefile
+site.exp
+site.bak
+*.sum
+*.log

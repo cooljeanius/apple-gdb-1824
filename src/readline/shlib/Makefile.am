@@ -17,6 +17,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 
+AUTOMAKE_OPTIONS = dejagnu gnits no-dist
+
 RL_LIBRARY_VERSION = @LIBVERSION@
 RL_LIBRARY_NAME = readline
 
@@ -56,6 +58,9 @@ LOCAL_CFLAGS = @LOCAL_CFLAGS@ -DRL_LIBRARY_VERSION='"$(RL_LIBRARY_VERSION)"'
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@ @LOCAL_LDFLAGS@ @CFLAGS@
 
+# architecture flags:
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+
 DEFS = @DEFS@
 LOCAL_DEFS = @LOCAL_DEFS@
 
@@ -89,7 +94,7 @@ SHLIB_MINOR=		.@SHLIB_MINOR@
 # For libraries which include headers from other libraries.
 AM_CPPFLAGS = -I. -I.. -I$(topdir)
 
-CCFLAGS = $(DEFS) $(LOCAL_DEFS) $(CPPFLAGS) $(INCLUDES) $(AM_CPPFLAGS) $(LOCAL_CFLAGS) $(CFLAGS)
+CCFLAGS = $(DEFS) $(LOCAL_DEFS) $(CPPFLAGS) $(INCLUDES) $(AM_CPPFLAGS) $(LOCAL_CFLAGS) $(CFLAGS) $(C_ARCHFLAGS)
 
 SUFFIXES = .so
 
@@ -155,11 +160,11 @@ unsupported:
 
 $(SHARED_READLINE): $(SHARED_OBJ)
 	$(RM) $@
-	$(SHOBJ_LD) ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_OBJ) $(SHLIB_LIBS)
+	$(SHOBJ_LD) ${SHOBJ_CFLAGS} ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_OBJ) $(SHLIB_LIBS)
 
 $(SHARED_HISTORY): $(SHARED_HISTOBJ) xmalloc.so
 	$(RM) $@
-	$(SHOBJ_LD) ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_HISTOBJ) xmalloc.so $(SHLIB_LIBS)
+	$(SHOBJ_LD) ${SHOBJ_CFLAGS} ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_HISTOBJ) xmalloc.so $(SHLIB_LIBS)
 
 wcwidth.o: $(srcdir)/support/wcwidth.c
 	$(RM) $@
@@ -189,6 +194,8 @@ uninstall-local:
 
 clean-local mostlyclean-local:	force
 	$(RM) $(SHARED_OBJ) $(SHARED_LIBS)
+
+CLEANFILES = $(SHARED_OBJ) $(SHARED_LIBS)
 
 distclean-local maintainer-clean-local: clean-local
 	$(RM) Makefile

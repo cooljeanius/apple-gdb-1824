@@ -1,1 +1,3 @@
+# Host: MingW/amd64
+
 NATDEPFILES= i386-nat.o windows-nat.o amd64-windows-nat.o

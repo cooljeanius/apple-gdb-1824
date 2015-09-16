@@ -1,0 +1,171 @@
+AutoGen Definitions str2mask.tpl;
+/*
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (C) 1992-2013 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following sha256 sums:
+##
+##  8584710e9b04216a394078dc156b781d0b47e1729104d666658aecef8ee32e95  COPYING.gplv3
+##  4379e7444a0e2ce2b12dd6f5a52a27a4d02d39d247901d3285c88cf0d37f477b  COPYING.lgplv3
+##  13aa749a5b0a454917a944ed8fffc530b784f5ead522b1aacaf4ec8aa55a6239  COPYING.mbsd
+*/
+prefix     = optst;
+type       = '';
+zero-name  = init;
+mask-type  = uint32_t;
+no-code;
+omit-test-n-set;
+
+/*
+ *  If any of these bit assignments change, the minimum version number of
+ *  the autoopts interface will also have to be changed.  The result is
+ *  incompatible.  The first 8 bits are mutable, tho 7 are used.
+ */
+cmd[  0] = set;
+what[ 0] = 'Set via the "SET_OPT()" macro';
+
+cmd[  1] = preset;
+what[ 1] = 'Set via an RC/INI file';
+
+cmd[  2] = defined;
+what[ 2] = 'Set via a command line option';
+
+cmd[  3] = reset;
+what[ 3] = 'Reset via command line option';
+
+
+cmd[  4] = equivalence;
+what[ 4] = 'selected by equiv\'ed option';
+
+cmd[  5] = disabled;
+what[ 5] = 'option is in disabled state';
+
+cmd[  6] = alloc-arg;
+what[ 6] = 'pzOptArg was allocated';
+
+
+/*
+ * The rem must not change
+ */
+cmd[  8] = no-init;
+what[ 8] = 'option cannot be preset';
+
+cmd[  9] = number-opt;
+what[ 9] = 'opt value (flag) is any digit';
+
+cmd[ 10] = stacked;
+what[10] = 'opt uses optionStackArg proc';
+
+cmd[ 11] = initenabled;
+what[11] = 'option defaults to enabled';
+
+add-on-text = { ao-file = mask-header;
+    ao-text = '#define OPTST_ARG_TYPE_SHIFT 12'; };
+cmd[ 12] = arg-type-1;
+what[12] = 'bit 1 of arg type enum';
+
+cmd[ 13] = arg-type-2;
+what[13] = 'bit 2 of arg type enum';
+
+cmd[ 14] = arg-type-3;
+what[14] = 'bit 3 of arg type enum';
+
+cmd[ 15] = arg-type-4;
+what[15] = 'bit 4 of arg type enum';
+
+
+cmd[ 16] = arg-optional;
+what[16] = 'the option arg not required';
+
+cmd[ 17] = imm;
+what[17] = 'process opt on first pass';
+
+cmd[ 18] = disable-imm;
+what[18] = 'process disablement immed.';
+
+cmd[ 19] = omitted;
+what[19] = 'compiled out of program';
+
+
+cmd[ 20] = must-set;
+what[20] = 'must be set or pre-set';
+
+cmd[ 21] = document;
+what[21] = 'opt is for doc only';
+
+cmd[ 22] = twice;
+what[22] = 'process opt twice - imm + reg';
+
+cmd[ 23] = disable-twice;
+what[23] = 'process disabled option twice';
+
+
+cmd[ 24] = scaled-num;
+what[24] = 'scaled integer value';
+
+cmd[ 25] = no-command;
+what[25] = 'disable from cmd line';
+
+cmd[ 26] = deprecated;
+what[26] = 'support is being removed';
+
+cmd[ 27] = alias;
+what[27] = 'alias for other option';
+
+
+mask = {
+  m-name  = set;
+  m-bit   = set, preset, reset, defined;
+};
+
+mask = {
+  m-name  = mutable;
+  m-bit   = set, preset, reset, defined, equivalence, disabled, alloc-arg;
+};
+
+mask = {
+  m-name  = persistent;
+  m-invert;
+  m-bit   = 'mutable-mask';
+};
+
+mask = {
+  m-name  = selected;
+  m-bit   = set, defined;
+};
+
+mask = {
+  m-name  = arg-type;
+  m-bit   = arg-type-1, arg-type-2, arg-type-3, arg-type-4;
+};
+
+mask = {
+  m-name  = no-usage;
+  m-bit   = omitted, no-command, deprecated;
+};
+
+mask = {
+  m-name  = immutable;
+  m-bit   = document, omitted;
+};
+
+mask = {
+  m-name  = do-not-save;
+  m-bit   = document, omitted, no-init;
+};
+
+mask = {
+  m-name  = no-output;
+  m-bit   = document, omitted, alias;
+};

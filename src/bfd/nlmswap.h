@@ -1,4 +1,4 @@
-/* NLM (NetWare Loadable Module) swapping routines for BFD.
+/* nlmswap.h: NLM (NetWare Loadable Module) swapping routines for BFD.
    Copyright 1993, 2000, 2001, 2005 Free Software Foundation, Inc.
 
    Written by Fred Fish @ Cygnus Support, using ELF support as the
@@ -149,3 +149,5 @@ nlm_swap_fixed_header_out (bfd *abfd,
   H_PUT_32 (abfd, src->flags,
 	    dst->flags);
 }
+
+/* EOF */

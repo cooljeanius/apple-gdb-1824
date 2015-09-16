@@ -1,4 +1,4 @@
-/* Routines for handling XML generic OS data provided by target.
+/* osdata.h: Routines for handling XML generic OS data provided by target.
 
    Copyright (C) 2008-2013 Free Software Foundation, Inc.
 
@@ -15,7 +15,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>  */
 
 #ifndef OSDATA_H
 #define OSDATA_H
@@ -44,11 +44,13 @@ struct osdata
 typedef struct osdata *osdata_p;
 DEF_VEC_P(osdata_p);
 
-struct osdata *osdata_parse (const char *xml);
-void osdata_free (struct osdata *);
-struct cleanup *make_cleanup_osdata_free (struct osdata *data);
-struct osdata *get_osdata (const char *type);
-const char *get_osdata_column (struct osdata_item *item, const char *name);
-void info_osdata_command (char *type, int from_tty);
+struct osdata *osdata_parse(const char *xml);
+void osdata_free(struct osdata *);
+struct cleanup *make_cleanup_osdata_free(struct osdata *data);
+struct osdata *get_osdata(const char *type);
+const char *get_osdata_column(struct osdata_item *item, const char *name);
+void info_osdata_command(char *type, int from_tty);
 
 #endif /* OSDATA_H */
+
+/* EOF */

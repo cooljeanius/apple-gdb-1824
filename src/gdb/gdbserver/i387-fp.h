@@ -1,4 +1,5 @@
-/* i387-specific utility functions, for the remote server for GDB.
+/* i387-fp.h
+   i387-specific utility functions, for the remote server for GDB.
    Copyright 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -31,3 +32,5 @@ void i387_fxsave_to_cache (const void *buf);
 extern int num_xmm_registers;
 
 #endif /* I387_FP_H */
+
+/* EOF */

@@ -15,9 +15,8 @@ Created: Sunday, January 6, 1991 at 10:01 PM
 #define __SEGLOAD__
 
 #ifndef __TYPES__
-#include <Types.h>
-#endif
-
+# include <Types.h>
+#endif /* !__TYPES__ */
 
 enum {
 
@@ -34,22 +33,23 @@ struct AppFile {
 
 typedef struct AppFile AppFile;
 
-
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 pascal void UnloadSeg(void * routineAddr)
-    = 0xA9F1; 
+    = 0xA9F1;
 pascal void ExitToShell(void)
-    = 0xA9F4; 
+    = 0xA9F4;
 pascal void GetAppParms(Str255 apName,short *apRefNum,Handle *apParam)
-    = 0xA9F5; 
-pascal void CountAppFiles(short *message,short *count); 
-pascal void GetAppFiles(short index,AppFile *theFile); 
-pascal void ClrAppFiles(short index); 
-void getappparms(char *apName,short *apRefNum,Handle *apParam); 
+    = 0xA9F5;
+pascal void CountAppFiles(short *message,short *count);
+pascal void GetAppFiles(short index,AppFile *theFile);
+pascal void ClrAppFiles(short index);
+void getappparms(char *apName,short *apRefNum,Handle *apParam);
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__SEGLOAD__ */
+
+/* EOF */

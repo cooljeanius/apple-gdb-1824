@@ -9,7 +9,7 @@ results, but tests our entire tool chain for native and crosses. It
 also produces a short summary report that gets emailed, as well as
 summary reports. It does regression analysis using the previous test
 run. testit is a very crude and simple Tk GUI for accessing all the
-testing results. Hope these are helpful to anyone, I'd like to collect
+testing results. Hope these are helpful to anyone, I would like to collect
 more from the net as they get developed.
 
 	- rob -

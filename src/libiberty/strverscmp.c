@@ -1,4 +1,4 @@
-/* Compare strings while treating digits characters numerically.
+/* strverscmp.c: Compare strings and treat digit characters numerically.
    Copyright (C) 1997, 2002, 2005 Free Software Foundation, Inc.
    This file is part of the libiberty library.
    Contributed by Jean-François Bignolles <bignolle@ecoledoc.ibp.fr>, 1997.
@@ -18,10 +18,14 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
    02111-1307 USA.  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "libiberty.h"
 #include "safe-ctype.h"
 
-/* 
+/*
 @deftypefun int strverscmp (const char *@var{s1}, const char *@var{s2})
 The @code{strverscmp} function compares the string @var{s1} against
 @var{s2}, considering them as holding indices/version numbers.  Return
@@ -131,7 +135,7 @@ strverscmp (const char *s1, const char *s2)
 
   while ((diff = c1 - c2) == 0 && c1 != '\0')
     {
-      state = next_state[state];
+      state = (int)next_state[state];
       c1 = *p1++;
       c2 = *p2++;
       state |= (c1 == '0') + (ISDIGIT (c1) != 0);
@@ -143,15 +147,17 @@ strverscmp (const char *s1, const char *s2)
     {
     case CMP:
       return diff;
-      
+
     case LEN:
       while (ISDIGIT (*p1++))
 	if (!ISDIGIT (*p2++))
 	  return 1;
-      
+
       return ISDIGIT (*p2) ? -1 : diff;
-      
+
     default:
       return state;
     }
 }
+
+/* EOF */

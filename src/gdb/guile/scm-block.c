@@ -120,6 +120,7 @@ bkscm_objfile_block_map (struct objfile *objfile)
   return htab;
 }
 
+#ifdef MY_BRANCH_IS_HEAD
 /* The smob "mark" function for <gdb:block>.  */
 
 static SCM
@@ -131,6 +132,8 @@ bkscm_mark_block_smob (SCM self)
   return gdbscm_mark_eqable_gsmob (&b_smob->base);
 }
 
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 /* The smob "free" function for <gdb:block>.  */
 
 static size_t
@@ -535,6 +538,7 @@ gdbscm_block_symbols (SCM self)
 /* The <gdb:block-symbols-iterator> object,
    for iterating over all symbols in a block.  */
 
+#ifdef MY_BRANCH_IS_HEAD
 /* The smob "mark" function for <gdb:block-symbols-iterator>.  */
 
 static SCM
@@ -547,6 +551,8 @@ bkscm_mark_block_syms_progress_smob (SCM self)
   return gdbscm_mark_gsmob (&i_smob->base);
 }
 
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 /* The smob "print" function for <gdb:block-symbols-iterator>.  */
 
 static int
@@ -798,15 +804,21 @@ gdbscm_initialize_blocks (void)
 {
   block_smob_tag
     = gdbscm_make_smob_type (block_smob_name, sizeof (block_smob));
+#ifdef MY_BRANCH_IS_HEAD
   scm_set_smob_mark (block_smob_tag, bkscm_mark_block_smob);
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
   scm_set_smob_free (block_smob_tag, bkscm_free_block_smob);
   scm_set_smob_print (block_smob_tag, bkscm_print_block_smob);
 
   block_syms_progress_smob_tag
     = gdbscm_make_smob_type (block_syms_progress_smob_name,
 			     sizeof (block_syms_progress_smob));
+#ifdef MY_BRANCH_IS_HEAD
   scm_set_smob_mark (block_syms_progress_smob_tag,
 		     bkscm_mark_block_syms_progress_smob);
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
   scm_set_smob_print (block_syms_progress_smob_tag,
 		      bkscm_print_block_syms_progress_smob);
 

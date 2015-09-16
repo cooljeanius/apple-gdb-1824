@@ -1,0 +1,57 @@
+#! /bin/echo This_file_must_be_sourced,_not_executed
+#
+# getdefs/bootstrap.dir --- maintainer's bootstrap script
+#
+# Author:            Bruce Korb <bkorb@gnu.org>
+## This file is part of AutoGen.
+## AutoGen Copyright (C) 1992-2013 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#  This script rebuilds sources not kept in the CVS repository.
+#  These files are distributed, so it is not necessary to invoke
+#  AutoGen before building AutoGen.  (Like I had to do long ago :)
+
+test "X${mainpid}" = X && {
+    PS4='>bsl> '
+    source ${top_srcdir}/config/bootstrap.shlib
+    PS4='>bsd> '
+    free_trap=true
+} || {
+    free_trap=false
+}
+
+#  Dump the bootstrap recursive argument.  We're not interested.
+#
+if [ "$1" = recursive ]
+then
+    shift
+fi
+
+targets="$@"
+if test -z "${targets}" -o "X${targets}" = Xproto.h
+then make_proto
+else die "Don't know how to make $targets"
+fi
+
+${free_trap} && trap '' 0
+
+# Local Variables:
+# mode:shell-script
+# sh-indentation:4
+# sh-basic-offset:4
+# indent-tabs-mode: nil
+# End:
+
+# end of bootstrap.dir

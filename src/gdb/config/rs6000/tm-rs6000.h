@@ -1,4 +1,5 @@
-/* Parameters for target execution on an RS6000, for GDB, the GNU debugger.
+/* tm-rs6000.h
+   Parameters for target execution on an RS6000, for GDB, the GNU debugger.
 
    Copyright 1986, 1987, 1989, 1991, 1992, 1993, 1994, 1995, 1996,
    1997, 1998, 1999, 2000, 2004 Free Software Foundation, Inc.
@@ -90,9 +91,11 @@ extern CORE_ADDR (*rs6000_find_toc_address_hook) (CORE_ADDR);
 
 extern void (*rs6000_set_host_arch_hook) (int);
 
-/* We need solib.h for building cross debuggers.  However, we don't want
+/* We need solib.h for building cross debuggers. However, we do NOT want
    to clobber any special solib support required by native debuggers, so
    only include solib.h if SOLIB_ADD is not defined.  */
 #ifndef SOLIB_ADD
-#include "solib.h"
-#endif
+# include "solib.h"
+#endif /* !SOLIB_ADD */
+
+/* EOF */

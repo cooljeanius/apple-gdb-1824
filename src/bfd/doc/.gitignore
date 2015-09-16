@@ -18,6 +18,8 @@ bfd.pdf
 bdf.ps
 bfd.html
 chew
+chew_am
+.dirstamp
 *.dSYM
 *.o
 *.lo
@@ -26,3 +28,13 @@ bfd.info-*
 site.bak
 site.exp
 bfd.sum
+
+# A floating file extension without a name before it means a script failed:
+.texi
+
+# generated:
+bfdver.texi
+
+# not sure why I never gitignored these generated headers before:
+libbfd.h
+libcoff.h

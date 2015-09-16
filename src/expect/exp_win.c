@@ -22,11 +22,27 @@ would appreciate credit if you use this file or parts of it.
 #   ifdef HAVE_MALLOC_MALLOC_H
 #    include <malloc/malloc.h>
 #   else
-#    warning exp_win.c expects a header that provides malloc() to be included.
+#    if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#     warning "exp_win.c expects a header that provides malloc() to be included."
+#    endif /* __GNUC__ && !__STRICT_ANSI__ */
 #   endif /* HAVE_MALLOC_MALLOC_H */
 #  endif /* HAVE_MALLOC_H */
 # endif /* HAVE_STDLIB_H */
 #endif /*NO_STDLIB_H*/
+
+#if defined(HAVE_STRING_H) || defined(STDC_HEADERS) || defined(__STDC__)
+# include <string.h>
+#endif /* HAVE_STRING_H || STDC_HEADERS || __STDC__ */
+
+#ifndef errno
+# ifdef HAVE_ERRNO_H
+#  include <errno.h>
+# else
+#  ifdef HAVE_SYS_ERRNO_H
+#   include <sys/errno.h>
+#  endif /* HAVE_SYS_ERRNO_H */
+# endif /* HAVE_ERRNO_H */
+#endif /* !errno */
 
 /* _IBCS2 required on some Intel platforms to allow the include files */
 /* to produce a definition for winsize. */
@@ -93,27 +109,39 @@ static exp_winsize win2size = {0, 0};
 int exp_window_size_set(fd)
 int fd;
 {
+	int ret = 0;
 #ifdef TIOCSWINSZ
-	ioctl(fd,TIOCSWINSZ,&winsize);
+	ret = ioctl(fd,TIOCSWINSZ,&winsize);
 #endif /* TIOCSWINSZ */
+	if (ret == -1) {
+		fprintf(stderr, "ioctl failed with errno %d: %s.\n", errno,
+				strerror(errno));
+	}
 #if defined(TIOCSSIZE) && !defined(TIOCSWINSZ)
-	ioctl(fd,TIOCSSIZE,&winsize);
+	ret = ioctl(fd,TIOCSSIZE,&winsize);
 #endif /* TIOCSSIZE && !TIOCSWINSZ */
+	return ret;
 }
 
 int exp_window_size_get(fd)
 int fd;
 {
+	int ret = 0;
 #ifdef TIOCGWINSZ
-	ioctl(fd,TIOCGWINSZ,&winsize);
+	ret = ioctl(fd,TIOCGWINSZ,&winsize);
 #endif /* TIOCGWINSZ */
+	if (ret == -1) {
+		fprintf(stderr, "ioctl failed with errno %d: %s.\n", errno,
+				strerror(errno));
+	}
 #if defined(TIOCGSIZE) && !defined(TIOCGWINSZ)
-	ioctl(fd,TIOCGSIZE,&winsize);
+	ret = ioctl(fd,TIOCGSIZE,&winsize);
 #endif /* TIOCGSIZE && !TIOCGWINSZ */
 #if !defined(EXP_WIN)
 	winsize.rows = 0;
 	winsize.columns = 0;
 #endif /* !EXP_WIN */
+	return ret;
 }
 
 void
@@ -155,23 +183,35 @@ char *columns;
 int exp_win2_size_set(fd)
 int fd;
 {
+	int ret = 0;
 #ifdef TIOCSWINSZ
-			ioctl(fd,TIOCSWINSZ,&win2size);
+	ret = ioctl(fd,TIOCSWINSZ,&win2size);
 #endif /* TIOCSWINSZ */
+	if (ret == -1) {
+		fprintf(stderr, "ioctl failed with errno %d: %s.\n", errno,
+				strerror(errno));
+	}
 #if defined(TIOCSSIZE) && !defined(TIOCSWINSZ)
-			ioctl(fd,TIOCSSIZE,&win2size);
+	ret = ioctl(fd,TIOCSSIZE,&win2size);
 #endif /* TIOCSSIZE && !TIOCSWINSZ */
+	return ret;
 }
 
 int exp_win2_size_get(fd)
 int fd;
 {
+	int ret = 0;
 #ifdef TIOCGWINSZ
-	ioctl(fd,TIOCGWINSZ,&win2size);
+	ret = ioctl(fd,TIOCGWINSZ,&win2size);
 #endif /* TIOCGWINSZ */
+	if (ret == -1) {
+		fprintf(stderr, "ioctl failed with errno %d: %s.\n", errno,
+				strerror(errno));
+	}
 #if defined(TIOCGSIZE) && !defined(TIOCGWINSZ)
-	ioctl(fd,TIOCGSIZE,&win2size);
+	ret = ioctl(fd,TIOCGSIZE,&win2size);
 #endif /* TIOCGSIZE && !TIOCGWINSZ */
+	return ret;
 }
 
 void

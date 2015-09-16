@@ -1,4 +1,4 @@
-/* Evaluate expressions for GDB.
+/* eval.c: Evaluate expressions for GDB.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005 Free
@@ -38,6 +38,18 @@
 #include "parser-defs.h"
 #include "cp-support.h"
 
+#ifndef INFINITY
+# ifdef HAVE_MATH_H
+#  include <math.h>
+# else
+#  ifdef HUGE_VALF
+#   define INFINITY HUGE_VALF
+#  else
+#   define INFINITY 1e50f
+#  endif /* HUGE_VALF */
+# endif /* HAVE_MATH_H */
+#endif /* !INFINITY */
+
 /* This is defined in valops.c */
 extern int overload_resolution;
 
@@ -47,46 +59,46 @@ extern int objectprint;
 
 /* Prototypes for local functions. */
 
-static struct value *evaluate_subexp_for_sizeof (struct expression *, int *);
+static struct value *evaluate_subexp_for_sizeof(struct expression *, int *);
 
-static struct value *evaluate_subexp_for_address (struct expression *,
-						  int *, enum noside);
+static struct value *evaluate_subexp_for_address(struct expression *,
+						 int *, enum noside);
 
-static struct value *evaluate_subexp (struct type *, struct expression *,
-				      int *, enum noside);
+static struct value *evaluate_subexp(struct type *, struct expression *,
+				     int *, enum noside);
 
-static char *get_label (struct expression *, int *);
+static char *get_label(struct expression *, int *);
 
-static struct value *evaluate_struct_tuple (struct value *,
-					    struct expression *, int *,
-					    enum noside, int);
+static struct value *evaluate_struct_tuple(struct value *,
+					   struct expression *, int *,
+					   enum noside, int);
 
-static LONGEST init_array_element (struct value *, struct value *,
-				   struct expression *, int *, enum noside,
-				   LONGEST, LONGEST);
+static LONGEST init_array_element(struct value *, struct value *,
+				  struct expression *, int *, enum noside,
+				  LONGEST, LONGEST);
 
 /* APPLE LOCAL: Closures.  */
 int print_closure = 1;
 
 static void
-do_restore_print_closure (void *in_oldval)
+do_restore_print_closure(void *in_oldval)
 {
-  print_closure = (int) in_oldval;
+  print_closure = (int)(intptr_t)in_oldval;
 }
 
 struct cleanup *
-make_cleanup_set_restore_print_closure (int newval)
+make_cleanup_set_restore_print_closure(int newval)
 {
   int oldval = print_closure;
   print_closure = newval;
-  return make_cleanup (do_restore_print_closure, (void *) oldval);
+  return make_cleanup(do_restore_print_closure, (void *)(intptr_t)oldval);
 }
 
 static struct value *
-evaluate_subexp (struct type *expect_type, struct expression *exp,
-		 int *pos, enum noside noside)
+evaluate_subexp(struct type *expect_type, struct expression *exp,
+                int *pos, enum noside noside)
 {
-  return (*exp->language_defn->la_exp_desc->evaluate_exp) 
+  return (*exp->language_defn->la_exp_desc->evaluate_exp)
     (expect_type, exp, pos, noside);
 }
 
@@ -125,15 +137,15 @@ parse_and_eval_address_1 (char **expptr)
   expr = parse_exp_1 (expptr, (struct block *) 0, 0);
   old_chain = make_cleanup (free_current_contents, &expr);
   /* APPLE LOCAL end initialize innermost_block  */
-  addr = value_as_address (evaluate_expression (expr));
-  do_cleanups (old_chain);
+  addr = value_as_address(evaluate_expression(expr));
+  do_cleanups(old_chain);
   return addr;
 }
 
 /* Like parse_and_eval_address, but treats the value of the expression
    as an integer, not an address, returns a LONGEST, not a CORE_ADDR */
 LONGEST
-parse_and_eval_long (char *exp)
+parse_and_eval_long(char *exp)
 {
   /* APPLE LOCAL begin initialize innermost_block  */
   struct expression *expr;
@@ -141,8 +153,8 @@ parse_and_eval_long (char *exp)
   struct cleanup *old_chain;
 
   innermost_block = NULL;
-  expr = parse_expression (exp);
-  old_chain = make_cleanup (free_current_contents, &expr);
+  expr = parse_expression(exp);
+  old_chain = make_cleanup(free_current_contents, &expr);
   /* APPLE LOCAL end initialize innermost_block  */
   retval = value_as_long (evaluate_expression (expr));
   do_cleanups (old_chain);
@@ -228,14 +240,12 @@ get_label (struct expression *exp, int *pos)
 }
 
 /* This function evaluates tuples (in (the deleted) Chill) or
-   brace-initializers (in C/C++) for structure types.  */
-
+ * brace-initializers (in C/C++) for structure types: */
 static struct value *
-evaluate_struct_tuple (struct value *struct_val,
-		       struct expression *exp,
-		       int *pos, enum noside noside, int nargs)
+evaluate_struct_tuple(struct value *struct_val, struct expression *exp,
+                      int *pos, enum noside noside, int nargs)
 {
-  struct type *struct_type = check_typedef (value_type (struct_val));
+  struct type *struct_type = check_typedef(value_type(struct_val));
   struct type *substruct_type = struct_type;
   struct type *field_type;
   int fieldno = -1;
@@ -367,57 +377,64 @@ evaluate_struct_tuple (struct value *struct_val,
 }
 
 /* Recursive helper function for setting elements of array tuples for
-   (the deleted) Chill.  The target is ARRAY (which has bounds
-   LOW_BOUND to HIGH_BOUND); the element value is ELEMENT; EXP, POS
-   and NOSIDE are as usual.  Evaluates index expresions and sets the
-   specified element(s) of ARRAY to ELEMENT.  Returns last index
-   value.  */
-
+ * (the deleted) Chill.  The target is ARRAY (which has bounds
+ * LOW_BOUND to HIGH_BOUND); the element value is ELEMENT; EXP, POS
+ * and NOSIDE are as usual. Evaluates index expresions and sets the
+ * specified element(s) of ARRAY to ELEMENT. Returns last index value. */
 static LONGEST
-init_array_element (struct value *array, struct value *element,
-		    struct expression *exp, int *pos,
-		    enum noside noside, LONGEST low_bound, LONGEST high_bound)
+init_array_element(struct value *array, struct value *element,
+                   struct expression *exp, int *pos, enum noside noside,
+                   LONGEST low_bound, LONGEST high_bound)
 {
   LONGEST index;
-  int element_size = TYPE_LENGTH (value_type (element));
+  int element_size = TYPE_LENGTH(value_type(element));
   if (exp->elts[*pos].opcode == BINOP_COMMA)
     {
       (*pos)++;
-      init_array_element (array, element, exp, pos, noside,
-			  low_bound, high_bound);
-      return init_array_element (array, element,
-				 exp, pos, noside, low_bound, high_bound);
+      init_array_element(array, element, exp, pos, noside,
+                         low_bound, high_bound);
+      return init_array_element(array, element, exp, pos, noside,
+                                low_bound, high_bound);
     }
   else if (exp->elts[*pos].opcode == BINOP_RANGE)
     {
       LONGEST low, high;
       (*pos)++;
-      low = value_as_long (evaluate_subexp (NULL_TYPE, exp, pos, noside));
-      high = value_as_long (evaluate_subexp (NULL_TYPE, exp, pos, noside));
-      if (low < low_bound || high > high_bound)
-	error (_("tuple range index out of range"));
+      low = value_as_long(evaluate_subexp(NULL_TYPE, exp, pos, noside));
+      high = value_as_long(evaluate_subexp(NULL_TYPE, exp, pos, noside));
+      if ((low < low_bound) || (high > high_bound)) {
+	error(_("tuple range index out of range"));
+      }
       for (index = low; index <= high; index++)
 	{
-	  memcpy (value_contents_raw (array)
-		  + (index - low_bound) * element_size,
-		  value_contents (element), element_size);
+	  memcpy((value_contents_raw(array) + (index - low_bound)
+                  * element_size), value_contents(element), element_size);
+          if (index > high_bound) {
+            /* should have already errored out if this is the case, but do
+             * this to try to silence '-Wunsafe-loop-optimizations': */
+            break; /* (not enough, apparently...) */
+          }
+          if (index == INFINITY) {
+            /* this way works though: */
+            break;
+          }
 	}
     }
   else
     {
-      index = value_as_long (evaluate_subexp (NULL_TYPE, exp, pos, noside));
-      if (index < low_bound || index > high_bound)
-	error (_("tuple index out of range"));
-      memcpy (value_contents_raw (array) + (index - low_bound) * element_size,
-	      value_contents (element), element_size);
+      index = value_as_long(evaluate_subexp(NULL_TYPE, exp, pos, noside));
+      if ((index < low_bound) || (index > high_bound)) {
+	error(_("tuple index out of range"));
+      }
+      memcpy((value_contents_raw(array) + (index - low_bound)
+              * element_size), value_contents(element), element_size);
     }
   return index;
 }
 
 struct value *
-evaluate_subexp_standard (struct type *expect_type,
-			  struct expression *exp, int *pos,
-			  enum noside noside)
+evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
+                         int *pos, enum noside noside)
 {
   enum exp_opcode op;
   int tem, tem2, tem3;
@@ -426,7 +443,7 @@ evaluate_subexp_standard (struct type *expect_type,
   struct value *arg2 = NULL;
   struct value *arg3;
   struct type *type;
-  int nargs;
+  int nargs = 0;
   struct value **argvec;
   int upper, lower, retcode;
   int code;
@@ -441,326 +458,368 @@ evaluate_subexp_standard (struct type *expect_type,
   switch (op)
     {
     case OP_SCOPE:
-      tem = longest_to_int (exp->elts[pc + 2].longconst);
-      (*pos) += 4 + BYTES_TO_EXP_ELEM (tem + 1);
-      arg1 = value_aggregate_elt (exp->elts[pc + 1].type,
-				  &exp->elts[pc + 3].string,
-				  noside);
-      if (arg1 == NULL)
-	error (_("There is no field named %s"), &exp->elts[pc + 3].string);
+    {
+      tem = longest_to_int(exp->elts[pc + 2].longconst);
+      (*pos) += (4 + BYTES_TO_EXP_ELEM(tem + 1));
+      arg1 = value_aggregate_elt(exp->elts[pc + 1].type,
+                                 &exp->elts[pc + 3].string, noside);
+      if (arg1 == NULL) {
+	error(_("There is no field named %s"), &exp->elts[pc + 3].string);
+      }
       return arg1;
-
+    }
     case OP_LONG:
+    {
       (*pos) += 3;
-      return value_from_longest (exp->elts[pc + 1].type,
-				 exp->elts[pc + 2].longconst);
-
+      return value_from_longest(exp->elts[pc + 1].type,
+                                exp->elts[pc + 2].longconst);
+    }
     case OP_DOUBLE:
+    {
       (*pos) += 3;
-      return value_from_double (exp->elts[pc + 1].type,
-				exp->elts[pc + 2].doubleconst);
-
+      return value_from_double(exp->elts[pc + 1].type,
+                               exp->elts[pc + 2].doubleconst);
+    }
     case OP_VAR_VALUE:
+    {
       (*pos) += 3;
-      if (noside == EVAL_SKIP)
+      if (noside == EVAL_SKIP) {
 	goto nosideret;
+      }
 
       /* JYG: We used to just return value_zero of the symbol type
-        if we're asked to avoid side effects.  Otherwise we return
-        value_of_variable (...).  However I'm not sure if
-        value_of_variable () has any side effect.
-        We need a full value object returned here for whatis_exp ()
-        to call evaluate_type () and then pass the full value to
-        value_rtti_target_type () if we are dealing with a pointer
-        or reference to a base class and print object is on. */
+       * if we were asked to avoid side effects.  Otherwise we return
+       * value_of_variable(...).  However, I am not sure if
+       * value_of_variable() has any side effect.
+       * We need a full value object returned here for whatis_exp()
+       * to call evaluate_type() and then pass the full value to
+       * value_rtti_target_type() if we are dealing with a pointer
+       * or reference to a base class and print object is on. */
       {
 	struct value *retval;
 	struct type *dynamic_type;
 
-        retval = value_of_variable (exp->elts[pc + 2].symbol,
-                                  exp->elts[pc + 1].block);
-	/* APPLE LOCAL - We don't want to print the closure type always.
-	   This made things look better in command-line gdb but it
+        retval = value_of_variable(exp->elts[pc + 2].symbol,
+                                   exp->elts[pc + 1].block);
+	/* APPLE LOCAL - We do NOT want to print the closure type always.
+	   This made things look better in command-line gdb, but it
 	   obscures the distinction between dynamic & static type
-	   changes.  So we add this variable and toggle it off in 
-	   the varobj code where this is important.  */
+	   changes.  So we add this variable and toggle it off in
+	   the varobj code where this is important:  */
 	if (print_closure)
 	  {
-	    dynamic_type = get_closure_dynamic_type (retval);
-	    if (dynamic_type)
-	      retval = value_cast (dynamic_type, retval);
+	    dynamic_type = get_closure_dynamic_type(retval);
+	    if (dynamic_type) {
+	      retval = value_cast(dynamic_type, retval);
+            }
 	  }
 	/* END APPLE LOCAL */
 	return retval;
       }
-
+    }
     case OP_LAST:
+    {
       (*pos) += 2;
       return
-	access_value_history (longest_to_int (exp->elts[pc + 1].longconst));
-
+	access_value_history(longest_to_int (exp->elts[pc + 1].longconst));
+    }
     case OP_REGISTER:
       {
-	int regno = longest_to_int (exp->elts[pc + 1].longconst);
-	struct value *val = value_of_register (regno, get_selected_frame (NULL));
+	int regno = longest_to_int(exp->elts[pc + 1].longconst);
+	struct value *val = value_of_register(regno,
+                                              get_selected_frame(NULL));
 	/* APPLE LOCAL begin literal register setting */
-	/* Remember that this is a register being set directly by
-	   name; for the benefit of G5s we will want to treat it as a
-	   single 64-bit entity (even with 32-bit programs), rather
-	   than following the ABI as we would do for a regular
-	   variable stored in the register.  */
-	VALUE_LVAL (val) = lval_register_literal;
+        /* Remember that this is a register being set directly by name;
+         * for the benefit of G5s we will want to treat it as a single
+         * 64-bit entity (even with 32-bit programs), rather than
+         * following the ABI as we would do for a regular variable stored
+         * in the register: */
+	VALUE_LVAL(val) = lval_register_literal;
 	/* APPLE LOCAL end literal register setting */
 	(*pos) += 2;
-	if (val == NULL)
-	  error (_("Value of register %s not available."),
-		 frame_map_regnum_to_name (get_selected_frame (NULL), regno));
-	else
+	if (val == NULL) {
+	  error(_("Value of register %s not available."),
+                frame_map_regnum_to_name(get_selected_frame(NULL), regno));
+	} else {
 	  return val;
+        }
       }
     case OP_BOOL:
+    {
       (*pos) += 2;
-      return value_from_longest (LA_BOOL_TYPE,
-				 exp->elts[pc + 1].longconst);
-
+      return value_from_longest(LA_BOOL_TYPE, exp->elts[pc + 1].longconst);
+    }
     case OP_INTERNALVAR:
+    {
       (*pos) += 2;
-      return value_of_internalvar (exp->elts[pc + 1].internalvar);
-
+      return value_of_internalvar(exp->elts[pc + 1].internalvar);
+    }
     case OP_STRING:
-      tem = longest_to_int (exp->elts[pc + 1].longconst);
-      (*pos) += 3 + BYTES_TO_EXP_ELEM (tem + 1);
-      if (noside == EVAL_SKIP)
+    {
+      tem = longest_to_int(exp->elts[pc + 1].longconst);
+      (*pos) += (3 + BYTES_TO_EXP_ELEM(tem + 1));
+      if (noside == EVAL_SKIP) {
 	goto nosideret;
-      return value_string (&exp->elts[pc + 2].string, tem);
+      }
+      return value_string(&exp->elts[pc + 2].string, tem);
 
-      /* FIXME: I think above call is likely wrong, and should be 
-         value_string (..., tem + 1);  I can't easily test it, since 
-         while Fortran and Chill still use OP_STRING, C and C++ do not. */
-
-    case OP_OBJC_NSSTRING:		/* Objective C Foundation Class NSString constant.  */
-      tem = longest_to_int (exp->elts[pc + 1].longconst);
-      (*pos) += 3 + BYTES_TO_EXP_ELEM (tem + 1);
+      /* FIXME: I think above call is likely wrong, and should be
+       * value_string(..., tem + 1);  I cannot easily test it, since
+       * while Fortran and Chill still use OP_STRING, C and C++ do not. */
+    }
+    case OP_OBJC_NSSTRING: /* ObjC Foundation Class NSString constant: */
+    {
+      tem = longest_to_int(exp->elts[pc + 1].longconst);
+      (*pos) += (3 + BYTES_TO_EXP_ELEM(tem + 1));
       if (noside == EVAL_SKIP)
 	{
 	  goto nosideret;
 	}
-      return (struct value *) value_nsstring (&exp->elts[pc + 2].string, tem + 1);
-
+      return (struct value *)value_nsstring(&exp->elts[pc + 2].string,
+                                            (tem + 1));
+    }
     case OP_BITSTRING:
-      tem = longest_to_int (exp->elts[pc + 1].longconst);
-      (*pos)
-	+= 3 + BYTES_TO_EXP_ELEM ((tem + HOST_CHAR_BIT - 1) / HOST_CHAR_BIT);
-      if (noside == EVAL_SKIP)
+    {
+      tem = longest_to_int(exp->elts[pc + 1].longconst);
+      (*pos) += (3 + BYTES_TO_EXP_ELEM((tem + HOST_CHAR_BIT - 1) / HOST_CHAR_BIT));
+      if (noside == EVAL_SKIP) {
 	goto nosideret;
-      return value_bitstring (&exp->elts[pc + 2].string, tem);
-      break;
-
+      }
+      return value_bitstring(&exp->elts[pc + 2].string, tem);
+      break; /* why break if we return?? */
+    }
     case OP_ARRAY:
+    {
       (*pos) += 3;
-      tem2 = longest_to_int (exp->elts[pc + 1].longconst);
-      tem3 = longest_to_int (exp->elts[pc + 2].longconst);
-      nargs = tem3 - tem2 + 1;
-      type = expect_type ? check_typedef (expect_type) : NULL_TYPE;
+      tem2 = longest_to_int(exp->elts[pc + 1].longconst);
+      tem3 = longest_to_int(exp->elts[pc + 2].longconst);
+      nargs = (tem3 - tem2 + 1);
+      type = (expect_type ? check_typedef(expect_type) : NULL_TYPE);
 
-      if (expect_type != NULL_TYPE && noside != EVAL_SKIP
-	  && TYPE_CODE (type) == TYPE_CODE_STRUCT)
+      if ((expect_type != NULL_TYPE) && (noside != EVAL_SKIP)
+	  && (TYPE_CODE(type) == TYPE_CODE_STRUCT))
 	{
-	  struct value *rec = allocate_value (expect_type);
-	  memset (value_contents_raw (rec), '\0', TYPE_LENGTH (type));
-	  return evaluate_struct_tuple (rec, exp, pos, noside, nargs);
+	  struct value *rec = allocate_value(expect_type);
+	  memset(value_contents_raw(rec), '\0', TYPE_LENGTH(type));
+	  return evaluate_struct_tuple(rec, exp, pos, noside, nargs);
 	}
 
-      if (expect_type != NULL_TYPE && noside != EVAL_SKIP
-	  && TYPE_CODE (type) == TYPE_CODE_ARRAY)
+      if ((expect_type != NULL_TYPE) && (noside != EVAL_SKIP)
+	  && (TYPE_CODE(type) == TYPE_CODE_ARRAY))
 	{
-	  struct type *range_type = TYPE_FIELD_TYPE (type, 0);
-	  struct type *element_type = TYPE_TARGET_TYPE (type);
-	  struct value *array = allocate_value (expect_type);
-	  int element_size = TYPE_LENGTH (check_typedef (element_type));
+          int ii = 0;
+	  struct type *range_type = TYPE_FIELD_TYPE(type, 0);
+	  struct type *element_type = TYPE_TARGET_TYPE(type);
+	  struct value *array = allocate_value(expect_type);
+	  int element_size = TYPE_LENGTH(check_typedef(element_type));
 	  LONGEST low_bound, high_bound, index;
-	  if (get_discrete_bounds (range_type, &low_bound, &high_bound) < 0)
+	  if (get_discrete_bounds(range_type, &low_bound, &high_bound) < 0)
 	    {
 	      low_bound = 0;
-	      high_bound = (TYPE_LENGTH (type) / element_size) - 1;
+	      high_bound = ((TYPE_LENGTH (type) / element_size) - 1);
 	    }
 	  index = low_bound;
-	  memset (value_contents_raw (array), 0, TYPE_LENGTH (expect_type));
-	  for (tem = nargs; --nargs >= 0;)
+	  memset(value_contents_raw(array), 0, TYPE_LENGTH(expect_type));
+	  for (tem = nargs; --nargs >= 0; ii++)
 	    {
 	      struct value *element;
 	      int index_pc = 0;
 	      if (exp->elts[*pos].opcode == BINOP_RANGE)
 		{
 		  index_pc = ++(*pos);
-		  evaluate_subexp (NULL_TYPE, exp, pos, EVAL_SKIP);
+		  evaluate_subexp(NULL_TYPE, exp, pos, EVAL_SKIP);
 		}
-	      element = evaluate_subexp (element_type, exp, pos, noside);
-	      if (value_type (element) != element_type)
-		element = value_cast (element_type, element);
+	      element = evaluate_subexp(element_type, exp, pos, noside);
+	      if (value_type(element) != element_type) {
+		element = value_cast(element_type, element);
+              }
 	      if (index_pc)
 		{
 		  int continue_pc = *pos;
 		  *pos = index_pc;
-		  index = init_array_element (array, element, exp, pos, noside,
-					      low_bound, high_bound);
+		  index = init_array_element(array, element, exp, pos, noside,
+                                             low_bound, high_bound);
 		  *pos = continue_pc;
 		}
 	      else
 		{
-		  if (index > high_bound)
-		    /* to avoid memory corruption */
-		    error (_("Too many array elements"));
-		  memcpy (value_contents_raw (array)
-			  + (index - low_bound) * element_size,
-			  value_contents (element),
-			  element_size);
+		  if (index > high_bound) {
+		    /* to avoid memory corruption: */
+		    error(_("Too many array elements"));
+                  }
+		  memcpy((value_contents_raw(array) + (index - low_bound)
+                          * element_size), value_contents(element),
+                         element_size);
 		}
 	      index++;
+              if (ii == 0) {
+                ; /* dummy */
+              }
 	    }
 	  return array;
 	}
 
-      if (expect_type != NULL_TYPE && noside != EVAL_SKIP
-	  && TYPE_CODE (type) == TYPE_CODE_SET)
+      if ((expect_type != NULL_TYPE) && (noside != EVAL_SKIP)
+	  && (TYPE_CODE(type) == TYPE_CODE_SET))
 	{
-	  struct value *set = allocate_value (expect_type);
-	  gdb_byte *valaddr = value_contents_raw (set);
-	  struct type *element_type = TYPE_INDEX_TYPE (type);
+	  struct value *set = allocate_value(expect_type);
+	  gdb_byte *valaddr = value_contents_raw(set);
+	  struct type *element_type = TYPE_INDEX_TYPE(type);
 	  struct type *check_type = element_type;
 	  LONGEST low_bound, high_bound;
 
 	  /* get targettype of elementtype */
-	  while (TYPE_CODE (check_type) == TYPE_CODE_RANGE ||
-		 TYPE_CODE (check_type) == TYPE_CODE_TYPEDEF)
-	    check_type = TYPE_TARGET_TYPE (check_type);
+	  while ((TYPE_CODE(check_type) == TYPE_CODE_RANGE) ||
+		 (TYPE_CODE(check_type) == TYPE_CODE_TYPEDEF)) {
+	    check_type = TYPE_TARGET_TYPE(check_type);
+          }
 
-	  if (get_discrete_bounds (element_type, &low_bound, &high_bound) < 0)
-	    error (_("(power)set type with unknown size"));
-	  memset (valaddr, '\0', TYPE_LENGTH (type));
+	  if (get_discrete_bounds(element_type, &low_bound, &high_bound) < 0)
+	    error(_("(power)set type with unknown size"));
+	  memset(valaddr, '\0', TYPE_LENGTH(type));
 	  for (tem = 0; tem < nargs; tem++)
 	    {
+              int ij;
 	      LONGEST range_low, range_high;
 	      struct type *range_low_type, *range_high_type;
 	      struct value *elem_val;
 	      if (exp->elts[*pos].opcode == BINOP_RANGE)
 		{
 		  (*pos)++;
-		  elem_val = evaluate_subexp (element_type, exp, pos, noside);
-		  range_low_type = value_type (elem_val);
-		  range_low = value_as_long (elem_val);
-		  elem_val = evaluate_subexp (element_type, exp, pos, noside);
-		  range_high_type = value_type (elem_val);
-		  range_high = value_as_long (elem_val);
+		  elem_val = evaluate_subexp(element_type, exp, pos,
+                                             noside);
+		  range_low_type = value_type(elem_val);
+		  range_low = value_as_long(elem_val);
+		  elem_val = evaluate_subexp(element_type, exp, pos,
+                                             noside);
+		  range_high_type = value_type(elem_val);
+		  range_high = value_as_long(elem_val);
 		}
 	      else
 		{
-		  elem_val = evaluate_subexp (element_type, exp, pos, noside);
-		  range_low_type = range_high_type = value_type (elem_val);
-		  range_low = range_high = value_as_long (elem_val);
+		  elem_val = evaluate_subexp(element_type, exp, pos,
+                                             noside);
+		  range_low_type = range_high_type = value_type(elem_val);
+		  range_low = range_high = value_as_long(elem_val);
 		}
 	      /* check types of elements to avoid mixture of elements from
-	         different types. Also check if type of element is "compatible"
-	         with element type of powerset */
-	      if (TYPE_CODE (range_low_type) == TYPE_CODE_RANGE)
-		range_low_type = TYPE_TARGET_TYPE (range_low_type);
-	      if (TYPE_CODE (range_high_type) == TYPE_CODE_RANGE)
-		range_high_type = TYPE_TARGET_TYPE (range_high_type);
-	      if ((TYPE_CODE (range_low_type) != TYPE_CODE (range_high_type)) ||
-		  (TYPE_CODE (range_low_type) == TYPE_CODE_ENUM &&
+	       * different types. Also, check if the type of the element
+               * is "compatible" with element type of powerset: */
+	      if (TYPE_CODE(range_low_type) == TYPE_CODE_RANGE) {
+		range_low_type = TYPE_TARGET_TYPE(range_low_type);
+              }
+	      if (TYPE_CODE(range_high_type) == TYPE_CODE_RANGE) {
+		range_high_type = TYPE_TARGET_TYPE(range_high_type);
+              }
+	      if ((TYPE_CODE(range_low_type) != TYPE_CODE(range_high_type)) ||
+		  ((TYPE_CODE(range_low_type) == TYPE_CODE_ENUM) &&
 		   (range_low_type != range_high_type)))
-		/* different element modes */
-		error (_("POWERSET tuple elements of different mode"));
-	      if ((TYPE_CODE (check_type) != TYPE_CODE (range_low_type)) ||
-		  (TYPE_CODE (check_type) == TYPE_CODE_ENUM &&
+                {
+                  /* different element modes: */
+                  error(_("POWERSET tuple elements of different mode"));
+                }
+	      if ((TYPE_CODE(check_type) != TYPE_CODE(range_low_type)) ||
+		  ((TYPE_CODE(check_type) == TYPE_CODE_ENUM) &&
 		   range_low_type != check_type))
-		error (_("incompatible POWERSET tuple elements"));
+                {
+                  error(_("incompatible POWERSET tuple elements"));
+                }
 	      if (range_low > range_high)
 		{
-		  warning (_("empty POWERSET tuple range"));
+		  warning(_("empty POWERSET tuple range"));
 		  continue;
 		}
-	      if (range_low < low_bound || range_high > high_bound)
-		error (_("POWERSET tuple element out of range"));
+	      if ((range_low < low_bound) || (range_high > high_bound)) {
+		error(_("POWERSET tuple element out of range"));
+              }
 	      range_low -= low_bound;
 	      range_high -= low_bound;
-	      for (; range_low <= range_high; range_low++)
+	      for (ij = 0; range_low <= range_high; range_low++)
 		{
-		  int bit_index = (unsigned) range_low % TARGET_CHAR_BIT;
-		  if (BITS_BIG_ENDIAN)
-		    bit_index = TARGET_CHAR_BIT - 1 - bit_index;
-		  valaddr[(unsigned) range_low / TARGET_CHAR_BIT]
-		    |= 1 << bit_index;
+		  int bit_index = ((unsigned)range_low % TARGET_CHAR_BIT);
+		  if (BITS_BIG_ENDIAN) {
+		    bit_index = (TARGET_CHAR_BIT - 1 - bit_index);
+                  }
+		  valaddr[(unsigned)range_low / TARGET_CHAR_BIT]
+		    |= (1 << bit_index);
+                  if (ij == 0) {
+                    ij++;
+                  }
+                  if (range_low == INFINITY) {
+                    break; /* silence '-Wunsafe-loop-optimizations' */
+                  }
 		}
 	    }
 	  return set;
 	}
 
-      argvec = (struct value **) alloca (sizeof (struct value *) * nargs);
+      argvec = (struct value **)alloca(sizeof(struct value *) * nargs);
       for (tem = 0; tem < nargs; tem++)
 	{
-	  /* Ensure that array expressions are coerced into pointer objects. */
-	  argvec[tem] = evaluate_subexp_with_coercion (exp, pos, noside);
+	  /* Ensure that array expressions are coerced into pointer
+           * objects: */
+	  argvec[tem] = evaluate_subexp_with_coercion(exp, pos, noside);
 	}
-      if (noside == EVAL_SKIP)
+      if (noside == EVAL_SKIP) {
 	goto nosideret;
-      return value_array (tem2, tem3, argvec);
-
+      }
+      return value_array(tem2, tem3, argvec);
+    } /* end case OP_ARRAY */
     case TERNOP_SLICE:
       {
-	struct value *array = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-	int lowbound
-	= value_as_long (evaluate_subexp (NULL_TYPE, exp, pos, noside));
-	int upper
-	= value_as_long (evaluate_subexp (NULL_TYPE, exp, pos, noside));
-	if (noside == EVAL_SKIP)
+	struct value *array = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+	int lowbound =
+          (int)value_as_long(evaluate_subexp(NULL_TYPE, exp, pos, noside));
+	int upper =
+          (int)value_as_long(evaluate_subexp(NULL_TYPE, exp, pos, noside));
+	if (noside == EVAL_SKIP) {
 	  goto nosideret;
-	return value_slice (array, lowbound, upper - lowbound + 1);
+        }
+	return value_slice(array, lowbound, ((upper - lowbound) + 1));
       }
-
     case TERNOP_SLICE_COUNT:
       {
-	struct value *array = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-	int lowbound
-	= value_as_long (evaluate_subexp (NULL_TYPE, exp, pos, noside));
-	int length
-	= value_as_long (evaluate_subexp (NULL_TYPE, exp, pos, noside));
-	return value_slice (array, lowbound, length);
+	struct value *array = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+	int lowbound =
+          (int)value_as_long(evaluate_subexp(NULL_TYPE, exp, pos, noside));
+	int length =
+          (int)value_as_long(evaluate_subexp(NULL_TYPE, exp, pos, noside));
+	return value_slice(array, lowbound, length);
       }
-
     case TERNOP_COND:
-      /* Skip third and second args to evaluate the first one.  */
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      if (value_logical_not (arg1))
+    {
+      /* Skip third and second args to evaluate the first one: */
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      if (value_logical_not(arg1))
 	{
-	  evaluate_subexp (NULL_TYPE, exp, pos, EVAL_SKIP);
-	  return evaluate_subexp (NULL_TYPE, exp, pos, noside);
+	  evaluate_subexp(NULL_TYPE, exp, pos, EVAL_SKIP);
+	  return evaluate_subexp(NULL_TYPE, exp, pos, noside);
 	}
       else
 	{
-	  arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-	  evaluate_subexp (NULL_TYPE, exp, pos, EVAL_SKIP);
+	  arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+	  evaluate_subexp(NULL_TYPE, exp, pos, EVAL_SKIP);
 	  return arg2;
 	}
-
+    }
     case OP_OBJC_SELECTOR:
-      {				/* Objective C @selector operator.  */
+      {				/* Objective C @selector operator: */
 	char *sel = &exp->elts[pc + 2].string;
-	int len = longest_to_int (exp->elts[pc + 1].longconst);
+	int len = longest_to_int(exp->elts[pc + 1].longconst);
 
-	(*pos) += 3 + BYTES_TO_EXP_ELEM (len + 1);
-	if (noside == EVAL_SKIP)
+	(*pos) += (3 + BYTES_TO_EXP_ELEM(len + 1));
+	if (noside == EVAL_SKIP) {
 	  goto nosideret;
+        }
 
 	if (sel[len] != 0)
-	  sel[len] = 0;		/* Make sure it's terminated.  */
-	return value_from_longest (lookup_pointer_type (builtin_type_void),
-				   lookup_child_selector (sel));
+	  sel[len] = 0;		/* Make sure it is terminated: */
+	return value_from_longest(lookup_pointer_type(builtin_type_void),
+                                  lookup_child_selector(sel));
       }
-
     case OP_OBJC_MSGCALL:
-      {				/* Objective C message (method) call.  */
-	CORE_ADDR selector = 0;
+      {				/* Objective C message (method) call: */
+	CORE_ADDR selector = 0UL;
 
 	int using_gcc = 0;
 	int struct_return = 0;
@@ -773,237 +832,249 @@ evaluate_subexp_standard (struct type *expect_type,
 
 	struct value *target = NULL;
 	struct value *method = NULL;
-	struct value *called_method = NULL; 
+	struct value *called_method = NULL;
 
 	struct type *selector_type = NULL;
 
 	struct value *ret = NULL;
-	CORE_ADDR addr = 0;
+	CORE_ADDR addr = 0UL;
 
         /* APPLE LOCAL: SELECTOR can be sign-extended because .longconst
-           is signed; mask off the upper 32 bits if we're not a 64 bit 
-           program.  */
-        if (TARGET_PTR_BIT == 64)
+         * is signed; mask off the upper 32 bits if we are not a 64 bit
+         * program.  */
+        if (TARGET_PTR_BIT == 64) {
 	  selector = exp->elts[pc + 1].longconst;
-        else
-	  selector = exp->elts[pc + 1].longconst & 0xffffffff;
-	nargs = exp->elts[pc + 2].longconst;
-	argvec = (struct value **) alloca (sizeof (struct value *) 
-					   * (nargs + 5));
+        } else {
+	  selector = (exp->elts[pc + 1].longconst & 0xffffffff);
+        }
+	nargs = (int)exp->elts[pc + 2].longconst;
+	argvec = (struct value **)alloca(sizeof(struct value *)
+                                         * (nargs + 5UL));
 
 	(*pos) += 3;
 
-	selector_type = lookup_pointer_type (builtin_type_void_data_ptr);
-	if (noside == EVAL_AVOID_SIDE_EFFECTS)
+	selector_type = lookup_pointer_type(builtin_type_void_data_ptr);
+	if (noside == EVAL_AVOID_SIDE_EFFECTS) {
 	  sub_no_side = EVAL_NORMAL;
-	else
+	} else {
 	  sub_no_side = noside;
+        }
 
-	target = evaluate_subexp (selector_type, exp, pos, sub_no_side);
+	target = evaluate_subexp(selector_type, exp, pos,
+                                 (enum noside)sub_no_side);
 
 	/* APPLE LOCAL: If we go on from here we are going to try to look
-	   up TARGET as an objc class.  But getting the target (OP_VAR_VALUE)
-	   when NOSIDE is EVAL_SKIP just returns "1", which is not going to 
-	   work when we start grubbing around in memory there.  */
-	if (noside == EVAL_SKIP)
+	 * up TARGET as an objc class.  But getting the target (OP_VAR_VALUE)
+	 * when NOSIDE is EVAL_SKIP just returns "1", which is not going to
+	 * work when we start grubbing around in memory there.  */
+	if (noside == EVAL_SKIP) {
 	  goto nosideret;
+        }
 
-	if (value_as_long (target) == 0)
- 	  return value_from_longest (builtin_type_long, 0);
+	if (value_as_long(target) == 0) {
+ 	  return value_from_longest(builtin_type_long, 0);
+        }
 
 	if (! cached_values)
 	  {
-
-	    if (lookup_minimal_symbol ("objc_msg_lookup", 0, 0))
+	    if (lookup_minimal_symbol("objc_msg_lookup", 0, 0)) {
 	      gnu_runtime = 1;
+            }
 
 	    /* Find the method dispatch (Apple runtime) or method lookup
-	       (GNU runtime) function for Objective-C.  These will be used
-	       to lookup the symbol information for the method.  If we
-	       can't find any symbol information, then we'll use these to
-	       call the method, otherwise we can call the method
-	       directly. The msg_send_stret function is used in the special
-	       case of a method that returns a structure (Apple runtime 
-	       only).  */
+             * (GNU runtime) function for Objective-C.  These will be used
+             * to lookup the symbol information for the method.  If we
+             * cannot find any symbol information, then we shall use these
+             * to call the method, otherwise we can call the method
+             * directly. The msg_send_stret function is used in the special
+             * case of a method that returns a structure (Apple runtime
+             * only).  */
 	    if (gnu_runtime)
 	      {
-
-		/* APPLE LOCAL: FIXME - it seems innocent enough to give
-		   a type to the msg_send function here.  But the code 
-		   below this will use the type of the cached function 
-		   value as the type of the method call if debug symbols
-		   for the call can't be found.  Look particularly where
-		   we check for (!method) and then inherit called_method
-		   from there.  I think THAT code is what is actually 
-		   wrong, but it works correctly if you don't set the 
-		   type here.  
-		   So don't be tempted to move this bit of code out to the
-		   Apple Runtime part of the code without fixing the
-		   way called_method is used below.  */
-	 
+                /* APPLE LOCAL: FIXME - it seems innocent enough to give a
+                 * type to the msg_send function here.  But the code below
+                 * this will use the type of the cached function value as
+                 * the type of the method call if debug symbols for the
+                 * call cannot be found.  Look particularly where we check
+                 * for (!method) and then inherit called_method from there.
+                 * I think THAT code is what is actually wrong, but it
+                 * works correctly if you do NOT set the type here.
+                 * So do NOT be tempted to move this bit of code out to the
+                 * Apple Runtime part of the code without fixing the way
+                 * called_method is used below.  */
                 struct type *type;
-                type = lookup_pointer_type (builtin_type_void);
-                type = lookup_function_type (type);
-                type = lookup_pointer_type (type);
-                type = lookup_function_type (type);
-                type = lookup_pointer_type (type);
-                msg_send = create_cached_function ("objc_msg_lookup", type);
-                /* Special dispatcher for methods returning structs */
-                msg_send_stret = create_cached_function ("objc_msg_lookup", type);
+                type = lookup_pointer_type(builtin_type_void);
+                type = lookup_function_type(type);
+                type = lookup_pointer_type(type);
+                type = lookup_function_type(type);
+                type = lookup_pointer_type(type);
+                msg_send = create_cached_function("objc_msg_lookup", type);
+                /* Special dispatcher for methods returning structs: */
+                msg_send_stret = create_cached_function("objc_msg_lookup",
+                                                        type);
 	      }
             else
               {
-                msg_send = create_cached_function ("objc_msgSend", NULL);
-                /* Special dispatcher for methods returning structs */
-                msg_send_stret = create_cached_function ("objc_msgSend_stret", NULL);
+                msg_send = create_cached_function("objc_msgSend", NULL);
+                /* Special dispatcher for methods returning structs: */
+                msg_send_stret = create_cached_function("objc_msgSend_stret", NULL);
               }
 
             cached_values = 1;
           }
 
-        /* APPLE LOCAL: Instead of calling into the inferior two times
-           before calling the method itself, let's just grope around in
-           the ObjC runtime like we do elsewhere and speed everything up. */
-
-        addr = find_implementation (value_as_address (target), selector, 0);
-        if (addr == 0)
-          error ("Target does not respond to this message selector.");
+        /* APPLE LOCAL: Instead of calling into the inferior 2 times before
+         * calling the method itself, let us just grope around in the ObjC
+         * runtime like we do elsewhere and speed everything up: */
+        addr = find_implementation(value_as_address(target), selector, 0);
+        if (addr == 0) {
+          error("Target does not respond to this message selector.");
+        }
 
 	if (addr)
 	  {
 	    struct symbol *sym = NULL;
 	    /* is it a high_level symbol?  */
 
-	    sym = find_pc_function (addr);
-	    if (sym != NULL) 
-	      method = value_of_variable (sym, 0);
+	    sym = find_pc_function(addr);
+	    if (sym != NULL) {
+	      method = value_of_variable(sym, 0);
+            }
 	  }
 
-	/* If we found a method with symbol information, check to see
-           if it returns a struct.  Otherwise assume it doesn't.  */
-
+        /* If we found a method with symbol information, then check to see
+         * if it returns a struct.  Otherwise assume that it does NOT: */
 	if (method)
 	  {
 	    struct block *b;
 	    CORE_ADDR funaddr;
 	    struct type *value_type;
 
-	    funaddr = find_function_addr (method, &value_type);
+	    funaddr = find_function_addr(method, &value_type);
 
-	    b = block_for_pc (funaddr);
+	    b = block_for_pc(funaddr);
 
 	    /* If compiled without -g, assume GCC 2.  */
-	    using_gcc = (b == NULL ? 2 : BLOCK_GCC_COMPILED (b));
+	    using_gcc = ((b == NULL) ? 2 : BLOCK_GCC_COMPILED(b));
 
-	    CHECK_TYPEDEF (value_type);
-	  
-	    if ((value_type == NULL) 
+	    CHECK_TYPEDEF(value_type);
+
+	    if ((value_type == NULL)
 		|| (TYPE_CODE(value_type) == TYPE_CODE_ERROR))
 	      {
-		if (expect_type != NULL)
+		if (expect_type != NULL) {
 		  value_type = expect_type;
+                }
 	      }
 
-	    struct_return = using_struct_return (value_type, using_gcc);
+	    struct_return = using_struct_return(value_type, using_gcc);
 	  }
 	else if (expect_type != NULL)
 	  {
-	    struct_return = using_struct_return (check_typedef (expect_type), using_gcc);
+	    struct_return = using_struct_return(check_typedef(expect_type),
+                                                using_gcc);
 	  }
-	
-	/* Found a function symbol.  Now we will substitute its
-	   value in place of the message dispatcher (obj_msgSend),
-	   so that we call the method directly instead of thru
-	   the dispatcher.  The main reason for doing this is that
-	   we can now evaluate the return value and parameter values
-	   according to their known data types, in case we need to
-	   do things like promotion, dereferencing, special handling
-	   of structs and doubles, etc.
-	  
-	   We want to use the type signature of 'method', but still
-	   jump to objc_msgSend() or objc_msgSend_stret() to better
-	   mimic the behavior of the runtime.  */
-	
+
+        /* Found a function symbol.  Now we will substitute its value in
+         * place of the message dispatcher (obj_msgSend), so that we call
+         * the method directly instead of thru the dispatcher.  The main
+         * reason for doing this is that we can now evaluate the return
+         * value and parameter values according to their known data types,
+         * in case we need to do things like promotion, dereferencing,
+         * special handling of structs and doubles, and so on.
+         *
+         * We want to use the type signature of 'method', but still jump
+         * to objc_msgSend() or objc_msgSend_stret() to better mimic the
+         * behavior of the runtime: */
 	if (method)
 	  {
-	    if (TYPE_CODE (value_type (method)) != TYPE_CODE_FUNC)
-	      error (_("method address has symbol information with non-function type; skipping"));
-	    if (struct_return)
-	      VALUE_ADDRESS (method) = value_as_address (lookup_cached_function (msg_send_stret));
-	    else
-	      VALUE_ADDRESS (method) = value_as_address (lookup_cached_function (msg_send));
+	    if (TYPE_CODE(value_type(method)) != TYPE_CODE_FUNC) {
+	      error(_("method address has symbol information with non-function type; skipping"));
+            }
+	    if (struct_return) {
+	      VALUE_ADDRESS(method) = value_as_address(lookup_cached_function(msg_send_stret));
+	    } else {
+	      VALUE_ADDRESS(method) = value_as_address(lookup_cached_function(msg_send));
+            }
 	    called_method = method;
 	  }
 	else
 	  {
-	    if (struct_return)
-	      called_method = lookup_cached_function (msg_send_stret);
-	    else
-	      called_method = lookup_cached_function (msg_send);
+	    if (struct_return) {
+	      called_method = lookup_cached_function(msg_send_stret);
+	    } else {
+	      called_method = lookup_cached_function(msg_send);
+            }
 	  }
 
-	if (noside == EVAL_SKIP)
+	if (noside == EVAL_SKIP) {
 	  goto nosideret;
+        }
 
 	if (noside == EVAL_AVOID_SIDE_EFFECTS)
 	  {
-	    /* If the return type doesn't look like a function type,
-	       call an error.  This can happen if somebody tries to
-	       turn a variable into a function call. This is here
-	       because people often want to call, eg, strcmp, which
-	       gdb doesn't know is a function.  If gdb isn't asked for
-	       it's opinion (ie. through "whatis"), it won't offer
-	       it. */
+            /* If the return type does NOT look like a function type, then
+             * call an error.  This can happen if somebody tries to turn
+             * a variable into a function call. This is here because people
+             * often want to call, e.g., strcmp(), which gdb does NOT know
+             * is a function.  If gdb is NOT asked for its opinion
+             * (i.e. through "whatis"), then it will NOT offer it. */
+	    struct type *type = value_type(called_method);
+	    if (type && (TYPE_CODE(type) == TYPE_CODE_PTR)) {
+	      type = TYPE_TARGET_TYPE(type);
+            }
+	    type = TYPE_TARGET_TYPE(type);
 
-	    struct type *type = value_type (called_method);
-	    if (type && TYPE_CODE (type) == TYPE_CODE_PTR)
-	      type = TYPE_TARGET_TYPE (type);
-	    type = TYPE_TARGET_TYPE (type);
-
-	    if (type)
-	    {
-	      if ((TYPE_CODE (type) == TYPE_CODE_ERROR) && expect_type)
-		return allocate_value (expect_type);
-	      else
-		return allocate_value (type);
-	    }
-	    else
-	      error (_("Expression of type other than \"method returning ...\" used as a method"));
+	    if (type) {
+              if ((TYPE_CODE(type) == TYPE_CODE_ERROR) && expect_type) {
+                return allocate_value(expect_type);
+              } else {
+                return allocate_value(type);
+              }
+            } else {
+	      error(_("Expression of type other than \"method returning ...\" used as a method"));
+            }
 	  }
 
-	/* Now depending on whether we found a symbol for the method,
-	   we will either call the runtime dispatcher or the method
-	   directly.  */
-
+        /* Now depending on whether we found a symbol for the method, we
+         * will either call the runtime dispatcher or method directly: */
 	argvec[0] = called_method;
 	argvec[1] = target;
-	argvec[2] = value_from_longest (builtin_type_long, selector);
-	/* User-supplied arguments.  */
-	for (tem = 0; tem < nargs; tem++)
-	  argvec[tem + 3] = evaluate_subexp_with_coercion (exp, pos, noside);
+	argvec[2] = value_from_longest(builtin_type_long, selector);
+	/* User-supplied arguments: */
+	for (tem = 0; tem < nargs; tem++) {
+	  argvec[tem + 3] = evaluate_subexp_with_coercion(exp, pos,
+                                                          noside);
+        }
 	argvec[tem + 3] = 0;
 
 	if (gnu_runtime && (method != NULL))
 	  {
 	    /* APPLE LOCAL begin */
-	    ret = call_function_by_hand_expecting_type (argvec[0], builtin_type_void_func_ptr, nargs + 2, argvec + 1, 1);
+	    ret = call_function_by_hand_expecting_type(argvec[0],
+                                                       builtin_type_void_func_ptr,
+                                                       (nargs + 2),
+                                                       (argvec + 1), 1);
 	    argvec[0] = ret;
 	  }
-	ret = call_function_by_hand_expecting_type (argvec[0], expect_type, nargs + 2, argvec + 1, 1);
+	ret = call_function_by_hand_expecting_type(argvec[0], expect_type,
+                                                   (nargs + 2),
+                                                   (argvec + 1), 1);
 	/* APPLE LOCAL end */
 
 	return ret;
-      }
+      } /* end brackets for case OP_OBJC_MSGCALL */
       break;
-
     case OP_FUNCALL:
+    {
+      int jj;
       (*pos) += 2;
       op = exp->elts[*pos].opcode;
-      nargs = longest_to_int (exp->elts[pc + 1].longconst);
+      nargs = longest_to_int(exp->elts[pc + 1].longconst);
       /* Allocate arg vector, including space for the function to be
-         called in argvec[0] and a terminating NULL */
-      argvec = (struct value **) alloca (sizeof (struct value *) * (nargs + 3));
-      if (op == STRUCTOP_MEMBER || op == STRUCTOP_MPTR)
+       * called in argvec[0] and a terminating NULL: */
+      argvec = (struct value **)alloca(sizeof(struct value *) * (nargs + 3));
+      if ((op == STRUCTOP_MEMBER) || (op == STRUCTOP_MPTR))
 	{
 	  LONGEST fnptr;
 
@@ -1012,11 +1083,11 @@ evaluate_subexp_standard (struct type *expect_type,
 	     to the function, but possibly to some thunk. */
 	  if (deprecated_hp_som_som_object_present)
 	    {
-	      error (_("Not implemented: function invocation through pointer to method with HP aCC"));
+	      error(_("Not implemented: function invocation through pointer to method with HP aCC"));
 	    }
 
 	  nargs++;
-	  /* First, evaluate the structure into arg2 */
+	  /* First, evaluate the structure into arg2: */
 	  pc2 = (*pos)++;
 
 	  if (noside == EVAL_SKIP)
@@ -1024,11 +1095,11 @@ evaluate_subexp_standard (struct type *expect_type,
 
 	  if (op == STRUCTOP_MEMBER)
 	    {
-	      arg2 = evaluate_subexp_for_address (exp, pos, noside);
+	      arg2 = evaluate_subexp_for_address(exp, pos, noside);
 	    }
 	  else
 	    {
-	      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+	      arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
 	    }
 
 	  /* If the function is a virtual function, then the
@@ -1036,21 +1107,20 @@ evaluate_subexp_standard (struct type *expect_type,
 	     its part by providing the vtable.  Otherwise,
 	     it is just along for the ride: call the function
 	     directly.  */
+	  arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
 
-	  arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+	  fnptr = value_as_long(arg1);
 
-	  fnptr = value_as_long (arg1);
-
-	  if (METHOD_PTR_IS_VIRTUAL (fnptr))
+	  if (METHOD_PTR_IS_VIRTUAL(fnptr))
 	    {
-	      int fnoffset = METHOD_PTR_TO_VOFFSET (fnptr);
+	      int fnoffset = METHOD_PTR_TO_VOFFSET(fnptr);
 	      struct type *basetype;
 	      struct type *domain_type =
-	      TYPE_DOMAIN_TYPE (TYPE_TARGET_TYPE (value_type (arg1)));
+                TYPE_DOMAIN_TYPE(TYPE_TARGET_TYPE(value_type(arg1)));
 	      int i, j;
-	      basetype = TYPE_TARGET_TYPE (value_type (arg2));
+	      basetype = TYPE_TARGET_TYPE(value_type(arg2));
 	      if (domain_type != basetype)
-		arg2 = value_cast (lookup_pointer_type (domain_type), arg2);
+		arg2 = value_cast(lookup_pointer_type(domain_type), arg2);
 	      basetype = TYPE_VPTR_BASETYPE (domain_type);
 	      for (i = TYPE_NFN_FIELDS (basetype) - 1; i >= 0; i--)
 		{
@@ -1101,7 +1171,7 @@ evaluate_subexp_standard (struct type *expect_type,
 	         copy of the variable on the stack, copy in the
 	         contents, call the function, and copy out the
 	         contents.  I.e. convert this from call by reference
-	         to call by copy-return (or whatever it's called).
+	         to call by copy-return (or whatever it is called).
 	         However, this does not work because it is not the
 	         same: the method being called could stash a copy of
 	         the address, and then future uses through that address
@@ -1118,61 +1188,88 @@ evaluate_subexp_standard (struct type *expect_type,
 	}
       else
 	{
-	  /* Non-method function call */
+	  /* Non-method function call: */
 	  save_pos1 = *pos;
-	  argvec[0] = evaluate_subexp_with_coercion (exp, pos, noside);
+	  argvec[0] = evaluate_subexp_with_coercion(exp, pos, noside);
 	  tem = 1;
-	  type = value_type (argvec[0]);
-	  if (type && TYPE_CODE (type) == TYPE_CODE_PTR)
-	    type = TYPE_TARGET_TYPE (type);
-	  if (type && TYPE_CODE (type) == TYPE_CODE_FUNC)
+	  type = value_type(argvec[0]);
+	  if (type && (TYPE_CODE(type) == TYPE_CODE_PTR)) {
+	    type = TYPE_TARGET_TYPE(type);
+          }
+	  if (type && (TYPE_CODE(type) == TYPE_CODE_FUNC))
 	    {
-	      for (; tem <= nargs && tem <= TYPE_NFIELDS (type); tem++)
+              int ik;
+	      for (ik = 0; (tem <= nargs) && (tem <= TYPE_NFIELDS(type)); tem++)
 		{
 		  /* pai: FIXME This seems to be coercing arguments before
 		   * overload resolution has been done! */
-		  argvec[tem] = evaluate_subexp (TYPE_FIELD_TYPE (type, tem - 1),
-						 exp, pos, noside);
+		  argvec[tem] = evaluate_subexp(TYPE_FIELD_TYPE(type,
+                                                                (tem - 1)),
+                                                exp, pos, noside);
+                  if (ik == 0) {
+                    ik++;
+                  }
+                  if (tem == INFINITY) {
+                    break; /* silence '-Wunsafe-loop-optimizations' */
+                  }
 		}
 	    }
 	}
 
-      /* Evaluate arguments */
-      for (; tem <= nargs; tem++)
+      /* Evaluate arguments: */
+      for (jj = 0; tem <= nargs; tem++)
 	{
-	  /* Ensure that array expressions are coerced into pointer objects. */
-	  argvec[tem] = evaluate_subexp_with_coercion (exp, pos, noside);
+          /* Ensure that array expressions are coerced into pointer
+           * objects: */
+	  argvec[tem] = evaluate_subexp_with_coercion(exp, pos, noside);
+          if (jj == 0) {
+            jj++;
+          }
+          if (tem == INFINITY) {
+            break; /* silence '-Wunsafe-loop-optimizations' */
+          }
 	}
 
-      /* signal end of arglist */
+      /* signal end of arglist: */
       argvec[tem] = 0;
 
-      if (op == STRUCTOP_STRUCT || op == STRUCTOP_PTR)
+      if ((op == STRUCTOP_STRUCT) || (op == STRUCTOP_PTR))
 	{
 	  int static_memfuncp;
 	  char tstr[256];
 
-	  /* Method invocation : stuff "this" as first parameter */
+	  /* Method invocation : stuff "this" as first parameter: */
 	  argvec[1] = arg2;
-	  /* Name of method from expression */
-	  strcpy (tstr, &exp->elts[pc2 + 2].string);
+	  /* Name of method from expression: */
+	  strcpy(tstr, &exp->elts[pc2 + 2].string);
 
 	  /* APPLE LOCAL ObjC++ */
-	  if (overload_resolution && (exp->language_defn->la_language == language_cplus
-				      || exp->language_defn->la_language == language_objcplus))
+	  if (overload_resolution
+              && ((exp->language_defn->la_language == language_cplus)
+                  || (exp->language_defn->la_language == language_objcplus)))
 	    {
-	      /* Language is C++, do some overload resolution before evaluation */
+	      /* Language is C++, do some overload resolution before
+               * evaluation: */
 	      struct value *valp = NULL;
 
-	      /* Prepare list of argument types for overload resolution */
-	      arg_types = (struct type **) alloca (nargs * (sizeof (struct type *)));
-	      for (ix = 1; ix <= nargs; ix++)
-		arg_types[ix - 1] = value_type (argvec[ix]);
+	      /* Prepare list of argument types for overload resolution: */
+	      arg_types = (struct type **)alloca(nargs * (sizeof(struct type *)));
+              if (nargs >= 1) {
+                for (ix = 1; ix < (nargs + 1); ix++) {
+                  arg_types[ix - 1] = value_type(argvec[ix]);
+                  if (ix == INFINITY) {
+                    break; /* silence '-Wunsafe-loop-optimizations' */
+                  }
+                }
+              } else {
+                warning(_("it makes no sense to assign types to arguments"
+                          "when there are no arguments to begin with."));
+              }
 
-	      (void) find_overload_match (arg_types, nargs, tstr,
-				     1 /* method */ , 0 /* strict match */ ,
-					  &arg2 /* the object */ , NULL,
-					  &valp, NULL, &static_memfuncp);
+	      (void)find_overload_match(arg_types, nargs, tstr,
+                                        1 /*method*/, 0 /*strict match*/,
+                                        &arg2 /*the object*/, NULL,
+                                        &valp, NULL, &static_memfuncp);
 
 
 	      argvec[1] = arg2;	/* the ``this'' pointer */
@@ -1182,16 +1279,17 @@ evaluate_subexp_standard (struct type *expect_type,
 	    /* Non-C++ case -- or no overload resolution */
 	    {
 	      struct value *temp = arg2;
-	      argvec[0] = value_struct_elt (&temp, argvec + 1, tstr,
-					    &static_memfuncp,
-					    op == STRUCTOP_STRUCT
-				       ? "structure" : "structure pointer");
+	      argvec[0] = value_struct_elt(&temp, (argvec + 1), tstr,
+                                           &static_memfuncp,
+                                           ((op == STRUCTOP_STRUCT)
+                                            ? "structure"
+                                            : "structure pointer"));
 	      /* value_struct_elt updates temp with the correct value
-	 	 of the ``this'' pointer if necessary, so modify argvec[1] to
-		 reflect any ``this'' changes.  */
-	      arg2 = value_from_longest (lookup_pointer_type(value_type (temp)),
-					 VALUE_ADDRESS (temp) + value_offset (temp)
-					 + value_embedded_offset (temp));
+               * of the ``this'' pointer if necessary, so modify argvec[1]
+               * to reflect any ``this'' changes: */
+	      arg2 = value_from_longest(lookup_pointer_type(value_type(temp)),
+                                        (VALUE_ADDRESS(temp) + value_offset(temp)
+					 + value_embedded_offset(temp)));
 	      argvec[1] = arg2;	/* the ``this'' pointer */
 	    }
 
@@ -1202,7 +1300,7 @@ evaluate_subexp_standard (struct type *expect_type,
 	      argvec++;
 	    }
 	}
-      else if (op == STRUCTOP_MEMBER || op == STRUCTOP_MPTR)
+      else if ((op == STRUCTOP_MEMBER) || (op == STRUCTOP_MPTR))
 	{
 	  argvec[1] = arg2;
 	  argvec[0] = arg1;
@@ -1210,187 +1308,217 @@ evaluate_subexp_standard (struct type *expect_type,
       else if (op == OP_VAR_VALUE)
 	{
 	  /* Non-member function being called */
-          /* fn: This can only be done for C++ functions.  A C-style function
-             in a C++ program, for instance, does not have the fields that 
-             are expected here */
+          /* fn: This can only be done for C++ functions.  A C-style
+           * function in a C++ program, for instance, does not have the
+           * fields that are expected here. */
 
 	  /* APPLE LOCAL ObjC++ */
-	  if (overload_resolution && (exp->language_defn->la_language == language_cplus
-				      || exp->language_defn->la_language == language_objcplus))
+	  if (overload_resolution
+              && ((exp->language_defn->la_language == language_cplus)
+                  || (exp->language_defn->la_language == language_objcplus)))
 	    {
-	      /* Language is C++, do some overload resolution before evaluation */
+	      /* Language is C++, do some overload resolution before
+               * evaluation: */
 	      struct symbol *symp;
 
-	      /* Prepare list of argument types for overload resolution */
-	      arg_types = (struct type **) alloca (nargs * (sizeof (struct type *)));
-	      for (ix = 1; ix <= nargs; ix++)
-		arg_types[ix - 1] = value_type (argvec[ix]);
+	      /* Prepare list of argument types for overload resolution: */
+	      arg_types = (struct type **)alloca(nargs * (sizeof(struct type *)));
+              if (nargs >= 1) {
+                for (ix = 1; ix < (nargs + 1); ix++) {
+                  arg_types[ix - 1] = value_type(argvec[ix]);
+                  if (ix == INFINITY) {
+                    break; /* silence '-Wunsafe-loop-optimizations' */
+                  }
+                }
+              } else {
+                warning(_("it makes no sense to assign types to arguments"
+                          "when there are no arguments to begin with."));
+              }
 
-	      (void) find_overload_match (arg_types, nargs, NULL /* no need for name */ ,
-				 0 /* not method */ , 0 /* strict match */ ,
-		      NULL, exp->elts[save_pos1+2].symbol /* the function */ ,
-					  NULL, &symp, NULL);
+	      (void)find_overload_match(arg_types, nargs,
+                                        NULL /*no need for name*/,
+                                        0 /*not method*/,
+                                        0 /*strict match*/, NULL,
+                                        exp->elts[save_pos1 + 2].symbol /*the func*/,
+                                        NULL, &symp, NULL);
 
-	      /* Now fix the expression being evaluated */
+	      /* Now fix the expression being evaluated: */
 	      exp->elts[save_pos1+2].symbol = symp;
-	      argvec[0] = evaluate_subexp_with_coercion (exp, &save_pos1, noside);
+	      argvec[0] = evaluate_subexp_with_coercion(exp, &save_pos1,
+                                                        noside);
 	    }
 	  else
 	    {
-	      /* Not C++, or no overload resolution allowed */
-	      /* nothing to be done; argvec already correctly set up */
+	      /* Not C++, or no overload resolution allowed. */
+	      ; /* nothing to be done; argvec already correctly set up. */
 	    }
 	}
       else
 	{
-	  /* It is probably a C-style function */
-	  /* nothing to be done; argvec already correctly set up */
+	  /* It is probably a C-style function. */
+	  ; /* nothing to be done; argvec already correctly set up. */
 	}
 
     do_call_it:
-
-      if (noside == EVAL_SKIP)
+      if (noside == EVAL_SKIP) {
 	goto nosideret;
-      if (argvec[0] == NULL)
-	error (_("Cannot evaluate function -- may be inlined"));
+      }
+      if (argvec[0] == NULL) {
+	error(_("Cannot evaluate function -- may be inlined"));
+      }
       if (noside == EVAL_AVOID_SIDE_EFFECTS)
 	{
-	  /* If the return type doesn't look like a function type, call an
-	     error.  This can happen if somebody tries to turn a variable into
-	     a function call. This is here because people often want to
-	     call, eg, strcmp, which gdb doesn't know is a function.  If
-	     gdb isn't asked for it's opinion (ie. through "whatis"),
-	     it won't offer it. */
-
-	  struct type *type = value_type (argvec[0]);
-	  type = TYPE_TARGET_TYPE (type);
+          /* If the return type does NOT look like a function type, call an
+           * error.  This can happen if somebody tries to turn a variable
+           * into a function call. This is here because people often want
+           * to call, e.g., strcmp, which gdb does NOT know is a function.
+           * If gdb is NOT asked for its opinion (ie. through "whatis"),
+           * it will NOT offer it. */
+	  struct type *type = value_type(argvec[0]);
+	  type = TYPE_TARGET_TYPE(type);
 
 	  if (type)
 	    {
-	      if ((TYPE_CODE (type) == TYPE_CODE_ERROR) && expect_type)
-		return allocate_value (expect_type);
-	      else
-		return allocate_value (type);
+	      if ((TYPE_CODE(type) == TYPE_CODE_ERROR) && expect_type) {
+		return allocate_value(expect_type);
+	      } else {
+		return allocate_value(type);
+              }
 	    }
 	  else
-	    error (_("Expression of type other than \"Function returning ...\" used as function"));
+	    error(_("Expression of type other than \"Function returning ...\" used as function"));
 	}
-      if (argvec[0] == NULL)
-	error ("Cannot evaluate function -- may be inlined");
-      return call_function_by_hand_expecting_type (argvec[0], expect_type, nargs, argvec + 1, 1);
-      /* pai: FIXME save value from call_function_by_hand, then adjust pc by adjust_fn_pc if +ve  */
-
+      if (argvec[0] == NULL) {
+	error("Cannot evaluate function -- may be inlined");
+      }
+      return call_function_by_hand_expecting_type(argvec[0], expect_type,
+                                                  nargs, (argvec + 1), 1);
+      /* pai: FIXME save value from call_function_by_hand, then adjust pc
+       * by adjust_fn_pc if +ve  */
+    } /* end brackets for case OP_FUNCALL */
     case OP_F77_UNDETERMINED_ARGLIST:
-
-      /* Remember that in F77, functions, substring ops and 
-         array subscript operations cannot be disambiguated 
-         at parse time.  We have made all array subscript operations, 
-         substring operations as well as function calls  come here 
-         and we now have to discover what the heck this thing actually was.  
+    {
+      /* Remember that in F77, functions, substring ops and
+         array subscript operations cannot be disambiguated
+         at parse time.  We have made all array subscript operations,
+         substring operations as well as function calls  come here
+         and we now have to discover what the heck this thing actually was.
          If it is a function, we process just as if we got an OP_FUNCALL. */
-
-      nargs = longest_to_int (exp->elts[pc + 1].longconst);
+      nargs = longest_to_int(exp->elts[pc + 1].longconst);
       (*pos) += 2;
 
-      /* First determine the type code we are dealing with.  */
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      type = check_typedef (value_type (arg1));
-      code = TYPE_CODE (type);
+      /* First determine the type code we are dealing with: */
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      type = check_typedef(value_type(arg1));
+      code = TYPE_CODE(type);
 
       if (code == TYPE_CODE_PTR)
 	{
 	  /* Fortran always passes variable to subroutines as pointer.
 	     So we need to look into its target type to see if it is
 	     array, string or function.  If it is, we need to switch
-	     to the target value the original one points to.  */ 
-	  struct type *target_type = check_typedef (TYPE_TARGET_TYPE (type));
+	     to the target value the original one points to.  */
+	  struct type *target_type = check_typedef(TYPE_TARGET_TYPE(type));
 
-	  if (TYPE_CODE (target_type) == TYPE_CODE_ARRAY
-	      || TYPE_CODE (target_type) == TYPE_CODE_STRING
-	      || TYPE_CODE (target_type) == TYPE_CODE_FUNC)
+	  if (TYPE_CODE(target_type) == TYPE_CODE_ARRAY
+	      || TYPE_CODE(target_type) == TYPE_CODE_STRING
+	      || TYPE_CODE(target_type) == TYPE_CODE_FUNC)
 	    {
-	      arg1 = value_ind (arg1);
-	      type = check_typedef (value_type (arg1));
-	      code = TYPE_CODE (type);
+	      arg1 = value_ind(arg1);
+	      type = check_typedef(value_type(arg1));
+	      code = TYPE_CODE(type);
 	    }
-	} 
+	}
 
       switch (code)
 	{
 	case TYPE_CODE_ARRAY:
 	  goto multi_f77_subscript;
-
 	case TYPE_CODE_STRING:
 	  goto op_f77_substr;
-
 	case TYPE_CODE_PTR:
 	case TYPE_CODE_FUNC:
-	  /* It's a function call. */
+        {
+          int jk;
+	  /* It is a function call. */
 	  /* Allocate arg vector, including space for the function to be
-	     called in argvec[0] and a terminating NULL */
-	  argvec = (struct value **) alloca (sizeof (struct value *) * (nargs + 2));
+	   * called in argvec[0] and a terminating NULL: */
+	  argvec = (struct value **)alloca(sizeof(struct value *) * (nargs + 2));
 	  argvec[0] = arg1;
 	  tem = 1;
-	  for (; tem <= nargs; tem++)
-	    argvec[tem] = evaluate_subexp_with_coercion (exp, pos, noside);
+          if (nargs >= 1) {
+            for (jk = 0; tem <= nargs; tem++) {
+              argvec[tem] = evaluate_subexp_with_coercion(exp, pos,
+                                                          noside);
+              if (jk == 0) {
+                jk++;
+              }
+              if (tem == INFINITY) {
+                break; /* silence '-Wunsafe-loop-optimizations' */
+              }
+            }
+          } else {
+            warning(_("No args for argvec"));
+          }
 	  argvec[tem] = 0;	/* signal end of arglist */
 	  goto do_call_it;
-
+        }
 	default:
-	  error (_("Cannot perform substring on this type"));
+	  error(_("Cannot perform substring on this type"));
 	}
 
     op_f77_substr:
-      /* We have a substring operation on our hands here, 
-         let us get the string we will be dealing with */
+      /* We have a substring operation on our hands here, so let us get
+       * the string with which we will be dealing. */
 
-      /* Now evaluate the 'from' and 'to' */
+      /* Now evaluate the 'from' and 'to': */
+      arg2 = evaluate_subexp_with_coercion(exp, pos, noside);
 
-      arg2 = evaluate_subexp_with_coercion (exp, pos, noside);
+      if (nargs < 2) {
+	return value_subscript(arg1, arg2);
+      }
 
-      if (nargs < 2)
-	return value_subscript (arg1, arg2);
+      arg3 = evaluate_subexp_with_coercion(exp, pos, noside);
 
-      arg3 = evaluate_subexp_with_coercion (exp, pos, noside);
-
-      if (noside == EVAL_SKIP)
+      if (noside == EVAL_SKIP) {
 	goto nosideret;
+      }
 
-      tem2 = value_as_long (arg2);
-      tem3 = value_as_long (arg3);
+      tem2 = (int)value_as_long(arg2);
+      tem3 = (int)value_as_long(arg3);
 
-      return value_slice (arg1, tem2, tem3 - tem2 + 1);
-
+      return value_slice(arg1, tem2, ((tem3 - tem2) + 1));
+    } /* end brackets for case OP_F77_UNDETERMINED_ARGLIST */
     case OP_COMPLEX:
-      /* We have a complex number, There should be 2 floating 
-         point numbers that compose it */
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      /* We have a complex number; there should be 2 floating point numbers
+       * that compose it: */
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
 
-      return value_literal_complex (arg1, arg2, builtin_type_f_complex_s16);
+      return value_literal_complex(arg1, arg2, builtin_type_f_complex_s16);
 
     case STRUCTOP_STRUCT:
-      tem = longest_to_int (exp->elts[pc + 1].longconst);
-      (*pos) += 3 + BYTES_TO_EXP_ELEM (tem + 1);
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      tem = longest_to_int(exp->elts[pc + 1].longconst);
+      (*pos) += (3 + BYTES_TO_EXP_ELEM(tem + 1));
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
       if (noside == EVAL_AVOID_SIDE_EFFECTS)
-	return value_zero (lookup_struct_elt_type (value_type (arg1),
-						   &exp->elts[pc + 2].string,
-						   0),
-			   lval_memory);
+	return value_zero(lookup_struct_elt_type(value_type(arg1),
+                                                 &exp->elts[pc + 2].string,
+                                                 0),
+			  lval_memory);
       else
 	{
 	  struct value *temp = arg1;
-	  return value_struct_elt (&temp, NULL, &exp->elts[pc + 2].string,
-				   NULL, "structure");
+	  return value_struct_elt(&temp, NULL, &exp->elts[pc + 2].string,
+				  NULL, "structure");
 	}
 
     case STRUCTOP_PTR:
-      tem = longest_to_int (exp->elts[pc + 1].longconst);
-      (*pos) += 3 + BYTES_TO_EXP_ELEM (tem + 1);
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      tem = longest_to_int(exp->elts[pc + 1].longconst);
+      (*pos) += (3 + BYTES_TO_EXP_ELEM(tem + 1));
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
 
@@ -1398,68 +1526,68 @@ evaluate_subexp_standard (struct type *expect_type,
 	 with rtti type in order to continue on with successful
 	 lookup of member / method only available in the rtti type. */
       {
-        struct type *type = value_type (arg1);
+        struct type *type = value_type(arg1);
         struct type *real_type = NULL;
         int full, top, using_enc;
-        
+
         if (objectprint && TYPE_TARGET_TYPE(type) &&
-            (TYPE_CODE (TYPE_TARGET_TYPE (type)) == TYPE_CODE_CLASS))
+            (TYPE_CODE(TYPE_TARGET_TYPE(type)) == TYPE_CODE_CLASS))
           {
-            real_type = value_rtti_target_type (arg1, &full, &top, &using_enc);
+            real_type = value_rtti_target_type(arg1, &full, &top, &using_enc);
             if (real_type)
               {
-                if (TYPE_CODE (type) == TYPE_CODE_PTR)
-                  real_type = lookup_pointer_type (real_type);
+                if (TYPE_CODE(type) == TYPE_CODE_PTR)
+                  real_type = lookup_pointer_type(real_type);
                 else
-                  real_type = lookup_reference_type (real_type);
+                  real_type = lookup_reference_type(real_type);
 
-                arg1 = value_cast (real_type, arg1);
+                arg1 = value_cast(real_type, arg1);
               }
           }
 	if (!real_type && print_closure)
 	  {
-	    real_type = get_closure_dynamic_type (arg1);
+	    real_type = get_closure_dynamic_type(arg1);
 	    if (real_type)
-	      arg1 = value_cast (real_type, arg1);
+	      arg1 = value_cast(real_type, arg1);
 	  }
       }
 
       if (noside == EVAL_AVOID_SIDE_EFFECTS)
-	return value_zero (lookup_struct_elt_type (value_type (arg1),
-						   &exp->elts[pc + 2].string,
-						   0),
-			   lval_memory);
+	return value_zero(lookup_struct_elt_type(value_type(arg1),
+                                                 &exp->elts[pc + 2].string,
+                                                 0),
+			  lval_memory);
       else
 	{
 	  struct value *temp = arg1;
-	  return value_struct_elt (&temp, NULL, &exp->elts[pc + 2].string,
-				   NULL, "structure pointer");
+	  return value_struct_elt(&temp, NULL, &exp->elts[pc + 2].string,
+				  NULL, "structure pointer");
 	}
 
     case STRUCTOP_MEMBER:
-      arg1 = evaluate_subexp_for_address (exp, pos, noside);
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      arg1 = evaluate_subexp_for_address(exp, pos, noside);
+      arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
 
       /* With HP aCC, pointers to methods do not point to the function code */
       if (deprecated_hp_som_som_object_present &&
-	  (TYPE_CODE (value_type (arg2)) == TYPE_CODE_PTR) &&
-      (TYPE_CODE (TYPE_TARGET_TYPE (value_type (arg2))) == TYPE_CODE_METHOD))
-	error (_("Pointers to methods not supported with HP aCC"));	/* 1997-08-19 */
+	  (TYPE_CODE(value_type(arg2)) == TYPE_CODE_PTR) &&
+      (TYPE_CODE(TYPE_TARGET_TYPE(value_type(arg2))) == TYPE_CODE_METHOD))
+	error(_("Pointers to methods not supported with HP aCC")); /* 1997-08-19 */
 
-      mem_offset = value_as_long (arg2);
+      mem_offset = (long)value_as_long(arg2);
       goto handle_pointer_to_member;
 
     case STRUCTOP_MPTR:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
 
       /* With HP aCC, pointers to methods do not point to the function code */
       if (deprecated_hp_som_som_object_present &&
-	  (TYPE_CODE (value_type (arg2)) == TYPE_CODE_PTR) &&
-      (TYPE_CODE (TYPE_TARGET_TYPE (value_type (arg2))) == TYPE_CODE_METHOD))
-	error (_("Pointers to methods not supported with HP aCC"));	/* 1997-08-19 */
+	  (TYPE_CODE(value_type(arg2)) == TYPE_CODE_PTR) &&
+      (TYPE_CODE(TYPE_TARGET_TYPE(value_type(arg2))) == TYPE_CODE_METHOD))
+	error(_("Pointers to methods not supported with HP aCC")); /* 1997-08-19 */
 
-      mem_offset = value_as_long (arg2);
+      mem_offset = (long)value_as_long(arg2);
 
     handle_pointer_to_member:
       /* HP aCC generates offsets that have bit #29 set; turn it off to get
@@ -1467,105 +1595,106 @@ evaluate_subexp_standard (struct type *expect_type,
       if (deprecated_hp_som_som_object_present)
 	{
 	  if (!mem_offset)	/* no bias -> really null */
-	    error (_("Attempted dereference of null pointer-to-member"));
+	    error(_("Attempted dereference of null pointer-to-member"));
 	  mem_offset &= ~0x20000000;
 	}
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      type = check_typedef (value_type (arg2));
-      if (TYPE_CODE (type) != TYPE_CODE_PTR)
+      type = check_typedef(value_type(arg2));
+      if (TYPE_CODE(type) != TYPE_CODE_PTR)
 	goto bad_pointer_to_member;
-      type = check_typedef (TYPE_TARGET_TYPE (type));
-      if (TYPE_CODE (type) == TYPE_CODE_METHOD)
-	error (_("not implemented: pointer-to-method in pointer-to-member construct"));
-      if (TYPE_CODE (type) != TYPE_CODE_MEMBER)
+      type = check_typedef(TYPE_TARGET_TYPE(type));
+      if (TYPE_CODE(type) == TYPE_CODE_METHOD)
+	error(_("not implemented: pointer-to-method in pointer-to-member construct"));
+      if (TYPE_CODE(type) != TYPE_CODE_MEMBER)
 	goto bad_pointer_to_member;
-      /* Now, convert these values to an address.  */
-      arg1 = value_cast (lookup_pointer_type (TYPE_DOMAIN_TYPE (type)),
-			 arg1);
-      arg3 = value_from_pointer (lookup_pointer_type (TYPE_TARGET_TYPE (type)),
-				 value_as_long (arg1) + mem_offset);
-      return value_ind (arg3);
+      /* Now, convert these values to an address: */
+      arg1 = value_cast(lookup_pointer_type(TYPE_DOMAIN_TYPE(type)),
+                        arg1);
+      arg3 = value_from_pointer(lookup_pointer_type(TYPE_TARGET_TYPE(type)),
+                                value_as_long(arg1) + mem_offset);
+      return value_ind(arg3);
     bad_pointer_to_member:
-      error (_("non-pointer-to-member value used in pointer-to-member construct"));
+      error(_("non-pointer-to-member value used in pointer-to-member construct"));
 
     case BINOP_CONCAT:
-      arg1 = evaluate_subexp_with_coercion (exp, pos, noside);
-      arg2 = evaluate_subexp_with_coercion (exp, pos, noside);
+      arg1 = evaluate_subexp_with_coercion(exp, pos, noside);
+      arg2 = evaluate_subexp_with_coercion(exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (binop_user_defined_p (op, arg1, arg2))
-	return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+      if (binop_user_defined_p(op, arg1, arg2))
+	return value_x_binop(arg1, arg2, op, OP_NULL, noside);
       else
-	return value_concat (arg1, arg2);
+	return value_concat(arg1, arg2);
 
     case BINOP_ASSIGN:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (value_type (arg1), exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      arg2 = evaluate_subexp(value_type(arg1), exp, pos, noside);
 
-      /* Do special stuff for HP aCC pointers to members */
+      /* Do special stuff for HP aCC pointers to members: */
       if (deprecated_hp_som_som_object_present)
 	{
-	  /* 1997-08-19 Can't assign HP aCC pointers to methods. No details of
-	     the implementation yet; but the pointer appears to point to a code
-	     sequence (thunk) in memory -- in any case it is *not* the address
-	     of the function as it would be in a naive implementation. */
-	  if ((TYPE_CODE (value_type (arg1)) == TYPE_CODE_PTR) &&
-	      (TYPE_CODE (TYPE_TARGET_TYPE (value_type (arg1))) == TYPE_CODE_METHOD))
-	    error (_("Assignment to pointers to methods not implemented with HP aCC"));
+          /* 1997-08-19: Cannot assign HP aCC pointers to methods.
+           * No details of the implementation yet; but the pointer appears
+           * to point to a code sequence (thunk) in memory -- in any case
+           * it is *not* the address of the function as it would be in a
+           * naive implementation. */
+	  if ((TYPE_CODE(value_type(arg1)) == TYPE_CODE_PTR) &&
+	      (TYPE_CODE(TYPE_TARGET_TYPE(value_type(arg1))) == TYPE_CODE_METHOD))
+	    error(_("Assignment to pointers to methods not implemented with HP aCC"));
 
-	  /* HP aCC pointers to data members require a constant bias */
-	  if ((TYPE_CODE (value_type (arg1)) == TYPE_CODE_PTR) &&
-	      (TYPE_CODE (TYPE_TARGET_TYPE (value_type (arg1))) == TYPE_CODE_MEMBER))
+	  /* HP aCC pointers to data members require a constant bias: */
+	  if ((TYPE_CODE(value_type(arg1)) == TYPE_CODE_PTR) &&
+	      (TYPE_CODE(TYPE_TARGET_TYPE(value_type(arg1))) == TYPE_CODE_MEMBER))
 	    {
-	      unsigned int *ptr = (unsigned int *) value_contents (arg2);	/* forces evaluation */
-	      *ptr |= 0x20000000;	/* set 29th bit */
+	      unsigned int *ptr = (unsigned int *)value_contents(arg2); /* forces evaluation */
+	      *ptr |= 0x20000000;    /* set 29th bit */
 	    }
 	}
 
-      if (noside == EVAL_SKIP || noside == EVAL_AVOID_SIDE_EFFECTS)
+      if ((noside == EVAL_SKIP) || (noside == EVAL_AVOID_SIDE_EFFECTS))
 	return arg1;
-      if (binop_user_defined_p (op, arg1, arg2))
-	return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+      if (binop_user_defined_p(op, arg1, arg2))
+	return value_x_binop(arg1, arg2, op, OP_NULL, noside);
       else
-	return value_assign (arg1, arg2);
+	return value_assign(arg1, arg2);
 
     case BINOP_ASSIGN_MODIFY:
       (*pos) += 2;
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (value_type (arg1), exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      arg2 = evaluate_subexp(value_type(arg1), exp, pos, noside);
       if (noside == EVAL_SKIP || noside == EVAL_AVOID_SIDE_EFFECTS)
 	return arg1;
       op = exp->elts[pc + 1].opcode;
-      if (binop_user_defined_p (op, arg1, arg2))
-	return value_x_binop (arg1, arg2, BINOP_ASSIGN_MODIFY, op, noside);
+      if (binop_user_defined_p(op, arg1, arg2))
+	return value_x_binop(arg1, arg2, BINOP_ASSIGN_MODIFY, op, noside);
       else if (op == BINOP_ADD)
-	arg2 = value_add (arg1, arg2);
+	arg2 = value_add(arg1, arg2);
       else if (op == BINOP_SUB)
-	arg2 = value_sub (arg1, arg2);
+	arg2 = value_sub(arg1, arg2);
       else
-	arg2 = value_binop (arg1, arg2, op);
-      return value_assign (arg1, arg2);
+	arg2 = value_binop(arg1, arg2, op);
+      return value_assign(arg1, arg2);
 
     case BINOP_ADD:
-      arg1 = evaluate_subexp_with_coercion (exp, pos, noside);
-      arg2 = evaluate_subexp_with_coercion (exp, pos, noside);
+      arg1 = evaluate_subexp_with_coercion(exp, pos, noside);
+      arg2 = evaluate_subexp_with_coercion(exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (binop_user_defined_p (op, arg1, arg2))
-	return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+      if (binop_user_defined_p(op, arg1, arg2))
+	return value_x_binop(arg1, arg2, op, OP_NULL, noside);
       else
-	return value_add (arg1, arg2);
+	return value_add(arg1, arg2);
 
     case BINOP_SUB:
-      arg1 = evaluate_subexp_with_coercion (exp, pos, noside);
-      arg2 = evaluate_subexp_with_coercion (exp, pos, noside);
+      arg1 = evaluate_subexp_with_coercion(exp, pos, noside);
+      arg2 = evaluate_subexp_with_coercion(exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (binop_user_defined_p (op, arg1, arg2))
-	return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+      if (binop_user_defined_p(op, arg1, arg2))
+	return value_x_binop(arg1, arg2, op, OP_NULL, noside);
       else
-	return value_sub (arg1, arg2);
+	return value_sub(arg1, arg2);
 
     case BINOP_EXP:
     case BINOP_MUL:
@@ -1577,71 +1706,73 @@ evaluate_subexp_standard (struct type *expect_type,
     case BINOP_BITWISE_AND:
     case BINOP_BITWISE_IOR:
     case BINOP_BITWISE_XOR:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (binop_user_defined_p (op, arg1, arg2))
-	return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+      if (binop_user_defined_p(op, arg1, arg2))
+	return value_x_binop(arg1, arg2, op, OP_NULL, noside);
       else if (noside == EVAL_AVOID_SIDE_EFFECTS
 	       && (op == BINOP_DIV || op == BINOP_REM || op == BINOP_MOD))
-	return value_zero (value_type (arg1), not_lval);
+	return value_zero(value_type(arg1), not_lval);
       else
-	return value_binop (arg1, arg2, op);
+	return value_binop(arg1, arg2, op);
 
     case BINOP_RANGE:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      error (_("':' operator used in invalid context"));
+      error(_("':' operator used in invalid context"));
 
     case BINOP_SUBSCRIPT:
-      arg1 = evaluate_subexp_with_coercion (exp, pos, noside);
-      arg2 = evaluate_subexp_with_coercion (exp, pos, noside);
+      arg1 = evaluate_subexp_with_coercion(exp, pos, noside);
+      arg2 = evaluate_subexp_with_coercion(exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (binop_user_defined_p (op, arg1, arg2))
-	return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+      if (binop_user_defined_p(op, arg1, arg2))
+	return value_x_binop(arg1, arg2, op, OP_NULL, noside);
       else
 	{
 	  /* If the user attempts to subscript something that is not an
 	     array or pointer type (like a plain int variable for example),
 	     then report this as an error. */
 
-	  arg1 = coerce_ref (arg1);
-	  type = check_typedef (value_type (arg1));
-	  if (TYPE_CODE (type) != TYPE_CODE_ARRAY
-	      && TYPE_CODE (type) != TYPE_CODE_PTR)
+	  arg1 = coerce_ref(arg1);
+	  type = check_typedef(value_type(arg1));
+	  if ((TYPE_CODE(type) != TYPE_CODE_ARRAY)
+	      && (TYPE_CODE(type) != TYPE_CODE_PTR))
 	    {
-	      if (TYPE_NAME (type))
-		error (_("cannot subscript something of type `%s'"),
-		       TYPE_NAME (type));
+	      if (TYPE_NAME(type))
+		error(_("cannot subscript something of type `%s'"),
+		      TYPE_NAME(type));
 	      else
-		error (_("cannot subscript requested type"));
+		error(_("cannot subscript requested type"));
 	    }
 
 	  if (noside == EVAL_AVOID_SIDE_EFFECTS)
-	    return value_zero (TYPE_TARGET_TYPE (type), VALUE_LVAL (arg1));
+	    return value_zero(TYPE_TARGET_TYPE(type), VALUE_LVAL(arg1));
 	  else
-	    return value_subscript (arg1, arg2);
+	    return value_subscript(arg1, arg2);
 	}
 
     case BINOP_IN:
-      arg1 = evaluate_subexp_with_coercion (exp, pos, noside);
-      arg2 = evaluate_subexp_with_coercion (exp, pos, noside);
-      if (noside == EVAL_SKIP)
+    {
+      arg1 = evaluate_subexp_with_coercion(exp, pos, noside);
+      arg2 = evaluate_subexp_with_coercion(exp, pos, noside);
+      if (noside == EVAL_SKIP) {
 	goto nosideret;
-      return value_in (arg1, arg2);
-
+      }
+      return value_in(arg1, arg2);
+    }
     case MULTI_SUBSCRIPT:
       (*pos) += 2;
-      nargs = longest_to_int (exp->elts[pc + 1].longconst);
-      arg1 = evaluate_subexp_with_coercion (exp, pos, noside);
+      nargs = longest_to_int(exp->elts[pc + 1].longconst);
+      arg1 = evaluate_subexp_with_coercion(exp, pos, noside);
       while (nargs-- > 0)
 	{
-	  arg2 = evaluate_subexp_with_coercion (exp, pos, noside);
-	  /* FIXME:  EVAL_SKIP handling may not be correct. */
+	  arg2 = evaluate_subexp_with_coercion(exp, pos, noside);
+	  /* FIXME:  EVAL_SKIP handling may not be correct: */
 	  if (noside == EVAL_SKIP)
 	    {
 	      if (nargs > 0)
@@ -1653,34 +1784,33 @@ evaluate_subexp_standard (struct type *expect_type,
 		  goto nosideret;
 		}
 	    }
-	  /* FIXME:  EVAL_AVOID_SIDE_EFFECTS handling may not be correct. */
+	  /* FIXME: EVAL_AVOID_SIDE_EFFECTS handling may not be correct: */
 	  if (noside == EVAL_AVOID_SIDE_EFFECTS)
 	    {
-	      /* If the user attempts to subscript something that has no target
-	         type (like a plain int variable for example), then report this
-	         as an error. */
-
-	      type = TYPE_TARGET_TYPE (check_typedef (value_type (arg1)));
+              /* If the user attempts to subscript something that has no
+               * target type (like a plain int variable, for example),
+               * then report this as an error: */
+	      type = TYPE_TARGET_TYPE(check_typedef(value_type(arg1)));
 	      if (type != NULL)
 		{
-		  arg1 = value_zero (type, VALUE_LVAL (arg1));
+		  arg1 = value_zero(type, VALUE_LVAL(arg1));
 		  noside = EVAL_SKIP;
 		  continue;
 		}
 	      else
 		{
-		  error (_("cannot subscript something of type `%s'"),
-			 TYPE_NAME (value_type (arg1)));
+		  error(_("cannot subscript something of type `%s'"),
+                        TYPE_NAME(value_type(arg1)));
 		}
 	    }
 
-	  if (binop_user_defined_p (op, arg1, arg2))
+	  if (binop_user_defined_p(op, arg1, arg2))
 	    {
-	      arg1 = value_x_binop (arg1, arg2, op, OP_NULL, noside);
+	      arg1 = value_x_binop(arg1, arg2, op, OP_NULL, noside);
 	    }
 	  else
 	    {
-	      arg1 = value_subscript (arg1, arg2);
+	      arg1 = value_subscript(arg1, arg2);
 	    }
 	}
       return (arg1);
@@ -1691,285 +1821,286 @@ evaluate_subexp_standard (struct type *expect_type,
 	int array_size_array[MAX_FORTRAN_DIMS];
 	int ndimensions = 1, i;
 	struct type *tmp_type;
-	int offset_item;	/* The array offset where the item lives */
+	int offset_item;    /* The array offset where the item lives */
 
-	if (nargs > MAX_FORTRAN_DIMS)
-	  error (_("Too many subscripts for F77 (%d Max)"), MAX_FORTRAN_DIMS);
+	if (nargs > MAX_FORTRAN_DIMS) {
+	  error(_("Too many subscripts for F77 (%d Max)"),
+                MAX_FORTRAN_DIMS);
+        }
 
-	tmp_type = check_typedef (value_type (arg1));
-	ndimensions = calc_f77_array_dims (type);
+	tmp_type = check_typedef(value_type(arg1));
+	ndimensions = calc_f77_array_dims(type);
 
-	if (nargs != ndimensions)
-	  error (_("Wrong number of subscripts"));
+	if (nargs != ndimensions) {
+	  error(_("Wrong number of subscripts"));
+        }
 
-	/* Now that we know we have a legal array subscript expression 
-	   let us actually find out where this element exists in the array. */
-
+        /* Now that we know we have a legal array subscript expression,
+         * let us actually find out where this element exists in the
+         * array: */
 	offset_item = 0;
-	/* Take array indices left to right */
+	/* Take array indices left to right: */
 	for (i = 0; i < nargs; i++)
 	  {
-	    /* Evaluate each subscript, It must be a legal integer in F77 */
-	    arg2 = evaluate_subexp_with_coercion (exp, pos, noside);
+            /* Evaluate each subscript; each one must be a legal integer
+             * in F77: */
+	    arg2 = evaluate_subexp_with_coercion(exp, pos, noside);
 
-	    /* Fill in the subscript and array size arrays */
-
-	    subscript_array[i] = value_as_long (arg2);
+	    /* Fill in the subscript and array size arrays: */
+	    subscript_array[i] = (int)value_as_long(arg2);
 	  }
 
-	/* Internal type of array is arranged right to left */
+	/* Internal type of array is arranged right to left: */
 	for (i = 0; i < nargs; i++)
 	  {
-	    retcode = f77_get_dynamic_upperbound (tmp_type, &upper);
-	    if (retcode == BOUND_FETCH_ERROR)
-	      error (_("Cannot obtain dynamic upper bound"));
+	    retcode = f77_get_dynamic_upperbound(tmp_type, &upper);
+	    if (retcode == BOUND_FETCH_ERROR) {
+	      error(_("Cannot obtain dynamic upper bound"));
+            }
 
-	    retcode = f77_get_dynamic_lowerbound (tmp_type, &lower);
-	    if (retcode == BOUND_FETCH_ERROR)
-	      error (_("Cannot obtain dynamic lower bound"));
+	    retcode = f77_get_dynamic_lowerbound(tmp_type, &lower);
+	    if (retcode == BOUND_FETCH_ERROR) {
+	      error(_("Cannot obtain dynamic lower bound"));
+            }
 
-	    array_size_array[nargs - i - 1] = upper - lower + 1;
+	    array_size_array[nargs - i - 1] = (upper - lower + 1);
 
-	    /* Zero-normalize subscripts so that offsetting will work. */
-
+	    /* Zero-normalize subscripts so that offsetting will work: */
 	    subscript_array[nargs - i - 1] -= lower;
 
-	    /* If we are at the bottom of a multidimensional 
-	       array type then keep a ptr to the last ARRAY
-	       type around for use when calling value_subscript()
-	       below. This is done because we pretend to value_subscript
-	       that we actually have a one-dimensional array 
-	       of base element type that we apply a simple 
-	       offset to. */
-
-	    if (i < nargs - 1)
-	      tmp_type = check_typedef (TYPE_TARGET_TYPE (tmp_type));
+            /* If we are at the bottom of a multidimensional array type,
+             * then keep a ptr to the last ARRAY type around for use when
+             * calling value_subscript() below.  This is done because we
+             * pretend to value_subscript that we actually have a
+             * one-dimensional array of base element type to which we apply
+             * a simple offset: */
+            if (i < (nargs - 1)) {
+	      tmp_type = check_typedef(TYPE_TARGET_TYPE(tmp_type));
+            }
 	  }
 
-	/* Now let us calculate the offset for this item */
-
+	/* Now let us calculate the offset for this item: */
 	offset_item = subscript_array[ndimensions - 1];
 
-	for (i = ndimensions - 1; i > 0; --i)
-	  offset_item =
-	    array_size_array[i - 1] * offset_item + subscript_array[i - 1];
+        /* ">= 1" should be the same as "> 0": */
+	for (i = (ndimensions - 1); i >= 1; --i) {
+	  offset_item = ((array_size_array[i - 1] * offset_item)
+                         + subscript_array[i - 1]);
+        }
 
-	/* Construct a value node with the value of the offset */
-
+	/* Construct a value node with the value of the offset: */
 	arg2 = value_from_longest (builtin_type_f_integer, offset_item);
 
-	/* Let us now play a dirty trick: we will take arg1 
-	   which is a value node pointing to the topmost level
-	   of the multidimensional array-set and pretend
-	   that it is actually a array of the final element 
-	   type, this will ensure that value_subscript()
-	   returns the correct type value */
-
-	deprecated_set_value_type (arg1, tmp_type);
-	return value_ind (value_add (value_coerce_array (arg1), arg2));
+        /* Let us now play a dirty trick: we will take arg1, which is a
+         * value node pointing to the topmost level of the multidimensional
+         * array-set, and pretend that it is actually a array of the final
+         * element type; this will ensure that value_subscript() returns
+         * the correct type value: */
+	deprecated_set_value_type(arg1, tmp_type);
+	return value_ind(value_add(value_coerce_array(arg1), arg2));
       }
 
     case BINOP_LOGICAL_AND:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	{
-	  arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+	  arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
 	  goto nosideret;
 	}
 
       oldpos = *pos;
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, EVAL_AVOID_SIDE_EFFECTS);
+      arg2 = evaluate_subexp(NULL_TYPE, exp, pos, EVAL_AVOID_SIDE_EFFECTS);
       *pos = oldpos;
 
-      if (binop_user_defined_p (op, arg1, arg2))
+      if (binop_user_defined_p(op, arg1, arg2))
 	{
-	  arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-	  return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+	  arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+	  return value_x_binop(arg1, arg2, op, OP_NULL, noside);
 	}
       else
 	{
-	  tem = value_logical_not (arg1);
-	  arg2 = evaluate_subexp (NULL_TYPE, exp, pos,
-				  (tem ? EVAL_SKIP : noside));
-	  return value_from_longest (LA_BOOL_TYPE,
-			     (LONGEST) (!tem && !value_logical_not (arg2)));
+	  tem = value_logical_not(arg1);
+	  arg2 = evaluate_subexp(NULL_TYPE, exp, pos,
+                                 (tem ? EVAL_SKIP : noside));
+	  return value_from_longest(LA_BOOL_TYPE,
+                                    (LONGEST)(!tem && !value_logical_not(arg2)));
 	}
 
     case BINOP_LOGICAL_OR:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	{
-	  arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+	  arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
 	  goto nosideret;
 	}
 
       oldpos = *pos;
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, EVAL_AVOID_SIDE_EFFECTS);
+      arg2 = evaluate_subexp(NULL_TYPE, exp, pos, EVAL_AVOID_SIDE_EFFECTS);
       *pos = oldpos;
 
-      if (binop_user_defined_p (op, arg1, arg2))
+      if (binop_user_defined_p(op, arg1, arg2))
 	{
-	  arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-	  return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+	  arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+	  return value_x_binop(arg1, arg2, op, OP_NULL, noside);
 	}
       else
 	{
-	  tem = value_logical_not (arg1);
-	  arg2 = evaluate_subexp (NULL_TYPE, exp, pos,
-				  (!tem ? EVAL_SKIP : noside));
-	  return value_from_longest (LA_BOOL_TYPE,
-			     (LONGEST) (!tem || !value_logical_not (arg2)));
+	  tem = value_logical_not(arg1);
+	  arg2 = evaluate_subexp(NULL_TYPE, exp, pos,
+                                 (!tem ? EVAL_SKIP : noside));
+	  return value_from_longest(LA_BOOL_TYPE,
+                                    (LONGEST)(!tem || !value_logical_not(arg2)));
 	}
 
     case BINOP_EQUAL:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (value_type (arg1), exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      arg2 = evaluate_subexp(value_type(arg1), exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (binop_user_defined_p (op, arg1, arg2))
+      if (binop_user_defined_p(op, arg1, arg2))
 	{
-	  return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+	  return value_x_binop(arg1, arg2, op, OP_NULL, noside);
 	}
       else
 	{
-	  tem = value_equal (arg1, arg2);
-	  return value_from_longest (LA_BOOL_TYPE, (LONGEST) tem);
+	  tem = value_equal(arg1, arg2);
+	  return value_from_longest(LA_BOOL_TYPE, (LONGEST)tem);
 	}
 
     case BINOP_NOTEQUAL:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (value_type (arg1), exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      arg2 = evaluate_subexp(value_type(arg1), exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (binop_user_defined_p (op, arg1, arg2))
+      if (binop_user_defined_p(op, arg1, arg2))
 	{
-	  return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+	  return value_x_binop(arg1, arg2, op, OP_NULL, noside);
 	}
       else
 	{
-	  tem = value_equal (arg1, arg2);
-	  return value_from_longest (LA_BOOL_TYPE, (LONGEST) ! tem);
+	  tem = value_equal(arg1, arg2);
+	  return value_from_longest(LA_BOOL_TYPE, (LONGEST) ! tem);
 	}
 
     case BINOP_LESS:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (value_type (arg1), exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      arg2 = evaluate_subexp(value_type(arg1), exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (binop_user_defined_p (op, arg1, arg2))
+      if (binop_user_defined_p(op, arg1, arg2))
 	{
-	  return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+	  return value_x_binop(arg1, arg2, op, OP_NULL, noside);
 	}
       else
 	{
-	  tem = value_less (arg1, arg2);
-	  return value_from_longest (LA_BOOL_TYPE, (LONGEST) tem);
+	  tem = value_less(arg1, arg2);
+	  return value_from_longest(LA_BOOL_TYPE, (LONGEST)tem);
 	}
 
     case BINOP_GTR:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (value_type (arg1), exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      arg2 = evaluate_subexp(value_type(arg1), exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (binop_user_defined_p (op, arg1, arg2))
+      if (binop_user_defined_p(op, arg1, arg2))
 	{
-	  return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+	  return value_x_binop(arg1, arg2, op, OP_NULL, noside);
 	}
       else
 	{
-	  tem = value_less (arg2, arg1);
-	  return value_from_longest (LA_BOOL_TYPE, (LONGEST) tem);
+	  tem = value_less(arg2, arg1);
+	  return value_from_longest(LA_BOOL_TYPE, (LONGEST)tem);
 	}
 
     case BINOP_GEQ:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (value_type (arg1), exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      arg2 = evaluate_subexp(value_type(arg1), exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (binop_user_defined_p (op, arg1, arg2))
+      if (binop_user_defined_p(op, arg1, arg2))
 	{
-	  return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+	  return value_x_binop(arg1, arg2, op, OP_NULL, noside);
 	}
       else
 	{
-	  tem = value_less (arg2, arg1) || value_equal (arg1, arg2);
-	  return value_from_longest (LA_BOOL_TYPE, (LONGEST) tem);
+	  tem = (value_less(arg2, arg1) || value_equal(arg1, arg2));
+	  return value_from_longest(LA_BOOL_TYPE, (LONGEST)tem);
 	}
 
     case BINOP_LEQ:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (value_type (arg1), exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      arg2 = evaluate_subexp(value_type(arg1), exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (binop_user_defined_p (op, arg1, arg2))
+      if (binop_user_defined_p(op, arg1, arg2))
 	{
-	  return value_x_binop (arg1, arg2, op, OP_NULL, noside);
+	  return value_x_binop(arg1, arg2, op, OP_NULL, noside);
 	}
       else
 	{
-	  tem = value_less (arg1, arg2) || value_equal (arg1, arg2);
-	  return value_from_longest (LA_BOOL_TYPE, (LONGEST) tem);
+	  tem = (value_less(arg1, arg2) || value_equal(arg1, arg2));
+	  return value_from_longest(LA_BOOL_TYPE, (LONGEST)tem);
 	}
 
     case BINOP_REPEAT:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      type = check_typedef (value_type (arg2));
-      if (TYPE_CODE (type) != TYPE_CODE_INT)
-	error (_("Non-integral right operand for \"@\" operator."));
+      type = check_typedef(value_type(arg2));
+      if (TYPE_CODE(type) != TYPE_CODE_INT)
+	error(_("Non-integral right operand for \"@\" operator."));
       if (noside == EVAL_AVOID_SIDE_EFFECTS)
 	{
-	  return allocate_repeat_value (value_type (arg1),
-				     longest_to_int (value_as_long (arg2)));
+	  return allocate_repeat_value(value_type(arg1),
+                                       longest_to_int(value_as_long(arg2)));
 	}
       else
-	return value_repeat (arg1, longest_to_int (value_as_long (arg2)));
+	return value_repeat(arg1, longest_to_int(value_as_long(arg2)));
 
     case BINOP_COMMA:
-      evaluate_subexp (NULL_TYPE, exp, pos, noside);
-      return evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      return evaluate_subexp(NULL_TYPE, exp, pos, noside);
 
     case UNOP_PLUS:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (unop_user_defined_p (op, arg1))
-	return value_x_unop (arg1, op, noside);
+      if (unop_user_defined_p(op, arg1))
+	return value_x_unop(arg1, op, noside);
       else
-	return value_pos (arg1);
-      
+	return value_pos(arg1);
+
     case UNOP_NEG:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (unop_user_defined_p (op, arg1))
-	return value_x_unop (arg1, op, noside);
+      if (unop_user_defined_p(op, arg1))
+	return value_x_unop(arg1, op, noside);
       else
-	return value_neg (arg1);
+	return value_neg(arg1);
 
     case UNOP_COMPLEMENT:
       /* C++: check for and handle destructor names.  */
       op = exp->elts[*pos].opcode;
 
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (unop_user_defined_p (UNOP_COMPLEMENT, arg1))
-	return value_x_unop (arg1, UNOP_COMPLEMENT, noside);
+      if (unop_user_defined_p(UNOP_COMPLEMENT, arg1))
+	return value_x_unop(arg1, UNOP_COMPLEMENT, noside);
       else
-	return value_complement (arg1);
+	return value_complement(arg1);
 
     case UNOP_LOGICAL_NOT:
-      arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (unop_user_defined_p (op, arg1))
-	return value_x_unop (arg1, op, noside);
+      if (unop_user_defined_p(op, arg1))
+	return value_x_unop(arg1, op, noside);
       else
-	return value_from_longest (LA_BOOL_TYPE,
-				   (LONGEST) value_logical_not (arg1));
+	return value_from_longest(LA_BOOL_TYPE,
+                                  (LONGEST)value_logical_not(arg1));
 
     case UNOP_IND:
       if (expect_type && TYPE_CODE (expect_type) == TYPE_CODE_PTR)
@@ -2002,19 +2133,18 @@ evaluate_subexp_standard (struct type *expect_type,
       return value_ind (arg1);
 
     case UNOP_ADDR:
-      /* C++: check for and handle pointer to members.  */
-
+      /* C++: check for and handle pointer to members: */
       op = exp->elts[*pos].opcode;
 
       if (noside == EVAL_SKIP)
 	{
 	  if (op == OP_SCOPE)
 	    {
-	      int temm = longest_to_int (exp->elts[pc + 3].longconst);
-	      (*pos) += 3 + BYTES_TO_EXP_ELEM (temm + 1);
+	      int temm = longest_to_int(exp->elts[pc + 3].longconst);
+	      (*pos) += (3 + BYTES_TO_EXP_ELEM(temm + 1));
 	    }
 	  else
-	    evaluate_subexp (NULL_TYPE, exp, pos, EVAL_SKIP);
+	    evaluate_subexp(NULL_TYPE, exp, pos, EVAL_SKIP);
 	  goto nosideret;
 	}
       else
@@ -2042,126 +2172,126 @@ evaluate_subexp_standard (struct type *expect_type,
     case UNOP_CAST:
       (*pos) += 2;
       type = exp->elts[pc + 1].type;
-      arg1 = evaluate_subexp (type, exp, pos, noside);
+      arg1 = evaluate_subexp(type, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      if (type != value_type (arg1))
-	arg1 = value_cast (type, arg1);
+      if (type != value_type(arg1))
+	arg1 = value_cast(type, arg1);
       return arg1;
 
     case UNOP_MEMVAL:
       (*pos) += 2;
-      arg1 = evaluate_subexp (expect_type, exp, pos, noside);
+      arg1 = evaluate_subexp(expect_type, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;
       if (noside == EVAL_AVOID_SIDE_EFFECTS)
 	return value_zero (exp->elts[pc + 1].type, lval_memory);
       else
-	return value_at_lazy (exp->elts[pc + 1].type,
-			      value_as_address (arg1));
+	return value_at_lazy(exp->elts[pc + 1].type,
+                             value_as_address(arg1));
 
     case UNOP_PREINCREMENT:
-      arg1 = evaluate_subexp (expect_type, exp, pos, noside);
+      arg1 = evaluate_subexp(expect_type, exp, pos, noside);
       if (noside == EVAL_SKIP || noside == EVAL_AVOID_SIDE_EFFECTS)
 	return arg1;
-      else if (unop_user_defined_p (op, arg1))
+      else if (unop_user_defined_p(op, arg1))
 	{
-	  return value_x_unop (arg1, op, noside);
+	  return value_x_unop(arg1, op, noside);
 	}
       else
 	{
-	  arg2 = value_add (arg1, value_from_longest (builtin_type_char,
-						      (LONGEST) 1));
-	  return value_assign (arg1, arg2);
+	  arg2 = value_add(arg1, value_from_longest(builtin_type_char,
+                                                    (LONGEST)1L));
+	  return value_assign(arg1, arg2);
 	}
 
     case UNOP_PREDECREMENT:
-      arg1 = evaluate_subexp (expect_type, exp, pos, noside);
+      arg1 = evaluate_subexp(expect_type, exp, pos, noside);
       if (noside == EVAL_SKIP || noside == EVAL_AVOID_SIDE_EFFECTS)
 	return arg1;
-      else if (unop_user_defined_p (op, arg1))
+      else if (unop_user_defined_p(op, arg1))
 	{
-	  return value_x_unop (arg1, op, noside);
+	  return value_x_unop(arg1, op, noside);
 	}
       else
 	{
-	  arg2 = value_sub (arg1, value_from_longest (builtin_type_char,
-						      (LONGEST) 1));
-	  return value_assign (arg1, arg2);
+	  arg2 = value_sub(arg1, value_from_longest(builtin_type_char,
+                                                    (LONGEST)1L));
+	  return value_assign(arg1, arg2);
 	}
 
     case UNOP_POSTINCREMENT:
-      arg1 = evaluate_subexp (expect_type, exp, pos, noside);
-      if (noside == EVAL_SKIP || noside == EVAL_AVOID_SIDE_EFFECTS)
+      arg1 = evaluate_subexp(expect_type, exp, pos, noside);
+      if ((noside == EVAL_SKIP) || (noside == EVAL_AVOID_SIDE_EFFECTS))
 	return arg1;
-      else if (unop_user_defined_p (op, arg1))
+      else if (unop_user_defined_p(op, arg1))
 	{
-	  return value_x_unop (arg1, op, noside);
+	  return value_x_unop(arg1, op, noside);
 	}
       else
 	{
-	  arg2 = value_add (arg1, value_from_longest (builtin_type_char,
-						      (LONGEST) 1));
-	  value_assign (arg1, arg2);
+	  arg2 = value_add(arg1, value_from_longest(builtin_type_char,
+                                                    (LONGEST)1L));
+	  value_assign(arg1, arg2);
 	  return arg1;
 	}
 
     case UNOP_POSTDECREMENT:
-      arg1 = evaluate_subexp (expect_type, exp, pos, noside);
-      if (noside == EVAL_SKIP || noside == EVAL_AVOID_SIDE_EFFECTS)
+      arg1 = evaluate_subexp(expect_type, exp, pos, noside);
+      if ((noside == EVAL_SKIP) || (noside == EVAL_AVOID_SIDE_EFFECTS))
 	return arg1;
-      else if (unop_user_defined_p (op, arg1))
+      else if (unop_user_defined_p(op, arg1))
 	{
-	  return value_x_unop (arg1, op, noside);
+	  return value_x_unop(arg1, op, noside);
 	}
       else
 	{
-	  arg2 = value_sub (arg1, value_from_longest (builtin_type_char,
-						      (LONGEST) 1));
-	  value_assign (arg1, arg2);
+	  arg2 = value_sub(arg1, value_from_longest(builtin_type_char,
+                                                    (LONGEST)1L));
+	  value_assign(arg1, arg2);
 	  return arg1;
 	}
 
     case OP_THIS:
       (*pos) += 1;
       /* APPLE LOCAL */
-      return value_of_local ("this", 1);
+      return value_of_local("this", 1);
 
     case OP_OBJC_SELF:
       (*pos) += 1;
-      return value_of_local ("self", 1);
+      return value_of_local("self", 1);
 
     case OP_TYPE:
-      error (_("Attempt to use a type name as an expression"));
+      error(_("Attempt to use a type name as an expression"));
 
     default:
-      /* Removing this case and compiling with gcc -Wall reveals that
-         a lot of cases are hitting this case.  Some of these should
-         probably be removed from expression.h; others are legitimate
-         expressions which are (apparently) not fully implemented.
-
-         If there are any cases landing here which mean a user error,
-         then they should be separate cases, with more descriptive
-         error messages.  */
-
-      error (_("\
+      /* Removing this case and compiling with gcc -Wall (or -Wswitch-enum)
+       * reveals that a lot of cases are hitting this case.  Some of these
+       * should probably be removed from expression.h; others are
+       * legitimate expressions which are (apparently) not fully
+       * implemented.
+       *
+       * If there are any cases landing here which mean a user error,
+       * then they should be separate cases, with more descriptive
+       * error messages.  */
+      error(_("\
 GDB does not (yet) know how to evaluate that kind of expression"));
     }
+  /* end "switch (op)" (really lengthy!) */
 
 nosideret:
   return value_from_longest (builtin_type_long, (LONGEST) 1);
 }
+/* end of evaluate_subexp_standard() (really lengthy; over 1,500 lines!) */
 
-/* Evaluate a subexpression of EXP, at index *POS,
-   and return the address of that subexpression.
-   Advance *POS over the subexpression.
-   If the subexpression isn't an lvalue, get an error.
-   NOSIDE may be EVAL_AVOID_SIDE_EFFECTS;
-   then only the type of the result need be correct.  */
-
+/* Evaluate a subexpression of EXP, at index *POS, and return the address
+ * of that subexpression. Advance *POS over the subexpression.
+ * If the subexpression is NOT an lvalue, then get an error.
+ * NOSIDE may be EVAL_AVOID_SIDE_EFFECTS; then only the type of the result
+ * needs to be correct: */
 static struct value *
-evaluate_subexp_for_address (struct expression *exp, int *pos,
-			     enum noside noside)
+evaluate_subexp_for_address(struct expression *exp, int *pos,
+                            enum noside noside)
 {
   enum exp_opcode op;
   int pc;
@@ -2258,22 +2388,23 @@ evaluate_subexp_with_coercion (struct expression *exp,
     {
     case OP_VAR_VALUE:
       var = exp->elts[pc + 2].symbol;
-      if (TYPE_CODE (check_typedef (SYMBOL_TYPE (var))) == TYPE_CODE_ARRAY
-	  /* APPLE LOCAL: Don't coerce to pointer if it's a vector type. */
-	  && (! TYPE_FLAGS (check_typedef (SYMBOL_TYPE (var))) & TYPE_FLAG_VECTOR)
+      if ((TYPE_CODE(check_typedef(SYMBOL_TYPE(var))) == TYPE_CODE_ARRAY)
+	  /* APPLE LOCAL: Do NOT coerce to pointer if it is a vector type: */
+	  && (!(TYPE_FLAGS(check_typedef(SYMBOL_TYPE(var))) & TYPE_FLAG_VECTOR))
 	  && CAST_IS_CONVERSION)
 	{
+          /* FIXME: my solution towards silencing '-Wparentheses' warning
+           * above was just a guess... */
 	  (*pos) += 4;
 	  val =
-	    locate_var_value
-	    (var, block_innermost_frame (exp->elts[pc + 1].block));
-	  return value_cast (lookup_pointer_type (TYPE_TARGET_TYPE (check_typedef (SYMBOL_TYPE (var)))),
-			     val);
+	    locate_var_value(var, block_innermost_frame(exp->elts[pc + 1].block));
+	  return value_cast(lookup_pointer_type(TYPE_TARGET_TYPE(check_typedef(SYMBOL_TYPE(var)))),
+                            val);
 	}
       /* FALLTHROUGH */
 
     default:
-      return evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      return evaluate_subexp(NULL_TYPE, exp, pos, noside);
     }
 }
 
@@ -2350,20 +2481,22 @@ parse_and_eval_type (char *p, int length)
 }
 
 int
-calc_f77_array_dims (struct type *array_type)
+calc_f77_array_dims(struct type *array_type)
 {
   int ndimen = 1;
   struct type *tmp_type;
 
-  if ((TYPE_CODE (array_type) != TYPE_CODE_ARRAY))
-    error (_("Can't get dimensions for a non-array type"));
+  if ((TYPE_CODE(array_type) != TYPE_CODE_ARRAY))
+    error(_("Cannot get dimensions for a non-array type"));
 
   tmp_type = array_type;
 
-  while ((tmp_type = TYPE_TARGET_TYPE (tmp_type)))
+  while ((tmp_type = TYPE_TARGET_TYPE(tmp_type)))
     {
-      if (TYPE_CODE (tmp_type) == TYPE_CODE_ARRAY)
+      if (TYPE_CODE(tmp_type) == TYPE_CODE_ARRAY)
 	++ndimen;
     }
   return ndimen;
 }
+
+/* EOF */

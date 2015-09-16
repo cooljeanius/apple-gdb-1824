@@ -35,8 +35,7 @@ dnl#=======================================================================
 
 dnl# Based on autoconf _AC_LANG_COMPILER_GNU
 dnl# _AC_BAKEFILE_LANG_COMPILER([NAME],[LANG],[SYMBOL],[IF-YES],[IF-NO])
-AC_DEFUN([_AC_BAKEFILE_LANG_COMPILER],
-[
+AC_DEFUN([_AC_BAKEFILE_LANG_COMPILER],[
     AC_LANG_PUSH([$2])
     AC_CACHE_CHECK([whether we are using the $1 $2 compiler],
         [bakefile_cv_[]_AC_LANG_ABBREV[]_compiler_[]$3],
@@ -85,147 +84,141 @@ AC_DEFUN([_AC_BAKEFILE_LANG_COMPILER_LATER_THAN],
 ])
 
 dnl# CodeWarrior Metrowerks compiler defines __MWERKS__ for both C and C++
-AC_DEFUN([AC_BAKEFILE_PROG_MWCC],
-[
-    _AC_BAKEFILE_LANG_COMPILER([Metrowerks],[C],[__MWERKS__],[MWCC=yes])
-])
+AC_DEFUN([AC_BAKEFILE_PROG_MWCC],[
+    _AC_BAKEFILE_LANG_COMPILER([Metrowerks],[C],[__MWERKS__],[MWCC=yes])dnl
+])dnl
 
-AC_DEFUN([AC_BAKEFILE_PROG_MWCXX],
-[
+AC_DEFUN([AC_BAKEFILE_PROG_MWCXX],[
     _AC_BAKEFILE_LANG_COMPILER([Metrowerks],[C++],[__MWERKS__],[MWCXX=yes])
-])
+])dnl
 
 dnl# IBM xlC compiler defines __xlC__ for both C and C++
-AC_DEFUN([AC_BAKEFILE_PROG_XLCC],
-[
-    _AC_BAKEFILE_LANG_COMPILER([IBM xlC],[C],[__xlC__],[XLCC=yes])
-])
+AC_DEFUN([AC_BAKEFILE_PROG_XLCC],[
+    _AC_BAKEFILE_LANG_COMPILER([IBM xlC],[C],[__xlC__],[XLCC=yes])dnl
+])dnl
 
-AC_DEFUN([AC_BAKEFILE_PROG_XLCXX],
-[
-    _AC_BAKEFILE_LANG_COMPILER([IBM xlC],[C++],[__xlC__],[XLCXX=yes])
-])
+AC_DEFUN([AC_BAKEFILE_PROG_XLCXX],[
+    _AC_BAKEFILE_LANG_COMPILER([IBM xlC],[C++],[__xlC__],[XLCXX=yes])dnl
+])dnl
 
 dnl# recent versions of SGI mipsPro compiler define _SGI_COMPILER_VERSION
 dnl#
 dnl# NB: old versions define _COMPILER_VERSION but this could probably be
-dnl#     defined by other compilers too so don't test for it to be safe
-AC_DEFUN([AC_BAKEFILE_PROG_SGICC],
-[
-    _AC_BAKEFILE_LANG_COMPILER([SGI],[C],[_SGI_COMPILER_VERSION], [SGICC=yes])
-])
+dnl#     defined by other compilers too so do NOT test for it to be safe
+AC_DEFUN([AC_BAKEFILE_PROG_SGICC],[
+    _AC_BAKEFILE_LANG_COMPILER([SGI],[C],[_SGI_COMPILER_VERSION],
+                               [SGICC=yes])dnl
+])dnl
 
-AC_DEFUN([AC_BAKEFILE_PROG_SGICXX],
-[
-    _AC_BAKEFILE_LANG_COMPILER([SGI],[C++],[_SGI_COMPILER_VERSION], [SGICXX=yes])
+AC_DEFUN([AC_BAKEFILE_PROG_SGICXX],[
+    _AC_BAKEFILE_LANG_COMPILER([SGI],[C++],[_SGI_COMPILER_VERSION],
+                               [SGICXX=yes])dnl
 ])
 
 dnl# Sun compiler defines __SUNPRO_C/__SUNPRO_CC
-AC_DEFUN([AC_BAKEFILE_PROG_SUNCC],
-[
-    _AC_BAKEFILE_LANG_COMPILER([Sun],[C],[__SUNPRO_C],[SUNCC=yes])
-])
+AC_DEFUN([AC_BAKEFILE_PROG_SUNCC],[
+    _AC_BAKEFILE_LANG_COMPILER([Sun],[C],[__SUNPRO_C],[SUNCC=yes])dnl
+])dnl
 
-AC_DEFUN([AC_BAKEFILE_PROG_SUNCXX],
-[
-    _AC_BAKEFILE_LANG_COMPILER([Sun],[C++],[__SUNPRO_CC],[SUNCXX=yes])
-])
+AC_DEFUN([AC_BAKEFILE_PROG_SUNCXX],[
+    _AC_BAKEFILE_LANG_COMPILER([Sun],[C++],[__SUNPRO_CC],[SUNCXX=yes])dnl
+])dnl
 
 dnl# Intel icc compiler defines __INTEL_COMPILER for both C and C++
-AC_DEFUN([AC_BAKEFILE_PROG_INTELCC],
-[
-    _AC_BAKEFILE_LANG_COMPILER([Intel],[C],[__INTEL_COMPILER],[INTELCC=yes])
-])
+AC_DEFUN([AC_BAKEFILE_PROG_INTELCC],[
+    _AC_BAKEFILE_LANG_COMPILER([Intel],[C],[__INTEL_COMPILER],
+                               [INTELCC=yes])dnl
+])dnl
 
-AC_DEFUN([AC_BAKEFILE_PROG_INTELCXX],
-[
-    _AC_BAKEFILE_LANG_COMPILER([Intel],[C++],[__INTEL_COMPILER],[INTELCXX=yes])
-])
+AC_DEFUN([AC_BAKEFILE_PROG_INTELCXX],[
+    _AC_BAKEFILE_LANG_COMPILER([Intel],[C++],[__INTEL_COMPILER],
+                               [INTELCXX=yes])dnl
+])dnl
 
 dnl# Intel compiler command line options changed in incompatible ways
 dnl# sometime before v8 (-KPIC was replaced with gcc-compatible -fPIC),
 dnl# and again in v10 (-create-pch deprecated in favour of -pch-create),
 dnl# so we need to test for its exact version, too.
-AC_DEFUN([AC_BAKEFILE_PROG_INTELCC_8],
-[
-    _AC_BAKEFILE_LANG_COMPILER_LATER_THAN([Intel],[C],[__INTEL_COMPILER],[800],[8],[INTELCC8=yes])
-])
-AC_DEFUN([AC_BAKEFILE_PROG_INTELCXX_8],
-[
-    _AC_BAKEFILE_LANG_COMPILER_LATER_THAN([Intel],[C++],[__INTEL_COMPILER],[800],[8],[INTELCXX8=yes])
-])
+AC_DEFUN([AC_BAKEFILE_PROG_INTELCC_8],[
+    _AC_BAKEFILE_LANG_COMPILER_LATER_THAN([Intel],[C],[__INTEL_COMPILER],
+                                          [800],[8],[INTELCC8=yes])dnl
+])dnl
 
-AC_DEFUN([AC_BAKEFILE_PROG_INTELCC_10],
-[
-    _AC_BAKEFILE_LANG_COMPILER_LATER_THAN([Intel],[C],[__INTEL_COMPILER],[1000],[10],[INTELCC10=yes])
-])
+AC_DEFUN([AC_BAKEFILE_PROG_INTELCXX_8],[
+    _AC_BAKEFILE_LANG_COMPILER_LATER_THAN([Intel],[C++],[__INTEL_COMPILER],
+                                          [800],[8],[INTELCXX8=yes])dnl
+])dnl
 
-AC_DEFUN([AC_BAKEFILE_PROG_INTELCXX_10],
-[
-    _AC_BAKEFILE_LANG_COMPILER_LATER_THAN([Intel],[C++],[__INTEL_COMPILER],[1000],[10],[INTELCXX10=yes])
-])
+AC_DEFUN([AC_BAKEFILE_PROG_INTELCC_10],[
+    _AC_BAKEFILE_LANG_COMPILER_LATER_THAN([Intel],[C],[__INTEL_COMPILER],
+                                          [1000],[10],[INTELCC10=yes])dnl
+])dnl
+
+AC_DEFUN([AC_BAKEFILE_PROG_INTELCXX_10],[
+    _AC_BAKEFILE_LANG_COMPILER_LATER_THAN([Intel],[C++],[__INTEL_COMPILER],
+                                          [1000],[10],[INTELCXX10=yes])dnl
+])dnl
 
 dnl# HP-UX aCC: see http://docs.hp.com/en/6162/preprocess.htm#macropredef
-AC_DEFUN([AC_BAKEFILE_PROG_HPCC],
-[
-    _AC_BAKEFILE_LANG_COMPILER([HP],[C],[__HP_cc],[HPCC=yes])
-])
+AC_DEFUN([AC_BAKEFILE_PROG_HPCC],[
+    _AC_BAKEFILE_LANG_COMPILER([HP],[C],[__HP_cc],[HPCC=yes])dnl
+])dnl
 
-AC_DEFUN([AC_BAKEFILE_PROG_HPCXX],
-[
-    _AC_BAKEFILE_LANG_COMPILER([HP],[C++],[__HP_aCC],[HPCXX=yes])
-])
+AC_DEFUN([AC_BAKEFILE_PROG_HPCXX],[
+    _AC_BAKEFILE_LANG_COMPILER([HP],[C++],[__HP_aCC],[HPCXX=yes])dnl
+])dnl
 
 dnl# Tru64 cc and cxx
-AC_DEFUN([AC_BAKEFILE_PROG_COMPAQCC],
-[
-    _AC_BAKEFILE_LANG_COMPILER([Compaq],[C],[__DECC],[COMPAQCC=yes])
+AC_DEFUN([AC_BAKEFILE_PROG_COMPAQCC],[
+    _AC_BAKEFILE_LANG_COMPILER([Compaq],[C],[__DECC],[COMPAQCC=yes])dnl
 ])
 
-AC_DEFUN([AC_BAKEFILE_PROG_COMPAQCXX],
-[
+AC_DEFUN([AC_BAKEFILE_PROG_COMPAQCXX],[
     _AC_BAKEFILE_LANG_COMPILER([Compaq],[C++],[__DECCXX],[COMPAQCXX=yes])
-])
+])dnl
 
 dnl#=======================================================================
 dnl# macros to detect specialty compiler options
 dnl#=======================================================================
 
 dnl# Figure out if we need to pass -ext o to compiler (MetroWerks)
-AC_DEFUN([AC_BAKEFILE_METROWERKS_EXTO],
-[AC_REQUIRE([AC_OBJEXT])
-AC_CACHE_CHECK([if the _AC_LANG compiler requires -ext o],[bakefile_cv_[]_AC_LANG_ABBREV[]_exto],
-dnl# First create an empty conf test
-[AC_LANG_CONFTEST([AC_LANG_PROGRAM([])])
+AC_DEFUN([AC_BAKEFILE_METROWERKS_EXTO],[
+AC_REQUIRE([AC_OBJEXT])dnl
+AC_CACHE_CHECK([if the _AC_LANG compiler requires -ext o],
+               [bakefile_cv_[]_AC_LANG_ABBREV[]_exto],[
+dnl# First create an empty conf test:
+AC_LANG_CONFTEST([AC_LANG_PROGRAM([[]],[[]])])
 dnl# Now remove .o and .c.o or .cc.o
-rm -f conftest.$ac_objext conftest.$ac_ext.o
+rm -f conftest.${ac_objext} conftest.${ac_ext}.o
 dnl# Now compile the test
-AS_IF([AC_TRY_EVAL([ac_compile])],
-dnl# If the test succeeded look for conftest.c.o or conftest.cc.o
-[for ac_file in `(ls conftest.* 2>/dev/null)`; do
-    case $ac_file in
-        conftest.$ac_ext.o)
+AS_IF([AC_TRY_EVAL([ac_compile])],[
+dnl# If the test succeeded, then look for conftest.c.o or conftest.cc.o
+for ac_file in `(ls conftest.* 2>/dev/null)`; do
+    case ${ac_file} in
+        conftest.${ac_ext}.o)
             bakefile_cv_[]_AC_LANG_ABBREV[]_exto="-ext o"
             ;;
         *)
+            bakefile_cv_[]_AC_LANG_ABBREV[]_exto=""
             ;;
     esac
-done],
-[AC_MSG_FAILURE([cannot figure out if compiler needs -ext o: cannot compile])
-]) dnl# AS_IF
+done
+],[
+AC_MSG_ERROR([cannot figure out if compiler needs -ext o: cannot compile])
+]) dnl# end AS_IF
 
-rm -f conftest.$ac_ext.o conftest.$ac_objext conftest.$ac_ext
-]) dnl# AC_CACHE_CHECK
+rm -f conftest.${ac_ext}.o conftest.${ac_objext} conftest.${ac_ext}
+]) dnl# end AC_CACHE_CHECK
 
 if test "x$bakefile_cv_[]_AC_LANG_ABBREV[]_exto" '!=' "x"; then
     if test "[]_AC_LANG_ABBREV[]" = "c"; then
-        CFLAGS="$bakefile_cv_[]_AC_LANG_ABBREV[]_exto $CFLAGS"
+        CFLAGS="$bakefile_cv_[]_AC_LANG_ABBREV[]_exto ${CFLAGS}"
     fi
     if test "[]_AC_LANG_ABBREV[]" = "cxx"; then
-        CXXFLAGS="$bakefile_cv_[]_AC_LANG_ABBREV[]_exto $CXXFLAGS"
+        CXXFLAGS="$bakefile_cv_[]_AC_LANG_ABBREV[]_exto ${CXXFLAGS}"
     fi
 fi
-]) dnl# AC_DEFUN
+]) dnl# end AC_DEFUN
 
 
 dnl#=======================================================================
@@ -234,8 +227,7 @@ dnl#=======================================================================
 
 dnl# check for different proprietary compilers depending on target platform
 dnl# _AC_BAKEFILE_PROG_COMPILER([LANG])
-AC_DEFUN([_AC_BAKEFILE_PROG_COMPILER],
-[
+AC_DEFUN([_AC_BAKEFILE_PROG_COMPILER],[
     AC_PROG_$1
 
     dnl# Intel compiler can be used under several different OS and even
@@ -254,14 +246,14 @@ AC_DEFUN([_AC_BAKEFILE_PROG_COMPILER],
     if test "x$G$1" != "xyes"; then
         if test "x$1" = "xC"; then
             AC_BAKEFILE_METROWERKS_EXTO
-            if test "x$bakefile_cv_c_exto" '!=' "x"; then
+            if test "x${bakefile_cv_c_exto}" '!=' "x"; then
                 unset ac_cv_prog_cc_g
                 _AC_PROG_CC_G
             fi
         fi
 
-        dnl# most of these compilers are only used under well-defined OS so
-        dnl# don't waste time checking for them on other ones
+        dnl# most of these compilers are only used under well-defined OS,
+        dnl# so do NOT waste time checking for them on other ones:
         case `uname -s` in
             AIX*)
                 AC_BAKEFILE_PROG_XL$1
@@ -302,13 +294,11 @@ AC_DEFUN([_AC_BAKEFILE_PROG_COMPILER],
     fi
 ])
 
-AC_DEFUN([AC_BAKEFILE_PROG_CC],
-[
-    _AC_BAKEFILE_PROG_COMPILER([CC])
-])
+AC_DEFUN([AC_BAKEFILE_PROG_CC],[
+    _AC_BAKEFILE_PROG_COMPILER([CC])dnl
+])dnl
 
-AC_DEFUN([AC_BAKEFILE_PROG_CXX],
-[
-    _AC_BAKEFILE_PROG_COMPILER([CXX])
-])
+AC_DEFUN([AC_BAKEFILE_PROG_CXX],[
+    _AC_BAKEFILE_PROG_COMPILER([CXX])dnl
+])dnl
 

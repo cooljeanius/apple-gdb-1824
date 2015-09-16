@@ -1,4 +1,5 @@
-/* Native-dependent definitions for NetBSD/alpha.
+/* nm-nbsd.h
+   Native-dependent definitions for NetBSD/alpha.
 
    Copyright 2002, 2005 Free Software Foundation, Inc.
 

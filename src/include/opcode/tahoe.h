@@ -1,10 +1,10 @@
-/*
+/* tahoe.h
  * Ported by the State University of New York at Buffalo by the Distributed
  * Computer Systems Lab, Department of Computer Science, 1991.
  */
 
 #ifndef tahoe_opcodeT
-#define tahoe_opcodeT int
+# define tahoe_opcodeT int
 #endif /* no tahoe_opcodeT */
 
 struct vot_wot                  /* tahoe opcode table: wot to do with this */
@@ -46,7 +46,7 @@ votstrs[] =
 {    "lnf",     {"rl",                  0x16    } },
 {    "lnd",     {"rq",                  0x17    } },
 {    "addb3",	{"rbrbwb",		0x18	} },
-{    "cmpb",	{"rbwb",		0x19	} }, 
+{    "cmpb",	{"rbwb",		0x19	} },
 {    "addw3",	{"rwrwww",		0x1a	} },
 {    "cmpw",	{"rwww",		0x1b	} },
 {    "addl3",	{"rlrlwl",		0x1c	} },
@@ -211,3 +211,5 @@ votstrs[] =
 {      ""       ,   ""          } /* empty is end sentinel */
 
 };
+
+/* EOF */

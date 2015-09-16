@@ -1,8 +1,8 @@
-/*
+/* udi2go32.c
 
-Interface from UDI calls in 32-bit mode to go32 in 16-bit mode. 
+Interface from UDI calls in 32-bit mode to go32 in 16-bit mode.
 Communication is done through a single interrupt vector, which passes
-data through two linear buffers. 
+data through two linear buffers.
 
 Call:
 	AH  = 0xfe
@@ -75,7 +75,7 @@ int main()
   printf("main: p1=%d p2=%d rv=%d\n", p1, p2, r);
   return r;
 }
-#endif
+#endif /* TEST_UDI */
 
 /*----------------------------------------------------------------------*/
 
@@ -94,10 +94,10 @@ UDIError UDIConnect (
   out_buffer[0] = 0; /* DJ - test */
   IN_INIT();
   IN_DATA(Configuration, strlen(Configuration)+1);
-  
+
   r = DO_CALL(UDIConnect_c);
 
-  OUT_INIT();  
+  OUT_INIT();
   *Session = OUT_VAL(UDISessionId);
   return r;
 }
@@ -111,7 +111,7 @@ UDIError UDIDisconnect (
   IN_INIT();
   IN_VAL(UDISessionId, Session);
   IN_VAL(UDIBool, Terminate);
-  
+
   return DO_CALL(UDIDisconnect_c);
 }
 
@@ -121,7 +121,7 @@ UDIError UDISetCurrentConnection (
 {
   IN_INIT();
   IN_VAL(UDISessionId, Session);
-  
+
   return DO_CALL(UDISetCurrentConnection_c);
 }
 
@@ -172,9 +172,9 @@ UDIError UDIGetErrorMsg (
   IN_INIT();
   IN_VAL(UDIError, ErrorCode);
   IN_VAL(UDISizeT, MsgSize);
-  
+
   r = DO_CALL(UDIGetErrorMsg_c);
-  
+
   OUT_INIT();
   *CountDone = OUT_VAL(UDISizeT);
   OUT_DATA(Msg, *CountDone);
@@ -284,7 +284,7 @@ UDIError UDIRead (
 {
   int cleft = Count, cthis, dthis;
   int cdone = 0, r, bsize=2048/Size;
-  
+
   while (cleft)
   {
     cthis = (cleft<bsize) ? cleft : bsize;
@@ -325,7 +325,7 @@ UDIError UDIWrite (
 {
   int cleft = Count, cthis, dthis;
   int cdone = 0, r, bsize=2048/Size;
-  
+
   while (cleft)
   {
     cthis = (cleft<bsize) ? cleft : bsize;
@@ -337,7 +337,7 @@ UDIError UDIWrite (
     IN_VAL(UDIBool, HostEndian);
     IN_DATA(From, cthis*Size);
     From += cthis*Size;
-    
+
     r = DO_CALL(UDIWrite_c);
 
     OUT_INIT();
@@ -372,12 +372,12 @@ UDIError UDICopy (
   IN_VAL(UDICount, Count);
   IN_VAL(UDISizeT, Size);
   IN_VAL(UDIBool, Direction);
-  
+
   r = DO_CALL(UDICopy_c);
-  
+
   OUT_INIT();
   *CountDone = OUT_VAL(UDICount);
-  
+
   return r;
 }
 
@@ -398,7 +398,7 @@ UDIError UDIStep (
   IN_VAL(UDIUInt32, Steps);
   IN_VAL(UDIStepType, StepType);
   IN_VAL(UDIRange, Range);
-  
+
   return DO_CALL(UDIStep_c);
 }
 
@@ -438,9 +438,9 @@ UDIError UDISetBreakpoint (
   IN_VAL(CPUOffset, Addr.Offset);
   IN_VAL(UDIInt32, PassCount);
   IN_VAL(UDIBreakType, Type);
-  
+
   r = DO_CALL(UDISetBreakpoint_c);
-  
+
   OUT_INIT();
   *BreakId = OUT_VAL(UDIBreakId);
   return r;
@@ -457,16 +457,16 @@ UDIError UDIQueryBreakpoint (
   int r;
   IN_INIT();
   IN_VAL(UDIBreakId, BreakId);
-  
+
   r = DO_CALL(UDIQueryBreakpoint_c);
-  
+
   OUT_INIT();
   Addr->Space = OUT_VAL(short);
   Addr->Offset = OUT_VAL(CPUOffset);
   *PassCount = OUT_VAL(UDIInt32);
   *Type = OUT_VAL(UDIBreakType);
   *CurrentCount = OUT_VAL(UDIInt32);
-  
+
   return r;
 }
 
@@ -476,7 +476,7 @@ UDIError UDIClearBreakpoint (
 {
   IN_INIT();
   IN_VAL(UDIBreakId, BreakId);
-  
+
   return DO_CALL(UDIClearBreakpoint_c);
 }
 

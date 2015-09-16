@@ -12,8 +12,11 @@ would appreciate credit if this program or parts of it are used.
 
 #include <stdio.h>
 #include <sys/types.h>
-/*#include <sys/time.h> seems to not be present on SVR3 systems */
-/* and its not used anyway as far as I can tell */
+#if defined(HAVE_SYS_TIME_H) && !defined(__SVR3__)
+# include <sys/time.h>
+/* seems to not be present on SVR3 systems, and it is not used anyway,
+ * as far as I can tell */
+#endif /* HAVE_SYS_TIME_H && !__SVR3__ */
 
 /* AIX insists that stropts.h be included before ioctl.h, because both */
 /* define _IO but only ioctl.h checks first. Oddly, they seem to be */
@@ -21,9 +24,9 @@ would appreciate credit if this program or parts of it are used.
 #ifdef HAVE_STROPTS_H
 # include <sys/stropts.h>
 #else
-# ifdef _AIX
-#  warning exp_command.c expects <sys/stropts.h> to be included.
-# endif /* _AIX */
+# if defined(_AIX) && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "exp_command.c expects <sys/stropts.h> to be included."
+# endif /* _AIX && __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STROPTS_H */
 #include <sys/ioctl.h>
 
@@ -33,7 +36,9 @@ would appreciate credit if this program or parts of it are used.
 # ifdef HAVE_FCNTL_H
 #  include <fcntl.h>
 # else
-#  warning exp_command.c expects either <sys/fcntl.h> or <fcntl.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "exp_command.c expects either <sys/fcntl.h> or <fcntl.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_FCNTL_H */
 #endif /* HAVE_SYS_FCNTL_H */
 #include <sys/file.h>
@@ -81,16 +86,20 @@ would appreciate credit if this program or parts of it are used.
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning exp_command.c expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "exp_command.c expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
 #include <math.h>		 /* for log/pow computation in send -h */
 #include <ctype.h>		 /* all this for ispunct! */
 
 #include "tclInt.h"		 /* need OpenFile */
-/*#include <varargs.h> *//* tclInt.h drags in varargs.h. Since Pyramid */
-/*				       *//* objects to including varargs.h twice, just */
-/*				       *//* omit this one. */
+#if defined(HAVE_VARARGS_H) && !defined(__pyramid__) && !defined(__pyr__)
+# include <varargs.h> /* tclInt.h drags in varargs.h.  Since Pyramid
+                       * objects to including varargs.h twice, just omit
+                       * this one. */
+#endif /* HAVE_VARARGS_H && !__pyramid__ && !__pyr__ */
 
 #include "tcl.h"
 #include "string.h"
@@ -921,23 +930,23 @@ char **argv;
 			tclWriteFile = Tcl_GetChannelFile(chan, TCL_WRITABLE);
 			wfd = (int)Tcl_GetFileInfo(tclWriteFile, (int *)0);
 #else
-			if (TCL_ERROR == Tcl_GetChannelHandle(chan, TCL_WRITABLE, (ClientData) &wfd)) {
+			if (TCL_ERROR == Tcl_GetChannelHandle(chan, TCL_WRITABLE, (ClientData)&wfd)) {
 				return TCL_ERROR;
 			}
 #endif /* TCL_MAJOR_VERSION < 8 */
 		}
 
-		master = (int)((mode & TCL_READABLE)?rfd:wfd);
+		master = (int)(intptr_t)((mode & TCL_READABLE) ? rfd : wfd);
 
-		/* make a new copy of file descriptor */
+		/* make a new copy of file descriptor: */
 		if (-1 == (write_master = master = dup(master))) {
-			exp_error(interp,"fdopen: %s",Tcl_PosixError(interp));
+			exp_error(interp, "fdopen: %s", Tcl_PosixError(interp));
 			return TCL_ERROR;
 		}
 
 		/* if writefilePtr is different, dup that too */
 		if ((mode & TCL_READABLE) && (mode & TCL_WRITABLE) && (wfd != rfd)) {
-			if (-1 == (write_master = dup((int)wfd))) {
+			if (-1 == (write_master = dup((int)(intptr_t)wfd))) {
 				exp_error(interp,"fdopen: %s",Tcl_PosixError(interp));
 				return TCL_ERROR;
 			}
@@ -1398,9 +1407,13 @@ parent_error:
 	close(sync_fds[1]);
 
 	/* wait for master to let us go on */
-	/* debuglog("child: waiting for go ahead from parent\r\n"); */
+#if defined(DEBUG) && defined(debuglog)
+	debuglog("child: waiting for go ahead from parent\r\n");
+#endif /* DEBUG && debuglog */
 
-/*	close(master);	/* force master-side close so we can read */
+#if 0
+	close(master);	/* force master-side close so we can read */
+#endif /* 0 */
 
 	while (((rc = read(sync2_fds[0],&sync_byte,1)) < 0) && (errno == EINTR)) {
 		/* empty */;
@@ -1945,7 +1958,7 @@ struct exp_i *i;
 	char *p;	/* string representation of list of spawn ids */
 
 	if (i->direct == EXP_INDIRECT) {
-		p = Tcl_GetVar(interp,i->variable,TCL_GLOBAL_ONLY);
+		p = (char *)Tcl_GetVar(interp,i->variable,TCL_GLOBAL_ONLY);
 		if (!p) {
 			p = "";
 			exp_debuglog("warning: indirect variable %s undefined",i->variable);
@@ -2264,12 +2277,16 @@ char **argv;
 	argc--;
 	for (;argc>0;argc--,argv++) {
 		if (streq(*argv,"-open")) {
-			if (!argv[1]) usage_error;
+			if (!argv[1]) {
+				usage_error;
+			}
 			openarg = ckalloc(strlen(argv[1])+1);
 			strcpy(openarg,argv[1]);
 			argc--; argv++;
 		} else if (streq(*argv,"-leaveopen")) {
-			if (!argv[1]) usage_error;
+			if (!argv[1]) {
+				usage_error;
+			}
 			openarg = ckalloc(strlen(argv[1])+1);
 			strcpy(openarg,argv[1]);
 			leaveopen = TRUE;
@@ -2330,7 +2347,7 @@ char **argv;
 			if (errno == 0) {
 				msg = open_failed;
 			} else {
-				msg = Tcl_PosixError(interp);
+				msg = (char *)Tcl_PosixError(interp);
 			}
 			exp_error(interp,"%s: %s",filename,msg);
 			Tcl_DStringFree(&dstring);
@@ -2554,7 +2571,7 @@ char **argv;
 			if (errno == 0) {
 				msg = open_failed;
 			} else {
-				msg = Tcl_PosixError(interp);
+				msg = (char *)Tcl_PosixError(interp);
 			}
 
 			exp_error(interp,"%s: %s",*argv,msg);
@@ -2626,6 +2643,7 @@ char **argv;
 
 	exp_exit(interp,value);
 	/*NOTREACHED*/
+	return TCL_ERROR;
 }
 
 /* so cmd table later is more intuitive */
@@ -3472,10 +3490,10 @@ char **argv;
 #if TCL_MAJOR_VERSION < 8
 			    (ClientData)m2,
 #endif /* TCL_MAJOR_VERSION < 8 */
-			    (ClientData)m2,
+			    (ClientData)(intptr_t)m2,
 			    TCL_READABLE|TCL_WRITABLE);
 	Tcl_RegisterChannel(interp, chan);
-	Tcl_AppendResult(interp, Tcl_GetChannelName(chan), (char *) NULL);
+	Tcl_AppendResult(interp, Tcl_GetChannelName(chan), (char *)NULL);
 	return TCL_OK;
 }
 

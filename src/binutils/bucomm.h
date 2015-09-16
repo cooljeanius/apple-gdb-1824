@@ -24,19 +24,25 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning bucomm.h expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "bucomm.h expects config.h to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #include "ansidecl.h"
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning bucomm.h expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "bucomm.h expects <stdio.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning bucomm.h expects <sys/types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "bucomm.h expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
 
 #include "bin-bugs.h"
@@ -47,7 +53,9 @@
 # ifdef HAVE_VARARGS_H
 #  include <varargs.h>
 # else
-#  warning bucomm.h expects either <stdarg.h> or <varargs.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "bucomm.h expects either <stdarg.h> or <varargs.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_VARARGS_H */
 #endif /* HAVE_STDARG_H */
 
@@ -60,7 +68,9 @@
 #ifdef HAVE_ERRNO_H
 # include <errno.h>
 #else
-# warning bucomm.h expects <errno.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "bucomm.h expects <errno.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_ERRNO_H */
 #ifndef errno
 extern int errno;
@@ -69,7 +79,9 @@ extern int errno;
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning bucomm.h expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "bucomm.h expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
 #ifdef HAVE_STRING_H
@@ -78,15 +90,17 @@ extern int errno;
 # ifdef HAVE_STRINGS_H
 #  include <strings.h>
 # else
-extern char *strchr ();
-extern char *strrchr ();
+extern char *strchr();
+extern char *strrchr();
 # endif /* HAVE_STRINGS_H */
 #endif /* HAVE_STRING_H */
 
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning bucomm.h expects <stdlib.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "bucomm.h expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H */
 
 #ifdef HAVE_MALLOC_H
@@ -95,7 +109,9 @@ extern char *strrchr ();
 # ifdef HAVE_MALLOC_MALLOC_H
 #  include <malloc/malloc.h>
 # else
-#  warning bucomm.h expects a malloc-related header to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "bucomm.h expects a malloc-related header to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_MALLOC_MALLOC_H */
 #endif /* HAVE_MALLOC_H */
 
@@ -105,22 +121,24 @@ extern char *strrchr ();
 # ifdef HAVE_SYS_FILE_H
 #  include <sys/file.h>
 # else
-#  warning bucomm.h expects either <fcntl.h> or <sys/file.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "bucomm.h expects either <fcntl.h> or <sys/file.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_SYS_FILE_H */
 #endif /* HAVE_FCNTL_H */
 
 #if !HAVE_DECL_STRSTR
-extern char *strstr ();
+extern char *strstr();
 #endif /* !HAVE_DECL_STRSTR */
 
 #ifdef HAVE_SBRK
 # if !HAVE_DECL_SBRK
-extern char *sbrk ();
+extern char *sbrk();
 # endif /* !HAVE_DECL_SBRK */
 #endif /* HAVE_SBRK */
 
 #if !HAVE_DECL_GETENV
-extern char *getenv ();
+extern char *getenv();
 #endif /* !HAVE_DECL_GETENV */
 
 #if !HAVE_DECL_ENVIRON
@@ -199,7 +217,9 @@ void *alloca ();
 #   ifdef HAVE_GETTEXT_H
 #    include <gettext.h>
 #   else
-#    warning bucomm.h expects <libintl.h> (or another similar header) to be included.
+#    if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#     warning "bucomm.h expects <libintl.h> (or another similar header) to be included."
+#    endif /* __GNUC__ && !__STRICT_ANSI__ */
 #   endif /* HAVE_GETTEXT_H */
 #  endif /* HAVE_LIBGETTEXT_H */
 # endif /* HAVE_LIBINTL_H */
@@ -218,53 +238,55 @@ void *alloca ();
 
 /* bucomm.c */
 
-/* Return the filename in a static buffer.  */
-const char *bfd_get_archive_filename (bfd *);
+/* Return the filename in a static buffer: */
+const char *bfd_get_archive_filename(bfd *);
 
-void bfd_nonfatal (const char *);
+void bfd_nonfatal(const char *);
 
-void bfd_fatal (const char *) ATTRIBUTE_NORETURN;
+void bfd_fatal(const char *) ATTRIBUTE_NORETURN;
 
-void report (const char *, va_list) ATTRIBUTE_PRINTF(1,0);
+void report(const char *, va_list) ATTRIBUTE_PRINTF(1,0);
 
-void fatal (const char *, ...) ATTRIBUTE_PRINTF_1 ATTRIBUTE_NORETURN;
+void fatal(const char *, ...) ATTRIBUTE_PRINTF_1 ATTRIBUTE_NORETURN;
 
-void non_fatal (const char *, ...) ATTRIBUTE_PRINTF_1;
+void non_fatal(const char *, ...) ATTRIBUTE_PRINTF_1;
 
-void set_default_bfd_target (void);
+void set_default_bfd_target(void);
 
-void list_matching_formats (char **);
+void list_matching_formats(char **);
 
-void list_supported_targets (const char *, FILE *);
+void list_supported_targets(const char *, FILE *);
 
-void list_supported_architectures (const char *, FILE *);
+void list_supported_architectures(const char *, FILE *);
 
-int display_info (void);
+int display_info(void);
 
-void print_arelt_descr (FILE *, bfd *, bfd_boolean);
+void print_arelt_descr(FILE *, bfd *, bfd_boolean);
 
-char *make_tempname (char *);
+char *make_tempname(char *);
 
-bfd_vma parse_vma (const char *, const char *);
+bfd_vma parse_vma(const char *, const char *);
 
-off_t get_file_size (const char *);
+off_t get_file_size(const char *);
 
 extern char *program_name;
 
 /* filemode.c */
-void mode_string (unsigned long, char *);
+void mode_string(unsigned long, char *);
 
 /* version.c */
-extern void print_version (const char *);
+extern void print_version(const char *);
 
 /* rename.c */
-extern void set_times (const char *, const struct stat *);
+extern void set_times(const char *, const struct stat *);
 
-extern int smart_rename (const char *, const char *, int);
+extern int smart_rename(const char *, const char *, int);
 
-/* libiberty.  */
-void *xmalloc (size_t);
+/* libiberty prototypes: */
+void *xmalloc(size_t);
 
-void *xrealloc (void *, size_t);
+void *xrealloc(void *, size_t);
 
 #endif /* _BUCOMM_H */
+
+/* EOF */

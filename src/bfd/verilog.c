@@ -1,4 +1,5 @@
-/* BFD back-end for verilog hex memory dump files.
+/* verilog.c
+   BFD back-end for verilog hex memory dump files.
    Copyright 2009, 2010, 2011
    Free Software Foundation, Inc.
    Written by Anthony Green <green@moxielogic.com>
@@ -27,7 +28,7 @@
    DESCRIPTION
 
 	Verilog hex memory files cannot hold anything but addresses
-	and data, so that's all that we implement.
+	and data, so that is all that we implement.
 
 	The syntax of the text file is described in the IEEE standard
 	for Verilog.  Briefly, the file contains two types of tokens:
@@ -133,8 +134,8 @@ verilog_set_section_contents (bfd *abfd,
       entry->where = section->lma + offset;
       entry->size = bytes_to_do;
 
-      /* Sort the records by address.  Optimize for the common case of
-	 adding a record to the end of the list.  */
+      /* Sort the records by address. Optimize for the common case of
+	   * adding a record to the end of the list.  */
       if (tdata->tail != NULL
 	  && entry->where >= tdata->tail->where)
 	{
@@ -373,3 +374,5 @@ const bfd_target verilog_vec =
 
   NULL
 };
+
+/* EOF */

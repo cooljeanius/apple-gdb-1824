@@ -11,3 +11,4 @@ XM_FILE= xm-vaxbsd.h
 NATDEPFILES= infptrace.o inftarg.o fork-child.o corelow.o core-aout.o
 
 NAT_FILE= nm-vax.h
+

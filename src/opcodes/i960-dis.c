@@ -1,7 +1,7 @@
-/* Disassemble i80960 instructions.
-   Copyright 1990, 1991, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001, 2003
-   Free Software Foundation, Inc.
-
+/* i960-dis.c: Disassemble i80960 instructions.
+ * Copyright 1990-1991, 1993-1996, 1998-2001, 2003
+ * Free Software Foundation, Inc.  */
+/*
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
@@ -48,14 +48,14 @@ static void put_abs (unsigned long, unsigned long);
    on INFO->STREAM.  Returns length of the instruction, in bytes.  */
 
 int
-print_insn_i960 (bfd_vma memaddr, struct disassemble_info *info_arg)
+print_insn_i960(bfd_vma memaddr, struct disassemble_info *info_arg)
 {
   unsigned int word1, word2 = 0xdeadbeef;
   bfd_byte buffer[8];
   int status;
 
   info = info_arg;
-  stream = info->stream;
+  stream = (FILE *)info->stream;
 
   /* Read word1.  Only read word2 if the instruction
      needs it, to prevent reading past the end of a section.  */

@@ -1,0 +1,17 @@
+$ ../../gdb/gdb file.out
+GNU gdb 1824 (Sun Apr  5 22:53:47 UTC 2015)
+Copyright 2004 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you are
+welcome to change it and/or distribute copies of it under certain conditions.
+Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for details.
+This GDB was configured as "--host=x86_64-apple-darwin10.8.0 --target="...Reading symbols from /usr/lib/dyld...Reading symbols from /usr/lib/dyld.dSYM/Contents/Resources/DWARF/dyld...done.
+done.
+Reading symbols from /usr/lib/libSystem.B.dylib...done.
+Reading symbols from /usr/lib/libSystem.B.dylib[LC_SEGMENT.__DATA.__commpage]...done.
+Reading symbols from /opt/local/lib/libgcc/libgcc_s.1.dylib...done.
+Reading symbols from /Users/ericgallager/apple-gdb-1824/src/utils/spu/file.out...done.
+
+(gdb) run
+Unable to find Mach task port for process-id 2273: (os/kern) failure (0x5).
+(gdb)

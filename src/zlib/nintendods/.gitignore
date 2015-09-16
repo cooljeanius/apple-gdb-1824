@@ -1,5 +1,7 @@
 build/*
-lib/*
+lib/*.dylib
+lib/*.so
+lib/*.la
 include/config.h
 libz.a
 *lib*.a

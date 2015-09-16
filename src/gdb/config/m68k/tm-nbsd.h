@@ -1,4 +1,5 @@
-/* Macro definitions for m68k running under NetBSD.
+/* tm-nbsd.h
+   Macro definitions for m68k running under NetBSD.
    Copyright 1994, 1996, 2001 Free Software Foundation, Inc.
 
    This file is part of GDB.

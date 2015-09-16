@@ -25,7 +25,9 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning arch-utils.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning arch-utils.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #include "arch-utils.h"
@@ -365,12 +367,12 @@ static int target_byte_order = BFD_ENDIAN_BIG;
 static int target_byte_order_auto = 1;
 
 enum bfd_endian
-selected_byte_order (void)
+selected_byte_order(void)
 {
   if (target_byte_order_auto)
     return BFD_ENDIAN_UNKNOWN;
   else
-    return target_byte_order;
+    return (enum bfd_endian)target_byte_order;
 }
 
 static const char endian_big[] = "big";
@@ -484,10 +486,10 @@ The target architecture is assumed to be %s\n"), arch);
 int
 set_architecture_from_string (char *new_arch)
 {
-  set_architecture_string = xstrdup (new_arch);
   struct gdbarch_info info;
-  gdbarch_info_init (&info);
-  info.bfd_arch_info = bfd_scan_arch (set_architecture_string);
+  set_architecture_string = xstrdup(new_arch);
+  gdbarch_info_init(&info);
+  info.bfd_arch_info = bfd_scan_arch(set_architecture_string);
   if (info.bfd_arch_info == NULL)
     internal_error (__FILE__, __LINE__,
 		    _("set_architecture: bfd_scan_arch failed"));
@@ -572,61 +574,61 @@ gdbarch_update_p (struct gdbarch_info info)
    could be find, return NULL.  */
 
 struct gdbarch *
-gdbarch_from_bfd (bfd *abfd)
+gdbarch_from_bfd(bfd *abfd)
 {
   struct gdbarch_info info;
 
-  gdbarch_info_init (&info);
+  gdbarch_info_init(&info);
   info.abfd = abfd;
-  return gdbarch_find_by_info (info);
+  return gdbarch_find_by_info(info);
 }
 
 /* Set the dynamic target-system-dependent parameters (architecture,
    byte-order) using information found in the BFD */
 
 void
-set_gdbarch_from_file (bfd *abfd)
+set_gdbarch_from_file(bfd *abfd)
 {
   struct gdbarch *gdbarch;
 
-  gdbarch = gdbarch_from_bfd (abfd);
+  gdbarch = gdbarch_from_bfd(abfd);
   if (gdbarch == NULL)
-    error (_("Architecture of file not recognized."));
-#if defined (TARGET_ARM) && defined (TM_NEXTSTEP)
+    error(_("Architecture of file not recognized."));
+#if defined(TARGET_ARM) && defined(TM_NEXTSTEP)
   /* APPLE LOCAL: We may have a arm binary with a lesser CPU subtype running on
      a more capable device. We need to pick the highest of the two architectures
      and go with that.  */
-  if (!target_architecture_auto && gdbarch != current_gdbarch)
+  if (!target_architecture_auto && (gdbarch != current_gdbarch))
     {
       const struct bfd_arch_info *abfd_bfd_arch_info;
       const struct bfd_arch_info *curr_bfd_arch_info;
       const struct bfd_arch_info *compatible_bfd_arch_info = NULL;
-      abfd_bfd_arch_info = bfd_get_arch_info (abfd);
-      curr_bfd_arch_info = gdbarch_bfd_arch_info (current_gdbarch);
-      if (abfd_bfd_arch_info != NULL && curr_bfd_arch_info != NULL)
+      abfd_bfd_arch_info = bfd_get_arch_info(abfd);
+      curr_bfd_arch_info = gdbarch_bfd_arch_info(current_gdbarch);
+      if ((abfd_bfd_arch_info != NULL) && (curr_bfd_arch_info != NULL))
 	{
-	  compatible_bfd_arch_info = bfd_default_compatible (abfd_bfd_arch_info,
-							 curr_bfd_arch_info);
+	  compatible_bfd_arch_info =
+            bfd_default_compatible(abfd_bfd_arch_info, curr_bfd_arch_info);
 	  if (compatible_bfd_arch_info == NULL)
 	    {
-	      warning ("Architecture of file \"%s\" (%s) is not compatible "
-		       "with the user selected architecture (%s).",
-		       abfd->filename ? abfd->filename : "<UNKNOWN>",
-		       curr_bfd_arch_info->printable_name,
-		       abfd_bfd_arch_info->printable_name);
+	      warning("Architecture of file \"%s\" (%s) is not compatible "
+		      "with the user selected architecture (%s).",
+		      (abfd->filename ? abfd->filename : "<UNKNOWN>"),
+		      curr_bfd_arch_info->printable_name,
+		      abfd_bfd_arch_info->printable_name);
 	    }
 	}
-      /* Only select the gdbarch from ABFD if it was the compatible one.  */
+      /* Only select the gdbarch from ABFD if it was the compatible one: */
       if (compatible_bfd_arch_info == abfd_bfd_arch_info)
-	deprecated_current_gdbarch_select_hack (gdbarch);
+	deprecated_current_gdbarch_select_hack(gdbarch);
     }
 
 #else
-  if (!target_architecture_auto && gdbarch != current_gdbarch)
-    error ("Architecture of file \"%s\" does not match user selected architecture.",
-	   abfd->filename ? abfd->filename : "<UNKNOWN>" );
-  deprecated_current_gdbarch_select_hack (gdbarch);
-#endif
+  if (!target_architecture_auto && (gdbarch != current_gdbarch))
+    error("Architecture of file \"%s\" does not match user selected architecture.",
+	  abfd->filename ? abfd->filename : "<UNKNOWN>" );
+  deprecated_current_gdbarch_select_hack(gdbarch);
+#endif /* TARGET_ARM && TM_NEXTSTEP */
 }
 
 /* Initialize the current architecture.  Update the ``set
@@ -651,17 +653,16 @@ static const bfd_target *default_bfd_vec;
 #endif
 
 void
-initialize_current_architecture (void)
+initialize_current_architecture(void)
 {
-  const char **arches = gdbarch_printable_names ();
+  const char **arches = gdbarch_printable_names();
 
-  /* determine a default architecture and byte order. */
+  /* determine a default architecture and byte order: */
   struct gdbarch_info info;
-  gdbarch_info_init (&info);
+  gdbarch_info_init(&info);
 
-  /* Find a default architecture. */
-  if (info.bfd_arch_info == NULL
-      && default_bfd_arch != NULL)
+  /* Find a default architecture: */
+  if ((info.bfd_arch_info == NULL) && (default_bfd_arch != NULL))
     info.bfd_arch_info = default_bfd_arch;
   if (info.bfd_arch_info == NULL)
     {
@@ -671,23 +672,23 @@ initialize_current_architecture (void)
       const char **arch;
       for (arch = arches; *arch != NULL; arch++)
 	{
-	  if (strcmp (*arch, chosen) < 0)
+	  if (strcmp(*arch, chosen) < 0)
 	    chosen = *arch;
 	}
       if (chosen == NULL)
-	internal_error (__FILE__, __LINE__,
-			_("initialize_current_architecture: No arch"));
-      info.bfd_arch_info = bfd_scan_arch (chosen);
+	internal_error(__FILE__, __LINE__,
+                       _("initialize_current_architecture: No arch"));
+      info.bfd_arch_info = bfd_scan_arch(chosen);
       if (info.bfd_arch_info == NULL)
-	internal_error (__FILE__, __LINE__,
-			_("initialize_current_architecture: Arch not found"));
+	internal_error(__FILE__, __LINE__,
+                       _("initialize_current_architecture: Arch not found"));
     }
 
-  /* Take several guesses at a byte order.  */
-  if (info.byte_order == BFD_ENDIAN_UNKNOWN
-      && default_bfd_vec != NULL)
+  /* Take several guesses at a byte order: */
+  if ((info.byte_order == BFD_ENDIAN_UNKNOWN)
+      && (default_bfd_vec != NULL))
     {
-      /* Extract BFD's default vector's byte order. */
+      /* Extract BFD's default vector's byte order: */
       switch (default_bfd_vec->byteorder)
 	{
 	case BFD_ENDIAN_BIG:
@@ -702,12 +703,12 @@ initialize_current_architecture (void)
     }
   if (info.byte_order == BFD_ENDIAN_UNKNOWN)
     {
-      /* look for ``*el-*'' in the target name. */
+      /* look for ``*el-*'' in the target name: */
       const char *chp;
       chp = strchr (target_name, '-');
-      if (chp != NULL
-	  && chp - 2 >= target_name
-	  && strncmp (chp - 2, "el", 2) == 0)
+      if ((chp != NULL)
+	  && ((chp - 2) >= target_name)
+	  && (strncmp(chp - 2, "el", 2) == 0))
 	info.byte_order = BFD_ENDIAN_LITTLE;
     }
   if (info.byte_order == BFD_ENDIAN_UNKNOWN)
@@ -717,9 +718,9 @@ initialize_current_architecture (void)
     }
 
   if (! gdbarch_update_p (info))
-    internal_error (__FILE__, __LINE__,
-		    _("initialize_current_architecture: Selection of "
-		      "initial architecture failed"));
+    internal_error(__FILE__, __LINE__,
+		   _("initialize_current_architecture: Selection of "
+		     "initial architecture failed"));
 
   /* Create the ``set architecture'' command appending ``auto'' to the
      list of architectures. */
@@ -727,16 +728,16 @@ initialize_current_architecture (void)
     /* Append ``auto''. */
     int nr;
     for (nr = 0; arches[nr] != NULL; nr++);
-    arches = xrealloc (arches, sizeof (char*) * (nr + 2));
+    arches = (const char **)xrealloc(arches, sizeof(char *) * (nr + 2));
     arches[nr + 0] = "auto";
     arches[nr + 1] = NULL;
-    add_setshow_enum_cmd ("architecture", class_support,
-			  arches, &set_architecture_string, _("\
+    add_setshow_enum_cmd("architecture", class_support,
+                         arches, &set_architecture_string, _("\
 Set architecture of target."), _("\
 Show architecture of target."), NULL,
-			  set_architecture, show_architecture,
-			  &setlist, &showlist);
-    add_alias_cmd ("processor", "architecture", class_support, 1, &setlist);
+                         set_architecture, show_architecture,
+                         &setlist, &showlist);
+    add_alias_cmd("processor", "architecture", class_support, 1, &setlist);
   }
 }
 

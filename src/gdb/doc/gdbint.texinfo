@@ -4051,7 +4051,7 @@ framework.  It involves
 @item
 The addition of a @code{@var{arch}_gdbarch_init} function@footnote{The
 above is from the original example and uses K&R C.  @value{GDBN}
-has since converted to ISO C but lets ignore that.} that creates
+has since converted to ISO C but let us ignore that.} that creates
 the architecture:
 @smallexample
 static struct gdbarch *
@@ -4940,7 +4940,7 @@ The current list of warning flags includes:
 @item -Wimplicit
 Since @value{GDBN} coding standard requires all functions to be declared
 using a prototype, the flag has the side effect of ensuring that
-prototyped functions are always visible with out resorting to
+prototyped functions are always visible without resorting to
 @samp{-Wstrict-prototypes}.
 
 @item -Wreturn-type
@@ -4948,22 +4948,108 @@ Such code often appears to work except on instruction set architectures
 that use register windows.
 
 @item -Wcomment
+Normally this would be part of @option{-Wall}, but we do not use that here.
+
+@item -Waddress
+Likewise.
+
+@item -Wbool-compare
+Likewise.
+
+@item -Wlogical-not-parentheses
+Likewise.
+
+@item -Wmain
+Likewise.
+
+@item -Wmissing-braces
+Likewise.
+
+@item -Wswitch
+Likewise.
 
 @item -Wtrigraphs
+Likewise.
+
+@item -Warray-bounds
+Likewise, but only at @option{-O2} and up, or when @option{-ftree-vrp} is
+active.
+
+@item -Wattributes
+Usually on by default, but specify it manually anyways.
+
+@item -Wdiv-by-zero
+Likewise (default).
+
+@item -Wfree-nonheap-object
+Likewise (default).
+
+@item -Woverflow
+Likewise (default).
+
+@item -Wpragmas
+Likewise (default).
+
+@item -Wsizeof-array-argument
+Likewise (default).
+
+@item -Wshift-count-negative
+Likewise (default).
+
+@item -Wshift-count-overflow
+Likewise (default).
+
+@item -Wswitch-bool
+Likewise (default).
+
+@item -Wcoverage-mismatch
+Likewise, but only relevant when using @option{-fprofile-use}.
 
 @item -Wformat
+Only part of this flag is actually used, specifically:
 @itemx -Wformat-nonliteral
 Since @value{GDBN} uses the @code{format printf} attribute on all
 @code{printf} like functions these check not just @code{printf} calls
 but also calls to functions such as @code{fprintf_unfiltered}.
 
+@itemx -Wno-format-security
+This subset of format checks is left out because it is annoying.
+
 @item -Wparentheses
 This warning includes uses of the assignment operator within an
 @code{if} statement.
 
+@item -Wdeclaration-after-statement
+Kind of pedantic, but less so than @option{-pedantic}.
+
+@item -Woverlength-strings
+Likewise (pedantic).
+
+@item -Wnormalized=nfkc
+Slightly stricter than the default @option{-Wnormalized=nfc}.
+
+@item -Wc++-compat
+In case upstream GDB transitions to C++ some day, which it seems to be
+doing...
+
+@item -Wjump-misses-init
+Part of the previous, but it makes sense to specify it separately, as well.
+
+@item -Winvalid-pch
+In case we start using a precompiled header.
+
 @item -Wpointer-arith
+Pointer arithmetic can be tricky.
+
+@item -Wpointer-sign
+Another flag normally enabled by @option{-Wall}.
 
 @item -Wuninitialized
+This flag is only used with optimization, and allows the use of
+@option{-Winit-self} as well.
+
+@item -Wunused-value
+Emulate a similar check often performed by the clang static analyzer.
 
 @item -Wunused-label
 This warning has the additional benefit of detecting the absence of the
@@ -4983,6 +5069,113 @@ switch (sched)
 @end smallexample
 
 @item -Wunused-function
+This one can often be ignored.
+
+@item -Wunused-macros
+This one goes hand-in-hand with the following @option{-Wundef} flag.
+
+@item -Wunused-result
+This warning ensures that return values of function calls get checked.
+
+@item -Wundef
+Makes sure the proper configure checks have been run.
+
+@item -Wmissing-include-dirs
+Makes sure the build system is functioning properly.
+
+@item -Wempty-body
+Normally this would be part of @option{-Wextra}, but we do not use that
+here.
+
+@item -Wclobbered
+Likewise (extra).
+
+@item -Wmissing-field-initializers
+Likewise (extra).
+
+@item -Wmissing-parameter-type
+Likewise (extra).
+
+@item -Woverride-init
+Likewise (extra).
+
+@item -Wsign-compare
+Likewise, except the @option{-Wextra} would be @option{-Wall} in C++.
+
+@item -Wshift-negative-value
+Like the previous @option{-Wextra} sub-options, except only in C99 and
+C++11 modes (and newer).
+
+@item -Wlto-type-mismatch
+In case we start building with Link-Time Optimization.
+
+@item -Wmisleading-indentation
+I really hate bad indentation, and am extremely thankful that this option
+exists as of GCC 6.
+
+@item -Wmissing-declarations
+Elsewhere in this document, it says that it is okay to write code to pacify
+this option.
+
+@item -Wmissing-format-attribute
+See the notes for why we use @option{-Wformat-nonliteral}.
+
+@item -Wmissing-noreturn
+A reminder to use @code{ATTRIBUTE_NORETURN} when applicable.
+
+@item -Wold-style-declaration
+For tranisitioning away from pre-ANSI code.
+
+@item -Wold-style-definition
+Likewise.
+
+@item -Wlong-long
+Only for platforms that are missing this type.
+
+@item -Wdouble-promotion
+Unlike what the GCC manual says, the main point for using this is for
+dealing with issues arising from the use of
+@option{-Wunsuffixed-float-constants} (see below).
+
+@item -Wunsuffixed-float-constants
+This option is kind of broken, as only the "f" and "L" suffixes (for floats
+and long doubles respectively) are standard (i.e. the "D" suffix for
+regular doubles is non-standard).
+I like to use it anyways though, because I am kind of pedantic.
+
+@item -Wfloat-conversion
+Goes with the previous 2 options.
+
+@item -Wmost
+This is an Apple-specific subset of @option{-Wall}.
+
+@item -Wextra-tokens
+This is Apple-specific; make sure the construct to which it refers is
+properly commented out.
+
+@item -Wnewline-eof
+This is Apple-specific; a missing newline at the end of a file can make it
+hard to @code{diff} it properly, and can confuse other similar utilities.
+
+@item -Wnonportable-cfstrings
+This is a flag only for newer FSF GCC on Apple platforms; the macosx subdir
+sometimes uses CoreFoundation functionality for strings, so make sure that
+it does so portably.
+
+@item -Wendif-labels
+Like @option{-Wextra-tokens}, but for FSF GCC.
+It is usually on by default, but we manually specify it anyways.
+
+@item -Wshorten-64-to-32
+A subset of @option{-Wconversion} that makes sense for 64-bit platforms.
+
+@item -Winvalid-memory-model
+FIXME: This option is undocumented.
+
+@item -Wno-deprecated-declarations
+I marked too many things as deprecated, so explicitly disable warnings
+about them until we can get things under control.
+
 @end table
 
 @emph{Pragmatics: Due to the way that @value{GDBN} is implemented most
@@ -4990,8 +5183,10 @@ functions have unused parameters.  Consequently the warning
 @samp{-Wunused-parameter} is precluded from the list.  The macro
 @code{ATTRIBUTE_UNUSED} is not used as it leads to false negatives ---
 it is not an error to have @code{ATTRIBUTE_UNUSED} on a parameter that
-is being used.  The options @samp{-Wall} and @samp{-Wunused} are also
-precluded because they both include @samp{-Wunused-parameter}.}
+is being used (unless you are using clang, which has a
+@samp{-Wused-but-marked-unused} flag that could be turned into an error).
+The options @samp{-Wall} and @samp{-Wunused} are also precluded because
+they both include @samp{-Wunused-parameter}.}
 
 @emph{Pragmatics: @value{GDBN} has not simply accepted the warnings
 enabled by @samp{-Wall -Werror -W...}.  Instead it is selecting warnings
@@ -5001,7 +5196,7 @@ when and where their benefits can be demonstrated.}
 
 @cindex source code formatting
 The standard GNU recommendations for formatting must be followed
-strictly.
+strictly if you intend to contribute your changes back upstream to the FSF.
 
 A function declaration should not have its name in column zero.  A
 function definition should have its name in column zero.
@@ -5047,7 +5242,8 @@ void* foo;
 @subsection Comments
 
 @cindex comment formatting
-The standard GNU requirements on comments must be followed strictly.
+The standard GNU requirements on comments must be followed strictly if you
+intend to contribute your changes back upstream to the FSF.
 
 Block comments must appear in the following form, with no @code{/*}- or
 @code{*/}-only lines, and no leading @code{*}:
@@ -5180,7 +5376,7 @@ An external declaration should only appear in one include file.
 
 An external declaration should never appear in a @code{.c} file.
 Exception: a declaration for the @code{_initialize} function that
-pacifies @option{-Wmissing-declaration}.
+pacifies @option{-Wmissing-declarations}.
 
 A @code{typedef} definition should only appear in one include file.
 

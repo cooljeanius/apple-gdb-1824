@@ -161,7 +161,7 @@ hex_init (void)
 #ifndef HEX_TABLE_INITIALIZED
   int i;
 
-  for (i=0; i<_hex_array_size; i++)
+  for (i = 0; i<_hex_array_size; i++)
     {
       switch (i)
 	{
@@ -188,5 +188,7 @@ hex_init (void)
 	  break;
 	}
     }
-#endif
+#endif /* !HEX_TABLE_INITIALIZED */
 }
+
+/* EOF */

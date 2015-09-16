@@ -1,6 +1,6 @@
 /* xgate.h -- Freescale XGATE opcode list
    Copyright 2010, 2011, 2012 Free Software Foundation, Inc.
-   Written by Sean Keys (skeys@ipdatasys.com)
+   Written by Sean Keys <skeys@ipdatasys.com>
 
    This file is part of the GNU opcodes library.
 

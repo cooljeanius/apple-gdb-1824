@@ -4,7 +4,7 @@ AC_DEFUN([AC_PROG_CC_GNU],
 cat > conftest.c <<EOF
 #ifdef __GNUC__
   yes;
-#endif
+#endif /* __GNUC__ */
 EOF
 AC_REQUIRE([AC_PROG_EGREP])
 if AC_TRY_COMMAND([${CC-cc} -E conftest.c]) | egrep yes >/dev/null 2>&1; then

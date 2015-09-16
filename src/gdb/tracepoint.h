@@ -1,4 +1,4 @@
-/* Data structures associated with tracepoints in GDB.
+/* tracepoint.h: Data structures associated with tracepoints in GDB.
    Copyright 1997, 1998, 1999, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -18,8 +18,10 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (TRACEPOINT_H)
+#if !defined(TRACEPOINT_H)
 #define TRACEPOINT_H 1
+
+#include "ansidecl.h"
 
 /* The data structure for an action: */
 struct action_line
@@ -40,7 +42,7 @@ struct tracepoint
     /* Type of tracepoint.  (MVS FIXME: needed?) */
     enum tptype type;
 
-    /* What to do with this tracepoint after we hit it 
+    /* What to do with this tracepoint after we hit it
        MVS FIXME: needed?).  */
     enum tpdisp disposition;
 #endif
@@ -51,19 +53,19 @@ struct tracepoint
        (MVS ?) */
     CORE_ADDR address;
 
-    /* Line number of this address.  
+    /* Line number of this address.
        Only matters if address is non-NULL.  */
     int line_number;
 
-    /* Source file name of this address.  
+    /* Source file name of this address.
        Only matters if address is non-NULL.  */
     char *source_file;
 
-    /* Number of times this tracepoint should single-step 
+    /* Number of times this tracepoint should single-step
        and collect additional data.  */
     long step_count;
 
-    /* Number of times this tracepoint should be hit before 
+    /* Number of times this tracepoint should be hit before
        disabling/ending.  */
     int pass_count;
 
@@ -89,7 +91,7 @@ struct tracepoint
        aborting, so you can back up to just before the abort.  */
     int hit_count;
 
-    /* Thread number for thread-specific tracepoint, 
+    /* Thread number for thread-specific tracepoint,
        or -1 if don't care.  */
     int thread;
 
@@ -107,19 +109,22 @@ enum actionline_type
   };
 
 
-/* The tracepoint chain of all tracepoints.  */
-
+/* The tracepoint chain of all tracepoints: */
 extern struct tracepoint *tracepoint_chain;
 
 extern unsigned long trace_running_p;
 
-/* A hook used to notify the UI of tracepoint operations.  */
-
-void (*deprecated_create_tracepoint_hook) (struct tracepoint *);
-void (*deprecated_delete_tracepoint_hook) (struct tracepoint *);
-void (*deprecated_modify_tracepoint_hook) (struct tracepoint *);
-void (*deprecated_trace_find_hook) (char *arg, int from_tty);
-void (*deprecated_trace_start_stop_hook) (int start, int from_tty);
+/* A hook used to notify the UI of tracepoint operations: */
+void (*deprecated_create_tracepoint_hook)(struct tracepoint *)
+  ATTRIBUTE_DEPRECATED;
+void (*deprecated_delete_tracepoint_hook)(struct tracepoint *)
+  ATTRIBUTE_DEPRECATED;
+void (*deprecated_modify_tracepoint_hook)(struct tracepoint *)
+  ATTRIBUTE_DEPRECATED;
+void (*deprecated_trace_find_hook)(char *arg, int from_tty)
+  ATTRIBUTE_DEPRECATED;
+void (*deprecated_trace_start_stop_hook)(int start, int from_tty)
+  ATTRIBUTE_DEPRECATED;
 
 struct tracepoint *get_tracepoint_by_number (char **, int, int);
 int get_traceframe_number (void);

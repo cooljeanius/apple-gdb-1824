@@ -20,22 +20,30 @@
    Free Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA
    02110-1301, USA.  */
 
-/* While the ia64-opc-* set of opcode tables are easy to maintain,
-   they waste a tremendous amount of space.  ia64-gen rearranges the
-   instructions into a directed acyclic graph (DAG) of instruction opcodes and 
-   their possible completers, as well as compacting the set of strings used.  
+/* While the ia64-opc-* set of opcode tables are easy to maintain, they
+ * waste a tremendous amount of space.  ia64-gen rearranges the
+ * instructions into a directed acyclic graph (DAG) of instruction opcodes
+ * and  their possible completers, as well as compacting the set of strings
+ * used.
+ *
+ * The disassembler table consists of a state machine that does branching
+ * based on the bits of the opcode being disassembled.  The state encodings
+ * have been chosen to minimize the amount of space required.
+ *
+ * The resource table is constructed based on some text dependency tables,
+ * which are also easier to maintain than the final representation.  */
 
-   The disassembler table consists of a state machine that does
-   branching based on the bits of the opcode being disassembled.  The
-   state encodings have been chosen to minimize the amount of space
-   required.  
-
-   The resource table is constructed based on some text dependency tables, 
-   which are also easier to maintain than the final representation.  */
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
 #include <stdarg.h>
 #include <errno.h>
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h> /* for chdir() */
+#endif /* HAVE_CHDIR */
 
 #include "ansidecl.h"
 #include "libiberty.h"
@@ -52,13 +60,15 @@
 #include "ia64-opc-d.c"
 
 #include <libintl.h>
-#define _(String) gettext (String)
+#ifndef _
+# define _(String) gettext(String)
+#endif /* !_ */
 
-const char * program_name = NULL;
+const char *program_name = NULL;
 int debug = 0;
 
-#define NELEMS(a) (sizeof (a) / sizeof ((a)[0]))
-#define tmalloc(X) (X *) xmalloc (sizeof (X))
+#define NELEMS(a) (sizeof(a) / sizeof((a)[0]))
+#define tmalloc(X) (X *)xmalloc(sizeof(X))
 
 /* The main opcode table entry.  Each entry is a unique combination of
    name and flags (no two entries in the table compare as being equal
@@ -163,7 +173,7 @@ struct bittree
    alphabetical order.  */
 
 /* One entry in the string table.  */
-struct string_entry 
+struct string_entry
 {
   /* The index in the ia64_strings[] array for this entry.  */
   int num;
@@ -179,11 +189,11 @@ int strtabtotlen = 0;
 struct rdep
 {
   char *name;                       /* Resource name.  */
-  unsigned 
+  unsigned
     mode:2,                         /* RAW, WAW, or WAR.  */
     semantics:3;                    /* Dependency semantics.  */
   char *extra;                      /* Additional semantics info.  */
-  int nchks;                   
+  int nchks;
   int total_chks;                   /* Total #of terminal insns.  */
   int *chks;                        /* Insn classes which read (RAW), write
                                        (WAW), or write (WAR) this rsrc.  */
@@ -202,12 +212,12 @@ static int rdepstotlen = 0;
 
 /* Array of all instruction classes.  */
 struct iclass
-{ 
+{
   char *name;                       /* Instruction class name.  */
   int is_class;                     /* Is a class, not a terminal.  */
-  int nsubs;                        
+  int nsubs;
   int *subs;                        /* Other classes within this class.  */
-  int nxsubs;                       
+  int nxsubs;
   int xsubs[4];                     /* Exclusions.  */
   char *comment;                    /* Optional comment.  */
   int note;                         /* Optional note.  */
@@ -292,7 +302,7 @@ static void
 fail (const char *message, ...)
 {
   va_list args;
-  
+
   va_start (args, message);
   fprintf (stderr, _("%s: Error: "), program_name);
   vfprintf (stderr, message, args);
@@ -327,7 +337,7 @@ insert_resource (const char *name, enum ia64_dependency_mode type)
   rdeps[rdepslen]->name = xstrdup (name);
   rdeps[rdepslen]->mode = type;
   rdeps[rdepslen]->waw_special = 0;
-  
+
   return rdeps[rdepslen++];
 }
 
@@ -396,7 +406,7 @@ insert_deplist (int count, unsigned short *deps)
 
 /* Add the given pair of dependency lists to the opcode dependency list.  */
 static short
-insert_dependencies (int nchks, unsigned short *chks, 
+insert_dependencies (int nchks, unsigned short *chks,
                      int nregs, unsigned short *regs)
 {
   struct opdep *pair;
@@ -410,14 +420,14 @@ insert_dependencies (int nchks, unsigned short *chks,
     chkind = insert_deplist (nchks, chks);
 
   for (i = 0; i < opdeplen; i++)
-    if (opdeps[i]->chk == chkind 
+    if (opdeps[i]->chk == chkind
 	&& opdeps[i]->reg == regind)
       return i;
 
   pair = tmalloc (struct opdep);
   pair->chk = chkind;
   pair->reg = regind;
-  
+
   if (opdeplen == opdeptotlen)
     {
       opdeptotlen += 20;
@@ -429,7 +439,7 @@ insert_dependencies (int nchks, unsigned short *chks,
   return opdeplen++;
 }
 
-static void 
+static void
 mark_used (struct iclass *ic, int clear_terminals)
 {
   int i;
@@ -512,7 +522,7 @@ fetch_insn_class (const char *full_name, int create)
     if (strcmp (name, ics[i]->name) == 0
         && ((comment == NULL && ics[i]->comment == NULL)
             || (comment != NULL && ics[i]->comment != NULL
-                && strncmp (ics[i]->comment, comment, 
+                && strncmp (ics[i]->comment, comment,
                             strlen (ics[i]->comment)) == 0))
         && note == ics[i]->note)
       return i;
@@ -614,10 +624,10 @@ load_insn_classes (void)
       int iclass;
       char *name;
       char *tmp;
-      
+
       if (fgets (buf, sizeof (buf), fp) == NULL)
         break;
-      
+
       while (ISSPACE (buf[strlen (buf) - 1]))
         buf[strlen (buf) - 1] = '\0';
 
@@ -661,9 +671,9 @@ load_insn_classes (void)
             }
           if (*tmp == ',')
             *tmp++ = '\0';
-          
+
           ics[iclass]->subs = (int *)
-            xrealloc ((void *)ics[iclass]->subs, 
+            xrealloc ((void *)ics[iclass]->subs,
 		      (ics[iclass]->nsubs + 1) * sizeof (int));
 
           sub = fetch_insn_class (subname, 1);
@@ -673,7 +683,7 @@ load_insn_classes (void)
         }
 
       /* Make sure classes come before terminals.  */
-      qsort ((void *)ics[iclass]->subs, 
+      qsort ((void *)ics[iclass]->subs,
              ics[iclass]->nsubs, sizeof(int), sub_compare);
     }
   fclose (fp);
@@ -682,16 +692,13 @@ load_insn_classes (void)
     printf ("%d classes\n", iclen);
 }
 
-/* Extract the insn classes from the given line.  */
+/* Extract the insn classes from the given line: */
 static void
-parse_resource_users (ref, usersp, nusersp, notesp)
-  const char *ref;
-  int **usersp;
-  int *nusersp;
-  int **notesp;
+parse_resource_users(const char *ref, int **usersp, int *nusersp,
+                     int **notesp)
 {
   int c;
-  char *line = xstrdup (ref);
+  char *line = xstrdup(ref);
   char *tmp = line;
   int *users = *usersp;
   int count = *nusersp;
@@ -706,33 +713,33 @@ parse_resource_users (ref, usersp, nusersp, notesp)
       int iclass;
       int create = 0;
       char *name;
-      
-      while (ISSPACE (*tmp))
+
+      while (ISSPACE(*tmp))
         ++tmp;
       name = tmp;
-      while (*tmp && *tmp != ',')
+      while (*tmp && (*tmp != ','))
         ++tmp;
       c = *tmp;
       *tmp++ = '\0';
-      
-      xsect = strchr (name, '\\');
-      if ((notestr = strstr (name, "+")) != NULL)
+
+      xsect = strchr(name, '\\');
+      if ((notestr = strstr(name, "+")) != NULL)
         {
           char *nextnotestr;
 
-          note = atoi (notestr + 1);
-          if ((nextnotestr = strchr (notestr + 1, '+')) != NULL)
+          note = atoi(notestr + 1);
+          if ((nextnotestr = strchr(notestr + 1, '+')) != NULL)
             {
-              /* Note 13 always implies note 1.  */
-              if (strcmp (notestr, "+1+13") == 0)
+              /* Note 13 always implies note 1: */
+              if (strcmp(notestr, "+1+13") == 0)
                 note = 13;
-              else if (!xsect || nextnotestr < xsect)
-                warn (_("multiple note %s not handled\n"), notestr);
+              else if (!xsect || (nextnotestr < xsect))
+                warn(_("multiple note %s not handled\n"), notestr);
             }
           if (!xsect)
             *notestr = '\0';
         }
-      else 
+      else
         note = 0;
 
       /* All classes are created when the insn class table is parsed;
@@ -740,16 +747,16 @@ parse_resource_users (ref, usersp, nusersp, notesp)
          are read.  Only create new classes if it's *not* an insn class,
          or if it's a composite class (which wouldn't necessarily be in the IC
          table).  */
-      if (strncmp (name, "IC:", 3) != 0 || xsect != NULL)
+      if ((strncmp(name, "IC:", 3) != 0) || (xsect != NULL))
         create = 1;
-      
+
       iclass = fetch_insn_class (name, create);
       if (iclass != -1)
         {
           users = (int *)
-            xrealloc ((void *) users,(count + 1) * sizeof (int));
+            xrealloc((void *)users, (count + 1) * sizeof(int));
           notes = (int *)
-            xrealloc ((void *) notes,(count + 1) * sizeof (int));
+            xrealloc((void *)notes, (count + 1) * sizeof(int));
           notes[count] = note;
           users[count++] = iclass;
           mark_used (ics[iclass], 0);
@@ -757,16 +764,16 @@ parse_resource_users (ref, usersp, nusersp, notesp)
       else if (debug)
 	printf("Class %s not found\n", name);
     }
-  /* Update the return values.  */
+  /* Update the return values: */
   *usersp = users;
   *nusersp = count;
   *notesp = notes;
 
-  free (line);
+  free(line);
 }
 
 static int
-parse_semantics (char *sem)
+parse_semantics(char *sem)
 {
   if (strcmp (sem, "none") == 0)
     return IA64_DVS_NONE;
@@ -782,20 +789,20 @@ parse_semantics (char *sem)
     return IA64_DVS_SPECIFIC;
   else if (strcmp (sem, "stop") == 0)
     return IA64_DVS_STOP;
-  else 
+  else
     return IA64_DVS_OTHER;
 }
 
 static void
-add_dep (const char *name, const char *chk, const char *reg,
-         int semantics, int mode, char *extra, int flag)
+add_dep(const char *name, const char *chk, const char *reg,
+        int semantics, int mode, char *extra, int flag)
 {
   struct rdep *rs;
 
-  rs = insert_resource (name, mode);
+  rs = insert_resource(name, (enum ia64_dependency_mode)mode);
 
-  parse_resource_users (chk, &rs->chks, &rs->nchks, &rs->chknotes);
-  parse_resource_users (reg, &rs->regs, &rs->nregs, &rs->regnotes);
+  parse_resource_users(chk, &rs->chks, &rs->nchks, &rs->chknotes);
+  parse_resource_users(reg, &rs->regs, &rs->nregs, &rs->regnotes);
 
   rs->semantics = semantics;
   rs->extra = extra;
@@ -829,7 +836,7 @@ load_depfile (const char *filename, enum ia64_dependency_mode mode)
       while (*tmp != ';')
         ++tmp;
       *tmp++ = '\0';
-      
+
       while (ISSPACE (*tmp))
         ++tmp;
       regp = tmp;
@@ -877,7 +884,7 @@ load_dependencies (void)
 }
 
 /* Is the given operand an indirect register file operand?  */
-static int 
+static int
 irf_operand (int op, const char *field)
 {
   if (!field)
@@ -903,7 +910,7 @@ irf_operand (int op, const char *field)
 /* Handle mov_ar, mov_br, mov_cr, mov_indirect, mov_ip, mov_pr, mov_psr, and
    mov_um insn classes.  */
 static int
-in_iclass_mov_x (struct ia64_opcode *idesc, struct iclass *ic, 
+in_iclass_mov_x (struct ia64_opcode *idesc, struct iclass *ic,
                  const char *format, const char *field)
 {
   int plain_mov = strcmp (idesc->name, "mov") == 0;
@@ -1017,7 +1024,7 @@ in_iclass_mov_x (struct ia64_opcode *idesc, struct iclass *ic,
 
 /* Is the given opcode in the given insn class?  */
 static int
-in_iclass (struct ia64_opcode *idesc, struct iclass *ic, 
+in_iclass (struct ia64_opcode *idesc, struct iclass *ic,
 	   const char *format, const char *field, int *notep)
 {
   int i;
@@ -1035,7 +1042,7 @@ in_iclass (struct ia64_opcode *idesc, struct iclass *ic,
                 {
                   warn (_("most recent format '%s'\nappears more restrictive than '%s'\n"),
 			ic->comment, format);
-                  format = ic->comment; 
+                  format = ic->comment;
                 }
             }
           else
@@ -1060,7 +1067,7 @@ in_iclass (struct ia64_opcode *idesc, struct iclass *ic,
       int len = strlen(ic->name);
 
       resolved = ((strncmp (ic->name, idesc->name, len) == 0)
-                  && (idesc->name[len] == '\0' 
+                  && (idesc->name[len] == '\0'
                       || idesc->name[len] == '.'));
 
       /* All break, nop, and hint variations must match exactly.  */
@@ -1148,7 +1155,7 @@ in_iclass (struct ia64_opcode *idesc, struct iclass *ic,
             resolved = 0;
         }
 
-      /* Misc brl variations ('.cond' is optional); 
+      /* Misc brl variations ('.cond' is optional);
          plain brl matches brl.cond.  */
       if (!resolved
           && (strcmp (idesc->name, "brl") == 0
@@ -1159,7 +1166,7 @@ in_iclass (struct ia64_opcode *idesc, struct iclass *ic,
         }
 
       /* Misc br variations ('.cond' is optional).  */
-      if (!resolved 
+      if (!resolved
           && (strcmp (idesc->name, "br") == 0
               || strncmp (idesc->name, "br.", 3) == 0)
           && strcmp (ic->name, "br.cond") == 0)
@@ -1176,8 +1183,8 @@ in_iclass (struct ia64_opcode *idesc, struct iclass *ic,
       /* probe variations.  */
       if (!resolved && strncmp (idesc->name, "probe", 5) == 0)
         {
-          resolved = strcmp (ic->name, "probe") == 0 
-            && !((strstr (idesc->name, "fault") != NULL) 
+          resolved = strcmp (ic->name, "probe") == 0
+            && !((strstr (idesc->name, "fault") != NULL)
                  ^ (format && strstr (format, "M40") != NULL));
         }
 
@@ -1212,7 +1219,7 @@ in_iclass (struct ia64_opcode *idesc, struct iclass *ic,
 	    resolved = in_iclass_mov_x (idesc, ic, format, field);
         }
 
-      /* Keep track of this so we can flag any insn classes which aren't 
+      /* Keep track of this so we can flag any insn classes which aren't
          mapped onto at least one real insn.  */
       if (resolved)
 	ic->terminal_resolved = 1;
@@ -1234,7 +1241,7 @@ in_iclass (struct ia64_opcode *idesc, struct iclass *ic,
           break;
         }
     }
-  
+
   /* If it's in this IC, add the IC note (if any) to the insn.  */
   if (resolved)
     {
@@ -1461,7 +1468,7 @@ lookup_specifier (const char *name)
         return IA64_RS_PMD;
       if (strstr (name, "RR#") != NULL)
         return IA64_RS_RR;
-      
+
       warn (_("Don't know how to specify # dependency %s\n"),
 	    name);
     }
@@ -1488,11 +1495,11 @@ lookup_specifier (const char *name)
 }
 
 static void
-print_dependency_table ()
+print_dependency_table(void)
 {
   int i, j;
 
-  if (debug) 
+  if (debug)
     {
       for (i=0;i < iclen;i++)
         {
@@ -1508,7 +1515,7 @@ print_dependency_table ()
 			  ics[i]->name);
                 }
             }
-          else 
+          else
             {
               if (!ics[i]->terminal_resolved && !ics[i]->orphan)
                 {
@@ -1534,11 +1541,11 @@ print_dependency_table ()
 
       if (debug > 1)
 	for (i = 0; i < rdepslen; i++)
-	  {  
+	  {
 	    static const char *mode_str[] = { "RAW", "WAW", "WAR" };
 
 	    if (rdeps[i]->total_chks == 0)
-	      warn (_("Warning: rsrc %s (%s) has no chks%s\n"), 
+	      warn (_("Warning: rsrc %s (%s) has no chks%s\n"),
 		    rdeps[i]->name, mode_str[rdeps[i]->mode],
 		    rdeps[i]->total_regs ? "" : " or regs");
 	    else if (rdeps[i]->total_regs == 0)
@@ -1552,7 +1559,7 @@ print_dependency_table ()
   for (i = 0; i < rdepslen; i++)
     {
       /* '%', '#', AR[], CR[], or PSR. indicates we need to specify the actual
-         resource used.  */ 
+         resource used.  */
       int specifier = lookup_specifier (rdeps[i]->name);
       int regindex = lookup_regindex (rdeps[i]->name, specifier);
 
@@ -1567,8 +1574,8 @@ print_dependency_table ()
     }
   printf ("};\n\n");
 
-  /* And dependency lists.  */
-  for (i=0;i < dlistlen;i++)
+  /* And dependency lists: */
+  for (i = 0; i < dlistlen; i++)
     {
       int len = 2;
       printf ("static const unsigned short dep%d[] = {\n  ", i);
@@ -1593,11 +1600,11 @@ print_dependency_table ()
       printf ("  { ");
       if (opdeps[i]->chk == -1)
         printf ("0, NULL, ");
-      else 
+      else
         printf ("NELS(dep%d), dep%d, ", opdeps[i]->chk, opdeps[i]->chk);
       if (opdeps[i]->reg == -1)
         printf ("0, NULL, ");
-      else 
+      else
         printf ("NELS(dep%d), dep%d, ", opdeps[i]->reg, opdeps[i]->reg);
       printf ("},\n");
     }
@@ -1605,9 +1612,9 @@ print_dependency_table ()
 }
 
 
-/* Add STR to the string table.  */
+/* Add STR to the string table: */
 static struct string_entry *
-insert_string (char *str)
+insert_string(char *str)
 {
   int start = 0, end = strtablen;
   int i, x;
@@ -1616,7 +1623,7 @@ insert_string (char *str)
     {
       strtabtotlen += 20;
       string_table = (struct string_entry **)
-	xrealloc (string_table, 
+	xrealloc (string_table,
 		  sizeof (struct string_entry **) * strtabtotlen);
     }
 
@@ -1689,14 +1696,11 @@ make_bittree_entry (void)
   res->bits_to_skip = 0;
   return res;
 }
- 
+
 
 static struct disent *
-add_dis_table_ent (which, insn, order, completer_index)
-     struct disent *which;
-     int insn;
-     int order;
-     int completer_index;
+add_dis_table_ent(struct disent *which, int insn, int order,
+                  int completer_index)
 {
   int ci = 0;
   struct disent *ent;
@@ -1733,7 +1737,7 @@ add_dis_table_ent (which, insn, order, completer_index)
 }
 
 static void
-finish_distable ()
+finish_distable(void)
 {
   struct disent *ent = disinsntable;
   struct disent *prev = ent;
@@ -1747,15 +1751,9 @@ finish_distable ()
 }
 
 static void
-insert_bit_table_ent (curr_ent, bit, opcode, mask, 
-                      opcodenum, order, completer_index)
-     struct bittree *curr_ent;
-     int bit;
-     ia64_insn opcode; 
-     ia64_insn mask;
-     int opcodenum;
-     int order;
-     int completer_index;
+insert_bit_table_ent(struct bittree *curr_ent, int bit, ia64_insn opcode,
+                     ia64_insn mask, int opcodenum, int order,
+                     int completer_index)
 {
   ia64_insn m;
   int b;
@@ -1763,63 +1761,57 @@ insert_bit_table_ent (curr_ent, bit, opcode, mask,
 
   if (bit == -1)
     {
-      struct disent *nent = add_dis_table_ent (curr_ent->disent, 
-                                               opcodenum, order,
-					       completer_index);
+      struct disent *nent = add_dis_table_ent(curr_ent->disent, opcodenum,
+                                              order, completer_index);
       curr_ent->disent = nent;
       return;
     }
 
-  m = ((ia64_insn) 1) << bit;
+  m = (((ia64_insn)1) << bit);
 
   if (mask & m)
-    b = (opcode & m) ? 1 : 0;
+    b = ((opcode & m) ? 1 : 0);
   else
     b = 2;
 
   next = curr_ent->bits[b];
   if (next == NULL)
     {
-      next = make_bittree_entry ();
+      next = make_bittree_entry();
       curr_ent->bits[b] = next;
     }
-  insert_bit_table_ent (next, bit - 1, opcode, mask, opcodenum, order,
-			completer_index);
+  insert_bit_table_ent(next, (bit - 1), opcode, mask, opcodenum, order,
+                       completer_index);
 }
 
 static void
-add_dis_entry (first, opcode, mask, opcodenum, ent, completer_index)
-     struct bittree *first;
-     ia64_insn opcode;
-     ia64_insn mask;
-     int opcodenum;
-     struct completer_entry *ent;
-     int completer_index;
+add_dis_entry(struct bittree *first, ia64_insn opcode, ia64_insn mask,
+              int opcodenum, struct completer_entry *ent,
+              int completer_index)
 {
   if (completer_index & (1 << 20))
-    abort ();
+    abort();
 
   while (ent != NULL)
     {
-      ia64_insn newopcode = (opcode & (~ ent->mask)) | ent->bits;
-      add_dis_entry (first, newopcode, mask, opcodenum, ent->addl_entries,
-		     (completer_index << 1) | 1);
+      ia64_insn newopcode = ((opcode & (~ ent->mask)) | ent->bits);
+      add_dis_entry(first, newopcode, mask, opcodenum, ent->addl_entries,
+		    ((completer_index << 1) | 1));
 
       if (ent->is_terminal)
 	{
-	  insert_bit_table_ent (bittree, 40, newopcode, mask, 
-                                opcodenum, opcode_count - ent->order - 1, 
-				(completer_index << 1) | 1);
+	  insert_bit_table_ent(bittree, 40, newopcode, mask,
+                               opcodenum, (opcode_count - ent->order - 1),
+                               ((completer_index << 1) | 1));
 	}
       completer_index <<= 1;
       ent = ent->alternative;
     }
 }
 
-/* This optimization pass combines multiple "don't care" nodes.  */
+/* This optimization pass combines multiple "don't care" nodes: */
 static void
-compact_distree (ent)
-     struct bittree *ent;
+compact_distree(struct bittree *ent)
 {
 #define IS_SKIP(ent) \
     ((ent->bits[2] !=NULL) \
@@ -1870,8 +1862,7 @@ static int tot_insn_list_len = 0;
 /* Generate the disassembler state machine corresponding to the tree
    in ENT.  */
 static void
-gen_dis_table (ent)
-     struct bittree *ent;
+gen_dis_table(struct bittree *ent)
 {
   int x;
   int our_offset = insn_list_len;
@@ -1989,7 +1980,7 @@ gen_dis_table (ent)
 	  else
 	    idest = ent->disent->ournum;
 
-	  /* If the destination offset for the if (bit is 1) test is less 
+	  /* If the destination offset for the if (bit is 1) test is less
 	     than 256 bytes away, we can store it as 8-bits instead of 16;
 	     the instruction has bit 5 set for the 16-bit address, and bit
 	     4 for the 8-bit address.  Since we've already allocated 16
@@ -2084,7 +2075,7 @@ gen_dis_table (ent)
     {
       if (ent->skip_flag)
 	printf ("%d: skipping %d\n", our_offset, ent->bits_to_skip);
-  
+
       if (ent->bits[0] != NULL)
 	printf ("%d: if (0:%d) goto %d\n", our_offset, zero_count + 1,
 		zero_dest);
@@ -2140,7 +2131,7 @@ generate_disassembler (void)
 
       if (ptr->opcode->type != IA64_TYPE_DYN)
 	add_dis_entry (bittree,
-		       ptr->opcode->opcode, ptr->opcode->mask, 
+		       ptr->opcode->opcode, ptr->opcode->mask,
 		       ptr->main_index,
 		       ptr->completers, 1);
     }
@@ -2165,7 +2156,7 @@ print_string_table (void)
   for (x = 0; x < strtablen; x++)
     {
       int len;
-      
+
       if (strlen (string_table[x]->s) > 75)
 	abort ();
 
@@ -2192,11 +2183,10 @@ static struct completer_entry **glist;
 static int glistlen = 0;
 static int glisttotlen = 0;
 
-/* If the completer trees ENT1 and ENT2 are equal, return 1.  */
-
+/* If the completer trees ENT1 and ENT2 are equal, then return 1: */
 static int
-completer_entries_eq (ent1, ent2)
-     struct completer_entry *ent1, *ent2;
+completer_entries_eq(struct completer_entry *ent1,
+                     struct completer_entry *ent2)
 {
   while (ent1 != NULL && ent2 != NULL)
     {
@@ -2267,7 +2257,7 @@ insert_gclist (struct completer_entry *ent)
 		end = i - 1;
 	      else if (c == 0)
 		{
-		  while (i > 0 
+		  while (i > 0
 			 && ent->name->num == glist[i - 1]->name->num)
 		    i--;
 
@@ -2313,8 +2303,7 @@ insert_gclist (struct completer_entry *ent)
 }
 
 static int
-get_prefix_len (name)
-     const char *name;
+get_prefix_len(const char *name)
 {
   char *c;
 
@@ -2329,9 +2318,8 @@ get_prefix_len (name)
 }
 
 static void
-compute_completer_bits (ment, ent)
-     struct main_entry *ment;
-     struct completer_entry *ent;
+compute_completer_bits(struct main_entry *ment,
+                       struct completer_entry *ent)
 {
   while (ent != NULL)
     {
@@ -2347,7 +2335,7 @@ compute_completer_bits (ment, ent)
 
 	  while (p != NULL && ! p->is_terminal)
 	    p = p->parent;
-      
+
 	  if (p != NULL)
 	    p_bits = p->bits;
 	  else
@@ -2400,19 +2388,18 @@ collapse_redundant_completers (void)
 
 /* Attach two lists of dependencies to each opcode.
    1) all resources which, when already marked in use, conflict with this
-   opcode (chks) 
+   opcode (chks)
    2) all resources which must be marked in use when this opcode is used
    (regs).  */
 static int
-insert_opcode_dependencies (opc, cmp)
-     struct ia64_opcode *opc;
-     struct completer_entry *cmp ATTRIBUTE_UNUSED;
+insert_opcode_dependencies(struct ia64_opcode *opc,
+                           struct completer_entry *cmp ATTRIBUTE_UNUSED)
 {
   /* Note all resources which point to this opcode.  rfi has the most chks
      (79) and cmpxchng has the most regs (54) so 100 here should be enough.  */
   int i;
   int nregs = 0;
-  unsigned short regs[256];                  
+  unsigned short regs[256];
   int nchks = 0;
   unsigned short chks[256];
   /* Flag insns for which no class matched; there should be none.  */
@@ -2428,7 +2415,7 @@ insert_opcode_dependencies (opc, cmp)
           && rs->mode == 1)
         no_class_found = 99;
 
-      for (j=0; j < rs->nregs;j++)
+      for (j = 0; j < rs->nregs; j++)
         {
           int ic_note = 0;
 
@@ -2484,25 +2471,23 @@ insert_opcode_dependencies (opc, cmp)
 
   if (no_class_found)
     warn (_("opcode %s has no class (ops %d %d %d)\n"),
-	  opc->name, 
+	  opc->name,
 	  opc->operands[0], opc->operands[1], opc->operands[2]);
 
   return insert_dependencies (nchks, chks, nregs, regs);
 }
 
 static void
-insert_completer_entry (opc, tabent, order)
-     struct ia64_opcode *opc;
-     struct main_entry *tabent;
-     int order;
+insert_completer_entry(struct ia64_opcode *opc, struct main_entry *tabent,
+                       int order)
 {
   struct completer_entry **ptr = &tabent->completers;
   struct completer_entry *parent = NULL;
   char pcopy[129], *prefix;
   int at_end = 0;
 
-  if (strlen (opc->name) > 128)
-    abort ();
+  if (strlen(opc->name) > 128)
+    abort();
 
   strcpy (pcopy, opc->name);
   prefix = pcopy + get_prefix_len (pcopy);
@@ -2565,8 +2550,7 @@ insert_completer_entry (opc, tabent, order)
 }
 
 static void
-print_completer_entry (ent)
-     struct completer_entry *ent;
+print_completer_entry(struct completer_entry *ent)
 {
   int moffset = 0;
   ia64_insn mask = ent->mask, bits = ent->bits;
@@ -2583,7 +2567,7 @@ print_completer_entry (ent)
       if (bits & 0xffffffff00000000LL)
 	abort ();
     }
-  
+
   printf ("  { 0x%x, 0x%x, %d, %d, %d, %d, %d, %d },\n",
 	  (int)bits,
 	  (int)mask,
@@ -2596,25 +2580,23 @@ print_completer_entry (ent)
 }
 
 static void
-print_completer_table ()
+print_completer_table(void)
 {
   int x;
 
-  printf ("static const struct ia64_completer_table\ncompleter_table[] = {\n");
+  printf("static const struct ia64_completer_table\ncompleter_table[] = {\n");
   for (x = 0; x < glistlen; x++)
-    print_completer_entry (glist[x]);
-  printf ("};\n\n");
+    print_completer_entry(glist[x]);
+  printf("};\n\n");
 }
 
 static int
-opcodes_eq (opc1, opc2)
-     struct ia64_opcode *opc1;
-     struct ia64_opcode *opc2;
+opcodes_eq(struct ia64_opcode *opc1, struct ia64_opcode *opc2)
 {
   int x;
   int plen1, plen2;
 
-  if ((opc1->mask != opc2->mask) || (opc1->type != opc2->type) 
+  if ((opc1->mask != opc2->mask) || (opc1->type != opc2->type)
       || (opc1->num_outputs != opc2->num_outputs)
       || (opc1->flags != opc2->flags))
     return 0;
@@ -2633,16 +2615,15 @@ opcodes_eq (opc1, opc2)
 }
 
 static void
-add_opcode_entry (opc)
-     struct ia64_opcode *opc;
+add_opcode_entry(struct ia64_opcode *opc)
 {
   struct main_entry **place;
   struct string_entry *name;
   char prefix[129];
   int found_it = 0;
 
-  if (strlen (opc->name) > 128)
-    abort ();
+  if (strlen(opc->name) > 128)
+    abort();
 
   place = &maintable;
   strcpy (prefix, opc->name);
@@ -2650,7 +2631,7 @@ add_opcode_entry (opc)
   name = insert_string (prefix);
 
   /* Walk the list of opcode table entries.  If it's a new
-     instruction, allocate and fill in a new entry.  Note 
+     instruction, allocate and fill in a new entry.  Note
      the main table is alphabetical by opcode name.  */
 
   while (*place != NULL)
@@ -2721,8 +2702,7 @@ print_main_table (void)
 }
 
 static void
-shrink (table)
-     struct ia64_opcode *table;
+shrink(struct ia64_opcode *table)
 {
   int curr_opcode;
 
@@ -2750,44 +2730,48 @@ shrink (table)
 }
 
 
-/* Program options.  */
+/* Program options: */
 #define OPTION_SRCDIR	200
 
-struct option long_options[] = 
+struct option long_options[] =
 {
-  {"srcdir",  required_argument, NULL, OPTION_SRCDIR},
-  {"debug",   no_argument,       NULL, 'd'},
-  {"version", no_argument,       NULL, 'V'},
-  {"help",    no_argument,       NULL, 'h'},
-  {0,         no_argument,       NULL, 0}
+  { "srcdir",  required_argument, NULL, OPTION_SRCDIR },
+  { "debug",   no_argument,       NULL, 'd' },
+  { "version", no_argument,       NULL, 'V' },
+  { "help",    no_argument,       NULL, 'h' },
+  { 0,         no_argument,       NULL, 0 }
 };
 
 static void
-print_version (void)
+print_version(void)
 {
-  printf ("%s: version 1.0\n", program_name);
-  xexit (0);
+  printf("%s: version 1.0\n", program_name);
+  xexit(0);
 }
 
 static void
-usage (FILE * stream, int status)
+usage(FILE *stream, int status)
 {
-  fprintf (stream, "Usage: %s [-V | --version] [-d | --debug] [--srcdir=dirname] [--help]\n",
-	   program_name);
-  xexit (status);
+  fprintf(stream,
+          "Usage: %s [-V | --version] [-d | --debug] [--srcdir=dirname] [--help]\n",
+	  program_name);
+  xexit(status);
 }
 
+#if defined(HAVE_DECL_CHDIR) && !HAVE_DECL_CHDIR
+extern int chdir(char *);
+#endif /* !HAVE_DECL_CHDIR */
+
 int
-main (int argc, char **argv)
+main(int argc, char **argv)
 {
-  extern int chdir (char *);
   char *srcdir = NULL;
   int c;
-  
-  program_name = *argv;
-  xmalloc_set_program_name (program_name);
 
-  while ((c = getopt_long (argc, argv, "vVdh", long_options, 0)) != EOF)
+  program_name = *argv;
+  xmalloc_set_program_name(program_name);
+
+  while ((c = getopt_long(argc, argv, "vVdh", long_options, 0)) != EOF)
     switch (c)
       {
       case OPTION_SRCDIR:
@@ -2795,47 +2779,49 @@ main (int argc, char **argv)
 	break;
       case 'V':
       case 'v':
-	print_version ();
+	print_version();
 	break;
       case 'd':
 	debug = 1;
 	break;
       case 'h':
       case '?':
-	usage (stderr, 0);
+	usage(stderr, 0);
       default:
       case 0:
 	break;
       }
 
   if (optind != argc)
-    usage (stdout, 1);
+    usage(stdout, 1);
 
-  if (srcdir != NULL) 
-    if (chdir (srcdir) != 0)
-      fail (_("unable to change directory to \"%s\", errno = %s\n"),
-	    srcdir, strerror (errno));
+  if (srcdir != NULL)
+    if (chdir(srcdir) != 0)
+      fail(_("unable to change directory to \"%s\", errno = %s\n"),
+	   srcdir, strerror(errno));
 
-  load_insn_classes ();
-  load_dependencies ();
+  load_insn_classes();
+  load_dependencies();
 
-  shrink (ia64_opcodes_a);
-  shrink (ia64_opcodes_b);
-  shrink (ia64_opcodes_f);
-  shrink (ia64_opcodes_i);
-  shrink (ia64_opcodes_m);
-  shrink (ia64_opcodes_x);
-  shrink (ia64_opcodes_d);
+  shrink(ia64_opcodes_a);
+  shrink(ia64_opcodes_b);
+  shrink(ia64_opcodes_f);
+  shrink(ia64_opcodes_i);
+  shrink(ia64_opcodes_m);
+  shrink(ia64_opcodes_x);
+  shrink(ia64_opcodes_d);
 
-  collapse_redundant_completers ();
+  collapse_redundant_completers();
 
-  printf ("/* This file is automatically generated by ia64-gen.  Do not edit!  */\n");
-  print_string_table ();
-  print_dependency_table ();
-  print_completer_table ();
-  print_main_table ();
+  printf("/* This file is automatically generated by ia64-gen.  Do not edit!  */\n");
+  print_string_table();
+  print_dependency_table();
+  print_completer_table();
+  print_main_table();
 
-  generate_disassembler ();
+  generate_disassembler();
 
-  exit (0);
+  exit(0);
 }
+
+/* EOF */

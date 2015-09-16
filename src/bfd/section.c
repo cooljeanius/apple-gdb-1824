@@ -1,9 +1,9 @@
-/* Object file "section" support for the BFD library.
-   Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
-   2000, 2001, 2002, 2003, 2004, 2005
-   Free Software Foundation, Inc.
-   Written by Cygnus Support.
-
+/* section.c: Object file "section" support for the BFD library.
+ * Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
+ * 2000, 2001, 2002, 2003, 2004, 2005
+ * Free Software Foundation, Inc.
+ * Written by Cygnus Support. */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
 /*
 SECTION
@@ -148,6 +149,15 @@ SUBSECTION
 	Here is the section structure:
 
 CODE_FRAGMENT
+.
+.#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+.# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2))
+.#  if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+. #   pragma GCC diagnostic push
+.#  endif {* gcc 4.6+ *}
+. #  pragma GCC diagnostic ignored "-Wpadded"
+.# endif {* gcc 4.2+ *}
+.#endif {* any gcc *}
 .
 .typedef struct bfd_section
 .{
@@ -510,6 +520,13 @@ CODE_FRAGMENT
 .  } map_head, map_tail;
 .} asection;
 .
+. {* keep the condition the same as the pushing part: *}
+.#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+.# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+. #   pragma GCC diagnostic pop
+.# endif {* gcc 4.6+ *}
+.#endif {* any gcc *}
+.
 .{* These sections are global, and are managed by BFD.  The application
 .   and target back end are not permitted to change the values in
 .   these sections.  New code should use the section_ptr macros rather
@@ -680,39 +697,53 @@ CODE_FRAGMENT
 .
 */
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic warning "-Wtraditional"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 /* We use a macro to initialize the static asymbol structures because
    traditional C does not permit us to initialize a union member while
-   gcc warns if we don't initialize it.  */
+   gcc warns if we do NOT initialize it.  */
  /* the_bfd, name, value, attr, section [, udata] */
 #ifdef __STDC__
-#define GLOBAL_SYM_INIT(NAME, SECTION) \
-  { 0, NAME, 0, BSF_SECTION_SYM, (asection *) SECTION, { 0 }}
+# define GLOBAL_SYM_INIT(NAME, SECTION) \
+  { 0, NAME, 0, BSF_SECTION_SYM, (asection *)SECTION, { 0 }}
 #else
-#define GLOBAL_SYM_INIT(NAME, SECTION) \
-  { 0, NAME, 0, BSF_SECTION_SYM, (asection *) SECTION }
-#endif
+# define GLOBAL_SYM_INIT(NAME, SECTION) \
+  { 0, NAME, 0, BSF_SECTION_SYM, (asection *)SECTION }
+#endif /* __STDC__ */
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 /* These symbols are global, not specific to any BFD.  Therefore, anything
    that tries to change them is broken, and should be repaired.  */
 
 static const asymbol global_syms[] =
 {
-  GLOBAL_SYM_INIT (BFD_COM_SECTION_NAME, &bfd_com_section),
-  GLOBAL_SYM_INIT (BFD_UND_SECTION_NAME, &bfd_und_section),
-  GLOBAL_SYM_INIT (BFD_ABS_SECTION_NAME, &bfd_abs_section),
-  GLOBAL_SYM_INIT (BFD_IND_SECTION_NAME, &bfd_ind_section)
+  GLOBAL_SYM_INIT(BFD_COM_SECTION_NAME, &bfd_com_section),
+  GLOBAL_SYM_INIT(BFD_UND_SECTION_NAME, &bfd_und_section),
+  GLOBAL_SYM_INIT(BFD_ABS_SECTION_NAME, &bfd_abs_section),
+  GLOBAL_SYM_INIT(BFD_IND_SECTION_NAME, &bfd_ind_section)
 };
 
 #define STD_SECTION(SEC, FLAGS, SYM, NAME, IDX)				\
-  const asymbol * const SYM = (asymbol *) &global_syms[IDX]; 		\
+  const asymbol * const SYM = (asymbol *)&global_syms[IDX]; 		\
   asection SEC = BFD_FAKE_SECTION(SEC, FLAGS, &global_syms[IDX], &SYM,	\
 				  NAME, IDX)
 
-STD_SECTION (bfd_com_section, SEC_IS_COMMON, bfd_com_symbol,
-	     BFD_COM_SECTION_NAME, 0);
-STD_SECTION (bfd_und_section, 0, bfd_und_symbol, BFD_UND_SECTION_NAME, 1);
-STD_SECTION (bfd_abs_section, 0, bfd_abs_symbol, BFD_ABS_SECTION_NAME, 2);
-STD_SECTION (bfd_ind_section, 0, bfd_ind_symbol, BFD_IND_SECTION_NAME, 3);
+STD_SECTION(bfd_com_section, SEC_IS_COMMON, bfd_com_symbol,
+	    BFD_COM_SECTION_NAME, 0);
+STD_SECTION(bfd_und_section, 0, bfd_und_symbol, BFD_UND_SECTION_NAME, 1);
+STD_SECTION(bfd_abs_section, 0, bfd_abs_symbol, BFD_ABS_SECTION_NAME, 2);
+STD_SECTION(bfd_ind_section, 0, bfd_ind_symbol, BFD_IND_SECTION_NAME, 3);
 #undef STD_SECTION
 
 struct section_hash_entry
@@ -721,28 +752,27 @@ struct section_hash_entry
   asection section;
 };
 
-/* Initialize an entry in the section hash table.  */
-
+/* Initialize an entry in the section hash table: */
 struct bfd_hash_entry *
-bfd_section_hash_newfunc (struct bfd_hash_entry *entry,
-			  struct bfd_hash_table *table,
-			  const char *string)
+bfd_section_hash_newfunc(struct bfd_hash_entry *entry,
+                         struct bfd_hash_table *table,
+                         const char *string)
 {
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
   if (entry == NULL)
     {
       entry = (struct bfd_hash_entry *)
-	bfd_hash_allocate (table, sizeof (struct section_hash_entry));
+	bfd_hash_allocate(table, sizeof(struct section_hash_entry));
       if (entry == NULL)
 	return entry;
     }
 
-  /* Call the allocation method of the superclass.  */
-  entry = bfd_hash_newfunc (entry, table, string);
+  /* Call the allocation method of the superclass: */
+  entry = bfd_hash_newfunc(entry, table, string);
   if (entry != NULL)
-    memset (&((struct section_hash_entry *) entry)->section, 0,
-	    sizeof (asection));
+    memset(&((struct section_hash_entry *)entry)->section, 0,
+           sizeof(asection));
 
   return entry;
 }
@@ -751,21 +781,20 @@ bfd_section_hash_newfunc (struct bfd_hash_entry *entry,
   ((struct section_hash_entry *) \
    bfd_hash_lookup ((table), (string), (create), (copy)))
 
-/* Initializes a new section.  NEWSECT->NAME is already set.  */
-
+/* Initializes a new section.  NEWSECT->NAME is already set: */
 static asection *
-bfd_section_init (bfd *abfd, asection *newsect)
+bfd_section_init(bfd *abfd, asection *newsect)
 {
   static int section_id = 0x10;  /* id 0 to 3 used by STD_SECTION.  */
 
   newsect->id = section_id;
-  newsect->index = abfd->section_count;
+  newsect->index = (int)abfd->section_count;
   newsect->owner = abfd;
 
   /* Create a symbol whose only job is to point to this section.  This
      is useful for things like relocs which are relative to the base
      of a section.  */
-  newsect->symbol = bfd_make_empty_symbol (abfd);
+  newsect->symbol = bfd_make_empty_symbol(abfd);
   if (newsect->symbol == NULL)
     return NULL;
 
@@ -915,29 +944,27 @@ DESCRIPTION
 */
 
 char *
-bfd_get_unique_section_name (bfd *abfd, const char *templat, int *count)
+bfd_get_unique_section_name(bfd *abfd, const char *templat, int *count)
 {
   int num;
-  unsigned int len;
+  size_t len;
   char *sname;
 
-  len = strlen (templat);
-  sname = bfd_malloc (len + 8);
+  len = strlen(templat);
+  sname = (char *)bfd_malloc(len + 8UL);
   if (sname == NULL)
     return NULL;
-  memcpy (sname, templat, len);
+  memcpy(sname, templat, len);
   num = 1;
   if (count != NULL)
     num = *count;
 
-  do
-    {
-      /* If we have a million sections, something is badly wrong.  */
-      if (num > 999999)
-	abort ();
-      sprintf (sname + len, ".%d", num++);
-    }
-  while (section_hash_lookup (&abfd->section_htab, sname, FALSE, FALSE));
+  do {
+    /* If we have a million sections, then something is badly wrong: */
+    if (num > 999999)
+      abort();
+    sprintf((sname + len), ".%d", num++);
+  } while (section_hash_lookup(&abfd->section_htab, sname, FALSE, FALSE));
 
   if (count != NULL)
     *count = num;
@@ -1328,31 +1355,28 @@ DESCRIPTION
 */
 
 bfd_boolean
-bfd_set_section_contents (bfd *abfd,
-			  sec_ptr section,
-			  const void *location,
-			  file_ptr offset,
-			  bfd_size_type count)
+bfd_set_section_contents(bfd *abfd, sec_ptr section, const void *location,
+                         file_ptr offset, bfd_size_type count)
 {
   bfd_size_type sz;
 
-  if (!(bfd_get_section_flags (abfd, section) & SEC_HAS_CONTENTS))
+  if (!(bfd_get_section_flags(abfd, section) & SEC_HAS_CONTENTS))
     {
-      bfd_set_error (bfd_error_no_contents);
+      bfd_set_error(bfd_error_no_contents);
       return FALSE;
     }
 
   sz = section->size;
-  if ((bfd_size_type) offset > sz
-      || count > sz
-      || offset + count > sz
-      || count != (size_t) count)
+  if (((bfd_size_type)offset > sz)
+      || (count > sz)
+      || (((bfd_size_type)offset + count) > sz)
+      || (count != (size_t)count))
     {
-      bfd_set_error (bfd_error_bad_value);
+      bfd_set_error(bfd_error_bad_value);
       return FALSE;
     }
 
-  if (!bfd_write_p (abfd))
+  if (!bfd_write_p(abfd))
     {
       bfd_set_error (bfd_error_invalid_operation);
       return FALSE;
@@ -1396,48 +1420,45 @@ DESCRIPTION
 
 */
 bfd_boolean
-bfd_get_section_contents (bfd *abfd,
-			  sec_ptr section,
-			  void *location,
-			  file_ptr offset,
-			  bfd_size_type count)
+bfd_get_section_contents(bfd *abfd, sec_ptr section, void *location,
+                         file_ptr offset, bfd_size_type count)
 {
   bfd_size_type sz;
 
   if (section->flags & SEC_CONSTRUCTOR)
     {
-      memset (location, 0, (size_t) count);
+      memset(location, 0, (size_t)count);
       return TRUE;
     }
 
-  sz = section->rawsize ? section->rawsize : section->size;
-  if ((bfd_size_type) offset > sz
-      || count > sz
-      || offset + count > sz
-      || count != (size_t) count)
+  sz = (section->rawsize ? section->rawsize : section->size);
+  if (((bfd_size_type)offset > sz)
+      || (count > sz)
+      || (((bfd_size_type)offset + count) > sz)
+      || (count != (size_t)count))
     {
-      bfd_set_error (bfd_error_bad_value);
+      bfd_set_error(bfd_error_bad_value);
       return FALSE;
     }
 
   if (count == 0)
-    /* Don't bother.  */
+    /* Do NOT bother: */
     return TRUE;
 
   if ((section->flags & SEC_HAS_CONTENTS) == 0)
     {
-      memset (location, 0, (size_t) count);
+      memset(location, 0, (size_t)count);
       return TRUE;
     }
 
   if ((section->flags & SEC_IN_MEMORY) != 0)
     {
-      memcpy (location, section->contents + offset, (size_t) count);
+      memcpy(location, section->contents + offset, (size_t)count);
       return TRUE;
     }
 
-  return BFD_SEND (abfd, _bfd_get_section_contents,
-		   (abfd, section, location, offset, count));
+  return BFD_SEND(abfd, _bfd_get_section_contents,
+                  (abfd, section, location, offset, count));
 }
 
 /*
@@ -1460,17 +1481,12 @@ DESCRIPTION
 	<<SEC_HAS_CONTENTS>> flag set, then the @var{location} is filled
 	with zeroes. If no errors occur, <<true>> is returned, else
 	<<false>>.
-
-
-
 */
+
 bfd_boolean
-bfd_get_section_contents_in_window (abfd, section, w, offset, count)
-     bfd *abfd;
-     sec_ptr section;
-     bfd_window *w;
-     file_ptr offset;
-     bfd_size_type count;
+bfd_get_section_contents_in_window(bfd *abfd, sec_ptr section,
+                                   bfd_window *w, file_ptr offset,
+                                   bfd_size_type count)
 {
   return BFD_SEND (abfd, _bfd_get_section_contents_in_window,
 		   (abfd, section, w, offset, count));
@@ -1498,18 +1514,14 @@ DESCRIPTION
 	<<SEC_HAS_CONTENTS>> flag set, then the @var{location} is filled
 	with zeroes. If no errors occur, <<true>> is returned, else
 	<<false>>.
-
-
-
 */
+
 bfd_boolean
-bfd_get_section_contents_in_window_with_mode (abfd, section, w, offset, count, mode)
-     bfd *abfd;
-     sec_ptr section;
-     bfd_window *w;
-     file_ptr offset;
-     bfd_size_type count;
-     bfd_boolean mode;
+bfd_get_section_contents_in_window_with_mode(bfd *abfd, sec_ptr section,
+                                             bfd_window *w,
+                                             file_ptr offset,
+                                             bfd_size_type count,
+                                             bfd_boolean mode)
 {
   return BFD_SEND (abfd, _bfd_get_section_contents_in_window_with_mode,
 		   (abfd, section, w, offset, count, mode));
@@ -1531,19 +1543,19 @@ DESCRIPTION
 bfd_boolean
 bfd_malloc_and_get_section (bfd *abfd, sec_ptr sec, bfd_byte **buf)
 {
-  bfd_size_type sz = sec->rawsize ? sec->rawsize : sec->size;
-  bfd_byte *p = NULL;
+  bfd_size_type sz = (sec->rawsize ? sec->rawsize : sec->size);
+  bfd_byte *p = (bfd_byte *)NULL;
 
   *buf = p;
   if (sz == 0)
     return TRUE;
 
-  p = bfd_malloc (sec->rawsize > sec->size ? sec->rawsize : sec->size);
+  p = (bfd_byte *)bfd_malloc((sec->rawsize > sec->size) ? sec->rawsize : sec->size);
   if (p == NULL)
     return FALSE;
   *buf = p;
 
-  return bfd_get_section_contents (abfd, sec, p, 0, sz);
+  return bfd_get_section_contents(abfd, sec, p, 0, sz);
 }
 /*
 FUNCTION
@@ -1597,8 +1609,10 @@ DESCRIPTION
 */
 
 bfd_boolean
-bfd_generic_discard_group (bfd *abfd ATTRIBUTE_UNUSED,
-			   asection *group ATTRIBUTE_UNUSED)
+bfd_generic_discard_group(bfd *abfd ATTRIBUTE_UNUSED,
+                          asection *group ATTRIBUTE_UNUSED)
 {
   return TRUE;
 }
+
+/* End of section.c */

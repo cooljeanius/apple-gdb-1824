@@ -122,6 +122,7 @@ stscm_objfile_symtab_map (struct symtab *symtab)
   return htab;
 }
 
+#ifdef MY_BRANCH_IS_HEAD
 /* The smob "mark" function for <gdb:symtab>.  */
 
 static SCM
@@ -133,6 +134,8 @@ stscm_mark_symtab_smob (SCM self)
   return gdbscm_mark_eqable_gsmob (&st_smob->base);
 }
 
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 /* The smob "free" function for <gdb:symtab>.  */
 
 static size_t
@@ -400,6 +403,7 @@ gdbscm_symtab_static_block (SCM self)
 
 /* Administrivia for sal (symtab-and-line) smobs.  */
 
+#ifdef MY_BRANCH_IS_HEAD
 /* The smob "mark" function for <gdb:sal>.  */
 
 static SCM
@@ -426,6 +430,8 @@ stscm_free_sal_smob (SCM self)
   return 0;
 }
 
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 /* The smob "print" function for <gdb:sal>.  */
 
 static int
@@ -716,13 +722,19 @@ gdbscm_initialize_symtabs (void)
 {
   symtab_smob_tag
     = gdbscm_make_smob_type (symtab_smob_name, sizeof (symtab_smob));
+#ifdef MY_BRANCH_IS_HEAD
   scm_set_smob_mark (symtab_smob_tag, stscm_mark_symtab_smob);
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
   scm_set_smob_free (symtab_smob_tag, stscm_free_symtab_smob);
   scm_set_smob_print (symtab_smob_tag, stscm_print_symtab_smob);
 
   sal_smob_tag = gdbscm_make_smob_type (sal_smob_name, sizeof (sal_smob));
+#ifdef MY_BRANCH_IS_HEAD
   scm_set_smob_mark (sal_smob_tag, stscm_mark_sal_smob);
   scm_set_smob_free (sal_smob_tag, stscm_free_sal_smob);
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
   scm_set_smob_print (sal_smob_tag, stscm_print_sal_smob);
 
   gdbscm_define_functions (symtab_functions, 1);

@@ -1,12 +1,12 @@
-/* 
+/* sys.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
  */
 
-/* sys.h 
+/* sys.h
  ***********************************************************************
  * Angel C Libary support channel protocol definitions
  *
@@ -64,19 +64,19 @@
 #define __sys_h
 
 #ifndef HtoT
-#define HtoT    ((unsigned)0 << 31)     /* Host-to-Target message */
-#define TtoH    ((unsigned)1 << 31)     /* Target-to-Host message */
-#endif
+# define HtoT    ((unsigned)0 << 31)     /* Host-to-Target message */
+# define TtoH    ((unsigned)1 << 31)     /* Target-to-Host message */
+#endif /* !HtoT */
 
 /*
  * The following are error codes used in the status field returned on
  * sending a message. 0 represents no error having occurred, non-zero
  * represents a general error.  More codes should be added as required.
  */
- 
+
 #ifndef ErrCode
-#define NoError  0x0
-#endif
+# define NoError  0x0
+#endif /* !ErrCode */
 
 /*************************************************************************/
 /* The following are direct conversions of the DeMon SWI's               */
@@ -101,7 +101,7 @@
     */
 
 /* Write a NULL terminated string of characters to the terminal.  The length
- * of the string excluding the NULL terminating character is passed in 
+ * of the string excluding the NULL terminating character is passed in
  * 'nbytes'.
  */
 #define CL_Write0       0x02
@@ -119,7 +119,7 @@
 /* Perform system call, pass NULL terminated string to host's command
  * line interpreter(NOT AVAILABLE IN PC/DOS RELEASE).  The data byte
  * returned holds the return code from the system call.
- */ 
+ */
 #define CL_System       0x05
    /* CLI(word nbytes, bytes data)
     * return(word status, word data)
@@ -134,7 +134,7 @@
     * return(word status, word nbytes, bytes argline)
     */
 
-/* Return the number of centi-seconds since the support code began 
+/* Return the number of centi-seconds since the support code began
  * execution.  Only the difference between successive calls can be
  * meaningful.
  */
@@ -160,7 +160,7 @@
 
 /* Rename the file specified by the NULL-terminated string 'oname'
  * to 'nname'.
- */   
+ */
 #define CL_Rename       0x65
    /* Rename(word nbytes, bytes oname, word nbytes, bytes nname)
     * return(word status)
@@ -176,7 +176,7 @@
  *
  * Values 12-15 are illegal.  If 'name' is ":tt" the stdin/stdout is
  * opened depending on whether 'mode' is read or write.
- */ 
+ */
 #define CL_Open         0x66
    /* Open(word nbytes, bytes name, word mode)
     * return(word handle)
@@ -184,7 +184,7 @@
 
 /* 'handle' is a file handle previously returned by CL_Open.  CL_Close
  * closes the file.
- */ 
+ */
 #define CL_Close        0x68
    /* Close(word handle)
     * return(word status)
@@ -201,19 +201,19 @@
  * the nbytes returned by CL_Write can be ignored
  * If the status word returned is non zero, an error has occurred and
  * the write request has been aborted.
- * 
+ *
  */
 #define CL_Write        0x69
    /* Write(word handle, word nbtotal, word nbytes, bytes data)
     * return(word status, word nbytes)
     */
 
-/* Write Extension is a reads a continuation of data from a CL_Write 
+/* Write Extension is a reads a continuation of data from a CL_Write
  * which was too big to fit in a single packet.
- * nbytes is the number of bytes of data in this packet, the 
- * returned value of nbytes can be ignored except if it is the 
+ * nbytes is the number of bytes of data in this packet, the
+ * returned value of nbytes can be ignored except if it is the
  * last packet, in which case it is the number of bytes that were NOT
- * written 
+ * written
  */
 #define CL_WriteX       0x6A
    /* WriteX(word nbytes, bytes data)
@@ -256,8 +256,8 @@
     */
 
 /* Returns the current length of the file specified by 'handle' in 'len'.
- * If an error occurs 'len' is set to -1. 
- */ 
+ * If an error occurs 'len' is set to -1.
+ */
 #define CL_Flen         0x6E
    /* Flen(word handle)
     * return(word len)
@@ -265,7 +265,7 @@
 
 /* Returns NoError if 'handle' specifies an interactive device, otherwise
  * returns GenError
- */ 
+ */
 #define CL_IsTTY        0x6F
    /* IsTTY(word handle)
     * return(word status)
@@ -274,11 +274,11 @@
 /* Returns a temporary host file name. The maximum length of a file name
  * is passed to the host. The TargetID is some identifier from the target
  * for this particular temporary filename. This value is could be used
- * directly in the generation of the filename. 
+ * directly in the generation of the filename.
  *
  * If the host cannot create a suitable name or the generated name is too
  * long then status is non zero. status will be NoError if the host can create
- * a name. 
+ * a name.
  */
 #define CL_TmpNam       0x70
    /* TmpNam(word maxlength, word TargetID)
@@ -301,7 +301,7 @@ extern void angel_SysLibraryInit(void);
  *  Purpose: return whether or not SysLibraryHandler is running
  *
  *   No paramaters
- *             
+ *
  *   Returns 1 if SysLibraryHandler is running
  *           0 otherwise
  */
@@ -313,7 +313,8 @@ extern int Angel_IsSysHandlerRunning(void);
  * target has.  This will then be used to deal with the HEAPINFO SWI
  */
 extern void angel_SetTopMem(unsigned addr);
-#endif
+#endif /* ICEMAN2 */
 
-#endif
+#endif /* !__sys_h */
 
+/* EOF */

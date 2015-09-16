@@ -23,25 +23,34 @@
 #ifndef _RL_TYPEDEFS_H_
 #define _RL_TYPEDEFS_H_
 
+#if defined(HAVE_STDIO_H) || defined(__STDC__)
+# include <stdio.h> /* for file pointers */
+#endif /* HAVE_STDIO_H || __STDC__ */
+
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
-/* Old-style */
-
-#if !defined (_FUNCTION_DEF)
-#  define _FUNCTION_DEF
-
-typedef int Function ();
-typedef void VFunction ();
-typedef char *CPFunction ();
-typedef char **CPPFunction ();
-
+/* Old-style: */
+#if !defined(_FUNCTION_DEF)
+#  define _FUNCTION_DEF 1
+#  if !defined(__STDC__)
+/* really old style: */
+typedef int Function();
+typedef void VFunction();
+typedef char *CPFunction();
+typedef char **CPPFunction();
+#  else
+typedef int Function(void);
+typedef void VFunction(void);
+typedef char *CPFunction(void);
+typedef char **CPPFunction(void);
+#  endif /* !__STDC__ */
 #endif /* _FUNCTION_DEF */
 
 /* New style. */
 
-#if !defined (_RL_FUNCTION_TYPEDEF)
+#if !defined(_RL_FUNCTION_TYPEDEF)
 #  define _RL_FUNCTION_TYPEDEF
 
 /* Bindable functions */
@@ -83,6 +92,6 @@ typedef void rl_vcppfunc_t PARAMS((char **));
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
 #endif /* _RL_TYPEDEFS_H_ */

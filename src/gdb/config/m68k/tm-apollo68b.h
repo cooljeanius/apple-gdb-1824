@@ -1,4 +1,5 @@
-/* Parameters for execution on Apollo 68k running BSD.
+/* tm-apollo68b.h
+   Parameters for execution on Apollo 68k running BSD.
    Copyright 1986, 1987, 1989, 1991, 1993, 1994, 1998
    Free Software Foundation, Inc.
    Contributed by Cygnus Support.

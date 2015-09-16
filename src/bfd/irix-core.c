@@ -1,4 +1,4 @@
-/* BFD back-end for Irix core files.
+/* irix-core.c: BFD back-end for Irix core files.
    Copyright 1993, 1994, 1996, 1999, 2001, 2002, 2004
    Free Software Foundation, Inc.
    Written by Stu Grossman, Cygnus Support.
@@ -18,7 +18,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* This file can only be compiled on systems which use Irix style core
    files (namely, Irix 4 and Irix 5, so far).  */
@@ -30,6 +30,11 @@
 #ifdef IRIX_CORE
 
 #include <core.out.h>
+
+#ifndef CORE_NAMESIZE
+/* made up; should be big enough: */
+# define CORE_NAMESIZE 100
+#endif /* !CORE_NAMESIZE */
 
 struct sgi_core_struct
 {
@@ -49,7 +54,7 @@ static asection *make_bfd_asection
 
 #ifdef CORE_MAGIC64
 static int
-do_sections64 (bfd *abfd, struct coreout *coreout)
+do_sections64(bfd *abfd, struct coreout *coreout)
 {
   struct vmap64 vmap;
   char *secname;
@@ -57,8 +62,8 @@ do_sections64 (bfd *abfd, struct coreout *coreout)
 
   for (i = 0; i < coreout->c_nvmap; i++)
     {
-      val = bfd_bread ((PTR) &vmap, (bfd_size_type) sizeof vmap, abfd);
-      if (val != sizeof vmap)
+      val = (int)bfd_bread((PTR)&vmap, (bfd_size_type)sizeof(vmap), abfd);
+      if (val != sizeof(vmap))
 	break;
 
       switch (vmap.v_type)
@@ -66,14 +71,16 @@ do_sections64 (bfd *abfd, struct coreout *coreout)
 	case VDATA:
 	  secname = ".data";
 	  break;
+# ifdef VSTACK
 	case VSTACK:
 	  secname = ".stack";
 	  break;
-#ifdef VMAPFILE
+# endif /* VSTACK */
+# ifdef VMAPFILE
 	case VMAPFILE:
 	  secname = ".mapfile";
 	  break;
-#endif
+# endif /* VMAPFILE */
 	default:
 	  continue;
 	}
@@ -83,21 +90,20 @@ do_sections64 (bfd *abfd, struct coreout *coreout)
       if (vmap.v_offset == 0)
 	continue;
 
-      if (!make_bfd_asection (abfd, secname,
-			      SEC_ALLOC | SEC_LOAD | SEC_HAS_CONTENTS,
-			      vmap.v_len, vmap.v_vaddr, vmap.v_offset))
+      if (!make_bfd_asection(abfd, secname,
+			     (SEC_ALLOC | SEC_LOAD | SEC_HAS_CONTENTS),
+			     vmap.v_len, vmap.v_vaddr, vmap.v_offset))
 	/* Fail.  */
 	return 0;
     }
 
   return 1;
 }
-#endif
+#endif /* CORE_MAGIC64 */
 
-/* 32-bit version.  */
-
+/* 32-bit version: */
 static int
-do_sections (bfd *abfd, struct coreout *coreout)
+do_sections(bfd *abfd, struct coreout *coreout)
 {
   struct vmap vmap;
   char *secname;
@@ -105,7 +111,7 @@ do_sections (bfd *abfd, struct coreout *coreout)
 
   for (i = 0; i < coreout->c_nvmap; i++)
     {
-      val = bfd_bread ((PTR) &vmap, (bfd_size_type) sizeof vmap, abfd);
+      val = (int)bfd_bread((PTR)&vmap, (bfd_size_type)sizeof(vmap), abfd);
       if (val != sizeof vmap)
 	break;
 
@@ -114,14 +120,16 @@ do_sections (bfd *abfd, struct coreout *coreout)
 	case VDATA:
 	  secname = ".data";
 	  break;
+#ifdef VSTACK
 	case VSTACK:
 	  secname = ".stack";
 	  break;
+#endif /* VSTACK */
 #ifdef VMAPFILE
 	case VMAPFILE:
 	  secname = ".mapfile";
 	  break;
-#endif
+#endif /* VMAPFILE */
 	default:
 	  continue;
 	}
@@ -131,9 +139,9 @@ do_sections (bfd *abfd, struct coreout *coreout)
       if (vmap.v_offset == 0)
 	continue;
 
-      if (!make_bfd_asection (abfd, secname,
-			      SEC_ALLOC | SEC_LOAD | SEC_HAS_CONTENTS,
-			      vmap.v_len, vmap.v_vaddr, vmap.v_offset))
+      if (!make_bfd_asection(abfd, secname,
+			     (SEC_ALLOC | SEC_LOAD | SEC_HAS_CONTENTS),
+			     vmap.v_len, vmap.v_vaddr, vmap.v_offset))
 	/* Fail.  */
 	return 0;
     }
@@ -141,16 +149,12 @@ do_sections (bfd *abfd, struct coreout *coreout)
 }
 
 static asection *
-make_bfd_asection (bfd *abfd,
-                   const char *name,
-                   flagword flags,
-                   bfd_size_type size,
-                   bfd_vma vma,
-                   file_ptr filepos)
+make_bfd_asection(bfd *abfd, const char *name, flagword flags,
+                  bfd_size_type size, bfd_vma vma, file_ptr filepos)
 {
   asection *asect;
 
-  asect = bfd_make_section_anyway (abfd, name);
+  asect = bfd_make_section_anyway(abfd, name);
   if (!asect)
     return NULL;
 
@@ -163,19 +167,24 @@ make_bfd_asection (bfd *abfd,
   return asect;
 }
 
+/* from "aoutf1.h"; could be bogus: */
+#ifndef CORE_MAGIC
+# define CORE_MAGIC 0x080456
+#endif /* !CORE_MAGIC */
+
 static const bfd_target *
-irix_core_core_file_p (bfd *abfd)
+irix_core_core_file_p(bfd *abfd)
 {
   int val;
   struct coreout coreout;
   struct idesc *idg, *idf, *ids;
   bfd_size_type amt;
 
-  val = bfd_bread ((PTR) &coreout, (bfd_size_type) sizeof coreout, abfd);
-  if (val != sizeof coreout)
+  val = (int)bfd_bread((PTR)&coreout, (bfd_size_type)sizeof(coreout), abfd);
+  if (val != sizeof(coreout))
     {
-      if (bfd_get_error () != bfd_error_system_call)
-	bfd_set_error (bfd_error_wrong_format);
+      if (bfd_get_error() != bfd_error_system_call)
+	bfd_set_error(bfd_error_wrong_format);
       return 0;
     }
 
@@ -188,100 +197,98 @@ irix_core_core_file_p (bfd *abfd)
     case CORE_MAGIC:	break;
 #ifdef CORE_MAGIC64
     case CORE_MAGIC64:	break;
-#endif
+#endif /* CORE_MAGIC64 */
 #ifdef CORE_MAGICN32
     case CORE_MAGICN32:	break;
-#endif
-    default:		return 0;	/* Un-identifiable or not corefile.  */
+#endif /* CORE_MAGICN32 */
+    default:	return 0;	/* Un-identifiable or not corefile.  */
     }
 
-  amt = sizeof (struct sgi_core_struct);
-  core_hdr (abfd) = (struct sgi_core_struct *) bfd_zalloc (abfd, amt);
-  if (!core_hdr (abfd))
+  amt = sizeof(struct sgi_core_struct);
+  core_hdr(abfd) = (struct sgi_core_struct *)bfd_zalloc(abfd, amt);
+  if (!core_hdr(abfd))
     return NULL;
 
-  strncpy (core_command (abfd), coreout.c_name, CORE_NAMESIZE);
-  core_signal (abfd) = coreout.c_sigcause;
+  strncpy(core_command(abfd), coreout.c_name, CORE_NAMESIZE);
+  core_signal(abfd) = coreout.c_sigcause;
 
-  if (bfd_seek (abfd, coreout.c_vmapoffset, SEEK_SET) != 0)
+  if (bfd_seek(abfd, coreout.c_vmapoffset, SEEK_SET) != 0)
     goto fail;
 
-  /* Process corefile sections.  */
+  /* Process corefile sections: */
 #ifdef CORE_MAGIC64
-  if (coreout.c_magic == (int) CORE_MAGIC64)
+  if (coreout.c_magic == (int)CORE_MAGIC64)
     {
-      if (! do_sections64 (abfd, & coreout))
+      if (! do_sections64(abfd, & coreout))
 	goto fail;
     }
   else
 #endif
-    if (! do_sections (abfd, & coreout))
+    if (! do_sections(abfd, & coreout))
       goto fail;
 
-  /* Make sure that the regs are contiguous within the core file.  */
-
+  /* Make sure that the regs are contiguous within the core file: */
   idg = &coreout.c_idesc[I_GPREGS];
   idf = &coreout.c_idesc[I_FPREGS];
   ids = &coreout.c_idesc[I_SPECREGS];
 
-  if (idg->i_offset + idg->i_len != idf->i_offset
-      || idf->i_offset + idf->i_len != ids->i_offset)
-    goto fail;			/* Can't deal with non-contig regs */
+  if (((idg->i_offset + idg->i_len) != idf->i_offset)
+      || ((idf->i_offset + idf->i_len) != ids->i_offset))
+    goto fail;			/* Cannot deal with non-contig regs */
 
-  if (bfd_seek (abfd, idg->i_offset, SEEK_SET) != 0)
+  if (bfd_seek(abfd, idg->i_offset, SEEK_SET) != 0)
     goto fail;
 
-  if (!make_bfd_asection (abfd, ".reg",
-			  SEC_HAS_CONTENTS,
-			  idg->i_len + idf->i_len + ids->i_len,
-			  0,
-			  idg->i_offset))
+  if (!make_bfd_asection(abfd, ".reg", SEC_HAS_CONTENTS,
+                         (idg->i_len + idf->i_len + ids->i_len), 0,
+			 idg->i_offset))
     goto fail;
 
-  /* OK, we believe you.  You're a core file (sure, sure).  */
-  bfd_default_set_arch_mach (abfd, bfd_arch_mips, 0);
+  /* OK, we believe you.  You are a core file (sure, sure): */
+  bfd_default_set_arch_mach(abfd, bfd_arch_mips, 0);
 
   return abfd->xvec;
 
  fail:
-  bfd_release (abfd, core_hdr (abfd));
-  core_hdr (abfd) = NULL;
-  bfd_section_list_clear (abfd);
+  bfd_release(abfd, core_hdr(abfd));
+  core_hdr(abfd) = NULL;
+  bfd_section_list_clear(abfd);
   return NULL;
 }
 
 static char *
-irix_core_core_file_failing_command (bfd *abfd)
+irix_core_core_file_failing_command(bfd *abfd)
 {
-  return core_command (abfd);
+  return core_command(abfd);
 }
 
 static int
-irix_core_core_file_failing_signal (bfd *abfd)
+irix_core_core_file_failing_signal(bfd *abfd)
 {
-  return core_signal (abfd);
+  return core_signal(abfd);
 }
 
 static bfd_boolean
-irix_core_core_file_matches_executable_p (bfd *core_bfd ATTRIBUTE_UNUSED,
-                                          bfd *exec_bfd ATTRIBUTE_UNUSED)
+irix_core_core_file_matches_executable_p(bfd *core_bfd ATTRIBUTE_UNUSED,
+                                         bfd *exec_bfd ATTRIBUTE_UNUSED)
 {
   return TRUE;			/* XXX - FIXME */
 }
 
-/* If somebody calls any byte-swapping routines, shoot them.  */
-static void
+/* If somebody calls any byte-swapping routines, then shoot them: */
+static void ATTRIBUTE_NORETURN
 swap_abort(void)
 {
-  abort(); /* This way doesn't require any declaration for ANSI to fuck up */
+  /* This way does NOT require any declaration for ANSI to mess up (?) */
+  abort();
 }
 
-#define	NO_GET ((bfd_vma (*) (const void *)) swap_abort)
-#define	NO_PUT ((void (*) (bfd_vma, void *)) swap_abort)
-#define	NO_GETS ((bfd_signed_vma (*) (const void *)) swap_abort)
-#define	NO_GET64 ((bfd_uint64_t (*) (const void *)) swap_abort)
-#define	NO_PUT64 ((void (*) (bfd_uint64_t, void *)) swap_abort)
-#define	NO_GETS64 ((bfd_int64_t (*) (const void *)) swap_abort)
+#define	NO_GET ((bfd_vma (*)(const void *))swap_abort)
+#define	NO_PUT ((void (*)(bfd_vma, void *))swap_abort)
+#define	NO_GETS ((bfd_signed_vma (*)(const void *))swap_abort)
+#define	NO_GET64 ((bfd_uint64_t (*)(const void *))swap_abort)
+#define	NO_PUT64 ((void (*)(bfd_uint64_t, void *))swap_abort)
+#define	NO_GETS64 ((bfd_int64_t (*)(const void *))swap_abort)
 
 const bfd_target irix_core_vec =
   {
@@ -318,19 +325,21 @@ const bfd_target irix_core_vec =
       bfd_false, bfd_false
     },
 
-    BFD_JUMP_TABLE_GENERIC (_bfd_generic),
-    BFD_JUMP_TABLE_COPY (_bfd_generic),
-    BFD_JUMP_TABLE_CORE (irix_core),
-    BFD_JUMP_TABLE_ARCHIVE (_bfd_noarchive),
-    BFD_JUMP_TABLE_SYMBOLS (_bfd_nosymbols),
-    BFD_JUMP_TABLE_RELOCS (_bfd_norelocs),
-    BFD_JUMP_TABLE_WRITE (_bfd_generic),
-    BFD_JUMP_TABLE_LINK (_bfd_nolink),
-    BFD_JUMP_TABLE_DYNAMIC (_bfd_nodynamic),
+    BFD_JUMP_TABLE_GENERIC(_bfd_generic),
+    BFD_JUMP_TABLE_COPY(_bfd_generic),
+    BFD_JUMP_TABLE_CORE(irix_core),
+    BFD_JUMP_TABLE_ARCHIVE(_bfd_noarchive),
+    BFD_JUMP_TABLE_SYMBOLS(_bfd_nosymbols),
+    BFD_JUMP_TABLE_RELOCS(_bfd_norelocs),
+    BFD_JUMP_TABLE_WRITE(_bfd_generic),
+    BFD_JUMP_TABLE_LINK(_bfd_nolink),
+    BFD_JUMP_TABLE_DYNAMIC(_bfd_nodynamic),
 
     NULL,
 
-    (PTR) 0			/* backend_data */
+    (PTR)0			/* backend_data */
   };
 
 #endif /* IRIX_CORE */
+
+/* EOF */

@@ -405,7 +405,7 @@ s390_elf_ldisp_reloc (abfd, reloc_entry, symbol, data, input_section,
   reloc_howto_type *howto = reloc_entry->howto;
   bfd_vma relocation;
   bfd_vma insn;
-  
+
   if (output_bfd != (bfd *) NULL
       && (symbol->flags & BSF_SECTION_SYM) == 0
       && (! howto->partial_inplace
@@ -414,13 +414,13 @@ s390_elf_ldisp_reloc (abfd, reloc_entry, symbol, data, input_section,
       reloc_entry->address += input_section->output_offset;
       return bfd_reloc_ok;
     }
-  
+
   if (output_bfd != NULL)
     return bfd_reloc_continue;
-  
+
   if (reloc_entry->address > bfd_get_section_limit (abfd, input_section))
     return bfd_reloc_outofrange;
-  
+
   relocation = (symbol->value
 		+ symbol->section->output_section->vma
 		+ symbol->section->output_offset);
@@ -431,11 +431,11 @@ s390_elf_ldisp_reloc (abfd, reloc_entry, symbol, data, input_section,
 		     + input_section->output_offset);
       relocation -= reloc_entry->address;
     }
-  
+
   insn = bfd_get_32 (abfd, (bfd_byte *) data + reloc_entry->address);
   insn |= (relocation & 0xfff) << 16 | (relocation & 0xff000) >> 4;
   bfd_put_32 (abfd, insn, (bfd_byte *) data + reloc_entry->address);
-  
+
   if ((bfd_signed_vma) relocation < - 0x80000
       || (bfd_signed_vma) relocation > 0x7ffff)
     return bfd_reloc_overflow;
@@ -728,23 +728,22 @@ struct elf_s390_link_hash_table
 /* Create an entry in an s390 ELF linker hash table.  */
 
 static struct bfd_hash_entry *
-link_hash_newfunc (entry, table, string)
-     struct bfd_hash_entry *entry;
-     struct bfd_hash_table *table;
-     const char *string;
+link_hash_newfunc(struct bfd_hash_entry *entry,
+                  struct bfd_hash_table *table, const char *string)
 {
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
   if (entry == NULL)
     {
-      entry = bfd_hash_allocate (table,
-				 sizeof (struct elf_s390_link_hash_entry));
+      entry = ((struct bfd_hash_entry *)
+               bfd_hash_allocate(table,
+				 sizeof(struct elf_s390_link_hash_entry)));
       if (entry == NULL)
 	return entry;
     }
 
-  /* Call the allocation method of the superclass.  */
-  entry = _bfd_elf_link_hash_newfunc (entry, table, string);
+  /* Call the allocation method of the superclass: */
+  entry = _bfd_elf_link_hash_newfunc(entry, table, string);
   if (entry != NULL)
     {
       struct elf_s390_link_hash_entry *eh;
@@ -922,10 +921,8 @@ elf_s390_copy_indirect_symbol (bed, dir, ind)
 }
 
 static int
-elf_s390_tls_transition (info, r_type, is_local)
-     struct bfd_link_info *info;
-     int r_type;
-     int is_local;
+elf_s390_tls_transition(struct bfd_link_info *info, int r_type,
+                        int is_local)
 {
   if (info->shared)
     return r_type;
@@ -943,6 +940,8 @@ elf_s390_tls_transition (info, r_type, is_local)
       return R_390_TLS_GOTIE32;
     case R_390_TLS_LDM32:
       return R_390_TLS_LE32;
+    default:
+      break;
     }
 
   return r_type;
@@ -1055,6 +1054,7 @@ elf_s390_check_relocs (abfd, info, sec, relocs)
 	      if (!create_got_section (htab->elf.dynobj, info))
 		return FALSE;
 	    }
+        default:;
 	}
 
       switch (r_type)
@@ -1311,7 +1311,7 @@ elf_s390_check_relocs (abfd, info, sec, relocs)
 		 relocations we need for this symbol.  */
 	      if (h != NULL)
 		{
-		  head = &((struct elf_s390_link_hash_entry *) h)->dyn_relocs;
+		  head = &((struct elf_s390_link_hash_entry *)h)->dyn_relocs;
 		}
 	      else
 		{
@@ -1320,22 +1320,22 @@ elf_s390_check_relocs (abfd, info, sec, relocs)
 		     easily.  Oh well.  */
 		  asection *s;
 
-		  s = bfd_section_from_r_symndx (abfd, &htab->sym_sec,
-						 sec, r_symndx);
+		  s = bfd_section_from_r_symndx(abfd, &htab->sym_sec,
+                                                sec, r_symndx);
 		  if (s == NULL)
 		    return FALSE;
 
 		  head = ((struct elf_s390_dyn_relocs **)
-			  &elf_section_data (s)->local_dynrel);
+			  &elf_section_data(s)->local_dynrel);
 		}
 
 	      p = *head;
-	      if (p == NULL || p->sec != sec)
+	      if ((p == NULL) || (p->sec != sec))
 		{
-		  bfd_size_type amt = sizeof *p;
+		  bfd_size_type amt = sizeof(*p);
 
 		  p = ((struct elf_s390_dyn_relocs *)
-		       bfd_alloc (htab->elf.dynobj, amt));
+		       bfd_alloc(htab->elf.dynobj, amt));
 		  if (p == NULL)
 		    return FALSE;
 		  p->next = *head;
@@ -2024,7 +2024,7 @@ elf_s390_size_dynamic_sections (output_bfd, info)
       Elf_Internal_Shdr *symtab_hdr;
       asection *srela;
 
-      if (bfd_get_flavour (ibfd) != bfd_target_elf_flavour)
+      if (bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
 	continue;
 
       for (s = ibfd->sections; s != NULL; s = s->next)
@@ -2032,12 +2032,12 @@ elf_s390_size_dynamic_sections (output_bfd, info)
 	  struct elf_s390_dyn_relocs *p;
 
 	  for (p = *((struct elf_s390_dyn_relocs **)
-		     &elf_section_data (s)->local_dynrel);
+		     &elf_section_data(s)->local_dynrel);
 	       p != NULL;
 	       p = p->next)
 	    {
-	      if (!bfd_is_abs_section (p->sec)
-		  && bfd_is_abs_section (p->sec->output_section))
+	      if (!bfd_is_abs_section(p->sec)
+		  && bfd_is_abs_section(p->sec->output_section))
 		{
 		  /* Input section has been discarded, either because
 		     it is a copy of a linkonce section or due to
@@ -3508,10 +3508,12 @@ elf_s390_plt_sym_val (bfd_vma i, const asection *plt,
 #define elf_backend_finish_dynamic_symbol     elf_s390_finish_dynamic_symbol
 #define elf_backend_gc_mark_hook	      elf_s390_gc_mark_hook
 #define elf_backend_gc_sweep_hook	      elf_s390_gc_sweep_hook
-#define elf_backend_reloc_type_class	      elf_s390_reloc_type_class
+#ifndef elf_backend_reloc_type_class
+# define elf_backend_reloc_type_class	      elf_s390_reloc_type_class
+#endif /* !elf_backend_reloc_type_class */
 #define elf_backend_relocate_section	      elf_s390_relocate_section
 #define elf_backend_size_dynamic_sections     elf_s390_size_dynamic_sections
-#define elf_backend_reloc_type_class	      elf_s390_reloc_type_class
+/* elf_backend_reloc_type_class is already defined a few lines above */
 #define elf_backend_grok_prstatus	      elf_s390_grok_prstatus
 #define elf_backend_plt_sym_val		      elf_s390_plt_sym_val
 
@@ -3519,3 +3521,9 @@ elf_s390_plt_sym_val (bfd_vma i, const asection *plt,
 #define elf_backend_object_p		elf_s390_object_p
 
 #include "elf32-target.h"
+
+#ifdef elf_backend_reloc_type_class
+# undef elf_backend_reloc_type_class
+#endif /* elf_backend_reloc_type_class */
+
+/* EOF */

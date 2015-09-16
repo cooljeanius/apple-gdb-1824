@@ -1,4 +1,5 @@
-/* Compressed section support (intended for debug sections).
+/* compress.c
+   Compressed section support (intended for debug sections).
    Copyright 2008, 2010, 2011, 2012
    Free Software Foundation, Inc.
 
@@ -23,8 +24,10 @@
 #include "bfd.h"
 #include "libbfd.h"
 #ifdef HAVE_ZLIB_H
-#include <zlib.h>
-#endif
+# include <zlib.h>
+#else
+# warning compress.c expects <zlib.h> to be included.
+#endif /* HAVE_ZLIB_H */
 
 #ifdef HAVE_ZLIB_H
 static bfd_boolean
@@ -41,13 +44,13 @@ decompress_contents (bfd_byte *compressed_buffer,
   strm.zalloc = NULL;
   strm.zfree = NULL;
   strm.opaque = NULL;
-  strm.avail_in = compressed_size - 12;
-  strm.next_in = (Bytef*) compressed_buffer + 12;
+  strm.avail_in = (compressed_size - 12);
+  strm.next_in = (Bytef*)compressed_buffer + 12;
   strm.avail_out = uncompressed_size;
 
-  BFD_ASSERT (Z_OK == 0);
-  rc = inflateInit (&strm);
-  while (strm.avail_in > 0 && strm.avail_out > 0)
+  BFD_ASSERT(Z_OK == 0);
+  rc = inflateInit(&strm);
+  while ((strm.avail_in > 0) && (strm.avail_out > 0))
     {
       if (rc != Z_OK)
 	break;
@@ -61,7 +64,7 @@ decompress_contents (bfd_byte *compressed_buffer,
   rc |= inflateEnd (&strm);
   return rc == Z_OK && strm.avail_out == 0;
 }
-#endif
+#endif /* HAVE_ZLIB_H */
 
 /*
 FUNCTION
@@ -91,7 +94,7 @@ bfd_compress_section_contents (bfd *abfd ATTRIBUTE_UNUSED,
 			       bfd_size_type uncompressed_size ATTRIBUTE_UNUSED)
 {
 #ifndef HAVE_ZLIB_H
-  bfd_set_error (bfd_error_invalid_operation);
+  bfd_set_error(bfd_error_invalid_operation);
   return FALSE;
 #else
   uLong compressed_size;
@@ -165,7 +168,7 @@ bfd_get_full_section_contents (bfd *abfd, sec_ptr sec, bfd_byte **ptr)
   bfd_size_type save_size;
   bfd_size_type save_rawsize;
   bfd_byte *compressed_buffer;
-#endif
+#endif  /* HAVE_ZLIB_H */
 
   if (abfd->direction != write_direction && sec->rawsize != 0)
     sz = sec->rawsize;
@@ -236,7 +239,7 @@ bfd_get_full_section_contents (bfd *abfd, sec_ptr sec, bfd_byte **ptr)
       free (compressed_buffer);
       *ptr = p;
       return TRUE;
-#endif
+#endif  /* HAVE_ZLIB_H */
 
     case COMPRESS_SECTION_DONE:
       if (p == NULL)
@@ -369,7 +372,7 @@ bfd_init_section_decompress_status (bfd *abfd ATTRIBUTE_UNUSED,
   sec->compress_status = DECOMPRESS_SECTION_SIZED;
 
   return TRUE;
-#endif
+#endif  /* HAVE_ZLIB_H */
 }
 
 /*
@@ -425,5 +428,7 @@ bfd_init_section_compress_status (bfd *abfd ATTRIBUTE_UNUSED,
 
   free (uncompressed_buffer);
   return ret;
-#endif
+#endif  /* HAVE_ZLIB_H */
 }
+
+/* EOF */

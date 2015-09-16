@@ -1,4 +1,4 @@
-/* MI Command Set - stack commands.
+/* mi-cmd-stack.c: MI Command Set - stack commands.
    Copyright 2000, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
    Contributed by Cygnus Solutions (a Red Hat company).
 
@@ -40,19 +40,24 @@
 /* APPLE LOCAL - subroutine inlining  */
 #include "inlining.h"
 
-#ifdef __i386__
+#if (defined(__i386__) && !defined(THROW_CATCH_FIND_TYPEINFO)) || \
+    defined(TARGET_I386)
 # include "tm-i386-macosx.h"
-# include "config/i386/tm-i386-macosx.h"
+# if !defined(TM_I386NEXT_H) && !defined(HAVE_I387_REGS)
+#  include "config/i386/tm-i386-macosx.h"
+# endif /* !TM_I386NEXT_H && !HAVE_I387_REGS */
 #else
 # define MI_CMD_STACK_C_NOT_ON_i386 1
-#endif /* __i386__ */
+#endif /* (__i386__ && !THROW_CATCH_FIND_TYPEINFO) || TARGET_I386 */
 
-/* FIXME: There is no general mi header to put this kind of utility function.*/
-extern void mi_report_var_creation (struct ui_out *uiout, struct varobj *var);
+/* FIXME: There is no general mi header to put these kinds of utility
+ * functions: */
+extern void mi_report_var_creation(struct ui_out *uiout, struct varobj *var);
+extern enum print_values mi_decode_print_values(char *arg);
 
-void mi_interp_stack_changed_hook (void);
-void mi_interp_frame_changed_hook (int new_frame_number);
-void mi_interp_context_hook (int thread_id);
+void mi_interp_stack_changed_hook(void);
+void mi_interp_frame_changed_hook(int new_frame_number);
+void mi_interp_context_hook(int thread_id);
 
 /* This regexp pattern buffer is used for the file_list_statics
    and file_list_globals for the filter.  It doesn't look like the
@@ -64,35 +69,35 @@ void mi_interp_context_hook (int thread_id);
 regex_t mi_symbol_filter;
 
 static char *print_values_bad_input_string =
-           "Unknown value for PRINT_VALUES: must be: 0 or \"--no-values\", "
-	   "1 or \"--all-values\", 2 or \"--simple-values\", "
-           "3 or \"--make-varobj\"";
+         "Unknown value for PRINT_VALUES: must be: 0 or \"--no-values\", "
+	 "1 or \"--all-values\", 2 or \"--simple-values\", "
+         "3 or \"--make-varobj\"";
 
 /* Use this to print any extra info in the stack listing output that is
    not in the standard gdb printing */
 
-void mi_print_frame_more_info (struct ui_out *uiout,
-				struct symtab_and_line *sal,
-				struct frame_info *fi);
+void mi_print_frame_more_info(struct ui_out *uiout,
+                              struct symtab_and_line *sal,
+                              struct frame_info *fi);
 
-static void list_args_or_locals (int locals, enum print_values values,
+static void list_args_or_locals(int locals, enum print_values values,
+                                struct frame_info *fi,
+                                int all_blocks);
+
+static void print_syms_for_block(struct block *block,
 				 struct frame_info *fi,
-				 int all_blocks);
-
-static void print_syms_for_block (struct block *block,
-				  struct frame_info *fi,
-				  struct ui_stream *stb,
-				  int locals,
-				  int consts,
-				  enum print_values values,
-				  regex_t *filter);
+				 struct ui_stream *stb,
+				 int locals,
+				 int consts,
+				 enum print_values values,
+				 regex_t *filter);
 
 static void
-print_globals_for_symtab (struct symtab *file_symtab,
-			  struct ui_stream *stb,
-			  enum print_values values,
-			  int consts,
-			  regex_t *filter);
+print_globals_for_symtab(struct symtab *file_symtab,
+			 struct ui_stream *stb,
+			 enum print_values values,
+			 int consts,
+			 regex_t *filter);
 
 /* Print a list of the stack frames. Args can be none, in which case
    we want to print the whole backtrace, or a pair of numbers
@@ -173,22 +178,23 @@ mi_print_frame_info_lite_base (struct ui_out *uiout,
 {
   char num_buf[8];
   struct cleanup *list_cleanup;
+  struct obj_section *osect;
 
-  print_inlined_frames_lite (uiout, with_names, frame_num, pc, fp);
+  print_inlined_frames_lite(uiout, with_names, frame_num, pc, fp);
 
-  sprintf (num_buf, "%d", *frame_num);
-  ui_out_text (uiout, "Frame ");
+  sprintf(num_buf, "%d", *frame_num);
+  ui_out_text(uiout, "Frame ");
   ui_out_text(uiout, num_buf);
   ui_out_text(uiout, ": ");
-  list_cleanup = make_cleanup_ui_out_tuple_begin_end (uiout, num_buf);
-  ui_out_field_core_addr (uiout, "pc", pc);
-  ui_out_field_core_addr (uiout, "fp", fp);
+  list_cleanup = make_cleanup_ui_out_tuple_begin_end(uiout, num_buf);
+  ui_out_field_core_addr(uiout, "pc", pc);
+  ui_out_field_core_addr(uiout, "fp", fp);
 
-  struct obj_section *osect = find_pc_sect_section (pc, NULL);
-  if (osect != NULL && osect->objfile != NULL && osect->objfile->name != NULL)
-      ui_out_field_string (uiout, "shlibname", osect->objfile->name);
+  osect = find_pc_sect_section(pc, NULL);
+  if ((osect != NULL) && (osect->objfile != NULL) && (osect->objfile->name != NULL))
+      ui_out_field_string(uiout, "shlibname", osect->objfile->name);
   else
-      ui_out_field_string (uiout, "shlibname", "<UNKNOWN>");
+      ui_out_field_string(uiout, "shlibname", "<UNKNOWN>");
 
   if (with_names)
     {
@@ -364,9 +370,10 @@ mi_cmd_stack_list_frames_lite (char *command, char **argv, int argc)
 
 	  if ((limit == -1) || (i >= start && i < limit))
 	    {
-	      print_fun (uiout, &i, get_frame_pc (fi),
-                                        get_frame_base(fi));
-              int j = frame_relative_level (fi);
+              int j;
+	      print_fun(uiout, &i, get_frame_pc(fi),
+                        get_frame_base(fi));
+              j = frame_relative_level(fi);
               while ((j < i) && (fi != NULL))
                 {
                   fi = get_prev_frame (fi);
@@ -431,29 +438,29 @@ mi_print_frame_more_info (struct ui_out *uiout,
 }
 
 enum mi_cmd_result
-mi_cmd_stack_info_depth (char *command, char **argv, int argc)
+mi_cmd_stack_info_depth(char *command, char **argv, int argc)
 {
   int frame_high;
   unsigned int i;
   struct frame_info *fi;
 
   if (argc > 1)
-    error (_("mi_cmd_stack_info_depth: Usage: [MAX_DEPTH]"));
+    error(_("mi_cmd_stack_info_depth: Usage: [MAX_DEPTH]"));
 
   if (argc == 1)
-    frame_high = atoi (argv[0]);
+    frame_high = atoi(argv[0]);
   else
     /* Called with no arguments, it means we want the real depth of
        the stack. */
     frame_high = -1;
 
 #ifdef FAST_COUNT_STACK_DEPTH
-  if (! FAST_COUNT_STACK_DEPTH (frame_high, 0, frame_high, &i, NULL))
-#endif
+  if (! FAST_COUNT_STACK_DEPTH(frame_high, 0, frame_high, &i, NULL))
+#endif /* FAST_COUNT_STACK_DEPTH */
     {
-      for (i = 0, fi = get_current_frame ();
-	   fi && (i < frame_high || frame_high == -1);
-	   i++, fi = get_prev_frame (fi))
+      for (i = 0U, fi = get_current_frame();
+	   fi && (((int)i < frame_high) || (frame_high == -1));
+	   i++, fi = get_prev_frame(fi))
 	QUIT;
     }
   ui_out_field_int (uiout, "depth", i);
@@ -461,13 +468,10 @@ mi_cmd_stack_info_depth (char *command, char **argv, int argc)
   return MI_CMD_DONE;
 }
 
-/*
-  mi_decode_print_values, ARG is the mi standard "print-values"
-  argument.  We decode this into an enum print_values.
-*/
-
+/* mi_decode_print_values, ARG is the mi standard "print-values"
+ * argument.  We decode this into an enum print_values: */
 enum print_values
-mi_decode_print_values (char *arg)
+mi_decode_print_values(char *arg)
 {
   enum print_values print_values = 0;
 
@@ -571,11 +575,12 @@ mi_cmd_stack_list_args (char *command, char **argv, int argc)
 
   cleanup_stack_args = make_cleanup_ui_out_list_begin_end (uiout, "stack-args");
 
-  /* Now let's print the frames up to frame_high, or until there are
+  /* Now let us print the frames up to frame_high, or until there are
      frames in the stack. */
   while (fi != NULL)
     {
       struct cleanup *cleanup_frame;
+      struct frame_id stack_frame_id;
       QUIT;
       /* APPLE LOCAL: We need to store the frame id and then look the frame
          info back up after our call to list_args_or_locals() in case that
@@ -583,18 +588,18 @@ mi_cmd_stack_list_args (char *command, char **argv, int argc)
 	 the dynamic type of a variable (which will cause flush_cached_frames()
 	 to be called resulting in our frame info chain being destroyed,
 	 leaving FI pointing to invalid memory.  */
-      struct frame_id stack_frame_id = get_frame_id (fi);
+      stack_frame_id = get_frame_id(fi);
 
-      cleanup_frame = make_cleanup_ui_out_tuple_begin_end (uiout, "frame");
-      ui_out_field_int (uiout, "level", i);
-      list_args_or_locals (0, values, fi, 0);
-      do_cleanups (cleanup_frame);
+      cleanup_frame = make_cleanup_ui_out_tuple_begin_end(uiout, "frame");
+      ui_out_field_int(uiout, "level", i);
+      list_args_or_locals(0, values, fi, 0);
+      do_cleanups(cleanup_frame);
 
       i++;
-      if (i <= frame_high || frame_high == -1)
+      if ((i <= frame_high) || (frame_high == -1))
         {
-	  /* APPLE LOCAL: Get our frame info again from the frame id.  */
-	  fi = frame_find_by_id (stack_frame_id);
+	  /* APPLE LOCAL: Get our frame info again from the frame id: */
+	  fi = frame_find_by_id(stack_frame_id);
 	  if (fi != NULL)
 	    fi = get_prev_frame (fi);
 	}
@@ -1263,22 +1268,22 @@ print_syms_for_block (struct block *block,
 	         to keep the uglification to a minimum.  */
 	      struct varobj *new_var;
 	      struct cleanup *tuple_cleanup, *expr_cleanup;
-	      char *expr = SYMBOL_NATURAL_NAME (sym2);
-	      if (strstr (expr, "::") != NULL)
+	      char *expr = SYMBOL_NATURAL_NAME(sym2);
+	      if (strstr(expr, "::") != NULL)
 		{
 		  char *tmp;
-		  int len = strlen (expr);
-		  tmp = xmalloc (len + 3);
+		  int len = strlen(expr);
+		  tmp = (char *)xmalloc(len + 3);
 		  tmp[0] = '\'';
-		  memcpy (tmp + 1, expr, len);
+		  memcpy(tmp + 1, expr, len);
 		  tmp[len + 1] = '\'';
 		  tmp[len + 2] = '\0';
 		  expr = tmp;
-		  expr_cleanup = make_cleanup (xfree, expr);
+		  expr_cleanup = make_cleanup(xfree, expr);
 		}
 	      else
 		{
-		  expr_cleanup = make_cleanup (null_cleanup, NULL);
+		  expr_cleanup = make_cleanup(null_cleanup, NULL);
 		}
 
 	      /* END APPLE LOCAL */
@@ -1495,39 +1500,40 @@ mi_interp_stack_changed_hook (void)
 }
 
 void
-mi_interp_frame_changed_hook (int new_frame_number)
+mi_interp_frame_changed_hook(int new_frame_number)
 {
   struct ui_out *saved_ui_out = uiout;
   struct cleanup *list_cleanup;
 
-  /* APPLE LOCAL: Don't report new_frame_number == -1, that is just the
+  /* APPLE LOCAL: Do NOT report new_frame_number == -1, that is just the
      invalidate frame message, and there is not much the UI can do with
      that.  */
 
   if (new_frame_number == -1)
     return;
 
-  uiout = interp_ui_out (mi_interp);
+  uiout = interp_ui_out(mi_interp);
 
-  list_cleanup = make_cleanup_ui_out_list_begin_end (uiout, "MI_HOOK_RESULT");
-  ui_out_field_string (uiout, "HOOK_TYPE", "frame_changed");
-  ui_out_field_int (uiout, "frame", new_frame_number);
-  do_cleanups (list_cleanup);
+  list_cleanup = make_cleanup_ui_out_list_begin_end(uiout, "MI_HOOK_RESULT");
+  ui_out_field_string(uiout, "HOOK_TYPE", "frame_changed");
+  ui_out_field_int(uiout, "frame", new_frame_number);
+  do_cleanups(list_cleanup);
   uiout = saved_ui_out;
-
 }
 
 void
-mi_interp_context_hook (int thread_id)
+mi_interp_context_hook(int thread_id)
 {
   struct ui_out *saved_ui_out = uiout;
   struct cleanup *list_cleanup;
-  uiout = interp_ui_out (mi_interp);
+  uiout = interp_ui_out(mi_interp);
 
-  list_cleanup = make_cleanup_ui_out_list_begin_end (uiout, "MI_HOOK_RESULT");
-  ui_out_field_string (uiout, "HOOK_TYPE", "thread_changed");
-  ui_out_field_int (uiout, "thread", thread_id);
-  do_cleanups (list_cleanup);
+  list_cleanup = make_cleanup_ui_out_list_begin_end(uiout, "MI_HOOK_RESULT");
+  ui_out_field_string(uiout, "HOOK_TYPE", "thread_changed");
+  ui_out_field_int(uiout, "thread", thread_id);
+  do_cleanups(list_cleanup);
   uiout = saved_ui_out;
 }
 /* APPLE LOCAL end hooks */
+
+/* EOF */

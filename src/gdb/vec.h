@@ -1,4 +1,4 @@
-/* Vector API for GDB.
+/* vec.h: Vector API for GDB.
    Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009
    Free Software Foundation, Inc.
    Contributed by Nathan Sidwell <nathan@codesourcery.com>
@@ -16,9 +16,9 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>  */
 
-#if !defined (GDB_VEC_H)
+#if !defined(GDB_VEC_H)
 #define GDB_VEC_H
 
 #include <stddef.h>
@@ -27,7 +27,7 @@
 
 /* The macros here implement a set of templated vector types and
    associated interfaces.  These templates are implemented with
-   macros, as we're not in C++ land.  The interface functions are
+   macros, as we are not in C++ land.  The interface functions are
    typesafe and use static inline functions, sometimes backed by
    out-of-line generic functions.
 
@@ -997,3 +997,5 @@ static inline T *VEC_OP (T,safe_insert)					  \
 }
 
 #endif /* GDB_VEC_H */
+
+/* EOF */

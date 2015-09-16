@@ -28,143 +28,154 @@
    impetus for this was writing a converter from stabs to HP IEEE-695
    debugging format.  */
 
-/* Different kinds of types.  */
-
+/* Different kinds of types: */
 enum debug_type_kind
 {
-  /* Not used.  */
+  /* Not used: */
   DEBUG_KIND_ILLEGAL,
-  /* Indirect via a pointer.  */
+  /* Indirect via a pointer: */
   DEBUG_KIND_INDIRECT,
-  /* Void.  */
+  /* Void: */
   DEBUG_KIND_VOID,
-  /* Integer.  */
+  /* Integer: */
   DEBUG_KIND_INT,
-  /* Floating point.  */
+  /* Floating point: */
   DEBUG_KIND_FLOAT,
-  /* Complex.  */
+  /* Complex: */
   DEBUG_KIND_COMPLEX,
-  /* Boolean.  */
+  /* Boolean: */
   DEBUG_KIND_BOOL,
-  /* Struct.  */
+  /* Struct: */
   DEBUG_KIND_STRUCT,
-  /* Union.  */
+  /* Union: */
   DEBUG_KIND_UNION,
-  /* Class.  */
+  /* Class: */
   DEBUG_KIND_CLASS,
-  /* Union class (can this really happen?).  */
+  /* Union class (can this really happen?): */
   DEBUG_KIND_UNION_CLASS,
-  /* Enumeration type.  */
+  /* Enumeration type: */
   DEBUG_KIND_ENUM,
-  /* Pointer.  */
+  /* Pointer: */
   DEBUG_KIND_POINTER,
-  /* Function.  */
+  /* Function: */
   DEBUG_KIND_FUNCTION,
-  /* Reference.  */
+  /* Reference: */
   DEBUG_KIND_REFERENCE,
-  /* Range.  */
+  /* Range: */
   DEBUG_KIND_RANGE,
-  /* Array.  */
+  /* Array: */
   DEBUG_KIND_ARRAY,
-  /* Set.  */
+  /* Set: */
   DEBUG_KIND_SET,
-  /* Based pointer.  */
+  /* Based pointer: */
   DEBUG_KIND_OFFSET,
-  /* Method.  */
+  /* Method: */
   DEBUG_KIND_METHOD,
-  /* Const qualified type.  */
+  /* Const qualified type: */
   DEBUG_KIND_CONST,
-  /* Volatile qualified type.  */
+  /* Volatile qualified type: */
   DEBUG_KIND_VOLATILE,
-  /* Named type.  */
+  /* Named type: */
   DEBUG_KIND_NAMED,
-  /* Tagged type.  */
+  /* Tagged type: */
   DEBUG_KIND_TAGGED
 };
 
-/* Different kinds of variables.  */
-
+/* Different kinds of variables: */
 enum debug_var_kind
 {
-  /* Not used.  */
+  /* Not used: */
   DEBUG_VAR_ILLEGAL,
-  /* A global variable.  */
+  /* A global variable: */
   DEBUG_GLOBAL,
-  /* A static variable.  */
+  /* A static variable: */
   DEBUG_STATIC,
-  /* A local static variable.  */
+  /* A local static variable: */
   DEBUG_LOCAL_STATIC,
-  /* A local variable.  */
+  /* A local variable: */
   DEBUG_LOCAL,
-  /* A register variable.  */
+  /* A register variable: */
   DEBUG_REGISTER
 };
 
-/* Different kinds of function parameters.  */
-
+/* Different kinds of function parameters: */
 enum debug_parm_kind
 {
-  /* Not used.  */
+  /* Not used: */
   DEBUG_PARM_ILLEGAL,
-  /* A stack based parameter.  */
+  /* A stack based parameter: */
   DEBUG_PARM_STACK,
-  /* A register parameter.  */
+  /* A register parameter: */
   DEBUG_PARM_REG,
-  /* A stack based reference parameter.  */
+  /* A stack based reference parameter: */
   DEBUG_PARM_REFERENCE,
-  /* A register reference parameter.  */
+  /* A register reference parameter: */
   DEBUG_PARM_REF_REG
 };
 
-/* Different kinds of visibility.  */
-
+/* Different kinds of visibility: */
 enum debug_visibility
 {
-  /* A public field (e.g., a field in a C struct).  */
+  /* A public field (e.g., a field in a C struct): */
   DEBUG_VISIBILITY_PUBLIC,
-  /* A protected field.  */
+  /* A protected field: */
   DEBUG_VISIBILITY_PROTECTED,
-  /* A private field.  */
+  /* A private field: */
   DEBUG_VISIBILITY_PRIVATE,
-  /* A field which should be ignored.  */
+  /* A field which should be ignored: */
   DEBUG_VISIBILITY_IGNORE
 };
 
-/* A type.  */
+/* temporary, until I am ready to deal with all of the fallout that would
+ * result from fixing these warnings in this header: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
+/* A type: */
 typedef struct debug_type *debug_type;
 
-#define DEBUG_TYPE_NULL ((debug_type) NULL)
+#define DEBUG_TYPE_NULL ((debug_type)NULL)
 
-/* A field in a struct or union.  */
-
+/* A field in a struct or union: */
 typedef struct debug_field *debug_field;
 
-#define DEBUG_FIELD_NULL ((debug_field) NULL)
+#define DEBUG_FIELD_NULL ((debug_field)NULL)
 
-/* A base class for an object.  */
-
+/* A base class for an object: */
 typedef struct debug_baseclass *debug_baseclass;
 
-#define DEBUG_BASECLASS_NULL ((debug_baseclass) NULL)
+#define DEBUG_BASECLASS_NULL ((debug_baseclass)NULL)
 
-/* A method of an object.  */
-
+/* A method of an object: */
 typedef struct debug_method *debug_method;
 
-#define DEBUG_METHOD_NULL ((debug_method) NULL)
+#define DEBUG_METHOD_NULL ((debug_method)NULL)
 
 /* The arguments to a method function of an object.  These indicate
    which method to run.  */
-
 typedef struct debug_method_variant *debug_method_variant;
 
-#define DEBUG_METHOD_VARIANT_NULL ((debug_method_variant) NULL)
+#define DEBUG_METHOD_VARIANT_NULL ((debug_method_variant)NULL)
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
+/* in case the avove popping popped off the wrong warning: */
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ && !__clang__ */
 
 /* This structure is passed to debug_write.  It holds function
    pointers that debug_write will call based on the accumulated
    debugging information.  */
-
 struct debug_write_fns
 {
   /* This is called at the start of each new compilation unit with the
@@ -790,3 +801,5 @@ extern bfd_boolean debug_write
   (void *, const struct debug_write_fns *, void *);
 
 #endif /* DEBUG_H */
+
+/* EOF */

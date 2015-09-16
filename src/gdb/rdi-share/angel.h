@@ -1,6 +1,6 @@
-/* 
+/*
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -108,21 +108,21 @@ typedef signed   short int signed16;
 #  define _bool int
 #  define _false 0
 #  define _true 1
-# endif
+# endif /* bool implementations */
 
 # ifdef _bool
 #  define bool _bool
-# endif
+# endif /* _bool */
 
 # ifndef true
 #  define true _true
 #  define false _false
-# endif
+# endif /* !true */
 
 # ifndef YES
 #  define YES   true
 #  define NO    false
-# endif
+# endif /* !YES */
 
 # undef TRUE             /* some OSF headers define as 1 */
 # define TRUE  true
@@ -132,17 +132,17 @@ typedef signed   short int signed16;
 
 # ifndef NULL
 #  define NULL 0
-# endif
+# endif /* !NULL */
 
 #else
 
 # include "host.h"
 
-#endif
+#endif /* TARGET */
 
 #ifndef IGNORE
 # define IGNORE(x) ((x)=(x))
-#endif
+#endif /* !IGNORE */
 
 /* The following typedef allows us to cast between integral and
  * function pointers. This isn't allowed by direct casting when

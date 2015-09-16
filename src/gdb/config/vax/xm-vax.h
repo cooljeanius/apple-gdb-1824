@@ -1,5 +1,7 @@
-/* Common definitions to make GDB run on Vaxen under 4.2bsd and Ultrix.
-   Copyright (C) 1986, 1987, 1989, 1992 Free Software Foundation, Inc.
+/* xm-vax.h
+ * Common definitions to make GDB run on Vaxen under 4.2bsd and Ultrix.
+ */
+/* Copyright (C) 1986, 1987, 1989, 1992 Free Software Foundation, Inc.
 
    This file is part of GDB.
 
@@ -23,16 +25,16 @@
 
 #define KERNEL_U_ADDR (0x80000000 - (UPAGES * NBPG))
 
-/* Kernel is a bit tenacious about sharing text segments, disallowing bpts.  */
+/* Kernel is tenacious about sharing text segments, disallowing bpts: */
 #define	ONE_PROCESS_WRITETEXT
 
 /* Interface definitions for kernel debugger KDB.  */
 
 /* Map machine fault codes into signal numbers.
-   First subtract 0, divide by 4, then index in a table.
-   Faults for which the entry in this table is 0
-   are not handled by KDB; the program's own trap handler
-   gets to handle then.  */
+ * First subtract 0, divide by 4, then index in a table.
+ * Faults for which the entry in this table is 0
+ * are not handled by KDB; the program's own trap handler
+ * gets to handle then.  */
 
 #define FAULT_CODE_ORIGIN 0
 #define FAULT_CODE_UNITS 4
@@ -42,8 +44,8 @@
   0, 0, 0, 0, 0, 0, 0, 0}
 
 /* Start running with a stack stretching from BEG to END.
-   BEG and END should be symbols meaningful to the assembler.
-   This is used only for kdb.  */
+ * BEG and END should be symbols meaningful to the assembler.
+ * This is used only for kdb.  */
 
 #define INIT_STACK(beg, end)  \
 { asm (".globl end");         \
@@ -59,9 +61,9 @@
   asm ("movl (sp), fp");
 
 /* After KDB is entered by a fault, push all registers
-   that GDB thinks about (all NUM_REGS of them),
-   so that they appear in order of ascending GDB register number.
-   The fault code will be on the stack beyond the last register.  */
+ * that GDB thinks about (all NUM_REGS of them),
+ * so that they appear in order of ascending GDB register number.
+ * The fault code will be on the stack beyond the last register.  */
 
 #define PUSH_REGISTERS        \
 { asm ("pushl 8(sp)");        \
@@ -70,11 +72,13 @@
   asm ("pushr $037777"); }
 
 /* Assuming the registers (including processor status) have been
-   pushed on the stack in order of ascending GDB register number,
-   restore them and return to the address in the saved PC register.  */
+ * pushed on the stack in order of ascending GDB register number,
+ * restore them and return to the address in the saved PC register.  */
 
 #define POP_REGISTERS      \
 { asm ("popr $037777");    \
   asm ("subl2 $8,(sp)");   \
   asm ("movl (sp),sp");    \
   asm ("rei"); }
+
+/* EOF */

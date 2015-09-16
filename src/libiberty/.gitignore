@@ -1,5 +1,8 @@
+testsuite/demangler-fuzzer
 testsuite/test-demangle
+testsuite/test-expandargv
 testsuite/test-pexecute
+testsuite/test-strtol
 testsuite/Makefile
 Makefile
 *.o
@@ -15,6 +18,7 @@ errors
 dummy
 needed-list
 config.h
+conf*/*.awk
 stamp-*
 libiberty.aux
 libiberty.cp
@@ -38,3 +42,20 @@ libiberty.dvi
 libiberty.info*
 libiberty.html
 *.framework
+libtoolT
+
+# Besides being built as objects, certain files can also be built as
+# standalone programs, so gitignore the built programs as well:
+demangle
+_doprnt
+argv
+concat
+floatformat
+getopt
+getopt1
+physmem
+sorttest
+strerror
+strsignal
+vasprintf
+vsnprintf

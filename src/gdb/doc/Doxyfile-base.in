@@ -80,13 +80,16 @@ SOURCE_BROWSER = YES
 
 FORCE_LOCAL_INCLUDES = YES
 
-# We would like to have full macro expansion, but it's very slow.
+# We would like to have full macro expansion, but it is very slow.
 
 ENABLE_PREPROCESSING = YES
 #MACRO_EXPANSION = YES
 #EXPAND_ONLY_PREDEF = YES
 #PREDEFINED = __attribute__(x)= __extension__=
 
-# Suppress the huge volume of chatter.
+# Suppress the huge volume of chatter
+# (normally I would want to print it, but there is a LOT here):
 
 QUIET = YES
+
+# (I wish there was a "SOMEWHAT" value for "QUIET", or something like that)

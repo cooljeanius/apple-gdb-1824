@@ -1,4 +1,5 @@
-/* Defines needed when configuring for "none".
+/* xm-none.h
+   Defines needed when configuring for "none".
    Copyright 1993 Free Software Foundation, Inc.
 
    This file is part of GDB.

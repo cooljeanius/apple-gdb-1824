@@ -1,4 +1,5 @@
-/* Native-dependent definitions for Motorola 680x0 running SVR4.
+/* nm-sysv4.h
+   Native-dependent definitions for Motorola 680x0 running SVR4.
    Copyright 1994 Free Software Foundation, Inc.
 
    This file is part of GDB.

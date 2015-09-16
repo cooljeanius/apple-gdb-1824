@@ -127,6 +127,7 @@ static SCM ppscm_string_string;
 
 /* Administrivia for pretty-printer matcher smobs.  */
 
+#ifdef MY_BRANCH_IS_HEAD
 /* The smob "mark" function for <gdb:pretty-printer>.  */
 
 static SCM
@@ -141,6 +142,8 @@ ppscm_mark_pretty_printer_smob (SCM self)
   return gdbscm_mark_gsmob (&pp_smob->base);
 }
 
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 /* The smob "print" function for <gdb:pretty-printer>.  */
 
 static int
@@ -257,6 +260,7 @@ gdbscm_set_pretty_printer_enabled_x (SCM self, SCM enabled)
 /* Administrivia for pretty-printer-worker smobs.
    These are created when a matcher recognizes a value.  */
 
+#ifdef MY_BRANCH_IS_HEAD
 /* The smob "mark" function for <gdb:pretty-printer-worker>.  */
 
 static SCM
@@ -272,6 +276,8 @@ ppscm_mark_pretty_printer_worker_smob (SCM self)
   return gdbscm_mark_gsmob (&w_smob->base);
 }
 
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 /* The smob "print" function for <gdb:pretty-printer-worker>.  */
 
 static int
@@ -1108,16 +1114,22 @@ gdbscm_initialize_pretty_printers (void)
   pretty_printer_smob_tag
     = gdbscm_make_smob_type (pretty_printer_smob_name,
 			     sizeof (pretty_printer_smob));
+#ifdef MY_BRANCH_IS_HEAD
   scm_set_smob_mark (pretty_printer_smob_tag,
 		     ppscm_mark_pretty_printer_smob);
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
   scm_set_smob_print (pretty_printer_smob_tag,
 		      ppscm_print_pretty_printer_smob);
 
   pretty_printer_worker_smob_tag
     = gdbscm_make_smob_type (pretty_printer_worker_smob_name,
 			     sizeof (pretty_printer_worker_smob));
+#ifdef MY_BRANCH_IS_HEAD
   scm_set_smob_mark (pretty_printer_worker_smob_tag,
 		     ppscm_mark_pretty_printer_worker_smob);
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
   scm_set_smob_print (pretty_printer_worker_smob_tag,
 		      ppscm_print_pretty_printer_worker_smob);
 

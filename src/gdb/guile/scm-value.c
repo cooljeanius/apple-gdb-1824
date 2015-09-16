@@ -123,6 +123,7 @@ vlscm_forget_value_smob (value_smob *v_smob)
     v_smob->next->prev = v_smob->prev;
 }
 
+#ifdef MY_BRANCH_IS_HEAD
 /* The smob "mark" function for <gdb:value>.  */
 
 static SCM
@@ -137,6 +138,8 @@ vlscm_mark_value_smob (SCM self)
   return gdbscm_mark_gsmob (&v_smob->base);
 }
 
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 /* The smob "free" function for <gdb:value>.  */
 
 static size_t
@@ -585,7 +588,14 @@ gdbscm_value_dynamic_type (SCM self)
 	  struct value *target;
 	  int was_pointer = TYPE_CODE (type) == TYPE_CODE_PTR;
 
+#ifdef MY_BRANCH_IS_HEAD
 	  target = value_ind (value);
+#else
+	  if (was_pointer)
+	    target = value_ind (value);
+	  else
+	    target = coerce_ref (value);
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 	  type = value_rtti_type (target, NULL, NULL, NULL);
 
 	  if (type)
@@ -1297,6 +1307,30 @@ gdbscm_history_ref (SCM index)
 
   return vlscm_scm_from_value (res_val);
 }
+#ifdef MY_BRANCH_IS_HEAD
+#else
+
+/* (history-append! <gdb:value>) -> index
+   Append VALUE to GDB's value history.  Return its index in the history.  */
+
+static SCM
+gdbscm_history_append_x (SCM value)
+{
+  int res_index = -1;
+  struct value *v;
+  volatile struct gdb_exception except;
+
+  v = vlscm_scm_to_value (value);
+
+  TRY_CATCH (except, RETURN_MASK_ALL)
+    {
+      res_index = record_latest_value (v);
+    }
+  GDBSCM_HANDLE_GDB_EXCEPTION (except);
+
+  return scm_from_int (res_index);
+}
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 
 /* Initialize the Scheme value code.  */
 
@@ -1459,6 +1493,13 @@ Evaluates string in gdb and returns the result as a <gdb:value> object." },
     "\
 Return the specified value from GDB's value history." },
 
+#ifdef MY_BRANCH_IS_HEAD
+#else
+  { "history-append!", 1, 0, 0, gdbscm_history_append_x,
+    "\
+Append the specified value onto GDB's value history." },
+
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
   END_FUNCTIONS
 };
 
@@ -1467,7 +1508,10 @@ gdbscm_initialize_values (void)
 {
   value_smob_tag = gdbscm_make_smob_type (value_smob_name,
 					  sizeof (value_smob));
+#ifdef MY_BRANCH_IS_HEAD
   scm_set_smob_mark (value_smob_tag, vlscm_mark_value_smob);
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
   scm_set_smob_free (value_smob_tag, vlscm_free_value_smob);
   scm_set_smob_print (value_smob_tag, vlscm_print_value_smob);
   scm_set_smob_equalp (value_smob_tag, vlscm_equal_p_value_smob);

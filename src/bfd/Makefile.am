@@ -1,15 +1,35 @@
+## automake Makefile for bfd source
 ## Process this file with automake to generate Makefile.in
+#
+#   Copyright (C) 2012-2014 Free Software Foundation, Inc.
+#
+# This file is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; see the file COPYING3.  If not see
+# <http://www.gnu.org/licenses/>.
+#
 
-AUTOMAKE_OPTIONS = 1.9.6 gnu dejagnu
+## might have to add back -Wno-portability, if I screwed up:
+AUTOMAKE_OPTIONS = 1.11.6 no-dist gnits dejagnu -Wall -Wno-override
+## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 ACLOCAL_AMFLAGS = -I m4 --install
 
-# APPLE LOCAL dynamiclib
+# APPLE LOCAL dynamiclib building method:
 NSLIBTOOL = cc -dynamiclib
 
 # Uncomment the following line when doing a release.
-# RELEASE=y
+#RELEASE=y
 
 srcdir = @srcdir@
 
@@ -17,41 +37,78 @@ INCDIR = $(srcdir)/../include
 CSEARCH = -I. -I$(srcdir) -I$(INCDIR)
 MKDEP = gcc -MM
 
+PATH_TO_MOVEIFCHANGE = $(srcdir)/../move-if-change
+RUN_MOVEIFCHANGE = $(SHELL) $(PATH_TO_MOVEIFCHANGE)
+
 SUBDIRS = doc po
 
-docdir = $(srcdir)/doc
+bfddocdir = doc
+
+sdocdir = $(srcdir)/doc
+if INSTALL_LIBBFD
 bfdlibdir = @bfdlibdir@
 bfdincludedir = @bfdincludedir@
+else !INSTALL_LIBBFD
+## Empty these so that the respective installation directories will not be
+## created:
+bfdlibdir =
+bfdincludedir =
+endif
+
 libbfddir = @bfdlibdir@
 libbfdincludedir = @bfdincludedir@
 
 my_bfdlib_LIBTOOL_ARCHIVE = libbfd.la
 libbfd_LTLIBRARIES = libbfd.la
 
+## also needed:
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
+## not strictly necessary, but goes with the previous:
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
+## use the host one, because that is the one that matters:
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+
 WARN_CFLAGS = @WARN_CFLAGS@
 NO_WERROR = @NO_WERROR@
-AM_CFLAGS = $(WARN_CFLAGS)
+AM_CFLAGS = $(WARN_CFLAGS) $(C_ARCHFLAGS)
+MY_AM_CPPFLAGS_EXTRA = -DBINDIR='"$(bindir)"'
 AM_WARNFLAGS = $(WARN_CFLAGS)
+AM_LIBTOOLFLAGS = --no-silent --verbose
+AM_LIBTOOL_DEBUG_FLAGS = @MAINT@ --debug
+if PLUGINS
+LIBDL = @lt_cv_dlopen_libs@
+endif
 
-# bfd.h goes here, for now
+# bfd.h goes here, for now:
 BFD_H = bfd.h
 
 # Jim Kingdon notes:
 # Writing S-records should be included in all (or at least most)
 # *-*-coff, *-*-aout, etc., configurations, because people will want to
-# be able to use objcopy to create S-records.  (S-records are not useful
-# for the debugger, so if you are downloading things as S-records you
-# need two copies of the executable, one to download and one for the
-# debugger).
+# be able to use objcopy to create S-records. (S-records are not useful
+# for the debugger, so if you are downloading things as S-records, then you
+# will need 2 copies of the executable: 1 to download & 1 for the debugger)
 BFD32_LIBS = \
 	archive.lo archures.lo bfd.lo bfdio.lo bfdwin.lo \
 	cache.lo coffgen.lo corefile.lo \
 	format.lo init.lo libbfd.lo opncls.lo reloc.lo \
 	section.lo syms.lo targets.lo hash.lo linker.lo \
 	srec.lo binary.lo tekhex.lo ihex.lo stabs.lo stab-syms.lo \
-	merge.lo dwarf2.lo simple.lo
+	merge.lo dwarf2.lo simple.lo @MAINT@ # compress.lo verilog.lo
+
+BFD32_PLISTS = \
+	archive.plist archures.plist bfd.plist bfdio.plist bfdwin.plist \
+	cache.plist coffgen.plist corefile.plist \
+	format.plist init.plist libbfd.plist opncls.plist reloc.plist \
+	section.plist syms.plist targets.plist hash.plist linker.plist \
+	srec.plist binary.plist tekhex.plist ihex.plist stabs.plist \
+	stab-syms.plist merge.plist dwarf2.plist simple.plist
+## to add to the above:
+FUTURE_BFD32_LIBS_EXTRA_PLISTS = compress.plist verilog.plist
 
 BFD64_LIBS = archive64.lo
+
+BFD64_PLISTS = archive64.plist
 
 BFD32_LIBS_CFILES = \
 	archive.c archures.c bfd.c bfdio.c bfdwin.c \
@@ -60,23 +117,29 @@ BFD32_LIBS_CFILES = \
 	section.c syms.c targets.c hash.c linker.c \
 	srec.c binary.c tekhex.c ihex.c stabs.c stab-syms.c \
 	merge.c dwarf2.c simple.c
+## to add to the above:
+FUTURE_BFD32_LIBS_EXTRA_CFILES = compress.c verilog.c
 
 BFD64_LIBS_CFILES = archive64.c
 
-# This list is alphabetized to make it easier to keep in sync
-# with the decls and initializer in archures.c.
+# This list is alphabetized to make it easier to keep in sync with the
+# decls and initializer in archures.c.
 ALL_MACHINES = \
+	cpu-aarch64.lo \
 	cpu-a29k.lo \
 	cpu-alpha.lo \
 	cpu-arc.lo \
 	cpu-arm.lo \
 	cpu-avr.lo \
+	cpu-bfin.lo \
+	cpu-cr16.lo \
 	cpu-cr16c.lo \
 	cpu-cris.lo \
 	cpu-crx.lo \
 	cpu-d10v.lo \
 	cpu-d30v.lo \
 	cpu-dlx.lo \
+	cpu-epiphany.lo \
 	cpu-fr30.lo \
 	cpu-frv.lo \
 	cpu-h8300.lo \
@@ -89,54 +152,84 @@ ALL_MACHINES = \
 	cpu-i960.lo \
 	cpu-ip2k.lo \
 	cpu-iq2000.lo \
+	cpu-k1om.lo \
+	cpu-l1om.lo \
+	cpu-lm32.lo \
 	cpu-m32c.lo \
 	cpu-m32r.lo \
 	cpu-m68hc11.lo \
 	cpu-m68hc12.lo \
 	cpu-m68k.lo \
 	cpu-m88k.lo \
+	cpu-m9s12x.lo \
+	cpu-m9s12xg.lo \
 	cpu-m10200.lo \
 	cpu-m10300.lo \
 	cpu-maxq.lo \
 	cpu-mcore.lo \
+	cpu-mep.lo \
+	cpu-metag.lo \
+	cpu-microblaze.lo \
 	cpu-mips.lo \
 	cpu-mmix.lo \
+	cpu-moxie.lo \
 	cpu-ms1.lo \
 	cpu-msp430.lo \
-	cpu-or32.lo \
+	cpu-mt.lo \
+	cpu-nds32.lo \
+	cpu-nios2.lo \
 	cpu-ns32k.lo \
 	cpu-openrisc.lo \
+	cpu-or1k.lo \
+	cpu-or32.lo \
 	cpu-pdp11.lo \
 	cpu-pj.lo \
+	cpu-plugin.lo \
 	cpu-powerpc.lo \
+	cpu-rl78.lo \
 	cpu-rs6000.lo \
+	cpu-rx.lo \
 	cpu-s390.lo \
+	cpu-score.lo \
 	cpu-sh.lo \
 	cpu-sparc.lo \
+	cpu-spu.lo \
 	cpu-tic30.lo \
 	cpu-tic4x.lo \
 	cpu-tic54x.lo \
+	cpu-tic6x.lo \
 	cpu-tic80.lo \
+	cpu-tilegx.lo \
+	cpu-tilepro.lo \
 	cpu-v850.lo \
+	cpu-v850_rh850.lo \
 	cpu-vax.lo \
 	cpu-we32k.lo \
 	cpu-w65.lo \
+	cpu-xc16x.lo \
+	cpu-xgate.lo \
 	cpu-xstormy16.lo \
 	cpu-xtensa.lo \
+	cpu-z80.lo \
 	cpu-z8k.lo
 
+# Source files corresponding to the previous libtool objects for all:
 ALL_MACHINES_CFILES = \
+	cpu-aarch64.c \
 	cpu-a29k.c \
 	cpu-alpha.c \
 	cpu-arc.c \
 	cpu-arm.c \
 	cpu-avr.c \
+	cpu-bfin.c \
 	cpu-cris.c \
+	cpu-cr16.c \
 	cpu-cr16c.c \
 	cpu-crx.c \
 	cpu-d10v.c \
 	cpu-d30v.c \
 	cpu-dlx.c \
+	cpu-epiphany.c \
 	cpu-fr30.c \
 	cpu-frv.c \
 	cpu-h8300.c \
@@ -149,40 +242,65 @@ ALL_MACHINES_CFILES = \
 	cpu-i960.c \
 	cpu-ip2k.c \
 	cpu-iq2000.c \
+	cpu-k1om.c \
+	cpu-l1om.c \
+	cpu-lm32.c \
 	cpu-m32c.c \
 	cpu-m32r.c \
 	cpu-m68hc11.c \
 	cpu-m68hc12.c \
 	cpu-m68k.c \
 	cpu-m88k.c \
+	cpu-m9s12x.c \
+	cpu-m9s12xg.c \
 	cpu-m10200.c \
 	cpu-m10300.c \
 	cpu-maxq.c \
 	cpu-mcore.c \
+	cpu-mep.c \
+	cpu-metag.c \
+	cpu-microblaze.c \
 	cpu-mips.c \
 	cpu-mmix.c \
+	cpu-moxie.c \
 	cpu-ms1.c \
 	cpu-msp430.c \
-	cpu-or32.c \
+	cpu-mt.c \
+	cpu-nds32.c \
+	cpu-nios2.c \
 	cpu-ns32k.c \
 	cpu-openrisc.c \
+	cpu-or1k.c \
+	cpu-or32.c \
 	cpu-pdp11.c \
 	cpu-pj.c \
+	cpu-plugin.c \
 	cpu-powerpc.c \
+	cpu-rl78.c \
 	cpu-rs6000.c \
+	cpu-rx.c \
 	cpu-s390.c \
+	cpu-score.c \
 	cpu-sh.c \
 	cpu-sparc.c \
+	cpu-spu.c \
 	cpu-tic30.c \
 	cpu-tic4x.c \
 	cpu-tic54x.c \
+	cpu-tic6x.c \
 	cpu-tic80.c \
+	cpu-tilegx.c \
+	cpu-tilepro.c \
 	cpu-v850.c \
+	cpu-v850_rh850.c \
 	cpu-vax.c \
 	cpu-we32k.c \
 	cpu-w65.c \
+	cpu-xc16x.c \
+	cpu-xgate.c \
 	cpu-xstormy16.c \
 	cpu-xtensa.c \
+	cpu-z80.c \
 	cpu-z8k.c
 
 # The .o files needed by all of the 32 bit vectors that are configured into
@@ -199,6 +317,7 @@ BFD32_BACKENDS = \
 	armnetbsd.lo \
 	bout.lo \
 	cf-i386lynx.lo \
+	cf-m68klynx.lo \
 	cf-sparclynx.lo \
 	coff-a29k.lo \
 	coff-apollo.lo \
@@ -215,6 +334,7 @@ BFD32_BACKENDS = \
 	coff-maxq.lo \
 	coff-mips.lo \
 	coff-or32.lo \
+	coff-pmac.lo \
 	coff-rs6000.lo \
 	coff-sh.lo \
 	coff-sparc.lo \
@@ -227,6 +347,7 @@ BFD32_BACKENDS = \
 	coff-u68k.lo \
 	coff-we32k.lo \
 	coff-w65.lo \
+	coff-z80.lo \
 	coff-z8k.lo \
 	cofflink.lo \
 	dwarf1.lo \
@@ -238,12 +359,15 @@ BFD32_BACKENDS = \
 	elf32-arc.lo \
 	elf32-arm.lo \
 	elf32-avr.lo \
+	elf32-bfin.lo \
+	elf32-cr16.lo \
 	elf32-cr16c.lo \
 	elf32-cris.lo \
 	elf32-crx.lo \
 	elf32-d10v.lo \
 	elf32-d30v.lo \
 	elf32-dlx.lo \
+	elf32-epiphany.lo \
 	elf32-fr30.lo \
 	elf32-frv.lo \
 	elf32-gen.lo \
@@ -255,6 +379,7 @@ BFD32_BACKENDS = \
 	elf32-i960.lo \
 	elf32-ip2k.lo \
 	elf32-iq2000.lo \
+	elf32-lm32.lo \
 	elf32-m32c.lo \
 	elf32-m32r.lo \
 	elf32-m68hc11.lo \
@@ -265,14 +390,24 @@ BFD32_BACKENDS = \
 	elf-m10200.lo \
 	elf-m10300.lo \
 	elf32-mcore.lo \
+	elf32-mep.lo \
+	elf32-metag.lo \
+	elf32-microblaze.lo \
 	elfxx-mips.lo \
 	elf32-mips.lo \
+	elf32-moxie.lo \
 	elf32-ms1.lo \
 	elf32-msp430.lo \
+	elf32-mt.lo \
+	elf32-nds32.lo \
+	elf32-nios2.lo \
 	elf32-openrisc.lo \
+	elf32-or1k.lo \
 	elf32-or32.lo \
 	elf32-pj.lo \
 	elf32-ppc.lo \
+	elf32-rl78.lo \
+	elf32-rx.lo \
 	elf32-s390.lo \
 	elf32-sh.lo \
 	elf32-sh-symbian.lo \
@@ -280,20 +415,28 @@ BFD32_BACKENDS = \
 	elf32-sh64-com.lo \
 	elfxx-sparc.lo \
 	elf32-sparc.lo \
+	elf32-spu.lo \
+	elf32-tic6x.lo \
+	elf32-tilegx.lo \
+	elf32-tilepro.lo \
 	elf32-v850.lo \
 	elf32-vax.lo \
+	elf32-xc16x.lo \
+	elf32-xgate.lo \
 	elf32-xstormy16.lo \
 	elf32-xtensa.lo \
 	elf32.lo \
 	elflink.lo \
-	elf-strtab.lo \
+	elf-attrs.lo \
 	elf-eh-frame.lo \
+	elf-ifunc.lo \
+	elf-nacl.lo \
+	elf-strtab.lo \
 	elf-vxworks.lo \
 	epoc-pe-arm.lo \
 	epoc-pei-arm.lo \
 	hp300bsd.lo \
 	hp300hpux.lo \
-	som.lo \
 	i386aout.lo \
 	i386bsd.lo \
 	i386dynix.lo \
@@ -311,6 +454,7 @@ BFD32_BACKENDS = \
 	m88kmach3.lo \
 	m88kopenbsd.lo \
 	mach-o.lo \
+	mach-o-i386.lo \
 	mipsbsd.lo \
 	newsos3.lo \
 	nlm.lo \
@@ -325,6 +469,8 @@ BFD32_BACKENDS = \
 	pef.lo \
 	pe-arm.lo \
 	pei-arm.lo \
+	pe-arm-wince.lo \
+	pei-arm-wince.lo \
 	pe-i386.lo \
 	pei-i386.lo \
 	pe-mcore.lo \
@@ -336,9 +482,11 @@ BFD32_BACKENDS = \
 	pe-mips.lo \
 	pei-mips.lo \
 	peigen.lo \
+	plugin.lo \
 	ppcboot.lo \
 	reloc16.lo \
 	riscix.lo \
+	som.lo \
 	sparclinux.lo \
 	sparclynx.lo \
 	sparcnetbsd.lo \
@@ -350,6 +498,7 @@ BFD32_BACKENDS = \
 	vms.lo \
 	vms-gsd.lo \
 	vms-hdr.lo \
+	vms-lib.lo \
 	vms-misc.lo \
 	vms-tir.lo \
 	xcofflink.lo \
@@ -357,6 +506,7 @@ BFD32_BACKENDS = \
 	xtensa-isa.lo \
 	xtensa-modules.lo
 
+# Source files corresponding to the previous libtool objects for bfd32:
 BFD32_BACKENDS_CFILES = \
 	aout-adobe.c \
 	aout-arm.c \
@@ -369,6 +519,7 @@ BFD32_BACKENDS_CFILES = \
 	armnetbsd.c \
 	bout.c \
 	cf-i386lynx.c \
+	cf-m68klynx.c \
 	cf-sparclynx.c \
 	coff-a29k.c \
 	coff-apollo.c \
@@ -385,6 +536,7 @@ BFD32_BACKENDS_CFILES = \
 	coff-maxq.c \
 	coff-mips.c \
 	coff-or32.c \
+	coff-pmac.c \
 	coff-rs6000.c \
 	coff-sh.c \
 	coff-sparc.c \
@@ -397,6 +549,7 @@ BFD32_BACKENDS_CFILES = \
 	coff-u68k.c \
 	coff-we32k.c \
 	coff-w65.c \
+	coff-z80.c \
 	coff-z8k.c \
 	cofflink.c \
 	dwarf1.c \
@@ -408,12 +561,15 @@ BFD32_BACKENDS_CFILES = \
 	elf32-arc.c \
 	elf32-arm.c \
 	elf32-avr.c \
+	elf32-bfin.c \
+	elf32-cr16.c \
 	elf32-cr16c.c \
 	elf32-cris.c \
 	elf32-crx.c \
 	elf32-d10v.c \
 	elf32-d30v.c \
 	elf32-dlx.c \
+	elf32-epiphany.c \
 	elf32-fr30.c \
 	elf32-frv.c \
 	elf32-gen.c \
@@ -425,6 +581,7 @@ BFD32_BACKENDS_CFILES = \
 	elf32-i960.c \
 	elf32-ip2k.c \
 	elf32-iq2000.c \
+	elf32-lm32.c \
 	elf32-m32c.c \
 	elf32-m32r.c \
 	elf32-m68k.c \
@@ -435,14 +592,24 @@ BFD32_BACKENDS_CFILES = \
 	elf-m10200.c \
 	elf-m10300.c \
 	elf32-mcore.c \
+	elf32-mep.c \
+	elf32-metag.c \
+	elf32-microblaze.c \
 	elfxx-mips.c \
 	elf32-mips.c \
+	elf32-moxie.c \
 	elf32-ms1.c \
 	elf32-msp430.c \
+	elf32-mt.c \
+	elf32-nds32.c \
+	elf32-nios2.c \
 	elf32-openrisc.c \
+	elf32-or1k.c \
 	elf32-or32.c \
 	elf32-pj.c \
 	elf32-ppc.c \
+	elf32-rl78.c \
+	elf32-rx.c \
 	elf32-sh64.c \
 	elf32-sh64-com.c \
 	elf32-s390.c \
@@ -450,20 +617,28 @@ BFD32_BACKENDS_CFILES = \
 	elf32-sh-symbian.c \
 	elfxx-sparc.c \
 	elf32-sparc.c \
+	elf32-spu.c \
+	elf32-tic6x.c \
+	elf32-tilegx.c \
+	elf32-tilepro.c \
 	elf32-v850.c \
 	elf32-vax.c \
+	elf32-xc16x.c \
+	elf32-xgate.c \
 	elf32-xstormy16.c \
 	elf32-xtensa.c \
 	elf32.c \
 	elflink.c \
-	elf-strtab.c \
+	elf-attrs.c \
 	elf-eh-frame.c \
+	elf-ifunc.c \
+	elf-nacl.c \
+	elf-strtab.c \
 	elf-vxworks.c \
 	epoc-pe-arm.c \
 	epoc-pei-arm.c \
 	hp300bsd.c \
 	hp300hpux.c \
-	som.c \
 	i386aout.c \
 	i386bsd.c \
 	i386dynix.c \
@@ -481,6 +656,7 @@ BFD32_BACKENDS_CFILES = \
 	m88kmach3.c \
 	m88kopenbsd.c \
 	mach-o.c \
+	mach-o-i386.c \
 	mipsbsd.c \
 	newsos3.c \
 	nlm.c \
@@ -495,6 +671,8 @@ BFD32_BACKENDS_CFILES = \
 	pef.c \
 	pe-arm.c \
 	pei-arm.c \
+	pe-arm-wince.c \
+	pei-arm-wince.c \
 	pe-i386.c \
 	pei-i386.c \
 	pe-mcore.c \
@@ -505,9 +683,11 @@ BFD32_BACKENDS_CFILES = \
 	pei-sh.c \
 	pe-mips.c \
 	pei-mips.c \
+	plugin.c \
 	ppcboot.c \
 	reloc16.c \
 	riscix.c \
+	som.c \
 	sparclinux.c \
 	sparclynx.c \
 	sparcnetbsd.c \
@@ -519,6 +699,7 @@ BFD32_BACKENDS_CFILES = \
 	vms.c \
 	vms-gsd.c \
 	vms-hdr.c \
+	vms-lib.c \
 	vms-misc.c \
 	vms-tir.c \
 	xcofflink.c \
@@ -535,38 +716,63 @@ BFD64_BACKENDS = \
 	aix5ppc-core.lo \
 	aout64.lo \
 	coff-alpha.lo \
+	coff-x86_64.lo \
 	coff64-rs6000.lo \
 	demo64.lo \
 	efi-app-ia64.lo \
 	elf64-x86-64.lo \
+	elf32-aarch64.lo \
+	elf64-aarch64.lo \
+	elfxx-aarch64.lo \
 	elf64-alpha.lo \
 	elf64-hppa.lo \
 	elf32-ia64.lo \
 	elf64-ia64.lo \
+	elf64-ia64-vms.lo \
 	elf64-gen.lo \
+	elf32-mips.lo \
 	elfn32-mips.lo \
 	elf64-mips.lo \
 	elf64-mmix.lo \
 	elf64-sh64.lo \
 	elf64-ppc.lo \
 	elf64-s390.lo \
+	elf32-score.lo \
+	elf32-score7.lo \
+	elf64-sh64.lo \
 	elf64-sparc.lo \
+	elf64-tilegx.lo \
+	elf64-x86-64.lo \
 	elf64.lo \
+	elfxx-ia64.lo \
+	elfxx-mips.lo \
+	mach-o-x86-64.lo \
 	mmo.lo \
 	nlm32-alpha.lo \
 	nlm64.lo \
-	pepigen.lo
+	pe-x86_64.lo \
+	pei-ia64.lo \
+	pei-x86_64.lo \
+	pepigen.lo \
+	pex64igen.lo \
+	vms-alpha.lo
 
+# Source files corresponding to the previous libtool objects for bfd64:
 BFD64_BACKENDS_CFILES = \
 	aix5ppc-core.c \
 	aout64.c \
 	coff-alpha.c \
+	coff-x86_64.c \
 	coff64-rs6000.c \
 	demo64.c \
 	efi-app-ia64.c \
+	elf32-mips.c \
+	elf32-score.c \
+	elf32-score7.c \
 	elf64-x86-64.c \
 	elf64-alpha.c \
 	elf64-hppa.c \
+	elf64-ia64-vms.c \
 	elf64-gen.c \
 	elfn32-mips.c \
 	elf64-mips.c \
@@ -575,38 +781,67 @@ BFD64_BACKENDS_CFILES = \
 	elf64-s390.c \
 	elf64-sh64.c \
 	elf64-sparc.c \
+	elf64-tilegx.c \
+	elf64-x86-64.c \
 	elf64.c \
+	elfxx-aarch64.c \
+	elfxx-mips.c \
+	mach-o-x86-64.c \
 	mmo.c \
 	nlm32-alpha.c \
-	nlm64.c
+	nlm64.c \
+	pe-x86_64.c \
+	pei-ia64.c \
+	pei-x86_64.c \
+	vms-alpha.c
+## to add to the above:
+FUTURE_BFD64_BACKENDS_EXTRA_CFILES = elfxx-ia64.c
 
+# Other misc. object files:
 OPTIONAL_BACKENDS = \
 	aix386-core.lo \
+	cisco-core.lo \
 	hpux-core.lo \
 	irix-core.lo \
 	lynx-core.lo \
 	osf-core.lo \
+	rs6000-core.lo \
 	sco5-core.lo \
-	trad-core.lo \
-	cisco-core.lo
+	trad-core.lo
 
+## corresponding plists generated by clang static analysis:
+OPTIONAL_BACKENDS_PLISTS = \
+	aix386-core.plist \
+	cisco-core.plist \
+	hpux-core.plist \
+	irix-core.plist \
+	lynx-core.plist \
+	osf-core.plist \
+	rs6000-core.plist \
+	sco5-core.plist \
+	trad-core.plist
+
+# Source files corresponding to the previous optional libtool objects:
 OPTIONAL_BACKENDS_CFILES = \
 	aix386-core.c \
+	cisco-core.c \
 	hpux-core.c \
 	irix-core.c \
 	lynx-core.c \
 	osf-core.c \
+	rs6000-core.c \
 	sco5-core.c \
-	trad-core.c \
-	cisco-core.c
+	trad-core.c
 
-# We want to rerun configure if configure.ac, config.bfd or
+# We want to rerun configure if configure.ac, config.bfd, or
 # configure.host change. configure.ac is needed since the version
 # number in Makefile comes from configure.ac.
+# development.sh is used to determine -Werror default.
 CONFIG_STATUS_DEPENDENCIES = \
 	$(srcdir)/configure.ac \
 	$(srcdir)/config.bfd \
-	$(srcdir)/configure.host
+	$(srcdir)/configure.host \
+	$(srcdir)/development.sh
 
 # These are defined by configure.ac:
 WORDSIZE = @wordsize@
@@ -615,8 +850,15 @@ BFD_BACKENDS = @bfd_backends@
 BFD_LIBS = @bfd_libs@
 BFD_MACHINES = @bfd_machines@
 TDEFAULTS = @tdefaults@
+HAVEVECS = @havevecs@
 
-AM_CPPFLAGS = @HDEFINES@ @COREFLAG@ @TDEFINES@ $(CSEARCH) $(CSWITCHES) -I$(srcdir)/../intl -I../intl
+INCINTL = @INCINTL@
+
+AM_CPPFLAGS = @HDEFINES@ @COREFLAG@ @TDEFINES@ $(CSEARCH) $(CSWITCHES) \
+	$(HAVEVECS) $(INCINTL)
+
+RUN_CLANG_ANALYZER = $(CLANG_ANALYZER) $(DEFS) $(CPPFLAGS) $(CFLAGS) \
+	$(CSEARCH) $(HAVEVECS) $(INCINTL) --analyze
 
 # C source files that correspond to .o's.
 SOURCE_CFILES = \
@@ -627,71 +869,188 @@ SOURCE_CFILES = \
 	$(BFD64_BACKENDS_CFILES) \
 	$(OPTIONAL_BACKENDS_CFILES)
 
+# C source files that are generated:
 BUILD_CFILES = \
-	elf32-ia64.c elf64-ia64.c peigen.c pepigen.c
+	elf32-aarch64.c elf64-aarch64.c \
+	elf32-ia64.c elf64-ia64.c peigen.c pepigen.c pex64igen.c
 
 CFILES = $(SOURCE_CFILES) $(BUILD_CFILES)
 
 ## This is a list of all .h files which are in the source tree.
 SOURCE_HFILES = \
 	aout-target.h aoutf1.h aoutx.h coffcode.h coffswap.h ecoffswap.h \
-	elf-bfd.h elf-hppa.h elf32-hppa.h \
+	elf-bfd.h elf-hppa.h elf-linux-psinfo.h elf32-hppa.h \
 	elf64-hppa.h elfcode.h elfcore.h \
 	freebsd.h genlink.h go32stub.h \
 	libaout.h libbfd.h libcoff.h libecoff.h libhppa.h libieee.h \
 	libnlm.h liboasys.h libpei.h libxcoff.h mach-o.h \
 	netbsd.h nlm-target.h nlmcode.h nlmswap.h ns32k.h \
-	pef.h pef-traceback.h peicode.h som.h version.h \
+	pef.h pef-traceback.h peicode.h som.h trad-user.h version.h \
 	vms.h xcoff-target.h xsym.h
 
 ## ... and all .h files which are in the build tree.
 BUILD_HFILES = \
-	bfdver.h elf32-target.h elf64-target.h targmatch.h
+	bfdver.h elf32-target.h elf64-target.h targmatch.h bfd_stdint.h
 
+# Ensure they are built early:
+MY_BUILT_SOURCES_COMMENTED_OUT = $(BUILD_HFILES) $(BUILD_CFILES)
+BUILT_SOURCES = $(BUILD_HFILES) $(BUILD_CFILES)
+
+# headers:
 HFILES = $(SOURCE_HFILES) $(BUILD_HFILES)
+noinst_HEADERS = $(HFILES)
 
+## hacks to extend the verbosity control:
+AM_V_redir = $(am__v_redir_@AM_V@)
+am__v_redir_ = $(am__v_redir_@AM_DEFAULT_V@)
+am__v_redir_0 = >
+am__v_redir_1 = | tee
+
+AM_V_redir_a = $(am__v_redir_a_@AM_V@)
+am__v_redir_a_ = $(am__v_redir_a_@AM_DEFAULT_V@)
+am__v_redir_a_0 = >>
+am__v_redir_a_1 = | tee -a
+
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
+am__v_v_0 =
+am__v_v_1 = -v
+
+# files to check for translations (I think?):
 SRC_POTFILES = $(SOURCE_CFILES) $(SOURCE_HFILES)
 BLD_POTFILES = $(BUILD_CFILES) $(BUILD_HFILES)
 
+## where to put clang static analysis plists:
+analysisdir = $(builddir)/clang_static_analysis
+
+SUFFIXES = .c .o .lo .plist
+
+.c.plist:
+	@if test ! -d $(analysisdir); then $(MKDIR_P) $(analysisdir); fi
+	$(RUN_CLANG_ANALYZER) -o $(analysisdir)/$@ $<
+
 po/SRC-POTFILES.in: @MAINT@ Makefile $(SRC_POTFILES)
-	for file in $(SRC_POTFILES); do echo $$file; done \
-	  | LC_COLLATE= sort > tmp.src \
-	  && mv tmp.src $(srcdir)/po/SRC-POTFILES.in
+	$(AM_V_GEN)for file in $(SRC_POTFILES); do echo $${file}; done \
+	  | LC_ALL=C LC_COLLATE="" sort $(AM_V_redir) tmp.src \
+	  && mv $(AM_V_v) tmp.src $(srcdir)/po/SRC-POTFILES.in
 
 po/BLD-POTFILES.in: @MAINT@ Makefile $(BLD_POTFILES)
-	for file in $(BLD_POTFILES); do echo $$file; done \
-	  | LC_COLLATE= sort > tmp.bld \
-	  && mv tmp.bld $(srcdir)/po/BLD-POTFILES.in
+	$(AM_V_GEN)for file in $(BLD_POTFILES); do echo $${file}; done \
+	  | LC_ALL=C LC_COLLATE="" sort $(AM_V_redir) tmp.bld \
+	  && mv $(AM_V_v) tmp.bld $(srcdir)/po/BLD-POTFILES.in
 
-all: config.status info
+all: info @MAINT@ config.status
+.PHONY: all info info-am
 
-diststuff: config.status info
+diststuff: info @MAINT@ config.status
+.PHONY: diststuff
+
+## currently breaks on cpu-aarch64.c:
+all_machines: $(ALL_MACHINES)
+.PHONY: all_machines
+
+## currently breaks on coff-z80.c:
+bfd32_backends: $(BFD32_BACKENDS)
+.PHONY: bfd32_backends
+
+## currently breaks on coff-x86_64.c:
+bfd64_backends: $(BFD64_BACKENDS)
+.PHONY: bfd64_backends
+
+## currently breaks on hpux-core.c:
+optional_backends: $(OPTIONAL_BACKENDS)
+.PHONY: optional_backends
+
+# dummy target that does nothing, not even an "echo"; for potential future
+# use by the configure script:
+nothing:
+	@true
+.PHONY: nothing
 
 # Various kinds of .o files to put in libbfd.a:
 # BFD_BACKENDS	Routines the configured targets need.
 # BFD_MACHINES	Architecture-specific routines the configured targets need.
 # COREFILE	Core file routines for a native configuration
-OFILES = $(BFD_BACKENDS) $(BFD_MACHINES) @COREFILE@
+# bfd64_libs	Routines for 64bit support
+# first they are libtool objects:
+LOFILES = $(BFD_BACKENDS) $(BFD_MACHINES) @COREFILE@ @bfd64_libs@
+# so need to transform to normal ones:
+OFILES = `echo $(LOFILES) | $(SED) -e 's/\.lo/\.o/g'`
+# We can use the same method to get a list of clang static analyzer plists
+# to make:
+PLISTFILES = `echo $(LOFILES) | $(SED) -e 's/\.lo/\.plist/g'`
 
-stamp-ofiles: Makefile
-	rm -f tofiles
+stamp-lofiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	rm -f $(AM_V_v) tlofiles
 	f=""; \
-	for i in $(OFILES) ; do \
-	  case " $$f " in \
-	    *" $$i "*) ;; \
-	    *) f="$$f $$i" ;; \
-	  esac ; \
-	done ; \
-	echo $$f > tofiles
-	$(SHELL) $(srcdir)/../move-if-change tofiles ofiles
-	touch stamp-ofiles
+	for i in $(LOFILES); do \
+	  case " $${f} " in \
+	    *" $${i} "*) ;; \
+	    *) f="$${f} $${i}" ;; \
+	  esac; \
+	done; \
+	echo $${f} $(AM_V_redir) tlofiles
+	$(RUN_MOVEIFCHANGE) tlofiles lofiles
+	$(AM_V_at)touch stamp-lofiles
 
-ofiles: stamp-ofiles ; @true
+stamp-ofiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	rm -f $(AM_V_v) tofiles
+	f=""; \
+	for i in $(OFILES); do \
+	  case " $${f} " in \
+	    *" $${i} "*) ;; \
+	    *) f="$${f} $${i}" ;; \
+	  esac; \
+	done; \
+	echo $${f} $(AM_V_redir) tofiles
+	$(RUN_MOVEIFCHANGE) tofiles ofiles
+	$(AM_V_at)touch stamp-ofiles
 
+stamp-plistfiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	rm -f $(AM_V_v) tplistfiles
+	f=""; \
+	for i in $(PLISTFILES); do \
+	  case " $${f} " in \
+	    *" $${i} "*) ;; \
+	    *) f="$${f} $${i}" ;; \
+	  esac; \
+	done; \
+	echo $${f} $(AM_V_redir) tplistfiles
+	$(RUN_MOVEIFCHANGE) tplistfiles plistfiles
+	$(AM_V_at)touch stamp-plistfiles
+
+lofiles: stamp-lofiles
+	@echo "this target, '$@', just makes its dependency, '$<'"
+ofiles: stamp-ofiles
+	@echo "this target, '$@', just makes its dependency, '$<'"
+plistfiles: stamp-plistfiles
+	@echo "this target, '$@', just makes its dependency, '$<'"
+
+@ifGNUmake@ifneq ($(srcdir),.)
+@ifGNUmake@$(srcdir)/lofiles: stamp-lofiles
+@ifGNUmake@	if test -e lofiles && test ! -e $(srcdir)/lofiles; then \
+@ifGNUmake@	  cp $(AM_V_v) lofiles $(srcdir)/lofiles; \
+@ifGNUmake@	fi
+@ifGNUmake@$(srcdir)/ofiles: stamp-ofiles
+@ifGNUmake@	if test -e ofiles && test ! -e $(srcdir)/ofiles; then \
+@ifGNUmake@	  cp $(AM_V_v) ofiles $(srcdir)/ofiles; \
+@ifGNUmake@	fi
+@ifGNUmake@endif
+
+# Since BFD64_LIBS is optional, and we cannot have substitution in
+# libbfd_la_SOURCES, we put BFD64_LIBS in OFILES instead.
+# However, list all sources in EXTRA_libbfd_la_SOURCES so the
+# dependency tracking fragments are picked up in the Makefile.
 libbfd_la_SOURCES = $(BFD32_LIBS_CFILES) $(BFD64_LIBS_CFILES)
-libbfd_la_DEPENDENCIES = $(OFILES) ofiles
-libbfd_la_LIBADD = `cat ofiles` @WIN32LIBADD@
+MY_EXTRA_libbfd_la_SOURCES_COMMENTED_OUT = $(CFILES)
+EXTRA_libbfd_la_SOURCES = $(CFILES)
+libbfd_la_DEPENDENCIES = $(LOFILES) stamp-lofiles lofiles $(srcdir)/lofiles
+libbfd_la_LIBADD = `cat lofiles` @WIN32LIBADD@ $(LIBDL)
 libbfd_la_LDFLAGS = -release $(VERSION) @WIN32LDFLAGS@
+
+SHARED_LIBADD = @SHARED_LIBADD@
+SHARED_LDFLAGS = @SHARED_LDFLAGS@
+LIBTOOL_SOVERSION = `cat libtool-soversion`
 
 # libtool will build .libs/libbfd.a.  We create libbfd.a in the build
 # directory so that we do NOT have to convert all the programs that use
@@ -699,73 +1058,175 @@ libbfd_la_LDFLAGS = -release $(VERSION) @WIN32LDFLAGS@
 # everything else starts using libtool. FIXME.
 
 noinst_LIBRARIES = libbfd.a
-libbfd_a_SOURCES =
-libbfd_a_DEPENDENCIES = $(OFILES) ofiles
-EXTRA_libbfd_a_DEPENDENCIES = 
+libbfd_a_SOURCES = libbfd.h $(BFD32_LIBS_CFILES) $(BFD64_LIBS_CFILES)
+MY_EXTRA_libbfd_a_SOURCES_COMMENTED_OUT = $(BFD_H) $(CFILES)
+EXTRA_libbfd_a_SOURCES = bfd.h $(CFILES)
+libbfd_a_DEPENDENCIES = stamp-ofiles ofiles $(srcdir)/ofiles @MAINT@ bfd.h
+## '$(OFILES)' does NOT work as a dependency here any more, now that
+## it is actually a command, so use 'stamp-staticlib' for it instead:
+EXTRA_libbfd_a_DEPENDENCIES = stamp-staticlib @MAINT@ Makefile # $(BFD_H)
 libbfd_a_LIBADD = `cat ofiles` @WIN32LIBADD@
+## see if this will cause automake to give its objfiles a different name:
+libbfd_a_CFLAGS = $(AM_CFLAGS) # -fkeep-inline-functions
+libbfd_a_LDFLAGS = -static
 
-# FIXME: Even the hack fails now... (does it still?)
-stamp-lib: libbfd.la ofiles
-	libtooldir=`$(LIBTOOL) --config | sed -n -e 's/^objdir=//p'`; \
-	if [ -f $$libtooldir/libbfd.a ]; then \
-	  cp $$libtooldir/libbfd.a libbfd.tmp; \
+# FIXME: Even the hack fails now... (does it still? I think we are okay...)
+stamp-lib: libbfd.la @MAINT@ ofiles $(PATH_TO_MOVEIFCHANGE) ltmain.sh
+	if test ! -e stamp-staticlib; then $(MAKE) stamp-staticlib; fi
+	libtooldir=`$(LIBTOOL) --config | $(SED) -n -e 's/^objdir=//p'`; \
+	if test -z "$${libtooldir}"; then \
+	  echo "" && echo "error: libtooldir is unset" >&2 && exit 1; \
+	else \
+	  echo "libtooldir is $${libtooldir}"; \
+	fi; \
+	stat $${libtooldir}/libbfd.a; \
+	if [ -f $${libtooldir}/libbfd.a ]; then \
+	  cp $(AM_V_v) $${libtooldir}/libbfd.a libbfd.tmp; \
 	  $(RANLIB) libbfd.tmp; \
-	  $(SHELL) $(srcdir)/../move-if-change libbfd.tmp libbfd.a; \
-	else true; fi
-	touch stamp-lib
+	  $(RUN_MOVEIFCHANGE) libbfd.tmp libbfd.a; \
+	else \
+	  echo "$${libtooldir}/libbfd.a does not exist as a file"; \
+	  if [ -f libbfd.a ]; then \
+	    $(RANLIB) libbfd.a; \
+	  fi; \
+	fi
+	$(AM_V_at)touch stamp-lib
 
-libbfd_static_library: stamp-lib ; @true
+# since OFILES no longer works as a dependency, have to make it explicitly
+# as part of a rule instead:
+stamp-staticlib: stamp-ofiles @MAINT@ bfd.h
+	rm -f $(AM_V_v) stamp-staticlib
+	if test ! -e $(BFD_H); then $(MAKE) $(BFD_H); fi
+	$(MAKE) $(OFILES)
+	if test -n "$(libbfd_a_OBJECTS)"; then \
+	  $(MAKE) $(libbfd_a_OBJECTS); \
+	fi
+	if [ -f libbfd.a ]; then \
+	  $(RANLIB) libbfd.a; \
+	fi
+	$(AM_V_at)touch stamp-staticlib
+
+# likewise with making PLISTFILES when running `make check`:
+check-local: stamp-plistfiles @MAINT@ plistfiles
+	$(MAKE) $(BFD32_PLISTS) $(BFD64_PLISTS) $(PLISTFILES)
+.PHONY: check-local
+
+# stamp-staticlib just makes the OFILES that libbfd.a depends upon, need
+# to make the 'stamp-lib' target instead to actually make the static
+# library:
+libbfd_static_library: stamp-lib
+	@echo "this target, '$@', just makes its dependency, '$<'"
 .PHONY: libbfd_static_library
 
+# hmmm...
 libbfd_la: libbfd.la
+	@echo "this target, '$@', just makes its dependency, '$<'"
 .PHONY: libbfd_la
+libbfd_a: libbfd.a
+	@echo "this target, '$@', just makes its dependency, '$<'"
+.PHONY: libbfd_a
 
 # This file holds an array associating configuration triplets and
 # vector names. It is built from config.bfd. It is not compiled by
 # itself, but is included by targets.c.
-targmatch.h: config.bfd config.status targmatch.sed
-	rm -f targmatch.h
-	sed -f $(srcdir)/targmatch.sed < $(srcdir)/config.bfd > targmatch.new
-	mv -f targmatch.new targmatch.h
+targmatch.h: config.bfd $(srcdir)/targmatch.sed @MAINT@ config.status
+	rm -f $(AM_V_v) targmatch.h
+	echo "/* $@ is generated from multiple files */" > targmatch.new
+	$(SED) -f $(srcdir)/targmatch.sed < $(srcdir)/config.bfd >> targmatch.new
+	mv -f $(AM_V_v) targmatch.new targmatch.h
 
 # When compiling archures.c and targets.c, supply the default target
 # info from configure.
 
-targets.lo: targets.c Makefile
-	$(LIBTOOL) --mode=compile $(COMPILE) -c $(TDEFAULTS) $(srcdir)/targets.c
+targets.lo: targets.c @MAINT@ Makefile ltmain.sh
+	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	  $(LIBTOOLFLAGS) --mode=compile $(COMPILE) -c $(TDEFAULTS) \
+	  $(srcdir)/targets.c
+targets.o: targets.lo
+libbfd_a-targets.o: targets.c @MAINT@ Makefile
+	$(AM_V_CC)$(COMPILE) -c $(TDEFAULTS) $(srcdir)/targets.c -o $@
 
-archures.lo: archures.c Makefile
-	$(LIBTOOL) --mode=compile $(COMPILE) -c $(TDEFAULTS) $(srcdir)/archures.c
+libbfd_a-archive.o: archive.c @MAINT@ Makefile config.h bfd.h
+	$(AM_V_CC)$(COMPILE) -c $(TDEFAULTS) $(srcdir)/archive.c -o $@
+
+archures.lo: archures.c @MAINT@ Makefile ltmain.sh
+	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	  $(LIBTOOLFLAGS) --mode=compile $(COMPILE) -c $(TDEFAULTS) \
+	  $(srcdir)/archures.c
+archures.o: archures.lo
+libbfd_a-archures.o: archures.c @MAINT@ Makefile bfd.h
+	$(AM_V_CC)$(COMPILE) -c $(TDEFAULTS) $(srcdir)/archures.c -o $@
+
+dwarf2.lo: dwarf2.c @MAINT@ Makefile ltmain.sh
+if am__fastdepCC
+	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c \
+	  -o $@ -DDEBUGDIR=\"$(DEBUGDIR)\" $(srcdir)/dwarf2.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+else
+if AMDEP
+	source='dwarf2.c' object='$@' libtool=yes @AMDEPBACKSLASH@
+	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+endif
+	$(LTCOMPILE) -c -o $@ -DDEBUGDIR=\"$(DEBUGDIR)\" $(srcdir)/dwarf2.c
+endif
+dwarf2.o: dwarf2.lo
+libbfd_a-dwarf2.o: dwarf2.c @MAINT@ Makefile
+	$(AM_V_CC)$(COMPILE) -c -o $@ -DDEBUGDIR=\"$(DEBUGDIR)\" \
+	  $(srcdir)/dwarf2.c
 
 elf32-target.h : elfxx-target.h
-	rm -f elf32-target.h
-	sed -e s/NN/32/g < $(srcdir)/elfxx-target.h > elf32-target.new
-	mv -f elf32-target.new elf32-target.h
+	rm -f $(AM_V_v) $@
+	echo "/* $@ is generated from $< */" > elf32-target.new
+	$(SED) -e s/NN/32/g < $(srcdir)/elfxx-target.h >> elf32-target.new
+	mv -f $(AM_V_v) elf32-target.new $@
 
 elf64-target.h : elfxx-target.h
-	rm -f elf64-target.h
-	sed -e s/NN/64/g < $(srcdir)/elfxx-target.h > elf64-target.new
-	mv -f elf64-target.new elf64-target.h
+	rm -f $(AM_V_v) $@
+	echo "/* $@ is generated from $< */" > elf64-target.new
+	$(SED) -e s/NN/64/g < $(srcdir)/elfxx-target.h >> elf64-target.new
+	mv -f $(AM_V_v) elf64-target.new $@
+
+elf32-aarch64.c : elfnn-aarch64.c
+	rm -f $(AM_V_v) $@
+	echo "#line 1 \"$(srcdir)/elfnn-aarch64.c\"" > elf32-aarch64.new
+	$(SED) -e s/NN/32/g < $(srcdir)/elfnn-aarch64.c >>elf32-aarch64.new
+	mv -f $(AM_V_v) elf32-aarch64.new $@
+
+elf64-aarch64.c : elfnn-aarch64.c
+	rm -f $(AM_V_v) $@
+	echo "#line 1 \"$(srcdir)/elfnn-aarch64.c\"" > elf64-aarch64.new
+	$(SED) -e s/NN/64/g < $(srcdir)/elfnn-aarch64.c >>elf64-aarch64.new
+	mv -f $(AM_V_v) elf64-aarch64.new $@
 
 elf32-ia64.c : elfxx-ia64.c
-	rm -f elf32-ia64.c
-	sed -e s/NN/32/g < $(srcdir)/elfxx-ia64.c > elf32-ia64.new
-	mv -f elf32-ia64.new elf32-ia64.c
+	rm -f $(AM_V_v) $@
+	echo "/* $@ is generated from $< */" > elf32-ia64.new
+	$(SED) -e s/NN/32/g < $(srcdir)/elfxx-ia64.c >> elf32-ia64.new
+	mv -f $(AM_V_v) elf32-ia64.new $@
 
 elf64-ia64.c : elfxx-ia64.c
-	rm -f elf64-ia64.c
-	sed -e s/NN/64/g < $(srcdir)/elfxx-ia64.c > elf64-ia64.new
-	mv -f elf64-ia64.new elf64-ia64.c
+	rm -f $(AM_V_v) $@
+	echo "/* $@ is generated from $< */" > elf64-ia64.new
+	$(SED) -e s/NN/64/g < $(srcdir)/elfxx-ia64.c >> elf64-ia64.new
+	mv -f $(AM_V_v) elf64-ia64.new $@
 
 peigen.c : peXXigen.c
-	rm -f peigen.c
-	sed -e s/XX/pe/g < $(srcdir)/peXXigen.c > peigen.new
-	mv -f peigen.new peigen.c
+	rm -f $(AM_V_v) $@
+	echo "/* $@ is generated from $< */" > peigen.new
+	$(SED) -e s/XX/pe/g < $(srcdir)/peXXigen.c >> peigen.new
+	mv -f $(AM_V_v) peigen.new $@
 
 pepigen.c : peXXigen.c
-	rm -f pepigen.c
-	sed -e s/XX/pep/g < $(srcdir)/peXXigen.c > pepigen.new
-	mv -f pepigen.new pepigen.c
+	rm -f $(AM_V_v) $@
+	echo "/* $@ is generated from $< */" > pepigen.new
+	$(SED) -e s/XX/pep/g < $(srcdir)/peXXigen.c >> pepigen.new
+	mv -f $(AM_V_v) pepigen.new $@
+
+pex64igen.c : peXXigen.c
+	rm -f $(AM_V_v) $@
+	echo "/* $@ is generated from $< */" > pex64igen.new
+	$(SED) -e s/XX/pex64/g < $(srcdir)/peXXigen.c >> pex64igen.new
+	mv -f $(AM_V_v) pex64igen.new pex64igen.c
 
 BFD_H_DEPS = $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h
 LOCAL_H_DEPS = libbfd.h sysdep.h config.h
@@ -776,112 +1237,163 @@ COMMON_BFD_DEPS = $(BFD_H) $(BFD_H_DEPS) $(LOCAL_H_DEPS)
 $(BFD32_LIBS): $(COMMON_BFD_DEPS)
 $(BFD64_LIBS): $(COMMON_BFD_DEPS)
 $(ALL_MACHINES): $(COMMON_BFD_DEPS)
-#FIXME: BFD32_BACKENDS is currently broken because of libtool
+##FIXME: BFD32_BACKENDS might still be broken because of libtool(?)
 $(BFD32_BACKENDS): $(COMMON_BFD_DEPS)
 $(BFD64_BACKENDS): $(COMMON_BFD_DEPS)
 $(OPTIONAL_BACKENDS): $(COMMON_BFD_DEPS)
 
+## NORMAL_INSTALL is a special automake variable:
 install_my_bfdlibLTLIBRARIES: @INSTALL_LIBBFD_TRUE@install_libbfd
-	@$(NORMAL_INSTALL)
+	$(AM_V_at)$(NORMAL_INSTALL)
 .PHONY: install_my_bfdlibLTLIBRARIES
 
+## NORMAL_UNINSTALL is a special automake variable:
 uninstall_my_bfdlibLTLIBRARIES: @INSTALL_LIBBFD_TRUE@uninstall_libbfd
-	@$(NORMAL_UNINSTALL)
+	$(AM_V_at)$(NORMAL_UNINSTALL)
 .PHONY: uninstall_my_bfdlibLTLIBRARIES
 
 .PHONY: install_libbfd uninstall_libbfd
 .PHONY: all-am
-install_libbfd: $(bfdlib_LTLIBRARIES) $(BFD_H)
+install_libbfd: $(bfdlib_LTLIBRARIES) $(BFD_H) @MAINT@ ltmain.sh
 	$(mkinstalldirs) $(DESTDIR)$(bfdlibdir)
 	$(mkinstalldirs) $(DESTDIR)$(bfdincludedir)
-	@list='$(bfdlib_LTLIBRARIES)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    echo "$(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(bfdlibdir)/$$p"; \
-	    $(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(bfdlibdir)/$$p; \
-	  else :; fi; \
+	$(AM_V_at)list='$(bfdlib_LTLIBRARIES)'; for p in $${list}; do \
+	  if test -f $${p}; then \
+	    echo "$(LIBTOOL) --mode=install $(INSTALL) $${p} $(DESTDIR)$(bfdlibdir)/$${p}"; \
+	    $(LIBTOOL) --mode=install $(INSTALL) $${p} $(DESTDIR)$(bfdlibdir)/$${p}; \
+	  else echo "$${p} is not an extant file, so not installing"; fi; \
 	done
 	$(INSTALL_DATA) $(BFD_H) $(DESTDIR)$(bfdincludedir)/bfd.h
 	$(INSTALL_DATA) $(INCDIR)/ansidecl.h $(DESTDIR)$(bfdincludedir)/ansidecl.h
 	$(INSTALL_DATA) $(INCDIR)/symcat.h $(DESTDIR)$(bfdincludedir)/symcat.h
 	$(INSTALL_DATA) $(INCDIR)/bfdlink.h $(DESTDIR)$(bfdincludedir)/bfdlink.h
 
-uninstall_libbfd:
-	list='$(bfdlib_LTLIBRARIES)'; for p in $$list; do \
-	  $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(bfdlibdir)/$$p; \
+uninstall_libbfd: @MAINT@ ltmain.sh
+	list='$(bfdlib_LTLIBRARIES)'; for p in $${list}; do \
+	  $(LIBTOOL) --mode=uninstall rm -f $(AM_V_v) $(DESTDIR)$(bfdlibdir)/$${p}; \
 	done
-	rm -f $(DESTDIR)$(bfdincludedir)/bfd.h
-	rm -f $(DESTDIR)$(bfdincludedir)/ansidecl.h
-	rm -f $(DESTDIR)$(bfdincludedir)/symcat.h
-	rm -f $(DESTDIR)$(bfdincludedir)/bfdlink.h
+	rm -f $(AM_V_v) $(DESTDIR)$(bfdincludedir)/bfd.h
+	rm -f $(AM_V_v) $(DESTDIR)$(bfdincludedir)/ansidecl.h
+	rm -f $(AM_V_v) $(DESTDIR)$(bfdincludedir)/symcat.h
+	rm -f $(AM_V_v) $(DESTDIR)$(bfdincludedir)/bfdlink.h
 
-# Have to get rid of DEP1 here so that "$?" later includes all of $(CFILES).
+# Have to get rid of any pre-existing DEP1 here, so that "$?" later
+# includes all of $(CFILES).
 DEP: dep.sed $(CFILES) $(HFILES) bfd.h
-	rm -f DEP1
+	rm -f $(AM_V_v) DEP1
 	$(MAKE) MKDEP="$(MKDEP)" DEP1
-	sed -f dep.sed < DEP1 > DEPA
+	$(SED) -f dep.sed < DEP1 $(AM_V_redir) DEPA
 	echo '# IF YOU PUT ANYTHING HERE IT WILL GO AWAY' >> DEPA
-	if grep ' /' DEPA > /dev/null 2> /dev/null; then \
-	  echo 'make DEP failed!'; exit 1; \
+	if $(GREP) ' /' DEPA > /dev/null 2>/dev/null; then \
+	  echo 'make DEP failed; it produced bad directories!'>&2; \
+	  exit 1; \
 	else \
-	  mv -f DEPA $@; \
+	  mv -f $(AM_V_v) DEPA $@; \
 	fi
+	$(AM_V_at)touch $@
+# I also want to include a check for variables not being closed properly
+# (missing parentheses), but I am not sure how to do that in a way where
+# the bad syntax for which we would be grepping does not also get
+# evaluated and treated as an error...
 
+# Not sure if AM_CPPFLAGS works perfectly as a 1-for-1 replacement
+# for INCLUDES here in this next one:
 DEP1: $(CFILES)
 	echo '# DO NOT DELETE THIS LINE -- mkdep uses it.' > DEP2
-	echo '# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.' >> DEP2
-	$(MKDEP) $(AM_CPPFLAGS) $(CFLAGS) $? >> DEP2 # Not sure if AM_CPPFLAGS works perfectly as a 1-for-1 replacement for INCLUDES here...
-	mv -f DEP2 $@
+	echo '# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.' >>DEP2
+	$(MKDEP) $(AM_CPPFLAGS) $(CFLAGS) $? $(AM_V_redir_a) DEP2
+	mv -f $(AM_V_v) DEP2 $@
+	$(AM_V_at)touch $@
 
-dep.sed: dep-in.sed config.status
-	sed <$(srcdir)/dep-in.sed >dep.sed	\
+#FIXME: this sed script is broken and hack-ish:
+dep.sed: dep-in.sed @MAINT@ config.status
+	$(SED) <$(srcdir)/dep-in.sed >dep.sed	\
 		-e 's!@BFD_H@!$(BFD_H)!'	\
 		-e 's!@SRCDIR@!$(srcdir)!'	\
-		-e 's!@TOPDIR@!'`echo $(srcdir) | sed -e s,/bfd$$,,`'!'
+		-e 's!@TOPDIR@!'`echo $(srcdir) | $(SED) -e s,/bfd$$,,`'!'
+	touch $@
 
-dep: DEP
-	sed -e '/^..DO NOT DELETE THIS LINE/,$$d' < Makefile > tmp-Makefile
+#FIXME: this target relies on dep.sed, which is broken (see above)
+dep: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < Makefile > tmp-Makefile
 	cat DEP >> tmp-Makefile
-	$(SHELL) $(srcdir)/../move-if-change tmp-Makefile Makefile
+	$(RUN_MOVEIFCHANGE) tmp-Makefile Makefile
+	$(AM_V_at)touch Makefile
 
-dep-in: DEP
-	sed -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.in > tmp-Makefile.in
+#FIXME: this target relies on dep.sed, which is broken (see above)
+dep-in: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.in > tmp-Makefile.in
 	cat DEP >> tmp-Makefile.in
-	$(SHELL) $(srcdir)/../move-if-change tmp-Makefile.in $(srcdir)/Makefile.in
+	$(RUN_MOVEIFCHANGE) tmp-Makefile.in $(srcdir)/Makefile.in
+	$(AM_V_at)touch $(srcdir)/Makefile.in
 
-dep-am: DEP
-	sed -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.am > tmp-Makefile.am
+#FIXME: this target relies on dep.sed, which is broken (see above)
+dep-am: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	@echo "this target is broken/dangerous; not letting you use it" >&2
+	@echo "edit Makefile.am if you have fixed things"
+	exit 1
+	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.am > tmp-Makefile.am
 	cat DEP >> tmp-Makefile.am
-	$(SHELL) $(srcdir)/../move-if-change tmp-Makefile.am $(srcdir)/Makefile.am
+	$(RUN_MOVEIFCHANGE) tmp-Makefile.am $(srcdir)/Makefile.am
+	$(AM_V_at)touch $(srcdir)/Makefile.am
 
+# Some manually-specified dependencies:
+archive64.o: archive64.lo
 host-aout.lo: Makefile
-mach-o.lo: headers $(BFD_H) bfd.h bfd-in3.h mach-o-target.c
+host-aout.o: host-aout.lo
+mach-o.lo: $(BFD_H) bfd.h bfd-in2.h bfd-in3.h mach-o-target.c \
+  bfd_stdint.h @MAINT@ headers
+mach-o.o: mach-o.lo
+pef.o: pef.lo
+xsym.o: xsym.lo
+cpu-i386.o: cpu-i386.lo
+cpu-powerpc.o: cpu-powerpc.lo
+cpu-rs6000.o: cpu-rs6000.lo
 
 # The following program can be used to generate a simple config file
 # which can be folded into an h-XXX file for a new host, with some editing.
-aout-params.h: gen-aout config.status
-	./gen-aout host > aout-params.h
-gen-aout: $(srcdir)/gen-aout.c Makefile
-	$(CC) -o gen-aout $(CFLAGS) $(LFLAGS) $(srcdir)/gen-aout.c
+aout-params.h: gen-aout @MAINT@ config.status
+	./gen-aout host $(AM_V_redir) aout-params.h
+gen-aout: $(srcdir)/gen-aout.c @MAINT@ Makefile
+	$(AM_V_CCLD)$(CC) -o gen-aout $(AM_CFLAGS) $(CFLAGS) $(LFLAGS) \
+	  $(srcdir)/gen-aout.c
 
-$(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h $(srcdir)/libbfd.h $(srcdir)/libcoff.h
-	(cd $(srcdir) && $(MAKE) headers $(FLAGS_TO_PASS))
+$(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h bfd-in3.h $(srcdir)/libbfd.h \
+  $(srcdir)/libcoff.h @MAINT@ $(srcdir)/Makefile
+	if test -e $(srcdir)/Makefile -a -d $(srcdir)/.deps; then \
+	  echo "making headers in $(srcdir)"; \
+	  (cd $(srcdir) && $(MAKE) headers $(FLAGS_TO_PASS)); \
+	elif test -e ./Makefile -a -d ./.deps; then \
+	  echo "making headers in the current directory"; \
+	  (cd . && $(MAKE) headers $(FLAGS_TO_PASS)); \
+	fi
+	-if test ! -e $(BFD_H); then \
+	  if test -e $(srcdir)/Makefile; then \
+	    (cd $(srcdir) && $(MAKE) stmp-bfd-h $(FLAGS_TO_PASS)); \
+	  elif test -e ./Makefile; then \
+	    (cd . && $(MAKE) stmp-bfd-h $(FLAGS_TO_PASS)); \
+	  fi; \
+	else \
+	  stat $(BFD_H); \
+	fi
 
-stmp-bfd-h: bfd-in3.h headers
-	rm -f bfd-tmp.h
-	cp bfd-in3.h bfd-tmp.h
-	$(SHELL) $(srcdir)/../move-if-change bfd-tmp.h $(BFD_H)
-	rm -f bfd-tmp.h
-	touch stmp-bfd-h
+stmp-bfd-h: bfd-in3.h @MAINT@ headers @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	rm -f $(AM_V_v) bfd-tmp.h
+	cp $(AM_V_v) bfd-in3.h bfd-tmp.h
+	$(RUN_MOVEIFCHANGE) bfd-tmp.h $(BFD_H)
+	$(AM_V_at)touch $(BFD_H)
+	rm -f $(AM_V_v) bfd-tmp.h
+	touch $@
 
 BFD_H_FILES = bfd-in.h init.c opncls.c libbfd.c section.c archures.c \
 	reloc.c syms.c bfd.c bfdio.c bfdwin.c \
-	archive.c corefile.c targets.c format.c
+	archive.c corefile.c targets.c format.c @MAINT@ compress.c
 BFD64_H_FILES = archive64.c
 LIBBFD_H_FILES = libbfd-in.h init.c libbfd.c bfdio.c bfdwin.c \
 	cache.c reloc.c archures.c elf.c
 LIBCOFF_H_FILES = libcoff-in.h coffcode.h
 
-# APPLE LOCAL begin framework building
+# APPLE LOCAL begin framework building:
 SYSTEM_FRAMEWORK = -L../intl -lintl -framework System @SYSTEM_FRAMEWORK_LIBS@
 
 FRAMEWORK = bfd
@@ -889,104 +1401,208 @@ FRAMEWORK_PREFIX =
 FRAMEWORK_SUFFIX =
 FRAMEWORK_VERSION_SUFFIX =
 FRAMEWORK_VERSION = A
-FRAMEWORK_OFILES = `echo $(libbfd_la_OBJECTS) | sed -e 's/\.lo/\.o/g'` `cat ofiles | sed -e 's/\.lo/\.o/g'`
+# We now fix ofiles above, but just in case:
+FRAMEWORK_OFILES = `echo $(libbfd_la_OBJECTS) | $(SED) -e 's/\.lo/\.o/g'` `(cat lofiles | $(SED) -e 's/\.lo/\.o/g' || cat ofiles)`
 FRAMEWORK_LIB = -F../libiberty -framework liberty -F../mmalloc -framework mmalloc $(SYSTEM_FRAMEWORK) $(LDFLAGS)
 
 stamp-framework-headers: bfd.h headers
-	$(RM) -f stamp-framework stamp-framework-headers
-	$(RM) -rf $(FRAMEWORK).framework
-	mkdir -p $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
-	mkdir -p $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
-	ln -s Versions/Current/Headers $(FRAMEWORK).framework/Headers
-	ln -s Versions/Current/PrivateHeaders $(FRAMEWORK).framework/PrivateHeaders
-	ln -s A $(FRAMEWORK).framework/Versions/Current
-	cp -p $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
-	cp -p *.h $(FRAMEWORK).framework/Versions/Current/Headers/
-	cp -p $(BFD_H_DEPS) $(FRAMEWORK).framework/Versions/Current/Headers/
-	touch stamp-framework-headers
+	rm -f stamp-framework stamp-framework-headers
+	rm -rf $(AM_V_v) $(FRAMEWORK).framework
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
+	$(LN_S) $(AM_V_v) Versions/Current/Headers $(FRAMEWORK).framework/Headers
+	$(LN_S) $(AM_V_v) Versions/Current/PrivateHeaders $(FRAMEWORK).framework/PrivateHeaders
+	$(LN_S) $(AM_V_v) A $(FRAMEWORK).framework/Versions/Current
+	cp -p $(AM_V_v) $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
+	cp -p $(AM_V_v) *.h $(FRAMEWORK).framework/Versions/Current/Headers/
+	cp -p $(AM_V_v) $(BFD_H_DEPS) $(FRAMEWORK).framework/Versions/Current/Headers/
+	$(AM_V_at)touch stamp-framework-headers
 
-stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES) 
+stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES)
 	$(MAKE) $(FRAMEWORK_OFILES)
-	$(RM) -f stamp-framework-headers
+	rm -f stamp-framework-headers
 	$(MAKE) stamp-framework-headers
-	mkdir -p $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
-	ln -s Versions/Current/Resources $(FRAMEWORK).framework/Resources
-	mkdir -p $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
+	$(LN_S) $(AM_V_v) Versions/Current/Resources $(FRAMEWORK).framework/Resources
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
 
-	set -e; if [ "$(FRAMEWORK_SUFFIX)" != "" ]; then \
-		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
-		ln -s $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
-		ln -s Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX); \
-		ln -s Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
-		ln -s $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK); \
+	set -ex; \
+	if [ "x$(FRAMEWORK_SUFFIX)" != "x" ]; then \
+	    test -n "$(FRAMEWORK_SUFFIX)" && echo "$(FRAMEWORK_SUFFIX)"; \
+	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
+	    $(LN_S) $(AM_V_v) $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
+	    $(LN_S) $(AM_V_v) $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK); \
 	else \
-		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
-		ln -s Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
+	    echo "making un-suffixed framework"; \
+	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
 	fi
-	touch stamp-framework
-# APPLE LOCAL end framework building
+	$(AM_V_at)touch stamp-framework
+# APPLE LOCAL end framework building.
 
 # Could really use a "copy-if-change"...
-headers: $(docdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h
-	(cd $(docdir); $(MAKE) protos $(FLAGS_TO_PASS))
-	(cd $(docdir); $(MAKE) libbfd.h $(FLAGS_TO_PASS))
-	(cd $(docdir); $(MAKE) $(srcdir)/libbfd.h $(FLAGS_TO_PASS))
-	(cd $(docdir); $(MAKE) libcoff.h $(FLAGS_TO_PASS))
-	(cd $(docdir); $(MAKE) $(srcdir)/libcoff.h $(FLAGS_TO_PASS))
-	(cd $(docdir); $(MAKE) bfd.h $(FLAGS_TO_PASS))
-	(cd $(docdir); $(MAKE) $(srcdir)/bfd.h $(FLAGS_TO_PASS))
-	cp $(docdir)/bfd.h bfd-in2.h-new
-	$(SHELL) $(srcdir)/../move-if-change bfd-in2.h-new $(srcdir)/bfd-in2.h
-	cp $(docdir)/libbfd.h libbfd.h-new
-	$(SHELL) $(srcdir)/../move-if-change libbfd.h-new $(srcdir)/libbfd.h
-	cp $(docdir)/libcoff.h libcoff.h-new
-	$(SHELL) $(srcdir)/../move-if-change libcoff.h-new $(srcdir)/libcoff.h
+headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	(cd $(sdocdir); $(MAKE) protos $(FLAGS_TO_PASS))
+	(cd $(sdocdir); $(MAKE) libbfd.h $(FLAGS_TO_PASS))
+	(cd $(sdocdir); $(MAKE) libcoff.h $(FLAGS_TO_PASS))
+	(cd $(sdocdir); $(MAKE) bfd.h $(FLAGS_TO_PASS))
+	if test $(srcdir) != "."; then \
+	  (cd $(sdocdir); $(MAKE) $(srcdir)/libbfd.h $(FLAGS_TO_PASS)); \
+	  (cd $(sdocdir); $(MAKE) $(srcdir)/libcoff.h $(FLAGS_TO_PASS)); \
+	  (cd $(sdocdir); $(MAKE) $(srcdir)/bfd.h $(FLAGS_TO_PASS)); \
+	fi
+	cp $(AM_V_v) $(sdocdir)/bfd.h bfd-in2.h-new
+	$(RUN_MOVEIFCHANGE) bfd-in2.h-new $(srcdir)/bfd-in2.h
+	$(AM_V_at)touch $(srcdir)/bfd-in2.h
+	cp $(AM_V_v) $(sdocdir)/libbfd.h libbfd.h-new
+	$(RUN_MOVEIFCHANGE) libbfd.h-new $(srcdir)/libbfd.h
+	$(AM_V_at)touch $(srcdir)/libbfd.h
+	cp $(AM_V_v) $(sdocdir)/libcoff.h libcoff.h-new
+	$(RUN_MOVEIFCHANGE) libcoff.h-new $(srcdir)/libcoff.h
+	$(AM_V_at)touch $(srcdir)/libcoff.h
+.PHONY: headers
+
+$(sdocdir)/Makefile: $(sdocdir)/Makefile.in $(top_builddir)/config.status
+	if test $(srcdir) != "."; then \
+	  if test -e ./doc/Makefile -a ! -e $(sdocdir)/Makefile; then \
+	    cp $(AM_V_v) ./doc/Makefile $(sdocdir)/Makefile; \
+	  elif test -e $(srcdir)/config.status; then \
+	    echo ' $(SHELL) $(srcdir)/config.status'; \
+	    $(SHELL) $(srcdir)/config.status; \
+	  fi; \
+	else \
+	  if test -e $(top_builddir)/config.status; then \
+	    echo ' $(SHELL) $(top_builddir)/config.status'; \
+	    $(SHELL) $(top_builddir)/config.status; \
+	  fi; \
+	fi
+	if test -e Makefile -a ! -e $(srcdir)/Makefile -a -d .deps; then \
+	  $(MAKE) $(srcdir)/Makefile; \
+	fi
+
+@ifGNUmake@ifneq ($(srcdir),.)
+@ifGNUmake@$(srcdir)/Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+@ifGNUmake@	if test $(srcdir) != "."; then \
+@ifGNUmake@	  if test -e ./Makefile -a ! -e $(srcdir)/Makefile; then \
+@ifGNUmake@	    cp $(AM_V_v) ./Makefile $(srcdir)/Makefile; \
+@ifGNUmake@	  elif test -e $(srcdir)/config.status; then \
+@ifGNUmake@	    echo ' $(SHELL) $(srcdir)/config.status'; \
+@ifGNUmake@	    $(SHELL) $(srcdir)/config.status; \
+@ifGNUmake@	  fi; \
+@ifGNUmake@	else \
+@ifGNUmake@	  if test -e $(top_builddir)/config.status; then \
+@ifGNUmake@	    echo ' $(SHELL) $(top_builddir)/config.status'; \
+@ifGNUmake@	    $(SHELL) $(top_builddir)/config.status; \
+@ifGNUmake@	  fi; \
+@ifGNUmake@	fi
+@ifGNUmake@endif
 
 # We only rebuild the header files automatically if we have been
 # configured with --enable-maintainer-mode.
 
-$(srcdir)/bfd-in2.h: @MAINT@ stmp-bin2-h ; @true
-stmp-bin2-h: $(BFD_H_FILES) $(BFD64_H_FILES)
-	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) bfd.h)
-	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/bfd.h)
-	cp $(docdir)/bfd.h bfd-in2.h-new
-	$(SHELL) $(srcdir)/../move-if-change bfd-in2.h-new $(srcdir)/bfd-in2.h
-	touch stmp-bin2-h
+$(srcdir)/bfd-in2.h: @MAINT@ stmp-bin2-h
+	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
+stmp-bin2-h: $(sdocdir)/Makefile $(BFD_H_FILES) $(BFD64_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	(cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) bfd.h)
+	if test $(srcdir) != "."; then \
+	  (cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/bfd.h); \
+	fi
+	cp $(AM_V_v) $(sdocdir)/bfd.h bfd-in2.h-new
+	$(RUN_MOVEIFCHANGE) bfd-in2.h-new $(srcdir)/bfd-in2.h
+	$(AM_V_at)touch $(srcdir)/bfd-in2.h
+	touch $@
 
-$(srcdir)/libbfd.h: @MAINT@ stmp-lbfd-h ; @true
-stmp-lbfd-h: $(LIBBFD_H_FILES)
-	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) libbfd.h)
-	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/libbfd.h)
-	cp $(docdir)/libbfd.h libbfd.h-new
-	$(SHELL) $(srcdir)/../move-if-change libbfd.h-new $(srcdir)/libbfd.h
-	touch stmp-lbfd-h
+$(srcdir)/libbfd.h: @MAINT@ stmp-lbfd-h
+	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
+stmp-lbfd-h: $(LIBBFD_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	(cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) libbfd.h)
+	if test $(srcdir) != "."; then \
+	  (cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/libbfd.h); \
+	fi
+	cp $(AM_V_v) $(sdocdir)/libbfd.h libbfd.h-new
+	$(RUN_MOVEIFCHANGE) libbfd.h-new $(srcdir)/libbfd.h
+	$(AM_V_at)touch $(srcdir)/libbfd.h
+	touch $@
 
-$(srcdir)/libcoff.h: @MAINT@ stmp-lcoff-h ; @true
-stmp-lcoff-h: $(LIBCOFF_H_FILES)
-	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) libcoff.h)
-	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/libcoff.h)
-	cp $(docdir)/libcoff.h libcoff.h-new
-	$(SHELL) $(srcdir)/../move-if-change libcoff.h-new $(srcdir)/libcoff.h
-	touch stmp-lcoff-h
+$(srcdir)/libcoff.h: @MAINT@ stmp-lcoff-h
+	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
+stmp-lcoff-h: $(LIBCOFF_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	(cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) libcoff.h)
+	if test $(srcdir) != "."; then \
+	  (cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/libcoff.h); \
+	fi
+	cp $(AM_V_v) $(sdocdir)/libcoff.h libcoff.h-new
+	$(RUN_MOVEIFCHANGE) libcoff.h-new $(srcdir)/libcoff.h
+	$(AM_V_at)touch $(srcdir)/libcoff.h
+	touch $@
 
-MOSTLYCLEANFILES = ofiles stamp-ofiles
+MOSTLYCLEANFILES = tofiles ofiles stamp-ofiles
+MOSTLYCLEANFILES += tlofiles lofiles stamp-lofiles
+MOSTLYCLEANFILES += tplistfiles plistfiles stamp-plistfiles
 
-CLEANFILES = bfd.h dep.sed stmp-bfd-h DEP DEPA DEP1 DEP2 libbfd.a stamp-lib \
-	stmp-bin2-h stmp-lbfd-h stmp-lcoff-h
+CLEANFILES = dep.sed stmp-bfd-h DEP DEPA DEP1 DEP2 libbfd.a stamp-lib \
+  stamp-staticlib stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ bfd.h
 
-DISTCLEANFILES = $(BUILD_CFILES) $(BUILD_HFILES)
+DISTCLEANFILES = $(BUILD_CFILES) $(BUILD_HFILES) libtool-soversion *~
 
-bfdver.h: $(srcdir)/version.h $(srcdir)/Makefile.in
+MAINTAINERCLEANFILES = bfd.h @MAINT@ bfd-in2.h
+
+apple-clean: @MAINT@ mostlyclean
+	(cd $(sdocdir); $(MAKE) apple-clean $(FLAGS_TO_PASS))
+	rm -rfv $(FRAMEWORK).framework || rmdir $(FRAMEWORK).framework
+.PHONY: apple-clean
+
+distclean-local:
+	rm -rfv autom4te.cache || rmdir autom4te.cache
+
+bfdver.h: $(srcdir)/version.h @MAINT@ $(srcdir)/development.sh \
+  $(srcdir)/Makefile.in
 	@echo "creating $@"
-	@bfd_version=`echo "$(VERSION)" | sed -e 's/\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\).*/\1.00\2.00\3.00\4.00\5/' -e 's/\([^\.]*\)\..*\(..\)\..*\(..\)\..*\(..\)\..*\(..\)$$/\1\2\3\4\5/'` ;\
-	bfd_version_string="\"$(VERSION)\"" ;\
-	if test "x$(RELEASE)" = x ; then \
-	  bfd_version_date=`sed -n -e 's/.*DATE //p' < $(srcdir)/version.h` ;\
-	  bfd_version_string="\"$(VERSION) $${bfd_version_date}\"" ;\
-	fi ;\
-	sed -e "s/@bfd_version@/$$bfd_version/" -e "s/@bfd_version_string@/$$bfd_version_string/" < $(srcdir)/version.h > $@
+	@bfd_version=`echo "$(VERSION)" | $(SED) -e 's/\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\).*/\1.00\2.00\3.00\4.00\5/' -e 's/\([^\.]*\)\..*\(..\)\..*\(..\)\..*\(..\)\..*\(..\)$$/\1\2\3\4\5/'`; \
+	bfd_version_string="\"$(VERSION)\""; \
+	bfd_soversion="$(VERSION)"; \
+	bfd_version_package="\"$(PKGVERSION)\""; \
+	report_bugs_to="\"$(REPORT_BUGS_TO)\""; \
+	. $(srcdir)/development.sh; \
+	if test "x$(RELEASE)" = "x" || test "x$${development}" = "xtrue"; then \
+	  bfd_version_date=`$(SED) -n -e 's/.*DATE //p' < $(srcdir)/version.h`; \
+	  bfd_version_string="\"$(VERSION) $${bfd_version_date}\""; \
+	  bfd_soversion="$(VERSION).$${bfd_version_date}"; \
+	fi; \
+	$(SED) -e "s/@bfd_version@/$${bfd_version}/" \
+	    -e "s/@bfd_version_string@/$${bfd_version_string}/" \
+	    -e "s,@bfd_version_package@,$${bfd_version_package}," \
+	    -e "s,@report_bugs_to@,$${report_bugs_to}," \
+	    < $(srcdir)/version.h $(AM_V_redir) $@; \
+	echo "$${bfd_soversion}" > libtool-soversion
+
+libtool-soversion: bfdver.h
+	stat $@ || touch $@
+
+# Disable -Werror, if it has been enabled, since coffswap.h fails
+# to compile with gcc 4.5 and above:
+coff-tic4x.lo: coff-tic4x.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $< $(NO_WERROR)
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $< $(NO_WERROR)
+
+coff-tic54x.lo: coff-tic54x.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $< $(NO_WERROR)
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $< $(NO_WERROR)
 
 # What appears below is generated by a hacked mkdep using gcc -MM.
+# FIXME: the sed script that generates this currently screws up some stuff
+# such as removing letters and directory separators when they do not need
+# to be removed
+# (for example, the 't' in 'aout', the 2nd 'f' in 'coff', the 'f' in 'elf')
+# can edit manually until the sed script is fixed
 
 # DO NOT DELETE THIS LINE -- mkdep uses it.
 # DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.
@@ -1009,7 +1625,8 @@ coffgen.lo: coffgen.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
 corefile.lo: corefile.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 format.lo: format.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 init.lo: init.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
-libbfd.lo: libbfd.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+libbfd.lo: libbfd.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
+  $(INCDIR)/libiberty.h
 opncls.lo: opncls.c $(INCDIR)/filenames.h $(INCDIR)/objalloc.h \
   $(INCDIR)/hashtab.h $(INCDIR)/libiberty.h
 reloc.lo: reloc.c $(INCDIR)/filenames.h $(INCDIR)/bfdlink.h \
@@ -1047,18 +1664,24 @@ simple.lo: simple.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
   $(INCDIR)/bfdlink.h
 archive64.lo: archive64.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
   $(INCDIR)/aout/ar.h
+cpu-aarch64.lo: cpu-aarch64.c $(INCDIR)/filenames.h \
+  $(INCDIR)/hashtab.h $(INCDIR)/libiberty.h
 cpu-a29k.lo: cpu-a29k.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-alpha.lo: cpu-alpha.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-arc.lo: cpu-arc.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-arm.lo: cpu-arm.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
   $(INCDIR)/libiberty.h
 cpu-avr.lo: cpu-avr.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-bfin.lo: cpu-bfin.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-cris.lo: cpu-cris.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-cr16.lo: cpu-cr16.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-cr16c.lo: cpu-cr16c.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-crx.lo: cpu-crx.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-d10v.lo: cpu-d10v.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-d30v.lo: cpu-d30v.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-dlx.lo: cpu-dlx.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-epiphany.lo: cpu-epiphany.c $(INCDIR)/filenames.h \
+  $(INCDIR)/hashtab.h
 cpu-fr30.lo: cpu-fr30.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-frv.lo: cpu-frv.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-h8300.lo: cpu-h8300.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
@@ -1072,6 +1695,9 @@ cpu-i860.lo: cpu-i860.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-i960.lo: cpu-i960.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-ip2k.lo: cpu-ip2k.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-iq2000.lo: cpu-iq2000.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-k1om.lo: cpu-k1om.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-l1om.lo: cpu-l1om.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-lm32.lo: cpu-lm32.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-m32c.lo: cpu-m32c.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-m32r.lo: cpu-m32r.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-m68hc11.lo: cpu-m68hc11.c $(INCDIR)/filenames.h \
@@ -1080,40 +1706,68 @@ cpu-m68hc12.lo: cpu-m68hc12.c $(INCDIR)/filenames.h \
   $(INCDIR)/hashtab.h
 cpu-m68k.lo: cpu-m68k.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-m88k.lo: cpu-m88k.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-m9s12x.lo: cpu-m9s12x.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-m9s12xg.lo: cpu-m9s12xg.c $(INCDIR)/filenames.h \
+  $(INCDIR)/hashtab.h
 cpu-m10200.lo: cpu-m10200.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-m10300.lo: cpu-m10300.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-maxq.lo: cpu-maxq.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-mcore.lo: cpu-mcore.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-mep.lo: cpu-mep.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-metag.lo: cpu-metag.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-microblaze.lo: cpu-microblaze.c $(INCDIR)/filenames.h \
+  $(INCDIR)/hashtab.h
 cpu-mips.lo: cpu-mips.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-mmix.lo: cpu-mmix.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-moxie.lo: cpu-moxie.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-ms1.lo: cpu-ms1.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-msp430.lo: cpu-msp430.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
-cpu-or32.lo: cpu-or32.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-mt.lo: cpu-mt.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-nds32.lo: cpu-nds32.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
+  elf-bfd.h $(INCDIR)/elf/common.h $(INCDIR)/elf/internal.h \
+  $(INCDIR)/elf/external.h $(INCDIR)/bfdlink.h
+cpu-nios2.lo: cpu-nios2.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-ns32k.lo: cpu-ns32k.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
   ns32k.h
 cpu-openrisc.lo: cpu-openrisc.c $(INCDIR)/filenames.h \
   $(INCDIR)/hashtab.h
+cpu-or1k.lo: cpu-or1k.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-or32.lo: cpu-or32.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-pdp11.lo: cpu-pdp11.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-pj.lo: cpu-pj.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-plugin.lo: cpu-plugin.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-powerpc.lo: cpu-powerpc.c $(INCDIR)/filenames.h \
   $(INCDIR)/hashtab.h
+cpu-rl78.lo: cpu-rl78.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-rs6000.lo: cpu-rs6000.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-rx.lo: cpu-rx.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-s390.lo: cpu-s390.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-score.lo: cpu-score.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-sh.lo: cpu-sh.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
   $(srcdir)/../opcodes/sh-opc.h
 cpu-sparc.lo: cpu-sparc.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-spu.lo: cpu-spu.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-tic30.lo: cpu-tic30.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-tic4x.lo: cpu-tic4x.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-tic54x.lo: cpu-tic54x.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-tic6x.lo: cpu-tic6x.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-tic80.lo: cpu-tic80.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-tilegx.lo: cpu-tilegx.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-tilepro.lo: cpu-tilepro.c $(INCDIR)/filenames.h \
+  $(INCDIR)/hashtab.h
 cpu-v850.lo: cpu-v850.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
   $(INCDIR)/safe-ctype.h
+cpu-v850_rh850.lo: cpu-v850_rh850.c $(INCDIR)/filenames.h \
+  $(INCDIR)/hashtab.h $(INCDIR)/safe-ctype.h
 cpu-vax.lo: cpu-vax.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-we32k.lo: cpu-we32k.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-w65.lo: cpu-w65.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-xc16x.lo: cpu-xc16x.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-xgate.lo: cpu-xgate.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-xstormy16.lo: cpu-xstormy16.c $(INCDIR)/filenames.h \
   $(INCDIR)/hashtab.h
 cpu-xtensa.lo: cpu-xtensa.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
+cpu-z80.lo: cpu-z80.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 cpu-z8k.lo: cpu-z8k.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h
 aout-adobe.lo: aout-adobe.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
   $(INCDIR)/aout/adobe.h $(INCDIR)/aout/stab_gnu.h $(INCDIR)/aout/stab.def \
@@ -1126,8 +1780,8 @@ aout-cris.lo: aout-cris.c aout32.c aoutx.h $(INCDIR)/filenames.h \
   $(INCDIR)/safe-ctype.h $(INCDIR)/bfdlink.h libaout.h \
   $(INCDIR)/hashtab.h $(INCDIR)/aout/aout64.h $(INCDIR)/aout/stab_gnu.h \
   $(INCDIR)/aout/stab.def $(INCDIR)/aout/ar.h aout-target.h
-aout-ns32k.lo: aout-ns32k.c $(INCDIR)/aout/aout64.h \
-  ns32k.h libaout.h $(INCDIR)/bfdlink.h aoutx.h $(INCDIR)/filenames.h \
+aout-ns32k.lo: aout-ns32k.c $(INCDIR)/aout/aout64.h ns32k.h \
+  libaout.h $(INCDIR)/bfdlink.h aoutx.h $(INCDIR)/filenames.h \
   $(INCDIR)/safe-ctype.h $(INCDIR)/hashtab.h $(INCDIR)/aout/stab_gnu.h \
   $(INCDIR)/aout/stab.def $(INCDIR)/aout/ar.h
 aout-sparcle.lo: aout-sparcle.c $(INCDIR)/bfdlink.h \
@@ -1156,6 +1810,10 @@ cf-i386lynx.lo: cf-i386lynx.c $(INCDIR)/filenames.h \
   coff-i386.c $(INCDIR)/hashtab.h $(INCDIR)/coff/i386.h \
   $(INCDIR)/coff/external.h $(INCDIR)/coff/internal.h \
   libcoff.h $(INCDIR)/bfdlink.h coffcode.h coffswap.h
+cf-m68klynx.lo: cf-m68klynx.c coff-m68k.c $(INCDIR)/filenames.h \
+  $(INCDIR)/hashtab.h $(INCDIR)/coff/m68k.h $(INCDIR)/coff/external.h \
+  $(INCDIR)/coff/internal.h libcoff.h $(INCDIR)/bfdlink.h \
+  coffcode.h coffswap.h
 cf-sparclynx.lo: cf-sparclynx.c coff-sparc.c $(INCDIR)/filenames.h \
   $(INCDIR)/hashtab.h $(INCDIR)/coff/sparc.h $(INCDIR)/coff/external.h \
   $(INCDIR)/coff/internal.h libcoff.h $(INCDIR)/bfdlink.h \
@@ -1172,7 +1830,8 @@ coff-arm.lo: coff-arm.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
   libcoff.h $(INCDIR)/bfdlink.h coffcode.h coffswap.h
 coff-aux.lo: coff-aux.c $(INCDIR)/filenames.h $(INCDIR)/coff/aux-coff.h \
   $(INCDIR)/coff/internal.h $(INCDIR)/coff/m68k.h $(INCDIR)/coff/external.h \
-  coff-m68k.c $(INCDIR)/hashtab.h libcoff.h $(INCDIR)/bfdlink.h \
+  coff-m68k.c $(INCDIR)/hashtab.h $(INCDIR)/coff/m68k.h \
+  $(INCDIR)/coff/internal.h libcoff.h $(INCDIR)/bfdlink.h \
   coffcode.h coffswap.h
 coff-h8300.lo: coff-h8300.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
   $(INCDIR)/bfdlink.h genlink.h $(INCDIR)/coff/h8300.h \
@@ -1212,6 +1871,10 @@ coff-mips.lo: coff-mips.c $(INCDIR)/filenames.h $(INCDIR)/bfdlink.h \
 coff-or32.lo: coff-or32.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
   $(INCDIR)/coff/or32.h $(INCDIR)/coff/internal.h libcoff.h \
   $(INCDIR)/bfdlink.h coffcode.h coffswap.h
+coff-pmac.lo: coff-pmac.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
+  $(INCDIR)/coff/internal.h $(INCDIR)/coff/rs6000.h libcoff.h \
+  $(INCDIR)/bfdlink.h libxcoff.h $(INCDIR)/coff/xcoff.h \
+  xcoff-target.h coffcode.h coffswap.h
 coff-rs6000.lo: coff-rs6000.c $(INCDIR)/filenames.h \
   $(INCDIR)/bfdlink.h $(INCDIR)/hashtab.h $(INCDIR)/coff/internal.h \
   $(INCDIR)/coff/xcoff.h $(INCDIR)/coff/rs6000.h libcoff.h \
@@ -1254,6 +1917,9 @@ coff-we32k.lo: coff-we32k.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
   libcoff.h $(INCDIR)/bfdlink.h coffcode.h coffswap.h
 coff-w65.lo: coff-w65.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
   $(INCDIR)/bfdlink.h $(INCDIR)/coff/w65.h $(INCDIR)/coff/external.h \
+  $(INCDIR)/coff/internal.h libcoff.h coffcode.h coffswap.h
+coff-z80.lo: coff-z80.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
+  $(INCDIR)/bfdlink.h $(INCDIR)/coff/z80.h $(INCDIR)/coff/external.h \
   $(INCDIR)/coff/internal.h libcoff.h coffcode.h coffswap.h
 coff-z8k.lo: coff-z8k.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
   $(INCDIR)/bfdlink.h $(INCDIR)/coff/z8k.h $(INCDIR)/coff/external.h \
@@ -1302,6 +1968,15 @@ elf32-avr.lo: elf32-avr.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
   elf-bfd.h $(INCDIR)/elf/common.h $(INCDIR)/elf/internal.h \
   $(INCDIR)/elf/external.h $(INCDIR)/bfdlink.h $(INCDIR)/elf/avr.h \
   $(INCDIR)/elf/reloc-macros.h elf32-target.h
+elf32-bfin.lo: elf32-bfin.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
+  elf-bfd.h $(INCDIR)/elf/common.h $(INCDIR)/elf/internal.h \
+  $(INCDIR)/elf/external.h $(INCDIR)/bfdlink.h $(INCDIR)/elf/bfin.h \
+  $(INCDIR)/elf/reloc-macros.h $(INCDIR)/dwarf2.h $(INCDIR)/dwarf2.def \
+  elf32-target.h
+elf32-cr16.lo: elf32-cr16.c $(INCDIR)/filenames.h $(INCDIR)/bfdlink.h \
+  $(INCDIR)/hashtab.h $(INCDIR)/libiberty.h elf-bfd.h \
+  $(INCDIR)/elf/common.h $(INCDIR)/elf/internal.h $(INCDIR)/elf/external.h \
+  $(INCDIR)/elf/cr16.h $(INCDIR)/elf/reloc-macros.h elf32-target.h
 elf32-cr16c.lo: elf32-cr16c.c $(INCDIR)/filenames.h \
   $(INCDIR)/hashtab.h $(INCDIR)/bfdlink.h $(INCDIR)/elf/cr16c.h \
   $(INCDIR)/elf/reloc-macros.h elf-bfd.h $(INCDIR)/elf/common.h \
@@ -1601,8 +2276,10 @@ m88kopenbsd.lo: m88kopenbsd.c netbsd.h $(INCDIR)/filenames.h \
   $(INCDIR)/hashtab.h libaout.h $(INCDIR)/bfdlink.h aout-target.h \
   $(INCDIR)/aout/aout64.h $(INCDIR)/aout/stab_gnu.h $(INCDIR)/aout/stab.def \
   $(INCDIR)/aout/ar.h
-mach-o.lo: mach-o.c mach-o.h $(INCDIR)/filenames.h \
-  $(INCDIR)/hashtab.h $(INCDIR)/libiberty.h mach-o-target.c
+mach-o.lo: mach-o.c mach-o.h bfd_stdint.h bfd-in2.h \
+  bfd-in3.h $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
+  $(INCDIR)/libiberty.h $(INCDIR)/aout/stab_gnu.h $(INCDIR)/aout/stab.def \
+  mach-o/reloc.h mach-o/external.h mach-o-target.c
 mipsbsd.lo: mipsbsd.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
   libaout.h $(INCDIR)/bfdlink.h aout-target.h $(INCDIR)/aout/aout64.h \
   $(INCDIR)/aout/stab_gnu.h $(INCDIR)/aout/stab.def $(INCDIR)/aout/ar.h
@@ -1737,6 +2414,9 @@ vms-gsd.lo: vms-gsd.c $(INCDIR)/filenames.h $(INCDIR)/bfdlink.h \
 vms-hdr.lo: vms-hdr.c bfdver.h $(INCDIR)/filenames.h \
   $(INCDIR)/bfdlink.h $(INCDIR)/safe-ctype.h $(INCDIR)/hashtab.h \
   vms.h
+vms-lib.lo: vms-lib.c $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
+  $(INCDIR)/safe-ctype.h bfdver.h vms.h $(INCDIR)/vms/lbr.h \
+  $(INCDIR)/vms/dcx.h
 vms-misc.lo: vms-misc.c $(INCDIR)/filenames.h $(INCDIR)/bfdlink.h \
   $(INCDIR)/hashtab.h vms.h
 vms-tir.lo: vms-tir.c $(INCDIR)/filenames.h $(INCDIR)/bfdlink.h \
@@ -1839,6 +2519,10 @@ nlm32-alpha.lo: nlm32-alpha.c $(INCDIR)/filenames.h \
 nlm64.lo: nlm64.c nlmcode.h $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
   libnlm.h $(INCDIR)/nlm/common.h $(INCDIR)/nlm/internal.h \
   $(INCDIR)/nlm/external.h
+pei-ia64.lo: pei-ia64.c $(INCDIR)/filenames.h coff-ia64.c \
+  $(INCDIR)/hashtab.h $(INCDIR)/coff/ia64.h $(INCDIR)/coff/external.h \
+  $(INCDIR)/coff/internal.h $(INCDIR)/coff/pe.h libcoff.h \
+  $(INCDIR)/bfdlink.h coffcode.h peicode.h libpei.h
 aix386-core.lo: aix386-core.c $(INCDIR)/filenames.h \
   $(INCDIR)/hashtab.h $(INCDIR)/coff/i386.h $(INCDIR)/coff/external.h \
   $(INCDIR)/coff/internal.h libcoff.h $(INCDIR)/bfdlink.h

@@ -1,4 +1,5 @@
-/* Copyright 1993, 1997, 1999, 2000 Free Software Foundation, Inc.
+/* tm-tx39.h
+   Copyright 1993, 1997, 1999, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
 
@@ -34,3 +35,5 @@
 	"",	"",	"",	"",	"",	"",	"",	"", \
 	"",	"", "config", "cache", "debug", "depc", "epc",	"" \
     }
+
+/* EOF */

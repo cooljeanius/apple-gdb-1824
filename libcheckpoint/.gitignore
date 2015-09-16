@@ -1,2 +1,5 @@
 *.o
 *.dylib
+Makefile
+cptest
+site.bak

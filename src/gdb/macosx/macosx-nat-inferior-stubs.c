@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-nat-inferior-stubs.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -25,50 +25,61 @@
 #include "target.h"
 #include "event-loop.h"
 
+#include "macosx-nat-inferior-stubs.h"
+
 /* The following functions are defined for the benefit of inftarg.c;
    they should never be called */
 
-int
-attach (int pid)
+int ATTR_NORETURN
+attach(int pid)
 {
-  internal_error (__FILE__, __LINE__,
-                  "macosx_nat_inferior: unexpected call to attach ()");
+#ifdef ATTR_NORETURN
+  internal_error(__FILE__, __LINE__,
+                 "macosx_nat_inferior: unexpected call to attach()");
+#else
   return 0;
+#endif /* ATTR_NORETURN */
 }
 
-void
-detach (int sig)
+void ATTR_NORETURN
+detach(int sig)
 {
-  internal_error (__FILE__, __LINE__,
-                  "macosx_nat_inferior: unexpected call to detach ()");
+  internal_error(__FILE__, __LINE__,
+                 "macosx_nat_inferior: unexpected call to detach()");
 }
 
-void
-kill_inferior ()
+void ATTR_NORETURN
+kill_inferior(void)
 {
-  internal_error (__FILE__, __LINE__,
-                  "macosx_nat_inferior: unexpected call to kill_inferior ()");
+  internal_error(__FILE__, __LINE__,
+                 "macosx_nat_inferior: unexpected call to kill_inferior()");
 }
 
-void
-child_resume (int pid, int step, enum target_signal sig)
+void ATTR_NORETURN
+child_resume(int pid, int step, enum target_signal sig)
 {
-  internal_error (__FILE__, __LINE__,
-                  "macosx_nat_inferior: unexpected call to child_resume ()");
+  internal_error(__FILE__, __LINE__,
+                 "macosx_nat_inferior: unexpected call to child_resume()");
 }
 
-int
-child_wait (int pid, struct target_waitstatus *status,
-            gdb_client_data client_data)
+int ATTR_NORETURN
+child_wait(int pid, struct target_waitstatus *status,
+           gdb_client_data client_data)
 {
-  internal_error (__FILE__, __LINE__,
-                  "macosx_nat_inferior: unexpected call to child_wait ()");
+#ifdef ATTR_NORETURN
+  internal_error(__FILE__, __LINE__,
+                 "macosx_nat_inferior: unexpected call to child_wait()");
+#else
+  return 0;
+#endif /* ATTR_NORETURN */
 }
 
-int child_xfer_memory
-  (CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
-   struct mem_attrib *attrib, struct target_ops *target)
+int ATTR_NORETURN
+child_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
+                  struct mem_attrib *attrib, struct target_ops *target)
 {
-  internal_error (__FILE__, __LINE__,
-                  "macosx_nat_inferior: unexpected call to child_xfer_memory ()");
+  internal_error(__FILE__, __LINE__,
+                 "macosx_nat_inferior: unexpected call to child_xfer_memory()");
 }
+
+/* EOF */

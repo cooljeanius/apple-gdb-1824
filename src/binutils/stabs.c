@@ -711,7 +711,11 @@ parse_stab_string (void *dhandle, struct stab_handle *info, int stabtype,
   if (info->gcc_compiled >= 2)
     lineno = desc;
   else
-    lineno = 0;
+    lineno = 0U;
+
+  if (lineno > 1U) {
+    ;
+  }
 
   /* FIXME: Sometimes the special C++ names start with '.'.  */
   name = NULL;
@@ -742,10 +746,10 @@ parse_stab_string (void *dhandle, struct stab_handle *info, int stabtype,
 
   if (name == NULL)
     {
-      if (p == string || (string[0] == ' ' && p == string + 1))
+      if ((p == string) || ((string[0] == ' ') && (p == (string + 1))))
 	name = NULL;
       else
-	name = savestring (string, p - string);
+	name = savestring(string, p - string);
     }
 
   ++p;
@@ -1124,7 +1128,9 @@ parse_stab_string (void *dhandle, struct stab_handle *info, int stabtype,
    store the slot used if the type is being defined.  */
 
 static debug_type
-parse_stab_type (void *dhandle, struct stab_handle *info, const char *typename, const char **pp, debug_type **slotp)
+parse_stab_type(void *dhandle, struct stab_handle *info,
+                const char *typename_in, const char **pp,
+                debug_type **slotp)
 {
   const char *orig;
   int typenums[2];
@@ -1288,9 +1294,9 @@ parse_stab_type (void *dhandle, struct stab_handle *info, const char *typename, 
 	       fleep:T20=xsfleep:
 	   which define structures in terms of themselves.  We need to
 	   tell the caller to avoid building a circular structure.  */
-	if (typename != NULL
-	    && strncmp (typename, *pp, p - *pp) == 0
-	    && typename[p - *pp] == '\0')
+	if (typename_in != NULL
+	    && strncmp (typename_in, *pp, p - *pp) == 0
+	    && typename_in[p - *pp] == '\0')
 	  info->self_crossref = TRUE;
 
 	dtype = stab_find_tagged_type (dhandle, info, *pp, p - *pp, code);
@@ -1521,7 +1527,7 @@ parse_stab_type (void *dhandle, struct stab_handle *info, const char *typename, 
 
     case 'r':
       /* Range type.  */
-      dtype = parse_stab_range_type (dhandle, info, typename, pp, typenums);
+      dtype = parse_stab_range_type (dhandle, info, typename_in, pp, typenums);
       break;
 
     case 'b':
@@ -1543,7 +1549,7 @@ parse_stab_type (void *dhandle, struct stab_handle *info, const char *typename, 
     case 's':
     case 'u':
       /* Struct or union type.  */
-      dtype = parse_stab_struct_type (dhandle, info, typename, pp,
+      dtype = parse_stab_struct_type (dhandle, info, typename_in, pp,
 				      descriptor == 's', typenums);
       break;
 
@@ -1630,10 +1636,11 @@ parse_stab_type_number (const char **pp, int *typenums)
   return TRUE;
 }
 
-/* Parse a range type.  */
-
+/* Parse a range type: */
 static debug_type
-parse_stab_range_type (void *dhandle, struct stab_handle *info, const char *typename, const char **pp, const int *typenums)
+parse_stab_range_type(void *dhandle, struct stab_handle *info,
+                      const char *type_name, const char **pp,
+                      const int *typenums)
 {
   const char *orig;
   int rangenums[2];
@@ -1732,11 +1739,11 @@ parse_stab_range_type (void *dhandle, struct stab_handle *info, const char *type
 	         long long int:t6=r1;0;-1;
 		 long long unsigned int:t7=r1;0;-1;
 	     We hack here to handle this reasonably.  */
-	  if (typename != NULL)
+	  if (type_name != NULL)
 	    {
-	      if (strcmp (typename, "long long int") == 0)
+	      if (strcmp (type_name, "long long int") == 0)
 		return debug_make_int_type (dhandle, 8, FALSE);
-	      else if (strcmp (typename, "long long unsigned int") == 0)
+	      else if (strcmp (type_name, "long long unsigned int") == 0)
 		return debug_make_int_type (dhandle, 8, TRUE);
 	    }
 	  /* FIXME: The size here really depends upon the target.  */
@@ -2019,10 +2026,13 @@ parse_stab_struct_type (void *dhandle, struct stab_handle *info,
 
   orig = *pp;
 
-  /* Get the size.  */
-  size = parse_number (pp, (bfd_boolean *) NULL);
+  if (orig != NULL) {
+    ;
+  }
+  /* Get the size: */
+  size = parse_number(pp, (bfd_boolean *)NULL);
 
-  /* Get the other information.  */
+  /* Get the other information: */
   if (! parse_stab_baseclasses (dhandle, info, pp, &baseclasses)
       || ! parse_stab_struct_fields (dhandle, info, pp, &fields, &statics)
       || ! parse_stab_members (dhandle, info, tagname, pp, typenums, &methods)
@@ -2031,14 +2041,14 @@ parse_stab_struct_type (void *dhandle, struct stab_handle *info,
     return DEBUG_TYPE_NULL;
 
   if (! statics
-      && baseclasses == NULL
-      && methods == NULL
-      && vptrbase == DEBUG_TYPE_NULL
+      && (baseclasses == NULL)
+      && (methods == NULL)
+      && (vptrbase == DEBUG_TYPE_NULL)
       && ! ownvptr)
-    return debug_make_struct_type (dhandle, structp, size, fields);
+    return debug_make_struct_type(dhandle, structp, size, fields);
 
-  return debug_make_object_type (dhandle, structp, size, fields, baseclasses,
-				 methods, vptrbase, ownvptr);
+  return debug_make_object_type(dhandle, structp, size, fields, baseclasses,
+                                methods, vptrbase, ownvptr);
 }
 
 /* The stabs for C++ derived classes contain baseclass information which
@@ -2097,7 +2107,7 @@ parse_stab_baseclasses (void *dhandle, struct stab_handle *info,
 
   for (i = 0; i < c; i++)
     {
-      bfd_boolean virtual;
+      bfd_boolean is_virtual;
       enum debug_visibility visibility;
       bfd_vma bitpos;
       debug_type type;
@@ -2105,14 +2115,14 @@ parse_stab_baseclasses (void *dhandle, struct stab_handle *info,
       switch (**pp)
 	{
 	case '0':
-	  virtual = FALSE;
+	  is_virtual = FALSE;
 	  break;
 	case '1':
-	  virtual = TRUE;
+	  is_virtual = TRUE;
 	  break;
 	default:
-	  warn_stab (orig, _("unknown virtual character for baseclass"));
-	  virtual = FALSE;
+	  warn_stab(orig, _("unknown virtual character for baseclass"));
+	  is_virtual = FALSE;
 	  break;
 	}
       ++*pp;
@@ -2129,7 +2139,7 @@ parse_stab_baseclasses (void *dhandle, struct stab_handle *info,
 	  visibility = DEBUG_VISIBILITY_PUBLIC;
 	  break;
 	default:
-	  warn_stab (orig, _("unknown visibility character for baseclass"));
+	  warn_stab(orig, _("unknown visibility character for baseclass"));
 	  visibility = DEBUG_VISIBILITY_PUBLIC;
 	  break;
 	}
@@ -2138,10 +2148,10 @@ parse_stab_baseclasses (void *dhandle, struct stab_handle *info,
       /* The remaining value is the bit offset of the portion of the
 	 object corresponding to this baseclass.  Always zero in the
 	 absence of multiple inheritance.  */
-      bitpos = parse_number (pp, (bfd_boolean *) NULL);
+      bitpos = parse_number(pp, (bfd_boolean *)NULL);
       if (**pp != ',')
 	{
-	  bad_stab (orig);
+	  bad_stab(orig);
 	  return FALSE;
 	}
       ++*pp;
@@ -2151,7 +2161,7 @@ parse_stab_baseclasses (void *dhandle, struct stab_handle *info,
       if (type == DEBUG_TYPE_NULL)
 	return FALSE;
 
-      classes[i] = debug_make_baseclass (dhandle, type, bitpos, virtual,
+      classes[i] = debug_make_baseclass (dhandle, type, bitpos, is_virtual,
 					 visibility);
       if (classes[i] == DEBUG_BASECLASS_NULL)
 	return FALSE;
@@ -2267,16 +2277,15 @@ parse_stab_struct_fields (void *dhandle, struct stab_handle *info,
 }
 
 /* Special GNU C++ name.  */
-
 static bfd_boolean
-parse_stab_cpp_abbrev (void *dhandle, struct stab_handle *info,
-		       const char **pp, debug_field *retp)
+parse_stab_cpp_abbrev(void *dhandle, struct stab_handle *info,
+                      const char **pp, debug_field *retp)
 {
   const char *orig;
   int cpp_abbrev;
   debug_type context;
   const char *name;
-  const char *typename;
+  const char *type_name;
   debug_type type;
   bfd_vma bitpos;
 
@@ -2286,7 +2295,7 @@ parse_stab_cpp_abbrev (void *dhandle, struct stab_handle *info,
 
   if (**pp != 'v')
     {
-      bad_stab (*pp);
+      bad_stab(*pp);
       return FALSE;
     }
   ++*pp;
@@ -2296,11 +2305,10 @@ parse_stab_cpp_abbrev (void *dhandle, struct stab_handle *info,
 
   /* At this point, *pp points to something like "22:23=*22...", where
      the type number before the ':' is the "context" and everything
-     after is a regular type definition.  Lookup the type, find it's
+     after is a regular type definition.  Lookup the type, find its
      name, and construct the field name.  */
-
-  context = parse_stab_type (dhandle, info, (const char *) NULL, pp,
-			     (debug_type **) NULL);
+  context = parse_stab_type(dhandle, info, (const char *)NULL, pp,
+                            (debug_type **)NULL);
   if (context == DEBUG_TYPE_NULL)
     return FALSE;
 
@@ -2312,46 +2320,46 @@ parse_stab_cpp_abbrev (void *dhandle, struct stab_handle *info,
       break;
     case 'b':
       /* $vb -- a virtual bsomethingorother */
-      typename = debug_get_type_name (dhandle, context);
-      if (typename == NULL)
+      type_name = debug_get_type_name(dhandle, context);
+      if (type_name == NULL)
 	{
-	  warn_stab (orig, _("unnamed $vb type"));
-	  typename = "FOO";
+	  warn_stab(orig, _("unnamed $vb type"));
+	  type_name = "FOO";
 	}
-      name = concat ("_vb$", typename, (const char *) NULL);
+      name = concat("_vb$", type_name, (const char *)NULL);
       break;
     default:
-      warn_stab (orig, _("unrecognized C++ abbreviation"));
+      warn_stab(orig, _("unrecognized C++ abbreviation"));
       name = "INVALID_CPLUSPLUS_ABBREV";
       break;
     }
 
   if (**pp != ':')
     {
-      bad_stab (orig);
+      bad_stab(orig);
       return FALSE;
     }
   ++*pp;
 
-  type = parse_stab_type (dhandle, info, (const char *) NULL, pp,
-			  (debug_type **) NULL);
+  type = parse_stab_type(dhandle, info, (const char *)NULL, pp,
+                         (debug_type **)NULL);
   if (**pp != ',')
     {
-      bad_stab (orig);
+      bad_stab(orig);
       return FALSE;
     }
   ++*pp;
 
-  bitpos = parse_number (pp, (bfd_boolean *) NULL);
+  bitpos = parse_number(pp, (bfd_boolean *)NULL);
   if (**pp != ';')
     {
-      bad_stab (orig);
+      bad_stab(orig);
       return FALSE;
     }
   ++*pp;
 
-  *retp = debug_make_field (dhandle, name, type, bitpos, 0,
-			    DEBUG_VISIBILITY_PRIVATE);
+  *retp = debug_make_field(dhandle, name, type, bitpos, 0,
+                           DEBUG_VISIBILITY_PRIVATE);
   if (*retp == DEBUG_FIELD_NULL)
     return FALSE;
 
@@ -4654,19 +4662,19 @@ stab_demangle_type (struct stab_demangle_info *minfo, const char **pp,
 	unsigned int n;
 	const char *name;
 
-	memberp = **pp == 'M';
+	memberp = (**pp == 'M');
 	constp = FALSE;
 	volatilep = FALSE;
 	args = NULL;
 	varargs = FALSE;
 
 	++*pp;
-	if (ISDIGIT (**pp))
+	if (ISDIGIT(**pp))
 	  {
-	    n = stab_demangle_count (pp);
-	    if (strlen (*pp) < n)
+	    n = stab_demangle_count(pp);
+	    if (strlen(*pp) < n)
 	      {
-		stab_bad_demangle (orig);
+		stab_bad_demangle(orig);
 		return FALSE;
 	      }
 	    name = *pp;
@@ -4674,25 +4682,25 @@ stab_demangle_type (struct stab_demangle_info *minfo, const char **pp,
 
 	    if (ptype != NULL)
 	      {
-		class_type = stab_find_tagged_type (minfo->dhandle,
-						    minfo->info,
-						    name, (int) n,
-						    DEBUG_KIND_CLASS);
+		class_type = stab_find_tagged_type(minfo->dhandle,
+                                                   minfo->info,
+                                                   name, (int)n,
+                                                   DEBUG_KIND_CLASS);
 		if (class_type == DEBUG_TYPE_NULL)
 		  return FALSE;
 	      }
 	  }
 	else if (**pp == 'Q')
 	  {
-	    if (! stab_demangle_qualified (minfo, pp,
-					   (ptype == NULL
-					    ? (debug_type *) NULL
-					    : &class_type)))
+	    if (! stab_demangle_qualified(minfo, pp,
+                                          ((ptype == NULL)
+                                           ? (debug_type *)NULL
+                                           : &class_type)))
 	      return FALSE;
 	  }
 	else
 	  {
-	    stab_bad_demangle (orig);
+	    stab_bad_demangle(orig);
 	    return FALSE;
 	  }
 
@@ -4710,41 +4718,43 @@ stab_demangle_type (struct stab_demangle_info *minfo, const char **pp,
 	      }
 	    if (**pp != 'F')
 	      {
-		stab_bad_demangle (orig);
+		stab_bad_demangle(orig);
 		return FALSE;
 	      }
 	    ++*pp;
-	    if (! stab_demangle_args (minfo, pp,
-				      (ptype == NULL
-				       ? (debug_type **) NULL
-				       : &args),
-				      (ptype == NULL
-				       ? (bfd_boolean *) NULL
-				       : &varargs)))
+	    if (! stab_demangle_args(minfo, pp,
+                                     ((ptype == NULL)
+                                      ? (debug_type **)NULL
+                                      : &args),
+                                     ((ptype == NULL)
+                                      ? (bfd_boolean *)NULL
+                                      : &varargs)))
 	      return FALSE;
 	  }
 
 	if (**pp != '_')
 	  {
-	    stab_bad_demangle (orig);
+	    stab_bad_demangle(orig);
 	    return FALSE;
 	  }
 	++*pp;
 
-	if (! stab_demangle_type (minfo, pp, ptype))
+	if (! stab_demangle_type(minfo, pp, ptype))
 	  return FALSE;
 
 	if (ptype != NULL)
 	  {
 	    if (! memberp)
-	      *ptype = debug_make_offset_type (minfo->dhandle, class_type,
-					       *ptype);
+	      *ptype = debug_make_offset_type(minfo->dhandle, class_type,
+                                              *ptype);
 	    else
 	      {
 		/* FIXME: We have no way to record constp or
                    volatilep.  */
-		*ptype = debug_make_method_type (minfo->dhandle, *ptype,
-						 class_type, args, varargs);
+		*ptype = debug_make_method_type(minfo->dhandle, *ptype,
+                                                class_type, args, varargs);
+                (void)constp;
+                (void)volatilep;
 	      }
 	  }
       }
@@ -4752,16 +4762,16 @@ stab_demangle_type (struct stab_demangle_info *minfo, const char **pp,
 
     case 'G':
       ++*pp;
-      if (! stab_demangle_type (minfo, pp, ptype))
+      if (! stab_demangle_type(minfo, pp, ptype))
 	return FALSE;
       break;
 
     case 'C':
       ++*pp;
-      if (! stab_demangle_type (minfo, pp, ptype))
+      if (! stab_demangle_type(minfo, pp, ptype))
 	return FALSE;
       if (ptype != NULL)
-	*ptype = debug_make_const_type (minfo->dhandle, *ptype);
+	*ptype = debug_make_const_type(minfo->dhandle, *ptype);
       break;
 
     case 'Q':
@@ -4769,8 +4779,10 @@ stab_demangle_type (struct stab_demangle_info *minfo, const char **pp,
 	const char *hold;
 
 	hold = *pp;
-	if (! stab_demangle_qualified (minfo, pp, ptype))
+	if (! stab_demangle_qualified(minfo, pp, ptype))
 	  return FALSE;
+        else if (hold != NULL)
+          break;
       }
       break;
 

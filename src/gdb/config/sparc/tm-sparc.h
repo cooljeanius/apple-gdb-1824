@@ -1,4 +1,5 @@
-/* Target machine sub-parameters for SPARC, for GDB, the GNU debugger.
+/* tm-sparc.h
+   Target machine sub-parameters for SPARC, for GDB, the GNU debugger.
    This is included by other tm-*.h files to define SPARC cpu-related info.
    Copyright 1986, 1987, 1989, 1991, 1992, 1993, 1994, 1995, 1996, 1997,
    1998, 1999, 2000
@@ -29,30 +30,30 @@ struct value;
 struct frame_info;
 
 /*
- * The following enums are purely for the convenience of the GDB 
+ * The following enums are purely for the convenience of the GDB
  * developer, when debugging GDB.
  */
 
 enum {	/* Sparc general registers, for all sparc versions.  */
-  G0_REGNUM, G1_REGNUM, G2_REGNUM, G3_REGNUM, 
-  G4_REGNUM, G5_REGNUM, G6_REGNUM, G7_REGNUM, 
-  O0_REGNUM, O1_REGNUM, O2_REGNUM, O3_REGNUM, 
+  G0_REGNUM, G1_REGNUM, G2_REGNUM, G3_REGNUM,
+  G4_REGNUM, G5_REGNUM, G6_REGNUM, G7_REGNUM,
+  O0_REGNUM, O1_REGNUM, O2_REGNUM, O3_REGNUM,
   O4_REGNUM, O5_REGNUM, O6_REGNUM, O7_REGNUM,
-  L0_REGNUM, L1_REGNUM, L2_REGNUM, L3_REGNUM, 
-  L4_REGNUM, L5_REGNUM, L6_REGNUM, L7_REGNUM, 
-  I0_REGNUM, I1_REGNUM, I2_REGNUM, I3_REGNUM, 
+  L0_REGNUM, L1_REGNUM, L2_REGNUM, L3_REGNUM,
+  L4_REGNUM, L5_REGNUM, L6_REGNUM, L7_REGNUM,
+  I0_REGNUM, I1_REGNUM, I2_REGNUM, I3_REGNUM,
   I4_REGNUM, I5_REGNUM, I6_REGNUM, I7_REGNUM,
   FP0_REGNUM 		/* Floating point register 0 */
 };
 
 enum {	/* Sparc general registers, alternate names.  */
-  R0_REGNUM,  R1_REGNUM,  R2_REGNUM,  R3_REGNUM, 
-  R4_REGNUM,  R5_REGNUM,  R6_REGNUM,  R7_REGNUM, 
-  R8_REGNUM,  R9_REGNUM,  R10_REGNUM, R11_REGNUM, 
-  R12_REGNUM, R13_REGNUM, R14_REGNUM, R15_REGNUM, 
-  R16_REGNUM, R17_REGNUM, R18_REGNUM, R19_REGNUM, 
-  R20_REGNUM, R21_REGNUM, R22_REGNUM, R23_REGNUM, 
-  R24_REGNUM, R25_REGNUM, R26_REGNUM, R27_REGNUM, 
+  R0_REGNUM,  R1_REGNUM,  R2_REGNUM,  R3_REGNUM,
+  R4_REGNUM,  R5_REGNUM,  R6_REGNUM,  R7_REGNUM,
+  R8_REGNUM,  R9_REGNUM,  R10_REGNUM, R11_REGNUM,
+  R12_REGNUM, R13_REGNUM, R14_REGNUM, R15_REGNUM,
+  R16_REGNUM, R17_REGNUM, R18_REGNUM, R19_REGNUM,
+  R20_REGNUM, R21_REGNUM, R22_REGNUM, R23_REGNUM,
+  R24_REGNUM, R25_REGNUM, R26_REGNUM, R27_REGNUM,
   R28_REGNUM, R29_REGNUM, R30_REGNUM, R31_REGNUM
 };
 
@@ -128,14 +129,14 @@ enum {	/* Sparc64 control registers, excluding Y, PC, and NPC.  */
 extern int sparc_intreg_size (void);
 #else
 
-/* Non-multi-arch: if it isn't defined, define it to zero.  */
+/* Non-multi-arch: if it is NOT defined, define it to zero.  */
 #ifndef GDB_TARGET_IS_SPARC64
-#define GDB_TARGET_IS_SPARC64 0
-#endif
+# define GDB_TARGET_IS_SPARC64 0
+#endif /* !GDB_TARGET_IS_SPARC64 */
 #ifndef TARGET_ELF64
-#define TARGET_ELF64 0
-#endif
-#endif
+# define TARGET_ELF64 0
+#endif /* TARGET_ELF64 */
+#endif /* GDB_MULTI_ARCH > 0 */
 
 #if !defined (GDB_MULTI_ARCH) || (GDB_MULTI_ARCH == 0)
 /*
@@ -194,14 +195,14 @@ extern int sparc_intreg_size (void);
 
 
 /* Total amount of space needed to store our copies of the machine's
-   register state, the array `registers'.  On the sparc, `registers'
+   register state, the array `registers'. On the sparc, `registers'
    contains the ins and locals, even though they are saved on the
    stack rather than with the other registers, and this causes hair
-   and confusion in places like pop_frame.  It might be better to
+   and confusion in places like pop_frame. It might be better to
    remove the ins and locals from `registers', make sure that
    get_saved_register can get them from the stack (even in the
-   innermost frame), and make this the way to access them.  For the
-   frame pointer we would do that via TARGET_READ_FP.  On the other
+   innermost frame), and make this the way to access them. For the
+   frame pointer we would do that via TARGET_READ_FP. On the other
    hand, that is likely to be confusing or worse for flat frames.  */
 
 #define REGISTER_BYTES (32*4+32*4+8*4)
@@ -214,14 +215,14 @@ extern int sparc_intreg_size (void);
 /* Number of bytes of storage in the actual machine representation for
    register N.  */
 
-/* On the SPARC, all regs are 4 bytes (except Sparc64, where they're 8).  */
+/* On the SPARC, all regs are 4 bytes (except Sparc64, where they are 8).  */
 
 #define REGISTER_RAW_SIZE(N) (4)
 
 /* Number of bytes of storage in the program's representation
    for register N.  */
 
-/* On the SPARC, all regs are 4 bytes (except Sparc64, where they're 8).  */
+/* On the SPARC, all regs are 4 bytes (except Sparc64, where they are 8).  */
 
 #define REGISTER_VIRTUAL_SIZE(N) (4)
 
@@ -254,7 +255,7 @@ extern CORE_ADDR sparc_skip_prologue (CORE_ADDR);
 #define SKIP_PROLOGUE(PC) sparc_skip_prologue (PC)
 
 /* Immediately after a function call, return the saved pc.
-   Can't go through the frames for this because on some machines
+   We cannot go through the frames for this, though, because on some machines
    the new frame is not set up until the new function executes
    some instructions.  */
 
@@ -341,15 +342,15 @@ extern CORE_ADDR sparc_pc_adjust (CORE_ADDR);
 
 #define USE_REGISTER_NOT_ARG
 
-/* For acc, there's no need to correct LBRAC entries by guessing how
-   they should work.  In fact, this is harmful because the LBRAC
+/* For acc, there is no need to correct LBRAC entries by guessing how
+   they should work. In fact, this is harmful because the LBRAC
    entries now all appear at the end of the function, not intermixed
-   with the SLINE entries.  n_opt_found detects acc for Solaris binaries;
+   with the SLINE entries. n_opt_found detects acc for Solaris binaries;
    function_stab_type detects acc for SunOS4 binaries.
 
    For binary from SunOS4 /bin/cc, need to correct LBRAC's.
 
-   For gcc, like acc, don't correct.  */
+   For gcc, like acc, do NOT correct.  */
 
 #define	SUN_FIXED_LBRAC_BUG \
   (n_opt_found \
@@ -377,22 +378,22 @@ extern CORE_ADDR sparc_pc_adjust (CORE_ADDR);
    to be actual register numbers as far as the user is concerned
    but do serve to get the desired values when passed to read_register.  */
 
-#define	G0_REGNUM 0		/* %g0 */
-#define	G1_REGNUM 1		/* %g1 */
-#define O0_REGNUM 8		/* %o0 */
-#define	RP_REGNUM 15		/* Contains return address value, *before* \
-				   any windows get switched.  */
-#define	O7_REGNUM 15		/* Last local reg not saved on stack frame */
-#define	L0_REGNUM 16		/* First local reg that's saved on stack frame
-				   rather than in machine registers */
-#define	I0_REGNUM 24		/* %i0 */
-#define	I7_REGNUM 31		/* Last local reg saved on stack frame */
-#define	PS_REGNUM 65		/* Contains processor status */
+#define	G0_REGNUM 0	/* %g0 */
+#define	G1_REGNUM 1	/* %g1 */
+#define O0_REGNUM 8	/* %o0 */
+#define	RP_REGNUM 15 /* Contains return address value, *before* \
+				      * any windows get switched.  */
+#define	O7_REGNUM 15 /* Last local reg not saved on stack frame */
+#define	L0_REGNUM 16 /* First local reg that is saved on stack frame
+				      * rather than in machine registers */
+#define	I0_REGNUM 24 /* %i0 */
+#define	I7_REGNUM 31 /* Last local reg saved on stack frame */
+#define	PS_REGNUM 65 /* Contains processor status */
 #define PS_FLAG_CARRY 0x100000	/* Carry bit in PS */
-#define	WIM_REGNUM 66		/* Window Invalid Mask (not really supported) */
-#define	TBR_REGNUM 67		/* Trap Base Register (not really supported) */
-#define	FPS_REGNUM 70		/* Floating point status register */
-#define	CPS_REGNUM 71		/* Coprocessor status register */
+#define	WIM_REGNUM 66 /* Window Invalid Mask (not really supported) */
+#define	TBR_REGNUM 67 /* Trap Base Register (not really supported) */
+#define	FPS_REGNUM 70 /* Floating point status register */
+#define	CPS_REGNUM 71 /* Coprocessor status register */
 
 /* Writing to %g0 is a noop (not an error or exception or anything like
    that, however).  */
@@ -421,16 +422,16 @@ extern CORE_ADDR sparc_pc_adjust (CORE_ADDR);
    From the previous frame's %sp, we can find the previous frame's
    %fp: it is in the save area just above the previous frame's %sp.
 
-   If we are setting up an arbitrary frame, we'll need to know where
-   it ends.  Hence the following.  This part of the frame cache
+   If we are setting up an arbitrary frame, we will need to know where
+   it ends. Hence the following. This part of the frame cache
    structure should be checked before it is assumed that this frame's
    bottom is in the stack pointer.
 
-   If there isn't a frame below this one, the bottom of this frame is
+   If there is NOT a frame below this one, the bottom of this frame is
    in the stack pointer.
 
    If there is a frame below this one, and the frame pointers are
-   identical, it's a leaf frame and the bottoms are the same also.
+   identical, it is a leaf frame and the bottoms are the same also.
 
    Otherwise the bottom of this frame is the top of the next frame.
 
@@ -448,7 +449,7 @@ extern CORE_ADDR sparc_pc_adjust (CORE_ADDR);
 
    Since the prologue in a flat frame also tells us where fp and pc
    have been stashed (the frame is of variable size, so their location
-   is not fixed), it's convenient to record them in the frame info.  */
+   is not fixed), it is convenient to record them in the frame info.  */
 
 #define EXTRA_FRAME_INFO \
   CORE_ADDR bottom;      \
@@ -503,7 +504,7 @@ extern CORE_ADDR sparc_frame_saved_pc (struct frame_info *);
 /* Set VAL to the number of args passed to frame described by FI.
    Can set VAL to -1, meaning no way to tell.  */
 
-/* We can't tell how many args there are
+/* We cannot tell how many args there are
    now that the C compiler delays popping them.  */
 #define FRAME_NUM_ARGS(FI) (-1)
 
@@ -584,8 +585,8 @@ extern void sparc_print_extra_frame_info (struct frame_info *);
  *               |                                 |
  *
  *   I understand everything in this picture except what the space
- * between fp - 0xe0 and fp - 0x140 is used for.  Oh, and I don't
- * understand why there's a large chunk of CALL_DUMMY that never gets
+ * between fp - 0xe0 and fp - 0x140 is used for.  Oh, and I do NOT
+ * understand why there is a large chunk of CALL_DUMMY that never gets
  * executed (its function is superceeded by PUSH_DUMMY_FRAME; they
  * are designed to do the same thing).
  *
@@ -613,7 +614,7 @@ extern void sparc_print_extra_frame_info (struct frame_info *);
    20:   d2 03 a0 48     ld  [ %sp + 0x48 ], %o1
    24:   40 00 00 00     call  <fun>
    28:   d0 03 a0 44     ld  [ %sp + 0x44 ], %o0
-   2c:   01 00 00 00     nop 
+   2c:   01 00 00 00     nop
    30:   91 d0 20 01     ta  1
    34:   01 00 00 00     nop
 
@@ -669,7 +670,7 @@ extern void sparc_print_extra_frame_info (struct frame_info *);
 
 #if !defined (GDB_MULTI_ARCH) || (GDB_MULTI_ARCH == 0)
 /*
- * The following defines must go away for MULTI_ARCH. 
+ * The following defines must go away for MULTI_ARCH.
  */
 
 /* Insert the specified number of args and function address
@@ -698,7 +699,7 @@ extern CORE_ADDR
 sparc32_push_arguments (int, struct value **, CORE_ADDR, int, CORE_ADDR);
 
 /* Store the address of the place in which to copy the structure the
-   subroutine will return.  This is called from call_function_by_hand. 
+   subroutine will return.  This is called from call_function_by_hand.
    The ultimate mystery is, tho, what is the value "16"?  */
 
 #define STORE_STRUCT_RETURN(ADDR, SP) \
@@ -709,9 +710,9 @@ sparc32_push_arguments (int, struct value **, CORE_ADDR, int, CORE_ADDR);
 /* Default definition of USE_STRUCT_CONVENTION.  */
 
 #ifndef USE_STRUCT_CONVENTION
-#define USE_STRUCT_CONVENTION(GCC_P, TYPE) \
+# define USE_STRUCT_CONVENTION(GCC_P, TYPE) \
      generic_use_struct_convention (GCC_P, TYPE)
-#endif
+#endif /* !USE_STRUCT_CONVENTION */
 
 /* Extract from an array REGBUF containing the (raw) register state a
    function return value of type TYPE, and copy that, in virtual
@@ -764,3 +765,4 @@ extern int deferred_stores;
 
 #define TM_PRINT_INSN_MACH bfd_mach_sparc
 
+/* EOF */

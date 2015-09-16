@@ -1,4 +1,4 @@
-/* Support routines for manipulating internal types for GDB.
+/* gdbtypes.c: Support routines for manipulating internal types for GDB.
    Copyright 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001, 2002, 2003,
    2004 Free Software Foundation, Inc.
    Contributed by Cygnus Support, using pieces from other GDB modules.
@@ -162,39 +162,39 @@ static void virtual_base_list_aux (struct type *dclass);
 /* Alloc a new type structure and fill it with some defaults.  If
    OBJFILE is non-NULL, then allocate the space for the type structure
    in that objfile's objfile_obstack.  Otherwise allocate the new type structure
-   by xmalloc () (for permanent types).  */
+   by xmalloc() (for permanent types).  */
 
 struct type *
-alloc_type (struct objfile *objfile)
+alloc_type(struct objfile *objfile)
 {
   struct type *type;
 
-  /* Alloc the structure and start off with all fields zeroed. */
-
+  /* Alloc the structure and start off with all fields zeroed: */
   if (objfile == NULL)
     {
-      type = xmalloc (sizeof (struct type));
-      memset (type, 0, sizeof (struct type));
-      TYPE_MAIN_TYPE (type) = xmalloc (sizeof (struct main_type));
+      type = (struct type *)xmalloc(sizeof(struct type));
+      memset(type, 0, sizeof(struct type));
+      TYPE_MAIN_TYPE(type) = ((struct main_type *)
+                              xmalloc(sizeof(struct main_type)));
     }
   else
     {
-      type = obstack_alloc (&objfile->objfile_obstack,
-			    sizeof (struct type));
-      memset (type, 0, sizeof (struct type));
-      TYPE_MAIN_TYPE (type) = obstack_alloc (&objfile->objfile_obstack,
-					     sizeof (struct main_type));
-      OBJSTAT (objfile, n_types++);
+      type = (struct type *)obstack_alloc(&objfile->objfile_obstack,
+                                          sizeof(struct type));
+      memset(type, 0, sizeof(struct type));
+      TYPE_MAIN_TYPE(type) = ((struct main_type *)
+                              obstack_alloc(&objfile->objfile_obstack,
+                                            sizeof(struct main_type)));
+      OBJSTAT(objfile, n_types++);
     }
-  memset (TYPE_MAIN_TYPE (type), 0, sizeof (struct main_type));
+  memset(TYPE_MAIN_TYPE(type), 0, sizeof(struct main_type));
 
-  /* Initialize the fields that might not be zero. */
-
-  TYPE_CODE (type) = TYPE_CODE_UNDEF;
-  TYPE_BYTE_ORDER (type) = BFD_ENDIAN_UNKNOWN;
-  TYPE_OBJFILE (type) = objfile;
-  TYPE_VPTR_FIELDNO (type) = -1;
-  TYPE_CHAIN (type) = type;	/* Chain back to itself.  */
+  /* Initialize the fields that might not be zero: */
+  TYPE_CODE(type) = TYPE_CODE_UNDEF;
+  TYPE_BYTE_ORDER(type) = BFD_ENDIAN_UNKNOWN;
+  TYPE_OBJFILE(type) = objfile;
+  TYPE_VPTR_FIELDNO(type) = -1;
+  TYPE_CHAIN(type) = type;	/* Chain back to itself.  */
 
   return (type);
 }
@@ -204,26 +204,26 @@ alloc_type (struct objfile *objfile)
    same place as OLDTYPE.  */
 
 static struct type *
-alloc_type_instance (struct type *oldtype)
+alloc_type_instance(struct type *oldtype)
 {
   struct type *type;
 
-  /* Allocate the structure.  */
-
-  if (TYPE_OBJFILE (oldtype) == NULL)
+  /* Allocate the structure: */
+  if (TYPE_OBJFILE(oldtype) == NULL)
     {
-      type = xmalloc (sizeof (struct type));
-      memset (type, 0, sizeof (struct type));
+      type = (struct type *)xmalloc(sizeof(struct type));
+      memset(type, 0, sizeof(struct type));
     }
   else
     {
-      type = obstack_alloc (&TYPE_OBJFILE (oldtype)->objfile_obstack,
-			    sizeof (struct type));
-      memset (type, 0, sizeof (struct type));
+      type = ((struct type *)
+              obstack_alloc(&TYPE_OBJFILE(oldtype)->objfile_obstack,
+                            sizeof(struct type)));
+      memset(type, 0, sizeof(struct type));
     }
-  TYPE_MAIN_TYPE (type) = TYPE_MAIN_TYPE (oldtype);
+  TYPE_MAIN_TYPE(type) = TYPE_MAIN_TYPE (oldtype);
 
-  TYPE_CHAIN (type) = type;	/* Chain back to itself for now.  */
+  TYPE_CHAIN(type) = type;	/* Chain back to itself for now.  */
 
   return (type);
 }
@@ -410,7 +410,7 @@ make_function_type (struct type *type, struct type **typeptr, int optimized)
 
   TYPE_LENGTH_ASSIGN (ntype) = 1;
   TYPE_CODE (ntype) = TYPE_CODE_FUNC;
-  
+
   /* APPLE LOCAL begin Inform users about debugging optimized code  */
   if (optimized)
     TYPE_FLAGS (ntype) |= TYPE_FLAG_OPTIMIZED;
@@ -451,7 +451,7 @@ address_space_name_to_int (char *space_identifier)
     error (_("Unknown address space specifier: \"%s\""), space_identifier);
 }
 
-/* Identify address space identifier by integer flag as defined in 
+/* Identify address space identifier by integer flag as defined in
    gdbtypes.h -- return the string version of the adress space name. */
 
 const char *
@@ -506,7 +506,7 @@ make_qualified_type (struct type *type, int new_flags,
       TYPE_MAIN_TYPE (ntype) = TYPE_MAIN_TYPE (type);
 #endif
       /* APPLE LOCAL: Don't do this, if NTYPE already
-	 has been linked to another type in this chain, 
+	 has been linked to another type in this chain,
 	 then you won't set the type in the chained type
 	 correctly, AND you will blow away the chain
 	 unnecessarily.  */
@@ -515,7 +515,7 @@ make_qualified_type (struct type *type, int new_flags,
 #endif
     }
 
-  /* APPLE LOCAL: I don't think this is right either.  If you 
+  /* APPLE LOCAL: I don't think this is right either.  If you
      get here because STORAGE is NULL, then these are NULL already,
      alloc_type_instance sees to that.
      If you get passed in a type that already has it's pointer type
@@ -601,19 +601,19 @@ make_type_with_address_space (struct type *type, int space_flag)
    type whereever TYPE lives.  If TYPEPTR is non-zero, set it to the
    new type we construct.  */
 struct type *
-make_cvr_type (int cnst, int voltl, int restrct, struct type *type, 
-               struct type **typeptr)
+make_cvr_type(int cnst, int voltl, int restrct, struct type *type,
+              struct type **typeptr)
 {
   struct type *ntype;	/* New type */
 
-  int new_flags = (TYPE_INSTANCE_FLAGS (type)
+  int new_flags = (TYPE_INSTANCE_FLAGS(type)
 		   & ~(TYPE_FLAG_CONST | TYPE_FLAG_VOLATILE | TYPE_FLAG_RESTRICT));
 
   /* APPLE LOCAL */
-  if (TYPE_CODE (type) == TYPE_CODE_ERROR)
+  if (TYPE_CODE(type) == TYPE_CODE_ERROR)
     {
       if (typeptr != NULL)
-      *typeptr = builtin_type_error;
+        *typeptr = builtin_type_error;
       return builtin_type_error;
     }
   if (cnst)
@@ -625,18 +625,25 @@ make_cvr_type (int cnst, int voltl, int restrct, struct type *type,
   if (restrct)
     new_flags |= TYPE_FLAG_RESTRICT;
 
-  if (typeptr && *typeptr != NULL)
+  if (typeptr && (*typeptr != NULL))
     {
 
       /* APPLE LOCAL if we somehow ended up with a type code error
-         over at *TYPEPTR, return a type error and in the hopes 
+         over at *TYPEPTR, return a type error and in the hopes
          that we can continue operation instead of asserting out
          and stopping the debugger.  */
 
-      if (TYPE_CODE (*typeptr) == TYPE_CODE_ERROR)
+      if (TYPE_CODE(*typeptr) == TYPE_CODE_ERROR)
         {
           return builtin_type_error;
         }
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Waddress"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
       /* TYPE and *TYPEPTR must be in the same objfile.  We can't have
 	 a C-V variant chain that threads across objfiles: if one
@@ -657,17 +664,24 @@ make_cvr_type (int cnst, int voltl, int restrct, struct type *type,
 
       /* APPLE LOCAL: Instead of asserting out and exiting the debugger,
          return an error type.  */
-#if 0
-      gdb_assert (TYPE_OBJFILE (*typeptr) == TYPE_OBJFILE (type)
-		  || (TYPE_STUB (*typeptr) || TYPE_IS_OPAQUE (*typeptr)));
+#if defined(gdb_assert) && !defined(__APPLE__)
+      gdb_assert(TYPE_OBJFILE(*typeptr) == TYPE_OBJFILE(type)
+		 || (TYPE_STUB(*typeptr) || TYPE_IS_OPAQUE(*typeptr)));
 #else
-      if (TYPE_OBJFILE (*typeptr) != TYPE_OBJFILE (type) 
-          && !TYPE_STUB (*typeptr) && !TYPE_IS_OPAQUE (*typeptr))
+      if ((TYPE_OBJFILE(*typeptr) != TYPE_OBJFILE(type))
+          && !TYPE_STUB(*typeptr) && !TYPE_IS_OPAQUE(*typeptr))
         return builtin_type_error;
-#endif
+#endif /* gdb_assert && !__APPLE__ */
+
+      /* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
     }
-  
-  ntype = make_qualified_type (type, new_flags, typeptr ? *typeptr : NULL);
+
+  ntype = make_qualified_type(type, new_flags, typeptr ? *typeptr : NULL);
 
   if (typeptr != NULL)
     *typeptr = ntype;
@@ -733,7 +747,7 @@ lookup_member_type (struct type *type, struct type *domain)
   return (mtype);
 }
 
-/* Allocate a stub method whose return type is TYPE.  
+/* Allocate a stub method whose return type is TYPE.
    This apparently happens for speed of symbol reading, since parsing
    out the arguments to the method is cpu-intensive, the way we are doing
    it.  So, we will fill in arguments later.
@@ -845,12 +859,12 @@ get_discrete_bounds (struct type *type, LONGEST *lowp, LONGEST *highp)
       *highp = 1;
       return 0;
     case TYPE_CODE_INT:
-      if (TYPE_LENGTH (type) > sizeof (LONGEST))	/* Too big */
+      if ((size_t)TYPE_LENGTH(type) > sizeof(LONGEST))	/* Too big */
 	return -1;
-      if (!TYPE_UNSIGNED (type))
+      if (!TYPE_UNSIGNED(type))
 	{
-	  *lowp = -(1 << (TYPE_LENGTH (type) * TARGET_CHAR_BIT - 1));
-	  *highp = -*lowp - 1;
+	  *lowp = -(1 << ((TYPE_LENGTH(type) * TARGET_CHAR_BIT) - 1));
+	  *highp = (-*lowp - 1);
 	  return 0;
 	}
       /* ... fall through for unsigned ints ... */
@@ -927,38 +941,38 @@ add_undefined_array (struct type *type)
    comes from create_array_type.  */
 
 void
-cleanup_undefined_arrays (void)
+cleanup_undefined_arrays(void)
 {
   struct type **type;
 
-  for (type = undef_arrays; type < undef_arrays + undef_arrays_length; type++)
+  for (type = undef_arrays; type < (undef_arrays + undef_arrays_length); type++)
     {
       struct type *range_type, *element_type;
       LONGEST low_bound, high_bound;
-      if (TYPE_CODE (*type) != TYPE_CODE_ARRAY)
+      if (TYPE_CODE(*type) != TYPE_CODE_ARRAY)
 	{
-	  warning ("Got a non-array type in cleanup_undefined_arrays");
+	  warning("Got a non-array type in cleanup_undefined_arrays");
 	  continue;
 	}
-      element_type = check_typedef(TYPE_TARGET_TYPE (*type));
-      range_type = TYPE_FIELD_TYPE (*type, 0);
+      element_type = check_typedef(TYPE_TARGET_TYPE(*type));
+      range_type = TYPE_FIELD_TYPE(*type, 0);
       if (element_type == NULL)
 	{
-	  warning ("Got null element type for cleanup_undefined_arrays.");
+	  warning("Got null element type for cleanup_undefined_arrays.");
 	  continue;
 	}
       else if (range_type == NULL)
 	{
-	  warning ("Got null range type for cleanup_undefined_arrays.");
+	  warning("Got null range type for cleanup_undefined_arrays.");
 	  continue;
 	}
-      if (get_discrete_bounds (range_type, &low_bound, &high_bound) < 0)
+      if (get_discrete_bounds(range_type, &low_bound, &high_bound) < 0)
 	low_bound = high_bound = 0;
-      CHECK_TYPEDEF (element_type);
-      TYPE_LENGTH_ASSIGN (*type) =
-	TYPE_LENGTH (element_type) * (high_bound - low_bound + 1);
-      /* Also turn off the STUB flag.  */
-      TYPE_FLAGS (*type) &= ~TYPE_FLAG_TARGET_STUB;
+      CHECK_TYPEDEF(element_type);
+      TYPE_LENGTH_ASSIGN(*type) =
+	(int)(TYPE_LENGTH(element_type) * ((high_bound - low_bound) + 1L));
+      /* Also turn off the STUB flag: */
+      TYPE_FLAGS(*type) &= ~TYPE_FLAG_TARGET_STUB;
     }
   undef_arrays_length = 0;
 }
@@ -992,11 +1006,11 @@ create_array_type (struct type *result_type, struct type *element_type,
   /* APPLE LOCAL: If the element type is undefined, then we are going
      to set the length to zero here.  Add this to the list of undefined
      arrays, then in end_symtab we'll come back and see if we know the
-     element type then.  
+     element type then.
      Another possibility is the element type is an array type that
      WAS undef'ed, but has now been defined.  Since we haven't done
-     the cleanup_undefined_arrays yet, the length won't be set on 
-     this yet.  So we need to add array's of this array to the 
+     the cleanup_undefined_arrays yet, the length won't be set on
+     this yet.  So we need to add array's of this array to the
      undefined arrays, and do it on cleanup.  */
 
   if (TYPE_CODE (element_type) == TYPE_CODE_UNDEF
@@ -1004,18 +1018,18 @@ create_array_type (struct type *result_type, struct type *element_type,
 	  && TYPE_LENGTH (element_type) == 0))
       add_undefined_array (result_type);
 
-  TYPE_LENGTH_ASSIGN (result_type) =
-    TYPE_LENGTH (element_type) * (high_bound - low_bound + 1);
-  TYPE_NFIELDS (result_type) = 1;
-  TYPE_FIELDS (result_type) =
-    (struct field *) TYPE_ALLOC (result_type, sizeof (struct field));
-  memset (TYPE_FIELDS (result_type), 0, sizeof (struct field));
-  TYPE_FIELD_TYPE (result_type, 0) = range_type;
-  TYPE_VPTR_FIELDNO (result_type) = -1;
+  TYPE_LENGTH_ASSIGN(result_type) =
+    (int)(TYPE_LENGTH(element_type) * ((high_bound - low_bound) + 1L));
+  TYPE_NFIELDS(result_type) = 1;
+  TYPE_FIELDS(result_type) =
+    (struct field *)TYPE_ALLOC(result_type, sizeof(struct field));
+  memset(TYPE_FIELDS(result_type), 0, sizeof(struct field));
+  TYPE_FIELD_TYPE(result_type, 0) = range_type;
+  TYPE_VPTR_FIELDNO(result_type) = -1;
 
   /* TYPE_FLAG_TARGET_STUB will take care of zero length arrays */
-  if (TYPE_LENGTH (result_type) == 0)
-    TYPE_FLAGS (result_type) |= TYPE_FLAG_TARGET_STUB;
+  if (TYPE_LENGTH(result_type) == 0)
+    TYPE_FLAGS(result_type) |= TYPE_FLAG_TARGET_STUB;
 
   return (result_type);
 }
@@ -1035,7 +1049,7 @@ struct type *
 create_string_type (struct type *result_type, struct type *range_type)
 {
   struct type *string_char_type;
-      
+
   string_char_type = language_string_char_type (current_language,
 						current_gdbarch);
   result_type = create_array_type (result_type,
@@ -1046,32 +1060,33 @@ create_string_type (struct type *result_type, struct type *range_type)
 }
 
 struct type *
-create_set_type (struct type *result_type, struct type *domain_type)
+create_set_type(struct type *result_type, struct type *domain_type)
 {
   LONGEST low_bound, high_bound, bit_length;
-  low_bound = 0;
+  low_bound = 0L;
   if (result_type == NULL)
     {
-      result_type = alloc_type (TYPE_OBJFILE (domain_type));
+      result_type = alloc_type(TYPE_OBJFILE(domain_type));
     }
-  TYPE_CODE (result_type) = TYPE_CODE_SET;
-  TYPE_NFIELDS (result_type) = 1;
-  TYPE_FIELDS (result_type) = (struct field *)
-    TYPE_ALLOC (result_type, 1 * sizeof (struct field));
-  memset (TYPE_FIELDS (result_type), 0, sizeof (struct field));
+  TYPE_CODE(result_type) = TYPE_CODE_SET;
+  TYPE_NFIELDS(result_type) = 1;
+  TYPE_FIELDS(result_type) = ((struct field *)
+                              TYPE_ALLOC(result_type,
+                                         (1UL * sizeof(struct field))));
+  memset(TYPE_FIELDS(result_type), 0, sizeof(struct field));
 
-  if (!TYPE_STUB (domain_type))
+  if (!TYPE_STUB(domain_type))
     {
-      if (get_discrete_bounds (domain_type, &low_bound, &high_bound) < 0)
+      if (get_discrete_bounds(domain_type, &low_bound, &high_bound) < 0)
 	low_bound = high_bound = 0;
-      bit_length = high_bound - low_bound + 1;
-      TYPE_LENGTH_ASSIGN (result_type)
-	= (bit_length + TARGET_CHAR_BIT - 1) / TARGET_CHAR_BIT;
+      bit_length = (high_bound - low_bound + 1);
+      TYPE_LENGTH_ASSIGN(result_type) =
+        (int)((bit_length + TARGET_CHAR_BIT - 1L) / TARGET_CHAR_BIT);
     }
-  TYPE_FIELD_TYPE (result_type, 0) = domain_type;
+  TYPE_FIELD_TYPE(result_type, 0) = domain_type;
 
   if (low_bound >= 0)
-    TYPE_FLAGS (result_type) |= TYPE_FLAG_UNSIGNED;
+    TYPE_FLAGS(result_type) |= TYPE_FLAG_UNSIGNED;
 
   return (result_type);
 }
@@ -1093,7 +1108,7 @@ init_simd_type (char *name,
 {
   struct type *simd_type;
   struct type *array_type;
-  
+
   simd_type = init_composite_type (name, TYPE_CODE_STRUCT);
   array_type = create_array_type (0, elt_type,
 				  create_range_type (0, builtin_type_int,
@@ -1106,7 +1121,7 @@ static struct type *
 init_vector_type (struct type *elt_type, int n)
 {
   struct type *array_type;
- 
+
   array_type = create_array_type (0, elt_type,
 				  create_range_type (0, builtin_type_int,
 						     0, n-1));
@@ -1150,7 +1165,7 @@ build_builtin_type_vec128 (void)
   /* Construct a type for the 128 bit registers.  The type we're
      building is this: */
 #if 0
- union __gdb_builtin_type_vec128 
+ union __gdb_builtin_type_vec128
   {
     int128_t uint128;
     float v4_float[4];
@@ -1174,7 +1189,7 @@ build_builtin_type_vec128 (void)
   return t;
 }
 
-/* Smash TYPE to be a type of members of DOMAIN with type TO_TYPE. 
+/* Smash TYPE to be a type of members of DOMAIN with type TO_TYPE.
    A MEMBER is a wierd thing -- it amounts to a typed offset into
    a struct, e.g. "an int at offset 8".  A MEMBER TYPE doesn't
    include the offset (that's the value of the MEMBER itself), but does
@@ -1304,22 +1319,23 @@ lookup_signed_typename (char *name)
    visible in lexical block BLOCK.  */
 
 struct type *
-lookup_struct (char *name, struct block *block)
+lookup_struct(char *name, struct block *block)
 {
   struct symbol *sym;
 
-  sym = lookup_symbol (name, block, STRUCT_DOMAIN, 0,
-		       (struct symtab **) NULL);
+  sym = lookup_symbol(name, block, STRUCT_DOMAIN, 0,
+		      (struct symtab **)NULL);
 
   if (sym == NULL)
     {
-      error (_("No struct type named %s."), name);
+      error(_("No struct type named %s."), name);
     }
-  if (TYPE_CODE (SYMBOL_TYPE (sym)) != TYPE_CODE_STRUCT)
+  if (TYPE_CODE(SYMBOL_TYPE(sym)) != TYPE_CODE_STRUCT)
     {
-      error (_("This context has class, union or enum %s, not a struct."), name);
+      error(_("This context has class, union or enum %s, not a struct."),
+            name);
     }
-  return (SYMBOL_TYPE (sym));
+  return (SYMBOL_TYPE(sym));
 }
 
 /* Lookup a structure type named "struct NAME",
@@ -1327,55 +1343,53 @@ lookup_struct (char *name, struct block *block)
    causing an error if it isn't found. */
 
 struct type *
-lookup_struct_no_error (name, block)
-     char *name;
-     struct block *block;
+lookup_struct_no_error(char *name, struct block *block)
 {
   register struct symbol *sym;
 
-  sym = lookup_symbol (name, block, STRUCT_DOMAIN, 0,
-		       (struct symtab **) NULL);
+  sym = lookup_symbol(name, block, STRUCT_DOMAIN, 0,
+		      (struct symtab **)NULL);
 
   if (sym == NULL)
     {
       return (NULL);
     }
-  if (TYPE_CODE (SYMBOL_TYPE (sym)) != TYPE_CODE_STRUCT)
+  if (TYPE_CODE(SYMBOL_TYPE(sym)) != TYPE_CODE_STRUCT)
     {
       return (NULL);
     }
-  return (SYMBOL_TYPE (sym));
+  return (SYMBOL_TYPE(sym));
 }
 
 /* Lookup a union type named "union NAME",
    visible in lexical block BLOCK.  */
 
 struct type *
-lookup_union (char *name, struct block *block)
+lookup_union(char *name, struct block *block)
 {
   struct symbol *sym;
   struct type *t;
 
-  sym = lookup_symbol (name, block, STRUCT_DOMAIN, 0,
-		       (struct symtab **) NULL);
+  sym = lookup_symbol(name, block, STRUCT_DOMAIN, 0,
+		      (struct symtab **)NULL);
 
   if (sym == NULL)
-    error (_("No union type named %s."), name);
+    error(_("No union type named %s."), name);
 
-  t = SYMBOL_TYPE (sym);
+  t = SYMBOL_TYPE(sym);
 
-  if (TYPE_CODE (t) == TYPE_CODE_UNION)
+  if (TYPE_CODE(t) == TYPE_CODE_UNION)
     return (t);
 
   /* C++ unions may come out with TYPE_CODE_CLASS, but we look at
-   * a further "declared_type" field to discover it is really a union.
-   */
-  if (HAVE_CPLUS_STRUCT (t))
-    if (TYPE_DECLARED_TYPE (t) == DECLARED_TYPE_UNION)
+   * a further "declared_type" field to discover it is really a union: */
+  if (HAVE_CPLUS_STRUCT(t))
+    if (TYPE_DECLARED_TYPE(t) == DECLARED_TYPE_UNION)
       return (t);
 
-  /* If we get here, it's not a union */
-  error (_("This context has class, struct or enum %s, not a union."), name);
+  /* If we get here, then it is not a union: */
+  error(_("This context has class, struct or enum %s, not a union."),
+        name);
 }
 
 
@@ -1383,50 +1397,52 @@ lookup_union (char *name, struct block *block)
    visible in lexical block BLOCK.  */
 
 struct type *
-lookup_enum (char *name, struct block *block)
+lookup_enum(char *name, struct block *block)
 {
   struct symbol *sym;
 
-  sym = lookup_symbol (name, block, STRUCT_DOMAIN, 0,
-		       (struct symtab **) NULL);
+  sym = lookup_symbol(name, block, STRUCT_DOMAIN, 0,
+		      (struct symtab **)NULL);
   if (sym == NULL)
     {
-      error (_("No enum type named %s."), name);
+      error(_("No enum type named %s."), name);
     }
-  if (TYPE_CODE (SYMBOL_TYPE (sym)) != TYPE_CODE_ENUM)
+  if (TYPE_CODE(SYMBOL_TYPE(sym)) != TYPE_CODE_ENUM)
     {
-      error (_("This context has class, struct or union %s, not an enum."), name);
+      error(_("This context has class, struct or union %s, not an enum."),
+            name);
     }
-  return (SYMBOL_TYPE (sym));
+  return (SYMBOL_TYPE(sym));
 }
 
 /* Lookup a template type named "template NAME<TYPE>",
    visible in lexical block BLOCK.  */
 
 struct type *
-lookup_template_type (char *name, struct type *type, struct block *block)
+lookup_template_type(char *name, struct type *type, struct block *block)
 {
   struct symbol *sym;
-  char *nam = (char *) alloca (strlen (name) + strlen (TYPE_NAME (type)) + 4);
-  strcpy (nam, name);
-  strcat (nam, "<");
-  strcat (nam, TYPE_NAME (type));
-  strcat (nam, " >");		/* FIXME, extra space still introduced in gcc? */
+  char *nam = (char *)alloca(strlen(name) + strlen(TYPE_NAME(type)) + 4UL);
+  strcpy(nam, name);
+  strcat(nam, "<");
+  strcat(nam, TYPE_NAME(type));
+  strcat(nam, " >");	/* FIXME: extra space still introduced in gcc? */
 
-  sym = lookup_symbol (nam, block, VAR_DOMAIN, 0, (struct symtab **) NULL);
+  sym = lookup_symbol(nam, block, VAR_DOMAIN, 0, (struct symtab **)NULL);
 
   if (sym == NULL)
     {
-      error (_("No template type named %s."), name);
+      error(_("No template type named %s."), name);
     }
-  if (TYPE_CODE (SYMBOL_TYPE (sym)) != TYPE_CODE_STRUCT)
+  if (TYPE_CODE(SYMBOL_TYPE(sym)) != TYPE_CODE_STRUCT)
     {
-      error (_("This context has class, union or enum %s, not a struct."), name);
+      error(_("This context has class, union or enum %s, not a struct."),
+            name);
     }
-  return (SYMBOL_TYPE (sym));
+  return (SYMBOL_TYPE(sym));
 }
 
-/* Given a type TYPE, lookup the type of the component of type named NAME.  
+/* Given a type TYPE, lookup the type of the component of type named NAME.
 
    TYPE can be either a struct or union, or a pointer or reference to a struct or
    union.  If it is a pointer or reference, its target type is automatically used.
@@ -1473,7 +1489,7 @@ lookup_struct_elt_type (struct type *type, char *name, int noerr)
     if (typename != NULL && strcmp (typename, name) == 0)
       return type;
   }
-#endif
+#endif /* 0 */
 
   for (i = TYPE_NFIELDS (type) - 1; i >= TYPE_N_BASECLASSES (type); i--)
     {
@@ -1505,7 +1521,7 @@ lookup_struct_elt_type (struct type *type, char *name, int noerr)
   target_terminal_ours ();
   gdb_flush (gdb_stdout);
 
-  type_for_printing = type_sprint (type, "", -1); 
+  type_for_printing = type_sprint (type, "", -1);
   make_cleanup (xfree, type_for_printing);
   error ("Type %s has no component named %s.", type_for_printing, name);
 
@@ -1599,7 +1615,7 @@ remove_all_typedefs (struct type *type)
 	default:
 	  error ("Should never get here, keeps the compiler quiet");
 	}
-	  
+
     }
   return type;
 }
@@ -1615,7 +1631,7 @@ remove_all_typedefs (struct type *type)
    be a mistake, though--we might load in more symbols which contain a
    full definition for the type.
 
-   This used to be coded as a macro, but I don't think it is called 
+   This used to be coded as a macro, but I don't think it is called
    often enough to merit such treatment.  */
 
 /* Find the real type of TYPE.  This function returns the real type, after
@@ -1638,7 +1654,7 @@ check_typedef (struct type *type)
 
 	     typedef struct foo foo
 
-	     but not always.  
+	     but not always.
 
 	     We need to figure out why this is happening, but for now,
 	     this makes the error benign... */
@@ -1675,25 +1691,32 @@ check_typedef (struct type *type)
       type = TYPE_TARGET_TYPE (type);
     }
 
-  is_const = TYPE_CONST (type);
-  is_volatile = TYPE_VOLATILE (type);
-  is_restrict= TYPE_RESTRICT (type);
+  is_const = TYPE_CONST(type);
+  is_volatile = TYPE_VOLATILE(type);
+  is_restrict= TYPE_RESTRICT(type);
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Waddress"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
   /* If this is a struct/class/union with no fields, then check whether a
      full definition exists somewhere else.  This is for systems where a
      type definition with no fields is issued for such types, instead of
      identifying them as stub types in the first place */
 
-  if (TYPE_IS_OPAQUE (type) && opaque_type_resolution && !currently_reading_symtab)
+  if (TYPE_IS_OPAQUE(type) && opaque_type_resolution && !currently_reading_symtab)
     {
-      char *name = type_name_no_tag (type);
+      char *name = type_name_no_tag(type);
       struct type *newtype;
       if (name == NULL)
 	{
-	  stub_noname_complaint ();
+	  stub_noname_complaint();
 	  return type;
 	}
-      newtype = lookup_transparent_type (name);
+      newtype = lookup_transparent_type(name);
 
       if (newtype)
 	{
@@ -1707,16 +1730,16 @@ check_typedef (struct type *type)
 	     objfile is pointless, too, since you'll have to move over any
 	     other types NEWTYPE refers to, which could be an unbounded
 	     amount of stuff.  */
-	  if (TYPE_OBJFILE (newtype) == TYPE_OBJFILE (type))
-	    make_cvr_type (is_const, is_volatile, is_restrict, newtype, &type);
+	  if (TYPE_OBJFILE(newtype) == TYPE_OBJFILE(type))
+	    make_cvr_type(is_const, is_volatile, is_restrict, newtype, &type);
 	  else
 	    type = newtype;
 	}
     }
   /* Otherwise, rely on the stub flag being set for opaque/stubbed types */
-  else if (TYPE_STUB (type) && !currently_reading_symtab)
+  else if (TYPE_STUB(type) && !currently_reading_symtab)
     {
-      char *name = type_name_no_tag (type);
+      char *name = type_name_no_tag(type);
       /* FIXME: shouldn't we separately check the TYPE_NAME and the
          TYPE_TAG_NAME, and look in STRUCT_DOMAIN and/or VAR_DOMAIN
          as appropriate?  (this code was written before TYPE_NAME and
@@ -1724,26 +1747,36 @@ check_typedef (struct type *type)
       struct symbol *sym;
       if (name == NULL)
 	{
-	  stub_noname_complaint ();
+	  stub_noname_complaint();
 	  return type;
 	}
-      sym = lookup_symbol (name, 0, STRUCT_DOMAIN, 0, (struct symtab **) NULL);
+      sym = lookup_symbol(name, 0, STRUCT_DOMAIN, 0,
+                          (struct symtab **)NULL);
       if (sym)
         {
-          if (TYPE_OBJFILE (type) == TYPE_OBJFILE (SYMBOL_TYPE (sym)))
-            make_cvr_type (is_const, is_volatile, is_restrict, SYMBOL_TYPE (sym), &type);
+          if (TYPE_OBJFILE(type) == TYPE_OBJFILE (SYMBOL_TYPE(sym)))
+            make_cvr_type(is_const, is_volatile, is_restrict,
+                          SYMBOL_TYPE(sym), &type);
           else
-            type = SYMBOL_TYPE (sym);
+            type = SYMBOL_TYPE(sym);
         }
     }
 
-  if (TYPE_TARGET_STUB (type))
+  /* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
+  if (TYPE_TARGET_STUB(type))
     {
       struct type *range_type;
-      struct type *target_type = check_typedef (TYPE_TARGET_TYPE (type));
+      struct type *target_type = check_typedef(TYPE_TARGET_TYPE(type));
 
-      if (TYPE_STUB (target_type) || TYPE_TARGET_STUB (target_type))
+      if (TYPE_STUB(target_type) || TYPE_TARGET_STUB(target_type))
 	{
+          ; /* ??? */
 	}
       else if (TYPE_CODE (type) == TYPE_CODE_ARRAY
 	       && TYPE_NFIELDS (type) == 1
@@ -1775,9 +1808,9 @@ check_typedef (struct type *type)
   if (TYPE_TARGET_TYPE (type) == type)
     {
       /* TYPE_CODE_UNDEF */
-      TYPE_TARGET_TYPE (type) = alloc_type (NULL);    
+      TYPE_TARGET_TYPE (type) = alloc_type (NULL);
     }
-        
+
   /* Cache TYPE_LENGTH for future use.  Only change it if it actually
      needs changing, in case the symbol information is in a read-only
      section. */
@@ -1938,41 +1971,42 @@ check_stub_method (struct type *type, int method_id, int signature_id)
    This function unfortunately can not die until stabs do.  */
 
 void
-check_stub_method_group (struct type *type, int method_id)
+check_stub_method_group(struct type *type, int method_id)
 {
-  int len = TYPE_FN_FIELDLIST_LENGTH (type, method_id);
-  struct fn_field *f = TYPE_FN_FIELDLIST1 (type, method_id);
+  int len = TYPE_FN_FIELDLIST_LENGTH(type, method_id);
+  struct fn_field *f = TYPE_FN_FIELDLIST1(type, method_id);
   int j, found_stub = 0;
 
   for (j = 0; j < len; j++)
-    if (TYPE_FN_FIELD_STUB (f, j))
+    if (TYPE_FN_FIELD_STUB(f, j))
       {
 	found_stub = 1;
-	check_stub_method (type, method_id, j);
+	check_stub_method(type, method_id, j);
       }
 
   /* GNU v3 methods with incorrect names were corrected when we read in
-     type information, because it was cheaper to do it then.  The only GNU v2
-     methods with incorrect method names are operators and destructors;
-     destructors were also corrected when we read in type information.
-
-     Therefore the only thing we need to handle here are v2 operator
-     names.  */
-  if (found_stub && strncmp (TYPE_FN_FIELD_PHYSNAME (f, 0), "_Z", 2) != 0)
+   * type information, because it was cheaper to do it then.  The only GNU
+   * v2 methods with incorrect method names are operators and destructors;
+   * destructors were also corrected when we read in type information.
+   *
+   * Therefore the only thing we need to handle here are v2 operator
+   * names.  */
+  if (found_stub && (strncmp(TYPE_FN_FIELD_PHYSNAME(f, 0), "_Z", 2) != 0))
     {
       int ret;
       char dem_opname[256];
 
-      ret = cplus_demangle_opname (TYPE_FN_FIELDLIST_NAME (type, method_id),
-				   dem_opname, DMGL_ANSI);
+      ret = cplus_demangle_opname(TYPE_FN_FIELDLIST_NAME(type, method_id),
+				  dem_opname, DMGL_ANSI);
       if (!ret)
-	ret = cplus_demangle_opname (TYPE_FN_FIELDLIST_NAME (type, method_id),
-				     dem_opname, 0);
+	ret = cplus_demangle_opname(TYPE_FN_FIELDLIST_NAME(type,
+                                                           method_id),
+				    dem_opname, 0);
       if (ret)
 	{
-	  TYPE_FN_FIELDLIST_NAME (type, method_id) =
-	    TYPE_ALLOC (type, strlen (dem_opname) + 1);
-	  strcpy (TYPE_FN_FIELDLIST_NAME (type, method_id), dem_opname);
+	  TYPE_FN_FIELDLIST_NAME(type, method_id) =
+	    (char *)TYPE_ALLOC(type, (strlen(dem_opname) + 1UL));
+	  strcpy(TYPE_FN_FIELDLIST_NAME(type, method_id), dem_opname);
 	}
     }
 }
@@ -2032,7 +2066,7 @@ init_type (enum type_code code, int length, int flags, char *name,
     {
       if (length * TARGET_CHAR_BIT != TARGET_LONG_DOUBLE_BIT)
 	{
-	  TYPE_FLOATFORMAT(type) = gdbarch_long_double_format (current_gdbarch); 
+	  TYPE_FLOATFORMAT(type) = gdbarch_long_double_format (current_gdbarch);
 	}
     }
 
@@ -2059,31 +2093,31 @@ init_composite_type (char *name, enum type_code code)
   return t;
 }
 
-/* Helper function.  Append a field to a composite type.  */
-
+/* Helper function.  Append a field to a composite type: */
 void
-append_composite_type_field (struct type *t, char *name, struct type *field)
+append_composite_type_field(struct type *t, char *name, struct type *field)
 {
   struct field *f;
-  TYPE_NFIELDS (t) = TYPE_NFIELDS (t) + 1;
-  TYPE_FIELDS (t) = xrealloc (TYPE_FIELDS (t),
-			      sizeof (struct field) * TYPE_NFIELDS (t));
-  f = &(TYPE_FIELDS (t)[TYPE_NFIELDS (t) - 1]);
-  memset (f, 0, sizeof f[0]);
-  FIELD_TYPE (f[0]) = field;
-  FIELD_NAME (f[0]) = name;
-  if (TYPE_CODE (t) == TYPE_CODE_UNION)
+  TYPE_NFIELDS(t) = (TYPE_NFIELDS(t) + 1);
+  TYPE_FIELDS(t) = ((struct field *)
+                    xrealloc(TYPE_FIELDS(t),
+                             (sizeof(struct field) * TYPE_NFIELDS(t))));
+  f = &(TYPE_FIELDS(t)[TYPE_NFIELDS(t) - 1]);
+  memset(f, 0, sizeof f[0]);
+  FIELD_TYPE(f[0]) = field;
+  FIELD_NAME(f[0]) = name;
+  if (TYPE_CODE(t) == TYPE_CODE_UNION)
     {
-      if (TYPE_LENGTH (t) < TYPE_LENGTH (field))
-	TYPE_LENGTH_ASSIGN (t) = TYPE_LENGTH (field);
+      if (TYPE_LENGTH(t) < TYPE_LENGTH(field))
+	TYPE_LENGTH_ASSIGN(t) = TYPE_LENGTH(field);
     }
-  else if (TYPE_CODE (t) == TYPE_CODE_STRUCT)
+  else if (TYPE_CODE(t) == TYPE_CODE_STRUCT)
     {
-      TYPE_LENGTH_ASSIGN (t) = TYPE_LENGTH (t) + TYPE_LENGTH (field);
-      if (TYPE_NFIELDS (t) > 1)
+      TYPE_LENGTH_ASSIGN(t) = (TYPE_LENGTH(t) + TYPE_LENGTH(field));
+      if (TYPE_NFIELDS(t) > 1)
 	{
-	  FIELD_BITPOS (f[0]) = (FIELD_BITPOS (f[-1])
-				 + TYPE_LENGTH (field) * TARGET_CHAR_BIT);
+	  FIELD_BITPOS(f[0]) = (FIELD_BITPOS(f[-1])
+                                + (TYPE_LENGTH(field) * TARGET_CHAR_BIT));
 	}
     }
 }
@@ -2110,14 +2144,14 @@ append_composite_type_field (struct type *t, char *name, struct type *field)
 
 
 struct type *
-lookup_fundamental_type (struct objfile *objfile, int typeid)
+lookup_fundamental_type(struct objfile *objfile, int type_id)
 {
   struct type **typep;
   int nbytes;
 
-  if (typeid < 0 || typeid >= FT_NUM_MEMBERS)
+  if ((type_id < 0) || (type_id >= FT_NUM_MEMBERS))
     {
-      error (_("internal error - invalid fundamental type id %d"), typeid);
+      error(_("internal error - invalid fundamental type id %d"), type_id);
     }
 
   /* If this is the first time we need a fundamental type for this objfile
@@ -2125,20 +2159,20 @@ lookup_fundamental_type (struct objfile *objfile, int typeid)
 
   if (objfile->fundamental_types == NULL)
     {
-      nbytes = FT_NUM_MEMBERS * sizeof (struct type *);
-      objfile->fundamental_types = (struct type **)
-	obstack_alloc (&objfile->objfile_obstack, nbytes);
-      memset ((char *) objfile->fundamental_types, 0, nbytes);
-      OBJSTAT (objfile, n_types += FT_NUM_MEMBERS);
+      nbytes = (FT_NUM_MEMBERS * sizeof(struct type *));
+      objfile->fundamental_types =
+        (struct type **)obstack_alloc(&objfile->objfile_obstack, nbytes);
+      memset((char *)objfile->fundamental_types, 0, nbytes);
+      OBJSTAT(objfile, n_types += FT_NUM_MEMBERS);
     }
 
   /* Look for this particular type in the fundamental type vector.  If one is
      not found, create and install one appropriate for the current language. */
 
-  typep = objfile->fundamental_types + typeid;
+  typep = (objfile->fundamental_types + type_id);
   if (*typep == NULL)
     {
-      *typep = create_fundamental_type (objfile, typeid);
+      *typep = create_fundamental_type(objfile, type_id);
     }
 
   return (*typep);
@@ -2168,7 +2202,7 @@ is_integral_type (struct type *t)
 	 || (TYPE_CODE (t) == TYPE_CODE_BOOL)));
 }
 
-/* Check whether BASE is an ancestor or base class or DCLASS 
+/* Check whether BASE is an ancestor or base class or DCLASS
    Return 1 if so, and 0 if not.
    Note: callers may want to check for identity of the types before
    calling this function -- identical types are considered to satisfy
@@ -2290,7 +2324,7 @@ static struct vbase *current_vbase_list = NULL;
    items. The vbasetype pointer of each item in the list points to the
    type information for a virtual base of the argument DCLASS.
 
-   Helper function for virtual_base_list(). 
+   Helper function for virtual_base_list().
    Note: the list goes backward, right-to-left. virtual_base_list()
    copies the items out in reverse order.  */
 
@@ -2595,15 +2629,15 @@ compare_badness (struct badness_vector *a, struct badness_vector *b)
  * Return a pointer to a badness vector. This has NARGS + 1 entries. */
 
 struct badness_vector *
-rank_function (struct type **parms, int nparms, struct type **args, int nargs)
+rank_function(struct type **parms, int nparms, struct type **args, int nargs)
 {
   int i;
   struct badness_vector *bv;
-  int min_len = nparms < nargs ? nparms : nargs;
+  int min_len = ((nparms < nargs) ? nparms : nargs);
 
-  bv = xmalloc (sizeof (struct badness_vector));
-  bv->length = nargs + 1;	/* add 1 for the length-match rank */
-  bv->rank = xmalloc ((nargs + 1) * sizeof (int));
+  bv = (struct badness_vector *)xmalloc(sizeof(struct badness_vector));
+  bv->length = (nargs + 1);	/* add 1 for the length-match rank */
+  bv->rank = (int *)xmalloc((nargs + 1) * sizeof(int));
 
   /* First compare the lengths of the supplied lists.
    * If there is a mismatch, set it to a high value. */
@@ -3528,15 +3562,15 @@ build_gdbtypes (void)
 	       0,
 	       "double", (struct objfile *) NULL);
 #if 0
-  TYPE_FLOATFORMAT (builtin_type_double) = TARGET_DOUBLE_FORMAT;
-#endif
+  TYPE_FLOATFORMAT(builtin_type_double) = TARGET_DOUBLE_FORMAT;
+#endif /* 0 */
   builtin_type_long_double =
     init_type (TYPE_CODE_FLT, TARGET_LONG_DOUBLE_BIT / TARGET_CHAR_BIT,
 	       0,
 	       "long double", (struct objfile *) NULL);
 #if 0
-  TYPE_FLOATFORMAT (builtin_type_long_double) = TARGET_LONG_DOUBLE_FORMAT;
-#endif
+  TYPE_FLOATFORMAT(builtin_type_long_double) = TARGET_LONG_DOUBLE_FORMAT;
+#endif /* 0 */
   builtin_type_complex =
     init_type (TYPE_CODE_COMPLEX, 2 * TARGET_FLOAT_BIT / TARGET_CHAR_BIT,
 	       0,
@@ -3645,39 +3679,39 @@ Show resolution of opaque struct/class/union types (if set before loading symbol
 static struct gdbarch_data *gdbtypes_data;
 
 const struct builtin_type *
-builtin_type (struct gdbarch *gdbarch)
+builtin_type(struct gdbarch *gdbarch)
 {
-  return gdbarch_data (gdbarch, gdbtypes_data);
+  return (const struct builtin_type *)gdbarch_data(gdbarch, gdbtypes_data);
 }
 
 
 static struct type *
-build_flt (int bit, char *name, const struct floatformat *floatformat)
+build_flt(int bit, char *name, const struct floatformat *floatformat)
 {
   struct type *t;
   if (bit <= 0 || floatformat == NULL)
     {
-      gdb_assert (builtin_type_error != NULL);
+      gdb_assert(builtin_type_error != NULL);
       return builtin_type_error;
     }
-  t = init_type (TYPE_CODE_FLT, bit / TARGET_CHAR_BIT,
-		 0, name, (struct objfile *) NULL);
-  TYPE_FLOATFORMAT (t) = floatformat;
+  t = init_type(TYPE_CODE_FLT, (bit / TARGET_CHAR_BIT),
+                0, name, (struct objfile *)NULL);
+  TYPE_FLOATFORMAT(t) = floatformat;
   return t;
 }
 
 static struct type *
-build_complex (int bit, char *name, struct type *target_type)
+build_complex(int bit, char *name, struct type *target_type)
 {
   struct type *t;
   if (bit <= 0 || target_type == builtin_type_error)
     {
-      gdb_assert (builtin_type_error != NULL);
+      gdb_assert(builtin_type_error != NULL);
       return builtin_type_error;
     }
-  t = init_type (TYPE_CODE_COMPLEX, 2 * bit / TARGET_CHAR_BIT,
-		 0, name, (struct objfile *) NULL);
-  TYPE_TARGET_TYPE (t) = target_type;
+  t = init_type(TYPE_CODE_COMPLEX, (2 * bit / TARGET_CHAR_BIT),
+                0, name, (struct objfile *)NULL);
+  TYPE_TARGET_TYPE(t) = target_type;
   return t;
 }
 
@@ -3805,21 +3839,28 @@ gdbtypes_post_init (struct gdbarch *gdbarch)
 }
 
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wdeclaration-after-statement"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* APPLE LOCAL BEGIN: Helper functions for easily building bitfield
-   built in types. 
+   built in types.
 
    Build a builtin enum type named NAME that represents a single integer
    bitfield that is SIZE bytes long. FLAGS from the TYPE_FLAG_xxx definitions
    can be OR'ed together to modify the enumeration. This can be used to
    create internal enumeration types for use with the build_builtin_bitfield ()
-   function. NAME is the name of the built in type and should start with 
-   "__gdb_builtin_type" followed by the type name. ENUMS is an array of 
-   NUM_ENUMS gdbtypes_enum_info structures that describe each enumeration. 
+   function. NAME is the name of the built in type and should start with
+   "__gdb_builtin_type" followed by the type name. ENUMS is an array of
+   NUM_ENUMS gdbtypes_enum_info structures that describe each enumeration.
    This function will copy NAME and gdbtypes_enum_info.name strings -- creating
    a potential memory leak -- but since builtin types need to permanently be
-   around and are typically created in the initialization functions, the leak 
+   around and are typically created in the initialization functions, the leak
    should be small and contained.
-   
+
    Sample code:
     struct type *enum_type;
     static struct gdbtypes_enum_info enums[] = {
@@ -3829,77 +3870,84 @@ gdbtypes_post_init (struct gdbarch *gdbarch)
       {"six",	6 }
     };
     uint32_t num_enums = sizeof (enums)/sizeof (enums[0]);
-    enum_type build_builtin_enum ("__gdb_builtin_type_small_numbers", 4, 
+    enum_type build_builtin_enum ("__gdb_builtin_type_small_numbers", 4,
 				  TYPE_FLAG_UNSIGNED, enums, num_enums);
    */
 struct type *
-build_builtin_enum (const char *name, uint32_t size, int flags, 
-		    struct gdbtypes_enum_info *enums, uint32_t num_enums)
+build_builtin_enum(const char *name, uint32_t size, int flags,
+		   struct gdbtypes_enum_info *enums, uint32_t num_enums)
 {
   int i;
-  struct type *t = init_type (TYPE_CODE_ENUM, size, flags, xstrdup (name), 
-			      (struct objfile *) NULL);
-  TYPE_NFIELDS (t) = num_enums;
-  const int fields_size = sizeof (struct field) * TYPE_NFIELDS (t);
-  TYPE_FIELDS (t) = xmalloc (fields_size);
-  memset (TYPE_FIELDS (t), 0, fields_size);
-  for (i = 0; i < num_enums; i++)
+  struct type *t = init_type(TYPE_CODE_ENUM, size, flags, xstrdup(name),
+			     (struct objfile *)NULL);
+  TYPE_NFIELDS(t) = num_enums;
+  const size_t fields_size = (sizeof(struct field) * TYPE_NFIELDS(t));
+  TYPE_FIELDS(t) = (struct field *)xmalloc(fields_size);
+  memset(TYPE_FIELDS(t), 0, fields_size);
+  for (i = 0; i < (int)num_enums; i++)
     {
-      TYPE_FIELD_NAME (t, i) = xstrdup (enums[i].name);
-      TYPE_FIELD_BITPOS_ASSIGN (t, i) = enums[i].value;  
+      TYPE_FIELD_NAME(t, i) = xstrdup(enums[i].name);
+      TYPE_FIELD_BITPOS_ASSIGN(t, i) = enums[i].value;
     }
-  gdb_assert (i == TYPE_NFIELDS (t));
-  TYPE_LENGTH_ASSIGN (t) = size;
+  gdb_assert(i == TYPE_NFIELDS(t));
+  TYPE_LENGTH_ASSIGN(t) = size;
   return t;
 }
 
-/* Helper function that builds a builtin bitfield type named NAME that  
-   represents a single integer bitfield that is SIZE bytes long. This can 
-   be used as a register's type to display a register's contents as a 
-   structure containing bitfields. NAME is the name of the built in type 
-   and should start with "__gdb_builtin_type" followed by the type name. 
-   BITFIELDS is an array of NUM_BITFIELDS gdbtypes_bitfield_info structures 
-   that describe each bitfield in the type. 
-   This function will copy NAME and gdbtypes_bitfield_info.name strings -- 
-   creating a potential memory leak -- but since builtin types need to 
-   permanently be around and are typically created in the initialization 
+/* Helper function that builds a builtin bitfield type named NAME that
+   represents a single integer bitfield that is SIZE bytes long. This can
+   be used as a register's type to display a register's contents as a
+   structure containing bitfields. NAME is the name of the built in type
+   and should start with "__gdb_builtin_type" followed by the type name.
+   BITFIELDS is an array of NUM_BITFIELDS gdbtypes_bitfield_info structures
+   that describe each bitfield in the type.
+   This function will copy NAME and gdbtypes_bitfield_info.name strings --
+   creating a potential memory leak -- but since builtin types need to
+   permanently be around and are typically created in the initialization
    functions, the leak should be small and contained.
    Sample code:
-  
+
     type * bitfield_type;
     struct gdbtypes_bitfield_info bitfields[] = {
       {"bit31",  builtin_type_uint32,  31, 31 },
-      {"num",   enum_type,             15,  8 }, 
+      {"num",   enum_type,             15,  8 },
       {"nibble", builtin_type_uint32,   3,  0 }
     };
     uint32_t num_bitfields = sizeof (bitfields)/sizeof (bitfields[0]);
-    bitfield_type = build_builtin_bitfield ("__gdb_builtin_type_test", 4, 
+    bitfield_type = build_builtin_bitfield ("__gdb_builtin_type_test", 4,
 					   bitfields, num_bitfields);
 */
 struct type *
-build_builtin_bitfield (const char *name, uint32_t size, 
-			struct gdbtypes_bitfield_info *bitfields, 
-			uint32_t num_bitfields)
+build_builtin_bitfield(const char *name, uint32_t size,
+                       struct gdbtypes_bitfield_info *bitfields,
+                       uint32_t num_bitfields)
 {
   struct type *t;
-  t = init_composite_type (xstrdup (name), TYPE_CODE_STRUCT);
-  TYPE_NFIELDS (t) = num_bitfields;
-  const int fields_size = sizeof (struct field) * TYPE_NFIELDS (t);
-  TYPE_FIELDS (t) = xmalloc (fields_size);
-  memset (TYPE_FIELDS (t), 0, fields_size);
-  int i = 0;
+  int i;
+  t = init_composite_type(xstrdup(name), TYPE_CODE_STRUCT);
+  TYPE_NFIELDS(t) = num_bitfields;
+  const size_t fields_size = (sizeof(struct field) * TYPE_NFIELDS(t));
+  TYPE_FIELDS(t) = (struct field *)xmalloc(fields_size);
+  memset(TYPE_FIELDS(t), 0, fields_size);
 
-  for (i = 0; i < num_bitfields; i++)
+  for (i = 0; i < (int)num_bitfields; i++)
     {
-      TYPE_FIELD_NAME (t, i) = xstrdup (bitfields[i].name);
-      TYPE_FIELD_TYPE (t, i) = bitfields[i].type;
-      TYPE_FIELD_BITSIZE (t, i) = bitfields[i].msbit - bitfields[i].lsbit + 1;
-      TYPE_FIELD_BITPOS_ASSIGN (t, i) = bitfields[i].lsbit;  
+      TYPE_FIELD_NAME(t, i) = xstrdup(bitfields[i].name);
+      TYPE_FIELD_TYPE(t, i) = bitfields[i].type;
+      TYPE_FIELD_BITSIZE(t, i) = (bitfields[i].msbit - bitfields[i].lsbit + 1);
+      TYPE_FIELD_BITPOS_ASSIGN(t, i) = bitfields[i].lsbit;
     }
-  gdb_assert (i == TYPE_NFIELDS (t));
-  TYPE_LENGTH_ASSIGN (t) = size;
+  gdb_assert(i == TYPE_NFIELDS(t));
+  TYPE_LENGTH_ASSIGN(t) = size;
   return t;
 }
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* APPLE LOCAL: closure dynamic type  */
 /* Note, in most functions I'm calling these "closures" not
@@ -3910,25 +3958,25 @@ build_builtin_bitfield (const char *name, uint32_t size,
    The result is cast to the correct function type.  */
 
 struct value *
-get_closure_implementation_fn (struct value *in_value)
+get_closure_implementation_fn(struct value *in_value)
 {
   /* This is the Apple Closure.  It has a field "FuncPtr" whose
      value is the implementation function for this closure.  And the
      first argument of that function is has the real type for this
      block pointer structure.  */
-  struct value *funcPtr_val = NULL;
+  struct value *funcPtr_val = (struct value *)NULL;
   struct gdb_exception e;
   CORE_ADDR func_addr;
   struct symbol *func_sym;
 
   /* APPLE LOCAL begin radar 6307592, new Blocks ABI  */
 
-  /* We might have either an old-style block struct or a new-style block 
+  /* We might have either an old-style block struct or a new-style block
      struct; we will need to check for both.
 
      The old style struct was:
 
-     struct __invoke_impl 
+     struct __invoke_impl
      {
          void *isa;
 	 int32_t Flags;
@@ -3938,7 +3986,7 @@ get_closure_implementation_fn (struct value *in_value)
 
       The new style struct is:
 
-      struct __block_literal_generic 
+      struct __block_literal_generic
       {
           void *--isa;
 	  int __flags;
@@ -3948,38 +3996,38 @@ get_closure_implementation_fn (struct value *in_value)
       };
   */
 
-  /* See if we have a new-style block.  */
-
-  TRY_CATCH (e, RETURN_MASK_ALL)
+  /* See if we have a new-style block: */
+  TRY_CATCH(e, RETURN_MASK_ALL)
     {
-      funcPtr_val = value_struct_elt (&in_value, NULL, "__FuncPtr", NULL, "");
+      funcPtr_val = value_struct_elt(&in_value, NULL, "__FuncPtr", NULL,
+                                     "");
     }
 
-  if (!funcPtr_val && e.reason == RETURN_ERROR)
+  if (!funcPtr_val && (e.reason == RETURN_ERROR))
     {
       /* See if we've got an old-style block...  */
-      
-      TRY_CATCH (e, RETURN_MASK_ALL)
+
+      TRY_CATCH(e, RETURN_MASK_ALL)
 	{
-	  funcPtr_val = value_struct_elt (&in_value, NULL, "FuncPtr", NULL, 
-					  "");
+	  funcPtr_val = value_struct_elt(&in_value, NULL, "FuncPtr", NULL,
+					 "");
 	}
     }
-  
-  if (e.reason != NO_ERROR || funcPtr_val == NULL)
+
+  if ((e.reason != (int)NO_ERROR) || (funcPtr_val == NULL))
     return NULL;
 
   /* APPLE LOCAL end radar 6307592, new Blocks ABI  */
-  
+
   /* The generic block structure only points to a generic function
      type.  To get the real function type, look up the function
      implementation's debug info.  */
-  func_addr = value_as_address (funcPtr_val);
-  func_sym = find_pc_function (func_addr);
+  func_addr = value_as_address(funcPtr_val);
+  func_sym = find_pc_function(func_addr);
   if (func_sym != NULL)
     {
       struct type *func_type;
-      func_type = SYMBOL_TYPE (func_sym);
+      func_type = SYMBOL_TYPE(func_sym);
       /* We usually get a pointer to the function as the value
 	 here.  I want to return a value whose type is
 	 TYPE_CODE_FUNC and whose address is the actual function
@@ -3987,14 +4035,14 @@ get_closure_implementation_fn (struct value *in_value)
 	 you pass it a pointer to the function, it doesn't get
 	 around to checking the parameters.  I don't want to fix
 	 that right now.  */
-      if (TYPE_CODE (value_type (funcPtr_val)) == TYPE_CODE_PTR)
+      if (TYPE_CODE(value_type(funcPtr_val)) == TYPE_CODE_PTR)
 	{
-	  func_type = make_pointer_type (func_type, NULL);
-	  funcPtr_val = value_cast (func_type, funcPtr_val);
-	  funcPtr_val = value_ind (funcPtr_val);
+	  func_type = make_pointer_type(func_type, NULL);
+	  funcPtr_val = value_cast(func_type, funcPtr_val);
+	  funcPtr_val = value_ind(funcPtr_val);
 	}
       else
-	funcPtr_val = value_cast (func_type, funcPtr_val);
+	funcPtr_val = value_cast(func_type, funcPtr_val);
     }
   return funcPtr_val;
 }
@@ -4007,7 +4055,7 @@ get_closure_implementation_fn (struct value *in_value)
    TYPE_CODE_PTR, we will return a pointer.
 
    FIXME, at this point, we should have some extensible runtime
-   module that provides dynamic type callouts.  But for now just add 'em by 
+   module that provides dynamic type callouts.  But for now just add 'em by
    hand.  */
 
 struct type *
@@ -4038,7 +4086,7 @@ get_closure_dynamic_type (struct value *in_value)
       TRY_CATCH (e, RETURN_MASK_ALL)
 	{
 	  funcPtr_val = get_closure_implementation_fn (in_value);
-	  
+
 	  if (funcPtr_val != NULL)
 	    {
 	      /* Look up the first argument to the implementation
@@ -4071,9 +4119,9 @@ get_closure_dynamic_type (struct value *in_value)
 /* END APPLE LOCAL  */
 
 
-extern void _initialize_gdbtypes (void);
+extern void _initialize_gdbtypes(void);
 void
-_initialize_gdbtypes (void)
+_initialize_gdbtypes(void)
 {
   builtin_type_int0 =
     init_type (TYPE_CODE_INT, 0 / 8,
@@ -4298,5 +4346,6 @@ Show if GDB should honor the 'stride' parameter of array types."), NULL,
   undef_arrays_length = 0;
   undef_arrays = (struct type **)
     xmalloc (undef_arrays_allocated * sizeof (struct type *));
-
 }
+
+/* EOF */

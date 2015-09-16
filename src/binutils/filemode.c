@@ -129,53 +129,52 @@ mode_string (unsigned long mode, char *str)
    's' for sockets
    'p' for fifos
    '-' for any other file type.  */
-
 #ifndef S_ISDIR
-#ifdef S_IFDIR
-#define S_ISDIR(i) (((i) & S_IFMT) == S_IFDIR)
-#else /* ! defined (S_IFDIR) */
-#define S_ISDIR(i) (((i) & 0170000) == 040000)
-#endif /* ! defined (S_IFDIR) */
+# ifdef S_IFDIR
+#  define S_ISDIR(i) (((i) & S_IFMT) == S_IFDIR)
+# else /* ! defined (S_IFDIR) */
+#  define S_ISDIR(i) (((i) & 0170000) == 040000)
+# endif /* ! defined (S_IFDIR) */
 #endif /* ! defined (S_ISDIR) */
 
 #ifndef S_ISBLK
-#ifdef S_IFBLK
-#define S_ISBLK(i) (((i) & S_IFMT) == S_IFBLK)
-#else /* ! defined (S_IFBLK) */
-#define S_ISBLK(i) 0
-#endif /* ! defined (S_IFBLK) */
+# ifdef S_IFBLK
+#  define S_ISBLK(i) (((i) & S_IFMT) == S_IFBLK)
+# else /* ! defined (S_IFBLK) */
+#  define S_ISBLK(i) 0
+# endif /* ! defined (S_IFBLK) */
 #endif /* ! defined (S_ISBLK) */
 
 #ifndef S_ISCHR
-#ifdef S_IFCHR
-#define S_ISCHR(i) (((i) & S_IFMT) == S_IFCHR)
-#else /* ! defined (S_IFCHR) */
-#define S_ISCHR(i) 0
-#endif /* ! defined (S_IFCHR) */
+# ifdef S_IFCHR
+#  define S_ISCHR(i) (((i) & S_IFMT) == S_IFCHR)
+# else /* ! defined (S_IFCHR) */
+#  define S_ISCHR(i) 0
+# endif /* ! defined (S_IFCHR) */
 #endif /* ! defined (S_ISCHR) */
 
 #ifndef S_ISFIFO
-#ifdef S_IFIFO
-#define S_ISFIFO(i) (((i) & S_IFMT) == S_IFIFO)
-#else /* ! defined (S_IFIFO) */
-#define S_ISFIFO(i) 0
-#endif /* ! defined (S_IFIFO) */
+# ifdef S_IFIFO
+#  define S_ISFIFO(i) (((i) & S_IFMT) == S_IFIFO)
+# else /* ! defined (S_IFIFO) */
+#  define S_ISFIFO(i) 0
+# endif /* ! defined (S_IFIFO) */
 #endif /* ! defined (S_ISFIFO) */
 
 #ifndef S_ISSOCK
-#ifdef S_IFSOCK
-#define S_ISSOCK(i) (((i) & S_IFMT) == S_IFSOCK)
-#else /* ! defined (S_IFSOCK) */
-#define S_ISSOCK(i) 0
-#endif /* ! defined (S_IFSOCK) */
+# ifdef S_IFSOCK
+#  define S_ISSOCK(i) (((i) & S_IFMT) == S_IFSOCK)
+# else /* ! defined (S_IFSOCK) */
+#  define S_ISSOCK(i) 0
+# endif /* ! defined (S_IFSOCK) */
 #endif /* ! defined (S_ISSOCK) */
 
 #ifndef S_ISLNK
-#ifdef S_IFLNK
-#define S_ISLNK(i) (((i) & S_IFMT) == S_IFLNK)
-#else /* ! defined (S_IFLNK) */
-#define S_ISLNK(i) 0
-#endif /* ! defined (S_IFLNK) */
+# ifdef S_IFLNK
+#  define S_ISLNK(i) (((i) & S_IFMT) == S_IFLNK)
+# else /* ! defined (S_IFLNK) */
+#  define S_ISLNK(i) 0
+# endif /* ! defined (S_IFLNK) */
 #endif /* ! defined (S_ISLNK) */
 
 static char
@@ -195,54 +194,63 @@ ftypelet (unsigned long bits)
     return 'p';
 
 #ifdef S_IFMT
-#ifdef S_IFMPC
+# ifdef S_IFMPC
   if ((bits & S_IFMT) == S_IFMPC
       || (bits & S_IFMT) == S_IFMPB)
     return 'm';
-#endif
-#ifdef S_IFNWK
+# endif /* S_IFMPC */
+# ifdef S_IFNWK
   if ((bits & S_IFMT) == S_IFNWK)
     return 'n';
-#endif
-#endif
+# endif /* S_IFNWK */
+#endif /* S_IFMT */
 
   return '-';
 }
 
 /* Set the 's' and 't' flags in file attributes string CHARS,
-   according to the file mode BITS.  */
-
+ * according to the file mode BITS.  */
 static void
-setst (unsigned long bits ATTRIBUTE_UNUSED, char *chars ATTRIBUTE_UNUSED)
+setst(unsigned long bits, char *chars)
 {
 #ifdef S_ISUID
   if (bits & S_ISUID)
     {
-      if (chars[3] != 'x')
-	/* Set-uid, but not executable by owner.  */
+      if (chars[3] != 'x') {
+	/* Set-uid, but not executable by owner: */
 	chars[3] = 'S';
-      else
+      } else {
 	chars[3] = 's';
+      }
     }
-#endif
+#endif /* S_ISUID */
 #ifdef S_ISGID
   if (bits & S_ISGID)
     {
-      if (chars[6] != 'x')
-	/* Set-gid, but not executable by group.  */
+      if (chars[6] != 'x') {
+	/* Set-gid, but not executable by group: */
 	chars[6] = 'S';
-      else
+      } else {
 	chars[6] = 's';
+      }
     }
-#endif
+#endif /* S_ISGID */
 #ifdef S_ISVTX
   if (bits & S_ISVTX)
     {
-      if (chars[9] != 'x')
-	/* Sticky, but not executable by others.  */
+      if (chars[9] != 'x') {
+	/* Sticky, but not executable by others: */
 	chars[9] = 'T';
-      else
+      } else {
 	chars[9] = 't';
+      }
     }
-#endif
+#endif /* S_ISVTX */
+#if !defined(S_ISUID) && !defined(S_ISGID) && !defined(S_ISVTX)
+  if ((bits > 1UL) || (chars != NULL)) {
+    ;
+  }
+#endif /* !S_ISUID && !S_ISGID && !S_ISVTX */
 }
+
+/* EOF */

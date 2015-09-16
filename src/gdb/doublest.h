@@ -1,4 +1,4 @@
-/* Floating point definitions for GDB.
+/* doublest.h: Floating point definitions for GDB.
 
    Copyright 1986, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
    1996, 1997, 1998, 1999, 2000, 2001, 2003, 2005 Free Software
@@ -23,6 +23,8 @@
 
 #ifndef DOUBLEST_H
 #define DOUBLEST_H
+
+#include "ansidecl.h"
 
 struct type;
 struct floatformat;
@@ -66,15 +68,17 @@ extern const char *floatformat_mantissa (const struct floatformat *,
 					 const bfd_byte *);
 
 /* These functions have been replaced by extract_typed_floating and
-   store_typed_floating.
+   store_typed_floating, respectively.
 
    Most calls are passing in TYPE_LENGTH (TYPE) so can be changed to
    just pass the TYPE.  The remainder pass in the length of a
    register, those calls should instead pass in the floating point
    type that corresponds to that length.  */
 
-extern DOUBLEST deprecated_extract_floating (const void *addr, int len);
-extern void deprecated_store_floating (void *addr, int len, DOUBLEST val);
+extern DOUBLEST deprecated_extract_floating(const void *addr, int len)
+  ATTRIBUTE_DEPRECATED_FOR(extract_typed_floating);
+extern void deprecated_store_floating(void *addr, int len, DOUBLEST val)
+  ATTRIBUTE_DEPRECATED_FOR(store_typed_floating);
 
 /* Given TYPE, return its floatformat.  TYPE_FLOATFORMAT() may return
    NULL.  type_floatformat() detects that and returns a floatformat

@@ -1,6 +1,6 @@
-/* GDB CLI commands.
+/* cli-cmds.c: GDB CLI commands.
 
-   Copyright 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+   Copyright 2000-2005 Free Software Foundation, Inc.
 
    This file is part of GDB.
 
@@ -182,21 +182,19 @@ error_no_arg (char *why)
 }
 
 /* The "info" command is defined as a prefix, with allow_unknown = 0.
-   Therefore, its own definition is called only for "info" with no args.  */
-
+ * Therefore, its own definition is called only for "info" with no args: */
 static void
-info_command (char *arg, int from_tty)
+info_command(char *arg, int from_tty)
 {
-  printf_unfiltered (_("\"info\" must be followed by the name of an info command.\n"));
-  help_list (infolist, "info ", -1, gdb_stdout);
+  printf_unfiltered(_("\"info\" must be followed by the name of an info command.\n"));
+  help_list(infolist, "info ", (enum command_class)-1, gdb_stdout);
 }
 
-/* The "show" command with no arguments shows all the settings.  */
-
+/* The "show" command with no arguments shows all the settings: */
 static void
-show_command (char *arg, int from_tty)
+show_command(char *arg, int from_tty)
 {
-  cmd_show_list (showlist, from_tty, "");
+  cmd_show_list(showlist, from_tty, "");
 }
 
 /* Provide documentation on command or list given by COMMAND.  FROM_TTY
@@ -243,7 +241,7 @@ complete_command (char *arg, int from_tty)
    of completions to the current uiout.  */
 
 int
-cli_interpreter_complete (void *data, char *word, char *command_buffer, 
+cli_interpreter_complete (void *data, char *word, char *command_buffer,
 			  int cursor, int limit)
 {
   char **completions;
@@ -284,7 +282,7 @@ cli_interpreter_complete (void *data, char *word, char *command_buffer,
 	  item = next_item;
 
           /* APPLE LOCAL: The mi output doesn't have the
-             ``Display all 236609 possibilities? (y or n)'' 
+             ``Display all 236609 possibilities? (y or n)''
              feature that readline gives us for free, so we
              need a facility to limit the number of matches
              returned.  */
@@ -463,7 +461,7 @@ cd_command (char *dir, int from_tty)
 
   if (from_tty)
     pwd_command ((char *) 0, 1);
-  
+
   do_cleanups (old_cleanups);
 }
 
@@ -496,7 +494,7 @@ source_command (char *args, int from_tty)
    that sources the file so that main.c can call source_file_attach with
    a filename with embedded whitespace and the argv expander won't
    expand it into multiple arguments.  I just copied Klee's scheme
-   from corefile.c and core_file_command -> core_file_attach.  
+   from corefile.c and core_file_command -> core_file_attach.
    This would more properly be up in ../top.c because it's specifically
    not the CLI command, but that would probably make FSF<->Apple merging
    more work, so here it stays.  */
@@ -506,7 +504,7 @@ source_file (char *file, int from_tty)
 {
   FILE *stream;
   /* APPLE LOCAL end refactor source command */
-  
+
   stream = fopen (file, FOPEN_RT);
   if (!stream)
     {
@@ -657,8 +655,8 @@ edit_command (char *arg, int from_tty)
       if (! sals.nelts) return;  /*  C++  */
       if (sals.nelts > 1) {
 	/* APPLE LOCAL: ambiguous_line_spec returns
-	   1 if the line spec really was ambiguous - 
-	   rather than just being many matches of the 
+	   1 if the line spec really was ambiguous -
+	   rather than just being many matches of the
 	   same line.  */
         if (ambiguous_line_spec (&sals) == 1)
 	  {
@@ -703,21 +701,21 @@ edit_command (char *arg, int from_tty)
          symbol which means no source code.  */
 
       if (sal.symtab == 0)
-        error (_("No line number known for %s."), arg);
+        error(_("No line number known for %s."), arg);
     }
 
-  if ((editor = (char *) getenv ("EDITOR")) == NULL)
-      editor = "/bin/ex";
+  if ((editor = (char *)getenv("EDITOR")) == NULL)
+    editor = "/bin/ex";  /* is this really a sane default? */
 
   /* Approximate base-10 log of line to 1 unit for digit count */
-  for(log10=32, m=0x80000000; !(sal.line & m) && log10>0; log10--, m=m>>1);
-  log10 = 1 + (int)((log10 + (0 == ((m-1) & sal.line)))/3.32192809);
+  for (log10 = 32, m = 0x80000000; !(sal.line & m) && (log10 > 0); log10--, m = (m >> 1));
+  log10 = (1 + (int)((log10 + (0 == ((m - 1) & sal.line))) / 3.32192809f));
 
-  /* If we don't already know the full absolute file name of the
-     source file, find it now.  */
+  /* If we do NOT already know the full absolute file name of the source
+   * file, then find it now: */
   if (!sal.symtab->fullname)
     {
-      fn = symtab_to_fullname (sal.symtab);
+      fn = symtab_to_fullname(sal.symtab);
       if (!fn)
 	fn = "unknown";
     }
@@ -794,8 +792,8 @@ list_command (char *arg, int from_tty)
       if (sals.nelts > 1)
 	{
 	/* APPLE LOCAL: ambiguous_line_spec returns
-	   1 if the line spec really was ambiguous - 
-	   rather than just being many matches of the 
+	   1 if the line spec really was ambiguous -
+	   rather than just being many matches of the
 	   same line.  */
         if (ambiguous_line_spec (&sals) == 1)
 	  {
@@ -837,8 +835,8 @@ list_command (char *arg, int from_tty)
 	    {
 
 	      /* APPLE LOCAL: ambiguous_line_spec returns
-		 1 if the line spec really was ambiguous - 
-		 rather than just being many matches of the 
+		 1 if the line spec really was ambiguous -
+		 rather than just being many matches of the
 		 same line.  */
 	      if (ambiguous_line_spec (&sals) == 1)
 		{
@@ -941,7 +939,7 @@ disassemble_command (char *arg, int from_tty)
   char *space_index;
 #if 0
   asection *section;
-#endif
+#endif /* 0 */
 
   name = NULL;
   if (!arg)
@@ -958,7 +956,7 @@ disassemble_command (char *arg, int from_tty)
       if (tui_active)
 	/* FIXME: cagney/2004-02-07: This should be an observer.  */
 	low = tui_get_low_disassembly_address (low, pc);
-#endif
+#endif /* TUI */
       low += DEPRECATED_FUNCTION_START_OFFSET;
     }
   else if (!(space_index = (char *) strchr (arg, ' ')))
@@ -973,20 +971,20 @@ disassemble_command (char *arg, int from_tty)
       if (tui_active)
 	/* FIXME: cagney/2004-02-07: This should be an observer.  */
 	low = tui_get_low_disassembly_address (low, pc);
-#endif
+#endif /* TUI */
       low += DEPRECATED_FUNCTION_START_OFFSET;
     }
   else
     {
-      /* Two arguments.  */
+      /* Two arguments: */
       *space_index = '\0';
       low = parse_and_eval_address (arg);
       high = parse_and_eval_address (space_index + 1);
     }
 
 #if defined(TUI)
-  if (!tui_is_window_visible (DISASSEM_WIN))
-#endif
+  if (!tui_is_window_visible(DISASSEM_WIN))
+#endif /* TUI */
     {
       printf_filtered ("Dump of assembler code ");
       if (name != NULL)
@@ -1012,13 +1010,13 @@ disassemble_command (char *arg, int from_tty)
 #if defined(TUI)
   else
     {
-      tui_show_assembly (low);
+      tui_show_assembly(low);
     }
-#endif
+#endif /* TUI */
 }
 
 static void
-make_command (char *arg, int from_tty)
+make_command(char *arg, int from_tty)
 {
   char *p;
 
@@ -1026,57 +1024,74 @@ make_command (char *arg, int from_tty)
     p = "make";
   else
     {
-      p = xmalloc (sizeof ("make ") + strlen (arg));
-      strcpy (p, "make ");
-      strcpy (p + sizeof ("make ") - 1, arg);
+      p = (char *)xmalloc(sizeof("make ") + strlen(arg));
+      strcpy(p, "make ");
+      strcpy(p + sizeof("make ") - 1, arg);
     }
 
-  shell_escape (p, from_tty);
+  shell_escape(p, from_tty);
 }
 
+/* just declare this once, up here: */
+extern struct cmd_list_element *cmdlist; /*This is the main command list*/
+
+/* FIXME: need to rename some struct fields that currently live in headers,
+ * and deal with all of the resulting fallout, before removing this: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 static void
-show_user (char *args, int from_tty)
+show_user(char *args, int from_tty)
 {
   struct cmd_list_element *c;
-  extern struct cmd_list_element *cmdlist;
 
   if (args)
     {
-      c = lookup_cmd (&args, cmdlist, "", 0, 1);
+      c = lookup_cmd(&args, cmdlist, "", 0, 1);
       if (c->class != class_user)
-	error (_("Not a user command."));
-      show_user_1 (c, gdb_stdout);
+	error(_("Not a user command."));
+      show_user_1(c, gdb_stdout);
     }
   else
     {
       for (c = cmdlist; c; c = c->next)
 	{
 	  if (c->class == class_user)
-	    show_user_1 (c, gdb_stdout);
+	    show_user_1(c, gdb_stdout);
 	}
     }
 }
 
-/* Search through names of commands and documentations for a certain
-   regular expression.
-*/
-void 
-apropos_command (char *searchstr, int from_tty)
-{
-  extern struct cmd_list_element *cmdlist; /*This is the main command list*/
-  regex_t pattern;
-  char errorbuffer[512];
-  if (searchstr == NULL)
-      error (_("REGEXP string is empty"));
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
-  if (regcomp(&pattern,searchstr,REG_ICASE) == 0)
+/* Search through names of commands and documentations for a certain
+ * regular expression: */
+void
+apropos_command(char *searchstr, int from_tty)
+{
+  regex_t pattern;
+  char errorbuffer[512UL];
+  if (searchstr == NULL)
+      error(_("REGEXP string is empty"));
+
+  if (regcomp(&pattern, searchstr, REG_ICASE) == 0)
     {
-      apropos_cmd (gdb_stdout,cmdlist,&pattern,"");
+      apropos_cmd(gdb_stdout, cmdlist, &pattern, "");
     }
   else
     {
-      regerror(regcomp(&pattern,searchstr,REG_ICASE),NULL,errorbuffer,512);
-      error (_("Error in regular expression:%s"),errorbuffer);
+      regerror(regcomp(&pattern, searchstr, REG_ICASE), NULL, errorbuffer,
+               (size_t)512UL);
+      error(_("Error in regular expression:%s"), errorbuffer);
     }
 }
 
@@ -1092,7 +1107,7 @@ static int
 ambiguous_line_spec (struct symtabs_and_lines *sals)
 {
   int i;
-  /* APPLE LOCAL: Look through the sals to make sure they 
+  /* APPLE LOCAL: Look through the sals to make sure they
      aren't all the same file & line.  */
 
   if (sals->sals[0].symtab != NULL)
@@ -1123,12 +1138,12 @@ ambiguous_line_spec (struct symtabs_and_lines *sals)
 	}
       if (non_matching == 0)
 	return 0;
-    } 
+    }
   /* END APPLE LOCAL  */
   for (i = 0; i < sals->nelts; ++i)
     if (sals->sals[i].symtab != 0)
       printf_filtered ("file: \"%s\", line number: %d\n",
-		       sals->sals[i].symtab->filename != NULL 
+		       sals->sals[i].symtab->filename != NULL
 		       ? sals->sals[i].symtab->filename : "<Unknown File>",
 		       sals->sals[i].line);
     else
@@ -1137,10 +1152,10 @@ ambiguous_line_spec (struct symtabs_and_lines *sals)
 }
 
 static void
-set_debug (char *arg, int from_tty)
+set_debug(char *arg, int from_tty)
 {
-  printf_unfiltered (_("\"set debug\" must be followed by the name of a print subcommand.\n"));
-  help_list (setdebuglist, "set debug ", -1, gdb_stdout);
+  printf_unfiltered(_("\"set debug\" must be followed by the name of a print subcommand.\n"));
+  help_list(setdebuglist, "set debug ", (enum command_class)-1, gdb_stdout);
 }
 
 static void

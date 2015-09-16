@@ -2,8 +2,8 @@
 
 	Assert.h
 	Diagnostics
-	
-	Copyright © Apple Computer,Inc.  1987-1990.
+
+	Copyright (c) Apple Computer,Inc.  1987-1990.
 	All Rights Reserved.
 
 ************************************************************/
@@ -12,21 +12,21 @@
 
 #ifdef NDEBUG
 
-#define assert(ignore) ((void) 0)
+# define assert(ignore) ((void) 0)
 
 #else
 
-#ifdef __cplusplus
+# ifdef __cplusplus
 extern "C" {
-#endif
+# endif /* __cplusplus */
 void __assertprint(const char* file, int line, const char* expr);
-#ifdef __cplusplus
+# ifdef __cplusplus
 }
-#endif
+# endif /* __cplusplus */
 
-#define assert(expression) \
+# define assert(expression) \
 	( (expression) ? (void) 0 : (__assertprint(__FILE__, __LINE__, #expression)) )
-		
-#endif
 
+#endif /* NDEBUG */
 
+/* EOF */

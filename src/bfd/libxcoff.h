@@ -1,4 +1,4 @@
-/* BFD XCOFF object file private structure.
+/* libxcoff.h: BFD XCOFF object file private structure.
    Copyright 2001, 2002, 2005 Free Software Foundation, Inc.
    Written by Tom Rix, Redhat.
 
@@ -21,14 +21,15 @@
 #ifndef LIBXCOFF_H
 #define LIBXCOFF_H
 
+#include "coff/xcoff.h"
+
 /* This is the backend information kept for XCOFF files.  This
    structure is constant for a particular backend.  The first element
    is the COFF backend data structure, so that XCOFF targets can use
    the generic COFF code.  */
-
 struct xcoff_backend_data_rec
 {
-  /* COFF backend information.  */
+  /* COFF backend information: */
   bfd_coff_backend_data coff;
 
   /* Magic number.  */
@@ -76,7 +77,7 @@ struct xcoff_backend_data_rec
     (bfd *, union internal_auxent *, const char *);
 
   /* Line number and relocation overflow.
-     XCOFF32 overflows to another section when the line number or the 
+     XCOFF32 overflows to another section when the line number or the
      relocation count exceeds 0xffff.  XCOFF64 does not overflow.  */
   bfd_boolean (*_xcoff_is_lineno_count_overflow) (bfd *, bfd_vma);
   bfd_boolean (*_xcoff_is_reloc_count_overflow)  (bfd *, bfd_vma);
@@ -86,11 +87,11 @@ struct xcoff_backend_data_rec
      XCOFF64 is offset in .loader header.  */
   bfd_vma (*_xcoff_loader_symbol_offset) (bfd *, struct internal_ldhdr *);
   bfd_vma (*_xcoff_loader_reloc_offset)  (bfd *, struct internal_ldhdr *);
-  
-  /* Global linkage.  The first word of global linkage code must be be 
+
+  /* Global linkage.  The first word of global linkage code must be be
      modified by filling in the correct TOC offset.  */
   unsigned long *_xcoff_glink_code;
-  
+
   /* Size of the global link code in bytes of the xcoff_glink_code table.  */
   unsigned long _xcoff_glink_size;
 
@@ -184,7 +185,7 @@ struct xcoff_backend_data_rec
 #define bfd_xcoff_glink_code(a, b)   ((xcoff_backend (a)->_xcoff_glink_code[(b)]))
 #define bfd_xcoff_glink_code_size(a) ((xcoff_backend (a)->_xcoff_glink_size))
 
-/* Check for the magic number U803XTOCMAGIC or U64_TOCMAGIC for 64 bit 
+/* Check for the magic number U803XTOCMAGIC or U64_TOCMAGIC for 64 bit
    targets.  */
 #define bfd_xcoff_is_xcoff64(a) \
   (   (0x01EF == (bfd_xcoff_magic_number (a))) \

@@ -1,17 +1,17 @@
 /* coff information for HP/Intel IA-64.
-   
+
    Copyright 2000 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2 of the License, or
    (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
@@ -39,7 +39,7 @@
 #define F_LSYMS		(0x0008)
 
 /********************** AOUT "OPTIONAL HEADER" **********************/
-typedef struct 
+typedef struct
 {
   char 	magic[2];		/* type of file				*/
   char	vstamp[2];		/* version stamp			*/
@@ -50,7 +50,7 @@ typedef struct
   char 	text_start[4];		/* base of text used for this file	*/
 #ifndef BFD64
   char 	data_start[4];		/* base of data used for this file	*/
-#endif
+#endif /* !BFD64 */
 }
 AOUTHDR;
 

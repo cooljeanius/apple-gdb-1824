@@ -290,28 +290,27 @@ static int value_history_count;	/* Abs number of last entry stored */
 
 static struct value *all_values;
 
-/* Allocate a  value  that has the correct length for type TYPE.  */
-
+/* Allocate a  value  that has the correct length for type TYPE: */
 struct value *
-allocate_value (struct type *type)
+allocate_value(struct type *type)
 {
   struct value *val;
-  struct type *atype = check_typedef (type);
+  struct type *atype = check_typedef(type);
 
-  val = (struct value *) xzalloc (sizeof (struct value) + TYPE_LENGTH (atype));
+  val = (struct value *)xzalloc(sizeof(struct value) + TYPE_LENGTH(atype));
   val->next = all_values;
   all_values = val;
   val->type = type;
   val->enclosing_type = type;
-  VALUE_LVAL (val) = not_lval;
-  VALUE_ADDRESS (val) = 0;
-  VALUE_FRAME_ID (val) = null_frame_id;
+  VALUE_LVAL(val) = not_lval;
+  VALUE_ADDRESS(val) = 0;
+  VALUE_FRAME_ID(val) = null_frame_id;
   val->offset = 0;
   val->bitpos = 0;
   val->bitsize = 0;
-  VALUE_REGNUM (val) = -1;
+  VALUE_REGNUM(val) = -1;
   val->lazy = 0;
-  val->optimized_out = 0;
+  val->optimized_out = (enum opt_state)0;
   val->embedded_offset = 0;
   val->pointed_to_offset = 0;
   val->modifiable = 1;
@@ -688,20 +687,20 @@ record_latest_value (struct value *val)
      from.  This is a bit dubious, because then *&$1 does not just return $1
      but the current contents of that location.  c'est la vie...  */
   val->modifiable = 0;
-  release_value (val);
+  release_value(val);
 
   /* Here we treat value_history_count as origin-zero
      and applying to the value being stored now.  */
 
-  i = value_history_count % VALUE_HISTORY_CHUNK;
+  i = (value_history_count % VALUE_HISTORY_CHUNK);
   if (i == 0)
     {
-      struct value_history_chunk *new
-      = (struct value_history_chunk *)
-      xmalloc (sizeof (struct value_history_chunk));
-      memset (new->values, 0, sizeof new->values);
-      new->next = value_history_chain;
-      value_history_chain = new;
+      struct value_history_chunk *newchunk =
+        ((struct value_history_chunk *)
+         xmalloc(sizeof(struct value_history_chunk)));
+      memset(newchunk->values, 0, sizeof(newchunk->values));
+      newchunk->next = value_history_chain;
+      value_history_chain = newchunk;
     }
 
   value_history_chain->values[i] = val;
@@ -776,34 +775,34 @@ show_values (char *num_exp, int from_tty)
 {
   int i;
   struct value *val;
-  static int num = 1;
+  static long num = 1;
 
   if (num_exp)
     {
       /* "info history +" should print from the stored position.
          "info history <exp>" should print around value number <exp>.  */
-      if (num_exp[0] != '+' || num_exp[1] != '\0')
-	num = parse_and_eval_long (num_exp) - 5;
+      if ((num_exp[0] != '+') || (num_exp[1] != '\0'))
+	num = (long)(parse_and_eval_long(num_exp) - 5L);
     }
   else
     {
-      /* "info history" means print the last 10 values.  */
-      num = value_history_count - 9;
+      /* "info history" means print the last 10 values: */
+      num = (value_history_count - 9L);
     }
 
-  if (num <= 0)
-    num = 1;
+  if (num <= 0L)
+    num = 1L;
 
-  for (i = num; i < num + 10 && i <= value_history_count; i++)
+  for (i = num; (i < (num + 10L)) && (i <= value_history_count); i++)
     {
-      val = access_value_history (i);
-      printf_filtered (("$%d = "), i);
-      value_print (val, gdb_stdout, 0, Val_pretty_default);
-      printf_filtered (("\n"));
+      val = access_value_history(i);
+      printf_filtered(("$%d = "), i);
+      value_print(val, gdb_stdout, 0, Val_pretty_default);
+      printf_filtered(("\n"));
     }
 
-  /* The next "info history +" should start after what we just printed.  */
-  num += 10;
+  /* The next "info history +" should start after what we just printed: */
+  num += 10L;
 
   /* Hitting just return after this command should do the same thing as
      "info history +".  If num_exp is null, this is unnecessary, since
@@ -971,7 +970,7 @@ value_as_double (struct value *val)
     error (_("Invalid floating value found in program."));
   return foo;
 }
-/* Extract a value as a C pointer. Does not deallocate the value.  
+/* Extract a value as a C pointer. Does not deallocate the value.
    Note that val's type may not actually be a pointer; value_as_long
    handles all the cases.  */
 CORE_ADDR
@@ -1116,13 +1115,13 @@ unpack_long (struct type *type, const gdb_byte *valaddr)
 	return extract_signed_integer_with_byte_order (valaddr, len, TYPE_BYTE_ORDER (type));
 
     case TYPE_CODE_FLT:
-      return extract_typed_floating (valaddr, type);
+      return (LONGEST)extract_typed_floating(valaddr, type);
 
     case TYPE_CODE_PTR:
     case TYPE_CODE_REF:
       /* Assume a CORE_ADDR can fit in a LONGEST (for now).  Not sure
          whether we want this to be true eventually.  */
-      return extract_typed_address (valaddr, type);
+      return extract_typed_address(valaddr, type);
 
     case TYPE_CODE_MEMBER:
       error (_("not implemented: member types in unpack_long"));
@@ -1143,14 +1142,17 @@ DOUBLEST
 unpack_double (struct type *type, const gdb_byte *valaddr, int *invp)
 {
   enum type_code code;
-  int len;
+  size_t len;
   int nosign;
 
   *invp = 0;			/* Assume valid.   */
-  CHECK_TYPEDEF (type);
-  code = TYPE_CODE (type);
-  len = TYPE_LENGTH (type);
-  nosign = TYPE_UNSIGNED (type);
+  CHECK_TYPEDEF(type);
+  code = TYPE_CODE(type);
+  len = TYPE_LENGTH(type);
+  if (!(len > 0UL)) {
+    ; /* ??? */
+  }
+  nosign = TYPE_UNSIGNED(type);
   if (code == TYPE_CODE_FLT)
     {
       /* NOTE: cagney/2002-02-19: There was a test here to see if the
@@ -1173,7 +1175,7 @@ unpack_double (struct type *type, const gdb_byte *valaddr, int *invp)
       if (!floatformat_is_valid (floatformat_from_type (type), valaddr))
 	{
 	  *invp = 1;
-	  return 0.0;
+	  return 0.0f;
 	}
 
       return extract_typed_floating (valaddr, type);
@@ -1259,16 +1261,16 @@ value_static_field (struct type *type, int fieldno)
   return retval;
 }
 
-/* Change the enclosing type of a value object VAL to NEW_ENCL_TYPE.  
-   You have to be careful here, since the size of the data area for the value 
-   is set by the length of the enclosing type.  So if NEW_ENCL_TYPE is bigger 
-   than the old enclosing type, you have to allocate more space for the data.  
+/* Change the enclosing type of a value object VAL to NEW_ENCL_TYPE.
+   You have to be careful here, since the size of the data area for the value
+   is set by the length of the enclosing type.  So if NEW_ENCL_TYPE is bigger
+   than the old enclosing type, you have to allocate more space for the data.
    The return value is a pointer to the new version of this value structure. */
 
 struct value *
 value_change_enclosing_type (struct value *val, struct type *new_encl_type)
 {
-  if (TYPE_LENGTH (new_encl_type) <= TYPE_LENGTH (value_enclosing_type (val))) 
+  if (TYPE_LENGTH (new_encl_type) <= TYPE_LENGTH (value_enclosing_type (val)))
     {
       val->enclosing_type = new_encl_type;
       return val;
@@ -1277,28 +1279,28 @@ value_change_enclosing_type (struct value *val, struct type *new_encl_type)
     {
       struct value *new_val;
       struct value *prev;
-      
+
       new_val = (struct value *) xrealloc (val, sizeof (struct value) + TYPE_LENGTH (new_encl_type));
 
       new_val->enclosing_type = new_encl_type;
- 
+
       /* We have to make sure this ends up in the same place in the value
-	 chain as the original copy, so it's clean-up behavior is the same. 
+	 chain as the original copy, so it's clean-up behavior is the same.
 	 If the value has been released, this is a waste of time, but there
 	 is no way to tell that in advance, so... */
-      
-      if (val != all_values) 
+
+      if (val != all_values)
 	{
 	  for (prev = all_values; prev != NULL; prev = prev->next)
 	    {
-	      if (prev->next == val) 
+	      if (prev->next == val)
 		{
 		  prev->next = new_val;
 		  break;
 		}
 	    }
 	}
-      
+
       return new_val;
     }
 }
@@ -1501,7 +1503,7 @@ unpack_field_as_long (struct type *type, const gdb_byte *valaddr, int fieldno)
 /* Modify the value of a bitfield.  ADDR points to a block of memory in
    target byte order; the bitfield starts in the byte pointed to.  FIELDVAL
    is the desired value of the field, in host byte order.  BITPOS and BITSIZE
-   indicate which bits (in target bit order) comprise the bitfield.  
+   indicate which bits (in target bit order) comprise the bitfield.
    Requires 0 < BITSIZE <= lbits, 0 <= BITPOS+BITSIZE <= lbits, and
    0 <= BITPOS, where lbits is the size of a LONGEST in bits.  */
 
@@ -1672,7 +1674,7 @@ coerce_ref (struct value *arg)
   struct type *value_type_arg_tmp = check_typedef (value_type (arg));
   if (TYPE_CODE (value_type_arg_tmp) == TYPE_CODE_REF)
     arg = value_at_lazy (TYPE_TARGET_TYPE (value_type_arg_tmp),
-			 unpack_pointer (value_type (arg),		
+			 unpack_pointer (value_type (arg),
 					 value_contents (arg)));
   return arg;
 }

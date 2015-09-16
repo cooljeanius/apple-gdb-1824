@@ -1,4 +1,4 @@
-/****************************************************************************
+/**************************************************************************
 
 		THIS SOFTWARE IS NOT COPYRIGHTED
 
@@ -10,9 +10,9 @@
    TO THIS SOFTWARE INCLUDING BUT NOT LIMITED TO THE WARRANTIES
    OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
-****************************************************************************/
+**************************************************************************/
 
-/****************************************************************************
+/**************************************************************************
  *  Header: remcom.c,v 1.34 91/03/09 12:29:49 glenne Exp $
  *
  *  Module name: remcom.c $
@@ -87,7 +87,7 @@
  * Host:                  Reply:
  * $m0,10#2a               +$00010203040506070809101112131415#42
  *
- ****************************************************************************/
+ *************************************************************************/
 
 #include <stdio.h>
 #include <string.h>
@@ -765,17 +765,17 @@ handle_exception (int exceptionVector)
   *ptr++ = hexchars[sigval >> 4];
   *ptr++ = hexchars[sigval & 0xf];
 
-  *ptr++ = hexchars[ESP]; 
+  *ptr++ = hexchars[ESP];
   *ptr++ = ':';
   ptr = mem2hex((char *)&registers[ESP], ptr, 4, 0);	/* SP */
   *ptr++ = ';';
 
-  *ptr++ = hexchars[EBP]; 
+  *ptr++ = hexchars[EBP];
   *ptr++ = ':';
   ptr = mem2hex((char *)&registers[EBP], ptr, 4, 0); 	/* FP */
   *ptr++ = ';';
 
-  *ptr++ = hexchars[PC]; 
+  *ptr++ = hexchars[PC];
   *ptr++ = ':';
   ptr = mem2hex((char *)&registers[PC], ptr, 4, 0); 	/* PC */
   *ptr++ = ';';

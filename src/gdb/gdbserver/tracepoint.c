@@ -1,4 +1,5 @@
-/* Tracepoint code for remote server for GDB.
+/* tracepoint.c
+   Tracepoint code for remote server for GDB.
    Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -36,7 +37,7 @@
 
 /* This file is built for both GDBserver, and the in-process
    agent (IPA), a shared library that includes a tracing agent that is
-   loaded by the inferior to support fast tracepoints.  Fast
+   loaded by the inferior to support fast tracepoints. Fast
    tracepoints (or more accurately, jump based tracepoints) are
    implemented by patching the tracepoint location with a jump into a
    small trampoline function whose job is to save the register state,
@@ -44,17 +45,17 @@
    instruction that was under the tracepoint jump (possibly adjusted,
    if PC-relative, or some such).
 
-   The current synchronization design is pull based.  That means,
+   The current synchronization design is pull based. That means,
    GDBserver does most of the work, by peeking/poking at the inferior
    agent's memory directly for downloading tracepoint and associated
-   objects, and for uploading trace frames.  Whenever the IPA needs
+   objects, and for uploading trace frames. Whenever the IPA needs
    something from GDBserver (trace buffer is full, tracing stopped for
    some reason, etc.) the IPA calls a corresponding hook function
    where GDBserver has placed a breakpoint.
 
-   Each of the agents has its own trace buffer.  When browsing the
+   Each of the agents has its own trace buffer. When browsing the
    trace frames built from slow and fast tracepoints from GDB (tfind
-   mode), there's no guarantee the user is seeing the trace frames in
+   mode), there is no guarantee the user is seeing the trace frames in
    strict chronological creation order, although, GDBserver tries to
    keep the order relatively reasonable, by syncing the trace buffers
    at appropriate times.
@@ -92,7 +93,7 @@ trace_vdebug (const char *fmt, ...)
 #  define ATTR_USED
 #  define ATTR_NOINLINE
 #  define ATTR_CONSTRUCTOR
-#endif
+#endif /* __GNUC__ */
 
 /* Make sure the functions the IPA needs to export (symbols GDBserver
    needs to query GDB about) are exported.  */
@@ -106,13 +107,13 @@ trace_vdebug (const char *fmt, ...)
   __attribute__ ((visibility("default"))) ATTR_USED
 #   else
 #     define IP_AGENT_EXPORT ATTR_USED
-#   endif
-# endif
+#   endif /* GCC 4+ */
+# endif /* _WIN32 || __CYGWIN__ */
 #else
 #  define IP_AGENT_EXPORT
-#endif
+#endif /* IN_PROCESS_AGENT */
 
-/* Prefix exported symbols, for good citizenship.  All the symbols
+/* Prefix exported symbols, for good citizenship. All the symbols
    that need exporting are defined in this module.  */
 #ifdef IN_PROCESS_AGENT
 # define gdb_tp_heap_buffer gdb_agent_gdb_tp_heap_buffer
@@ -148,7 +149,7 @@ trace_vdebug (const char *fmt, ...)
 # define ust_loaded gdb_agent_ust_loaded
 # define helper_thread_id gdb_agent_helper_thread_id
 # define cmd_buf gdb_agent_cmd_buf
-#endif
+#endif /* IN_PROCESS_AGENT */
 
 #ifndef IN_PROCESS_AGENT
 
@@ -267,7 +268,7 @@ write_e_ipa_not_loaded (char *buffer)
 	   "Fast and static tracepoints unavailable.");
 }
 
-/* Write an error to BUFFER indicating that UST isn't loaded in the
+/* Write an error to BUFFER indicating that UST is NOT loaded in the
    inferior.  */
 
 static void
@@ -279,11 +280,11 @@ write_e_ust_not_loaded (char *buffer)
 	   "Static tracepoints unavailable.");
 #else
   sprintf (buffer, "E.GDBserver was built without static tracepoints support");
-#endif
+#endif /* HAVE_UST */
 }
 
-/* If the in-process agent library isn't loaded in the inferior, write
-   an error to BUFFER, and return 1.  Otherwise, return 0.  */
+/* If the in-process agent library is NOT loaded in the inferior, write
+   an error to BUFFER, and return 1. Otherwise, return 0.  */
 
 static int
 maybe_write_ipa_not_loaded (char *buffer)
@@ -297,8 +298,8 @@ maybe_write_ipa_not_loaded (char *buffer)
 }
 
 /* If the in-process agent library and the ust (static tracepoints)
-   library aren't loaded in the inferior, write an error to BUFFER,
-   and return 1.  Otherwise, return 0.  */
+   library are NOT loaded in the inferior, write an error to BUFFER,
+   and return 1. Otherwise, return 0.  */
 
 static int
 maybe_write_ipa_ust_not_loaded (char *buffer)
@@ -346,7 +347,7 @@ tracepoint_look_up_symbols (void)
   agent_look_up_symbols (NULL);
 }
 
-#endif
+#endif /* !IN_PROCESS_AGENT (far up) */
 
 /* GDBserver places a breakpoint on the IPA's version (which is a nop)
    of the "stop_tracing" function.  When this breakpoint is hit,
@@ -370,15 +371,15 @@ read_inferior_memory (CORE_ADDR memaddr, unsigned char *myaddr, int len)
 }
 
 /* Call this in the functions where GDBserver places a breakpoint, so
-   that the compiler doesn't try to be clever and skip calling the
-   function at all.  This is necessary, even if we tell the compiler
+   that the compiler does NOT try to be clever and skip calling the
+   function at all. This is necessary, even if we tell the compiler
    to not inline said functions.  */
 
 #if defined(__GNUC__)
 #  define UNKNOWN_SIDE_EFFECTS() asm ("")
 #else
 #  define UNKNOWN_SIDE_EFFECTS() do {} while (0)
-#endif
+#endif /* __GNUC__ */
 
 IP_AGENT_EXPORT void ATTR_USED ATTR_NOINLINE
 stop_tracing (void)
@@ -394,7 +395,7 @@ flush_trace_buffer (void)
   UNKNOWN_SIDE_EFFECTS();
 }
 
-#endif
+#endif /* IN_PROCESS_AGENT */
 
 #ifndef IN_PROCESS_AGENT
 static int
@@ -475,7 +476,7 @@ static int write_inferior_data_ptr (CORE_ADDR where, CORE_ADDR ptr);
     BUF += sizeof ((OBJ)->FIELD);			\
   } while (0)
 
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
 /* Operations on various types of tracepoint actions.  */
 
@@ -483,7 +484,7 @@ struct tracepoint_action;
 
 struct tracepoint_action_ops
 {
-  /* Download tracepoint action ACTION to IPA.  Return the address of action
+  /* Download tracepoint action ACTION to IPA. Return the address of action
      in IPA/inferior.  */
   CORE_ADDR (*download) (const struct tracepoint_action *action);
 
@@ -498,7 +499,7 @@ struct tracepoint_action
 {
 #ifndef IN_PROCESS_AGENT
   const struct tracepoint_action_ops *ops;
-#endif
+#endif /* !IN_PROCESS_AGENT */
   char type;
 };
 
@@ -673,7 +674,7 @@ static const struct tracepoint_action_ops l_tracepoint_action_ops =
   l_tracepoint_action_download,
   l_tracepoint_action_send,
 };
-#endif
+#endif /* !IN_PROCESS_AGENT (far up) */
 
 /* This structure describes a piece of the source-level definition of
    the tracepoint.  The contents are not interpreted by the target,
@@ -757,7 +758,7 @@ struct tracepoint
   uint32_t numactions;
   struct tracepoint_action **actions;
 
-  /* Count of the times we've hit this tracepoint during the run.
+  /* Count of the times we have hit this tracepoint during the run.
      Note that while-stepping steps are not counted as "hits".  */
   uint64_t hit_count;
 
@@ -814,9 +815,9 @@ struct tracepoint
 
   /* Handle returned by the breakpoint or tracepoint module when we
      inserted the trap or jump, or hooked into a static tracepoint.
-     NULL if we haven't inserted it yet.  */
+     NULL if we have NOT inserted it yet.  */
   void *handle;
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
 };
 
@@ -844,10 +845,10 @@ struct wstep_state
   long current_step;
 };
 
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
-/* The linked list of all tracepoints.  Marked explicitly as used as
-   the in-process library doesn't use it for the fast tracepoints
+/* The linked list of all tracepoints. Marked explicitly as used as
+   the in-process library does NOT use it for the fast tracepoints
    support.  */
 IP_AGENT_EXPORT struct tracepoint *tracepoints ATTR_USED;
 
@@ -857,7 +858,7 @@ IP_AGENT_EXPORT struct tracepoint *tracepoints ATTR_USED;
    linked in at the end.  */
 
 static struct tracepoint *last_tracepoint;
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
 /* The first tracepoint to exceed its pass count.  */
 
@@ -883,7 +884,7 @@ static const char *eval_result_names[] =
     "terror:divide by zero"
   };
 
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
 /* The tracepoint in which the error occurred.  */
 
@@ -891,8 +892,8 @@ static struct tracepoint *error_tracepoint;
 
 struct trace_state_variable
 {
-  /* This is the name of the variable as used in GDB.  The target
-     doesn't use the name, but needs to have it for saving and
+  /* This is the name of the variable as used in GDB. The target
+     does NOT use the name, but needs to have it for saving and
      reconnection purposes.  */
   char *name;
 
@@ -919,22 +920,22 @@ struct trace_state_variable
 
 #ifdef IN_PROCESS_AGENT
 struct trace_state_variable *alloced_trace_state_variables;
-#endif
+#endif /* IN_PROCESS_AGENT */
 
 IP_AGENT_EXPORT struct trace_state_variable *trace_state_variables;
 
 /* The results of tracing go into a fixed-size space known as the
-   "trace buffer".  Because usage follows a limited number of
-   patterns, we manage it ourselves rather than with malloc.  Basic
+   "trace buffer". Because usage follows a limited number of
+   patterns, we manage it ourselves rather than with malloc. Basic
    rules are that we create only one trace frame at a time, each is
    variable in size, they are never moved once created, and we only
    discard if we are doing a circular buffer, and then only the oldest
-   ones.  Each trace frame includes its own size, so we don't need to
+   ones. Each trace frame includes its own size, so we do NOT need to
    link them together, and the trace frame number is relative to the
-   first one, so we don't need to record numbers.  A trace frame also
-   records the number of the tracepoint that created it.  The data
+   first one, so we do NOT need to record numbers. A trace frame also
+   records the number of the tracepoint that created it. The data
    itself is a series of blocks, each introduced by a single character
-   and with a defined format.  Each type of block has enough
+   and with a defined format. Each type of block has enough
    type/length info to allow scanners to jump quickly from one block
    to the next without reading each byte in the block.  */
 
@@ -955,10 +956,10 @@ IP_AGENT_EXPORT struct trace_state_variable *trace_state_variables;
 #    define ATTR_PACKED __attribute__ ((packed))
 #  else
 #    define ATTR_PACKED /* nothing */
-#  endif
-#endif
+#  endif /* __GNUC__ */
+#endif /* !ATTR_PACKED */
 
-/* The data collected at a tracepoint hit.  This object should be as
+/* The data collected at a tracepoint hit. This object should be as
    small as possible, since there may be a great many of them.  We do
    not need to keep a frame number, because they are all sequential
    and there are no deletions; so the Nth frame in the buffer is
@@ -966,14 +967,14 @@ IP_AGENT_EXPORT struct trace_state_variable *trace_state_variables;
 
 struct traceframe
 {
-  /* Number of the tracepoint that collected this traceframe.  A value
-     of 0 indicates the current end of the trace buffer.  We make this
-     a 16-bit field because it's never going to happen that GDB's
+  /* Number of the tracepoint that collected this traceframe. A value
+     of 0 indicates the current end of the trace buffer. We make this
+     a 16-bit field because it is never going to happen that GDB's
      numbering of tracepoints reaches 32,000.  */
   int tpnum : 16;
 
-  /* The size of the data in this trace frame.  We limit this to 32
-     bits, even on a 64-bit target, because it's just implausible that
+  /* The size of the data in this trace frame. We limit this to 32
+     bits, even on a 64-bit target, because it is just implausible that
      one is validly going to collect 4 gigabytes of data at a single
      tracepoint hit.  */
   unsigned int data_size : 32;
@@ -998,7 +999,7 @@ int current_traceframe = -1;
 
 #ifndef IN_PROCESS_AGENT
 static int circular_trace_buffer;
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
 /* Size of the trace buffer.  */
 
@@ -1056,29 +1057,29 @@ struct ipa_trace_buffer_control
 
 
 /* We have possibly both GDBserver and an inferior thread accessing
-   the same IPA trace buffer memory.  The IPA is the producer (tries
+   the same IPA trace buffer memory. The IPA is the producer (tries
    to put new frames in the buffer), while GDBserver occasionally
    consumes them, that is, flushes the IPA's buffer into its own
-   buffer.  Both sides need to update the trace buffer control
-   pointers (current head, tail, etc.).  We can't use a global lock to
+   buffer. Both sides need to update the trace buffer control
+   pointers (current head, tail, etc.). We cannot use a global lock to
    synchronize the accesses, as otherwise we could deadlock GDBserver
-   (if the thread holding the lock stops for a signal, say).  So
+   (if the thread holding the lock stops for a signal, say). So
    instead of that, we use a transaction scheme where GDBserver writes
    always prevail over the IPAs writes, and, we have the IPA detect
-   the commit failure/overwrite, and retry the whole attempt.  This is
+   the commit failure/overwrite, and retry the whole attempt. This is
    mainly implemented by having a global token object that represents
-   who wrote last to the buffer control structure.  We need to freeze
+   who wrote last to the buffer control structure. We need to freeze
    any inferior writing to the buffer while GDBserver touches memory,
    so that the inferior can correctly detect that GDBserver had been
    there, otherwise, it could mistakingly think its commit was
-   successful; that's implemented by simply having GDBserver set a
+   successful; that is implemented by simply having GDBserver set a
    breakpoint the inferior hits if it is the critical region.
 
    There are three cycling trace buffer control structure copies
    (buffer head, tail, etc.), with the token object including an index
-   indicating which is current live copy.  The IPA tentatively builds
+   indicating which is current live copy. The IPA tentatively builds
    an updated copy in a non-current control structure, while GDBserver
-   always clobbers the current version directly.  The IPA then tries
+   always clobbers the current version directly. The IPA then tries
    to atomically "commit" its version; if GDBserver clobbered the
    structure meanwhile, that will fail, and the IPA restarts the
    allocation process.
@@ -1121,7 +1122,7 @@ struct ipa_trace_buffer_control
   - removes the `about_to_request_buffer_space' breakpoint.
 
 The token is stored in the `trace_buffer_ctrl_curr' variable.
-Internally, it's bits are defined as:
+Internally, its bits are defined as:
 
  |-------------+-----+-------------+--------+-------------+--------------|
  | Bit offsets |  31 |   30 - 20   |   19   |    18-8     |     7-0      |
@@ -1149,19 +1150,19 @@ A GDBserver update of `trace_buffer_ctrl_curr' does:
 */
 
 /* These are the bits of `trace_buffer_ctrl_curr' that are reserved
-   for the counters described below.  The cleared bits are used to
-   hold the index of the items of the `trace_buffer_ctrl' array that
-   is "current".  */
+ * for the counters described below. The cleared bits are used to
+ * hold the index of the items of the `trace_buffer_ctrl' array that
+ * is "current".  */
 #define GDBSERVER_FLUSH_COUNT_MASK        0xfffffff0
 
-/* `trace_buffer_ctrl_curr' contains two counters.  The `previous'
-   counter, and the `current' counter.  */
+/* `trace_buffer_ctrl_curr' contains two counters. The `previous'
+ * counter, and the `current' counter.  */
 
 #define GDBSERVER_FLUSH_COUNT_MASK_PREV   0x7ff00000
 #define GDBSERVER_FLUSH_COUNT_MASK_CURR   0x0007ff00
 
 /* When GDBserver update the IP agent's `trace_buffer_ctrl_curr', it
-   always stamps this bit as set.  */
+ * always stamps this bit as set.  */
 #define GDBSERVER_UPDATED_FLUSH_COUNT_BIT 0x80000000
 
 #ifdef IN_PROCESS_AGENT
@@ -1174,12 +1175,12 @@ IP_AGENT_EXPORT unsigned int trace_buffer_ctrl_curr;
 #else
 
 /* The GDBserver side agent only needs one instance of this object, as
-   it doesn't need to sync with itself.  Define it as array anyway so
-   that the rest of the code base doesn't need to care for the
+   it does NOT need to sync with itself. Define it as array anyway so
+   that the rest of the code base does NOT need to care for the
    difference.  */
 struct trace_buffer_control trace_buffer_ctrl[1];
 # define TRACE_BUFFER_CTRL_CURR 0
-#endif
+#endif /* IN_PROCESS_AGENT */
 
 /* These are convenience macros used to access the current trace
    buffer control in effect.  */
@@ -1226,12 +1227,12 @@ IP_AGENT_EXPORT int traceframes_created;
 
 #ifndef IN_PROCESS_AGENT
 
-/* Read-only regions are address ranges whose contents don't change,
+/* Read-only regions are address ranges whose contents do NOT change,
    and so can be read from target memory even while looking at a trace
-   frame.  Without these, disassembly for instance will likely fail,
+   frame. Without these, disassembly for instance will likely fail,
    because the program code is not usually collected into a trace
-   frame.  This data structure does not need to be very complicated or
-   particularly efficient, it's only going to be used occasionally,
+   frame. This data structure does not need to be very complicated or
+   particularly efficient, it is only going to be used occasionally,
    and only by some commands.  */
 
 struct readonly_region
@@ -1243,12 +1244,12 @@ struct readonly_region
   struct readonly_region *next;
 };
 
-/* Linked list of readonly regions.  This list stays in effect from
+/* Linked list of readonly regions. This list stays in effect from
    one tstart to the next.  */
 
 static struct readonly_region *readonly_regions;
 
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
 /* The global that controls tracing overall.  */
 
@@ -1260,7 +1261,7 @@ IP_AGENT_EXPORT int tracing;
 
 int disconnected_tracing;
 
-/* The reason for the last tracing run to have stopped.  We initialize
+/* The reason for the last tracing run to have stopped. We initialize
    to a distinct string so that GDB can distinguish between "stopped
    after running" and "stopped because never run" cases.  */
 
@@ -1279,17 +1280,17 @@ LONGEST tracing_stop_time;
 
 char *tracing_user_name;
 
-/* Optional user-supplied text describing the run.  This is
+/* Optional user-supplied text describing the run. This is
    an arbitrary string, and may be NULL.  */
 
 char *tracing_notes;
 
-/* Optional user-supplied text explaining a tstop command.  This is an
+/* Optional user-supplied text explaining a tstop command. This is an
    arbitrary string, and may be NULL.  */
 
 char *tracing_stop_note;
 
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
 /* Functions local to this file.  */
 
@@ -1356,12 +1357,12 @@ struct trap_tracepoint_ctx
   struct regcache *regcache;
 };
 
-#endif
+#endif /* IN_PROCESS_AGENT */
 
 #ifndef IN_PROCESS_AGENT
 static CORE_ADDR traceframe_get_pc (struct traceframe *tframe);
 static int traceframe_read_tsv (int num, LONGEST *val);
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
 static int condition_true_at_tracepoint (struct tracepoint_hit_ctx *ctx,
 					 struct tracepoint *tpoint);
@@ -1369,7 +1370,7 @@ static int condition_true_at_tracepoint (struct tracepoint_hit_ctx *ctx,
 #ifndef IN_PROCESS_AGENT
 static void clear_readonly_regions (void);
 static void clear_installed_tracepoints (void);
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
 static void collect_data_at_tracepoint (struct tracepoint_hit_ctx *ctx,
 					CORE_ADDR stop_pc,
@@ -1380,7 +1381,7 @@ static void collect_data_at_step (struct tracepoint_hit_ctx *ctx,
 				  struct tracepoint *tpoint, int current_step);
 static void compile_tracepoint_condition (struct tracepoint *tpoint,
 					  CORE_ADDR *jump_entry);
-#endif
+#endif /* !IN_PROCESS_AGENT */
 static void do_action_at_tracepoint (struct tracepoint_hit_ctx *ctx,
 				     CORE_ADDR stop_pc,
 				     struct tracepoint *tpoint,
@@ -1395,7 +1396,7 @@ static void download_tracepoint (struct tracepoint *);
 static int install_fast_tracepoint (struct tracepoint *, char *errbuf);
 static void clone_fast_tracepoint (struct tracepoint *to,
 				   const struct tracepoint *from);
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
 static LONGEST get_timestamp (void);
 
@@ -1403,10 +1404,10 @@ static LONGEST get_timestamp (void);
 #  define memory_barrier() asm volatile ("" : : : "memory")
 #else
 #  define memory_barrier() do {} while (0)
-#endif
+#endif /* __GNUC__ */
 
 /* We only build the IPA if this builtin is supported, and there are
-   no uses of this in GDBserver itself, so we're safe in defining this
+   no uses of this in GDBserver itself, so we are safe in defining this
    unconditionally.  */
 #define cmpxchg(mem, oldval, newval) \
   __sync_val_compare_and_swap (mem, oldval, newval)
@@ -1423,13 +1424,14 @@ record_tracepoint_error (struct tracepoint *tpoint, const char *which,
 #ifdef IN_PROCESS_AGENT
   /* Only record the first error we get.  */
   if (cmpxchg (&expr_eval_result,
-	       expr_eval_no_error,
-	       rtype) != expr_eval_no_error)
-    return;
+			   expr_eval_no_error,
+			   rtype) != expr_eval_no_error) {
+	  return;
+  }
 #else
   if (expr_eval_result != expr_eval_no_error)
     return;
-#endif
+#endif /* IN_PROCESS_AGENT */
 
   error_tracepoint = tpoint;
 }
@@ -1487,7 +1489,7 @@ clear_inferior_trace_buffer (void)
   write_inferior_integer (ipa_sym_addrs.addr_traceframes_created, 0);
 }
 
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
 static void
 init_trace_buffer (LONGEST bufsize)
@@ -1517,7 +1519,7 @@ about_to_request_buffer_space (void)
   UNKNOWN_SIDE_EFFECTS();
 }
 
-#endif
+#endif /* IN_PROCESS_AGENT */
 
 /* Carve out a piece of the trace buffer, returning NULL in case of
    failure.  */
@@ -1536,7 +1538,7 @@ trace_buffer_alloc (size_t amt)
 #else
   struct traceframe *oldest;
   unsigned char *new_start;
-#endif
+#endif /* IN_PROCESS_AGENT */
 
   trace_debug ("Want to allocate %ld+%ld bytes in trace buffer",
 	       (long) amt, (long) sizeof (struct traceframe));
@@ -1559,16 +1561,16 @@ trace_buffer_alloc (size_t amt)
   about_to_request_buffer_space ();
 
   /* Start out with a copy of the current state.  GDBserver may be
-     midway writing to the PREV_FILTERED TBC, but, that's OK, we won't
+     midway writing to the PREV_FILTERED TBC, but, that is OK, we will NOT
      be able to commit anyway if that happens.  */
   trace_buffer_ctrl[curr]
     = trace_buffer_ctrl[prev_filtered];
   trace_debug ("trying curr=%u", curr);
 #else
-  /* The GDBserver's agent doesn't need all that syncing, and always
-     updates TCB 0 (there's only one, mind you).  */
+  /* The GDBserver's agent does NOT need all that syncing, and always
+     updates TCB 0 (there is only one, mind you).  */
   curr = 0;
-#endif
+#endif /* IN_PROCESS_AGENT */
   tbctrl = &trace_buffer_ctrl[curr];
 
   /* Offsets are easier to grok for debugging than raw addresses,
@@ -1584,7 +1586,7 @@ trace_buffer_alloc (size_t amt)
 
   /* The algorithm here is to keep trying to get a contiguous block of
      the requested size, possibly discarding older traceframes to free
-     up space.  Since free space might come in one or two pieces,
+     up space. Since free space might come in one or two pieces,
      depending on whether discarded traceframes wrapped around at the
      high end of the buffer, we test both pieces after each
      discard.  */
@@ -1598,10 +1600,10 @@ trace_buffer_alloc (size_t amt)
 	    break;
 	  else
 	    {
-	      /* Our high part of free space wasn't enough.  Give up
-		 on it for now, set wraparound.  We will recover the
-		 space later, if/when the wrapped-around traceframe is
-		 discarded.  */
+	      /* Our high part of free space was NOT enough. Give up
+	       * on it for now, set wraparound. We will recover the
+	       * space later, if/when the wrapped-around traceframe is
+	       * discarded.  */
 	      trace_debug ("Upper part too small, setting wraparound");
 	      tbctrl->wrap = tbctrl->free;
 	      tbctrl->free = trace_buffer_lo;
@@ -1613,10 +1615,10 @@ trace_buffer_alloc (size_t amt)
 	break;
 
 #ifdef IN_PROCESS_AGENT
-      /* The IP Agent's buffer is always circular.  It isn't used
-	 currently, but `circular_trace_buffer' could represent
-	 GDBserver's mode.  If we didn't find space, ask GDBserver to
-	 flush.  */
+      /* The IP Agent's buffer is always circular. It is NOT used
+       * currently, but `circular_trace_buffer' could represent
+       * GDBserver's mode. If we did NOT find space, ask GDBserver to
+       * flush.  */
 
       flush_trace_buffer ();
       memory_barrier ();
@@ -1629,8 +1631,8 @@ trace_buffer_alloc (size_t amt)
       /* GDBserver cancelled the tracing.  Bail out as well.  */
       return NULL;
 #else
-      /* If we're here, then neither part is big enough, and
-	 non-circular trace buffers are now full.  */
+      /* If we are here, then neither part is big enough, and
+       * non-circular trace buffers are now full.  */
       if (!circular_trace_buffer)
 	{
 	  trace_debug ("Not enough space in the trace buffer");
@@ -1640,22 +1642,22 @@ trace_buffer_alloc (size_t amt)
       trace_debug ("Need more space in the trace buffer");
 
       /* If we have a circular buffer, we can try discarding the
-	 oldest traceframe and see if that helps.  */
+       * oldest traceframe and see if that helps.  */
       oldest = FIRST_TRACEFRAME ();
       if (oldest->tpnum == 0)
 	{
-	  /* Not good; we have no traceframes to free.  Perhaps we're
-	     asking for a block that is larger than the buffer?  In
+	  /* Not good; we have no traceframes to free. Perhaps we are
+	     asking for a block that is larger than the buffer? In
 	     any case, give up.  */
 	  trace_debug ("No traceframes to discard");
 	  return NULL;
 	}
 
-      /* We don't run this code in the in-process agent currently.
-	 E.g., we could leave the in-process agent in autonomous
-	 circular mode if we only have fast tracepoints.  If we do
-	 that, then this bit becomes racy with GDBserver, which also
-	 writes to this counter.  */
+      /* We do NOT run this code in the in-process agent currently.
+       * E.g., we could leave the in-process agent in autonomous
+       * circular mode if we only have fast tracepoints. If we do
+       * that, then this bit becomes racy with GDBserver, which also
+       * writes to this counter.  */
       --traceframe_write_count;
 
       new_start = (unsigned char *) NEXT_TRACEFRAME (oldest);
@@ -1680,9 +1682,9 @@ trace_buffer_alloc (size_t amt)
 		   (int) (trace_buffer_hi - trace_buffer_lo));
 
       /* Now go back around the loop.  The discard might have resulted
-	 in either one or two pieces of free space, so we want to try
-	 both before freeing any more traceframes.  */
-#endif
+       * in either one or two pieces of free space, so we want to try
+       * both before freeing any more traceframes.  */
+#endif /* IN_PROCESS_AGENT */
     }
 
   /* If we get here, we know we can provide the asked-for space.  */
@@ -1690,12 +1692,12 @@ trace_buffer_alloc (size_t amt)
   rslt = tbctrl->free;
 
   /* Adjust the request back down, now that we know we have space for
-     the marker, but don't commit to AMT yet, we may still need to
+     the marker, but do NOT commit to AMT yet, we may still need to
      restart the operation if GDBserver touches the trace buffer
      (obviously only important in the in-process agent's version).  */
   tbctrl->free += (amt - sizeof (struct traceframe));
 
-  /* Or not.  If GDBserver changed the trace buffer behind our back,
+  /* Or not. If GDBserver changed the trace buffer behind our back,
      we get to restart a new allocation attempt.  */
 
 #ifdef IN_PROCESS_AGENT
@@ -1750,9 +1752,9 @@ trace_buffer_alloc (size_t amt)
 	goto again;
       }
   }
-#endif
+#endif /* IN_PROCESS_AGENT */
 
-  /* We have a new piece of the trace buffer.  Hurray!  */
+  /* We have a new piece of the trace buffer. Hurray!  */
 
   /* Add an EOB marker just past this allocation.  */
   ((struct traceframe *) tbctrl->free)->tpnum = 0;
@@ -1825,7 +1827,7 @@ add_tracepoint (int num, CORE_ADDR addr)
   tpoint->next = NULL;
 
   /* Find a place to insert this tracepoint into list in order to keep
-     the tracepoint list still in the ascending order.  There may be
+     the tracepoint list still in the ascending order. There may be
      multiple tracepoints at the same address as TPOINT's, and this
      guarantees TPOINT is inserted after all the tracepoints which are
      set at the same address.  For example, fast tracepoints A, B, C are
@@ -1841,7 +1843,7 @@ add_tracepoint (int num, CORE_ADDR addr)
      -->| D |-->| A |--> | B |-->| C |->...
 
      without updating jump pad, D is not reachable during collect, which
-     is wrong.  As we can see, the order of B, C and D doesn't matter, but
+     is wrong.  As we can see, the order of B, C and D does NOT matter, but
      A should always be the `first' one.  */
   for (tp_next = &tracepoints;
        (*tp_next) != NULL && (*tp_next)->address <= tpoint->address;
@@ -1915,7 +1917,7 @@ find_next_tracepoint_by_number (struct tracepoint *prev_tp, int num)
   return NULL;
 }
 
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
 /* Append another action to perform when the tracepoint triggers.  */
 
@@ -2055,7 +2057,7 @@ add_tracepoint_action (struct tracepoint *tpoint, char *packet)
     }
 }
 
-#endif
+#endif /* ? */
 
 /* Find or create a trace state variable with the given number.  */
 
@@ -2069,7 +2071,7 @@ get_trace_state_variable (int num)
   for (tsv = alloced_trace_state_variables; tsv; tsv = tsv->next)
     if (tsv->number == num)
       return tsv;
-#endif
+#endif /* IN_PROCESS_AGENT */
 
   /* Search for an existing variable.  */
   for (tsv = trace_state_variables; tsv; tsv = tsv->next)
@@ -2104,7 +2106,7 @@ create_trace_state_variable (int num, int gdb)
       alloced_trace_state_variables = tsv;
     }
   else
-#endif
+#endif /* IN_PROCESS_AGENT */
     {
       tsv->next = trace_state_variables;
       trace_state_variables = tsv;
@@ -2125,7 +2127,7 @@ get_trace_state_variable_value (int num)
       return 0;
     }
 
-  /* Call a getter function if we have one.  While it's tempting to
+  /* Call a getter function if we have one.  While it is tempting to
      set up something to only call the getter once per tracepoint hit,
      it could run afoul of thread races. Better to let the getter
      handle it directly, if necessary to worry about it.  */
@@ -2351,7 +2353,7 @@ find_next_traceframe_by_tracepoint (int num, int *tfnump)
   return NULL;
 }
 
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
 #ifndef IN_PROCESS_AGENT
 
@@ -2362,7 +2364,7 @@ cmd_qtinit (char *packet)
 {
   struct trace_state_variable *tsv, *prev, *next;
 
-  /* Make sure we don't try to read from a trace frame.  */
+  /* Make sure we do NOT try to read from a trace frame.  */
   current_traceframe = -1;
 
   stop_tracing ();
@@ -2375,7 +2377,7 @@ cmd_qtinit (char *packet)
   tracepoints = NULL;
   last_tracepoint = NULL;
 
-  /* Clear out any leftover trace state variables.  Ones with target
+  /* Clear out any leftover trace state variables. Ones with target
      defined getters should be kept however.  */
   prev = NULL;
   tsv = trace_state_variables;
@@ -2593,7 +2595,7 @@ cmd_qtdp (char *own_buf)
       pause_all (0);
 
       /* download_tracepoint will update global `tracepoints'
-	 list, so it is unsafe to leave threads in jump pad.  */
+       * list, so it is unsafe to leave threads in jump pad.  */
       stabilize_threads ();
 
       /* Freeze threads.  */
@@ -2790,10 +2792,10 @@ cmd_qtenable_disable (char *own_buf, int enable)
 	      write_enn (own_buf);
 	      return;
 	    }
-	  
+
 	  ret = write_inferior_integer (obj_addr, enable);
 	  done_accessing_memory ();
-	  
+
 	  if (ret)
 	    {
 	      trace_debug ("Cannot write enabled flag into "
@@ -2833,7 +2835,7 @@ cmd_qtv (char *own_buf)
 	  return;
 	}
     }
-  /* Only make tsv's be undefined before the first trace run.  After a
+  /* Only make tsv's be undefined before the first trace run. After a
      trace run is over, the user might want to see the last value of
      the tsv, and it might not be available in a traceframe.  */
   else if (!tracing && strcmp (tracing_stop_reason, "tnotrun") == 0)
@@ -3004,7 +3006,7 @@ have_fast_tracepoint_trampoline_buffer (char *buf)
       fatal ("error extracting trampoline_buffer_end");
       return 0;
     }
-  
+
   if (buf)
     {
       buf[0] = '\0';
@@ -3151,7 +3153,7 @@ install_tracepoint (struct tracepoint *tpoint, char *own_buf)
       if (!agent_loaded_p ())
 	{
 	  trace_debug ("Requested a %s tracepoint, but fast "
-		       "tracepoints aren't supported.",
+		       "tracepoints are not supported.",
 		       tpoint->type == static_tracepoint ? "static" : "fast");
 	  write_e_ipa_not_loaded (own_buf);
 	  return;
@@ -3199,8 +3201,8 @@ cmd_qtstart (char *packet)
   /* Pause all threads temporarily while we patch tracepoints.  */
   pause_all (0);
 
-  /* Get threads out of jump pads.  Safe to do here, since this is a
-     top level command.  And, required to do here, since we're
+  /* Get threads out of jump pads. Safe to do here, since this is a
+     top level command. And, required to do here, since we are
      deleting/rewriting jump pads.  */
 
   stabilize_threads ();
@@ -3234,7 +3236,7 @@ cmd_qtstart (char *packet)
       if (tpoint->type == trap_tracepoint)
 	{
 	  /* Tracepoints are installed as memory breakpoints.  Just go
-	     ahead and install the trap.  The breakpoints module
+	     ahead and install the trap. The breakpoints module
 	     handles duplicated breakpoints, and the memory read
 	     routine handles un-patching traps from memory reads.  */
 	  tpoint->handle = set_breakpoint_at (tpoint->address,
@@ -3246,7 +3248,7 @@ cmd_qtstart (char *packet)
 	  if (maybe_write_ipa_not_loaded (packet))
 	    {
 	      trace_debug ("Requested a %s tracepoint, but fast "
-			   "tracepoints aren't supported.",
+			   "tracepoints are not supported.",
 			   tpoint->type == static_tracepoint
 			   ? "static" : "fast");
 	      break;
@@ -3398,14 +3400,14 @@ stop_tracing (void)
   /* Pause all threads before removing fast jumps from memory,
      breakpoints, and touching IPA state variables (inferior memory).
      Some thread may hit the internal tracing breakpoints, or be
-     collecting this moment, but that's ok, we don't release the
+     collecting this moment, but that is ok, we do NOT release the
      tpoint object's memory or the jump pads here (we only do that
-     when we're sure we can move all threads out of the jump pads).
-     We can't now, since we may be getting here due to the inferior
+     when we are sure we can move all threads out of the jump pads).
+     We cannot do so now, since we may be getting here due to the inferior
      agent calling us.  */
   pause_all (1);
-  /* Since we're removing breakpoints, cancel breakpoint hits,
-     possibly related to the breakpoints we're about to delete.  */
+  /* Since we are removing breakpoints, cancel breakpoint hits,
+     possibly related to the breakpoints we are about to delete.  */
   cancel_breakpoints ();
 
   /* Stop logging. Tracepoints can still be hit, but they will not be
@@ -3446,7 +3448,7 @@ stop_tracing (void)
       trace_debug ("Stopping the trace because GDB disconnected");
       tracing_stop_reason = "tdisconnected";
     }
-#endif
+#endif /* !IN_PROCESS_AGENT */
   else
     {
       trace_debug ("Stopping the trace because of a tstop command");
@@ -3488,7 +3490,7 @@ stop_tracing_handler (CORE_ADDR addr)
 {
   trace_debug ("lib hit stop_tracing");
 
-  /* Don't actually handle it here.  When we stop tracing we remove
+  /* Do NOT actually handle it here. When we stop tracing we remove
      breakpoints from the inferior, and that is not allowed in a
      breakpoint handler (as the caller is walking the breakpoint
      list).  */
@@ -3976,7 +3978,7 @@ cmd_qtminftpilen (char *packet)
 }
 
 /* Respond to qTBuffer packet with a block of raw data from the trace
-   buffer.  GDB may ask for a lot, but we are allowed to reply with
+   buffer. GDB may ask for a lot, but we are allowed to reply with
    only as much as will fit within packet limits or whatever.  */
 
 static void
@@ -3997,7 +3999,7 @@ cmd_qtbuffer (char *own_buf)
 
   tot = (trace_buffer_hi - trace_buffer_lo) - free_space ();
 
-  /* If we're right at the end, reply specially that we're done.  */
+  /* If we are right at the end, reply specially that we are done.  */
   if (offset == tot)
     {
       strcpy (own_buf, "l");
@@ -4017,7 +4019,7 @@ cmd_qtbuffer (char *own_buf)
   if (tbp >= trace_buffer_wrap)
     tbp -= (trace_buffer_wrap - trace_buffer_lo);
 
-  /* Trim to the remaining bytes if we're close to the end.  */
+  /* Trim to the remaining bytes if we are close to the end.  */
   if (num > tot - offset)
     num = tot - offset;
 
@@ -4050,7 +4052,7 @@ cmd_bigqtbuffer_size (char *own_buf)
   LONGEST sval;
   char *packet = own_buf;
 
-  /* Can't change the size during a tracing run.  */
+  /* Cannot change the size during a tracing run.  */
   if (tracing)
     {
       write_enn (own_buf);
@@ -4279,12 +4281,12 @@ handle_tracepoint_query (char *packet)
   return 0;
 }
 
-#endif
+#endif /* ? */
 #ifndef IN_PROCESS_AGENT
 
 /* Call this when thread TINFO has hit the tracepoint defined by
    TP_NUMBER and TP_ADDRESS, and that tracepoint has a while-stepping
-   action.  This adds a while-stepping collecting state item to the
+   action. This adds a while-stepping collecting state item to the
    threads' collecting state list, so that we can keep track of
    multiple simultaneous while-stepping actions being collected by the
    same thread.  This can happen in cases like:
@@ -4297,7 +4299,7 @@ handle_tracepoint_query (char *packet)
 
    Notice that when instruction INSN5 is reached, the while-stepping
    actions of both TP1 and TP3 are still being collected, and that TP2
-   had been collected meanwhile.  The whole range of ff0001-ff0005
+   had been collected meanwhile. The whole range of ff0001-ff0005
    should be single-stepped, due to at least TP1's while-stepping
    action covering the whole range.  */
 
@@ -4343,7 +4345,7 @@ release_while_stepping_state_list (struct thread_info *tinfo)
 
 /* If TINFO was handling a 'while-stepping' action, the step has
    finished, so collect any step data needed, and check if any more
-   steps are required.  Return true if the thread was indeed
+   steps are required. Return true if the thread was indeed
    collecting tracepoint data, false otherwise.  */
 
 int
@@ -4355,23 +4357,23 @@ tracepoint_finished_step (struct thread_info *tinfo, CORE_ADDR stop_pc)
   struct trap_tracepoint_ctx ctx;
 
   /* Pull in fast tracepoint trace frames from the inferior lib buffer into
-     our buffer.  */
+     our buffer. */
   if (agent_loaded_p ())
     upload_fast_traceframes ();
 
   /* Check if we were indeed collecting data for one of more
-     tracepoints with a 'while-stepping' count.  */
+     tracepoints with a 'while-stepping' count. */
   if (tinfo->while_stepping == NULL)
     return 0;
 
   if (!tracing)
     {
-      /* We're not even tracing anymore.  Stop this thread from
-	 collecting.  */
+      /* We are not even tracing anymore. Stop this thread from
+       * collecting. */
       release_while_stepping_state_list (tinfo);
 
       /* The thread had stopped due to a single-step request indeed
-	 explained by a tracepoint.  */
+       * explained by a tracepoint. */
       return 1;
     }
 
@@ -4401,7 +4403,7 @@ tracepoint_finished_step (struct thread_info *tinfo, CORE_ADDR stop_pc)
 	  continue;
 	}
 
-      /* We've just finished one step.  */
+      /* We have just finished one step.  */
       ++wstep->current_step;
 
       /* Collect data.  */
@@ -4530,7 +4532,7 @@ handle_tracepoint_bkpts (struct thread_info *tinfo, CORE_ADDR stop_pc)
   return 0;
 }
 
-/* Return true if TINFO just hit a tracepoint.  Collect data if
+/* Return true if TINFO just hit a tracepoint. Collect data if
    so.  */
 
 int
@@ -4540,7 +4542,7 @@ tracepoint_was_hit (struct thread_info *tinfo, CORE_ADDR stop_pc)
   int ret = 0;
   struct trap_tracepoint_ctx ctx;
 
-  /* Not tracing, don't handle.  */
+  /* Not tracing, do NOT handle.  */
   if (!tracing)
     return 0;
 
@@ -4549,12 +4551,12 @@ tracepoint_was_hit (struct thread_info *tinfo, CORE_ADDR stop_pc)
 
   for (tpoint = tracepoints; tpoint; tpoint = tpoint->next)
     {
-      /* Note that we collect fast tracepoints here as well.  We'll
-	 step over the fast tracepoint jump later, which avoids the
-	 double collect.  However, we don't collect for static
-	 tracepoints here, because UST markers are compiled in program,
-	 and probes will be executed in program.  So static tracepoints
-	 are collected there.   */
+      /* Note that we collect fast tracepoints here as well. We shall
+       * step over the fast tracepoint jump later, which avoids the
+       * double collect. However, we do NOT collect for static
+       * tracepoints here, because UST markers are compiled in program,
+       * and probes will be executed in program. So static tracepoints
+       * are collected there.   */
       if (tpoint->enabled && stop_pc == tpoint->address
 	  && tpoint->type != static_tracepoint)
 	{
@@ -4591,13 +4593,13 @@ tracepoint_was_hit (struct thread_info *tinfo, CORE_ADDR stop_pc)
   return ret;
 }
 
-#endif
+#endif /* !IN_PROCESS_AGENT (far up) */
 
 #if defined IN_PROCESS_AGENT && defined HAVE_UST
 struct ust_marker_data;
 static void collect_ust_data_at_tracepoint (struct tracepoint_hit_ctx *ctx,
 					    struct traceframe *tframe);
-#endif
+#endif /* IN_PROCESS_AGENT && HAVE_UST */
 
 /* Create a trace frame for the hit of the given tracepoint in the
    given thread.  */
@@ -4612,8 +4614,8 @@ collect_data_at_tracepoint (struct tracepoint_hit_ctx *ctx, CORE_ADDR stop_pc,
   /* Only count it as a hit when we actually collect data.  */
   tpoint->hit_count++;
 
-  /* If we've exceeded a defined pass count, record the event for
-     later, and finish the collection for this hit.  This test is only
+  /* If we have exceeded a defined pass count, record the event for
+     later, and finish the collection for this hit. This test is only
      for nonstepping tracepoints, stepping tracepoints test at the end
      of their while-stepping loop.  */
   if (tpoint->pass_count > 0
@@ -4635,7 +4637,7 @@ collect_data_at_tracepoint (struct tracepoint_hit_ctx *ctx, CORE_ADDR stop_pc,
 	  trace_debug ("Tracepoint %d at 0x%s about to do action '%s'",
 		       tpoint->number, paddress (tpoint->address),
 		       tpoint->actions_str[acti]);
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
 	  do_action_at_tracepoint (ctx, stop_pc, tpoint, tframe,
 				   tpoint->actions[acti]);
@@ -4685,15 +4687,15 @@ collect_data_at_step (struct tracepoint_hit_ctx *ctx,
     trace_buffer_is_full = 1;
 }
 
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
 #ifdef IN_PROCESS_AGENT
-/* The target description used by the IPA.  Given that the IPA library
+/* The target description used by the IPA. Given that the IPA library
    is built for a specific architecture that is loaded into the
    inferior, there only needs to be one such description per
    build.  */
 const struct target_desc *ipa_tdesc;
-#endif
+#endif /* IN_PROCESS_AGENT */
 
 static struct regcache *
 get_context_regcache (struct tracepoint_hit_ctx *ctx)
@@ -4713,7 +4715,7 @@ get_context_regcache (struct tracepoint_hit_ctx *ctx)
 	}
       regcache = &fctx->regcache;
     }
-#ifdef HAVE_UST
+# ifdef HAVE_UST
   if (ctx->type == static_tracepoint)
     {
       struct static_tracepoint_ctx *sctx
@@ -4724,7 +4726,7 @@ get_context_regcache (struct tracepoint_hit_ctx *ctx)
 	  sctx->regcache_initted = 1;
 	  init_register_cache (&sctx->regcache, ipa_tdesc, sctx->regspace);
 	  supply_regblock (&sctx->regcache, NULL);
-	  /* Pass down the tracepoint address, because REGS doesn't
+	  /* Pass down the tracepoint address, because REGS does NOT
 	     include the PC, but we know what it must have been.  */
 	  supply_static_tracepoint_registers (&sctx->regcache,
 					      (const unsigned char *)
@@ -4733,14 +4735,14 @@ get_context_regcache (struct tracepoint_hit_ctx *ctx)
 	}
       regcache = &sctx->regcache;
     }
-#endif
+# endif /* HAVE_UST */
 #else
   if (ctx->type == trap_tracepoint)
     {
       struct trap_tracepoint_ctx *tctx = (struct trap_tracepoint_ctx *) ctx;
       regcache = tctx->regcache;
     }
-#endif
+#endif /* IN_PROCESS_AGENT */
 
   gdb_assert (regcache != NULL);
 
@@ -4799,7 +4801,7 @@ do_action_at_tracepoint (struct tracepoint_hit_ctx *ctx,
 	*regspace = 'R';
 
 	/* Wrap the regblock in a register cache (in the stack, we
-	   don't want to malloc here).  */
+	   do NOT want to malloc here).  */
 	init_register_cache (&tregcache, context_regcache->tdesc,
 			     regspace + 1);
 
@@ -4809,10 +4811,10 @@ do_action_at_tracepoint (struct tracepoint_hit_ctx *ctx,
 #ifndef IN_PROCESS_AGENT
 	/* On some platforms, trap-based tracepoints will have the PC
 	   pointing to the next instruction after the trap, but we
-	   don't want the user or GDB trying to guess whether the
+	   do NOT want the user or GDB trying to guess whether the
 	   saved PC needs adjusting; so always record the adjusted
-	   stop_pc.  Note that we can't use tpoint->address instead,
-	   since it will be wrong for while-stepping actions.  This
+	   stop_pc. Note that we cannot use tpoint->address instead,
+	   since it will be wrong for while-stepping actions. This
 	   adjustment is a nop for fast tracepoints collected from the
 	   in-process lib (but not if GDBserver is collecting one
 	   preemptively), since the PC had already been adjusted to
@@ -4823,7 +4825,7 @@ do_action_at_tracepoint (struct tracepoint_hit_ctx *ctx,
 	/* This changes the regblock, not the thread's
 	   regcache.  */
 	regcache_write_pc (&tregcache, stop_pc);
-#endif
+#endif /* !IN_PROCESS_AGENT */
       }
       break;
     case 'X':
@@ -4855,7 +4857,7 @@ do_action_at_tracepoint (struct tracepoint_hit_ctx *ctx,
 #else
 	trace_debug ("warning: collecting static trace data, "
 		     "but static tracepoints are not supported");
-#endif
+#endif /* IN_PROCESS_AGENT && HAVE_UST */
       }
       break;
     default:
@@ -4871,25 +4873,25 @@ condition_true_at_tracepoint (struct tracepoint_hit_ctx *ctx,
   ULONGEST value = 0;
   enum eval_result_type err;
 
-  /* Presently, gdbserver doesn't run compiled conditions, only the
-     IPA does.  If the program stops at a fast tracepoint's address
+  /* Presently, gdbserver does NOT run compiled conditions, only the
+     IPA does. If the program stops at a fast tracepoint's address
      (e.g., due to a breakpoint, trap tracepoint, or stepping),
-     gdbserver preemptively collect the fast tracepoint.  Later, on
+     gdbserver preemptively collect the fast tracepoint. Later, on
      resume, gdbserver steps over the fast tracepoint like it steps
-     over breakpoints, so that the IPA doesn't see that fast
-     tracepoint.  This avoids double collects of fast tracepoints in
-     that stopping scenario.  Having gdbserver itself handle the fast
+     over breakpoints, so that the IPA does NOT see that fast
+     tracepoint. This avoids double collects of fast tracepoints in
+     that stopping scenario. Having gdbserver itself handle the fast
      tracepoint gives the user a consistent view of when fast or trap
      tracepoints are collected, compared to an alternative where only
      trap tracepoints are collected on stop, and fast tracepoints on
-     resume.  When a fast tracepoint is being processed by gdbserver,
+     resume. When a fast tracepoint is being processed by gdbserver,
      it is always the non-compiled condition expression that is
      used.  */
 #ifdef IN_PROCESS_AGENT
   if (tpoint->compiled_cond)
     err = ((condfn) (uintptr_t) (tpoint->compiled_cond)) (ctx, &value);
   else
-#endif
+#endif /* IN_PROCESS_AGENT */
     {
       struct eval_agent_expr_context ax_ctx;
 
@@ -4974,13 +4976,13 @@ agent_mem_read_string (struct eval_agent_expr_context *ctx,
 
       blocklen = (remaining > 65535 ? 65535 : remaining);
       /* We want working space to accumulate nonzero bytes, since
-	 traceframes must have a predecided size (otherwise it gets
-	 harder to wrap correctly for the circular case, etc).  */
+       * traceframes must have a predecided size (otherwise it gets
+       * harder to wrap correctly for the circular case, etc).  */
       buf = (unsigned char *) xmalloc (blocklen + 1);
       for (i = 0; i < blocklen; ++i)
 	{
 	  /* Read the string one byte at a time, in case the string is
-	     at the end of a valid memory area - we don't want a
+	     at the end of a valid memory area - we do NOT want a
 	     correctly-terminated string to engender segvio
 	     complaints.  */
 	  read_inferior_memory (from + i, buf + i, 1);
@@ -5249,8 +5251,8 @@ traceframe_read_mem (int tfnum, CORE_ADDR addr,
 		   tfnum, mlen, paddress (maddr));
 
       /* If the block includes the first part of the desired range,
-	 return as much it has; GDB will re-request the remainder,
-	 which might be in a different block of this trace frame.  */
+       * return as much it has; GDB will re-request the remainder,
+       * which might be in a different block of this trace frame.  */
       if (maddr <= addr && addr < (maddr + mlen))
 	{
 	  ULONGEST amt = (maddr + mlen) - addr;
@@ -5508,7 +5510,7 @@ fast_tracepoint_from_ipa_tpoint_address (CORE_ADDR ipa_tpoint_obj)
   return NULL;
 }
 
-#endif
+#endif /* ? */
 
 /* The type of the object that is used to synchronize fast tracepoint
    collection.  */
@@ -5538,9 +5540,9 @@ force_unlock_trace_buffer (void)
 
 /* Check if the thread identified by THREAD_AREA which is stopped at
    STOP_PC, is presently locking the fast tracepoint collection, and
-   if so, gather some status of said collection.  Returns 0 if the
-   thread isn't collecting or in the jump pad at all.  1, if in the
-   jump pad (or within gdb_collect) and hasn't executed the adjusted
+   if so, gather some status of said collection. Returns 0 if the
+   thread is NOT collecting or in the jump pad at all. 1, if in the
+   jump pad (or within gdb_collect) and has NOT executed the adjusted
    original insn yet (can set a breakpoint there and run to it).  2,
    if presently executing the adjusted original insn --- in which
    case, if we want to move the thread out of the jump pad, we need to
@@ -5561,24 +5563,24 @@ fast_tracepoint_collecting (CORE_ADDR thread_area,
   /* The thread THREAD_AREA is either:
 
       0. not collecting at all, not within the jump pad, or within
-	 gdb_collect or one of its callees.
+	     gdb_collect or one of its callees.
 
-      1. in the jump pad and haven't reached gdb_collect
+      1. in the jump pad and have NOT reached gdb_collect
 
       2. within gdb_collect (out of the jump pad) (collect is set)
 
-      3. we're in the jump pad, after gdb_collect having returned,
-	 possibly executing the adjusted insns.
+      3. we are in the jump pad, after gdb_collect having returned,
+	     possibly executing the adjusted insns.
 
-      For cases 1 and 3, `collecting' may or not be set.  The jump pad
-      doesn't have any complicated jump logic, so we can tell if the
+      For cases 1 and 3, `collecting' may or not be set. The jump pad
+      does NOT have any complicated jump logic, so we can tell if the
       thread is executing the adjust original insn or not by just
-      matching STOP_PC with known jump pad addresses.  If we it isn't
-      yet executing the original insn, set a breakpoint there, and let
+      matching STOP_PC with known jump pad addresses. If we (know?) it is
+      NOT yet executing the original insn, set a breakpoint there, and let
       the thread run to it, so to quickly step over a possible (many
-      insns) gdb_collect call.  Otherwise, or when the breakpoint is
+      insns) gdb_collect call. Otherwise, or when the breakpoint is
       hit, only a few (small number of) insns are left to be executed
-      in the jump pad.  Single-step the thread until it leaves the
+      in the jump pad. Single-step the thread until it leaves the
       jump pad.  */
 
  again:
@@ -5604,7 +5606,7 @@ fast_tracepoint_collecting (CORE_ADDR thread_area,
       && stop_pc < ipa_gdb_jump_pad_buffer_end)
     {
       /* We can tell which tracepoint(s) the thread is collecting by
-	 matching the jump pad address back to the tracepoint.  */
+       * matching the jump pad address back to the tracepoint.  */
       tpoint = fast_tracepoint_from_jump_pad_address (stop_pc);
       if (tpoint == NULL)
 	{
@@ -5623,7 +5625,7 @@ fast_tracepoint_collecting (CORE_ADDR thread_area,
 	}
 
       /* Definitely in the jump pad.  May or may not need
-	 fast-exit-jump-pad breakpoint.  */
+       * fast-exit-jump-pad breakpoint.  */
       if (tpoint->jump_pad <= stop_pc
 	  && stop_pc < tpoint->adjusted_insn_addr)
 	needs_breakpoint =  1;
@@ -5632,7 +5634,7 @@ fast_tracepoint_collecting (CORE_ADDR thread_area,
 	   && stop_pc < ipa_gdb_trampoline_buffer_end)
     {
       /* We can tell which tracepoint(s) the thread is collecting by
-	 matching the trampoline address back to the tracepoint.  */
+       * matching the trampoline address back to the tracepoint.  */
       tpoint = fast_tracepoint_from_trampoline_address (stop_pc);
       if (tpoint == NULL)
 	{
@@ -5648,8 +5650,8 @@ fast_tracepoint_collecting (CORE_ADDR thread_area,
 	}
 
       /* Have not reached jump pad yet, but treat the trampoline as a
-	 part of the jump pad that is before the adjusted original
-	 instruction.  */
+       * part of the jump pad that is before the adjusted original
+       * instruction.  */
       needs_breakpoint = 1;
     }
   else
@@ -5657,8 +5659,8 @@ fast_tracepoint_collecting (CORE_ADDR thread_area,
       collecting_t ipa_collecting_obj;
 
       /* If `collecting' is set/locked, then the THREAD_AREA thread
-	 may or not be the one holding the lock.  We have to read the
-	 lock to find out.  */
+       * may or not be the one holding the lock.  We have to read the
+       * lock to find out.  */
 
       if (read_inferior_data_pointer (ipa_sym_addrs.addr_collecting,
 				      &ipa_collecting))
@@ -5699,7 +5701,7 @@ fast_tracepoint_collecting (CORE_ADDR thread_area,
 	}
 
       /* The thread is within `gdb_collect', skip over the rest of
-	 fast tracepoint collection quickly using a breakpoint.  */
+       * fast tracepoint collection quickly using a breakpoint.  */
       needs_breakpoint = 1;
     }
 
@@ -5714,9 +5716,9 @@ fast_tracepoint_collecting (CORE_ADDR thread_area,
 
   if (needs_breakpoint)
     {
-      /* Hasn't executed the original instruction yet.  Set breakpoint
-	 there, and wait till it's hit, then single-step until exiting
-	 the jump pad.  */
+      /* Has NOT executed the original instruction yet. Set breakpoint
+       * there, and wait till it has been hit, then single-step until exiting
+       * the jump pad.  */
 
       trace_debug ("\
 fast_tracepoint_collecting, returning continue-until-break at %s",
@@ -5737,13 +5739,13 @@ fast_tracepoint_collecting, returning continue-until-break at %s",
     }
 }
 
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
 #ifdef IN_PROCESS_AGENT
 
-/* The global fast tracepoint collect lock.  Points to a collecting_t
+/* The global fast tracepoint collect lock. Points to a collecting_t
    object built on the stack by the jump pad, if presently locked;
-   NULL if it isn't locked.  Note that this lock *must* be set while
+   NULL if it is NOT locked. Note that this lock *must* be set while
    executing any *function other than the jump pad.  See
    fast_tracepoint_collecting.  */
 static collecting_t * ATTR_USED collecting;
@@ -5757,14 +5759,14 @@ gdb_collect (struct tracepoint *tpoint, unsigned char *regs)
 {
   struct fast_tracepoint_ctx ctx;
 
-  /* Don't do anything until the trace run is completely set up.  */
+  /* Do NOT do anything until the trace run is completely set up.  */
   if (!tracing)
     return;
 
   ctx.base.type = fast_tracepoint;
   ctx.regs = regs;
   ctx.regcache_initted = 0;
-  /* Wrap the regblock in a register cache (in the stack, we don't
+  /* Wrap the regblock in a register cache (in the stack, we do NOT
      want to malloc here).  */
   ctx.regspace = alloca (ipa_tdesc->registers_size);
   if (ctx.regspace == NULL)
@@ -5794,8 +5796,8 @@ gdb_collect (struct tracepoint *tpoint, unsigned char *regs)
 				      ctx.tpoint->address, ctx.tpoint);
 
 	  /* Note that this will cause original insns to be written back
-	     to where we jumped from, but that's OK because we're jumping
-	     back to the next whole instruction.  This will go badly if
+	     to where we jumped from, but that is OK because we are jumping
+	     back to the next whole instruction. This will go badly if
 	     instruction restoration is not atomic though.  */
 	  if (stopping_tracepoint
 	      || trace_buffer_is_full
@@ -5819,7 +5821,7 @@ gdb_collect (struct tracepoint *tpoint, unsigned char *regs)
     }
 }
 
-#endif
+#endif /* IN_PROCESS_AGENT */
 
 #ifndef IN_PROCESS_AGENT
 
@@ -5870,7 +5872,7 @@ compile_tracepoint_condition (struct tracepoint *tpoint,
     }
   else
     {
-      /* Leave the unfinished code in situ, but don't point to it.  */
+      /* Leave the unfinished code in situ, but do NOT point to it.  */
 
       tpoint->compiled_cond = 0;
 
@@ -5879,7 +5881,7 @@ compile_tracepoint_condition (struct tracepoint *tpoint,
 		   tpoint->number, err);
     }
 
-  /* Update the code pointer passed in.  Note that we do this even if
+  /* Update the code pointer passed in. Note that we do this even if
      the compile fails, so that we can look at the partial results
      instead of letting them be overwritten.  */
   *jump_entry = current_insn_ptr;
@@ -5888,7 +5890,7 @@ compile_tracepoint_condition (struct tracepoint *tpoint,
   *jump_entry += 16;
 }
 
-/* We'll need to adjust these when we consider bi-arch setups, and big
+/* We will need to adjust these when we consider bi-arch setups, and big
    endian machines.  */
 
 static int
@@ -5898,10 +5900,10 @@ write_inferior_data_ptr (CORE_ADDR where, CORE_ADDR ptr)
 				(unsigned char *) &ptr, sizeof (void *));
 }
 
-/* The base pointer of the IPA's heap.  This is the only memory the
-   IPA is allowed to use.  The IPA should _not_ call the inferior's
-   `malloc' during operation.  That'd be slow, and, most importantly,
-   it may not be safe.  We may be collecting a tracepoint in a signal
+/* The base pointer of the IPA's heap. This is the only memory the
+   IPA is allowed to use. The IPA should _not_ call the inferior's
+   `malloc' during operation. That would be slow, and, most importantly,
+   it may not be safe. We may be collecting a tracepoint in a signal
    handler, for example.  */
 static CORE_ADDR target_tp_heap;
 
@@ -5987,11 +5989,11 @@ download_tracepoint_1 (struct tracepoint *tpoint)
   tpptr = target_malloc (sizeof (*tpoint));
   tpoint->obj_addr_on_target = tpptr;
 
-  /* Write the whole object.  We'll fix up its pointers in a bit.
-     Assume no next for now.  This is fixed up above on the next
-     iteration, if there's any.  */
+  /* Write the whole object. We shall fix up its pointers in a bit.
+     Assume no next for now. This is fixed up above on the next
+     iteration, if there is any.  */
   target_tracepoint.next = NULL;
-  /* Need to clear this here too, since we're downloading the
+  /* Need to clear this here too, since we are downloading the
      tracepoints before clearing our own copy.  */
   target_tracepoint.hit_count = 0;
 
@@ -6088,7 +6090,7 @@ tracepoint_send_agent (struct tracepoint *tpoint)
   if (strncmp (buf, "OK", 2) != 0)
     return 1;
 
-  /* The value of tracepoint's target address is stored in BUF.  */
+  /* The value of the tracepoint's target address is stored in BUF. */
   memcpy (&tpoint->obj_addr_on_target,
 	  &buf[IPA_PROTO_FAST_TRACE_ADDR_ON_TARGET], 8);
 
@@ -6104,7 +6106,7 @@ tracepoint_send_agent (struct tracepoint *tpoint)
 
       memcpy (&gdb_jump_pad_head, &buf[IPA_PROTO_FAST_TRACE_JUMP_PAD], 8);
 
-      /* This has been done in agent.  We should also set up record for it.  */
+      /* This has been done in agent. We should also set up record for it. */
       memcpy (&fjump_size, &buf[IPA_PROTO_FAST_TRACE_FJUMP_SIZE], 4);
       /* Wire it in.  */
       tpoint->handle
@@ -6175,7 +6177,7 @@ download_trace_state_variables (void)
       struct trace_state_variable target_tsv;
 
       /* TSV's with a getter have been initialized equally in both the
-	 inferior and GDBserver.  Skip them.  */
+       * inferior and GDBserver. Skip them.  */
       if (tsv->getter != NULL)
 	continue;
 
@@ -6200,8 +6202,8 @@ download_trace_state_variables (void)
 				   ptr);
 	}
 
-      /* Write the whole object.  We'll fix up its pointers in a bit.
-	 Assume no next, fixup when needed.  */
+      /* Write the whole object. We will fix up its pointers in a bit.
+       * Assume no next, fixup when needed.  */
       target_tsv.next = NULL;
 
       write_inferior_memory (ptr, (unsigned char *) &target_tsv,
@@ -6235,9 +6237,9 @@ download_trace_state_variables (void)
 }
 
 /* Upload complete trace frames out of the IP Agent's trace buffer
-   into GDBserver's trace buffer.  This always uploads either all or
-   no trace frames.  This is the counter part of
-   `trace_alloc_trace_buffer'.  See its description of the atomic
+   into GDBserver's trace buffer. This always uploads either all or
+   no trace frames. This is the counter part of
+   `trace_alloc_trace_buffer'. See its description of the atomic
    synching mechanism.  */
 
 static void
@@ -6310,10 +6312,10 @@ upload_fast_traceframes (void)
 	       ipa_trace_buffer_ctrl_curr_old,
 	       ipa_trace_buffer_ctrl_curr);
 
-  /* Re-read these, now that we've installed the
-     `about_to_request_buffer_space' breakpoint/lock.  A thread could
+  /* Re-read these, now that we have installed the
+     `about_to_request_buffer_space' breakpoint/lock. A thread could
      have finished a traceframe between the last read of these
-     counters and setting the breakpoint above.  If we start
+     counters and setting the breakpoint above. If we start
      uploading, we never want to leave this function with
      traceframe_read_count != 0, otherwise, GDBserver could end up
      incrementing the counter tokens more than once (due to event loop
@@ -6392,7 +6394,7 @@ upload_fast_traceframes (void)
 
       if (read_inferior_memory (tf, (unsigned char *) &ipa_tframe,
 				offsetof (struct traceframe, data)))
-	error ("Uploading: couldn't read traceframe at %s\n", paddress (tf));
+	error ("Uploading: could not read traceframe at %s\n", paddress (tf));
 
       if (ipa_tframe.tpnum == 0)
 	fatal ("Uploading: No (more) fast traceframes, but "
@@ -6420,11 +6422,11 @@ upload_fast_traceframes (void)
 	      if (read_inferior_memory (tf
 					+ offsetof (struct traceframe, data),
 					block, ipa_tframe.data_size))
-		error ("Uploading: Couldn't read traceframe data at %s\n",
+		error ("Uploading: Could not read traceframe data at %s\n",
 		       paddress (tf + offsetof (struct traceframe, data)));
 	    }
 
-	  trace_debug ("Uploading: traceframe didn't fit");
+	  trace_debug ("Uploading: traceframe did not fit");
 	  finish_traceframe (tframe);
 	}
 
@@ -6493,7 +6495,7 @@ upload_fast_traceframes (void)
   if (trace_buffer_is_full)
     stop_tracing ();
 }
-#endif
+#endif /* ? */
 
 #ifdef IN_PROCESS_AGENT
 
@@ -6505,8 +6507,8 @@ IP_AGENT_EXPORT char cmd_buf[IPA_CMD_BUF_SIZE];
 /* Static tracepoints.  */
 
 /* UST puts a "struct tracepoint" in the global namespace, which
-   conflicts with our tracepoint.  Arguably, being a library, it
-   shouldn't take ownership of such a generic name.  We work around it
+   conflicts with our tracepoint. Arguably, being a library, it
+   should not take ownership of such a generic name. We work around it
    here.  */
 #define tracepoint ust_tracepoint
 #include <ust/ust.h>
@@ -6611,7 +6613,7 @@ gdb_probe (const struct marker *mdata, void *probe_private,
   struct tracepoint *tpoint;
   struct static_tracepoint_ctx ctx;
 
-  /* Don't do anything until the trace run is completely set up.  */
+  /* Do NOT do anything until the trace run is completely set up.  */
   if (!tracing)
     {
       trace_debug ("gdb_probe: not tracing\n");
@@ -6624,7 +6626,7 @@ gdb_probe (const struct marker *mdata, void *probe_private,
   ctx.fmt = fmt;
   ctx.args = args;
 
-  /* Wrap the regblock in a register cache (in the stack, we don't
+  /* Wrap the regblock in a register cache (in the stack, we do NOT
      want to malloc here).  */
   ctx.regspace = alloca (ipa_tdesc->registers_size);
   if (ctx.regspace == NULL)
@@ -6702,7 +6704,7 @@ collect_ust_data_at_tracepoint (struct tracepoint_hit_ctx *ctx,
   if (umd == NULL)
     {
       trace_debug ("Wanted to collect static trace data, "
-		   "but there's no static trace data");
+		           "but there is no static trace data");
       return;
     }
 
@@ -6749,10 +6751,10 @@ static struct ltt_available_probe gdb_ust_probe =
 
 #ifndef IN_PROCESS_AGENT
 
-/* Ask the in-process agent to run a command.  Since we don't want to
+/* Ask the in-process agent to run a command. Since we do NOT want to
    have to handle the IPA hitting breakpoints while running the
    command, we pause all threads, remove all breakpoints, and then set
-   the helper thread re-running.  We communicate with the helper
+   the helper thread re-running. We communicate with the helper
    thread by means of direct memory xfering, and a socket for
    synchronization.  */
 
@@ -6781,8 +6783,8 @@ run_inferior_command (char *cmd, int len)
 #include <sys/un.h>
 
 #ifndef UNIX_PATH_MAX
-#define UNIX_PATH_MAX sizeof(((struct sockaddr_un *) NULL)->sun_path)
-#endif
+# define UNIX_PATH_MAX sizeof(((struct sockaddr_un *) NULL)->sun_path)
+#endif /* !UNIX_PATH_MAX */
 
 /* Where we put the socked used for synchronization.  */
 #define SOCK_DIR P_tmpdir
@@ -7098,7 +7100,7 @@ gdb_agent_remove_socket (void)
   unlink (agent_socket_name);
 }
 
-/* Helper thread of agent.  */
+/* Helper thread of agent. */
 
 static void *
 gdb_agent_helper_thread (void *arg)
@@ -7194,7 +7196,7 @@ gdb_agent_helper_thread (void *arg)
 #endif /* HAVE_UST */
 	    }
 
-	  /* Fix compiler's warning: ignoring return value of 'write'.  */
+	  /* Fix compiler warning: ignoring return value of 'write'.  */
 	  ret = write (fd, buf, 1);
 	  close (fd);
 
@@ -7203,11 +7205,11 @@ gdb_agent_helper_thread (void *arg)
 	      close (listen_fd);
 	      unlink (agent_socket_name);
 
-	      /* Sleep endlessly to wait the whole inferior stops.  This
-		 thread can not exit because GDB or GDBserver may still need
-		 'current_inferior' (representing this thread) to access
-		 inferior memory.  Otherwise, this thread exits earlier than
-		 other threads, and 'current_inferior' is set to NULL.  */
+	      /* Sleep endlessly to wait the whole inferior stops. This
+	       * thread can not exit because GDB or GDBserver may still need
+	       * 'current_inferior' (representing this thread) to access
+	       * inferior memory. Otherwise, this thread exits earlier than
+	       * other threads, and 'current_inferior' is set to NULL.  */
 	      while (1)
 		sleep (10);
 	    }
@@ -7252,7 +7254,7 @@ gdb_agent_init (void)
 
 #ifdef HAVE_UST
   gdb_ust_init ();
-#endif
+#endif /* HAVE_UST */
 }
 
 #include <sys/mman.h>
@@ -7291,7 +7293,7 @@ initialize_tracepoint_ftlib (void)
 #endif /* IN_PROCESS_AGENT */
 
 /* Return a timestamp, expressed as microseconds of the usual Unix
-   time.  (As the result is a 64-bit number, it will not overflow any
+   time. (As the result is a 64-bit number, it will not overflow any
    time soon.)  */
 
 static LONGEST
@@ -7311,9 +7313,9 @@ initialize_tracepoint (void)
   /* Start with the default size.  */
   init_trace_buffer (DEFAULT_TRACE_BUFFER_SIZE);
 
-  /* Wire trace state variable 1 to be the timestamp.  This will be
+  /* Wire trace state variable 1 to be the timestamp. This will be
      uploaded to GDB upon connection and become one of its trace state
-     variables.  (In case you're wondering, if GDB already has a trace
+     variables. (In case you are/were wondering, if GDB already has a trace
      variable numbered 1, it will be renumbered.)  */
   create_trace_state_variable (1, 0);
   set_trace_state_variable_name (1, "trace_timestamp");
@@ -7354,7 +7356,7 @@ initialize_tracepoint: mmap'ing jump pad buffer failed with %s",
 
   gdb_trampoline_buffer = gdb_trampoline_buffer_end = 0;
 
-  /* It's not a fatal error for something to go wrong with trampoline
+  /* It is not a fatal error for something to go wrong with trampoline
      buffer setup, but it can be mysterious, so create a channel to
      report back on what went wrong, using a fixed size since we may
      not be able to allocate space later when the problem occurs.  */
@@ -7363,5 +7365,7 @@ initialize_tracepoint: mmap'ing jump pad buffer failed with %s",
   strcpy (gdb_trampoline_buffer_error, "No errors reported");
 
   initialize_low_tracepoint ();
-#endif
+#endif /* IN_PROCESS_AGENT */
 }
+
+/* EOF (phew! It took a long time to get here!) */

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>File Version</key>
+	<string>1</string>
+	<key>C16 *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>&quot;{(char *) formatUnicodeString((long *) $VAR, 2, (int) $ID)}:s&quot;</string>
+	</dict>
+	<key>SICORE::C16 *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>&quot;{(char *) formatUnicodeString((long *) $VAR, 2, (int) $ID)}:s&quot;</string>
+	</dict>
+	<key>SICORE::STRING_BUFFER</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>&quot;{(char *) formatUnicodeString(((long*)&amp;$VAR.length + 1), 2, (int) $ID)}:s&quot;</string>
+	</dict>
+	<key>SICORE::STRING_BUFFER *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>&quot;{(char *) formatUnicodeString(((long*)&amp;$VAR-&gt;length + 1), 2, (int) $ID)}:s&quot;</string>
+	</dict>
+	<key>SICORE::STRING_BUILDER</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>&quot;{$VAR.buffer_ptr}:s&quot;</string>
+	</dict>
+	<key>SICORE::STRING_BUILDER *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>&quot;{$VAR-&gt;buffer_ptr}:s&quot;</string>
+	</dict>
+	<key>SICORE::STRING</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>&quot;{(char *) formatCoreString((long*) $VAR.string_pointer, 2, (int) $ID)}:s&quot;</string>
+	</dict>
+	<key>SICORE::STRING *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>&quot;{(char *) formatCoreString((long*) $VAR-&gt;string_pointer, 2, (int) $ID)}:s&quot;</string>
+	</dict>
+	<key>SIOS::SAFE_STRING</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>&quot;{(char *) formatCoreString((long*) $VAR.string_pointer, 2, (int) $ID)}:s&quot;</string>
+	</dict>
+	<key>SIOS::SAFE_STRING *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>&quot;{(char *) formatCoreString((long*) $VAR-&gt;string_pointer, 2, (int) $ID)}:s&quot;</string>
+	</dict>
+	<key>wchar_t *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>&quot;{(char *) formatUnicodeString((long *) $VAR, sizeof($VAR[0]), (int) $ID)}:s&quot;</string>
+	</dict>
+	<key>wchar_t</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>&apos;{(char *) formatUnicodeCharacter((long)$VAR, (int) $ID)}:s&apos;</string>
+	</dict>
+</dict>
+</plist>

@@ -1,4 +1,4 @@
-/* Initialize "struct disassemble_info".
+/* opcodes/dis-init.c: Initialize "struct disassemble_info".
 
    Copyright 2003 Free Software Foundation, Inc.
 
@@ -22,10 +22,10 @@
 #include "bfd.h"
 
 void
-init_disassemble_info (struct disassemble_info *info, void *stream,
-		       fprintf_ftype fprintf_func)
+init_disassemble_info(struct disassemble_info *info, void *stream,
+                      fprintf_ftype fprintf_func)
 {
-  memset (info, 0, sizeof (*info));
+  memset(info, 0, sizeof(*info));
 
   info->flavour = bfd_target_unknown_flavour;
   info->arch = bfd_arch_unknown;
@@ -41,3 +41,4 @@ init_disassemble_info (struct disassemble_info *info, void *stream,
   info->display_endian = BFD_ENDIAN_UNKNOWN;
 }
 
+/* EOF */

@@ -1,6 +1,6 @@
-/* 
+/* armdbg.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -56,7 +56,7 @@ typedef unsigned16 ARMhword;
 #ifdef __cplusplus
 extern "C"
 {
-#endif
+#endif /* __cplusplus */
 
 typedef unsigned char Dbg_Byte;
 
@@ -1445,8 +1445,8 @@ Dbg_Error Dbg_OnRestart(Dbg_MCState *state, Dbg_RestartProc *fn, void *arg);
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !armdbg__h */
 
 /* End of armdbg.h */

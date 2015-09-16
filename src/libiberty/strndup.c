@@ -1,4 +1,4 @@
-/* Implement the strndup function.
+/* strndup.c: Implement the strndup function.
    Copyright (C) 2005 Free Software Foundation, Inc.
    Written by Kaveh R. Ghazi <ghazi@caip.rutgers.edu>.
 
@@ -30,26 +30,32 @@ memory was available.  The result is always NUL terminated.
 
 */
 
-#include "ansidecl.h"
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
+#include "libiberty.h"
 #include <stddef.h>
 
-extern size_t	strlen (const char*);
-extern PTR	malloc (size_t);
-extern PTR	memcpy (PTR, const PTR, size_t);
+extern size_t strlen(const char*);
+extern PTR malloc(size_t);
+extern PTR memcpy(PTR, const PTR, size_t);
 
 char *
-strndup (const char *s, size_t n)
+strndup(const char *s, size_t n)
 {
   char *result;
-  size_t len = strlen (s);
+  size_t len = strlen(s);
 
   if (n < len)
     len = n;
 
-  result = (char *) malloc (len + 1);
+  result = (char *)malloc(len + 1);
   if (!result)
     return 0;
 
   result[len] = '\0';
-  return (char *) memcpy (result, s, len);
+  return (char *)memcpy(result, s, len);
 }
+
+/* EOF */

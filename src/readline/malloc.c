@@ -1,4 +1,4 @@
-/* malloc() function that is glibc compatible.
+/* readline/malloc.c: malloc() function that is glibc compatible.
 
    Copyright (C) 1997-1998, 2006-2007, 2009-2012 Free Software Foundation, Inc.
 
@@ -32,11 +32,16 @@
 
 #include <errno.h>
 
+#ifndef rpl_malloc
+/* prototype: */
+void *rpl_malloc(size_t n);
+#endif /* !rpl_malloc */
+
 /* Allocate an N-byte block of memory from the heap.
    If N is zero, allocate a 1-byte block.  */
 
 void *
-rpl_malloc (size_t n)
+rpl_malloc(size_t n)
 {
   void *result;
 
@@ -45,7 +50,7 @@ rpl_malloc (size_t n)
     n = 1;
 #endif /* NEED_MALLOC_GNU */
 
-  result = malloc (n);
+  result = malloc(n);
 
 #if !HAVE_MALLOC_POSIX
   if (result == NULL)
@@ -54,3 +59,5 @@ rpl_malloc (size_t n)
 
   return result;
 }
+
+/* EOF */

@@ -1,0 +1,430 @@
+AutoGen Definitions strings;
+
+string = { nm = ARG_BREAK_STR;    str  = " \t\n:="; };
+string = { nm = INVALID_FMT;      str  = "INVALID-%d"; };
+string = { nm = INVALID_STR;      str  = "*INVALID*"; };
+string = { nm = NONE_STR;         str  = "none"; };
+string = { nm = PLUS_STR;         str  = " + "; };
+string = { nm = OR_STR;           str  = " | "; };
+string = { nm = NLSTR_FMT;        str  = "%s\n"; };
+string = { nm = PAGER_NAME;       str  = "PAGER"; };
+string = { nm = TMP_USAGE_FMT;    str  = "/tmp/use.%lu"; };
+string = { nm = MORE_STR;         str  = "more"; };
+string = { nm = LONG_OPT_MARK;    str  = "    --* )\n"; };
+string = { nm = NLSTR_SPACE_FMT;  str  = "%s\n  "; };
+string = { nm = TWO_SPACES_STR;   str  = "  "; };
+string = { nm = FLAG_OPT_MARK;    str  = "    -* )\n"; };
+string = { nm = END_OPT_SEL_STR;  str  = "        ;;\n\n"; };
+string = { nm = STDOUT;           str  = "stdout"; };
+string = { nm = TIME_FMT;         str  = "%A %B %e, %Y at %r %Z"; };
+string = { nm = SHELL_MAGIC;      str  = "#! %s\n"; };
+string = { nm = OPT_VAL_FMT;      str  = "%s_%s="; };
+string = { nm = OPT_END_FMT;      str  = "\nexport %s_%s\n"; };
+string = { nm = EMPTY_ARG;        str  = "''"; };
+string = { nm = QUOT_APOS;        str  = "\\'"; };
+string = { nm = QUOT_ARG_FMT;     str  = "'%s'"; };
+string = { nm = ARG_BY_NUM_FMT;   str  = "%s_%s_%d="; };
+string = { nm = EXPORT_ARG_FMT;   str  = "\nexport %s_%s_%d\n"; };
+string = { nm = set_dash;         str  = "set --"; };
+string = { nm = arg_fmt;          str  = " '%s'"; };
+string = { nm = apostrophy;       str  = "'\\''"; };
+string = { nm = init_optct;       str  = "\nOPTION_CT=0\n"; };
+string = { nm = SHOW_VAL_FMT;     str  = "=%1$lu # 0x%1$lX\n"; };
+string = { nm = TRUE_STR;         str  = "true"; };
+string = { nm = FALSE_STR;        str  = "false"; };
+string = { nm = VER_STR;          str  = "VERSION"; };
+string = { nm = OK_NEED_OPT_ARG;  str  = "OPT_ARG_NEEDED=OK"; };
+string = { nm = NO_ARG_NEEDED;    str  = "OPT_ARG_NEEDED=NO"; };
+string = { nm = YES_NEED_OPT_ARG; str  = "OPT_ARG_NEEDED=YES"; };
+string = { nm = LONG_USE_STR;     str  = "LONGUSAGE"; };
+string = { nm = FLAG_STR;         str  = "flag"; };
+string = { nm = SET_TEXT_FMT;     str  = "%s_%s_TEXT='"; };
+string = { nm = END_SET_TEXT;     str  = "'\n\n"; };
+string = { nm = OPTION_STR;       str  = "option"; };
+string = { nm = SHOW_PROG_ENV;    str  = "\nenv | grep '^%s_'\n"; };
+string = { nm = SET_OFF_FMT;      str  = " -- %s"; };
+string = { nm = LONG_OPT_MARKER;  str  = "--"; };
+string = { nm = BULLET_STR;       str  = "\t\t\t\t- "; };
+string = { nm = DEEP_INDENT_STR;  str  = "\t\t\t\t  "; };
+string = { nm = ONE_TAB_STR;      str  = "\t"; };
+
+string = { nm = NOT_FOUND_STR;
+  str  = <<- _EOStr_
+	    * )
+	         OPT_PROCESS=false
+	         ;;
+	    esac
+
+	_EOStr_;
+};
+
+string = { nm = ENUM_ERR_SEP_LINE_FMT;
+  str  = "  %s\n"; };
+
+string = { nm = ENUM_ERR_STR_WIDTH_FMT;
+  str  = "%%-%ds"; };
+
+string = { nm = PAGE_USAGE_FMT;
+  str  = "%1$s /tmp/use.%2$lu ; rm -f /tmp/use.%2$lu"; };
+
+string = { nm = START_MARK;
+  str  = <<- _EOStr_
+	# # # # # # # # # # -- do not modify this marker --
+	#
+	#  DO NOT EDIT THIS SECTION
+
+	_EOStr_;
+};
+
+string = { nm = PREAMBLE_FMT;
+  str  = <<- _EOStr_
+	%s OF %s
+	#
+	#  From here to the next `-- do not modify this marker --',
+	#  the text has been generated %s
+
+	_EOStr_;
+};
+
+string = { nm = END_PRE_FMT;
+  str  = "#  From the %s option definitions\n#\n"; };
+
+string = { nm = MULTI_DEF_FMT;
+  str  = <<- _EOStr_
+
+	if test -z "${%1$s_%2$s}"
+	then
+	  %1$s_%2$s_CT=0
+	else
+	  %1$s_%2$s_CT=1
+	  %1$s_%2$s_1=${%1$s_%2$s}
+	fi
+	export %1$s_%2$s_CT
+	_EOStr_;
+};
+
+string = { nm = SGL_DEF_FMT;
+  str  = <<- _EOStr_
+
+	%1$s_%2$s=${%1$s_%2$s-'%3$s'}
+	%1$s_%2$s_set=false
+	export %1$s_%2$s
+	_EOStr_;
+};
+
+string = { nm = SGL_NO_DEF_FMT;
+  str  = <<- _EOStr_
+
+	%1$s_%2$s=${%1$s_%2$s}
+	%1$s_%2$s_set=false
+	export %1$s_%2$s
+
+	_EOStr_;
+};
+
+
+string = { nm = LOOP_STR;
+  str  = <<- _EOStr_
+
+	OPT_PROCESS=true
+	OPT_ARG=$1
+	while ${OPT_PROCESS} && [ $# -gt 0 ]
+	do
+	    OPT_ELEMENT=''
+	    OPT_ARG_VAL=''
+
+	    case "${OPT_ARG}" in
+	    -- )
+	        OPT_PROCESS=false
+	        shift
+	        ;;
+
+	_EOStr_;
+};
+
+string = { nm = ONLY_OPTS_LOOP;
+  str  = <<- _EOStr_
+
+	OPT_ARG=$1
+	while [ $# -gt 0 ]
+	do
+	    OPT_ELEMENT=''
+	    OPT_ARG_VAL=''
+	    OPT_ARG=${1}
+
+	_EOStr_;
+};
+
+string = { nm = zLoopEnd;
+  str  = <<- _EOStr_
+	    if [ -n "${OPT_ARG_VAL}" ]
+	    then
+	        eval %1$s_${OPT_NAME}${OPT_ELEMENT}="'${OPT_ARG_VAL}'"
+	        export %1$s_${OPT_NAME}${OPT_ELEMENT}
+	    fi
+	done
+	unset OPT_PROCESS || :
+	unset OPT_ELEMENT || :
+	unset OPT_ARG     || :
+	unset OPT_ARG_NEEDED || :
+	unset OPT_NAME    || :
+	unset OPT_CODE    || :
+	unset OPT_ARG_VAL || :
+	%2$s
+	_EOStr_;
+};
+
+string = { nm = END_MARK;
+  str  = <<- _EOStr_
+
+	# # # # # # # # # #
+	#
+	#  END OF AUTOMATED OPTION PROCESSING
+	#
+	# # # # # # # # # # -- do not modify this marker --
+
+	_EOStr_;
+};
+
+string = { nm = zOptionCase;
+  str  = "        case \"${OPT_CODE}\" in\n"; };
+
+string = { nm = zOptionPartName;  str  = "        '%s' | \\\n"; };
+string = { nm = zOptionFullName;  str  = "        '%s' )\n"; };
+string = { nm = zOptionFlag;      str  = "        '%c' )\n"; };
+string = { nm = zOptionEndSelect; str  = "            ;;\n\n"; };
+
+string = { nm = UNK_OPT_FMT;
+  str  =
+"        * )\n"
+"            echo Unknown %s: \"${OPT_CODE}\" >&2\n"
+"            echo \"$%s_USAGE_TEXT\"\n"
+"            exit 1\n"
+"            ;;\n"
+"        esac\n\n"; };
+
+string = { nm = zTextExit;
+  str  =
+"            echo \"$%s_%s_TEXT\"\n"
+"            exit 0\n"; };
+
+string = { nm = zPagedUsageExit;
+  str  =
+"            echo \"$%s_LONGUSAGE_TEXT\" | ${PAGER-more}\n"
+"            exit 0\n"; };
+
+string = { nm = zCmdFmt;
+  str  = "            %s\n"; };
+
+string = { nm = zCountTest;
+  str  =
+"            if [ $%1$s_%2$s_CT -ge %3$d ] ; then\n"
+"                echo Error:  more than %3$d %2$s options >&2\n"
+"                echo \"$%1$s_USAGE_TEXT\"\n"
+"                exit 1 ; fi\n"; };
+
+string = { nm = MULTI_ARG_FMT;
+  str  =
+"            %1$s_%2$s_CT=`expr ${%1$s_%2$s_CT} + 1`\n"
+"            OPT_ELEMENT=\"_${%1$s_%2$s_CT}\"\n"
+"            OPT_NAME='%2$s'\n"; };
+
+string = { nm = SGL_ARG_FMT;
+  str  =
+"            if [ -n \"${%1$s_%2$s}\" ] && ${%1$s_%2$s_set} ; then\n"
+"                echo Error:  duplicate %2$s option >&2\n"
+"                echo \"$%1$s_USAGE_TEXT\"\n"
+"                exit 1 ; fi\n"
+"            %1$s_%2$s_set=true\n"
+"            OPT_NAME='%2$s'\n"; };
+
+string = { nm = NO_MULTI_ARG_FMT;
+  str  =
+"            %1$s_%2$s_CT=0\n"
+"            OPT_ELEMENT=''\n"
+"            %1$s_%2$s='%3$s'\n"
+"            export %1$s_%2$s\n"
+"            OPT_NAME='%2$s'\n"; };
+
+string = { nm = NO_SGL_ARG_FMT;
+  str  = <<- _EOStr_
+	            if [ -n "${%1$s_%2$s}" ] && ${%1$s_%2$s_set} ; then
+	                echo 'Error:  duplicate %2$s option' >&2
+	                echo "$%1$s_USAGE_TEXT"
+	                exit 1 ; fi
+	            %1$s_%2$s_set=true
+	            %1$s_%2$s='%3$s'
+	            export %1$s_%2$s
+	            OPT_NAME='%2$s'
+
+	_EOStr_;
+};
+
+string = { nm = zMayArg;
+  str  =
+"            eval %1$s_%2$s${OPT_ELEMENT}=true\n"
+"            export %1$s_%2$s${OPT_ELEMENT}\n"
+"            OPT_ARG_NEEDED=OK\n"; };
+
+string = { nm = zMustArg;
+  str  = "            OPT_ARG_NEEDED=YES\n"; };
+
+string = { nm = zCantArg;
+  str  =
+"            eval %1$s_%2$s${OPT_ELEMENT}=true\n"
+"            export %1$s_%2$s${OPT_ELEMENT}\n"
+"            OPT_ARG_NEEDED=NO\n"; };
+
+string = { nm = INIT_LOPT_STR;
+  str  = <<- _EOStr_
+        OPT_CODE=`echo "X${OPT_ARG}"|sed 's/^X-*//'`
+        shift
+        OPT_ARG=$1
+        case "${OPT_CODE}" in *=* )
+            OPT_ARG_VAL=`echo "${OPT_CODE}"|sed 's/^[^=]*=//'`
+            OPT_CODE=`echo "${OPT_CODE}"|sed 's/=.*$//'` ;; esac
+
+	_EOStr_; };
+
+string = { nm = LOPT_ARG_FMT;
+  str  = <<- _EOStr_
+        case "${OPT_ARG_NEEDED}" in
+        NO )
+            OPT_ARG_VAL=''
+            ;;
+        YES )
+            if [ -z "${OPT_ARG_VAL}" ]
+            then
+                if [ $# -eq 0 ]
+                then
+                    echo No argument provided for ${OPT_NAME} option >&2
+                    echo "$%s_USAGE_TEXT"
+                    exit 1
+                fi
+                OPT_ARG_VAL=${OPT_ARG}
+                shift
+                OPT_ARG=$1
+            fi
+            ;;
+        OK )
+            if [ -z "${OPT_ARG_VAL}" ] && [ $# -gt 0 ]
+            then
+                case "${OPT_ARG}" in -* ) ;; * )
+                    OPT_ARG_VAL=${OPT_ARG}
+                    shift
+                    OPT_ARG=$1 ;; esac
+            fi
+            ;;
+        esac
+
+	_EOStr_; };
+
+string = { nm = INIT_OPT_STR;
+  str  = <<- _EOStr_
+        OPT_CODE=`echo "X${OPT_ARG}" | sed 's/X-\(.\).*/\1/'`
+        OPT_ARG=` echo "X${OPT_ARG}" | sed 's/X-.//'`
+
+	_EOStr_; };
+
+
+string = { nm = OPT_ARG_FMT;
+  str  = <<- _EOStr_
+        case "${OPT_ARG_NEEDED}" in
+        NO )
+            if [ -n "${OPT_ARG}" ]
+            then
+                OPT_ARG=-${OPT_ARG}
+            else
+                shift
+                OPT_ARG=$1
+            fi
+            ;;
+        YES )
+            if [ -n "${OPT_ARG}" ]
+            then
+                OPT_ARG_VAL=${OPT_ARG}
+            else
+                if [ $# -eq 0 ]
+                then
+                    echo No argument provided for ${OPT_NAME} option >&2
+                    echo "$%s_USAGE_TEXT"
+                    exit 1
+                fi
+                shift
+                OPT_ARG_VAL=$1
+            fi
+            shift
+            OPT_ARG=$1
+            ;;
+        OK )
+            if [ -n "${OPT_ARG}" ]
+            then
+                OPT_ARG_VAL=${OPT_ARG}
+                shift
+                OPT_ARG=$1
+            else
+                shift
+                if [ $# -gt 0 ]
+                then
+                    case "$1" in -* ) ;; * )
+                        OPT_ARG_VAL=$1
+                        shift ;; esac
+                    OPT_ARG=$1
+                fi
+            fi
+            ;;
+        esac
+
+	_EOStr_; };
+
+string = { nm = zOptNumFmt;
+  str  = "%1$s_%2$s=%3$d # 0x%3$X\nexport %1$s_%2$s\n"; };
+
+string = { nm = zOptCookieCt;
+  str  = "%1$s_%2$s_CT=%3$d\nexport %1$s_%2$s_CT\n"; };
+
+string = { nm = zOptCtFmt;
+  str  = "OPTION_CT=%d\nexport OPTION_CT\n"; };
+
+string = { nm = zOptDisabl;
+  str  = "%1$s_%2$s=%3$s\nexport %1$s_%2$s\n"; };
+
+string = { nm = zFullOptFmt;
+  str  = "%1$s_%2$s='%3$s'\nexport %1$s_%2$s\n"; };
+
+string = { nm = zEquivMode;
+  str  = "%1$s_%2$s_MODE='%3$s'\nexport %1$s_%2$s_MODE\n"; };
+
+string = { nm = NO_LOAD_WARN;
+  str  = "echo 'Warning:  Cannot load options files' >&2"; };
+
+string = { nm = NO_SAVE_OPTS;
+  str  = "echo 'Warning:  Cannot save options files' >&2"; };
+
+string = { nm = NO_SUPPRESS_LOAD;
+  str  = "echo 'Warning:  Cannot suppress the loading of options files' >&2"; };
+
+string = { nm = SET_NO_TEXT_FMT;
+  str  = "%1$s_%2$s_TEXT='no %2$s text'\n"; };
+
+string = { nm = SAVE_WARN;
+  str  = "%s WARNING:  cannot save options - "; };
+
+string = { nm = OPEN_CLOSE_FMT;   str  = "<%s/>\n"; };
+string = { nm = OPEN_XML_FMT;     str  = "<%s>"; };
+string = { nm = END_XML_FMT;      str  = "</%s>\n"; };
+string = { nm = TYPE_ATR_FMT;     str  = "<%s type=%s>"; };
+string = { nm = NULL_ATR_FMT;     str  = "<%s/>\n"; };
+string = { nm = NESTED_OPT_FMT;   str  = "<%s type=nested>\n"; };
+string = { nm = XML_HEX_BYTE_FMT; str  = "#x%02X;"; };
+
+string = { nm = BOOL_ATR_FMT;
+  str  = "<%1$s type=boolean>%2$s</%1$s>\n"; };
+
+string = { nm = NUMB_ATR_FMT;
+  str  = "<%1$s type=integer>0x%2$lX</%1$s>\n"; };
+
+#if 0
+string = { nm = ;
+  str  = ; };
+#endif

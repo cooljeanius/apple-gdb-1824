@@ -1,4 +1,4 @@
-/* BFD back-end data structures for ELF files.
+/* elf-bfd.h: BFD back-end data structures for ELF files.
    Copyright 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
    2002, 2003, 2004, 2005 Free Software Foundation, Inc.
    Written by Cygnus Support.
@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #ifndef _LIBELF_H_
 #define _LIBELF_H_ 1
@@ -29,24 +29,36 @@
 #include "elf/external.h"
 #include "bfdlink.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 /* The number of entries in a section is its size divided by the size
    of a single entry.  This is normally only applicable to reloc and
    symbol table sections.  */
 #define NUM_SHDR_ENTRIES(shdr) ((shdr)->sh_size / (shdr)->sh_entsize)
 
-/* If size isn't specified as 64 or 32, NAME macro should fail.  */
+#ifndef ARCH_SIZE
+# if defined(__LP64__) && __LP64__
+#  define ARCH_SIZE 64
+# else
+#  define ARCH_SIZE 32 /* seems like a safe assumption */
+# endif /* __LP64__ */
+#endif /* !ARCH_SIZE */
+
+/* If size is NOT specified as 64 or 32, NAME macro should fail: */
 #ifndef NAME
-#if ARCH_SIZE == 64
-#define NAME(x, y) x ## 64 ## _ ## y
-#endif
-#if ARCH_SIZE == 32
-#define NAME(x, y) x ## 32 ## _ ## y
-#endif
-#endif
+# if defined(ARCH_SIZE) && (ARCH_SIZE == 64)
+#  define NAME(x, y) x ## 64 ## _ ## y
+# endif /* ARCH_SIZE == 64 */
+# if defined(ARCH_SIZE) && (ARCH_SIZE == 32)
+#  define NAME(x, y) x ## 32 ## _ ## y
+# endif /* ARCH_SIZE == 32 */
+#endif /* !NAME */
 
 #ifndef NAME
-#define NAME(x, y) x ## NOSIZE ## _ ## y
-#endif
+# define NAME(x, y) x ## NOSIZE ## _ ## y
+#endif /* !NAME */
 
 #define ElfNAME(X)	NAME(Elf,X)
 #define elfNAME(X)	NAME(elf,X)
@@ -76,14 +88,37 @@ typedef struct
      version information.  */
   unsigned short version;
 
+  short padding; /* should be 2 bytes */
 } elf_symbol_type;
 
 struct elf_strtab_hash;
 struct got_entry;
 struct plt_entry;
 
-/* ELF linker hash table entries.  */
+/* used in the struct after this: */
+union gotplt_union
+{
+  bfd_signed_vma refcount;
+  bfd_vma offset;
+  struct got_entry *glist;
+  struct plt_entry *plist;
+};
 
+/* un-nested from the struct after it, and named, for '-Wc++-compat': */
+struct elf_link_vtable
+{
+  /* Virtual table entry use information.  This array is nominally of size
+   * size/sizeof(target_void_pointer), though we have to be able to assume
+   * and track a size while the symbol is still undefined.  It is indexed
+   * via offset/sizeof(target_void_pointer): */
+  size_t size;
+  bfd_boolean *used;
+
+  /* Virtual table derivation info: */
+  struct elf_link_hash_entry *parent;
+};
+
+/* ELF linker hash table entries: */
 struct elf_link_hash_entry
 {
   struct bfd_link_hash_entry root;
@@ -115,13 +150,7 @@ struct elf_link_hash_entry
      require a global offset table entry.  The second scheme allows
      multiple GOT entries per symbol, managed via a linked list
      pointed to by GLIST.  */
-  union gotplt_union
-    {
-      bfd_signed_vma refcount;
-      bfd_vma offset;
-      struct got_entry *glist;
-      struct plt_entry *plist;
-    } got;
+  union gotplt_union got;
 
   /* Same, but tracks a procedure linkage table entry.  */
   union gotplt_union plt;
@@ -188,7 +217,7 @@ struct elf_link_hash_entry
     unsigned long elf_hash_value;
   } u;
 
-  /* Version information.  */
+  /* Version information: */
   union
   {
     /* This field is used for a symbol which is not defined in a
@@ -201,18 +230,7 @@ struct elf_link_hash_entry
     struct bfd_elf_version_tree *vertree;
   } verinfo;
 
-  struct
-  {
-    /* Virtual table entry use information.  This array is nominally of size
-       size/sizeof(target_void_pointer), though we have to be able to assume
-       and track a size while the symbol is still undefined.  It is indexed
-       via offset/sizeof(target_void_pointer).  */
-    size_t size;
-    bfd_boolean *used;
-
-    /* Virtual table derivation info.  */
-    struct elf_link_hash_entry *parent;
-  } *vtable;
+  struct elf_link_vtable *vtable;
 };
 
 /* Will references to this symbol always reference the symbol
@@ -1029,53 +1047,55 @@ struct elf_backend_data
      global constructors and destructors by name.  This is TRUE for
      MIPS ELF because the Irix 5 tools can not handle the .init
      section.  */
-  unsigned collect : 1;
+  unsigned int collect : 1;
 
   /* This is TRUE if the linker should ignore changes to the type of a
      symbol.  This is TRUE for MIPS ELF because some Irix 5 objects
      record undefined functions as STT_OBJECT although the definitions
      are STT_FUNC.  */
-  unsigned type_change_ok : 1;
+  unsigned int type_change_ok : 1;
 
   /* Whether the backend may use REL relocations.  (Some backends use
      both REL and RELA relocations, and this flag is set for those
      backends.)  */
-  unsigned may_use_rel_p : 1;
+  unsigned int may_use_rel_p : 1;
 
   /* Whether the backend may use RELA relocations.  (Some backends use
      both REL and RELA relocations, and this flag is set for those
      backends.)  */
-  unsigned may_use_rela_p : 1;
+  unsigned int may_use_rela_p : 1;
 
   /* Whether the default relocation type is RELA.  If a backend with
      this flag set wants REL relocations for a particular section,
      it must note that explicitly.  Similarly, if this flag is clear,
      and the backend wants RELA relocations for a particular
      section.  */
-  unsigned default_use_rela_p : 1;
+  unsigned int default_use_rela_p : 1;
 
   /* Set if RELA relocations for a relocatable link can be handled by
      generic code.  Backends that set this flag need do nothing in the
      backend relocate_section routine for relocatable linking.  */
-  unsigned rela_normal : 1;
+  unsigned int rela_normal : 1;
 
   /* TRUE if addresses "naturally" sign extend.  This is used when
      swapping in from Elf32 when BFD64.  */
-  unsigned sign_extend_vma : 1;
+  unsigned int sign_extend_vma : 1;
 
-  unsigned want_got_plt : 1;
-  unsigned plt_readonly : 1;
-  unsigned want_plt_sym : 1;
-  unsigned plt_not_loaded : 1;
-  unsigned plt_alignment : 4;
-  unsigned can_gc_sections : 1;
-  unsigned can_refcount : 1;
-  unsigned want_got_sym : 1;
-  unsigned want_dynbss : 1;
+  unsigned int want_got_plt : 1;
+  unsigned int plt_readonly : 1;
+  unsigned int want_plt_sym : 1;
+  unsigned int plt_not_loaded : 1;
+  unsigned int plt_alignment : 4;
+  unsigned int can_gc_sections : 1;
+  unsigned int can_refcount : 1;
+  unsigned int want_got_sym : 1;
+  unsigned int want_dynbss : 1;
     /* Targets which do not support physical addressing often require
        that the p_paddr field in the section header to be set to zero.
        This field indicates whether this behavior is required.  */
-  unsigned want_p_paddr_set_to_zero : 1;
+  unsigned int want_p_paddr_set_to_zero : 1;
+  /* '-Wpadded': */
+  unsigned int padding : 12;
 };
 
 /* Information stored for each BFD section in an ELF file.  This
@@ -1922,4 +1942,9 @@ extern bfd_boolean _sh_elf_set_mach_from_flags
     }									\
   while (0)
 
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 #endif /* _LIBELF_H_ */
+
+/* EOF */

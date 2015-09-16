@@ -1,0 +1,80 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# extract.test --- test extract functionality
+#
+# Time-stamp:        "2010-06-26 16:05:58 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+mkdir ${testname}.dir
+echo creating ${testname}.dir/${testname}.tpl
+cat > ${testname}.dir/${testname}.tpl <<_EOF_
+[= AutoGen5 template out =]
+This is the start of generated text[=\` echo ' working' \` =]
+We will be extracting from [=(find-file "${testname}" "sample")=]:
+[=(extract (find-file "${testname}" "sample")
+           "/* =-= %s =-= MARKER =-= %s =-= */")=]
+[=(extract (find-file "${testname}" "sample")
+           "/* =-= %s =-= SECOND =-= %s =-= */"
+           "DNC Test" "DEFAULT-ed text.")=]
+And this is the end.[= \` echo ' done' \` =]
+_EOF_
+
+# # # # # # # # # # EXPECTED OUTPUT FILE # # # # # # #
+
+echo creating ${testname}.dir/${testname}.sample
+# this is the output we should expect to see
+cat > ${testname}.dir/${testname}.sample <<_EOF_
+This is the start of generated text working
+We will be extracting from ${testname}.dir/${testname}.sample:
+_EOF_
+cat >> ${testname}.dir/${testname}.sample <<\_EOF_
+/* =-= START =-= MARKER =-= DO NOT CHANGE THIS COMMENT =-= */
+This is inserted text
+/* =-= END   =-= MARKER =-= DO NOT CHANGE THIS COMMENT =-= */
+/* =-= START =-= SECOND =-= DNC Test =-= */
+This is an insertion
+test.
+/* =-= END   =-= SECOND =-= DNC Test =-= */
+And this is the end. done
+_EOF_
+
+AGCMD="--no-def -L${testname}.dir -b${testname} -T${testname}.tpl"
+
+run_ag x ${AGCMD} || failure autogen ${AGCMD} failed
+
+cmp -s ${testname}.out ${testname}.dir/${testname}.sample || \
+  failure "`diff -c ${testname}.out ${testname}.dir/${testname}.sample`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of extract.test

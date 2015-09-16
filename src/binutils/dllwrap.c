@@ -1,6 +1,6 @@
 /* dllwrap.c -- wrapper for DLLTOOL and GCC to generate PE style DLLs
-   Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
-   Contributed by Mumit Khan (khan@xraylith.wisc.edu).
+   Copyright 1998-2004 Free Software Foundation, Inc.
+   Contributed by Mumit Khan <khan@xraylith.wisc.edu>.
 
    This file is part of GNU Binutils.
 
@@ -19,16 +19,16 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
    02110-1301, USA.  */
 
-/* AIX requires this to be the first thing in the file.  */
+/* AIX requires this to be the first thing in the file: */
 #ifndef __GNUC__
 # ifdef _AIX
  #pragma alloca
-#endif
-#endif
+# endif /* _AIX */
+#endif /* !__GNUC__ */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 
 #include "bfd.h"
 #include "libiberty.h"
@@ -178,24 +178,23 @@ look_for_prog (const char *prog_name, const char *prefix, int end_prefix)
   struct stat s;
   char *cmd;
 
-  cmd = xmalloc (strlen (prefix)
-		 + strlen (prog_name)
+  cmd = (char *)xmalloc(strlen(prefix) + strlen(prog_name)
 #ifdef HAVE_EXECUTABLE_SUFFIX
-		 + strlen (EXECUTABLE_SUFFIX)
-#endif
-		 + 10);
-  strcpy (cmd, prefix);
+                        + strlen(EXECUTABLE_SUFFIX)
+#endif /* HAVE_EXECUTABLE_SUFFIX */
+                        + 10);
+  strcpy(cmd, prefix);
 
-  sprintf (cmd + end_prefix, "%s", prog_name);
+  sprintf(cmd + end_prefix, "%s", prog_name);
 
-  if (strchr (cmd, '/') != NULL)
+  if (strchr(cmd, '/') != NULL)
     {
       int found;
 
       found = (stat (cmd, &s) == 0
 #ifdef HAVE_EXECUTABLE_SUFFIX
 	       || stat (strcat (cmd, EXECUTABLE_SUFFIX), &s) == 0
-#endif
+#endif /* HAVE_EXECUTABLE_SUFFIX */
 	       );
 
       if (! found)
@@ -342,27 +341,27 @@ cleanup_and_exit (int status)
 }
 
 static int
-run (const char *what, char *args)
+run(const char *what, char *args)
 {
   char *s;
   int pid, wait_status, retcode;
   int i;
   const char **argv;
   char *errmsg_fmt, *errmsg_arg;
-  char *temp_base = choose_temp_base ();
+  char *temp_base = choose_temp_base();
   int in_quote;
   char sep;
 
   if (verbose || dry_run)
-    fprintf (stderr, "%s %s\n", what, args);
+    fprintf(stderr, "%s %s\n", what, args);
 
-  /* Count the args */
+  /* Count the args: */
   i = 0;
   for (s = args; *s; s++)
     if (*s == ' ')
       i++;
   i++;
-  argv = alloca (sizeof (char *) * (i + 3));
+  argv = (const char **)alloca(sizeof(char *) * (i + 3));
   i = 0;
   argv[i++] = what;
   s = args;
@@ -916,65 +915,65 @@ Creating one, but that may not be what you want"));
 
   /* Step pre-1. If no --def <EXPORT_DEF> is specified,
      then create it and then pass it on.  */
-
   if (! def_file_seen)
     {
-      int i;
+      int j;
       dyn_string_t step_pre1;
 
-      step_pre1 = dyn_string_new (1024);
+      step_pre1 = dyn_string_new(1024);
 
-      dyn_string_append_cstr (step_pre1, dlltool_cmdline->s);
+      dyn_string_append_cstr(step_pre1, dlltool_cmdline->s);
       if (export_all)
 	{
-	  dyn_string_append_cstr (step_pre1, " --export-all --exclude-symbol=");
-	  dyn_string_append_cstr (step_pre1,
+	  dyn_string_append_cstr(step_pre1, " --export-all --exclude-symbol=");
+	  dyn_string_append_cstr(step_pre1,
 	  "_cygwin_dll_entry@12,DllMainCRTStartup@12,DllMain@12,DllEntryPoint@12");
 	}
-      dyn_string_append_cstr (step_pre1, " --output-def ");
-      dyn_string_append_cstr (step_pre1, def_file_name);
+      dyn_string_append_cstr(step_pre1, " --output-def ");
+      dyn_string_append_cstr(step_pre1, def_file_name);
 
-      for (i = 1; i < argc; ++i)
+      for (j = 1; j < argc; ++j)
 	{
-	  if (driver_arg_indices[i])
+	  if (driver_arg_indices[j])
 	    {
-	      char *arg = saved_argv[i];
-	      size_t len = strlen (arg);
-	      if (len >= 2 && arg[len-2] == '.'
-	          && (arg[len-1] == 'o' || arg[len-1] == 'a'))
+	      char *arg = saved_argv[j];
+	      size_t len = strlen(arg);
+	      if ((len >= 2) && (arg[len - 2] == '.')
+	          && ((arg[len - 1] == 'o') || (arg[len - 1] == 'a')))
 		{
-		  int quote = (strchr (arg, ' ') || strchr (arg, '\t'));
-		  dyn_string_append_cstr (step_pre1,
-				     (quote) ? " \"" : " ");
-		  dyn_string_append_cstr (step_pre1, arg);
-		  dyn_string_append_cstr (step_pre1,
-				     (quote) ? "\"" : "");
+		  int quote = (strchr(arg, ' ') || strchr(arg, '\t'));
+		  dyn_string_append_cstr(step_pre1,
+                                         ((quote) ? " \"" : " "));
+		  dyn_string_append_cstr(step_pre1, arg);
+		  dyn_string_append_cstr(step_pre1,
+                                         ((quote) ? "\"" : ""));
 		}
 	    }
 	}
 
-      if (run (dlltool_name, step_pre1->s))
-	cleanup_and_exit (1);
+      if (run(dlltool_name, step_pre1->s))
+	cleanup_and_exit(1);
 
-      dyn_string_delete (step_pre1);
+      dyn_string_delete(step_pre1);
     }
+  /* (end that part) */
 
-  dyn_string_append_cstr (dlltool_cmdline, " --def ");
-  dyn_string_append_cstr (dlltool_cmdline, def_file_name);
+  dyn_string_append_cstr(dlltool_cmdline, " --def ");
+  dyn_string_append_cstr(dlltool_cmdline, def_file_name);
 
   if (verbose)
     {
-      fprintf (stderr, _("DLLTOOL name    : %s\n"), dlltool_name);
-      fprintf (stderr, _("DLLTOOL options : %s\n"), dlltool_cmdline->s);
-      fprintf (stderr, _("DRIVER name     : %s\n"), driver_name);
-      fprintf (stderr, _("DRIVER options  : %s\n"), driver_cmdline->s);
+      fprintf(stderr, _("DLLTOOL name    : %s\n"), dlltool_name);
+      fprintf(stderr, _("DLLTOOL options : %s\n"), dlltool_cmdline->s);
+      fprintf(stderr, _("DRIVER name     : %s\n"), driver_name);
+      fprintf(stderr, _("DRIVER options  : %s\n"), driver_cmdline->s);
     }
 
   /* Step 1. Call GCC/LD to create base relocation file. If using GCC, the
      driver command line will look like the following:
-    
+
         % gcc -Wl,--dll --Wl,--base-file,foo.base [rest of command line]
-    
+
      If the user does not specify a base name, create temporary one that
      is deleted at exit.  */
 
@@ -1016,9 +1015,9 @@ Creating one, but that may not be what you want"));
 
   /* Step 2. generate the exp file by running dlltool.
      dlltool command line will look like the following:
-    
+
         % dlltool -Wl,--dll --Wl,--base-file,foo.base [rest of command line]
-    
+
      If the user does not specify a base name, create temporary one that
      is deleted at exit.  */
 

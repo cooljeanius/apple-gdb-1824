@@ -1,0 +1,28 @@
+Process:         bash [2273]
+Path:            /bin/bash
+Identifier:      bash
+Version:         ??? (???)
+Code Type:       X86-64 (Native)
+Parent Process:  gdb [2272]
+
+Date/Time:       2015-04-06 16:34:31.311 -0400
+OS Version:      Mac OS X 10.6.8 (10K549)
+Report Version:  6
+
+Exception Type:  EXC_CRASH (SIGTRAP)
+Exception Codes: 0x0000000000000000, 0x0000000000000000
+Crashed Thread:  0
+
+Thread 0 Crashed:
+0   dyld                          	0x00007fff5fc01028 _dyld_start + 0
+
+Thread 0 crashed with X86 Thread State (64-bit):
+  rax: 0x0000000000000000  rbx: 0x0000000000000000  rcx: 0x0000000000000000  rdx: 0x0000000000000000
+  rdi: 0x0000000000000000  rsi: 0x0000000000000000  rbp: 0x0000000000000000  rsp: 0x00007fff5fbf6178
+   r8: 0x90caa68200000000   r9: 0x0000000000000000  r10: 0x0000000000000000  r11: 0x0000000000000000
+  r12: 0x0000000000000000  r13: 0x0000000000000000  r14: 0x0000000000000000  r15: 0x0000000000000000
+  rip: 0x00007fff5fc01028  rfl: 0x0000000000000200  cr2: 0x0000000000000000
+
+Binary Images:
+    0x7fff5fc00000 -     0x7fff5fc3be0f  dyld 132.1 (???) <29DECB19-0193-2575-D838-CF743F0400B2> /usr/lib/dyld
+

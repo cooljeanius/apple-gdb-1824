@@ -1,0 +1,29 @@
+## Makefile for decomment to use with ../configure
+
+PROJECT = decomment
+PRODUCT_TYPE = tool
+
+CC = @CC@
+
+CFILES = decomment.c
+OFILES = decomment.o
+CLEANFILES = *.o *~ decomment decomment_decommented.c
+
+AM_CFLAGS = -Wall -Wextra -mdynamic-no-pic
+AM_LDFLAGS = -dead_strip
+
+bin_PROGRAMS = decomment
+
+all: decomment
+
+decomment.o: decomment.c
+	$(CC) $(AM_CFLAGS) -o decomment.o -c decomment.c
+
+decomment: decomment.o
+	$(CC) $(AM_LDFLAGS) decomment.o -o decomment
+
+clean:
+	rm -f $(CLEANFILES)
+
+check: decomment decomment.c
+	./decomment decomment.c > decomment_decommented.c

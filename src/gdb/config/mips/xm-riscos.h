@@ -1,4 +1,5 @@
-/* Copyright 1993, 1994, 1995 Free Software Foundation, Inc.
+/* xm-riscos.h
+   Copyright 1993, 1994, 1995 Free Software Foundation, Inc.
 
    This file is part of GDB.
 
@@ -21,5 +22,9 @@
 
 #define USG 1
 
-/* setjmp.h requires uid_t.  */
+/* setjmp.h requires uid_t.
+ * (TODO: confirm with results of AC_TYPE_UID_T autoconf macro?)
+ */
 #include <sys/types.h>
+
+/* EOF */

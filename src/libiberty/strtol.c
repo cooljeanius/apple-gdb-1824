@@ -1,4 +1,4 @@
-/*-
+/*- strtol.c
  * Copyright (c) 1990 The Regents of the University of California.
  * All rights reserved.
  *
@@ -132,8 +132,8 @@ strtol(const char *nptr, char **endptr, register int base)
 	 * Set any if any `digits' consumed; make it negative to indicate
 	 * overflow.
 	 */
-	cutoff = neg ? -(unsigned long)LONG_MIN : LONG_MAX;
-	cutlim = cutoff % (unsigned long)base;
+	cutoff = (neg ? -(unsigned long)LONG_MIN : LONG_MAX);
+	cutlim = (int)(cutoff % (unsigned long)base);
 	cutoff /= (unsigned long)base;
 	for (acc = 0, any = 0;; c = *s++) {
 		if (ISDIGIT(c))
@@ -148,16 +148,18 @@ strtol(const char *nptr, char **endptr, register int base)
 			any = -1;
 		else {
 			any = 1;
-			acc *= base;
-			acc += c;
+			acc *= (unsigned long)base;
+			acc += (unsigned long)c;
 		}
 	}
 	if (any < 0) {
-		acc = neg ? LONG_MIN : LONG_MAX;
+		acc = (neg ? (unsigned long)LONG_MIN : LONG_MAX);
 		errno = ERANGE;
 	} else if (neg)
 		acc = -acc;
 	if (endptr != 0)
-		*endptr = (char *) (any ? s - 1 : nptr);
-	return (acc);
+		*endptr = (char *)(any ? (s - 1) : nptr);
+	return (long)(acc);
 }
+
+/* EOF */

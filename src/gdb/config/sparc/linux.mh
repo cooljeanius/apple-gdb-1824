@@ -1,4 +1,5 @@
 # Host: GNU/Linux SPARC
+
 NAT_FILE= nm-linux.h
 NATDEPFILES= sparc-nat.o sparc-sol2-nat.o \
 	corelow.o core-regset.o fork-child.o inf-ptrace.o \

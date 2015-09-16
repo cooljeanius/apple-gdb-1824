@@ -1,8 +1,8 @@
-/* BFD backend for SunOS style a.out with flags set to 0
-   Copyright 1990, 1991, 1992, 1993, 1994, 1995, 2001
-   Free Software Foundation, Inc.
-   Written by Cygnus Support.
-
+/* aout0.c: BFD backend for SunOS style a.out with flags set to 0
+ * Copyright 1990, 1991, 1992, 1993, 1994, 1995, 2001
+ * Free Software Foundation, Inc.
+ * Written by Cygnus Support.  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #define TARGETNAME "a.out-zero-big"
 
@@ -26,12 +26,21 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
    the tokens.  */
 #define MY(OP) CONCAT2 (aout0_big_,OP)
 
+/* this needs to go after the usage of the CONCAT* macro mentioned above,
+ * but before any other headers are included, or prototypes for functions
+ * are declared: */
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ && !__clang__ */
+
 #include "bfd.h"
 
 #define MY_exec_hdr_flags 0
 
 #define MACHTYPE_OK(mtype) \
-  ((mtype) == M_UNKNOWN || (mtype) == M_68010 || (mtype) == M_68020)
+  (((mtype) == M_UNKNOWN) || ((mtype) == M_68010) || ((mtype) == M_68020))
 
 /* Include the usual a.out support.  */
 #include "aoutf1.h"
+
+/* EOF */

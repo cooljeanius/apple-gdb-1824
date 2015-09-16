@@ -1,0 +1,105 @@
+# -*- Mode: Makefile -*-
+
+AO_LIBS         := $(shell autoopts-config ldflags)
+AO_CFLAGS       := $(shell autoopts-config cflags)
+CFLAGS          =  -g3 -O0 -std=c99
+
+CLOBBER_LIST    =  $(TARGET)
+HEADER_LIST     =  $(LCLHDR)
+CLEAN_LIST      =  $(LCL_CLEAN)
+
+default         :  $(TARGET)
+all             :  $(TARGET)
+
+# If there is an option definition file:
+#
+ifdef OPTDEF
+OPT_C           := $(OPTDEF:.def=.c)
+OPT_H           := $(OPTDEF:.def=.h)
+HEADER_LIST     += $(OPT_H)
+SRC             += $(OPTDEF:.def=.o)
+CLOBBER_LIST    += $(EXE).1 $(EXE).texi $(EXE).menu $(OPT_C) $(OPT_H)
+CLEAN_LIST      += $(OPT_C)-stamp $(OPT_C)-dep
+-include $(OPT_C)-dep
+
+$(OBJ)          : $(OPT_C)-stamp
+
+all             : $(EXE).1
+
+$(OPT_C)        : $(OPT_C)-stamp
+
+$(OPT_C)-stamp  : $(OPTDEF)
+	autogen -MT$@ -MF$(OPT_C)-dep $(OPTDEF)
+
+$(EXE).1        : $(OPTDEF)
+	autogen -Tagman-cmd.tpl -b $(EXE) $(OPTDEF)
+install         : /usr/local/man/man1/$(EXE).1
+
+/usr/local/man/man1/$(EXE).1 : $(EXE).1
+	cp $(EXE).1 $@
+endif
+
+# Character mapping file
+#
+ifdef CMAPFILE
+CMAPHDR         := $(shell sed -n $$'s/%file[ \t]*//p' $(CMAPFILE))
+CLOBBER_LIST    += $(CMAPHDR)
+HEADER_LIST     += $(CMAPHDR)
+$(OBJ)          :  $(CMAPHDR)
+
+$(CMAPHDR)      :  $(CMAPFILE)
+	char-mapper $(CMAPFILE)
+endif
+
+# Finite State Machine
+#
+ifdef FSMDEF
+-include $(FSMDEF)-dep
+
+FSMHDR          := $(FSMDEF)-fsm.h
+FSMSRC          := $(FSMDEF)-fsm.c
+SRC             += $(FSMSRC)
+CLOBBER_LIST    += $(FSMDEF)-*
+CLEAN_LIST      += $(FSMDEF)-dep $(FSMDEF)-stamp
+
+$(OBJ)          :  $(FSMHDR)
+$(FSMHDR)       : $(FSMDEF)-stamp
+$(FSMSRC)       : $(FSMDEF)-stamp
+
+$(FSMDEF)-stamp : $(FSMDEF).def $(FSMDEF).c
+	cp -fp $(FSMDEF).c $(FSMDEF)-fsm.c
+	autogen -MF$(FSMDEF)-dep -MT$(FSMDEF)-stamp $(FSMDEF).def
+endif
+
+# How to compile a source file
+#
+ifdef SRC
+.c.o: $(HEADER_LIST)
+	$(CC) -g $(CFLAGS) $(AO_CFLAGS) -c $*.c
+endif
+
+# How to build an executable
+#
+ifdef EXE
+OBJ             =  $(SRC:.c=.o)
+$(EXE)          : $(OBJ)
+	$(CC) -g -o $@ $(OBJ) $(AO_LIBS)
+
+install         : /usr/local/bin/$(EXE)
+
+/usr/local/bin/$(EXE) : $(EXE)
+	cp $(EXE) $@
+endif
+
+# Common rules:
+#
+clean           : $(LOCAL_CLEAN)
+	rm -f *.o core* *~ $(CLEAN_LIST)
+
+clobber         : clean $(LOCAL_CLOBBER)
+	rm -f $(CLOBBER_LIST)
+
+ifneq ($(wildcard test.sh),)
+check : $(TARGET)
+	$(TESTENV) $(SHELL) `test "X$${VERBOSE}" = Xtrue && echo -x` test.sh
+endif

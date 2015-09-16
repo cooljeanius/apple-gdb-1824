@@ -15,9 +15,8 @@ Created: Sunday, January 6, 1991 at 10:02 PM
 #define __SHUTDOWN__
 
 #ifndef __TYPES__
-#include <Types.h>
-#endif
-
+# include <Types.h>
+#endif /* !__TYPES__ */
 
 enum {
 
@@ -32,17 +31,19 @@ typedef pascal void (*ShutDwnProcPtr)(void);
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 pascal void ShutDwnPower(void)
-    = {0x3F3C,0x0001,0xA895}; 
+    = {0x3F3C,0x0001,0xA895};
 pascal void ShutDwnStart(void)
-    = {0x3F3C,0x0002,0xA895}; 
+    = {0x3F3C,0x0002,0xA895};
 pascal void ShutDwnInstall(ShutDwnProcPtr shutDownProc,short flags)
-    = {0x3F3C,0x0003,0xA895}; 
+    = {0x3F3C,0x0003,0xA895};
 pascal void ShutDwnRemove(ShutDwnProcPtr shutDownProc)
-    = {0x3F3C,0x0004,0xA895}; 
+    = {0x3F3C,0x0004,0xA895};
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__SHUTDOWN__ */
+
+/* EOF */

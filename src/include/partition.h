@@ -1,4 +1,4 @@
-/* List implementation of a partition of consecutive integers.
+/* partition.h: List implementation of a partition of consecutive integers.
    Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
    Contributed by CodeSourcery, LLC.
 
@@ -56,7 +56,7 @@ struct partition_elem
   unsigned class_count;
 };
 
-typedef struct partition_def 
+typedef struct partition_def
 {
   /* The number of elements in this partition.  */
   int num_elements;

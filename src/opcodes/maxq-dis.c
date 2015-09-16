@@ -1,24 +1,24 @@
-/* Instruction printing code for the MAXQ
+/* maxq-dis.c: Instruction printing code for the MAXQ
 
    Copyright 2004, 2005 Free Software Foundation, Inc.
 
-   Written by Vineet Sharma(vineets@noida.hcltech.com) Inderpreet
-   S.(inderpreetb@noida.hcltech.com)
+   Written by Vineet Sharma <vineets@noida.hcltech.com> and Inderpreet
+   S. <inderpreetb@noida.hcltech.com>
 
    This file is part of GDB.
 
    This program is free software; you can redistribute it and/or modify it
-   under the terms of the GNU General Public License as published by the Free 
+   under the terms of the GNU General Public License as published by the Free
    Software Foundation; either version 2 of the License, or (at your option)
    any later version.
 
    This program is distributed in the hope that it will be useful, but
-   WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+   WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
    or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
    for more details.
 
    You should have received a copy of the GNU General Public License along
-   with this program; if not, write to the Free Software Foundation, Inc., 
+   with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #include "sysdep.h"
@@ -181,10 +181,12 @@ get_reg_name (unsigned char reg_code, type1 arg_pos)
     {
       if (reg_code == mem_acc->opcode)
 	{
+          const char *mem_access_syntax_table_name =
+            (const char *)mem_access_syntax_table->name;
 	  for (syntax = mem_access_syntax_table;
-	       mem_access_syntax_table != NULL || mem_access_syntax_table->name;
+	       (mem_access_syntax_table != NULL) || mem_access_syntax_table_name;
 	       ++syntax)
-	    if (!strcmp (mem_acc->name, syntax->name))
+	    if (!strcmp(mem_acc->name, syntax->name))
 	      {
 		if ((arg_pos == syntax->type) || (syntax->type == BOTH))
 		  return mem_acc->name;
@@ -281,7 +283,7 @@ check_move (unsigned char insn0, unsigned char insn8)
 		  break;
 		}
 	    }
-	}	
+	}
 
       if (second)
 	{
@@ -544,7 +546,7 @@ get_insn_opcode (const unsigned int insn, group_info *i)
 }
 
 
-/* Print one instruction from MEMADDR on INFO->STREAM. Return the size of the 
+/* Print one instruction from MEMADDR on INFO->STREAM. Return the size of the
    instruction (always 2 on MAXQ20).  */
 
 static int
@@ -707,7 +709,7 @@ print_insn (bfd_vma memaddr, struct disassemble_info *info,
 
   info->fprintf_func (info->stream, "Unable to Decode :  %02x %02x",
 		      insn[0], insn[1]);
-  return 2;			
+  return 2;
 }
 
 int

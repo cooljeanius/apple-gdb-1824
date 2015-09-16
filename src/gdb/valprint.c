@@ -1,4 +1,4 @@
-/* Print values for GDB, the GNU debugger.
+/* valprint.c: Print values for GDB, the GNU debugger.
 
    Copyright 1986, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
    1996, 1997, 1998, 1999, 2000, 2001, 2002, 2005 Free Software
@@ -70,12 +70,12 @@ void _initialize_valprint (void);
 unsigned int print_max;
 #define PRINT_MAX_DEFAULT 200	/* Start print_max off at this value. */
 static void
-show_print_max (struct ui_file *file, int from_tty,
-		struct cmd_list_element *c, const char *value)
+show_print_max(struct ui_file *file, int from_tty,
+               struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("\
+  fprintf_filtered(file, _("\
 Limit on string chars or array elements to print is %s.\n"),
-		    value);
+                   value);
 }
 
 
@@ -242,7 +242,7 @@ value_check_printable (struct value *val, struct ui_file *stream)
       return 0;
     case opt_evicted:
     case opt_other:
-      fprintf_filtered (stream, 
+      fprintf_filtered (stream,
 		      _("<value temporarily unavailable, due to optimizations>"));
       return 0;
     default:
@@ -295,24 +295,26 @@ value_print (struct value *val, struct ui_file *stream, int format,
   return LA_VALUE_PRINT (val, stream, format, pretty);
 }
 
+#ifndef extract_luinteger_wbyte_order
+# define ExtractLUIntWByteOrd extract_long_unsigned_integer_with_byte_order
+#endif /* !extract_luinteger_wbyte_order */
 /* Called by various <lang>_val_print routines to print
    TYPE_CODE_INT's.  TYPE is the type.  VALADDR is the address of the
    value.  STREAM is where to print the value.  */
-
 void
-val_print_type_code_int (struct type *type, const gdb_byte *valaddr,
-			 struct ui_file *stream)
+val_print_type_code_int(struct type *type, const gdb_byte *valaddr,
+                        struct ui_file *stream)
 {
-  if (TYPE_LENGTH (type) > sizeof (LONGEST))
+  if ((size_t)TYPE_LENGTH(type) > sizeof(LONGEST))
     {
       LONGEST val;
 
-      if (TYPE_UNSIGNED (type)
+      if (TYPE_UNSIGNED(type)
 	  /* APPLE LOCAL byte order */
-	  && extract_long_unsigned_integer_with_byte_order 
-	  (valaddr, TYPE_LENGTH (type), &val, TYPE_BYTE_ORDER (type)))
+	  && ExtractLUIntWByteOrd(valaddr, TYPE_LENGTH(type), &val,
+                                  TYPE_BYTE_ORDER(type)))
 	{
-	  print_longest (stream, 'u', 0, val);
+	  print_longest(stream, 'u', 0, val);
 	}
       else
 	{
@@ -333,15 +335,15 @@ val_print_type_code_int (struct type *type, const gdb_byte *valaddr,
 }
 
 /* Print a number according to FORMAT which is one of d,u,x,o,b,h,w,g.
-   The raison d'etre of this function is to consolidate printing of 
-   LONG_LONG's into this one function. The format chars b,h,w,g are 
+   The raison d'etre of this function is to consolidate printing of
+   LONG_LONG's into this one function. The format chars b,h,w,g are
    from print_scalar_formatted().  Numbers are printed using C
-   format. 
+   format.
 
-   USE_C_FORMAT means to use C format in all cases.  Without it, 
+   USE_C_FORMAT means to use C format in all cases.  Without it,
    'o' and 'x' format do not include the standard C radix prefix
-   (leading 0 or 0x). 
-   
+   (leading 0 or 0x).
+
    Hilfinger/2004-09-09: USE_C_FORMAT was originally called USE_LOCAL
    and was intended to request formating according to the current
    language and would be used for most integers that GDB prints.  The
@@ -378,7 +380,7 @@ print_longest (struct ui_file *stream, int format, int use_c_format,
       val = int_string (val_long, 8, 0, 0, use_c_format); break;
     default:
       internal_error (__FILE__, __LINE__, _("failed internal consistency check"));
-    } 
+    }
   fputs_filtered (val, stream);
 }
 
@@ -588,27 +590,29 @@ print_binary_chars (struct ui_file *stream, const gdb_byte *valaddr,
 	      else
 		b = 0;
 
-	      fprintf_filtered (stream, "%1d", b);
+	      fprintf_filtered(stream, "%1d", b);
 	    }
 	}
     }
 }
 
-/* APPLE LOCAL: Formatting for OSType variables.  */
+/* APPLE LOCAL: Formatting for OSType variables: */
 void
-print_ostype (struct ui_file *stream, struct type *type, unsigned char *valaddr)
+print_ostype(struct ui_file *stream, struct type *type,
+             unsigned char *valaddr)
 {
-    unsigned int buf_extracted = unpack_long (type, valaddr);
+    unsigned long buf_extracted = (unsigned long)unpack_long(type,
+                                                             valaddr);
     int i;
     for (i = 3; i >= 0; i--)
       {
-        unsigned char c = (buf_extracted >> (i * 8)) & 0xff;
+        unsigned char c = ((buf_extracted >> (i * 8)) & 0xff);
         if (c == '\'')
-          fprintf_filtered (stream, "\\'");
-        else if (isprint (c))
-          fprintf_filtered (stream, "%c", c);
+          fprintf_filtered(stream, "\\'");
+        else if (isprint(c))
+          fprintf_filtered(stream, "%c", c);
         else
-          fprintf_filtered (stream, "\\%.3o", (unsigned int) c);
+          fprintf_filtered(stream, "\\%.3o", (unsigned int)c);
       }
 }
 
@@ -809,7 +813,7 @@ print_decimal_chars (struct ui_file *stream, const gdb_byte *valaddr,
    * the nibbles by 16, add Y and re-decimalize.  Repeat with Z.
    *
    * The trick is that "digits" holds a base-10 number, but sometimes
-   * the individual digits are > 10. 
+   * the individual digits are > 10.
    *
    * Outer loop is per nibble (hex digit) of input, from MSD end to
    * LSD end.
@@ -940,7 +944,7 @@ print_hex_chars_with_byte_order (struct ui_file *stream, const bfd_byte *valaddr
     }
 }
 
-/* VALADDR points to a char integer of LEN bytes.  Print it out in appropriate language form on stream.  
+/* VALADDR points to a char integer of LEN bytes.  Print it out in appropriate language form on stream.
    Omit any leading zero chars.  */
 
 void
@@ -993,25 +997,26 @@ print_char_chars_with_byte_order (struct ui_file *stream, const gdb_byte *valadd
    bounds. */
 
 static const gdb_byte *
-val_elt_addr (struct type *type, const gdb_byte *valaddr,
-	      unsigned int i)
+val_elt_addr(struct type *type, const gdb_byte *valaddr,
+	     unsigned int i)
 {
   struct type *elttype;
-  unsigned eltlen;
+  unsigned int eltlen;
   LONGEST lowerbound, upperbound, stride;
 
-  get_array_bounds (type, &lowerbound, &upperbound, &stride);
-  if (stride == 1)
+  get_array_bounds(type, &lowerbound, &upperbound, &stride);
+  if (stride == 1L)
     ;
-  else if (stride == -1)
-    i = (upperbound - i);
+  else if (stride == -1L)
+    i = (unsigned int)(upperbound - i);
   else
-    internal_error (__FILE__, __LINE__, _("unsupported stride %ld"), stride);
+    internal_error(__FILE__, __LINE__, _("unsupported stride %ld"),
+                   (long)stride);
 
-  elttype = TYPE_TARGET_TYPE (type);
-  eltlen = TYPE_LENGTH (check_typedef (elttype));
+  elttype = TYPE_TARGET_TYPE(type);
+  eltlen = TYPE_LENGTH(check_typedef(elttype));
 
-  return (valaddr + i * eltlen);
+  return (valaddr + (i * eltlen));
 }
 /* APPLE LOCAL end val_elt_addr */
 
@@ -1109,16 +1114,16 @@ val_print_array_elements (struct type *type, const gdb_byte *valaddr,
    function be eliminated.  */
 
 static int
-partial_memory_read (CORE_ADDR memaddr, char *myaddr, int len, int *errnoptr)
+partial_memory_read(CORE_ADDR memaddr, char *myaddr, int len, int *errnoptr)
 {
   int nread;			/* Number of bytes actually read. */
   int errcode;			/* Error from last read. */
 
-  /* First try a complete read. */
-  errcode = target_read_memory (memaddr, myaddr, len);
+  /* First try a complete read: */
+  errcode = target_read_memory(memaddr, (gdb_byte *)myaddr, len);
   if (errcode == 0)
     {
-      /* Got it all. */
+      /* Got it all: */
       nread = len;
     }
   else
@@ -1126,7 +1131,7 @@ partial_memory_read (CORE_ADDR memaddr, char *myaddr, int len, int *errnoptr)
       /* Loop, reading one byte at a time until we get as much as we can. */
       for (errcode = 0, nread = 0; len > 0 && errcode == 0; nread++, len--)
 	{
-	  errcode = target_read_memory (memaddr++, myaddr++, 1);
+	  errcode = target_read_memory((memaddr++), (gdb_byte *)(myaddr++), 1);
 	}
       /* If an error, the last read was unsuccessful, so adjust count. */
       if (errcode != 0)
@@ -1150,7 +1155,7 @@ partial_memory_read (CORE_ADDR memaddr, char *myaddr, int len, int *errnoptr)
 /* FIXME: Use target_read_string.  */
 
 int
-val_print_string (CORE_ADDR addr, int len, int width, struct ui_file *stream)
+val_print_string(CORE_ADDR addr, int len, int width, struct ui_file *stream)
 {
   int force_ellipsis = 0;	/* Force ellipsis to be printed if nonzero. */
   int errcode;			/* Errno returned from bad reads. */
@@ -1171,7 +1176,7 @@ val_print_string (CORE_ADDR addr, int len, int width, struct ui_file *stream)
      because finding the null byte (or available memory) is what actually
      limits the fetch. */
 
-  fetchlimit = (len == -1 ? print_max : min (len, print_max));
+  fetchlimit = ((len == -1) ? print_max : min((size_t)len, print_max));
 
   /* Now decide how large of chunks to try to read in one operation.  This
      is also pretty simple.  If LEN >= zero, then we want fetchlimit chars,
@@ -1182,76 +1187,77 @@ val_print_string (CORE_ADDR addr, int len, int width, struct ui_file *stream)
      minimum of 8 and fetchlimit.  We used to use 200 instead of 8 but
      200 is way too big for remote debugging over a serial line.  */
 
-  chunksize = (len == -1 ? min (8, fetchlimit) : fetchlimit);
+  chunksize = ((len == -1) ? min(8, fetchlimit) : fetchlimit);
 
   /* Loop until we either have all the characters to print, or we encounter
      some error, such as bumping into the end of the address space. */
 
   found_nul = 0;
-  old_chain = make_cleanup (null_cleanup, 0);
+  old_chain = make_cleanup(null_cleanup, 0);
 
   if (len > 0)
     {
-      buffer = (char *) xmalloc (len * width);
+      buffer = (char *)xmalloc(len * width);
       bufptr = buffer;
-      old_chain = make_cleanup (xfree, buffer);
+      old_chain = make_cleanup(xfree, buffer);
 
-      nfetch = partial_memory_read (addr, bufptr, len * width, &errcode)
-	/ width;
-      addr += nfetch * width;
-      bufptr += nfetch * width;
+      nfetch = (partial_memory_read(addr, bufptr, (len * width), &errcode)
+                / width);
+      addr += (nfetch * width);
+      bufptr += (nfetch * width);
     }
   else if (len == -1)
     {
-      unsigned long bufsize = 0;
-      do
-	{
-	  QUIT;
-	  nfetch = min (chunksize, fetchlimit - bufsize);
+      unsigned long bufsize = 0UL;
+      do {
+        QUIT;
+        nfetch = min(chunksize, fetchlimit - bufsize);
 
-	  if (buffer == NULL)
-	    buffer = (char *) xmalloc (nfetch * width);
-	  else
-	    {
-	      discard_cleanups (old_chain);
-	      buffer = (char *) xrealloc (buffer, (nfetch + bufsize) * width);
-	    }
+        if (buffer == NULL)
+          buffer = (char *)xmalloc(nfetch * width);
+        else
+          {
+            discard_cleanups(old_chain);
+            buffer = (char *)xrealloc(buffer, (nfetch + bufsize) * width);
+          }
 
-	  old_chain = make_cleanup (xfree, buffer);
-	  bufptr = buffer + bufsize * width;
-	  bufsize += nfetch;
+        old_chain = make_cleanup(xfree, buffer);
+        bufptr = (buffer + (bufsize * width));
+        bufsize += nfetch;
 
-	  /* Read as much as we can. */
-	  nfetch = partial_memory_read (addr, bufptr, nfetch * width, &errcode)
-	    / width;
+        /* Read as much as we can: */
+        nfetch = (partial_memory_read(addr, bufptr, (nfetch * width),
+                                      &errcode) / width);
 
-	  /* Scan this chunk for the null byte that terminates the string
-	     to print.  If found, we don't need to fetch any more.  Note
-	     that bufptr is explicitly left pointing at the next character
-	     after the null byte, or at the next character after the end of
-	     the buffer. */
+        /* Scan this chunk for the null byte that terminates the string
+         * to print.  If found, we don't need to fetch any more.  Note
+         * that bufptr is explicitly left pointing at the next character
+         * after the null byte, or at the next character after the end of
+         * the buffer. */
 
-	  limit = bufptr + nfetch * width;
-	  while (bufptr < limit)
-	    {
-	      unsigned long c;
+        limit = (bufptr + (nfetch * width));
+        while (bufptr < limit)
+          {
+            unsigned long c;
 
-	      c = extract_unsigned_integer (bufptr, width);
-	      addr += width;
-	      bufptr += width;
-	      if (c == 0)
-		{
-		  /* We don't care about any error which happened after
-		     the NULL terminator.  */
-		  errcode = 0;
-		  found_nul = 1;
-		  break;
-		}
-	    }
-	}
-      while (errcode == 0	/* no error */
-	     && bufptr - buffer < fetchlimit * width	/* no overrun */
-	     && !found_nul);	/* haven't found nul yet */
+            c = ((unsigned long)
+                 extract_unsigned_integer((const gdb_byte *)bufptr,
+                                          width));
+            addr += width;
+            bufptr += width;
+            if (c == 0)
+              {
+                /* We do NOT care about any error which happened after
+                 * the NULL terminator: */
+                errcode = 0;
+                found_nul = 1;
+                break;
+              }
+          }
+      } while ((errcode == 0)	/* no error */
+               && ((bufptr - buffer)
+                   < (ptrdiff_t)(fetchlimit * width)) /* no overrun */
+               && !found_nul);	/* have NOT found nul yet */
     }
   else
     {				/* length of string is really 0! */
@@ -1273,13 +1279,14 @@ val_print_string (CORE_ADDR addr, int len, int width, struct ui_file *stream)
          to peek at the next character.  If not successful, or it is not
          a null byte, then force ellipsis to be printed.  */
 
-      peekbuf = (char *) alloca (width);
+      peekbuf = (char *)alloca(width);
 
-      if (target_read_memory (addr, peekbuf, width) == 0
-	  && extract_unsigned_integer (peekbuf, width) != 0)
+      if ((target_read_memory(addr, (gdb_byte *)peekbuf, width) == 0)
+	  && (extract_unsigned_integer((const gdb_byte *)peekbuf, width) != 0UL))
 	force_ellipsis = 1;
     }
-  else if ((len >= 0 && errcode != 0) || (len > (bufptr - buffer) / width))
+  else if (((len >= 0) && (errcode != 0))
+           || (len > ((bufptr - buffer) / width)))
     {
       /* Getting an error when we have a requested length, or fetching less
          than the number of characters actually requested, always make us
@@ -1296,18 +1303,19 @@ val_print_string (CORE_ADDR addr, int len, int width, struct ui_file *stream)
     {
       if (addressprint)
 	{
-	  fputs_filtered (" ", stream);
+	  fputs_filtered(" ", stream);
 	}
-      LA_PRINT_STRING (stream, buffer, (bufptr - buffer) / width, width, force_ellipsis);
+      LA_PRINT_STRING(stream, (const gdb_byte *)buffer,
+                      ((bufptr - buffer) / width), width, force_ellipsis);
     }
 
   if (errcode != 0)
     {
       if (errcode == EIO)
 	{
-	  fprintf_filtered (stream, " <Address ");
-	  deprecated_print_address_numeric (addr, 1, stream);
-	  fprintf_filtered (stream, " out of bounds>");
+	  fprintf_filtered(stream, " <Address ");
+	  deprecated_print_address_numeric(addr, 1, stream);
+	  fprintf_filtered(stream, " out of bounds>");
 	}
       else
 	{
@@ -1406,17 +1414,17 @@ set_output_radix_1 (int from_tty, unsigned radix)
    the 'set input-radix' command. */
 
 static void
-set_radix (char *arg, int from_tty)
+set_radix(char *arg, int from_tty)
 {
-  unsigned radix;
+  unsigned long radix;
 
-  radix = (arg == NULL) ? 10 : parse_and_eval_long (arg);
-  set_output_radix_1 (0, radix);
-  set_input_radix_1 (0, radix);
+  radix = ((arg == NULL) ? 10UL : (unsigned long)parse_and_eval_long(arg));
+  set_output_radix_1(0, radix);
+  set_input_radix_1(0, radix);
   if (from_tty)
     {
-      printf_filtered (_("Input and output radices now set to decimal %u, hex %x, octal %o.\n"),
-		       radix, radix, radix);
+      printf_filtered(_("Input and output radices now set to decimal %lu, hex %lx, octal %lo.\n"),
+		      radix, radix, radix);
     }
 }
 
@@ -1444,11 +1452,12 @@ show_radix (char *arg, int from_tty)
 
 
 static void
-set_print (char *arg, int from_tty)
+set_print(char *arg, int from_tty)
 {
-  printf_unfiltered (
-     "\"set print\" must be followed by the name of a print subcommand.\n");
-  help_list (setprintlist, "set print ", -1, gdb_stdout);
+  printf_unfiltered("\
+     \"set print\" must be followed by the name of a print subcommand.\n");
+  help_list(setprintlist, "set print ", (enum command_class)-1,
+            gdb_stdout);
 }
 
 static void

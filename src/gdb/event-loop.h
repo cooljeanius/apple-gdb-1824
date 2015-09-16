@@ -1,4 +1,4 @@
-/* Definitions used by the GDB event loop.
+/* event-loop.h: Definitions used by the GDB event loop.
    Copyright 1999, 2000 Free Software Foundation, Inc.
    Written by Elena Zannoni <ezannoni@cygnus.com> of Cygnus Solutions.
 
@@ -26,9 +26,9 @@
    sources to listen on.  External event sources can be plugged into
    the loop.
 
-   There are 3 main components: 
-   - a list of file descriptors to be monitored, GDB_NOTIFIER.  
-   - a list of events that have occurred, EVENT_QUEUE.  
+   There are 3 main components:
+   - a list of file descriptors to be monitored, GDB_NOTIFIER.
+   - a list of events that have occurred, EVENT_QUEUE.
    - a list of signal handling functions, SIGHANDLER_LIST.
 
    GDB_NOTIFIER keeps track of the event sources. Event sources for
@@ -53,15 +53,18 @@
    functions that are invoked through traditional signal handlers.
    The actions to be taken is response to such events will be executed
    when the SIGHANDLER_LIST is scanned, the next time through the
-   infinite loop.  
+   infinite loop.
 
    Corollary tasks are the creation and deletion of event sources. */
 
+#ifndef __GDB_EVENT_LOOP_H__
+#define __GDB_EVENT_LOOP_H__ 1
+
 /* APPLE LOCAL make gdb_client_data more visible */
 struct async_signal_handler;
-typedef void (handler_func) (int, gdb_client_data);
-typedef void (sig_handler_func) (gdb_client_data);
-typedef void (timer_handler_func) (gdb_client_data);
+typedef void (handler_func)(int, gdb_client_data);
+typedef void (sig_handler_func)(gdb_client_data);
+typedef void (timer_handler_func)(gdb_client_data);
 
 /* Where to add an event onto the event queue, by queue_event. */
 typedef enum
@@ -75,27 +78,33 @@ typedef enum
   }
 queue_position;
 
-/* Tell create_file_handler what events we are interested in. 
+/* Tell create_file_handler what events we are interested in.
    This is used by the select version of the event loop. */
 
-#define GDB_READABLE	(1<<1)
-#define GDB_WRITABLE	(1<<2)
-#define GDB_EXCEPTION	(1<<3)
+#define GDB_READABLE	(1 << 1)
+#define GDB_WRITABLE	(1 << 2)
+#define GDB_EXCEPTION	(1 << 3)
 
 /* Exported functions from event-loop.c */
 
-extern void start_event_loop (void);
-extern int gdb_do_one_event (void *data);
-extern void delete_file_handler (int fd);
-extern void add_file_handler (int fd, handler_func * proc, gdb_client_data client_data);
-extern void mark_async_signal_handler (struct async_signal_handler *async_handler_ptr);
-extern void unmark_async_signal_handler (struct async_signal_handler *async_handler_ptr);
+extern void start_event_loop(void);
+extern int gdb_do_one_event(void *data);
+extern void delete_file_handler(int fd);
+extern void add_file_handler(int fd, handler_func * proc, gdb_client_data client_data);
+extern void mark_async_signal_handler(struct async_signal_handler *async_handler_ptr);
+extern void unmark_async_signal_handler(struct async_signal_handler *async_handler_ptr);
 extern struct async_signal_handler *
-  create_async_signal_handler (sig_handler_func * proc, gdb_client_data client_data);
-extern void delete_async_signal_handler (struct async_signal_handler **async_handler_ptr);
-extern int create_timer (int milliseconds, timer_handler_func * proc, gdb_client_data client_data);
-extern void delete_timer (int id);
+  create_async_signal_handler(sig_handler_func * proc, gdb_client_data client_data);
+extern void delete_async_signal_handler(struct async_signal_handler **async_handler_ptr);
+extern int create_timer(int milliseconds, timer_handler_func *proc, gdb_client_data client_data);
+extern void delete_timer(int id);
 
 /* APPLE LOCAL async */
-typedef void (event_handler_func) (void *);
-extern void gdb_queue_event (event_handler_func proc, void *data, queue_position position);
+typedef void (event_handler_func)(void *);
+extern void gdb_queue_event(event_handler_func proc, void *data, queue_position position);
+
+extern void print_event_queue(void);
+
+#endif /* !__GDB_EVENT_LOOP_H__ */
+
+/* EOF */

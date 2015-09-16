@@ -1,4 +1,4 @@
-/* Generic support for remote debugging interfaces.
+/* gdb/remote-utils.c: Generic support for remote debugging interfaces.
 
    Copyright 1993, 1994, 1995, 1996, 1998, 2000, 2001
    Free Software Foundation, Inc.
@@ -32,7 +32,7 @@
 
    The second package is a collection of more or less generic
    functions for use by remote backends.  They support user settable
-   variables for debugging, retries, and the like.  
+   variables for debugging, retries, and the like.
 
    Todo:
 
@@ -54,41 +54,45 @@
 #include "regcache.h"
 
 
-void _initialize_sr_support (void);
+void _initialize_sr_support(void);
 
 struct _sr_settings sr_settings =
 {
-  4,				/* timeout:
-				   remote-hms.c had 2
-				   remote-bug.c had "with a timeout of 2, we time out waiting for
-				   the prompt after an s-record dump."
+  4,	/* timeout:
+	   remote-hms.c had 2
+	   remote-bug.c had "with a timeout of 2, we time out waiting for
+	   the prompt after an s-record dump."
 
-				   remote.c had (2): This was 5 seconds, which is a long time to
-				   sit and wait. Unless this is going though some terminal server
-				   or multiplexer or other form of hairy serial connection, I
-				   would think 2 seconds would be plenty.
-				 */
+	   remote.c had (2): This was 5 seconds, which is a long time to
+	   sit and wait. Unless this is going though some terminal server
+	   or multiplexer or other form of hairy serial connection, I
+	   would think 2 seconds would be plenty.
+	 */
 
-  10,				/* retries */
-  NULL,				/* device */
-  NULL,				/* descriptor */
+  10,	/* retries */
+  NULL,	/* device */
+  NULL,	/* descriptor */
 };
 
 struct gr_settings *gr_settings = NULL;
 
-static void usage (char *, char *);
-static void sr_com (char *, int);
+static void usage(char *, char *);
+static void sr_com(char *, int);
 
-static void
-usage (char *proto, char *junk)
+static void ATTR_NORETURN
+usage(char *proto, char *junk)
 {
-  if (junk != NULL)
-    fprintf_unfiltered (gdb_stderr, "Unrecognized arguments: `%s'.\n", junk);
+  if (junk != NULL) {
+    fprintf_unfiltered(gdb_stderr, "Unrecognized arguments: `%s'.\n",
+                       junk);
+  }
 
-  error (_("Usage: target %s [DEVICE [SPEED [DEBUG]]]\n\
+  error(_("Usage: target %s [DEVICE [SPEED [DEBUG]]]\n\
 where DEVICE is the name of a device or HOST:PORT"), proto);
 
+#ifndef ATTR_NORETURN
   return;
+#endif /* !ATTR_NORETURN */
 }
 
 #define CHECKDONE(p, q) \
@@ -103,45 +107,51 @@ where DEVICE is the name of a device or HOST:PORT"), proto);
 }
 
 void
-sr_scan_args (char *proto, char *args)
+sr_scan_args(char *proto, char *args)
 {
   int n;
   char *p, *q;
 
-  /* if no args, then nothing to do. */
+  /* if no args, then nothing to do: */
   if (args == NULL || *args == '\0')
     return;
 
-  /* scan off white space.  */
-  for (p = args; isspace (*p); ++p);;
+  /* scan off white space: */
+  for (p = args; isspace(*p); ++p) {
+    ; /* (do nothing) */
+  };
 
-  /* find end of device name.  */
-  for (q = p; *q != '\0' && !isspace (*q); ++q);;
+  /* find end of device name: */
+  for (q = p; (*q != '\0') && !isspace(*q); ++q) {
+    ; /* (do nothing) */
+  };
 
-  /* check for missing or empty device name.  */
-  CHECKDONE (p, q);
-  sr_set_device (savestring (p, q - p));
+  /* check for missing or empty device name: */
+  CHECKDONE(p, q);
+  sr_set_device(savestring(p, (q - p)));
 
-  /* look for baud rate.  */
-  n = strtol (q, &p, 10);
+  /* look for baud rate: */
+  n = strtol(q, &p, 10);
 
-  /* check for missing or empty baud rate.  */
-  CHECKDONE (p, q);
+  /* check for missing or empty baud rate: */
+  CHECKDONE(p, q);
   baud_rate = n;
 
-  /* look for debug value.  */
-  n = strtol (p, &q, 10);
+  /* look for debug value: */
+  n = strtol(p, &q, 10);
 
-  /* check for missing or empty debug value.  */
-  CHECKDONE (p, q);
-  sr_set_debug (n);
+  /* check for missing or empty debug value: */
+  CHECKDONE(p, q);
+  sr_set_debug(n);
 
-  /* scan off remaining white space.  */
-  for (p = q; isspace (*p); ++p);;
+  /* scan off remaining white space: */
+  for (p = q; isspace(*p); ++p) {
+    ; /* (do nothing) */
+  };
 
   /* if not end of string, then there's unrecognized junk. */
   if (*p != '\0')
-    usage (proto, p);
+    usage(proto, p);
 
   return;
 }
@@ -466,27 +476,27 @@ gr_kill (void)
 /* This is called not only when we first attach, but also when the
    user types "run" after having attached.  */
 void
-gr_create_inferior (char *execfile, char *args, char **env)
+gr_create_inferior(char *execfile, char *args, char **env)
 {
   int entry_pt;
 
   if (args && *args)
-    error (_("Can't pass arguments to remote process."));
+    error(_("Cannot pass arguments to remote process."));
 
-  if (execfile == 0 || exec_bfd == 0)
-    error (_("No executable file specified"));
+  if ((execfile == 0) || (exec_bfd == 0))
+    error(_("No executable file specified"));
 
-  entry_pt = (int) bfd_get_start_address (exec_bfd);
-  sr_check_open ();
+  entry_pt = (int)bfd_get_start_address(exec_bfd);
+  sr_check_open();
 
-  gr_kill ();
-  gr_clear_all_breakpoints ();
+  gr_kill();
+  gr_clear_all_breakpoints();
 
-  init_wait_for_inferior ();
-  gr_checkin ();
+  init_wait_for_inferior();
+  gr_checkin();
 
-  insert_breakpoints ();	/* Needed to get correct instruction in cache */
-  proceed (entry_pt, -1, 0);
+  insert_breakpoints(); /* Needed to get correct instruction in cache */
+  proceed(entry_pt, (enum target_signal)-1, 0);
 }
 
 /* Given a null terminated list of strings LIST, read the input until we find one of
@@ -497,7 +507,7 @@ gr_create_inferior (char *execfile, char *args, char **env)
    pass non-matching data on.  */
 
 int
-gr_multi_scan (char *list[], int passthrough)
+gr_multi_scan(char *list[], int passthrough)
 {
   char *swallowed;
   char *swallowed_p;
@@ -505,7 +515,7 @@ gr_multi_scan (char *list[], int passthrough)
   int ch_handled;
   int i;
   int string_count;
-  int max_length;
+  size_t max_length;
   char **plist;
 
   /* Look through the strings.  Count them.  Find the largest one so we can
@@ -515,7 +525,7 @@ gr_multi_scan (char *list[], int passthrough)
        list[i] != NULL;
        ++i, ++string_count)
     {
-      int length = strlen (list[i]);
+      size_t length = strlen(list[i]);
 
       if (length > max_length)
 	max_length = length;
@@ -527,10 +537,10 @@ gr_multi_scan (char *list[], int passthrough)
 
   /* otherwise, we will need a holding area big enough to hold almost two
      copies of our largest string.  */
-  swallowed_p = swallowed = alloca (max_length << 1);
+  swallowed_p = swallowed = (char *)alloca(max_length << 1);
 
   /* and a list of pointers to current scan points. */
-  plist = (char **) alloca (string_count * sizeof (*plist));
+  plist = (char **)alloca(string_count * sizeof(*plist));
 
   /* and initialize */
   for (i = 0; i < string_count; ++i)
@@ -538,7 +548,7 @@ gr_multi_scan (char *list[], int passthrough)
 
   for (ch = sr_readchar (); /* loop forever */ ; ch = sr_readchar ())
     {
-      QUIT;			/* Let user quit and leave process running */
+      QUIT;		/* Let user quit and leave process running */
       ch_handled = 0;
 
       for (i = 0; i < string_count; ++i)
@@ -575,9 +585,9 @@ gr_multi_scan (char *list[], int passthrough)
 	}
     }
 #if 0
-  /* Never reached.  */
+  /* Never reached: */
   return (-1);
-#endif
+#endif /* 0 */
 }
 
 /* Get ready to modify the registers array.  On machines which store
@@ -587,24 +597,25 @@ gr_multi_scan (char *list[], int passthrough)
    debugged.  */
 
 void
-gr_prepare_to_store (void)
+gr_prepare_to_store(void)
 {
-  /* Do nothing, since we assume we can store individual regs */
+  ; /* Do nothing, since we assume we can store individual regs */
 }
 
 void
-_initialize_sr_support (void)
+_initialize_sr_support(void)
 {
   /* FIXME-now: if target is open... */
-  add_setshow_filename_cmd ("remotedevice", no_class, &sr_settings.device, _("\
+  add_setshow_filename_cmd("remotedevice", no_class, &sr_settings.device, _("\
 Set device for remote serial I/O."), _("\
 Show device for remote serial I/O."), _("\
 This device is used as the serial port when debugging using remote targets."),
-			    NULL,
-			    NULL, /* FIXME: i18n: */
-			    &setlist, &showlist);
+			   NULL,
+			   NULL, /* FIXME: i18n: */
+			   &setlist, &showlist);
 
-  add_com ("remote", class_obscure, sr_com,
-	   _("Send a command to the remote monitor."));
-
+  add_com("remote", class_obscure, sr_com,
+	  _("Send a command to the remote monitor."));
 }
+
+/* EOF */

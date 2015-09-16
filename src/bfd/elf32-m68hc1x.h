@@ -1,4 +1,4 @@
-/* Motorola 68HC11/68HC12-specific support for 32-bit ELF
+/* elf32-m68hc1x.h: Motorola 68HC11/68HC12-specific support for 32-bit ELF
    Copyright 2003, 2004 Free Software Foundation, Inc.
    Contributed by Stephane Carrez (stcarrez@nerim.fr)
 

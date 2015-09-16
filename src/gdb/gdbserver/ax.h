@@ -1,4 +1,5 @@
-/* Data structures and functions associated with agent expressions in GDB.
+/* ax.h
+   Data structures and functions associated with agent expressions in GDB.
    Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -24,8 +25,12 @@
 
 #ifdef IN_PROCESS_AGENT
 extern int debug_agent;
-#define debug_threads debug_agent
-#endif
+# define debug_threads debug_agent
+#endif /* IN_PROCESS_AGENT */
+
+#ifndef ULONGEST
+# define ULONGEST unsigned long long
+#endif /* !ULONGEST */
 
 struct traceframe;
 
@@ -65,7 +70,7 @@ char *gdb_unparse_agent_expr (struct agent_expr *aexpr);
 void emit_prologue (void);
 void emit_epilogue (void);
 enum eval_result_type compile_bytecodes (struct agent_expr *aexpr);
-#endif
+#endif /* !IN_PROCESS_AGENT */
 
 /* The context when evaluating agent expression.  */
 
@@ -141,3 +146,5 @@ extern CORE_ADDR current_insn_ptr;
 extern int emit_error;
 
 #endif /* AX_H */
+
+/* EOF */

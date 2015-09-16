@@ -1,0 +1,8 @@
+EXPORTS
+WinRDI_Config
+WinRDI_GetRDIProcVec
+WinRDI_GetVersion
+WinRDI_Get_DLL_Description
+WinRDI_Initialise
+WinRDI_Valid_RDI_DLL
+

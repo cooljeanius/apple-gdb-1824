@@ -1,4 +1,5 @@
-/* i387-specific utility functions, for the remote server for GDB.
+/* i387-fp.c
+   i387-specific utility functions, for the remote server for GDB.
    Copyright 2000, 2001, 2002, 2005
    Free Software Foundation, Inc.
 
@@ -80,32 +81,32 @@ i387_cache_to_fsave (void *buf)
   for (i = 0; i < 8; i++)
     collect_register (i + st0_regnum, ((char *) &fp->st_space[0]) + i * 10);
 
-  collect_register_by_name ("fioff", &fp->fioff);
-  collect_register_by_name ("fooff", &fp->fooff);
-  
-  /* This one's 11 bits... */
+  collect_register_by_name("fioff", &fp->fioff);
+  collect_register_by_name("fooff", &fp->fooff);
+
+  /* This one is 11 bits... */
   collect_register_by_name ("fop", &val2);
   fp->fop = (val2 & 0x7FF) | (fp->fop & 0xF800);
 
   /* Some registers are 16-bit.  */
-  collect_register_by_name ("fctrl", &val);
-  *(unsigned short *) &fp->fctrl = val;
+  collect_register_by_name("fctrl", &val);
+  *(unsigned short *)&fp->fctrl = val;
 
-  collect_register_by_name ("fstat", &val);
+  collect_register_by_name("fstat", &val);
   val &= 0xFFFF;
-  *(unsigned short *) &fp->fstat = val;
+  *(unsigned short *)&fp->fstat = val;
 
-  collect_register_by_name ("ftag", &val);
+  collect_register_by_name("ftag", &val);
   val &= 0xFFFF;
-  *(unsigned short *) &fp->ftag = val;
+  *(unsigned short *)&fp->ftag = val;
 
-  collect_register_by_name ("fiseg", &val);
+  collect_register_by_name("fiseg", &val);
   val &= 0xFFFF;
-  *(unsigned short *) &fp->fiseg = val;
+  *(unsigned short *)&fp->fiseg = val;
 
-  collect_register_by_name ("foseg", &val);
+  collect_register_by_name("foseg", &val);
   val &= 0xFFFF;
-  *(unsigned short *) &fp->foseg = val;
+  *(unsigned short *)&fp->foseg = val;
 }
 
 void
@@ -121,7 +122,7 @@ i387_fsave_to_cache (const void *buf)
 
   supply_register_by_name ("fioff", &fp->fioff);
   supply_register_by_name ("fooff", &fp->fooff);
-  
+
   /* Some registers are 16-bit.  */
   val = fp->fctrl & 0xFFFF;
   supply_register_by_name ("fctrl", &val);
@@ -143,34 +144,34 @@ i387_fsave_to_cache (const void *buf)
 }
 
 void
-i387_cache_to_fxsave (void *buf)
+i387_cache_to_fxsave(void *buf)
 {
-  struct i387_fxsave *fp = (struct i387_fxsave *) buf;
+  struct i387_fxsave *fp = (struct i387_fxsave *)buf;
   int i;
-  int st0_regnum = find_regno ("st0");
-  int xmm0_regnum = find_regno ("xmm0");
+  int st0_regnum = find_regno("st0");
+  int xmm0_regnum = find_regno("xmm0");
   unsigned long val, val2;
 
   for (i = 0; i < 8; i++)
-    collect_register (i + st0_regnum, ((char *) &fp->st_space[0]) + i * 16);
+    collect_register(i + st0_regnum, ((char *)&fp->st_space[0]) + i * 16);
   for (i = 0; i < num_xmm_registers; i++)
-    collect_register (i + xmm0_regnum, ((char *) &fp->xmm_space[0]) + i * 16);
+    collect_register(i + xmm0_regnum, ((char *)&fp->xmm_space[0]) + i * 16);
 
-  collect_register_by_name ("fioff", &fp->fioff);
-  collect_register_by_name ("fooff", &fp->fooff);
-  collect_register_by_name ("mxcsr", &fp->mxcsr);
-  
-  /* This one's 11 bits... */
-  collect_register_by_name ("fop", &val2);
+  collect_register_by_name("fioff", &fp->fioff);
+  collect_register_by_name("fooff", &fp->fooff);
+  collect_register_by_name("mxcsr", &fp->mxcsr);
+
+  /* This one is 11 bits... */
+  collect_register_by_name("fop", &val2);
   fp->fop = (val2 & 0x7FF) | (fp->fop & 0xF800);
 
   /* Some registers are 16-bit.  */
   collect_register_by_name ("fctrl", &val);
-  *(unsigned short *) &fp->fctrl = val;
+  *(unsigned short *)&fp->fctrl = val;
 
   collect_register_by_name ("fstat", &val);
   val &= 0xFFFF;
-  *(unsigned short *) &fp->fstat = val;
+  *(unsigned short *)&fp->fstat = val;
 
   /* Convert to the simplifed tag form stored in fxsave data.  */
   collect_register_by_name ("ftag", &val);
@@ -182,15 +183,15 @@ i387_cache_to_fxsave (void *buf)
       if (tag != 3)
 	val2 |= (1 << i);
     }
-  *(unsigned short *) &fp->ftag = val2;
+  *(unsigned short *)&fp->ftag = val2;
 
   collect_register_by_name ("fiseg", &val);
   val &= 0xFFFF;
-  *(unsigned short *) &fp->fiseg = val;
+  *(unsigned short *)&fp->fiseg = val;
 
   collect_register_by_name ("foseg", &val);
   val &= 0xFFFF;
-  *(unsigned short *) &fp->foseg = val;
+  *(unsigned short *)&fp->foseg = val;
 }
 
 static int
@@ -257,7 +258,7 @@ i387_fxsave_to_cache (const void *buf)
   supply_register_by_name ("fioff", &fp->fioff);
   supply_register_by_name ("fooff", &fp->fooff);
   supply_register_by_name ("mxcsr", &fp->mxcsr);
-  
+
   /* Some registers are 16-bit.  */
   val = fp->fctrl & 0xFFFF;
   supply_register_by_name ("fctrl", &val);
@@ -288,3 +289,5 @@ i387_fxsave_to_cache (const void *buf)
   val = (fp->fop) & 0x7FF;
   supply_register_by_name ("fop", &val);
 }
+
+/* EOF */

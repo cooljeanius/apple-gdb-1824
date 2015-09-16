@@ -51,4 +51,13 @@ GDBvn.texi
 *.ps
 *.html
 *.pdf
-
+annotate/*
+doxy/*
+gdb/*
+gdbint/*
+stabs/*
+Doxyfile-base
+Doxyfile-gdb-api
+Doxyfile-gdb-xref
+Doxyfile-gdbserver
+version.subst

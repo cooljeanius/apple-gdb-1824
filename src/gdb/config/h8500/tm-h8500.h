@@ -1,4 +1,5 @@
-/* Parameters for execution on a H8/500 series machine.
+/* tm-h8500.h
+   Parameters for execution on a H8/500 series machine.
    Copyright 1993, 1994, 1995, 1998, 1999, 2000, 2001
    Free Software Foundation, Inc.
 

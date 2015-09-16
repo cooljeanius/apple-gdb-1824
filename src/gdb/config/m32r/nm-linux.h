@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on an M32R based machine under GNU/Linux.
+/* nm-linux.h
+   Definitions to make GDB run on an M32R based machine under GNU/Linux.
    Copyright 2004 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -27,3 +28,5 @@
 #define FETCH_INFERIOR_REGISTERS
 
 #endif /* NM_M32R_LINUX_H */
+
+/* EOF */

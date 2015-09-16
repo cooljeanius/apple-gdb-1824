@@ -1,0 +1,79 @@
+
+autogen definitions options;
+
+/**
+ * \file genshell.def
+ *
+ * Time-stamp:      "2012-01-29 13:32:43 bkorb"
+ *
+ *  This module generates shell scripts with AutoOpts supported command line
+ *  option processing.  This program is licensed separately from the AutoOpts
+ *  library and is _only_ available under the terms of the GNU General
+ *  Public License.
+ *
+ *  Genshell Copyright (c) 1999-2012 by Bruce Korb - all rights reserved
+ *  Genshell is free software.
+ *  This file is part of AutoGen.
+ *
+ *  AutoGen copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+ *
+ *  AutoGen is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AutoGen is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+copyright = {
+    date  = "1999-2012";
+    owner = "Bruce Korb";
+    eaddr = "autogen-users@lists.sourceforge.net";
+    type  = gpl;
+};
+
+owner          = "Bruce Korb";
+prog-name      = "genshellopt";
+prog-title     = "Generate Shell Option Processing Script";
+long-opts;
+usage          = genshelloptUsage;
+prefix         = genshell;
+
+version = 1;
+
+flag = {
+    name      = script;
+    value     = o;
+    arg-type  = string;
+    descrip   = "Output Script File";
+};
+
+flag = {
+    name      = shell;
+    disable   = no;
+    enabled;
+    value     = s;
+    arg-type  = string;
+    descrip   = 'Shell name (follows "#!" magic)';
+};
+
+option-doc-format = texi;
+
+explain =<<- _EOF_
+	Note that @code{shell} is only useful if the output file does not
+	already exist.  If it does, then the shell name and optional first
+	argument will be extracted from the script file.
+	_EOF_;
+
+detail =<<- _EOF_
+	If the script file already exists and contains Automated Option
+	Processing text, the second line of the file through the ending tag
+	will be replaced by the newly generated text.  The first @code{#!}
+	line will be regenerated.
+	_EOF_;

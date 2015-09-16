@@ -1,4 +1,4 @@
-/* Very simple "bfd" target, for GDB, the GNU debugger.
+/* bfd-target.h: Very simple "bfd" target, for GDB, the GNU debugger.
 
    Copyright 2003 Free Software Foundation, Inc.
 
@@ -28,12 +28,27 @@ struct target_ops;
 /* Given an existing BFD, re-open it as a "struct target_ops".  On
    close, it will also close the corresponding BFD (which is like
    freopen and fdopen).  */
-struct target_ops *target_bfd_reopen (struct bfd *bfd);
+struct target_ops *target_bfd_reopen(struct bfd *bfd);
 
 /* Map over ABFD's sections, creating corresponding entries in the
    target's section table.  */
 
-void build_target_sections_from_bfd (struct target_ops *targ,
-				     struct bfd *abfd);
+void build_target_sections_from_bfd(struct target_ops *targ,
+				    struct bfd *abfd);
 
-#endif
+#if !defined(LONGEST) || !defined(ULONGEST)
+# include "defs.h"
+#endif /* !LONGEST || !ULONGEST */
+
+extern LONGEST target_bfd_xfer_partial(struct target_ops *ops,
+                                       enum target_object object,
+                                       const char *annex,
+                                       gdb_byte *readbuf,
+                                       const gdb_byte *writebuf,
+                                       ULONGEST offset, LONGEST len);
+
+extern void target_bfd_xclose(struct target_ops *t, int quitting);
+
+#endif /* !BFD_TARGET_H */
+
+/* EOF */

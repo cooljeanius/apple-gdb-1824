@@ -1,1 +1,4 @@
 This is a collection of include files that help imitate Posix in MPW.
+It was originally from older versions of binutils.
+The "CIncludes" directory actually comes from MPW itself.
+(MPW version 3.3, that is)

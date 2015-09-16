@@ -646,6 +646,7 @@ build_vendor
 build_cpu
 build
 RANLIB
+ac_ct_AR
 AR
 INSTALL_DATA
 INSTALL_SCRIPT
@@ -712,7 +713,7 @@ CXX
 CXXFLAGS
 CCC
 CPP'
-ac_subdirs_all='$configdirs
+ac_subdirs_all='${configdirs}
 ${extra_subdirs}'
 
 # Initialize some variables set by options.
@@ -2977,9 +2978,16 @@ test -z "$INSTALL_SCRIPT" && INSTALL_SCRIPT='${INSTALL}'
 
 test -z "$INSTALL_DATA" && INSTALL_DATA='${INSTALL} -m 644'
 
+
+  # Expand $ac_aux_dir to an absolute path.
+am_aux_dir=`cd "$ac_aux_dir" && pwd`
+
+
 if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}ar", so it can be a program name with args.
-set dummy ${ac_tool_prefix}ar; ac_word=$2
+  for ac_prog in ar lib "link -lib"
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_AR+:} false; then :
@@ -2995,7 +3003,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_AR="${ac_tool_prefix}ar"
+    ac_cv_prog_AR="$ac_tool_prefix$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -3015,11 +3023,15 @@ $as_echo "no" >&6; }
 fi
 
 
+    test -n "$AR" && break
+  done
 fi
-if test -z "$ac_cv_prog_AR"; then
+if test -z "$AR"; then
   ac_ct_AR=$AR
-  # Extract the first word of "ar", so it can be a program name with args.
-set dummy ar; ac_word=$2
+  for ac_prog in ar lib "link -lib"
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_ac_ct_AR+:} false; then :
@@ -3035,7 +3047,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_AR="ar"
+    ac_cv_prog_ac_ct_AR="$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -3054,8 +3066,12 @@ else
 $as_echo "no" >&6; }
 fi
 
+
+  test -n "$ac_ct_AR" && break
+done
+
   if test "x$ac_ct_AR" = x; then
-    AR=""
+    AR="false"
   else
     case $cross_compiling:$ac_tool_warned in
 yes:)
@@ -3065,9 +3081,78 @@ ac_tool_warned=yes ;;
 esac
     AR=$ac_ct_AR
   fi
-else
-  AR="$ac_cv_prog_AR"
 fi
+
+: ${AR=ar}
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking the archiver ($AR) interface" >&5
+$as_echo_n "checking the archiver ($AR) interface... " >&6; }
+if ${am_cv_ar_interface+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+   am_cv_ar_interface=ar
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+int some_variable = 0;
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  am_ar_try='$AR cru libconftest.a conftest.$ac_objext >&5'
+      { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$am_ar_try\""; } >&5
+  (eval $am_ar_try) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }
+      if test "$ac_status" -eq 0; then
+        am_cv_ar_interface=ar
+      else
+        am_ar_try='$AR -NOLOGO -OUT:conftest.lib conftest.$ac_objext >&5'
+        { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$am_ar_try\""; } >&5
+  (eval $am_ar_try) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }
+        if test "$ac_status" -eq 0; then
+          am_cv_ar_interface=lib
+        else
+          am_cv_ar_interface=unknown
+        fi
+      fi
+      rm -f conftest.lib libconftest.a
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+   ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_ar_interface" >&5
+$as_echo "$am_cv_ar_interface" >&6; }
+
+case $am_cv_ar_interface in
+ar)
+  ;;
+lib)
+  # Microsoft lib, so override with the ar-lib wrapper script.
+  # FIXME: It is wrong to rewrite AR.
+  # But if we don't then we get into trouble of one sort or another.
+  # A longer-term fix would be to have automake use am__AR in this case,
+  # and then we could set am__AR="$am_aux_dir/ar-lib \$(AR)" or something
+  # similar.
+  AR="$am_aux_dir/ar-lib $AR"
+  ;;
+unknown)
+  as_fn_error $? "could not determine $AR interface" "$LINENO" 5
+  ;;
+esac
 
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
@@ -3160,7 +3245,6 @@ esac
 else
   RANLIB="$ac_cv_prog_RANLIB"
 fi
-
 
 ac_aux_dir=
 for ac_dir in .. "$srcdir"/..; do
@@ -3568,13 +3652,11 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-
-
 AR=${AR-ar}
-
-if test "x$RANLIB" = "x"; then
-	test -z "$RANLIB"
-	if test -n "$ac_tool_prefix"; then
+  ## keep autoscan happy:
+if test "x${RANLIB}" = "x"; then
+  test -z "${RANLIB}"
+  if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -3667,17 +3749,16 @@ else
 fi
 
 else
-	test ! -z "$RANLIB" && export RANLIB
-
+  test ! -z "${RANLIB}" && export RANLIB
+    ## gotta do something here...
 fi
 
 # Put a plausible default for CC_FOR_BUILD in Makefile.
-if test "x$cross_compiling" = "xno"; then
+if test "x${cross_compiling}" = "xno"; then
   CC_FOR_BUILD='$(CC)'
 else
   CC_FOR_BUILD=gcc
 fi
-
 
 # If a cpu ever has more than one simulator to choose from, use
 # --enable-sim=... to choose.
@@ -3685,17 +3766,15 @@ fi
 if test "${enable_sim+set}" = set; then :
   enableval=$enable_sim; case "${enableval}" in
 yes | no) ;;
-*)	as_fn_error $? "bad value ${enableval} given for --enable-sim option" "$LINENO" 5 ;;
+*) as_fn_error $? "bad value ${enableval} given for --enable-sim option" "$LINENO" 5 ;;
 esac
 fi
-
 
 # Assume simulator can be built with cc.
 # If the user passes --enable-sim built it regardless of $(CC).
 only_if_gcc=no
 only_if_enabled=no
 extra_subdirs=common
-
 
 
 # WHEN ADDING ENTRIES TO THIS MATRIX:
@@ -3706,102 +3785,102 @@ extra_subdirs=common
 case "${target}" in
   arm*-*-* | thumb*-*-*)
 
-	if test -d arm; then
-		sim_target=arm
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the arm target was requested but the subdirectory for it is not present" >&5
+  if test -d arm; then
+    sim_target=arm
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the arm target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the arm target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
 
 	extra_subdirs="${extra_subdirs} testsuite"
 	;;
   strongarm*-*-*)
 
-	if test -d arm; then
-		sim_target=arm
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the arm target was requested but the subdirectory for it is not present" >&5
+  if test -d arm; then
+    sim_target=arm
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the arm target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the arm target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
 
 	extra_subdirs="${extra_subdirs} testsuite"
 	;;
   xscale-*-*)
 
-	if test -d arm; then
-		sim_target=arm
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the arm target was requested but the subdirectory for it is not present" >&5
+  if test -d arm; then
+    sim_target=arm
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the arm target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the arm target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
 
 	extra_subdirs="${extra_subdirs} testsuite"
 	;;
   d10v-*-*)
-	if test -d d10v; then
-		sim_target=d10v
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the d10v target was requested but the subdirectory for it is not present" >&5
+  if test -d d10v; then
+    sim_target=d10v
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the d10v target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the d10v target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
  ;;
   h8300*-*-*)
-	if test -d h8300; then
-		sim_target=h8300
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the h8300 target was requested but the subdirectory for it is not present" >&5
+  if test -d h8300; then
+    sim_target=h8300
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the h8300 target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the h8300 target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
  ;;
   h8500-*-*)
-	if test -d h8500; then
-		sim_target=h8500
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the h8500 target was requested but the subdirectory for it is not present" >&5
+  if test -d h8500; then
+    sim_target=h8500
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the h8500 target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the h8500 target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
  ;;
   i960-*-*)
-	if test -d i960; then
-		sim_target=i960
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the i960 target was requested but the subdirectory for it is not present" >&5
+  if test -d i960; then
+    sim_target=i960
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the i960 target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the i960 target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
  ;;
   m32r-*-*)
-	if test -d m32r; then
-		sim_target=m32r
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the m32r target was requested but the subdirectory for it is not present" >&5
+  if test -d m32r; then
+    sim_target=m32r
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the m32r target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the m32r target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
  ;;
   m68hc11-*-*|m6811-*-*)
-	if test -d m68hc11; then
-		sim_target=m68hc11
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the m68hc11 target was requested but the subdirectory for it is not present" >&5
+  if test -d m68hc11; then
+    sim_target=m68hc11
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the m68hc11 target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the m68hc11 target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
  ;;
   mcore-*-*)
-	if test -d mcore; then
-		sim_target=mcore
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the mcore target was requested but the subdirectory for it is not present" >&5
+  if test -d mcore; then
+    sim_target=mcore
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the mcore target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the mcore target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
  ;;
   mips*-*-*)
 	# The MIPS simulator can only be compiled by gcc.
 
-	if test -d mips; then
-		sim_target=mips
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the mips target was requested but the subdirectory for it is not present" >&5
+  if test -d mips; then
+    sim_target=mips
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the mips target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the mips target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
 
 	only_if_gcc=yes
 	extra_subdirs="${extra_subdirs} igen"
@@ -3809,33 +3888,33 @@ $as_echo "$as_me: WARNING: the mips target was requested but the subdirectory fo
   mn10300*-*-*)
 	# The mn10300 simulator can only be compiled by gcc.
 
-	if test -d mn10300; then
-		sim_target=mn10300
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the mn10300 target was requested but the subdirectory for it is not present" >&5
+  if test -d mn10300; then
+    sim_target=mn10300
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the mn10300 target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the mn10300 target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
 
 	only_if_gcc=yes
 	extra_subdirs="${extra_subdirs} igen"
 	;;
   mn10200*-*-*)
 
-	if test -d mn10200; then
-		sim_target=mn10200
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the mn10200 target was requested but the subdirectory for it is not present" >&5
+  if test -d mn10200; then
+    sim_target=mn10200
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the mn10200 target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the mn10200 target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
 
 	;;
   sh*-*-*)
-	if test -d sh; then
-		sim_target=sh
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the sh target was requested but the subdirectory for it is not present" >&5
+  if test -d sh; then
+    sim_target=sh
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the sh target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the sh target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
  ;;
   powerpc*-*-eabi* | powerpc*-*-solaris* | powerpc*-*-sysv4* | \
   powerpc*-*-elf* | powerpc*-*-linux* | powerpc*-*-netbsd* | powerpc*-apple-darwin*)
@@ -3857,7 +3936,6 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
-
 
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for unsigned long long int" >&5
@@ -4485,24 +4563,24 @@ fi
 
 
 
-	if test -d ppc; then
-		sim_target=ppc
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the ppc target was requested but the subdirectory for it is not present" >&5
+  if test -d ppc; then
+    sim_target=ppc
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the ppc target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the ppc target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
 
 	only_if_gcc=yes
 	extra_subdirs="${extra_subdirs} igen"
 	;;
   tic80-*-*)
 
-	if test -d tic80; then
-		sim_target=tic80
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the tic80 target was requested but the subdirectory for it is not present" >&5
+  if test -d tic80; then
+    sim_target=tic80
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the tic80 target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the tic80 target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
 
 	only_if_gcc=yes
 	extra_subdirs="${extra_subdirs} igen"
@@ -4510,12 +4588,12 @@ $as_echo "$as_me: WARNING: the tic80 target was requested but the subdirectory f
   v850-*-*)
 	# The V850 simulator can only be compiled by gcc.
 
-	if test -d v850; then
-		sim_target=v850
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the v850 target was requested but the subdirectory for it is not present" >&5
+  if test -d v850; then
+    sim_target=v850
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the v850 target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the v850 target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
 
 	extra_subdirs="${extra_subdirs} igen"
 	only_if_gcc=yes
@@ -4523,12 +4601,12 @@ $as_echo "$as_me: WARNING: the v850 target was requested but the subdirectory fo
   v850e-*-*)
 	# The V850 simulator can only be compiled by gcc.
 
-	if test -d v850; then
-		sim_target=v850
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the v850 target was requested but the subdirectory for it is not present" >&5
+  if test -d v850; then
+    sim_target=v850
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the v850 target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the v850 target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
 
 	extra_subdirs="${extra_subdirs} igen"
 	only_if_gcc=yes
@@ -4536,35 +4614,35 @@ $as_echo "$as_me: WARNING: the v850 target was requested but the subdirectory fo
   v850ea-*-*)
 	# The V850 simulator can only be compiled by gcc.
 
-	if test -d v850; then
-		sim_target=v850
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the v850 target was requested but the subdirectory for it is not present" >&5
+  if test -d v850; then
+    sim_target=v850
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the v850 target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the v850 target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
 
 	extra_subdirs="${extra_subdirs} igen"
 	only_if_gcc=yes
 	;;
   w65-*-*)
 
-	if test -d w65; then
-		sim_target=w65
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the w65 target was requested but the subdirectory for it is not present" >&5
+  if test -d w65; then
+    sim_target=w65
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the w65 target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the w65 target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
 
 	# The w65 is suffering from gradual decay.
 	only_if_enabled=yes
 	;;
   z8k*-*-*)
-	if test -d z8k; then
-		sim_target=z8k
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the z8k target was requested but the subdirectory for it is not present" >&5
+  if test -d z8k; then
+    sim_target=z8k
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the z8k target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the z8k target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
  ;;
   sparc64-*-*)
 	only_if_gcc=yes
@@ -4574,12 +4652,12 @@ $as_echo "$as_me: WARNING: the z8k target was requested but the subdirectory for
 	# The SPARC simulator can only be compiled by gcc.
 	only_if_gcc=yes
 
-	if test -d erc32; then
-		sim_target=erc32
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the erc32 target was requested but the subdirectory for it is not present" >&5
+  if test -d erc32; then
+    sim_target=erc32
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the erc32 target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the erc32 target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
 
 	;;
   sparc*-*-*)
@@ -4589,17 +4667,17 @@ $as_echo "$as_me: WARNING: the erc32 target was requested but the subdirectory f
 	# it if the user really really wants it.
 	only_if_enabled=yes
 
-	if test -d erc32; then
-		sim_target=erc32
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the erc32 target was requested but the subdirectory for it is not present" >&5
+  if test -d erc32; then
+    sim_target=erc32
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the erc32 target was requested but the subdirectory for it is not present" >&5
 $as_echo "$as_me: WARNING: the erc32 target was requested but the subdirectory for it is not present" >&2;}
-	fi
+  fi
 
 	;;
   *)
 	# The "igen" subdir always successfully configures.
-	# So does the "testsuite" subdir, but that is checked farther below.
+	# So does the "testsuite" subdir, but that is checked lower below.
 	# Also the subdirs are useful to have regardless of which simulator
 	# you want.
 	extra_subdirs="${extra_subdirs} igen"
@@ -4616,45 +4694,46 @@ fi
 
 
 case "${enable_sim}" in
-no)	sim_target=none ;;
+no) sim_target=none ;;
 yes)
-	if test ${only_if_gcc} = yes ; then
-		if test "${GCC}" != yes ; then
-			echo "Cannot enable simulator since not compiling with GCC."
-			sim_target=none
-		fi
-	fi
-	;;
+  if test "x${only_if_gcc}" = "xyes"; then
+    if test "x${GCC}" != "xyes"; then
+      echo "Cannot enable simulator since not compiling with GCC."
+      sim_target=none
+    fi
+  fi
+  ;;
 *)
-	if test ${only_if_enabled} = yes ; then
-		echo "The simulator was not explicitly enabled, so disabling."
-		sim_target=none
-	else
-		if test ${only_if_gcc} = yes ; then
-			if test "${GCC}" != yes ; then
-				echo "The requested simulator requires gcc, but you are not using gcc, so disabling."
-				sim_target=none
-			fi
-		fi
-	fi
-	;;
+  if test "x${only_if_enabled}" = "xyes"; then
+    echo "The simulator was not explicitly enabled, so disabling."
+    sim_target=none
+  else
+    if test "x${only_if_gcc}" = "xyes"; then
+      if test "x${GCC}" != "xyes"; then
+        echo "The requested simulator requires gcc, but you are not using gcc, so disabling."
+        sim_target=none
+      fi
+    fi
+  fi
+  ;;
 esac
 
-if test x"${sim_target}" != xnone ; then
-	configdirs="${extra_subdirs} ${sim_target}"
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: config subdirs are \"${configdirs}\"" >&5
+if test x"${sim_target}" != x"none"; then
+  configdirs="${extra_subdirs} ${sim_target}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: config subdirs are \"${configdirs}\"" >&5
 $as_echo "$as_me: config subdirs are \"${configdirs}\"" >&6;}
 
 
-subdirs="$subdirs $configdirs"
+subdirs="$subdirs ${configdirs}"
 
 else
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: config subdirs are just \"${extra_subdirs}\"" >&5
+  { $as_echo "$as_me:${as_lineno-$LINENO}: config subdirs are just \"${extra_subdirs}\"" >&5
 $as_echo "$as_me: config subdirs are just \"${extra_subdirs}\"" >&6;}
-	subdirs="$subdirs ${extra_subdirs}"
+  subdirs="$subdirs ${extra_subdirs}"
 
 fi
 
+# Output.
 ac_config_files="$ac_config_files Makefile"
 
 cat >confcache <<\_ACEOF

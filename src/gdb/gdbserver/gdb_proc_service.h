@@ -1,4 +1,4 @@
-/* <proc_service.h> replacement for systems that don't have it.
+/* <proc_service.h> replacement for systems that do NOT have it.
    Copyright (C) 2000-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -22,21 +22,25 @@
 #include <sys/types.h>
 
 #ifdef HAVE_PROC_SERVICE_H
-#include <proc_service.h>
+# include <proc_service.h>
 #else
 
 #ifdef HAVE_SYS_PROCFS_H
-#include <sys/procfs.h>
-#endif
+# include <sys/procfs.h>
+#else
+# ifdef __GNUC__
+#  warning gdb_proc_service.h expects <sys/procfs.h> to be included.
+# endif /* __GNUC__ */
+#endif /* HAVE_SYS_PROCFS_H */
 
-/* Not all platforms bring in <linux/elf.h> via <sys/procfs.h>.  If
-   <sys/procfs.h> wasn't enough to find elf_fpregset_t, try the kernel
-   headers also (but don't if we don't need to).  */
+/* Not all platforms bring in <linux/elf.h> via <sys/procfs.h>. If
+   <sys/procfs.h> was NOT enough to find elf_fpregset_t, try the kernel
+   headers also (but do NOT do so if we do NOT need to).  */
 #ifndef HAVE_ELF_FPREGSET_T
 # ifdef HAVE_LINUX_ELF_H
 #  include <linux/elf.h>
-# endif
-#endif
+# endif /* HAVE_LINUX_ELF_H */
+#endif /* !HAVE_ELF_FPREGSET_T */
 
 typedef enum
 {
@@ -51,23 +55,25 @@ typedef enum
 
 #ifndef HAVE_LWPID_T
 typedef unsigned int lwpid_t;
-#endif
+#endif /* !HAVE_LWPID_T */
 
 #ifndef HAVE_PSADDR_T
 typedef void *psaddr_t;
-#endif
+#endif /* !HAVE_PSADDR_T */
 
 #ifndef HAVE_PRGREGSET_T
 typedef elf_gregset_t prgregset_t;
-#endif
+#endif /* !HAVE_PRGREGSET_T */
 
 #endif /* HAVE_PROC_SERVICE_H */
 
 /* Structure that identifies the target process.  */
 struct ps_prochandle
 {
-  /* We don't need to track anything.  All context is served from the
+  /* We do NOT need to track anything. All context is served from the
      current inferior.  */
 };
 
 #endif /* gdb_proc_service.h */
+
+/* EOF */

@@ -1,3 +1,5 @@
+/* vprintf.c */
+
 /*
 
 @deftypefn Supplemental int vprintf (const char *@var{format}, va_list @var{ap})
@@ -19,8 +21,11 @@ nonstandard but common function @code{_doprnt}.
 #include <stdarg.h>
 #include <stdio.h>
 #undef vprintf
+
 int
-vprintf (const char *format, va_list ap)
+vprintf(const char *format, va_list ap)
 {
-  return vfprintf (stdout, format, ap);
+  return vfprintf(stdout, format, ap);
 }
+
+/* EOF */

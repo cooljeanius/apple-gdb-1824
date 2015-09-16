@@ -1,0 +1,945 @@
+/* -*- Mode: conf -*-
+#  ag-text.def: autogen text strings */
+
+AutoGen Definitions strings;
+
+file-name-string;
+
+string = { nm = ADDR_FAMILY_BAD;
+   str = "The '%d' address family cannot be handled"; };
+
+string = { nm = ADD_ENV_VARS_SUFFIX_FMT;
+   str = "%s__"; };
+
+string = { nm = ADD_SYS_ENV_VAL_FMT;    str = "%s=1"; };
+
+string = { nm = AG_ABEND_STATE_FMT;
+   str = "ABEND-ing in %s state\n"; };
+
+string = { nm = AG_ABORT_LOC_FMT;
+   str = "processing template %s\n"
+         "            on line %d\n"
+         "       for function %s (%d)\n"; };
+
+string = { nm = AG_FPRINTF_BAD_PORT;
+   str = "ag-fprintf: 'port' is invalid"; };
+
+string = { nm = AG_MAKE_DEP_NAME;
+   str = "AUTOGEN_MAKE_DEP"; };
+
+string = { nm = AG_MARK;
+   str = "autogen5"; };
+
+string = { nm = AG_NEVER_STARTED;
+   str = "AutoGen caught signal %d (%s) before initialization completed\n"; };
+
+string = { nm = AG_SIG_ABORT_FMT;
+   str = "AutoGen aborting on signal %d (%s) in state %s\n"; };
+
+string = { nm = ALIST_TO_AG_ERR;
+   str = "Scheme definition expression does not yield string:\n"; };
+
+string = { nm = ALIST_TO_AG_TEXT;
+   str = "Scheme Computed Definitions"; };
+
+string = { nm = ALIST_TO_AG_WRAP;
+   str = "(alist->autogen-def %s)"; };
+
+string = { nm = APRF_ALLOCATE_FAIL;
+   str = "could not allocate for or formatting failed on:\n%s"; };
+
+string = { nm = ASPRINTFV_FAIL_FMT;
+   str = "asprintfv returned 0x%08X\n"; };
+
+string = { nm = ASSEMBLE_NAME_ERR;
+   str = "%s Error: Invalid input char '%c' in %s on line %d\n"; };
+
+string = { nm = BAD_BREAK_FMT;
+   str = "Cannot %s from outside a loop"; };
+
+string = { nm = BAD_MAC_NM_FMT;
+   str = "Could not resolve macro name: '%s'"; };
+
+string = { nm = BAD_MSG_STR;
+   str = "??? indecipherable error message ???"; };
+
+string = { nm = BAD_NAME_FMT;
+   str = "Ill formed name '%s' in %s line %d\n"; };
+
+string = { nm = BAD_RE_FMT;
+   str = "Invalid regular expression:  error %d (%s):\n%s"; };
+
+string = { nm = BASE_NAME_TOO_LONG;
+   str = "--base-name name is too long"; };
+
+string = { nm = BOGUS_TAG;  str = "** BOGUS **"; };
+string = { nm = BREAK_STR;  str = "break"; };
+string = { nm = ULONG_FMT;  str = "%lu"; };
+
+string = { nm = CANNOT_FMT;
+   str = "fserr %d: cannot %s %s:  %s\n"; };
+
+string = { nm = CFGDEP_DUP_TARGET_MSG;
+   str = "duplicate make target"; };
+
+string = { nm = CFGDEP_UNKNOWN_DEP_FMT;
+   str = "unknown dependency type:  %s"; };
+
+string = { nm = CGI_ERR_MSG_FMT;
+   str = "Content-type: text/plain\n\n"
+         "AutoGen form processing error:\n"; };
+
+string = { nm = CGI_PARSE_ERR_FMT;
+   str = "CGI parsing error:  %s"; };
+
+string = { nm = CGI_TEMP_ERR_FILE_STR;
+   str = "/tmp/cgi-stderr-XXXXXX"; };
+
+string = { nm = CMD_FAIL_FMT;
+   str = "CLOSING SHELL SERVER - command failure:\n\t%s\n"; };
+
+string = { nm = DEF_ERR_FMT;
+   str = "%s Error:  %s in %s on line %d\n"; };
+
+string = { nm = DEF_NOTE_FMT;
+   str = "DEFINITIONS %s in %s line %d for %s:\n\t%s\n"; };
+
+string = { nm = COMPILE_RE_BAD;         str = "Bad regular expression"; };
+string = { nm = CONTINUE_STR;           str = "continue"; };
+string = { nm = C_STRING_NEWLINE;       str = "\\n\"\n       \""; };
+string = { nm = DEF_FILE_LINE_FMT;      str = "from %s line %d"; };
+string = { nm = DEF_TYPE_BLOCK;         str = "block"; };
+string = { nm = DEF_TYPE_INVALID;       str = "INVALID"; };
+string = { nm = DEF_TYPE_TEXT;          str = "text"; };
+string = { nm = DEF_TYPE_UNKNOWN;       str = "unknown"; };
+string = { nm = DEP_FILE_SPLICE_STR;    str = " \\\n"; };
+string = { nm = DEP_FILE_TARG_FMT;      str = "%s_%s"; };
+
+string = { nm = DEP_FILE_CLEAN_FMT;
+   str = <<- _EOF_
+
+	.PHONY : clean-%1$s
+
+	clean-%1$s :
+	\	rm -f %3$s $(%2$s_TList)
+	\	@-touch -t 199912312359 %1$s
+
+	_EOF_; };
+
+string = { nm = DEP_FILE_WRAP_FMT;
+   str = <<- _EOStr_
+
+	%2$s : $(%1$s_SList)
+
+	$(%1$s_TList) : %2$s
+	\	@:
+
+	_EOStr_; };
+
+string = { nm = DEP_List;               str = " \\\n\t%s"; };
+string = { nm = DEP_OUT_NAME;           str = "DEPENDENCIES_OUTPUT"; };
+string = { nm = DEP_SList;              str = "\n\n%s_SList ="; };
+string = { nm = DEP_TList;              str = "%s_TList ="; };
+string = { nm = DEV_NULL;               str = "/dev/null"; };
+string = { nm = DFT_BASE_NAME;          str = "baseless"; };
+string = { nm = DFT_DEF_INPUT_STR;      str = "-"; };
+string = { nm = DFT_ENV_VAL;            str = "=1"; };
+string = { nm = DFT_TPL_DIR_DATA;       str = "$@"; };
+string = { nm = DFT_TPL_DIR_RELATIVE;   str = "$$/../share/autogen"; };
+string = { nm = DIRECT_CK_LIST_MARK;    str = "\n#"; };
+
+string = { nm = DIRECT_ASSERT_FMT;
+   str = "#assert yielded \"%s\":\n\t`%s`"; };
+
+string = { nm = DIRECT_BAD_CTX_FMT;
+   str = "'#%s' directive encountered out of context\n"
+         "\tin %s on line %d\n"; };
+
+string = { nm = DIRECT_ERROR_FMT;
+   str = "#error directive -- in %s on line %d\n\t%s\n"; };
+
+string = { nm = DIRECT_INC_CANNOT_FIND;
+   str = "WARNING:  cannot find `%s' definitions file\n"; };
+
+string = { nm = DIRECT_INC_CANNOT_OPEN; str = "open"; };
+string = { nm = DIRECT_INC_CANNOT_READ; str = "read"; };
+string = { nm = DIRECT_INC_DEF_SFX;     str = "def"; };
+
+string = { nm = DIRECT_INC_CANNOT_STAT;
+   str = "WARNING %d (%s):  cannot stat `%s' for include\n"; };
+
+string = { nm = DIRECT_INC_NOT_REG;
+   str = "WARNING:  `%s' must be regular file to include\n"; };
+
+string = { nm = DIRECT_NOENDIF_FMT;
+   str = "Definition error:  in %s line %d, #endif not found\n"; };
+
+string = { nm = DIRECT_NOMATCH_FMT;
+   str = "Definition error:  in %s line %d, "
+         "#%s no matching start/if directive\n"; };
+
+string = { nm = DIRECT_SHELL_NOEND;
+   str = "Missing #endshell after '#shell' in %s on line %d\n"; };
+
+string = { nm = DIRECT_SHELL_COMP_DEFS; str = "Computed Definitions"; };
+string = { nm = DIRECT_SHELL_END_SHELL; str = "\n#endshell"; };
+string = { nm = DONE_CHECK_DONE;        str = "done_check done\n"; };
+string = { nm = DONE_CHECK_REDONE;      str = "done_check re-done\n"; };
+string = { nm = DOT_SFX_FMT;            str = "%s.%s"; };
+string = { nm = DOUBLE_NEWLINE;         str = "\n\n"; };
+
+string = { nm = DOOPT_TOO_MANY_DEFS;
+   str = "%s ERROR:  Too many definition files\n"; };
+
+string = { nm = DO_STDOUT_TPL_ABANDONED;
+   str = "%soutput was abandoned\n"; };
+
+string = { nm = DO_STDOUT_TPL_BADR;
+   str = "%sBogus return from setjmp\n"; };
+
+string = { nm = DO_STDOUT_TPL_CONTENT;
+   str = "content-type: text/html\n\n"; };
+
+string = { nm = DO_STDOUT_TPL_NOSFX;    str = "* NONE *"; };
+
+string = { nm = DO_STDOUT_TPL_START_STD;
+   str = "Starting stdout template\n"; };
+
+string = { nm = DO_STDOUT_TPL_STDOUT;   str = "stdout"; };
+
+string = { nm = DO_SUFFIX_BAD_CHARS;
+   str = "invalid chars in suffix format:  %s"; };
+
+string = { nm = DO_SUFFIX_EMPTY;        str = "Empty suffix format"; };
+
+string = { nm = DUP_VALUE_INDEX;
+   str = "Duplicate value index for %s:  %d"; };
+
+string = { nm = ELIF_CONTEXT_MSG;
+   str = "#elif directive found out of context"; };
+
+string = { nm = EMIT_INVAL_PORT;        str = "invalid emission port: %lu"; };
+string = { nm = END_C_COMMENT;          str = "*/"; };
+string = { nm = ERROR_STR;              str = "ERROR"; };
+
+string = { nm = ERROR_IN_TPL_FMT;
+   str = "Error in template %s, line %d\n\t"; };
+
+string = { nm = EVAL_EXPR_BLOCK_IN_EVAL;
+   str = "attempted to use block macro in eval expression"; };
+
+string = { nm = EVAL_EXPR_PROG_ERR;
+   str = "PROGRAM ERROR:  ambiguous expr code"; };
+
+string = { nm = EXIT_CLEANUP_DONE_FMT;
+   str = "exit_cleanup %s done\n"
+         "AutoGen %u exits\n"; };
+
+string = { nm = EVAL_TRUE_FALSE_STR;    str = "false"; };
+string = { nm = EXIT_CLEANUP_MULLIGAN;  str = "exit_cleanup re-done\n"; };
+string = { nm = EXIT_CLEANUP_NOWAIT;    str = "no waiting"; };
+
+string = { nm = EXIT_CLEANUP_STR;
+   str = "(if (> (string-length shell-cleanup) 0)"
+         " (shellf \"( (%s) & >/dev/null 2>&1 )\" shell-cleanup) )"; };
+
+string = { nm = EXIT_CLEANUP_WAITED;    str = "waited"; };
+string = { nm = EXP_FMT_BAD_LIC;        str = "an unknown license"; };
+
+string = { nm = EXP_FMT_DNE;
+   str = "%6$s"
+         "%1$sDO NOT EDIT THIS FILE   (%2$s)\n"
+         "%1$s\n"
+         "%1$sIt has been AutoGen-ed%3$s\n"
+         "%1$sFrom the definitions    %4$s\n"
+         "%1$sand the template file   %5$s"; };
+
+string = { nm = EXP_FMT_DNE1;
+   str = "%s -*- buffer-read-only: t -*- vi: set ro:\n"
+         "%s\n"; };
+
+string = { nm = EXP_FMT_DNE2;
+   str = "%6$s"
+         "%1$sEDIT THIS FILE WITH CAUTION  (%2$s)\n"
+         "%1$s\n"
+         "%1$sIt has been AutoGen-ed%3$s\n"
+         "%1$sFrom the definitions    %4$s\n"
+         "%1$sand the template file   %5$s"; };
+
+string = { nm = FIND_DIRECT_UNKNOWN;
+   str = "WARNING:  in %s on line %d unknown directive:\n"
+         "\t#%s\n"; };
+
+string = { nm = EXTRACT_CAVEAT;         str = "DO NOT CHANGE THIS COMMENT"; };
+string = { nm = FILL_IN_VAL_NO_ASSIGN;  str = "name not followed by '='"; };
+string = { nm = FILL_IN_VAL_NO_SEP;     str = "no space separating entries"; };
+string = { nm = EXTRACT_END;            str = "END  "; };
+string = { nm = EXTRACT_START;          str = START; };
+string = { nm = FALSE_NAME_STR;         str = false; };
+string = { nm = FILE_LINE_FMT;          str = "# %2$d \"%1$s\""; };
+string = { nm = FIND_ENT_FAIL;          str = "failed\n"; };
+string = { nm = FIND_ENT_SUCC;          str = "SUCCESS\n"; };
+string = { nm = FIND_FILE_CURDIR;       str = "."; };
+string = { nm = FIND_FILE_DIR_FMT;      str = "%s/%s"; };
+string = { nm = FIND_FILE_NAME;         str = "find-file"; };
+string = { nm = FIND_LIC_TEXT_AGPL;     str = agpl; };
+string = { nm = FIND_LIC_TEXT_BAD_FILE; str = "read full file"; };
+string = { nm = FIND_LIC_TEXT_INVAL;    str = "invalid license file: %s"; };
+string = { nm = FIND_LIC_TEXT_LGPL;     str = lgpl; };
+string = { nm = FIND_LIC_TEXT_MBSD;     str = mbsd; };
+string = { nm = FIND_LIC_TEXT_NO_LIC;   str = "stat file"; };
+string = { nm = FIND_LIC_TEXT_OPEN;     str = "open"; };
+string = { nm = FIND_LIC_TEXT_SFX;      str = lic; };
+string = { nm = FIND_MAC_END_NESTED;    str = "macros cannot nest"; };
+string = { nm = FIND_MAC_END_NOPE;      str = "macro has no end"; };
+
+string = { nm = FIND_MAC_END_EMPTY;
+   str = "WARNING: empty macro in %s line %d\n"; };
+
+string = { nm = FN_DEBUG;
+   str = "  --  DEBUG %s -- FOR index %d"; };
+
+string = { nm = FN_BOGUS_FMT;
+   str = "%d (%s) is an unknown macro function, or has no handler"; };
+
+string = { nm = FN_BOGUS_HUH;           str = "? Say, what ?"; };
+string = { nm = FN_DEBUG_GRAPHIC;       str = " (%c)"; };
+string = { nm = FN_IF_ELSE;             str = "ELSE clause"; };
+string = { nm = FORK_FAILED;            str = "Error %d while forking: %s\n";};
+string = { nm = FOR_IN_LISTLESS;        str = "FOR x IN ... has no list"; };
+string = { nm = GUARD_SFX;              str = "_GUARD"; };
+
+string = { nm = FOR_ITERATION_FMT;
+   str = "  -  FOR-%s %s[%d] it#%d: Nxt %d, first=%s, last=%s\n"; };
+
+string = { nm = GET_NOTHING_FMT;
+   str = "'get' invoked with no name in %s line %u\n"; };
+
+string = { nm = GOT_NOTHING_FMT;
+   str = "'get %s' retrieved in %s line %u\n"; };
+
+string = { nm = GUILE_CMD_FAIL_FMT;
+   str = "Failing Guile command:  = = = = =\n\n%s\n\n"
+         "=================================\n"; };
+
+string = { nm = GUILE_VERSION_BAD;
+   str = "Could not decipher Guile version: %s\n"; };
+
+string = { nm = GUILE_VERSION_WRONG;
+   str = "Compiled Guile version does not match: %s vs %s\n"; };
+
+string = { nm = GUILE_WARN_DEP_STR;     str = "GUILE_WARN_DEPRECATED"; };
+string = { nm = GUILE_WARN_NO_ENV;      str = "GUILE_WARN_DEPRECATED=no"; };
+string = { nm = HANDLE_EOL__ELS;        str = els; };
+string = { nm = HANDLE_EOL__THE;        str = the; };
+string = { nm = HANDLE_HASH_BAD_TPL;    str = "Invalid template file"; };
+string = { nm = HANDLE_HASH_ENV_FMT;    str = "%s=%s"; };
+string = { nm = HANDLE_HASH_SHELL;      str = "SHELL"; };
+string = { nm = HANDLE_SED_ELSE;        str = "lse"; };
+string = { nm = HANDLE_SED_ENDIF;       str = "ndif"; };
+string = { nm = HANDLE_SED_IFDEF;       str = "fdef "; };
+string = { nm = HANDLE_SED_IFNDEF;      str = "fndef "; };
+string = { nm = HEADER_STR;             str = "HEADER"; };
+string = { nm = HERE_ENDLESS_STR;       str = "Unterminated HereString"; };
+string = { nm = HERE_MISS_MARK_STR;     str = "HereString missing the mark"; };
+string = { nm = HTML_DEC_DIGIT;         str = "&#%d;"; };
+string = { nm = INIT_SCM_DEBUG_FMT;     str = "(debug-enable 'backtrace)"; };
+
+string = { nm = HERE_MARK_TOO_LONG;
+   str = "HereString mark 64 or more chars"; };
+
+string = { nm = HIDE_EMAIL_END_FMT;
+   str = "');\n"
+         "document.write('\" >%s</a>');\n"
+         "//-->\n</script>"; };
+
+string = { nm = HIDE_EMAIL_START_STR;
+   str = "<script language=\"JavaScript\" type=\"text/javascript\">\n"
+         "<!--\n"
+         "var one = 'm&#97;';\n"
+         "var two = 'i&#108;t';\n"
+         "document.write('<a href=\"' + one + two );\n"
+         "document.write('&#111;:"; };
+
+string = { nm = INIT_SCM_ERRS_FMT;
+   str = "(use-modules (%s)) (read-enable 'positions)\n"
+         "(add-hook! before-error-hook error-source-line)\n"
+         "(use-modules (ice-9 stack-catch))"; };
+
+string = { nm = LD_BOGUS_UNKNOWN;
+   str = "Unknown macro or invalid context in %s line %d:\n\t%s%s"; };
+
+string = { nm = LD_EXTRACT_BAD_READ;
+   str = "Error %d (%s) reading %d bytes of %s\n"; };
+
+string = { nm = LD_FOR_NAMELESS;
+   str = "FOR macro requires iterator name"; };
+
+string = { nm = LD_INC_NO_FNAME;
+   str = "The INCLUDE macro requires a file name"; };
+
+string = { nm = KR_STRING_NEWLINE;      str = "\\n\\\n"; };
+string = { nm = LC_ALL_IS_C;            str = "LC_ALL=C"; };
+string = { nm = LD_CASE_NO_ESAC;        str = "ESAC not found"; };
+string = { nm = LD_CASE_NO_EXPR;        str = "expressionless CASE"; };
+string = { nm = LD_DEF_NEED_NAME;       str = "DEFINE requires a name"; };
+string = { nm = LD_DEF_WOOPS;           str = "parse ended unexpectedly"; };
+string = { nm = LD_EXPR_BAD_NAME;       str = "Invalid definition name"; };
+string = { nm = LD_EXPR_NEED_TWO;       str = "`?' needs two expressions"; };
+string = { nm = LD_EXPR_NO_SPACE;       str = "No space between expressions";};
+string = { nm = LD_EXPR_NO_TEXT;        str = "No text for unfound value"; };
+string = { nm = LD_EXTRACT_READ_FAIL;   str = "read failure"; };
+string = { nm = LD_FOR_IN;              str = "in"; };
+string = { nm = LD_FOR_INVALID_VAR;     str = "invalid FOR loop variable"; };
+string = { nm = LD_FOR_NO_ENDFOR;       str = "ENDFOR not found"; };
+string = { nm = LD_IF_NO_ENDIF;         str = "ENDIF not found"; };
+string = { nm = LD_LIB_PATH_PFX;        str = "LD_LIBRARY_PATH="; };
+string = { nm = LD_LIB_PATH_STR;        str = "LD_LIBRARY_PATH"; };
+string = { nm = LD_SEL_EMPTY;           str = "Empty macro text"; };
+string = { nm = LD_SEL_INVAL;           str = "Invalid selection clause"; };
+string = { nm = LD_UNKNOWN_INVAL_DEF;   str = "Invalid definition name"; };
+string = { nm = LD_WHILE_NO_ENDWHILE;   str = "ENDWHILE not found"; };
+string = { nm = LD_WHILE_NO_EXPR;       str = "expressionless WHILE"; };
+string = { nm = LINE_CONCAT3_FMT;       str = "%s\n%s\n%s"; };
+string = { nm = LOAD_CGI_DEFS_MARKER;   str = "@@ CGI Definitions @@"; };
+string = { nm = LOAD_CGI_GET_NAME;      str = "GET"; };
+string = { nm = LOAD_CGI_NO_DATA_MSG;   str = "No CGI data were received"; };
+string = { nm = LOAD_CGI_READ_NAME;     str = "read"; };
+string = { nm = LOAD_CGI_READ_WHAT;     str = "CGI text"; };
+string = { nm = LOAD_TPL_CANNOT_MAP;    str = "map data file"; };
+string = { nm = LOAD_TPL_CANNOT_OPEN;   str = "Could not open template '%s'";};
+string = { nm = LOAD_TPL_CANNOT_STAT;   str = "stat file"; };
+string = { nm = LOAD_TPL_IRREGULAR;     str = "not regular file"; };
+string = { nm = LOAD_TPL_SFX_AGL;       str = "agl"; };
+string = { nm = LOAD_TPL_SFX_TPL;       str = "tpl"; };
+string = { nm = MAKE_SCRIPT_NL;         str = " ; \\\n"; };
+string = { nm = MEM_FILE_STR;           str = "in-mem file"; };
+string = { nm = MKSTEMP_FAIL_FMT;       str = "mkstemp failed on `%s'"; };
+
+string = { nm = LISTEN_PORT_FMT;
+   str = "to port %s with %d type address"; };
+
+string = { nm = LOAD_CGI_INVAL_REQ_FMT;
+   str = "invalid CGI request method: ''%s''"; };
+
+string = { nm = LOAD_FILE_SHORT_NAME;
+   str = "Cannot expand directory name:  '%s'"; };
+
+string = { nm = LOAD_MACS_BAD_PARSE;
+   str = "Template parse ended unexpectedly"; };
+
+string = { nm = LOAD_SCM_ENDLESS;
+   str = "end of Guile/scheme expression not found"; };
+
+string = { nm = LOG_SEP_FMT;
+   str = "\n\n* * * * LOG ENTRY %d * * * *\n"; };
+
+string = { nm = MAKE_GPERF_CLEANUP;
+   str = "(add-cleanup \"rm -rf ${gpdir}\")"; };
+
+string = { nm = MALLOC_FAIL_FMT;
+   str = "malloc of %zd bytes failed\n"; };
+
+string = { nm = MK_GPERF_SCRIPT;
+   str = <<- _GP_Script_
+	gperf --version > /dev/null 2>&1 || die 'no gperf program'
+	test -z ${gpdir} && {
+	  gpdir=`mktemp -d ./.gperf.XXXXXX` 2>/dev/null
+	  test -z "${gpdir}" && gpdir=.gperf.$$
+	  test -d ${gpdir} || mkdir ${gpdir} || die "cannot mkdir ${gpdir}"
+	}
+	cd ${gpdir} || die cannot cd into ${gpdir}
+	gpdir=`pwd`
+	gperf_%2$s=${gpdir}/%2$s
+
+	{
+	  cat << \_EOF_
+		%%{
+		#include <stdio.h>
+		%%}
+		struct %2$s_index { char const * name; int const idx; };
+		%%%%
+		_EOF_
+
+	  idx=1
+	  while read f
+	  do echo "${f}, ${idx}"
+	     idx=`expr ${idx} + 1`
+	  done << \_EOLIST_
+		%3$s
+		_EOLIST_
+
+	  cat << \_EOF_
+		%%%%
+		int main(int argc, char** argv) {
+		    char*    pz = argv[1];
+		    struct %2$s_index const * pI = %2$s_find( pz, strlen( pz ));
+		    if (pI == NULL)
+		        return 1;
+		    printf( "0x%%02X\n", pI->idx );
+		    return 0;
+		}
+		_EOF_
+	} > %2$s.gperf
+
+	exec 2> %2$s.log
+	gperf --language=ANSI-C -H %2$s_hash -N %2$s_find \
+	      -C -E -I -t %2$s.gperf > %2$s-temp.c || \
+	   die "gperf failed on ${gpdir}/%2$s.gperf
+	      `cat %2$s.log`"
+	egrep -v '^[^#].*_inline' %2$s-temp.c > %2$s.c
+	export CFLAGS=-g
+	%1$s %2$s 1>&2
+	test $? -eq 0 -a -x ${gperf_%2$s} || \
+	  die "could not '%1$s %2$s' gperf program
+	      `cat %2$s.log`"
+	exec 2>&8
+	_GP_Script_;
+};
+
+string = { nm = MK_HEAD_GUARD_SCM;
+   str = "(define header-file \"%s\") "
+         "(define header-guard \"%s\")"; };
+
+string = { nm = MK_LIC_NO_OPEN;
+   str = "Could not open license file '%s'"; };
+
+string = { nm = MK_TMP_DIR_CMD;
+   str = "mk_tmp_dir ; echo ${tmp_dir}/ag-XXXXXX"; };
+
+string = { nm = MK_HEAD_GUARD_GUARD;    str = "#ifndef %1$s\n#define %1$s 1";};
+string = { nm = MK_LIC_TOO_BIG_FMT;     str = "%s may not exceed %d chars\n";};
+string = { nm = MK_LIC_BIG_OWN;         str = "owner length"; };
+string = { nm = MK_LIC_BIG_PFX;         str = "prefix length"; };
+string = { nm = MK_LIC_BIG_PROG;        str = "program name length"; };
+string = { nm = MK_LIC_NOT_STR;         str = "license name is not a string";};
+string = { nm = MK_LIC_NO_LIC;          str = "There is no %s license."; };
+string = { nm = MK_LIC_OWN;             str = "<owner>"; };
+string = { nm = MK_LIC_PFX;             str = "<PFX>"; };
+string = { nm = MK_LIC_PROG;            str = "<program>"; };
+string = { nm = MK_LIC_SFX;             str = "lic"; };
+string = { nm = MK_LIC_YRS;             str = "<years>"; };
+string = { nm = NAMED_VALUES_NO_NAME;   str = "no macro arg name"; };
+string = { nm = NEWLINE;                str = "\n"; };
+string = { nm = NEXT_PM_TOKEN_INVALID;  str = "Invalid template file: %s"; };
+string = { nm = NOT_STR_FMT;            str = "ERROR: %s is not a string\n"; };
+string = { nm = NO_IF_EXPR;             str = "expressionless IF"; };
+string = { nm = NO_NAME_STR;            str = no; };
+string = { nm = NO_TEMPLATE_ERR_MSG;    str = "no template was specified"; };
+string = { nm = NULL_FILE_NAME_STR;     str = "NULL file name"; };
+string = { nm = OPEN_OUTPUT_NULL;       str = "null"; };
+string = { nm = OUTPUT_NO_OPEN;         str = "open for output"; };
+string = { nm = OUTPUT_NO_UNLINK;       str = "unlink"; };
+string = { nm = OUTPUT_TEMP_FILE;       str = "* temp file *"; };
+string = { nm = NAMED_VALUES_WHERE;     str = "On macro argument # %d:\n%s\n";};
+
+string = { nm = OPEN_ERROR_FMT;
+   str = "Error %d (%s) opening `%s' for output"; };
+
+string = { nm = OPEN_OUTPUT_BAD_FMT;
+   str = "Cannot format file name:  \"%s\", %s, %s"; };
+
+string = { nm = OUT_ADD_INVALID;
+   str = "No output file specified to add to"; };
+
+string = { nm = OUT_PUSH_NEW_FAILED;
+   str = "failed to create temp file from %s"; };
+
+string = { nm = OUT_RESUME_CANNOT;
+   str = "ERROR: no output file was suspended as '%s'\n"; };
+
+string = { nm = OUT_SUSPEND_CANNOT;
+   str = "ERROR:  Cannot pop output with no output pushed"; };
+
+string = { nm = OUT_CLOSE_TRACE_WRAP;   str = "%s '%s'\n"; };
+string = { nm = OUT_PUSH_NEW_FAIL;      str = "open 'wb+'"; };
+string = { nm = OUT_SWITCH_FAIL;        str = "freopen"; };
+string = { nm = PARSE_INPUT_AG_DEF_STR; str = "Autogen Definitions cgi;\n"; };
+string = { nm = PATH_TOO_BIG;           str = "AF_UNIX path exceeds %d"; };
+string = { nm = PIPE_DEFS_STDIN_NAME;   str = "stdin"; };
+string = { nm = PIPE_DEFS_STDIN_STR;    str = "-"; };
+string = { nm = PIPE_DUP2_NAME_STR;     str = "dup2"; };
+string = { nm = PIPE_FIFO_IN_NAME_FMT;  str = "%s-in"; };
+string = { nm = PIPE_FIFO_OPEN;         str = "open"; };
+string = { nm = PIPE_FIFO_OUT_NAME_FMT; str = "%s-out"; };
+string = { nm = PIPE_FORK_NAME;         str = "fork"; };
+string = { nm = PIPE_MKFIFO_NAME;       str = "mkfifo"; };
+string = { nm = PIPE_POLL_NAME_STR;     str = "poll"; };
+string = { nm = PIPE_WRITE_NAME_STR;    str = "write"; };
+string = { nm = PORT_NUM_BAD;           str = "Invalid port number:  '%s'"; };
+string = { nm = PREFIX_FAIL;            str = "(prefix ...) failed"; };
+string = { nm = PROC_TPL_START;         str = "Starting %s template\n"; };
+string = { nm = PSEUDO_MACRO_NAME_STR;  str = "pseudo-macro"; };
+string = { nm = PSEUDO_MAC_BAD_FSM;     str = "BROKEN FSM STATE"; };
+
+string = { nm = PREP_INVOKE_NO_NAME;
+   str = "The INVOKE macro requires a name"; };
+
+string = { nm = PREP_INVOKE_NO_SEP;
+   str = "The INVOKE macro name not space separated"; };
+
+string = { nm = PRINT_DEF_SHOW_FMT;
+   str = "%s%s[%u] (%s) from %s/%d at %p\n"; };
+
+string = { nm = PRINT_DEF_SPACES;
+  str =  "                                "; }; // 32 spaces
+
+string = { nm = PROC_TPL_BOGUS_RET;
+   str = "%sBogus return from setjmp\n"; };
+
+string = { nm = PSEUDO_MAC_BAD_ENDER;
+   str = "start marker contained in end marker"; };
+
+string = { nm = PSEUDO_MAC_BAD_LENGTH;
+   str = "start/end macro mark too long"; };
+
+string = { nm = PSEUDO_MAC_BAD_STARTER;
+   str = "end marker contained in start marker"; };
+
+string = { nm = PSEUDO_MAC_ERR_FMT;
+   str = "bad template marker in %s on line %d:\n\t%s"; };
+
+string = { nm = PSEUDO_MAC_BAD_MODE;    str = "invalid edit mode marker"; };
+string = { nm = PSEUDO_MAC_BAD_NOAG5;   str = "need autogen5 marker"; };
+string = { nm = PSEUDO_MAC_BAD_NOEND;   str = "need end marker"; };
+string = { nm = PSEUDO_MAC_BAD_NOEOL;   str = "need end of line"; };
+string = { nm = PSEUDO_MAC_BAD_NOSTART; str = "need start marker"; };
+string = { nm = PSEUDO_MAC_BAD_NOTPL;   str = "need template marker"; };
+string = { nm = PSEUDO_MAC_BAD_PSEUDO;  str = "broken pseudo-macro FSM"; };
+string = { nm = PSEUDO_MAC_MODE_MARK;   str = "-*-"; };
+string = { nm = PSEUDO_MAC_TPL_FILE;    str = "*template file*"; };
+string = { nm = READY_INPUT_NODEF;      str = "@@ No-Definitions @@"; };
+string = { nm = READY_INPUT_NOT_REG;    str = "open non-regular file"; };
+string = { nm = READY_INPUT_STAT;       str = stat; };
+string = { nm = READ_DEF_NO_DEFS;       str = "No definition data were read";};
+string = { nm = READ_DEF_OPEN;          str = "open"; };
+string = { nm = READ_DEF_READ;          str = "read"; };
+string = { nm = REQUEST_METHOD;         str = REQUEST_METHOD; };
+string = { nm = RESOLVE_SCM_EXACT;      str = "** EXACT **"; };
+string = { nm = RESOLVE_SCM_INEXACT;    str = "** INEXACT **"; };
+string = { nm = RESOLVE_SCM_LIST;       str = "** LIST **"; };
+string = { nm = RESOLVE_SCM_PAIR;       str = "** Pair **"; };
+string = { nm = RESOLVE_SCM_PROC;       str = "** Procedure 0x%08lX **"; };
+string = { nm = RESOLVE_SCM_UNKNOWN;    str = "** UNKNOWN **"; };
+string = { nm = RESOLVE_SCM_VECTOR;     str = "** Vector **"; };
+string = { nm = RETURN_FROM_NOWHERE;    str = "RETURN out of context"; };
+
+string = { nm = REALLOC_FAIL_FMT;
+   str = "realloc of %zd bytes at 0x%p failed\n"; };
+
+string = { nm = RM_MISSING_DE;
+   str = "attempt to remove unrecorded def entry\n"; };
+
+string = { nm = RUN_GPERF_CMD;
+   str = <<- _EOF_
+	test -n "${gperf_%1$s}" || \
+	    die 'no environment variable "gperf_%1$s"'
+	test -x "${gperf_%1$s}" || \
+	    die "no gperf program named  ${gperf_%1$s}"
+	${gperf_%1$s} %2$s
+	_EOF_;
+};
+
+string = { nm = SAFE_PRINTF_BAD_FMT;
+   str = "%s ERROR:  %s processing printf format:\n\t%s\n"; };
+
+string = { nm = RUN_PRINTF_HUH;         str = "? Say, what ?"; };
+string = { nm = SAFE_PRINTF_BAD_ARGS;   str = "Bad args to sprintf"; };
+string = { nm = SCHEME_INIT_DEBUG_1_6;  str = "ice-9 debug"; };
+string = { nm = SCHEME_INIT_DEBUG_2_0;  str = "system vm trace"; };
+
+string = { nm = SCHEME_EVAL_ERR_FMT;
+   str = "Scheme evaluation error.  AutoGen ABEND-ing in template\n"
+        "\t%s on line %d\n"; };
+
+string = { nm = SCHEME_INIT_TEXT; define-line-no; str = `
+sed  -e "s/AUTOGEN_VERSION/${AG_VERSION}/" \
+     -e $'s/^[ \t]*//' \
+     -e 's/  *)/)/g' \
+     -e '/^;/d' \
+     -e '/^$/d' ${srcdir}/schemedef.scm
+`; };
+
+string = { nm = SCM2ZCHARS_BAD_VAL;
+   str = "scm_string_length returned wrong value: %d != %d\n"; };
+
+string = { nm = SCM_ERROR_FMT;
+   str = "\nGuile/Scheme evaluation error in %s line %d:  %s\n"; };
+
+string = { nm = SCM_FALSE_STR;          str = "#f"; };
+string = { nm = SCM_LIST_STR;           str = "..."; };
+string = { nm = SCM_OUT_POP_NO_REREAD;  str = "re-read output"; };
+string = { nm = SCM_PROC_CAST;          str = "(*)()"; };
+string = { nm = SCM_TRUE_STR;           str = "#t"; };
+string = { nm = SFX_FMT;                str = "%s%s"; };
+string = { nm = SHELL_RES_NULL_MSG;     str = "shell_cmd result is NULL"; };
+
+string = { nm = SCM_OUT_POP_EMPTY;
+   str = "ERROR:  Cannot pop output with no output pushed\n"; };
+
+string = { nm = SERV_RESTART;
+   str = "SERVER RESTART:  serv_id is NULLPROCESS\n"; };
+
+string = { nm = SETSID_FAIL;
+   str = "Error %d setting session ID:  %s\n"; };
+
+string = { nm = SET_ORIG_DIR_NO_MEM_MSG;
+   str = "cannot allocate path name"; };
+
+string = { nm = SET_TMP_DIR_CMD;
+   str = "(set! tmp-dir \"%1$s\")\n"
+         "(add-cleanup \"test \\\"${VERBOSE:-false}\\\" = true "
+            "|| rm -rf %1$s\")"; };
+
+string = { nm = SET_WRITE_WARN;
+   str = "Warning: (set-writable) function in %s on line %d:\n"
+         "\toverridden by invocation option\n"; };
+
+string = { nm = SHELL_CMD_FMT;
+   str = "cd %s\n%s\n\necho\necho %s - %d\n"; };
+
+string = { nm = SHELL_DIE_FMT;
+   str = "Closing server:  %s signal (%d) received\n"; };
+
+string = { nm = SHELL_INIT_STR;
+   str = <<- _EOF_
+	exec 8>&2 2>/dev/null
+
+	if test -n "${ZSH_VERSION+set}" && (emulate sh) 1>&2
+	then
+	  emulate sh
+	  NULLCMD=:
+
+	else case `set -o` in *posix*) set -o posix ;; esac
+	fi
+	trap_exit() {
+	    case "$1" in
+	    0 | 10 | 15 )
+	        exec 1>&- 2>&-
+	        test -d "${tmp_dir}" && rm -rf "${tmp_dir}"
+	        ;;
+
+	    * )
+	        exec 1>&8
+	        echo "trapped on signal ${1}"
+	        test -d "${tmp_dir}" && \
+	            echo "temp directory has been retained:  ${tmp_dir}"
+	    esac
+	}
+	for f in 0 1 2 5 6 7 10 13 14 15
+	do trap "trap_exit ${f}" $f ; done
+
+	test -n "${CDPATH}" && {
+	  CDPATH=''
+	  unset CDPATH
+	}
+	( exec 1>&2 ; unalias cd ) && unalias cd
+	die() {
+	  echo "Killing AutoGen ${AG_pid}"
+	  echo "FAILURE REASON:  $*"
+	  kill -15 ${AG_pid}
+	  kill -1  ${AG_pid}
+	  kill -2  ${AG_pid}
+	  exit 1
+	} >&8
+	test -z "${TMPDIR}" && TMPDIR=/tmp
+	tmp_dir=''
+	mk_tmp_dir() {
+	  test -d "${tmp_dir}" && return 0
+	  tmp_dir=`
+	    t=\`mktemp -d ${TMPDIR}/.ag-XXXXXX\`
+	    test -d "${t}" || {
+	      t=${TMPDIR}/.ag-$$
+	      rm -rf ${t}
+	      mkdir ${t} || die cannot mkdir ${t}
+	    }
+	    chmod 700 ${t} || die cannot chmod 700 ${t}
+	    echo ${t}
+	    ` 2>/dev/null
+	}
+	exec 2>&8
+	export AG_pid
+	AG_pid="%u"
+	AGexe='%s'
+	_EOF_;
+};
+
+string = { nm = SHELL_LAST_CMD_MSG;     str = "\nLast command issued:\n"; };
+string = { nm = SHELL_NO_END_MARK_MSG;  str = "feof on data load\n"; };
+string = { nm = SHELL_RESTART_MSG;      str = "\nServer Restart\n"; };
+string = { nm = SHELL_RES_DISCARD_MSG;  str = "(result discarded)\n"; };
+string = { nm = SHELL_SET_PS4_FMT;      str = "PS4=>${FUNCNAME:-ag}> "; };
+string = { nm = SHELL_UNK_LAST_CMD_MSG; str = "? Say, what ?"; };
+
+string = { nm = SHELL_READ_ERR_FMT;
+   str = "fs err %d (%s) reading from server shell\n"; };
+
+string = { nm = SHELL_XTRACE_CMDS;
+   str = "set -x\n"
+         "trap\n"
+         "echo server setup done\n"; };
+
+string = { nm = SH_DONE_MARK;
+   str = "ShElL-OuTpUt-HaS-bEeN-cOmPlEtEd"; };
+
+string = { nm = START_DEP_FILE_FMT;
+   str = "# Makefile dependency file created by:\t\t-*- Mode: Makefile -*-\n"
+         "# %s\n"
+         "# with the following command line arguments:\n"; };
+
+string = { nm = START_DEP_ARG_FMT;      str = "#   %s"; };
+string = { nm = START_DEP_FOPEN_MSG;    str = "fopen for write"; };
+string = { nm = START_SCHEME_LIST;      str = "'("; };
+string = { nm = STDIN_FILE_NAME;        str = "stdin"; };
+
+string = { nm = STRDUP_FAIL_FMT;
+   str = "strdup of %d byte string failed\n"; };
+
+string = { nm = STR_TO_C_MAP_FAIL;
+   str = "cannot map unprintable chars to C name chars"; };
+
+string = { nm = STR_TO_C_NAME;
+   str = "ag_scm_string_to_c_name_x"; };
+
+string = { nm = TOO_MANY_TIMEOUTS_MSG;
+   str = "Server shell timed out 5 times"; };
+
+string = { nm = SYSCALL_NAME;           str = "syscall"; };
+string = { nm = TAB_FILE_LINE_FMT;      str = "\tfrom %s line %d\n"; };
+string = { nm = TEMP_SUFFIX;            str = ".d-XXXXXX"; };
+string = { nm = TPL_FILE_LINE_FMT;      str = "from %s line %d"; };
+string = { nm = TPL_FILE_TPL;           str = "tpl"; };
+string = { nm = TPL_MARK;               str = "template"; };
+string = { nm = TPL_FILE_NEXT_LINE_FMT; str = "# %2$d \"%1$s\""; };
+string = { nm = TRACE_ADD_SRC_FILE_FMT; str = "add source dep:  %s\n"; };
+string = { nm = TRACE_ADD_TARG_FILE_FMT; str = "add target dep:  %s\n"; };
+
+string = { nm = TPL_INVOKED;
+   str = "Template macro %s invoked with %d args\n"; };
+
+string = { nm = TPL_WARN_FMT;
+   str = "Warning in template %s, line %d\n\t%s\n"; };
+
+string = { nm = TRACE_ADD_TO_ENV_FMT;
+   str = "Adding '%s' to environment\n"; };
+
+string = { nm = TRACE_CASE_FAIL;
+   str = "CASE string `%s' did not match\n"; };
+
+string = { nm = TRACE_CASE_MATCHED;
+   str = "CASE string `%s' %s matched `%s'\n"; };
+
+string = { nm = TRACE_CASE_NOMATCH;
+   str = "CASE no match: `%s' %s vs. `%s'\n"; };
+
+string = { nm = TRACE_AG_ARG_FMT;       str = " '%s'"; };
+string = { nm = TRACE_BUILD_DEFS;       str = "eval for arg %d:\n\t`%s'\n"; };
+string = { nm = TRACE_COPY_MARK;        str = "marker '%s' loaded\n"; };
+string = { nm = TRACE_DEF_LOAD;         str = "Definition Load:\n"; };
+string = { nm = TRACE_FIND_ENT;         str = " in \"%s\" -- "; };
+string = { nm = TRACE_FN_FOR_REPEAT;    str = "FOR %s repeated %d times\n"; };
+
+string = { nm = TRACE_EVAL_STRING;
+   str = "eval from file %s line %d:\n%s\n"; };
+
+string = { nm = TRACE_FN_FOR;
+   str = "FOR %s loop in %s on line %d begins:\n"; };
+
+string = { nm = TRACE_FN_FOR_SKIP;
+   str = "FOR loop skipped - no definition for `%s'\n"; };
+
+string = { nm = TRACE_FN_IF;
+   str = "IF expression `%s' on line %d yielded true\n"; };
+
+string = { nm = TRACE_FN_IF_NOTHING;
+   str = "IF `%s' macro selected no clause\n"; };
+
+string = { nm = TRACE_FN_INC_LINE;      str = "\tfrom %s line %d\n"; };
+string = { nm = TRACE_FN_INC_TPL;       str = "Template %s included\n"; };
+string = { nm = TRACE_FN_REMAP_BASE;    str = "\tbased on %s\n"; };
+string = { nm = TRACE_FN_REMAP_EXPR;    str = Expr; };
+string = { nm = TRACE_FN_REMAP_INVOKE;  str = Invoke; };
+
+string = { nm = TRACE_FN_REMAPPED;
+   str = "remapped to '%s' (%2X) in %s at line %d\n"; };
+
+string = { nm = TRACE_FN_WHILE_END;
+   str = "WHILE macro repeated %d times\n"; };
+
+string = { nm = TRACE_FN_WHILE_START;
+   str = "WHILE `%s' loop in %s on line %d begins:\n"; };
+
+string = { nm = TRACE_FOR_BY_STEP;
+   str = "\texiting FOR %s from %d to %d by %d:\n"
+         "\tmore than %d iterations\n"; };
+
+string = { nm = TRACE_FOR_STEP_TOO_FAR;
+   str = "too many FOR iterations in %s line %d\n"; };
+
+string = { nm = TRACE_MACRO_DEF;
+   str = "Defining macro %s from %s\n"; };
+
+string = { nm = TRACE_MACRO_FMT;
+   str = "%-10s (%2X) in %s at line %d\n"; };
+
+string = { nm = TRACE_SEL_MATCH_FULL;
+   str = "Compiling '%s' with bits 0x%lX\n"; };
+
+string = { nm = TRACE_SHELL_RESULT_MSG;
+   str = "\n= = = RESULT %d bytes:\n%s%s\n"
+         "= = = = = = = = = = = = = = =\n"; };
+
+string = { nm = TRACE_START_GUILE;
+   str = "\nGuile Library Version %s\n"; };
+
+string = { nm = TRACE_MATCH_VAL;        str = "searching for `%s'"; };
+string = { nm = TRACE_MOVE_FMT;         str = "%s %s to %s\n"; };
+string = { nm = TRACE_OPEN_OUT;         str = "%s '%s' mode %s\n"; };
+string = { nm = TRACE_OUT_DELETE;       str = "NOTE:  skipping file '%s'\n";};
+string = { nm = TRACE_OUT_PUSH_NEW;     str = "%s -- temp file %s\n"; };
+string = { nm = TRACE_OUT_SWITCH;       str = "%s from %s to '%s'\n"; };
+string = { nm = TRACE_POP_FMT;          str = "%s %s%s\n"; };
+string = { nm = TRACE_RESUME;           str = "%s %s from '%s'\n"; };
+string = { nm = TRACE_RM_SRC_FILE_FMT;  str = "remove source dep:  %s\n"; };
+string = { nm = TRACE_RM_TARG_FILE_FMT; str = "remove target dep:  %s\n"; };
+string = { nm = TRACE_SHELL_FIRST_START; str = "\nServer First Start\n"; };
+string = { nm = TRACE_SHELL_PID_FMT;    str = "Server shell is pid %u\n"; };
+string = { nm = TRACE_SHELL_STARTS_FMT; str = "Server shell %s starts\n"; };
+string = { nm = TRACE_START_FMT;        str = "\nAutoGen %u starts:  %s"; };
+string = { nm = TRACE_SUSPEND;          str = "%s %s as '%s'\n"; };
+string = { nm = TRACE_TRAP_STATE_FMT;   str = "Trap state:\n%s\n"; };
+string = { nm = TRACE_UNKNOWN_FMT;      str = "\tcode %lX -- %s\n"; };
+string = { nm = TRACE_VER_CONVERT;      str = "0x%016llX <<== '%s'\n"; };
+string = { nm = TRACE_XTRACE_MSG;       str = "Server traps set\n"; };
+string = { nm = TRUE_NAME_STR;          str = true; };
+string = { nm = UNAME_CALL_NAME;        str = "uname(2)"; };
+
+string = { nm = USAGE_INVAL_DEP_OPT_FMT;
+   str = "invalid make dependency option:  %s"; };
+
+string = { nm = USED_DEFINES_FMT;
+   str = "echo 'definition names looked up'\n"
+         "sed 's/[-^]/-/g'|sort -u -f\n"
+         "echo 'end of looked up definitions'"; };
+
+string = { nm = USED_DEFINES_LINE_FMT;  str = "%s\n"; };
+string = { nm = WARN_STR;               str = "Warning"; };
+string = { nm = WORD_FORMAT;            str = "format"; };
+string = { nm = YES_NAME_STR;           str = yes; };
+string = { nm = YYLEX_DF_STR;           str = "'%s'\n"; };
+
+string = { nm = YYLEX_ERR_FMT;
+   str = "%s:  in %s on line %d\n"
+         "\ttoken in error:  %s\n"
+         "\t[[...<error-text>]] %s\n\n"
+         "Likely causes:  a mismatched quote, a value that needs "
+         "quoting,\n\t\tor a missing semi-colon\n"; };
+
+string = { nm = YYLEX_TOKEN_STR;        str = "%s:  ''%s''\n"; };
+
+string = { nm = YYLEX_UNENDING_QUOTE;
+   str = "unterminated quote in definition"; };
+
+string = { nm = zNil;                   str = ""; };
+
+/* end of ag-text.def */

@@ -1,4 +1,4 @@
-/* BFD back-end for IBM RS/6000 "XCOFF64" files.
+/* coff64-rs6000.c: BFD back-end for IBM RS/6000 "XCOFF64" files.
    Copyright 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
    Written Clinton Popetz.
@@ -83,106 +83,110 @@
 #define coff_SWAP_lineno_out _bfd_xcoff64_swap_lineno_out
 
 static void _bfd_xcoff64_swap_lineno_in
-  PARAMS ((bfd *, PTR, PTR));
+  PARAMS((bfd *, PTR, PTR));
 static unsigned int _bfd_xcoff64_swap_lineno_out
-  PARAMS ((bfd *, PTR, PTR));
+  PARAMS((bfd *, PTR, PTR));
 static bfd_boolean _bfd_xcoff64_put_symbol_name
-  PARAMS ((bfd *, struct bfd_strtab_hash *, struct internal_syment *,
-	   const char *));
+  PARAMS((bfd *, struct bfd_strtab_hash *, struct internal_syment *,
+          const char *));
 static bfd_boolean _bfd_xcoff64_put_ldsymbol_name
-  PARAMS ((bfd *, struct xcoff_loader_info *, struct internal_ldsym *,
-	   const char *));
+  PARAMS((bfd *, struct xcoff_loader_info *, struct internal_ldsym *,
+          const char *));
 static void _bfd_xcoff64_swap_sym_in
-  PARAMS ((bfd *, PTR, PTR));
+  PARAMS((bfd *, PTR, PTR));
 static unsigned int _bfd_xcoff64_swap_sym_out
-  PARAMS ((bfd *, PTR, PTR));
+  PARAMS((bfd *, PTR, PTR));
 static void _bfd_xcoff64_swap_aux_in
-  PARAMS ((bfd *, PTR, int, int, int, int, PTR));
+  PARAMS((bfd *, PTR, int, int, int, int, PTR));
 static unsigned int _bfd_xcoff64_swap_aux_out
-  PARAMS ((bfd *, PTR, int, int, int, int, PTR));
+  PARAMS((bfd *, PTR, int, int, int, int, PTR));
 static void xcoff64_swap_reloc_in
-  PARAMS ((bfd *, PTR, PTR));
+  PARAMS((bfd *, PTR, PTR));
 static unsigned int xcoff64_swap_reloc_out
-  PARAMS ((bfd *, PTR, PTR));
+  PARAMS((bfd *, PTR, PTR));
 extern bfd_boolean _bfd_xcoff_mkobject
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 extern bfd_boolean _bfd_xcoff_copy_private_bfd_data
-  PARAMS ((bfd *, bfd *));
+  PARAMS((bfd *, bfd *));
 extern bfd_boolean _bfd_xcoff_is_local_label_name
-  PARAMS ((bfd *, const char *));
+  PARAMS((bfd *, const char *));
 extern void xcoff64_rtype2howto
-  PARAMS ((arelent *, struct internal_reloc *));
+  PARAMS((arelent *, struct internal_reloc *));
 extern reloc_howto_type * xcoff64_reloc_type_lookup
-  PARAMS ((bfd *, bfd_reloc_code_real_type));
+  PARAMS((bfd *, bfd_reloc_code_real_type));
 extern bfd_boolean _bfd_xcoff_slurp_armap
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 extern PTR _bfd_xcoff_read_ar_hdr
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 extern bfd *_bfd_xcoff_openr_next_archived_file
-  PARAMS ((bfd *, bfd *));
+  PARAMS((bfd *, bfd *));
 extern int _bfd_xcoff_stat_arch_elt
-  PARAMS ((bfd *, struct stat *));
+  PARAMS((bfd *, struct stat *));
 extern bfd_boolean _bfd_xcoff_write_armap
-  PARAMS ((bfd *, unsigned int, struct orl *, unsigned int, int));
+  PARAMS((bfd *, unsigned int, struct orl *, unsigned int, int));
 extern bfd_boolean _bfd_xcoff_write_archive_contents
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 extern int _bfd_xcoff_sizeof_headers
-  PARAMS ((bfd *, bfd_boolean));
+  PARAMS((bfd *, bfd_boolean));
 extern void _bfd_xcoff_swap_sym_in
-  PARAMS ((bfd *, PTR, PTR));
+  PARAMS((bfd *, PTR, PTR));
 extern unsigned int _bfd_xcoff_swap_sym_out
-  PARAMS ((bfd *, PTR, PTR));
+  PARAMS((bfd *, PTR, PTR));
 extern void _bfd_xcoff_swap_aux_in
-  PARAMS ((bfd *, PTR, int, int, int, int, PTR));
+  PARAMS((bfd *, PTR, int, int, int, int, PTR));
 extern unsigned int _bfd_xcoff_swap_aux_out
-  PARAMS ((bfd *, PTR, int, int, int, int, PTR));
+  PARAMS((bfd *, PTR, int, int, int, int, PTR));
 static void xcoff64_swap_ldhdr_in
-  PARAMS ((bfd *, const PTR, struct internal_ldhdr *));
+  PARAMS((bfd *, const PTR, struct internal_ldhdr *));
 static void xcoff64_swap_ldhdr_out
-  PARAMS ((bfd *, const struct internal_ldhdr *, PTR d));
+  PARAMS((bfd *, const struct internal_ldhdr *, PTR d));
 static void xcoff64_swap_ldsym_in
-  PARAMS ((bfd *, const PTR, struct internal_ldsym *));
+  PARAMS((bfd *, const PTR, struct internal_ldsym *));
 static void xcoff64_swap_ldsym_out
-  PARAMS ((bfd *, const struct internal_ldsym *, PTR d));
+  PARAMS((bfd *, const struct internal_ldsym *, PTR d));
 static void xcoff64_swap_ldrel_in
-  PARAMS ((bfd *, const PTR, struct internal_ldrel *));
+  PARAMS((bfd *, const PTR, struct internal_ldrel *));
 static void xcoff64_swap_ldrel_out
-  PARAMS ((bfd *, const struct internal_ldrel *, PTR d));
+  PARAMS((bfd *, const struct internal_ldrel *, PTR d));
 static bfd_boolean xcoff64_write_object_contents
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 static bfd_boolean xcoff64_ppc_relocate_section
-  PARAMS ((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
-	   struct internal_reloc *, struct internal_syment *,
-	   asection **));
+  PARAMS((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
+          struct internal_reloc *, struct internal_syment *,
+          asection **));
 static bfd_boolean xcoff64_slurp_armap
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 static const bfd_target *xcoff64_archive_p
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 static bfd *xcoff64_openr_next_archived_file
-  PARAMS ((bfd *, bfd *));
+  PARAMS((bfd *, bfd *));
 static int xcoff64_sizeof_headers
-  PARAMS ((bfd *, bfd_boolean));
+  PARAMS((bfd *, bfd_boolean));
 static asection *xcoff64_create_csect_from_smclas
-  PARAMS ((bfd *, union internal_auxent *, const char *));
+  PARAMS((bfd *, union internal_auxent *, const char *));
 static bfd_boolean xcoff64_is_lineno_count_overflow
-  PARAMS ((bfd *, bfd_vma));
+  PARAMS((bfd *, bfd_vma));
 static bfd_boolean xcoff64_is_reloc_count_overflow
-  PARAMS ((bfd *, bfd_vma));
+  PARAMS((bfd *, bfd_vma));
 static bfd_vma xcoff64_loader_symbol_offset
-  PARAMS ((bfd *, struct internal_ldhdr *));
+  PARAMS((bfd *, struct internal_ldhdr *));
 static bfd_vma xcoff64_loader_reloc_offset
-  PARAMS ((bfd *, struct internal_ldhdr *));
+  PARAMS((bfd *, struct internal_ldhdr *));
 static bfd_boolean xcoff64_generate_rtinit
-  PARAMS ((bfd *, const char *, const char *, bfd_boolean));
+  PARAMS((bfd *, const char *, const char *, bfd_boolean));
 static bfd_boolean xcoff64_bad_format_hook
-  PARAMS ((bfd *, PTR ));
+  PARAMS((bfd *, PTR ));
 
-/* Relocation functions */
+/* Relocation functions: */
 static bfd_boolean xcoff64_reloc_type_br
-  PARAMS ((XCOFF_RELOC_FUNCTION_ARGS));
+  PARAMS((XCOFF_RELOC_FUNCTION_ARGS));
 
+#ifdef __clang__
+extern bfd_boolean (*xcoff64_calculate_relocation[XCOFF_MAX_CALCULATE_RELOCATION])
+  PARAMS((XCOFF_RELOC_FUNCTION_ARGS));
+#endif /* __clang__ */
 bfd_boolean (*xcoff64_calculate_relocation[XCOFF_MAX_CALCULATE_RELOCATION])
-  PARAMS ((XCOFF_RELOC_FUNCTION_ARGS)) =
+  PARAMS((XCOFF_RELOC_FUNCTION_ARGS)) =
 {
   xcoff_reloc_type_pos,	 /* R_POS   (0x00) */
   xcoff_reloc_type_neg,	 /* R_NEG   (0x01) */
@@ -215,18 +219,19 @@ bfd_boolean (*xcoff64_calculate_relocation[XCOFF_MAX_CALCULATE_RELOCATION])
 };
 
 /* coffcode.h needs these to be defined.  */
-/* Internalcoff.h and coffcode.h modify themselves based on these flags.  */
+/* Internalcoff.h and coffcode.h modify themselves based on these flags: */
 #define XCOFF64
 #define RS6000COFF_C 1
 
 #define SELECT_RELOC(internal, howto)					\
   {									\
-    internal.r_type = howto->type;					\
+    internal.r_type = (unsigned short)howto->type;			\
     internal.r_size =							\
-      ((howto->complain_on_overflow == complain_overflow_signed		\
-	? 0x80								\
-	: 0)								\
-       | (howto->bitsize - 1));						\
+      ((unsigned char)							\
+       (((howto->complain_on_overflow == complain_overflow_signed)	\
+         ? 0x80								\
+         : 0)								\
+        | (howto->bitsize - 1)));					\
   }
 
 #define COFF_DEFAULT_SECTION_ALIGNMENT_POWER (3)
@@ -275,124 +280,113 @@ extern int rs6000coff_core_file_failing_signal
 /* For XCOFF64, the effective width of symndx changes depending on
    whether we are the first entry.  Sigh.  */
 static void
-_bfd_xcoff64_swap_lineno_in (abfd, ext1, in1)
-     bfd *abfd;
-     PTR ext1;
-     PTR in1;
+_bfd_xcoff64_swap_lineno_in(bfd *abfd, PTR ext1, PTR in1)
 {
-  LINENO *ext = (LINENO *) ext1;
-  struct internal_lineno *in = (struct internal_lineno *) in1;
+  LINENO *ext = (LINENO *)ext1;
+  struct internal_lineno *in = (struct internal_lineno *)in1;
 
-  in->l_lnno = H_GET_32 (abfd, (ext->l_lnno));
+  in->l_lnno = (unsigned long)H_GET_32(abfd, (ext->l_lnno));
   if (in->l_lnno == 0)
-    in->l_addr.l_symndx = H_GET_32 (abfd, ext->l_addr.l_symndx);
+    in->l_addr.l_symndx = (bfd_signed_vma)H_GET_32(abfd,
+                                                   ext->l_addr.l_symndx);
   else
-    in->l_addr.l_paddr = H_GET_64 (abfd, ext->l_addr.l_paddr);
+    in->l_addr.l_paddr = (bfd_signed_vma)H_GET_64(abfd,
+                                                  ext->l_addr.l_paddr);
 }
 
 static unsigned int
-_bfd_xcoff64_swap_lineno_out (abfd, inp, outp)
-     bfd *abfd;
-     PTR inp;
-     PTR outp;
+_bfd_xcoff64_swap_lineno_out(bfd *abfd, PTR inp, PTR outp)
 {
-  struct internal_lineno *in = (struct internal_lineno *) inp;
-  struct external_lineno *ext = (struct external_lineno *) outp;
+  struct internal_lineno *in = (struct internal_lineno *)inp;
+  struct external_lineno *ext = (struct external_lineno *)outp;
 
-  H_PUT_32 (abfd, in->l_addr.l_symndx, ext->l_addr.l_symndx);
-  H_PUT_32 (abfd, in->l_lnno, (ext->l_lnno));
+  H_PUT_32(abfd, (bfd_vma)in->l_addr.l_symndx, ext->l_addr.l_symndx);
+  H_PUT_32(abfd, (bfd_vma)in->l_lnno, (ext->l_lnno));
 
   if (in->l_lnno == 0)
-    H_PUT_32 (abfd, in->l_addr.l_symndx, ext->l_addr.l_symndx);
+    H_PUT_32(abfd, (bfd_vma)in->l_addr.l_symndx, ext->l_addr.l_symndx);
   else
-    H_PUT_64 (abfd, in->l_addr.l_paddr, ext->l_addr.l_paddr);
+    H_PUT_64(abfd, (bfd_vma)in->l_addr.l_paddr, ext->l_addr.l_paddr);
 
-  return bfd_coff_linesz (abfd);
+  return bfd_coff_linesz(abfd);
 }
 
 static void
-_bfd_xcoff64_swap_sym_in (abfd, ext1, in1)
-     bfd *abfd;
-     PTR ext1;
-     PTR in1;
+_bfd_xcoff64_swap_sym_in(bfd *abfd, PTR ext1, PTR in1)
 {
-  struct external_syment *ext = (struct external_syment *) ext1;
-  struct internal_syment *in = (struct internal_syment *) in1;
+  struct external_syment *ext = (struct external_syment *)ext1;
+  struct internal_syment *in = (struct internal_syment *)in1;
 
-  in->_n._n_n._n_zeroes = 0;
-  in->_n._n_n._n_offset = H_GET_32 (abfd, ext->e_offset);
-  in->n_value = H_GET_64 (abfd, ext->e_value);
-  in->n_scnum = H_GET_16 (abfd, ext->e_scnum);
-  in->n_type = H_GET_16 (abfd, ext->e_type);
-  in->n_sclass = H_GET_8 (abfd, ext->e_sclass);
-  in->n_numaux = H_GET_8 (abfd, ext->e_numaux);
+  in->_n._n_n._n_zeroes = 0L;
+  in->_n._n_n._n_offset = (long)H_GET_32(abfd, ext->e_offset);
+  in->n_value = H_GET_64(abfd, ext->e_value);
+  in->n_scnum = (short)H_GET_16(abfd, ext->e_scnum);
+  in->n_type = (unsigned short)H_GET_16(abfd, ext->e_type);
+  in->n_sclass = H_GET_8(abfd, ext->e_sclass);
+  in->n_numaux = H_GET_8(abfd, ext->e_numaux);
 }
 
 static unsigned int
-_bfd_xcoff64_swap_sym_out (abfd, inp, extp)
-     bfd *abfd;
-     PTR inp;
-     PTR extp;
+_bfd_xcoff64_swap_sym_out(bfd *abfd, PTR inp, PTR extp)
 {
-  struct internal_syment *in = (struct internal_syment *) inp;
-  struct external_syment *ext = (struct external_syment *) extp;
+  struct internal_syment *in = (struct internal_syment *)inp;
+  struct external_syment *ext = (struct external_syment *)extp;
 
-  H_PUT_32 (abfd, in->_n._n_n._n_offset, ext->e_offset);
-  H_PUT_64 (abfd, in->n_value, ext->e_value);
-  H_PUT_16 (abfd, in->n_scnum, ext->e_scnum);
-  H_PUT_16 (abfd, in->n_type, ext->e_type);
-  H_PUT_8 (abfd, in->n_sclass, ext->e_sclass);
-  H_PUT_8 (abfd, in->n_numaux, ext->e_numaux);
-  return bfd_coff_symesz (abfd);
+  H_PUT_32(abfd, (bfd_vma)in->_n._n_n._n_offset, ext->e_offset);
+  H_PUT_64(abfd, in->n_value, ext->e_value);
+  H_PUT_16(abfd, (bfd_vma)in->n_scnum, ext->e_scnum);
+  H_PUT_16(abfd, (bfd_vma)in->n_type, ext->e_type);
+  H_PUT_8(abfd, in->n_sclass, ext->e_sclass);
+  H_PUT_8(abfd, in->n_numaux, ext->e_numaux);
+  return bfd_coff_symesz(abfd);
 }
 
 static void
-_bfd_xcoff64_swap_aux_in (abfd, ext1, type, class, indx, numaux, in1)
-     bfd *abfd;
-     PTR ext1;
-     int type;
-     int class;
-     int indx;
-     int numaux;
-     PTR in1;
+_bfd_xcoff64_swap_aux_in(bfd *abfd, PTR ext1, int type, int classparam,
+                         int indx, int numaux, PTR in1)
 {
-  union external_auxent *ext = (union external_auxent *) ext1;
-  union internal_auxent *in = (union internal_auxent *) in1;
+  union external_auxent *ext = (union external_auxent *)ext1;
+  union internal_auxent *in = (union internal_auxent *)in1;
 
-  switch (class)
+  switch (classparam)
     {
     case C_FILE:
       if (ext->x_file.x_n.x_zeroes[0] == 0)
 	{
-	  in->x_file.x_n.x_zeroes = 0;
-	  in->x_file.x_n.x_offset = H_GET_32 (abfd, ext->x_file.x_n.x_offset);
+	  in->x_file.x_n.x_zeroes = 0L;
+	  in->x_file.x_n.x_offset =
+            (long)H_GET_32(abfd, ext->x_file.x_n.x_offset);
 	}
       else
 	{
-	  memcpy (in->x_file.x_fname, ext->x_file.x_fname, FILNMLEN);
+	  memcpy(in->x_file.x_fname, ext->x_file.x_fname,
+                 (size_t)FILNMLEN);
 	}
       goto end;
 
       /* RS/6000 "csect" auxents */
     case C_EXT:
     case C_HIDEXT:
-      if (indx + 1 == numaux)
+      if ((indx + 1) == numaux)
 	{
-	  bfd_signed_vma h = 0;
-	  bfd_vma l = 0;
+	  bfd_signed_vma h = 0L;
+	  bfd_vma l = 0UL;
 
-	  h = H_GET_S32 (abfd, ext->x_csect.x_scnlen_hi);
-	  l = H_GET_32 (abfd, ext->x_csect.x_scnlen_lo);
+	  h = H_GET_S32(abfd, ext->x_csect.x_scnlen_hi);
+	  l = H_GET_32(abfd, ext->x_csect.x_scnlen_lo);
 
-	  in->x_csect.x_scnlen.l = h << 32 | (l & 0xffffffff);
+	  in->x_csect.x_scnlen.l =
+            (bfd_signed_vma)((h << 32) | (bfd_signed_vma)(l & 0xffffffff));
 
-	  in->x_csect.x_parmhash = H_GET_32 (abfd, ext->x_csect.x_parmhash);
-	  in->x_csect.x_snhash = H_GET_16 (abfd, ext->x_csect.x_snhash);
-	  /* We don't have to hack bitfields in x_smtyp because it's
+	  in->x_csect.x_parmhash =
+            (long)H_GET_32(abfd, ext->x_csect.x_parmhash);
+	  in->x_csect.x_snhash =
+            (unsigned short)H_GET_16(abfd, ext->x_csect.x_snhash);
+	  /* We do NOT have to hack bitfields in x_smtyp because it's
 	     defined by shifts-and-ands, which are equivalent on all
 	     byte orders.  */
-	  in->x_csect.x_smtyp = H_GET_8 (abfd, ext->x_csect.x_smtyp);
-	  in->x_csect.x_smclas = H_GET_8 (abfd, ext->x_csect.x_smclas);
+	  in->x_csect.x_smtyp = H_GET_8(abfd, ext->x_csect.x_smtyp);
+	  in->x_csect.x_smclas = H_GET_8(abfd, ext->x_csect.x_smclas);
 	  goto end;
 	}
       break;
@@ -411,79 +405,82 @@ _bfd_xcoff64_swap_aux_in (abfd, ext1, type, class, indx, numaux, in1)
 	  goto end;
 	}
       break;
+    default:
+      break;
     }
 
-  if (class == C_BLOCK || class == C_FCN || ISFCN (type) || ISTAG (class))
+  if ((classparam == C_BLOCK) || (classparam == C_FCN) || ISFCN(type)
+      || ISTAG(classparam))
     {
-      in->x_sym.x_fcnary.x_fcn.x_lnnoptr
-	= H_GET_64 (abfd, ext->x_sym.x_fcnary.x_fcn.x_lnnoptr);
-      in->x_sym.x_fcnary.x_fcn.x_endndx.l
-	= H_GET_32 (abfd, ext->x_sym.x_fcnary.x_fcn.x_endndx);
+      in->x_sym.x_fcnary.x_fcn.x_lnnoptr =
+        (bfd_signed_vma)H_GET_64(abfd,
+                                 ext->x_sym.x_fcnary.x_fcn.x_lnnoptr);
+      in->x_sym.x_fcnary.x_fcn.x_endndx.l =
+        (long)H_GET_32(abfd, ext->x_sym.x_fcnary.x_fcn.x_endndx);
     }
-  if (ISFCN (type))
+  if (ISFCN(type))
     {
-      in->x_sym.x_misc.x_fsize
-	= H_GET_32 (abfd, ext->x_sym.x_fcnary.x_fcn.x_fsize);
+      in->x_sym.x_misc.x_fsize =
+        (long)H_GET_32(abfd, ext->x_sym.x_fcnary.x_fcn.x_fsize);
     }
   else
     {
-      in->x_sym.x_misc.x_lnsz.x_lnno
-	= H_GET_32 (abfd, ext->x_sym.x_fcnary.x_lnsz.x_lnno);
-      in->x_sym.x_misc.x_lnsz.x_size
-	= H_GET_16 (abfd, ext->x_sym.x_fcnary.x_lnsz.x_size);
+      in->x_sym.x_misc.x_lnsz.x_lnno =
+        (unsigned short)H_GET_32(abfd, ext->x_sym.x_fcnary.x_lnsz.x_lnno);
+      in->x_sym.x_misc.x_lnsz.x_size =
+        (unsigned short)H_GET_16(abfd, ext->x_sym.x_fcnary.x_lnsz.x_size);
     }
 
  end: ;
 }
 
 static unsigned int
-_bfd_xcoff64_swap_aux_out (abfd, inp, type, class, indx, numaux, extp)
-     bfd *abfd;
-     PTR inp;
-     int type;
-     int class;
-     int indx ATTRIBUTE_UNUSED;
-     int numaux ATTRIBUTE_UNUSED;
-     PTR extp;
+_bfd_xcoff64_swap_aux_out(bfd *abfd, PTR inp, int type, int the_class,
+                          int indx ATTRIBUTE_UNUSED,
+                          int numaux ATTRIBUTE_UNUSED, PTR extp)
 {
-  union internal_auxent *in = (union internal_auxent *) inp;
-  union external_auxent *ext = (union external_auxent *) extp;
+  union internal_auxent *in = (union internal_auxent *)inp;
+  union external_auxent *ext = (union external_auxent *)extp;
 
-  memset ((PTR) ext, 0, bfd_coff_auxesz (abfd));
-  switch (class)
+  memset((PTR)ext, 0, (size_t)bfd_coff_auxesz(abfd));
+  switch (the_class)
     {
     case C_FILE:
       if (in->x_file.x_n.x_zeroes == 0)
 	{
-	  H_PUT_32 (abfd, 0, ext->x_file.x_n.x_zeroes);
-	  H_PUT_32 (abfd, in->x_file.x_n.x_offset, ext->x_file.x_n.x_offset);
+	  H_PUT_32(abfd, (bfd_vma)0UL, ext->x_file.x_n.x_zeroes);
+	  H_PUT_32(abfd, (bfd_vma)in->x_file.x_n.x_offset,
+                   ext->x_file.x_n.x_offset);
 	}
       else
 	{
-	  memcpy (ext->x_file.x_fname, in->x_file.x_fname, FILNMLEN);
+	  memcpy(ext->x_file.x_fname, in->x_file.x_fname,
+                 (size_t)FILNMLEN);
 	}
-      H_PUT_8 (abfd, _AUX_FILE, ext->x_auxtype.x_auxtype);
+      H_PUT_8(abfd, _AUX_FILE, ext->x_auxtype.x_auxtype);
       goto end;
 
       /* RS/6000 "csect" auxents */
     case C_EXT:
     case C_HIDEXT:
-      if (indx + 1 == numaux)
+      if ((indx + 1) == numaux)
 	{
 	  bfd_vma temp;
 
-	  temp = in->x_csect.x_scnlen.l & 0xffffffff;
-	  H_PUT_32 (abfd, temp, ext->x_csect.x_scnlen_lo);
-	  temp = in->x_csect.x_scnlen.l >> 32;
-	  H_PUT_32 (abfd, temp, ext->x_csect.x_scnlen_hi);
-	  H_PUT_32 (abfd, in->x_csect.x_parmhash, ext->x_csect.x_parmhash);
-	  H_PUT_16 (abfd, in->x_csect.x_snhash, ext->x_csect.x_snhash);
+	  temp = (in->x_csect.x_scnlen.l & 0xffffffff);
+	  H_PUT_32(abfd, temp, ext->x_csect.x_scnlen_lo);
+	  temp = (bfd_vma)(in->x_csect.x_scnlen.l >> 32);
+	  H_PUT_32(abfd, temp, ext->x_csect.x_scnlen_hi);
+	  H_PUT_32(abfd, (bfd_vma)in->x_csect.x_parmhash,
+                   ext->x_csect.x_parmhash);
+	  H_PUT_16(abfd, (bfd_vma)in->x_csect.x_snhash,
+                   ext->x_csect.x_snhash);
 	  /* We don't have to hack bitfields in x_smtyp because it's
 	     defined by shifts-and-ands, which are equivalent on all
 	     byte orders.  */
-	  H_PUT_8 (abfd, in->x_csect.x_smtyp, ext->x_csect.x_smtyp);
-	  H_PUT_8 (abfd, in->x_csect.x_smclas, ext->x_csect.x_smclas);
-	  H_PUT_8 (abfd, _AUX_CSECT, ext->x_auxtype.x_auxtype);
+	  H_PUT_8(abfd, in->x_csect.x_smtyp, ext->x_csect.x_smtyp);
+	  H_PUT_8(abfd, in->x_csect.x_smclas, ext->x_csect.x_smclas);
+	  H_PUT_8(abfd, _AUX_CSECT, ext->x_auxtype.x_auxtype);
 	  goto end;
 	}
       break;
@@ -496,41 +493,40 @@ _bfd_xcoff64_swap_aux_out (abfd, inp, type, class, indx, numaux, extp)
 	  goto end;
 	}
       break;
+    default:
+      break;
     }
 
-  if (class == C_BLOCK || class == C_FCN || ISFCN (type) || ISTAG (class))
+  if ((the_class == C_BLOCK) || (the_class == C_FCN) || ISFCN(type)
+      || ISTAG(the_class))
     {
-      H_PUT_64 (abfd, in->x_sym.x_fcnary.x_fcn.x_lnnoptr,
+      H_PUT_64(abfd, (bfd_vma)in->x_sym.x_fcnary.x_fcn.x_lnnoptr,
 	       ext->x_sym.x_fcnary.x_fcn.x_lnnoptr);
-      H_PUT_8 (abfd, _AUX_FCN,
-	       ext->x_auxtype.x_auxtype);
-      H_PUT_32 (abfd, in->x_sym.x_fcnary.x_fcn.x_endndx.l,
+      H_PUT_8(abfd, _AUX_FCN, ext->x_auxtype.x_auxtype);
+      H_PUT_32(abfd, (bfd_vma)in->x_sym.x_fcnary.x_fcn.x_endndx.l,
 	       ext->x_sym.x_fcnary.x_fcn.x_endndx);
     }
-  if (ISFCN (type))
+  if (ISFCN(type))
     {
-      H_PUT_32 (abfd, in->x_sym.x_misc.x_fsize,
+      H_PUT_32(abfd, (bfd_vma)in->x_sym.x_misc.x_fsize,
 	       ext->x_sym.x_fcnary.x_fcn.x_fsize);
     }
   else
     {
-      H_PUT_32 (abfd, in->x_sym.x_misc.x_lnsz.x_lnno,
+      H_PUT_32(abfd, (bfd_vma)in->x_sym.x_misc.x_lnsz.x_lnno,
 	       ext->x_sym.x_fcnary.x_lnsz.x_lnno);
-      H_PUT_16 (abfd, in->x_sym.x_misc.x_lnsz.x_size,
+      H_PUT_16(abfd, (bfd_vma)in->x_sym.x_misc.x_lnsz.x_size,
 	       ext->x_sym.x_fcnary.x_lnsz.x_size);
     }
 
  end:
 
-  return bfd_coff_auxesz (abfd);
+  return bfd_coff_auxesz(abfd);
 }
 
 static bfd_boolean
-_bfd_xcoff64_put_symbol_name (abfd, strtab, sym, name)
-     bfd *abfd;
-     struct bfd_strtab_hash *strtab;
-     struct internal_syment *sym;
-     const char *name;
+_bfd_xcoff64_put_symbol_name(bfd *abfd, struct bfd_strtab_hash *strtab,
+                             struct internal_syment *sym, const char *name)
 {
   bfd_boolean hash;
   bfd_size_type indx;
@@ -540,54 +536,53 @@ _bfd_xcoff64_put_symbol_name (abfd, strtab, sym, name)
   if ((abfd->flags & BFD_TRADITIONAL_FORMAT) != 0)
     hash = FALSE;
 
-  indx = _bfd_stringtab_add (strtab, name, hash, FALSE);
+  indx = _bfd_stringtab_add(strtab, name, hash, FALSE);
 
-  if (indx == (bfd_size_type) -1)
+  if (indx == (bfd_size_type)-1L)
     return FALSE;
 
-  sym->_n._n_n._n_zeroes = 0;
-  sym->_n._n_n._n_offset = STRING_SIZE_SIZE + indx;
+  sym->_n._n_n._n_zeroes = 0L;
+  sym->_n._n_n._n_offset = (long)(STRING_SIZE_SIZE + indx);
 
   return TRUE;
 }
 
 static bfd_boolean
-_bfd_xcoff64_put_ldsymbol_name (abfd, ldinfo, ldsym, name)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     struct xcoff_loader_info *ldinfo;
-     struct internal_ldsym *ldsym;
-     const char *name;
+_bfd_xcoff64_put_ldsymbol_name(bfd *abfd ATTRIBUTE_UNUSED,
+                               struct xcoff_loader_info *ldinfo,
+                               struct internal_ldsym *ldsym,
+                               const char *name)
 {
   size_t len;
-  len = strlen (name);
+  len = strlen(name);
 
-  if (ldinfo->string_size + len + 3 > ldinfo->string_alc)
+  if ((ldinfo->string_size + len + 3UL) > ldinfo->string_alc)
     {
       bfd_size_type newalc;
       char *newstrings;
 
-      newalc = ldinfo->string_alc * 2;
-      if (newalc == 0)
-	newalc = 32;
-      while (ldinfo->string_size + len + 3 > newalc)
-	newalc *= 2;
+      newalc = (ldinfo->string_alc * 2UL);
+      if (newalc == 0UL)
+	newalc = 32UL;
+      while ((ldinfo->string_size + len + 3UL) > newalc)
+	newalc *= 2UL;
 
-      newstrings = bfd_realloc (ldinfo->strings, newalc);
+      newstrings = (char *)bfd_realloc(ldinfo->strings, newalc);
       if (newstrings == NULL)
 	{
 	  ldinfo->failed = TRUE;
 	  return FALSE;
 	}
-      ldinfo->string_alc = newalc;
+      ldinfo->string_alc = (size_t)newalc;
       ldinfo->strings = newstrings;
     }
 
-  bfd_put_16 (ldinfo->output_bfd, (bfd_vma) (len + 1),
-	      ldinfo->strings + ldinfo->string_size);
-  strcpy (ldinfo->strings + ldinfo->string_size + 2, name);
-  ldsym->_l._l_l._l_zeroes = 0;
-  ldsym->_l._l_l._l_offset = ldinfo->string_size + 2;
-  ldinfo->string_size += len + 3;
+  bfd_put_16(ldinfo->output_bfd, (bfd_vma)(len + 1UL),
+	     (ldinfo->strings + ldinfo->string_size));
+  strcpy((ldinfo->strings + ldinfo->string_size + 2UL), name);
+  ldsym->_l._l_l._l_zeroes = 0L;
+  ldsym->_l._l_l._l_offset = (long)(ldinfo->string_size + 2UL);
+  ldinfo->string_size += (len + 3UL);
 
   return TRUE;
 }
@@ -597,160 +592,129 @@ _bfd_xcoff64_put_ldsymbol_name (abfd, ldinfo, ldsym, name)
    moved to another file shared by the linker (which XCOFF calls the
    ``binder'') and the loader.  */
 
-/* Swap in the ldhdr structure.  */
-
+/* Swap in the ldhdr structure: */
 static void
-xcoff64_swap_ldhdr_in (abfd, s, dst)
-     bfd *abfd;
-     const PTR s;
-     struct internal_ldhdr *dst;
+xcoff64_swap_ldhdr_in(bfd *abfd, const PTR s, struct internal_ldhdr *dst)
 {
-  const struct external_ldhdr *src = (const struct external_ldhdr *) s;
+  const struct external_ldhdr *src = (const struct external_ldhdr *)s;
 
-  dst->l_version = bfd_get_32 (abfd, src->l_version);
-  dst->l_nsyms = bfd_get_32 (abfd, src->l_nsyms);
-  dst->l_nreloc = bfd_get_32 (abfd, src->l_nreloc);
-  dst->l_istlen = bfd_get_32 (abfd, src->l_istlen);
-  dst->l_nimpid = bfd_get_32 (abfd, src->l_nimpid);
-  dst->l_stlen = bfd_get_32 (abfd, src->l_stlen);
-  dst->l_impoff = bfd_get_64 (abfd, src->l_impoff);
-  dst->l_stoff = bfd_get_64 (abfd, src->l_stoff);
-  dst->l_symoff = bfd_get_64 (abfd, src->l_symoff);
-  dst->l_rldoff = bfd_get_64 (abfd, src->l_rldoff);
+  dst->l_version = (unsigned long)bfd_get_32(abfd, src->l_version);
+  dst->l_nsyms = bfd_get_32(abfd, src->l_nsyms);
+  dst->l_nreloc = bfd_get_32(abfd, src->l_nreloc);
+  dst->l_istlen = bfd_get_32(abfd, src->l_istlen);
+  dst->l_nimpid = bfd_get_32(abfd, src->l_nimpid);
+  dst->l_stlen = bfd_get_32(abfd, src->l_stlen);
+  dst->l_impoff = bfd_get_64(abfd, src->l_impoff);
+  dst->l_stoff = bfd_get_64(abfd, src->l_stoff);
+  dst->l_symoff = bfd_get_64(abfd, src->l_symoff);
+  dst->l_rldoff = bfd_get_64(abfd, src->l_rldoff);
 }
 
-/* Swap out the ldhdr structure.  */
-
+/* Swap out the ldhdr structure: */
 static void
-xcoff64_swap_ldhdr_out (abfd, src, d)
-     bfd *abfd;
-     const struct internal_ldhdr *src;
-     PTR d;
+xcoff64_swap_ldhdr_out(bfd *abfd, const struct internal_ldhdr *src, PTR d)
 {
-  struct external_ldhdr *dst = (struct external_ldhdr *) d;
+  struct external_ldhdr *dst = (struct external_ldhdr *)d;
 
-  bfd_put_32 (abfd, (bfd_vma) src->l_version, dst->l_version);
-  bfd_put_32 (abfd, src->l_nsyms, dst->l_nsyms);
-  bfd_put_32 (abfd, src->l_nreloc, dst->l_nreloc);
-  bfd_put_32 (abfd, src->l_istlen, dst->l_istlen);
-  bfd_put_32 (abfd, src->l_nimpid, dst->l_nimpid);
-  bfd_put_32 (abfd, src->l_stlen, dst->l_stlen);
-  bfd_put_64 (abfd, src->l_impoff, dst->l_impoff);
-  bfd_put_64 (abfd, src->l_stoff, dst->l_stoff);
-  bfd_put_64 (abfd, src->l_symoff, dst->l_symoff);
-  bfd_put_64 (abfd, src->l_rldoff, dst->l_rldoff);
+  bfd_put_32(abfd, (bfd_vma)src->l_version, dst->l_version);
+  bfd_put_32(abfd, src->l_nsyms, dst->l_nsyms);
+  bfd_put_32(abfd, src->l_nreloc, dst->l_nreloc);
+  bfd_put_32(abfd, src->l_istlen, dst->l_istlen);
+  bfd_put_32(abfd, src->l_nimpid, dst->l_nimpid);
+  bfd_put_32(abfd, src->l_stlen, dst->l_stlen);
+  bfd_put_64(abfd, src->l_impoff, dst->l_impoff);
+  bfd_put_64(abfd, src->l_stoff, dst->l_stoff);
+  bfd_put_64(abfd, src->l_symoff, dst->l_symoff);
+  bfd_put_64(abfd, src->l_rldoff, dst->l_rldoff);
 }
 
-/* Swap in the ldsym structure.  */
-
+/* Swap in the ldsym structure: */
 static void
-xcoff64_swap_ldsym_in (abfd, s, dst)
-     bfd *abfd;
-     const PTR s;
-     struct internal_ldsym *dst;
+xcoff64_swap_ldsym_in(bfd *abfd, const PTR s, struct internal_ldsym *dst)
 {
-  const struct external_ldsym *src = (const struct external_ldsym *) s;
+  const struct external_ldsym *src = (const struct external_ldsym *)s;
   /* XCOFF64 does not use l_zeroes like XCOFF32
      Set the internal l_zeroes to 0 so the common 32/64 code uses l_value
      as an offset into the loader symbol table.  */
-  dst->_l._l_l._l_zeroes = 0;
-  dst->_l._l_l._l_offset = bfd_get_32 (abfd, src->l_offset);
-  dst->l_value = bfd_get_64 (abfd, src->l_value);
-  dst->l_scnum = bfd_get_16 (abfd, src->l_scnum);
-  dst->l_smtype = bfd_get_8 (abfd, src->l_smtype);
-  dst->l_smclas = bfd_get_8 (abfd, src->l_smclas);
-  dst->l_ifile = bfd_get_32 (abfd, src->l_ifile);
-  dst->l_parm = bfd_get_32 (abfd, src->l_parm);
+  dst->_l._l_l._l_zeroes = 0L;
+  dst->_l._l_l._l_offset = (long)bfd_get_32(abfd, src->l_offset);
+  dst->l_value = bfd_get_64(abfd, src->l_value);
+  dst->l_scnum = (short)bfd_get_16(abfd, src->l_scnum);
+  dst->l_smtype = (char)bfd_get_8(abfd, src->l_smtype);
+  dst->l_smclas = (char)bfd_get_8(abfd, src->l_smclas);
+  dst->l_ifile = bfd_get_32(abfd, src->l_ifile);
+  dst->l_parm = bfd_get_32(abfd, src->l_parm);
 }
 
-/* Swap out the ldsym structure.  */
-
+/* Swap out the ldsym structure: */
 static void
-xcoff64_swap_ldsym_out (abfd, src, d)
-     bfd *abfd;
-     const struct internal_ldsym *src;
-     PTR d;
+xcoff64_swap_ldsym_out(bfd *abfd, const struct internal_ldsym *src, PTR d)
 {
-  struct external_ldsym *dst = (struct external_ldsym *) d;
+  struct external_ldsym *dst = (struct external_ldsym *)d;
 
-  bfd_put_64 (abfd, src->l_value, dst->l_value);
-  bfd_put_32 (abfd, (bfd_vma) src->_l._l_l._l_offset, dst->l_offset);
-  bfd_put_16 (abfd, (bfd_vma) src->l_scnum, dst->l_scnum);
-  bfd_put_8 (abfd, src->l_smtype, dst->l_smtype);
-  bfd_put_8 (abfd, src->l_smclas, dst->l_smclas);
-  bfd_put_32 (abfd, src->l_ifile, dst->l_ifile);
-  bfd_put_32 (abfd, src->l_parm, dst->l_parm);
+  bfd_put_64(abfd, src->l_value, dst->l_value);
+  bfd_put_32(abfd, (bfd_vma)src->_l._l_l._l_offset, dst->l_offset);
+  bfd_put_16(abfd, (bfd_vma)src->l_scnum, dst->l_scnum);
+  bfd_put_8(abfd, (unsigned char)src->l_smtype, dst->l_smtype);
+  bfd_put_8(abfd, (unsigned char)src->l_smclas, dst->l_smclas);
+  bfd_put_32(abfd, src->l_ifile, dst->l_ifile);
+  bfd_put_32(abfd, src->l_parm, dst->l_parm);
 }
 
 static void
-xcoff64_swap_reloc_in (abfd, s, d)
-     bfd *abfd;
-     PTR s;
-     PTR d;
+xcoff64_swap_reloc_in(bfd *abfd, PTR s, PTR d)
 {
-  struct external_reloc *src = (struct external_reloc *) s;
-  struct internal_reloc *dst = (struct internal_reloc *) d;
+  struct external_reloc *src = (struct external_reloc *)s;
+  struct internal_reloc *dst = (struct internal_reloc *)d;
 
-  memset (dst, 0, sizeof (struct internal_reloc));
+  memset(dst, 0, sizeof(struct internal_reloc));
 
-  dst->r_vaddr = bfd_get_64 (abfd, src->r_vaddr);
-  dst->r_symndx = bfd_get_32 (abfd, src->r_symndx);
-  dst->r_size = bfd_get_8 (abfd, src->r_size);
-  dst->r_type = bfd_get_8 (abfd, src->r_type);
+  dst->r_vaddr = bfd_get_64(abfd, src->r_vaddr);
+  dst->r_symndx = (long)bfd_get_32(abfd, src->r_symndx);
+  dst->r_size = bfd_get_8(abfd, src->r_size);
+  dst->r_type = bfd_get_8(abfd, src->r_type);
 }
 
 static unsigned int
-xcoff64_swap_reloc_out (abfd, s, d)
-     bfd *abfd;
-     PTR s;
-     PTR d;
+xcoff64_swap_reloc_out(bfd *abfd, PTR s, PTR d)
 {
-  struct internal_reloc *src = (struct internal_reloc *) s;
-  struct external_reloc *dst = (struct external_reloc *) d;
+  struct internal_reloc *src = (struct internal_reloc *)s;
+  struct external_reloc *dst = (struct external_reloc *)d;
 
-  bfd_put_64 (abfd, src->r_vaddr, dst->r_vaddr);
-  bfd_put_32 (abfd, src->r_symndx, dst->r_symndx);
-  bfd_put_8 (abfd, src->r_type, dst->r_type);
-  bfd_put_8 (abfd, src->r_size, dst->r_size);
+  bfd_put_64(abfd, src->r_vaddr, dst->r_vaddr);
+  bfd_put_32(abfd, (bfd_vma)src->r_symndx, dst->r_symndx);
+  bfd_put_8(abfd, (unsigned char)src->r_type, dst->r_type);
+  bfd_put_8(abfd, src->r_size, dst->r_size);
 
-  return bfd_coff_relsz (abfd);
+  return bfd_coff_relsz(abfd);
 }
 
-/* Swap in the ldrel structure.  */
-
+/* Swap in the ldrel structure: */
 static void
-xcoff64_swap_ldrel_in (abfd, s, dst)
-     bfd *abfd;
-     const PTR s;
-     struct internal_ldrel *dst;
+xcoff64_swap_ldrel_in(bfd *abfd, const PTR s, struct internal_ldrel *dst)
 {
-  const struct external_ldrel *src = (const struct external_ldrel *) s;
+  const struct external_ldrel *src = (const struct external_ldrel *)s;
 
-  dst->l_vaddr = bfd_get_64 (abfd, src->l_vaddr);
-  dst->l_symndx = bfd_get_32 (abfd, src->l_symndx);
-  dst->l_rtype = bfd_get_16 (abfd, src->l_rtype);
-  dst->l_rsecnm = bfd_get_16 (abfd, src->l_rsecnm);
+  dst->l_vaddr = bfd_get_64(abfd, src->l_vaddr);
+  dst->l_symndx = bfd_get_32(abfd, src->l_symndx);
+  dst->l_rtype = (short)bfd_get_16(abfd, src->l_rtype);
+  dst->l_rsecnm = (short)bfd_get_16(abfd, src->l_rsecnm);
 }
 
-/* Swap out the ldrel structure.  */
-
+/* Swap out the ldrel structure: */
 static void
-xcoff64_swap_ldrel_out (abfd, src, d)
-     bfd *abfd;
-     const struct internal_ldrel *src;
-     PTR d;
+xcoff64_swap_ldrel_out(bfd *abfd, const struct internal_ldrel *src, PTR d)
 {
-  struct external_ldrel *dst = (struct external_ldrel *) d;
+  struct external_ldrel *dst = (struct external_ldrel *)d;
 
-  bfd_put_64 (abfd, src->l_vaddr, dst->l_vaddr);
-  bfd_put_16 (abfd, (bfd_vma) src->l_rtype, dst->l_rtype);
-  bfd_put_16 (abfd, (bfd_vma) src->l_rsecnm, dst->l_rsecnm);
-  bfd_put_32 (abfd, src->l_symndx, dst->l_symndx);
+  bfd_put_64(abfd, src->l_vaddr, dst->l_vaddr);
+  bfd_put_16(abfd, (bfd_vma)src->l_rtype, dst->l_rtype);
+  bfd_put_16(abfd, (bfd_vma)src->l_rsecnm, dst->l_rsecnm);
+  bfd_put_32(abfd, src->l_symndx, dst->l_symndx);
 }
 
 static bfd_boolean
-xcoff64_write_object_contents (abfd)
-     bfd *abfd;
+xcoff64_write_object_contents(bfd *abfd)
 {
   asection *current;
   bfd_boolean hasrelocs = FALSE;
@@ -759,45 +723,46 @@ xcoff64_write_object_contents (abfd)
   file_ptr reloc_base;
   file_ptr lineno_base;
   file_ptr sym_base;
-  unsigned long reloc_size = 0;
-  unsigned long lnno_size = 0;
+  unsigned long reloc_size = 0UL;
+  unsigned long lnno_size = 0UL;
   bfd_boolean long_section_names;
-  asection *text_sec = ((void *) 0);
-  asection *data_sec = ((void *) 0);
-  asection *bss_sec = ((void *) 0);
+  asection *text_sec = ((void *)0);
+  asection *data_sec = ((void *)0);
+  asection *bss_sec = ((void *)0);
   struct internal_filehdr internal_f;
   struct internal_aouthdr internal_a;
 
-  bfd_set_error (bfd_error_system_call);
+  bfd_set_error(bfd_error_system_call);
 
   if (! abfd->output_has_begun)
     {
-      if (! bfd_coff_compute_section_file_positions (abfd))
+      if (! bfd_coff_compute_section_file_positions(abfd))
 	return FALSE;
     }
 
-  /* Work out the size of the reloc and linno areas.  */
-  reloc_base = obj_relocbase (abfd);
+  /* Work out the size of the reloc and linno areas: */
+  reloc_base = obj_relocbase(abfd);
 
   for (current = abfd->sections; current != NULL; current = current->next)
-    reloc_size += current->reloc_count * bfd_coff_relsz (abfd);
+    reloc_size += (current->reloc_count * bfd_coff_relsz(abfd));
 
-  lineno_base = reloc_base + reloc_size;
+  lineno_base = (reloc_base + reloc_size);
 
   /* Make a pass through the symbol table to count line number entries and
      put them into the correct asections.  */
-  lnno_size = coff_count_linenumbers (abfd) * bfd_coff_linesz (abfd);
+  lnno_size = ((unsigned int)coff_count_linenumbers(abfd)
+               * bfd_coff_linesz(abfd));
 
-  sym_base = lineno_base + lnno_size;
+  sym_base = (lineno_base + lnno_size);
 
-  /* Indicate in each section->line_filepos its actual file address.  */
-  for (current = abfd->sections; current != NULL; current =  current->next)
+  /* Indicate in each section->line_filepos its actual file address: */
+  for (current = abfd->sections; current != NULL; current = current->next)
     {
       if (current->lineno_count)
 	{
 	  current->line_filepos = lineno_base;
 	  current->moving_line_filepos = lineno_base;
-	  lineno_base += current->lineno_count * bfd_coff_linesz (abfd);
+	  lineno_base += (current->lineno_count * bfd_coff_linesz(abfd));
 	}
       else
 	{
@@ -807,7 +772,7 @@ xcoff64_write_object_contents (abfd)
       if (current->reloc_count)
 	{
 	  current->rel_filepos = reloc_base;
-	  reloc_base += current->reloc_count * bfd_coff_relsz (abfd);
+	  reloc_base += (current->reloc_count * bfd_coff_relsz(abfd));
 	}
       else
 	{
@@ -817,18 +782,18 @@ xcoff64_write_object_contents (abfd)
 
   if ((abfd->flags & EXEC_P) != 0)
     {
-      scn_base = bfd_coff_filhsz (abfd) + bfd_coff_aoutsz (abfd);
-      internal_f.f_opthdr = bfd_coff_aoutsz (abfd);
+      scn_base = (bfd_coff_filhsz(abfd) + bfd_coff_aoutsz(abfd));
+      internal_f.f_opthdr = (unsigned short)bfd_coff_aoutsz(abfd);
     }
   else
     {
-      scn_base = bfd_coff_filhsz (abfd);
+      scn_base = bfd_coff_filhsz(abfd);
       internal_f.f_opthdr = 0;
     }
 
   internal_f.f_nscns = 0;
 
-  if (bfd_seek (abfd, scn_base, SEEK_SET) != 0)
+  if (bfd_seek(abfd, scn_base, SEEK_SET) != 0)
     return FALSE;
 
   long_section_names = FALSE;
@@ -840,26 +805,26 @@ xcoff64_write_object_contents (abfd)
 
       internal_f.f_nscns++;
 
-      strncpy (section.s_name, current->name, SCNNMLEN);
+      strncpy(section.s_name, current->name, (size_t)SCNNMLEN);
 
       section.s_vaddr = current->vma;
       section.s_paddr = current->lma;
-      section.s_size =  current->size;
+      section.s_size = current->size;
 
       /* If this section has no size or is unloadable then the scnptr
 	 will be 0 too.  */
-      if (current->size == 0
-	  || (current->flags & (SEC_LOAD | SEC_HAS_CONTENTS)) == 0)
+      if ((current->size == 0)
+	  || ((current->flags & (SEC_LOAD | SEC_HAS_CONTENTS)) == 0))
 	{
 	  section.s_scnptr = 0;
 	}
       else
 	{
-	  section.s_scnptr = current->filepos;
+	  section.s_scnptr = (bfd_vma)current->filepos;
 	}
 
-      section.s_relptr = current->rel_filepos;
-      section.s_lnnoptr = current->line_filepos;
+      section.s_relptr = (bfd_vma)current->rel_filepos;
+      section.s_lnnoptr = (bfd_vma)current->line_filepos;
       section.s_nreloc = current->reloc_count;
 
       section.s_nlnno = current->lineno_count;
@@ -868,24 +833,24 @@ xcoff64_write_object_contents (abfd)
       if (current->lineno_count != 0)
 	haslinno = TRUE;
 
-      section.s_flags = sec_to_styp_flags (current->name, current->flags);
+      section.s_flags = sec_to_styp_flags(current->name, current->flags);
 
-      if (!strcmp (current->name, _TEXT))
+      if (!strcmp(current->name, _TEXT))
 	{
 	  text_sec = current;
 	}
-      else if (!strcmp (current->name, _DATA))
+      else if (!strcmp(current->name, _DATA))
 	{
 	  data_sec = current;
 	}
-      else if (!strcmp (current->name, _BSS))
+      else if (!strcmp(current->name, _BSS))
 	{
 	  bss_sec = current;
 	}
 
-      amount = bfd_coff_scnhsz (abfd);
-      if (bfd_coff_swap_scnhdr_out (abfd, &section, &buff) == 0
-	  || bfd_bwrite ((PTR) (&buff), amount, abfd) != amount)
+      amount = bfd_coff_scnhsz(abfd);
+      if ((bfd_coff_swap_scnhdr_out(abfd, &section, &buff) == 0)
+	  || (bfd_bwrite((PTR)(&buff), amount, abfd) != amount))
 	return FALSE;
     }
 
@@ -901,61 +866,61 @@ xcoff64_write_object_contents (abfd)
     internal_f.f_flags |= F_EXEC;
 
   /* FIXME: this is wrong for PPC_PE!  */
-  if (bfd_little_endian (abfd))
+  if (bfd_little_endian(abfd))
     internal_f.f_flags |= F_AR32WR;
   else
     internal_f.f_flags |= F_AR32W;
 
   if ((abfd->flags & DYNAMIC) != 0)
     internal_f.f_flags |= F_SHROBJ;
-  if (bfd_get_section_by_name (abfd, _LOADER) != NULL)
+  if (bfd_get_section_by_name(abfd, _LOADER) != NULL)
     internal_f.f_flags |= F_DYNLOAD;
 
-  memset (&internal_a, 0, sizeof internal_a);
+  memset(&internal_a, 0, sizeof(internal_a));
 
-  internal_f.f_magic = bfd_xcoff_magic_number (abfd);
-  internal_a.magic = (abfd->flags & D_PAGED
+  internal_f.f_magic = bfd_xcoff_magic_number(abfd);
+  internal_a.magic = ((abfd->flags & D_PAGED)
 		      ? RS6K_AOUTHDR_ZMAGIC
-		      : (abfd->flags & WP_TEXT
+		      : ((abfd->flags & WP_TEXT)
 			 ? RS6K_AOUTHDR_NMAGIC
 			 : RS6K_AOUTHDR_OMAGIC));
 
   /* FIXME: Does anybody ever set this to another value?  */
   internal_a.vstamp = 0;
 
-  /* Now should write relocs, strings, syms.  */
-  obj_sym_filepos (abfd) = sym_base;
+  /* Now should write relocs, strings, syms: */
+  obj_sym_filepos(abfd) = sym_base;
 
   internal_f.f_symptr = 0;
   internal_f.f_nsyms = 0;
 
-  /* If bfd_get_symcount (abfd) != 0, then we are not using the COFF
+  /* If bfd_get_symcount(abfd) != 0, then we are not using the COFF
      backend linker, and obj_raw_syment_count is not valid until after
      coff_write_symbols is called.  */
-  if (bfd_get_symcount (abfd) != 0)
+  if (bfd_get_symcount(abfd) != 0)
     {
       int firstundef;
 
-      if (!coff_renumber_symbols (abfd, &firstundef))
+      if (!coff_renumber_symbols(abfd, &firstundef))
 	return FALSE;
-      coff_mangle_symbols (abfd);
-      if (! coff_write_symbols (abfd))
+      coff_mangle_symbols(abfd);
+      if (! coff_write_symbols(abfd))
 	return FALSE;
-      if (! coff_write_linenumbers (abfd))
+      if (! coff_write_linenumbers(abfd))
 	return FALSE;
-      if (! coff_write_relocs (abfd, firstundef))
+      if (! coff_write_relocs(abfd, firstundef))
 	return FALSE;
 
-      internal_f.f_symptr = sym_base;
-      internal_f.f_nsyms = bfd_get_symcount (abfd);
+      internal_f.f_symptr = (bfd_vma)sym_base;
+      internal_f.f_nsyms = (long)bfd_get_symcount(abfd);
     }
-  else if (obj_raw_syment_count (abfd) != 0)
+  else if (obj_raw_syment_count(abfd) != 0)
     {
-      internal_f.f_symptr = sym_base;
+      internal_f.f_symptr = (bfd_vma)sym_base;
 
       /* AIX appears to require that F_RELFLG not be set if there are
 	 local symbols but no relocations.  */
-      internal_f.f_flags &=~ F_RELFLG;
+      internal_f.f_flags &= (unsigned short)~F_RELFLG;
     }
   else
     {
@@ -965,40 +930,41 @@ xcoff64_write_object_contents (abfd)
   if (text_sec)
     {
       internal_a.tsize = text_sec->size;
-      internal_a.text_start = internal_a.tsize ? text_sec->vma : 0;
+      internal_a.text_start = (internal_a.tsize ? text_sec->vma : 0);
     }
 
   if (data_sec)
     {
       internal_a.dsize = data_sec->size;
-      internal_a.data_start = internal_a.dsize ? data_sec->vma : 0;
+      internal_a.data_start = (internal_a.dsize ? data_sec->vma : 0);
     }
 
   if (bss_sec)
     {
       internal_a.bsize = bss_sec->size;
-      if (internal_a.bsize && bss_sec->vma < internal_a.data_start)
+      if (internal_a.bsize && (bss_sec->vma < internal_a.data_start))
 	internal_a.data_start = bss_sec->vma;
     }
 
-  internal_a.entry = bfd_get_start_address (abfd);
-  internal_f.f_nsyms = obj_raw_syment_count (abfd);
+  internal_a.entry = bfd_get_start_address(abfd);
+  internal_f.f_nsyms = (long)obj_raw_syment_count(abfd);
 
-  if (xcoff_data (abfd)->full_aouthdr)
+  if (xcoff_data(abfd)->full_aouthdr)
     {
       bfd_vma toc;
       asection *loader_sec;
 
       internal_a.vstamp = 1;
 
-      internal_a.o_snentry = xcoff_data (abfd)->snentry;
+      internal_a.o_snentry = (short)xcoff_data(abfd)->snentry;
       if (internal_a.o_snentry == 0)
-	internal_a.entry = (bfd_vma) -1;
+	internal_a.entry = (bfd_vma)-1L;
 
       if (text_sec != NULL)
 	{
-	  internal_a.o_sntext = text_sec->target_index;
-	  internal_a.o_algntext = bfd_get_section_alignment (abfd, text_sec);
+	  internal_a.o_sntext = (short)text_sec->target_index;
+	  internal_a.o_algntext =
+            (short)bfd_get_section_alignment(abfd, text_sec);
 	}
       else
 	{
@@ -1008,8 +974,9 @@ xcoff64_write_object_contents (abfd)
 
       if (data_sec != NULL)
 	{
-	  internal_a.o_sndata = data_sec->target_index;
-	  internal_a.o_algndata = bfd_get_section_alignment (abfd, data_sec);
+	  internal_a.o_sndata = (short)data_sec->target_index;
+	  internal_a.o_algndata =
+            (short)bfd_get_section_alignment(abfd, data_sec);
 	}
       else
 	{
@@ -1017,105 +984,104 @@ xcoff64_write_object_contents (abfd)
 	  internal_a.o_algndata = 0;
 	}
 
-      loader_sec = bfd_get_section_by_name (abfd, ".loader");
+      loader_sec = bfd_get_section_by_name(abfd, ".loader");
       if (loader_sec != NULL)
-	internal_a.o_snloader = loader_sec->target_index;
+	internal_a.o_snloader = (short)loader_sec->target_index;
       else
 	internal_a.o_snloader = 0;
       if (bss_sec != NULL)
-	internal_a.o_snbss = bss_sec->target_index;
+	internal_a.o_snbss = (short)bss_sec->target_index;
       else
 	internal_a.o_snbss = 0;
 
-      toc = xcoff_data (abfd)->toc;
+      toc = xcoff_data(abfd)->toc;
       internal_a.o_toc = toc;
-      internal_a.o_sntoc = xcoff_data (abfd)->sntoc;
+      internal_a.o_sntoc = (short)xcoff_data(abfd)->sntoc;
 
-      internal_a.o_modtype = xcoff_data (abfd)->modtype;
-      if (xcoff_data (abfd)->cputype != -1)
-	internal_a.o_cputype = xcoff_data (abfd)->cputype;
+      internal_a.o_modtype = xcoff_data(abfd)->modtype;
+      if (xcoff_data(abfd)->cputype != -1)
+	internal_a.o_cputype = xcoff_data(abfd)->cputype;
       else
 	{
-	  switch (bfd_get_arch (abfd))
+	  switch (bfd_get_arch(abfd))
 	    {
 	    case bfd_arch_rs6000:
 	      internal_a.o_cputype = 4;
 	      break;
 	    case bfd_arch_powerpc:
-	      if (bfd_get_mach (abfd) == bfd_mach_ppc)
+	      if (bfd_get_mach(abfd) == bfd_mach_ppc)
 		internal_a.o_cputype = 3;
 	      else
 		internal_a.o_cputype = 1;
 	      break;
 	    default:
-	      abort ();
+	      abort();
 	    }
 	}
-      internal_a.o_maxstack = xcoff_data (abfd)->maxstack;
-      internal_a.o_maxdata = xcoff_data (abfd)->maxdata;
+      internal_a.o_maxstack = xcoff_data(abfd)->maxstack;
+      internal_a.o_maxdata = xcoff_data(abfd)->maxdata;
     }
 
-  if (bfd_seek (abfd, (file_ptr) 0, 0) != 0)
+  if (bfd_seek(abfd, (file_ptr)0L, 0) != 0)
     return FALSE;
 
   {
-    char * buff;
-    bfd_size_type amount = bfd_coff_filhsz (abfd);
+    char *buff;
+    bfd_size_type amount = bfd_coff_filhsz(abfd);
 
-    buff = bfd_malloc (amount);
+    buff = (char *)bfd_malloc(amount);
     if (buff == NULL)
       return FALSE;
 
-    bfd_coff_swap_filehdr_out (abfd, (PTR) &internal_f, (PTR) buff);
-    amount = bfd_bwrite ((PTR) buff, amount, abfd);
+    bfd_coff_swap_filehdr_out(abfd, (PTR)&internal_f, (PTR)buff);
+    amount = bfd_bwrite((PTR)buff, amount, abfd);
 
-    free (buff);
+    free(buff);
 
-    if (amount != bfd_coff_filhsz (abfd))
+    if (amount != bfd_coff_filhsz(abfd))
       return FALSE;
   }
 
   if (abfd->flags & EXEC_P)
     {
-      char * buff;
-      bfd_size_type amount = bfd_coff_aoutsz (abfd);
+      char *buff;
+      bfd_size_type amount = bfd_coff_aoutsz(abfd);
 
-      buff = bfd_malloc (amount);
+      buff = (char *)bfd_malloc(amount);
       if (buff == NULL)
 	return FALSE;
 
-      bfd_coff_swap_aouthdr_out (abfd, (PTR) &internal_a, (PTR) buff);
-      amount = bfd_bwrite ((PTR) buff, amount, abfd);
+      bfd_coff_swap_aouthdr_out(abfd, (PTR)&internal_a, (PTR)buff);
+      amount = bfd_bwrite((PTR)buff, amount, abfd);
 
-      free (buff);
+      free(buff);
 
-      if (amount != bfd_coff_aoutsz (abfd))
+      if (amount != bfd_coff_aoutsz(abfd))
 	return FALSE;
     }
+
+  if (long_section_names) {
+    ; /* do nothing; just silence '-Wunused-but-set-variable' */
+  }
 
   return TRUE;
 }
 
 static bfd_boolean
-xcoff64_reloc_type_br (input_bfd, input_section, output_bfd, rel, sym, howto,
-		       val, addend, relocation, contents)
-     bfd *input_bfd;
-     asection *input_section;
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     struct internal_reloc *rel;
-     struct internal_syment *sym ATTRIBUTE_UNUSED;
-     struct reloc_howto_struct *howto;
-     bfd_vma val;
-     bfd_vma addend;
-     bfd_vma *relocation;
-     bfd_byte *contents;
+xcoff64_reloc_type_br(bfd *input_bfd, asection *input_section,
+                      bfd *output_bfd ATTRIBUTE_UNUSED,
+                      struct internal_reloc *rel,
+                      struct internal_syment *sym ATTRIBUTE_UNUSED,
+                      struct reloc_howto_struct *howto, bfd_vma val,
+                      bfd_vma addend, bfd_vma *relocation,
+                      bfd_byte *contents)
 {
   struct xcoff_link_hash_entry *h;
 
   if (0 > rel->r_symndx)
     return FALSE;
 
-  h = obj_xcoff_sym_hashes (input_bfd)[rel->r_symndx];
+  h = obj_xcoff_sym_hashes(input_bfd)[rel->r_symndx];
 
   /* If we see an R_BR or R_RBR reloc which is jumping to global
      linkage code, and it is followed by an appropriate cror nop
@@ -1124,29 +1090,29 @@ xcoff64_reloc_type_br (input_bfd, input_section, output_bfd, rel, sym, howto,
      call is followed by a ld r2,40(r1), but the call is not
      going to global linkage code, we can replace the load with a
      cror.  */
-  if (NULL != h
-      && bfd_link_hash_defined == h->root.type
-      && rel->r_vaddr - input_section->vma + 8 <= input_section->size)
+  if ((NULL != h) && (bfd_link_hash_defined == h->root.type)
+      && ((rel->r_vaddr - input_section->vma + 8) <= input_section->size))
     {
       bfd_byte *pnext;
       unsigned long next;
 
-      pnext = contents + (rel->r_vaddr - input_section->vma) + 4;
-      next = bfd_get_32 (input_bfd, pnext);
+      pnext = (contents + (rel->r_vaddr - input_section->vma) + 4UL);
+      next = (unsigned long)bfd_get_32(input_bfd, pnext);
 
       /* The _ptrgl function is magic.  It is used by the AIX compiler to call
 	 a function through a pointer.  */
-      if (h->smclas == XMC_GL || strcmp (h->root.root.string, "._ptrgl") == 0)
+      if ((h->smclas == XMC_GL)
+          || (strcmp(h->root.root.string, "._ptrgl") == 0))
 	{
-	  if (next == 0x4def7b82			/* cror 15,15,15  */
-	      || next == 0x4ffffb82			/* cror 31,31,31  */
-	      || next == 0x60000000)			/* ori	r0,r0,0	  */
-	    bfd_put_32 (input_bfd, 0xe8410028, pnext);	/* ld	r2,40(r1) */
+	  if ((next == 0x4def7b82)			/* cror 15,15,15  */
+	      || (next == 0x4ffffb82)			/* cror 31,31,31  */
+	      || (next == 0x60000000))			/* ori	r0,r0,0	  */
+	    bfd_put_32(input_bfd, (bfd_vma)0xe8410028, pnext);	/* ld	r2,40(r1) */
 	}
       else
 	{
 	  if (next == 0xe8410028)			/* ld r2,40(r1)	  */
-	    bfd_put_32 (input_bfd, 0x60000000, pnext);	/* ori r0,r0,0	  */
+	    bfd_put_32(input_bfd, (bfd_vma)0x60000000, pnext);	/* ori r0,r0,0	  */
 	}
     }
   else if (NULL != h && bfd_link_hash_undefined == h->root.type)
@@ -1161,7 +1127,7 @@ xcoff64_reloc_type_br (input_bfd, input_section, output_bfd, rel, sym, howto,
     }
 
   howto->pc_relative = TRUE;
-  howto->src_mask &= ~3;
+  howto->src_mask &= (bfd_vma)~3;
   howto->dst_mask = howto->src_mask;
 
   /* A PC relative reloc includes the section address.  */
@@ -1177,23 +1143,18 @@ xcoff64_reloc_type_br (input_bfd, input_section, output_bfd, rel, sym, howto,
    See xcoff_ppc_relocation_section for more information. */
 
 bfd_boolean
-xcoff64_ppc_relocate_section (output_bfd, info, input_bfd,
-			      input_section, contents, relocs, syms,
-			      sections)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     struct internal_reloc *relocs;
-     struct internal_syment *syms;
-     asection **sections;
+xcoff64_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+                             bfd *input_bfd, asection *input_section,
+                             bfd_byte *contents,
+                             struct internal_reloc *relocs,
+                             struct internal_syment *syms,
+			     asection **sections)
 {
   struct internal_reloc *rel;
   struct internal_reloc *relend;
 
   rel = relocs;
-  relend = rel + input_section->reloc_count;
+  relend = (rel + input_section->reloc_count);
   for (; rel < relend; rel++)
     {
       long symndx;
@@ -1216,11 +1177,12 @@ xcoff64_ppc_relocate_section (output_bfd, info, input_bfd,
       /* howto */
       howto.type = rel->r_type;
       howto.rightshift = 0;
-      howto.bitsize = (rel->r_size & 0x3f) + 1;
-      howto.size = howto.bitsize > 16 ? (howto.bitsize > 32 ? 4 : 2) : 1;
+      howto.bitsize = ((rel->r_size & 0x3f) + 1U);
+      howto.size = ((howto.bitsize > 16)
+                    ? ((howto.bitsize > 32) ? 4 : 2) : 1);
       howto.pc_relative = FALSE;
       howto.bitpos = 0;
-      howto.complain_on_overflow = (rel->r_size & 0x80
+      howto.complain_on_overflow = ((rel->r_size & 0x80)
 				    ? complain_overflow_signed
 				    : complain_overflow_bitfield);
       howto.special_function = NULL;
@@ -1780,12 +1742,10 @@ reloc_howto_type xcoff64_howto_table[] =
 };
 
 void
-xcoff64_rtype2howto (relent, internal)
-     arelent *relent;
-     struct internal_reloc *internal;
+xcoff64_rtype2howto(arelent *relent, struct internal_reloc *internal)
 {
   if (internal->r_type > R_RBRC)
-    abort ();
+    abort();
 
   /* Default howto layout works most of the time */
   relent->howto = &xcoff64_howto_table[internal->r_type];
@@ -1814,14 +1774,13 @@ xcoff64_rtype2howto (relent, internal)
      for R_REF relocs.  */
   if (relent->howto->dst_mask != 0
       && (relent->howto->bitsize
-	  != ((unsigned int) internal->r_size & 0x3f) + 1))
-    abort ();
+	  != ((unsigned int)internal->r_size & 0x3f) + 1))
+    abort();
 }
 
 reloc_howto_type *
-xcoff64_reloc_type_lookup (abfd, code)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+xcoff64_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                          bfd_reloc_code_real_type code)
 {
   switch (code)
     {
@@ -1843,11 +1802,9 @@ xcoff64_reloc_type_lookup (abfd, code)
     }
 }
 
-/* Read in the armap of an XCOFF archive.  */
-
+/* Read in the armap of an XCOFF archive: */
 static bfd_boolean
-xcoff64_slurp_armap (abfd)
-     bfd *abfd;
+xcoff64_slurp_armap(bfd *abfd)
 {
   file_ptr off;
   size_t namlen;
@@ -1858,154 +1815,153 @@ xcoff64_slurp_armap (abfd)
   bfd_byte *p;
   file_ptr pos;
 
-  /* This is for the new format.  */
+  /* This is for the new format: */
   struct xcoff_ar_hdr_big hdr;
 
-  if (xcoff_ardata (abfd) == NULL)
+  if (xcoff_ardata(abfd) == NULL)
     {
-      bfd_has_map (abfd) = FALSE;
+      bfd_has_map(abfd) = FALSE;
       return TRUE;
     }
 
-  off = bfd_scan_vma (xcoff_ardata_big (abfd)->symoff64,
-		      (const char **) NULL, 10);
+  off = (file_ptr)bfd_scan_vma(xcoff_ardata_big(abfd)->symoff64,
+                               (const char **)NULL, 10);
   if (off == 0)
     {
-      bfd_has_map (abfd) = FALSE;
+      bfd_has_map(abfd) = FALSE;
       return TRUE;
     }
 
-  if (bfd_seek (abfd, off, SEEK_SET) != 0)
+  if (bfd_seek(abfd, off, SEEK_SET) != 0)
     return FALSE;
 
-  /* The symbol table starts with a normal archive header.  */
-  if (bfd_bread ((PTR) &hdr, (bfd_size_type) SIZEOF_AR_HDR_BIG, abfd)
+  /* The symbol table starts with a normal archive header: */
+  if (bfd_bread((PTR)&hdr, (bfd_size_type)SIZEOF_AR_HDR_BIG, abfd)
       != SIZEOF_AR_HDR_BIG)
     return FALSE;
 
-  /* Skip the name (normally empty).  */
-  namlen = strtol (hdr.namlen, (char **) NULL, 10);
-  pos = ((namlen + 1) & ~(size_t) 1) + SXCOFFARFMAG;
-  if (bfd_seek (abfd, pos, SEEK_CUR) != 0)
+  /* Skip the name (normally empty): */
+  namlen = (size_t)strtol(hdr.namlen, (char **)NULL, 10);
+  pos = ((namlen + 1) & ~(size_t)1UL) + SXCOFFARFMAG;
+  if (bfd_seek(abfd, pos, SEEK_CUR) != 0)
     return FALSE;
 
-  sz = bfd_scan_vma (hdr.size, (const char **) NULL, 10);
+  sz = bfd_scan_vma(hdr.size, (const char **)NULL, 10);
 
-  /* Read in the entire symbol table.  */
-  contents = (bfd_byte *) bfd_alloc (abfd, sz);
+  /* Read in the entire symbol table: */
+  contents = (bfd_byte *)bfd_alloc(abfd, sz);
   if (contents == NULL)
     return FALSE;
-  if (bfd_bread ((PTR) contents, sz, abfd) != sz)
+  if (bfd_bread((PTR)contents, sz, abfd) != sz)
     return FALSE;
 
-  /* The symbol table starts with an eight byte count.  */
-  c = H_GET_64 (abfd, contents);
+  /* The symbol table starts with an eight byte count: */
+  c = H_GET_64(abfd, contents);
 
-  if (c * 8 >= sz)
+  if ((c * 8) >= sz)
     {
-      bfd_set_error (bfd_error_bad_value);
+      bfd_set_error(bfd_error_bad_value);
       return FALSE;
     }
   amt = c;
-  amt *= sizeof (carsym);
-  bfd_ardata (abfd)->symdefs = (carsym *) bfd_alloc (abfd, amt);
-  if (bfd_ardata (abfd)->symdefs == NULL)
+  amt *= sizeof(carsym);
+  bfd_ardata(abfd)->symdefs = (carsym *)bfd_alloc(abfd, amt);
+  if (bfd_ardata(abfd)->symdefs == NULL)
     return FALSE;
 
-  /* After the count comes a list of eight byte file offsets.  */
-  for (i = 0, arsym = bfd_ardata (abfd)->symdefs, p = contents + 8;
+  /* After the count comes a list of eight byte file offsets: */
+  for (i = 0, arsym = bfd_ardata(abfd)->symdefs, p = contents + 8;
        i < c;
        ++i, ++arsym, p += 8)
-    arsym->file_offset = H_GET_64 (abfd, p);
+    arsym->file_offset = (file_ptr)H_GET_64(abfd, p);
 
-  /* After the file offsets come null terminated symbol names.  */
-  cend = contents + sz;
-  for (i = 0, arsym = bfd_ardata (abfd)->symdefs;
+  /* After the file offsets come null terminated symbol names: */
+  cend = (contents + sz);
+  for (i = 0, arsym = bfd_ardata(abfd)->symdefs;
        i < c;
-       ++i, ++arsym, p += strlen ((char *) p) + 1)
+       ++i, ++arsym, p += (strlen((char *)p) + 1UL))
     {
       if (p >= cend)
 	{
-	  bfd_set_error (bfd_error_bad_value);
+	  bfd_set_error(bfd_error_bad_value);
 	  return FALSE;
 	}
-      arsym->name = (char *) p;
+      arsym->name = (char *)p;
     }
 
-  bfd_ardata (abfd)->symdef_count = c;
-  bfd_has_map (abfd) = TRUE;
+  bfd_ardata(abfd)->symdef_count = (symindex)c;
+  bfd_has_map(abfd) = TRUE;
 
   return TRUE;
 }
 
 
-/* See if this is an NEW XCOFF archive.  */
-
+/* See if this is an NEW XCOFF archive: */
 static const bfd_target *
-xcoff64_archive_p (abfd)
-     bfd *abfd;
+xcoff64_archive_p(bfd *abfd)
 {
   struct artdata *tdata_hold;
   char magic[SXCOFFARMAG];
-  /* This is the new format.  */
+  /* This is the new format: */
   struct xcoff_ar_file_hdr_big hdr;
   bfd_size_type amt = SXCOFFARMAG;
 
-  if (bfd_bread ((PTR) magic, amt, abfd) != amt)
+  if (bfd_bread((PTR)magic, amt, abfd) != amt)
     {
-      if (bfd_get_error () != bfd_error_system_call)
-	bfd_set_error (bfd_error_wrong_format);
+      if (bfd_get_error() != bfd_error_system_call)
+	bfd_set_error(bfd_error_wrong_format);
       return NULL;
     }
 
-  if (strncmp (magic, XCOFFARMAGBIG, SXCOFFARMAG) != 0)
+  if (strncmp(magic, XCOFFARMAGBIG, (size_t)SXCOFFARMAG) != 0)
     {
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return NULL;
     }
 
-  /* Copy over the magic string.  */
-  memcpy (hdr.magic, magic, SXCOFFARMAG);
+  /* Copy over the magic string: */
+  memcpy(hdr.magic, magic, (size_t)SXCOFFARMAG);
 
-  /* Now read the rest of the file header.  */
-  amt = SIZEOF_AR_FILE_HDR_BIG - SXCOFFARMAG;
-  if (bfd_bread ((PTR) &hdr.memoff, amt, abfd) != amt)
+  /* Now read the rest of the file header: */
+  amt = (SIZEOF_AR_FILE_HDR_BIG - SXCOFFARMAG);
+  if (bfd_bread((PTR)&hdr.memoff, amt, abfd) != amt)
     {
-      if (bfd_get_error () != bfd_error_system_call)
-	bfd_set_error (bfd_error_wrong_format);
+      if (bfd_get_error() != bfd_error_system_call)
+	bfd_set_error(bfd_error_wrong_format);
       return NULL;
     }
 
-  tdata_hold = bfd_ardata (abfd);
+  tdata_hold = bfd_ardata(abfd);
 
-  amt = sizeof (struct artdata);
-  bfd_ardata (abfd) = (struct artdata *) bfd_zalloc (abfd, amt);
-  if (bfd_ardata (abfd) == (struct artdata *) NULL)
+  amt = sizeof(struct artdata);
+  bfd_ardata(abfd) = (struct artdata *)bfd_zalloc(abfd, amt);
+  if (bfd_ardata(abfd) == (struct artdata *)NULL)
     goto error_ret_restore;
 
-  /* Already cleared by bfd_zalloc above.
-     bfd_ardata (abfd)->cache = NULL;
-     bfd_ardata (abfd)->archive_head = NULL;
-     bfd_ardata (abfd)->symdefs = NULL;
-     bfd_ardata (abfd)->extended_names = NULL;
-     bfd_ardata (abfd)->extended_names_size = 0;  */
-  bfd_ardata (abfd)->first_file_filepos = bfd_scan_vma (hdr.firstmemoff,
-							(const char **) NULL,
-							10);
+  /* Already cleared by bfd_zalloc above: */
+#ifdef NOT_ACTUALLY_CLEARED_BY_BFD_ZALLOC_ABOVE
+  bfd_ardata(abfd)->cache = NULL;
+  bfd_ardata(abfd)->archive_head = NULL;
+  bfd_ardata(abfd)->symdefs = NULL;
+  bfd_ardata(abfd)->extended_names = NULL;
+  bfd_ardata(abfd)->extended_names_size = 0;
+#endif /* NOT_ACTUALLY_CLEARED_BY_BFD_ZALLOC_ABOVE */
+  bfd_ardata(abfd)->first_file_filepos =
+    (file_ptr)bfd_scan_vma(hdr.firstmemoff, (const char **)NULL, 10);
 
   amt = SIZEOF_AR_FILE_HDR_BIG;
-  bfd_ardata (abfd)->tdata = bfd_zalloc (abfd, amt);
-  if (bfd_ardata (abfd)->tdata == NULL)
+  bfd_ardata(abfd)->tdata = bfd_zalloc(abfd, amt);
+  if (bfd_ardata(abfd)->tdata == NULL)
     goto error_ret;
 
-  memcpy (bfd_ardata (abfd)->tdata, &hdr, SIZEOF_AR_FILE_HDR_BIG);
+  memcpy(bfd_ardata(abfd)->tdata, &hdr, (size_t)SIZEOF_AR_FILE_HDR_BIG);
 
   if (! xcoff64_slurp_armap (abfd))
     {
     error_ret:
-      bfd_release (abfd, bfd_ardata (abfd));
+      bfd_release(abfd, bfd_ardata(abfd));
     error_ret_restore:
-      bfd_ardata (abfd) = tdata_hold;
+      bfd_ardata(abfd) = tdata_hold;
       return NULL;
     }
 
@@ -2013,75 +1969,68 @@ xcoff64_archive_p (abfd)
 }
 
 
-/* Open the next element in an XCOFF archive.  */
-
+/* Open the next element in an XCOFF archive: */
 static bfd *
-xcoff64_openr_next_archived_file (archive, last_file)
-     bfd *archive;
-     bfd *last_file;
+xcoff64_openr_next_archived_file(bfd *archive, bfd *last_file)
 {
   bfd_vma filestart;
 
-  if ((xcoff_ardata (archive) == NULL)
-      || ! xcoff_big_format_p (archive))
+  if ((xcoff_ardata(archive) == NULL)
+      || ! xcoff_big_format_p(archive))
     {
-      bfd_set_error (bfd_error_invalid_operation);
+      bfd_set_error(bfd_error_invalid_operation);
       return NULL;
     }
 
   if (last_file == NULL)
     {
-      filestart = bfd_ardata (archive)->first_file_filepos;
+      filestart = (bfd_vma)bfd_ardata(archive)->first_file_filepos;
     }
   else
     {
-      filestart = bfd_scan_vma (arch_xhdr_big (last_file)->nextoff,
-				(const char **) NULL, 10);
+      filestart = bfd_scan_vma(arch_xhdr_big(last_file)->nextoff,
+                               (const char **)NULL, 10);
     }
 
-  if (filestart == 0
-      || filestart == bfd_scan_vma (xcoff_ardata_big (archive)->memoff,
-				    (const char **) NULL, 10)
-      || filestart == bfd_scan_vma (xcoff_ardata_big (archive)->symoff,
-				    (const char **) NULL, 10))
+  if ((filestart == 0)
+      || (filestart == bfd_scan_vma(xcoff_ardata_big(archive)->memoff,
+                                    (const char **)NULL, 10))
+      || (filestart == bfd_scan_vma(xcoff_ardata_big(archive)->symoff,
+                                    (const char **)NULL, 10)))
     {
-      bfd_set_error (bfd_error_no_more_archived_files);
+      bfd_set_error(bfd_error_no_more_archived_files);
       return NULL;
     }
 
-  return _bfd_get_elt_at_filepos (archive, (file_ptr) filestart);
+  return _bfd_get_elt_at_filepos(archive, (file_ptr)filestart);
 }
 
 /* We can't use the usual coff_sizeof_headers routine, because AIX
    always uses an a.out header.  */
 
 static int
-xcoff64_sizeof_headers (abfd, reloc)
-     bfd *abfd;
-     bfd_boolean reloc ATTRIBUTE_UNUSED;
+xcoff64_sizeof_headers(bfd *abfd, bfd_boolean reloc ATTRIBUTE_UNUSED)
 {
   int size;
 
-  size = bfd_coff_filhsz (abfd);
+  size = (int)bfd_coff_filhsz(abfd);
 
   /* Don't think the small aout header can be used since some of the
      old elements have been reordered past the end of the old coff
      small aout size.  */
 
-  if (xcoff_data (abfd)->full_aouthdr)
-    size += bfd_coff_aoutsz (abfd);
+  if (xcoff_data(abfd)->full_aouthdr)
+    size += (int)bfd_coff_aoutsz(abfd);
 
-  size += abfd->section_count * bfd_coff_scnhsz (abfd);
+  size += (int)(abfd->section_count * bfd_coff_scnhsz(abfd));
   return size;
 }
 
 
 
 static asection *
-xcoff64_create_csect_from_smclas (abfd, aux, symbol_name)
-     bfd *abfd;
-     union internal_auxent *aux;
-     const char *symbol_name;
+xcoff64_create_csect_from_smclas(bfd *abfd, union internal_auxent *aux,
+                                 const char *symbol_name)
 {
   asection *return_value = NULL;
 
@@ -2108,67 +2057,58 @@ xcoff64_create_csect_from_smclas (abfd, aux, symbol_name)
       (*_bfd_error_handler)
 	(_("%B: symbol `%s' has unrecognized smclas %d"),
 	 abfd, symbol_name, aux->x_csect.x_smclas);
-      bfd_set_error (bfd_error_bad_value);
+      bfd_set_error(bfd_error_bad_value);
     }
 
   return return_value;
 }
 
 static bfd_boolean
-xcoff64_is_lineno_count_overflow (abfd, value)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_vma value ATTRIBUTE_UNUSED;
+xcoff64_is_lineno_count_overflow(bfd *abfd ATTRIBUTE_UNUSED,
+                                 bfd_vma value ATTRIBUTE_UNUSED)
 {
   return FALSE;
 }
 
 static bfd_boolean
-xcoff64_is_reloc_count_overflow (abfd, value)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_vma value ATTRIBUTE_UNUSED;
+xcoff64_is_reloc_count_overflow(bfd *abfd ATTRIBUTE_UNUSED,
+                                bfd_vma value ATTRIBUTE_UNUSED)
 {
   return FALSE;
 }
 
 static bfd_vma
-xcoff64_loader_symbol_offset (abfd, ldhdr)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     struct internal_ldhdr *ldhdr;
+xcoff64_loader_symbol_offset(bfd *abfd ATTRIBUTE_UNUSED,
+                             struct internal_ldhdr *ldhdr)
 {
   return (ldhdr->l_symoff);
 }
 
 static bfd_vma
-xcoff64_loader_reloc_offset (abfd, ldhdr)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     struct internal_ldhdr *ldhdr;
+xcoff64_loader_reloc_offset(bfd *abfd ATTRIBUTE_UNUSED,
+                            struct internal_ldhdr *ldhdr)
 {
   return (ldhdr->l_rldoff);
 }
 
 static bfd_boolean
-xcoff64_bad_format_hook (abfd, filehdr)
-     bfd * abfd;
-     PTR filehdr;
+xcoff64_bad_format_hook(bfd *abfd, PTR filehdr)
 {
-  struct internal_filehdr *internal_f = (struct internal_filehdr *) filehdr;
+  struct internal_filehdr *internal_f = (struct internal_filehdr *)filehdr;
 
-  /* Check flavor first.  */
-  if (bfd_get_flavour (abfd) != bfd_target_xcoff_flavour)
+  /* Check flavor first: */
+  if (bfd_get_flavour(abfd) != bfd_target_xcoff_flavour)
     return FALSE;
 
-  if (bfd_xcoff_magic_number (abfd) != internal_f->f_magic)
+  if (bfd_xcoff_magic_number(abfd) != internal_f->f_magic)
     return FALSE;
 
   return TRUE;
 }
 
 static bfd_boolean
-xcoff64_generate_rtinit (abfd, init, fini, rtld)
-     bfd *abfd;
-     const char *init;
-     const char *fini;
-     bfd_boolean rtld;
+xcoff64_generate_rtinit(bfd *abfd, const char *init, const char *fini,
+                        bfd_boolean rtld)
 {
   bfd_byte filehdr_ext[FILHSZ];
   bfd_byte scnhdr_ext[SCNHSZ * 3];
@@ -2194,16 +2134,16 @@ xcoff64_generate_rtinit (abfd, init, fini, rtld)
   char *rtinit_name = "__rtinit";
   char *rtld_name = "__rtld";
 
-  if (! bfd_xcoff_rtinit_size (abfd))
+  if (! bfd_xcoff_rtinit_size(abfd))
     return FALSE;
 
-  initsz = (init == NULL ? 0 : 1 + strlen (init));
-  finisz = (fini == NULL ? 0 : 1 + strlen (fini));
+  initsz = ((init == NULL) ? 0UL : (1UL + strlen(init)));
+  finisz = ((fini == NULL) ? 0UL : (1UL + strlen(fini)));
 
-  /* File header.  */
-  memset (filehdr_ext, 0, FILHSZ);
-  memset (&filehdr, 0, sizeof (struct internal_filehdr));
-  filehdr.f_magic = bfd_xcoff_magic_number (abfd);
+  /* File header: */
+  memset(filehdr_ext, 0, (size_t)FILHSZ);
+  memset(&filehdr, 0, sizeof(struct internal_filehdr));
+  filehdr.f_magic = bfd_xcoff_magic_number(abfd);
   filehdr.f_nscns = 3;
   filehdr.f_timdat = 0;
   filehdr.f_nsyms = 0;  /* at least 6, no more than 8 */
@@ -2211,12 +2151,12 @@ xcoff64_generate_rtinit (abfd, init, fini, rtld)
   filehdr.f_opthdr = 0;
   filehdr.f_flags = 0;
 
-  /* Section headers.  */
-  memset (scnhdr_ext, 0, 3 * SCNHSZ);
+  /* Section headers: */
+  memset(scnhdr_ext, 0, (size_t)(3UL * SCNHSZ));
 
-  /* Text.  */
-  memset (&text_scnhdr, 0, sizeof (struct internal_scnhdr));
-  memcpy (text_scnhdr.s_name, text_name, strlen (text_name));
+  /* Text: */
+  memset(&text_scnhdr, 0, sizeof(struct internal_scnhdr));
+  memcpy(text_scnhdr.s_name, text_name, strlen(text_name));
   text_scnhdr.s_paddr = 0;
   text_scnhdr.s_vaddr = 0;
   text_scnhdr.s_size = 0;
@@ -2227,13 +2167,13 @@ xcoff64_generate_rtinit (abfd, init, fini, rtld)
   text_scnhdr.s_nlnno = 0;
   text_scnhdr.s_flags = STYP_TEXT;
 
-  /* Data.  */
-  memset (&data_scnhdr, 0, sizeof (struct internal_scnhdr));
-  memcpy (data_scnhdr.s_name, data_name, strlen (data_name));
+  /* Data: */
+  memset(&data_scnhdr, 0, sizeof(struct internal_scnhdr));
+  memcpy(data_scnhdr.s_name, data_name, strlen(data_name));
   data_scnhdr.s_paddr = 0;
   data_scnhdr.s_vaddr = 0;
   data_scnhdr.s_size = 0;    /* set below */
-  data_scnhdr.s_scnptr = FILHSZ + 3 * SCNHSZ;
+  data_scnhdr.s_scnptr = (FILHSZ + 3 * SCNHSZ);
   data_scnhdr.s_relptr = 0;  /* set below */
   data_scnhdr.s_lnnoptr = 0;
   data_scnhdr.s_nreloc = 0;  /* either 1 or 2 */
@@ -2241,8 +2181,8 @@ xcoff64_generate_rtinit (abfd, init, fini, rtld)
   data_scnhdr.s_flags = STYP_DATA;
 
   /* Bss.  */
-  memset (&bss_scnhdr, 0, sizeof (struct internal_scnhdr));
-  memcpy (bss_scnhdr.s_name, bss_name, strlen (bss_name));
+  memset(&bss_scnhdr, 0, sizeof(struct internal_scnhdr));
+  memcpy(bss_scnhdr.s_name, bss_name, strlen(bss_name));
   bss_scnhdr.s_paddr = 0; /* set below */
   bss_scnhdr.s_vaddr = 0; /* set below */
   bss_scnhdr.s_size = 0;  /* set below */
@@ -2279,52 +2219,52 @@ xcoff64_generate_rtinit (abfd, init, fini, rtld)
      0x0058	      init name
      0x0058 + initsz  fini name */
 
-  data_buffer_size = 0x0058 + initsz + finisz;
-  data_buffer_size = (data_buffer_size + 7) &~ (bfd_size_type) 7;
+  data_buffer_size = (0x0058 + initsz + finisz);
+  data_buffer_size = ((data_buffer_size + 7) & ~(bfd_size_type)7UL);
   data_buffer = NULL;
-  data_buffer = (bfd_byte *) bfd_zmalloc (data_buffer_size);
+  data_buffer = (bfd_byte *)bfd_zmalloc(data_buffer_size);
   if (data_buffer == NULL)
     return FALSE;
 
   if (initsz)
     {
       val = 0x18;
-      bfd_put_32 (abfd, val, &data_buffer[0x08]);
+      bfd_put_32(abfd, val, &data_buffer[0x08]);
       val = 0x58;
-      bfd_put_32 (abfd, val, &data_buffer[0x20]);
-      memcpy (&data_buffer[val], init, initsz);
+      bfd_put_32(abfd, val, &data_buffer[0x20]);
+      memcpy(&data_buffer[val], init, initsz);
     }
 
   if (finisz)
     {
       val = 0x38;
-      bfd_put_32 (abfd, val, &data_buffer[0x0C]);
-      val = 0x58 + initsz;
-      bfd_put_32 (abfd, val, &data_buffer[0x40]);
-      memcpy (&data_buffer[val], fini, finisz);
+      bfd_put_32(abfd, val, &data_buffer[0x0C]);
+      val = (0x58 + initsz);
+      bfd_put_32(abfd, val, &data_buffer[0x40]);
+      memcpy(&data_buffer[val], fini, finisz);
     }
 
   val = 0x10;
-  bfd_put_32 (abfd, val, &data_buffer[0x10]);
+  bfd_put_32(abfd, val, &data_buffer[0x10]);
   data_scnhdr.s_size = data_buffer_size;
   bss_scnhdr.s_paddr = bss_scnhdr.s_vaddr = data_scnhdr.s_size;
 
-  /* String table.  */
+  /* String table: */
   string_table_size = 4;
-  string_table_size += strlen (data_name) + 1;
-  string_table_size += strlen (rtinit_name) + 1;
+  string_table_size += (strlen(data_name) + 1UL);
+  string_table_size += (strlen(rtinit_name) + 1UL);
   string_table_size += initsz;
   string_table_size += finisz;
   if (rtld)
-    string_table_size += strlen (rtld_name) + 1;
+    string_table_size += (strlen(rtld_name) + 1UL);
 
-  string_table = (bfd_byte *) bfd_zmalloc (string_table_size);
+  string_table = (bfd_byte *)bfd_zmalloc(string_table_size);
   if (string_table == NULL)
     return FALSE;
 
   val = string_table_size;
-  bfd_put_32 (abfd, val, &string_table[0]);
-  st_tmp = string_table + 4;
+  bfd_put_32(abfd, val, &string_table[0]);
+  st_tmp = (string_table + 4);
 
   /* symbols
      0. .data csect
@@ -2332,104 +2272,104 @@ xcoff64_generate_rtinit (abfd, init, fini, rtld)
      4. init function
      6. fini function
      8. __rtld  */
-  memset (syment_ext, 0, 10 * SYMESZ);
-  memset (reloc_ext, 0, 3 * RELSZ);
+  memset(syment_ext, 0, (size_t)(10UL * SYMESZ));
+  memset(reloc_ext, 0, (size_t)(3UL * RELSZ));
 
   /* .data csect */
-  memset (&syment, 0, sizeof (struct internal_syment));
-  memset (&auxent, 0, sizeof (union internal_auxent));
+  memset(&syment, 0, sizeof(struct internal_syment));
+  memset(&auxent, 0, sizeof(union internal_auxent));
 
-  syment._n._n_n._n_offset = st_tmp - string_table;
-  memcpy (st_tmp, data_name, strlen (data_name));
-  st_tmp += strlen (data_name) + 1;
+  syment._n._n_n._n_offset = (st_tmp - string_table);
+  memcpy(st_tmp, data_name, strlen(data_name));
+  st_tmp += (strlen(data_name) + 1UL);
 
   syment.n_scnum = 2;
   syment.n_sclass = C_HIDEXT;
   syment.n_numaux = 1;
-  auxent.x_csect.x_scnlen.l = data_buffer_size;
-  auxent.x_csect.x_smtyp = 3 << 3 | XTY_SD;
+  auxent.x_csect.x_scnlen.l = (bfd_signed_vma)data_buffer_size;
+  auxent.x_csect.x_smtyp = (3 << 3 | XTY_SD);
   auxent.x_csect.x_smclas = XMC_RW;
-  bfd_coff_swap_sym_out (abfd, &syment,
-			 &syment_ext[filehdr.f_nsyms * SYMESZ]);
-  bfd_coff_swap_aux_out (abfd, &auxent, syment.n_type, syment.n_sclass, 0,
-			 syment.n_numaux,
-			 &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
+  bfd_coff_swap_sym_out(abfd, &syment,
+                        &syment_ext[filehdr.f_nsyms * SYMESZ]);
+  bfd_coff_swap_aux_out(abfd, &auxent, syment.n_type, syment.n_sclass, 0,
+                        syment.n_numaux,
+                        &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
   filehdr.f_nsyms += 2;
 
   /* __rtinit */
-  memset (&syment, 0, sizeof (struct internal_syment));
-  memset (&auxent, 0, sizeof (union internal_auxent));
-  syment._n._n_n._n_offset = st_tmp - string_table;
-  memcpy (st_tmp, rtinit_name, strlen (rtinit_name));
-  st_tmp += strlen (rtinit_name) + 1;
+  memset(&syment, 0, sizeof(struct internal_syment));
+  memset(&auxent, 0, sizeof(union internal_auxent));
+  syment._n._n_n._n_offset = (st_tmp - string_table);
+  memcpy(st_tmp, rtinit_name, strlen(rtinit_name));
+  st_tmp += (strlen(rtinit_name) + 1UL);
 
   syment.n_scnum = 2;
   syment.n_sclass = C_EXT;
   syment.n_numaux = 1;
   auxent.x_csect.x_smtyp = XTY_LD;
   auxent.x_csect.x_smclas = XMC_RW;
-  bfd_coff_swap_sym_out (abfd, &syment,
-			 &syment_ext[filehdr.f_nsyms * SYMESZ]);
-  bfd_coff_swap_aux_out (abfd, &auxent, syment.n_type, syment.n_sclass, 0,
-			 syment.n_numaux,
-			 &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
+  bfd_coff_swap_sym_out(abfd, &syment,
+                        &syment_ext[filehdr.f_nsyms * SYMESZ]);
+  bfd_coff_swap_aux_out(abfd, &auxent, syment.n_type, syment.n_sclass, 0,
+                        syment.n_numaux,
+                        &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
   filehdr.f_nsyms += 2;
 
-  /* Init.  */
+  /* Init: */
   if (initsz)
     {
-      memset (&syment, 0, sizeof (struct internal_syment));
-      memset (&auxent, 0, sizeof (union internal_auxent));
+      memset(&syment, 0, sizeof(struct internal_syment));
+      memset(&auxent, 0, sizeof(union internal_auxent));
 
-      syment._n._n_n._n_offset = st_tmp - string_table;
-      memcpy (st_tmp, init, initsz);
+      syment._n._n_n._n_offset = (st_tmp - string_table);
+      memcpy(st_tmp, init, initsz);
       st_tmp += initsz;
 
       syment.n_sclass = C_EXT;
       syment.n_numaux = 1;
-      bfd_coff_swap_sym_out (abfd, &syment,
-			     &syment_ext[filehdr.f_nsyms * SYMESZ]);
-      bfd_coff_swap_aux_out (abfd, &auxent, syment.n_type, syment.n_sclass, 0,
-			     syment.n_numaux,
-			     &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
-      /* Reloc.  */
-      memset (&reloc, 0, sizeof (struct internal_reloc));
+      bfd_coff_swap_sym_out(abfd, &syment,
+			    &syment_ext[filehdr.f_nsyms * SYMESZ]);
+      bfd_coff_swap_aux_out(abfd, &auxent, syment.n_type, syment.n_sclass,
+                            0, syment.n_numaux,
+			    &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
+      /* Reloc: */
+      memset(&reloc, 0, sizeof(struct internal_reloc));
       reloc.r_vaddr = 0x0018;
       reloc.r_symndx = filehdr.f_nsyms;
       reloc.r_type = R_POS;
       reloc.r_size = 63;
-      bfd_coff_swap_reloc_out (abfd, &reloc, &reloc_ext[0]);
+      bfd_coff_swap_reloc_out(abfd, &reloc, &reloc_ext[0]);
 
       filehdr.f_nsyms += 2;
       data_scnhdr.s_nreloc += 1;
     }
 
-  /* Finit.  */
+  /* Finit: */
   if (finisz)
     {
-      memset (&syment, 0, sizeof (struct internal_syment));
-      memset (&auxent, 0, sizeof (union internal_auxent));
+      memset(&syment, 0, sizeof(struct internal_syment));
+      memset(&auxent, 0, sizeof(union internal_auxent));
 
-      syment._n._n_n._n_offset = st_tmp - string_table;
-      memcpy (st_tmp, fini, finisz);
+      syment._n._n_n._n_offset = (st_tmp - string_table);
+      memcpy(st_tmp, fini, finisz);
       st_tmp += finisz;
 
       syment.n_sclass = C_EXT;
       syment.n_numaux = 1;
-      bfd_coff_swap_sym_out (abfd, &syment,
-			     &syment_ext[filehdr.f_nsyms * SYMESZ]);
-      bfd_coff_swap_aux_out (abfd, &auxent, syment.n_type, syment.n_sclass, 0,
-			     syment.n_numaux,
-			     &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
+      bfd_coff_swap_sym_out(abfd, &syment,
+			    &syment_ext[filehdr.f_nsyms * SYMESZ]);
+      bfd_coff_swap_aux_out(abfd, &auxent, syment.n_type, syment.n_sclass,
+                            0, syment.n_numaux,
+			    &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
 
-      /* Reloc.  */
-      memset (&reloc, 0, sizeof (struct internal_reloc));
+      /* Reloc: */
+      memset(&reloc, 0, sizeof(struct internal_reloc));
       reloc.r_vaddr = 0x0038;
       reloc.r_symndx = filehdr.f_nsyms;
       reloc.r_type = R_POS;
       reloc.r_size = 63;
-      bfd_coff_swap_reloc_out (abfd, &reloc,
-			       &reloc_ext[data_scnhdr.s_nreloc * RELSZ]);
+      bfd_coff_swap_reloc_out(abfd, &reloc,
+			      &reloc_ext[data_scnhdr.s_nreloc * RELSZ]);
 
       filehdr.f_nsyms += 2;
       data_scnhdr.s_nreloc += 1;
@@ -2437,29 +2377,29 @@ xcoff64_generate_rtinit (abfd, init, fini, rtld)
 
   if (rtld)
     {
-      memset (&syment, 0, sizeof (struct internal_syment));
-      memset (&auxent, 0, sizeof (union internal_auxent));
+      memset(&syment, 0, sizeof(struct internal_syment));
+      memset(&auxent, 0, sizeof(union internal_auxent));
 
-      syment._n._n_n._n_offset = st_tmp - string_table;
-      memcpy (st_tmp, rtld_name, strlen (rtld_name));
-      st_tmp += strlen (rtld_name) + 1;
+      syment._n._n_n._n_offset = (st_tmp - string_table);
+      memcpy(st_tmp, rtld_name, strlen(rtld_name));
+      st_tmp += (strlen(rtld_name) + 1UL);
 
       syment.n_sclass = C_EXT;
       syment.n_numaux = 1;
-      bfd_coff_swap_sym_out (abfd, &syment,
-			     &syment_ext[filehdr.f_nsyms * SYMESZ]);
-      bfd_coff_swap_aux_out (abfd, &auxent, syment.n_type, syment.n_sclass, 0,
-			     syment.n_numaux,
-			     &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
+      bfd_coff_swap_sym_out(abfd, &syment,
+			    &syment_ext[filehdr.f_nsyms * SYMESZ]);
+      bfd_coff_swap_aux_out(abfd, &auxent, syment.n_type, syment.n_sclass,
+                            0, syment.n_numaux,
+			    &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
 
-      /* Reloc.  */
-      memset (&reloc, 0, sizeof (struct internal_reloc));
+      /* Reloc: */
+      memset(&reloc, 0, sizeof(struct internal_reloc));
       reloc.r_vaddr = 0x0000;
       reloc.r_symndx = filehdr.f_nsyms;
       reloc.r_type = R_POS;
       reloc.r_size = 63;
-      bfd_coff_swap_reloc_out (abfd, &reloc,
-			       &reloc_ext[data_scnhdr.s_nreloc * RELSZ]);
+      bfd_coff_swap_reloc_out(abfd, &reloc,
+			      &reloc_ext[data_scnhdr.s_nreloc * RELSZ]);
 
       filehdr.f_nsyms += 2;
       data_scnhdr.s_nreloc += 1;
@@ -2467,28 +2407,28 @@ xcoff64_generate_rtinit (abfd, init, fini, rtld)
       bss_scnhdr.s_size = 0;
     }
 
-  data_scnhdr.s_relptr = data_scnhdr.s_scnptr + data_buffer_size;
-  filehdr.f_symptr = data_scnhdr.s_relptr + data_scnhdr.s_nreloc * RELSZ;
+  data_scnhdr.s_relptr = (data_scnhdr.s_scnptr + data_buffer_size);
+  filehdr.f_symptr = (data_scnhdr.s_relptr + data_scnhdr.s_nreloc * RELSZ);
 
-  bfd_coff_swap_filehdr_out (abfd, &filehdr, filehdr_ext);
-  bfd_bwrite (filehdr_ext, FILHSZ, abfd);
-  bfd_coff_swap_scnhdr_out (abfd, &text_scnhdr, &scnhdr_ext[SCNHSZ * 0]);
-  bfd_coff_swap_scnhdr_out (abfd, &data_scnhdr, &scnhdr_ext[SCNHSZ * 1]);
-  bfd_coff_swap_scnhdr_out (abfd, &bss_scnhdr, &scnhdr_ext[SCNHSZ * 2]);
-  bfd_bwrite (scnhdr_ext, 3 * SCNHSZ, abfd);
-  bfd_bwrite (data_buffer, data_buffer_size, abfd);
-  bfd_bwrite (reloc_ext, data_scnhdr.s_nreloc * RELSZ, abfd);
-  bfd_bwrite (syment_ext, filehdr.f_nsyms * SYMESZ, abfd);
-  bfd_bwrite (string_table, string_table_size, abfd);
+  bfd_coff_swap_filehdr_out(abfd, &filehdr, filehdr_ext);
+  bfd_bwrite(filehdr_ext, (bfd_size_type)FILHSZ, abfd);
+  bfd_coff_swap_scnhdr_out(abfd, &text_scnhdr, &scnhdr_ext[SCNHSZ * 0]);
+  bfd_coff_swap_scnhdr_out(abfd, &data_scnhdr, &scnhdr_ext[SCNHSZ * 1]);
+  bfd_coff_swap_scnhdr_out(abfd, &bss_scnhdr, &scnhdr_ext[SCNHSZ * 2]);
+  bfd_bwrite(scnhdr_ext, (bfd_size_type)(3UL * SCNHSZ), abfd);
+  bfd_bwrite(data_buffer, data_buffer_size, abfd);
+  bfd_bwrite(reloc_ext, (bfd_size_type)(data_scnhdr.s_nreloc * RELSZ),
+             abfd);
+  bfd_bwrite(syment_ext, (bfd_size_type)(filehdr.f_nsyms * SYMESZ), abfd);
+  bfd_bwrite(string_table, string_table_size, abfd);
 
-  free (data_buffer);
+  free(data_buffer);
   data_buffer = NULL;
 
   return TRUE;
 }
 
-/* The typical dynamic reloc.  */
-
+/* The typical dynamic reloc: */
 static reloc_howto_type xcoff64_dynamic_reloc =
 HOWTO (0,			/* type */
        0,			/* rightshift */
@@ -2613,7 +2553,10 @@ static const struct xcoff_backend_data_rec bfd_xcoff_backend_data =
     xcoff64_generate_rtinit,
   };
 
-/* The transfer vector that leads the outside world to all of the above.  */
+/* The transfer vector that leads the outside world to all of the above: */
+#ifdef __clang__
+extern const bfd_target rs6000coff64_vec;
+#endif /* __clang__ */
 const bfd_target rs6000coff64_vec =
   {
     "aixcoff64-rs6000",
@@ -2864,7 +2807,10 @@ static const struct xcoff_backend_data_rec bfd_xcoff_aix5_backend_data =
     xcoff64_generate_rtinit,
   };
 
-/* The transfer vector that leads the outside world to all of the above.  */
+/* The transfer vector that leads the outside world to all of the above: */
+#ifdef __clang__
+extern const bfd_target aix5coff64_vec;
+#endif /* __clang__ */
 const bfd_target aix5coff64_vec =
   {
     "aix5coff64-rs6000",
@@ -2933,12 +2879,12 @@ const bfd_target aix5coff64_vec =
 
     /* Copy */
     _bfd_xcoff_copy_private_bfd_data,
-    ((bfd_boolean (*) (bfd *, bfd *)) bfd_true),
-    ((bfd_boolean (*) (bfd *, asection *, bfd *, asection *)) bfd_true),
-    ((bfd_boolean (*) (bfd *, asymbol *, bfd *, asymbol *)) bfd_true),
-    ((bfd_boolean (*) (bfd *, bfd *)) bfd_true),
-    ((bfd_boolean (*) (bfd *, flagword)) bfd_true),
-    ((bfd_boolean (*) (bfd *, void * )) bfd_true),
+    ((bfd_boolean (*)(bfd *, bfd *))bfd_true),
+    ((bfd_boolean (*)(bfd *, asection *, bfd *, asection *))bfd_true),
+    ((bfd_boolean (*)(bfd *, asymbol *, bfd *, asymbol *))bfd_true),
+    ((bfd_boolean (*)(bfd *, bfd *))bfd_true),
+    ((bfd_boolean (*)(bfd *, flagword))bfd_true),
+    ((bfd_boolean (*)(bfd *, void *))bfd_true),
 
     /* Core */
     xcoff64_core_file_failing_command,

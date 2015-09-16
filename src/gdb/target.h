@@ -49,6 +49,7 @@ struct target_ops;
    it goes into the file stratum, which is always below the process
    stratum.  */
 
+#include "ansidecl.h"
 #include "bfd.h"
 #include "symtab.h"
 #include "dcache.h"
@@ -358,10 +359,11 @@ struct target_ops
        NOTE: cagney/2004-10-01: This has been entirely superseeded by
        to_xfer_partial and inferior inheritance.  */
 
-    int (*deprecated_xfer_memory) (CORE_ADDR memaddr, gdb_byte *myaddr,
-				   int len, int write,
-				   struct mem_attrib *attrib,
-				   struct target_ops *target);
+    int (*deprecated_xfer_memory)(CORE_ADDR memaddr, gdb_byte *myaddr,
+				  int len, int write,
+				  struct mem_attrib *attrib,
+				  struct target_ops *target)
+      ATTRIBUTE_DEPRECATED_FOR(to_xfer_partial);
 
     void (*to_files_info) (struct target_ops *);
     int (*to_insert_breakpoint) (CORE_ADDR, gdb_byte *);
@@ -422,40 +424,38 @@ struct target_ops
     struct section_table
      *to_sections_end;
     /* ASYNC target controls */
-    int (*to_can_async_p) (void);
-    int (*to_is_async_p) (void);
-    void (*to_async) (void (*cb) (enum inferior_event_type, void *context),
-		      void *context);
+    int (*to_can_async_p)(void);
+    int (*to_is_async_p)(void);
+    void (*to_async)(void (*cb)(enum inferior_event_type, void *context),
+		     void *context);
     int to_async_mask_value;
-    int (*to_find_memory_regions) (int (*) (CORE_ADDR,
-					    unsigned long,
-					    int, int, int,
-					    void *),
-				   void *);
-    char * (*to_make_corefile_notes) (bfd *, int *);
-    int (*to_bind_function) (char *);
-    
+    int (*to_find_memory_regions)(int (*)(CORE_ADDR, unsigned long,
+                                          int, int, int, void *),
+				  void *);
+    char *(*to_make_corefile_notes)(bfd *, int *);
+    int (*to_bind_function)(char *);
+
     /* Return the thread-local address at OFFSET in the
        thread-local storage for the thread PTID and the shared library
        or executable file given by OBJFILE.  If that block of
        thread-local storage hasn't been allocated yet, this function
        may return an error.  */
-    CORE_ADDR (*to_get_thread_local_address) (ptid_t ptid,
-					      CORE_ADDR load_module_addr,
-					      CORE_ADDR offset);
+    CORE_ADDR (*to_get_thread_local_address)(ptid_t ptid,
+					     CORE_ADDR load_module_addr,
+					     CORE_ADDR offset);
 
     /* Perform partial transfers on OBJECT.  See target_read_partial
        and target_write_partial for details of each variant.  One, and
        only one, of readbuf or writebuf must be non-NULL.  */
-    LONGEST (*to_xfer_partial) (struct target_ops *ops,
-				enum target_object object, const char *annex,
-				gdb_byte *readbuf, const gdb_byte *writebuf,
-				ULONGEST offset, LONGEST len);
+    LONGEST (*to_xfer_partial)(struct target_ops *ops,
+                               enum target_object object, const char *annex,
+                               gdb_byte *readbuf, const gdb_byte *writebuf,
+                               ULONGEST offset, LONGEST len);
 
     /* APPLE LOCAL: If this system supports setting names on threads, return
-       the name of this thread in a static buffer that will be reused on 
+       the name of this thread in a static buffer that will be reused on
        subsequent calls.  */
-   char *(*to_get_thread_name) (ptid_t ptid);
+   char *(*to_get_thread_name)(ptid_t ptid);
 
     /* APPLE LOCAL: Return a string that uniquely identifies a given thread
        in a way meaningful to the given target. */
@@ -486,7 +486,7 @@ struct target_ops
        from that objfile.)  */
     int (*to_check_is_objfile_loaded) (struct objfile *objfile);
 
-    /* APPLE LOCAL: How do we load a shared library into the target?  
+    /* APPLE LOCAL: How do we load a shared library into the target?
        Returns a value containing the return value of the native
        loader function.  */
     struct value *(*to_load_solib) (char *path, char *flags);
@@ -500,9 +500,9 @@ struct target_ops
     /* APPLE LOCAL: Added support for target specific information to be
        stored in the thread specific inferior_status to allow targets to
        save/restore thread specific data between context switches.  */
-    void * (*to_save_thread_inferior_status) ();
-    void (*to_restore_thread_inferior_status) (void *);
-    void (*to_free_thread_inferior_status) (void *);
+    void *(*to_save_thread_inferior_status)(void);
+    void (*to_restore_thread_inferior_status)(void *);
+    void (*to_free_thread_inferior_status)(void *);
 
     int to_magic;
     /* Need sub-structure for target machine related rather than comm related?
@@ -1000,7 +1000,7 @@ void gdb_set_async_override (void *on);
 #define	target_async_mask_value	\
      (current_target.to_async_mask_value)
 
-extern int target_async_mask (int mask);
+extern int target_async_mask(int mask);
 
 /* Converts a process id to a string.  Usually, the string just contains
    `process xyz', but on some systems it may contain
@@ -1045,7 +1045,8 @@ extern char *normal_pid_to_str (ptid_t ptid);
    that way, multiple clients can receive this notification (something
    like with signal handlers).  */
 
-extern void (*deprecated_target_new_objfile_hook) (struct objfile *);
+extern void (*deprecated_target_new_objfile_hook)(struct objfile *)
+  ATTRIBUTE_DEPRECATED;
 
 #ifndef target_pid_or_tid_to_str
 #define target_pid_or_tid_to_str(ID) \
@@ -1106,14 +1107,14 @@ extern void (*deprecated_target_new_objfile_hook) (struct objfile *);
   (current_target.to_get_thread_id_str) (PTID)
 
 /*
- * APPLE LOCAL: Check whether it is safe to call functions on this thread 
+ * APPLE LOCAL: Check whether it is safe to call functions on this thread
  */
 
 #define target_check_safe_call(WHICH, THREAD_MODE)	\
   (current_target.to_check_safe_call) (WHICH, THREAD_MODE)
 
 /*
- * APPLE LOCAL: Check whether it is safe to call functions on this thread 
+ * APPLE LOCAL: Check whether it is safe to call functions on this thread
  */
 
 #define target_setup_safe_print	\
@@ -1251,8 +1252,8 @@ extern int target_stopped_data_address_p (struct target_ops *);
    well.  To prevent the parent from running spontaneously, such targets should
    define this to a function that prevents that from happening.  */
 #if !defined(ENSURE_VFORKING_PARENT_REMAINS_STOPPED)
-#define ENSURE_VFORKING_PARENT_REMAINS_STOPPED(PID) (0)
-#endif
+# define ENSURE_VFORKING_PARENT_REMAINS_STOPPED(PID) ((void)0)
+#endif /* !ENSURE_VFORKING_PARENT_REMAINS_STOPPED */
 
 /* This will only be defined by a target that supports catching vfork events,
    such as HP-UX.
@@ -1262,8 +1263,8 @@ extern int target_stopped_data_address_p (struct target_ops *);
    vfork event will be delivered to us.  */
 
 #if !defined(RESUME_EXECD_VFORKING_CHILD_TO_GET_PARENT_VFORK)
-#define RESUME_EXECD_VFORKING_CHILD_TO_GET_PARENT_VFORK() (0)
-#endif
+# define RESUME_EXECD_VFORKING_CHILD_TO_GET_PARENT_VFORK() ((void)0)
+#endif /* !RESUME_EXECD_VFORKING_CHILD_TO_GET_PARENT_VFORK */
 
 /* Routines for maintenance of the target structures...
 
@@ -1290,6 +1291,15 @@ extern void target_preopen (int);
 
 extern void pop_target (void);
 
+/* temporary, until I am ready to deal with all of the fallout that would
+ * result from fixing these warnings in this header: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 /* Struct section_table maps address ranges to file sections.  It is
    mostly used with BFD files, but can be used without (e.g. for handling
    raw disks, or files not in formats handled by BFD).  */
@@ -1303,6 +1313,13 @@ struct section_table
 
     bfd *bfd;			/* BFD file pointer */
   };
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 /* Return the "section" containing the specified address.  */
 struct section_table *target_section_by_addr (struct target_ops *target,
@@ -1378,32 +1395,42 @@ extern int target_signal_to_host_p (enum target_signal signo);
    gdb_signal'' would probably be better as it is refering to GDB's
    internal representation of a target operating system's signal.  */
 
-extern enum target_signal target_signal_from_host (int);
-extern int target_signal_to_host (enum target_signal);
+extern enum target_signal target_signal_from_host(int);
+extern int target_signal_to_host(enum target_signal);
 
-/* Convert from a number used in a GDB command to an enum target_signal.  */
-extern enum target_signal target_signal_from_command (int);
+/* Convert from a number used in a GDB command to an enum target_signal: */
+extern enum target_signal target_signal_from_command(int);
 
 /* Any target can call this to switch to remote protocol (in remote.c). */
-extern void push_remote_target (char *name, int from_tty);
-/* APPLE LOCAL: target remote-macosx equivalent of push_remote_target().  */
-extern void push_remote_macosx_target (char *name, int from_tty);
+extern void push_remote_target(char *name, int from_tty);
+
+/* APPLE LOCAL: target remote-macosx equivalent of push_remote_target(): */
+extern void push_remote_macosx_target(char *name, int from_tty);
 
 /* Imported from machine dependent code */
 
 /* Blank target vector entries are initialized to target_ignore. */
-void target_ignore (void);
+void target_ignore(void);
 
-/* APPLE LOCAL update current target */
-void update_current_target (void);
+/* APPLE LOCAL update current target: */
+void update_current_target(void);
 
-extern struct target_ops deprecated_child_ops;
+extern struct target_ops deprecated_child_ops ATTRIBUTE_DEPRECATED;
 
 /* APPLE LOCAL: Override trust-readonly-sections.  */
-extern int set_trust_readonly (int);
-void set_trust_readonly_cleanup (void *new);
+extern int set_trust_readonly(int);
+void set_trust_readonly_cleanup(void *);
 /* END APPLE LOCAL */
 
 /* APPLE LOCAL */
-int length_of_this_instruction (CORE_ADDR memaddr);
-#endif /* !defined (TARGET_H) */
+int length_of_this_instruction(CORE_ADDR memaddr);
+
+/* other: */
+void do_restore_target_async_mask(int mask);
+
+int debug_to_enable_exception_callback(enum exception_event_kind kind,
+                                       int enable);
+
+#endif /* !defined(TARGET_H) */
+
+/* EOF */

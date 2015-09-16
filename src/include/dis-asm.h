@@ -1,4 +1,4 @@
-/* Interface between the opcode library and its callers.
+/* include/dis-asm.h: Interface between the opcode library and its callers.
 
    Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006
    Free Software Foundation, Inc.
@@ -30,12 +30,12 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 #include <stdio.h>
 #include "bfd.h"
 
-  typedef int (*fprintf_ftype) (void *, const char*, ...) /*ATTRIBUTE_FPTR_PRINTF_2*/;
+typedef int (*fprintf_ftype)(void *, const char*, ...) ATTRIBUTE_FPTR_PRINTF_2;
 
 enum dis_insn_type
 {
@@ -242,7 +242,7 @@ extern int print_insn_little_arm	(bfd_vma, disassemble_info *);
 extern int print_insn_little_mips	(bfd_vma, disassemble_info *);
 extern int print_insn_little_or32	(bfd_vma, disassemble_info *);
 extern int print_insn_little_powerpc	(bfd_vma, disassemble_info *);
-extern int print_insn_little_score      (bfd_vma, disassemble_info *); 
+extern int print_insn_little_score      (bfd_vma, disassemble_info *);
 extern int print_insn_m32c	        (bfd_vma, disassemble_info *);
 extern int print_insn_m32r		(bfd_vma, disassemble_info *);
 extern int print_insn_m68hc11		(bfd_vma, disassemble_info *);
@@ -337,18 +337,20 @@ extern bfd_boolean generic_symbol_is_valid
 
 /* Method to initialize a disassemble_info struct.  This should be
    called by all applications creating such a struct.  */
-extern void init_disassemble_info (struct disassemble_info *info, void *stream,
-				   fprintf_ftype fprintf_func);
+extern void init_disassemble_info(struct disassemble_info *info, void *stream,
+				  fprintf_ftype fprintf_func);
 
 /* For compatibility with existing code.  */
 #define INIT_DISASSEMBLE_INFO(INFO, STREAM, FPRINTF_FUNC) \
-  init_disassemble_info (&(INFO), (STREAM), (fprintf_ftype) (FPRINTF_FUNC))
+  init_disassemble_info(&(INFO), (STREAM), (fprintf_ftype)(FPRINTF_FUNC))
 #define INIT_DISASSEMBLE_INFO_NO_ARCH(INFO, STREAM, FPRINTF_FUNC) \
-  init_disassemble_info (&(INFO), (STREAM), (fprintf_ftype) (FPRINTF_FUNC))
+  init_disassemble_info(&(INFO), (STREAM), (fprintf_ftype)(FPRINTF_FUNC))
 
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif /* ! defined (DIS_ASM_H) */
+#endif /* ! defined(DIS_ASM_H) */
+
+/* EOF */

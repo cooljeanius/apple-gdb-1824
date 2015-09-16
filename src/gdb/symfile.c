@@ -1,4 +1,4 @@
-/* Generic symbol file reading for the GNU debugger, GDB.
+/* symfile.c: Generic symbol file reading for the GNU debugger, GDB.
 
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
    1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
@@ -272,23 +272,22 @@ int auto_solib_limit;
    for the comparison.  */
 
 static int
-compare_psymbols (const void *s1p, const void *s2p)
+compare_psymbols(const void *s1p, const void *s2p)
 {
-  struct partial_symbol *const *s1 = s1p;
-  struct partial_symbol *const *s2 = s2p;
+  struct partial_symbol *const *s1 = (struct partial_symbol *const *)s1p;
+  struct partial_symbol *const *s2 = (struct partial_symbol *const *)s2p;
 
-  return strcmp_iw_ordered (SYMBOL_SEARCH_NAME (*s1),
-			    SYMBOL_SEARCH_NAME (*s2));
+  return strcmp_iw_ordered(SYMBOL_SEARCH_NAME(*s1),
+                           SYMBOL_SEARCH_NAME(*s2));
 }
 
 void
-sort_pst_symbols (struct partial_symtab *pst)
+sort_pst_symbols(struct partial_symtab *pst)
 {
-  /* Sort the global list; do NOT sort the static list */
-
-  qsort (pst->objfile->global_psymbols.list + pst->globals_offset,
-	 pst->n_global_syms, sizeof (struct partial_symbol *),
-	 compare_psymbols);
+  /* Sort the global list; do NOT sort the static list: */
+  qsort(pst->objfile->global_psymbols.list + pst->globals_offset,
+        pst->n_global_syms, sizeof(struct partial_symbol *),
+        compare_psymbols);
 }
 
 /* Make a null terminated copy of the string at PTR with SIZE characters in
@@ -417,16 +416,16 @@ alloc_section_addr_info (size_t num_sections)
 /* Return a freshly allocated copy of ADDRS.  The section names, if
    any, are also freshly allocated copies of those in ADDRS.  */
 struct section_addr_info *
-copy_section_addr_info (struct section_addr_info *addrs)
+copy_section_addr_info(struct section_addr_info *addrs)
 {
-  struct section_addr_info *copy
-    = alloc_section_addr_info (addrs->num_sections);
-  int i;
+  struct section_addr_info *copy;
+  size_t i;
+  copy = alloc_section_addr_info(addrs->num_sections);
 
   copy->num_sections = addrs->num_sections;
   /* APPLE LOCAL */
   copy->addrs_are_offsets = addrs->addrs_are_offsets;
-  for (i = 0; i < addrs->num_sections; i++)
+  for (i = 0UL; i < addrs->num_sections; i++)
     {
       copy->other[i].addr = addrs->other[i].addr;
       if (addrs->other[i].name)
@@ -445,24 +444,28 @@ copy_section_addr_info (struct section_addr_info *addrs)
    an existing section table. */
 
 extern struct section_addr_info *
-build_section_addr_info_from_section_table (const struct section_table *start,
-                                            const struct section_table *end)
+build_section_addr_info_from_section_table(const struct section_table *start,
+                                           const struct section_table *end)
 {
   struct section_addr_info *sap;
   const struct section_table *stp;
   int oidx;
 
-  sap = alloc_section_addr_info (end - start);
+  /* An attempt to ensure that usage of 'end' will be safe: */
+  gdb_assert(end != NULL);
+
+  sap = alloc_section_addr_info(end - start);
 
   for (stp = start, oidx = 0; stp != end; stp++)
     {
-      if (bfd_get_section_flags (stp->bfd,
-				 stp->the_bfd_section) & (SEC_ALLOC | SEC_LOAD)
-	  && oidx < end - start)
+      /* FIXME: avoid possible overflow in loop counter */
+      if ((bfd_get_section_flags(stp->bfd,
+                                 stp->the_bfd_section) & (SEC_ALLOC | SEC_LOAD))
+	  && (oidx < (end - start)))
 	{
 	  sap->other[oidx].addr = stp->addr;
 	  sap->other[oidx].name
-	    = xstrdup (bfd_section_name (stp->bfd, stp->the_bfd_section));
+	    = xstrdup(bfd_section_name(stp->bfd, stp->the_bfd_section));
 	  sap->other[oidx].sectindex = stp->the_bfd_section->index;
 	  oidx++;
 	}
@@ -473,16 +476,15 @@ build_section_addr_info_from_section_table (const struct section_table *start,
 
 
 /* Free all memory allocated by build_section_addr_info_from_section_table. */
-
 extern void
-free_section_addr_info (struct section_addr_info *sap)
+free_section_addr_info(struct section_addr_info *sap)
 {
-  int idx;
+  size_t idx;
 
-  for (idx = 0; idx < sap->num_sections; idx++)
+  for (idx = 0UL; idx < sap->num_sections; idx++)
     if (sap->other[idx].name)
-      xfree (sap->other[idx].name);
-  xfree (sap);
+      xfree(sap->other[idx].name);
+  xfree(sap);
 }
 
 
@@ -580,8 +582,7 @@ init_objfile_sect_indices (struct objfile *objfile)
     }
 }
 
-/* The arguments to place_section.  */
-
+/* The arguments to place_section: */
 struct place_section_arg
 {
   struct section_offsets *offsets;
@@ -589,12 +590,11 @@ struct place_section_arg
 };
 
 /* Find a unique offset to use for loadable section SECT if
-   the user did not provide an offset.  */
-
+ * the user did not provide an offset: */
 void
-place_section (bfd *abfd, asection *sect, void *obj)
+place_section(bfd *abfd, asection *sect, void *obj)
 {
-  struct place_section_arg *arg = obj;
+  struct place_section_arg *arg = (struct place_section_arg *)obj;
   CORE_ADDR *offsets = arg->offsets->offsets, start_addr;
   int done;
 
@@ -665,10 +665,10 @@ place_section (bfd *abfd, asection *sect, void *obj)
    for the objectfile OBJFILE and stuffs ADDR into all of the offsets.  */
 
 void
-default_symfile_offsets (struct objfile *objfile,
-			 struct section_addr_info *addrs)
+default_symfile_offsets(struct objfile *objfile,
+                        struct section_addr_info *addrs)
 {
-  int i;
+  size_t i;
 
   objfile->num_sections = bfd_count_sections (objfile->obfd);
   objfile->section_offsets = (struct section_offsets *)
@@ -679,11 +679,11 @@ default_symfile_offsets (struct objfile *objfile,
 
   /* Now calculate offsets for section that were specified by the
      caller. */
-  for (i = 0; i < addrs->num_sections && addrs->other[i].name; i++)
+  for (i = 0UL; i < addrs->num_sections && addrs->other[i].name; i++)
     {
-      struct other_sections *osp ;
+      struct other_sections *osp;
 
-      osp = &addrs->other[i] ;
+      osp = &addrs->other[i];
       if (osp->addr == 0)
   	continue;
 
@@ -745,24 +745,21 @@ default_symfile_offsets (struct objfile *objfile,
    the symbol reading (and complaints can be more terse about it).  */
 
 void
-syms_from_objfile (struct objfile *objfile,
-                   struct section_addr_info *addrs,
-                   struct section_offsets *offsets,
-                   int num_offsets,
-		   int mainline,
-                   int verbo)
+syms_from_objfile(struct objfile *objfile, struct section_addr_info *addrs,
+                  struct section_offsets *offsets, int num_offsets,
+		  int mainline, int verbo)
 {
   struct section_addr_info *local_addr = NULL;
   struct cleanup *old_chain;
 
-  gdb_assert (! (addrs && offsets));
+  gdb_assert(!(addrs && offsets));
 
-  init_entry_point_info (objfile);
+  init_entry_point_info(objfile);
 
   /* The objfile might slide and so the entry point info from the bfd
      might be wrong.  */
-  if (objfile->ei.entry_point != ~(CORE_ADDR) 0
-      && objfile->ei.entry_point != 0)
+  if ((objfile->ei.entry_point != ~(CORE_ADDR)0)
+      && (objfile->ei.entry_point != 0))
     {
       if (offsets != NULL)
 	{
@@ -819,7 +816,7 @@ syms_from_objfile (struct objfile *objfile,
       make_cleanup (xfree, local_addr);
       addrs = local_addr;
       /* APPLE LOCAL huh? */
-      addrs -> addrs_are_offsets = 1;
+      addrs->addrs_are_offsets = 1;
     }
 
   /* Now either addrs or offsets is non-zero.  */
@@ -858,16 +855,16 @@ syms_from_objfile (struct objfile *objfile,
   if (addrs)
     {
       if (mainline)
-	addrs -> addrs_are_offsets = 1;
+	addrs->addrs_are_offsets = 1;
       if (!addrs->addrs_are_offsets)
 	{
 	  asection *lower_sect;
 	  asection *sect;
 	  CORE_ADDR lower_offset;
-	  int i;
+	  size_t i;
 
 	  /* APPLE LOCAL */
-	  gdb_assert (addrs->other[0].name);
+	  gdb_assert(addrs->other[0].name);
 
 	  /* Find lowest loadable section to be used as starting point for
 	     continguous sections. FIXME!! will NOT work without call to find
@@ -875,21 +872,21 @@ syms_from_objfile (struct objfile *objfile,
 	  /* APPLE LOCAL: Look for the text segment ("__TEXT"), not the section
 	     ("__TEXT.__text") because what we are really looking for is the load
 	     address of the image, and the section address is offset a bit. */
-	  lower_sect = bfd_get_section_by_name (objfile->obfd, TEXT_SEGMENT_NAME);
+	  lower_sect = bfd_get_section_by_name(objfile->obfd, TEXT_SEGMENT_NAME);
 	  if (lower_sect == NULL)
-	    bfd_map_over_sections (objfile->obfd, find_lowest_section,
-				   &lower_sect);
+	    bfd_map_over_sections(objfile->obfd, find_lowest_section,
+				  &lower_sect);
 	  if (lower_sect == NULL)
-	    warning (_("no loadable sections found in added symbol-file %s"),
-		     objfile->name);
+	    warning(_("no loadable sections found in added symbol-file %s"),
+		    objfile->name);
 	  else
-	    if ((bfd_get_section_flags (objfile->obfd, lower_sect) & SEC_CODE) == 0)
-	      warning (_("Lowest section in %s is %s at %s"),
-		       objfile->name,
-		       bfd_section_name (objfile->obfd, lower_sect),
-		       paddr (bfd_section_vma (objfile->obfd, lower_sect)));
+	    if ((bfd_get_section_flags(objfile->obfd, lower_sect) & SEC_CODE) == 0)
+	      warning(_("Lowest section in %s is %s at %s"),
+		      objfile->name,
+		      bfd_section_name(objfile->obfd, lower_sect),
+		      paddr(bfd_section_vma(objfile->obfd, lower_sect)));
 	  if (lower_sect != NULL)
-	    lower_offset = bfd_section_vma (objfile->obfd, lower_sect);
+	    lower_offset = bfd_section_vma(objfile->obfd, lower_sect);
 	  else
 	    lower_offset = 0;
 
@@ -911,17 +908,16 @@ syms_from_objfile (struct objfile *objfile,
 						  addrs->other[i].name);
 		  if (sect)
 		    {
-		      addrs->other[i].addr
-			-= bfd_section_vma (objfile->obfd, sect);
+		      addrs->other[i].addr -=
+                        bfd_section_vma(objfile->obfd, sect);
 		      lower_offset = addrs->other[i].addr;
-		      /* This is the index used by BFD. */
-		      addrs->other[i].sectindex = sect->index ;
+		      /* This is the index used by BFD: */
+		      addrs->other[i].sectindex = sect->index;
 		    }
 		  else
 		    {
-		      warning (_("section %s not found in %s"),
-			       addrs->other[i].name,
-			       objfile->name);
+		      warning(_("section %s not found in %s"),
+			      addrs->other[i].name, objfile->name);
 		      addrs->other[i].addr = 0;
 		    }
 		}
@@ -953,24 +949,25 @@ syms_from_objfile (struct objfile *objfile,
     {
       struct obj_section *osect;
       size_t size = SIZEOF_N_SECTION_OFFSETS (num_offsets);
+      int idx;
 
-      /* Just copy in the offset table directly as given to us.  */
+      /* Just copy in the offset table directly as given to us: */
       objfile->num_sections = num_offsets;
       objfile->section_offsets
         = ((struct section_offsets *)
-           obstack_alloc (&objfile->objfile_obstack, size));
-      memcpy (objfile->section_offsets, offsets, size);
+           obstack_alloc(&objfile->objfile_obstack, size));
+      memcpy(objfile->section_offsets, offsets, size);
 
-      init_objfile_sect_indices (objfile);
+      init_objfile_sect_indices(objfile);
 
-      int idx = 0;
+      idx = 0;
       /* APPLE LOCAL: I am unclear where the section_offsets are
        * supposed to actually get applied to the sections. If you read
        * in from a disk file, but the library itself is NOT loaded at that
        * address, you either have to call objfile_relocate here, or you
        * need to relocate the sections somewhere. Note that in the macosx
-       * code this used to be somewhat bogusly done in macho_symfile_offsets.
-	   */
+       * code this used to be somewhat bogusly done in
+       * macho_symfile_offsets. */
       ALL_OBJFILE_OSECTIONS (objfile, osect)
 	{
 	  /* There is another tricky bit here, which is that we only
@@ -1029,15 +1026,15 @@ syms_from_objfile (struct objfile *objfile,
       ALL_OBJFILE_OSECTIONS (objfile, s)
 	{
 	  CORE_ADDR s_addr = 0;
-	  int i;
+	  size_t i;
 
- 	    for (i = 0;
-	         !s_addr && i < addrs->num_sections && addrs->other[i].name;
-		 i++)
- 	      if (strcmp (bfd_section_name (s->objfile->obfd,
-					    s->the_bfd_section),
-			  addrs->other[i].name) == 0)
- 	        s_addr = addrs->other[i].addr; /* end added for gdb/13815 */
+          for (i = 0UL;
+               !s_addr && i < addrs->num_sections && addrs->other[i].name;
+               i++)
+            if (strcmp(bfd_section_name(s->objfile->obfd,
+                                        s->the_bfd_section),
+                       addrs->other[i].name) == 0)
+              s_addr = addrs->other[i].addr; /* end added for gdb/13815 */
 
 	  s->addr -= s->offset;
 	  s->addr += s_addr;
@@ -1066,9 +1063,8 @@ syms_from_objfile (struct objfile *objfile,
 
   objfile->flags |= OBJF_SYMS;
 
-  /* Discard cleanups as symbol reading was successful.  */
-
-  discard_cleanups (old_chain);
+  /* Discard cleanups as symbol reading was successful: */
+  discard_cleanups(old_chain);
 }
 
 /* Perform required actions after either reading in the initial
@@ -1103,7 +1099,7 @@ new_symfile_objfile (struct objfile *objfile, int mainline, int verbo)
 
 /* APPLE LOCAL begin */
 static int
-check_bfd_for_matching_uuid (bfd *exe_bfd, bfd *dbg_bfd)
+check_bfd_for_matching_uuid(bfd *exe_bfd, bfd *dbg_bfd)
 {
   /* Compare the UUID's of the object and debug files.  */
   unsigned char exe_uuid[16];
@@ -1113,21 +1109,21 @@ check_bfd_for_matching_uuid (bfd *exe_bfd, bfd *dbg_bfd)
      and that they exist properly. If they do match correctly, then return
      without removing the new debug file, else remove the separate debug
      file because it does NOT match.  */
-  if (bfd_mach_o_get_uuid (exe_bfd, exe_uuid, sizeof (exe_uuid)) &&
-      bfd_mach_o_get_uuid (dbg_bfd, dbg_uuid, sizeof (dbg_uuid)) &&
-      (memcmp (exe_uuid, dbg_uuid, sizeof (exe_uuid)) == 0))
+  if (bfd_mach_o_get_uuid(exe_bfd, exe_uuid, sizeof(exe_uuid))
+      && bfd_mach_o_get_uuid(dbg_bfd, dbg_uuid, sizeof(dbg_uuid))
+      && (memcmp(exe_uuid, dbg_uuid, sizeof(exe_uuid)) == 0))
     return 1; /* The UUIDs match, nothing needs to be done.  */
 
-  warning (_("UUID mismatch detected between:\n\t%s\n\t%s..."),
-	   exe_bfd->filename, dbg_bfd->filename);
-  if (ui_out_is_mi_like_p (uiout))
+  warning(_("UUID mismatch detected between:\n\t%s\n\t%s..."),
+	  exe_bfd->filename, dbg_bfd->filename);
+  if (ui_out_is_mi_like_p(uiout))
     {
       struct cleanup *notify_cleanup =
-	make_cleanup_ui_out_notify_begin_end (uiout, "uuid-mismatch");
-      ui_out_field_string (uiout, "file", exe_bfd->filename);
-      ui_out_field_string (uiout, "debug-file",
-			   dbg_bfd->filename);
-      do_cleanups (notify_cleanup);
+	make_cleanup_ui_out_notify_begin_end(uiout, "uuid-mismatch");
+      ui_out_field_string(uiout, "file", exe_bfd->filename);
+      ui_out_field_string(uiout, "debug-file",
+			  dbg_bfd->filename);
+      do_cleanups(notify_cleanup);
     }
   return 0;
 
@@ -1136,42 +1132,42 @@ check_bfd_for_matching_uuid (bfd *exe_bfd, bfd *dbg_bfd)
 /* Prefix NAME with the prefix for OBJFILE only if needed. The new string is
    allocated on the object stack.  */
 static const char *
-add_objfile_prefix (struct objfile *objfile, const char* name)
+add_objfile_prefix(struct objfile *objfile, const char* name)
 {
   char* prefixed_name;
   size_t prefixed_name_length;
   /* Check to see if we need to add a prefix?  */
   if (name && name[0] && objfile && objfile->prefix && objfile->prefix[0])
     {
-      /* Get length for leading char, prefix, name and NULL terminator.  */
-      prefixed_name_length = strlen (objfile->prefix) + strlen (name) + 1;
+      /* Get length for leading char, prefix, name and NULL terminator: */
+      prefixed_name_length = strlen(objfile->prefix) + strlen(name) + 1UL;
       prefixed_name = (char*) obstack_alloc (&objfile->objfile_obstack,
 					     prefixed_name_length);
 
-      sprintf (prefixed_name, "%s%s", objfile->prefix, name);
+      sprintf(prefixed_name, "%s%s", objfile->prefix, name);
 
       return prefixed_name;
     }
 
-  /* No prefix needed.  */
+  /* No prefix needed: */
   return name;
 }
 
 /* Search OBJFILE's section list for the section with the smallest address
    range that still contains ADDR.  */
 static struct obj_section *
-find_section_for_addr (struct objfile *objfile, CORE_ADDR addr)
+find_section_for_addr(struct objfile *objfile, CORE_ADDR addr)
 {
   struct obj_section *curr_osect;
   struct obj_section *best_osect = NULL;
-  ALL_OBJFILE_OSECTIONS (objfile, curr_osect)
+  ALL_OBJFILE_OSECTIONS(objfile, curr_osect)
     {
-      if (curr_osect->addr <= addr && addr < curr_osect->endaddr)
+      if ((curr_osect->addr <= addr) && (addr < curr_osect->endaddr))
 	{
 	  if (best_osect)
 	    {
-	      if ((curr_osect->endaddr - curr_osect->addr) <
-		  (best_osect->endaddr - best_osect->addr))
+	      if ((curr_osect->endaddr - curr_osect->addr)
+                  < (best_osect->endaddr - best_osect->addr))
 		best_osect = curr_osect;
 	    }
 	  else
@@ -1186,7 +1182,7 @@ find_section_for_addr (struct objfile *objfile, CORE_ADDR addr)
    it relies on msymbols and the main executable could have been completely
    stripped.  */
 void
-append_psymbols_as_msymbols (struct objfile *objfile)
+append_psymbols_as_msymbols(struct objfile *objfile)
 {
   int i;
   struct obj_section *psym_osect;
@@ -1197,108 +1193,109 @@ append_psymbols_as_msymbols (struct objfile *objfile)
   int add_prefix = objfile->prefix && objfile->prefix[0];
   /* Initialize a new block of msymbols and create a cleanup.  */
 
-  init_minimal_symbol_collection ();
-  back_to = make_cleanup_discard_minimal_symbols ();
+  init_minimal_symbol_collection();
+  back_to = make_cleanup_discard_minimal_symbols();
 
-
-  /* Append msymbols for all global partial symbols that are functions.  */
+  /* Append msymbols for all global partial symbols that are functions.:*/
   if (dsym_objfile->global_psymbols.list && dsym_objfile->global_psymbols.next)
     {
-      int symcount = dsym_objfile->global_psymbols.next - dsym_objfile->global_psymbols.list;
+      int symcount = (dsym_objfile->global_psymbols.next - dsym_objfile->global_psymbols.list);
       for (i = 0; i < symcount; i++)
         {
           struct partial_symbol *psym = dsym_objfile->global_psymbols.list[i];
           psym_osect = NULL;
-          if (PSYMBOL_DOMAIN (psym) == VAR_DOMAIN
-              && PSYMBOL_CLASS (psym) == LOC_BLOCK)
+          if ((PSYMBOL_DOMAIN(psym) == VAR_DOMAIN)
+              && (PSYMBOL_CLASS(psym) == LOC_BLOCK))
             {
-              psym_addr = SYMBOL_VALUE_ADDRESS (psym);
-              psym_osect = find_section_for_addr (objfile, psym_addr);
+              psym_addr = SYMBOL_VALUE_ADDRESS(psym);
+              psym_osect = find_section_for_addr(objfile, psym_addr);
 
               if (psym_osect != NULL)
                 {
                   struct minimal_symbol *msym;
+                  char *armthumb_info;
 
                   /* Do NOT overwrite an extant msym, since we might lose information
                      that is NOT known in the psymbol (like the "is_special" info.)  */
-                  msym = lookup_minimal_symbol_by_pc_section_from_objfile (psym_addr,
-                                                                           psym_osect->the_bfd_section,
-                                                                           objfile);
-                  if (msym != NULL
-                      && SYMBOL_VALUE_ADDRESS (msym) == psym_addr)
+                  msym = lookup_minimal_symbol_by_pc_section_from_objfile(psym_addr,
+                                                                          psym_osect->the_bfd_section,
+                                                                          objfile);
+                  if ((msym != NULL)
+                      && (SYMBOL_VALUE_ADDRESS(msym) == psym_addr))
                     continue;
 
                   if (add_prefix)
                     {
                       psym_linkage_name =
-                                        add_objfile_prefix (objfile,
-                                                            SYMBOL_LINKAGE_NAME (psym));
+                        add_objfile_prefix(objfile,
+                                           SYMBOL_LINKAGE_NAME(psym));
                     }
                   else
-                    psym_linkage_name = SYMBOL_LINKAGE_NAME (psym);
+                    psym_linkage_name = SYMBOL_LINKAGE_NAME(psym);
 
-                  char *armthumb_info = partial_symbol_special_info (dsym_objfile,
-                                                                     psym);
+                  armthumb_info = partial_symbol_special_info(dsym_objfile,
+                                                              psym);
 
-                  /* APPLE LOCAL - Differentiate between arm & thumb  */
-                  msym = prim_record_minimal_symbol_and_info (psym_linkage_name,
-                                                              psym_addr,
-                                                              mst_text,
-                                                              armthumb_info,
-                                                              SECT_OFF_TEXT (objfile),
-                                                              psym_osect->the_bfd_section,
-                                                              objfile);
+                  /* APPLE LOCAL - Differentiate between arm & thum: */
+                  msym = prim_record_minimal_symbol_and_info(psym_linkage_name,
+                                                             psym_addr,
+                                                             mst_text,
+                                                             armthumb_info,
+                                                             SECT_OFF_TEXT(objfile),
+                                                             psym_osect->the_bfd_section,
+                                                             objfile);
                 }
             }
         }
     }
 
-  /* Append msymbols for all static partial symbols that are functions.  */
+  /* Append msymbols for all static partial symbols that are functions: */
   if (dsym_objfile->static_psymbols.list && dsym_objfile->static_psymbols.next)
     {
-      int symcount = dsym_objfile->static_psymbols.next - dsym_objfile->static_psymbols.list;
+      int symcount = (dsym_objfile->static_psymbols.next - dsym_objfile->static_psymbols.list);
       for (i = 0; i < symcount; i++)
         {
           struct partial_symbol *psym = dsym_objfile->static_psymbols.list[i];
-          if (PSYMBOL_DOMAIN (psym) == VAR_DOMAIN
-              && PSYMBOL_CLASS (psym) == LOC_BLOCK)
+          if ((PSYMBOL_DOMAIN(psym) == VAR_DOMAIN)
+              && (PSYMBOL_CLASS(psym) == LOC_BLOCK))
             {
-              psym_addr = SYMBOL_VALUE_ADDRESS (psym);
-              psym_osect = find_section_for_addr (objfile, psym_addr);
+              psym_addr = SYMBOL_VALUE_ADDRESS(psym);
+              psym_osect = find_section_for_addr(objfile, psym_addr);
 
               if (psym_osect != NULL)
                 {
                   struct minimal_symbol *msym;
+                  char *armthumb_info;
 
                   /* Do NOT overwrite an extant msym, since we might lose information
                      that is NOT known in the psymbol (like the "is_special" info.  */
-                  msym = lookup_minimal_symbol_by_pc_section_from_objfile (psym_addr,
-                                                                           psym_osect->the_bfd_section,
-                                                                           objfile);
-                  if (msym != NULL
-                      && SYMBOL_VALUE_ADDRESS (msym) == psym_addr)
+                  msym = lookup_minimal_symbol_by_pc_section_from_objfile(psym_addr,
+                                                                          psym_osect->the_bfd_section,
+                                                                          objfile);
+                  if ((msym != NULL)
+                      && (SYMBOL_VALUE_ADDRESS(msym) == psym_addr))
                     continue;
 
                   if (add_prefix)
                     {
                       psym_linkage_name =
-                                        add_objfile_prefix (objfile,
-                                                            SYMBOL_LINKAGE_NAME (psym));
+                        add_objfile_prefix(objfile,
+                                           SYMBOL_LINKAGE_NAME(psym));
                     }
                   else
-                    psym_linkage_name = SYMBOL_LINKAGE_NAME (psym);
+                    psym_linkage_name = SYMBOL_LINKAGE_NAME(psym);
 
-                  char *armthumb_info = partial_symbol_special_info (dsym_objfile,
-                                                                     psym);
+                  armthumb_info = partial_symbol_special_info(dsym_objfile,
+                                                              psym);
 
-                  /* APPLE LOCAL - Differentiate between arm & thumb  */
-                  msym = prim_record_minimal_symbol_and_info (psym_linkage_name,
-                                                              psym_addr,
-                                                              mst_file_text,
-                                                              armthumb_info,
-                                                              SECT_OFF_TEXT (objfile),
-                                                              psym_osect->the_bfd_section,
-                                                              objfile);
+                  /* APPLE LOCAL - Differentiate between arm & thum: */
+                  msym = prim_record_minimal_symbol_and_info(psym_linkage_name,
+                                                             psym_addr,
+                                                             mst_file_text,
+                                                             armthumb_info,
+                                                             SECT_OFF_TEXT(objfile),
+                                                             psym_osect->the_bfd_section,
+                                                             objfile);
                 }
             }
         }
@@ -1339,8 +1336,8 @@ struct dbxread_symloc
     int file_string_offset;
 
     const char *prefix;
+  };
 
-};
 #define LDSYMOFF(p) (((struct dbxread_symloc *)((p)->read_symtab_private))->ldsymoff)
 #define LDSYMLEN(p) (((struct dbxread_symloc *)((p)->read_symtab_private))->ldsymlen)
 #define SYMLOC(p) ((struct dbxread_symloc *)((p)->read_symtab_private))
@@ -1369,7 +1366,7 @@ struct dbxread_symloc
   non-dSYM file and got the psymtabs from the debug map entries.  */
 
 void
-replace_psymbols_with_correct_psymbols (struct objfile *exe_obj)
+replace_psymbols_with_correct_psymbols(struct objfile *exe_obj)
 {
   struct objfile *dsym_obj = exe_obj->separate_debug_objfile;
   struct partial_symtab *exe_pst;
@@ -1579,12 +1576,12 @@ symbol_file_add_with_addrs_or_offsets_using_objfile (struct objfile *in_objfile,
 
 	  /* APPLE LOCAL: Add OBJF_SEPARATE_DEBUG_FILE */
 #ifdef MACOSX_DYLD
- 	  objfile_osabi = macosx_get_osabi_from_dyld_entry (objfile->obfd);
+ 	  objfile_osabi = macosx_get_osabi_from_dyld_entry(objfile->obfd);
 #endif /* MACOSX_DYLD */
-          debug_bfd = symfile_bfd_open_safe (debugfile, mainline, objfile_osabi);
+          debug_bfd = symfile_bfd_open_safe(debugfile, mainline, objfile_osabi);
           if (debug_bfd == NULL)
             {
-              warning ("Unable to open dSYM file '%s'", debugfile);
+              warning("Unable to open dSYM file '%s'", debugfile);
             }
           else
             {
@@ -1665,9 +1662,9 @@ symbol_file_add_with_addrs_or_offsets_using_objfile (struct objfile *in_objfile,
 	}
 
       /* APPLE LOCAL ALL_OBJFILE_PSYMTABS */
-      ALL_OBJFILE_PSYMTABS (objfile, psymtab)
+      ALL_OBJFILE_PSYMTABS(objfile, psymtab)
 	{
-	  psymtab_to_symtab (psymtab);
+	  psymtab_to_symtab(psymtab);
 	}
     }
 
@@ -1677,10 +1674,10 @@ symbol_file_add_with_addrs_or_offsets_using_objfile (struct objfile *in_objfile,
   if (from_tty || info_verbose)
     {
       if (deprecated_post_add_symbol_hook)
-	deprecated_post_add_symbol_hook ();
+	deprecated_post_add_symbol_hook();
       else
 	{
-	  printf_unfiltered (_("done.\n"));
+	  printf_unfiltered(_("done.\n"));
 	}
     }
 
@@ -1727,15 +1724,16 @@ symbol_file_add_with_addrs_or_offsets_using_objfile (struct objfile *in_objfile,
      of right now.  */
 #if defined(TARGET_ARM)
   if (mainline && objfile->obfd &&
-      (gdbarch_osabi (current_gdbarch) == GDB_OSABI_UNKNOWN || gdbarch_osabi (current_gdbarch) == GDB_OSABI_DARWIN))
+      ((gdbarch_osabi(current_gdbarch) == GDB_OSABI_UNKNOWN)
+       || (gdbarch_osabi(current_gdbarch) == GDB_OSABI_DARWIN)))
     {
-      const char *osabi_name = gdbarch_osabi_name (gdbarch_lookup_osabi_from_bfd (objfile->obfd));
-      if (osabi_name && strcasecmp (osabi_name, "unknown") != 0)
-        set_osabi_from_string (osabi_name);
+      const char *osabi_name = gdbarch_osabi_name(gdbarch_lookup_osabi_from_bfd(objfile->obfd));
+      if (osabi_name && (strcasecmp(osabi_name, "unknown") != 0))
+        set_osabi_from_string((char *)osabi_name);
     }
 #endif /* TARGET_ARM */
 
-  bfd_cache_close_all ();
+  bfd_cache_close_all();
   return (objfile);
 }
 
@@ -2071,20 +2069,20 @@ find_separate_debug_file (struct objfile *objfile)
      followed by a slash.  Objfile names should always be absolute and
      tilde-expanded, so there should always be a slash in there
      somewhere.  */
-  for (i = strlen(dir) - 1; i >= 0; i--)
+  for (i = (strlen(dir) - 1); i >= 0; i--)
     {
-      if (IS_DIR_SEPARATOR (dir[i]))
+      if (IS_DIR_SEPARATOR(dir[i]))
 	break;
     }
-  gdb_assert (i >= 0 && IS_DIR_SEPARATOR (dir[i]));
-  dir[i+1] = '\0';
+  gdb_assert((i >= 0) && IS_DIR_SEPARATOR(dir[i]));
+  dir[i + 1] = '\0';
 
-  debugfile = alloca (strlen (debug_file_directory) + 1
-                      + strlen (dir)
-                      + strlen (DEBUG_SUBDIRECTORY)
-                      + strlen ("/")
-                      + strlen (basename)
-                      + 1);
+  debugfile = alloca(strlen(debug_file_directory) + 1UL
+                     + strlen(dir)
+                     + strlen(DEBUG_SUBDIRECTORY)
+                     + strlen("/")
+                     + strlen(basename)
+                     + 1UL);
 
   /* First try in the same directory as the original file.  */
   strcpy (debugfile, dir);
@@ -2233,27 +2231,25 @@ set_initial_language (void)
 
 /* APPLE LOCAL symfile bfd open */
 bfd *
-symfile_bfd_open (const char *name, int mainline, enum gdb_osabi osabi)
+symfile_bfd_open(const char *name, int mainline, enum gdb_osabi osabi)
 {
   bfd *sym_bfd = NULL;
   int desc;
   char *absolute_name = NULL;
 
+  name = tilde_expand(name);	/* Returns 1st new malloc'd copy */
 
-
-  name = tilde_expand (name);	/* Returns 1st new malloc'd copy */
-
-  /* Look down path for it, allocate 2nd new malloc'd copy.  */
-  desc = openp (getenv ("PATH"), OPF_TRY_CWD_FIRST, name, O_RDONLY | O_BINARY,
-		0, &absolute_name);
-#if defined(__GO32__) || defined(_WIN32) || defined (__CYGWIN__)
+  /* Look down path for it, allocate 2nd new malloc'd copy: */
+  desc = openp(getenv("PATH"), OPF_TRY_CWD_FIRST, name,
+               (O_RDONLY | O_BINARY), 0, &absolute_name);
+#if defined(__GO32__) || defined(_WIN32) || defined(__CYGWIN__)
   /* APPLE LOCAL symfile bfd open */
-  if (mainline && desc < 0)
+  if (mainline && (desc < 0))
     {
-      char *exename = alloca (strlen (name) + 5);
-      strcat (strcpy (exename, name), ".exe");
-      desc = openp (getenv ("PATH"), OPF_TRY_CWD_FIRST, exename,
-		    O_RDONLY | O_BINARY, 0, &absolute_name);
+      char *exename = alloca(strlen(name) + 5);
+      strcat(strcpy(exename, name), ".exe");
+      desc = openp(getenv("PATH"), OPF_TRY_CWD_FIRST, exename,
+                   (O_RDONLY | O_BINARY), 0, &absolute_name);
     }
 #endif /* __GO32__ || _WIN32 || __CYGWIN__ */
 
@@ -2265,13 +2261,13 @@ symfile_bfd_open (const char *name, int mainline, enum gdb_osabi osabi)
        * Foo.app/Contents/MacOS/Foo, where the user gave us up to
        * Foo.app. The ".app" is optional. */
 
-      char *wrapped_filename = macosx_filename_in_bundle (name, mainline);
+      char *wrapped_filename = macosx_filename_in_bundle(name, mainline);
 
       if (wrapped_filename != NULL)
 	{
-	  desc = openp (getenv ("PATH"), 1, wrapped_filename, O_RDONLY | O_BINARY,
-			0, &absolute_name);
-	  xfree (wrapped_filename);
+	  desc = openp(getenv("PATH"), 1, wrapped_filename,
+                       (O_RDONLY | O_BINARY), 0, &absolute_name);
+	  xfree(wrapped_filename);
 	}
     }
 #endif /* TM_NEXTSTEP */
@@ -2279,22 +2275,22 @@ symfile_bfd_open (const char *name, int mainline, enum gdb_osabi osabi)
 
   if (desc < 0)
     {
-      make_cleanup (xfree, (char *) name);
-      perror_with_name (name);
+      make_cleanup(xfree, (char *)name);
+      perror_with_name(name);
     }
-  xfree ((char *) name);			/* Free 1st new malloc'd copy */
+  xfree((char *)name);			/* Free 1st new malloc'd copy */
   name = absolute_name;		/* Keep 2nd malloc'd copy in bfd */
   /* It will be freed in free_objfile(). */
 
   if (desc > 0)
-    sym_bfd = bfd_fopen (name, gnutarget, FOPEN_RB, desc);
+    sym_bfd = bfd_fopen(name, gnutarget, FOPEN_RB, desc);
 
   if (!sym_bfd)
     {
-      close (desc);
-      make_cleanup (xfree, (char *) name);
-      error (_("\"%s\": cannot open to read symbols: %s."), name,
-	     bfd_errmsg (bfd_get_error ()));
+      close(desc);
+      make_cleanup(xfree, (char *)name);
+      error(_("\"%s\": cannot open to read symbols: %s."), name,
+	    bfd_errmsg(bfd_get_error()));
     }
   sym_bfd->cacheable = 1;
 
@@ -2302,35 +2298,36 @@ symfile_bfd_open (const char *name, int mainline, enum gdb_osabi osabi)
 #if HAVE_MMAP
   if (mmap_symbol_files_flag)
     {
-      if (!bfd_mmap_file (sym_bfd, (void *) -1))
-	error ("\"%s\": could not mmap file for read: %s",
-	       name, bfd_errmsg (bfd_get_error ()));
+      if (!bfd_mmap_file(sym_bfd, (void *)-1))
+	error("\"%s\": could not mmap file for read: %s",
+	      name, bfd_errmsg(bfd_get_error()));
     }
 #endif /* HAVE_MMAP */
 
-  /* APPLE LOCAL: If the file is an archive file (i.e. fat
-     binary), look for sub-files that match the current osabi. */
-
-  if (bfd_check_format (sym_bfd, bfd_archive))
+  /* APPLE LOCAL: If the file is an archive file (i.e. a fat binary),
+   * then look for sub-files that match the current osabi: */
+  if (bfd_check_format(sym_bfd, bfd_archive))
     {
       bfd *tmp_bfd;
-      tmp_bfd = open_bfd_matching_arch (sym_bfd, bfd_object, osabi);
+      tmp_bfd = open_bfd_matching_arch(sym_bfd, bfd_object, osabi);
       if (tmp_bfd != NULL)
 	sym_bfd = tmp_bfd;
     }
   /* APPLE LOCAL end symfile bfd open */
 
-  bfd_set_cacheable (sym_bfd, 1);
+  if (bfd_set_cacheable(sym_bfd, 1)) {
+    ; /* do nothing; the conditional is just to silence '-Wunused-value' */
+  }
 
-  if (!bfd_check_format (sym_bfd, bfd_object))
+  if (!bfd_check_format(sym_bfd, bfd_object))
     {
-      /* FIXME: should be checking for errors from bfd_close (for one thing,
+      /* FIXME: should be checking for errors from bfd_close (for 1 thing,
          on error it does not free all the storage associated with the
          bfd).  */
-      bfd_close (sym_bfd);	/* This also closes desc */
-      make_cleanup (xfree, (char *) name);
-      error (_("\"%s\": cannot read symbols: %s."), name,
-	     bfd_errmsg (bfd_get_error ()));
+      bfd_close(sym_bfd);	/* This also closes desc */
+      make_cleanup(xfree, (char *)name);
+      error(_("\"%s\": cannot read symbols: %s."), name,
+	    bfd_errmsg(bfd_get_error()));
     }
   return (sym_bfd);
 }
@@ -2338,9 +2335,9 @@ symfile_bfd_open (const char *name, int mainline, enum gdb_osabi osabi)
 /* Return the section index for the given section name. Return -1 if
    the section was not found. */
 int
-get_section_index (struct objfile *objfile, char *section_name)
+get_section_index(struct objfile *objfile, char *section_name)
 {
-  asection *sect = bfd_get_section_by_name (objfile->obfd, section_name);
+  asection *sect = bfd_get_section_by_name(objfile->obfd, section_name);
   if (sect)
     return sect->index;
   else
@@ -2353,7 +2350,7 @@ get_section_index (struct objfile *objfile, char *section_name)
    to handle. */
 
 void
-add_symtab_fns (struct sym_fns *sf)
+add_symtab_fns(struct sym_fns *sf)
 {
   sf->next = symtab_fns;
   symtab_fns = sf;
@@ -2366,14 +2363,14 @@ add_symtab_fns (struct sym_fns *sf)
    symbol file.  */
 
 static void
-find_sym_fns (struct objfile *objfile)
+find_sym_fns(struct objfile *objfile)
 {
   struct sym_fns *sf;
-  enum bfd_flavour our_flavour = bfd_get_flavour (objfile->obfd);
+  enum bfd_flavour our_flavour = bfd_get_flavour(objfile->obfd);
 
-  if (our_flavour == bfd_target_srec_flavour
-      || our_flavour == bfd_target_ihex_flavour
-      || our_flavour == bfd_target_tekhex_flavour)
+  if ((our_flavour == bfd_target_srec_flavour)
+      || (our_flavour == bfd_target_ihex_flavour)
+      || (our_flavour == bfd_target_tekhex_flavour))
     return;	/* No symbols. */
 
   for (sf = symtab_fns; sf != NULL; sf = sf->next)
@@ -2384,18 +2381,17 @@ find_sym_fns (struct objfile *objfile)
 	  return;
 	}
     }
-  error (_("I am sorry, Dave, I cannot do that. Symbol format `%s' unknown."),
-	 bfd_get_target (objfile->obfd));
+  error(_("I am sorry, Dave, I cannot do that. Symbol format `%s' unknown."),
+        bfd_get_target(objfile->obfd));
 }
 
-/* This function runs the load command of our current target.  */
-
+/* This function runs the load command of our current target: */
 static void
-load_command (char *arg, int from_tty)
+load_command(char *arg, int from_tty)
 {
   if (arg == NULL)
-    arg = get_exec_file (1);
-  target_load (arg, from_tty);
+    arg = get_exec_file(1);
+  target_load(arg, from_tty);
 
   /* After re-loading the executable, we do NOT really know which
      overlays are mapped any more.  */
@@ -2413,33 +2409,32 @@ load_command (char *arg, int from_tty)
 
 static int download_write_size = 512;
 static void
-show_download_write_size (struct ui_file *file, int from_tty,
-			  struct cmd_list_element *c, const char *value)
+show_download_write_size(struct ui_file *file, int from_tty,
+			 struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("\
+  fprintf_filtered(file, _("\
 The write size used when downloading a program is %s.\n"),
-		    value);
+                   value);
 }
 static int validate_download = 0;
 
-/* Callback service function for generic_load (bfd_map_over_sections).  */
-
+/* Callback service function for generic_load (bfd_map_over_sections): */
 static void
-add_section_size_callback (bfd *abfd, asection *asec, void *data)
+add_section_size_callback(bfd *abfd, asection *asec, void *data)
 {
-  bfd_size_type *sum = data;
+  bfd_size_type *sum = (bfd_size_type *)data;
 
-  *sum += bfd_get_section_size (asec);
+  *sum += bfd_get_section_size(asec);
 }
 
-/* Opaque data for load_section_callback.  */
+/* Opaque data for load_section_callback: */
 struct load_section_data {
   unsigned long load_offset;
   unsigned long write_count;
   unsigned long data_count;
   bfd_size_type total_size;
 
-  /* Per-section data for load_progress.  */
+  /* Per-section data for load_progress: */
   const char *section_name;
   ULONGEST section_sent;
   ULONGEST section_size;
@@ -2447,12 +2442,11 @@ struct load_section_data {
   gdb_byte *buffer;
 };
 
-/* Target write callback routine for load_section_callback.  */
-
+/* Target write callback routine for load_section_callback: */
 static void
-load_progress (ULONGEST bytes, void *untyped_arg)
+load_progress(ULONGEST bytes, void *untyped_arg)
 {
-  struct load_section_data *args = untyped_arg;
+  struct load_section_data *args = (struct load_section_data *)untyped_arg;
 
   if (validate_download)
     {
@@ -2463,16 +2457,16 @@ load_progress (ULONGEST bytes, void *untyped_arg)
 	 might add a verify_memory() method to the target vector and
 	 then use that.  remote.c could implement that method using
 	 the ``qCRC'' packet.  */
-      gdb_byte *check = xmalloc (bytes);
-      struct cleanup *verify_cleanups = make_cleanup (xfree, check);
+      gdb_byte *check = (gdb_byte *)xmalloc(bytes);
+      struct cleanup *verify_cleanups = make_cleanup(xfree, check);
 
-      if (target_read_memory (args->lma, check, bytes) != 0)
-	error (_("Download verify read failed at 0x%s"),
-	       paddr (args->lma));
-      if (memcmp (args->buffer, check, bytes) != 0)
-	error (_("Download verify compare failed at 0x%s"),
-	       paddr (args->lma));
-      do_cleanups (verify_cleanups);
+      if (target_read_memory(args->lma, check, bytes) != 0)
+	error(_("Download verify read failed at 0x%s"),
+	      paddr(args->lma));
+      if (memcmp(args->buffer, check, bytes) != 0)
+	error(_("Download verify compare failed at 0x%s"),
+	      paddr(args->lma));
+      do_cleanups(verify_cleanups);
     }
   args->data_count += bytes;
   args->lma += bytes;
@@ -2480,66 +2474,63 @@ load_progress (ULONGEST bytes, void *untyped_arg)
   args->write_count += 1;
   args->section_sent += bytes;
   if (quit_flag
-      || (deprecated_ui_load_progress_hook != NULL
-	  && deprecated_ui_load_progress_hook (args->section_name,
-					       args->section_sent)))
+      || ((deprecated_ui_load_progress_hook != NULL)
+	  && deprecated_ui_load_progress_hook(args->section_name,
+					      args->section_sent)))
     error (_("Canceled the download"));
 
   if (deprecated_show_load_progress != NULL)
-    deprecated_show_load_progress (args->section_name,
-				   args->section_sent,
-				   args->section_size,
-				   args->data_count,
-				   args->total_size);
+    deprecated_show_load_progress(args->section_name, args->section_sent,
+				  args->section_size, args->data_count,
+				  args->total_size);
 }
 
-/* Callback service function for generic_load (bfd_map_over_sections).  */
-
+/* Callback service function for generic_load (bfd_map_over_sections): */
 static void
-load_section_callback (bfd *abfd, asection *asec, void *data)
+load_section_callback(bfd *abfd, asection *asec, void *data)
 {
-  struct load_section_data *args = data;
-  bfd_size_type size = bfd_get_section_size (asec);
+  struct load_section_data *args = (struct load_section_data *)data;
+  bfd_size_type size = bfd_get_section_size(asec);
   gdb_byte *buffer;
   struct cleanup *old_chain;
-  const char *sect_name = bfd_get_section_name (abfd, asec);
+  const char *sect_name = bfd_get_section_name(abfd, asec);
   LONGEST transferred;
 
-  if ((bfd_get_section_flags (abfd, asec) & SEC_LOAD) == 0)
+  if ((bfd_get_section_flags(abfd, asec) & SEC_LOAD) == 0)
     return;
 
-  if (size == 0)
+  if (size == 0UL)
     return;
 
-  buffer = xmalloc (size);
-  old_chain = make_cleanup (xfree, buffer);
+  buffer = (gdb_byte *)xmalloc(size);
+  old_chain = make_cleanup(xfree, buffer);
 
   args->section_name = sect_name;
   args->section_sent = 0;
   args->section_size = size;
-  args->lma = bfd_section_lma (abfd, asec) + args->load_offset;
+  args->lma = (bfd_section_lma(abfd, asec) + args->load_offset);
   args->buffer = buffer;
 
   /* Is this really necessary?  I guess it gives the user something
      to look at during a long download.  */
-  ui_out_message (uiout, 0, "Loading section %s, size 0x%s lma 0x%s\n",
-		  sect_name, paddr_nz (size), paddr_nz (args->lma));
+  ui_out_message(uiout, 0, "Loading section %s, size 0x%s lma 0x%s\n",
+		 sect_name, paddr_nz(size), paddr_nz(args->lma));
 
-  bfd_get_section_contents (abfd, asec, buffer, 0, size);
+  bfd_get_section_contents(abfd, asec, buffer, 0, size);
 
-  transferred = target_write_with_progress (&current_target,
-					    TARGET_OBJECT_MEMORY,
-					    NULL, buffer, args->lma,
-					    size, load_progress, args);
-  if (transferred < size)
-    error (_("Memory access error while loading section %s."),
-	   sect_name);
+  transferred = target_write_with_progress(&current_target,
+					   TARGET_OBJECT_MEMORY,
+					   NULL, buffer, args->lma,
+					   size, load_progress, args);
+  if (transferred < (LONGEST)size)
+    error(_("Memory access error while loading section %s."),
+	  sect_name);
 
-  do_cleanups (old_chain);
+  do_cleanups(old_chain);
 }
 
 void
-generic_load (char *args, int from_tty)
+generic_load(char *args, int from_tty)
 {
   bfd *loadfile_bfd;
   struct timeval start_time, end_time;
@@ -2549,66 +2540,66 @@ generic_load (char *args, int from_tty)
   struct load_section_data cbdata;
   CORE_ADDR entry;
 
-  cbdata.load_offset = 0;	/* Offset to add to vma for each section. */
+  cbdata.load_offset = 0;   /* Offset to add to vma for each section. */
   cbdata.write_count = 0;	/* Number of writes needed. */
-  cbdata.data_count = 0;	/* Number of bytes written to target memory. */
+  cbdata.data_count = 0;    /* Number of bytes written to target memory. */
   cbdata.total_size = 0;	/* Total size of all bfd sectors. */
 
   /* Parse the input argument - the user can specify a load offset as
      a second argument. */
-  filename = xmalloc (strlen (args) + 1);
-  old_cleanups = make_cleanup (xfree, filename);
+  filename = (char *)xmalloc(strlen(args) + 1UL);
+  old_cleanups = make_cleanup(xfree, filename);
   strcpy (filename, args);
-  offptr = strchr (filename, ' ');
+  offptr = strchr(filename, ' ');
   if (offptr != NULL)
     {
       char *endptr;
 
-      cbdata.load_offset = strtoul (offptr, &endptr, 0);
+      cbdata.load_offset = strtoul(offptr, &endptr, 0);
       if (offptr == endptr)
-	error (_("Invalid download offset:%s."), offptr);
+	error(_("Invalid download offset:%s."), offptr);
       *offptr = '\0';
     }
   else
     cbdata.load_offset = 0;
 
-  /* Open the file for loading. */
-  loadfile_bfd = bfd_openr (xstrdup (filename), gnutarget);
+  /* Open the file for loading: */
+  loadfile_bfd = bfd_openr(xstrdup(filename), gnutarget);
   if (loadfile_bfd == NULL)
     {
-      perror_with_name (filename);
+      perror_with_name(filename);
       return;
     }
 
   /* FIXME: should be checking for errors from bfd_close (for one thing,
      on error it does not free all the storage associated with the
      bfd).  */
-  make_cleanup_bfd_close (loadfile_bfd);
+  make_cleanup_bfd_close(loadfile_bfd);
 
-  if (!bfd_check_format (loadfile_bfd, bfd_object))
+  if (!bfd_check_format(loadfile_bfd, bfd_object))
     {
-      error (_("\"%s\" is not an object file: %s"), filename,
-	     bfd_errmsg (bfd_get_error ()));
+      error(_("\"%s\" is not an object file: %s"), filename,
+	    bfd_errmsg(bfd_get_error()));
     }
 
   bfd_map_over_sections (loadfile_bfd, add_section_size_callback,
-			 (void *) &cbdata.total_size);
+			 (void *)&cbdata.total_size);
 
-  gettimeofday (&start_time, NULL);
+  gettimeofday(&start_time, NULL);
 
-  bfd_map_over_sections (loadfile_bfd, load_section_callback, &cbdata);
+  bfd_map_over_sections(loadfile_bfd, load_section_callback, &cbdata);
 
-  gettimeofday (&end_time, NULL);
+  gettimeofday(&end_time, NULL);
 
-  entry = bfd_get_start_address (loadfile_bfd);
-  ui_out_text (uiout, "Start address ");
-  ui_out_field_fmt (uiout, "address", "0x%s", paddr_nz (entry));
-  ui_out_text (uiout, ", load size ");
-  ui_out_field_fmt (uiout, "load-size", "%lu", cbdata.data_count);
-  ui_out_text (uiout, "\n");
+  entry = bfd_get_start_address(loadfile_bfd);
+  ui_out_text(uiout, "Start address ");
+  ui_out_field_fmt(uiout, "address", "0x%s", paddr_nz(entry));
+  ui_out_text(uiout, ", load size ");
+  ui_out_field_fmt(uiout, "load-size", "%lu", cbdata.data_count);
+  ui_out_text(uiout, "\n");
   /* We were doing this in remote-mips.c, I suspect it is right
      for other targets too.  */
-  write_pc (entry);
+  write_pc(entry);
 
   /* FIXME: are we supposed to call symbol_file_add or not?  According
      to a comment from remote-mips.c (where a call to symbol_file_add
@@ -2616,10 +2607,10 @@ generic_load (char *args, int from_tty)
      file is loaded in.  Some targets do (e.g., remote-vx.c) but
      others do NOT (or _did_ not - perhaps they have all been deleted).  */
 
-  print_transfer_performance (gdb_stdout, cbdata.data_count,
-			      cbdata.write_count, &start_time, &end_time);
+  print_transfer_performance(gdb_stdout, cbdata.data_count,
+			     cbdata.write_count, &start_time, &end_time);
 
-  do_cleanups (old_cleanups);
+  do_cleanups(old_cleanups);
 }
 
 /* Report how fast the transfer went. */
@@ -2687,7 +2678,7 @@ print_transfer_performance (struct ui_file *stream,
    value to use. We are now discontinuing this type of ad hoc syntax. */
 
 static void
-add_symbol_file_command (char *args, int from_tty)
+add_symbol_file_command(char *args, int from_tty)
 {
   char *filename = NULL;
   char *address = NULL;
@@ -2714,21 +2705,21 @@ add_symbol_file_command (char *args, int from_tty)
   struct section_addr_info *section_addrs;
   struct sect_opt *sect_opts = NULL;
   size_t num_sect_opts = 0;
-  struct cleanup *my_cleanups = make_cleanup (null_cleanup, NULL);
+  struct cleanup *my_cleanups = make_cleanup(null_cleanup, NULL);
 
   num_sect_opts = 16;
   sect_opts = (struct sect_opt *) xmalloc (num_sect_opts
-					   * sizeof (struct sect_opt));
+					   * sizeof(struct sect_opt));
 
-  dont_repeat ();
+  dont_repeat();
 
   if (args == NULL)
-    error (usage_string, "argument required");
+    error(usage_string, "argument required");
 
-  argv = buildargv (args);
+  argv = buildargv(args);
   if (argv == NULL)
     nomem (0);
-  make_cleanup_freeargv (argv);
+  make_cleanup_freeargv(argv);
 
   argcnt = 0;
   for (;;)
@@ -2742,34 +2733,35 @@ add_symbol_file_command (char *args, int from_tty)
 
       if (*arg == '-')
  	{
- 	  if (strcmp (arg, "-mapaddr") == 0)
+ 	  if (strcmp(arg, "-mapaddr") == 0)
  	    {
  	      char *atmp = argv[argcnt++];
  	      if (atmp == NULL)
- 		error (usage_string, "must specify address to -mapaddr");
- 	      mapaddr = parse_and_eval_address (atmp);
+ 		error(usage_string, "must specify address to -mapaddr");
+ 	      mapaddr = parse_and_eval_address(atmp);
  	    }
- 	  if (strcmp (arg, "-prefix") == 0)
+ 	  if (strcmp(arg, "-prefix") == 0)
  	    {
  	      char *atmp = argv[argcnt++];
  	      if (atmp == NULL)
- 		error (usage_string, "must specify address to -prefix");
- 	      prefix = xstrdup (atmp);
+ 		error(usage_string, "must specify address to -prefix");
+ 	      prefix = xstrdup(atmp);
  	    }
- 	  else if (strcmp (arg, "-readnow") == 0)
+ 	  else if (strcmp(arg, "-readnow") == 0)
  	    flags |= OBJF_READNOW;
- 	  else if (strcmp (arg, "-s") == 0)
+ 	  else if (strcmp(arg, "-s") == 0)
  	    {
  	      char *atmp = argv[argcnt++];
+              char *atmp2;
  	      if (atmp == NULL)
- 		error (usage_string, "must specify section name to -s");
+ 		error(usage_string, "must specify section name to -s");
 
- 	      char *atmp2 = argv[argcnt++];
+ 	      atmp2 = argv[argcnt++];
  	      if (atmp2 == NULL)
- 		error (usage_string, "must specify section address to -s");
+ 		error(usage_string, "must specify section address to -s");
 
  	      if (section_index >= 16)
- 		error (usage_string, "too many sections specified.");
+ 		error(usage_string, "too many sections specified.");
 
  	      sect_opts[section_index].name = atmp;
  	      sect_opts[section_index].value = atmp2;
@@ -2780,8 +2772,8 @@ add_symbol_file_command (char *args, int from_tty)
  	{
  	  if (filename == NULL)
  	    {
- 	      filename = tilde_expand (arg);
- 	      make_cleanup (xfree, filename);
+ 	      filename = tilde_expand(arg);
+ 	      make_cleanup(xfree, filename);
  	    }
  	  else if (address == NULL)
  	    {
@@ -2789,7 +2781,7 @@ add_symbol_file_command (char *args, int from_tty)
  	    }
  	  else
  	    {
- 	      error (usage_string, "too many arguments");
+ 	      error(usage_string, "too many arguments");
  	    }
  	}
     }
@@ -2797,7 +2789,7 @@ add_symbol_file_command (char *args, int from_tty)
   if (address != NULL)
     {
       if (section_index >= 16)
-	error (usage_string, "too many sections specified.");
+	error(usage_string, "too many sections specified.");
 
       /* APPLE LOCAL: Look for the text segment ("__TEXT"), not the section
          ("__TEXT.__text") because what we are really looking for is the load
@@ -2808,7 +2800,7 @@ add_symbol_file_command (char *args, int from_tty)
     }
 
   if (filename == NULL)
-    error ("usage: must specify exactly one filename");
+    error("usage: must specify exactly one filename");
 
   /* APPLE LOCAL: Did the user do "add-symbol-file whatever.dSYM" when
      they really intended to do an add-dsym?
@@ -2816,18 +2808,18 @@ add_symbol_file_command (char *args, int from_tty)
      we will assume they know what they are doing and give them a warning.
      If it is just the dSYM bundle name, redirect to add-dsym.  */
 
-  if (strstr (filename, ".dSYM"))
+  if (strstr(filename, ".dSYM"))
     {
       /* If there is one argument (e.g. a filename), argcnt == 2 */
       if (argcnt == 2)
         {
-          add_dsym_command (args, from_tty);
+          add_dsym_command(args, from_tty);
           return;
         }
       else
         {
-          warning ("add-symbol-file does NOT work on dSYM files, use "
-                   "\"add-dsym\" instead.");
+          warning("add-symbol-file does NOT work on dSYM files, use "
+                  "\"add-dsym\" instead.");
         }
     }
 
@@ -2840,11 +2832,11 @@ add_symbol_file_command (char *args, int from_tty)
   /* APPLE LOCAL: Do NOT print ``at\n'' (which should be followed by
      a list of sections and addresses) if there are no sections and
      addresses supplied (i.e. "add-symbol-file a.out")  */
-  printf_filtered ("add symbol table from file \"%s\"", filename);
+  printf_filtered("add symbol table from file \"%s\"", filename);
   if (section_index > 0)
-    printf_filtered (" at\n");
+    printf_filtered(" at\n");
   else
-    printf_filtered ("? ");
+    printf_filtered("? ");
   if (section_index == 0)
     {
       section_addrs = NULL;
@@ -2859,14 +2851,14 @@ add_symbol_file_command (char *args, int from_tty)
 	  char *val = sect_opts[i].value;
 	  char *sec = sect_opts[i].name;
 
-	  addr = parse_and_eval_address (val);
+	  addr = parse_and_eval_address(val);
 
 	  /* Here we store the section offsets in the order they were
 	     entered on the command line. */
 	  section_addrs->other[sec_num].name = sec;
 	  section_addrs->other[sec_num].addr = addr;
 	  printf_unfiltered ("\t%s = 0x%s\n",
-			     sec, paddr_nz (addr));
+			     sec, paddr_nz(addr));
 	  sec_num++;
 
 	  /* The object's sections are initialized when a
@@ -2877,8 +2869,8 @@ add_symbol_file_command (char *args, int from_tty)
 	}
     }
 
-  if (from_tty && (!query ("%s", "")))
-    error (_("Not confirmed."));
+  if (from_tty && (!query("%s", "")))
+    error(_("Not confirmed."));
 
   /* APPLE LOCAL: Save return'ed objfile, set the syms_only_objfile flag */
   o = symbol_file_add_name_with_addrs_or_offsets
@@ -2887,15 +2879,15 @@ add_symbol_file_command (char *args, int from_tty)
   o->syms_only_objfile = 1;
 
 #ifdef MACOSX_DYLD
-  update_section_tables ();
+  update_section_tables();
 #endif /* MACOSX_DYLD */
-  update_current_target ();
-  re_enable_breakpoints_in_shlibs (0);
+  update_current_target();
+  re_enable_breakpoints_in_shlibs(0);
 
   /* Getting new symbols may change our opinion about what is
      frameless.  */
-  reinit_frame_cache ();
-  do_cleanups (my_cleanups);
+  reinit_frame_cache();
+  do_cleanups(my_cleanups);
 }
 
 /* APPLE LOCAL: A stripped down copy of add_symbol_file_command designed
@@ -2919,13 +2911,13 @@ add_symbol_file_command (char *args, int from_tty)
    that will be used when reading #3.
  */
 
-static void find_kext_files_by_bundle (const char *filename,
-                                       char **kextload_symbol_filename,
+static void find_kext_files_by_bundle(const char *filename,
+                                      char **kextload_symbol_filename,
+                                      char **kext_bundle_executable_filename);
+static void find_kext_files_by_symfile(const char *filename,
                                        char **kext_bundle_executable_filename);
-static void find_kext_files_by_symfile (const char *filename,
-                                        char **kext_bundle_executable_filename);
 static void
-add_kext_command (char *args, int from_tty)
+add_kext_command(char *args, int from_tty)
 {
   char **argv = NULL;
   char *filename;
@@ -2949,70 +2941,68 @@ add_kext_command (char *args, int from_tty)
     "spotlight indexed location or the same directory as the .sym.\n"
     "On newer kernels, the .sym file is not required - only the .kext and .dSYM.";
 
-  struct cleanup *my_cleanups = make_cleanup (null_cleanup, NULL);
+  struct cleanup *my_cleanups = make_cleanup(null_cleanup, NULL);
 
-  dont_repeat ();
+  dont_repeat();
 
   if (args == NULL)
-    error (usage_string, "argument required");
+    error(usage_string, "argument required");
 
-  argv = buildargv (args);
+  argv = buildargv(args);
   if (argv == NULL)
-    nomem (0);
-  make_cleanup_freeargv (argv);
+    nomem(0);
+  make_cleanup_freeargv(argv);
 
   filename = argv[0];
   if (filename == NULL)
-    error (usage_string, "no kext bundle name supplied");
+    error(usage_string, "no kext bundle name supplied");
 
-  ext = strrchr (filename, '.');
+  ext = strrchr(filename, '.');
   if (!ext)
-    error (usage_string, "supplied path has no extension");
+    error(usage_string, "supplied path has no extension");
 
-  if (!strncmp (ext, ".kext", strlen (".kext")))
+  if (!strncmp(ext, ".kext", strlen(".kext")))
     {
        /* See if we can find a .sym file next to the .kext bundle; use it
-        * if it is there.
-		*/
-       find_kext_files_by_bundle (filename, &kextload_symbol_filename,
-                                   &kext_bundle_executable_filename);
+        * if it is there: */
+       find_kext_files_by_bundle(filename, &kextload_symbol_filename,
+                                 &kext_bundle_executable_filename);
 
        /* See if the kernel can supply load addresses to us; if it can,
-        * we do NOT need a .sym file at all.
-		*/
-       if ((!kextload_symbol_filename || !file_exists_p (kextload_symbol_filename))
-           && lookup_minimal_symbol ("gLoadedKextSummaries", NULL, NULL))
+        * we do NOT need a .sym file at all: */
+       if ((!kextload_symbol_filename || !file_exists_p(kextload_symbol_filename))
+           && lookup_minimal_symbol("gLoadedKextSummaries", NULL, NULL))
          {
-           section_addrs = find_kext_loadaddrs_from_kernel (filename,
-                                            &kext_bundle_executable_filename);
+           section_addrs = find_kext_loadaddrs_from_kernel(filename,
+                                                           &kext_bundle_executable_filename);
            if (section_addrs)
-             make_cleanup_free_section_addr_info (section_addrs);
+             make_cleanup_free_section_addr_info(section_addrs);
          }
     }
-  else if (!strncmp (ext, ".sym", strlen (".sym")))
+  else if (!strncmp(ext, ".sym", strlen(".sym")))
     {
-      find_kext_files_by_symfile (filename, &kext_bundle_executable_filename);
-      kextload_symbol_filename = xstrdup (filename);
-      if (kernel_slide != 0 && kernel_slide != INVALID_ADDRESS && section_addrs == NULL)
+      find_kext_files_by_symfile(filename, &kext_bundle_executable_filename);
+      kextload_symbol_filename = xstrdup(filename);
+      if ((kernel_slide != 0) && (kernel_slide != INVALID_ADDRESS) && (section_addrs == NULL))
         {
-          section_addrs = get_section_addrs_of_macho_on_disk (filename);
-          int i = 0;
-          for (i = 0; i < section_addrs->num_sections; i++)
+          size_t i = 0UL;
+          section_addrs = get_section_addrs_of_macho_on_disk(filename);
+          for (i = 0UL; i < section_addrs->num_sections; i++)
             section_addrs->other[i].addr += kernel_slide;
         }
     }
   else
-      error (usage_string, "supplied file must have a .kext or .sym extension");
+      error(usage_string, "supplied file must have a .kext or .sym extension");
 
     if (kext_bundle_executable_filename == NULL)
       {
-        // Try to print just the basename here
-        const char *bname = strrchr (filename, '/');
-        if (bname && *bname == '/' && *(bname + 1) != '\0')
+        /* Try to print just the basename here: */
+        const char *bname = strrchr(filename, '/');
+        if (bname && (*bname == '/') && (*(bname + 1) != '\0'))
           bname++;
         else
           bname = filename;
-        printf_filtered ("No .kext bundle binary found for %s -- not adding kext.\n\n", bname);
+        printf_filtered("No .kext bundle binary found for %s -- not adding kext.\n\n", bname);
         return;
       }
 
@@ -3020,42 +3010,47 @@ add_kext_command (char *args, int from_tty)
     {
       struct section_offsets *sect_offsets;
       int num_offsets;
-      sect_offsets = convert_sect_addrs_to_offsets_via_on_disk_file
-                        (section_addrs, kext_bundle_executable_filename,
-                         &num_offsets);
-      o = symbol_file_add_name_with_addrs_or_offsets
-                 (kext_bundle_executable_filename, from_tty, NULL,
-                  sect_offsets, num_offsets, 0, flags, symflags, 0, NULL, NULL);
-      xfree (sect_offsets);
+      sect_offsets = convert_sect_addrs_to_offsets_via_on_disk_file(section_addrs,
+                                                                    kext_bundle_executable_filename,
+                                                                    &num_offsets);
+      o = symbol_file_add_name_with_addrs_or_offsets(kext_bundle_executable_filename,
+                                                     from_tty, NULL,
+                                                     sect_offsets,
+                                                     num_offsets, 0,
+                                                     flags, symflags, 0,
+                                                     NULL, NULL);
+      xfree(sect_offsets);
     }
   else
     {
-      o = symbol_file_add_name_with_addrs_or_offsets
-                 (kextload_symbol_filename, from_tty, NULL, NULL, 0, 0,
-                  flags, symflags, 0, NULL, kext_bundle_executable_filename);
+      o = symbol_file_add_name_with_addrs_or_offsets(kextload_symbol_filename,
+                                                     from_tty, NULL, NULL,
+                                                     0, 0, flags, symflags,
+                                                     0, NULL,
+                                                     kext_bundle_executable_filename);
       o->syms_only_objfile = 1;
     }
 
-  if (bfd_default_compatible (bfd_get_arch_info (o->obfd),
-                              gdbarch_bfd_arch_info (current_gdbarch)) == NULL)
+  if (bfd_default_compatible(bfd_get_arch_info(o->obfd),
+                             gdbarch_bfd_arch_info(current_gdbarch)) == NULL)
     {
-      warning ("This gdb is expecting %s binaries but %s is %s which is not "
-               "compatible.  gdb will use the .sym file but this is unlikely "
-               "to be correct.",
-               gdbarch_bfd_arch_info (current_gdbarch)->printable_name,
-               o->name, bfd_get_arch_info (o->obfd)->printable_name);
+      warning("This gdb is expecting %s binaries but %s is %s which is not "
+              "compatible.  gdb will use the .sym file but this is unlikely "
+              "to be correct.",
+              gdbarch_bfd_arch_info(current_gdbarch)->printable_name,
+              o->name, bfd_get_arch_info(o->obfd)->printable_name);
     }
 
 #ifdef NM_NEXTSTEP
-  update_section_tables ();
+  update_section_tables();
 #endif /* NM_NEXTSTEP */
-  update_current_target ();
-  breakpoint_update ();
+  update_current_target();
+  breakpoint_update();
 
   /* Getting new symbols may change our opinion about what is
-     frameless.  */
-  reinit_frame_cache ();
-  do_cleanups (my_cleanups);
+   * frameless: */
+  reinit_frame_cache();
+  do_cleanups(my_cleanups);
 }
 
 /* Given the pathname to a kext bundle, read the Info.plist
@@ -3069,90 +3064,96 @@ add_kext_command (char *args, int from_tty)
    responsibility of the caller to free them.  */
 
 static void
-get_kext_bundle_ident_and_binary_path (const char *filename,
-                             const char **kext_bundle_filename,
-                             char **kext_bundle_executable_filename,
-                             const char **bundle_identifier_name_from_plist)
+get_kext_bundle_ident_and_binary_path(const char *filename,
+                                      const char **kext_bundle_filename,
+                                      char **kext_bundle_executable_filename,
+                                      const char **bundle_identifier_name_from_plist)
 {
   const char *bundle_executable_name_from_plist;
+  char *t;
 
-  *kext_bundle_filename = macosx_kext_info (filename,
-                                           &bundle_executable_name_from_plist,
-                                           bundle_identifier_name_from_plist);
+  *kext_bundle_filename = macosx_kext_info(filename,
+                                          &bundle_executable_name_from_plist,
+                                          bundle_identifier_name_from_plist);
 
   if (*kext_bundle_filename == NULL)
-    error ("Unable to find kext bundle at \"%s\"", filename);
+    error("Unable to find kext bundle at \"%s\"", filename);
   if (bundle_executable_name_from_plist == NULL)
-    error ("Unable to find CFBundleExecutable in Info.plist");
+    error("Unable to find CFBundleExecutable in Info.plist");
   if (*bundle_identifier_name_from_plist == NULL)
-    error ("Unable to find CFBundleIdentifier in Info.plist");
+    error("Unable to find CFBundleIdentifier in Info.plist");
 
- char *t = dirname ((char *)*kext_bundle_filename);
+  t = dirname((char *)*kext_bundle_filename);
   if (t == NULL)
-    error ("dirname on the kext bundle filename failed");
+    error("dirname on the kext bundle filename failed");
 
-  *kext_bundle_executable_filename = xmalloc (strlen (*kext_bundle_filename) +
-                                strlen ("/Contents/MacOS/") +
-                                strlen (bundle_executable_name_from_plist) + 1);
-  strcpy (*kext_bundle_executable_filename, *kext_bundle_filename);
-  strcat (*kext_bundle_executable_filename, "/Contents/MacOS/");
-  strcat (*kext_bundle_executable_filename, bundle_executable_name_from_plist);
+  *kext_bundle_executable_filename = (char *)xmalloc(strlen(*kext_bundle_filename)
+                                                     + strlen("/Contents/MacOS/")
+                                                     + strlen(bundle_executable_name_from_plist)
+                                                     + 1UL);
+  strcpy(*kext_bundle_executable_filename, *kext_bundle_filename);
+  strcat(*kext_bundle_executable_filename, "/Contents/MacOS/");
+  strcat(*kext_bundle_executable_filename, bundle_executable_name_from_plist);
 
-  /* See if we might be loading a shallow bundle here.  */
-  if (!file_exists_p (*kext_bundle_executable_filename))
+  /* See if we might be loading a shallow bundle here: */
+  if (!file_exists_p(*kext_bundle_executable_filename))
     {
-       char *shallow_bundle_name = xmalloc (strlen (*kext_bundle_filename) + 1 +
-                               strlen (bundle_executable_name_from_plist) + 1);
-       strcpy (shallow_bundle_name, *kext_bundle_filename);
-       strcat (shallow_bundle_name, "/");
-       strcat (shallow_bundle_name, bundle_executable_name_from_plist);
-       if (file_exists_p (shallow_bundle_name))
+       char *shallow_bundle_name = (char *)xmalloc(strlen(*kext_bundle_filename)
+                                                   + 1UL + strlen(bundle_executable_name_from_plist)
+                                                   + 1UL);
+       strcpy(shallow_bundle_name, *kext_bundle_filename);
+       strcat(shallow_bundle_name, "/");
+       strcat(shallow_bundle_name, bundle_executable_name_from_plist);
+       if (file_exists_p(shallow_bundle_name))
          {
-           xfree ((char *) *kext_bundle_executable_filename);
+           xfree((char *)*kext_bundle_executable_filename);
            *kext_bundle_executable_filename = shallow_bundle_name;
          }
        else
          {
-           xfree ((char *) shallow_bundle_name);
+           xfree((char *)shallow_bundle_name);
          }
     }
 }
 
 static void
-find_kext_files_by_bundle (const char *filename,
-                           char **kextload_symbol_filename,
-                           char **kext_bundle_executable_filename)
+find_kext_files_by_bundle(const char *filename,
+                          char **kextload_symbol_filename,
+                          char **kext_bundle_executable_filename)
 {
   const char *kext_bundle_filename;
   const char *bundle_identifier_name_from_plist;
   char *kextload_symbol_basename;
+  char *t;
 
-  get_kext_bundle_ident_and_binary_path (filename, &kext_bundle_filename,
-         kext_bundle_executable_filename, &bundle_identifier_name_from_plist);
+  get_kext_bundle_ident_and_binary_path(filename, &kext_bundle_filename,
+                                        kext_bundle_executable_filename,
+                                        &bundle_identifier_name_from_plist);
 
-  kextload_symbol_basename = xmalloc
-             (strlen (bundle_identifier_name_from_plist) + strlen (".sym") + 1);
-  strcpy (kextload_symbol_basename, bundle_identifier_name_from_plist);
-  strcat (kextload_symbol_basename, ".sym");
+  kextload_symbol_basename =
+    (char *)xmalloc(strlen(bundle_identifier_name_from_plist) + strlen(".sym") + 1UL);
+  strcpy(kextload_symbol_basename, bundle_identifier_name_from_plist);
+  strcat(kextload_symbol_basename, ".sym");
 
- char *t = dirname ((char *)kext_bundle_filename);
+  t = dirname((char *)kext_bundle_filename);
   if (t == NULL)
-    error ("dirname on the kext bundle filename failed");
+    error("dirname on the kext bundle filename failed");
 
   /* A string of "." means that KEXT_BUNDLE_FILENAME has no dirname
      component. */
-  if (t[0] == '.' && t[1] == '\0')
+  if ((t[0] == '.') && (t[1] == '\0'))
     {
       *kextload_symbol_filename = kextload_symbol_basename;
     }
-  else if (file_exists_p (kextload_symbol_basename))
+  else if (file_exists_p(kextload_symbol_basename))
     {
       *kextload_symbol_filename = kextload_symbol_basename;
     }
   else
     {
-      *kextload_symbol_filename = xmalloc (strlen (t) + 1 +
-                                  strlen (kextload_symbol_basename) + 1);
+      *kextload_symbol_filename = (char *)xmalloc(strlen(t) + 1UL
+                                                  + strlen(kextload_symbol_basename)
+                                                  + 1UL);
       strcpy (*kextload_symbol_filename, t);
       strcat (*kextload_symbol_filename, "/");
       strcat (*kextload_symbol_filename, kextload_symbol_basename);
@@ -3160,83 +3161,89 @@ find_kext_files_by_bundle (const char *filename,
     }
 
   /* By default we assume the .sym file is next to the .kext bundle - but
-     if the user has added a kext-symbol-file-path, look there as well.  */
-
-  if (file_exists_p (*kextload_symbol_filename) == 0
-      && kext_symbol_file_path != NULL)
+   * if the user has added a kext-symbol-file-path, look there as well: */
+  if ((file_exists_p(*kextload_symbol_filename) == 0)
+      && (kext_symbol_file_path != NULL))
     {
       char *possible_new_name;
-      possible_new_name = xmalloc (strlen (kext_symbol_file_path) + 1 +
-                                   strlen (bundle_identifier_name_from_plist) +
-                                   strlen (".sym") + 1);
-      strcpy (possible_new_name, kext_symbol_file_path);
-      strcat (possible_new_name, "/");
-      strcat (possible_new_name, bundle_identifier_name_from_plist);
-      strcat (possible_new_name, ".sym");
-      if (file_exists_p (possible_new_name))
+      possible_new_name = (char *)xmalloc(strlen(kext_symbol_file_path)
+                                          + 1UL + strlen(bundle_identifier_name_from_plist)
+                                          + strlen(".sym") + 1UL);
+      strcpy(possible_new_name, kext_symbol_file_path);
+      strcat(possible_new_name, "/");
+      strcat(possible_new_name, bundle_identifier_name_from_plist);
+      strcat(possible_new_name, ".sym");
+      if (file_exists_p(possible_new_name))
         {
-          xfree (*kextload_symbol_filename);
+          xfree(*kextload_symbol_filename);
           *kextload_symbol_filename = possible_new_name;
         }
     }
 
-  xfree ((char *) bundle_identifier_name_from_plist);
+  xfree((char *)bundle_identifier_name_from_plist);
 }
 
-/* This is used in a kernel debug session where the user
-   is adding the symbol file and/or debug info for one of
-   the loaded kexts.  It looks in the kernel memory at the
-   list of currently loaded kexts, get the load addresses of
-   each section and fills in a section_addr_info structure.
-
-   It is the responsibility of the caller to free the
-   section_addr_info structure.  free_section_addr_info()
-   is the best way to do this.
-
-   An error will be thrown if there are any problems finding
-   the kext load addresses in the kernel's memory.
-*/
-
+/* This is used in a kernel debug session where the user is adding the
+ * symbol file and/or debug info for one of the loaded kexts.  It looks in
+ * the kernel memory at the list of currently loaded kexts, gets the load
+ * addresses of each section, and then fills in a section_addr_info
+ * structure.
+ *
+ * It is the responsibility of the caller to free the section_addr_info
+ * structure.  free_section_addr_info() is the best way to do this.
+ *
+ * An error will be thrown if there are any problems finding the kext load
+ * addresses in the kernel's memory.  */
 static struct section_addr_info *
-find_kext_loadaddrs_from_kernel (const char *filename,
-                                 char **kext_bundle_executable_filename)
+find_kext_loadaddrs_from_kernel(const char *filename,
+                                char **kext_bundle_executable_filename)
 {
   const char *bundle_identifier_name_from_plist;
   const char *kext_bundle_filename;
 
-  get_kext_bundle_ident_and_binary_path (filename, &kext_bundle_filename,
-         kext_bundle_executable_filename, &bundle_identifier_name_from_plist);
+  uint8_t **kext_uuids;
+  struct cleanup *clean;
+  int i;
+  struct section_addr_info *sect_addrs;
 
-  if (bundle_identifier_name_from_plist)
-    make_cleanup (xfree, bundle_identifier_name_from_plist);
-  if (kext_bundle_filename)
-    make_cleanup (xfree, kext_bundle_filename);
+  get_kext_bundle_ident_and_binary_path(filename, &kext_bundle_filename,
+                                        kext_bundle_executable_filename,
+                                        &bundle_identifier_name_from_plist);
 
-  // kext_bundle_filename now holds the path to the kext executable binary
+  if (bundle_identifier_name_from_plist) {
+    make_cleanup(xfree, (void *)bundle_identifier_name_from_plist);
+  }
+  if (kext_bundle_filename) {
+    make_cleanup(xfree, (void *)kext_bundle_filename);
+  }
 
-  uint8_t **kext_uuids = get_binary_file_uuids (*kext_bundle_executable_filename);
-  if (kext_uuids == NULL)
-    error ("Unable to find Mach-O LC_UUID load command in file '%s'",
-                                      *kext_bundle_executable_filename);
-  struct cleanup *clean = make_cleanup (free_uuids_array, kext_uuids);
+  /* kext_bundle_filename now holds the path to the kext executable
+   * binary: */
+  kext_uuids = get_binary_file_uuids(*kext_bundle_executable_filename);
+  if (kext_uuids == NULL) {
+    error("Unable to find Mach-O LC_UUID load command in file '%s'",
+          *kext_bundle_executable_filename);
+  }
+  clean = make_cleanup((make_cleanup_ftype *)free_uuids_array, kext_uuids);
 
-  int i = 0;
+  i = 0;
   while (kext_uuids[i] != NULL)
     {
-      if (find_objfile_by_uuid (kext_uuids[i]))
-        error ("%s has already been added.", filename);
+      if (find_objfile_by_uuid (kext_uuids[i])) {
+        error("%s has already been added.", filename);
+      }
       i++;
     }
 
-  struct section_addr_info *sect_addrs;
-  sect_addrs = macosx_get_kext_sect_addrs_from_kernel
-                                   (*kext_bundle_executable_filename,
-                                    kext_uuids,
-                                    bundle_identifier_name_from_plist);
-  if (sect_addrs == NULL)
-    error ("Unable to find the kext '%s' loaded in this kernel.", filename);
+  sect_addrs
+    = macosx_get_kext_sect_addrs_from_kernel(*kext_bundle_executable_filename,
+                                             kext_uuids,
+                                             bundle_identifier_name_from_plist);
+  if (sect_addrs == NULL) {
+    error("Unable to find the kext '%s' loaded in this kernel.", filename);
+  }
 
-  do_cleanups (clean);
+  do_cleanups(clean);
 
   return sect_addrs;
 }
@@ -3259,35 +3266,37 @@ find_kext_files_by_symfile (const char *filename,
    *   5) Proceed as add-kext does.
    */
 
-  abfd = symfile_bfd_open (filename, 0, GDB_OSABI_UNKNOWN);
+  abfd = symfile_bfd_open(filename, 0, GDB_OSABI_UNKNOWN);
   if (abfd == NULL)
-    error ("Cannot open kext sym file");
+    error("Cannot open kext sym file");
 
-  *kext_bundle_executable_filename = macosx_locate_kext_executable_by_symfile (abfd);
+  *kext_bundle_executable_filename = macosx_locate_kext_executable_by_symfile(abfd);
   if (*kext_bundle_executable_filename == NULL)
     {
-      // Try to print just the basename here if we have a uuid
-      const char *bname = strrchr (filename, '/');
-      if (bname && *bname == '/' && *(bname + 1) != '\0')
-        bname++;
-      else
-        bname = filename;
-
       uint8_t uuid[16];
-      if (bfd_mach_o_get_uuid (abfd, uuid, sizeof (uuid)))
-        warning ("Cannot find .kext bundle for %s (%s)", bname, puuid (uuid));
-      else
-        warning ("Cannot find .kext bundle for %s", filename);
+      /* Try to print just the basename here if we have a uuid: */
+      const char *bname = strrchr(filename, '/');
+      if (bname && (*bname == '/') && (*(bname + 1) != '\0')) {
+        bname++;
+      } else {
+        bname = filename;
+      }
+
+      if (bfd_mach_o_get_uuid(abfd, uuid, sizeof(uuid))) {
+        warning("Cannot find .kext bundle for %s (%s)", bname,
+                puuid(uuid));
+      } else {
+        warning("Cannot find .kext bundle for %s", filename);
+      }
     }
 
-  bfd_close (abfd);
+  bfd_close(abfd);
 }
 
 /* APPLE LOCAL: This command adds the space-separated list of dSYMs
-   pointed to by ARGS to the objfiles with matching UUIDs.  */
-
+ * pointed to by ARGS to the objfiles with matching UUIDs.  */
 static void
-add_dsym_command (char *args, int from_tty)
+add_dsym_command(char *args, int from_tty)
 {
   struct objfile *objfile;
   volatile struct gdb_exception e;
@@ -3298,43 +3307,43 @@ add_dsym_command (char *args, int from_tty)
   struct cleanup *argv_cleanup;
   struct stat stat_buf;
   char **arg_array;
-  int i;
+  volatile int i;
 
-  if (args == NULL || *args == '\0')
-    error ("Wrong number of args, should be \"add-dsym <DSYM PATH>\".");
+  if ((args == NULL) || (*args == '\0'))
+    error("Wrong number of args, should be \"add-dsym <DSYM PATH>\".");
 
-  arg_array = buildargv (args);
+  arg_array = buildargv(args);
   if (arg_array == NULL)
-    error ("Unable to build argument vector for add-dsym command.");
+    error("Unable to build argument vector for add-dsym command.");
 
-  argv_cleanup = make_cleanup_freeargv (arg_array);
+  argv_cleanup = make_cleanup_freeargv(arg_array);
 
   for (i = 0; arg_array[i] != NULL; i++)
     {
-      /* Check that the passed in dsym file exists */
-      full_name = tilde_expand (arg_array[i]);
-      full_name_cleanup = make_cleanup (xfree, full_name);
-      if (stat (full_name, &stat_buf) == -1)
+      /* Check that the passed in dsym file exists: */
+      full_name = tilde_expand(arg_array[i]);
+      full_name_cleanup = make_cleanup(xfree, full_name);
+      if (stat(full_name, &stat_buf) == -1)
 	{
-	  error ("Error \"%s\" accessing dSYM file \"%s\".",
-		 strerror (errno), full_name);
-
+	  error("Error \"%s\" accessing dSYM file \"%s\".",
+                strerror(errno), full_name);
 	}
 
-      objfile = macosx_find_objfile_matching_dsym_in_bundle (full_name, &dsym_path);
+      objfile = macosx_find_objfile_matching_dsym_in_bundle(full_name,
+                                                            &dsym_path);
 
       if (!objfile)
 	{
-	  warning ("Could not find binary to match \"%s\".", full_name);
+	  warning("Could not find binary to match \"%s\".", full_name);
 	  continue;
 	}
 
-      make_cleanup (xfree, dsym_path);
+      make_cleanup(xfree, dsym_path);
 
       if (objfile->separate_debug_objfile != NULL)
 	{
-	  warning ("Trying to add dSYM file to \"%s\" which already has one.",
-		 objfile->name);
+	  warning("Trying to add dSYM file to \"%s\" which already has one.",
+                  objfile->name);
 	  goto do_cleanups;
 	}
 
@@ -3343,8 +3352,8 @@ add_dsym_command (char *args, int from_tty)
        * away the name now so we can print the command result
        * when we are done.  */
 
-      objfile_name = xstrdup (objfile->name);
-      make_cleanup (xfree, objfile_name);
+      objfile_name = xstrdup(objfile->name);
+      make_cleanup(xfree, objfile_name);
 
       /* The code that brings in a new objfile is too involved
        * to try to JUST add a dSYM to the extant objfile. Instead,
@@ -3356,42 +3365,43 @@ add_dsym_command (char *args, int from_tty)
        * way raising the load levels does.  */
 
       already_found_debug_file = dsym_path;
-      TRY_CATCH (e, RETURN_MASK_ERROR)
+      TRY_CATCH(e, RETURN_MASK_ERROR)
 	{
 	  /* This is a bit of a lie, but we need to set the symflags
 	     back to NONE so the set_load_state code will actually
 	     change the objfile state.  */
 	  objfile->symflags = OBJF_SYM_NONE;
-	  dyld_objfile_set_load_state (objfile, OBJF_SYM_ALL);
+	  dyld_objfile_set_load_state(objfile, OBJF_SYM_ALL);
 	}
       already_found_debug_file = NULL;
-      if (e.reason != NO_ERROR)
+      if (e.reason != (enum return_reason)NO_ERROR)
 	{
-	  warning ("Could not add dSYM \"%s\" to library \"%s\".",
-		 dsym_path, objfile->name);
+	  warning("Could not add dSYM \"%s\" to library \"%s\".",
+                  dsym_path, objfile->name);
 	  goto do_cleanups;
 	}
 
-      /* Now report on what we have done.  */
-      make_cleanup_ui_out_tuple_begin_end (uiout, NULL);
-      ui_out_text (uiout, "Added dsym \"");
-      ui_out_field_string (uiout, "dsymfile", full_name);
-      ui_out_text (uiout, "\" to \"");
-      ui_out_field_string (uiout, "objfile", objfile_name);
-      ui_out_text (uiout, "\".\n");
+      /* Now report on what we have done: */
+      make_cleanup_ui_out_tuple_begin_end(uiout, NULL);
+      ui_out_text(uiout, "Added dsym \"");
+      ui_out_field_string(uiout, "dsymfile", full_name);
+      ui_out_text(uiout, "\" to \"");
+      ui_out_field_string(uiout, "objfile", objfile_name);
+      ui_out_text(uiout, "\".\n");
     do_cleanups:
-      do_cleanups (full_name_cleanup);
+      do_cleanups(full_name_cleanup);
     }
-  do_cleanups (argv_cleanup);
+  do_cleanups(argv_cleanup);
 }
 
-static void
-add_shared_symbol_files_command (char *args, int from_tty)
+static void ATTR_NORETURN
+add_shared_symbol_files_command(char *args, int from_tty)
 {
+#undef ADD_SHARED_SYMBOL_FILES /*FIXME*/
 #ifdef ADD_SHARED_SYMBOL_FILES
-  ADD_SHARED_SYMBOL_FILES (args, from_tty);
+  ADD_SHARED_SYMBOL_FILES(args, from_tty);
 #else
-  error (_("This command is not available in this configuration of GDB."));
+  error(_("This command is not available in this configuration of GDB."));
 #endif /* ADD_SHARED_SYMBOL_FILES */
 }
 
@@ -3423,24 +3433,24 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
   if (new_modtime == 0 && objfile->obfd != NULL)
     {
       struct stat buf;
-      if (stat (objfile->obfd->filename, &buf) != 0)
+      if (stat(objfile->obfd->filename, &buf) != 0)
 	{
 	  /* Check for NULL iostream. If that is/was NULL, then
 	     bfd_get_mtime is just going to abort, which is not
 	     very friendly. Instead, use new_modtime of -1 to
 	     indicate we cannot find the file right now.  */
 	  if (objfile->obfd->iostream != NULL)
-	    new_modtime = bfd_get_mtime (objfile->obfd);
+	    new_modtime = bfd_get_mtime(objfile->obfd);
 	  else
-	    warning ("Cannot find backing file for \"%s\".",
-		     objfile->obfd->filename);
+	    warning("Cannot find backing file for \"%s\".",
+		    objfile->obfd->filename);
 	}
       else
 	new_modtime = buf.st_mtime;
     }
 
-  printf_unfiltered (_("`%s' has changed; re-reading symbols.\n"),
-		   objfile->name);
+  printf_unfiltered(_("`%s' has changed; re-reading symbols.\n"),
+                    objfile->name);
 
   /* There are various functions like symbol_file_add,
      symfile_bfd_open, syms_from_objfile, etc., which might
@@ -3510,14 +3520,14 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
      leave the exec_bfd pointing to the old file */
   if (update_exec_bfd)
     {
-      /* if exec_bfd == objfile->obfd, it has already been closed.  */
+      /* if exec_bfd == objfile->obfd, then it has already been closed: */
       if (exec_bfd != objfile->obfd)
         {
-          char *name = xstrdup (bfd_get_filename (exec_bfd));
-          if (!bfd_close (exec_bfd))
-            warning (_("cannot close \"%s\": %s"),
-                     name, bfd_errmsg (bfd_get_error ()));
-          xfree (name);
+          char *name = xstrdup(bfd_get_filename(exec_bfd));
+          if (!bfd_close(exec_bfd))
+            warning(_("cannot close \"%s\": %s"),
+                    name, bfd_errmsg(bfd_get_error()));
+          xfree(name);
         }
 
       /* Question: Should exec_bfd be its own standalone copy of the
@@ -3664,22 +3674,22 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
      in this way seems rather dubious.  */
   if (objfile == symfile_objfile)
     {
-      (*objfile->sf->sym_new_init) (objfile);
+      (*objfile->sf->sym_new_init)(objfile);
     }
 
-  (*objfile->sf->sym_init) (objfile);
-  clear_complaints (&symfile_complaints, 1, 1);
+  (*objfile->sf->sym_init)(objfile);
+  clear_complaints(&symfile_complaints, 1, 1);
 
   /* APPLE LOCAL: Re-read the separate symbols before we read in the symbols
      so we do NOT get spurious warnings about N_OSO objects not being
      available.  */
-  reread_separate_symbols (objfile);
+  reread_separate_symbols(objfile);
 
   /* The "mainline" parameter is a hideous hack; I think leaving it
      zero is OK since dbxread.c also does what it needs to do if
      objfile->global_psymbols.size is 0.  */
   if ((objfile->symflags & ~OBJF_SYM_CONTAINER) & OBJF_SYM_LEVELS_MASK)
-    (*objfile->sf->sym_read) (objfile, 0);
+    (*objfile->sf->sym_read)(objfile, 0);
   /* APPLE LOCAL don't complain about lack of symbols */
   objfile->flags |= OBJF_SYMS;
 
@@ -3714,9 +3724,9 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
   return 1;
 }
 
-/* Re-read symbols if a symbol-file has changed.  */
+/* Re-read symbols if a symbol-file has changed: */
 void
-reread_symbols (void)
+reread_symbols(void)
 {
   struct objfile *objfile, *next;
   long new_modtime;
@@ -3775,8 +3785,8 @@ reread_symbols (void)
 	       * cannot tell the shared library system that this objfile is
 	       * gone. So just continue on here, and hope that next time we
 	       * run, an extant file will show up.  */
-	      warning ("Cannot find backing file for \"%s\".",
-		     objfile->obfd->filename);
+	      warning("Cannot find backing file for \"%s\".",
+                      objfile->obfd->filename);
 	    }
 	  else if (new_modtime != objfile->mtime)
 	    {
@@ -3793,31 +3803,31 @@ reread_symbols (void)
 
   if (num_reread > 0)
     {
-      clear_symtab_users ();
+      clear_symtab_users();
       /* At least one objfile has changed, so we can consider that
          the executable we are debugging has changed too.  */
-      observer_notify_executable_changed (NULL);
+      observer_notify_executable_changed(NULL);
     }
 }
 
 /* APPLE LOCAL begin reread symbols */
 static void
-reread_symbols_command (char *args, int from_tty)
+reread_symbols_command(char *args, int from_tty)
 {
-  reread_symbols ();
+  reread_symbols();
 }
 /* APPLE LOCAL end reread symbols */
 
 /* APPLE LOCAL begin remove symbol file */
 struct objfile *
-find_objfile (const char *name)
+find_objfile(const char *name)
 {
   struct objfile *objfile = NULL;
   struct objfile *o, *temp;
 
-  ALL_OBJFILES_SAFE (o, temp)
+  ALL_OBJFILES_SAFE(o, temp)
   {
-    if (strcmp (name, o->name) == 0)
+    if (strcmp(name, o->name) == 0)
       {
 	if (objfile == NULL)
 	  {
@@ -3825,7 +3835,8 @@ find_objfile (const char *name)
 	  }
 	else
 	  {
-	    warning ("Multiple object files exist with name \"%s\": choosing first", o->name);
+	    warning("Multiple object files exist with name \"%s\": choosing first",
+                    o->name);
 	  }
       }
   }
@@ -3833,38 +3844,36 @@ find_objfile (const char *name)
 }
 
 static void
-remove_symbol_file_command (args, from_tty)
-     char *args;
-     int from_tty;
+remove_symbol_file_command(char *args, int from_tty)
 {
   char *name = NULL;
   struct objfile *objfile = NULL;
 
-  dont_repeat ();
+  dont_repeat();
   if (args == NULL)
     {
-      error ("remove-symbol-file takes a file name");
+      error("remove-symbol-file takes a file name");
     }
 
-  name = tilde_expand (args);
-  make_cleanup (free, name);
+  name = tilde_expand(args);
+  make_cleanup(free, name);
 
-  objfile = find_objfile (name);
+  objfile = find_objfile(name);
   if (objfile == NULL)
     {
-      error ("unable to locate object file named \"%s\"", args);
+      error("unable to locate object file named \"%s\"", args);
     }
 
-  tell_breakpoints_objfile_changed (objfile);
-  tell_objc_msgsend_cacher_objfile_changed (objfile);
-  free_objfile (objfile);
+  tell_breakpoints_objfile_changed(objfile);
+  tell_objc_msgsend_cacher_objfile_changed(objfile);
+  free_objfile(objfile);
 
   /* APPLE LOCAL cache lookup values for improved performance  */
-  symtab_clear_cached_lookup_values ();
-  clear_symtab_users ();
+  symtab_clear_cached_lookup_values();
+  clear_symtab_users();
 
   /* changing symbols may change our opinion about what is frameless.  */
-  reinit_frame_cache ();
+  reinit_frame_cache();
 }
 /* APPLE LOCAL end remove symbol file */
 
@@ -3988,10 +3997,7 @@ reread_separate_symbols (struct objfile *objfile)
     if (debug_file)
       xfree (debug_file);
 }
-
-
 
-
 
 typedef struct
 {
@@ -4004,33 +4010,33 @@ static filename_language *filename_language_table;
 static int fl_table_size, fl_table_next;
 
 static void
-add_filename_language (char *ext, enum language lang)
+add_filename_language(char *ext, enum language lang)
 {
   if (fl_table_next >= fl_table_size)
     {
       fl_table_size += 10;
       filename_language_table =
-	xrealloc (filename_language_table,
-		  fl_table_size * sizeof (*filename_language_table));
+	(filename_language *)xrealloc(filename_language_table,
+                                      (fl_table_size * sizeof(*filename_language_table)));
     }
 
-  filename_language_table[fl_table_next].ext = xstrdup (ext);
+  filename_language_table[fl_table_next].ext = xstrdup(ext);
   filename_language_table[fl_table_next].lang = lang;
   fl_table_next++;
 }
 
 static char *ext_args;
 static void
-show_ext_args (struct ui_file *file, int from_tty,
-	       struct cmd_list_element *c, const char *value)
+show_ext_args(struct ui_file *file, int from_tty,
+	      struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("\
+  fprintf_filtered(file, _("\
 Mapping between filename extension and source language is \"%s\".\n"),
-		    value);
+                   value);
 }
 
 static void
-set_ext_lang_command (char *args, int from_tty, struct cmd_list_element *e)
+set_ext_lang_command(char *args, int from_tty, struct cmd_list_element *e)
 {
   int i;
   char *cp = ext_args;
@@ -4038,101 +4044,102 @@ set_ext_lang_command (char *args, int from_tty, struct cmd_list_element *e)
 
   /* First arg is filename extension, starting with '.' */
   if (*cp != '.')
-    error (_("'%s': Filename extension must begin with '.'"), ext_args);
+    error(_("'%s': Filename extension must begin with '.'"), ext_args);
 
-  /* Find end of first arg.  */
-  while (*cp && !isspace (*cp))
+  /* Find end of first arg: */
+  while (*cp && !isspace(*cp))
     cp++;
 
   if (*cp == '\0')
-    error (_("'%s': two arguments required -- filename extension and language"),
-	   ext_args);
+    error(_("'%s': two arguments required -- filename extension and language"),
+	  ext_args);
 
-  /* Null-terminate first arg */
+  /* Null-terminate first arg: */
   *cp++ = '\0';
 
-  /* Find beginning of second arg, which should be a source language.  */
-  while (*cp && isspace (*cp))
+  /* Find beginning of second arg, which should be a source language: */
+  while (*cp && isspace(*cp))
     cp++;
 
   if (*cp == '\0')
-    error (_("'%s': two arguments required -- filename extension and language"),
-	   ext_args);
+    error(_("'%s': two arguments required -- filename extension and language"),
+	  ext_args);
 
-  /* Lookup the language from among those we know.  */
-  lang = language_enum (cp);
+  /* Lookup the language from among those we know: */
+  lang = language_enum(cp);
 
   /* Now lookup the filename extension: do we already know it?  */
   for (i = 0; i < fl_table_next; i++)
-    if (0 == strcmp (ext_args, filename_language_table[i].ext))
+    if (0 == strcmp(ext_args, filename_language_table[i].ext))
       break;
 
   if (i >= fl_table_next)
     {
       /* new file extension */
-      add_filename_language (ext_args, lang);
+      add_filename_language(ext_args, lang);
     }
   else
     {
-      /* redefining a previously known filename extension */
+      /* redefining a previously known filename extension: */
+#if 0
+      if (from_tty)
+        query("Really make files of type %s '%s'?",
+              ext_args, language_str(lang));
+#endif /* 0 */
 
-      /* if (from_tty) */
-      /*   query ("Really make files of type %s '%s'?", */
-      /*          ext_args, language_str (lang));           */
-
-      xfree (filename_language_table[i].ext);
-      filename_language_table[i].ext = xstrdup (ext_args);
+      xfree(filename_language_table[i].ext);
+      filename_language_table[i].ext = xstrdup(ext_args);
       filename_language_table[i].lang = lang;
     }
 }
 
 static void
-info_ext_lang_command (char *args, int from_tty)
+info_ext_lang_command(char *args, int from_tty)
 {
   int i;
 
-  printf_filtered (_("Filename extensions and the languages they represent:"));
-  printf_filtered ("\n\n");
+  printf_filtered(_("Filename extensions and the languages they represent:"));
+  printf_filtered("\n\n");
   for (i = 0; i < fl_table_next; i++)
-    printf_filtered ("\t%s\t- %s\n",
-		     filename_language_table[i].ext,
-		     language_str (filename_language_table[i].lang));
+    printf_filtered("\t%s\t- %s\n",
+		    filename_language_table[i].ext,
+		    language_str(filename_language_table[i].lang));
 }
 
 static void
-init_filename_language_table (void)
+init_filename_language_table(void)
 {
   if (fl_table_size == 0)	/* protect against repetition */
     {
       fl_table_size = 20;
       fl_table_next = 0;
       filename_language_table =
-	xmalloc (fl_table_size * sizeof (*filename_language_table));
-      add_filename_language (".c", language_c);
-      add_filename_language (".C", language_cplus);
-      add_filename_language (".cc", language_cplus);
-      add_filename_language (".cp", language_cplus);
-      add_filename_language (".cpp", language_cplus);
-      add_filename_language (".cxx", language_cplus);
-      add_filename_language (".c++", language_cplus);
-      add_filename_language (".java", language_java);
-      add_filename_language (".class", language_java);
-      add_filename_language (".m", language_objc);
+	(filename_language *)xmalloc(fl_table_size * sizeof(*filename_language_table));
+      add_filename_language(".c", language_c);
+      add_filename_language(".C", language_cplus);
+      add_filename_language(".cc", language_cplus);
+      add_filename_language(".cp", language_cplus);
+      add_filename_language(".cpp", language_cplus);
+      add_filename_language(".cxx", language_cplus);
+      add_filename_language(".c++", language_cplus);
+      add_filename_language(".java", language_java);
+      add_filename_language(".class", language_java);
+      add_filename_language(".m", language_objc);
       /* APPLE LOCAL begin Objective-C++ */
-      add_filename_language (".mm", language_objcplus);
-      add_filename_language (".M", language_objcplus);
+      add_filename_language(".mm", language_objcplus);
+      add_filename_language(".M", language_objcplus);
       /* APPLE LOCAL end Objective-C++ */
-      add_filename_language (".f", language_fortran);
-      add_filename_language (".F", language_fortran);
-      add_filename_language (".s", language_asm);
-      add_filename_language (".S", language_asm);
-      add_filename_language (".pas", language_pascal);
-      add_filename_language (".p", language_pascal);
-      add_filename_language (".pp", language_pascal);
-      add_filename_language (".adb", language_ada);
-      add_filename_language (".ads", language_ada);
-      add_filename_language (".a", language_ada);
-      add_filename_language (".ada", language_ada);
+      add_filename_language(".f", language_fortran);
+      add_filename_language(".F", language_fortran);
+      add_filename_language(".s", language_asm);
+      add_filename_language(".S", language_asm);
+      add_filename_language(".pas", language_pascal);
+      add_filename_language(".p", language_pascal);
+      add_filename_language(".pp", language_pascal);
+      add_filename_language(".adb", language_ada);
+      add_filename_language(".ads", language_ada);
+      add_filename_language(".a", language_ada);
+      add_filename_language(".ada", language_ada);
     }
 }
 
@@ -4551,49 +4558,51 @@ start_psymtab_common (struct objfile *objfile,
    cache.  */
 
 const struct partial_symbol *
-add_psymbol_to_list (char *name, int namelength, domain_enum domain,
-		     enum address_class class,
-		     struct psymbol_allocation_list *list, long val,	/* Value as a long */
-		     CORE_ADDR coreaddr,	/* Value as a CORE_ADDR */
-		     enum language language, struct objfile *objfile)
+add_psymbol_to_list(char *name, int namelength, domain_enum domain,
+		    enum address_class addrclass,
+		    struct psymbol_allocation_list *list,
+                    long val, /* Value as a long */
+		    CORE_ADDR coreaddr,	/* Value as a CORE_ADDR */
+		    enum language language, struct objfile *objfile)
 {
   struct partial_symbol *psym;
-  char *buf = alloca (namelength + 1);
+  char *buf = alloca(namelength + 1);
   /* psymbol is static so that there will be no uninitialized gaps in the
      structure which might contain random data, causing cache misses in
      bcache. */
   static struct partial_symbol psymbol;
 
-  /* Create local copy of the partial symbol */
-  memcpy (buf, name, namelength);
+  /* Create local copy of the partial symbol: */
+  memcpy(buf, name, namelength);
   buf[namelength] = '\0';
-  /* val and coreaddr are mutually exclusive, one of them *will* be zero */
+  /* val and coreaddr are mutually exclusive; one of them *will* be 0: */
   if (val != 0)
     {
-      SYMBOL_VALUE (&psymbol) = val;
+      SYMBOL_VALUE(&psymbol) = val;
     }
   else
     {
-      SYMBOL_VALUE_ADDRESS (&psymbol) = coreaddr;
+      SYMBOL_VALUE_ADDRESS(&psymbol) = coreaddr;
     }
-  SYMBOL_SECTION (&psymbol) = 0;
-  SYMBOL_LANGUAGE (&psymbol) = language;
-  PSYMBOL_DOMAIN (&psymbol) = domain;
-  PSYMBOL_CLASS (&psymbol) = class;
+  SYMBOL_SECTION(&psymbol) = 0;
+  SYMBOL_LANGUAGE(&psymbol) = language;
+  PSYMBOL_DOMAIN(&psymbol) = domain;
+  PSYMBOL_CLASS(&psymbol) = addrclass;
 
-  SYMBOL_SET_NAMES (&psymbol, buf, namelength, objfile);
+  SYMBOL_SET_NAMES(&psymbol, buf, namelength, objfile);
 
-  /* Stash the partial symbol away in the cache */
-  psym = deprecated_bcache (&psymbol, sizeof (struct partial_symbol),
-			    objfile->psymbol_cache);
+  /* Stash the partial symbol away in the cache: */
+  psym = (struct partial_symbol *)deprecated_bcache(&psymbol,
+                                                    sizeof(struct partial_symbol),
+                                                    objfile->psymbol_cache);
 
-  /* Save pointer to partial symbol in psymtab, growing symtab if needed. */
-  if (list->next >= list->list + list->size)
+  /* Save pointer to partial symbol in psymtab, growing symtab if needed: */
+  if (list->next >= (list->list + list->size))
     {
-      extend_psymbol_list (list, objfile);
+      extend_psymbol_list(list, objfile);
     }
   *list->next++ = psym;
-  OBJSTAT (objfile, n_psyms++);
+  OBJSTAT(objfile, n_psyms++);
 
   return psym;
 }
@@ -4601,32 +4610,33 @@ add_psymbol_to_list (char *name, int namelength, domain_enum domain,
 /* Add a symbol with a long value to a psymtab. This differs from
  * add_psymbol_to_list above in taking both a mangled and a demangled
  * name. */
-
 void
-add_psymbol_with_dem_name_to_list (char *name, int namelength, char *dem_name,
-				   int dem_namelength, domain_enum domain,
-				   enum address_class class,
-				   struct psymbol_allocation_list *list, long val,	/* Value as a long */
-				   CORE_ADDR coreaddr,	/* Value as a CORE_ADDR */
-				   enum language language,
-				   struct objfile *objfile)
+add_psymbol_with_dem_name_to_list(char *name, int namelength,
+                                  char *dem_name,
+				  int dem_namelength, domain_enum domain,
+				  enum address_class addrclass,
+				  struct psymbol_allocation_list *list,
+                                  long val,	/* Value as a long */
+				  CORE_ADDR coreaddr, /* Value as a CORE_ADDR */
+				  enum language language,
+				  struct objfile *objfile)
 {
   struct partial_symbol *psym;
-  char *buf = alloca (namelength + 1);
+  char *buf = alloca(namelength + 1);
   /* psymbol is static so that there will be no uninitialized gaps in the
      structure which might contain random data, causing cache misses in
      bcache. */
   static struct partial_symbol psymbol;
 
-  /* Create local copy of the partial symbol */
-
-  memcpy (buf, name, namelength);
+  /* Create local copy of the partial symbol: */
+  memcpy(buf, name, namelength);
   buf[namelength] = '\0';
-  DEPRECATED_SYMBOL_NAME (&psymbol) = deprecated_bcache (buf, namelength + 1,
-							 objfile->psymbol_cache);
+  DEPRECATED_SYMBOL_NAME(&psymbol) =
+    (char *)deprecated_bcache(buf, (namelength + 1),
+                              objfile->psymbol_cache);
 
-  buf = alloca (dem_namelength + 1);
-  memcpy (buf, dem_name, dem_namelength);
+  buf = (char *)alloca(dem_namelength + 1);
+  memcpy(buf, dem_name, dem_namelength);
   buf[dem_namelength] = '\0';
 
   switch (language)
@@ -4635,13 +4645,15 @@ add_psymbol_with_dem_name_to_list (char *name, int namelength, char *dem_name,
     case language_cplus:
       /* APPLE LOCAL Objective-C++ */
     case language_objcplus:
-      SYMBOL_CPLUS_DEMANGLED_NAME (&psymbol) =
-	deprecated_bcache (buf, dem_namelength + 1, objfile->psymbol_cache);
+      SYMBOL_CPLUS_DEMANGLED_NAME(&psymbol) =
+	(char *)deprecated_bcache(buf, (dem_namelength + 1),
+                                  objfile->psymbol_cache);
       break;
-      /* FIXME What should be done for the default case? Ignoring for now. */
+      /* FIXME: What should be done for the default case?
+       * FSF gdb ignored for now. */
       /* APPLE LOCAL begin add default case */
     default:
-      internal_error (__FILE__, __LINE__, "unhandled case");
+      internal_error(__FILE__, __LINE__, "unhandled case (i.e. language)");
       break;
       /* APPLE LOCAL end add default case */
     }
@@ -4649,26 +4661,27 @@ add_psymbol_with_dem_name_to_list (char *name, int namelength, char *dem_name,
   /* val and coreaddr are mutually exclusive, one of them *will* be zero */
   if (val != 0)
     {
-      SYMBOL_VALUE (&psymbol) = val;
+      SYMBOL_VALUE(&psymbol) = val;
     }
   else
     {
-      SYMBOL_VALUE_ADDRESS (&psymbol) = coreaddr;
+      SYMBOL_VALUE_ADDRESS(&psymbol) = coreaddr;
     }
-  SYMBOL_SECTION (&psymbol) = 0;
-  SYMBOL_LANGUAGE (&psymbol) = language;
-  PSYMBOL_DOMAIN (&psymbol) = domain;
-  PSYMBOL_CLASS (&psymbol) = class;
-  SYMBOL_INIT_LANGUAGE_SPECIFIC (&psymbol, language);
+  SYMBOL_SECTION(&psymbol) = 0;
+  SYMBOL_LANGUAGE(&psymbol) = language;
+  PSYMBOL_DOMAIN(&psymbol) = domain;
+  PSYMBOL_CLASS(&psymbol) = addrclass;
+  SYMBOL_INIT_LANGUAGE_SPECIFIC(&psymbol, language);
 
-  /* Stash the partial symbol away in the cache */
-  psym = deprecated_bcache (&psymbol, sizeof (struct partial_symbol),
-			    objfile->psymbol_cache);
+  /* Stash the partial symbol away in the cache: */
+  psym = (struct partial_symbol *)deprecated_bcache(&psymbol,
+                                                    sizeof(struct partial_symbol),
+                                                    objfile->psymbol_cache);
 
-  /* Save pointer to partial symbol in psymtab, growing symtab if needed. */
-  if (list->next >= list->list + list->size)
+  /* Save pointer to partial symbol in psymtab, growing symtab if needed: */
+  if (list->next >= (list->list + list->size))
     {
-      extend_psymbol_list (list, objfile);
+      extend_psymbol_list(list, objfile);
     }
   *list->next++ = psym;
   OBJSTAT (objfile, n_psyms++);
@@ -5230,11 +5243,11 @@ overlay_load_command (char *args, int from_tty)
 struct cmd_list_element *overlaylist;
 
 static void
-overlay_command (char *args, int from_tty)
+overlay_command(char *args, int from_tty)
 {
   printf_unfiltered
     ("\"overlay\" must be followed by the name of an overlay command.\n");
-  help_list (overlaylist, "overlay ", -1, gdb_stdout);
+  help_list(overlaylist, "overlay ", (enum command_class)-1, gdb_stdout);
 }
 
 
@@ -5293,10 +5306,10 @@ enum ovly_index
 
 /* Throw away the cached copy of _ovly_table */
 static void
-simple_free_overlay_table (void)
+simple_free_overlay_table(void)
 {
   if (cache_ovly_table)
-    xfree (cache_ovly_table);
+    xfree(cache_ovly_table);
   cache_novlys = 0;
   cache_ovly_table = NULL;
   cache_ovly_table_base = 0;
@@ -5305,10 +5318,10 @@ simple_free_overlay_table (void)
 #if 0
 /* Throw away the cached copy of _ovly_region_table */
 static void
-simple_free_overlay_region_table (void)
+simple_free_overlay_region_table(void)
 {
   if (cache_ovly_region_table)
-    xfree (cache_ovly_region_table);
+    xfree(cache_ovly_region_table);
   cache_novly_regions = 0;
   cache_ovly_region_table = NULL;
   cache_ovly_region_table_base = 0;
@@ -5316,53 +5329,53 @@ simple_free_overlay_region_table (void)
 #endif /* 0 */
 
 /* Read an array of ints from the target into a local buffer.
-   Convert to host order.  int LEN is number of ints  */
+ * Convert to host order.  (int LEN is number of ints)  */
 static void
-read_target_long_array (CORE_ADDR memaddr, unsigned int *myaddr, int len)
+read_target_long_array(CORE_ADDR memaddr, unsigned int *myaddr, int len)
 {
-  /* FIXME (alloca): Not safe if array is very large. */
-  char *buf = alloca (len * TARGET_LONG_BYTES);
+  /* FIXME (alloca): Not safe if array is very large: */
+  char *buf = alloca(len * TARGET_LONG_BYTES);
   int i;
 
-  read_memory (memaddr, buf, len * TARGET_LONG_BYTES);
+  read_memory(memaddr, (gdb_byte *)buf, len * TARGET_LONG_BYTES);
   for (i = 0; i < len; i++)
-    myaddr[i] = extract_unsigned_integer (TARGET_LONG_BYTES * i + buf,
-					  TARGET_LONG_BYTES);
+    myaddr[i] = extract_unsigned_integer((const gdb_byte *)(TARGET_LONG_BYTES * i + buf),
+					 TARGET_LONG_BYTES);
 }
 
 /* Find and grab a copy of the target _ovly_table
    (and _novlys, which is needed for the table's size) */
 static int
-simple_read_overlay_table (void)
+simple_read_overlay_table(void)
 {
   struct minimal_symbol *novlys_msym, *ovly_table_msym;
 
-  simple_free_overlay_table ();
-  novlys_msym = lookup_minimal_symbol ("_novlys", NULL, NULL);
+  simple_free_overlay_table();
+  novlys_msym = lookup_minimal_symbol("_novlys", NULL, NULL);
   if (! novlys_msym)
     {
-      error (_("Error reading inferior's overlay table: "
-             "could NOT find `_novlys' variable\n"
-             "in inferior. Use `overlay manual' mode."));
+      error(_("Error reading inferior's overlay table: "
+            "could NOT find `_novlys' variable\n"
+            "in inferior. Use `overlay manual' mode."));
       return 0;
     }
 
-  ovly_table_msym = lookup_minimal_symbol ("_ovly_table", NULL, NULL);
+  ovly_table_msym = lookup_minimal_symbol("_ovly_table", NULL, NULL);
   if (! ovly_table_msym)
     {
-      error (_("Error reading inferior's overlay table: could NOT find "
-             "`_ovly_table' array\n"
-             "in inferior. Use `overlay manual' mode."));
+      error(_("Error reading inferior's overlay table: could NOT find "
+            "`_ovly_table' array\n"
+            "in inferior. Use `overlay manual' mode."));
       return 0;
     }
 
-  cache_novlys = read_memory_integer (SYMBOL_VALUE_ADDRESS (novlys_msym), 4);
+  cache_novlys = read_memory_integer(SYMBOL_VALUE_ADDRESS(novlys_msym), 4);
   cache_ovly_table
-    = (void *) xmalloc (cache_novlys * sizeof (*cache_ovly_table));
-  cache_ovly_table_base = SYMBOL_VALUE_ADDRESS (ovly_table_msym);
-  read_target_long_array (cache_ovly_table_base,
-                          (int *) cache_ovly_table,
-                          cache_novlys * 4);
+    = (unsigned int (*)[4])(void *)xmalloc(cache_novlys * sizeof(*cache_ovly_table));
+  cache_ovly_table_base = SYMBOL_VALUE_ADDRESS(ovly_table_msym);
+  read_target_long_array(cache_ovly_table_base,
+                         (unsigned int *) cache_ovly_table,
+                         cache_novlys * 4);
 
   return 1;			/* SUCCESS */
 }
@@ -5371,26 +5384,26 @@ simple_read_overlay_table (void)
 /* Find and grab a copy of the target _ovly_region_table
    (and _novly_regions, which is needed for the table's size) */
 static int
-simple_read_overlay_region_table (void)
+simple_read_overlay_region_table(void)
 {
   struct minimal_symbol *msym;
 
-  simple_free_overlay_region_table ();
-  msym = lookup_minimal_symbol ("_novly_regions", NULL, NULL);
+  simple_free_overlay_region_table();
+  msym = lookup_minimal_symbol("_novly_regions", NULL, NULL);
   if (msym != NULL)
-    cache_novly_regions = read_memory_integer (SYMBOL_VALUE_ADDRESS (msym), 4);
+    cache_novly_regions = read_memory_integer(SYMBOL_VALUE_ADDRESS(msym), 4);
   else
     return 0;			/* failure */
-  cache_ovly_region_table = (void *) xmalloc (cache_novly_regions * 12);
+  cache_ovly_region_table = (void *)xmalloc(cache_novly_regions * 12);
   if (cache_ovly_region_table != NULL)
     {
-      msym = lookup_minimal_symbol ("_ovly_region_table", NULL, NULL);
+      msym = lookup_minimal_symbol("_ovly_region_table", NULL, NULL);
       if (msym != NULL)
 	{
-	  cache_ovly_region_table_base = SYMBOL_VALUE_ADDRESS (msym);
-	  read_target_long_array (cache_ovly_region_table_base,
-				  (int *) cache_ovly_region_table,
-				  cache_novly_regions * 3);
+	  cache_ovly_region_table_base = SYMBOL_VALUE_ADDRESS(msym);
+	  read_target_long_array(cache_ovly_region_table_base,
+				 (int *)cache_ovly_region_table,
+				 cache_novly_regions * 3);
 	}
       else
 	return 0;		/* failure */
@@ -5410,28 +5423,32 @@ simple_read_overlay_region_table (void)
    success, 0 for failure.  */
 
 static int
-simple_overlay_update_1 (struct obj_section *osect)
+simple_overlay_update_1(struct obj_section *osect)
 {
-  int i, size;
+  unsigned int i;
+  size_t size;
   asection *bsect = osect->the_bfd_section;
 
-  size = bfd_get_section_size (osect->the_bfd_section);
-  for (i = 0; i < cache_novlys; i++)
-    if (cache_ovly_table[i][VMA] == bfd_section_vma (obfd, bsect)
-	&& cache_ovly_table[i][LMA] == bfd_section_lma (obfd, bsect)
-	/* && cache_ovly_table[i][SIZE] == size */ )
+  size = bfd_get_section_size(osect->the_bfd_section);
+  for (i = 0U; i < cache_novlys; i++)
+    if ((cache_ovly_table[i][VMA] == bfd_section_vma(obfd, bsect))
+	&& (cache_ovly_table[i][LMA] == bfd_section_lma(obfd, bsect))
+	&& (cache_ovly_table[i][SIZE] == size))
       {
-	read_target_long_array (cache_ovly_table_base + i * TARGET_LONG_BYTES,
-				(int *) cache_ovly_table[i], 4);
-	if (cache_ovly_table[i][VMA] == bfd_section_vma (obfd, bsect)
-	    && cache_ovly_table[i][LMA] == bfd_section_lma (obfd, bsect)
-	    /* && cache_ovly_table[i][SIZE] == size */ )
+	read_target_long_array((cache_ovly_table_base + i * TARGET_LONG_BYTES),
+                               (unsigned int *)cache_ovly_table[i], 4);
+	if ((cache_ovly_table[i][VMA] == bfd_section_vma(obfd, bsect))
+	    && (cache_ovly_table[i][LMA] == bfd_section_lma(obfd, bsect))
+	    && (cache_ovly_table[i][SIZE] == size))
 	  {
 	    osect->ovly_mapped = cache_ovly_table[i][MAPPED];
 	    return 1;
 	  }
 	else	/* Warning! Warning! Target's ovly table has changed! */
-	  return 0;
+          {
+            warning("The ovly table for the target has changed!");
+            return 0;
+          }
       }
   return 0;
 }
@@ -5445,7 +5462,7 @@ simple_overlay_update_1 (struct obj_section *osect)
    re-read the entire cache, and go ahead and update all sections.  */
 
 static void
-simple_overlay_update (struct obj_section *osect)
+simple_overlay_update(struct obj_section *osect)
 {
   struct objfile *objfile;
 
@@ -5455,9 +5472,9 @@ simple_overlay_update (struct obj_section *osect)
     if (cache_ovly_table != NULL)
       /* Does its cached location match what is currently in the symtab? */
       if (cache_ovly_table_base ==
-	  SYMBOL_VALUE_ADDRESS (lookup_minimal_symbol ("_ovly_table", NULL, NULL)))
+	  SYMBOL_VALUE_ADDRESS(lookup_minimal_symbol("_ovly_table", NULL, NULL)))
 	/* Then go ahead and try to look up this single section in the cache */
-	if (simple_overlay_update_1 (osect))
+	if (simple_overlay_update_1(osect))
 	  /* Found it! We are done. */
 	  return;
 
@@ -5465,25 +5482,28 @@ simple_overlay_update (struct obj_section *osect)
      Or else we want all the sections, in which case it is actually
      more efficient to read the whole table in one block anyway.  */
 
-  if (! simple_read_overlay_table ())
+  if (! simple_read_overlay_table())
     return;
 
-  /* Now may as well update all sections, even if only one was requested. */
-  ALL_OBJSECTIONS (objfile, osect)
-    if (section_is_overlay (osect->the_bfd_section))
-    {
-      int i, size;
-      asection *bsect = osect->the_bfd_section;
+  /* Now may as well update all sections, even if only 1 was requested: */
+  ALL_OBJSECTIONS(objfile, osect)
+    if (section_is_overlay(osect->the_bfd_section))
+      {
+        unsigned int i;
+        size_t size;
+        asection *bsect = osect->the_bfd_section;
 
-      size = bfd_get_section_size (bsect);
-      for (i = 0; i < cache_novlys; i++)
-	if (cache_ovly_table[i][VMA] == bfd_section_vma (obfd, bsect)
-	    && cache_ovly_table[i][LMA] == bfd_section_lma (obfd, bsect)
-	    /* && cache_ovly_table[i][SIZE] == size */ )
-	  { /* obj_section matches i'th entry in ovly_table */
-	    osect->ovly_mapped = cache_ovly_table[i][MAPPED];
-	    break;		/* finished with inner for loop: break out */
-	  }
+        size = bfd_get_section_size(bsect);
+        for (i = 0U; i < cache_novlys; i++)
+          {
+            if ((cache_ovly_table[i][VMA] == bfd_section_vma(obfd, bsect))
+                && (cache_ovly_table[i][LMA] == bfd_section_lma(obfd, bsect))
+                && (cache_ovly_table[i][SIZE] == size))
+              { /* obj_section matches i'th entry in ovly_table: */
+                osect->ovly_mapped = cache_ovly_table[i][MAPPED];
+                break;	/* finished with inner for loop: break out */
+              }
+          }
     }
 }
 
@@ -5493,7 +5513,7 @@ simple_overlay_update (struct obj_section *osect)
    with no offset; this means that SECTP->vma will be honored.  */
 
 static void
-symfile_dummy_outputs (bfd *abfd, asection *sectp, void *dummy)
+symfile_dummy_outputs(bfd *abfd, asection *sectp, void *dummy)
 {
   sectp->output_section = sectp;
   sectp->output_offset = 0;
@@ -5511,7 +5531,7 @@ symfile_dummy_outputs (bfd *abfd, asection *sectp, void *dummy)
    the relocations in order to get the locations of symbols correct.  */
 
 bfd_byte *
-symfile_relocate_debug_section (bfd *abfd, asection *sectp, bfd_byte *buf)
+symfile_relocate_debug_section(bfd *abfd, asection *sectp, bfd_byte *buf)
 {
   /* We are only interested in debugging sections with relocation
      information.  */
@@ -5522,9 +5542,9 @@ symfile_relocate_debug_section (bfd *abfd, asection *sectp, bfd_byte *buf)
 
   /* We will handle section offsets properly elsewhere, so relocate as if
      all sections begin at 0.  */
-  bfd_map_over_sections (abfd, symfile_dummy_outputs, NULL);
+  bfd_map_over_sections(abfd, symfile_dummy_outputs, NULL);
 
-  return bfd_simple_get_relocated_section_contents (abfd, sectp, buf, NULL);
+  return bfd_simple_get_relocated_section_contents(abfd, sectp, buf, NULL);
 }
 
 /* APPLE LOCAL begin symfile */
@@ -5544,12 +5564,16 @@ struct symbol_file_info {
 };
 
 int
-symbol_file_add_bfd_helper (void *v)
+symbol_file_add_bfd_helper(void *v)
 {
-  struct symbol_file_info *s = (struct symbol_file_info *) v;
-  s->result = symbol_file_add_with_addrs_or_offsets
-    (s->abfd, s->from_tty, s->addrs, s->offsets, s->num_offsets, s->mainline, s->flags,
-     s->symflags, s->mapaddr, s->prefix, s->kext_bundle);
+  struct symbol_file_info *s = (struct symbol_file_info *)v;
+  s->result = symbol_file_add_with_addrs_or_offsets(s->abfd, s->from_tty,
+                                                    s->addrs, s->offsets,
+                                                    s->num_offsets,
+                                                    s->mainline, s->flags,
+                                                    s->symflags,
+                                                    s->mapaddr, s->prefix,
+                                                    s->kext_bundle);
   return 1;
 }
 
@@ -5558,26 +5582,26 @@ symbol_file_add_bfd_helper (void *v)
    did NOT add the "safe" version because with the TRY_CATCH stuff that seems
    rather pointless.  */
 struct objfile *
-symbol_file_add_bfd_using_objfile (struct objfile *objfile,
-				   bfd *abfd, int from_tty,
-				   struct section_addr_info *addrs,
-				   struct section_offsets *offsets,
-				   int mainline, int flags, int symflags,
-				   CORE_ADDR mapaddr, const char *prefix)
+symbol_file_add_bfd_using_objfile(struct objfile *objfile,
+				  bfd *abfd, int from_tty,
+				  struct section_addr_info *addrs,
+				  struct section_offsets *offsets,
+				  int mainline, int flags, int symflags,
+				  CORE_ADDR mapaddr, const char *prefix)
 {
-  return symbol_file_add_with_addrs_or_offsets_using_objfile (objfile, abfd, from_tty,
-							      addrs, offsets, 0, mainline,
-							      flags, symflags,
-							      mapaddr, prefix, NULL);
+  return symbol_file_add_with_addrs_or_offsets_using_objfile(objfile, abfd, from_tty,
+							     addrs, offsets, 0, mainline,
+							     flags, symflags,
+							     mapaddr, prefix, NULL);
 }
 
 struct objfile *
-symbol_file_add_bfd_safe (bfd *abfd, int from_tty,
-			  struct section_addr_info *addrs,
-			  struct section_offsets *offsets,
-			  int mainline, int flags, int symflags,
-			  CORE_ADDR mapaddr, const char *prefix,
-                          char *kext_bundle)
+symbol_file_add_bfd_safe(bfd *abfd, int from_tty,
+			 struct section_addr_info *addrs,
+			 struct section_offsets *offsets,
+			 int mainline, int flags, int symflags,
+			 CORE_ADDR mapaddr, const char *prefix,
+                         char *kext_bundle)
 {
   struct symbol_file_info s;
   int ret;
@@ -5590,13 +5614,13 @@ symbol_file_add_bfd_safe (bfd *abfd, int from_tty,
     {
       /* We only make section offsets for the bfd sections
 	 that make it into the objfile.  */
-      int i;
+      unsigned int i;
       struct bfd_section *this_sect;
       s.num_offsets = 0;
       this_sect = abfd->sections;
-      for (i = 0; i < bfd_count_sections (abfd); i++, this_sect = this_sect->next)
+      for (i = 0U; i < bfd_count_sections(abfd); i++, this_sect = this_sect->next)
 	{
-	  if (objfile_keeps_section (abfd, this_sect))
+	  if (objfile_keeps_section(abfd, this_sect))
 	    s.num_offsets++;
 	}
     }
@@ -5611,8 +5635,12 @@ symbol_file_add_bfd_safe (bfd *abfd, int from_tty,
   s.result = NULL;
   s.kext_bundle = kext_bundle;
 
-  ret = catch_errors
-    (symbol_file_add_bfd_helper, &s, "unable to load symbol file: ", RETURN_MASK_ALL);
+  ret = catch_errors(symbol_file_add_bfd_helper, &s,
+                     "unable to load symbol file: ", RETURN_MASK_ALL);
+
+  if (ret != 0) {
+    ; /* ??? */
+  }
 
   return s.result;
 }
@@ -5625,9 +5653,9 @@ struct bfd_file_info {
 };
 
 int
-symfile_bfd_open_helper (void *v)
+symfile_bfd_open_helper(void *v)
 {
-  struct bfd_file_info *s = (struct bfd_file_info *) v;
+  struct bfd_file_info *s = (struct bfd_file_info *)v;
   s->result = symfile_bfd_open (s->filename, s->mainline, s->osabi);
   return 1;
 }
@@ -5643,8 +5671,12 @@ symfile_bfd_open_safe(const char *filename, int mainline, enum gdb_osabi osabi)
   s.osabi = osabi;
   s.result = NULL;
 
-  ret = catch_errors
-    (symfile_bfd_open_helper, &s, "unable to open symbol file: ", RETURN_MASK_ALL);
+  ret = catch_errors(symfile_bfd_open_helper, &s,
+                     "unable to open symbol file: ", RETURN_MASK_ALL);
+
+  if (ret != 0) {
+    ; /* ??? */
+  }
 
   return s.result;
 }
@@ -5662,49 +5694,52 @@ symfile_bfd_open_safe(const char *filename, int mainline, enum gdb_osabi osabi)
    of the caller to xfree the array.  */
 
 struct section_offsets *
-convert_sect_addrs_to_offsets_via_on_disk_file (struct section_addr_info *sect_addrs,
-                                                const char *file, int *num_offsets)
+convert_sect_addrs_to_offsets_via_on_disk_file(struct section_addr_info *sect_addrs,
+                                               const char *file, int *num_offsets)
 {
   struct section_offsets *sect_offsets;
   struct bfd_section *this_sect;
   CORE_ADDR slide = INVALID_ADDRESS;
 
   struct cleanup *cleanup;
-  if (sect_addrs == NULL || file == NULL || !file_exists_p (file))
+  bfd *abfd;
+  unsigned int i;
+  int cur_section;
+
+  if ((sect_addrs == NULL) || (file == NULL) || !file_exists_p(file))
     return NULL;
 
-  bfd *abfd = symfile_bfd_open_safe (file, 0, gdbarch_osabi (current_gdbarch));
+  abfd = symfile_bfd_open_safe(file, 0, gdbarch_osabi(current_gdbarch));
   if (abfd == NULL)
     return NULL;
-  cleanup = make_cleanup_bfd_close (abfd);
+  cleanup = make_cleanup_bfd_close(abfd);
 
   sect_offsets = (struct section_offsets *)
-    xmalloc (SIZEOF_N_SECTION_OFFSETS (abfd->section_count));
+    xmalloc(SIZEOF_N_SECTION_OFFSETS(abfd->section_count));
 
-  int i, cur_section;
-  for (i = 0; i < abfd->section_count; i++)
+  for (i = 0U; i < abfd->section_count; i++)
     sect_offsets->offsets[i] = INVALID_ADDRESS;
 
   *num_offsets = abfd->section_count;
 
-  for (i = 0; i < sect_addrs->num_sections; i++)
+  for (i = 0U; i < sect_addrs->num_sections; i++)
     {
-      if (sect_addrs->other[i].name == NULL
-          || sect_addrs->other[i].name[0] == '\0'
-          || sect_addrs->other[i].addr == 0)
+      if ((sect_addrs->other[i].name == NULL)
+          || (sect_addrs->other[i].name[0] == '\0')
+          || (sect_addrs->other[i].addr == 0))
         continue;
 
       for (this_sect = abfd->sections, cur_section = 0;
            this_sect != NULL;
            this_sect = this_sect->next, ++cur_section)
         {
-          if (this_sect->name == NULL || this_sect->name[0] == '\0')
+          if ((this_sect->name == NULL) || (this_sect->name[0] == '\0'))
             continue;
 
-          if (strcmp (sect_addrs->other[i].name, this_sect->name) == 0)
+          if (strcmp(sect_addrs->other[i].name, this_sect->name) == 0)
             {
               sect_offsets->offsets[cur_section] =
-                          sect_addrs->other[i].addr - this_sect->vma;
+                          (sect_addrs->other[i].addr - this_sect->vma);
               if (slide == INVALID_ADDRESS)
                 slide = sect_offsets->offsets[cur_section];
             }
@@ -5712,11 +5747,11 @@ convert_sect_addrs_to_offsets_via_on_disk_file (struct section_addr_info *sect_a
     }
 
   if (slide != INVALID_ADDRESS)
-    for (i = 0; i < abfd->section_count; i++)
+    for (i = 0U; i < abfd->section_count; i++)
       if (sect_offsets->offsets[i] == INVALID_ADDRESS)
-        sect_offsets->offsets[i]  = slide;
+        sect_offsets->offsets[i] = slide;
 
-  do_cleanups (cleanup);
+  do_cleanups(cleanup);
 
   return sect_offsets;
 }
@@ -5727,11 +5762,11 @@ convert_sect_addrs_to_offsets_via_on_disk_file (struct section_addr_info *sect_a
    back to the current architecture if not a cross build.  */
 
 bfd *
-open_bfd_matching_arch (bfd *archive_bfd, bfd_format expected_format,
-			enum gdb_osabi osabi)
+open_bfd_matching_arch(bfd *archive_bfd, bfd_format expected_format,
+                       enum gdb_osabi osabi)
 {
   bfd *abfd = NULL;
-#if defined (TARGET_ARM) && defined (TM_NEXTSTEP)
+#if defined(TARGET_ARM) && defined(TM_NEXTSTEP)
 
   /* APPLE LOCAL: The model for Darwin ARM stuff does NOT fit well
      with the way PPC works. You do NOT choose the fork that
@@ -5742,40 +5777,40 @@ open_bfd_matching_arch (bfd *archive_bfd, bfd_format expected_format,
   bfd *fallback = NULL;
   enum gdb_osabi fallback_osabi = GDB_OSABI_UNKNOWN;
 
-#ifdef MACOSX_DYLD
+# ifdef MACOSX_DYLD
   if (osabi == GDB_OSABI_UNKNOWN)
-    osabi = macosx_get_osabi_from_dyld_entry (archive_bfd);
-#endif /* MACOSX_DYLD */
+    osabi = macosx_get_osabi_from_dyld_entry(archive_bfd);
+# endif /* MACOSX_DYLD */
 
-#ifdef NM_NEXTSTEP
-  extern enum gdb_osabi arm_host_osabi ();
+# ifdef NM_NEXTSTEP
+  extern enum gdb_osabi arm_host_osabi();
 
   if (osabi == GDB_OSABI_UNKNOWN)
       osabi = arm_host_osabi();
 
-#else	/* NM_NEXTSTEP */
+# else	/* NM_NEXTSTEP */
 
   if (osabi == GDB_OSABI_UNKNOWN)
     {
-  /* We have a cross ARM gdb, so check if the user has set the ABI
-     manually. If the osabi has NOT been set manually, just get the
-	 best one from this file. If ARCHIVE_BFD is fat or an archive, then
-	 we will get GDB_OSABI_UNKNOWN back.  */
-  osabi = gdbarch_lookup_osabi (archive_bfd);
+      /* We have a cross ARM gdb, so check if the user has set the ABI
+       * manually. If the osabi has NOT been set manually, just get the
+       * best one from this file. If ARCHIVE_BFD is fat or an archive, then
+       * we will get GDB_OSABI_UNKNOWN back.  */
+      osabi = gdbarch_lookup_osabi(archive_bfd);
     }
 
-#endif	/* NM_NEXTSTEP */
+# endif	/* NM_NEXTSTEP */
 
   for (;;)
     {
       enum gdb_osabi this_osabi;
-      abfd = bfd_openr_next_archived_file (archive_bfd, abfd);
+      abfd = bfd_openr_next_archived_file(archive_bfd, abfd);
       if (abfd == NULL)
 	break;
-      if (!(bfd_check_format (abfd, bfd_object) ||
-	   (bfd_check_format (abfd, bfd_archive))))
+      if (!(bfd_check_format(abfd, bfd_object) ||
+	   (bfd_check_format(abfd, bfd_archive))))
 	continue;
-      this_osabi = gdbarch_lookup_osabi_from_bfd (abfd);
+      this_osabi = gdbarch_lookup_osabi_from_bfd(abfd);
       if (this_osabi == osabi)
 	  return abfd;
       else if (fallback_osabi < this_osabi)
@@ -5785,8 +5820,8 @@ open_bfd_matching_arch (bfd *archive_bfd, bfd_format expected_format,
 	     can use it. This can happen in a few cases: we have a cross
 	     ARM gdb where the user did NOT specify the the architecture
 	     (osabi == GDB_OSABI_UNKNOWN), or we have an osabi slice that
-	     is less that the user specified value (this_osabi < osabi).  */
-	  if (osabi == GDB_OSABI_UNKNOWN || this_osabi < osabi)
+	     is less that the user specified value (this_osabi < osabi): */
+	  if ((osabi == GDB_OSABI_UNKNOWN) || (this_osabi < osabi))
 	    {
 	      /* Only ARM compatible OSABI slices can be used as a
 	         fallback.  */
@@ -5798,30 +5833,30 @@ open_bfd_matching_arch (bfd *archive_bfd, bfd_format expected_format,
 		case GDB_OSABI_DARWINV7K:
 		case GDB_OSABI_DARWINV7F:
 		case GDB_OSABI_DARWINV7S:
-	fallback = abfd;
+                  fallback = abfd;
 		  fallback_osabi = this_osabi;
 		  break;
 
 		default:
 		  break;
-    }
+                }
 	    }
 	}
     }
   return fallback;
 #else	/* defined (TARGET_ARM) && defined (TM_NEXTSTEP)  */
-  osabi = gdbarch_osabi (current_gdbarch);
+  osabi = gdbarch_osabi(current_gdbarch);
   if ((osabi <= GDB_OSABI_UNKNOWN) || (osabi >= GDB_OSABI_INVALID))
-    osabi = gdbarch_lookup_osabi (archive_bfd);
+    osabi = gdbarch_lookup_osabi(archive_bfd);
 
   for (;;)
     {
-      abfd = bfd_openr_next_archived_file (archive_bfd, abfd);
+      abfd = bfd_openr_next_archived_file(archive_bfd, abfd);
       if (abfd == NULL)
         break;
-      if (! bfd_check_format (abfd, expected_format))
+      if (! bfd_check_format(abfd, expected_format))
         continue;
-      if (osabi == gdbarch_lookup_osabi_from_bfd (abfd))
+      if (osabi == gdbarch_lookup_osabi_from_bfd(abfd))
         {
           break;
         }

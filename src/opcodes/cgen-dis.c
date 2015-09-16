@@ -1,4 +1,4 @@
-/* CGEN generic disassembler support code.
+/* cgen-dis.c: CGEN generic disassembler support code.
 
    Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
@@ -51,7 +51,7 @@ count_decodable_bits (const CGEN_INSN *insn)
   return bits;
 }
 
-/* Add an instruction to the hash chain.  */     
+/* Add an instruction to the hash chain.  */
 static void
 add_insn_to_hash_chain (CGEN_INSN_LIST *hentbuf,
 			const CGEN_INSN *insn,

@@ -26,6 +26,7 @@ man7dir = $(mandir)/man7
 man8dir = $(mandir)/man8
 man9dir = $(mandir)/man9
 infodir = @infodir@
+datarootdir = @datarootdir@
 
 SHELL = /bin/sh
 

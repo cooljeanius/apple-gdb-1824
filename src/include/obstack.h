@@ -53,7 +53,7 @@ would not like to put any arbitrary upper limit on the length of your
 symbols.
 
 In practice this often means you will build many short symbols and a
-few long symbols.  At the time you are reading a symbol you don't know
+few long symbols.  At the time you are reading a symbol you do NOT know
 how long it is.  One traditional method is to read a symbol into a
 buffer, realloc()ating the buffer every time you try to read a symbol
 that is longer than the buffer.  This is beaut, but you still will
@@ -74,7 +74,7 @@ Mostly the chars will not burst over the highest address of the chunk,
 because you would typically expect a chunk to be (say) 100 times as
 long as an average object.
 
-In case that isn't clear, when we have enough chars to make up
+In case that is NOT clear, when we have enough chars to make up
 the object, THEY ARE ALREADY CONTIGUOUS IN THE CHUNK (guaranteed)
 so we just point to it where it lies.  No moving of chars is
 needed and this is the second win: potentially long strings need
@@ -105,33 +105,32 @@ Summary:
 */
 
 
-/* Don't do the contents of this file more than once.  */
+/* Do NOT do the contents of this file more than once.  */
 
 #ifndef _OBSTACK_H
 #define _OBSTACK_H 1
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
-/* We use subtraction of (char *) 0 instead of casting to int
-   because on word-addressable machines a simple cast to int
-   may ignore the byte-within-word field of the pointer.  */
+/* We use subtraction of (char *) 0 instead of casting to int because
+ * on word-addressable machines a simple cast to int may ignore
+ * the byte-within-word field of the pointer.  */
 
 #ifndef __PTR_TO_INT
 # define __PTR_TO_INT(P) ((P) - (char *) 0)
-#endif
+#endif /* !__PTR_TO_INT */
 
 #ifndef __INT_TO_PTR
 # define __INT_TO_PTR(P) ((P) + (char *) 0)
-#endif
+#endif /* !__INT_TO_PTR */
 
 /* We need the type of the resulting object.  If __PTRDIFF_TYPE__ is
-   defined, as with GNU C, use that; that way we don't pollute the
-   namespace with <stddef.h>'s symbols.  Otherwise, if <stddef.h> is
-   available, include it and use ptrdiff_t.  In traditional C, long is
-   the best that we can do.  */
-
+ * defined, as with GNU C, use that; that way we do NOT pollute the
+ * namespace with symbols from the <stddef.h> header.  Otherwise, if
+ * <stddef.h> is available, then include it and use ptrdiff_t.
+ * In traditional C, long is the best that we can do: */
 #ifdef __PTRDIFF_TYPE__
 # define PTR_INT_TYPE __PTRDIFF_TYPE__
 #else
@@ -140,19 +139,19 @@ extern "C" {
 #  define PTR_INT_TYPE ptrdiff_t
 # else
 #  define PTR_INT_TYPE long
-# endif
-#endif
+# endif /* HAVE_STDDEF_H */
+#endif /* __PTRDIFF_TYPE__ */
 
-#if defined _LIBC || defined HAVE_STRING_H
+#if defined(_LIBC) || defined(HAVE_STRING_H)
 # include <string.h>
-# define _obstack_memcpy(To, From, N) memcpy ((To), (From), (N))
+# define _obstack_memcpy(To, From, N) memcpy((To), (From), (N))
 #else
 # ifdef memcpy
-#  define _obstack_memcpy(To, From, N) memcpy ((To), (char *)(From), (N))
+#  define _obstack_memcpy(To, From, N) memcpy((To), (char *)(From), (N))
 # else
-#  define _obstack_memcpy(To, From, N) bcopy ((char *)(From), (To), (N))
-# endif
-#endif
+#  define _obstack_memcpy(To, From, N) bcopy((char *)(From), (To), (N))
+# endif /* memcpy */
+#endif /* _LIBC || HAVE_STRING_H */
 
 struct _obstack_chunk		/* Lives at front of each chunk. */
 {
@@ -170,20 +169,20 @@ struct obstack		/* control current object in current chunk */
   char	*chunk_limit;		/* address of char after current chunk */
   PTR_INT_TYPE temp;		/* Temporary for some macros.  */
   int   alignment_mask;		/* Mask of alignment for each object. */
-  /* These prototypes vary based on `use_extra_arg', and we use
-     casts to the prototypeless function type in all assignments,
-     but having prototypes here quiets -Wstrict-prototypes.  */
+  /* These prototypes vary based on `use_extra_arg', and we use casts
+   * to the prototypeless function type in all assignments,
+   * but having prototypes here quiets -Wstrict-prototypes. */
   struct _obstack_chunk *(*chunkfun) (void *, long);
   void (*freefun) (void *, struct _obstack_chunk *);
   void *extra_arg;		/* first arg for chunk alloc/dealloc funcs */
   unsigned use_extra_arg:1;	/* chunk alloc/dealloc funcs take extra arg */
-  unsigned maybe_empty_object:1;/* There is a possibility that the current
-				   chunk contains a zero-length object.  This
-				   prevents freeing the chunk if we allocate
-				   a bigger chunk to replace it. */
+  unsigned maybe_empty_object:1; /* There is a possibility that the current
+				  * chunk contains a zero-length object. This
+				  * prevents freeing the chunk if we allocate
+				  * a bigger chunk to replace it. */
   unsigned alloc_failed:1;	/* No longer used, as we now call the failed
-				   handler on error, but retained for binary
-				   compatibility.  */
+				 * handler on error, but retained for binary
+				 * compatibility.  */
 };
 
 /* Declare the external functions we use; they are in obstack.c.  */
@@ -197,9 +196,7 @@ extern int _obstack_begin_1 (struct obstack *, int, int,
 			     void (*) (void *, void *), void *);
 extern int _obstack_memory_used (struct obstack *);
 
-/* Do the function-declarations after the structs
-   but before defining the macros.  */
-
+/* Do the function-decls after the structs, but before defining the macros: */
 void obstack_init (struct obstack *obstack);
 
 void * obstack_alloc (struct obstack *obstack, int size);
@@ -229,16 +226,16 @@ void obstack_ptr_grow_fast (struct obstack *obstack, void *data);
 void obstack_int_grow_fast (struct obstack *obstack, int data);
 void obstack_blank_fast (struct obstack *obstack, int size);
 
-void * obstack_base (struct obstack *obstack);
-void * obstack_next_free (struct obstack *obstack);
-int obstack_alignment_mask (struct obstack *obstack);
-int obstack_chunk_size (struct obstack *obstack);
-int obstack_memory_used (struct obstack *obstack);
+void *obstack_base(struct obstack *obstack);
+void *obstack_next_free(struct obstack *obstack);
+int obstack_alignment_mask(struct obstack *obstack);
+int obstack_chunk_size(struct obstack *obstack);
+int obstack_memory_used(struct obstack *obstack);
 
 /* Error handler called when `obstack_chunk_alloc' failed to allocate
    more memory.  This can be set to a user defined function.  The
    default action is to print a message and abort.  */
-extern void (*obstack_alloc_failed_handler) (void);
+extern void (*obstack_alloc_failed_handler)(void) ATTRIBUTE_NORETURN;
 
 /* Exit value used when `print_and_abort' is used.  */
 extern int obstack_exit_failure;
@@ -294,16 +291,15 @@ extern int obstack_exit_failure;
 
 #if defined __GNUC__ && defined __STDC__ && __STDC__
 /* NextStep 2.0 cc is really gcc 1.93 but it defines __GNUC__ = 2 and
-   does not implement __extension__.  But that compiler doesn't define
-   __GNUC_MINOR__.  */
-# if __GNUC__ < 2 || (__NeXT__ && !__GNUC_MINOR__)
+ * does not implement __extension__.  But that compiler does NOT define
+ * __GNUC_MINOR__.  */
+# if (__GNUC__ < 2) || ((defined(__NeXT__) && __NeXT__) && !__GNUC_MINOR__)
 #  define __extension__
-# endif
+# endif /* gcc older than 2 */
 
-/* For GNU C, if not -traditional,
-   we can define these macros to compute all args only once
-   without using a global variable.
-   Also, we can avoid using the `temp' slot, to make faster code.  */
+/* For GNU C, if not -traditional, we can define these macros to compute
+ * all args only once without using a global variable. Also, we can avoid
+ * using the `temp' slot, to make faster code. */
 
 # define obstack_object_size(OBSTACK)					\
   __extension__								\
@@ -358,8 +354,8 @@ __extension__								\
    (void) 0; })
 
 /* These assume that the obstack alignment is good enough for pointers or ints,
-   and that the data added so far to the current object
-   shares that much alignment.  */
+ * & that the data added so far to the current object shares that much
+ * alignment. */
 
 # define obstack_ptr_grow(OBSTACK,datum)				\
 __extension__								\
@@ -416,8 +412,8 @@ __extension__								\
    obstack_grow0 (__h, (where), (length));				\
    obstack_finish (__h); })
 
-/* The local variable is named __o1 to avoid a name conflict
-   when obstack_blank is called.  */
+/* The local variable is named __o1 to avoid a name conflict when
+ * obstack_blank() is called.  */
 # define obstack_finish(OBSTACK)  					\
 __extension__								\
 ({ struct obstack *__o1 = (OBSTACK);					\
@@ -457,7 +453,7 @@ __extension__								\
    so that we can avoid having void expressions
    in the arms of the conditional expression.
    Casting the third operand to void was tried before,
-   but some compilers won't accept it.  */
+   but some compilers will NOT accept it.  */
 
 # define obstack_make_room(h,length)					\
 ( (h)->temp = (length),							\
@@ -540,6 +536,8 @@ __extension__								\
 
 #ifdef __cplusplus
 }	/* C++ */
-#endif
+#endif /* __cplusplus */
 
 #endif /* obstack.h */
+
+/* EOF */

@@ -1,9 +1,9 @@
-/* BFD back-end for PowerPC Microsoft Portable Executable files.
+/* coff-ppc.c: BFD backend for PowerPC Microsoft Portable Executable files.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
-   Original version pieced together by Kim Knuttila (krk@cygnus.com)
+   Original version pieced together by Kim Knuttila <krk@cygnus.com>
 
    There is nothing new under the sun. This file draws a lot on other
    coff files, in particular, those for the rs/6000, alpha, mips, and
@@ -44,8 +44,8 @@
 #include "coff/pe.h"
 
 #ifdef BADMAG
-#undef BADMAG
-#endif
+# undef BADMAG
+#endif /* BADMAG */
 
 #define BADMAG(x) PPCBADMAG(x)
 
@@ -54,8 +54,8 @@
 /* This file is compiled more than once, but we only compile the
    final_link routine once.  */
 extern bfd_boolean ppc_bfd_coff_final_link
-  PARAMS ((bfd *, struct bfd_link_info *));
-extern void dump_toc PARAMS ((PTR));
+  PARAMS((bfd *, struct bfd_link_info *));
+extern void dump_toc PARAMS((PTR));
 
 /* The toc is a set of bfd_vma fields. We use the fact that valid
    addresses are even (i.e. the bit representing "1" is off) to allow
@@ -68,36 +68,38 @@ extern void dump_toc PARAMS ((PTR));
    the low order bit with a "1" upon writing.  */
 
 #define SET_UNALLOCATED(x)  ((x) = 1)
-#define IS_UNALLOCATED(x)   ((x) == 1)
+#ifndef IS_UNALLOCATED
+# define IS_UNALLOCATED(x)   ((x) == 1)
+#endif /* !IS_UNALLOCATED */
 
 #define IS_WRITTEN(x)       ((x) & 1)
 #define MARK_AS_WRITTEN(x)  ((x) |= 1)
 #define MAKE_ADDR_AGAIN(x)  ((x) &= ~1)
 
-/* Turn on this check if you suspect something amiss in the hash tables.  */
+/* Turn on this check if you suspect something amiss in the hash tables: */
 #ifdef DEBUG_HASH
 
-/* Need a 7 char string for an eye catcher.  */
-#define EYE "krkjunk"
+/* Need a 7 char string for an eye catcher: */
+# define EYE "krkjunk"
 
-#define HASH_CHECK_DCL char eye_catcher[8];
-#define HASH_CHECK_INIT(ret)      strcpy(ret->eye_catcher, EYE)
-#define HASH_CHECK(addr) \
- if (strcmp(addr->eye_catcher, EYE) != 0) \
-  { \
-    fprintf (stderr,\
-    _("File %s, line %d, Hash check failure, bad eye %8s\n"), \
-    __FILE__, __LINE__, addr->eye_catcher); \
-    abort (); \
- }
+# define HASH_CHECK_DCL char eye_catcher[8];
+# define HASH_CHECK_INIT(ret)      strcpy(ret->eye_catcher, EYE)
+# define HASH_CHECK(addr) \
+  if (strcmp(addr->eye_catcher, EYE) != 0) \
+   { \
+     fprintf(stderr,\
+             _("File %s, line %d, Hash check failure, bad eye %8s\n"), \
+             __FILE__, __LINE__, addr->eye_catcher); \
+     abort(); \
+  }
 
 #else
 
-#define HASH_CHECK_DCL
-#define HASH_CHECK_INIT(ret)
-#define HASH_CHECK(addr)
+# define HASH_CHECK_DCL
+# define HASH_CHECK_INIT(ret)
+# define HASH_CHECK(addr)
 
-#endif
+#endif /* DEBUG_HASH */
 
 /* In order not to add an int to every hash table item for every coff
    linker, we define our own hash table, derived from the coff one.  */
@@ -125,92 +127,88 @@ struct ppc_coff_link_hash_table
 };
 
 static struct bfd_hash_entry *ppc_coff_link_hash_newfunc
-  PARAMS ((struct bfd_hash_entry *, struct bfd_hash_table *,
-	   const char *));
+  PARAMS((struct bfd_hash_entry *, struct bfd_hash_table *,
+	  const char *));
 static bfd_boolean ppc_coff_link_hash_table_init
-  PARAMS ((struct ppc_coff_link_hash_table *, bfd *,
-	   struct bfd_hash_entry *(*) (struct bfd_hash_entry *,
-				       struct bfd_hash_table *,
-				       const char *)));
+  PARAMS((struct ppc_coff_link_hash_table *, bfd *,
+	  struct bfd_hash_entry *(*)(struct bfd_hash_entry *,
+                                     struct bfd_hash_table *,
+                                     const char *)));
 static struct bfd_link_hash_table *ppc_coff_link_hash_table_create
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 static bfd_boolean coff_ppc_relocate_section
-  PARAMS ((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
-	   struct internal_reloc *, struct internal_syment *, asection **));
+  PARAMS((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
+	  struct internal_reloc *, struct internal_syment *, asection **));
 static reloc_howto_type *coff_ppc_rtype_to_howto
-  PARAMS ((bfd *, asection *, struct internal_reloc *,
-	   struct coff_link_hash_entry *, struct internal_syment *,
-	   bfd_vma *));
+  PARAMS((bfd *, asection *, struct internal_reloc *,
+	  struct coff_link_hash_entry *, struct internal_syment *,
+	  bfd_vma *));
 
-/* Routine to create an entry in the link hash table.  */
-
+/* Routine to create an entry in the link hash table: */
 static struct bfd_hash_entry *
-ppc_coff_link_hash_newfunc (entry, table, string)
-     struct bfd_hash_entry *entry;
-     struct bfd_hash_table *table;
-     const char *string;
+ppc_coff_link_hash_newfunc(struct bfd_hash_entry *entry,
+                           struct bfd_hash_table *table,
+                           const char *string)
 {
   struct ppc_coff_link_hash_entry *ret =
-    (struct ppc_coff_link_hash_entry *) entry;
+    (struct ppc_coff_link_hash_entry *)entry;
 
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
-  if (ret == (struct ppc_coff_link_hash_entry *) NULL)
+  if (ret == (struct ppc_coff_link_hash_entry *)NULL)
     ret = (struct ppc_coff_link_hash_entry *)
-      bfd_hash_allocate (table,
-			 sizeof (struct ppc_coff_link_hash_entry));
+      bfd_hash_allocate(table,
+                        ((unsigned int)
+                         sizeof(struct ppc_coff_link_hash_entry)));
 
-  if (ret == (struct ppc_coff_link_hash_entry *) NULL)
+  if (ret == (struct ppc_coff_link_hash_entry *)NULL)
     return NULL;
 
-  /* Call the allocation method of the superclass.  */
+  /* Call the allocation method of the superclass: */
   ret = ((struct ppc_coff_link_hash_entry *)
-	 _bfd_coff_link_hash_newfunc ((struct bfd_hash_entry *) ret,
-				      table, string));
+	 _bfd_coff_link_hash_newfunc((struct bfd_hash_entry *)ret,
+				     table, string));
 
   if (ret)
     {
-      /* Initialize the local fields.  */
-      SET_UNALLOCATED (ret->toc_offset);
+      /* Initialize the local fields: */
+      SET_UNALLOCATED(ret->toc_offset);
       ret->symbol_is_glue = 0;
       ret->glue_insn = 0;
 
-      HASH_CHECK_INIT (ret);
+      HASH_CHECK_INIT(ret);
     }
 
-  return (struct bfd_hash_entry *) ret;
+  return (struct bfd_hash_entry *)ret;
 }
 
-/* Initialize a PE linker hash table.  */
-
+/* Initialize a PE linker hash table: */
 static bfd_boolean
-ppc_coff_link_hash_table_init (table, abfd, newfunc)
-     struct ppc_coff_link_hash_table *table;
-     bfd *abfd;
-     struct bfd_hash_entry *(*newfunc) PARAMS ((struct bfd_hash_entry *,
-						struct bfd_hash_table *,
-						const char *));
+ppc_coff_link_hash_table_init(struct ppc_coff_link_hash_table *table,
+                              bfd *abfd,
+                              struct bfd_hash_entry *(*newfunc)
+                                PARAMS((struct bfd_hash_entry *,
+                                        struct bfd_hash_table *,
+                                        const char *)))
 {
   return _bfd_coff_link_hash_table_init (&table->root, abfd, newfunc);
 }
 
-/* Create a PE linker hash table.  */
-
+/* Create a PE linker hash table: */
 static struct bfd_link_hash_table *
-ppc_coff_link_hash_table_create (abfd)
-     bfd *abfd;
+ppc_coff_link_hash_table_create(bfd *abfd)
 {
   struct ppc_coff_link_hash_table *ret;
-  bfd_size_type amt = sizeof (struct ppc_coff_link_hash_table);
+  bfd_size_type amt = sizeof(struct ppc_coff_link_hash_table);
 
-  ret = (struct ppc_coff_link_hash_table *) bfd_malloc (amt);
+  ret = (struct ppc_coff_link_hash_table *)bfd_malloc(amt);
   if (ret == NULL)
     return NULL;
-  if (! ppc_coff_link_hash_table_init (ret, abfd,
-					ppc_coff_link_hash_newfunc))
+  if (! ppc_coff_link_hash_table_init(ret, abfd,
+                                      ppc_coff_link_hash_newfunc))
     {
-      free (ret);
-      return (struct bfd_link_hash_table *) NULL;
+      free(ret);
+      return (struct bfd_link_hash_table *)NULL;
     }
   return &ret->root.root;
 }
@@ -229,7 +227,7 @@ ppc_coff_link_hash_table_create (abfd)
 
 #define COFF_DEFAULT_SECTION_ALIGNMENT_POWER (3)
 
-/* In case we're on a 32-bit machine, construct a 64-bit "-1" value
+/* In case we are on a 32-bit machine, construct a 64-bit "-1" value
    from smaller values.  Start with zero, widen, *then* decrement.  */
 #define MINUS_ONE	(((bfd_vma)0) - 1)
 
@@ -256,8 +254,10 @@ ppc_coff_link_hash_table_create (abfd)
 /* 26-bit PC-relative offset, shifted left 2 (branch relative) */
 #define IMAGE_REL_PPC_REL24             0x0006
 
+#ifndef IMAGE_REL_PPC_REL14
 /* 16-bit PC-relative offset, shifted left 2 (br cond relative) */
-#define IMAGE_REL_PPC_REL14             0x0007
+# define IMAGE_REL_PPC_REL14            0x0007
+#endif /* !IMAGE_REL_PPC_REL14 */
 
 /* 16-bit offset from TOC base */
 #define IMAGE_REL_PPC_TOCREL16          0x0008
@@ -295,14 +295,20 @@ ppc_coff_link_hash_table_create (abfd)
 
 /* Flag bits in IMAGE_RELOCATION.TYPE.  */
 
-/* Subtract reloc value rather than adding it.  */
-#define IMAGE_REL_PPC_NEG               0x0100
+#ifndef IMAGE_REL_PPC_NEG
+/* Subtract reloc value rather than adding it: */
+# define IMAGE_REL_PPC_NEG              0x0100
+#endif /* !IMAGE_REL_PPC_NEG */
 
-/* Fix branch prediction bit to predict branch taken.  */
-#define IMAGE_REL_PPC_BRTAKEN           0x0200
+#ifndef IMAGE_REL_PPC_BRTAKEN
+/* Fix branch prediction bit to predict branch taken: */
+# define IMAGE_REL_PPC_BRTAKEN          0x0200
+#endif /* !IMAGE_REL_PPC_BRTAKEN */
 
-/* Fix branch prediction bit to predict branch not taken.  */
-#define IMAGE_REL_PPC_BRNTAKEN          0x0400
+#ifndef IMAGE_REL_PPC_BRNTAKEN
+/* Fix branch prediction bit to predict branch not taken: */
+# define IMAGE_REL_PPC_BRNTAKEN         0x0400
+#endif /* !IMAGE_REL_PPC_BRNTAKEN */
 
 /* TOC slot defined in file (or, data in toc).  */
 #define IMAGE_REL_PPC_TOCDEFN           0x0800
@@ -372,7 +378,7 @@ static bfd_boolean in_reloc_p PARAMS((bfd *abfd, reloc_howto_type *howto));
    get us started, so those I'll make sure work. Those marked FIXME are either
    completely unverified or have a specific unknown marked in the comment.  */
 
-/* Relocation entries for Windows/NT on PowerPC.                             
+/* Relocation entries for Windows/NT on PowerPC.
 
    From the document "" we find the following listed as used relocs:
 
@@ -822,26 +828,24 @@ extern struct list_ele *head;
 extern struct list_ele *tail;
 
 static void record_toc
-  PARAMS ((asection *, bfd_signed_vma, enum ref_category, const char *));
+  PARAMS((asection *, bfd_signed_vma, enum ref_category, const char *));
 
 static void
-record_toc (toc_section, our_toc_offset, cat, name)
-     asection *toc_section;
-     bfd_signed_vma our_toc_offset;
-     enum ref_category cat;
-     const char *name;
+record_toc(asection *toc_section, bfd_signed_vma our_toc_offset,
+           enum ref_category cat, const char *name)
 {
-  /* Add this entry to our toc addr-offset-name list.  */
-  bfd_size_type amt = sizeof (struct list_ele);
-  struct list_ele *t = (struct list_ele *) bfd_malloc (amt);
+  /* Add this entry to our toc addr-offset-name list: */
+  bfd_size_type amt = sizeof(struct list_ele);
+  struct list_ele *t = (struct list_ele *)bfd_malloc(amt);
 
-  if (t == NULL)
-    abort ();
+  if (t == NULL) {
+    abort();
+  }
   t->next = 0;
   t->offset = our_toc_offset;
   t->name = name;
   t->cat = cat;
-  t->addr = toc_section->output_offset + our_toc_offset;
+  t->addr = (toc_section->output_offset + our_toc_offset);
 
   if (head == 0)
     {
@@ -862,14 +866,12 @@ static bfd_boolean ppc_record_toc_entry
 static void ppc_mark_symbol_as_glue
   PARAMS ((bfd *, int, struct internal_reloc *));
 
-/* Record a toc offset against a symbol.  */
+/* Record a toc offset against a symbol: */
 static bfd_boolean
-ppc_record_toc_entry(abfd, info, sec, sym, toc_kind)
-     bfd *abfd;
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
-     asection *sec ATTRIBUTE_UNUSED;
-     int sym;
-     enum toc_type toc_kind ATTRIBUTE_UNUSED;
+ppc_record_toc_entry(bfd *abfd,
+                     struct bfd_link_info *info ATTRIBUTE_UNUSED,
+                     asection *sec ATTRIBUTE_UNUSED, int sym,
+                     enum toc_type toc_kind ATTRIBUTE_UNUSED)
 {
   struct ppc_coff_link_hash_entry *h;
   const char *name;
@@ -934,8 +936,8 @@ ppc_record_toc_entry(abfd, info, sec, sym, toc_kind)
 	  /* The size must fit in a 16-bit displacement.  */
 	  if (global_toc_size >= 65535)
 	    {
-	      (*_bfd_error_handler) (_("TOC overflow"));
-	      bfd_set_error (bfd_error_file_too_big);
+	      (*_bfd_error_handler)(_("TOC overflow"));
+	      bfd_set_error(bfd_error_file_too_big);
 	      return FALSE;
 	    }
 	}
@@ -944,16 +946,13 @@ ppc_record_toc_entry(abfd, info, sec, sym, toc_kind)
   return TRUE;
 }
 
-/* Record a toc offset against a symbol.  */
+/* Record a toc offset against a symbol: */
 static void
-ppc_mark_symbol_as_glue(abfd, sym, rel)
-     bfd *abfd;
-     int sym;
-     struct internal_reloc *rel;
+ppc_mark_symbol_as_glue(bfd *abfd, int sym, struct internal_reloc *rel)
 {
   struct ppc_coff_link_hash_entry *h;
 
-  h = (struct ppc_coff_link_hash_entry *) (obj_coff_sym_hashes (abfd)[sym]);
+  h = (struct ppc_coff_link_hash_entry *)(obj_coff_sym_hashes(abfd)[sym]);
 
   HASH_CHECK(h);
 
@@ -965,41 +964,33 @@ ppc_mark_symbol_as_glue(abfd, sym, rel)
 
 #endif /* COFF_IMAGE_WITH_PE */
 
-/* Return TRUE if this relocation should
-   appear in the output .reloc section.  */
-
-static bfd_boolean in_reloc_p(abfd, howto)
-     bfd * abfd ATTRIBUTE_UNUSED;
-     reloc_howto_type *howto;
+/* Return TRUE if relocation should appear in the output .reloc section: */
+static bfd_boolean
+in_reloc_p(bfd *abfd ATTRIBUTE_UNUSED, reloc_howto_type *howto)
 {
   return
-    (! howto->pc_relative)
-      && (howto->type != IMAGE_REL_PPC_ADDR32NB)
-      && (howto->type != IMAGE_REL_PPC_TOCREL16)
-      && (howto->type != IMAGE_REL_PPC_IMGLUE)
-      && (howto->type != IMAGE_REL_PPC_IFGLUE)
-      && (howto->type != IMAGE_REL_PPC_SECREL)
-      && (howto->type != IMAGE_REL_PPC_SECTION)
-      && (howto->type != IMAGE_REL_PPC_SECREL16)
-      && (howto->type != IMAGE_REL_PPC_REFHI)
-      && (howto->type != IMAGE_REL_PPC_REFLO)
-      && (howto->type != IMAGE_REL_PPC_PAIR)
-      && (howto->type != IMAGE_REL_PPC_TOCREL16_DEFN) ;
+    ((! howto->pc_relative)
+     && (howto->type != IMAGE_REL_PPC_ADDR32NB)
+     && (howto->type != IMAGE_REL_PPC_TOCREL16)
+     && (howto->type != IMAGE_REL_PPC_IMGLUE)
+     && (howto->type != IMAGE_REL_PPC_IFGLUE)
+     && (howto->type != IMAGE_REL_PPC_SECREL)
+     && (howto->type != IMAGE_REL_PPC_SECTION)
+     && (howto->type != IMAGE_REL_PPC_SECREL16)
+     && (howto->type != IMAGE_REL_PPC_REFHI)
+     && (howto->type != IMAGE_REL_PPC_REFLO)
+     && (howto->type != IMAGE_REL_PPC_PAIR)
+     && (howto->type != IMAGE_REL_PPC_TOCREL16_DEFN));
 }
 
-/* The reloc processing routine for the optimized COFF linker.  */
-
+/* The reloc processing routine for the optimized COFF linker: */
 static bfd_boolean
-coff_ppc_relocate_section (output_bfd, info, input_bfd, input_section,
-			   contents, relocs, syms, sections)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     struct internal_reloc *relocs;
-     struct internal_syment *syms;
-     asection **sections;
+coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+                          bfd *input_bfd, asection *input_section,
+                          bfd_byte *contents,
+                          struct internal_reloc *relocs,
+                          struct internal_syment *syms,
+                          asection **sections)
 {
   struct internal_reloc *rel;
   struct internal_reloc *relend;
@@ -1242,37 +1233,39 @@ coff_ppc_relocate_section (output_bfd, info, input_bfd, input_section,
 		bfd_vma addr = (toc_section->output_section->vma
 				+ toc_section->output_offset + our_toc_offset);
 
-		if (coff_data (output_bfd)->pe)
+		if (coff_data(output_bfd)->pe)
 		  addr -= pe_data(output_bfd)->pe_opthdr.ImageBase;
 
-		fwrite (&addr, 1,4, (FILE *) info->base_file);
+		fwrite(&addr, (size_t)1UL, (size_t)4UL,
+                       (FILE *)info->base_file);
 	      }
 
-	    /* FIXME: this test is conservative.  */
+	    /* FIXME: this test is conservative: */
 	    if ((r_flags & IMAGE_REL_PPC_TOCDEFN) != IMAGE_REL_PPC_TOCDEFN
-		&& (bfd_vma) our_toc_offset > toc_section->size)
+		&& ((bfd_vma)our_toc_offset > toc_section->size))
 	      {
 		(*_bfd_error_handler)
 		  (_("%B: Relocation exceeds allocated TOC (%lx)"),
-		   input_bfd, (unsigned long) toc_section->size);
-		bfd_set_error (bfd_error_bad_value);
+		   input_bfd, (unsigned long)toc_section->size);
+		bfd_set_error(bfd_error_bad_value);
 		return FALSE;
 	      }
 
-	    /* Now we know the relocation for this toc reference.  */
-	    relocation =  our_toc_offset + TOC_LOAD_ADJUSTMENT;
-	    rstat = _bfd_relocate_contents (howto, input_bfd, relocation, loc);
+	    /* Now we know the relocation for this toc reference: */
+	    relocation = (our_toc_offset + TOC_LOAD_ADJUSTMENT);
+	    rstat = _bfd_relocate_contents(howto, input_bfd, relocation,
+                                           loc);
 	  }
 	  break;
 	case IMAGE_REL_PPC_IFGLUE:
 	  {
 	    /* To solve this, we need to know whether or not the symbol
 	       appearing on the call instruction is a glue function or not.
-	       A glue function must announce itself via a IMGLUE reloc, and 
+	       A glue function must announce itself via a IMGLUE reloc, and
 	       the reloc contains the required toc restore instruction.  */
 	    bfd_vma x;
 	    const char *my_name;
-	    
+
 	    DUMP_RELOC2 (howto->name, rel);
 
 	    if (h != 0)
@@ -1325,8 +1318,9 @@ coff_ppc_relocate_section (output_bfd, info, input_bfd, input_section,
 	    my_name = h->root.root.root.string;
 
 	    (*_bfd_error_handler)
-	      (_("%B: Out of order IMGLUE reloc for %s"), input_bfd, my_name);
-	    bfd_set_error (bfd_error_bad_value);
+	      (_("%B: Out of order IMGLUE reloc for %s"),
+               input_bfd, my_name);
+	    bfd_set_error(bfd_error_bad_value);
 	    return FALSE;
 	  }
 
@@ -1336,9 +1330,10 @@ coff_ppc_relocate_section (output_bfd, info, input_bfd, input_section,
 
 	    DUMP_RELOC2 (howto->name, rel);
 
-	    if (strncmp(".idata$2",input_section->name,8) == 0 && first_thunk_address == 0)
+	    if ((strncmp(".idata$2", input_section->name, (size_t)8L) == 0)
+                && (first_thunk_address == 0))
 	      {
-		/* Set magic values.  */
+		/* Set magic values: */
 		int idata5offset;
 		struct coff_link_hash_entry *myh;
 
@@ -1370,31 +1365,33 @@ coff_ppc_relocate_section (output_bfd, info, input_bfd, input_section,
 	      }
 	    else
 	      {
-		char *target = 0;
+		const char *target = (const char *)0;
 
 		name = h->root.root.root.string;
-		if (strcmp (".idata$2", name) == 0)
+		if (strcmp(".idata$2", name) == 0)
 		  target = "__idata2_magic__";
-		else if (strcmp (".idata$4", name) == 0)
+		else if (strcmp(".idata$4", name) == 0)
 		  target = "__idata4_magic__";
-		else if (strcmp (".idata$5", name) == 0)
+		else if (strcmp(".idata$5", name) == 0)
 		  target = "__idata5_magic__";
 
-		if (target != 0)
+		if (target != (const char *)0)
 		  {
 		    struct coff_link_hash_entry *myh;
 
-		    myh = coff_link_hash_lookup (coff_hash_table (info),
-						 target,
-						 FALSE, FALSE, TRUE);
+		    myh = coff_link_hash_lookup(coff_hash_table(info),
+                                                target,
+                                                FALSE, FALSE, TRUE);
 		    if (myh == 0)
 		      {
-			/* Missing magic cookies. Something is very wrong.  */
-			abort ();
+			/* Missing magic cookies.  Something is very
+                         * wrong: */
+			abort();
 		      }
 
-		    val = myh->root.u.def.value +
-		      sec->output_section->vma + sec->output_offset;
+		    val = (myh->root.u.def.value
+                           + sec->output_section->vma
+                           + sec->output_offset);
 		    if (first_thunk_address == 0)
 		      {
 			int idata5offset;
@@ -1458,15 +1455,15 @@ coff_ppc_relocate_section (output_bfd, info, input_bfd, input_section,
 	      /* Relocation to a symbol in a section which
 		 isn't absolute - we output the address here
 		 to a file.  */
-	      bfd_vma addr = rel->r_vaddr
-		- input_section->vma
-		+ input_section->output_offset
-		  + input_section->output_section->vma;
+	      bfd_vma addr = (rel->r_vaddr - input_section->vma
+                              + input_section->output_offset
+                              + input_section->output_section->vma);
 
-	      if (coff_data (output_bfd)->pe)
-		addr -= pe_data (output_bfd)->pe_opthdr.ImageBase;
+	      if (coff_data(output_bfd)->pe)
+		addr -= pe_data(output_bfd)->pe_opthdr.ImageBase;
 
-	      fwrite (&addr, 1,4, (FILE *) info->base_file);
+	      fwrite(&addr, (size_t)1UL, (size_t)4UL,
+                     (FILE *)info->base_file);
 	    }
 	}
 
@@ -1487,20 +1484,21 @@ coff_ppc_relocate_section (output_bfd, info, input_bfd, input_section,
 	      name = NULL;
 	    else if (sym == NULL)
 	      name = "*unknown*";
-	    else if (sym->_n._n_n._n_zeroes == 0
-		     && sym->_n._n_n._n_offset != 0)
-	      name = obj_coff_strings (input_bfd) + sym->_n._n_n._n_offset;
+	    else if ((sym->_n._n_n._n_zeroes == 0)
+		     && (sym->_n._n_n._n_offset != 0))
+	      name = (obj_coff_strings(input_bfd)
+                      + sym->_n._n_n._n_offset);
 	    else
 	      {
-		strncpy (buf, sym->_n._n_name, SYMNMLEN);
+		strncpy(buf, sym->_n._n_name, (size_t)SYMNMLEN);
 		buf[SYMNMLEN] = '\0';
 		name = buf;
 	      }
 
-	    if (! ((*info->callbacks->reloc_overflow)
-		   (info, (h ? &h->root.root : NULL), name, howto->name,
-		    (bfd_vma) 0, input_bfd,
-		    input_section, rel->r_vaddr - input_section->vma)))
+	    if (!((*info->callbacks->reloc_overflow)
+		  (info, (h ? &h->root.root : NULL), name, howto->name,
+		   (bfd_vma)0UL, input_bfd,
+		   input_section, (rel->r_vaddr - input_section->vma))))
 	      return FALSE;
 	  }
 	}
@@ -1510,11 +1508,8 @@ coff_ppc_relocate_section (output_bfd, info, input_bfd, input_section,
 }
 
 #ifdef COFF_IMAGE_WITH_PE
-
 /* FIXME: BFD should not use global variables.  This file is compiled
-   twice, and these variables are shared.  This is confusing and
-   weird.  */
-
+ * twice, and these variables are shared.  This is confusing and weird: */
 long int global_toc_size = 4;
 
 bfd* bfd_of_toc_owner = 0;
@@ -1526,26 +1521,24 @@ long int thunk_size;
 struct list_ele *head;
 struct list_ele *tail;
 
-static char *
+static const char *
 h1 = N_("\n\t\t\tTOC MAPPING\n\n");
-static char *
+static const char *
 h2 = N_(" TOC    disassembly  Comments       Name\n");
-static char *
+static const char *
 h3 = N_(" Offset  spelling                   (if present)\n");
 
 void
-dump_toc (vfile)
-     PTR vfile;
+dump_toc(PTR vfile)
 {
-  FILE *file = (FILE *) vfile;
+  FILE *file = (FILE *)vfile;
   struct list_ele *t;
 
-  fprintf (file, _(h1));
-  fprintf (file, _(h2));
-  fprintf (file, _(h3));
+  fprintf(file, "%s", _(h1));
+  fprintf(file, "%s", _(h2));
+  fprintf(file, "%s", _(h3));
 
-  for (t = head; t != 0; t=t->next)
-    {
+  for (t = head; t != 0; t=t->next) {
       const char *cat = "";
 
       if (t->cat == priv)
@@ -1577,12 +1570,11 @@ dump_toc (vfile)
 
     }
 
-  fprintf (file, "\n");
+  fprintf(file, "\n");
 }
 
 bfd_boolean
-ppc_allocate_toc_section (info)
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
+ppc_allocate_toc_section(struct bfd_link_info *info ATTRIBUTE_UNUSED)
 {
   asection *s;
   bfd_byte *foo;
@@ -1612,9 +1604,7 @@ ppc_allocate_toc_section (info)
 }
 
 bfd_boolean
-ppc_process_before_allocation (abfd, info)
-     bfd *abfd;
-     struct bfd_link_info *info;
+ppc_process_before_allocation(bfd *abfd, struct bfd_link_info *info)
 {
   asection *sec;
   struct internal_reloc *i, *rel;
@@ -1671,19 +1661,15 @@ ppc_process_before_allocation (abfd, info)
 
   return TRUE;
 }
-
-#endif
+#endif /* COFF_IMAGE_WITH_PE */
 
 static bfd_reloc_status_type
-ppc_refhi_reloc (abfd, reloc_entry, symbol, data,
-		 input_section, output_bfd, error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry ATTRIBUTE_UNUSED;
-     asymbol *symbol ATTRIBUTE_UNUSED;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section ATTRIBUTE_UNUSED;
-     bfd *output_bfd;
-     char **error_message ATTRIBUTE_UNUSED;
+ppc_refhi_reloc(bfd *abfd ATTRIBUTE_UNUSED,
+                arelent *reloc_entry ATTRIBUTE_UNUSED,
+                asymbol *symbol ATTRIBUTE_UNUSED,
+                PTR data ATTRIBUTE_UNUSED,
+		asection *input_section ATTRIBUTE_UNUSED, bfd *output_bfd,
+                char **error_message ATTRIBUTE_UNUSED)
 {
   UN_IMPL("REFHI");
   DUMP_RELOC("REFHI",reloc_entry);
@@ -1695,15 +1681,11 @@ ppc_refhi_reloc (abfd, reloc_entry, symbol, data,
 }
 
 static bfd_reloc_status_type
-ppc_pair_reloc (abfd, reloc_entry, symbol, data,
-		input_section, output_bfd, error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry ATTRIBUTE_UNUSED;
-     asymbol *symbol ATTRIBUTE_UNUSED;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section ATTRIBUTE_UNUSED;
-     bfd *output_bfd;
-     char **error_message ATTRIBUTE_UNUSED;
+ppc_pair_reloc(bfd *abfd ATTRIBUTE_UNUSED,
+               arelent *reloc_entry ATTRIBUTE_UNUSED,
+               asymbol *symbol ATTRIBUTE_UNUSED, PTR data ATTRIBUTE_UNUSED,
+               asection *input_section ATTRIBUTE_UNUSED, bfd *output_bfd,
+               char **error_message ATTRIBUTE_UNUSED)
 {
   UN_IMPL("PAIR");
   DUMP_RELOC("PAIR",reloc_entry);
@@ -1715,55 +1697,46 @@ ppc_pair_reloc (abfd, reloc_entry, symbol, data,
 }
 
 static bfd_reloc_status_type
-ppc_toc16_reloc (abfd, reloc_entry, symbol, data,
-		 input_section, output_bfd, error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry ATTRIBUTE_UNUSED;
-     asymbol *symbol ATTRIBUTE_UNUSED;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section ATTRIBUTE_UNUSED;
-     bfd *output_bfd;
-     char **error_message ATTRIBUTE_UNUSED;
+ppc_toc16_reloc(bfd *abfd ATTRIBUTE_UNUSED,
+                arelent *reloc_entry ATTRIBUTE_UNUSED,
+                asymbol *symbol ATTRIBUTE_UNUSED,
+                PTR data ATTRIBUTE_UNUSED,
+                asection *input_section ATTRIBUTE_UNUSED, bfd *output_bfd,
+                char **error_message ATTRIBUTE_UNUSED)
 {
-  UN_IMPL ("TOCREL16");
-  DUMP_RELOC ("TOCREL16",reloc_entry);
+  UN_IMPL("TOCREL16");
+  DUMP_RELOC("TOCREL16",reloc_entry);
 
-  if (output_bfd == (bfd *) NULL)
+  if (output_bfd == (bfd *)NULL)
     return bfd_reloc_continue;
 
   return bfd_reloc_ok;
 }
 
 static bfd_reloc_status_type
-ppc_secrel_reloc (abfd, reloc_entry, symbol, data,
-		  input_section, output_bfd, error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry ATTRIBUTE_UNUSED;
-     asymbol *symbol ATTRIBUTE_UNUSED;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section ATTRIBUTE_UNUSED;
-     bfd *output_bfd;
-     char **error_message ATTRIBUTE_UNUSED;
+ppc_secrel_reloc(bfd *abfd ATTRIBUTE_UNUSED,
+                 arelent *reloc_entry ATTRIBUTE_UNUSED,
+                 asymbol *symbol ATTRIBUTE_UNUSED,
+                 PTR data ATTRIBUTE_UNUSED,
+		 asection *input_section ATTRIBUTE_UNUSED, bfd *output_bfd,
+                 char **error_message ATTRIBUTE_UNUSED)
 {
   UN_IMPL("SECREL");
   DUMP_RELOC("SECREL",reloc_entry);
 
-  if (output_bfd == (bfd *) NULL)
+  if (output_bfd == (bfd *)NULL)
     return bfd_reloc_continue;
 
   return bfd_reloc_ok;
 }
 
 static bfd_reloc_status_type
-ppc_section_reloc (abfd, reloc_entry, symbol, data,
-		   input_section, output_bfd, error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry ATTRIBUTE_UNUSED;
-     asymbol *symbol ATTRIBUTE_UNUSED;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section ATTRIBUTE_UNUSED;
-     bfd *output_bfd;
-     char **error_message ATTRIBUTE_UNUSED;
+ppc_section_reloc(bfd *abfd ATTRIBUTE_UNUSED,
+                  arelent *reloc_entry ATTRIBUTE_UNUSED,
+                  asymbol *symbol ATTRIBUTE_UNUSED,
+                  PTR data ATTRIBUTE_UNUSED,
+                  asection *input_section ATTRIBUTE_UNUSED,
+                  bfd *output_bfd, char **error_message ATTRIBUTE_UNUSED)
 {
   UN_IMPL("SECTION");
   DUMP_RELOC("SECTION",reloc_entry);
@@ -1775,15 +1748,12 @@ ppc_section_reloc (abfd, reloc_entry, symbol, data,
 }
 
 static bfd_reloc_status_type
-ppc_imglue_reloc (abfd, reloc_entry, symbol, data,
-		  input_section, output_bfd, error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry ATTRIBUTE_UNUSED;
-     asymbol *symbol ATTRIBUTE_UNUSED;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section ATTRIBUTE_UNUSED;
-     bfd *output_bfd;
-     char **error_message ATTRIBUTE_UNUSED;
+ppc_imglue_reloc(bfd *abfd ATTRIBUTE_UNUSED,
+                 arelent *reloc_entry ATTRIBUTE_UNUSED,
+                 asymbol *symbol ATTRIBUTE_UNUSED,
+                 PTR data ATTRIBUTE_UNUSED,
+                 asection *input_section ATTRIBUTE_UNUSED, bfd *output_bfd,
+                 char **error_message ATTRIBUTE_UNUSED)
 {
   UN_IMPL("IMGLUE");
   DUMP_RELOC("IMGLUE",reloc_entry);
@@ -1800,12 +1770,10 @@ ppc_imglue_reloc (abfd, reloc_entry, symbol, data,
 /* FIXME: There is a possibility that when we read in a reloc from a file,
           that there are some bits encoded in the upper portion of the
 	  type field. Not yet implemented.  */
-static void ppc_coff_rtype2howto PARAMS ((arelent *, struct internal_reloc *));
+static void ppc_coff_rtype2howto PARAMS((arelent *, struct internal_reloc *));
 
 static void
-ppc_coff_rtype2howto (relent, internal)
-     arelent *relent;
-     struct internal_reloc *internal;
+ppc_coff_rtype2howto(arelent *relent, struct internal_reloc *internal)
 {
   /* We can encode one of three things in the type field, aside from the
      type:
@@ -1866,13 +1834,11 @@ ppc_coff_rtype2howto (relent, internal)
 }
 
 static reloc_howto_type *
-coff_ppc_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     asection *sec;
-     struct internal_reloc *rel;
-     struct coff_link_hash_entry *h ATTRIBUTE_UNUSED;
-     struct internal_syment *sym ATTRIBUTE_UNUSED;
-     bfd_vma *addendp;
+coff_ppc_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
+                        struct internal_reloc *rel,
+                        struct coff_link_hash_entry *h ATTRIBUTE_UNUSED,
+                        struct internal_syment *sym ATTRIBUTE_UNUSED,
+                        bfd_vma *addendp)
 {
   reloc_howto_type *howto;
 
@@ -1938,17 +1904,16 @@ coff_ppc_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
   return howto;
 }
 
-/* A cheesy little macro to make the code a little more readable.  */
+/* A cheesy little macro to make the code a little more readable: */
 #define HOW2MAP(bfd_rtype,ppc_rtype)  \
  case bfd_rtype: return &ppc_coff_howto_table[ppc_rtype]
 
 static reloc_howto_type *ppc_coff_reloc_type_lookup
-PARAMS ((bfd *, bfd_reloc_code_real_type));
+  PARAMS((bfd *, bfd_reloc_code_real_type));
 
 static reloc_howto_type *
-ppc_coff_reloc_type_lookup (abfd, code)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+ppc_coff_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                           bfd_reloc_code_real_type code)
 {
   switch (code)
     {
@@ -2009,12 +1974,11 @@ ppc_coff_reloc_type_lookup (abfd, code)
 
 #ifndef COFF_IMAGE_WITH_PE
 
-static bfd_boolean ppc_do_last PARAMS ((bfd *));
-static bfd *ppc_get_last PARAMS ((void));
+static bfd_boolean ppc_do_last PARAMS((bfd *));
+static bfd *ppc_get_last PARAMS((void));
 
 static bfd_boolean
-ppc_do_last (abfd)
-     bfd *abfd;
+ppc_do_last(bfd *abfd)
 {
   if (abfd == bfd_of_toc_owner)
     return TRUE;
@@ -2023,7 +1987,7 @@ ppc_do_last (abfd)
 }
 
 static bfd *
-ppc_get_last()
+ppc_get_last(void)
 {
   return bfd_of_toc_owner;
 }
@@ -2037,14 +2001,11 @@ ppc_get_last()
    This is otherwise intended to be functionally the same as
    cofflink.c:_bfd_coff_final_link(). It is specifically different only
    where the POWERPC_LE_PE macro modifies the code. It is left in as a
-   precise form of comment. krk@cygnus.com  */
+   precise form of comment. -<krk@cygnus.com>  */
 
-/* Do the final link step.  */
-
+/* Do the final link step: */
 bfd_boolean
-ppc_bfd_coff_final_link (abfd, info)
-     bfd *abfd;
-     struct bfd_link_info *info;
+ppc_bfd_coff_final_link(bfd *abfd, struct bfd_link_info *info)
 {
   bfd_size_type symesz;
   struct coff_final_link_info finfo;
@@ -2065,7 +2026,7 @@ ppc_bfd_coff_final_link (abfd, info)
   char strbuf[STRING_SIZE_SIZE];
   bfd_size_type amt;
 
-  symesz = bfd_coff_symesz (abfd);
+  symesz = bfd_coff_symesz(abfd);
 
   finfo.info = info;
   finfo.output_bfd = abfd;
@@ -2083,27 +2044,27 @@ ppc_bfd_coff_final_link (abfd, info)
   finfo.internal_relocs = NULL;
   debug_merge_allocated = FALSE;
 
-  coff_data (abfd)->link_info = info;
+  coff_data(abfd)->link_info = info;
 
-  finfo.strtab = _bfd_stringtab_init ();
+  finfo.strtab = _bfd_stringtab_init();
   if (finfo.strtab == NULL)
     goto error_return;
 
-  if (! coff_debug_merge_hash_table_init (&finfo.debug_merge))
+  if (! coff_debug_merge_hash_table_init(&finfo.debug_merge))
     goto error_return;
   debug_merge_allocated = TRUE;
 
-  /* Compute the file positions for all the sections.  */
+  /* Compute the file positions for all the sections: */
   if (! abfd->output_has_begun)
     {
-      if (! bfd_coff_compute_section_file_positions (abfd))
+      if (! bfd_coff_compute_section_file_positions(abfd))
 	return FALSE;
     }
 
   /* Count the line numbers and relocation entries required for the
      output file.  Set the file positions for the relocs.  */
-  rel_filepos = obj_relocbase (abfd);
-  relsz = bfd_coff_relsz (abfd);
+  rel_filepos = obj_relocbase(abfd);
+  relsz = bfd_coff_relsz(abfd);
   max_contents_size = 0;
   max_lineno_count = 0;
   max_reloc_count = 0;
@@ -2553,14 +2514,13 @@ ppc_bfd_coff_final_link (abfd, info)
 /* Forward declaration for use by alternative_target field.  */
 #ifdef TARGET_BIG_SYM
 extern const bfd_target TARGET_BIG_SYM;
-#endif
+#endif /* TARGET_BIG_SYM */
 
-/* The transfer vectors that lead the outside world to all of the above.  */
-
+/* The transfer vectors that lead the outside world to all of the above: */
 #ifdef TARGET_LITTLE_SYM
 const bfd_target TARGET_LITTLE_SYM =
 {
-  TARGET_LITTLE_NAME,		/* name or coff-arm-little */
+  (char *)TARGET_LITTLE_NAME,		/* name or coff-arm-little */
   bfd_target_coff_flavour,
   BFD_ENDIAN_LITTLE,		/* data byte order is little */
   BFD_ENDIAN_LITTLE,		/* header byte order is little */
@@ -2569,12 +2529,12 @@ const bfd_target TARGET_LITTLE_SYM =
    HAS_LINENO | HAS_DEBUG |
    HAS_SYMS | HAS_LOCALS | WP_TEXT | D_PAGED),
 
-#ifndef COFF_WITH_PE
+# ifndef COFF_WITH_PE
   (SEC_HAS_CONTENTS | SEC_ALLOC | SEC_LOAD | SEC_RELOC), /* section flags */
-#else
+# else
   (SEC_HAS_CONTENTS | SEC_ALLOC | SEC_LOAD | SEC_RELOC /* section flags */
    | SEC_LINK_ONCE | SEC_LINK_DUPLICATES),
-#endif
+# endif /* !COFF_WITH_PE */
 
   0,				/* leading char */
   '/',				/* ar_pad_char */
@@ -2605,21 +2565,21 @@ const bfd_target TARGET_LITTLE_SYM =
   BFD_JUMP_TABLE_LINK (coff),
   BFD_JUMP_TABLE_DYNAMIC (_bfd_nodynamic),
 
-  /* Alternative_target.  */
-#ifdef TARGET_BIG_SYM
+  /* Alternative_target: */
+# ifdef TARGET_BIG_SYM
   & TARGET_BIG_SYM,
-#else
+# else
   NULL,
-#endif
+# endif /* TARGET_BIG_SYM */
 
   COFF_SWAP_TABLE
 };
-#endif
+#endif /* TARGET_LITTLE_SYM */
 
 #ifdef TARGET_BIG_SYM
 const bfd_target TARGET_BIG_SYM =
 {
-  TARGET_BIG_NAME,
+  (char *)TARGET_BIG_NAME,
   bfd_target_coff_flavour,
   BFD_ENDIAN_BIG,		/* data byte order is big */
   BFD_ENDIAN_BIG,		/* header byte order is big */
@@ -2628,12 +2588,12 @@ const bfd_target TARGET_BIG_SYM =
    HAS_LINENO | HAS_DEBUG |
    HAS_SYMS | HAS_LOCALS | WP_TEXT | D_PAGED),
 
-#ifndef COFF_WITH_PE
+# ifndef COFF_WITH_PE
   (SEC_HAS_CONTENTS | SEC_ALLOC | SEC_LOAD | SEC_RELOC), /* section flags */
-#else
+# else
   (SEC_HAS_CONTENTS | SEC_ALLOC | SEC_LOAD | SEC_RELOC /* section flags */
    | SEC_LINK_ONCE | SEC_LINK_DUPLICATES),
-#endif
+# endif /* !COFF_WITH_PE */
 
   0,				/* leading char */
   '/',				/* ar_pad_char */
@@ -2664,14 +2624,31 @@ const bfd_target TARGET_BIG_SYM =
   BFD_JUMP_TABLE_LINK (coff),
   BFD_JUMP_TABLE_DYNAMIC (_bfd_nodynamic),
 
-  /* Alternative_target.  */
-#ifdef TARGET_LITTLE_SYM
+  /* Alternative_target: */
+# ifdef TARGET_LITTLE_SYM
   & TARGET_LITTLE_SYM,
-#else
+# else
   NULL,
-#endif
+# endif /* TARGET_LITTLE_SYM */
 
   COFF_SWAP_TABLE
 };
+#endif /* TARGET_BIG_SYM */
 
-#endif
+#ifdef IS_UNALLOCATED
+# undef IS_UNALLOCATED
+#endif /* IS_UNALLOCATED */
+#ifdef IMAGE_REL_PPC_REL14
+# undef IMAGE_REL_PPC_REL14
+#endif /* IMAGE_REL_PPC_REL14 */
+#ifdef IMAGE_REL_PPC_NEG
+# undef IMAGE_REL_PPC_NEG
+#endif /* IMAGE_REL_PPC_NEG */
+#ifdef IMAGE_REL_PPC_BRTAKEN
+# undef IMAGE_REL_PPC_BRTAKEN
+#endif /* IMAGE_REL_PPC_BRTAKEN */
+#ifdef IMAGE_REL_PPC_BRNTAKEN
+# undef IMAGE_REL_PPC_BRNTAKEN
+#endif /* IMAGE_REL_PPC_BRNTAKEN */
+
+/* EOF */

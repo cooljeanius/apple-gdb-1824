@@ -1,4 +1,4 @@
-/* 
+/*
  * tclTimer.c --
  *
  *	This file provides timer event management facilities for Tcl,
@@ -151,7 +151,7 @@ static void		TimerSetupProc _ANSI_ARGS_((ClientData clientData,
 static ThreadSpecificData *
 InitTimer()
 {
-    ThreadSpecificData *tsdPtr = 
+    ThreadSpecificData *tsdPtr =
 	(ThreadSpecificData *) TclThreadDataKeyGet(&dataKey);
 
     if (tsdPtr == NULL) {
@@ -377,7 +377,7 @@ TimerSetupProc(data, flags)
     } else {
 	return;
     }
-	
+
     Tcl_SetMaxBlockTime(&blockTime);
 }
 
@@ -519,7 +519,7 @@ TimerHandlerEventProc(evPtr, flags)
 	if (timerHandlerPtr == NULL) {
 	    break;
 	}
-	    
+
 	if ((timerHandlerPtr->time.sec > time.sec)
 		|| ((timerHandlerPtr->time.sec == time.sec)
 			&& (timerHandlerPtr->time.usec > time.usec))) {
@@ -978,7 +978,7 @@ GetAfterEvent(assocPtr, commandPtr)
 	return NULL;
     }
     cmdString += 6;
-    id = strtoul(cmdString, &end, 10);
+    id = (int)strtoul(cmdString, &end, 10);
     if ((end == cmdString) || (*end != 0)) {
 	return NULL;
     }
@@ -1052,7 +1052,7 @@ AfterProc(clientData)
 	Tcl_BackgroundError(interp);
     }
     Tcl_Release((ClientData) interp);
-    
+
     /*
      * Free the memory for the callback.
      */

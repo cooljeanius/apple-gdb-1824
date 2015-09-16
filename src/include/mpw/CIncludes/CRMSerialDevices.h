@@ -11,21 +11,17 @@ Created: Wednesday, September 11, 1991 at 2:05 PM
 
 ************************************************************/
 
-
 #ifndef __CRMSERIALDEVICES__
 #define __CRMSERIALDEVICES__
 
 #ifndef __TYPES__
-#include <Types.h>
-#endif
-
+# include <Types.h>
+#endif /* !__TYPES__ */
 
 enum {
 
-
 /*    for the crmDeviceType field of the CRMRec data structure */
  crmSerialDevice = 1,
-
 
 /*  version of the CRMSerialRecord below */
  curCRMSerRecVers = 1
@@ -56,6 +52,6 @@ struct CRMSerialRecord {
 typedef struct CRMSerialRecord CRMSerialRecord;
 typedef CRMSerialRecord *CRMSerialPtr;
 
+#endif /* !__CRMSERIALDEVICES__ */
 
-
-#endif
+/* EOF */

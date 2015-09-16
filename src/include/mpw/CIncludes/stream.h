@@ -1,12 +1,13 @@
 /*ident	"@(#)C++env:incl-master/const-headers/stream.h	1.2" */
 /**************************************************************************
                         Copyright (c) 1984 AT&T
-                          All Rights Reserved   
+                          All Rights Reserved
 
         THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF AT&T
-      
-        The copyright notice above does not evidence any        
+
+        The copyright notice above does not evidence any
         actual or intended publication of such source code.
+		(Really? This header was shipped with MPW...)
 
 *****************************************************************************/
 
@@ -19,9 +20,9 @@
 #include <fstream.h>
 	/* for filebuf */
 
-#ifndef NULL
-#define NULL	0
-#endif
+#ifndef NULL /* declared everywhere... */
+# define NULL	0
+#endif /* !NULL */
 
 extern char*  oct(long, int =0);
 extern char*  dec(long, int =0);
@@ -31,9 +32,9 @@ extern char*  chr(int, int =0);	/* chr(0) is the empty string "" */
 extern char*  str(const char*, int =0);
 extern char*  form(const char* ...);
 			/* printf format
-                         * Things may go terribly wrong (maybe even core
-                         * dumps, if form tries to create a string with
-                         * more than "max_field_width" characters. */
+             * Things may go terribly wrong (maybe even core
+             * dumps, if form tries to create a string with
+             * more than "max_field_width" characters. */
 
 /* WS used to be a special in streams. The WS manipulator
  * is implemented differently but may be extracted from an istream
@@ -58,4 +59,6 @@ typedef ios::io_state state_value ;
 typedef io_state state_value ;
 #endif /*__ATT2_1*/
 
-#endif
+#endif /* !__STREAM__ */
+
+/* EOF */

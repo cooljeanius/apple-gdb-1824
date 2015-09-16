@@ -1,21 +1,21 @@
 /*
-	PLStringFuncs.h -- C string conversion functions for pascal
-		
-	Copyright Apple Computer,Inc.  1989, 1990
-	All rights reserved
-
-*/
+ *	PLStringFuncs.h -- C string conversion functions for pascal
+ *
+ *	Copyright Apple Computer,Inc.  1989, 1990
+ *	All rights reserved
+ *
+ */
 
 #ifndef __PLSTRINGFUNCS__
 #define __PLSTRINGFUNCS__
 
 #ifndef	__TYPES__
-#include <Types.h>
-#endif
+# include <Types.h>
+#endif /* !__TYPES__ */
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 pascal short		PLstrcmp(ConstStr255Param str1, ConstStr255Param str2);
 pascal short 		PLstrncmp(ConstStr255Param str1, ConstStr255Param str2, short num);
@@ -34,6 +34,8 @@ pascal short		PLpos(ConstStr255Param str1, ConstStr255Param str2);
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__PLSTRINGFUNCS__ */
+
+/* EOF */

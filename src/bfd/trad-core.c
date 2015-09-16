@@ -18,7 +18,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -31,198 +31,218 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #else
 # ifdef HAVE_SYS_NDIR_H
 #  include <sys/ndir.h>
-# endif
+# endif /* HAVE_SYS_NDIR_H */
 # ifdef HAVE_SYS_DIR_H
 #  include <sys/dir.h>
-# endif
+# endif /* HAVE_SYS_DIR_H */
 # ifdef HAVE_NDIR_H
 #  include <ndir.h>
-# endif
-#endif
+# endif /* HAVE_NDIR_H */
+#endif /* HAVE_DIRENT_H */
 #include <signal.h>
 
 #include <sys/user.h>		/* After a.out.h  */
 
+#ifndef TRAD_HEADER
+# define TRAD_HEADER "trad-user.h"
+#endif /* !TRAD_HEADER */
+
 #ifdef TRAD_HEADER
-#include TRAD_HEADER
-#endif
+# include TRAD_HEADER
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "TRAD_HEADER cannot be included because it is not defined."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* TRAD_HEADER */
 
 struct trad_core_struct
 {
   asection *data_section;
   asection *stack_section;
   asection *reg_section;
-  struct user u;
+  user_struct_t u;
 };
 
-#define core_upage(bfd) (&((bfd)->tdata.trad_core_data->u))
+#ifndef core_upage
+# define core_upage(bfd) (&((bfd)->tdata.trad_core_data->u))
+#endif /* !core_upage */
+
 #define core_datasec(bfd) ((bfd)->tdata.trad_core_data->data_section)
 #define core_stacksec(bfd) ((bfd)->tdata.trad_core_data->stack_section)
 #define core_regsec(bfd) ((bfd)->tdata.trad_core_data->reg_section)
 
-/* forward declarations */
+#ifndef UPAGES
+# define UPAGES 0
+#endif /* !UPAGES */
 
+
+/* forward declarations: */
 const bfd_target *trad_unix_core_file_p PARAMS ((bfd *abfd));
 char * trad_unix_core_file_failing_command PARAMS ((bfd *abfd));
 int trad_unix_core_file_failing_signal PARAMS ((bfd *abfd));
 bfd_boolean trad_unix_core_file_matches_executable_p
-  PARAMS ((bfd *core_bfd, bfd *exec_bfd));
-static void swap_abort PARAMS ((void));
+  PARAMS((bfd *core_bfd, bfd *exec_bfd));
+static void swap_abort PARAMS((void));
 
-/* Handle 4.2-style (and perhaps also sysV-style) core dump file.  */
-
+/* Handle 4.2-style (and perhaps also sysV-style) core dump file: */
 const bfd_target *
-trad_unix_core_file_p (abfd)
-     bfd *abfd;
-
+trad_unix_core_file_p(bfd *abfd)
 {
   int val;
-  struct user u;
+  user_struct_t u;
   struct trad_core_struct *rawptr;
   bfd_size_type amt;
 
 #ifdef TRAD_CORE_USER_OFFSET
-  /* If defined, this macro is the file position of the user struct.  */
-  if (bfd_seek (abfd, (file_ptr) TRAD_CORE_USER_OFFSET, SEEK_SET) != 0)
+  /* If defined, this macro is the file position of the user struct: */
+  if (bfd_seek(abfd, (file_ptr)TRAD_CORE_USER_OFFSET, SEEK_SET) != 0)
     return 0;
-#endif
+#endif /* TRAD_CORE_USER_OFFSET */
 
-  val = bfd_bread ((void *) &u, (bfd_size_type) sizeof u, abfd);
-  if (val != sizeof u)
+  val = bfd_bread((void *) &u, (bfd_size_type)sizeof(u), abfd);
+  if (val != sizeof(u))
     {
-      /* Too small to be a core file */
-      bfd_set_error (bfd_error_wrong_format);
+      /* Too small to be a core file: */
+      bfd_set_error(bfd_error_wrong_format);
       return 0;
     }
 
   /* Sanity check perhaps??? */
-  if (u.u_dsize > 0x1000000)	/* Remember, it's in pages...  */
+  if (u.u_dsize > 0x1000000)	/* Remember, it is in pages...  */
     {
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return 0;
     }
   if (u.u_ssize > 0x1000000)
     {
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return 0;
     }
 
-  /* Check that the size claimed is no greater than the file size.  */
+  /* Check that the size claimed is no greater than the file size: */
   {
-    FILE *stream = bfd_cache_lookup (abfd);
+    FILE *stream = bfd_cache_lookup(abfd);
     struct stat statbuf;
 
-    if (fstat (fileno (stream), &statbuf) < 0)
+    if (fstat(fileno(stream), &statbuf) < 0)
       {
-	bfd_set_error (bfd_error_system_call);
+	bfd_set_error(bfd_error_system_call);
 	return 0;
       }
-    if ((unsigned long) (NBPG * (UPAGES + u.u_dsize
+    if ((unsigned long)(NBPG * (UPAGES + u.u_dsize
 #ifdef TRAD_CORE_DSIZE_INCLUDES_TSIZE
-				 - u.u_tsize
-#endif
-				 + u.u_ssize))
-	> (unsigned long) statbuf.st_size)
+                                - u.u_tsize
+#endif /* TRAD_CORE_DSIZE_INCLUDES_TSIZE */
+                                + u.u_ssize))
+	> (unsigned long)statbuf.st_size)
       {
-	bfd_set_error (bfd_error_wrong_format);
+	bfd_set_error(bfd_error_wrong_format);
 	return 0;
       }
 #ifndef TRAD_CORE_ALLOW_ANY_EXTRA_SIZE
-    if ((unsigned long) (NBPG * (UPAGES + u.u_dsize + u.u_ssize)
-#ifdef TRAD_CORE_EXTRA_SIZE_ALLOWED
-	/* Some systems write the file too big.  */
-			 + TRAD_CORE_EXTRA_SIZE_ALLOWED
-#endif
-			 )
-	< (unsigned long) statbuf.st_size)
+    if ((unsigned long)(NBPG * (UPAGES + u.u_dsize + u.u_ssize)
+# ifdef TRAD_CORE_EXTRA_SIZE_ALLOWED
+	/* Some systems write the file too big: */
+                        + TRAD_CORE_EXTRA_SIZE_ALLOWED
+# endif /* TRAD_CORE_EXTRA_SIZE_ALLOWED */
+                        + 0UL)
+	< (unsigned long)statbuf.st_size)
       {
-	/* The file is too big.  Maybe it's not a core file
-	   or we otherwise have bad values for u_dsize and u_ssize).  */
-	bfd_set_error (bfd_error_wrong_format);
+	/* The file is too big.  Maybe it is not a core file, or maybe we
+         * otherwise have bad values for u_dsize and u_ssize:  */
+	bfd_set_error(bfd_error_wrong_format);
 	return 0;
       }
-#endif
+#endif /* !TRAD_CORE_ALLOW_ANY_EXTRA_SIZE */
   }
 
-  /* OK, we believe you.  You're a core file (sure, sure).  */
+  /* OK, we believe you.  You are a core file (sure, sure).  */
 
-  /* Allocate both the upage and the struct core_data at once, so
-     a single free() will free them both.  */
-  amt = sizeof (struct trad_core_struct);
-  rawptr = (struct trad_core_struct *) bfd_zmalloc (amt);
+  /* Allocate both the upage and the struct core_data at once, so that a
+   * single free() will free them both: */
+  amt = sizeof(struct trad_core_struct);
+  rawptr = (struct trad_core_struct *)bfd_zmalloc(amt);
   if (rawptr == NULL)
     return 0;
 
   abfd->tdata.trad_core_data = rawptr;
 
-  rawptr->u = u; /*Copy the uarea into the tdata part of the bfd */
+  rawptr->u = u; /* Copy the uarea into the tdata part of the bfd */
 
-  /* Create the sections.  */
-
-  core_stacksec(abfd) = bfd_make_section_anyway (abfd, ".stack");
-  if (core_stacksec (abfd) == NULL)
+  /* Create the sections: */
+  core_stacksec(abfd) = bfd_make_section_anyway(abfd, ".stack");
+  if (core_stacksec(abfd) == NULL)
     goto fail;
-  core_datasec (abfd) = bfd_make_section_anyway (abfd, ".data");
-  if (core_datasec (abfd) == NULL)
+  core_datasec(abfd) = bfd_make_section_anyway(abfd, ".data");
+  if (core_datasec(abfd) == NULL)
     goto fail;
-  core_regsec (abfd) = bfd_make_section_anyway (abfd, ".reg");
-  if (core_regsec (abfd) == NULL)
+  core_regsec(abfd) = bfd_make_section_anyway(abfd, ".reg");
+  if (core_regsec(abfd) == NULL)
     goto fail;
 
-  core_stacksec (abfd)->flags = SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS;
-  core_datasec (abfd)->flags = SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS;
-  core_regsec (abfd)->flags = SEC_HAS_CONTENTS;
+  core_stacksec(abfd)->flags = (SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS);
+  core_datasec(abfd)->flags = (SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS);
+  core_regsec(abfd)->flags = SEC_HAS_CONTENTS;
 
-  core_datasec (abfd)->size =  NBPG * u.u_dsize
+  core_datasec (abfd)->size = ((NBPG * u.u_dsize)
 #ifdef TRAD_CORE_DSIZE_INCLUDES_TSIZE
-    - NBPG * u.u_tsize
-#endif
-      ;
-  core_stacksec (abfd)->size = NBPG * u.u_ssize;
-  core_regsec (abfd)->size = NBPG * UPAGES; /* Larger than sizeof struct u */
+                               - (NBPG * u.u_tsize)
+#endif /* TRAD_CORE_DSIZE_INCLUDES_TSIZE */
+                               + 0);
+  core_stacksec(abfd)->size = (NBPG * u.u_ssize);
+  core_regsec(abfd)->size = (NBPG * UPAGES); /* Larger than sizeof struct u */
 
-  /* What a hack... we'd like to steal it from the exec file,
+  /* What a hack... we would like to steal it from the exec file,
      since the upage does not seem to provide it.  FIXME.  */
 #ifdef HOST_DATA_START_ADDR
-  core_datasec (abfd)->vma = HOST_DATA_START_ADDR;
+  core_datasec(abfd)->vma = HOST_DATA_START_ADDR;
 #else
-  core_datasec (abfd)->vma = HOST_TEXT_START_ADDR + (NBPG * u.u_tsize);
-#endif
+# ifdef HOST_TEXT_START_ADDR
+  core_datasec(abfd)->vma = HOST_TEXT_START_ADDR + (NBPG * u.u_tsize);
+# else
+  core_datasec(abfd)->vma = 0 + (NBPG * u.u_tsize);
+# endif /* HOST_TEXT_START_ADDR */
+#endif /* HOST_DATA_START_ADDR */
 
 #ifdef HOST_STACK_START_ADDR
-  core_stacksec (abfd)->vma = HOST_STACK_START_ADDR;
+  core_stacksec(abfd)->vma = HOST_STACK_START_ADDR;
 #else
-  core_stacksec (abfd)->vma = HOST_STACK_END_ADDR - (NBPG * u.u_ssize);
-#endif
+# ifdef HOST_STACK_END_ADDR
+  core_stacksec(abfd)->vma = HOST_STACK_END_ADDR - (NBPG * u.u_ssize);
+# else
+  core_stacksec(abfd)->vma = 0 - (NBPG * u.u_ssize);
+# endif /* HOST_STACK_END_ADDR */
+#endif /* HOST_STACK_START_ADDR */
 
   /* This is tricky.  As the "register section", we give them the entire
-     upage and stack.  u.u_ar0 points to where "register 0" is stored.
-     There are two tricks with this, though.  One is that the rest of the
-     registers might be at positive or negative (or both) displacements
-     from *u_ar0.  The other is that u_ar0 is sometimes an absolute address
-     in kernel memory, and on other systems it is an offset from the beginning
-     of the `struct user'.
+   * upage and stack.  u.u_ar0 points to where "register 0" is stored.
+   * There are two tricks with this, though.  One is that the rest of the
+   * registers might be at positive or negative (or both) displacements
+   * from *u_ar0.  The other is that u_ar0 is sometimes an absolute address
+   * in kernel memory, and on other systems it is an offset from the
+   * beginning of the `struct user'.
+   *
+   * As a practical matter, we do NOT know where the registers actually
+   * are, so we have to pass the whole area to GDB.  We encode the value of
+   * u_ar0 by setting the .regs section up so that its virtual memory
+   * address 0 is at the place pointed to by u_ar0 (by setting the vma of
+   * the start of the section to -u_ar0).  GDB uses this info to locate the
+   * regs, using minor trickery to get around the offset-or-absolute-addr
+   * problem: */
+  core_regsec(abfd)->vma = 0 - (bfd_vma)(unsigned long)u.u_ar0;
 
-     As a practical matter, we don't know where the registers actually are,
-     so we have to pass the whole area to GDB.  We encode the value of u_ar0
-     by setting the .regs section up so that its virtual memory address
-     0 is at the place pointed to by u_ar0 (by setting the vma of the start
-     of the section to -u_ar0).  GDB uses this info to locate the regs,
-     using minor trickery to get around the offset-or-absolute-addr problem.  */
-  core_regsec (abfd)->vma = - (bfd_vma) (unsigned long) u.u_ar0;
-
-  core_datasec (abfd)->filepos = NBPG * UPAGES;
-  core_stacksec (abfd)->filepos = (NBPG * UPAGES) + NBPG * u.u_dsize
+  core_datasec(abfd)->filepos = NBPG * UPAGES;
+  core_stacksec(abfd)->filepos = (((NBPG * UPAGES) + (NBPG * u.u_dsize))
 #ifdef TRAD_CORE_DSIZE_INCLUDES_TSIZE
-    - NBPG * u.u_tsize
-#endif
-      ;
-  core_regsec (abfd)->filepos = 0; /* Register segment is the upage */
+                                  - (NBPG * u.u_tsize)
+#endif /* TRAD_CORE_DSIZE_INCLUDES_TSIZE */
+                                  + 0);
+  core_regsec(abfd)->filepos = 0; /* Register segment is the upage */
 
   /* Align to word at least */
-  core_stacksec (abfd)->alignment_power = 2;
-  core_datasec (abfd)->alignment_power = 2;
-  core_regsec (abfd)->alignment_power = 2;
+  core_stacksec(abfd)->alignment_power = 2;
+  core_datasec(abfd)->alignment_power = 2;
+  core_regsec(abfd)->alignment_power = 2;
 
   return abfd->xvec;
 
@@ -234,42 +254,40 @@ trad_unix_core_file_p (abfd)
 }
 
 char *
-trad_unix_core_file_failing_command (abfd)
-     bfd *abfd;
+trad_unix_core_file_failing_command(bfd *abfd)
 {
 #ifndef NO_CORE_COMMAND
   char *com = abfd->tdata.trad_core_data->u.u_comm;
   if (*com)
     return com;
   else
-#endif
+#endif /* !NO_CORE_COMMAND */
     return 0;
 }
 
 int
-trad_unix_core_file_failing_signal (ignore_abfd)
-     bfd *ignore_abfd ATTRIBUTE_UNUSED;
+trad_unix_core_file_failing_signal(bfd *ignore_abfd ATTRIBUTE_UNUSED)
 {
 #ifdef TRAD_UNIX_CORE_FILE_FAILING_SIGNAL
   return TRAD_UNIX_CORE_FILE_FAILING_SIGNAL(ignore_abfd);
 #else
   return -1;		/* FIXME, where is it? */
-#endif
+#endif /* TRAD_UNIX_CORE_FILE_FAILING_SIGNAL */
 }
 
 bfd_boolean
-trad_unix_core_file_matches_executable_p  (core_bfd, exec_bfd)
-     bfd *core_bfd ATTRIBUTE_UNUSED;
-     bfd *exec_bfd ATTRIBUTE_UNUSED;
+trad_unix_core_file_matches_executable_p(bfd *core_bfd ATTRIBUTE_UNUSED,
+                                         bfd *exec_bfd ATTRIBUTE_UNUSED)
 {
-  return TRUE;		/* FIXME, We have no way of telling at this point */
+  return TRUE;	 /* FIXME: We have no way of telling at this point */
 }
 
-/* If somebody calls any byte-swapping routines, shoot them.  */
-static void
-swap_abort ()
+/* If somebody calls any byte-swapping routines, then shoot them: */
+static void ATTRIBUTE_NORETURN
+swap_abort(void)
 {
-  abort (); /* This way doesn't require any declaration for ANSI to fuck up */
+  /* This way does NOT require any declaration for ANSI to mess up (?) */
+  abort();
 }
 
 #define	NO_GET ((bfd_vma (*) (const void *)) swap_abort)
@@ -289,9 +307,9 @@ const bfd_target trad_core_vec =
      HAS_LINENO | HAS_DEBUG |
      HAS_SYMS | HAS_LOCALS | WP_TEXT | D_PAGED),
     (SEC_HAS_CONTENTS | SEC_ALLOC | SEC_LOAD | SEC_RELOC), /* section flags */
-    0,			                                   /* symbol prefix */
-    ' ',						   /* ar_pad_char */
-    16,							   /* ar_max_namelen */
+    0,			                                /* symbol prefix */
+    ' ',						 /* ar_pad_char */
+    16,						/* ar_max_namelen */
     NO_GET64, NO_GETS64, NO_PUT64,	/* 64 bit data */
     NO_GET, NO_GETS, NO_PUT,		/* 32 bit data */
     NO_GET, NO_GETS, NO_PUT,		/* 16 bit data */
@@ -314,17 +332,23 @@ const bfd_target trad_core_vec =
       bfd_false, bfd_false
     },
 
-    BFD_JUMP_TABLE_GENERIC (_bfd_generic),
-    BFD_JUMP_TABLE_COPY (_bfd_generic),
-    BFD_JUMP_TABLE_CORE (trad_unix),
-    BFD_JUMP_TABLE_ARCHIVE (_bfd_noarchive),
-    BFD_JUMP_TABLE_SYMBOLS (_bfd_nosymbols),
-    BFD_JUMP_TABLE_RELOCS (_bfd_norelocs),
-    BFD_JUMP_TABLE_WRITE (_bfd_generic),
-    BFD_JUMP_TABLE_LINK (_bfd_nolink),
-    BFD_JUMP_TABLE_DYNAMIC (_bfd_nodynamic),
+    BFD_JUMP_TABLE_GENERIC(_bfd_generic),
+    BFD_JUMP_TABLE_COPY(_bfd_generic),
+    BFD_JUMP_TABLE_CORE(trad_unix),
+    BFD_JUMP_TABLE_ARCHIVE(_bfd_noarchive),
+    BFD_JUMP_TABLE_SYMBOLS(_bfd_nosymbols),
+    BFD_JUMP_TABLE_RELOCS(_bfd_norelocs),
+    BFD_JUMP_TABLE_WRITE(_bfd_generic),
+    BFD_JUMP_TABLE_LINK(_bfd_nolink),
+    BFD_JUMP_TABLE_DYNAMIC(_bfd_nodynamic),
 
     NULL,
 
-    (PTR) 0			/* backend_data */
+    (PTR)0			/* backend_data */
   };
+
+#ifdef core_upage
+# undef core_upage
+#endif /* core_upage */
+
+/* EOF */

@@ -3,7 +3,8 @@
  */
 
 #ifndef __GDB_MACOSX_NAT_CFM_H__
-#define __GDB_MACOSX_NAT_CFM_H__
+#define __GDB_MACOSX_NAT_CFM_H__ 1
+
 #if WITH_CFM
 
 #include <mach/mach.h>
@@ -95,6 +96,17 @@ extern long
   cfm_fetch_connection_info
   (struct cfm_parser *parser, CORE_ADDR addr, NCFragConnectionInfo *info);
 
+/**/
+extern long
+cfm_parse_section_info(struct cfm_parser *parser,
+                       unsigned char *buf,
+                       size_t len, NCFragSectionInfo *info);
+
+extern long
+cfm_parse_instance_info(struct cfm_parser *parser,
+                        unsigned char *buf,
+                        size_t len, NCFragInstanceInfo *info);
+
 extern long
   cfm_parse_container_info
   (struct cfm_parser *parser, unsigned char *buf, size_t len,
@@ -115,9 +127,15 @@ extern long
   (struct cfm_parser *parser, CORE_ADDR addr, unsigned long sectionIndex,
    NCFragSectionInfo *section);
 
-long cfm_update (task_t task, struct dyld_objfile_info *info);
-void cfm_init (void);
+long cfm_update(task_t task, struct dyld_objfile_info *info);
+void cfm_init(void);
 
-
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "macosx-nat-cfm.h is useless unless WITH_CFM is defined."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* WITH_CFM */
+
 #endif /* __GDB_MACOSX_NAT_CFM_H__ */
+
+/* EOF */

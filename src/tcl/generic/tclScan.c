@@ -1,4 +1,4 @@
-/* 
+/*
  * tclScan.c --
  *
  *	This file contains the implementation of the "scan" command.
@@ -89,7 +89,7 @@ BuildCharSet(cset, format)
     char *end;
 
     memset(cset, 0, sizeof(CharSet));
-    
+
     offset = Tcl_UtfToUniChar(format, &ch);
     if (ch == '^') {
 	cset->exclude = 1;
@@ -113,10 +113,10 @@ BuildCharSet(cset, format)
 	end += Tcl_UtfToUniChar(end, &ch);
     }
 
-    cset->chars = (Tcl_UniChar *) ckalloc(sizeof(Tcl_UniChar)
-	    * (end - format - 1));
+    cset->chars = (Tcl_UniChar *)ckalloc(sizeof(Tcl_UniChar)
+	    * ((size_t)(end - format) - 1UL));
     if (nranges > 0) {
-	cset->ranges = (struct Range *) ckalloc(sizeof(struct Range)*nranges);
+	cset->ranges = (struct Range *)ckalloc(sizeof(struct Range) * (size_t)nranges);
     } else {
 	cset->ranges = NULL;
     }
@@ -163,7 +163,7 @@ BuildCharSet(cset, format)
 		} else {
 		    cset->ranges[cset->nranges].start = ch;
 		    cset->ranges[cset->nranges].end = start;
-		}		    
+		}
 		cset->nranges++;
 	    }
 	} else {
@@ -213,7 +213,7 @@ CharInSet(cset, c)
 	    }
 	}
     }
-    return (cset->exclude ? !match : match);    
+    return (cset->exclude ? !match : match);
 }
 
 /*
@@ -269,13 +269,16 @@ ValidateFormat(interp, format, numVars, totalSubs)
 				 * required. */
 {
 #define STATIC_LIST_SIZE 16
-    int gotXpg, gotSequential, value, i, flags;
+    int gotXpg, gotSequential;
+    size_t value;
+    int i, flags;
     char *end;
     Tcl_UniChar ch;
     int staticAssign[STATIC_LIST_SIZE];
     int *nassign = staticAssign;
-    int objIndex, xpgSize, nspace = STATIC_LIST_SIZE;
-    char buf[TCL_UTF_MAX+1];
+    int objIndex;
+    size_t xpgSize, nspace = STATIC_LIST_SIZE;
+    char buf[TCL_UTF_MAX + 1];
 
     /*
      * Initialize an array that records the number of times a variable
@@ -284,8 +287,8 @@ ValidateFormat(interp, format, numVars, totalSubs)
      */
 
     if (numVars > nspace) {
-	nassign = (int*)ckalloc(sizeof(int) * numVars);
-	nspace = numVars;
+	nassign = (int *)ckalloc(sizeof(int) * (size_t)numVars);
+	nspace = (size_t)numVars;
     }
     for (i = 0; i < nspace; i++) {
 	nassign[i] = 0;
@@ -328,7 +331,7 @@ ValidateFormat(interp, format, numVars, totalSubs)
 	    if (gotSequential) {
 		goto mixedXPG;
 	    }
-	    objIndex = value - 1;
+	    objIndex = (int)(value - 1UL);
 	    if ((objIndex < 0) || (numVars && (objIndex >= numVars))) {
 		goto badIndex;
 	    } else if (numVars == 0) {
@@ -359,7 +362,7 @@ ValidateFormat(interp, format, numVars, totalSubs)
 	 */
 
 	if ((ch < 0x80) && isdigit(UCHAR(ch))) { /* INTL: "C" locale. */
-	    value = strtoul(format-1, &format, 10); /* INTL: "C" locale. */
+	    value = strtoul(format - 1, &format, 10); /* INTL: "C" locale. */
 	    flags |= SCAN_WIDTH;
 	    format += Tcl_UtfToUniChar(format, &ch);
 	}
@@ -483,9 +486,9 @@ ValidateFormat(interp, format, numVars, totalSubs)
 		    }
 		} else {
 		    nassign = (void *)ckrealloc((void *)nassign,
-			    nspace * sizeof(int));
+			    (nspace * sizeof(int)));
 		}
-		for (i = value; i < nspace; i++) {
+		for (i = (int)value; i < nspace; i++) {
 		    nassign[i] = 0;
 		}
 	    }
@@ -500,7 +503,7 @@ ValidateFormat(interp, format, numVars, totalSubs)
 
     if (numVars == 0) {
 	if (xpgSize) {
-	    numVars = xpgSize;
+	    numVars = (int)xpgSize;
 	} else {
 	    numVars = objIndex;
 	}
@@ -532,7 +535,7 @@ ValidateFormat(interp, format, numVars, totalSubs)
 	Tcl_SetResult(interp, "\"%n$\" argument index out of range",
 		TCL_STATIC);
     } else {
-	Tcl_SetResult(interp, 
+	Tcl_SetResult(interp,
 		"different numbers of variable names and field specifiers",
 		TCL_STATIC);
     }
@@ -603,7 +606,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
     /*
      * Check for errors in the format string.
      */
-    
+
     if (ValidateFormat(interp, format, numVars, &totalVars) == TCL_ERROR) {
 	return TCL_ERROR;
     }
@@ -613,7 +616,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
      */
 
     if (totalVars > 0) {
-	objs = (Tcl_Obj **) ckalloc(sizeof(Tcl_Obj*) * totalVars);
+	objs = (Tcl_Obj **)ckalloc(sizeof(Tcl_Obj*) * (size_t)totalVars);
 	for (i = 0; i < totalVars; i++) {
 	    objs[i] = NULL;
 	}
@@ -650,7 +653,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 	    }
 	    continue;
 	}
-	    
+
 	if (ch != '%') {
 	    literal:
 	    if (*string == '\0') {
@@ -678,7 +681,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 	    flags |= SCAN_SUPPRESS;
 	    format += Tcl_UtfToUniChar(format, &ch);
 	} else if ((ch < 0x80) && isdigit(UCHAR(ch))) { /* INTL: "C" locale. */
-	    value = strtoul(format-1, &end, 10); /* INTL: "C" locale. */
+	    value = (long)strtoul(format-1, &end, 10); /* INTL: "C" locale. */
 	    if (*end == '$') {
 		format = end+1;
 		format += Tcl_UtfToUniChar(format, &ch);
@@ -799,7 +802,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 	    underflow = 1;
 	    goto done;
 	}
-	
+
 	/*
 	 * Skip any leading whitespace at the beginning of a field unless
 	 * the format suppresses this behavior.
@@ -822,7 +825,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 	/*
 	 * Perform the requested scanning operation.
 	 */
-	
+
 	switch (op) {
 	    case 's':
 		/*
@@ -884,7 +887,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 		    objs[objIndex++] = objPtr;
 		}
 		string = end;
-		
+
 		break;
 	    }
 	    case 'c':
@@ -957,7 +960,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 			    goto addToInt;
 
 			case 'A': case 'B': case 'C':
-			case 'D': case 'E': case 'F': 
+			case 'D': case 'E': case 'F':
 			case 'a': case 'b': case 'c':
 			case 'd': case 'e': case 'f':
 			    if (base <= 10) {

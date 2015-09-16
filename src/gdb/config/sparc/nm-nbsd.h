@@ -1,4 +1,5 @@
-/* Native-dependent definitions for Sparc running NetBSD, for GDB.
+/* nm-nbsd.h
+   Native-dependent definitions for Sparc running NetBSD, for GDB.
    Copyright 1986, 1987, 1989, 1992, 1994, 1996, 1999, 2000, 2002
    Free Software Foundation, Inc.
 

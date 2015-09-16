@@ -1,4 +1,5 @@
-/* Macro definitions for running gdb on a Sun 4 running sunos 4.
+/* xm-sun4os4.h
+   Macro definitions for running gdb on a Sun 4 running sunos 4.
    Copyright 1989, 1993, 1994, 1995, 1996
    Free Software Foundation, Inc.
 
@@ -33,3 +34,5 @@
 /* SunOS 4.x uses nonstandard "char *" as type of third argument to ptrace() */
 
 #define PTRACE_ARG3_TYPE char*
+
+/* EOF */

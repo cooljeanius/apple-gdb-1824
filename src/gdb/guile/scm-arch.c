@@ -48,6 +48,7 @@ static int arscm_is_arch (SCM);
 
 /* Administrivia for arch smobs.  */
 
+#ifdef MY_BRANCH_IS_HEAD
 /* The smob "mark" function for <gdb:arch>.  */
 
 static SCM
@@ -59,6 +60,8 @@ arscm_mark_arch_smob (SCM self)
   return gdbscm_mark_gsmob (&a_smob->base);
 }
 
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 /* The smob "print" function for <gdb:arch>.  */
 
 static int
@@ -658,7 +661,10 @@ void
 gdbscm_initialize_arches (void)
 {
   arch_smob_tag = gdbscm_make_smob_type (arch_smob_name, sizeof (arch_smob));
+#ifdef MY_BRANCH_IS_HEAD
   scm_set_smob_mark (arch_smob_tag, arscm_mark_arch_smob);
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
   scm_set_smob_print (arch_smob_tag, arscm_print_arch_smob);
 
   gdbscm_define_functions (arch_functions, 1);

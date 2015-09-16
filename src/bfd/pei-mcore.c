@@ -1,6 +1,6 @@
-/* BFD back-end for MCore PECOFF files.
-   Copyright 1999, 2002 Free Software Foundation, Inc.
-
+/* pei-mcore.c: BFD back-end for MCore PECOFF files.
+ * Copyright 1999, 2002 Free Software Foundation, Inc.  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -15,23 +15,31 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
 
 #ifndef TARGET_BIG_SYM
-#define TARGET_BIG_SYM       mcore_pei_big_vec
-#define TARGET_BIG_NAME      "pei-mcore-big"
-#define TARGET_LITTLE_SYM    mcore_pei_little_vec
-#define TARGET_LITTLE_NAME   "pei-mcore-little"
-#endif
+# define TARGET_BIG_SYM       mcore_pei_big_vec
+# define TARGET_BIG_NAME      "pei-mcore-big"
+# define TARGET_LITTLE_SYM    mcore_pei_little_vec
+# define TARGET_LITTLE_NAME   "pei-mcore-little"
+#endif /* !TARGET_BIG_SYM */
 
 #define COFF_IMAGE_WITH_PE
 #define COFF_WITH_PE
-#define PCRELOFFSET        TRUE
+#ifndef PCRELOFFSET
+# define PCRELOFFSET        TRUE
+#endif /* !PCRELOFFSET */
 #define COFF_LONG_SECTION_NAMES
 
 #define MCORE_PE
 
 #include "coff-mcore.c"
+
+#ifdef PCRELOFFSET
+# undef PCRELOFFSET
+#endif /* PCRELOFFSET */
+
+/* EOF */

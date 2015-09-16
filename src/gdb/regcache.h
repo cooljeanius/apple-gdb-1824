@@ -23,6 +23,8 @@
 #ifndef REGCACHE_H
 #define REGCACHE_H
 
+#include "ansidecl.h"
+
 struct regcache;
 struct gdbarch;
 
@@ -114,10 +116,9 @@ extern void regcache_raw_collect (const struct regcache *regcache,
 
 extern int register_offset_hack (struct gdbarch *gdbarch, int regnum);
 
-/* Similar.  The total number of bytes occupied by a regcache.  */
-
-extern int deprecated_register_bytes (void );
-
+/* Similar.  The total number of bytes occupied by a regcache: */
+extern int deprecated_register_bytes(void)
+  ATTRIBUTE_DEPRECATED;
 
 /* The type of a register.  This function is slightly more efficient
    then its gdbarch vector counterpart since it returns a precomputed
@@ -128,7 +129,7 @@ extern struct type *register_type (struct gdbarch *gdbarch, int regnum);
 
 /* Return the size of register REGNUM.  All registers should have only
    one size.  */
-   
+
 extern int register_size (struct gdbarch *gdbarch, int regnum);
 
 
@@ -175,33 +176,47 @@ extern void regcache_cpy_no_passthrough (struct regcache *dest, struct regcache 
    method, there should already be a non-deprecated variant that is
    parameterized with FRAME or REGCACHE.  */
 
-extern gdb_byte *deprecated_grub_regcache_for_registers (struct regcache *);
-extern void deprecated_read_register_gen (int regnum, gdb_byte *myaddr);
-extern void deprecated_write_register_gen (int regnum, gdb_byte *myaddr);
-extern void deprecated_read_register_bytes (int regbyte, gdb_byte *myaddr,
-					    int len);
-extern void deprecated_write_register_bytes (int regbyte, gdb_byte *myaddr,
-					     int len);
+#ifndef _PREPEND_DEPRECATED_TO_REGCACHE_FUNCTIONS
+# define _PREPEND_DEPRECATED_TO_REGCACHE_FUNCTIONS 1
+#endif /* !_PREPEND_DEPRECATED_TO_REGCACHE_FUNCTIONS */
+
+extern gdb_byte *deprecated_grub_regcache_for_registers(struct regcache *)
+  ATTRIBUTE_DEPRECATED;
+extern void deprecated_read_register_gen(int regnum, gdb_byte *myaddr)
+  ATTRIBUTE_DEPRECATED;
+extern void deprecated_write_register_gen(int regnum, gdb_byte *myaddr)
+  ATTRIBUTE_DEPRECATED;
+extern void deprecated_read_register_bytes(int regbyte, gdb_byte *myaddr,
+					   int len) ATTRIBUTE_DEPRECATED;
+extern void deprecated_write_register_bytes(int regbyte, gdb_byte *myaddr,
+					    int len) ATTRIBUTE_DEPRECATED;
 
 /* NOTE: cagney/2002-11-05: This function has been superseeded by
    regcache_raw_supply().  */
-extern void deprecated_registers_fetched (void);
+extern void deprecated_registers_fetched(void)
+  ATTRIBUTE_DEPRECATED_FOR(regcache_raw_supply);
 
-extern int register_cached (int regnum);
+extern int register_cached(int regnum);
 
-extern void set_register_cached (int regnum, int state);
+extern void set_register_cached(int regnum, int state);
 
-extern void registers_changed (void);
+extern void registers_changed(void);
 
 
 /* Rename to read_unsigned_register()? */
-extern ULONGEST read_register (int regnum);
+extern ULONGEST read_register(int regnum);
 
 /* Rename to read_unsigned_register_pid()? */
-extern ULONGEST read_register_pid (int regnum, ptid_t ptid);
+extern ULONGEST read_register_pid(int regnum, ptid_t ptid);
 
-extern void write_register (int regnum, LONGEST val);
+extern void write_register(int regnum, LONGEST val);
 
-extern void write_register_pid (int regnum, CORE_ADDR val, ptid_t ptid);
+extern void write_register_pid(int regnum, CORE_ADDR val, ptid_t ptid);
+
+extern int regcache_compare(struct regcache *rc1, struct regcache *rc2);
+
+extern void regcache_observer_target_changed(struct target_ops *target);
 
 #endif /* REGCACHE_H */
+
+/* EOF */

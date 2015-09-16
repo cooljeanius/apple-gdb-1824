@@ -1,0 +1,54 @@
+/* tm-aarch64-macosx.h
+ * Target support for Mac OS X on AArch64 for GDB, the GNU debugger.
+ * Copyright (C) 1997-2002,
+ * Free Software Foundation, Inc. */
+/*
+This file is part of GDB.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#ifndef _TM_AARCH64_MACOSX_H_
+#define _TM_AARCH64_MACOSX_H_
+
+#include "tm-macosx.h"
+
+
+struct aarch64_macosx_tdep_inf_status {
+  CORE_ADDR macosx_half_step_pc;
+};
+
+typedef struct aarch64_macosx_tdep_inf_status aarch64_macosx_tdep_inf_status_t;
+
+int aarch64_macosx_fast_show_stack(unsigned int count_limit,
+                                   unsigned int print_start,
+                                   unsigned int print_end,
+                                   unsigned int *count,
+                                   void (print_fun)(struct ui_out *uiout,
+                                                    int *frame_num,
+                                                    CORE_ADDR pc,
+                                                    CORE_ADDR fp));
+
+#define FAST_COUNT_STACK_DEPTH(count_limit, print_start, print_end, count, print_fun) \
+  (aarch64_macosx_fast_show_stack(count_limit, print_start, print_end, count, print_fun))
+
+char *aarch64_throw_catch_find_typeinfo(struct frame_info *curr_frame,
+                                        int exception_type);
+#define THROW_CATCH_FIND_TYPEINFO(curr_frame, exception_type) \
+  (aarch64_throw_catch_find_typeinfo(curr_frame, exception_type))
+
+#endif /* _TM_AARCH64_MACOSX_H_ */
+
+/* EOF */

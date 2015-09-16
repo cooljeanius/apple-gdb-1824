@@ -1,5 +1,5 @@
 /* obstack.c - subroutines used implicitly by object stack macros
-   Copyright (C) 1988,89,90,91,92,93,94,96,97 Free Software Foundation, Inc.
+   Copyright (C) 1988-94, 1996-1997 Free Software Foundation, Inc.
 
 
    NOTE: This source is derived from an old version taken from the GNU C
@@ -17,12 +17,14 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301,
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301,
    USA.  */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+# include <config.h>
+#endif /* HAVE_CONFIG_H */
+
+#include "ansidecl.h"
 
 #include "obstack.h"
 
@@ -77,8 +79,9 @@ union fooround {long x; double d;};
    jump to the handler pointed to by `obstack_alloc_failed_handler'.
    This variable by default points to the internal function
    `print_and_abort'.  */
-static void print_and_abort (void);
-void (*obstack_alloc_failed_handler) (void) = print_and_abort;
+static void print_and_abort(void) ATTRIBUTE_NORETURN;
+void (*obstack_alloc_failed_handler)(void) ATTRIBUTE_NORETURN =
+  print_and_abort;
 
 /* Exit value used when `print_and_abort' is used.  */
 #if defined __GNU_LIBRARY__ || defined HAVE_STDLIB_H
@@ -100,31 +103,31 @@ struct obstack *_obstack;
    For free, do not use ?:, since some compilers, like the MIPS compilers,
    do not allow (expr) ? void : void.  */
 
-#if defined (__STDC__) && __STDC__
+#if defined(__STDC__) && __STDC__
 #define CALL_CHUNKFUN(h, size) \
-  (((h) -> use_extra_arg) \
+  (((h)->use_extra_arg) \
    ? (*(h)->chunkfun) ((h)->extra_arg, (size)) \
    : (*(struct _obstack_chunk *(*) (long)) (h)->chunkfun) ((size)))
 
 #define CALL_FREEFUN(h, old_chunk) \
   do { \
-    if ((h) -> use_extra_arg) \
+    if ((h)->use_extra_arg) \
       (*(h)->freefun) ((h)->extra_arg, (old_chunk)); \
     else \
       (*(void (*) (void *)) (h)->freefun) ((old_chunk)); \
   } while (0)
 #else
 #define CALL_CHUNKFUN(h, size) \
-  (((h) -> use_extra_arg) \
+  (((h)->use_extra_arg) \
    ? (*(h)->chunkfun) ((h)->extra_arg, (size)) \
-   : (*(struct _obstack_chunk *(*) ()) (h)->chunkfun) ((size)))
+   : (*(struct _obstack_chunk *(*)())(h)->chunkfun) ((size)))
 
 #define CALL_FREEFUN(h, old_chunk) \
   do { \
-    if ((h) -> use_extra_arg) \
-      (*(h)->freefun) ((h)->extra_arg, (old_chunk)); \
+    if ((h)->use_extra_arg) \
+      (*(h)->freefun)((h)->extra_arg, (old_chunk)); \
     else \
-      (*(void (*) ()) (h)->freefun) ((old_chunk)); \
+      (*(void (*)())(h)->freefun) ((old_chunk)); \
   } while (0)
 #endif
 
@@ -163,18 +166,18 @@ _obstack_begin (struct obstack *h, int size, int alignment,
       size = 4096 - extra;
     }
 
-  h->chunkfun = (struct _obstack_chunk * (*)(void *, long)) chunkfun;
-  h->freefun = (void (*) (void *, struct _obstack_chunk *)) freefun;
+  h->chunkfun = (struct _obstack_chunk *(*)(void *, long))chunkfun;
+  h->freefun = (void (*)(void *, struct _obstack_chunk *))freefun;
   h->chunk_size = size;
-  h->alignment_mask = alignment - 1;
+  h->alignment_mask = (alignment - 1);
   h->use_extra_arg = 0;
 
-  chunk = h->chunk = CALL_CHUNKFUN (h, h -> chunk_size);
+  chunk = h->chunk = CALL_CHUNKFUN(h, h->chunk_size);
   if (!chunk)
-    (*obstack_alloc_failed_handler) ();
+    (*obstack_alloc_failed_handler)();
   h->next_free = h->object_base = chunk->contents;
   h->chunk_limit = chunk->limit
-    = (char *) chunk + h->chunk_size;
+    = (char *)chunk + h->chunk_size;
   chunk->prev = 0;
   /* The initial chunk now contains no empty object.  */
   h->maybe_empty_object = 0;
@@ -208,19 +211,19 @@ _obstack_begin_1 (struct obstack *h, int size, int alignment,
       size = 4096 - extra;
     }
 
-  h->chunkfun = (struct _obstack_chunk * (*)(void *,long)) chunkfun;
-  h->freefun = (void (*) (void *, struct _obstack_chunk *)) freefun;
+  h->chunkfun = (struct _obstack_chunk *(*)(void *,long))chunkfun;
+  h->freefun = (void (*)(void *, struct _obstack_chunk *))freefun;
   h->chunk_size = size;
   h->alignment_mask = alignment - 1;
   h->extra_arg = arg;
   h->use_extra_arg = 1;
 
-  chunk = h->chunk = CALL_CHUNKFUN (h, h -> chunk_size);
+  chunk = h->chunk = CALL_CHUNKFUN(h, h->chunk_size);
   if (!chunk)
-    (*obstack_alloc_failed_handler) ();
+    (*obstack_alloc_failed_handler)();
   h->next_free = h->object_base = chunk->contents;
   h->chunk_limit = chunk->limit
-    = (char *) chunk + h->chunk_size;
+    = ((char *)chunk + h->chunk_size);
   chunk->prev = 0;
   /* The initial chunk now contains no empty object.  */
   h->maybe_empty_object = 0;
@@ -235,45 +238,45 @@ _obstack_begin_1 (struct obstack *h, int size, int alignment,
    to the beginning of the new one.  */
 
 void
-_obstack_newchunk (struct obstack *h, int length)
+_obstack_newchunk(struct obstack *h, int length)
 {
   register struct _obstack_chunk *old_chunk = h->chunk;
   register struct _obstack_chunk *new_chunk;
   register long	new_size;
-  register long obj_size = h->next_free - h->object_base;
+  register long obj_size = (h->next_free - h->object_base);
   register long i;
   long already;
 
-  /* Compute size for new chunk.  */
-  new_size = (obj_size + length) + (obj_size >> 3) + 100;
+  /* Compute size for new chunk: */
+  new_size = ((obj_size + length) + (obj_size >> 3) + 100);
   if (new_size < h->chunk_size)
     new_size = h->chunk_size;
 
-  /* Allocate and initialize the new chunk.  */
-  new_chunk = CALL_CHUNKFUN (h, new_size);
+  /* Allocate and initialize the new chunk: */
+  new_chunk = CALL_CHUNKFUN(h, new_size);
   if (!new_chunk)
-    (*obstack_alloc_failed_handler) ();
+    (*obstack_alloc_failed_handler)();
   h->chunk = new_chunk;
   new_chunk->prev = old_chunk;
-  new_chunk->limit = h->chunk_limit = (char *) new_chunk + new_size;
+  new_chunk->limit = h->chunk_limit = ((char *)new_chunk + new_size);
 
   /* Move the existing object to the new chunk.
      Word at a time is fast and is safe if the object
      is sufficiently aligned.  */
-  if (h->alignment_mask + 1 >= DEFAULT_ALIGNMENT)
+  if ((h->alignment_mask + 1) >= DEFAULT_ALIGNMENT)
     {
-      for (i = obj_size / sizeof (COPYING_UNIT) - 1;
+      for (i = (long)(((size_t)obj_size / sizeof(COPYING_UNIT)) - 1UL);
 	   i >= 0; i--)
 	((COPYING_UNIT *)new_chunk->contents)[i]
 	  = ((COPYING_UNIT *)h->object_base)[i];
       /* We used to copy the odd few remaining bytes as one extra COPYING_UNIT,
 	 but that can cross a page boundary on a machine
 	 which does not do strict alignment for COPYING_UNITS.  */
-      already = obj_size / sizeof (COPYING_UNIT) * sizeof (COPYING_UNIT);
+      already = (long)((size_t)obj_size / sizeof(COPYING_UNIT) * sizeof(COPYING_UNIT));
     }
   else
     already = 0;
-  /* Copy remaining bytes one by one.  */
+  /* Copy remaining bytes one by one: */
   for (i = already; i < obj_size; i++)
     new_chunk->contents[i] = h->object_base[i];
 
@@ -283,7 +286,7 @@ _obstack_newchunk (struct obstack *h, int length)
   if (h->object_base == old_chunk->contents && ! h->maybe_empty_object)
     {
       new_chunk->prev = old_chunk->prev;
-      CALL_FREEFUN (h, old_chunk);
+      CALL_FREEFUN(h, old_chunk);
     }
 
   h->object_base = new_chunk->contents;
@@ -401,23 +404,24 @@ _obstack_memory_used (struct obstack *h)
   return nbytes;
 }
 
-/* Define the error handler.  */
+/* Define the error handler: */
 #ifndef _
-# if (HAVE_LIBINTL_H && ENABLE_NLS) || defined _LIBC
+# if ((defined(HAVE_LIBINTL_H) && HAVE_LIBINTL_H) && \
+      (defined(ENABLE_NLS) && ENABLE_NLS)) || defined _LIBC
 #  include <libintl.h>
 #  ifndef _
 #   define _(Str) gettext (Str)
-#  endif
+#  endif /* !_ */
 # else
 #  define _(Str) (Str)
-# endif
-#endif
+# endif /* (HAVE_LIBINTL_H && ENABLE_NLS) || _LIBC */
+#endif /* !_ */
 
-static void
-print_and_abort (void)
+static void ATTRIBUTE_NORETURN
+print_and_abort(void)
 {
-  fputs (_("memory exhausted\n"), stderr);
-  exit (obstack_exit_failure);
+  fputs(_("memory exhausted\n"), stderr);
+  exit(obstack_exit_failure);
 }
 
 #if 0
@@ -508,3 +512,5 @@ POINTER (obstack_copy0) (struct obstack *obstack, POINTER pointer, int length)
 #endif /* 0 */
 
 #endif	/* !ELIDE_CODE */
+
+/* EOF */

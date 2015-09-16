@@ -1,6 +1,6 @@
-/* 
+/* angel_bytesex.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -39,4 +39,6 @@ int32 bytesex_hostval(int32 v);
 int32 bytesex_hostval_16(int32 v);
 /* Return v or byte-reversed v for a 16 bit value */
 
-#endif
+#endif /* !angel_bytesex_h */
+
+/* EOF */

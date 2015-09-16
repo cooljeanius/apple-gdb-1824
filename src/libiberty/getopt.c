@@ -1,6 +1,6 @@
-/* Getopt for GNU.
-   NOTE: getopt is now part of the C library, so if you don't know what
-   "Keep this file name-space clean" means, talk to drepper@gnu.org
+/* getopt.c: Getopt for GNU.
+   NOTE: getopt is now part of the C library, so if you do NOT know what
+   "Keep this file name-space clean" means, talk to <drepper@gnu.org>
    before changing it!
 
    Copyright (C) 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
@@ -28,11 +28,11 @@
    Ditto for AIX 3.2 and <stdlib.h>.  */
 #ifndef _NO_PROTO
 # define _NO_PROTO
-#endif
+#endif /* !_NO_PROTO */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
 
 #if !defined __STDC__ || !__STDC__
 /* This is a separate conditional since some stdc systems
@@ -71,7 +71,11 @@
    contain conflicting prototypes for getopt.  */
 # include <stdlib.h>
 # include <unistd.h>
-#endif	/* GNU C library.  */
+#else
+# if defined(HAVE_UNISTD_H) && !defined(_UNISTD_H_)
+#  include <unistd.h>
+# endif /* HAVE_UNISTD_H && !_UNISTD_H_ */
+#endif /* GNU C library.  */
 
 #ifdef VMS
 # include <unixlib.h>
@@ -83,13 +87,14 @@
 #ifndef _
 /* This is for other GNU distributions with internationalized messages.
    When compiling libc, the _ macro is predefined.  */
-# if (HAVE_LIBINTL_H && ENABLE_NLS) || defined _LIBC
+# if ((defined(HAVE_LIBINTL_H) && HAVE_LIBINTL_H) && \
+      (defined(ENABLE_NLS) && ENABLE_NLS)) || defined _LIBC
 #  include <libintl.h>
 #  define _(msgid)	gettext (msgid)
 # else
 #  define _(msgid)	(msgid)
-# endif
-#endif
+# endif /* (HAVE_LIBINTL_H && ENABLE_NLS) || _LIBC */
+#endif /* !_ */
 
 /* This version of `getopt' appears to the caller like standard Unix `getopt'
    but it behaves differently for the user, since it allows the user
@@ -106,6 +111,10 @@
    they can distinguish the relative order of options and other arguments.  */
 
 #include "getopt.h"
+
+#if defined(HAVE_GETOPT_H) && !defined(_GETOPT) && !defined(_GETOPT_H_)
+# include <getopt.h>
+#endif /* HAVE_GETOPT_H && !_GETOPT && !_GETOPT_H_ */
 
 /* For communication from `getopt' to the caller.
    When `getopt' finds an option that takes an argument,
@@ -277,8 +286,8 @@ static char *const *original_argv;
    is valid for the getopt call we must make sure that the ARGV passed
    to getopt is that one passed to the process.  */
 static void
-__attribute__ ((unused))
-store_args_and_env (int argc, char *const *argv)
+ATTRIBUTE_UNUSED
+store_args_and_env(int argc, char *const *argv)
 {
   /* XXX This is no good solution.  We should rather copy the args so
      that we can compare them later.  But we must not use malloc(3).  */
@@ -655,12 +664,12 @@ _getopt_internal (int argc, char *const *argv, const char *optstring,
       /* Test all long options for either exact match
 	 or abbreviated matches.  */
       for (p = longopts, option_index = 0; p->name; p++, option_index++)
-	if (!strncmp (p->name, nextchar, nameend - nextchar))
+	if (!strncmp(p->name, nextchar, (size_t)(nameend - nextchar)))
 	  {
-	    if ((unsigned int) (nameend - nextchar)
-		== (unsigned int) strlen (p->name))
+	    if ((unsigned int)(nameend - nextchar)
+		== (unsigned int)strlen(p->name))
 	      {
-		/* Exact match found.  */
+		/* Exact match found: */
 		pfound = p;
 		indfound = option_index;
 		exact = 1;
@@ -843,12 +852,13 @@ _getopt_internal (int argc, char *const *argv, const char *optstring,
 
 	/* Test all long options for either exact match
 	   or abbreviated matches.  */
-	for (p = longopts, option_index = 0; p->name; p++, option_index++)
-	  if (!strncmp (p->name, nextchar, nameend - nextchar))
+	for (p = longopts, option_index = 0; (p != NULL) && p->name;
+             p++, option_index++)
+	  if (!strncmp(p->name, nextchar, (size_t)(nameend - nextchar)))
 	    {
-	      if ((unsigned int) (nameend - nextchar) == strlen (p->name))
+	      if ((unsigned int)(nameend - nextchar) == strlen(p->name))
 		{
-		  /* Exact match found.  */
+		  /* Exact match found: */
 		  pfound = p;
 		  indfound = option_index;
 		  exact = 1;
@@ -971,12 +981,11 @@ _getopt_internal (int argc, char *const *argv, const char *optstring,
 }
 
 int
-getopt (int argc, char *const *argv, const char *optstring)
+getopt(int argc, char *const *argv, const char *optstring)
 {
-  return _getopt_internal (argc, argv, optstring,
-			   (const struct option *) 0,
-			   (int *) 0,
-			   0);
+  return _getopt_internal(argc, argv, optstring,
+			  (const struct option *)0,
+			  (int *)0, 0);
 }
 
 #endif	/* Not ELIDE_CODE.  */

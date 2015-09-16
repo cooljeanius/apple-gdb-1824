@@ -93,7 +93,7 @@ add_free_pendings (struct pending *list)
       free_pendings = list;
     }
 }
-      
+
 /* Add a symbol to one of the lists of symbols.  While we're at it, if
    we're in the C++ case and don't have full namespace debugging info,
    check to see if it references an anonymous namespace; if so, add an
@@ -131,9 +131,9 @@ add_symbol_to_list (struct symbol *symbol, struct pending **listhead)
 
   /* Check to see if we might need to look for a mention of anonymous
      namespaces.  */
-  
+
   /* APPLE LOCAL begin Objective-C++ */
-  if (SYMBOL_LANGUAGE (symbol) == language_cplus 
+  if (SYMBOL_LANGUAGE (symbol) == language_cplus
       || SYMBOL_LANGUAGE (symbol) == language_objcplus)
     /* APPLE LOCAL end Objective-C++ */
     cp_scan_for_anonymous_namespaces (symbol);
@@ -202,10 +202,9 @@ really_free_pendings (void *dummy)
     free_macro_table (pending_macros);
 }
 
-/* This function is called to discard any pending blocks. */
-
+/* This function is called to discard any pending blocks: */
 void
-free_pending_blocks (void)
+free_pending_blocks(void)
 {
 #if 0				/* Now we make the links in the
 				   objfile_obstack, so don't free
@@ -215,15 +214,24 @@ free_pending_blocks (void)
   for (bnext = pending_blocks; bnext; bnext = bnext1)
     {
       bnext1 = bnext->next;
-      xfree ((void *) bnext);
+      xfree((void *)bnext);
     }
-#endif
+#endif /* 0 */
   pending_blocks = NULL;
 }
 
 /* Take one of the lists of symbols and make a block from it.  Keep
    the order the symbols have in the list (reversed from the input
    file).  Put the block on the list of pending blocks.  */
+
+/* FIXME: need to rename some struct fields that currently live in headers,
+ * and deal with all of the resulting fallout, before removing this: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* APPLE LOCAL address ranges: Add a new parameter, RANGES, for the
    case in which the block is contained within multiple non-contiguous
@@ -237,12 +245,12 @@ free_pending_blocks (void)
    should just be NULL.  */
 
 void
-finish_block (struct symbol *symbol, struct pending **listhead,
-	      struct pending_block *old_blocks, 
-	      CORE_ADDR start, CORE_ADDR end, 
-	      /* APPLE LOCAL begin address ranges  */
-	      struct address_range_list *ranges, struct objfile *objfile)
-	      /* APPLE LOCAL end address ranges  */
+finish_block(struct symbol *symbol, struct pending **listhead,
+	     struct pending_block *old_blocks,
+	     CORE_ADDR start, CORE_ADDR end,
+	     /* APPLE LOCAL begin address ranges  */
+	     struct address_range_list *ranges, struct objfile *objfile)
+	     /* APPLE LOCAL end address ranges  */
 {
   struct pending *next, *next1;
   struct block *block;
@@ -278,16 +286,16 @@ finish_block (struct symbol *symbol, struct pending **listhead,
     }
   /* APPLE LOCAL end address ranges  */
 
-  BLOCK_START (block) = start;
-  BLOCK_END (block) = end;
+  BLOCK_START(block) = start;
+  BLOCK_END(block) = end;
   /* APPLE LOCAL begin address ranges  */
-  BLOCK_RANGES (block) = ranges;
+  BLOCK_RANGES(block) = ranges;
   /* APPLE LOCAL end address ranges  */
   /* Superblock filled in when containing block is made */
-  BLOCK_SUPERBLOCK (block) = NULL;
-  BLOCK_NAMESPACE (block) = NULL;
+  BLOCK_SUPERBLOCK(block) = NULL;
+  BLOCK_NAMESPACE(block) = NULL;
 
-  BLOCK_GCC_COMPILED (block) = processing_gcc_compilation;
+  BLOCK_GCC_COMPILED(block) = processing_gcc_compilation;
 
   /* Put the block in as the value of the symbol that names it.  */
 
@@ -449,7 +457,7 @@ finish_block (struct symbol *symbol, struct pending **listhead,
 	      {
 	  complaint (&symfile_complaints,
 		     _("block end address 0x%s less than block start address 0x%s (patched it)"),
-		     paddr_nz (BLOCK_RANGE_END (block, i)), 
+		     paddr_nz (BLOCK_RANGE_END (block, i)),
 		     paddr_nz (BLOCK_RANGE_START (block, i)));
 	      }
 	    /* Better than nothing */
@@ -457,14 +465,14 @@ finish_block (struct symbol *symbol, struct pending **listhead,
 	  }
     }
   /* APPLE LOCAL end address ranges  */
-#endif
+#endif /* 1 */
 
   /* Install this block as the superblock of all blocks made since the
      start of this scope that don't have superblocks yet.  */
 
   opblock = NULL;
-  for (pblock = pending_blocks; 
-       pblock && pblock != old_blocks; 
+  for (pblock = pending_blocks;
+       pblock && pblock != old_blocks;
        pblock = pblock->next)
     {
       if (BLOCK_SUPERBLOCK (pblock->block) == NULL)
@@ -487,7 +495,7 @@ finish_block (struct symbol *symbol, struct pending **listhead,
 		{
                   /* APPLE LOCAL: If you've got a function and you know
                      its name, clap your hands.  Er, I mean, print it.  */
-                  if (pblock->block->function 
+                  if (pblock->block->function
                       && pblock->block->function->ginfo.name)
 		  complaint (&symfile_complaints,
 			     _("inner block (0x%s-0x%s '%s') not inside outer block (0x%s-0x%s)"),
@@ -532,6 +540,13 @@ finish_block (struct symbol *symbol, struct pending **listhead,
   record_pending_block (objfile, block, opblock);
 }
 
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 
 /* Record BLOCK on the list of all blocks in the file.  Put it after
    OPBLOCK, or at the beginning if opblock is NULL.  This puts the
@@ -561,12 +576,12 @@ record_pending_block (struct objfile *objfile, struct block *block,
     }
 }
 
-/* APPLE LOCAL begin sort objfile blocks */
+/* APPLE LOCAL begin sort objfile blocks: */
 static int
-compare_blocks (const void *v1, const void *v2)
+compare_blocks(const void *v1, const void *v2)
 {
-  const struct block *const *b1 = v1;
-  const struct block *const *b2 = v2;
+  const struct block *const *b1 = (const struct block *const *)v1;
+  const struct block *const *b2 = (const struct block *const *)v2;
 
   if ((*b1)->startaddr < (*b2)->startaddr)
     return -1;
@@ -864,7 +879,7 @@ record_line (struct subfile *subfile, int line, CORE_ADDR pc, CORE_ADDR end_pc,
 	    fprintf_unfiltered (gdb_stdout, "     INLINED CALL SITE,  ");
 	  else
 	    fprintf_unfiltered (gdb_stdout, "     INLINED SUBROUTINE, ");
-	  fprintf_unfiltered (gdb_stdout, "0x%x  - 0x%x, ", 
+	  fprintf_unfiltered (gdb_stdout, "0x%x  - 0x%x, ",
 			      (unsigned int) pc, (unsigned int) end_pc);
 	  fprintf_unfiltered (gdb_stdout, "%s:%d\n", subfile->name, line);
 	}
@@ -1032,7 +1047,7 @@ end_symtab (CORE_ADDR end_addr, struct objfile *objfile, int section)
 
   cleanup_undefined_types ();
 
-  /* APPLE LOCAL: Some fields may not have gotten the "packed" 
+  /* APPLE LOCAL: Some fields may not have gotten the "packed"
      set right because their type was not known yet.  This cleans that up.  */
   cleanup_undefined_fields ();
   cleanup_undefined_arrays ();
@@ -1205,30 +1220,30 @@ end_symtab (CORE_ADDR end_addr, struct objfile *objfile, int section)
    context.  */
 
 struct context_stack *
-push_context (int desc, CORE_ADDR valu)
+push_context(int desc, CORE_ADDR valu)
 {
-  struct context_stack *new;
+  struct context_stack *newstack;
 
   if (context_stack_depth == context_stack_size)
     {
       context_stack_size *= 2;
       context_stack = (struct context_stack *)
-	xrealloc ((char *) context_stack,
-		  (context_stack_size * sizeof (struct context_stack)));
+	xrealloc((char *)context_stack,
+		 (context_stack_size * sizeof(struct context_stack)));
     }
 
-  new = &context_stack[context_stack_depth++];
-  new->depth = desc;
-  new->locals = local_symbols;
-  new->params = param_symbols;
-  new->old_blocks = pending_blocks;
-  new->start_addr = valu;
-  new->name = NULL;
+  newstack = &context_stack[context_stack_depth++];
+  newstack->depth = desc;
+  newstack->locals = local_symbols;
+  newstack->params = param_symbols;
+  newstack->old_blocks = pending_blocks;
+  newstack->start_addr = valu;
+  newstack->name = NULL;
 
   local_symbols = NULL;
   param_symbols = NULL;
 
-  return new;
+  return newstack;
 }
 
 /* Pop a context block.  Returns the address of the context block just
@@ -1302,7 +1317,7 @@ merge_symbol_lists (struct pending **srclist, struct pending **targetlist)
    corresponding to a psymtab.  */
 
 void
-buildsym_init (void)
+buildsym_init(void)
 {
   free_pendings = NULL;
   file_symbols = NULL;
@@ -1316,7 +1331,9 @@ buildsym_init (void)
    file, e.g. a shared library).  */
 
 void
-buildsym_new_init (void)
+buildsym_new_init(void)
 {
-  buildsym_init ();
+  buildsym_init();
 }
+
+/* EOF */

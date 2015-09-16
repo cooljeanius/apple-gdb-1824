@@ -1,4 +1,4 @@
-/* BFD back-end for Renesas Super-H COFF binaries.
+/* coff-sh.c: BFD back-end for Renesas Super-H COFF binaries.
    Copyright 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002,
    2003, 2004, 2005 Free Software Foundation, Inc.
    Contributed by Cygnus Support.
@@ -19,7 +19,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -29,18 +29,22 @@
 #include "coff/sh.h"
 #include "coff/internal.h"
 
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
+
 #ifdef COFF_WITH_PE
-#include "coff/pe.h"
+# include "coff/pe.h"
 
-#ifndef COFF_IMAGE_WITH_PE
+# ifndef COFF_IMAGE_WITH_PE
 static bfd_boolean sh_align_load_span
-  PARAMS ((bfd *, asection *, bfd_byte *,
-	   bfd_boolean (*) (bfd *, asection *, PTR, bfd_byte *, bfd_vma),
-	   PTR, bfd_vma **, bfd_vma *, bfd_vma, bfd_vma, bfd_boolean *));
+  PARAMS((bfd *, asection *, bfd_byte *,
+	  bfd_boolean (*)(bfd *, asection *, PTR, bfd_byte *, bfd_vma),
+	  PTR, bfd_vma **, bfd_vma *, bfd_vma, bfd_vma, bfd_boolean *));
 
-#define _bfd_sh_align_load_span sh_align_load_span
-#endif
-#endif
+#  define _bfd_sh_align_load_span sh_align_load_span
+# endif /* !COFF_IMAGE_WITH_PE */
+#endif /* COFF_WITH_PE */
 
 #include "libcoff.h"
 
@@ -54,7 +58,7 @@ static bfd_boolean sh_relax_delete_bytes
   PARAMS ((bfd *, asection *, bfd_vma, int));
 #ifndef COFF_IMAGE_WITH_PE
 static const struct sh_opcode *sh_insn_info PARAMS ((unsigned int));
-#endif
+#endif /* !COFF_IMAGE_WITH_PE */
 static bfd_boolean sh_align_loads
   PARAMS ((bfd *, asection *, struct internal_reloc *, bfd_byte *,
 	   bfd_boolean *));
@@ -85,19 +89,17 @@ static reloc_howto_type * sh_coff_reloc_type_lookup PARAMS ((bfd *, bfd_reloc_co
 #define COFF_LONG_FILENAMES
 
 #ifdef COFF_WITH_PE
-static bfd_boolean in_reloc_p PARAMS ((bfd *, reloc_howto_type *));
-/* Return TRUE if this relocation should
-   appear in the output .reloc section.  */
-static bfd_boolean in_reloc_p (abfd, howto)
-     bfd * abfd ATTRIBUTE_UNUSED;
-     reloc_howto_type * howto;
+static bfd_boolean in_reloc_p PARAMS((bfd *, reloc_howto_type *));
+/* Return TRUE if this relocation should appear in output .reloc sect: */
+static bfd_boolean
+in_reloc_p(bfd * abfd ATTRIBUTE_UNUSED, reloc_howto_type *howto)
 {
-  return ! howto->pc_relative && howto->type != R_SH_IMAGEBASE;
+  return ! howto->pc_relative && (howto->type != R_SH_IMAGEBASE);
 }
-#endif
+#endif /* COFF_WITH_PE */
 
-/* The supported relocations.  There are a lot of relocations defined
-   in coff/internal.h which we do not expect to ever see.  */
+/* The supported relocations.  There are a lot of relocations defined in
+ * "../include/coff/internal.h" which we do not expect to ever see: */
 static reloc_howto_type sh_coff_howtos[] =
 {
   EMPTY_HOWTO (0),
@@ -375,33 +377,31 @@ static reloc_howto_type sh_coff_howtos[] =
 /* Customize coffcode.h (this is not currently used).  */
 #define SH 1
 
-/* FIXME: This should not be set here.  */
-#define __A_MAGIC_SET__
+/* FIXME: This should not be set here: */
+#ifndef __A_MAGIC_SET__
+# define __A_MAGIC_SET__
+#endif /* !__A_MAGIC_SET__ */
 
 #ifndef COFF_WITH_PE
-/* Swap the r_offset field in and out.  */
-#define SWAP_IN_RELOC_OFFSET  H_GET_32
-#define SWAP_OUT_RELOC_OFFSET H_PUT_32
+/* Swap the r_offset field in and out: */
+# define SWAP_IN_RELOC_OFFSET  H_GET_32
+# define SWAP_OUT_RELOC_OFFSET H_PUT_32
 
 /* Swap out extra information in the reloc structure.  */
-#define SWAP_OUT_RELOC_EXTRA(abfd, src, dst)	\
-  do						\
-    {						\
-      dst->r_stuff[0] = 'S';			\
-      dst->r_stuff[1] = 'C';			\
-    }						\
-  while (0)
-#endif
+# define SWAP_OUT_RELOC_EXTRA(abfd, src, dst)	\
+   do {						\
+       dst->r_stuff[0] = 'S';			\
+       dst->r_stuff[1] = 'C';			\
+   } while (0)
+#endif /* !COFF_WITH_PE */
 
-/* Get the value of a symbol, when performing a relocation.  */
-
+/* Get the value of a symbol, when performing a relocation: */
 static long
-get_symbol_value (symbol)
-     asymbol *symbol;
+get_symbol_value(asymbol *symbol)
 {
   bfd_vma relocation;
 
-  if (bfd_is_com_section (symbol->section))
+  if (bfd_is_com_section(symbol->section))
     relocation = 0;
   else
     relocation = (symbol->value +
@@ -413,29 +413,29 @@ get_symbol_value (symbol)
 
 #ifdef COFF_WITH_PE
 /* Convert an rtype to howto for the COFF backend linker.
-   Copied from coff-i386.  */
-#define coff_rtype_to_howto coff_sh_rtype_to_howto
-static reloc_howto_type * coff_sh_rtype_to_howto PARAMS ((bfd *, asection *, struct internal_reloc *, struct coff_link_hash_entry *, struct internal_syment *, bfd_vma *));
+ * Copied from coff-i386.  */
+# define coff_rtype_to_howto coff_sh_rtype_to_howto
+static reloc_howto_type *coff_sh_rtype_to_howto
+  PARAMS((bfd *, asection *, struct internal_reloc *,
+          struct coff_link_hash_entry *, struct internal_syment *,
+          bfd_vma *));
 
 static reloc_howto_type *
-coff_sh_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
-     bfd * abfd ATTRIBUTE_UNUSED;
-     asection * sec;
-     struct internal_reloc * rel;
-     struct coff_link_hash_entry * h;
-     struct internal_syment * sym;
-     bfd_vma * addendp;
+coff_sh_rtype_to_howto(bfd * abfd ATTRIBUTE_UNUSED, asection *sec,
+                       struct internal_reloc *rel,
+                       struct coff_link_hash_entry *h,
+                       struct internal_syment *sym, bfd_vma *addendp)
 {
   reloc_howto_type * howto;
 
-  howto = sh_coff_howtos + rel->r_type;
+  howto = (sh_coff_howtos + rel->r_type);
 
   *addendp = 0;
 
   if (howto->pc_relative)
     *addendp += sec->vma;
 
-  if (sym != NULL && sym->n_scnum == 0 && sym->n_value != 0)
+  if ((sym != NULL) && (sym->n_scnum == 0) && (sym->n_value != 0))
     {
       /* This is a common symbol.  The section contents include the
 	 size (sym->n_value) as an addend.  The relocate_section
@@ -496,9 +496,8 @@ static const struct shcoff_reloc_map sh_reloc_map[] =
 #define coff_bfd_reloc_type_lookup	sh_coff_reloc_type_lookup
 
 static reloc_howto_type *
-sh_coff_reloc_type_lookup (abfd, code)
-     bfd * abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+sh_coff_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                          bfd_reloc_code_real_type code)
 {
   unsigned int i;
 
@@ -546,30 +545,23 @@ sh_coff_reloc_type_lookup (abfd, code)
       cache_ptr->addend = (reloc).r_offset;			\
   }
 
-/* This is the howto function for the SH relocations.  */
-
+/* This is the howto function for the SH relocations: */
 static bfd_reloc_status_type
-sh_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
-	  error_message)
-     bfd *abfd;
-     arelent *reloc_entry;
-     asymbol *symbol_in;
-     PTR data;
-     asection *input_section;
-     bfd *output_bfd;
-     char **error_message ATTRIBUTE_UNUSED;
+sh_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
+         asection *input_section, bfd *output_bfd,
+	 char **error_message ATTRIBUTE_UNUSED)
 {
   unsigned long insn;
   bfd_vma sym_value;
   unsigned short r_type;
   bfd_vma addr = reloc_entry->address;
-  bfd_byte *hit_data = addr + (bfd_byte *) data;
+  bfd_byte *hit_data = (addr + (bfd_byte *)data);
 
   r_type = reloc_entry->howto->type;
 
   if (output_bfd != NULL)
     {
-      /* Partial linking--do nothing.  */
+      /* Partial linking -- do nothing: */
       reloc_entry->address += input_section->output_offset;
       return bfd_reloc_ok;
     }
@@ -645,6 +637,11 @@ sh_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
 #define coff_bfd_get_relocated_section_contents \
   sh_coff_get_relocated_section_contents
 
+/* undo above define: */
+#ifdef __A_MAGIC_SET__
+# undef __A_MAGIC_SET__
+#endif /* __A_MAGIC_SET__ */
+
 #include "coffcode.h"
 
 /* This function handles relaxing on the SH.
@@ -689,13 +686,9 @@ sh_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
    causing a one cycle bubble in the pipeline.  Therefore, we try to
    align load and store instructions on four byte boundaries if we
    can, by swapping them with one of the adjacent instructions.  */
-
 static bfd_boolean
-sh_relax_section (abfd, sec, link_info, again)
-     bfd *abfd;
-     asection *sec;
-     struct bfd_link_info *link_info;
-     bfd_boolean *again;
+sh_relax_section(bfd *abfd, asection *sec, struct bfd_link_info *link_info,
+                 bfd_boolean *again)
 {
   struct internal_reloc *internal_relocs;
   bfd_boolean have_code;
@@ -705,22 +698,22 @@ sh_relax_section (abfd, sec, link_info, again)
   *again = FALSE;
 
   if (link_info->relocatable
-      || (sec->flags & SEC_RELOC) == 0
-      || sec->reloc_count == 0)
+      || ((sec->flags & SEC_RELOC) == 0)
+      || (sec->reloc_count == 0))
     return TRUE;
 
-  if (coff_section_data (abfd, sec) == NULL)
+  if (coff_section_data(abfd, sec) == NULL)
     {
-      bfd_size_type amt = sizeof (struct coff_section_tdata);
-      sec->used_by_bfd = (PTR) bfd_zalloc (abfd, amt);
+      bfd_size_type amt = sizeof(struct coff_section_tdata);
+      sec->used_by_bfd = (PTR)bfd_zalloc(abfd, amt);
       if (sec->used_by_bfd == NULL)
 	return FALSE;
     }
 
   internal_relocs = (_bfd_coff_read_internal_relocs
 		     (abfd, sec, link_info->keep_memory,
-		      (bfd_byte *) NULL, FALSE,
-		      (struct internal_reloc *) NULL));
+		      (bfd_byte *)NULL, FALSE,
+		      (struct internal_reloc *)NULL));
   if (internal_relocs == NULL)
     goto error_return;
 
@@ -1045,14 +1038,9 @@ sh_relax_section (abfd, sec, link_info, again)
   return FALSE;
 }
 
-/* Delete some bytes from a section while relaxing.  */
-
+/* Delete some bytes from a section while relaxing: */
 static bfd_boolean
-sh_relax_delete_bytes (abfd, sec, addr, count)
-     bfd *abfd;
-     asection *sec;
-     bfd_vma addr;
-     int count;
+sh_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr, int count)
 {
   bfd_byte *contents;
   struct internal_reloc *irel, *irelend;
@@ -2020,16 +2008,14 @@ static const struct sh_opcode sh_dsp_opcodef0[] =
 
 static const struct sh_minor_opcode sh_dsp_opcodef[] =
 {
-  { MAP (sh_dsp_opcodef0), 0xfc0d }
+  { MAP(sh_dsp_opcodef0), 0xfc0d }
 };
 
 /* Given an instruction, return a pointer to the corresponding
-   sh_opcode structure.  Return NULL if the instruction is not
-   recognized.  */
-
+ * sh_opcode structure.  Return NULL if the instruction is not
+ * recognized: */
 static const struct sh_opcode *
-sh_insn_info (insn)
-     unsigned int insn;
+sh_insn_info(unsigned int insn)
 {
   const struct sh_major_opcode *maj;
   const struct sh_minor_opcode *min, *minend;
@@ -2056,27 +2042,21 @@ sh_insn_info (insn)
   return NULL;
 }
 
-/* See whether an instruction uses or sets a general purpose register */
-
+/* See whether an instruction uses or sets a general purpose register: */
 static bfd_boolean
-sh_insn_uses_or_sets_reg (insn, op, reg)
-     unsigned int insn;
-     const struct sh_opcode *op;
-     unsigned int reg;
+sh_insn_uses_or_sets_reg(unsigned int insn, const struct sh_opcode *op,
+                         unsigned int reg)
 {
-  if (sh_insn_uses_reg (insn, op, reg))
+  if (sh_insn_uses_reg(insn, op, reg))
     return TRUE;
 
-  return sh_insn_sets_reg (insn, op, reg);
+  return sh_insn_sets_reg(insn, op, reg);
 }
 
-/* See whether an instruction uses a general purpose register.  */
-
+/* See whether an instruction uses a general purpose register: */
 static bfd_boolean
-sh_insn_uses_reg (insn, op, reg)
-     unsigned int insn;
-     const struct sh_opcode *op;
-     unsigned int reg;
+sh_insn_uses_reg(unsigned int insn, const struct sh_opcode *op,
+                 unsigned int reg)
 {
   unsigned int f;
 
@@ -2099,20 +2079,17 @@ sh_insn_uses_reg (insn, op, reg)
   return FALSE;
 }
 
-/* See whether an instruction sets a general purpose register.  */
-
+/* See whether an instruction sets a general purpose register: */
 static bfd_boolean
-sh_insn_sets_reg (insn, op, reg)
-     unsigned int insn;
-     const struct sh_opcode *op;
-     unsigned int reg;
+sh_insn_sets_reg(unsigned int insn, const struct sh_opcode *op,
+                 unsigned int reg)
 {
   unsigned int f;
 
   f = op->flags;
 
-  if ((f & SETS1) != 0
-      && SETS1_REG (insn) == reg)
+  if (((f & SETS1) != 0)
+      && (SETS1_REG(insn) == reg))
     return TRUE;
   if ((f & SETS2) != 0
       && SETS2_REG (insn) == reg)
@@ -2126,33 +2103,27 @@ sh_insn_sets_reg (insn, op, reg)
   return FALSE;
 }
 
-/* See whether an instruction uses or sets a floating point register */
-
+/* See whether an instruction uses or sets a floating point register: */
 static bfd_boolean
-sh_insn_uses_or_sets_freg (insn, op, reg)
-     unsigned int insn;
-     const struct sh_opcode *op;
-     unsigned int reg;
+sh_insn_uses_or_sets_freg(unsigned int insn, const struct sh_opcode *op,
+                          unsigned int reg)
 {
-  if (sh_insn_uses_freg (insn, op, reg))
+  if (sh_insn_uses_freg(insn, op, reg))
     return TRUE;
 
-  return sh_insn_sets_freg (insn, op, reg);
+  return sh_insn_sets_freg(insn, op, reg);
 }
 
-/* See whether an instruction uses a floating point register.  */
-
+/* See whether an instruction uses a floating point register: */
 static bfd_boolean
-sh_insn_uses_freg (insn, op, freg)
-     unsigned int insn;
-     const struct sh_opcode *op;
-     unsigned int freg;
+sh_insn_uses_freg(unsigned int insn, const struct sh_opcode *op,
+                  unsigned int freg)
 {
   unsigned int f;
 
   f = op->flags;
 
-  /* We can't tell if this is a double-precision insn, so just play safe
+  /* We cannot tell if this is a double-precision insn, so just play safe
      and assume that it might be.  So not only have we test FREG against
      itself, but also even FREG against FREG+1 - if the using insn uses
      just the low part of a double precision value - but also an odd
@@ -2174,13 +2145,10 @@ sh_insn_uses_freg (insn, op, freg)
   return FALSE;
 }
 
-/* See whether an instruction sets a floating point register.  */
-
+/* See whether an instruction sets a floating point register: */
 static bfd_boolean
-sh_insn_sets_freg (insn, op, freg)
-     unsigned int insn;
-     const struct sh_opcode *op;
-     unsigned int freg;
+sh_insn_sets_freg(unsigned int insn, const struct sh_opcode *op,
+                  unsigned int freg)
 {
   unsigned int f;
 
@@ -2208,11 +2176,8 @@ sh_insn_sets_freg (insn, op, freg)
    instructions can be swapped safely.  */
 
 static bfd_boolean
-sh_insns_conflict (i1, op1, i2, op2)
-     unsigned int i1;
-     const struct sh_opcode *op1;
-     unsigned int i2;
-     const struct sh_opcode *op2;
+sh_insns_conflict(unsigned int i1, const struct sh_opcode *op1,
+                  unsigned int i2, const struct sh_opcode *op2)
 {
   unsigned int f1, f2;
 
@@ -2220,9 +2185,9 @@ sh_insns_conflict (i1, op1, i2, op2)
   f2 = op2->flags;
 
   /* Load of fpscr conflicts with floating point operations.
-     FIXME: shouldn't test raw opcodes here.  */
-  if (((i1 & 0xf0ff) == 0x4066 && (i2 & 0xf000) == 0xf000)
-      || ((i2 & 0xf0ff) == 0x4066 && (i1 & 0xf000) == 0xf000))
+     FIXME: should NOT test raw opcodes here: */
+  if ((((i1 & 0xf0ff) == 0x4066) && ((i2 & 0xf000) == 0xf000))
+      || (((i2 & 0xf0ff) == 0x4066) && ((i1 & 0xf000) == 0xf000)))
     return TRUE;
 
   if ((f1 & (BRANCH | DELAY)) != 0
@@ -2271,24 +2236,20 @@ sh_insns_conflict (i1, op1, i2, op2)
 }
 
 /* I1 is a load instruction, and I2 is some other instruction.  Return
-   TRUE if I1 loads a register which I2 uses.  */
-
+ * TRUE if I1 loads a register which I2 uses: */
 static bfd_boolean
-sh_load_use (i1, op1, i2, op2)
-     unsigned int i1;
-     const struct sh_opcode *op1;
-     unsigned int i2;
-     const struct sh_opcode *op2;
+sh_load_use(unsigned int i1, const struct sh_opcode *op1,
+            unsigned int i2, const struct sh_opcode *op2)
 {
   unsigned int f1;
 
   f1 = op1->flags;
 
-  if ((f1 & LOAD) == 0)
+  if ((f1 & LOAD) == 0U)
     return FALSE;
 
   /* If both SETS1 and SETSSP are set, that means a load to a special
-     register using postincrement addressing mode, which we don't care
+     register using postincrement addressing mode, which we do NOT care
      about here.  */
   if ((f1 & SETS1) != 0
       && (f1 & SETSSP) == 0
@@ -2318,24 +2279,17 @@ sh_load_use (i1, op1, i2, op2)
 
 #ifdef COFF_WITH_PE
 static
-#endif
+#endif /* COFF_WITH_PE */
 bfd_boolean
-_bfd_sh_align_load_span (abfd, sec, contents, swap, relocs,
-			 plabel, label_end, start, stop, pswapped)
-     bfd *abfd;
-     asection *sec;
-     bfd_byte *contents;
-     bfd_boolean (*swap) PARAMS ((bfd *, asection *, PTR, bfd_byte *, bfd_vma));
-     PTR relocs;
-     bfd_vma **plabel;
-     bfd_vma *label_end;
-     bfd_vma start;
-     bfd_vma stop;
-     bfd_boolean *pswapped;
+_bfd_sh_align_load_span(bfd *abfd, asection *sec, bfd_byte *contents,
+                        bfd_boolean (*swap)PARAMS((bfd *, asection *, PTR,
+                                                   bfd_byte *, bfd_vma)),
+                        PTR relocs, bfd_vma **plabel, bfd_vma *label_end,
+                        bfd_vma start, bfd_vma stop, bfd_boolean *pswapped)
 {
-  int dsp = (abfd->arch_info->mach == bfd_mach_sh_dsp
-	     || abfd->arch_info->mach == bfd_mach_sh3_dsp);
-  bfd_vma i;
+  int dsp = ((abfd->arch_info->mach == bfd_mach_sh_dsp)
+	     || (abfd->arch_info->mach == bfd_mach_sh3_dsp));
+  bfd_vma prev_i, i;
 
   /* The SH4 has a Harvard architecture, hence aligning loads is not
      desirable.  In fact, it is counter-productive, since it interferes
@@ -2348,72 +2302,71 @@ _bfd_sh_align_load_span (abfd, sec, contents, swap, relocs,
   if (dsp)
     {
       sh_opcodes[0xf].minor_opcodes = sh_dsp_opcodef;
-      sh_opcodes[0xf].count = sizeof sh_dsp_opcodef / sizeof sh_dsp_opcodef;
+      sh_opcodes[0xf].count = (sizeof(sh_dsp_opcodef) / sizeof(sh_dsp_opcodef));
     }
 
   /* Instructions should be aligned on 2 byte boundaries.  */
   if ((start & 1) == 1)
     ++start;
 
-  /* Now look through the unaligned addresses.  */
-  i = start;
-  if ((i & 2) == 0)
-    i += 2;
-  for (; i < stop; i += 4)
+  /* Now look through the unaligned addresses: */
+  prev_i = start;
+  if ((prev_i & 2) == 0)
+    prev_i += 2UL;
+  for (i = prev_i; (i < stop) && (i < (bfd_vma)UINT_MAX); i += 4UL)
     {
       unsigned int insn;
       const struct sh_opcode *op;
-      unsigned int prev_insn = 0;
+      unsigned int prev_insn = 0U;
       const struct sh_opcode *prev_op = NULL;
 
-      insn = bfd_get_16 (abfd, contents + i);
-      op = sh_insn_info (insn);
-      if (op == NULL
-	  || (op->flags & (LOAD | STORE)) == 0)
+      insn = bfd_get_16(abfd, (contents + i));
+      op = sh_insn_info(insn);
+      if ((op == NULL)
+	  || ((op->flags & (LOAD | STORE)) == 0))
 	continue;
 
-      /* This is a load or store which is not on a four byte boundary.  */
-
-      while (*plabel < label_end && **plabel < i)
+      /* This is a load or store which is not on a four byte boundary: */
+      while ((*plabel < label_end) && (**plabel < i))
 	++*plabel;
 
       if (i > start)
 	{
-	  prev_insn = bfd_get_16 (abfd, contents + i - 2);
-	  /* If INSN is the field b of a parallel processing insn, it is not
-	     a load / store after all.  Note that the test here might mistake
-	     the field_b of a pcopy insn for the starting code of a parallel
-	     processing insn; this might miss a swapping opportunity, but at
-	     least we're on the safe side.  */
-	  if (dsp && (prev_insn & 0xfc00) == 0xf800)
+	  prev_insn = bfd_get_16(abfd, (contents + i - 2UL));
+          /* If INSN is the field b of a parallel processing insn, then it
+           * is not a load/store after all.  Note that the test here might
+           * mistake the field_b of a pcopy insn for the starting code of
+           * a parallel processing insn; this might miss a swapping
+           * opportunity, but at least we are on the safe side: */
+	  if (dsp && ((prev_insn & 0xfc00) == 0xf800))
 	    continue;
 
 	  /* Check if prev_insn is actually the field b of a parallel
 	     processing insn.  Again, this can give a spurious match
 	     after a pcopy.  */
-	  if (dsp && i - 2 > start)
+	  if (dsp && ((i - 2) > start))
 	    {
-	      unsigned pprev_insn = bfd_get_16 (abfd, contents + i - 4);
+	      unsigned pprev_insn = bfd_get_16(abfd, (contents + i - 4UL));
 
 	      if ((pprev_insn & 0xfc00) == 0xf800)
 		prev_op = NULL;
 	      else
-		prev_op = sh_insn_info (prev_insn);
+		prev_op = sh_insn_info(prev_insn);
 	    }
 	  else
-	    prev_op = sh_insn_info (prev_insn);
+	    prev_op = sh_insn_info(prev_insn);
 
-	  /* If the load/store instruction is in a delay slot, we
-	     can't swap.  */
-	  if (prev_op == NULL
-	      || (prev_op->flags & DELAY) != 0)
+	  /* If the load/store instruction is in a delay slot, then we
+	     cannot swap.  */
+	  if ((prev_op == NULL)
+	      || ((prev_op->flags & DELAY) != 0))
 	    continue;
 	}
-      if (i > start
-	  && (*plabel >= label_end || **plabel != i)
-	  && prev_op != NULL
-	  && (prev_op->flags & (LOAD | STORE)) == 0
-	  && ! sh_insns_conflict (prev_insn, prev_op, insn, op))
+      if ((i > start)
+	  && ((*plabel >= label_end) || (**plabel != i))
+	  && (prev_op != NULL)
+	  && ((prev_op->flags & (LOAD | STORE)) == 0)
+	  && ! sh_insns_conflict(prev_insn, prev_op, insn, op))
 	{
 	  bfd_boolean ok;
 
@@ -2424,19 +2377,19 @@ _bfd_sh_align_load_span (abfd, sec, contents, swap, relocs,
 
 	  ok = TRUE;
 
-	  if (i >= start + 4)
+	  if (i >= (start + 4))
 	    {
 	      unsigned int prev2_insn;
 	      const struct sh_opcode *prev2_op;
 
-	      prev2_insn = bfd_get_16 (abfd, contents + i - 4);
-	      prev2_op = sh_insn_info (prev2_insn);
+	      prev2_insn = bfd_get_16(abfd, (contents + i - 4UL));
+	      prev2_op = sh_insn_info(prev2_insn);
 
 	      /* If the instruction before PREV_INSN has a delay
 		 slot--that is, PREV_INSN is in a delay slot--we
 		 can not swap.  */
-	      if (prev2_op == NULL
-		  || (prev2_op->flags & DELAY) != 0)
+	      if ((prev2_op == NULL)
+		  || ((prev2_op->flags & DELAY) != 0))
 		ok = FALSE;
 
 	      /* If the instruction before PREV_INSN is a load,
@@ -2445,36 +2398,36 @@ _bfd_sh_align_load_span (abfd, sec, contents, swap, relocs,
 		 cause a pipeline bubble, so there is no point to
 		 making the swap.  */
 	      if (ok
-		  && (prev2_op->flags & LOAD) != 0
-		  && sh_load_use (prev2_insn, prev2_op, insn, op))
+		  && ((prev2_op->flags & LOAD) != 0)
+		  && sh_load_use(prev2_insn, prev2_op, insn, op))
 		ok = FALSE;
 	    }
 
 	  if (ok)
 	    {
-	      if (! (*swap) (abfd, sec, relocs, contents, i - 2))
+	      if (!(*swap)(abfd, sec, relocs, contents, (i - 2UL)))
 		return FALSE;
 	      *pswapped = TRUE;
 	      continue;
 	    }
 	}
 
-      while (*plabel < label_end && **plabel < i + 2)
+      while ((*plabel < label_end) && (**plabel < (i + 2UL)))
 	++*plabel;
 
-      if (i + 2 < stop
-	  && (*plabel >= label_end || **plabel != i + 2))
+      if (((i + 2UL) < stop)
+	  && ((*plabel >= label_end) || (**plabel != (i + 2UL))))
 	{
 	  unsigned int next_insn;
 	  const struct sh_opcode *next_op;
 
 	  /* There is an instruction after the load/store
 	     instruction, and it does not have a label.  */
-	  next_insn = bfd_get_16 (abfd, contents + i + 2);
-	  next_op = sh_insn_info (next_insn);
-	  if (next_op != NULL
-	      && (next_op->flags & (LOAD | STORE)) == 0
-	      && ! sh_insns_conflict (insn, op, next_insn, next_op))
+	  next_insn = bfd_get_16(abfd, (contents + i + 2UL));
+	  next_op = sh_insn_info(next_insn);
+	  if ((next_op != NULL)
+	      && ((next_op->flags & (LOAD | STORE)) == 0)
+	      && ! sh_insns_conflict(insn, op, next_insn, next_op))
 	    {
 	      bfd_boolean ok;
 
@@ -2486,10 +2439,10 @@ _bfd_sh_align_load_span (abfd, sec, contents, swap, relocs,
 	      /* If PREV_INSN is a load, and it sets a register
 		 which NEXT_INSN uses, then putting NEXT_INSN
 		 immediately after PREV_INSN will cause a pipeline
-		 bubble, so there is no reason to make this swap.  */
-	      if (prev_op != NULL
-		  && (prev_op->flags & LOAD) != 0
-		  && sh_load_use (prev_insn, prev_op, next_insn, next_op))
+		 bubble, so there is no reason to make this swap: */
+	      if ((prev_op != NULL)
+		  && ((prev_op->flags & LOAD) != 0)
+		  && sh_load_use(prev_insn, prev_op, next_insn, next_op))
 		ok = FALSE;
 
 	      /* If INSN is a load, and it sets a register which
@@ -2500,24 +2453,24 @@ _bfd_sh_align_load_span (abfd, sec, contents, swap, relocs,
 		 instruction, then it is misaligned, so
 		 optimistically hope that it will be swapped
 		 itself, and just live with the pipeline bubble if
-		 it isn't.  */
+		 it is NOT.  */
 	      if (ok
-		  && i + 4 < stop
-		  && (op->flags & LOAD) != 0)
+		  && ((i + 4UL) < stop)
+		  && ((op->flags & LOAD) != 0))
 		{
 		  unsigned int next2_insn;
 		  const struct sh_opcode *next2_op;
 
-		  next2_insn = bfd_get_16 (abfd, contents + i + 4);
-		  next2_op = sh_insn_info (next2_insn);
-		  if ((next2_op->flags & (LOAD | STORE)) == 0
-		      && sh_load_use (insn, op, next2_insn, next2_op))
+		  next2_insn = bfd_get_16(abfd, (contents + i + 4UL));
+		  next2_op = sh_insn_info(next2_insn);
+		  if (((next2_op->flags & (LOAD | STORE)) == 0)
+		      && sh_load_use(insn, op, next2_insn, next2_op))
 		    ok = FALSE;
 		}
 
 	      if (ok)
 		{
-		  if (! (*swap) (abfd, sec, relocs, contents, i))
+		  if (!(*swap)(abfd, sec, relocs, contents, i))
 		    return FALSE;
 		  *pswapped = TRUE;
 		  continue;
@@ -2525,23 +2478,19 @@ _bfd_sh_align_load_span (abfd, sec, contents, swap, relocs,
 	    }
 	}
     }
+  /* end for-loop */
 
   return TRUE;
 }
 #endif /* not COFF_IMAGE_WITH_PE */
 
-/* Look for loads and stores which we can align to four byte
-   boundaries.  See the longer comment above sh_relax_section for why
-   this is desirable.  This sets *PSWAPPED if some instruction was
-   swapped.  */
-
+/* Look for loads and stores which we can align to four byte boundaries.
+ * See the longer comment above sh_relax_section for why this is desirable.
+ * This sets *PSWAPPED if some instruction was swapped: */
 static bfd_boolean
-sh_align_loads (abfd, sec, internal_relocs, contents, pswapped)
-     bfd *abfd;
-     asection *sec;
-     struct internal_reloc *internal_relocs;
-     bfd_byte *contents;
-     bfd_boolean *pswapped;
+sh_align_loads(bfd *abfd, asection *sec,
+               struct internal_reloc *internal_relocs, bfd_byte *contents,
+               bfd_boolean *pswapped)
 {
   struct internal_reloc *irel, *irelend;
   bfd_vma *labels = NULL;
@@ -2606,17 +2555,12 @@ sh_align_loads (abfd, sec, internal_relocs, contents, pswapped)
   return FALSE;
 }
 
-/* Swap two SH instructions.  */
-
+/* Swap two SH instructions: */
 static bfd_boolean
-sh_swap_insns (abfd, sec, relocs, contents, addr)
-     bfd *abfd;
-     asection *sec;
-     PTR relocs;
-     bfd_byte *contents;
-     bfd_vma addr;
+sh_swap_insns(bfd *abfd, asection *sec, PTR relocs, bfd_byte *contents,
+              bfd_vma addr)
 {
-  struct internal_reloc *internal_relocs = (struct internal_reloc *) relocs;
+  struct internal_reloc *internal_relocs = (struct internal_reloc *)relocs;
   unsigned short i1, i2;
   struct internal_reloc *irel, *irelend;
 
@@ -2739,19 +2683,13 @@ sh_swap_insns (abfd, sec, relocs, contents, addr)
 }
 
 /* This is a modification of _bfd_coff_generic_relocate_section, which
-   will handle SH relaxing.  */
-
+ * will handle SH relaxing: */
 static bfd_boolean
-sh_relocate_section (output_bfd, info, input_bfd, input_section, contents,
-		     relocs, syms, sections)
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     struct internal_reloc *relocs;
-     struct internal_syment *syms;
-     asection **sections;
+sh_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
+                    struct bfd_link_info *info, bfd *input_bfd,
+                    asection *input_section, bfd_byte *contents,
+                    struct internal_reloc *relocs,
+                    struct internal_syment *syms, asection **sections)
 {
   struct internal_reloc *rel;
   struct internal_reloc *relend;
@@ -2889,20 +2827,21 @@ sh_relocate_section (output_bfd, info, input_bfd, input_section, contents,
 	      name = "*ABS*";
 	    else if (h != NULL)
 	      name = NULL;
-	    else if (sym->_n._n_n._n_zeroes == 0
-		     && sym->_n._n_n._n_offset != 0)
-	      name = obj_coff_strings (input_bfd) + sym->_n._n_n._n_offset;
+	    else if ((sym->_n._n_n._n_zeroes == 0)
+		     && (sym->_n._n_n._n_offset != 0))
+	      name = (obj_coff_strings(input_bfd)
+                      + sym->_n._n_n._n_offset);
 	    else
 	      {
- 		strncpy (buf, sym->_n._n_name, SYMNMLEN);
+ 		strncpy(buf, sym->_n._n_name, (size_t)SYMNMLEN);
 		buf[SYMNMLEN] = '\0';
 		name = buf;
 	      }
 
-	    if (! ((*info->callbacks->reloc_overflow)
-		   (info, (h ? &h->root : NULL), name, howto->name,
-		    (bfd_vma) 0, input_bfd, input_section,
-		    rel->r_vaddr - input_section->vma)))
+	    if (!((*info->callbacks->reloc_overflow)
+		  (info, (h ? &h->root : NULL), name, howto->name,
+		   (bfd_vma)0UL, input_bfd, input_section,
+		   (rel->r_vaddr - input_section->vma))))
 	      return FALSE;
 	  }
 	}
@@ -2915,14 +2854,12 @@ sh_relocate_section (output_bfd, info, input_bfd, input_section, contents,
    which uses sh_relocate_section.  */
 
 static bfd_byte *
-sh_coff_get_relocated_section_contents (output_bfd, link_info, link_order,
-					data, relocatable, symbols)
-     bfd *output_bfd;
-     struct bfd_link_info *link_info;
-     struct bfd_link_order *link_order;
-     bfd_byte *data;
-     bfd_boolean relocatable;
-     asymbol **symbols;
+sh_coff_get_relocated_section_contents(bfd *output_bfd,
+                                       struct bfd_link_info *link_info,
+                                       struct bfd_link_order *link_order,
+                                       bfd_byte *data,
+                                       bfd_boolean relocatable,
+                                       asymbol **symbols)
 {
   asection *input_section = link_order->u.indirect.section;
   bfd *input_bfd = input_section->owner;
@@ -3039,15 +2976,15 @@ CREATE_BIG_COFF_TARGET_VEC (shcoff_vec, "coff-sh", BFD_IS_RELAXABLE, 0, '_', NUL
 
 #ifdef COFF_WITH_PE
 CREATE_LITTLE_COFF_TARGET_VEC (TARGET_SYM, TARGET_SHL_NAME, BFD_IS_RELAXABLE,
-			       SEC_CODE | SEC_DATA, '_', NULL, COFF_SWAP_TABLE);
+			       SEC_CODE | SEC_DATA, '_', NULL, COFF_SWAP_TABLE)
 #else
 CREATE_LITTLE_COFF_TARGET_VEC (TARGET_SYM, TARGET_SHL_NAME, BFD_IS_RELAXABLE,
 			       0, '_', NULL, COFF_SWAP_TABLE)
 #endif
 
 #ifndef TARGET_SHL_SYM
-static const bfd_target * coff_small_object_p PARAMS ((bfd *));
-static bfd_boolean coff_small_new_section_hook PARAMS ((bfd *, asection *));
+static const bfd_target * coff_small_object_p PARAMS((bfd *));
+static bfd_boolean coff_small_new_section_hook PARAMS((bfd *, asection *));
 /* Some people want versions of the SH COFF target which do not align
    to 16 byte boundaries.  We implement that by adding a couple of new
    target vectors.  These are just like the ones above, but they
@@ -3060,32 +2997,27 @@ static bfd_boolean coff_small_new_section_hook PARAMS ((bfd *, asection *));
    correctly.  */
 
 /* Only recognize the small versions if the target was not defaulted.
-   Otherwise we won't recognize the non default endianness.  */
-
+ * Otherwise we will NOT recognize the non-default endianness: */
 static const bfd_target *
-coff_small_object_p (abfd)
-     bfd *abfd;
+coff_small_object_p(bfd *abfd)
 {
   if (abfd->target_defaulted)
     {
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return NULL;
     }
-  return coff_object_p (abfd);
+  return coff_object_p(abfd);
 }
 
-/* Set the section alignment for the small versions.  */
-
+/* Set the section alignment for the small versions: */
 static bfd_boolean
-coff_small_new_section_hook (abfd, section)
-     bfd *abfd;
-     asection *section;
+coff_small_new_section_hook(bfd *abfd, asection *section)
 {
-  if (! coff_new_section_hook (abfd, section))
+  if (! coff_new_section_hook(abfd, section))
     return FALSE;
 
   /* We must align to at least a four byte boundary, because longword
-     accesses must be on a four byte boundary.  */
+   * accesses must be on a four byte boundary: */
   if (section->alignment_power == COFF_DEFAULT_SECTION_ALIGNMENT_POWER)
     section->alignment_power = 2;
 
@@ -3093,8 +3025,7 @@ coff_small_new_section_hook (abfd, section)
 }
 
 /* This is copied from bfd_coff_std_swap_table so that we can change
-   the default section alignment power.  */
-
+ * the default section alignment power: */
 static const bfd_coff_backend_data bfd_coff_small_swap_table =
 {
   coff_swap_aux_in, coff_swap_sym_in, coff_swap_lineno_in,
@@ -3144,11 +3075,21 @@ static const bfd_coff_backend_data bfd_coff_small_swap_table =
 #define coff_small_get_section_contents_in_window \
   coff_get_section_contents_in_window
 
+#ifndef coff_get_section_contents_in_window_with_mode
+# define coff_get_section_contents_in_window_with_mode \
+   _bfd_generic_get_section_contents_in_window_with_mode
+#endif /* !coff_get_section_contents_in_window_with_mode */
+
+#if !defined(coff_small_get_section_contents_in_window_with_mode) && defined(coff_get_section_contents_in_window_with_mode)
+# define coff_small_get_section_contents_in_window_with_mode \
+   coff_get_section_contents_in_window_with_mode
+#endif /* !coff_small_get_section_contents_in_window && coff_get_section_contents_in_window_with_mode */
+
 extern const bfd_target shlcoff_small_vec;
 
 const bfd_target shcoff_small_vec =
 {
-  "coff-sh-small",		/* name */
+  (char *)"coff-sh-small",		/* name */
   bfd_target_coff_flavour,
   BFD_ENDIAN_BIG,		/* data byte order is big */
   BFD_ENDIAN_BIG,		/* header byte order is big */
@@ -3234,3 +3175,5 @@ const bfd_target shlcoff_small_vec =
   (PTR) &bfd_coff_small_swap_table
 };
 #endif
+
+/* EOF */

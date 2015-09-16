@@ -1,4 +1,5 @@
-/* Copyright 1996, 2000 Free Software Foundation, Inc.
+/* tm-vr5000el.h
+   Copyright 1996, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
 
@@ -18,3 +19,5 @@
    Boston, MA 02111-1307, USA.  */
 
 #include "mips/tm-mips64.h"
+
+/* EOF */

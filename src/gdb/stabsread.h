@@ -1,4 +1,4 @@
-/* Include file for stabs debugging format support functions.
+/* stabsread.h: Include file for stabs debugging format support functions.
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
    1996, 1997, 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
@@ -174,26 +174,39 @@ struct stab_section_list
 /* Functions exported by dbxread.c.  These are not in stabsread.c because
    they are only used by some stabs readers.  */
 
-extern struct partial_symtab *end_psymtab (struct partial_symtab *pst,
-					   char **include_list,
-					   int num_includes,
-					   int capping_symbol_offset,
-					   CORE_ADDR capping_text,
-					   struct partial_symtab
-					   **dependency_list,
-					   int number_dependencies,
-					   int textlow_not_set);
+extern struct oso_pst_list *init_oso_pst_list(char *oso_name,
+                                              struct objfile *objfile);
+
+extern void add_oso_pst_to_list(struct oso_pst_list *list,
+                                struct partial_symtab *pst,
+                                struct objfile *objfile);
+
+extern void end_oso_pst_list(struct oso_pst_list *list,
+                             struct objfile *objfile);
+
+extern int parse_archive_name(char *oso_name, char **archive_name,
+                              char **module_name);
+
+extern struct partial_symtab *end_psymtab(struct partial_symtab *pst,
+					  char **include_list,
+					  int num_includes,
+					  int capping_symbol_offset,
+					  CORE_ADDR capping_text,
+					  struct partial_symtab
+					  **dependency_list,
+					  int number_dependencies,
+					  int textlow_not_set);
 
 extern void
 /* APPLE LOCAL symbol prefixes */
-process_one_symbol (int, int, CORE_ADDR, char *, const char *,
-		    struct section_offsets *, struct objfile *);
+process_one_symbol(int, int, CORE_ADDR, char *, const char *,
+		   struct section_offsets *, struct objfile *);
 
-extern void elfstab_build_psymtabs (struct objfile *objfile,
-				    int mainline,
-				    asection *stabsect,
-				    file_ptr stabstroffset,
-				    unsigned int stabstrsize);
+extern void elfstab_build_psymtabs(struct objfile *objfile,
+				   int mainline,
+				   asection *stabsect,
+				   file_ptr stabstroffset,
+				   unsigned int stabstrsize);
 
 extern void coffstab_build_psymtabs
   (struct objfile *objfile,
@@ -206,19 +219,21 @@ extern void stabsect_build_psymtabs
   (struct objfile *objfile,
    int mainline, char *stab_name, char *stabstr_name, char *text_name);
 
-extern void elfstab_offset_sections (struct objfile *,
-				     struct partial_symtab *);
-extern int symbol_reference_defined (char **);
+extern void elfstab_offset_sections(struct objfile *,
+				    struct partial_symtab *);
+extern int symbol_reference_defined(char **);
 
-extern void ref_add (int, struct symbol *, char *, CORE_ADDR);
+extern void ref_add(int, struct symbol *, char *, CORE_ADDR);
 
-extern struct symbol *ref_search (int);
+extern struct symbol *ref_search(int);
 
-extern void free_header_files (void);
+extern void free_header_files(void);
 
-extern void init_header_files (void);
+extern void init_header_files(void);
 
 /* APPLE LOCAL make globally visible */
-extern char *find_name_end (char *name);
+extern char *find_name_end(char *name);
 
 #undef EXTERN
+
+/* EOF */

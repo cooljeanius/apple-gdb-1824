@@ -1,4 +1,5 @@
-/* Host-dependent definitions for Motorola 680x0 running LynxOS, for GDB.
+/* xm-m68klynx.h
+   Host-dependent definitions for Motorola 680x0 running LynxOS, for GDB.
    Copyright 1993 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -23,3 +24,5 @@
 /* Get generic LynxOS host definitions. */
 
 #include "xm-lynx.h"
+
+/* EOF */

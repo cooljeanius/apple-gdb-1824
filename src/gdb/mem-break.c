@@ -46,7 +46,7 @@ int last_bkpt_index = -1;
 /* Insert a breakpoint on targets that don't have any better breakpoint
    support.  We read the contents of the target location and stash it,
    then overwrite it with a breakpoint instruction.  ADDR is the target
-   location in the target machine.  CONTENTS_CACHE is a pointer to 
+   location in the target machine.  CONTENTS_CACHE is a pointer to
    memory allocated for saving the target contents.  It is guaranteed
    by the caller to be long enough to save BREAKPOINT_LEN bytes (this
    is accomplished via BREAKPOINT_MAX).  */
@@ -57,34 +57,35 @@ default_memory_insert_breakpoint (CORE_ADDR addr, bfd_byte *contents_cache)
   int val;
   const unsigned char *bp;
   int bplen;
-  /* APPLE LOCAL: Override trust-readonly-sections.  */
+  /* APPLE LOCAL: Override trust-readonly-sections: */
   int old_readonly;
   struct cleanup *reset_trust_readonly;
   /* END APPLE LOCAL */
 
-  /* Determine appropriate breakpoint contents and size for this address.  */
-  bp = BREAKPOINT_FROM_PC (&addr, &bplen);
+  /* Determine appropriate breakpoint contents and size for this addr: */
+  bp = BREAKPOINT_FROM_PC(&addr, &bplen);
   if (bp == NULL)
-    error (_("Software breakpoints not implemented for this target."));
+    error(_("Software breakpoints not implemented for this target."));
 
   /* APPLE LOCAL: For breakpoints we should override the trust_readonly setting.  */
-  old_readonly = set_trust_readonly (0);
-  reset_trust_readonly = make_cleanup (set_trust_readonly_cleanup, (void *) old_readonly);
+  old_readonly = set_trust_readonly(0);
+  reset_trust_readonly = make_cleanup(set_trust_readonly_cleanup,
+                                      (void *)(intptr_t)old_readonly);
   /* END APPLE LOCAL */
-  /* Save the memory contents.  */
-  val = target_read_memory (addr, contents_cache, bplen);
+  /* Save the memory contents: */
+  val = target_read_memory(addr, contents_cache, bplen);
 
-  /* Write the breakpoint.  */
+  /* Write the breakpoint: */
   if (val == 0)
-    val = target_write_memory (addr, bp, bplen);
+    val = target_write_memory(addr, bp, bplen);
 
-  do_cleanups (reset_trust_readonly);
+  do_cleanups(reset_trust_readonly);
   return val;
 }
 
 
 int
-default_memory_remove_breakpoint (CORE_ADDR addr, bfd_byte *contents_cache)
+default_memory_remove_breakpoint(CORE_ADDR addr, bfd_byte *contents_cache)
 {
   const bfd_byte *bp;
   int bplen;
@@ -95,29 +96,30 @@ default_memory_remove_breakpoint (CORE_ADDR addr, bfd_byte *contents_cache)
   struct cleanup *reset_trust_readonly;
   /* END APPLE LOCAL */
 
-  /* Determine appropriate breakpoint contents and size for this address.  */
-  bp = BREAKPOINT_FROM_PC (&addr, &bplen);
+  /* Determine appropriate breakpoint contents and size for this addr: */
+  bp = BREAKPOINT_FROM_PC(&addr, &bplen);
   if (bp == NULL)
-    error (_("Software breakpoints not implemented for this target."));
+    error(_("Software breakpoints not implemented for this target."));
 
   /* APPLE LOCAL: If a program has self modifying code, it might have
      overwritten our trap between the time we last inserted it and
      now.  So if the current contents is not our trap, let's use what
      got written there as the contents_cache..  */
-  /* ALSO, we have to unset trust_readonly if it's set, because for 
+  /* ALSO, we have to unset trust_readonly if it's set, because for
      this we're counting on getting the value we wrote there.  */
 
-  old_readonly = set_trust_readonly (0);
-  reset_trust_readonly = make_cleanup (set_trust_readonly_cleanup, (void *) old_readonly);
-  val = target_read_memory (addr, cur_contents, bplen);
-  
+  old_readonly = set_trust_readonly(0);
+  reset_trust_readonly = make_cleanup(set_trust_readonly_cleanup,
+                                      (void *)(intptr_t)old_readonly);
+  val = target_read_memory(addr, cur_contents, bplen);
+
   /* I don't know why we wouldn't be able to read the memory where we
      plan to re-insert to old code, but if we can't we aren't going
      to write it either, most likely...  */
 
   if (val != 0)
     goto cleanup;
-  
+
   if (memcmp (cur_contents, bp, bplen) != 0)
     {
       memcpy (contents_cache, cur_contents, bplen);
@@ -134,7 +136,7 @@ default_memory_remove_breakpoint (CORE_ADDR addr, bfd_byte *contents_cache)
 	  recent_breakpoints[last_bkpt_index] = addr;
 	}
     }
-  
+
  cleanup:
   do_cleanups(reset_trust_readonly);
   return val;
@@ -160,13 +162,13 @@ address_contained_breakpoint_trap (CORE_ADDR addr)
 }
 
 int
-memory_insert_breakpoint (CORE_ADDR addr, bfd_byte *contents_cache)
+memory_insert_breakpoint(CORE_ADDR addr, bfd_byte *contents_cache)
 {
   return MEMORY_INSERT_BREAKPOINT(addr, contents_cache);
 }
 
 int
-memory_remove_breakpoint (CORE_ADDR addr, bfd_byte *contents_cache)
+memory_remove_breakpoint(CORE_ADDR addr, bfd_byte *contents_cache)
 {
   return MEMORY_REMOVE_BREAKPOINT(addr, contents_cache);
 }

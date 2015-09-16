@@ -32,8 +32,8 @@
 #include <sys/file.h>
 #include <sys/kernel.h>
 #ifndef __LYNXOS
-#define __LYNXOS
-#endif
+# define __LYNXOS
+#endif /* !__LYNXOS */
 #include <sys/itimer.h>
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -51,7 +51,7 @@ char *registers = my_registers;
 #include <sys/ptrace.h>
 
 /* Start an inferior process and returns its pid.
-   ALLARGS is a vector of program-name and args. */
+ * ALLARGS is a vector of program-name and args. */
 
 int
 create_inferior (char *program, char **allargs)
@@ -66,8 +66,9 @@ create_inferior (char *program, char **allargs)
     {
       int pgrp;
 
-      /* Switch child to it's own process group so that signals won't
-         directly affect gdbserver. */
+      /* Switch child to its own process group so that signals will NOT
+       * directly affect gdbserver.
+	   */
 
       pgrp = getpid ();
       setpgrp (0, pgrp);
@@ -111,15 +112,16 @@ kill_inferior (void)
 int
 mythread_alive (int pid)
 {
-  /* Arggh.  Apparently pthread_kill only works for threads within
-     the process that calls pthread_kill.
-
-     We want to avoid the lynx signal extensions as they simply don't
-     map well to the generic gdb interface we want to keep.
-
-     All we want to do is determine if a particular thread is alive;
-     it appears as if we can just make a harmless thread specific
-     ptrace call to do that.  */
+  /* Arggh. Apparently pthread_kill only works for threads within
+   * the process that calls pthread_kill.
+   *
+   * We want to avoid the lynx signal extensions as they simply do NOT
+   * map well to the generic gdb interface we want to keep.
+   *
+   * All we want to do is determine if a particular thread is alive;
+   * it appears as if we can just make a harmless thread specific
+   * ptrace call to do that.
+   */
   return (ptrace (PTRACE_THREADUSER,
 		  BUILDPID (PIDGET (inferior_pid), pid), 0, 0) != -1);
 }
@@ -156,12 +158,13 @@ mywait (char *status)
 
 	  if (realsig == SIGNEWTHREAD)
 	    {
-	      /* It's a new thread notification.  Nothing to do here since
-	         the machine independent code in wait_for_inferior will
-	         add the thread to the thread list and restart the thread
-	         when pid != inferior_pid and pid is not in the thread list.
-	         We don't even want to muck with realsig -- the code in
-	         wait_for_inferior expects SIGTRAP.  */
+	      /* It is a new thread notification. Nothing to do here since
+	       * the machine independent code in wait_for_inferior will
+	       * add the thread to the thread list and restart the thread
+	       * when pid != inferior_pid and pid is not in the thread list.
+	       * We do NOT even want to muck with realsig -- the code in
+	       * wait_for_inferior expects SIGTRAP.
+		   */
 	      ;
 	    }
 	}
@@ -186,8 +189,8 @@ mywait (char *status)
 }
 
 /* Resume execution of the inferior process.
-   If STEP is nonzero, single-step it.
-   If SIGNAL is nonzero, give it that signal.  */
+ * If STEP is nonzero, single-step it.
+ * If SIGNAL is nonzero, give it that signal.  */
 
 void
 myresume (int step, int signal)
@@ -227,11 +230,11 @@ static int regmap[] =
   X (ss),
   X (ds),
   X (es),
-  X (ecode),			/* Lynx doesn't give us either fs or gs, so */
+  X (ecode),			/* Lynx does NOT give us either fs or gs, so */
   X (fault),			/* we just substitute these two in the hopes
-				   that they are useful. */
+				         * that they are useful. */
 };
-#endif
+#endif /* I386 */
 
 #ifdef M68K
 /* Mappings from tm-m68k.h */
@@ -272,7 +275,7 @@ static int regmap[] =
   X (ssw),			/* fpcode */
   X (fault),			/* fpflags */
 };
-#endif
+#endif /* M68K */
 
 #ifdef SPARC
 /* Mappings from tm-sparc.h */
@@ -286,7 +289,7 @@ static int regmap[] =
   X (g2),
   X (g3),
   X (g4),
-  -1,				/* g5->g7 aren't saved by Lynx */
+  -1,				/* g5->g7 are NOT saved by Lynx */
   -1,
   -1,
 
@@ -345,13 +348,14 @@ static int regmap[] =
   FX (fsr),			/* fpsr */
   -1,				/* cpsr */
 };
-#endif
+#endif /* SPARC */
 
 #ifdef SPARC
 
 /* This routine handles some oddball cases for Sparc registers and LynxOS.
-   In partucular, it causes refs to G0, g5->7, and all fp regs to return zero.
-   It also handles knows where to find the I & L regs on the stack.  */
+ * In partucular, it causes refs to G0, g5->7, and all fp regs to return zero.
+ * It also handles knows where to find the I & L regs on the stack.
+ */
 
 void
 fetch_inferior_registers (int regno)
@@ -359,9 +363,9 @@ fetch_inferior_registers (int regno)
 #if 0
   int whatregs = 0;
 
-#define WHATREGS_FLOAT 1
-#define WHATREGS_GEN 2
-#define WHATREGS_STACK 4
+# define WHATREGS_FLOAT 1
+# define WHATREGS_GEN 2
+# define WHATREGS_STACK 4
 
   if (regno == -1)
     whatregs = WHATREGS_FLOAT | WHATREGS_GEN | WHATREGS_STACK;
@@ -447,14 +451,14 @@ fetch_inferior_registers (int regno)
 
       supply_register (FPS_REGNUM, (char *) &fc.fsr);
     }
-#endif
+#endif /* 0 */
 }
 
-/* This routine handles storing of the I & L regs for the Sparc.  The trick
-   here is that they actually live on the stack.  The really tricky part is
+/* This routine handles storing of the I & L regs for the Sparc. The trick
+   here is that they actually live on the stack. The really tricky part is
    that when changing the stack pointer, the I & L regs must be written to
    where the new SP points, otherwise the regs will be incorrect when the
-   process is started up again.   We assume that the I & L regs are valid at
+   process is started up again. We assume that the I & L regs are valid at
    this point.  */
 
 void
@@ -556,7 +560,7 @@ store_inferior_registers (int regno)
       if (errno)
 	perror_with_name ("Sparc fetch_inferior_registers(ptrace)");
     }
-#endif
+#endif /* 0 */
 }
 #endif /* SPARC */
 
@@ -586,9 +590,9 @@ lynx_registers_addr (void)
   return ecp - stblock;
 }
 
-/* Fetch one or more registers from the inferior.  REGNO == -1 to get
-   them all.  We actually fetch more than requested, when convenient,
-   marking them as valid so we won't fetch them again.  */
+/* Fetch one or more registers from the inferior. REGNO == -1 to get
+ * them all. We actually fetch more than requested, when convenient,
+ * marking them as valid so we will NOT fetch them again.  */
 
 void
 fetch_inferior_registers (int ignored)
@@ -605,7 +609,7 @@ fetch_inferior_registers (int ignored)
 
 #ifdef PTRACE_PEEKUSP
       ptrace_fun = regno == SP_REGNUM ? PTRACE_PEEKUSP : PTRACE_PEEKTHREAD;
-#endif
+#endif /* PTRACE_PEEKUSP */
 
       errno = 0;
       reg = ptrace (ptrace_fun, BUILDPID (inferior_pid, general_thread),
@@ -618,8 +622,9 @@ fetch_inferior_registers (int ignored)
 }
 
 /* Store our register values back into the inferior.
-   If REGNO is -1, do this for all registers.
-   Otherwise, REGNO specifies which register (so we can save time).  */
+ * If REGNO is -1, do this for all registers.
+ * Otherwise, REGNO specifies which register (so we can save time).
+ */
 
 void
 store_inferior_registers (int ignored)
@@ -636,7 +641,7 @@ store_inferior_registers (int ignored)
 
 #ifdef PTRACE_POKEUSP
       ptrace_fun = regno == SP_REGNUM ? PTRACE_POKEUSP : PTRACE_POKEUSER;
-#endif
+#endif /* PTRACE_PEEKUSP */
 
       reg = *(unsigned long *) &registers[REGISTER_BYTE (regno)];
 
@@ -652,12 +657,13 @@ store_inferior_registers (int ignored)
 
 /* NOTE! I tried using PTRACE_READDATA, etc., to read and write memory
    in the NEW_SUN_PTRACE case.
-   It ought to be straightforward.  But it appears that writing did
-   not write the data that I specified.  I cannot understand where
+   It ought to be straightforward. But it appears that writing did
+   not write the data that I specified. I cannot understand where
    it got the data that it actually did write.  */
 
 /* Copy LEN bytes from inferior's memory starting at MEMADDR
-   to debugger memory starting at MYADDR.  */
+ * to debugger memory starting at MYADDR.
+ */
 
 void
 read_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
@@ -682,9 +688,9 @@ read_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
 }
 
 /* Copy LEN bytes of data from debugger memory at MYADDR
-   to inferior's memory at MEMADDR.
-   On failure (cannot write the inferior)
-   returns the value of errno.  */
+ * to inferior's memory at MEMADDR.
+ * On failure (cannot write the inferior)
+ * returns the value of errno.  */
 
 int
 write_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)

@@ -1,6 +1,6 @@
-/* 
+/* devices.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -80,7 +80,7 @@ typedef enum DeviceControl {
   DC_GET_USER_PARAMS,           /* params set by user at open    */
   DC_GET_DEFAULT_PARAMS,        /* device default parameters     */
   DC_RESYNC,                    /* resynchronise with new agent  */
-#endif
+#endif /* !TARGET */
   DC_PRIVATE                    /* start of private device codes */
 } DeviceControl;
 

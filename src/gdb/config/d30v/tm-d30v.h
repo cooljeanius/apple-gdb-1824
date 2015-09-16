@@ -1,4 +1,5 @@
-/* Target-specific definition for the Mitsubishi D30V
+/* tm-d30v.h
+   Target-specific definition for the Mitsubishi D30V
    Copyright 1997, 1998, 1999, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.

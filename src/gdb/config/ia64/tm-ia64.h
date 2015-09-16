@@ -1,4 +1,5 @@
-/* Definitions to target GDB to GNU/Linux on an ia64 architecture.
+/* tm-ia64.h
+   Definitions to target GDB to GNU/Linux on an ia64 architecture.
    Copyright 1992, 1993, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.

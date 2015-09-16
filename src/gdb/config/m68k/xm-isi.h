@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on an ISI Optimum V (3.05) under 4.3bsd.
+/* xm-isi.h
+   Definitions to make GDB run on an ISI Optimum V (3.05) under 4.3bsd.
    Copyright 1987, 1989, 1992 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -26,7 +27,7 @@
 /* This is the amount to subtract from u.u_ar0
    to get the offset in the core file of the register values.  */
 
-/*#define KERNEL_U_ADDR 0x10800000 */
+#define KERNEL_U_ADDR_COMMENTED_OUT_VERSION 0x10800000
 #define KERNEL_U_ADDR 0
 
 /* expects blockend to be u.u_ar0 */
@@ -39,7 +40,7 @@ extern int rloc[];		/* Defined in isi-dep.c */
         else if (regno < 29) addr = (int) &((struct user *)0)->u_68881_regs \
             + 8 * 12 + (regno - 26) * 4;                        \
 }
-
+
 /* Interface definitions for kernel debugger KDB.  */
 
 /* Map machine fault codes into signal numbers.
@@ -91,3 +92,5 @@ extern int rloc[];		/* Defined in isi-dep.c */
 { asm ("subil $8,28(sp)");     \
   asm ("movem (sp),$ 0xffff"); \
   asm ("rte"); }
+
+/* EOF */

@@ -25,9 +25,9 @@ Boston, MA 02110-1301, USA.  */
 /* Get a definition for NULL.  */
 #include <stdio.h>
 
-#if VMS
-#include <stdlib.h>
-#include <unixlib.h>
+#if defined(VMS) && VMS
+# include <stdlib.h>
+# include <unixlib.h>
 #else
 
 /* Get a definition for size_t.  */
@@ -156,22 +156,21 @@ _objalloc_alloc (struct objalloc *o, unsigned long len)
       chunk->current_ptr = NULL;
 
       o->current_ptr = (char *) chunk + CHUNK_HEADER_SIZE;
-      o->current_space = CHUNK_SIZE - CHUNK_HEADER_SIZE;
+      o->current_space = (CHUNK_SIZE - CHUNK_HEADER_SIZE);
 
-      o->chunks = (PTR) chunk;
+      o->chunks = (PTR)chunk;
 
-      return objalloc_alloc (o, len);
+      return objalloc_alloc(o, len);
     }
 }
 
-/* Free an entire objalloc structure.  */
-
+/* Free an entire objalloc structure: */
 void
-objalloc_free (struct objalloc *o)
+objalloc_free(struct objalloc *o)
 {
   struct objalloc_chunk *l;
 
-  l = (struct objalloc_chunk *) o->chunks;
+  l = (struct objalloc_chunk *)o->chunks;
   while (l != NULL)
     {
       struct objalloc_chunk *next;
@@ -188,32 +187,32 @@ objalloc_free (struct objalloc *o)
    recently allocated blocks.  */
 
 void
-objalloc_free_block (struct objalloc *o, PTR block)
+objalloc_free_block(struct objalloc *o, PTR block)
 {
   struct objalloc_chunk *p, *small;
-  char *b = (char *) block;
+  char *b = (char *)block;
 
   /* First set P to the chunk which contains the block we are freeing,
      and set Q to the last small object chunk we see before P.  */
   small = NULL;
-  for (p = (struct objalloc_chunk *) o->chunks; p != NULL; p = p->next)
+  for (p = (struct objalloc_chunk *)o->chunks; p != NULL; p = p->next)
     {
       if (p->current_ptr == NULL)
 	{
-	  if (b > (char *) p && b < (char *) p + CHUNK_SIZE)
+	  if (b > (char *)p && b < (char *)p + CHUNK_SIZE)
 	    break;
 	  small = p;
 	}
       else
 	{
-	  if (b == (char *) p + CHUNK_HEADER_SIZE)
+	  if (b == (char *)p + CHUNK_HEADER_SIZE)
 	    break;
 	}
     }
 
   /* If we can't find the chunk, the caller has made a mistake.  */
   if (p == NULL)
-    abort ();
+    abort();
 
   if (p->current_ptr == NULL)
     {
@@ -228,7 +227,7 @@ objalloc_free_block (struct objalloc *o, PTR block)
 	 can then reset the new current_ptr to B.  */
 
       first = NULL;
-      q = (struct objalloc_chunk *) o->chunks;
+      q = (struct objalloc_chunk *)o->chunks;
       while (q != p)
 	{
 	  struct objalloc_chunk *next;
@@ -238,10 +237,10 @@ objalloc_free_block (struct objalloc *o, PTR block)
 	    {
 	      if (small == q)
 		small = NULL;
-	      free (q);
+	      free(q);
 	    }
 	  else if (q->current_ptr > b)
-	    free (q);
+	    free(q);
 	  else if (first == NULL)
 	    first = q;
 
@@ -250,11 +249,11 @@ objalloc_free_block (struct objalloc *o, PTR block)
 
       if (first == NULL)
 	first = p;
-      o->chunks = (PTR) first;
+      o->chunks = (PTR)first;
 
-      /* Now start allocating from this small block again.  */
+      /* Now start allocating from this small block again: */
       o->current_ptr = b;
-      o->current_space = ((char *) p + CHUNK_SIZE) - b;
+      o->current_space = (unsigned long)(((char *)p + CHUNK_SIZE) - b);
     }
   else
     {
@@ -270,22 +269,25 @@ objalloc_free_block (struct objalloc *o, PTR block)
       current_ptr = p->current_ptr;
       p = p->next;
 
-      q = (struct objalloc_chunk *) o->chunks;
+      q = (struct objalloc_chunk *)o->chunks;
       while (q != p)
 	{
 	  struct objalloc_chunk *next;
 
 	  next = q->next;
-	  free (q);
+	  free(q);
 	  q = next;
 	}
 
-      o->chunks = (PTR) p;
+      o->chunks = (PTR)p;
 
       while (p->current_ptr != NULL)
 	p = p->next;
 
       o->current_ptr = current_ptr;
-      o->current_space = ((char *) p + CHUNK_SIZE) - current_ptr;
+      o->current_space = (unsigned long)(((char *)p + CHUNK_SIZE)
+                                         - current_ptr);
     }
 }
+
+/* EOF */

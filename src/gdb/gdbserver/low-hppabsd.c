@@ -1,4 +1,5 @@
-/* Low level interface to ptrace, for the remote server for GDB.
+/* low-hppabsd.c
+   Low level interface to ptrace, for the remote server for GDB.
    Copyright 1995, 1996, 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -129,8 +130,8 @@ mywait (char *status)
 }
 
 /* Resume execution of the inferior process.
-   If STEP is nonzero, single-step it.
-   If SIGNAL is nonzero, give it that signal.  */
+ * If STEP is nonzero, single-step it.
+ * If SIGNAL is nonzero, give it that signal.  */
 
 void
 myresume (int step, int signal)
@@ -143,8 +144,8 @@ myresume (int step, int signal)
 
 
 #if !defined (offsetof)
-#define offsetof(TYPE, MEMBER) ((unsigned long) &((TYPE *)0)->MEMBER)
-#endif
+# define offsetof(TYPE, MEMBER) ((unsigned long) &((TYPE *)0)->MEMBER)
+#endif /* !offsetof */
 
 /* U_REGS_OFFSET is the offset of the registers within the u area.  */
 #if !defined (U_REGS_OFFSET)
@@ -152,7 +153,7 @@ myresume (int step, int signal)
   ptrace (PT_READ_U, inferior_pid, \
           (PTRACE_ARG3_TYPE) (offsetof (struct user, u_ar0)), 0) \
     - KERNEL_U_ADDR
-#endif
+#endif /* !U_REGS_OFFSET */
 
 CORE_ADDR
 register_addr (int regno, CORE_ADDR blockend)
@@ -191,7 +192,7 @@ fetch_register (int regno)
       if (errno != 0)
 	{
 	  /* Warning, not error, in case we are attached; sometimes the
-	     kernel doesn't let us at the registers.  */
+	   * kernel does NOT let us at the registers.  */
 	  char *err = strerror (errno);
 	  char *msg = alloca (strlen (err) + 128);
 	  sprintf (msg, "reading register %d: %s", regno, err);
@@ -215,8 +216,8 @@ fetch_inferior_registers (int regno)
 }
 
 /* Store our register values back into the inferior.
-   If REGNO is -1, do this for all registers.
-   Otherwise, REGNO specifies which register (so we can save time).  */
+ * If REGNO is -1, do this for all registers.
+ * Otherwise, REGNO specifies which register (so we can save time).  */
 
 void
 store_inferior_registers (int regno)
@@ -241,8 +242,8 @@ store_inferior_registers (int regno)
 		  scratch, 0);
 	  if (errno != 0)
 	    {
-	      /* Error, even if attached.  Failing to write these two
-	         registers is pretty serious.  */
+	      /* Error, even if attached. Failing to write these two
+	       * registers is pretty serious.  */
 	      sprintf (buf, "writing register number %d", regno);
 	      perror_with_name (buf);
 	    }
@@ -256,7 +257,7 @@ store_inferior_registers (int regno)
 	    if (errno != 0)
 	      {
 		/* Warning, not error, in case we are attached; sometimes the
-		   kernel doesn't let us at the registers.  */
+		 * kernel does NOT let us at the registers.  */
 		char *err = strerror (errno);
 		char *msg = alloca (strlen (err) + 128);
 		sprintf (msg, "writing register %d: %s",
@@ -274,12 +275,12 @@ store_inferior_registers (int regno)
 
 /* NOTE! I tried using PTRACE_READDATA, etc., to read and write memory
    in the NEW_SUN_PTRACE case.
-   It ought to be straightforward.  But it appears that writing did
-   not write the data that I specified.  I cannot understand where
+   It ought to be straightforward. But it appears that writing did
+   not write the data that I specified. I cannot understand where
    it got the data that it actually did write.  */
 
 /* Copy LEN bytes from inferior's memory starting at MEMADDR
-   to debugger memory starting at MYADDR.  */
+ * to debugger memory starting at MYADDR.  */
 
 void
 read_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
@@ -304,9 +305,9 @@ read_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
 }
 
 /* Copy LEN bytes of data from debugger memory at MYADDR
-   to inferior's memory at MEMADDR.
-   On failure (cannot write the inferior)
-   returns the value of errno.  */
+ * to inferior's memory at MEMADDR.
+ * On failure (cannot write the inferior)
+ * returns the value of errno.  */
 
 int
 write_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
@@ -348,8 +349,10 @@ write_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
 
   return 0;
 }
-
+
 void
 initialize_low (void)
 {
 }
+
+/* EOF */

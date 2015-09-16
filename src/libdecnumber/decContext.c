@@ -36,6 +36,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #endif
 #include "dconfig.h"	      /* for GCC definitions */
 #include "decContext.h"       /* context and base types */
+#include "decNumber.h"        /* "decNumberLocal.h" will want DECDPUN to be defined. */
 #include "decNumberLocal.h"   /* decNumber local types, etc. */
 
 /* compile-time endian tester [assumes sizeof(Int)>1] */
@@ -400,7 +401,9 @@ Int decContextTestEndian(Flag quiet) {
 #if DECCHECK
       printf("Warning: DECLITEND is set to %d, but this computer appears to be %s-endian\n",
 	     DECLITEND, adj);
-#endif
+#else
+        (void)adj;
+#endif /* DECCHECK */
       }
     res=(Int)LITEND-dle;
     }

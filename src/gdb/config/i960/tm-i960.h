@@ -1,4 +1,5 @@
-/* Parameters for target machine Intel 960, for GDB, the GNU debugger.
+/* tm-i960.h
+   Parameters for target machine Intel 960, for GDB, the GNU debugger.
 
    Copyright 1990, 1991, 1993, 1994, 1996, 1998, 1999, 2000, 2002 Free
    Software Foundation, Inc.
@@ -24,8 +25,8 @@
 /* Definitions to target GDB to any i960.  */
 
 #ifndef I80960
-#define I80960
-#endif
+# define I80960
+#endif /* !I80960 */
 
 #include "doublest.h"
 
@@ -52,7 +53,7 @@
 extern CORE_ADDR i960_skip_prologue ();
 
 /* Immediately after a function call, return the saved ip.
-   Can't always go through the frames for this because on some machines
+   Cannot always go through the frames for this because on some machines
    the new frame is not set up until the new function
    executes some instructions.  */
 
@@ -317,18 +318,18 @@ void i960_pop_frame (void);
 	i960_pop_frame ()
 
 
-/* This sequence of words is the instructions
+/* This sequence of words is the instructions:
 
    callx 0x00000000
    fmark
  */
 
-/* #define CALL_DUMMY { 0x86003000, 0x00000000, 0x66003e00 } */
+#if 0
+# define CALL_DUMMY { 0x86003000, 0x00000000, 0x66003e00 }
+# define CALL_DUMMY_START_OFFSET 0 /* Start execution at beginning of dummy */
+#endif /* 0 */
 
-																			    /* #define CALL_DUMMY_START_OFFSET 0 *//* Start execution at beginning of dummy */
-
-/* Indicate that we do NOT support calling inferior child functions.  */
-
+/* Indicate that we do NOT support calling inferior child functions: */
 #undef CALL_DUMMY
 
 /* Insert the specified number of args and function address
@@ -336,7 +337,9 @@ void i960_pop_frame (void);
 
    Ignore arg count on i960.  */
 
-/* #define FIX_CALL_DUMMY(dummyname, fun, nargs) *(((int *)dummyname)+1) = fun */
+#if 0
+# define FIX_CALL_DUMMY(dummyname, fun, nargs) *(((int *)dummyname)+1) = fun
+#endif /* 0 */
 
 #undef FIX_CALL_DUMMY
 

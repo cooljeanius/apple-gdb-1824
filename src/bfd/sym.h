@@ -1,3 +1,7 @@
+/*
+ * sym.h
+ */
+
 #include "bfd.h"
 
 #include <stdio.h>
@@ -92,16 +96,16 @@ typedef struct bfd_sym_file_reference bfd_sym_file_reference;
 /* NAME TABLE (NTE) */
 
 /* RESOURCES TABLE (RTE)
- *	
- * All code and data is *defined* to reside in a resource.  Even A5
+ *
+ * All code and data is *defined* to reside in a resource. Even A5
  * relative data is defined to reside in a dummy resource of ResType
- * 'gbld'.  Code always resides in a resource.  Because a code/data
+ * 'gbld'. Code always resides in a resource. Because a code/data
  * is built of many modules, when walking through a resource we must
- * point back to the modules in the order they were defined.  This is
+ * point back to the modules in the order they were defined. This is
  * done by requiring the entries in the Modules Entry table to be
  * ordered by resource/resource-number and by the location in that
- * resource.  Hence, the resource table entry points to the first
- * module making up that resource.  All modules table entries following
+ * resource. Hence, the resource table entry points to the first
+ * module making up that resource. All modules table entries following
  * that first one with the same restype/resnum are contiguous and offset
  * from that first entry.
  */
@@ -148,7 +152,7 @@ struct bfd_sym_modules_table_entry {
   unsigned long mte_ctte_index;        /* Types contained in this */
   unsigned long mte_csnte_idx_1;       /* CSNTE index of mte_snbr_first */
   unsigned long mte_csnte_idx_2;       /* CSNTE index of mte_snbr_last */
-}; 
+};
 typedef struct bfd_sym_modules_table_entry bfd_sym_modules_table_entry;
 
 /* FILE REFERENCES TABLE (FRTE)
@@ -179,7 +183,7 @@ union bfd_sym_file_references_table_entry {
     unsigned long nte_index;
     unsigned long mod_date;
   } filename;
-  
+
   struct {
     /* < FILE_NAME_INDEX */
     unsigned long mte_index;
@@ -198,12 +202,12 @@ typedef union bfd_sym_file_references_table_entry bfd_sym_file_references_table_
  */
 
 union bfd_sym_contained_modules_table_entry {
-  
+
   struct {
     /* END_OF_LIST, index */
     unsigned long type;
   } generic;
-  
+
   struct {
     unsigned long mte_index; /* Index into the Modules Table */
     unsigned long nte_index; /* The name of the module */
@@ -214,9 +218,9 @@ typedef union bfd_sym_contained_modules_table_entry bfd_sym_contained_modules_ta
 /* CONTAINED VARIABLES TABLE (CVTE)
  *
  * Contained Variables map into the module table, file table, name table, and type
- * table.  Contained Variables are a contiguous list of source file change record,
+ * table. Contained Variables are a contiguous list of source file change record,
  * giving the name of and offset into the source file corresponding to all variables
- * following.  Variable definition records contain an index into the name table (giving
+ * following. Variable definition records contain an index into the name table (giving
  * the text of the variable as it appears in the source code), an index into the type
  * table giving the type of the variable, an increment added to the source file
  * offset giving the start of the implementation of the variable, and a storage
@@ -225,7 +229,7 @@ typedef union bfd_sym_contained_modules_table_entry bfd_sym_contained_modules_ta
  * CVT = SOURCE_FILE_CHANGE SYMBOL_INFO* END_OF_LIST.
  * SYMBOL_INFO = SYMBOL_DEFINITION | SOURCE_FILE_CHANGE .
  *
- * All entries are of the same size, making the fetching of data simple.  The
+ * All entries are of the same size, making the fetching of data simple. The
  * variable entries in the list are in ALPHABETICAL ORDER to simplify the display of
  * available variables for several of the debugger's windows.
  */
@@ -243,7 +247,7 @@ typedef union bfd_sym_contained_modules_table_entry bfd_sym_contained_modules_ta
  *    Logical address bytes in constant pool, at offset 'big_la'.
  *
  */
- 
+
 #define	BFD_SYM_CVTE_SCA 0          /* indicate SCA variant of CVTE */
 #define	BFD_SYM_CVTE_LA_MAX_SIZE 13 /* max# of logical address bytes in a CVTE */
 #define	BFD_SYM_CVTE_BIG_LA 127     /* indicates LA redirection to constant pool */
@@ -289,7 +293,7 @@ union bfd_sym_contained_variables_table_entry {
 	unsigned long big_la;                       /* logical address bytes in constant pool */
 	unsigned char big_la_kind;                  /* eqv. cvte_location.sca_kind */
       } biglastruct;
- 
+
     } address;
 
   } entry;
@@ -388,7 +392,7 @@ union bfd_sym_contained_types_table_entry {
 
   struct {
     /* < SOURCE_FILE_CHANGE */
-    unsigned long tte_index; 
+    unsigned long tte_index;
     unsigned long nte_index;
     unsigned long file_delta; /* From last file definition */
   } entry;
@@ -425,7 +429,7 @@ union bfd_sym_file_references_index_table_entry {
   struct {
     unsigned long type;
   } generic;
-  
+
   struct {
     unsigned long frte_index;  /* Index into the FRTE table */
     unsigned long nte_index;   /* Name table index, gives filename */
@@ -465,7 +469,7 @@ typedef short bfd_sym_constant_pool_entry;
  * table.  That entry is filled with all zeroes.  The reason for this
  * is to avoid off-by-one programming errors that would otherwise
  * occur: an index of k *MEANS* k, not k-1 when going to the disk
- * table.  
+ * table.
  */
 
 struct bfd_sym_table_info {
@@ -475,14 +479,14 @@ struct bfd_sym_table_info {
 };
 typedef struct bfd_sym_table_info bfd_sym_table_info;
 
-struct bfd_sym_header_block 
+struct bfd_sym_header_block
 {
   unsigned char dshb_id[32];      /* Version information */
 
   unsigned short dshb_page_size;  /* Size of the pages/blocks */
   unsigned long dshb_hash_page;   /* Disk page for the hash table */
   unsigned long dshb_root_mte;    /* MTE index of the program root */
-  
+
   unsigned long dshb_mod_date;    /* modification date of executable */
 
   bfd_sym_table_info dshb_frte;   /* Per TABLE information */
@@ -629,3 +633,5 @@ extern void bfd_sym_get_symbol_info (bfd *ignore_abfd, asymbol *symbol, symbol_i
 extern long bfd_sym_get_symtab_upper_bound (bfd *abfd);
 extern long bfd_sym_get_symtab (bfd *abfd, asymbol **sym);
 extern int bfd_sym_sizeof_headers (bfd *abfd, boolean exec);
+
+/* EOF */

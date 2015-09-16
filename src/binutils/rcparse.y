@@ -29,27 +29,22 @@
 #include "windres.h"
 #include "safe-ctype.h"
 
-/* The current language.  */
-
+/* The current language: */
 static unsigned short language;
 
-/* The resource information during a sub statement.  */
-
+/* The resource information during a sub statement: */
 static struct res_res_info sub_res_info;
 
 /* Dialog information.  This is built by the nonterminals styles and
    controls.  */
-
 static struct dialog dialog;
 
 /* This is used when building a style.  It is modified by the
    nonterminal styleexpr.  */
-
 static unsigned long style;
 
 /* These are used when building a control.  They are set before using
    control_params.  */
-
 static unsigned long base_style;
 static unsigned long default_style;
 static unsigned long class;
@@ -393,7 +388,7 @@ dialog:
 	      dialog.y = $6;
 	      dialog.width = $7;
 	      dialog.height = $8;
-	      dialog.style = WS_POPUP | WS_BORDER | WS_SYSMENU;
+	      dialog.style = (WS_POPUP | WS_BORDER | WS_SYSMENU);
 	      dialog.exstyle = $4;
 	      dialog.menu.named = 1;
 	      dialog.class.named = 1;
@@ -432,7 +427,7 @@ styles:
 	  {
 	    dialog.style |= WS_CAPTION;
 	    style |= WS_CAPTION;
-	    unicode_from_ascii ((int *) NULL, &dialog.caption, $3);
+	    unicode_from_ascii_old((int *)NULL, &dialog.caption, $3);
 	  }
 	| styles CLASS id
 	  {
@@ -449,14 +444,14 @@ styles:
 	  }
 	| styles CLASS QUOTEDSTRING
 	  {
-	    res_string_to_id (& dialog.class, $3);
+	    res_string_to_id(& dialog.class, $3);
 	  }
 	| styles FONT numexpr ',' QUOTEDSTRING
 	  {
 	    dialog.style |= DS_SETFONT;
 	    style |= DS_SETFONT;
 	    dialog.pointsize = $3;
-	    unicode_from_ascii ((int *) NULL, &dialog.font, $5);
+	    unicode_from_ascii_old((int *)NULL, &dialog.font, $5);
 	    if (dialog.ex != NULL)
 	      {
 		dialog.ex->weight = 0;
@@ -469,9 +464,9 @@ styles:
 	    dialog.style |= DS_SETFONT;
 	    style |= DS_SETFONT;
 	    dialog.pointsize = $3;
-	    unicode_from_ascii ((int *) NULL, &dialog.font, $5);
+	    unicode_from_ascii_old((int *)NULL, &dialog.font, $5);
 	    if (dialog.ex == NULL)
-	      rcparse_warning (_("extended FONT requires DIALOGEX"));
+	      rcparse_warning(_("extended FONT requires DIALOGEX"));
 	    else
 	      {
 		dialog.ex->weight = $6;
@@ -484,9 +479,9 @@ styles:
 	    dialog.style |= DS_SETFONT;
 	    style |= DS_SETFONT;
 	    dialog.pointsize = $3;
-	    unicode_from_ascii ((int *) NULL, &dialog.font, $5);
+	    unicode_from_ascii_old((int *)NULL, &dialog.font, $5);
 	    if (dialog.ex == NULL)
-	      rcparse_warning (_("extended FONT requires DIALOGEX"));
+	      rcparse_warning(_("extended FONT requires DIALOGEX"));
 	    else
 	      {
 		dialog.ex->weight = $6;
@@ -499,9 +494,9 @@ styles:
 	    dialog.style |= DS_SETFONT;
 	    style |= DS_SETFONT;
 	    dialog.pointsize = $3;
-	    unicode_from_ascii ((int *) NULL, &dialog.font, $5);
+	    unicode_from_ascii_old((int *)NULL, &dialog.font, $5);
 	    if (dialog.ex == NULL)
-	      rcparse_warning (_("extended FONT requires DIALOGEX"));
+	      rcparse_warning(_("extended FONT requires DIALOGEX"));
 	    else
 	      {
 		dialog.ex->weight = $6;
@@ -545,7 +540,7 @@ control:
 	      default_style = BS_AUTO3STATE | WS_TABSTOP;
 	      base_style = BS_AUTO3STATE;
 	      class = CTL_BUTTON;
-	      res_text_field = $2;	
+	      res_text_field = $2;
 	    }
 	    control_params
 	  {
@@ -556,7 +551,7 @@ control:
 	      default_style = BS_AUTOCHECKBOX | WS_TABSTOP;
 	      base_style = BS_AUTOCHECKBOX;
 	      class = CTL_BUTTON;
-	      res_text_field = $2;	
+	      res_text_field = $2;
 	    }
 	    control_params
 	  {
@@ -567,7 +562,7 @@ control:
 	      default_style = BS_AUTORADIOBUTTON | WS_TABSTOP;
 	      base_style = BS_AUTORADIOBUTTON;
 	      class = CTL_BUTTON;
-	      res_text_field = $2;	
+	      res_text_field = $2;
 	    }
 	    control_params
 	  {
@@ -578,7 +573,7 @@ control:
 	      default_style = ES_LEFT | WS_BORDER | WS_TABSTOP;
 	      base_style = ES_LEFT | WS_BORDER | WS_TABSTOP;
 	      class = CTL_EDIT;
-	      res_text_field = $2;	
+	      res_text_field = $2;
 	    }
 	    control_params
 	  {
@@ -592,7 +587,7 @@ control:
 	      default_style = BS_CHECKBOX | WS_TABSTOP;
 	      base_style = BS_CHECKBOX | WS_TABSTOP;
 	      class = CTL_BUTTON;
-	      res_text_field = $2;	
+	      res_text_field = $2;
 	    }
 	    control_params
 	  {
@@ -605,7 +600,7 @@ control:
 	      default_style = CBS_SIMPLE | WS_TABSTOP;
 	      base_style = 0;
 	      class = CTL_COMBOBOX;
-	      res_text_field = res_null_text;	
+	      res_text_field = res_null_text;
 	    }
 	    control_params
 	  {
@@ -642,25 +637,25 @@ control:
 		$$->data = $12;
 	      }
 	    $$->class.named = 1;
-  	    unicode_from_ascii (&$$->class.u.n.length, &$$->class.u.n.name, $5);
+  	    unicode_from_ascii_old(&$$->class.u.n.length, &$$->class.u.n.name, $5);
 	  }
 	| CONTROL optresidc numexpr ',' QUOTEDSTRING control_styleexpr
 	    cnumexpr cnumexpr cnumexpr cnumexpr cnumexpr cnumexpr opt_control_data
 	  {
-	    $$ = define_control ($2, $3, $7, $8, $9, $10, 0, style, $11);
+	    $$ = define_control($2, $3, $7, $8, $9, $10, 0, style, $11);
 	    if (dialog.ex == NULL)
-	      rcparse_warning ("help ID requires DIALOGEX");
+	      rcparse_warning("help ID requires DIALOGEX");
 	    $$->help = $12;
 	    $$->data = $13;
 	    $$->class.named = 1;
-  	    unicode_from_ascii (&$$->class.u.n.length, &$$->class.u.n.name, $5);
+  	    unicode_from_ascii_old(&$$->class.u.n.length, &$$->class.u.n.name, $5);
 	  }
 	| CTEXT optresidc
 	    {
 	      default_style = SS_CENTER | WS_GROUP;
 	      base_style = SS_CENTER;
 	      class = CTL_STATIC;
-	      res_text_field = $2;	
+	      res_text_field = $2;
 	    }
 	    control_params
 	  {
@@ -671,7 +666,7 @@ control:
 	      default_style = BS_DEFPUSHBUTTON | WS_TABSTOP;
 	      base_style = BS_DEFPUSHBUTTON | WS_TABSTOP;
 	      class = CTL_BUTTON;
-	      res_text_field = $2;	
+	      res_text_field = $2;
 	    }
 	    control_params
 	  {
@@ -682,7 +677,7 @@ control:
 	      default_style = ES_LEFT | WS_BORDER | WS_TABSTOP;
 	      base_style = ES_LEFT | WS_BORDER | WS_TABSTOP;
 	      class = CTL_EDIT;
-	      res_text_field = res_null_text;	
+	      res_text_field = res_null_text;
 	    }
 	    control_params
 	  {
@@ -693,7 +688,7 @@ control:
 	      default_style = BS_GROUPBOX;
 	      base_style = BS_GROUPBOX;
 	      class = CTL_BUTTON;
-	      res_text_field = $2;	
+	      res_text_field = $2;
 	    }
 	    control_params
 	  {
@@ -704,7 +699,7 @@ control:
 	      default_style = ES_LEFT | WS_BORDER | WS_TABSTOP;
 	      base_style = ES_LEFT | WS_BORDER | WS_TABSTOP;
 	      class = CTL_EDIT;
-	      res_text_field = $2;	
+	      res_text_field = $2;
 	    }
 	    control_params
 	  {
@@ -741,7 +736,7 @@ control:
 	      default_style = ES_LEFT | WS_BORDER | WS_TABSTOP;
 	      base_style = ES_LEFT | WS_BORDER | WS_TABSTOP;
 	      class = CTL_EDIT;
-	      res_text_field = $2;	
+	      res_text_field = $2;
 	    }
 	    control_params
 	  {
@@ -755,7 +750,7 @@ control:
 	      default_style = LBS_NOTIFY | WS_BORDER;
 	      base_style = LBS_NOTIFY | WS_BORDER;
 	      class = CTL_LISTBOX;
-	      res_text_field = res_null_text;	
+	      res_text_field = res_null_text;
 	    }
 	    control_params
 	  {
@@ -766,7 +761,7 @@ control:
 	      default_style = SS_LEFT | WS_GROUP;
 	      base_style = SS_LEFT;
 	      class = CTL_STATIC;
-	      res_text_field = $2;	
+	      res_text_field = $2;
 	    }
 	    control_params
 	  {
@@ -787,7 +782,7 @@ control:
 	      default_style = BS_PUSHBUTTON | WS_TABSTOP;
 	      base_style = BS_PUSHBUTTON | WS_TABSTOP;
 	      class = CTL_BUTTON;
-	      res_text_field = $2;	
+	      res_text_field = $2;
 	    }
 	    control_params
 	  {
@@ -798,7 +793,7 @@ control:
 	      default_style = BS_RADIOBUTTON | WS_TABSTOP;
 	      base_style = BS_RADIOBUTTON;
 	      class = CTL_BUTTON;
-	      res_text_field = $2;	
+	      res_text_field = $2;
 	    }
 	    control_params
 	  {
@@ -809,7 +804,7 @@ control:
 	      default_style = SS_RIGHT | WS_GROUP;
 	      base_style = SS_RIGHT;
 	      class = CTL_STATIC;
-	      res_text_field = $2;	
+	      res_text_field = $2;
 	    }
 	    control_params
 	  {
@@ -820,7 +815,7 @@ control:
 	      default_style = SBS_HORZ;
 	      base_style = 0;
 	      class = CTL_SCROLLBAR;
-	      res_text_field = res_null_text;	
+	      res_text_field = res_null_text;
 	    }
 	    control_params
 	  {
@@ -831,14 +826,14 @@ control:
 	      default_style = BS_3STATE | WS_TABSTOP;
 	      base_style = BS_3STATE;
 	      class = CTL_BUTTON;
-	      res_text_field = $2;	
+	      res_text_field = $2;
 	    }
 	    control_params
 	  {
 	    $$ = $4;
 	  }
 	| USERBUTTON resref numexpr ',' numexpr ',' numexpr ','
-	    numexpr ',' numexpr ',' 
+	    numexpr ',' numexpr ','
 	    { style = WS_CHILD | WS_VISIBLE; }
 	    styleexpr optcnumexpr
 	  {
@@ -1229,7 +1224,7 @@ rcdata_data:
 /* Stringtable resources.  */
 
 stringtable:
-	  STRINGTABLE suboptions BEG 
+	  STRINGTABLE suboptions BEG
 	    { sub_res_info = $2; }
 	    string_data END
 	;

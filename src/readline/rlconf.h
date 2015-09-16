@@ -21,14 +21,21 @@
    have a copy of the license, write to the Free Software Foundation,
    59 Temple Place, Suite 330, Boston, MA 02111 USA. */
 
-#if !defined (_RLCONF_H_)
+#if !defined(_RLCONF_H_)
 #define _RLCONF_H_
 
-/* Define this if you want the vi-mode editing available. */
-#define VI_MODE
+/* Define this if you want the vi-mode editing available: */
+#ifndef VI_MODE
+# define VI_MODE 1
+#endif /* !VI_MODE */
 
 /* Define this to get an indication of file type when listing completions. */
 #define VISIBLE_STATS
+
+/* Define this to handle multibyte characters: */
+#if 0
+# define HANDLE_MULTIBYTE
+#endif /* 0 */
 
 /* This definition is needed by readline.c, rltty.c, and signals.c. */
 /* If on, then readline handles signals in a way that doesn't screw. */
@@ -45,7 +52,9 @@
 
 /* If defined, use the terminal escape sequence to move the cursor forward
    over a character when updating the line rather than rewriting it. */
-/* #define HACK_TERMCAP_MOTION */
+#if 0
+# define HACK_TERMCAP_MOTION
+#endif /* 0 */
 
 /* The string inserted by the `insert comment' command. */
 #define RL_COMMENT_BEGIN_DEFAULT "#"
@@ -54,7 +63,9 @@
    X `callback' style. */
 #define READLINE_CALLBACKS
 
-/* Define this if you want the cursor to indicate insert or overwrite mode. */
-/* #define CURSOR_MODE */
+/* Define this if you want the cursor to indicate insert or overwrite mode: */
+#if 0
+# define CURSOR_MODE
+#endif /* 0 */
 
 #endif /* _RLCONF_H_ */

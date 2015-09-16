@@ -1,4 +1,4 @@
-/* Variable user interface layer for GDB, the GNU debugger.
+/* gtk-varobj.c: Variable user interface layer for GDB, the GNU debugger.
    Copyright 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -193,13 +193,13 @@ variable_obj_command (ClientData clientData, Tcl_Interp *interp,
   struct varobj *var;
   char *varobj_name;
   int index, result;
-  
+
   /* Get the current handle for this variable token (name). */
   varobj_name = Tcl_GetStringFromObj (objv[0], NULL);
   if (varobj_name == NULL)
     return TCL_ERROR;
   var = varobj_get_handle (varobj_name);
-  
+
 
   if (objc < 2)
     {
@@ -260,7 +260,7 @@ variable_obj_command (ClientData clientData, Tcl_Interp *interp,
       break;
 
     case VARIABLE_EDITABLE:
-      Tcl_SetObjResult (interp, 
+      Tcl_SetObjResult (interp,
 			Tcl_NewIntObj (varobj_get_attributes (var) & 0x00000001 /* Editable? */ ));
       break;
 
@@ -449,7 +449,7 @@ variable_update (Tcl_Interp *interp, struct varobj **var)
   if (varobj_update (var, &changelist) == -1)
     return Tcl_NewStringObj ("-1", -1);
 
-  changed = Tcl_NewListObj (0, NULL);  
+  changed = Tcl_NewListObj (0, NULL);
   vc = changelist;
   while (*vc != NULL)
     {
@@ -466,7 +466,7 @@ variable_update (Tcl_Interp *interp, struct varobj **var)
 /* This implements the format object command allowing
    the querying or setting of the object's display format. */
 static int
-variable_format (Tcl_Interp *interp, int objc, 
+variable_format (Tcl_Interp *interp, int objc,
 		 Tcl_Obj *CONST objv[], struct varobj *var)
 {
   if (objc > 2)

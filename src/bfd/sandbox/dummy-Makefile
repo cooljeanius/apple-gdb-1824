@@ -1,0 +1,5 @@
+# dummy target that does nothing; for potential future use by the
+# configure script:
+nothing:
+	@true
+.PHONY: nothing

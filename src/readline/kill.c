@@ -68,7 +68,7 @@ static char **rl_kill_ring = (char **)NULL;
 static int rl_kill_index;
 
 /* How many slots we have in the kill ring. */
-static int rl_kill_ring_length;
+static size_t rl_kill_ring_length;
 
 static int _rl_copy_to_kill_ring PARAMS((char *, int));
 static int region_kill_internal PARAMS((int));
@@ -89,12 +89,10 @@ rl_set_retained_kills (num)
    non-zero, and the last command was a kill, the text is appended to the
    current kill ring slot, otherwise prepended. */
 static int
-_rl_copy_to_kill_ring (text, append)
-     char *text;
-     int append;
+_rl_copy_to_kill_ring(char *text, int append)
 {
   char *old, *new;
-  int slot;
+  size_t slot;
 
   /* First, find the slot to work with. */
   if (_rl_last_command_was_kill == 0)
@@ -104,7 +102,7 @@ _rl_copy_to_kill_ring (text, append)
 	{
 	  /* If we don't have any defined, then make one. */
 	  rl_kill_ring = (char **)
-	    xmalloc (((rl_kill_ring_length = 1) + 1) * sizeof (char *));
+	    xmalloc(((rl_kill_ring_length = 1UL) + 1UL) * sizeof(char *));
 	  rl_kill_ring[slot = 0] = (char *)NULL;
 	}
       else
@@ -112,48 +110,48 @@ _rl_copy_to_kill_ring (text, append)
 	  /* We have to add a new slot on the end, unless we have
 	     exceeded the max limit for remembering kills. */
 	  slot = rl_kill_ring_length;
-	  if (slot == rl_max_kills)
+	  if ((int)slot == rl_max_kills)
 	    {
 	      register int i;
-	      free (rl_kill_ring[0]);
-	      for (i = 0; i < slot; i++)
+	      free(rl_kill_ring[0]);
+	      for (i = 0; i < (int)slot; i++)
 		rl_kill_ring[i] = rl_kill_ring[i + 1];
 	    }
 	  else
 	    {
 	      slot = rl_kill_ring_length += 1;
-	      rl_kill_ring = (char **)xrealloc (rl_kill_ring, slot * sizeof (char *));
+	      rl_kill_ring = (char **)xrealloc(rl_kill_ring, slot * sizeof(char *));
 	    }
 	  rl_kill_ring[--slot] = (char *)NULL;
 	}
     }
   else
-    slot = rl_kill_ring_length - 1;
+    slot = (rl_kill_ring_length - 1);
 
   /* If the last command was a kill, prepend or append. */
-  if (_rl_last_command_was_kill && rl_editing_mode != vi_mode)
+  if (_rl_last_command_was_kill && (rl_editing_mode != vi_mode))
     {
       old = rl_kill_ring[slot];
-      new = (char *)xmalloc (1 + strlen (old) + strlen (text));
+      new = (char *)xmalloc(1UL + strlen(old) + strlen(text));
 
       if (append)
 	{
-	  strcpy (new, old);
-	  strcat (new, text);
+	  strcpy(new, old);
+	  strcat(new, text);
 	}
       else
 	{
-	  strcpy (new, text);
-	  strcat (new, old);
+	  strcpy(new, text);
+	  strcat(new, old);
 	}
-      free (old);
-      free (text);
+      free(old);
+      free(text);
       rl_kill_ring[slot] = new;
     }
   else
     rl_kill_ring[slot] = text;
 
-  rl_kill_index = slot;
+  rl_kill_index = (int)slot;
   return 0;
 }
 
@@ -163,8 +161,7 @@ _rl_copy_to_kill_ring (text, append)
    last command was not a kill command, then a new slot is made for
    this kill. */
 int
-rl_kill_text (from, to)
-     int from, to;
+rl_kill_text(int from, int to)
 {
   char *text;
 
@@ -456,7 +453,7 @@ rl_copy_backward_word (count, key)
 
   return (_rl_copy_word_as_kill (count, -1));
 }
-  
+
 /* Yank back the last killed text.  This ignores arguments. */
 int
 rl_yank (count, ignore)
@@ -478,33 +475,33 @@ rl_yank (count, ignore)
    delete that text from the line, rotate the index down, and
    yank back some other text. */
 int
-rl_yank_pop (count, key)
-     int count, key;
+rl_yank_pop(int count, int key)
 {
-  int l, n;
+  size_t l;
+  int n;
 
   if (((rl_last_func != rl_yank_pop) && (rl_last_func != rl_yank)) ||
       !rl_kill_ring)
     {
-      _rl_abort_internal ();
+      _rl_abort_internal();
       return -1;
     }
 
-  l = strlen (rl_kill_ring[rl_kill_index]);
-  n = rl_point - l;
-  if (n >= 0 && STREQN (rl_line_buffer + n, rl_kill_ring[rl_kill_index], l))
+  l = strlen(rl_kill_ring[rl_kill_index]);
+  n = (int)(rl_point - (int)l);
+  if ((n >= 0) && STREQN((rl_line_buffer + n), rl_kill_ring[rl_kill_index], l))
     {
-      rl_delete_text (n, rl_point);
+      rl_delete_text(n, rl_point);
       rl_point = n;
       rl_kill_index--;
       if (rl_kill_index < 0)
-	rl_kill_index = rl_kill_ring_length - 1;
-      rl_yank (1, 0);
+	rl_kill_index = (int)(rl_kill_ring_length - 1);
+      rl_yank(1, 0);
       return 0;
     }
   else
     {
-      _rl_abort_internal ();
+      _rl_abort_internal();
       return -1;
     }
 }
@@ -512,14 +509,13 @@ rl_yank_pop (count, key)
 /* Yank the COUNTh argument from the previous history line, skipping
    HISTORY_SKIP lines before looking for the `previous line'. */
 static int
-rl_yank_nth_arg_internal (count, ignore, history_skip)
-     int count, ignore, history_skip;
+rl_yank_nth_arg_internal(int count, int ignore, int history_skip)
 {
   register HIST_ENTRY *entry;
   char *arg;
   int i, pos;
 
-  pos = where_history ();
+  pos = where_history();
 
   if (history_skip)
     {
@@ -604,7 +600,7 @@ rl_yank_last_arg (count, key)
       if (history_skip < 0)
 	history_skip = 0;
     }
- 
+
   if (explicit_arg_p)
     retval = rl_yank_nth_arg_internal (count_passed, key, history_skip);
   else

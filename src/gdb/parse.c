@@ -1,4 +1,4 @@
-/* Parse expressions for GDB.
+/* parse.c: Parse expressions for GDB.
 
    Copyright 1986, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996,
    1997, 1998, 1999, 2000, 2001, 2004 Free Software Foundation, Inc.
@@ -46,7 +46,7 @@
 #include "parser-defs.h"
 #include "gdbcmd.h"
 #include "symfile.h"		/* for overlay functions */
-#include "inferior.h"		/* for NUM_PSEUDO_REGS.  NOTE: replace 
+#include "inferior.h"		/* for NUM_PSEUDO_REGS.  NOTE: replace
 				   with "gdbarch.h" when appropriate.  */
 #include "doublest.h"
 #include "gdb_assert.h"
@@ -55,7 +55,7 @@
 /* Standard set of definitions for printing, dumping, prefixifying,
  * and evaluating expressions.  */
 
-const struct exp_descriptor exp_descriptor_standard = 
+const struct exp_descriptor exp_descriptor_standard =
   {
     print_subexp_standard,
     operator_length_standard,
@@ -91,27 +91,27 @@ size_t namecopy_size;
 
 static int expressiondebug = 0;
 static void
-show_expressiondebug (struct ui_file *file, int from_tty,
-		      struct cmd_list_element *c, const char *value)
+show_expressiondebug(struct ui_file *file, int from_tty,
+		     struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("Expression debugging is %s.\n"), value);
+  fprintf_filtered(file, _("Expression debugging is %s.\n"), value);
 }
 
-static void free_funcalls (void *ignore);
+static void free_funcalls(void *ignore);
 
-static void prefixify_expression (struct expression *);
+static void prefixify_expression(struct expression *);
 
-static void prefixify_subexp (struct expression *, struct expression *, int,
-			      int);
+static void prefixify_subexp(struct expression *, struct expression *, int,
+			     int);
 
-static struct expression *parse_exp_in_context (char **, struct block *, int, 
-						int);
+static struct expression *parse_exp_in_context(char **, struct block *,
+                                               int, int);
 
 /* APPLE LOCAL: Fix expressions containing references to variables the
    compiler optimzied away.  */
-static void fix_references_to_optimized_out_variables (void);
+static void fix_references_to_optimized_out_variables(void);
 
-void _initialize_parse (void);
+void _initialize_parse(void);
 
 /* Data structure for saving values of arglist_len for function calls whose
    arguments contain other function calls.  */
@@ -128,28 +128,28 @@ static struct funcall *funcall_chain;
    saving the data about any containing call.  */
 
 void
-start_arglist (void)
+start_arglist(void)
 {
-  struct funcall *new;
+  struct funcall *newf;
 
-  new = (struct funcall *) xmalloc (sizeof (struct funcall));
-  new->next = funcall_chain;
-  new->arglist_len = arglist_len;
+  newf = (struct funcall *)xmalloc(sizeof(struct funcall));
+  newf->next = funcall_chain;
+  newf->arglist_len = arglist_len;
   arglist_len = 0;
-  funcall_chain = new;
+  funcall_chain = newf;
 }
 
 /* Return the number of arguments in a function call just terminated,
    and restore the data for the containing function call.  */
 
 int
-end_arglist (void)
+end_arglist(void)
 {
   int val = arglist_len;
   struct funcall *call = funcall_chain;
   funcall_chain = call->next;
   arglist_len = call->arglist_len;
-  xfree (call);
+  xfree(call);
   return val;
 }
 
@@ -157,14 +157,14 @@ end_arglist (void)
    Used when there is an error inside parsing.  */
 
 static void
-free_funcalls (void *ignore)
+free_funcalls(void *ignore)
 {
   struct funcall *call, *next;
 
   for (call = funcall_chain; call; call = next)
     {
       next = call->next;
-      xfree (call);
+      xfree(call);
     }
 }
 
@@ -177,26 +177,26 @@ free_funcalls (void *ignore)
    a register through here */
 
 void
-write_exp_elt (union exp_element expelt)
+write_exp_elt(register union exp_element expelt)
 {
   if (expout_ptr >= expout_size)
     {
       expout_size *= 2;
-      expout = (struct expression *)
-	xrealloc ((char *) expout, sizeof (struct expression)
-		  + EXP_ELEM_TO_BYTES (expout_size));
+      expout = ((struct expression *)
+                xrealloc((char *)expout, sizeof(struct expression)
+                         + EXP_ELEM_TO_BYTES(expout_size)));
     }
   expout->elts[expout_ptr++] = expelt;
 }
 
 void
-write_exp_elt_opcode (enum exp_opcode expelt)
+write_exp_elt_opcode(enum exp_opcode expelt)
 {
   union exp_element tmp;
 
   tmp.opcode = expelt;
 
-  write_exp_elt (tmp);
+  write_exp_elt(tmp);
 }
 
 void
@@ -223,7 +223,7 @@ write_exp_elt_sym (struct symbol *expelt)
   /* APPLE LOCAL end  */
 
   tmp.symbol = expelt;
-  
+
   write_exp_elt (tmp);
 }
 
@@ -282,7 +282,7 @@ write_exp_elt_intern (struct internalvar *expelt)
    constant itself into however many expression elements are needed
    to hold it, and then writing another expression element that contains
    the length of the string.  I.E. an expression element at each end of
-   the string records the string length, so you can skip over the 
+   the string records the string length, so you can skip over the
    expression elements containing the actual string bytes from either
    end of the string.  Note that this also allows gdb to handle
    strings with embedded null bytes, as is required for some languages.
@@ -393,8 +393,8 @@ struct type *msym_data_symbol_type;
 struct type *msym_unknown_symbol_type;
 
 void
-write_exp_msymbol (struct minimal_symbol *msymbol, 
-		   struct type *text_symbol_type, 
+write_exp_msymbol (struct minimal_symbol *msymbol,
+		   struct type *text_symbol_type,
 		   struct type *data_symbol_type)
 {
   CORE_ADDR addr;
@@ -499,7 +499,7 @@ write_dollar_variable (struct stoken str)
   if (i >= 0)
     goto handle_register;
 
-  /* On some systems, such as HP-UX and hppa-linux, certain system routines 
+  /* On some systems, such as HP-UX and hppa-linux, certain system routines
      have names beginning with $ or $$.  Check for those, first. */
 
   sym = lookup_symbol (copy_name (str), (struct block *) NULL,
@@ -552,7 +552,7 @@ handle_register:
 
    The return value is a pointer to the symbol for the base class or
    variable if found, or NULL if not found.  Callers must check this
-   first -- if NULL, the outputs may not be correct. 
+   first -- if NULL, the outputs may not be correct.
 
    This function is used c-exp.y.  This is used specifically to get
    around HP aCC (and possibly other compilers), which insists on
@@ -787,16 +787,16 @@ find_template_name_end (char *p)
    of a string token.  */
 
 char *
-copy_name (struct stoken token)
+copy_name(struct stoken token)
 {
-  /* Make sure there's enough space for the token.  */
-  if (namecopy_size < token.length + 1)
+  /* Make sure there is enough space for the token: */
+  if (namecopy_size < (token.length + 1UL))
     {
-      namecopy_size = token.length + 1;
-      namecopy = xrealloc (namecopy, token.length + 1);
+      namecopy_size = (token.length + 1UL);
+      namecopy = (char *)xrealloc(namecopy, (token.length + 1UL));
     }
-      
-  memcpy (namecopy, token.ptr, token.length);
+
+  memcpy(namecopy, token.ptr, token.length);
   namecopy[token.length] = 0;
 
   return namecopy;
@@ -806,22 +806,22 @@ copy_name (struct stoken token)
    to prefix form (in which we can conveniently print or execute it).  */
 
 static void
-prefixify_expression (struct expression *expr)
+prefixify_expression(struct expression *expr)
 {
   int len =
-  sizeof (struct expression) + EXP_ELEM_TO_BYTES (expr->nelts);
+    (sizeof(struct expression) + EXP_ELEM_TO_BYTES(expr->nelts));
   struct expression *temp;
   int inpos = expr->nelts, outpos = 0;
 
-  temp = (struct expression *) alloca (len);
+  temp = (struct expression *)alloca(len);
 
-  /* Copy the original expression into temp.  */
-  memcpy (temp, expr, len);
+  /* Copy the original expression into temp: */
+  memcpy(temp, expr, len);
 
-  prefixify_subexp (temp, expr, inpos, outpos);
+  prefixify_subexp(temp, expr, inpos, outpos);
 }
 
-/* Return the number of exp_elements in the postfix subexpression 
+/* Return the number of exp_elements in the postfix subexpression
    of EXPR whose operator is at index ENDPOS - 1 in EXPR.  */
 
 int
@@ -840,7 +840,7 @@ length_of_subexp (struct expression *expr, int endpos)
   return oplen;
 }
 
-/* Sets *OPLENP to the length of the operator whose (last) index is 
+/* Sets *OPLENP to the length of the operator whose (last) index is
    ENDPOS - 1 in EXPR, and sets *ARGSP to the number of arguments that
    operator takes.  */
 
@@ -1055,7 +1055,7 @@ parse_exp_1 (char **stringptr, struct block *block, int comma)
    no value is expected from the expression.  */
 
 static struct expression *
-parse_exp_in_context (char **stringptr, struct block *block, int comma, 
+parse_exp_in_context (char **stringptr, struct block *block, int comma,
 		      int void_context_p)
 {
   struct cleanup *old_chain;
@@ -1241,17 +1241,17 @@ follow_types (struct type *follow_type)
       case tp_end:
 	done = 1;
 	if (make_const)
-	  follow_type = make_cvr_type (make_const, 
-				      TYPE_VOLATILE (follow_type), 
-				      TYPE_RESTRICT (follow_type), 
+	  follow_type = make_cvr_type (make_const,
+				      TYPE_VOLATILE (follow_type),
+				      TYPE_RESTRICT (follow_type),
 				      follow_type, 0);
 	if (make_volatile)
-	  follow_type = make_cvr_type (TYPE_CONST (follow_type), 
-				      make_volatile, 
-				      TYPE_RESTRICT (follow_type), 
+	  follow_type = make_cvr_type (TYPE_CONST (follow_type),
+				      make_volatile,
+				      TYPE_RESTRICT (follow_type),
 				      follow_type, 0);
 	if (make_addr_space)
-	  follow_type = make_type_with_address_space (follow_type, 
+	  follow_type = make_type_with_address_space (follow_type,
 						      make_addr_space);
 	make_const = make_volatile = 0;
 	make_addr_space = 0;
@@ -1268,17 +1268,17 @@ follow_types (struct type *follow_type)
       case tp_pointer:
 	follow_type = lookup_pointer_type (follow_type);
 	if (make_const)
-	  follow_type = make_cvr_type (make_const, 
-				      TYPE_VOLATILE (follow_type), 
-				      TYPE_RESTRICT (follow_type), 
+	  follow_type = make_cvr_type (make_const,
+				      TYPE_VOLATILE (follow_type),
+				      TYPE_RESTRICT (follow_type),
 				      follow_type, 0);
 	if (make_volatile)
-	  follow_type = make_cvr_type (TYPE_CONST (follow_type), 
-				      make_volatile, 
-				      TYPE_RESTRICT (follow_type), 
+	  follow_type = make_cvr_type (TYPE_CONST (follow_type),
+				      make_volatile,
+				      TYPE_RESTRICT (follow_type),
 				      follow_type, 0);
 	if (make_addr_space)
-	  follow_type = make_type_with_address_space (follow_type, 
+	  follow_type = make_type_with_address_space (follow_type,
 						      make_addr_space);
 	make_const = make_volatile = 0;
 	make_addr_space = 0;
@@ -1286,17 +1286,17 @@ follow_types (struct type *follow_type)
       case tp_reference:
 	follow_type = lookup_reference_type (follow_type);
 	if (make_const)
-	  follow_type = make_cvr_type (make_const, 
-				      TYPE_VOLATILE (follow_type), 
-				      TYPE_RESTRICT (follow_type), 
+	  follow_type = make_cvr_type (make_const,
+				      TYPE_VOLATILE (follow_type),
+				      TYPE_RESTRICT (follow_type),
 				      follow_type, 0);
 	if (make_volatile)
-	  follow_type = make_cvr_type (TYPE_CONST (follow_type), 
-				      make_volatile, 
-				      TYPE_RESTRICT (follow_type), 
+	  follow_type = make_cvr_type (TYPE_CONST (follow_type),
+				      make_volatile,
+				      TYPE_RESTRICT (follow_type),
 				      follow_type, 0);
 	if (make_addr_space)
-	  follow_type = make_type_with_address_space (follow_type, 
+	  follow_type = make_type_with_address_space (follow_type,
 						      make_addr_space);
 	make_const = make_volatile = 0;
 	make_addr_space = 0;
@@ -1334,7 +1334,7 @@ static char *ftype_no_debug_info_name =
 int
 ftype_has_debug_info_p (struct type *type)
 {
-  return ! (TYPE_NAME (type) != NULL 
+  return ! (TYPE_NAME (type) != NULL
 	  && strcmp (TYPE_NAME (type), ftype_no_debug_info_name) == 0);
 }
 /* END APPLE LOCAL */
@@ -1355,15 +1355,15 @@ build_parse (void)
 	       NULL);
 }
 
-/* This function avoids direct calls to fprintf 
+/* This function avoids direct calls to fprintf
    in the parser generated debug code.  */
 void
 parser_fprintf (FILE *x, const char *y, ...)
-{ 
+{
   va_list args;
   va_start (args, y);
   if (x == stderr)
-    vfprintf_unfiltered (gdb_stderr, y, args); 
+    vfprintf_unfiltered (gdb_stderr, y, args);
   else
     {
       fprintf_unfiltered (gdb_stderr, " Unknown FILE used.\n");
@@ -1382,7 +1382,7 @@ parser_fprintf (FILE *x, const char *y, ...)
    for the symbol that was optimized away.  This symbol then gets
    properly handled in value_check_printable.  */
 
-static void 
+static void
 fix_references_to_optimized_out_variables (void)
 {
   int i;

@@ -54,7 +54,7 @@
    things to handle at once, and dispatches them via select().  Call
    rl_callback_handler_install() with the prompt and a function to call
    whenever a complete line of input is ready.  The user must then
-   call rl_callback_read_char() every time some input is available, and 
+   call rl_callback_read_char() every time some input is available, and
    rl_callback_read_char() will call the user's function with the complete
    text read in at each end of line.  The terminal is kept prepped and
    signals handled all the time, except during calls to the user's function. */
@@ -64,9 +64,9 @@ static int in_handler;		/* terminal_prepped and signals set? */
 
 /* Make sure the terminal is set up, initialize readline, and prompt. */
 static void
-_rl_callback_newline ()
+_rl_callback_newline(void)
 {
-  rl_initialize ();
+  rl_initialize();
 
   if (in_handler == 0)
     {
@@ -84,18 +84,16 @@ _rl_callback_newline ()
 
 /* Install a readline handler, set up the terminal, and issue the prompt. */
 void
-rl_callback_handler_install (prompt, linefunc)
-     const char *prompt;
-     rl_vcpfunc_t *linefunc;
+rl_callback_handler_install(const char *prompt, rl_vcpfunc_t *linefunc)
 {
-  rl_set_prompt (prompt);
+  rl_set_prompt(prompt);
   rl_linefunc = linefunc;
-  _rl_callback_newline ();
+  _rl_callback_newline();
 }
 
 /* Read one character, and dispatch to the handler if it ends the line. */
 void
-rl_callback_read_char ()
+rl_callback_read_char(void)
 {
   char *line;
   int eof;
@@ -132,7 +130,7 @@ rl_callback_read_char ()
 	    _rl_callback_newline ();
 	}
       if (rl_pending_input)
-	eof = readline_internal_char ();
+	eof = readline_internal_char();
       else
         break;
     }
@@ -140,7 +138,7 @@ rl_callback_read_char ()
 
 /* Remove the handler, and make sure the terminal is in its normal state. */
 void
-rl_callback_handler_remove ()
+rl_callback_handler_remove(void)
 {
   rl_linefunc = NULL;
   if (in_handler)

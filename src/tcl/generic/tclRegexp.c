@@ -1,4 +1,4 @@
-/* 
+/*
  * tclRegexp.c --
  *
  *	This file contains the public interfaces to the Tcl regular
@@ -29,20 +29,20 @@
  *	regfronts.c	regguts.h
  *
  * Copyright (c) 1998 Henry Spencer.  All rights reserved.
- * 
+ *
  * Development of this software was funded, in part, by Cray Research Inc.,
  * UUNET Communications Services Inc., Sun Microsystems Inc., and Scriptics
  * Corporation, none of whom are responsible for the results.  The author
- * thanks all of them. 
- * 
+ * thanks all of them.
+ *
  * Redistribution and use in source and binary forms -- with or without
  * modification -- are permitted for any purpose, provided that
  * redistributions in source form retain this entire copyright notice and
  * indicate the origin and nature of any modifications.
- * 
+ *
  * I'd appreciate being given credit for this package in the documentation
  * of software which uses it, but that is not a requirement.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
  * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
  * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL
@@ -180,7 +180,8 @@ Tcl_RegExpExec(interp, re, string, start)
 				 * this identifies beginning of larger
 				 * string, so that "^" won't match. */
 {
-    int flags, result, numChars;
+    int flags, result;
+    size_t numChars;
     TclRegexp *regexp = (TclRegexp *)re;
     Tcl_DString ds;
     CONST Tcl_UniChar *ustr;
@@ -209,8 +210,8 @@ Tcl_RegExpExec(interp, re, string, start)
 
     Tcl_DStringInit(&ds);
     ustr = Tcl_UtfToUniCharDString(string, -1, &ds);
-    numChars = Tcl_DStringLength(&ds) / sizeof(Tcl_UniChar);
-    result = RegExpExecUniChar(interp, re, ustr, numChars,
+    numChars = ((size_t)Tcl_DStringLength(&ds) / sizeof(Tcl_UniChar));
+    result = RegExpExecUniChar(interp, re, ustr, (int)numChars,
 	    -1 /* nmatches */, flags);
     Tcl_DStringFree(&ds);
 
@@ -462,7 +463,7 @@ Tcl_RegExpExecObj(interp, re, objPtr, offset, nmatches, flags)
     }
     udata += offset;
     length -= offset;
-    
+
     return RegExpExecUniChar(interp, re, udata, length, nmatches, flags);
 }
 
@@ -524,10 +525,10 @@ Tcl_RegExpGetInfo(regexp, infoPtr)
     Tcl_RegExp regexp;		/* Pattern from which to get subexpressions. */
     Tcl_RegExpInfo *infoPtr;	/* Match information is stored here.  */
 {
-    TclRegexp *regexpPtr = (TclRegexp *) regexp;
+    TclRegexp *regexpPtr = (TclRegexp *)regexp;
 
-    infoPtr->nsubs = regexpPtr->re.re_nsub;
-    infoPtr->matches = (Tcl_RegExpIndices *) regexpPtr->matches;
+    infoPtr->nsubs = (int)regexpPtr->re.re_nsub;
+    infoPtr->matches = (Tcl_RegExpIndices *)regexpPtr->matches;
     infoPtr->extendStart = regexpPtr->details.rm_extend.rm_so;
 }
 
@@ -837,11 +838,11 @@ CompileRegexp(interp, string, length, flags)
 {
     TclRegexp *regexpPtr;
     CONST Tcl_UniChar *uniString;
-    int numChars;
+    size_t numChars;
     Tcl_DString stringBuf;
     int status, i;
     ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
- 
+
     if (!tsdPtr->initialized) {
 	tsdPtr->initialized = 1;
 	Tcl_CreateThreadExitHandler(FinalizeRegexp, NULL);
@@ -890,7 +891,7 @@ CompileRegexp(interp, string, length, flags)
     /*
      * This is a new expression, so compile it and add it to the cache.
      */
-    
+
     regexpPtr = (TclRegexp *) ckalloc(sizeof(TclRegexp));
     regexpPtr->objPtr = NULL;
     regexpPtr->string = NULL;
@@ -903,7 +904,7 @@ CompileRegexp(interp, string, length, flags)
 
     Tcl_DStringInit(&stringBuf);
     uniString = Tcl_UtfToUniCharDString(string, length, &stringBuf);
-    numChars = Tcl_DStringLength(&stringBuf) / sizeof(Tcl_UniChar);
+    numChars = ((size_t)Tcl_DStringLength(&stringBuf) / sizeof(Tcl_UniChar));
 
     /*
      * Compile the string and check for errors.

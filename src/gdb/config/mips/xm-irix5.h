@@ -1,4 +1,5 @@
-/* Definitions for irix5 hosting support.
+/* xm-irix5.h
+   Definitions for irix5 hosting support.
 
    Copyright 1993, 1994, 1995, 1996 Free Software Foundation, Inc.
 
@@ -30,5 +31,8 @@
       addr = regno + NSIG_HNDLRS;	/* Skip over signal handlers */
 
 /* This enables reliable signals (and the associated setjmp/longjmp), and gives
-   bsdish prototypes for getpgrp/setpgrg/setgroups and initgroups.  */
+ * bsdish prototypes for getpgrp/setpgrg/setgroups and initgroups.
+ */
 #define _BSD_COMPAT
+
+/* EOF */

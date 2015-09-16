@@ -8,13 +8,13 @@ dnl# the shell level, so use sinclude(...) to pull it in.
 # convention, else the table becomes a real mess to understand and
 # maintain.
 
-dnl# glue to avoid code duplication at top level
+dnl# glue to avoid code duplication at top level:
 m4_ifndef([SIM_ARCH],[AC_DEFUN([SIM_ARCH],[sim_arch=$1])])
 
 sim_testsuite=no
 sim_common=yes
 sim_igen=no
-sim_arch=
+sim_arch=""
 case "${target}" in
    arm*-*-*)
        SIM_ARCH([arm])
@@ -116,7 +116,7 @@ case "${target}" in
        sim_testsuite=yes
        ;;
    *)
-       # No simulator subdir, so the subdir "common" is NOT needed.
+       # No simulator subdir, so the subdir "common" is NOT needed:
        sim_common=no
        ;;
 esac

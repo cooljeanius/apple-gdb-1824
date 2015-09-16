@@ -1,4 +1,5 @@
 # Host: Hewlett-Packard PA-RISC machine, running Linux
+
 XDEPFILES=
 NAT_FILE= nm-linux.h
 NATDEPFILES= infptrace.o inftarg.o fork-child.o corelow.o gcore.o \

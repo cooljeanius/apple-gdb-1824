@@ -1,0 +1,109 @@
+/*
+ *  Time-stamp:        "2010-08-06 08:57:49 bkorb"
+ *
+ *  This file is part of AutoGen.
+ *  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+ *
+ * AutoGen is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * AutoGen is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+autogen definitions fsm;
+
+method = callout;
+type   = loop;
+prefix = dp;
+#ifdef DEBUG_ENABLED
+debug-flag      = FSM_DEBUG_ENABLED;
+#endif
+handler-file    = defParse.x;
+
+/*
+ * Non-terminal "events"
+ */
+event  = "autogen", "definitions", end,
+         var_name, other_name, string, here_string, number;
+
+/*
+ * Terminal token-events
+ */
+event  = lit_semi, lit_eq, lit_comma, lit_o_brace, lit_c_brace,
+         lit_open_bkt, lit_close_bkt;
+
+lit-semi        = ';';
+lit-eq          = '=';
+lit-comma       = ',';
+lit-o_brace     = '{';
+lit-c_brace     = '}';
+lit-open_bkt    = '[';
+lit-close_bkt   = ']';
+end = 'End-Of-File';
+
+state  = need_def,     need_tpl,     need_semi,    need_name,
+         have_name,    need_value,   need_idx,     need_cbkt,
+         indx_name,    have_value;
+
+/*
+ *  Initial to operational state
+ */
+transition =
+{ tst  = init;         tev = "autogen";     next = need_def;  ttype = noop; },
+{ tst  = need_def;     tev = "definitions"; next = need_tpl;  ttype = noop; },
+{ tst  = need_tpl;     tev = string, other_name, var_name;
+  next = need_semi;    ttype = tpl_name; },
+{ tst  = need_semi;    tev = lit_semi;      next = need_name; ttype = noop; };
+
+/*
+ *  When looking for the next named object, you either get the name,
+ *  or end a block or end the input.  If you get an "autogen" token, ignore it.
+ *  We likely got it due to a #include.
+ */
+transition =
+{ tst = need_name;    tev   = "autogen";    next = need_def;  ttype = noop; },
+{ tst = need_name;    tev   = var_name;     next = have_name; },
+{ tst = need_name;    tev   = lit_c_brace;  next = have_value;
+                      ttype = end_block; },
+{ tst = need_name;    tev   = end;          next = done; };
+
+/*
+ *  We have a name now.  Next is a semicolon for an empty string value,
+ *  or an '=' to start a value list or a '[' for an indexed value.
+ */
+transition =
+{ tst = have_name;    tev   = lit_semi;      next = need_name;
+                      ttype = empty_val; },
+{ tst = have_name;    tev   = lit_eq;        next = need_value; },
+{ tst = have_name;    tev   = lit_open_bkt;  next = need_idx; ttype = noop; },
+{ tst = need_idx;     tev   = number, var_name;
+                      ttype = indexed_name;  next = need_cbkt; },
+{ tst = need_cbkt;    tev   = lit_close_bkt; next = indx_name;
+                      ttype = noop; },
+/*
+ *  once you have one index, you cannot have another.
+ *  Otherwise, "indx_name" is identical to "have_name".
+ */
+{ tst = indx_name;    tev   = lit_semi;        next = need_name;
+                      ttype = empty_val; },
+{ tst = indx_name;    tev   = lit_eq;          next = need_value;
+                      ttype = noop; };
+
+transition =
+{ tst  = need_value;  tev = string, here_string, other_name, var_name, number;
+                      next  = have_value;      ttype = str_value; },
+{ tst  = need_value;  tev   = lit_o_brace;     next  = need_name;
+                      ttype = start_block; },
+{ tst  = have_value;  tev   = lit_semi;        next  = need_name;
+                      ttype = noop; },
+{ tst  = have_value;  tev   = lit_comma;       next  = need_value;
+                      ttype = next_val; };
+/* end of agen5/defParse.def */

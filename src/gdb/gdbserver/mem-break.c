@@ -1,4 +1,5 @@
-/* Memory breakpoint operations for the remote server for GDB.
+/* mem-break.c
+   Memory breakpoint operations for the remote server for GDB.
    Copyright 2002, 2003, 2005
    Free Software Foundation, Inc.
 
@@ -210,16 +211,18 @@ set_breakpoint_data (const unsigned char *bp_data, int bp_len)
 }
 
 void
-check_mem_read (CORE_ADDR mem_addr, unsigned char *buf, int mem_len)
+check_mem_read(CORE_ADDR mem_addr, unsigned char *buf, int mem_len)
 {
   struct breakpoint *bp = breakpoints;
-  CORE_ADDR mem_end = mem_addr + mem_len;
+  CORE_ADDR mem_end = (mem_addr + mem_len);
 
   for (; bp != NULL; bp = bp->next)
     {
-      CORE_ADDR bp_end = bp->pc + breakpoint_len;
+      CORE_ADDR bp_end = (bp->pc + breakpoint_len);
       CORE_ADDR start, end;
-      int copy_offset, copy_len, buf_offset;
+      off_t copy_offset;
+      size_t copy_len;
+      off_t buf_offset;
 
       if (mem_addr >= bp_end)
 	continue;
@@ -234,25 +237,27 @@ check_mem_read (CORE_ADDR mem_addr, unsigned char *buf, int mem_len)
       if (end > mem_end)
 	end = mem_end;
 
-      copy_len = end - start;
-      copy_offset = start - bp->pc;
-      buf_offset = start - mem_addr;
+      copy_len = (size_t)(end - start);
+      copy_offset = (start - bp->pc);
+      buf_offset = (start - mem_addr);
 
-      memcpy (buf + buf_offset, bp->old_data + copy_offset, copy_len);
+      memcpy((buf + buf_offset), (bp->old_data + copy_offset), copy_len);
     }
 }
 
 void
-check_mem_write (CORE_ADDR mem_addr, unsigned char *buf, int mem_len)
+check_mem_write(CORE_ADDR mem_addr, unsigned char *buf, int mem_len)
 {
   struct breakpoint *bp = breakpoints;
-  CORE_ADDR mem_end = mem_addr + mem_len;
+  CORE_ADDR mem_end = (mem_addr + mem_len);
 
   for (; bp != NULL; bp = bp->next)
     {
-      CORE_ADDR bp_end = bp->pc + breakpoint_len;
+      CORE_ADDR bp_end = (bp->pc + breakpoint_len);
       CORE_ADDR start, end;
-      int copy_offset, copy_len, buf_offset;
+      off_t copy_offset;
+      size_t copy_len;
+      off_t buf_offset;
 
       if (mem_addr >= bp_end)
 	continue;
@@ -267,12 +272,15 @@ check_mem_write (CORE_ADDR mem_addr, unsigned char *buf, int mem_len)
       if (end > mem_end)
 	end = mem_end;
 
-      copy_len = end - start;
-      copy_offset = start - bp->pc;
-      buf_offset = start - mem_addr;
+      copy_len = (size_t)(end - start);
+      copy_offset = (start - bp->pc);
+      buf_offset = (start - mem_addr);
 
-      memcpy (bp->old_data + copy_offset, buf + buf_offset, copy_len);
+      memcpy((bp->old_data + copy_offset), (buf + buf_offset), copy_len);
       if (bp->reinserting == 0)
-	memcpy (buf + buf_offset, breakpoint_data + copy_offset, copy_len);
+	memcpy((buf + buf_offset), (breakpoint_data + copy_offset),
+               copy_len);
     }
 }
+
+/* EOF */

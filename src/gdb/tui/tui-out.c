@@ -1,4 +1,4 @@
-/* Output generating routines for GDB CLI.
+/* tui-out.c: Output generating routines for GDB CLI.
 
    Copyright 1999, 2000, 2001, 2002, 2003, 2005
    Free Software Foundation, Inc.
@@ -66,7 +66,7 @@ static void tui_text (struct ui_out *uiout, const char *string);
 static void tui_message (struct ui_out *uiout, int verbosity,
 			 const char *format, va_list args)
      ATTR_FORMAT (printf, 3, 0);
-static void tui_wrap_hint (struct ui_out *uiout, char *identstring);
+static void tui_wrap_hint (struct ui_out *uiout, const char *identstring);
 static void tui_flush (struct ui_out *uiout);
 
 /* This is the CLI ui-out implementation functions vector */
@@ -88,22 +88,26 @@ static struct ui_out_impl tui_ui_out_impl =
   tui_field_fmt,
   tui_spaces,
   tui_text,
+  (text_fmt_ftype *)NULL, /* FIXME */
   tui_message,
   tui_wrap_hint,
   tui_flush,
-  NULL,
+  (redirect_ftype *)NULL,
+  (notify_begin_ftype *)NULL,
+  (notify_end_ftype *)NULL,
   0, /* Does not need MI hacks (i.e. needs CLI hacks).  */
 };
 
+
 /* Prototypes for local functions */
 
-extern void _initialize_tui_out (void);
+extern void _initialize_tui_out(void);
 
-static void field_separator (void);
+static void field_separator(void);
 
-static void out_field_fmt (struct ui_out *uiout, int fldno,
-			   const char *fldname,
-			   const char *format,...) ATTR_FORMAT (printf, 4, 5);
+static void out_field_fmt(struct ui_out *uiout, int fldno,
+			  const char *fldname,
+			  const char *format, ...) ATTR_FORMAT(printf, 4, 5);
 
 /* local variables */
 
@@ -249,7 +253,7 @@ tui_field_string (struct ui_out *uiout,
         }
       return;
     }
-  
+
   data->start_of_line ++;
   if ((align != ui_noalign) && string)
     {
@@ -347,12 +351,12 @@ tui_message (struct ui_out *uiout, int verbosity,
 }
 
 void
-tui_wrap_hint (struct ui_out *uiout, char *identstring)
+tui_wrap_hint(struct ui_out *uiout, const char *identstring)
 {
-  tui_out_data *data = ui_out_data (uiout);
+  tui_out_data *data = ui_out_data(uiout);
   if (data->suppress_output)
     return;
-  wrap_here (identstring);
+  wrap_here((char *)identstring);
 }
 
 void

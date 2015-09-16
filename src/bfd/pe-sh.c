@@ -23,8 +23,16 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #define TARGET_SHL_SYM shlpe_vec
 #define TARGET_SHL_NAME "pe-shl"
 #define COFF_WITH_PE
-#define PCRELOFFSET TRUE
+#ifndef PCRELOFFSET
+# define PCRELOFFSET TRUE
+#endif /* !PCRELOFFSET */
 #define TARGET_UNDERSCORE '_'
 #define COFF_LONG_SECTION_NAMES
 
 #include "coff-sh.c"
+
+#ifdef PCRELOFFSET
+# undef PCRELOFFSET
+#endif /* PCRELOFFSET */
+
+/* EOF */

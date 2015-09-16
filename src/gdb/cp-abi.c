@@ -1,4 +1,4 @@
-/* Generic code for supporting multiple C++ ABI's
+/* cp-abi.c: Generic code for supporting multiple C++ ABI's
 
    Copyright 2001, 2002, 2003, 2005 Free Software Foundation, Inc.
 
@@ -28,10 +28,26 @@
 
 #include "gdb_string.h"
 
-static struct cp_abi_ops *find_cp_abi (const char *short_name);
+static struct cp_abi_ops *find_cp_abi(const char *short_name);
 
-static struct cp_abi_ops current_cp_abi = { "", NULL };
-static struct cp_abi_ops auto_cp_abi = { "auto", NULL };
+static struct cp_abi_ops current_cp_abi = {
+  "", NULL, NULL,  (enum ctor_kinds (*)(const char *))NULL,
+  (enum dtor_kinds (*)(const char *))NULL, (int (*)(const char *))NULL,
+  (int (*)(const char *))NULL,
+  (struct value *(*)(struct value **, struct fn_field *, int,
+                     struct type *, int))NULL,
+  (struct type *(*)(struct value *, int *, int *, int *))NULL,
+  (int (*)(struct type *, int, const bfd_byte *, CORE_ADDR))NULL
+};
+static struct cp_abi_ops auto_cp_abi = {
+  "auto", NULL, NULL, (enum ctor_kinds (*)(const char *))NULL,
+  (enum dtor_kinds (*)(const char *))NULL, (int (*)(const char *))NULL,
+  (int (*)(const char *))NULL,
+  (struct value *(*)(struct value **, struct fn_field *, int,
+                     struct type *, int))NULL,
+  (struct type *(*)(struct value *, int *, int *, int *))NULL,
+  (int (*)(struct type *, int, const bfd_byte *, CORE_ADDR))NULL
+};
 
 #define CP_ABI_MAX 8
 static struct cp_abi_ops *cp_abis[CP_ABI_MAX];
@@ -168,15 +184,15 @@ set_cp_abi_as_auto_default (const char *short_name)
   /* Since we copy the current ABI into current_cp_abi instead of
      using a pointer, if auto is currently the default, we need to
      reset it.  */
-  if (strcmp (current_cp_abi.shortname, "auto") == 0)
-    switch_to_cp_abi ("auto");
+  if (strcmp(current_cp_abi.shortname, "auto") == 0)
+    switch_to_cp_abi("auto");
 }
 
 /* APPLE LOCAL begin C++ auto abi */
 int
-cp_abi_is_auto_p ()
+cp_abi_is_auto_p(void)
 {
-  if (strcmp (current_cp_abi.shortname, "auto") == 0)
+  if (strcmp(current_cp_abi.shortname, "auto") == 0)
     return 1;
   else
     return 0;
@@ -259,16 +275,18 @@ show_cp_abi_cmd (char *args, int from_tty)
 extern initialize_file_ftype _initialize_cp_abi; /* -Wmissing-prototypes */
 
 void
-_initialize_cp_abi (void)
+_initialize_cp_abi(void)
 {
-  register_cp_abi (&auto_cp_abi);
-  switch_to_cp_abi ("auto");
+  register_cp_abi(&auto_cp_abi);
+  switch_to_cp_abi("auto");
 
-  add_cmd ("cp-abi", class_obscure, set_cp_abi_cmd, _("\
+  add_cmd("cp-abi", class_obscure, set_cp_abi_cmd, _("\
 Set the ABI used for inspecting C++ objects.\n\
 \"set cp-abi\" with no arguments will list the available ABIs."),
-	   &setlist);
+          &setlist);
 
-  add_cmd ("cp-abi", class_obscure, show_cp_abi_cmd,
-	   _("Show the ABI used for inspecting C++ objects."), &showlist);
+  add_cmd("cp-abi", class_obscure, show_cp_abi_cmd,
+	  _("Show the ABI used for inspecting C++ objects."), &showlist);
 }
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* Simple implementation of strstr for systems without it.
+/* strstr.c: Simple implementation of strstr for systems without it.
    This function is in the public domain.  */
 
 /*
@@ -22,20 +22,22 @@ length, the function returns @var{string}.
 
 #include <stddef.h>
 
-extern char *strchr (const char *, int);
-extern int strncmp (const void *, const void *, size_t);
-extern size_t strlen (const char *);
+extern char *strchr(const char *, int);
+extern int strncmp(const void *, const void *, size_t);
+extern size_t strlen(const char *);
 
 char *
-strstr (const char *s1, const char *s2)
+strstr(const char *s1, const char *s2)
 {
   const char *p = s1;
-  const size_t len = strlen (s2);
+  const size_t len = strlen(s2);
 
-  for (; (p = strchr (p, *s2)) != 0; p++)
+  for (; (p = strchr(p, *s2)) != 0; p++)
     {
-      if (strncmp (p, s2, len) == 0)
+      if (strncmp(p, s2, len) == 0)
 	return (char *)p;
     }
   return (0);
 }
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Macro definitions for RS6000 running under LynxOS.
+/* tm-rs6000ly.h
+   Macro definitions for RS6000 running under LynxOS.
    Copyright 1993, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -23,7 +24,7 @@
 
 #include "coff-solib.h"		/* COFF shared library support */
 
-/* Lynx's signal.h doesn't seem to have any macros for what signal numbers
+/* Lynx's signal.h does NOT seem to have any macros for what signal numbers
    the real-time events are.  */
 #define REALTIME_LO 33
 /* One more than the last one.  */
@@ -35,3 +36,5 @@
 #define CANNOT_STORE_REGISTER(regno) (regno == PS_REGNUM)
 
 #endif /* TM_RS6000LYNX_H */
+
+/* EOF */

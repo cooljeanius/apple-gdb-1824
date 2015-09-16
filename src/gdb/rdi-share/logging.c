@@ -1,6 +1,6 @@
-/* 
+/* logging.c
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -23,13 +23,13 @@
 # include "devconf.h"
 #else
 # include "host.h"
-#endif
+#endif /* TARGET */
 
 #include "logging.h"    /* Header file for this source code */
 
 #ifndef UNUSED
 # define UNUSED(x) ((x)=(x))
-#endif
+#endif /* !UNUSED */
 
 /*
  * __rt_warning
@@ -58,8 +58,8 @@
 #  define  POST_DEBUG(n) METHOD_EXPAND(DEBUG_METHOD, _PostWarn, (n))
 
 # else
-#  error Must define DEBUG_METHOD
-# endif
+#  error "Must define DEBUG_METHOD"
+# endif /* DEBUG_METHOD */
 
 #endif /* def DEBUG */
 
@@ -67,7 +67,9 @@
  * the guts of __rt_warning
  */
 
+#if !defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #pragma no_check_stack
+#endif /* !__GNUC__ && !__STRICT_ANSI__ */
 #ifdef DEBUG
 
 static const char hextab[] = "0123456789ABCDEF";
@@ -80,10 +82,8 @@ static int va_warn0(char *format, va_list args)
 {
     int len = 0;
 
-    while ((format != NULL) && (*format != '\0'))
-    {
-        if (*format == '%')
-        {
+    while ((format != NULL) && (*format != '\0')) {
+        if (*format == '%') {
             char fch = *(++format); /* get format character (skipping '%') */
             int ival; /* holder for integer arguments */
             char *string; /* holder for string arguments */
@@ -97,17 +97,14 @@ static int va_warn0(char *format, va_list args)
              * defines "isdigit" as a macro, that uses a fixed
              * character description table.
              */
-            if ((fch >= '0') && (fch <= '9'))
-            {
-                if (fch == '0')
-                {
-                    /* Leading zeroes padding */
+            if ((fch >= '0') && (fch <= '9')) {
+                if (fch == '0') {
+                    /* Leading zeroes padding: */
                     padzero = TRUE;
                     fch = *(++format);
                 }
 
-                while ((fch >= '0') && (fch <= '9'))
-                {
+                while ((fch >= '0') && (fch <= '9')) {
                     width = ((width * 10) + (fch - '0'));
                     fch = *(++format);
                 }
@@ -138,8 +135,7 @@ static int va_warn0(char *format, va_list args)
                   if ((width == 0) || (width > 8))
                       width = 8;
 
-                  for(loop = (width * 4); (loop != 0); loop -= 4)
-                  {
+                  for (loop = (width * 4); (loop != 0); loop -= 4) {
                       CHAROUT(hextab[(uval >> (loop - 4)) & 0xF]);
                       len++;
                   }
@@ -151,20 +147,16 @@ static int va_warn0(char *format, va_list args)
                   /* decimal */
                   ival = va_arg(args, int);
 
-                  if (ival < 0)
-                  {
+                  if (ival < 0) {
                       ival = -ival;
                       CHAROUT('-');
                       len++;
                   }
 
-                  if (ival == 0)
-                  {
+                  if (ival == 0) {
                       CHAROUT('0');
                       len++;
-                  }
-                  else
-                  {
+                  } else {
                       /*
                        * The simplest method of displaying numbers is
                        * to provide a small recursive routine, that
@@ -183,8 +175,7 @@ static int va_warn0(char *format, va_list args)
                        * Place the conversion into the buffer in
                        * reverse order:
                        */
-                      while (ival != 0)
-                      {
+                      while (ival != 0) {
                           buffer[count++] = ('0' + ((unsigned int)ival % 10));
                           ival = ((unsigned int)ival / 10);
                       }
@@ -193,20 +184,17 @@ static int va_warn0(char *format, va_list args)
                        * Check if we are placing the data in a
                        * fixed width field:
                        */
-                      if (width != 0)
-                      {
+                      if (width != 0) {
                           width -= count;
 
-                          for (; (width != 0); width--)
-                          {
+                          for (; (width != 0); width--) {
                               CHAROUT(padzero ? '0': ' ');
                               len++;
                           }
                       }
 
-                      /* then display the buffer in reverse order */
-                      for (; (count != 0); count--)
-                      {
+                      /* then display the buffer in reverse order: */
+                      for (; (count != 0); count--) {
                           CHAROUT(buffer[count - 1]);
                           len++;
                       }
@@ -221,8 +209,7 @@ static int va_warn0(char *format, va_list args)
                   /* we only need this test once */
                   if (string != NULL)
                       /* whilst we check this for every character */
-                      while (*string)
-                      {
+                      while (*string) {
                           CHAROUT(*string);
                           len++;
                           string++;
@@ -246,7 +233,7 @@ static int va_warn0(char *format, va_list args)
                   break;
 
               default:
-                  /* just display the character */
+                  /* just display the character: */
                   CHAROUT(*format);
                   len++;
 
@@ -254,9 +241,7 @@ static int va_warn0(char *format, va_list args)
             }
 
             format++; /* step over format character */
-        }
-        else
-        {
+        } else {
             CHAROUT(*format);
             len++;
             format++;
@@ -274,16 +259,15 @@ static void va_warn1(int len, char *msg)
 {
     UNUSED(len); UNUSED(msg);
 }
-# endif
+# endif /* DEBUG_NEED_VA_WARN1 */
 
 void va_warn(WarnLevel level, char *format, va_list args)
 {
     int len;
 
-    if ( PRE_DEBUG( level ) )
-    {
+    if (PRE_DEBUG(level)) {
         len = va_warn0(format, args);
-        POST_DEBUG( len );
+        POST_DEBUG(len);
     }
 }
 
@@ -295,9 +279,13 @@ void va_warn(WarnLevel level, char *format, va_list args)
 }
 
 #endif /* ... else ndef(DEBUG) ... */
+#if !defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #pragma check_stack
+#endif /* !__GNUC__ && !__STRICT_ANSI__ */
 
+#if !defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #pragma no_check_stack
+#endif /* !__GNUC__ && !__STRICT_ANSI__ */
 void __rt_warning(char *format, ...)
 {
     va_list args;
@@ -313,12 +301,16 @@ void __rt_warning(char *format, ...)
 
     return;
 }
+#if !defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #pragma check_stack
+#endif /* !__GNUC__ && !__STRICT_ANSI__ */
 
 #ifdef TARGET
 
+#if !defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #pragma no_check_stack
-void __rt_uninterruptable_loop( void ); /* in suppasm.s */
+#endif /* !__GNUC__ && !__STRICT_ANSI__ */
+void __rt_uninterruptable_loop(void); /* in suppasm.s */
 
 void __rt_error(char *format, ...)
 {
@@ -326,7 +318,7 @@ void __rt_error(char *format, ...)
 
     va_start(args, format);
 
-    /* Display warning message */
+    /* Display warning message: */
     va_warn(WL_ERROR, format, args);
 
     __rt_uninterruptable_loop();
@@ -334,7 +326,9 @@ void __rt_error(char *format, ...)
     va_end(args);
     return;
 }
+#if !defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #pragma check_stack
+#endif /* !__GNUC__ && !__STRICT_ANSI__ */
 
 #endif /* def TARGET */
 
@@ -342,7 +336,9 @@ void __rt_error(char *format, ...)
 
 static bool trace_on = FALSE; /* must be set true in debugger if req'd */
 
+#if !defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #pragma no_check_stack
+#endif /* !__GNUC__ && !__STRICT_ANSI__ */
 void __rt_trace(char *format, ...)
 {
     va_list args;
@@ -352,8 +348,7 @@ void __rt_trace(char *format, ...)
      * to ensure that the warning messages are sequenced properly.
      */
 
-    if (trace_on)
-    {
+    if (trace_on) {
         va_start(args, format);
         va_warn(WL_TRACE, format, args);
         va_end(args);
@@ -361,7 +356,9 @@ void __rt_trace(char *format, ...)
 
     return;
 }
+#if !defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #pragma check_stack
+#endif /* !__GNUC__ && !__STRICT_ANSI__ */
 
 #endif /* def DO_TRACE */
 

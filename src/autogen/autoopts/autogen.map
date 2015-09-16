@@ -1,0 +1,52 @@
+
+%guard
+%file           ag-char-map.h
+
+%comment
+  This file contains the character classifications
+  used by AutoGen and AutoOpts for identifying tokens.
+  The table is static scope, so %guard is empty.
+
+  This file is part of AutoGen.
+  Copyright (c) 1992-2012 Bruce Korb - all rights reserved
+
+  AutoGen is free software: you can redistribute it and/or modify it under the
+  terms of the GNU General Public License as published by the Free Software
+  Foundation, either version 3 of the License, or (at your option) any later
+  version.
+
+  AutoGen is distributed in the hope that it will be useful, but WITHOUT ANY
+  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+  A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License along
+  with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+
+lower-case      "a-z"
+upper-case      "A-Z"
+alphabetic      +lower-case   +upper-case
+oct-digit       "0-7"
+dec-digit       "89"          +oct-digit
+hex-digit       "a-fA-F"      +dec-digit
+alphanumeric    +alphabetic   +dec-digit
+var-first       "_"           +alphabetic
+variable-name   +var-first    +dec-digit
+option-name     "^-"          +variable-name
+value-name      ":"           +option-name
+horiz-white     "\t "
+name-sep        "[.]"
+compound-name   +value-name   +name-sep +horiz-white
+whitespace      "\v\f\r\n\b"  +horiz-white
+unquotable      "!-~"         -"\"#(),;<=>[\\]`{}?*'"
+end-xml-token   "/>"          +whitespace
+graphic         "!-~"
+plus-n-space    "+"           +whitespace
+punctuation     "!-~"         -alphanumeric -"_"
+suffix          "-._"         +alphanumeric
+suffix-fmt      "%/"          +suffix     
+false-type      "nNfF0\x00"
+file-name       "/"           +suffix
+end-token       "\x00"        +whitespace
+end-list-entry  ","           +end-token
+set-separator   "|+"          +end-list-entry

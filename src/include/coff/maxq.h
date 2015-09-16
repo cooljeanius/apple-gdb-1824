@@ -1,31 +1,31 @@
 /* COFF spec for MAXQ
-
-   Copyright 2004, 2005 Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify it
-   under the terms of the GNU General Public License as published by the Free 
-   Software Foundation; either version 2 of the License, or (at your option)
-   any later version.
-
-   This program is distributed in the hope that it will be useful, but
-   WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-   for more details.
-
-   You should have received a copy of the GNU General Public License along
-   with this program; if not, write to the Free Software Foundation, Inc.,
-   51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
-
-   Contributed by Vineet Sharma(vineets@noida.hcltech.com) Inderpreet
-   S.(inderpreetb@noida.hcltech.com) HCL Technologies Ltd.  */
+ *
+ * Copyright 2004, 2005 Free Software Foundation, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ * Contributed by Vineet Sharma(vineets@noida.hcltech.com) Inderpreet
+ * S.(inderpreetb@noida.hcltech.com) HCL Technologies Ltd.  */
 
 #define L_LNNO_SIZE 2
 
 #include "coff/external.h"
 
 /* Bits for f_flags: F_RELFLG relocation info stripped from file F_EXEC file
-   is executable (no unresolved external references) F_LNNO line numbers
-   stripped from file F_LSYMS local symbols stripped from file.  */
+ * is executable (no unresolved external references) F_LNNO line numbers
+ * stripped from file F_LSYMS local symbols stripped from file.  */
 
 #define F_RELFLG        (0x0001)
 #define F_EXEC          (0x0002)
@@ -54,3 +54,5 @@ struct external_reloc
 
 #define	RELOC		struct external_reloc
 #define	RELSZ		(10 + 2)	/* sizeof (RELOC) */
+
+/* EOF */

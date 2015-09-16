@@ -1,4 +1,5 @@
-/* Macro definitions for ns32k running under NetBSD.
+/* tm-nbsd.h
+   Macro definitions for ns32k running under NetBSD.
    Copyright 1986, 1987, 1989, 1991, 1992, 1993, 1994
    Free Software Foundation, Inc.
 

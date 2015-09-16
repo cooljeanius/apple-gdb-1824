@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* i386-macosx-nat-exec.c
+   Mac OS X execution support for i386 for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -36,60 +37,64 @@
 #include "gdbarch.h"
 #include "arch-utils.h"
 
+#include "i386-macosx-nat-exec.h"
 #include "i386-macosx-tdep.h"
 
 #include "macosx-nat-mutils.h"
 #include "macosx-nat-inferior.h"
 
+#include <libintl.h>
+
 extern macosx_inferior_status *macosx_status;
 
 static void
-validate_inferior_registers (int regno)
+validate_inferior_registers(int regno)
 {
   int i;
   if (regno == -1)
     {
       for (i = 0; i < NUM_REGS; i++)
         {
-          if (!register_cached (i))
-            fetch_inferior_registers (i);
+          if (!register_cached(i))
+            fetch_inferior_registers(i);
         }
     }
-  else if (!register_cached (regno))
+  else if (!register_cached(regno))
     {
-      fetch_inferior_registers (regno);
+      fetch_inferior_registers(regno);
     }
 }
 
-/* NOTE: the following code was just lifted from i386-tdep.c.  Ultra-cheesy,
-   but it's time to get this thing building for submission...
+/* NOTE: the following code was just lifted from i386-tdep.c. Ultra-cheesy,
+   but it is time to get this thing building for submission...
    jmolenda/2004-05-17  */
 
 static int
-i386_sse_regnum_p (struct gdbarch *gdbarch, int regnum)
+i386_sse_regnum_p(struct gdbarch *gdbarch, int regnum)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
 
 #define I387_ST0_REGNUM tdep->st0_regnum
 #define I387_NUM_XMM_REGS tdep->num_xmm_regs
 
-  if (I387_NUM_XMM_REGS == 0)
+  if (I387_NUM_XMM_REGS == 0) {
     return 0;
+  }
 
-  return (I387_XMM0_REGNUM <= regnum && regnum < I387_MXCSR_REGNUM);
+  return ((I387_XMM0_REGNUM <= regnum) && (regnum < I387_MXCSR_REGNUM));
 
 #undef I387_ST0_REGNUM
 #undef I387_NUM_XMM_REGS
 }
 
 /* NOTE: the following code was just lifted from i386-tdep.c.  Ultra-cheesy,
-   but it's time to get this thing building for submission...
+   but it is time to get this thing building for submission...
    jmolenda/2004-05-17  */
 
 static int
-i386_mxcsr_regnum_p (struct gdbarch *gdbarch, int regnum)
+i386_mxcsr_regnum_p(struct gdbarch *gdbarch, int regnum)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
 
 #define I387_ST0_REGNUM tdep->st0_regnum
 #define I387_NUM_XMM_REGS tdep->num_xmm_regs
@@ -109,130 +114,133 @@ i386_mxcsr_regnum_p (struct gdbarch *gdbarch, int regnum)
    Otherwise, REGNO specifies which register (so we can save time).  */
 
 void
-fetch_inferior_registers (int regno)
+fetch_inferior_registers(int regno)
 {
   int current_pid;
   thread_t current_thread;
   int fetched = 0;
 
-  current_pid = ptid_get_pid (inferior_ptid);
-  current_thread = ptid_get_tid (inferior_ptid);
-  
-/* ifdef the following code so that gdb doesn't send the new
-   GDB_x86_THREAD_STATE constant when built on an older x86 MacOS X 10.4
-   system that won't recognize it.  In Leopard this is unnecessary.  */
-   
+  current_pid = ptid_get_pid(inferior_ptid);
+  current_thread = ptid_get_tid(inferior_ptid);
+
+  if (current_pid == 0) {
+    ; /* do nothing; just use value stored to current_pid */
+  }
+
+/* ifdef the following code so that gdb does NOT send the new
+ * GDB_x86_THREAD_STATE constant when built on an older x86 MacOS X 10.4
+ * system that will NOT recognize it.
+ * In Leopard (and later(?)) this is unnecessary. */
+
   if (TARGET_OSABI == GDB_OSABI_UNKNOWN)
     {
-      /* Attaching to a process.  Let's figure out what kind it is. */
+      /* Attaching to a process. Let us figure out what kind it is. */
       gdb_x86_thread_state_t gp_regs;
       struct gdbarch_info info;
       unsigned int gp_count = GDB_x86_THREAD_STATE_COUNT;
-      kern_return_t ret = thread_get_state
-        (current_thread, GDB_x86_THREAD_STATE, (thread_state_t) & gp_regs,
-         &gp_count);
+      kern_return_t ret =
+        thread_get_state(current_thread, GDB_x86_THREAD_STATE,
+                         (thread_state_t)&gp_regs, &gp_count);
       if (ret != KERN_SUCCESS)
 	{
-	  printf_unfiltered ("Error calling thread_get_state for GP registers for thread 0x%x\n", (int) current_thread);
-	  MACH_CHECK_ERROR (ret);
+	  printf_unfiltered("Error calling thread_get_state for GP registers for thread 0x%x\n", (int) current_thread);
+	  MACH_CHECK_ERROR(ret);
 	}
 
-      gdbarch_info_init (&info);
-      gdbarch_info_fill (current_gdbarch, &info);
-      info.byte_order = gdbarch_byte_order (current_gdbarch);
+      gdbarch_info_init(&info);
+      gdbarch_info_fill(current_gdbarch, &info);
+      info.byte_order = gdbarch_byte_order(current_gdbarch);
       if (gp_regs.tsh.flavor == GDB_x86_THREAD_STATE64)
         {
           info.osabi = GDB_OSABI_DARWIN64;
-          info.bfd_arch_info = bfd_lookup_arch (bfd_arch_i386, bfd_mach_x86_64);
+          info.bfd_arch_info = bfd_lookup_arch(bfd_arch_i386,
+                                               bfd_mach_x86_64);
         }
       else
         {
           info.osabi = GDB_OSABI_DARWIN;
-          info.bfd_arch_info = bfd_lookup_arch (bfd_arch_i386, 
-                                                           bfd_mach_i386_i386);
+          info.bfd_arch_info = bfd_lookup_arch(bfd_arch_i386,
+                                               bfd_mach_i386_i386);
         }
-      gdbarch_update_p (info);
+      gdbarch_update_p(info);
     }
 
   if (TARGET_OSABI == GDB_OSABI_DARWIN64)
     {
-      if ((regno == -1) || IS_GP_REGNUM_64 (regno))
+      if ((regno == -1) || IS_GP_REGNUM_64(regno))
         {
           gdb_x86_thread_state_t gp_regs;
           unsigned int gp_count = GDB_x86_THREAD_STATE_COUNT;
-          kern_return_t ret = thread_get_state
-            (current_thread, GDB_x86_THREAD_STATE, (thread_state_t) & gp_regs,
-             &gp_count);
+          kern_return_t ret =
+            thread_get_state(current_thread, GDB_x86_THREAD_STATE,
+                             (thread_state_t)&gp_regs, &gp_count);
 	  if (ret != KERN_SUCCESS)
 	    {
-	      printf_unfiltered ("Error calling thread_get_state for GP registers for thread 0x%x\n", (int) current_thread);
-	      MACH_CHECK_ERROR (ret);
+	      printf_unfiltered("Error calling thread_get_state for GP registers for thread 0x%x\n", (int) current_thread);
+	      MACH_CHECK_ERROR(ret);
 	    }
-          x86_64_macosx_fetch_gp_registers (&gp_regs.uts.ts64);
+          x86_64_macosx_fetch_gp_registers(&gp_regs.uts.ts64);
           fetched++;
         }
 
-      if ((regno == -1) 
-          || IS_FP_REGNUM_64 (regno)
-          || IS_VP_REGNUM_64 (regno)
-          || regno == REGS_64_MXCSR)
+      if ((regno == -1) || IS_FP_REGNUM_64(regno)
+          || IS_VP_REGNUM_64(regno) || (regno == REGS_64_MXCSR))
         {
           gdb_x86_float_state_t fp_regs;
           unsigned int fp_count = GDB_x86_FLOAT_STATE_COUNT;
-          kern_return_t ret = thread_get_state
-            (current_thread, GDB_x86_FLOAT_STATE, (thread_state_t) & fp_regs,
-             &fp_count);
+          kern_return_t ret =
+            thread_get_state(current_thread, GDB_x86_FLOAT_STATE,
+                             (thread_state_t)&fp_regs, &fp_count);
 	  if (ret != KERN_SUCCESS)
 	    {
-	      printf_unfiltered ("Error calling thread_get_state for float registers for thread 0x%x\n", (int) current_thread);
-	      MACH_CHECK_ERROR (ret);
+	      printf_unfiltered("Error calling thread_get_state for float registers for thread 0x%x\n", (int) current_thread);
+	      MACH_CHECK_ERROR(ret);
 	    }
-          x86_64_macosx_fetch_fp_registers (&fp_regs.ufs.fs64);
+          x86_64_macosx_fetch_fp_registers(&fp_regs.ufs.fs64);
           fetched++;
         }
     }
   else
     {
-      if ((regno == -1) || IS_GP_REGNUM (regno))
+      if ((regno == -1) || IS_GP_REGNUM(regno))
         {
           gdb_x86_thread_state_t gp_regs;
           unsigned int gp_count = GDB_x86_THREAD_STATE_COUNT;
-          kern_return_t ret = thread_get_state
-            (current_thread, GDB_x86_THREAD_STATE, (thread_state_t) & gp_regs,
-             &gp_count);
+          kern_return_t ret =
+            thread_get_state(current_thread, GDB_x86_THREAD_STATE,
+                             (thread_state_t)&gp_regs, &gp_count);
 	  if (ret != KERN_SUCCESS)
 	    {
-	      printf_unfiltered ("Error calling thread_get_state for GP registers for thread 0x%x\n", (int) current_thread);
-	      MACH_CHECK_ERROR (ret);
+	      printf_unfiltered("Error calling thread_get_state for GP registers for thread 0x%x\n", (int) current_thread);
+	      MACH_CHECK_ERROR(ret);
 	    }
-          i386_macosx_fetch_gp_registers (&(gp_regs.uts.ts32));
+          i386_macosx_fetch_gp_registers(&(gp_regs.uts.ts32));
           fetched++;
         }
 
-      if ((regno == -1) 
-          || IS_FP_REGNUM (regno)
-          || i386_sse_regnum_p (current_gdbarch, regno)
-          || i386_mxcsr_regnum_p (current_gdbarch, regno))
+      if ((regno == -1) || IS_FP_REGNUM(regno)
+          || i386_sse_regnum_p(current_gdbarch, regno)
+          || i386_mxcsr_regnum_p(current_gdbarch, regno))
         {
           gdb_i386_float_state_t fp_regs;
           unsigned int fp_count = GDB_i386_FLOAT_STATE_COUNT;
-          kern_return_t ret = thread_get_state
-            (current_thread, GDB_i386_FLOAT_STATE, (thread_state_t) & fp_regs,
-             &fp_count);
+          kern_return_t ret =
+            thread_get_state(current_thread, GDB_i386_FLOAT_STATE,
+                             (thread_state_t)&fp_regs, &fp_count);
 	  if (ret != KERN_SUCCESS)
 	    {
-	      printf_unfiltered ("Error calling thread_get_state for float registers for thread 0x%x\n", (int) current_thread);
-	      MACH_CHECK_ERROR (ret);
+	      printf_unfiltered("Error calling thread_get_state for float registers for thread 0x%x\n", (int) current_thread);
+	      MACH_CHECK_ERROR(ret);
 	    }
-          i386_macosx_fetch_fp_registers (&fp_regs);
+          i386_macosx_fetch_fp_registers(&fp_regs);
           fetched++;
         }
     }
 
   if (! fetched)
     {
-      warning ("unknown register %d", regno);
-      regcache_raw_supply (current_regcache, regno, NULL);
+      warning("unknown register %d", regno);
+      regcache_raw_supply(current_regcache, regno, NULL);
     }
 }
 
@@ -241,77 +249,78 @@ fetch_inferior_registers (int regno)
    Otherwise, REGNO specifies which register (so we can save time).  */
 
 void
-store_inferior_registers (int regno)
+store_inferior_registers(int regno)
 {
   int current_pid;
   thread_t current_thread;
 
-  current_pid = ptid_get_pid (inferior_ptid);
-  current_thread = ptid_get_tid (inferior_ptid);
+  current_pid = ptid_get_pid(inferior_ptid);
+  current_thread = ptid_get_tid(inferior_ptid);
 
-  validate_inferior_registers (regno);
+  if (current_pid == 0) {
+    ; /* do nothing; just use value stored to current_pid */
+  }
+
+  validate_inferior_registers(regno);
 
   if (TARGET_OSABI == GDB_OSABI_DARWIN64)
     {
-      if ((regno == -1) || IS_GP_REGNUM_64 (regno))
+      if ((regno == -1) || IS_GP_REGNUM_64(regno))
         {
           gdb_x86_thread_state_t gp_regs;
           kern_return_t ret;
           gp_regs.tsh.flavor = GDB_x86_THREAD_STATE64;
           gp_regs.tsh.count = GDB_x86_THREAD_STATE64_COUNT;
-          x86_64_macosx_store_gp_registers (&gp_regs.uts.ts64);
-          ret = thread_set_state (current_thread, GDB_x86_THREAD_STATE,
-                                  (thread_state_t) & gp_regs,
-                                  GDB_x86_THREAD_STATE_COUNT);
-          MACH_CHECK_ERROR (ret);
+          x86_64_macosx_store_gp_registers(&gp_regs.uts.ts64);
+          ret = thread_set_state(current_thread, GDB_x86_THREAD_STATE,
+                                 (thread_state_t)&gp_regs,
+                                 GDB_x86_THREAD_STATE_COUNT);
+          MACH_CHECK_ERROR(ret);
         }
 
-      if ((regno == -1)
-          || IS_FP_REGNUM_64 (regno)
-          || IS_VP_REGNUM_64 (regno)
-          || regno == REGS_64_MXCSR)
+      if ((regno == -1) || IS_FP_REGNUM_64(regno)
+          || IS_VP_REGNUM_64(regno) || (regno == REGS_64_MXCSR))
         {
           gdb_x86_float_state_t fp_regs;
           kern_return_t ret;
           fp_regs.fsh.flavor = GDB_x86_FLOAT_STATE64;
           fp_regs.fsh.count = GDB_x86_FLOAT_STATE64_COUNT;
-          if (x86_64_macosx_store_fp_registers (&fp_regs.ufs.fs64))
+          if (x86_64_macosx_store_fp_registers(&fp_regs.ufs.fs64))
             {
-               ret = thread_set_state (current_thread, GDB_x86_FLOAT_STATE,
-                                      (thread_state_t) & fp_regs,
+               ret = thread_set_state(current_thread, GDB_x86_FLOAT_STATE,
+                                      (thread_state_t)&fp_regs,
                                       GDB_x86_FLOAT_STATE_COUNT);
-               MACH_CHECK_ERROR (ret);
+               MACH_CHECK_ERROR(ret);
             }
         }
     }
   else
     {
-      if ((regno == -1) || IS_GP_REGNUM (regno))
+      if ((regno == -1) || IS_GP_REGNUM(regno))
         {
           gdb_x86_thread_state_t gp_regs;
           kern_return_t ret;
           gp_regs.tsh.flavor = GDB_x86_THREAD_STATE32;
           gp_regs.tsh.count = GDB_x86_THREAD_STATE32_COUNT;
-          i386_macosx_store_gp_registers (&(gp_regs.uts.ts32));
-          ret = thread_set_state (current_thread, GDB_x86_THREAD_STATE,
-                                  (thread_state_t) & gp_regs,
-                                  GDB_x86_THREAD_STATE_COUNT);
-          MACH_CHECK_ERROR (ret);
+          i386_macosx_store_gp_registers(&(gp_regs.uts.ts32));
+          ret = thread_set_state(current_thread, GDB_x86_THREAD_STATE,
+                                 (thread_state_t)&gp_regs,
+                                 GDB_x86_THREAD_STATE_COUNT);
+          MACH_CHECK_ERROR(ret);
         }
 
-      if ((regno == -1)
-          || IS_FP_REGNUM (regno)
-          || i386_sse_regnum_p (current_gdbarch, regno)
-          || i386_mxcsr_regnum_p (current_gdbarch, regno))
+      if ((regno == -1) || IS_FP_REGNUM(regno)
+          || i386_sse_regnum_p(current_gdbarch, regno)
+          || i386_mxcsr_regnum_p(current_gdbarch, regno))
         {
           gdb_i386_float_state_t fp_regs;
           kern_return_t ret;
-          if (i386_macosx_store_fp_registers (&fp_regs))
+          if (i386_macosx_store_fp_registers(&fp_regs))
             {
-               ret = thread_set_state (current_thread, GDB_i386_FLOAT_STATE,
-                                      (thread_state_t) & fp_regs,
+               ret = thread_set_state(current_thread, GDB_i386_FLOAT_STATE,
+                                      (thread_state_t)&fp_regs,
                                       GDB_i386_FLOAT_STATE_COUNT);
-               MACH_CHECK_ERROR (ret);
+               MACH_CHECK_ERROR(ret);
             }
         }
     }
@@ -321,28 +330,27 @@ store_inferior_registers (int regno)
 /* Support for debug registers, boosted mostly from i386-linux-nat.c.  */
 
 #ifndef DR_FIRSTADDR
-#define DR_FIRSTADDR 0
-#endif
+# define DR_FIRSTADDR 0
+#endif /* !DR_FIRSTADDR */
 
 #ifndef DR_LASTADDR
-#define DR_LASTADDR 3
-#endif
+# define DR_LASTADDR 3
+#endif /* !DR_LASTADDR */
 
 #ifndef DR_STATUS
-#define DR_STATUS 6
-#endif
+# define DR_STATUS 6
+#endif /* !DR_STATUS */
 
 #ifndef DR_CONTROL
-#define DR_CONTROL 7
-#endif
+# define DR_CONTROL 7
+#endif /* !DR_CONTROL */
 
 
 /* This function handles the case of an i386 or an x86_64 inferior.
-   In the i386 case, only the lower 32 bits of the argument VALUE are
-   used.  */
-
+ * In the i386 case, only the lower 32 bits of the argument VALUE are
+ * used: */
 static void
-i386_macosx_dr_set (int regnum, uint64_t value)
+i386_macosx_dr_set(int regnum, uint64_t value)
 {
   thread_t current_thread;
   x86_debug_state_t dr_regs;
@@ -350,20 +358,20 @@ i386_macosx_dr_set (int regnum, uint64_t value)
   kern_return_t ret;
   thread_array_t thread_list;
   unsigned int nthreads;
-  int i;
+  unsigned int i;
 
-  gdb_assert (regnum >= 0 && regnum <= DR_CONTROL);
+  gdb_assert((regnum >= 0) && (regnum <= DR_CONTROL));
 
-  /* We have to set the watchpoint value in all the threads.  */
-  ret = task_threads (macosx_status->task, &thread_list, &nthreads);
+  /* We have to set the watchpoint value in all the threads: */
+  ret = task_threads(macosx_status->task, &thread_list, &nthreads);
   if (ret != KERN_SUCCESS)
     {
-      printf_unfiltered ("Error getting the task threads for task: 0x%x.\n",
-			 (int) macosx_status->task);
-      MACH_CHECK_ERROR (ret);
+      printf_unfiltered("Error getting the task threads for task: 0x%x.\n",
+                        (int)macosx_status->task);
+      MACH_CHECK_ERROR(ret);
     }
 
-  for (i = 0; i < nthreads; i++)
+  for (i = 0U; i < nthreads; i++)
     {
       current_thread = thread_list[i];
 
@@ -371,16 +379,16 @@ i386_macosx_dr_set (int regnum, uint64_t value)
         {
           dr_regs.dsh.flavor = x86_DEBUG_STATE64;
           dr_regs.dsh.count = x86_DEBUG_STATE64_COUNT;
-          ret = thread_get_state (current_thread, x86_DEBUG_STATE,
-                                  (thread_state_t) &dr_regs, &dr_count);
+          ret = thread_get_state(current_thread, x86_DEBUG_STATE,
+                                 (thread_state_t)&dr_regs, &dr_count);
 
           if (ret != KERN_SUCCESS)
             {
-              printf_unfiltered ("Error reading debug registers thread 0x%x via thread_get_state\n", (int) current_thread);
-              MACH_CHECK_ERROR (ret);
+              printf_unfiltered("Error reading debug registers thread 0x%x via thread_get_state\n", (int) current_thread);
+              MACH_CHECK_ERROR(ret);
             }
-          
-          switch (regnum) 
+
+          switch (regnum)
             {
             case 0:
               dr_regs.uds.ds64.__dr0 = value;
@@ -407,35 +415,35 @@ i386_macosx_dr_set (int regnum, uint64_t value)
               dr_regs.uds.ds64.__dr7 = value;
               break;
             }
-          
-          ret = thread_set_state (current_thread, x86_DEBUG_STATE,
-                                  (thread_state_t) &dr_regs, dr_count);
+
+          ret = thread_set_state(current_thread, x86_DEBUG_STATE,
+                                 (thread_state_t)&dr_regs, dr_count);
 
           if (ret != KERN_SUCCESS)
             {
-              printf_unfiltered ("Error writing debug registers thread "
-                                 "0x%x via thread_get_state\n", 
-                                 (int) current_thread);
-              MACH_CHECK_ERROR (ret);
+              printf_unfiltered("Error writing debug registers thread "
+                                "0x%x via thread_get_state\n",
+                                (int)current_thread);
+              MACH_CHECK_ERROR(ret);
             }
         }
       else
         {
-          uint32_t val_32 = value & 0xffffffff;
+          uint32_t val_32 = (value & 0xffffffff);
 
           dr_regs.dsh.flavor = x86_DEBUG_STATE32;
           dr_regs.dsh.count = x86_DEBUG_STATE32_COUNT;
           dr_count = x86_DEBUG_STATE_COUNT;
-          ret = thread_get_state (current_thread, x86_DEBUG_STATE, 
-                                  (thread_state_t) &dr_regs, &dr_count);
-          
+          ret = thread_get_state(current_thread, x86_DEBUG_STATE,
+                                 (thread_state_t)&dr_regs, &dr_count);
+
           if (ret != KERN_SUCCESS)
             {
-              printf_unfiltered ("Error reading debug registers thread 0x%x via thread_get_state\n", (int) current_thread);
-              MACH_CHECK_ERROR (ret);
+              printf_unfiltered("Error reading debug registers thread 0x%x via thread_get_state\n", (int) current_thread);
+              MACH_CHECK_ERROR(ret);
             }
-          
-          switch (regnum) 
+
+          switch (regnum)
             {
             case 0:
               dr_regs.uds.ds32.__dr0 = val_32;
@@ -462,43 +470,43 @@ i386_macosx_dr_set (int regnum, uint64_t value)
               dr_regs.uds.ds32.__dr7 = val_32;
               break;
             }
-          
-          ret = thread_set_state (current_thread, x86_DEBUG_STATE, 
-                                  (thread_state_t) &dr_regs, dr_count);
+
+          ret = thread_set_state(current_thread, x86_DEBUG_STATE,
+                                 (thread_state_t)&dr_regs, dr_count);
 
           if (ret != KERN_SUCCESS)
             {
-              printf_unfiltered ("Error writing debug registers thread "
-                                 "0x%x via thread_get_state\n", 
-                                 (int) current_thread);
-              MACH_CHECK_ERROR (ret);
+              printf_unfiltered("Error writing debug registers thread "
+                                "0x%x via thread_get_state\n",
+                                (int)current_thread);
+              MACH_CHECK_ERROR(ret);
             }
         }
-#if HAVE_TASK_SET_STATE          
+#if defined(HAVE_TASK_SET_STATE) && HAVE_TASK_SET_STATE
       /* Now call task_set_state with the values of the last thread we
-         set -- gdb doesn't support putting watchpoints on individual threads
-         so it doesn't matter which one we use.  The task_set_state call here
-         will make the kernel set the watchpoints on any newly-created 
+         set - gdb does NOT support putting watchpoints on individual threads
+         so it does NOT matter which one we use. The task_set_state call here
+         will make the kernel set the watchpoints on any newly-created
          threads.  */
 
-      ret = task_set_state (macosx_status->task, x86_DEBUG_STATE, 
-                              (thread_state_t) &dr_regs, dr_count);
+      ret = task_set_state(macosx_status->task, x86_DEBUG_STATE,
+                           (thread_state_t)&dr_regs, dr_count);
       if (ret != KERN_SUCCESS)
         {
-          printf_unfiltered ("Error writing debug registers task "
-                             "0x%x via thread_set_state\n", 
-                             (int) macosx_status->task);
-          MACH_CHECK_ERROR (ret);
+          printf_unfiltered("Error writing debug registers task "
+                            "0x%x via thread_set_state\n",
+                            (int)macosx_status->task);
+          MACH_CHECK_ERROR(ret);
         }
-#endif
+#endif /* HAVE_TASK_SET_STATE */
     }
-  ret = vm_deallocate (mach_task_self (), (vm_address_t) thread_list, 
-			(nthreads * sizeof (int)));
+  ret = vm_deallocate(mach_task_self(), (vm_address_t)thread_list,
+                      (nthreads * sizeof(int)));
 }
 
 
 static uint64_t
-i386_macosx_dr_get (int regnum)
+i386_macosx_dr_get(int regnum)
 {
   int current_pid;
   thread_t current_thread;
@@ -506,24 +514,28 @@ i386_macosx_dr_get (int regnum)
   kern_return_t ret;
   unsigned int dr_count = x86_DEBUG_STATE_COUNT;
 
-  gdb_assert (regnum >= 0 && regnum <= DR_CONTROL);
+  gdb_assert((regnum >= 0) && (regnum <= DR_CONTROL));
 
-  current_pid = ptid_get_pid (inferior_ptid);
-  current_thread = ptid_get_tid (inferior_ptid);
+  current_pid = ptid_get_pid(inferior_ptid);
+  current_thread = ptid_get_tid(inferior_ptid);
+
+  if (current_pid == 0) {
+    ; /* do nothing; just use value stored to current_pid */
+  }
 
   if (TARGET_OSABI == GDB_OSABI_DARWIN64)
     {
       dr_regs.dsh.flavor = x86_DEBUG_STATE64;
       dr_regs.dsh.count = x86_DEBUG_STATE64_COUNT;
-      ret = thread_get_state (current_thread, x86_DEBUG_STATE,
-                              (thread_state_t) &dr_regs, &dr_count);
+      ret = thread_get_state(current_thread, x86_DEBUG_STATE,
+                             (thread_state_t)&dr_regs, &dr_count);
       if (ret != KERN_SUCCESS)
         {
-          printf_unfiltered ("Error reading debug registers thread 0x%x via thread_get_state\n", (int) current_thread);
-          MACH_CHECK_ERROR (ret);
+          printf_unfiltered("Error reading debug registers thread 0x%x via thread_get_state\n", (int) current_thread);
+          MACH_CHECK_ERROR(ret);
         }
 
-      switch (regnum) 
+      switch (regnum)
         {
           case 0:
             return dr_regs.uds.ds64.__dr0;
@@ -550,16 +562,16 @@ i386_macosx_dr_get (int regnum)
       dr_regs.dsh.flavor = x86_DEBUG_STATE32;
       dr_regs.dsh.count = x86_DEBUG_STATE32_COUNT;
       dr_count = x86_DEBUG_STATE_COUNT;
-      ret = thread_get_state (current_thread, x86_DEBUG_STATE, 
-                              (thread_state_t) &dr_regs, &dr_count);
-    
+      ret = thread_get_state(current_thread, x86_DEBUG_STATE,
+                             (thread_state_t)&dr_regs, &dr_count);
+
       if (ret != KERN_SUCCESS)
         {
-          printf_unfiltered ("Error reading debug registers thread 0x%x via thread_get_state\n", (int) current_thread);
-          MACH_CHECK_ERROR (ret);
+          printf_unfiltered("Error reading debug registers thread 0x%x via thread_get_state\n", (int) current_thread);
+          MACH_CHECK_ERROR(ret);
         }
-    
-      switch (regnum) 
+
+      switch (regnum)
         {
           case 0:
             return dr_regs.uds.ds32.__dr0;
@@ -584,57 +596,57 @@ i386_macosx_dr_get (int regnum)
 }
 
 void
-i386_macosx_dr_set_control (unsigned long control)
+i386_macosx_dr_set_control(unsigned long control)
 {
-  i386_macosx_dr_set (DR_CONTROL, control);
+  i386_macosx_dr_set(DR_CONTROL, control);
 }
 
 void
-i386_macosx_dr_set_addr (int regnum, CORE_ADDR addr)
+i386_macosx_dr_set_addr(int regnum, CORE_ADDR addr)
 {
-  gdb_assert (regnum >= 0 && regnum <= DR_LASTADDR - DR_FIRSTADDR);
+  gdb_assert((regnum >= 0) && (regnum <= (DR_LASTADDR - DR_FIRSTADDR)));
 
-  i386_macosx_dr_set (DR_FIRSTADDR + regnum, addr);
+  i386_macosx_dr_set((DR_FIRSTADDR + regnum), addr);
 }
 
 void
-i386_macosx_dr_reset_addr (int regnum)
+i386_macosx_dr_reset_addr(int regnum)
 {
-  gdb_assert (regnum >= 0 && regnum <= DR_LASTADDR - DR_FIRSTADDR);
+  gdb_assert((regnum >= 0) && (regnum <= (DR_LASTADDR - DR_FIRSTADDR)));
 
-  i386_macosx_dr_set (DR_FIRSTADDR + regnum, 0L);
+  i386_macosx_dr_set((DR_FIRSTADDR + regnum), 0L);
 }
 
 unsigned long
-i386_macosx_dr_get_status (void)
+i386_macosx_dr_get_status(void)
 {
-  return i386_macosx_dr_get (DR_STATUS);
+  return (unsigned long)i386_macosx_dr_get(DR_STATUS);
 }
 
 /* I have no idea why this target vector entry gets passed in the target.
    That seems REALLY whacky...  */
 
 int
-i386_macosx_target_stopped_data_address (struct target_ops *target, 
-                                         CORE_ADDR *addr)
+i386_macosx_target_stopped_data_address(struct target_ops *target ATTRIBUTE_UNUSED,
+                                        CORE_ADDR *addr)
 {
-  return i386_stopped_data_address (addr);
+  return i386_stopped_data_address(addr);
 }
 
-int 
-i386_macosx_can_use_hw_breakpoint (int unused1, int unused2, int unused3)
+int
+i386_macosx_can_use_hw_breakpoint(int unused1 ATTRIBUTE_UNUSED,
+                                  int unused2 ATTRIBUTE_UNUSED,
+                                  int unused3 ATTRIBUTE_UNUSED)
 {
   return 1;
 }
 
-void
-i386_macosx_child_post_startup_inferior (ptid_t pid)
+void i386_macosx_child_post_startup_inferior(ptid_t pid ATTRIBUTE_UNUSED)
 {
   i386_cleanup_dregs();
 }
 
-void
-macosx_complete_child_target (struct target_ops *target)
+void macosx_complete_child_target(struct target_ops *target)
 {
   target->to_can_use_hw_breakpoint = i386_macosx_can_use_hw_breakpoint;
   target->to_stopped_by_watchpoint = i386_stopped_by_watchpoint;
@@ -647,3 +659,4 @@ macosx_complete_child_target (struct target_ops *target)
   target->to_post_startup_inferior = i386_macosx_child_post_startup_inferior;
 }
 
+/* EOF */

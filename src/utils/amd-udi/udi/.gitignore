@@ -1,0 +1,9 @@
+*.o
+lib*.a
+site.exp
+site.bak
+*.sum
+*.log
+Makefile
+Makefile.orig
+*.status

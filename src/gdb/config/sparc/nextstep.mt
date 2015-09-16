@@ -1,3 +1,4 @@
+# nextstep.mt
 # Target: Sparc running NeXTStep 4.0
 
 TDEPFILES =

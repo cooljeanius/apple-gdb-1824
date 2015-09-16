@@ -1,6 +1,6 @@
-/* 
+/* host.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -16,55 +16,55 @@
 
 #ifndef SEEK_SET
 #  define SEEK_SET  0
-#endif
+#endif /* !SEEK_SET */
 #ifndef SEEK_CUR
 #  define SEEK_CUR  1
-#endif
+#endif /* !SEEK_CUR */
 #ifndef SEEK_END
 #  define SEEK_END  2
-#endif
+#endif /* !SEEK_END */
 
 /* The following for the benefit of compiling on SunOS */
 #ifndef offsetof
 #  define offsetof(T, member)  ((char *)&(((T *)0)->member) - (char *)0)
-#endif
+#endif /* !offsetof */
 
 /* A temporary sop to older compilers */
-#if defined (__NetBSD__) || defined (unix)
+#if defined (__NetBSD__) || defined (unix) || defined (__APPLE__)
 #  ifndef __unix              /* (good for long-term portability?)  */
 #    define __unix    1
-#  endif
-#endif
+#  endif /* !__unix */
+#endif /* __NetBSD__ || unix || __APPLE__ */
 
 #if defined(__unix)
 /* Generic unix -- hopefully a split into other variants will not be    */
 /* needed.  However, beware the 'bsd' test above and safe_toupper etc.  */
 /* which cope with backwards (pre-posix/X/open) unix compatility.       */
 #  define COMPILING_ON_UNIX     1
-#endif
+#endif /* __unix */
 #if defined(_WIN32)
 #  define COMPILING_ON_WIN32    1
 #  if !defined(__CYGWIN__)
 #    define COMPILING_ON_WINDOWS  1
-#  endif
-#endif
+#  endif /* !__CYGWIN__ */
+#endif /* _WIN32 */
 #if defined(_CONSOLE)
 #  define COMPILING_ON_WINDOWS_CONSOLE 1
 #  define COMPILING_ON_WINDOWS 1
-#endif
+#endif /* _CONSOLE */
 /* The '(defined(__sparc) && defined(P_tmpdir)                     */
 /* && !defined(__svr4__))' is to detect gcc on SunOS.              */
-/* C++ compilers don't have to define __STDC__                     */
+/* C++ compilers do NOT have to define __STDC__                    */
 #if (defined(__sparc) && defined(P_tmpdir))
 #  if defined(__svr4__)
 #    define COMPILING_ON_SOLARIS
 #  else
 #    define COMPILING_ON_SUNOS
-#  endif
-#endif
+#  endif /* __svr4__ */
+#endif /* (__sparc && P_tmpdir) */
 #ifdef __hppa
 #  define COMPILING_ON_HPUX
-#endif
+#endif /* __hppa */
 
 /*
  * The following typedefs may need alteration for obscure host machines.
@@ -84,8 +84,8 @@ typedef          long  int   int32;
 typedef unsigned long  int   unsigned32;
 /* IPtr and UPtr are 'ints of same size as pointer'.  Do not use in     */
 /* new code.  Currently only used within 'ncc'.                         */
-#define IPtr int32
-#define UPtr unsigned32
+# define IPtr int32
+# define UPtr unsigned32
 #endif /* ============================================================= */
 
 typedef          short int   int16;
@@ -97,7 +97,9 @@ typedef unsigned       char  unsigned8;
 /* and real 'bool' under C++.  It also avoids warnings such as          */
 /* C++ keyword 'bool' used as identifier.  It can be overridden by      */
 /* defining IMPLEMENT_BOOL_AS_ENUM or IMPLEMENT_BOOL_AS_INT.            */
-#undef _bool
+#ifdef _bool
+# undef _bool
+#endif /* _bool */
 
 #ifdef IMPLEMENT_BOOL_AS_ENUM
    enum _bool { _false, _true };
@@ -106,19 +108,25 @@ typedef unsigned       char  unsigned8;
 #  define _bool int
 #  define _false 0
 #  define _true 1
-#endif
+#endif /* bool implementations */
 
-#ifdef _bool
-#  if defined(_MFC_VER) || defined(__CC_NORCROFT) /* When using MS Visual C/C++ v4.2 */
-#    define bool _bool /* avoids "'bool' is reserved word" warning      */
-#  else
-#    ifndef bool
-       typedef _bool bool;
-#    endif
-#  endif
-#  define true _true
-#  define false _false
-#endif
+#if defined(_bool) && (defined(_true) && defined(_false)) && \
+    (!defined(true) && !defined(false))
+# if defined(_MFC_VER) || defined(__CC_NORCROFT) || \
+     (defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ >= 4))
+/* When using MS Visual C/C++ v4.2, or gcc */
+#  ifndef bool
+#   define bool _bool /* avoids "'bool' is reserved word" warning      */
+#  endif /* !bool */
+# else
+#  if !defined(bool) && !defined(__cplusplus) && !defined(_STDBOOL_H_) && \
+      (!defined(__bool_true_false_are_defined) || !__bool_true_false_are_defined)
+    typedef _bool bool;
+#  endif /* !bool && !__cplusplus && !_STDBOOL_H_ && !__bool_true_false_are_defined */
+# endif /* _MFC_VER || __CC_NORCROFT || gcc 4+ */
+# define true _true
+# define false _false
+#endif /* _bool && (_true && _false) && (!true && !false) */
 
 #define YES   true
 #define NO    false
@@ -148,7 +156,7 @@ typedef char *ArgvType;
 #pragma pointer_size (restore)
 #else
 typedef char *ArgvType;
-#endif
+#endif /* ALPHA_TASO_SHORT_ON_OSF */
 
 /*
  * Rotate macros
@@ -159,23 +167,23 @@ typedef char *ArgvType;
 ((((unsigned32)(val) >> (n)) | ((unsigned32)(val) << (32-(n)))) & 0xFFFFFFFFL)
 
 #if 0
-#ifdef COMPILING_ON_UNIX
+# ifdef COMPILING_ON_UNIX
 #  define FOPEN_WB     "w"
 #  define FOPEN_RB     "r"
 #  define FOPEN_RWB    "r+"
 #  ifndef __STDC__                     /* caveat RISCiX... */
 #    define remove(file) unlink(file)  /* a horrid hack, but probably best? */
-#  endif
-#else
+#  endif /* !__STDC__ */
+# else
 #  define FOPEN_WB     "wb"
 #  define FOPEN_RB     "rb"
 #  define FOPEN_RWB    "rb+"
-#endif
-#endif
+# endif /* COMPILING_ON_UNIX */
+#endif /* 0 */
 
 #ifndef FILENAME_MAX
 #  define FILENAME_MAX 256
-#endif
+#endif /* !FILENAME_MAX */
 
 #if (!defined(__STDC__) && !defined(__cplusplus)) || defined(COMPILING_ON_SUNOS)
 /* Use bcopy rather than memmove, as memmove is not available.     */
@@ -183,25 +191,25 @@ typedef char *ArgvType;
 void bcopy(const char *src, char *dst, int length);
 #  define memmove(d,s,l) bcopy(s,d,l)
 
-/* BSD/SUN don't have strtoul(), but then strtol() doesn't barf on */
+/* BSD/SUN do not have strtoul(), but then strtol() does NOT barf on */
 /* overflow as required by ANSI... This bodge is horrid.           */
 #  define strtoul(s, ptr, base) strtol(s, ptr, base)
 
 /* strtod is present in the C-library but is not in stdlib.h       */
 extern double strtod(const char *str, char **ptr);
-#endif
+#endif /* (!__STDC__ && !__cplusplus) || COMPILING_ON_SUNOS */
 
 /* For systems that do not define EXIT_SUCCESS and EXIT_FAILURE */
 #ifndef EXIT_SUCCESS
 #  define EXIT_SUCCESS           0
-#endif
+#endif /* !EXIT_SUCCESS */
 #ifndef EXIT_FAILURE
 #  define EXIT_FAILURE           1
-#endif
+#endif /* !EXIT_FAILURE */
 
 #ifndef IGNORE
-#define IGNORE(x) (x = x)  /* Silence compiler warnings for unused arguments */
-#endif
+# define IGNORE(x) (x = x)  /* Silence compiler warnings for unused arguments */
+#endif /* !IGNORE */
 
 /* Define endian-ness of host */
 
@@ -212,9 +220,9 @@ extern double strtod(const char *str, char **ptr);
 #  define HOST_ENDIAN_BIG
 #else
 #  define HOST_ENDIAN_UNKNOWN
-#endif
+#endif /* different host checks */
 
-#endif
+#endif /* !_host_LOADED */
 
 /* Needs to be supplied by the host.  */
 extern void Fail (const char *, ...);

@@ -10,7 +10,7 @@ Created: Wednesday, October 21, 1992 at 2:55 PM
 
 ************************************************************/
 
-
+/* TODO: come back to */
 #ifndef __QUICKTIMECOMPONENTS__
 #define __QUICKTIMECOMPONENTS__
 
@@ -36,16 +36,16 @@ Created: Wednesday, October 21, 1992 at 2:55 PM
 
 
 	#define clockComponentType 		'clok'
-	#define systemTickClock 		'tick'			/* subtype: 60ths since boot		*/
-	#define systemSecondClock		'seco'			/* subtype: seconds since 1904		*/
-	#define systemMillisecondClock	'mill'			/* subtype: 1000ths since boot		*/
-	#define systemMicrosecondClock	'micr'			/* subtype: 1000000ths since boot	*/
-	
+	#define systemTickClock 		'tick'	/* subtype: 60ths since boot	*/
+	#define systemSecondClock		'seco'	/* subtype: seconds since 1904	*/
+	#define systemMillisecondClock	'mill'	/* subtype: 1000ths since boot	*/
+	#define systemMicrosecondClock	'micr'	/* subtype: 1000000ths since boot */
+
 	enum {
 		kClockRateIsLinear = 1,
 		kClockImplementsCallBacks = 2
 	};
-	
+
 	#define ClockGetTime GetClockTime
 
 
@@ -88,17 +88,17 @@ enum {
 	kClockTimeChangedSelect = 0x7,
 	kClockSetTimeBaseSelect = 0x8,
 	kClockStartStopChangedSelect = 0x9,
-	kClockGetRateSelect = 0xA 
+	kClockGetRateSelect = 0xA
 };
 
 	/*
 		General Sequence Grab stuff
 	*/
-	
+
 	typedef ComponentInstance SeqGrabComponent;
-	
+
 	typedef ComponentInstance SGChannel;
-	
+
 	#define SeqGrabComponentType 'barg'
 	#define SeqGrabChannelType 'sgch'
 	#define SeqGrabPanelType 'sgpn'
@@ -138,7 +138,7 @@ enum {
 		SGChannel	frameChannel;
 		long		frameRefCon;
 	} seqGrabFrameInfo;
-	
+
 	enum {
 		grabPictOffScreen = 1,
 		grabPictIgnoreClip = 2
@@ -204,7 +204,7 @@ extern "C" {
 pascal ComponentResult SGInitialize (SeqGrabComponent s)  = {0x2F3C,0,0x1,0x7000,0xA82A};
 
 pascal ComponentResult SGSetDataOutput (SeqGrabComponent s, FSSpec *movieFile, long whereFlags)  = {0x2F3C,0x8,0x2,0x7000,0xA82A};
-	
+
 pascal ComponentResult SGGetDataOutput (SeqGrabComponent s, FSSpec *movieFile, long *whereFlags)  = {0x2F3C,0x8,0x3,0x7000,0xA82A};
 
 pascal ComponentResult SGSetGWorld (SeqGrabComponent s, CGrafPtr gp, GDHandle gd)  = {0x2F3C,0x8,0x4,0x7000,0xA82A};
@@ -433,7 +433,7 @@ pascal ComponentResult SGSetCompressBuffer (SGChannel c, short depth, const Rect
 
 pascal ComponentResult SGGetCompressBuffer (SGChannel c, short *depth, Rect *compressSize)  = {0x2F3C,0x8,0x114,0x7000,0xA82A};
 
-pascal ComponentResult SGGetBufferInfo (SGChannel c, short bufferNum, 
+pascal ComponentResult SGGetBufferInfo (SGChannel c, short bufferNum,
 					PixMapHandle *bufferPM, Rect *bufferRect,
 					GWorldPtr *compressBuffer, Rect *compressBufferRect)  = {0x2F3C,0x12,0x115,0x7000,0xA82A};
 
@@ -650,12 +650,12 @@ enum {
 	kSGCSetSoundInputRateSelect = 0x105,
 	kSGCGetSoundInputRateSelect = 0x106,
 	kSGCSetSoundInputParametersSelect = 0x107,
-	kSGCGetSoundInputParametersSelect = 0x108 
+	kSGCGetSoundInputParametersSelect = 0x108
 };
 
 /* Standard type for video digitizers */
 
-#define	videoDigitizerComponentType		'vdig'		
+#define	videoDigitizerComponentType		'vdig'
 #define vdigInterfaceRev				2L
 
 /* Input Format Standards */
@@ -774,13 +774,13 @@ typedef ComponentResult VideoDigitizerError;
 typedef struct {
 	short		vdigType;
 	long 		inputCapabilityFlags;
-	long 		outputCapabilityFlags;	
+	long 		outputCapabilityFlags;
 	long 		inputCurrentFlags;
 	long 		outputCurrentFlags;
 	short		slot;					/* temporary for connection purposes */
 	GDHandle	gdh;					/* temporary for digitizers that have preferred screen */
 	GDHandle	maskgdh;				/* temporary for digitizers that have mask planes */
-	short		minDestHeight;			/* Smallest resizable height */		
+	short		minDestHeight;			/* Smallest resizable height */
 	short		minDestWidth;			/* Smallest resizable width */
 	short		maxDestHeight;			/* Largest resizable height */
 	short		maxDestWidth;			/* Largest resizable height */
@@ -848,137 +848,137 @@ enum {
 extern "C" {
 #endif __cplusplus
 pascal VideoDigitizerError VDGetMaxSrcRect(VideoDigitizerComponent ci, short inputStd, Rect *maxSrcRect) 	= {0x2F3C,0x6,0x1,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetActiveSrcRect(VideoDigitizerComponent ci, short inputStd, Rect *activeSrcRect) 	= {0x2F3C,0x6,0x2,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetDigitizerRect(VideoDigitizerComponent ci, Rect *digitizerRect) 	= {0x2F3C,0x4,0x3,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetDigitizerRect(VideoDigitizerComponent ci, Rect *digitizerRect) 	= {0x2F3C,0x4,0x4,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetVBlankRect(VideoDigitizerComponent ci, short inputStd, Rect *vBlankRect) 	= {0x2F3C,0x6,0x5,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetMaskPixMap(VideoDigitizerComponent ci, PixMapHandle maskPixMap) 	= {0x2F3C,0x4,0x6,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetPlayThruDestination(VideoDigitizerComponent ci, PixMapHandle *dest, Rect *destRect,
 			 MatrixRecord *m, RgnHandle *mask) 	= {0x2F3C,0x10,0x8,0x7000,0xA82A};
-	
-pascal VideoDigitizerError VDUseThisCLUT(VideoDigitizerComponent ci, CTabHandle colorTableHandle) 	= {0x2F3C,0x4,0x9,0x7000,0xA82A};		
-	
+
+pascal VideoDigitizerError VDUseThisCLUT(VideoDigitizerComponent ci, CTabHandle colorTableHandle) 	= {0x2F3C,0x4,0x9,0x7000,0xA82A};
+
 pascal VideoDigitizerError VDSetInputGammaValue(VideoDigitizerComponent ci, Fixed channel1, Fixed channel2, Fixed channel3) 	= {0x2F3C,0xC,0xA,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetInputGammaValue(VideoDigitizerComponent ci, Fixed *channel1, Fixed *channel2, Fixed *channel3) 	= {0x2F3C,0xC,0xB,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetBrightness(VideoDigitizerComponent ci, unsigned short *brightness) 	= {0x2F3C,0x4,0xC,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetBrightness(VideoDigitizerComponent ci, unsigned short *brightness) 	= {0x2F3C,0x4,0xD,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetContrast(VideoDigitizerComponent ci, unsigned short *contrast) 	= {0x2F3C,0x4,0xE,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetHue(VideoDigitizerComponent ci, unsigned short *hue) 	= {0x2F3C,0x4,0xF,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetSharpness(VideoDigitizerComponent ci, unsigned short *sharpness) 	= {0x2F3C,0x4,0x10,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetSaturation(VideoDigitizerComponent ci, unsigned short *saturation) 	= {0x2F3C,0x4,0x11,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetContrast(VideoDigitizerComponent ci, unsigned short *contrast) 	= {0x2F3C,0x4,0x12,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetHue(VideoDigitizerComponent ci, unsigned short *hue) 	= {0x2F3C,0x4,0x13,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetSharpness(VideoDigitizerComponent ci, unsigned short *sharpness) 	= {0x2F3C,0x4,0x14,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetSaturation(VideoDigitizerComponent ci, unsigned short *saturation) 	= {0x2F3C,0x4,0x15,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGrabOneFrame(VideoDigitizerComponent ci) 	= {0x2F3C,0,0x16,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetMaxAuxBuffer(VideoDigitizerComponent ci, PixMapHandle *pm, Rect *r) 	= {0x2F3C,0x8,0x17,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetDigitizerInfo(VideoDigitizerComponent ci, DigitizerInfo *info) 	= {0x2F3C,0x4,0x19,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetCurrentFlags(VideoDigitizerComponent ci, long *inputCurrentFlag, long *outputCurrentFlag) 	= {0x2F3C,0x8,0x1A,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetKeyColor(VideoDigitizerComponent ci, long index) 	= {0x2F3C,0x4,0x1B,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetKeyColor(VideoDigitizerComponent ci, long *index) 	= {0x2F3C,0x4,0x1C,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDAddKeyColor(VideoDigitizerComponent ci, long *index) 	= {0x2F3C,0x4,0x1D,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetNextKeyColor(VideoDigitizerComponent ci, long index) 	= {0x2F3C,0x4,0x1E,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetKeyColorRange(VideoDigitizerComponent ci, RGBColor *minRGB, RGBColor *maxRGB) 	= {0x2F3C,0x8,0x1F,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetKeyColorRange(VideoDigitizerComponent ci, RGBColor *minRGB, RGBColor *maxRGB) 	= {0x2F3C,0x8,0x20,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetDigitizerUserInterrupt(VideoDigitizerComponent ci, long flags, VdigIntProc userInterruptProc, long refcon) 	= {0x2F3C,0xC,0x21,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetInputColorSpaceMode(VideoDigitizerComponent ci, short colorSpaceMode) 	= {0x2F3C,0x2,0x22,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetInputColorSpaceMode(VideoDigitizerComponent ci, short *colorSpaceMode) 	= {0x2F3C,0x4,0x23,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetClipState(VideoDigitizerComponent ci, short clipEnable) 	= {0x2F3C,0x2,0x24,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetClipState(VideoDigitizerComponent ci, short *clipEnable) 	= {0x2F3C,0x4,0x25,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetClipRgn(VideoDigitizerComponent ci, RgnHandle clipRegion) 	= {0x2F3C,0x4,0x26,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDClearClipRgn(VideoDigitizerComponent ci, RgnHandle clipRegion) 	= {0x2F3C,0x4,0x27,0x7000,0xA82A};
-	
-pascal VideoDigitizerError VDGetCLUTInUse(VideoDigitizerComponent ci, CTabHandle *colorTableHandle) 	= {0x2F3C,0x4,0x28,0x7000,0xA82A};		
-	
+
+pascal VideoDigitizerError VDGetCLUTInUse(VideoDigitizerComponent ci, CTabHandle *colorTableHandle) 	= {0x2F3C,0x4,0x28,0x7000,0xA82A};
+
 pascal VideoDigitizerError VDSetPLLFilterType(VideoDigitizerComponent ci, short pllType) 	= {0x2F3C,0x2,0x29,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetPLLFilterType(VideoDigitizerComponent ci, short *pllType) 	= {0x2F3C,0x4,0x2A,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetMaskandValue(VideoDigitizerComponent ci, unsigned short blendLevel, long *mask, long *value ) 	= {0x2F3C,0xA,0x2B,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetMasterBlendLevel(VideoDigitizerComponent ci, unsigned short *blendLevel) 	= {0x2F3C,0x4,0x2C,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetPlayThruDestination(VideoDigitizerComponent ci, PixMapHandle dest, Rect *destRect,
 								MatrixRecord *m, RgnHandle mask) 	= {0x2F3C,0x10,0x2D,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetPlayThruOnOff(VideoDigitizerComponent ci, short state) 	= {0x2F3C,0x2,0x2E,0x7000,0xA82A};
 
 pascal VideoDigitizerError VDSetFieldPreference(VideoDigitizerComponent ci, short fieldFlag) 	= {0x2F3C,0x2,0x2F,0x7000,0xA82A};
 
 pascal VideoDigitizerError VDGetFieldPreference(VideoDigitizerComponent ci, short *fieldFlag) 	= {0x2F3C,0x4,0x30,0x7000,0xA82A};
-	
-pascal VideoDigitizerError VDPreflightDestination(VideoDigitizerComponent ci, Rect *digitizerRect, PixMap **dest, 
+
+pascal VideoDigitizerError VDPreflightDestination(VideoDigitizerComponent ci, Rect *digitizerRect, PixMap **dest,
 								Rect *destRect, MatrixRecord *m) 	= {0x2F3C,0x10,0x32,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDPreflightGlobalRect(VideoDigitizerComponent ci, GrafPtr theWindow, Rect *globalRect) 	= {0x2F3C,0x8,0x33,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetPlayThruGlobalRect(VideoDigitizerComponent ci, GrafPtr theWindow, Rect *globalRect) 	= {0x2F3C,0x8,0x34,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetInputGammaRecord(VideoDigitizerComponent ci, VDGamRecPtr inputGammaPtr) 	= {0x2F3C,0x4,0x35,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetInputGammaRecord(VideoDigitizerComponent ci, VDGamRecPtr *inputGammaPtr) 	= {0x2F3C,0x4,0x36,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetBlackLevelValue(VideoDigitizerComponent ci, unsigned short *blackLevel) 	= {0x2F3C,0x4,0x37,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetBlackLevelValue(VideoDigitizerComponent ci, unsigned short *blackLevel) 	= {0x2F3C,0x4,0x38,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetWhiteLevelValue(VideoDigitizerComponent ci, unsigned short *whiteLevel) 	= {0x2F3C,0x4,0x39,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetWhiteLevelValue(VideoDigitizerComponent ci, unsigned short *whiteLevel) 	= {0x2F3C,0x4,0x3A,0x7000,0xA82A};
-	
-pascal VideoDigitizerError VDGetVideoDefaults(VideoDigitizerComponent ci, 
+
+pascal VideoDigitizerError VDGetVideoDefaults(VideoDigitizerComponent ci,
 		unsigned short *blackLevel, unsigned short *whiteLevel,
 		unsigned short *brightness, unsigned short *hue, unsigned short *saturation,
 		unsigned short *contrast, unsigned short *sharpness) 	= {0x2F3C,0x1C,0x3B,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetNumberOfInputs(VideoDigitizerComponent ci, short *inputs) 	= {0x2F3C,0x4,0x3C,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetInputFormat(VideoDigitizerComponent ci, short input, short *format) 	= {0x2F3C,0x6,0x3D,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetInput(VideoDigitizerComponent ci, short input) 	= {0x2F3C,0x2,0x3E,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGetInput(VideoDigitizerComponent ci, short *input) 	= {0x2F3C,0x4,0x3F,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetInputStandard(VideoDigitizerComponent ci, short inputStandard) 	= {0x2F3C,0x2,0x40,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDSetupBuffers(VideoDigitizerComponent ci, VdigBufferRecListHandle bufferList) 	= {0x2F3C,0x4,0x41,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDGrabOneFrameAsync(VideoDigitizerComponent ci, short buffer) 	= {0x2F3C,0x2,0x42,0x7000,0xA82A};
-	
+
 pascal VideoDigitizerError VDDone(VideoDigitizerComponent ci, short buffer) 	= {0x2F3C,0x2,0x43,0x7000,0xA82A};
 
 pascal VideoDigitizerError VDSetCompression(VideoDigitizerComponent ci, OSType compressType, short depth, Rect *bounds,
@@ -1024,7 +1024,7 @@ enum {
 	kSelectVDGetVBlankRect = 0x5,
 	kSelectVDGetMaskPixMap = 0x6,
 	kSelectVDGetPlayThruDestination = 0x8,
-	kSelectVDUseThisCLUT = 0x9,		
+	kSelectVDUseThisCLUT = 0x9,
 	kSelectVDSetInputGammaValue = 0xA,
 	kSelectVDGetInputGammaValue = 0xB,
 	kSelectVDSetBrightness = 0xC,
@@ -1054,7 +1054,7 @@ enum {
 	kSelectVDGetClipState = 0x25,
 	kSelectVDSetClipRgn = 0x26,
 	kSelectVDClearClipRgn = 0x27,
-	kSelectVDGetCLUTInUse = 0x28,		
+	kSelectVDGetCLUTInUse = 0x28,
 	kSelectVDSetPLLFilterType = 0x29,
 	kSelectVDGetPLLFilterType = 0x2A,
 	kSelectVDGetMaskandValue = 0x2B,
@@ -1095,7 +1095,7 @@ enum {
 	kSelectVDGetSoundInputDriver = 0x4F,
 	kSelectVDGetDMADepths = 0x50,
 	kSelectVDGetPreferredTimeScale = 0x51,
-	kSelectVDReleaseAsyncBuffers = 0x52 
+	kSelectVDReleaseAsyncBuffers = 0x52
 };
 #define	StandardCompressionType		'scdi'
 #define	StandardCompressionSubType	'imag'
@@ -1242,7 +1242,7 @@ SCSetTestImagePixMap(ComponentInstance ci, PixMapHandle testPixMap, Rect *testRe
 	= {0x2F3C,0xA,0x6,0x7000,0xA82A};
 
 pascal ComponentResult
-SCGetBestDeviceRect(ComponentInstance ci, Rect *r) 
+SCGetBestDeviceRect(ComponentInstance ci, Rect *r)
  	= {0x2F3C,0x4,0x7,0x7000,0xA82A};
 
 
@@ -1375,7 +1375,7 @@ enum {
 	kMovieImportExportOpenSelect = kComponentOpenSelect,
 	kMovieImportExportCloseSelect = kComponentCloseSelect,
 	kMovieImportExportCanDoSelect = kComponentCanDoSelect,
-	kMovieImportExportVersionSelect = kComponentVersionSelect, 
+	kMovieImportExportVersionSelect = kComponentVersionSelect,
 
 	kMovieImportHandleSelect = 1,
 	kMovieImportFileSelect = 2,
@@ -1389,7 +1389,7 @@ enum {
 	kMovieImportSetFromScrapSelect = 10,
 	kMovieImportDoUserDialogSelect = 11,
 	kMovieImportSetDurationSelect = 12,
-	
+
 	kMovieExportToHandleSelect = 128,
 	kMovieExportToFileSelect = 129,
 	kMovieExportDoUserDialogSelect = 130,
@@ -1473,7 +1473,7 @@ enum {
 	kPreviewOpenSelector = 0,
 	kPreviewCloseSelector = -1,
 	kPreviewCanDoSelector = -2,
-	kPreviewVersionSelector = -3, 
+	kPreviewVersionSelector = -3,
 
 	kPreviewShowDataSelector = 1,
 	kPreviewMakePreviewSelector = 2,

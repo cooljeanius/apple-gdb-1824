@@ -1,4 +1,5 @@
-/* Parameters for CISCO m68k.
+/* tm-cisco.h
+   Parameters for CISCO m68k.
    Copyright 1994, 1996, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.

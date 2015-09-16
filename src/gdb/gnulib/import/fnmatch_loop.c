@@ -1,4 +1,4 @@
-/* Copyright (C) 1991-1993, 1996-2006, 2009-2012 Free Software Foundation, Inc.
+/* Copyright (C) 1991-1993, 1996-2006, 2009-2015 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    This program is free software; you can redistribute it and/or modify
@@ -16,11 +16,6 @@
 
 /* Match STRING against the file name pattern PATTERN, returning zero if
    it matches, nonzero if not.  */
-
-#ifndef _STRING_H_
-# include <string.h>
-#endif /* !_STRING_H_ */
-
 static int EXT (INT opt, const CHAR *pattern, const CHAR *string,
                 const CHAR *string_end, bool no_leading_period, int flags)
      internal_function;
@@ -40,8 +35,8 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 # else
   const UCHAR *collseq = (const UCHAR *)
     _NL_CURRENT(LC_COLLATE, _NL_COLLATE_COLLSEQMB);
-# endif /* WIDE_CHAR_VERSION */
-#endif /* _LIBC */
+# endif
+#endif
 
   while ((c = *p++) != L_('\0'))
     {
@@ -232,6 +227,8 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
             c = *p++;
             for (;;)
               {
+		bool is_range = false;
+
                 if (!(flags & FNM_NOESCAPE) && c == L_('\\'))
                   {
                     if (*p == L_('\0'))
@@ -248,7 +245,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                     size_t c1 = 0;
 #if defined _LIBC || WIDE_CHAR_SUPPORT
                     wctype_t wt;
-#endif /* _LIBC || WIDE_CHAR_SUPPORT */
+#endif
                     const CHAR *startp = p;
 
                     for (;;)
@@ -291,7 +288,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 # else
                     if (ISWCTYPE (BTOWC ((UCHAR) *n), wt))
                       goto matched;
-# endif /* _LIBC && !WIDE_CHAR_VERSION */
+# endif
 #else
                     if ((STREQ (str, L_("alnum")) && isalnum ((UCHAR) *n))
                         || (STREQ (str, L_("alpha")) && isalpha ((UCHAR) *n))
@@ -306,7 +303,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                         || (STREQ (str, L_("upper")) && isupper ((UCHAR) *n))
                         || (STREQ (str, L_("xdigit")) && isxdigit ((UCHAR) *n)))
                       goto matched;
-#endif /* _LIBC || WIDE_CHAR_SUPPORT */
+#endif
                     c = *p++;
                   }
 #ifdef _LIBC
@@ -349,7 +346,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 # else
                         const unsigned char *weights;
                         const unsigned char *extra;
-# endif /* WIDE_CHAR_VERSION */
+# endif
                         const int32_t *indirect;
                         int32_t idx;
                         const UCHAR *cp = (const UCHAR *) str;
@@ -359,7 +356,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 #  include <locale/weightwc.h>
 # else
 #  include <locale/weight.h>
-# endif /* WIDE_CHAR_VERSION */
+# endif
 
 # if WIDE_CHAR_VERSION
                         table = (const int32_t *)
@@ -379,14 +376,14 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                           _NL_CURRENT (LC_COLLATE, _NL_COLLATE_EXTRAMB);
                         indirect = (const int32_t *)
                           _NL_CURRENT (LC_COLLATE, _NL_COLLATE_INDIRECTMB);
-# endif /* WIDE_CHAR_VERSION */
+# endif
 
                         idx = findidx (&cp);
                         if (idx != 0)
                           {
-                            /* We found a table entry. Now see whether the
-                             * character we are currently at has the same
-                             * equivalence class value.  */
+                            /* We found a table entry.  Now see whether the
+                               character we are currently at has the same
+                               equivalence class value.  */
                             int len = weights[idx & 0xffffff];
                             int32_t idx2;
                             const UCHAR *np = (const UCHAR *) n;
@@ -414,7 +411,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 
                     c = *p++;
                   }
-#endif /* _LIBC */
+#endif
                 else if (c == L_('\0'))
                   {
                     /* [ unterminated, treat as normal character.  */
@@ -425,8 +422,6 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                   }
                 else
                   {
-                    bool is_range = false;
-
 #ifdef _LIBC
                     bool is_seqval = false;
 
@@ -478,7 +473,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                             size_t strcnt;
 # else
 #  define str (startp + 1)
-# endif /* WIDE_CHAR_VERSION */
+# endif
                             const unsigned char *extra;
                             int32_t idx;
                             int32_t elem;
@@ -487,12 +482,12 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 
 # ifdef WIDE_CHAR_VERSION
                             /* We have to convert the name to a single-byte
-                             * string. This is possible since the names
-                             * consist of ASCII characters and the internal
-                             * representation is UCS4.  */
+                               string.  This is possible since the names
+                               consist of ASCII characters and the internal
+                               representation is UCS4.  */
                             for (strcnt = 0; strcnt < c1; ++strcnt)
                               str[strcnt] = startp[1 + strcnt];
-# endif /* WIDE_CHAR_VERSION */
+# endif
 
                             table_size =
                               _NL_CURRENT_WORD (LC_COLLATE,
@@ -548,7 +543,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                                 idx = (idx + 3) & ~3;
 
                                 wextra = (int32_t *) &extra[idx + 4];
-# endif /* WIDE_CHAR_VERSION */
+# endif
 
                                 if (! is_range)
                                   {
@@ -568,7 +563,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 
                                     if (c1 == extra[idx])
                                       goto matched;
-# endif /* WIDE_CHAR_VERSION */
+# endif
                                   }
 
                                 /* Get the collation sequence value.  */
@@ -580,7 +575,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                                 idx += 1 + extra[idx];
                                 idx = (idx + 3) & ~4;
                                 cold = *((int32_t *) &extra[idx]);
-# endif /* WIDE_CHAR_VERSION */
+# endif
 
                                 c = *p++;
                               }
@@ -600,7 +595,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                       }
                     else
 # undef str
-#endif /* _LIBC */
+#endif
                       {
                         c = FOLD (c);
                       normal_bracket:
@@ -618,7 +613,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                         /* This is needed if we goto normal_bracket; from
                            outside of is_seqval's scope.  */
                         is_seqval = false;
-#endif /* _LIBC */
+#endif
 
                         cold = c;
                         c = *p++;
@@ -655,7 +650,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 # else
                         fcollseq = collseq[fn];
                         lcollseq = is_seqval ? cold : collseq[(UCHAR) cold];
-# endif /* WIDE_CHAR_VERSION */
+# endif
 
                         is_seqval = false;
                         if (cend == L_('[') && *p == L_('.'))
@@ -699,7 +694,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                                 size_t strcnt;
 # else
 #  define str (startp + 1)
-# endif /* WIDE_CHAR_VERSION */
+# endif
                                 const unsigned char *extra;
                                 int32_t idx;
                                 int32_t elem;
@@ -708,12 +703,12 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 
 # ifdef WIDE_CHAR_VERSION
                                 /* We have to convert the name to a single-byte
-                                 * string. This is possible since the names
-                                 * consist of ASCII characters and the internal
-                                 * representation is UCS4.  */
+                                   string.  This is possible since the names
+                                   consist of ASCII characters and the internal
+                                   representation is UCS4.  */
                                 for (strcnt = 0; strcnt < c1; ++strcnt)
                                   str[strcnt] = startp[1 + strcnt];
-# endif /* WIDE_CHAR_VERSION */
+# endif
 
                                 table_size =
                                   _NL_CURRENT_WORD (LC_COLLATE,
@@ -769,7 +764,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                                     idx = (idx + 3) & ~4;
 
                                     wextra = (int32_t *) &extra[idx + 4];
-# endif /* WIDE_CHAR_VERSION */
+# endif
                                     /* Get the collation sequence value.  */
                                     is_seqval = true;
 # ifdef WIDE_CHAR_VERSION
@@ -779,7 +774,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                                     idx += 1 + extra[idx];
                                     idx = (idx + 3) & ~4;
                                     cend = *((int32_t *) &extra[idx]);
-# endif /* WIDE_CHAR_VERSION */
+# endif
                                   }
                                 else if (symb_table[2 * elem] != 0 && c1 == 1)
                                   {
@@ -801,12 +796,12 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                           }
 
                         /* XXX It is not entirely clear to me how to handle
-                         * characters which are not mentioned in the
-                         * collation specification.  */
+                           characters which are not mentioned in the
+                           collation specification.  */
                         if (
 # ifdef WIDE_CHAR_VERSION
                             lcollseq == 0xffffffff ||
-# endif /* WIDE_CHAR_VERSION */
+# endif
                             lcollseq <= fcollseq)
                           {
                             /* We have to look at the upper bound.  */
@@ -831,7 +826,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                                   }
 # else
                                 hcollseq = collseq[cend];
-# endif /* WIDE_CHAR_VERSION */
+# endif
                               }
 
                             if (lcollseq <= hcollseq && fcollseq <= hcollseq)
@@ -839,12 +834,12 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                           }
 # ifdef WIDE_CHAR_VERSION
                       range_not_matched:
-# endif /* WIDE_CHAR_VERSION */
+# endif
 #else
                         /* We use a boring value comparison of the character
-                         * values. This is better than comparing using
-                         * 'strcoll' since the latter would have surprising
-                         * and sometimes fatal consequences.  */
+                           values.  This is better than comparing using
+                           'strcoll' since the latter would have surprising
+                           and sometimes fatal consequences.  */
                         UCHAR cend = *p++;
 
                         if (!(flags & FNM_NOESCAPE) && cend == L_('\\'))
@@ -855,7 +850,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                         /* It is a range.  */
                         if (cold <= fn && fn <= cend)
                           goto matched;
-#endif /* _LIBC */
+#endif
 
                         c = *p++;
                       }

@@ -1,4 +1,4 @@
-/* Parser for linespec for the GNU debugger, GDB.
+/* linespec.c: Parser for linespec for the GNU debugger, GDB.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
@@ -87,7 +87,7 @@ static struct symtabs_and_lines find_method (int funfirstline,
 					     char *saved_arg,
 					     char *copy,
 					     struct type *t,
-					     struct symbol *sym_class, 
+					     struct symbol *sym_class,
 					     int *not_found_ptr);
 
 /* APPLE LOCAL begin return multiple symbols  */
@@ -131,7 +131,7 @@ static struct symtab **symtab_from_filename (char **argptr,
 /* APPLE LOCAL: I added the parsed_lineno so we could directly do error
    reporting if there were no actual matches to that file & lineno.  */
  static struct
-symtabs_and_lines decode_all_digits_exhaustive (char **argptr, 
+symtabs_and_lines decode_all_digits_exhaustive (char **argptr,
                                    int funfirstline,
                                    struct symtab *default_symtab,
                                    int default_line,
@@ -272,7 +272,7 @@ total_number_of_methods (struct type *type)
    to grow the array.  */
 
 static int
-find_methods (struct type *t, char *name, struct symbol ***sym_arr, 
+find_methods (struct type *t, char *name, struct symbol ***sym_arr,
 	      int *sym_arr_size, int *sym_arr_pos)
 /* APPLE LOCAL end return multiple symbols  */
 {
@@ -282,8 +282,8 @@ find_methods (struct type *t, char *name, struct symbol ***sym_arr,
   struct cleanup *old_chain;
 
   /* APPLE LOCAL: The whole point of this exercise is to look for
-     C++ methods, so let's set the language to cplusplus before trying.  
-     FIXME: Dunno whether this will break Java or not, but since we 
+     C++ methods, so let's set the language to cplusplus before trying.
+     FIXME: Dunno whether this will break Java or not, but since we
      don't use our gdb for Java, this isn't that big a deal.  The comment
      at the start of the function says this is g++ specific anyway...
   */
@@ -430,22 +430,20 @@ add_matching_methods (int method_counter, struct type *t,
       sym_list = NULL;
       /* APPLE LOCAL end return multiple symbols  */
 
-      f = TYPE_FN_FIELDLIST1 (t, method_counter);
+      f = TYPE_FN_FIELDLIST1(t, method_counter);
 
-      if (TYPE_FN_FIELD_STUB (f, field_counter))
+      if (TYPE_FN_FIELD_STUB(f, field_counter))
 	{
 	  char *tmp_name;
 
-	  tmp_name = gdb_mangle_name (t,
-				      method_counter,
-				      field_counter);
-	  phys_name = alloca (strlen (tmp_name) + 1);
-	  strcpy (phys_name, tmp_name);
-	  xfree (tmp_name);
+	  tmp_name = gdb_mangle_name(t, method_counter, field_counter);
+	  phys_name = (char *)alloca(strlen(tmp_name) + 1UL);
+	  strcpy(phys_name, tmp_name);
+	  xfree(tmp_name);
 	}
       else
-	phys_name = TYPE_FN_FIELD_PHYSNAME (f, field_counter);
-		
+	phys_name = TYPE_FN_FIELD_PHYSNAME(f, field_counter);
+
       /* Destructor is handled by caller, don't add it to
 	 the list.  */
       if (is_destructor_name (phys_name) != 0)
@@ -461,12 +459,12 @@ add_matching_methods (int method_counter, struct type *t,
 
       if (phys_name[0] != '_')
         {
-          char *demangled_name = alloca (strlen (TYPE_NAME (t)) + 
+          char *demangled_name = alloca (strlen (TYPE_NAME (t)) +
                                          strlen (phys_name) + 3);
           sprintf (demangled_name, "%s::%s", TYPE_NAME (t), phys_name);
 	  /* APPLE LOCAL begin return multiple symbols  */
 	  syms_found = lookup_symbol_all (demangled_name, NULL, VAR_DOMAIN,
-					  (int *) NULL, 
+					  (int *) NULL,
 					  (struct symtab **) NULL,
 					  &sym_list);
         }
@@ -483,7 +481,7 @@ add_matching_methods (int method_counter, struct type *t,
 	  int base_pos = *sym_arr_pos;
 	  int new_pos = *sym_arr_pos;
 	  struct symbol_search *cur;
-	  
+
 	  /* sym_arr may have had some stuff in it when passed into
 	     this function. sym_arr_pos indicates the first open
 	     position in the array, so we use that as a base_pos
@@ -502,26 +500,26 @@ add_matching_methods (int method_counter, struct type *t,
 
 
 	  /* Count the number of new symbols we found.  */
-	  
+
 	  for (cur = sym_list; cur; cur = cur->next)
 	    num_syms++;
 
-	  /* Check to see if there is room left in the array for all 
+	  /* Check to see if there is room left in the array for all
 	     the new symbols.  If not, realloc the array.  */
 
 	  if ((base_pos + num_syms) > *sym_arr_size)
 	    {
 	      int k;
-	      *sym_arr = xrealloc (*sym_arr,
-				   (num_syms + base_pos) * sizeof 
-				                         (struct symbol *));
+	      *sym_arr = ((struct symbol **)
+                          xrealloc(*sym_arr,
+                                   ((num_syms + base_pos)
+                                    * sizeof(struct symbol *))));
 
-	      /* Blank out the new entries.  */
-
-	      for (k = *sym_arr_size; k < num_syms + base_pos; k++)
+	      /* Blank out the new entries: */
+	      for (k = *sym_arr_size; k < (num_syms + base_pos); k++)
 		(*sym_arr)[k] = NULL;
 
-	      *sym_arr_size = num_syms + base_pos;
+	      *sym_arr_size = (num_syms + base_pos);
 	    }
 
 	  /* Walk down the list of new symbols adding each new symbol
@@ -585,7 +583,7 @@ add_constructors (int method_counter, struct type *t,
     {
       struct fn_field *f;
       char *phys_name;
-		  
+
       f = TYPE_FN_FIELDLIST1 (t, method_counter);
 
       /* GCC 3.x will never produce stabs stub methods, so
@@ -629,19 +627,20 @@ add_constructors (int method_counter, struct type *t,
 				    &sym_list);
 
 	  /* Count the number of new symbols we found.  */
-	  
+
 	  for (cur = sym_list; cur; cur = cur->next)
 	    num_syms++;
 
-	  /* Check to see if there is room left in the array for all 
+	  /* Check to see if there is room left in the array for all
 	     the new symbols.  If not, realloc the array.  */
 
 	  if ((num_syms + base_pos) > *sym_arr_size)
 	    {
 	      int k;
-	      *sym_arr = xrealloc (*sym_arr,
-				   (num_syms + base_pos) * sizeof 
-				                          (struct symbol *));
+	      *sym_arr = ((struct symbol **)
+                          xrealloc(*sym_arr,
+                                   ((num_syms + base_pos)
+                                    * sizeof(struct symbol *))));
 	      /* Blank out the new entries.  */
 
 	      for (k = *sym_arr_size; k < num_syms + base_pos; k++)
@@ -679,20 +678,20 @@ add_constructors (int method_counter, struct type *t,
    line spec is `filename:linenum'.  */
 
 static void
-build_canonical_line_spec (struct symtab_and_line *sal, char *symname,
-			   char ***canonical)
+build_canonical_line_spec(struct symtab_and_line *sal, char *symname,
+			  char ***canonical)
 {
   char **canonical_arr;
   char *canonical_name;
   char *filename;
   struct symtab *s = sal->symtab;
 
-  if (s == (struct symtab *) NULL
-      || s->filename == (char *) NULL
-      || canonical == (char ***) NULL)
+  if (s == (struct symtab *)NULL
+      || s->filename == (char *)NULL
+      || canonical == (char ***)NULL)
     return;
 
-  canonical_arr = (char **) xmalloc (sizeof (char *));
+  canonical_arr = (char **)xmalloc(sizeof(char *));
   *canonical = canonical_arr;
 
   filename = s->filename;
@@ -700,13 +699,14 @@ build_canonical_line_spec (struct symtab_and_line *sal, char *symname,
     {
       /* APPLE LOCAL: put single quotes around the symbol otherwise we'll
 	 fail to parse it correctly if it has parens or "::".  */
-      canonical_name = xmalloc (strlen (filename) + strlen (symname) + 2 + 2);
-      sprintf (canonical_name, "%s:'%s'", filename, symname);
+      canonical_name = (char *)xmalloc(strlen(filename) + strlen(symname)
+                                       + 2UL + 2UL);
+      sprintf(canonical_name, "%s:'%s'", filename, symname);
     }
   else
     {
-      canonical_name = xmalloc (strlen (filename) + 30);
-      sprintf (canonical_name, "%s:%d", filename, sal->line);
+      canonical_name = (char *)xmalloc(strlen(filename) + 30UL);
+      sprintf(canonical_name, "%s:%d", filename, sal->line);
     }
   canonical_arr[0] = canonical_name;
 }
@@ -719,7 +719,7 @@ build_canonical_line_spec (struct symtab_and_line *sal, char *symname,
    within foo<int, int>.  */
 
 static char *
-find_toplevel_char (char *s, char c)
+find_toplevel_char(char *s, char c)
 {
   int quoted = 0;		/* zero if we're not in quotes;
 				   '"' if we're in a double-quoted string;
@@ -753,13 +753,13 @@ find_toplevel_char (char *s, char c)
    representation, such as -[Foo bar:] or +[Foo bar]. Objective-C symbols
    are allowed to have spaces and parentheses in them.  */
 
-static int 
+static int
 is_objc_method_format (const char *s)
 {
   if (s == NULL || *s == '\0')
     return 0;
   /* Handle arguments with the format FILENAME:SYMBOL.  */
-  if ((s[0] == ':') && (strchr ("+-", s[1]) != NULL) 
+  if ((s[0] == ':') && (strchr ("+-", s[1]) != NULL)
       && (s[2] == '[') && strchr(s, ']'))
     return 1;
   /* Handle arguments that are just SYMBOL.  */
@@ -773,20 +773,19 @@ is_objc_method_format (const char *s)
    If CANONICAL is non-NULL return a corresponding array of mangled names
    as canonical line specs there.  */
 
-/* APPLE LOCAL: Added ACCEPT_ALL meaning don't ask, but just return all the 
+/* APPLE LOCAL: Added ACCEPT_ALL meaning don't ask, but just return all the
    matches.  This is implemented slightly inefficiently - I just mock up a
    return answer of "1".  But this doesn't need to be high performance, and
    it is better that we don't duplicate the code.  This way also reduces merge
    conflicts...  */
 
-/* APPLE LOCAL: Also added the nsyms parameter.  decode_objc returns the total 
+/* APPLE LOCAL: Also added the nsyms parameter.  decode_objc returns the total
    number of elements, AND the number that have symbols.  So we should use this
    info if available.  */
 
 static struct symtabs_and_lines
-decode_line_2 (struct symbol *sym_arr[], int nelts, int nsyms, int funfirstline,
-	       int accept_all,
-	       char ***canonical)
+decode_line_2(struct symbol *sym_arr[], int nelts, int nsyms,
+              int funfirstline, int accept_all, char ***canonical)
 {
   struct symtabs_and_lines values, return_values;
   char *args, *arg1;
@@ -794,78 +793,80 @@ decode_line_2 (struct symbol *sym_arr[], int nelts, int nsyms, int funfirstline,
   char *prompt;
   char *symname;
   struct cleanup *old_chain;
-  char **canonical_arr = (char **) NULL;
+  char **canonical_arr = (char **)NULL;
 
-  values.sals = (struct symtab_and_line *)
-    alloca (nelts * sizeof (struct symtab_and_line));
-  return_values.sals = (struct symtab_and_line *)
-    xmalloc (nelts * sizeof (struct symtab_and_line));
-  old_chain = make_cleanup (xfree, return_values.sals);
+  values.sals = ((struct symtab_and_line *)
+                 alloca(nelts * sizeof(struct symtab_and_line)));
+  return_values.sals = ((struct symtab_and_line *)
+                        xmalloc(nelts * sizeof(struct symtab_and_line)));
+  old_chain = make_cleanup(xfree, return_values.sals);
 
   if (canonical)
     {
-      canonical_arr = (char **) xmalloc (nelts * sizeof (char *));
-      make_cleanup (xfree, canonical_arr);
-      memset (canonical_arr, 0, nelts * sizeof (char *));
+      canonical_arr = (char **)xmalloc(nelts * sizeof(char *));
+      make_cleanup(xfree, canonical_arr);
+      memset(canonical_arr, 0, nelts * sizeof(char *));
       *canonical = canonical_arr;
     }
 
   i = 0;
   /* APPLE LOCAL */
   if (!accept_all)
-  printf_unfiltered (_("[0] cancel\n[1] all\n"));
+    printf_unfiltered(_("[0] cancel\n[1] all\n"));
 
   /* APPLE LOCAL */
   while (i < nsyms)
     {
-      init_sal (&return_values.sals[i]);	/* Initialize to zeroes.  */
-      init_sal (&values.sals[i]);
-      if (sym_arr[i] && SYMBOL_CLASS (sym_arr[i]) == LOC_BLOCK)
+      init_sal(&return_values.sals[i]);	/* Initialize to zeroes.  */
+      init_sal(&values.sals[i]);
+      if (sym_arr[i] && SYMBOL_CLASS(sym_arr[i]) == LOC_BLOCK)
 	{
-	  values.sals[i] = find_function_start_sal (sym_arr[i], funfirstline);
+	  values.sals[i] = find_function_start_sal(sym_arr[i], funfirstline);
 	  if (!accept_all)
 	    {
 	      if (values.sals[i].symtab)
-		printf_unfiltered ("[%d] %s at %s:%d\n",
-				   (i + 2),
-				   SYMBOL_PRINT_NAME (sym_arr[i]),
-				   values.sals[i].symtab->filename,
-				   values.sals[i].line);
+		printf_unfiltered("[%d] %s at %s:%d\n",
+				  (i + 2),
+				  SYMBOL_PRINT_NAME(sym_arr[i]),
+				  values.sals[i].symtab->filename,
+				  values.sals[i].line);
 	      else
-		printf_unfiltered ("[%d] %s at ?FILE:%d [No symtab? Probably broken debug info...]\n",
-				   (i + 2),
-				   SYMBOL_PRINT_NAME (sym_arr[i]),
-				   values.sals[i].line);
+		printf_unfiltered("[%d] %s at ?FILE:%d [No symtab? Probably broken debug info...]\n",
+				  (i + 2),
+				  SYMBOL_PRINT_NAME(sym_arr[i]),
+				  values.sals[i].line);
 	    }
 	}
       else if (!accept_all)
 	{
 	  /* APPLE LOCAL: We can do a little better than just printing ?HERE?...  */
-          printf_filtered ("[%d]    %s\n",
-                           (i + 2),
-                           (sym_arr[i] && SYMBOL_PRINT_NAME (sym_arr[i])) ?
-                           SYMBOL_PRINT_NAME (sym_arr[i]) : "?HERE?");
+          printf_filtered("[%d]    %s\n",
+                          (i + 2),
+                          (sym_arr[i] && SYMBOL_PRINT_NAME(sym_arr[i])) ?
+                          SYMBOL_PRINT_NAME(sym_arr[i]) : "?HERE?");
 	}
       else
-	printf_unfiltered (_("?HERE\n"));
+	printf_unfiltered(_("?HERE\n"));
       i++;
     }
 
-  if (!accept_all && nelts != nsyms)
-        printf_filtered ("\nNon-debugging symbols:\n");
+  if (!accept_all && (nelts != nsyms))
+    printf_filtered("\nNon-debugging symbols:\n");
 
   /* handle minimal_symbols */
   for (i = nsyms; i < nelts; i++)
     {
-      /* assert (sym_arr[i] != NULL); */
+#if defined(DEBUG) && defined(assert)
+      assert(sym_arr[i] != NULL);
+#endif /* DEBUG && assert */
       QUIT;
       values.sals[i].symtab = 0;
       values.sals[i].line = 0;
       values.sals[i].end = 0;
-      values.sals[i].entry_type = 0;
+      values.sals[i].entry_type = (enum line_table_entry_type)0;
       values.sals[i].next = 0;
-      values.sals[i].pc = SYMBOL_VALUE_ADDRESS (sym_arr[i]);
-      values.sals[i].section = SYMBOL_BFD_SECTION (sym_arr[i]);
+      values.sals[i].pc = SYMBOL_VALUE_ADDRESS(sym_arr[i]);
+      values.sals[i].section = SYMBOL_BFD_SECTION(sym_arr[i]);
       if (funfirstline)
 	{
 	  /* APPLE LOCAL begin address context.  */
@@ -901,7 +902,7 @@ decode_line_2 (struct symbol *sym_arr[], int nelts, int nsyms, int funfirstline,
 	  prompt = "> ";
 	}
       args = command_line_input (prompt, 0, "overload-choice");
-      
+
       if (args == 0 || *args == 0)
 	error_no_arg ("one or more choice numbers");
     }
@@ -976,7 +977,7 @@ decode_line_2 (struct symbol *sym_arr[], int nelts, int nsyms, int funfirstline,
   return return_values;
 }
 
-/* APPLE LOCAL: Append NUM_SALS members from the array of symtab_and_line 
+/* APPLE LOCAL: Append NUM_SALS members from the array of symtab_and_line
    structs in SAL to the symtabs_and_lines struct SALS.  */
 
 static void
@@ -985,17 +986,17 @@ sals_pushback (struct symtabs_and_lines *sals,
                unsigned int num_sals)
 {
   const unsigned int total_num_sals = sals->nelts + num_sals;
-  sals->sals = (struct symtab_and_line *) 
-                  xrealloc (sals->sals, 
+  sals->sals = (struct symtab_and_line *)
+                  xrealloc (sals->sals,
                             total_num_sals * sizeof (struct symtab_and_line));
-  memcpy (sals->sals + sals->nelts, sal, 
+  memcpy (sals->sals + sals->nelts, sal,
           num_sals * sizeof (struct symtab_and_line));
   sals->nelts += num_sals;
 }
 
-/* APPLE LOCAL: Only adds the symtab_and_line entries in SRC_SALS to 
+/* APPLE LOCAL: Only adds the symtab_and_line entries in SRC_SALS to
    DST_SALS if they are not duplicates of an existing symtab_and_line
-   entry in DST_SALS. We can run into this problem when we have a dSYM file 
+   entry in DST_SALS. We can run into this problem when we have a dSYM file
    whose executable still contains its debug map and the .o files are still
    available.  The other place we run into this is if you have a function that
    is in multiple .o files, but gets coalesced into one function in the
@@ -1003,7 +1004,7 @@ sals_pushback (struct symtabs_and_lines *sals,
    don't want to set multiple breakpoints on the same address.  */
 
 static void
-intersect_sals (struct symtabs_and_lines *dst_sals, 
+intersect_sals (struct symtabs_and_lines *dst_sals,
                 const struct symtabs_and_lines *src_sals)
 {
   if (src_sals->nelts > 0)
@@ -1018,20 +1019,20 @@ intersect_sals (struct symtabs_and_lines *dst_sals,
 	  for (dst_idx = 0; dst_idx < dst_sals->nelts; dst_idx++)
 	    {
 	      struct symtab_and_line *dst_sal = &dst_sals->sals[dst_idx];
-	      
-	      /* A duplicate is considered an entry whose address line are the 
+
+	      /* A duplicate is considered an entry whose address line are the
                  same and whose objfile is the same as the the others separate
 		 debug objfile.  */
 	      if (dst_sal->pc == src_sal->pc
 		  && dst_sal->line == src_sal->line
-		  && dst_sal->symtab 
-                  && src_sal->symtab 
+		  && dst_sal->symtab
+                  && src_sal->symtab
 		  /* Check that EITHER this sals are coming from an objfile
 		     and its dSYM:  */
-		  && ((dst_sal->symtab->objfile == 
+		  && ((dst_sal->symtab->objfile ==
 		       src_sal->symtab->objfile->separate_debug_objfile)
 		      /* OR from a coalesced function that shows up in two symtabs:  */
-		      || (dst_sal->symtab->objfile == 
+		      || (dst_sal->symtab->objfile ==
 			  src_sal->symtab->objfile))
 		  /* We should also check that the file & dir are the same... */
  		  && (src_sal->symtab->filename != NULL
@@ -1045,7 +1046,7 @@ intersect_sals (struct symtabs_and_lines *dst_sals,
 		  break;
 		}
 	    }
-	    
+
 	  if (add_src)
 	    {
 	      sals_pushback (dst_sals, src_sal, 1);
@@ -1091,7 +1092,7 @@ intersect_sals (struct symtabs_and_lines *dst_sals,
 
    Note that it is possible to return zero for the symtab
    if no file is validly specified.  Callers must check that.
-   Also, the line number returned may be invalid.  
+   Also, the line number returned may be invalid.
 
    If NOT_FOUND_PTR is not null, store a boolean true/false value at the
    location, based on whether or not failure occurs due to an unknown function
@@ -1110,7 +1111,7 @@ intersect_sals (struct symtabs_and_lines *dst_sals,
    constructors & destructors).  */
 struct symtabs_and_lines
 decode_line_1 (char **argptr, int funfirstline, struct symtab *default_symtab,
-	       int default_line, char ***canonical, int *not_found_ptr, 
+	       int default_line, char ***canonical, int *not_found_ptr,
 	       int find_all_occurrences)
 /* APPLE LOCAL end return multiple symbols  */
 {
@@ -1138,11 +1139,11 @@ decode_line_1 (char **argptr, int funfirstline, struct symtab *default_symtab,
   /* Defaults have defaults.  */
 
   initialize_defaults (&default_symtab, &default_line);
-  
-  /* If we get a compound expression of the form: 
+
+  /* If we get a compound expression of the form:
         filename.cp:foo::bar(this, that)
      then we'll peal off the filename.cp, and use that to set
-     file_symtab_arr, but if we go on from there, we'll have 
+     file_symtab_arr, but if we go on from there, we'll have
      passed the code that deals with the :: in the symbol
      name.  So we come back here again to make sure we pick
      that up.  */
@@ -1189,7 +1190,7 @@ decode_line_1 (char **argptr, int funfirstline, struct symtab *default_symtab,
 	 methods now and this means every time you type "b main"
 	 on an ObjC program you get a "Select one of the following"
 	 dialogue.  Lame.  And it doesn't look like we can talk the
-	 AppKit guys down, so hack it in here.  
+	 AppKit guys down, so hack it in here.
          Jeez.  Same thing with "error" now.  Guess what function I put
          a breakpoint on all the time while working on gdb... */
       if (saved_arg == NULL
@@ -1204,14 +1205,14 @@ decode_line_1 (char **argptr, int funfirstline, struct symtab *default_symtab,
     }
 
   /* Does it look like there actually were two parts?  */
-  
+
   /* APPLE LOCAL: Ignore parens before ':' or '.', since they might be part
      of the file name and won't be part of a method or symbol name.  */
   /* APPLE LOCAL: The original test here would not go into the symtab_from_filename
      part if you had a paren after the ":".  That breaks parsing something like:
         foo.cp:Class::Method(Type*)
      since we guess the first part is foo.cp:Class, which isn't in fact anything.
-     This wouldn't be a big deal except we canonicalize Class::Method(Type*) to 
+     This wouldn't be a big deal except we canonicalize Class::Method(Type*) to
      just something of this form.
      I didn't want to change the parser too much but it seemed safe to me to test
      for a single quote after the :, which would catch it if we did:
@@ -1219,20 +1220,20 @@ decode_line_1 (char **argptr, int funfirstline, struct symtab *default_symtab,
      which is actually the right way to do this in gdb.  I also changed the
      canonicalizer so it builds this form.  */
 
-  if ((p[0] == ':' || p[0] == '.') 
+  if ((p[0] == ':' || p[0] == '.')
       && (paren_pointer == NULL || paren_pointer < p
 	  || p[1] == '\''))
     {
       if (is_quoted)
 	*argptr = *argptr + 1;
-      
+
       /* Is it a C++ or Java compound data structure?
 	 The check on p[1] == ':' is capturing the case of "::",
-	 since p[0]==':' was checked above.  
+	 since p[0]==':' was checked above.
 	 Note that the call to decode_compound does everything
 	 for us, including the lookup on the symbol table, so we
 	 can return now. */
-	
+
       if (p[0] == '.' || p[1] == ':')
 	return decode_compound (argptr, funfirstline, canonical,
 				saved_arg, p, not_found_ptr);
@@ -1240,7 +1241,7 @@ decode_line_1 (char **argptr, int funfirstline, struct symtab *default_symtab,
       /* No, the first part is a filename; set s to be that file's
 	 symtab.  Also, move argptr past the filename.  */
 
-      file_symtab_arr = symtab_from_filename (argptr, p, is_quote_enclosed, 
+      file_symtab_arr = symtab_from_filename (argptr, p, is_quote_enclosed,
 		      			  not_found_ptr);
       if (strchr (p+1, ':') != NULL)
 	{
@@ -1316,17 +1317,17 @@ decode_line_1 (char **argptr, int funfirstline, struct symtab *default_symtab,
             if (file_symtab_arr[i]->linetable == NULL)
               continue;
 
-            this_result = decode_all_digits_exhaustive (&start_here, 
+            this_result = decode_all_digits_exhaustive (&start_here,
                               funfirstline, default_symtab, default_line,
 			      canonical, file_symtab_arr[i], q, &parsed_lineno,
 			      not_found_ptr);
             if (this_result.nelts > 0)
               {
-                /* APPLE LOCAL: Only add the sal entries from this_result 
+                /* APPLE LOCAL: Only add the sal entries from this_result
                    if they are not duplicates of ones found in final_result.  */
                 intersect_sals (&final_result, &this_result);
               }
-	      
+
 	    /* APPLE LOCAL: Be sure to free the sals found in 'this_result'.  */
 	    if (this_result.sals)
 	      xfree (this_result.sals);
@@ -1345,7 +1346,7 @@ decode_line_1 (char **argptr, int funfirstline, struct symtab *default_symtab,
 
 	       So I'm going to adopt a cheesier, but simpler heuristic.  I
 	       am going to go through the results, and find the line number
-	       closest to the given source line, and eliminate all the 
+	       closest to the given source line, and eliminate all the
                others.  */
 
 	    int closest_line;
@@ -1363,9 +1364,9 @@ decode_line_1 (char **argptr, int funfirstline, struct symtab *default_symtab,
 		    closest_line = parsed_lineno;
 		    break;
 		  }
-		/* I don't think we ever move the line to lower numbers, 
+		/* I don't think we ever move the line to lower numbers,
                    so I will reject those cases as some kind of error.  */
-		if (this_line > parsed_lineno 
+		if (this_line > parsed_lineno
 		    && this_line < closest_line)
 		  closest_line = this_line;
 	      }
@@ -1388,7 +1389,7 @@ decode_line_1 (char **argptr, int funfirstline, struct symtab *default_symtab,
           {
             final_result.nelts = 0;
 
-            if (file_symtab_arr[0] && file_symtab_arr[0]->filename 
+            if (file_symtab_arr[0] && file_symtab_arr[0]->filename
                 && file_symtab_arr[0]->linetable == NULL)
               {
                 error ("Could not find specified line number in %s, "
@@ -1398,14 +1399,14 @@ decode_line_1 (char **argptr, int funfirstline, struct symtab *default_symtab,
               error ("Error parsing file+line number specification or "
                      "could not find source file.");
 
-            /* A file+line specifier like 'objc-prog.m:0' has special meaning 
-               in MI; it is used when creating a varobj to indicate a varobj 
-               with file-static scope.  So we return a specially constructed 
-               sal with just the symtab pointer in that case.  
+            /* A file+line specifier like 'objc-prog.m:0' has special meaning
+               in MI; it is used when creating a varobj to indicate a varobj
+               with file-static scope.  So we return a specially constructed
+               sal with just the symtab pointer in that case.
                If the line number is greater than the number of lines in the
                file, same deal.  */
 
-            final_result.sals = (struct symtab_and_line *) 
+            final_result.sals = (struct symtab_and_line *)
               xmalloc (sizeof (struct symtab_and_line));
             memset (final_result.sals, 0, sizeof (struct symtab_and_line));
             final_result.nelts = 1;
@@ -1414,14 +1415,14 @@ decode_line_1 (char **argptr, int funfirstline, struct symtab *default_symtab,
 	  }
 
         /* We had multiple matching sals but only one (final_result.nelts == 1)
-           actually worked out.  Make sure to advance *argptr over the 
+           actually worked out.  Make sure to advance *argptr over the
            line number specification or we'll get an error about junk at the
            end of the linespec.  */
         *argptr = q;
         return final_result;
       }
       else
-	return decode_all_digits (argptr, funfirstline, default_symtab, 
+	return decode_all_digits (argptr, funfirstline, default_symtab,
 				  default_line, canonical, NULL, q);
     }
 
@@ -1533,9 +1534,9 @@ initialize_defaults (struct symtab **default_symtab, int *default_line)
       /* Use whatever we have for the default source line.  We don't use
          get_current_or_default_symtab_and_line as it can recurse and call
 	 us back! */
-      struct symtab_and_line cursal = 
+      struct symtab_and_line cursal =
 	get_current_source_symtab_and_line ();
-      
+
       *default_symtab = cursal.symtab;
       *default_line = cursal.line;
     }
@@ -1588,7 +1589,7 @@ decode_indirect (char **argptr)
 {
   struct symtabs_and_lines values;
   CORE_ADDR pc;
-  
+
   (*argptr)++;
   pc = parse_and_eval_address_1 (argptr);
 
@@ -1677,7 +1678,7 @@ locate_first_half (char **argptr, int *is_quote_enclosed)
 
       if (p[0] == ':')
 	{
-	  if (p[1] == ':') 
+	  if (p[1] == ':')
 	    break;
 	  else
 	    {
@@ -1747,16 +1748,18 @@ decode_objc (char **argptr, int funfirstline, struct symtab *file_symtab,
   if (file_symtab != NULL)
     block = BLOCKVECTOR_BLOCK (BLOCKVECTOR (file_symtab), STATIC_BLOCK);
   else
-    block = get_selected_block (0);
-    
-  copy = find_imps (file_symtab, block, *argptr, NULL, &i1, &i2); 
-    
+    block = get_selected_block(0);
+
+  copy = find_imps(file_symtab, block, *argptr, NULL,
+                   (unsigned int *)&i1, (unsigned int *)&i2);
+
   if (i1 > 0)
     {
-      sym_arr = (struct symbol **) alloca ((i1 + 1) * sizeof (struct symbol *));
+      sym_arr = (struct symbol **)alloca((i1 + 1) * sizeof(struct symbol *));
       sym_arr[i1] = 0;
 
-      copy = find_imps (file_symtab, block, *argptr, sym_arr, &i1, &i2); 
+      copy = find_imps(file_symtab, block, *argptr, sym_arr,
+                       (unsigned int *)&i1, (unsigned int *)&i2);
       *argptr = copy;
     }
 
@@ -1764,7 +1767,7 @@ decode_objc (char **argptr, int funfirstline, struct symtab *file_symtab,
      i2 represents how many HIGH-LEVEL (struct symbol) matches,
      which will come first in the sym_arr array.  Any low-level
      (minimal_symbol) matches will follow those.  */
-      
+
   if (i1 == 1)
     {
       if (i2 > 0)
@@ -1787,10 +1790,10 @@ decode_objc (char **argptr, int funfirstline, struct symtab *file_symtab,
 	      sym = NULL;
 	    }
 	}
-	      
+
       values.sals = (struct symtab_and_line *) xmalloc (sizeof (struct symtab_and_line));
       values.nelts = 1;
-	      
+
       if (sym && SYMBOL_CLASS (sym) == LOC_BLOCK)
 	{
 	  /* Canonicalize this, so it remains resolved for dylib loads.  */
@@ -1826,7 +1829,7 @@ decode_objc (char **argptr, int funfirstline, struct symtab *file_symtab,
 		}
 	      /* APPLE LOCAL end address context.  */
 	    }
-	    
+
 	  values.sals[0].section = SYMBOL_BFD_SECTION (sym_arr[0]);
 	}
       return values;
@@ -1869,7 +1872,7 @@ decode_compound (char **argptr, int funfirstline, char ***canonical,
      "::foo".  If found, skip over the colons and jump to normal
      symbol processing.  I.e. the whole line specification starts with
      "::" (note the condition that *argptr == p). */
-  if (p[0] == ':' 
+  if (p[0] == ':'
       && ((*argptr == p) || (p[-1] == ' ') || (p[-1] == '\t')))
     saved_arg2 += 2;
 
@@ -2101,50 +2104,51 @@ lookup_prefix_sym (char **argptr, char *p)
    symbol is SYM_CLASS.  */
 
 static struct symtabs_and_lines
-find_method (int funfirstline, char ***canonical, char *saved_arg,
-	     char *copy, struct type *t, struct symbol *sym_class,
-	     int *not_found_ptr)
+find_method(int funfirstline, char ***canonical, char *saved_arg,
+	    char *copy, struct type *t, struct symbol *sym_class,
+	    int *not_found_ptr)
 {
   struct symtabs_and_lines values;
   struct symbol *sym = 0;
   int i1;	/*  Counter for the symbol array.  */
   /* APPLE LOCAL begin return multiple symbols  */
-  int sym_arr_size = total_number_of_methods (t);
-  struct symbol **sym_arr =  xcalloc (sym_arr_size,
-				      sizeof (struct symbol *));
+  int sym_arr_size = total_number_of_methods(t);
+  struct symbol **sym_arr = ((struct symbol **)
+                             xcalloc(sym_arr_size,
+                                     sizeof(struct symbol *)));
   /* APPLE LOCAL end return multiple symbols  */
 
   /* Find all methods with a matching name, and put them in
      sym_arr.  */
 
   /* APPLE LOCAL return multiple symbols  */
-  i1 = collect_methods (copy, t, &sym_arr, &sym_arr_size);
+  i1 = collect_methods(copy, t, &sym_arr, &sym_arr_size);
 
   if (i1 == 1)
     {
-      /* There is exactly one field with that name.  */
+      /* There is exactly one field with that name: */
       sym = sym_arr[0];
 
-      if (sym && SYMBOL_CLASS (sym) == LOC_BLOCK)
+      if (sym && SYMBOL_CLASS(sym) == LOC_BLOCK)
 	{
-	  values.sals = (struct symtab_and_line *)
-	    xmalloc (sizeof (struct symtab_and_line));
+	  values.sals = ((struct symtab_and_line *)
+                         xmalloc(sizeof(struct symtab_and_line)));
 	  values.nelts = 1;
-	  values.sals[0] = find_function_start_sal (sym,
-						    funfirstline);
+	  values.sals[0] = find_function_start_sal(sym,
+						   funfirstline);
 	}
       else
 	{
 	  values.nelts = 0;
 	}
       /* APPLE LOCAL return multiple symbols  */
-      xfree (sym_arr);
+      xfree(sym_arr);
       return values;
     }
   if (i1 > 0)
     {
       int accept_all;
-      if (ui_out_is_mi_like_p (uiout))
+      if (ui_out_is_mi_like_p(uiout))
 	accept_all = 1;
       else
 	accept_all = 0;
@@ -2152,9 +2156,9 @@ find_method (int funfirstline, char ***canonical, char *saved_arg,
       /* There is more than one field with that name
 	 (overloaded).  Ask the user which one to use.  */
       /* APPLE LOCAL begin return multiple values  */
-      values = decode_line_2 (sym_arr, i1, i1, funfirstline, accept_all, 
-			      canonical);
-      xfree (sym_arr);
+      values = decode_line_2(sym_arr, i1, i1, funfirstline, accept_all,
+			     canonical);
+      xfree(sym_arr);
       return values;
       /* APPLE LOCAL end return multiple values  */
     }
@@ -2162,11 +2166,11 @@ find_method (int funfirstline, char ***canonical, char *saved_arg,
     {
       char *tmp;
 
-      if (is_operator_name (copy))
+      if (is_operator_name(copy))
 	{
-	  tmp = (char *) alloca (strlen (copy + 3) + 9);
-	  strcpy (tmp, "operator ");
-	  strcat (tmp, copy + 3);
+	  tmp = (char *)alloca(strlen(copy + 3) + 9UL);
+	  strcpy(tmp, "operator ");
+	  strcat(tmp, copy + 3);
 	}
       else
 	tmp = copy;
@@ -2177,16 +2181,16 @@ find_method (int funfirstline, char ***canonical, char *saved_arg,
 	*not_found_ptr = 1;
 
       /* APPLE LOCAL return multiple symbols  */
-      xfree (sym_arr);
+      xfree(sym_arr);
 
       if (tmp[0] == '~')
-	cplusplus_error (saved_arg,
-			 "the class `%s' does not have destructor defined\n",
-			 SYMBOL_PRINT_NAME (sym_class));
+	cplusplus_error(saved_arg,
+                        "the class `%s' does not have destructor defined\n",
+                        SYMBOL_PRINT_NAME(sym_class));
       else
-	cplusplus_error (saved_arg,
-			 "the class %s does not have any method named %s\n",
-			 SYMBOL_PRINT_NAME (sym_class), tmp);
+	cplusplus_error(saved_arg,
+                        "the class %s does not have any method named %s\n",
+                        SYMBOL_PRINT_NAME(sym_class), tmp);
     }
 }
 
@@ -2196,8 +2200,8 @@ find_method (int funfirstline, char ***canonical, char *saved_arg,
    be resized or not.  Return the number of methods found.  */
 
 static int
-collect_methods (char *copy, struct type *t,
-		 struct symbol ***sym_arr, int *sym_arr_size)
+collect_methods(char *copy, struct type *t,
+                struct symbol ***sym_arr, int *sym_arr_size)
 {
   int i1 = 0;	/*  Counter for the symbol array.  */
   int arr_pos = 0;
@@ -2205,37 +2209,37 @@ collect_methods (char *copy, struct type *t,
   struct symbol_search *sym_list = NULL;
   /* APPLE LOCAL end return multiple symbols  */
 
-  if (destructor_name_p (copy, t))
+  if (destructor_name_p(copy, t))
     {
       /* Destructors are a special case.  */
       int m_index, f_index;
 
-      if (get_destructor_fn_field (t, &m_index, &f_index))
+      if (get_destructor_fn_field(t, &m_index, &f_index))
 	{
-	  struct fn_field *f = TYPE_FN_FIELDLIST1 (t, m_index);
+	  struct fn_field *f = TYPE_FN_FIELDLIST1(t, m_index);
 	  /* APPLE LOCAL: More fallout from the fact that the DWARF
 	     doesn't have the mangled name, so the PHYSNAME is the
 	     bare ctor or dtor.  */
-	  
-	  char *phys_name = TYPE_FN_FIELD_PHYSNAME (f, f_index);
-	  
+
+	  char *phys_name = TYPE_FN_FIELD_PHYSNAME(f, f_index);
+
 	  if (phys_name[0] != '_')
 	    {
-	      char *demangled_name = alloca (strlen (TYPE_NAME (t)) + 
-					     strlen (phys_name) + 3);
-	      sprintf (demangled_name, "%s::%s", TYPE_NAME (t), phys_name);
+	      char *demangled_name = alloca(strlen(TYPE_NAME(t)) +
+					    strlen(phys_name) + 3UL);
+	      sprintf(demangled_name, "%s::%s", TYPE_NAME(t), phys_name);
 	      /* APPLE LOCAL begin return multiple symbols  */
-	      syms_found = lookup_symbol_all (demangled_name, NULL, VAR_DOMAIN, 
-					      (int *) NULL,
-					      (struct symtab **) NULL, 
-					      &sym_list);
+	      syms_found = lookup_symbol_all(demangled_name, NULL, VAR_DOMAIN,
+					     (int *)NULL,
+					     (struct symtab **)NULL,
+					     &sym_list);
 
 	    }
 	  else
-	    syms_found = lookup_symbol_all (phys_name, NULL, VAR_DOMAIN,
-					    (int *) NULL,
-					    (struct symtab **) NULL,
-					    &sym_list);
+	    syms_found = lookup_symbol_all(phys_name, NULL, VAR_DOMAIN,
+					   (int *)NULL,
+					   (struct symtab **)NULL,
+					   &sym_list);
 
 	  if (syms_found)
 	    {
@@ -2243,12 +2247,10 @@ collect_methods (char *copy, struct type *t,
 	      int num_syms = 0;
 	      struct symbol_search *cur;
 
-	      /* Remove symbols from sym_list that are already in sym_arr  */
+	      /* Remove symbols from sym_list that are already in sym_arr: */
+	      remove_duplicate_symbols(*sym_arr, arr_pos, &sym_list);
 
-	      remove_duplicate_symbols (*sym_arr, arr_pos, &sym_list);
-
-	      /* Count the number of new symbols we found.  */
-
+	      /* Count the number of new symbols we found: */
 	      for (cur = sym_list; cur; cur = cur->next)
 		num_syms++;
 
@@ -2259,11 +2261,12 @@ collect_methods (char *copy, struct type *t,
 		{
 		  int k;
 
-		  *sym_arr = xrealloc (*sym_arr,
-				       num_syms * sizeof (struct symbol *));
+		  *sym_arr =
+                    ((struct symbol **)
+                     xrealloc(*sym_arr,
+                              (num_syms * sizeof(struct symbol *))));
 
-		  /* Blank out the new entries.  */
-
+		  /* Blank out the new entries: */
 		  for (k = *sym_arr_size; k < num_syms; k++)
 		    (*sym_arr)[k] = NULL;
 
@@ -2274,7 +2277,7 @@ collect_methods (char *copy, struct type *t,
 		 the array.  */
 
 	      i1 = num_syms;
-	      for (j = 0, cur = sym_list; j < num_syms && cur; 
+	      for (j = 0, cur = sym_list; j < num_syms && cur;
 		   j++, cur = cur->next)
 		(*sym_arr)[j] = cur->symbol;
 	    }
@@ -2299,13 +2302,13 @@ collect_methods (char *copy, struct type *t,
    This will look through all the objfiles for symtabs that match.  */
 
 static struct symtab **
-symtab_from_filename (char **argptr, char *p, int is_quote_enclosed, 
+symtab_from_filename (char **argptr, char *p, int is_quote_enclosed,
 		      int *not_found_ptr)
 {
   char *p1;
   char *copy;
   struct symtab **file_symtab_arr;
-  
+
   p1 = p;
   while (p != *argptr && p[-1] == ' ')
     --p;
@@ -2323,13 +2326,13 @@ symtab_from_filename (char **argptr, char *p, int is_quote_enclosed,
   file_symtab_arr = lookup_symtab_all (copy);
   if (file_symtab_arr == 0)
     {
-      /* APPLE LOCAL: Set the not_found_ptr before throwing an error.  
+      /* APPLE LOCAL: Set the not_found_ptr before throwing an error.
          Also return NOT_FOUND_ERROR, not generic error because the
          code that is calling us is expecting that...  */
       if (not_found_ptr)
 	*not_found_ptr = 1;
       if (!have_full_symbols () && !have_partial_symbols ())
-	throw_error (NOT_FOUND_ERROR, 
+	throw_error (NOT_FOUND_ERROR,
 		     _("No symbol table is loaded.  Use the \"file\" command."));
       throw_error (NOT_FOUND_ERROR, _("No source file named %s."), copy);
     }
@@ -2387,7 +2390,7 @@ one_block_contains_other (struct blockvector *bv, int index1, int index2)
     }
   else
     return 0;
-  
+
   superblock = inner_block->superblock;
 
   if (!superblock)
@@ -2488,7 +2491,7 @@ decode_all_digits_exhaustive (char **argptr, int funfirstline,
   *parsed_lineno = lineno;
 
   values.nelts = 0;
-  values.sals = 
+  values.sals =
     (struct symtab_and_line *) xmalloc (sizeof (struct symtab_and_line));
   nvalues_allocated = 1;
 
@@ -2504,7 +2507,7 @@ decode_all_digits_exhaustive (char **argptr, int funfirstline,
   if (file_symtab == 0)
     file_symtab = default_symtab;
 
-  /* Now we have to scan the file_symtab and see if we how many 
+  /* Now we have to scan the file_symtab and see if we how many
      addresses we can find that all share this file & line number.  */
 
   {
@@ -2518,7 +2521,7 @@ decode_all_digits_exhaustive (char **argptr, int funfirstline,
     int i;
 
     l = LINETABLE (file_symtab);
-    
+
   do_with_best:
     cur_blockvector = NULL;
     cur_index = -2;
@@ -2534,11 +2537,11 @@ decode_all_digits_exhaustive (char **argptr, int funfirstline,
             struct linetable_entry *item = &(l->item[i]);
 	    /* APPLE LOCAL radar 6557594  */
 	    int inlined_entry = 0;  /* For actual inlined subroutine  */
-            
+
             if (item->line == lineno)
               {
                 /* We found a match, but we don't want to keep setting new
-                   breakpoints on the line entries for assembly code all 
+                   breakpoints on the line entries for assembly code all
                    coming from the same source line (due to scheduling).
                    Our heuristic is that if the block hasn't changed, then
                    we won't set a new breakpoint.  That's not 100% sure,
@@ -2560,7 +2563,7 @@ decode_all_digits_exhaustive (char **argptr, int funfirstline,
 		       with the same line number to see if any of them are for
 		       inlined call sites or subroutines.  */
 
-		    while (j < l->nitems 
+		    while (j < l->nitems
 			   && (l->item[j].line == lineno)
 			   && !cur_inlined_call_site)
 		      {
@@ -2575,7 +2578,7 @@ decode_all_digits_exhaustive (char **argptr, int funfirstline,
 		  }
 		/* APPLE LOCAL end Check for potential inlining . */
 
-                new_blockvector = blockvector_for_pc_sect (item->pc, NULL, 
+                new_blockvector = blockvector_for_pc_sect (item->pc, NULL,
                                                            &new_index, file_symtab);
 
 		/* APPLE LOCAL begin inlined function symbols & blocks  */
@@ -2646,12 +2649,12 @@ decode_all_digits_exhaustive (char **argptr, int funfirstline,
        funfirstline is set.  */
     if (funfirstline)
       {
-	int i;
+	volatile int i;
 	for (i = 0; i < values.nelts; i++)
 	  {
 	    struct symtab_and_line *val = &(values.sals[i]);
 	    struct symbol *func_sym;
-	    
+
 	    /* If we have an objfile for the pc, then be careful to only
 	       look in that objfile for the function symbol.  This is
 	       important because if you are running gdb on a program
@@ -2661,7 +2664,7 @@ decode_all_digits_exhaustive (char **argptr, int funfirstline,
 	       might fool us into moving the breakpoint over the
 	       prologue of this function, which is now totally in the
 	       wrong place...  */
-	    
+
 	    if (val->symtab && val->symtab->objfile)
             {
               struct cleanup *restrict_cleanup;
@@ -2681,16 +2684,16 @@ decode_all_digits_exhaustive (char **argptr, int funfirstline,
 	      struct gdb_exception e;
 	      /* APPLE LOCAL: If we can't parse the prologue for some reason,
 		 make sure the breakpoint gets marked as "future".  */
-	      TRY_CATCH (e, RETURN_MASK_ALL)
+	      TRY_CATCH(e, RETURN_MASK_ALL)
 	      {
-		sal = find_function_start_sal (func_sym, 1);
+		sal = find_function_start_sal(func_sym, 1);
 	      }
 
-	      if (e.reason != NO_ERROR)
+	      if (e.reason != (int)NO_ERROR)
 		{
 		  if (not_found_ptr)
 		    *not_found_ptr = 1;
-		  throw_exception (e);
+		  throw_exception(e);
 		}
 
               /* Don't move the line, just set the pc
@@ -2699,7 +2702,7 @@ decode_all_digits_exhaustive (char **argptr, int funfirstline,
 		 are different.  This will happen for inlined functions,
 		 and then you don't want to move the pc.  */
 
-              if (val->symtab == sal.symtab 
+              if (val->symtab == sal.symtab
 		  &&val->line <= sal.line)
                 val->pc = sal.pc;
             }
@@ -2783,7 +2786,7 @@ decode_all_digits (char **argptr, int funfirstline,
   if (file_symtab == 0)
     file_symtab = default_symtab;
 
-  /* It is possible that this source file has more than one symtab, 
+  /* It is possible that this source file has more than one symtab,
      and that the new line number specification has moved us from the
      default (in file_symtab) to a new one.  */
   val.symtab = find_line_symtab (file_symtab, val.line, NULL, NULL);
@@ -2854,11 +2857,10 @@ decode_all_digits (char **argptr, int funfirstline,
 
 
 
-/* Decode a linespec starting with a dollar sign.  */
-
+/* Decode a linespec starting with a dollar sign: */
 static struct symtabs_and_lines
-decode_dollar (char *copy, int funfirstline, struct symtab *default_symtab,
-	       char ***canonical, struct symtab *file_symtab)
+decode_dollar(char *copy, int funfirstline, struct symtab *default_symtab,
+	      char ***canonical, struct symtab *file_symtab)
 {
   struct value *valx;
   int index = 0;
@@ -2871,58 +2873,58 @@ decode_dollar (char *copy, int funfirstline, struct symtab *default_symtab,
   struct symtab *sym_symtab;
   struct minimal_symbol *msymbol;
 
-  p = (copy[1] == '$') ? copy + 2 : copy + 1;
-  while (*p >= '0' && *p <= '9')
+  p = ((copy[1] == '$') ? (copy + 2) : (copy + 1));
+  while ((*p >= '0') && (*p <= '9'))
     p++;
-  if (!*p)		/* Reached end of token without hitting non-digit.  */
+  if (!*p)	/* Reached end of token without hitting non-digit: */
     {
-      /* We have a value history reference.  */
-      sscanf ((copy[1] == '$') ? copy + 2 : copy + 1, "%d", &index);
-      valx = access_value_history ((copy[1] == '$') ? -index : index);
-      if (TYPE_CODE (value_type (valx)) != TYPE_CODE_INT)
-	error (_("History values used in line specs must have integer values."));
+      /* We have a value history reference: */
+      sscanf(((copy[1] == '$') ? (copy + 2) : (copy + 1)), "%d", &index);
+      valx = access_value_history((copy[1] == '$') ? -index : index);
+      if (TYPE_CODE(value_type(valx)) != TYPE_CODE_INT)
+	error(_("History values used in line specs must have integer values."));
     }
   else
     {
       /* Not all digits -- may be user variable/function or a
 	 convenience variable.  */
 
-      /* Look up entire name as a symbol first.  */
-      sym = lookup_symbol (copy, 0, VAR_DOMAIN, 0, &sym_symtab);
-      file_symtab = (struct symtab *) 0;
+      /* Look up entire name as a symbol first: */
+      sym = lookup_symbol(copy, 0, VAR_DOMAIN, 0, &sym_symtab);
+      file_symtab = (struct symtab *)0;
       need_canonical = 1;
-      /* Symbol was found --> jump to normal symbol processing.  */
+      /* Symbol was found --> jump to normal symbol processing: */
       if (sym)
-	return symbol_found (funfirstline, canonical, copy, sym,
-			     NULL, sym_symtab);
+	return symbol_found(funfirstline, canonical, copy, sym,
+			    NULL, sym_symtab);
 
-      /* If symbol was not found, look in minimal symbol tables.  */
-      msymbol = lookup_minimal_symbol (copy, NULL, NULL);
-      /* Min symbol was found --> jump to minsym processing.  */
+      /* If symbol was not found, look in minimal symbol tables: */
+      msymbol = lookup_minimal_symbol(copy, NULL, NULL);
+      /* Min symbol was found --> jump to minsym processing: */
       if (msymbol)
-	/* APPLE LOCAL: We have to pass in canonical as well.  */
-	return minsym_found (funfirstline, 0, msymbol, canonical);
+	/* APPLE LOCAL: We have to pass in canonical as well: */
+	return minsym_found(funfirstline, 0, msymbol, canonical);
 
-      /* Not a user variable or function -- must be convenience variable.  */
-      need_canonical = (file_symtab == 0) ? 1 : 0;
-      valx = value_of_internalvar (lookup_internalvar (copy + 1));
-      if (TYPE_CODE (value_type (valx)) != TYPE_CODE_INT)
-	error (_("Convenience variables used in line specs must have integer values."));
+      /* Not a user variable or function -- must be convenience variable: */
+      need_canonical = ((file_symtab == 0) ? 1 : 0);
+      valx = value_of_internalvar(lookup_internalvar(copy + 1));
+      if (TYPE_CODE(value_type(valx)) != TYPE_CODE_INT)
+	error(_("Convenience variables used in line specs must have integer values."));
     }
 
-  init_sal (&val);
+  init_sal(&val);
 
-  /* Either history value or convenience value from above, in valx.  */
-  val.symtab = file_symtab ? file_symtab : default_symtab;
-  val.line = value_as_long (valx);
+  /* Either history value or convenience value from above, in valx: */
+  val.symtab = (file_symtab ? file_symtab : default_symtab);
+  val.line = (int)value_as_long(valx);
   val.pc = 0;
 
-  values.sals = (struct symtab_and_line *) xmalloc (sizeof val);
+  values.sals = (struct symtab_and_line *)xmalloc(sizeof val);
   values.sals[0] = val;
   values.nelts = 1;
 
   if (need_canonical)
-    build_canonical_line_spec (values.sals, NULL, canonical);
+    build_canonical_line_spec(values.sals, NULL, canonical);
 
   return values;
 }
@@ -2936,8 +2938,8 @@ decode_dollar (char *copy, int funfirstline, struct symtab *default_symtab,
 
 static struct symtabs_and_lines
 /* APPLE LOCAL equivalences */
-decode_variable (char *copy, int funfirstline, int equivalencies, 
-                 char ***canonical, struct symtab *file_symtab, 
+decode_variable (char *copy, int funfirstline, int equivalencies,
+                 char ***canonical, struct symtab *file_symtab,
                  int *not_found_ptr)
 {
   struct symbol *sym;
@@ -2998,8 +3000,8 @@ decode_variable (char *copy, int funfirstline, int equivalencies,
    occurrences.  This is used to set breakpoints by name.  */
 
 static struct symtabs_and_lines
-decode_all_variables (char *copy, int funfirstline, int equivalencies, 
-                      char ***canonical, struct symtab *file_symtab, 
+decode_all_variables (char *copy, int funfirstline, int equivalencies,
+                      char ***canonical, struct symtab *file_symtab,
                       int *not_found_ptr)
 {
   /* The symtab that SYM was found in.  */
@@ -3023,13 +3025,13 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
   char **canonical_arr;
   /* APPLE LOCAL end radar 6366048 search both minsyms & syms for bps.  */
 
-  syms_found = lookup_symbol_all  
+  syms_found = lookup_symbol_all
                      (copy, (file_symtab
 			    ? BLOCKVECTOR_BLOCK (BLOCKVECTOR (file_symtab),
 						 STATIC_BLOCK)
 			    : get_selected_block (0)),
 		      VAR_DOMAIN, 0, &sym_symtab, &sym_list);
-  
+
   /* APPLE LOCAL begin radar 6366048 search both minsyms & syms for bps.  */
   /* If we are supposed to look in a particular symbol table, then
      we don't want minimal symbols.  */
@@ -3047,7 +3049,7 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
 	    *not_found_ptr = 1;
 	  error (_("No symbol table is loaded.  Use the \"file\" command."));
 	}
-      
+
       if (not_found_ptr)
 	*not_found_ptr = 1;
       if (file_symtab == NULL)
@@ -3062,7 +3064,7 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
 
   /* APPLE LOCAL begin radar 6366048 search both minsyms & syms for bps.  */
 
-  /* If we are supposed to look in a particular symtab, then eliminate 
+  /* If we are supposed to look in a particular symtab, then eliminate
      all entries that do not match that symtab.  */
 
   if (file_symtab)
@@ -3103,12 +3105,12 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
 	prev = cur;
       cur = cur->next;
     }
-    
+
   /* Eliminate duplicate entries from sym_list.  Two entries are
      "duplicate" if they point to the same symbol.  */
 
-  for (outer_current = sym_list; 
-       outer_current; 
+  for (outer_current = sym_list;
+       outer_current;
        outer_current = outer_current->next)
     for (prev = outer_current, cur = prev->next; cur; )
       {
@@ -3122,7 +3124,7 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
 	       files, and they've been coalesced into one function.  */
 	    struct block *prev_b = SYMBOL_BLOCK_VALUE (prev->symbol);
 	    struct block *cur_b = SYMBOL_BLOCK_VALUE (cur->symbol);
-	    if (cur_b && prev_b 
+	    if (cur_b && prev_b
 		&& cur_b->startaddr == prev_b->startaddr
 		&& cur_b->endaddr == prev_b->endaddr
 		&& strcmp (SYMBOL_LINKAGE_NAME (cur->symbol), SYMBOL_LINKAGE_NAME (prev->symbol)) == 0)
@@ -3140,8 +3142,8 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
   /* Eliminate duplicate entries from minsym_list.  Two entries are
      "duplicate" if they point to the same msymbol.  */
 
-  for (outer_current = minsym_list; 
-       outer_current; 
+  for (outer_current = minsym_list;
+       outer_current;
        outer_current = outer_current->next)
     for (prev = outer_current, cur = prev->next; cur; )
       {
@@ -3158,7 +3160,7 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
   if (sym_list && minsym_list)
     {
       int found;
-      for (outer_current = sym_list; outer_current; 
+      for (outer_current = sym_list; outer_current;
 	   outer_current = outer_current->next)
 	{
 	  found = 0;
@@ -3168,7 +3170,7 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
 	  while (cur && !found)
 	    {
 	      struct block *b = SYMBOL_BLOCK_VALUE (outer_current->symbol);
-	      
+
 	      if (b && (b->startaddr == SYMBOL_VALUE_ADDRESS (cur->msymbol)))
 		{
 		  found = 1;
@@ -3187,15 +3189,15 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
 
   /* Convert symbol lists into sals.  */
 
-  
+
   if (sym_list)
-    sym_sals =  symbols_found (funfirstline, &sym_canonical, copy, sym_list, 
+    sym_sals =  symbols_found (funfirstline, &sym_canonical, copy, sym_list,
 			       file_symtab);
   else
     sym_sals.nelts = 0;
 
   if (minsym_list)
-    minsym_sals =  minsyms_found (funfirstline, equivalencies, minsym_list, 
+    minsym_sals =  minsyms_found (funfirstline, equivalencies, minsym_list,
 				  &minsym_canonical);
   else
     minsym_sals.nelts = 0;
@@ -3208,7 +3210,7 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
   /* Combine sals from syms & minsyms, and return.  */
 
   ret_sals.nelts = minsym_sals.nelts + sym_sals.nelts;
-  ret_sals.sals = (struct symtab_and_line *) 
+  ret_sals.sals = (struct symtab_and_line *)
                     xmalloc (ret_sals.nelts * sizeof (struct symtab_and_line));
 
   for (i = 0; i < minsym_sals.nelts; i++)
@@ -3285,7 +3287,7 @@ symbols_found (int funfirstline, char ***canonical, char *copy,
   for (current = sym_list; current; current = current->next)
     num_syms++;
 
-  values.sals = (struct symtab_and_line *) xmalloc (num_syms * 
+  values.sals = (struct symtab_and_line *) xmalloc (num_syms *
 						    sizeof (struct symtab_and_line));
   values.nelts = num_syms;
 
@@ -3299,7 +3301,7 @@ symbols_found (int funfirstline, char ***canonical, char *copy,
   for (current = sym_list, i = 0; current; current = current->next, i++)
     {
       struct symbol *sym = current->symbol;
-      
+
       if (SYMBOL_CLASS (sym) == LOC_BLOCK)
 	{
 	  values.sals[i] = find_function_start_sal (sym, funfirstline);
@@ -3307,34 +3309,36 @@ symbols_found (int funfirstline, char ***canonical, char *copy,
           /* APPLE LOCAL: This seems to be happening in a fix & continue
              situation where we get a symbol that should have been obsoleted;
              we get the non-obsolete symtab but the linetable entries are
-             all a bad match for the symbol so we return a symtab of null.  
+             all a bad match for the symbol so we return a symtab of null.
              At the very least, let's not crash in this situation. */
           if (values.sals[i].symtab == 0)
             error (_("Line number not known for symbol \"%s\""), copy);
 
 	  if ((file_symtab == 0) && (canonical != NULL))
 	    {
-	      struct blockvector *bv = BLOCKVECTOR (values.sals[i].symtab);
-	      struct block *b = BLOCKVECTOR_BLOCK (bv, STATIC_BLOCK);
-	      if (lookup_block_symbol (b, copy, NULL, VAR_DOMAIN) != NULL)
+	      struct blockvector *bv = BLOCKVECTOR(values.sals[i].symtab);
+	      struct block *b = BLOCKVECTOR_BLOCK(bv, STATIC_BLOCK);
+	      if (lookup_block_symbol(b, copy, NULL, VAR_DOMAIN) != NULL)
 		{
-		  char *canonical_name; 
+		  char *canonical_name;
 		  struct symtab *s = values.sals[i].symtab;
 
 		  if (s && s->filename)
 		    {
 		      if (copy)
 			{
-			  canonical_name = xmalloc (strlen (s->filename) +
-						    strlen (copy) + 4);
-			  sprintf (canonical_name, "%s:'%s'", s->filename,
-				   copy);
+			  canonical_name =
+                            (char *)xmalloc(strlen(s->filename) +
+                                            strlen(copy) + 4UL);
+			  sprintf(canonical_name, "%s:'%s'", s->filename,
+				  copy);
 			}
 		      else
 			{
-			  canonical_name = xmalloc (strlen (s->filename) + 30);
-			  sprintf (canonical_name, "%s:%d", s->filename,
-				   values.sals[i].line);
+			  canonical_name =
+                            (char *)xmalloc(strlen(s->filename) + 30UL);
+			  sprintf(canonical_name, "%s:%d", s->filename,
+				  values.sals[i].line);
 			}
                       if (canonical_arr)
 		        canonical_arr[i] = canonical_name;
@@ -3369,7 +3373,7 @@ symbol_found (int funfirstline, char ***canonical, char *copy,
 	      struct symtab *sym_symtab)
 {
   struct symtabs_and_lines values;
-  
+
   if (SYMBOL_CLASS (sym) == LOC_BLOCK)
     {
       /* Arg is the name of a function */
@@ -3443,7 +3447,7 @@ minsyms_found (int funfirstline, int equivalencies,
   if (equivalencies)
     {
       equiv_msymbols = find_equivalent_msymbol (sym_list->msymbol);
-      
+
       if (equiv_msymbols != NULL)
 	{
 	  for (pointer = equiv_msymbols; *pointer != NULL; eq_symbols++, pointer++)
@@ -3492,7 +3496,7 @@ minsyms_found (int funfirstline, int equivalencies,
   for (j = 0; j < eq_symbols; j++, i++)
     {
       struct minimal_symbol *msym;
-      
+
       msym = equiv_msymbols[j];
       values.sals[i] = find_pc_sect_line (SYMBOL_VALUE_ADDRESS (msym),
 					  msym->ginfo.bfd_section, 0);
@@ -3572,7 +3576,7 @@ minsym_found (int funfirstline, int equivalencies,
 
   if (equiv_msymbols != NULL)
     {
-      for (pointer = equiv_msymbols; *pointer != NULL; 
+      for (pointer = equiv_msymbols; *pointer != NULL;
 	   nsymbols++, pointer++)
 	;
       equiv_cleanup = make_cleanup (xfree, equiv_msymbols);
@@ -3582,7 +3586,7 @@ minsym_found (int funfirstline, int equivalencies,
 
   values.sals = (struct symtab_and_line *)
 	xmalloc (nsymbols * sizeof (struct symtab_and_line));
-  
+
   for (i = 0; i < nsymbols; i++)
     {
       struct minimal_symbol *msym;
@@ -3639,7 +3643,7 @@ minsym_found (int funfirstline, int equivalencies,
     }
 
   values.nelts = nsymbols;
-  do_cleanups (equiv_cleanup);
+  do_cleanups(equiv_cleanup);
   /* APPLE LOCAL end equivalences */
   return values;
 }
@@ -3650,8 +3654,10 @@ minsym_found (int funfirstline, int equivalencies,
    error occurs. */
 
 void
-reset_allow_objc_selectors_flag (PTR dummy)
+reset_allow_objc_selectors_flag(PTR dummy)
 {
   allow_objc_selectors_flag = 1;
 }
 /* APPLE LOCAL end */
+
+/* EOF */

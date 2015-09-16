@@ -215,12 +215,13 @@ Evaluate @var{command}, a string, as a @value{GDBN} CLI command.
 If a GDB exception happens while @var{command} runs, it is
 translated as described in @ref{Exception Handling,,Exception Handling}.
 
-@var{from_tty} specifies whether @value{GDBN} ought to consider this
+The @var{from_tty} flag specifies whether @value{GDBN} ought to consider this
 command as having originated from the user invoking it interactively.
 It must be a boolean value.  If omitted, it defaults to @code{False}.
 
 By default, any output produced by @var{command} is sent to
-@value{GDBN}'s standard output.  If the @var{to_string} parameter is
+@value{GDBN}'s standard output (and to the log output if logging is
+turned on).  If the @var{to_string} parameter is
 @code{True}, then output will be collected by @code{gdb.execute} and
 returned as a string.  The default is @code{False}, in which case the
 return value is @code{None}.  If @var{to_string} is @code{True}, the
@@ -3623,6 +3624,7 @@ offset, not the value itself.
 Value is a specified register.  Just like @code{LOC_REGISTER} except
 the register holds the address of the argument instead of the argument
 itself.
+
 @findex SYMBOL_LOC_LOCAL
 @findex gdb.SYMBOL_LOC_LOCAL
 @item gdb.SYMBOL_LOC_LOCAL
@@ -3646,6 +3648,7 @@ Value is a byte-sequence.
 Value is at a fixed address, but the address of the variable has to be
 determined from the minimal symbol table whenever the variable is
 referenced.
+
 @findex SYMBOL_LOC_OPTIMIZED_OUT
 @findex gdb.SYMBOL_LOC_OPTIMIZED_OUT
 @item gdb.SYMBOL_LOC_OPTIMIZED_OUT

@@ -1,0 +1,86 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+#
+# forin.test --- test forin functionality
+#
+# Time-stamp:        "2010-07-17 09:51:55 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+#
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+set -x
+echo creating ${testname}.tpl in `pwd`
+cat > ${testname}.tpl <<_EOF_
+[+ AutoGen5 template out +]
+[+
+FOR t IN build host target      +][+
+  FOR v IN alias cpu vendor os  +]
+[+t+]_[+v+]=@[+t+]_[+v+]@[+
+  ENDFOR  +]
+[+t+]_canonical=@[+t+]_cpu@-@[+t+]_vendor@-@[+t+]_os@
+[+
+
+ENDFOR
+
++]
+_EOF_
+
+# # # # # # # # # # EXPECTED OUTPUT FILE # # # # # # #
+
+echo creating ${testname}.ok
+# this is the output we should expect to see
+cat > ${testname}.ok <<'_EOF_'
+
+build_alias=@build_alias@
+build_cpu=@build_cpu@
+build_vendor=@build_vendor@
+build_os=@build_os@
+build_canonical=@build_cpu@-@build_vendor@-@build_os@
+
+host_alias=@host_alias@
+host_cpu=@host_cpu@
+host_vendor=@host_vendor@
+host_os=@host_os@
+host_canonical=@host_cpu@-@host_vendor@-@host_os@
+
+target_alias=@target_alias@
+target_cpu=@target_cpu@
+target_vendor=@target_vendor@
+target_os=@target_os@
+target_canonical=@target_cpu@-@target_vendor@-@target_os@
+
+_EOF_
+
+run_ag x --no-def -T${testname}.tpl -b ${testname} || \
+  failure autogen failed
+cmp -s ${testname}.ok ${testname}.out || \
+  failure "`diff ${testname}.ok ${testname}.out`"
+exit 0
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of forin.test

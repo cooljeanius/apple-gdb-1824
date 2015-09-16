@@ -1,4 +1,5 @@
-/* Native definitions for Intel x86 running CYGWIN.
+/* nm-cygwin.h
+   Native definitions for Intel x86 running CYGWIN.
    Copyright 2002 Free Software Foundation, Inc.
 
    This file is part of GDB.

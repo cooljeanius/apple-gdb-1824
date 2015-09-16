@@ -47,6 +47,8 @@ cat <<EOF >>${otmp}
 
    This file was generated using observer.sh and observer.texi.  */
 
+#line 50 "observer.sh"
+
 EOF
 
 
@@ -54,6 +56,8 @@ case $lang in
     h) cat <<EOF >>${otmp}
 #ifndef OBSERVER_H
 #define OBSERVER_H
+
+#line 60 "observer.sh"
 
 struct observer;
 struct bpstats;
@@ -101,18 +105,22 @@ do
   case $lang in
       h) cat <<EOF >>${otmp}
 
+#line 108 "observer.sh"
+
 /* ${event} notifications.  */
 
-typedef void (observer_${event}_ftype) (${formal});
+typedef void (observer_${event}_ftype)(${formal});
 
-extern struct observer *observer_attach_${event} (observer_${event}_ftype *f);
-extern void observer_detach_${event} (struct observer *observer);
-extern void observer_notify_${event} (${formal});
+extern struct observer *observer_attach_${event}(observer_${event}_ftype *f);
+extern void observer_detach_${event}(struct observer *observer);
+extern void observer_notify_${event}(${formal});
 EOF
 	;;
 
       inc)
       	cat <<EOF >>${otmp}
+
+#line 123 "observer.sh"
 
 /* ${event} notifications.  */
 
@@ -121,35 +129,35 @@ static struct observer_list *${event}_subject = NULL;
 struct ${event}_args { `echo "${formal}" | sed -e 's/,/;/g'`; };
 
 static void
-observer_${event}_notification_stub (const void *data, const void *args_data)
+observer_${event}_notification_stub(const void *data, const void *args_data)
 {
-  observer_${event}_ftype *notify = (observer_${event}_ftype *) data;
-  const struct ${event}_args *args = args_data;
-  notify (`echo ${actual} | sed -e 's/\([a-z0-9_][a-z0-9_]*\)/args->\1/g'`);
+  observer_${event}_ftype *notify = (observer_${event}_ftype *)data;
+  const struct ${event}_args *args = (const struct ${event}_args *)args_data;
+  notify(`echo ${actual} | sed -e 's/\([a-z0-9_][a-z0-9_]*\)/args->\1/g'`);
 }
 
 struct observer *
-observer_attach_${event} (observer_${event}_ftype *f)
+observer_attach_${event}(observer_${event}_ftype *f)
 {
-  return generic_observer_attach (&${event}_subject,
-				  &observer_${event}_notification_stub,
-				  (void *) f);
+  return generic_observer_attach(&${event}_subject,
+                                 &observer_${event}_notification_stub,
+                                 (void *)f);
 }
 
 void
-observer_detach_${event} (struct observer *observer)
+observer_detach_${event}(struct observer *observer)
 {
-  generic_observer_detach (&${event}_subject, observer);
+  generic_observer_detach(&${event}_subject, observer);
 }
 
 void
-observer_notify_${event} (${formal})
+observer_notify_${event}(${formal})
 {
   struct ${event}_args args;
   `echo ${actual} | sed -e 's/\([a-z0-9_][a-z0-9_]*\)/args.\1 = \1/g'`;
   if (observer_debug)
-    fprintf_unfiltered (gdb_stdlog, "observer_notify_${event}() called\n");
-  generic_observer_notify (${event}_subject, &args);
+    fprintf_unfiltered(gdb_stdlog, "observer_notify_${event}() called\n");
+  generic_observer_notify(${event}_subject, &args);
 }
 EOF
 	;;
@@ -160,10 +168,12 @@ done
 case $lang in
     h) cat <<EOF >>${otmp}
 
+#line 171 "observer.sh"
+
 #endif /* OBSERVER_H */
 EOF
 esac
 
 
-echo Moving ${otmp} to ${o}
+echo "Moving ${otmp} to ${o}"
 mv ${otmp} ${o}

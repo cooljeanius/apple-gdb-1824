@@ -75,9 +75,9 @@ adjust_type_signedness (struct type *type)
     TYPE_FLAGS (type) |= TYPE_FLAG_UNSIGNED;
 }
 
-/* Assuming TYPE is a simple, non-empty array type, prints its lower bound 
+/* Assuming TYPE is a simple, non-empty array type, prints its lower bound
    on STREAM, if non-standard (i.e., other than 1 for numbers, other
-   than lower bound of index type for enumerated type).  Returns 1 
+   than lower bound of index type for enumerated type).  Returns 1
    if something printed, otherwise 0.  */
 
 static int
@@ -135,31 +135,31 @@ val_print_packed_array_elements (struct type *type, const gdb_byte *valaddr,
 				 enum val_prettyprint pretty)
 {
   unsigned int i;
-  unsigned int things_printed = 0;
-  unsigned len;
+  unsigned int things_printed = 0U;
+  unsigned long len;
   struct type *elttype;
-  unsigned eltlen;
-  unsigned long bitsize = TYPE_FIELD_BITSIZE (type, 0);
-  struct value *mark = value_mark ();
+  unsigned long eltlen;
+  unsigned long bitsize = TYPE_FIELD_BITSIZE(type, 0);
+  struct value *mark = value_mark();
 
-  elttype = TYPE_TARGET_TYPE (type);
-  eltlen = TYPE_LENGTH (check_typedef (elttype));
+  elttype = TYPE_TARGET_TYPE(type);
+  eltlen = TYPE_LENGTH(check_typedef(elttype));
 
   {
     LONGEST low, high;
-    if (get_discrete_bounds (TYPE_FIELD_TYPE (type, 0), &low, &high) < 0)
-      len = 1;
+    if (get_discrete_bounds(TYPE_FIELD_TYPE(type, 0), &low, &high) < 0)
+      len = 1UL;
     else
-      len = high - low + 1;
+      len = (unsigned long)((high - low) + 1UL);
   }
 
   i = 0;
-  annotate_array_section_begin (i, elttype);
+  annotate_array_section_begin(i, elttype);
 
-  while (i < len && things_printed < print_max)
+  while ((i < len) && (things_printed < print_max))
     {
       struct value *v0, *v1;
-      int i0;
+      unsigned int i0;
 
       if (i != 0)
 	{
@@ -204,8 +204,8 @@ val_print_packed_array_elements (struct type *type, const gdb_byte *valaddr,
 	}
       else
 	{
-	  int j;
-	  for (j = i0; j < i; j += 1)
+	  unsigned int j;
+	  for (j = i0; j < i; j += 1U)
 	    {
 	      if (j > i0)
 		{
@@ -290,39 +290,39 @@ ui_memcpy (void *dest, const char *buffer, long len)
    a decimal point, and at least one digit before and after the
    point.  We use GNAT format for NaNs and infinities.  */
 static void
-ada_print_floating (const gdb_byte *valaddr, struct type *type,
-		    struct ui_file *stream)
+ada_print_floating(const gdb_byte *valaddr, struct type *type,
+		   struct ui_file *stream)
 {
   char buffer[64];
   char *s, *result;
-  int len;
-  struct ui_file *tmp_stream = mem_fileopen ();
-  struct cleanup *cleanups = make_cleanup_ui_file_delete (tmp_stream);
+  size_t len;
+  struct ui_file *tmp_stream = mem_fileopen();
+  struct cleanup *cleanups = make_cleanup_ui_file_delete(tmp_stream);
 
-  print_floating (valaddr, type, tmp_stream);
-  ui_file_put (tmp_stream, ui_memcpy, buffer);
-  do_cleanups (cleanups);
+  print_floating(valaddr, type, tmp_stream);
+  ui_file_put(tmp_stream, ui_memcpy, buffer);
+  do_cleanups(cleanups);
 
   result = buffer;
-  len = strlen (result);
+  len = strlen(result);
 
   /* Modify for Ada rules.  */
-  
-  s = strstr (result, "inf");
+
+  s = strstr(result, "inf");
   if (s == NULL)
-    s = strstr (result, "Inf");
+    s = strstr(result, "Inf");
   if (s == NULL)
-    s = strstr (result, "INF");
+    s = strstr(result, "INF");
   if (s != NULL)
-    strcpy (s, "Inf");
+    strncpy(s, "Inf", (len + 4UL));
 
   if (s == NULL)
     {
-      s = strstr (result, "nan");
+      s = strstr(result, "nan");
       if (s == NULL)
-	s = strstr (result, "NaN");
+	s = strstr(result, "NaN");
       if (s == NULL)
-	s = strstr (result, "Nan");
+	s = strstr(result, "Nan");
       if (s != NULL)
 	{
 	  s[0] = s[2] = 'N';
@@ -331,16 +331,16 @@ ada_print_floating (const gdb_byte *valaddr, struct type *type,
 	}
     }
 
-  if (s == NULL && strchr (result, '.') == NULL)
+  if (s == NULL && strchr(result, '.') == NULL)
     {
-      s = strchr (result, 'e');
+      s = strchr(result, 'e');
       if (s == NULL)
-	fprintf_filtered (stream, "%s.0", result);
+	fprintf_filtered(stream, "%s.0", result);
       else
-	fprintf_filtered (stream, "%.*s.0%s", (int) (s-result), result, s);
+	fprintf_filtered(stream, "%.*s.0%s", (int)(s-result), result, s);
       return;
     }
-  fprintf_filtered (stream, "%s", result);
+  fprintf_filtered(stream, "%s", result);
 }
 
 void
@@ -582,21 +582,21 @@ ada_val_print_stub (void *args0)
  * does not catch evaluation errors (leaving that to ada_val_print).  */
 
 static int
-ada_val_print_1 (struct type *type, const gdb_byte *valaddr0,
-		 int embedded_offset, CORE_ADDR address,
-		 struct ui_file *stream, int format,
-		 int deref_ref, int recurse, enum val_prettyprint pretty)
+ada_val_print_1(struct type *type, const gdb_byte *valaddr0,
+                int embedded_offset, CORE_ADDR address,
+                struct ui_file *stream, int format,
+                int deref_ref, int recurse, enum val_prettyprint pretty)
 {
   unsigned int len;
-  int i;
+  unsigned int i;
   struct type *elttype;
   unsigned int eltlen;
   LONGEST val;
   const gdb_byte *valaddr = valaddr0 + embedded_offset;
 
-  type = ada_check_typedef (type);
+  type = ada_check_typedef(type);
 
-  if (ada_is_array_descriptor_type (type) || ada_is_packed_array_type (type))
+  if (ada_is_array_descriptor_type(type) || ada_is_packed_array_type(type))
     {
       int retn;
       struct value *mark = value_mark ();
@@ -628,14 +628,14 @@ ada_val_print_1 (struct type *type, const gdb_byte *valaddr0,
 
     case TYPE_CODE_PTR:
       {
-	int ret = c_val_print (type, valaddr0, embedded_offset, address, 
+	int ret = c_val_print (type, valaddr0, embedded_offset, address,
 			       stream, format, deref_ref, recurse, pretty);
 	if (ada_is_tag_type (type))
 	  {
-	    struct value *val = 
+	    struct value *val =
 	      value_from_contents_and_address (type, valaddr, address);
 	    const char *name = ada_tag_name (val);
-	    if (name != NULL) 
+	    if (name != NULL)
 	      fprintf_filtered (stream, " (%s)", name);
 	    return 0;
 	}
@@ -706,30 +706,30 @@ ada_val_print_1 (struct type *type, const gdb_byte *valaddr0,
 	  format = format ? format : output_format;
 	  if (format)
 	    {
-	      print_scalar_formatted (valaddr, type, format, 0, stream);
+	      print_scalar_formatted(valaddr, type, format, 0, stream);
 	    }
-          else if (ada_is_system_address_type (type))
+          else if (ada_is_system_address_type(type))
             {
               /* FIXME: We want to print System.Address variables using
                  the same format as for any access type.  But for some
                  reason GNAT encodes the System.Address type as an int,
                  so we have to work-around this deficiency by handling
                  System.Address values as a special case.  */
-              fprintf_filtered (stream, "(");
-              type_print (type, "", stream, -1);
-              fprintf_filtered (stream, ") ");
-              deprecated_print_address_numeric 
-		(extract_typed_address (valaddr, builtin_type_void_data_ptr),
-                 1, stream);
+              fprintf_filtered(stream, "(");
+              type_print(type, "", stream, -1);
+              fprintf_filtered(stream, ") ");
+              deprecated_print_address_numeric(extract_typed_address(valaddr,
+                                                                     builtin_type_void_data_ptr),
+                                               1, stream);
             }
 	  else
 	    {
-	      val_print_type_code_int (type, valaddr, stream);
-	      if (ada_is_character_type (type))
+	      val_print_type_code_int(type, valaddr, stream);
+	      if (ada_is_character_type(type))
 		{
-		  fputs_filtered (" ", stream);
-		  ada_printchar ((unsigned char) unpack_long (type, valaddr),
-				 stream);
+		  fputs_filtered(" ", stream);
+		  ada_printchar((unsigned char)unpack_long(type, valaddr),
+                                stream);
 		}
 	    }
 	  return 0;
@@ -738,89 +738,89 @@ ada_val_print_1 (struct type *type, const gdb_byte *valaddr0,
     case TYPE_CODE_ENUM:
       if (format)
 	{
-	  print_scalar_formatted (valaddr, type, format, 0, stream);
+	  print_scalar_formatted(valaddr, type, format, 0, stream);
 	  break;
 	}
-      len = TYPE_NFIELDS (type);
-      val = unpack_long (type, valaddr);
-      for (i = 0; i < len; i++)
+      len = TYPE_NFIELDS(type);
+      val = unpack_long(type, valaddr);
+      for (i = 0U; i < len; i++)
 	{
 	  QUIT;
-	  if (val == TYPE_FIELD_BITPOS (type, i))
+	  if (val == TYPE_FIELD_BITPOS(type, i))
 	    {
 	      break;
 	    }
 	}
       if (i < len)
 	{
-	  const char *name = ada_enum_name (TYPE_FIELD_NAME (type, i));
+	  const char *name = ada_enum_name(TYPE_FIELD_NAME(type, i));
 	  if (name[0] == '\'')
-	    fprintf_filtered (stream, "%ld %s", (long) val, name);
+	    fprintf_filtered(stream, "%ld %s", (long)val, name);
 	  else
-	    fputs_filtered (name, stream);
+	    fputs_filtered(name, stream);
 	}
       else
 	{
-	  print_longest (stream, 'd', 0, val);
+	  print_longest(stream, 'd', 0, val);
 	}
       break;
 
     case TYPE_CODE_FLT:
       if (format)
-	return c_val_print (type, valaddr0, embedded_offset, address, stream,
-			    format, deref_ref, recurse, pretty);
+	return c_val_print(type, valaddr0, embedded_offset, address,
+                           stream, format, deref_ref, recurse, pretty);
       else
-	ada_print_floating (valaddr0 + embedded_offset, type, stream);
+	ada_print_floating(valaddr0 + embedded_offset, type, stream);
       break;
 
     case TYPE_CODE_UNION:
     case TYPE_CODE_STRUCT:
-      if (ada_is_bogus_array_descriptor (type))
+      if (ada_is_bogus_array_descriptor(type))
 	{
-	  fprintf_filtered (stream, "(...?)");
+	  fprintf_filtered(stream, "(...?)");
 	  return 0;
 	}
       else
 	{
-	  print_record (type, valaddr, stream, format, recurse, pretty);
+	  print_record(type, valaddr, stream, format, recurse, pretty);
 	  return 0;
 	}
 
     case TYPE_CODE_ARRAY:
-      elttype = TYPE_TARGET_TYPE (type);
+      elttype = TYPE_TARGET_TYPE(type);
       if (elttype == NULL)
 	eltlen = 0;
       else
-	eltlen = TYPE_LENGTH (elttype);
-      /* FIXME: This doesn't deal with non-empty arrays of
+	eltlen = TYPE_LENGTH(elttype);
+      /* FIXME: This does NOT deal with non-empty arrays of
 	 0-length items (not a typical case!) */
       if (eltlen == 0)
 	len = 0;
       else
-	len = TYPE_LENGTH (type) / eltlen;
+	len = (TYPE_LENGTH(type) / eltlen);
 
 	  /* For an array of chars, print with string syntax.  */
-      if (ada_is_string_type (type) && (format == 0 || format == 's'))
+      if (ada_is_string_type(type) && ((format == 0) || (format == 's')))
 	{
 	  if (prettyprint_arrays)
 	    {
-	      print_spaces_filtered (2 + 2 * recurse, stream);
+	      print_spaces_filtered(2 + 2 * recurse, stream);
 	    }
 	  /* If requested, look for the first null char and only print
 	     elements up to it.  */
 	  if (stop_print_at_null)
 	    {
-	      int temp_len;
+	      unsigned int temp_len;
 
-	      /* Look for a NULL char.  */
-	      for (temp_len = 0;
-		   temp_len < len && temp_len < print_max
-		     && char_at (valaddr, temp_len, eltlen) != 0;
-		   temp_len += 1);
+	      /* Look for a NULL char: */
+	      for (temp_len = 0U;
+		   (temp_len < len) && (temp_len < print_max)
+                   && (char_at(valaddr, temp_len, eltlen) != 0);
+		   temp_len += 1U);
 	      len = temp_len;
 	    }
 
-	  printstr (stream, valaddr, len, 0, eltlen);
+	  printstr(stream, valaddr, len, 0, eltlen);
 	}
       else
 	{
@@ -909,7 +909,7 @@ ada_value_print (struct value *val0, struct ui_file *stream, int format,
       /* Hack:  don't print (char *) for char strings.  Their
          type is indicated by the quoted string anyway.  */
       if (TYPE_LENGTH (TYPE_TARGET_TYPE (type)) != sizeof (char)
-	  || TYPE_CODE (TYPE_TARGET_TYPE (type)) != TYPE_CODE_INT 
+	  || TYPE_CODE (TYPE_TARGET_TYPE (type)) != TYPE_CODE_INT
 	  || TYPE_UNSIGNED (TYPE_TARGET_TYPE (type)))
 	{
 	  fprintf_filtered (stream, "(");
@@ -946,7 +946,7 @@ ada_value_print (struct value *val0, struct ui_file *stream, int format,
                         TYPE_HIGH_BOUND (TYPE_INDEX_TYPE (type)));
       return 0;
     }
-  
+
   return (val_print (type, value_contents (val), 0, address,
 		     stream, format, 1, 0, pretty));
 }

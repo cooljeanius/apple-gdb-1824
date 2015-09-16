@@ -1,4 +1,4 @@
-/* BFD back-end for linux flavored sparc a.out binaries.
+/* sparclinux.c: BFD back-end for linux flavored sparc a.out binaries.
    Copyright 1992, 1993, 1994, 1995, 1996, 1997, 1999, 2000, 2001, 2002,
    2003, 2004 Free Software Foundation, Inc.
 
@@ -35,12 +35,26 @@ USA.  */
 #include "aout/ar.h"
 #include "libaout.h"           /* BFD a.out internal data structures */
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic warning "-Wtraditional"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 #define DEFAULT_ARCH bfd_arch_sparc
 /* Do not "beautify" the CONCAT* macro args.  Traditional C will not
    remove whitespace added here, and thus will fail to concatenate
    the tokens.  */
 #define MY(OP) CONCAT2 (sparclinux_,OP)
 #define TARGETNAME "a.out-sparc-linux"
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 extern const bfd_target MY(vec);
 
@@ -49,36 +63,32 @@ extern const bfd_target MY(vec);
    becomes important.  */
 
 static void MY_final_link_callback
-  PARAMS ((bfd *, file_ptr *, file_ptr *, file_ptr *));
+  PARAMS((bfd *, file_ptr *, file_ptr *, file_ptr *));
 
 static bfd_boolean sparclinux_bfd_final_link
-  PARAMS ((bfd *abfd, struct bfd_link_info *info));
+  PARAMS((bfd *abfd, struct bfd_link_info *info));
 
 static bfd_boolean
-sparclinux_bfd_final_link (abfd, info)
-     bfd *abfd;
-     struct bfd_link_info *info;
+sparclinux_bfd_final_link(bfd *abfd, struct bfd_link_info *info)
 {
-  obj_aout_subformat (abfd) = q_magic_format;
-  return NAME(aout,final_link) (abfd, info, MY_final_link_callback);
+  obj_aout_subformat(abfd) = q_magic_format;
+  return NAME(aout,final_link)(abfd, info, MY_final_link_callback);
 }
 
 #define MY_bfd_final_link sparclinux_bfd_final_link
 
-/* Set the machine type correctly.  */
-
-static bfd_boolean sparclinux_write_object_contents PARAMS ((bfd *abfd));
+/* Set the machine type correctly: */
+static bfd_boolean sparclinux_write_object_contents PARAMS((bfd *abfd));
 
 static bfd_boolean
-sparclinux_write_object_contents (abfd)
-     bfd *abfd;
+sparclinux_write_object_contents(bfd *abfd)
 {
   struct external_exec exec_bytes;
-  struct internal_exec *execp = exec_hdr (abfd);
+  struct internal_exec *execp = exec_hdr(abfd);
 
-  N_SET_MACHTYPE (*execp, M_SPARC);
+  N_SET_MACHTYPE(*execp, M_SPARC);
 
-  obj_reloc_entry_size (abfd) = RELOC_STD_SIZE;
+  obj_reloc_entry_size(abfd) = RELOC_STD_SIZE;
 
   WRITE_HEADERS(abfd, execp);
 
@@ -173,65 +183,60 @@ struct linux_link_hash_table
 };
 
 static struct bfd_hash_entry *linux_link_hash_newfunc
-  PARAMS ((struct bfd_hash_entry *, struct bfd_hash_table *, const char *));
+  PARAMS((struct bfd_hash_entry *, struct bfd_hash_table *, const char *));
 static struct bfd_link_hash_table *linux_link_hash_table_create
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 static struct fixup *new_fixup
-  PARAMS ((struct bfd_link_info *, struct linux_link_hash_entry *,
+  PARAMS((struct bfd_link_info *, struct linux_link_hash_entry *,
 	  bfd_vma, int));
 static bfd_boolean linux_link_create_dynamic_sections
-  PARAMS ((bfd *, struct bfd_link_info *));
+  PARAMS((bfd *, struct bfd_link_info *));
 static bfd_boolean linux_add_one_symbol
-  PARAMS ((struct bfd_link_info *, bfd *, const char *, flagword, asection *,
+  PARAMS((struct bfd_link_info *, bfd *, const char *, flagword, asection *,
 	  bfd_vma, const char *, bfd_boolean, bfd_boolean,
 	  struct bfd_link_hash_entry **));
 static bfd_boolean linux_tally_symbols
-  PARAMS ((struct linux_link_hash_entry *, PTR));
+  PARAMS((struct linux_link_hash_entry *, PTR));
 static bfd_boolean linux_finish_dynamic_link
-  PARAMS ((bfd *, struct bfd_link_info *));
+  PARAMS((bfd *, struct bfd_link_info *));
 
-/* Routine to create an entry in an Linux link hash table.  */
-
+/* Routine to create an entry in an Linux link hash table: */
 static struct bfd_hash_entry *
-linux_link_hash_newfunc (entry, table, string)
-     struct bfd_hash_entry *entry;
-     struct bfd_hash_table *table;
-     const char *string;
+linux_link_hash_newfunc(struct bfd_hash_entry *entry,
+                        struct bfd_hash_table *table, const char *string)
 {
-  struct linux_link_hash_entry *ret = (struct linux_link_hash_entry *) entry;
+  struct linux_link_hash_entry *ret = (struct linux_link_hash_entry *)entry;
 
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
-  if (ret == (struct linux_link_hash_entry *) NULL)
+  if (ret == (struct linux_link_hash_entry *)NULL)
     ret = ((struct linux_link_hash_entry *)
-	   bfd_hash_allocate (table, sizeof (struct linux_link_hash_entry)));
+	   bfd_hash_allocate(table, sizeof(struct linux_link_hash_entry)));
   if (ret == NULL)
-    return (struct bfd_hash_entry *) ret;
+    return (struct bfd_hash_entry *)ret;
 
-  /* Call the allocation method of the superclass.  */
+  /* Call the allocation method of the superclass: */
   ret = ((struct linux_link_hash_entry *)
-	 NAME(aout,link_hash_newfunc) ((struct bfd_hash_entry *) ret,
-				       table, string));
+	 NAME(aout,link_hash_newfunc)((struct bfd_hash_entry *)ret,
+                                      table, string));
   if (ret != NULL)
     {
-      /* Set local fields; there aren't any.  */
+      ; /* Set local fields; there are NOT any.  */
     }
 
-  return (struct bfd_hash_entry *) ret;
+  return (struct bfd_hash_entry *)ret;
 }
 
-/* Create a Linux link hash table.  */
-
+/* Create a Linux link hash table: */
 static struct bfd_link_hash_table *
-linux_link_hash_table_create (abfd)
-     bfd *abfd;
+linux_link_hash_table_create(bfd *abfd)
 {
   struct linux_link_hash_table *ret;
-  bfd_size_type amt = sizeof (struct linux_link_hash_table);
+  bfd_size_type amt = sizeof(struct linux_link_hash_table);
 
-  ret = (struct linux_link_hash_table *) bfd_malloc (amt);
-  if (ret == (struct linux_link_hash_table *) NULL)
-    return (struct bfd_link_hash_table *) NULL;
+  ret = (struct linux_link_hash_table *)bfd_malloc(amt);
+  if (ret == (struct linux_link_hash_table *)NULL)
+    return (struct bfd_link_hash_table *)NULL;
   if (! NAME(aout,link_hash_table_init) (&ret->root, abfd,
 					 linux_link_hash_newfunc))
     {
@@ -267,28 +272,24 @@ linux_link_hash_table_create (abfd)
 
 #define linux_hash_table(p) ((struct linux_link_hash_table *) ((p)->hash))
 
-/* Store the information for a new fixup.  */
-
+/* Store the information for a new fixup: */
 static struct fixup *
-new_fixup (info, h, value, builtin)
-     struct bfd_link_info *info;
-     struct linux_link_hash_entry *h;
-     bfd_vma value;
-     int builtin;
+new_fixup(struct bfd_link_info *info, struct linux_link_hash_entry *h,
+          bfd_vma value, int builtin)
 {
   struct fixup *f;
 
-  f = (struct fixup *) bfd_hash_allocate (&info->hash->table,
-					  sizeof (struct fixup));
+  f = (struct fixup *)bfd_hash_allocate(&info->hash->table,
+                                        sizeof(struct fixup));
   if (f == NULL)
     return f;
-  f->next = linux_hash_table (info)->fixup_list;
-  linux_hash_table (info)->fixup_list = f;
+  f->next = linux_hash_table(info)->fixup_list;
+  linux_hash_table(info)->fixup_list = f;
   f->h = h;
   f->value = value;
   f->builtin = builtin;
   f->jump = 0;
-  ++linux_hash_table (info)->fixup_count;
+  ++linux_hash_table(info)->fixup_count;
   return f;
 }
 
@@ -296,26 +297,25 @@ new_fixup (info, h, value, builtin)
    library.  We need to create a special section that contains the
    fixup table, and we ultimately need to add a pointer to this into
    the set vector for SHARABLE_CONFLICTS.  At this point we do not
-   know the size of the section, but that's OK - we just need to
+   know the size of the section, but that is OK - we just need to
    create it for now.  */
 
 static bfd_boolean
-linux_link_create_dynamic_sections (abfd, info)
-     bfd *abfd;
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
+linux_link_create_dynamic_sections(bfd *abfd,
+                                   struct bfd_link_info *info ATTRIBUTE_UNUSED)
 {
   flagword flags;
   register asection *s;
 
-  /* Note that we set the SEC_IN_MEMORY flag.  */
-  flags = SEC_ALLOC | SEC_LOAD | SEC_HAS_CONTENTS | SEC_IN_MEMORY;
+  /* Note that we set the SEC_IN_MEMORY flag: */
+  flags = (SEC_ALLOC | SEC_LOAD | SEC_HAS_CONTENTS | SEC_IN_MEMORY);
 
   /* We choose to use the name ".linux-dynamic" for the fixup table.
      Why not?  */
-  s = bfd_make_section (abfd, ".linux-dynamic");
-  if (s == NULL
-      || ! bfd_set_section_flags (abfd, s, flags)
-      || ! bfd_set_section_alignment (abfd, s, 2))
+  s = bfd_make_section(abfd, ".linux-dynamic");
+  if ((s == NULL)
+      || ! bfd_set_section_flags(abfd, s, flags)
+      || ! bfd_set_section_alignment(abfd, s, 2))
     return FALSE;
   s->size = 0;
   s->contents = 0;
@@ -328,18 +328,11 @@ linux_link_create_dynamic_sections (abfd, info)
    tweaking needed for dynamic linking support.  */
 
 static bfd_boolean
-linux_add_one_symbol (info, abfd, name, flags, section, value, string,
-		      copy, collect, hashp)
-     struct bfd_link_info *info;
-     bfd *abfd;
-     const char *name;
-     flagword flags;
-     asection *section;
-     bfd_vma value;
-     const char *string;
-     bfd_boolean copy;
-     bfd_boolean collect;
-     struct bfd_link_hash_entry **hashp;
+linux_add_one_symbol(struct bfd_link_info *info, bfd *abfd,
+                     const char *name, flagword flags, asection *section,
+                     bfd_vma value, const char *string, bfd_boolean copy,
+                     bfd_boolean collect,
+                     struct bfd_link_hash_entry **hashp)
 {
   struct linux_link_hash_entry *h;
   bfd_boolean insert;
@@ -428,47 +421,45 @@ linux_add_one_symbol (info, abfd, name, flags, section, value, string,
    This function is called via linux_link_hash_traverse.  */
 
 static bfd_boolean
-linux_tally_symbols (h, data)
-     struct linux_link_hash_entry *h;
-     PTR data;
+linux_tally_symbols(struct linux_link_hash_entry *h, PTR data)
 {
-  struct bfd_link_info *info = (struct bfd_link_info *) data;
+  struct bfd_link_info *info = (struct bfd_link_info *)data;
   struct fixup *f, *f1;
   int is_plt;
   struct linux_link_hash_entry *h1, *h2;
   bfd_boolean exists;
 
   if (h->root.root.type == bfd_link_hash_warning)
-    h = (struct linux_link_hash_entry *) h->root.root.u.i.link;
+    h = (struct linux_link_hash_entry *)h->root.root.u.i.link;
 
-  if (h->root.root.type == bfd_link_hash_undefined
-      && strncmp (h->root.root.root.string, NEEDS_SHRLIB,
-		  sizeof NEEDS_SHRLIB - 1) == 0)
+  if ((h->root.root.type == bfd_link_hash_undefined)
+      && (strncmp(h->root.root.root.string, NEEDS_SHRLIB,
+                  (sizeof(NEEDS_SHRLIB) - (size_t)1UL)) == 0))
     {
       const char *name;
       char *p;
       char *alloc = NULL;
 
-      name = h->root.root.root.string + sizeof NEEDS_SHRLIB - 1;
-      p = strrchr (name, '_');
+      name = (h->root.root.root.string + sizeof(NEEDS_SHRLIB) - 1);
+      p = strrchr(name, '_');
       if (p != NULL)
-	alloc = (char *) bfd_malloc ((bfd_size_type) strlen (name) + 1);
+	alloc = (char *)bfd_malloc((bfd_size_type)strlen(name) + 1);
 
-      if (p == NULL || alloc == NULL)
-	(*_bfd_error_handler) (_("Output file requires shared library `%s'\n"),
-			       name);
+      if ((p == NULL) || (alloc == NULL))
+	(*_bfd_error_handler)(_("Output file requires shared library `%s'\n"),
+                              name);
       else
 	{
-	  strcpy (alloc, name);
-	  p = strrchr (alloc, '_');
+	  strcpy(alloc, name);
+	  p = strrchr(alloc, '_');
 	  *p++ = '\0';
 	  (*_bfd_error_handler)
 	    (_("Output file requires shared library `%s.so.%s'\n"),
 	     alloc, p);
-	  free (alloc);
+	  free(alloc);
 	}
 
-      abort ();
+      abort();
     }
 
   /* If this symbol is not a PLT/GOT, we do not even need to look at
@@ -556,9 +547,8 @@ linux_tally_symbols (h, data)
    are required.  */
 
 bfd_boolean
-bfd_sparclinux_size_dynamic_sections (output_bfd, info)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
+bfd_sparclinux_size_dynamic_sections(bfd *output_bfd,
+                                     struct bfd_link_info *info)
 {
   struct fixup *f;
   asection *s;
@@ -567,9 +557,8 @@ bfd_sparclinux_size_dynamic_sections (output_bfd, info)
     return TRUE;
 
   /* First find the fixups...  */
-  linux_link_hash_traverse (linux_hash_table (info),
-			    linux_tally_symbols,
-			    (PTR) info);
+  linux_link_hash_traverse(linux_hash_table(info), linux_tally_symbols,
+                           (PTR)info);
 
   /* If there are builtin fixups, leave room for a marker.  This is
      used by the dynamic linker so that it knows that all that follow
@@ -607,13 +596,10 @@ bfd_sparclinux_size_dynamic_sections (output_bfd, info)
 }
 
 /* We come here once we are ready to actually write the fixup table to
-   the output file.  Scan the fixup tables and so forth and generate
-   the stuff we need.  */
-
+ * the output file.  Scan the fixup tables and so forth and generate
+ * the stuff we need.  */
 static bfd_boolean
-linux_finish_dynamic_link (output_bfd, info)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
+linux_finish_dynamic_link(bfd *output_bfd, struct bfd_link_info *info)
 {
   asection *s, *os, *is;
   bfd_byte *fixup_table;
@@ -623,34 +609,34 @@ linux_finish_dynamic_link (output_bfd, info)
   int section_offset;
   unsigned int fixups_written;
 
-  if (linux_hash_table (info)->dynobj == NULL)
+  if (linux_hash_table(info)->dynobj == NULL)
     return TRUE;
 
-  s = bfd_get_section_by_name (linux_hash_table (info)->dynobj,
-			       ".linux-dynamic");
-  BFD_ASSERT (s != NULL);
+  s = bfd_get_section_by_name(linux_hash_table(info)->dynobj,
+			      ".linux-dynamic");
+  BFD_ASSERT(s != NULL);
   os = s->output_section;
   fixups_written = 0;
 
 #ifdef LINUX_LINK_DEBUG
-  printf ("Fixup table file offset: %x  VMA: %x\n",
-	  os->filepos + s->output_offset,
-	  os->vma + s->output_offset);
-#endif
+  printf("Fixup table file offset: %lx  VMA: %lx\n",
+	 (os->filepos + s->output_offset),
+	 (os->vma + s->output_offset));
+#endif /* LINUX_LINK_DEBUG */
 
   fixup_table = s->contents;
-  bfd_put_32 (output_bfd,
-	      (bfd_vma) linux_hash_table (info)->fixup_count, fixup_table);
+  bfd_put_32(output_bfd,
+	     (bfd_vma)linux_hash_table(info)->fixup_count, fixup_table);
   fixup_table += 4;
 
-  /* Fill in fixup table.  */
-  for (f = linux_hash_table (info)->fixup_list; f != NULL; f = f->next)
+  /* Fill in fixup table: */
+  for (f = linux_hash_table(info)->fixup_list; f != NULL; f = f->next)
     {
       if (f->builtin)
 	continue;
 
-      if (f->h->root.root.type != bfd_link_hash_defined
-	  && f->h->root.root.type != bfd_link_hash_defweak)
+      if ((f->h->root.root.type != bfd_link_hash_defined)
+	  && (f->h->root.root.type != bfd_link_hash_defweak))
 	{
 	  (*_bfd_error_handler)
 	    (_("Symbol %s not defined for fixups\n"),
@@ -659,48 +645,48 @@ linux_finish_dynamic_link (output_bfd, info)
 	}
 
       is = f->h->root.root.u.def.section;
-      section_offset = is->output_section->vma + is->output_offset;
-      new_addr = f->h->root.root.u.def.value + section_offset;
+      section_offset = (is->output_section->vma + is->output_offset);
+      new_addr = (f->h->root.root.u.def.value + section_offset);
 
-#ifdef LINUX_LINK_DEBUG
-      printf ("Fixup(%d) %s: %x %x\n",f->jump, f->h->root.root.string,
-	      new_addr, f->value);
-#endif
+#if defined(LINUX_LINK_DEBUG) && 0
+      printf("Fixup(%d) %s: %x %lx\n", f->jump, f->h->root.root.string,
+	     new_addr, f->value);
+#endif /* LINUX_LINK_DEBUG && 0 */
 
       if (f->jump)
 	{
 	  /* Relative address */
-	  new_addr = new_addr - (f->value + 5);
-	  bfd_put_32 (output_bfd, (bfd_vma) new_addr, fixup_table);
+	  new_addr = (new_addr - (f->value + 5));
+	  bfd_put_32(output_bfd, (bfd_vma)new_addr, fixup_table);
 	  fixup_table += 4;
-	  bfd_put_32 (output_bfd, f->value + 1, fixup_table);
+	  bfd_put_32(output_bfd, (f->value + 1), fixup_table);
 	  fixup_table += 4;
 	}
       else
 	{
-	  bfd_put_32 (output_bfd, (bfd_vma) new_addr, fixup_table);
+	  bfd_put_32(output_bfd, (bfd_vma)new_addr, fixup_table);
 	  fixup_table += 4;
-	  bfd_put_32 (output_bfd, f->value, fixup_table);
+	  bfd_put_32(output_bfd, f->value, fixup_table);
 	  fixup_table += 4;
 	}
       ++fixups_written;
     }
 
-  if (linux_hash_table (info)->local_builtins != 0)
+  if (linux_hash_table(info)->local_builtins != 0)
     {
-      /* Special marker so we know to switch to the other type of fixup */
-      bfd_put_32 (output_bfd, (bfd_vma) 0, fixup_table);
+      /* Special marker so we know to switch to the other type of fixup: */
+      bfd_put_32(output_bfd, (bfd_vma)0UL, fixup_table);
       fixup_table += 4;
-      bfd_put_32 (output_bfd, (bfd_vma) 0, fixup_table);
+      bfd_put_32(output_bfd, (bfd_vma)0UL, fixup_table);
       fixup_table += 4;
       ++fixups_written;
-      for (f = linux_hash_table (info)->fixup_list; f != NULL; f = f->next)
+      for (f = linux_hash_table(info)->fixup_list; f != NULL; f = f->next)
 	{
 	  if (! f->builtin)
 	    continue;
 
-	  if (f->h->root.root.type != bfd_link_hash_defined
-	      && f->h->root.root.type != bfd_link_hash_defweak)
+	  if ((f->h->root.root.type != bfd_link_hash_defined)
+	      && (f->h->root.root.type != bfd_link_hash_defweak))
 	    {
 	      (*_bfd_error_handler)
 		(_("Symbol %s not defined for fixups\n"),
@@ -709,61 +695,61 @@ linux_finish_dynamic_link (output_bfd, info)
 	    }
 
 	  is = f->h->root.root.u.def.section;
-	  section_offset = is->output_section->vma + is->output_offset;
-	  new_addr = f->h->root.root.u.def.value + section_offset;
+	  section_offset = (is->output_section->vma + is->output_offset);
+	  new_addr = (f->h->root.root.u.def.value + section_offset);
 
-#ifdef LINUX_LINK_DEBUG
-	  printf ("Fixup(B) %s: %x %x\n", f->h->root.root.string,
-		  new_addr, f->value);
-#endif
+#if defined(LINUX_LINK_DEBUG) && 0
+	  printf("Fixup(B) %s: %x %lx\n", f->h->root.root.string,
+		 new_addr, f->value);
+#endif /* LINUX_LINK_DEBUG && 0 */
 
-	  bfd_put_32 (output_bfd, (bfd_vma) new_addr, fixup_table);
+	  bfd_put_32(output_bfd, (bfd_vma)new_addr, fixup_table);
 	  fixup_table += 4;
-	  bfd_put_32 (output_bfd, f->value, fixup_table);
+	  bfd_put_32(output_bfd, f->value, fixup_table);
 	  fixup_table += 4;
 	  ++fixups_written;
 	}
     }
 
-  if (linux_hash_table (info)->fixup_count != fixups_written)
+  if (linux_hash_table(info)->fixup_count != fixups_written)
     {
-      (*_bfd_error_handler) (_("Warning: fixup count mismatch\n"));
-      while (linux_hash_table (info)->fixup_count > fixups_written)
+      (*_bfd_error_handler)(_("Warning: fixup count mismatch\n"));
+      while (linux_hash_table(info)->fixup_count > fixups_written)
 	{
-	  bfd_put_32 (output_bfd, (bfd_vma) 0, fixup_table);
+	  bfd_put_32(output_bfd, (bfd_vma)0UL, fixup_table);
 	  fixup_table += 4;
-	  bfd_put_32 (output_bfd, (bfd_vma) 0, fixup_table);
+	  bfd_put_32(output_bfd, (bfd_vma)0UL, fixup_table);
 	  fixup_table += 4;
 	  ++fixups_written;
 	}
     }
 
-  h = linux_link_hash_lookup (linux_hash_table (info),
-			      "__BUILTIN_FIXUPS__",
-			      FALSE, FALSE, FALSE);
+  h = linux_link_hash_lookup(linux_hash_table(info),
+			     "__BUILTIN_FIXUPS__",
+			     FALSE, FALSE, FALSE);
 
-  if (h != NULL
-      && (h->root.root.type == bfd_link_hash_defined
-	  || h->root.root.type == bfd_link_hash_defweak))
+  if ((h != NULL)
+      && ((h->root.root.type == bfd_link_hash_defined)
+	  || (h->root.root.type == bfd_link_hash_defweak)))
     {
       is = h->root.root.u.def.section;
-      section_offset = is->output_section->vma + is->output_offset;
-      new_addr = h->root.root.u.def.value + section_offset;
+      section_offset = (is->output_section->vma + is->output_offset);
+      new_addr = (h->root.root.u.def.value + section_offset);
 
 #ifdef LINUX_LINK_DEBUG
-      printf ("Builtin fixup table at %x\n", new_addr);
-#endif
+      printf("Builtin fixup table at %x\n", new_addr);
+#endif /* LINUX_LINK_DEBUG */
 
-      bfd_put_32 (output_bfd, (bfd_vma) new_addr, fixup_table);
+      bfd_put_32(output_bfd, (bfd_vma)new_addr, fixup_table);
     }
   else
-    bfd_put_32 (output_bfd, (bfd_vma) 0, fixup_table);
+    bfd_put_32(output_bfd, (bfd_vma)0UL, fixup_table);
 
-  if (bfd_seek (output_bfd, (file_ptr) (os->filepos + s->output_offset),
-		SEEK_SET) != 0)
+  if (bfd_seek(output_bfd, (file_ptr)(os->filepos + s->output_offset),
+               SEEK_SET) != 0)
     return FALSE;
 
-  if (bfd_bwrite ((PTR) s->contents, s->size, output_bfd) != s->size)
+  if (bfd_bwrite((PTR)s->contents, s->size, output_bfd) != s->size)
     return FALSE;
 
   return TRUE;
@@ -776,3 +762,5 @@ linux_finish_dynamic_link (output_bfd, info)
 #define MY_zmagic_contiguous 1
 
 #include "aout-target.h"
+
+/* EOF */

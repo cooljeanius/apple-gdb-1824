@@ -1,5 +1,5 @@
-/* Definitions for a Motorola Delta 3300 box running System V R3.0.
-   Contributed by manfred@lts.sel.alcatel.de.  */
+/* delta68.h: Definitions for a Motorola Delta 3300 box running System V R3.0.
+ * Contributed by manfred@lts.sel.alcatel.de.  */
 
 #include <sys/param.h>
 
@@ -12,3 +12,5 @@
 #define	UPAGES			USIZE
 #define	TRAD_UNIX_CORE_FILE_FAILING_SIGNAL(abfd) \
   abfd->tdata.trad_core_data->u.u_abort
+
+/* EOF */

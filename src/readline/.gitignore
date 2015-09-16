@@ -28,7 +28,7 @@
 *.vrs
 *libs/*
 Makefile
-Makefile.orig
+Makefile*orig
 config.h
 core
 doc/*.0
@@ -39,9 +39,9 @@ doc/*.ps
 doc/*site.exp
 doc/*site.bak
 doc/Makefile
-doc/Makefile.orig
+doc/Makefile*orig
 examples/Makefile
-examples/Makefile.orig
+examples/Makefile*orig
 examples/fileman
 examples/histexamp
 examples/rl
@@ -54,7 +54,7 @@ readline
 site.bak
 site.exp
 shlib/Makefile
-shlib/Makefile.orig
+shlib/Makefile*orig
 stamp-*
 TAGS
 tags

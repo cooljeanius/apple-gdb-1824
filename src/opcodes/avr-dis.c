@@ -1,4 +1,4 @@
-/* Disassemble AVR instructions.
+/* avr-dis.c: Disassemble AVR instructions.
    Copyright 1999, 2000, 2002, 2004, 2005 Free Software Foundation, Inc.
 
    Contributed by Denis Chertykov <denisc@overta.ru>
@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include <assert.h>
 #include "sysdep.h"
@@ -43,8 +43,9 @@ const struct avr_opcodes_s avr_opcodes[] =
 };
 
 static int
-avr_operand (unsigned int insn, unsigned int insn2, unsigned int pc, int constraint,
-             char *buf, char *comment, int regs, int *sym, bfd_vma *sym_addr)
+avr_operand(unsigned int insn, unsigned int insn2, unsigned int pc,
+            int constraint, char *buf, char *comment, int regs, int *sym,
+            bfd_vma *sym_addr)
 {
   int ok = 1;
   *sym = 0;
@@ -57,33 +58,33 @@ avr_operand (unsigned int insn, unsigned int insn2, unsigned int pc, int constra
 	insn = (insn & 0xf) | ((insn & 0x0200) >> 5); /* Source register.  */
       else
 	insn = (insn & 0x01f0) >> 4; /* Destination register.  */
-      
-      sprintf (buf, "r%d", insn);
+
+      sprintf(buf, "r%d", insn);
       break;
 
     case 'd':
       if (regs)
-	sprintf (buf, "r%d", 16 + (insn & 0xf));
+	sprintf(buf, "r%d", 16 + (insn & 0xf));
       else
-	sprintf (buf, "r%d", 16 + ((insn & 0xf0) >> 4));
+	sprintf(buf, "r%d", 16 + ((insn & 0xf0) >> 4));
       break;
-      
+
     case 'w':
-      sprintf (buf, "r%d", 24 + ((insn & 0x30) >> 3));
+      sprintf(buf, "r%d", 24 + ((insn & 0x30) >> 3));
       break;
-      
+
     case 'a':
       if (regs)
-	sprintf (buf, "r%d", 16 + (insn & 7));
+	sprintf(buf, "r%d", 16 + (insn & 7));
       else
-	sprintf (buf, "r%d", 16 + ((insn >> 4) & 7));
+	sprintf(buf, "r%d", 16 + ((insn >> 4) & 7));
       break;
 
     case 'v':
       if (regs)
-	sprintf (buf, "r%d", (insn & 0xf) * 2);
+	sprintf(buf, "r%d", (insn & 0xf) * 2);
       else
-	sprintf (buf, "r%d", ((insn & 0xf0) >> 3));
+	sprintf(buf, "r%d", ((insn & 0xf0) >> 3));
       break;
 
     case 'e':
@@ -103,10 +104,10 @@ avr_operand (unsigned int insn, unsigned int insn2, unsigned int pc, int constra
 	    case 0x100e: xyz = "-X"; break;
 	    default: xyz = "??"; ok = 0;
 	  }
-	sprintf (buf, xyz);
+	sprintf(buf, "%s", xyz);
 
 	if (AVR_UNDEF_P (insn))
-	  sprintf (comment, _("undefined"));
+	  sprintf(comment, _("undefined"));
       }
       break;
 
@@ -122,11 +123,11 @@ avr_operand (unsigned int insn, unsigned int insn2, unsigned int pc, int constra
     case 'b':
       {
 	unsigned int x;
-	
+
 	x = (insn & 7);
 	x |= (insn >> 7) & (3 << 3);
 	x |= (insn >> 8) & (1 << 5);
-	
+
 	if (insn & 0x8)
 	  *buf++ = 'Y';
 	else
@@ -135,13 +136,13 @@ avr_operand (unsigned int insn, unsigned int insn2, unsigned int pc, int constra
 	sprintf (comment, "0x%02x", x);
       }
       break;
-      
+
     case 'h':
       *sym = 1;
       *sym_addr = ((((insn & 1) | ((insn & 0x1f0) >> 3)) << 16) | insn2) * 2;
       sprintf (buf, "0x");
       break;
-      
+
     case 'L':
       {
 	int rel_addr = (((insn & 0xfff) ^ 0x800) - 0x800) * 2;
@@ -165,7 +166,7 @@ avr_operand (unsigned int insn, unsigned int insn2, unsigned int pc, int constra
     case 'i':
       sprintf (buf, "0x%04X", insn2);
       break;
-      
+
     case 'M':
       sprintf (buf, "0x%02X", ((insn & 0xf00) >> 4) | (insn & 0xf));
       sprintf (comment, "%d", ((insn & 0xf00) >> 4) | (insn & 0xf));
@@ -176,7 +177,7 @@ avr_operand (unsigned int insn, unsigned int insn2, unsigned int pc, int constra
       fprintf (stderr, _("Internal disassembler error"));
       ok = 0;
       break;
-      
+
     case 'K':
       {
 	unsigned int x;
@@ -186,15 +187,15 @@ avr_operand (unsigned int insn, unsigned int insn2, unsigned int pc, int constra
 	sprintf (comment, "%d", x);
       }
       break;
-      
+
     case 's':
       sprintf (buf, "%d", insn & 7);
       break;
-      
+
     case 'S':
       sprintf (buf, "%d", (insn >> 4) & 7);
       break;
-      
+
     case 'P':
       {
 	unsigned int x;
@@ -209,17 +210,17 @@ avr_operand (unsigned int insn, unsigned int insn2, unsigned int pc, int constra
     case 'p':
       {
 	unsigned int x;
-	
+
 	x = (insn >> 3) & 0x1f;
 	sprintf (buf, "0x%02x", x);
 	sprintf (comment, "%d", x);
       }
       break;
-      
+
     case '?':
       *buf = '\0';
       break;
-      
+
     default:
       sprintf (buf, "??");
       fprintf (stderr, _("unknown constraint `%c'"), constraint);
@@ -265,9 +266,9 @@ print_insn_avr (bfd_vma addr, disassemble_info *info)
     {
       unsigned int nopcodes;
 
-      nopcodes = sizeof (avr_opcodes) / sizeof (struct avr_opcodes_s);
-      
-      avr_bin_masks = xmalloc (nopcodes * sizeof (unsigned int));
+      nopcodes = (sizeof(avr_opcodes) / sizeof(struct avr_opcodes_s));
+
+      avr_bin_masks = (unsigned int *)xmalloc(nopcodes * sizeof(unsigned int));
 
       for (opcode = avr_opcodes, maskptr = avr_bin_masks;
 	   opcode->name;
@@ -276,7 +277,7 @@ print_insn_avr (bfd_vma addr, disassemble_info *info)
 	  char * s;
 	  unsigned int bin = 0;
 	  unsigned int mask = 0;
-	
+
 	  for (s = opcode->opcode; *s; ++s)
 	    {
 	      bin <<= 1;
@@ -293,13 +294,13 @@ print_insn_avr (bfd_vma addr, disassemble_info *info)
     }
 
   insn = avrdis_opcode (addr, info);
-  
+
   for (opcode = avr_opcodes, maskptr = avr_bin_masks;
        opcode->name;
        opcode++, maskptr++)
     if ((insn & *maskptr) == opcode->bin_opcode)
       break;
-  
+
   /* Special case: disassemble `ldd r,b+0' as `ld r,b', and
      `std b+0,r' as `st b,r' (next entry in the table).  */
 

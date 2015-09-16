@@ -21,13 +21,19 @@ DEP
 DEPA
 DEP1
 DEP2
+DEPM
 stamp-*
 stmp-bfd-h
 stmp-bin2-h
 stmp-lbfd-h
 stmp-lcoff-h
 *libs/*
+tofiles
 ofiles
+tlofiles
+lofiles
+tplistfiles
+plistfiles
 Makefile
 doc/Makefile
 config.h
@@ -40,6 +46,22 @@ bfdver.h
 *site.bak
 *.framework
 libtool
-libtool.old
+# (un-gitignoring libtool.old until stuff is fixed)
 libtoolT
+libtool-soversion
 *.swp
+config/*
+# some more generated files:
+elf32-aarch64.c
+elf32-ia64.c
+elf64-aarch64.c
+elf64-ia64.c
+peigen.c
+pepigen.c
+pex64igen.c
+targmatch.h
+# not sure why I never gitignored these generated headers before:
+elf32-target.h
+elf64-target.h
+# tempfiles that are normally deleted anyways:
+*.new

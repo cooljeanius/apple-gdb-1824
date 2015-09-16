@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <mach-o/dyld.h>
 
-main ()
+int main ()
 {
 
   fputs ("hi\n", stdout);
@@ -9,7 +9,7 @@ main ()
   puts ("test");     /* this call will always go to libSystem, even though it is defined in mylib.dylib */
 
   if (NSIsSymbolNameDefined ("_foo")) {
-    int (*addr)(void) = 
+    int (*addr)(void) =
          NSAddressOfSymbol (NSLookupAndBindSymbol ("_foo"));
     if (addr) {
       addr ();

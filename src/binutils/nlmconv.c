@@ -32,6 +32,10 @@
 #endif
 #endif
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "bfd.h"
 #include "libiberty.h"
 #include "bucomm.h"
@@ -200,10 +204,10 @@ main (int argc, char **argv)
 
 #if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES)
   setlocale (LC_MESSAGES, "");
-#endif
+#endif /* HAVE_SETLOCALE && HAVE_LC_MESSAGES */
 #if defined (HAVE_SETLOCALE)
   setlocale (LC_CTYPE, "");
-#endif
+#endif /* HAVE_SETLOCALE */
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
@@ -470,23 +474,23 @@ main (int argc, char **argv)
 		    ++sym->name;
 		  else
 		    {
-		      char *new;
+		      char *newstr;
 
-		      new = xmalloc (strlen (bfd_asymbol_name (sym)) + 1);
-		      new[0] = outlead;
-		      strcpy (new + 1, bfd_asymbol_name (sym) + 1);
-		      sym->name = new;
+		      newstr = (char *)xmalloc(strlen(bfd_asymbol_name(sym)) + 1);
+		      newstr[0] = outlead;
+		      strcpy(newstr + 1, bfd_asymbol_name(sym) + 1);
+		      sym->name = newstr;
 		    }
 		}
 	    }
 	  else
 	    {
-	      char *new;
+	      char *newer;
 
-	      new = xmalloc (strlen (bfd_asymbol_name (sym)) + 2);
-	      new[0] = outlead;
-	      strcpy (new + 1, bfd_asymbol_name (sym));
-	      sym->name = new;
+	      newer = (char *)xmalloc(strlen(bfd_asymbol_name(sym)) + 2);
+	      newer[0] = outlead;
+	      strcpy((newer + 1), bfd_asymbol_name(sym));
+	      sym->name = newer;
 	    }
 	}
 
@@ -545,7 +549,7 @@ main (int argc, char **argv)
 	      sym->value = got_sec->output_offset;
 	      sym->section = got_sec->output_section;
 	    }
-#endif
+#endif /* NLMCONV_POWERPC */
 	}
 
       /* If this is a global symbol, check the export list.  */
@@ -1057,7 +1061,7 @@ main (int argc, char **argv)
   {
     const int    max_len  = NLM_MODULE_NAME_SIZE - 2;
     const char * filename = lbasename (output_file);
-    
+
     len = strlen (filename);
     if (len > max_len)
       len = max_len;
@@ -2030,8 +2034,8 @@ powerpc_mangle_relocs (bfd *outbfd, asection *insec,
 
 /* Name of linker.  */
 #ifndef LD_NAME
-#define LD_NAME "ld"
-#endif
+# define LD_NAME "ld"
+#endif /* !LD_NAME */
 
 /* The user has specified several input files.  Invoke the linker to
    link them all together, and convert and delete the resulting output

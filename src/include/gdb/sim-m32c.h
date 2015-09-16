@@ -1,5 +1,7 @@
-/* This file defines the interface between the m32c simulator and gdb.
-   Copyright (C) 2005 Free Software Foundation, Inc.
+/* sim-m32c.h
+ * This file defines the interface between the m32c simulator and gdb.
+ */
+/* Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GDB.
 
@@ -61,3 +63,5 @@ enum m32c_sim_reg {
 };
 
 #endif /* SIM_M32C_H */
+
+/* EOF */

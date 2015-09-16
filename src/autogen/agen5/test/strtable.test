@@ -1,0 +1,97 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# strtable.test --- test string-table functionality
+#
+# Time-stamp:        "2012-01-07 09:02:42 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating ${testname}.tpl
+cat > ${testname}.tpl <<_EOF_
+[= AutoGen5 template test =]
+[=
+
+(string-table-new "scribble")
+(out-push-new) ;; redirect output to temporary
+(define ct 1)
+
+=][=
+
+FOR str IN that was the week that was
+
+=][= (set! ct (+ ct 1)) =]
+    [= (string-table-add-ref "scribble" (get "str")) =],[=
+
+ENDFOR
+
+=][=
+   (out-suspend "main")
+   (emit-string-table "scribble")
+   (emit (sprintf "\n#define STRING_CT %d\n" (- ct 1)))
+   (ag-fprintf 0 "\nchar const * const ap[%d] = {" ct)
+   (out-resume "main")
+   (out-pop #t) ;; now dump out the redirected output
+   ;; and finish: =]
+    NULL };
+_EOF_
+
+# # # # # # # # # # EXPECTED OUTPUT FILE # # # # # # #
+set -x
+echo creating ${testname}.base
+# this is the output we should expect to see
+cat > ${testname}.base <<'_EOF_'
+
+static char const scribble[18] =
+/*     0 */ "that\0"
+/*     5 */ "was\0"
+/*     9 */ "the\0"
+/*    13 */ "week";
+
+#define STRING_CT 6
+
+char const * const ap[7] = {
+    scribble+0,
+    scribble+5,
+    scribble+9,
+    scribble+13,
+    scribble+0,
+    scribble+5,
+    NULL };
+_EOF_
+
+run_ag x -b ${testname} -T ${testname}.tpl --no-defin || \
+   failure autogen failed
+cmp -s ${testname}.base ${testname}.test || \
+   failure "bad output: `diff -c ${testname}.base ${testname}.test`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of strtable.test

@@ -1,4 +1,5 @@
-/* Macro definitions for Power PC running embedded ABI
+/* tm-ppcle-eabi.h
+   Macro definitions for Power PC running embedded ABI
    in little endian mode.
    Copyright 1995, 1998 Free Software Foundation, Inc.
 

@@ -19,61 +19,63 @@ will never return a @code{NULL} pointer.
 #include "libiberty.h"
 
 #ifdef VMS
-#  include <errno.h>
-#  if !defined (__STRICT_ANSI__) && !defined (__HIDE_FORBIDDEN_NAMES)
-#    ifdef __cplusplus
+# include <errno.h>
+# if !defined(__STRICT_ANSI__) && !defined(__HIDE_FORBIDDEN_NAMES)
+#  ifdef __cplusplus
 extern "C" {
-#    endif /* __cplusplus */
-extern char *strerror (int,...);
-#    define DONT_DECLARE_STRERROR
-#    ifdef __cplusplus
+#  endif /* __cplusplus */
+extern char *strerror(int,...);
+#  define DONT_DECLARE_STRERROR
+#  ifdef __cplusplus
 }
-#    endif /* __cplusplus */
-#  endif
+#  endif /* __cplusplus */
+# endif /* !__STRICT_ANSI__ && !__HIDE_FORBIDDEN_NAMES */
 #endif  /* VMS */
 
 
 #ifndef DONT_DECLARE_STRERROR
-#  ifdef __cplusplus
+# ifdef __cplusplus
 extern "C" {
-#  endif /* __cplusplus */
-extern char *strerror (int);
-#  ifdef __cplusplus
+# endif /* __cplusplus */
+extern char *strerror(int);
+# ifdef __cplusplus
 }
-#  endif /* __cplusplus */
-#endif
+# endif /* __cplusplus */
+#endif /* !DONT_DECLARE_STRERROR */
 
-/* If strerror returns NULL, we'll format the number into a static buffer.  */
-
+/* If strerror returns NULL, then we shall format the number into a static
+ * buffer: */
 #define ERRSTR_FMT "undocumented error #%d"
 static char xstrerror_buf[sizeof ERRSTR_FMT + 20];
 
-/* Like strerror, but result is never a null pointer.  */
-
+/* Like strerror, but result is never a null pointer: */
 char *
-xstrerror (int errnum)
+xstrerror(int errnum)
 {
   char *errstr;
 #ifdef VMS
-  char *(*vmslib_strerror) (int,...);
+  char *(*vmslib_strerror)(int,...);
 
-  /* Override any possibly-conflicting declaration from system header.  */
-  vmslib_strerror = (char *(*) (int,...)) strerror;
-  /* Second argument matters iff first is EVMSERR, but it's simpler to
+  /* Override any possibly-conflicting declaration from system header: */
+  vmslib_strerror = (char *(*)(int,...))strerror;
+  /* Second argument matters iff first is EVMSERR, but it is simpler to
      pass it unconditionally.  `vaxc$errno' is declared in <errno.h>
      and maintained by the run-time library in parallel to `errno'.
      We assume that `errnum' corresponds to the last value assigned to
      errno by the run-time library, hence vaxc$errno will be relevant.  */
-  errstr = (*vmslib_strerror) (errnum, vaxc$errno);
+  errstr = (*vmslib_strerror)(errnum, vaxc$errno);
 #else
-  errstr = strerror (errnum);
-#endif
+  errstr = strerror(errnum);
+#endif /* VMS */
 
-  /* If `errnum' is out of range, result might be NULL.  We'll fix that.  */
+  /* If `errnum' is out of range, then the result might be NULL.
+   * We shall fix that: */
   if (!errstr)
     {
-      sprintf (xstrerror_buf, ERRSTR_FMT, errnum);
+      sprintf(xstrerror_buf, ERRSTR_FMT, errnum);
       errstr = xstrerror_buf;
     }
   return errstr;
 }
+
+/* EOF */

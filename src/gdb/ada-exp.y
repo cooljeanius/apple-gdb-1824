@@ -1,7 +1,7 @@
-/* YACC parser for Ada expressions, for GDB.
-   Copyright (C) 1986, 1989, 1990, 1991, 1993, 1994, 1997, 2000, 2003, 
-   2004 Free Software Foundation, Inc.
-
+/* ada-exp.y: YACC parser for Ada expressions, for GDB.
+ * Copyright (C) 1986, 1989-1991, 1993-1994, 1997, 2000, 2003-2004
+ * Free Software Foundation, Inc.  */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -95,8 +95,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #define yyrule	ada_rule		/* With YYDEBUG defined */
 
 #ifndef YYDEBUG
-#define	YYDEBUG	1		/* Default to yydebug support */
-#endif
+# define YYDEBUG 1		/* Default to yydebug support */
+#endif /* !YYDEBUG */
 
 #define YYFPRINTF parser_fprintf
 
@@ -111,37 +111,39 @@ struct name_info {
  * NULL.  */
 static struct type *type_qualifier;
 
-int yyparse (void);
+int yyparse(void);
 
-static int yylex (void);
+static int yylex(void);
 
-void yyerror (char *);
+void yyerror(char *);
 
-static struct stoken string_to_operator (struct stoken);
+static struct stoken string_to_operator(struct stoken);
 
-static void write_int (LONGEST, struct type *);
+static void write_int(LONGEST, struct type *);
 
-static void write_object_renaming (struct block *, struct symbol *, int);
+static void write_object_renaming(struct block *, struct symbol *, int);
 
-static void write_var_from_name (struct block *, struct name_info);
+static void write_var_from_name(struct block *, struct name_info);
 
-static LONGEST convert_char_literal (struct type *, LONGEST);
+static LONGEST convert_char_literal(struct type *, LONGEST);
 
-static struct type *type_int (void);
+static struct type *type_int(void);
 
-static struct type *type_long (void);
+static struct type *type_long(void);
 
-static struct type *type_long_long (void);
+static struct type *type_long_long(void);
 
-static struct type *type_float (void);
+static struct type *type_float(void);
 
-static struct type *type_double (void);
+static struct type *type_double(void);
 
-static struct type *type_long_double (void);
+static struct type *type_long_double(void);
 
-static struct type *type_char (void);
+static struct type *type_char(void);
 
-static struct type *type_system_address (void);
+static struct type *type_system_address(void);
+
+extern void _initialize_ada_exp(void);
 %}
 
 %union
@@ -161,7 +163,6 @@ static struct type *type_system_address (void);
     int voidval;
     struct block *bval;
     struct internalvar *ivar;
-
   }
 
 %type <voidval> exp exp1 simple_exp start variable
@@ -215,50 +216,50 @@ static struct type *type_system_address (void);
 %%
 
 start   :	exp1
-	|	type	{ write_exp_elt_opcode (OP_TYPE);
-			  write_exp_elt_type ($1);
- 			  write_exp_elt_opcode (OP_TYPE); }
+	|	type	{ write_exp_elt_opcode(OP_TYPE);
+			  write_exp_elt_type($1);
+ 			  write_exp_elt_opcode(OP_TYPE); }
 	;
 
 /* Expressions, including the sequencing operator.  */
 exp1	:	exp
 	|	exp1 ';' exp
-			{ write_exp_elt_opcode (BINOP_COMMA); }
+			{ write_exp_elt_opcode(BINOP_COMMA); }
 	;
 
-/* Expressions, not including the sequencing operator.  */
+/* Expressions, not including the sequencing operator: */
 simple_exp :	simple_exp DOT_ALL
-			{ write_exp_elt_opcode (UNOP_IND); }
+			{ write_exp_elt_opcode(UNOP_IND); }
 	;
 
 simple_exp :	simple_exp DOT_ID
-			{ write_exp_elt_opcode (STRUCTOP_STRUCT);
-			  write_exp_string ($2.stoken);
-			  write_exp_elt_opcode (STRUCTOP_STRUCT);
+			{ write_exp_elt_opcode(STRUCTOP_STRUCT);
+			  write_exp_string($2.stoken);
+			  write_exp_elt_opcode(STRUCTOP_STRUCT);
 			  }
 	;
 
 simple_exp :	simple_exp '(' arglist ')'
 			{
-			  write_exp_elt_opcode (OP_FUNCALL);
-			  write_exp_elt_longcst ($3);
-			  write_exp_elt_opcode (OP_FUNCALL);
+			  write_exp_elt_opcode(OP_FUNCALL);
+			  write_exp_elt_longcst($3);
+			  write_exp_elt_opcode(OP_FUNCALL);
 		        }
 	;
 
 simple_exp :	type '(' exp ')'
 			{
-			  write_exp_elt_opcode (UNOP_CAST);
-			  write_exp_elt_type ($1);
-			  write_exp_elt_opcode (UNOP_CAST);
+			  write_exp_elt_opcode(UNOP_CAST);
+			  write_exp_elt_type($1);
+			  write_exp_elt_opcode(UNOP_CAST);
 			}
 	;
 
 simple_exp :	type '\'' save_qualifier { type_qualifier = $1; } '(' exp ')'
 			{
-			  write_exp_elt_opcode (UNOP_QUAL);
-			  write_exp_elt_type ($1);
-			  write_exp_elt_opcode (UNOP_QUAL);
+			  write_exp_elt_opcode((enum exp_opcode)UNOP_QUAL);
+			  write_exp_elt_type($1);
+			  write_exp_elt_opcode((enum exp_opcode)UNOP_QUAL);
 			  type_qualifier = $3;
 			}
 	;
@@ -268,7 +269,7 @@ save_qualifier : 	{ $$ = type_qualifier; }
 
 simple_exp :
 		simple_exp '(' exp DOTDOT exp ')'
-			{ write_exp_elt_opcode (TERNOP_SLICE); }
+			{ write_exp_elt_opcode(TERNOP_SLICE); }
 	;
 
 simple_exp :	'(' exp1 ')'	{ }
@@ -278,30 +279,30 @@ simple_exp :	variable
 	;
 
 simple_exp:	SPECIAL_VARIABLE /* Various GDB extensions */
-			{ write_dollar_variable ($1); }
+			{ write_dollar_variable($1); }
 	;
 
 exp	: 	simple_exp
 	;
 
 exp	: 	exp ASSIGN exp   /* Extension for convenience */
-			{ write_exp_elt_opcode (BINOP_ASSIGN); }
+			{ write_exp_elt_opcode(BINOP_ASSIGN); }
 	;
 
 exp	:	'-' exp    %prec UNARY
-			{ write_exp_elt_opcode (UNOP_NEG); }
+			{ write_exp_elt_opcode(UNOP_NEG); }
 	;
 
 exp	:	'+' exp    %prec UNARY
-			{ write_exp_elt_opcode (UNOP_PLUS); }
+			{ write_exp_elt_opcode(UNOP_PLUS); }
 	;
 
 exp     :	NOT exp    %prec UNARY
-			{ write_exp_elt_opcode (UNOP_LOGICAL_NOT); }
+			{ write_exp_elt_opcode(UNOP_LOGICAL_NOT); }
 	;
 
 exp	:       ABS exp	   %prec UNARY
-			{ write_exp_elt_opcode (UNOP_ABS); }
+			{ write_exp_elt_opcode(UNOP_ABS); }
 	;
 
 arglist	:		{ $$ = 0; }
@@ -319,164 +320,164 @@ arglist	:	exp
 
 exp	:	'{' type '}' exp  %prec '.'
 		/* GDB extension */
-			{ write_exp_elt_opcode (UNOP_MEMVAL);
-			  write_exp_elt_type ($2);
-			  write_exp_elt_opcode (UNOP_MEMVAL);
+			{ write_exp_elt_opcode(UNOP_MEMVAL);
+			  write_exp_elt_type($2);
+			  write_exp_elt_opcode(UNOP_MEMVAL);
 			}
 	;
 
 /* Binary operators in order of decreasing precedence.  */
 
 exp 	: 	exp STARSTAR exp
-			{ write_exp_elt_opcode (BINOP_EXP); }
+			{ write_exp_elt_opcode(BINOP_EXP); }
 	;
 
 exp	:	exp '*' exp
-			{ write_exp_elt_opcode (BINOP_MUL); }
+			{ write_exp_elt_opcode(BINOP_MUL); }
 	;
 
 exp	:	exp '/' exp
-			{ write_exp_elt_opcode (BINOP_DIV); }
+			{ write_exp_elt_opcode(BINOP_DIV); }
 	;
 
 exp	:	exp REM exp /* May need to be fixed to give correct Ada REM */
-			{ write_exp_elt_opcode (BINOP_REM); }
+			{ write_exp_elt_opcode(BINOP_REM); }
 	;
 
 exp	:	exp MOD exp
-			{ write_exp_elt_opcode (BINOP_MOD); }
+			{ write_exp_elt_opcode(BINOP_MOD); }
 	;
 
 exp	:	exp '@' exp	/* GDB extension */
-			{ write_exp_elt_opcode (BINOP_REPEAT); }
+			{ write_exp_elt_opcode(BINOP_REPEAT); }
 	;
 
 exp	:	exp '+' exp
-			{ write_exp_elt_opcode (BINOP_ADD); }
+			{ write_exp_elt_opcode(BINOP_ADD); }
 	;
 
 exp	:	exp '&' exp
-			{ write_exp_elt_opcode (BINOP_CONCAT); }
+			{ write_exp_elt_opcode(BINOP_CONCAT); }
 	;
 
 exp	:	exp '-' exp
-			{ write_exp_elt_opcode (BINOP_SUB); }
+			{ write_exp_elt_opcode(BINOP_SUB); }
 	;
 
 exp	:	exp '=' exp
-			{ write_exp_elt_opcode (BINOP_EQUAL); }
+			{ write_exp_elt_opcode(BINOP_EQUAL); }
 	;
 
 exp	:	exp NOTEQUAL exp
-			{ write_exp_elt_opcode (BINOP_NOTEQUAL); }
+			{ write_exp_elt_opcode(BINOP_NOTEQUAL); }
 	;
 
 exp	:	exp LEQ exp
-			{ write_exp_elt_opcode (BINOP_LEQ); }
+			{ write_exp_elt_opcode(BINOP_LEQ); }
 	;
 
 exp	:	exp IN exp DOTDOT exp
-			{ write_exp_elt_opcode (TERNOP_IN_RANGE); }
+			{ write_exp_elt_opcode((enum exp_opcode)TERNOP_IN_RANGE); }
         |       exp IN exp TICK_RANGE tick_arglist
-			{ write_exp_elt_opcode (BINOP_IN_BOUNDS);
-			  write_exp_elt_longcst ((LONGEST) $5);
-			  write_exp_elt_opcode (BINOP_IN_BOUNDS);
+			{ write_exp_elt_opcode((enum exp_opcode)BINOP_IN_BOUNDS);
+			  write_exp_elt_longcst((LONGEST)$5);
+			  write_exp_elt_opcode((enum exp_opcode)BINOP_IN_BOUNDS);
 			}
  	|	exp IN TYPENAME		%prec TICK_ACCESS
-			{ write_exp_elt_opcode (UNOP_IN_RANGE);
-		          write_exp_elt_type ($3);
-		          write_exp_elt_opcode (UNOP_IN_RANGE);
+			{ write_exp_elt_opcode((enum exp_opcode)UNOP_IN_RANGE);
+		          write_exp_elt_type($3);
+		          write_exp_elt_opcode((enum exp_opcode)UNOP_IN_RANGE);
 			}
 	|	exp NOT IN exp DOTDOT exp
-			{ write_exp_elt_opcode (TERNOP_IN_RANGE);
-		          write_exp_elt_opcode (UNOP_LOGICAL_NOT);
+			{ write_exp_elt_opcode((enum exp_opcode)TERNOP_IN_RANGE);
+		          write_exp_elt_opcode(UNOP_LOGICAL_NOT);
 			}
         |       exp NOT IN exp TICK_RANGE tick_arglist
-			{ write_exp_elt_opcode (BINOP_IN_BOUNDS);
-			  write_exp_elt_longcst ((LONGEST) $6);
-			  write_exp_elt_opcode (BINOP_IN_BOUNDS);
-		          write_exp_elt_opcode (UNOP_LOGICAL_NOT);
+			{ write_exp_elt_opcode((enum exp_opcode)BINOP_IN_BOUNDS);
+			  write_exp_elt_longcst((LONGEST)$6);
+			  write_exp_elt_opcode((enum exp_opcode)BINOP_IN_BOUNDS);
+		          write_exp_elt_opcode(UNOP_LOGICAL_NOT);
 			}
  	|	exp NOT IN TYPENAME	%prec TICK_ACCESS
-			{ write_exp_elt_opcode (UNOP_IN_RANGE);
-		          write_exp_elt_type ($4);
-		          write_exp_elt_opcode (UNOP_IN_RANGE);
-		          write_exp_elt_opcode (UNOP_LOGICAL_NOT);
+			{ write_exp_elt_opcode((enum exp_opcode)UNOP_IN_RANGE);
+		          write_exp_elt_type($4);
+		          write_exp_elt_opcode((enum exp_opcode)UNOP_IN_RANGE);
+		          write_exp_elt_opcode(UNOP_LOGICAL_NOT);
 			}
 	;
 
 exp	:	exp GEQ exp
-			{ write_exp_elt_opcode (BINOP_GEQ); }
+			{ write_exp_elt_opcode(BINOP_GEQ); }
 	;
 
 exp	:	exp '<' exp
-			{ write_exp_elt_opcode (BINOP_LESS); }
+			{ write_exp_elt_opcode(BINOP_LESS); }
 	;
 
 exp	:	exp '>' exp
-			{ write_exp_elt_opcode (BINOP_GTR); }
+			{ write_exp_elt_opcode(BINOP_GTR); }
 	;
 
 exp     :	exp _AND_ exp  /* Fix for Ada elementwise AND.  */
-			{ write_exp_elt_opcode (BINOP_BITWISE_AND); }
+			{ write_exp_elt_opcode(BINOP_BITWISE_AND); }
         ;
 
 exp     :       exp _AND_ THEN exp	%prec _AND_
-			{ write_exp_elt_opcode (BINOP_LOGICAL_AND); }
+			{ write_exp_elt_opcode(BINOP_LOGICAL_AND); }
         ;
 
 exp     :	exp OR exp     /* Fix for Ada elementwise OR */
-			{ write_exp_elt_opcode (BINOP_BITWISE_IOR); }
+			{ write_exp_elt_opcode(BINOP_BITWISE_IOR); }
         ;
 
 exp     :       exp OR ELSE exp
-			{ write_exp_elt_opcode (BINOP_LOGICAL_OR); }
+			{ write_exp_elt_opcode(BINOP_LOGICAL_OR); }
         ;
 
 exp     :       exp XOR exp    /* Fix for Ada elementwise XOR */
-			{ write_exp_elt_opcode (BINOP_BITWISE_XOR); }
+			{ write_exp_elt_opcode(BINOP_BITWISE_XOR); }
         ;
 
 simple_exp :	simple_exp TICK_ACCESS
-			{ write_exp_elt_opcode (UNOP_ADDR); }
+			{ write_exp_elt_opcode(UNOP_ADDR); }
 	|	simple_exp TICK_ADDRESS
-			{ write_exp_elt_opcode (UNOP_ADDR);
-			  write_exp_elt_opcode (UNOP_CAST);
-			  write_exp_elt_type (type_system_address ());
-			  write_exp_elt_opcode (UNOP_CAST);
+			{ write_exp_elt_opcode(UNOP_ADDR);
+			  write_exp_elt_opcode(UNOP_CAST);
+			  write_exp_elt_type(type_system_address());
+			  write_exp_elt_opcode(UNOP_CAST);
 			}
 	|	simple_exp TICK_FIRST tick_arglist
-			{ write_int ($3, type_int ());
-			  write_exp_elt_opcode (OP_ATR_FIRST); }
+			{ write_int($3, type_int());
+			  write_exp_elt_opcode((enum exp_opcode)OP_ATR_FIRST); }
 	|	simple_exp TICK_LAST tick_arglist
-			{ write_int ($3, type_int ());
-			  write_exp_elt_opcode (OP_ATR_LAST); }
+			{ write_int($3, type_int());
+			  write_exp_elt_opcode((enum exp_opcode)OP_ATR_LAST); }
 	| 	simple_exp TICK_LENGTH tick_arglist
-			{ write_int ($3, type_int ());
-			  write_exp_elt_opcode (OP_ATR_LENGTH); }
+			{ write_int($3, type_int());
+			  write_exp_elt_opcode((enum exp_opcode)OP_ATR_LENGTH); }
         |       simple_exp TICK_SIZE
-			{ write_exp_elt_opcode (OP_ATR_SIZE); }
+			{ write_exp_elt_opcode((enum exp_opcode)OP_ATR_SIZE); }
 	|	simple_exp TICK_TAG
-			{ write_exp_elt_opcode (OP_ATR_TAG); }
+			{ write_exp_elt_opcode((enum exp_opcode)OP_ATR_TAG); }
         |       opt_type_prefix TICK_MIN '(' exp ',' exp ')'
-			{ write_exp_elt_opcode (OP_ATR_MIN); }
+			{ write_exp_elt_opcode((enum exp_opcode)OP_ATR_MIN); }
         |       opt_type_prefix TICK_MAX '(' exp ',' exp ')'
-			{ write_exp_elt_opcode (OP_ATR_MAX); }
+			{ write_exp_elt_opcode((enum exp_opcode)OP_ATR_MAX); }
 	| 	opt_type_prefix TICK_POS '(' exp ')'
-			{ write_exp_elt_opcode (OP_ATR_POS); }
+			{ write_exp_elt_opcode((enum exp_opcode)OP_ATR_POS); }
 	|	type_prefix TICK_FIRST tick_arglist
-			{ write_int ($3, type_int ());
-			  write_exp_elt_opcode (OP_ATR_FIRST); }
+			{ write_int($3, type_int());
+			  write_exp_elt_opcode((enum exp_opcode)OP_ATR_FIRST); }
 	|	type_prefix TICK_LAST tick_arglist
-			{ write_int ($3, type_int ());
-			  write_exp_elt_opcode (OP_ATR_LAST); }
+			{ write_int($3, type_int());
+			  write_exp_elt_opcode((enum exp_opcode)OP_ATR_LAST); }
 	| 	type_prefix TICK_LENGTH tick_arglist
-			{ write_int ($3, type_int ());
-			  write_exp_elt_opcode (OP_ATR_LENGTH); }
+			{ write_int($3, type_int());
+			  write_exp_elt_opcode((enum exp_opcode)OP_ATR_LENGTH); }
 	|	type_prefix TICK_VAL '(' exp ')'
-			{ write_exp_elt_opcode (OP_ATR_VAL); }
+			{ write_exp_elt_opcode((enum exp_opcode)OP_ATR_VAL); }
 	|	type_prefix TICK_MODULUS
-			{ write_exp_elt_opcode (OP_ATR_MODULUS); }
+			{ write_exp_elt_opcode((enum exp_opcode)OP_ATR_MODULUS); }
 	;
 
 tick_arglist :			%prec '('
@@ -487,64 +488,64 @@ tick_arglist :			%prec '('
 
 type_prefix :
 		TYPENAME
-			{ write_exp_elt_opcode (OP_TYPE);
-			  write_exp_elt_type ($1);
-			  write_exp_elt_opcode (OP_TYPE); }
+			{ write_exp_elt_opcode(OP_TYPE);
+			  write_exp_elt_type($1);
+			  write_exp_elt_opcode(OP_TYPE); }
 	;
 
 opt_type_prefix :
 		type_prefix
 	| 	/* EMPTY */
-			{ write_exp_elt_opcode (OP_TYPE);
-			  write_exp_elt_type (builtin_type_void);
-			  write_exp_elt_opcode (OP_TYPE); }
+			{ write_exp_elt_opcode(OP_TYPE);
+			  write_exp_elt_type(builtin_type_void);
+			  write_exp_elt_opcode(OP_TYPE); }
 	;
 
 
 exp	:	INT
-			{ write_int ((LONGEST) $1.val, $1.type); }
+			{ write_int((LONGEST)$1.val, $1.type); }
 	;
 
 exp	:	CHARLIT
-                  { write_int (convert_char_literal (type_qualifier, $1.val),
-			       (type_qualifier == NULL) 
-			       ? $1.type : type_qualifier);
+                  { write_int(convert_char_literal(type_qualifier, $1.val),
+			      ((type_qualifier == NULL)
+                               ? $1.type : type_qualifier));
 		  }
 	;
 
 exp	:	FLOAT
-			{ write_exp_elt_opcode (OP_DOUBLE);
-			  write_exp_elt_type ($1.type);
-			  write_exp_elt_dblcst ($1.dval);
-			  write_exp_elt_opcode (OP_DOUBLE);
+			{ write_exp_elt_opcode(OP_DOUBLE);
+			  write_exp_elt_type($1.type);
+			  write_exp_elt_dblcst($1.dval);
+			  write_exp_elt_opcode(OP_DOUBLE);
 			}
 	;
 
 exp	:	NULL_PTR
-			{ write_int (0, type_int ()); }
+			{ write_int(0, type_int()); }
 	;
 
 exp	:	STRING
-			{ 
-			  write_exp_elt_opcode (OP_STRING);
-			  write_exp_string ($1);
-			  write_exp_elt_opcode (OP_STRING);
+			{
+			  write_exp_elt_opcode(OP_STRING);
+			  write_exp_string($1);
+			  write_exp_elt_opcode(OP_STRING);
 			}
 	;
 
 exp	: 	NEW TYPENAME
-			{ error ("NEW not implemented."); }
+			{ error("NEW not implemented."); }
 	;
 
-variable:	NAME   		{ write_var_from_name (NULL, $1); }
+variable:	NAME   		{ write_var_from_name(NULL, $1); }
 	|	block NAME  	/* GDB extension */
-                                { write_var_from_name ($1, $2); }
-	|	OBJECT_RENAMING 
-		    { write_object_renaming (NULL, $1.sym, 
-				             MAX_RENAMING_CHAIN_LENGTH); }
+                                { write_var_from_name($1, $2); }
+	|	OBJECT_RENAMING
+		    { write_object_renaming(NULL, $1.sym,
+				            MAX_RENAMING_CHAIN_LENGTH); }
 	|	block OBJECT_RENAMING
-		    { write_object_renaming ($1, $2.sym, 
-					     MAX_RENAMING_CHAIN_LENGTH); }
+		    { write_object_renaming($1, $2.sym,
+					    MAX_RENAMING_CHAIN_LENGTH); }
 	;
 
 any_name :	NAME 		{ }
@@ -562,20 +563,20 @@ block	:	BLOCKNAME  /* GDB extension */
 type	:	TYPENAME	{ $$ = $1; }
 	|	block TYPENAME  { $$ = $2; }
 	| 	TYPENAME TICK_ACCESS
-				{ $$ = lookup_pointer_type ($1); }
+				{ $$ = lookup_pointer_type($1); }
 	|	block TYPENAME TICK_ACCESS
-				{ $$ = lookup_pointer_type ($2); }
+				{ $$ = lookup_pointer_type($2); }
         ;
 
 /* Some extensions borrowed from C, for the benefit of those who find they
-   can't get used to Ada notation in GDB.  */
+   cannot get used to Ada notation in GDB.  */
 
 exp	:	'*' exp		%prec '.'
-			{ write_exp_elt_opcode (UNOP_IND); }
+			{ write_exp_elt_opcode(UNOP_IND); }
 	|	'&' exp		%prec '.'
-			{ write_exp_elt_opcode (UNOP_ADDR); }
+			{ write_exp_elt_opcode(UNOP_ADDR); }
 	|	exp '[' exp ']'
-			{ write_exp_elt_opcode (BINOP_SUBSCRIPT); }
+			{ write_exp_elt_opcode(BINOP_SUBSCRIPT); }
 	;
 
 %%
@@ -606,21 +607,21 @@ static struct obstack temp_parse_space;
 #include "ada-lex.c"
 
 int
-ada_parse (void)
+ada_parse(void)
 {
-  lexer_init (yyin);		/* (Re-)initialize lexer.  */
+  lexer_init(yyin);		/* (Re-)initialize lexer.  */
   left_block_context = NULL;
   type_qualifier = NULL;
-  obstack_free (&temp_parse_space, NULL);
-  obstack_init (&temp_parse_space);
+  obstack_free(&temp_parse_space, NULL);
+  obstack_init(&temp_parse_space);
 
-  return _ada_parse ();
+  return _ada_parse();
 }
 
-void
-yyerror (char *msg)
+void ATTR_NORETURN
+yyerror(char *msg)
 {
-  error ("A %s in expression, near `%s'.", (msg ? msg : "error"), lexptr);
+  error("A %s in expression, near `%s'.", (msg ? msg : "error"), lexptr);
 }
 
 /* The operator name corresponding to operator symbol STRING (adds
@@ -632,43 +633,42 @@ yyerror (char *msg)
    STRING.length+3 characters.  */
 
 static struct stoken
-string_to_operator (struct stoken string)
+string_to_operator(struct stoken string)
 {
   int i;
 
   for (i = 0; ada_opname_table[i].encoded != NULL; i += 1)
     {
-      if (string.length == strlen (ada_opname_table[i].decoded)-2
-	  && strncasecmp (string.ptr, ada_opname_table[i].decoded+1,
-			  string.length) == 0)
+      if ((string.length == (int)(strlen(ada_opname_table[i].decoded) - 2))
+	  && (strncasecmp(string.ptr, (ada_opname_table[i].decoded + 1),
+			  string.length) == 0))
 	{
-	  strncpy (string.ptr, ada_opname_table[i].decoded,
-		   string.length+2);
+	  strncpy(string.ptr, ada_opname_table[i].decoded,
+		  (string.length + 2));
 	  string.length += 2;
 	  return string;
 	}
     }
-  error ("Invalid operator symbol `%s'", string.ptr);
+  error("Invalid operator symbol `%s'", string.ptr);
 }
 
 /* Emit expression to access an instance of SYM, in block BLOCK (if
  * non-NULL), and with :: qualification ORIG_LEFT_CONTEXT.  */
 static void
-write_var_from_sym (struct block *orig_left_context,
-		    struct block *block,
-		    struct symbol *sym)
+write_var_from_sym(struct block *orig_left_context, struct block *block,
+		   struct symbol *sym)
 {
-  if (orig_left_context == NULL && symbol_read_needs_frame (sym))
+  if ((orig_left_context == NULL) && symbol_read_needs_frame(sym))
     {
-      if (innermost_block == 0
-	  || contained_in (block, innermost_block))
+      if ((innermost_block == 0)
+	  || contained_in(block, innermost_block))
 	innermost_block = block;
     }
 
-  write_exp_elt_opcode (OP_VAR_VALUE);
-  write_exp_elt_block (block);
-  write_exp_elt_sym (sym);
-  write_exp_elt_opcode (OP_VAR_VALUE);
+  write_exp_elt_opcode(OP_VAR_VALUE);
+  write_exp_elt_block(block);
+  write_exp_elt_sym(sym);
+  write_exp_elt_opcode(OP_VAR_VALUE);
 }
 
 /* Emit expression to access an instance of NAME in :: context
@@ -676,46 +676,46 @@ write_var_from_sym (struct block *orig_left_context,
  * output a dummy symbol (good to the next call of ada_parse) for NAME
  * in the UNDEF_DOMAIN, for later resolution by ada_resolve.  */
 static void
-write_var_from_name (struct block *orig_left_context,
-		     struct name_info name)
+write_var_from_name(struct block *orig_left_context,
+		    struct name_info name)
 {
   if (name.msym != NULL)
     {
-      write_exp_msymbol (name.msym,
-			 lookup_function_type (type_int ()),
-			 type_int ());
+      write_exp_msymbol(name.msym,
+                        lookup_function_type(type_int()),
+                        type_int());
     }
   else if (name.sym == NULL)
     {
       /* Multiple matches: record name and starting block for later
          resolution by ada_resolve.  */
-      char *encoded_name = ada_encode (name.stoken.ptr);
+      char *encoded_name = ada_encode(name.stoken.ptr);
       struct symbol *sym =
-	obstack_alloc (&temp_parse_space, sizeof (struct symbol));
-      memset (sym, 0, sizeof (struct symbol));
-      SYMBOL_DOMAIN (sym) = UNDEF_DOMAIN;
-      SYMBOL_LINKAGE_NAME (sym)
-	= obsavestring (encoded_name, strlen (encoded_name), &temp_parse_space);
-      SYMBOL_LANGUAGE (sym) = language_ada;
+	(struct symbol *)obstack_alloc(&temp_parse_space,
+                                       sizeof(struct symbol));
+      memset(sym, 0, sizeof(struct symbol));
+      SYMBOL_DOMAIN(sym) = UNDEF_DOMAIN;
+      SYMBOL_LINKAGE_NAME(sym)
+	= obsavestring(encoded_name, strlen(encoded_name), &temp_parse_space);
+      SYMBOL_LANGUAGE(sym) = language_ada;
 
-      write_exp_elt_opcode (OP_VAR_VALUE);
-      write_exp_elt_block (name.block);
-      write_exp_elt_sym (sym);
-      write_exp_elt_opcode (OP_VAR_VALUE);
+      write_exp_elt_opcode(OP_VAR_VALUE);
+      write_exp_elt_block(name.block);
+      write_exp_elt_sym(sym);
+      write_exp_elt_opcode(OP_VAR_VALUE);
     }
   else
-    write_var_from_sym (orig_left_context, name.block, name.sym);
+    write_var_from_sym(orig_left_context, name.block, name.sym);
 }
 
-/* Write integer constant ARG of type TYPE.  */
-
+/* Write integer constant ARG of type TYPE: */
 static void
-write_int (LONGEST arg, struct type *type)
+write_int(LONGEST arg, struct type *type)
 {
-  write_exp_elt_opcode (OP_LONG);
-  write_exp_elt_type (type);
-  write_exp_elt_longcst (arg);
-  write_exp_elt_opcode (OP_LONG);
+  write_exp_elt_opcode(OP_LONG);
+  write_exp_elt_type(type);
+  write_exp_elt_longcst(arg);
+  write_exp_elt_opcode(OP_LONG);
 }
 
 /* Emit expression corresponding to the renamed object designated by
@@ -723,7 +723,7 @@ write_int (LONGEST arg, struct type *type)
  * type, in the context of ORIG_LEFT_CONTEXT.  MAX_DEPTH is the maximum
  * number of cascaded renamings to allow.  */
 static void
-write_object_renaming (struct block *orig_left_context, 
+write_object_renaming (struct block *orig_left_context,
 		       struct symbol *renaming, int max_depth)
 {
   const char *qualification = SYMBOL_LINKAGE_NAME (renaming);
@@ -848,17 +848,17 @@ write_object_renaming (struct block *orig_left_context,
 
 	  if (slice_state != SIMPLE_INDEX)
 	    goto BadEncoding;
-	  end = strchr (suffix, 'X');
+	  end = strchr(suffix, 'X');
 	  if (end == NULL)
-	    end = suffix + strlen (suffix);
-	  field_name.length = end - suffix;
-	  field_name.ptr = xmalloc (end - suffix + 1);
-	  strncpy (field_name.ptr, suffix, end - suffix);
+	    end = (suffix + strlen(suffix));
+	  field_name.length = (end - suffix);
+	  field_name.ptr = (char *)xmalloc(end - suffix + 1);
+	  strncpy(field_name.ptr, suffix, end - suffix);
 	  field_name.ptr[end - suffix] = '\000';
 	  suffix = end;
-	  write_exp_elt_opcode (STRUCTOP_STRUCT);
-	  write_exp_string (field_name);
-	  write_exp_elt_opcode (STRUCTOP_STRUCT);
+	  write_exp_elt_opcode(STRUCTOP_STRUCT);
+	  write_exp_string(field_name);
+	  write_exp_elt_opcode(STRUCTOP_STRUCT);
 	  break;
 	}
 
@@ -870,8 +870,8 @@ write_object_renaming (struct block *orig_left_context,
     return;
 
  BadEncoding:
-  error ("Internal error in encoding of renaming declaration: %s",
-	 SYMBOL_LINKAGE_NAME (renaming));
+  error("Internal error in encoding of renaming declaration: %s",
+        SYMBOL_LINKAGE_NAME(renaming));
 }
 
 /* Convert the character literal whose ASCII value would be VAL to the
@@ -879,86 +879,87 @@ write_object_renaming (struct block *orig_left_context,
    Otherwise return VAL.  Hence, in an enumeration type ('A', 'B'),
    the literal 'A' (VAL == 65), returns 0.  */
 static LONGEST
-convert_char_literal (struct type *type, LONGEST val)
+convert_char_literal(struct type *type, LONGEST val)
 {
   char name[7];
   int f;
 
-  if (type == NULL || TYPE_CODE (type) != TYPE_CODE_ENUM)
+  if ((type == NULL) || (TYPE_CODE(type) != TYPE_CODE_ENUM))
     return val;
-  sprintf (name, "QU%02x", (int) val);
-  for (f = 0; f < TYPE_NFIELDS (type); f += 1)
+  sprintf(name, "QU%02x", (int)val);
+  for (f = 0; f < TYPE_NFIELDS(type); f += 1)
     {
-      if (strcmp (name, TYPE_FIELD_NAME (type, f)) == 0)
-	return TYPE_FIELD_BITPOS (type, f);
+      if (strcmp(name, TYPE_FIELD_NAME(type, f)) == 0)
+	return TYPE_FIELD_BITPOS(type, f);
     }
   return val;
 }
 
 static struct type *
-type_int (void)
+type_int(void)
 {
-  return builtin_type (current_gdbarch)->builtin_int;
+  return builtin_type(current_gdbarch)->builtin_int;
 }
 
 static struct type *
-type_long (void)
+type_long(void)
 {
-  return builtin_type (current_gdbarch)->builtin_long;
+  return builtin_type(current_gdbarch)->builtin_long;
 }
 
 static struct type *
-type_long_long (void)
+type_long_long(void)
 {
-  return builtin_type (current_gdbarch)->builtin_long_long;
+  return builtin_type(current_gdbarch)->builtin_long_long;
 }
 
 static struct type *
-type_float (void)
+type_float(void)
 {
-  return builtin_type (current_gdbarch)->builtin_float;
+  return builtin_type(current_gdbarch)->builtin_float;
 }
 
 static struct type *
-type_double (void)
+type_double(void)
 {
-  return builtin_type (current_gdbarch)->builtin_double;
+  return builtin_type(current_gdbarch)->builtin_double;
 }
 
 static struct type *
-type_long_double (void)
+type_long_double(void)
 {
-  return builtin_type (current_gdbarch)->builtin_long_double;
+  return builtin_type(current_gdbarch)->builtin_long_double;
 }
 
 static struct type *
-type_char (void)
+type_char(void)
 {
-  return language_string_char_type (current_language, current_gdbarch);
+  return language_string_char_type(current_language, current_gdbarch);
 }
 
 static struct type *
-type_system_address (void)
+type_system_address(void)
 {
-  struct type *type 
-    = language_lookup_primitive_type_by_name (current_language,
-					      current_gdbarch, 
-					      "system__address");
-  return  type != NULL ? type : lookup_pointer_type (builtin_type_void);
+  struct type *type
+    = language_lookup_primitive_type_by_name(current_language,
+                                             current_gdbarch,
+                                             "system__address");
+  return ((type != NULL) ? type : lookup_pointer_type(builtin_type_void));
 }
 
 void
-_initialize_ada_exp (void)
+_initialize_ada_exp(void)
 {
-  obstack_init (&temp_parse_space);
+  obstack_init(&temp_parse_space);
 }
 
 /* FIXME: hilfingr/2004-10-05: Hack to remove warning.  The function
    string_to_operator is supposed to be used for cases where one
-   calls an operator function with prefix notation, as in 
+   calls an operator function with prefix notation, as in
    "+" (a, b), but at some point, this code seems to have gone
    missing. */
 
-struct stoken (*dummy_string_to_ada_operator) (struct stoken) 
+struct stoken(*dummy_string_to_ada_operator)(struct stoken)
      = string_to_operator;
 
+/* End of ada-exp.y */

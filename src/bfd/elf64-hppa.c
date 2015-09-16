@@ -1,4 +1,4 @@
-/* Support for HPPA 64-bit ELF
+/* elf64-hppa.c: Support for HPPA 64-bit ELF
    Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -16,16 +16,21 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA.  */
 
+#include "sysdep.h"
 #include "alloca-conf.h"
 #include "bfd.h"
-#include "sysdep.h"
 #include "libbfd.h"
 #include "elf-bfd.h"
 #include "elf/hppa.h"
 #include "libhppa.h"
 #include "elf64-hppa.h"
+#ifdef ARCH_SIZE
+# if (ARCH_SIZE != 64)
+#  undef ARCH_SIZE
+# endif /* ARCH_SIZE */
+#endif /* ARCH_SIZE */
 #define ARCH_SIZE	       64
 
 #define PLT_ENTRY_SIZE 0x10
@@ -44,8 +49,10 @@
 
    Note that we must use the LDD with a 14 bit displacement, not the one
    with a 5 bit displacement.  */
-static char plt_stub[] = {0x53, 0x61, 0x00, 0x00, 0xe8, 0x20, 0xd0, 0x00,
-			  0x53, 0x7b, 0x00, 0x00 };
+static char plt_stub[] = {
+  0x53, 0x61, 0x00, 0x00, (char)0xe8, 0x20, (char)0xd0, 0x00, 0x53, 0x7b,
+  0x00, 0x00
+};
 
 struct elf64_hppa_dyn_hash_entry
 {
@@ -286,18 +293,18 @@ elf64_hppa_dyn_hash_table_init (ht, abfd, new)
 }
 
 static struct bfd_hash_entry*
-elf64_hppa_new_dyn_hash_entry (entry, table, string)
-     struct bfd_hash_entry *entry;
-     struct bfd_hash_table *table;
-     const char *string;
+elf64_hppa_new_dyn_hash_entry(struct bfd_hash_entry *entry,
+                              struct bfd_hash_table *table,
+                              const char *string)
 {
   struct elf64_hppa_dyn_hash_entry *ret;
-  ret = (struct elf64_hppa_dyn_hash_entry *) entry;
+  ret = (struct elf64_hppa_dyn_hash_entry *)entry;
 
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
   if (!ret)
-    ret = bfd_hash_allocate (table, sizeof (*ret));
+    ret = ((struct elf64_hppa_dyn_hash_entry *)
+           bfd_hash_allocate(table, sizeof(*ret)));
 
   if (!ret)
     return 0;
@@ -319,18 +326,18 @@ elf64_hppa_new_dyn_hash_entry (entry, table, string)
    linker (without using static variables).  */
 
 static struct bfd_link_hash_table*
-elf64_hppa_hash_table_create (abfd)
-     bfd *abfd;
+elf64_hppa_hash_table_create(bfd *abfd)
 {
   struct elf64_hppa_link_hash_table *ret;
 
-  ret = bfd_zalloc (abfd, (bfd_size_type) sizeof (*ret));
+  ret = ((struct elf64_hppa_link_hash_table *)
+         bfd_zalloc(abfd, (bfd_size_type)sizeof(*ret)));
   if (!ret)
     return 0;
-  if (!_bfd_elf_link_hash_table_init (&ret->root, abfd,
-				      _bfd_elf_link_hash_newfunc))
+  if (!_bfd_elf_link_hash_table_init(&ret->root, abfd,
+				     _bfd_elf_link_hash_newfunc))
     {
-      bfd_release (abfd, ret);
+      bfd_release(abfd, ret);
       return 0;
     }
 
@@ -370,19 +377,18 @@ elf64_hppa_dyn_hash_traverse (table, func, info)
 
    Additionally we set the default architecture and machine.  */
 static bfd_boolean
-elf64_hppa_object_p (abfd)
-     bfd *abfd;
+elf64_hppa_object_p(bfd *abfd)
 {
   Elf_Internal_Ehdr * i_ehdrp;
   unsigned int flags;
 
-  i_ehdrp = elf_elfheader (abfd);
-  if (strcmp (bfd_get_target (abfd), "elf64-hppa-linux") == 0)
+  i_ehdrp = elf_elfheader(abfd);
+  if (strcmp(bfd_get_target(abfd), "elf64-hppa-linux") == 0)
     {
       /* GCC on hppa-linux produces binaries with OSABI=Linux,
 	 but the kernel produces corefiles with OSABI=SysV.  */
-      if (i_ehdrp->e_ident[EI_OSABI] != ELFOSABI_LINUX &&
-	  i_ehdrp->e_ident[EI_OSABI] != ELFOSABI_NONE) /* aka SYSV */
+      if ((i_ehdrp->e_ident[EI_OSABI] != ELFOSABI_LINUX) &&
+	  (i_ehdrp->e_ident[EI_OSABI] != ELFOSABI_NONE)) /* aka SYSV */
 	return FALSE;
     }
   else
@@ -391,19 +397,21 @@ elf64_hppa_object_p (abfd)
 	return FALSE;
     }
 
-  flags = i_ehdrp->e_flags;
+  flags = (unsigned int)i_ehdrp->e_flags;
   switch (flags & (EF_PARISC_ARCH | EF_PARISC_WIDE))
     {
     case EFA_PARISC_1_0:
-      return bfd_default_set_arch_mach (abfd, bfd_arch_hppa, 10);
+      return bfd_default_set_arch_mach(abfd, bfd_arch_hppa, 10);
     case EFA_PARISC_1_1:
-      return bfd_default_set_arch_mach (abfd, bfd_arch_hppa, 11);
+      return bfd_default_set_arch_mach(abfd, bfd_arch_hppa, 11);
     case EFA_PARISC_2_0:
-      return bfd_default_set_arch_mach (abfd, bfd_arch_hppa, 20);
+      return bfd_default_set_arch_mach(abfd, bfd_arch_hppa, 20);
     case EFA_PARISC_2_0 | EF_PARISC_WIDE:
-      return bfd_default_set_arch_mach (abfd, bfd_arch_hppa, 25);
+      return bfd_default_set_arch_mach(abfd, bfd_arch_hppa, 25);
+    default:
+      break;
     }
-  /* Don't be fussy.  */
+  /* Do NOT be fussy: */
   return TRUE;
 }
 
@@ -457,22 +465,22 @@ get_dyn_name (abfd, h, rel, pbuf, plen)
   char *buf;
   size_t len;
 
-  if (h && rel->r_addend == 0)
+  if (h && (rel->r_addend == 0))
     return h->root.root.string;
 
   if (h)
-    nlen = strlen (h->root.root.string);
+    nlen = strlen(h->root.root.string);
   else
-    nlen = 8 + 1 + sizeof (rel->r_info) * 2 - 8;
-  tlen = nlen + 1 + sizeof (rel->r_addend) * 2 + 1;
+    nlen = 8 + 1 + sizeof(rel->r_info) * 2 - 8;
+  tlen = nlen + 1 + sizeof(rel->r_addend) * 2 + 1;
 
   len = *plen;
   buf = *pbuf;
   if (len < tlen)
     {
       if (buf)
-	free (buf);
-      *pbuf = buf = malloc (tlen);
+	free(buf);
+      *pbuf = buf = (char *)malloc(tlen);
       *plen = len = tlen;
       if (!buf)
 	return NULL;
@@ -586,11 +594,8 @@ count_dyn_reloc (abfd, dyn_h, type, sec, sec_symndx, offset, addend)
    referenced symbol needs.  */
 
 static bfd_boolean
-elf64_hppa_check_relocs (abfd, info, sec, relocs)
-     bfd *abfd;
-     struct bfd_link_info *info;
-     asection *sec;
-     const Elf_Internal_Rela *relocs;
+elf64_hppa_check_relocs(bfd *abfd, struct bfd_link_info *info,
+                        asection *sec, const Elf_Internal_Rela *relocs)
 {
   struct elf64_hppa_link_hash_table *hppa_info;
   const Elf_Internal_Rela *relend;
@@ -659,23 +664,23 @@ elf64_hppa_check_relocs (abfd, info, sec, relocs)
 	 mapping.  Bump by one since we start counting at zero.  */
       highest_shndx++;
       amt = highest_shndx;
-      amt *= sizeof (int);
-      hppa_info->section_syms = (int *) bfd_malloc (amt);
+      amt *= sizeof(int);
+      hppa_info->section_syms = (int *)bfd_malloc(amt);
 
       /* Now walk the local symbols again.  If we find a section symbol,
 	 record the index of the symbol into the section_syms array.  */
-      for (i = 0, isym = local_syms; isym < isymend; i++, isym++)
+      for (i = 0UL, isym = local_syms; isym < isymend; i++, isym++)
 	{
-	  if (ELF_ST_TYPE (isym->st_info) == STT_SECTION)
-	    hppa_info->section_syms[isym->st_shndx] = i;
+	  if (ELF_ST_TYPE(isym->st_info) == STT_SECTION)
+	    hppa_info->section_syms[isym->st_shndx] = (int)i;
 	}
 
-      /* We are finished with the local symbols.  */
-      if (local_syms != NULL
-	  && symtab_hdr->contents != (unsigned char *) local_syms)
+      /* We are finished with the local symbols: */
+      if ((local_syms != NULL)
+	  && (symtab_hdr->contents != (unsigned char *)local_syms))
 	{
 	  if (! info->keep_memory)
-	    free (local_syms);
+	    free(local_syms);
 	  else
 	    {
 	      /* Cache the symbols for elf_link_input_bfd.  */
@@ -722,7 +727,7 @@ elf64_hppa_check_relocs (abfd, info, sec, relocs)
 	};
 
       struct elf_link_hash_entry *h = NULL;
-      unsigned long r_symndx = ELF64_R_SYM (rel->r_info);
+      unsigned long r_symndx = (unsigned long)ELF64_R_SYM(rel->r_info);
       struct elf64_hppa_dyn_hash_entry *dyn_h;
       int need_entry;
       const char *addr_name;
@@ -852,6 +857,8 @@ elf64_hppa_check_relocs (abfd, info, sec, relocs)
 	  break;
 
 	/* Add more cases as needed.  */
+        default:
+          break;
 	}
 
       if (!need_entry)
@@ -1161,7 +1168,7 @@ allocate_global_data_opd (dyn_h, data)
 	      char *new_name;
 	      struct elf_link_hash_entry *nh;
 
-	      new_name = alloca (strlen (h->root.root.string) + 2);
+	      new_name = (char *)alloca(strlen(h->root.root.string) + 2);
 	      new_name[0] = '.';
 	      strcpy (new_name + 1, h->root.root.string);
 
@@ -1999,19 +2006,20 @@ elf64_hppa_finish_dynamic_symbol (output_bfd, info, h, sym)
 
   /* Initialize an external call stub entry if requested.  */
   if (dyn_h && dyn_h->want_stub
-      && elf64_hppa_dynamic_symbol_p (dyn_h->h, info))
+      && elf64_hppa_dynamic_symbol_p(dyn_h->h, info))
     {
       bfd_vma value;
       int insn;
       unsigned int max_offset;
 
-      BFD_ASSERT (stub != NULL);
+      BFD_ASSERT(stub != NULL);
 
       /* Install the generic stub template.
 
 	 We are modifying the contents of the stub section, so we do not
 	 need to include the stub section's output_offset here.  */
-      memcpy (stub->contents + dyn_h->stub_offset, plt_stub, sizeof (plt_stub));
+      memcpy((stub->contents + dyn_h->stub_offset), plt_stub,
+             sizeof(plt_stub));
 
       /* Fix up the first ldd instruction.
 
@@ -2024,49 +2032,50 @@ elf64_hppa_finish_dynamic_symbol (output_bfd, info, h, sym)
 	 the same address as the start of the PLT section.
 
 	 gp_offset contains the offset of __gp within the PLT section.  */
-      value = dyn_h->plt_offset - hppa_info->gp_offset;
+      value = (dyn_h->plt_offset - hppa_info->gp_offset);
 
-      insn = bfd_get_32 (stub->owner, stub->contents + dyn_h->stub_offset);
+      insn = (int)bfd_get_32(stub->owner,
+                             (stub->contents + dyn_h->stub_offset));
       if (output_bfd->arch_info->mach >= 25)
 	{
-	  /* Wide mode allows 16 bit offsets.  */
+	  /* Wide mode allows 16 bit offsets: */
 	  max_offset = 32768;
-	  insn &= ~ 0xfff1;
-	  insn |= re_assemble_16 ((int) value);
+	  insn &= ~0xfff1;
+	  insn |= re_assemble_16((int)value);
 	}
       else
 	{
 	  max_offset = 8192;
-	  insn &= ~ 0x3ff1;
-	  insn |= re_assemble_14 ((int) value);
+	  insn &= ~0x3ff1;
+	  insn |= re_assemble_14((int)value);
 	}
 
-      if ((value & 7) || value + max_offset >= 2*max_offset - 8)
+      if ((value & 7) || ((value + max_offset) >= ((2 * max_offset) - 8)))
 	{
-	  (*_bfd_error_handler) (_("stub entry for %s cannot load .plt, dp offset = %ld"),
-				 dyn_h->root.string,
-				 (long) value);
+	  (*_bfd_error_handler)(_("stub entry for %s cannot load .plt, dp offset = %ld"),
+                                dyn_h->root.string, (long)value);
 	  return FALSE;
 	}
 
-      bfd_put_32 (stub->owner, (bfd_vma) insn,
-		  stub->contents + dyn_h->stub_offset);
+      bfd_put_32(stub->owner, (bfd_vma)insn,
+		 stub->contents + dyn_h->stub_offset);
 
       /* Fix up the second ldd instruction.  */
       value += 8;
-      insn = bfd_get_32 (stub->owner, stub->contents + dyn_h->stub_offset + 8);
+      insn = (int)bfd_get_32(stub->owner,
+                             (stub->contents + dyn_h->stub_offset + 8));
       if (output_bfd->arch_info->mach >= 25)
 	{
-	  insn &= ~ 0xfff1;
-	  insn |= re_assemble_16 ((int) value);
+	  insn &= ~0xfff1;
+	  insn |= re_assemble_16((int)value);
 	}
       else
 	{
-	  insn &= ~ 0x3ff1;
-	  insn |= re_assemble_14 ((int) value);
+	  insn &= ~0x3ff1;
+	  insn |= re_assemble_14((int)value);
 	}
-      bfd_put_32 (stub->owner, (bfd_vma) insn,
-		  stub->contents + dyn_h->stub_offset + 8);
+      bfd_put_32(stub->owner, (bfd_vma)insn,
+		 (stub->contents + dyn_h->stub_offset + 8));
     }
 
   return TRUE;
@@ -2076,9 +2085,7 @@ elf64_hppa_finish_dynamic_symbol (output_bfd, info, h, sym)
    exports.  Initialize the FPTR entries.  */
 
 static bfd_boolean
-elf64_hppa_finalize_opd (dyn_h, data)
-     struct elf64_hppa_dyn_hash_entry *dyn_h;
-     PTR data;
+elf64_hppa_finalize_opd(struct elf64_hppa_dyn_hash_entry *dyn_h, PTR data)
 {
   struct bfd_link_info *info = (struct bfd_link_info *)data;
   struct elf64_hppa_link_hash_table *hppa_info;
@@ -2124,12 +2131,12 @@ elf64_hppa_finalize_opd (dyn_h, data)
       /* We may need to do a relocation against a local symbol, in
 	 which case we have to look up it's dynamic symbol index off
 	 the local symbol hash table.  */
-      if (h && h->dynindx != -1)
-	dynindx = h->dynindx;
+      if (h && (h->dynindx != -1))
+	dynindx = (int)h->dynindx;
       else
-	dynindx
-	  = _bfd_elf_link_lookup_local_dynindx (info, dyn_h->owner,
-						dyn_h->sym_indx);
+	dynindx =
+          (int)_bfd_elf_link_lookup_local_dynindx(info, dyn_h->owner,
+                                                  dyn_h->sym_indx);
 
       /* The offset of this relocation is the absolute address of the
 	 .opd entry for this symbol.  */
@@ -2168,24 +2175,24 @@ elf64_hppa_finalize_opd (dyn_h, data)
 	  char *new_name;
 	  struct elf_link_hash_entry *nh;
 
-	  new_name = alloca (strlen (h->root.root.string) + 2);
+	  new_name = (char *)alloca(strlen(h->root.root.string) + 2UL);
 	  new_name[0] = '.';
-	  strcpy (new_name + 1, h->root.root.string);
+	  strcpy((new_name + 1), h->root.root.string);
 
-	  nh = elf_link_hash_lookup (elf_hash_table (info),
-				     new_name, FALSE, FALSE, FALSE);
+	  nh = elf_link_hash_lookup(elf_hash_table(info), new_name, FALSE,
+                                    FALSE, FALSE);
 
 	  /* All we really want from the new symbol is its dynamic
 	     symbol index.  */
-	  dynindx = nh->dynindx;
+	  dynindx = (int)nh->dynindx;
 	}
 
       rel.r_addend = 0;
-      rel.r_info = ELF64_R_INFO (dynindx, R_PARISC_EPLT);
+      rel.r_info = ELF64_R_INFO(dynindx, R_PARISC_EPLT);
 
       loc = sopdrel->contents;
-      loc += sopdrel->reloc_count++ * sizeof (Elf64_External_Rela);
-      bfd_elf64_swap_reloca_out (sopd->output_section->owner, &rel, loc);
+      loc += (sopdrel->reloc_count++ * sizeof(Elf64_External_Rela));
+      bfd_elf64_swap_reloca_out(sopd->output_section->owner, &rel, loc);
     }
   return TRUE;
 }
@@ -2260,12 +2267,12 @@ elf64_hppa_finalize_dlt (dyn_h, data)
       /* We may need to do a relocation against a local symbol, in
 	 which case we have to look up it's dynamic symbol index off
 	 the local symbol hash table.  */
-      if (h && h->dynindx != -1)
-	dynindx = h->dynindx;
+      if (h && (h->dynindx != -1))
+	dynindx = (int)h->dynindx;
       else
-	dynindx
-	  = _bfd_elf_link_lookup_local_dynindx (info, dyn_h->owner,
-						dyn_h->sym_indx);
+	dynindx =
+          (int)_bfd_elf_link_lookup_local_dynindx(info, dyn_h->owner,
+                                                  dyn_h->sym_indx);
 
       /* Create a dynamic relocation for this entry.  Do include the output
 	 offset of the DLT entry since we need an absolute address in the
@@ -2308,18 +2315,18 @@ elf64_hppa_finalize_dynreloc (dyn_h, data)
       struct elf64_hppa_dyn_reloc_entry *rent;
       int dynindx;
 
-      hppa_info = elf64_hppa_hash_table (info);
+      hppa_info = elf64_hppa_hash_table(info);
       h = dyn_h->h;
 
       /* We may need to do a relocation against a local symbol, in
 	 which case we have to look up it's dynamic symbol index off
 	 the local symbol hash table.  */
-      if (h && h->dynindx != -1)
-	dynindx = h->dynindx;
+      if (h && (h->dynindx != -1))
+	dynindx = (int)h->dynindx;
       else
-	dynindx
-	  = _bfd_elf_link_lookup_local_dynindx (info, dyn_h->owner,
-						dyn_h->sym_indx);
+	dynindx =
+          (int)_bfd_elf_link_lookup_local_dynindx(info, dyn_h->owner,
+                                                  dyn_h->sym_indx);
 
       for (rent = dyn_h->reloc_entries; rent; rent = rent->next)
 	{
@@ -2381,21 +2388,21 @@ elf64_hppa_finalize_dynreloc (dyn_h, data)
 
 	      /* The section symbol becomes the symbol for the dynamic
 		 relocation.  */
-	      dynindx
-		= _bfd_elf_link_lookup_local_dynindx (info,
-						      rent->sec->owner,
-						      rent->sec_symndx);
+	      dynindx =
+                (int)_bfd_elf_link_lookup_local_dynindx(info,
+                                                        rent->sec->owner,
+                                                        rent->sec_symndx);
 	    }
 	  else
 	    rel.r_addend = rent->addend;
 
-	  rel.r_info = ELF64_R_INFO (dynindx, rent->type);
+	  rel.r_info = ELF64_R_INFO(dynindx, rent->type);
 
 	  loc = hppa_info->other_rel_sec->contents;
 	  loc += (hppa_info->other_rel_sec->reloc_count++
-		  * sizeof (Elf64_External_Rela));
-	  bfd_elf64_swap_reloca_out (hppa_info->other_rel_sec->output_section->owner,
-				     &rel, loc);
+		  * sizeof(Elf64_External_Rela));
+	  bfd_elf64_swap_reloca_out(hppa_info->other_rel_sec->output_section->owner,
+				    &rel, loc);
 	}
     }
 

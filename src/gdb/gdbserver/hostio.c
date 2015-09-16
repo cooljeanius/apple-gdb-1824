@@ -1,4 +1,5 @@
-/* Host file transfer support for gdbserver.
+/* hostio.c
+   Host file transfer support for gdbserver.
    Copyright (C) 2007, 2008, 2009 Free Software Foundation, Inc.
 
    Contributed by CodeSourcery.
@@ -20,6 +21,10 @@
 
 #include "server.h"
 #include "gdb/fileio.h"
+
+#if !defined(xmalloc)
+# include "libiberty.h"
+#endif /* !xmalloc */
 
 #include <fcntl.h>
 #include <limits.h>
@@ -63,13 +68,15 @@ require_filename (char **pp, char *filename)
     {
       int nib1, nib2;
 
-      /* Don't allow overflow.  */
-      if (count >= PATH_MAX - 1)
-	return -1;
+      /* Do NOT allow overflow.  */
+		if (count >= PATH_MAX - 1) {
+			return -1;
+		}
 
       if (safe_fromhex (p[0], &nib1)
-	  || safe_fromhex (p[1], &nib2))
-	return -1;
+		  || safe_fromhex (p[1], &nib2)) {
+		  return -1;
+	  }
 
       filename[count++] = nib1 * 16 + nib2;
       p += 2;
@@ -94,12 +101,14 @@ require_int (char **pp, int *value)
     {
       int nib;
 
-      /* Don't allow overflow.  */
-      if (count >= 7)
-	return -1;
+      /* Do NOT allow overflow.  */
+		if (count >= 7) {
+			return -1;
+		}
 
-      if (safe_fromhex (p[0], &nib))
-	return -1;
+		if (safe_fromhex (p[0], &nib)) {
+			return -1;
+		}
       *value = *value * 16 + nib;
       p++;
       count++;
@@ -178,7 +187,7 @@ require_valid_fd (int fd)
 static void
 hostio_error (char *own_buf)
 {
-  the_target->hostio_last_error (own_buf);
+  the_target->hostio_last_error (own_buf); /* no such member? */
 }
 
 static void
@@ -254,7 +263,7 @@ fileio_open_flags_to_host (int fileio_open_flags, int *open_flags_p)
    binary mode. */
 #ifdef O_BINARY
   open_flags |= O_BINARY;
-#endif
+#endif /* O_BINARY */
 
   *open_flags_p = open_flags;
   return 0;
@@ -326,9 +335,10 @@ handle_pread (char *own_buf, int *new_packet_len)
   ret = pread (fd, data, len, offset);
 #else
   ret = lseek (fd, offset, SEEK_SET);
-  if (ret != -1)
-    ret = read (fd, data, len);
-#endif
+	if (ret != -1) {
+		ret = read (fd, data, len);
+	}
+#endif /* HAVE_PREAD */
 
   if (ret == -1)
     {
@@ -374,9 +384,10 @@ handle_pwrite (char *own_buf, int packet_len)
   ret = pwrite (fd, data, len, offset);
 #else
   ret = lseek (fd, offset, SEEK_SET);
-  if (ret != -1)
-    ret = write (fd, data, len);
-#endif
+	if (ret != -1) {
+		ret = write (fd, data, len);
+	}
+#endif /* HAVE_PWRITE */
 
   if (ret == -1)
     {
@@ -472,3 +483,5 @@ handle_vFile (char *own_buf, int packet_len, int *new_packet_len)
 
   return 1;
 }
+
+/* EOF */

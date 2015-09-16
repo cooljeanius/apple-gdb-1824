@@ -1,4 +1,5 @@
-/* Definitions to target GDB to GNU/Linux on m680x0.
+/* tm-linux.h
+   Definitions to target GDB to GNU/Linux on m680x0.
 
    Copyright 1996, 1998, 1999, 2000, 2002 Free Software Foundation,
    Inc.
@@ -92,10 +93,10 @@
 #define JB_ELEMENT_SIZE 4
 #define JB_PC 7
 
-/* Figure out where the longjmp will land.  Slurp the args out of the stack.
-   We expect the first arg to be a pointer to the jmp_buf structure from which
-   we extract the pc (JB_PC) that we will land at.  The pc is copied into ADDR.
-   This routine returns true on success */
+/* Figure out where the longjmp will land. Slurp the args out of the stack.
+   We expect the first arg to be a pointer to the jmp_buf structure
+   from which we extract the pc (JB_PC) that we will land at.
+   The pc is copied into ADDR. This routine returns true on success. */
 
 #define GET_LONGJMP_TARGET(ADDR) m68k_get_longjmp_target(ADDR)
 

@@ -1,4 +1,4 @@
-/* Dynamic architecture support for GDB, the GNU debugger.
+/* arch-utils.h: Dynamic architecture support for GDB, the GNU debugger.
 
    Copyright 1998, 1999, 2000, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -22,6 +22,8 @@
 
 #ifndef GDBARCH_UTILS_H
 #define GDBARCH_UTILS_H
+
+#include "ansidecl.h"
 
 struct gdbarch;
 struct frame_info;
@@ -50,7 +52,8 @@ extern gdbarch_store_return_value_ftype legacy_store_return_value;
 
 /* To return any structure or union type by value, store it at the
    address passed as an invisible first argument to the function.  */
-extern gdbarch_deprecated_use_struct_convention_ftype always_use_struct_convention;
+extern gdbarch_deprecated_use_struct_convention_ftype always_use_struct_convention
+  ATTRIBUTE_DEPRECATED;
 
 /* Typical remote_translate_xfer_address */
 extern gdbarch_remote_translate_xfer_address_ftype generic_remote_translate_xfer_address;
@@ -159,8 +162,14 @@ extern void gdbarch_info_fill (struct gdbarch *gdbarch,
 
 extern struct gdbarch *gdbarch_from_bfd (bfd *abfd);
 
-/* APPLE LOCAL: I need a way to programmatically do "set architecture".  */
+/* APPLE LOCAL: I need a way to programmatically do "set architecture": */
 int set_architecture_from_string (char *);
+
+#if 1
+/* This is used various places, but I failed to find a prototype for it
+ * anywhere else: */
+extern struct gdbarch *get_current_arch(void);
+#endif /* 1 */
 #endif /* GDBARCH_UTILS_H */
 
 /* EOF */

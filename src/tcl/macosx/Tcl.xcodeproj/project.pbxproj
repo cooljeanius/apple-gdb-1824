@@ -6,6 +6,14 @@
 	objectVersion = 42;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		7BC331AE1881E6E300EF9359 /* Tcl-Common.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331AD1881E6E300EF9359 /* Tcl-Common.xcconfig */; };
+		7BC331B01881E6E900EF9359 /* Tcl-Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331AF1881E6E900EF9359 /* Tcl-Debug.xcconfig */; };
+		7BC331B21881E6EF00EF9359 /* Tcl-Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331B11881E6EF00EF9359 /* Tcl-Release.xcconfig */; };
+		7BC331B41881E7CA00EF9359 /* README in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331AC1881E6B300EF9359 /* README */; };
+		7BC331B51881E7CE00EF9359 /* license.terms in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331AB1881E6AE00EF9359 /* license.terms */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		A50F54D21808CA0D008BA312 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -39,6 +47,16 @@
 
 /* Begin PBXFileReference section */
 		00E2F84D016E92110ACA28DC /* Tcl.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Tcl.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7BC331291881DD2000EF9359 /* tclMacOSXFCmd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tclMacOSXFCmd.c; sourceTree = "<group>"; };
+		7BC3312A1881DD2700EF9359 /* tclMacOSXNotify.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tclMacOSXNotify.c; sourceTree = "<group>"; };
+		7BC331A81881E67700EF9359 /* acinclude.m4 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = acinclude.m4; sourceTree = "<group>"; };
+		7BC331A91881E68200EF9359 /* configure.ac */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = configure.ac; sourceTree = "<group>"; };
+		7BC331AA1881E68A00EF9359 /* AppleGNUmakefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = AppleGNUmakefile; sourceTree = "<group>"; };
+		7BC331AB1881E6AE00EF9359 /* license.terms */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = license.terms; sourceTree = "<group>"; };
+		7BC331AC1881E6B300EF9359 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		7BC331AD1881E6E300EF9359 /* Tcl-Common.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Tcl-Common.xcconfig"; sourceTree = "<group>"; };
+		7BC331AF1881E6E900EF9359 /* Tcl-Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Tcl-Debug.xcconfig"; sourceTree = "<group>"; };
+		7BC331B11881E6EF00EF9359 /* Tcl-Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Tcl-Release.xcconfig"; sourceTree = "<group>"; };
 		A50F55611808CA1C008BA312 /* Info-Tcl__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Tcl__Upgraded_.plist"; sourceTree = "<group>"; };
 		A50F55621808CA1C008BA312 /* Tcl.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Tcl.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F53ACC5C031D9D11016F146B /* tclsh8.4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = tclsh8.4; path = ../../build/tclsh8.4; sourceTree = SOURCE_ROOT; };
@@ -47,20 +65,20 @@
 		F5C88656017D604601DC9062 /* genStubs.tcl */ = {isa = PBXFileReference; lastKnownFileType = text; name = genStubs.tcl; path = ../tools/genStubs.tcl; sourceTree = SOURCE_ROOT; };
 		F5C88657017D60C901DC9062 /* tcl.decls */ = {isa = PBXFileReference; lastKnownFileType = text; name = tcl.decls; path = ../generic/tcl.decls; sourceTree = SOURCE_ROOT; };
 		F5C88658017D60C901DC9062 /* tclInt.decls */ = {isa = PBXFileReference; lastKnownFileType = text; name = tclInt.decls; path = ../generic/tclInt.decls; sourceTree = SOURCE_ROOT; };
-		F5F24F6B016ECAA401DC9062 /* regcustom.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = regcustom.h; path = ../generic/regcustom.h; sourceTree = SOURCE_ROOT; };
-		F5F24F6C016ECAA401DC9062 /* regerrs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = regerrs.h; path = ../generic/regerrs.h; sourceTree = SOURCE_ROOT; };
-		F5F24F6D016ECAA401DC9062 /* regguts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = regguts.h; path = ../generic/regguts.h; sourceTree = SOURCE_ROOT; };
-		F5F24F6E016ECAA401DC9062 /* tcl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tcl.h; path = ../generic/tcl.h; sourceTree = SOURCE_ROOT; };
-		F5F24F6F016ECAA401DC9062 /* tclCompile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclCompile.h; path = ../generic/tclCompile.h; sourceTree = SOURCE_ROOT; };
-		F5F24F70016ECAA401DC9062 /* tclDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclDecls.h; path = ../generic/tclDecls.h; sourceTree = SOURCE_ROOT; };
-		F5F24F71016ECAA401DC9062 /* tclInitScript.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclInitScript.h; path = ../generic/tclInitScript.h; sourceTree = SOURCE_ROOT; };
-		F5F24F72016ECAA401DC9062 /* tclInt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclInt.h; path = ../generic/tclInt.h; sourceTree = SOURCE_ROOT; };
-		F5F24F73016ECAA401DC9062 /* tclIntDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclIntDecls.h; path = ../generic/tclIntDecls.h; sourceTree = SOURCE_ROOT; };
-		F5F24F74016ECAA401DC9062 /* tclIntPlatDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclIntPlatDecls.h; path = ../generic/tclIntPlatDecls.h; sourceTree = SOURCE_ROOT; };
-		F5F24F75016ECAA401DC9062 /* tclIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclIO.h; path = ../generic/tclIO.h; sourceTree = SOURCE_ROOT; };
-		F5F24F76016ECAA401DC9062 /* tclMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclMath.h; path = ../generic/tclMath.h; sourceTree = SOURCE_ROOT; };
-		F5F24F77016ECAA401DC9062 /* tclPlatDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclPlatDecls.h; path = ../generic/tclPlatDecls.h; sourceTree = SOURCE_ROOT; };
-		F5F24F78016ECAA401DC9062 /* tclRegexp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclRegexp.h; path = ../generic/tclRegexp.h; sourceTree = SOURCE_ROOT; };
+		F5F24F6B016ECAA401DC9062 /* regcustom.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = regcustom.h; path = ../generic/regcustom.h; sourceTree = SOURCE_ROOT; };
+		F5F24F6C016ECAA401DC9062 /* regerrs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = regerrs.h; path = ../generic/regerrs.h; sourceTree = SOURCE_ROOT; };
+		F5F24F6D016ECAA401DC9062 /* regguts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = regguts.h; path = ../generic/regguts.h; sourceTree = SOURCE_ROOT; };
+		F5F24F6E016ECAA401DC9062 /* tcl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tcl.h; path = ../generic/tcl.h; sourceTree = SOURCE_ROOT; };
+		F5F24F6F016ECAA401DC9062 /* tclCompile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclCompile.h; path = ../generic/tclCompile.h; sourceTree = SOURCE_ROOT; };
+		F5F24F70016ECAA401DC9062 /* tclDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclDecls.h; path = ../generic/tclDecls.h; sourceTree = SOURCE_ROOT; };
+		F5F24F71016ECAA401DC9062 /* tclInitScript.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclInitScript.h; path = ../generic/tclInitScript.h; sourceTree = SOURCE_ROOT; };
+		F5F24F72016ECAA401DC9062 /* tclInt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclInt.h; path = ../generic/tclInt.h; sourceTree = SOURCE_ROOT; };
+		F5F24F73016ECAA401DC9062 /* tclIntDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclIntDecls.h; path = ../generic/tclIntDecls.h; sourceTree = SOURCE_ROOT; };
+		F5F24F74016ECAA401DC9062 /* tclIntPlatDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclIntPlatDecls.h; path = ../generic/tclIntPlatDecls.h; sourceTree = SOURCE_ROOT; };
+		F5F24F75016ECAA401DC9062 /* tclIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclIO.h; path = ../generic/tclIO.h; sourceTree = SOURCE_ROOT; };
+		F5F24F76016ECAA401DC9062 /* tclMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclMath.h; path = ../generic/tclMath.h; sourceTree = SOURCE_ROOT; };
+		F5F24F77016ECAA401DC9062 /* tclPlatDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclPlatDecls.h; path = ../generic/tclPlatDecls.h; sourceTree = SOURCE_ROOT; };
+		F5F24F78016ECAA401DC9062 /* tclRegexp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclRegexp.h; path = ../generic/tclRegexp.h; sourceTree = SOURCE_ROOT; };
 		F5F24F87016ECAFC01DC9062 /* regc_color.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = regc_color.c; path = ../generic/regc_color.c; sourceTree = SOURCE_ROOT; };
 		F5F24F88016ECAFC01DC9062 /* regc_cvec.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = regc_cvec.c; path = ../generic/regc_cvec.c; sourceTree = SOURCE_ROOT; };
 		F5F24F89016ECAFC01DC9062 /* regc_lex.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = regc_lex.c; path = ../generic/regc_lex.c; sourceTree = SOURCE_ROOT; };
@@ -135,11 +153,11 @@
 		F5F24FCE016ECAFC01DC9062 /* tclUtf.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUtf.c; path = ../generic/tclUtf.c; sourceTree = SOURCE_ROOT; };
 		F5F24FCF016ECAFC01DC9062 /* tclUtil.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUtil.c; path = ../generic/tclUtil.c; sourceTree = SOURCE_ROOT; };
 		F5F24FD0016ECAFC01DC9062 /* tclVar.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclVar.c; path = ../generic/tclVar.c; sourceTree = SOURCE_ROOT; };
-		F5F24FD1016ECB1E01DC9062 /* regex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = regex.h; path = ../generic/regex.h; sourceTree = SOURCE_ROOT; };
-		F5F24FD2016ECB1E01DC9062 /* tclPort.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclPort.h; path = ../generic/tclPort.h; sourceTree = SOURCE_ROOT; };
+		F5F24FD1016ECB1E01DC9062 /* regex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = regex.h; path = ../generic/regex.h; sourceTree = SOURCE_ROOT; };
+		F5F24FD2016ECB1E01DC9062 /* tclPort.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclPort.h; path = ../generic/tclPort.h; sourceTree = SOURCE_ROOT; };
 		F5F24FD3016ECB4901DC9062 /* tclPkg.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclPkg.c; path = ../generic/tclPkg.c; sourceTree = SOURCE_ROOT; };
-		F5F24FD6016ECC0F01DC9062 /* tclUnixPort.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclUnixPort.h; path = ../unix/tclUnixPort.h; sourceTree = SOURCE_ROOT; };
-		F5F24FD7016ECC0F01DC9062 /* tclUnixThrd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclUnixThrd.h; path = ../unix/tclUnixThrd.h; sourceTree = SOURCE_ROOT; };
+		F5F24FD6016ECC0F01DC9062 /* tclUnixPort.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclUnixPort.h; path = ../unix/tclUnixPort.h; sourceTree = SOURCE_ROOT; };
+		F5F24FD7016ECC0F01DC9062 /* tclUnixThrd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclUnixThrd.h; path = ../unix/tclUnixThrd.h; sourceTree = SOURCE_ROOT; };
 		F5F24FD8016ECC0F01DC9062 /* tclAppInit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclAppInit.c; path = ../unix/tclAppInit.c; sourceTree = SOURCE_ROOT; };
 		F5F24FD9016ECC0F01DC9062 /* tclLoadDyld.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclLoadDyld.c; path = ../unix/tclLoadDyld.c; sourceTree = SOURCE_ROOT; };
 		F5F24FDB016ECC0F01DC9062 /* tclUnixChan.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUnixChan.c; path = ../unix/tclUnixChan.c; sourceTree = SOURCE_ROOT; };
@@ -389,6 +407,14 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		00E2F857016E92B00ACA28DC /* macosx */ = {
 			isa = PBXGroup;
 			children = (
+				7BC331AD1881E6E300EF9359 /* Tcl-Common.xcconfig */,
+				7BC331AF1881E6E900EF9359 /* Tcl-Debug.xcconfig */,
+				7BC331B11881E6EF00EF9359 /* Tcl-Release.xcconfig */,
+				7BC331A81881E67700EF9359 /* acinclude.m4 */,
+				7BC331A91881E68200EF9359 /* configure.ac */,
+				7BC331AA1881E68A00EF9359 /* AppleGNUmakefile */,
+				7BC331AB1881E6AE00EF9359 /* license.terms */,
+				7BC331AC1881E6B300EF9359 /* README */,
 				00E2F858016E92B00ACA28DC /* Headers */,
 				00E2F859016E92B00ACA28DC /* Sources */,
 			);
@@ -405,6 +431,8 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		00E2F859016E92B00ACA28DC /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				7BC3312A1881DD2700EF9359 /* tclMacOSXNotify.c */,
+				7BC331291881DD2000EF9359 /* tclMacOSXFCmd.c */,
 				F5A1836F018242A501DC9062 /* tclMacOSXBundle.c */,
 			);
 			name = Sources;
@@ -533,24 +561,24 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			passBuildSettingsInEnvironment = 1;
 			productName = Make;
 		};
-		A50F55631808CA1C008BA312 /* Configure (Copied) */ = {
+		A50F55631808CA1C008BA312 /* Configure_Copied */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = "-c \"if [ \\\"${ACTION}\\\" != \\\"clean\\\" ]; then if [ -z \\\"`find . -name Makefile -newer \\\"${SRCROOT}/../unix/configure\\\"`\\\" ]; then \\\"${SRCROOT}/../unix/configure\\\" --prefix=/usr --mandir=/usr/share/man --libdir=\\\"${LIBDIR}\\\" --includedir=\\\"${LIBDIR}/Headers\\\" --enable-threads --enable-framework ${EXTRA_CONFIGURE_FLAGS}; mkdir -p Tcl.framework; ln -fs ../Tcl Tcl.framework/Tcl; fi; else rm -f Makefile; fi\"";
-			buildConfigurationList = A50F55641808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Configure (Copied)" */;
+			buildArgumentsString = "-cex \"if [ \\\"${ACTION}\\\" != \\\"clean\\\" ]; then if [ -z \\\"`find . -name Makefile -newer \\\"${SRCROOT}/../unix/configure\\\"`\\\" ]; then \\\"${SRCROOT}/../unix/configure\\\" --prefix=/usr --mandir=/usr/share/man --libdir=\\\"${LIBDIR}\\\" --includedir=\\\"${LIBDIR}/Headers\\\" --enable-threads --enable-framework ${EXTRA_CONFIGURE_FLAGS}; mkdir -pv Tcl.framework; ln -fsv ../Tcl Tcl.framework/Tcl; fi; else rm -fv Makefile; fi\"";
+			buildConfigurationList = A50F55641808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Configure_Copied" */;
 			buildPhases = (
 			);
 			buildToolPath = /bin/sh;
 			buildWorkingDirectory = "${TEMP_DIR}/..";
 			dependencies = (
 			);
-			name = "Configure (Copied)";
+			name = Configure_Copied;
 			passBuildSettingsInEnvironment = 1;
 			productName = Configure;
 		};
-		A50F55681808CA1C008BA312 /* Make (Copied) */ = {
+		A50F55681808CA1C008BA312 /* Make_Copied */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = "-c \"if [ \\\"${ACTION}\\\" != \\\"clean\\\" ]; then gnumake tclsh tcltest TCL_LIBRARY=\\\"@TCL_IN_FRAMEWORK@\\\" TCL_PACKAGE_PATH=\\\"~/Library/Tcl /Library/Tcl /Network/Library/Tcl /System/Library/Tcl\\\" DYLIB_INSTALL_DIR=\\\"${DYLIB_INSTALL_DIR}\\\" ${EXTRA_MAKE_FLAGS}; else gnumake clean; fi\"";
-			buildConfigurationList = A50F556B1808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Make (Copied)" */;
+			buildArgumentsString = "-cex \"if [ \\\"${ACTION}\\\" != \\\"clean\\\" ]; then gnumake tclsh tcltest TCL_LIBRARY=\\\"@TCL_IN_FRAMEWORK@\\\" TCL_PACKAGE_PATH=\\\"~/Library/Tcl /Library/Tcl /Network/Library/Tcl /System/Library/Tcl\\\" DYLIB_INSTALL_DIR=\\\"${DYLIB_INSTALL_DIR}\\\" ${EXTRA_MAKE_FLAGS}; else gnumake clean; fi\"";
+			buildConfigurationList = A50F556B1808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Make_Copied" */;
 			buildPhases = (
 			);
 			buildToolPath = /bin/sh;
@@ -558,34 +586,34 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			dependencies = (
 				A50F55721808CA1C008BA312 /* PBXTargetDependency */,
 			);
-			name = "Make (Copied)";
+			name = Make_Copied;
 			passBuildSettingsInEnvironment = 1;
 			productName = Make;
 		};
 /* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
-		A50F55501808CA1C008BA312 /* Tcl (Upgraded) */ = {
+		A50F55501808CA1C008BA312 /* Tcl_Upgraded */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A50F555D1808CA1C008BA312 /* Build configuration list for PBXNativeTarget "Tcl (Upgraded)" */;
+			buildConfigurationList = A50F555D1808CA1C008BA312 /* Build configuration list for PBXNativeTarget "Tcl_Upgraded" */;
 			buildPhases = (
-				A50F55531808CA1C008BA312 /* ShellScript */,
+				A50F55531808CA1C008BA312 /* Run Script 1 */,
 				A50F55541808CA1C008BA312 /* Sources */,
 				A50F55551808CA1C008BA312 /* Frameworks */,
 				A50F55561808CA1C008BA312 /* Resources */,
 				A50F55571808CA1C008BA312 /* Headers */,
-				A50F55581808CA1C008BA312 /* ShellScript */,
-				A50F55591808CA1C008BA312 /* ShellScript */,
-				A50F555A1808CA1C008BA312 /* ShellScript */,
-				A50F555B1808CA1C008BA312 /* ShellScript */,
-				A50F555C1808CA1C008BA312 /* ShellScript */,
+				A50F55581808CA1C008BA312 /* Run Script 2 */,
+				A50F55591808CA1C008BA312 /* Run Script 3 */,
+				A50F555A1808CA1C008BA312 /* Run Script 4 */,
+				A50F555B1808CA1C008BA312 /* Run Script 5 */,
+				A50F555C1808CA1C008BA312 /* Run Script 6 */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				A50F55701808CA1C008BA312 /* PBXTargetDependency */,
 			);
-			name = "Tcl (Upgraded)";
+			name = Tcl_Upgraded;
 			productInstallPath = /Library/Frameworks;
 			productName = TclLibrary;
 			productReference = A50F55621808CA1C008BA312 /* Tcl.framework */;
@@ -611,9 +639,9 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A50F55501808CA1C008BA312 /* Tcl (Upgraded) */,
-				A50F55631808CA1C008BA312 /* Configure (Copied) */,
-				A50F55681808CA1C008BA312 /* Make (Copied) */,
+				A50F55501808CA1C008BA312 /* Tcl_Upgraded */,
+				A50F55631808CA1C008BA312 /* Configure_Copied */,
+				A50F55681808CA1C008BA312 /* Make_Copied */,
 				00E2F84E016E92110ACA28DC /* Tcl */,
 				00E2F84B016E8A830ACA28DC /* Configure */,
 				00E2F84C016E8B780ACA28DC /* Make */,
@@ -626,6 +654,11 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BC331B51881E7CE00EF9359 /* license.terms in Resources */,
+				7BC331B41881E7CA00EF9359 /* README in Resources */,
+				7BC331AE1881E6E300EF9359 /* Tcl-Common.xcconfig in Resources */,
+				7BC331B01881E6E900EF9359 /* Tcl-Debug.xcconfig in Resources */,
+				7BC331B21881E6EF00EF9359 /* Tcl-Release.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -657,59 +690,65 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			shellPath = /bin/sh;
 			shellScript = "# fixup Framework structure\ncd \"${INSTALL_ROOT}${LIBDIR}\"\nln -fs Versions/Current/Headers ../..\nmv -f tclConfig.sh Resources\nif [ \"${BUILD_STYLE}\" = \"Development\" ]; then\n\t# keep copy of debug library around, so that\n\t# Deployment build can be installed on top\n\t# of Development build without overwriting\n\t# the debuglibrary\n\tcp -fp \"${PRODUCT_NAME}\" \"${PRODUCT_NAME}_debug\"\nfi";
 		};
-		A50F55531808CA1C008BA312 /* ShellScript */ = {
+		A50F55531808CA1C008BA312 /* Run Script 1 */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 8;
 			files = (
 			);
+			name = "Run Script 1";
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "# ensure we can overwrite a previous install\nif [ -d \"${INSTALL_ROOT}${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}\" ]; then\n    chmod -RH u+w \"${INSTALL_ROOT}${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}\"\nfi";
+			shellScript = "#!/bin/sh\necho \"This is the first custom shell script\"\n# ensure we can overwrite a previous install\necho \"INSTALL_ROOT is ${INSTALL_ROOT}\"\necho \"INSTALL_PATH is ${INSTALL_PATH}\"\necho \"PRODUCT_NAME is ${PRODUCT_NAME}\"\necho \"WRAPPER_EXTENSION is ${WRAPPER_EXTENSION}\"\nset -ex\nif [ -d \"${INSTALL_ROOT}${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}\" ]; then\n    chmod -RH u+w \"${INSTALL_ROOT}${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}\"\nfi\n";
 		};
-		A50F55581808CA1C008BA312 /* ShellScript */ = {
+		A50F55581808CA1C008BA312 /* Run Script 2 */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
+			name = "Run Script 2";
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# symolic link hackery to trick\n# 'make install INSTALL_ROOT=${TEMP_DIR}'\n# into building Tcl.framework and tclsh in ${SYMROOT}\ncd \"${TEMP_DIR}\"\nmkdir -p Library\nmkdir -p usr\nrm -f Library/Frameworks; ln -fs \"${SYMROOT}\" Library/Frameworks\nrm -f usr/bin; ln -fs \"${SYMROOT}\" usr/bin\nln -fs \"${TEMP_DIR}/../tcltest\" \"${SYMROOT}\"";
+			shellScript = "#!/bin/sh\necho \"This is the second custom shell script\"\n# symolic link hackery to trick\n# 'make install INSTALL_ROOT=${TEMP_DIR}'\n# into building Tcl.framework and tclsh in ${SYMROOT}\necho \"SYMROOT is ${SYMROOT}\"\necho \"BUILD_STYLE is ${BUILD_STYLE}\"\nset -ex\nif test -d \"${TEMP_DIR}\"; then\n cd \"${TEMP_DIR}\" && pwd\n mkdir -pv Library\n mkdir -pv usr\n if test -d \"${SYMROOT}/${BUILD_STYLE}\"; then\n  rm -fv Library/Frameworks; ln -fsv \"${SYMROOT}/${BUILD_STYLE}\" Library/Frameworks\n  rm -fv usr/bin; ln -fsv \"${SYMROOT}/${BUILD_STYLE}\" usr/bin\n  ln -fsv \"${TEMP_DIR}/../tcltest\" \"${SYMROOT}/${BUILD_STYLE}\"\n else\n  rm -fv Library/Frameworks; ln -fsv \"${SYMROOT}\" Library/Frameworks\n  rm -fv usr/bin; ln -fsv \"${SYMROOT}\" usr/bin\n  ln -fsv \"${TEMP_DIR}/../tcltest\" \"${SYMROOT}\"\n fi\nelse\n echo \"TEMP_DIR does not exist\"\nfi\n\n";
 		};
-		A50F55591808CA1C008BA312 /* ShellScript */ = {
+		A50F55591808CA1C008BA312 /* Run Script 3 */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 12;
 			files = (
 			);
+			name = "Run Script 3";
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# install to ${INSTALL_ROOT} with optional stripping\ncd ${TEMP_DIR}/..\nif test \"${INSTALL_STRIP}\" = \"YES\"; then\nexport INSTALL_PROGRAM='${INSTALL} ${INSTALL_STRIP_PROGRAM}'\nexport INSTALL_LIBRARY='${INSTALL} ${INSTALL_STRIP_LIBRARY}'\nelse\nexport INSTALL_PROGRAM='${INSTALL}'\nexport INSTALL_LIBRARY='${INSTALL}'\nfi\ngnumake install-binaries install-libraries TCL_LIBRARY=\"@TCL_IN_FRAMEWORK@\" INSTALL_ROOT=\"${INSTALL_ROOT}\" SCRIPT_INSTALL_DIR=\"${INSTALL_ROOT}${LIBDIR}/Resources/Scripts\" INSTALL_PROGRAM=\"${INSTALL_PROGRAM}\" INSTALL_LIBRARY=\"${INSTALL_LIBRARY}\"";
+			shellScript = "#!/bin/sh\necho \"This is the third custom shell script\"\n# install to ${INSTALL_ROOT} with optional stripping\nset -ex\ntest -d \"${TEMP_DIR}\" && cd \"${TEMP_DIR}/..\"\nif test \"${INSTALL_STRIP}\" = \"YES\"; then\n export INSTALL_PROGRAM='${INSTALL} ${INSTALL_STRIP_PROGRAM}'\n export INSTALL_LIBRARY='${INSTALL} ${INSTALL_STRIP_LIBRARY}'\nelse\n export INSTALL_PROGRAM='${INSTALL}'\n export INSTALL_LIBRARY='${INSTALL}'\nfi\npwd && test -e Makefile && gnumake install-binaries install-libraries TCL_LIBRARY=\"@TCL_IN_FRAMEWORK@\" INSTALL_ROOT=\"${INSTALL_ROOT}\" SCRIPT_INSTALL_DIR=\"${INSTALL_ROOT}${LIBDIR}/Resources/Scripts\" INSTALL_PROGRAM=\"${INSTALL_PROGRAM}\" INSTALL_LIBRARY=\"${INSTALL_LIBRARY}\"\n";
 		};
-		A50F555A1808CA1C008BA312 /* ShellScript */ = {
+		A50F555A1808CA1C008BA312 /* Run Script 4 */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 12;
 			files = (
 			);
+			name = "Run Script 4";
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# fixup Framework structure\ncd \"${INSTALL_ROOT}${LIBDIR}\"\nln -fs Versions/Current/Headers ../..\nmv -f tclConfig.sh Resources\nif [ \"${BUILD_STYLE}\" = \"Development\" ]; then\n\t# keep copy of debug library around, so that\n\t# Deployment build can be installed on top\n\t# of Development build without overwriting\n\t# the debuglibrary\n\tcp -fp \"${PRODUCT_NAME}\" \"${PRODUCT_NAME}_debug\"\nfi";
+			shellScript = "#!/bin/sh\necho \"This is the fourth custom shell script\"\n# fixup Framework structure\necho \"INSTALL_ROOT is ${INSTALL_ROOT}\"\necho \"LIBDIR is ${LIBDIR}\"\necho \"BUILD_STYLE is ${BUILD_STYLE}\"\necho \"SYMROOT is ${SYMROOT}\"\nset -ex\nif [ ! -d \"${INSTALL_ROOT}${LIBDIR}\" ]; then\n    mkdir -pv \"${INSTALL_ROOT}${LIBDIR}\"\nfi\ncd \"${INSTALL_ROOT}${LIBDIR}\" && pwd && ls -l\ntest -e Versions/Current || test -e ../..\nln -fsv Versions/Current/Headers ../..\nif [ ! -d Resources ]; then\n    mkdir -p Resources\nfi\ntest -e tclConfig.sh\nmv -fv tclConfig.sh Resources\nif [ \"${BUILD_STYLE}\" = \"Development\" ]; then\n\t# keep copy of debug library around, so that\n\t# Deployment build can be installed on top\n\t# of Development build without overwriting\n\t# the debuglibrary\n\ttest -e \"${PRODUCT_NAME}\"\n\tcp -fpv \"${PRODUCT_NAME}\" \"${PRODUCT_NAME}_debug\"\nfi\n";
 		};
-		A50F555B1808CA1C008BA312 /* ShellScript */ = {
+		A50F555B1808CA1C008BA312 /* Run Script 5 */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 8;
 			files = (
 			);
+			name = "Run Script 5";
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "if [ `echo \"${DYLIB_INSTALL_PATH:-}\" | grep -c \"@executable_path\"` -gt 0 ]; then\n# if we are embedding frameworks, don't install tclsh\nrm -f \"${INSTALL_ROOT}/usr/bin/tclsh${FRAMEWORK_VERSION}\"\nrmdir -p \"${INSTALL_ROOT}/usr/bin\"\necho \"tclsh removed\"\nelse\n# redo prebinding\ncd \"${INSTALL_ROOT}\"\nif [ ! -d usr/lib ]; then mkdir -p usr; ln -fs /usr/lib usr/; RM_USRLIB=1; fi\nif [ ! -d System ]; then ln -fs /System .; RM_SYSTEM=1; fi\nredo_prebinding -r . \"./usr/bin/tclsh${FRAMEWORK_VERSION}\"\nif [ -n \"${RM_USRLIB:-}\" ]; then rm -f usr/lib; rmdir -p usr; fi\nif [ -n \"${RM_SYSTEM:-}\" ]; then rm -f System; fi\nfi";
+			shellScript = "#!/bin/sh\necho \"This is the fifth custom shell script\"\nset -ex\nif [ `echo \"${DYLIB_INSTALL_PATH:-}\" | grep -c \"@executable_path\"` -gt 0 ]; then\n# if we are embedding frameworks, do NOT install tclsh\n test -d \"${INSTALL_ROOT}\"\n rm -fv \"${INSTALL_ROOT}/usr/bin/tclsh${FRAMEWORK_VERSION}\"\n rmdir -p \"${INSTALL_ROOT}/usr/bin\"\n echo \"tclsh removed\"\nelse\n# redo prebinding\n test -d \"${INSTALL_ROOT}\"\n cd \"${INSTALL_ROOT}\"\n if [ ! -d usr/lib ]; then mkdir -pv usr; ln -fsv /usr/lib usr/; RM_USRLIB=1; fi\n if [ ! -d System ]; then ln -fsv /System .; RM_SYSTEM=1; fi\n test -x `which redo_prebinding`\n redo_prebinding -r . \"./usr/bin/tclsh${FRAMEWORK_VERSION}\"\n if [ -n \"${RM_USRLIB:-}\" ]; then rm -fv usr/lib; rmdir -p usr; fi\n if [ -n \"${RM_SYSTEM:-}\" ]; then rm -fv System; fi\nfi\n";
 		};
-		A50F555C1808CA1C008BA312 /* ShellScript */ = {
+		A50F555C1808CA1C008BA312 /* Run Script 6 */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 8;
 			files = (
 			);
+			name = "Run Script 6";
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "# build html documentation\nif [ \"${BUILD_STYLE}\" = \"Deployment\" ]; then\n    cd \"${TEMP_DIR}/..\"\n    gnumake html DISTDIR=\"${INSTALL_ROOT}${LIBDIR}/Resources/English.lproj/Documentation/Reference\"\n    cd \"${INSTALL_ROOT}${LIBDIR}/Resources/English.lproj/Documentation/Reference\"\n    ln -fs contents.htm html/index.html\n    rm -f \"${PRODUCT_NAME}\"; ln -fs html \"${PRODUCT_NAME}\"\nfi";
+			shellScript = "#!/bin/sh\necho \"This is the sixth custom shell script\"\nset -ex\n# build html documentation\nif [ \"${BUILD_STYLE}\" = \"Deployment\" ]; then\n    test -d \"${TEMP_DIR}/..\"\n    cd \"${TEMP_DIR}/..\"\n    gnumake html DISTDIR=\"${INSTALL_ROOT}${LIBDIR}/Resources/English.lproj/Documentation/Reference\"\n    cd \"${INSTALL_ROOT}${LIBDIR}/Resources/English.lproj/Documentation/Reference\"\n    ln -fsv contents.htm html/index.html\n    rm -fv \"${PRODUCT_NAME}\"; ln -fsv html \"${PRODUCT_NAME}\"\nfi\n";
 		};
 		F5877FB6031F97AF016F146B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -769,12 +808,12 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 /* Begin PBXTargetDependency section */
 		A50F55701808CA1C008BA312 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A50F55681808CA1C008BA312 /* Make (Copied) */;
+			target = A50F55681808CA1C008BA312 /* Make_Copied */;
 			targetProxy = A50F556F1808CA1C008BA312 /* PBXContainerItemProxy */;
 		};
 		A50F55721808CA1C008BA312 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A50F55631808CA1C008BA312 /* Configure (Copied) */;
+			target = A50F55631808CA1C008BA312 /* Configure_Copied */;
 			targetProxy = A50F55711808CA1C008BA312 /* PBXContainerItemProxy */;
 		};
 		F5877EB5031F7997016F146B /* PBXTargetDependency */ = {
@@ -795,20 +834,85 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				BINDIR = "$(PREFIX)/bin";
+				CC = "$(GCC)-$(GCC_VERSION)";
+				CONFIGURE_ARGS = "--enable-symbols --enable-dtrace $(TCL_CONFIGURE_ARGS) $(CONFIGURE_ARGS)";
+				CPPFLAGS = "-mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET) $(CPPFLAGS)";
+				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_POSTPROCESSING = NO;
+				FRAMEWORK_INSTALL_PATH = /Library/Frameworks;
+				GCC = "$(DEVELOPER_DIR)/usr/bin/gcc";
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREFIX_HEADER = "$(DERIVED_FILE_DIR)/tcl/tclConfig.h";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(TCL_DEFS)",
+					"$(GCC_PREPROCESSOR_DEFINITIONS)",
+				);
+				GCC_VERSION = 4.2;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_PROTOTYPE_CONVERSION = YES;
 				GENERATE_PKGINFO_FILE = YES;
 				GENERATE_PROFILING_CODE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1)",
+					"$(HEADER_SEARCH_PATHS)",
+				);
+				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1 = "\"$(DERIVED_FILE_DIR)/tcl\"";
+				INCLUDEDIR = "$(PREFIX)/include";
+				INSTALL_PATH = "$(BINDIR)";
+				LD = "$(CC)";
 				LD_GENERATE_MAP_FILE = YES;
+				LIBDIR = "$(PREFIX)/lib";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MAKE_TARGET = develop;
+				MANDIR = "$(PREFIX)/man";
+				OTHER_LDFLAGS = "-headerpad_max_install_names";
+				PER_ARCH_CFLAGS_ppc = "-mcpu=G3 -mtune=G4 $(PER_ARCH_CFLAGS_ppc)";
+				PER_ARCH_CFLAGS_ppc64 = "-mcpu=G5 -mpowerpc64 $(PER_ARCH_CFLAGS_ppc64)";
+				PREFIX = /usr/local;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				TCL_DEFS = HAVE_TCL_CONFIG_H;
+				TCL_LIBRARY = "$(LIBDIR)/tcl$(VERSION)";
+				TCL_PACKAGE_PATH = "\"$(LIBDIR)\"";
 				VALIDATE_PRODUCT = YES;
+				VERSION = 8.5;
 				VERSIONING_SYSTEM = "apple-generic";
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wextra",
+					"-Wno-missing-field-initializers",
+					"-Wcast-align",
+					"-Winit-self",
+					"-Wpointer-arith",
+					"-Wdisabled-optimization",
+					"-Winline",
+					"$(WARNING_CFLAGS_GCC3)",
+					"$(WARNING_CFLAGS)",
+				);
+				WARNING_CFLAGS_GCC3 = "-Wall -Wno-implicit-int -Wno-unused-parameter -Wno-deprecated-declarations";
 			};
 			name = Development;
 		};
 		A50F553D1808CA11008BA312 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CONFIGURE_ARGS = "--disable-symbols $(TCL_CONFIGURE_ARGS) $(CONFIGURE_ARGS)";
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					NDEBUG,
+					"$(TCL_DEFS)",
+					"$(GCC_PREPROCESSOR_DEFINITIONS)",
+				);
+				GCC_VERSION = 4.2;
+				MAKE_TARGET = deploy;
 			};
 			name = Deployment;
 		};
@@ -965,7 +1069,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = "${TEMP_DIR}";
-				EXTRA_CONFIGURE_FLAGS = "--enable-symbols";
+				EXTRA_CONFIGURE_FLAGS = "--enable-symbols --enable-dtrace";
 				EXTRA_MAKE_INSTALL_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1021,7 +1125,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F55651808CA1C008BA312 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				EXTRA_CONFIGURE_FLAGS = "--enable-symbols";
+				EXTRA_CONFIGURE_FLAGS = "--enable-symbols --enable-dtrace";
 				FRAMEWORK_VERSION = 8.4;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -1153,7 +1257,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Default;
 		};
-		A50F555D1808CA1C008BA312 /* Build configuration list for PBXNativeTarget "Tcl (Upgraded)" */ = {
+		A50F555D1808CA1C008BA312 /* Build configuration list for PBXNativeTarget "Tcl_Upgraded" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A50F555E1808CA1C008BA312 /* Development */,
@@ -1163,7 +1267,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Default;
 		};
-		A50F55641808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Configure (Copied)" */ = {
+		A50F55641808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Configure_Copied" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A50F55651808CA1C008BA312 /* Development */,
@@ -1173,7 +1277,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Default;
 		};
-		A50F556B1808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Make (Copied)" */ = {
+		A50F556B1808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Make_Copied" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A50F556C1808CA1C008BA312 /* Development */,

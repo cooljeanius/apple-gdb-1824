@@ -1,4 +1,4 @@
-/* Plugin support for BFD.
+/* plugin.c: Plugin support for BFD.
    Copyright 2009, 2010, 2011, 2012
    Free Software Foundation, Inc.
 
@@ -22,16 +22,16 @@
 #include "sysdep.h"
 #include "bfd.h"
 
-#if BFD_SUPPORTS_PLUGINS
+#if defined(BFD_SUPPORTS_PLUGINS) && BFD_SUPPORTS_PLUGINS
 
 #include <assert.h>
 #ifdef HAVE_DLFCN_H
-#include <dlfcn.h>
-#elif defined (HAVE_WINDOWS_H)
-#include <windows.h>
+# include <dlfcn.h>
+#elif defined(HAVE_WINDOWS_H)
+# include <windows.h>
 #else
-#error Unknown how to handle dynamic-load-libraries.
-#endif
+# error "Unknown how to handle dynamic-load-libraries."
+#endif /* HAVE_DLFCN_H || HAVE_WINDOWS_H */
 #include <stdarg.h>
 #include "plugin-api.h"
 #include "plugin.h"
@@ -558,3 +558,5 @@ const bfd_target plugin_vec =
   NULL  			/* backend_data.  */
 };
 #endif /* BFD_SUPPORTS_PLUGIN */
+
+/* EOF */

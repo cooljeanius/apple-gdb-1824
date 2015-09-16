@@ -1,4 +1,5 @@
-/* Native-dependent definitions for PowerPC running NetBSD ELF, for GDB.
+/* nm-nbsd.h
+   Native-dependent definitions for PowerPC running NetBSD ELF, for GDB.
    Copyright 2000, 2002 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -24,4 +25,4 @@
 /* Get generic NetBSD native definitions. */
 #include "config/nm-nbsd.h"
 
-#endif
+#endif /* !NM_NBSD_H */

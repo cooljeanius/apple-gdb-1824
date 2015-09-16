@@ -12,15 +12,31 @@ AC_CONFIG_SRCDIR([Makefile.in])
 AC_CANONICAL_TARGET
 
 srctrigger=Makefile.in
-srcname="Misc utilities"
+srcname="MiscUtilities"
 target_dependent=true
 AC_SUBST([srctrigger])
 AC_SUBST([srcname])
 AC_SUBST([target_dependent])
 
 # per-host:
+case "${host}" in
+  *dos*)
+    host_subdirs=doschk
+    ;;
+  *)
+    ;;
+esac
+AC_SUBST([host_subdirs])
 
 # per-target:
+case "${target}" in
+  *dos*)
+    target_subdirs=doschk
+    ;;
+  *)
+    ;;
+esac
+AC_SUBST([target_subdirs])
 
 configdirs="doschk"
 AC_SUBST([configdirs])

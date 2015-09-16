@@ -1,4 +1,4 @@
-/* Generic serial interface functions.
+/* ser-base.c: Generic serial interface functions.
 
    Copyright 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001,
    2003, 2004, 2005 Free Software Foundation, Inc.
@@ -28,8 +28,8 @@
 #include "gdb_string.h"
 #include <sys/time.h>
 #ifdef USE_WIN32API
-#include <winsock2.h>
-#endif
+# include <winsock2.h>
+#endif /* USE_WIN32API */
 
 
 static timer_handler_func push_event;
@@ -130,9 +130,9 @@ reschedule (struct serial *scb)
    push_event() is used to nag the client until it is. */
 
 static void
-fd_event (int error, void *context)
+fd_event(int error, void *context)
 {
-  struct serial *scb = context;
+  struct serial *scb = (struct serial *)context;
   if (error != 0)
     {
       scb->bufcnt = SERIAL_ERROR;
@@ -143,7 +143,7 @@ fd_event (int error, void *context)
          pull characters out of the buffer.  See also
          generic_readchar(). */
       int nr;
-      nr = scb->ops->read_prim (scb, BUFSIZ);
+      nr = scb->ops->read_prim(scb, BUFSIZ);
       if (nr == 0)
 	{
 	  scb->bufcnt = SERIAL_EOF;
@@ -158,8 +158,8 @@ fd_event (int error, void *context)
 	  scb->bufcnt = SERIAL_ERROR;
 	}
     }
-  scb->async_handler (scb, scb->async_context);
-  reschedule (scb);
+  scb->async_handler(scb, scb->async_context);
+  reschedule(scb);
 }
 
 /* PUSH_EVENT: The input FIFO is non-empty (or there is a pending
@@ -168,20 +168,20 @@ fd_event (int error, void *context)
    device before naging stops. */
 
 static void
-push_event (void *context)
+push_event(void *context)
 {
-  struct serial *scb = context;
+  struct serial *scb = (struct serial *)context;
   scb->async_state = NOTHING_SCHEDULED; /* Timers are one-off */
-  scb->async_handler (scb, scb->async_context);
+  scb->async_handler(scb, scb->async_context);
   /* re-schedule */
-  reschedule (scb);
+  reschedule(scb);
 }
 
 /* Wait for input on scb, with timeout seconds.  Returns 0 on success,
    otherwise SERIAL_TIMEOUT or SERIAL_ERROR. */
 
 static int
-ser_base_wait_for (struct serial *scb, int timeout)
+ser_base_wait_for(struct serial *scb, int timeout)
 {
   while (1)
     {
@@ -258,7 +258,7 @@ do_ser_base_readchar (struct serial *scb, int timeout)
       if (timeout > 0)
         timeout -= delta;
 
-      /* If we got a character or an error back from wait_for, then we can 
+      /* If we got a character or an error back from wait_for, then we can
          break from the loop before the timeout is completed. */
       if (status != SERIAL_TIMEOUT)
 	break;
@@ -282,10 +282,10 @@ do_ser_base_readchar (struct serial *scb, int timeout)
       if (status == 0)
 	/* 0 chars means timeout.  (We may need to distinguish between EOF
 	   & timeouts someday.)  */
-	return SERIAL_TIMEOUT;	
+	return SERIAL_TIMEOUT;
       else
 	/* Got an error from read.  */
-	return SERIAL_ERROR;	
+	return SERIAL_ERROR;
     }
 
   scb->bufcnt = status;
@@ -359,7 +359,7 @@ ser_base_write (struct serial *scb, const char *str, int len)
 
   while (len > 0)
     {
-      cc = scb->ops->write_prim (scb, str, len); 
+      cc = scb->ops->write_prim (scb, str, len);
 
       if (cc < 0)
 	return 1;
@@ -428,7 +428,7 @@ ser_base_noflush_set_tty_state (struct serial *scb,
 }
 
 void
-ser_base_print_tty_state (struct serial *scb, 
+ser_base_print_tty_state (struct serial *scb,
 			  serial_ttystate ttystate,
 			  struct ui_file *stream)
 {

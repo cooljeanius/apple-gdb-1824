@@ -456,28 +456,28 @@ gen_left_shift (struct agent_expr *ax, int distance)
 /* Generate code to push the base address of the argument portion of
    the top stack frame.  */
 static void
-gen_frame_args_address (struct agent_expr *ax)
+gen_frame_args_address(struct agent_expr *ax)
 {
   int frame_reg;
   LONGEST frame_offset;
 
-  TARGET_VIRTUAL_FRAME_POINTER (ax->scope, &frame_reg, &frame_offset);
-  ax_reg (ax, frame_reg);
-  gen_offset (ax, frame_offset);
+  TARGET_VIRTUAL_FRAME_POINTER(ax->scope, &frame_reg, &frame_offset);
+  ax_reg(ax, frame_reg);
+  gen_offset(ax, (int)frame_offset);
 }
 
 
 /* Generate code to push the base address of the locals portion of the
    top stack frame.  */
 static void
-gen_frame_locals_address (struct agent_expr *ax)
+gen_frame_locals_address(struct agent_expr *ax)
 {
   int frame_reg;
   LONGEST frame_offset;
 
-  TARGET_VIRTUAL_FRAME_POINTER (ax->scope, &frame_reg, &frame_offset);
-  ax_reg (ax, frame_reg);
-  gen_offset (ax, frame_offset);
+  TARGET_VIRTUAL_FRAME_POINTER(ax->scope, &frame_reg, &frame_offset);
+  ax_reg(ax, frame_reg);
+  gen_offset(ax, (int)frame_offset);
 }
 
 
@@ -708,47 +708,50 @@ require_rvalue (struct agent_expr *ax, struct axs_value *value)
    lvalue through unchanged, and let `+' raise an error.  */
 
 static void
-gen_usual_unary (struct agent_expr *ax, struct axs_value *value)
+gen_usual_unary(struct agent_expr *ax, struct axs_value *value)
 {
-  /* We don't have to generate any code for the usual integral
-     conversions, since values are always represented as full-width on
-     the stack.  Should we tweak the type?  */
+  /* We do NOT have to generate any code for the usual integral
+   * conversions, since values are always represented as full-width on
+   * the stack.  Should we tweak the type?  */
 
-  /* Some types require special handling.  */
-  switch (TYPE_CODE (value->type))
+  /* Some types require special handling: */
+  switch (TYPE_CODE(value->type))
     {
-      /* Functions get converted to a pointer to the function.  */
+    /* Functions get converted to a pointer to the function: */
     case TYPE_CODE_FUNC:
-      value->type = lookup_pointer_type (value->type);
+      value->type = lookup_pointer_type(value->type);
       value->kind = axs_rvalue;	/* Should always be true, but just in case.  */
       break;
 
-      /* Arrays get converted to a pointer to their first element, and
-         are no longer an lvalue.  */
+    /* Arrays get converted to a pointer to their first element, and are
+     * no longer an lvalue: */
     case TYPE_CODE_ARRAY:
       {
-	struct type *elements = TYPE_TARGET_TYPE (value->type);
-	value->type = lookup_pointer_type (elements);
+	struct type *elements = TYPE_TARGET_TYPE(value->type);
+	value->type = lookup_pointer_type(elements);
 	value->kind = axs_rvalue;
-	/* We don't need to generate any code; the address of the array
-	   is also the address of its first element.  */
+	/* We do NOT need to generate any code; the address of the array
+	 * is also the address of its first element.  */
       }
       break;
 
-      /* Don't try to convert structures and unions to rvalues.  Let the
-         consumer signal an error.  */
+    /* Do NOT try to convert structures and unions to rvalues.  Let the
+     * consumer signal an error: */
     case TYPE_CODE_STRUCT:
     case TYPE_CODE_UNION:
       return;
 
-      /* If the value is an enum, call it an integer.  */
+    /* If the value is an enum, then call it an integer: */
     case TYPE_CODE_ENUM:
       value->type = builtin_type_int;
       break;
+
+    default:
+      break;
     }
 
-  /* If the value is an lvalue, dereference it.  */
-  require_rvalue (ax, value);
+  /* If the value is an lvalue, then dereference it: */
+  require_rvalue(ax, value);
 }
 
 
@@ -1397,7 +1400,7 @@ gen_struct_ref (struct agent_expr *ax, struct axs_value *value, char *field,
 }
 
 
-/* Generate code for GDB's magical `repeat' operator.  
+/* Generate code for GDB's magical `repeat' operator.
    LVALUE @ INT creates an array INT elements long, and whose elements
    have the same type as LVALUE, located in memory so that LVALUE is
    its first element.  For example, argv[0]@argc gives you the array
@@ -1421,16 +1424,16 @@ gen_repeat (union exp_element **pc, struct agent_expr *ax,
 
   /* Evaluate the length; it had better be a constant.  */
   {
-    struct value *v = const_expr (pc);
-    int length;
+    struct value *v = const_expr(pc);
+    long length;
 
     if (!v)
-      error (_("Right operand of `@' must be a constant, in agent expressions."));
-    if (TYPE_CODE (value_type (v)) != TYPE_CODE_INT)
-      error (_("Right operand of `@' must be an integer."));
-    length = value_as_long (v);
-    if (length <= 0)
-      error (_("Right operand of `@' must be positive."));
+      error(_("Right operand of `@' must be a constant, in agent expressions."));
+    if (TYPE_CODE (value_type(v)) != TYPE_CODE_INT)
+      error(_("Right operand of `@' must be an integer."));
+    length = (long)value_as_long(v);
+    if (length <= 0L)
+      error(_("Right operand of `@' must be positive."));
 
     /* The top of the stack is already the address of the object, so
        all we need to do is frob the type of the lvalue.  */
@@ -1650,7 +1653,7 @@ gen_expr (union exp_element **pc, struct agent_expr *ax,
       gen_expr (pc, ax, value);
       gen_usual_unary (ax, value);
       break;
-      
+
     case UNOP_NEG:
       (*pc)++;
       /* -FOO is equivalent to 0 - FOO.  */
@@ -1700,7 +1703,7 @@ gen_expr (union exp_element **pc, struct agent_expr *ax,
     case STRUCTOP_STRUCT:
     case STRUCTOP_PTR:
       {
-	int length = (*pc)[1].longconst;
+	long length = (long)((*pc)[1].longconst);
 	char *name = &(*pc)[2].string;
 
 	(*pc) += 4 + BYTES_TO_EXP_ELEM (length + 1);

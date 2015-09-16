@@ -1,4 +1,5 @@
-/* Native support for GNU/Linux, for GDB, the GNU debugger.
+/* nm-linux.h
+   Native support for GNU/Linux, for GDB, the GNU debugger.
 
    Copyright 1999, 2000, 2001, 2004
    Free Software Foundation, Inc.
@@ -50,10 +51,10 @@ extern int ia64_cannot_store_register (int regno);
 /* The IA-64 architecture can step over a watch point (without triggering
    it again) if the "dd" (data debug fault disable) bit in the processor
    status word is set.
-   
+
    This PSR bit is set in ia64_linux_stopped_by_watchpoint when the
    code there has determined that a hardware watchpoint has indeed
-   been hit.  The CPU will then be able to execute one instruction 
+   been hit.  The CPU will then be able to execute one instruction
    without triggering a watchpoint. */
 #define HAVE_STEPPABLE_WATCHPOINT 1
 
@@ -78,12 +79,12 @@ extern int ia64_linux_remove_watchpoint (ptid_t ptid, CORE_ADDR addr,
 #include "target.h"
 
 #define NATIVE_XFER_UNWIND_TABLE ia64_linux_xfer_unwind_table
-extern LONGEST ia64_linux_xfer_unwind_table (struct target_ops *ops, 
+extern LONGEST ia64_linux_xfer_unwind_table (struct target_ops *ops,
 					     enum target_object object,
-					     const char *annex, 
+					     const char *annex,
 					     void *readbuf,
 					     const void *writebuf,
-					     ULONGEST offset, 
+					     ULONGEST offset,
 					     LONGEST len);
 
 #endif /* #ifndef NM_LINUX_H */

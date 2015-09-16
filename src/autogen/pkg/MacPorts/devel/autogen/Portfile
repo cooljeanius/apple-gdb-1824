@@ -1,0 +1,44 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem 1.0
+
+name                autogen
+version             5.17.4
+categories          devel
+platforms           darwin
+maintainers         mww openmaintainer
+license             GPL-3
+description         tool to simplify the creation and maintenance of programs
+long_description    AutoGen is a tool designed to simplify the creation \
+                    and maintenance of programs that contain large \
+                    amounts of repetitious text. It is especially \
+                    valuable in programs that have several blocks of \
+                    text that must be kept synchronized.
+
+homepage            http://autogen.sourceforge.net/
+master_sites        sourceforge gnu:autogen/rel${version} 
+checksums           rmd160  68d3ab321d76d6c052f1e88bc67371dabc87fd85 \
+                    sha256  35cd4b5f0b48ce61278865412ed7e3c5b9b8cb082ae969ca1e6888e8bf8128a4
+use_xz              yes
+
+depends_lib-append  port:guile \
+                    port:libiconv \
+                    port:libxml2 \
+                    port:zlib \
+                    port:coreutils
+
+configure.args-append \
+                    --mandir=${prefix}/share/man \
+                    --infodir=${prefix}/share/info
+
+test.run            yes
+test.target         check
+
+platform darwin 8 {
+    configure.cppflags-append "-D_WINT_T"
+}
+
+livecheck.type      regex
+livecheck.url       http://ftp.gnu.org/gnu/${name}/?C=M&O=D
+livecheck.regex     rel(\\d+(?:\\.\\d+)*)

@@ -1,4 +1,5 @@
-/* Macro defintions for i386, running System V 3.2.
+/* xm-i386v32.h
+   Macro defintions for i386, running System V 3.2.
    Copyright (C) 1989 Free Software Foundation, Inc.
 
    This file is part of GDB.

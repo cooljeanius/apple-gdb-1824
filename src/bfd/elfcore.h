@@ -1,4 +1,4 @@
-/* ELF core file support for BFD.
+/* elfcore.h: ELF core file support for BFD.
    Copyright 1995, 1996, 1997, 1998, 2000, 2001, 2002, 2003, 2005
    Free Software Foundation, Inc.
 
@@ -128,9 +128,9 @@ elf_core_file_p (bfd *abfd)
   i_ehdrp = elf_elfheader (abfd);
   elf_swap_ehdr_in (abfd, &x_ehdr, i_ehdrp);
 
-#if DEBUG & 1
-  elf_debug_file (i_ehdrp);
-#endif
+#if defined(DEBUG) && (DEBUG & 1)
+  elf_debug_file(i_ehdrp);
+#endif /* DEBUG */
 
   ebd = get_elf_backend_data (abfd);
 
@@ -185,9 +185,9 @@ elf_core_file_p (bfd *abfd)
   if (bfd_seek (abfd, (file_ptr) i_ehdrp->e_phoff, SEEK_SET) != 0)
     goto wrong;
 
-  /* Allocate space for the program headers.  */
-  amt = sizeof (*i_phdrp) * i_ehdrp->e_phnum;
-  i_phdrp = bfd_alloc (abfd, amt);
+  /* Allocate space for the program headers: */
+  amt = sizeof(*i_phdrp) * i_ehdrp->e_phnum;
+  i_phdrp = (Elf_Internal_Phdr *)bfd_alloc(abfd, amt);
   if (!i_phdrp)
     goto fail;
 
@@ -249,3 +249,5 @@ fail:
     bfd_preserve_restore (abfd, &preserve);
   return NULL;
 }
+
+/* EOF */

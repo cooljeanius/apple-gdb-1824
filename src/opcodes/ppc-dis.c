@@ -1,7 +1,7 @@
 /* ppc-dis.c -- Disassemble PowerPC instructions
-   Copyright 1994, 1995, 2000, 2001, 2002, 2003, 2004, 2005
-   Free Software Foundation, Inc.
-   Written by Ian Lance Taylor, Cygnus Support
+ * Copyright 1994, 1995, 2000, 2001, 2002, 2003, 2004, 2005
+ * Free Software Foundation, Inc.
+ * Written by Ian Lance Taylor, Cygnus Support
 
 This file is part of GDB, GAS, and the GNU binutils.
 
@@ -20,15 +20,16 @@ along with this file; see the file COPYING.  If not, write to the Free
 Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #include <stdio.h>
+#include "bfd.h"
 #include "sysdep.h"
 #include "dis-asm.h"
 #include "opcode/ppc.h"
 
 /* This file provides several disassembler functions, all of which use
-   the disassembler interface defined in dis-asm.h.  Several functions
-   are provided because this file handles disassembly for the PowerPC
-   in both big and little endian mode and also for the POWER (RS/6000)
-   chip.  */
+ * the disassembler interface defined in dis-asm.h. Several functions
+ * are provided because this file handles disassembly for the PowerPC
+ * in both big and little endian mode and also for the POWER (RS/6000)
+ * chip.  */
 
 static int print_insn_powerpc (bfd_vma, struct disassemble_info *, int, int);
 
@@ -37,9 +38,9 @@ struct dis_private {
   int dialect;
 };
 
-/* Determine which set of machines to disassemble for.  PPC403/601 or
-   BookE.  For convenience, also disassemble instructions supported
-   by the AltiVec vector unit and the GPUL.  */
+/* Determine which set of machines to disassemble for. PPC403/601 or
+ * BookE. For convenience, also disassemble instructions supported
+ * by the AltiVec vector unit and the GPUL.  */
 
 static int
 powerpc_dialect (struct disassemble_info *info)
@@ -73,10 +74,13 @@ powerpc_dialect (struct disassemble_info *info)
     dialect |= PPC_OPCODE_POWER4;
 
   /* APPLE LOCAL begin gpul */
+#ifdef __APPLE__
   if ((info->mach == bfd_mach_ppc_970)
       || (info->disassembler_options
-	  && strcmp (info->disassembler_options, "gpul") == 0))
-    dialect |= PPC_OPCODE_GPUL;
+	  && strcmp (info->disassembler_options, "gpul") == 0)) {
+		  dialect |= PPC_OPCODE_GPUL;
+	  }
+#endif /* __APPLE__ */
   /* APPLE LOCAL end gpul */
 
   if (info->disassembler_options
@@ -158,8 +162,8 @@ print_insn_powerpc (bfd_vma memaddr,
   /* Get the major opcode of the instruction.  */
   op = PPC_OP (insn);
 
-  /* Find the first match in the opcode table.  We could speed this up
-     a bit by doing a binary search on the major opcode.  */
+  /* Find the first match in the opcode table. We could speed this up
+   * a bit by doing a binary search on the major opcode.  */
   opcode_end = powerpc_opcodes + powerpc_num_opcodes;
  again:
   for (opcode = powerpc_opcodes; opcode < opcode_end; opcode++)
@@ -181,9 +185,9 @@ print_insn_powerpc (bfd_vma memaddr,
 	  || (opcode->flags & dialect) == 0)
 	continue;
 
-      /* Make two passes over the operands.  First see if any of them
-	 have extraction functions, and, if they do, make sure the
-	 instruction is valid.  */
+      /* Make two passes over the operands. First see if any of them
+       * have extraction functions, and, if they do, make sure the
+       * instruction is valid.  */
       invalid = 0;
       for (opindex = opcode->operands; *opindex != 0; opindex++)
 	{
@@ -209,9 +213,9 @@ print_insn_powerpc (bfd_vma memaddr,
 
 	  operand = powerpc_operands + *opindex;
 
-	  /* Operands that are marked FAKE are simply ignored.  We
-	     already made sure that the extract function considered
-	     the instruction to be valid.  */
+	  /* Operands that are marked FAKE are simply ignored. We
+	   * already made sure that the extract function considered
+	   * the instruction to be valid.  */
 	  if ((operand->flags & PPC_OPERAND_FAKE) != 0)
 	    continue;
 
@@ -226,8 +230,8 @@ print_insn_powerpc (bfd_vma memaddr,
 		value -= 1 << operand->bits;
 	    }
 
-	  /* If the operand is optional, and the value is zero, don't
-	     print anything.  */
+	  /* If the operand is optional, and the value is zero, do NOT
+	   * print anything.  */
 	  if ((operand->flags & PPC_OPERAND_OPTIONAL) != 0
 	      && (operand->flags & PPC_OPERAND_NEXT) == 0
 	      && value == 0)
@@ -320,3 +324,5 @@ the -M switch:\n");
   fprintf (stream, "  32                       Do not disassemble 64-bit instructions\n");
   fprintf (stream, "  64                       Allow disassembly of 64-bit instructions\n");
 }
+
+/* EOF */

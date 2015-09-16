@@ -1,4 +1,4 @@
-%{
+%{ /* syslex.l */
 /* Copyright 2001, 2003, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Binutils.
@@ -15,26 +15,36 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GLD; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA
+Software Foundation, 51 Franklin St., 5th Floor, Boston, MA
 02110-1301, USA.  */
 
-#include "config.h"
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #ifdef HAVE_STRING_H
-#include <string.h>
+# include <string.h>
 #else
-#ifdef HAVE_STRINGS_H
-#include <strings.h>
-#endif
-#endif
+# ifdef HAVE_STRINGS_H
+#  include <strings.h>
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H */
 #include "sysinfo.h"
+
+/* in case these got re-defined on us: */
+#ifdef malloc
+# undef malloc
+#endif /* malloc */
+#ifdef realloc
+# undef realloc
+#endif /* realloc */
 
 #define YY_NO_UNPUT
 
 #ifndef yywrap
-static int yywrap (void) { return 1; }
-#endif
+static int yywrap(void) { return 1; }
+#endif /* !yywrap */
 
-extern int yylex (void);
+extern int yylex(void);
 %}
 %%
 "(" { return '(';}
@@ -42,18 +52,18 @@ extern int yylex (void);
 "[" { return '[';}
 "]" { return ']';}
 " " { ; }
-";".* { ; } 
+";".* { ; }
 "\t" { ; }
 "\n" { ; }
 "\""[^\"]*"\"" {
-	yylval.s = malloc (yyleng - 1);
-	memcpy (yylval.s, yytext + 1, yyleng - 2);
+	yylval.s = (char *)malloc(yyleng - 1);
+	memcpy(yylval.s, (yytext + 1), (yyleng - 2));
 	yylval.s[yyleng - 2] = '\0';
         return NAME;
 	}
 
 0x[0-9a-f]+ {
-        yylval.i = strtol(yytext,0,16);
+        yylval.i = (int)strtol(yytext, 0, 16);
 	return  NUMBER;
 	}
 
@@ -77,3 +87,7 @@ extern int yylex (void);
 "segsize" { yylval.i = -1; return NUMBER; }
 "cond" { return COND;}
 "repeat" { return REPEAT;}
+
+%{
+/* End of syslex.l */
+%}

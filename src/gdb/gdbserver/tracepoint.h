@@ -19,6 +19,14 @@
 #ifndef TRACEPOINT_H
 #define TRACEPOINT_H
 
+#ifndef ULONGEST
+# define ULONGEST unsigned long long
+#endif /* !ULONGEST */
+
+#ifndef LONGEST
+# define LONGEST long long
+#endif /* !LONGEST */
+
 /* Size for a small buffer to report problems from the in-process
    agent back to GDBserver.  */
 #define IPA_BUFSIZ 100

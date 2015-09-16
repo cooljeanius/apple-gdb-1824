@@ -1,4 +1,5 @@
-/* Target definitions for GDB on a Motorola 680x0 running SVR4.
+/* tm-m68kv4.h
+   Target definitions for GDB on a Motorola 680x0 running SVR4.
    (Commodore Amiga with amix or Atari TT with ASV)
    Copyright 1991, 1994, 1995, 1996, 1998, 1999, 2000
    Free Software Foundation, Inc.
@@ -38,11 +39,11 @@
 #include "m68k/tm-m68k.h"
 
 /* Offsets (in target ints) into jmp_buf.  Not defined in any system header
-   file, so we have to step through setjmp/longjmp with a debugger and figure
+   file, so we have to step through setjmp/longjmp with a debugger & figure
    them out.  As a double check, note that <setjmp> defines _JBLEN as 13,
    which matches the number of elements we see saved by setjmp(). */
 
-#define JB_ELEMENT_SIZE sizeof(int)	/* jmp_buf[_JBLEN] is array of ints */
+#define JB_ELEMENT_SIZE sizeof(int) /* jmp_buf[_JBLEN] is array of ints */
 
 #define JB_D2	0
 #define JB_D3	1
@@ -60,10 +61,10 @@
 
 #define JB_PC	JB_A1		/* Setjmp()'s return PC saved in A1 */
 
-/* Figure out where the longjmp will land.  Slurp the args out of the stack.
-   We expect the first arg to be a pointer to the jmp_buf structure from which
-   we extract the pc (JB_PC) that we will land at.  The pc is copied into ADDR.
-   This routine returns true on success */
+/* Figure out where the longjmp will land. Slurp the args out of the stack.
+   We expect the first arg to be a pointer to the jmp_buf structure
+   from which we extract the pc (JB_PC) that we will land at.
+   The pc is copied into ADDR. This routine returns true on success. */
 
 #define GET_LONGJMP_TARGET(ADDR) m68k_get_longjmp_target(ADDR)
 

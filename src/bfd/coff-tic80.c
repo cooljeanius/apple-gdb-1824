@@ -32,7 +32,7 @@ Boston, MA 02110-1301, USA.  */
 /* Newlib-based hosts define _CONST as a STDC-safe alias for const,
   but to the tic80 toolchain it means something altogether different.
   Since sysdep.h will have pulled in stdio.h and hence _ansi.h which
-  contains this definition, we must undef it before including the 
+  contains this definition, we must undef it before including the
   tic80-specific definition. */
 #undef _CONST
 #endif /* _CONST */
@@ -42,28 +42,30 @@ Boston, MA 02110-1301, USA.  */
 
 #define COFF_DEFAULT_SECTION_ALIGNMENT_POWER (2)
 #define COFF_ALIGN_IN_SECTION_HEADER 1
-#define COFF_ALIGN_IN_SFLAGS 1
+#ifndef COFF_ALIGN_IN_SFLAGS
+# define COFF_ALIGN_IN_SFLAGS 1
+#endif /* !COFF_ALIGN_IN_SFLAGS */
 
 #define GET_SCNHDR_FLAGS H_GET_16
 #define PUT_SCNHDR_FLAGS H_PUT_16
 
 static void rtype2howto
-  PARAMS ((arelent *cache_ptr, struct internal_reloc *dst));
+  PARAMS((arelent *cache_ptr, struct internal_reloc *dst));
 static bfd_reloc_status_type ppbase_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
 static bfd_reloc_status_type glob15_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
 static bfd_reloc_status_type glob16_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
 static bfd_reloc_status_type local16_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
 static bfd_boolean coff_tic80_relocate_section
-  PARAMS ((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
-	   struct internal_reloc *, struct internal_syment *, asection **));
+  PARAMS((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
+          struct internal_reloc *, struct internal_syment *, asection **));
 static reloc_howto_type * coff_tic80_rtype_to_howto
-  PARAMS ((bfd *, asection *, struct internal_reloc *,
-	   struct coff_link_hash_entry *, struct internal_syment *,
-	   bfd_vma *));
+  PARAMS((bfd *, asection *, struct internal_reloc *,
+          struct coff_link_hash_entry *, struct internal_syment *,
+          bfd_vma *));
 
 static reloc_howto_type tic80_howto_table[] =
 {
@@ -369,70 +371,59 @@ static reloc_howto_type tic80_howto_table[] =
 /* This special function is used for the base address type
    relocations.  */
 
-static bfd_reloc_status_type
-ppbase_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
-	      error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry ATTRIBUTE_UNUSED;
-     asymbol *symbol_in ATTRIBUTE_UNUSED;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section ATTRIBUTE_UNUSED;
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     char **error_message ATTRIBUTE_UNUSED;
+static bfd_reloc_status_type ATTRIBUTE_NORETURN
+ppbase_reloc(bfd *abfd ATTRIBUTE_UNUSED,
+             arelent *reloc_entry ATTRIBUTE_UNUSED,
+             asymbol *symbol_in ATTRIBUTE_UNUSED,
+             PTR data ATTRIBUTE_UNUSED,
+             asection *input_section ATTRIBUTE_UNUSED,
+             bfd *output_bfd ATTRIBUTE_UNUSED,
+             char **error_message ATTRIBUTE_UNUSED)
 {
-  /* FIXME.  */
-  abort ();
+  /* FIXME: */
+  abort();
 }
 
-/* This special function is used for the global 15 bit relocations.  */
-
-static bfd_reloc_status_type
-glob15_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
-	      error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry ATTRIBUTE_UNUSED;
-     asymbol *symbol_in ATTRIBUTE_UNUSED;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section ATTRIBUTE_UNUSED;
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     char **error_message ATTRIBUTE_UNUSED;
+/* This special function is used for the global 15 bit relocations: */
+static bfd_reloc_status_type ATTRIBUTE_NORETURN
+glob15_reloc(bfd *abfd ATTRIBUTE_UNUSED,
+             arelent *reloc_entry ATTRIBUTE_UNUSED,
+             asymbol *symbol_in ATTRIBUTE_UNUSED,
+             PTR data ATTRIBUTE_UNUSED,
+             asection *input_section ATTRIBUTE_UNUSED,
+             bfd *output_bfd ATTRIBUTE_UNUSED,
+             char **error_message ATTRIBUTE_UNUSED)
 {
-  /* FIXME.  */
-  abort ();
+  /* FIXME: */
+  abort();
 }
 
-/* This special function is used for the global 16 bit relocations.  */
-
-static bfd_reloc_status_type
-glob16_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
-	      error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry ATTRIBUTE_UNUSED;
-     asymbol *symbol_in ATTRIBUTE_UNUSED;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section ATTRIBUTE_UNUSED;
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     char **error_message ATTRIBUTE_UNUSED;
+/* This special function is used for the global 16 bit relocations: */
+static bfd_reloc_status_type ATTRIBUTE_NORETURN
+glob16_reloc(bfd *abfd ATTRIBUTE_UNUSED,
+             arelent *reloc_entry ATTRIBUTE_UNUSED,
+             asymbol *symbol_in ATTRIBUTE_UNUSED,
+             PTR data ATTRIBUTE_UNUSED,
+             asection *input_section ATTRIBUTE_UNUSED,
+             bfd *output_bfd ATTRIBUTE_UNUSED,
+             char **error_message ATTRIBUTE_UNUSED)
 {
-  /* FIXME.  */
-  abort ();
+  /* FIXME: */
+  abort();
 }
 
-/* This special function is used for the local 16 bit relocations.  */
-
-static bfd_reloc_status_type
-local16_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
-	      error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry ATTRIBUTE_UNUSED;
-     asymbol *symbol_in ATTRIBUTE_UNUSED;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section ATTRIBUTE_UNUSED;
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     char **error_message ATTRIBUTE_UNUSED;
+/* This special function is used for the local 16 bit relocations: */
+static bfd_reloc_status_type ATTRIBUTE_NORETURN
+local16_reloc(bfd *abfd ATTRIBUTE_UNUSED,
+              arelent *reloc_entry ATTRIBUTE_UNUSED,
+              asymbol *symbol_in ATTRIBUTE_UNUSED,
+              PTR data ATTRIBUTE_UNUSED,
+              asection *input_section ATTRIBUTE_UNUSED,
+              bfd *output_bfd ATTRIBUTE_UNUSED,
+	      char **error_message ATTRIBUTE_UNUSED)
 {
-  /* FIXME.  */
-  abort ();
+  /* FIXME: */
+  abort();
 }
 
 /* Code to turn an external r_type into a pointer to an entry in the howto_table.
@@ -440,13 +431,11 @@ local16_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
    to generate an output file.  */
 
 static void
-rtype2howto (cache_ptr, dst)
-     arelent *cache_ptr;
-     struct internal_reloc *dst;
+rtype2howto(arelent *cache_ptr, struct internal_reloc *dst)
 {
   unsigned int i;
 
-  for (i = 0; i < sizeof tic80_howto_table / sizeof tic80_howto_table[0]; i++)
+  for (i = 0U; i < (sizeof(tic80_howto_table) / sizeof(tic80_howto_table[0])); i++)
     {
       if (tic80_howto_table[i].type == dst->r_type)
 	{
@@ -455,39 +444,37 @@ rtype2howto (cache_ptr, dst)
 	}
     }
 
-  (*_bfd_error_handler) (_("Unrecognized reloc type 0x%x"),
-			 (unsigned int) dst->r_type);
-  cache_ptr->howto = tic80_howto_table + 0;
+  (*_bfd_error_handler)(_("Unrecognized reloc type 0x%x"),
+                        (unsigned int)dst->r_type);
+  cache_ptr->howto = (tic80_howto_table + 0);
 }
 
-#define RTYPE2HOWTO(cache_ptr, dst) rtype2howto (cache_ptr, dst)
+#define RTYPE2HOWTO(cache_ptr, dst) rtype2howto(cache_ptr, dst)
 #define coff_rtype_to_howto coff_tic80_rtype_to_howto
 
 static reloc_howto_type *
-coff_tic80_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     asection *sec;
-     struct internal_reloc *rel;
-     struct coff_link_hash_entry *h ATTRIBUTE_UNUSED;
-     struct internal_syment *sym ATTRIBUTE_UNUSED;
-     bfd_vma *addendp;
+coff_tic80_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
+                          struct internal_reloc *rel,
+                          struct coff_link_hash_entry *h ATTRIBUTE_UNUSED,
+                          struct internal_syment *sym ATTRIBUTE_UNUSED,
+                          bfd_vma *addendp)
 {
   arelent genrel;
 
-  if (rel -> r_symndx == -1 && addendp != NULL)
+  if ((rel->r_symndx == -1) && (addendp != NULL))
     {
       /* This is a TI "internal relocation", which means that the relocation
 	 amount is the amount by which the current section is being relocated
 	 in the output section.  */
-      *addendp = (sec -> output_section -> vma + sec -> output_offset) - sec -> vma;
+      *addendp = ((sec->output_section->vma + sec->output_offset) - sec->vma);
     }
-  RTYPE2HOWTO (&genrel, rel);
+  RTYPE2HOWTO(&genrel, rel);
   return genrel.howto;
 }
 
 #ifndef BADMAG
-#define BADMAG(x) TIC80BADMAG(x)
-#endif
+# define BADMAG(x) TIC80BADMAG(x)
+#endif /* !BADMAG */
 
 #define coff_relocate_section coff_tic80_relocate_section
 
@@ -495,17 +482,12 @@ coff_tic80_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
    of this is a copy of _bfd_coff_generic_relocate_section.  */
 
 static bfd_boolean
-coff_tic80_relocate_section (output_bfd, info, input_bfd,
-			     input_section, contents, relocs, syms,
-			     sections)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     struct internal_reloc *relocs;
-     struct internal_syment *syms;
-     asection **sections;
+coff_tic80_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+                            bfd* input_bfd, asection *input_section,
+                            bfd_byte *contents,
+                            struct internal_reloc *relocs,
+                            struct internal_syment *syms,
+			    asection **sections)
 {
   struct internal_reloc *rel;
   struct internal_reloc *relend;
@@ -724,16 +706,21 @@ coff_tic80_relocate_section (output_bfd, info, input_bfd,
 
 /* Clear the r_reserved field in relocs.  */
 #define SWAP_OUT_RELOC_EXTRA(abfd,src,dst) \
-  do \
-    { \
+  do { \
       dst->r_reserved[0] = 0; \
       dst->r_reserved[1] = 0; \
-    } \
-  while (0)
+  } while (0)
 
 #define TIC80COFF 1		/* Customize coffcode.h */
 #undef C_AUTOARG		/* Clashes with TIc80's C_UEXT */
 #undef C_LASTENT		/* Clashes with TIc80's C_STATLAB */
 #include "coffcode.h"
 
-CREATE_LITTLE_COFF_TARGET_VEC (tic80coff_vec, "coff-tic80", D_PAGED, 0, '_', NULL, COFF_SWAP_TABLE)
+CREATE_LITTLE_COFF_TARGET_VEC(tic80coff_vec, "coff-tic80", D_PAGED, 0, '_',
+                              NULL, COFF_SWAP_TABLE)
+
+#ifdef COFF_ALIGN_IN_SFLAGS
+# undef COFF_ALIGN_IN_SFLAGS
+#endif /* COFF_ALIGN_IN_SFLAGS */
+
+/* EOF */

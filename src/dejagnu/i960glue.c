@@ -8,18 +8,17 @@
 #include "../newlib/libc/reent/impure.c"
 
 
-/* these are for ld -r -wrap */
-
+/* these are for `ld -r -wrap`: */
 void
-__real_exit (int code)
+__real_exit(int code)
 {
-  exit (code);
+  exit(code);
 }
 
 void
-__real_abort (void)
+__real_abort(void)
 {
-  abort ();
+  abort();
 }
 
 /* EOF */

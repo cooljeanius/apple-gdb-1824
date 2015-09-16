@@ -1,4 +1,4 @@
-/* BFD backend for sparc little-endian aout binaries.
+/* aout-sparcle.c: BFD backend for sparc little-endian aout binaries.
    Copyright 1996, 2001 Free Software Foundation, Inc.
    Written by Cygnus Support.
 
@@ -16,7 +16,14 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic warning "-Wtraditional"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 #define TARGETNAME "a.out-sparc-little"
 
@@ -25,12 +32,21 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
    the tokens.  */
 #define MY(OP) CONCAT2 (sparcle_aout_,OP)
 
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 #include "bfd.h"
 #include "bfdlink.h"
 #include "libaout.h"
 
-#define MACHTYPE_OK(mtype) ((mtype) == M_SPARC || (mtype) == M_SPARCLET)
+#define MACHTYPE_OK(mtype) (((mtype) == M_SPARC) || ((mtype) == M_SPARCLET))
 
-/* Include the usual a.out support.  */
+/* Include the usual a.out support: */
 #define TARGET_IS_LITTLE_ENDIAN_P
 #include "aoutf1.h"
+
+/* EOF */

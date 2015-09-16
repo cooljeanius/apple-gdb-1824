@@ -1,4 +1,5 @@
-/* Low level interface to simulators, for the remote server for GDB.
+/* low-sim.c
+   Low level interface to simulators, for the remote server for GDB.
    Copyright 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -34,11 +35,13 @@ char * registers = my_registers;
 int target_byte_order;		/* used by simulator */
 
 /* We record the result of sim_open so we can pass it
-   back to the other sim_foo routines.  */
+ * back to the other sim_foo routines.
+ */
 static SIM_DESC gdbsim_desc = 0;
 
 /* This version of "load" should be usable for any simulator that
-   does not support loading itself.  */
+ * does not support loading itself.
+ */
 
 static void
 mygeneric_load (bfd *loadfile_bfd)
@@ -60,8 +63,9 @@ mygeneric_load (bfd *loadfile_bfd)
 	      buffer = xmalloc (size);
 	      lma = s->lma;
 
-	      /* Is this really necessary?  I guess it gives the user something
-	         to look at during a long download.  */
+	      /* Is this really necessary? I guess it gives the user something
+	       * to look at during a long download.
+		   */
 	      printf ("Loading section %s, size 0x%lx lma 0x%lx\n",
 		      bfd_get_section_name (loadfile_bfd, s),
 		      (unsigned long) size,
@@ -79,7 +83,8 @@ mygeneric_load (bfd *loadfile_bfd)
 	  (unsigned long) loadfile_bfd->start_address);
 
   /* We were doing this in remote-mips.c, I suspect it is right
-     for other targets too.  */
+   * for other targets too.
+   */
   /* write_pc (loadfile_bfd->start_address); *//* FIXME!! */
 }
 
@@ -94,7 +99,7 @@ create_inferior (char *program, char **argv)
   abfd = bfd_openr (program, 0);
   if (!abfd)
     {
-      fprintf (stderr, "gdbserver: can't open %s: %s\n",
+      fprintf (stderr, "gdbserver: cannot open %s: %s\n",
 	       program, bfd_errmsg (bfd_get_error ()));
       exit (1);
     }
@@ -219,9 +224,9 @@ mywait (char *status)
 	printf ("\nChild terminated with signal = %x \n", sigrc);
       *status = 'X';
       return sigrc;
-#endif
+#endif /* 0 */
 
-    default:			/* should this be sim_signalled or sim_stopped?  FIXME!! */
+    default:		/* should this be sim_signalled or sim_stopped?  FIXME!! */
       if (remote_debug)
 	printf ("\nChild received signal = %x \n", sigrc);
       fetch_inferior_registers (0);
@@ -231,19 +236,22 @@ mywait (char *status)
 }
 
 /* Resume execution of the inferior process.
-   If STEP is nonzero, single-step it.
-   If SIGNAL is nonzero, give it that signal.  */
+ * If STEP is nonzero, single-step it.
+ * If SIGNAL is nonzero, give it that signal.
+ */
 
 void
 myresume (int step, int signo)
 {
   /* Should be using target_signal_to_host() or signal numbers in target.h
-     to convert GDB signal number to target signal number.  */
+   * to convert GDB signal number to target signal number.
+   */
   sim_resume (gdbsim_desc, step, signo);
 }
 
 /* Copy LEN bytes from inferior's memory starting at MEMADDR
-   to debugger memory starting at MYADDR.  */
+ * to debugger memory starting at MYADDR.
+ */
 
 void
 read_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
@@ -252,14 +260,15 @@ read_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
 }
 
 /* Copy LEN bytes of data from debugger memory at MYADDR
-   to inferior's memory at MEMADDR.
-   On failure (cannot write the inferior)
-   returns the value of errno.  */
+ * to inferior's memory at MEMADDR.
+ * On failure (cannot write the inferior)
+ * returns the value of errno.
+ */
 
 int
 write_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
 {
-  sim_write (gdbsim_desc, memaddr, myaddr, len);	/* should check for error.  FIXME!! */
+  sim_write (gdbsim_desc, memaddr, myaddr, len); /* should check for error. FIXME!! */
   return 0;
 }
 
@@ -267,3 +276,5 @@ void
 initialize_low (void)
 {
 }
+
+/* EOF */

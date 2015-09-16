@@ -19,6 +19,10 @@
    Free Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA
    02110-1301, USA.  */
 
+/* this file is included like a header, so treat it like one: */
+#ifndef _IA64_OPC_D_C
+#define _IA64_OPC_D_C 1
+
 struct ia64_opcode ia64_opcodes_d[] =
   {
     {"add",   IA64_TYPE_DYN, 1, 0, 0, {IA64_OPND_R1, IA64_OPND_IMM22, IA64_OPND_R3_2}, 0, 0, NULL},
@@ -32,3 +36,5 @@ struct ia64_opcode ia64_opcodes_d[] =
     {"nop",   IA64_TYPE_DYN, 0, 0, 0, {IA64_OPND_IMMU21}, 0, 0, NULL},
     {NULL, 0, 0, 0, 0, {0}, 0, 0, NULL}
   };
+
+#endif /* !_IA64_OPC_D_C */

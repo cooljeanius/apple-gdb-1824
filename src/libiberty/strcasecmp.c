@@ -1,4 +1,4 @@
-/*
+/* strcasecmp.c
  * Copyright (c) 1987 Regents of the University of California.
  * All rights reserved.
  *
@@ -11,7 +11,7 @@
  */
 
 /*
-  
+
 @deftypefn Supplemental int strcasecmp (const char *@var{s1}, const char *@var{s2})
 
 A case-insensitive @code{strcmp}.
@@ -74,8 +74,8 @@ strcasecmp(const char *s1, const char *s2)
     register unsigned char u1, u2;
 
     for (;;) {
-	u1 = (unsigned char) *s1++;
-	u2 = (unsigned char) *s2++;
+	u1 = (unsigned char)*s1++;
+	u2 = (unsigned char)*s2++;
 	if (charmap[u1] != charmap[u2]) {
 	    return charmap[u1] - charmap[u2];
 	}
@@ -85,3 +85,4 @@ strcasecmp(const char *s1, const char *s2)
     }
 }
 
+/* EOF */

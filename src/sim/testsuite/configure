@@ -644,6 +644,9 @@ LDFLAGS
 CFLAGS
 CC
 AWK
+MAINT
+MAINTAINER_MODE_FALSE
+MAINTAINER_MODE_TRUE
 target_os
 target_vendor
 target_cpu
@@ -698,6 +701,7 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
+enable_maintainer_mode
 '
       ac_precious_vars='build_alias
 host_alias
@@ -711,7 +715,7 @@ CXX
 CXXFLAGS
 CCC
 CPP'
-ac_subdirs_all='$configdirs'
+ac_subdirs_all='${configdirs}'
 
 # Initialize some variables set by options.
 ac_init_help=
@@ -1320,6 +1324,14 @@ if test -n "$ac_init_help"; then
      short | recursive ) echo "Configuration of sim-testsuite 0.0.1:";;
    esac
   cat <<\_ACEOF
+
+Optional Features:
+  --disable-option-checking  ignore unrecognized --enable/--with options
+  --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
+  --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --enable-maintainer-mode
+                          enable make rules and dependencies not useful (and
+                          sometimes confusing) to the casual installer
 
 Some influential environment variables:
   CC          C compiler command
@@ -2354,6 +2366,30 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable maintainer-specific portions of Makefiles" >&5
+$as_echo_n "checking whether to enable maintainer-specific portions of Makefiles... " >&6; }
+    # Check whether --enable-maintainer-mode was given.
+if test "${enable_maintainer_mode+set}" = set; then :
+  enableval=$enable_maintainer_mode; USE_MAINTAINER_MODE=$enableval
+else
+  USE_MAINTAINER_MODE=no
+fi
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $USE_MAINTAINER_MODE" >&5
+$as_echo "$USE_MAINTAINER_MODE" >&6; }
+   if test $USE_MAINTAINER_MODE = yes; then
+  MAINTAINER_MODE_TRUE=
+  MAINTAINER_MODE_FALSE='#'
+else
+  MAINTAINER_MODE_TRUE='#'
+  MAINTAINER_MODE_FALSE=
+fi
+
+  MAINT=$MAINTAINER_MODE_TRUE
+
+
+
 
 # Checks for programs.
 for ac_prog in gawk mawk nawk awk
@@ -4448,7 +4484,7 @@ configdirs=""
 # add test sub-directory for appropriate targets
 testdir=`echo ${target} | sed -e 's/-.*-/-/'`
 if test -r ${srcdir}/${testdir}/configure ; then
-  configdirs="${configdirs} $testdir"
+  configdirs="${configdirs} ${testdir}"
 fi
 
 # add any extra subdirectories
@@ -4467,7 +4503,7 @@ esac
 # configure the subdirectories too
 
 
-subdirs="$subdirs $configdirs"
+subdirs="$subdirs ${configdirs}"
 
 
 ac_config_files="$ac_config_files Makefile"
@@ -4617,6 +4653,10 @@ LIBOBJS=$ac_libobjs
 LTLIBOBJS=$ac_ltlibobjs
 
 
+if test -z "${MAINTAINER_MODE_TRUE}" && test -z "${MAINTAINER_MODE_FALSE}"; then
+  as_fn_error $? "conditional \"MAINTAINER_MODE\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 
 : "${CONFIG_STATUS=./config.status}"
 ac_write_fail=0

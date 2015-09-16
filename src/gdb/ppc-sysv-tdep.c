@@ -108,7 +108,7 @@ struct ppc_stack_context
    this for LE PPC...  */
 
 static void
-ppc_copy_into_greg (struct regcache *regcache, int regno, int wordsize, 
+ppc_copy_into_greg (struct regcache *regcache, int regno, int wordsize,
 		    int len, const gdb_byte *contents)
 {
   int reg_size = register_size (current_gdbarch, regno);
@@ -126,7 +126,7 @@ ppc_copy_into_greg (struct regcache *regcache, int regno, int wordsize,
       if (num_regs == 0)
 	num_regs = 1;
 
-      
+
       for (i = 0; i < num_regs; i++)
 	{
 	  char buf[8];
@@ -141,7 +141,7 @@ ppc_copy_into_greg (struct regcache *regcache, int regno, int wordsize,
 }
 
 static void
-ppc_copy_from_greg (struct regcache *regcache, int regno, int wordsize, 
+ppc_copy_from_greg (struct regcache *regcache, int regno, int wordsize,
 		    int len, bfd_byte *buf)
 {
   /* Write just the bottom part of the register. */
@@ -176,7 +176,7 @@ ppc_copy_from_greg (struct regcache *regcache, int regno, int wordsize,
    registers. */
 
 static void
-ppc_push_argument (struct ppc_stack_abi *abi, 
+ppc_push_argument (struct ppc_stack_abi *abi,
 		   struct ppc_stack_context *c, struct value *arg,
 		   int argno, int do_copy, int floatonly)
 {
@@ -190,7 +190,7 @@ ppc_push_argument (struct ppc_stack_abi *abi,
   c->argoffset = ROUND_UP (c->argoffset, 4);
 
   switch (TYPE_CODE (type)) {
-      
+
   case TYPE_CODE_FLT:
     {
       if (c->freg <= abi->last_freg)
@@ -223,7 +223,7 @@ ppc_push_argument (struct ppc_stack_abi *abi,
 	    error ("floating point parameter had unexpected size");
 
 	  if (do_copy)
-	    regcache_raw_write (current_regcache, FP0_REGNUM + c->freg, 
+	    regcache_raw_write (current_regcache, FP0_REGNUM + c->freg,
 				value_contents (rval));
 	  if (do_copy && ! floatonly && abi->fregs_shadow_gregs)
 	    ppc_copy_into_greg (current_regcache, c->greg, tdep->wordsize, len, value_contents (arg));
@@ -266,19 +266,19 @@ ppc_push_argument (struct ppc_stack_abi *abi,
 
       /* APPLE LOCAL: Huge Hack...  The problem is that if we are a 32
 	 bit app on Mac OS X, the registers are really 64 bits, but we
-	 don't want to pass all 64 bits.  So if we get passed a value
+	 do NOT want to pass all 64 bits.  So if we get passed a value
 	 that came from a register, and it's length is > the wordsize,
 	 cast it to the wordsize first before passing it in.  */
-      if (VALUE_REGNUM (arg) != -1 && len == 8 && tdep->wordsize == 4)
+      if ((VALUE_REGNUM(arg) != -1) && (len == 8) && (tdep->wordsize == 4))
 	{
 	  len = 4;
-	  val_contents = value_contents (arg) + 4;
+	  val_contents = (gdb_byte *)(value_contents(arg) + 4);
 	}
       else
-	val_contents = value_contents (arg);
+	val_contents = (gdb_byte *)value_contents(arg);
       /* END APPLE LOCAL  */
 
-      nregs = (len <= 4) ? 1 : 2;
+      nregs = ((len <= 4) ? 1 : 2);
       if ((len != 1) && (len != 2) && (len != 4) && (len != 8))
 	error ("integer parameter had unexpected size");
 
@@ -295,7 +295,7 @@ ppc_push_argument (struct ppc_stack_abi *abi,
 	      if (regs_avaliable >= nregs)
 		regs_avaliable = nregs;
 
-	      ppc_copy_into_greg (current_regcache, c->greg, 
+	      ppc_copy_into_greg (current_regcache, c->greg,
 				  tdep->wordsize, regs_avaliable * 4, val_contents);
 	    }
 	  if (do_copy && abi->regs_shadow_stack)
@@ -305,7 +305,7 @@ ppc_push_argument (struct ppc_stack_abi *abi,
 	  if (abi->regs_shadow_stack)
 	    c->argoffset += (nregs * 4);
 	}
-      else 
+      else
 	{
 	  /* If we've filled up the registers, then just write it on the stack. */
 
@@ -366,11 +366,11 @@ ppc_push_argument (struct ppc_stack_abi *abi,
 	  int writereg = (regspace > len) ? len : regspace;
 	  int writestack = abi->regs_shadow_stack ? len : stackspace;
 
-	  for (i = 0; i < TYPE_NFIELDS (type); i++)
+	  for (i = 0; i < TYPE_NFIELDS(type); i++)
 	    {
-	      struct value *subarg = value_field (arg, i);
+	      struct value *subarg = value_field(arg, i);
 
-	      ppc_push_argument (abi, c, subarg, argno, do_copy, 1);
+	      ppc_push_argument(abi, c, subarg, argno, do_copy, 1);
 	    }
 
 	  if (floatonly)
@@ -378,23 +378,23 @@ ppc_push_argument (struct ppc_stack_abi *abi,
 
 	  if (do_copy)
 	    {
-	      gdb_byte *ptr = value_contents (arg);
+	      gdb_byte *ptr = (gdb_byte *)value_contents(arg);
 	      if (len < 4)
 		{
-		  memset (buf, 0, 4);
+		  memset(buf, 0, 4);
 		  if ((len == 1) || (len == 2))
-		    memcpy (buf + 4 - len, ptr, len);
+		    memcpy(buf + 4 - len, ptr, len);
 		  else
-		    memcpy (buf, ptr, len);
+		    memcpy(buf, ptr, len);
 		  ptr = buf;
 		}
-	      ppc_copy_into_greg (current_regcache, c->greg, 
-				  tdep->wordsize, (writereg < 4) ? 4 : writereg, ptr);
-	      write_memory (c->sp + c->argoffset, ptr,
-			    (writestack < 4) ? 4 : writestack);
+	      ppc_copy_into_greg(current_regcache, c->greg,
+				 tdep->wordsize, (writereg < 4) ? 4 : writereg, ptr);
+	      write_memory(c->sp + c->argoffset, ptr,
+			   (writestack < 4) ? 4 : writestack);
 	    }
 
-	  c->greg += ROUND_UP (writereg, 4) / 4;
+	  c->greg += (ROUND_UP(writereg, 4) / 4);
 	  c->argoffset += writestack;
 	}
       break;
@@ -522,7 +522,7 @@ ppc_push_arguments (struct ppc_stack_abi *abi, int nargs, struct value **args,
   if (struct_return)
     {
       store_unsigned_integer (buf, 4, struct_addr);
-      ppc_copy_into_greg (current_regcache, write.greg, 
+      ppc_copy_into_greg (current_regcache, write.greg,
 			  gdbarch_tdep (current_gdbarch)->wordsize, 4, buf);
       write.greg++;
       if (abi->regs_shadow_stack)
@@ -543,7 +543,7 @@ ppc_push_arguments (struct ppc_stack_abi *abi, int nargs, struct value **args,
    be less than eight parameters if some parameters occupy more than one
    word) are passed in r3..r10 registers.  float and double parameters are
    passed in fpr's, in addition to that. Rest of the parameters if any
-   are passed in user stack. 
+   are passed in user stack.
 
    If the function is returning a structure, then the return address is passed
    in r3, then the first 7 words of the parametes can be passed in registers,
@@ -708,13 +708,13 @@ do_ppc_sysv_return_value (struct gdbarch *gdbarch, struct type *type,
       if (readbuf)
 	{
 	  /* A long long, or a double stored in the 32 bit r3/r4.  */
-	  ppc_copy_from_greg (regcache, tdep->ppc_gp0_regnum + 3, 
+	  ppc_copy_from_greg (regcache, tdep->ppc_gp0_regnum + 3,
 			      tdep->wordsize, 8, (bfd_byte *) readbuf);
 	}
       if (writebuf)
 	{
 	  /* A long long, or a double stored in the 32 bit r3/r4.  */
-	  ppc_copy_into_greg (regcache, tdep->ppc_gp0_regnum + 3, 
+	  ppc_copy_into_greg (regcache, tdep->ppc_gp0_regnum + 3,
 			      tdep->wordsize, 8, writebuf);
 	}
       return RETURN_VALUE_REGISTER_CONVENTION;
@@ -867,10 +867,10 @@ ppc_darwin_abi_return_value (struct gdbarch *gdbarch, struct type *valtype,
 	  /* CORE_ADDR is more logical, but ULONGEST finesses the situation
 	     of G5 registers in 32-bit mode.  */
 	  ULONGEST addr;
-	  
+
 	  regcache_cooked_read (regcache, tdep->ppc_gp0_regnum + 3, (gdb_byte *) &addr);
 	  read_memory (addr, readbuf, TYPE_LENGTH (valtype));
-	  
+
 	}
       return RETURN_VALUE_ABI_RETURNS_ADDRESS;
     }
@@ -931,32 +931,34 @@ ppc64_darwin_abi_return_value (struct gdbarch *gdbarch, struct type *valtype,
    find "FN" in the same object file as ".FN").  */
 
 static int
-convert_code_addr_to_desc_addr (CORE_ADDR code_addr, CORE_ADDR *desc_addr)
+convert_code_addr_to_desc_addr(CORE_ADDR code_addr, CORE_ADDR *desc_addr)
 {
   struct obj_section *dot_fn_section;
   struct minimal_symbol *dot_fn;
   struct minimal_symbol *fn;
+#ifdef ALLOW_UNUSED_VARIABLES
   CORE_ADDR toc;
+#endif /* ALLOW_UNUSED_VARIABLES */
   /* Find the minimal symbol that corresponds to CODE_ADDR (should
      have a name of the form ".FN").  */
-  dot_fn = lookup_minimal_symbol_by_pc (code_addr);
-  if (dot_fn == NULL || SYMBOL_LINKAGE_NAME (dot_fn)[0] != '.')
+  dot_fn = lookup_minimal_symbol_by_pc(code_addr);
+  if ((dot_fn == NULL) || (SYMBOL_LINKAGE_NAME(dot_fn)[0] != '.'))
     return 0;
   /* Get the section that contains CODE_ADDR.  Need this for the
      "objfile" that it contains.  */
-  dot_fn_section = find_pc_section (code_addr);
-  if (dot_fn_section == NULL || dot_fn_section->objfile == NULL)
+  dot_fn_section = find_pc_section(code_addr);
+  if ((dot_fn_section == NULL) || (dot_fn_section->objfile == NULL))
     return 0;
   /* Now find the corresponding "FN" (dropping ".") minimal symbol's
      address.  Only look for the minimal symbol in ".FN"'s object file
      - avoids problems when two object files (i.e., shared libraries)
      contain a minimal symbol with the same name.  */
-  fn = lookup_minimal_symbol (SYMBOL_LINKAGE_NAME (dot_fn) + 1, NULL,
-			      dot_fn_section->objfile);
+  fn = lookup_minimal_symbol(SYMBOL_LINKAGE_NAME(dot_fn) + 1, NULL,
+			     dot_fn_section->objfile);
   if (fn == NULL)
     return 0;
-  /* Found a descriptor.  */
-  (*desc_addr) = SYMBOL_VALUE_ADDRESS (fn);
+  /* Found a descriptor: */
+  (*desc_addr) = SYMBOL_VALUE_ADDRESS(fn);
   return 1;
 }
 

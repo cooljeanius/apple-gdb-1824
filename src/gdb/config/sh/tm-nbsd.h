@@ -1,4 +1,5 @@
-/* Target-dependent definitions for SuperH running NetBSD, for GDB.
+/* tm-nbsd.h
+   Target-dependent definitions for SuperH running NetBSD, for GDB.
    Copyright 2002 Free Software Foundation, Inc.
    Contributed by Wasabi Systems, Inc.
 

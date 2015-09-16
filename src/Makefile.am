@@ -1,4 +1,5 @@
-
+## automake Makefile for the "src/" directory that is shared among many
+## projects
 # Makefile.in is generated from Makefile.am by 'automake'.
 #
 # Makefile for directory with subdirs to build.
@@ -23,6 +24,9 @@
 #
 
 ACLOCAL_AMFLAGS = -I m4 -I config --install
+AUTOMAKE_OPTIONS = 1.11.1 gnits no-dist
+## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
+AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 # -------------------------------
 # Standard Autoconf-set variables
@@ -85,6 +89,19 @@ build_tooldir = @build_tooldir@
 
 GDB_NLM_DEPS = 
 
+## list all three archs, starting with build:
+BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
+## now host:
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
+## finally target:
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
+## now transform them into archflags, starting with build:
+C_BUILD_ARCHFLAGS = -arch $(BUILD_ARCHITECTURE)
+## and host:
+C_HOST_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+## and finally target:
+C_TARG_ARCHFLAGS = -arch $(TARGET_ARCHITECTURE)
+
 # This is the name of the environment variable used for the path to
 # the libraries.
 RPATH_ENVVAR = @RPATH_ENVVAR@
@@ -116,7 +133,7 @@ BUILD_EXPORTS = \
 	AR="$(AR_FOR_BUILD)"; export AR; \
 	AS="$(AS_FOR_BUILD)"; export AS; \
 	CC="$(CC_FOR_BUILD)"; export CC; \
-	CFLAGS="$(CFLAGS_FOR_BUILD)"; export CFLAGS; \
+	CFLAGS="$(CFLAGS_FOR_BUILD) $(C_BUILD_ARCHFLAGS)"; export CFLAGS; \
 	CONFIG_SHELL="$(SHELL)"; export CONFIG_SHELL; \
 	CXX="$(CXX_FOR_BUILD)"; export CXX; \
 	CXXFLAGS="$(CXXFLAGS_FOR_BUILD)"; export CXXFLAGS; \
@@ -142,7 +159,7 @@ HOST_SUBDIR = @host_subdir@
 HOST_EXPORTS = \
 	$(BASE_EXPORTS) \
 	CC="$(CC)"; export CC; \
-	CFLAGS="$(CFLAGS)"; export CFLAGS; \
+	CFLAGS="$(CFLAGS) $(C_HOST_ARCHFLAGS)"; export CFLAGS; \
 	CONFIG_SHELL="$(SHELL)"; export CONFIG_SHELL; \
 	CXX="$(CXX)"; export CXX; \
 	CXXFLAGS="$(CXXFLAGS)"; export CXXFLAGS; \
@@ -188,7 +205,7 @@ BASE_TARGET_EXPORTS = \
 	AR="$(AR_FOR_TARGET)"; export AR; \
 	AS="$(AS_FOR_TARGET)"; export AS; \
 	CC="$(CC_FOR_TARGET)"; export CC; \
-	CFLAGS="$(CFLAGS_FOR_TARGET)"; export CFLAGS; \
+	CFLAGS="$(CFLAGS_FOR_TARGET) $(C_TARG_ARCHFLAGS)"; export CFLAGS; \
 	CONFIG_SHELL="$(SHELL)"; export CONFIG_SHELL; \
 	CPPFLAGS="$(CPPFLAGS_FOR_TARGET)"; export CPPFLAGS; \
 	CXXFLAGS="$(CXXFLAGS_FOR_TARGET)"; export CXXFLAGS; \
@@ -233,6 +250,7 @@ PWD_COMMAND = $${PWDCMD-pwd}
 # environment.
 CC_FOR_BUILD = @CC_FOR_BUILD@
 CFLAGS_FOR_BUILD = @CFLAGS_FOR_BUILD@
+LIBCFLAGS_FOR_BUILD = $(CFLAGS_FOR_BUILD) $(C_BUILD_ARCHFLAGS)
 
 CXX_FOR_BUILD = $(CXX)
 
@@ -313,7 +331,7 @@ AR_FLAGS = rc
 
 CC = @CC@
 CFLAGS = @CFLAGS@
-LIBCFLAGS = $(CFLAGS)
+LIBCFLAGS = $(CFLAGS) $(C_HOST_ARCHFLAGS)
 
 CXX = @CXX@
 CXXFLAGS = @CXXFLAGS@
@@ -394,7 +412,7 @@ GCC_FOR_TARGET=@GCC_FOR_TARGET@
 CONFIGURED_GCC_FOR_TARGET=@CONFIGURED_GCC_FOR_TARGET@
 USUAL_GCC_FOR_TARGET = $(STAGE_CC_WRAPPER) \
   $$r/$(HOST_SUBDIR)/gcc/xgcc -B$$r/$(HOST_SUBDIR)/gcc/ $(FLAGS_FOR_TARGET)
-LIBCFLAGS_FOR_TARGET = $(CFLAGS_FOR_TARGET)
+LIBCFLAGS_FOR_TARGET = $(CFLAGS_FOR_TARGET) $(C_TARG_ARCHFLAGS)
 
 CXX_FOR_TARGET=$(STAGE_CC_WRAPPER) @CXX_FOR_TARGET@ $(FLAGS_FOR_TARGET)
 CONFIGURED_CXX_FOR_TARGET=@CONFIGURED_CXX_FOR_TARGET@
@@ -1892,30 +1910,35 @@ install-info: do-install-info dir.info
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	if [ -f dir.info ] ; then \
 	  $(INSTALL_DATA) dir.info $(DESTDIR)$(infodir)/dir.info ; \
-	else true ; fi
+	else echo "dir.info is missing, so skipping installing it"; fi
 
 local-clean:
 	-rm -f *.a TEMP errs core *.o *~ \#* TAGS *.E *.log
 
 local-distclean:
-	-rm -f Makefile config.status config.cache mh-frag mt-frag
+	-rm -f Makefile Makefile*orig
+	-rm -f config.status config.cache
+	-rm -f mh-frag mt-frag
 	-rm -f multilib.out multilib.tmp maybedep.tmp serdep.tmp
 	-if [ "$(TARGET_SUBDIR)" != "." ]; then \
 	  rm -rf $(TARGET_SUBDIR); \
-	else true; fi
+	else echo "vpath is irrelevant"; fi
 	-rm -rf $(BUILD_SUBDIR)
 	-if [ "$(HOST_SUBDIR)" != "." ]; then \
 	  rm -rf $(HOST_SUBDIR); \
-	else true; fi
+	else echo "vpath is irrelevant"; fi
 	-rm -f texinfo/po/Makefile texinfo/po/Makefile.in texinfo/info/Makefile
 	-rm -f texinfo/doc/Makefile texinfo/po/POTFILES
 	-rmdir texinfo/doc texinfo/info texinfo/intl texinfo/lib 2>/dev/null
 	-rmdir texinfo/makeinfo texinfo/po texinfo/util 2>/dev/null
 	-rmdir fastjar gcc libiberty texinfo zlib 2>/dev/null
+	-rm -rf autom4te.cache || rmdir autom4te.cache
+	-rm -f .DS_Store
 
 local-maintainer-clean:
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
+	-rm -f configure.scan
 
 clean: do-clean local-clean
 mostlyclean: do-mostlyclean local-clean
@@ -35033,7 +35056,7 @@ multilib.out: maybe-all-gcc
 	echo "";
 
 # Rebuilding Makefile.in, using autogen.
-AUTOGEN = autogen
+AUTOGEN = `which autogen`
 $(srcdir)/Makefile.in: @MAINT@ $(srcdir)/Makefile.tpl $(srcdir)/Makefile.def
 	cd $(srcdir) && $(AUTOGEN) Makefile.def
 .PHONY: $(srcdir)/Makefile.in
@@ -35082,33 +35105,34 @@ BINUTILS_LIB = $(SYSTEM_FRAMEWORK)
 
 stamp-framework-headers-binutils:
 	$(RM) -f stamp-framework-binutils stamp-framework-headers-binutils
-	$(RM) -rf $(BINUTILS).framework
-	mkdir -p $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Headers
-	mkdir -p $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/PrivateHeaders
-	ln -s Versions/Current/Headers $(BINUTILS).framework/Headers
-	ln -s Versions/Current/PrivateHeaders $(BINUTILS).framework/PrivateHeaders
-	ln -s A $(BINUTILS).framework/Versions/Current
-	cp -rp $(srcdir)/include/* $(BINUTILS).framework/Versions/Current/Headers/
-	cp -rp $(srcdir)/intl/*.h $(BINUTILS).framework/Versions/Current/Headers/
-	cp -rp intl/*.h $(BINUTILS).framework/Versions/Current/Headers/
+	$(RM) -rfv $(BINUTILS).framework
+	$(MKDIR_P) -v $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Headers
+	$(MKDIR_P) -v $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/PrivateHeaders
+	$(LN_S) -v Versions/Current/Headers $(BINUTILS).framework/Headers
+	$(LN_S) -v Versions/Current/PrivateHeaders $(BINUTILS).framework/PrivateHeaders
+	$(LN_S) -v A $(BINUTILS).framework/Versions/Current
+	cp -rpv $(srcdir)/include/* $(BINUTILS).framework/Versions/Current/Headers/
+	cp -rpv $(srcdir)/intl/*.h $(BINUTILS).framework/Versions/Current/Headers/
+	cp -rpv intl/*.h $(BINUTILS).framework/Versions/Current/Headers/
 	touch stamp-framework-headers-binutils
 
 stamp-framework-binutils: $(BINUTILS_OFILES)
 	$(RM) -f stamp-framework-headers-binutils
 	$(MAKE) stamp-framework-headers-binutils
-	mkdir -p $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Resources
-	ln -s Versions/Current/Resources $(BINUTILS).framework/Resources
-	mkdir -p $(BINUTILS).framework/Versions/Current/Resources/English.lproj
+	$(MKDIR_P) -v $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Resources
+	$(LN_S) -v Versions/Current/Resources $(BINUTILS).framework/Resources
+	$(MKDIR_P) -v $(BINUTILS).framework/Versions/Current/Resources/English.lproj
 
-	set -e; if [ "$(BINUTILS_SUFFIX)" != "" ]; then \
-		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(BINUTILS_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) -o $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS_OFILES) $(BINUTILS_LIB); \
-		ln -s $(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX); \
-		ln -s Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX); \
-		ln -s Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX); \
-		ln -s $(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX) $(BINUTILS).framework/$(BINUTILS); \
+	set -ex; \
+	if [ "x$(BINUTILS_SUFFIX)" != "x" ]; then \
+	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(BINUTILS_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) -o $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS_OFILES) $(BINUTILS_LIB); \
+	    $(LN_S) -v $(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX); \
+	    $(LN_S) -v Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX); \
+	    $(LN_S) -v Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX); \
+	    $(LN_S) -v $(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX) $(BINUTILS).framework/$(BINUTILS); \
 	else \
-		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(BINUTILS_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/$(BINUTILS_PREFIX)$(BINUTILS) -o $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS) $(BINUTILS_OFILES) $(BINUTILS_LIB); \
-		ln -s Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS); \
+	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(BINUTILS_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/$(BINUTILS_PREFIX)$(BINUTILS) -o $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS) $(BINUTILS_OFILES) $(BINUTILS_LIB); \
+	    $(LN_S) -v Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS); \
 	fi
 	touch stamp-framework-binutils
 
@@ -35126,44 +35150,46 @@ TEMPLATEdir = @TEMPLATEdir@
 
 stamp-framework-headers-gdb:
 	$(RM) -f stamp-framework-gdb stamp-framework-headers-gdb
-	$(RM) -rf $(GDB).framework
-	mkdir -p $(GDB).framework/Versions/$(GDB_VERSION)/Headers
-	mkdir -p $(GDB).framework/Versions/$(GDB_VERSION)/PrivateHeaders
-	ln -s Versions/Current/Headers $(GDB).framework/Headers
-	ln -s Versions/Current/PrivateHeaders $(GDB).framework/PrivateHeaders
-	ln -s A $(GDB).framework/Versions/Current
-	cp -p $(srcdir)/gdb/*.h $(GDB).framework/Versions/Current/Headers/
-	cp -p $(srcdir)/gdb/macosx/*.h $(GDB).framework/Versions/Current/Headers/
-	mkdir -p $(GDB).framework/Versions/Current/Headers/tui
-	cp -p $(srcdir)/gdb/tui/*.h $(GDB).framework/Versions/Current/Headers/tui
-	mkdir -p $(GDB).framework/Versions/Current/Headers/cli
-	cp -p $(srcdir)/gdb/cli/*.h $(GDB).framework/Versions/Current/Headers/cli
-	mkdir -p $(GDB).framework/Versions/Current/Headers/mi
-	cp -p $(srcdir)/gdb/mi/*.h $(GDB).framework/Versions/Current/Headers/mi
-	mkdir -p $(GDB).framework/Versions/Current/Headers/machine
-	cp -p gdb/*.h $(GDB).framework/Versions/Current/Headers/machine/
-	cp -rp $(srcdir)/gdb/config $(GDB).framework/Versions/Current/Headers/config
-	set -e; for h in $(TEMPLATE_HEADERS); do \
-		rm -f $(GDB).framework/Versions/A/Headers/$${h}; \
-		ln -s machine/$${h} $(GDB).framework/Versions/A/Headers/$${h}; \
+	$(RM) -rfv $(GDB).framework
+	$(MKDIR_P) -v $(GDB).framework/Versions/$(GDB_VERSION)/Headers
+	$(MKDIR_P) -v $(GDB).framework/Versions/$(GDB_VERSION)/PrivateHeaders
+	$(LN_S) -v Versions/Current/Headers $(GDB).framework/Headers
+	$(LN_S) -v Versions/Current/PrivateHeaders $(GDB).framework/PrivateHeaders
+	$(LN_S) -v A $(GDB).framework/Versions/Current
+	cp -pv $(srcdir)/gdb/*.h $(GDB).framework/Versions/Current/Headers/
+	cp -pv $(srcdir)/gdb/macosx/*.h $(GDB).framework/Versions/Current/Headers/
+	$(MKDIR_P) -v $(GDB).framework/Versions/Current/Headers/tui
+	cp -pv $(srcdir)/gdb/tui/*.h $(GDB).framework/Versions/Current/Headers/tui
+	$(MKDIR_P) -v $(GDB).framework/Versions/Current/Headers/cli
+	cp -pv $(srcdir)/gdb/cli/*.h $(GDB).framework/Versions/Current/Headers/cli
+	$(MKDIR_P) -v $(GDB).framework/Versions/Current/Headers/mi
+	cp -pv $(srcdir)/gdb/mi/*.h $(GDB).framework/Versions/Current/Headers/mi
+	$(MKDIR_P) -v $(GDB).framework/Versions/Current/Headers/machine
+	cp -pv gdb/*.h $(GDB).framework/Versions/Current/Headers/machine/
+	cp -rpv $(srcdir)/gdb/config $(GDB).framework/Versions/Current/Headers/config
+	set -ex; \
+	for h in $(TEMPLATE_HEADERS); do \
+	    rm -fv $(GDB).framework/Versions/A/Headers/$${h}; \
+	    $(LN_S) -v machine/$${h} $(GDB).framework/Versions/A/Headers/$${h}; \
 	done
 	touch stamp-framework-headers-gdb
 
 stamp-framework-gdb: $(GDB_OFILES)
 	$(RM) -f stamp-framework-headers-gdb
 	$(MAKE) stamp-framework-headers-gdb
-	mkdir -p $(GDB).framework/Versions/$(GDB_VERSION)/Resources
-	ln -s Versions/Current/Resources $(GDB).framework/Resources
-	mkdir -p $(GDB).framework/Versions/Current/Resources/English.lproj
+	$(MKDIR_P) -v $(GDB).framework/Versions/$(GDB_VERSION)/Resources
+	$(LN_S) -v Versions/Current/Resources $(GDB).framework/Resources
+	$(MKDIR_P) -v $(GDB).framework/Versions/Current/Resources/English.lproj
 
-	set -e; if [ "$(GDB_SUFFIX)" != "" ]; then \
-		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(GDB_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(GDB).framework/Versions/$(GDB_VERSION)/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) -o $(GDB).framework/Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) $(GDB_OFILES) $(GDB_LIB); \
-		ln -s $(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) $(GDB).framework/Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_SUFFIX); \
-		ln -s Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) $(GDB).framework/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX); \
-		ln -s Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_SUFFIX) $(GDB).framework/$(GDB_PREFIX)$(GDB)$(GDB_SUFFIX); \
-		ln -s $(GDB_PREFIX)$(GDB)$(GDB_SUFFIX) $(GDB).framework/$(GDB); \
+	set -ex; \
+	if [ "x$(GDB_SUFFIX)" != x"" ]; then \
+	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(GDB_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(GDB).framework/Versions/$(GDB_VERSION)/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) -o $(GDB).framework/Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) $(GDB_OFILES) $(GDB_LIB); \
+	    $(LN_S) -v $(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) $(GDB).framework/Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_SUFFIX); \
+	    $(LN_S) -v Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) $(GDB).framework/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX); \
+	    $(LN_S) -v Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_SUFFIX) $(GDB).framework/$(GDB_PREFIX)$(GDB)$(GDB_SUFFIX); \
+	    $(LN_S) -v $(GDB_PREFIX)$(GDB)$(GDB_SUFFIX) $(GDB).framework/$(GDB); \
 	else \
-		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(GDB_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(GDB).framework/Versions/$(GDB_VERSION)/$(GDB_PREFIX)$(GDB) -o $(GDB).framework/Versions/Current/$(GDB_PREFIX)$(GDB) $(GDB_OFILES) $(GDB_LIB); \
-		ln -s Versions/Current/$(GDB_PREFIX)$(GDB) $(GDB).framework/$(GDB_PREFIX)$(GDB); \
+	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(GDB_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(GDB).framework/Versions/$(GDB_VERSION)/$(GDB_PREFIX)$(GDB) -o $(GDB).framework/Versions/Current/$(GDB_PREFIX)$(GDB) $(GDB_OFILES) $(GDB_LIB); \
+	    $(LN_S) -v Versions/Current/$(GDB_PREFIX)$(GDB) $(GDB).framework/$(GDB_PREFIX)$(GDB); \
 	fi
 	touch stamp-framework-gdb

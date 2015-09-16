@@ -1,4 +1,4 @@
-/* Generate a core file for the inferior process.
+/* gcore.c: Generate a core file for the inferior process.
 
    Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
@@ -31,15 +31,14 @@
 
 #include "gdb_assert.h"
 
-static char *default_gcore_target (void);
-static enum bfd_architecture default_gcore_arch (void);
-static unsigned long default_gcore_mach (void);
-static int gcore_memory_sections (bfd *);
+static char *default_gcore_target(void);
+static enum bfd_architecture default_gcore_arch(void);
+static unsigned long default_gcore_mach(void);
+static int gcore_memory_sections(bfd *);
 
-/* Generate a core file from the inferior process.  */
-
+/* Generate a core file from the inferior process: */
 static void
-gcore_command (char *args, int from_tty)
+gcore_command(char *args, int from_tty)
 {
   struct cleanup *old_chain;
   char *corefilename, corefilename_buffer[40];
@@ -474,29 +473,29 @@ gcore_copy_callback (bfd *obfd, asection *osec, void *ignored)
 }
 
 static int
-gcore_memory_sections (bfd *obfd)
+gcore_memory_sections(bfd *obfd)
 {
-  if (target_find_memory_regions (gcore_create_callback, obfd) != 0)
+  if (target_find_memory_regions(gcore_create_callback, obfd) != 0)
     return 0;			/* FIXME: error return/msg?  */
 
   /* Record phdrs for section-to-segment mapping.  */
-  bfd_map_over_sections (obfd, make_output_phdrs, NULL);
+  bfd_map_over_sections(obfd, make_output_phdrs, NULL);
 
-  /* Copy memory region contents.  */
-  bfd_map_over_sections (obfd, gcore_copy_callback, NULL);
+  /* Copy memory region contents: */
+  bfd_map_over_sections(obfd, gcore_copy_callback, NULL);
 
   return 1;
 }
 
 void
-_initialize_gcore (void)
+_initialize_gcore(void)
 {
-  add_com ("generate-core-file", class_files, gcore_command, _("\
+  add_com("generate-core-file", class_files, gcore_command, _("\
 Save a core file with the current state of the debugged process.\n\
 Argument is optional filename.  Default filename is 'core.<process_id>'."));
 
-  add_com_alias ("gcore", "generate-core-file", class_files, 1);
-  exec_set_find_memory_regions (objfile_find_memory_regions);
+  add_com_alias("gcore", "generate-core-file", class_files, 1);
+  exec_set_find_memory_regions(objfile_find_memory_regions);
 }
 
 /* EOF */

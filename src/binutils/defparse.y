@@ -37,7 +37,7 @@
 %token <number> NUMBER
 %type  <number> opt_base opt_ordinal opt_NONAME opt_CONSTANT opt_DATA opt_PRIVATE
 %type  <number> attr attr_list opt_number
-%type  <id> opt_name opt_equal_name 
+%type  <id> opt_name opt_equal_name
 
 %%
 
@@ -45,10 +45,10 @@ start: start command
 	| command
 	;
 
-command: 
+command:
 		NAME opt_name opt_base { def_name ($2, $3); }
 	|	LIBRARY opt_name opt_base option_list { def_library ($2, $3); }
-	|	EXPORTS explist 
+	|	EXPORTS explist
 	|	DESCRIPTION ID { def_description ($2);}
 	|	STACKSIZE NUMBER opt_number { def_stacksize ($2, $3);}
 	|	HEAPSIZE NUMBER opt_number { def_heapsize ($2, $3);}
@@ -70,7 +70,7 @@ expline:
 		ID opt_equal_name opt_ordinal opt_NONAME opt_CONSTANT opt_DATA opt_PRIVATE
 			{ def_exports ($1, $2, $3, $4, $5, $6, $7);}
 	;
-implist:	
+implist:
 		implist impline
 	|	impline
 	;
@@ -102,12 +102,12 @@ attr_list:
 
 opt_comma:
 	','
-	| 
+	|
 	;
 opt_number: ',' NUMBER { $$=$2;}
 	|	   { $$=-1;}
 	;
-	
+
 attr:
 		READ { $$ = 1; }
 	|	WRITE { $$ = 2; }
@@ -139,29 +139,29 @@ opt_PRIVATE:
 	;
 
 opt_name: ID		{ $$ =$1; }
-	| ID '.' ID	
-	  { 
-	    char *name = xmalloc (strlen ($1) + 1 + strlen ($3) + 1);
-	    sprintf (name, "%s.%s", $1, $3);
+	| ID '.' ID
+	  {
+	    char *name = (char *)xmalloc(strlen($1) + 1 + strlen($3) + 1);
+	    sprintf(name, "%s.%s", $1, $3);
 	    $$ = name;
 	  }
 	|		{ $$=""; }
 	;
 
-opt_ordinal: 
+opt_ordinal:
 	  '@' NUMBER     { $$=$2;}
 	|                { $$=-1;}
 	;
 
 opt_equal_name:
           '=' ID	{ $$ = $2; }
-	| '=' ID '.' ID	
-	  { 
-	    char *name = xmalloc (strlen ($2) + 1 + strlen ($4) + 1);
-	    sprintf (name, "%s.%s", $2, $4);
+	| '=' ID '.' ID
+	  {
+	    char *name = (char *)xmalloc(strlen($2) + 1 + strlen($4) + 1);
+	    sprintf(name, "%s.%s", $2, $4);
 	    $$ = name;
 	  }
-        | 		{ $$ =  0; }			 
+        | 		{ $$ =  0; }
 	;
 
 opt_base: BASE	'=' NUMBER	{ $$= $3;}

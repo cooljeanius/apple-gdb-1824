@@ -1,4 +1,5 @@
-/* Copyright (C) 2013 Free Software Foundation, Inc.
+/* expect-read1.c
+   Copyright (C) 2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
 

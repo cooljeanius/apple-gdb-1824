@@ -1,0 +1,35 @@
+#!/bin/sh
+# Script to coordinate parsing of S. Chamberlain source-embedded 
+# documentation markup language.
+
+# Four passes:
+#	1) awk discards lines not intended for docn, and marks blocks of
+#	   text with comments identifying source file;
+#	2) first sed pass interprets Chamberlain markup;
+#	3) second sed pass does cleanup that involves merging lines
+#	4) third sed pass does remaining cleans up---making {}
+#	   printable within examples, and eliminating empty index entries &
+#          headings.
+# 3rd and 2nd sed passes are separate because order of execution is hard
+# to control otherwise, making 1/another of the things involving @example
+# inoperative.
+
+if [ -z ${1} ]; then
+  echo "Error: missing an argument (1)"
+  exit 1
+fi
+base=`echo ${1} | cut -d '.' -f 1`
+echo "base is ${base}"
+if [ -z ${2} ]; then
+  echo "Error: missing an argument (2)"
+  exit 2
+fi
+out=`echo ${2} | cut -d '.' -f 1`
+echo "out is ${out}"
+
+awk -f awkscan.awk ${1} | \
+sed -f sedscript.sed | \
+sed -f unPROTO.sed | \
+sed -f exmerge.sed  | \
+sed -f exfilter.sed  >${out}.texi
+

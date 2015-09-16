@@ -1,4 +1,4 @@
-/* Character set conversion support for GDB.
+/* charset.c: Character set conversion support for GDB.
 
    Copyright 2001, 2003 Free Software Foundation, Inc.
 
@@ -29,8 +29,8 @@
 #include <ctype.h>
 
 #ifdef HAVE_ICONV
-#include <iconv.h>
-#endif
+# include <iconv.h>
+#endif /* HAVE_ICONV */
 
 
 /* How GDB's character set support works
@@ -133,7 +133,7 @@ struct translation {
      should fall back on the default behavior.  We hope the default
      behavior will be correct for many from/to pairs, reducing the
      number of translations that need to be registered explicitly.  */
-  
+
   /* TARGET_CHAR is in the `from' charset.
      Returns a string in the `to' charset.  */
   const char *(*c_target_char_has_backslash_escape) (void *baton,
@@ -159,21 +159,21 @@ struct translation {
 
 #ifdef NM_NEXTSTEP
   #ifndef GDB_DEFAULT_HOST_CHARSET
-  #define GDB_DEFAULT_HOST_CHARSET "UTF-8"
-  #endif
+  # define GDB_DEFAULT_HOST_CHARSET "UTF-8"
+  #endif /* !GDB_DEFAULT_HOST_CHARSET */
 
   #ifndef GDB_DEFAULT_TARGET_CHARSET
-  #define GDB_DEFAULT_TARGET_CHARSET "UTF-8"
-  #endif
+  # define GDB_DEFAULT_TARGET_CHARSET "UTF-8"
+  #endif /* !GDB_DEFAULT_TARGET_CHARSET */
 #else
   #ifndef GDB_DEFAULT_HOST_CHARSET
-  #define GDB_DEFAULT_HOST_CHARSET "ISO-8859-1"
-  #endif
+  # define GDB_DEFAULT_HOST_CHARSET "ISO-8859-1"
+  #endif /* !GDB_DEFAULT_HOST_CHARSET */
 
   #ifndef GDB_DEFAULT_TARGET_CHARSET
-  #define GDB_DEFAULT_TARGET_CHARSET "ISO-8859-1"
-  #endif
-#endif
+  # define GDB_DEFAULT_TARGET_CHARSET "ISO-8859-1"
+  #endif /* GDB_DEFAULT_TARGET_CHARSET */
+#endif /* NM_NEXTSTEP */
 static const char *host_charset_name = GDB_DEFAULT_HOST_CHARSET;
 static void
 show_host_charset_name (struct ui_file *file, int from_tty,
@@ -193,7 +193,7 @@ show_target_charset_name (struct ui_file *file, int from_tty,
 }
 
 
-static const char *host_charset_enum[] = 
+static const char *host_charset_enum[] =
 {
   "ASCII",
   "ISO-8859-1",
@@ -201,7 +201,7 @@ static const char *host_charset_enum[] =
   0
 };
 
-static const char *target_charset_enum[] = 
+static const char *target_charset_enum[] =
 {
   "ASCII",
   "ISO-8859-1",
@@ -246,7 +246,6 @@ lookup_charset (const char *name)
 /* The global list of translations.  */
 static struct translation *all_translations;
 
-
 static void
 register_translation (struct translation *t)
 {
@@ -268,7 +267,6 @@ lookup_translation (const char *from, const char *to)
   return 0;
 }
 
-
 
 /* Constructing charsets.  */
 
@@ -277,18 +275,18 @@ lookup_translation (const char *from, const char *to)
    so that we can add new fields to the structure in the future without
    having to tweak all the old charset descriptions.  */
 static struct charset *
-simple_charset (const char *name,
-                int valid_host_charset,
-                int (*host_char_print_literally) (void *baton, int host_char),
-                void *host_char_print_literally_baton,
-                int (*target_char_to_control_char) (void *baton,
-                                                    int target_char,
-                                                    int *target_ctrl_char),
-                void *target_char_to_control_char_baton)
+simple_charset(const char *name, int valid_host_charset,
+               int (*host_char_print_literally)(void *baton,
+                                                int host_char),
+               void *host_char_print_literally_baton,
+               int (*target_char_to_control_char)(void *baton,
+                                                  int target_char,
+                                                  int *target_ctrl_char),
+               void *target_char_to_control_char_baton)
 {
-  struct charset *cs = xmalloc (sizeof (*cs));
+  struct charset *cs = (struct charset *)xmalloc(sizeof (*cs));
 
-  memset (cs, 0, sizeof (*cs));
+  memset(cs, 0, sizeof(*cs));
   cs->name = name;
   cs->valid_host_charset = valid_host_charset;
   cs->host_char_print_literally = host_char_print_literally;
@@ -298,31 +296,26 @@ simple_charset (const char *name,
 
   return cs;
 }
-
-
 
-/* ASCII functions.  */
-
+/* ASCII functions: */
 static int
-ascii_print_literally (void *baton, int c)
+ascii_print_literally(void *baton, int c)
 {
   c &= 0xff;
 
-  return (0x20 <= c && c <= 0x7e);
+  return ((0x20 <= c) && (c <= 0x7e));
 }
 
 
 static int
-ascii_to_control (void *baton, int c, int *ctrl_char)
+ascii_to_control(void *baton, int c, int *ctrl_char)
 {
   *ctrl_char = (c & 037);
   return 1;
 }
 
 
-/* ISO-8859 family functions.  */
-
-
+/* ISO-8859 family functions: */
 static int
 iso_8859_print_literally (void *baton, int c)
 {
@@ -334,22 +327,21 @@ iso_8859_print_literally (void *baton, int c)
 
 
 static int
-iso_8859_to_control (void *baton, int c, int *ctrl_char)
+iso_8859_to_control(void *baton, int c, int *ctrl_char)
 {
-  *ctrl_char = (c & 0200) | (c & 037);
+  *ctrl_char = ((c & 0200) | (c & 037));
   return 1;
 }
 
 
-/* Construct an ISO-8859-like character set.  */
+/* Construct an ISO-8859-like character set: */
 static struct charset *
-iso_8859_family_charset (const char *name)
+iso_8859_family_charset(const char *name)
 {
-  return simple_charset (name, 1,
-                         iso_8859_print_literally, 0,
-                         iso_8859_to_control, 0);
+  return simple_charset(name, 1,
+                        iso_8859_print_literally, 0,
+                        iso_8859_to_control, 0);
 }
-
 
 
 /* APPLE LOCAL: UTF-8 */
@@ -416,9 +408,6 @@ ebcdic_family_charset (const char *name)
                          ebcdic_print_literally, 0,
                          ebcdic_to_control, 0);
 }
-                
-
-
 
 
 /* Fallback functions using iconv.  */
@@ -455,7 +444,7 @@ check_iconv_cache (struct cached_iconv *ci,
     {
       i = ci->i;
       ci->i = (iconv_t) 0;
-      
+
       if (iconv_close (i) == -1)
         error (_("Error closing `iconv' descriptor for "
 		 "`%s'-to-`%s' character conversion: %s"),
@@ -538,49 +527,46 @@ register_iconv_charsets (void)
 #endif /* defined (HAVE_ICONV) */
 
 
-/* Fallback routines for systems without iconv.  */
-
-#if ! defined (HAVE_ICONV) 
+/* Fallback routines for systems without iconv: */
+#if ! defined(HAVE_ICONV)
 struct cached_iconv { char nothing; };
 
 static int
-check_iconv_cache (struct cached_iconv *ci,
-                   struct charset *from,
-                   struct charset *to)
+check_iconv_cache(struct cached_iconv *ci, struct charset *from,
+                  struct charset *to)
 {
   errno = EINVAL;
   return -1;
 }
 
 static int
-cached_iconv_convert (struct cached_iconv *ci, int from_char, int *to_char)
+cached_iconv_convert(struct cached_iconv *ci, int from_char, int *to_char)
 {
-  /* This function should never be called.  */
-  gdb_assert (0);
+  /* This function should never be called: */
+  gdb_assert(0);
 }
 
 static void
-register_iconv_charsets (void)
+register_iconv_charsets(void)
 {
+  return;
 }
-
 #endif /* ! defined(HAVE_ICONV) */
 
 
-/* Default trivial conversion functions.  */
-
+/* Default trivial conversion functions: */
 static int
-identity_either_char_to_other (void *baton, int either_char, int *other_char)
+identity_either_char_to_other(void *baton, int either_char,
+                              int *other_char)
 {
   *other_char = either_char;
   return 1;
 }
 
-
 
 /* Default non-trivial conversion functions.  */
 
-
+/* Various variables (strings) used by these functions: */
 static char backslashable[] = "abfnrtv";
 static char *backslashed[] = {"a", "b", "f", "n", "r", "t", "v", "0"};
 static char represented[] = "\a\b\f\n\r\t\v";
@@ -589,17 +575,17 @@ static char represented[] = "\a\b\f\n\r\t\v";
 /* Translate TARGET_CHAR into the host character set, and see if it
    matches any of our standard escape sequences.  */
 static const char *
-default_c_target_char_has_backslash_escape (void *baton, int target_char)
+default_c_target_char_has_backslash_escape(void *baton, int target_char)
 {
   int host_char;
   const char *ix;
 
   /* If target_char has no equivalent in the host character set,
      assume it doesn't have a backslashed form.  */
-  if (! target_char_to_host (target_char, &host_char))
+  if (! target_char_to_host(target_char, &host_char))
     return NULL;
 
-  ix = strchr (represented, host_char);
+  ix = strchr(represented, host_char);
   if (ix)
     return backslashed[ix - represented];
   else
@@ -610,28 +596,27 @@ default_c_target_char_has_backslash_escape (void *baton, int target_char)
 /* Translate the backslash the way we would in the host character set,
    and then try to translate that into the target character set.  */
 static int
-default_c_parse_backslash (void *baton, int host_char, int *target_char)
+default_c_parse_backslash(void *baton, int host_char, int *target_char)
 {
   const char *ix;
 
-  ix = strchr (backslashable, host_char);
+  ix = strchr(backslashable, host_char);
 
   if (! ix)
     return 0;
   else
-    return host_char_to_target (represented[ix - backslashable],
-                                target_char);
+    return host_char_to_target(represented[ix - backslashable],
+                               target_char);
 }
 
 
-/* Convert using a cached iconv descriptor.  */
+/* Convert using a cached iconv descriptor: */
 static int
-iconv_convert (void *baton, int from_char, int *to_char)
+iconv_convert(void *baton, int from_char, int *to_char)
 {
-  struct cached_iconv *ci = baton;
-  return cached_iconv_convert (ci, from_char, to_char);
+  struct cached_iconv *ci = (struct cached_iconv *)baton;
+  return cached_iconv_convert(ci, from_char, to_char);
 }
-
 
 
 /* Conversion tables.  */
@@ -909,18 +894,18 @@ table_convert_char (void *baton, int from, int *to)
 
 
 static struct translation *
-table_translation (const char *from, const char *to, int *table,
-                   const char *(*c_target_char_has_backslash_escape)
-                   (void *baton, int target_char),
-                   void *c_target_char_has_backslash_escape_baton,
-                   int (*c_parse_backslash) (void *baton,
-                                             int host_char,
-                                             int *target_char),
-                   void *c_parse_backslash_baton)
+table_translation(const char *from, const char *to, int *table,
+                  const char *(*c_target_char_has_backslash_escape)
+                  (void *baton, int target_char),
+                  void *c_target_char_has_backslash_escape_baton,
+                  int (*c_parse_backslash)(void *baton,
+                                           int host_char,
+                                           int *target_char),
+                  void *c_parse_backslash_baton)
 {
-  struct translation *t = xmalloc (sizeof (*t));
+  struct translation *t = (struct translation *)xmalloc(sizeof(*t));
 
-  memset (t, 0, sizeof (*t));
+  memset(t, 0, sizeof(*t));
   t->from = from;
   t->to = to;
   t->c_target_char_has_backslash_escape = c_target_char_has_backslash_escape;
@@ -929,18 +914,17 @@ table_translation (const char *from, const char *to, int *table,
   t->c_parse_backslash = c_parse_backslash;
   t->c_parse_backslash_baton = c_parse_backslash_baton;
   t->convert_char = table_convert_char;
-  t->convert_char_baton = (void *) table;
+  t->convert_char_baton = (void *)table;
 
   return t;
 }
 
 
 static struct translation *
-simple_table_translation (const char *from, const char *to, int *table)
+simple_table_translation(const char *from, const char *to, int *table)
 {
-  return table_translation (from, to, table, 0, 0, 0, 0);
+  return table_translation(from, to, table, 0, 0, 0, 0);
 }
-
 
 
 /* Setting and retrieving the host and target charsets.  */
@@ -956,19 +940,19 @@ static const char *(*c_target_char_has_backslash_escape_func)
      (void *baton, int target_char);
 static void *c_target_char_has_backslash_escape_baton;
 
-static int (*c_parse_backslash_func) (void *baton,
-                                      int host_char,
-                                      int *target_char);
+static int (*c_parse_backslash_func)(void *baton,
+                                     int host_char,
+                                     int *target_char);
 static void *c_parse_backslash_baton;
 
-static int (*host_char_to_target_func) (void *baton,
-                                        int host_char,
-                                        int *target_char);
+static int (*host_char_to_target_func)(void *baton,
+                                       int host_char,
+                                       int *target_char);
 static void *host_char_to_target_baton;
 
-static int (*target_char_to_host_func) (void *baton,
-                                        int target_char,
-                                        int *host_char);
+static int (*target_char_to_host_func)(void *baton,
+                                       int target_char,
+                                       int *host_char);
 static void *target_char_to_host_baton;
 
 
@@ -981,26 +965,26 @@ static struct cached_iconv cached_iconv_target_to_host;
 /* Charset structures manipulation functions.  */
 
 static struct charset *
-lookup_charset_or_error (const char *name)
+lookup_charset_or_error(const char *name)
 {
-  struct charset *cs = lookup_charset (name);
+  struct charset *cs = lookup_charset(name);
 
   if (! cs)
-    error (_("GDB doesn't know of any character set named `%s'."), name);
+    error(_("GDB does NOT know of any character set named `%s'."), name);
 
   return cs;
 }
 
 static void
-check_valid_host_charset (struct charset *cs)
+check_valid_host_charset(struct charset *cs)
 {
   if (! cs->valid_host_charset)
-    error (_("GDB can't use `%s' as its host character set."), cs->name);
+    error(_("GDB cannot use `%s' as its host character set."), cs->name);
 }
 
-/* Set the host and target character sets to HOST and TARGET.  */
+/* Set the host and target character sets to HOST and TARGET: */
 static void
-set_host_and_target_charsets (struct charset *host, struct charset *target)
+set_host_and_target_charsets(struct charset *host, struct charset *target)
 {
   struct translation *h2t, *t2h;
 
@@ -1023,17 +1007,17 @@ set_host_and_target_charsets (struct charset *host, struct charset *target)
     {
       if (! h2t || ! h2t->convert_char)
         {
-          if (check_iconv_cache (&cached_iconv_host_to_target, host, target)
+          if (check_iconv_cache(&cached_iconv_host_to_target, host, target)
               < 0)
-            error (_("GDB can't convert from the `%s' character set to `%s'."),
-                   host->name, target->name);
+            error(_("GDB cannot convert from the `%s' character set to `%s'."),
+                  host->name, target->name);
         }
       if (! t2h || ! t2h->convert_char)
         {
-          if (check_iconv_cache (&cached_iconv_target_to_host, target, host)
+          if (check_iconv_cache(&cached_iconv_target_to_host, target, host)
               < 0)
-            error (_("GDB can't convert from the `%s' character set to `%s'."),
-                   target->name, host->name);
+            error(_("GDB cannot convert from the `%s' character set to `%s'."),
+                  target->name, host->name);
         }
     }
 
@@ -1086,93 +1070,90 @@ set_host_and_target_charsets (struct charset *host, struct charset *target)
   current_target_charset = target;
 }
 
-/* Do the real work of setting the host charset.  */
+/* Do the real work of setting the host charset: */
 static void
-set_host_charset (const char *charset)
+set_host_charset(const char *charset)
 {
-  struct charset *cs = lookup_charset_or_error (charset);
-  check_valid_host_charset (cs);
-  set_host_and_target_charsets (cs, current_target_charset);
+  struct charset *cs = lookup_charset_or_error(charset);
+  check_valid_host_charset(cs);
+  set_host_and_target_charsets(cs, current_target_charset);
 }
 
-/* Do the real work of setting the target charset.  */
+/* Do the real work of setting the target charset: */
 static void
-set_target_charset (const char *charset)
+set_target_charset(const char *charset)
 {
-  struct charset *cs = lookup_charset_or_error (charset);
+  struct charset *cs = lookup_charset_or_error(charset);
 
-  set_host_and_target_charsets (current_host_charset, cs);
+  set_host_and_target_charsets(current_host_charset, cs);
 }
 
 
 /* 'Set charset', 'set host-charset', 'set target-charset', 'show
    charset' sfunc's.  */
 
-/* This is the sfunc for the 'set charset' command.  */
+/* This is the sfunc for the 'set charset' command: */
 static void
-set_charset_sfunc (char *charset, int from_tty, struct cmd_list_element *c)
+set_charset_sfunc(char *charset, int from_tty, struct cmd_list_element *c)
 {
-  struct charset *cs = lookup_charset_or_error (host_charset_name);
-  check_valid_host_charset (cs);
+  struct charset *cs = lookup_charset_or_error(host_charset_name);
+  check_valid_host_charset(cs);
   /* CAREFUL: set the target charset here as well. */
   target_charset_name = host_charset_name;
-  set_host_and_target_charsets (cs, cs);
+  set_host_and_target_charsets(cs, cs);
 }
 
 /* 'set host-charset' command sfunc.  We need a wrapper here because
    the function needs to have a specific signature.  */
 static void
-set_host_charset_sfunc (char *charset, int from_tty,
-			  struct cmd_list_element *c)
+set_host_charset_sfunc(char *charset, int from_tty,
+                       struct cmd_list_element *c)
 {
-  set_host_charset (host_charset_name);
+  set_host_charset(host_charset_name);
 }
 
-/* Wrapper for the 'set target-charset' command.  */
+/* Wrapper for the 'set target-charset' command: */
 static void
-set_target_charset_sfunc (char *charset, int from_tty,
-			    struct cmd_list_element *c)
+set_target_charset_sfunc(char *charset, int from_tty,
+                         struct cmd_list_element *c)
 {
-  set_target_charset (target_charset_name);
+  set_target_charset(target_charset_name);
 }
 
-/* sfunc for the 'show charset' command.  */
+/* sfunc for the 'show charset' command: */
 static void
-show_charset (struct ui_file *file, int from_tty, struct cmd_list_element *c,
-	      const char *name)
+show_charset(struct ui_file *file, int from_tty,
+             struct cmd_list_element *c, const char *name)
 {
   if (current_host_charset == current_target_charset)
-    fprintf_filtered (file,
-		      _("The current host and target character set is `%s'.\n"),
-		      host_charset ());
+    fprintf_filtered(file,
+		     _("The current host and target character set is `%s'.\n"),
+		     host_charset());
   else
     {
-      fprintf_filtered (file, _("The current host character set is `%s'.\n"),
-			host_charset ());
-      fprintf_filtered (file, _("The current target character set is `%s'.\n"),
-			target_charset ());
+      fprintf_filtered(file, _("The current host character set is `%s'.\n"),
+                       host_charset());
+      fprintf_filtered(file, _("The current target character set is `%s'.\n"),
+                       target_charset());
     }
 }
 
 
-/* Accessor functions.  */
-
+/* Accessor functions: */
 const char *
-host_charset (void)
+host_charset(void)
 {
   return current_host_charset->name;
 }
 
 const char *
-target_charset (void)
+target_charset(void)
 {
   return current_target_charset->name;
 }
 
-
 
 /* Public character management functions.  */
-
 
 const char *
 c_target_char_has_backslash_escape (int target_char)
@@ -1223,14 +1204,13 @@ target_char_to_host (int target_char, int *host_char)
           (target_char_to_host_baton, target_char, host_char));
 }
 
-
 
 /* The charset.c module initialization function.  */
 
 extern initialize_file_ftype _initialize_charset; /* -Wmissing-prototype */
 
 void
-_initialize_charset (void)
+_initialize_charset(void)
 {
   /* Register all the character set GDB knows about.
 
@@ -1244,17 +1224,17 @@ _initialize_charset (void)
      when a translation's function pointer for a particular operation
      is zero.  Hopefully, these defaults will be correct often enough
      that we won't need to provide too many translations.  */
-  register_charset (simple_charset ("ASCII", 1,
-                                    ascii_print_literally, 0,
-                                    ascii_to_control, 0));
-  register_charset (iso_8859_family_charset ("ISO-8859-1"));
-  register_charset (ebcdic_family_charset ("EBCDIC-US"));
-  register_charset (ebcdic_family_charset ("IBM1047"));
+  register_charset(simple_charset("ASCII", 1,
+                                  ascii_print_literally, 0,
+                                  ascii_to_control, 0));
+  register_charset(iso_8859_family_charset("ISO-8859-1"));
+  register_charset(ebcdic_family_charset("EBCDIC-US"));
+  register_charset(ebcdic_family_charset("IBM1047"));
 
   /* APPLE LOCAL: Add the UTF8 charset  */
-  register_charset (utf_8_family_charset ("UTF-8"));
+  register_charset(utf_8_family_charset("UTF-8"));
 
-  register_iconv_charsets ();
+  register_iconv_charsets();
 
   {
     struct { char *from; char *to; int *table; } tlist[] = {
@@ -1276,19 +1256,19 @@ _initialize_charset (void)
       { "UTF-8", "ASCII",      iso_8859_1_to_ascii_table }
     };
 
-    int i;
+    size_t i;
 
-    for (i = 0; i < (sizeof (tlist) / sizeof (tlist[0])); i++)
-      register_translation (simple_table_translation (tlist[i].from,
-                                                      tlist[i].to,
-                                                      tlist[i].table));
+    for (i = 0; i < (sizeof(tlist) / sizeof(tlist[0])); i++)
+      register_translation(simple_table_translation(tlist[i].from,
+                                                    tlist[i].to,
+                                                    tlist[i].table));
   }
 
-  set_host_charset (host_charset_name);
-  set_target_charset (target_charset_name);
+  set_host_charset(host_charset_name);
+  set_target_charset(target_charset_name);
 
-  add_setshow_enum_cmd ("charset", class_support,
-			host_charset_enum, &host_charset_name, _("\
+  add_setshow_enum_cmd("charset", class_support,
+                       host_charset_enum, &host_charset_name, _("\
 Set the host and target character sets."), _("\
 Show the host and target character sets."), _("\
 The `host character set' is the one used by the system GDB is running on.\n\
@@ -1296,34 +1276,35 @@ The `target character set' is the one used by the program being debugged.\n\
 You may only use supersets of ASCII for your host character set; GDB does\n\
 not support any others.\n\
 To see a list of the character sets GDB supports, type `set charset <TAB>'."),
-			/* Note that the sfunc below needs to set
-			   target_charset_name, because the 'set
-			   charset' command sets two variables.  */
-			set_charset_sfunc,
-			show_charset,
-			&setlist, &showlist);
+                       /* Note that the sfunc below needs to set
+                        * target_charset_name, because the 'set charset'
+                        * command sets two variables.  */
+                       set_charset_sfunc, show_charset,
+                       &setlist, &showlist);
 
-  add_setshow_enum_cmd ("host-charset", class_support,
-			host_charset_enum, &host_charset_name, _("\
+  add_setshow_enum_cmd("host-charset", class_support,
+                       host_charset_enum, &host_charset_name, _("\
 Set the host character set."), _("\
 Show the host character set."), _("\
 The `host character set' is the one used by the system GDB is running on.\n\
 You may only use supersets of ASCII for your host character set; GDB does\n\
 not support any others.\n\
 To see a list of the character sets GDB supports, type `set host-charset <TAB>'."),
-			set_host_charset_sfunc,
-			show_host_charset_name,
-			&setlist, &showlist);
+                       set_host_charset_sfunc,
+                       show_host_charset_name,
+                       &setlist, &showlist);
 
-  add_setshow_enum_cmd ("target-charset", class_support,
-			target_charset_enum, &target_charset_name, _("\
+  add_setshow_enum_cmd("target-charset", class_support,
+                       target_charset_enum, &target_charset_name, _("\
 Set the target character set."), _("\
 Show the target character set."), _("\
 The `target character set' is the one used by the program being debugged.\n\
 GDB translates characters and strings between the host and target\n\
 character sets as needed.\n\
 To see a list of the character sets GDB supports, type `set target-charset'<TAB>"),
-			set_target_charset_sfunc,
-			show_target_charset_name,
-			&setlist, &showlist);
+                       set_target_charset_sfunc,
+                       show_target_charset_name,
+                       &setlist, &showlist);
 }
+
+/* EOF */

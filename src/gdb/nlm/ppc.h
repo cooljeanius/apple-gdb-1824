@@ -1,6 +1,8 @@
+/* ppc.h */
+
 typedef long Long;
 
-/* The following enum is used to access the special registers in 
+/* The following enum is used to access the special registers in
    the saved machine state.  */
 
 typedef enum
@@ -158,8 +160,10 @@ extern unsigned char breakpoint_insn[];
 #define BREAKPOINT_SIZE 4
 
 #if 0
-#define ALTERNATE_MEM_FUNCS	/* We need our own get_char/set_char */
-#endif
+# define ALTERNATE_MEM_FUNCS	/* We need our own get_char/set_char */
+#endif /* 0 */
 
-extern int get_char (char *addr);
-extern void set_char (char *addr, int val);
+extern int get_char(char *addr);
+extern void set_char(char *addr, int val);
+
+/* EOF */

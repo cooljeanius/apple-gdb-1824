@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on an ARM based machine under GNU/Linux.
+/* nm-linux.h
+   Definitions to make GDB run on an ARM based machine under GNU/Linux.
    Copyright 1999, 2000, 2001 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -39,3 +40,5 @@ extern int kernel_u_size (void);
 #define FETCH_INFERIOR_REGISTERS
 
 #endif /* NM_ARMLINUX_H */
+
+/* EOF */

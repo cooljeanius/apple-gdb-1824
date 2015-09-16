@@ -1,5 +1,5 @@
 #==========================================================================
-#  http://www.gnu.org/software/autoconf-archive/ax_maintainer_mode_auto_silent.html
+# http://www.gnu.org/software/autoconf-archive/ax_maintainer_mode_auto_silent.html
 #==========================================================================
 #
 # SYNOPSIS
@@ -17,7 +17,8 @@
 #   quite in --maintainer-mode. That is very annoying. Likewise, a user who
 #   installs from source does not want to see doubled compiler messages.
 #
-#   I did not put an AC_REQUIRE(MAINTAINER_MODE) in here - should I?
+#   I did not originally put an AC_REQUIRE(MAINTAINER_MODE) in here -
+#   should I have done so from the start?
 #
 # LICENSE
 #
@@ -28,10 +29,10 @@
 #   Free Software Foundation; either version 3 of the License, or (at your
 #   option) any later version.
 #
-#   This program is distributed in the hope that it will be useful, but
-#   WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-#   Public License for more details.
+#  This program is distributed in the hope that it will be useful, but
+#  WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+#  Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License along
 #   with this program. If not, see <http://www.gnu.org/licenses/>.
@@ -52,15 +53,15 @@
 #serial 8
 
 AC_DEFUN([AX_MAINTAINER_MODE_AUTO_SILENT],[dnl
-dnl ac_REQUIRE([am_MAINTAINER_MODE])dn
-AC_MSG_CHECKING(auto silent in maintainer mode)
-if test "$USE_MAINTAINER_MODE" = "no" ; then
-   test ".$TIMEOUT" = "." && TIMEOUT="9"
-   AUTOHEADER="sleep $TIMEOUT ; true || autoheader || skipped"
-   AUTOMAKE="sleep $TIMEOUT ; true || automake || skipped"
-   AUTOCONF="sleep $TIMEOUT ; true || autoconf || skipped"
-   if test ".$LIBTOOL" != "." ; then
-      LIBTOOL="$LIBTOOL --silent"
+AC_REQUIRE([AM_MAINTAINER_MODE])dnl
+AC_MSG_CHECKING([auto silent in maintainer mode])
+if test "${USE_MAINTAINER_MODE}" = "no" ; then
+   test ".${TIMEOUT}" = "." && TIMEOUT="9"
+   AUTOHEADER="sleep ${TIMEOUT} ; true || autoheader || skipped"
+   AUTOMAKE="sleep ${TIMEOUT} ; true || automake || skipped"
+   AUTOCONF="sleep ${TIMEOUT} ; true || autoconf || skipped"
+   if test ".${LIBTOOL}" != "." ; then
+      LIBTOOL="${LIBTOOL} --silent"
       AC_MSG_RESULT([libtool-silent, auto-sleep-9])
    else
       AC_MSG_RESULT([auto-sleep-9])

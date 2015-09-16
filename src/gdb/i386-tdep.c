@@ -1,4 +1,4 @@
-/* Intel 386 target-dependent stuff.
+/* i386-tdep.c: Intel 386 target-dependent stuff.
 
    Copyright 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996,
    1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software
@@ -45,14 +45,14 @@
 #include "value.h"
 #include "gdb_assert.h"
 #include "reggroups.h"
-#include "dummy-frame.h"
-#include "osabi.h"
+/* we already included "dummy-frame.h" once above */
+/* we already included "osabi.h" once above */
 
 #include "bfd.h"
 #include "elf-bfd.h"
 #include "dis-asm.h"
 
-#include "gdb_assert.h"
+/* we already included "gdb_assert.h" once above */
 #include "gdb_string.h"
 
 #include "i386-tdep.h"
@@ -63,9 +63,11 @@
 /* APPLE LOCAL get the prototype for macosx_skip_trampoline_code */
 #include "macosx-tdep.h"
 
-#ifndef __i386__
-# warning i386-tdep.c is an i386-specific file.
-#endif /* !__i386__ */
+#if !(defined(__i386) || defined(__i386__) || defined(_I386))
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && defined(__APPLE__)
+#  warning "i386-tdep.c is an i386-specific file but __i386__ is undefined"
+# endif /* __GNUC__ && !__STRICT_ANSI__ && __APPLE__ */
+#endif /* !(__i386 || __i386__ || _I386) */
 
 /* Register names.  */
 
@@ -326,25 +328,30 @@ i386_breakpoint_from_pc (CORE_ADDR *pc, int *len)
    be set to the register that contains the pic base. */
 
 int
-i386_find_picbase_setup (CORE_ADDR pc, CORE_ADDR *picbase_addr,
-                         enum i386_regnum *picbase_reg)
+i386_find_picbase_setup(CORE_ADDR pc, CORE_ADDR *picbase_addr,
+                        enum i386_regnum *picbase_reg)
 {
-  int limit = 32;  /* number made up by me; 32 bytes is enough for a prologue */
+  int limit = 32; /* number made up by me; 32 bytes is enough for a prologue */
   int skip = 0;
   int found_call_insn = 0;
   unsigned char op;
+
+  uint32_t rel32;
+  uint32_t offset_from;
+  struct minimal_symbol *dest;
 
   if (picbase_addr != NULL)
     *picbase_addr = -1;
 
   while (skip < limit)
     {
-      int length = length_of_this_instruction (pc + skip);
-      /* Did we just find a CALL instruction?  It's probably our
+      int length = length_of_this_instruction(pc + skip);
+      /* Did we just find a CALL instruction?  It is probably our
          picbase setup call.  */
       if (length == 5)
         {
-          uint32_t buf = read_memory_unsigned_integer (pc + skip, 1);
+          uint32_t buf;
+          buf = (uint32_t)read_memory_unsigned_integer((pc + skip), 1);
           if (buf == 0xe8)  /* 0xe8 == CALL disp32 */
             {
               found_call_insn = 1;
@@ -354,36 +361,34 @@ i386_find_picbase_setup (CORE_ADDR pc, CORE_ADDR *picbase_addr,
       skip += length;
     }
 
-  /* We've hit our limit without finding a `call rel32' or we've hit
+  /* We have hit our limit without finding a `call rel32' or we have hit
      some unexpected instruction.  Give up the search.  */
   if (!found_call_insn)
     return 0;
 
   /* pc + skip is now pointing at the start of a `call rel32' instruction
-     which may be setting up the picbase. */
-
-  uint32_t rel32 = read_memory_unsigned_integer (pc + skip + 1, 4);
-  uint32_t offset_from = pc + skip + 5;
-  struct minimal_symbol *dest;
+   * which may be setting up the picbase: */
+  rel32 = (uint32_t)read_memory_unsigned_integer((pc + skip + 1), 4);
+  offset_from = (uint32_t)(pc + skip + 5U);
 
   /* Old-style picbase setup, jumping to the next instruction and popping
      the value into the picbase reg.  */
   if (rel32 == 0x0)
     {
       /* Check for `pop r' (opcode 0x58 + rd). */
-      op = read_memory_unsigned_integer (offset_from, 1);
+      op = read_memory_unsigned_integer(offset_from, 1);
       if ((op & 0xf8) != 0x58)
         return 0;
 
       if (picbase_addr != NULL)
         *picbase_addr = offset_from;
       if (picbase_reg != NULL)
-        *picbase_reg = (enum i386_regnum) op & 0x7;
+        *picbase_reg = ((enum i386_regnum)op & 0x7);
       return 1;
     }
 
-  dest = lookup_minimal_symbol_by_pc ((uint32_t) rel32 + offset_from);
-  if (dest == NULL || SYMBOL_LINKAGE_NAME (dest) == NULL)
+  dest = lookup_minimal_symbol_by_pc((uint32_t)rel32 + offset_from);
+  if ((dest == NULL) || (SYMBOL_LINKAGE_NAME(dest) == NULL))
     return 0;
 
   /* We're looking for a call to one of the __i686.get_pc_thunk.ax functions,
@@ -479,45 +484,44 @@ static const struct frame_unwind i386_frame_unwind =
 };
 
 static const struct frame_unwind *
-i386_frame_sniffer (struct frame_info *next_frame)
+i386_frame_sniffer(struct frame_info *next_frame)
 {
   return &i386_frame_unwind;
 }
 
 
-/* Signal trampolines.  */
-
+/* Signal trampolines: */
 static struct x86_frame_cache *
-i386_sigtramp_frame_cache (struct frame_info *next_frame, void **this_cache)
+i386_sigtramp_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct x86_frame_cache *cache;
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
   CORE_ADDR addr;
   gdb_byte buf[4];
 
   if (*this_cache)
-    return *this_cache;
+    return (struct x86_frame_cache *)*this_cache;
 
-  cache = x86_alloc_frame_cache (4);
+  cache = x86_alloc_frame_cache(4);
 
-  frame_unwind_register (next_frame, I386_ESP_REGNUM, buf);
-  cache->frame_base = extract_unsigned_integer (buf, 4);
+  frame_unwind_register(next_frame, I386_ESP_REGNUM, buf);
+  cache->frame_base = extract_unsigned_integer(buf, 4);
 
-  addr = tdep->sigcontext_addr (next_frame);
+  addr = tdep->sigcontext_addr(next_frame);
   if (tdep->sc_reg_offset)
     {
       int i;
 
-      gdb_assert (tdep->sc_num_regs <= I386_NUM_SAVED_REGS);
+      gdb_assert(tdep->sc_num_regs <= I386_NUM_SAVED_REGS);
 
       for (i = 0; i < tdep->sc_num_regs; i++)
 	if (tdep->sc_reg_offset[i] != -1)
-	  cache->saved_regs[i] = addr + tdep->sc_reg_offset[i];
+	  cache->saved_regs[i] = (addr + tdep->sc_reg_offset[i]);
     }
   else
     {
-      cache->saved_regs[I386_EIP_REGNUM] = addr + tdep->sc_pc_offset;
-      cache->saved_regs[I386_ESP_REGNUM] = addr + tdep->sc_sp_offset;
+      cache->saved_regs[I386_EIP_REGNUM] = (addr + tdep->sc_pc_offset);
+      cache->saved_regs[I386_ESP_REGNUM] = (addr + tdep->sc_sp_offset);
     }
 
   cache->saved_regs_are_absolute = 1;
@@ -661,10 +665,10 @@ i386_get_longjmp_target (CORE_ADDR *pc)
 
 
 static CORE_ADDR
-i386_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
-		      struct regcache *regcache, CORE_ADDR bp_addr, int nargs,
-		      struct value **args, CORE_ADDR sp, int struct_return,
-		      CORE_ADDR struct_addr)
+i386_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
+		     struct regcache *regcache, CORE_ADDR bp_addr,
+                     int nargs, struct value **args, CORE_ADDR sp,
+                     int struct_return, CORE_ADDR struct_addr)
 {
   gdb_byte buf[4];
   int i;
@@ -679,15 +683,16 @@ i386_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
      return will take once we push them, then we move the stack
      pointer before we start pushing args.  */
 
-  for (i = nargs - 1; i >= 0; i--)
+  for (i = (nargs - 1); i >= 0; i--)
     {
-      int len = TYPE_LENGTH (value_enclosing_type (args[i]));
-      argument_bytes += (len + 3) & ~3;
+      int len = TYPE_LENGTH(value_enclosing_type(args[i]));
+      argument_bytes += ((len + 3) & ~3);
     }
   if (struct_return)
     argument_bytes += 4;
 
-  alignment_pad_bytes = (sp - argument_bytes) - ((sp - argument_bytes) & ~15);
+  alignment_pad_bytes = (int)((sp - argument_bytes)
+                              - ((sp - argument_bytes) & ~15));
   sp -= alignment_pad_bytes;
   /* APPLE LOCAL end */
 
@@ -1133,7 +1138,7 @@ i386_pseudo_register_write (struct gdbarch *gdbarch, struct regcache *regcache,
    REGNUM, or -1 if there is no such register.  */
 
 static int
-i386_next_regnum (int regnum)
+i386_next_regnum(int regnum)
 {
   /* GCC allocates the registers in the order:
 
@@ -1152,7 +1157,7 @@ i386_next_regnum (int regnum)
     I386_EBP_REGNUM		/* Slot for %edi.  */
   };
 
-  if (regnum >= 0 && regnum < sizeof (next_regnum) / sizeof (next_regnum[0]))
+  if ((regnum >= 0) && ((size_t)regnum < (sizeof(next_regnum) / sizeof(next_regnum[0]))))
     return next_regnum[regnum];
 
   return -1;
@@ -1258,20 +1263,20 @@ i386_value_to_register (struct frame_info *frame, int regnum,
    REGCACHE.  If REGNUM is -1, do this for all registers in REGSET.  */
 
 void
-i386_supply_gregset (const struct regset *regset, struct regcache *regcache,
-		     int regnum, const void *gregs, size_t len)
+i386_supply_gregset(const struct regset *regset, struct regcache *regcache,
+		    int regnum, const void *gregs, size_t len)
 {
-  const struct gdbarch_tdep *tdep = gdbarch_tdep (regset->arch);
-  const gdb_byte *regs = gregs;
+  const struct gdbarch_tdep *tdep = gdbarch_tdep(regset->arch);
+  const gdb_byte *regs = (const gdb_byte *)gregs;
   int i;
 
-  gdb_assert (len == tdep->sizeof_gregset);
+  gdb_assert(len == tdep->sizeof_gregset);
 
   for (i = 0; i < tdep->gregset_num_regs; i++)
     {
-      if ((regnum == i || regnum == -1)
-	  && tdep->gregset_reg_offset[i] != -1)
-	regcache_raw_supply (regcache, i, regs + tdep->gregset_reg_offset[i]);
+      if (((regnum == i) || (regnum == -1))
+	  && (tdep->gregset_reg_offset[i] != -1))
+	regcache_raw_supply(regcache, i, regs + tdep->gregset_reg_offset[i]);
     }
 }
 
@@ -1281,21 +1286,21 @@ i386_supply_gregset (const struct regset *regset, struct regcache *regcache,
    all registers in REGSET.  */
 
 void
-i386_collect_gregset (const struct regset *regset,
-		      const struct regcache *regcache,
-		      int regnum, void *gregs, size_t len)
+i386_collect_gregset(const struct regset *regset,
+		     const struct regcache *regcache,
+		     int regnum, void *gregs, size_t len)
 {
-  const struct gdbarch_tdep *tdep = gdbarch_tdep (regset->arch);
-  gdb_byte *regs = gregs;
+  const struct gdbarch_tdep *tdep = gdbarch_tdep(regset->arch);
+  gdb_byte *regs = (gdb_byte *)gregs;
   int i;
 
-  gdb_assert (len == tdep->sizeof_gregset);
+  gdb_assert(len == tdep->sizeof_gregset);
 
   for (i = 0; i < tdep->gregset_num_regs; i++)
     {
-      if ((regnum == i || regnum == -1)
-	  && tdep->gregset_reg_offset[i] != -1)
-	regcache_raw_collect (regcache, i, regs + tdep->gregset_reg_offset[i]);
+      if (((regnum == i) || (regnum == -1))
+	  && (tdep->gregset_reg_offset[i] != -1))
+	regcache_raw_collect(regcache, i, (regs + tdep->gregset_reg_offset[i]));
     }
 }
 
@@ -1666,10 +1671,9 @@ i386_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   return gdbarch;
 }
 
-/* APPLE LOCAL: a function for checking the prologue parser by hand. */
-
+/* APPLE LOCAL: a function for checking the prologue parser by hand: */
 static void
-maintenance_i386_prologue_parser (char *arg, int from_tty)
+maintenance_i386_prologue_parser(char *arg, int from_tty)
 {
   char **argv;
   CORE_ADDR start_address, end_address;
@@ -1680,94 +1684,94 @@ maintenance_i386_prologue_parser (char *arg, int from_tty)
   struct minimal_symbol *func;
   int parse_failed = 0;
 
-  if (arg == NULL || arg[0] == '\0')
+  if ((arg == NULL) || (arg[0] == '\0'))
     return;
 
-  argv = buildargv (arg);
+  argv = buildargv(arg);
   if (argv == NULL)
     return;
-  cleanups = make_cleanup_freeargv (argv);
+  cleanups = make_cleanup_freeargv(argv);
 
-  for (argc = 0; argv[argc] != NULL && argv[argc][0] != '\0'; argc++)
+  for (argc = 0; (argv[argc] != NULL) && (argv[argc][0] != '\0'); argc++)
     ;
 
   if (argc == 0)
     {
-      do_cleanups (cleanups);
+      do_cleanups(cleanups);
       return;
     }
 
-  start_address = parse_and_eval_address (argv[0]);
+  start_address = parse_and_eval_address(argv[0]);
   if (argc == 2)
-    end_address = strtoul (argv[1], NULL, 16);
+    end_address = strtoul(argv[1], NULL, 16);
   else
-    end_address = start_address + 48; /* 48 bytes is enough for a prologue */
+    end_address = (start_address + 48); /* 48 bytes is enough for a prologue */
 
-  if (gdbarch_lookup_osabi (exec_bfd) == GDB_OSABI_DARWIN64)
-    cache = x86_alloc_frame_cache (8);
+  if (gdbarch_lookup_osabi(exec_bfd) == GDB_OSABI_DARWIN64)
+    cache = x86_alloc_frame_cache(8);
   else
-    cache = x86_alloc_frame_cache (4);
+    cache = x86_alloc_frame_cache(4);
 
-  parsed_to = x86_analyze_prologue (start_address, end_address + 1, cache);
+  parsed_to = x86_analyze_prologue(start_address, end_address + 1, cache);
 
-  func = lookup_minimal_symbol_by_pc_section (start_address, NULL);
-  printf_filtered ("Analyzing the prologue of '%s' 0x%s.\n",
-                   SYMBOL_LINKAGE_NAME (func),
-                   paddr_nz (SYMBOL_VALUE_ADDRESS (func)));
-  if (func != lookup_minimal_symbol_by_pc_section (parsed_to, NULL))
+  func = lookup_minimal_symbol_by_pc_section(start_address, NULL);
+  printf_filtered("Analyzing the prologue of '%s' 0x%s.\n",
+                  SYMBOL_LINKAGE_NAME(func),
+                  paddr_nz(SYMBOL_VALUE_ADDRESS(func)));
+  if (func != lookup_minimal_symbol_by_pc_section(parsed_to, NULL))
     {
-      printf_filtered ("Prologue scanner went to 0x%s (off the end of '%s')"
-                        " trying to\nfind a prologue.  %s is frameless?\n",
-                       paddr_nz (parsed_to),
-                       SYMBOL_LINKAGE_NAME (func), SYMBOL_LINKAGE_NAME (func));
+      printf_filtered("Prologue scanner went to 0x%s (off the end of '%s')"
+                       " trying to\nfind a prologue.  %s is frameless?\n",
+                      paddr_nz(parsed_to),
+                      SYMBOL_LINKAGE_NAME(func), SYMBOL_LINKAGE_NAME(func));
       parse_failed = 1;
     }
   else
     {
-      printf_filtered ("Prologue parser parsed to address 0x%s (%d bytes)",
-                       paddr_nz (parsed_to), (int) (parsed_to - start_address));
+      printf_filtered("Prologue parser parsed to address 0x%s (%d bytes)",
+                      paddr_nz(parsed_to), (int)(parsed_to - start_address));
       if (parsed_to == end_address -1)
-        printf_filtered (" which is the entire length of the function\n");
+        printf_filtered(" which is the entire length of the function\n");
       else
         {
-          printf_filtered (".\n");
-          if (cache->saved_regs[cache->ebp_regnum] == -1)
+          printf_filtered(".\n");
+          if (cache->saved_regs[cache->ebp_regnum] == (CORE_ADDR)-1)
             {
-              printf_filtered ("Didn't find push %%ebp and didn't parse the full range: prologue parse failed (frameless function?)\n");
+              printf_filtered("Didn't find push %%ebp and didn't parse the full range: prologue parse failed (frameless function?)\n");
               parse_failed = 1;
             }
         }
     }
 
-  printf_filtered ("\n");
-  if (cache->saved_regs[cache->ebp_regnum] == -1)
+  printf_filtered("\n");
+  if (cache->saved_regs[cache->ebp_regnum] == (CORE_ADDR)-1)
     {
-      printf_filtered ("Did not find the push %%ebp\n");
+      printf_filtered("Did not find the push %%ebp\n");
       parse_failed = 1;
     }
   else
-    printf_filtered ("Found push %%ebp\n");
+    printf_filtered("Found push %%ebp\n");
   if (cache->ebp_is_frame_pointer == 0)
     {
-      printf_filtered ("Did not find mov %%esp, %%ebp\n");
+      printf_filtered("Did not find mov %%esp, %%ebp\n");
       parse_failed = 1;
     }
   if (cache->ebp_is_frame_pointer == 1)
-    printf_filtered ("Found mov %%esp, %%ebp\n");
+    printf_filtered("Found mov %%esp, %%ebp\n");
 
   if (parse_failed)
-    printf_filtered ("\nFAILED TO PARSE func %s startaddr 0x%s\n\n",
-                     SYMBOL_LINKAGE_NAME (func), paddr_nz (start_address));
+    printf_filtered("\nFAILED TO PARSE func %s startaddr 0x%s\n\n",
+                    SYMBOL_LINKAGE_NAME(func), paddr_nz(start_address));
 
-  do_cleanups (cleanups);
+  do_cleanups(cleanups);
 }
 
 
 /* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_i386_tdep (void);
+void _initialize_i386_tdep(void);
 
 void
-_initialize_i386_tdep (void)
+_initialize_i386_tdep(void)
 {
   register_gdbarch_init (bfd_arch_i386, i386_gdbarch_init);
 
@@ -1804,8 +1808,8 @@ is \"default\"."),
 			NULL, /* FIXME: i18n: */
 			&setlist, &showlist);
 
-  /* Initialize the i386 specific register groups.  */
-  i386_init_reggroups ();
+  /* Initialize the i386 specific register groups: */
+  i386_init_reggroups();
 }
 
 /* EOF */

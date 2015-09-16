@@ -1,0 +1,127 @@
+#! /bin/sh
+#  -*- Mode: Shell-Script -*-
+# ----------------------------------------------------------------------
+# main.test ---  test main program attribute
+#                    make sure that when it is not specified
+#                    then option processing consumes all args.
+#
+# Time-stamp:        "2011-08-07 17:33:19 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo "creating ${testname}.def in `pwd`"
+testname="${testname}" \
+argument="${argument}" long_opts="${long_opts}" \
+${SHELLX} ${stdopts} option:'opt init' second=020 || \
+    failure "Could not run stdopts.def"
+
+exec 4> ${testname}.def2
+${SED} '/test_main=/d' ${testname}.def >&4
+unset test_main
+cat >&4 <<-  _EOF_
+	explain  = 'This is some explanatory text.';
+	argument = '[ <argument> ... ]';
+	main = {
+	  handler-proc = fumble;
+	  fumble-code  = 'printf( "%s\n", pz_entry );';
+	  main-type    = for-each;
+	};
+	_EOF_
+exec 4>&-
+mv -f ${testname}.def2 ${testname}.def
+
+echo ${AG_L} ${testname}.def
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process
+
+compile "-?"
+
+# # # # # # # # # # HELP OUTPUT FILE # # # # # # # # #
+
+basehlp=${testname}.hlp
+echo creating ${basehlp}
+clean_help > ${basehlp} <<'_EOF_'
+test_main - Test AutoOpts for main
+USAGE:  main [ -<flag> [<val>] ]... [ <argument> ... ]
+  Flg Arg Option-Name    Description
+   -o Str option         The option option descrip
+   -s Num second         The second option descrip
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+
+
+This is some explanatory text.
+If no arguments are provided, input arguments are read from stdin,
+one per line; blank and '#'-prefixed lines are comments.
+'stdin' may not be a terminal (tty).
+_EOF_
+
+cmp -s ${testname}.h*lp || \
+  failure "`diff ${basehlp} ${testname}.help`"
+
+# # # # # # # # # # TEST OPERATION # # # # # # # # # #
+
+./${testname} > ${testname}.out < ${testname}.hlp
+
+clean_help > ${testname}.base <<\_EOF_
+test_main - Test AutoOpts for main
+USAGE:  main [ -<flag> [<val>] ]... [ <argument> ... ]
+Flg Arg Option-Name    Description
+-o Str option         The option option descrip
+-s Num second         The second option descrip
+-? no  help           Display extended usage information and exit
+-! no  more-help      Extended usage information passed thru pager
+This is some explanatory text.
+If no arguments are provided, input arguments are read from stdin,
+one per line; blank and '#'-prefixed lines are comments.
+'stdin' may not be a terminal (tty).
+_EOF_
+
+cmp -s ${testname}.base ${testname}.out || \
+  failure "`diff ${testname}.base ${testname}.out`"
+
+./${testname} -s 5 the quick 'brown fox' > ${testname}.out2
+
+cat > ${testname}.base2 <<\_EOF_
+the
+quick
+brown fox
+_EOF_
+
+cmp -s ${testname}.base2 ${testname}.out2 || \
+  failure "`diff ${testname}.base2 ${testname}.out2`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## End:
+
+# end of main.test

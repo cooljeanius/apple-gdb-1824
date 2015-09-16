@@ -1,5 +1,7 @@
-/* Special version of <a.out.h> for use under hp-ux.
-   Copyright 1988, 1993, 1995, 2001 Free Software Foundation, Inc. */
+/* hp300hpux.h
+ * Special version of <a.out.h> for use under hp-ux.
+ * Copyright 1988, 1993, 1995, 2001 Free Software Foundation, Inc.
+ */
 
 struct hp300hpux_exec_bytes
 {
@@ -117,3 +119,5 @@ struct hp300hpux_header_extension
 
 #undef N_SHARED_LIB
 #define N_SHARED_LIB(x)  ( 0 /* no shared libraries */ )
+
+/* EOF */

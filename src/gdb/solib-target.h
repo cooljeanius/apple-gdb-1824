@@ -1,4 +1,4 @@
-/* Handle shared libraries for GDB, the GNU Debugger.
+/* solib-target.h: Handle shared libraries for GDB, the GNU Debugger.
 
    Copyright (C) 2007-2013 Free Software Foundation, Inc.
 
@@ -24,3 +24,5 @@ struct target_so_ops;
 extern struct target_so_ops solib_target_so_ops;
 
 #endif /* solib-target.h */
+
+/* EOF */

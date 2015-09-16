@@ -26,9 +26,9 @@
 #include "gdb_wait.h"
 #include "gdb_assert.h"
 #ifdef HAVE_TKILL_SYSCALL
-#include <unistd.h>
-#include <sys/syscall.h>
-#endif
+# include <unistd.h>
+# include <sys/syscall.h>
+#endif /* HAVE_TKILL_SYSCALL */
 #include <sys/ptrace.h>
 #include "linux-nat.h"
 #include "gdbthread.h"
@@ -45,8 +45,8 @@
 #include <fcntl.h>		/* for O_RDONLY */
 
 #ifndef O_LARGEFILE
-#define O_LARGEFILE 0
-#endif
+# define O_LARGEFILE 0
+#endif /* !O_LARGEFILE */
 
 /* If the system headers did not provide the constants, hard-code the normal
    values.  */
@@ -1496,7 +1496,7 @@ flush_callback (struct lwp_info *lp, void *data)
   while (linux_nat_has_pending (GET_LWP (lp->ptid), &pending, flush_mask))
     {
       int ret;
-      
+
       errno = 0;
       ret = ptrace (PTRACE_CONT, GET_LWP (lp->ptid), 0, 0);
       if (debug_linux_nat)

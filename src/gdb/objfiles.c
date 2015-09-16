@@ -1,4 +1,4 @@
-/* GDB routines for manipulating objfiles.
+/* objfiles.c: GDB routines for manipulating objfiles.
 
    Copyright 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
    2001, 2002, 2003, 2004 Free Software Foundation, Inc.
@@ -48,7 +48,7 @@
 #include "block.h"
 #include "dictionary.h"
 #include "objc-lang.h"
-#include "macosx-nat-inferior.h"  // need to pick up macho_calculate_offsets_for_dsym() in machoread.c
+#include "macosx-nat-inferior.h" /* need to pick up macho_calculate_offsets_for_dsym() in machoread.c */
 
 #include "db-access-functions.h"
 
@@ -72,7 +72,7 @@ static void objfile_remove_from_restrict_list (struct objfile *);
 /* Variables to make obsolete commands available.  */
 static char *cached_symfile_path = NULL;
 int mapped_symbol_files = 0;
-int use_mapped_symbol_files = 0;  // Temporarily disable jmolenda 2004-05-13
+int use_mapped_symbol_files = 0; /* Temporarily disable jmolenda 2004-05-13 */
 
 extern struct cmd_list_element *setshliblist;
 extern struct cmd_list_element *showshliblist;
@@ -226,10 +226,10 @@ objfile_keeps_section (bfd *abfd, asection *asect)
    we are building the table, we are pretty much hosed. */
 
 int
-build_objfile_section_table (struct objfile *objfile)
+build_objfile_section_table(struct objfile *objfile)
 {
   asection *asect;
-  unsigned int i = 0;
+  unsigned int i = 0U;
   /* APPLE LOCAL: For separate debug objfiles, we need to use the main
      symfile's bfd sections to build the section table. We want to be
      able to ask the debug_objfile what the SECT_OFFSET_TEXT is, and
@@ -247,7 +247,8 @@ build_objfile_section_table (struct objfile *objfile)
   for (asect = abfd->sections; asect != NULL; asect = asect->next)
     i++;
 
-  objfile->sections = xmalloc (sizeof (struct obj_section) * i);
+  objfile->sections = ((struct obj_section *)
+                       xmalloc(sizeof(struct obj_section) * i));
   objfile->sections_end = objfile->sections;
 
   i = 0;
@@ -302,13 +303,11 @@ build_objfile_section_table (struct objfile *objfile)
    makes ALL_OBJFILES_SAFE no longer safe. So it is better to edit the
    objfiles in place.  */
 
-struct objfile *
-allocate_objfile_internal (struct objfile *objfile,
-			   bfd *abfd, int flags,
-			   int symflags, CORE_ADDR mapaddr,
-			   const char *prefix)
+static struct objfile *
+allocate_objfile_internal(struct objfile *objfile, bfd *abfd, int flags,
+			  int symflags, CORE_ADDR mapaddr,
+                          const char *prefix)
 {
-
   objfile->symflags = symflags;
   objfile->flags |= flags;
 
@@ -318,23 +317,23 @@ allocate_objfile_internal (struct objfile *objfile,
 
   objfile->obfd = abfd;
   if (objfile->name)
-    objfile->name = xstrdup (objfile->name);
+    objfile->name = xstrdup(objfile->name);
   else
-    objfile->name = xstrdup (bfd_get_filename (abfd));
-  objfile->mtime = bfd_get_mtime (abfd);
+    objfile->name = xstrdup(bfd_get_filename(abfd));
+  objfile->mtime = bfd_get_mtime(abfd);
 
-  if (build_objfile_section_table (objfile))
-    error ("Cannot find the file sections in `%s': %s",
-	   objfile->name, bfd_errmsg (bfd_get_error ()));
+  if (build_objfile_section_table(objfile))
+    error("Cannot find the file sections in `%s': %s",
+	  objfile->name, bfd_errmsg(bfd_get_error()));
 
   /* FIXME: At some point this should be a host specific callout.
      Even though this is a Mac OS X specific copy of allocate_objfile,
      we should still fix this when we fix that...  */
   /* Added /usr/lib/system to the equivalence libraries list.  */
 
-  if (objfile->name != NULL &&
-      (strstr (objfile->name, "libSystem") != NULL
-       || strstr (objfile->name, "/usr/lib/system") == objfile->name))
+  if ((objfile->name != NULL) &&
+      ((strstr(objfile->name, "libSystem") != NULL)
+       || (strstr(objfile->name, "/usr/lib/system") == objfile->name)))
     objfile->check_for_equivalence = 1;
   else
     objfile->check_for_equivalence = 0;
@@ -349,53 +348,51 @@ allocate_objfile_internal (struct objfile *objfile,
 }
 
 struct objfile *
-allocate_objfile (bfd *abfd, int flags, int symflags, CORE_ADDR mapaddr,
-                  const char *prefix)
+allocate_objfile(bfd *abfd, int flags, int symflags, CORE_ADDR mapaddr,
+                 const char *prefix)
 {
-  struct objfile *objfile = NULL;
+  struct objfile *objfile = (struct objfile *)NULL;
 
-  objfile = create_objfile (abfd);
-  objfile = allocate_objfile_internal (objfile, abfd, flags,
-				    symflags, mapaddr, prefix);
-  link_objfile (objfile);
+  objfile = create_objfile(abfd);
+  objfile = allocate_objfile_internal(objfile, abfd, flags,
+                                      symflags, mapaddr, prefix);
+  link_objfile(objfile);
   return objfile;
 }
 
 struct objfile *
-allocate_objfile_using_objfile (struct objfile *objfile,
-			       bfd *abfd, int flags,
-			       int symflags, CORE_ADDR mapaddr,
+allocate_objfile_using_objfile(struct objfile *objfile, bfd *abfd,
+                               int flags, int symflags, CORE_ADDR mapaddr,
 			       const char *prefix)
 {
-  create_objfile_using_objfile (objfile, abfd);
-  return allocate_objfile_internal (objfile, abfd, flags,
-				    symflags, mapaddr, prefix);
+  create_objfile_using_objfile(objfile, abfd);
+  return allocate_objfile_internal(objfile, abfd, flags,
+				   symflags, mapaddr, prefix);
 }
 
 struct objfile *
-create_objfile (bfd *abfd)
+create_objfile(bfd *abfd)
 {
   struct objfile *objfile;
 
-  objfile = (struct objfile *) xmalloc (sizeof (struct objfile));
-  memset (objfile, 0, sizeof (struct objfile));
-  return create_objfile_using_objfile (objfile, abfd);
-
+  objfile = (struct objfile *)xmalloc(sizeof(struct objfile));
+  memset(objfile, 0, sizeof(struct objfile));
+  return create_objfile_using_objfile(objfile, abfd);
 }
 
 struct objfile *
-create_objfile_using_objfile (struct objfile *objfile, bfd *abfd)
+create_objfile_using_objfile(struct objfile *objfile, bfd *abfd)
 {
   objfile->md = NULL;
-  objfile->psymbol_cache = bcache_xmalloc (NULL);
-  objfile->macro_cache = bcache_xmalloc (NULL);
-  bcache_specify_allocation (objfile->psymbol_cache, xmalloc, xfree);
-  bcache_specify_allocation (objfile->macro_cache, xmalloc, xfree);
-  obstack_specify_allocation (&objfile->objfile_obstack, 0, 0, xmalloc,
-                              xfree);
+  objfile->psymbol_cache = bcache_xmalloc(NULL);
+  objfile->macro_cache = bcache_xmalloc(NULL);
+  bcache_specify_allocation(objfile->psymbol_cache, xmalloc, xfree);
+  bcache_specify_allocation(objfile->macro_cache, xmalloc, xfree);
+  obstack_specify_allocation(&objfile->objfile_obstack, 0, 0, xmalloc,
+                             xfree);
 
   /* FIXME: This needs to be converted to use objfile-specific data. */
-  objfile_alloc_data (objfile);
+  objfile_alloc_data(objfile);
 
   /* Initialize the section indexes for this objfile, so that we can
      later detect if they are used w/o being properly assigned to. */
@@ -417,45 +414,41 @@ create_objfile_using_objfile (struct objfile *objfile, bfd *abfd)
    order.  */
 
 static int
-backward_section_compare (const void *left_ptr,
-		 const void *right_ptr)
+backward_section_compare(const void *left_ptr, const void *right_ptr)
 {
-
-  struct obj_section_with_index *left
-    = (struct obj_section_with_index *) left_ptr;
-  struct obj_section_with_index * right
-    = (struct obj_section_with_index *) right_ptr;
+  struct obj_section_with_index *left =
+    (struct obj_section_with_index *)left_ptr;
+  struct obj_section_with_index *right =
+    (struct obj_section_with_index *)right_ptr;
 
   if (left->section->addr > right->section->addr)
     return -1;
   else if (left->section->addr < right->section->addr)
     return 1;
   else
-      return 0;
+    return 0;
 }
 
-/* Simple integer compare for quicksort */
-
+/* Simple integer compare for quicksort: */
 static int
-forward_int_compare (const void *left_ptr,
-		 const void *right_ptr)
+forward_int_compare(const void *left_ptr, const void *right_ptr)
 {
-  int *left = (int *) left_ptr;
-  int *right = (int *) right_ptr;
+  int *left = (int *)left_ptr;
+  int *right = (int *)right_ptr;
 
   if (*left < *right)
     return -1;
   else if (*left > *right)
     return 1;
   else
-      return 0;
+    return 0;
 }
 
 /* APPLE LOCAL: The difference between the segment names and the section
    names is the segment names always only have one dot.  Use this to count
    the dots quickly...  */
 static int
-number_of_dots (const char *s)
+number_of_dots(const char *s)
 {
   int numdots = 0;
   while (*s != '\0')
@@ -1125,16 +1118,16 @@ clear_objfile (struct objfile *objfile)
 
 /* APPLE LOCAL: Factored out to use free_objfile_internal.  */
 void
-free_objfile (struct objfile *objfile)
+free_objfile(struct objfile *objfile)
 {
   /* APPLE LOCAL: Give a chance for any breakpoints to mark themselves as
      pending with the name of the objfile kept around for accurate
      re-setting. */
-  tell_breakpoints_objfile_removed (objfile);
+  tell_breakpoints_objfile_removed(objfile);
 
   if (objfile->separate_debug_objfile)
     {
-      free_objfile (objfile->separate_debug_objfile);
+      free_objfile(objfile->separate_debug_objfile);
       objfile->separate_debug_objfile = NULL;
     }
 
@@ -1145,41 +1138,39 @@ free_objfile (struct objfile *objfile)
       objfile->separate_debug_objfile_backlink->separate_debug_objfile = NULL;
     }
 
-  free_objfile_internal (objfile);
+  free_objfile_internal(objfile);
 
-  /* Remove it from the chain of all objfiles. */
+  /* Remove it from the chain of all objfiles: */
+  unlink_objfile(objfile);
 
-  unlink_objfile (objfile);
-
-  xfree (objfile);
+  xfree(objfile);
   objfile = NULL;
 }
 /* END APPLE LOCAL  */
 
 static void
-do_free_objfile_cleanup (void *obj)
+do_free_objfile_cleanup(void *obj)
 {
-  free_objfile (obj);
+  free_objfile((struct objfile *)obj);
 }
 
 struct cleanup *
-make_cleanup_free_objfile (struct objfile *obj)
+make_cleanup_free_objfile(struct objfile *obj)
 {
-  return make_cleanup (do_free_objfile_cleanup, obj);
+  return make_cleanup(do_free_objfile_cleanup, obj);
 }
 
-/* Free all the object files at once and clean up their users.  */
-
+/* Free all the object files at once and clean up their users: */
 void
-free_all_objfiles (void)
+free_all_objfiles(void)
 {
   struct objfile *objfile, *temp;
 
-  ALL_OBJFILES_SAFE (objfile, temp)
+  ALL_OBJFILES_SAFE(objfile, temp)
   {
-    free_objfile (objfile);
+    free_objfile(objfile);
   }
-  clear_symtab_users ();
+  clear_symtab_users();
 }
 
 /* Relocate OBJFILE to NEW_OFFSETS.  There should be OBJFILE->NUM_SECTIONS
@@ -1400,20 +1391,24 @@ objfile_relocate (struct objfile *objfile, struct section_offsets *new_offsets)
 
     abfd = objfile->obfd;
 
-    objfile_delete_from_ordered_sections (objfile);
+    if (abfd == (bfd *)NULL) {
+      ; /* ??? */
+    }
 
-    ALL_OBJFILE_OSECTIONS (objfile, s)
+    objfile_delete_from_ordered_sections(objfile);
+
+    ALL_OBJFILE_OSECTIONS(objfile, s)
       {
-	s->addr += ANOFFSET (delta, idx);
-	s->endaddr += ANOFFSET (delta, idx);
+	s->addr += ANOFFSET(delta, idx);
+	s->endaddr += ANOFFSET(delta, idx);
 	idx++;
       }
 
-    objfile_add_to_ordered_sections (objfile);
+    objfile_add_to_ordered_sections(objfile);
   }
 
-  /* Relocate breakpoints as necessary, after things are relocated. */
-  breakpoint_re_set (objfile);
+  /* Relocate breakpoints as necessary, after things are relocated: */
+  breakpoint_re_set(objfile);
 }
 
 /* Many places in gdb want to test just to see if we have any partial
@@ -1421,11 +1416,11 @@ objfile_relocate (struct objfile *objfile, struct section_offsets *new_offsets)
    available, nonzero otherwise. */
 
 int
-have_partial_symbols (void)
+have_partial_symbols(void)
 {
   struct objfile *ofp;
 
-  ALL_OBJFILES (ofp)
+  ALL_OBJFILES(ofp)
   {
     if (ofp->psymtabs != NULL)
       {
@@ -1672,10 +1667,9 @@ objfile_remove_from_restrict_list (struct objfile *objfile)
     }
 }
 
-/* Clear the restricted objfile search list.  */
-
+/* Clear the restricted objfile search list: */
 void
-objfile_clear_restrict_list ()
+objfile_clear_restrict_list(void)
 {
   while (objfile_list != NULL)
     {
@@ -1703,25 +1697,26 @@ struct swap_objfile_list_cleanup
 };
 
 void
-do_cleanup_restrict_to_objfile (void *arg)
+do_cleanup_restrict_to_objfile(void *arg)
 {
   struct swap_objfile_list_cleanup *data =
-    (struct swap_objfile_list_cleanup *) arg;
-  objfile_clear_restrict_list ();
+    (struct swap_objfile_list_cleanup *)arg;
+  objfile_clear_restrict_list();
   objfile_list = data->old_list;
-  objfile_restrict_search (data->restrict_state);
+  objfile_restrict_search(data->restrict_state);
 }
 
 struct cleanup *
-make_cleanup_restrict_to_objfile (struct objfile *objfile)
+make_cleanup_restrict_to_objfile(struct objfile *objfile)
 {
-  struct swap_objfile_list_cleanup *data
-    = (struct swap_objfile_list_cleanup *) xmalloc (sizeof (struct swap_objfile_list_cleanup));
+  struct swap_objfile_list_cleanup *data;
+  data = ((struct swap_objfile_list_cleanup *)
+          xmalloc(sizeof(struct swap_objfile_list_cleanup)));
   data->old_list = objfile_list;
   objfile_list = NULL;
-  objfile_add_to_restrict_list (objfile);
-  data->restrict_state = objfile_restrict_search (1);
-  return make_cleanup (do_cleanup_restrict_to_objfile, (void *) data);
+  objfile_add_to_restrict_list(objfile);
+  data->restrict_state = objfile_restrict_search(1);
+  return make_cleanup(do_cleanup_restrict_to_objfile, (void *)data);
 }
 
 /* APPLE LOCAL: Find an objfile called NAME.
@@ -1731,19 +1726,19 @@ make_cleanup_restrict_to_objfile (struct objfile *objfile)
    or just "Jabber".  */
 
 struct objfile *
-find_objfile_by_name (const char *name, int exact)
+find_objfile_by_name(const char *name, int exact)
 {
   struct objfile *o, *temp;
-  if (name == NULL || *name == '\0')
+  if ((name == NULL) || (*name == '\0'))
     return NULL;
 
-  ALL_OBJFILES_SAFE (o, temp)
+  ALL_OBJFILES_SAFE(o, temp)
     {
        enum objfile_matches_name_return r;
-       r = objfile_matches_name (o, name);
-       if (exact && r == objfile_match_exact)
+       r = objfile_matches_name(o, (char *)name);
+       if (exact && (r == objfile_match_exact))
          return o;
-       if (!exact && r == objfile_match_base)
+       if (!exact && (r == objfile_match_base))
          return o;
     }
 
@@ -1751,28 +1746,30 @@ find_objfile_by_name (const char *name, int exact)
    * of the objfile will be in the form of
    * [memory object "/usr/lib/libbz2.1.0.dylib" at 0x9a45b000]
    */
+  {
+    const char *memobj_str = "[memory object \"";
+    size_t memobj_strlen = strlen(memobj_str);
+    char buf[PATH_MAX + 1];
+    ALL_OBJFILES_SAFE(o, temp)
+      {
+        char *t;
+        if (o->name == NULL)
+          continue;
+        if (strncmp(memobj_str, o->name, memobj_strlen) != 0)
+          continue;
+        strcpy(buf, (o->name + memobj_strlen));
+        buf[PATH_MAX] = '\0';
+        t = strchr(buf, '"');
+        if (t == NULL)
+          continue;
+        *t = '\0';
 
-  const char *memobj_str = "[memory object \"";
-  int memobj_strlen = strlen (memobj_str);
-  char buf[PATH_MAX + 1];
-  ALL_OBJFILES_SAFE (o, temp)
-    {
-       if (o->name == NULL)
-         continue;
-       if (strncmp (memobj_str, o->name, memobj_strlen) != 0)
-         continue;
-       strcpy (buf, o->name + memobj_strlen);
-       buf[PATH_MAX] = '\0';
-       char *t = strchr (buf, '"');
-       if (t == NULL)
-         continue;
-       *t = '\0';
-
-       if (strcmp (buf, name) == 0)
-         return o;
-       if (exact == 0 && strstr (buf, name) != NULL)
-         return o;
-    }
+        if (strcmp(buf, name) == 0)
+          return o;
+        if ((exact == 0) && (strstr(buf, name) != NULL))
+          return o;
+      }
+  }
 
   return NULL;
 }
@@ -1784,15 +1781,15 @@ find_objfile_by_name (const char *name, int exact)
    NULL is returned if no match is found.  */
 
 struct objfile *
-find_objfile_by_uuid (uuid_t uuid)
+find_objfile_by_uuid(uuid_t uuid)
 {
   struct objfile *o, *temp;
 
-  ALL_OBJFILES_SAFE (o, temp)
+  ALL_OBJFILES_SAFE(o, temp)
     {
        uuid_t bfd_uuid;
-       if (bfd_mach_o_get_uuid (o->obfd, bfd_uuid, sizeof (uuid_t))
-           && memcmp (bfd_uuid, uuid, sizeof (uuid_t)) == 0)
+       if (bfd_mach_o_get_uuid(o->obfd, bfd_uuid, sizeof(uuid_t))
+           && memcmp(bfd_uuid, uuid, sizeof(uuid_t)) == 0)
          {
            if (o->separate_debug_objfile_backlink)
              return o->separate_debug_objfile_backlink;
@@ -1803,37 +1800,38 @@ find_objfile_by_uuid (uuid_t uuid)
   return NULL;
 }
 
-/* Same as make_cleanup_restrict_to_objfile, except that instead of
-   being given an objfile struct, this function is given an objfile name.  */
-
+/* Same as make_cleanup_restrict_to_objfile, except that instead of being
+ * given an objfile struct, this function is given an objfile name: */
 struct cleanup *
-make_cleanup_restrict_to_objfile_by_name (char *objfile_name)
+make_cleanup_restrict_to_objfile_by_name(char *objfile_name)
 {
   struct objfile *objfile = NULL;
-  struct swap_objfile_list_cleanup *data
-    = (struct swap_objfile_list_cleanup *) xmalloc (sizeof (struct swap_objfile_list_cleanup));
+  struct swap_objfile_list_cleanup *data;
+  data = ((struct swap_objfile_list_cleanup *)
+          xmalloc(sizeof(struct swap_objfile_list_cleanup)));
   data->old_list = objfile_list;
   objfile_list = NULL;
-  objfile = find_objfile_by_name (objfile_name, 1);
+  objfile = find_objfile_by_name(objfile_name, 1);
   if (objfile)
     {
-      objfile_add_to_restrict_list (objfile);
-      data->restrict_state = objfile_restrict_search (1);
-      return make_cleanup (do_cleanup_restrict_to_objfile, (void *) data);
+      objfile_add_to_restrict_list(objfile);
+      data->restrict_state = objfile_restrict_search(1);
+      return make_cleanup(do_cleanup_restrict_to_objfile, (void *)data);
     }
   else
-    return make_cleanup (null_cleanup, NULL);
+    return make_cleanup(null_cleanup, NULL);
 }
 /* APPLE LOCAL end radar 5273932  */
 
 struct cleanup *
-make_cleanup_restrict_to_objfile_list (struct objfile_list *objlist)
+make_cleanup_restrict_to_objfile_list(struct objfile_list *objlist)
 {
-  struct swap_objfile_list_cleanup *data
-    = (struct swap_objfile_list_cleanup *) xmalloc (sizeof (struct swap_objfile_list_cleanup));
-  data->old_list = objfile_set_restrict_list (objlist);
-  data->restrict_state = objfile_restrict_search (1);
-  return make_cleanup (do_cleanup_restrict_to_objfile, (void *) data);
+  struct swap_objfile_list_cleanup *data;
+  data = ((struct swap_objfile_list_cleanup *)
+          xmalloc(sizeof(struct swap_objfile_list_cleanup)));
+  data->old_list = objfile_set_restrict_list(objlist);
+  data->restrict_state = objfile_restrict_search(1);
+  return make_cleanup(do_cleanup_restrict_to_objfile, (void *)data);
 }
 
 /* Check whether the OBJFILE matches NAME.  We want to match either the
@@ -1846,7 +1844,7 @@ make_cleanup_restrict_to_objfile_list (struct objfile_list *objlist)
    no match.  */
 
 enum objfile_matches_name_return
-objfile_matches_name (struct objfile *objfile, char *name)
+objfile_matches_name(struct objfile *objfile, char *name)
 {
   const char *filename;
   const char *bundlename;
@@ -1857,42 +1855,43 @@ objfile_matches_name (struct objfile *objfile, char *name)
 
   real_name = objfile->name;
 
-  if (strcmp (real_name, name) == 0)
+  if (strcmp(real_name, name) == 0)
     return objfile_match_exact;
 
-  bundlename = bundle_basename (real_name);
-  if (bundlename && strcmp (bundlename, name) == 0)
+  bundlename = bundle_basename(real_name);
+  if (bundlename && (strcmp(bundlename, name) == 0))
     return objfile_match_base;
 
-  filename = lbasename (real_name);
+  filename = lbasename(real_name);
   if (filename == NULL)
     return objfile_no_match;
 
-  if (strcmp (filename, name) == 0)
+  if (strcmp(filename, name) == 0)
     return objfile_match_base;
 
   return objfile_no_match;
 }
 
 void
-push_front_restrict_list (struct objfile_list **requested_list_head,
-                          struct objfile *objfile)
+push_front_restrict_list(struct objfile_list **requested_list_head,
+                         struct objfile *objfile)
 {
-  struct objfile_list *new_requested_list_head
-    = (struct objfile_list *) xmalloc (sizeof (struct objfile_list));
+  struct objfile_list *new_requested_list_head;
+  new_requested_list_head = ((struct objfile_list *)
+                             xmalloc(sizeof(struct objfile_list)));
   new_requested_list_head->objfile = objfile;
   new_requested_list_head->next = *requested_list_head;
   *requested_list_head = new_requested_list_head;
 }
 
-void clear_restrict_list (struct objfile_list **requested_list_head)
+void clear_restrict_list(struct objfile_list **requested_list_head)
 {
   while (*requested_list_head != NULL)
     {
       struct objfile_list *list_ptr;
       list_ptr = *requested_list_head;
       *requested_list_head = list_ptr->next;
-      xfree (list_ptr);
+      xfree(list_ptr);
     }
 }
 /* Restricts the objfile search to the REQUESTED_SHILB. Returns
@@ -1900,22 +1899,23 @@ void clear_restrict_list (struct objfile_list **requested_list_head)
    found.  */
 
 struct cleanup *
-make_cleanup_restrict_to_shlib (char *requested_shlib)
+make_cleanup_restrict_to_shlib(char *requested_shlib)
 {
-  struct objfile_list *requested_list = NULL;
-  struct objfile *requested_objfile = NULL;
+  struct objfile_list *requested_list = (struct objfile_list *)NULL;
+  struct objfile *requested_objfile = (struct objfile *)NULL;
   struct objfile *tmp_obj;
 
   if (requested_shlib == NULL)
     return NULL;
 
-  /* Find the requested_objfile, if it does NOT exist, then throw an error. Look
-     for an exact match on the name, and if that does NOT work, look for a match
-     on the filename, in case the user just gave us the library name.  */
-  ALL_OBJFILES (tmp_obj)
+  /* Find the requested_objfile, if it does NOT exist, then throw an error.
+   * Look for an exact match on the name, and if that does NOT work, then
+   * look for a match on the filename, in case the user just gave us the
+   * library name: */
+  ALL_OBJFILES(tmp_obj)
     {
-      enum objfile_matches_name_return match =
-                             objfile_matches_name (tmp_obj, requested_shlib);
+      enum objfile_matches_name_return match;
+      match = objfile_matches_name(tmp_obj, requested_shlib);
       if (match == objfile_match_exact)
 	{
 	  /* Okay, we found an exact match, so throw away a list if we
@@ -1926,7 +1926,7 @@ make_cleanup_restrict_to_shlib (char *requested_shlib)
 	     functions will always return this separate debug objfile
 	     first, followed by the original executable.  */
 
-	  clear_restrict_list (&requested_list);
+	  clear_restrict_list(&requested_list);
 	  if (tmp_obj->separate_debug_objfile_backlink)
 	    requested_objfile = tmp_obj->separate_debug_objfile_backlink;
 	  else
@@ -1939,17 +1939,17 @@ make_cleanup_restrict_to_shlib (char *requested_shlib)
              add the separate debug objfiles.  */
 	  if (tmp_obj->separate_debug_objfile_backlink == NULL)
 	    {
-	      push_front_restrict_list (&requested_list, tmp_obj);
+	      push_front_restrict_list(&requested_list, tmp_obj);
 	    }
 	}
     }
 
   if (requested_objfile != NULL)
-    return make_cleanup_restrict_to_objfile (requested_objfile);
+    return make_cleanup_restrict_to_objfile(requested_objfile);
   else if (requested_list != NULL)
-    return make_cleanup_restrict_to_objfile_list (requested_list);
+    return make_cleanup_restrict_to_objfile_list(requested_list);
   else
-    return (void *) -1;
+    return (struct cleanup *)(void *)-1;
 }
 
 
@@ -1958,7 +1958,7 @@ make_cleanup_restrict_to_shlib (char *requested_shlib)
    it starts from the object_files. */
 
 struct objfile *
-objfile_get_first ()
+objfile_get_first(void)
 {
   if (!restrict_search || objfile_list == NULL)
     return object_files;
@@ -2410,20 +2410,22 @@ static int hitlist_max_elem;
 #define HITLIST_INITIAL_MAX_ELEM 1
 
 static void
-objfile_init_hitlist ()
+objfile_init_hitlist(void)
 {
   if (cur_objfile_hitlist != NULL)
-    internal_error (__FILE__, __LINE__,
-		    "Tried to initialize hit list without "
-		    "closing previous hitlist.");
-  cur_objfile_hitlist = xmalloc (sizeof (struct objfile_hitlist)
-				 + HITLIST_INITIAL_MAX_ELEM * sizeof (struct objfile *));
+    internal_error(__FILE__, __LINE__,
+		   "Tried to initialize hit list without "
+		   "closing previous hitlist.");
+  cur_objfile_hitlist = ((struct objfile_hitlist *)
+                         xmalloc(sizeof(struct objfile_hitlist)
+                                 + (HITLIST_INITIAL_MAX_ELEM
+                                    * sizeof(struct objfile *))));
   hitlist_max_elem = HITLIST_INITIAL_MAX_ELEM;
   cur_objfile_hitlist->num_elem = 0;
 }
 
 void
-objfile_add_to_hitlist (struct objfile *ofile)
+objfile_add_to_hitlist(struct objfile *ofile)
 {
   int ctr;
   if (cur_objfile_hitlist == NULL)
@@ -2435,8 +2437,11 @@ objfile_add_to_hitlist (struct objfile *ofile)
     {
       hitlist_max_elem
 	+= hitlist_max_elem;
-      cur_objfile_hitlist = xrealloc (cur_objfile_hitlist, sizeof (struct objfile_hitlist)
-		     + hitlist_max_elem * sizeof (struct objfile *));
+      cur_objfile_hitlist = ((struct objfile_hitlist *)
+                             xrealloc(cur_objfile_hitlist,
+                                      (sizeof(struct objfile_hitlist)
+                                       + (hitlist_max_elem
+                                          * sizeof(struct objfile *)))));
     }
   for (ctr = 0; ctr < cur_objfile_hitlist->num_elem; ctr++)
     {
@@ -2454,7 +2459,7 @@ objfile_add_to_hitlist (struct objfile *ofile)
    When you are done with it you can just free it.  */
 
 struct objfile_hitlist *
-objfile_detach_hitlist ()
+objfile_detach_hitlist(void)
 {
   struct objfile_hitlist *thislist;
 
@@ -2479,10 +2484,10 @@ objfile_clear_hitlist (void *notused)
    cleanup will do nothing.  */
 
 struct cleanup *
-make_cleanup_objfile_init_clear_hitlist ()
+make_cleanup_objfile_init_clear_hitlist(void)
 {
-  objfile_init_hitlist ();
-  return make_cleanup (objfile_clear_hitlist, NULL);
+  objfile_init_hitlist();
+  return make_cleanup(objfile_clear_hitlist, NULL);
 }
 
 int
@@ -2527,37 +2532,39 @@ sort_objfile_thumb_psyms (struct objfile *objfile)
 }
 
 
-// This constant value matches the value used in
-// MSYMBOL_SET_SPECIAL / MSYMBOL_IS_SPECIAL
+/* This constant value matches the value used in
+ * MSYMBOL_SET_SPECIAL / MSYMBOL_IS_SPECIAL  */
 
 #define MSYMBOL_THUMB_FUNCTION 0x80000000
 
 char *
-partial_symbol_special_info (struct objfile *objfile,
-                             struct partial_symbol *psym)
+partial_symbol_special_info(struct objfile *objfile,
+                            struct partial_symbol *psym)
 {
+  struct partial_symbol **i;
+
   if (objfile->num_thumb_psyms == 0)
     return NULL;
 
-  if (PSYMBOL_DOMAIN (psym) != VAR_DOMAIN
-      && PSYMBOL_DOMAIN (psym) != FUNCTIONS_DOMAIN
-      && PSYMBOL_DOMAIN (psym) != METHODS_DOMAIN)
+  if ((PSYMBOL_DOMAIN(psym) != VAR_DOMAIN)
+      && (PSYMBOL_DOMAIN(psym) != FUNCTIONS_DOMAIN)
+      && (PSYMBOL_DOMAIN(psym) != METHODS_DOMAIN))
     return NULL;
 
-  if (PSYMBOL_CLASS (psym) != LOC_BLOCK)
+  if (PSYMBOL_CLASS(psym) != LOC_BLOCK)
     return NULL;
 
-  if (SYMBOL_VALUE_ADDRESS (psym) == 0
-      || SYMBOL_VALUE_ADDRESS (psym) == INVALID_ADDRESS)
+  if ((SYMBOL_VALUE_ADDRESS(psym) == 0)
+      || (SYMBOL_VALUE_ADDRESS(psym) == INVALID_ADDRESS))
     return NULL;
 
-  struct partial_symbol **i;
-  i = bsearch (&psym, objfile->thumb_psyms,
-              objfile->num_thumb_psyms, sizeof (struct partial_symbol *),
-              compare_psymbol_ptrs);
+  i = ((struct partial_symbol **)
+       bsearch(&psym, objfile->thumb_psyms,
+               objfile->num_thumb_psyms, sizeof(struct partial_symbol *),
+               compare_psymbol_ptrs));
 
   if (i)
-      return (char *) (MSYMBOL_THUMB_FUNCTION);
+    return (char *)(MSYMBOL_THUMB_FUNCTION);
 
   return NULL;
 }
@@ -2658,22 +2665,27 @@ slide_objfile (struct objfile *objfile, CORE_ADDR slide,
         }
 
 
-      do_cleanups (offset_cleanup);
+      do_cleanups(offset_cleanup);
       if (info_verbose)
-        printf_filtered ("done\n");
+        printf_filtered("done\n");
     }
 }
 
+/* For '-Wmissing-prototypes' or '-Wmissing-declarations': */
+extern initialize_file_ftype _initialize_objfiles;
+
 void
-_initialize_objfiles (void)
+_initialize_objfiles(void)
 {
   cached_symfile_path =
-    xstrdup ("./gdb-symfile-cache:./syms:/usr/libexec/gdb/symfiles");
+    xstrdup("./gdb-symfile-cache:./syms:/usr/libexec/gdb/symfiles");
 
-  /* APPLE LOCAL: We do NOT want to raise load levels for MetroWerks.  */
-  add_setshow_boolean_cmd ("auto-raise-load-levels", class_obscure,
-			   &should_auto_raise_load_state, _("\
+  /* APPLE LOCAL: We do NOT want to raise load levels for MetroWerks: */
+  add_setshow_boolean_cmd("auto-raise-load-levels", class_obscure,
+			  &should_auto_raise_load_state, _("\
 Set if GDB should raise the symbol loading level on all frames found in backtraces."), _("\
 Show if GDB should raise the symbol loading level on all frames found in backtraces."), NULL,
-			   NULL, NULL, &setlist, &showlist);
+                          NULL, NULL, &setlist, &showlist);
 }
+
+/* EOF */

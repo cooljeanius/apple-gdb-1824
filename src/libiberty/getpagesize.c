@@ -61,9 +61,9 @@ BUGS
 #endif /* GNU_OUR_PAGESIZE */
 
 int
-getpagesize (void)
+getpagesize(void)
 {
-  return (GNU_OUR_PAGESIZE);
+  return (int)(GNU_OUR_PAGESIZE);
 }
 
 #else /* VMS */

@@ -1,6 +1,6 @@
-/* Provide a version of _doprnt in terms of fprintf.
+/* _doprnt.c: Provide a version of _doprnt in terms of fprintf.
    Copyright (C) 1998, 1999, 2000, 2001, 2002   Free Software Foundation, Inc.
-   Contributed by Kaveh Ghazi  (ghazi@caip.rutgers.edu)  3/29/98
+   Contributed by Kaveh Ghazi  <ghazi@caip.rutgers.edu>  3/29/98
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
@@ -156,7 +156,7 @@ _doprnt (const char *format, va_list ap, FILE *stream)
 			break;
 		      case 2:
 		      default:
-#if defined(__GNUC__) || defined(HAVE_LONG_LONG)
+#if (defined(__GNUC__) || defined(HAVE_LONG_LONG)) && !defined(__STRICT_ANSI__)
 			PRINT_TYPE(long long);
 #else
 			PRINT_TYPE(long); /* Fake it and hope for the best.  */
@@ -277,7 +277,7 @@ main (void)
   RESULT(checkit ("Testing (hd) short: <%d><%ld><%hd><%hd><%d>\n", 123, (long)234, 345, 123456789, 456));
   RESULT(printf ("Testing (hd) short: <%d><%ld><%hd><%hd><%d>\n", 123, (long)234, 345, 123456789, 456));
 
-#if defined(__GNUC__) || defined (HAVE_LONG_LONG)
+#if (defined(__GNUC__) || defined(HAVE_LONG_LONG)) && !defined(__STRICT_ANSI__)
   RESULT(checkit ("Testing (lld) long long: <%d><%lld><%d>\n", 123, 234234234234234234LL, 345));
   RESULT(printf ("Testing (lld) long long: <%d><%lld><%d>\n", 123, 234234234234234234LL, 345));
   RESULT(checkit ("Testing (Ld) long long: <%d><%Ld><%d>\n", 123, 234234234234234234LL, 345));

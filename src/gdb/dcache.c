@@ -1,4 +1,4 @@
-/* Caching code for GDB, the GNU debugger.
+/* dcache.c: Caching code for GDB, the GNU debugger.
 
    Copyright 1992, 1993, 1995, 1996, 1998, 1999, 2000, 2001, 2003 Free
    Software Foundation, Inc.
@@ -40,11 +40,11 @@
    Reducing the overhead to an eighth of what it was.  This is very
    obvious when displaying a large amount of data,
 
-   eg, x/200x 0 
+   eg, x/200x 0
 
-   caching     |   no    yes 
-   ---------------------------- 
-   first time  |   4 sec  2 sec improvement due to chunking 
+   caching     |   no    yes
+   ----------------------------
+   first time  |   4 sec  2 sec improvement due to chunking
    second time |   4 sec  0 sec improvement due to caching
 
    The cache structure is unusual, we keep a number of cache blocks
@@ -137,7 +137,7 @@ struct dcache_block
     /* APPLE LOCAL: data and state used to be fixed size.  */
     gdb_byte *data;
     unsigned char *state;
-    /* whether anything in state is dirty - used to speed up the 
+    /* whether anything in state is dirty - used to speed up the
        dirty scan. */
     int anydirty;
 
@@ -266,7 +266,7 @@ dcache_write_line (DCACHE *dcache, struct dcache_block *db)
   gdb_byte *myaddr;
   int len;
   int res;
-  int reg_len;
+  long reg_len;
   struct mem_region *region;
 
   if (!db->anydirty)
@@ -274,25 +274,25 @@ dcache_write_line (DCACHE *dcache, struct dcache_block *db)
 
   len = g_line_size;
   memaddr = db->addr;
-  myaddr  = db->data;
+  myaddr = db->data;
 
   while (len > 0)
     {
       int s;
       int e;
       int dirty_len;
-      
+
       region = lookup_mem_region(memaddr);
-      if (memaddr + len < region->hi)
+      if ((memaddr + len) < region->hi)
 	reg_len = len;
       else
-	reg_len = region->hi - memaddr;
+	reg_len = (long)(region->hi - memaddr);
 
       if (!(region->attrib.cache == 1) || region->attrib.mode == MEM_RO)
 	{
 	  memaddr += reg_len;
-	  myaddr  += reg_len;
-	  len     -= reg_len;
+	  myaddr += reg_len;
+	  len -= reg_len;
 	  continue;
 	}
 
@@ -318,13 +318,14 @@ dcache_write_line (DCACHE *dcache, struct dcache_block *db)
 	    reg_len--;
 	  }
 
-	  dirty_len = e - s;
-	  res = target_write (&current_target, TARGET_OBJECT_RAW_MEMORY,
-			      NULL, myaddr, memaddr, dirty_len);
+	  dirty_len = (e - s);
+	  res = (int)target_write(&current_target,
+                                  TARGET_OBJECT_RAW_MEMORY, NULL, myaddr,
+                                  memaddr, dirty_len);
 	  if (res < dirty_len)
 	    return 0;
 
-	  memset (&db->state[XFORM(memaddr)], ENTRY_OK, res);
+	  memset(&db->state[XFORM(memaddr)], ENTRY_OK, res);
 	  memaddr += res;
 	  myaddr += res;
 	  len -= res;
@@ -337,46 +338,46 @@ dcache_write_line (DCACHE *dcache, struct dcache_block *db)
 
 /* Read cache line */
 static int
-dcache_read_line (DCACHE *dcache, struct dcache_block *db)
+dcache_read_line(DCACHE *dcache, struct dcache_block *db)
 {
   CORE_ADDR memaddr;
   gdb_byte *myaddr;
   int len;
   int res;
-  int reg_len;
+  size_t reg_len;
   struct mem_region *region;
 
   /* If there are any dirty bytes in the line, it must be written
      before a new line can be read */
   if (db->anydirty)
     {
-      if (!dcache_write_line (dcache, db))
+      if (!dcache_write_line(dcache, db))
 	return 0;
     }
-  
+
   len = g_line_size;
   memaddr = db->addr;
-  myaddr  = db->data;
+  myaddr = db->data;
 
   while (len > 0)
     {
       region = lookup_mem_region(memaddr);
-      if (memaddr + len < region->hi)
+      if ((memaddr + len) < region->hi)
 	reg_len = len;
       else
-	reg_len = region->hi - memaddr;
+	reg_len = (size_t)(region->hi - memaddr);
 
       if (!(region->attrib.cache == 1) || region->attrib.mode == MEM_WO)
 	{
 	  memaddr += reg_len;
-	  myaddr  += reg_len;
-	  len     -= reg_len;
+	  myaddr += reg_len;
+	  len -= reg_len;
 	  continue;
 	}
-      
-      res = target_read (&current_target, TARGET_OBJECT_RAW_MEMORY,
-			 NULL, myaddr, memaddr, reg_len);
-      if (res < reg_len)
+
+      res = (int)target_read(&current_target, TARGET_OBJECT_RAW_MEMORY,
+                             NULL, myaddr, memaddr, reg_len);
+      if ((size_t)res < reg_len)
 	return 0;
 
       memaddr += res;
@@ -384,9 +385,9 @@ dcache_read_line (DCACHE *dcache, struct dcache_block *db)
       len -= res;
     }
 
-  memset (db->state, ENTRY_OK, g_line_size * sizeof (unsigned char));
+  memset(db->state, ENTRY_OK, (g_line_size * sizeof(unsigned char)));
   db->anydirty = 0;
-  
+
   return 1;
 }
 
@@ -411,7 +412,7 @@ dcache_alloc (DCACHE *dcache, CORE_ADDR addr)
 
       if (!dcache_write_line (dcache, db))
 	return NULL;
-      
+
       dcache->valid_head = db->p;
     }
 
@@ -450,7 +451,7 @@ dcache_writeback (DCACHE *dcache)
 
 
 /* Using the data cache DCACHE return the contents of the byte at
-   address ADDR in the remote machine.  
+   address ADDR in the remote machine.
 
    Returns 0 on error. */
 
@@ -465,7 +466,7 @@ dcache_peek_byte (DCACHE *dcache, CORE_ADDR addr, gdb_byte *ptr)
       if (!db)
 	return 0;
     }
-  
+
   if (db->state[XFORM (addr)] == ENTRY_BAD)
     {
       if (!dcache_read_line(dcache, db))
@@ -500,14 +501,14 @@ dcache_poke_byte (DCACHE *dcache, CORE_ADDR addr, gdb_byte *ptr)
 }
 
 static void
-dcache_set_data (DCACHE *dcache)
+dcache_set_data(DCACHE *dcache)
 {
 
   int i;
 
-  dcache->data_block = xmalloc (g_line_size * DCACHE_SIZE * sizeof (gdb_byte));
-  dcache->state_block = xmalloc (g_line_size * DCACHE_SIZE * sizeof (unsigned char));
-  
+  dcache->data_block = (gdb_byte *)xmalloc(g_line_size * DCACHE_SIZE * sizeof(gdb_byte));
+  dcache->state_block = (unsigned char *)xmalloc(g_line_size * DCACHE_SIZE * sizeof(unsigned char));
+
   for (i = 0; i < DCACHE_SIZE; i++)
     {
       dcache->the_cache[i].data = dcache->data_block + (i * g_line_size);
@@ -525,24 +526,25 @@ dcache_resize (DCACHE *dcache)
 
 /* Initialize the data cache.  */
 DCACHE *
-dcache_init (void)
+dcache_init(void)
 {
-  int csize = sizeof (struct dcache_block) * DCACHE_SIZE;
+  size_t csize = (sizeof(struct dcache_block) * DCACHE_SIZE);
   DCACHE *dcache;
 
-  dcache = (DCACHE *) xmalloc (sizeof (*dcache));
+  dcache = (DCACHE *)xmalloc(sizeof(*dcache));
 
-  dcache->the_cache = (struct dcache_block *) xmalloc (csize);
-  memset (dcache->the_cache, 0, csize);
+  dcache->the_cache = (struct dcache_block *)xmalloc(csize);
+  memset(dcache->the_cache, 0, csize);
 
-  dcache_set_data (dcache);
+  dcache_set_data(dcache);
 
-  dcache_invalidate (dcache);
+  dcache_invalidate(dcache);
 
   if (g_num_caches == g_max_num_caches)
     {
       g_max_num_caches += 4;
-      g_cache_array = xrealloc (g_cache_array, g_max_num_caches * sizeof (DCACHE *));
+      g_cache_array = (DCACHE **)xrealloc(g_cache_array,
+                                          (g_max_num_caches * sizeof(DCACHE *)));
     }
   g_cache_array[g_num_caches++] = dcache;
 
@@ -575,9 +577,9 @@ dcache_free (DCACHE *dcache)
 
 /* Read or write LEN bytes from inferior memory at MEMADDR, transferring
    to or from debugger address MYADDR.  Write to inferior if SHOULD_WRITE is
-   nonzero. 
+   nonzero.
 
-   Returns length of data written or read; 0 for error.  
+   Returns length of data written or read; 0 for error.
 
    This routine is indended to be called by remote_xfer_ functions. */
 
@@ -606,7 +608,7 @@ dcache_xfer_memory (DCACHE *dcache, CORE_ADDR memaddr, gdb_byte *myaddr,
 
   if (should_write)
     dcache_writeback (dcache);
-    
+
   return len;
 }
 
@@ -679,7 +681,7 @@ volatile registers are in use.  By default, this option is off."),
 	    _("Print information on the dcache performance."));
 
   add_setshow_zinteger_cmd ("dcache-linesize-power", class_support,
-                        &g_line_power, 
+                        &g_line_power,
                         "Set the power for the cache line size",
                         "Show the power for the cache line size",
 "Sets the power for the cache line size, the actual cache line will be 2^cache-line-power.",

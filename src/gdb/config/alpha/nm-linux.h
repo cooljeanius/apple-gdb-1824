@@ -1,4 +1,5 @@
-/* Native definitions for alpha running GNU/Linux.
+/* nm-linux.h
+   Native definitions for alpha running GNU/Linux.
 
    Copyright 1993, 1994, 1996, 1998, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.

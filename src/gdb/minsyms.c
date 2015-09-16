@@ -1,4 +1,4 @@
-/* GDB routines for manipulating the minimal symbol tables.
+/* minisyms.c: GDB routines for manipulating the minimal symbol tables.
    Copyright 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
    2002, 2003, 2004
    Free Software Foundation, Inc.
@@ -174,8 +174,8 @@ lookup_minimal_symbol_all (const char *name, const char *sfile,
 	     and the second over the demangled hash table.  */
 	  int pass;
 
-	  for (pass = 1; 
-	       pass <= 2 && found_symbol == NULL && found_file_symbol == NULL; 
+	  for (pass = 1;
+	       pass <= 2 && found_symbol == NULL && found_file_symbol == NULL;
 	       pass++)
 	    {
 	      /* Select hash list according to pass.  */
@@ -184,7 +184,7 @@ lookup_minimal_symbol_all (const char *name, const char *sfile,
 	      else
 		msymbol = objfile->msymbol_demangled_hash[dem_hash];
 
-	      while (msymbol != NULL 
+	      while (msymbol != NULL
 		     && found_symbol == NULL
 		     && found_file_symbol == NULL)
 		{
@@ -257,7 +257,7 @@ lookup_minimal_symbol_all (const char *name, const char *sfile,
 		      && (!MSYMBOL_OBSOLETED (msym)))
 		    {
 
-		      node = (struct symbol_search *) xmalloc 
+		      node = (struct symbol_search *) xmalloc
 			                                 (sizeof (struct symbol_search));
 		      node->block = 0;
 		      node->symtab = NULL;
@@ -543,7 +543,7 @@ lookup_minimal_symbol_by_pc_section_from_objfile
 {
   int lo;
   int hi;
-  int new;
+  int newthing;
   struct minimal_symbol *msymbol;
   struct minimal_symbol *best_symbol = NULL;
 
@@ -575,7 +575,7 @@ lookup_minimal_symbol_by_pc_section_from_objfile
   if ((msymbol = objfile->msymbols) != NULL)
     {
       lo = 0;
-      hi = objfile->minimal_symbol_count - 1;
+      hi = (objfile->minimal_symbol_count - 1);
 
       /* This code assumes that the minimal symbols are sorted by
          ascending address values.  If the pc value is greater than or
@@ -596,36 +596,36 @@ lookup_minimal_symbol_by_pc_section_from_objfile
          Warning: this code is trickier than it would appear at first. */
 
       /* Should also require that pc is <= end of objfile.  FIXME! */
-      if (pc >= SYMBOL_VALUE_ADDRESS (&msymbol[lo]))
+      if (pc >= SYMBOL_VALUE_ADDRESS(&msymbol[lo]))
 	{
-	  while (SYMBOL_VALUE_ADDRESS (&msymbol[hi]) > pc)
+	  while (SYMBOL_VALUE_ADDRESS(&msymbol[hi]) > pc)
 	    {
 	      /* pc is still strictly less than highest address */
 	      /* Note "new" will always be >= lo */
-	      new = (lo + hi) / 2;
-	      if ((SYMBOL_VALUE_ADDRESS (&msymbol[new]) >= pc) ||
-		  (lo == new))
+	      newthing = ((lo + hi) / 2);
+	      if ((SYMBOL_VALUE_ADDRESS(&msymbol[newthing]) >= pc)
+                  || (lo == newthing))
 		{
-		  hi = new;
+		  hi = newthing;
 		}
 	      else
 		{
-		  lo = new;
+		  lo = newthing;
 		}
 	    }
 
 	  /* If we have multiple symbols at the same address, we want
 	     hi to point to the last one.  That way we can find the
 	     right symbol if it has an index greater than hi.  */
-	  while (hi < objfile->minimal_symbol_count - 1
-		 && (SYMBOL_VALUE_ADDRESS (&msymbol[hi])
-		     == SYMBOL_VALUE_ADDRESS (&msymbol[hi + 1])))
+	  while ((hi < (objfile->minimal_symbol_count - 1))
+		 && (SYMBOL_VALUE_ADDRESS(&msymbol[hi])
+		     == SYMBOL_VALUE_ADDRESS(&msymbol[hi + 1])))
 	    hi++;
 
 	  /* The minimal symbol indexed by hi now is the best one in this
 	     objfile's minimal symbol table.  See if it is the best one
 	     overall. */
-	  
+
 	  /* Skip any absolute symbols.  This is apparently what adb
 	     and dbx do, and is needed for the CM-5.  There are two
 	     known possible problems: (1) on ELF, apparently end, edata,
@@ -635,15 +635,14 @@ lookup_minimal_symbol_by_pc_section_from_objfile
 	     NeXT are absolute.  If we want special handling for this
 	     it probably should be triggered by a special
 	     mst_abs_or_lib or some such.  */
-	  while (hi >= 0
-		 && msymbol[hi].type == mst_abs)
+	  while ((hi >= 0) && (msymbol[hi].type == mst_abs))
 	    --hi;
 
 	  /* If "section" specified, skip any symbol from wrong section */
 	  /* This is the new code that distinguishes it from the old function */
 	  if (section)
 	    {
-	      while (hi >= 0 
+	      while ((hi >= 0)
 		     /* Some types of debug info, such as COFF,
 			don't fill the bfd_section member, so don't
 			throw away symbols on those platforms.  */
@@ -651,13 +650,13 @@ lookup_minimal_symbol_by_pc_section_from_objfile
 			don't have sections are eh frame info, and we
 			pretty much never want to find them accidentally.
 			&& SYMBOL_BFD_SECTION (&msymbol[hi]) != NULL */
-		     && SYMBOL_BFD_SECTION (&msymbol[hi]) != section)
+		     && (SYMBOL_BFD_SECTION(&msymbol[hi]) != section))
 		--hi;
 	      /* If there are NO section matches at all, return NULL
 		 rather than accidentally returning the lowest msymbol
 		 in the objfile. */
-	      if (hi == 0 
-		  && SYMBOL_BFD_SECTION (&msymbol[hi]) != section)
+	      if ((hi == 0)
+		  && (SYMBOL_BFD_SECTION(&msymbol[hi]) != section))
 		return NULL;
 	    }
 	  if (hi >= 0)
@@ -675,9 +674,7 @@ lookup_minimal_symbol_by_pc_section_from_objfile
    symbol that comes closest to the specified PC. */
 
 struct minimal_symbol *
-lookup_minimal_symbol_by_pc_section (pc, section)
-     CORE_ADDR pc;
-     asection *section;
+lookup_minimal_symbol_by_pc_section(CORE_ADDR pc, asection *section)
 {
   struct objfile *objfile;
   struct minimal_symbol *best_symbol = NULL;
@@ -686,7 +683,7 @@ lookup_minimal_symbol_by_pc_section (pc, section)
   struct obj_section *pc_section;
 
   /* APPLE LOCAL: Although the objfiles can have discontiguous address
-     ranges, two objfiles can't have overlapping sections (or if they 
+     ranges, two objfiles can't have overlapping sections (or if they
      do, either the section will sort out which is the right one, or
      the pc->symbol translation will be ambiguous anyway so we are
      going to fail here.)  So find the obj_section that contains the
@@ -697,7 +694,7 @@ lookup_minimal_symbol_by_pc_section (pc, section)
   if (s)
     best_symbol = lookup_minimal_symbol_by_pc_section_from_objfile
       (pc, section, s->objfile);
-  
+
   if (best_symbol != NULL)
     return best_symbol;
 
@@ -726,7 +723,7 @@ lookup_minimal_symbol_by_pc_section (pc, section)
   return (best_symbol);
 }
 
-/* Backward compatibility: search through the minimal symbol table 
+/* Backward compatibility: search through the minimal symbol table
    for a matching PC (no section or objfile given) */
 
 struct minimal_symbol *
@@ -802,17 +799,17 @@ prim_record_minimal_symbol (const char *name, CORE_ADDR address,
    newly created.  */
 
 struct minimal_symbol *
-prim_record_minimal_symbol_and_info (const char *name, CORE_ADDR address,
-				     enum minimal_symbol_type ms_type,
-				     char *info, int section,
-				     asection *bfd_section,
-				     struct objfile *objfile)
+prim_record_minimal_symbol_and_info(const char *name, CORE_ADDR address,
+				    enum minimal_symbol_type ms_type,
+				    char *info, int section,
+				    asection *bfd_section,
+				    struct objfile *objfile)
 {
-  struct msym_bunch *new;
+  struct msym_bunch *newbunch;
   struct minimal_symbol *msymbol;
 
   /* APPLE LOCAL: Re-factor the mst_file_text check up one level.
-     Don't modify the symbol name when checking it against
+     Do NOT modify the symbol name when checking it against
      __gcc_compiled. */
 
   if (ms_type == mst_file_text)
@@ -822,48 +819,48 @@ prim_record_minimal_symbol_and_info (const char *name, CORE_ADDR address,
 	 at the same address (e.g. the first function of the file),
 	 lookup_minimal_symbol_by_pc would have no way of getting the
 	 right one.  */
-      if (name[0] == 'g'
-	  && (strcmp (name, GCC_COMPILED_FLAG_SYMBOL) == 0
-	      || strcmp (name, GCC2_COMPILED_FLAG_SYMBOL) == 0))
+      if ((name[0] == 'g')
+	  && ((strcmp(name, GCC_COMPILED_FLAG_SYMBOL) == 0)
+	      || (strcmp(name, GCC2_COMPILED_FLAG_SYMBOL) == 0)))
 	return (NULL);
 
       {
         const char *tempstring = name;
-        if (tempstring[0] == get_symbol_leading_char (objfile->obfd))
+        if (tempstring[0] == get_symbol_leading_char(objfile->obfd))
           ++tempstring;
-        if (strncmp (tempstring, "__gnu_compiled", 14) == 0)
+        if (strncmp(tempstring, "__gnu_compiled", 14) == 0)
           return (NULL);
       }
     }
- 
+
   /* END APPLE LOCAL */
 
   if (msym_bunch_index == BUNCH_SIZE)
     {
-      new = (struct msym_bunch *) xmalloc (sizeof (struct msym_bunch));
+      newbunch = (struct msym_bunch *)xmalloc(sizeof(struct msym_bunch));
       msym_bunch_index = 0;
-      new->next = msym_bunch;
-      msym_bunch = new;
+      newbunch->next = msym_bunch;
+      msym_bunch = newbunch;
     }
   msymbol = &msym_bunch->contents[msym_bunch_index];
-/* APPLE LOCAL: Initialize the msymbol->filename to NULL.  */
+/* APPLE LOCAL: Initialize the msymbol->filename to NULL: */
 #if defined(SOFUN_ADDRESS_MAYBE_MISSING) && !defined(TM_NEXTSTEP)
   msymbol->filename = NULL;
-#endif
-  SYMBOL_INIT_LANGUAGE_SPECIFIC (msymbol, language_unknown);
-  SYMBOL_LANGUAGE (msymbol) = language_auto;
-  SYMBOL_SET_NAMES (msymbol, (char *)name, strlen (name), objfile);
+#endif /* SOFUN_ADDRESS_MAYBE_MISSING && !TM_NEXTSTEP */
+  SYMBOL_INIT_LANGUAGE_SPECIFIC(msymbol, language_unknown);
+  SYMBOL_LANGUAGE(msymbol) = language_auto;
+  SYMBOL_SET_NAMES(msymbol, (char *)name, strlen(name), objfile);
 
-  SYMBOL_VALUE_ADDRESS (msymbol) = address;
-  SYMBOL_SECTION (msymbol) = section;
-  SYMBOL_BFD_SECTION (msymbol) = bfd_section;
+  SYMBOL_VALUE_ADDRESS(msymbol) = address;
+  SYMBOL_SECTION(msymbol) = section;
+  SYMBOL_BFD_SECTION(msymbol) = bfd_section;
 
-  MSYMBOL_TYPE (msymbol) = ms_type;
+  MSYMBOL_TYPE(msymbol) = ms_type;
   /* FIXME:  This info, if it remains, needs its own field.  */
-  MSYMBOL_INFO (msymbol) = info;	/* FIXME! */
-  MSYMBOL_SIZE (msymbol) = 0;
+  MSYMBOL_INFO(msymbol) = info; /* FIXME! */
+  MSYMBOL_SIZE(msymbol) = 0;
   /* APPLE LOCAL: fix-and-continue */
-  MSYMBOL_OBSOLETED (msymbol) = 0;
+  MSYMBOL_OBSOLETED(msymbol) = 0;
 
   /* The hash pointers must be cleared! If they're not,
      add_minsym_to_hash_table will NOT add this msymbol to the hash table. */
@@ -872,13 +869,13 @@ prim_record_minimal_symbol_and_info (const char *name, CORE_ADDR address,
 
   msym_bunch_index++;
   msym_count++;
-  OBJSTAT (objfile, n_minsyms++);
+  OBJSTAT(objfile, n_minsyms++);
 
   return msymbol;
 }
 
 /* Compare two minimal symbols by address and return a signed result based
-   on unsigned comparisons, so that we sort into unsigned numeric order.  
+   on unsigned comparisons, so that we sort into unsigned numeric order.
    Within groups with the same address, sort by name.  */
 
 static int
@@ -1016,7 +1013,7 @@ compact_minimal_symbols (struct minimal_symbol *msymbol, int mcount,
 /* Build (or rebuild) the minimal symbol hash tables.  This is necessary
    after compacting or sorting the table since the entries move around
    thus causing the internal minimal_symbol pointers to become jumbled. */
-  
+
 static void
 build_minimal_symbol_hash_tables (struct objfile *objfile)
 {
@@ -1152,7 +1149,7 @@ install_minimal_symbols (struct objfile *objfile)
       objfile->minimal_symbol_count = mcount;
       objfile->msymbols = msymbols;
 
-      /* Try to guess the appropriate C++ ABI by looking at the names 
+      /* Try to guess the appropriate C++ ABI by looking at the names
 	 of the minimal symbols in the table.  */
       {
 	int i;
@@ -1165,7 +1162,7 @@ install_minimal_symbols (struct objfile *objfile)
 	       mixing ABIs then the user will need to "set cp-abi"
 	       manually.  */
 	    const char *name = SYMBOL_LINKAGE_NAME (&objfile->msymbols[i]);
-	    if (name[0] == '_' && name[1] == 'Z' 
+	    if (name[0] == '_' && name[1] == 'Z'
 		&& SYMBOL_DEMANGLED_NAME (&objfile->msymbols[i]) != NULL
 		&& cp_abi_is_auto_p())
 	      {
@@ -1174,7 +1171,7 @@ install_minimal_symbols (struct objfile *objfile)
 	      }
 	  }
       }
-      
+
       /* Now build the hash tables; we can't do this incrementally
          at an earlier point since we weren't finished with the obstack
 	 yet.  (And if the msymbol obstack gets moved, all the internal

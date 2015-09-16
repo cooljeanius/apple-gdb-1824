@@ -1,4 +1,4 @@
-/* MIPS ELF specific backend routines.
+/* elfxx-mips.h: MIPS ELF specific backend routines.
    Copyright 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of BFD, the Binary File Descriptor library.

@@ -1,15 +1,16 @@
+/* macosx-nat-dyld-info.h */
+
 #ifndef __GDB_MACOSX_NAT_DYLD_INFO_H__
 #define __GDB_MACOSX_NAT_DYLD_INFO_H__
 
 #include "defs.h"
 #include <mach/machine.h>       /* cpu_type_t, cpu_subtype_t */
-#include <mach-o/loader.h>      /* struct mach_header, struct load_command */
+#include <mach-o/loader.h>    /* struct mach_header, struct load_command */
 
 struct _bfd;
 
 typedef enum dyld_objfile_reason
 {
-
   dyld_reason_deallocated = 0x0000,
 
   dyld_reason_user = 0x0001,
@@ -43,29 +44,29 @@ struct dyld_objfile_entry
   /* The mach header as found in inferior memory gets stored with each dyld
      entry so we always will know if the entry is in the shared cache, and
      the exact slice that was laoded (cputype and cpusubtype).  */
-  struct mach_header mem_header;  
+  struct mach_header mem_header;
   CORE_ADDR dyld_addr;
   CORE_ADDR dyld_slide;
   CORE_ADDR dyld_length;
   struct section_offsets *dyld_section_offsets;
 
   /* This boolean seems to indicate that dyld has told us about this particular
-      dyld_objfile_entry.  I guess that's distinguished from load
-      command-discovered images that aren't actually loaded yet?  */
+      dyld_objfile_entry.  I guess that is distinguished from load
+      command-discovered images that are NOT actually loaded yet?  */
 
   int dyld_valid;
 
-#if WITH_CFM
-  unsigned long cfm_container;  /* it really is 32 bits - CFM won't go 64bit */
-#endif
+#if defined(WITH_CFM) && WITH_CFM
+  unsigned long cfm_container;  /* it really is 32 bits - CFM will NOT go 64bit */
+#endif /* WITH_CFM */
 
   /* Names names names.
-     Why oh why lord are there all these names? 
+     Why oh why lord are there all these names?
      What use can they possibly have? */
 
   /* USER_NAME is a name coming from the user.  This can happen with
      a DYLD_INSERT_LIBRARY name, or it can happen if we've got an
-     objfile w/o a corresponding dyld_objfile_entry - we'll use the
+     objfile w/o a corresponding dyld_objfile_entry - we will use the
      objfile->name and put it in the d_o_e's user_name field.  */
 
   char *user_name;
@@ -103,14 +104,14 @@ struct dyld_objfile_entry
   CORE_ADDR loaded_addr;
   CORE_ADDR loaded_offset;
 
-  /* God as my witness, I can't figure out what this one is for.  It seems
+  /* God as my witness, I cannot figure out what this one is for.  It seems
      to indicate that the LOADED_ADDR field is the slide (aka offset) instead
      of an absolute address.  Huh?  Like it gets set for the main executable
-     which is at 0x0, and if the DYLD_VALID isn't set and
-     IMAGE_ADDR_VALID isn't set, dyld_load_symfile will set it to
+     which is at 0x0, and if the DYLD_VALID is NOT set and
+     IMAGE_ADDR_VALID is NOT set, then dyld_load_symfile will set it to
      the slide, which I guess somehow got set without DYLD_VALID getting set...
-     uh.... 
-     I don't think it actually does anything.  jsm/2004-12-15*/
+     uh....
+     I do NOT think that it actually does anything.  jsm/2004-12-15 */
 
   int loaded_addrisoffset;
 
@@ -144,7 +145,7 @@ struct dyld_objfile_info
      relationship or you'll have conflicting input/output.
 
      This "offset is the key" appraoch works, but it would be just as easy
-     to disassociate the two and have dyld_objfile_entry contain a KEY 
+     to disassociate the two and have dyld_objfile_entry contain a KEY
      field... */
 
   struct dyld_objfile_entry *entries;
@@ -164,7 +165,7 @@ enum dyld_entry_filename_type
 };
 
 const char *dyld_entry_filename (const struct dyld_objfile_entry *e,
-                                 const struct dyld_path_info *d, 
+                                 const struct dyld_path_info *d,
                                  enum dyld_entry_filename_type type);
 
 char *dyld_offset_string (CORE_ADDR offset);
@@ -195,35 +196,41 @@ struct dyld_objfile_entry *dyld_objfile_entry_alloc (struct dyld_objfile_info *i
 void dyld_print_shlib_info (struct dyld_objfile_info *s,
                             unsigned int reason_mask, int header, char *args);
 
-int dyld_resolve_shlib_num (struct dyld_objfile_info *s, int num,
-                            struct dyld_objfile_entry **eptr,
-                            struct objfile ** optr);
+int dyld_resolve_shlib_num(struct dyld_objfile_info *s, int num,
+                           struct dyld_objfile_entry **eptr,
+                           struct objfile ** optr);
 
-int dyld_objfile_info_compare (struct dyld_objfile_info *a,
-                               struct dyld_objfile_info *b);
+int dyld_objfile_entry_compare(struct dyld_objfile_entry *a,
+                               struct dyld_objfile_entry *b);
 
-void dyld_convert_entry (struct objfile *o, struct dyld_objfile_entry *e);
+int dyld_objfile_info_compare(struct dyld_objfile_info *a,
+                              struct dyld_objfile_info *b);
 
-void dyld_entry_info (struct dyld_objfile_entry *e, int print_basenames,
-                      char **in_name, char **in_objname, char **in_symname,
-                      char **in_auxobjname, char **in_auxsymname, char **in_dsymobjname,
-		      char **addr, char **slide, char **prefix);
+void dyld_convert_entry(struct objfile *o, struct dyld_objfile_entry *e);
 
-void dyld_print_entry_info (struct dyld_objfile_entry *j, int shlibnum, int baselen);
+void dyld_entry_info(struct dyld_objfile_entry *e, int print_basenames,
+                     char **in_name, char **in_objname, char **in_symname,
+                     char **in_auxobjname, char **in_auxsymname, char **in_dsymobjname,
+		     char **addr, char **slide, char **prefix);
+
+void dyld_print_entry_info(struct dyld_objfile_entry *j, int shlibnum,
+                           size_t baselen);
 
 int dyld_shlib_info_basename_length (struct dyld_objfile_info *, unsigned int);
 
-int dyld_entry_shlib_num (struct dyld_objfile_info *s,
-                          struct dyld_objfile_entry *eptr,
-                          int *numptr);
+int dyld_entry_shlib_num(struct dyld_objfile_info *s,
+                         struct dyld_objfile_entry *eptr,
+                         int *numptr);
 
-int dyld_entry_shlib_num_matches (int shlibnum, char *args, int verbose);
+int dyld_entry_shlib_num_matches(int shlibnum, char *args, int verbose);
 
-int dyld_next_allocated_shlib (struct dyld_objfile_info *info, int n);
+int dyld_next_allocated_shlib(struct dyld_objfile_info *info, int n);
 
-int dyld_objfile_entry_in_shared_cache (struct dyld_objfile_entry *e);
+void dyld_check_entry(struct dyld_objfile_entry *e);
 
-enum gdb_osabi dyld_objfile_entry_osabi (const struct dyld_objfile_entry *e);
+int dyld_objfile_entry_in_shared_cache(struct dyld_objfile_entry *e);
+
+enum gdb_osabi dyld_objfile_entry_osabi(const struct dyld_objfile_entry *e);
 
 
 /* The one-per-inferior INFO structure has an array of dyld_objfile_entry
@@ -241,8 +248,10 @@ enum gdb_osabi dyld_objfile_entry_osabi (const struct dyld_objfile_entry *e);
         break;
 */
 #define DYLD_ALL_OBJFILE_INFO_ENTRIES(info, o, n)                  \
-  for ((n) = dyld_next_allocated_shlib ((info), 0);                \
+  for ((n) = dyld_next_allocated_shlib((info), 0);                 \
        ((n) < (info)->nents) ? (o = &(info)->entries[(n)], 1) : 0; \
-       (n) = dyld_next_allocated_shlib (info, (n) + 1))
+       (n) = dyld_next_allocated_shlib(info, (n) + 1))
 
 #endif /* __GDB_MACOSX_NAT_DYLD_INFO_H__ */
+
+/* EOF */

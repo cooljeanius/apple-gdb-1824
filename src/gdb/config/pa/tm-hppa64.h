@@ -1,10 +1,11 @@
-/* Parameters for execution on any Hewlett-Packard PA-RISC machine.
-   Copyright 1986, 1987, 1989, 1990, 1991, 1992, 1993, 1995, 1999, 2000
-   Free Software Foundation, Inc.
-
-   Contributed by the Center for Software Science at the
-   University of Utah (pa-gdb-bugs@cs.utah.edu).
-
+/* tm-hppa64.h
+ * Parameters for execution on any Hewlett-Packard PA-RISC machine.
+ * Copyright 1986, 1987, 1989, 1990, 1991, 1992, 1993, 1995, 1999, 2000
+ * Free Software Foundation, Inc.
+ *
+ * Contributed by the Center for Software Science at the
+ * University of Utah (pa-gdb-bugs@cs.utah.edu). */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -19,23 +20,24 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
 /* PA 64-bit specific definitions.  Override those which are in
    tm-hppa.h */
 
 struct frame_info;
 
-/* jimb: this must go.  I'm just using it to disable code I haven't
+/* jimb: this must go. I am just using it to disable code I have NOT
    gotten working yet.  */
 #define GDB_TARGET_IS_HPPA_20W
 
 /* NOTE: cagney/2003-07-27: Using CC='cc +DA2.0W -Ae' configure
    hppa64-hp-hpux11.00; GDB managed to build / start / break main /
-   run with multi-arch enabled.  Not sure about much else as there
+   run with multi-arch enabled. Not sure about much else as there
    appears to be an unrelated problem in the SOM symbol table reader
-   causing GDB to lose line number information.  Since prior to this
-   switch and a other recent tweaks, 64 bit PA hadn't been building
+   causing GDB to lose line number information. Since prior to this
+   switch and a other recent tweaks, 64 bit PA had NOT been building
    for some months, this is probably the lesser of several evils.  */
 
 #include "pa/tm-hppah.h"
@@ -56,3 +58,5 @@ struct frame_info;
 #undef SR4EXPORT_LDO_OFFSET
 
 /* jimb: omitted purify call support */
+
+/* EOF */

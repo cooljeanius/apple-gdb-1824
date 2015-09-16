@@ -1,0 +1,312 @@
+#! /bin/sh
+#  -*- Mode: shell-script -*-
+# ----------------------------------------------------------------------
+# enums.test ---  test enums program attribute
+#                    make sure that when it is not specified
+#                    then option processing consumes all args.
+#
+# Time-stamp:        "2011-08-07 17:33:57 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+cat > ${testname}.def <<-  _EOF_
+	autogen definitions options;
+
+	prog-name   = ${testname}-test;
+	prog-title  = 'test complex main procedure';
+	config-header = config.h;
+
+	argument    = '[ <node> ]';
+	long-opts;
+
+	flag = {
+	   name     = print;
+	   value    = p;
+	   descrip  = 'Print operational info';
+	   arg-type = keyword;
+	   arg-name = type;
+	   min      = 1;
+	   equivalence = print;
+	   keyword  = one, two, three, four, five, six, seven, eight, nine, ten;
+	};
+
+	flag = {
+	   name     = dump-log;
+	   value    = D;
+	   descrip  = 'Dump the program log';
+	   equivalence = print;
+	};
+
+	flag = {
+	   name     = all-dump;
+	   value    = A;
+	   equivalence = print;
+	   descrip  = 'Dump everything we\'ve got';
+	};
+
+	flag = {
+	   name     = set;
+	   value    = s;
+	   descrip  = 'set options';
+	   arg-type = set;
+	   arg-name = 'opt[, ...]';
+	   arg-default = first,fifth,ninth,thirteenth;
+	   equivalence = print;
+	   keyword  = first, second, third, fourth, fifth, sixth, seventh,
+	              eighth, ninth, tenth, eleventh, twelfth, thirteenth,
+	              fourteenth, fifteenth, sixteenth;
+	};
+
+	flag = {
+	   name     = unset;
+	   value    = u;
+	   descrip  = 'unset debug options';
+	   arg-type = string;
+	   arg-name = 'opt[, ...]';
+	   equivalence = print;
+	   flag-proc   = set;
+	};
+
+	flag = {
+	   name     = msg-num;
+	   value    = m;
+	   descrip  = 'message number';
+	   no-preset;
+	   arg-type = string;
+	   arg-name = id;
+	   max      = NOLIMIT;
+
+	   flag-code = <<- _EndOfFlagCode_
+		    /*
+		     *  'set' and 'unset' must be acted upon immediately
+		     *  -- we may get more of them.
+		     */
+		    switch (WHICH_IDX_PRINT) {
+		    case NO_EQUIVALENT:
+		        /* FALLTHROUGH */
+		    case INDEX_OPT_PRINT:
+		        /* FALLTHROUGH */
+		    case INDEX_OPT_DUMP_LOG:
+		        /* FALLTHROUGH */
+		    case INDEX_OPT_ALL_DUMP:
+		        if (COUNT_OPT( MSG_NUM ) > 1) {
+		            fputs( "Except for 'set' and 'unset' functions, "
+		                   "only one 'msg-num' is allowed\n", stderr );
+		            USAGE( EXIT_FAILURE );
+		        }
+		        break;
+		    case INDEX_OPT_SET:
+		        set_options( 1, pOptDesc->pzLastArg );
+		        break;
+		    case INDEX_OPT_UNSET:
+		        set_options( 0, pOptDesc->pzLastArg );
+		        break;
+		    };
+		_EndOfFlagCode_;
+	};
+	/*
+	cat <<_EOF_
+	 * for emacs */
+
+	export = "#include <sys/types.h>\n"
+		 "#include <sys/stat.h>\n"
+		 "#include <stdio.h>\n"
+		 "#include <stdlib.h>\n"
+		 "#include <fcntl.h>\n"
+		 "#include \"config.h\"\n"
+		 "#include \"compat/compat.h\"";
+
+		include = 'void set_options( int mode, char const* pzArg );';
+
+	main = {
+	   main-type = include;
+	   tpl       = ${testname}.tpl;
+	};
+	_EOF_
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+#
+#  In one case we must not use built in echo.
+#
+cat > ${testname}.tpl <<- \__EOF
+	[= AutoGen5 Template -*- Mode: C -*- =]
+	[=(define proc-list "")=]
+	typedef int (do_proc_t)( void );
+	extern do_proc_t
+	[=  (set! proc-list (string-append "do_print_undefined,\ndo_print_"
+	                    (join ",\ndo_print_" (stack "flag[0].keyword"))  ))
+	    (set! proc-list
+	         (shell (string-append "columns -I4 --spread=1 <<_EOF_\n"
+	            proc-list "\n_EOF_")) )
+	    proc-list =];
+	do_proc_t* do_proc[] = {
+	[= (. proc-list) =] };
+
+	[=(shellf "procs='%s' ; ix=0 ; for p in ${procs}
+	do
+	  p=`echo $p | sed s/,//`
+	  echo int ${p}'( void ) {'
+	  printf 'fputs( \"'${p}'\\\\n\", stdout );\n'
+	  echo return ${ix}'; }'
+	  ix=`expr $ix + 1`
+	done" proc-list) =]
+
+	int
+	do_dump_log(void)
+	{
+	    return WHICH_IDX_PRINT != INDEX_OPT_DUMP_LOG;
+	}
+
+	int
+	do_all_dump(void)
+	{
+	    return WHICH_IDX_PRINT != INDEX_OPT_ALL_DUMP;
+	}
+
+	int
+	do_set( int which_way )
+	{
+	    printf( "PRINT = 0x%lX\n", DESC(PRINT).optCookie );
+	    printf( "SET   = 0x%lX\n", DESC(SET).optCookie );
+	    if (which_way)
+	        printf( "0x%lX\n", OPT_VALUE_SET );
+	    else
+	        printf( "0x%lX\n", (~ OPT_VALUE_SET) & SET_MEMBERSHIP_MASK );
+	    return 0;
+	}
+
+	void
+	set_options( int mode, char const* pzArg )
+	{
+	    exit( atoi( pzArg ));
+	}
+	__EOF
+
+cat >> ${testname}.tpl <<- __EOF
+	int
+	main( int argc, char** argv )
+	{
+	    {
+	        int ct = optionProcess( &${testname}_testOptions, argc, argv );
+	        argc -= ct;
+	        argv += ct;
+	    }
+
+	    if (argc > 1)
+	        return EXIT_FAILURE;
+
+	    /*
+	     *  Invoke the proper operational procedure.
+	     */
+	    {
+	        int res = 0;
+	        switch (WHICH_IDX_PRINT) {
+	        case INDEX_OPT_PRINT:    res = do_proc[OPT_VALUE_PRINT](); break;
+	        case INDEX_OPT_DUMP_LOG: res = do_dump_log();  break;
+	        case INDEX_OPT_ALL_DUMP: res = do_all_dump();  break;
+	        case INDEX_OPT_SET:      res = do_set( 1 );    break;
+	        case INDEX_OPT_UNSET:    res = do_set( 0 );    break;
+	        }
+	        return res;
+	    }
+	}
+	__EOF
+
+# # # # # # # # # # CREATE PROGRAM # # # # # # # # #
+
+echo ${AG_L} ${testname}.def
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process
+
+compile "-?"
+
+# # # # # # # # # # HELP OUTPUT FILE # # # # # # # # #
+
+basehlp=${testname}.hlp
+echo creating ${basehlp}
+clean_help > ${basehlp} <<_EOF_
+${testname}-test - test complex main procedure
+USAGE:  ${testname} { -<flag> [<val>] | --<name>[{=| }<val>] }... [ <node> ]
+  Flg Arg Option-Name   Req?  Description
+   -p KWd print          YES  Print operational info
+   -D no  dump-log       opt  Dump the program log
+				- an alternate for print
+   -A no  all-dump       opt  Dump everything we've got
+				- an alternate for print
+   -s Mbr set            opt  set options
+				- an alternate for print
+   -u Str unset          opt  unset debug options
+				- an alternate for print
+   -m Str msg-num        opt  message number
+				- may not be preset
+				- may appear multiple times
+   -? no  help           opt  Display extended usage information and exit
+   -! no  more-help      opt  Extended usage information passed thru pager
+
+Options are specified by doubled hyphens and their name or by a single
+hyphen and the flag character.
+
+The valid "print" option keywords are:
+  one two three four five six seven eight nine ten
+  or an integer from 1 through 10
+The valid "set" option keywords are:
+  first      second     third      fourth     fifth      sixth      seventh
+  eighth     ninth      tenth      eleventh   twelfth    thirteenth fourteenth
+  fifteenth  sixteenth
+  or an integer mask with any of the lower 16 bits set
+or you may use a numeric representation.  Preceding these with a '!' will
+clear the bits, specifying 'none' will clear all bits, and 'all' will set them
+all.  Multiple entries may be passed as an option argument list.
+_EOF_
+
+cmp -s ${testname}.h*lp || \
+  failure "`diff ${basehlp} ${testname}.help`"
+
+# # # # # # # # # # TEST OPERATION # # # # # # # # # #
+
+ix=0
+for f in one two three four five six seven eight nine ten
+do
+  ix=`expr $ix + 1`
+  txt=`./${testname} -p $f`
+  test $? -eq $ix || \
+    failure "'./${testname} -p $f' did not yield $ix"
+  test "${txt}" = "do_print_${f}" || \
+    failure "'./${testname} -p $f' did not print 'do_print_${f}'"
+done
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of enums.test

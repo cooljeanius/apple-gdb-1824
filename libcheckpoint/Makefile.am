@@ -23,9 +23,12 @@ CFLAGS = @CFLAGS@
 
 AM_CFLAGS = -gdwarf-2 $(RC_CFLAGS)
 
-.SUFFIXES : .c .h .o
+check_PROGRAMS = cptest
+cptest_LDADD = $(LIB)
 
-.PHONY : all install clean
+SUFFIXES = .c .h .o
+
+.PHONY : all install-original-way clean-local
 
 # Standard targets.
 
@@ -33,13 +36,17 @@ all : $(SYMROOT)/$(LIB)
 
 # (Note that installsrc and installhdrs not needed)
 
-install : all
+install-original-way: all
 	mkdir -p $(DSTDIR)
 	dsymutil $(SYMROOT)/$(LIB)
 	strip -S -o $(DSTDIR)/$(LIB) $(SYMROOT)/$(LIB)
 
-clean :
+clean-local:
 	rm -f $(OBJS) $(SYMROOT)/$(LIB)
+
+#FIXME: need some install_name_tool hackery to get this to work:
+check-local: $(check_PROGRAMS)
+#	./cptest
 
 $(OBJROOT)/%.o : $(SRCROOT)/%.c
 	mkdir -p $(OBJROOT)

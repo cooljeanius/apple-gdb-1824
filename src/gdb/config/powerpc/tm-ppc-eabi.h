@@ -1,4 +1,5 @@
-/* Macro definitions for Power PC running embedded ABI.
+/* tm-ppc-eabi.h
+   Macro definitions for Power PC running embedded ABI.
    Copyright 1995, 1996, 1997, 1998, 1999, 2000
    Free Software Foundation, Inc.
 
@@ -11,7 +12,7 @@
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
@@ -30,8 +31,9 @@
 #undef TEXT_SEGMENT_BASE
 #define TEXT_SEGMENT_BASE 1
 
-/* The value of symbols of type N_SO and N_FUN maybe null when 
-   it shouldn't be. */
+/* The value of symbols of type N_SO and N_FUN may be null even when
+ * said value should NOT be.
+ */
 #define SOFUN_ADDRESS_MAYBE_MISSING
 
 /* Use generic shared library machinery.  */

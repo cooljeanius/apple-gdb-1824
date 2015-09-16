@@ -1,4 +1,4 @@
-/* Support for printing C and C++ types for GDB, the GNU debugger.
+/* c-typeprint.c: Support printing C & C++ types in GDB, the GNU debugger.
    Copyright 1986, 1988, 1989, 1991, 1992, 1993, 1994, 1995, 1996, 1998,
    1999, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
@@ -55,19 +55,19 @@ static void c_type_print_modifier (struct type *, struct ui_file *,
 static void c_print_typename_possibly_quoted (struct type *type, struct ui_file *stream);
 
 
-static void 
+static void
 c_print_typename_possibly_quoted (struct type *type, struct ui_file *stream)
 {
   int has_quotable = (strstr (TYPE_NAME (type), "::") != NULL);
 
   c_type_print_modifier (type, stream, 0, 1);
-  
-  
+
+
   if (has_quotable && get_single_quote_typename ())
     fputs_filtered ("'", stream);
-  
+
   fputs_filtered (TYPE_NAME (type), stream);
-  
+
   if (has_quotable && get_single_quote_typename ())
     fputs_filtered ("'", stream);
 }
@@ -136,9 +136,9 @@ c_print_type (struct type *type, char *varstring, struct ui_file *stream,
    }
 
    In general, gdb should try to print the types as closely as possible to
-   the form that they appear in the source code. 
-   Note that in case of protected derivation gcc will not say 'protected' 
-   but 'private'. The HP's aCC compiler emits specific information for 
+   the form that they appear in the source code.
+   Note that in case of protected derivation gcc will not say 'protected'
+   but 'private'. The HP's aCC compiler emits specific information for
    derivation via protected inheritance, so gdb can print it out */
 
 static void
@@ -211,7 +211,7 @@ cp_type_print_method_args (struct type *mtype, char *prefix, char *varstring,
    On outermost call, SHOW > 0 means should ignore
    any typename for TYPE and show its details.
    SHOW is always zero on recursive calls.
-   
+
    NEED_POST_SPACE is non-zero when a space will be be needed
    between a trailing qualifier and a field, variable, or function
    name.  */
@@ -302,7 +302,7 @@ c_type_print_varspec_prefix (struct type *type, struct ui_file *stream,
     case TYPE_CODE_TEMPLATE:
     case TYPE_CODE_NAMESPACE:
       /* These types need no prefix.  They are listed here so that
-         gcc -Wall will reveal any types that haven't been handled.  */
+         gcc -Wall will reveal any types that have NOT been handled.  */
       break;
     default:
       error (_("type not handled in c_type_print_varspec_prefix()"));
@@ -768,7 +768,7 @@ c_type_print_base (struct type *type, struct ui_file *stream, int show,
 
     struct_union:
 
-      /* Print the tag if it exists. 
+      /* Print the tag if it exists.
        * The HP aCC compiler emits
        * a spurious "{unnamed struct}"/"{unnamed union}"/"{unnamed enum}"
        * tag  for unnamed struct/union/enum's, which we don't
@@ -973,7 +973,7 @@ c_type_print_base (struct type *type, struct ui_file *stream, int show,
 		{
 		  char *physname = TYPE_FN_FIELD_PHYSNAME (f, j);
 		  int is_full_physname_constructor =
-		   is_constructor_name (physname) 
+		   is_constructor_name (physname)
 		   || is_destructor_name (physname)
 		   || method_name[0] == '~';
 
@@ -1040,9 +1040,9 @@ c_type_print_base (struct type *type, struct ui_file *stream, int show,
 		  if (demangled_name == NULL)
 		    {
 		      /* in some cases (for instance with the HP demangling),
-		         if a function has more than 10 arguments, 
+		         if a function has more than 10 arguments,
 		         the demangling will fail.
-		         Let's try to reconstruct the function signature from 
+		         Let's try to reconstruct the function signature from
 		         the symbol information */
 		      if (!TYPE_FN_FIELD_STUB (f, j))
 			{
@@ -1115,7 +1115,7 @@ c_type_print_base (struct type *type, struct ui_file *stream, int show,
 	  }
       fprintf_filtered (stream, "enum ");
       /* Print the tag name if it exists.
-         The aCC compiler emits a spurious 
+         The aCC compiler emits a spurious
          "{unnamed struct}"/"{unnamed union}"/"{unnamed enum}"
          tag for unnamed struct/union/enum's, which we don't
          want to print. */
@@ -1237,3 +1237,5 @@ c_type_print_base (struct type *type, struct ui_file *stream, int show,
       break;
     }
 }
+
+/* EOF */

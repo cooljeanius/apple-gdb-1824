@@ -1,4 +1,5 @@
-/* Host-machine dependent parameters for Motorola 88000, for GDB.
+/* xm-cxux.h
+   Host-machine dependent parameters for Motorola 88000, for GDB.
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1993
    Free Software Foundation, Inc.
 
@@ -24,8 +25,8 @@
 #define HOST_BYTE_ORDER BIG_ENDIAN
 
 #if !defined (USG)
-#define USG 1
-#endif
+# define USG 1
+#endif /* !USG */
 
 #include <sys/param.h>
 
@@ -33,17 +34,17 @@
 #define x_fname _x_name
 #define USER ptrace_user
 /*
-   #define _BSD_WAIT_FLAVOR
+ * #define _BSD_WAIT_FLAVOR
  */
 
 #define HAVE_TERMIO
 
 #ifndef USIZE
-#define USIZE 2048
-#ifndef UPAGES
-#define UPAGES USIZE
-#endif
-#endif
+# define USIZE 2048
+# ifndef UPAGES
+#  define UPAGES USIZE
+# endif /* !UPAGES */
+#endif /* !USIZE */
 #define NBPG NBPC
 
 /* Get rid of any system-imposed stack limit if possible.  */
@@ -51,7 +52,8 @@
 #define SET_STACK_LIMIT_HUGE
 
 /* This is the amount to subtract from u.u_ar0
-   to get the offset in the core file of the register values.  */
+ * to get the offset in the core file of the register values.
+ */
 
 /* Since registers r0 through r31 are stored directly in the struct ptrace_user,
    (for m88k BCS)
@@ -64,3 +66,5 @@
 
 #define CORE_REGISTER_ADDR(regno, reg_ptr) \
    m88k_harris_core_register_addr(regno, reg_ptr)
+
+/* EOF */

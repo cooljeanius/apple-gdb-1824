@@ -1,0 +1,243 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# handler.test ---   test option handling
+#                    make sure that when it is not specified
+#                    then option processing consumes all args.
+#
+# Time-stamp:        "2012-02-18 09:15:12 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo "creating ${testname}.def in `pwd`"
+cat > ${testname}.def <<_EOF_
+AutoGen Definitions options;
+prog-name = ${testname};
+prog-title = "Testing ${testname}";
+
+flag = {
+    name = first;
+    descrip = "first description";
+    extract_code;
+};
+
+flag = {
+    name = second;
+    descrip = "second description";
+    arg-type = keyword;
+    keyword = alpha, beta, gamma, omega;
+};
+
+flag = {
+    name = third;
+    descrip = "third description";
+    flag_code = "    SomeCodeOrOther();";
+};
+
+flag = {
+    name = fourth;
+    descrip = "fourth description";
+    arg-type = keyword;
+    keyword = alpha, beta, gamma, omega;
+    arg-default = gamma;
+    arg-optional;
+};
+
+flag = {
+    name = fifth;
+    descrip = "fifth description";
+    flag_proc = first;
+};
+
+flag = {
+    name = sixth;
+    descrip = "sixth description";
+    arg-type = set-member;
+    keyword = alpha, beta, gamma, omega;
+    arg-default = gamma, beta;
+};
+_EOF_
+
+echo ${AG_L} ${testname}.def
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process
+
+${SED} '/START =/a\
+SampleCode();\
+XXX-REMOVE-XXX' ${testname}.c > ${testname}.tmp
+chmod 644 ${testname}.c
+${SED} -e '/^XXX-REMOVE-XXX$/d;s/XXX-REMOVE-XXX//' \
+    ${testname}.tmp > ${testname}.c
+
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process
+
+# We are testing to ensure the procedures are created correctly.
+# The template line numbers and time stamps and all that cruft
+# vary too much, so sed them away.
+#
+${SED} -e '1,/Create the static procedure(s) declared above/d' \
+    -e '/extracted from.*near line/d' \
+    -e '/^#line/d' \
+    -e 's@handler_opt_strs+[0-9]*@handler_opt_strs+NNN@g' \
+    -e 's@+NNN,  *@+NNN, @g' \
+    -e '/^#ifndef *PKGDATADIR/,$d' \
+    ${testname}.c > ${testname}.test
+
+# # # # # # # # # # SAMPLE OUTPUT FILE # # # # # # # # #
+
+echo creating ${testname}.sample
+cat > ${testname}.sample <<\_EOF_
+ */
+/**
+ * The callout function that invokes the USAGE() macro.
+ *
+ * @param pOptions the AutoOpts option description structure
+ * @param pOptDesc the descriptor for the "help" (usage) option.
+ */
+static void
+doUsageOpt(tOptions * pOptions, tOptDesc * pOptDesc)
+{
+    (void)pOptions;
+    USAGE(HANDLER_EXIT_SUCCESS);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/**
+ * Code to handle the first option.
+ *
+ * @param pOptions the handler options data structure
+ * @param pOptDesc the option descriptor for this option.
+ */
+static void
+doOptFirst(tOptions* pOptions, tOptDesc* pOptDesc)
+{
+/*  START =-= First Opt Code =-= DO NOT CHANGE THIS COMMENT */
+SampleCode();
+/*  END   =-= First Opt Code =-= DO NOT CHANGE THIS COMMENT */
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/**
+ * Code to handle the second option.
+ *
+ * @param pOptions the handler options data structure
+ * @param pOptDesc the option descriptor for this option.
+ */
+static void
+doOptSecond(tOptions* pOptions, tOptDesc* pOptDesc)
+{
+
+    static char const zDef[2] = { 0x7F, 0 };
+    static char const * const azNames[5] = { zDef,
+        handler_opt_strs+NNN, handler_opt_strs+NNN, handler_opt_strs+NNN,
+        handler_opt_strs+NNN };
+
+    if (pOptions <= OPTPROC_EMIT_LIMIT) {
+        (void) optionEnumerationVal(pOptions, pOptDesc, azNames, 5);
+        return; /* protect AutoOpts client code from internal callbacks */
+    }
+
+    pOptDesc->optArg.argEnum =
+        optionEnumerationVal(pOptions, pOptDesc, azNames, 5);
+
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/**
+ * Code to handle the third option.
+ *
+ * @param pOptions the handler options data structure
+ * @param pOptDesc the option descriptor for this option.
+ */
+static void
+doOptThird(tOptions* pOptions, tOptDesc* pOptDesc)
+{
+    /* extracted from handler.def, line 21 */
+    SomeCodeOrOther();
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/**
+ * Code to handle the fourth option.
+ *
+ * @param pOptions the handler options data structure
+ * @param pOptDesc the option descriptor for this option.
+ */
+static void
+doOptFourth(tOptions* pOptions, tOptDesc* pOptDesc)
+{
+
+    static char const * const azNames[4] = {
+        handler_opt_strs+NNN, handler_opt_strs+NNN, handler_opt_strs+NNN,
+        handler_opt_strs+NNN };
+
+    if (pOptions <= OPTPROC_EMIT_LIMIT) {
+        (void) optionEnumerationVal(pOptions, pOptDesc, azNames, 4);
+        return; /* protect AutoOpts client code from internal callbacks */
+    }
+
+    if (pOptDesc->optArg.argString == NULL)
+        pOptDesc->optArg.argEnum = FOURTH_GAMMA;
+    else
+        pOptDesc->optArg.argEnum =
+            optionEnumerationVal(pOptions, pOptDesc, azNames, 4);
+
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/**
+ * Code to handle the sixth option.
+ *
+ * @param pOptions the handler options data structure
+ * @param pOptDesc the option descriptor for this option.
+ */
+static void
+doOptSixth(tOptions* pOptions, tOptDesc* pOptDesc)
+{
+
+    static char const * const azNames[4] = {
+        "alpha",  "beta",   "gamma",  "omega"
+    };
+    optionSetMembers(pOptions, pOptDesc, azNames, 4);
+}
+
+_EOF_
+
+cmp -s ${testname}.test ${testname}.sample || {
+  failure "`diff -c ${testname}.test ${testname}.sample`" ; }
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## End:
+
+# end of handler.test

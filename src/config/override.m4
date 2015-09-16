@@ -271,4 +271,21 @@ m4_define([m4_wrap], [m4_ifdef([_$0_text],
   [m4_define([_$0_text], [$1]m4_defn([_$0_text]))],
   [m4_define([_$0_text], [$1])m4_builtin([m4wrap],
     [m4_default(m4_defn([_$0_text])m4_undefine([_$0_text]))])])])
-])
+])dnl
+
+dnl# override bad fnmatch libobj macro:
+AC_DEFUN([_AC_LIBOBJ_FNMATCH],
+[AC_REQUIRE([AC_C_CONST])dnl
+AC_REQUIRE([AC_FUNC_ALLOCA])dnl
+AC_REQUIRE([AC_TYPE_MBSTATE_T])dnl
+AC_CHECK_DECLS_ONCE([getenv])dnl
+AC_CHECK_FUNCS_ONCE([btowc mbsrtowcs mempcpy wmempcpy])dnl
+AC_CHECK_HEADERS_ONCE([wchar.h wctype.h])dnl
+AC_LIBOBJ([fnmatch])dnl
+  ## Warning: this define might require the mangled header that I removed,
+  ## so ensure it never gets used:
+if test "x" = "Y0"; then
+  AC_DEFINE([fnmatch],[rpl_fnmatch],
+	    [Define to rpl_fnmatch if the replacement func should be used])
+fi
+])dnl# _AC_LIBOBJ_FNMATCH

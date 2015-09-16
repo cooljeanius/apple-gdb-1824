@@ -1,4 +1,5 @@
-/* Parameters for execution on an HP PA-RISC machine running BSD, for GDB.
+/* tm-hppab.h
+   Parameters for execution on an HP PA-RISC machine running BSD, for GDB.
    Contributed by the Center for Software Science at the
    University of Utah (pa-gdb-bugs@cs.utah.edu).  */
 
@@ -8,9 +9,9 @@
    of the frame + 0x4.
 
    We get the PC & SP directly from the sigcontext structure itself.
-   For other registers we have to dive in a little deeper: 
+   For other registers we have to dive in a little deeper:
 
-   The hardware save state pointer is at offset 0x10 within the 
+   The hardware save state pointer is at offset 0x10 within the
    signal context structure.
 
    Within the hardware save state, registers are found in the same order
@@ -43,5 +44,7 @@
     } \
 }
 
-/* It's mostly just the common stuff.  */
+/* It is mostly just the common stuff.  */
 #include "pa/tm-hppa.h"
+
+/* EOF */

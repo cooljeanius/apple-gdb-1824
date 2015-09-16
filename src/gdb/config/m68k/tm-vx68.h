@@ -1,4 +1,6 @@
-/* Target machine description for VxWorks m68k's, for GDB, the GNU debugger.
+/* tm-vx68.h
+   Target machine description for VxWorks m68k-based machines, for GDB,
+   the GNU debugger.
    Copyright 1986, 1987, 1989, 1991, 1992, 1993, 1996, 1998, 1999, 2000
    Free Software Foundation, Inc.
    Contributed by Cygnus Support.
@@ -44,12 +46,12 @@
 /* If the chain pointer is zero (either because the saved value fetched
    by FRAME_CHAIN was zero, or because the current FP was zero so FRAME_CHAIN
    never fetched anything), we are at the top of the stack.  */
-/* We are guaranteed to have a zero frame pointer at bottom of stack, too. */
+/* We are guaranteed to have a 0-frame pointer at bottom of stack, too. */
 
 #undef	FRAME_CHAIN_VALID
 #define FRAME_CHAIN_VALID(chain, thisframe) nonnull_frame_chain_valid (chain, thisframe)
 
-/* FIXME, Longjmp information stolen from Sun-3 config.  Dunno if right.  */
+/* FIXME, Longjmp information stolen from Sun-3 config.  Dunno if right. */
 /* Offsets (in target ints) into jmp_buf.  Not defined by Sun, but at least
    documented in a comment in <machine/setjmp.h>! */
 
@@ -72,10 +74,10 @@
 #define JB_A5 14
 #define JB_A6 15
 
-/* Figure out where the longjmp will land.  Slurp the args out of the stack.
-   We expect the first arg to be a pointer to the jmp_buf structure from which
-   we extract the pc (JB_PC) that we will land at.  The pc is copied into ADDR.
-   This routine returns true on success */
+/* Figure out where the longjmp will land. Slurp the args out of the stack.
+   We expect the first arg to be a pointer to the jmp_buf structure
+   from which we extract the pc (JB_PC) that we will land at.
+   The pc is copied into ADDR. This routine returns true on success. */
 
 #define GET_LONGJMP_TARGET(ADDR) m68k_get_longjmp_target(ADDR)
 

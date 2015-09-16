@@ -1,4 +1,5 @@
-/* Native support for GNU/Linux x86.
+/* nm-linux.h
+   Native support for GNU/Linux x86.
 
    Copyright 1986, 1987, 1989, 1992, 1993, 1994, 1995, 1996, 1997,
    1998, 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
@@ -85,7 +86,7 @@ extern int cannot_store_register (int regno);
 /* `linux-nat.c' and `i386-nat.c' have their own versions of
    child_post_startup_inferior.  Define this to use the copy in
    `i386-linux-nat.c' instead, which calls both.
-   
+
    NOTE drow/2003-08-17: This is ugly beyond words, but properly
    fixing it will require some serious surgery.  Ideally the target
    stack could be used for this.  */

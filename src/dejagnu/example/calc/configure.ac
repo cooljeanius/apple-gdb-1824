@@ -1,12 +1,10 @@
 dnl#                                               -*- Autoconf -*-
 dnl# Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.69])
-AC_INIT([calc],[1.1],[])
+AC_INIT([calc],[1.1],[rob@welcomehome.org])
 AC_CONFIG_SRCDIR([calc.c])
 AC_CONFIG_HEADERS([calc.h])
-AM_INIT_AUTOMAKE([1.4 dejagnu foreign])
-dnl# Yes, that is a "1.4" and not a "1.14" there.
-dnl# (the aclocal.m4 I found in here was really old)
+AM_INIT_AUTOMAKE([1.11.6 dejagnu foreign])
 
 # Checks for programs.
 AC_PROG_CC

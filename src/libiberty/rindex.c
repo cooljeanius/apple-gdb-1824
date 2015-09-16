@@ -1,4 +1,4 @@
-/* Stub implementation of (obsolete) rindex(). */
+/* rindex.c: Stub implementation of (obsolete) rindex(). */
 
 /*
 
@@ -12,10 +12,14 @@ deprecated in new programs in favor of @code{strrchr}.
 
 */
 
-extern char *strrchr (const char *, int);
+#include "libiberty_deprecated.h"
+
+extern char *strrchr(const char *, int);
 
 char *
-rindex (const char *s, int c)
+rindex(const char *s, int c)
 {
-  return strrchr (s, c);
+  return strrchr(s, c);
 }
+
+/* EOF */

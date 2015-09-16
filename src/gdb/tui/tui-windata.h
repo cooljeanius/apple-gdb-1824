@@ -1,4 +1,4 @@
-/* Data/register window display.
+/* tui-windata.h: Data/register window display.
 
    Copyright 1998, 1999, 2000, 2001, 2004 Free Software Foundation,
    Inc.

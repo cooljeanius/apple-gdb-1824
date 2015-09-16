@@ -1,8 +1,7 @@
-/* Ada language support definitions for GDB, the GNU debugger.
-
-   Copyright 1992, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005 Free Software Foundation, Inc.
-
+/* ada-lang.h: Ada language support definitions for GDB, the GNU debugger.
+ *
+ * Copyright 1992, 1997-2005 Free Software Foundation, Inc.  */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -19,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
-#if !defined (ADA_LANG_H)
+#if !defined(ADA_LANG_H)
 #define ADA_LANG_H 1
 
 struct partial_symbol;
@@ -80,10 +79,10 @@ struct ada_opname_map
 /* Defined in ada-lang.c */
 extern const struct ada_opname_map ada_opname_table[];
 
-enum ada_operator 
+enum ada_operator
   {
-    /* X IN A'RANGE(N).  N is an immediate operand, surrounded by 
-       BINOP_IN_BOUNDS before and after.  A is an array, X an index 
+    /* X IN A'RANGE(N).  N is an immediate operand, surrounded by
+       BINOP_IN_BOUNDS before and after.  A is an array, X an index
        value.  Evaluates to true iff X is within range of the Nth
        dimension (1-based) of A.  (A multi-dimensional array
        type is represented as array of array of ...) */
@@ -105,12 +104,12 @@ enum ada_operator
     OP_ATR_TAG,
     OP_ATR_VAL,
 
-    /* Ada type qualification.  It is encoded as for UNOP_CAST, above, 
+    /* Ada type qualification.  It is encoded as for UNOP_CAST, above,
        and denotes the TYPE'(EXPR) construct. */
     UNOP_QUAL,
 
-    /* X IN TYPE.  The `TYPE' argument is immediate, with 
-       UNOP_IN_RANGE before and after it. True iff X is a member of 
+    /* X IN TYPE.  The `TYPE' argument is immediate, with
+       UNOP_IN_RANGE before and after it. True iff X is a member of
        type TYPE (typically a subrange). */
     UNOP_IN_RANGE,
 
@@ -118,7 +117,7 @@ enum ada_operator
     OP_ADA_LAST
   };
 
-/* A triple, (symbol, block, symtab), representing one instance of a 
+/* A triple, (symbol, block, symtab), representing one instance of a
  * symbol-lookup operation. */
 struct ada_symbol_info {
   struct symbol* sym;
@@ -168,17 +167,16 @@ extern const int MAX_NUMBER_OF_KNOWN_TASKS;
 extern struct task_entry *task_list;
 
 
-/* Assuming V points to an array of S objects,  make sure that it contains at
-   least M objects, updating V and S as necessary. */
+/* Assuming vector V of type T points to an array of S objects, make sure
+ * that it contains at least M objects, updating V and S as necessary: */
+#define GROW_VECT(v, s, m, t)                                             \
+   if ((s) < (m)) (v) = (t *)grow_vect(v, &(s), m, sizeof *(v));
 
-#define GROW_VECT(v, s, m)                                              \
-   if ((s) < (m)) (v) = grow_vect (v, &(s), m, sizeof *(v));
+extern void *grow_vect(void *, size_t *, size_t, int);
 
-extern void *grow_vect (void *, size_t *, size_t, int);
-
-extern int ada_get_field_index (const struct type *type,
-                                const char *field_name,
-                                int maybe_missing);
+extern int ada_get_field_index(const struct type *type,
+                               const char *field_name,
+                               int maybe_missing);
 
 extern int ada_parse (void);    /* Defined in ada-exp.y */
 
@@ -236,7 +234,7 @@ extern char *ada_decode_symbol (const struct general_symbol_info*);
 
 extern const char *ada_decode (const char*);
 
-extern enum language ada_update_initial_language (enum language, 
+extern enum language ada_update_initial_language (enum language,
 						  struct partial_symtab*);
 
 extern void clear_ada_sym_cache (void);
@@ -250,7 +248,7 @@ extern int ada_lookup_symbol_list (const char *, const struct block *,
 extern char *ada_fold_name (const char *);
 
 extern struct symbol *ada_lookup_symbol (const char *, const struct block *,
-                                         domain_enum, int *, 
+                                         domain_enum, int *,
 					 struct symtab **);
 
 extern struct minimal_symbol *ada_lookup_simple_minsym (const char *);
@@ -426,14 +424,36 @@ extern void ada_reset_thread_registers (void);
 
 extern int ada_build_task_list (void);
 
-/* Look up a symbol by name using the search conventions of 
-   a specific language (optional block, optional symtab). 
+/* Look up a symbol by name using the search conventions of
+   a specific language (optional block, optional symtab).
    FIXME: Should be symtab.h. */
 
-extern struct symbol *lookup_symbol_in_language (const char *, 
-						 const struct block *,
-						 domain_enum, 
-						 enum language,
-						 int *,
-						 struct symtab **);
-#endif
+extern struct symbol *lookup_symbol_in_language(const char *,
+                                                const struct block *,
+                                                domain_enum, enum language,
+                                                int *, struct symtab **);
+
+/* '-Wmissing-declarations': */
+extern char *ada_la_decode(const char *encoded, int options);
+
+extern int ada_match_name(const char *, const char *, int);
+
+extern int ada_suppress_symbol_printing(struct symbol *);
+
+extern struct value *ada_value_ptr_subscript(struct value *, struct type *,
+                                             int, struct value **);
+
+extern LONGEST ada_array_bound_from_type(struct type *, int, int,
+                                         struct type **);
+
+extern struct value *ada_array_length(struct value *, int);
+
+extern struct value *ada_to_static_fixed_value(struct value *val);
+
+extern struct value *ada_evaluate_subexp(struct type *,
+                                         struct expression *, int *,
+                                         enum noside);
+
+#endif /* !ADA_LANG_H */
+
+/* EOF */

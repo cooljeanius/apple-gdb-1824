@@ -1,7 +1,7 @@
-/* BFD support for the ARM processor
+/* cpu-arm.c: BFD support for the ARM processor
    Copyright 1994, 1997, 1999, 2000, 2002, 2003, 2004, 2005, 2007
    Free Software Foundation, Inc.
-   Contributed by Richard Earnshaw (rwe@pegasus.esprit.ec.org)
+   Contributed by Richard Earnshaw <rwe@pegasus.esprit.ec.org>
 
    This file is part of BFD, the Binary File Descriptor library.
 
@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "sysdep.h"
 #include "bfd.h"
@@ -159,21 +159,22 @@ const bfd_arch_info_type bfd_arm_arch =
    Returns TRUE if they were merged successfully or FALSE otherwise.  */
 
 bfd_boolean
-bfd_arm_merge_machines (bfd *ibfd, bfd *obfd)
+bfd_arm_merge_machines(bfd *ibfd, bfd *obfd)
 {
-  unsigned int in  = bfd_get_mach (ibfd);
-  unsigned int out = bfd_get_mach (obfd);
+  unsigned int in = (unsigned int)bfd_get_mach(ibfd);
+  unsigned int out = (unsigned int)bfd_get_mach(obfd);
 
   /* If the output architecture is unknown, we now have a value to set.  */
   if (out == bfd_mach_arm_unknown)
-    bfd_set_arch_mach (obfd, bfd_arch_arm, in);
+    bfd_set_arch_mach(obfd, bfd_arch_arm, (unsigned long)in);
 
   /* If the input architecture is unknown,
      then so must be the output architecture.  */
   else if (in == bfd_mach_arm_unknown)
     /* FIXME: We ought to have some way to
        override this on the command line.  */
-    bfd_set_arch_mach (obfd, bfd_arch_arm, bfd_mach_arm_unknown);
+    bfd_set_arch_mach(obfd, bfd_arch_arm,
+                      (unsigned long)bfd_mach_arm_unknown);
 
   /* If they are the same then nothing needs to be done.  */
   else if (out == in)
@@ -209,7 +210,7 @@ ERROR: %B is compiled for the EP9312, whereas %B is compiled for XScale"),
       return FALSE;
     }
   else if (in > out)
-    bfd_set_arch_mach (obfd, bfd_arch_arm, in);
+    bfd_set_arch_mach(obfd, bfd_arch_arm, (unsigned long)in);
   /* else
      Nothing to do.  */
 
@@ -234,20 +235,22 @@ arm_check_note (bfd *abfd,
   unsigned long namesz;
   unsigned long descsz;
   unsigned long type;
-  char *        descr;
+  char *descr;
 
-  if (buffer_size < offsetof (arm_Note, name))
+  if (buffer_size < offsetof(arm_Note, name))
     return FALSE;
 
-  /* We have to extract the values this way to allow for a
-     host whose endian-ness is different from the target.  */
-  namesz = bfd_get_32 (abfd, buffer);
-  descsz = bfd_get_32 (abfd, buffer + offsetof (arm_Note, descsz));
-  type   = bfd_get_32 (abfd, buffer + offsetof (arm_Note, type));
-  descr  = (char *) buffer + offsetof (arm_Note, name);
+  /* We have to extract the values this way to allow for a host whose
+   * endian-ness is different from the target: */
+  namesz = (unsigned long)bfd_get_32(abfd, buffer);
+  descsz = (unsigned long)bfd_get_32(abfd, (buffer
+                                            + offsetof(arm_Note, descsz)));
+  type = (unsigned long)bfd_get_32(abfd, (buffer
+                                          + offsetof(arm_Note, type)));
+  descr = (char *)buffer + offsetof(arm_Note, name);
 
-  /* Check for buffer overflow.  */
-  if (namesz + descsz + offsetof (arm_Note, name) > buffer_size)
+  /* Check for buffer overflow: */
+  if ((namesz + descsz + offsetof(arm_Note, name)) > buffer_size)
     return FALSE;
 
   if (expected_name == NULL)
@@ -256,20 +259,26 @@ arm_check_note (bfd *abfd,
 	return FALSE;
     }
   else
-    { 
-      if (namesz != ((strlen (expected_name) + 1 + 3) & ~3))
+    {
+      if (namesz != ((strlen(expected_name) + 1UL + 3UL) & (size_t)~3)) {
 	return FALSE;
-      
-      if (strcmp (descr, expected_name) != 0)
-	return FALSE;
+      }
 
-      descr += (namesz + 3) & ~3;
+      if (strcmp(descr, expected_name) != 0) {
+	return FALSE;
+      }
+
+      descr += ((namesz + 3) & (size_t)~3);
     }
 
-  /* FIXME: We should probably check the type as well.  */
+  /* FIXME: We should probably check the type as well: */
+  if (type != 0UL) {
+    ; /* TODO: do actual checking here */
+  }
 
-  if (description_return != NULL)
+  if (description_return != NULL) {
     * description_return = descr;
+  }
 
   return TRUE;
 }
@@ -277,13 +286,13 @@ arm_check_note (bfd *abfd,
 #define NOTE_ARCH_STRING 	"arch: "
 
 bfd_boolean
-bfd_arm_update_notes (bfd *abfd, const char *note_section)
+bfd_arm_update_notes(bfd *abfd, const char *note_section)
 {
-  asection *     arm_arch_section;
-  bfd_size_type  buffer_size;
-  bfd_byte *     buffer;
-  char *         arch_string;
-  char *         expected;
+  asection *arm_arch_section;
+  bfd_size_type buffer_size;
+  bfd_byte *buffer;
+  char *arch_string;
+  char *expected;
 
   /* Look for a note section.  If one is present check the architecture
      string encoded in it, and set it to the current architecture if it is
@@ -324,11 +333,12 @@ bfd_arm_update_notes (bfd *abfd, const char *note_section)
     case bfd_mach_arm_iWMMXt2: expected = "iWMMXt2"; break;
     }
 
-  if (strcmp (arch_string, expected) != 0)
+  if (strcmp(arch_string, expected) != 0)
     {
-      strcpy ((char *) buffer + (offsetof (arm_Note, name)
-				 + ((strlen (NOTE_ARCH_STRING) + 3) & ~3)),
-	      expected);
+      strcpy((char *)buffer + (offsetof(arm_Note, name)
+                               + ((strlen(NOTE_ARCH_STRING) + 3UL)
+                                  & (size_t)~3)),
+	     expected);
 
       if (! bfd_set_section_contents (abfd, arm_arch_section, buffer,
 				      (file_ptr) 0, buffer_size))
@@ -378,9 +388,9 @@ architectures[] =
   { "armv7k",   bfd_mach_arm_7k }
 };
 
-/* Extract the machine number stored in a note section.  */
+/* Extract the machine number stored in a note section: */
 unsigned int
-bfd_arm_get_mach_from_notes (bfd *abfd, const char *note_section)
+bfd_arm_get_mach_from_notes(bfd *abfd, const char *note_section)
 {
   asection *     arm_arch_section;
   bfd_size_type  buffer_size;
@@ -391,7 +401,7 @@ bfd_arm_get_mach_from_notes (bfd *abfd, const char *note_section)
   /* Look for a note section.  If one is present check the architecture
      string encoded in it, and set it to the current architecture if it is
      different.  */
-  arm_arch_section = bfd_get_section_by_name (abfd, note_section);
+  arm_arch_section = bfd_get_section_by_name(abfd, note_section);
 
   if (arm_arch_section == NULL)
     return bfd_mach_arm_unknown;
@@ -400,44 +410,47 @@ bfd_arm_get_mach_from_notes (bfd *abfd, const char *note_section)
   if (buffer_size == 0)
     return bfd_mach_arm_unknown;
 
-  if (!bfd_malloc_and_get_section (abfd, arm_arch_section, &buffer))
+  if (!bfd_malloc_and_get_section(abfd, arm_arch_section, &buffer))
     goto FAIL;
 
-  /* Parse the note.  */
-  if (! arm_check_note (abfd, buffer, buffer_size, NOTE_ARCH_STRING, & arch_string))
+  /* Parse the note: */
+  if (! arm_check_note(abfd, buffer, buffer_size, NOTE_ARCH_STRING, &arch_string))
     goto FAIL;
 
-  /* Interpret the architecture string.  */
-  for (i = ARRAY_SIZE (architectures); i--;)
-    if (strcmp (arch_string, architectures[i].string) == 0)
+  /* Interpret the architecture string: */
+  for (i = ARRAY_SIZE(architectures); i--;)
+    if (strcmp(arch_string, architectures[i].string) == 0)
       {
-	free (buffer);
+	free(buffer);
 	return architectures[i].mach;
       }
 
  FAIL:
   if (buffer != NULL)
-    free (buffer);
+    free(buffer);
   return bfd_mach_arm_unknown;
 }
 
 bfd_boolean
-bfd_is_arm_special_symbol_name (const char * name, int type)
+bfd_is_arm_special_symbol_name(const char * name, int type)
 {
   /* The ARM compiler outputs several obsolete forms.  Recognize them
-     in addition to the standard $a, $t and $d.  We are somewhat loose
-     in what we accept here, since the full set is not documented.  */
-  if (!name || name[0] != '$')
+   * in addition to the standard $a, $t and $d.  We are somewhat loose
+   * in what we accept here, since the full set is not documented: */
+  if (!name || (name[0] != '$')) {
     return FALSE;
-  if (name[1] == 'a' || name[1] == 't' || name[1] == 'd')
+  }
+  if ((name[1] == 'a') || (name[1] == 't') || (name[1] == 'd')) {
     type &= BFD_ARM_SPECIAL_SYM_TYPE_MAP;
-  else if (name[1] == 'm' || name[1] == 'f' || name[1] == 'p')
+  } else if ((name[1] == 'm') || (name[1] == 'f') || (name[1] == 'p')) {
     type &= BFD_ARM_SPECIAL_SYM_TYPE_TAG;
-  else if (name[1] >= 'a' && name[1] <= 'z')
+  } else if ((name[1] >= 'a') && (name[1] <= 'z')) {
     type &= BFD_ARM_SPECIAL_SYM_TYPE_OTHER;
-  else
+  } else {
     return FALSE;
+  }
 
-  return (type != 0 && (name[2] == 0 || name[2] == '.'));
+  return ((type != 0) && ((name[2] == 0) || (name[2] == '.')));
 }
 
+/* EOF */

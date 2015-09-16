@@ -1,4 +1,5 @@
-/* Definitions for native support of irix6.
+/* nm-irix6.h
+   Definitions for native support of irix6.
 
    Copyright 2001 Free Software Foundation, Inc.
 
@@ -20,3 +21,5 @@
    Boston, MA 02111-1307, USA.  */
 
 #include "mips/nm-irix5.h"
+
+/* EOF */

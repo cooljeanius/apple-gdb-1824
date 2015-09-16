@@ -1,0 +1,181 @@
+
+AutoGen Definitions guile-iface.tpl;
+
+#if 0
+iface = {
+  i-name    = ;
+  i-args    = ;
+  i-impl    = { i-end = ''; i-code = ''; };
+};
+#endif
+
+invalid = '200000-200003';
+
+iface = {
+  i-name    = bool_p;
+  i-args    = '_b';
+  i-impl    = { i-end = '107'; i-code = 'SCM_BOOLP(_b)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_is_bool(_b)'; };
+};
+
+iface = {
+  i-name    = char;
+  i-args    = '_c';
+  i-impl    = { i-end = '107'; i-code = 'gh_scm2char(_c)'; };
+  i-impl    = { i-end = '201'; i-code = 'SCM_CHAR(_c)'; };
+};
+
+iface = {
+  i-name    = chars;
+  i-args    = '_s';
+  i-impl    = { i-end = '107'; i-code = 'SCM_CHARS(_s)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_i_string_chars(_s)'; };
+};
+
+iface = {
+  i-name    = falsep;
+  i-args    = '_r';
+  i-impl    = { i-end = '107'; i-code = 'SCM_FALSEP(_r)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_is_false(_r)'; };
+};
+
+iface = {
+  i-name    = from_long;
+  i-args    = '_l';
+  i-impl    = { i-end = '107'; i-code = 'gh_long2scm(_l)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_from_long(_l)'; };
+};
+
+iface = {
+  i-name    = int2scm;
+  i-args    = '_i';
+  i-impl    = { i-end = '107'; i-code = 'gh_int2scm(_i)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_from_int(_i)'; };
+};
+
+iface = {
+  i-name    = is_proc;
+  i-args    = '_p';
+  i-impl    = { i-end = '107'; i-code = 'SCM_NFALSEP( scm_procedure_p(_p))'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_is_true( scm_procedure_p(_p))'; };
+};
+
+iface = {
+  i-name    = list_p;
+  i-args    = '_l';
+  i-impl    = { i-end = '107'; i-code = 'SCM_NFALSEP( scm_list_p(_l))'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_is_true( scm_list_p(_l))'; };
+};
+
+iface = {
+  i-name    = listofnull;
+  i-impl    = { i-end = '107'; i-code = 'scm_listofnull'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_list_1(SCM_EOL)'; };
+};
+
+iface = {
+  i-name    = long2scm;
+  i-args    = '_i';
+  i-impl    = { i-end = '107'; i-code = 'gh_long2scm(_i)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_from_long(_i)'; };
+};
+
+iface = {
+  i-name    = nfalsep;
+  i-args    = '_r';
+  i-impl    = { i-end = '107'; i-code = 'SCM_NFALSEP(_r)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_is_true(_r)'; };
+};
+
+iface = {
+  i-name    = nullp;
+  i-args    = '_m';
+  i-impl    = { i-end = '107'; i-code = 'SCM_NULLP(_m)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_is_null(_m)'; };
+};
+
+iface = {
+  i-name    = num_p;
+  i-args    = '_n';
+  i-impl    = { i-end = '107'; i-code = 'SCM_NUMBERP(_n)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_is_number(_n)'; };
+};
+
+iface = {
+  i-name    = pair_p;
+  i-args    = '_p';
+  i-impl    = { i-end = '107'; i-code = 'SCM_NFALSEP( scm_pair_p(_p))'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_is_true( scm_pair_p(_p))'; };
+};
+
+iface = {
+  i-name    = str02scm;
+  i-args    = '_s';
+  i-impl    = { i-end = '107'; i-code = 'scm_makfrom0str(_s)'; };
+  i-impl    = { i-end = '200'; i-code = 'scm_from_locale_string(_s)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_from_utf8_string(_s)'; };
+};
+
+iface = {
+  i-name    = str2scm;
+  i-args    = '_st,_sz';
+  i-impl    = { i-end = '107'; i-code = 'scm_mem2string(_st,_sz)'; };
+  i-impl    = { i-end = '200'; i-code = 'scm_from_locale_stringn(_st,_sz)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_from_utf8_stringn(_st,_sz)'; };
+};
+
+iface = {
+  i-name    = string_p;
+  i-args    = '_s';
+  i-impl    = { i-end = '107'; i-code = 'SCM_STRINGP(_s)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_is_string(_s)'; };
+};
+
+iface = {
+  i-name    = strlen;
+  i-args    = '_s';
+  i-impl    = { i-end = '107'; i-code = 'SCM_STRING_LENGTH(_s)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_c_string_length(_s)'; };
+};
+
+iface = {
+  i-name    = sym_p;
+  i-args    = '_s';
+  i-impl    = { i-end = '107'; i-code = 'SCM_SYMBOLP(_s)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_is_symbol(_s)'; };
+};
+
+iface = {
+  i-name    = to_int;
+  i-args    = '_i';
+  i-impl    = { i-end = '107'; i-code = 'gh_scm2int(_i)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_to_int(_i)'; };
+};
+
+iface = {
+  i-name    = to_long;
+  i-args    = '_v';
+  i-impl    = { i-end = '107'; i-code = 'gh_scm2long(_v)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_to_long(_v)'; };
+};
+
+iface = {
+  i-name    = to_newstr;
+  i-args    = '_s';
+  i-impl    = { i-end = '107'; i-code = 'gh_scm2newstr(_s, NULL)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_to_locale_string(_s)'; };
+};
+
+iface = {
+  i-name    = to_ulong;
+  i-args    = '_v';
+  i-impl    = { i-end = '107'; i-code = 'gh_scm2ulong(_v)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_to_ulong(_v)'; };
+};
+
+iface = {
+  i-name    = vec_p;
+  i-args    = '_v';
+  i-impl    = { i-end = '107'; i-code = 'SCM_VECTORP(_v)'; };
+  i-impl    = { i-end = '201'; i-code = 'scm_is_vector(_v)'; };
+};

@@ -1,4 +1,4 @@
-/* Top level stuff for GDB, the GNU debugger.
+/* main.c: Top level stuff for GDB, the GNU debugger.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
@@ -112,12 +112,17 @@ captured_command_loop (void *data)
   return 1;
 }
 
+/* Keep this condition the same as where it is used: */
+#ifdef HAVE_SBRK
+extern char **environ;
+#endif /* HAVE_SBRK */
+
 static int
-captured_main (void *data)
+captured_main(void *data)
 {
   /* If you add initializations here, you also need to add then to the
      proc do_steps_and_nexts in selftest.exp.  */
-  struct captured_main_args *context = data;
+  struct captured_main_args *context = (struct captured_main_args *)data;
   int argc = context->argc;
   char **argv = context->argv;
   int count;
@@ -125,7 +130,7 @@ captured_main (void *data)
   static int batch = 0;
   static int set_args = 0;
 
-  /* Pointers to various arguments from command line.  */
+  /* Pointers to various arguments from command line: */
   char *symarg = NULL;
   char *execarg = NULL;
   char *corearg = NULL;
@@ -163,83 +168,83 @@ captured_main (void *data)
 
   int i;
 
-  long time_at_startup = get_run_time ();
+  long time_at_startup = get_run_time();
 
-#if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES)
-  setlocale (LC_MESSAGES, "");
+#if defined(HAVE_SETLOCALE) && defined(HAVE_LC_MESSAGES)
+  setlocale(LC_MESSAGES, "");
 #endif /* HAVE_SETLOCALE */
-#if defined (HAVE_SETLOCALE)
-  setlocale (LC_CTYPE, "");
+#if defined(HAVE_SETLOCALE)
+  setlocale(LC_CTYPE, "");
 #endif /* HAVE_SETLOCALE */
-  bindtextdomain (PACKAGE, LOCALEDIR);
-  textdomain (PACKAGE);
+  bindtextdomain(PACKAGE, LOCALEDIR);
+  textdomain(PACKAGE);
 
   /* APPLE LOCAL memory */
 #ifdef USE_MMALLOC
-  init_mmalloc_default_pool ((PTR) NULL);
+  init_mmalloc_default_pool((PTR)NULL);
 #endif /* USE_MMALLOC */
 
-  /* This needs to happen before the first use of malloc.  */
-  init_malloc (NULL);
+  /* This needs to happen before the first use of malloc: */
+  init_malloc(NULL);
 
 #ifdef HAVE_SBRK
-  lim_at_start = (char *) sbrk (0);
+  lim_at_start = (char *)sbrk(0);
 #endif /* HAVE_SBRK */
 
 #if defined(ALIGN_STACK_ON_STARTUP)
-  i = (int) &count & 0x3;
+  i = (int)&count & 0x3;
   if (i != 0)
-    alloca (4 - i);
+    alloca(4 - i);
 #endif /* ALIGN_STACK_ON_STARTUP */
 
   cmdsize = 1;
-  cmdarg = (char **) xmalloc (cmdsize * sizeof (*cmdarg));
+  cmdarg = (char **)xmalloc(cmdsize * sizeof(*cmdarg));
   ncmd = 0;
   dirsize = 1;
-  dirarg = (char **) xmalloc (dirsize * sizeof (*dirarg));
+  dirarg = (char **)xmalloc(dirsize * sizeof(*dirarg));
   ndir = 0;
 
   quit_flag = 0;
-  line = (char *) xmalloc (linesize);
+  line = (char *)xmalloc(linesize);
   line[0] = '\0';		/* Terminate saved (now empty) cmd line */
   instream = stdin;
 
-  getcwd (gdb_dirbuf, sizeof (gdb_dirbuf));
+  getcwd(gdb_dirbuf, sizeof(gdb_dirbuf));
   current_directory = gdb_dirbuf;
 
   /* APPLE LOCAL gdb_null */
-  gdb_null = ui_file_new ();
-  gdb_stdout = stdio_fileopen (stdout);
-  gdb_stderr = stdio_fileopen (stderr);
+  gdb_null = ui_file_new();
+  gdb_stdout = stdio_fileopen(stdout);
+  gdb_stderr = stdio_fileopen(stderr);
   gdb_stdlog = gdb_stderr;	/* for moment */
   gdb_stdtarg = gdb_stderr;	/* for moment */
-  gdb_stdin = stdio_fileopen (stdin);
+  gdb_stdin = stdio_fileopen(stdin);
   gdb_stdtargerr = gdb_stderr;	/* for moment */
   gdb_stdtargin = gdb_stdin;	/* for moment */
 
   /* APPLE LOCAL: set our main thread's name */
 #ifdef HAVE_PTHREAD_SETNAME_NP
-  pthread_setname_np ("gdb main thread");
+  pthread_setname_np("gdb main thread");
 #endif /* HAVE_PTHREAD_SETNAME_NP */
 
-  /* APPLE LOCAL: raise our file descriptor limit a lot.  */
-  unlimit_file_rlimit ();
+  /* APPLE LOCAL: raise our file descriptor limit a lot: */
+  unlimit_file_rlimit();
 
-  /* Set the sysroot path.  */
+  /* Set the sysroot path: */
 #ifdef TARGET_SYSTEM_ROOT_RELOCATABLE
-  gdb_sysroot = make_relative_prefix (argv[0], BINDIR, TARGET_SYSTEM_ROOT);
+  gdb_sysroot = make_relative_prefix(argv[0], BINDIR, TARGET_SYSTEM_ROOT);
   if (gdb_sysroot)
     {
       struct stat s;
       int res = 0;
 
-      if (stat (gdb_sysroot, &s) == 0)
-	if (S_ISDIR (s.st_mode))
+      if (stat(gdb_sysroot, &s) == 0)
+	if (S_ISDIR(s.st_mode))
 	  res = 1;
 
       if (res == 0)
 	{
-	  xfree (gdb_sysroot);
+	  xfree(gdb_sysroot);
 	  gdb_sysroot = TARGET_SYSTEM_ROOT;
 	}
     }
@@ -257,7 +262,7 @@ captured_main (void *data)
      this captured main, or one specified by the user at start up, or
      the console. Initialize the interpreter to the one requested by
      the application.  */
-  interpreter_p = xstrdup (context->interpreter_p);
+  interpreter_p = xstrdup(context->interpreter_p);
 
   /* Parse arguments and options.  */
   {
@@ -349,19 +354,19 @@ captured_main (void *data)
       {
 	int option_index;
 
-	c = getopt_long_only (argc, argv, "",
-			      long_options, &option_index);
-	if (c == EOF || set_args)
+	c = getopt_long_only(argc, argv, "",
+			     long_options, &option_index);
+	if ((c == EOF) || set_args)
 	  break;
 
-	/* Long option that takes an argument.  */
-	if (c == 0 && long_options[option_index].flag == 0)
+	/* Long option that takes an argument: */
+	if ((c == 0) && (long_options[option_index].flag == 0))
 	  c = long_options[option_index].val;
 
 	switch (c)
 	  {
 	  case 0:
-	    /* Long option that just sets a flag.  */
+	    /* Long option that just sets a flag: */
 	    break;
 	  case OPT_SE:
 	    symarg = optarg;
@@ -372,17 +377,17 @@ captured_main (void *data)
 	    break;
 	  case OPT_ANNOTATE:
 	    /* FIXME: what if the syntax is wrong (e.g. not digits)?  */
-	    annotation_level = atoi (optarg);
+	    annotation_level = atoi(optarg);
 	    break;
 	  case OPT_STATISTICS:
-	    /* Enable the display of both time and space usage.  */
+	    /* Enable the display of both time and space usage: */
 	    display_time = 1;
 	    display_space = 1;
 	    break;
 	  case OPT_TUI:
 	    /* --tui is equivalent to -i=tui.  */
 	    xfree (interpreter_p);
-	    interpreter_p = xstrdup ("tui");
+	    interpreter_p = xstrdup("tui");
 	    break;
 	  case OPT_WINDOWS:
 	    /* FIXME: cagney/2003-03-01: Not sure if this option is
@@ -391,18 +396,18 @@ captured_main (void *data)
 	    break;
 	  case OPT_NOWINDOWS:
 	    /* -nw is equivalent to -i=console.  */
-	    xfree (interpreter_p);
-	    interpreter_p = xstrdup (INTERP_CONSOLE);
+	    xfree(interpreter_p);
+	    interpreter_p = xstrdup(INTERP_CONSOLE);
 	    use_windows = 0;
 	    break;
 	  /* APPLE LOCAL: */
 	  case OPT_WAITFOR:
-	    attach_waitfor = (char *) xmalloc (12 + strlen (optarg));
-	    sprintf (attach_waitfor, "-waitfor \"%s\"", optarg);
+	    attach_waitfor = (char *)xmalloc(12UL + strlen(optarg));
+	    sprintf(attach_waitfor, "-waitfor \"%s\"", optarg);
 	    break;
 	  /* APPLE LOCAL: */
 	  case OPT_ARCH:
-	    initial_arch = xstrdup (optarg);
+	    initial_arch = xstrdup(optarg);
 	    break;
 	  /* APPLE LOCAL: Set the osabi via option. This option was
 	     added along with a modification to the gdb driver shell script
@@ -444,19 +449,19 @@ captured_main (void *data)
 	    if (ncmd >= cmdsize)
 	      {
 		cmdsize *= 2;
-		cmdarg = (char **) xrealloc ((char *) cmdarg,
-					     cmdsize * sizeof (*cmdarg));
+		cmdarg = (char **)xrealloc((char *)cmdarg,
+                                           (cmdsize * sizeof(*cmdarg)));
 	      }
 	    break;
 #ifdef GDBTK
 	  case 'z':
 	    {
-extern int gdbtk_test (char *);
-	      if (!gdbtk_test (optarg))
+extern int gdbtk_test(char *);
+	      if (!gdbtk_test(optarg))
 		{
-		  fprintf_unfiltered (gdb_stderr, _("%s: unable to load tclcommand file \"%s\""),
-				      argv[0], optarg);
-		  exit (1);
+		  fprintf_unfiltered(gdb_stderr, _("%s: unable to load tclcommand file \"%s\""),
+				     argv[0], optarg);
+		  exit(1);
 		}
 	      break;
 	    }
@@ -465,21 +470,21 @@ extern int gdbtk_test (char *);
 	    break;
 	  case 'w':
 	    {
-	      external_editor_command = xstrdup (optarg);
+	      external_editor_command = xstrdup(optarg);
 	      break;
 	    }
 #endif /* GDBTK */
 	  case 'i':
-	    xfree (interpreter_p);
-	    interpreter_p = xstrdup (optarg);
+	    xfree(interpreter_p);
+	    interpreter_p = xstrdup(optarg);
 	    break;
 	  case 'd':
 	    dirarg[ndir++] = optarg;
 	    if (ndir >= dirsize)
 	      {
 		dirsize *= 2;
-		dirarg = (char **) xrealloc ((char *) dirarg,
-					     dirsize * sizeof (*dirarg));
+		dirarg = (char **)xrealloc((char *)dirarg,
+                                           (dirsize * sizeof(*dirarg)));
 	      }
 	    break;
 	  case 't':
@@ -493,15 +498,13 @@ extern int gdbtk_test (char *);
 	      int i;
 	      char *p;
 
-	      i = strtol (optarg, &p, 0);
-	      if (i == 0 && p == optarg)
-
+	      i = strtol(optarg, &p, 0);
+	      if ((i == 0) && (p == optarg))
 		/* Do NOT use *_filtered or warning() (which relies on
 		   current_target) until after initialize_all_files(). */
-
-		fprintf_unfiltered
-		  (gdb_stderr,
-		   _("warning: could not set baud rate to `%s'.\n"), optarg);
+		fprintf_unfiltered(gdb_stderr,
+                                   _("warning: could not set baud rate to `%s'.\n"),
+                                   optarg);
 	      else
 		baud_rate = i;
 	    }
@@ -511,25 +514,23 @@ extern int gdbtk_test (char *);
 	      int i;
 	      char *p;
 
-	      i = strtol (optarg, &p, 0);
-	      if (i == 0 && p == optarg)
-
+	      i = strtol(optarg, &p, 0);
+	      if ((i == 0) && (p == optarg))
 		/* Do NOT use *_filtered or warning() (which relies on
 		   current_target) until after initialize_all_files(). */
-
-		fprintf_unfiltered
-		  (gdb_stderr,
-		 _("warning: could not set timeout limit to `%s'.\n"), optarg);
+		fprintf_unfiltered(gdb_stderr,
+                                   _("warning: could not set timeout limit to `%s'.\n"),
+                                   optarg);
 	      else
 		remote_timeout = i;
 	    }
 	    break;
 
 	  case '?':
-	    fprintf_unfiltered (gdb_stderr,
+	    fprintf_unfiltered(gdb_stderr,
 			_("Use `%s --help' for a complete list of options.\n"),
-				argv[0]);
-	    exit (1);
+                               argv[0]);
+	    exit(1);
 	  }
       }
 
@@ -546,15 +547,15 @@ extern int gdbtk_test (char *);
 	   are arguments.  */
 	if (optind >= argc)
 	  {
-	    fprintf_unfiltered (gdb_stderr,
-				_("%s: `--args' specified but no program specified\n"),
-				argv[0]);
-	    exit (1);
+	    fprintf_unfiltered(gdb_stderr,
+                               _("%s: `--args' specified but no program specified\n"),
+                               argv[0]);
+	    exit(1);
 	  }
 	symarg = argv[optind];
 	execarg = argv[optind];
 	++optind;
-	set_inferior_args_vector (argc - optind, &argv[optind]);
+	set_inferior_args_vector(argc - optind, &argv[optind]);
       }
     else
       {
@@ -573,9 +574,9 @@ extern int gdbtk_test (char *);
 	      corearg = argv[optind];
 	      break;
 	    case 3:
-	      fprintf_unfiltered (gdb_stderr,
-				  _("Excess command line arguments ignored. (%s%s)\n"),
-				  argv[optind], (optind == argc - 1) ? "" : " ...");
+	      fprintf_unfiltered(gdb_stderr,
+				 _("Excess command line arguments ignored. (%s%s)\n"),
+				 argv[optind], (optind == argc - 1) ? "" : " ...");
 	      break;
 	    }
       }
@@ -584,8 +585,8 @@ extern int gdbtk_test (char *);
   }
 
   /* Initialize all files. Give the interpreter a chance to take
-     control of the console via the deprecated_init_ui_hook ().  */
-  gdb_init (argv[0]);
+     control of the console via the deprecated_init_ui_hook().  */
+  gdb_init(argv[0]);
 
   /* Do these (and anything which might call wrap_here or *_filtered)
      after initialize_all_files() but before the interpreter has been
@@ -594,39 +595,39 @@ extern int gdbtk_test (char *);
 
   if (print_version)
     {
-      print_gdb_version (gdb_stdout);
-      wrap_here ("");
-      printf_filtered ("\n");
-      exit (0);
+      print_gdb_version(gdb_stdout);
+      wrap_here("");
+      printf_filtered("\n");
+      exit(0);
     }
 
   if (print_help)
     {
-      print_gdb_help (gdb_stdout);
-      fputs_unfiltered ("\n", gdb_stdout);
-      exit (0);
+      print_gdb_help(gdb_stdout);
+      fputs_unfiltered("\n", gdb_stdout);
+      exit(0);
     }
 
   /* FIXME: cagney/2003-02-03: The big hack (part 1 of 2) that lets
      GDB retain the old MI1 interpreter startup behavior. Output the
      copyright message before the interpreter is installed. That way
      it is NOT encapsulated in MI output.  */
-  if (!quiet && strcmp (interpreter_p, INTERP_MI1) == 0)
+  if (!quiet && (strcmp(interpreter_p, INTERP_MI1) == 0))
     {
       /* APPLE LOCAL begin do NOT print dots */
       /* Print all the junk at the top. */
-      print_gdb_version (gdb_stdout);
-      printf_filtered ("\n");
+      print_gdb_version(gdb_stdout);
+      printf_filtered("\n");
       /* APPLE LOCAL end do NOT print dots */
-      wrap_here ("");
-      gdb_flush (gdb_stdout);	/* Force to screen during slow operations */
+      wrap_here("");
+      gdb_flush(gdb_stdout); /* Force to screen during slow operations */
     }
 
 
   /* APPLE LOCAL begin */
   if (state_change_hook)
     {
-      state_change_hook (STATE_ACTIVE);
+      state_change_hook(STATE_ACTIVE);
     }
   /* APPLE LOCAL end */
 
@@ -635,17 +636,17 @@ extern int gdbtk_test (char *);
 
   {
     /* Find it.  */
-    struct interp *interp = interp_lookup (interpreter_p);
+    struct interp *interp = interp_lookup(interpreter_p);
     if (interp == NULL)
-      error (_("Interpreter `%s' unrecognized"), interpreter_p);
+      error(_("Interpreter `%s' unrecognized"), interpreter_p);
     /* Install it.  */
     /* APPLE LOCAL clarity */
-    if (interp_set (interp) == NULL)
+    if (interp_set(interp) == NULL)
       {
-        fprintf_unfiltered (gdb_stderr,
-			    "Interpreter `%s' failed to initialize.\n",
-                            interpreter_p);
-        exit (1);
+        fprintf_unfiltered(gdb_stderr,
+			   "Interpreter `%s' failed to initialize.\n",
+                           interpreter_p);
+        exit(1);
       }
   }
 
@@ -653,15 +654,15 @@ extern int gdbtk_test (char *);
      GDB retain the old MI1 interpreter startup behavior. Output the
      copyright message after the interpreter is installed when it is
      any sane interpreter.  */
-  if (!quiet && !current_interp_named_p (INTERP_MI1))
+  if (!quiet && !current_interp_named_p(INTERP_MI1))
     {
       /* Print all the junk at the top, with trailing "..." if we are about
          to read a symbol file (possibly slowly).  */
-      print_gdb_version (gdb_stdout);
+      print_gdb_version(gdb_stdout);
       if (symarg)
-	printf_filtered ("..");
-      wrap_here ("");
-      gdb_flush (gdb_stdout);	/* Force to screen during slow operations */
+	printf_filtered("..");
+      wrap_here("");
+      gdb_flush(gdb_stdout);  /* Force to screen during slow operations */
     }
 
   error_pre_print = "\n\n";
@@ -674,55 +675,56 @@ extern int gdbtk_test (char *);
   /* Make sure that they are zero in case one of them fails (this
      guarantees that they will NOT match if either exists).  */
 
-  memset (&homebuf, 0, sizeof (struct stat));
-  memset (&cwdbuf, 0, sizeof (struct stat));
+  memset(&homebuf, 0, sizeof(struct stat));
+  memset(&cwdbuf, 0, sizeof(struct stat));
   /* APPLE LOCAL end move inits up */
   /* APPLE LOCAL begin global gdbinit */
-  memset (&globalbuf, 0, sizeof (struct stat));
-  stat (gdbinit_global, &globalbuf);
+  memset(&globalbuf, 0, sizeof(struct stat));
+  stat(gdbinit_global, &globalbuf);
   if (!inhibit_gdbinit)
     {
-      /* if (!SET_TOP_LEVEL ()) */
-	 source_file (gdbinit_global, 0);
+      /* if (!SET_TOP_LEVEL()) */
+	 source_file(gdbinit_global, 0);
     }
-  do_cleanups (ALL_CLEANUPS);
+  do_cleanups(ALL_CLEANUPS);
   /* APPLE LOCAL end global gdbinit */
 
   /* APPLE LOCAL: Set the $_Xcode convenience variable at '0' before sourcing
      any .gdbinit files. Xcode will override this to 1 when it is launching
      gdb but we need to start with a value of 0 so .gdbinit files can use it
      in conditional expressions.  */
-  set_internalvar (lookup_internalvar ("_Xcode"),
-                   value_from_longest (builtin_type_int, (LONGEST) 0));
+  set_internalvar(lookup_internalvar("_Xcode"),
+                  value_from_longest(builtin_type_int, (LONGEST)0L));
 
   /* Read and execute $HOME/.gdbinit file, if it exists. This is done
      *before* all the command line arguments are processed; it sets
      global parameters, which are independent of what file you are
      debugging or what directory you are in.  */
-  homedir = getenv ("HOME");
+  homedir = getenv("HOME");
   if (homedir)
     {
-      char *homeinit = xstrprintf ("%s/%s", homedir, gdbinit);
+      char *homeinit = xstrprintf("%s/%s", homedir, gdbinit);
 
       /* APPLE LOCAL move inits up */
-      stat (homeinit, &homebuf);
+      stat(homeinit, &homebuf);
       /* APPLE LOCAL gdbinit */
       if (!inhibit_gdbinit)
-	if ((globalbuf.st_dev != homebuf.st_dev) || (globalbuf.st_ino != homebuf.st_ino))
+	if ((globalbuf.st_dev != homebuf.st_dev)
+            || (globalbuf.st_ino != homebuf.st_ino))
 	  {
-	    catch_command_errors (source_file, homeinit, 0, RETURN_MASK_ALL);
+	    catch_command_errors(source_file, homeinit, 0, RETURN_MASK_ALL);
 	  }
     }
 
-  /* Now perform all the actions indicated by the arguments.  */
+  /* Now perform all the actions indicated by the arguments: */
   if (cdarg != NULL)
     {
-      catch_command_errors (cd_command, cdarg, 0, RETURN_MASK_ALL);
+      catch_command_errors(cd_command, cdarg, 0, RETURN_MASK_ALL);
     }
 
   for (i = 0; i < ndir; i++)
-    catch_command_errors (directory_command, dirarg[i], 0, RETURN_MASK_ALL);
-  xfree (dirarg);
+    catch_command_errors(directory_command, dirarg[i], 0, RETURN_MASK_ALL);
+  xfree(dirarg);
 
   /* APPLE LOCAL: If an architecture has been supplied, process it.
      FIXME: Note, this is a TOTAL hack. There should be some gdbarch'y type
@@ -736,157 +738,156 @@ extern int gdbtk_test (char *);
       char *arch_string = NULL;
       char *osabi_string;
 # if defined(TARGET_POWERPC)
-      if (strcmp (initial_arch, "ppc") == 0)
+      if (strcmp(initial_arch, "ppc") == 0)
 	{
 	  arch_string = "powerpc:common";
 	  osabi_string = "Darwin";
 	}
-      else if (strcmp (initial_arch, "ppc64") == 0)
+      else if (strcmp(initial_arch, "ppc64") == 0)
 	{
 	  arch_string = "powerpc:common64";
 	  osabi_string = "Darwin64";
 	}
       else
-	  warning ("invalid argument \"%s\" for \"--arch\", should be one of "
-		 "\"ppc\" or \"ppc64\"\n", initial_arch);
+	  warning("invalid argument \"%s\" for \"--arch\", should be one of "
+                  "\"ppc\" or \"ppc64\"\n", initial_arch);
 # elif defined(TARGET_I386)
-      if (strcmp (initial_arch, "i386") == 0)
+      if (strcmp(initial_arch, "i386") == 0)
 	{
 	  arch_string = "i386";
 	  osabi_string = "Darwin";
 	}
-      else if (strcmp (initial_arch, "x86_64") == 0)
+      else if (strcmp(initial_arch, "x86_64") == 0)
 	{
 	  arch_string = "i386:x86-64";
 	  osabi_string = "Darwin64";
 	}
       else
-	warning ("invalid argument \"%s\" for \"--arch\", should be one of "
-		 "\"i386\" or \"x86_64\"\n", initial_arch);
+	warning("invalid argument \"%s\" for \"--arch\", should be one of "
+                "\"i386\" or \"x86_64\"\n", initial_arch);
 # elif defined(TARGET_ARM)
-      if (strcmp (initial_arch, "arm") == 0)
+      if (strcmp(initial_arch, "arm") == 0)
 	{
 	  arch_string = "arm";
 	  osabi_string = "Darwin";
 	}
-      else if (strstr (initial_arch, "armv4") == initial_arch)
+      else if (strstr(initial_arch, "armv4") == initial_arch)
 	{
 	  arch_string = "armv4t";
 	  osabi_string = "Darwin";
 	}
-      else if (strstr (initial_arch, "armv6") == initial_arch)
+      else if (strstr(initial_arch, "armv6") == initial_arch)
 	{
 	  arch_string = "armv6";
 	  osabi_string = "DarwinV6";
 	}
-      else if (strstr (initial_arch, "armv7") == initial_arch)
+      else if (strstr(initial_arch, "armv7") == initial_arch)
 	{
 	  arch_string = "armv7";
 	  osabi_string = "DarwinV7";
 	}
       else
-	warning ("invalid argument \"%s\" for \"--arch\", should be one of "
-		 "\"arm\", \"armv4*\", \"armv6*\", or \"armv7*\"\n",
-		 initial_arch);
+	warning("invalid argument \"%s\" for \"--arch\", should be one of "
+                "\"arm\", \"armv4*\", \"armv6*\", or \"armv7*\"\n",
+                initial_arch);
 # endif /* TARGET_POWERPC || TARGET_I386 || TARGET_ARM */
       if (arch_string != NULL)
 	{
-	  set_architecture_from_string (arch_string);
-	  set_osabi_from_string (osabi_string);
+	  set_architecture_from_string(arch_string);
+	  set_osabi_from_string(osabi_string);
 	}
       else
 	{
 # if defined(TARGET_ARM) && defined(NM_NEXTSTEP)
 	  /* Always set the OSABI so we are sure to pick up the right slices
 	     for ARM.  */
-	  extern enum gdb_osabi arm_set_osabi_from_host_info ();
-	  arm_set_osabi_from_host_info ();
+	  extern enum gdb_osabi arm_set_osabi_from_host_info();
+	  arm_set_osabi_from_host_info();
 # endif /* TARGET_ARM && NM_NEXTSTEP */
+        }
     }
-    }
-# if defined (TARGET_ARM) && defined (NM_NEXTSTEP)
+# if defined(TARGET_ARM) && defined(NM_NEXTSTEP)
   else
     {
       /* Always set the OSABI so we are sure to pick up the right slices
          for ARM.  */
-      extern enum gdb_osabi arm_set_osabi_from_host_info ();
-      arm_set_osabi_from_host_info ();
+      extern enum gdb_osabi arm_set_osabi_from_host_info();
+      arm_set_osabi_from_host_info();
     }
 # endif /* TARGET_ARM && NM_NEXTSTEP */
 
 #else
-  warning ("--arch option not supported in this gdb.");
+  warning("--arch option not supported in this gdb.");
 #endif /* USE_POSIX_SPAWN || USE_ARCH_FOR_EXEC */
 
   /* APPLE LOCAL BEGIN: Set the osabi via option.  */
   if (osabiarg != NULL)
-    set_osabi_option (osabiarg);
+    set_osabi_option(osabiarg);
   /* APPLE LOCAL END */
 
-  if (execarg != NULL
-      && symarg != NULL
-      && strcmp (execarg, symarg) == 0)
+  if ((execarg != NULL) && (symarg != NULL)
+      && (strcmp(execarg, symarg) == 0))
     {
       /* The exec file and the symbol-file are the same. If we cannot
          open it, better only print one error message.
          catch_command_errors returns non-zero on success! */
-      if (catch_command_errors (exec_file_attach, execarg, !batch, RETURN_MASK_ALL))
-	catch_command_errors (symbol_file_add_main, symarg, 0, RETURN_MASK_ALL);
+      if (catch_command_errors(exec_file_attach, execarg, !batch, RETURN_MASK_ALL))
+	catch_command_errors(symbol_file_add_main, symarg, 0, RETURN_MASK_ALL);
     }
   else
     {
       if (execarg != NULL)
-	catch_command_errors (exec_file_attach, execarg, !batch, RETURN_MASK_ALL);
+	catch_command_errors(exec_file_attach, execarg, !batch, RETURN_MASK_ALL);
       if (symarg != NULL)
-	catch_command_errors (symbol_file_add_main, symarg, 0, RETURN_MASK_ALL);
+	catch_command_errors(symbol_file_add_main, symarg, 0, RETURN_MASK_ALL);
     }
 
   /* APPLE LOCAL begin */
-  if (state_change_hook && symarg != NULL)
+  if (state_change_hook && (symarg != NULL))
     {
-      state_change_hook (STATE_INFERIOR_LOADED);
+      state_change_hook(STATE_INFERIOR_LOADED);
     }
   /* APPLE LOCAL end */
 
   /* APPLE LOCAL begin */
   if (attach_waitfor != NULL)
     {
-      printf_filtered ("\n");
-      catch_command_errors (attach_command, attach_waitfor, 0, RETURN_MASK_ALL);
+      printf_filtered("\n");
+      catch_command_errors(attach_command, attach_waitfor, 0, RETURN_MASK_ALL);
     }
 
   /* After the symbol file has been read, print a newline to get us
      beyond the copyright line...  But errors should still set off
      the error message with a (single) blank line.  */
   if (!quiet)
-    printf_filtered ("\n");
+    printf_filtered("\n");
   error_pre_print = "\n";
   quit_pre_print = error_pre_print;
   warning_pre_print = _("\nwarning: ");
 
   if (corearg != NULL)
     {
-      if (catch_command_errors (core_file_attach, corearg, !batch, RETURN_MASK_ALL) == 0)
+      if (catch_command_errors(core_file_attach, corearg, !batch, RETURN_MASK_ALL) == 0)
 	{
 	  /* See if the core file is really a PID. */
 	  /* Be careful, we have quoted the corearg above... */
 	  if (corearg[0] == '"')
 	    {
-	      int len = strlen (corearg);
-	      if (corearg[len - 1] == '"')
+	      size_t len = strlen(corearg);
+	      if (corearg[len - 1UL] == '"')
 		{
-		  corearg[len - 1] = '\0';
+		  corearg[len - 1UL] = '\0';
 		  corearg += 1;
 		}
 	    }
 
-	  if (isdigit (corearg[0]))
-	    catch_command_errors (attach_command, corearg, !batch, RETURN_MASK_ALL);
+	  if (isdigit(corearg[0]))
+	    catch_command_errors(attach_command, corearg, !batch, RETURN_MASK_ALL);
 	}
     }
 
   if (ttyarg != NULL)
-    catch_command_errors (tty_command, ttyarg, !batch, RETURN_MASK_ALL);
+    catch_command_errors(tty_command, ttyarg, !batch, RETURN_MASK_ALL);
 
   /* Error messages should no longer be distinguished with extra output. */
   error_pre_print = NULL;
@@ -896,14 +897,14 @@ extern int gdbtk_test (char *);
   /* Read the .gdbinit file in the current directory, *if* it is NOT
      the same as the $HOME/.gdbinit file (it should exist, also).  */
 
-  stat (gdbinit, &cwdbuf);
+  stat(gdbinit, &cwdbuf);
   if (!inhibit_gdbinit)
     if (((globalbuf.st_dev != cwdbuf.st_dev) || (globalbuf.st_ino != cwdbuf.st_ino))
 	&& ((homebuf.st_dev != cwdbuf.st_dev) || (homebuf.st_ino != cwdbuf.st_ino)))
       {
         /* APPLE LOCAL: fix for CVE-2005-1705 */
-        if (cwdbuf.st_uid == getuid ())
-	  catch_command_errors (source_file, gdbinit, 0, RETURN_MASK_ALL);
+        if (cwdbuf.st_uid == getuid())
+	  catch_command_errors(source_file, gdbinit, 0, RETURN_MASK_ALL);
       }
 
   /* These need to be set this late in the initialization to ensure that
@@ -912,36 +913,36 @@ extern int gdbtk_test (char *);
      radix across the breakpoints restoration assuming they are restored
      using the -x (-command) command line options.  */
 
-  set_internalvar (lookup_internalvar ("input_radix"),
-		   value_from_longest (builtin_type_int, (LONGEST) input_radix));
-  set_internalvar (lookup_internalvar ("output_radix"),
-		   value_from_longest (builtin_type_int, (LONGEST) output_radix));
+  set_internalvar(lookup_internalvar("input_radix"),
+		  value_from_longest(builtin_type_int, (LONGEST)input_radix));
+  set_internalvar(lookup_internalvar("output_radix"),
+		  value_from_longest(builtin_type_int, (LONGEST)output_radix));
 
   for (i = 0; i < ncmd; i++)
     {
 #if 0
       /* NOTE: cagney/1999-11-03: SET_TOP_LEVEL() was a macro that
          expanded into a call to setjmp().  */
-      if (!SET_TOP_LEVEL ()) /* NB: This is #if 0'd out */
+      if (!SET_TOP_LEVEL()) /* NB: This is #if 0'd out */
 	{
 	  /* NOTE: I am commenting this out, because it is not clear
 	     where this feature is used. It is very old and
 	     undocumented. ezannoni: 1999-05-04 */
 # if 0
-	  if (cmdarg[i][0] == '-' && cmdarg[i][1] == '\0')
-	    read_command_file (stdin);
+	  if ((cmdarg[i][0] == '-') && (cmdarg[i][1] == '\0'))
+	    read_command_file(stdin);
 	  else
 # endif /* 0 */
-	    source_file (cmdarg[i], !batch);
-	  do_cleanups (ALL_CLEANUPS);
+	    source_file(cmdarg[i], !batch);
+	  do_cleanups(ALL_CLEANUPS);
 	}
 #endif /* 0 */
-      catch_command_errors (source_file, cmdarg[i], !batch, RETURN_MASK_ALL);
+      catch_command_errors(source_file, cmdarg[i], !batch, RETURN_MASK_ALL);
     }
-  xfree (cmdarg);
+  xfree(cmdarg);
 
   /* Read in the old history after all the command files have been read. */
-  init_history ();
+  init_history();
 
   if (batch)
     {
@@ -950,10 +951,10 @@ extern int gdbtk_test (char *);
 	   batch file aborted early, or the batch file forgot to do an
 	   explicit detach. Explicitly detach the inferior ensuring
 	   that there are no zombies.  */
-	target_detach (NULL, 0);
+	target_detach(NULL, 0);
 
       /* We have hit the end of the batch file.  */
-      exit (0);
+      exit(0);
     }
 
   /* Do any host- or target-specific hacks. This is used for i960 targets
@@ -963,24 +964,22 @@ extern int gdbtk_test (char *);
   BEFORE_MAIN_LOOP_HOOK;
 #endif /* BEFORE_MAIN_LOOP_HOOK */
 
-  /* Show time and/or space usage.  */
-
+  /* Show time and/or space usage: */
   if (display_time)
     {
-      long init_time = get_run_time () - time_at_startup;
+      long init_time = (get_run_time() - time_at_startup);
 
-      printf_unfiltered (_("Startup time: %ld.%06ld\n"),
-			 init_time / 1000000, init_time % 1000000);
+      printf_unfiltered(_("Startup time: %ld.%06ld\n"),
+                        (init_time / 1000000), (init_time % 1000000));
     }
 
   if (display_space)
     {
 #ifdef HAVE_SBRK
-      extern char **environ;
-      char *lim = (char *) sbrk (0);
+      char *lim = (char *)sbrk(0);
 
-      printf_unfiltered (_("Startup size: data size %ld\n"),
-			 (long) (lim - (char *) &environ));
+      printf_unfiltered(_("Startup size: data size %ld\n"),
+                        (long)(lim - (char *)&environ));
 #endif /* HAVE_SBRK */
     }
 
@@ -988,17 +987,17 @@ extern int gdbtk_test (char *);
   /* FIXME: cagney/1999-11-06: The original main loop was like: */
   while (1)
     {
-      if (!SET_TOP_LEVEL ())
+      if (!SET_TOP_LEVEL())
 	{
-	  do_cleanups (ALL_CLEANUPS);	/* Do complete cleanup */
+	  do_cleanups(ALL_CLEANUPS);	/* Do complete cleanup */
 	  /* GUIs generally have their own command loop, mainloop, or
 	     whatever.  This is a good place to gain control because
 	     many error conditions will end up here via longjmp().  */
 	  if (deprecated_command_loop_hook)
-	    deprecated_command_loop_hook ();
+	    deprecated_command_loop_hook();
 	  else
-	    deprecated_command_loop ();
-	  quit_command ((char *) 0, instream == stdin);
+	    deprecated_command_loop();
+	  quit_command((char *)0, instream == stdin);
 	}
     }
   /* NOTE: If the command_loop() returned normally, the loop would
@@ -1017,16 +1016,16 @@ extern int gdbtk_test (char *);
      change - SET_TOP_LEVEL() - has been eliminated. */
   while (1)
     {
-      catch_errors (captured_command_loop, 0, "", RETURN_MASK_ALL);
+      catch_errors(captured_command_loop, 0, "", RETURN_MASK_ALL);
     }
   /* No exit -- exit is through quit_command.  */
 }
 
 int
-gdb_main (struct captured_main_args *args)
+gdb_main(struct captured_main_args *args)
 {
   use_windows = args->use_windows;
-  catch_errors (captured_main, args, "", RETURN_MASK_ALL);
+  catch_errors(captured_main, args, "", RETURN_MASK_ALL);
   /* The only way to end up here is by an error (normal exit is
      handled by quit_force()), hence always return an error status.  */
   return 1;
@@ -1038,18 +1037,18 @@ gdb_main (struct captured_main_args *args)
    to print.  */
 
 static void
-print_gdb_help (struct ui_file *stream)
+print_gdb_help(struct ui_file *stream)
 {
-  fputs_unfiltered (_("\
+  fputs_unfiltered(_("\
 This is the GNU debugger.  Usage:\n\n\
     gdb [options] [executable-file [core-file or process-id]]\n\
     gdb [options] --args executable-file [inferior-arguments ...]\n\n\
 Options:\n\n\
 "), stream);
-  fputs_unfiltered (_("\
+  fputs_unfiltered(_("\
   --args             Arguments after executable-file are passed to inferior\n\
 "), stream);
-  fputs_unfiltered (_("\
+  fputs_unfiltered(_("\
   -b BAUDRATE        Set serial port baud rate used for remote debugging.\n\
   --batch            Exit after processing options.\n\
   --cd=DIR           Change current directory to DIR.\n\
@@ -1057,7 +1056,7 @@ Options:\n\n\
   --core=COREFILE    Analyze the core dump COREFILE.\n\
   --pid=PID          Attach to running process PID.\n\
 "), stream);
-  fputs_unfiltered (_("\
+  fputs_unfiltered(_("\
   --dbx              DBX compatibility mode.\n\
   --directory=DIR    Search for source files in DIR.\n\
   --epoch            Output information used by epoch emacs-GDB interface.\n\
@@ -1065,31 +1064,31 @@ Options:\n\n\
   --fullname         Output information used by emacs-GDB interface.\n\
   --help             Print this message.\n\
 "), stream);
-  fputs_unfiltered (_("\
+  fputs_unfiltered(_("\
   --interpreter=INTERP\n\
                      Select a specific interpreter / user interface\n\
 "), stream);
-  fputs_unfiltered (_("\
+  fputs_unfiltered(_("\
   -l TIMEOUT         Set timeout in seconds for remote debugging.\n\
   --mapped           Use mapped symbol files if supported on this system.\n\
   --nw		     Do not use a window interface.\n\
   --nx               Do not read "), stream);
-  fputs_unfiltered (gdbinit, stream);
-  fputs_unfiltered (_(" file.\n\
+  fputs_unfiltered(gdbinit, stream);
+  fputs_unfiltered(_(" file.\n\
   --quiet            Do not print version number on startup.\n\
   --readnow          Fully read symbol files on first access.\n\
 "), stream);
-  fputs_unfiltered (_("\
+  fputs_unfiltered(_("\
   --se=FILE          Use FILE as symbol file and executable file.\n\
   --symbols=SYMFILE  Read symbols from SYMFILE.\n\
   --tty=TTY          Use TTY for input/output by the program being debugged.\n\
 "), stream);
 #if defined(TUI)
-  fputs_unfiltered (_("\
+  fputs_unfiltered(_("\
   --tui              Use a terminal user interface.\n\
 "), stream);
 #endif /* TUI */
-  fputs_unfiltered (_("\
+  fputs_unfiltered(_("\
   --version          Print version information and then exit.\n\
   -w                 Use a window interface.\n\
   --write            Set writing into executable and core files.\n\
@@ -1098,7 +1097,7 @@ Options:\n\n\
   --arch=ARCH        Run the slice of a Universal file given by ARCH.\n\
   --osabi=OSABI      Set the osabi prior to loading any executables.\n\
 "), stream);
-  fputs_unfiltered (_("\n\
+  fputs_unfiltered(_("\n\
 For more information, type \"help\" from within GDB, or consult the\n\
 GDB manual (available as on-line info or a printed manual).\n\
 Report bugs to \"bug-gdb@gnu.org\".\
@@ -1106,17 +1105,15 @@ Report bugs to \"bug-gdb@gnu.org\".\
 }
 
 #if 0
-#include "cli/cli-cmds.h"
-#include "cli/cli-decode.h"
+# include "cli/cli-cmds.h"
+# include "cli/cli-decode.h"
 
 struct cmd_list_element *
-add_set_cmd (char *name,
-	     enum command_class class,
-	     var_types var_type,
-	     void *var,
-	     char *doc,
-	     struct cmd_list_element **list)
+add_set_cmd(char *name, enum command_class class, var_types var_type,
+	    void *var, char *doc, struct cmd_list_element **list)
 {
-  return deprecated_add_set_cmd (name, class, var_type, var, doc, list);
+  return deprecated_add_set_cmd(name, class, var_type, var, doc, list);
 }
 #endif /* 0 */
+
+/* EOF */

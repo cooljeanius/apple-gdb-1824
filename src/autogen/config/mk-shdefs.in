@@ -1,0 +1,127 @@
+#! @CONFIG_SHELL@
+# -*- Mode: shell-script -*-
+
+## mk-shdefs.in - extract the substitutions in config.status into
+##                environment variables.
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (C) 1992-2013 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+die() {
+    echo "$prog fatal error:  $*"
+    kill -TERM $progpid
+    exit 1
+} >&2
+
+init() {
+    prog=`basename $1 .sh`
+    progpid=$$
+
+    SED='@SED@'
+    AWK='@AWK@'
+    GREP='@GREP@'
+    EGREP='@EGREP@'
+    target=`basename $2`
+    builddir=`dirname $2`
+    builddir=`cd $builddir && pwd`
+    srcdir=`dirname $1`
+    srcdir=`cd $srcdir >/dev/null && pwd`
+
+    cd ${builddir} || die no builddir
+
+    # top_builddir may be relative to the build directory that corresponds
+    # to the source directory for this file.  Make it absolute
+    #
+    top_builddir=`cd @top_builddir@ >/dev/null && pwd`
+    top_srcdir=`
+        cd ${builddir} >/dev/null && cd @top_srcdir@ >/dev/null && pwd`
+
+    rm -f ${target}
+    exec 3> shdef-temp.in || die cannot create output
+    cd ..
+}
+
+mk_config() {
+    cat >&3 <<- _EOF_
+	prefix='@prefix@'
+	exec_prefix="@exec_prefix@"
+	PACKAGE_TARNAME='@PACKAGE_TARNAME@'
+	_EOF_
+
+    # Skip the stuff we force to be first
+    #
+    skip_list='top_srcdir|top_builddir|prefix|exec_prefix|PACKAGE_TARNAME'
+
+    # skip the autoconf/automake internal names
+    #
+    skip_list=${skip_list}"|a[mc]_.*|.*_TRUE|.*_FALSE|HAVE_.*|AM*"
+
+    # These must be in the correct order.  Ensure it and don't do 'em twice
+    #
+    eval_fmt='eval "%s=\\"@%s@\\""\n'
+    for v in datarootdir mandir localedir infodir docdir datadir \
+        libdir libexecdir sbindir bindir \
+        includedir localstatedir sharedstatedir sysconfdir oldincludedir
+    do  printf "${eval_fmt}" $v $v
+        skip_list=${skip_list}"|$v"
+    done >&3
+
+    for f in `${GREP} '^S\["' config.status`
+    do
+        v=`echo "$f" | ${SED}   's/".=.*//;s/[SD]\["//'`
+        x=`echo "$v" | ${EGREP} "^($skip_list)\$"`
+        test "X$x" = X || continue
+
+        case "$f" in
+        *'$('* ) : ;; # no make file only substitutions
+        *'missing --run '* ) : ;; # no bootstrap tools
+        S*\$* )  printf "${eval_fmt}" $v $v ;;
+        S*    )  echo   "$v='@$v@'" ;;
+        esac
+    done >&3
+
+    exec 3>&-
+}
+
+configure() {
+    cd config
+
+    ../config.status --file shdef-temp
+    {
+        cmd='`set -o | '${AWK}" '/^allexport/ {print \$2}'"\`
+        cat <<- _EOF_
+		#! `which echo` this-file-should-be-sourced,-not-executed
+		# -*- Mode: shell-script -*-
+
+		case "$cmd" in
+		on  ) cleara=: ;;
+		*   ) cleara='set +a' ; set -a ;;
+		esac
+
+		top_srcdir="$top_srcdir"
+		top_builddir="$top_builddir"
+		_EOF_
+
+        cat shdef-temp
+        echo 'eval $cleara'
+    } > ${target}
+
+    rm -f shdef-temp*
+}
+
+init $0 $1
+mk_config
+configure

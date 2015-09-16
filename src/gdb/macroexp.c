@@ -1,4 +1,4 @@
-/* C preprocessor macro expansion for GDB.
+/* macroexp.c: C preprocessor macro expansion for GDB.
    Copyright 2002 Free Software Foundation, Inc.
    Contributed by Red Hat, Inc.
 
@@ -44,8 +44,8 @@ struct macro_buffer
      null-terminated.  */
   char *text;
 
-  /* The number of characters in the string.  */
-  int len;
+  /* The number of characters in the string: */
+  size_t len;
 
   /* The number of characters allocated to the string.  If SHARED is
      non-zero, this is meaningless; in this case, we set it to zero so
@@ -58,7 +58,7 @@ struct macro_buffer
      some other block, and we shouldn't reallocate it.  */
   int shared;
 
-  /* For detecting token splicing. 
+  /* For detecting token splicing.
 
      This is the index in TEXT of the first character of the token
      that abuts the end of TEXT.  If TEXT contains no tokens, then we
@@ -68,7 +68,7 @@ struct macro_buffer
      know the nature of TEXT.  */
   int last_token;
 
-  /* If this buffer is holding the result from get_token, then this 
+  /* If this buffer is holding the result from get_token, then this
      is non-zero if it is an identifier token, zero otherwise.  */
   int is_identifier;
 };
@@ -129,18 +129,18 @@ cleanup_macro_buffer (void *untyped_buf)
 /* Resize the buffer B to be at least N bytes long.  Raise an error if
    B shouldn't be resized.  */
 static void
-resize_buffer (struct macro_buffer *b, int n)
+resize_buffer(struct macro_buffer *b, int n)
 {
-  /* We shouldn't be trying to resize shared strings.  */
-  gdb_assert (! b->shared);
-  
+  /* We should NOT be trying to resize shared strings.  */
+  gdb_assert(! b->shared);
+
   if (b->size == 0)
     b->size = n;
   else
     while (b->size <= n)
       b->size *= 2;
 
-  b->text = xrealloc (b->text, b->size);
+  b->text = (char *)xrealloc(b->text, b->size);
 }
 
 
@@ -318,7 +318,7 @@ get_pp_number (struct macro_buffer *tok, char *p, char *end)
 static int
 get_character_constant (struct macro_buffer *tok, char *p, char *end)
 {
-  /* ISO/IEC 9899:1999 (E)  Section 6.4.4.4  paragraph 1 
+  /* ISO/IEC 9899:1999 (E)  Section 6.4.4.4  paragraph 1
      But of course, what really matters is that we handle it the same
      way GDB's C/C++ lexer does.  So we call parse_escape in utils.c
      to handle escape sequences.  */
@@ -423,9 +423,9 @@ get_punctuator (struct macro_buffer *tok, char *p, char *end)
 
   /* ISO/IEC 9899:1999 (E)  Section 6.4.6  Paragraph 1  */
   static const char * const punctuators[] = {
-    "[", "]", "(", ")", "{", "}", ".", "->", 
+    "[", "]", "(", ")", "{", "}", ".", "->",
     "++", "--", "&", "*", "+", "-", "~", "!",
-    "/", "%", "<<", ">>", "<", ">", "<=", ">=", "==", "!=", 
+    "/", "%", "<<", ">>", "<", ">", "<=", ">=", "==", "!=",
     "^", "|", "&&", "||",
     "?", ":", ";", "...",
     "=", "*=", "/=", "%=", "+=", "-=", "<<=", ">>=", "&=", "^=", "|=",
@@ -477,7 +477,7 @@ get_token (struct macro_buffer *tok,
 
   /* From the ISO C standard, ISO/IEC 9899:1999 (E), section 6.4:
 
-     preprocessing-token: 
+     preprocessing-token:
          header-name
          identifier
          pp-number
@@ -514,7 +514,7 @@ get_token (struct macro_buffer *tok,
         src->len -= consumed;
         return 1;
       }
-    else 
+    else
       {
         /* We have found a "non-whitespace character that cannot be
            one of the above."  Make a token out of it.  */
@@ -559,7 +559,7 @@ append_tokens_without_splicing (struct macro_buffer *dest,
 
   gdb_assert (src->last_token != -1);
   gdb_assert (dest->last_token != -1);
-  
+
   /* First, just try appending the two, and call get_token to see if
      we got a splice.  */
   appendmem (dest, src->text, src->len);
@@ -624,7 +624,7 @@ append_tokens_without_splicing (struct macro_buffer *dest,
 /* Expanding macros!  */
 
 
-/* A singly-linked list of the names of the macros we are currently 
+/* A singly-linked list of the names of the macros we are currently
    expanding --- for detecting expansion loops.  */
 struct macro_name_list {
   const char *name;
@@ -688,35 +688,35 @@ currently_rescanning (struct macro_name_list *list, const char *name)
    following the invocation.  */
 
 static struct macro_buffer *
-gather_arguments (const char *name, struct macro_buffer *src, int *argc_p)
+gather_arguments(const char *name, struct macro_buffer *src, int *argc_p)
 {
   struct macro_buffer tok;
   int args_len, args_size;
   struct macro_buffer *args = NULL;
-  struct cleanup *back_to = make_cleanup (free_current_contents, &args);
+  struct cleanup *back_to = make_cleanup(free_current_contents, &args);
 
   /* Does SRC start with an opening paren token?  Read from a copy of
      SRC, so SRC itself is unaffected if we don't find an opening
      paren.  */
   {
     struct macro_buffer temp;
-    init_shared_buffer (&temp, src->text, src->len);
+    init_shared_buffer(&temp, src->text, src->len);
 
-    if (! get_token (&tok, &temp)
-        || tok.len != 1
-        || tok.text[0] != '(')
+    if (! get_token(&tok, &temp)
+        || (tok.len != 1)
+        || (tok.text[0] != '('))
       {
-        discard_cleanups (back_to);
+        discard_cleanups(back_to);
         return 0;
       }
   }
 
-  /* Consume SRC's opening paren.  */
-  get_token (&tok, src);
+  /* Consume SRC's opening paren: */
+  get_token(&tok, src);
 
   args_len = 0;
   args_size = 1;                /* small for initial testing */
-  args = (struct macro_buffer *) xmalloc (sizeof (*args) * args_size);
+  args = (struct macro_buffer *)xmalloc(sizeof(*args) * args_size);
 
   for (;;)
     {
@@ -727,12 +727,13 @@ gather_arguments (const char *name, struct macro_buffer *src, int *argc_p)
       if (args_len >= args_size)
         {
           args_size *= 2;
-          args = xrealloc (args, sizeof (*args) * args_size);
+          args = ((struct macro_buffer *)
+                  xrealloc(args, (sizeof(*args) * args_size)));
         }
 
-      /* Initialize the next argument.  */
+      /* Initialize the next argument: */
       arg = &args[args_len++];
-      set_token (arg, src->text, src->text);
+      set_token(arg, src->text, src->text);
 
       /* Gather the argument's tokens.  */
       depth = 0;
@@ -740,7 +741,7 @@ gather_arguments (const char *name, struct macro_buffer *src, int *argc_p)
         {
           if (! get_token (&tok, src))
             error (_("Malformed argument list for macro `%s'."), name);
-      
+
           /* Is tok an opening paren?  */
           if (tok.len == 1 && tok.text[0] == '(')
             depth++;
@@ -802,7 +803,7 @@ static void scan (struct macro_buffer *dest,
    definitions, and don't expand invocations of the macros listed in
    NO_LOOP.  */
 static void
-substitute_args (struct macro_buffer *dest, 
+substitute_args (struct macro_buffer *dest,
                  struct macro_definition *def,
                  int argc, struct macro_buffer *argv,
                  struct macro_name_list *no_loop,
@@ -823,29 +824,29 @@ substitute_args (struct macro_buffer *dest,
       struct macro_buffer tok;
       char *original_rl_start = replacement_list.text;
       int substituted = 0;
-      
-      /* Find the next token in the replacement list.  */
-      if (! get_token (&tok, &replacement_list))
+
+      /* Find the next token in the replacement list: */
+      if (! get_token(&tok, &replacement_list))
         break;
 
       /* Just for aesthetics.  If we skipped some whitespace, copy
          that to DEST.  */
       if (tok.text > original_rl_start)
         {
-          appendmem (dest, original_rl_start, tok.text - original_rl_start);
+          appendmem(dest, original_rl_start, tok.text - original_rl_start);
           dest->last_token = dest->len;
         }
 
       /* Is this token the stringification operator?  */
-      if (tok.len == 1
-          && tok.text[0] == '#')
-        error (_("Stringification is not implemented yet."));
+      if ((tok.len == 1)
+          && (tok.text[0] == '#'))
+        error(_("Stringification is not implemented yet."));
 
       /* Is this token the splicing operator?  */
-      if (tok.len == 2
-          && tok.text[0] == '#'
-          && tok.text[1] == '#')
-        error (_("Token splicing is not implemented yet."));
+      if ((tok.len == 2)
+          && (tok.text[0] == '#')
+          && (tok.text[1] == '#'))
+        error(_("Token splicing is not implemented yet."));
 
       /* Is this token an identifier?  */
       if (tok.is_identifier)
@@ -853,14 +854,14 @@ substitute_args (struct macro_buffer *dest,
           int i;
 
           /* Is it the magic varargs parameter?  */
-          if (tok.len == 11
-              && ! memcmp (tok.text, "__VA_ARGS__", 11))
-            error (_("Variable-arity macros not implemented yet."));
+          if ((tok.len == 11)
+              && ! memcmp(tok.text, "__VA_ARGS__", 11))
+            error(_("Variable-arity macros not implemented yet."));
 
           /* Is it one of the parameters?  */
           for (i = 0; i < def->argc; i++)
-            if (tok.len == strlen (def->argv[i])
-                && ! memcmp (tok.text, def->argv[i], tok.len))
+            if ((tok.len == strlen(def->argv[i]))
+                && ! memcmp(tok.text, def->argv[i], tok.len))
               {
                 struct macro_buffer arg_src;
 
@@ -869,8 +870,8 @@ substitute_args (struct macro_buffer *dest,
                    mutates its source, so we need to scan a new buffer
                    referring to the argument's text, not the argument
                    itself.  */
-                init_shared_buffer (&arg_src, argv[i].text, argv[i].len);
-                scan (dest, &arg_src, no_loop, lookup_func, lookup_baton);
+                init_shared_buffer(&arg_src, argv[i].text, argv[i].len);
+                scan(dest, &arg_src, no_loop, lookup_func, lookup_baton);
                 substituted = 1;
                 break;
               }
@@ -887,14 +888,14 @@ substitute_args (struct macro_buffer *dest,
    its expansion to DEST.  SRC is the input text following the ID
    token.  We are currently rescanning the expansions of the macros
    named in NO_LOOP; don't re-expand them.  Use LOOKUP_FUNC and
-   LOOKUP_BATON to find definitions for any nested macro references.  
+   LOOKUP_BATON to find definitions for any nested macro references.
 
    Return 1 if we decided to expand it, zero otherwise.  (If it's a
    function-like macro name that isn't followed by an argument list,
    we don't expand it.)  If we return zero, leave SRC unchanged.  */
 static int
 expand (const char *id,
-        struct macro_definition *def, 
+        struct macro_definition *def,
         struct macro_buffer *dest,
         struct macro_buffer *src,
         struct macro_name_list *no_loop,
@@ -1008,23 +1009,23 @@ maybe_expand (struct macro_buffer *dest,
               macro_lookup_ftype *lookup_func,
               void *lookup_baton)
 {
-  gdb_assert (src_first->shared);
-  gdb_assert (src_rest->shared);
-  gdb_assert (! dest->shared);
+  gdb_assert(src_first->shared);
+  gdb_assert(src_rest->shared);
+  gdb_assert(! dest->shared);
 
   /* Is this token an identifier?  */
   if (src_first->is_identifier)
     {
       /* Make a null-terminated copy of it, since that's what our
          lookup function expects.  */
-      char *id = xmalloc (src_first->len + 1);
-      struct cleanup *back_to = make_cleanup (xfree, id);
-      memcpy (id, src_first->text, src_first->len);
+      char *id = (char *)xmalloc(src_first->len + 1);
+      struct cleanup *back_to = make_cleanup(xfree, id);
+      memcpy(id, src_first->text, src_first->len);
       id[src_first->len] = 0;
-          
+
       /* If we're currently re-scanning the result of expanding
          this macro, don't expand it again.  */
-      if (! currently_rescanning (no_loop, id))
+      if (! currently_rescanning(no_loop, id))
         {
           /* Does this identifier have a macro definition in scope?  */
           struct macro_definition *def = lookup_func (id, lookup_baton);
@@ -1093,9 +1094,9 @@ scan (struct macro_buffer *dest,
 
 
 char *
-macro_expand (const char *source,
-              macro_lookup_ftype *lookup_func,
-              void *lookup_func_baton)
+macro_expand(const char *source,
+             macro_lookup_ftype *lookup_func,
+             void *lookup_func_baton)
 {
   struct macro_buffer src, dest;
   struct cleanup *back_to;
@@ -1115,19 +1116,17 @@ macro_expand (const char *source,
 }
 
 
-char *
-macro_expand_once (const char *source,
-                   macro_lookup_ftype *lookup_func,
-                   void *lookup_func_baton)
+char * ATTR_NORETURN
+macro_expand_once(const char *source, macro_lookup_ftype *lookup_func,
+                  void *lookup_func_baton)
 {
-  error (_("Expand-once not implemented yet."));
+  error(_("Expand-once not implemented yet."));
 }
 
 
 char *
-macro_expand_next (char **lexptr,
-                   macro_lookup_ftype *lookup_func,
-                   void *lookup_baton)
+macro_expand_next(char **lexptr, macro_lookup_ftype *lookup_func,
+                  void *lookup_baton)
 {
   struct macro_buffer src, dest, tok;
   struct cleanup *back_to;
@@ -1160,8 +1159,10 @@ macro_expand_next (char **lexptr,
     }
   else
     {
-      /* It wasn't a macro invocation.  */
-      do_cleanups (back_to);
+      /* It was NOT a macro invocation: */
+      do_cleanups(back_to);
       return 0;
     }
 }
+
+/* EOF */

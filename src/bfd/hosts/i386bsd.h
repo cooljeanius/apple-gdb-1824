@@ -1,9 +1,9 @@
-/* Intel 386 running any BSD Unix */
+/* i386bsd.h: Intel 386 running any BSD Unix */
 
 #include <machine/param.h>
 #include <machine/vmparam.h>
 
-/* Recent versions of FreeBSD don't define NBPG.  */
+/* Recent versions of FreeBSD do NOT define NBPG.  */
 #ifndef NBPG
 #ifdef PAGE_SIZE
 #define NBPG PAGE_SIZE
@@ -30,3 +30,5 @@
 #define TRAD_UNIX_CORE_FILE_FAILING_SIGNAL(core_bfd) \
   ((core_bfd)->tdata.trad_core_data->u.u_sig)
 #define u_comm u_kproc.kp_proc.p_comm
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* Implement a cached obstack.
+/* bcache.c: Implement a cached obstack.
    Written by Fred Fish <fnf@cygnus.com>
    Rewritten by Jim Blandy <jimb@cygnus.com>
 
@@ -71,7 +71,7 @@ struct bcache
 
   /* How many hash buckets we're using.  */
   unsigned int num_buckets;
-  
+
   /* Hash buckets.  This table is allocated using malloc, so when we
      grow the table we can return the old table to the system.  */
   struct bstring **bucket;
@@ -96,7 +96,7 @@ struct bcache
 };
 
 /* The old hash function was stolen from SDBM. This is what DB 3.0 uses now,
- * and is better than the old one. 
+ * and is better than the old one.
  */
 
 unsigned long
@@ -104,7 +104,7 @@ hash(const void *addr, int length)
 {
 		const unsigned char *k, *e;
 		unsigned long h;
-		
+
 		k = (const unsigned char *)addr;
 		e = k+length;
 		for (h=0; k< e;++k)
@@ -126,10 +126,10 @@ expand_hash_table (struct bcache *bcache)
 {
   /* A table of good hash table sizes.  Whenever we grow, we pick the
      next larger size from this table.  sizes[i] is close to 1 << (i+10),
-     so we roughly double the table size each time.  After we fall off 
+     so we roughly double the table size each time.  After we fall off
      the end of this table, we just double.  Don't laugh --- there have
      been executables sighted with a gigabyte of debug info.  */
-  static unsigned long sizes[] = { 
+  static unsigned long sizes[] = {
     1021, 2053, 4099, 8191, 16381, 32771,
     65537, 131071, 262144, 524287, 1048573, 2097143,
     4194301, 8388617, 16777213, 33554467, 67108859, 134217757,
@@ -195,29 +195,29 @@ expand_hash_table (struct bcache *bcache)
 
 /* The number of bytes needed to allocate a struct bstring whose data
    is N bytes long.  */
-#define BSTRING_SIZE(n) (offsetof (struct bstring, d.data) + (n))
+#define BSTRING_SIZE(n) (offsetof(struct bstring, d.data) + (n))
 
 /* Find a copy of the LENGTH bytes at ADDR in BCACHE.  If BCACHE has
    never seen those bytes before, add a copy of them to BCACHE.  In
    either case, return a pointer to BCACHE's copy of that string.  */
 static void *
-bcache_data (const void *addr, int length, struct bcache *bcache)
+bcache_data(const void *addr, int length, struct bcache *bcache)
 {
   unsigned long full_hash;
   unsigned short half_hash;
   int hash_index;
   struct bstring *s;
 
-  /* If our average chain length is too high, expand the hash table.  */
+  /* If our average chain length is too high, expand the hash table: */
   if (bcache->unique_count >= bcache->num_buckets * CHAIN_LENGTH_THRESHOLD)
-    expand_hash_table (bcache);
+    expand_hash_table(bcache);
 
   bcache->total_count++;
   bcache->total_size += length;
 
-  full_hash = hash (addr, length);
+  full_hash = hash(addr, length);
   half_hash = (full_hash >> 16);
-  hash_index = full_hash % bcache->num_buckets;
+  hash_index = (full_hash % bcache->num_buckets);
 
   /* Search the hash bucket for a string identical to the caller's.
      As a short-circuit first compare the upper part of each hash
@@ -226,113 +226,110 @@ bcache_data (const void *addr, int length, struct bcache *bcache)
     {
       if (s->half_hash == half_hash)
 	{
-	  if (s->length == length
-	      && ! memcmp (&s->d.data, addr, length))
+	  if ((s->length == length)
+	      && ! memcmp(&s->d.data, addr, length))
 	    return &s->d.data;
 	  else
 	    bcache->half_hash_miss_count++;
 	}
     }
 
-  /* The user's string isn't in the list.  Insert it after *ps.  */
+  /* The user's string is NOT in the list.  Insert it after *ps: */
   {
-    struct bstring *new
-      = obstack_alloc (&bcache->cache, BSTRING_SIZE (length));
-    memcpy (&new->d.data, addr, length);
-    new->length = length;
-    new->next = bcache->bucket[hash_index];
-    new->half_hash = half_hash;
-    bcache->bucket[hash_index] = new;
+    struct bstring *newbstr
+      = (struct bstring *)obstack_alloc(&bcache->cache,
+                                        BSTRING_SIZE(length));
+    memcpy(&newbstr->d.data, addr, length);
+    newbstr->length = length;
+    newbstr->next = bcache->bucket[hash_index];
+    newbstr->half_hash = half_hash;
+    bcache->bucket[hash_index] = newbstr;
 
     bcache->unique_count++;
     bcache->unique_size += length;
-    bcache->structure_size += BSTRING_SIZE (length);
+    bcache->structure_size += BSTRING_SIZE(length);
 
-    return &new->d.data;
+    return &newbstr->d.data;
   }
 }
 
 /* APPLE LOCAL begin bcache pool */
-/* Allocating and freeing bcaches.  */
-
+/* Allocating and freeing bcaches: */
 void
 bcache_specify_allocation_with_arg
-(struct bcache *b, void * (* alloc) (void *, size_t),
- void (* free) (void *, void *), void *arg)
+(struct bcache *b, void *(* alloc)(void *, size_t),
+ void (* free)(void *, void *), void *arg)
 {
-  obstack_specify_allocation_with_arg (&b->cache, 0, 0, alloc, free, arg);
+  obstack_specify_allocation_with_arg(&b->cache, 0, 0, alloc, free, arg);
 }
 
 void
 bcache_specify_allocation
-(struct bcache *b, void * (* alloc) (size_t),
- void (* free) (void *))
+(struct bcache *b, void *(* alloc)(size_t),
+ void (* free)(void *))
 {
-  obstack_specify_allocation (&b->cache, 0, 0, alloc, free);
+  obstack_specify_allocation(&b->cache, 0, 0, alloc, free);
 }
 /* APPLE LOCAL end bcache pool */
 
 void *
-deprecated_bcache (const void *addr, int length, struct bcache *bcache)
+deprecated_bcache(const void *addr, int length, struct bcache *bcache)
 {
-  return bcache_data (addr, length, bcache);
+  return bcache_data(addr, length, bcache);
 }
 
 const void *
-bcache (const void *addr, int length, struct bcache *bcache)
+bcache(const void *addr, int length, struct bcache *bcache)
 {
-  return bcache_data (addr, length, bcache);
+  return bcache_data(addr, length, bcache);
 }
 
-/* Allocating and freeing bcaches.  */
-
+/* Allocating and freeing bcaches: */
 struct bcache *
 /* APPLE LOCAL bcache pool */
-bcache_xmalloc (void *pool)
+bcache_xmalloc(void *pool)
 {
   /* Allocate the bcache pre-zeroed.  */
   /* APPLE LOCAL begin bcache pool */
-  struct bcache *b = (struct bcache *) xmcalloc (pool, 1, sizeof (struct bcache));
+  struct bcache *b = (struct bcache *)xmcalloc(pool, 1, sizeof(struct bcache));
   b->pool = pool;
-  obstack_specify_allocation_with_arg (&b->cache, 0, 0, xmmalloc, xmfree, pool);
+  obstack_specify_allocation_with_arg(&b->cache, 0, 0, xmmalloc, xmfree, pool);
   /* APPLE LOCAL end bcache pool */
   return b;
 }
 
-/* Free all the storage associated with BCACHE.  */
+/* Free all the storage associated with BCACHE: */
 void
-bcache_xfree (struct bcache *bcache)
+bcache_xfree(struct bcache *bcache)
 {
   if (bcache == NULL)
     return;
-  obstack_free (&bcache->cache, 0);
+  obstack_free(&bcache->cache, 0);
   /* APPLE LOCAL begin bcache pool */
-  xmfree (bcache->pool, bcache->bucket);
-  xmfree (bcache->pool, bcache);
+  xmfree(bcache->pool, bcache->bucket);
+  xmfree(bcache->pool, bcache);
   /* APPLE LOCAL end bcache pool */
 }
 
-
 
-/* Printing statistics.  */
-
+/* Printing statistics: */
 static int
-compare_ints (const void *ap, const void *bp)
+compare_ints(const void *ap, const void *bp)
 {
-  /* Because we know we're comparing two ints which are positive,
-     there's no danger of overflow here.  */
-  return * (int *) ap - * (int *) bp;
+  /* Because we know we are comparing two ints which are positive,
+   * there is no danger of overflow here: */
+  return (*(int *)ap - *(int *)bp);
 }
 
 
 static void
-print_percentage (int portion, int total)
+print_percentage(int portion, int total)
 {
   if (total == 0)
     /* i18n: Like "Percentage of duplicates, by count: (not applicable)" */
-    printf_filtered (_("(not applicable)\n"));
+    printf_filtered(_("(not applicable)\n"));
   else
-    printf_filtered ("%3d%%\n", (int) (portion * 100.0 / total));
+    printf_filtered("%3d%%\n", (int)(portion * 100.0f / total));
 }
 
 
@@ -341,7 +338,7 @@ print_percentage (int portion, int total)
    BCACHE holds.  Statistics are printed using `printf_filtered' and
    its ilk.  */
 void
-print_bcache_statistics (struct bcache *c, char *type)
+print_bcache_statistics(struct bcache *c, char *type)
 {
   int occupied_buckets;
   int max_chain_length;
@@ -353,9 +350,9 @@ print_bcache_statistics (struct bcache *c, char *type)
      lengths, and measure chain lengths.  */
   {
     unsigned int b;
-    int *chain_length = XCALLOC (c->num_buckets + 1, int);
-    int *entry_size = XCALLOC (c->unique_count + 1, int);
-    int stringi = 0;
+    int *chain_length = XCALLOC((c->num_buckets + 1), int);
+    int *entry_size = XCALLOC((c->unique_count + 1), int);
+    unsigned long stringi = 0UL;
 
     occupied_buckets = 0;
 
@@ -368,23 +365,23 @@ print_bcache_statistics (struct bcache *c, char *type)
 	if (s)
 	  {
 	    occupied_buckets++;
-	    
+
 	    while (s)
 	      {
-		gdb_assert (b < c->num_buckets);
+		gdb_assert(b < c->num_buckets);
 		chain_length[b]++;
-		gdb_assert (stringi < c->unique_count);
+		gdb_assert(stringi < c->unique_count);
 		entry_size[stringi++] = s->length;
 		s = s->next;
 	      }
 	  }
       }
 
-    /* To compute the median, we need the set of chain lengths sorted.  */
-    qsort (chain_length, c->num_buckets, sizeof (chain_length[0]),
-	   compare_ints);
-    qsort (entry_size, c->unique_count, sizeof (entry_size[0]),
-	   compare_ints);
+    /* To compute the median, we need the set of chain lengths sorted: */
+    qsort(chain_length, c->num_buckets, sizeof(chain_length[0]),
+	  compare_ints);
+    qsort(entry_size, c->unique_count, sizeof(entry_size[0]),
+	  compare_ints);
 
     if (c->num_buckets > 0)
       {
@@ -407,64 +404,66 @@ print_bcache_statistics (struct bcache *c, char *type)
 	median_entry_size = 0;
       }
 
-    xfree (chain_length);
-    xfree (entry_size);
+    xfree(chain_length);
+    xfree(entry_size);
   }
 
-  printf_filtered (_("  Cached '%s' statistics:\n"), type);
-  printf_filtered (_("    Total object count:  %ld\n"), c->total_count);
-  printf_filtered (_("    Unique object count: %lu\n"), c->unique_count);
-  printf_filtered (_("    Percentage of duplicates, by count: "));
-  print_percentage (c->total_count - c->unique_count, c->total_count);
-  printf_filtered ("\n");
+  printf_filtered(_("  Cached '%s' statistics:\n"), type);
+  printf_filtered(_("    Total object count:  %ld\n"), c->total_count);
+  printf_filtered(_("    Unique object count: %lu\n"), c->unique_count);
+  printf_filtered(_("    Percentage of duplicates, by count: "));
+  print_percentage(c->total_count - c->unique_count, c->total_count);
+  printf_filtered("\n");
 
-  printf_filtered (_("    Total object size:   %ld\n"), c->total_size);
-  printf_filtered (_("    Unique object size:  %ld\n"), c->unique_size);
-  printf_filtered (_("    Percentage of duplicates, by size:  "));
-  print_percentage (c->total_size - c->unique_size, c->total_size);
-  printf_filtered ("\n");
+  printf_filtered(_("    Total object size:   %ld\n"), c->total_size);
+  printf_filtered(_("    Unique object size:  %ld\n"), c->unique_size);
+  printf_filtered(_("    Percentage of duplicates, by size:  "));
+  print_percentage(c->total_size - c->unique_size, c->total_size);
+  printf_filtered("\n");
 
-  printf_filtered (_("    Max entry size:     %d\n"), max_entry_size);
-  printf_filtered (_("    Average entry size: "));
+  printf_filtered(_("    Max entry size:     %d\n"), max_entry_size);
+  printf_filtered(_("    Average entry size: "));
   if (c->unique_count > 0)
-    printf_filtered ("%ld\n", c->unique_size / c->unique_count);
+    printf_filtered("%ld\n", c->unique_size / c->unique_count);
   else
     /* i18n: "Average entry size: (not applicable)" */
-    printf_filtered (_("(not applicable)\n"));    
-  printf_filtered (_("    Median entry size:  %d\n"), median_entry_size);
-  printf_filtered ("\n");
+    printf_filtered(_("(not applicable)\n"));
+  printf_filtered(_("    Median entry size:  %d\n"), median_entry_size);
+  printf_filtered("\n");
 
-  printf_filtered (_("    Total memory used by bcache, including overhead: %ld\n"),
-		   c->structure_size);
-  printf_filtered (_("    Percentage memory overhead: "));
-  print_percentage (c->structure_size - c->unique_size, c->unique_size);
-  printf_filtered (_("    Net memory savings:         "));
-  print_percentage (c->total_size - c->structure_size, c->total_size);
-  printf_filtered ("\n");
+  printf_filtered(_("    Total memory used by bcache, including overhead: %ld\n"),
+		  c->structure_size);
+  printf_filtered(_("    Percentage memory overhead: "));
+  print_percentage(c->structure_size - c->unique_size, c->unique_size);
+  printf_filtered(_("    Net memory savings:         "));
+  print_percentage(c->total_size - c->structure_size, c->total_size);
+  printf_filtered("\n");
 
-  printf_filtered (_("    Hash table size:           %3d\n"), c->num_buckets);
-  printf_filtered (_("    Hash table expands:        %lu\n"),
-		   c->expand_count);
-  printf_filtered (_("    Hash table hashes:         %lu\n"),
-		   c->total_count + c->expand_hash_count);
-  printf_filtered (_("    Half hash misses:          %lu\n"),
-		   c->half_hash_miss_count);
-  printf_filtered (_("    Hash table population:     "));
-  print_percentage (occupied_buckets, c->num_buckets);
-  printf_filtered (_("    Median hash chain length:  %3d\n"),
-		   median_chain_length);
-  printf_filtered (_("    Average hash chain length: "));
+  printf_filtered(_("    Hash table size:           %3d\n"), c->num_buckets);
+  printf_filtered(_("    Hash table expands:        %lu\n"),
+		  c->expand_count);
+  printf_filtered(_("    Hash table hashes:         %lu\n"),
+		  c->total_count + c->expand_hash_count);
+  printf_filtered(_("    Half hash misses:          %lu\n"),
+		  c->half_hash_miss_count);
+  printf_filtered(_("    Hash table population:     "));
+  print_percentage(occupied_buckets, c->num_buckets);
+  printf_filtered(_("    Median hash chain length:  %3d\n"),
+		  median_chain_length);
+  printf_filtered(_("    Average hash chain length: "));
   if (c->num_buckets > 0)
-    printf_filtered ("%3lu\n", c->unique_count / c->num_buckets);
+    printf_filtered("%3lu\n", c->unique_count / c->num_buckets);
   else
     /* i18n: "Average hash chain length: (not applicable)" */
-    printf_filtered (_("(not applicable)\n"));
-  printf_filtered (_("    Maximum hash chain length: %3d\n"), max_chain_length);
-  printf_filtered ("\n");
+    printf_filtered(_("(not applicable)\n"));
+  printf_filtered(_("    Maximum hash chain length: %3d\n"), max_chain_length);
+  printf_filtered("\n");
 }
 
 int
-bcache_memory_used (struct bcache *bcache)
+bcache_memory_used(struct bcache *bcache)
 {
-  return obstack_memory_used (&bcache->cache);
+  return obstack_memory_used(&bcache->cache);
 }
+
+/* EOF */

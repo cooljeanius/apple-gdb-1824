@@ -1,6 +1,6 @@
-/* 
+/* devsw.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -22,7 +22,7 @@
 #ifndef __cplusplus
 typedef struct Packet Packet;
 typedef struct DevSWState DevSWState;
-#endif
+#endif /* !__cplusplus */
 
 /*
  * the basic structure used for passing packets around
@@ -56,7 +56,7 @@ struct DevSWState
 
 #ifdef __cplusplus
     extern "C" {
-#endif
+#endif /* __cplusplus */
 
 /*
  *  Function: DevSW_AllocatePacket
@@ -259,16 +259,16 @@ AdpErrs DevSW_Ioctl(const DeviceDescr *device, const int opcode, void *args);
  */
 bool DevSW_WriteFinished(const DeviceDescr *device);
 
-      
+
 /*
  * set filename and enable/disable logginf of ADP packets
  */
 void DevSW_SetLogfile(const char *filename);
 void DevSW_SetLogEnable(int logEnableFlag);
-      
+
 #ifdef __cplusplus
     }
-#endif
+#endif /* __cplusplus */
 
 #endif /* ndef angsd_devsw_h */
 

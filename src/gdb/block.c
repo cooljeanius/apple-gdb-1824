@@ -1,4 +1,4 @@
-/* Block-related functions for the GNU debugger, GDB.
+/* block.c: Block-related functions for the GNU debugger, GDB.
 
    Copyright 2003 Free Software Foundation, Inc.
 
@@ -35,15 +35,15 @@
 struct block_namespace_info
 {
   const char *scope;
-  struct using_direct *using;
+  struct using_direct *usingd;
 };
 
-static void block_initialize_namespace (struct block *block,
-					struct obstack *obstack);
+static void block_initialize_namespace(struct block *block,
+                                       struct obstack *obstack);
 
 /* APPLE LOCAL begin address ranges  */
-/* Return the highest address accounted for by BL's scope or one of 
-   BL's ranges.  
+/* Return the highest address accounted for by BL's scope or one of
+   BL's ranges.
    Are we guaranteed that the RANGE_END values increase?  i.e. can this
    be a simple returning of the last range entry's endaddr?  */
 
@@ -116,7 +116,7 @@ contained_in (const struct block *a, const struct block *b)
     }
   else
     {
-      /* Both block A and block B have non-contiguous address ranges.  
+      /* Both block A and block B have non-contiguous address ranges.
          A is contained in B if all of A's address ranges fit within at
          least one of B's address ranges.  */
 
@@ -132,8 +132,8 @@ contained_in (const struct block *a, const struct block *b)
               }
           if (fits == 0)
             {
-              /* One of A's ranges is is not contained within any B range */ 
-              return 0; 
+              /* One of A's ranges is is not contained within any B range */
+              return 0;
             }
 	}
       return 1;  /* All of A's ranges are contained within B's ranges */
@@ -155,6 +155,15 @@ block_function (const struct block *bl)
   return BLOCK_FUNCTION (bl);
 }
 
+/* FIXME: need to rename some struct fields that currently live in headers,
+ * and deal with all of the resulting fallout, before removing this: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* APPLE LOCAL begin address ranges  */
 /* Return a 1 if any of the address ranges for block BL begins with START
    and any of the address ranges for BL ends with END; return a 0 otherwise.  */
@@ -170,8 +179,8 @@ block_starts_and_ends (struct block *bl, CORE_ADDR start, CORE_ADDR end)
   else
     {
       int i;
-      for (i = 0; 
-           i < BLOCK_RANGES (bl)->nelts && !start_found && !end_found; 
+      for (i = 0;
+           i < BLOCK_RANGES (bl)->nelts && !start_found && !end_found;
            i++)
 	{
 	  if (BLOCK_RANGE_START (bl, i) == start)
@@ -181,7 +190,7 @@ block_starts_and_ends (struct block *bl, CORE_ADDR start, CORE_ADDR end)
 	}
       retval = start_found && end_found;
     }
-  
+
   return retval;
 }
 /* APPLE LOCAL end address ranges  */
@@ -289,18 +298,18 @@ blockvector_for_pc_sect (CORE_ADDR pc, struct bfd_section *section,
 
       /* This condition is a little tricky.
          Given a function like
-            func () { 
+            func () {
                { subblock}
                 // pc here
             }
 	 BOT may be pointing to "subblock" and so the BOT block
 	 start/end addrs are less than PC.  But we don't want to
 	 terminate the search in this case - we need to keep iterating
-         backwards to find "func"'s block.  
+         backwards to find "func"'s block.
          So I'm trying to restrict this to only quit searching if
          we're looking at a function's overall scope and both its
          highest/lowest addresses are lower than PC.  */
-      if (BLOCK_SUPERBLOCK (b) == static_block 
+      if (BLOCK_SUPERBLOCK (b) == static_block
           && BLOCK_LOWEST_PC (b) < pc && BLOCK_HIGHEST_PC (b) < pc)
 	/* APPLE LOCAL begin cache lookup values for improved performance  */
 	{
@@ -315,8 +324,8 @@ blockvector_for_pc_sect (CORE_ADDR pc, struct bfd_section *section,
 	{
 	  if (pindex)
 	    *pindex = bot;
-	  /* APPLE LOCAL begom cache lookup values for improved 
-	     performance  */	
+	  /* APPLE LOCAL begom cache lookup values for improved
+	     performance  */
 	  cached_blockvector_index = bot;
 	  cached_blockvector = bl;
 	  /* APPLE LOCAL end cache lookup values for improved performance  */
@@ -336,35 +345,35 @@ blockvector_for_pc_sect (CORE_ADDR pc, struct bfd_section *section,
    Backward compatibility, no section.  */
 
 struct blockvector *
-blockvector_for_pc (CORE_ADDR pc, int *pindex)
+blockvector_for_pc(CORE_ADDR pc, int *pindex)
 {
-  return blockvector_for_pc_sect (pc, find_pc_mapped_section (pc),
-				  pindex, NULL);
+  return blockvector_for_pc_sect(pc, find_pc_mapped_section(pc),
+				 pindex, NULL);
 }
 
 /* Return the innermost lexical block containing the specified pc value
    in the specified section, or 0 if there is none.  */
 
 struct block *
-block_for_pc_sect (CORE_ADDR pc, struct bfd_section *section)
+block_for_pc_sect(CORE_ADDR pc, struct bfd_section *section)
 {
   struct blockvector *bl;
   int index;
 
-  /* APPLE LOCAL begin cache lookup values for improved performance  */
-  if (pc == last_block_lookup_pc
-	   && pc == last_mapped_section_lookup_pc
-	   && section == cached_mapped_section
-	   && cached_block)
+  /* APPLE LOCAL begin cache lookup values for improved performance: */
+  if ((pc == last_block_lookup_pc)
+      && (pc == last_mapped_section_lookup_pc)
+      && (section == cached_mapped_section)
+      && cached_block)
     return cached_block;
 
   last_block_lookup_pc = pc;
 
-  bl = blockvector_for_pc_sect (pc, section, &index, NULL);
+  bl = blockvector_for_pc_sect(pc, section, &index, NULL);
   if (bl)
     {
-      cached_block = BLOCKVECTOR_BLOCK (bl, index);
-      return BLOCKVECTOR_BLOCK (bl, index);
+      cached_block = BLOCKVECTOR_BLOCK(bl, index);
+      return BLOCKVECTOR_BLOCK(bl, index);
     }
   cached_block = NULL;
   return 0;
@@ -375,9 +384,9 @@ block_for_pc_sect (CORE_ADDR pc, struct bfd_section *section)
    or 0 if there is none.  Backward compatibility, no section.  */
 
 struct block *
-block_for_pc (CORE_ADDR pc)
+block_for_pc(CORE_ADDR pc)
 {
-  return block_for_pc_sect (pc, find_pc_mapped_section (pc));
+  return block_for_pc_sect(pc, find_pc_mapped_section(pc));
 }
 
 /* Now come some functions designed to deal with C++ namespace issues.
@@ -390,11 +399,11 @@ block_for_pc (CORE_ADDR pc)
 const char *
 block_scope (const struct block *block)
 {
-  for (; block != NULL; block = BLOCK_SUPERBLOCK (block))
+  for (; block != NULL; block = BLOCK_SUPERBLOCK(block))
     {
-      if (BLOCK_NAMESPACE (block) != NULL
-	  && BLOCK_NAMESPACE (block)->scope != NULL)
-	return BLOCK_NAMESPACE (block)->scope;
+      if ((BLOCK_NAMESPACE(block) != NULL)
+	  && (BLOCK_NAMESPACE(block)->scope != NULL))
+	return BLOCK_NAMESPACE(block)->scope;
     }
 
   return "";
@@ -405,12 +414,12 @@ block_scope (const struct block *block)
    has to be allocated correctly.)  */
 
 void
-block_set_scope (struct block *block, const char *scope,
-		 struct obstack *obstack)
+block_set_scope(struct block *block, const char *scope,
+                struct obstack *obstack)
 {
-  block_initialize_namespace (block, obstack);
+  block_initialize_namespace(block, obstack);
 
-  BLOCK_NAMESPACE (block)->scope = scope;
+  BLOCK_NAMESPACE(block)->scope = scope;
 }
 
 /* This returns the first using directives associated to BLOCK, if
@@ -423,15 +432,15 @@ block_set_scope (struct block *block, const char *scope,
    this by some iterator functions.  */
 
 struct using_direct *
-block_using (const struct block *block)
+block_using(const struct block *block)
 {
-  const struct block *static_block = block_static_block (block);
+  const struct block *static_block = block_static_block(block);
 
-  if (static_block == NULL
-      || BLOCK_NAMESPACE (static_block) == NULL)
+  if ((static_block == NULL)
+      || (BLOCK_NAMESPACE(static_block) == NULL))
     return NULL;
   else
-    return BLOCK_NAMESPACE (static_block)->using;
+    return BLOCK_NAMESPACE(static_block)->usingd;
 }
 
 /* Set BLOCK's using member to USING; if needed, allocate memory via
@@ -439,27 +448,27 @@ block_using (const struct block *block)
    has to be allocated correctly.)  */
 
 void
-block_set_using (struct block *block,
-		 struct using_direct *using,
-		 struct obstack *obstack)
+block_set_using(struct block *block, struct using_direct *usingd,
+                struct obstack *obstack)
 {
-  block_initialize_namespace (block, obstack);
+  block_initialize_namespace(block, obstack);
 
-  BLOCK_NAMESPACE (block)->using = using;
+  BLOCK_NAMESPACE(block)->usingd = usingd;
 }
 
 /* If BLOCK_NAMESPACE (block) is NULL, allocate it via OBSTACK and
    ititialize its members to zero.  */
 
 static void
-block_initialize_namespace (struct block *block, struct obstack *obstack)
+block_initialize_namespace(struct block *block, struct obstack *obstack)
 {
-  if (BLOCK_NAMESPACE (block) == NULL)
+  if (BLOCK_NAMESPACE(block) == NULL)
     {
-      BLOCK_NAMESPACE (block)
-	= obstack_alloc (obstack, sizeof (struct block_namespace_info));
-      BLOCK_NAMESPACE (block)->scope = NULL;
-      BLOCK_NAMESPACE (block)->using = NULL;
+      BLOCK_NAMESPACE(block)
+	= (struct block_namespace_info *)obstack_alloc(obstack,
+                                                       sizeof(struct block_namespace_info));
+      BLOCK_NAMESPACE(block)->scope = NULL;
+      BLOCK_NAMESPACE(block)->usingd = NULL;
     }
 }
 
@@ -467,13 +476,13 @@ block_initialize_namespace (struct block *block, struct obstack *obstack)
    is NULL or if block is a global block.  */
 
 const struct block *
-block_static_block (const struct block *block)
+block_static_block(const struct block *block)
 {
-  if (block == NULL || BLOCK_SUPERBLOCK (block) == NULL)
+  if ((block == NULL) || (BLOCK_SUPERBLOCK(block) == NULL))
     return NULL;
 
-  while (BLOCK_SUPERBLOCK (BLOCK_SUPERBLOCK (block)) != NULL)
-    block = BLOCK_SUPERBLOCK (block);
+  while (BLOCK_SUPERBLOCK(BLOCK_SUPERBLOCK(block)) != NULL)
+    block = BLOCK_SUPERBLOCK(block);
 
   return block;
 }
@@ -482,13 +491,13 @@ block_static_block (const struct block *block)
    is NULL.  */
 
 const struct block *
-block_global_block (const struct block *block)
+block_global_block(const struct block *block)
 {
   if (block == NULL)
     return NULL;
 
-  while (BLOCK_SUPERBLOCK (block) != NULL)
-    block = BLOCK_SUPERBLOCK (block);
+  while (BLOCK_SUPERBLOCK(block) != NULL)
+    block = BLOCK_SUPERBLOCK(block);
 
   return block;
 }
@@ -503,20 +512,30 @@ block_global_block (const struct block *block)
    dict_create_linear (obstack, NULL).  */
 
 struct block *
-allocate_block (struct obstack *obstack)
+allocate_block(struct obstack *obstack)
 {
-  struct block *bl = obstack_alloc (obstack, sizeof (struct block));
+  struct block *bl = (struct block *)obstack_alloc(obstack,
+                                                   sizeof(struct block));
 
-  BLOCK_START (bl) = 0;
-  BLOCK_END (bl) = 0;
-  BLOCK_FUNCTION (bl) = NULL;
-  BLOCK_SUPERBLOCK (bl) = NULL;
-  BLOCK_DICT (bl) = NULL;
-  BLOCK_NAMESPACE (bl) = NULL;
-  BLOCK_GCC_COMPILED (bl) = 0;
+  BLOCK_START(bl) = 0;
+  BLOCK_END(bl) = 0;
+  BLOCK_FUNCTION(bl) = NULL;
+  BLOCK_SUPERBLOCK(bl) = NULL;
+  BLOCK_DICT(bl) = NULL;
+  BLOCK_NAMESPACE(bl) = NULL;
+  BLOCK_GCC_COMPILED(bl) = 0;
   /* APPLE LOCAL begin address ranges  */
-  BLOCK_RANGES (bl) = NULL;
+  BLOCK_RANGES(bl) = NULL;
   /* APPLE LOCAL end address ranges  */
 
   return bl;
 }
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
+/* EOF */

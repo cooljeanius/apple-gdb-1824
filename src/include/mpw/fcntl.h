@@ -82,15 +82,29 @@ typedef struct SelectionRecord SelectionRecord;
 /*
  * Mode values accessible to open()
  */
-#define O_RDONLY		 0 		/* Bits 0 and 1 are used internally */
-#define O_WRONLY		 1 		/* Values 0..2 are historical */
-#define O_RDWR 			 2		/* NOTE: it goes 0, 1, 2, *!* 8, 16, 32, ... */
-#define O_APPEND	(1<< 3)		/* append (writes guaranteed at the end) */
+#ifndef O_RDONLY
+# define O_RDONLY		 0 		/* Bits 0 and 1 are used internally */
+#endif /* !O_RDONLY */
+#ifndef O_WRONLY
+# define O_WRONLY		 1 		/* Values 0..2 are historical */
+#endif /* !O_WRONLY */
+#ifndef O_RDWR
+# define O_RDWR 		 2		/* NOTE: it goes 0, 1, 2, *!* 8, 16, 32, ... */
+#endif /* !O_RDWR */
+#ifndef O_APPEND
+# define O_APPEND	(1<< 3)		/* append (writes guaranteed at the end) */
+#endif /* !O_APPEND */
 #define O_RSRC 		(1<< 4)		/* Open the resource fork */
 #define O_ALIAS		(1<< 5)		/* Open alias file */
-#define O_CREAT		(1<< 8)		/* Open with file create */
-#define O_TRUNC		(1<< 9)		/* Open with truncation */
-#define O_EXCL 		(1<<10) 	/* w/ O_CREAT:  Exclusive "create-only" */
+#ifndef O_CREAT
+# define O_CREAT	(1<< 8)		/* Open with file create */
+#endif /* !O_CREAT */
+#ifndef O_TRUNC
+# define O_TRUNC	(1<< 9)		/* Open with truncation */
+#endif /* !O_TRUNC */
+#ifndef O_EXCL
+# define O_EXCL 	(1<<10) 	/* w/ O_CREAT:  Exclusive "create-only" */
+#endif /* !O_EXCL */
 #define O_BINARY	(1<<11) 	/* Open as a binary stream */
 #define O_NRESOLVE	(1<<14)		/* Do NOT resolve any aliases */
 
@@ -99,18 +113,21 @@ extern "C" {
 #endif /* __cplusplus */
 
 /*
- *		function prototypes
+ * function prototypes:
  */
 int  close(int);
-int  creat(const char*);
-int	 dup(int filedes);		/* OBSOLETE: fcntl(filedes, F_DUPFD, 0) is preferred */
+int	 dup(int filedes); /* OBSOLETE: fcntl(filedes, F_DUPFD, 0) is preferred */
 int	 faccess(char*, unsigned int, long*);
+int  open(const char*, int, ...);
+
+#ifndef _SYS_FCNTL_H_
+int  creat(const char*);
 int  fcntl(int, unsigned int, int);
 long lseek(int, long, int);
-int  open(const char*, int, ...);
 int  read(int, char*, unsigned);
 int  unlink(char*);
 int  write(int, const char*, unsigned);
+#endif /* !_SYS_FCNTL_H_ */
 
 #ifdef __cplusplus
 }
@@ -122,3 +139,5 @@ int  write(int, const char*, unsigned);
 #define F_DUPFD 0	   /* Duplicate files (file descriptor) */
 
 #endif /* !__FCNTL__ */
+
+/* EOF */

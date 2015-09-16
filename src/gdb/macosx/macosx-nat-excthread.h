@@ -1,3 +1,7 @@
+/*
+ * macosx-nat-excthread.h
+ */
+
 #ifndef __GDB_MACOSX_NAT_EXCTHREAD_H__
 #define __GDB_MACOSX_NAT_EXCTHREAD_H__
 
@@ -10,9 +14,9 @@
 #include <sys/wait.h>
 
 #ifndef HAVE_64_BIT_MACH_EXCEPTIONS
-#define mach_exception_data_t exception_data_t
-#define mach_exception_data_type_t exception_data_type_t
-#endif
+# define mach_exception_data_t exception_data_t
+# define mach_exception_data_type_t exception_data_type_t
+#endif /* !HAVE_64_BIT_MACH_EXCEPTIONS */
 
 struct macosx_exception_info
 {
@@ -35,14 +39,16 @@ struct macosx_exception_thread_status
   int error_transmit_fd; /* The exception thread uses the to signal an error */
   int error_receive_fd;  /* to the main thread.  */
 
-  // The exception port for the inferior process
-  // gdb has a combined send and a receive right for this port
-  mach_port_t inferior_exception_port; // receive-right mach port
+  /* The exception port for the inferior process
+   * gdb has a combined send and a receive right for this port
+   */
+  mach_port_t inferior_exception_port; /* receive-right mach port */
 
-  // The Mach port returned by task_for_pid() 
-  // aka the inferior's self port aka the inferio's kernel port
-  // the kernel has the receive right of this port; 
-  // gdb has the send right
+  /* The Mach port returned by task_for_pid() 
+   * aka the inferior's self port aka the inferior's kernel port
+   * the kernel has the receive right of this port; 
+   * gdb has the send right
+   */
   task_t task;
 
   macosx_exception_info saved_exceptions;
@@ -76,3 +82,5 @@ void macosx_exception_get_write_lock (macosx_exception_thread_status *s);
 void macosx_exception_release_write_lock (macosx_exception_thread_status *s);
 
 #endif /* __GDB_MACOSX_NAT_EXCTHREAD_H__ */
+
+/* EOF */

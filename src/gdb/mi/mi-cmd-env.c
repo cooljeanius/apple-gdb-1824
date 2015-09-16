@@ -1,4 +1,4 @@
-/* MI Command Set - environment commands.
+/* mi-cmd-env.c: MI Command Set - environment commands.
 
    Copyright 2002, 2003, 2004 Free Software Foundation, Inc.
 
@@ -37,8 +37,8 @@
 #include "gdb_string.h"
 #include "gdb_stat.h"
 
-static void env_mod_path (char *dirname, char **which_path);
-extern void _initialize_mi_cmd_env (void);
+static void env_mod_path(char *dirname, char **which_path);
+extern void _initialize_mi_cmd_env(void);
 
 static const char path_var_name[] = "PATH";
 static char *orig_path = NULL;
@@ -71,13 +71,13 @@ mi_cmd_env_pwd (char *command, char **argv, int argc)
 {
   if (argc > 0)
     error (_("mi_cmd_env_pwd: No arguments required"));
-          
+
   if (mi_version (uiout) < 2)
     {
       env_execute_cli_command ("pwd", NULL);
       return MI_CMD_DONE;
     }
-     
+
   /* Otherwise the mi level is 2 or higher.  */
 
   getcwd (gdb_dirbuf, sizeof (gdb_dirbuf));
@@ -92,7 +92,7 @@ mi_cmd_env_cd (char *command, char **argv, int argc)
 {
   if (argc == 0 || argc > 1)
     error (_("mi_cmd_env_cd: Usage DIRECTORY"));
-          
+
   env_execute_cli_command ("cd", argv[0]);
 
   return MI_CMD_DONE;
@@ -104,7 +104,7 @@ env_mod_path (char *dirname, char **which_path)
   if (dirname == 0 || dirname[0] == '\0')
     return;
 
-  /* Call add_path with last arg 0 to indicate not to parse for 
+  /* Call add_path with last arg 0 to indicate not to parse for
      separator characters.  */
   add_path (dirname, which_path, 0);
 }
@@ -125,16 +125,16 @@ mi_cmd_env_path (char *command, char **argv, int argc)
     };
   static struct mi_opt opts[] =
   {
-    {"r", RESET_OPT, 0},
-    0
+    { "r", RESET_OPT, 0 },
+    { NULL, 0, 0 }
   };
 
-  dont_repeat ();
+  dont_repeat();
 
-  if (mi_version (uiout) < 2)
+  if (mi_version(uiout) < 2)
     {
-      for (i = argc - 1; i >= 0; --i)
-	env_execute_cli_command ("path", argv[i]);
+      for (i = (argc - 1); i >= 0; --i)
+	env_execute_cli_command("path", argv[i]);
       return MI_CMD_DONE;
     }
 
@@ -197,13 +197,13 @@ mi_cmd_env_dir (char *command, char **argv, int argc)
     };
   static struct mi_opt opts[] =
   {
-    {"r", RESET_OPT, 0},
-    0
+    { "r", RESET_OPT, 0 },
+    { NULL, 0, 0 }
   };
 
-  dont_repeat ();
+  dont_repeat();
 
-  if (mi_version (uiout) < 2)
+  if (mi_version(uiout) < 2)
     {
       for (i = argc - 1; i >= 0; --i)
 	env_execute_cli_command ("dir", argv[i]);
@@ -258,7 +258,7 @@ enum mi_cmd_result
 mi_cmd_inferior_tty_show (char *command, char **argv, int argc)
 {
   const char *inferior_io_terminal = get_inferior_io_terminal ();
-  
+
   if ( !mi_valid_noargs ("mi_cmd_inferior_tty_show", argc, argv))
     error (_("mi_cmd_inferior_tty_show: Usage: No args"));
 
@@ -268,16 +268,18 @@ mi_cmd_inferior_tty_show (char *command, char **argv, int argc)
   return MI_CMD_DONE;
 }
 
-void 
-_initialize_mi_cmd_env (void)
+void
+_initialize_mi_cmd_env(void)
 {
   char *env;
 
-  /* We want original execution path to reset to, if desired later.  */
-  env = get_in_environ (inferior_environ, path_var_name);
+  /* We want original execution path to reset to, if desired later: */
+  env = get_in_environ(inferior_environ, path_var_name);
 
-  /* Can be null if path is not set.  */
+  /* Can be null if path is not set: */
   if (!env)
     env = "";
-  orig_path = xstrdup (env);
+  orig_path = xstrdup(env);
 }
+
+/* EOF */

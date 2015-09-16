@@ -1,0 +1,160 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# define.test --- test evalstack functionality
+#
+# Time-stamp:        "2010-06-26 16:06:29 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # TEMPLATE LIBRARY FILE # # # # # #
+
+echo creating $testname.tlib
+cat > $testname.tlib <<'_EOF_'
+[+ AutoGen5 Template Library +]
+[+
+
+# * * * * * * * * * * * *
+
+      VISUAL SEPARATION
++][+
+
+DEFINE first_macro
++][+(for-index)+] Argument list:
+	[+
+  FOR arg "\n\t"
+    +]arg[ [+(for-index)+] ] = [+ arg +][+
+  ENDFOR +][+
+ENDDEF +][+
+
+# * * * * * * * * * * * *
+
+      VISUAL SEPARATION
++][+
+
+DEFINE last_macro
+  +]This is the last (number [+(for-index)+]) macro.[+
+ENDDEF +]
+_EOF_
+
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating $testname.tpl
+cat > $testname.tpl <<'_EOF_'
+[= AutoGen5 Template test =]
+[=
+
+DEFINE nest     =][=
+  IF (exist? "name") =]
+level [=level=] iteration [=(for-index)=] Nested Name:  [=name=][=
+  ENDIF         =][=
+
+  FOR .nesting  =][=
+    nest        =][=
+  ENDFOR        =][=
+
+ENDDEF nest     =][=
+
+FOR value
+
+=][=
+  IF (or (first-for?) (last-for?)) =][=
+    INVOKE (string-append (get "value") "_macro")
+       arg = one  arg = "the second arg = the second"
+       arg = (shell "date +'%A, %D'") arg = 'done.' =][=
+  ELSE =]
+
+     non first/last value: [=value=] = [= (for-index) =]
+[=ENDIF         =][=
+ENDFOR          =]
+[=invoke nest   =]
+Done.
+_EOF_
+
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo creating $testname.def
+cat > $testname.def <<_EOF_
+autogen definitions $testname;
+
+value = first;
+value[2] = secondary;
+value[4] = tertiary;
+value[6] = last;
+
+level = 0;
+nesting[1] = {
+  level = 1;
+  name = primary;
+  nesting[1] = {
+    level = 2;
+    name = secondary;
+  }, {
+    level = 2;
+    /* no name defined - default to primary level */
+    nesting[1] = {
+      level = 3;
+      name = tertiary;
+    };
+  };
+};
+_EOF_
+
+# this is the output we should expect to see
+cat > $testname.samp <<_EOF_
+0 Argument list:
+	arg[ 0 ] = one
+	arg[ 1 ] = the second arg = the second
+	arg[ 2 ] = `date +'%A, %D'`
+	arg[ 3 ] = done.
+
+     non first/last value: secondary = 2
+
+
+     non first/last value: tertiary = 4
+This is the last (number 6) macro.
+
+level 1 iteration 1 Nested Name:  primary
+level 2 iteration 1 Nested Name:  secondary
+level 2 iteration 2 Nested Name:  primary
+level 3 iteration 1 Nested Name:  tertiary
+Done.
+_EOF_
+
+run_ag x --lib=$testname.tlib $testname.def || \
+  failure "autogen failed"
+set -x
+cmp -s $testname.test $testname.test || \
+  failure "`diff $testname.samp $testname.test`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of define.test

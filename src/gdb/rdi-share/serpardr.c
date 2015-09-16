@@ -1,6 +1,6 @@
-/* 
+/*
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -40,13 +40,13 @@
 #    undef _TERMIOS_INCLUDED
 #  else
 #    include <termios.h>
-#  endif
+#  endif /* __hpux */
 #  include "unixcomm.h"
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
 #ifndef UNUSED
 #  define UNUSED(x) (x = x)     /* Silence compiler warnings */
-#endif
+#endif /* !UNUSED */
 
 #define MAXREADSIZE     512
 #define MAXWRITESIZE    512
@@ -84,7 +84,7 @@ static unsigned int baud_options[] =
 {
 #ifdef __hpux
     115200, 57600,
-#endif
+#endif /* __hpux */
     38400, 19200, 9600
 };
 
@@ -174,7 +174,7 @@ static void process_baud_rate(unsigned int target_baud_rate)
                {
 #ifdef DEBUG
                    printf("user selected default\n");
-#endif
+#endif /* DEBUG */
                }
                else
                {
@@ -184,7 +184,7 @@ static void process_baud_rate(unsigned int target_baud_rate)
                    for (j = 0; j < user_list->num_options; ++j)
                       printf("%u ", user_list->option[j]);
                    printf("\n");
-#endif
+#endif /* DEBUG */
                }
 
                break;   /* out of i loop */
@@ -193,12 +193,12 @@ static void process_baud_rate(unsigned int target_baud_rate)
 #ifdef DEBUG
         if (i >= full_list->num_options)
            printf("couldn't match baud rate %u\n", target_baud_rate);
-#endif
+#endif /* DEBUG */
     }
 #ifdef DEBUG
     else
        printf("failed to find lists\n");
-#endif
+#endif /* DEBUG */
 }
 
 static int SerparOpen(const char *name, const char *arg)
@@ -208,17 +208,18 @@ static int SerparOpen(const char *name, const char *arg)
 
 #ifdef DEBUG
     printf("SerparOpen: name %s arg %s\n", name, arg ? arg : "<NULL>");
-#endif
+#endif /* DEBUG */
 
 #ifdef COMPILING_ON_WINDOWS
     if (IsOpenSerial() || IsOpenParallel()) return -1;
 #else
     if (Unix_IsSerialInUse() || Unix_IsParallelInUse()) return -1;
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
 #ifdef COMPILING_ON_WINDOWS
-    if (SerparMatch(name, arg) == -1)
+    if (SerparMatch(name, arg) == -1) {
         return -1;
+	}
 #else
     Unix_IsValidParallelDevice(name,&sername,&parname);
 # ifdef DEBUG
@@ -226,9 +227,9 @@ static int SerparOpen(const char *name, const char *arg)
            name==0 ? "NULL" : name,
            sername==0 ? "NULL" : sername,
            parname==0 ? "NULL" : parname);
-# endif
+# endif /* DEBUG */
     if (sername==NULL || parname==NULL) return -1;
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
     user_options_set = FALSE;
 
@@ -243,13 +244,13 @@ static int SerparOpen(const char *name, const char *arg)
         {
 #ifdef DEBUG
             printf("user selected baud rate %u\n", target_baud_rate);
-#endif
+#endif /* DEBUG */
             process_baud_rate(target_baud_rate);
         }
 #ifdef DEBUG
         else
             printf("could not understand baud rate %s\n", arg);
-#endif
+#endif /* DEBUG */
     }
 
 #ifdef COMPILING_ON_WINDOWS
@@ -274,13 +275,13 @@ static int SerparOpen(const char *name, const char *arg)
 #else
     Unix_OpenParallel(parname);
     Unix_OpenSerial(sername);
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
     serpar_reset();
 
 #if defined(__unix) || defined(__CYGWIN__)
     Unix_ioctlNonBlocking();
-#endif
+#endif /* __unix || __CYGWIN__ */
 
     Angel_RxEngineInit(&config, &rxstate);
 
@@ -317,7 +318,7 @@ static int SerparMatch(const char *portstring, const char *arg)
     if (sername==NULL || parname==NULL) return -1;
     return 0;
 }
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
 static void SerparClose(void)
 {
@@ -327,7 +328,7 @@ static void SerparClose(void)
 #else
     Unix_CloseParallel();
     Unix_CloseSerial();
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 }
 
 static int SerparRead(DriverCall *dc, bool block)
@@ -362,34 +363,32 @@ static int SerparRead(DriverCall *dc, bool block)
 #else
     nread = Unix_ReadSerial(readbuf+rbindex, MAXREADSIZE-rbindex, block);
     read_errno = errno;
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
-    if ((nread > 0) || (rbindex > 0))
-    {
+    if ((nread > 0) || (rbindex > 0)) {
 #ifdef DO_TRACE
         printf("[%d@%d] ", nread, rbindex);
-#endif
+#endif /* DO_TRACE */
 
-        if (nread > 0)
-            rbindex = rbindex + nread;
+	if (nread > 0) {
+            rbindex = (rbindex + nread);
+	}
 
-        do
-        {
-            restatus = Angel_RxEngine(readbuf[c], &(dc->dc_packet), &rxstate);
-
+        do {
+            restatus = Angel_RxEngine((unsigned char)readbuf[c],
+				      &(dc->dc_packet), &rxstate);
 #ifdef DO_TRACE
             printf("<%02X ",readbuf[c]);
-#endif
+#endif /* DO_TRACE */
             c++;
-        } while (c < rbindex &&
+        } while ((c < rbindex) &&
                  ((restatus == RS_IN_PKT) || (restatus == RS_WAIT_PKT)));
 
 #ifdef DO_TRACE
         printf("\n");
-#endif
+#endif /* DO_TRACE */
 
-        switch(restatus)
-        {
+        switch(restatus) {
           case RS_GOOD_PKT:
               ret_code = 1;
               /* fall through to: */
@@ -398,15 +397,17 @@ static int SerparRead(DriverCall *dc, bool block)
               /*
                * We now need to shuffle any left over data down to the
                * beginning of our private buffer ready to be used
-               *for the next packet
+               * for the next packet
                */
 #ifdef DO_TRACE
               printf("SerparRead() processed %d, moving down %d\n",
-                     c, rbindex - c);
-#endif
+                     c, (rbindex - c));
+#endif /* DO_TRACE */
 
-              if (c != rbindex)
-                  memmove((char *) readbuf, (char *) (readbuf + c), rbindex - c);
+	      if (c != rbindex) {
+                  memmove((char *)readbuf, (char *)(readbuf + c),
+			  (size_t)(rbindex - c));
+	      }
 
               rbindex -= c;
 
@@ -421,7 +422,7 @@ static int SerparRead(DriverCall *dc, bool block)
           default:
 #ifdef DEBUG
               printf("Bad re_status in SerparRead()\n");
-#endif
+#endif /* DEBUG */
               break;
         }
     }
@@ -434,7 +435,7 @@ static int SerparRead(DriverCall *dc, bool block)
 #ifdef DEBUG
     if ((nread < 0) && (read_errno != ERRNO_FOR_BLOCKED_IO))
         perror("read() error in SerparRead()");
-#endif
+#endif /* DEBUG */
 
     return ret_code;
 }
@@ -506,7 +507,7 @@ static int SerparWrite(DriverCall *dc)
         if (i % 16)
             putc('\n', stdout);
     }
-#endif
+#endif /* DO_TRACE */
 
     /*
      * the data are ready, all we need now is to send them out
@@ -521,48 +522,47 @@ static int SerparWrite(DriverCall *dc)
       progressInfo.nWritten += nwritten;
       (*pfnProgressCallback)(&progressInfo);
     }
-  }
-  else
-  {
+  } else {
       MessageBox(GetFocus(), "Write error\n", "Angel", MB_OK | MB_ICONSTOP);
-      return -1;   /* SJ - This really needs to return a value, which is picked up in */
-                   /*      DevSW_Read as meaning stop debugger but don't kill. */
+      return -1;   /* SJ - This really needs to return a value, which is picked
+		    *      up in DevSW_Read() as meaning,
+		    *      "Stop the debugger, but do NOT kill". */
   }
 #else
-    nwritten = Unix_WriteParallel(txstate.writebuf, txstate.index);
-#endif
+    nwritten = Unix_WriteParallel(txstate.writebuf, (int)txstate.index);
+#endif /* COMPILING_ON_WINDOWS */
 
-    if (nwritten < 0) nwritten = 0;
+    if (nwritten < 0) {
+      nwritten = 0;
+    }
 
 #ifdef DO_TRACE
     printf("SerparWrite: wrote %d out of %d bytes\n",
            nwritten, txstate.index);
-#endif
+#endif /* DO_TRACE */
 
     /*
      * has the whole packet gone?
      */
-    if (nwritten == (int)txstate.index &&
-        (status == TS_DONE_PKT || status == TS_IDLE))
+    if ((nwritten == (int)txstate.index) &&
+        ((status == TS_DONE_PKT) || (status == TS_IDLE))) {
         /*
          * yes it has
          */
         return 1;
-    else
-    {
+    } else {
         /*
          * if some data are left, shuffle them
          * to the start of the buffer
          */
-        if (nwritten != (int)txstate.index && nwritten != 0)
-        {
+        if ((nwritten != (int)txstate.index) && (nwritten != 0)) {
             txstate.index -= nwritten;
-            (void)memmove((char *) txstate.writebuf,
-                          (char *) (txstate.writebuf + nwritten),
-                          txstate.index);
-        }
-        else if (nwritten == (int)txstate.index)
+            (void)memmove((char *)txstate.writebuf,
+                          (char *)(txstate.writebuf + nwritten),
+                          (size_t)txstate.index);
+        } else if (nwritten == (int)txstate.index) {
             txstate.index = 0;
+	}
 
         return 0;
     }
@@ -576,7 +576,7 @@ static int serpar_reset(void)
 #else
     Unix_ResetParallel();
     Unix_ResetSerial();
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
     return serpar_set_params(&serpar_defaults);
 }
@@ -591,12 +591,12 @@ static int find_baud_rate(unsigned int *speed)
       {
 #if defined(__hpux)
           {115200, _B115200}, {57600, _B57600},
-#endif
+#endif /* __hpux */
 #ifdef COMPILING_ON_WINDOWS
         {38400, CBR_38400}, {19200, CBR_19200}, {9600, CBR_9600}, {0, 0}
 #else
         {38400, B38400}, {19200, B19200}, {9600, B9600}, {0, 0}
-#endif
+#endif /* COMPILING_ON_WINDOWS */
     };
     unsigned int i;
 
@@ -618,13 +618,13 @@ static int serpar_set_params(const ParameterConfig *config)
 
 #ifdef DEBUG
     printf("serpar_set_params\n");
-#endif
+#endif /* DEBUG */
 
     if (!Angel_FindParam(AP_BAUD_RATE, config, &speed))
     {
 #ifdef DEBUG
         printf("speed not found in config\n");
-#endif
+#endif /* DEBUG */
         return DE_OKAY;
     }
 
@@ -633,19 +633,19 @@ static int serpar_set_params(const ParameterConfig *config)
     {
 #ifdef DEBUG
         printf("speed not valid: %u\n", speed);
-#endif
+#endif /* DEBUG */
         return DE_OKAY;
     }
 
 #ifdef DEBUG
     printf("setting speed to %u\n", speed);
-#endif
+#endif /* DEBUG */
 
 #ifdef COMPILING_ON_WINDOWS
     SetBaudRate((WORD)termios_value);
 #else
     Unix_SetSerialBaudRate(termios_value);
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
     return DE_OKAY;
 }
@@ -655,7 +655,7 @@ static int serpar_get_user_params(ParameterOptions **p_options)
 {
 #ifdef DEBUG
     printf("serpar_get_user_params\n");
-#endif
+#endif /* DEBUG */
 
     if (user_options_set)
     {
@@ -674,7 +674,7 @@ static int serial_get_default_params( const ParameterConfig **p_config )
 {
 #ifdef DEBUG
     printf( "serial_get_default_params\n" );
-#endif
+#endif /* DEBUG */
 
     *p_config = &serpar_defaults;
     return DE_OKAY;
@@ -687,7 +687,7 @@ static int SerparIoctl(const int opcode, void *args)
 
 #ifdef DEBUG
     printf("SerparIoctl: op %d arg %p\n", opcode, args ? args : "<NULL>");
-#endif
+#endif /* DEBUG */
 
     switch (opcode)
     {
@@ -724,7 +724,8 @@ DeviceDescr angel_SerparDevice =
     SerparClose,
     SerparRead,
     SerparWrite,
-    SerparIoctl
+    SerparIoctl,
+    NULL
 };
 
 /* EOF serpardr.c */

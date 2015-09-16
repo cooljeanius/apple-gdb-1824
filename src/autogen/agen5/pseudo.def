@@ -1,0 +1,69 @@
+/* -*- Mode: C -*- */
+
+/**
+ * \file pseudo.def
+ *
+ *  Time-stamp:        "2010-07-03 09:51:09 bkorb"
+ *
+ * This file is part of AutoGen.
+ *  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+ *
+ * AutoGen is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * AutoGen is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  This defines the finite state transition table for parsing the
+ *  pseudo-macro at the head of every template
+ */
+AutoGen Definitions fsm;
+
+/* "method" is not defined -- produce a header only */
+
+prefix = pm;
+
+event = ed_mode;     /* the -*- mode marker */
+event = marker;      /* a start or end macro mark */
+event = end_pseudo;  /* newline found in end_mark state */
+
+event = "autogen";   /* "autogen" */
+event = template;    /* "template" */
+event = suffix;      /* a string other than the above */
+event = scheme;      /* a scheme expression to process */
+
+state = st_mark;     /* start marker processed */
+state = agen;        /* "autogen5" processed   */
+state = templ;       /* "template" processed   */
+state = end_mark;    /* end marker processed   */
+
+ed-mode = '-*-';
+
+/*
+ *  No-op transition.  Applies to all states and does not change state.
+ */
+transition = { tst = '*';       tev = ed_mode;    ttype = skip_ed_mode; };
+/*
+ *  Disable the ed_mode transition in the end_mark state tho
+ */
+transition = { tst = end_mark;  tev = ed_mode;    ttype = invalid;   };
+
+/*
+ *  Meaningful transitions
+ */
+transition = { tst = init;     tev = marker;     next = st_mark;  };
+transition = { tst = st_mark;  tev = "autogen";  next = agen;  ttype = noop; };
+transition = { tst = agen;     tev = template;   next = templ; ttype = noop; };
+transition = { tst = templ;    tev = suffix; };
+transition = { tst = templ;    tev = scheme; };
+transition = { tst = templ;    tev = marker;     next = end_mark; };
+transition = { tst = end_mark; tev = end_pseudo; next = done;  ttype = noop; };
+
+/* end of agen5/pseudo.def */

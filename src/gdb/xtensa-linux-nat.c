@@ -172,7 +172,7 @@ fill_fpregset (const struct regcache *regcache,
   return;
 }
 
-void 
+void
 supply_fpregset (struct regcache *regcache,
 		 const gdb_fpregset_t *fpregsetp)
 {
@@ -188,17 +188,17 @@ fetch_gregs (struct regcache *regcache, int regnum)
   int tid = GET_THREAD_ID (inferior_ptid);
   const gdb_gregset_t regs;
   int areg;
-  
+
   if (ptrace (PTRACE_GETREGS, tid, 0, (long) &regs) < 0)
     {
       perror_with_name (_("Couldn't get registers"));
       return;
     }
- 
+
   supply_gregset_reg (regcache, &regs, regnum);
 }
 
-/* Store greg-register(s) in GDB's register 
+/* Store greg-register(s) in GDB's register
    array into the process/thread specified by TID.  */
 
 static void
@@ -285,19 +285,19 @@ xtensa_linux_store_inferior_registers (struct target_ops *ops,
 {
   if (regnum == -1)
     {
-      store_gregs (regcache, regnum);
-      store_xtregs (regcache, regnum);
+      store_gregs(regcache, regnum);
+      store_xtregs(regcache, regnum);
     }
   else if ((regnum < xtreg_lo) || (regnum > xtreg_high))
-    store_gregs (regcache, regnum);
+    store_gregs(regcache, regnum);
   else
-    store_xtregs (regcache, regnum);
+    store_xtregs(regcache, regnum);
 }
 
-void _initialize_xtensa_linux_nat (void);
+void _initialize_xtensa_linux_nat(void);
 
 void
-_initialize_xtensa_linux_nat (void)
+_initialize_xtensa_linux_nat(void)
 {
   struct target_ops *t;
   const xtensa_regtable_t *ptr;

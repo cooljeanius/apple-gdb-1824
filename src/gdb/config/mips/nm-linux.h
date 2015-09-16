@@ -1,4 +1,5 @@
-/* Native-dependent definitions for GNU/Linux on MIPS.
+/* nm-linux.h
+   Native-dependent definitions for GNU/Linux on MIPS.
 
    Copyright 1996, 2001, 2002, 2003 Free Software Foundation, Inc.
 
@@ -25,8 +26,8 @@
 #include "config/nm-linux.h"
 
 /* Return sizeof user struct to callers in less machine dependent
-   routines.  Hard coded for cross-compilation friendliness. */
-
+ * routines. Hard coded for cross-compilation friendliness.
+ */
 #define KERNEL_U_SIZE 504
 
 /* ptrace register ``addresses'' are absolute.  */
@@ -47,3 +48,5 @@ int mips_linux_cannot_store_register (int regno);
 #define CANNOT_STORE_REGISTER(regno) mips_linux_cannot_store_register (regno)
 
 #endif /* NM_MIPSLINUX_H */
+
+/* EOF */

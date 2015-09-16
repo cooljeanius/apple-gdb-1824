@@ -1,4 +1,4 @@
-/* Kernel Object Display generic routines and callbacks
+/* kod.c: Kernel Object Display generic routines and callbacks
    Copyright 1998, 1999, 2000 Free Software Foundation, Inc.
 
    Written by Fernando Nasser <fnasser@cygnus.com> for Cygnus Solutions.
@@ -27,47 +27,47 @@
 #include "gdb_string.h"
 #include "kod.h"
 
-/* Prototypes for exported functions.  */
-void _initialize_kod (void);
+/* Prototypes for exported functions: */
+void _initialize_kod(void);
 
-/* Prototypes for local functions.  */
-static void info_kod_command (char *, int);
-static void load_kod_library (char *);
+/* Prototypes for local functions: */
+static void info_kod_command(char *, int);
+static void load_kod_library(char *);
 
-/* Prototypes for callbacks.  These are passed into the KOD modules.  */
-static void gdb_kod_display (char *);
-static void gdb_kod_query (char *, char *, int *);
+/* Prototypes for callbacks.  These are passed into the KOD modules: */
+static void gdb_kod_display(char *);
+static void gdb_kod_query(char *, char *, int *);
 
 /* These functions are imported from the KOD module.
-   
+
    gdb_kod_open - initiates the KOD connection to the remote.  The
    first argument is the display function the module should use to
    communicate with the user.  The second argument is the query
    function the display should use to communicate with the target.
    This should call error() if there is an error.  Otherwise it should
    return a malloc()d string of the form:
-   
+
    NAME VERSION - DESCRIPTION
-   
+
    Neither NAME nor VERSION should contain a hyphen.
 
-   
+
    gdb_kod_request - This is used when the user enters an "info
    <module>" request.  The remaining arguments are passed as the first
    argument.  The second argument is the standard `from_tty'
    argument.
 
-   
+
    gdb_kod_close - This is called when the KOD connection to the
    remote should be terminated.  */
 
-static char *(*gdb_kod_open) (kod_display_callback_ftype *display,
+static char *(*gdb_kod_open)(kod_display_callback_ftype *display,
 			      kod_query_callback_ftype *query);
-static void (*gdb_kod_request) (char *, int);
-static void (*gdb_kod_close) ();
+static void (*gdb_kod_request)(char *, int);
+static void (*gdb_kod_close)(void);
 
 
-/* Name of inferior's operating system.  */
+/* Name of inferior's operating system: */
 char *operating_system;
 
 /* We save a copy of the OS so that we can properly reset when
@@ -82,21 +82,20 @@ gdb_kod_display (char *arg)
   printf_filtered ("%s", arg);
 }
 
-/* Queries the target on behalf of the module.  */
-
+/* Queries the target on behalf of the module: */
 static void
-gdb_kod_query (char *arg, char *result, int *maxsiz)
+gdb_kod_query(char *arg, char *result, int *maxsiz)
 {
-  LONGEST bufsiz = 0;
+  LONGEST bufsiz = 0L;
 
   /* Check if current target has remote_query capabilities.  If not,
      it does not have kod either.  */
-  bufsiz = target_read_partial (&current_target, TARGET_OBJECT_KOD,
-				NULL, NULL, 0, 0);
+  bufsiz = target_read_partial(&current_target, TARGET_OBJECT_KOD,
+                               NULL, NULL, 0, 0);
   if (bufsiz < 0)
     {
-      strcpy (result,
-              "ERR: Kernel Object Display not supported by current target\n");
+      strcpy(result,
+             "ERR: Kernel Object Display not supported by current target\n");
       return;
     }
 
@@ -105,8 +104,8 @@ gdb_kod_query (char *arg, char *result, int *maxsiz)
   /* Check if *we* were called just for getting the buffer size.  */
   if (*maxsiz == 0)
     {
-      *maxsiz = bufsiz;
-      strcpy (result, "OK");
+      *maxsiz = (int)bufsiz;
+      strcpy(result, "OK");
       return;
     }
 
@@ -116,13 +115,13 @@ gdb_kod_query (char *arg, char *result, int *maxsiz)
 
   /* See if buffer can hold the query (usually it can, as the query is
      short).  */
-  if (strlen (arg) >= bufsiz)
-    error (_("kod: query argument too long"));
+  if (strlen(arg) >= (size_t)bufsiz)
+    error(_("kod: query argument too long"));
 
-  /* Send actual request.  */
-  if (target_read_partial (&current_target, TARGET_OBJECT_KOD,
-			   arg, result, 0, bufsiz) < 0)
-    strcpy (result, "ERR: remote query failed");
+  /* Send actual request: */
+  if (target_read_partial(&current_target, TARGET_OBJECT_KOD,
+			  arg, (gdb_byte *)result, 0, bufsiz) < 0)
+    strcpy(result, "ERR: remote query failed");
 }
 
 /* Print name of kod command after selecting the appropriate kod
@@ -130,13 +129,13 @@ gdb_kod_query (char *arg, char *result, int *maxsiz)
    subcommand which is what the user actually uses to query the OS.  */
 
 static void
-kod_set_os (char *arg, int from_tty, struct cmd_list_element *command)
+kod_set_os(char *arg, int from_tty, struct cmd_list_element *command)
 {
   char *p;
 
   /* If we had already had an open OS, close it.  */
   if (gdb_kod_close)
-    (*gdb_kod_close) ();
+    (*gdb_kod_close)();
 
   /* Also remove the old OS's command.  */
   if (old_operating_system)

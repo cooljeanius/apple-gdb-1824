@@ -1,4 +1,5 @@
-/* Target operations for the remote server for GDB.
+/* target.h
+   Target operations for the remote server for GDB.
    Copyright 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -103,7 +104,7 @@ struct target_ops
      called through read_inferior_memory, which handles breakpoint shadowing.
 
      Read LEN bytes at MEMADDR into a buffer at MYADDR.
-  
+
      Returns 0 on success and errno on failure.  */
 
   int (*read_memory) (CORE_ADDR memaddr, unsigned char *myaddr, int len);
@@ -118,10 +119,10 @@ struct target_ops
   int (*write_memory) (CORE_ADDR memaddr, const unsigned char *myaddr,
 		       int len);
 
-  /* Query GDB for the values of any symbols we're interested in.
+  /* Query GDB for the values of any symbols we are interested in.
      This function is called whenever we receive a "qSymbols::"
      query, which corresponds to every time more symbols (might)
-     become available.  NULL if we aren't interested in any
+     become available.  NULL if we are NOT interested in any
      symbols.  */
 
   void (*look_up_symbols) (void);
@@ -137,7 +138,7 @@ struct target_ops
 		    unsigned int len);
 
   /* Insert and remove a hardware watchpoint.
-     Returns 0 on success, -1 on failure and 1 on unsupported.  
+     Returns 0 on success, -1 on failure and 1 on unsupported.
      The type is coded as follows:
        2 = write watchpoint
        3 = read watchpoint
@@ -151,7 +152,7 @@ struct target_ops
 
   int (*stopped_by_watchpoint) (void);
 
-  /* Returns the address associated with the watchpoint that hit, if any;  
+  /* Returns the address associated with the watchpoint that hit, if any;
      returns 0 otherwise.  */
 
   CORE_ADDR (*stopped_data_address) (void);
@@ -193,3 +194,5 @@ int write_inferior_memory (CORE_ADDR memaddr, const unsigned char *myaddr,
 void set_desired_inferior (int id);
 
 #endif /* TARGET_H */
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* Low-level child interface to ttrace.
+/* inf-ttrace.c: Low-level child interface to ttrace.
 
    Copyright 2004, 2005 Free Software Foundation, Inc.
 
@@ -183,7 +183,7 @@ inf_ttrace_add_page (pid_t pid, CORE_ADDR addr)
       prev = page;
       page = page->next;
     }
-  
+
   if (!page)
     {
       int prot;
@@ -191,7 +191,7 @@ inf_ttrace_add_page (pid_t pid, CORE_ADDR addr)
       if (ttrace (TT_PROC_GET_MPROTECT, pid, 0,
 		  addr, 0, (uintptr_t)&prot) == -1)
 	perror_with_name (("ttrace"));
-      
+
       page = XMALLOC (struct inf_ttrace_page);
       page->addr = addr;
       page->prot = prot;
@@ -997,7 +997,7 @@ inf_ttrace_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
 	     would be a logical place to re-enable the page
 	     protections, but that doesn't work.  We can't re-enable
 	     them until we've done another wait.  */
-	  inf_ttrace_reenable_page_protections = 
+	  inf_ttrace_reenable_page_protections =
 	    (inf_ttrace_num_lwps_in_syscall == 1);
 	  inf_ttrace_num_lwps_in_syscall--;
 	}
@@ -1141,12 +1141,14 @@ inf_ttrace_target (void)
 
 
 /* Prevent warning from -Wmissing-prototypes.  */
-void _initialize_hppa_hpux_nat (void);
+void _initialize_hppa_hpux_nat(void);
 
 void
-_initialize_inf_ttrace (void)
+_initialize_inf_ttrace(void)
 {
 #ifdef HAVE_TTRACE
   inf_ttrace_page_dict.pagesize = getpagesize();
-#endif
+#endif /* HAVE_TTRACE */
 }
+
+/* EOF */

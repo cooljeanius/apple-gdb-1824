@@ -1,4 +1,4 @@
-/* Work with executable files, for GDB. 
+/* exec.c: Work with executable files, for GDB.
 
    Copyright 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996,
    1997, 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation,
@@ -47,25 +47,25 @@
 #include <ctype.h>
 #include "gdb_stat.h"
 #ifndef O_BINARY
-#define O_BINARY 0
-#endif
+# define O_BINARY 0
+#endif /* !O_BINARY */
 
 #include "xcoffsolib.h"
 
 /* APPLE LOCAL begin dyld */
 #ifdef MACOSX_DYLD
-#include "macosx-nat-dyld.h"
-#endif
+# include "macosx-nat-dyld.h"
+#endif /* MACOSX_DYLD */
 /* APPLE LOCAL end dyld */
 
 /* APPLE LOCAL begin section names */
 #ifndef TEXT_SECTION_NAME
-#define TEXT_SECTION_NAME ".text"
-#endif
+# define TEXT_SECTION_NAME ".text"
+#endif /* !TEXT_SECTION_NAME */
 
 #ifndef DATA_SECTION_NAME
-#define DATA_SECTION_NAME ".data"
-#endif
+# define DATA_SECTION_NAME ".data"
+#endif /* !DATA_SECTION_NAME */
 /* APPLE LOCAL end section names */
 
 /* When attaching to a KASLR kernel we have a symbol file provided at
@@ -74,45 +74,45 @@
    while doing this.  */
 int only_read_from_live_memory = 0;
 
-int set_only_read_from_live_memory (int newval)
+int set_only_read_from_live_memory(int newval)
 {
   int oldval = only_read_from_live_memory;
   only_read_from_live_memory = newval;
   return oldval;
 }
 
-/* set_only_read_from_live_memory_cleanup() takes an int but the 
-   cleanup func must take a void* so we use this trampoline func 
+/* set_only_read_from_live_memory_cleanup() takes an int but the
+   cleanup func must take a void* so we use this trampoline func
    to avoid sizeof int == sizeof void* confusions.  */
 void
-set_only_read_from_live_memory_cleanup (void *new)
+set_only_read_from_live_memory_cleanup(void *newptr)
 {
-  set_only_read_from_live_memory ((int) new);
+  set_only_read_from_live_memory((int)(intptr_t)newptr);
 }
 
 
 /* APPLE LOCAL begin async */
 static void
-standard_async (void (*callback) (enum inferior_event_type event_type, 
-				  void *context), void *context)
+standard_async(void (*callback)(enum inferior_event_type event_type,
+                                void *context), void *context)
 {
   return;
 }
 
-int standard_is_async_p (void)
+int standard_is_async_p(void)
 {
   return (current_target.to_async_mask_value);
 }
 
-int standard_can_async_p (void)
+int standard_can_async_p(void)
 {
   return (current_target.to_async_mask_value);
 }
 /* APPLE LOCAL end async */
 
-struct vmap *map_vmap (bfd *, bfd *);
+struct vmap *map_vmap(bfd *, bfd *);
 
-void (*deprecated_file_changed_hook) (char *);
+void (*deprecated_file_changed_hook)(char *);
 
 /* Prototypes for local functions */
 
@@ -161,7 +161,7 @@ exec_open (char *args, int from_tty)
 }
 
 static void
-exec_close (int quitting)
+exec_close(int quitting)
 {
   int need_symtab_cleanup = 0;
   struct vmap *vp, *nxt;
@@ -176,49 +176,54 @@ exec_close (int quitting)
 
       if (vp->objfile)
 	{
-	  free_objfile (vp->objfile);
+	  free_objfile(vp->objfile);
 	  need_symtab_cleanup = 1;
 	}
       else if (vp->bfd != exec_bfd)
 	/* FIXME-leak: We should be freeing vp->name too, I think.  */
-	if (!bfd_close (vp->bfd))
-	  warning (_("cannot close \"%s\": %s"),
-		   vp->name, bfd_errmsg (bfd_get_error ()));
+	if (!bfd_close(vp->bfd))
+	  warning(_("cannot close \"%s\": %s"),
+		  vp->name, bfd_errmsg(bfd_get_error()));
 
       /* FIXME: This routine is #if 0'd in symfile.c.  What should we
          be doing here?  Should we just free everything in
          vp->objfile->symtabs?  Should free_objfile do that?
-         FIXME-as-well: free_objfile already free'd vp->name, so it isn't
+         FIXME-as-well: free_objfile already free'd vp->name, so it is NOT
          valid here.  */
-      free_named_symtabs (vp->name);
-      xfree (vp);
+      free_named_symtabs(vp->name);
+      xfree(vp);
     }
 
   vmap = NULL;
 
   if (exec_bfd)
     {
-      char *name = bfd_get_filename (exec_bfd);
+      char *name = bfd_get_filename(exec_bfd);
 
-      if (!bfd_close (exec_bfd))
-	warning (_("cannot close \"%s\": %s"),
-		 name, bfd_errmsg (bfd_get_error ()));
+      if (!bfd_close(exec_bfd))
+	warning(_("cannot close \"%s\": %s"),
+                name, bfd_errmsg(bfd_get_error()));
       exec_bfd = NULL;
     }
 
   if (exec_ops.to_sections)
     {
       /* APPLE LOCAL section resize */
-      target_resize_to_sections
-	(&exec_ops, exec_ops.to_sections_end - exec_ops.to_sections);
+      target_resize_to_sections(&exec_ops,
+                                (exec_ops.to_sections_end - exec_ops.to_sections));
     }
+
+  /* use an unused variable: */
+  if (need_symtab_cleanup > 0) {
+    return; /* else fall off the end; it matters little either way */
+  }
 }
 
 void
-exec_file_clear (int from_tty)
+exec_file_clear(int from_tty)
 {
-  /* Remove exec file.  */
-  unpush_target (&exec_ops);
+  /* Remove exec file: */
+  unpush_target(&exec_ops);
 
   if (from_tty)
     printf_unfiltered (_("No executable file now.\n"));
@@ -229,10 +234,10 @@ exec_file_clear (int from_tty)
    is really an int * which points to from_tty.  */
 
 static int
-solib_add_stub (PTR from_ttyp)
+solib_add_stub(PTR from_ttyp)
 {
-  SOLIB_ADD (NULL, *(int *) from_ttyp, &current_target, auto_solib_add);
-  re_enable_breakpoints_in_shlibs (0);
+  SOLIB_ADD(NULL, *(int *)from_ttyp, &current_target, auto_solib_add);
+  re_enable_breakpoints_in_shlibs(0);
   return 0;
 }
 #endif /* SOLIB_ADD */
@@ -253,7 +258,7 @@ solib_add_stub (PTR from_ttyp)
    figure out the pathname from the pid.  (In this case, we shouldn't
    ask the user whether the current target should be shut down --
    we're supplying the exec pathname late for good reason.)
-   
+
    ARGS is assumed to be the filename. */
 
 void
@@ -280,13 +285,15 @@ exec_file_attach (char *filename, int from_tty)
 #if defined(__GO32__) || defined(_WIN32) || defined(__CYGWIN__)
       if (scratch_chan < 0)
 	{
-	  char *exename = alloca (strlen (filename) + 5);
-	  strcat (strcpy (exename, filename), ".exe");
-	  scratch_chan = openp (getenv ("PATH"), OPF_TRY_CWD_FIRST, exename,
-	     write_files ? O_RDWR | O_BINARY : O_RDONLY | O_BINARY, 0,
-	     &scratch_pathname);
+	  char *exename = alloca(strlen(filename) + 5);
+	  strcat(strcpy(exename, filename), ".exe");
+	  scratch_chan = openp(getenv("PATH"), OPF_TRY_CWD_FIRST, exename,
+                               (write_files
+                                ? (O_RDWR | O_BINARY)
+                                : (O_RDONLY | O_BINARY)), 0,
+                               &scratch_pathname);
 	}
-#endif
+#endif /* __GO32__ || _WIN32 || __CYGWIN__ */
 
       /* APPLE LOCAL begin app bundles */
 #ifdef TM_NEXTSTEP
@@ -296,17 +303,19 @@ exec_file_attach (char *filename, int from_tty)
 	     Foo.app/Contents/MacOS/Foo, where the user gave us up to
 	     Foo.app.  The ".app" is optional. */
 
-	  char *wrapped_filename = macosx_filename_in_bundle (filename, 1);
+	  char *wrapped_filename = macosx_filename_in_bundle(filename, 1);
 
 	  if (wrapped_filename != NULL)
 	    {
-	      scratch_chan = openp (getenv ("PATH"), 1, wrapped_filename,
-				    write_files ? O_RDWR | O_BINARY : O_RDONLY | O_BINARY, 0,
-				    &scratch_pathname);
-	      xfree (wrapped_filename);
+	      scratch_chan = openp(getenv("PATH"), 1, wrapped_filename,
+				   (write_files
+                                    ? (O_RDWR | O_BINARY)
+                                    : (O_RDONLY | O_BINARY)), 0,
+				   &scratch_pathname);
+	      xfree(wrapped_filename);
 	    }
 	}
-#endif
+#endif /* TM_NEXTSTEP */
       /* APPLE LOCAL end app bundles */
 
       if (scratch_chan < 0 && !file_exists_p (filename))
@@ -337,13 +346,13 @@ exec_file_attach (char *filename, int from_tty)
       if (bfd_check_format (exec_bfd, bfd_archive))
 	{
 	  bfd *tmp_bfd;
-	  tmp_bfd = open_bfd_matching_arch (exec_bfd, bfd_object, 
+	  tmp_bfd = open_bfd_matching_arch (exec_bfd, bfd_object,
 					    GDB_OSABI_UNKNOWN);
 	  if (tmp_bfd != NULL)
 	    exec_bfd = tmp_bfd;
 	}
       /* APPLE LOCAL end fat binaries */
-      
+
       if (!bfd_check_format (exec_bfd, bfd_object))
 	{
 	  /* Make sure to close exec_bfd, or else "run" might try to use
@@ -358,52 +367,52 @@ exec_file_attach (char *filename, int from_tty)
 #ifdef DEPRECATED_IBM6000_TARGET
       /* Setup initial vmap. */
 
-      map_vmap (exec_bfd, 0);
+      map_vmap(exec_bfd, 0);
       if (vmap == NULL)
 	{
 	  /* Make sure to close exec_bfd, or else "run" might try to use
 	     it.  */
-	  exec_close (0);
-	  error (_("\"%s\": can't find the file sections: %s"),
-		 scratch_pathname, bfd_errmsg (bfd_get_error ()));
+	  exec_close(0);
+	  error(_("\"%s\": cannot find the file sections: %s"),
+                scratch_pathname, bfd_errmsg(bfd_get_error()));
 	}
 #endif /* DEPRECATED_IBM6000_TARGET */
 
-      if (build_section_table (exec_bfd, &exec_ops.to_sections,
-			       &exec_ops.to_sections_end))
+      if (build_section_table(exec_bfd, &exec_ops.to_sections,
+			      &exec_ops.to_sections_end))
 	{
 	  /* Make sure to close exec_bfd, or else "run" might try to use
 	     it.  */
-	  exec_close (0);
-	  error (_("\"%s\": can't find the file sections: %s"),
-		 scratch_pathname, bfd_errmsg (bfd_get_error ()));
+	  exec_close(0);
+	  error(_("\"%s\": cannot find the file sections: %s"),
+                scratch_pathname, bfd_errmsg(bfd_get_error()));
 	}
 
 #ifdef DEPRECATED_HPUX_TEXT_END
-      DEPRECATED_HPUX_TEXT_END (&exec_ops);
-#endif
+      DEPRECATED_HPUX_TEXT_END(&exec_ops);
+#endif /* DEPRECATED_HPUX_TEXT_END */
 
-      validate_files ();
+      validate_files();
 
-      set_gdbarch_from_file (exec_bfd);
+      set_gdbarch_from_file(exec_bfd);
 
-      push_target (&exec_ops);
+      push_target(&exec_ops);
 
 #ifdef MACOSX_DYLD
-      macosx_init_dyld_symfile (symfile_objfile, exec_bfd);
-#endif
+      macosx_init_dyld_symfile(symfile_objfile, exec_bfd);
+#endif /* MACOSX_DYLD */
 
 #ifdef SOLIB_ADD
-      catch_errors (solib_add_stub, &from_tty, (char *) 0,
-		    RETURN_MASK_ALL);
-#endif
-  
-      /* Tell display code (if any) about the changed file name.  */
+      catch_errors(solib_add_stub, &from_tty, (char *)0,
+		   RETURN_MASK_ALL);
+#endif /* SOLIB_ADD */
+
+      /* Tell display code (if any) about the changed file name: */
       if (deprecated_exec_file_display_hook)
-	(*deprecated_exec_file_display_hook) (filename);
+	(*deprecated_exec_file_display_hook)(filename);
     }
-  bfd_cache_close_all ();
-  observer_notify_executable_changed (NULL);
+  bfd_cache_close_all();
+  observer_notify_executable_changed(NULL);
 }
 
 /*  Process the first arg in ARGS as the new exec file.
@@ -411,7 +420,7 @@ exec_file_attach (char *filename, int from_tty)
    Note that we have to explicitly ignore additional args, since we can
    be called from file_command(), which also calls symbol_file_command()
    which can take multiple args.
-   
+
    If ARGS is NULL, we just want to close the exec file. */
 
 static void
@@ -419,7 +428,7 @@ exec_file_command (char *args, int from_tty)
 {
   char **argv;
   char *filename;
-  
+
   target_preopen (from_tty);
 
   if (args)
@@ -447,7 +456,7 @@ exec_file_command (char *args, int from_tty)
     exec_file_attach (NULL, from_tty);
 }
 
-/* Set both the exec file and the symbol file, in one command.  
+/* Set both the exec file and the symbol file, in one command.
    What a novelty.  Why did GDB go through four major releases before this
    command was added?  */
 
@@ -463,7 +472,7 @@ file_command (char *arg, int from_tty)
 }
 
 
-/* Locate all mappable sections of a BFD file. 
+/* Locate all mappable sections of a BFD file.
    table_pp_char is a char * to get it through bfd_map_over_sections;
    we cast it back to its proper type.  */
 
@@ -581,8 +590,8 @@ map_vmap (bfd *abfd, bfd *arch)
    we just tail-call it with more arguments to select between them.  */
 
 static int
-xfer_memory_1 (CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
-	     struct mem_attrib *attrib, struct target_ops *target)
+xfer_memory_1(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
+              struct mem_attrib *attrib, struct target_ops *target)
 {
   int res;
   struct section_table *p;
@@ -590,13 +599,13 @@ xfer_memory_1 (CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
   asection *section = NULL;
 
   if (len <= 0)
-    internal_error (__FILE__, __LINE__, _("failed internal consistency check"));
+    internal_error(__FILE__, __LINE__, _("failed internal consistency check"));
 
   if (overlay_debugging)
     {
-      section = find_pc_overlay (memaddr);
-      if (pc_in_unmapped_range (memaddr, section))
-	memaddr = overlay_mapped_address (memaddr, section);
+      section = find_pc_overlay(memaddr);
+      if (pc_in_unmapped_range(memaddr, section))
+	memaddr = overlay_mapped_address(memaddr, section);
     }
 
   memend = memaddr + len;
@@ -605,22 +614,22 @@ xfer_memory_1 (CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
   for (p = target->to_sections; p < target->to_sections_end; p++)
     {
       if (overlay_debugging && section && p->the_bfd_section &&
-	  strcmp (section->name, p->the_bfd_section->name) != 0)
+	  (strcmp(section->name, p->the_bfd_section->name) != 0))
 	continue;		/* not the section we need */
       if (memaddr >= p->addr)
         {
 	  if (memend <= p->endaddr)
 	    {
-	      /* Entire transfer is within this section.  */
+	      /* Entire transfer is within this section: */
 	      if (write)
-		res = bfd_set_section_contents (p->bfd, p->the_bfd_section,
-						myaddr, memaddr - p->addr,
-						len);
+		res = bfd_set_section_contents(p->bfd, p->the_bfd_section,
+                                               myaddr, (memaddr - p->addr),
+                                               (bfd_size_type)len);
 	      else
-		res = bfd_get_section_contents (p->bfd, p->the_bfd_section,
-						myaddr, memaddr - p->addr,
-						len);
-	      return (res != 0) ? len : 0;
+		res = bfd_get_section_contents(p->bfd, p->the_bfd_section,
+                                               myaddr, (memaddr - p->addr),
+                                               (bfd_size_type)len);
+	      return ((res != 0) ? len : 0);
 	    }
 	  else if (memaddr >= p->endaddr)
 	    {
@@ -629,27 +638,27 @@ xfer_memory_1 (CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
 	    }
 	  else
 	    {
-	      /* This section overlaps the transfer.  Just do half.  */
-	      len = p->endaddr - memaddr;
+	      /* This section overlaps the transfer.  Just do half: */
+	      len = (int)(p->endaddr - memaddr);
 	      if (write)
-		res = bfd_set_section_contents (p->bfd, p->the_bfd_section,
-						myaddr, memaddr - p->addr,
-						len);
+		res = bfd_set_section_contents(p->bfd, p->the_bfd_section,
+                                               myaddr, (memaddr - p->addr),
+                                               (bfd_size_type)len);
 	      else
-		res = bfd_get_section_contents (p->bfd, p->the_bfd_section,
-						myaddr, memaddr - p->addr,
-						len);
-	      return (res != 0) ? len : 0;
+		res = bfd_get_section_contents(p->bfd, p->the_bfd_section,
+                                               myaddr, (memaddr - p->addr),
+                                               (bfd_size_type)len);
+	      return ((res != 0) ? len : 0);
 	    }
         }
       else
-	nextsectaddr = min (nextsectaddr, p->addr);
+	nextsectaddr = min(nextsectaddr, p->addr);
     }
 
   if (nextsectaddr >= memend)
-    return 0;			/* We can't help */
+    return 0;			/* We cannot help */
   else
-    return -(nextsectaddr - memaddr);	/* Next boundary where we can help */
+    return (int)(-(nextsectaddr - memaddr)); /* Next boundary where we can help */
 }
 
 int
@@ -825,43 +834,44 @@ exec_set_section_offsets (bfd_signed_vma text_off, bfd_signed_vma data_off,
 }
 
 static void
-set_section_command (char *args, int from_tty)
+set_section_command(char *args, int from_tty)
 {
   struct section_table *p;
   char *secname;
   unsigned seclen;
-  unsigned long secaddr;
+  CORE_ADDR secaddr;
   char secprint[100];
-  long offset;
+  off_t offset;
 
   if (args == 0)
-    error (_("Must specify section name and its virtual address"));
+    error(_("Must specify section name and its virtual address"));
 
-  /* Parse out section name */
-  for (secname = args; !isspace (*args); args++);
-  seclen = args - secname;
+  /* Parse out section name: */
+  for (secname = args; !isspace(*args); args++);
+  seclen = (args - secname);
 
-  /* Parse out new virtual address */
-  secaddr = parse_and_eval_address (args);
+  /* Parse out new virtual address: */
+  secaddr = parse_and_eval_address(args);
 
   for (p = exec_ops.to_sections; p < exec_ops.to_sections_end; p++)
     {
-      if (!strncmp (secname, bfd_section_name (exec_bfd, p->the_bfd_section), seclen)
-	  && bfd_section_name (exec_bfd, p->the_bfd_section)[seclen] == '\0')
+      if (!strncmp(secname, bfd_section_name(exec_bfd, p->the_bfd_section),
+                   seclen)
+	  && (bfd_section_name(exec_bfd, p->the_bfd_section)[seclen] == '\0'))
 	{
-	  offset = secaddr - p->addr;
+	  offset = (secaddr - p->addr);
 	  p->addr += offset;
 	  p->endaddr += offset;
 	  if (from_tty)
-	    exec_files_info (&exec_ops);
+	    exec_files_info(&exec_ops);
 	  return;
 	}
     }
-  if (seclen >= sizeof (secprint))
-    seclen = sizeof (secprint) - 1;
-  strncpy (secprint, secname, seclen);
+  if (seclen >= sizeof(secprint))
+    seclen = (sizeof(secprint) - 1UL);
+  strncpy(secprint, secname, seclen);
   secprint[seclen] = '\0';
-  error (_("Section %s not found"), secprint);
+  error(_("Section %s not found"), secprint);
 }
 
 /* If we can find a section in FILENAME with BFD index INDEX, and the
@@ -898,9 +908,9 @@ ignore (CORE_ADDR addr, bfd_byte *contents)
 /* Find mapped memory. */
 
 extern void
-exec_set_find_memory_regions (int (*func) (int (*) (CORE_ADDR, 
-						    unsigned long, 
-						    int, int, int, 
+exec_set_find_memory_regions (int (*func) (int (*) (CORE_ADDR,
+						    unsigned long,
+						    int, int, int,
 						    void *),
 					   void *))
 {
@@ -973,18 +983,20 @@ This can be used if the exec file does not contain section addresses,\n\
 file itself are wrong.  Each section must be changed separately.  The\n\
 ``info files'' command lists all the sections and their addresses."));
 
-  add_setshow_boolean_cmd ("write", class_support, &write_files, _("\
+  add_setshow_boolean_cmd("write", class_support, &write_files, _("\
 Set writing into executable and core files."), _("\
 Show writing into executable and core files."), NULL,
-			   NULL,
-			   show_write_files,
-			   &setlist, &showlist);
+			  NULL,
+			  show_write_files,
+			  &setlist, &showlist);
 
-  add_target (&exec_ops);
+  add_target(&exec_ops);
 }
 
 static char *
-exec_make_note_section (bfd *obfd, int *note_size)
+exec_make_note_section(bfd *obfd, int *note_size)
 {
-  error (_("Can't create a corefile"));
+  error(_("Cannot create a corefile"));
 }
+
+/* EOF */

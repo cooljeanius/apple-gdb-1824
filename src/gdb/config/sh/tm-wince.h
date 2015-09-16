@@ -1,4 +1,5 @@
-/* Target-specific definition for Window CE
+/* tm-wince.h
+   Target-specific definition for Window CE
    Copyright 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.

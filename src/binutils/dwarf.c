@@ -30,10 +30,10 @@
 #include "gdb/gdb-index.h"
 
 #if !HAVE_DECL_STRNLEN
-size_t strnlen (const char *, size_t);
-#endif
+size_t strnlen(const char *, size_t);
+#endif /* !HAVE_DECL_STRNLEN */
 
-static const char *regname (unsigned int regno, int row);
+static const char *regname(unsigned int regno, int row);
 
 static int have_frame_base;
 static int need_base_address;
@@ -139,18 +139,19 @@ get_encoded_value (unsigned char *data,
   return val;
 }
 
-#if __STDC_VERSION__ >= 199901L || (defined(__GNUC__) && __GNUC__ >= 2)
-#ifndef __MINGW32__
-#define  DWARF_VMA_FMT       "ll"
-#define  DWARF_VMA_FMT_LONG  "%16.16llx"
+#if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || \
+    (defined(__GNUC__) && (__GNUC__ >= 2))
+# ifndef __MINGW32__
+#  define  DWARF_VMA_FMT       "ll"
+#  define  DWARF_VMA_FMT_LONG  "%16.16llx"
+# else
+#  define  DWARF_VMA_FMT       "I64"
+#  define  DWARF_VMA_FMT_LONG  "%016I64x"
+# endif /* !__MINGW32__ */
 #else
-#define  DWARF_VMA_FMT       "I64"
-#define  DWARF_VMA_FMT_LONG  "%016I64x"
-#endif
-#else
-#define  DWARF_VMA_FMT       "l"
-#define  DWARF_VMA_FMT_LONG  "%16.16lx"
-#endif
+# define  DWARF_VMA_FMT       "l"
+# define  DWARF_VMA_FMT_LONG  "%16.16lx"
+#endif /* c99 || gcc 2+ */
 
 /* Convert a dwarf vma value into a string.  Returns a pointer to a static
    buffer containing the converted VALUE.  The value is converted according
@@ -2007,7 +2008,9 @@ read_and_display_attr_value (unsigned long attribute,
     case DW_AT_allocated:
     case DW_AT_associated:
     case DW_AT_data_location:
+#ifdef DW_AT_stride
     case DW_AT_stride:
+#endif /* DW_AT_stride */
     case DW_AT_upper_bound:
     case DW_AT_lower_bound:
       if (block_start)
@@ -4068,7 +4071,7 @@ display_debug_macro (struct dwarf_section *section,
 	}
 
       printf ("\n");
-    }	
+    }
 
   return 1;
 }
@@ -5092,32 +5095,29 @@ static const char *const dwarf_regnames_x86_64[] =
   "k0", "k1", "k2", "k3", "k4", "k5", "k6", "k7"
 };
 
-void
-init_dwarf_regnames_x86_64 (void)
+void init_dwarf_regnames_x86_64(void)
 {
   dwarf_regnames = dwarf_regnames_x86_64;
-  dwarf_regnames_count = ARRAY_SIZE (dwarf_regnames_x86_64);
+  dwarf_regnames_count = ARRAY_SIZE(dwarf_regnames_x86_64);
 }
 
-void
-init_dwarf_regnames (unsigned int e_machine)
+void init_dwarf_regnames(unsigned int e_machine)
 {
-  switch (e_machine)
-    {
+  switch (e_machine) {
     case EM_386:
     case EM_486:
-      init_dwarf_regnames_i386 ();
+      init_dwarf_regnames_i386();
       break;
 
     case EM_X86_64:
     case EM_L1OM:
     case EM_K1OM:
-      init_dwarf_regnames_x86_64 ();
+      init_dwarf_regnames_x86_64();
       break;
 
     default:
       break;
-    }
+  }
 }
 
 static const char *
@@ -5650,7 +5650,7 @@ display_debug_frames (struct dwarf_section *section,
 	      else
 		printf ("  DW_CFA_advance_loc: %d to %s\n",
 			opa * fc->code_factor,
-			dwarf_vmatoa_1 (NULL, 
+			dwarf_vmatoa_1 (NULL,
 					fc->pc_begin + opa * fc->code_factor,
 					fc->ptr_size));
 	      fc->pc_begin += opa * fc->code_factor;

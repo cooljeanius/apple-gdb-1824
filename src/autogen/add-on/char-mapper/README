@@ -1,0 +1,61 @@
+
+DESCRIPTION:
+
+Construct a character classification table and a collection of macros
+to test a character's classification.
+
+PURPOSE:
+
+   This program will take a list of character classes and convert them
+   into bit map tests.  If all you ever need are "isspace" or "isalpha"
+   or the other tests included in <ctype.h>, then by all means use that.
+   On the other hand, if you find yourself writing code like:
+      if (isalnum(*p) || (*p == '_'))
+   Then this might be handy.
+
+EXAMPLE:
+
+Here is a short example:
+
+    lower-case      "a-z"
+    upper-case      "A-Z"
+    alphabetic      +lower-case   +upper-case
+    unquotable      "!-~"         -"\"#(),;<=>[\\]`{}?*'"
+    oct-digit       "0-7"
+    dec-digit       "89"          +oct-digit
+    hex-digit       "a-fA-F"      +dec-digit
+
+The syntax is: class-name [ literal-string ] [{+|-}another-class]...
+If a literal string is specified, then a new test bit is added.
+If a character class is named, its bits are included or removed
+from the character class set.  If a class does not have a literal
+string specified, then you cannot remove members.  Only the literal
+members of a class can be removed from that class.
+
+This table produces these (among other) macros for each character class,
+plus a hidden array of 128 mask values:
+
+#define  IS_LOWER_CASE_CHAR( _c)       is_ag_char_map_char((char)( _c), 0x000001)
+#define SPN_LOWER_CASE_CHARS(_s)      spn_ag_char_map_chars((char *)_s, 0x000001)
+#define BRK_LOWER_CASE_CHARS(_s)      brk_ag_char_map_chars((char *)_s, 0x000001)
+
+and the code to scan over a valid variable name, for example,
+looks like this:
+
+   if (IS_VAR_FIRST_CHAR(*p)) {
+      end = SPN_VARIABLE_NAME_CHARS(p);
+
+"spn" and "brk" return pointers to the next (non-)matching character.
+They do not return character counts.
+
+If "%backup" is specified, two backup spanner macros are also created:
+
+#define SPN_LOWER_CASE_BACK(s,e)         \
+        spn_ag_char_map_back((char *)s, (char *)e, 0x0000001)
+#define BRK_LOWER_CASE_BACK(s,e)         \
+        brk_ag_char_map_back((char *)s, (char *)e, 0x0000001)
+
+where the "s" points to the start of the string and "e" points
+to either the start or one character past the end of the string.
+If they are equal, the "e" pointer is advanced to the end of
+the string.

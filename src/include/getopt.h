@@ -1,9 +1,9 @@
-/* Declarations for getopt.
+/* getopt.h: Declarations for getopt.
    Copyright 1989, 1990, 1991, 1992, 1993, 1994, 1996, 1997, 1998, 2000,
    2002 Free Software Foundation, Inc.
 
    NOTE: The canonical source of this file is maintained with the GNU C Library.
-   Bugs can be reported to bug-glibc@gnu.org.
+   Bugs can be reported to <bug-glibc@gnu.org>.
 
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the
@@ -25,7 +25,7 @@
 
 #ifdef	__cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 /* For communication from `getopt' to the caller.
    When `getopt' finds an option that takes an argument,
@@ -81,12 +81,12 @@ extern int optopt;
 
 struct option
 {
-#if defined (__STDC__) && __STDC__
+#if defined(__STDC__) && __STDC__
   const char *name;
 #else
   char *name;
-#endif
-  /* has_arg can't be an enum because some compilers complain about
+#endif /* __STDC__ */
+  /* has_arg cannot be an enum because some compilers complain about
      type mismatches in all the code that assumes it is an int.  */
   int has_arg;
   int *flag;
@@ -99,46 +99,51 @@ struct option
 #define required_argument	1
 #define optional_argument	2
 
-#if defined (__STDC__) && __STDC__
+#if defined(__STDC__) && __STDC__
 /* HAVE_DECL_* is a three-state macro: undefined, 0 or 1.  If it is
    undefined, we haven't run the autoconf check so provide the
    declaration without arguments.  If it is 0, we checked and failed
    to find the declaration so provide a fully prototyped one.  If it
    is 1, we found it so don't provide any declaration at all.  */
-#if !HAVE_DECL_GETOPT
-#if defined (__GNU_LIBRARY__) || defined (HAVE_DECL_GETOPT)
+# if !HAVE_DECL_GETOPT
+#  if defined(__GNU_LIBRARY__) || defined(HAVE_DECL_GETOPT) || \
+      (!defined(_UNISTD_H_) && (defined(PROTOTYPES) || defined(__PROTOTYPES)))
 /* Many other libraries have conflicting prototypes for getopt, with
    differences in the consts, in unistd.h.  To avoid compilation
    errors, only prototype getopt for the GNU C library.  */
-extern int getopt (int argc, char *const *argv, const char *shortopts);
-#else
-#ifndef __cplusplus
-extern int getopt ();
-#endif /* __cplusplus */
-#endif
-#endif /* !HAVE_DECL_GETOPT */
+extern int getopt(int argc, char *const *argv, const char *shortopts);
+#  else
+#   ifndef __cplusplus
+extern int getopt();
+#   else
+#    if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #     warning "In getopt.h, we should never get here..."
+#    endif /* __GNUC__ && !__STRICT_ANSI__ */
+#   endif /* __cplusplus */
+#  endif /* __GNU_LIBRARY__ || HAVE_DECL_GETOPT || (!_UNISTD_H_ && (have protos)) */
+# endif /* !HAVE_DECL_GETOPT */
 
-extern int getopt_long (int argc, char *const *argv, const char *shortopts,
-		        const struct option *longopts, int *longind);
-extern int getopt_long_only (int argc, char *const *argv,
-			     const char *shortopts,
-		             const struct option *longopts, int *longind);
+extern int getopt_long(int argc, char *const *argv, const char *shortopts,
+		       const struct option *longopts, int *longind);
+extern int getopt_long_only(int argc, char *const *argv,
+			    const char *shortopts,
+		            const struct option *longopts, int *longind);
 
 /* Internal only.  Users should not call this directly.  */
-extern int _getopt_internal (int argc, char *const *argv,
-			     const char *shortopts,
-		             const struct option *longopts, int *longind,
-			     int long_only);
+extern int _getopt_internal(int argc, char *const *argv,
+			    const char *shortopts,
+		            const struct option *longopts, int *longind,
+			    int long_only);
 #else /* not __STDC__ */
-extern int getopt ();
-extern int getopt_long ();
-extern int getopt_long_only ();
+extern int getopt();
+extern int getopt_long();
+extern int getopt_long_only();
 
-extern int _getopt_internal ();
+extern int _getopt_internal();
 #endif /* __STDC__ */
 
 #ifdef	__cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
 #endif /* getopt.h */

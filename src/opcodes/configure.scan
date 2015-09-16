@@ -7,9 +7,14 @@ AC_CONFIG_SRCDIR([a29k-dis.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
+AC_PROG_CXX
+AC_PROG_AWK
 AC_PROG_CC
+AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lintl':
@@ -17,7 +22,7 @@ AC_CHECK_LIB([intl], [main])
 
 # Checks for header files.
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([inttypes.h libintl.h stddef.h stdint.h stdlib.h string.h strings.h])
+AC_CHECK_HEADERS([inttypes.h libintl.h stddef.h stdint.h stdlib.h string.h strings.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -37,5 +42,6 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([memmove memset regcomp strcasecmp strchr strdup strerror strncasecmp strstr strtol strtoul])
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile
+                 po/Makefile])
 AC_OUTPUT

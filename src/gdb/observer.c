@@ -1,4 +1,4 @@
-/* GDB Notifications to Observers.
+/* observer.c: GDB Notifications to Observers.
 
    Copyright 2003, 2004 Free Software Foundation, Inc.
 
@@ -56,18 +56,24 @@
 #include "command.h"
 #include "gdbcmd.h"
 
+/* "observer.h" is a generated file, so put any extra prototypes here in
+ * the meantime: */
+extern void observer_test_first_notification_function(struct bpstats *bs);
+extern void observer_test_second_notification_function(struct bpstats *bs);
+extern void observer_test_third_notification_function(struct bpstats *bs);
+
+/* now we can do actual functions and stuff: */
 static int observer_debug;
 static void
-show_observer_debug (struct ui_file *file, int from_tty,
-		     struct cmd_list_element *c, const char *value)
+show_observer_debug(struct ui_file *file, int from_tty,
+		    struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("Observer debugging is %s.\n"), value);
+  fprintf_filtered(file, _("Observer debugging is %s.\n"), value);
 }
 
-/* The internal generic observer.  */
-
-typedef void (generic_observer_notification_ftype) (const void *data,
-						    const void *args);
+/* The internal generic observer: */
+typedef void (generic_observer_notification_ftype)(const void *data,
+						   const void *args);
 
 struct observer
 {
@@ -89,10 +95,10 @@ struct observer_list
    in the list of observers maintained by a subject.  */
 
 static struct observer_list *
-xalloc_observer_list_node (void)
+xalloc_observer_list_node(void)
 {
-  struct observer_list *node = XMALLOC (struct observer_list);
-  node->observer = XMALLOC (struct observer);
+  struct observer_list *node = XMALLOC(struct observer_list);
+  node->observer = XMALLOC(struct observer);
   return node;
 }
 
@@ -100,10 +106,10 @@ xalloc_observer_list_node (void)
    the given node.  */
 
 static void
-xfree_observer_list_node (struct observer_list *node)
+xfree_observer_list_node(struct observer_list *node)
 {
-  xfree (node->observer);
-  xfree (node);
+  xfree(node->observer);
+  xfree(node);
 }
 
 /* Attach the callback NOTIFY to a SUBJECT.  The DATA is also stored,
@@ -177,25 +183,25 @@ generic_observer_notify (struct observer_list *subject, const void *args)
 
 /* If we define these variables and functions as `static', the
    compiler will optimize them out.  */
- 
+
 int observer_test_first_observer = 0;
 int observer_test_second_observer = 0;
 int observer_test_third_observer = 0;
 
 void
-observer_test_first_notification_function (struct bpstats *bs)
+observer_test_first_notification_function(struct bpstats *bs)
 {
   observer_test_first_observer++;
 }
 
 void
-observer_test_second_notification_function (struct bpstats *bs)
+observer_test_second_notification_function(struct bpstats *bs)
 {
   observer_test_second_observer++;
 }
 
 void
-observer_test_third_notification_function (struct bpstats *bs)
+observer_test_third_notification_function(struct bpstats *bs)
 {
   observer_test_third_observer++;
 }
@@ -203,16 +209,18 @@ observer_test_third_notification_function (struct bpstats *bs)
 extern initialize_file_ftype _initialize_observer; /* -Wmissing-prototypes */
 
 void
-_initialize_observer (void)
+_initialize_observer(void)
 {
-  add_setshow_zinteger_cmd ("observer", class_maintenance,
-			    &observer_debug, _("\
+  add_setshow_zinteger_cmd("observer", class_maintenance,
+			   &observer_debug, _("\
 Set observer debugging."), _("\
 Show observer debugging."), _("\
 When non-zero, observer debugging is enabled."),
-			    NULL,
-			    show_observer_debug,
-			    &setdebuglist, &showdebuglist);
+			   NULL,
+			   show_observer_debug,
+			   &setdebuglist, &showdebuglist);
 }
 
 #include "observer.inc"
+
+/* EOF */

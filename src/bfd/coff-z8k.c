@@ -77,7 +77,9 @@ coff_z8k_select_reloc (reloc_howto_type *howto)
 #define SELECT_RELOC(x,howto) x.r_type = coff_z8k_select_reloc(howto)
 
 #define BADMAG(x) Z8KBADMAG(x)
-#define Z8K 1			/* Customize coffcode.h */
+#ifndef Z8K
+# define Z8K 1			/* Customize coffcode.h */
+#endif /* !Z8K */
 #define __A_MAGIC_SET__
 
 /* Code to swap in the reloc.  */
@@ -330,7 +332,7 @@ extra_case (bfd *in_abfd,
       }
 
     default:
-      abort ();
+      abort();
     }
 }
 
@@ -338,10 +340,16 @@ extra_case (bfd *in_abfd,
 
 #include "coffcode.h"
 
-#undef  coff_bfd_get_relocated_section_contents
+#undef coff_bfd_get_relocated_section_contents
 #undef coff_bfd_relax_section
 #define coff_bfd_get_relocated_section_contents \
   bfd_coff_reloc16_get_relocated_section_contents
 #define coff_bfd_relax_section bfd_coff_reloc16_relax_section
 
-CREATE_BIG_COFF_TARGET_VEC (z8kcoff_vec, "coff-z8k", 0, 0, '_', NULL, COFF_SWAP_TABLE)
+CREATE_BIG_COFF_TARGET_VEC(z8kcoff_vec, "coff-z8k", 0, 0, '_', NULL, COFF_SWAP_TABLE)
+
+#ifdef Z8K
+# undef Z8K
+#endif /* Z8K */
+
+/* EOF */

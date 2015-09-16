@@ -1,0 +1,43 @@
+#    Makefile for the remote server for GDB, the GNU debugger.
+#    Copyright (C) 1986, 1989 Free Software Foundation, Inc.
+# 
+# This file is part of GDB.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+CPPFLAGS = -I.. -I../common -I../config -I../macosx -I../../include -I../../bfd -I../../intl
+DEFS = -DHAVE_CONFIG_H
+CFLAGS = -ggdb ${CPPFLAGS} ${DEFS} -std=gnu99 -Wall -Wextra -Wold-style-definition -Wtrampolines -Wwrite-strings -Wformat=2 # -Wstrict-prototypes -Wnested-externs
+LDFLAGS = -L. -L..
+CC = gcc
+
+SERVER = remote_server.o \
+	 remote_inflow.o \
+	 remote_utils.o \
+	 remote_gutils.o
+
+all: prog
+.PHONY: all
+
+prog: $(SERVER) Remote_Makefile
+	$(CC) -ggdb -o serve $(SERVER) ${LDFLAGS}
+.PHONY: prog
+
+clean:
+	rm -f $(SERVER) serve prog
+.PHONY: clean
+
+distclean: clean
+.PHONY: distclean

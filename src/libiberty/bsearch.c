@@ -1,4 +1,4 @@
-/*
+/* bsearch.c
  * Copyright (c) 1990 Regents of the University of California.
  * All rights reserved.
  *
@@ -67,23 +67,25 @@ is respectively less than, matching, or greater than the array member.
  * look at item 3.
  */
 void *
-bsearch (register const void *key, const void *base0,
-         size_t nmemb, register size_t size,
-         register int (*compar)(const void *, const void *))
+bsearch(register const void *key, const void *base0,
+        size_t nmemb, register size_t size,
+        register int (*compar)(const void *, const void *))
 {
-	register const char *base = (const char *) base0;
-	register int lim, cmp;
-	register const void *p;
+  register const char *base = (const char *)base0;
+  register int lim, cmp;
+  register const void *p;
 
-	for (lim = nmemb; lim != 0; lim >>= 1) {
-		p = base + (lim >> 1) * size;
-		cmp = (*compar)(key, p);
-		if (cmp == 0)
-			return (void *)p;
-		if (cmp > 0) {	/* key > p: move right */
-			base = (const char *)p + size;
-			lim--;
-		} /* else move left */
-	}
-	return (NULL);
+  for (lim = (int)nmemb; lim != 0; lim >>= 1) {
+    p = (base + ((size_t)(lim >> 1) * size));
+    cmp = (*compar)(key, p);
+    if (cmp == 0)
+      return (void *)p;
+    if (cmp > 0) {	/* key > p: move right */
+      base = (const char *)p + size;
+      lim--;
+    } /* else move left */
+  }
+  return (NULL);
 }
+
+/* EOF */

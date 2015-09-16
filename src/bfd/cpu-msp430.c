@@ -60,7 +60,7 @@ static const bfd_arch_info_type arch_info_struct[] =
 
   /* msp430x15x.  */
   N (16, bfd_mach_msp15, "msp:15", FALSE, & arch_info_struct[6]),
-  
+
   /* msp430x16x.  */
   N (16, bfd_mach_msp16, "msp:16", FALSE, & arch_info_struct[7]),
 
@@ -68,14 +68,14 @@ static const bfd_arch_info_type arch_info_struct[] =
   N (16, bfd_mach_msp21, "msp:21", FALSE, & arch_info_struct[8]),
 
   /* msp430x31x.  */
-  N (16, bfd_mach_msp31, "msp:31", FALSE, & arch_info_struct[9]), 
+  N (16, bfd_mach_msp31, "msp:31", FALSE, & arch_info_struct[9]),
 
   /* msp430x32x.  */
-  N (16, bfd_mach_msp32, "msp:32", FALSE, & arch_info_struct[10]), 
+  N (16, bfd_mach_msp32, "msp:32", FALSE, & arch_info_struct[10]),
 
   /* msp430x33x.  */
   N (16, bfd_mach_msp33, "msp:33", FALSE, & arch_info_struct[11]),
-  
+
   /* msp430x41x.  */
   N (16, bfd_mach_msp41, "msp:41", FALSE, & arch_info_struct[12]),
 
@@ -93,15 +93,12 @@ const bfd_arch_info_type bfd_msp430_arch =
   N (16, bfd_mach_msp14, "msp:14", TRUE, & arch_info_struct[0]);
 
 /* This routine is provided two arch_infos and works out which MSP
-   machine which would be compatible with both and returns a pointer
-   to its info structure.  */
-
+ * machine which would be compatible with both and returns a pointer
+ * to its info structure: */
 static const bfd_arch_info_type *
-compatible (a,b)
-     const bfd_arch_info_type * a;
-     const bfd_arch_info_type * b;
+compatible(const bfd_arch_info_type *a, const bfd_arch_info_type *b)
 {
-  /* If a & b are for different architectures we can do nothing.  */
+  /* If a & b are for different architectures we can do nothing: */
   if (a->arch != b->arch)
     return NULL;
 
@@ -110,3 +107,5 @@ compatible (a,b)
 
   return a;
 }
+
+/* EOF */

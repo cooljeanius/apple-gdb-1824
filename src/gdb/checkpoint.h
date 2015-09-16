@@ -1,5 +1,5 @@
 /* APPLE LOCAL file checkpoints */
-/* Checkpoints for GDB.
+/* checkpoint.h Checkpoints for GDB.
    Copyright 2005
    Free Software Foundation, Inc.
 
@@ -19,6 +19,9 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
+
+#ifndef __GDB_CHECKPOINT_H__
+#define __GDB_CHECKPOINT_H__ 1
 
 /* The memory cache is a block of memory that is part of a checkpoint's
    state.  */
@@ -52,7 +55,7 @@ struct checkpoint
      consecutively throughout a debugging session.  */
   int number;
 
-  /* Double linkage for the complete list of checkpoints.  */
+  /* Double linkage for the complete list of checkpoints: */
   struct checkpoint *next;
   struct checkpoint *prev;
 
@@ -72,22 +75,35 @@ struct checkpoint
 
   int pid;
 
-  /* Flag used to decide which ones to keep.  */
+  /* Flag used to decide which ones to keep: */
   int keep;
 };
 
-extern void memcache_get (struct checkpoint *cp, ULONGEST addr, int len);
+extern void memcache_get(struct checkpoint *cp, ULONGEST addr, int len);
+extern void memcache_put(struct checkpoint *cp);
 
-extern void clear_checkpoints (void);
-extern void clear_all_checkpoints (void);
-extern struct checkpoint *create_checkpoint (void);
-extern struct checkpoint *collect_checkpoint (void);
-extern struct checkpoint *finish_checkpoint (struct checkpoint *cp);
-extern struct checkpoint *find_checkpoint (int num);
-extern void rollback_to_checkpoint (struct checkpoint *cp);
-extern void print_checkpoint_info (struct checkpoint *cp);
-extern int checkpoint_compare (struct checkpoint *cp1, struct checkpoint *cp2);
-extern void checkpoint_clear_inferior ();
+extern void load_helpers(void);
+
+extern void clear_checkpoints(void);
+extern void clear_all_checkpoints(void);
+extern void set_max_checkpoints(char *, int, struct cmd_list_element *);
+extern struct checkpoint *create_checkpoint(void);
+extern struct checkpoint *collect_checkpoint(void);
+extern struct checkpoint *finish_checkpoint(struct checkpoint *cp);
+extern struct checkpoint *find_checkpoint(int num);
+extern void maybe_create_checkpoint(void);
+extern void begin_inferior_call_checkpoints(void);
+extern void end_inferior_call_checkpoints(void);
+extern void rollback_to_checkpoint(struct checkpoint *cp);
+extern void checkpoints_info(char *args, int from_tty);
+extern void print_checkpoint_info(struct checkpoint *cp);
+extern int checkpoint_compare(struct checkpoint *cp1,
+                              struct checkpoint *cp2);
+extern struct checkpoint *start_checkpoint(void);
+extern void checkpoint_clear_inferior(void);
 
 extern int auto_checkpointing;
 
+#endif /* !__GDB_CHECKPOINT_H__ */
+
+/* EOF */

@@ -54,7 +54,9 @@ static reloc_howto_type howto_table[] =
   { x.r_type = select_reloc(howto); }
 
 #define BADMAG(x) (W65BADMAG(x))
-#define W65 1			/* Customize coffcode.h */
+#ifndef W65
+# define W65 1			/* Customize coffcode.h */
+#endif /* !W65 */
 #define __A_MAGIC_SET__
 
 /* Code to swap in the reloc */
@@ -65,26 +67,21 @@ static reloc_howto_type howto_table[] =
   dst->r_stuff[1] = 'C';
 
 static int
-select_reloc (howto)
-     reloc_howto_type *howto;
+select_reloc(reloc_howto_type *howto)
 {
-  return howto->type ;
+  return howto->type;
 }
 
-/* Code to turn a r_type into a howto ptr, uses the above howto table.  */
-
+/* Code to turn a r_type into a howto ptr, uses the above howto table: */
 static void
-rtype2howto (internal, dst)
-     arelent *internal;
-     struct internal_reloc *dst;
+rtype2howto(arelent *internal, struct internal_reloc *dst)
 {
-  internal->howto = howto_table + dst->r_type - 1;
+  internal->howto = (howto_table + dst->r_type - 1);
 }
 
 #define RTYPE2HOWTO(internal, relocentry) rtype2howto(internal,relocentry)
 
-/* Perform any necessary magic to the addend in a reloc entry.  */
-
+/* Perform any necessary magic to the addend in a reloc entry: */
 #define CALC_ADDEND(abfd, symbol, ext_reloc, cache_ptr) \
  cache_ptr->addend =  ext_reloc.r_offset;
 
@@ -92,47 +89,43 @@ rtype2howto (internal, dst)
  reloc_processing(relent, reloc, symbols, abfd, section)
 
 static void
-reloc_processing (relent, reloc, symbols, abfd, section)
-     arelent * relent;
-     struct internal_reloc *reloc;
-     asymbol ** symbols;
-     bfd * abfd;
-     asection * section;
+reloc_processing(arelent *relent, struct internal_reloc *reloc,
+                 asymbol **symbols, bfd *abfd, asection *section)
 {
   relent->address = reloc->r_vaddr;
   rtype2howto (relent, reloc);
 
-  if (((int) reloc->r_symndx) > 0)
-    relent->sym_ptr_ptr = symbols + obj_convert (abfd)[reloc->r_symndx];
+  if (((int)reloc->r_symndx) > 0)
+    relent->sym_ptr_ptr = (symbols + obj_convert(abfd)[reloc->r_symndx]);
   else
     relent->sym_ptr_ptr = (asymbol **)&(bfd_abs_symbol);
 
   relent->addend = reloc->r_offset;
 
   relent->address -= section->vma;
-  /*  relent->section = 0;*/
+#if 0
+  relent->section = 0;
+#endif /* 0 */
 }
 
 static int
-w65_reloc16_estimate (abfd, input_section, reloc, shrink, link_info)
-     bfd *abfd;
-     asection *input_section;
-     arelent *reloc;
-     unsigned int shrink;
-     struct bfd_link_info *link_info;
+w65_reloc16_estimate(bfd *abfd, asection *input_section, arelent *reloc,
+                     unsigned int shrink, struct bfd_link_info *link_info)
 {
   bfd_vma value;
   bfd_vma dot;
   bfd_vma gap;
 
   /* The address of the thing to be relocated will have moved back by
-   the size of the shrink  - but we don't change reloc->address here,
-   since we need it to know where the relocation lives in the source
-   uncooked section.  */
+   * the size of the shrink - but we do NOT change reloc->address here,
+   * since we need it to know where the relocation lives in the source
+   * uncooked section.  */
 
-  /*  reloc->address -= shrink;   conceptual */
+#ifdef _CONCEPTUAL
+  reloc->address -= shrink; /* conceptual */
+#endif /* _CONCEPTUAL */
 
-  bfd_vma address = reloc->address - shrink;
+  bfd_vma address = (reloc->address - shrink);
 
   switch (reloc->howto->type)
     {
@@ -141,19 +134,19 @@ w65_reloc16_estimate (abfd, input_section, reloc, shrink, link_info)
       shrink+=2;
       break;
 
-      /* Thing is a move one byte.  */
+      /* Thing is a move one byte: */
     case R_MOV16B1:
-      value = bfd_coff_reloc16_get_value (reloc, link_info, input_section);
+      value = bfd_coff_reloc16_get_value(reloc, link_info, input_section);
 
       if (value >= 0xff00)
 	{
 	  /* Change the reloc type from 16bit, possible 8 to 8bit
 	     possible 16.  */
-	  reloc->howto = reloc->howto + 1;
+	  reloc->howto = (reloc->howto + 1);
 	  /* The place to relc moves back by one.  */
 	  /* This will be two bytes smaller in the long run.  */
 	  shrink += 2;
-	  bfd_perform_slip (abfd, 2, input_section, address);
+	  bfd_perform_slip(abfd, 2, input_section, address);
 	}
 
       break;
@@ -162,49 +155,52 @@ w65_reloc16_estimate (abfd, input_section, reloc, shrink, link_info)
 	 actual data.  */
 
     case R_JMPL1:
-      value = bfd_coff_reloc16_get_value (reloc, link_info, input_section);
+      value = bfd_coff_reloc16_get_value(reloc, link_info, input_section);
 
-      dot = input_section->output_section->vma +
-	input_section->output_offset + address;
+      dot = (input_section->output_section->vma +
+             input_section->output_offset + address);
 
-      /* See if the address we're looking at within 127 bytes of where
+      /* See if the address we are looking at within 127 bytes of where
 	 we are, if so then we can use a small branch rather than the
 	 jump we were going to.  */
-      gap = value - dot;
+      gap = (value - dot);
 
-      if (-120 < (long) gap && (long) gap < 120)
+      if ((-120L < (long)gap) && ((long)gap < 120L))
 	{
 	  /* Change the reloc type from 24bit, possible 8 to 8bit
 	     possible 32.  */
-	  reloc->howto = reloc->howto + 1;
-	  /* This will be two bytes smaller in the long run.  */
+	  reloc->howto = (reloc->howto + 1);
+	  /* This will be two bytes smaller in the long run: */
 	  shrink += 2;
-	  bfd_perform_slip (abfd, 2, input_section, address);
+	  bfd_perform_slip(abfd, 2, input_section, address);
 	}
       break;
 
     case R_JMP1:
-      value = bfd_coff_reloc16_get_value (reloc, link_info, input_section);
+      value = bfd_coff_reloc16_get_value(reloc, link_info, input_section);
 
-      dot = input_section->output_section->vma +
-	input_section->output_offset + address;
+      dot = (input_section->output_section->vma +
+             input_section->output_offset + address);
 
-      /* See if the address we're looking at within 127 bytes of where
+      /* See if the address we are looking at within 127 bytes of where
 	 we are, if so then we can use a small branch rather than the
 	 jump we were going to.  */
-      gap = value - (dot - shrink);
+      gap = (value - (dot - shrink));
 
-      if (-120 < (long) gap && (long) gap < 120)
+      if ((-120L < (long)gap) && ((long)gap < 120L))
 	{
 	  /* Change the reloc type from 16bit, possible 8 to 8bit
 	     possible 16.  */
-	  reloc->howto = reloc->howto + 1;
+	  reloc->howto = (reloc->howto + 1);
 	  /* The place to relc moves back by one.  */
 
-	  /* This will be two bytes smaller in the long run.  */
+	  /* This will be two bytes smaller in the long run: */
 	  shrink += 2;
-	  bfd_perform_slip (abfd, 2, input_section, address);
+	  bfd_perform_slip(abfd, 2, input_section, address);
 	}
+      break;
+
+    default:
       break;
     }
 
@@ -221,15 +217,10 @@ w65_reloc16_estimate (abfd, input_section, reloc, shrink, link_info)
    R_MOV24B1		R_MOV24B2	24 or 8 bit reloc for mov.b  */
 
 static void
-w65_reloc16_extra_cases (abfd, link_info, link_order, reloc, data, src_ptr,
-			   dst_ptr)
-     bfd *abfd;
-     struct bfd_link_info *link_info;
-     struct bfd_link_order *link_order;
-     arelent *reloc;
-     bfd_byte *data;
-     unsigned int *src_ptr;
-     unsigned int *dst_ptr;
+w65_reloc16_extra_cases(bfd *abfd, struct bfd_link_info *link_info,
+                        struct bfd_link_order *link_order, arelent *reloc,
+                        bfd_byte *data, unsigned int *src_ptr,
+                        unsigned int *dst_ptr)
 {
   unsigned int src_address = *src_ptr;
   unsigned int dst_address = *dst_ptr;
@@ -382,4 +373,11 @@ w65_reloc16_extra_cases (abfd, link_info, link_order, reloc, data, src_ptr,
   bfd_coff_reloc16_get_relocated_section_contents
 #define coff_bfd_relax_section bfd_coff_reloc16_relax_section
 
-CREATE_LITTLE_COFF_TARGET_VEC (w65_vec, "coff-w65", BFD_IS_RELAXABLE, 0, '_', NULL, COFF_SWAP_TABLE)
+CREATE_LITTLE_COFF_TARGET_VEC(w65_vec, "coff-w65", BFD_IS_RELAXABLE, 0,
+                              '_', NULL, COFF_SWAP_TABLE)
+
+#ifdef W65
+# undef W65
+#endif /* W65 */
+
+/* EOF */

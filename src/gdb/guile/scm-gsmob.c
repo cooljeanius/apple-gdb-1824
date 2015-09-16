@@ -30,6 +30,7 @@
    specify the gdb smob kind, that is left for another day if it ever is
    needed.
 
+<<<<<<< HEAD
    We want the objects we export to Scheme to be extensible by the user.
    A gsmob (gdb smob) adds a simple API on top of smobs to support this.
    This allows GDB objects to be easily extendable in a useful manner.
@@ -48,7 +49,20 @@
 
    Gsmobs (and chained/eqable gsmobs) add an extra field that is used to
    record extra data: "properties".  It is a table of key/value pairs
-   that can be set with set-gsmob-property!, gsmob-property.  */
+   that can be set with set-gsmob-property!, gsmob-property.
+=======
+   Some GDB smobs are "chained gsmobs".  They are used to assist with life-time
+   tracking of GDB objects vs Scheme objects.  Gsmobs can "subclass"
+   chained_gdb_smob, which contains a doubly-linked list to assist with
+   life-time tracking.
+
+   Some other GDB smobs are "eqable gsmobs".  Gsmob implementations can
+   "subclass" eqable_gdb_smob to make gsmobs eq?-able.  This is done by
+   recording all gsmobs in a hash table and before creating a gsmob first
+   seeing if it's already in the table.  Eqable gsmobs can also be used where
+   lifetime-tracking is required.
+>>>>>>> e0ce22ee5feb0d1682ac7365358abd9c23fc4033
+ */
 
 #include "defs.h"
 #include "hashtab.h"
@@ -61,6 +75,7 @@
 
 static htab_t registered_gsmobs;
 
+#ifdef MY_BRANCH_IS_HEAD
 /* Gsmob properties are initialize stored as an alist to minimize space
    usage: GDB can be used to debug some really big programs, and property
    lists generally have very few elements.  Once the list grows to this
@@ -68,8 +83,10 @@ static htab_t registered_gsmobs;
    The smallest Guile hashtable in 2.0 uses a vector of 31 elements.
    The value we use here is large enough to hold several expected uses,
    without being so large that we might as well just use a hashtable.  */
-#define SMOB_PROP_HTAB_THRESHOLD 7
+# define SMOB_PROP_HTAB_THRESHOLD 7
 
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 /* Hash function for registered_gsmobs hash table.  */
 
 static hashval_t
@@ -131,7 +148,11 @@ gdbscm_make_smob_type (const char *name, size_t size)
 void
 gdbscm_init_gsmob (gdb_smob *base)
 {
+#ifdef MY_BRANCH_IS_HEAD
   base->properties = SCM_EOL;
+#else
+  base->empty_base_class = 0;
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 }
 
 /* Initialize a chained_gdb_smob.
@@ -157,6 +178,7 @@ gdbscm_init_eqable_gsmob (eqable_gdb_smob *base, SCM containing_scm)
   base->containing_scm = containing_scm;
 }
 
+#ifdef MY_BRANCH_IS_HEAD
 /* Call this from each smob's "mark" routine.
    In general, this should be called as:
    return gdbscm_mark_gsmob (base);  */
@@ -197,6 +219,8 @@ gdbscm_mark_eqable_gsmob (eqable_gdb_smob *base)
      The marking infrastructure will mark it for us.  */
   return base->properties;
 }
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 
 /* gsmob accessors */
 
@@ -212,9 +236,16 @@ gsscm_get_gsmob_arg_unsafe (SCM self, int arg_pos, const char *func_name)
   return self;
 }
 
-/* (gsmob-kind gsmob) -> symbol
+/*
+<<<<<<< HEAD
+   (gsmob-kind gsmob) -> symbol
 
    Note: While one might want to name this gsmob-class-name, it is named
+=======
+   (gdb-object-kind gsmob) -> symbol
+
+   Note: While one might want to name this gdb-object-class-name, it is named
+>>>>>>> e0ce22ee5feb0d1682ac7365358abd9c23fc4033
    "-kind" because smobs aren't real GOOPS classes.  */
 
 static SCM
@@ -236,6 +267,7 @@ gdbscm_gsmob_kind (SCM self)
   return result;
 }
 
+#ifdef MY_BRANCH_IS_HEAD
 /* (gsmob-property gsmob property) -> object
    If property isn't present then #f is returned.  */
 
@@ -354,6 +386,8 @@ gdbscm_gsmob_properties (SCM self)
 
   return result;
 }
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 
 /* When underlying gdb data structures are deleted, we need to update any
    smobs with references to them.  There are several smobs that reference
@@ -449,6 +483,7 @@ gdbscm_clear_eqable_gsmob_ptr_slot (htab_t htab, eqable_gdb_smob *base)
 
 static const scheme_function gsmob_functions[] =
 {
+#ifdef MY_BRANCH_IS_HEAD
   { "gsmob-kind", 1, 0, 0, gdbscm_gsmob_kind,
     "\
 Return the kind of the smob, e.g., <gdb:breakpoint>, as a symbol." },
@@ -468,6 +503,14 @@ Return #t if the specified property is present." },
   { "gsmob-properties", 1, 0, 0, gdbscm_gsmob_properties,
     "\
 Return an unsorted list of names of properties." },
+#else
+  /* N.B. There is a general rule of not naming symbols in gdb-guile with a
+     "gdb" prefix.  This symbol does not violate this rule because it is to
+     be read as "gdb-object-foo", not "gdb-foo".  */
+  { "gdb-object-kind", 1, 0, 0, gdbscm_gsmob_kind,
+    "\
+Return the kind of the GDB object, e.g., <gdb:breakpoint>, as a symbol." },
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 
   END_FUNCTIONS
 };

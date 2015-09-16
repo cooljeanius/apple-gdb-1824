@@ -3,7 +3,7 @@
 @c Edit the *.c files, configure with --enable-maintainer-mode,
 @c and let gather-docs build you a new copy.
 
-@c safe-ctype.c:25
+@c simple-object.txh:184
 @defvr Extension HOST_CHARSET
 This macro indicates the basic character set and encoding used by the
 host: more precisely, the encoding used for character constants in
@@ -24,6 +24,183 @@ The host character set is some variant of EBCDIC.  (Only one of the
 nineteen EBCDIC varying characters is tested; exercise caution.)
 @end ftable
 @end defvr
+@deftypefn Extension {simple_object_read *} simple_object_open_read @
+  (int @var{descriptor}, off_t @var{offset}, const char *{segment_name}, @
+  const char **@var{errmsg}, int *@var{err})
+
+Opens an object file for reading.  Creates and returns an
+@code{simple_object_read} pointer which may be passed to other
+functions to extract data from the object file.
+
+@var{descriptor} holds a file descriptor which permits reading.
+
+@var{offset} is the offset into the file; this will be @code{0} in the
+normal case, but may be a different value when reading an object file
+in an archive file.
+
+@var{segment_name} is only used with the Mach-O file format used on
+Darwin aka Mac OS X.  It is required on that platform, and means to
+only look at sections within the segment with that name.  The
+parameter is ignored on other systems.
+
+If an error occurs, this functions returns @code{NULL} and sets
+@code{*@var{errmsg}} to an error string and sets @code{*@var{err}} to
+an errno value or @code{0} if there is no relevant errno.
+
+@end deftypefn
+@deftypefn Extension {const char *} simple_object_find_sections @
+  (simple_object_read *@var{simple_object}, int (*@var{pfn}) (void *@var{data}, @
+  const char *@var{name}, off_t @var{offset}, off_t @var{length}), @
+  void *@var{data}, int *@var{err})
+
+This function calls @var{pfn} for each section in @var{simple_object}.
+It calls @var{pfn} with the section name, the offset within the file
+of the section contents, and the length of the section contents.  The
+offset within the file is relative to the offset passed to
+@code{simple_object_open_read}.  The @var{data} argument to this
+function is passed along to @var{pfn}.
+
+If @var{pfn} returns @code{0}, the loop over the sections stops and
+@code{simple_object_find_sections} returns.  If @var{pfn} returns some
+other value, the loop continues.
+
+On success @code{simple_object_find_sections} returns.  On error it
+returns an error string, and sets @code{*@var{err}} to an errno value
+or @code{0} if there is no relevant errno.
+
+@end deftypefn
+@deftypefn Extension {int} simple_object_find_section @
+  (simple_object_read *@var{simple_object} off_t *@var{offset}, @
+  off_t *@var{length}, const char **@var{errmsg}, int *@var{err})
+
+Look for the section @var{name} in @var{simple_object}.  This returns
+information for the first section with that name.
+
+If found, return 1 and set @code{*@var{offset}} to the offset in the
+file of the section contents and set @code{*@var{length}} to the
+length of the section contents.  The value in @code{*@var{offset}}
+will be relative to the offset passed to
+@code{simple_object_open_read}.
+
+If the section is not found, and no error occurs,
+@code{simple_object_find_section} returns @code{0} and set
+@code{*@var{errmsg}} to @code{NULL}.
+
+If an error occurs, @code{simple_object_find_section} returns
+@code{0}, sets @code{*@var{errmsg}} to an error message, and sets
+@code{*@var{err}} to an errno value or @code{0} if there is no
+relevant errno.
+
+@end deftypefn
+@deftypefn Extension {void} simple_object_release_read @
+  (simple_object_read *@var{simple_object})
+
+Release all resources associated with @var{simple_object}.  This does
+not close the file descriptor.
+
+@end deftypefn
+@deftypefn Extension {simple_object_attributes *} simple_object_fetch_attributes @
+  (simple_object_read *@var{simple_object}, const char **@var{errmsg}, int *@var{err})
+
+Fetch the attributes of @var{simple_object}.  The attributes are
+internal information such as the format of the object file, or the
+architecture it was compiled for.  This information will persist until
+@code{simple_object_attributes_release} is called, even if
+@var{simple_object} itself is released.
+
+On error this returns @code{NULL}, sets @code{*@var{errmsg}} to an
+error message, and sets @code{*@var{err}} to an errno value or
+@code{0} if there is no relevant errno.
+
+@end deftypefn
+@deftypefn Extension {const char *} simple_object_attributes_compare @
+  (simple_object_attributes *@var{attrs1}, simple_object_attributes *@var{attrs2}, @
+   int *@var{err})
+
+Compare @var{attrs1} and @var{attrs2}.  If they could be linked
+together without error, return @code{NULL}.  Otherwise, return an
+error message and set @code{*@var{err}} to an errno value or @code{0}
+if there is no relevant errno.
+
+@end deftypefn
+@deftypefn Extension {void} simple_object_release_attributes @
+  (simple_object_attributes *@var{attrs})
+
+Release all resources associated with @var{attrs}.
+
+@end deftypefn
+@deftypefn Extension {simple_object_write *} simple_object_start_write @
+  (simple_object_attributes @var{attrs}, const char *@var{segment_name}, @
+  const char **@var{errmsg}, int *@var{err})
+
+Start creating a new object file using the object file format
+described in @var{attrs}.  You must fetch attribute information from
+an existing object file before you can create a new one.  There is
+currently no support for creating an object file de novo.
+
+@var{segment_name} is only used with Mach-O as found on Darwin aka Mac
+OS X.  The parameter is required on that target.  It means that all
+sections are created within the named segment.  It is ignored for
+other object file formats.
+
+On error @code{simple_object_start_write} returns @code{NULL}, sets
+@code{*@var{ERRMSG}} to an error message, and sets @code{*@var{err}}
+to an errno value or @code{0} if there is no relevant errno.
+
+@end deftypefn
+@deftypefn Extension {simple_object_write_section *} simple_object_write_create_section @
+  (simple_object_write *@var{simple_object}, const char *@var{name}, @
+  unsigned int @var{align}, const char **@var{errmsg}, int *@var{err})
+
+Add a section to @var{simple_object}.  @var{name} is the name of the
+new section.  @var{align} is the required alignment expressed as the
+number of required low-order 0 bits (e.g., 2 for alignment to a 32-bit
+boundary).
+
+The section is created as containing data, readable, not writable, not
+executable, not loaded at runtime.  The section is not written to the
+file until @code{simple_object_write_to_file} is called.
+
+On error this returns @code{NULL}, sets @code{*@var{errmsg}} to an
+error message, and sets @code{*@var{err}} to an errno value or
+@code{0} if there is no relevant errno.
+
+@end deftypefn
+@deftypefn Extension {const char *} simple_object_write_add_data @
+  (simple_object_write *@var{simple_object}, @
+  simple_object_write_section *@var{section}, const void *@var{buffer}, @
+  size_t @var{size}, int @var{copy}, int *@var{err})
+
+Add data @var{buffer}/@var{size} to @var{section} in
+@var{simple_object}.  If @var{copy} is non-zero, the data will be
+copied into memory if necessary.  If @var{copy} is zero, @var{buffer}
+must persist until @code{simple_object_write_to_file} is called.  is
+released.
+
+On success this returns @code{NULL}.  On error this returns an error
+message, and sets @code{*@var{err}} to an errno value or 0 if there is
+no relevant erro.
+
+@end deftypefn
+@deftypefn Extension {const char *} simple_object_write_to_file @
+  (simple_object_write *@var{simple_object}, int @var{descriptor}, int *@var{err})
+
+Write the complete object file to @var{descriptor}, an open file
+descriptor.  This writes out all the data accumulated by calls to
+@code{simple_object_write_create_section} and
+@var{simple_object_write_add_data}.
+
+This returns @code{NULL} on success.  On error this returns an error
+message and sets @code{*@var{err}} to an errno value or @code{0} if
+there is no relevant errno.
+
+@end deftypefn
+@deftypefn Extension {void} simple_object_release_write @
+  (simple_object_write *@var{simple_object})
+
+Release all resources associated with @var{simple_object}.
+
+@end deftypefn
 
 @c alloca.c:26
 @deftypefn Replacement void* alloca (size_t @var{size})
@@ -104,7 +281,7 @@ is respectively less than, matching, or greater than the array member.
 
 @end deftypefn
 
-@c argv.c:124
+@c argv.c:150
 @deftypefn Extension char** buildargv (char *@var{sp})
 
 Given a pointer to a string, parse the string extracting fields
@@ -145,6 +322,16 @@ Uses @code{malloc} to allocate storage for @var{nelem} objects of
 
 @end deftypefn
 
+@c filename_cmp.c:173
+@deftypefn Extension int canonical_filename_eq (const char *@var{a}, const char *@var{b})
+
+Return non-zero if file names @var{a} and @var{b} are equivalent.
+This function compares the canonical versions of the filenames as returned by
+@code{lrealpath()}, so that so that different file names pointing to the same
+underlying file are treated as being identical.
+
+@end deftypefn
+
 @c choose-temp.c:42
 @deftypefn Extension char* choose_temp_base (void)
 
@@ -158,8 +345,8 @@ not recommended.
 
 @end deftypefn
 
-@c make-temp-file.c:87
-@deftypefn Replacement char* choose_tmpdir ()
+@c make-temp-file.c:88
+@deftypefn Replacement const char* choose_tmpdir ()
 
 Returns a pointer to a directory path suitable for creating temporary
 files in.
@@ -185,7 +372,43 @@ pointer encountered.  Pointers to empty strings are ignored.
 
 @end deftypefn
 
-@c argv.c:52
+@c argv.c:503
+@deftypefn Extension int countargv (char **@var{argv})
+
+Return the number of elements in @var{argv}.
+Returns zero if @var{argv} is NULL.
+
+@end deftypefn
+
+@c crc32.c:141
+@deftypefn Extension unsigned int crc32 (const unsigned char *@var{buf}, int @var{len}, unsigned int @var{init})
+
+Compute the 32-bit CRC of @var{buf} which has length @var{len}.  The
+starting value is @var{init}; this may be used to compute the CRC of
+data split across multiple buffers by passing the return value of each
+call as the @var{init} parameter of the next.
+
+This is intended to match the CRC used by the @command{gdb} remote
+protocol for the @samp{qCRC} command.  In order to get the same
+results as gdb for a block of data, you must pass the first CRC
+parameter as @code{0xffffffff}.
+
+This CRC can be specified as:
+
+  Width  : 32
+  Poly   : 0x04c11db7
+  Init   : parameter, typically 0xffffffff
+  RefIn  : false
+  RefOut : false
+  XorOut : 0
+
+This differs from the "standard" CRC-32 algorithm in that the values
+are not reflected, and there is no final XOR value.  These differences
+make it easy to compose the values of multiple blocks.
+
+@end deftypefn
+
+@c argv.c:56
 @deftypefn Extension char** dupargv (char **@var{vector})
 
 Duplicate an argument vector.  Simply scans through @var{vector},
@@ -196,7 +419,7 @@ argument vector.
 
 @end deftypefn
 
-@c strerror.c:567
+@c strerror.c:569
 @deftypefn Extension int errno_max (void)
 
 Returns the maximum @code{errno} value for which a corresponding
@@ -211,6 +434,26 @@ implied by the largest @code{errno} value defined in @code{<errno.h>}.
 
 We return the maximum value that can be used to obtain a meaningful
 symbolic name or message.
+
+@end deftypefn
+
+@c argv.c:374
+@deftypefn Extension void expandargv (int *@var{argcp}, char ***@var{argvp})
+
+The @var{argcp} and @code{argvp} arguments are pointers to the usual
+@code{argc} and @code{argv} arguments to @code{main}.  This function
+looks for arguments that begin with the character @samp{@@}.  Any such
+arguments are interpreted as ``response files''.  The contents of the
+response file are interpreted as additional command line options.  In
+particular, the file is separated into whitespace-separated strings;
+each such string is taken as a command-line option.  The new options
+are inserted in place of the option naming the response file, and
+@code{*argcp} and @code{*argvp} will be updated.  If the value of
+@code{*argvp} is modified by this function, then the new value has
+been dynamically allocated and can be deallocated by the caller with
+@code{freeargv}.  However, most callers will simply call
+@code{expandargv} near the beginning of @code{main} and allow the
+operating system to free the memory when the program exits.
 
 @end deftypefn
 
@@ -245,6 +488,49 @@ unchanged.
 Find the first (least significant) bit set in @var{valu}.  Bits are
 numbered from right to left, starting with bit 1 (corresponding to the
 value 1).  If @var{valu} is zero, zero is returned.
+
+@end deftypefn
+
+@c filename_cmp.c:37
+@deftypefn Extension int filename_cmp (const char *@var{s1}, const char *@var{s2})
+
+Return zero if the two file names @var{s1} and @var{s2} are equivalent.
+If not equivalent, the returned value is similar to what @code{strcmp}
+would return.  In other words, it returns a negative value if @var{s1}
+is less than @var{s2}, or a positive value if @var{s2} is greater than
+@var{s2}.
+
+This function does not normalize file names.  As a result, this function
+will treat filenames that are spelled differently as different even in
+the case when the two filenames point to the same underlying file.
+However, it does handle the fact that on DOS-like file systems, forward
+and backward slashes are equal.
+
+@end deftypefn
+
+@c filename_cmp.c:155
+@deftypefn Extension int filename_eq (const void *@var{s1}, const void *@var{s2})
+
+Return non-zero if file names @var{s1} and @var{s2} are equivalent.
+This function is for use with hashtab.c hash tables.
+
+@end deftypefn
+
+@c filename_cmp.c:94
+@deftypefn Extension int filename_ncmp (const char *@var{s1}, const char *@var{s2}, size_t @var{n})
+
+Return zero if the two file names @var{s1} and @var{s2} are equivalent
+in range @var{n}.
+If not equivalent, the returned value is similar to what @code{strncmp}
+would return.  In other words, it returns a negative value if @var{s1}
+is less than @var{s2}, or a positive value if @var{s2} is greater than
+@var{s2}.
+
+This function does not normalize file names.  As a result, this function
+will treat filenames that are spelled differently as different even in
+the case when the two filenames point to the same underlying file.
+However, it does handle the fact that on DOS-like file systems, forward
+and backward slashes are equal.
 
 @end deftypefn
 
@@ -308,7 +594,7 @@ unchanged.
 
 @end deftypefn
 
-@c argv.c:97
+@c argv.c:101
 @deftypefn Extension void freeargv (char **@var{vector})
 
 Free an argument vector that was built using @code{buildargv}.  Simply
@@ -337,15 +623,15 @@ process started.
 
 @end deftypefn
 
-@c getcwd.c:6
+@c getcwd.c:7
 @deftypefn Supplemental char* getcwd (char *@var{pathname}, int @var{len})
 
 Copy the absolute pathname for the current working directory into
 @var{pathname}, which is assumed to point to a buffer of at least
-@var{len} bytes, and return a pointer to the buffer.  If the current
-directory's path doesn't fit in @var{len} characters, the result is
-@code{NULL} and @code{errno} is set.  If @var{pathname} is a null pointer,
-@code{getcwd} will obtain @var{len} bytes of space using
+@var{len} bytes, and return a pointer to the buffer. If the current
+directory's path does NOT fit in @var{len} characters, then the result is
+@code{NULL} and @code{errno} is set. If @var{pathname} is a null pointer,
+then @code{getcwd} will obtain @var{len} bytes of space using
 @code{malloc}.
 
 @end deftypefn
@@ -369,7 +655,7 @@ between calls to @code{getpwd}.
 
 @end deftypefn
 
-@c gettimeofday.c:12
+@c gettimeofday.c:21
 @deftypefn Supplemental int gettimeofday (struct timeval *@var{tp}, void *@var{tz})
 
 Writes the current time to @var{tp}.  This implementation requires
@@ -464,7 +750,7 @@ others.  However, there are two differences between these macros and
 those provided by @file{ctype.h}:
 
 @itemize @bullet
-@item These macros are guaranteed to have well-defined behavior for all 
+@item These macros are guaranteed to have well-defined behavior for all
 values representable by @code{signed char} and @code{unsigned char}, and
 for @code{EOF}.
 
@@ -565,7 +851,7 @@ relative prefix can be found, return @code{NULL}.
 
 @end deftypefn
 
-@c make-temp-file.c:137
+@c make-temp-file.c:138
 @deftypefn Replacement char* make_temp_file (const char *@var{suffix})
 
 Return a temporary file name (as a string) or @code{NULL} if unable to
@@ -574,7 +860,7 @@ string is @code{malloc}ed, and the temporary file has been created.
 
 @end deftypefn
 
-@c memchr.c:3
+@c memchr.c:5
 @deftypefn Supplemental void* memchr (const void *@var{s}, int @var{c}, size_t @var{n})
 
 This function searches memory starting at @code{*@var{s}} for the
@@ -606,6 +892,15 @@ Copies @var{length} bytes from memory region @var{in} to region
 
 @end deftypefn
 
+@c memmem.c:20
+@deftypefn Supplemental void* memmem (const void *@var{haystack}, size_t @var{haystack_len} const void *@var{needle}, size_t @var{needle_len})
+
+Returns a pointer to the first occurrence of @var{needle} (length
+@var{needle_len}) in @var{haystack} (length @var{haystack_len}).
+Returns @code{NULL} if not found.
+
+@end deftypefn
+
 @c memmove.c:6
 @deftypefn Supplemental void* memmove (void *@var{from}, const void *@var{to}, size_t @var{count})
 
@@ -630,7 +925,7 @@ Sets the first @var{count} bytes of @var{s} to the constant byte
 
 @end deftypefn
 
-@c mkstemps.c:54
+@c mkstemps.c:55
 @deftypefn Replacement int mkstemps (char *@var{pattern}, int @var{suffix_len})
 
 Generate a unique temporary file name from @var{pattern}.
@@ -850,7 +1145,7 @@ documented.
 
 @end deftypefn
 
-@c strsignal.c:539
+@c strsignal.c:537
 @deftypefn Supplemental void psignal (unsigned @var{signo}, char *@var{message})
 
 Print @var{message} to the standard error, followed by a colon,
@@ -934,7 +1229,15 @@ environment.  This implementation is not safe for multithreaded code.
 
 @end deftypefn
 
-@c strsignal.c:348
+@c setproctitle.c:33
+@deftypefn Supplemental void setproctitle (const char *@var{fmt}, ...)
+
+Set the title of a process to @var{fmt}. va args not supported for now,
+but defined for compatibility with BSD.
+
+@end deftypefn
+
+@c strsignal.c:346
 @deftypefn Extension int signo_max (void)
 
 Returns the maximum signal value for which a corresponding symbolic
@@ -961,7 +1264,7 @@ be the value @code{1}).
 
 @end deftypefn
 
-@c snprintf.c:28
+@c snprintf.c:29
 @deftypefn Supplemental int snprintf (char *@var{buf}, size_t @var{n}, const char *@var{format}, ...)
 
 This function is similar to sprintf, but it will print at most @var{n}
@@ -980,6 +1283,13 @@ this function is used.
 Returns a pointer to a memory region filled with the specified
 number of spaces and null terminated.  The returned pointer is
 valid until at least the next call.
+
+@end deftypefn
+
+@c stack-limit.c:28
+@deftypefn Extension void stack_limit_increase (unsigned long @var{pref})
+
+Attempt to increase stack size limit to @var{pref} bytes if possible.
 
 @end deftypefn
 
@@ -1017,7 +1327,7 @@ null character, the results are undefined.
 
 @end deftypefn
 
-@c strdup.c:3
+@c strdup.c:5
 @deftypefn Supplemental char* strdup (const char *@var{s})
 
 Returns a pointer to a copy of @var{s} in memory obtained from
@@ -1025,7 +1335,7 @@ Returns a pointer to a copy of @var{s} in memory obtained from
 
 @end deftypefn
 
-@c strerror.c:670
+@c strerror.c:669
 @deftypefn Replacement {const char*} strerrno (int @var{errnum})
 
 Given an error number returned from a system call (typically returned
@@ -1045,7 +1355,7 @@ valid until the next call to @code{strerrno}.
 
 @end deftypefn
 
-@c strerror.c:603
+@c strerror.c:605
 @deftypefn Supplemental char* strerror (int @var{errnoval})
 
 Maps an @code{errno} number to an error message string, the contents
@@ -1090,6 +1400,16 @@ memory was available.  The result is always NUL terminated.
 
 @end deftypefn
 
+@c strnlen.c:6
+@deftypefn Supplemental size_t strnlen (const char *@var{s}, size_t @var{maxlen})
+
+Returns the length of @var{s}, as with @code{strlen}, but never looks
+past the first @var{maxlen} characters in the string.  If there is no
+'\0' character in the first @var{maxlen} characters, returns
+@var{maxlen}.
+
+@end deftypefn
+
 @c strrchr.c:6
 @deftypefn Supplemental char* strrchr (const char *@var{s}, int @var{c})
 
@@ -1099,7 +1419,7 @@ null character, the results are undefined.
 
 @end deftypefn
 
-@c strsignal.c:383
+@c strsignal.c:381
 @deftypefn Supplemental {const char *} strsignal (int @var{signo})
 
 Maps an signal number to an signal message string, the contents of
@@ -1120,7 +1440,7 @@ call to @code{strsignal}.
 
 @end deftypefn
 
-@c strsignal.c:446
+@c strsignal.c:444
 @deftypefn Extension {const char*} strsigno (int @var{signo})
 
 Given an signal number, returns a pointer to a string containing the
@@ -1162,7 +1482,7 @@ the location referenced by @var{endptr}.
 
 @end deftypefn
 
-@c strerror.c:729
+@c strerror.c:728
 @deftypefn Extension int strtoerrno (const char *@var{name})
 
 Given the symbolic name of a error number (e.g., @code{EACCES}), map it
@@ -1186,7 +1506,25 @@ that the converted value is unsigned.
 
 @end deftypefn
 
-@c strsignal.c:500
+@c strtoll.c:33
+@deftypefn Supplemental {long long int} strtoll (const char *@var{string}, @
+  char **@var{endptr}, int @var{base})
+@deftypefnx Supplemental {unsigned long long int} strtoul (@
+  const char *@var{string}, char **@var{endptr}, int @var{base})
+
+The @code{strtoll} function converts the string in @var{string} to a
+long long integer value according to the given @var{base}, which must be
+between 2 and 36 inclusive, or be the special value 0.  If @var{base}
+is 0, @code{strtoll} will look for the prefixes @code{0} and @code{0x}
+to indicate bases 8 and 16, respectively, else default to base 10.
+When the base is 16 (either explicitly or implicitly), a prefix of
+@code{0x} is allowed.  The handling of @var{endptr} is as that of
+@code{strtod} above.  The @code{strtoull} function is the same, except
+that the converted value is unsigned.
+
+@end deftypefn
+
+@c strsignal.c:498
 @deftypefn Extension int strtosigno (const char *@var{name})
 
 Given the symbolic name of a signal, map it to a signal number.  If no
@@ -1194,7 +1532,7 @@ translation is found, returns 0.
 
 @end deftypefn
 
-@c strverscmp.c:24
+@c strverscmp.c:29
 @deftypefun int strverscmp (const char *@var{s1}, const char *@var{s2})
 The @code{strverscmp} function compares the string @var{s1} against
 @var{s2}, considering them as holding indices/version numbers.  Return
@@ -1241,7 +1579,23 @@ This function is especially useful when dealing with filename sorting,
 because filenames frequently hold indices/version numbers.
 @end deftypefun
 
-@c tmpnam.c:3
+@c timeval-utils.c:43
+@deftypefn Extension void timeval_add (struct timeval *@var{a}, @
+  struct timeval *@var{b}, struct timeval *@var{result})
+
+Adds @var{a} to @var{b} and stores the result in @var{result}.
+
+@end deftypefn
+
+@c timeval-utils.c:67
+@deftypefn Extension void timeval_sub (struct timeval *@var{a}, @
+  struct timeval *@var{b}, struct timeval *@var{result})
+
+Subtracts @var{b} from @var{a} and stores the result in @var{result}.
+
+@end deftypefn
+
+@c tmpnam.c:5
 @deftypefn Supplemental char* tmpnam (char *@var{s})
 
 This function attempts to create a name for a temporary file, which
@@ -1280,7 +1634,7 @@ pointer unchanged.  If the @var{stream} is @code{NULL} do nothing.
 
 @end deftypefn
 
-@c vasprintf.c:47
+@c vasprintf.c:49
 @deftypefn Extension int vasprintf (char **@var{resptr}, const char *@var{format}, va_list @var{args})
 
 Like @code{vsprintf}, but instead of passing a pointer to a buffer,
@@ -1300,7 +1654,7 @@ Emulates @code{vfork} by calling @code{fork} and returning its value.
 
 @end deftypefn
 
-@c vprintf.c:3
+@c vprintf.c:5
 @deftypefn Supplemental int vprintf (const char *@var{format}, va_list @var{ap})
 @deftypefnx Supplemental int vfprintf (FILE *@var{stream}, const char *@var{format}, va_list @var{ap})
 @deftypefnx Supplemental int vsprintf (char *@var{str}, const char *@var{format}, va_list @var{ap})
@@ -1327,12 +1681,30 @@ system version of this function is used.
 
 @end deftypefn
 
-@c waitpid.c:3
+@c waitpid.c:5
 @deftypefn Supplemental int waitpid (int @var{pid}, int *@var{status}, int)
 
 This is a wrapper around the @code{wait} function.  Any ``special''
 values of @var{pid} depend on your implementation of @code{wait}, as
 does the return value.  The third argument is unused in @libib{}.
+
+@end deftypefn
+
+@c argv.c:319
+@deftypefn Extension int writeargv (const char **@var{argv}, FILE *@var{file})
+
+Write each member of ARGV, handling all necessary quoting, to the file
+named by FILE, separated by whitespace.  Return 0 on success, non-zero
+if an error occurred while writing to FILE.
+
+@end deftypefn
+
+@c xasprintf.c:31
+@deftypefn Replacement char* xasprintf (const char *@var{format}, ...)
+
+Print to allocated string without fail.  If @code{xasprintf} fails,
+this will print a message to @code{stderr} (using the name set by
+@code{xmalloc_set_program_name}, if any) and then call @code{xexit}.
 
 @end deftypefn
 
@@ -1375,7 +1747,7 @@ a program to contain @code{#define malloc xmalloc} in its source.
 
 @end deftypefn
 
-@c xmalloc.c:53
+@c xmalloc.c:62
 @deftypefn Replacement void xmalloc_failed (size_t)
 
 This function is not meant to be called by client code, and is listed
@@ -1385,6 +1757,16 @@ function will be called to print an error message and terminate execution.
 @end deftypefn
 
 @c xmalloc.c:46
+@deftypefn Replacement void xmalloc_set_malloc_hooks (PTR (*@var{nmalloc}) (size_t), PTR (*@var{ncalloc}) (size_t, size_t), PTR (*nrealloc) (PTR, @var{size_t}), void (*@var{nfree}) (PTR))
+
+Replace the implementations of @var{xmalloc}, @{xcalloc}, @{xrealloc},
+and @{xfree} with the provided functions.  By default, they will call
+the system functions @var{malloc}, @{calloc}, @{realloc}, and @{free},
+respectively
+
+@end deftypefn
+
+@c xmalloc.c:55
 @deftypefn Replacement void xmalloc_set_program_name (const char *@var{name})
 
 You can use this to set the name of the program used by
@@ -1431,6 +1813,15 @@ will never return a @code{NULL} pointer.
 Returns a pointer to a copy of @var{s} with at most @var{n} characters
 without fail, using @code{xmalloc} to obtain memory.  The result is
 always NUL terminated.
+
+@end deftypefn
+
+@c xvasprintf.c:38
+@deftypefn Replacement char* xvasprintf (const char *@var{format}, va_list @var{args})
+
+Print to allocated string without fail.  If @code{xvasprintf} fails,
+this will print a message to @code{stderr} (using the name set by
+@code{xmalloc_set_program_name}, if any) and then call @code{xexit}.
 
 @end deftypefn
 

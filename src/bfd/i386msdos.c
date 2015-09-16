@@ -1,26 +1,25 @@
-/* BFD back-end for MS-DOS executables.
-   Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2001, 2002,
-   2003, 2004, 2005 Free Software Foundation, Inc.
-   Written by Bryan Ford of the University of Utah.
+/* i386msdos.c: BFD back-end for MS-DOS executables.
+ * Copyright 1990-1996, 1998-2005 Free Software Foundation, Inc.
+ * Written by Bryan Ford of the University of Utah.
+ *
+ * Contributed by the Center for Software Science at the
+ * University of Utah <pa-gdb-bugs@cs.utah.edu>.  */
+/*
+This file is part of BFD, the Binary File Descriptor library.
 
-   Contributed by the Center for Software Science at the
-   University of Utah (pa-gdb-bugs@cs.utah.edu).
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
-   This file is part of BFD, the Binary File Descriptor library.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 
 #include "bfd.h"
@@ -29,106 +28,102 @@
 #include "libaout.h"
 
 #define EXE_MAGIC	0x5a4d
-#define EXE_LOAD_HIGH	0x0000
+#ifndef EXE_LOAD_HIGH
+# define EXE_LOAD_HIGH	0x0000
+#endif /* !EXE_LOAD_HIGH */
 #define EXE_LOAD_LOW	0xffff
 #define EXE_PAGE_SIZE	512
 
 static int msdos_sizeof_headers
-  PARAMS ((bfd *, bfd_boolean));
+  PARAMS((bfd *, bfd_boolean));
 static bfd_boolean msdos_write_object_contents
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 static bfd_boolean msdos_set_section_contents
-  PARAMS ((bfd *, sec_ptr, const PTR, file_ptr, bfd_size_type));
+  PARAMS((bfd *, sec_ptr, const PTR, file_ptr, bfd_size_type));
 
 static int
-msdos_sizeof_headers (abfd, exec)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_boolean exec ATTRIBUTE_UNUSED;
+msdos_sizeof_headers(bfd *abfd ATTRIBUTE_UNUSED,
+                     bfd_boolean exec ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
 static bfd_boolean
-msdos_write_object_contents (abfd)
-     bfd *abfd;
+msdos_write_object_contents(bfd *abfd)
 {
   static char hdr[EXE_PAGE_SIZE];
   file_ptr outfile_size = sizeof(hdr);
-  bfd_vma high_vma = 0;
+  bfd_vma high_vma = 0UL;
   asection *sec;
 
-  /* Find the total size of the program on disk and in memory.  */
-  for (sec = abfd->sections; sec != (asection *) NULL; sec = sec->next)
+  /* Find the total size of the program on disk and in memory: */
+  for (sec = abfd->sections; sec != (asection *)NULL; sec = sec->next)
     {
       if (sec->size == 0)
         continue;
       if (bfd_get_section_flags (abfd, sec) & SEC_ALLOC)
         {
-	  bfd_vma sec_vma = bfd_get_section_vma (abfd, sec) + sec->size;
+	  bfd_vma sec_vma = (bfd_get_section_vma(abfd, sec) + sec->size);
 	  if (sec_vma > high_vma)
 	    high_vma = sec_vma;
 	}
-      if (bfd_get_section_flags (abfd, sec) & SEC_LOAD)
+      if (bfd_get_section_flags(abfd, sec) & SEC_LOAD)
         {
-	  file_ptr sec_end = (sizeof (hdr)
-			      + bfd_get_section_vma (abfd, sec)
+	  file_ptr sec_end = (sizeof(hdr)
+			      + bfd_get_section_vma(abfd, sec)
 			      + sec->size);
 	  if (sec_end > outfile_size)
 	    outfile_size = sec_end;
 	}
     }
 
-  /* Make sure the program isn't too big.  */
+  /* Make sure the program is NOT too big: */
   if (high_vma > (bfd_vma)0xffff)
     {
       bfd_set_error(bfd_error_file_too_big);
       return FALSE;
     }
 
-  /* Constants.  */
-  H_PUT_16 (abfd, EXE_MAGIC, &hdr[0]);
-  H_PUT_16 (abfd, EXE_PAGE_SIZE / 16, &hdr[8]);
-  H_PUT_16 (abfd, EXE_LOAD_LOW, &hdr[12]);
-  H_PUT_16 (abfd, 0x3e, &hdr[24]);
-  H_PUT_16 (abfd, 0x0001, &hdr[28]); /* XXX??? */
-  H_PUT_16 (abfd, 0x30fb, &hdr[30]); /* XXX??? */
-  H_PUT_16 (abfd, 0x726a, &hdr[32]); /* XXX??? */
+  /* Constants: */
+  H_PUT_16(abfd, EXE_MAGIC, &hdr[0]);
+  H_PUT_16(abfd, (EXE_PAGE_SIZE / 16), &hdr[8]);
+  H_PUT_16(abfd, EXE_LOAD_LOW, &hdr[12]);
+  H_PUT_16(abfd, 0x3e, &hdr[24]);
+  H_PUT_16(abfd, 0x0001, &hdr[28]); /* XXX??? */
+  H_PUT_16(abfd, 0x30fb, &hdr[30]); /* XXX??? */
+  H_PUT_16(abfd, 0x726a, &hdr[32]); /* XXX??? */
 
-  /* Bytes in last page (0 = full page).  */
-  H_PUT_16 (abfd, outfile_size & (EXE_PAGE_SIZE - 1), &hdr[2]);
+  /* Bytes in last page (0 = full page): */
+  H_PUT_16(abfd, (outfile_size & (EXE_PAGE_SIZE - 1)), &hdr[2]);
 
-  /* Number of pages.  */
-  H_PUT_16 (abfd, (outfile_size + EXE_PAGE_SIZE - 1) / EXE_PAGE_SIZE, &hdr[4]);
+  /* Number of pages: */
+  H_PUT_16(abfd, ((outfile_size + EXE_PAGE_SIZE - 1) / EXE_PAGE_SIZE),
+           &hdr[4]);
 
   /* Set the initial stack pointer to the end of the bss.
-     The program's crt0 code must relocate it to a real stack.  */
-  H_PUT_16 (abfd, high_vma, &hdr[16]);
+   * The program's crt0 code must relocate it to a real stack: */
+  H_PUT_16(abfd, high_vma, &hdr[16]);
 
-  if (bfd_seek (abfd, (file_ptr) 0, SEEK_SET) != 0
-      || bfd_bwrite (hdr, (bfd_size_type) sizeof(hdr), abfd) != sizeof(hdr))
+  if ((bfd_seek(abfd, (file_ptr) 0, SEEK_SET) != 0)
+      || (bfd_bwrite(hdr, (bfd_size_type) sizeof(hdr), abfd) != sizeof(hdr)))
     return FALSE;
 
   return TRUE;
 }
 
 static bfd_boolean
-msdos_set_section_contents (abfd, section, location, offset, count)
-     bfd *abfd;
-     sec_ptr section;
-     const PTR location;
-     file_ptr offset;
-     bfd_size_type count;
+msdos_set_section_contents(bfd *abfd, sec_ptr section, const PTR location,
+                           file_ptr offset, bfd_size_type count)
 {
-
   if (count == 0)
     return TRUE;
 
-  section->filepos = EXE_PAGE_SIZE + bfd_get_section_vma (abfd, section);
+  section->filepos = (EXE_PAGE_SIZE + bfd_get_section_vma(abfd, section));
 
-  if (bfd_get_section_flags (abfd, section) & SEC_LOAD)
+  if (bfd_get_section_flags(abfd, section) & SEC_LOAD)
     {
-      if (bfd_seek (abfd, section->filepos + offset, SEEK_SET) != 0
-          || bfd_bwrite (location, count, abfd) != count)
+      if ((bfd_seek(abfd, section->filepos + offset, SEEK_SET) != 0)
+          || (bfd_bwrite(location, count, abfd) != count))
         return FALSE;
     }
 
@@ -181,7 +176,9 @@ msdos_set_section_contents (abfd, section, location, offset, count)
 
 #define msdos_canonicalize_reloc _bfd_norelocs_canonicalize_reloc
 #define msdos_get_reloc_upper_bound _bfd_norelocs_get_reloc_upper_bound
-#define msdos_32_bfd_link_split_section  _bfd_generic_link_split_section
+#ifndef msdos_32_bfd_link_split_section
+# define msdos_32_bfd_link_split_section _bfd_generic_link_split_section
+#endif /* !msdos_32_bfd_link_split_section */
 
 const bfd_target i386msdos_vec =
   {
@@ -221,19 +218,26 @@ const bfd_target i386msdos_vec =
       bfd_false,
     },
 
-    BFD_JUMP_TABLE_GENERIC (msdos),
-    BFD_JUMP_TABLE_COPY (_bfd_generic),
-    BFD_JUMP_TABLE_CORE (_bfd_nocore),
-    BFD_JUMP_TABLE_ARCHIVE (_bfd_noarchive),
-    BFD_JUMP_TABLE_SYMBOLS (msdos),
-    BFD_JUMP_TABLE_RELOCS (msdos),
-    BFD_JUMP_TABLE_WRITE (msdos),
-    BFD_JUMP_TABLE_LINK (msdos),
-    BFD_JUMP_TABLE_DYNAMIC (_bfd_nodynamic),
+    BFD_JUMP_TABLE_GENERIC(msdos),
+    BFD_JUMP_TABLE_COPY(_bfd_generic),
+    BFD_JUMP_TABLE_CORE(_bfd_nocore),
+    BFD_JUMP_TABLE_ARCHIVE(_bfd_noarchive),
+    BFD_JUMP_TABLE_SYMBOLS(msdos),
+    BFD_JUMP_TABLE_RELOCS(msdos),
+    BFD_JUMP_TABLE_WRITE(msdos),
+    BFD_JUMP_TABLE_LINK(msdos),
+    BFD_JUMP_TABLE_DYNAMIC(_bfd_nodynamic),
 
     NULL,
 
-    (PTR) 0
+    (PTR)0
   };
 
+#ifdef EXE_LOAD_HIGH
+# undef EXE_LOAD_HIGH
+#endif /* EXE_LOAD_HIGH */
+#ifdef msdos_32_bfd_link_split_section
+# undef msdos_32_bfd_link_split_section
+#endif /* msdos_32_bfd_link_split_section */
 
+/* EOF */

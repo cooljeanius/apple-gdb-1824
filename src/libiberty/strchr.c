@@ -1,4 +1,4 @@
-/* Portable version of strchr()
+/* strchr.c: Portable version of strchr()
    This function is in the public domain.  */
 
 /*
@@ -16,7 +16,7 @@ null character, the results are undefined.
 #include <ansidecl.h>
 
 char *
-strchr (register const char *s, int c)
+strchr(register const char *s, int c)
 {
   do {
     if (*s == c)
@@ -26,3 +26,5 @@ strchr (register const char *s, int c)
   } while (*s++);
   return (0);
 }
+
+/* EOF */

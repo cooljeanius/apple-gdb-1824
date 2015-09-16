@@ -1,4 +1,5 @@
-/* memmove - some systems lack this */
+/* exp_memmove.c */
+/* memmove() - some systems lack this */
 
 #include "expect_cf.h"
 #include "tcl.h"
@@ -22,6 +23,9 @@ int n;
 	} else for (;0<n;--n) *d++ = *s++;
 	return dest;
 }
+#else
+typedef int exp_memmove_c_dummy_t;
+extern exp_memmove_c_dummy_t exp_memmove_c_dummy_var;
 #endif /* HAVE_MEMMOVE */
 
 /* EOF */

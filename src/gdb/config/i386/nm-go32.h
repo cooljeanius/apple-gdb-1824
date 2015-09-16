@@ -1,4 +1,5 @@
-/* Native definitions for Intel x86 running DJGPP.
+/* nm-go32.h
+   Native definitions for Intel x86 running DJGPP.
    Copyright 1997, 1998, 1999, 2001, 2002 Free Software Foundation, Inc.
 
    This file is part of GDB.

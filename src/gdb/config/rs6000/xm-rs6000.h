@@ -1,4 +1,5 @@
-/* Parameters for hosting on an RS6000, for GDB, the GNU debugger.
+/* xm-rs6000.h
+   Parameters for hosting on an RS6000, for GDB, the GNU debugger.
    Copyright 1986, 1987, 1989, 1991, 1992, 1993, 1994, 1995, 1996, 1998,
    2000, 2001 Free Software Foundation, Inc.
    Contributed by IBM Corporation.

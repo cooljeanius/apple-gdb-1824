@@ -1,4 +1,4 @@
-/* Manages interpreters for GDB, the GNU debugger.
+/* interps.h: Manages interpreters for GDB, the GNU debugger.
 
    Copyright 2000, 2002, 2003 Free Software Foundation, Inc.
 
@@ -72,10 +72,10 @@ extern void interp_add (struct interp *interp);
 extern struct interp *interp_set (struct interp *interp);
 int interp_set_quiet (struct interp *interp, int quiet);
 extern struct interp *interp_lookup (const char *name);
-/* APPLE LOCAL: This is a useful function.  */
-extern struct interp *current_interp ();
+/* APPLE LOCAL: This is a useful function: */
+extern struct interp *current_interp (void);
 extern struct ui_out *interp_ui_out (struct interp *interp);
-/* APPLE LOCAL: Use for redirection an extant interpreter's output.  */
+/* APPLE LOCAL: Use for redirection an extant interpreter's output: */
 extern struct ui_out *interp_set_ui_out (struct interp *interp,
 					 struct ui_out *new_uiout);
 

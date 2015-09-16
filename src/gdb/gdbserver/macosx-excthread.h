@@ -7,6 +7,25 @@
 
 #include <sys/wait.h>
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning not including autoheader-generated config header
+# define MACOSX_EXCTHREAD_H_NON_AUTOTOOLS_BUILD 1
+#endif /* HAVE_CONFIG_H */
+
+#ifdef HAVE_MACH_EXCEPTION_TYPES_H
+# include <mach/exception_types.h>
+#else
+# if defined(__APPLE__) && !defined(MACOSX_EXCTHREAD_H_NON_AUTOTOOLS_BUILD)
+#  ifndef exception_mask_t
+#   warning macosx-excthread.h needs to include <mach/exception_types.h> for exception_mask_t
+#  else
+#   warning macosx-excthread.h expects <mach/exception_types.h> to be included.
+#  endif /* !exception_mask_t */
+# endif /* __APPLE__ && !MACOSX_EXCTHREAD_H_NON_AUTOTOOLS_BUILD */
+#endif /* HAVE_MACH_EXCEPTION_TYPES_H */
+
 struct macosx_exception_info
 {
   exception_mask_t masks[EXC_TYPES_COUNT];
@@ -56,3 +75,5 @@ void macosx_exception_get_write_lock (macosx_exception_thread_status *s);
 void macosx_exception_release_write_lock (macosx_exception_thread_status *s);
 
 #endif /* __GDB_MACOSX_NAT_EXCTHREAD_H__ */
+
+/* EOF */

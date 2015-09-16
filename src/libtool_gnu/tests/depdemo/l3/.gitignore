@@ -1,0 +1,14 @@
+libl3.la
+./so_locations
+*libs/*
+*.o
+*.lo
+*.tab.c
+TAGS
+ID
+GTAGS
+GRTAGS
+GSYMS
+GPATH
+tags
+Makefile

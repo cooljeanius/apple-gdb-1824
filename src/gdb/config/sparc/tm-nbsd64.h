@@ -1,4 +1,5 @@
-/* Macro definitions for UltraSPARC running under NetBSD.
+/* tm-nbsd64.h
+   Macro definitions for UltraSPARC running under NetBSD.
    Copyright 1994, 2002 Free Software Foundation, Inc.
 
    This file is part of GDB.

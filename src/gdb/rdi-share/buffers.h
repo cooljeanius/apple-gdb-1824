@@ -1,6 +1,6 @@
-/* 
+/* buffers.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -35,7 +35,7 @@ typedef unsigned char *p_Buffer;
 # define BUFFERDATA(b)  (b)     /* channels layer takes care of it */
 #else
 # define BUFFERDATA(b)  (&((b)[CHAN_HEADER_SIZE]))
-#endif
+#endif /* TARGET */
 
 
 /*
@@ -54,12 +54,12 @@ typedef unsigned char *p_Buffer;
  *                     sizes in on return
  */
 
-void Angel_BufferQuerySizes(unsigned int *default_size, 
+void Angel_BufferQuerySizes(unsigned int *default_size,
                             unsigned int *max_size );
 
 /*
  * Function: Angel_RxEnginBuffersLeft
- *  Purpose: return the number of free buffers 
+ *  Purpose: return the number of free buffers
  *
  *   Params:
  *            Returns: number of free buffers
@@ -68,12 +68,12 @@ unsigned int Angel_BuffersLeft( void );
 
 /*
  * Function: Angel_BufferAlloc
- *  Purpose: allocate a buffer that is at least req_size bytes long 
+ *  Purpose: allocate a buffer that is at least req_size bytes long
  *
  *   Params:
  *              Input: req_size     the required size of the buffer
  *
- *              Returns: pointer to the buffer NULL if unable to 
+ *              Returns: pointer to the buffer NULL if unable to
  *                       fulfil the request
  */
 p_Buffer     Angel_BufferAlloc(unsigned int  req_size);

@@ -2188,8 +2188,8 @@ _frvfdpic_emit_got_relocs_plt_entries (struct frvfdpic_relocs_info *entry,
 /* Handle an FRV small data reloc.  */
 
 static bfd_reloc_status_type
-elf32_frv_relocate_gprel12 (info, input_bfd, input_section, relocation,
-			    contents, value)
+elf32_frv_relocate_gprel12(info, input_bfd, input_section, relocation,
+			   contents, value)
      struct bfd_link_info *info;
      bfd *input_bfd;
      asection *input_section;
@@ -2227,8 +2227,8 @@ elf32_frv_relocate_gprel12 (info, input_bfd, input_section, relocation,
 /* Handle an FRV small data reloc. for the u12 field.  */
 
 static bfd_reloc_status_type
-elf32_frv_relocate_gprelu12 (info, input_bfd, input_section, relocation,
-			     contents, value)
+elf32_frv_relocate_gprelu12(info, input_bfd, input_section, relocation,
+			    contents, value)
      struct bfd_link_info *info;
      bfd *input_bfd;
      asection *input_section;
@@ -2261,56 +2261,49 @@ elf32_frv_relocate_gprelu12 (info, input_bfd, input_section, relocation,
   mask = 0x3f03f;
   insn = (insn & ~mask) | ((value & 0xfc0) << 12) | (value & 0x3f);
 
-  bfd_put_32 (input_bfd, insn, contents + relocation->r_offset);
+  bfd_put_32(input_bfd, insn, contents + relocation->r_offset);
 
   return bfd_reloc_ok;
 }
 
-/* Handle an FRV ELF HI16 reloc.  */
-
+/* Handle an FRV ELF HI16 reloc: */
 static bfd_reloc_status_type
-elf32_frv_relocate_hi16 (input_bfd, relhi, contents, value)
-     bfd *input_bfd;
-     Elf_Internal_Rela *relhi;
-     bfd_byte *contents;
-     bfd_vma value;
+elf32_frv_relocate_hi16(bfd *input_bfd, Elf_Internal_Rela *relhi,
+                        bfd_byte *contents, bfd_vma value)
 {
   bfd_vma insn;
 
-  insn = bfd_get_32 (input_bfd, contents + relhi->r_offset);
+  insn = bfd_get_32(input_bfd, contents + relhi->r_offset);
 
   value += relhi->r_addend;
   value = ((value >> 16) & 0xffff);
 
-  insn = (insn & 0xffff0000) | value;
+  insn = ((insn & 0xffff0000) | value);
 
-  if ((long) value > 0xffff || (long) value < -0x10000)
+  if (((long)value > 0xffff) || ((long)value < -0x10000))
     return bfd_reloc_overflow;
 
-  bfd_put_32 (input_bfd, insn, contents + relhi->r_offset);
+  bfd_put_32(input_bfd, insn, (contents + relhi->r_offset));
   return bfd_reloc_ok;
-
 }
+
 static bfd_reloc_status_type
-elf32_frv_relocate_lo16 (input_bfd, rello, contents, value)
-     bfd *input_bfd;
-     Elf_Internal_Rela *rello;
-     bfd_byte *contents;
-     bfd_vma value;
+elf32_frv_relocate_lo16(bfd *input_bfd, Elf_Internal_Rela *rello,
+                        bfd_byte *contents, bfd_vma value)
 {
   bfd_vma insn;
 
-  insn = bfd_get_32 (input_bfd, contents + rello->r_offset);
+  insn = bfd_get_32(input_bfd, contents + rello->r_offset);
 
   value += rello->r_addend;
-  value = value & 0xffff;
+  value = (value & 0xffff);
 
-  insn = (insn & 0xffff0000) | value;
+  insn = ((insn & 0xffff0000) | value);
 
-  if ((long) value > 0xffff || (long) value < -0x10000)
+  if (((long)value > 0xffff) || ((long)value < -0x10000))
     return bfd_reloc_overflow;
 
-  bfd_put_32 (input_bfd, insn, contents + rello->r_offset);
+  bfd_put_32(input_bfd, insn, contents + rello->r_offset);
   return bfd_reloc_ok;
 }
 
@@ -4257,12 +4250,12 @@ _frvfdpic_link_omit_section_dynsym (bfd *output_bfd ATTRIBUTE_UNUSED,
    elflink.c:_bfd_elf_create_got_section().  */
 
 static bfd_boolean
-_frv_create_got_section (bfd *abfd, struct bfd_link_info *info)
+_frv_create_got_section(bfd *abfd, struct bfd_link_info *info)
 {
   flagword flags, pltflags;
   asection *s;
-  struct elf_link_hash_entry *h;
-  struct bfd_link_hash_entry *bh;
+  struct elf_link_hash_entry *h0;
+  struct bfd_link_hash_entry *bh0;
   const struct elf_backend_data *bed = get_elf_backend_data (abfd);
   int ptralign;
   int offset;
@@ -4301,25 +4294,29 @@ _frv_create_got_section (bfd *abfd, struct bfd_link_info *info)
 	 (or .got.plt) section.  We don't do this in the linker script
 	 because we don't want to define the symbol if we are not creating
 	 a global offset table.  */
-      bh = NULL;
-      if (!(_bfd_generic_link_add_one_symbol
-	    (info, abfd, "_GLOBAL_OFFSET_TABLE_", BSF_GLOBAL, s,
-	     0, (const char *) NULL, FALSE, bed->collect, &bh)))
+      bh0 = NULL;
+      if (!(_bfd_generic_link_add_one_symbol(info, abfd,
+                                             "_GLOBAL_OFFSET_TABLE_",
+                                             BSF_GLOBAL, s, 0,
+                                             (const char *)NULL, FALSE,
+                                             bed->collect, &bh0)))
 	return FALSE;
-      h = (struct elf_link_hash_entry *) bh;
-      h->def_regular = 1;
-      h->type = STT_OBJECT;
-      /* h->other = STV_HIDDEN; */ /* Should we?  */
+      h0 = (struct elf_link_hash_entry *)bh0;
+      h0->def_regular = 1;
+      h0->type = STT_OBJECT;
+#ifdef WE_SHOULD
+      h0->other = STV_HIDDEN; /* Should we?  */
+#endif /* WE_SHOULD */
 
       /* Machine-specific: we want the symbol for executables as
 	 well.  */
-      if (! bfd_elf_link_record_dynamic_symbol (info, h))
+      if (! bfd_elf_link_record_dynamic_symbol(info, h0))
 	return FALSE;
 
-      elf_hash_table (info)->hgot = h;
+      elf_hash_table(info)->hgot = h0;
     }
 
-  /* The first bit of the global offset table is the header.  */
+  /* The first bit of the global offset table is the header: */
   s->size += bed->got_header_size;
 
   /* This is the machine-specific part.  Create and initialize section
@@ -4356,27 +4353,29 @@ _frv_create_got_section (bfd *abfd, struct bfd_link_info *info)
   else
     {
       offset = 2048;
-      flags = BSF_GLOBAL | BSF_WEAK;
+      flags = (BSF_GLOBAL | BSF_WEAK);
     }
 
   /* Define _gp in .rofixup, for FDPIC, or .got otherwise.  If it
      turns out that we're linking with a different linker script, the
      linker script will override it.  */
-  bh = NULL;
-  if (!(_bfd_generic_link_add_one_symbol
-	(info, abfd, "_gp", flags, s, offset, (const char *) NULL, FALSE,
-	 bed->collect, &bh)))
+  bh0 = NULL;
+  if (!(_bfd_generic_link_add_one_symbol(info, abfd, "_gp", flags, s,
+                                         offset, (const char *)NULL, FALSE,
+                                         bed->collect, &bh0)))
     return FALSE;
-  h = (struct elf_link_hash_entry *) bh;
-  h->def_regular = 1;
-  h->type = STT_OBJECT;
-  /* h->other = STV_HIDDEN; */ /* Should we?  */
+  h0 = (struct elf_link_hash_entry *)bh0;
+  h0->def_regular = 1;
+  h0->type = STT_OBJECT;
+#ifdef WE_SHOULD
+  h0->other = STV_HIDDEN; /* Should we?  */
+#endif /* WE_SHOULD */
 
-  /* Machine-specific: we want the symbol for executables as well.  */
-  if (IS_FDPIC (abfd) && ! bfd_elf_link_record_dynamic_symbol (info, h))
+  /* Machine-specific: we want the symbol for executables as well: */
+  if (IS_FDPIC(abfd) && ! bfd_elf_link_record_dynamic_symbol(info, h0))
     return FALSE;
 
-  if (!IS_FDPIC (abfd))
+  if (!IS_FDPIC(abfd))
     return TRUE;
 
   /* FDPIC supports Thread Local Storage, and this may require a
@@ -4392,42 +4391,46 @@ _frv_create_got_section (bfd *abfd, struct bfd_link_info *info)
   if (bed->plt_readonly)
     pltflags |= SEC_READONLY;
 
-  s = bfd_make_section_with_flags (abfd, ".plt", pltflags);
+  s = bfd_make_section_with_flags(abfd, ".plt", pltflags);
   if (s == NULL
-      || ! bfd_set_section_alignment (abfd, s, bed->plt_alignment))
+      || ! bfd_set_section_alignment(abfd, s, bed->plt_alignment))
     return FALSE;
-  /* FRV-specific: remember it.  */
-  frvfdpic_plt_section (info) = s;
+  /* FRV-specific: remember it: */
+  frvfdpic_plt_section(info) = s;
 
   if (bed->want_plt_sym)
     {
       /* Define the symbol _PROCEDURE_LINKAGE_TABLE_ at the start of the
 	 .plt section.  */
-      struct elf_link_hash_entry *h;
-      struct bfd_link_hash_entry *bh = NULL;
+      struct elf_link_hash_entry *h1;
+      struct bfd_link_hash_entry *bh1 = NULL;
 
-      if (! (_bfd_generic_link_add_one_symbol
-	     (info, abfd, "_PROCEDURE_LINKAGE_TABLE_", BSF_GLOBAL, s, 0, NULL,
-	      FALSE, get_elf_backend_data (abfd)->collect, &bh)))
+      if (!(_bfd_generic_link_add_one_symbol(info, abfd,
+                                             "_PROCEDURE_LINKAGE_TABLE_",
+                                             BSF_GLOBAL, s, 0, NULL, FALSE,
+                                             get_elf_backend_data(abfd)->collect,
+                                             &bh1)))
 	return FALSE;
-      h = (struct elf_link_hash_entry *) bh;
-      h->def_regular = 1;
-      h->type = STT_OBJECT;
-      /* h->other = STV_HIDDEN; */ /* Should we?  */
+      h1 = (struct elf_link_hash_entry *)bh1;
+      h1->def_regular = 1;
+      h1->type = STT_OBJECT;
+#ifdef WE_SHOULD
+      h1->other = STV_HIDDEN; /* Should we?  */
+#endif /* WE_SHOULD */
 
       if (! info->executable
-	  && ! bfd_elf_link_record_dynamic_symbol (info, h))
+	  && ! bfd_elf_link_record_dynamic_symbol(info, h1))
 	return FALSE;
     }
 
-  /* FRV-specific: we want rel relocations for the plt.  */
-  s = bfd_make_section_with_flags (abfd, ".rel.plt",
-				   flags | SEC_READONLY);
+  /* FRV-specific: we want rel relocations for the plt: */
+  s = bfd_make_section_with_flags(abfd, ".rel.plt",
+				  (flags | SEC_READONLY));
   if (s == NULL
-      || ! bfd_set_section_alignment (abfd, s, bed->s->log_file_align))
+      || ! bfd_set_section_alignment(abfd, s, bed->s->log_file_align))
     return FALSE;
-  /* FRV-specific: remember it.  */
-  frvfdpic_pltrel_section (info) = s;
+  /* FRV-specific: remember it: */
+  frvfdpic_pltrel_section(info) = s;
 
   return TRUE;
 }
@@ -6873,7 +6876,9 @@ frv_elf_print_private_bfd_data (abfd, ptr)
 #define elf_backend_want_got_plt	0
 #define elf_backend_plt_readonly	1
 #define elf_backend_want_plt_sym	0
-#define elf_backend_plt_header_size	0
+#ifndef elf_backend_plt_header_size
+# define elf_backend_plt_header_size	0
+#endif /* !elf_backend_plt_header_size */
 
 #define elf_backend_finish_dynamic_sections \
 		elf32_frv_finish_dynamic_sections
@@ -6939,7 +6944,7 @@ frv_elf_print_private_bfd_data (abfd, ptr)
 #define elf_backend_may_use_rel_p       1
 #undef elf_backend_may_use_rela_p
 #define elf_backend_may_use_rela_p      1
-/* We use REL for dynamic relocations only.  */
+/* We use REL for dynamic relocations only: */
 #undef elf_backend_default_use_rela_p
 #define elf_backend_default_use_rela_p  1
 
@@ -6947,3 +6952,9 @@ frv_elf_print_private_bfd_data (abfd, ptr)
 #define elf_backend_omit_section_dynsym _frvfdpic_link_omit_section_dynsym
 
 #include "elf32-target.h"
+
+#ifdef elf_backend_plt_header_size
+# undef elf_backend_plt_header_size
+#endif /* elf_backend_plt_header_size */
+
+/* EOF */

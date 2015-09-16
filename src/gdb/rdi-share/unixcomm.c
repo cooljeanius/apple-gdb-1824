@@ -1,6 +1,6 @@
-/* 
+/* unixcomm.c
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -15,7 +15,15 @@
 
 #ifdef __hpux
 #  define _POSIX_SOURCE 1
-#endif
+#endif /* __hpux */
+
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning unixcomm.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -27,7 +35,7 @@
 #  undef _TERMIOS_INCLUDED
 #else
 #  include <termios.h>
-#endif
+#endif /* __hpux */
 
 #include <string.h>
 #include <fcntl.h>
@@ -37,9 +45,9 @@
 #include <sys/time.h>
 
 #if defined (__FreeBSD__) || defined (__NetBSD__) || defined (__OpenBSD__) || defined (bsdi)
-#undef BSD
-#include <sys/ioctl.h>
-#endif
+# undef BSD
+# include <sys/ioctl.h>
+#endif /* bsd-variants */
 
 #ifdef sun
 # include <sys/ioccom.h>
@@ -47,72 +55,81 @@
 #  include <sys/bpp_io.h>
 # else
 #  include <sbusdev/bpp_io.h>
-# endif
-#endif
+# endif /* __svr4__ */
+#endif /* sun */
 
 #ifdef BSD
 # ifdef sun
 #  include <sys/ttydev.h>
-# endif
-# ifdef __alpha 
+# endif /* sun */
+# ifdef __alpha
 #  include <sys/ioctl.h>
 # else
 #  include <sys/filio.h>
-# endif
-#endif
+# endif /* __alpha */
+#endif /* BSD */
 
 #ifdef __hpux
 #  define _INCLUDE_HPUX_SOURCE
 #  include <sys/ioctl.h>
 #  undef _INCLUDE_HPUX_SOURCE
-#endif
+#endif /* __hpux */
+
+#ifndef ioctl
+# ifdef HAVE_SYS_IOCTL_H
+#  include <sys/ioctl.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "unixcomm.c expects <sys/ioctl.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_SYS_IOCTL_H */
+#endif /* !ioctl */
 
 #include "host.h"
+#include "hsys.h" /* for panic() */
 #include "unixcomm.h"
 
 #define PP_TIMEOUT      1              /* seconds */
 
 #ifdef sun
-#define SERIAL_PREFIX "/dev/tty"
-#define SERPORT1   "/dev/ttya"
-#define SERPORT2   "/dev/ttyb"
-#define PARPORT1   "/dev/bpp0"
-#define PARPORT2   "/dev/bpp1"
-#endif
+# define SERIAL_PREFIX "/dev/tty"
+# define SERPORT1   "/dev/ttya"
+# define SERPORT2   "/dev/ttyb"
+# define PARPORT1   "/dev/bpp0"
+# define PARPORT2   "/dev/bpp1"
+#endif /* sun */
 
 #ifdef __hpux
-#define SERIAL_PREFIX "/dev/tty"
-#define SERPORT1   "/dev/tty00"
-#define SERPORT2   "/dev/tty01"
-#define PARPORT1   "/dev/ptr_parallel"
-#define PARPORT2   "/dev/ptr_parallel"
-#endif
+# define SERIAL_PREFIX "/dev/tty"
+# define SERPORT1   "/dev/tty00"
+# define SERPORT2   "/dev/tty01"
+# define PARPORT1   "/dev/ptr_parallel"
+# define PARPORT2   "/dev/ptr_parallel"
+#endif /* __hpux */
 
 #ifdef __linux__
-#define SERIAL_PREFIX "/dev/ttyS"
-#define SERPORT1   "/dev/ttyS0"
-#define SERPORT2   "/dev/ttyS1"
-#define PARPORT1   "/dev/par0"
-#define PARPORT2   "/dev/par1"
-#endif
+# define SERIAL_PREFIX "/dev/ttyS"
+# define SERPORT1   "/dev/ttyS0"
+# define SERPORT2   "/dev/ttyS1"
+# define PARPORT1   "/dev/par0"
+# define PARPORT2   "/dev/par1"
+#endif /* __linux__ */
 
-#if defined(_WIN32) || defined (__CYGWIN__) 
-#define SERIAL_PREFIX "com"
-#define SERPORT1   "com1"
-#define SERPORT2   "com2"
-#define PARPORT1   "lpt1"
-#define PARPORT2   "lpt2"
-#endif
+#if defined(_WIN32) || defined (__CYGWIN__)
+# define SERIAL_PREFIX "com"
+# define SERPORT1   "com1"
+# define SERPORT2   "com2"
+# define PARPORT1   "lpt1"
+# define PARPORT2   "lpt2"
+#endif /* _WIN32 || __CYGWIN__ */
 
 #if !defined (SERIAL_PREFIX)
-#define SERIAL_PREFIX "/dev/cuaa"
-#define SERPORT1   "/dev/cuaa0"
-#define SERPORT2   "/dev/cuaa1"
-#define PARPORT1   "/dev/lpt0"
-#define PARPORT2   "/dev/lpt1"
-#endif
-
-
+# define SERIAL_PREFIX "/dev/cuaa"
+# define SERPORT1   "/dev/cuaa0"
+# define SERPORT2   "/dev/cuaa1"
+# define PARPORT1   "/dev/lpt0"
+# define PARPORT2   "/dev/lpt1"
+#endif /* !SERIAL_PREFIX */
 
 
 /*
@@ -121,7 +138,7 @@
 
 #ifdef sun
 struct bpp_pins bp;
-#endif
+#endif /* sun */
 
 static int serpfd = -1;
 static int parpfd = -1;
@@ -154,7 +171,7 @@ extern const char *Unix_MatchValidSerialDevice(const char *name)
   }
   if (strcmp(name, "2") == 0) return SERPORT2;
 
-  /* It wasn't one of the simple cases, so now we have to parse it
+  /* It was NOT one of the simple cases, so now we have to parse it
    * properly
    */
 
@@ -164,7 +181,7 @@ extern const char *Unix_MatchValidSerialDevice(const char *name)
         /* Skip over commas */
         i++;
         break;
-      
+
       default:
         return 0;
         /* Unexpected character => error - not matched */
@@ -179,12 +196,12 @@ extern const char *Unix_MatchValidSerialDevice(const char *name)
       case 'H': {
         char ch = tolower(name[i]);
         int j, continue_from, len;
-        
+
         /* If the next character is a comma or a NULL then this is
          * a request for the default Serial port
          */
         if (name[++i] == 0 || name[i] == ',') {
-          if (ch=='s') 
+          if (ch=='s')
               sername=SERPORT1;
           break;
         }
@@ -206,9 +223,9 @@ extern const char *Unix_MatchValidSerialDevice(const char *name)
           case 's': {
             /* Match serial port */
             if (len==1) {
-              if (name[i]=='1') 
+              if (name[i]=='1')
                   sername=SERPORT1;
-              else if (name[i]=='2') 
+              else if (name[i]=='2')
                   sername=SERPORT2;
             } else if (len==strlen(SERPORT1)) {
               if (strncmp(name+i,SERPORT1,strlen(SERPORT1)) == 0)
@@ -220,7 +237,7 @@ extern const char *Unix_MatchValidSerialDevice(const char *name)
             break;
           }
 
-          case 'h': 
+          case 'h':
             /* We don't actually deal with the H case here, we just
              * match it and allow it through.
              */
@@ -252,7 +269,7 @@ extern int Unix_OpenSerial(const char *name)
     serpfd = open(name, O_RDWR);
 #else
     serpfd = open(name, O_RDWR | O_NONBLOCK);
-#endif
+#endif /* BSD || __CYGWIN__ */
 
     if (serpfd < 0) {
         perror("open");
@@ -264,7 +281,7 @@ extern int Unix_OpenSerial(const char *name)
         perror("ioctl: TIOCEXCL");
         return -1;
     }
-#endif
+#endif /* TIOCEXCL */
 
     return 0;
 }
@@ -290,27 +307,23 @@ extern int Unix_ReadSerial(unsigned char *buf, int n, bool block)
     tv.tv_sec = 0;
     tv.tv_usec = (block ? 10000 : 0);
 
-    err = select(serpfd + 1, &fdset, NULL, NULL, &tv);
+    err = select((serpfd + 1), &fdset, NULL, NULL, &tv);
 
-    if (err < 0 && errno != EINTR)
-    {
+    if ((err < 0) && (errno != EINTR)) {
 #ifdef DEBUG
         perror("select");
-#endif
+#endif /* DEBUG */
         panic("select failure");
         return -1;
-    }
-    else if (err > 0 && FD_ISSET(serpfd, &fdset))
-      {
+    } else if ((err > 0) && FD_ISSET(serpfd, &fdset)) {
 	int s;
 
 	s = read(serpfd, buf, n);
-	if (s < 0)
-	  perror("read:");
+	if (s < 0) {
+	    perror("read:");
+	}
 	return s;
-      }
-    else /* err == 0 || FD_CLR(serpfd, &fdset) */
-    {
+    } else { /* ((err == 0) || FD_CLR(serpfd, &fdset)) */
         errno = ERRNO_FOR_BLOCKED_IO;
         return -1;
     }
@@ -355,7 +368,7 @@ extern void Unix_ioctlNonBlocking(void)
 
     if (parpfd != -1)
         (void)ioctl(parpfd, FIONBIO, &nonblockingIO);
-#endif
+#endif /* BSD */
 }
 
 extern void Unix_IsValidParallelDevice(
@@ -374,7 +387,7 @@ extern void Unix_IsValidParallelDevice(
         /* Skip over commas */
         i++;
         break;
-      
+
       default:
       case 0:
         /* End of string or bad characcter means we have finished */
@@ -388,7 +401,7 @@ extern void Unix_IsValidParallelDevice(
       case 'H': {
         char ch = tolower(portstring[i]);
         int j, continue_from, len;
-        
+
         /* If the next character is a comma or a NULL then this is
          * a request for the default Serial or Parallel port
          */
@@ -440,8 +453,8 @@ extern void Unix_IsValidParallelDevice(
             break;
           }
 
-          case 'h': 
-            /* We don't actually deal with the H case here, we just
+          case 'h':
+            /* We do NOT actually deal with the H case here, we just
              * match it and allow it through.
              */
             break;
@@ -470,7 +483,7 @@ extern int Unix_OpenParallel(const char *name)
     parpfd = open(name, O_RDWR);
 #else
     parpfd = open(name, O_RDWR | O_NONBLOCK);
-#endif
+#endif /* BSD */
 
     if (parpfd < 0)
     {
@@ -487,8 +500,7 @@ extern int Unix_OpenParallel(const char *name)
 
 extern void Unix_CloseParallel(void)
 {
-    if (parpfd >= 0)
-    {
+    if (parpfd >= 0) {
         (void)close(parpfd);
         parpfd = -1;
     }
@@ -499,8 +511,7 @@ extern unsigned int Unix_WriteParallel(unsigned char *buf, int n)
 {
     int ngone;
 
-    if ((ngone = write(parpfd, buf, n)) < 0)
-    {
+    if ((ngone = write(parpfd, buf, n)) < 0) {
         /*
          * we ignore errors (except for debug purposes)
          */
@@ -509,7 +520,7 @@ extern unsigned int Unix_WriteParallel(unsigned char *buf, int n)
 
         sprintf(errbuf, "send_packet: write");
         perror(errbuf);
-#endif
+#endif /* DEBUG */
         ngone = 0;
     }
 
@@ -523,9 +534,9 @@ extern void Unix_ResetParallel(void)
 {
     struct bpp_transfer_parms tp;
 
-#ifdef DEBUG
+# ifdef DEBUG
     printf("serpar_reset\n");
-#endif
+# endif /* DEBUG */
 
     /*
      * we need to set the parallel port up for BUSY handshaking,
@@ -533,9 +544,9 @@ extern void Unix_ResetParallel(void)
      */
     if (ioctl(parpfd, BPPIOC_GETPARMS, &tp) < 0)
     {
-#ifdef DEBUG
+# ifdef DEBUG
         perror("ioctl(BPPIOCGETPARMS)");
-#endif
+# endif /* DEBUG */
         panic("serpar_reset: cannot get BPP parameters");
     }
 
@@ -544,9 +555,9 @@ extern void Unix_ResetParallel(void)
 
     if (ioctl(parpfd, BPPIOC_SETPARMS, &tp) < 0)
     {
-#ifdef DEBUG
+# ifdef DEBUG
         perror("ioctl(BPPIOC_SETPARMS)");
-#endif
+# endif /* DEBUG */
         panic("serpar_reset: cannot set BPP parameters");
     }
 }
@@ -559,5 +570,6 @@ extern void Unix_ResetParallel(void)
 {
 }
 
-#endif
+#endif /* sun */
 
+/* EOF */

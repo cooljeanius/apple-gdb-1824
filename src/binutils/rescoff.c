@@ -696,7 +696,8 @@ coff_to_bin (const struct res_directory *resdir, struct coff_write_info *cwi)
 /* Convert the resource RES to binary.  */
 
 static void
-coff_res_to_bin (const struct res_resource *res, struct coff_write_info *cwi)
+coff_res_to_bin(const struct res_resource *res,
+                struct coff_write_info *cwi)
 {
   arelent *r;
   struct extern_res_data *erd;
@@ -710,32 +711,28 @@ coff_res_to_bin (const struct res_resource *res, struct coff_write_info *cwi)
      This relocation handling is correct for the i386, but probably
      not for any other target.  */
 
-  r = (arelent *) reswr_alloc (sizeof (arelent));
+  r = (arelent *)reswr_alloc(sizeof(arelent));
   r->sym_ptr_ptr = cwi->sympp;
-  r->address = cwi->dirsize + cwi->dirstrsize + cwi->dataents.length;
+  r->address = (cwi->dirsize + cwi->dirstrsize + cwi->dataents.length);
   r->addend = 0;
-  r->howto = bfd_reloc_type_lookup (cwi->abfd, BFD_RELOC_RVA);
+  r->howto = bfd_reloc_type_lookup(cwi->abfd, BFD_RELOC_RVA);
   if (r->howto == NULL)
-    bfd_fatal (_("can't get BFD_RELOC_RVA relocation type"));
+    bfd_fatal(_("cannot get BFD_RELOC_RVA relocation type"));
 
-  cwi->relocs = xrealloc (cwi->relocs,
-			  (cwi->reloc_count + 2) * sizeof (arelent *));
+  cwi->relocs = (arelent **)xrealloc(cwi->relocs,
+                                     ((cwi->reloc_count + 2) * sizeof(arelent *)));
   cwi->relocs[cwi->reloc_count] = r;
   cwi->relocs[cwi->reloc_count + 1] = NULL;
   ++cwi->reloc_count;
 
-  erd = (struct extern_res_data *) coff_alloc (&cwi->dataents, sizeof (*erd));
+  erd = (struct extern_res_data *)coff_alloc(&cwi->dataents, sizeof(*erd));
 
-  putcwi_32 (cwi,
-	     (cwi->dirsize
-	      + cwi->dirstrsize
-	      + cwi->dataentsize
-	      + cwi->resources.length),
-	     erd->rva);
-  putcwi_32 (cwi, res->coff_info.codepage, erd->codepage);
-  putcwi_32 (cwi, res->coff_info.reserved, erd->reserved);
+  putcwi_32(cwi, (cwi->dirsize + cwi->dirstrsize + cwi->dataentsize
+                  + cwi->resources.length), erd->rva);
+  putcwi_32(cwi, res->coff_info.codepage, erd->codepage);
+  putcwi_32(cwi, res->coff_info.reserved, erd->reserved);
 
-  d = res_to_bin (res, cwi->big_endian);
+  d = res_to_bin(res, cwi->big_endian);
 
   if (cwi->resources.d == NULL)
     cwi->resources.d = d;
@@ -749,18 +746,19 @@ coff_res_to_bin (const struct res_resource *res, struct coff_write_info *cwi)
   cwi->resources.last = d;
   cwi->resources.length += length;
 
-  putcwi_32 (cwi, length, erd->size);
+  putcwi_32(cwi, length, erd->size);
 
-  /* Force the next resource to have 32 bit alignment.  */
-
+  /* Force the next resource to have 32 bit alignment: */
   if ((length & 3) != 0)
     {
       int add;
       unsigned char *ex;
 
-      add = 4 - (length & 3);
+      add = (4 - (length & 3));
 
-      ex = coff_alloc (&cwi->resources, add);
-      memset (ex, 0, add);
+      ex = coff_alloc(&cwi->resources, add);
+      memset(ex, 0, add);
     }
 }
+
+/* EOF */

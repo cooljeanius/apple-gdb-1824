@@ -1,4 +1,4 @@
-/* PowerMac native-dependent macros for GDB, the GNU debugger.
+/* nm-macos.h: PowerMac native-dependent macros for GDB, the GNU debugger.
    Copyright 1995 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -26,3 +26,5 @@
 /* content goes here */
 
 #endif /* !NM_MACOS_H */
+
+/* EOF */

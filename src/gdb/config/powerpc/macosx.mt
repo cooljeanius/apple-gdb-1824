@@ -1,4 +1,4 @@
-# APPLE LOCAL file Darwin
+# APPLE LOCAL file (powerpc/macosx.mt) for Darwin
 # Target: PowerPC running Mac OS X
 
 MT_CFLAGS = \
@@ -21,13 +21,16 @@ TDEPFILES = \
 	macosx-tdep.o \
 	machoread.o \
 	macosx-nat-cmds-load.o \
-    macosx-nat-dyld.o \
-    macosx-nat-dyld-path.o \
-    macosx-nat-dyld-info.o \
-    macosx-nat-dyld-process.o \
-    macosx-nat-dyld-io.o \
-    macosx-nat-utils.o \
+	macosx-nat-dyld.o \
+	macosx-nat-dyld-path.o \
+	macosx-nat-dyld-info.o \
+	macosx-nat-dyld-process.o \
+	macosx-nat-dyld-io.o \
+	macosx-nat-utils.o \
 	symread.o \
 	pefread.o
 
 DEPRECATED_TM_FILE = tm-ppc-macosx.h
+
+SIM_OBS = remote-sim.o
+SIM = ../sim/ppc/libsim.a

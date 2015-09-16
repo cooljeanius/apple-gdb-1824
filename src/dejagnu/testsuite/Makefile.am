@@ -1,6 +1,6 @@
 ## Process this file with automake to generate Makefile.in
 
-AUTOMAKE_OPTIONS = dejagnu subdir-objects
+AUTOMAKE_OPTIONS = 1.11.6 dejagnu subdir-objects gnits
 
 all all-am all-am-local all-local all-redirect-local all-redirect: force
 	@echo "Nothing to be done for all"
@@ -11,14 +11,15 @@ force:
 RUNTESTLOCAL = ` \
   if [ -f ${top_srcdir}/runtest$(EXEEXT) ] ; then \
     echo ${top_srcdir}/runtest$(EXEEXT); \
-  else echo "ERROR: runtest not found" ; exit 1; fi`
+  else echo "ERROR: runtest not found"; exit 1; fi`
 RUNTESTDEFAULTFLAGSLOCAL = --srcdir $$srcdir
 
-CLEANFILES = *.log *.sum site.bak setval.tmp
+CLEANFILES = *.log *.sum site.bak setval.tmp .DS_Store
 
 SUBDIRS = libdejagnu .
 
 clean-local: Makefile
+	-find . -name .DS_Store -delete 2>&1
 .PHONY: clean-local
 
 my_site.exp: Makefile

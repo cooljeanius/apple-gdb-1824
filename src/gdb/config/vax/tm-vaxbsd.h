@@ -1,5 +1,7 @@
-/* Definitions to make GDB run on a vax under 4.2bsd.
-   Copyright 1986, 1987, 1989, 1991, 1993, 1994, 1996, 1998, 1999, 2000, 2002
+/* tm-vaxbsd.h
+ * Definitions to make GDB run on a vax under 4.2bsd.
+ */
+/* Copyright 1986, 1987, 1989, 1991, 1993, 1994, 1996, 1998-2000, 2002
    Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -28,9 +30,9 @@
 #define TARGET_NBPG 512
 #define STACK_END_ADDR (0x80000000 - (TARGET_UPAGES * TARGET_NBPG))
 
-/* On the VAX, sigtramp is in the u area.  Can't check the exact
-   addresses because for cross-debugging we don't have VAX include
-   files around.  This should be close enough.  */
+/* On the VAX, sigtramp is in the u area. Cannot check the exact
+ * addresses because for cross-debugging we don't have VAX include
+ * files around. This should be close enough.  */
 #define SIGTRAMP_START(pc)	STACK_END_ADDR
 #define SIGTRAMP_END(pc)	0x80000000
 
@@ -39,3 +41,5 @@
 #define SIGCONTEXT_PC_OFFSET 12
 
 #endif /* TM_VAXBSD_H */
+
+/* EOF */

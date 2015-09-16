@@ -1,4 +1,5 @@
-/* Native definitions for GDB on DECstations, Sony News. and MIPS Riscos systems
+/* nm-mips.h
+   Native definitions for GDB on DECstations, Sony News. and MIPS Riscos systems
    Copyright 1986, 1987, 1989, 1992, 1995, 1996, 2000
    Free Software Foundation, Inc.
    Contributed by Per Bothner(bothner@cs.wisc.edu) at U.Wisconsin
@@ -24,11 +25,13 @@
 /* Override copies of {fetch,store}_inferior_registers in infptrace.c.  */
 #define FETCH_INFERIOR_REGISTERS
 
-/* Figure out where the longjmp will land.  We expect that we have just entered
-   longjmp and haven't yet setup the stack frame, so the args are still in the
-   argument regs.  a0 (CALL_ARG0) points at the jmp_buf structure from which we
-   extract the pc (JB_PC) that we will land at.  The pc is copied into ADDR.
+/* Figure out where the longjmp will land. We expect that we have just entered
+   longjmp and have NOT yet setup the stack frame, so the args are still in the
+   argument regs. a0 (CALL_ARG0) points at the jmp_buf structure from which we
+   extract the pc (JB_PC) that we will land at. The pc is copied into ADDR.
    This routine returns true on success */
 
 #define GET_LONGJMP_TARGET(ADDR) get_longjmp_target(ADDR)
 extern int get_longjmp_target (CORE_ADDR *);
+
+/* EOF */

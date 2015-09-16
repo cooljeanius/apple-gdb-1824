@@ -1,6 +1,6 @@
 ## Process this file with automake to generate Makefile.in
 
-AUTOMAKE_OPTIONS = dejagnu
+AUTOMAKE_OPTIONS = 1.11.6 dejagnu foreign
 
 man_MANS = runtest.1
 # FIXME: We need to generate an info doc from SGML somehow, but for
@@ -53,9 +53,10 @@ docs: $(TARGETS)
 
 html rtf overview.pdf overview.ps overview.dvi overview.rtf overview.html: overview.sgml ref.sgml user.sgml
 
-clean-local realclean distclean-local: Makefile
+clean-local realclean distclean-local maintainer-clean-local: Makefile
 	rm -fr $(TARGETS) DBHTOHTML* overview.junk overview overview.{aux,dvi,log,ps,pdf,tex}
-.PHONY: clean-local realclean distclean-local
+	rm -fr autom4te.cache || rmdir autom4te.cache
+.PHONY: clean-local realclean distclean-local maintainer-clean-local
 
 install-doc: $(TARGETS)
 	$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/html $(DESTDIR)$(pkgdatadir)/html/stylesheet-images

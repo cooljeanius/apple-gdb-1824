@@ -23,8 +23,8 @@
 #include "defs.h"
 
 #ifdef NEW_PROC_API
-#define _STRUCTURED_PROC 1
-#endif
+# define _STRUCTURED_PROC 1
+#endif /* NEW_PROC_API */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -52,7 +52,7 @@ static struct trans pr_why_table[] =
 {
 #if defined (PR_REQUESTED)
   /* All platforms.  */
-  { PR_REQUESTED, "PR_REQUESTED", 
+  { PR_REQUESTED, "PR_REQUESTED",
     "Directed to stop by debugger via P(IO)CSTOP or P(IO)CWSTOP" },
 #endif
 #if defined (PR_SIGNALLED)

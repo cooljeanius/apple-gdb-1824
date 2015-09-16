@@ -1,9 +1,12 @@
 # src/binutils/.gitignore
 
+*.trs
 *.dSYM
 *.framework
+*.i
 *.lo
 *.o
+*.s
 *deps/*.*o
 *libs/*
 DEP
@@ -18,14 +21,28 @@ arlex.c
 arparse.c
 arparse.h
 binutils-*/*
+arparse.output
+bfdtest1
+bfdtest2
+bin2c
 binutils.log
 binutils.sum
+coffdump
 config.h
 cxxfilt
+defparse.output
 dep.sed
+dlltool
+dllwrap
 doc/Makefile
+elfedit
+embedspu
+lex.backup
 lex.yy.c
 libtool
+mcparse.output
+nlmconv
+nlmheader.output
 nm-new
 objcopy
 objdump
@@ -39,12 +56,23 @@ po/binutils.po
 po/cat-id-tbl.tmp
 po/core*
 ranlib
+rcparse.output
 readelf
 site.bak
 site.exp
 size
+srconv
 stamp-*
 strings
 strip-new
+sysdump
 sysinfo
+sysinfo.output
 tmpdir
+windmc
+windres
+
+# this header is generated:
+sysroff.h
+# ...as is this:
+sysroff.c

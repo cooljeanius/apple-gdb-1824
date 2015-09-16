@@ -14,3 +14,5 @@ TAGS
 a.out
 errors
 stamp-*
+*deps/*.*o
+clang_static_analysis/*

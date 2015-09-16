@@ -1,3 +1,5 @@
+# cygwin.mh
+
 MH_CFLAGS=
 XM_FILE=xm-cygwin.h
 XDEP_FILES=

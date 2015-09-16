@@ -1,3 +1,5 @@
+# Makefile for the expect testsuite
+
 VPATH = @srcdir@
 srcdir = @srcdir@
 prefix = @prefix@
@@ -14,16 +16,25 @@ targetdir = $(datadir)/$(target_alias)
 SHELL = /bin/sh
 
 CC = @CC@
+CFLAGS = @CFLAGS@
+LDFLAGS = @LDFLAGS@
 TCLHDIR = @TCLHDIR@
 
+BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+
+XCFLAGS = ${CFLAGS} ${C_ARCHFLAGS}
+
 CC_FOR_TARGET = ` \
-  if [ -f $${rootme}../gcc/Makefile ] ; then \
+  if [ -f $${rootme}../gcc/Makefile ]; then \
     echo $${rootme}../gcc/xgcc -B$${rootme}../gcc/; \
   else \
-    if [ "$(host_canonical)" = "$(target_canonical)" ] ; then \
+    if [ "$(host_canonical)" = "$(target_canonical)" ]; then \
       echo $(CC); \
     else \
-      t='$(program_transform_name)'; echo gcc | sed -e '' $$t; \
+      t='$(program_transform_name)'; echo gcc | sed -e '' $${t}; \
     fi; \
   fi`
 
@@ -32,9 +43,9 @@ EXPECT = `if [ -f $${rootme}/expect ] ; \
 	else echo expect; fi`
 
 RUNTEST = ` \
-  if [ -f ${srcdir}/../../dejagnu/runtest ] ; then \
-    echo ${srcdir}/../../dejagnu/runtest ; \
-  else echo runtest ;  fi`
+  if [ -f ${srcdir}/../../dejagnu/runtest ]; then \
+    echo ${srcdir}/../../dejagnu/runtest; \
+  else echo runtest;  fi`
 RUNTESTFLAGS =
 
 all:
@@ -46,19 +57,26 @@ check:
 installcheck:
 .NOEXPORT:
 
-check:	exp_test site.exp
+check:	exp_test site.exp ../expect
 	rootme=`cd .. && pwd`; export rootme; \
 	EXPECT=${EXPECT}; export EXPECT; \
-	if [ -f ../expect ] ; then  \
-	   TCL_LIBRARY=`echo ${TCLHDIR} | sed -e 's/-I//' -e 's/generic//'`/library ; \
-	   export TCL_LIBRARY ; \
-	else true ; fi ; \
-	$(RUNTEST) $(RUNTESTFLAGS) --tool expect EXPECT=$$EXPECT --srcdir $(srcdir)
+	if [ -f ../expect ]; then  \
+	   TCL_LIBRARY=`echo ${TCLHDIR} | sed -e 's/-I//' -e 's/generic//'`/library; \
+	   export TCL_LIBRARY; \
+	else echo "../expect is missing" >&2; fi; \
+	$(RUNTEST) $(RUNTESTFLAGS) --tool expect EXPECT=$${EXPECT} --srcdir $(srcdir)
 
 install:
 uninstall: force
 
 exp_test.o: ${srcdir}/exp_test.c
+	${CC} -c ${XCFLAGS} ${srcdir}/exp_test.c
+
+exp_test: exp_test.o
+	${CC} -o $@ ${XCFLAGS} exp_test.o
+
+../expect:
+	cd .. && ${MAKE} expect
 
 site.exp: Makefile
 	@echo "Making a new config file..."
@@ -79,22 +97,24 @@ site.exp: Makefile
 	@rm -f ./tmp1 ./tmp0
 
 clean mostlyclean:
-	-rm -f *~ core *.o a.out *.x
+	-rm -f *~ core *.o a.out *.x .DS_Store exp_test
 
-distclean realclean: clean
-	-rm -f *~ core
+distclean realclean maintainer-clean: clean
+	-rm -f *~ core site.exp site.bak expect.sum
 	-rm -f Makefile config.status
 	-rm -fr *.log summary detail
+	-rm -fr autom4te.cache || rmdir autom4te.cache
 
 Makefile : $(srcdir)/Makefile.in $(host_makefile_frag)
 	$(SHELL) ./config.status
 
 # Original aclocal.m4 comes from DejaGnu
-# CYGNUS LOCAL: this hack lets "make -f Makefile.in" produce a configure file
+# CYGNUS LOCAL: this hack lets "make -f Makefile.in" produce a configure
+# file
 .PHONY: configure
 configure:
 	@echo "Rebuilding configure..."
-	(cd ${srcdir}; autoconf)
+	(cd ${srcdir}; autoconf --force)
 
 config.status: $(srcdir)/configure
 	@echo "Rebuilding config.status..."

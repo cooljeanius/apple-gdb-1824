@@ -1,6 +1,6 @@
-/* 
+/* msgbuild.c
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -24,7 +24,7 @@
 #else
 # include "host.h"
 # include "hostchan.h"
-#endif
+#endif /* TARGET */
 
 #include "channels.h"
 #include "buffers.h"
@@ -33,7 +33,7 @@
 
 #ifndef UNUSED
 # define UNUSED(x) ((x)=(x))
-#endif
+#endif /* !UNUSED */
 
 #ifndef TARGET
 
@@ -163,7 +163,7 @@ extern int msgsend(ChannelID chan, const char *format,...)
     buffer = packet->pk_buffer;
 # else
     buffer = angel_ChannelAllocBuffer(Angel_ChanBuffSize);
-# endif
+# endif /* !TARGET */
 
     if (buffer != NULL)
     {
@@ -176,7 +176,7 @@ extern int msgsend(ChannelID chan, const char *format,...)
 # else
         packet->pk_length = length;
         Adp_ChannelWrite(chan, packet);
-# endif
+# endif /* TARGET */
 
         va_end(args);
         return 0;

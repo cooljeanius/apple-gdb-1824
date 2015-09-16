@@ -270,13 +270,19 @@
  make-pretty-printer-worker
  pretty-printer-worker?
 
- ;; scm-smob.c
+ ;; <<<<<<< HEAD
+ ;;;; scm-smob.c
 
  gsmob-kind
  gsmob-property
  set-gsmob-property!
  gsmob-has-property?
  gsmob-properties
+ ;; =======
+ ;;;; scm-gsmob.c
+
+ ;; gdb-object-kind
+ ;; >>>>>>> e0ce22ee5feb0d1682ac7365358abd9c23fc4033
 
  ;; scm-string.c
 

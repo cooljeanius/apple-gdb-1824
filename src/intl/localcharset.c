@@ -1,4 +1,5 @@
-/* Determine a canonical name for the current locale's character encoding.
+/* localcharset.c
+   Determine a canonical name for the current locale's character encoding.
 
    Copyright (C) 2000-2003 Free Software Foundation, Inc.
 
@@ -14,41 +15,43 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301,
+   Foundation, Inc., 51 Franklin Street - 5th Floor, Boston, MA 02110-1301,
    USA.  */
 
 /* Written by Bruno Haible <bruno@clisp.org>.  */
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 
-/* Specification.  */
+/* Specification: */
 #include "localcharset.h"
 
-#if HAVE_STDDEF_H
+#if defined(HAVE_STDDEF_H) && HAVE_STDDEF_H
 # include <stddef.h>
-#endif
+#endif /* HAVE_STDDEF_H */
 
 #include <stdio.h>
-#if HAVE_STRING_H
+#if defined(HAVE_STRING_H) && HAVE_STRING_H
 # include <string.h>
 #else
-# include <strings.h>
-#endif
-#if HAVE_STDLIB_H
+# if defined(HAVE_STRINGS_H) && HAVE_STRINGS_H
+#  include <strings.h>
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H */
+#if defined(HAVE_STDLIB_H) && HAVE_STDLIB_H
 # include <stdlib.h>
-#endif
+#endif /* HAVE_STDLIB_H */
 
 #if defined _WIN32 || defined __WIN32__
 # undef WIN32   /* avoid warning on mingw32 */
 # define WIN32
-#endif
+#endif /* _WIN32 || __WIN32__ */
 
 #if defined __EMX__
 /* Assume EMX program runs on OS/2, even if compiled under DOS.  */
 # define OS2
-#endif
+#endif /* __EMX__ */
 
 #if !defined WIN32
 # if HAVE_LANGINFO_CODESET
@@ -56,8 +59,8 @@
 # else
 #  if HAVE_SETLOCALE
 #   include <locale.h>
-#  endif
-# endif
+#  endif /* HAVE_SETLOCALE */
+# endif /* HAVE_LANGINFO_CODESET */
 #elif defined WIN32
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
@@ -65,13 +68,13 @@
 #if defined OS2
 # define INCL_DOS
 # include <os2.h>
-#endif
+#endif /* OS2 */
 
 #if ENABLE_RELOCATABLE
 # include "relocatable.h"
 #else
 # define relocate(pathname) (pathname)
-#endif
+#endif /* ENABLE_RELOCATABLE */
 
 #if defined _WIN32 || defined __WIN32__ || defined __EMX__ || defined __DJGPP__
   /* Win32, OS/2, DOS */
@@ -80,24 +83,24 @@
 
 #ifndef DIRECTORY_SEPARATOR
 # define DIRECTORY_SEPARATOR '/'
-#endif
+#endif /* !DIRECTORY_SEPARATOR */
 
 #ifndef ISSLASH
 # define ISSLASH(C) ((C) == DIRECTORY_SEPARATOR)
-#endif
+#endif /* !ISSLASH */
 
 #ifdef HAVE_GETC_UNLOCKED
 # undef getc
 # define getc getc_unlocked
-#endif
+#endif /* HAVE_GETC_UNLOCKED */
 
 /* The following static variable is declared 'volatile' to avoid a
    possible multithread problem in the function get_charset_aliases. If we
    are running in a threaded environment, and if two threads initialize
    'charset_aliases' simultaneously, both will produce the same value,
    and everything will be ok if the two assignments to 'charset_aliases'
-   are atomic. But I don't know what will happen if the two assignments mix.  */
-#if __STDC__ != 1
+   are atomic. But I do NOT know what will happen if the 2 assignments mix. */
+#if (__STDC__ != 1)
 # define volatile /* empty */
 #endif
 /* Pointer to the contents of the charset.alias file, if it has already been
@@ -105,9 +108,8 @@
    ALIAS_1 '\0' CANONICAL_1 '\0' ... ALIAS_n '\0' CANONICAL_n '\0' '\0'  */
 static const char * volatile charset_aliases;
 
-/* Return a pointer to the contents of the charset.alias file.  */
-static const char *
-get_charset_aliases ()
+/* Return a pointer to the contents of the charset.alias file: */
+static const char *get_charset_aliases(void)
 {
   const char *cp;
 
@@ -120,37 +122,38 @@ get_charset_aliases ()
       const char *base = "charset.alias";
       char *file_name;
 
-      /* Concatenate dir and base into freshly allocated file_name.  */
+      /* Concatenate dir and base into freshly allocated file_name: */
       {
-	size_t dir_len = strlen (dir);
-	size_t base_len = strlen (base);
-	int add_slash = (dir_len > 0 && !ISSLASH (dir[dir_len - 1]));
-	file_name = (char *) malloc (dir_len + add_slash + base_len + 1);
-	if (file_name != NULL)
-	  {
-	    memcpy (file_name, dir, dir_len);
-	    if (add_slash)
+	size_t dir_len = strlen(dir);
+	size_t base_len = strlen(base);
+	int add_slash = ((dir_len > 0) && !ISSLASH(dir[(dir_len - 1)]));
+	file_name = (char *)malloc(dir_len + (size_t)add_slash + base_len + 1L);
+	if (file_name != NULL) {
+	    memcpy(file_name, dir, dir_len);
+	    if (add_slash) {
 	      file_name[dir_len] = DIRECTORY_SEPARATOR;
-	    memcpy (file_name + dir_len + add_slash, base, base_len + 1);
-	  }
+            }
+	    memcpy((file_name + dir_len + add_slash), base,
+                   (base_len + 1L));
+        }
       }
 
-      if (file_name == NULL || (fp = fopen (file_name, "r")) == NULL)
+      if (file_name == NULL || (fp = fopen(file_name, "r")) == NULL)
 	/* Out of memory or file not found, treat it as empty.  */
 	cp = "";
       else
 	{
-	  /* Parse the file's contents.  */
+	  /* Parse the file's contents: */
 	  int c;
-	  char buf1[50+1];
-	  char buf2[50+1];
+	  char buf1[(50 + 1)]; /* why not just "51"? */
+	  char buf2[(50 + 1)]; /* likewise, why not just "51"? */
 	  char *res_ptr = NULL;
 	  size_t res_size = 0;
 	  size_t l1, l2;
 
 	  for (;;)
 	    {
-	      c = getc (fp);
+	      c = getc(fp);
 	      if (c == EOF)
 		break;
 	      if (c == '\n' || c == ' ' || c == '\t')
@@ -159,35 +162,35 @@ get_charset_aliases ()
 		{
 		  /* Skip comment, to end of line.  */
 		  do
-		    c = getc (fp);
+		    c = getc(fp);
 		  while (!(c == EOF || c == '\n'));
 		  if (c == EOF)
 		    break;
 		  continue;
 		}
-	      ungetc (c, fp);
-	      if (fscanf (fp, "%50s %50s", buf1, buf2) < 2)
+	      ungetc(c, fp);
+	      if (fscanf(fp, "%50s %50s", buf1, buf2) < 2)
 		break;
-	      l1 = strlen (buf1);
-	      l2 = strlen (buf2);
+	      l1 = strlen(buf1);
+	      l2 = strlen(buf2);
 	      if (res_size == 0)
 		{
-		  res_size = l1 + 1 + l2 + 1;
-		  res_ptr = (char *) malloc (res_size + 1);
+		  res_size = (l1 + 1 + l2 + 1);
+		  res_ptr = (char *)malloc(res_size + 1);
 		}
 	      else
 		{
 		  res_size += l1 + 1 + l2 + 1;
-		  res_ptr = (char *) realloc (res_ptr, res_size + 1);
+		  res_ptr = (char *)realloc(res_ptr, res_size + 1);
 		}
 	      if (res_ptr == NULL)
 		{
-		  /* Out of memory. */
+		  /* Out of memory: */
 		  res_size = 0;
 		  break;
 		}
-	      strcpy (res_ptr + res_size - (l2 + 1) - (l1 + 1), buf1);
-	      strcpy (res_ptr + res_size - (l2 + 1), buf2);
+	      strcpy(res_ptr + res_size - (l2 + 1) - (l1 + 1), buf1);
+	      strcpy(res_ptr + res_size - (l2 + 1), buf2);
 	    }
 	  fclose (fp);
 	  if (res_size == 0)
@@ -200,7 +203,7 @@ get_charset_aliases ()
 	}
 
       if (file_name != NULL)
-	free (file_name);
+	free(file_name);
 
 #else
 
@@ -227,7 +230,7 @@ get_charset_aliases ()
 	   "DECHANZI" "\0" "GB2312" "\0"
 	   /* Korean */
 	   "DECKOREAN" "\0" "EUC-KR" "\0";
-# endif
+# endif /* VMS */
 
 # if defined WIN32
       /* To avoid the troubles of installing a separate file in the same
@@ -266,23 +269,18 @@ get_charset_aliases ()
 
 #ifdef STATIC
 STATIC
-#endif
-const char *
-locale_charset ()
+#endif /* STATIC */
+const char *locale_charset(void)
 {
   const char *codeset;
   const char *aliases;
 
 #if !(defined WIN32 || defined OS2)
-
-# if HAVE_LANGINFO_CODESET
-
-  /* Most systems support nl_langinfo (CODESET) nowadays.  */
-  codeset = nl_langinfo (CODESET);
-
+# if defined(HAVE_LANGINFO_CODESET) && HAVE_LANGINFO_CODESET
+  /* Most systems support nl_langinfo (CODESET) nowadays: */
+  codeset = nl_langinfo(CODESET);
 # else
-
-  /* On old systems which lack it, use setlocale or getenv.  */
+  /* On old systems which lack it, use setlocale or getenv: */
   const char *locale = NULL;
 
   /* But most old systems don't have a complete set of locales.  Some
@@ -378,17 +376,17 @@ locale_charset ()
     codeset = "";
 
   /* Resolve alias. */
-  for (aliases = get_charset_aliases ();
+  for (aliases = get_charset_aliases();
        *aliases != '\0';
-       aliases += strlen (aliases) + 1, aliases += strlen (aliases) + 1)
-    if (strcmp (codeset, aliases) == 0
+       aliases += strlen(aliases) + 1, aliases += strlen(aliases) + 1)
+    if (strcmp(codeset, aliases) == 0
 	|| (aliases[0] == '*' && aliases[1] == '\0'))
       {
-	codeset = aliases + strlen (aliases) + 1;
+	codeset = aliases + strlen(aliases) + 1;
 	break;
       }
 
-  /* Don't return an empty string.  GNU libc and GNU libiconv interpret
+  /* Do NOT return an empty string.  GNU libc and GNU libiconv interpret
      the empty string as denoting "the locale's character encoding",
      thus GNU libiconv would call this function a second time.  */
   if (codeset[0] == '\0')
@@ -396,3 +394,5 @@ locale_charset ()
 
   return codeset;
 }
+
+/* EOF */

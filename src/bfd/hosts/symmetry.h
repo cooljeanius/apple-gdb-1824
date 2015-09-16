@@ -1,4 +1,4 @@
-/* Symmetry running either dynix 3.1 (bsd) or ptx (sysv).  */
+/* symmetry.h: Symmetry running either dynix 3.1 (bsd) or ptx (sysv).  */
 
 #define NBPG 4096
 #define UPAGES 1

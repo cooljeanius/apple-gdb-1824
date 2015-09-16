@@ -1,4 +1,5 @@
-/* Macro definitions for PowerPC running under NetBSD.
+/* tm-nbsd.h
+   Macro definitions for PowerPC running under NetBSD.
    Copyright 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.

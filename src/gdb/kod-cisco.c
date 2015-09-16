@@ -1,8 +1,8 @@
-/* Kernel Object Display facility for Cisco
-   Copyright 1999, 2000 Free Software Foundation, Inc.
-   
-   Written by Tom Tromey <tromey@cygnus.com>.
-   
+/* kod-cisco.c: Kernel Object Display facility for Cisco
+ * Copyright 1999, 2000 Free Software Foundation, Inc.
+ *
+ * Written by Tom Tromey <tromey@cygnus.com>.  */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -17,15 +17,15 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA.  */
 
 #include "defs.h"
 #include "gdb_string.h"
 #include "kod.h"
 
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 
 /* Define this to turn off communication with target.  */
 /* #define FAKE_PACKET */
@@ -58,7 +58,7 @@ cisco_kod_open (kod_display_callback_ftype *display_func,
      version, which we use to see whether we will understand what
      comes back.  This is lame, but the `qKoL' request doesn't
      actually provide enough configurability.
-     
+
      Right now the only defined version number is `0.0.0'.
      This stub supports qKoI and the `a' (any) object requests qKaL
      and qKaI.  Each `a' object is returned as a 4-byte integer ID.

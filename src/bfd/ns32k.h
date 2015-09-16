@@ -1,4 +1,4 @@
-/* Header file for ns32k routines.
+/* ns32k.h: Header file for ns32k routines.
    Copyright 1996, 2001, 2002, 2005 Free Software Foundation, Inc.
    Written by Cygnus Support.
 
@@ -27,3 +27,5 @@ extern void                  _bfd_ns32k_put_displacement    (bfd_vma, bfd_byte *
 extern void                  _bfd_ns32k_put_immediate       (bfd_vma, bfd_byte *, int);
 extern bfd_reloc_status_type _bfd_ns32k_reloc_disp          (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
 extern bfd_reloc_status_type _bfd_ns32k_reloc_imm           (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+
+/* EOF */

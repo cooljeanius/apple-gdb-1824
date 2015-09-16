@@ -339,15 +339,14 @@ simple_object_mach_o_match (
   return (void *) omr;
 }
 
-/* Get the file offset and size from a section header.  */
-
+/* Get the file offset and size from a section header: */
 static void
-simple_object_mach_o_section_info (int is_big_endian, int is_32,
-				   const unsigned char *sechdr, off_t *offset,
-				   size_t *size)
+simple_object_mach_o_section_info(int is_big_endian, int is_32,
+				  const unsigned char *sechdr,
+                                  off_t *offset, size_t *size)
 {
-  unsigned int (*fetch_32) (const unsigned char *);
-  ulong_type (*fetch_64) (const unsigned char *);
+  unsigned int (*fetch_32)(const unsigned char *);
+  ulong_type (*fetch_64)(const unsigned char *);
 
   fetch_32 = (is_big_endian
 	      ? simple_object_fetch_big_32
@@ -358,21 +357,21 @@ simple_object_mach_o_section_info (int is_big_endian, int is_32,
   fetch_64 = (is_big_endian
 	      ? simple_object_fetch_big_64
 	      : simple_object_fetch_little_64);
-#endif
+#endif /* UNSIGNED_64BIT_TYPE */
 
   if (is_32)
     {
-      *offset = fetch_32 (sechdr
-			  + offsetof (struct mach_o_section_32, offset));
-      *size = fetch_32 (sechdr
-			+ offsetof (struct mach_o_section_32, size));
+      *offset = fetch_32(sechdr
+			 + offsetof(struct mach_o_section_32, offset));
+      *size = fetch_32(sechdr
+                       + offsetof(struct mach_o_section_32, size));
     }
   else
     {
-      *offset = fetch_32 (sechdr
-			  + offsetof (struct mach_o_section_64, offset));
-      *size = fetch_64 (sechdr
-			+ offsetof (struct mach_o_section_64, size));
+      *offset = fetch_32(sechdr
+			 + offsetof(struct mach_o_section_64, offset));
+      *size = (size_t)fetch_64(sechdr
+                               + offsetof(struct mach_o_section_64, size));
     }
 }
 
@@ -401,16 +400,16 @@ simple_object_mach_o_section_info (int is_big_endian, int is_32,
 		       | SOMO_NAMES_PRESENT)
 
 static int
-simple_object_mach_o_segment (simple_object_read *sobj, off_t offset,
-			      const unsigned char *segbuf,
-			      int (*pfn) (void *, const char *, off_t offset,
-					  off_t length),
-			      void *data,
-			      const char **errmsg, int *err)
+simple_object_mach_o_segment(simple_object_read *sobj, off_t offset,
+			     const unsigned char *segbuf,
+			     int (*pfn)(void *, const char *, off_t offset,
+                                        off_t length),
+			     void *data,
+			     const char **errmsg, int *err)
 {
   struct simple_object_mach_o_read *omr =
     (struct simple_object_mach_o_read *) sobj->data;
-  unsigned int (*fetch_32) (const unsigned char *);
+  unsigned int (*fetch_32)(const unsigned char *);
   int is_32;
   size_t seghdrsize;
   size_t sechdrsize;
@@ -426,7 +425,7 @@ simple_object_mach_o_segment (simple_object_read *sobj, off_t offset,
   unsigned int sections_index;
   char *strtab;
   char *nametab;
-  unsigned char *index;
+  unsigned char *uindex;
   size_t strtab_size;
   size_t nametab_size;
   size_t index_size;
@@ -442,37 +441,37 @@ simple_object_mach_o_segment (simple_object_read *sobj, off_t offset,
 
   if (is_32)
     {
-      seghdrsize = sizeof (struct mach_o_segment_command_32);
-      sechdrsize = sizeof (struct mach_o_section_32);
-      segname_offset = offsetof (struct mach_o_section_32, segname);
-      sectname_offset = offsetof (struct mach_o_section_32, sectname);
-      nsects = (*fetch_32) (segbuf
-			    + offsetof (struct mach_o_segment_command_32,
-					nsects));
+      seghdrsize = sizeof(struct mach_o_segment_command_32);
+      sechdrsize = sizeof(struct mach_o_section_32);
+      segname_offset = offsetof(struct mach_o_section_32, segname);
+      sectname_offset = offsetof(struct mach_o_section_32, sectname);
+      nsects = (*fetch_32)(segbuf
+			   + offsetof(struct mach_o_segment_command_32,
+                                      nsects));
     }
   else
     {
-      seghdrsize = sizeof (struct mach_o_segment_command_64);
-      sechdrsize = sizeof (struct mach_o_section_64);
-      segname_offset = offsetof (struct mach_o_section_64, segname);
-      sectname_offset = offsetof (struct mach_o_section_64, sectname);
-      nsects = (*fetch_32) (segbuf
-			    + offsetof (struct mach_o_segment_command_64,
-					nsects));
+      seghdrsize = sizeof(struct mach_o_segment_command_64);
+      sechdrsize = sizeof(struct mach_o_section_64);
+      segname_offset = offsetof(struct mach_o_section_64, segname);
+      sectname_offset = offsetof(struct mach_o_section_64, sectname);
+      nsects = (*fetch_32)(segbuf
+			   + offsetof(struct mach_o_segment_command_64,
+                                      nsects));
     }
 
-  /* Fetch the section headers from the segment command.  */
-
-  secdata = XNEWVEC (unsigned char, nsects * sechdrsize);
-  if (!simple_object_internal_read (sobj->descriptor, offset + seghdrsize,
-				    secdata, nsects * sechdrsize, errmsg, err))
+  /* Fetch the section headers from the segment command: */
+  secdata = XNEWVEC(unsigned char, nsects * sechdrsize);
+  if (!simple_object_internal_read(sobj->descriptor,
+                                   (offset + (off_t)seghdrsize),
+				   secdata, (nsects * sechdrsize),
+                                   errmsg, err))
     {
-      XDELETEVEC (secdata);
+      XDELETEVEC(secdata);
       return 0;
     }
 
-  /* Scan for special sections that signal GNU extensions to the format.  */
-
+  /* Scan for special sections that signal GNU extensions to the format: */
   gnu_sections_found = 0;
   index_index = nsects;
   sections_index = nsects;
@@ -546,13 +545,13 @@ simple_object_mach_o_segment (simple_object_read *sobj, off_t offset,
       simple_object_mach_o_section_info (omr->is_big_endian, is_32,
 					 secdata + index_index * sechdrsize,
 					 &index_offset, &index_size);
-      index = XNEWVEC (unsigned char, index_size);
+      uindex = XNEWVEC (unsigned char, index_size);
       if (!simple_object_internal_read (sobj->descriptor,
 					sobj->offset + index_offset,
-					index, index_size,
+					uindex, index_size,
 					errmsg, err))
 	{
-	  XDELETEVEC (index);
+	  XDELETEVEC (uindex);
 	  XDELETEVEC (nametab);
 	  XDELETEVEC (secdata);
 	  return 0;
@@ -562,17 +561,18 @@ simple_object_mach_o_segment (simple_object_read *sobj, off_t offset,
 	 sub-section offset/length, sub-section name/length.
 	 We fix this for both 32 and 64 bit mach-o for now, since
 	 other fields limit the maximum size of an object to 4G.  */
-      n_wrapped_sects = index_size / 16;
+      n_wrapped_sects = (unsigned int)(index_size / 16UL);
 
       /* Get the parameters for the wrapper too.  */
-      simple_object_mach_o_section_info (omr->is_big_endian, is_32,
-					 secdata + sections_index * sechdrsize,
-					 &wrapper_sect_offset,
-					 &wrapper_sect_size);
+      simple_object_mach_o_section_info(omr->is_big_endian, is_32,
+                                        (secdata + (sections_index
+                                                    * sechdrsize)),
+                                        &wrapper_sect_offset,
+                                        &wrapper_sect_size);
     }
   else
     {
-      index = NULL;
+      uindex = NULL;
       index_size = 0;
       nametab = NULL;
       nametab_size = 0;
@@ -595,7 +595,7 @@ simple_object_mach_o_segment (simple_object_read *sobj, off_t offset,
 					errmsg, err))
 	{
 	  XDELETEVEC (strtab);
-	  XDELETEVEC (index);
+	  XDELETEVEC (uindex);
 	  XDELETEVEC (nametab);
 	  XDELETEVEC (secdata);
 	  return 0;
@@ -617,7 +617,7 @@ simple_object_mach_o_segment (simple_object_read *sobj, off_t offset,
       char *name;
       off_t secoffset;
       size_t secsize;
-      int l;
+      size_t l;
 
       sechdr = secdata + i * sechdrsize;
 
@@ -645,20 +645,20 @@ simple_object_mach_o_segment (simple_object_read *sobj, off_t offset,
 	      for (j = 0; j < n_wrapped_sects; ++j)
 		{
 		  unsigned int subsect_offset, subsect_length, name_offset;
-		  subsect_offset = (*fetch_32) (index + 16 * j);
-		  subsect_length = (*fetch_32) (index + 16 * j + 4);
-		  name_offset = (*fetch_32) (index + 16 * j + 8);
+		  subsect_offset = (*fetch_32) (uindex + 16 * j);
+		  subsect_length = (*fetch_32) (uindex + 16 * j + 4);
+		  name_offset = (*fetch_32) (uindex + 16 * j + 8);
 		  /* We don't need the name_length yet.  */
 
 		  secoffset = wrapper_sect_offset + subsect_offset;
 		  secsize = subsect_length;
 		  name = nametab + name_offset;
 
-		  if (!(*pfn) (data, name, secoffset, secsize))
+		  if (!(*pfn)(data, name, secoffset, (off_t)secsize))
 		    {
 		      *errmsg = NULL;
 		      *err = 0;
-		      XDELETEVEC (index);
+		      XDELETEVEC (uindex);
 		      XDELETEVEC (nametab);
 		      XDELETEVEC (strtab);
 		      XDELETEVEC (secdata);
@@ -685,7 +685,7 @@ simple_object_mach_o_segment (simple_object_read *sobj, off_t offset,
 		    {
 		      *errmsg = "section name offset out of range";
 		      *err = 0;
-		      XDELETEVEC (index);
+		      XDELETEVEC (uindex);
 		      XDELETEVEC (nametab);
 		      XDELETEVEC (strtab);
 		      XDELETEVEC (secdata);
@@ -710,22 +710,22 @@ simple_object_mach_o_segment (simple_object_read *sobj, off_t offset,
 	  namebuf[l + 1 + MACH_O_NAME_LEN] = '\0';
 	}
 
-      simple_object_mach_o_section_info (omr->is_big_endian, is_32, sechdr,
-					 &secoffset, &secsize);
+      simple_object_mach_o_section_info(omr->is_big_endian, is_32, sechdr,
+                                        &secoffset, &secsize);
 
-      if (!(*pfn) (data, name, secoffset, secsize))
+      if (!(*pfn)(data, name, secoffset, (off_t)secsize))
 	{
 	  *errmsg = NULL;
 	  *err = 0;
-	  XDELETEVEC (index);
-	  XDELETEVEC (nametab);
-	  XDELETEVEC (strtab);
-	  XDELETEVEC (secdata);
+	  XDELETEVEC(uindex);
+	  XDELETEVEC(nametab);
+	  XDELETEVEC(strtab);
+	  XDELETEVEC(secdata);
 	  return 0;
 	}
     }
 
-  XDELETEVEC (index);
+  XDELETEVEC (uindex);
   XDELETEVEC (nametab);
   XDELETEVEC (strtab);
   XDELETEVEC (secdata);
@@ -886,14 +886,14 @@ simple_object_mach_o_start_write (void *attributes_data,
 /* Write out the header of a Mach-O file.  */
 
 static int
-simple_object_mach_o_write_header (simple_object_write *sobj, int descriptor,
-				   size_t nsects, const char **errmsg,
-				   int *err)
+simple_object_mach_o_write_header(simple_object_write *sobj,
+                                  int descriptor, size_t nsects,
+                                  const char **errmsg, int *err)
 {
   struct simple_object_mach_o_attributes *attrs =
-    (struct simple_object_mach_o_attributes *) sobj->data;
-  void (*set_32) (unsigned char *, unsigned int);
-  unsigned char hdrbuf[sizeof (struct mach_o_header_64)];
+    (struct simple_object_mach_o_attributes *)sobj->data;
+  void (*set_32)(unsigned char *, unsigned int);
+  unsigned char hdrbuf[sizeof(struct mach_o_header_64)];
   unsigned char *hdr;
   size_t wrsize;
 
@@ -901,54 +901,57 @@ simple_object_mach_o_write_header (simple_object_write *sobj, int descriptor,
 	    ? simple_object_set_big_32
 	    : simple_object_set_little_32);
 
-  memset (hdrbuf, 0, sizeof hdrbuf);
+  memset(hdrbuf, 0, sizeof(hdrbuf));
 
-  /* The 32-bit and 64-bit headers start out the same.  */
-
+  /* The 32-bit and 64-bit headers start out the same: */
   hdr = &hdrbuf[0];
-  set_32 (hdr + offsetof (struct mach_o_header_32, magic), attrs->magic);
-  set_32 (hdr + offsetof (struct mach_o_header_32, cputype), attrs->cputype);
-  set_32 (hdr + offsetof (struct mach_o_header_32, cpusubtype),
-	  attrs->cpusubtype);
-  set_32 (hdr + offsetof (struct mach_o_header_32, filetype), MACH_O_MH_OBJECT);
-  set_32 (hdr + offsetof (struct mach_o_header_32, ncmds), 1);
-  set_32 (hdr + offsetof (struct mach_o_header_32, flags), attrs->flags);
+  set_32((hdr + offsetof(struct mach_o_header_32, magic)), attrs->magic);
+  set_32((hdr + offsetof(struct mach_o_header_32, cputype)),
+         attrs->cputype);
+  set_32((hdr + offsetof(struct mach_o_header_32, cpusubtype)),
+	 attrs->cpusubtype);
+  set_32((hdr + offsetof(struct mach_o_header_32, filetype)),
+         MACH_O_MH_OBJECT);
+  set_32((hdr + offsetof(struct mach_o_header_32, ncmds)), 1);
+  set_32((hdr + offsetof(struct mach_o_header_32, flags)), attrs->flags);
   if (attrs->magic == MACH_O_MH_MAGIC)
     {
-      wrsize = sizeof (struct mach_o_header_32);
-      set_32 (hdr + offsetof (struct mach_o_header_32, sizeofcmds),
-	      (sizeof (struct mach_o_segment_command_32)
-	       + nsects * sizeof (struct mach_o_section_32)));
+      wrsize = sizeof(struct mach_o_header_32);
+      set_32((hdr + offsetof(struct mach_o_header_32, sizeofcmds)),
+	     (unsigned int)(sizeof(struct mach_o_segment_command_32)
+                            + (nsects
+                               * sizeof(struct mach_o_section_32))));
     }
   else
     {
-      set_32 (hdr + offsetof (struct mach_o_header_64, sizeofcmds),
-	      (sizeof (struct mach_o_segment_command_64)
-	       + nsects * sizeof (struct mach_o_section_64)));
-      set_32 (hdr + offsetof (struct mach_o_header_64, reserved),
-	      attrs->reserved);
-      wrsize = sizeof (struct mach_o_header_64);
+      set_32((hdr + offsetof(struct mach_o_header_64, sizeofcmds)),
+	     (unsigned int)(sizeof(struct mach_o_segment_command_64)
+                            + (nsects
+                               * sizeof(struct mach_o_section_64))));
+      set_32((hdr + offsetof(struct mach_o_header_64, reserved)),
+	     attrs->reserved);
+      wrsize = sizeof(struct mach_o_header_64);
     }
 
-  return simple_object_internal_write (descriptor, 0, hdrbuf, wrsize,
-				       errmsg, err);
+  return simple_object_internal_write(descriptor, (off_t)0L, hdrbuf,
+                                      wrsize, errmsg, err);
 }
 
-/* Write a Mach-O section header.  */
-
+/* Write a Mach-O section header: */
 static int
-simple_object_mach_o_write_section_header (simple_object_write *sobj,
-					   int descriptor,
-					   size_t sechdr_offset,
-					   const char *name, const char *segn,
-					   size_t secaddr, size_t secsize,
-					   size_t offset, unsigned int align,
-					   const char **errmsg, int *err)
+simple_object_mach_o_write_section_header(simple_object_write *sobj,
+					  int descriptor,
+					  size_t sechdr_offset,
+                                          const char *name,
+                                          const char *segn, size_t secaddr,
+                                          size_t secsize, size_t offset,
+                                          unsigned int align,
+                                          const char **errmsg, int *err)
 {
   struct simple_object_mach_o_attributes *attrs =
-    (struct simple_object_mach_o_attributes *) sobj->data;
-  void (*set_32) (unsigned char *, unsigned int);
-  unsigned char hdrbuf[sizeof (struct mach_o_section_64)];
+    (struct simple_object_mach_o_attributes *)sobj->data;
+  void (*set_32)(unsigned char *, unsigned int);
+  unsigned char hdrbuf[sizeof(struct mach_o_section_64)];
   unsigned char *hdr;
   size_t sechdrsize;
 
@@ -956,57 +959,64 @@ simple_object_mach_o_write_section_header (simple_object_write *sobj,
 	    ? simple_object_set_big_32
 	    : simple_object_set_little_32);
 
-  memset (hdrbuf, 0, sizeof hdrbuf);
+  memset(hdrbuf, 0, sizeof(hdrbuf));
 
   hdr = &hdrbuf[0];
   if (attrs->magic == MACH_O_MH_MAGIC)
     {
-      strncpy ((char *) hdr + offsetof (struct mach_o_section_32, sectname),
-	       name, MACH_O_NAME_LEN);
-      strncpy ((char *) hdr + offsetof (struct mach_o_section_32, segname),
-	       segn, MACH_O_NAME_LEN);
-      set_32 (hdr + offsetof (struct mach_o_section_32, addr), secaddr);
-      set_32 (hdr + offsetof (struct mach_o_section_32, size), secsize);
-      set_32 (hdr + offsetof (struct mach_o_section_32, offset), offset);
-      set_32 (hdr + offsetof (struct mach_o_section_32, align), align);
+      strncpy(((char *)hdr + offsetof(struct mach_o_section_32, sectname)),
+	      name, MACH_O_NAME_LEN);
+      strncpy(((char *)hdr + offsetof(struct mach_o_section_32, segname)),
+	      segn, MACH_O_NAME_LEN);
+      set_32((hdr + offsetof(struct mach_o_section_32, addr)),
+             (unsigned int)secaddr);
+      set_32((hdr + offsetof(struct mach_o_section_32, size)),
+             (unsigned int)secsize);
+      set_32((hdr + offsetof(struct mach_o_section_32, offset)),
+             (unsigned int)offset);
+      set_32((hdr + offsetof(struct mach_o_section_32, align)), align);
       /* reloff left as zero.  */
       /* nreloc left as zero.  */
-      set_32 (hdr + offsetof (struct mach_o_section_32, flags),
-	      MACH_O_S_ATTR_DEBUG);
+      set_32((hdr + offsetof(struct mach_o_section_32, flags)),
+	     MACH_O_S_ATTR_DEBUG);
       /* reserved1 left as zero.  */
       /* reserved2 left as zero.  */
-      sechdrsize = sizeof (struct mach_o_section_32);
+      sechdrsize = sizeof(struct mach_o_section_32);
     }
   else
     {
 #ifdef UNSIGNED_64BIT_TYPE
-      void (*set_64) (unsigned char *, ulong_type);
+      void (*set_64)(unsigned char *, ulong_type);
 
       set_64 = (attrs->is_big_endian
 		? simple_object_set_big_64
 		: simple_object_set_little_64);
 
-      strncpy ((char *) hdr + offsetof (struct mach_o_section_64, sectname),
-	       name, MACH_O_NAME_LEN);
-      strncpy ((char *) hdr + offsetof (struct mach_o_section_64, segname),
-	       segn, MACH_O_NAME_LEN);
-      set_64 (hdr + offsetof (struct mach_o_section_64, addr), secaddr);
-      set_64 (hdr + offsetof (struct mach_o_section_64, size), secsize);
-      set_32 (hdr + offsetof (struct mach_o_section_64, offset), offset);
-      set_32 (hdr + offsetof (struct mach_o_section_64, align), align);
+      strncpy((char *)hdr + offsetof(struct mach_o_section_64, sectname),
+	      name, MACH_O_NAME_LEN);
+      strncpy((char *)hdr + offsetof(struct mach_o_section_64, segname),
+	      segn, MACH_O_NAME_LEN);
+      set_64((hdr + offsetof(struct mach_o_section_64, addr)),
+             (ulong_type)secaddr);
+      set_64((hdr + offsetof(struct mach_o_section_64, size)),
+             (ulong_type)secsize);
+      set_32((hdr + offsetof(struct mach_o_section_64, offset)),
+             (unsigned int)offset);
+      set_32((hdr + offsetof(struct mach_o_section_64, align)),
+             (unsigned int)align);
       /* reloff left as zero.  */
       /* nreloc left as zero.  */
-      set_32 (hdr + offsetof (struct mach_o_section_64, flags),
-	      MACH_O_S_ATTR_DEBUG);
+      set_32((hdr + offsetof(struct mach_o_section_64, flags)),
+	     MACH_O_S_ATTR_DEBUG);
       /* reserved1 left as zero.  */
       /* reserved2 left as zero.  */
       /* reserved3 left as zero.  */
-#endif
-      sechdrsize = sizeof (struct mach_o_section_64);
+#endif /* UNSIGNED_64BIT_TYPE */
+      sechdrsize = sizeof(struct mach_o_section_64);
     }
 
-  return simple_object_internal_write (descriptor, sechdr_offset, hdr,
-				       sechdrsize, errmsg, err);
+  return simple_object_internal_write(descriptor, (off_t)sechdr_offset,
+                                      hdr, sechdrsize, errmsg, err);
 }
 
 /* Write out the single (anonymous) segment containing the sections of a Mach-O
@@ -1026,13 +1036,13 @@ simple_object_mach_o_write_section_header (simple_object_write *sobj,
    is in the form __SEGMENT_NAME,__section_name as per Mach-O asm.  */
 
 static int
-simple_object_mach_o_write_segment (simple_object_write *sobj, int descriptor,
-				    size_t *nsects, const char **errmsg,
-				    int *err)
+simple_object_mach_o_write_segment(simple_object_write *sobj,
+                                   int descriptor, size_t *nsects,
+                                   const char **errmsg, int *err)
 {
   struct simple_object_mach_o_attributes *attrs =
-    (struct simple_object_mach_o_attributes *) sobj->data;
-  void (*set_32) (unsigned char *, unsigned int);
+    (struct simple_object_mach_o_attributes *)sobj->data;
+  void (*set_32)(unsigned char *, unsigned int);
   size_t hdrsize;
   size_t seghdrsize;
   size_t sechdrsize;
@@ -1042,10 +1052,10 @@ simple_object_mach_o_write_segment (simple_object_write *sobj, int descriptor,
   size_t secaddr;
   unsigned int name_offset;
   simple_object_write_section *section;
-  unsigned char hdrbuf[sizeof (struct mach_o_segment_command_64)];
+  unsigned char hdrbuf[sizeof(struct mach_o_segment_command_64)];
   unsigned char *hdr;
   size_t nsects_in;
-  unsigned int *index;
+  unsigned int *the_index;
   char *snames;
   unsigned int sect;
 
@@ -1053,33 +1063,30 @@ simple_object_mach_o_write_segment (simple_object_write *sobj, int descriptor,
 	    ? simple_object_set_big_32
 	    : simple_object_set_little_32);
 
-  /* Write out the sections first.  */
-
+  /* Write out the sections first: */
   if (attrs->magic == MACH_O_MH_MAGIC)
     {
-      hdrsize = sizeof (struct mach_o_header_32);
-      seghdrsize = sizeof (struct mach_o_segment_command_32);
-      sechdrsize = sizeof (struct mach_o_section_32);
+      hdrsize = sizeof(struct mach_o_header_32);
+      seghdrsize = sizeof(struct mach_o_segment_command_32);
+      sechdrsize = sizeof(struct mach_o_section_32);
     }
   else
     {
-      hdrsize = sizeof (struct mach_o_header_64);
-      seghdrsize = sizeof (struct mach_o_segment_command_64);
-      sechdrsize = sizeof (struct mach_o_section_64);
+      hdrsize = sizeof(struct mach_o_header_64);
+      seghdrsize = sizeof(struct mach_o_segment_command_64);
+      sechdrsize = sizeof(struct mach_o_section_64);
     }
 
   name_offset = 0;
   *nsects = nsects_in = 0;
 
-  /* Count the number of sections we start with.  */
-
+  /* Count the number of sections we start with: */
   for (section = sobj->sections; section != NULL; section = section->next)
     nsects_in++;
 
   if (sobj->segment_name != NULL)
     {
-      /* We will only write 3 sections: wrapped data, index and names.  */
-
+      /* We will only write 3 sections: wrapped data, index and names: */
       *nsects = 3;
 
       /* The index has four entries per wrapped section:
@@ -1090,7 +1097,7 @@ simple_object_mach_o_write_segment (simple_object_write *sobj, int descriptor,
 	 since the size of a mach-o MH_OBJECT cannot exceed 4G owing to
 	 other constraints.  */
 
-      index = XNEWVEC (unsigned int, nsects_in * 4);
+      the_index = XNEWVEC (unsigned int, nsects_in * 4);
 
       /* We now need to figure out the size of the names section.  This just
 	 stores the names as null-terminated c strings, packed without any
@@ -1099,16 +1106,17 @@ simple_object_mach_o_write_segment (simple_object_write *sobj, int descriptor,
       for (section = sobj->sections, sect = 0; section != NULL;
 	   section = section->next, sect++)
 	{
-	  index[sect*4+2] = name_offset;
-	  index[sect*4+3] = strlen (section->name) + 1;
-	  name_offset += strlen (section->name) + 1;
+	  the_index[(sect * 4) + 2] = name_offset;
+	  the_index[(sect * 4) + 3] = ((unsigned int)
+                                       (strlen(section->name) + 1UL));
+	  name_offset += (strlen(section->name) + 1UL);
 	}
-      snames = XNEWVEC (char, name_offset);
+      snames = XNEWVEC(char, name_offset);
     }
   else
     {
       *nsects = nsects_in;
-      index = NULL;
+      the_index = NULL;
       snames = NULL;
     }
 
@@ -1131,36 +1139,38 @@ simple_object_mach_o_write_segment (simple_object_write *sobj, int descriptor,
       while (new_offset > offset)
 	{
 	  unsigned char zeroes[16];
-	  size_t write;
+	  size_t write_amt;
 
-	  memset (zeroes, 0, sizeof zeroes);
-	  write = new_offset - offset;
-	  if (write > sizeof zeroes)
-	    write = sizeof zeroes;
-	  if (!simple_object_internal_write (descriptor, offset, zeroes, write,
-					     errmsg, err))
+	  memset(zeroes, 0, sizeof(zeroes));
+	  write_amt = (new_offset - offset);
+	  if (write_amt > sizeof(zeroes))
+	    write_amt = sizeof(zeroes);
+	  if (!simple_object_internal_write(descriptor, (off_t)offset,
+                                            zeroes, write_amt, errmsg,
+                                            err))
 	    return 0;
-	  offset += write;
+	  offset += write_amt;
 	}
 
       secsize = 0;
       for (buffer = section->buffers; buffer != NULL; buffer = buffer->next)
 	{
-	  if (!simple_object_internal_write (descriptor, offset + secsize,
-					     ((const unsigned char *)
-					      buffer->buffer),
-					     buffer->size, errmsg, err))
+	  if (!simple_object_internal_write(descriptor,
+                                            (off_t)(offset + secsize),
+					    ((const unsigned char *)
+					     buffer->buffer),
+					    buffer->size, errmsg, err))
 	    return 0;
 	  secsize += buffer->size;
 	}
 
-      if (sobj->segment_name != NULL)
+      if ((sobj->segment_name != NULL) && (the_index != NULL))
 	{
-	  index[sect*4+0] = (unsigned int) offset;
-	  index[sect*4+1] = secsize;
-	  /* Stash the section name in our table.  */
-	  memcpy (snames + index[sect * 4 + 2], section->name,
-		  index[sect * 4 + 3]);
+	  the_index[(sect * 4) + 0] = (unsigned int)offset;
+	  the_index[(sect * 4) + 1] = (unsigned int)secsize;
+	  /* Stash the section name in our table: */
+	  memcpy((snames + the_index[(sect * 4) + 2]), section->name,
+		 the_index[(sect * 4) + 3]);
 	}
       else
 	{
@@ -1168,20 +1178,19 @@ simple_object_mach_o_write_segment (simple_object_write *sobj, int descriptor,
 	  char segnbuf[MACH_O_NAME_LEN + 1];
 	  char *comma;
 
-	  /* Try to extract segment,section from the input name.  */
-
-	  memset (namebuf, 0, sizeof namebuf);
-	  memset (segnbuf, 0, sizeof segnbuf);
-	  comma = strchr (section->name, ',');
+	  /* Try to extract segment,section from the input name: */
+	  memset(namebuf, 0, sizeof(namebuf));
+	  memset(segnbuf, 0, sizeof(segnbuf));
+	  comma = strchr(section->name, ',');
 	  if (comma != NULL)
 	    {
-	      int len = comma - section->name;
-	      len = len > MACH_O_NAME_LEN ? MACH_O_NAME_LEN : len;
-	      strncpy (namebuf, section->name, len);
-	      strncpy (segnbuf, comma + 1, MACH_O_NAME_LEN);
+	      long len = (comma - section->name);
+	      len = ((len > MACH_O_NAME_LEN) ? MACH_O_NAME_LEN : len);
+	      strncpy(namebuf, section->name, (size_t)len);
+	      strncpy(segnbuf, (comma + 1), MACH_O_NAME_LEN);
 	    }
-	  else /* just try to copy the name, leave segment blank.  */
-	    strncpy (namebuf, section->name, MACH_O_NAME_LEN);
+	  else /* just try to copy the name, leave segment blank: */
+	    strncpy(namebuf, section->name, MACH_O_NAME_LEN);
 
 	  if (!simple_object_mach_o_write_section_header (sobj, descriptor,
 							  sechdr_offset,
@@ -1207,23 +1216,34 @@ simple_object_mach_o_write_segment (simple_object_write *sobj, int descriptor,
       /* Account for any initial aligment - which becomes the alignment for this
 	 created section.  */
 
-      secsize = (offset - index[0]);
-      if (!simple_object_mach_o_write_section_header (sobj, descriptor,
-						      sechdr_offset,
-						      GNU_WRAPPER_SECTS,
-						      sobj->segment_name,
-						      0 /*secaddr*/,
-						      secsize, index[0],
-						      sobj->sections->align,
-						      errmsg, err))
+      if (the_index != NULL) {
+        secsize = (offset - the_index[0]);
+      } else {
+        secsize = (offset - 0U);
+      }
+      if ((the_index != NULL) &&
+          (sobj != NULL) && (sobj->sections != NULL) &&
+          !simple_object_mach_o_write_section_header(sobj, descriptor,
+						     sechdr_offset,
+						     GNU_WRAPPER_SECTS,
+						     sobj->segment_name,
+						     0 /*secaddr*/,
+						     secsize, the_index[0],
+						     sobj->sections->align,
+						     errmsg, err))
 	return 0;
 
       /* Subtract the wrapper section start from the begining of each sub
 	 section.  */
 
-      for (i = 1; i < nsects_in; ++i)
-	index[4 * i] -= index[0];
-      index[0] = 0;
+      for (i = 1; i < nsects_in; ++i) {
+        if (the_index != NULL) {
+          the_index[4 * i] -= the_index[0];
+        }
+      }
+      if (the_index != NULL) {
+        the_index[0] = 0;
+      }
 
       sechdr_offset += sechdrsize;
 
@@ -1231,107 +1251,106 @@ simple_object_mach_o_write_segment (simple_object_write *sobj, int descriptor,
 	 ... the header ...
 	 name_offset contains the length of the section.  It is not aligned.  */
 
-      if (!simple_object_mach_o_write_section_header (sobj, descriptor,
-						      sechdr_offset,
-						      GNU_WRAPPER_NAMES,
-						      sobj->segment_name,
-						      0 /*secaddr*/,
-						      name_offset,
-						      offset,
-						      0, errmsg, err))
+      if (!simple_object_mach_o_write_section_header(sobj, descriptor,
+						     sechdr_offset,
+						     GNU_WRAPPER_NAMES,
+						     sobj->segment_name,
+						     0 /*secaddr*/,
+						     name_offset,
+						     offset,
+						     0, errmsg, err))
 	return 0;
 
-      /* ... and the content.. */
-      if (!simple_object_internal_write (descriptor, offset,
-					 (const unsigned char *) snames,
-					 name_offset, errmsg, err))
+      /* ...and the content... */
+      if (!simple_object_internal_write(descriptor, (off_t)offset,
+                                        (const unsigned char *)snames,
+                                        name_offset, errmsg, err))
 	return 0;
 
       sechdr_offset += sechdrsize;
       secaddr += name_offset;
       offset += name_offset;
 
-      /* Now do the index, we'll align this to 4 bytes although the read code
-	 will handle unaligned.  */
-
+      /* Now do the index; we shall align this to 4 bytes, even though the
+       * read code will handle unaligned: */
       offset += 3;
-      offset &= ~0x03;
-      if (!simple_object_mach_o_write_section_header (sobj, descriptor,
-						      sechdr_offset,
-						      GNU_WRAPPER_INDEX,
-						      sobj->segment_name,
-						      0 /*secaddr*/,
-						      nsects_in * 16,
-						      offset,
-						      2, errmsg, err))
+      offset &= (size_t)(~0x03);
+      if (!simple_object_mach_o_write_section_header(sobj, descriptor,
+						     sechdr_offset,
+						     GNU_WRAPPER_INDEX,
+						     sobj->segment_name,
+						     ((secaddr == 0)
+                                                      ? secaddr : 0),
+						     (nsects_in * 16),
+						     offset, 2,
+                                                     errmsg, err))
 	return 0;
 
       /* ... and the content.. */
-      if (!simple_object_internal_write (descriptor, offset,
-					 (const unsigned char *) index,
-					 nsects_in*16, errmsg, err))
+      if (!simple_object_internal_write(descriptor, (off_t)offset,
+                                        (const unsigned char *)the_index,
+                                        (nsects_in * 16), errmsg, err))
 	return 0;
 
-      XDELETEVEC (index);
-      XDELETEVEC (snames);
+      XDELETEVEC(the_index);
+      XDELETEVEC(snames);
     }
 
-  /* Write out the segment header.  */
-
-  memset (hdrbuf, 0, sizeof hdrbuf);
+  /* Write out the segment header: */
+  memset(hdrbuf, 0, sizeof(hdrbuf));
 
   hdr = &hdrbuf[0];
   if (attrs->magic == MACH_O_MH_MAGIC)
     {
-      set_32 (hdr + offsetof (struct mach_o_segment_command_32, cmd),
-	      MACH_O_LC_SEGMENT);
-      set_32 (hdr + offsetof (struct mach_o_segment_command_32, cmdsize),
-	      cmdsize);
+      set_32((hdr + offsetof(struct mach_o_segment_command_32, cmd)),
+	     MACH_O_LC_SEGMENT);
+      set_32((hdr + offsetof(struct mach_o_segment_command_32, cmdsize)),
+	     (unsigned int)cmdsize);
      /* MH_OBJECTS have a single, anonymous, segment - so the segment name
 	 is left empty.  */
       /* vmaddr left as zero.  */
       /* vmsize left as zero.  */
-      set_32 (hdr + offsetof (struct mach_o_segment_command_32, fileoff),
-	      hdrsize + cmdsize);
-      set_32 (hdr + offsetof (struct mach_o_segment_command_32, filesize),
-	      offset - (hdrsize + cmdsize));
+      set_32((hdr + offsetof(struct mach_o_segment_command_32, fileoff)),
+	     (unsigned int)(hdrsize + cmdsize));
+      set_32((hdr + offsetof(struct mach_o_segment_command_32, filesize)),
+	     (unsigned int)(offset - (hdrsize + cmdsize)));
       /* maxprot left as zero.  */
       /* initprot left as zero.  */
-      set_32 (hdr + offsetof (struct mach_o_segment_command_32, nsects),
-	      *nsects);
+      set_32((hdr + offsetof(struct mach_o_segment_command_32, nsects)),
+	     (unsigned int)(*nsects));
       /* flags left as zero.  */
     }
   else
     {
 #ifdef UNSIGNED_64BIT_TYPE
-      void (*set_64) (unsigned char *, ulong_type);
+      void (*set_64)(unsigned char *, ulong_type);
 
       set_64 = (attrs->is_big_endian
 		? simple_object_set_big_64
 		: simple_object_set_little_64);
 
-      set_32 (hdr + offsetof (struct mach_o_segment_command_64, cmd),
-	      MACH_O_LC_SEGMENT);
-      set_32 (hdr + offsetof (struct mach_o_segment_command_64, cmdsize),
-	      cmdsize);
+      set_32((hdr + offsetof(struct mach_o_segment_command_64, cmd)),
+	     MACH_O_LC_SEGMENT);
+      set_32((hdr + offsetof(struct mach_o_segment_command_64, cmdsize)),
+	     (unsigned int)cmdsize);
       /* MH_OBJECTS have a single, anonymous, segment - so the segment name
 	 is left empty.  */
       /* vmaddr left as zero.  */
       /* vmsize left as zero.  */
-      set_64 (hdr + offsetof (struct mach_o_segment_command_64, fileoff),
-	      hdrsize + cmdsize);
-      set_64 (hdr + offsetof (struct mach_o_segment_command_64, filesize),
-	      offset - (hdrsize + cmdsize));
+      set_64((hdr + offsetof(struct mach_o_segment_command_64, fileoff)),
+	     (ulong_type)(hdrsize + cmdsize));
+      set_64((hdr + offsetof(struct mach_o_segment_command_64, filesize)),
+	     (ulong_type)(offset - (hdrsize + cmdsize)));
       /* maxprot left as zero.  */
       /* initprot left as zero.  */
-      set_32 (hdr + offsetof (struct mach_o_segment_command_64, nsects),
-	      *nsects);
+      set_32((hdr + offsetof(struct mach_o_segment_command_64, nsects)),
+	     (unsigned int)(*nsects));
       /* flags left as zero.  */
-#endif
+#endif /* UNSIGNED_64BIT_TYPE */
     }
 
-  return simple_object_internal_write (descriptor, hdrsize, hdr, seghdrsize,
-				       errmsg, err);
+  return simple_object_internal_write(descriptor, (off_t)hdrsize, hdr,
+                                      seghdrsize, errmsg, err);
 }
 
 /* Write out a complete Mach-O file.  */
@@ -1354,16 +1373,14 @@ simple_object_mach_o_write_to_file (simple_object_write *sobj, int descriptor,
   return NULL;
 }
 
-/* Release the private data for an simple_object_write structure.  */
-
+/* Release the private data for an simple_object_write structure: */
 static void
-simple_object_mach_o_release_write (void *data)
+simple_object_mach_o_release_write(void *data)
 {
-  XDELETE (data);
+  XDELETE(data);
 }
 
-/* The Mach-O functions.  */
-
+/* The Mach-O functions: */
 const struct simple_object_functions simple_object_mach_o_functions =
 {
   simple_object_mach_o_match,
@@ -1376,3 +1393,5 @@ const struct simple_object_functions simple_object_mach_o_functions =
   simple_object_mach_o_write_to_file,
   simple_object_mach_o_release_write
 };
+
+/* EOF */

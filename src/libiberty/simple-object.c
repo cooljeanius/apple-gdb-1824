@@ -59,13 +59,13 @@ static const struct simple_object_functions * const format_functions[] =
    conventions.  */
 
 int
-simple_object_internal_read (int descriptor, off_t offset,
-			     unsigned char *buffer, size_t size,
-			     const char **errmsg, int *err)
+simple_object_internal_read(int descriptor, off_t offset,
+			    unsigned char *buffer, size_t size,
+			    const char **errmsg, int *err)
 {
   ssize_t got;
 
-  if (lseek (descriptor, offset, SEEK_SET) < 0)
+  if (lseek(descriptor, offset, SEEK_SET) < 0)
     {
       *errmsg = "lseek";
       *err = errno;
@@ -94,9 +94,9 @@ simple_object_internal_read (int descriptor, off_t offset,
    conventions.  */
 
 int
-simple_object_internal_write (int descriptor, off_t offset,
-			      const unsigned char *buffer, size_t size,
-			      const char **errmsg, int *err)
+simple_object_internal_write(int descriptor, off_t offset,
+			     const unsigned char *buffer, size_t size,
+			     const char **errmsg, int *err)
 {
   ssize_t wrote;
 
@@ -421,3 +421,5 @@ simple_object_release_write (simple_object_write *sobj)
   sobj->functions->release_write (sobj->data);
   XDELETE (sobj);
 }
+
+/* EOF */

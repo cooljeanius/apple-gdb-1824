@@ -1,10 +1,10 @@
-/* Support for printing Fortran types for GDB, the GNU debugger.
+/* f-typeprint.c: Support printing Fortran types in GDB, the GNU debugger.
 
    Copyright 1986, 1988, 1989, 1991, 1993, 1994, 1995, 1996, 1998,
    2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
    Contributed by Motorola.  Adapted from the C version by Farooq Butt
-   (fmbutt@engage.sps.mot.com).
+   <fmbutt@engage.sps.mot.com>.
 
    This file is part of GDB.
 
@@ -39,7 +39,7 @@
 
 #if 0				/* Currently unused */
 static void f_type_print_args (struct type *, struct ui_file *);
-#endif
+#endif /* 0 */
 
 static void print_equivalent_f77_float_type (struct type *,
 					     struct ui_file *);
@@ -96,31 +96,31 @@ f_print_type (struct type *type, char *varstring, struct ui_file *stream,
    SHOW is always zero on recursive calls.  */
 
 void
-f_type_print_varspec_prefix (struct type *type, struct ui_file *stream,
-			     int show, int passed_a_ptr)
+f_type_print_varspec_prefix(struct type *type, struct ui_file *stream,
+			    int show, int passed_a_ptr)
 {
   if (type == 0)
     return;
 
-  if (TYPE_NAME (type) && show <= 0)
+  if (TYPE_NAME(type) && show <= 0)
     return;
 
   QUIT;
 
-  switch (TYPE_CODE (type))
+  switch (TYPE_CODE(type))
     {
     case TYPE_CODE_PTR:
-      f_type_print_varspec_prefix (TYPE_TARGET_TYPE (type), stream, 0, 1);
+      f_type_print_varspec_prefix(TYPE_TARGET_TYPE(type), stream, 0, 1);
       break;
 
     case TYPE_CODE_FUNC:
-      f_type_print_varspec_prefix (TYPE_TARGET_TYPE (type), stream, 0, 0);
+      f_type_print_varspec_prefix(TYPE_TARGET_TYPE(type), stream, 0, 0);
       if (passed_a_ptr)
-	fprintf_filtered (stream, "(");
+	fprintf_filtered(stream, "(");
       break;
 
     case TYPE_CODE_ARRAY:
-      f_type_print_varspec_prefix (TYPE_TARGET_TYPE (type), stream, 0, 0);
+      f_type_print_varspec_prefix(TYPE_TARGET_TYPE(type), stream, 0, 0);
       break;
 
     case TYPE_CODE_UNDEF:
@@ -143,7 +143,10 @@ f_type_print_varspec_prefix (struct type *type, struct ui_file *stream,
     case TYPE_CODE_COMPLEX:
     case TYPE_CODE_TYPEDEF:
       /* These types need no prefix.  They are listed here so that
-         gcc -Wall will reveal any types that haven't been handled.  */
+         gcc -Wall will reveal any types that have NOT been handled.  */
+      break;
+
+    default:
       break;
     }
 }
@@ -153,8 +156,8 @@ f_type_print_varspec_prefix (struct type *type, struct ui_file *stream,
    Args work like c_type_print_varspec_prefix.  */
 
 static void
-f_type_print_varspec_suffix (struct type *type, struct ui_file *stream,
-			     int show, int passed_a_ptr, int demangled_args)
+f_type_print_varspec_suffix(struct type *type, struct ui_file *stream,
+			    int show, int passed_a_ptr, int demangled_args)
 {
   int upper_bound, lower_bound;
   int lower_bound_was_default = 0;
@@ -164,75 +167,75 @@ f_type_print_varspec_suffix (struct type *type, struct ui_file *stream,
   if (type == 0)
     return;
 
-  if (TYPE_NAME (type) && show <= 0)
+  if (TYPE_NAME(type) && show <= 0)
     return;
 
   QUIT;
 
-  switch (TYPE_CODE (type))
+  switch (TYPE_CODE(type))
     {
     case TYPE_CODE_ARRAY:
       arrayprint_recurse_level++;
 
       if (arrayprint_recurse_level == 1)
-	fprintf_filtered (stream, "(");
+	fprintf_filtered(stream, "(");
 
-      if (TYPE_CODE (TYPE_TARGET_TYPE (type)) == TYPE_CODE_ARRAY)
-	f_type_print_varspec_suffix (TYPE_TARGET_TYPE (type), stream, 0, 0, 0);
+      if (TYPE_CODE(TYPE_TARGET_TYPE(type)) == TYPE_CODE_ARRAY)
+	f_type_print_varspec_suffix(TYPE_TARGET_TYPE(type), stream, 0, 0, 0);
 
-      retcode = f77_get_dynamic_lowerbound (type, &lower_bound);
+      retcode = f77_get_dynamic_lowerbound(type, &lower_bound);
 
       lower_bound_was_default = 0;
 
       if (retcode == BOUND_FETCH_ERROR)
-	fprintf_filtered (stream, "???");
+	fprintf_filtered(stream, "???");
       else if (lower_bound == 1)	/* The default */
 	lower_bound_was_default = 1;
       else
-	fprintf_filtered (stream, "%d", lower_bound);
+	fprintf_filtered(stream, "%d", lower_bound);
 
       if (lower_bound_was_default)
 	lower_bound_was_default = 0;
       else
-	fprintf_filtered (stream, ":");
+	fprintf_filtered(stream, ":");
 
       /* Make sure that, if we have an assumed size array, we
          print out a warning and print the upperbound as '*' */
 
-      if (TYPE_ARRAY_UPPER_BOUND_TYPE (type) == BOUND_CANNOT_BE_DETERMINED)
-	fprintf_filtered (stream, "*");
+      if (TYPE_ARRAY_UPPER_BOUND_TYPE(type) == BOUND_CANNOT_BE_DETERMINED)
+	fprintf_filtered(stream, "*");
       else
 	{
-	  retcode = f77_get_dynamic_upperbound (type, &upper_bound);
+	  retcode = f77_get_dynamic_upperbound(type, &upper_bound);
 
 	  if (retcode == BOUND_FETCH_ERROR)
-	    fprintf_filtered (stream, "???");
+	    fprintf_filtered(stream, "???");
 	  else
-	    fprintf_filtered (stream, "%d", upper_bound);
+	    fprintf_filtered(stream, "%d", upper_bound);
 	}
 
-      if (TYPE_CODE (TYPE_TARGET_TYPE (type)) != TYPE_CODE_ARRAY)
-	f_type_print_varspec_suffix (TYPE_TARGET_TYPE (type), stream, 0, 0, 0);
+      if (TYPE_CODE(TYPE_TARGET_TYPE(type)) != TYPE_CODE_ARRAY)
+	f_type_print_varspec_suffix(TYPE_TARGET_TYPE(type), stream, 0, 0, 0);
       if (arrayprint_recurse_level == 1)
-	fprintf_filtered (stream, ")");
+	fprintf_filtered(stream, ")");
       else
-	fprintf_filtered (stream, ",");
+	fprintf_filtered(stream, ",");
       arrayprint_recurse_level--;
       break;
 
     case TYPE_CODE_PTR:
     case TYPE_CODE_REF:
-      f_type_print_varspec_suffix (TYPE_TARGET_TYPE (type), stream, 0, 1, 0);
-      fprintf_filtered (stream, ")");
+      f_type_print_varspec_suffix(TYPE_TARGET_TYPE(type), stream, 0, 1, 0);
+      fprintf_filtered(stream, ")");
       break;
 
     case TYPE_CODE_FUNC:
-      f_type_print_varspec_suffix (TYPE_TARGET_TYPE (type), stream, 0,
-				   passed_a_ptr, 0);
+      f_type_print_varspec_suffix(TYPE_TARGET_TYPE(type), stream, 0,
+				  passed_a_ptr, 0);
       if (passed_a_ptr)
-	fprintf_filtered (stream, ")");
+	fprintf_filtered(stream, ")");
 
-      fprintf_filtered (stream, "()");
+      fprintf_filtered(stream, "()");
       break;
 
     case TYPE_CODE_UNDEF:
@@ -256,11 +259,14 @@ f_type_print_varspec_suffix (struct type *type, struct ui_file *stream,
       /* These types do not need a suffix.  They are listed so that
          gcc -Wall will report types that may not have been considered.  */
       break;
+
+    default:
+      break;
     }
 }
 
 static void
-print_equivalent_f77_float_type (struct type *type, struct ui_file *stream)
+print_equivalent_f77_float_type(struct type *type, struct ui_file *stream)
 {
   /* Override type name "float" and make it the
      appropriate real. XLC stupidly outputs -12 as a type
@@ -404,3 +410,5 @@ f_type_print_base (struct type *type, struct ui_file *stream, int show,
       break;
     }
 }
+
+/* EOF */

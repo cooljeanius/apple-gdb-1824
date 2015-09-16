@@ -1,0 +1,103 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# pseudo.test --- test the select pseudo option
+#
+# Time-stamp:        "2010-06-26 16:04:38 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating ${testname}.tpl
+cat > ${testname}.tpl <<- \_EOF_
+	[= AutoGen5 Template
+
+	(define f-name "")
+
+	h=(begin
+	    (set! f-name (getenv "incdir"))
+	    (if (not (string? f-name)) (set! f-name "."))
+	    (set! f-name (string-append f-name "/%s-hdr.%s"))
+	    (shellf
+	    "d=`dirname %s`
+	    test -d ${d} || mkdir -p $d || die cannot mkdir $d"
+	    f-name)
+	    f-name
+	  )
+
+	c=(begin
+	    (set! f-name (getenv "srcdir"))
+	    (if (not (string? f-name)) (set! f-name "."))
+	    (set! f-name (string-append f-name "/%s-body.%s"))
+	    (shellf
+	    "d=`dirname %s`
+	    test -d ${d} || mkdir -p $d || die cannot mkdir $d"
+	    f-name)
+	    f-name
+	  )
+
+	# end of pseudo
+	=]
+	[=
+
+	(sprintf "two file create %s: " (suffix)) =][=
+
+	CASE (suffix) =][=
+
+	== h =]HEADER FILE[=
+	== c =]BODY 4 FILE[=
+	*    =][= (error "woops") =][=
+
+	ESAC =]
+	_EOF_
+
+# # # # # # # # # # RUN TESTS # # # # # # #
+
+incdir=${testname}-inc
+srcdir=${testname}-src
+
+export incdir srcdir
+
+run_ag x --no-def -T${testname}.tpl -b${testname} || \
+   failure autogen --no-def -T${testname}.tpl -b${testname}
+
+f=${incdir}/${testname}-hdr.h
+test -f ${f} || \
+   failure missing file: ${f}
+${FGREP} 'two file create h: HEADER FILE' ${f} || failure bad contents for $f
+
+f=${srcdir}/${testname}-body.c
+test -f ${f} || \
+   failure missing file: ${f}
+${FGREP} 'two file create c: BODY 4 FILE' ${f} || failure bad contents for $f
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of pseudo.test

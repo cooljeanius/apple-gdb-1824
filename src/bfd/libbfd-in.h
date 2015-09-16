@@ -1,12 +1,12 @@
 /* libbfd.h -- Declarations used by bfd library *implementation*.
-   (This include file is not for users of the library.)
-
-   Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
-   1999, 2000, 2001, 2002, 2003, 2004, 2005
-   Free Software Foundation, Inc.
-
-   Written by Cygnus Support.
-
+ * (This include file is not for users of the library.)
+ *
+ * Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
+ * 1999, 2000, 2001, 2002, 2003, 2004, 2005
+ * Free Software Foundation, Inc.
+ *
+ * Written by Cygnus Support.  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -21,46 +21,50 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
+/* the fact that this ifdef remains unterminated in "libbfd-in.h" enforces
+ * the requirement to include the complete version of this header
+ * ("libbfd.h") as opposed to the incomplete one, as the complete version
+ * gets combined with "libbfd-post.h", which has the necessary "#endif": */
 #ifndef __LIBBFD_H__
 #define __LIBBFD_H__
 
 #include <stdio.h>
 
+#include "ansidecl.h"
+
 #include "hashtab.h"
 
 /* Align an address upward to a boundary, expressed as a number of bytes.
-   E.g. align to an 8-byte boundary with argument of 8.  Take care never
-   to wrap around if the address is within boundary-1 of the end of the
-   address space.  */
+ * E.g. align to an 8-byte boundary with argument of 8.  Take care never
+ * to wrap around if the address is within boundary-1 of the end of the
+ * address space: */
 #define BFD_ALIGN(this, boundary)					  \
-  ((((bfd_vma) (this) + (boundary) - 1) >= (bfd_vma) (this))		  \
-   ? (((bfd_vma) (this) + ((boundary) - 1)) & ~ (bfd_vma) ((boundary)-1)) \
-   : ~ (bfd_vma) 0)
+  ((((bfd_vma)(this) + (boundary) - 1) >= (bfd_vma)(this))		  \
+   ? (((bfd_vma)(this) + ((boundary) - 1)) & ~ (bfd_vma)((boundary)-1))   \
+   : ~ (bfd_vma)0)
 
-/* If you want to read and write large blocks, you might want to do it
-   in quanta of this amount */
+/* If you want to read and write large blocks, then you might want to do it
+ * in quanta of this amount: */
 #define DEFAULT_BUFFERSIZE 8192
 
-/* Set a tdata field.  Can't use the other macros for this, since they
-   do casts, and casting to the left of assignment isn't portable.  */
+/* Set a tdata field.  Cannot use the other macros for this, since they do
+ * casts, and casting to the left of assignment is bad and NOT portable: */
 #define set_tdata(bfd, v) ((bfd)->tdata.any = (v))
 
 /* If BFD_IN_MEMORY is set for a BFD, then the iostream fields points
-   to an instance of this structure.  */
-
+ * to an instance of this structure: */
 struct bfd_in_memory
 {
-  /* Size of buffer.  */
+  /* Size of buffer: */
   bfd_size_type size;
-  /* Buffer holding contents of BFD.  */
+  /* Buffer holding contents of BFD: */
   bfd_byte *buffer;
 };
 
-/* tdata for an archive.  For an input archive, cache
-   needs to be free()'d.  For an output archive, symdefs do.  */
-
+/* tdata for an archive.  For an input archive, cache needs to be free()'d.
+ * For an output archive, symdefs do: */
 struct artdata {
   file_ptr first_file_filepos;
   /* Speed up searching the armap */
@@ -84,43 +88,32 @@ struct artdata {
 
 #define bfd_ardata(bfd) ((bfd)->tdata.aout_ar_data)
 
-/* Goes in bfd's arelt_data slot */
+/* Goes in bfd's arelt_data slot: */
 struct areltdata {
-  char * arch_header;		/* it's actually a string */
-  unsigned int parsed_size;	/* octets of filesize not including ar_hdr */
-  char *filename;		/* null-terminated */
+  char *arch_header;	  /* it is actually a string */
+  unsigned int parsed_size;  /* octets of filesize not including ar_hdr */
+  char *filename;	  /* null-terminated */
 };
 
 #define arelt_size(bfd) (((struct areltdata *)((bfd)->arelt_data))->parsed_size)
 
-extern void *bfd_malloc
-  (bfd_size_type);
-extern void *bfd_realloc
-  (void *, bfd_size_type);
-extern void *bfd_zmalloc
-  (bfd_size_type);
-extern void *bfd_malloc2
-  (bfd_size_type, bfd_size_type);
-extern void *bfd_realloc2
-  (void *, bfd_size_type, bfd_size_type);
-extern void *bfd_zmalloc2
-  (bfd_size_type, bfd_size_type);
+extern void *bfd_malloc(bfd_size_type);
+extern void *bfd_realloc(void *, bfd_size_type);
+extern void *bfd_zmalloc(bfd_size_type);
+extern void *bfd_malloc2(bfd_size_type, bfd_size_type);
+extern void *bfd_realloc2(void *, bfd_size_type, bfd_size_type);
+extern void *bfd_zmalloc2(bfd_size_type, bfd_size_type);
 
-extern void _bfd_default_error_handler (const char *s, ...);
+extern void _bfd_default_error_handler(const char *s, ...)
+  ATTRIBUTE_PRINTF_1;
 extern bfd_error_handler_type _bfd_error_handler;
 
-/* These routines allocate and free things on the BFD's objalloc.  */
-
-extern void *bfd_alloc
-  (bfd *, bfd_size_type);
-extern void *bfd_zalloc
-  (bfd *, bfd_size_type);
-extern void *bfd_alloc2
-  (bfd *, bfd_size_type, bfd_size_type);
-extern void *bfd_zalloc2
-  (bfd *, bfd_size_type, bfd_size_type);
-extern void bfd_release
-  (bfd *, void *);
+/* These routines allocate and free things on the BFD's objalloc: */
+extern void *bfd_alloc(bfd *, bfd_size_type);
+extern void *bfd_zalloc(bfd *, bfd_size_type);
+extern void *bfd_alloc2(bfd *, bfd_size_type, bfd_size_type);
+extern void *bfd_zalloc2(bfd *, bfd_size_type, bfd_size_type);
+extern void bfd_release(bfd *, void *);
 
 bfd * _bfd_create_empty_archive_element_shell
   (bfd *obfd);
@@ -209,9 +202,9 @@ int bfd_generic_stat_arch_elt
   (bfd *, struct stat *);
 
 #define _bfd_read_ar_hdr(abfd) \
-  BFD_SEND (abfd, _bfd_read_ar_hdr_fn, (abfd))
+  BFD_SEND(abfd, _bfd_read_ar_hdr_fn, (abfd))
 
-/* APPLE LOCAL: Allow a way to clear the cached bfd's in an archive.  */
+/* APPLE LOCAL: Allow a way to clear the cached bfd's in an archive: */
 void bfd_archive_free_cached_info (bfd *);
 
 
@@ -617,7 +610,7 @@ extern bfd_size_type _bfd_stringtab_add
 extern bfd_boolean _bfd_stringtab_emit
   (bfd *, struct bfd_strtab_hash *);
 
-/* Check that endianness of input and output file match.  */
+/* Check that endianness of input and output file match: */
 extern bfd_boolean _bfd_generic_verify_endian_match
   (bfd *, bfd *);
 
@@ -631,12 +624,15 @@ extern bfd_boolean _bfd_generic_verify_endian_match
 */
 
 #define	bfd_read_p(abfd) \
-  ((abfd)->direction == read_direction || (abfd)->direction == both_direction)
+  (((abfd)->direction == read_direction) || ((abfd)->direction == both_direction))
 #define	bfd_write_p(abfd) \
-  ((abfd)->direction == write_direction || (abfd)->direction == both_direction)
+  (((abfd)->direction == write_direction) || ((abfd)->direction == both_direction))
 
-void bfd_assert
-  (const char*,int);
+void
+#ifdef __clang_analyzer__
+ATTRIBUTE_NORETURN
+#endif /* __clang_analyzer__ */
+bfd_assert(const char *, int);
 
 #define BFD_ASSERT(x) \
   do { if (!(x)) bfd_assert(__FILE__,__LINE__); } while (0)
@@ -644,24 +640,30 @@ void bfd_assert
 #define BFD_FAIL() \
   do { bfd_assert(__FILE__,__LINE__); } while (0)
 
-extern void _bfd_abort
-  (const char *, int, const char *) ATTRIBUTE_NORETURN;
+extern void _bfd_abort(const char *, int, const char *) ATTRIBUTE_NORETURN;
 
-/* if gcc >= 2.6, we can give a function name, too */
-#if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 6)
-#define __PRETTY_FUNCTION__  ((char *) NULL)
-#endif
+/* We use __extension__ here to suppress -pedantic warnings about GCC
+ * extensions.  This feature did NOT work properly before gcc 2.8: */
+#if !defined(__extension__) && defined(GCC_VERSION)
+# if (GCC_VERSION < 2008)
+#  define __extension__
+# endif /* gcc pre-2.8 */
+#endif /* !__extension__ && GCC_VERSION */
+
+/* if gcc >= 2.6, we can give a function name, too: */
+#if (__GNUC__ < 2) || ((__GNUC__ == 2) && (__GNUC_MINOR__ < 6))
+# define __PRETTY_FUNCTION__  ((char *)NULL)
+#endif /* gcc pre-2.6 */
 
 #undef abort
-#define abort() _bfd_abort (__FILE__, __LINE__, __PRETTY_FUNCTION__)
+#define abort() _bfd_abort(__FILE__, __LINE__, __extension__ __PRETTY_FUNCTION__)
 
 /* Manipulate a system FILE but using BFD's "file_ptr", rather than
-   the system "off_t" or "off64_t", as the offset.  */
-extern file_ptr real_ftell (FILE *file);
-extern int real_fseek (FILE *file, file_ptr offset, int whence);
+ * the system "off_t" or "off64_t", as the offset.  */
+extern file_ptr real_ftell(FILE *file);
+extern int real_fseek(FILE *file, file_ptr offset, int whence);
 
-FILE * bfd_cache_lookup_worker
-  (bfd *);
+FILE * bfd_cache_lookup_worker(bfd *);
 
 extern bfd *bfd_last_cache;
 
@@ -686,30 +688,34 @@ extern bfd_boolean _bfd_ecoff_locate_line
    const char **, const char **, unsigned int *);
 extern bfd_boolean _bfd_ecoff_get_accumulated_pdr
   (void *, bfd_byte *);
-extern bfd_boolean _bfd_ecoff_get_accumulated_sym
-  (void *, bfd_byte *);
-extern bfd_boolean _bfd_ecoff_get_accumulated_ss
-  (void *, bfd_byte *);
+extern bfd_boolean _bfd_ecoff_get_accumulated_sym(void *, bfd_byte *);
+extern bfd_boolean _bfd_ecoff_get_accumulated_ss(void *, bfd_byte *);
 
-extern bfd_vma _bfd_get_gp_value
-  (bfd *);
-extern void _bfd_set_gp_value
-  (bfd *, bfd_vma);
+extern bfd_vma _bfd_get_gp_value(bfd *);
+extern void _bfd_set_gp_value(bfd *, bfd_vma);
 
-/* Function shared by the COFF and ELF SH backends, which have no
-   other common header files.  */
-
+/* Function shared by the COFF and ELF SH backends, which have no other
+ * common header files: */
 #ifndef _bfd_sh_align_load_span
 extern bfd_boolean _bfd_sh_align_load_span
   (bfd *, asection *, bfd_byte *,
-   bfd_boolean (*) (bfd *, asection *, void *, bfd_byte *, bfd_vma),
+   bfd_boolean (*)(bfd *, asection *, void *, bfd_byte *, bfd_vma),
    void *, bfd_vma **, bfd_vma *, bfd_vma, bfd_vma, bfd_boolean *);
 #endif /* !_bfd_sh_align_load_span */
 
-/* This is the shape of the elements inside the already_linked hash
-   table. It maps a name onto a list of already_linked elements with
-   the same name.  */
+#if defined(A_OUT_NEWSOS_THREE_C) && (!defined(__STDC__) || !__STDC__)
+# if defined(bfd_section_already_linked)
+#  undef bfd_section_already_linked
+# endif /* bfd_section_already_linked */
+#endif /* A_OUT_NEWSOS_THREE_C && !__STDC__ */
 
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ && !__clang__ */
+
+/* This is the shape of the elements inside the already_linked hash table.
+ * It maps a name onto a list of already_linked elements with the same
+ * name: */
 struct bfd_section_already_linked_hash_entry
 {
   struct bfd_hash_entry root;
@@ -723,15 +729,15 @@ struct bfd_section_already_linked
 };
 
 extern struct bfd_section_already_linked_hash_entry *
-  bfd_section_already_linked_table_lookup (const char *);
+  bfd_section_already_linked_table_lookup(const char *);
 extern void bfd_section_already_linked_table_insert
   (struct bfd_section_already_linked_hash_entry *, asection *);
 extern void bfd_section_already_linked_table_traverse
-  (bfd_boolean (*) (struct bfd_section_already_linked_hash_entry *,
-		    void *), void *);
+  (bfd_boolean (*)(struct bfd_section_already_linked_hash_entry *,
+                   void *), void *);
 
-extern bfd_vma read_unsigned_leb128 (bfd *, bfd_byte *, unsigned int *);
-extern bfd_signed_vma read_signed_leb128 (bfd *, bfd_byte *, unsigned int *);
+extern bfd_vma read_unsigned_leb128(bfd *, bfd_byte *, unsigned int *);
+extern bfd_signed_vma read_signed_leb128(bfd *, bfd_byte *, unsigned int *);
 
 /* End of libbfd-in.h */
 

@@ -1,4 +1,5 @@
-/* Native definitions for alpha running OSF/1-2.x, using procfs.
+/* nm-osf2.h
+   Native definitions for alpha running OSF/1-2.x, using procfs.
    Copyright 1995, 1996, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -25,12 +26,12 @@
 #define USE_PROC_FS
 #define HAVE_OPTIONAL_PROC_FS
 
-/* Don't trace faults under OSF/1, rely on the posting of the appropriate
+/* Do NOT trace faults under OSF/1, rely on the posting of the appropriate
    signal if fault tracing is disabled.
    Tracing T_IFAULT under Alpha OSF/1 causes a `floating point enable'
    fault from which we cannot continue (except by disabling the
    tracing).
-   And as OSF/1 doesn't provide the standard fault definitions, the
+   And as OSF/1 does NOT provide the standard fault definitions, the
    mapping of faults to appropriate signals in procfs_wait is difficult.  */
 #define PROCFS_DONT_TRACE_FAULTS
 
@@ -42,3 +43,5 @@
 
 #define KERNEL_U_SIZE kernel_u_size()
 extern int kernel_u_size (void);
+
+/* EOF */

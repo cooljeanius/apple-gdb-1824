@@ -1,4 +1,5 @@
-/* Macro definitions for ns532, Mach 3.0
+/* tm-ns32km3.h
+   Macro definitions for ns532, Mach 3.0
    Copyright (C) 1992 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -56,7 +57,8 @@
 #undef NUM_REGS
 #undef REGISTER_BYTES
 /* Initializer for an array of names of registers.
-   There should be NUM_REGS strings in this initializer.  */
+ * There should be NUM_REGS strings in this initializer.
+ */
 
 #define REGISTER_NAMES {"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",	\
  			"f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7",	\
@@ -68,7 +70,10 @@
 #define NUM_REGS		29
 
 /* Total amount of space needed to store our copies of the machine's
-   register state, the array `registers'.  */
+ * register state, the array `registers'.
+ */
 #define REGISTER_BYTES \
   ((NUM_REGS - 4) * REGISTER_RAW_SIZE(R0_REGNUM) \
    + 8            * REGISTER_RAW_SIZE(LP0_REGNUM))
+
+/* EOF */

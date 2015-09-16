@@ -1,0 +1,95 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# in.test --- Verify that the "in?" predicate works
+#
+# Time-stamp:        "2010-06-26 16:05:12 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating ${testname}.tpl
+cat > ${testname}.tpl <<_EOF_
+[++ AutoGen5 template out ++][++
+
+(define stack-list (stack "foo.bar"))
+(string-append
+  (if (in? (get "baz") stack-list) "success" "FAIL")
+  "\n"
+  (if (in? (get "oops") stack-list) "FAIL" "success")
+) ++][++
+
+IF .true ++]
+success[++
+ELSE     ++]
+FAILURE[++
+ENDIF    ++]-[++ .true ++][++
+
+IF .false ++]
+FAILURE[++
+ELSE     ++]
+success[++
+ENDIF    ++]-[++ .false ++]
+_EOF_
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo creating ${testname}.def
+cat > ${testname}.def <<_EOF_
+AutoGen definitions ${testname};
+foo  = { bar = one; };
+foo  = { bar = two; };
+foo  = { bar = three; };
+foo  = { bar = four; };
+baz  = three;
+oops = oops;
+true = true;
+false = false;
+_EOF_
+
+# # # # # # # # # # EXPECTED OUTPUT FILE # # # # # # #
+set -x
+echo creating ${testname}.ok
+# this is the output we should expect to see
+cat > ${testname}.ok <<'_EOF_'
+success
+success
+success-true
+success-false
+_EOF_
+
+run_ag x ${testname}.def || failure autogen failed
+cmp -s ${testname}.ok ${testname}.out || \
+  failure "`diff ${testname}.ok ${testname}.test`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of in.test

@@ -78,7 +78,7 @@ local block_state deflate_stored OF((deflate_state *s, int flush));
 local block_state deflate_fast   OF((deflate_state *s, int flush));
 #ifndef FASTEST
 local block_state deflate_slow   OF((deflate_state *s, int flush));
-#endif
+#endif /* !FASTEST */
 local block_state deflate_rle    OF((deflate_state *s, int flush));
 local block_state deflate_huff   OF((deflate_state *s, int flush));
 local void lm_init        OF((deflate_state *s));
@@ -90,12 +90,12 @@ local int read_buf        OF((z_streamp strm, Bytef *buf, unsigned size));
       uInt longest_match  OF((deflate_state *s, IPos cur_match));
 #else
 local uInt longest_match  OF((deflate_state *s, IPos cur_match));
-#endif
+#endif /* ASMV */
 
 #ifdef DEBUG
 local  void check_match OF((deflate_state *s, IPos start, IPos match,
                             int length));
-#endif
+#endif /* DEBUG */
 
 /* ===========================================================================
  * Local data
@@ -148,12 +148,17 @@ local const config configuration_table[10] = {
  * meaning.
  */
 
-#define EQUAL 0
-/* result of memcmp for equal strings */
+/* result of memcmp for equal strings (memcmp is only used in this file when
+ * DEBUG is defined, so use a similar condition here): */
+#ifdef DEBUG
+# ifndef EQUAL
+#  define EQUAL 0
+# endif /* !EQUAL */
+#endif /* DEBUG */
 
 #ifndef NO_DUMMY_DECL
 struct static_tree_desc_s {int dummy;}; /* for buggy compilers */
-#endif
+#endif /* !NO_DUMMY_DECL */
 
 /* rank Z_BLOCK between Z_NO_FLUSH and Z_PARTIAL_FLUSH */
 #define RANK(f) (((f) << 1) - ((f) > 4 ? 9 : 0))
@@ -1965,3 +1970,5 @@ local block_state deflate_huff(s, flush)
         FLUSH_BLOCK(s, 0);
     return block_done;
 }
+
+/* EOF */

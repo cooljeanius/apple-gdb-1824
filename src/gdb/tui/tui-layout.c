@@ -1,4 +1,4 @@
-/* TUI layout window management.
+/* tui-layout.c: TUI layout window management.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -31,6 +31,7 @@
 
 #include "tui/tui.h"
 #include "tui/tui-data.h"
+#include "tui/tui-layout.h"
 #include "tui/tui-windata.h"
 #include "tui/tui-wingeneral.h"
 #include "tui/tui-stack.h"
@@ -45,26 +46,28 @@
 /*******************************
 ** Static Local Decls
 ********************************/
-static void show_layout (enum tui_layout_type);
-static void init_gen_win_info (struct tui_gen_win_info *, enum tui_win_type, int, int, int, int);
-static void init_and_make_win (void **, enum tui_win_type, int, int, int, int, int);
-static void show_source_or_disasm_and_command (enum tui_layout_type);
-static void make_source_or_disasm_window (struct tui_win_info * *, enum tui_win_type, int, int);
-static void make_command_window (struct tui_win_info * *, int, int);
-static void make_source_window (struct tui_win_info * *, int, int);
-static void make_disasm_window (struct tui_win_info * *, int, int);
-static void make_data_window (struct tui_win_info * *, int, int);
-static void show_source_command (void);
-static void show_disasm_command (void);
-static void show_source_disasm_command (void);
-static void show_data (enum tui_layout_type);
-static enum tui_layout_type next_layout (void);
-static enum tui_layout_type prev_layout (void);
-static void tui_layout_command (char *, int);
-static void tui_toggle_layout_command (char *, int);
-static void tui_toggle_split_layout_command (char *, int);
-static CORE_ADDR extract_display_start_addr (void);
-static void tui_handle_xdb_layout (struct tui_layout_def *);
+static void show_layout(enum tui_layout_type);
+static void init_gen_win_info(struct tui_gen_win_info *, enum tui_win_type, int, int, int, int);
+static void init_and_make_win(void **, enum tui_win_type, int, int, int, int, int);
+static void show_source_or_disasm_and_command(enum tui_layout_type);
+static void make_source_or_disasm_window(struct tui_win_info * *, enum tui_win_type, int, int);
+static void make_command_window(struct tui_win_info * *, int, int);
+static void make_source_window(struct tui_win_info * *, int, int);
+static void make_disasm_window(struct tui_win_info * *, int, int);
+static void make_data_window(struct tui_win_info * *, int, int);
+static void show_source_command(void);
+static void show_disasm_command(void);
+static void show_source_disasm_command(void);
+static void show_data(enum tui_layout_type);
+static enum tui_layout_type next_layout(void);
+static enum tui_layout_type prev_layout(void);
+static void tui_layout_command(char *, int);
+static void tui_toggle_layout_command(char *, int);
+static void tui_toggle_split_layout_command(char *, int);
+static CORE_ADDR extract_display_start_addr(void);
+static void tui_handle_xdb_layout(struct tui_layout_def *);
+
+extern void _initialize_tui_layout(void);
 
 
 /***************************************
@@ -370,7 +373,7 @@ tui_default_win_viewport_height (enum tui_win_type type,
 /* Function to initialize gdb commands, for tui window layout
    manipulation.  */
 void
-_initialize_tui_layout (void)
+_initialize_tui_layout(void)
 {
   add_com ("layout", class_tui, tui_layout_command, _("\
 Change the layout of windows.\n\
@@ -410,44 +413,44 @@ tui_set_layout_for_display_command (const char *layout_name)
 
   if (layout_name != (char *) NULL)
     {
-      int i;
+      size_t i;
       char *buf_ptr;
       enum tui_layout_type new_layout = UNDEFINED_LAYOUT;
       enum tui_register_display_type dpy_type = TUI_UNDEFINED_REGS;
-      enum tui_layout_type cur_layout = tui_current_layout ();
+      enum tui_layout_type cur_layout = tui_current_layout();
 
-      buf_ptr = (char *) xstrdup (layout_name);
-      for (i = 0; (i < strlen (layout_name)); i++)
-	buf_ptr[i] = toupper (buf_ptr[i]);
+      buf_ptr = (char *)xstrdup(layout_name);
+      for (i = 0UL; (i < strlen(layout_name)); i++)
+	buf_ptr[i] = toupper(buf_ptr[i]);
 
-      /* First check for ambiguous input */
-      if (strlen (buf_ptr) <= 1 && (*buf_ptr == 'S' || *buf_ptr == '$'))
+      /* First check for ambiguous input: */
+      if ((strlen(buf_ptr) <= 1UL) && ((*buf_ptr == 'S') || (*buf_ptr == '$')))
 	{
-	  warning (_("Ambiguous command input."));
+	  warning(_("Ambiguous command input."));
 	  status = TUI_FAILURE;
 	}
       else
 	{
-	  if (subset_compare (buf_ptr, "SRC"))
+	  if (subset_compare(buf_ptr, "SRC"))
 	    new_layout = SRC_COMMAND;
-	  else if (subset_compare (buf_ptr, "ASM"))
+	  else if (subset_compare(buf_ptr, "ASM"))
 	    new_layout = DISASSEM_COMMAND;
-	  else if (subset_compare (buf_ptr, "SPLIT"))
+	  else if (subset_compare(buf_ptr, "SPLIT"))
 	    new_layout = SRC_DISASSEM_COMMAND;
-	  else if (subset_compare (buf_ptr, "REGS") ||
-		   subset_compare (buf_ptr, TUI_GENERAL_SPECIAL_REGS_NAME) ||
-		   subset_compare (buf_ptr, TUI_GENERAL_REGS_NAME) ||
-		   subset_compare (buf_ptr, TUI_FLOAT_REGS_NAME) ||
-		   subset_compare (buf_ptr, TUI_SPECIAL_REGS_NAME))
+	  else if (subset_compare(buf_ptr, "REGS")
+                   || subset_compare(buf_ptr, TUI_GENERAL_SPECIAL_REGS_NAME)
+                   || subset_compare(buf_ptr, TUI_GENERAL_REGS_NAME)
+                   || subset_compare(buf_ptr, TUI_FLOAT_REGS_NAME)
+                   || subset_compare(buf_ptr, TUI_SPECIAL_REGS_NAME))
 	    {
-	      if (cur_layout == SRC_COMMAND || cur_layout == SRC_DATA_COMMAND)
+	      if ((cur_layout == SRC_COMMAND) || (cur_layout == SRC_DATA_COMMAND))
 		new_layout = SRC_DATA_COMMAND;
 	      else
 		new_layout = DISASSEM_DATA_COMMAND;
 
-/* could ifdef out the following code. when compile with -z, there are null 
-   pointer references that cause a core dump if 'layout regs' is the first 
-   layout command issued by the user. HP has asked us to hook up this code 
+/* could ifdef out the following code. when compile with -z, there are null
+   pointer references that cause a core dump if 'layout regs' is the first
+   layout command issued by the user. HP has asked us to hook up this code
    - edie epstein
  */
 	      if (subset_compare (buf_ptr, TUI_FLOAT_REGS_NAME))
@@ -478,14 +481,14 @@ tui_set_layout_for_display_command (const char *layout_name)
 		    dpy_type = TUI_GENERAL_REGS;
 		}
 
-/* end of potential ifdef 
+/* end of potential ifdef
  */
 
-/* if ifdefed out code above, then assume that the user wishes to display the 
-   general purpose registers 
+/* if ifdefed out code above, then assume that the user wishes to display the
+   general purpose registers
  */
 
-/*              dpy_type = TUI_GENERAL_REGS; 
+/*              dpy_type = TUI_GENERAL_REGS;
  */
 	    }
 	  else if (subset_compare (buf_ptr, "NEXT"))

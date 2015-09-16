@@ -62,6 +62,7 @@ ofscm_objfile_smob_pretty_printers (objfile_smob *o_smob)
 
 /* Administrivia for objfile smobs.  */
 
+#ifdef MY_BRANCH_IS_HEAD
 /* The smob "mark" function for <gdb:objfile>.  */
 
 static SCM
@@ -78,6 +79,8 @@ ofscm_mark_objfile_smob (SCM self)
   return gdbscm_mark_gsmob (&o_smob->base);
 }
 
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 /* The smob "print" function for <gdb:objfile>.  */
 
 static int
@@ -403,7 +406,10 @@ gdbscm_initialize_objfiles (void)
 {
   objfile_smob_tag
     = gdbscm_make_smob_type (objfile_smob_name, sizeof (objfile_smob));
+#ifdef MY_BRANCH_IS_HEAD
   scm_set_smob_mark (objfile_smob_tag, ofscm_mark_objfile_smob);
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
   scm_set_smob_print (objfile_smob_tag, ofscm_print_objfile_smob);
 
   gdbscm_define_functions (objfile_functions, 1);

@@ -1,5 +1,6 @@
-/* Internal demangler interface for g++ V3 ABI.
-   Copyright (C) 2003, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
+/* cp-demangle.h: Internal demangler interface for g++ V3 ABI.
+   Copyright (C) 2003, 2004, 2005, 2006, 2007, 2010
+   Free Software Foundation, Inc.
    Written by Ian Lance Taylor <ian@wasabisystems.com>.
 
    This file is part of the libiberty library, which is part of GCC.
@@ -25,14 +26,13 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
+   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
 /* This file provides some definitions shared by cp-demangle.c and
    cp-demint.c.  It should not be included by any other files.  */
 
-/* Information we keep for operators.  */
-
+/* Information we keep for operators: */
 struct demangle_operator_info
 {
   /* Mangled name.  */
@@ -45,8 +45,7 @@ struct demangle_operator_info
   int args;
 };
 
-/* How to print the value of a builtin type.  */
-
+/* How to print the value of a builtin type: */
 enum d_builtin_type_print
 {
   /* Print as (type)val.  */
@@ -71,8 +70,7 @@ enum d_builtin_type_print
   D_PRINT_VOID
 };
 
-/* Information we keep for a builtin type.  */
-
+/* Information we keep for a builtin type: */
 struct demangle_builtin_type_info
 {
   /* Type name.  */
@@ -87,8 +85,7 @@ struct demangle_builtin_type_info
   enum d_builtin_type_print print;
 };
 
-/* The information structure we pass around.  */
-
+/* The information structure we pass around: */
 struct d_info
 {
   /* The string we are demangling.  */
@@ -121,6 +118,11 @@ struct d_info
      mangled name to the demangled name, such as standard
      substitutions and builtin types.  */
   int expansion;
+  /* Non-zero if we are parsing an expression.  */
+  int is_expression;
+  /* Non-zero if we are parsing the type operand of a conversion
+   * operator, but not when in an expression.  */
+  int is_conversion;
 };
 
 /* To avoid running past the ending '\0', don't:
@@ -138,16 +140,16 @@ struct d_info
 /* Functions and arrays in cp-demangle.c which are referenced by
    functions in cp-demint.c.  */
 #ifdef IN_GLIBCPP_V3
-#define CP_STATIC_IF_GLIBCPP_V3 static
+# define CP_STATIC_IF_GLIBCPP_V3 static
 #else
-#define CP_STATIC_IF_GLIBCPP_V3 extern
-#endif
+# define CP_STATIC_IF_GLIBCPP_V3 extern
+#endif /* IN_GLIBCPP_V3 */
 
 #ifndef IN_GLIBCPP_V3
 extern const struct demangle_operator_info cplus_demangle_operators[];
-#endif
+#endif /* IN_GLIBCPP_V3 */
 
-#define D_BUILTIN_TYPE_COUNT (26)
+#define D_BUILTIN_TYPE_COUNT (33)
 
 CP_STATIC_IF_GLIBCPP_V3
 const struct demangle_builtin_type_info

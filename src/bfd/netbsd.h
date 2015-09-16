@@ -1,4 +1,4 @@
-/* BFD back-end definitions used by all NetBSD targets.
+/* netbsd.h: BFD back-end definitions used by all NetBSD targets.
    Copyright 1990, 1991, 1992, 1994, 1995, 1996, 1997, 1998, 2000, 2002, 2005
    Free Software Foundation, Inc.
 
@@ -16,13 +16,13 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301,
+   Foundation, Inc., 51 Franklin St., Fifth Floor, Boston, MA 02110-1301,
    USA.  */
 
-/* Check for our machine type (part of magic number).  */
+/* Check for our machine type (part of magic number): */
 #ifndef MACHTYPE_OK
-#define MACHTYPE_OK(m) ((m) == DEFAULT_MID || (m) == M_UNKNOWN)
-#endif
+# define MACHTYPE_OK(m) (((m) == DEFAULT_MID) || ((m) == M_UNKNOWN))
+#endif /* !MACHTYPE_OK */
 
 /* This is the normal load address for executables.  */
 #define TEXT_START_ADDR		TARGET_PAGE_SIZE
@@ -57,14 +57,14 @@
 
 /* On NetBSD, the magic number is always in ntohl's "network" (big-endian)
    format.  */
-#define SWAP_MAGIC(ext) bfd_getb32 (ext)
+#define SWAP_MAGIC(ext) bfd_getb32(ext)
 
 /* On NetBSD, the entry point may be taken to be the start of the text
    section.  */
 #define MY_entry_is_text_address 1
 
-#define MY_write_object_contents MY (write_object_contents)
-static bfd_boolean MY (write_object_contents) (bfd *);
+#define MY_write_object_contents MY(write_object_contents)
+static bfd_boolean MY(write_object_contents)(bfd *);
 
 #define MY_text_includes_header 1
 
@@ -75,10 +75,10 @@ static bfd_boolean MY (write_object_contents) (bfd *);
    file header, symbols, and relocation.  */
 
 static bfd_boolean
-MY (write_object_contents) (bfd *abfd)
+MY(write_object_contents)(bfd *abfd)
 {
   struct external_exec exec_bytes;
-  struct internal_exec *execp = exec_hdr (abfd);
+  struct internal_exec *execp = exec_hdr(abfd);
 
   /* We must make certain that the magic number has been set.  This
      will normally have been done by set_section_contents, but only if
@@ -88,10 +88,10 @@ MY (write_object_contents) (bfd *abfd)
       bfd_size_type text_size;
       file_ptr text_end;
 
-      NAME (aout, adjust_sizes_and_vmas) (abfd, & text_size, & text_end);
+      NAME(aout, adjust_sizes_and_vmas)(abfd, & text_size, & text_end);
     }
 
-  obj_reloc_entry_size (abfd) = RELOC_STD_SIZE;
+  obj_reloc_entry_size(abfd) = RELOC_STD_SIZE;
 
   /* Magic number, maestro, please!  */
   switch (bfd_get_arch(abfd))
@@ -106,14 +106,16 @@ MY (write_object_contents) (bfd *abfd)
 
   /* The NetBSD magic number is always big-endian */
 #ifndef TARGET_IS_BIG_ENDIAN_P
-  /* XXX aren't there any macro to change byteorder of a word independent of
+  /* XXX are there not any macros to change byteorder of a word independent of
      the host's or target's endianesses?  */
   execp->a_info
     = (execp->a_info & 0xff) << 24 | (execp->a_info & 0xff00) << 8
       | (execp->a_info & 0xff0000) >> 8 | (execp->a_info & 0xff000000) >> 24;
-#endif
+#endif /* TARGET_IS_BIG_ENDIAN_P */
 
-  WRITE_HEADERS (abfd, execp);
+  WRITE_HEADERS(abfd, execp);
 
   return TRUE;
 }
+
+/* EOF */

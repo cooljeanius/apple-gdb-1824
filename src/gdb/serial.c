@@ -1,4 +1,4 @@
-/* Generic serial interface routines
+/* serial.c: Generic serial interface routines
 
    Copyright 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
    2001, 2002 Free Software Foundation, Inc.
@@ -26,7 +26,7 @@
 #include "gdb_string.h"
 #include "gdbcmd.h"
 
-extern void _initialize_serial (void);
+extern void _initialize_serial(void);
 
 /* Is serial being debugged? */
 
@@ -664,16 +664,17 @@ static struct cmd_list_element *serial_set_cmdlist;
 static struct cmd_list_element *serial_show_cmdlist;
 
 static void
-serial_set_cmd (char *args, int from_tty)
+serial_set_cmd(char *args, int from_tty)
 {
-  printf_unfiltered ("\"set serial\" must be followed by the name of a command.\n");
-  help_list (serial_set_cmdlist, "set serial ", -1, gdb_stdout);
+  printf_unfiltered("\"set serial\" must be followed by the name of a command.\n");
+  help_list(serial_set_cmdlist, "set serial ",
+            (enum command_class)-1, gdb_stdout);
 }
 
 static void
-serial_show_cmd (char *args, int from_tty)
+serial_show_cmd(char *args, int from_tty)
 {
-  cmd_show_list (serial_show_cmdlist, from_tty, "");
+  cmd_show_list(serial_show_cmdlist, from_tty, "");
 }
 
 

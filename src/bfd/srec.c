@@ -1,4 +1,4 @@
-/* BFD back-end for s-record objects.
+/* srec.c: BFD back-end for s-record objects.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -114,10 +114,10 @@ static const char digs[] = "0123456789ABCDEF";
 
 #define NIBBLE(x)    hex_value(x)
 #define HEX(buffer) ((NIBBLE ((buffer)[0])<<4) + NIBBLE ((buffer)[1]))
-#define TOHEX(d, x, ch) \
+#define TOHEX(d, x, ch, t) \
 	d[1] = digs[(x) & 0xf]; \
 	d[0] = digs[((x)>>4)&0xf]; \
-	ch += ((x) & 0xff);
+	ch += (t)((x) & 0xff);
 #define	ISHEX(x)    hex_p(x)
 
 /* The maximum number of address+data+crc bytes on a line is FF.  */
@@ -129,11 +129,17 @@ static const char digs[] = "0123456789ABCDEF";
 /* The number of data bytes we actually fit onto a line on output.
    This variable can be modified by objcopy's --srec-len parameter.
    For a 0x75 byte record you should set --srec-len=0x70.  */
+#ifdef __clang__
+extern unsigned int Chunk;
+#endif /* __clang__ */
 unsigned int Chunk = DEFAULT_CHUNK;
 
 /* The type of srec output (free or forced to S3).
    This variable can be modified by objcopy's --srec-forceS3
    parameter.  */
+#ifdef __clang__
+extern bfd_boolean S3Forced;
+#endif /* __clang__ */
 bfd_boolean S3Forced = FALSE;
 
 /* When writing an S-record file, the S-records can not be output as
@@ -183,20 +189,19 @@ srec_init (void)
   if (! inited)
     {
       inited = TRUE;
-      hex_init ();
+      hex_init();
     }
 }
 
-/* Set up the S-record tdata information.  */
-
+/* Set up the S-record tdata information: */
 static bfd_boolean
-srec_mkobject (bfd *abfd)
+srec_mkobject(bfd *abfd)
 {
   tdata_type *tdata;
 
-  srec_init ();
+  srec_init();
 
-  tdata = bfd_alloc (abfd, sizeof (tdata_type));
+  tdata = (tdata_type *)bfd_alloc(abfd, (bfd_size_type)sizeof(tdata_type));
   if (tdata == NULL)
     return FALSE;
 
@@ -215,18 +220,18 @@ srec_mkobject (bfd *abfd)
    occurred.  Return EOF on error or end of file.  */
 
 static int
-srec_get_byte (bfd *abfd, bfd_boolean *errorptr)
+srec_get_byte(bfd *abfd, bfd_boolean *errorptr)
 {
   bfd_byte c;
 
-  if (bfd_bread (&c, (bfd_size_type) 1, abfd) != 1)
+  if (bfd_bread(&c, (bfd_size_type)1UL, abfd) != 1)
     {
-      if (bfd_get_error () != bfd_error_file_truncated)
+      if (bfd_get_error() != bfd_error_file_truncated)
 	*errorptr = TRUE;
       return EOF;
     }
 
-  return (int) (c & 0xff);
+  return (int)(c & 0xff);
 }
 
 /* Report a problem in an S record file.  FIXME: This probably should
@@ -234,42 +239,38 @@ srec_get_byte (bfd *abfd, bfd_boolean *errorptr)
    error messages.  */
 
 static void
-srec_bad_byte (bfd *abfd,
-	       unsigned int lineno,
-	       int c,
-	       bfd_boolean error)
+srec_bad_byte(bfd *abfd, unsigned int lineno, int c, bfd_boolean error)
 {
   if (c == EOF)
     {
       if (! error)
-	bfd_set_error (bfd_error_file_truncated);
+	bfd_set_error(bfd_error_file_truncated);
     }
   else
     {
       char buf[10];
 
       if (! ISPRINT (c))
-	sprintf (buf, "\\%03o", (unsigned int) c);
+	sprintf(buf, "\\%03o", (unsigned int)c);
       else
 	{
-	  buf[0] = c;
+	  buf[0] = (char)c;
 	  buf[1] = '\0';
 	}
       (*_bfd_error_handler)
 	(_("%B:%d: Unexpected character `%s' in S-record file\n"),
 	 abfd, lineno, buf);
-      bfd_set_error (bfd_error_bad_value);
+      bfd_set_error(bfd_error_bad_value);
     }
 }
 
-/* Add a new symbol found in an S-record file.  */
-
+/* Add a new symbol found in an S-record file: */
 static bfd_boolean
-srec_new_symbol (bfd *abfd, const char *name, bfd_vma val)
+srec_new_symbol(bfd *abfd, const char *name, bfd_vma val)
 {
   struct srec_symbol *n;
 
-  n = bfd_alloc (abfd, sizeof (* n));
+  n = (struct srec_symbol *)bfd_alloc(abfd, (bfd_size_type)sizeof(* n));
   if (n == NULL)
     return FALSE;
 
@@ -347,8 +348,8 @@ srec_scan (bfd *abfd)
 	      bfd_vma symval;
 
 	      /* Starting a symbol definition.  */
-	      while ((c = srec_get_byte (abfd, &error)) != EOF
-		     && (c == ' ' || c == '\t'))
+	      while (((c = srec_get_byte(abfd, &error)) != EOF)
+		     && ((c == ' ') || (c == '\t')))
 		;
 
 	      if (c == '\n' || c == '\r')
@@ -356,44 +357,44 @@ srec_scan (bfd *abfd)
 
 	      if (c == EOF)
 		{
-		  srec_bad_byte (abfd, lineno, c, error);
+		  srec_bad_byte(abfd, lineno, c, error);
 		  goto error_return;
 		}
 
 	      alc = 10;
-	      symbuf = bfd_malloc (alc + 1);
+	      symbuf = (char *)bfd_malloc(alc + 1);
 	      if (symbuf == NULL)
 		goto error_return;
 
 	      p = symbuf;
 
-	      *p++ = c;
-	      while ((c = srec_get_byte (abfd, &error)) != EOF
-		     && ! ISSPACE (c))
+	      *p++ = (char)c;
+	      while (((c = srec_get_byte(abfd, &error)) != EOF)
+		     && ! ISSPACE(c))
 		{
-		  if ((bfd_size_type) (p - symbuf) >= alc)
+		  if ((bfd_size_type)(p - symbuf) >= alc)
 		    {
 		      char *n;
 
 		      alc *= 2;
-		      n = bfd_realloc (symbuf, alc + 1);
+		      n = (char *)bfd_realloc(symbuf, (alc + 1));
 		      if (n == NULL)
 			goto error_return;
-		      p = n + (p - symbuf);
+		      p = (n + (p - symbuf));
 		      symbuf = n;
 		    }
 
-		  *p++ = c;
+		  *p++ = (char)c;
 		}
 
 	      if (c == EOF)
 		{
-		  srec_bad_byte (abfd, lineno, c, error);
+		  srec_bad_byte(abfd, lineno, c, error);
 		  goto error_return;
 		}
 
 	      *p++ = '\0';
-	      symname = bfd_alloc (abfd, (bfd_size_type) (p - symbuf));
+	      symname = (char *)bfd_alloc(abfd, (bfd_size_type)(p - symbuf));
 	      if (symname == NULL)
 		goto error_return;
 	      strcpy (symname, symbuf);
@@ -452,35 +453,34 @@ srec_scan (bfd *abfd)
 	    bfd_vma address;
 	    bfd_byte *data;
 
-	    /* Starting an S-record.  */
+	    /* Starting an S-record: */
+	    pos = (bfd_tell(abfd) - 1);
 
-	    pos = bfd_tell (abfd) - 1;
-
-	    if (bfd_bread (hdr, (bfd_size_type) 3, abfd) != 3)
+	    if (bfd_bread(hdr, (bfd_size_type)3, abfd) != 3)
 	      goto error_return;
 
-	    if (! ISHEX (hdr[1]) || ! ISHEX (hdr[2]))
+	    if (! ISHEX(hdr[1]) || ! ISHEX(hdr[2]))
 	      {
-		if (! ISHEX (hdr[1]))
+		if (! ISHEX(hdr[1]))
 		  c = hdr[1];
 		else
 		  c = hdr[2];
-		srec_bad_byte (abfd, lineno, c, error);
+		srec_bad_byte(abfd, lineno, c, error);
 		goto error_return;
 	      }
 
-	    bytes = HEX (hdr + 1);
-	    if (bytes * 2 > bufsize)
+	    bytes = HEX(hdr + 1);
+	    if ((bytes * 2) > bufsize)
 	      {
 		if (buf != NULL)
-		  free (buf);
-		buf = bfd_malloc ((bfd_size_type) bytes * 2);
+		  free(buf);
+		buf = (bfd_byte *)bfd_malloc((bfd_size_type)bytes * 2);
 		if (buf == NULL)
 		  goto error_return;
-		bufsize = bytes * 2;
+		bufsize = (bytes * 2);
 	      }
 
-	    if (bfd_bread (buf, (bfd_size_type) bytes * 2, abfd) != bytes * 2)
+	    if (bfd_bread(buf, ((bfd_size_type)bytes * 2), abfd) != (bytes * 2))
 	      goto error_return;
 
 	    /* Ignore the checksum byte.  */
@@ -493,29 +493,29 @@ srec_scan (bfd *abfd)
 	      case '0':
 	      case '5':
 		/* Prologue--ignore the file name, but stop building a
-		   section at this point.  */
+		 * section at this point: */
 		sec = NULL;
 		break;
 
 	      case '3':
-		address = HEX (data);
+		address = HEX(data);
 		data += 2;
 		--bytes;
-		/* Fall through.  */
+		/* Fall through to: */
 	      case '2':
-		address = (address << 8) | HEX (data);
+		address = ((address << 8) | HEX(data));
 		data += 2;
 		--bytes;
 		/* Fall through.  */
 	      case '1':
-		address = (address << 8) | HEX (data);
+		address = ((address << 8) | HEX(data));
 		data += 2;
-		address = (address << 8) | HEX (data);
+		address = ((address << 8) | HEX(data));
 		data += 2;
 		bytes -= 2;
 
-		if (sec != NULL
-		    && sec->vma + sec->size == address)
+		if ((sec != NULL)
+		    && ((sec->vma + sec->size) == address))
 		  {
 		    /* This data goes at the end of the section we are
 		       currently building.  */
@@ -527,14 +527,14 @@ srec_scan (bfd *abfd)
 		    char *secname;
 		    bfd_size_type amt;
 
-		    sprintf (secbuf, ".sec%d", bfd_count_sections (abfd) + 1);
-		    amt = strlen (secbuf) + 1;
-		    secname = bfd_alloc (abfd, amt);
-		    strcpy (secname, secbuf);
-		    sec = bfd_make_section (abfd, secname);
+		    sprintf(secbuf, ".sec%d", bfd_count_sections(abfd) + 1);
+		    amt = (strlen(secbuf) + 1);
+		    secname = (char *)bfd_alloc(abfd, amt);
+		    strcpy(secname, secbuf);
+		    sec = bfd_make_section(abfd, secname);
 		    if (sec == NULL)
 		      goto error_return;
-		    sec->flags = SEC_HAS_CONTENTS | SEC_LOAD | SEC_ALLOC;
+		    sec->flags = (SEC_HAS_CONTENTS | SEC_LOAD | SEC_ALLOC);
 		    sec->vma = address;
 		    sec->lma = address;
 		    sec->size = bytes;
@@ -543,26 +543,29 @@ srec_scan (bfd *abfd)
 		break;
 
 	      case '7':
-		address = HEX (data);
+		address = HEX(data);
 		data += 2;
-		/* Fall through.  */
+		/* Fall through to: */
 	      case '8':
-		address = (address << 8) | HEX (data);
+		address = ((address << 8) | HEX(data));
 		data += 2;
-		/* Fall through.  */
+		/* Fall through to: */
 	      case '9':
-		address = (address << 8) | HEX (data);
+		address = ((address << 8) | HEX(data));
 		data += 2;
-		address = (address << 8) | HEX (data);
+		address = ((address << 8) | HEX(data));
 		data += 2;
 
-		/* This is a termination record.  */
+		/* This is a termination record: */
 		abfd->start_address = address;
 
 		if (buf != NULL)
-		  free (buf);
+		  free(buf);
 
 		return TRUE;
+
+              default:
+                break;
 	      }
 	  }
 	  break;
@@ -655,96 +658,95 @@ symbolsrec_object_p (bfd *abfd)
   return abfd->xvec;
 }
 
-/* Read in the contents of a section in an S-record file.  */
-
+/* Read in the contents of a section in an S-record file: */
 static bfd_boolean
-srec_read_section (bfd *abfd, asection *section, bfd_byte *contents)
+srec_read_section(bfd *abfd, asection *section, bfd_byte *contents)
 {
   int c;
-  bfd_size_type sofar = 0;
+  bfd_size_type sofar = 0UL;
   bfd_boolean error = FALSE;
   bfd_byte *buf = NULL;
-  size_t bufsize = 0;
+  size_t bufsize = 0UL;
 
-  if (bfd_seek (abfd, section->filepos, SEEK_SET) != 0)
+  if (bfd_seek(abfd, section->filepos, SEEK_SET) != 0)
     goto error_return;
 
-  while ((c = srec_get_byte (abfd, &error)) != EOF)
+  while ((c = srec_get_byte(abfd, &error)) != EOF)
     {
       bfd_byte hdr[3];
       unsigned int bytes;
       bfd_vma address;
       bfd_byte *data;
 
-      if (c == '\r' || c == '\n')
+      if ((c == '\r') || (c == '\n'))
 	continue;
 
       /* This is called after srec_scan has already been called, so we
 	 ought to know the exact format.  */
-      BFD_ASSERT (c == 'S');
+      BFD_ASSERT(c == 'S');
 
-      if (bfd_bread (hdr, (bfd_size_type) 3, abfd) != 3)
+      if (bfd_bread(hdr, (bfd_size_type)3UL, abfd) != 3)
 	goto error_return;
 
-      BFD_ASSERT (ISHEX (hdr[1]) && ISHEX (hdr[2]));
+      BFD_ASSERT(ISHEX(hdr[1]) && ISHEX(hdr[2]));
 
-      bytes = HEX (hdr + 1);
+      bytes = HEX(hdr + 1);
 
-      if (bytes * 2 > bufsize)
+      if ((bytes * 2U) > bufsize)
 	{
 	  if (buf != NULL)
-	    free (buf);
-	  buf = bfd_malloc ((bfd_size_type) bytes * 2);
+	    free(buf);
+	  buf = (bfd_byte *)bfd_malloc((bfd_size_type)bytes * 2UL);
 	  if (buf == NULL)
 	    goto error_return;
-	  bufsize = bytes * 2;
+	  bufsize = (bytes * 2U);
 	}
 
-      if (bfd_bread (buf, (bfd_size_type) bytes * 2, abfd) != bytes * 2)
+      if (bfd_bread(buf, (bfd_size_type)bytes * 2UL, abfd) != (bytes * 2U))
 	goto error_return;
 
-      address = 0;
+      address = 0UL;
       data = buf;
       switch (hdr[0])
 	{
 	default:
-	  BFD_ASSERT (sofar == section->size);
+	  BFD_ASSERT(sofar == section->size);
 	  if (buf != NULL)
-	    free (buf);
+	    free(buf);
 	  return TRUE;
 
 	case '3':
-	  address = HEX (data);
+	  address = HEX(data);
 	  data += 2;
 	  --bytes;
-	  /* Fall through.  */
+	  /* Fall through to: */
 	case '2':
-	  address = (address << 8) | HEX (data);
+	  address = ((address << 8) | HEX(data));
 	  data += 2;
 	  --bytes;
-	  /* Fall through.  */
+	  /* Fall through to: */
 	case '1':
-	  address = (address << 8) | HEX (data);
+	  address = ((address << 8) | HEX(data));
 	  data += 2;
-	  address = (address << 8) | HEX (data);
+	  address = ((address << 8) | HEX(data));
 	  data += 2;
 	  bytes -= 2;
 
-	  if (address != section->vma + sofar)
+	  if (address != (section->vma + sofar))
 	    {
-	      /* We've come to the end of this section.  */
-	      BFD_ASSERT (sofar == section->size);
+	      /* We have come to the end of this section: */
+	      BFD_ASSERT(sofar == section->size);
 	      if (buf != NULL)
-		free (buf);
+		free(buf);
 	      return TRUE;
 	    }
 
-	  /* Don't consider checksum.  */
+	  /* Do NOT consider checksum: */
 	  --bytes;
 
-	  while (bytes-- != 0)
+	  while (bytes-- != 0U)
 	    {
-	      contents[sofar] = HEX (data);
+	      contents[sofar] = (bfd_byte)HEX(data);
 	      data += 2;
 	      ++sofar;
 	    }
@@ -756,48 +758,44 @@ srec_read_section (bfd *abfd, asection *section, bfd_byte *contents)
   if (error)
     goto error_return;
 
-  BFD_ASSERT (sofar == section->size);
+  BFD_ASSERT(sofar == section->size);
 
   if (buf != NULL)
-    free (buf);
+    free(buf);
 
   return TRUE;
 
  error_return:
   if (buf != NULL)
-    free (buf);
+    free(buf);
   return FALSE;
 }
 
-/* Get the contents of a section in an S-record file.  */
-
+/* Get the contents of a section in an S-record file: */
 static bfd_boolean
-srec_get_section_contents (bfd *abfd,
-			   asection *section,
-			   void * location,
-			   file_ptr offset,
-			   bfd_size_type count)
+srec_get_section_contents(bfd *abfd, asection *section, void * location,
+                          file_ptr offset, bfd_size_type count)
 {
   if (section->used_by_bfd == NULL)
     {
-      section->used_by_bfd = bfd_alloc (abfd, section->size);
-      if (section->used_by_bfd == NULL && section->size != 0)
+      section->used_by_bfd = bfd_alloc(abfd, section->size);
+      if ((section->used_by_bfd == NULL) && (section->size != 0))
 	return FALSE;
 
-      if (! srec_read_section (abfd, section, section->used_by_bfd))
+      if (! srec_read_section(abfd, section,
+                              (bfd_byte *)section->used_by_bfd))
 	return FALSE;
     }
 
-  memcpy (location, (bfd_byte *) section->used_by_bfd + offset,
-	  (size_t) count);
+  memcpy(location, ((bfd_byte *)section->used_by_bfd + offset),
+         (size_t)count);
 
   return TRUE;
 }
 
-/* Set the architecture.  We accept an unknown architecture here.  */
-
+/* Set the architecture.  We accept an unknown architecture here: */
 static bfd_boolean
-srec_set_arch_mach (bfd *abfd, enum bfd_architecture arch, unsigned long mach)
+srec_set_arch_mach(bfd *abfd, enum bfd_architecture arch, unsigned long mach)
 {
   if (arch != bfd_arch_unknown)
     return bfd_default_set_arch_mach (abfd, arch, mach);
@@ -806,53 +804,49 @@ srec_set_arch_mach (bfd *abfd, enum bfd_architecture arch, unsigned long mach)
   return TRUE;
 }
 
-/* We have to save up all the Srecords for a splurge before output.  */
-
+/* We have to save up all the Srecords for a splurge before output: */
 static bfd_boolean
-srec_set_section_contents (bfd *abfd,
-			   sec_ptr section,
-			   const void * location,
-			   file_ptr offset,
-			   bfd_size_type bytes_to_do)
+srec_set_section_contents(bfd *abfd, sec_ptr section, const void *location,
+                          file_ptr offset, bfd_size_type bytes_to_do)
 {
   tdata_type *tdata = abfd->tdata.srec_data;
   srec_data_list_type *entry;
 
-  entry = bfd_alloc (abfd, sizeof (* entry));
+  entry = (srec_data_list_type *)bfd_alloc(abfd,
+                                           (bfd_size_type)sizeof(* entry));
   if (entry == NULL)
     return FALSE;
 
-  if (bytes_to_do
-      && (section->flags & SEC_ALLOC)
+  if (bytes_to_do && (section->flags & SEC_ALLOC)
       && (section->flags & SEC_LOAD))
     {
       bfd_byte *data;
 
-      data = bfd_alloc (abfd, bytes_to_do);
+      data = (bfd_byte *)bfd_alloc(abfd, bytes_to_do);
       if (data == NULL)
 	return FALSE;
-      memcpy ((void *) data, location, (size_t) bytes_to_do);
+      memcpy((void *)data, location, (size_t)bytes_to_do);
 
       /* Ff S3Forced is TRUE then always select S3 records,
 	 regardless of the siez of the addresses.  */
       if (S3Forced)
 	tdata->type = 3;
-      else if ((section->lma + offset + bytes_to_do - 1) <= 0xffff)
+      else if ((section->lma + (bfd_vma)offset + bytes_to_do - 1UL) <= 0xffff)
 	;  /* The default, S1, is OK.  */
-      else if ((section->lma + offset + bytes_to_do - 1) <= 0xffffff
-	       && tdata->type <= 2)
+      else if (((section->lma + (bfd_vma)offset + bytes_to_do - 1UL) <= 0xffffff)
+	       && (tdata->type <= 2))
 	tdata->type = 2;
       else
 	tdata->type = 3;
 
       entry->data = data;
-      entry->where = section->lma + offset;
+      entry->where = (bfd_vma)(section->lma + (bfd_vma)offset);
       entry->size = bytes_to_do;
 
       /* Sort the records by address.  Optimize for the common case of
 	 adding a record to the end of the list.  */
-      if (tdata->tail != NULL
-	  && entry->where >= tdata->tail->where)
+      if ((tdata->tail != NULL)
+	  && (entry->where >= tdata->tail->where))
 	{
 	  tdata->tail->next = entry;
 	  entry->next = NULL;
@@ -863,7 +857,7 @@ srec_set_section_contents (bfd *abfd,
 	  srec_data_list_type **look;
 
 	  for (look = &tdata->head;
-	       *look != NULL && (*look)->where < entry->where;
+	       (*look != NULL) && ((*look)->where < entry->where);
 	       look = &(*look)->next)
 	    ;
 	  entry->next = *look;
@@ -878,23 +872,19 @@ srec_set_section_contents (bfd *abfd,
 /* Write a record of type, of the supplied number of bytes. The
    supplied bytes and length don't have a checksum. That's worked out
    here.  */
-
 static bfd_boolean
-srec_write_record (bfd *abfd,
-		   unsigned int type,
-		   bfd_vma address,
-		   const bfd_byte *data,
-		   const bfd_byte *end)
+srec_write_record(bfd *abfd, unsigned int type, bfd_vma address,
+                  const bfd_byte *data, const bfd_byte *end)
 {
   char buffer[2 * MAXCHUNK + 6];
-  unsigned int check_sum = 0;
+  unsigned int check_sum = 0U;
   const bfd_byte *src = data;
   char *dst = buffer;
   char *length;
   bfd_size_type wrlen;
 
   *dst++ = 'S';
-  *dst++ = '0' + type;
+  *dst++ = (char)('0' + type);
 
   length = dst;
   dst += 2;			/* Leave room for dst.  */
@@ -903,62 +893,62 @@ srec_write_record (bfd *abfd,
     {
     case 3:
     case 7:
-      TOHEX (dst, (address >> 24), check_sum);
+      TOHEX(dst, (address >> 24), check_sum, unsigned int);
       dst += 2;
     case 8:
     case 2:
-      TOHEX (dst, (address >> 16), check_sum);
+      TOHEX(dst, (address >> 16), check_sum, unsigned int);
       dst += 2;
     case 9:
     case 1:
     case 0:
-      TOHEX (dst, (address >> 8), check_sum);
+      TOHEX(dst, (address >> 8), check_sum, unsigned int);
       dst += 2;
-      TOHEX (dst, (address), check_sum);
+      TOHEX(dst, (address), check_sum, unsigned int);
       dst += 2;
       break;
-
+    default:
+      break;
     }
   for (src = data; src < end; src++)
     {
-      TOHEX (dst, *src, check_sum);
+      TOHEX(dst, *src, check_sum, unsigned int);
       dst += 2;
     }
 
-  /* Fill in the length.  */
-  TOHEX (length, (dst - length) / 2, check_sum);
+  /* Fill in the length: */
+  TOHEX(length, ((dst - length) / 2), check_sum, unsigned int);
   check_sum &= 0xff;
-  check_sum = 255 - check_sum;
-  TOHEX (dst, check_sum, check_sum);
+  check_sum = (255 - check_sum);
+  TOHEX(dst, check_sum, check_sum, unsigned int);
   dst += 2;
 
   *dst++ = '\r';
   *dst++ = '\n';
-  wrlen = dst - buffer;
+  wrlen = (bfd_size_type)(dst - buffer);
 
-  return bfd_bwrite ((void *) buffer, wrlen, abfd) == wrlen;
+  return (bfd_bwrite((void *)buffer, wrlen, abfd) == wrlen);
 }
 
 static bfd_boolean
-srec_write_header (bfd *abfd)
+srec_write_header(bfd *abfd)
 {
-  unsigned int len = strlen (abfd->filename);
+  size_t len = strlen(abfd->filename);
 
-  /* I'll put an arbitrary 40 char limit on header size.  */
-  if (len > 40)
-    len = 40;
+  /* I shall put an arbitrary 40 char limit on header size: */
+  if (len > 40UL)
+    len = 40UL;
 
-  return srec_write_record (abfd, 0, (bfd_vma) 0,
-			    (bfd_byte *) abfd->filename,
-			    (bfd_byte *) abfd->filename + len);
+  return srec_write_record(abfd, 0, (bfd_vma)0L,
+			   (bfd_byte *)abfd->filename,
+			   (bfd_byte *)abfd->filename + len);
 }
 
 static bfd_boolean
-srec_write_section (bfd *abfd,
-		    tdata_type *tdata,
-		    srec_data_list_type *list)
+srec_write_section(bfd *abfd, tdata_type *tdata,
+		   srec_data_list_type *list)
 {
-  unsigned int octets_written = 0;
+  unsigned int octets_written = 0U;
   bfd_byte *location = list->data;
 
   /* Validate number of data bytes to write.  The srec length byte
@@ -969,24 +959,22 @@ srec_write_section (bfd *abfd,
      spin for a long time.  */
   if (Chunk == 0)
     Chunk = 1;
-  else if (Chunk > MAXCHUNK - tdata->type - 2)
-    Chunk = MAXCHUNK - tdata->type - 2;
+  else if (Chunk > (MAXCHUNK - tdata->type - 2))
+    Chunk = (MAXCHUNK - tdata->type - 2);
 
   while (octets_written < list->size)
     {
       bfd_vma address;
-      unsigned int octets_this_chunk = list->size - octets_written;
+      unsigned int octets_this_chunk;
+      octets_this_chunk = (unsigned int)(list->size - octets_written);
 
       if (octets_this_chunk > Chunk)
 	octets_this_chunk = Chunk;
 
-      address = list->where + octets_written / bfd_octets_per_byte (abfd);
+      address = (list->where + octets_written / bfd_octets_per_byte(abfd));
 
-      if (! srec_write_record (abfd,
-			       tdata->type,
-			       address,
-			       location,
-			       location + octets_this_chunk))
+      if (! srec_write_record(abfd, tdata->type, address, location,
+			      (location + octets_this_chunk)))
 	return FALSE;
 
       octets_written += octets_this_chunk;
@@ -1004,11 +992,11 @@ srec_write_terminator (bfd *abfd, tdata_type *tdata)
 }
 
 static bfd_boolean
-srec_write_symbols (bfd *abfd)
+srec_write_symbols(bfd *abfd)
 {
-  /* Dump out the symbols of a bfd.  */
+  /* Dump out the symbols of a bfd: */
   int i;
-  int count = bfd_get_symcount (abfd);
+  int count = (int)bfd_get_symcount(abfd);
 
   if (count)
     {
@@ -1104,20 +1092,18 @@ srec_sizeof_headers (bfd *abfd ATTRIBUTE_UNUSED,
   return 0;
 }
 
-/* Return the amount of memory needed to read the symbol table.  */
-
+/* Return the amount of memory needed to read the symbol table: */
 static long
-srec_get_symtab_upper_bound (bfd *abfd)
+srec_get_symtab_upper_bound(bfd *abfd)
 {
-  return (bfd_get_symcount (abfd) + 1) * sizeof (asymbol *);
+  return (long)((size_t)(bfd_get_symcount(abfd) + 1L) * sizeof(asymbol *));
 }
 
-/* Return the symbol table.  */
-
+/* Return the symbol table: */
 static long
-srec_canonicalize_symtab (bfd *abfd, asymbol **alocation)
+srec_canonicalize_symtab(bfd *abfd, asymbol **alocation)
 {
-  bfd_size_type symcount = bfd_get_symcount (abfd);
+  bfd_size_type symcount = bfd_get_symcount(abfd);
   asymbol *csymbols;
   unsigned int i;
 
@@ -1127,8 +1113,8 @@ srec_canonicalize_symtab (bfd *abfd, asymbol **alocation)
       asymbol *c;
       struct srec_symbol *s;
 
-      csymbols = bfd_alloc (abfd, symcount * sizeof (asymbol));
-      if (csymbols == NULL && symcount != 0)
+      csymbols = (asymbol *)bfd_alloc(abfd, (symcount * sizeof(asymbol)));
+      if ((csymbols == NULL) && (symcount != 0))
 	return 0;
       abfd->tdata.srec_data->csymbols = csymbols;
 
@@ -1149,35 +1135,32 @@ srec_canonicalize_symtab (bfd *abfd, asymbol **alocation)
     *alocation++ = csymbols++;
   *alocation = NULL;
 
-  return symcount;
+  return (long)symcount;
 }
 
 static void
-srec_get_symbol_info (bfd *ignore_abfd ATTRIBUTE_UNUSED,
-		      asymbol *symbol,
-		      symbol_info *ret)
+srec_get_symbol_info(bfd *ignore_abfd ATTRIBUTE_UNUSED,
+		     asymbol *symbol, symbol_info *ret)
 {
-  bfd_symbol_info (symbol, ret);
+  bfd_symbol_info(symbol, ret);
 }
 
 static void
-srec_print_symbol (bfd *abfd,
-		   void * afile,
-		   asymbol *symbol,
-		   bfd_print_symbol_type how)
+srec_print_symbol(bfd *abfd, void * afile, asymbol *symbol,
+                  bfd_print_symbol_type how)
 {
-  FILE *file = (FILE *) afile;
+  FILE *file = (FILE *)afile;
 
   switch (how)
     {
     case bfd_print_symbol_name:
-      fprintf (file, "%s", symbol->name);
+      fprintf(file, "%s", symbol->name);
       break;
+    case bfd_print_symbol_more: /* Fall through: */
+    case bfd_print_symbol_all: /* Fall through: */
     default:
-      bfd_print_symbol_vandf (abfd, (void *) file, symbol);
-      fprintf (file, " %-5s %s",
-	       symbol->section->name,
-	       symbol->name);
+      bfd_print_symbol_vandf(abfd, (void *)file, symbol);
+      fprintf(file, " %-5s %s", symbol->section->name, symbol->name);
     }
 }
 
@@ -1214,9 +1197,12 @@ srec_print_symbol (bfd *abfd,
 #define srec_bfd_final_link                       _bfd_generic_final_link
 #define srec_bfd_link_split_section               _bfd_generic_link_split_section
 
+#ifdef __clang__
+extern const bfd_target srec_vec;
+#endif /* __clang__ */
 const bfd_target srec_vec =
 {
-  "srec",			/* Name.  */
+  (char *)"srec",			/* Name.  */
   bfd_target_srec_flavour,
   BFD_ENDIAN_UNKNOWN,		/* Target byte order.  */
   BFD_ENDIAN_UNKNOWN,		/* Target headers byte order.  */
@@ -1269,9 +1255,12 @@ const bfd_target srec_vec =
   NULL
 };
 
+#ifdef __clang__
+extern const bfd_target symbolsrec_vec;
+#endif /* __clang__ */
 const bfd_target symbolsrec_vec =
 {
-  "symbolsrec",			/* Name.  */
+  (char *)"symbolsrec",			/* Name.  */
   bfd_target_srec_flavour,
   BFD_ENDIAN_UNKNOWN,		/* Target byte order.  */
   BFD_ENDIAN_UNKNOWN,		/* Target headers byte order.  */
@@ -1323,3 +1312,5 @@ const bfd_target symbolsrec_vec =
 
   NULL
 };
+
+/* EOF */

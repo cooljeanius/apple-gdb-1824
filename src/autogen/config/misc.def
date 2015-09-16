@@ -1,0 +1,494 @@
+// -*- Mode: conf -*-
+
+autogen definitions conftest.tpl;
+
+/*
+ */ author =           "Bruce Korb <bkorb@gnu.org>";
+
+/*  This file is part of AutoGen.
+ *
+ *  AutoGen Copyright (C) 1992-2013 by Bruce Korb - all rights reserved
+ *
+ *  AutoGen is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AutoGen is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+group       = ag;
+output-file = ag_macros.m4;
+
+test = {
+    name   = shell;
+    type   = disable;
+    check  = 'shell scripts are desired';
+    action = { act-type = script; act-text = 'AC_FUNC_FORK'; };
+
+    doc = <<-  _EOF_
+	If you wish to use AutoGen as a CGI service, template shell scripts
+	should be disabled.  It is extremely dangerous to allow text to be
+	interpreted by a shell.  To ensure that that cannot happen
+	accidentally, it is best to completely disable subshell services by
+	specifying, --disable-shell.  In the default, enabled state, the
+	"yes-subst[itution]" will enable the getdefs, columns and doc
+	subdirectory builds.
+	_EOF_;
+};
+
+test = {
+    name   = do-shell;
+    type   = test;
+    check  = 'using shell scripts';
+
+    code   = <<- _EOF_
+	test "x$ac_cv_func_fork_works" != xyes && \
+	    test "x$ac_cv_func_vfork_works" != xyes && exit 1
+	test "x$ag_cv_enable_shell" = xyes || exit 1
+	echo yes
+	_EOF_;
+    code-quoting  = asis;
+
+    action = { act-type = script; asis;
+      act-text = <<-  _EOF_
+	AC_SUBST(OPTS_TESTDIR)
+	AC_SUBST(AGEN5_TESTS)
+	AC_DEFINE([SHELL_ENABLED], [1], [Define if shell scripts are enabled])
+	OPTS_TESTDIR=test
+	AGEN5_TESTS='$(SHELL_TESTS) $(NOSHELL_TESTS)'
+	_EOF_; };
+
+    action = { no; act-type = script; asis;
+      act-text = <<-  _EOF_
+	OPTS_TESTDIR=
+	AGEN5_TESTS='$(NOSHELL_TESTS)'
+	_EOF_; };
+
+    conditional = DO_SHELL_CMDS;
+
+    doc = <<-  _EOF_
+	Make sure that shell scripts are enabled and also that fork() works
+	before actually enabling shell commands.
+	_EOF_;
+};
+
+#ifdef NOT_YET
+
+test   = {
+    name   = daemon;
+    type   = enable;
+    check  = 'using autogen as a daemon';
+    action = { act-type = define; };
+
+    doc = <<-  _EOF_
+	AutoGen may be used as a daemon process.  It will accept definitions
+	either over a socket connection or through a pipe fattach-ed to a file.
+	Which is selected by the argument to the @code{--daemon} option.
+	_EOF_;
+};
+
+#endif
+
+test   = {
+  name     = setjmp;
+  type     = link;
+  check    = 'setjmp() links okay';
+  code     = <<- _EOCode_
+	#include <setjmp.h>
+	jmp_buf bf;
+	if (setjmp(bf))
+	  return 0;
+	return 0;
+	_EOCode_;
+  action = {
+    act-type = script;
+    act-text = 'AC_DEFINE(HAVE_WORKING_SETJMP, 1, [setjmp links okay])';
+  };
+};
+
+test   = {
+  name     = sigsetjmp;
+  type     = link;
+  check    = 'sigsetjmp() links okay';
+  code     = <<- _EOCode_
+	#include <setjmp.h>
+	sigjmp_buf bf;
+	if (sigsetjmp(bf,0))
+	  return 0;
+	return 0;
+	_EOCode_;
+  action = {
+    act-type = script;
+    act-text = 'AC_DEFINE(HAVE_WORKING_SIGSETJMP, 1, [sigsetjmp links okay])';
+  };
+};
+
+test   = {
+  name     = guile;
+  type     = withlib;
+  check    = "prefix for a working libguile installation";
+  code     = <<- _END_OF_CODE_
+	#include <libguile.h>
+	#if ((SCM_MAJOR_VERSION * 100) + SCM_MINOR_VERSION) > 200
+	This has not been tested with Guile 2.1.  Remove this line to proceed.
+	#endif
+	int main () {
+	  SCM fumble = SCM_UNDEFINED;
+	  SCM bumble = SCM_UNDEFINED;
+	  SCM stumble= SCM_UNDEFINED;
+	  long lstumble;
+	  stumble = scm_display( fumble, bumble );
+	  lstumble = scm_ilength( fumble );
+	  stumble = scm_c_eval_string( "stumble" );
+	  scm_misc_error( "oops", "bad", bumble );
+	  stumble = scm_num_eq_p( fumble, bumble );
+	  scm_wrong_type_arg( "oops", 1, bumble );
+	  return 0; }
+	_END_OF_CODE_;
+  run-mode   =  link;
+
+  config   = { cflags-arg = 'compile'; libs-arg = 'link'; };
+  action = { yes; act-type = script;
+             act-text = <<- _EOF_
+		      CPPFLAGS="${ag_save_CPPFLAGS}"
+		      LIBS="${ag_save_LIBS}"
+		_EOF_;
+  };
+
+  action = { no; act-type = script; asis;
+      act-text = '  AC_MSG_ERROR([Cannot find libguile.  libguile is required.'
+                 '  Perhaps you need to install guile-devel?])';
+  };
+
+  doc = <<- _END_OF_DOC_
+	AutoGen won't work without Guile, so either the methods for finding the
+	header and libraries must be provided, or guile-config must be found in
+	the executable path, or we have to find the stuff in /usr or /usr/local.
+	Since the Guile interface changes from release to release, we have to
+	explicitly accept every new minor revision.  Sorry about that.
+	_END_OF_DOC_; // '
+};
+
+test   = {
+  name      = guile_ver;
+  type      = withconf;
+  check     = "the guile version is set";
+  action    = { yes; act-type = script; asis;
+    act-text = 'ag_cv_test_guile_version=${ag_cv_set_guile_ver}'; };
+};
+
+test   = {
+  name      = guile_version;
+  type      = test;
+  check     = "the guile version";
+  code      = <<- _END_OF_CODE_
+	v=`guile-config --version 2>&1`
+	test -n "${v}" && {
+	  echo "${v}" | sed 's/.*Guile version *//'
+	  exit 0
+	}
+	v=`guile --version`
+	test -n "${v}" && {
+	  echo "${v}" | sed 's/.*Guile *//;1q'
+	  exit 0
+	}
+	v=`rpm -q --list guile-devel 2>/dev/null | \
+	        grep '/version\.h' | \
+	        head -1`
+	test -n "${v}" && {
+	  v=`awk '/^#define SCM_M/{print $2 "=" $3}' $v`
+	  eval "$v"
+	  test "X$SCM_MICRO_VERSION" = X || \
+	    SCM_MINOR_VERSION=$SCM_MINOR_VERSION.$SCM_MICRO_VERSION
+	  echo "$SCM_MAJOR_VERSION.$SCM_MINOR_VERSION"
+	  exit 0
+	}
+	v=`dpkg --list 2>/dev/null | egrep 'guile-[0-9.]*-dev' | head -1`
+	test -n "${v}" && {
+	  echo "${v}" | sed 's/.*guile-//;s/-dev.*//'
+	  exit 0
+	}
+	exit 1
+	_END_OF_CODE_;
+  code-quoting  = asis;
+
+  action   = { yes;
+    act-type = script; asis;
+    act-text = <<- _END_OF_SCRIPT_
+	set -- `IFS=' .' ; echo ${ag_cv_test_guile_version}`
+	i=${3}
+	test -z "${i}" && i=0
+	GUILE_VERSION=`expr ${1} \* 100000 + ${2} \* 1000 + ${i}`
+	test ${GUILE_VERSION} -lt 107000 && \
+	    AC_MSG_ERROR([Guile must be no older than 1.7.x])
+	AC_DEFINE_UNQUOTED([GUILE_VERSION], [${GUILE_VERSION}],
+	         [define to Guile version expression])
+	AC_SUBST(GUILE_VERSION)
+	_END_OF_SCRIPT_;
+  };
+
+  action   = { no;
+    act-type = script;
+    act-text = <<- _END_OF_SCRIPT_
+	AC_MSG_ERROR([Cannot determine Guile version number])
+	_END_OF_SCRIPT_;
+  };
+
+  doc = <<- _END_OF_DOC_
+	We have to vary our interface all over the place because Guile keeps
+	changing.  Use a single version number.  Fail if we cannot determine it.
+	_END_OF_DOC_;
+};
+
+test   = {
+  name     = xml2;
+  type     = withlib;
+  check    = "a working libxml2 can be found";
+  code     = <<- _END_OF_CODE_
+	#include <libxml/parser.h>
+	#include <libxml/tree.h>
+
+	int main () {
+	xmlDocPtr p = xmlParseFile( "mumble.xml" ); }
+	_END_OF_CODE_;
+  config   = { cflags-arg = '--cflags'; libs-arg = '--libs'; };
+  action = { yes; act-type = script;
+             act-text = 'CPPFLAGS="${ag_save_CPPFLAGS}"' "\n"
+                        '    LIBS="${ag_save_LIBS}"' "\n"
+                        '    ';
+           };
+
+  run-mode    =  link;
+  conditional = HAVE_XML_LIB;
+
+  doc = <<- _END_OF_DOC_
+	xml2ag won't work without libxml2, so either the methods
+	for finding the header and libraries must be provided,
+	or xml2-config must be found in the executable path.
+	_END_OF_DOC_; // '
+};
+
+test = {
+    name   = solaris_sysinfo;
+    type   = run;
+    check  = "sysinfo(2) is Solaris";
+    action = { act-type = define; };
+    code   = <<- _EOF_
+	#include <sys/systeminfo.h>
+	int main() { char z[ 256 ];
+	long sz = sysinfo(SI_SYSNAME, z, sizeof(z));
+	return (sz > 0) ? 0 : 1; }
+	_EOF_;
+    doc =
+    "Check that the Solaris compliant sysinfo(2) call works properly.\n"
+    "Linux has its own special alternative.";
+};
+
+test = {
+    name   = strcspn;
+    type   = run;
+    check  = "strcspn matches prototype and works";
+    action = { act-type = define; };
+    action = { no; act-type = script;
+		act-text = 'COMPATOBJ="$COMPATOBJ strcspn.lo"'; };
+
+    code   = <<-  _EOF_
+	#include <string.h>
+	int main (int argc, char** argv) {
+	   char zRej[] = reject;
+	   char zAcc[] = "a-ok-eject";
+	   return strcspn( zAcc, zRej ) - 5;
+	}
+	_EOF_;
+
+    doc = <<- _EODoc_
+	Not all systems have strcspn(3).  See if we need to substitute.
+	To make this work, you have to do horrible things.  In one of your
+	Makefile.am files, you must make an explicit rule to make this object.
+	It should look like this:
+	  strcspn.lo : $(top_srcdir)/compat/strcspn.c
+	      $(LTCOMPILE) -o $@ -c $(top_srcdir)/compat/strcspn.c
+	and you must include ``@COMPATOBJ@'' in a LIBADD somewhere and,
+	finally, you must add another artificial dependency, something like:
+	  makeshell.lo : genshell.c @COMPATOBJ@
+	It is all pretty horrific, but I have found nothing else that works.
+	_EODoc_;
+};
+
+test = {
+    name   = uname_syscall;
+    type   = run;
+    check  = "uname(2) is POSIX";
+    action = { act-type = define; };
+    code   = <<- _EOF_
+	#include <sys/utsname.h>
+	int main() { struct utsname unm;
+	return uname( &unm ); }
+	_EOF_;
+    doc =
+    "Check that the POSIX compliant uname(2) call works properly.";
+};
+
+test   = {
+  name     = ldflags;
+  type     = test;
+  check    = "runtime library dirs can be specified";
+  code     = <<- _END_OF_CODE_
+	echo 'int main() { return 0; }' > conftest.$ac_ext
+	libs="${LIBS}"
+	LIBS="${LIBS} -Wl,-R/tmp"
+	if (eval $ac_link) > /dev/null 2>&1
+	then echo '-Wl,-R${libdir}' ; rm -f conftest* ; exit 0 ; fi
+	LIBS="${libs} -R/tmp"
+	if (eval $ac_link) > /dev/null 2>&1
+	then echo '-R' ; rm -f conftest* ; exit 0 ; fi
+	rm -f conftest* ; exit 1
+	_END_OF_CODE_;
+  code-quoting  = asis;
+
+  action   = { yes; act-type=subst;
+      act-text = "${ag_cv_test_ldflags}"; };
+
+  doc = <<- _END_OF_DOC_
+	This test determines whether `-R/path/to/libs' or
+	`-Wl,-R/path/to/libs' should be used to find a runtime
+	dynamic library.
+	_END_OF_DOC_;
+};
+
+test = {
+    name   = debug;
+    type   = enable;
+    check  = 'wanting autogen debugging';
+    action = { act-type = define; };
+    /*
+     *  What to do for non-default
+     */
+    action = { act-type = script; asis;
+      act-text = <<- _EOF_
+	AC_DEFINE([DEBUG_ENABLED], [1],
+	          [Define this if debugging is enabled])
+	    CFLAGS="-g `echo $CFLAGS|sed 's%-g *%%g;s%-O[0-9]* *%%g'`"
+	    f=`which dmalloc 2>/dev/null`
+	    [ -n "$f" ] && LIBS="${LIBS} -ldmalloc"
+	_EOF_; };
+
+    doc = <<-  _EOF_
+	This option will enable two debugging options for AutoGen.
+	viz., --show-defs (dump out the definition tree)
+	and --show-shell (trace all shell commands via `set -x')
+	_EOF_; // '
+};
+
+test = {
+    name    = packager;
+    type    = with-group;
+    check   = 'name of the packager of this software is supplied';
+    action  = { act-type = define; act-text = '"${withval}"'; unquoted; };
+
+    subgroup = {
+       subtype = version;
+       subtext = 'packager-specific version information is supplied';
+    };
+    subgroup = {
+       subtype = bug-reports;
+       subtext = 'bug reporting URI/e-mail/etc. is supplied';
+    };
+    grp-valid = {
+      grp-test = <<- _EOF_
+	test "X$with_packager" != "X" || \
+	    test "X$with_packager_version$with_packager_bug_reports" = "X"
+	_EOF_;
+      grp-action = { no; act-type = script; asis;
+        act-text = 'AC_MSG_ERROR('
+           '[--with-packager-{bug-reports,version} require --with-packager])';
+      };
+    };
+};
+
+do-always = <<- _END_ALWAYS_
+	gl_STDNORETURN_H
+	INVOKE_LIBOPTS_MACROS
+
+	[echo 'test "X${ac_cv_header_sys_wait_h}" = Xyes' 1>&2
+	test "X${ac_cv_header_sys_wait_h}" = Xyes || \
+	    ]AC_MSG_ERROR([you must have sys/wait.h on your system])
+
+	AC_CHECK_FUNCS([fopencookie funopen], [break])
+	case "${ac_cv_func_fopencookie}${ac_cv_func_funopen}" in
+	*yes* )
+	   AC_DEFINE([ENABLE_FMEMOPEN], 1, "Define if we can use it")
+	   ;;
+	esac
+
+	# Note that BSD does not typedef these in its headers, but instead
+	# calls for them to be identical in signature to read(2), write(2),
+	# lseek(2), and close(2).  Newlib however does include typedefs
+	# in its stdio.h for these, and they do not match the signatures
+	# of the BSD implementation.  So this test relies on the fact
+	# that any typedef will succeed for BSD, while only one that
+	# matches the existing definitions in stdio.h will succeed for
+	# a newlib system.
+
+	if test "X${ac_cv_func_funopen}" = Xyes; then
+	  AC_CACHE_CHECK([for cookie_function_t type],
+	    [ag_cv_cookie_function_t],
+	    [AC_TRY_COMPILE([#include <stdio.h>
+	      typedef int cookie_read_function_t (void *, char *, int);
+	      ], [], ag_cv_cookie_function_t="bsd",
+	      AC_TRY_COMPILE([#include <stdio.h>
+	        typedef ssize_t cookie_read_function_t (void *, char *, size_t);
+	        ], [], ag_cv_cookie_function_t="newlib",
+	        AC_MSG_ERROR([Unknown flavor of cookie_XXX_t types])))])
+	fi
+	if test "X${ag_cv_cookie_function_t}" = Xbsd; then
+	  AC_DEFINE([NEED_COOKIE_FUNCTION_TYPEDEFS], [1],
+	    [Define if typedefs for the funopen function pointers are required.])
+	fi
+
+	AC_CACHE_CHECK([for static inline], [snv_cv_static_inline], [
+	AC_TRY_COMPILE([static inline foo(bar) int bar; { return bar; }],
+	  [return foo(0);],
+	  [snv_cv_static_inline='static inline'],
+	  [snv_cv_static_inline='static'])
+	])
+	AC_DEFINE_UNQUOTED(SNV_INLINE, ${snv_cv_static_inline},
+	         [define to static or static inline])
+	[if test "X${libopts_cv_with_libregex}" = Xno
+	then
+	  echo "A POSIX compliant regcomp/regexec routine is required.
+		These are required for AutoGen to work correctly.  If you have
+		such a library present on your system, you must specify it by
+		setting the LIBS environment variable, e.g., \"LIBS='-lregex'\".
+		If you do not have such a library on your system, then you should
+		download and install, for example, the one from:
+		    ftp://ftp.gnu.org/gnu/rx/" >&2]
+	  AC_MSG_ERROR([Cannot find working POSIX regex library])
+	[fi]
+	_END_ALWAYS_;
+
+/*
+ *  Verify this stuff before mucking around with specific-to-autogen stuff.
+ */
+do-first = <<- _END_FIRST_
+	AC_CHECK_HEADERS([libio.h ctype.h assert.h sys/resource.h])
+	AC_CHECK_DECLS([sigsetjmp],,, [#include <setjmp.h>])
+	AC_DECL_SYS_SIGLIST
+	AC_CHECK_FUNCS([putenv getdate_r utimes futimes])
+
+	AC_C_INLINE
+	AC_TYPE_LONG_LONG_INT
+
+	AC_PROG_GREP
+	AC_PROG_EGREP
+	AC_PROG_FGREP
+	_END_FIRST_;
+
+/* misc.def ends here */

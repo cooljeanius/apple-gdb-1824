@@ -1,4 +1,5 @@
-/* Macro defintions for i386, running SCO Unix System V/386 3.2.
+/* xm-i386sco.h
+   Macro defintions for i386, running SCO Unix System V/386 3.2.
    Copyright 1989, 1993, 1995 Free Software Foundation, Inc.
 
    This file is part of GDB.

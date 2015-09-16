@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on an encore under umax 4.2
+/* xm-umax.h
+   Definitions to make GDB run on an encore under umax 4.2
    Copyright 1987, 1989, 1992 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -22,5 +23,5 @@
 
 #define HAVE_WAIT_STRUCT
 
-/* Doesn't have siginterupt.  */
+/* Does NOT have siginterupt.  */
 #define NO_SIGINTERRUPT

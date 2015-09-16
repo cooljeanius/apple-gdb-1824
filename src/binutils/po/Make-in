@@ -33,10 +33,12 @@ MKINSTALLDIRS = @MKINSTALLDIRS@
 
 CC = @CC@
 GENCAT = @GENCAT@
-GMSGFMT = PATH=../src:$$PATH @GMSGFMT@
+GMSGFMT = PATH=../src:$${PATH} @GMSGFMT@
 MSGFMT = @MSGFMT@
-XGETTEXT = PATH=../src:$$PATH @XGETTEXT@
-MSGMERGE = PATH=../src:$$PATH msgmerge
+XGETTEXT = PATH=../src:$${PATH} @XGETTEXT@
+MSGMERGE = PATH=../src:$${PATH} msgmerge
+
+SED = @SED@
 
 DEFS = @DEFS@
 CFLAGS = @CFLAGS@
@@ -72,11 +74,11 @@ INSTOBJEXT = @INSTOBJEXT@
 	$(MSGFMT) -o $@ $<
 
 .po.gmo:
-	file=$(srcdir)/`echo $* | sed 's,.*/,,'`.gmo \
-	  && rm -f $$file && $(GMSGFMT) -o $$file $<
+	file=$(srcdir)/`echo $* | $(SED) 's,.*/,,'`.gmo \
+	  && rm -f $${file} && $(GMSGFMT) -o $${file} $<
 
 .po.cat:
-	sed -f ../intl/po2msg.sed < $< > $*.msg \
+	$(SED) -f ../intl/po2msg.sed < $< > $*.msg \
 	  && rm -f $@ && $(GENCAT) $@ $*.msg
 
 
@@ -89,20 +91,21 @@ $(srcdir)/$(PACKAGE).pot: $(POTFILES)
 	$(XGETTEXT) --default-domain=$(PACKAGE) --directory=$(top_srcdir) \
 	  --add-comments --keyword=_ --keyword=N_ \
 	  --files-from=$(srcdir)/POTFILES.in
-	if -f $(PACKAGE).po; then \
-		rm -f $(srcdir)/$(PACKAGE).pot; \
-		mv $(PACKAGE).po $(srcdir)/$(PACKAGE).pot; \
+	if test -f $(PACKAGE).po; then \
+		rm -fv $(srcdir)/$(PACKAGE).pot; \
+		mv -v $(PACKAGE).po $(srcdir)/$(PACKAGE).pot; \
 	fi
 
-$(srcdir)/cat-id-tbl.c: stamp-cat-id; @:
+$(srcdir)/cat-id-tbl.c: stamp-cat-id
+	@echo "this target, '$@', just makes its dependency, '$<'."
 $(srcdir)/stamp-cat-id: $(PACKAGE).pot
 	rm -f cat-id-tbl.tmp
-	sed -f ../intl/po2tbl.sed $(srcdir)/$(PACKAGE).pot \
-		| sed -e "s/@PACKAGE NAME@/$(PACKAGE)/" > cat-id-tbl.tmp
+	$(SED) -f ../intl/po2tbl.sed $(srcdir)/$(PACKAGE).pot \
+		| $(SED) -e "s/@PACKAGE NAME@/$(PACKAGE)/" > cat-id-tbl.tmp
 	if cmp -s cat-id-tbl.tmp $(srcdir)/cat-id-tbl.c; then \
 	  rm cat-id-tbl.tmp; \
 	else \
-	  echo cat-id-tbl.c changed; \
+	  echo "cat-id-tbl.c changed"; \
 	  rm -f $(srcdir)/cat-id-tbl.c; \
 	  mv cat-id-tbl.tmp $(srcdir)/cat-id-tbl.c; \
 	fi
@@ -121,42 +124,42 @@ install-data-yes: all
 	  $(top_srcdir)/mkinstalldirs $(DESTDIR)$(datadir); \
 	fi
 	@catalogs='$(CATALOGS)'; \
-	for cat in $$catalogs; do \
-	  cat=`basename $$cat`; \
-	  case "$$cat" in \
+	for cat in $${catalogs}; do \
+	  cat=`basename $${cat}`; \
+	  case "$${cat}" in \
 	    *.gmo) destdir=$(gnulocaledir);; \
 	    *)     destdir=$(localedir);; \
 	  esac; \
-	  lang=`echo $$cat | sed 's/\$(CATOBJEXT)$$//'`; \
-	  dir=$(DESTDIR)$$destdir/$$lang/LC_MESSAGES; \
+	  lang=`echo $${cat} | $(SED) 's/\$(CATOBJEXT)$$//'`; \
+	  dir=$(DESTDIR)$${destdir}/$${lang}/LC_MESSAGES; \
 	  if test -r $(MKINSTALLDIRS); then \
-	    $(MKINSTALLDIRS) $$dir; \
+	    $(MKINSTALLDIRS) $${dir}; \
 	  else \
-	    $(top_srcdir)/mkinstalldirs $$dir; \
+	    $(top_srcdir)/mkinstalldirs $${dir}; \
 	  fi; \
-	  if test -r $$cat; then \
-	    $(INSTALL_DATA) $$cat $$dir/$(PACKAGE)$(INSTOBJEXT); \
-	    echo "installing $$cat as $$dir/$(PACKAGE)$(INSTOBJEXT)"; \
+	  if test -r $${cat}; then \
+	    $(INSTALL_DATA) $${cat} $${dir}/$(PACKAGE)$(INSTOBJEXT); \
+	    echo "installing $${cat} as $${dir}/$(PACKAGE)$(INSTOBJEXT)"; \
 	  else \
-	    $(INSTALL_DATA) $(srcdir)/$$cat $$dir/$(PACKAGE)$(INSTOBJEXT); \
-	    echo "installing $(srcdir)/$$cat as" \
-		 "$$dir/$(PACKAGE)$(INSTOBJEXT)"; \
+	    $(INSTALL_DATA) $(srcdir)/$${cat} $${dir}/$(PACKAGE)$(INSTOBJEXT); \
+	    echo "installing $(srcdir)/$${cat} as" \
+		 "$${dir}/$(PACKAGE)$(INSTOBJEXT)"; \
 	  fi; \
-	  if test -r $$cat.m; then \
-	    $(INSTALL_DATA) $$cat.m $$dir/$(PACKAGE)$(INSTOBJEXT).m; \
+	  if test -r $${cat}.m; then \
+	    $(INSTALL_DATA) $${cat}.m $$dir/$(PACKAGE)$(INSTOBJEXT).m; \
 	    echo "installing $$cat.m as $$dir/$(PACKAGE)$(INSTOBJEXT).m"; \
 	  else \
-	    if test -r $(srcdir)/$$cat.m ; then \
-	      $(INSTALL_DATA) $(srcdir)/$$cat.m \
-		$$dir/$(PACKAGE)$(INSTOBJEXT).m; \
-	      echo "installing $(srcdir)/$$cat as" \
-		   "$$dir/$(PACKAGE)$(INSTOBJEXT).m"; \
+	    if test -r $(srcdir)/$${cat}.m; then \
+	      $(INSTALL_DATA) $(srcdir)/$${cat}.m \
+		$${dir}/$(PACKAGE)$(INSTOBJEXT).m; \
+	      echo "installing $(srcdir)/$${cat} as" \
+		   "$${dir}/$(PACKAGE)$(INSTOBJEXT).m"; \
 	    else \
-	      true; \
+	      echo "no readable $(srcdir)/$${cat}.m to install"; \
 	    fi; \
 	  fi; \
 	done
-	if test "$(PACKAGE)" = "gettext"; then \
+	if test "x$(PACKAGE)" = "xgettext"; then \
 	  if test -r $(MKINSTALLDIRS); then \
 	    $(MKINSTALLDIRS) $(DESTDIR)$(gettextsrcdir); \
 	  else \
@@ -165,7 +168,7 @@ install-data-yes: all
 	  $(INSTALL_DATA) $(srcdir)/Makefile.in.in \
 			  $(DESTDIR)$(gettextsrcdir)/Makefile.in.in; \
 	else \
-	  : ; \
+	  echo "skipping gettext-specific stuff"; \
 	fi
 
 # Define this as empty until I found a useful application.
@@ -173,13 +176,13 @@ installcheck:
 
 uninstall:
 	catalogs='$(CATALOGS)'; \
-	for cat in $$catalogs; do \
-	  cat=`basename $$cat`; \
-	  lang=`echo $$cat | sed 's/\$(CATOBJEXT)$$//'`; \
-	  rm -f $(DESTDIR)$(localedir)/$$lang/LC_MESSAGES/$(PACKAGE)$(INSTOBJEXT); \
-	  rm -f $(DESTDIR)$(localedir)/$$lang/LC_MESSAGES/$(PACKAGE)$(INSTOBJEXT).m; \
-	  rm -f $(DESTDIR)$(gnulocaledir)/$$lang/LC_MESSAGES/$(PACKAGE)$(INSTOBJEXT); \
-	  rm -f $(DESTDIR)$(gnulocaledir)/$$lang/LC_MESSAGES/$(PACKAGE)$(INSTOBJEXT).m; \
+	for cat in $${catalogs}; do \
+	  cat=`basename $${cat}`; \
+	  lang=`echo $${cat} | $(SED) 's/\$(CATOBJEXT)$$//'`; \
+	  rm -f $(DESTDIR)$(localedir)/$${lang}/LC_MESSAGES/$(PACKAGE)$(INSTOBJEXT); \
+	  rm -f $(DESTDIR)$(localedir)/$${lang}/LC_MESSAGES/$(PACKAGE)$(INSTOBJEXT).m; \
+	  rm -f $(DESTDIR)$(gnulocaledir)/$${lang}/LC_MESSAGES/$(PACKAGE)$(INSTOBJEXT); \
+	  rm -f $(DESTDIR)$(gnulocaledir)/$${lang}/LC_MESSAGES/$(PACKAGE)$(INSTOBJEXT).m; \
 	done
 	rm -f $(DESTDIR)$(gettextsrcdir)/po-Makefile.in.in
 
@@ -206,27 +209,27 @@ maintainer-clean: distclean
 distdir = ../$(PACKAGE)-$(VERSION)/$(subdir)
 dist distdir: update-po $(DISTFILES)
 	dists="$(DISTFILES)"; \
-	for file in $$dists; do \
-	  ln $(srcdir)/$$file $(distdir) 2> /dev/null \
-	    || cp -p $(srcdir)/$$file $(distdir); \
+	for file in $${dists}; do \
+	  ln $(srcdir)/$${file} $(distdir) 2>/dev/null \
+	    || cp -pv $(srcdir)/$${file} $(distdir); \
 	done
 
 update-po: Makefile
 	$(MAKE) $(PACKAGE).pot
-	PATH=`pwd`/../src:$$PATH; \
+	PATH=`pwd`/../src:$${PATH}; \
 	cd $(srcdir); \
 	catalogs='$(CATALOGS)'; \
-	for cat in $$catalogs; do \
-	  cat=`basename $$cat`; \
-	  lang=`echo $$cat | sed 's/\$(CATOBJEXT)$$//'`; \
-	  mv $$lang.po $$lang.old.po; \
-	  echo "$$lang:"; \
-	  if $(MSGMERGE) $$lang.old.po $(PACKAGE).pot -o $$lang.po; then \
-	    rm -f $$lang.old.po; \
+	for cat in $${catalogs}; do \
+	  cat=`basename $${cat}`; \
+	  lang=`echo $${cat} | $(SED) 's/\$(CATOBJEXT)$$//'`; \
+	  mv $${lang}.po $${lang}.old.po; \
+	  echo "$${lang}:"; \
+	  if $(MSGMERGE) $${lang}.old.po $(PACKAGE).pot -o $${lang}.po; then \
+	    rm -f $${lang}.old.po; \
 	  else \
-	    echo "msgmerge for $$cat failed!"; \
-	    rm -f $$lang.po; \
-	    mv $$lang.old.po $$lang.po; \
+	    echo "msgmerge for $${cat} failed!"; \
+	    rm -f $${lang}.po; \
+	    mv $${lang}.old.po $${lang}.po; \
 	  fi; \
 	done
 
@@ -239,7 +242,7 @@ POTFILES: POTFILES.in
 	  rm -f $@-t $@ \
 	    && (sed -e '/^#/d' -e '/^[ 	]*$$/d' \
 		    -e "s@.*@	$$posrcprefix& \\\\@" < $(srcdir)/$@.in \
-		| sed -e '$$s/\\$$//') > $@-t \
+		| $(SED) -e '$$s/\\$$//') > $@-t \
 	    && chmod a-w $@-t \
 	    && mv $@-t $@ )
 
@@ -249,7 +252,7 @@ POTFILES.in: @MAINT@ ../Makefile
 Makefile: Make-in ../config.status POTFILES
 	cd .. \
 	  && CONFIG_FILES=$(subdir)/Makefile.in:$(subdir)/Make-in \
-	     CONFIG_HEADERS= $(SHELL) ./config.status
+	     CONFIG_HEADERS="" $(SHELL) ./config.status
 
 # Tell versions [3.59,3.63) of GNU make not to export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

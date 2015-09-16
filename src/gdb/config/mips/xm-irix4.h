@@ -1,4 +1,5 @@
-/* Definitions for irix4 hosting support.
+/* xm-irix4.h
+   Definitions for irix4 hosting support.
 
    Copyright 1991, 1992, 1993, 1994, 1995 Free Software Foundation, Inc.
 
@@ -25,10 +26,13 @@
 
 #define BROKEN_SIGINFO_H	/* <sys/siginfo.h> si_pid & si_uid are bogus */
 
-/* Irix 4.0.1 and later have termios.  Not sure about earlier versions.  */
+/* Irix 4.0.1 and later have termios. Not sure about earlier versions.  */
 #undef HAVE_TERMIO
 #define HAVE_TERMIOS
 
 /* This enables reliable signals (and the associated setjmp/longjmp), and gives
-   bsdish prototypes for getpgrp/setpgrg/setgroups and initgroups.  */
+ * bsdish prototypes for getpgrp/setpgrg/setgroups and initgroups.
+ */
 #define _BSD_COMPAT
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Copyright 1991, 1993, 1994, 1995 Free Software Foundation, Inc.
+/* xm-irix3.h
+   Copyright 1991, 1993, 1994, 1995 Free Software Foundation, Inc.
 
    This file is part of GDB.
 
@@ -28,3 +29,5 @@
       addr = regno;					\
   else							\
       addr = regno + NSIG_HNDLRS;	/* Skip over signal handlers */
+
+/* EOF */

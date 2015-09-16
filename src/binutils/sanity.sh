@@ -2,7 +2,7 @@
 ### quick sanity test for the binutils.
 ###
 ### This file was written and is maintained by K. Richard Pixley,
-### rich@cygnus.com.
+### <rich@cygnus.com>.
 
 ### fail on errors
 set -e

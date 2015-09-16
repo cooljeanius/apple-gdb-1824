@@ -1,4 +1,4 @@
-/* BFD back-end for i386 a.out binaries under BSD.
+/* i386-bsd.c: BFD back-end for i386 a.out binaries under BSD.
    Copyright 1990, 1991, 1992, 1993, 1994, 2001
    Free Software Foundation, Inc.
 
@@ -16,7 +16,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* This data should be correct for the format used under all the various
    BSD ports for 386 machines.  */
@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #define	SEGMENT_SIZE	TARGET_PAGE_SIZE
 
 #define	DEFAULT_ARCH	bfd_arch_i386
-#define MACHTYPE_OK(mtype) ((mtype) == M_386 || (mtype) == M_UNKNOWN)
+#define MACHTYPE_OK(mtype) (((mtype) == M_386) || ((mtype) == M_UNKNOWN))
 
 /* Do not "beautify" the CONCAT* macro args.  Traditional C will not
    remove whitespace added here, and thus will fail to concatenate
@@ -42,9 +42,18 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #define MY(OP) CONCAT2 (i386bsd_,OP)
 #define TARGETNAME "a.out-i386-bsd"
 
+/* this needs to go after the usage of the CONCAT* macro mentioned above,
+ * but before any other headers are included, or prototypes for functions
+ * are declared: */
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ && !__clang__ */
+
 #include "bfd.h"
 #include "sysdep.h"
 #include "libbfd.h"
 #include "libaout.h"
 
 #include "aout-target.h"
+
+/* EOF */

@@ -71,21 +71,21 @@ struct catcher
 static struct catcher *current_catcher;
 
 EXCEPTIONS_SIGJMP_BUF *
-exceptions_state_mc_init (struct ui_out *func_uiout,
-			  volatile struct gdb_exception *exception,
-			  return_mask mask)
+exceptions_state_mc_init(struct ui_out *func_uiout,
+			 volatile struct gdb_exception *exception,
+			 return_mask mask)
 {
-  struct catcher *new_catcher = XZALLOC (struct catcher);
+  struct catcher *new_catcher = XZALLOC(struct catcher);
 
-  /* Start with no exception, save it's address.  */
-  exception->reason = 0;
+  /* Start with no exception, save its address: */
+  exception->reason = (enum return_reason)0;
   exception->error = NO_ERROR;
   exception->message = NULL;
   new_catcher->exception = exception;
 
   new_catcher->mask = mask;
 
-  /* Override the global ``struct ui_out'' builder.  */
+  /* Override the global ``struct ui_out'' builde:  */
   new_catcher->saved_uiout = uiout;
   uiout = func_uiout;
 
@@ -255,7 +255,7 @@ deprecated_throw_reason (enum return_reason reason)
     default:
       internal_error (__FILE__, __LINE__, _("bad switch"));
     }
-  
+
   throw_exception (exception);
 }
 
@@ -314,7 +314,7 @@ print_exception (struct ui_file *file, struct gdb_exception e)
 	      end++;
 	      ui_file_write (file, start, end - start);
 	    }
-        }					    
+        }
       fprintf_filtered (file, "\n");
     }
 
@@ -344,71 +344,71 @@ exception_print (struct ui_file *file, struct gdb_exception e)
 }
 
 void
-exception_fprintf (struct ui_file *file, struct gdb_exception e,
-		   const char *prefix, ...)
+exception_fprintf(struct ui_file *file, struct gdb_exception e,
+		  const char *prefix, ...)
 {
-  if (e.reason < 0 && e.message != NULL)
+  if ((e.reason < 0) && (e.message != NULL))
     {
       va_list args;
 
-      print_flush ();
+      print_flush();
 
-      /* Print the prefix.  */
-      va_start (args, prefix);
-      vfprintf_filtered (file, prefix, args);
-      va_end (args);
+      /* Print the prefix: */
+      va_start(args, prefix);
+      vfprintf_filtered(file, prefix, args);
+      va_end(args);
 
-      print_exception (file, e);
+      print_exception(file, e);
     }
 }
 
 void
-print_any_exception (struct ui_file *file, const char *prefix,
-		     struct gdb_exception e)
+print_any_exception(struct ui_file *file, const char *prefix,
+		    struct gdb_exception e)
 {
-  if (e.reason < 0 && e.message != NULL)
+  if ((e.reason < 0) && (e.message != NULL))
     {
-      target_terminal_ours ();
-      wrap_here ("");		/* Force out any buffered output */
-      gdb_flush (gdb_stdout);
-      annotate_error_begin ();
+      target_terminal_ours();
+      wrap_here("");		/* Force out any buffered output */
+      gdb_flush(gdb_stdout);
+      annotate_error_begin();
 
-      /* Print the prefix.  */
-      if (prefix != NULL && prefix[0] != '\0')
-	fputs_filtered (prefix, file);
-      print_exception (file, e);
+      /* Print the prefix: */
+      if ((prefix != NULL) && (prefix[0] != '\0'))
+	fputs_filtered(prefix, file);
+      print_exception(file, e);
     }
 }
 
 NORETURN static void
-throw_it (enum return_reason reason, enum errors error, const char *fmt,
-	  va_list ap) ATTR_NORETURN;
+throw_it(enum return_reason reason, enum errors error, const char *fmt,
+	 va_list ap) ATTR_NORETURN ATTR_FORMAT(gnu_printf, 3, 0);
 NORETURN static void
-throw_it (enum return_reason reason, enum errors error, const char *fmt,
-	  va_list ap)
+throw_it(enum return_reason reason, enum errors error, const char *fmt,
+	 va_list ap)
 {
   struct gdb_exception e;
   char *new_message;
 
   /* Save the message.  Create the new message before deleting the
      old, the new message may include the old message text.  */
-  new_message = xstrvprintf (fmt, ap);
-  xfree (last_message);
+  new_message = xstrvprintf(fmt, ap);
+  xfree(last_message);
   last_message = new_message;
 
-  /* Create the exception.  */
+  /* Create the exception: */
   e.reason = reason;
   e.error = error;
   e.message = last_message;
 
-  /* Throw the exception.  */
-  throw_exception (e);
+  /* Throw the exception: */
+  throw_exception(e);
 }
 
 NORETURN void
-throw_verror (enum errors error, const char *fmt, va_list ap)
+throw_verror(enum errors error, const char *fmt, va_list ap)
 {
-  throw_it (RETURN_ERROR, error, fmt, ap);
+  throw_it(RETURN_ERROR, error, fmt, ap);
 }
 
 NORETURN void
@@ -515,16 +515,16 @@ catch_exceptions_with_msg (struct ui_out *uiout,
 }
 
 int
-catch_errors (catch_errors_ftype *func, void *func_args, char *errstring,
-	      return_mask mask)
+catch_errors(catch_errors_ftype *func, void *func_args, char *errstring,
+	     return_mask mask)
 {
   volatile int val = 0;
   volatile struct gdb_exception exception;
-  TRY_CATCH (exception, mask)
+  TRY_CATCH(exception, mask)
     {
-      val = func (func_args);
+      val = func(func_args);
     }
-  print_any_exception (gdb_stderr, errstring, exception);
+  print_any_exception(gdb_stderr, errstring, exception);
   if (exception.reason != 0)
     return 0;
   return val;
@@ -544,3 +544,5 @@ catch_command_errors (catch_command_errors_ftype * command,
     return 0;
   return 1;
 }
+
+/* EOF */

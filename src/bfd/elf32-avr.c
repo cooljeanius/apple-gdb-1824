@@ -412,14 +412,13 @@ struct avr_reloc_map
 };
 
 static reloc_howto_type *
-bfd_elf32_bfd_reloc_type_lookup (abfd, code)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+bfd_elf32_bfd_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                                bfd_reloc_code_real_type code)
 {
   unsigned int i;
 
-  for (i = 0;
-       i < sizeof (avr_reloc_map) / sizeof (struct avr_reloc_map);
+  for (i = 0U;
+       i < (sizeof(avr_reloc_map) / sizeof(struct avr_reloc_map));
        i++)
     {
       if (avr_reloc_map[i].bfd_reloc_val == code)
@@ -429,32 +428,28 @@ bfd_elf32_bfd_reloc_type_lookup (abfd, code)
   return NULL;
 }
 
-/* Set the howto pointer for an AVR ELF reloc.  */
-
+/* Set the howto pointer for an AVR ELF reloc: */
 static void
-avr_info_to_howto_rela (abfd, cache_ptr, dst)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *cache_ptr;
-     Elf_Internal_Rela *dst;
+avr_info_to_howto_rela(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+                       Elf_Internal_Rela *dst)
 {
   unsigned int r_type;
 
-  r_type = ELF32_R_TYPE (dst->r_info);
-  BFD_ASSERT (r_type < (unsigned int) R_AVR_max);
+  r_type = ELF32_R_TYPE(dst->r_info);
+  BFD_ASSERT(r_type < (unsigned int)R_AVR_max);
   cache_ptr->howto = &elf_avr_howto_table[r_type];
 }
 
 static asection *
-elf32_avr_gc_mark_hook (sec, info, rel, h, sym)
-     asection *sec;
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
-     Elf_Internal_Rela *rel;
-     struct elf_link_hash_entry *h;
-     Elf_Internal_Sym *sym;
+elf32_avr_gc_mark_hook(asection *sec,
+                       struct bfd_link_info *info ATTRIBUTE_UNUSED,
+                       Elf_Internal_Rela *rel,
+                       struct elf_link_hash_entry *h,
+                       Elf_Internal_Sym *sym)
 {
   if (h != NULL)
     {
-      switch (ELF32_R_TYPE (rel->r_info))
+      switch (ELF32_R_TYPE(rel->r_info))
 	{
 	default:
 	  switch (h->root.type)
@@ -478,13 +473,12 @@ elf32_avr_gc_mark_hook (sec, info, rel, h, sym)
 }
 
 static bfd_boolean
-elf32_avr_gc_sweep_hook (abfd, info, sec, relocs)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
-     asection *sec ATTRIBUTE_UNUSED;
-     const Elf_Internal_Rela *relocs ATTRIBUTE_UNUSED;
+elf32_avr_gc_sweep_hook(bfd *abfd ATTRIBUTE_UNUSED,
+                        struct bfd_link_info *info ATTRIBUTE_UNUSED,
+                        asection *sec ATTRIBUTE_UNUSED,
+                        const Elf_Internal_Rela *relocs ATTRIBUTE_UNUSED)
 {
-  /* We don't use got and plt entries for avr.  */
+  /* We do NOT use got and plt entries for avr: */
   return TRUE;
 }
 
@@ -493,11 +487,8 @@ elf32_avr_gc_sweep_hook (abfd, info, sec, relocs)
    virtual table relocs for gc.  */
 
 static bfd_boolean
-elf32_avr_check_relocs (abfd, info, sec, relocs)
-     bfd *abfd;
-     struct bfd_link_info *info;
-     asection *sec;
-     const Elf_Internal_Rela *relocs;
+elf32_avr_check_relocs(bfd *abfd, struct bfd_link_info *info,
+                       asection *sec, const Elf_Internal_Rela *relocs)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes, **sym_hashes_end;
@@ -507,27 +498,28 @@ elf32_avr_check_relocs (abfd, info, sec, relocs)
   if (info->relocatable)
     return TRUE;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (abfd);
-  sym_hashes_end = sym_hashes + symtab_hdr->sh_size/sizeof (Elf32_External_Sym);
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(abfd);
+  sym_hashes_end = (sym_hashes
+                    + (symtab_hdr->sh_size / sizeof(Elf32_External_Sym)));
   if (!elf_bad_symtab (abfd))
     sym_hashes_end -= symtab_hdr->sh_info;
 
-  rel_end = relocs + sec->reloc_count;
+  rel_end = (relocs + sec->reloc_count);
   for (rel = relocs; rel < rel_end; rel++)
     {
       struct elf_link_hash_entry *h;
       unsigned long r_symndx;
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
       if (r_symndx < symtab_hdr->sh_info)
         h = NULL;
       else
 	{
 	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
-	  while (h->root.type == bfd_link_hash_indirect
-		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	  while ((h->root.type == bfd_link_hash_indirect)
+		 || (h->root.type == bfd_link_hash_warning))
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 	}
     }
 
@@ -538,14 +530,9 @@ elf32_avr_check_relocs (abfd, info, sec, relocs)
    routines, but a few relocs, we have to do them ourselves.  */
 
 static bfd_reloc_status_type
-avr_final_link_relocate (howto, input_bfd, input_section,
-			 contents, rel, relocation)
-     reloc_howto_type *  howto;
-     bfd *               input_bfd;
-     asection *          input_section;
-     bfd_byte *          contents;
-     Elf_Internal_Rela * rel;
-     bfd_vma             relocation;
+avr_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
+                        asection *input_section, bfd_byte *contents,
+                        Elf_Internal_Rela *rel, bfd_vma relocation)
 {
   bfd_reloc_status_type r = bfd_reloc_ok;
   bfd_vma               x;
@@ -643,7 +630,7 @@ avr_final_link_relocate (howto, input_bfd, input_section,
 	/* Remove offset for data/eeprom section.  */
 	return bfd_reloc_overflow;
       x = bfd_get_16 (input_bfd, contents);
-      x = (x & 0xff30) | (srel & 0xf) | ((srel & 0x30) << 2); 
+      x = (x & 0xff30) | (srel & 0xf) | ((srel & 0x30) << 2);
       bfd_put_16 (input_bfd, x, contents);
       break;
 
@@ -790,16 +777,12 @@ avr_final_link_relocate (howto, input_bfd, input_section,
 
 /* Relocate an AVR ELF section.  */
 static bfd_boolean
-elf32_avr_relocate_section (output_bfd, info, input_bfd, input_section,
-			    contents, relocs, local_syms, local_sections)
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     Elf_Internal_Rela *relocs;
-     Elf_Internal_Sym *local_syms;
-     asection **local_sections;
+elf32_avr_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
+                           struct bfd_link_info *info, bfd *input_bfd,
+                           asection *input_section, bfd_byte *contents,
+                           Elf_Internal_Rela *relocs,
+                           Elf_Internal_Sym *local_syms,
+                           asection **local_sections)
 {
   Elf_Internal_Shdr *           symtab_hdr;
   struct elf_link_hash_entry ** sym_hashes;
@@ -910,13 +893,12 @@ elf32_avr_relocate_section (output_bfd, info, input_bfd, input_section,
    number.  */
 
 static void
-bfd_elf_avr_final_write_processing (abfd, linker)
-     bfd *abfd;
-     bfd_boolean linker ATTRIBUTE_UNUSED;
+bfd_elf_avr_final_write_processing(bfd *abfd,
+                                   bfd_boolean linker ATTRIBUTE_UNUSED)
 {
   unsigned long val;
 
-  switch (bfd_get_mach (abfd))
+  switch (bfd_get_mach(abfd))
     {
     default:
     case bfd_mach_avr2:
@@ -940,22 +922,20 @@ bfd_elf_avr_final_write_processing (abfd, linker)
       break;
     }
 
-  elf_elfheader (abfd)->e_machine = EM_AVR;
-  elf_elfheader (abfd)->e_flags &= ~ EF_AVR_MACH;
-  elf_elfheader (abfd)->e_flags |= val;
+  elf_elfheader(abfd)->e_machine = EM_AVR;
+  elf_elfheader(abfd)->e_flags &= ~EF_AVR_MACH;
+  elf_elfheader(abfd)->e_flags |= val;
 }
 
-/* Set the right machine number.  */
-
+/* Set the right machine number: */
 static bfd_boolean
-elf32_avr_object_p (abfd)
-     bfd *abfd;
+elf32_avr_object_p(bfd *abfd)
 {
   unsigned int e_set = bfd_mach_avr2;
-  if (elf_elfheader (abfd)->e_machine == EM_AVR
-      || elf_elfheader (abfd)->e_machine == EM_AVR_OLD)
+  if (elf_elfheader(abfd)->e_machine == EM_AVR
+      || elf_elfheader(abfd)->e_machine == EM_AVR_OLD)
     {
-      int e_mach = elf_elfheader (abfd)->e_flags & EF_AVR_MACH;
+      int e_mach = elf_elfheader(abfd)->e_flags & EF_AVR_MACH;
       switch (e_mach)
 	{
 	default:

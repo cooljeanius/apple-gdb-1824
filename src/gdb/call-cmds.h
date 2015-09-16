@@ -3,7 +3,7 @@
    present or not) must be used and set to the appropriate routine by any
    command language that cares about it.  If you are having to include this
    file you are possibly doing things the old way.  This file will disapear.
-   2000-12-01 fnasser@redhat.com    */
+   2000-12-01 <fnasser@redhat.com>    */
 
 /* Prototypes for GDB commands that are called internally by other functions.
    Copyright 1992, 2000, 2001 Free Software Foundation, Inc.
@@ -26,10 +26,20 @@
 #ifndef CALL_CMDS_H
 #define CALL_CMDS_H
 
-extern void initialize_all_files (void);
+#include "ansidecl.h"
 
-extern void core_file_command (char *, int);
+/* Since this file is deprecated overall, mark all prototypes in it as
+ * deprecated, too: */
 
-extern void break_command (char *, int);
+extern void initialize_all_files(void)
+  ATTRIBUTE_DEPRECATED;
 
-#endif
+extern void core_file_command(char *, int)
+  ATTRIBUTE_DEPRECATED;
+
+extern void break_command(char *, int)
+  ATTRIBUTE_DEPRECATED;
+
+#endif /* !CALL_CMDS_H */
+
+/* EOF */

@@ -1,8 +1,8 @@
-/* Core file generic interface routines for BFD.
-   Copyright 1990, 1991, 1992, 1993, 1994, 2000, 2001, 2002, 2003
-   Free Software Foundation, Inc.
-   Written by Cygnus Support.
-
+/* corefile.c: Core file generic interface routines for BFD.
+ * Copyright 1990, 1991, 1992, 1993, 1994, 2000, 2001, 2002, 2003
+ * Free Software Foundation, Inc.
+ * Written by Cygnus Support.  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /*
 SECTION
@@ -45,14 +45,14 @@ DESCRIPTION
 */
 
 const char *
-bfd_core_file_failing_command (bfd *abfd)
+bfd_core_file_failing_command(bfd *abfd)
 {
   if (abfd->format != bfd_core)
     {
-      bfd_set_error (bfd_error_invalid_operation);
+      bfd_set_error(bfd_error_invalid_operation);
       return NULL;
     }
-  return BFD_SEND (abfd, _core_file_failing_command, (abfd));
+  return BFD_SEND(abfd, _core_file_failing_command, (abfd));
 }
 
 /*
@@ -68,14 +68,14 @@ DESCRIPTION
 */
 
 int
-bfd_core_file_failing_signal (bfd *abfd)
+bfd_core_file_failing_signal(bfd *abfd)
 {
   if (abfd->format != bfd_core)
     {
-      bfd_set_error (bfd_error_invalid_operation);
+      bfd_set_error(bfd_error_invalid_operation);
       return 0;
     }
-  return BFD_SEND (abfd, _core_file_failing_signal, (abfd));
+  return BFD_SEND(abfd, _core_file_failing_signal, (abfd));
 }
 
 /*
@@ -93,14 +93,16 @@ DESCRIPTION
 */
 
 bfd_boolean
-core_file_matches_executable_p (bfd *core_bfd, bfd *exec_bfd)
+core_file_matches_executable_p(bfd *core_bfd, bfd *exec_bfd)
 {
-  if (core_bfd->format != bfd_core || exec_bfd->format != bfd_object)
+  if ((core_bfd->format != bfd_core) || (exec_bfd->format != bfd_object))
     {
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return FALSE;
     }
 
-  return BFD_SEND (core_bfd, _core_file_matches_executable_p,
-		   (core_bfd, exec_bfd));
+  return BFD_SEND(core_bfd, _core_file_matches_executable_p,
+                  (core_bfd, exec_bfd));
 }
+
+/* End of corefile.c */

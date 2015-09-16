@@ -1,4 +1,5 @@
-/* Remote utility routines for the remote server for GDB.
+/* gdbserver/remote-utils.c
+   Remote utility routines for the remote server for GDB.
    Copyright 1986, 1989, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
    2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -20,8 +21,13 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "server.h"
 #include "terminal.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/ioctl.h>
@@ -36,12 +42,16 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <sys/stat.h>
+#if defined(HAVE_ERRNO_H) && HAVE_ERRNO_H
+# include <errno.h>
+#endif /* HAVE_ERRNO_H */
 
 #ifndef HAVE_SOCKLEN_T
 typedef int socklen_t;
-#endif
+#endif /* !HAVE_SOCKLEN_T */
 
-/* A cache entry for a successfully looked-up symbol.  */
+/* A cache entry for a successfully looked-up symbol: */
 struct sym_cache
 {
   const char *name;
@@ -49,8 +59,12 @@ struct sym_cache
   struct sym_cache *next;
 };
 
-/* The symbol cache.  */
+/* The symbol cache: */
 static struct sym_cache *symbol_cache;
+
+#ifndef REMOTE_UTILS_H
+void clear_symbol_cache(struct sym_cache **symcache_p);
+#endif /* !REMOTE_UTILS_H */
 
 int remote_debug = 0;
 struct ui_file *gdb_stdlog;
@@ -61,6 +75,14 @@ static int remote_desc;
 extern int using_threads;
 extern int debug_threads;
 
+/* in case gnulib redefined these on us: */
+#ifdef fcntl
+# undef fcntl
+#endif /* fcntl */
+#ifdef open
+# undef open
+#endif /* open */
+
 /* Open a connection to a remote debugger.
    NAME is the filename used for communication.  */
 
@@ -68,7 +90,7 @@ void
 remote_open (char *name)
 {
   int save_fcntl_flags;
-  
+
   if (!strchr (name, ':'))
     {
       remote_desc = open (name, O_RDWR);
@@ -90,7 +112,7 @@ remote_open (char *name)
 
 	tcsetattr (remote_desc, TCSANOW, &termios);
       }
-#endif
+#endif /* HAVE_TERMIOS */
 
 #ifdef HAVE_TERMIO
       {
@@ -107,7 +129,7 @@ remote_open (char *name)
 
 	ioctl (remote_desc, TCSETA, &termio);
       }
-#endif
+#endif /* HAVE_TERMIO */
 
 #ifdef HAVE_SGTTY
       {
@@ -117,7 +139,7 @@ remote_open (char *name)
 	sg.sg_flags = RAW;
 	ioctl (remote_desc, TIOCSETP, &sg);
       }
-#endif
+#endif /* HAVE_SGTTY */
 
       fprintf (stderr, "Remote debugging using %s\n", name);
     }
@@ -135,7 +157,7 @@ remote_open (char *name)
 
       tmp_desc = socket (PF_INET, SOCK_STREAM, IPPROTO_TCP);
       if (tmp_desc < 0)
-	perror_with_name ("Can't open socket");
+	perror_with_name ("Cannot open socket");
 
       /* Allow rapid reuse of this port. */
       tmp = 1;
@@ -148,16 +170,16 @@ remote_open (char *name)
 
       if (bind (tmp_desc, (struct sockaddr *) &sockaddr, sizeof (sockaddr))
 	  || listen (tmp_desc, 1))
-	perror_with_name ("Can't bind address");
+	perror_with_name ("Cannot bind address");
 
       /* If port is zero, a random port will be selected, and the
-	 fprintf below needs to know what port was selected.  */
+	   * fprintf below needs to know what port was selected.  */
       if (port == 0)
 	{
 	  socklen_t len = sizeof (sockaddr);
 	  if (getsockname (tmp_desc, (struct sockaddr *) &sockaddr, &len) < 0
 	      || len < sizeof (sockaddr))
-	    perror_with_name ("Can't determine port");
+	    perror_with_name ("Cannot determine port");
 	  port = ntohs (sockaddr.sin_port);
 	}
 
@@ -173,7 +195,7 @@ remote_open (char *name)
       tmp = 1;
       setsockopt (tmp_desc, SOL_SOCKET, SO_KEEPALIVE, (char *) &tmp, sizeof (tmp));
 
-      /* Tell TCP not to delay small packets.  This greatly speeds up
+      /* Tell TCP not to delay small packets. This greatly speeds up
          interactive response. */
       tmp = 1;
       setsockopt (remote_desc, IPPROTO_TCP, TCP_NODELAY,
@@ -181,21 +203,21 @@ remote_open (char *name)
 
       close (tmp_desc);		/* No longer need this */
 
-      signal (SIGPIPE, SIG_IGN);	/* If we don't do this, then gdbserver simply
-					   exits when the remote side dies.  */
+      signal (SIGPIPE, SIG_IGN); /* If we do NOT do this, then gdbserver simply
+					              * exits when the remote side dies.  */
 
       /* Convert IP address to string.  */
-      fprintf (stderr, "Remote debugging from host %s\n", 
+      fprintf (stderr, "Remote debugging from host %s\n",
          inet_ntoa (sockaddr.sin_addr));
     }
 
 #if defined(F_SETFL) && defined (FASYNC)
-  save_fcntl_flags = fcntl (remote_desc, F_GETFL, 0);
-  fcntl (remote_desc, F_SETFL, save_fcntl_flags | FASYNC);
-#if defined (F_SETOWN)
-  fcntl (remote_desc, F_SETOWN, getpid ());
-#endif
-#endif
+  save_fcntl_flags = fcntl(remote_desc, F_GETFL, 0);
+  fcntl(remote_desc, F_SETFL, save_fcntl_flags | FASYNC);
+# if defined (F_SETOWN)
+  fcntl(remote_desc, F_SETOWN, getpid());
+# endif /* F_SETOWN */
+#endif /* F_SETFL && FASYNC */
   disable_async_io ();
 }
 
@@ -330,7 +352,7 @@ putpkt (char *buf)
 
 #if defined (NO_ACKS)
       break;
-#endif
+#endif /* NO_ACKS */
 
       if (remote_debug)
 	{
@@ -355,7 +377,7 @@ putpkt (char *buf)
 	  return -1;
 	}
 
-      /* Check for an input interrupt while we're here.  */
+      /* Check for an input interrupt while we are here.  */
       if (buf3[0] == '\003')
 	(*the_target->send_signal) (SIGINT);
     }
@@ -385,7 +407,7 @@ input_interrupt (int unused)
     {
       int cc;
       char c = 0;
-      
+
       cc = read (remote_desc, &c, 1);
 
       if (cc != 1 || c != '\003')
@@ -394,7 +416,7 @@ input_interrupt (int unused)
 		   cc, c, c);
 	  return;
 	}
-      
+
       (*the_target->send_signal) (SIGINT);
     }
 }
@@ -519,7 +541,7 @@ getpkt (char *buf)
 
 #if defined (NO_ACKS)
       break;
-#endif
+#endif /* NO_ACKS */
 
       c1 = fromhex (readchar ());
       c2 = fromhex (readchar ());
@@ -546,7 +568,7 @@ getpkt (char *buf)
       fprintf (stderr, "[sent ack]\n");
       fflush (stderr);
     }
-#endif
+#endif /* !NO_ACKS */
 
   return bp - buf;
 }
@@ -620,7 +642,7 @@ new_thread_notify (int id)
 {
   char own_buf[256];
 
-  /* The `n' response is not yet part of the remote protocol.  Do nothing.  */
+  /* The `n' response is not yet part of the remote protocol. Do nothing. */
   if (1)
     return;
 
@@ -638,7 +660,7 @@ dead_thread_notify (int id)
 {
   char own_buf[256];
 
-  /* The `x' response is not yet part of the remote protocol.  Do nothing.  */
+  /* The `x' response is not yet part of the remote protocol. Do nothing. */
   if (1)
     return;
 
@@ -694,24 +716,25 @@ prepare_resume_reply (char *buf, char status, unsigned char signo)
 	}
 
       /* Formerly, if the debugger had not used any thread features we would not
-	 burden it with a thread status response.  This was for the benefit of
-	 GDB 4.13 and older.  However, in recent GDB versions the check
-	 (``if (cont_thread != 0)'') does not have the desired effect because of
-	 sillyness in the way that the remote protocol handles specifying a thread.
-	 Since thread support relies on qSymbol support anyway, assume GDB can handle
-	 threads.  */
+       * burden it with a thread status response. This was for the benefit of
+       * GDB 4.13 and older. However, in recent GDB versions the check
+       * (``if (cont_thread != 0)'') does not have the desired effect because of
+       * silliness in the way that the remote protocol handles specifying a thread.
+       * Since thread support relies on qSymbol support anyway, assume GDB can
+       * handle threads. */
 
       if (using_threads)
 	{
+          unsigned int gdb_id_from_wait;
 	  /* FIXME right place to set this? */
 	  thread_from_wait = ((struct inferior_list_entry *)current_inferior)->id;
-	  unsigned int gdb_id_from_wait = thread_to_gdb_id (current_inferior);
+	  gdb_id_from_wait = thread_to_gdb_id (current_inferior);
 
 	  if (debug_threads)
 	    fprintf (stderr, "Writing resume reply for %ld\n\n", thread_from_wait);
-	  /* This if (1) ought to be unnecessary.  But remote_wait in GDB
+	  /* This if (1) ought to be unnecessary. But remote_wait in GDB
 	     will claim this event belongs to inferior_ptid if we do not
-	     specify a thread, and there's no way for gdbserver to know
+	     specify a thread, and there is no way for gdbserver to know
 	     what inferior_ptid is.  */
 	  if (1 || old_thread_from_wait != thread_from_wait)
 	    {
@@ -722,7 +745,7 @@ prepare_resume_reply (char *buf, char status, unsigned char signo)
 	    }
 	}
     }
-  /* For W and X, we're done.  */
+  /* For W and X, we are done.  */
   *buf++ = 0;
 }
 
@@ -771,6 +794,27 @@ decode_M_packet (char *from, CORE_ADDR *mem_addr_ptr, unsigned int *len_ptr,
   convert_ascii_to_int (&from[i++], to, *len_ptr);
 }
 
+static void free_sym_cache(struct sym_cache *sym)
+{
+  if (sym != NULL) {
+      free((void *)sym->name);
+      free((void *)sym);
+  }
+}
+
+void clear_symbol_cache(struct sym_cache **symcache_p)
+{
+  struct sym_cache *sym, *next;
+
+  /* Check the cache first.  */
+  for ((sym = *symcache_p); sym; (sym = next)) {
+      next = sym->next;
+      free_sym_cache(sym);
+  }
+
+  *symcache_p = NULL;
+}
+
 /* Ask GDB for the address of NAME, and return it in ADDRP if found.
    Returns 1 if the symbol is found, 0 if it is not, -1 on error.  */
 
@@ -812,23 +856,27 @@ look_up_one_symbol (const char *name, CORE_ADDR *addrp)
       return -1;
     }
 
-  p = own_buf + strlen ("qSymbol:");
+  p = (own_buf + strlen("qSymbol:"));
   q = p;
-  while (*q && *q != ':')
-    q++;
+  while (*q && (*q != ':')) {
+      q++;
+  }
 
-  /* Make sure we found a value for the symbol.  */
-  if (p == q || *q == '\0')
-    return 0;
+  /* Make sure we found a value for the symbol: */
+  if ((p == q) || (*q == '\0')) {
+      return 0;
+  }
 
-  decode_address (addrp, p, q - p);
+  decode_address(addrp, p, (q - p));
 
-  /* Save the symbol in our cache.  */
-  sym = malloc (sizeof (*sym));
-  sym->name = strdup (name);
+  /* Save the symbol in our cache: */
+  sym = malloc(sizeof(*sym));
+  sym->name = strdup(name);
   sym->addr = *addrp;
   sym->next = symbol_cache;
   symbol_cache = sym;
 
   return 1;
 }
+
+/* EOF */

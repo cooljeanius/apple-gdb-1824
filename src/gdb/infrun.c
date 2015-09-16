@@ -59,18 +59,18 @@
 /* APPLE LOCAL: need objfile.h for pc_set_load_state.  */
 #include "objfiles.h"
 
-/* APPLE LOCAL: for the $lr == $pc check in handle_inferior_event () */
-#if TM_NEXTSTEP && TARGET_POWERPC
-#include "ppc-macosx-regnums.h"
-#endif
+/* APPLE LOCAL: for the $lr == $pc check in handle_inferior_event() */
+#if (defined(TM_NEXTSTEP) && TM_NEXTSTEP) && (defined(TARGET_POWERPC) && TARGET_POWERPC)
+# include "ppc-macosx-regnums.h"
+#endif /* TM_NEXTSTEP && TARGET_POWERPC */
 
 /* APPLE LOCAL begin old watchpoint hackery */
 #if !defined(TARGET_DISABLE_HW_WATCHPOINTS)
-#define TARGET_DISABLE_HW_WATCHPOINTS(pid)
-#endif
+# define TARGET_DISABLE_HW_WATCHPOINTS(pid)
+#endif /* !TARGET_DISABLE_HW_WATCHPOINTS */
 #if !defined(TARGET_ENABLE_HW_WATCHPOINTS)
-#define TARGET_ENABLE_HW_WATCHPOINTS(pid)
-#endif
+# define TARGET_ENABLE_HW_WATCHPOINTS(pid)
+#endif /* !TARGET_ENABLE_HW_WATCHPOINTS */
 /* APPLE LOCAL end old watchpoint hackery */
 
 /* APPLE LOCAL checkpoints */
@@ -78,36 +78,38 @@
 
 /* Prototypes for local functions */
 
-static void signals_info (char *, int);
+static void signals_info(char *, int);
 
-static void handle_command (char *, int);
+static void handle_command(char *, int);
 
-static void sig_print_info (enum target_signal);
+static void sig_print_info(enum target_signal);
 
-static void sig_print_header (void);
+static void sig_print_header(void);
 
-static void resume_cleanups (void *);
+static void resume_cleanups(void *);
 
-static int hook_stop_stub (void *);
+static int hook_stop_stub(void *);
 
-static int restore_selected_frame (void *);
+static int restore_selected_frame(void *);
 
-static void build_infrun (void);
+static void build_infrun(void);
 
-static int follow_fork (void);
+static int follow_fork(void);
 
-static void set_schedlock_func (char *args, int from_tty,
-				struct cmd_list_element *c);
+static void set_schedlock_func(char *args, int from_tty,
+                               struct cmd_list_element *c);
 
 struct execution_control_state;
 
-static int currently_stepping (struct execution_control_state *ecs);
+static int currently_stepping(struct execution_control_state *ecs);
 
-static void xdb_handle_command (char *args, int from_tty);
+static void xdb_handle_command(char *args, int from_tty);
 
-static int prepare_to_proceed (void);
+static int prepare_to_proceed(void);
 
-void _initialize_infrun (void);
+extern void rollback_stop(void);
+
+void _initialize_infrun(void);
 
 int inferior_ignoring_startup_exec_events = 0;
 int inferior_ignoring_leading_exec_events = 0;
@@ -121,10 +123,10 @@ int currently_inside_optimized_code = 0;
    over such function.  */
 int step_stop_if_no_debug = 0;
 static void
-show_step_stop_if_no_debug (struct ui_file *file, int from_tty,
-			    struct cmd_list_element *c, const char *value)
+show_step_stop_if_no_debug(struct ui_file *file, int from_tty,
+			   struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("Mode of the step operation is %s.\n"), value);
+  fprintf_filtered(file, _("Mode of the step operation is %s.\n"), value);
 }
 
 /* In asynchronous mode, but simulating synchronous execution. */
@@ -142,8 +144,8 @@ static ptid_t previous_inferior_ptid;
    similar functions.  At present this is only true for HP-UX native.  */
 
 #ifndef MAY_FOLLOW_EXEC
-#define MAY_FOLLOW_EXEC (0)
-#endif
+# define MAY_FOLLOW_EXEC (0)
+#endif /* !MAY_FOLLOW_EXEC */
 
 static int may_follow_exec = MAY_FOLLOW_EXEC;
 
@@ -152,10 +154,10 @@ int debug_handcall_setup = 0;
 
 static int debug_infrun = 0;
 static void
-show_debug_infrun (struct ui_file *file, int from_tty,
-		   struct cmd_list_element *c, const char *value)
+show_debug_infrun(struct ui_file *file, int from_tty,
+		  struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("Inferior debugging is %s.\n"), value);
+  fprintf_filtered(file, _("Inferior debugging is %s.\n"), value);
 }
 
 /* If the program uses ELF-style shared libraries, then calls to
@@ -215,16 +217,16 @@ show_debug_infrun (struct ui_file *file, int from_tty,
    does that, or zero if we have no such function.  If we don't have a
    definition for it, we have to report an error.  */
 #ifndef SKIP_PERMANENT_BREAKPOINT
-#define SKIP_PERMANENT_BREAKPOINT (default_skip_permanent_breakpoint)
-static void
-default_skip_permanent_breakpoint (void)
+# define SKIP_PERMANENT_BREAKPOINT (default_skip_permanent_breakpoint)
+static void ATTR_NORETURN
+default_skip_permanent_breakpoint(void)
 {
-  error (_("\
+  error(_("\
 The program is stopped at a permanent breakpoint, but GDB does not know\n\
 how to step past a permanent breakpoint on this architecture.  Try using\n\
 a command like `return' or `jump' to continue execution."));
 }
-#endif
+#endif /* !SKIP_PERMANENT_BREAKPOINT */
 
 
 /* Convert the #defines into values.  This is temporary until wfi control
@@ -563,7 +565,7 @@ static const char *scheduler_mode = schedlock_off;
 
 static struct ptid scheduler_lock_ptid;
 
-struct ptid get_scheduler_lock_ptid ()
+struct ptid get_scheduler_lock_ptid(void)
 {
   return scheduler_lock_ptid;
 }
@@ -571,7 +573,7 @@ struct ptid get_scheduler_lock_ptid ()
 /* APPLE LOCAL: Record the current thread as the one you are trying
    to run.  */
 
-void 
+void
 scheduler_run_this_ptid (struct ptid this_ptid)
 {
   scheduler_lock_ptid = this_ptid;
@@ -581,7 +583,7 @@ scheduler_run_this_ptid (struct ptid this_ptid)
    step.  */
 
 int
-scheduler_lock_on_p ()
+scheduler_lock_on_p(void)
 {
   return ((scheduler_mode == schedlock_on)
 	  || (scheduler_mode == schedlock_step));
@@ -606,7 +608,7 @@ set_schedlock_helper (void)
    just translates between the enum and the strings used for the
    command. */
 
-enum scheduler_locking_mode 
+enum scheduler_locking_mode
 set_scheduler_locking_mode (enum scheduler_locking_mode new_mode)
 {
   enum scheduler_locking_mode old_mode;
@@ -634,7 +636,7 @@ set_scheduler_locking_mode (enum scheduler_locking_mode new_mode)
     default:
       error ("Invalid new scheduler mode: %d", new_mode);
     }
-     
+
   if (debug_handcall_setup)
     {
       char *old_str = "UNKNOWN", *new_str = "UNKNOWN";
@@ -699,8 +701,7 @@ set_schedlock_func (char *args, int from_tty, struct cmd_list_element *c)
 
    STEP nonzero if we should step (zero to continue instead).
    SIG is the signal to give the inferior (zero for none).  */
-void
-resume (int step, enum target_signal sig)
+void resume(int step, enum target_signal sig)
 {
   int should_resume = 1;
   struct cleanup *old_cleanups = make_cleanup (resume_cleanups, 0);
@@ -787,7 +788,7 @@ resume (int step, enum target_signal sig)
 
       /* APPLE LOCAL begin Handle the first part of this condition
          differently (the scheduler_mode == schedlock_on).  */
-      if (scheduler_mode == schedlock_on) 
+      if (scheduler_mode == schedlock_on)
 	{
 	  /* Store this ptid away in scheduler_lock_ptid, in
 	     case another thread wakes up when we contine.  This
@@ -795,7 +796,7 @@ resume (int step, enum target_signal sig)
 	  if (ptid_equal (scheduler_lock_ptid, minus_one_ptid)
 	      || !in_thread_list (scheduler_lock_ptid))
 	    scheduler_run_this_ptid (inferior_ptid);
-	  
+
 	  resume_ptid = scheduler_lock_ptid;
 	}
       /* APPLE LOCAL end */
@@ -872,7 +873,7 @@ prepare_to_proceed (void)
      cause a problem, but if the scheduler is locked, we won't
      be able to get back to the thread that we really meant to
      lock the scheduler to.  It's alright in this context not to
-     handle the breakpoint hit right away, since we are only 
+     handle the breakpoint hit right away, since we are only
      calling functions below the current point in the stack which
      triggered the breakpoint.  */
   if (proceed_from_hand_call)
@@ -1020,7 +1021,7 @@ proceed (CORE_ADDR addr, enum target_signal siggnal, int step)
   else
     {
       insert_breakpoints ();
-      /* If we get here there was no call to error() in 
+      /* If we get here there was no call to error() in
          insert breakpoints -- so they were inserted.  */
       breakpoints_inserted = 1;
     }
@@ -1042,15 +1043,15 @@ proceed (CORE_ADDR addr, enum target_signal siggnal, int step)
      done in stop_stepping, however, setting prev_pc there did not handle
      scenarios such as inferior function calls or returning from
      a function via the return command.  In those cases, the prev_pc
-     value was not set properly for subsequent commands.  The prev_pc value 
-     is used to initialize the starting line number in the ecs.  With an 
+     value was not set properly for subsequent commands.  The prev_pc value
+     is used to initialize the starting line number in the ecs.  With an
      invalid value, the gdb next command ends up stopping at the position
      represented by the next line table entry past our start position.
      On platforms that generate one line table entry per line, this
      is not a problem.  However, on the ia64, the compiler generates
      extraneous line table entries that do not increase the line number.
      When we issue the gdb next command on the ia64 after an inferior call
-     or a return command, we often end up a few instructions forward, still 
+     or a return command, we often end up a few instructions forward, still
      within the original line we started.
 
      An attempt was made to have init_execution_control_state () refresh
@@ -1058,7 +1059,7 @@ proceed (CORE_ADDR addr, enum target_signal siggnal, int step)
      did not work because on platforms that use ptrace, the pc register
      cannot be read unless the inferior is stopped.  At that point, we
      are not guaranteed the inferior is stopped and so the read_pc ()
-     call can fail.  Setting the prev_pc value here ensures the value is 
+     call can fail.  Setting the prev_pc value here ensures the value is
      updated correctly when the inferior is stopped.  */
   prev_pc = read_pc ();
 
@@ -1493,6 +1494,11 @@ adjust_pc_after_break (struct execution_control_state *ecs)
     }
 }
 
+/* same condition as where it is used: */
+#ifdef TM_NEXTSTEP
+extern void macosx_print_extra_stop_info(int, CORE_ADDR);
+#endif /* TM_NEXTSTEP */
+
 /* Given an execution control state that has been freshly filled in
    by an event from the inferior, figure out what it means and take
    appropriate action.  */
@@ -1500,7 +1506,7 @@ adjust_pc_after_break (struct execution_control_state *ecs)
 int stepped_after_stopped_by_watchpoint;
 
 void
-handle_inferior_event (struct execution_control_state *ecs)
+handle_inferior_event(struct execution_control_state *ecs)
 {
   /* NOTE: bje/2005-05-02: If you're looking at this code and thinking
      that the variable stepped_after_stopped_by_watchpoint isn't used,
@@ -1520,19 +1526,19 @@ handle_inferior_event (struct execution_control_state *ecs)
   target_last_wait_ptid = ecs->ptid;
   target_last_waitstatus = *ecs->wp;
 
-  adjust_pc_after_break (ecs);
+  adjust_pc_after_break(ecs);
 
   switch (ecs->infwait_state)
     {
     case infwait_thread_hop_state:
       if (debug_infrun)
-        fprintf_unfiltered (gdb_stdlog, "infrun: infwait_thread_hop_state\n");
+        fprintf_unfiltered(gdb_stdlog, "infrun: infwait_thread_hop_state\n");
       /* Cancel the waiton_ptid. */
-      ecs->waiton_ptid = pid_to_ptid (-1);
+      ecs->waiton_ptid = pid_to_ptid(-1);
       /* APPLE LOCAL begin old watchpoint hackery */
       if (ecs->enable_hw_watchpoints_after_wait)
 	{
-	  TARGET_ENABLE_HW_WATCHPOINTS (PIDGET (inferior_ptid));
+	  TARGET_ENABLE_HW_WATCHPOINTS(PIDGET(inferior_ptid));
 	  ecs->enable_hw_watchpoints_after_wait = 0;
 	}
       stepped_after_stopped_by_watchpoint = 0;
@@ -1541,11 +1547,11 @@ handle_inferior_event (struct execution_control_state *ecs)
 
     case infwait_normal_state:
       if (debug_infrun)
-        fprintf_unfiltered (gdb_stdlog, "infrun: infwait_normal_state\n");
+        fprintf_unfiltered(gdb_stdlog, "infrun: infwait_normal_state\n");
       /* APPLE LOCAL begin old watchpoint hackery */
       if (ecs->enable_hw_watchpoints_after_wait)
 	{
-	  TARGET_ENABLE_HW_WATCHPOINTS (PIDGET (inferior_ptid));
+	  TARGET_ENABLE_HW_WATCHPOINTS(PIDGET(inferior_ptid));
 	  ecs->enable_hw_watchpoints_after_wait = 0;
 	}
       /* APPLE LOCAL end old watchpoint hackery */
@@ -1554,9 +1560,9 @@ handle_inferior_event (struct execution_control_state *ecs)
 
     case infwait_nonstep_watch_state:
       if (debug_infrun)
-        fprintf_unfiltered (gdb_stdlog,
-			    "infrun: infwait_nonstep_watch_state\n");
-      insert_breakpoints ();
+        fprintf_unfiltered(gdb_stdlog,
+			   "infrun: infwait_nonstep_watch_state\n");
+      insert_breakpoints();
 
       /* FIXME-maybe: is this cleaner than setting a flag?  Does it
          handle things like signals arriving and other things happening
@@ -1565,26 +1571,25 @@ handle_inferior_event (struct execution_control_state *ecs)
       break;
 
     default:
-      internal_error (__FILE__, __LINE__, _("bad switch"));
+      internal_error(__FILE__, __LINE__, _("bad switch"));
     }
   ecs->infwait_state = infwait_normal_state;
 
-  flush_cached_frames ();
+  flush_cached_frames();
 
-  /* If it's a new process, add it to the thread database */
-
-  ecs->new_thread_event = (!ptid_equal (ecs->ptid, inferior_ptid)
-			   && !ptid_equal (ecs->ptid, minus_one_ptid)
-			   && !in_thread_list (ecs->ptid));
+  /* If it is a new process, then add it to the thread database: */
+  ecs->new_thread_event = (!ptid_equal(ecs->ptid, inferior_ptid)
+			   && !ptid_equal(ecs->ptid, minus_one_ptid)
+			   && !in_thread_list(ecs->ptid));
 
   if (ecs->ws.kind != TARGET_WAITKIND_EXITED
       && ecs->ws.kind != TARGET_WAITKIND_SIGNALLED && ecs->new_thread_event)
     {
-      add_thread (ecs->ptid);
+      add_thread(ecs->ptid);
 
-      ui_out_text (uiout, "[New ");
-      ui_out_text (uiout, target_pid_or_tid_to_str (ecs->ptid));
-      ui_out_text (uiout, "]\n");
+      ui_out_text(uiout, "[New ");
+      ui_out_text(uiout, target_pid_or_tid_to_str(ecs->ptid));
+      ui_out_text(uiout, "]\n");
     }
 
   switch (ecs->ws.kind)
@@ -1601,13 +1606,13 @@ handle_inferior_event (struct execution_control_state *ecs)
 	  /* Remove breakpoints, SOLIB_ADD might adjust
 	     breakpoint addresses via breakpoint_re_set.  */
 	  if (breakpoints_inserted)
-	    remove_breakpoints ();
+	    remove_breakpoints();
 
 	  /* Check for any newly added shared libraries if we're
 	     supposed to be adding them automatically.  Switch
 	     terminal for any messages produced by
 	     breakpoint_re_set.  */
-	  target_terminal_ours_for_output ();
+	  target_terminal_ours_for_output();
 	  /* NOTE: cagney/2003-11-25: Make certain that the target
 	     stack's section table is kept up-to-date.  Architectures,
 	     (e.g., PPC64), use the section table to perform
@@ -1623,66 +1628,70 @@ handle_inferior_event (struct execution_control_state *ecs)
 	     exec/process stratum, instead relying on the target stack
 	     to propagate relevant changes (stop, section table
 	     changed, ...) up to other layers.  */
-	  SOLIB_ADD (NULL, 0, &current_target, auto_solib_add);
-	  target_terminal_inferior ();
+	  SOLIB_ADD(NULL, 0, &current_target, auto_solib_add);
+	  target_terminal_inferior();
 
-	  /* Reinsert breakpoints and continue.  */
+	  /* Reinsert breakpoints and continue: */
 	  if (breakpoints_inserted)
-	    insert_breakpoints ();
+	    insert_breakpoints();
 	}
-#endif
-      resume (0, TARGET_SIGNAL_0);
-      prepare_to_wait (ecs);
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "gdb will be unable to handle adding solib events on the inferior."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* SOLIB_ADD */
+      resume(0, TARGET_SIGNAL_0);
+      prepare_to_wait(ecs);
       return;
 
     case TARGET_WAITKIND_SPURIOUS:
       if (debug_infrun)
-        fprintf_unfiltered (gdb_stdlog, "infrun: TARGET_WAITKIND_SPURIOUS\n");
-      resume (0, TARGET_SIGNAL_0);
-      prepare_to_wait (ecs);
+        fprintf_unfiltered(gdb_stdlog, "infrun: TARGET_WAITKIND_SPURIOUS\n");
+      resume(0, TARGET_SIGNAL_0);
+      prepare_to_wait(ecs);
       return;
 
     case TARGET_WAITKIND_EXITED:
       if (debug_infrun)
-        fprintf_unfiltered (gdb_stdlog, "infrun: TARGET_WAITKIND_EXITED\n");
-      target_terminal_ours ();	/* Must do this before mourn anyway */
-      print_stop_reason (EXITED, ecs->ws.value.integer);
+        fprintf_unfiltered(gdb_stdlog, "infrun: TARGET_WAITKIND_EXITED\n");
+      target_terminal_ours();	/* Must do this before mourn anyway */
+      print_stop_reason(EXITED, ecs->ws.value.integer);
 
       /* Record the exit code in the convenience variable $_exitcode, so
          that the user can inspect this again later.  */
-      set_internalvar (lookup_internalvar ("_exitcode"),
-		       value_from_longest (builtin_type_int,
-					   (LONGEST) ecs->ws.value.integer));
-      gdb_flush (gdb_stdout);
-      target_mourn_inferior ();
-      singlestep_breakpoints_inserted_p = 0;	/*SOFTWARE_SINGLE_STEP_P() */
+      set_internalvar(lookup_internalvar("_exitcode"),
+		      value_from_longest(builtin_type_int,
+                                         (LONGEST)ecs->ws.value.integer));
+      gdb_flush(gdb_stdout);
+      target_mourn_inferior();
+      singlestep_breakpoints_inserted_p = 0; /*SOFTWARE_SINGLE_STEP_P() */
       stop_print_frame = 0;
       /* APPLE LOCAL */
       if (state_change_hook)
-        state_change_hook (STATE_INFERIOR_EXITED);
-      stop_stepping (ecs);
+        state_change_hook(STATE_INFERIOR_EXITED);
+      stop_stepping(ecs);
       return;
 
     case TARGET_WAITKIND_SIGNALLED:
       if (debug_infrun)
-        fprintf_unfiltered (gdb_stdlog, "infrun: TARGET_WAITKIND_SIGNALLED\n");
+        fprintf_unfiltered(gdb_stdlog, "infrun: TARGET_WAITKIND_SIGNALLED\n");
       stop_print_frame = 0;
       stop_signal = ecs->ws.value.sig;
-      target_terminal_ours ();	/* Must do this before mourn anyway */
+      target_terminal_ours();	/* Must do this before mourn anyway */
 
       /* Note: By definition of TARGET_WAITKIND_SIGNALLED, we shouldn't
          reach here unless the inferior is dead.  However, for years
          target_kill() was called here, which hints that fatal signals aren't
          really fatal on some systems.  If that's true, then some changes
          may be needed. */
-      target_mourn_inferior ();
+      target_mourn_inferior();
 
-      print_stop_reason (SIGNAL_EXITED, stop_signal);
-      singlestep_breakpoints_inserted_p = 0;	/*SOFTWARE_SINGLE_STEP_P() */
+      print_stop_reason(SIGNAL_EXITED, stop_signal);
+      singlestep_breakpoints_inserted_p = 0; /*SOFTWARE_SINGLE_STEP_P() */
       /* APPLE LOCAL */
       if (state_change_hook)
-        state_change_hook (STATE_INFERIOR_EXITED);
-      stop_stepping (ecs);
+        state_change_hook(STATE_INFERIOR_EXITED);
+      stop_stepping(ecs);
       return;
 
       /* The following are the only cases in which we keep going;
@@ -1690,38 +1699,38 @@ handle_inferior_event (struct execution_control_state *ecs)
     case TARGET_WAITKIND_FORKED:
     case TARGET_WAITKIND_VFORKED:
       if (debug_infrun)
-        fprintf_unfiltered (gdb_stdlog, "infrun: TARGET_WAITKIND_FORKED\n");
+        fprintf_unfiltered(gdb_stdlog, "infrun: TARGET_WAITKIND_FORKED\n");
       stop_signal = TARGET_SIGNAL_TRAP;
       pending_follow.kind = ecs->ws.kind;
 
-      pending_follow.fork_event.parent_pid = PIDGET (ecs->ptid);
+      pending_follow.fork_event.parent_pid = PIDGET(ecs->ptid);
       pending_follow.fork_event.child_pid = ecs->ws.value.related_pid;
 
-      stop_pc = read_pc ();
+      stop_pc = read_pc();
       /* APPLE LOCAL begin subroutine inlining  */
       /* If the PC has changed since the last time we updated the
 	 global_inlined_call_stack data, we need to verify the current
 	 data and possibly update it.  */
-      if (stop_pc != inlined_function_call_stack_pc ())
-	inlined_function_update_call_stack (stop_pc);
+      if (stop_pc != inlined_function_call_stack_pc())
+	inlined_function_update_call_stack(stop_pc);
       /* APPLE LOCAL end subroutine inlining  */
 
-      stop_bpstat = bpstat_stop_status (stop_pc, ecs->ptid, 0);
+      stop_bpstat = bpstat_stop_status(stop_pc, ecs->ptid, 0);
 
-      ecs->random_signal = !bpstat_explains_signal (stop_bpstat);
+      ecs->random_signal = !bpstat_explains_signal(stop_bpstat);
 
       /* If no catchpoint triggered for this, then keep going.  */
       if (ecs->random_signal)
 	{
 	  stop_signal = TARGET_SIGNAL_0;
-	  keep_going (ecs);
+	  keep_going(ecs);
 	  return;
 	}
       goto process_event_stop_test;
 
     case TARGET_WAITKIND_EXECD:
       if (debug_infrun)
-        fprintf_unfiltered (gdb_stdlog, "infrun: TARGET_WAITKIND_EXECED\n");
+        fprintf_unfiltered(gdb_stdlog, "infrun: TARGET_WAITKIND_EXECED\n");
       stop_signal = TARGET_SIGNAL_TRAP;
 
       /* NOTE drow/2002-12-05: This code should be pushed down into the
@@ -1735,45 +1744,44 @@ handle_inferior_event (struct execution_control_state *ecs)
 	{
 	  inferior_ignoring_leading_exec_events--;
 	  if (pending_follow.kind == TARGET_WAITKIND_VFORKED)
-	    ENSURE_VFORKING_PARENT_REMAINS_STOPPED (pending_follow.fork_event.
-						    parent_pid);
-	  target_resume (ecs->ptid, 0, TARGET_SIGNAL_0);
-	  prepare_to_wait (ecs);
+	    ENSURE_VFORKING_PARENT_REMAINS_STOPPED(pending_follow.fork_event.parent_pid);
+	  target_resume(ecs->ptid, 0, TARGET_SIGNAL_0);
+	  prepare_to_wait(ecs);
 	  return;
 	}
       inferior_ignoring_leading_exec_events =
-	target_reported_exec_events_per_exec_call () - 1;
+	(target_reported_exec_events_per_exec_call() - 1);
 
       pending_follow.execd_pathname =
-	savestring (ecs->ws.value.execd_pathname,
-		    strlen (ecs->ws.value.execd_pathname));
+	savestring(ecs->ws.value.execd_pathname,
+		   strlen(ecs->ws.value.execd_pathname));
 
       /* This causes the eventpoints and symbol table to be reset.  Must
          do this now, before trying to determine whether to stop. */
-      follow_exec (PIDGET (inferior_ptid), pending_follow.execd_pathname);
-      xfree (pending_follow.execd_pathname);
+      follow_exec(PIDGET(inferior_ptid), pending_follow.execd_pathname);
+      xfree(pending_follow.execd_pathname);
 
-      stop_pc = read_pc_pid (ecs->ptid);
+      stop_pc = read_pc_pid(ecs->ptid);
       /* APPLE LOCAL begin subroutine inlining  */
       /* If the PC has changed since the last time we updated the
 	 global_inlined_call_stack data, we need to verify the current
 	 data and possibly update it.  */
-      if (stop_pc != inlined_function_call_stack_pc ())
-	inlined_function_update_call_stack (stop_pc);
+      if (stop_pc != inlined_function_call_stack_pc())
+	inlined_function_update_call_stack(stop_pc);
       /* APPLE LOCAL end subroutine inlining  */
       ecs->saved_inferior_ptid = inferior_ptid;
       inferior_ptid = ecs->ptid;
 
-      stop_bpstat = bpstat_stop_status (stop_pc, ecs->ptid, 0);
+      stop_bpstat = bpstat_stop_status(stop_pc, ecs->ptid, 0);
 
-      ecs->random_signal = !bpstat_explains_signal (stop_bpstat);
+      ecs->random_signal = !bpstat_explains_signal(stop_bpstat);
       inferior_ptid = ecs->saved_inferior_ptid;
 
       /* If no catchpoint triggered for this, then keep going.  */
       if (ecs->random_signal)
 	{
 	  stop_signal = TARGET_SIGNAL_0;
-	  keep_going (ecs);
+	  keep_going(ecs);
 	  return;
 	}
       goto process_event_stop_test;
@@ -1782,9 +1790,9 @@ handle_inferior_event (struct execution_control_state *ecs)
          that's in a syscall.  It's frequently a losing proposition.  */
     case TARGET_WAITKIND_SYSCALL_ENTRY:
       if (debug_infrun)
-        fprintf_unfiltered (gdb_stdlog, "infrun: TARGET_WAITKIND_SYSCALL_ENTRY\n");
-      resume (0, TARGET_SIGNAL_0);
-      prepare_to_wait (ecs);
+        fprintf_unfiltered(gdb_stdlog, "infrun: TARGET_WAITKIND_SYSCALL_ENTRY\n");
+      resume(0, TARGET_SIGNAL_0);
+      prepare_to_wait(ecs);
       return;
 
       /* Before examining the threads further, step this thread to
@@ -1794,14 +1802,14 @@ handle_inferior_event (struct execution_control_state *ecs)
          into user code.)  */
     case TARGET_WAITKIND_SYSCALL_RETURN:
       if (debug_infrun)
-        fprintf_unfiltered (gdb_stdlog, "infrun: TARGET_WAITKIND_SYSCALL_RETURN\n");
-      target_resume (ecs->ptid, 1, TARGET_SIGNAL_0);
-      prepare_to_wait (ecs);
+        fprintf_unfiltered(gdb_stdlog, "infrun: TARGET_WAITKIND_SYSCALL_RETURN\n");
+      target_resume(ecs->ptid, 1, TARGET_SIGNAL_0);
+      prepare_to_wait(ecs);
       return;
 
     case TARGET_WAITKIND_STOPPED:
       if (debug_infrun)
-        fprintf_unfiltered (gdb_stdlog, "infrun: TARGET_WAITKIND_STOPPED\n");
+        fprintf_unfiltered(gdb_stdlog, "infrun: TARGET_WAITKIND_STOPPED\n");
       stop_signal = ecs->ws.value.sig;
       break;
 
@@ -1816,8 +1824,8 @@ handle_inferior_event (struct execution_control_state *ecs)
          reported multiple times without an intervening resume.  */
     case TARGET_WAITKIND_IGNORE:
       if (debug_infrun)
-        fprintf_unfiltered (gdb_stdlog, "infrun: TARGET_WAITKIND_IGNORE\n");
-      prepare_to_wait (ecs);
+        fprintf_unfiltered(gdb_stdlog, "infrun: TARGET_WAITKIND_IGNORE\n");
+      prepare_to_wait(ecs);
       return;
     }
 
@@ -1830,29 +1838,29 @@ handle_inferior_event (struct execution_control_state *ecs)
      all threads in order to make progress.  */
   if (ecs->new_thread_event)
     {
-      target_resume (RESUME_ALL, 0, TARGET_SIGNAL_0);
-      prepare_to_wait (ecs);
+      target_resume(RESUME_ALL, 0, TARGET_SIGNAL_0);
+      prepare_to_wait(ecs);
       return;
     }
 
-  stop_pc = read_pc_pid (ecs->ptid);
+  stop_pc = read_pc_pid(ecs->ptid);
   /* APPLE LOCAL begin subroutine inlining  */
   /* If the PC has changed since the last time we updated the
      global_inlined_call_stack data, we need to verify the current
      data and possibly update it.  */
-  if (stop_pc != inlined_function_call_stack_pc ())
-    inlined_function_update_call_stack (stop_pc);
+  if (stop_pc != inlined_function_call_stack_pc())
+    inlined_function_update_call_stack(stop_pc);
   /* APPLE LOCAL end subroutine inlining  */
 
   if (debug_infrun)
-    fprintf_unfiltered (gdb_stdlog, "infrun: stop_pc = 0x%s\n", paddr_nz (stop_pc));
+    fprintf_unfiltered(gdb_stdlog, "infrun: stop_pc = 0x%s\n", paddr_nz(stop_pc));
 
   if (stepping_past_singlestep_breakpoint)
     {
-      gdb_assert (SOFTWARE_SINGLE_STEP_P ()
-		  && singlestep_breakpoints_inserted_p);
-      gdb_assert (ptid_equal (singlestep_ptid, ecs->ptid));
-      gdb_assert (!ptid_equal (singlestep_ptid, saved_singlestep_ptid));
+      gdb_assert(SOFTWARE_SINGLE_STEP_P()
+		 && singlestep_breakpoints_inserted_p);
+      gdb_assert(ptid_equal(singlestep_ptid, ecs->ptid));
+      gdb_assert(!ptid_equal(singlestep_ptid, saved_singlestep_ptid));
 
       stepping_past_singlestep_breakpoint = 0;
 
@@ -1862,20 +1870,20 @@ handle_inferior_event (struct execution_control_state *ecs)
       if (stop_signal == TARGET_SIGNAL_TRAP)
 	{
 	  if (debug_infrun)
-	    fprintf_unfiltered (gdb_stdlog, "infrun: stepping_past_singlestep_breakpoint\n");
-	  /* Pull the single step breakpoints out of the target.  */
-	  SOFTWARE_SINGLE_STEP (0, 0);
+	    fprintf_unfiltered(gdb_stdlog, "infrun: stepping_past_singlestep_breakpoint\n");
+	  /* Pull the single step breakpoints out of the target: */
+	  SOFTWARE_SINGLE_STEP((enum target_signal)0, 0);
 	  singlestep_breakpoints_inserted_p = 0;
 
 	  ecs->random_signal = 0;
 
 	  ecs->ptid = saved_singlestep_ptid;
-	  context_switch (ecs);
+	  context_switch(ecs);
 	  if (deprecated_context_hook)
-	    deprecated_context_hook (pid_to_thread_id (ecs->ptid));
+	    deprecated_context_hook(pid_to_thread_id(ecs->ptid));
 
-	  resume (1, TARGET_SIGNAL_0);
-	  prepare_to_wait (ecs);
+	  resume(1, TARGET_SIGNAL_0);
+	  prepare_to_wait(ecs);
 	  return;
 	}
     }
@@ -1893,21 +1901,21 @@ handle_inferior_event (struct execution_control_state *ecs)
       /* Check if a regular breakpoint has been hit before checking
          for a potential single step breakpoint. Otherwise, GDB will
          not see this breakpoint hit when stepping onto breakpoints.  */
-      if (breakpoints_inserted && breakpoint_here_p (stop_pc))
+      if (breakpoints_inserted && breakpoint_here_p(stop_pc))
 	{
 	  ecs->random_signal = 0;
-	  if (!breakpoint_thread_match (stop_pc, ecs->ptid))
+	  if (!breakpoint_thread_match(stop_pc, ecs->ptid))
 	    thread_hop_needed = 1;
 	}
-      else if (SOFTWARE_SINGLE_STEP_P () && singlestep_breakpoints_inserted_p)
+      else if (SOFTWARE_SINGLE_STEP_P() && singlestep_breakpoints_inserted_p)
 	{
 	  ecs->random_signal = 0;
 	  /* The call to in_thread_list is necessary because PTIDs sometimes
 	     change when we go from single-threaded to multi-threaded.  If
 	     the singlestep_ptid is still in the list, assume that it is
 	     really different from ecs->ptid.  */
-	  if (!ptid_equal (singlestep_ptid, ecs->ptid)
-	      && in_thread_list (singlestep_ptid))
+	  if (!ptid_equal(singlestep_ptid, ecs->ptid)
+	      && in_thread_list(singlestep_ptid))
 	    {
 	      thread_hop_needed = 1;
 	      stepping_past_singlestep_breakpoint = 1;
@@ -1920,19 +1928,19 @@ handle_inferior_event (struct execution_control_state *ecs)
 	  int remove_status;
 
 	  if (debug_infrun)
-	    fprintf_unfiltered (gdb_stdlog, "infrun: thread_hop_needed\n");
+	    fprintf_unfiltered(gdb_stdlog, "infrun: thread_hop_needed\n");
 
 	  /* Saw a breakpoint, but it was hit by the wrong thread.
 	     Just continue. */
 
-	  if (SOFTWARE_SINGLE_STEP_P () && singlestep_breakpoints_inserted_p)
+	  if (SOFTWARE_SINGLE_STEP_P() && singlestep_breakpoints_inserted_p)
 	    {
-	      /* Pull the single step breakpoints out of the target. */
-	      SOFTWARE_SINGLE_STEP (0, 0);
+	      /* Pull the single step breakpoints out of the target: */
+	      SOFTWARE_SINGLE_STEP((enum target_signal)0, 0);
 	      singlestep_breakpoints_inserted_p = 0;
 	    }
 
-	  remove_status = remove_breakpoints ();
+	  remove_status = remove_breakpoints();
 	  /* Did we fail to remove breakpoints?  If so, try
 	     to set the PC past the bp.  (There's at least
 	     one situation in which we can fail to remove
@@ -1943,38 +1951,37 @@ handle_inferior_event (struct execution_control_state *ecs)
 	  if (remove_status != 0)
 	    {
 	      /* FIXME!  This is obviously non-portable! */
-	      write_pc_pid (stop_pc + 4, ecs->ptid);
+	      write_pc_pid(stop_pc + 4, ecs->ptid);
 	      /* We need to restart all the threads now,
-	       * unles we're running in scheduler-locked mode. 
-	       * Use currently_stepping to determine whether to 
-	       * step or continue.
-	       */
+	       * unles we are/were running in scheduler-locked mode.
+	       * Use currently_stepping to determine whether to
+	       * step or continue.  */
 	      /* FIXME MVS: is there any reason not to call resume()? */
 	      if (scheduler_mode == schedlock_on)
-		target_resume (ecs->ptid,
-			       currently_stepping (ecs), TARGET_SIGNAL_0);
+		target_resume(ecs->ptid,
+			      currently_stepping(ecs), TARGET_SIGNAL_0);
 	      else
-		target_resume (RESUME_ALL,
-			       currently_stepping (ecs), TARGET_SIGNAL_0);
-	      prepare_to_wait (ecs);
+		target_resume(RESUME_ALL,
+			      currently_stepping(ecs), TARGET_SIGNAL_0);
+	      prepare_to_wait(ecs);
 	      return;
 	    }
 	  else
 	    {			/* Single step */
 	      breakpoints_inserted = 0;
-	      if (!ptid_equal (inferior_ptid, ecs->ptid))
-		context_switch (ecs);
+	      if (!ptid_equal(inferior_ptid, ecs->ptid))
+		context_switch(ecs);
 	      ecs->waiton_ptid = ecs->ptid;
 	      ecs->wp = &(ecs->ws);
 	      ecs->another_trap = 1;
 
 	      ecs->infwait_state = infwait_thread_hop_state;
-	      keep_going (ecs);
-	      registers_changed ();
+	      keep_going(ecs);
+	      registers_changed();
 	      return;
 	    }
 	}
-      else if (SOFTWARE_SINGLE_STEP_P () && singlestep_breakpoints_inserted_p)
+      else if (SOFTWARE_SINGLE_STEP_P() && singlestep_breakpoints_inserted_p)
 	{
 	  sw_single_step_trap_p = 1;
 	  ecs->random_signal = 0;
@@ -1985,51 +1992,51 @@ handle_inferior_event (struct execution_control_state *ecs)
 
   /* See if something interesting happened to the non-current thread.  If
      so, then switch to that thread.  */
-  if (!ptid_equal (ecs->ptid, inferior_ptid))
+  if (!ptid_equal(ecs->ptid, inferior_ptid))
     {
       if (debug_infrun)
-	fprintf_unfiltered (gdb_stdlog, "infrun: context switch\n");
+	fprintf_unfiltered(gdb_stdlog, "infrun: context switch\n");
 
-      context_switch (ecs);
+      context_switch(ecs);
 
       if (deprecated_context_hook)
-	deprecated_context_hook (pid_to_thread_id (ecs->ptid));
+	deprecated_context_hook(pid_to_thread_id(ecs->ptid));
 
       /* APPLE LOCAL begin mi */
-      if (ui_out_is_mi_like_p (uiout))
+      if (ui_out_is_mi_like_p(uiout))
 	{
-	  target_terminal_ours_for_output ();
-	  printf_filtered ("[Switching to %s]\n",
-			   target_pid_or_tid_to_str (inferior_ptid));
+	  target_terminal_ours_for_output();
+	  printf_filtered("[Switching to %s]\n",
+			  target_pid_or_tid_to_str(inferior_ptid));
 	}
       /* APPLE LOCAL end mi */
 
-      flush_cached_frames ();      
+      flush_cached_frames();
     }
 
-  if (SOFTWARE_SINGLE_STEP_P () && singlestep_breakpoints_inserted_p)
+  if (SOFTWARE_SINGLE_STEP_P() && singlestep_breakpoints_inserted_p)
     {
-      /* Pull the single step breakpoints out of the target. */
-      SOFTWARE_SINGLE_STEP (0, 0);
+      /* Pull the single step breakpoints out of the target: */
+      SOFTWARE_SINGLE_STEP((enum target_signal)0, 0);
       singlestep_breakpoints_inserted_p = 0;
     }
 
   /* It may not be necessary to disable the watchpoint to stop over
      it.  For example, the PA can (with some kernel cooperation)
      single step over a watchpoint without disabling the watchpoint.  */
-  if (HAVE_STEPPABLE_WATCHPOINT && STOPPED_BY_WATCHPOINT (ecs->ws))
+  if (HAVE_STEPPABLE_WATCHPOINT && STOPPED_BY_WATCHPOINT(ecs->ws))
     {
       if (debug_infrun)
-	fprintf_unfiltered (gdb_stdlog, "infrun: STOPPED_BY_WATCHPOINT\n");
-      resume (1, 0);
-      prepare_to_wait (ecs);
+	fprintf_unfiltered(gdb_stdlog, "infrun: STOPPED_BY_WATCHPOINT\n");
+      resume(1, (enum target_signal)0);
+      prepare_to_wait(ecs);
       return;
     }
 
   /* It is far more common to need to disable a watchpoint to step
      the inferior over it.  FIXME.  What else might a debug
      register or page protection watchpoint scheme need here?  */
-  if (HAVE_NONSTEPPABLE_WATCHPOINT && STOPPED_BY_WATCHPOINT (ecs->ws))
+  if (HAVE_NONSTEPPABLE_WATCHPOINT && STOPPED_BY_WATCHPOINT(ecs->ws))
     {
       /* At this point, we are stopped at an instruction which has
          attempted to write to a piece of memory under control of
@@ -2049,44 +2056,44 @@ handle_inferior_event (struct execution_control_state *ecs)
          stop in the correct manner.  */
 
       if (debug_infrun)
-	fprintf_unfiltered (gdb_stdlog, "infrun: STOPPED_BY_WATCHPOINT\n");
-      remove_breakpoints ();
-      registers_changed ();
-      if (SOFTWARE_SINGLE_STEP_P ())
+	fprintf_unfiltered(gdb_stdlog, "infrun: STOPPED_BY_WATCHPOINT\n");
+      remove_breakpoints();
+      registers_changed();
+      if (SOFTWARE_SINGLE_STEP_P())
        {
          /* Do it the hard way, w/temp breakpoints */
-         SOFTWARE_SINGLE_STEP (TARGET_SIGNAL_0, 1 /*insert-breakpoints */ );
+         SOFTWARE_SINGLE_STEP(TARGET_SIGNAL_0, 1 /*insert-breakpoints */ );
          /* and do not pull these breakpoints until after a `wait' in
             `wait_for_inferior' */
          singlestep_breakpoints_inserted_p = 1;
          singlestep_ptid = ecs->ptid;
          /* Run to our single step breakpoint */
-         target_resume (ecs->ptid, 0, TARGET_SIGNAL_0); 
+         target_resume(ecs->ptid, 0, TARGET_SIGNAL_0);
        }
       else
-       target_resume (ecs->ptid, 1, TARGET_SIGNAL_0);  /* Single step */
+       target_resume(ecs->ptid, 1, TARGET_SIGNAL_0);  /* Single step */
 
       ecs->waiton_ptid = ecs->ptid;
       ecs->wp = &(ecs->ws);
       ecs->infwait_state = infwait_nonstep_watch_state;
-      prepare_to_wait (ecs);
+      prepare_to_wait(ecs);
       return;
     }
 
   /* It may be possible to simply continue after a watchpoint.  */
   if (HAVE_CONTINUABLE_WATCHPOINT)
-    stopped_by_watchpoint = STOPPED_BY_WATCHPOINT (ecs->ws);
+    stopped_by_watchpoint = STOPPED_BY_WATCHPOINT(ecs->ws);
 
   ecs->stop_func_start = 0;
   ecs->stop_func_end = 0;
   ecs->stop_func_name = 0;
   /* Don't care about return value; stop_func_start and stop_func_name
      will both be 0 if it doesn't work.  */
-  find_pc_partial_function (stop_pc, &ecs->stop_func_name,
-			    &ecs->stop_func_start, &ecs->stop_func_end);
+  find_pc_partial_function(stop_pc, &ecs->stop_func_name,
+			   &ecs->stop_func_start, &ecs->stop_func_end);
   ecs->stop_func_start += DEPRECATED_FUNCTION_START_OFFSET;
   ecs->another_trap = 0;
-  bpstat_clear (&stop_bpstat);
+  bpstat_clear(&stop_bpstat);
   stop_step = 0;
   stop_stack_dummy = 0;
   stop_print_frame = 1;
@@ -2096,8 +2103,8 @@ handle_inferior_event (struct execution_control_state *ecs)
 
   if (stop_signal == TARGET_SIGNAL_TRAP
       && trap_expected
-      && gdbarch_single_step_through_delay_p (current_gdbarch)
-      && currently_stepping (ecs))
+      && gdbarch_single_step_through_delay_p(current_gdbarch)
+      && currently_stepping(ecs))
     {
       /* We're trying to step of a breakpoint.  Turns out that we're
 	 also on an instruction that needs to be stepped multiple
@@ -2105,16 +2112,16 @@ handle_inferior_event (struct execution_control_state *ecs)
 	 with a delay slot.  It needs to be stepped twice, once for
 	 the instruction and once for the delay slot.  */
       int step_through_delay
-	= gdbarch_single_step_through_delay (current_gdbarch,
-					     get_current_frame ());
+	= gdbarch_single_step_through_delay(current_gdbarch,
+					    get_current_frame());
       if (debug_infrun && step_through_delay)
-	fprintf_unfiltered (gdb_stdlog, "infrun: step through delay\n");
+	fprintf_unfiltered(gdb_stdlog, "infrun: step through delay\n");
       if (step_range_end == 0 && step_through_delay)
 	{
 	  /* The user issued a continue when stopped at a breakpoint.
 	     Set up for another trap and get out of here.  */
          ecs->another_trap = 1;
-         keep_going (ecs);
+         keep_going(ecs);
          return;
 	}
       else if (step_through_delay)
@@ -2158,9 +2165,9 @@ handle_inferior_event (struct execution_control_state *ecs)
       if (stop_signal == TARGET_SIGNAL_TRAP && stop_after_trap)
 	{
           if (debug_infrun)
-	    fprintf_unfiltered (gdb_stdlog, "infrun: stopped\n");
+	    fprintf_unfiltered(gdb_stdlog, "infrun: stopped\n");
 	  stop_print_frame = 0;
-	  stop_stepping (ecs);
+	  stop_stepping(ecs);
 	  return;
 	}
 
@@ -2169,8 +2176,8 @@ handle_inferior_event (struct execution_control_state *ecs)
       if (stop_soon == STOP_QUIETLY)
 	{
           if (debug_infrun)
-	    fprintf_unfiltered (gdb_stdlog, "infrun: quietly stopped\n");
-	  stop_stepping (ecs);
+	    fprintf_unfiltered(gdb_stdlog, "infrun: quietly stopped\n");
+	  stop_stepping(ecs);
 	  return;
 	}
 
@@ -2180,7 +2187,7 @@ handle_inferior_event (struct execution_control_state *ecs)
          See more comments in inferior.h.  */
       if (stop_soon == STOP_QUIETLY_NO_SIGSTOP)
 	{
-	  stop_stepping (ecs);
+	  stop_stepping(ecs);
 	  if (stop_signal == TARGET_SIGNAL_STOP)
 	    stop_signal = TARGET_SIGNAL_0;
 	  return;
@@ -2191,14 +2198,14 @@ handle_inferior_event (struct execution_control_state *ecs)
       if (stop_signal == TARGET_SIGNAL_TRAP && trap_expected)
 	{
           if (debug_infrun)
-	    fprintf_unfiltered (gdb_stdlog, "infrun: trap expected\n");
-	  bpstat_clear (&stop_bpstat);
+	    fprintf_unfiltered(gdb_stdlog, "infrun: trap expected\n");
+	  bpstat_clear(&stop_bpstat);
 	}
       else
 	{
 	  /* See if there is a breakpoint at the current PC.  */
-	  stop_bpstat = bpstat_stop_status (stop_pc, ecs->ptid,
-					    stopped_by_watchpoint);
+	  stop_bpstat = bpstat_stop_status(stop_pc, ecs->ptid,
+					   stopped_by_watchpoint);
 
 	  /* Following in case break condition called a
 	     function.  */
@@ -2227,21 +2234,19 @@ handle_inferior_event (struct execution_control_state *ecs)
 
       if (stop_signal == TARGET_SIGNAL_TRAP)
 	ecs->random_signal
-	  = !(bpstat_explains_signal (stop_bpstat)
+	  = !(bpstat_explains_signal(stop_bpstat)
 	      || trap_expected
 	      || (step_range_end && step_resume_breakpoint == NULL));
       else
 	{
-	  ecs->random_signal = !bpstat_explains_signal (stop_bpstat);
+	  ecs->random_signal = !bpstat_explains_signal(stop_bpstat);
 	  if (!ecs->random_signal)
 	    stop_signal = TARGET_SIGNAL_TRAP;
 	}
     }
-
   /* When we reach this point, we've pretty much decided
      that the reason for stopping must've been a random
      (unexpected) signal. */
-
   else
     ecs->random_signal = 1;
 
@@ -2251,19 +2256,19 @@ process_event_stop_test:
 
   if (ecs->random_signal)
     {
-      /* Signal not for debugging purposes.  */
+      /* Signal not for debugging purposes: */
       int printed = 0;
 
       if (debug_infrun)
-	 fprintf_unfiltered (gdb_stdlog, "infrun: random signal %d\n", stop_signal);
+	 fprintf_unfiltered(gdb_stdlog, "infrun: random signal %d\n", stop_signal);
 
       stopped_by_random_signal = 1;
 
       if (signal_print[stop_signal])
 	{
 	  printed = 1;
-	  target_terminal_ours_for_output ();
-	  print_stop_reason (SIGNAL_RECEIVED, stop_signal);
+	  target_terminal_ours_for_output();
+	  print_stop_reason(SIGNAL_RECEIVED, stop_signal);
 	  /* APPLE LOCAL begin extra stop info */
 #ifdef TM_NEXTSTEP
 	  /* We have more interesting info on the target
@@ -2272,29 +2277,28 @@ process_event_stop_test:
 	     target_waitstatus, and then pass that down to the
 	     target_signal_to_string so it can print the extra bits.
 	     But that's lots of diffs for no real benefit.  */
-extern void macosx_print_extra_stop_info (int, CORE_ADDR);
-	  if (ecs->ws.code != -1) 
-	    macosx_print_extra_stop_info (ecs->ws.code, ecs->ws.address);
-#endif	  
+	  if (ecs->ws.code != -1)
+	    macosx_print_extra_stop_info(ecs->ws.code, ecs->ws.address);
+#endif /* TM_NEXTSTEP */
 	  /* APPLE LOCAL end extra stop info */
 	}
       if (signal_stop[stop_signal])
 	{
-	  stop_stepping (ecs);
+	  stop_stepping(ecs);
 	  return;
 	}
       /* If not going to stop, give terminal back
          if we took it away.  */
       else if (printed)
-	target_terminal_inferior ();
+	target_terminal_inferior();
 
       /* Clear the signal if it should not be passed.  */
       if (signal_program[stop_signal] == 0)
 	stop_signal = TARGET_SIGNAL_0;
 
-      if (prev_pc == read_pc ()
+      if (prev_pc == read_pc()
 	  && !breakpoints_inserted
-	  && breakpoint_here_p (read_pc ())
+	  && breakpoint_here_p(read_pc())
 	  && step_resume_breakpoint == NULL)
 	{
 	  /* We were just starting a new sequence, attempting to
@@ -2306,7 +2310,7 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
 	  /* To simplify things, "continue" is forced to use the same
 	     code paths as single-step - set a breakpoint at the
 	     signal return address and then, once hit, step off that breakpoint.  */
-	  insert_step_resume_breakpoint_at_frame (get_current_frame ());
+	  insert_step_resume_breakpoint_at_frame(get_current_frame());
 	  ecs->step_after_step_resume_breakpoint = 1;
 
 	  /* APPLE LOCAL: If you look at keep_going, you will see that since
@@ -2319,18 +2323,18 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
 	     if I actually insert the breakpoints here, I do hit this breakpoint,
 	     but the signal handler never gets tripped.  So I'm not going to do that.  */
 
-	  keep_going (ecs);
+	  keep_going(ecs);
 	  return;
 	}
 
-      if (step_range_end != 0
-	  && stop_signal != TARGET_SIGNAL_0
+      if ((step_range_end != 0)
+	  && (stop_signal != TARGET_SIGNAL_0)
 	  /* APPLE LOCAL begin step ranges  */
-	  && ((stop_pc >= step_range_start && stop_pc < step_range_end)
-	      || (is_within_stepping_ranges (stop_pc)))
+	  && (((stop_pc >= step_range_start) && (stop_pc < step_range_end))
+	      || (is_within_stepping_ranges(stop_pc)))
 	  /* APPLE LOCAL end step ranges  */
-	  && frame_id_eq (get_frame_id (get_current_frame ()),
-			  step_frame_id)
+	  && frame_id_eq(get_frame_id(get_current_frame()),
+			 step_frame_id)
 	  && step_resume_breakpoint == NULL)
 	{
 	  /* The inferior is about to take a signal that will take it
@@ -2342,8 +2346,8 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
 	     Note that this is only needed for a signal delivered
 	     while in the single-step range.  Nested signals aren't a
 	     problem as they eventually all return.  */
-	  insert_step_resume_breakpoint_at_frame (get_current_frame ());
-	  keep_going (ecs);
+	  insert_step_resume_breakpoint_at_frame(get_current_frame());
+	  keep_going(ecs);
 	  return;
 	}
 
@@ -2353,7 +2357,7 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
 	 (leaving the inferior at the step-resume-breakpoint without
 	 actually executing it).  Either way continue until the
 	 breakpoint is really hit.  */
-      keep_going (ecs);
+      keep_going(ecs);
       return;
     }
 
@@ -2362,7 +2366,7 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
     CORE_ADDR jmp_buf_pc;
     struct bpstat_what what;
 
-    what = bpstat_what (stop_bpstat);
+    what = bpstat_what(stop_bpstat);
 
     if (what.call_dummy)
       {
@@ -2376,13 +2380,13 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
 	   duration of this command.  Then, install a temporary
 	   breakpoint at the target of the jmp_buf. */
         if (debug_infrun)
-	  fprintf_unfiltered (gdb_stdlog, "infrun: BPSTATE_WHAT_SET_LONGJMP_RESUME\n");
-	disable_longjmp_breakpoint ();
-	remove_breakpoints ();
+	  fprintf_unfiltered(gdb_stdlog, "infrun: BPSTATE_WHAT_SET_LONGJMP_RESUME\n");
+	disable_longjmp_breakpoint();
+	remove_breakpoints();
 	breakpoints_inserted = 0;
-	if (!GET_LONGJMP_TARGET_P () || !GET_LONGJMP_TARGET (&jmp_buf_pc))
+	if (!GET_LONGJMP_TARGET_P() || !GET_LONGJMP_TARGET(&jmp_buf_pc))
 	  {
-	    keep_going (ecs);
+	    keep_going(ecs);
 	    return;
 	  }
 
@@ -2390,21 +2394,21 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
 	   interferes with us */
 	if (step_resume_breakpoint != NULL)
 	  {
-	    delete_step_resume_breakpoint (&step_resume_breakpoint);
+	    delete_step_resume_breakpoint(&step_resume_breakpoint);
 	  }
 
-	set_longjmp_resume_breakpoint (jmp_buf_pc, null_frame_id);
+	set_longjmp_resume_breakpoint(jmp_buf_pc, null_frame_id);
 	ecs->handling_longjmp = 1;	/* FIXME */
-	keep_going (ecs);
+	keep_going(ecs);
 	return;
 
       case BPSTAT_WHAT_CLEAR_LONGJMP_RESUME:
       case BPSTAT_WHAT_CLEAR_LONGJMP_RESUME_SINGLE:
         if (debug_infrun)
-	  fprintf_unfiltered (gdb_stdlog, "infrun: BPSTATE_WHAT_CLEAR_LONGJMP_RESUME\n");
-	remove_breakpoints ();
+	  fprintf_unfiltered(gdb_stdlog, "infrun: BPSTATE_WHAT_CLEAR_LONGJMP_RESUME\n");
+	remove_breakpoints();
 	breakpoints_inserted = 0;
-	disable_longjmp_breakpoint ();
+	disable_longjmp_breakpoint();
 	ecs->handling_longjmp = 0;	/* FIXME */
 	if (what.main_action == BPSTAT_WHAT_CLEAR_LONGJMP_RESUME)
 	  break;
@@ -2412,10 +2416,10 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
 
       case BPSTAT_WHAT_SINGLE:
         if (debug_infrun)
-	  fprintf_unfiltered (gdb_stdlog, "infrun: BPSTATE_WHAT_SINGLE\n");
+	  fprintf_unfiltered(gdb_stdlog, "infrun: BPSTATE_WHAT_SINGLE\n");
 	if (breakpoints_inserted)
 	  {
-	    remove_breakpoints ();
+	    remove_breakpoints();
 	  }
 	breakpoints_inserted = 0;
 	ecs->another_trap = 1;
@@ -2425,24 +2429,24 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
 
       case BPSTAT_WHAT_STOP_NOISY:
         if (debug_infrun)
-	  fprintf_unfiltered (gdb_stdlog, "infrun: BPSTATE_WHAT_STOP_NOISY\n");
+	  fprintf_unfiltered(gdb_stdlog, "infrun: BPSTATE_WHAT_STOP_NOISY\n");
 	stop_print_frame = 1;
 
 	/* We are about to nuke the step_resume_breakpointt via the
 	   cleanup chain, so no need to worry about it here.  */
 
-	stop_stepping (ecs);
+	stop_stepping(ecs);
 	return;
 
       case BPSTAT_WHAT_STOP_SILENT:
         if (debug_infrun)
-	  fprintf_unfiltered (gdb_stdlog, "infrun: BPSTATE_WHAT_STOP_SILENT\n");
+	  fprintf_unfiltered(gdb_stdlog, "infrun: BPSTATE_WHAT_STOP_SILENT\n");
 	stop_print_frame = 0;
 
 	/* We are about to nuke the step_resume_breakpoin via the
 	   cleanup chain, so no need to worry about it here.  */
 
-	stop_stepping (ecs);
+	stop_stepping(ecs);
 	return;
 
       case BPSTAT_WHAT_STEP_RESUME:
@@ -2457,31 +2461,31 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
 	   If we reach here and step_resume_breakpoint is already
 	   NULL, then apparently we have multiple active
 	   step-resume bp's.  We'll just delete the breakpoint we
-	   stopped at, and carry on.  
+	   stopped at, and carry on.
 
 	   Correction: what the code currently does is delete a
 	   step-resume bp, but it makes no effort to ensure that
 	   the one deleted is the one currently stopped at.  MVS  */
 
         if (debug_infrun)
-	  fprintf_unfiltered (gdb_stdlog, "infrun: BPSTATE_WHAT_STEP_RESUME\n");
+	  fprintf_unfiltered(gdb_stdlog, "infrun: BPSTATE_WHAT_STEP_RESUME\n");
 
 	if (step_resume_breakpoint == NULL)
 	  {
 	    step_resume_breakpoint =
-	      bpstat_find_step_resume_breakpoint (stop_bpstat);
+	      bpstat_find_step_resume_breakpoint(stop_bpstat);
 	  }
-	delete_step_resume_breakpoint (&step_resume_breakpoint);
+	delete_step_resume_breakpoint(&step_resume_breakpoint);
 	if (ecs->step_after_step_resume_breakpoint)
 	  {
 	    /* Back when the step-resume breakpoint was inserted, we
 	       were trying to single-step off a breakpoint.  Go back
 	       to doing that.  */
 	    ecs->step_after_step_resume_breakpoint = 0;
-	    remove_breakpoints ();
+	    remove_breakpoints();
 	    breakpoints_inserted = 0;
 	    ecs->another_trap = 1;
-	    keep_going (ecs);
+	    keep_going(ecs);
 	    return;
 	  }
 	break;
@@ -2523,7 +2527,7 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
 	      case.  Run it again just in case...  */
 	  was_sync_execution = sync_execution;
           /* APPLE LOCAL end async */
-	  target_terminal_ours_for_output ();
+	  target_terminal_ours_for_output();
 	  /* NOTE: cagney/2003-11-25: Make certain that the target
 	     stack's section table is kept up-to-date.  Architectures,
 	     (e.g., PPC64), use the section table to perform
@@ -2542,10 +2546,10 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
           /* APPLE LOCAL solib_changed */
 	  solib_changed =
 #ifdef SOLIB_ADD
-	  SOLIB_ADD (NULL, 0, &current_target, auto_solib_add);
+	  SOLIB_ADD(NULL, 0, &current_target, auto_solib_add);
 #else
-	  solib_add (NULL, 0, &current_target, auto_solib_add);
-#endif
+	  solib_add(NULL, 0, &current_target, auto_solib_add);
+#endif /* SOLIB_ADD */
           /* APPLE LOCAL begin async */
 	  if (was_sync_execution && !sync_execution)
 	    async_disable_stdin();
@@ -2662,19 +2666,19 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
      test for stepping.  But, if not stepping,
      do not stop.  */
 
-  /* APPLE LOCAL: complex step support. Check if the target to see if it 
+  /* APPLE LOCAL: complex step support. Check if the target to see if it
      needs to keep going.  */
 
   if (target_keep_going(stop_pc))
     {
-	  if (debug_infrun)
-	fprintf_unfiltered (gdb_stdlog, 
-			    "infrun: target_keep_going (%s) returned true.\n",
-				paddr_nz (stop_pc));
-	  ecs->another_trap = 1;
-	  keep_going (ecs);
-	  return;
-	}
+      if (debug_infrun)
+        fprintf_unfiltered(gdb_stdlog,
+                           "infrun: target_keep_going(%s) returned true\n",
+                           paddr_nz(stop_pc));
+      ecs->another_trap = 1;
+      keep_going(ecs);
+      return;
+    }
 
   /* Are we stepping to get the inferior out of the dynamic linker's
      hook (and possibly the dld itself) after catching a shlib
@@ -2683,66 +2687,67 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
     {
 #if defined(SOLIB_ADD)
       /* Have we reached our destination?  If not, keep going. */
-      if (SOLIB_IN_DYNAMIC_LINKER (PIDGET (ecs->ptid), stop_pc))
+      if (SOLIB_IN_DYNAMIC_LINKER(PIDGET(ecs->ptid), stop_pc))
 	{
           if (debug_infrun)
-	    fprintf_unfiltered (gdb_stdlog, "infrun: stepping in dynamic linker\n");
+	    fprintf_unfiltered(gdb_stdlog, "infrun: stepping in dynamic linker\n");
 	  ecs->another_trap = 1;
-	  keep_going (ecs);
+	  keep_going(ecs);
 	  return;
 	}
-#endif
+#endif /* SOLIB_ADD */
       if (debug_infrun)
-	 fprintf_unfiltered (gdb_stdlog, "infrun: step past dynamic linker\n");
+	 fprintf_unfiltered(gdb_stdlog, "infrun: step past dynamic linker\n");
       /* Else, stop and report the catchpoint(s) whose triggering
          caused us to begin stepping. */
       ecs->stepping_through_solib_after_catch = 0;
-      bpstat_clear (&stop_bpstat);
-      stop_bpstat = bpstat_copy (ecs->stepping_through_solib_catchpoints);
-      bpstat_clear (&ecs->stepping_through_solib_catchpoints);
+      bpstat_clear(&stop_bpstat);
+      stop_bpstat = bpstat_copy(ecs->stepping_through_solib_catchpoints);
+      bpstat_clear(&ecs->stepping_through_solib_catchpoints);
       stop_print_frame = 1;
-      stop_stepping (ecs);
+      stop_stepping(ecs);
       return;
     }
 
   if (step_resume_breakpoint)
     {
       if (debug_infrun)
-	 fprintf_unfiltered (gdb_stdlog, "infrun: step-resume breakpoint\n");
+	 fprintf_unfiltered(gdb_stdlog, "infrun: step-resume breakpoint\n");
 
       /* APPLE LOCAL: On Mach, when we get the signal while trying to step,
 	 the step has actually already completed behind our back.  So immediately
 	 after we send the signal back, we hit the hardware step trap, and the
 	 pc is on the next instruction past where we set the breakpoint.
-  
+
 	 That's why we didn't notice it above where we check the
 	 bpstat_stop_status, and we come here instead.  If we JUST
 	 keep going, we're going to continue beyond our stepping range,
-	 since currently_stepping returns 0 if the step_resume_breakpoint is set. 
+	 since currently_stepping returns 0 if the step_resume_breakpoint is set.
          The only point of the step_resume_breakpoint was to make sure that
          we did stop at the instruction we've already missed.  So we might as
          well just delete it here and continue on.  */
       if (ecs->step_after_step_resume_breakpoint
-	  && step_resume_breakpoint->loc->address 
-	  + length_of_this_instruction (step_resume_breakpoint->loc->address) == stop_pc)
+	  && ((step_resume_breakpoint->loc->address
+               + length_of_this_instruction(step_resume_breakpoint->loc->address))
+              == stop_pc))
 	{
 	  ecs->step_after_step_resume_breakpoint = 0;
-	  delete_step_resume_breakpoint (&step_resume_breakpoint);
-	  
+	  delete_step_resume_breakpoint(&step_resume_breakpoint);
+
 	}
       /* Having a step-resume breakpoint overrides anything
          else having to do with stepping commands until
          that breakpoint is reached.  */
-      keep_going (ecs);
+      keep_going(ecs);
       return;
     }
 
   if (step_range_end == 0)
     {
       if (debug_infrun)
-	 fprintf_unfiltered (gdb_stdlog, "infrun: no stepping, continue\n");
-      /* Likewise if we aren't even stepping.  */
-      keep_going (ecs);
+	 fprintf_unfiltered(gdb_stdlog, "infrun: no stepping, continue\n");
+      /* Likewise if we are NOT even stepping: */
+      keep_going(ecs);
       return;
     }
 
@@ -2752,16 +2757,15 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
      beyond the step range, and NOT the address of the last instruction
      within it! */
   /* APPLE LOCAL begin step ranges  */
-  if ((stop_pc >= step_range_start && stop_pc < step_range_end)
-      || (is_within_stepping_ranges (stop_pc)))
+  if (((stop_pc >= step_range_start) && (stop_pc < step_range_end))
+      || (is_within_stepping_ranges(stop_pc)))
   /* APPLE LOCAL end step ranges  */
     {
-
       if (debug_infrun)
-	 fprintf_unfiltered (gdb_stdlog, "infrun: stepping inside range [0x%s-0x%s]\n",
-			    paddr_nz (step_range_start),
-			    paddr_nz (step_range_end));
-      keep_going (ecs);
+	 fprintf_unfiltered(gdb_stdlog, "infrun: stepping inside range [0x%s-0x%s]\n",
+			    paddr_nz(step_range_start),
+			    paddr_nz(step_range_end));
+      keep_going(ecs);
       return;
     }
 
@@ -2773,46 +2777,46 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
      address.  */
   if (step_over_calls == STEP_OVER_UNDEBUGGABLE
 #ifdef IN_SOLIB_DYNSYM_RESOLVE_CODE
-      && IN_SOLIB_DYNSYM_RESOLVE_CODE (stop_pc)
+      && IN_SOLIB_DYNSYM_RESOLVE_CODE(stop_pc)
 #else
-      && in_solib_dynsym_resolve_code (stop_pc)
-#endif
+      && in_solib_dynsym_resolve_code(stop_pc)
+#endif /* IN_SOLIB_DYNSYM_RESOLVE_CODE */
       )
     {
       CORE_ADDR pc_after_resolver =
-	gdbarch_skip_solib_resolver (current_gdbarch, stop_pc);
+	gdbarch_skip_solib_resolver(current_gdbarch, stop_pc);
 
       if (debug_infrun)
-	 fprintf_unfiltered (gdb_stdlog, "infrun: stepped into dynsym resolve code\n");
+	 fprintf_unfiltered(gdb_stdlog, "infrun: stepped into dynsym resolve code\n");
 
       if (pc_after_resolver)
 	{
 	  /* Set up a step-resume breakpoint at the address
 	     indicated by SKIP_SOLIB_RESOLVER.  */
 	  struct symtab_and_line sr_sal;
-	  init_sal (&sr_sal);
+	  init_sal(&sr_sal);
 	  sr_sal.pc = pc_after_resolver;
 
-	  insert_step_resume_breakpoint_at_sal (sr_sal, null_frame_id);
+	  insert_step_resume_breakpoint_at_sal(sr_sal, null_frame_id);
 	}
 
-      keep_going (ecs);
+      keep_going(ecs);
       return;
     }
 
   if (step_range_end != 1
       && (step_over_calls == STEP_OVER_UNDEBUGGABLE
 	  || step_over_calls == STEP_OVER_ALL)
-      && get_frame_type (get_current_frame ()) == SIGTRAMP_FRAME)
+      && get_frame_type(get_current_frame()) == SIGTRAMP_FRAME)
     {
       if (debug_infrun)
-	 fprintf_unfiltered (gdb_stdlog, "infrun: stepped into signal trampoline\n");
+	 fprintf_unfiltered(gdb_stdlog, "infrun: stepped into signal trampoline\n");
       /* The inferior, while doing a "step" or "next", has ended up in
          a signal trampoline (either by a signal being delivered or by
          the signal handler returning).  Just single-step until the
          inferior leaves the trampoline (either by calling the handler
          or returning).  */
-      keep_going (ecs);
+      keep_going(ecs);
       return;
     }
 
@@ -2826,15 +2830,15 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
   if (ecs->stop_func_name == NULL
       && step_range_end == 1
       && step_over_calls > 0
-      && !in_prologue (stop_pc, stop_pc))
+      && !in_prologue(stop_pc, stop_pc))
     {
       /* We are doing a nexti, but we are in a function that
 	 we have NO symbols for.  The next test will ALWAYS conclude
 	 that we have just stepped into a subroutine.  We need to short-
 	 curcuit that here... */
       stop_step = 1;
-      print_stop_reason (END_STEPPING_RANGE, 0);
-      stop_stepping (ecs);
+      print_stop_reason(END_STEPPING_RANGE, 0);
+      stop_stepping(ecs);
       return;
     }
 
@@ -2842,59 +2846,59 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
      direct jump - rather than a stub.  In that case, we would have
      set the stop_func_name and _start & _stop wrong since we didn't
      have debug info.  So we need to up the level of the stop_pc and
-     also re-fetch the stop_func_start and the stop_func_name.  
+     also re-fetch the stop_func_start and the stop_func_name.
      ALSO, we changed the "It's a subroutine call" test depend
      explicitly on the frame unwinder.  That works better if we
      have debug info, so let's make sure we up the load level here
      before we try to unwind from the stop_pc.  */
-  
-  {
-      /* APPLE LOCAL: raise load levels */
-      int load_state;
 
-      load_state = pc_set_load_state (stop_pc, OBJF_SYM_ALL, 0);      
-      if ((OBJF_SYM_LEVELS_MASK & load_state) != OBJF_SYM_ALL)
-	{
-	  find_pc_partial_function (stop_pc, &ecs->stop_func_name,
-				    &ecs->stop_func_start, &ecs->stop_func_end);
-	}
+  {
+    /* APPLE LOCAL: raise load levels */
+    int load_state;
+
+    load_state = pc_set_load_state(stop_pc, OBJF_SYM_ALL, 0);
+    if ((OBJF_SYM_LEVELS_MASK & load_state) != OBJF_SYM_ALL)
+      {
+        find_pc_partial_function(stop_pc, &ecs->stop_func_name,
+                                 &ecs->stop_func_start, &ecs->stop_func_end);
+      }
   }
   /* END APPLE LOCAL */
 
   /* Stopping in code that should be next'ed over?  The conditional
      expression below compares the frame ID we began stepping to
      the previous frame id of the current frame.  If they're equal
-     then we've stepped into a new routine.  
+     then we've stepped into a new routine.
      A common bug here is that gdb doesn't unwind correctly from
      some stub routine or hand written assembly code and the previous
      frame == steping frame comparison fails.  */
   /* APPLE LOCAL: Some jokers like to put the stack pointer in
-     unreadable memory occasionally.  Don't error out of 
+     unreadable memory occasionally.  Don't error out of
      handle_inferior_event for that...  */
 
-    TRY_CATCH (e, RETURN_MASK_ALL)
+    TRY_CATCH(e, RETURN_MASK_ALL)
       {
-	prev_frame_id = frame_unwind_id (get_current_frame ());
+	prev_frame_id = frame_unwind_id(get_current_frame());
       }
-    if (e.reason != NO_ERROR)
+    if (e.reason != (int)NO_ERROR)
       prev_frame_id = null_frame_id;
 
-  if (frame_id_eq (prev_frame_id, step_frame_id)
+  if (frame_id_eq(prev_frame_id, step_frame_id)
       || stepping_over_inlined_subroutine)
     /* END APPLE LOCAL */
     {
-      /* It's a subroutine call.  */
+      /* It is/was a subroutine call: */
       CORE_ADDR real_stop_pc;
       char *file_name;
       int line;
       int column;
 
       if (debug_infrun)
-	 fprintf_unfiltered (gdb_stdlog, "infrun: stepped into subroutine\n");
+	 fprintf_unfiltered(gdb_stdlog, "infrun: stepped into subroutine\n");
 
       if ((step_over_calls == STEP_OVER_NONE)
 	  || ((step_range_end == 1)
-	      && in_prologue (prev_pc, ecs->stop_func_start)))
+	      && in_prologue(prev_pc, ecs->stop_func_start)))
 	{
 	  /* I presume that step_over_calls is only 0 when we're
 	     supposed to be stepping at the assembly language level
@@ -2903,8 +2907,8 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
 	     thought it was a subroutine call but it was not.  Stop as
 	     well.  FENN */
 	  stop_step = 1;
-	  print_stop_reason (END_STEPPING_RANGE, 0);
-	  stop_stepping (ecs);
+	  print_stop_reason(END_STEPPING_RANGE, 0);
+	  stop_stepping(ecs);
 	  return;
 	}
 
@@ -2913,18 +2917,19 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
 	  /* We're doing a "next", set a breakpoint at callee's return
 	     address (the address at which the caller will
 	     resume).  */
-	  /* APPLE LOCAL: Don't crash if we can't get the previous frame.  */
-	  /* APPLE LOCAL: FIx struct type to avoid warning.  */
-	  struct frame_info *prev_frame = get_prev_frame (get_current_frame ());
+	  /* APPLE LOCAL: Do NOT crash if we cannot get the prev. frame: */
+	  /* APPLE LOCAL: Fix struct type to avoid warning: */
+	  struct frame_info *prev_frame;
+          prev_frame = get_prev_frame(get_current_frame());
 	  /* APPLE LOCAL begin subroutine inlining  */
 	  if (stepping_over_inlined_subroutine
 	      && (stop_pc == step_range_end
 		  /* APPLE LOCAL step ranges  */
-		  || is_at_stepping_ranges_end (stop_pc)))
+		  || is_at_stepping_ranges_end(stop_pc)))
 	    {
 	      stop_step = 1;
-	      print_stop_reason (END_STEPPING_RANGE, 0);
-	      stop_stepping (ecs);
+	      print_stop_reason(END_STEPPING_RANGE, 0);
+	      stop_stepping(ecs);
 	      return;
 	    }
 	  /* The following clause is supposed to catch the situation
@@ -2933,28 +2938,28 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
 	     the next instruction happens to be the start of another
 	     inlined subroutine.  */
 	  else if (stepping_over_inlined_subroutine
-		   && frame_id_eq (get_frame_id (prev_frame), step_frame_id)
-		   && get_frame_type (get_current_frame ()) == INLINED_FRAME
-		   && at_inlined_call_site_p (&file_name, &line, &column )
-		   && current_inlined_subroutine_call_stack_start_pc ()
-		   == stop_pc)
+		   && frame_id_eq(get_frame_id(prev_frame), step_frame_id)
+		   && get_frame_type(get_current_frame()) == INLINED_FRAME
+		   && at_inlined_call_site_p(&file_name, &line, &column)
+		   && (current_inlined_subroutine_call_stack_start_pc()
+                       == stop_pc))
 	    {
 	      stop_step = 1;
-	      print_stop_reason (END_STEPPING_RANGE, 0);
-	      stop_stepping (ecs);
+	      print_stop_reason(END_STEPPING_RANGE, 0);
+	      stop_stepping(ecs);
 	      return;
 	    }
 	  /* APPLE LOCAL end subroutine inlining  */
 	  else if (prev_frame)
 	    {
-	      insert_step_resume_breakpoint_at_frame (prev_frame);
-	      keep_going (ecs);
+	      insert_step_resume_breakpoint_at_frame(prev_frame);
+	      keep_going(ecs);
 	      return;
 	    }
 	  else
 	    {
-	      warning ("Couldn't find previous frame to set return breakpoint, stopping now.");
-	      stop_stepping (ecs);
+	      warning("Failed to find previous frame to set return breakpoint, stopping now.");
+	      stop_stepping(ecs);
 	      return;
 	    }
 	}
@@ -2969,8 +2974,8 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
 	  && stop_pc > ecs->stop_func_start)
 	{
 	  stop_step = 1;
-	  print_stop_reason (END_STEPPING_RANGE, 0);
-	  stop_stepping (ecs);
+	  print_stop_reason(END_STEPPING_RANGE, 0);
+	  stop_stepping(ecs);
 	  return;
 	}
 
@@ -2983,24 +2988,24 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
       real_stop_pc = skip_language_trampoline (stop_pc);
 
       if (real_stop_pc == 0)
-	real_stop_pc = SKIP_TRAMPOLINE_CODE (stop_pc);
+	real_stop_pc = SKIP_TRAMPOLINE_CODE(stop_pc);
       if (real_stop_pc != 0)
 	ecs->stop_func_start = real_stop_pc;
 
       if (
 #ifdef IN_SOLIB_DYNSYM_RESOLVE_CODE
-	  IN_SOLIB_DYNSYM_RESOLVE_CODE (ecs->stop_func_start)
+	  IN_SOLIB_DYNSYM_RESOLVE_CODE(ecs->stop_func_start)
 #else
-	  in_solib_dynsym_resolve_code (ecs->stop_func_start)
-#endif
-)
+	  in_solib_dynsym_resolve_code(ecs->stop_func_start)
+#endif /* IN_SOLIB_DYNSYM_RESOLVE_CODE */
+          )
 	{
 	  struct symtab_and_line sr_sal;
-	  init_sal (&sr_sal);
+	  init_sal(&sr_sal);
 	  sr_sal.pc = ecs->stop_func_start;
 
-	  insert_step_resume_breakpoint_at_sal (sr_sal, null_frame_id);
-	  keep_going (ecs);
+	  insert_step_resume_breakpoint_at_sal(sr_sal, null_frame_id);
+	  keep_going(ecs);
 	  return;
 	}
 
@@ -3022,14 +3027,14 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
            care of that above.  */
 
         if (real_stop_pc != 0)
-          pc_set_load_state (ecs->stop_func_start, OBJF_SYM_ALL, 0);
+          pc_set_load_state(ecs->stop_func_start, OBJF_SYM_ALL, 0);
 
 	/* APPLE LOCAL end infrun */
 
-	tmp_sal = find_pc_line (ecs->stop_func_start, 0);
+	tmp_sal = find_pc_line(ecs->stop_func_start, 0);
 	if (tmp_sal.line != 0)
 	  {
-	    step_into_function (ecs);
+	    step_into_function(ecs);
 	    return;
 	  }
       }
@@ -3040,48 +3045,49 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
       if (step_over_calls == STEP_OVER_UNDEBUGGABLE && step_stop_if_no_debug)
 	{
 	  stop_step = 1;
-	  print_stop_reason (END_STEPPING_RANGE, 0);
-	  stop_stepping (ecs);
+	  print_stop_reason(END_STEPPING_RANGE, 0);
+	  stop_stepping(ecs);
 	  return;
 	}
 
       /* Set a breakpoint at callee's return address (the address at
          which the caller will resume).  */
       {
-	  /* APPLE LOCAL: Don't crash if we can't get the previous frame.  */
-	  /* APPLE LOCAL: Fix struct type to avoid warning.  */
-	  struct frame_info *prev_frame = get_prev_frame (get_current_frame ());
-	  if (prev_frame)
-	    {
-	      insert_step_resume_breakpoint_at_frame (prev_frame);
-	      keep_going (ecs);
-	      return;
-	    }
-	  else
-	    {
-	      warning ("Couldn't find previous frame to set return breakpoint, stopping now.");
-	      stop_stepping (ecs);
-	      return;
-	    }
+        /* APPLE LOCAL: Don't crash if we can't get the previous frame.  */
+        /* APPLE LOCAL: Fix struct type to avoid warning.  */
+        struct frame_info *prev_frame;
+        prev_frame = get_prev_frame(get_current_frame());
+        if (prev_frame)
+          {
+            insert_step_resume_breakpoint_at_frame(prev_frame);
+            keep_going(ecs);
+            return;
+          }
+        else
+          {
+            warning("Failed to find previous frame to set return breakpoint, stopping now.");
+            stop_stepping(ecs);
+            return;
+          }
       }
     }
 
   /* If we're in the return path from a shared library trampoline,
      we want to proceed through the trampoline when stepping.  */
-  if (IN_SOLIB_RETURN_TRAMPOLINE (stop_pc, ecs->stop_func_name))
+  if (IN_SOLIB_RETURN_TRAMPOLINE(stop_pc, ecs->stop_func_name))
     {
       /* Determine where this trampoline returns.  */
-      CORE_ADDR real_stop_pc = SKIP_TRAMPOLINE_CODE (stop_pc);
+      CORE_ADDR real_stop_pc = SKIP_TRAMPOLINE_CODE(stop_pc);
       /* APPLE LOCAL begin subroutine inlining  */
       /* If the PC has changed since the last time we updated the
 	 global_inlined_call_stack data, we need to verify the current
 	 data and possibly update it.  */
-      if (real_stop_pc != inlined_function_call_stack_pc ())
-	inlined_function_update_call_stack (real_stop_pc);
+      if (real_stop_pc != inlined_function_call_stack_pc())
+	inlined_function_update_call_stack(real_stop_pc);
       /* APPLE LOCAL end subroutine inlining  */
 
       if (debug_infrun)
-	 fprintf_unfiltered (gdb_stdlog, "infrun: stepped into solib return tramp\n");
+	 fprintf_unfiltered(gdb_stdlog, "infrun: stepped into solib return tramp\n");
 
       /* Only proceed through if we know where it's going.  */
       if (real_stop_pc)
@@ -3089,33 +3095,33 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
 	  /* And put the step-breakpoint there and go until there. */
 	  struct symtab_and_line sr_sal;
 
-	  init_sal (&sr_sal);	/* initialize to zeroes */
+	  init_sal(&sr_sal);	/* initialize to zeroes */
 	  sr_sal.pc = real_stop_pc;
-	  sr_sal.section = find_pc_overlay (sr_sal.pc);
+	  sr_sal.section = find_pc_overlay(sr_sal.pc);
 
 	  /* Do not specify what the fp should be when we stop since
 	     on some machines the prologue is where the new fp value
 	     is established.  */
-	  insert_step_resume_breakpoint_at_sal (sr_sal, null_frame_id);
+	  insert_step_resume_breakpoint_at_sal(sr_sal, null_frame_id);
 
 	  /* Restart without fiddling with the step ranges or
 	     other state.  */
-	  keep_going (ecs);
+	  keep_going(ecs);
 	  return;
 	}
     }
 
-  ecs->sal = find_pc_line (stop_pc, 0);
+  ecs->sal = find_pc_line(stop_pc, 0);
 
   /* NOTE: tausq/2004-05-24: This if block used to be done before all
-     the trampoline processing logic, however, there are some trampolines 
+     the trampoline processing logic, however, there are some trampolines
      that have no names, so we should do trampoline handling first.  */
   if (step_over_calls == STEP_OVER_UNDEBUGGABLE
       && ecs->stop_func_name == NULL
       && ecs->sal.line == 0)
     {
       if (debug_infrun)
-	 fprintf_unfiltered (gdb_stdlog, "infrun: stepped into undebuggable function\n");
+	 fprintf_unfiltered(gdb_stdlog, "infrun: stepped into undebuggable function\n");
 
       /* The inferior just stepped into, or returned to, an
          undebuggable function (where there is no debugging information
@@ -3129,8 +3135,8 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
 	     is set, we stop the step so that the user has a chance to
 	     switch in assembly mode.  */
 	  stop_step = 1;
-	  print_stop_reason (END_STEPPING_RANGE, 0);
-	  stop_stepping (ecs);
+	  print_stop_reason(END_STEPPING_RANGE, 0);
+	  stop_stepping(ecs);
 	  return;
 	}
       else
@@ -3139,17 +3145,17 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
 	     at which the caller will resume).  */
           /* APPLE LOCAL: Don't crash if we can't get the previous frame.  */
 	  /* APPLE LOCAL: Fix struct type to avoid warning.  */
-	  struct frame_info *prev_frame = get_prev_frame (get_current_frame ());
+	  struct frame_info *prev_frame = get_prev_frame(get_current_frame());
 	  if (prev_frame)
 	    {
-	      insert_step_resume_breakpoint_at_frame (prev_frame);
-	      keep_going (ecs);
+	      insert_step_resume_breakpoint_at_frame(prev_frame);
+	      keep_going(ecs);
 	      return;
 	    }
 	  else
 	    {
-	      warning ("Couldn't find previous frame to set return breakpoint, stopping now.");
-	      stop_stepping (ecs);
+	      warning("Failed to find previous frame to set return breakpoint, stopping now.");
+	      stop_stepping(ecs);
 	      return;
 	    }
 	}
@@ -3160,10 +3166,10 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
       /* It is stepi or nexti.  We always want to stop stepping after
          one instruction.  */
       if (debug_infrun)
-	 fprintf_unfiltered (gdb_stdlog, "infrun: stepi/nexti\n");
+	 fprintf_unfiltered(gdb_stdlog, "infrun: stepi/nexti\n");
       stop_step = 1;
-      print_stop_reason (END_STEPPING_RANGE, 0);
-      stop_stepping (ecs);
+      print_stop_reason(END_STEPPING_RANGE, 0);
+      stop_stepping(ecs);
       return;
     }
 
@@ -3174,19 +3180,19 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
          when we do "s" in a function with no line numbers,
          or can this happen as a result of a return or longjmp?).  */
       if (debug_infrun)
-	 fprintf_unfiltered (gdb_stdlog, "infrun: no line number info\n");
+	 fprintf_unfiltered(gdb_stdlog, "infrun: no line number info\n");
       stop_step = 1;
-      print_stop_reason (END_STEPPING_RANGE, 0);
-      stop_stepping (ecs);
+      print_stop_reason(END_STEPPING_RANGE, 0);
+      stop_stepping(ecs);
       return;
     }
 
   if ((stop_pc == ecs->sal.pc)
-      && (ecs->current_line != ecs->sal.line
+      && ((ecs->current_line != ecs->sal.line)
 	  /* APPLE LOCAL begin inlined subroutine  */
-	  || ecs->current_symtab != ecs->sal.symtab
-	  || (get_frame_type (get_current_frame ()) == INLINED_FRAME
-	      && step_range_end != 1)))
+	  || (ecs->current_symtab != ecs->sal.symtab)
+	  || (get_frame_type(get_current_frame()) == INLINED_FRAME
+	      && (step_range_end != 1))))
           /* APPLE LOCAL end inlined subroutine  */
     {
       /* We are at the start of a different line.  So stop.  Note that
@@ -3194,10 +3200,10 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
          That is said to make things like for (;;) statements work
          better.  */
       if (debug_infrun)
-	 fprintf_unfiltered (gdb_stdlog, "infrun: stepped to a different line\n");
+	 fprintf_unfiltered(gdb_stdlog, "infrun: stepped to a different line\n");
       stop_step = 1;
-      print_stop_reason (END_STEPPING_RANGE, 0);
-      stop_stepping (ecs);
+      print_stop_reason(END_STEPPING_RANGE, 0);
+      stop_stepping(ecs);
       return;
     }
 
@@ -3216,10 +3222,10 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
          in which after skipping the prologue we better stop even though
          we will be in mid-line.  */
       if (debug_infrun)
-	 fprintf_unfiltered (gdb_stdlog, "infrun: stepped to a different function\n");
+	 fprintf_unfiltered(gdb_stdlog, "infrun: stepped to a different function\n");
       stop_step = 1;
-      print_stop_reason (END_STEPPING_RANGE, 0);
-      stop_stepping (ecs);
+      print_stop_reason(END_STEPPING_RANGE, 0);
+      stop_stepping(ecs);
       return;
     }
 
@@ -3229,7 +3235,7 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
   stepping_over_inlined_subroutine = 0;
   /* APPLE LOCAL step ranges  */
   stepping_ranges = NULL;
-  step_frame_id = get_frame_id (get_current_frame ());
+  step_frame_id = get_frame_id(get_current_frame());
   ecs->current_line = ecs->sal.line;
   ecs->current_symtab = ecs->sal.symtab;
 
@@ -3242,31 +3248,36 @@ extern void macosx_print_extra_stop_info (int, CORE_ADDR);
      stackless leaf function.  I think the logic should instead look
      at the unwound frame ID has that should give a more robust
      indication of what happened.  */
-  if (step - ID == current - ID)
+  if ((step - ID) == (current - ID))
     still stepping in same function;
-  else if (step - ID == unwind (current - ID))
+  else if ((step - ID) == unwind(current - ID))
     stepped into a function;
   else
     stepped out of a function;
   /* Of course this assumes that the frame ID unwind code is robust
      and we're willing to introduce frame unwind logic into this
      function.  Fortunately, those days are nearly upon us.  */
-#endif
+#endif /* 0 */
   {
-    struct frame_id current_frame = get_frame_id (get_current_frame ());
-    if (!(frame_id_inner (current_frame, step_frame_id)))
+    struct frame_id current_frame = get_frame_id(get_current_frame());
+    if (!(frame_id_inner(current_frame, step_frame_id)))
       step_frame_id = current_frame;
   }
 
   if (debug_infrun)
-     fprintf_unfiltered (gdb_stdlog, "infrun: keep going\n");
-  keep_going (ecs);
+     fprintf_unfiltered(gdb_stdlog, "infrun: keep going\n");
+  keep_going(ecs);
+
+  /* use an unused variable: */
+  if (sw_single_step_trap_p > 0) {
+    return; /* else fall off the end; it matters little either way */
+  }
 }
+/* Phew, that function was over 1700 lines! */
 
 /* Are we in the middle of stepping?  */
-
 static int
-currently_stepping (struct execution_control_state *ecs)
+currently_stepping(struct execution_control_state *ecs)
 {
   return ((!ecs->handling_longjmp
 	   && ((step_range_end && step_resume_breakpoint == NULL)
@@ -3374,7 +3385,7 @@ insert_step_resume_breakpoint_at_sal (struct symtab_and_line sr_sal,
   if (breakpoints_inserted)
     insert_breakpoints ();
 }
-				      
+
 /* Insert a "step resume breakpoint" at RETURN_FRAME.pc.  This is used
    to skip a function (next, skip-no-debug) or signal.  It's assumed
    that the function/signal handler being skipped eventually returns
@@ -3410,7 +3421,7 @@ insert_step_resume_breakpoint_at_frame (struct frame_info *return_frame)
 }
 
 struct breakpoint *
-hide_step_resume_breakpoint ()
+hide_step_resume_breakpoint(void)
 {
   struct breakpoint *old_step_resume_breakpoint = step_resume_breakpoint;
   step_resume_breakpoint = NULL;
@@ -3448,7 +3459,7 @@ keep_going (struct execution_control_state *ecs)
   /* If we did not do break;, it means we should keep running the
      inferior and not return to debugger.  */
 
-  /* proceed and keep_going need to turn off the debug mode before 
+  /* proceed and keep_going need to turn off the debug mode before
      they restart the target.  proceed is generally called by the user
      to restart, and keep_going is called internally within handle_inferior_event.  */
 
@@ -3578,41 +3589,41 @@ print_stop_reason (enum inferior_stop_reason stop_reason, int stop_info)
       /* For now print nothing. */
       break;
     case SIGNAL_EXITED:
-      /* The inferior was terminated by a signal. */
-      annotate_signalled ();
-      ui_out_print_annotation_string (uiout, 0, "reason",
-			       async_reason_lookup (EXEC_ASYNC_EXITED_SIGNALLED));
-      ui_out_text (uiout, "\nProgram terminated with signal ");
-      annotate_signal_name ();
-      ui_out_print_annotation_string (uiout, 1, "signal-name",
-			   target_signal_to_name (stop_info));
-      annotate_signal_name_end ();
-      ui_out_text (uiout, ", ");
-      annotate_signal_string ();
-      ui_out_print_annotation_string (uiout, 1, "signal-meaning",
-			   target_signal_to_string (stop_info));
-      
-      annotate_signal_string_end ();
-      ui_out_text (uiout, ".\n");
-      ui_out_text (uiout, "The program no longer exists.\n");
+      /* The inferior was terminated by a signal: */
+      annotate_signalled();
+      ui_out_print_annotation_string(uiout, 0, "reason",
+			       async_reason_lookup(EXEC_ASYNC_EXITED_SIGNALLED));
+      ui_out_text(uiout, "\nProgram terminated with signal ");
+      annotate_signal_name();
+      ui_out_print_annotation_string(uiout, 1, "signal-name",
+			   target_signal_to_name((enum target_signal)stop_info));
+      annotate_signal_name_end();
+      ui_out_text(uiout, ", ");
+      annotate_signal_string();
+      ui_out_print_annotation_string(uiout, 1, "signal-meaning",
+			   target_signal_to_string((enum target_signal)stop_info));
+
+      annotate_signal_string_end();
+      ui_out_text(uiout, ".\n");
+      ui_out_text(uiout, "The program no longer exists.\n");
       break;
     case EXITED:
       /* The inferior program is finished. */
-      annotate_exited (stop_info);
+      annotate_exited(stop_info);
       if (stop_info)
 	{
-	  ui_out_print_annotation_string (uiout, 0, "reason", 
-				 async_reason_lookup (EXEC_ASYNC_EXITED));
-	  ui_out_text (uiout, "\nProgram exited with code ");
-	  ui_out_field_fmt (uiout, "exit-code", "0%o",
-			    (unsigned int) stop_info);
-	  ui_out_text (uiout, ".\n");
+	  ui_out_print_annotation_string(uiout, 0, "reason",
+				 async_reason_lookup(EXEC_ASYNC_EXITED));
+	  ui_out_text(uiout, "\nProgram exited with code ");
+	  ui_out_field_fmt(uiout, "exit-code", "0%o",
+			   (unsigned int)stop_info);
+	  ui_out_text(uiout, ".\n");
 	}
       else
 	{
-	  ui_out_print_annotation_string (uiout, 0, "reason",
-	       async_reason_lookup (EXEC_ASYNC_EXITED_NORMALLY));
-	  ui_out_text (uiout, "\nProgram exited normally.\n");
+	  ui_out_print_annotation_string(uiout, 0, "reason",
+	       async_reason_lookup(EXEC_ASYNC_EXITED_NORMALLY));
+	  ui_out_text(uiout, "\nProgram exited normally.\n");
 	}
       break;
     case SIGNAL_RECEIVED:
@@ -3622,44 +3633,46 @@ print_stop_reason (enum inferior_stop_reason stop_reason, int stop_info)
 	 then print it as an asynchronous message instead of accumulating
 	 these signal messages in the stop reason for the final *stopped
 	 result.  */
-      if (ui_out_is_mi_like_p (uiout) && !signal_stop [stop_info])
-	notify_cleanup 
-	  = make_cleanup_ui_out_notify_begin_end (uiout, "signal-received");
+      if (ui_out_is_mi_like_p(uiout) && !signal_stop[stop_info])
+	notify_cleanup =
+          make_cleanup_ui_out_notify_begin_end(uiout, "signal-received");
 
-      annotate_signal ();
-      ui_out_text (uiout, "\nProgram received signal ");
-      annotate_signal_name ();
-      ui_out_print_annotation_string (uiout, 0, "reason", 
-				      async_reason_lookup (EXEC_ASYNC_SIGNAL_RECEIVED));
-      ui_out_print_annotation_string (uiout, 1, "signal-name",
-				      target_signal_to_name (stop_info));
-      annotate_signal_name_end ();
-      ui_out_text (uiout, ", ");
-      annotate_signal_string ();
-      ui_out_print_annotation_string (uiout, 1, "signal-meaning",
-				      target_signal_to_string (stop_info));
-      annotate_signal_string_end ();
-      ui_out_text (uiout, ".\n");
+      annotate_signal();
+      ui_out_text(uiout, "\nProgram received signal ");
+      annotate_signal_name();
+      ui_out_print_annotation_string(uiout, 0, "reason",
+				     async_reason_lookup(EXEC_ASYNC_SIGNAL_RECEIVED));
+      ui_out_print_annotation_string(uiout, 1, "signal-name",
+                                     target_signal_to_name((enum target_signal)stop_info));
+      annotate_signal_name_end();
+      ui_out_text(uiout, ", ");
+      annotate_signal_string();
+      ui_out_print_annotation_string(uiout, 1, "signal-meaning",
+				     target_signal_to_string((enum target_signal)stop_info));
+      annotate_signal_string_end();
+      ui_out_text(uiout, ".\n");
 
-      if (ui_out_is_mi_like_p (uiout) && !signal_stop [stop_info])
-	  do_cleanups (notify_cleanup); 
+      if (ui_out_is_mi_like_p(uiout) && !signal_stop[stop_info])
+	  do_cleanups (notify_cleanup);
 
       break;
     default:
-      internal_error (__FILE__, __LINE__,
-		      _("print_stop_reason: unrecognized enum value"));
+      internal_error(__FILE__, __LINE__,
+		     _("print_stop_reason: unrecognized enum value"));
       break;
     }
 }
 
 /* APPLE LOCAL begin checkpoints */
 void
-rollback_stop (void)
+rollback_stop(void)
 {
   stop_print_frame = 1;
-  normal_stop ();
+  normal_stop();
 }
 /* APPLE LOCAL end checkpoints */
+
+extern void maybe_create_checkpoint(void);
 
 /* Here to return control to GDB when the inferior stops for real.
    Print appropriate messages, remove breakpoints, give terminal our modes.
@@ -3670,7 +3683,7 @@ rollback_stop (void)
    attempting to insert breakpoints.  */
 
 void
-normal_stop (void)
+normal_stop(void)
 {
   struct target_waitstatus last;
   ptid_t last_ptid;
@@ -3748,7 +3761,7 @@ Further execution is probably impossible.\n"));
       if (stop_command)
 	catch_errors (hook_stop_stub, stop_command,
 		      "Error while running hook_stop:\n", RETURN_MASK_ALL);
-      
+
       goto done;
     }
 
@@ -3812,7 +3825,7 @@ Further execution is probably impossible.\n"));
 #endif /* SOLIB_ADD */
 /* APPLE LOCAL end */
 
-         /* APPLE LOCAL: The following block exists in the FSF sources 
+         /* APPLE LOCAL: The following block exists in the FSF sources
             verbatim, but is not bracketed by the following conditional exp. */
          if (!solib_step_bpstat_p)
            {
@@ -3831,7 +3844,7 @@ Further execution is probably impossible.\n"));
 		     && step_start_function == find_pc_function (stop_pc))
 		   {
 		     if (finishing_inlined_subroutine
-			 || (current_inlined_subroutine_call_stack_start_pc () 
+			 || (current_inlined_subroutine_call_stack_start_pc ()
 			     == stop_pc))
 		       source_flag = SRC_AND_LOC;
 		     else
@@ -3887,20 +3900,21 @@ Further execution is probably impossible.\n"));
 	    /* APPLE LOCAL mi */
 	    /* We will usually ask for this again in anything that uses
 	       the mi, so don't print it here. */
-	    if (!interpreter_p || strncmp (interpreter_p, "mi", 2) != 0)
+	    if (!interpreter_p || strncmp(interpreter_p, "mi", 2) != 0)
 	      /* APPLE LOCAL begin subroutine inlining  */
 	      {
-		print_stack_frame (get_selected_frame (NULL), 0, source_flag);
-		clear_inlined_subroutine_print_frames ();
+		print_stack_frame(get_selected_frame(NULL), 0,
+                                  (enum print_what)source_flag);
+		clear_inlined_subroutine_print_frames();
 	      }
 	      /* APPLE LOCAL end subroutine inlining  */
 
 	  /* Display the auto-display expressions.  */
-	  do_displays ();
+	  do_displays();
 	}
     }
 
-  /* APPLE LOCAL: This was moved from above the section of code that 
+  /* APPLE LOCAL: This was moved from above the section of code that
      prints the bottom-most stack frame.  */
 
   /* Look up the hook_stop and run it (CLI internally handles problem
@@ -3944,36 +3958,35 @@ done:
   /* Delete the breakpoint we stopped at, if it wants to be deleted.
      Delete any breakpoint that is to be deleted at the next stop.  */
 
-  breakpoint_auto_delete (stop_bpstat);
+  breakpoint_auto_delete(stop_bpstat);
 
   if (!stop_stack_dummy)
     {
        /* APPLE LOCAL: Don't invoke hooks for called-by-hand functions */
-       if (PIDGET (inferior_ptid) != 0)
+       if (PIDGET(inferior_ptid) != 0)
        {
          if (state_change_hook)
            {
-             state_change_hook (STATE_INFERIOR_STOPPED);
+             state_change_hook(STATE_INFERIOR_STOPPED);
            }
        }
 
       if ((stack_changed_hook != NULL) &&
-	  (! frame_id_eq (step_frame_id, get_frame_id (get_current_frame ())) ||
-	   step_start_function != find_pc_function (stop_pc)))
+	  (! frame_id_eq(step_frame_id, get_frame_id(get_current_frame()))
+           || (step_start_function != find_pc_function(stop_pc))))
 	{
-	  stack_changed_hook ();
+	  stack_changed_hook();
 	}
     }
   /* APPLE LOCAL end */
 
-  annotate_stopped ();
-  observer_notify_normal_stop (stop_bpstat);
+  annotate_stopped();
+  observer_notify_normal_stop(stop_bpstat);
 
   /* APPLE LOCAL begin checkpoints */
   {
-    void maybe_create_checkpoint (void);
     if (auto_checkpointing)
-      maybe_create_checkpoint ();
+      maybe_create_checkpoint();
   }
   /* APPLE LOCAL end checkpoints */
 
@@ -3990,20 +4003,18 @@ done:
   /* APPLE LOCAL end Inform users about debugging optimzied code  */
 }
 
-/* APPLE LOCAL: Sometimes we don't want to
-   call hook_stop - especially when running
-   functions in the objc parser.  */
-
+/* APPLE LOCAL: Sometimes we do NOT want to call hook_stop - especially
+ * when running functions in the objc parser: */
 static void *suppress_hook_stop_p;
 
 static void
-do_cleanup_suppress_hook_stop (void *arg)
+do_cleanup_suppress_hook_stop(void *arg)
 {
   suppress_hook_stop_p = arg;
 }
 
 struct cleanup *
-make_cleanup_suppress_hook_stop ()
+make_cleanup_suppress_hook_stop(void)
 {
   void *old_value = suppress_hook_stop_p;
   suppress_hook_stop_p = (void *) 1;
@@ -4014,7 +4025,7 @@ static int
 hook_stop_stub (void *cmd)
 {
   /* APPLE LOCAL - sometimes it's not safe to call the
-     hook stop.  Particularly while parsing expressions 
+     hook stop.  Particularly while parsing expressions
      (see objc-lang.c).  */
   if (!suppress_hook_stop_p)
     execute_cmd_pre_hook ((struct cmd_list_element *) cmd);
@@ -4064,27 +4075,27 @@ signal_pass_update (int signo, int state)
 }
 
 static void
-sig_print_header (void)
+sig_print_header(void)
 {
-  printf_filtered (_("\
+  printf_filtered(_("\
 Signal        Stop\tPrint\tPass to program\tDescription\n"));
 }
 
 static void
-sig_print_info (enum target_signal oursig)
+sig_print_info(enum target_signal oursig)
 {
-  char *name = target_signal_to_name (oursig);
-  int name_padding = 13 - strlen (name);
+  char *name = target_signal_to_name(oursig);
+  int name_padding = (int)(13UL - strlen(name));
 
   if (name_padding <= 0)
     name_padding = 0;
 
-  printf_filtered ("%s", name);
-  printf_filtered ("%*.*s ", name_padding, name_padding, "                 ");
-  printf_filtered ("%s\t", signal_stop[oursig] ? "Yes" : "No");
-  printf_filtered ("%s\t", signal_print[oursig] ? "Yes" : "No");
-  printf_filtered ("%s\t\t", signal_program[oursig] ? "Yes" : "No");
-  printf_filtered ("%s\n", target_signal_to_string (oursig));
+  printf_filtered("%s", name);
+  printf_filtered("%*.*s ", name_padding, name_padding, "                 ");
+  printf_filtered("%s\t", signal_stop[oursig] ? "Yes" : "No");
+  printf_filtered("%s\t", signal_print[oursig] ? "Yes" : "No");
+  printf_filtered("%s\t\t", signal_program[oursig] ? "Yes" : "No");
+  printf_filtered("%s\n", target_signal_to_string (oursig));
 }
 
 /* Specify how various signals in the inferior should be handled.  */
@@ -4255,22 +4266,22 @@ Are you sure you want to change it? ", target_signal_to_name ((enum target_signa
 
   if (from_tty)
     {
-      /* Show the results.  */
-      sig_print_header ();
+      /* Show the results: */
+      sig_print_header();
       for (signum = 0; signum < nsigs; signum++)
 	{
 	  if (sigs[signum])
 	    {
-	      sig_print_info (signum);
+	      sig_print_info((enum target_signal)signum);
 	    }
 	}
     }
 
-  do_cleanups (old_chain);
+  do_cleanups(old_chain);
 }
 
 static void
-xdb_handle_command (char *args, int from_tty)
+xdb_handle_command(char *args, int from_tty)
 {
   char **argv;
   struct cleanup *old_chain;
@@ -4342,39 +4353,40 @@ xdb_handle_command (char *args, int from_tty)
    targets, all signals should be in the signal tables).  */
 
 static void
-signals_info (char *signum_exp, int from_tty)
+signals_info(char *signum_exp, int from_tty)
 {
   enum target_signal oursig;
-  sig_print_header ();
+  sig_print_header();
 
   if (signum_exp)
     {
-      /* First see if this is a symbol name.  */
-      oursig = target_signal_from_name (signum_exp);
+      /* First see if this is a symbol name: */
+      oursig = target_signal_from_name(signum_exp);
       if (oursig == TARGET_SIGNAL_UNKNOWN)
 	{
-	  /* No, try numeric.  */
+	  /* No, try numeric: */
 	  oursig =
-	    target_signal_from_command (parse_and_eval_long (signum_exp));
+	    target_signal_from_command((int)parse_and_eval_long(signum_exp));
 	}
-      sig_print_info (oursig);
+      sig_print_info(oursig);
       return;
     }
 
-  printf_filtered ("\n");
-  /* These ugly casts brought to you by the native VAX compiler.  */
+  printf_filtered("\n");
+  /* These ugly casts brought to you by the native VAX compiler: */
   for (oursig = TARGET_SIGNAL_FIRST;
-       (int) oursig < (int) TARGET_SIGNAL_LAST;
-       oursig = (enum target_signal) ((int) oursig + 1))
+       (int)oursig < (int)TARGET_SIGNAL_LAST;
+       oursig = (enum target_signal)((int)oursig + 1))
     {
       QUIT;
 
-      if (oursig != TARGET_SIGNAL_UNKNOWN
-	  && oursig != TARGET_SIGNAL_DEFAULT && oursig != TARGET_SIGNAL_0)
-	sig_print_info (oursig);
+      if ((oursig != TARGET_SIGNAL_UNKNOWN)
+	  && (oursig != TARGET_SIGNAL_DEFAULT)
+          && (oursig != TARGET_SIGNAL_0))
+	sig_print_info(oursig);
     }
 
-  printf_filtered (_("\nUse the \"handle\" command to change these tables.\n"));
+  printf_filtered(_("\nUse the \"handle\" command to change these tables.\n"));
 }
 
 /* APPLE LOCAL: This command sets gdb's signal handling into a minimal
@@ -4392,8 +4404,8 @@ static unsigned char *full_signal_print = NULL;
 static unsigned char *full_signal_program = NULL;
 
 static int
-allocate_signal_set (unsigned char **stop, 
-		     unsigned char **print, 
+allocate_signal_set (unsigned char **stop,
+		     unsigned char **print,
 		     unsigned char **program)
 {
   int numsigs;
@@ -4430,7 +4442,7 @@ set_minimal_signal_handling (char *args, int from_tty,
 
 struct inferior_status
 {
-  /* APPLE LOCAL: You may run one thread but stop in 
+  /* APPLE LOCAL: You may run one thread but stop in
      another.  In that case, you'd better restore the
      ptid before restoring the registers!  */
   ptid_t stop_ptid;
@@ -4469,13 +4481,13 @@ struct inferior_status
 };
 
 void
-write_inferior_status_register (struct inferior_status *inf_status, int regno,
-				LONGEST val)
+write_inferior_status_register(struct inferior_status *inf_status,
+                               int regno, LONGEST val)
 {
-  int size = register_size (current_gdbarch, regno);
-  void *buf = alloca (size);
-  store_signed_integer (buf, size, val);
-  regcache_raw_write (inf_status->registers, regno, buf);
+  int size = register_size(current_gdbarch, regno);
+  void *buf = alloca(size);
+  store_signed_integer((gdb_byte *)buf, size, val);
+  regcache_raw_write(inf_status->registers, regno, (const gdb_byte *)buf);
 }
 
 /* Save all of the information associated with the inferior<==>gdb
@@ -4515,7 +4527,7 @@ save_inferior_status (int restore_stack_info)
 
   inf_status->registers = regcache_dup (current_regcache);
 
-  /* APPLE LOCAL: use get_selected_frame not deprecated_selected_frame 
+  /* APPLE LOCAL: use get_selected_frame not deprecated_selected_frame
      otherwise we'll store a NULL frame here if there's nothing selected,
      and the restore_selected_frame will complain.  */
   inf_status->selected_frame_id = get_frame_id (get_selected_frame (NULL));
@@ -4527,7 +4539,7 @@ save_inferior_status (int restore_stack_info)
 
   /* APPLE LOCAL target specific inferior_status support.  */
   inf_status->tdep_inferior_status = target_save_thread_inferior_status ();
-  
+
   return inf_status;
 }
 
@@ -4553,7 +4565,7 @@ restore_selected_frame (void *args)
 }
 
 void
-restore_inferior_status (struct inferior_status *inf_status)
+restore_inferior_status(struct inferior_status *inf_status)
 {
   /* Restore stop_ptid.  */
   inferior_ptid = inf_status->stop_ptid;
@@ -4570,8 +4582,8 @@ restore_inferior_status (struct inferior_status *inf_status)
   step_frame_id = inf_status->step_frame_id;
   step_over_calls = inf_status->step_over_calls;
   stop_after_trap = inf_status->stop_after_trap;
-  stop_soon = inf_status->stop_soon;
-  bpstat_clear (&stop_bpstat);
+  stop_soon = (enum stop_kind)inf_status->stop_soon;
+  bpstat_clear(&stop_bpstat);
   stop_bpstat = inf_status->stop_bpstat;
   breakpoint_proceeded = inf_status->breakpoint_proceeded;
   proceed_to_finish = inf_status->proceed_to_finish;
@@ -4624,15 +4636,15 @@ restore_inferior_status (struct inferior_status *inf_status)
 }
 
 static void
-do_restore_inferior_status_cleanup (void *sts)
+do_restore_inferior_status_cleanup(void *sts)
 {
-  restore_inferior_status (sts);
+  restore_inferior_status((struct inferior_status *)sts);
 }
 
 struct cleanup *
-make_cleanup_restore_inferior_status (struct inferior_status *inf_status)
+make_cleanup_restore_inferior_status(struct inferior_status *inf_status)
 {
-  return make_cleanup (do_restore_inferior_status_cleanup, inf_status);
+  return make_cleanup(do_restore_inferior_status_cleanup, inf_status);
 }
 
 void
@@ -4719,26 +4731,20 @@ ptid_build (int pid, long lwp, long tid)
   return ptid;
 }
 
-/* Create a ptid from just a pid.  */
-
-ptid_t
-pid_to_ptid (int pid)
+/* Create a ptid from just a pid: */
+ptid_t pid_to_ptid(int pid)
 {
-  return ptid_build (pid, 0, 0);
+  return ptid_build(pid, 0, 0);
 }
 
-/* Fetch the pid (process id) component from a ptid.  */
-
-int
-ptid_get_pid (ptid_t ptid)
+/* Fetch the pid (process id) component from a ptid: */
+int ptid_get_pid(ptid_t ptid)
 {
   return ptid.pid;
 }
 
-/* Fetch the lwp (lightweight process) component from a ptid.  */
-
-long
-ptid_get_lwp (ptid_t ptid)
+/* Fetch the lwp (lightweight process) component from a ptid: */
+long ptid_get_lwp(ptid_t ptid)
 {
   return ptid.lwp;
 }
@@ -4765,11 +4771,11 @@ ptid_equal (ptid_t ptid1, ptid_t ptid2)
    save_inferior_ptid().  */
 
 static void
-restore_inferior_ptid (void *arg)
+restore_inferior_ptid(void *arg)
 {
-  ptid_t *saved_ptid_ptr = arg;
+  ptid_t *saved_ptid_ptr = (ptid_t *)arg;
   inferior_ptid = *saved_ptid_ptr;
-  xfree (arg);
+  xfree(arg);
 }
 
 /* Save the value of inferior_ptid so that it may be restored by a
@@ -4777,24 +4783,24 @@ restore_inferior_ptid (void *arg)
    needed for later doing the cleanup.  */
 
 struct cleanup *
-save_inferior_ptid (void)
+save_inferior_ptid(void)
 {
   ptid_t *saved_ptid_ptr;
 
-  saved_ptid_ptr = xmalloc (sizeof (ptid_t));
+  saved_ptid_ptr = (ptid_t *)xmalloc(sizeof(ptid_t));
   *saved_ptid_ptr = inferior_ptid;
-  return make_cleanup (restore_inferior_ptid, saved_ptid_ptr);
+  return make_cleanup(restore_inferior_ptid, saved_ptid_ptr);
 }
 
 
 static void
-build_infrun (void)
+build_infrun(void)
 {
-  stop_registers = regcache_xmalloc (current_gdbarch);
+  stop_registers = regcache_xmalloc(current_gdbarch);
 }
 
 void
-_initialize_infrun (void)
+_initialize_infrun(void)
 {
   int i;
   int numsigs;
@@ -4868,8 +4874,8 @@ When non-zero, inferior specific debugging is enabled."),
 			   NULL, NULL,
 			   &setdebuglist, &showdebuglist);
 
-  numsigs = allocate_signal_set (&full_signal_stop, 
-				 &full_signal_print, 
+  numsigs = allocate_signal_set (&full_signal_stop,
+				 &full_signal_print,
 				 &full_signal_program);
 
   for (i = 0; i < numsigs; i++)
@@ -4917,8 +4923,8 @@ When non-zero, inferior specific debugging is enabled."),
   set_minimal_signal_handling (NULL, 0, NULL);
 
   /* APPLE LOCAL: Initialize the "minimal_signal" arrays.  */
-  numsigs = allocate_signal_set (&minimal_signal_stop, 
-				 &minimal_signal_print, 
+  numsigs = allocate_signal_set (&minimal_signal_stop,
+				 &minimal_signal_print,
 				 &minimal_signal_program);
 
   for (i = 0; i < numsigs; i++)
@@ -4992,7 +4998,7 @@ By default, the debugger will follow the parent process."),
 			show_follow_fork_mode_string,
 			&setlist, &showlist);
 
-  add_setshow_enum_cmd ("scheduler-locking", class_run, 
+  add_setshow_enum_cmd ("scheduler-locking", class_run,
 			scheduler_enums, &scheduler_mode, _("\
 Set mode for locking scheduler during execution."), _("\
 Show mode for locking scheduler during execution."), _("\
@@ -5000,7 +5006,7 @@ off  == no locking (threads may preempt at any time)\n\
 on   == full locking (no thread except the current thread may run)\n\
 step == scheduler locked during every single-step operation.\n\
 	In this mode, no other thread may run during a step command.\n\
-	Other threads may run while stepping over a function call ('next')."), 
+	Other threads may run while stepping over a function call ('next')."),
 			set_schedlock_func,	/* traps on target vector */
 			show_scheduler_mode,
 			&setlist, &showlist);

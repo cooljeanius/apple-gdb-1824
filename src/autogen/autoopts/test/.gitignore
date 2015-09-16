@@ -1,0 +1,12 @@
+*libs/*
+*.log
+*.trs
+*.lo
+defs
+./testdir/*
+testdir/*
+FAILURES/*
+Makefile
+site.exp
+site.bak
+*.sum

@@ -1,4 +1,4 @@
-/* Support for printing C values for GDB, the GNU debugger.
+/* c-valprint.c: Support for printing C values for GDB, the GNU debugger.
 
    Copyright 1986, 1988, 1989, 1991, 1992, 1993, 1994, 1995, 1996,
    1997, 1998, 1999, 2000, 2001, 2003, 2005 Free Software Foundation,
@@ -102,8 +102,8 @@ c_val_print (struct type *type, const gdb_byte *valaddr, int embedded_offset,
              what the user expects 99% of the time.  Instead, detect that
              we're looking at a vector's int8_t array and treat it
              specially.  */
-          if (eltlen == 1 
-              && TYPE_VECTOR (type) 
+          if (eltlen == 1
+              && TYPE_VECTOR (type)
               && TYPE_CODE (elttype) == TYPE_CODE_INT
               && format == 0)
             {
@@ -113,7 +113,7 @@ c_val_print (struct type *type, const gdb_byte *valaddr, int embedded_offset,
           /* APPLE LOCAL: Detect if we're about to print an array of
              v4_float or v2_doubles in a vector register  */
           if ((eltlen == 4 || eltlen == 8)
-              && TYPE_VECTOR (type) 
+              && TYPE_VECTOR (type)
               && TYPE_CODE (elttype) == TYPE_CODE_FLT)
             {
               vector_floats = 1;
@@ -158,7 +158,7 @@ c_val_print (struct type *type, const gdb_byte *valaddr, int embedded_offset,
 		{
 		  i = 0;
 		}
-              
+
               /* If this is an array of int8_t's in a vector register,
                  force it to print as decimal by default, not as
                  decimal value + octal escaped char.  */
@@ -172,8 +172,8 @@ c_val_print (struct type *type, const gdb_byte *valaddr, int embedded_offset,
               if (format == 'x' && vector_floats)
                 format = 'A';
 
-	      val_print_array_elements (type, valaddr + embedded_offset, 
-                                        address, stream, format, deref_ref, 
+	      val_print_array_elements (type, valaddr + embedded_offset,
+                                        address, stream, format, deref_ref,
                                         recurse, pretty, i);
 	      fprintf_filtered (stream, "}");
 	    }
@@ -590,7 +590,7 @@ c_value_print (struct value *val, struct ui_file *stream, int format,
 	      /* NOTE: cagney/2005-01-02: THIS IS BOGUS.  */
               value_contents_writeable (val)[0] -= top;
 
-              /* Note: When we look up RTTI entries, we don't get any 
+              /* Note: When we look up RTTI entries, we don't get any
                  information on const or volatile attributes */
             }
           type_print (type, "", stream, -1);
@@ -649,3 +649,5 @@ c_value_print (struct value *val, struct ui_file *stream, int format,
 		    VALUE_ADDRESS (val) + value_offset (val),
 		    stream, format, 1, 0, pretty);
 }
+
+/* EOF */

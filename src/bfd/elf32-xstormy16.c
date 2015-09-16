@@ -413,7 +413,7 @@ xstormy16_elf_check_relocs (bfd *abfd,
 	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
 	}
 
-      switch (ELF32_R_TYPE (rel->r_info))
+      switch (ELF32_R_TYPE(rel->r_info))
         {
 	  /* This relocation describes a 16-bit pointer to a function.
 	     We may need to allocate a thunk in low memory; reserve memory
@@ -427,10 +427,10 @@ xstormy16_elf_check_relocs (bfd *abfd,
 	    }
 
 	  if (dynobj == NULL)
-	    elf_hash_table (info)->dynobj = dynobj = abfd;
+	    elf_hash_table(info)->dynobj = dynobj = abfd;
 	  if (splt == NULL)
 	    {
-	      splt = bfd_get_section_by_name (dynobj, ".plt");
+	      splt = bfd_get_section_by_name(dynobj, ".plt");
 	      if (splt == NULL)
 		{
 		  splt = bfd_make_section_with_flags (dynobj, ".plt",
@@ -442,8 +442,8 @@ xstormy16_elf_check_relocs (bfd *abfd,
 						       | SEC_READONLY
 						       | SEC_CODE));
 
-		  if (splt == NULL
-		      || ! bfd_set_section_alignment (dynobj, splt, 1))
+		  if ((splt == NULL)
+		      || ! bfd_set_section_alignment(dynobj, splt, 1))
 		    return FALSE;
 		}
 	    }
@@ -457,8 +457,8 @@ xstormy16_elf_check_relocs (bfd *abfd,
 		  size_t size;
 		  unsigned int i;
 
-		  size = symtab_hdr->sh_info * sizeof (bfd_vma);
-		  local_plt_offsets = bfd_alloc (abfd, size);
+		  size = symtab_hdr->sh_info * sizeof(bfd_vma);
+		  local_plt_offsets = (bfd_vma *)bfd_alloc(abfd, size);
 		  if (local_plt_offsets == NULL)
 		    return FALSE;
 		  elf_local_got_offsets (abfd) = local_plt_offsets;
@@ -469,7 +469,7 @@ xstormy16_elf_check_relocs (bfd *abfd,
 	      offset = &local_plt_offsets[r_symndx];
 	    }
 
-	  if (*offset == (bfd_vma) -1)
+	  if (*offset == (bfd_vma)-1)
 	    {
 	      *offset = splt->size;
 	      splt->size += 4;
@@ -479,15 +479,18 @@ xstormy16_elf_check_relocs (bfd *abfd,
 	  /* This relocation describes the C++ object vtable hierarchy.
 	     Reconstruct it for later use during GC.  */
         case R_XSTORMY16_GNU_VTINHERIT:
-          if (!bfd_elf_gc_record_vtinherit (abfd, sec, h, rel->r_offset))
+          if (!bfd_elf_gc_record_vtinherit(abfd, sec, h, rel->r_offset))
             return FALSE;
           break;
 
 	  /* This relocation describes which C++ vtable entries are actually
 	     used.  Record for later use during GC.  */
         case R_XSTORMY16_GNU_VTENTRY:
-          if (!bfd_elf_gc_record_vtentry (abfd, sec, h, rel->r_addend))
+          if (!bfd_elf_gc_record_vtentry(abfd, sec, h, rel->r_addend))
             return FALSE;
+          break;
+
+        default:
           break;
 	}
     }
@@ -693,14 +696,14 @@ xstormy16_elf_always_size_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
   if (info->relocatable)
     return TRUE;
 
-  dynobj = elf_hash_table (info)->dynobj;
+  dynobj = elf_hash_table(info)->dynobj;
   if (dynobj == NULL)
     return TRUE;
 
-  splt = bfd_get_section_by_name (dynobj, ".plt");
-  BFD_ASSERT (splt != NULL);
+  splt = bfd_get_section_by_name(dynobj, ".plt");
+  BFD_ASSERT(splt != NULL);
 
-  splt->contents = bfd_zalloc (dynobj, splt->size);
+  splt->contents = (unsigned char *)bfd_zalloc(dynobj, splt->size);
   if (splt->contents == NULL)
     return FALSE;
 

@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+# Requires perl 5.10 or newer.
 
 # Copyright (C) 2013-2014 Free Software Foundation, Inc.
 #

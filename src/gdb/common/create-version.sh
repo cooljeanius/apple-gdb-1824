@@ -22,17 +22,25 @@
 #    create-version.sh PATH-TO-GDB-SRCDIR HOST_ALIAS \
 #        TARGET_ALIAS OUTPUT-FILE-NAME
 
+if test "x${V}" = "x1" || test "x${SH_V}" = "x1"; then
+    AM_V_v="-v"
+    set -ex
+else
+    AM_V_v=""
+    set -e
+fi
+
 srcdir="$1"
 host_alias="$2"
 target_alias="$3"
 output="$4"
 
-rm -f version.c-tmp $output version.tmp
-date=`sed -n -e 's/^.* BFD_VERSION_DATE \(.*\)$/\1/p' $srcdir/../bfd/version.h`
-sed -e "s/DATE/$date/" < $srcdir/version.in > version.tmp
+rm -f ${AM_V_v} version.c-tmp ${output} version.tmp
+date=`sed -n -e 's/^.* BFD_VERSION_DATE \(.*\)$/\1/p' ${srcdir}/../bfd/version.h`
+sed -e "s/DATE/${date}/" < ${srcdir}/version.in > version.tmp
 echo '#include "version.h"' >> version.c-tmp
 echo 'const char version[] = "'"`sed q version.tmp`"'";' >> version.c-tmp
-echo 'const char host_name[] = "'"$host_alias"'";' >> version.c-tmp
-echo 'const char target_name[] = "'"$target_alias"'";' >> version.c-tmp
-mv version.c-tmp $output
+echo 'const char host_name[] = "'"${host_alias}"'";' >> version.c-tmp
+echo 'const char target_name[] = "'"${target_alias}"'";' >> version.c-tmp
+mv ${AM_V_v} version.c-tmp ${output}
 rm -f version.tmp

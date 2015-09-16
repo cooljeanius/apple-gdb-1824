@@ -1,7 +1,7 @@
 /* d10v-opc.c -- D10V opcode list
-   Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
-   Written by Martin Hunt, Cygnus Support
-
+ * Copyright 1996-2002 Free Software Foundation, Inc.
+ * Written by Martin Hunt, Cygnus Support.  */
+/*
 This file is part of GDB, GAS, and the GNU binutils.
 
 GDB, GAS, and the GNU binutils are free software; you can redistribute
@@ -16,14 +16,14 @@ the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this file; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Software Foundation, 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include <stdio.h>
 #include "sysdep.h"
 #include "opcode/d10v.h"
 
 
-/*   The table is sorted. Suitable for searching by a binary search. */
+/* The table is sorted. Suitable for searching by a binary search. */
 const struct pd_reg d10v_predefined_registers[] =
 {
   { "a0", NULL, OPERAND_ACC0+0 },
@@ -88,8 +88,8 @@ const struct pd_reg d10v_predefined_registers[] =
   { "sp", NULL, OPERAND_SP|(OPERAND_GPR+15) },
 };
 
-int 
-d10v_reg_name_cnt()
+int
+d10v_reg_name_cnt(void)
 {
   return (sizeof(d10v_predefined_registers) / sizeof(struct pd_reg));
 }

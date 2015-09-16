@@ -1,4 +1,5 @@
-/* Parameters for execution on a 3b1.
+/* xm-3b1.h
+   Parameters for execution on a 3b1.
    Copyright (C) 1986, 1987, 1989 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -82,3 +83,5 @@
 { asm ("subil $8,28(sp)");     \
   asm ("movem (sp),$ 0xffff"); \
   asm ("rte"); }
+
+/* EOF */

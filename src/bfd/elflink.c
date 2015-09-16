@@ -1,4 +1,4 @@
-/* ELF linking support for BFD.
+/* elflink.c: ELF linking support for BFD.
    Copyright 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -16,7 +16,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -27,8 +27,13 @@
 #include "safe-ctype.h"
 #include "libiberty.h"
 
+/* one local prototype needs to be up here for now: */
+extern bfd_boolean
+elf_link_add_archive_symbols(bfd *, struct bfd_link_info *);
+
+/* now straight into actual functions: */
 bfd_boolean
-_bfd_elf_create_got_section (bfd *abfd, struct bfd_link_info *info)
+_bfd_elf_create_got_section(bfd *abfd, struct bfd_link_info *info)
 {
   flagword flags;
   asection *s;
@@ -253,8 +258,7 @@ _bfd_elf_link_create_dynamic_sections (bfd *abfd, struct bfd_link_info *info)
   return TRUE;
 }
 
-/* Create dynamic sections when linking against a dynamic object.  */
-
+/* Create dynamic sections when linking against a dynamic object: */
 bfd_boolean
 _bfd_elf_create_dynamic_sections (bfd *abfd, struct bfd_link_info *info)
 {
@@ -518,9 +522,8 @@ bfd_elf_record_link_assignment (struct bfd_link_info *info,
    in a discarded section, eg. a discarded link-once section symbol.  */
 
 int
-bfd_elf_link_record_local_dynamic_symbol (struct bfd_link_info *info,
-					  bfd *input_bfd,
-					  long input_indx)
+bfd_elf_link_record_local_dynamic_symbol(struct bfd_link_info *info,
+					 bfd *input_bfd, long input_indx)
 {
   bfd_size_type amt;
   struct elf_link_local_dynamic_entry *entry;
@@ -529,18 +532,18 @@ bfd_elf_link_record_local_dynamic_symbol (struct bfd_link_info *info,
   unsigned long dynstr_index;
   char *name;
   Elf_External_Sym_Shndx eshndx;
-  char esym[sizeof (Elf64_External_Sym)];
+  char esym[sizeof(Elf64_External_Sym)];
 
-  if (! is_elf_hash_table (info->hash))
+  if (! is_elf_hash_table(info->hash))
     return 0;
 
-  /* See if the entry exists already.  */
-  for (entry = elf_hash_table (info)->dynlocal; entry ; entry = entry->next)
-    if (entry->input_bfd == input_bfd && entry->input_indx == input_indx)
+  /* See if the entry exists already: */
+  for (entry = elf_hash_table(info)->dynlocal; entry; entry = entry->next)
+    if ((entry->input_bfd == input_bfd) && entry->input_indx == input_indx)
       return 1;
 
-  amt = sizeof (*entry);
-  entry = bfd_alloc (input_bfd, amt);
+  amt = sizeof(*entry);
+  entry = (struct elf_link_local_dynamic_entry *)bfd_alloc(input_bfd, amt);
   if (entry == NULL)
     return 0;
 
@@ -623,13 +626,13 @@ _bfd_elf_link_lookup_local_dynindx (struct bfd_link_info *info,
    via elf_link_hash_traverse.  */
 
 static bfd_boolean
-elf_link_renumber_hash_table_dynsyms (struct elf_link_hash_entry *h,
-				      void *data)
+elf_link_renumber_hash_table_dynsyms(struct elf_link_hash_entry *h,
+                                     void *data)
 {
-  size_t *count = data;
+  size_t *count = (size_t *)data;
 
   if (h->root.type == bfd_link_hash_warning)
-    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 
   if (h->forced_local)
     return TRUE;
@@ -645,10 +648,10 @@ elf_link_renumber_hash_table_dynsyms (struct elf_link_hash_entry *h,
    STB_LOCAL binding.  */
 
 static bfd_boolean
-elf_link_renumber_local_hash_table_dynsyms (struct elf_link_hash_entry *h,
-					    void *data)
+elf_link_renumber_local_hash_table_dynsyms(struct elf_link_hash_entry *h,
+                                           void *data)
 {
-  size_t *count = data;
+  size_t *count = (size_t *)data;
 
   if (h->root.type == bfd_link_hash_warning)
     h = (struct elf_link_hash_entry *) h->root.u.i.link;
@@ -760,18 +763,14 @@ _bfd_elf_link_renumber_dynsyms (bfd *output_bfd,
    object is overridden by a regular object.  */
 
 bfd_boolean
-_bfd_elf_merge_symbol (bfd *abfd,
-		       struct bfd_link_info *info,
-		       const char *name,
-		       Elf_Internal_Sym *sym,
-		       asection **psec,
-		       bfd_vma *pvalue,
-		       unsigned int *pold_alignment,
-		       struct elf_link_hash_entry **sym_hash,
-		       bfd_boolean *skip,
-		       bfd_boolean *override,
-		       bfd_boolean *type_change_ok,
-		       bfd_boolean *size_change_ok)
+_bfd_elf_merge_symbol(bfd *abfd, struct bfd_link_info *info,
+                      const char *name, Elf_Internal_Sym *sym,
+                      asection **psec, bfd_vma *pvalue,
+		      unsigned int *pold_alignment,
+                      struct elf_link_hash_entry **sym_hash,
+		      bfd_boolean *skip, bfd_boolean *override,
+		      bfd_boolean *type_change_ok,
+                      bfd_boolean *size_change_ok)
 {
   asection *sec, *oldsec;
   struct elf_link_hash_entry *h;
@@ -780,7 +779,7 @@ _bfd_elf_merge_symbol (bfd *abfd,
   bfd *oldbfd;
   bfd_boolean newdyn, olddyn, olddef, newdef, newdyncommon, olddyncommon;
   bfd_boolean newweak, oldweak;
-  const struct elf_backend_data *bed;
+  const struct elf_backend_data *abed;
 
   *skip = FALSE;
   *override = FALSE;
@@ -1124,15 +1123,15 @@ _bfd_elf_merge_symbol (bfd *abfd,
 
   /* We now know everything about the old and new symbols.  We ask the
      backend to check if we can merge them.  */
-  bed = get_elf_backend_data (abfd);
-  if (bed->merge_symbol
-      && !bed->merge_symbol (info, sym_hash, h, sym, psec, pvalue,
-			     pold_alignment, skip, override,
-			     type_change_ok, size_change_ok,
-			     &newdyn, &newdef, &newdyncommon, &newweak,
-			     abfd, &sec,
-			     &olddyn, &olddef, &olddyncommon, &oldweak,
-			     oldbfd, &oldsec))
+  abed = get_elf_backend_data(abfd);
+  if (abed->merge_symbol
+      && !abed->merge_symbol(info, sym_hash, h, sym, psec, pvalue,
+                             pold_alignment, skip, override,
+                             type_change_ok, size_change_ok,
+                             &newdyn, &newdef, &newdyncommon, &newweak,
+                             abfd, &sec,
+                             &olddyn, &olddef, &olddyncommon, &oldweak,
+                             oldbfd, &oldsec))
     return FALSE;
 
   /* If both the old and the new symbols look like common symbols in a
@@ -1205,13 +1204,13 @@ _bfd_elf_merge_symbol (bfd *abfd,
      right thing.  */
 
   if (newdyncommon
-      && h->root.type == bfd_link_hash_common)
+      && (h->root.type == bfd_link_hash_common))
     {
       *override = TRUE;
       newdef = FALSE;
       newdyncommon = FALSE;
       *pvalue = sym->st_size;
-      *psec = sec = bed->common_section (oldsec);
+      *psec = sec = abed->common_section(oldsec);
       *size_change_ok = TRUE;
     }
 
@@ -1314,11 +1313,11 @@ _bfd_elf_merge_symbol (bfd *abfd,
       /* Handle the case where we had a versioned symbol in a dynamic
 	 library and now find a definition in a normal object.  In this
 	 case, we make the versioned symbol point to the normal one.  */
-      const struct elf_backend_data *bed = get_elf_backend_data (abfd);
+      const struct elf_backend_data *ebed = get_elf_backend_data(abfd);
       flip->root.type = h->root.type;
       h->root.type = bfd_link_hash_indirect;
       h->root.u.i.link = (struct bfd_link_hash_entry *) flip;
-      (*bed->elf_backend_copy_indirect_symbol) (bed, flip, h);
+      (*ebed->elf_backend_copy_indirect_symbol)(ebed, flip, h);
       flip->root.u.undef.abfd = h->root.u.undef.abfd;
       if (h->def_dynamic)
 	{
@@ -1376,24 +1375,24 @@ _bfd_elf_add_default_symbol (bfd *abfd,
       BFD_ASSERT (hi != NULL);
       if (hi == h)
 	return TRUE;
-      while (hi->root.type == bfd_link_hash_indirect
-	     || hi->root.type == bfd_link_hash_warning)
+      while ((hi->root.type == bfd_link_hash_indirect)
+	     || (hi->root.type == bfd_link_hash_warning))
 	{
-	  hi = (struct elf_link_hash_entry *) hi->root.u.i.link;
+	  hi = (struct elf_link_hash_entry *)hi->root.u.i.link;
 	  if (hi == h)
 	    return TRUE;
 	}
     }
 
-  bed = get_elf_backend_data (abfd);
+  bed = get_elf_backend_data(abfd);
   collect = bed->collect;
   dynamic = (abfd->flags & DYNAMIC) != 0;
 
-  shortlen = p - name;
-  shortname = bfd_hash_allocate (&info->hash->table, shortlen + 1);
+  shortlen = (p - name);
+  shortname = (char *)bfd_hash_allocate(&info->hash->table, shortlen + 1);
   if (shortname == NULL)
     return FALSE;
-  memcpy (shortname, name, shortlen);
+  memcpy(shortname, name, shortlen);
   shortname[shortlen] = '\0';
 
   /* We are going to create a new symbol.  Merge it with any existing
@@ -1496,20 +1495,20 @@ _bfd_elf_add_default_symbol (bfd *abfd,
      of the symbol.  */
 
 nondefault:
-  len = strlen (name);
-  shortname = bfd_hash_allocate (&info->hash->table, len);
+  len = strlen(name);
+  shortname = (char *)bfd_hash_allocate(&info->hash->table, len);
   if (shortname == NULL)
     return FALSE;
-  memcpy (shortname, name, shortlen);
-  memcpy (shortname + shortlen, p + 1, len - shortlen);
+  memcpy(shortname, name, shortlen);
+  memcpy(shortname + shortlen, p + 1, len - shortlen);
 
-  /* Once again, merge with any existing symbol.  */
+  /* Once again, merge with any existing symbol: */
   type_change_ok = FALSE;
   size_change_ok = FALSE;
   sec = *psec;
-  if (!_bfd_elf_merge_symbol (abfd, info, shortname, sym, &sec, value,
-			      NULL, &hi, &skip, &override,
-			      &type_change_ok, &size_change_ok))
+  if (!_bfd_elf_merge_symbol(abfd, info, shortname, sym, &sec, value,
+			     NULL, &hi, &skip, &override,
+			     &type_change_ok, &size_change_ok))
     return FALSE;
 
   if (skip)
@@ -1757,20 +1756,20 @@ _bfd_elf_link_assign_sym_version (struct elf_link_hash_entry *h, void *data)
 	  return TRUE;
 	}
 
-      /* Look for the version.  If we find it, it is no longer weak.  */
+      /* Look for the version.  If we find it, it is no longer weak: */
       for (t = sinfo->verdefs; t != NULL; t = t->next)
 	{
-	  if (strcmp (t->name, p) == 0)
+	  if (strcmp(t->name, p) == 0)
 	    {
 	      size_t len;
 	      char *alc;
 	      struct bfd_elf_version_expr *d;
 
-	      len = p - h->root.root.string;
-	      alc = bfd_malloc (len);
+	      len = (p - h->root.root.string);
+	      alc = (char *)bfd_malloc(len);
 	      if (alc == NULL)
 		return FALSE;
-	      memcpy (alc, h->root.root.string, len - 1);
+	      memcpy(alc, h->root.root.string, len - 1);
 	      alc[len - 1] = '\0';
 	      if (alc[len - 2] == ELF_VER_CHR)
 		alc[len - 2] = '\0';
@@ -1935,46 +1934,45 @@ _bfd_elf_link_assign_sym_version (struct elf_link_hash_entry *h, void *data)
    Returns FALSE if something goes wrong.  */
 
 static bfd_boolean
-elf_link_read_relocs_from_section (bfd *abfd,
-				   asection *sec,
-				   Elf_Internal_Shdr *shdr,
-				   void *external_relocs,
-				   Elf_Internal_Rela *internal_relocs)
+elf_link_read_relocs_from_section(bfd *abfd, asection *sec,
+                                  Elf_Internal_Shdr *shdr,
+                                  void *external_relocs,
+				  Elf_Internal_Rela *internal_relocs)
 {
   const struct elf_backend_data *bed;
-  void (*swap_in) (bfd *, const bfd_byte *, Elf_Internal_Rela *);
+  void (*swap_in)(bfd *, const bfd_byte *, Elf_Internal_Rela *);
   const bfd_byte *erela;
   const bfd_byte *erelaend;
   Elf_Internal_Rela *irela;
   Elf_Internal_Shdr *symtab_hdr;
   size_t nsyms;
 
-  /* Position ourselves at the start of the section.  */
-  if (bfd_seek (abfd, shdr->sh_offset, SEEK_SET) != 0)
+  /* Position ourselves at the start of the section: */
+  if (bfd_seek(abfd, shdr->sh_offset, SEEK_SET) != 0)
     return FALSE;
 
-  /* Read the relocations.  */
-  if (bfd_bread (external_relocs, shdr->sh_size, abfd) != shdr->sh_size)
+  /* Read the relocations: */
+  if (bfd_bread(external_relocs, shdr->sh_size, abfd) != shdr->sh_size)
     return FALSE;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  nsyms = symtab_hdr->sh_size / symtab_hdr->sh_entsize;
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  nsyms = (symtab_hdr->sh_size / symtab_hdr->sh_entsize);
 
-  bed = get_elf_backend_data (abfd);
+  bed = get_elf_backend_data(abfd);
 
-  /* Convert the external relocations to the internal format.  */
+  /* Convert the external relocations to the internal format: */
   if (shdr->sh_entsize == bed->s->sizeof_rel)
     swap_in = bed->s->swap_reloc_in;
   else if (shdr->sh_entsize == bed->s->sizeof_rela)
     swap_in = bed->s->swap_reloca_in;
   else
     {
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return FALSE;
     }
 
-  erela = external_relocs;
-  erelaend = erela + shdr->sh_size;
+  erela = (const bfd_byte *)external_relocs;
+  erelaend = (erela + shdr->sh_size);
   irela = internal_relocs;
   while (erela < erelaend)
     {
@@ -2094,46 +2092,44 @@ _bfd_elf_link_read_relocs (bfd *abfd,
    section header for a section containing relocations for O.  */
 
 bfd_boolean
-_bfd_elf_link_size_reloc_section (bfd *abfd,
-				  Elf_Internal_Shdr *rel_hdr,
-				  asection *o)
+_bfd_elf_link_size_reloc_section(bfd *abfd, Elf_Internal_Shdr *rel_hdr,
+				 asection *o)
 {
   bfd_size_type reloc_count;
   bfd_size_type num_rel_hashes;
 
-  /* Figure out how many relocations there will be.  */
-  if (rel_hdr == &elf_section_data (o)->rel_hdr)
-    reloc_count = elf_section_data (o)->rel_count;
+  /* Figure out how many relocations there will be: */
+  if (rel_hdr == &elf_section_data(o)->rel_hdr)
+    reloc_count = elf_section_data(o)->rel_count;
   else
-    reloc_count = elf_section_data (o)->rel_count2;
+    reloc_count = elf_section_data(o)->rel_count2;
 
   num_rel_hashes = o->reloc_count;
   if (num_rel_hashes < reloc_count)
     num_rel_hashes = reloc_count;
 
-  /* That allows us to calculate the size of the section.  */
-  rel_hdr->sh_size = rel_hdr->sh_entsize * reloc_count;
+  /* That allows us to calculate the size of the section: */
+  rel_hdr->sh_size = (rel_hdr->sh_entsize * reloc_count);
 
   /* The contents field must last into write_object_contents, so we
      allocate it with bfd_alloc rather than malloc.  Also since we
      cannot be sure that the contents will actually be filled in,
      we zero the allocated space.  */
-  rel_hdr->contents = bfd_zalloc (abfd, rel_hdr->sh_size);
-  if (rel_hdr->contents == NULL && rel_hdr->sh_size != 0)
+  rel_hdr->contents = (unsigned char *)bfd_zalloc(abfd, rel_hdr->sh_size);
+  if ((rel_hdr->contents == NULL) && (rel_hdr->sh_size != 0))
     return FALSE;
 
   /* We only allocate one set of hash entries, so we only do it the
      first time we are called.  */
-  if (elf_section_data (o)->rel_hashes == NULL
-      && num_rel_hashes)
+  if ((elf_section_data(o)->rel_hashes == NULL) && num_rel_hashes)
     {
       struct elf_link_hash_entry **p;
 
-      p = bfd_zmalloc (num_rel_hashes * sizeof (struct elf_link_hash_entry *));
+      p = bfd_zmalloc(num_rel_hashes * sizeof(struct elf_link_hash_entry *));
       if (p == NULL)
 	return FALSE;
 
-      elf_section_data (o)->rel_hashes = p;
+      elf_section_data(o)->rel_hashes = p;
     }
 
   return TRUE;
@@ -2499,13 +2495,12 @@ _bfd_elf_link_sec_merge_syms (struct elf_link_hash_entry *h, void *data)
       && ((sec = h->root.u.def.section)->flags & SEC_MERGE)
       && sec->sec_info_type == ELF_INFO_TYPE_MERGE)
     {
-      bfd *output_bfd = data;
+      bfd *output_bfd = (bfd *)data;
 
       h->root.u.def.value =
-	_bfd_merged_section_offset (output_bfd,
-				    &h->root.u.def.section,
-				    elf_section_data (sec)->sec_info,
-				    h->root.u.def.value);
+	_bfd_merged_section_offset(output_bfd, &h->root.u.def.section,
+				   elf_section_data(sec)->sec_info,
+				   h->root.u.def.value);
     }
 
   return TRUE;
@@ -2795,18 +2790,18 @@ _bfd_elf_add_dynamic_entry (struct bfd_link_info *info,
     _bfd_error_handler
       (_("warning: creating a DT_TEXTREL in a shared object."));
 
-  bed = get_elf_backend_data (hash_table->dynobj);
-  s = bfd_get_section_by_name (hash_table->dynobj, ".dynamic");
-  BFD_ASSERT (s != NULL);
+  bed = get_elf_backend_data(hash_table->dynobj);
+  s = bfd_get_section_by_name(hash_table->dynobj, ".dynamic");
+  BFD_ASSERT(s != NULL);
 
-  newsize = s->size + bed->s->sizeof_dyn;
-  newcontents = bfd_realloc (s->contents, newsize);
+  newsize = (s->size + bed->s->sizeof_dyn);
+  newcontents = (bfd_byte *)bfd_realloc(s->contents, newsize);
   if (newcontents == NULL)
     return FALSE;
 
   dyn.d_tag = tag;
   dyn.d_un.d_val = val;
-  bed->s->swap_dyn_out (hash_table->dynobj, &dyn, newcontents + s->size);
+  bed->s->swap_dyn_out(hash_table->dynobj, &dyn, (newcontents + s->size));
 
   s->size = newsize;
   s->contents = newcontents;
@@ -3242,11 +3237,11 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 		}
 
 	      sz = s->size;
-	      msg = bfd_alloc (abfd, sz + 1);
+	      msg = (char *)bfd_alloc(abfd, (sz + 1UL));
 	      if (msg == NULL)
 		goto error_return;
 
-	      if (! bfd_get_section_contents (abfd, s, msg, 0, sz))
+	      if (! bfd_get_section_contents(abfd, s, msg, 0, sz))
 		goto error_return;
 
 	      msg[sz] = '\0';
@@ -3350,16 +3345,16 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 		  char *fnm, *anm;
 		  unsigned int tagv = dyn.d_un.d_val;
 
-		  amt = sizeof (struct bfd_link_needed_list);
-		  n = bfd_alloc (abfd, amt);
-		  fnm = bfd_elf_string_from_elf_section (abfd, shlink, tagv);
-		  if (n == NULL || fnm == NULL)
+		  amt = sizeof(struct bfd_link_needed_list);
+		  n = (struct bfd_link_needed_list *)bfd_alloc(abfd, amt);
+		  fnm = bfd_elf_string_from_elf_section(abfd, shlink, tagv);
+		  if ((n == NULL) || (fnm == NULL))
 		    goto error_free_dyn;
-		  amt = strlen (fnm) + 1;
-		  anm = bfd_alloc (abfd, amt);
+		  amt = (strlen(fnm) + 1UL);
+		  anm = (char *)bfd_alloc(abfd, amt);
 		  if (anm == NULL)
 		    goto error_free_dyn;
-		  memcpy (anm, fnm, amt);
+		  memcpy(anm, fnm, amt);
 		  n->name = anm;
 		  n->by = abfd;
 		  n->next = NULL;
@@ -3375,16 +3370,16 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 		  char *fnm, *anm;
 		  unsigned int tagv = dyn.d_un.d_val;
 
-		  amt = sizeof (struct bfd_link_needed_list);
-		  n = bfd_alloc (abfd, amt);
-		  fnm = bfd_elf_string_from_elf_section (abfd, shlink, tagv);
-		  if (n == NULL || fnm == NULL)
+		  amt = sizeof(struct bfd_link_needed_list);
+		  n = (struct bfd_link_needed_list *)bfd_alloc(abfd, amt);
+		  fnm = bfd_elf_string_from_elf_section(abfd, shlink, tagv);
+		  if ((n == NULL) || (fnm == NULL))
 		    goto error_free_dyn;
-		  amt = strlen (fnm) + 1;
-		  anm = bfd_alloc (abfd, amt);
+		  amt = (strlen(fnm) + 1UL);
+		  anm = (char *)bfd_alloc(abfd, amt);
 		  if (anm == NULL)
 		    goto error_free_dyn;
-		  memcpy (anm, fnm, amt);
+		  memcpy(anm, fnm, amt);
 		  n->name = anm;
 		  n->by = abfd;
 		  n->next = NULL;
@@ -3401,20 +3396,20 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 		  char *fnm, *anm;
 		  unsigned int tagv = dyn.d_un.d_val;
 
-		  amt = sizeof (struct bfd_link_needed_list);
-		  n = bfd_alloc (abfd, amt);
-		  fnm = bfd_elf_string_from_elf_section (abfd, shlink, tagv);
-		  if (n == NULL || fnm == NULL)
+		  amt = sizeof(struct bfd_link_needed_list);
+		  n = (struct bfd_link_needed_list *)bfd_alloc(abfd, amt);
+		  fnm = bfd_elf_string_from_elf_section(abfd, shlink, tagv);
+		  if ((n == NULL) || (fnm == NULL))
 		    goto error_free_dyn;
-		  amt = strlen (fnm) + 1;
-		  anm = bfd_alloc (abfd, amt);
+		  amt = (strlen(fnm) + 1UL);
+		  anm = (char *)bfd_alloc(abfd, amt);
 		  if (anm == NULL)
 		    {
 		    error_free_dyn:
-		      free (dynbuf);
+		      free(dynbuf);
 		      goto error_return;
 		    }
-		  memcpy (anm, fnm, amt);
+		  memcpy(anm, fnm, amt);
 		  n->name = anm;
 		  n->by = abfd;
 		  n->next = NULL;
@@ -3772,18 +3767,18 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 		    }
 		}
 
-	      namelen = strlen (name);
-	      verlen = strlen (verstr);
-	      newlen = namelen + verlen + 2;
-	      if ((iver.vs_vers & VERSYM_HIDDEN) == 0
-		  && isym->st_shndx != SHN_UNDEF)
+	      namelen = strlen(name);
+	      verlen = strlen(verstr);
+	      newlen = (namelen + verlen + 2);
+	      if (((iver.vs_vers & VERSYM_HIDDEN) == 0)
+		  && (isym->st_shndx != SHN_UNDEF))
 		++newlen;
 
-	      newname = bfd_alloc (abfd, newlen);
+	      newname = (char *)bfd_alloc(abfd, newlen);
 	      if (newname == NULL)
 		goto error_free_vers;
-	      memcpy (newname, name, namelen);
-	      p = newname + namelen;
+	      memcpy(newname, name, namelen);
+	      p = (newname + namelen);
 	      *p++ = ELF_VER_CHR;
 	      /* If this is a defined non-hidden version symbol,
 		 we add another @ to the name.  This indicates the
@@ -4009,11 +4004,11 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 
 	      /* Take the balance of OTHER from the definition.  */
 	      other = (definition ? isym->st_other : h->other);
-	      other &= ~ ELF_ST_VISIBILITY (-1);
+	      other &= ~ ELF_ST_VISIBILITY(-1);
 
-	      /* Combine visibilities, using the most constraining one.  */
-	      hvis   = ELF_ST_VISIBILITY (h->other);
-	      symvis = ELF_ST_VISIBILITY (isym->st_other);
+	      /* Combine visibilities, using the most constraining one: */
+	      hvis = ELF_ST_VISIBILITY(h->other);
+	      symvis = ELF_ST_VISIBILITY(isym->st_other);
 	      if (! hvis)
 		nvis = symvis;
 	      else if (! symvis)
@@ -4053,31 +4048,31 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 		h->def_dynamic = 1;
 	      if (h->def_regular
 		  || h->ref_regular
-		  || (h->u.weakdef != NULL
+		  || ((h->u.weakdef != NULL)
 		      && ! new_weakdef
-		      && h->u.weakdef->dynindx != -1))
+		      && (h->u.weakdef->dynindx != -1)))
 		dynsym = TRUE;
 	    }
 
 	  /* Check to see if we need to add an indirect symbol for
 	     the default name.  */
-	  if (definition || h->root.type == bfd_link_hash_common)
-	    if (!_bfd_elf_add_default_symbol (abfd, info, h, name, isym,
-					      &sec, &value, &dynsym,
-					      override))
+	  if (definition || (h->root.type == bfd_link_hash_common))
+	    if (!_bfd_elf_add_default_symbol(abfd, info, h, name, isym,
+					     &sec, &value, &dynsym,
+					     override))
 	      goto error_free_vers;
 
 	  if (definition && !dynamic)
 	    {
-	      char *p = strchr (name, ELF_VER_CHR);
-	      if (p != NULL && p[1] != ELF_VER_CHR)
+	      char *p = strchr(name, ELF_VER_CHR);
+	      if ((p != NULL) && (p[1] != ELF_VER_CHR))
 		{
 		  /* Queue non-default versions so that .symver x, x@FOO
 		     aliases can be checked.  */
 		  if (! nondeflt_vers)
 		    {
-		      amt = (isymend - isym + 1)
-			    * sizeof (struct elf_link_hash_entry *);
+		      amt = (bfd_size_type)((size_t)(isymend - isym + 1UL)
+                                            * sizeof(struct elf_link_hash_entry *));
 		      nondeflt_vers = bfd_malloc (amt);
 		    }
 		  nondeflt_vers [nondeflt_vers_cnt++] = h;
@@ -4100,14 +4095,15 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 	    /* If the symbol already has a dynamic index, but
 	       visibility says it should not be visible, turn it into
 	       a local symbol.  */
-	    switch (ELF_ST_VISIBILITY (h->other))
-	      {
+	    switch (ELF_ST_VISIBILITY(h->other)) {
 	      case STV_INTERNAL:
 	      case STV_HIDDEN:
-		(*bed->elf_backend_hide_symbol) (info, h, TRUE);
+		(*bed->elf_backend_hide_symbol)(info, h, TRUE);
 		dynsym = FALSE;
 		break;
-	      }
+	      default:
+		break; /* (?) */
+	    }
 
 	  if (!add_needed
 	      && definition
@@ -4154,29 +4150,27 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 	  char *shortname, *p;
 
 	  p = strchr (h->root.root.string, ELF_VER_CHR);
-	  if (p == NULL
-	      || (h->root.type != bfd_link_hash_defined
-		  && h->root.type != bfd_link_hash_defweak))
+	  if ((p == NULL) || ((h->root.type != bfd_link_hash_defined)
+                              && (h->root.type != bfd_link_hash_defweak)))
 	    continue;
 
-	  amt = p - h->root.root.string;
-	  shortname = bfd_malloc (amt + 1);
-	  memcpy (shortname, h->root.root.string, amt);
+	  amt = (p - h->root.root.string);
+	  shortname = (char *)bfd_malloc(amt + 1);
+	  memcpy(shortname, h->root.root.string, amt);
 	  shortname[amt] = '\0';
 
-	  hi = (struct elf_link_hash_entry *)
-	       bfd_link_hash_lookup (&hash_table->root, shortname,
-				     FALSE, FALSE, FALSE);
-	  if (hi != NULL
-	      && hi->root.type == h->root.type
-	      && hi->root.u.def.value == h->root.u.def.value
-	      && hi->root.u.def.section == h->root.u.def.section)
+	  hi = ((struct elf_link_hash_entry *)
+                bfd_link_hash_lookup(&hash_table->root, shortname,
+                                     FALSE, FALSE, FALSE));
+	  if ((hi != NULL) && (hi->root.type == h->root.type)
+	      && (hi->root.u.def.value == h->root.u.def.value)
+	      && (hi->root.u.def.section == h->root.u.def.section))
 	    {
-	      (*bed->elf_backend_hide_symbol) (info, hi, TRUE);
+	      (*bed->elf_backend_hide_symbol)(info, hi, TRUE);
 	      hi->root.type = bfd_link_hash_indirect;
-	      hi->root.u.i.link = (struct bfd_link_hash_entry *) h;
-	      (*bed->elf_backend_copy_indirect_symbol) (bed, h, hi);
-	      sym_hash = elf_sym_hashes (abfd);
+	      hi->root.u.i.link = (struct bfd_link_hash_entry *)h;
+	      (*bed->elf_backend_copy_indirect_symbol)(bed, h, hi);
+	      sym_hash = elf_sym_hashes(abfd);
 	      if (sym_hash)
 		for (symidx = 0; symidx < extsymcount; ++symidx)
 		  if (sym_hash[symidx] == hi)
@@ -4479,15 +4473,14 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
    satisfied by an archive symbol.  Return -1 on error.  */
 
 struct elf_link_hash_entry *
-_bfd_elf_archive_symbol_lookup (bfd *abfd,
-				struct bfd_link_info *info,
-				const char *name)
+_bfd_elf_archive_symbol_lookup(bfd *abfd, struct bfd_link_info *info,
+                               const char *name)
 {
   struct elf_link_hash_entry *h;
   char *p, *copy;
   size_t len, first;
 
-  h = elf_link_hash_lookup (elf_hash_table (info), name, FALSE, FALSE, FALSE);
+  h = elf_link_hash_lookup(elf_hash_table(info), name, FALSE, FALSE, FALSE);
   if (h != NULL)
     return h;
 
@@ -4496,21 +4489,21 @@ _bfd_elf_archive_symbol_lookup (bfd *abfd,
      The effect is that references to the symbol with and without the
      version will be matched by the default symbol in the archive.  */
 
-  p = strchr (name, ELF_VER_CHR);
-  if (p == NULL || p[1] != ELF_VER_CHR)
+  p = strchr(name, ELF_VER_CHR);
+  if ((p == NULL) || (p[1] != ELF_VER_CHR))
     return h;
 
-  /* First check with only one `@'.  */
-  len = strlen (name);
-  copy = bfd_alloc (abfd, len);
+  /* First check with only one `@': */
+  len = strlen(name);
+  copy = (char *)bfd_alloc(abfd, len);
   if (copy == NULL)
-    return (struct elf_link_hash_entry *) 0 - 1;
+    return ((struct elf_link_hash_entry *)0 - 1);
 
   first = p - name + 1;
-  memcpy (copy, name, first);
-  memcpy (copy + first, name + first + 1, len - first);
+  memcpy(copy, name, first);
+  memcpy((copy + first), (name + first + 1), (len - first));
 
-  h = elf_link_hash_lookup (elf_hash_table (info), copy, FALSE, FALSE, FALSE);
+  h = elf_link_hash_lookup(elf_hash_table(info), copy, FALSE, FALSE, FALSE);
   if (h == NULL)
     {
       /* We also need to check references to the symbol without the
@@ -4525,7 +4518,7 @@ _bfd_elf_archive_symbol_lookup (bfd *abfd,
 }
 
 /* Add symbols from an ELF archive file to the linker hash table.  We
-   don't use _bfd_generic_link_add_archive_symbols because of a
+   do NOT use _bfd_generic_link_add_archive_symbols because of a
    problem which arises on UnixWare.  The UnixWare libc.so is an
    archive which includes an entry libc.so.1 which defines a bunch of
    symbols.  The libc.so archive also includes a number of other
@@ -4549,8 +4542,8 @@ _bfd_elf_archive_symbol_lookup (bfd *abfd,
    Unfortunately, we do have to make multiple passes over the symbol
    table until nothing further is resolved.  */
 
-static bfd_boolean
-elf_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
+extern bfd_boolean
+elf_link_add_archive_symbols(bfd *abfd, struct bfd_link_info *info)
 {
   symindex c;
   bfd_boolean *defined = NULL;
@@ -4578,18 +4571,18 @@ elf_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
   if (c == 0)
     return TRUE;
   amt = c;
-  amt *= sizeof (bfd_boolean);
-  defined = bfd_zmalloc (amt);
-  included = bfd_zmalloc (amt);
-  if (defined == NULL || included == NULL)
-    goto error_return;
+  amt *= sizeof(bfd_boolean);
+  defined = (bfd_boolean *)bfd_zmalloc(amt);
+  included = (bfd_boolean *)bfd_zmalloc(amt);
+  if ((defined == NULL) || (included == NULL)) {
+      goto error_return;
+  }
 
   symdefs = bfd_ardata (abfd)->symdefs;
   bed = get_elf_backend_data (abfd);
   archive_symbol_lookup = bed->elf_backend_archive_symbol_lookup;
 
-  do
-    {
+  do {
       file_ptr last;
       symindex i;
       carsym *symdef;
@@ -4698,11 +4691,10 @@ elf_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
 	     on through the loop.  */
 	  last = symdef->file_offset;
 	}
-    }
-  while (loop);
+  } while (loop);
 
-  free (defined);
-  free (included);
+  free(defined);
+  free(included);
 
   return TRUE;
 
@@ -4714,55 +4706,51 @@ elf_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
   return FALSE;
 }
 
-/* Given an ELF BFD, add symbols to the global hash table as
-   appropriate.  */
-
-bfd_boolean
-bfd_elf_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
+/* Given an ELF BFD, add symbols to the global hash table as appropriate: */
+bfd_boolean bfd_elf_link_add_symbols(bfd *abfd, struct bfd_link_info *info)
 {
-  switch (bfd_get_format (abfd))
-    {
+  switch (bfd_get_format(abfd)) {
     case bfd_object:
-      return elf_link_add_object_symbols (abfd, info);
+      return elf_link_add_object_symbols(abfd, info);
     case bfd_archive:
-      return elf_link_add_archive_symbols (abfd, info);
+      return elf_link_add_archive_symbols(abfd, info);
     default:
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return FALSE;
-    }
+  }
 }
-
-/* This function will be called though elf_link_hash_traverse to store
-   all hash value of the exported symbols in an array.  */
 
+
+/* This function will be called though elf_link_hash_traverse to store
+ * all hash value of the exported symbols in an array: */
 static bfd_boolean
-elf_collect_hash_codes (struct elf_link_hash_entry *h, void *data)
+elf_collect_hash_codes(struct elf_link_hash_entry *h, void *data)
 {
-  unsigned long **valuep = data;
+  unsigned long **valuep = (unsigned long **)data;
   const char *name;
   char *p;
   unsigned long ha;
   char *alc = NULL;
 
   if (h->root.type == bfd_link_hash_warning)
-    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 
-  /* Ignore indirect symbols.  These are added by the versioning code.  */
+  /* Ignore indirect symbols.  These are added by the versioning code: */
   if (h->dynindx == -1)
     return TRUE;
 
   name = h->root.root.string;
-  p = strchr (name, ELF_VER_CHR);
+  p = strchr(name, ELF_VER_CHR);
   if (p != NULL)
     {
-      alc = bfd_malloc (p - name + 1);
-      memcpy (alc, name, p - name);
+      alc = (char *)bfd_malloc(p - name + 1);
+      memcpy(alc, name, (p - name));
       alc[p - name] = '\0';
       name = alc;
     }
 
-  /* Compute the hash value.  */
-  ha = bfd_elf_hash (name);
+  /* Compute the hash value: */
+  ha = bfd_elf_hash(name);
 
   /* Store the found hash value in the array given as the argument.  */
   *(*valuep)++ = ha;
@@ -4811,15 +4799,15 @@ compute_bucket_count (struct bfd_link_info *info)
      time store the values in an array so that we could use them for
      optimizations.  */
   amt = dynsymcount;
-  amt *= sizeof (unsigned long int);
-  hashcodes = bfd_malloc (amt);
+  amt *= sizeof(unsigned long int);
+  hashcodes = (unsigned long int *)bfd_malloc(amt);
   if (hashcodes == NULL)
     return 0;
   hashcodesp = hashcodes;
 
-  /* Put all hash values in HASHCODES.  */
-  elf_link_hash_traverse (elf_hash_table (info),
-			  elf_collect_hash_codes, &hashcodesp);
+  /* Put all hash values in HASHCODES: */
+  elf_link_hash_traverse(elf_hash_table(info),
+			 elf_collect_hash_codes, &hashcodesp);
 
   /* We have a problem here.  The following code to optimize the table
      size requires an integer type with more the 32 bits.  If
@@ -4827,13 +4815,13 @@ compute_bucket_count (struct bfd_link_info *info)
 #ifdef BFD_HOST_U_64_BIT
   if (info->optimize)
     {
-      unsigned long int nsyms = hashcodesp - hashcodes;
+      unsigned long int nsyms = (hashcodesp - hashcodes);
       size_t minsize;
       size_t maxsize;
-      BFD_HOST_U_64_BIT best_chlen = ~((BFD_HOST_U_64_BIT) 0);
-      unsigned long int *counts ;
-      bfd *dynobj = elf_hash_table (info)->dynobj;
-      const struct elf_backend_data *bed = get_elf_backend_data (dynobj);
+      BFD_HOST_U_64_BIT best_chlen = ~((BFD_HOST_U_64_BIT)0UL);
+      unsigned long int *counts;
+      bfd *dynobj = elf_hash_table(info)->dynobj;
+      const struct elf_backend_data *bed = get_elf_backend_data(dynobj);
 
       /* Possible optimization parameters: if we have NSYMS symbols we say
 	 that the hashing table must at least have NSYMS/4 and at most
@@ -4846,11 +4834,11 @@ compute_bucket_count (struct bfd_link_info *info)
       /* Create array where we count the collisions in.  We must use bfd_malloc
 	 since the size could be large.  */
       amt = maxsize;
-      amt *= sizeof (unsigned long int);
-      counts = bfd_malloc (amt);
+      amt *= sizeof(unsigned long int);
+      counts = (unsigned long int *)bfd_malloc(amt);
       if (counts == NULL)
 	{
-	  free (hashcodes);
+	  free(hashcodes);
 	  return 0;
 	}
 
@@ -5125,23 +5113,22 @@ bfd_elf_size_dynamic_sections (bfd *output_bfd,
 	      struct elf_link_hash_entry *newh;
 
 	      name = d->symbol;
-	      namelen = strlen (name);
+	      namelen = strlen(name);
 	      verstr = t->name;
-	      verlen = strlen (verstr);
-	      newlen = namelen + verlen + 3;
+	      verlen = strlen(verstr);
+	      newlen = (namelen + verlen + 3UL);
 
-	      newname = bfd_malloc (newlen);
+	      newname = (char *)bfd_malloc(newlen);
 	      if (newname == NULL)
 		return FALSE;
-	      memcpy (newname, name, namelen);
+	      memcpy(newname, name, namelen);
 
-	      /* Check the hidden versioned definition.  */
+	      /* Check the hidden versioned definition: */
 	      p = newname + namelen;
 	      *p++ = ELF_VER_CHR;
-	      memcpy (p, verstr, verlen + 1);
-	      newh = elf_link_hash_lookup (elf_hash_table (info),
-					   newname, FALSE, FALSE,
-					   FALSE);
+	      memcpy(p, verstr, (verlen + 1UL));
+	      newh = elf_link_hash_lookup(elf_hash_table(info),
+					  newname, FALSE, FALSE, FALSE);
 	      if (newh == NULL
 		  || (newh->root.type != bfd_link_hash_defined
 		      && newh->root.type != bfd_link_hash_defweak))
@@ -5356,21 +5343,20 @@ bfd_elf_size_dynamic_sections (bfd *output_bfd,
 	    {
 	      struct bfd_elf_version_deps *n;
 
-	      size += sizeof (Elf_External_Verdef);
-	      size += sizeof (Elf_External_Verdaux);
+	      size += sizeof(Elf_External_Verdef);
+	      size += sizeof(Elf_External_Verdaux);
 	      ++cdefs;
 
 	      for (n = t->deps; n != NULL; n = n->next)
-		size += sizeof (Elf_External_Verdaux);
+		size += sizeof(Elf_External_Verdaux);
 	    }
 
 	  s->size = size;
-	  s->contents = bfd_alloc (output_bfd, s->size);
-	  if (s->contents == NULL && s->size != 0)
+	  s->contents = (unsigned char *)bfd_alloc(output_bfd, s->size);
+	  if ((s->contents == NULL) && (s->size != 0))
 	    return FALSE;
 
-	  /* Fill in the version definition section.  */
-
+	  /* Fill in the version definition section: */
 	  p = s->contents;
 
 	  def.vd_version = VER_DEF_CURRENT;
@@ -5595,14 +5581,14 @@ bfd_elf_size_dynamic_sections (bfd *output_bfd,
 	      {
 		Elf_Internal_Vernaux *a;
 
-		size += sizeof (Elf_External_Verneed);
+		size += sizeof(Elf_External_Verneed);
 		++crefs;
 		for (a = t->vn_auxptr; a != NULL; a = a->vna_nextptr)
-		  size += sizeof (Elf_External_Vernaux);
+		  size += sizeof(Elf_External_Vernaux);
 	      }
 
 	    s->size = size;
-	    s->contents = bfd_alloc (output_bfd, s->size);
+	    s->contents = (unsigned char *)bfd_alloc(output_bfd, s->size);
 	    if (s->contents == NULL)
 	      return FALSE;
 
@@ -5706,18 +5692,18 @@ bfd_elf_size_dynsym_hash_dynstr (bfd *output_bfd, struct bfd_link_info *info)
       dynsymcount = _bfd_elf_link_renumber_dynsyms (output_bfd, info,
 						    &section_sym_count);
 
-      /* Work out the size of the symbol version section.  */
-      s = bfd_get_section_by_name (dynobj, ".gnu.version");
-      BFD_ASSERT (s != NULL);
-      if (dynsymcount != 0
-	  && (s->flags & SEC_EXCLUDE) == 0)
+      /* Work out the size of the symbol version section: */
+      s = bfd_get_section_by_name(dynobj, ".gnu.version");
+      BFD_ASSERT(s != NULL);
+      if ((dynsymcount != 0)
+	  && ((s->flags & SEC_EXCLUDE) == 0))
 	{
-	  s->size = dynsymcount * sizeof (Elf_External_Versym);
-	  s->contents = bfd_zalloc (output_bfd, s->size);
+	  s->size = (dynsymcount * sizeof(Elf_External_Versym));
+	  s->contents = (unsigned char *)bfd_zalloc(output_bfd, s->size);
 	  if (s->contents == NULL)
 	    return FALSE;
 
-	  if (!_bfd_elf_add_dynamic_entry (info, DT_VERSYM, 0))
+	  if (!_bfd_elf_add_dynamic_entry(info, DT_VERSYM, 0))
 	    return FALSE;
 	}
 
@@ -5727,14 +5713,14 @@ bfd_elf_size_dynsym_hash_dynstr (bfd *output_bfd, struct bfd_link_info *info)
 	 the final symbol table, because until then we do not know the
 	 correct value to give the symbols.  We built the .dynstr
 	 section as we went along in elf_link_add_object_symbols.  */
-      s = bfd_get_section_by_name (dynobj, ".dynsym");
-      BFD_ASSERT (s != NULL);
-      bed = get_elf_backend_data (output_bfd);
+      s = bfd_get_section_by_name(dynobj, ".dynsym");
+      BFD_ASSERT(s != NULL);
+      bed = get_elf_backend_data(output_bfd);
       s->size = dynsymcount * bed->s->sizeof_sym;
 
       if (dynsymcount != 0)
 	{
-	  s->contents = bfd_alloc (output_bfd, s->size);
+	  s->contents = (unsigned char *)bfd_alloc(output_bfd, s->size);
 	  if (s->contents == NULL)
 	    return FALSE;
 
@@ -5746,24 +5732,24 @@ bfd_elf_size_dynsym_hash_dynstr (bfd *output_bfd, struct bfd_link_info *info)
 
       /* Compute the size of the hashing table.  As a side effect this
 	 computes the hash values for all the names we export.  */
-      bucketcount = compute_bucket_count (info);
+      bucketcount = compute_bucket_count(info);
 
-      s = bfd_get_section_by_name (dynobj, ".hash");
-      BFD_ASSERT (s != NULL);
-      hash_entry_size = elf_section_data (s)->this_hdr.sh_entsize;
-      s->size = ((2 + bucketcount + dynsymcount) * hash_entry_size);
-      s->contents = bfd_zalloc (output_bfd, s->size);
+      s = bfd_get_section_by_name(dynobj, ".hash");
+      BFD_ASSERT(s != NULL);
+      hash_entry_size = elf_section_data(s)->this_hdr.sh_entsize;
+      s->size = ((2UL + bucketcount + dynsymcount) * hash_entry_size);
+      s->contents = (unsigned char *)bfd_zalloc(output_bfd, s->size);
       if (s->contents == NULL)
 	return FALSE;
 
-      bfd_put (8 * hash_entry_size, output_bfd, bucketcount, s->contents);
-      bfd_put (8 * hash_entry_size, output_bfd, dynsymcount,
-	       s->contents + hash_entry_size);
+      bfd_put(8 * hash_entry_size, output_bfd, bucketcount, s->contents);
+      bfd_put(8 * hash_entry_size, output_bfd, dynsymcount,
+	      s->contents + hash_entry_size);
 
-      elf_hash_table (info)->bucketcount = bucketcount;
+      elf_hash_table(info)->bucketcount = bucketcount;
 
-      s = bfd_get_section_by_name (dynobj, ".dynstr");
-      BFD_ASSERT (s != NULL);
+      s = bfd_get_section_by_name(dynobj, ".dynstr");
+      BFD_ASSERT(s != NULL);
 
       elf_finalize_dynstr (output_bfd, info);
 
@@ -6005,9 +5991,9 @@ elf_link_sort_relocs (bfd *abfd, struct bfd_link_info *info, asection **psec)
   if (size != reldyn->size)
     return 0;
 
-  sort_elt = (sizeof (struct elf_link_sort_rela)
-	      + (i2e - 1) * sizeof (Elf_Internal_Rela));
-  sort = bfd_zmalloc (sort_elt * count);
+  sort_elt = (sizeof(struct elf_link_sort_rela)
+	      + (i2e - 1) * sizeof(Elf_Internal_Rela));
+  sort = (bfd_byte *)bfd_zmalloc(sort_elt * count);
   if (sort == NULL)
     {
       (*info->callbacks->warning)
@@ -7519,7 +7505,7 @@ elf_reloc_link_order (bfd *output_bfd,
 
   /* If this is an inplace reloc, we must write the addend into the
      object file.  */
-  if (howto->partial_inplace && addend != 0)
+  if (howto->partial_inplace && (addend != 0))
     {
       bfd_size_type size;
       bfd_reloc_status_type rstat;
@@ -7527,11 +7513,11 @@ elf_reloc_link_order (bfd *output_bfd,
       bfd_boolean ok;
       const char *sym_name;
 
-      size = bfd_get_reloc_size (howto);
-      buf = bfd_zmalloc (size);
+      size = bfd_get_reloc_size(howto);
+      buf = (bfd_byte *)bfd_zmalloc(size);
       if (buf == NULL)
 	return FALSE;
-      rstat = _bfd_relocate_contents (howto, output_bfd, addend, buf);
+      rstat = _bfd_relocate_contents(howto, output_bfd, addend, buf);
       switch (rstat)
 	{
 	case bfd_reloc_ok:
@@ -8030,22 +8016,22 @@ bfd_elf_final_link (bfd *abfd, struct bfd_link_info *info)
 
   /* Allocate a buffer to hold swapped out symbols.  This is to avoid
      continuously seeking to the right position in the file.  */
-  if (! info->keep_memory || max_sym_count < 20)
+  if (! info->keep_memory || (max_sym_count < 20))
     finfo.symbuf_size = 20;
   else
     finfo.symbuf_size = max_sym_count;
   amt = finfo.symbuf_size;
   amt *= bed->s->sizeof_sym;
-  finfo.symbuf = bfd_malloc (amt);
+  finfo.symbuf = (bfd_byte *)bfd_malloc(amt);
   if (finfo.symbuf == NULL)
     goto error_return;
   if (elf_numsections (abfd) > SHN_LORESERVE)
     {
-      /* Wild guess at number of output symbols.  realloc'd as needed.  */
-      amt = 2 * max_sym_count + elf_numsections (abfd) + 1000;
+      /* Wild guess at number of output symbols; realloc-ed as needed: */
+      amt = (2 * max_sym_count + elf_numsections(abfd) + 1000);
       finfo.shndxbuf_size = amt;
-      amt *= sizeof (Elf_External_Sym_Shndx);
-      finfo.symshndxbuf = bfd_zmalloc (amt);
+      amt *= sizeof(Elf_External_Sym_Shndx);
+      finfo.symshndxbuf = (Elf_External_Sym_Shndx *)bfd_zmalloc(amt);
       if (finfo.symshndxbuf == NULL)
 	goto error_return;
     }
@@ -8086,10 +8072,10 @@ bfd_elf_final_link (bfd *abfd, struct bfd_link_info *info)
 	    elfsym.st_value = 0;
 	  else
 	    elfsym.st_value = o->vma;
-	  if (! elf_link_output_sym (&finfo, NULL, &elfsym, o, NULL))
+	  if (! elf_link_output_sym(&finfo, NULL, &elfsym, o, NULL))
 	    goto error_return;
-	  if (i == SHN_LORESERVE - 1)
-	    i += SHN_HIRESERVE + 1 - SHN_LORESERVE;
+	  if (i == (SHN_LORESERVE - 1))
+	    i += (SHN_HIRESERVE + 1 - SHN_LORESERVE);
 	}
     }
 
@@ -8097,46 +8083,46 @@ bfd_elf_final_link (bfd *abfd, struct bfd_link_info *info)
      files.  */
   if (max_contents_size != 0)
     {
-      finfo.contents = bfd_malloc (max_contents_size);
+      finfo.contents = (bfd_byte *)bfd_malloc(max_contents_size);
       if (finfo.contents == NULL)
 	goto error_return;
     }
 
   if (max_external_reloc_size != 0)
     {
-      finfo.external_relocs = bfd_malloc (max_external_reloc_size);
+      finfo.external_relocs = bfd_malloc(max_external_reloc_size);
       if (finfo.external_relocs == NULL)
 	goto error_return;
     }
 
   if (max_internal_reloc_count != 0)
     {
-      amt = max_internal_reloc_count * bed->s->int_rels_per_ext_rel;
-      amt *= sizeof (Elf_Internal_Rela);
-      finfo.internal_relocs = bfd_malloc (amt);
+      amt = (max_internal_reloc_count * bed->s->int_rels_per_ext_rel);
+      amt *= sizeof(Elf_Internal_Rela);
+      finfo.internal_relocs = (Elf_Internal_Rela *)bfd_malloc(amt);
       if (finfo.internal_relocs == NULL)
 	goto error_return;
     }
 
   if (max_sym_count != 0)
     {
-      amt = max_sym_count * bed->s->sizeof_sym;
-      finfo.external_syms = bfd_malloc (amt);
+      amt = (max_sym_count * bed->s->sizeof_sym);
+      finfo.external_syms = (bfd_byte *)bfd_malloc(amt);
       if (finfo.external_syms == NULL)
 	goto error_return;
 
-      amt = max_sym_count * sizeof (Elf_Internal_Sym);
-      finfo.internal_syms = bfd_malloc (amt);
+      amt = (max_sym_count * sizeof(Elf_Internal_Sym));
+      finfo.internal_syms = (Elf_Internal_Sym *)bfd_malloc(amt);
       if (finfo.internal_syms == NULL)
 	goto error_return;
 
-      amt = max_sym_count * sizeof (long);
-      finfo.indices = bfd_malloc (amt);
+      amt = (max_sym_count * sizeof(long));
+      finfo.indices = (long *)bfd_malloc(amt);
       if (finfo.indices == NULL)
 	goto error_return;
 
-      amt = max_sym_count * sizeof (asection *);
-      finfo.sections = bfd_malloc (amt);
+      amt = (max_sym_count * sizeof(asection *));
+      finfo.sections = (asection **)bfd_malloc(amt);
       if (finfo.sections == NULL)
 	goto error_return;
     }
@@ -8154,25 +8140,25 @@ bfd_elf_final_link (bfd *abfd, struct bfd_link_info *info)
       bfd_vma base, end = 0;
       asection *sec;
 
-      for (sec = elf_hash_table (info)->tls_sec;
+      for (sec = elf_hash_table(info)->tls_sec;
 	   sec && (sec->flags & SEC_THREAD_LOCAL);
 	   sec = sec->next)
 	{
 	  bfd_vma size = sec->size;
 
-	  if (size == 0 && (sec->flags & SEC_HAS_CONTENTS) == 0)
+	  if ((size == 0) && ((sec->flags & SEC_HAS_CONTENTS) == 0))
 	    {
-	      struct bfd_link_order *o;
+	      struct bfd_link_order *lorder;
 
-	      for (o = sec->map_head.link_order; o != NULL; o = o->next)
-		if (size < o->offset + o->size)
-		  size = o->offset + o->size;
+	      for (lorder = sec->map_head.link_order; lorder != NULL; lorder = lorder->next)
+		if (size < (lorder->offset + lorder->size))
+		  size = (lorder->offset + lorder->size);
 	    }
-	  end = sec->vma + size;
+	  end = (sec->vma + size);
 	}
-      base = elf_hash_table (info)->tls_sec->vma;
-      end = align_power (end, elf_hash_table (info)->tls_sec->alignment_power);
-      elf_hash_table (info)->tls_size = end - base;
+      base = elf_hash_table(info)->tls_sec->vma;
+      end = align_power(end, elf_hash_table(info)->tls_sec->alignment_power);
+      elf_hash_table(info)->tls_size = (end - base);
     }
 
   /* Reorder SHF_LINK_ORDER sections.  */
@@ -8858,19 +8844,18 @@ _bfd_elf_gc_mark (struct bfd_link_info *info,
   return ret;
 }
 
-/* Sweep symbols in swept sections.  Called via elf_link_hash_traverse.  */
-
+/* Sweep symbols in swept sections.  Called via elf_link_hash_traverse: */
 static bfd_boolean
-elf_gc_sweep_symbol (struct elf_link_hash_entry *h, void *idxptr)
+elf_gc_sweep_symbol(struct elf_link_hash_entry *h, void *idxptr)
 {
-  int *idx = idxptr;
+  int *idx = (int *)idxptr;
 
   if (h->root.type == bfd_link_hash_warning)
-    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 
-  if (h->dynindx != -1
-      && ((h->root.type != bfd_link_hash_defined
-	   && h->root.type != bfd_link_hash_defweak)
+  if ((h->dynindx != -1)
+      && (((h->root.type != bfd_link_hash_defined)
+	   && (h->root.type != bfd_link_hash_defweak))
 	  || h->root.u.def.section->gc_mark))
     h->dynindx = (*idx)++;
 
@@ -9159,28 +9144,28 @@ bfd_elf_gc_sections (bfd *abfd, struct bfd_link_info *info)
 
       /* Keep .gcc_except_table.* if the associated .text.* is
 	 marked.  This isn't very nice, but the proper solution,
-	 splitting .eh_frame up and using comdat doesn't pan out 
+	 splitting .eh_frame up and using comdat doesn't pan out
 	 easily due to needing special relocs to handle the
 	 difference of two symbols in separate sections.
 	 Don't keep code sections referenced by .eh_frame.  */
       for (o = sub->sections; o != NULL; o = o->next)
-	if (!o->gc_mark && o->gc_mark_from_eh && (o->flags & SEC_CODE) == 0)
+	if (!o->gc_mark && o->gc_mark_from_eh && ((o->flags & SEC_CODE) == 0))
 	  {
-	    if (strncmp (o->name, ".gcc_except_table.", 18) == 0)
+	    if (strncmp(o->name, ".gcc_except_table.", 18) == 0)
 	      {
 		unsigned long len;
 		char *fn_name;
 		asection *fn_text;
 
-		len = strlen (o->name + 18) + 1;
-		fn_name = bfd_malloc (len + 6);
+		len = (strlen(o->name + 18) + 1UL);
+		fn_name = (char *)bfd_malloc(len + 6);
 		if (fn_name == NULL)
 		  return FALSE;
-		memcpy (fn_name, ".text.", 6);
-		memcpy (fn_name + 6, o->name + 18, len);
-		fn_text = bfd_get_section_by_name (sub, fn_name);
-		free (fn_name);
-		if (fn_text == NULL || !fn_text->gc_mark)
+		memcpy(fn_name, ".text.", 6);
+		memcpy(fn_name + 6, o->name + 18, len);
+		fn_text = bfd_get_section_by_name(sub, fn_name);
+		free(fn_name);
+		if ((fn_text == NULL) || !fn_text->gc_mark)
 		  continue;
 	      }
 
@@ -9233,15 +9218,16 @@ bfd_elf_gc_record_vtinherit (bfd *abfd,
 	goto win;
     }
 
-  (*_bfd_error_handler) ("%B: %A+%lu: No symbol found for INHERIT",
-			 abfd, sec, (unsigned long) offset);
-  bfd_set_error (bfd_error_invalid_operation);
+  (*_bfd_error_handler)("%B: %A+%lu: No symbol found for INHERIT",
+                        abfd, sec, (unsigned long)offset);
+  bfd_set_error(bfd_error_invalid_operation);
   return FALSE;
 
  win:
   if (!child->vtable)
     {
-      child->vtable = bfd_zalloc (abfd, sizeof (*child->vtable));
+      child->vtable = ((struct elf_link_vtable *)
+                       bfd_zalloc(abfd, sizeof(*child->vtable)));
       if (!child->vtable)
 	return FALSE;
     }
@@ -9263,17 +9249,18 @@ bfd_elf_gc_record_vtinherit (bfd *abfd,
 /* Called from check_relocs to record the existence of a VTENTRY reloc.  */
 
 bfd_boolean
-bfd_elf_gc_record_vtentry (bfd *abfd ATTRIBUTE_UNUSED,
-			   asection *sec ATTRIBUTE_UNUSED,
-			   struct elf_link_hash_entry *h,
-			   bfd_vma addend)
+bfd_elf_gc_record_vtentry(bfd *abfd ATTRIBUTE_UNUSED,
+			  asection *sec ATTRIBUTE_UNUSED,
+			  struct elf_link_hash_entry *h,
+			  bfd_vma addend)
 {
-  const struct elf_backend_data *bed = get_elf_backend_data (abfd);
+  const struct elf_backend_data *bed = get_elf_backend_data(abfd);
   unsigned int log_file_align = bed->s->log_file_align;
 
   if (!h->vtable)
     {
-      h->vtable = bfd_zalloc (abfd, sizeof (*h->vtable));
+      h->vtable = (struct elf_link_vtable *)bfd_zalloc(abfd,
+                                                       sizeof(*h->vtable));
       if (!h->vtable)
 	return FALSE;
     }
@@ -9306,19 +9293,19 @@ bfd_elf_gc_record_vtentry (bfd *abfd ATTRIBUTE_UNUSED,
 
       if (ptr)
 	{
-	  ptr = bfd_realloc (ptr - 1, bytes);
+	  ptr = (bfd_boolean *)bfd_realloc(ptr - 1, bytes);
 
 	  if (ptr != NULL)
 	    {
 	      size_t oldbytes;
 
 	      oldbytes = (((h->vtable->size >> log_file_align) + 1)
-			  * sizeof (bfd_boolean));
-	      memset (((char *) ptr) + oldbytes, 0, bytes - oldbytes);
+			  * sizeof(bfd_boolean));
+	      memset(((char *)ptr) + oldbytes, 0, bytes - oldbytes);
 	    }
 	}
       else
-	ptr = bfd_zmalloc (bytes);
+	ptr = (bfd_boolean *)bfd_zmalloc(bytes);
 
       if (ptr == NULL)
 	return FALSE;
@@ -9846,19 +9833,21 @@ _bfd_elf_section_already_linked (bfd *abfd, struct bfd_section * sec)
 }
 
 bfd_boolean
-_bfd_elf_common_definition (Elf_Internal_Sym *sym)
+_bfd_elf_common_definition(Elf_Internal_Sym *sym)
 {
-  return sym->st_shndx == SHN_COMMON;
+  return (sym->st_shndx == SHN_COMMON);
 }
 
 unsigned int
-_bfd_elf_common_section_index (asection *sec ATTRIBUTE_UNUSED)
+_bfd_elf_common_section_index(asection *sec ATTRIBUTE_UNUSED)
 {
   return SHN_COMMON;
 }
 
 asection *
-_bfd_elf_common_section (asection *sec ATTRIBUTE_UNUSED)
+_bfd_elf_common_section(asection *sec ATTRIBUTE_UNUSED)
 {
   return bfd_com_section_ptr;
 }
+
+/* EOF */

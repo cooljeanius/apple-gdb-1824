@@ -1,0 +1,537 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		224350D00FE0FE7F006E14FC /* unicode_formatter.c in Sources */ = {isa = PBXBuildFile; fileRef = 226188660FE0F3D100FE8DC1 /* unicode_formatter.c */; };
+		224350D10FE0FE7F006E14FC /* si formatters.c in Sources */ = {isa = PBXBuildFile; fileRef = 226188670FE0F3D100FE8DC1 /* si formatters.c */; };
+		224350D40FE0FE9C006E14FC /* si formatter.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 226188300FE0F0E000FE8DC1 /* si formatter.bundle */; };
+		226188250FE0F0E000FE8DC1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
+		2261882A0FE0F0E000FE8DC1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2263D8780FE01D3B00F410A4 /* CoreFoundation.framework */; };
+		226188680FE0F3D100FE8DC1 /* unicode_formatter.c in Sources */ = {isa = PBXBuildFile; fileRef = 226188660FE0F3D100FE8DC1 /* unicode_formatter.c */; };
+		226188690FE0F3D100FE8DC1 /* si formatters.c in Sources */ = {isa = PBXBuildFile; fileRef = 226188670FE0F3D100FE8DC1 /* si formatters.c */; };
+		226188A10FE0F5F000FE8DC1 /* CustomDataViews.plist in Resources */ = {isa = PBXBuildFile; fileRef = 226188A00FE0F5F000FE8DC1 /* CustomDataViews.plist */; };
+		226188A30FE0F62800FE8DC1 /* CustomDataViews.plist in Resources */ = {isa = PBXBuildFile; fileRef = 226188A20FE0F62800FE8DC1 /* CustomDataViews.plist */; };
+		226188D60FE0F85800FE8DC1 /* unicode_formatter_test.c in Sources */ = {isa = PBXBuildFile; fileRef = 2261886B0FE0F3F300FE8DC1 /* unicode_formatter_test.c */; };
+		2263D8790FE01D3B00F410A4 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2263D8780FE01D3B00F410A4 /* CoreFoundation.framework */; };
+		22D28B740FE012D3000E073E /* unicode formatter.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8D01CCD20486CAD60068D4B7 /* unicode formatter.bundle */; };
+		8D01CCCA0486CAD60068D4B7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		22D28B930FE01320000E073E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D01CCC60486CAD60068D4B7;
+			remoteInfo = "unicode formatter";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2261882B0FE0F0E000FE8DC1 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 8;
+			dstPath = "~/Library/Application Support/Developer/Shared/XCode/CustomDataViews/";
+			dstSubfolderSpec = 0;
+			files = (
+				224350D40FE0FE9C006E14FC /* si formatter.bundle in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		22D28B850FE012D8000E073E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 8;
+			dstPath = "~/Library/Application Support/Developer/Shared/XCode/CustomDataViews/";
+			dstSubfolderSpec = 0;
+			files = (
+				22D28B740FE012D3000E073E /* unicode formatter.bundle in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		089C167EFE841241C02AAC07 /* InfoPlist.strings */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = resources/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		226188300FE0F0E000FE8DC1 /* si formatter.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "si formatter.bundle"; sourceTree = BUILT_PRODUCTS_DIR; };
+		226188650FE0F3D100FE8DC1 /* unicode_formatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unicode_formatter.h; path = code/unicode_formatter.h; sourceTree = "<group>"; };
+		226188660FE0F3D100FE8DC1 /* unicode_formatter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unicode_formatter.c; path = code/unicode_formatter.c; sourceTree = "<group>"; };
+		226188670FE0F3D100FE8DC1 /* si formatters.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "si formatters.c"; path = "code/si formatters.c"; sourceTree = "<group>"; };
+		2261886A0FE0F3F300FE8DC1 /* unicode_formatter_prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unicode_formatter_prefix.pch; path = code/unicode_formatter_prefix.pch; sourceTree = "<group>"; };
+		2261886B0FE0F3F300FE8DC1 /* unicode_formatter_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unicode_formatter_test.c; path = code/unicode_formatter_test.c; sourceTree = "<group>"; };
+		2261888F0FE0F4FD00FE8DC1 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = resources/Info.plist; sourceTree = "<group>"; };
+		226188930FE0F55B00FE8DC1 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		226188A00FE0F5F000FE8DC1 /* CustomDataViews.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = CustomDataViews.plist; path = resources/CustomDataViews.plist; sourceTree = "<group>"; };
+		226188A20FE0F62800FE8DC1 /* CustomDataViews.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CustomDataViews.plist; sourceTree = "<group>"; };
+		2263D8780FE01D3B00F410A4 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
+		22876393112DED4E00B702DE /* README */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		8D01CCD20486CAD60068D4B7 /* unicode formatter.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "unicode formatter.bundle"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF02A49D094A5623002B0BF1 /* unicode_formatter_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = unicode_formatter_test; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		226188290FE0F0E000FE8DC1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2261882A0FE0F0E000FE8DC1 /* CoreFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D01CCCD0486CAD60068D4B7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2263D8790FE01D3B00F410A4 /* CoreFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EF02A49B094A5623002B0BF1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		089C166AFE841209C02AAC07 /* wchardataformatter */ = {
+			isa = PBXGroup;
+			children = (
+				08FB77ADFE841716C02AAC07 /* Source */,
+				089C167CFE841241C02AAC07 /* Resources */,
+				089C1671FE841209C02AAC07 /* External Frameworks and Libraries */,
+				19C28FB4FE9D528D11CA2CBB /* Products */,
+			);
+			name = wchardataformatter;
+			sourceTree = "<group>";
+		};
+		089C1671FE841209C02AAC07 /* External Frameworks and Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				2263D8780FE01D3B00F410A4 /* CoreFoundation.framework */,
+			);
+			name = "External Frameworks and Libraries";
+			sourceTree = "<group>";
+		};
+		089C167CFE841241C02AAC07 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				226188A00FE0F5F000FE8DC1 /* CustomDataViews.plist */,
+				226188920FE0F55B00FE8DC1 /* si */,
+				2261888F0FE0F4FD00FE8DC1 /* Info.plist */,
+				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		08FB77ADFE841716C02AAC07 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				22876393112DED4E00B702DE /* README */,
+				226188650FE0F3D100FE8DC1 /* unicode_formatter.h */,
+				226188660FE0F3D100FE8DC1 /* unicode_formatter.c */,
+				2261886A0FE0F3F300FE8DC1 /* unicode_formatter_prefix.pch */,
+				2261886B0FE0F3F300FE8DC1 /* unicode_formatter_test.c */,
+				226188670FE0F3D100FE8DC1 /* si formatters.c */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		19C28FB4FE9D528D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8D01CCD20486CAD60068D4B7 /* unicode formatter.bundle */,
+				226188300FE0F0E000FE8DC1 /* si formatter.bundle */,
+				EF02A49D094A5623002B0BF1 /* unicode_formatter_test */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		226188920FE0F55B00FE8DC1 /* si */ = {
+			isa = PBXGroup;
+			children = (
+				226188A20FE0F62800FE8DC1 /* CustomDataViews.plist */,
+				226188930FE0F55B00FE8DC1 /* Info.plist */,
+			);
+			name = si;
+			path = resources/si;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		226188230FE0F0E000FE8DC1 /* si formatter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2261882D0FE0F0E000FE8DC1 /* Build configuration list for PBXNativeTarget "si formatter" */;
+			buildPhases = (
+				226188240FE0F0E000FE8DC1 /* Resources */,
+				226188270FE0F0E000FE8DC1 /* Sources */,
+				226188290FE0F0E000FE8DC1 /* Frameworks */,
+				2261882B0FE0F0E000FE8DC1 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "si formatter";
+			productInstallPath = "$(HOME)/Library/Bundles";
+			productName = wchardataformatter;
+			productReference = 226188300FE0F0E000FE8DC1 /* si formatter.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+		8D01CCC60486CAD60068D4B7 /* unicode formatter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4FADC23308B4156C00ABE55E /* Build configuration list for PBXNativeTarget "unicode formatter" */;
+			buildPhases = (
+				8D01CCC90486CAD60068D4B7 /* Resources */,
+				8D01CCCB0486CAD60068D4B7 /* Sources */,
+				8D01CCCD0486CAD60068D4B7 /* Frameworks */,
+				22D28B850FE012D8000E073E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "unicode formatter";
+			productInstallPath = "$(HOME)/Library/Bundles";
+			productName = wchardataformatter;
+			productReference = 8D01CCD20486CAD60068D4B7 /* unicode formatter.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+		EF02A49C094A5623002B0BF1 /* test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EF02A4A6094A563E002B0BF1 /* Build configuration list for PBXNativeTarget "test" */;
+			buildPhases = (
+				EF02A49A094A5623002B0BF1 /* Sources */,
+				EF02A49B094A5623002B0BF1 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				22D28B940FE01320000E073E /* PBXTargetDependency */,
+			);
+			name = test;
+			productName = wcharTest;
+			productReference = EF02A49D094A5623002B0BF1 /* unicode_formatter_test */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		089C1669FE841209C02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 4FADC23708B4156C00ABE55E /* Build configuration list for PBXProject "unicode_formatter" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 089C166AFE841209C02AAC07 /* wchardataformatter */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8D01CCC60486CAD60068D4B7 /* unicode formatter */,
+				226188230FE0F0E000FE8DC1 /* si formatter */,
+				EF02A49C094A5623002B0BF1 /* test */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		226188240FE0F0E000FE8DC1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				226188250FE0F0E000FE8DC1 /* InfoPlist.strings in Resources */,
+				226188A30FE0F62800FE8DC1 /* CustomDataViews.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D01CCC90486CAD60068D4B7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D01CCCA0486CAD60068D4B7 /* InfoPlist.strings in Resources */,
+				226188A10FE0F5F000FE8DC1 /* CustomDataViews.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		226188270FE0F0E000FE8DC1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				224350D00FE0FE7F006E14FC /* unicode_formatter.c in Sources */,
+				224350D10FE0FE7F006E14FC /* si formatters.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D01CCCB0486CAD60068D4B7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				226188680FE0F3D100FE8DC1 /* unicode_formatter.c in Sources */,
+				226188690FE0F3D100FE8DC1 /* si formatters.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EF02A49A094A5623002B0BF1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				226188D60FE0F85800FE8DC1 /* unicode_formatter_test.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		22D28B940FE01320000E073E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8D01CCC60486CAD60068D4B7 /* unicode formatter */;
+			targetProxy = 22D28B930FE01320000E073E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		089C167DFE841241C02AAC07 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				089C167EFE841241C02AAC07 /* InfoPlist.strings */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		2261882E0FE0F0E000FE8DC1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_SYMBOL_SEPARATION = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_USE_GCC3_PFE_SUPPORT = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = NO;
+				INFOPLIST_FILE = resources/si/Info.plist;
+				INSTALL_PATH = "~/Library/Application Support/Developer/Shared/XCode/CustomDataViews";
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "si formatter";
+				STRIP_INSTALLED_PRODUCT = NO;
+				WARNING_CFLAGS = "-Wmost";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		2261882F0FE0F0E000FE8DC1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_SYMBOL_SEPARATION = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_USE_GCC3_PFE_SUPPORT = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = NO;
+				INFOPLIST_FILE = resources/si/Info.plist;
+				INSTALL_PATH = "/Users/sam/Library/Application Support/Developer/Shared/XCode/CustomDataViews";
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "si formatter";
+				STRIP_INSTALLED_PRODUCT = NO;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+		4FADC23408B4156C00ABE55E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_SYMBOL_SEPARATION = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_USE_GCC3_PFE_SUPPORT = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = NO;
+				INFOPLIST_FILE = resources/Info.plist;
+				INSTALL_PATH = "~/Library/Application Support/Developer/Shared/XCode/CustomDataViews";
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "unicode formatter";
+				STRIP_INSTALLED_PRODUCT = NO;
+				WARNING_CFLAGS = "-Wmost";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		4FADC23508B4156C00ABE55E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_SYMBOL_SEPARATION = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_USE_GCC3_PFE_SUPPORT = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = NO;
+				INFOPLIST_FILE = resources/Info.plist;
+				INSTALL_PATH = "/Users/sam/Library/Application Support/Developer/Shared/XCode/CustomDataViews";
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "unicode formatter";
+				STRIP_INSTALLED_PRODUCT = NO;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+		4FADC23808B4156C00ABE55E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_EXCEPTIONS = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = YES;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = YES;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				GENERATE_PKGINFO_FILE = YES;
+				GENERATE_PROFILING_CODE = YES;
+				LD_GENERATE_MAP_FILE = YES;
+				PREBINDING = NO;
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				SDKROOT = macosx;
+				STRIP_INSTALLED_PRODUCT = YES;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		4FADC23908B4156C00ABE55E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				STRIP_INSTALLED_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		EF02A4A7094A563E002B0BF1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = "$(HOME)/bin";
+				PREBINDING = NO;
+				PRODUCT_NAME = unicode_formatter_test;
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		EF02A4A8094A563E002B0BF1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = "$(HOME)/bin";
+				PREBINDING = NO;
+				PRODUCT_NAME = unicode_formatter_test;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2261882D0FE0F0E000FE8DC1 /* Build configuration list for PBXNativeTarget "si formatter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2261882E0FE0F0E000FE8DC1 /* Debug */,
+				2261882F0FE0F0E000FE8DC1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4FADC23308B4156C00ABE55E /* Build configuration list for PBXNativeTarget "unicode formatter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4FADC23408B4156C00ABE55E /* Debug */,
+				4FADC23508B4156C00ABE55E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4FADC23708B4156C00ABE55E /* Build configuration list for PBXProject "unicode_formatter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4FADC23808B4156C00ABE55E /* Debug */,
+				4FADC23908B4156C00ABE55E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EF02A4A6094A563E002B0BF1 /* Build configuration list for PBXNativeTarget "test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF02A4A7094A563E002B0BF1 /* Debug */,
+				EF02A4A8094A563E002B0BF1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 089C1669FE841209C02AAC07 /* Project object */;
+}

@@ -3,7 +3,7 @@ last versions to contain certain files. I have tried to copy files from
 these older versions into this distribution when relevant. Feel free to
 add to this list if you are able to narrow down the last appearances of
 other files. (This would be so much easier if Apple would just open up
-their VCS to us...)
+their VCS to us... or maybe it is open but just hidden? idk...)
 
 	- 186.1: first version available
 
@@ -12,6 +12,9 @@ their VCS to us...)
 
 	- 250: last version with src/gdb/29k-share and some other things in
 	src/gdb...
+
+	- 282: first version with src/utils (unfortunately Apple decided to
+	add it after amd-udi had already been deprecated upstream...)
 
 	- 309: last version with src/contrib, src/etc, src/expect, src/sim,
 	src/tcl, src/texinfo, src/utils, and maybe a few other things...
@@ -42,3 +45,17 @@ These directories have their own special versions:
 
 	- binutils-36: last version with actual files in src/electric-fence
 
+There is also a separate directory for gdb for CodeWarrior:
+http://opensource.apple.com/tarballs/gdbforcw/
+and
+http://opensource.apple.com/source/gdbforcw/
+The releases of gdbforcw correspond to releases missing from the main
+gdb-apple releases, which would all fall between gdb-437 and gdb-477:
+
+	- gdbforcw-1 = gdb-439
+
+	- gdbforcw-3.2 = gdb-441.2
+
+	- gdbforcw-5 = gdb-443
+
+	- gdbforcw-6 = gdb-444

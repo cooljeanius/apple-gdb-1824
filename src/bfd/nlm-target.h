@@ -1,4 +1,4 @@
-/* Target definitions for 32/64-bit NLM (NetWare Loadable Module)
+/* nlm-target.h: Target definitions for 32/64-bit NLM (NetWare Loadable Module)
    Copyright 1993, 1994, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
    2005 Free Software Foundation, Inc.
 
@@ -16,7 +16,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #define nlm_core_file_p _bfd_dummy_target
 
@@ -65,13 +65,13 @@
 /* Forward declaration for use when initialising alternative_target field.  */
 #ifdef TARGET_LITTLE_SYM
 extern const bfd_target TARGET_LITTLE_SYM;
-#endif
+#endif /* TARGET_LITTLE_SYM */
 
 #ifdef TARGET_BIG_SYM
 const bfd_target TARGET_BIG_SYM =
 {
   /* Name: identify kind of target.  */
-  TARGET_BIG_NAME,
+  (char *)TARGET_BIG_NAME,
 
   /* Flavour: general indication about file.  */
   bfd_target_nlm_flavour,
@@ -164,7 +164,7 @@ const bfd_target TARGET_BIG_SYM =
 const bfd_target TARGET_LITTLE_SYM =
 {
   /* Name: identify kind of target.  */
-  TARGET_LITTLE_NAME,
+  (char *)TARGET_LITTLE_NAME,
 
   /* Flavour: general indication about file.  */
   bfd_target_nlm_flavour,
@@ -252,3 +252,5 @@ const bfd_target TARGET_LITTLE_SYM =
   (void *) TARGET_BACKEND_DATA
 };
 #endif
+
+/* EOF */

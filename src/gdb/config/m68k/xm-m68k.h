@@ -1,4 +1,5 @@
-/* Macro definitions for running gdb on host machines with m68k cpu's.
+/* xm-m68k.h
+   Macro definitions for running gdb on host machines with m68k cpu's.
    Copyright (C) 1991, Free Software Foundation, Inc.
    Written by Fred Fish at Cygnus Support (fnf@cygint)
 
@@ -19,3 +20,4 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+/* (nothing to put here so far) */

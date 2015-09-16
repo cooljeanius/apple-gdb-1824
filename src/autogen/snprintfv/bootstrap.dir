@@ -1,0 +1,133 @@
+#! /bin/echo This_file_must_be_sourced,_not_executed
+#  -*- Mode: Sh -*-
+#
+# bootstrap.dir --- script to create generated files in this directory
+#
+# Author:	      Gary V. Vaughan <gvv@techie.com>
+# Maintainer:	      Gary V. Vaughan <gvv@techie.com>
+# Created:	      Wed Jul 14 10:49:15 1999
+# Last Modified:      Thu Aug  5 14:14:36 1999
+#
+# Copyright (C) 1999 Gary V. Vaughan
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses>.
+#
+# As a special exception to the GNU General Public License, if you
+# distribute this file as part of a program that also links with and
+# uses the libopts library from AutoGen, you may include it under
+# the same distribution terms used by the libopts library.
+
+# Code:
+
+init() {
+    top_srcdir=..
+    srcdir=.
+    cwd=`pwd`
+    BASH=`which bash`
+    test -z "$BASH" && BASH=/bin/sh
+}
+
+do_all_headers() {
+    # Generate the header files
+    #
+    local PS4='>dah> '
+    for file in [abd-z]*.in
+    do
+        gen_hdr `echo $file | sed 's/\.in$//'`
+    done
+}
+
+protoize() {
+    local PS4='>pt> '
+    state=do_comment
+
+    while IFS='' read -r line
+    do
+        case $state in
+        do_comment )
+            printf '%s\n' "${line}"
+            case "$line" in
+            *'*/' ) state=need_extern ;;
+            esac
+            ;;
+
+        need_extern )
+            case "$line" in
+            extern' '* ) : ;;
+            * ) line="extern $line"
+            esac
+            printf '%s\n' "${line}"
+            state=do_proto
+            ;;
+
+        do_proto )
+            case "$line" in
+            *')' )
+                line="${line};"
+                state=skip_brace
+                ;;
+            esac
+            printf '%s\n' "${line}"
+            ;;
+
+        skip_brace )
+            echo
+            test "X${line}" = "X{" && \
+                state=do_comment
+            ;;
+        esac
+    done
+}
+
+gen_hdr() {
+    local PS4='>gh> '
+    line_no=1
+    hdr=${1}.h
+    inf=${1}.in
+    stp=${1}.stamp
+    tmp=${1}.tmp
+
+    exec < ${inf} > ${tmp}
+    while IFS='' read -r line
+    do
+        line_no=`expr $line_no + 1`
+
+        case "${line}" in
+        '@protos '* ) : ;;
+        * ) printf '%s\n' "${line}"
+            continue ;;
+        esac
+
+        cfile=`echo "$line" | sed 's/.* //'`
+        sed -n '/^\/\*\*$/,/^{$/p' ${cfile} | protoize
+        printf '#line %d "%s"\n' $line_no $inf
+    done
+
+    if cmp -s $hdr $tmp
+    then rm -f $tmp
+    else mv -f $tmp $hdr
+    fi
+    touch $stp
+}
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+#    M A I N
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+init
+do_all_headers
+
+# bootstrap.dir ends here

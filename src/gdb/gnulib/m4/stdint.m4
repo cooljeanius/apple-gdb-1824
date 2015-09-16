@@ -1,4 +1,4 @@
-# stdint.m4 serial 29
+# stdint.m4 serial 30
 dnl# Copyright (C) 2001-2007, 2009 Free Software Foundation, Inc.
 dnl# This file is free software; the Free Software Foundation
 dnl# gives unlimited permission to copy and/or distribute it,
@@ -13,14 +13,14 @@ AC_DEFUN([gl_STDINT_H],
 
   dnl# Check for long long int and unsigned long long int.
   AC_REQUIRE([AC_TYPE_LONG_LONG_INT])
-  if test $ac_cv_type_long_long_int = yes; then
+  if test "x${ac_cv_type_long_long_int}" = "xyes"; then
     HAVE_LONG_LONG_INT=1
   else
     HAVE_LONG_LONG_INT=0
   fi
   AC_SUBST([HAVE_LONG_LONG_INT])
   AC_REQUIRE([AC_TYPE_UNSIGNED_LONG_LONG_INT])
-  if test $ac_cv_type_unsigned_long_long_int = yes; then
+  if test "x${ac_cv_type_unsigned_long_long_int}" = "xyes"; then
     HAVE_UNSIGNED_LONG_LONG_INT=1
   else
     HAVE_UNSIGNED_LONG_LONG_INT=0
@@ -240,8 +240,7 @@ AC_DEFUN([gl_STDINT_BITSIZEOF],
   dnl# - extra AH_TEMPLATE calls, so that autoheader knows what to put into
   dnl#   config.h.in,
   dnl# - extra AC_SUBST calls, so that the right substitutions are made.
-  AC_FOREACH([gltype],[$1],
-    [AH_TEMPLATE([BITSIZEOF_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]),
+  m4_foreach_w([gltype],[$1],[AH_TEMPLATE([BITSIZEOF_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]),
        [Define to the number of bits in type ']gltype['.])])
   for gltype in $1 ; do
     AC_CACHE_CHECK([for bit size of $gltype],[gl_cv_bitsizeof_${gltype}],
@@ -265,8 +264,7 @@ AC_DEFUN([gl_STDINT_BITSIZEOF],
     AC_DEFINE_UNQUOTED([BITSIZEOF_${GLTYPE}], [$result])
     eval BITSIZEOF_${GLTYPE}=\$result
   done
-  AC_FOREACH([gltype],[$1],
-    [AC_SUBST([BITSIZEOF_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]))])
+  m4_foreach_w([gltype],[$1],[AC_SUBST([BITSIZEOF_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]))])
 ])
 
 dnl# gl_CHECK_TYPES_SIGNED([TYPES],[INCLUDES])
@@ -278,8 +276,7 @@ AC_DEFUN([gl_CHECK_TYPES_SIGNED],
   dnl# - extra AH_TEMPLATE calls, so that autoheader knows what to put into
   dnl#   config.h.in,
   dnl# - extra AC_SUBST calls, so that the right substitutions are made.
-  AC_FOREACH([gltype],[$1],
-    [AH_TEMPLATE([HAVE_SIGNED_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]),
+  m4_foreach_w([gltype],[$1],[AH_TEMPLATE([HAVE_SIGNED_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]),
        [Define to 1 if ']gltype[' is a signed integer type.])])
   for gltype in $1 ; do
     AC_CACHE_CHECK([whether $gltype is signed], [gl_cv_type_${gltype}_signed],
@@ -298,8 +295,7 @@ AC_DEFUN([gl_CHECK_TYPES_SIGNED],
       eval HAVE_SIGNED_${GLTYPE}=0
     fi
   done
-  AC_FOREACH([gltype], [$1],
-    [AC_SUBST([HAVE_SIGNED_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]))])
+  m4_foreach_w([gltype],[$1],[AC_SUBST([HAVE_SIGNED_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]))])
 ])
 
 dnl# gl_INTEGER_TYPE_SUFFIX(TYPES, INCLUDES)
@@ -311,8 +307,7 @@ AC_DEFUN([gl_INTEGER_TYPE_SUFFIX],
   dnl# - extra AH_TEMPLATE calls, so that autoheader knows what to put into
   dnl#   config.h.in,
   dnl# - extra AC_SUBST calls, so that the right substitutions are made.
-  AC_FOREACH([gltype],[$1],
-    [AH_TEMPLATE(translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_])[_SUFFIX],
+  m4_foreach_w([gltype],[$1],[AH_TEMPLATE(translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_])[_SUFFIX],
        [Define to l, ll, u, ul, ull, etc., as suitable for
         constants of type ']gltype['.])])
   for gltype in $1 ; do
@@ -350,8 +345,7 @@ AC_DEFUN([gl_INTEGER_TYPE_SUFFIX],
     eval ${GLTYPE}_SUFFIX=\$result
     AC_DEFINE_UNQUOTED([${GLTYPE}_SUFFIX], $result)
   done
-  AC_FOREACH([gltype], [$1],
-    [AC_SUBST(translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_])[_SUFFIX])])
+  m4_foreach_w([gltype],[$1],[AC_SUBST(translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_])[_SUFFIX])])
 ])
 
 dnl# gl_STDINT_INCLUDES

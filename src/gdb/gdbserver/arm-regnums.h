@@ -1,4 +1,5 @@
-/* Common target dependent code for GDB on ARM systems.
+/* arm-regnums.h
+   Common target dependent code for GDB on ARM systems.
    Copyright 2002, 2003 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -24,14 +25,17 @@
    numbers which are too large to be actual register numbers as far as
    the user is concerned but do serve to get the desired values when
    passed to read_register.  */
-   
-/* APPLE LOCAL: Use R7 as FP for ARM for Darwin, use R11 for everything 
+
+#ifndef __ARM_REGNUMS_H__
+#define __ARM_REGNUMS_H__ 1
+
+/* APPLE LOCAL: Use R7 as FP for ARM for Darwin, use R11 for everything
    else. */
 #ifdef TM_NEXTSTEP
-#define __ARM_FP_REG 7
+# define __ARM_FP_REG 7
 #else
-#define __ARM_FP_REG 11
-#endif
+# define __ARM_FP_REG 11
+#endif /* TM_NEXTSTEP */
 
 enum gdb_regnum {
   ARM_R0_REGNUM = 0,
@@ -49,25 +53,25 @@ enum gdb_regnum {
   /* APPLE LOCAL: Allow alternate FP register number for ARM. */
   ARM_FP_REGNUM = __ARM_FP_REG,	/* Frame register in ARM code, if used.  */
   THUMB_FP_REGNUM = 7,		/* Frame register in Thumb code, if used.  */
-  ARM_NUM_ARG_REGS = 4, 
+  ARM_NUM_ARG_REGS = 4,
   ARM_LAST_ARG_REGNUM = ARM_A4_REGNUM,
   ARM_NUM_FP_ARG_REGS = 4,
   ARM_LAST_FP_ARG_REGNUM = ARM_F3_REGNUM,
 
   /* APPLE LOCAL START: Support for VFP.  */
-  /* The "VFP_REGNUM" registers are the VFPv1 register set of 32 
+  /* The "VFP_REGNUM" registers are the VFPv1 register set of 32
      32-bit registers that hold either integers or single precision
      floating point numbers (S0-S31).  */
   ARM_VFP_REGNUM_S0 = 26,
   ARM_VFP_REGNUM_S31 = 57,
   ARM_FPSCR_REGNUM = 58,
-  /* The "VFPV3_REGNUM" registers are the VFPv3 registers that aren't
+  /* The "VFPV3_REGNUM" registers are the VFPv3 registers that are NOT
      part of the VFPv1 registers (D16-D31). D0-D15 are numbered as pseudo
      registers since they ovarlap with S0-S31, so for VFPv3, we only need
      to define actual register values that do not overlap.   */
-  ARM_VFPV3_REGNUM_D16 = 59,	
+  ARM_VFPV3_REGNUM_D16 = 59,
   ARM_VFPV3_REGNUM_D31 = 74,
-  
+
   /* The VFP_PSEUDO registers are the "D variants" of the VFPv1 register set;
      16 64-bit double-precision floating point registers D0-D15. They overlap
      with the S0-S31 registers (S0 and S1 occupy the same space as D0).  */
@@ -94,13 +98,13 @@ enum gdb_regnum {
 #define INT_REGISTER_RAW_SIZE		4
 #define INT_REGISTER_VIRTUAL_SIZE	4
 
-/* Say how long FP registers are.  Used for documentation purposes and
-   code readability in this header.  IEEE extended doubles are 80
+/* Say how long FP registers are. Used for documentation purposes and
+   code readability in this header. IEEE extended doubles are 80
    bits.  DWORD aligned they use 96 bits.  */
 #define FP_REGISTER_RAW_SIZE	12
 
-/* GCC doesn't support long doubles (extended IEEE values).  The FP
-   register virtual size is therefore 64 bits.  Used for documentation
+/* GCC does NOT support long doubles (extended IEEE values). The FP
+   register virtual size is therefore 64 bits. Used for documentation
    purposes and code readability in this header.  */
 #define FP_REGISTER_VIRTUAL_SIZE	8
 
@@ -114,7 +118,7 @@ enum gdb_regnum {
    header.  */
 #define STATUS_REGISTER_SIZE	4
 
-/* Number of machine registers.  The only define actually required 
+/* Number of machine registers. The only define actually required
    is NUM_REGS.  The other definitions are used for documentation
    purposes and code readability.  */
 /* For 26 bit ARM code, a fake copy of the PC is placed in register 25 (PS)
@@ -161,5 +165,6 @@ enum gdb_regnum {
 #define FLAG_Z		(1<<30)
 #define FLAG_N		(1<<31)
 
+#endif /* !__ARM_REGNUMS_H__ */
 
-
+/* EOF */

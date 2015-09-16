@@ -1,0 +1,112 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# for.test --- test functionality of `for' function
+#
+# Time-stamp:        "2011-02-02 12:09:29 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating $testname.tpl
+${SED} 's/^ *[0-9]*: //' > $testname.tpl <<_EOF_
+ 1: <= AutoGen5 template test =>
+ 2: <=
+ 3: FOR list ",\n" =><=
+ 4:   IF (first-for?)
+ 5:      =>FIRST:  <=
+ 6:   ELIF (last-for?)
+ 7:      =>LAST:   <=
+ 8:   ELSE
+ 9:      =>MIDDLE: <=
+10:   ENDIF =><=elt[0]=><=
+11: ENDFOR =>
+12: <=
+13: FOR list-2       \=>
+14: <=FOR list   ", "\=>
+15: <=bumble         \=>
+16: <=ENDFOR         \=>
+17: <=
+18: ENDFOR            =>
+19: <=
+20: FOR list  ",\n"   =><=
+21:   FOR list-2 \=>	
+22: <=(for-index "list")=>:  <=
+23: 
+24:       IF (first-for? "list")
+25:          =>FIRST  <=
+26:       ELIF (last-for? "list")
+27:          =>LAST   <=
+28:       ELSE
+29:          =>MIDDLE <=
+30:       ENDIF       =><=
+31: 
+32:       (tpl-file-line " on line %2\$d") =><=
+33: 
+34:   ENDFOR          =><=
+35: ENDFOR            =>
+_EOF_
+
+
+# Create the files we need in the test environment
+cat > $testname.def <<_EOF_
+AutoGen definitions $testname;
+list = { elt = one; },
+{ elt = two.one, two.two, two.three; };
+list = { elt = three; }, {elt = four;};
+
+list-2 = { bumble = mumble; };
+_EOF_
+
+# this is the output we should expect to see
+cat > $testname.sample <<_EOF_
+FIRST:  one,
+MIDDLE: two.one,
+MIDDLE: three,
+LAST:   four
+mumble, mumble, mumble, mumble
+0:  FIRST   on line 32,
+1:  MIDDLE  on line 32,
+2:  MIDDLE  on line 32,
+3:  LAST    on line 32
+_EOF_
+
+run_ag x $testname.def || failure AutoGen failed
+cmp -s $testname.test $testname.sample || \
+    failure "`diff -c $testname.test $testname.sample`"
+
+echo '<= FOR =><= ENDFOR =>' >> $testname.tpl
+f=`(run_ag x $testname.def 2>&1) | ${EGREP} 'requires iterator'`
+test -z "$f" && \
+  failure "failed to detect missing FOR iterator"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of for.test

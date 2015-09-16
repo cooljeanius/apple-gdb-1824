@@ -237,7 +237,7 @@ int
 
 The @code{(gdb)} module provides these basic Guile functions.
 
-@c TODO: line length 
+@c TODO: line length
 @deffn {Scheme Procedure} execute command @r{[}#:from-tty boolean@r{]}@r{[}#:to-string boolean@r{]}
 Evaluate @var{command}, a string, as a @value{GDBN} CLI command.
 If a @value{GDBN} exception happens while @var{command} runs, it is
@@ -260,7 +260,7 @@ and height, and its pagination will be disabled; @pxref{Screen Size}.
 
 @deffn {Scheme Procedure} history-ref number
 Return a value from @value{GDBN}'s value history (@pxref{Value
-History}).  @var{number} indicates which history element to return.
+History}).  The @var{number} argument indicates which history element to return.
 If @var{number} is negative, then @value{GDBN} will take its absolute value
 and count backward from the last element (i.e., the most recent element) to
 find the value to return.  If @var{number} is zero, then @value{GDBN} will
@@ -278,10 +278,19 @@ history contains the result of evaluating an expression from Guile's
 command line.
 @end deffn
 
+@deffn {Scheme Procedure} history-append! value
+Append @var{value}, an instance of @code{<gdb:value>}, to @value{GDBN}'s
+value history.  Return its index in the history.
+
+Putting into history values returned by Guile extensions will allow
+the user convenient access to those values via CLI history
+facilities.
+@end deffn
+
 @deffn {Scheme Procedure} parse-and-eval expression
 Parse @var{expression} as an expression in the current language,
 evaluate it, and return the result as a @code{<gdb:value>}.
-@var{expression} must be a string.
+The @var{expression} must be a string.
 
 This function is useful when computing values.
 For example, it is the only way to get the value of a
@@ -812,7 +821,7 @@ Return field @var{field-name} from @code{<gdb:value>} object @var{value}.
 
 @deffn {Scheme Procedure} value-subscript value index
 Return the value of array @var{value} at index @var{index}.
-@var{value} must be a subscriptable @code{<gdb:value>} object.
+The @var{value} argument must be a subscriptable @code{<gdb:value>} object.
 @end deffn
 
 @deffn {Scheme Procedure} value-call value arg-list

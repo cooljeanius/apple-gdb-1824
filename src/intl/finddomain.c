@@ -1,4 +1,5 @@
-/* Handle list of needed message catalogs
+/* finddomain.c
+   Handle list of needed message catalogs
    Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
    Written by Ulrich Drepper <drepper@gnu.ai.mit.edu>, 1995.
 
@@ -19,49 +20,71 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning finddomain.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning finddomain.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_CTYPE_H
 # include <ctype.h>
 #else
-# warning finddomain.c expects <ctype.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "finddomain.c expects <ctype.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CTYPE_H */
 #ifdef HAVE_ERRNO_H
 # include <errno.h>
 #else
-# warning finddomain.c expects <errno.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "finddomain.c expects <errno.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_ERRNO_H */
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning finddomain.c expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "finddomain.c expects <stdio.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning finddomain.c expects <sys/types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "finddomain.c expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
+
+#ifndef PARAMS
+# if __STDC__ || defined __GNUC__ || defined __SUNPRO_C || defined __cplusplus || __PROTOTYPES
+#  define PARAMS(args) args
+# else
+#  define PARAMS(args) ()
+# endif /* __STDC__ */
+#endif /* !PARAMS */
 
 #if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
 # include <stdlib.h>
 #else
 # ifdef HAVE_MALLOC_H
 #  include <malloc.h>
-# elif defined(HAVE_MALLOC_MALLOC_H)
-#  include <malloc/malloc.h>
 # else
-void free ();
+#  if defined(HAVE_MALLOC_MALLOC_H)
+#   include <malloc/malloc.h>
+#  else
+void free PARAMS((void *buffer));
+#  endif /* HAVE_MALLOC_MALLOC_H */
 # endif /* HAVE_MALLOC_H */
 #endif /* STDC_HEADERS || _LIBC || HAVE_STDLIB_H */
 
 #if defined HAVE_STRING_H || defined _LIBC
 # include <string.h>
-#elif defined HAVE_STRINGS_H
-# include <strings.h>
-# ifndef memcpy
-#  define memcpy(Dst, Src, Num) bcopy (Src, Dst, Num)
-# endif /* !memcpy */
+#else
+# if defined HAVE_STRINGS_H
+#  include <strings.h>
+#  ifndef memcpy
+#   define memcpy(Dst, Src, Num) bcopy(Src, Dst, Num)
+#  endif /* !memcpy */
+# endif /* HAVE_STRINGS_H */
 #endif /* HAVE_STRING_H || _LIBC */
 #if !HAVE_STRCHR && !defined _LIBC
 # ifndef strchr
@@ -72,7 +95,9 @@ void free ();
 #if defined HAVE_UNISTD_H || defined _LIBC
 # include <unistd.h>
 #else
-# warning finddomain.c expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "finddomain.c expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H || _LIBC */
 
 #include "gettext.h"
@@ -93,10 +118,7 @@ static struct loaded_l10nfile *_nl_loaded_domains;
    established bindings.  */
 struct loaded_l10nfile *
 internal_function
-_nl_find_domain (dirname, locale, domainname)
-     const char *dirname;
-     char *locale;
-     const char *domainname;
+_nl_find_domain(const char *dirname, char *locale, const char *domainname)
 {
   struct loaded_l10nfile *retval;
   const char *language;
@@ -212,29 +234,29 @@ _nl_find_domain (dirname, locale, domainname)
 
   /* The room for an alias was dynamically allocated. Free it now.  */
   if (alias_value != NULL)
-    free (locale);
+    free(locale);
 
   return retval;
 }
 
 
 #ifdef _LIBC
-static void __attribute__ ((unused))
-free_mem (void)
+static void __attribute__((unused))
+free_mem(void)
 {
   struct loaded_l10nfile *runp = _nl_loaded_domains;
 
-  while (runp != NULL)
-    {
+  while (runp != NULL) {
       struct loaded_l10nfile *here = runp;
-      if (runp->data != NULL)
-	_nl_unload_domain ((struct loaded_domain *) runp->data);
+      if (runp->data != NULL) {
+	_nl_unload_domain((struct loaded_domain *)runp->data);
+      }
       runp = runp->next;
-      free (here);
-    }
+      free(here);
+  }
 }
 
-text_set_element (__libc_subfreeres, free_mem);
+text_set_element(__libc_subfreeres, free_mem);
 #endif /* _LIBC */
 
 /* EOF */

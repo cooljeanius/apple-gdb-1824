@@ -38,3 +38,8 @@ tic80/*
 v850/*
 w65/*
 z8k/*
+#TODO: I am on a different machine now, and my gitignored copies of
+# the broken directories that I was working on are now gone... do I start
+# afresh from the last versions to appear in apple-gdb (309), which is what
+# I started from last time, or do I start afresh from the latest
+# FSF versions this time?

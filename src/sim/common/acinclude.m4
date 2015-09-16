@@ -43,7 +43,7 @@ AC_REQUIRE([AC_PROG_CC])
 AC_REQUIRE([AC_PROG_INSTALL])
 
 dnl# Put a plausible default for CC_FOR_BUILD in Makefile.
-if test "x$cross_compiling" = "xno"; then
+if test "x${cross_compiling}" = "xno"; then
   CC_FOR_BUILD='$(CC)'
 else
   CC_FOR_BUILD=gcc
@@ -814,18 +814,31 @@ dnl# --enable-build-warnings is for developers of the simulator.
 dnl# it enables extra GCC specific warnings.
 AC_DEFUN([SIM_AC_OPTION_WARNINGS],
 [
+AC_REQUIRE([AC_PROG_SED])
 # NOTE: Do NOT add -Wall or -Wunused, they both include
 # -Wunused-parameter which reports bogus warnings.
 # NOTE: If you add to this list, remember to update
 # gdb/doc/gdbint.texinfo.
 build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
--Wformat -Wparentheses -Wpointer-arith -Wuninitialized"
+-Wformat -Wparentheses -Wpointer-arith -Wmisleading-indentation"
+# GCC supports -Wuninitialized only with -O or -On, n != 0.
+if test x${CFLAGS+set} = xset; then
+  case "${CFLAGS}" in
+    *"-O0"*) ;;
+    *"-O"*)
+      build_warnings="${build_warnings} -Wuninitialized"
+    ;;
+    *) ;;
+  esac
+else
+  build_warnings="${build_warnings} -Wuninitialized"
+fi
 # Up for debate: -Wswitch -Wcomment -trigraphs -Wtrigraphs
 # -Wunused-function -Wunused-label -Wunused-variable -Wunused-value
 # -Wchar-subscripts -Wtraditional -Wshadow -Wcast-qual
 # -Wcast-align -Wwrite-strings -Wconversion -Wstrict-prototypes
 # -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls
-# -Woverloaded-virtual -Winline -Werror"
+# -Woverloaded-virtual -Winline -Werror
 AC_ARG_ENABLE([build-warnings],
 [AS_HELP_STRING([--enable-build-warnings],[Enable build-time compiler warnings if gcc is used])],
 [case "${enableval}" in
@@ -837,11 +850,11 @@ AC_ARG_ENABLE([build-warnings],
         build_warnings="${t} ${build_warnings}";;
   *)    build_warnings=`echo "${enableval}" | sed -e "s/,/ /g"`;;
 esac
-if test x"$silent" != x"yes" && test x"$build_warnings" != x""; then
-  echo "Setting compiler warning flags = $build_warnings" 6>&1
+if test x"${silent}" != x"yes" && test x"${build_warnings}" != x""; then
+  echo "Setting compiler warning flags = ${build_warnings}" 6>&1
 fi])dnl
 AC_ARG_ENABLE([sim-build-warnings],
-[AS_HELP_STRING([--enable-gdb-build-warnings],[Enable SIM specific build-time compiler warnings if gcc is used])],
+[AS_HELP_STRING([--enable-sim-build-warnings],[Enable SIM specific build-time compiler warnings if gcc is used])],
 [case "${enableval}" in
   yes)	;;
   no)	build_warnings="-w";;
@@ -851,31 +864,45 @@ AC_ARG_ENABLE([sim-build-warnings],
         build_warnings="${t} ${build_warnings}";;
   *)    build_warnings=`echo "${enableval}" | sed -e "s/,/ /g"`;;
 esac
-if test x"$silent" != x"yes" && test x"$build_warnings" != x""; then
-  echo "Setting GDB specific compiler warning flags = $build_warnings" 6>&1
+if test x"${silent}" != x"yes" && test x"${build_warnings}" != x""; then
+  echo "Setting SIM specific compiler warning flags = ${build_warnings}" 6>&1
 fi])dnl
 WARN_CFLAGS=""
 WERROR_CFLAGS=""
-if test "x${build_warnings}" != x -a "x$GCC" = xyes
+if test "x${build_warnings}" != x -a "x${GCC}" = xyes
 then
     AC_MSG_CHECKING([compiler warning flags])
     # Separate out the -Werror flag as some files just cannot be
     # compiled with it enabled.
     for w in ${build_warnings}; do
-	case $w in
+	case ${w} in
 	-Werr*) WERROR_CFLAGS=-Werror ;;
+        -Wunintialized*)
+            if test x${CFLAGS+set} = xset; then
+              case "${CFLAGS}" in
+                *"-O0"*) ;;
+                *"-O"*)
+                  WARN_CFLAGS="${WARN_CFLAGS} ${w}"
+                ;;
+                *) ;;
+              esac
+            else
+              WARN_CFLAGS="${WARN_CFLAGS} ${w}"
+            fi
+            ;;
 	*) # Check that GCC accepts it
-	    saved_CFLAGS="$CFLAGS"
-	    CFLAGS="$CFLAGS $w"
-	    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],[WARN_CFLAGS="${WARN_CFLAGS} $w"],[])
-	    CFLAGS="$saved_CFLAGS"
+	    saved_CFLAGS="${CFLAGS}"
+	    CFLAGS="${CFLAGS} ${w}"
+	    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],[WARN_CFLAGS="${WARN_CFLAGS} ${w}"],[])
+	    CFLAGS="${saved_CFLAGS}"
+            ;;
 	esac
     done
-    AC_MSG_RESULT(${WARN_CFLAGS}${WERROR_CFLAGS})
+    AC_MSG_RESULT([${WARN_CFLAGS}${WERROR_CFLAGS}])
 fi
 ])
-AC_SUBST([WARN_CFLAGS])
-AC_SUBST([WERROR_CFLAGS])
+AC_SUBST([WARN_CFLAGS])dnl
+AC_SUBST([WERROR_CFLAGS])dnl
 
 
 dnl# Generate the Makefile in a target specific directory.
@@ -1357,7 +1384,7 @@ if test "x${cgen_maint}" != "xno"; then
 else
   CGEN_MAINT='#'
 fi
-AC_SUBST([CGEN_MAINT])
-AC_SUBST([cgendir])
-AC_SUBST([cgen])
-])
+AC_SUBST([CGEN_MAINT])dnl
+AC_SUBST([cgendir])dnl
+AC_SUBST([cgen])dnl
+])dnl

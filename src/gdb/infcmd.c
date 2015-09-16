@@ -1,4 +1,4 @@
-/* Memory-access and commands for "inferior" process, for GDB.
+/* infcmd.c: Memory-access and commands for "inferior" process, for GDB.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
@@ -37,7 +37,7 @@
 #include "language.h"
 /* APPLE LOCAL - subroutine inlining  */
 #include "annotate.h"
-#include "symfile.h"
+/* we already included "symfile.h" once above */
 #include "objfiles.h"
 #include "completer.h"
 #include "ui-out.h"
@@ -51,16 +51,31 @@
 #include "solib.h"
 #include <ctype.h>
 #include "gdb_assert.h"
+#include "infcmd.h"
 /* APPLE LOCAL - subroutine inlining  */
 #include "inlining.h"
 #include "macosx/macosx-nat-dyld.h"
 
 #if defined(NM_NEXTSTEP) || defined(TM_NEXTSTEP)
-# include "nm-macosx.h"
 # include "macosx-nat-inferior.h"
-# include "config/nm-macosx.h"
-# include "macosx/nm-macosx.h"
-# include "macosx/macosx-nat-inferior.h"
+# if !defined(TARGET_CAN_USE_HARDWARE_WATCHPOINT) && \
+     !defined(STOPPED_BY_WATCHPOINT) && \
+     !defined(HAVE_NONSTEPPABLE_WATCHPOINT) && \
+     !defined(target_insert_watchpoint) && \
+     !defined(target_remove_watchpoint)
+#  include "nm-macosx.h"
+#  ifndef NM_NEXTSTEP
+#   include "config/nm-macosx.h"
+#  endif /* !NM_NEXTSTEP */
+#  ifndef _NM_NEXTSTEP_H_
+#   include "macosx/nm-macosx.h"
+#  endif /* !_NM_NEXTSTEP_H_ */
+# endif /* !(multiple things) */
+/* in case we found the wrong one (i.e., from "../gdb-next" instead of
+ * from "./macosx"): */
+# ifndef __GDB_MACOSX_NAT_INFERIOR_H__
+#  include "macosx/macosx-nat-inferior.h"
+# endif /* !__GDB_MACOSX_NAT_INFERIOR_H__ */
 #else
 # define INFCMD_C_NOT_ON_NEXTSTEP 1
 #endif /* NM_NEXTSTEP || TM_NEXTSTEP */
@@ -73,94 +88,94 @@
 # define PROCESS_COMPLETER noop_completer
 #endif /* !PROCESS_COMPLETER */
 
-extern char **process_completer (char *, char *);
+extern char **process_completer(char *, char *);
 /* APPLE LOCAL end process completer */
 
 /* Functions exported for general use, in inferior.h: */
 
-void all_registers_info (char *, int);
+void all_registers_info(char *, int);
 
-void registers_info (char *, int);
+void registers_info(char *, int);
 
-void nexti_command (char *, int);
+void nexti_command(char *, int);
 
-void stepi_command (char *, int);
+void stepi_command(char *, int);
 
-void continue_command (char *, int);
+void continue_command(char *, int);
 
-void interrupt_target_command (char *args, int from_tty);
+void interrupt_target_command(char *args, int from_tty);
 
 /* Local functions: */
 
-static void nofp_registers_info (char *, int);
+static void nofp_registers_info(char *, int);
 
-static void print_return_value (int struct_return, struct type *value_type);
+static void print_return_value(int struct_return, struct type *value_type);
 
-static void finish_command_continuation (struct continuation_arg *);
+static void finish_command_continuation(struct continuation_arg *);
 
-static void until_next_command (int);
+static void until_next_command(int);
 
-static void until_command (char *, int);
+static void until_command(char *, int);
 
-static void path_info (char *, int);
+static void path_info(char *, int);
 
-static void path_command (char *, int);
+static void path_command(char *, int);
 
-static void unset_command (char *, int);
+static void unset_command(char *, int);
 
-static void float_info (char *, int);
+static void float_info(char *, int);
 
-static void detach_command (char *, int);
+static void detach_command(char *, int);
 
-static void disconnect_command (char *, int);
+static void disconnect_command(char *, int);
 
-static void unset_environment_command (char *, int);
+static void unset_environment_command(char *, int);
 
-static void set_environment_command (char *, int);
+static void set_environment_command(char *, int);
 
-static void environment_info (char *, int);
+static void environment_info(char *, int);
 
-static void program_info (char *, int);
+static void program_info(char *, int);
 
 /* APPLE LOCAL pid info */
-void pid_info (char *, int);
+void pid_info(char *, int);
 
-static void finish_command (char *, int);
+static void finish_command(char *, int);
 
-static void signal_command (char *, int);
+static void signal_command(char *, int);
 
-static void jump_command (char *, int);
+static void jump_command(char *, int);
 
-static void step_1 (int, int, char *);
-static void step_1_inlining (int, int, char *);
-static void step_1_no_inlining (int, int, char *);
+static void step_1(int, int, char *);
+static void step_1_inlining(int, int, char *);
+static void step_1_no_inlining(int, int, char *);
 /* APPLE LOCAL make step_once globally visible */
-static void step_1_continuation (struct continuation_arg *arg);
+static void step_1_continuation(struct continuation_arg *arg);
 
 /* APPLE LOCAL begin checkpoints */
-void re_exec_1 ();
-void re_exec_1_continuation (struct continuation_arg *arg);
-void re_exec_once (int count);
+void re_exec_1(void);
+void re_exec_1_continuation(struct continuation_arg *arg);
+void re_exec_once(int count);
 /* APPLE LOCAL end checkpoints */
 
-static void next_command (char *, int);
+static void next_command(char *, int);
 
-static void step_command (char *, int);
+static void step_command(char *, int);
 
-static void run_command (char *, int);
+static void run_command(char *, int);
 
-static void run_no_args_command (char *args, int from_tty);
+static void run_no_args_command(char *args, int from_tty);
 
-static void go_command (char *line_no, int from_tty);
+static void go_command(char *line_no, int from_tty);
 
-int strip_bg_char (char **);
+int strip_bg_char(char **);
 
-void _initialize_infcmd (void);
+void _initialize_infcmd(void);
 
 #define GO_USAGE   "Usage: go <location>\n"
 
 #define ERROR_NO_INFERIOR \
-   if (!target_has_execution) error (_("The program is not being run."));
+   if (!target_has_execution) error(_("The program is not being run."));
 
 /* String containing arguments to give to the program, separated by spaces.
    Empty string (pointer to '\0') means no args.  */
@@ -472,22 +487,22 @@ tty_command (char *file, int from_tty)
    the program being debugged when FROM_TTY is non-null.  */
 
 void
-kill_if_already_running (int from_tty)
+kill_if_already_running(int from_tty)
 {
-  if (! ptid_equal (inferior_ptid, null_ptid) && target_has_execution)
+  if (! ptid_equal(inferior_ptid, null_ptid) && target_has_execution)
     {
       if (from_tty
-	  && !query ("The program being debugged has been started already.\n\
+	  && !query("The program being debugged has been started already.\n\
 Start it from the beginning? "))
-	error (_("Program not restarted."));
-      target_kill ();
+	error(_("Program not restarted."));
+      target_kill();
 #if defined(SOLIB_RESTART)
-      SOLIB_RESTART ();
-#endif
+      SOLIB_RESTART();
+#endif /* SOLIB_RESTART */
       /* APPLE LOCAL checkpoints */
-      clear_all_checkpoints ();
+      clear_all_checkpoints();
 
-      init_wait_for_inferior ();
+      init_wait_for_inferior();
     }
 }
 
@@ -688,26 +703,25 @@ continue_command (char *proc_count_exp, int from_tty)
   if (proc_count_exp != NULL)
     {
       bpstat bs = stop_bpstat;
-      int num = bpstat_num (&bs);
+      int num = bpstat_num(&bs);
       /* APPLE LOCAL: Used to be "num == 0", but bpstat_num returns -1
 	 if the breakpoint_at for the bpstat is NULL.  We should
 	 ignore that as well.  */
 
-      if (num <= 0 && from_tty)
+      if ((num <= 0) && from_tty)
 	{
-	  printf_filtered
-	    ("Not stopped at any breakpoint; argument ignored.\n");
+	  printf_filtered("Not stopped at any breakpoint; argument ignored.\n");
 	}
       while (num != 0)
 	{
-	  set_ignore_count (num,
-			    parse_and_eval_long (proc_count_exp) - 1,
-			    from_tty);
+	  set_ignore_count(num,
+			   (int)(parse_and_eval_long(proc_count_exp) - 1L),
+			   from_tty);
 	  /* set_ignore_count prints a message ending with a period.
 	     So print two spaces before "Continuing.".  */
 	  if (from_tty)
-	    printf_filtered ("  ");
-	  num = bpstat_num (&bs);
+	    printf_filtered("  ");
+	  num = bpstat_num(&bs);
 	}
     }
 
@@ -785,10 +799,10 @@ step_1 (int skip_subroutines, int single_inst, char *count_string)
    inlined-stepping option is turned off.  */
 
 static void
-step_1_no_inlining (int skip_subroutines, int single_inst, char *count_string)
+step_1_no_inlining(int skip_subroutines, int single_inst, char *count_string)
 /* APPLE LOCAL end stepping through inlined subroutines  */
 {
-  int count = 1;
+  long count = 1L;
   struct frame_info *frame;
   struct cleanup *cleanups = 0;
   int async_exec = 0;
@@ -801,35 +815,37 @@ step_1_no_inlining (int skip_subroutines, int single_inst, char *count_string)
   ERROR_NO_INFERIOR;
 
   if (count_string)
-    async_exec = strip_bg_char (&count_string);
+    async_exec = strip_bg_char(&count_string);
 
   /* If we get a request for running in the bg but the target
      doesn't support it, error out. */
-  if (async_exec && !target_can_async_p ())
-    error (_("Asynchronous execution not supported on this target."));
+  if (async_exec && !target_can_async_p())
+    error(_("Asynchronous execution not supported on this target."));
 
   /* If we don't get a request of running in the bg, then we need
      to simulate synchronous (fg) execution. */
   /* APPLE LOCAL begin subroutine inlining  */
-  if (!async_exec && target_can_async_p ()
+  if (!async_exec && target_can_async_p()
       && !single_inst
       && (skip_subroutines
-	  || !at_inlined_call_site_p (&file_name, &line_num, &column)))
+	  || !at_inlined_call_site_p(&file_name, &line_num, &column)))
   /* APPLE LOCAL end subroutine inlining  */
     {
       /* Simulate synchronous execution */
-      async_disable_stdin ();
+      async_disable_stdin();
     }
 
-  count = count_string ? parse_and_eval_long (count_string) : 1;
+  count = (count_string ? (long)parse_and_eval_long(count_string) : 1L);
 
   if (!single_inst || skip_subroutines)		/* leave si command alone */
     {
-      enable_longjmp_breakpoint ();
-      if (!target_can_async_p ())
-	cleanups = make_cleanup (disable_longjmp_breakpoint_cleanup, 0 /*ignore*/);
+      enable_longjmp_breakpoint();
+      if (!target_can_async_p())
+	cleanups = make_cleanup(disable_longjmp_breakpoint_cleanup,
+                                0/*ignore*/);
       else
-        make_exec_cleanup (disable_longjmp_breakpoint_cleanup, 0 /*ignore*/);
+        make_exec_cleanup(disable_longjmp_breakpoint_cleanup,
+                          0 /*ignore*/);
     }
 
   /* In synchronous case, all is well, just use the regular for loop. */
@@ -915,9 +931,9 @@ which has no line number information.\n"), name);
    step_once.  */
 
 static void
-step_1_inlining (int skip_subroutines, int single_inst, char *count_string)
+step_1_inlining(int skip_subroutines, int single_inst, char *count_string)
 {
-  int count = 1;
+  long count = 1L;
   struct frame_info *frame;
   struct cleanup *cleanups = 0;
   int async_exec = 0;
@@ -927,35 +943,35 @@ step_1_inlining (int skip_subroutines, int single_inst, char *count_string)
   int column = 0;
   int stack_pos = 0;
   int do_proceed = 1;
-  CORE_ADDR end_of_line = (CORE_ADDR) 0;
-  CORE_ADDR inline_start_pc = (CORE_ADDR) 0;
-  CORE_ADDR tmp_end = (CORE_ADDR) 0;
+  CORE_ADDR end_of_line = (CORE_ADDR)0UL;
+  CORE_ADDR inline_start_pc = (CORE_ADDR)0UL;
+  CORE_ADDR tmp_end = (CORE_ADDR)0UL;
   /* APPLE LOCAL end subroutine inlining  */
 
   ERROR_NO_INFERIOR;
 
   if (count_string)
-    async_exec = strip_bg_char (&count_string);
+    async_exec = strip_bg_char(&count_string);
 
   /* If we get a request for running in the bg but the target
      doesn't support it, error out. */
-  if (async_exec && !target_can_async_p ())
-    error (_("Asynchronous execution not supported on this target."));
+  if (async_exec && !target_can_async_p())
+    error(_("Asynchronous execution not supported on this target."));
 
   /* If we don't get a request of running in the bg, then we need
      to simulate synchronous (fg) execution. */
   /* APPLE LOCAL begin subroutine inlining  */
-  if (!async_exec && target_can_async_p ()
+  if (!async_exec && target_can_async_p()
       && !single_inst
       && (skip_subroutines
-	  || !at_inlined_call_site_p (&file_name, &line_num, &column)))
+	  || !at_inlined_call_site_p(&file_name, &line_num, &column)))
   /* APPLE LOCAL end subroutine inlining  */
     {
       /* Simulate synchronous execution */
-      async_disable_stdin ();
+      async_disable_stdin();
     }
 
-  count = count_string ? parse_and_eval_long (count_string) : 1;
+  count = (count_string ? (long)parse_and_eval_long(count_string) : 1L);
 
   if (!single_inst || skip_subroutines)		/* leave si command alone */
     {
@@ -1361,9 +1377,9 @@ step_once (int skip_subroutines, int single_inst, int count)
   int line_num = 0;
   int column = 0;
   int stack_pos;
-  CORE_ADDR end_of_line = (CORE_ADDR) 0;
-  CORE_ADDR inline_start_pc = (CORE_ADDR) 0;
-  CORE_ADDR tmp_end = (CORE_ADDR) 0;
+  CORE_ADDR end_of_line = (CORE_ADDR)0UL;
+  CORE_ADDR inline_start_pc = (CORE_ADDR)0UL;
+  CORE_ADDR tmp_end = (CORE_ADDR)0UL;
 
   if (!single_inst
       && (stack_pos = at_inlined_call_site_p (&file_name, &line_num, &column)
@@ -1708,26 +1724,26 @@ struct checkpoint *active_checkpoint;
 int magic_flag = 0;
 
 void
-re_execute_command (char *args, int from_tty)
+re_execute_command(char *args, int from_tty)
 {
-  int cpn = (args ? parse_and_eval_long (args) : 1);
+  long cpn = (args ? (long)parse_and_eval_long(args) : 1L);
 
-  rx_cp = find_checkpoint (cpn);
+  rx_cp = find_checkpoint(cpn);
 
   if (rx_cp == NULL)
     {
-      printf ("Checkpoint not found\n");
+      printf("Checkpoint not found\n");
       return;
     }
 
-  printf ("Re-executing to ");
-  print_checkpoint_info (rx_cp);
+  printf("Re-executing to ");
+  print_checkpoint_info(rx_cp);
 
-  re_exec_1 ();
+  re_exec_1();
 }
 
 void
-re_exec_1 ()
+re_exec_1(void)
 {
   int count = 1;
   struct frame_info *frame;
@@ -1985,13 +2001,13 @@ signal_command (char *signum_exp, int from_tty)
 
   if (oursig == TARGET_SIGNAL_UNKNOWN)
     {
-      /* No, try numeric.  */
-      int num = parse_and_eval_long (signum_exp);
+      /* No, try numeric: */
+      long num = (long)parse_and_eval_long(signum_exp);
 
-      if (num == 0)
+      if (num == 0L)
 	oursig = TARGET_SIGNAL_0;
       else
-	oursig = target_signal_from_command (num);
+	oursig = target_signal_from_command(num);
     }
 
   if (from_tty)
@@ -2295,7 +2311,7 @@ finish_inlined_subroutine_command_continuation (struct continuation_arg *arg)
    to make sure return values are printed out, etc.  */
 
 static void
-finish_inlined_subroutine_command (CORE_ADDR inline_end_pc)
+finish_inlined_subroutine_command(CORE_ADDR inline_end_pc)
 {
   int i;  /* Position, in inlined call stack, of subroutine to be
 	     'finish'ed  */
@@ -2314,28 +2330,30 @@ finish_inlined_subroutine_command (CORE_ADDR inline_end_pc)
   /* Find the record corresponding to the inlined subroutine we wish
      to 'finish'.  */
 
-  i = current_inlined_subroutine_stack_position ();
-  if (i > 0
+  i = current_inlined_subroutine_stack_position();
+  if ((i > 0)
       && !global_inlined_call_stack.records[i].stepped_into)
     i--;
 
   /* If we aren't at an active record on the inlining stack, then we
      have gotten here by mistake.  */
 
-  gdb_assert (i >= 1);
-  gdb_assert (global_inlined_call_stack.records[i].stepped_into);
+  gdb_assert(i >= 1);
+  gdb_assert(global_inlined_call_stack.records[i].stepped_into);
 
-  /* Collect the call site information.  */
-
+  /* Collect the call site information: */
   file_name = global_inlined_call_stack.records[i].call_site_filename;
-  line_num  = global_inlined_call_stack.records[i].call_site_line;
-  column    = global_inlined_call_stack.records[i].call_site_column;
+  line_num = global_inlined_call_stack.records[i].call_site_line;
+  column = global_inlined_call_stack.records[i].call_site_column;
   start_pc = global_inlined_call_stack.records[i].start_pc;
 
-  /* Get the correct sal.  */
+  if ((file_name == NULL) || (column == 0)) {
+    ; /* ??? */
+  }
 
-  frame = get_current_frame ();
-  sal = find_pc_line (start_pc, 0);
+  /* Get the correct sal: */
+  frame = get_current_frame();
+  sal = find_pc_line(start_pc, 0);
   while (sal.entry_type != INLINED_CALL_SITE_LT_ENTRY
 	 || sal.line != line_num)
     {
@@ -2352,10 +2370,10 @@ finish_inlined_subroutine_command (CORE_ADDR inline_end_pc)
   /* Proceed as if we are doing 'next' over the inlined subroutine, but
      make sure to use prev_frame.  */
 
-  clear_proceed_status ();
+  clear_proceed_status();
   if (!frame)
-    error (_("No current frame"));
-  step_frame_id = get_frame_id (get_prev_frame (frame));
+    error(_("No current frame"));
+  step_frame_id = get_frame_id(get_prev_frame(frame));
   step_range_start = start_pc;
   step_range_end = sal.pc;
   step_over_calls = STEP_OVER_ALL;
@@ -2366,33 +2384,33 @@ finish_inlined_subroutine_command (CORE_ADDR inline_end_pc)
      the subroutien.  */
 
   global_inlined_call_stack.records[i].stepped_into = 0;
-  adjust_current_inlined_subroutine_stack_position (-1);
+  adjust_current_inlined_subroutine_stack_position(-1);
 
-  frame = get_prev_frame (deprecated_selected_frame);
+  frame = get_prev_frame(deprecated_selected_frame);
 
-  function = find_pc_function (get_frame_pc (frame));
+  function = find_pc_function(get_frame_pc(frame));
 
   /* Take care of printing out the return value, if any, of the function
      we are finishing.  */
 
-  if (target_can_async_p ())
+  if (target_can_async_p())
     {
       arg1 =
-	(struct continuation_arg *) xmalloc (sizeof (struct continuation_arg));
+	(struct continuation_arg*)xmalloc(sizeof(struct continuation_arg));
       arg2 =
-	(struct continuation_arg *) xmalloc (sizeof (struct continuation_arg));
+	(struct continuation_arg*)xmalloc(sizeof(struct continuation_arg));
       arg1->next = arg2;
       arg2->next = NULL;
       arg1->data.pointer = function;
       arg2->data.pointer = old_chain;
-      add_continuation (finish_inlined_subroutine_command_continuation, arg1);
+      add_continuation(finish_inlined_subroutine_command_continuation, arg1);
     }
 
   finishing_inlined_subroutine = 1;
   proceed_to_finish = 1;
-  proceed ((CORE_ADDR) -1, TARGET_SIGNAL_DEFAULT, 1);
+  proceed((CORE_ADDR)-1L, TARGET_SIGNAL_DEFAULT, 1);
 
-  if (!target_can_async_p ())
+  if (!target_can_async_p())
     {
       if (function != NULL)
 	{
@@ -2400,25 +2418,25 @@ finish_inlined_subroutine_command (CORE_ADDR inline_end_pc)
 	  int struct_return;
 	  int gcc_compiled;
 
-	  value_type = TYPE_TARGET_TYPE (SYMBOL_TYPE (function));
+	  value_type = TYPE_TARGET_TYPE(SYMBOL_TYPE(function));
 	  if (!value_type)
-	    internal_error (__FILE__, __LINE__,
+	    internal_error(__FILE__, __LINE__,
 	  _("finish_inlined_subroutine_command: function has no target type"));
 
-	  if (TYPE_CODE (value_type) == TYPE_CODE_VOID)
+	  if (TYPE_CODE(value_type) == TYPE_CODE_VOID)
 	    {
-	      do_exec_cleanups (old_chain);
+	      do_exec_cleanups(old_chain);
 	      return;
 	    }
 
-	  CHECK_TYPEDEF (value_type);
-	  gcc_compiled = BLOCK_GCC_COMPILED (SYMBOL_BLOCK_VALUE (function));
-	  struct_return = using_struct_return (value_type, gcc_compiled);
+	  CHECK_TYPEDEF(value_type);
+	  gcc_compiled = BLOCK_GCC_COMPILED(SYMBOL_BLOCK_VALUE(function));
+	  struct_return = using_struct_return(value_type, gcc_compiled);
 
-	  print_return_value (struct_return, value_type);
+	  print_return_value(struct_return, value_type);
 	}
 
-      do_exec_cleanups (old_chain);
+      do_exec_cleanups(old_chain);
     }
 }
 /* APPLE LOCAL end subroutine inlining  */
@@ -3261,81 +3279,82 @@ float_info (char *args, int from_tty)
 }
 
 static void
-unset_command (char *args, int from_tty)
+unset_command(char *args, int from_tty)
 {
-  printf_filtered (_("\
+  printf_filtered(_("\
 \"unset\" must be followed by the name of an unset subcommand.\n"));
-  help_list (unsetlist, "unset ", -1, gdb_stdout);
+  help_list(unsetlist, "unset ", (enum command_class)-1, gdb_stdout);
 }
 
 void
-_initialize_infcmd (void)
+_initialize_infcmd(void)
 {
   struct cmd_list_element *c = NULL;
 
   /* add the filename of the terminal connected to inferior I/O */
-  add_setshow_filename_cmd ("inferior-tty", class_run,
-			    &inferior_io_terminal, _("\
+  add_setshow_filename_cmd("inferior-tty", class_run,
+			   &inferior_io_terminal, _("\
 Set terminal for future runs of program being debugged."), _("\
 Show terminal for future runs of program being debugged."), _("\
 Usage: set inferior-tty /dev/pts/1"), NULL, NULL, &setlist, &showlist);
-  add_com_alias ("tty", "set inferior-tty", class_alias, 0);
+  add_com_alias("tty", "set inferior-tty", class_alias, 0);
 
-  /* c->completer_word_break_characters = gdb_completer_filename_word_break_characters; */ /* FIXME */
+#if 0
+  c->completer_word_break_characters = gdb_completer_filename_word_break_characters; /* FIXME */
+#endif /* 0 */
 
-  add_setshow_optional_filename_cmd ("args", class_run,
-				     &inferior_args, _("\
+  add_setshow_optional_filename_cmd("args", class_run,
+				    &inferior_args, _("\
 Set argument list to give program being debugged when it is started."), _("\
 Show argument list to give program being debugged when it is started."), _("\
 Follow this command with any number of args, to be passed to the program."),
-				     notice_args_set,
-				     notice_args_read,
-				     &setlist, &showlist);
+				    notice_args_set, notice_args_read,
+				    &setlist, &showlist);
 
-  c = add_cmd ("environment", no_class, environment_info, _("\
+  c = add_cmd("environment", no_class, environment_info, _("\
 The environment to give the program, or one variable's value.\n\
 With an argument VAR, prints the value of environment variable VAR to\n\
 give the program being debugged.  With no arguments, prints the entire\n\
 environment to be given to the program."), &showlist);
-  set_cmd_completer (c, noop_completer);
+  set_cmd_completer(c, noop_completer);
 
-  add_prefix_cmd ("unset", no_class, unset_command,
-		  _("Complement to certain \"set\" commands."),
-		  &unsetlist, "unset ", 0, &cmdlist);
+  add_prefix_cmd("unset", no_class, unset_command,
+		 _("Complement to certain \"set\" commands."),
+		 &unsetlist, "unset ", 0, &cmdlist);
 
-  c = add_cmd ("environment", class_run, unset_environment_command, _("\
+  c = add_cmd("environment", class_run, unset_environment_command, _("\
 Cancel environment variable VAR for the program.\n\
 This does not affect the program until the next \"run\" command."),
-	       &unsetlist);
-  set_cmd_completer (c, noop_completer);
+              &unsetlist);
+  set_cmd_completer(c, noop_completer);
 
-  c = add_cmd ("environment", class_run, set_environment_command, _("\
+  c = add_cmd("environment", class_run, set_environment_command, _("\
 Set environment variable value to give the program.\n\
 Arguments are VAR VALUE where VAR is variable name and VALUE is value.\n\
 VALUES of environment variables are uninterpreted strings.\n\
 This does not affect the program until the next \"run\" command."),
-	       &setlist);
-  set_cmd_completer (c, noop_completer);
+              &setlist);
+  set_cmd_completer(c, noop_completer);
 
-  c = add_com ("path", class_files, path_command, _("\
+  c = add_com("path", class_files, path_command, _("\
 Add directory DIR(s) to beginning of search path for object files.\n\
 $cwd in the path means the current working directory.\n\
 This path is equivalent to the $PATH shell variable.  It is a list of\n\
 directories, separated by colons.  These directories are searched to find\n\
 fully linked executable files and separately compiled object files as needed."));
-  set_cmd_completer (c, filename_completer);
+  set_cmd_completer(c, filename_completer);
 
-  c = add_cmd ("paths", no_class, path_info, _("\
+  c = add_cmd("paths", no_class, path_info, _("\
 Current search path for finding object files.\n\
 $cwd in the path means the current working directory.\n\
 This path is equivalent to the $PATH shell variable.  It is a list of\n\
 directories, separated by colons.  These directories are searched to find\n\
 fully linked executable files and separately compiled object files as needed."),
-	       &showlist);
-  set_cmd_completer (c, noop_completer);
+              &showlist);
+  set_cmd_completer(c, noop_completer);
 
   /* APPLE LOCAL process completer */
-  c = add_com ("attach", class_run, attach_command, _("\
+  c = add_com("attach", class_run, attach_command, _("\
 Attach to a process or file outside of GDB.\n\
 This command attaches to another target, of the same type as your last\n\
 \"target\" command (\"info files\" will show your target stack).\n\
@@ -3354,94 +3373,94 @@ You may also use the '-waitfor' argument followed by a process name -- gdb\n\
 will poll and loop waiting for the process by that name to launch."));
 
   /* APPLE LOCAL process completer */
-  set_cmd_completer (c, PROCESS_COMPLETER);
-#ifdef PROCESS_COMPLETER_WORD_BREAK_CHARACTERS
-  /* c->completer_word_break_characters = PROCESS_COMPLETER_WORD_BREAK_CHARACTERS; */ /* FIXME */
-#endif
+  set_cmd_completer(c, PROCESS_COMPLETER);
+#if defined(PROCESS_COMPLETER_WORD_BREAK_CHARACTERS) && 0
+  c->completer_word_break_characters = PROCESS_COMPLETER_WORD_BREAK_CHARACTERS; /* FIXME */
+#endif /* PROCESS_COMPLETER_WORD_BREAK_CHARACTERS && 0 */
 
-  add_com ("detach", class_run, detach_command, _("\
+  add_com("detach", class_run, detach_command, _("\
 Detach a process or file previously attached.\n\
 If a process, it is no longer traced, and it continues its execution.  If\n\
 you were debugging a file, the file is closed and gdb no longer accesses it."));
 
-  add_com ("disconnect", class_run, disconnect_command, _("\
+  add_com("disconnect", class_run, disconnect_command, _("\
 Disconnect from a target.\n\
 The target will wait for another debugger to connect.  Not available for\n\
 all targets."));
 
-  add_com ("signal", class_run, signal_command, _("\
+  add_com("signal", class_run, signal_command, _("\
 Continue program giving it signal specified by the argument.\n\
 An argument of \"0\" means continue program without giving it a signal."));
 
-  add_com ("stepi", class_run, stepi_command, _("\
+  add_com("stepi", class_run, stepi_command, _("\
 Step one instruction exactly.\n\
 Argument N means do this N times (or till program stops for another reason)."));
-  add_com_alias ("si", "stepi", class_alias, 0);
+  add_com_alias("si", "stepi", class_alias, 0);
 
-  add_com ("nexti", class_run, nexti_command, _("\
+  add_com("nexti", class_run, nexti_command, _("\
 Step one instruction, but proceed through subroutine calls.\n\
 Argument N means do this N times (or till program stops for another reason)."));
-  add_com_alias ("ni", "nexti", class_alias, 0);
+  add_com_alias("ni", "nexti", class_alias, 0);
 
-  add_com ("finish", class_run, finish_command, _("\
+  add_com("finish", class_run, finish_command, _("\
 Execute until selected stack frame returns.\n\
 Upon return, the value returned is printed and put in the value history."));
 
-  add_com ("next", class_run, next_command, _("\
+  add_com("next", class_run, next_command, _("\
 Step program, proceeding through subroutine calls.\n\
 Like the \"step\" command as long as subroutine calls do not happen;\n\
 when they do, the call is treated as one instruction.\n\
 Argument N means do this N times (or till program stops for another reason)."));
-  add_com_alias ("n", "next", class_run, 1);
+  add_com_alias("n", "next", class_run, 1);
   if (xdb_commands)
-    add_com_alias ("S", "next", class_run, 1);
+    add_com_alias("S", "next", class_run, 1);
 
-  add_com ("step", class_run, step_command, _("\
+  add_com("step", class_run, step_command, _("\
 Step program until it reaches a different source line.\n\
 Argument N means do this N times (or till program stops for another reason)."));
-  add_com_alias ("s", "step", class_run, 1);
+  add_com_alias("s", "step", class_run, 1);
 
-  c = add_com ("until", class_run, until_command, _("\
+  c = add_com("until", class_run, until_command, _("\
 Execute until the program reaches a source line greater than the current\n\
 or a specified location (same args as break command) within the current frame."));
-  set_cmd_completer (c, location_completer);
-  add_com_alias ("u", "until", class_run, 1);
+  set_cmd_completer(c, location_completer);
+  add_com_alias("u", "until", class_run, 1);
 
-  c = add_com ("advance", class_run, advance_command, _("\
+  c = add_com("advance", class_run, advance_command, _("\
 Continue the program up to the given location (same form as args for break command).\n\
 Execution will also stop upon exit from the current stack frame."));
-  set_cmd_completer (c, location_completer);
+  set_cmd_completer(c, location_completer);
 
-  c = add_com ("jump", class_run, jump_command, _("\
+  c = add_com("jump", class_run, jump_command, _("\
 Continue program being debugged at specified line or address.\n\
 Give as argument either LINENUM or *ADDR, where ADDR is an expression\n\
 for an address to start at."));
-  set_cmd_completer (c, location_completer);
+  set_cmd_completer(c, location_completer);
 
   if (xdb_commands)
     {
-      c = add_com ("go", class_run, go_command, _("\
+      c = add_com("go", class_run, go_command, _("\
 Usage: go <location>\n\
 Continue program being debugged, stopping at specified line or \n\
 address.\n\
 Give as argument either LINENUM or *ADDR, where ADDR is an \n\
 expression for an address to start at.\n\
 This command is a combination of tbreak and jump."));
-      set_cmd_completer (c, location_completer);
+      set_cmd_completer(c, location_completer);
     }
 
   if (xdb_commands)
-    add_com_alias ("g", "go", class_run, 1);
+    add_com_alias("g", "go", class_run, 1);
 
-  add_com ("continue", class_run, continue_command, _("\
+  add_com("continue", class_run, continue_command, _("\
 Continue program being debugged, after signal or breakpoint.\n\
 If proceeding from breakpoint, a number N may be used as an argument,\n\
 which means to set the ignore count of that breakpoint to N - 1 (so that\n\
 the breakpoint won't break until the Nth time it is reached)."));
-  add_com_alias ("c", "cont", class_run, 1);
-  add_com_alias ("fg", "cont", class_run, 1);
+  add_com_alias("c", "cont", class_run, 1);
+  add_com_alias("fg", "cont", class_run, 1);
 
-  c = add_com ("run", class_run, run_command, _("\
+  c = add_com("run", class_run, run_command, _("\
 Start debugged program.  You may specify arguments to give it.\n\
 If 'start-with-shell' is set to 1, args may include \"*\", or \"[...]\";\n\
 they will be expanded using \"sh\".  Input and output redirection with\n\
@@ -3449,54 +3468,58 @@ they will be expanded using \"sh\".  Input and output redirection with\n\
 With no arguments, uses arguments last specified (with \"run\" or \"set args\").\n\
 To cancel previous arguments and run with no arguments,\n\
 use \"set args\" without arguments."));
-  set_cmd_completer (c, filename_completer);
-  /* c->completer_word_break_characters = gdb_completer_filename_word_break_characters; */ /* FIXME */
-  add_com_alias ("r", "run", class_run, 1);
+  set_cmd_completer(c, filename_completer);
+#if 0
+  c->completer_word_break_characters = gdb_completer_filename_word_break_characters; /* FIXME */
+#endif /* 0 */
+  add_com_alias("r", "run", class_run, 1);
   if (xdb_commands)
-    add_com ("R", class_run, run_no_args_command,
-	     _("Start debugged program with no arguments."));
+    add_com("R", class_run, run_no_args_command,
+	    _("Start debugged program with no arguments."));
 
-  c = add_com ("start", class_run, start_command, _("\
+  c = add_com("start", class_run, start_command, _("\
 Run the debugged program until the beginning of the main procedure.\n\
 You may specify arguments to give to your program, just as with the\n\
 \"run\" command."));
-  set_cmd_completer (c, filename_completer);
+  set_cmd_completer(c, filename_completer);
 
-  add_com ("interrupt", class_run, interrupt_target_command,
-	   _("Interrupt the execution of the debugged program."));
+  add_com("interrupt", class_run, interrupt_target_command,
+	  _("Interrupt the execution of the debugged program."));
 
-  add_info ("registers", nofp_registers_info, _("\
+  add_info("registers", nofp_registers_info, _("\
 List of integer registers and their contents, for selected stack frame.\n\
 Register name as argument means describe only that register."));
-  add_info_alias ("r", "registers", 1);
+  add_info_alias("r", "registers", 1);
 
   if (xdb_commands)
-    add_com ("lr", class_info, nofp_registers_info, _("\
+    add_com("lr", class_info, nofp_registers_info, _("\
 List of integer registers and their contents, for selected stack frame.\n\
 Register name as argument means describe only that register."));
-  add_info ("all-registers", all_registers_info, _("\
+  add_info("all-registers", all_registers_info, _("\
 List of all registers and their contents, for selected stack frame.\n\
 Register name as argument means describe only that register."));
 
-  add_info ("program", program_info,
-	    _("Execution status of the program."));
+  add_info("program", program_info,
+	   _("Execution status of the program."));
 
   /* APPLE LOCAL begin info pid */
   /* "info pid" & MI's "-pid-info" are Apple local cmds for
      use by Xcode.  */
-  add_info ("pid", pid_info,
-	    "Process ID of the program.");
+  add_info("pid", pid_info,
+	   "Process ID of the program.");
   /* APPLE LOCAL end info pid */
 
-  add_info ("float", float_info,
-	    _("Print the status of the floating point unit\n"));
+  add_info("float", float_info,
+	   _("Print the status of the floating point unit\n"));
 
-  add_info ("vector", vector_info,
-	    _("Print the status of the vector unit\n"));
+  add_info("vector", vector_info,
+	   _("Print the status of the vector unit\n"));
 
-  inferior_environ = make_environ ();
-  init_environ (inferior_environ);
+  inferior_environ = make_environ();
+  init_environ(inferior_environ);
 
   /* APPLE LOCAL */
-  smuggle_dyld_settings (inferior_environ);
+  smuggle_dyld_settings(inferior_environ);
 }
+
+/* EOF */

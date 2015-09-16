@@ -1,4 +1,5 @@
-/* Macro definitions for GDB on an Intel i386 running Solaris 2.
+/* tm-i386sol2.h
+   Macro definitions for GDB on an Intel i386 running Solaris 2.
 
    Copyright 1998, 1999, 2000, 2004 Free Software Foundation, Inc.
 

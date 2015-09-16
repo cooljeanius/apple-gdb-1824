@@ -15,12 +15,18 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 
-AUTOMAKE_OPTIONS = 1.4 dejagnu foreign
+AUTOMAKE_OPTIONS = 1.11.6 dejagnu foreign
 
 SUBDIRS = .
 
 noinst_PROGRAMS = calc
 calc_SOURCES = calc.c
+calc_CFLAGS = $(CFLAGS) $(AM_CFLAGS) -Wall -Wextra -pedantic -Wno-unused
 
 # renamed because the old variable overrode the default Automake one:
 RUNTESTDEFAULTFLAGSLOCAL = --tool calc CALC=`pwd`/calc --srcdir $$srcdir/testsuite
+
+CLEANFILES = *~ *.o .DS_Store testsuite/.DS_Store
+
+clean-local:
+	-rm -rf *.dSYM || rmdir *.dSYM

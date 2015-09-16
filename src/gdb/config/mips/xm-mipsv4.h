@@ -1,4 +1,5 @@
-/* Definitions for MIPS running SVR4 hosting support.
+/* xm-mipsv4.h
+   Definitions for MIPS running SVR4 hosting support.
 
    Copyright 1994 Free Software Foundation, Inc.
 
@@ -20,3 +21,5 @@
    Boston, MA 02111-1307, USA.  */
 
 #include "config/xm-sysv4.h"
+
+/* EOF */

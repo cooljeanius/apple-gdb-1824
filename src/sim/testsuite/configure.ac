@@ -13,6 +13,8 @@ my_CC=${CC-cc}
 AC_SUBST([my_CC])
 AC_CONFIG_AUX_DIR([../..])
 AC_CANONICAL_TARGET
+AM_MAINTAINER_MODE
+AC_SUBST([MAINT])
 
 # Checks for programs.
 AC_PROG_AWK
@@ -46,7 +48,7 @@ configdirs=""
 # add test sub-directory for appropriate targets
 testdir=`echo ${target} | sed -e 's/-.*-/-/'`
 if test -r ${srcdir}/${testdir}/configure ; then
-  configdirs="${configdirs} $testdir"
+  configdirs="${configdirs} ${testdir}"
 fi
 
 # add any extra subdirectories
@@ -63,7 +65,7 @@ esac
 AC_SUBST([arch])
 
 # configure the subdirectories too
-AC_CONFIG_SUBDIRS([$configdirs])
+AC_CONFIG_SUBDIRS([${configdirs}])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

@@ -1,17 +1,19 @@
 # This file contains common code used by all simulators.
 #
 # common.m4 invokes AC macros used by all simulators and by the common
-# directory.  It is intended to be included before any target specific
-# stuff.  SIM_AC_OUTPUT is a cover function to AC_OUTPUT to generate
-# the Makefile.  It is intended to be invoked last.
+# directory. It is intended to be included before any target specific
+# stuff. SIM_AC_OUTPUT is a cover function to AC_OUTPUT to generate
+# the Makefile. It is intended to be invoked last.
 #
-# The simulator's configure.in should look like:
+# The simulator's configure.ac should look like:
 #
-# dnl Process this file with autoconf to produce a configure script.
-# AC_PREREQ(2.5)dnl
-# AC_INIT(Makefile.in)
-# AC_CONFIG_HEADER(config.h:config.in)
+# dnl# Process this file with autoconf to produce a configure script.
+# AC_PREREQ([2.5])dnl
+# AC_INIT([SIMULATOR-NAME],[VERSION],[BUG-REPORT-ADDRESS])
+# AC_CONFIG_SRCDIR([Makefile.in])
+# AC_CONFIG_HEADER([config.h:config.in])
 #
+# sinclude(../common/acinclude.m4)
 # sinclude(../common/aclocal.m4)
 # sinclude(../common/common.m4)
 #
@@ -23,7 +25,7 @@ AC_PROG_CC
 AC_PROG_INSTALL
 
 # Put a plausible default for CC_FOR_BUILD in Makefile.
-if test "x$cross_compiling" = "xno"; then
+if test "x${cross_compiling}" = "xno"; then
   CC_FOR_BUILD='$(CC)'
 else
   CC_FOR_BUILD=gcc
@@ -33,13 +35,13 @@ AC_SUBST([CC_FOR_BUILD])
 AC_SUBST([CFLAGS])
 AC_SUBST([HDEFINES])
 AR=${AR-ar}
-AC_SUBST(AR)
+AC_SUBST([AR])
 AC_PROG_RANLIB
 
 dnl# We do NOT use gettext, but bfd does. So we do the appropriate checks
 dnl# to see if there are intl libraries we should link against.
-ALL_LINGUAS=
-ZW_GNU_GETTEXT_SISTER_DIR(../../intl)
+ALL_LINGUAS=""
+ZW_GNU_GETTEXT_SISTER_DIR([../../intl])
 
 # Check for common headers.
 # FIXME: Seems to me this can cause problems for i386-windows hosts.
@@ -186,27 +188,27 @@ AC_ARG_ENABLE([sim-profile],
 	sim_profile="-DPROFILE='(${enableval})' -DWITH_PROFILE='(${enableval})'";;
   [[a-z]]*)
 	sim_profile=""
-	for x in `echo "$enableval" | sed -e "s/,/ /g"`; do
-	  if test x"$sim_profile" = x; then
+	for x in `echo "${enableval}" | sed -e "s/,/ /g"`; do
+	  if test x"${sim_profile}" = x; then
 	    sim_profile="-DWITH_PROFILE='(PROFILE_$x"
 	  else
 	    sim_profile="${sim_profile}|PROFILE_$x"
 	  fi
 	done
-	sim_profile="$sim_profile)'" ;;
+	sim_profile="${sim_profile})'" ;;
 esac
-if test x"$silent" != x"yes" && test x"$sim_profile" != x""; then
+if test x"${silent}" != x"yes" && test x"${sim_profile}" != x""; then
   echo "Setting sim profile = $sim_profile" 6>&1
 fi],[sim_profile="-DPROFILE=1 -DWITH_PROFILE=-1"])dnl
 AC_SUBST([sim_profile])
 
 ACX_PKGVERSION([GDB])
 ACX_BUGURL([http://www.gnu.org/software/gdb/bugs/])
-AC_DEFINE_UNQUOTED([PKGVERSION],["$PKGVERSION"],[Additional package description])
-AC_DEFINE_UNQUOTED([REPORT_BUGS_TO],["$REPORT_BUGS_TO"],[Bug reporting address])
+AC_DEFINE_UNQUOTED([PKGVERSION],["${PKGVERSION}"],[Additional package description])
+AC_DEFINE_UNQUOTED([REPORT_BUGS_TO],["${REPORT_BUGS_TO}"],[Bug reporting address])
 
 dnl# Types used by common code
-AC_TYPE_SIGNAL
+AC_TYPE_SIGNAL dnl# obsolete
 
 dnl# Detect exe extension
 AC_EXEEXT

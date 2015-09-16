@@ -1,4 +1,5 @@
-/* Target definitions for GDB for a s390 running GNU/Linux.
+/* tm-linux.h
+   Target definitions for GDB for a s390 running GNU/Linux.
 
    Copyright 2001, 2002 Free Software Foundation, Inc.
 

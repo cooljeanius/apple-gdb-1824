@@ -18,13 +18,17 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning dgettext.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning dgettext.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #if defined HAVE_LOCALE_H || defined _LIBC
 # include <locale.h>
 #else
-# warning dgettext.c expects <locale.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "dgettext.c expects <locale.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LOCALE_H */
 
 #if defined _LIBC || defined HAVE_LIBINTL_H
@@ -49,17 +53,14 @@
 
 /* Look up MSGID in the DOMAINNAME message catalog of the current
    LC_MESSAGES locale.  */
-char *
-DGETTEXT (domainname, msgid)
-     const char *domainname;
-     const char *msgid;
+char *DGETTEXT(const char *domainname, const char *msgid)
 {
-  return DCGETTEXT (domainname, msgid, LC_MESSAGES);
+  return DCGETTEXT(domainname, msgid, LC_MESSAGES);
 }
 
 #ifdef _LIBC
 /* Alias for function name in GNU C Library.  */
-weak_alias (__dgettext, dgettext);
+weak_alias(__dgettext, dgettext);
 #endif /* _LIBC */
 
 /* EOF */

@@ -1,0 +1,232 @@
+#! /bin/echo This_file_must_be_sourced,_not_executed
+# Time-stamp:      "2012-01-29 16:06:25 bkorb"
+#
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+
+burn_aover() {
+    agvars=$(egrep '^A[GO]_' ../VERSION)
+    eval "${agvars}"
+    vers_curr=$(expr '(' $AO_CURRENT   '*' 4096 ')' + $AO_REVISION)
+
+    sedcmd="s=@CONFIG_SHELL@=$(which bash)=
+	s=@AO_TEMPLATE_VERSION@=${vers_curr}=
+	s=@bindir@=$(dirname $(which columns))="
+    for f in $(echo "${agvars}" | sed 's/=.*//')
+    do
+        eval v=\${$f}
+        sedcmd="${sedcmd}${nl}s%@${f}@%${v}%g"
+    done
+
+    cd tpl
+    sed "${sedcmd}" tpl-config-tlib.in > tpl-config.tlib
+    for f in *.sh *.pl
+    do  g=${f%.sh} ; g=${g%.pl}
+        cat $f > $g
+        chmod +x $g
+    done
+    cd -
+}
+
+add_files_to_mf() {
+    #  Regenerate the "genshell.h" 'cuz we just altered the template to
+    #  contain the header version number.
+    #
+    ${AGexe} -Tagman3.tpl funcs.def || \
+        die "FAILED: ${AGexe} -Tagman3.tpl funcs.def"
+
+    local tmpl=$(
+        ndst=""
+        sfil=''
+
+        for f in man mdoc texi
+        do
+            for g in man mdoc texi
+            do
+                sfil=${sfil}tpl/${f}2${g}${nl}
+                test -f tpl/${f}2${g}.sh || \
+                    ndst=${ndst}tpl/${f}2${g}${nl}
+            done
+        done
+
+        pdta="autoopts.m4${nl}tpl/usage.tlib${nl}"
+        edta="bootstrap.dir${nl}autoopts-config.in${nl}autogen.map${nl}"
+        edta="${edta}mk-tpl-config.sh${nl}mk-autoopts-pc.in${nl}"
+        edta="${edta}install-hook.sh${nl}po${nl}tpl/usage-txt.tpl${nl}"
+
+        for f in tpl/*.*
+        do
+            case $f in
+            ( *.in | *.pl | *.sh )
+                g=$(echo $f | sed 's/\...$//;s/-tlib$/.tlib/')
+                ndst=${ndst}${g}${nl}    # installed file
+                edta=${edta}${f}${nl}    # distributed file
+                ;;
+
+            ( *tpl-config.tlib | *tpl/usage* ) : ;;
+
+            ( *.tlib | *.tpl | *.def | *.lic )
+                pdta=${pdta}${f}${nl} ;; # installed & distributed file
+            esac
+        done
+
+        echo "local ndst='${ndst%${nl}}'"
+        echo "local pdta='${pdta%${nl}}'"
+        echo "local edta='${edta%${nl}}'"
+        echo "local sfil='${sfil%${nl}}'"
+    )
+
+    eval "$tmpl"
+
+    sedcmd=$'/^GENMAN /a\\\n'"$(
+        ls -1 *.3 | \
+            sed '/^pathfind.3$/d' | \
+            columns -I4 --spread=1 --line=' \\\'
+
+    )"$'\\\n\\\nnodist_pkgdata_DATA = \$(libsrc) \\\\\\\n'"$(
+        echo "${ndst}" | sort -u | columns -I4 --spread=1 --line=' \\\'
+
+    )"$'\\\n\\\npkgdata_DATA    = \\\\\\\n'"$(
+        echo "${pdta}" | sort -u | columns -I4 --spread=1 --line=' \\\'
+
+    )"$'\\\n\\\nEXTRA_DATA      = \$(pkgdata_DATA) \\\\\\\n'"$(
+        echo "${edta}" | sort -u | columns -I4 --spread=1 --line=' \\\'
+
+    )"$'\\\n\\\nGENSCRIPTS      = \$(srcdir)/funcs.def \\\\\\\n'"$(
+        echo "${sfil}" | columns -I4 --spread=1 --line=' \\\'
+    )"
+
+    rm -f *.3
+    sed -i "${sedcmd}" Makefile.am
+}
+
+make_funcs_def()
+{
+    $noag && exit 1
+    s2enum=`which mk-str2enum` 2>/dev/null || :
+    test -x "${s2enum}" || \
+        s2enum="bash ${top_srcdir}/add-on/char-mapper/mk-str2enum.sh"
+
+    ${char_mapper:-char-mapper} autogen.map || die "FAILED: char-mapper"
+    ${AGexe} ao-strs.def || die "cannot make strings - exited $?"
+
+    ${s2enum} --base-name=xat-attribute -n \
+        type words members cooked uncooked keep || \
+        die "FAILED: ${s2enum} --base-name=xat-attribute"
+
+    ${s2enum} --base-name=value-type --prefix=vtp -n string integer \
+        boolean bool keyword set set-membership nested hierarchy || \
+        die "FAILED: ${s2enum} --base-name=value-type"
+    burn_aover
+
+    test -d autoopts || mkdir autoopts
+    test -d po       || mkdir po
+    ${AGexe} genshell.def  || \
+        die "FAILED: ${AGexe} genshell.def"
+    ${AGexe} usage-txt.def || \
+        die "FAILED: ${AGexe} usage-txt.def"
+    mv usage-txt.h   autoopts/.
+    mv usage-txt.pot po/.
+
+    files=$(sed -n '/^CSRC/,/\.c$/p' Makefile.am | \
+        sed '/^CSRC/d;s/[=\\]//'
+        echo  ../compat/pathfind.c)
+    getdefs linenum srcfile template=options_h output=funcs.def $files
+    chmod u+w funcs.def
+    vers_min=$( expr '(' $AO_CURRENT - $AO_AGE ')' '*' 4096)
+    cat >> funcs.def <<-  _END_VERS_INFO_
+	vers-curr       = "${vers_curr}";
+	vers-min        = "${vers_min}";
+	vers-min-str    = "$(expr $AO_CURRENT - $AO_AGE):0:0";
+	vers-sovers     = "${AO_SOVERS}";
+	library         = opts;
+
+	/*
+	 *  THIS FILE IS DISTRIBUTED
+	 *
+	 *  This file is used to construct options.h + doc files.  Because it is
+	 *  such a nuisance to get the build ordering correct, we distribute
+	 *  this.  It should be constructed after all binaries are built.
+	 */
+	_END_VERS_INFO_
+    ${AGexe} funcs.def || die "FAILED: ${AGexe} funcs.def"
+    test -f options.h || die "options.h not created"
+    mv options.h autoopts/.
+    cp project.h autoopts/.
+    add_files_to_mf
+    make_proto
+
+    ${AGexe} aoconf.def || die "FAILED: ${AGexe} aoconf.def"
+}
+
+test "X${mainpid}" = X && {
+    \cd ${top_srcdir-..}
+    top_srcdir=`pwd`
+    . config/bootstrap.shlib
+    cd autoopts
+    free_trap=true
+} || {
+    free_trap=false
+}
+
+export AGexe=${AGexe-autogen}\ -L${top_srcdir}/autoopts/tpl
+noag=`${AGexe} -v > /dev/null 2>&1 && echo false || echo true`
+nl=$'\n'
+
+case "$1" in
+*genshell.c )
+    if ${noag}
+    then
+        test -f ${top_srcdir}/autoopts/genshell.c || \
+            die "No autogen for building genshell.c"
+    else
+        ${AGexe} genshell.def || \
+            die "FAILED: ${AGexe} genshell.def"
+    fi
+    ;;
+
+*libopts.texi )
+    if ${noag}
+    then
+        test -f ${top_srcdir}/autoopts/libopts.texi || \
+            die "No autogen for building libopts.texi"
+    else
+        agopts='-Taginfo3.tpl -DLEVEL=subsection -blibopts funcs.def'
+        ${AGexe} ${agopts} || \
+            die "FAILED: ${AGexe} ${agopts}"
+    fi
+    ;;
+
+aoconf )
+    make_funcs_def
+    ;;
+esac
+
+${free_trap} && trap '' 0
+true
+
+# Local Variables:
+# mode:shell-script
+# sh-indentation:4
+# sh-basic-offset:4
+# indent-tabs-mode: nil
+# End:
+
+# bootstrap.dir ends here

@@ -1,4 +1,4 @@
-/* Memory attributes support, for GDB.
+/* memattr.c: Memory attributes support, for GDB.
 
    Copyright 2001, 2002 Free Software Foundation, Inc.
 
@@ -41,15 +41,15 @@ static struct mem_region *mem_region_chain = NULL;
 static int mem_number = 0;
 
 static struct mem_region *
-create_mem_region (CORE_ADDR lo, CORE_ADDR hi,
-		   const struct mem_attrib *attrib)
+create_mem_region(CORE_ADDR lo, CORE_ADDR hi,
+		  const struct mem_attrib *attrib)
 {
-  struct mem_region *n, *new;
+  struct mem_region *n, *newregion;
 
   /* lo == hi is a useless empty region */
-  if (lo >= hi && hi != 0)
+  if ((lo >= hi) && (hi != 0))
     {
-      printf_unfiltered (_("invalid memory region: low >= high\n"));
+      printf_unfiltered(_("invalid memory region: low >= high\n"));
       return NULL;
     }
 
@@ -57,41 +57,41 @@ create_mem_region (CORE_ADDR lo, CORE_ADDR hi,
   while (n)
     {
       /* overlapping node */
-      if ((lo >= n->lo && (lo < n->hi || n->hi == 0)) 
+      if ((lo >= n->lo && (lo < n->hi || n->hi == 0))
 	  || (hi > n->lo && (hi <= n->hi || n->hi == 0))
 	  || (lo <= n->lo && (hi >= n->hi || hi == 0)))
 	{
-	  printf_unfiltered (_("overlapping memory region\n"));
+	  printf_unfiltered(_("overlapping memory region\n"));
 	  return NULL;
 	}
       n = n->next;
     }
 
-  new = xmalloc (sizeof (struct mem_region));
-  new->lo = lo;
-  new->hi = hi;
-  new->number = ++mem_number;
-  new->enabled_p = 1;
-  new->attrib = *attrib;
+  newregion = (struct mem_region *)xmalloc(sizeof(struct mem_region));
+  newregion->lo = lo;
+  newregion->hi = hi;
+  newregion->number = ++mem_number;
+  newregion->enabled_p = 1;
+  newregion->attrib = *attrib;
 
-  /* link in new node */
-  new->next = mem_region_chain;
-  mem_region_chain = new;
+  /* link in new node: */
+  newregion->next = mem_region_chain;
+  mem_region_chain = newregion;
 
-  return new;
+  return newregion;
 }
 
 static void
-delete_mem_region (struct mem_region *m)
+delete_mem_region(struct mem_region *m)
 {
-  xfree (m);
+  xfree(m);
 }
 
 /*
  * Look up the memory region cooresponding to ADDR.
  */
 struct mem_region *
-lookup_mem_region (CORE_ADDR addr)
+lookup_mem_region(CORE_ADDR addr)
 {
   static struct mem_region region;
   struct mem_region *m;
@@ -246,7 +246,7 @@ mem_info_command (char *args, int from_tty)
 	tmp = hex_string_custom ((unsigned long) m->lo, 8);
       else
 	tmp = hex_string_custom ((unsigned long) m->lo, 16);
-      
+
       printf_filtered ("%s ", tmp);
 
       if (TARGET_ADDR_BIT <= 32)
@@ -527,11 +527,11 @@ mem_delete_command (char *args, int from_tty)
 /* APPLE LOCAL: Allow a way to temporarily suspend caching.
    For instance when reading in the stabstr & stabs from a
    file in memory, the caching will just slow us down.  */
-void 
+void
 mem_disable_caching (void)
 {
   struct mem_region *mreg;
-  
+
   for (mreg = mem_region_chain; mreg != NULL; mreg = mreg->next)
     {
       if (mreg->attrib.cache == 1)
@@ -543,7 +543,7 @@ void
 mem_enable_caching (void *unusued)
 {
   struct mem_region *mreg;
-  
+
   for (mreg = mem_region_chain; mreg != NULL; mreg = mreg->next)
     {
       if (mreg->attrib.cache == -1)
@@ -552,36 +552,38 @@ mem_enable_caching (void *unusued)
 }
 /* END APPLE LOCAL */
 
-extern initialize_file_ftype _initialize_mem; /* -Wmissing-prototype */
+extern initialize_file_ftype _initialize_mem; /* -Wmissing-prototypes */
 
 void
-_initialize_mem (void)
+_initialize_mem(void)
 {
-  add_com ("mem", class_vars, mem_command, _("\
+  add_com("mem", class_vars, mem_command, _("\
 Define attributes for memory region.\n\
 Usage: mem <lo addr> <hi addr> [<mode> <width> <cache>], \n\
 where <mode>  may be rw (read/write), ro (read-only), wo (write-only), or none (don't touch)\n\
       <width> may be 8, 16, 32, or 64, and \n\
       <cache> may be cache or nocache"));
 
-  add_cmd ("mem", class_vars, mem_enable_command, _("\
+  add_cmd("mem", class_vars, mem_enable_command, _("\
 Enable memory region.\n\
 Arguments are the code numbers of the memory regions to enable.\n\
 Usage: enable mem <code number>\n\
 Do \"info mem\" to see current list of code numbers."), &enablelist);
 
-  add_cmd ("mem", class_vars, mem_disable_command, _("\
+  add_cmd("mem", class_vars, mem_disable_command, _("\
 Disable memory region.\n\
 Arguments are the code numbers of the memory regions to disable.\n\
 Usage: disable mem <code number>\n\
 Do \"info mem\" to see current list of code numbers."), &disablelist);
 
-  add_cmd ("mem", class_vars, mem_delete_command, _("\
+  add_cmd("mem", class_vars, mem_delete_command, _("\
 Delete memory region.\n\
 Arguments are the code numbers of the memory regions to delete.\n\
 Usage: delete mem <code number>\n\
 Do \"info mem\" to see current list of code numbers."), &deletelist);
 
-  add_info ("mem", mem_info_command,
-	    _("Memory region attributes"));
+  add_info("mem", mem_info_command,
+	   _("Memory region attributes"));
 }
+
+/* EOF */

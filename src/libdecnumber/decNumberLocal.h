@@ -43,7 +43,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 
   /* Conditional code flag -- set this to match hardware platform     */
   /* 1=little-endian, 0=big-endian                                   */
-  #if WORDS_BIGENDIAN
+  #if defined(WORDS_BIGENDIAN) && WORDS_BIGENDIAN
   #define DECLITEND 0
   #else
   #define DECLITEND 1

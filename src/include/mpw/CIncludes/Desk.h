@@ -15,16 +15,16 @@ Created: Sunday, January 6, 1991 at 9:05 PM
 #define __DESK__
 
 #ifndef __TYPES__
-#include <Types.h>
-#endif
+# include <Types.h>
+#endif /* !__TYPES__ */
 
 #ifndef __QUICKDRAW__
-#include <Quickdraw.h>
-#endif
+# include <Quickdraw.h>
+#endif /* !__QUICKDRAW__ */
 
 #ifndef __EVENTS__
-#include <Events.h>
-#endif
+# include <Events.h>
+#endif /* !__EVENTS__ */
 
 
 enum {
@@ -43,24 +43,47 @@ enum {
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 pascal short OpenDeskAcc(ConstStr255Param deskAccName)
-    = 0xA9B6; 
+#ifdef MPW_C
+    = 0xA9B6
+#endif /* MPW_C */
+	;
 pascal void CloseDeskAcc(short refNum)
-    = 0xA9B7; 
+#ifdef MPW_C
+    = 0xA9B7
+#endif /* MPW_C */
+	;
 pascal void SystemClick(const EventRecord *theEvent,WindowPtr theWindow)
-    = 0xA9B3; 
+#ifdef MPW_C
+    = 0xA9B3
+#endif /* MPW_C */
+	;
 pascal Boolean SystemEdit(short editCmd)
-    = 0xA9C2; 
+#ifdef MPW_C
+    = 0xA9C2
+#endif /* MPW_C */
+	;
 pascal void SystemTask(void)
-    = 0xA9B4; 
+#ifdef MPW_C
+    = 0xA9B4
+#endif /* MPW_C */
+	;
 pascal Boolean SystemEvent(const EventRecord *theEvent)
-    = 0xA9B2; 
+#ifdef MPW_C
+    = 0xA9B2
+#endif /* MPW_C */
+	;
 pascal void SystemMenu(long menuResult)
-    = 0xA9B5; 
-short opendeskacc(char *deskAccName); 
+#ifdef MPW_C
+    = 0xA9B5
+#endif /* MPW_C */
+	;
+short opendeskacc(char *deskAccName);
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__DESK__ */
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* Ubicom IP2xxx specific support for 32-bit ELF
+/* elf32-ip2k.c: Ubicom IP2xxx specific support for 32-bit ELF
    Copyright 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -24,6 +24,10 @@
 #include "libbfd.h"
 #include "elf-bfd.h"
 #include "elf/ip2k.h"
+
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
 
 /* Struct used to pass miscellaneous paramaters which
    helps to avoid overly long parameter lists.  */
@@ -326,42 +330,40 @@ symbol_value (bfd *abfd,
           jmp     $nnnN  */
 
 static int
-ip2k_is_switch_table_128 (bfd *abfd ATTRIBUTE_UNUSED,
-			  asection *sec,
-			  bfd_vma addr,
-			  bfd_byte *contents)
+ip2k_is_switch_table_128(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
+			 bfd_vma addr, bfd_byte *contents)
 {
   bfd_byte code[4];
-  int index = 0;
-  
-  /* Check current page-jmp.  */
-  if (addr + 4 > sec->size)
+  int i_index = 0;
+
+  /* Check current page-jmp: */
+  if ((addr + 4UL) > sec->size)
     return -1;
 
-  ip2k_get_mem (abfd, contents + addr, 4, code);
+  ip2k_get_mem(abfd, (contents + addr), 4, code);
 
-  if ((! IS_PAGE_OPCODE (code + 0))
-      || (! IS_JMP_OPCODE (code + 2)))
+  if ((! IS_PAGE_OPCODE(code + 0))
+      || (! IS_JMP_OPCODE(code + 2)))
     return -1;
-  
-  /* Search back.  */
+
+  /* Search back: */
   while (1)
     {
-      if (addr < 4)
+      if ((addr < 4UL) && (addr >= 1UL))
+        return -1;
+
+      /* Check previous 2 instructions: */
+      ip2k_get_mem(abfd, (contents + addr - 4UL), 4, code);
+      if ((IS_ADD_W_WREG_OPCODE(code + 0))
+	  && (IS_ADD_PCL_W_OPCODE(code + 2)))
+	return i_index;
+
+      if ((! IS_PAGE_OPCODE(code + 0))
+	  || (! IS_JMP_OPCODE(code + 2)))
 	return -1;
 
-      /* Check previous 2 instructions.  */
-      ip2k_get_mem (abfd, contents + addr - 4, 4, code);
-      if ((IS_ADD_W_WREG_OPCODE (code + 0))
-	  && (IS_ADD_PCL_W_OPCODE (code + 2)))
-	return index;
-
-      if ((! IS_PAGE_OPCODE (code + 0))
-	  || (! IS_JMP_OPCODE (code + 2)))
-	return -1;
-
-      index++;
-      addr -= 4;
+      i_index++;
+      addr -= 4UL;
     }
 }
 
@@ -406,57 +408,59 @@ ip2k_is_switch_table_128 (bfd *abfd ATTRIBUTE_UNUSED,
           jmp     $nnnN  */
 
 static int
-ip2k_is_switch_table_256 (bfd *abfd ATTRIBUTE_UNUSED,
-			  asection *sec,
-			  bfd_vma addr,
-			  bfd_byte *contents)
+ip2k_is_switch_table_256(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
+			 bfd_vma addr, bfd_byte *contents)
 {
   bfd_byte code[16];
-  int index = 0;
-  
-  /* Check current page-jmp.  */
-  if (addr + 4 > sec->size)
+  int i_index = 0;
+
+  /* Check current page-jmp: */
+  if ((addr + 4UL) > sec->size)
     return -1;
 
-  ip2k_get_mem (abfd, contents + addr, 4, code);
-  if ((! IS_PAGE_OPCODE (code + 0))
-      || (! IS_JMP_OPCODE (code + 2)))
+  ip2k_get_mem(abfd, (contents + addr), 4, code);
+  if ((! IS_PAGE_OPCODE(code + 0))
+      || (! IS_JMP_OPCODE(code + 2)))
     return -1;
-  
-  /* Search back.  */
+
+  /* Search back: */
   while (1)
     {
-      if (addr < 16)
+      /* FIXME: the gcc loop optimizer complains here: */
+      if (addr < 16UL)
 	return -1;
 
-      /* Check previous 8 instructions.  */
-      ip2k_get_mem (abfd, contents + addr - 16, 16, code);
-      if ((IS_ADD_W_WREG_OPCODE (code + 0))
-	  && (IS_SNC_OPCODE (code + 2))
-	  && (IS_INC_1SP_OPCODE (code + 4))
-	  && (IS_ADD_2SP_W_OPCODE (code + 6))
-	  && (IS_SNC_OPCODE (code + 8))
-	  && (IS_INC_1SP_OPCODE (code + 10))
-	  && (IS_PAGE_OPCODE (code + 12))
-	  && (IS_JMP_OPCODE (code + 14)))
-	return index;
+      /* Check previous 8 instructions: */
+      ip2k_get_mem(abfd, (contents + addr - 16), 16, code);
+      if ((IS_ADD_W_WREG_OPCODE(code + 0))
+	  && (IS_SNC_OPCODE(code + 2))
+	  && (IS_INC_1SP_OPCODE(code + 4))
+	  && (IS_ADD_2SP_W_OPCODE(code + 6))
+	  && (IS_SNC_OPCODE(code + 8))
+	  && (IS_INC_1SP_OPCODE(code + 10))
+	  && (IS_PAGE_OPCODE(code + 12))
+	  && (IS_JMP_OPCODE(code + 14)))
+	return i_index;
 
-      if ((IS_ADD_W_WREG_OPCODE (code + 2))
-	  && (IS_SNC_OPCODE (code + 4))
-	  && (IS_INC_1SP_OPCODE (code + 6))
-	  && (IS_ADD_2SP_W_OPCODE (code + 8))
-	  && (IS_SNC_OPCODE (code + 10))
-	  && (IS_INC_1SP_OPCODE (code + 12))
-	  && (IS_JMP_OPCODE (code + 14)))
-	return index;
-      
-      if ((! IS_PAGE_OPCODE (code + 0))
-	  || (! IS_JMP_OPCODE (code + 2)))
+      if ((IS_ADD_W_WREG_OPCODE(code + 2))
+	  && (IS_SNC_OPCODE(code + 4))
+	  && (IS_INC_1SP_OPCODE(code + 6))
+	  && (IS_ADD_2SP_W_OPCODE(code + 8))
+	  && (IS_SNC_OPCODE(code + 10))
+	  && (IS_INC_1SP_OPCODE(code + 12))
+	  && (IS_JMP_OPCODE(code + 14)))
+	return i_index;
+
+      if ((! IS_PAGE_OPCODE(code + 0))
+	  || (! IS_JMP_OPCODE(code + 2)))
 	return -1;
 
-      index++;
-      addr -= 4;
+      i_index++;
+      addr -= 4UL;
     }
+
+  /* if we got here, something went wrong: */
+  return -1;
 }
 
 /* Returns the expected page state for the given instruction not including
@@ -646,11 +650,11 @@ adjust_all_relocations (bfd *abfd,
 	      if (ELF32_R_SYM (irel->r_info) < symtab_hdr->sh_info)
 		{
 		  asection *sym_sec;
-		  
+
 		  /* A local symbol.  */
 		  isym = isymbuf + ELF32_R_SYM (irel->r_info);
 		  sym_sec = bfd_section_from_elf_index (abfd, isym->st_shndx);
-		  
+
 		  if (sym_sec == sec)
 		    {
 		      const char *name;
@@ -661,13 +665,13 @@ adjust_all_relocations (bfd *abfd,
 		      bfd_vma baseaddr = BASEADDR (sec);
 		      bfd_vma symval = BASEADDR (sym_sec) + isym->st_value
 			+ irel->r_addend;
-		      
+
 		      if ((baseaddr + addr) <= symval
 			  && symval <= (baseaddr + endaddr))
 			irel->r_addend += count;
 
 		      /* Go hunt up a function and fix its line info if needed.  */
-		      stabp = stabcontents + irel->r_offset - 8; 
+		      stabp = stabcontents + irel->r_offset - 8;
 
 		      /* Go pullout the stab entry.  */
 		      strx  = bfd_h_get_32 (abfd, stabp + STRDXOFF);
@@ -675,9 +679,9 @@ adjust_all_relocations (bfd *abfd,
 		      other = bfd_h_get_8 (abfd, stabp + OTHEROFF);
 		      desc  = bfd_h_get_16 (abfd, stabp + DESCOFF);
 		      value = bfd_h_get_32 (abfd, stabp + VALOFF);
-		      
+
 		      name = bfd_get_stab_name (type);
-		      
+
 		      if (strcmp (name, "FUN") == 0)
 			{
 			  int function_adjusted = 0;
@@ -706,7 +710,7 @@ adjust_all_relocations (bfd *abfd,
 				    {
 				      /* Adjust the value.  */
 				      value += count;
-				  
+
 				      /* We need to put it back.  */
 				      bfd_h_put_32 (abfd, value,stabp + VALOFF);
 				    }
@@ -815,10 +819,10 @@ ip2k_delete_page_insn (bfd *abfd ATTRIBUTE_UNUSED,
   /* Delete the PAGE insn.  */
   if (!ip2k_elf_relax_delete_bytes (abfd, sec, irel->r_offset, 2))
     return FALSE;
-	
+
   /* Modified => will need to iterate relaxation again.  */
   *again = TRUE;
-  
+
   return TRUE;
 }
 
@@ -833,7 +837,7 @@ ip2k_relax_switch_table_128 (bfd *abfd ATTRIBUTE_UNUSED,
   Elf_Internal_Rela *ireltest = irel;
   bfd_byte code[4];
   bfd_vma addr;
-  
+
   /* Test all page instructions.  */
   addr = irel->r_offset;
   while (1)
@@ -904,7 +908,7 @@ ip2k_relax_switch_table_256 (bfd *abfd ATTRIBUTE_UNUSED,
   Elf_Internal_Rela *ireltest = irel;
   bfd_byte code[12];
   bfd_vma addr;
-  
+
   /* Test all page instructions.  */
   addr = irel->r_offset;
 
@@ -991,7 +995,7 @@ ip2k_elf_relax_section_page (bfd *abfd,
   Elf_Internal_Rela *irel;
   int switch_table_128;
   int switch_table_256;
-  
+
   /* Walk thru the section looking for relaxation opportunities.  */
   for (irel = misc->irelbase; irel < irelend; irel++)
     {

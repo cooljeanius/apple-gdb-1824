@@ -1,4 +1,4 @@
-/* strncmp -- compare two strings, stop after n bytes.
+/* strncmp.c -- compare two strings, stop after n bytes.
    This function is in the public domain.  */
 
 /*
@@ -12,7 +12,11 @@ Compares the first @var{n} bytes of two strings, returning a value as
 
 */
 
-#include <ansidecl.h>
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
+#include "libiberty.h"
 #include <stddef.h>
 
 int
@@ -22,12 +26,14 @@ strncmp(const char *s1, const char *s2, register size_t n)
 
   while (n-- > 0)
     {
-      u1 = (unsigned char) *s1++;
-      u2 = (unsigned char) *s2++;
+      u1 = (unsigned char)*s1++;
+      u2 = (unsigned char)*s2++;
       if (u1 != u2)
-	return u1 - u2;
+	return (u1 - u2);
       if (u1 == '\0')
 	return 0;
     }
   return 0;
 }
+
+/* EOF */

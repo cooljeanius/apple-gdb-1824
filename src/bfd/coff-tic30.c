@@ -51,16 +51,13 @@ reloc_howto_type tic30_coff_howto_table[] =
   };
 
 #ifndef coff_bfd_reloc_type_lookup
-#define coff_bfd_reloc_type_lookup tic30_coff_reloc_type_lookup
-
-/* For the case statement use the code values used in tc_gen_reloc to
-   map to the howto table entries that match those in both the aout
-   and coff implementations.  */
-
+# define coff_bfd_reloc_type_lookup tic30_coff_reloc_type_lookup
+/* For the case statement use the code values used in tc_gen_reloc to map
+ * to the howto table entries that match those in both the aout and coff
+ * implementations: */
 reloc_howto_type *
-tic30_coff_reloc_type_lookup (abfd, code)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+tic30_coff_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                             bfd_reloc_code_real_type code)
 {
   switch (code)
     {
@@ -76,17 +73,14 @@ tic30_coff_reloc_type_lookup (abfd, code)
     case BFD_RELOC_32:
       return &tic30_coff_howto_table[3];
     default:
-      return (reloc_howto_type *) NULL;
+      return (reloc_howto_type *)NULL;
     }
 }
+#endif /* !coff_bfd_reloc_type_lookup */
 
-#endif
-
-/* Turn a howto into a reloc number.  */
-
+/* Turn a howto into a reloc number: */
 static int
-coff_tic30_select_reloc (howto)
-     reloc_howto_type *howto;
+coff_tic30_select_reloc(reloc_howto_type *howto)
 {
   return howto->type;
 }
@@ -103,12 +97,9 @@ coff_tic30_select_reloc (howto)
 #define SWAP_OUT_RELOC_EXTRA(abfd, src, dst) dst->r_stuff[0] = 'S'; \
 dst->r_stuff[1] = 'C';
 
-/* Code to turn a r_type into a howto ptr, uses the above howto table.  */
-
+/* Code to turn a r_type into a howto ptr, uses the above howto table: */
 static void
-rtype2howto (internal, dst)
-     arelent *internal;
-     struct internal_reloc *dst;
+rtype2howto(arelent *internal, struct internal_reloc *dst)
 {
   switch (dst->r_type)
     {
@@ -144,12 +135,8 @@ rtype2howto (internal, dst)
  reloc_processing(relent, reloc, symbols, abfd, section)
 
 static void
-reloc_processing (relent, reloc, symbols, abfd, section)
-     arelent *relent;
-     struct internal_reloc *reloc;
-     asymbol **symbols;
-     bfd *abfd;
-     asection *section;
+reloc_processing(arelent *relent, struct internal_reloc *reloc,
+                 asymbol **symbols, bfd *abfd, asection *section)
 {
   relent->address = reloc->r_vaddr;
   rtype2howto (relent, reloc);
@@ -208,3 +195,9 @@ const bfd_target tic30_coff_vec =
 
   COFF_SWAP_TABLE
 };
+
+#ifdef TIC30
+# undef TIC30
+#endif /* TIC30 */
+
+/* EOF */

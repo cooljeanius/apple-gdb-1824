@@ -1,4 +1,5 @@
-/* Host-dependent definitions for Intel x86 running DJGPP.
+/* xm-go32.h
+   Host-dependent definitions for Intel x86 running DJGPP.
    Copyright 1993-1996 Free Software Foundation, Inc.
 
    This file is part of GDB.

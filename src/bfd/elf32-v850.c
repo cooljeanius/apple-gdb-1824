@@ -1,4 +1,4 @@
-/* V850-specific support for 32-bit ELF
+/* elf32-v850.c: V850-specific support for 32-bit ELF
    Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -146,13 +146,13 @@ v850_elf_check_relocs (bfd *abfd,
 	small_data_common:
 	  if (h)
 	    {
-	      /* Flag which type of relocation was used.  */
+	      /* Flag which type of relocation was used: */
 	      h->other |= other;
 	      if ((h->other & V850_OTHER_MASK) != (other & V850_OTHER_MASK)
 		  && (h->other & V850_OTHER_ERROR) == 0)
 		{
-		  const char * msg;
-		  static char  buff[200]; /* XXX */
+		  const char *msg;
+		  static char buff[200]; /* XXX */
 
 		  switch (h->other & V850_OTHER_MASK)
 		    {
@@ -173,10 +173,10 @@ v850_elf_check_relocs (bfd *abfd,
 		      break;
 		    }
 
-		  sprintf (buff, msg, h->root.root.string);
-		  info->callbacks->warning (info, buff, h->root.root.string,
-					    abfd, h->root.u.def.section,
-					    (bfd_vma) 0);
+		  sprintf(buff, msg, h->root.root.string);
+		  info->callbacks->warning(info, buff, h->root.root.string,
+					   abfd, h->root.u.def.section,
+					   (bfd_vma)0UL);
 
 		  bfd_set_error (bfd_error_bad_value);
 		  h->other |= V850_OTHER_ERROR;
@@ -230,31 +230,31 @@ typedef struct hi16s_location
 }
 hi16s_location;
 
-static hi16s_location * previous_hi16s;
-static hi16s_location * free_hi16s;
-static unsigned long    hi16s_counter;
+static hi16s_location *previous_hi16s;
+static hi16s_location *free_hi16s;
+static unsigned long hi16s_counter;
 
 static void
-remember_hi16s_reloc (bfd *abfd, bfd_vma addend, bfd_byte *address)
+remember_hi16s_reloc(bfd *abfd, bfd_vma addend, bfd_byte *address)
 {
-  hi16s_location * entry = NULL;
-  bfd_size_type amt = sizeof (* free_hi16s);
+  hi16s_location *entry = (hi16s_location *)NULL;
+  bfd_size_type amt = sizeof(* free_hi16s);
 
-  /* Find a free structure.  */
+  /* Find a free structure: */
   if (free_hi16s == NULL)
-    free_hi16s = bfd_zalloc (abfd, amt);
+    free_hi16s = (hi16s_location *)bfd_zalloc(abfd, amt);
 
-  entry      = free_hi16s;
+  entry = free_hi16s;
   free_hi16s = free_hi16s->next;
 
-  entry->addend  = addend;
+  entry->addend = addend;
   entry->address = address;
   entry->counter = hi16s_counter ++;
-  entry->found   = FALSE;
-  entry->next    = previous_hi16s;
+  entry->found = FALSE;
+  entry->next = previous_hi16s;
   previous_hi16s = entry;
 
-  /* Cope with wrap around of our counter.  */
+  /* Cope with wrap around of our counter: */
   if (hi16s_counter == 0)
     {
       /* XXX: Assume that all counter entries differ only in their low 16 bits.  */
@@ -1240,7 +1240,7 @@ static reloc_howto_type v850_elf_howto_table[] =
        0,                     /* Src_mask.  */
        0,                     /* Dst_mask.  */
        TRUE),                 /* PCrel_offset.  */
-  
+
   /* Simple pc-relative 32bit reloc.  */
   HOWTO (R_V850_REL32,			/* Type.  */
 	 0,				/* Rightshift.  */
@@ -1978,55 +1978,58 @@ v850_elf_symbol_processing (bfd *abfd, asymbol *asym)
     case SHN_V850_SCOMMON:
       if (v850_elf_scom_section.name == NULL)
 	{
-	  /* Initialize the small common section.  */
-	  v850_elf_scom_section.name           = ".scommon";
-	  v850_elf_scom_section.flags          = SEC_IS_COMMON | SEC_ALLOC | SEC_DATA;
-	  v850_elf_scom_section.output_section = & v850_elf_scom_section;
-	  v850_elf_scom_section.symbol         = & v850_elf_scom_symbol;
-	  v850_elf_scom_section.symbol_ptr_ptr = & v850_elf_scom_symbol_ptr;
-	  v850_elf_scom_symbol.name            = ".scommon";
-	  v850_elf_scom_symbol.flags           = BSF_SECTION_SYM;
-	  v850_elf_scom_symbol.section         = & v850_elf_scom_section;
-	  v850_elf_scom_symbol_ptr             = & v850_elf_scom_symbol;
+	  /* Initialize the small common section: */
+	  v850_elf_scom_section.name = ".scommon";
+	  v850_elf_scom_section.flags = (SEC_IS_COMMON | SEC_ALLOC | SEC_DATA);
+	  v850_elf_scom_section.output_section = &v850_elf_scom_section;
+	  v850_elf_scom_section.symbol = &v850_elf_scom_symbol;
+	  v850_elf_scom_section.symbol_ptr_ptr = &v850_elf_scom_symbol_ptr;
+	  v850_elf_scom_symbol.name = ".scommon";
+	  v850_elf_scom_symbol.flags = BSF_SECTION_SYM;
+	  v850_elf_scom_symbol.section = &v850_elf_scom_section;
+	  v850_elf_scom_symbol_ptr = &v850_elf_scom_symbol;
 	}
-      asym->section = & v850_elf_scom_section;
+      asym->section = &v850_elf_scom_section;
       asym->value = elfsym->internal_elf_sym.st_size;
       break;
 
     case SHN_V850_TCOMMON:
       if (v850_elf_tcom_section.name == NULL)
 	{
-	  /* Initialize the tcommon section.  */
-	  v850_elf_tcom_section.name           = ".tcommon";
-	  v850_elf_tcom_section.flags          = SEC_IS_COMMON;
-	  v850_elf_tcom_section.output_section = & v850_elf_tcom_section;
-	  v850_elf_tcom_section.symbol         = & v850_elf_tcom_symbol;
-	  v850_elf_tcom_section.symbol_ptr_ptr = & v850_elf_tcom_symbol_ptr;
-	  v850_elf_tcom_symbol.name            = ".tcommon";
-	  v850_elf_tcom_symbol.flags           = BSF_SECTION_SYM;
-	  v850_elf_tcom_symbol.section         = & v850_elf_tcom_section;
-	  v850_elf_tcom_symbol_ptr             = & v850_elf_tcom_symbol;
+	  /* Initialize the tcommon section: */
+	  v850_elf_tcom_section.name = ".tcommon";
+	  v850_elf_tcom_section.flags = SEC_IS_COMMON;
+	  v850_elf_tcom_section.output_section = &v850_elf_tcom_section;
+	  v850_elf_tcom_section.symbol = &v850_elf_tcom_symbol;
+	  v850_elf_tcom_section.symbol_ptr_ptr = &v850_elf_tcom_symbol_ptr;
+	  v850_elf_tcom_symbol.name = ".tcommon";
+	  v850_elf_tcom_symbol.flags = BSF_SECTION_SYM;
+	  v850_elf_tcom_symbol.section = &v850_elf_tcom_section;
+	  v850_elf_tcom_symbol_ptr = &v850_elf_tcom_symbol;
 	}
-      asym->section = & v850_elf_tcom_section;
+      asym->section = &v850_elf_tcom_section;
       asym->value = elfsym->internal_elf_sym.st_size;
       break;
 
     case SHN_V850_ZCOMMON:
       if (v850_elf_zcom_section.name == NULL)
 	{
-	  /* Initialize the zcommon section.  */
-	  v850_elf_zcom_section.name           = ".zcommon";
-	  v850_elf_zcom_section.flags          = SEC_IS_COMMON;
-	  v850_elf_zcom_section.output_section = & v850_elf_zcom_section;
-	  v850_elf_zcom_section.symbol         = & v850_elf_zcom_symbol;
-	  v850_elf_zcom_section.symbol_ptr_ptr = & v850_elf_zcom_symbol_ptr;
-	  v850_elf_zcom_symbol.name            = ".zcommon";
-	  v850_elf_zcom_symbol.flags           = BSF_SECTION_SYM;
-	  v850_elf_zcom_symbol.section         = & v850_elf_zcom_section;
-	  v850_elf_zcom_symbol_ptr             = & v850_elf_zcom_symbol;
+	  /* Initialize the zcommon section: */
+	  v850_elf_zcom_section.name = ".zcommon";
+	  v850_elf_zcom_section.flags = SEC_IS_COMMON;
+	  v850_elf_zcom_section.output_section = &v850_elf_zcom_section;
+	  v850_elf_zcom_section.symbol = &v850_elf_zcom_symbol;
+	  v850_elf_zcom_section.symbol_ptr_ptr = &v850_elf_zcom_symbol_ptr;
+	  v850_elf_zcom_symbol.name = ".zcommon";
+	  v850_elf_zcom_symbol.flags = BSF_SECTION_SYM;
+	  v850_elf_zcom_symbol.section = &v850_elf_zcom_section;
+	  v850_elf_zcom_symbol_ptr = &v850_elf_zcom_symbol;
 	}
       asym->section = & v850_elf_zcom_section;
       asym->value = elfsym->internal_elf_sym.st_size;
+      break;
+
+    default:
       break;
     }
 }
@@ -2035,13 +2038,12 @@ v850_elf_symbol_processing (bfd *abfd, asymbol *asym)
    file.  We must handle the special v850 section numbers here.  */
 
 static bfd_boolean
-v850_elf_add_symbol_hook (bfd *abfd,
-			  struct bfd_link_info *info ATTRIBUTE_UNUSED,
-			  Elf_Internal_Sym *sym,
-			  const char **namep ATTRIBUTE_UNUSED,
-			  flagword *flagsp ATTRIBUTE_UNUSED,
-			  asection **secp,
-			  bfd_vma *valp)
+v850_elf_add_symbol_hook(bfd *abfd,
+                         struct bfd_link_info *info ATTRIBUTE_UNUSED,
+			 Elf_Internal_Sym *sym,
+			 const char **namep ATTRIBUTE_UNUSED,
+			 flagword *flagsp ATTRIBUTE_UNUSED,
+			 asection **secp, bfd_vma *valp)
 {
   unsigned int indx = sym->st_shndx;
 
@@ -2073,21 +2075,24 @@ v850_elf_add_symbol_hook (bfd *abfd,
   switch (indx)
     {
     case SHN_V850_SCOMMON:
-      *secp = bfd_make_section_old_way (abfd, ".scommon");
+      *secp = bfd_make_section_old_way(abfd, ".scommon");
       (*secp)->flags |= SEC_IS_COMMON;
       *valp = sym->st_size;
       break;
 
     case SHN_V850_TCOMMON:
-      *secp = bfd_make_section_old_way (abfd, ".tcommon");
+      *secp = bfd_make_section_old_way(abfd, ".tcommon");
       (*secp)->flags |= SEC_IS_COMMON;
       *valp = sym->st_size;
       break;
 
     case SHN_V850_ZCOMMON:
-      *secp = bfd_make_section_old_way (abfd, ".zcommon");
+      *secp = bfd_make_section_old_way(abfd, ".zcommon");
       (*secp)->flags |= SEC_IS_COMMON;
       *valp = sym->st_size;
+      break;
+
+    default:
       break;
     }
 
@@ -2125,10 +2130,10 @@ v850_elf_section_from_shdr (bfd *abfd,
 			    int shindex)
 {
   /* There ought to be a place to keep ELF backend specific flags, but
-     at the moment there isn't one.  We just keep track of the
+     at the moment there is NOT one.  We just keep track of the
      sections by their name, instead.  */
 
-  if (! _bfd_elf_make_section_from_shdr (abfd, hdr, name, shindex))
+  if (! _bfd_elf_make_section_from_shdr(abfd, hdr, name, shindex))
     return FALSE;
 
   switch (hdr->sh_type)
@@ -2136,11 +2141,13 @@ v850_elf_section_from_shdr (bfd *abfd,
     case SHT_V850_SCOMMON:
     case SHT_V850_TCOMMON:
     case SHT_V850_ZCOMMON:
-      if (! bfd_set_section_flags (abfd, hdr->bfd_section,
-				   (bfd_get_section_flags (abfd,
-							   hdr->bfd_section)
-				    | SEC_IS_COMMON)))
+      if (! bfd_set_section_flags(abfd, hdr->bfd_section,
+				  (bfd_get_section_flags(abfd,
+                                                         hdr->bfd_section)
+				   | SEC_IS_COMMON)))
 	return FALSE;
+    default:
+      break;
     }
 
   return TRUE;
@@ -2168,20 +2175,16 @@ v850_elf_fake_sections (bfd *abfd ATTRIBUTE_UNUSED,
   return TRUE;
 }
 
-/* Delete some bytes from a section while relaxing.  */
-
+/* Delete some bytes from a section while relaxing: */
 static bfd_boolean
-v850_elf_relax_delete_bytes (bfd *abfd,
-			     asection *sec,
-			     bfd_vma addr,
-			     bfd_vma toaddr,
-			     int count)
+v850_elf_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr,
+                            bfd_vma toaddr, int count)
 {
   Elf_Internal_Shdr *symtab_hdr;
   Elf32_External_Sym *extsyms;
   Elf32_External_Sym *esym;
   Elf32_External_Sym *esymend;
-  int index;
+  int i_index;
   unsigned int sec_shndx;
   bfd_byte *contents;
   Elf_Internal_Rela *irel;
@@ -2190,42 +2193,42 @@ v850_elf_relax_delete_bytes (bfd *abfd,
   Elf_Internal_Shdr *shndx_hdr;
   Elf_External_Sym_Shndx *shndx;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  extsyms = (Elf32_External_Sym *) symtab_hdr->contents;
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  extsyms = (Elf32_External_Sym *)symtab_hdr->contents;
 
-  sec_shndx = _bfd_elf_section_from_bfd_section (abfd, sec);
+  sec_shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
 
-  contents = elf_section_data (sec)->this_hdr.contents;
+  contents = elf_section_data(sec)->this_hdr.contents;
 
   /* The deletion must stop at the next ALIGN reloc for an alignment
      power larger than the number of bytes we are deleting.  */
 
-  /* Actually delete the bytes.  */
-#if (DEBUG_RELAX & 2)
-  fprintf (stderr, "relax_delete: contents: sec: %s  %p .. %p %x\n",
-	   sec->name, addr, toaddr, count );
-#endif
-  memmove (contents + addr, contents + addr + count,
-	   toaddr - addr - count);
-  memset (contents + toaddr-count, 0, count);
+  /* Actually delete the bytes: */
+#if defined(DEBUG_RELAX) && (DEBUG_RELAX & 2)
+  fprintf(stderr, "relax_delete: contents: sec: %s  %p .. %p %x\n",
+          sec->name, addr, toaddr, count );
+#endif /* DEBUG_RELAX */
+  memmove(contents + addr, contents + addr + count,
+          toaddr - addr - count);
+  memset(contents + toaddr-count, 0, count);
 
-  /* Adjust all the relocs.  */
-  irel = elf_section_data (sec)->relocs;
+  /* Adjust all the relocs: */
+  irel = elf_section_data(sec)->relocs;
   irelend = irel + sec->reloc_count;
-  shndx_hdr = &elf_tdata (abfd)->symtab_shndx_hdr;
-  shndx = (Elf_External_Sym_Shndx *) shndx_hdr->contents;
+  shndx_hdr = &elf_tdata(abfd)->symtab_shndx_hdr;
+  shndx = (Elf_External_Sym_Shndx *)shndx_hdr->contents;
 
   for (; irel < irelend; irel++)
     {
       bfd_vma raddr, paddr, symval;
       Elf_Internal_Sym isym;
 
-      /* Get the new reloc address.  */
+      /* Get the new reloc address: */
       raddr = irel->r_offset;
-      if ((raddr >= (addr + count) && raddr < toaddr))
+      if ((raddr >= (addr + count)) && (raddr < toaddr))
 	irel->r_offset -= count;
 
-      if (raddr >= addr && raddr < addr + count)
+      if ((raddr >= addr) && (raddr < (addr + count)))
 	{
 	  irel->r_info = ELF32_R_INFO (ELF32_R_SYM (irel->r_info),
 				       (int) R_V850_NONE);
@@ -2247,41 +2250,42 @@ v850_elf_relax_delete_bytes (bfd *abfd,
       if (ELF32_R_SYM (irel->r_info) < symtab_hdr->sh_info)
 	{
 	  symval = isym.st_value;
-#if (DEBUG_RELAX & 2)
+#if defined(DEBUG_RELAX) && (DEBUG_RELAX & 2)
 	  {
-	    char * name = bfd_elf_string_from_elf_section
-	                   (abfd, symtab_hdr->sh_link, isym.st_name);
-	    fprintf (stderr,
-	       "relax_delete: local: sec: %s, sym: %s (%d), value: %x + %x + %x addend %x\n",
-	       sec->name, name, isym.st_name,
-	       sec->output_section->vma, sec->output_offset,
-	       isym.st_value, irel->r_addend);
+	    char *name =
+              bfd_elf_string_from_elf_section(abfd, symtab_hdr->sh_link,
+                                              isym.st_name);
+	    fprintf(stderr,
+                    "relax_delete: local: sec: %s, sym: %s (%d), value: %x + %x + %x addend %x\n",
+                    sec->name, name, isym.st_name,
+                    sec->output_section->vma, sec->output_offset,
+                    isym.st_value, irel->r_addend);
 	  }
-#endif
+#endif /* DEBUG_RELAX */
 	}
       else
 	{
 	  unsigned long indx;
-	  struct elf_link_hash_entry * h;
+	  struct elf_link_hash_entry *h;
 
-	  /* An external symbol.  */
-	  indx = ELF32_R_SYM (irel->r_info) - symtab_hdr->sh_info;
+	  /* An external symbol: */
+	  indx = ELF32_R_SYM(irel->r_info) - symtab_hdr->sh_info;
 
-	  h = elf_sym_hashes (abfd) [indx];
-	  BFD_ASSERT (h != NULL);
+	  h = elf_sym_hashes(abfd)[indx];
+	  BFD_ASSERT(h != NULL);
 
 	  symval = h->root.u.def.value;
-#if (DEBUG_RELAX & 2)
-	  fprintf (stderr,
-		   "relax_delete: defined: sec: %s, name: %s, value: %x + %x + %x addend %x\n",
-		   sec->name, h->root.root.string, h->root.u.def.value,
-		   sec->output_section->vma, sec->output_offset, irel->r_addend);
-#endif
+#if defined(DEBUG_RELAX) && (DEBUG_RELAX & 2)
+	  fprintf(stderr,
+                  "relax_delete: defined: sec: %s, name: %s, value: %x + %x + %x addend %x\n",
+                  sec->name, h->root.root.string, h->root.u.def.value,
+                  sec->output_section->vma, sec->output_offset, irel->r_addend);
+#endif /* DEBUG_RELAX */
 	}
 
-      paddr = symval + irel->r_addend;
+      paddr = (symval + irel->r_addend);
 
-      if ( (symval >= addr + count && symval < toaddr)
+      if ((symval >= addr + count && symval < toaddr)
 	  && (paddr < addr + count || paddr >= toaddr))
 	irel->r_addend += count;
       else if (    (symval < addr + count || symval >= toaddr)
@@ -2289,7 +2293,7 @@ v850_elf_relax_delete_bytes (bfd *abfd,
 	irel->r_addend -= count;
     }
 
-  /* Adjust the local symbols defined in this section.  */
+  /* Adjust the local symbols defined in this section: */
   esym = extsyms;
   esymend = esym + symtab_hdr->sh_info;
 
@@ -2329,12 +2333,12 @@ v850_elf_relax_delete_bytes (bfd *abfd,
   esym = extsyms + symtab_hdr->sh_info;
   esymend = extsyms + (symtab_hdr->sh_size / sizeof (Elf32_External_Sym));
 
-  for (index = 0; esym < esymend; esym ++, index ++)
+  for (i_index = 0; esym < esymend; esym ++, i_index ++)
     {
       Elf_Internal_Sym isym;
 
       bfd_elf32_swap_symbol_in (abfd, esym, shndx, & isym);
-      sym_hash = elf_sym_hashes (abfd) [index];
+      sym_hash = elf_sym_hashes (abfd) [i_index];
 
       if (isym.st_shndx == sec_shndx
 	  && ((sym_hash)->root.type == bfd_link_hash_defined
@@ -3093,3 +3097,5 @@ static const struct bfd_elf_special_section v850_elf_special_sections[] =
 #define elf_symbol_leading_char			'_'
 
 #include "elf32-target.h"
+
+/* EOF */

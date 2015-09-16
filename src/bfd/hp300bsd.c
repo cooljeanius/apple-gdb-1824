@@ -1,4 +1,4 @@
-/* BFD back-end for HP 9000/300 (68000-based) machines running BSD Unix.
+/* hp300bsd.c: BFD backend for HP 9000/300 (68k-based) machines running BSD Unix
    Copyright 1992, 1994, 1995, 2001, 2003 Free Software Foundation, Inc.
 
 This file is part of BFD, the Binary File Descriptor library.
@@ -31,6 +31,13 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
    the tokens.  */
 #define MY(OP) CONCAT2 (hp300bsd_,OP)
 #define TARGETNAME "a.out-hp300bsd"
+
+/* this needs to go after the usage of the CONCAT* macro mentioned above,
+ * but before any other headers are included, or prototypes for functions
+ * are declared: */
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ && !__clang__ */
 
 #include "bfd.h"
 #include "sysdep.h"

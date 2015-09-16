@@ -1,4 +1,4 @@
-/* TUI support I/O functions.
+/* tui-io.c: TUI support I/O functions.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -49,7 +49,7 @@
 #include "readline/readline.h"
 
 int
-key_is_start_sequence (int ch)
+key_is_start_sequence(int ch)
 {
   return (ch == 27);
 }
@@ -194,7 +194,7 @@ tui_puts (const char *string)
    Redisplay the command line with its prompt after readline has
    changed the edited text.  */
 void
-tui_redisplay_readline (void)
+tui_redisplay_readline(void)
 {
   int prev_col;
   int height;
@@ -208,25 +208,25 @@ tui_redisplay_readline (void)
 
   /* Detect when we temporarily left SingleKey and now the readline
      edit buffer is empty, automatically restore the SingleKey mode.  */
-  if (tui_current_key_mode == TUI_ONE_COMMAND_MODE && rl_end == 0)
-    tui_set_key_mode (TUI_SINGLE_KEY_MODE);
+  if ((tui_current_key_mode == TUI_ONE_COMMAND_MODE) && (rl_end == 0))
+    tui_set_key_mode(TUI_SINGLE_KEY_MODE);
 
   if (tui_current_key_mode == TUI_SINGLE_KEY_MODE)
     prompt = "";
   else
     prompt = tui_rl_saved_prompt;
-  
+
   c_pos = -1;
   c_line = -1;
   w = TUI_CMD_WIN->generic.handle;
   start_line = TUI_CMD_WIN->detail.command_info.start_line;
-  wmove (w, start_line, 0);
+  wmove(w, start_line, 0);
   prev_col = 0;
   height = 1;
   for (in = 0; prompt && prompt[in]; in++)
     {
-      waddch (w, prompt[in]);
-      getyx (w, line, col);
+      waddch(w, prompt[in]);
+      getyx(w, line, col);
       if (col < prev_col)
         height++;
       prev_col = col;
@@ -234,64 +234,70 @@ tui_redisplay_readline (void)
   for (in = 0; in < rl_end; in++)
     {
       unsigned char c;
-      
-      c = (unsigned char) rl_line_buffer[in];
+
+      c = (unsigned char)rl_line_buffer[in];
       if (in == rl_point)
 	{
-          getyx (w, c_line, c_pos);
+          getyx(w, c_line, c_pos);
 	}
 
-      if (CTRL_CHAR (c) || c == RUBOUT)
+      if (CTRL_CHAR(c) || (c == RUBOUT))
 	{
-          waddch (w, '^');
-          waddch (w, CTRL_CHAR (c) ? UNCTRL (c) : '?');
+          waddch(w, '^');
+          waddch(w, CTRL_CHAR(c) ? UNCTRL(c) : '?');
 	}
       else
 	{
-          waddch (w, c);
+          waddch(w, c);
 	}
       if (c == '\n')
         {
-          getyx (w, TUI_CMD_WIN->detail.command_info.start_line,
-                 TUI_CMD_WIN->detail.command_info.curch);
+          getyx(w, TUI_CMD_WIN->detail.command_info.start_line,
+                TUI_CMD_WIN->detail.command_info.curch);
         }
-      getyx (w, line, col);
+      getyx(w, line, col);
       if (col < prev_col)
         height++;
       prev_col = col;
     }
-  wclrtobot (w);
-  getyx (w, TUI_CMD_WIN->detail.command_info.start_line,
-         TUI_CMD_WIN->detail.command_info.curch);
+  wclrtobot(w);
+  getyx(w, TUI_CMD_WIN->detail.command_info.start_line,
+        TUI_CMD_WIN->detail.command_info.curch);
   if (c_line >= 0)
     {
-      wmove (w, c_line, c_pos);
+      wmove(w, c_line, c_pos);
       TUI_CMD_WIN->detail.command_info.cur_line = c_line;
       TUI_CMD_WIN->detail.command_info.curch = c_pos;
     }
-  TUI_CMD_WIN->detail.command_info.start_line -= height - 1;
+  TUI_CMD_WIN->detail.command_info.start_line -= (height - 1);
 
-  wrefresh (w);
+  wrefresh(w);
   fflush(stdout);
+
+  /* this conditional is just to silence '-Wunused-but-set-variable': */
+  if (line == 0) {
+    return;
+  }
 }
 
 /* Readline callback to prepare the terminal.  It is called once
    each time we enter readline.  Terminal is already setup in curses mode.  */
 static void
-tui_prep_terminal (int notused1)
+tui_prep_terminal(int notused1 ATTRIBUTE_UNUSED)
 {
   /* Save the prompt registered in readline to correctly display it.
      (we can't use gdb_prompt() due to secondary prompts and can't use
      rl_prompt because it points to an alloca buffer).  */
-  xfree (tui_rl_saved_prompt);
-  tui_rl_saved_prompt = xstrdup (rl_prompt);
+  xfree(tui_rl_saved_prompt);
+  tui_rl_saved_prompt = xstrdup(rl_prompt);
 }
 
 /* Readline callback to restore the terminal.  It is called once
    each time we leave readline.  There is nothing to do in curses mode.  */
 static void
-tui_deprep_terminal (void)
+tui_deprep_terminal(void)
 {
+  return;
 }
 
 #ifdef TUI_USE_PIPE_FOR_READLINE
@@ -356,38 +362,44 @@ printable_part (char *pathname)
     } while (0)
 
 static int
-print_filename (char *to_print, char *full_pathname)
+print_filename(char *to_print, char *full_pathname)
 {
   int printed_len = 0;
   char *s;
 
   for (s = to_print; *s; s++)
     {
-      PUTX (*s);
+      PUTX(*s);
     }
   return printed_len;
 }
 
+/* Moved up here for '-Wnested-externs': */
+extern int _rl_abort_internal(void);
+
 /* The user must press "y" or "n".  Non-zero return means "y" pressed.
    Comes from readline/complete.c  */
 static int
-get_y_or_n (void)
+get_y_or_n(void)
 {
-  extern int _rl_abort_internal ();
   int c;
 
   for (;;)
     {
-      c = rl_read_key ();
-      if (c == 'y' || c == 'Y' || c == ' ')
+      c = rl_read_key();
+      if ((c == 'y') || (c == 'Y') || (c == ' '))
 	return (1);
-      if (c == 'n' || c == 'N' || c == RUBOUT)
+      if ((c == 'n') || (c == 'N') || (c == RUBOUT))
 	return (0);
       if (c == ABORT_CHAR)
-	_rl_abort_internal ();
-      beep ();
+	_rl_abort_internal();
+      beep();
     }
 }
+
+/* Moved up here for '-Wnested-externs': */
+extern int _rl_qsort_string_compare(const void *, const void *);
+extern int _rl_print_completions_horizontally;
 
 /* A convenience function for displaying a list of strings in
    columnar format on readline's output stream.  MATCHES is the list
@@ -397,17 +409,15 @@ get_y_or_n (void)
    Comes from readline/complete.c and modified to write in
    the TUI command window using tui_putc/tui_puts.  */
 static void
-tui_rl_display_match_list (char **matches, int len, int max)
+tui_rl_display_match_list(char **matches, int len, int max)
 {
-  typedef int QSFUNC (const void *, const void *);
-  extern int _rl_qsort_string_compare (const void*, const void*);
-  extern int _rl_print_completions_horizontally;
-  
+  typedef int QSFUNC(const void *, const void *);
+
   int count, limit, printed_len;
   int i, j, k, l;
   char *temp;
 
-  /* Screen dimension correspond to the TUI command window.  */
+  /* Screen dimension correspond to the TUI command window: */
   int screenwidth = TUI_CMD_WIN->generic.width;
 
   /* If there are many items, then ask the user if she really wants to
@@ -416,19 +426,19 @@ tui_rl_display_match_list (char **matches, int len, int max)
     {
       char msg[256];
 
-      sprintf (msg, "\nDisplay all %d possibilities? (y or n)", len);
-      tui_puts (msg);
-      if (get_y_or_n () == 0)
+      sprintf(msg, "\nDisplay all %d possibilities? (y or n)", len);
+      tui_puts(msg);
+      if (get_y_or_n() == 0)
 	{
-	  tui_puts ("\n");
+	  tui_puts("\n");
 	  return;
 	}
     }
 
   /* How many items of MAX length can we fit in the screen window? */
   max += 2;
-  limit = screenwidth / max;
-  if (limit != 1 && (limit * max == screenwidth))
+  limit = (screenwidth / max);
+  if ((limit != 1) && ((limit * max) == screenwidth))
     limit--;
 
   /* Avoid a possible floating exception.  If max > screenwidth,
@@ -437,7 +447,7 @@ tui_rl_display_match_list (char **matches, int len, int max)
     limit = 1;
 
   /* How many iterations of the printing loop? */
-  count = (len + (limit - 1)) / limit;
+  count = ((len + (limit - 1)) / limit); /* FIXME: sanity-check result */
 
   /* Watch out for special case.  If LEN is less than LIMIT, then
      just do the inner printing loop.
@@ -445,10 +455,10 @@ tui_rl_display_match_list (char **matches, int len, int max)
 
   /* Sort the items if they are not already sorted. */
   if (rl_ignore_completion_duplicates == 0)
-    qsort (matches + 1, len, sizeof (char *),
-           (QSFUNC *)_rl_qsort_string_compare);
+    qsort(matches + 1, len, sizeof(char *),
+          (QSFUNC *)_rl_qsort_string_compare);
 
-  tui_putc ('\n');
+  tui_putc('\n');
 
   if (_rl_print_completions_horizontally == 0)
     {
@@ -457,20 +467,20 @@ tui_rl_display_match_list (char **matches, int len, int max)
 	{
 	  for (j = 0, l = i; j < limit; j++)
 	    {
-	      if (l > len || matches[l] == 0)
+	      if ((l > len) || (matches[l] == 0))
 		break;
 	      else
 		{
-		  temp = printable_part (matches[l]);
-		  printed_len = print_filename (temp, matches[l]);
+		  temp = printable_part(matches[l]);
+		  printed_len = print_filename(temp, matches[l]);
 
-		  if (j + 1 < limit)
-		    for (k = 0; k < max - printed_len; k++)
-		      tui_putc (' ');
+		  if ((j + 1) < limit)
+		    for (k = 0; k < (max - printed_len); k++)
+		      tui_putc(' ');
 		}
 	      l += count;
 	    }
-	  tui_putc ('\n');
+	  tui_putc('\n');
 	}
     }
   else
@@ -478,21 +488,24 @@ tui_rl_display_match_list (char **matches, int len, int max)
       /* Print the sorted items, across alphabetically, like ls -x. */
       for (i = 1; matches[i]; i++)
 	{
-	  temp = printable_part (matches[i]);
-	  printed_len = print_filename (temp, matches[i]);
+	  temp = printable_part(matches[i]);
+	  printed_len = print_filename(temp, matches[i]);
 	  /* Have we reached the end of this line? */
-	  if (matches[i+1])
+	  if (matches[i + 1])
 	    {
-	      if (i && (limit > 1) && (i % limit) == 0)
-		tui_putc ('\n');
+	      if (i && (limit > 1) && ((i % limit) == 0))
+		tui_putc('\n');
 	      else
 		for (k = 0; k < max - printed_len; k++)
-		  tui_putc (' ');
+		  tui_putc(' ');
 	    }
 	}
-      tui_putc ('\n');
+      tui_putc('\n');
     }
 }
+
+/* Moved up here for '-Wnested-externs': */
+extern int readline_echoing_p;
 
 /* Setup the IO for curses or non-curses mode.
    - In non-curses mode, readline and gdb use the standard input and
@@ -503,17 +516,15 @@ tui_rl_display_match_list (char **matches, int len, int max)
    so that readline asks for its input to the curses command window
    with wgetch().  */
 void
-tui_setup_io (int mode)
+tui_setup_io(int mode)
 {
-  extern int readline_echoing_p;
- 
   if (mode)
     {
-      /* Redirect readline to TUI.  */
+      /* Redirect readline to TUI: */
       tui_old_rl_redisplay_function = rl_redisplay_function;
       tui_old_rl_deprep_terminal = rl_deprep_term_function;
-      tui_old_rl_prep_terminal = rl_prep_term_function;
-      tui_old_rl_getc_function = rl_getc_function;
+      tui_old_rl_prep_terminal = (VFunction *)rl_prep_term_function;
+      tui_old_rl_getc_function = (Function *)rl_getc_function;
       tui_old_rl_outstream = rl_outstream;
       tui_old_readline_echoing_p = readline_echoing_p;
       rl_redisplay_function = tui_redisplay_readline;
@@ -526,42 +537,42 @@ tui_setup_io (int mode)
       rl_completion_display_matches_hook = tui_rl_display_match_list;
       rl_already_prompted = 0;
 
-      /* Keep track of previous gdb output.  */
+      /* Keep track of previous gdb output: */
       tui_old_stdout = gdb_stdout;
       tui_old_stderr = gdb_stderr;
       tui_old_uiout = uiout;
 
-      /* Reconfigure gdb output.  */
+      /* Reconfigure gdb output: */
       gdb_stdout = tui_stdout;
       gdb_stderr = tui_stderr;
-      gdb_stdlog = gdb_stdout;	/* for moment */
+      gdb_stdlog = gdb_stdout;/* for moment */
       gdb_stdtarg = gdb_stderr;	/* for moment */
       uiout = tui_out;
 
-      /* Save tty for SIGCONT.  */
-      savetty ();
+      /* Save tty for SIGCONT: */
+      savetty();
     }
   else
     {
-      /* Restore gdb output.  */
+      /* Restore gdb output: */
       gdb_stdout = tui_old_stdout;
       gdb_stderr = tui_old_stderr;
-      gdb_stdlog = gdb_stdout;	/* for moment */
+      gdb_stdlog = gdb_stdout; /* for moment */
       gdb_stdtarg = gdb_stderr;	/* for moment */
       uiout = tui_old_uiout;
 
-      /* Restore readline.  */
+      /* Restore readline: */
       rl_redisplay_function = tui_old_rl_redisplay_function;
       rl_deprep_term_function = tui_old_rl_deprep_terminal;
-      rl_prep_term_function = tui_old_rl_prep_terminal;
-      rl_getc_function = tui_old_rl_getc_function;
+      rl_prep_term_function = (rl_vintfunc_t *)tui_old_rl_prep_terminal;
+      rl_getc_function = (rl_getc_func_t *)tui_old_rl_getc_function;
       rl_outstream = tui_old_rl_outstream;
       rl_completion_display_matches_hook = 0;
       readline_echoing_p = tui_old_readline_echoing_p;
       rl_already_prompted = 0;
 
-      /* Save tty for SIGCONT.  */
-      savetty ();
+      /* Save tty for SIGCONT: */
+      savetty();
     }
 }
 
@@ -679,17 +690,17 @@ tui_getc (FILE *fp)
           waddch (w, ch);
         }
     }
-  
+
   if (key_is_command_char (ch))
     {				/* Handle prev/next/up/down here */
       ch = tui_dispatch_ctrl_char (ch);
     }
-  
+
   if (ch == '\n' || ch == '\r' || ch == '\f')
     TUI_CMD_WIN->detail.command_info.curch = 0;
   if (ch == KEY_BACKSPACE)
     return '\b';
-  
+
   return ch;
 }
 
@@ -697,15 +708,17 @@ tui_getc (FILE *fp)
 /* Cleanup when a resize has occured.
    Returns the character that must be processed.  */
 static unsigned int
-tui_handle_resize_during_io (unsigned int original_ch)
+tui_handle_resize_during_io(unsigned int original_ch)
 {
-  if (tui_win_resized ())
+  if (tui_win_resized())
     {
-      tui_refresh_all_win ();
-      dont_repeat ();
-      tui_set_win_resized_to (FALSE);
+      tui_refresh_all_win();
+      dont_repeat();
+      tui_set_win_resized_to(FALSE);
       return '\n';
     }
   else
     return original_ch;
 }
+
+/* EOF */

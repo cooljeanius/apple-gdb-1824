@@ -380,11 +380,13 @@ char *argv[];
 
 		if (proc && (arg_index > 1)) wrap = TRUE;
 		else {
-			(void) TclFindElement(interp,*argv,
+			(void)TclFindElement(interp, *argv,
 #if TCL_MAJOR_VERSION >= 8
-                                              -1,
+								 -1,
 #endif /* Tcl >= 8 */
-                       &elementPtr,&nextPtr,(int *)0,(int *)0);
+								 (const char **)&elementPtr,
+								 (const char **)&nextPtr,
+								 (int *)0, (int *)0);
 			if (*elementPtr == '\0') wrap = TRUE;
 			else if (*nextPtr == '\0') wrap = FALSE;
 			else wrap = TRUE;
@@ -430,12 +432,12 @@ Tcl_Obj *objv[];
     char **argv;
     int argc;
     int len;
-    argv = (char **)ckalloc(objc+1 * sizeof(char *));
-    for (argc=0 ; argc<objc ; argc++) {
-	argv[argc] = Tcl_GetStringFromObj(objv[argc],&len);
+    argv = (char **)ckalloc((objc + 1) * sizeof(char *));
+    for (argc = 0; argc < objc; argc++) {
+		argv[argc] = Tcl_GetStringFromObj(objv[argc],&len);
     }
     argv[argc] = NULL;
-    print_argv(interp,argc,argv);
+    return print_argv(interp, argc, argv);
 }
 #endif /* Tcl >= 8 */
 
@@ -458,9 +460,9 @@ CallFrame *viewf;	/* view FramePtr */
 		PrintStackBelow(interp,curf->callerVarPtr,viewf);
 		print(interp,"%c%d: %s\n",ptr,curf->level,
 #if TCL_MAJOR_VERSION >= 8
-			print_objv(interp,curf->objc,curf->objv));
+			print_objv(interp, curf->objc, (Tcl_Obj **)curf->objv));
 #else
-			print_argv(interp,curf->argc,curf->argv));
+			print_argv(interp, curf->argc, curf->argv));
 #endif /* Tcl >= 8 */
 	}
 }
@@ -555,8 +557,12 @@ char *argv[];
 
 	if ((*ignoreproc)(interp,argv[0])) return;
 
-	/* if level is unknown, use "?" */
-	sprintf(level_text,(level == -1)?"?":"%d",level);
+	/* if level is unknown, then use "?" */
+	if (level == -1) {
+		sprintf(level_text, "?");
+	} else {
+		sprintf(level_text, "%d", level);
+	}
 
 	/* save so we can restore later */
 	trueFramePtr = iPtr->varFramePtr;
@@ -592,7 +598,9 @@ char *argv[];
 		/* command was issued.  Also test */
 		/* against all FramePtrs and if no match, assume that */
 		/* we have missed a return, and so we should break  */
-/*		if (goalFramePtr != iPtr->varFramePtr) goto finish;*/
+#if 0
+		if (goalFramePtr != iPtr->varFramePtr) goto finish;
+#endif /* 0 */
 		if (GoalFrame(goalFramePtr,iPtr)) goto finish;
 		step_count--;
 		if (step_count > 0) goto finish;
@@ -608,6 +616,9 @@ char *argv[];
 		/* same comment as in "case next" */
 		if (goalFramePtr != iPtr->varFramePtr) goto finish;
 		goto start_interact;
+        default:
+        	/* FIXME: print a message about unhandled case here: */
+        	break;
 	}
 
 start_interact:
@@ -666,6 +677,9 @@ end_interact:
 	case where:
 		PrintStack(interp,iPtr->varFramePtr,viewFramePtr,argc,argv,level_text);
 		break;
+        default:
+        	/* FIXME: print a message about unhandled case here: */
+        	break;
 	}
 
 	/* restore view and restart interactor */
@@ -1145,7 +1159,8 @@ Tcl_Interp *interp;
 			   version */
 
 			static int nextid = 0;
-			char *nextidstr = Tcl_GetVar2(interp,"tcl::history","nextid",0);
+			char *nextidstr;
+			nextidstr = (char *)Tcl_GetVar2(interp, "tcl::history", "nextid", 0);
 			if (nextidstr) {
 				sscanf(nextidstr,"%d",&nextid);
 			}
@@ -1270,7 +1285,9 @@ int immediate;		/* if true, stop immediately */
 
 		debugger_trap((ClientData)0,interp,-1,fake_cmd,(int (*)())0,
 					(ClientData)0,1,&fake_cmd);
-/*		(*interactor)(interp);*/
+#if 0
+		(*interactor)(interp);
+#endif /* 0 */
 	}
 }
 

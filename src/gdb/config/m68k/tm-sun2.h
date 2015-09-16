@@ -1,4 +1,5 @@
-/* Parameters for execution on a Sun, for GDB, the GNU debugger.
+/* tm-sun2.h
+   Parameters for execution on a Sun, for GDB, the GNU debugger.
    Copyright (C) 1986, 1987, 1989, 1992 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -18,7 +19,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* The child target can't deal with floating registers.  */
+/* The child target cannot deal with floating registers.  */
 #define CANNOT_STORE_REGISTER(regno) ((regno) >= FP0_REGNUM)
 
 #include "m68k/tm-m68k.h"

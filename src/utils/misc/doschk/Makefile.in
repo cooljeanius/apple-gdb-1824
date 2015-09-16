@@ -22,18 +22,34 @@ VPATH = @srcdir@
 
 CC = @CC@
 
+CLANG_ANALYZER = @CLANG_ANALYZER@
+
 INSTALL = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@
+MKDIR_P = @MKDIR_P@
 
 DEFS = @DEFS@
 LIBS = @LIBS@
 
-CFLAGS = -g
-LDFLAGS = -g
+CWARNFLAGS = -Wall -Wextra -Wstrict-prototypes -Wmissing-prototypes \
+-Wconversion -Wold-style-definition -Wshadow -Wundef -Wwrite-strings \
+-std=gnu89 -pedantic
+## others to add with newer versions of gcc:
+## * -Wtraditional-conversion
+## * -Wold-style-declaration
+## * -Wmissing-parameter-type
+## (should really check which warning flags are supported when configuring)
+CFLAGS = -ggdb
+ALL_CFLAGS = $(CFLAGS) $(CWARNFLAGS)
+LDFLAGS = -ggdb
 
-prefix = /usr/local
+prefix = @prefix@
+default_prefix = /usr/local
 exec_prefix = $(prefix)
+
+builddir = @builddir@
+analysisdir = $(builddir)/CFE_S_A
 
 bindir = $(exec_prefix)/bin
 datadir = $(prefix)/share
@@ -44,6 +60,10 @@ infodir = $(prefix)/info
 mandir = $(prefix)/man/man1
 # Extension (not including `.') for the installed manual page filenames.
 manext = 1
+
+# Simplify the analyzer command by aggregating variables into one:
+RUN_CLANG_ANALYZER = $(CLANG_ANALYZER) $(DEFS) $(CPPFLAGS) $(ALL_CFLAGS) \
+	--analyze
 
 #### End of system configuration section. ####
 
@@ -57,9 +77,19 @@ DISTNAME = doschk-1.1
 
 all: doschk
 info:
+.PHONY: all info
+
+SUFFIXES = .c .o .plist
+
+.SUFFIXES:
+.SUFFIXES: .c .o .plist
 
 .c.o:
-	$(CC) -c -I. -I$(srcdir) $(DEFS) $(CPPFLAGS) $(CFLAGS) $<
+	$(CC) -c -I. -I$(srcdir) $(DEFS) $(CPPFLAGS) $(ALL_CFLAGS) $<
+
+.c.plist:
+	@if test ! -d $(analysisdir); then $(MKDIR_P) $(analysisdir); fi
+	$(RUN_CLANG_ANALYZER) -o $(analysisdir)/$@ $<
 
 ### targets required by GNU Coding standards ###
 
@@ -67,15 +97,16 @@ TAGS:
 	cd $(srcdir); etags
 
 clean:
-	rm -f *.o core a.out doschk
+	rm -f *.o *~ core a.out doschk
+	rm -rf autom4te.cache || rmdir autom4te.cache
 
 mostlyclean: clean
 
 distclean: clean
-	rm -f Makefile config.status
+	rm -f Makefile config.status config.log
 
-realclean: distclean
-	rm -f TAGS
+maintainer-clean realclean: distclean
+	rm -f TAGS autoscan.log
 
 dist: $(DISTFILES)
 	rm -rf $(DISTNAME)
@@ -92,18 +123,28 @@ install-info:
 uninstall: force
 	-cd $(bindir); rm -f doschk
 
+check: check-local doschk_check
+
+Makefile: Makefile.in config.status
+	$(SHELL) config.status
+
 ### Actual doschk-specific targets ###
 
+doschk.o: doschk.c config.h
+
 doschk: doschk.o
+	$(CC) $(LDFLAGS) $(ALL_CFLAGS) $< -o $@
 
-#check: doschk
-#	ls -1 * | ./doschk
+doschk_check: doschk
+	ls -1 -d * | ./doschk
+.PHONY: doschk_check
 
-#doschk.info: doschk.texi
-#	cd $(srcdir); makeinfo doschk.texi
-
-#doschk.dvi: doschk.texi
-#	cd $(srcdir); texi2dvi doschk.texi
+## using dependencies for the plist could go wrong, so call it as part
+## of the rule instead:
+check-local: config.h @MAINT@ all
+	$(MKDIR_P) $(analysisdir)
+	$(MAKE) doschk.plist
+.PHONY: check-local
 
 # Prevent GNU make v3 from overflowing arg limit on SysV.
 .NOEXPORT:

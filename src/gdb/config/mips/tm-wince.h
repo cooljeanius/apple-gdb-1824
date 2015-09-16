@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on a Windows CE system.
+/* tm-wince.h
+   Definitions to make GDB run on a Windows CE system.
 
    Copyright 2000 Free Software Foundation, Inc.
 
@@ -29,3 +30,5 @@
 void wince_software_single_step (unsigned int, int);
 
 #endif /* TM_WINCE_H */
+
+/* EOF */

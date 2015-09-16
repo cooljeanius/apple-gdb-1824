@@ -85,7 +85,26 @@ const struct mmix_spec_reg mmix_spec_regs[] =
 #define J mmix_type_jsr
 #define P mmix_type_pseudo
 
-#define OP(y) XCONCAT2 (mmix_operands_,y)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic warning "-Wtraditional"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
+#define OP(y) XCONCAT2(mmix_operands_,y)
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
+/* in case the popping failed: */
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ && !__clang__ */
 
 /* Groups of instructions specified here must, if all are matching the
    same instruction, be consecutive, in order more-specific to

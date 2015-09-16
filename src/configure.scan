@@ -22,7 +22,7 @@ AC_PROG_RANLIB
 
 # Checks for header files.
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([fcntl.h inttypes.h langinfo.h libintl.h limits.h locale.h mach/mach.h malloc.h netdb.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/file.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h wchar.h wctype.h])
+AC_CHECK_HEADERS([fcntl.h inttypes.h langinfo.h libintl.h limits.h locale.h mach/mach.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/file.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h wchar.h wctype.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -46,25 +46,34 @@ AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 AC_TYPE_UINT8_T
+AC_CHECK_TYPES([ptrdiff_t])
 
 # Checks for library functions.
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_MALLOC
+AC_FUNC_MKTIME
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([getcwd gethostbyaddr gethostbyname gettimeofday memchr memmove memset putenv re_comp regcomp select socket strcasecmp strchr strerror strrchr strstr strtol strtoul strverscmp utime])
+AC_FUNC_STRCOLL
+AC_FUNC_STRNLEN
+AC_FUNC_STRTOD
+AC_CHECK_FUNCS([atexit bzero floor getcwd gethostbyaddr gethostbyname gettimeofday isascii localeconv mblen memchr memmove mempcpy memset modf pow putenv re_comp regcomp rint select setlocale socket sqrt strcasecmp strchr strcspn strerror strndup strpbrk strrchr strspn strstr strtol strtoul strverscmp utime])
 
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_SUBDIRS([bfd
+AC_CONFIG_SUBDIRS([autogen
+                   bfd
                    binutils
+                   cgen
                    dejagnu
                    electric-fence
                    etc
                    expect
                    gdb
                    intl
+                   libbacktrace
                    libdecnumber
                    libiberty
                    libintl
+                   libtool_gnu
                    mmalloc
                    opcodes
                    readline

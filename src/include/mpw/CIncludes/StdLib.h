@@ -1,23 +1,23 @@
 /*
-	StdLib.h -- General utilities
-
-	Copyright Apple Computer,Inc.	1987, 1990
-	All rights reserved.
-
-*/
+ *	StdLib.h -- General utilities
+ *
+ *	Copyright Apple Computer,Inc.	1987, 1990
+ *	All rights reserved.
+ *
+ */
 
 #ifndef __STDLIB__
 #define __STDLIB__
 
 #ifndef __size_t__
-#define __size_t__
+# define __size_t__
 typedef unsigned int size_t;
-#endif
+#endif /* !__size_t__ */
 
 #ifndef __wchar_t__
-#define __wchar_t__
+# define __wchar_t__
 typedef short wchar_t;
-#endif
+#endif /* !__wchar_t__ */
 
 typedef struct {
 	int quot;			/* quotient */
@@ -30,9 +30,9 @@ typedef struct {
 } ldiv_t;
 
 
-#ifndef NULL
-#define NULL 0
-#endif
+#ifndef NULL /* again... */
+# define NULL 0
+#endif /* !NULL */
 
 #define EXIT_FAILURE 1
 #define EXIT_SUCCESS 0
@@ -43,7 +43,7 @@ typedef struct {
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 /*
  *	String conversion functions
@@ -120,6 +120,8 @@ size_t wcstombs (char *s, const wchar_t *pwcs, size_t n);
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__STDLIB__ */
+
+/* EOF */

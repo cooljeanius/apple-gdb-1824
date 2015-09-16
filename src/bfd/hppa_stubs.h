@@ -1,8 +1,9 @@
-/* HPPA linker stub instructions  */
+/* hppa_stubs.h
+ * HPPA linker stub instructions  */
 
 /* These are the instructions which the linker may insert into the
-   code stream when building final executables to handle out-of-range
-   calls and argument relocations.  */
+ * code stream when building final executables to handle out-of-range
+ * calls and argument relocations.  */
 
 #define LDO_M4_R31_R31		0x37ff3ff9	/* ldo -4(%r31),%r31	  */
 #define LDIL_R1			0x20200000	/* ldil XXX,%r1		  */
@@ -21,3 +22,5 @@
 #define FLDW_M16R30_FARG	0x27c11000	/* fldws -16(%r30),%fargX */
 #define FSTD_FARG_M16R30	0x2fc11200	/* fstds %fargX,-16(%r30) */
 #define FLDD_M16R30_FARG	0x2fc11000	/* fldds -16(%r30),%fargX */
+
+/* EOF */

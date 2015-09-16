@@ -50,8 +50,8 @@
  	  relocation info are never sent to the target.  */
 
 #define BMAGIC	0415
-/* We don't accept the following (see N_BADMAG macro).
-   They're just here so GNU code will compile.  */
+/* We do NOT accept the following (see N_BADMAG macro).
+   They are just here so GNU code will compile.  */
 #define	OMAGIC	0407		/* old impure format */
 #define	NMAGIC	0410		/* read-only text */
 #define	ZMAGIC	0413		/* demand load format */

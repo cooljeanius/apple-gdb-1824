@@ -31,17 +31,19 @@
 #include "scm-lang.h"
 #include "scm-tags.h"
 
-#define USE_EXPRSTRING 0
+#ifndef USE_EXPRSTRING
+# define USE_EXPRSTRING 0
+#endif /* !USE_EXPRSTRING */
 
-static void scm_lreadparen (int);
-static int scm_skip_ws (void);
-static void scm_read_token (int, int);
-static LONGEST scm_istring2number (char *, int, int);
-static LONGEST scm_istr2int (char *, int, int);
-static void scm_lreadr (int);
+static void scm_lreadparen(int);
+static int scm_skip_ws(void);
+static void scm_read_token(int, int);
+static LONGEST scm_istring2number(char *, int, int);
+static LONGEST scm_istr2int(char *, int, int);
+static void scm_lreadr(int);
 
 static LONGEST
-scm_istr2int (char *str, int len, int radix)
+scm_istr2int(char *str, int len, int radix)
 {
   int i = 0;
   LONGEST inum = 0;
@@ -58,10 +60,9 @@ scm_istr2int (char *str, int len, int radix)
       if (++i == len)
 	return SCM_BOOL_F;	/* bad if lone `+' or `-' */
     }
-  do
-    {
-      switch (c = str[i++])
-	{
+  do {
+    switch (c = str[i++])
+      {
 	case '0':
 	case '1':
 	case '2':
@@ -72,7 +73,7 @@ scm_istr2int (char *str, int len, int radix)
 	case '7':
 	case '8':
 	case '9':
-	  c = c - '0';
+	  c = (c - '0');
 	  goto accumulate;
 	case 'A':
 	case 'B':
@@ -80,7 +81,7 @@ scm_istr2int (char *str, int len, int radix)
 	case 'D':
 	case 'E':
 	case 'F':
-	  c = c - 'A' + 10;
+	  c = (c - 'A' + 10);
 	  goto accumulate;
 	case 'a':
 	case 'b':
@@ -88,7 +89,7 @@ scm_istr2int (char *str, int len, int radix)
 	case 'd':
 	case 'e':
 	case 'f':
-	  c = c - 'a' + 10;
+	  c = (c - 'a' + 10);
 	accumulate:
 	  if (c >= radix)
 	    return SCM_BOOL_F;	/* bad digit for radix */
@@ -97,25 +98,24 @@ scm_istr2int (char *str, int len, int radix)
 	  break;
 	default:
 	  return SCM_BOOL_F;	/* not a digit */
-	}
-    }
-  while (i < len);
+      }
+  } while (i < len);
   if (sign == '-')
     inum = -inum;
-  return SCM_MAKINUM (inum);
+  return SCM_MAKINUM(inum);
 }
 
 static LONGEST
-scm_istring2number (char *str, int len, int radix)
+scm_istring2number(char *str, int len, int radix)
 {
   int i = 0;
   char ex = 0;
-  char ex_p = 0, rx_p = 0;	/* Only allow 1 exactness and 1 radix prefix */
+  char ex_p = 0, rx_p = 0; /* Only allow 1 exactness and 1 radix prefix */
 #if 0
   SCM res;
-#endif
+#endif /* 0 */
   if (len == 1)
-    if (*str == '+' || *str == '-')	/* Catches lone `+' and `-' for speed */
+    if (*str == '+' || *str == '-') /* Catches lone `+' & `-' for speed */
       return SCM_BOOL_F;
 
   while ((len - i) >= 2 && str[i] == '#' && ++i)
@@ -164,23 +164,23 @@ scm_istring2number (char *str, int len, int radix)
   switch (ex)
     {
     case 1:
-      return scm_istr2int (&str[i], len - i, radix);
+      return scm_istr2int(&str[i], (len - i), radix);
     case 0:
-      return scm_istr2int (&str[i], len - i, radix);
+      return scm_istr2int(&str[i], (len - i), radix);
 #if 0
       if NFALSEP
 	(res) return res;
-#ifdef FLOATS
+# ifdef FLOATS
     case 2:
-      return scm_istr2flo (&str[i], len - i, radix);
-#endif
-#endif
+      return scm_istr2flo(&str[i], (len - i), radix);
+# endif /* FLOATS */
+#endif /* 0 */
     }
   return SCM_BOOL_F;
 }
 
 static void
-scm_read_token (int c, int weird)
+scm_read_token(int c, int weird)
 {
   while (1)
     {
@@ -393,8 +393,8 @@ tryagain:
 	default:
 #if 0
 	callshrp:
-#endif
-	  scm_lreadr (skipping);
+#endif /* 0 */
+	  scm_lreadr(skipping);
 	  return;
 	}
     case '\"':
@@ -404,7 +404,7 @@ tryagain:
 	    switch (*lexptr++)
 	      {
 	      case '\0':
-		error ("non-terminated string literal");
+		error("non-terminated string literal");
 	      case '\n':
 		continue;
 	      case '0':
@@ -433,11 +433,11 @@ tryagain:
     case '+':
     num:
       {
-	str.ptr = lexptr - 1;
-	scm_read_token (c, 0);
+	str.ptr = (lexptr - 1);
+	scm_read_token(c, 0);
 	if (!skipping)
 	  {
-	    svalue = scm_istring2number (str.ptr, lexptr - str.ptr, 10);
+	    svalue = scm_istring2number(str.ptr, (lexptr - str.ptr), 10);
 	    if (svalue != SCM_BOOL_F)
 	      goto handle_immediate;
 	    goto tok;
@@ -445,53 +445,59 @@ tryagain:
       }
       return;
     case ':':
-      scm_read_token ('-', 0);
+      scm_read_token('-', 0);
       return;
 #if 0
     do_symbol:
-#endif
+#endif /* 0 */
     default:
-      str.ptr = lexptr - 1;
-      scm_read_token (c, 0);
+      str.ptr = (lexptr - 1);
+      scm_read_token(c, 0);
     tok:
       if (!skipping)
 	{
-	  str.length = lexptr - str.ptr;
+	  str.length = (lexptr - str.ptr);
 	  if (str.ptr[0] == '$')
 	    {
-	      write_dollar_variable (str);
+	      write_dollar_variable(str);
 	      return;
 	    }
-	  write_exp_elt_opcode (OP_NAME);
-	  write_exp_string (str);
-	  write_exp_elt_opcode (OP_NAME);
+	  write_exp_elt_opcode(OP_NAME);
+	  write_exp_string(str);
+	  write_exp_elt_opcode(OP_NAME);
 	}
       return;
     }
 handle_immediate:
   if (!skipping)
     {
-      write_exp_elt_opcode (OP_LONG);
-      write_exp_elt_type (builtin_type_scm);
-      write_exp_elt_longcst (svalue);
-      write_exp_elt_opcode (OP_LONG);
+      write_exp_elt_opcode(OP_LONG);
+      write_exp_elt_type(builtin_type_scm);
+      write_exp_elt_longcst(svalue);
+      write_exp_elt_opcode(OP_LONG);
     }
 }
 
 int
-scm_parse (void)
+scm_parse(void)
 {
   char *start;
   while (*lexptr == ' ')
     lexptr++;
   start = lexptr;
-  scm_lreadr (USE_EXPRSTRING);
-#if USE_EXPRSTRING
-  str.length = lexptr - start;
+  scm_lreadr(USE_EXPRSTRING);
+#if defined(USE_EXPRSTRING) && USE_EXPRSTRING
+  str.length = (lexptr - start);
   str.ptr = start;
-  write_exp_elt_opcode (OP_EXPRSTRING);
-  write_exp_string (str);
-  write_exp_elt_opcode (OP_EXPRSTRING);
-#endif
+  write_exp_elt_opcode(OP_EXPRSTRING);
+  write_exp_string(str);
+  write_exp_elt_opcode(OP_EXPRSTRING);
+#else
+  if (start == NULL) {
+    ; /* ??? */
+  }
+#endif /* USE_EXPRSTRING */
   return 0;
 }
+
+/* EOF */

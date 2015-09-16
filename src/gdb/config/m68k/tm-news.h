@@ -1,4 +1,5 @@
-/* Parameters for execution on a Sony/NEWS, for GDB, the GNU debugger.
+/* tm-news.h
+   Parameters for execution on a Sony/NEWS, for GDB, the GNU debugger.
    Copyright 1987, 1989, 1991, 1993 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -20,7 +21,7 @@
 
 /* See following cpu type determination macro to get the machine type.
 
-   Here is an m-news.h file for gdb.  It supports the 68881 registers.
+   Here is an m-news.h file for gdb. It supports the 68881 registers.
    by hikichi@srava.sra.junet
 
    * Ptrace for handling floating register has a bug(before NEWS OS version 2.2),
@@ -64,3 +65,5 @@ extern int news_frame_num_args (struct frame_info *fi);
 #define FRAME_NUM_ARGS(fi) (news_frame_num_args ((fi)))
 
 #include "m68k/tm-m68k.h"
+
+/* EOF */

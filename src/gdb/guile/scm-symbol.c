@@ -95,6 +95,7 @@ syscm_objfile_symbol_map (struct symbol *symbol)
   return htab;
 }
 
+#ifdef MY_BRANCH_IS_HEAD
 /* The smob "mark" function for <gdb:symbol>.  */
 
 static SCM
@@ -106,6 +107,8 @@ syscm_mark_symbol_smob (SCM self)
   return gdbscm_mark_eqable_gsmob (&s_smob->base);
 }
 
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
 /* The smob "free" function for <gdb:symbol>.  */
 
 static size_t
@@ -759,7 +762,10 @@ gdbscm_initialize_symbols (void)
 {
   symbol_smob_tag
     = gdbscm_make_smob_type (symbol_smob_name, sizeof (symbol_smob));
+#ifdef MY_BRANCH_IS_HEAD
   scm_set_smob_mark (symbol_smob_tag, syscm_mark_symbol_smob);
+#else
+#endif /* e0ce22ee5feb0d1682ac7365358abd9c23fc4033 */
   scm_set_smob_free (symbol_smob_tag, syscm_free_symbol_smob);
   scm_set_smob_print (symbol_smob_tag, syscm_print_symbol_smob);
 

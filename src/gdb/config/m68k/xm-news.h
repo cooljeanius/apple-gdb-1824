@@ -1,4 +1,5 @@
-/* Parameters for execution on a Sony/NEWS, for GDB, the GNU debugger.
+/* xm-news.h
+   Parameters for execution on a Sony/NEWS, for GDB, the GNU debugger.
    Copyright 1987, 1989, 1992 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -24,7 +25,7 @@
 
 #define HAVE_WAIT_STRUCT
 
-/* We can't use "isatty" or "fileno" on this machine.  This isn't good,
+/* We cannot use "isatty" or "fileno" on this machine. This is NOT good,
    but it will have to do.  */
 #define ISATTY(FP)	((FP) == stdin || (FP) == stdout)
 
@@ -75,34 +76,34 @@ extern int errno;
    This is used only for kdb.  */
 
 #ifdef MOTOROLA
-#define INIT_STACK(beg, end)  \
+# define INIT_STACK(beg, end)  \
 { asm (".globl end");         \
   asm ("move.l $ end, sp");      \
   asm ("clr.l fp"); }
-#else
-#define INIT_STACK(beg, end)  \
+#else /* !MOTOROLA */
+# define INIT_STACK(beg, end)  \
 { asm (".globl end");         \
   asm ("movel $ end, sp");      \
   asm ("clrl fp"); }
-#endif
+#endif /* MOTOROLA */
 
 /* Push the frame pointer register on the stack.  */
 #ifdef MOTOROLA
-#define PUSH_FRAME_PTR        \
+# define PUSH_FRAME_PTR        \
   asm ("move.l fp, -(sp)");
-#else
-#define PUSH_FRAME_PTR        \
+#else /* !MOTOROLA */
+# define PUSH_FRAME_PTR        \
   asm ("movel fp, -(sp)");
-#endif
+#endif /* MOTOROLA */
 
 /* Copy the top-of-stack to the frame pointer register.  */
 #ifdef MOTOROLA
-#define POP_FRAME_PTR  \
+# define POP_FRAME_PTR  \
   asm ("move.l (sp), fp");
-#else
-#define POP_FRAME_PTR  \
+#else /* !MOTOROLA */
+# define POP_FRAME_PTR  \
   asm ("movl (sp), fp");
-#endif
+#endif /* MOTOROLA */
 
 /* After KDB is entered by a fault, push all registers
    that GDB thinks about (all NUM_REGS of them),
@@ -110,29 +111,31 @@ extern int errno;
    The fault code will be on the stack beyond the last register.  */
 
 #ifdef MOTOROLA
-#define PUSH_REGISTERS        \
+# define PUSH_REGISTERS        \
 { asm ("clr.w -(sp)");	      \
   asm ("pea (10,sp)");	      \
   asm ("movem $ 0xfffe,-(sp)"); }
-#else
-#define PUSH_REGISTERS        \
+#else /* !MOTOROLA */
+# define PUSH_REGISTERS        \
 { asm ("clrw -(sp)");	      \
   asm ("pea 10(sp)");	      \
   asm ("movem $ 0xfffe,-(sp)"); }
-#endif
+#endif /* MOTOROLA */
 
 /* Assuming the registers (including processor status) have been
    pushed on the stack in order of ascending GDB register number,
    restore them and return to the address in the saved PC register.  */
 
 #ifdef MOTOROLA
-#define POP_REGISTERS          \
+# define POP_REGISTERS          \
 { asm ("subi.l $8,28(sp)");     \
   asm ("movem (sp),$ 0xffff"); \
   asm ("rte"); }
-#else
-#define POP_REGISTERS          \
+#else /* !MOTOROLA */
+# define POP_REGISTERS          \
 { asm ("subil $8,28(sp)");     \
   asm ("movem (sp),$ 0xffff"); \
   asm ("rte"); }
-#endif
+#endif /* MOTOROLA */
+
+/* EOF */

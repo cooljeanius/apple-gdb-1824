@@ -447,37 +447,33 @@ static const struct cris_reloc_map cris_reloc_map [] =
 };
 
 static reloc_howto_type *
-cris_reloc_type_lookup (abfd, code)
-     bfd * abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+cris_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                       bfd_reloc_code_real_type code)
 {
   unsigned int i;
 
-  for (i = 0; i < sizeof (cris_reloc_map) / sizeof (cris_reloc_map[0]); i++)
+  for (i = 0U; i < sizeof(cris_reloc_map) / sizeof(cris_reloc_map[0]); i++)
     if (cris_reloc_map [i].bfd_reloc_val == code)
-      return & cris_elf_howto_table [cris_reloc_map[i].cris_reloc_val];
+      return &cris_elf_howto_table[cris_reloc_map[i].cris_reloc_val];
 
   return NULL;
 }
 
-/* Set the howto pointer for an CRIS ELF reloc.  */
-
+/* Set the howto pointer for an CRIS ELF reloc: */
 static void
-cris_info_to_howto_rela (abfd, cache_ptr, dst)
-     bfd * abfd ATTRIBUTE_UNUSED;
-     arelent * cache_ptr;
-     Elf_Internal_Rela * dst;
+cris_info_to_howto_rela(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+                        Elf_Internal_Rela *dst)
 {
   unsigned int r_type;
 
-  r_type = ELF32_R_TYPE (dst->r_info);
-  BFD_ASSERT (r_type < (unsigned int) R_CRIS_max);
-  cache_ptr->howto = & cris_elf_howto_table [r_type];
+  r_type = ELF32_R_TYPE(dst->r_info);
+  BFD_ASSERT(r_type < (unsigned int)R_CRIS_max);
+  cache_ptr->howto = &cris_elf_howto_table[r_type];
 }
 
 bfd_reloc_status_type
-cris_elf_pcrel_reloc (abfd, reloc_entry, symbol, data, input_section,
-		      output_bfd, error_message)
+cris_elf_pcrel_reloc(abfd, reloc_entry, symbol, data, input_section,
+		     output_bfd, error_message)
      bfd *abfd ATTRIBUTE_UNUSED;
      arelent *reloc_entry;
      asymbol *symbol;
@@ -509,14 +505,12 @@ cris_elf_pcrel_reloc (abfd, reloc_entry, symbol, data, input_section,
    changes, while still keeping Linux/CRIS and Linux/CRISv32 code apart.  */
 
 static bfd_boolean
-cris_elf_grok_prstatus (abfd, note)
-     bfd *abfd;
-     Elf_Internal_Note *note;
+cris_elf_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 {
   int offset;
   size_t size;
 
-  if (bfd_get_mach (abfd) == bfd_mach_cris_v32)
+  if (bfd_get_mach(abfd) == bfd_mach_cris_v32)
     switch (note->descsz)
       {
       default:
@@ -524,10 +518,11 @@ cris_elf_grok_prstatus (abfd, note)
 
       case 202:		/* Linux/CRISv32 */
 	/* pr_cursig */
-	elf_tdata (abfd)->core_signal = bfd_get_16 (abfd, note->descdata + 12);
+	elf_tdata(abfd)->core_signal = bfd_get_16(abfd,
+                                                  (note->descdata + 12));
 
 	/* pr_pid */
-	elf_tdata (abfd)->core_pid = bfd_get_32 (abfd, note->descdata + 22);
+	elf_tdata(abfd)->core_pid = bfd_get_32(abfd, note->descdata + 22);
 
 	/* pr_reg */
 	offset = 70;
@@ -1067,18 +1062,18 @@ cris_elf_relocate_section (output_bfd, info, input_bfd, input_section,
 	     filling in the PLT-specific GOT entry.  For the GOT offset,
 	     calculate it as we do when filling it in for the .got.plt
 	     section.  If we don't have a PLT, punt to GOT handling.  */
-	  if (h != NULL
-	      && ((struct elf_cris_link_hash_entry *) h)->gotplt_offset != 0)
+	  if ((h != NULL)
+	      && (((struct elf_cris_link_hash_entry *)h)->gotplt_offset != 0))
 	    {
 	      asection *sgotplt
-		= bfd_get_section_by_name (dynobj, ".got.plt");
+		= bfd_get_section_by_name(dynobj, ".got.plt");
 	      bfd_vma got_offset;
 
-	      BFD_ASSERT (h->dynindx != -1);
-	      BFD_ASSERT (sgotplt != NULL);
+	      BFD_ASSERT(h->dynindx != -1);
+	      BFD_ASSERT(sgotplt != NULL);
 
 	      got_offset
-		= ((struct elf_cris_link_hash_entry *) h)->gotplt_offset;
+		= ((struct elf_cris_link_hash_entry *)h)->gotplt_offset;
 
 	      relocation = got_offset;
 	      break;
@@ -1475,10 +1470,14 @@ cris_elf_relocate_section (output_bfd, info, input_bfd, input_section,
 	    }
 
 	  break;
-	}
 
-      r = cris_final_link_relocate (howto, input_bfd, input_section,
-				     contents, rel, relocation);
+        default:
+          break;
+	}
+      /* That was the end of that switch on 'r_type' */
+
+      r = cris_final_link_relocate(howto, input_bfd, input_section,
+                                   contents, rel, relocation);
 
       if (r != bfd_reloc_ok)
 	{
