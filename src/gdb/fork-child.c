@@ -99,6 +99,7 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
 {
   int pid;
   char *shell_command;
+  size_t shell_cmd_len;
   static char default_shell_file[] = SHELL_FILE;
   int len;
   /* Set debug_fork then attach to the child while it sleeps, to debug. */
@@ -146,10 +147,12 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
   /* If desired, concat something onto the front of ALLARGS.
      SHELL_COMMAND is the result.  */
 #ifdef SHELL_COMMAND_CONCAT
-  shell_command = (char *)alloca(strlen(SHELL_COMMAND_CONCAT) + len);
+  shell_cmd_len = (strlen(SHELL_COMMAND_CONCAT) + len);
+  shell_command = (char *)alloca(shell_cmd_len);
   strcpy(shell_command, SHELL_COMMAND_CONCAT);
 #else
-  shell_command = (char *)alloca(len);
+  shell_cmd_len = len;
+  shell_command = (char *)alloca(shell_cmd_len);
   shell_command[0] = '\0';
 #endif /* SHELL_COMMAND_CONCAT */
 
@@ -217,7 +220,9 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
 	  arch_string = "armv7f";
 # endif /* TARGET_[POWERPC|I386|ARM] */
 	if (arch_string != NULL)
-	  sprintf(shell_command, "%s exec /usr/bin/arch -arch %s ", shell_command, arch_string);
+	  snprintf(shell_command, shell_cmd_len,
+		   "%s exec /usr/bin/arch -arch %s ", shell_command,
+		   arch_string);
 	else
 	  strcat(shell_command, "exec ");
       }

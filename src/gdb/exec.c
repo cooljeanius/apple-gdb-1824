@@ -131,16 +131,13 @@ void init_exec_ops (void);
 
 void _initialize_exec (void);
 
-/* The target vector for executable files.  */
-
+/* The target vector for executable files: */
 struct target_ops exec_ops;
 
-/* The Binary File Descriptor handle for the executable file.  */
-
+/* The Binary File Descriptor handle for the executable file: */
 bfd *exec_bfd = NULL;
 
-/* Whether to open exec and core files read-only or read-write.  */
-
+/* Whether to open exec and core files read-only or read-write: */
 int write_files = 0;
 static void
 show_write_files (struct ui_file *file, int from_tty,

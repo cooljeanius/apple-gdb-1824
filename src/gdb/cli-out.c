@@ -199,13 +199,13 @@ cli_field_int (struct ui_out *uiout, int fldno, int width,
 	       enum ui_align alignment,
 	       const char *fldname, int value)
 {
-  char buffer[20];		/* FIXME: how many chars long a %d can become? */
+  char buffer[20];	/* FIXME: how many chars long a %d can become? */
 
-  cli_out_data *data = ui_out_data (uiout);
+  cli_out_data *data = ui_out_data(uiout);
   if (data->suppress_output)
     return;
-  sprintf (buffer, "%d", value);
-  cli_field_string (uiout, fldno, width, alignment, fldname, buffer);
+  snprintf(buffer, sizeof(buffer), "%d", value);
+  cli_field_string(uiout, fldno, width, alignment, fldname, buffer);
 }
 
 /* used to omit a field */

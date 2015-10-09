@@ -231,8 +231,8 @@ static struct symbol *current_symbol = NULL;
 /* Check for and handle cretinous stabs symbol name continuation!  */
 #define STABS_CONTINUE(pp,objfile)				\
   do {							\
-    if (**(pp) == '\\' || (**(pp) == '?' && (*(pp))[1] == '\0')) \
-      *(pp) = next_symbol_text (objfile);	\
+    if ((*(pp) != NULL) && (**(pp) == '\\' || (**(pp) == '?' && (*(pp))[1] == '\0'))) \
+      *(pp) = next_symbol_text(objfile);	\
   } while (0)
 
 
@@ -752,11 +752,11 @@ extern const char vtbl_ptr_name[];
 
 struct symbol *
 /* APPLE LOCAL symbol prefixes */
-define_symbol (CORE_ADDR valu, char *string, const char *prefix,
-               int desc, int type, struct objfile *objfile)
+define_symbol(CORE_ADDR valu, char *string, const char *prefix,
+              int desc, int type, struct objfile *objfile)
 {
   struct symbol *sym;
-  char *p = (char *) find_name_end (string);
+  char *p = (char *)find_name_end(string);
   int deftype;
   int synonym = 0;
   int i;
@@ -784,11 +784,12 @@ define_symbol (CORE_ADDR valu, char *string, const char *prefix,
   while (p[1] == ':')
     {
       p += 2;
-      p = strchr (p, ':');
+      p = strchr(p, ':');
       /* APPLE LOCAL begin huh? */
       if (p == NULL) {
-	STABS_CONTINUE (&p, objfile);
-	p = strchr (p, ':');
+	/* FIXME: but if p is NULL... is something backwards here? */
+	STABS_CONTINUE(&p, objfile);
+	p = strchr(p, ':');
       }
       /* APPLE LOCAL end huh? */
     }
@@ -798,19 +799,19 @@ define_symbol (CORE_ADDR valu, char *string, const char *prefix,
   nameless = (p == string || ((string[0] == ' ') && (string[1] == ':')));
 
   current_symbol = sym = (struct symbol *)
-    obstack_alloc (&objfile->objfile_obstack, sizeof (struct symbol));
-  memset (sym, 0, sizeof (struct symbol));
+    obstack_alloc(&objfile->objfile_obstack, sizeof(struct symbol));
+  memset(sym, 0, sizeof(struct symbol));
 
   switch (type & N_TYPE)
     {
     case N_TEXT:
-      SYMBOL_SECTION (sym) = SECT_OFF_TEXT (objfile);
+      SYMBOL_SECTION(sym) = SECT_OFF_TEXT(objfile);
       break;
     case N_DATA:
-      SYMBOL_SECTION (sym) = SECT_OFF_DATA (objfile);
+      SYMBOL_SECTION(sym) = SECT_OFF_DATA(objfile);
       break;
     case N_BSS:
-      SYMBOL_SECTION (sym) = SECT_OFF_BSS (objfile);
+      SYMBOL_SECTION(sym) = SECT_OFF_BSS(objfile);
       break;
     }
 
@@ -818,11 +819,11 @@ define_symbol (CORE_ADDR valu, char *string, const char *prefix,
     {
       /* GCC 2.x puts the line number in desc.  SunOS apparently puts in the
          number of bytes occupied by a type or object, which we ignore.  */
-      SYMBOL_LINE (sym) = desc;
+      SYMBOL_LINE(sym) = desc;
     }
   else
     {
-      SYMBOL_LINE (sym) = 0;	/* unknown */
+      SYMBOL_LINE(sym) = 0;	/* unknown */
     }
 
   if (is_cplus_marker (string[0]))
@@ -855,8 +856,8 @@ define_symbol (CORE_ADDR valu, char *string, const char *prefix,
 #endif /* STATIC_TRANSFORM_NAME */
 
 	default:
-	  complaint (&symfile_complaints, _("Unknown C++ symbol name `%s'"),
-		     string);
+	  complaint(&symfile_complaints, _("Unknown C++ symbol name `%s'"),
+		    string);
 	  goto normal;		/* Do *something* with it */
 	}
     }

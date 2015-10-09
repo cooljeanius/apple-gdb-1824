@@ -568,7 +568,7 @@ identity_either_char_to_other(void *baton, int either_char,
 
 /* Various variables (strings) used by these functions: */
 static char backslashable[] = "abfnrtv";
-static char *backslashed[] = {"a", "b", "f", "n", "r", "t", "v", "0"};
+static const char *backslashed[] = {"a", "b", "f", "n", "r", "t", "v", "0"};
 static char represented[] = "\a\b\f\n\r\t\v";
 
 
@@ -1237,7 +1237,7 @@ _initialize_charset(void)
   register_iconv_charsets();
 
   {
-    struct { char *from; char *to; int *table; } tlist[] = {
+    struct { const char *from; const char *to; int *table; } tlist[] = {
       { "ASCII",      "ISO-8859-1", ascii_to_iso_8859_1_table },
       { "ASCII",      "EBCDIC-US",  ascii_to_ebcdic_us_table },
       { "ASCII",      "IBM1047",    ascii_to_ibm1047_table },

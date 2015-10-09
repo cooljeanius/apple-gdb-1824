@@ -583,26 +583,26 @@ floatformat_mantissa (const struct floatformat *fmt,
   if (! fmt->exp_nan)
     return 0;
 
-  /* Make sure we have enough room to store the mantissa.  */
-  gdb_assert (sizeof res > ((fmt->man_len + 7) / 8) * 2);
+  /* Make sure we have enough room to store the mantissa: */
+  gdb_assert(sizeof(res) > ((fmt->man_len + 7) / 8) * 2);
 
   mant_off = fmt->man_start;
   mant_bits_left = fmt->man_len;
-  mant_bits = (mant_bits_left % 32) > 0 ? mant_bits_left % 32 : 32;
+  mant_bits = (((mant_bits_left % 32) > 0) ? (mant_bits_left % 32) : 32);
 
-  mant = get_field (uval, order, fmt->totalsize, mant_off, mant_bits);
+  mant = get_field(uval, order, fmt->totalsize, mant_off, mant_bits);
 
-  sprintf (res, "%lx", mant);
+  snprintf(res, sizeof(res), "%lx", mant);
 
   mant_off += mant_bits;
   mant_bits_left -= mant_bits;
 
   while (mant_bits_left > 0)
     {
-      mant = get_field (uval, order, fmt->totalsize, mant_off, 32);
+      mant = get_field(uval, order, fmt->totalsize, mant_off, 32);
 
-      sprintf (buf, "%08lx", mant);
-      strcat (res, buf);
+      snprintf(buf, sizeof(buf), "%08lx", mant);
+      strcat(res, buf);
 
       mant_off += 32;
       mant_bits_left -= 32;

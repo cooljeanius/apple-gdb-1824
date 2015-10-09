@@ -845,7 +845,8 @@ esac
 # and also -Winit-self only with -Wuninitialized
 opt_warnings="-Wuninitialized -Winit-self -Wmaybe-uninitialized \
 -Wdisabled-optimization -Waggressive-loop-optimizations \
--Wvector-operation-performance -Wunsafe-loop-optimizations"
+-Wvector-operation-performance -Wunsafe-loop-optimizations \
+-Wnull-dereference"
 if test x${CFLAGS+set} = xset; then
   case "${CFLAGS}" in
     *"-O0"* ) ;;

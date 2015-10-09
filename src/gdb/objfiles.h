@@ -27,6 +27,13 @@
 
 #include <uuid/uuid.h>
 
+/* just in case: */
+#ifndef _UUID_T
+# if defined(HAVE_UNISTD_H) && (!defined(_POSIX_C_SOURCE) || defined(_DARWIN_C_SOURCE))
+#  include <unistd.h>
+# endif /* HAVE_UNISTD_H && (!_POSIX_C_SOURCE || _DARWIN_C_SOURCE) */
+#endif /* !_UUID_T */
+
 #include "gdb_obstack.h"	/* For obstack internals.  */
 #include "symfile.h"		/* For struct psymbol_allocation_list */
 /* APPLE LOCAL subroutine inlining  */

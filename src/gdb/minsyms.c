@@ -42,6 +42,7 @@
 
 #include "defs.h"
 #include <ctype.h>
+#include "gdb_assert.h"
 #include "gdb_string.h"
 #include "symtab.h"
 #include "bfd.h"
@@ -68,41 +69,37 @@ struct msym_bunch
 
 static struct msym_bunch *msym_bunch;
 
-/* Number of slots filled in current bunch.  */
-
+/* Number of slots filled in current bunch: */
 static int msym_bunch_index;
 
-/* Total number of minimal symbols recorded so far for the objfile.  */
-
+/* Total number of minimal symbols recorded so far for the objfile: */
 static int msym_count;
 
-/* Compute a hash code based using the same criteria as `strcmp_iw'.  */
-
+/* Compute a hash code based using the same criteria as `strcmp_iw': */
 unsigned int
-msymbol_hash_iw (const char *string)
+msymbol_hash_iw(const char *string)
 {
-  unsigned int hash = 0;
-  while (*string && *string != '(')
+  unsigned int hash = 0U;
+  while (*string && (*string != '('))
     {
-      while (isspace (*string))
+      while (isspace(*string))
 	++string;
-      if (*string && *string != '(')
+      if (*string && (*string != '('))
 	{
-	  hash = hash * 67 + *string - 113;
+	  hash = ((hash * 67U) + *string - 113);
 	  ++string;
 	}
     }
   return hash;
 }
 
-/* Compute a hash code for a string.  */
-
+/* Compute a hash code for a string: */
 unsigned int
-msymbol_hash (const char *string)
+msymbol_hash(const char *string)
 {
-  unsigned int hash = 0;
+  unsigned int hash = 0U;
   for (; *string; ++string)
-    hash = hash * 67 + *string - 113;
+    hash = ((hash * 67U) + *string - 113);
   return hash;
 }
 
@@ -162,7 +159,7 @@ lookup_minimal_symbol_all (const char *name, const char *sfile,
       if (p != NULL)
 	sfile = p + 1;
     }
-#endif
+#endif /* SOFUN_ADDRESS_MAYBE_MISSING */
 
   for (objfile = objfile_get_first ();
        objfile != NULL;
@@ -327,7 +324,7 @@ lookup_minimal_symbol (const char *name, const char *sfile,
       if (p != NULL)
 	sfile = p + 1;
     }
-#endif
+#endif /* SOFUN_ADDRESS_MAYBE_MISSING */
 
   for (objfile = objfile_get_first ();
        objfile != NULL && found_symbol == NULL;
@@ -814,7 +811,7 @@ prim_record_minimal_symbol_and_info(const char *name, CORE_ADDR address,
 
   if (ms_type == mst_file_text)
     {
-      /* Don't put gcc_compiled, __gnu_compiled_cplus, and friends into
+      /* Do NOT put gcc_compiled, __gnu_compiled_cplus, and friends into
 	 the minimal symbols, because if there is also another symbol
 	 at the same address (e.g. the first function of the file),
 	 lookup_minimal_symbol_by_pc would have no way of getting the
@@ -842,17 +839,21 @@ prim_record_minimal_symbol_and_info(const char *name, CORE_ADDR address,
       newbunch->next = msym_bunch;
       msym_bunch = newbunch;
     }
+#if defined(DEBUG) || defined(_DEBUG)
+  printf_filtered("using mysm number %d in bunch...\n", msym_bunch_index);
+#endif /* DEBUG || _DEBUG */
   msymbol = &msym_bunch->contents[msym_bunch_index];
+  gdb_assert(msymbol != NULL);
 /* APPLE LOCAL: Initialize the msymbol->filename to NULL: */
 #if defined(SOFUN_ADDRESS_MAYBE_MISSING) && !defined(TM_NEXTSTEP)
   msymbol->filename = NULL;
 #endif /* SOFUN_ADDRESS_MAYBE_MISSING && !TM_NEXTSTEP */
   SYMBOL_INIT_LANGUAGE_SPECIFIC(msymbol, language_unknown);
   SYMBOL_LANGUAGE(msymbol) = language_auto;
-  SYMBOL_SET_NAMES(msymbol, (char *)name, strlen(name), objfile);
+  SYMBOL_SET_NAMES(msymbol, (char *)name, (int)strlen(name), objfile);
 
   SYMBOL_VALUE_ADDRESS(msymbol) = address;
-  SYMBOL_SECTION(msymbol) = section;
+  SYMBOL_SECTION(msymbol) = (short)section;
   SYMBOL_BFD_SECTION(msymbol) = bfd_section;
 
   MSYMBOL_TYPE(msymbol) = ms_type;
@@ -862,7 +863,7 @@ prim_record_minimal_symbol_and_info(const char *name, CORE_ADDR address,
   /* APPLE LOCAL: fix-and-continue */
   MSYMBOL_OBSOLETED(msymbol) = 0;
 
-  /* The hash pointers must be cleared! If they're not,
+  /* The hash pointers must be cleared! If they are not cleared, then
      add_minsym_to_hash_table will NOT add this msymbol to the hash table. */
   msymbol->hash_next = NULL;
   msymbol->demangled_hash_next = NULL;

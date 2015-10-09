@@ -36,6 +36,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
    times by the parser generator.  */
 
 %{
+  
+/* define this because of flex: */
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* !NO_POISON */
 
 #include "defs.h"
 #include "gdb_string.h"
@@ -639,12 +644,12 @@ string_to_operator(struct stoken string)
 
   for (i = 0; ada_opname_table[i].encoded != NULL; i += 1)
     {
-      if ((string.length == (int)(strlen(ada_opname_table[i].decoded) - 2))
+      if ((string.length == (strlen(ada_opname_table[i].decoded) - 2UL))
 	  && (strncasecmp(string.ptr, (ada_opname_table[i].decoded + 1),
 			  string.length) == 0))
 	{
 	  strncpy(string.ptr, ada_opname_table[i].decoded,
-		  (string.length + 2));
+		  (string.length + 2UL));
 	  string.length += 2;
 	  return string;
 	}
@@ -695,8 +700,9 @@ write_var_from_name(struct block *orig_left_context,
                                        sizeof(struct symbol));
       memset(sym, 0, sizeof(struct symbol));
       SYMBOL_DOMAIN(sym) = UNDEF_DOMAIN;
-      SYMBOL_LINKAGE_NAME(sym)
-	= obsavestring(encoded_name, strlen(encoded_name), &temp_parse_space);
+      SYMBOL_LINKAGE_NAME(sym) =
+	obsavestring(encoded_name, (int)strlen(encoded_name),
+		     &temp_parse_space);
       SYMBOL_LANGUAGE(sym) = language_ada;
 
       write_exp_elt_opcode(OP_VAR_VALUE);
@@ -762,7 +768,7 @@ write_object_renaming (struct block *orig_left_context,
     goto BadEncoding;
 
   name = (char *) obstack_alloc (&temp_parse_space, suffix - expr + 1);
-  strncpy (name, expr, suffix-expr);
+  strncpy(name, expr, (size_t)(suffix - expr));
   name[suffix-expr] = '\000';
   sym = lookup_symbol (name, orig_left_context, VAR_DOMAIN, 0, NULL);
   if (sym == NULL)
@@ -803,20 +809,22 @@ write_object_renaming (struct block *orig_left_context,
 	  {
 	    const char *end;
 	    char *index_name;
-	    int index_len;
+	    size_t index_len;
 	    struct symbol *index_sym;
 
 	    end = strchr (suffix, 'X');
 	    if (end == NULL)
-	      end = suffix + strlen (suffix);
+	      end = suffix + strlen(suffix);
 
-	    index_len = simple_tail - qualification + 2 + (suffix - end) + 1;
-	    index_name
-	      = (char *) obstack_alloc (&temp_parse_space, index_len);
-	    memset (index_name, '\000', index_len);
-	    strncpy (index_name, qualification, simple_tail - qualification);
+	    index_len = ((size_t)(simple_tail - qualification) + 2UL
+			 + (size_t)(suffix - end) + 1UL);
+	    index_name = (char *)obstack_alloc(&temp_parse_space,
+					       (int)index_len);
+	    memset(index_name, '\000', index_len);
+	    strncpy(index_name, qualification,
+		    (size_t)(simple_tail - qualification));
 	    index_name[simple_tail - qualification] = '\000';
-	    strncat (index_name, suffix, suffix-end);
+	    strncat(index_name, suffix, (size_t)(suffix - end));
 	    suffix = end;
 
 	    index_sym =
@@ -851,9 +859,9 @@ write_object_renaming (struct block *orig_left_context,
 	  end = strchr(suffix, 'X');
 	  if (end == NULL)
 	    end = (suffix + strlen(suffix));
-	  field_name.length = (end - suffix);
-	  field_name.ptr = (char *)xmalloc(end - suffix + 1);
-	  strncpy(field_name.ptr, suffix, end - suffix);
+	  field_name.length = (size_t)(end - suffix);
+	  field_name.ptr = (char *)xmalloc((size_t)(end - suffix) + 1UL);
+	  strncpy(field_name.ptr, suffix, (size_t)(end - suffix));
 	  field_name.ptr[end - suffix] = '\000';
 	  suffix = end;
 	  write_exp_elt_opcode(STRUCTOP_STRUCT);
@@ -886,7 +894,7 @@ convert_char_literal(struct type *type, LONGEST val)
 
   if ((type == NULL) || (TYPE_CODE(type) != TYPE_CODE_ENUM))
     return val;
-  sprintf(name, "QU%02x", (int)val);
+  sprintf(name, "QU%02x", (unsigned int)val);
   for (f = 0; f < TYPE_NFIELDS(type); f += 1)
     {
       if (strcmp(name, TYPE_FIELD_NAME(type, f)) == 0)

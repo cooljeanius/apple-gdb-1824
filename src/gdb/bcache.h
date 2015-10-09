@@ -159,11 +159,11 @@ extern void bcache_xfree(struct bcache *bcache);
 /* APPLE LOCAL begin bcache pool */
 extern void bcache_specify_allocation_with_arg (struct bcache *b,
 						void *(* alloc)(void *, size_t),
-						void (* free)(void *, void *),
+						void (* free_f)(void *, void *),
 						void *arg);
 extern void bcache_specify_allocation(struct bcache *b,
 				      void *(* alloc)(size_t),
-				      void (* free)(void *));
+				      void (* free_f)(void *));
 /* APPLE LOCAL end bcache pool */
 
 /* Create a new bcache object.  */

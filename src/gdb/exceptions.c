@@ -1,4 +1,4 @@
-/* Exception (throw catch) mechanism, for GDB, the GNU debugger.
+/* exceptions.c: Exception (throw catch) mechanism, for GDB, the GNU debugger.
 
    Copyright 1986, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
    1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free
@@ -45,7 +45,7 @@ enum catcher_state {
   CATCHER_ABORTING
 };
 
-/* Possible catcher actions.  */
+/* Possible catcher actions: */
 enum catcher_action {
   CATCH_ITER,
   CATCH_ITER_1,
@@ -55,11 +55,11 @@ enum catcher_action {
 struct catcher
 {
   enum catcher_state state;
-  /* Jump buffer pointing back at the exception handler.  */
+  /* Jump buffer pointing back at the exception handler: */
   EXCEPTIONS_SIGJMP_BUF buf;
-  /* Status buffer belonging to the exception handler.  */
+  /* Status buffer belonging to the exception handler: */
   volatile struct gdb_exception *exception;
-  /* Saved/current state.  */
+  /* Saved/current state: */
   int mask;
   struct ui_out *saved_uiout;
   struct cleanup *saved_cleanup_chain;

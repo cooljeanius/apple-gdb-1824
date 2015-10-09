@@ -21,6 +21,12 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+/* We use poisoned functions to implement their non-poisoned alternatives
+ * in this file: */
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include "defs.h"
 #include "gdb_assert.h"
 #include <ctype.h>
@@ -90,7 +96,7 @@
 # ifdef __clang__
 extern int pagination_enabled;
 extern int job_control;
-# endif /* __clang */
+# endif /* __clang__ */
 #endif /* 0 */
 
 #if !HAVE_DECL_MALLOC
@@ -1043,7 +1049,7 @@ safe_strerror(int errnum)
 {
   char *msg;
 
-  msg = strerror(errnum);
+  msg = strerror(errnum); /* OK: strerror */
   if (msg == NULL)
     {
       static char buf[32];
@@ -1465,7 +1471,7 @@ char *
 xstrvprintf(const char *format, va_list ap)
 {
   char *ret = NULL;
-  int status = vasprintf(&ret, format, ap);
+  int status = vasprintf(&ret, format, ap); /* OK: vasprintf */
   /* NULL is returned when there was a memory allocation problem: */
   if (ret == NULL)
     nomem(0);
@@ -1477,6 +1483,7 @@ xstrvprintf(const char *format, va_list ap)
   return ret;
 }
 
+/* Should we recommend using this instead of the regular snprintf() function? */
 int
 xsnprintf(char *str, size_t size, const char *format, ...)
 {
@@ -1518,31 +1525,29 @@ myread(int desc, char *addr, int len)
    Uses malloc to get the space.  Returns the address of the copy.  */
 
 char *
-savestring (const char *ptr, size_t size)
+savestring(const char *ptr, size_t size)
 {
-  char *p = (char *) xmalloc (size + 1);
-  memcpy (p, ptr, size);
+  char *p = (char *)xmalloc(size + 1UL);
+  memcpy(p, ptr, size);
   p[size] = 0;
   return p;
 }
 
 void
-print_spaces (int n, struct ui_file *file)
+print_spaces(int n, struct ui_file *file)
 {
-  fputs_unfiltered (n_spaces (n), file);
+  fputs_unfiltered(n_spaces(n), file);
 }
 
-/* Print a host address.  */
-
+/* Print a host address: */
 void
-gdb_print_host_address (const void *addr, struct ui_file *stream)
+gdb_print_host_address(const void *addr, struct ui_file *stream)
 {
-
   /* We could use the %p conversion specifier to fprintf if we had any
      way of knowing whether this host supports it.  But the following
      should work on the Alpha and on 32 bit machines.  */
 
-  fprintf_filtered (stream, "0x%lx", (unsigned long) addr);
+  fprintf_filtered(stream, "0x%lx", (unsigned long)addr);
 }
 
 /* Ask user a y-or-n question and return 1 iff answer is yes.
@@ -2229,7 +2234,7 @@ reinitialize_more_filter(void)
    used to force out output from the wrap_buffer.  */
 
 void
-wrap_here(char *indent)
+wrap_here(const char *indent)
 {
   /* This should have been allocated, but be paranoid anyway. */
   if (!wrap_buffer)
@@ -2315,11 +2320,11 @@ puts_filtered_tabular(char *string, int width, int right)
    line.  Otherwise do nothing. */
 
 void
-begin_line (void)
+begin_line(void)
 {
   if (chars_printed > 0)
     {
-      puts_filtered ("\n");
+      puts_filtered("\n");
     }
 }
 
@@ -2487,7 +2492,7 @@ fputc_filtered(int c, struct ui_file *stream)
    characters in printable fashion.  */
 
 void
-puts_debug (char *prefix, char *string, char *suffix)
+puts_debug(char *prefix, char *string, char *suffix)
 {
   int ch;
 
@@ -3034,7 +3039,7 @@ paddr(CORE_ADDR addr)
 }
 
 char *
-paddr_nz (CORE_ADDR addr)
+paddr_nz(CORE_ADDR addr)
 {
   return phex_nz(addr, (TARGET_ADDR_BIT / 8));
 }
@@ -4086,7 +4091,7 @@ re_exec(const char *str)
 }
 
 /* Some people use re_search() as a simpler way to call regexec() without
- * really needing the "find a match, now find the next match, etc" behavior
+ * really needing the "find a match, now find the next match, etc." behavior
  * that re_search() really provides.
  * This is a one-shot re_search impl.  */
 int

@@ -378,7 +378,7 @@ enum precision_type
     unspecified_precision
   };
 
-/* A generic, not quite boolean, enumeration.  */
+/* A generic, not quite boolean, enumeration: */
 enum auto_boolean
 {
   AUTO_BOOLEAN_TRUE,
@@ -652,7 +652,7 @@ extern int annotation_level;	/* in stack.c */
 
 extern void begin_line(void);
 
-extern void wrap_here(char *);
+extern void wrap_here(const char *);
 
 extern void reinitialize_more_filter(void);
 
@@ -909,6 +909,7 @@ enum command_control_type
     continue_control,
     while_control,
     if_control,
+    commands_control,
     invalid_control
   };
 
@@ -1666,6 +1667,16 @@ struct cleanup *start_timer(int *timer_var, char *timer_name, char *this_mssg);
 #define LOADER_SUBSYSTEM (1 << 2)
 #define SPINLOCK_SUBSYSTEM (1 << 3)
 #define ALL_SUBSYSTEMS (MALLOC_SUBSYSTEM|OBJC_SUBSYSTEM|LOADER_SUBSYSTEM|SPINLOCK_SUBSYSTEM)
+
+/* poison some unwanted functions: */
+#if (defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ >= 3)) && \
+    !defined(NO_POISON) && !defined(FLEX_SCANNER)
+/* gdbint.texinfo says to avoid these ones: */
+# pragma GCC poison malloc realloc calloc free strdup
+/* for similar reasons, such as libiberty also providing replacements: */
+# pragma GCC poison strndup memdup strerror vsprintf vasprintf
+/* also consider poisoining: asprintf sprintf atexit exit */
+#endif /* gcc3+ && !NO_POISON && !FLEX_SCANNER */
 
 #endif /* #ifndef DEFS_H */
 

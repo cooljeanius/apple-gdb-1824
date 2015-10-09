@@ -1140,11 +1140,12 @@ add_objfile_prefix(struct objfile *objfile, const char* name)
   if (name && name[0] && objfile && objfile->prefix && objfile->prefix[0])
     {
       /* Get length for leading char, prefix, name and NULL terminator: */
-      prefixed_name_length = strlen(objfile->prefix) + strlen(name) + 1UL;
-      prefixed_name = (char*) obstack_alloc (&objfile->objfile_obstack,
-					     prefixed_name_length);
+      prefixed_name_length = (strlen(objfile->prefix) + strlen(name) + 1UL);
+      prefixed_name = (char *)obstack_alloc(&objfile->objfile_obstack,
+					    prefixed_name_length);
 
-      sprintf(prefixed_name, "%s%s", objfile->prefix, name);
+      snprintf(prefixed_name, prefixed_name_length, "%s%s", objfile->prefix,
+	       name);
 
       return prefixed_name;
     }
@@ -3326,7 +3327,7 @@ add_dsym_command(char *args, int from_tty)
       if (stat(full_name, &stat_buf) == -1)
 	{
 	  error("Error \"%s\" accessing dSYM file \"%s\".",
-                strerror(errno), full_name);
+                safe_strerror(errno), full_name);
 	}
 
       objfile = macosx_find_objfile_matching_dsym_in_bundle(full_name,
@@ -3856,7 +3857,7 @@ remove_symbol_file_command(char *args, int from_tty)
     }
 
   name = tilde_expand(args);
-  make_cleanup(free, name);
+  make_cleanup(xfree, name);
 
   objfile = find_objfile(name);
   if (objfile == NULL)
@@ -5998,8 +5999,8 @@ cache."),
 			   &setlist, &showlist);
 
   /* APPLE LOCAL: For the add-kext command.  */
-  add_setshow_optional_filename_cmd ("kext-symbol-file-path", class_support,
-				     &kext_symbol_file_path, _("\
+  add_setshow_optional_filename_cmd("kext-symbol-file-path", class_support,
+				    &kext_symbol_file_path, _("\
 Set the directory where kextutil-generated sym files are searched for."), _("\
 Show the directory where kextutil-generated sym files are searched for."), _("\
 The kextutil-generated sym file is first searched for in the same\n\
@@ -6007,22 +6008,20 @@ directory as the kext bundle, then in the directory specified by \n\
 kext-symbol-file-path.  A common use would be to have kext-symbol-file-path\n\
 set to /tmp and the kextutil-generated .sym files put in /tmp with the kext\n\
 bundle and dSYM in another location."),
-				     NULL,
-				     NULL,
-				     &setlist, &showlist);
+				    NULL, NULL,
+				    &setlist, &showlist);
 
-  debug_file_directory = xstrdup (DEBUGDIR);
-  add_setshow_optional_filename_cmd ("debug-file-directory", class_support,
-				     &debug_file_directory, _("\
+  debug_file_directory = xstrdup(DEBUGDIR);
+  add_setshow_optional_filename_cmd("debug-file-directory", class_support,
+				    &debug_file_directory, _("\
 Set the directory where separate debug symbols are searched for."), _("\
 Show the directory where separate debug symbols are searched for."), _("\
 Separate debug symbols are first searched for in the same\n\
 directory as the binary, then in the `" DEBUG_SUBDIRECTORY "' subdirectory,\n\
 and lastly at the path of the directory of the binary with\n\
 the global debug-file directory prepended."),
-				     NULL,
-				     show_debug_file_directory,
-				     &setlist, &showlist);
+				    NULL, show_debug_file_directory,
+				    &setlist, &showlist);
 }
 
 /* EOF */

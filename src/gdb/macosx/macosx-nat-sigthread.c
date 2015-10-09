@@ -213,7 +213,7 @@ macosx_signal_thread(void *arg)
       if (pid < 0)
         {
           fprintf(sigthread_stderr_re,
-                  "%s: unexpected error: %s\n", funcname, strerror(errno));
+                  "%s: unexpected error: %s\n", funcname, safe_strerror(errno));
           abort();
         }
 

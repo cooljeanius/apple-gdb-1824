@@ -33,9 +33,9 @@ Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA */
    during the process of parsing; the lower levels of the tree always
    come first in the result.
 
-   Note that malloc's and realloc's in this file are transformed to
-   xmalloc and xrealloc respectively by the same sed command in the
-   makefile that remaps any other malloc/realloc inserted by the parser
+   Note that malloc's, realloc's, and free's in this file are transformed to
+   xmalloc, xrealloc, and xfree respectively by the same sed command in the
+   makefile that remaps any other malloc/realloc/free inserted by the parser
    generator.  Doing this with #defines and trying to control the interaction
    with include files (<malloc.h> and <stdlib.h> for example) just became
    too messy, particularly when such includes can be inserted at random
@@ -770,7 +770,7 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 
 struct token
 {
-  char *foperator;
+  const char *foperator;
   int token;
   enum exp_opcode opcode;
 };
@@ -804,7 +804,7 @@ static const struct token dot_ops[] =
 
 struct f77_boolean_val
 {
-  char *name;
+  const char *name;
   int value;
 };
 

@@ -578,21 +578,20 @@ value_at (struct type *type, CORE_ADDR addr)
   return val;
 }
 
-/* Return a lazy value with type TYPE located at ADDR (cf. value_at).  */
-
+/* Return a lazy value with type TYPE located at ADDR (cf. value_at): */
 struct value *
-value_at_lazy (struct type *type, CORE_ADDR addr)
+value_at_lazy(struct type *type, CORE_ADDR addr)
 {
   struct value *val;
 
-  if (TYPE_CODE (check_typedef (type)) == TYPE_CODE_VOID)
-    error (_("Attempt to dereference a generic pointer."));
+  if (TYPE_CODE (check_typedef(type)) == TYPE_CODE_VOID)
+    error(_("Attempt to dereference a generic pointer."));
 
-  val = allocate_value (type);
+  val = allocate_value(type);
 
-  VALUE_LVAL (val) = lval_memory;
-  VALUE_ADDRESS (val) = addr;
-  set_value_lazy (val, 1);
+  VALUE_LVAL(val) = lval_memory;
+  VALUE_ADDRESS(val) = addr;
+  set_value_lazy(val, 1);
 
   return val;
 }
@@ -694,16 +693,16 @@ value_assign(struct value *toval, struct value *fromval)
 	const gdb_byte *dest_buffer;
 	CORE_ADDR changed_addr;
 	int changed_len;
-        gdb_byte buffer[sizeof (LONGEST)];
+        gdb_byte buffer[sizeof(LONGEST)];
 
-	if (value_bitsize (toval))
+	if (value_bitsize(toval))
 	  {
 	    /* We assume that the argument to read_memory is in units of
 	       host chars.  FIXME:  Is that correct?  */
-	    changed_len = (value_bitpos (toval)
-			   + value_bitsize (toval)
-			   + HOST_CHAR_BIT - 1)
-	      / HOST_CHAR_BIT;
+	    changed_len = ((value_bitpos(toval)
+			    + value_bitsize(toval)
+			    + HOST_CHAR_BIT - 1)
+			   / HOST_CHAR_BIT);
 
 	    if (changed_len > (int) sizeof (LONGEST))
 	      error (_("Can't handle bitfields which don't fit in a %d bit word."),
@@ -736,12 +735,16 @@ value_assign(struct value *toval, struct value *fromval)
 	struct frame_info *frame;
 	int value_reg;
 
-	/* Figure out which frame this is in currently.  */
-	frame = frame_find_by_id (VALUE_FRAME_ID (toval));
-	value_reg = VALUE_REGNUM (toval);
-
+	value_reg = VALUE_REGNUM(toval);
+	/* Figure out which frame this is in currently: */
+	frame = frame_find_by_id(VALUE_FRAME_ID(toval));
+	
 	if (!frame)
-	  error (_("Value being assigned to is no longer active."));
+	  frame = get_current_frame();
+
+	/* Probably never happens: */
+	if (!frame)
+	  error(_("Value being assigned to is no longer active."));
 
 	/* APPLE LOCAL begin literal register setting */
 	/* Don't do the special conversion stuff for registers
@@ -2869,13 +2872,13 @@ value_rtti_target_type (struct value *v, int *full, int *top, int *using_enc)
    RTYPE is the type, and XFULL, XTOP, and XUSING_ENC are the other
    parameters, computed by value_rtti_type(). If these are available,
    they can be supplied and a second call to value_rtti_type() is avoided.
-   (Pass RTYPE == NULL if they're not available */
+   (Pass RTYPE == NULL if they're not available) */
 
 struct value *
-value_full_object (struct value *argp, struct type *rtype, int xfull, int xtop,
-		   int xusing_enc)
+value_full_object(struct value *argp, struct type *rtype, int xfull, int xtop,
+		  int xusing_enc)
 {
-  struct type *real_type;
+  struct type *volatile real_type = (struct type *volatile)NULL;
   int full = 0;
   int top = -1;
   int using_enc = 0;
@@ -2892,28 +2895,29 @@ value_full_object (struct value *argp, struct type *rtype, int xfull, int xtop,
     {
       volatile struct gdb_exception e;
       real_type = NULL;
-      TRY_CATCH (e, RETURN_MASK_ERROR)
+      TRY_CATCH(e, RETURN_MASK_ERROR)
 	{
-	  real_type = value_rtti_type (argp, &full, &top, &using_enc);
+	  real_type = value_rtti_type(argp, &full, &top, &using_enc);
 	}
     }
 
   /* If no RTTI data, or if object is already complete, do nothing */
-  if (!real_type || real_type == value_enclosing_type (argp))
+  if (!real_type || real_type == value_enclosing_type(argp))
     return argp;
 
   /* If we have the full object, but for some reason the enclosing
      type is wrong, set it *//* pai: FIXME -- sounds iffy */
   if (full)
     {
-      argp = value_change_enclosing_type (argp, real_type);
+      argp = value_change_enclosing_type(argp, (struct type *)real_type);
       return argp;
     }
 
-  /* Check if object is in memory */
-  if (VALUE_LVAL (argp) != lval_memory)
+  /* Check if object is in memory: */
+  if (VALUE_LVAL(argp) != lval_memory)
     {
-      warning (_("Couldn't retrieve complete object of RTTI type %s; object may be in register(s)."), TYPE_NAME (real_type));
+      warning(_("Failed to retrieve complete object of RTTI type %s; object may be in register(s)."),
+	      TYPE_NAME(real_type));
 
       return argp;
     }
@@ -2922,12 +2926,12 @@ value_full_object (struct value *argp, struct type *rtype, int xfull, int xtop,
   /* Go back by the computed top_offset from the beginning of the object,
      adjusting for the embedded offset of argp if that's what value_rtti_type
      used for its computation. */
-  new_val = value_at_lazy (real_type, VALUE_ADDRESS (argp) - top +
-			   (using_enc ? 0 : value_embedded_offset (argp)));
-  deprecated_set_value_type (new_val, value_type (argp));
-  set_value_embedded_offset (new_val, (using_enc
-				       ? top + value_embedded_offset (argp)
-				       : top));
+  new_val = value_at_lazy((struct type *)real_type, VALUE_ADDRESS(argp) - top +
+			  (using_enc ? 0 : value_embedded_offset(argp)));
+  deprecated_set_value_type(new_val, value_type(argp));
+  set_value_embedded_offset(new_val, (using_enc
+				      ? (top + value_embedded_offset(argp))
+				      : top));
   return new_val;
 }
 

@@ -408,7 +408,8 @@ case "${target}" in
 			srv_xmlfiles="${srv_xmlfiles} rs6000/power64-linux.xml"
 			srv_platform_include="-I\$(srcdir)/../macosx"
 			;;
-  i386-*-darwin*)	srv_regobj="reg-i386.o ${srv_i386_regobj}"
+  i386-*-darwin*)	srv_regobj="${srv_i386_regobj}"
+			srv_extra_regobj="reg-i386.o"
 			srv_tgtobj="${srv_macosx_obj} macosx-i386-low.o i387-fp.o hostio-errno.o"
 			srv_xmlfiles="${srv_i386_xmlfiles}"
 			srv_platform_include="-I\$(srcdir)/../macosx"

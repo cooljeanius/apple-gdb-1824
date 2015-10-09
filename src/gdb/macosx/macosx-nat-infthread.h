@@ -18,7 +18,7 @@ void prepare_threads_before_run(struct macosx_inferior_status *inferior,
 
 void prepare_threads_after_stop(struct macosx_inferior_status *inferior);
 
-char *unparse_run_state(int run_state);
+const char *unparse_run_state(int run_state);
 
 void macosx_setup_registers_before_hand_call(void);
 

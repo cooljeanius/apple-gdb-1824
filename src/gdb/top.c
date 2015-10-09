@@ -1497,9 +1497,10 @@ init_history (void)
 #endif
     }
   /* APPLE LOCAL begin history read error */
-  ret = read_history (history_filename);
+  ret = read_history(history_filename);
   if ((ret != 0) && (ret != ENOENT))
-    warning ("unable to read history from \"%s\": %s", history_filename, strerror (ret));
+    warning("unable to read history from \"%s\": %s", history_filename,
+	    safe_strerror(ret));
   /* APPLE LOCAL end history read error */
 }
 

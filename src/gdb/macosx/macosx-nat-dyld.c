@@ -103,7 +103,7 @@
 #if defined(NM_NEXTSTEP)
 /* MACOSX_STATUS is only defined for native builds, not cross builds.  */
 /* (so then why does the ARM cross build complain about this file missing
- * the _macosx_status symbol? */
+ * the _macosx_status symbol?) */
 extern macosx_inferior_status *macosx_status;
 #else
 # define MACOSX_NAT_DYLD_C_NOT_NATIVE 1
@@ -120,7 +120,7 @@ static int num_macosx_solib_add_dyld_objfile_entries = 0;
 int dyld_preload_libraries_flag = 1;
 int dyld_filter_events_flag = 1;
 int dyld_always_read_from_memory_flag = 0;
-char *dyld_symbols_prefix = "__dyld_";
+const char *dyld_symbols_prefix = "__dyld_";
 int dyld_load_dyld_symbols_flag = 1;
 int dyld_load_dyld_shlib_symbols_flag = 1;
 int dyld_load_cfm_shlib_symbols_flag = 1;
@@ -151,8 +151,8 @@ int dyld_combine_shlibs_added = 1;
    This function name can be mangled in one of two ways. We must check
    for both.  */
 
-char *malloc_inited_callback = "_Z21registerThreadHelpersPKN4dyld16LibSystemHelpersE";
-char *malloc_inited_callback_alt = "_ZL21registerThreadHelpersPKN4dyld16LibSystemHelpersE";
+const char *malloc_inited_callback = "_Z21registerThreadHelpersPKN4dyld16LibSystemHelpersE";
+const char *malloc_inited_callback_alt = "_ZL21registerThreadHelpersPKN4dyld16LibSystemHelpersE";
 
 /* A structure filled in by dyld in the inferior process.
    There is only one of these in the inferior.
@@ -167,7 +167,7 @@ struct dyld_raw_infos
   /* Array of images (struct dyld_raw_info here in gdb) that are loaded
      in the inferior process.
      Note that this address may change over the lifetime of a process;
-     as the array grows, dyld may need to realloc () the array. So do NOT
+     as the array grows, dyld may need to realloc() the array. So do NOT
      cache the value of info_array except while the inferior is stopped.
      This is either 4 or 8 bytes in the inferior, depending on wordsize.
      This value can be 0 (NULL) if dyld is in the middle of updating the
@@ -481,6 +481,7 @@ target_read_minimal_segment_32(CORE_ADDR addr, struct segment_command *s)
   return error;
 }
 
+/* */
 int
 target_read_minimal_segment_64(CORE_ADDR addr, struct segment_command_64 *s)
 {
@@ -818,7 +819,7 @@ macosx_locate_dyld_via_taskinfo(macosx_dyld_thread_status *s)
        }
      else
        {
-#if defined(NM_NEXTSTEP)
+#if defined(NM_NEXTSTEP) && defined(TASK_DYLD_INFO) && defined(TASK_DYLD_INFO_COUNT)
          struct task_dyld_info task_dyld_info;
          mach_msg_type_number_t count = TASK_DYLD_INFO_COUNT;
          kern_return_t kret;
@@ -841,7 +842,7 @@ macosx_locate_dyld_via_taskinfo(macosx_dyld_thread_status *s)
           all_image_info_addr = (CORE_ADDR)task_dyld_info.all_image_info_addr;
 #else
            return 0;
-#endif /* NM_NEXTSTEP */
+#endif /* NM_NEXTSTEP && TASK_DYLD_INFO && TASK_DYLD_INFO_COUNT */
         }
 
 #if defined(TARGET_ARM)
@@ -1602,7 +1603,7 @@ macosx_solib_add(const char *filename, int from_tty,
         run
         file /path/to/some/file
         y
-     will result in this function being called from solib_add_stub ()
+     will result in this function being called from solib_add_stub()
      without an inferior process yet initialized -- in which case, none of
      the below checks are going to accomplish anything. So we will just close
      our eyes for the nonce and wait to be called again when there is an
@@ -2136,7 +2137,9 @@ dyld_info_process_raw(struct macosx_dyld_thread_status *s,
     case MH_DYLIB:
     case MH_DYLINKER:
     case MH_BUNDLE:
+#ifdef MH_KEXT_BUNDLE
     case MH_KEXT_BUNDLE:
+#endif /* MH_KEXT_BUNDLE */
       break;
     case MH_FVMLIB:
     case MH_PRELOAD:
@@ -2207,7 +2210,7 @@ dyld_info_process_raw(struct macosx_dyld_thread_status *s,
        when we are loading libraries again as on remote targets we just fixed
        a slow down issue related to reloading all libraries every time a shlid
        got loaded.  */
-    dyld_debug ("dyld_info_process_raw () called for '%s'\n", entry->dyld_name);
+    dyld_debug ("dyld_info_process_raw() called for '%s'\n", entry->dyld_name);
     /* Set the loaded image address since we know where the mach header is.  */
     entry->dyld_addr = header_addr;
     if (core_bfd)
@@ -2220,7 +2223,7 @@ dyld_info_process_raw(struct macosx_dyld_thread_status *s,
   /* Next compute the intended load address of the library.  */
   intended_loadaddr = INVALID_ADDRESS;
 
-  /* dyld_objfile_entry_in_shared_cache () needs to know whether this entry
+  /* dyld_objfile_entry_in_shared_cache() needs to know whether this entry
      is actually in memory or not.  So I set dyld_valid early in this
      function - given the nature of this function, we know we got the
      information about the entry from dyld.  */
@@ -2229,12 +2232,11 @@ dyld_info_process_raw(struct macosx_dyld_thread_status *s,
 
   if (dyld_objfile_entry_in_shared_cache (entry))
     {
-
       /* If we are in the shared cache, then the version in memory WILL NOT be
-	   * slid, it will be rebound to its correct address. So we need to
-	   * figure out the slide by looking at the disk version, figuring out
-	   * where that was supposed to load and then computing the difference
-	   * between that and where it really ended up.  */
+       * slid, it will be rebound to its correct address. So we need to
+       * figure out the slide by looking at the disk version, figuring out
+       * where that was supposed to load and then computing the difference
+       * between that and where it really ended up.  */
 
       if (entry->dyld_name != NULL)
 	{
@@ -2274,7 +2276,8 @@ dyld_info_process_raw(struct macosx_dyld_thread_status *s,
 	      this_bfd = entry->abfd;
 
 	      if (this_bfd == NULL)
-		error ("Could not read in on disk or the memory version of library \"%s\".", entry->dyld_name);
+		error("Could not read in on disk or the memory version of library \"%s\".",
+		      entry->dyld_name);
 	    }
 
   	  if (macosx_bfd_is_in_memory (this_bfd))
@@ -2370,16 +2373,16 @@ dyld_info_process_raw(struct macosx_dyld_thread_status *s,
       /* A bundle that only exists in memory (e.g. was loaded with
        * mmap + NSCreateObjectFileImageFromMemory + NSLinkModule)
        * may not have an on-disk file that we can find.  We should
-	   * map the entire image from the inferior into our address
-	   * space and do bfd_memopenr () on it, similar to what is
-	   * done above.  But at the very least, do NOT try to dereference
-	   * the bfd struct if we failed to open the file.  */
+       * map the entire image from the inferior into our address
+       * space and do bfd_memopenr() on it, similar to what is
+       * done above.  But at the very least, do NOT try to dereference
+       * the bfd struct if we failed to open the file.  */
 
       /* It is a little tricky trying to calculate the slide of each
-	   * segment independently.  Since at present all libraries that are
-	   * NOT in the shared cache just get slid rigidly, we will figure out
-	   * the rigid slide using the slide of the text segment, then apply
-	   * that to all the sections.  */
+       * segment independently.  Since at present all libraries that are
+       * NOT in the shared cache just get slid rigidly, we will figure out
+       * the rigid slide using the slide of the text segment, then apply
+       * that to all the sections.  */
 
       if (!entry->loaded_error && entry->abfd)
         {
@@ -2460,7 +2463,9 @@ dyld_info_process_raw(struct macosx_dyld_thread_status *s,
       break;
     case MH_DYLINKER:
     case MH_BUNDLE:
+#ifdef MH_KEXT_BUNDLE
     case MH_KEXT_BUNDLE:
+#endif /* MH_KEXT_BUNDLE */
       entry->reason = dyld_reason_dyld;
       break;
     default:
@@ -3477,7 +3482,7 @@ dyld_section_info_command(char *args, int from_tty)
 static void
 info_sharedlibrary_command(char *args, int from_tty)
 {
-  char **argv;
+  char **argv = (char **)NULL;
   struct cleanup *wipe;
 
   wipe = make_cleanup(null_cleanup, NULL);
@@ -3514,7 +3519,7 @@ info_sharedlibrary_address(CORE_ADDR address)
   int shlibnum = 1;
   int found_dylib = 0;
   int baselen;
-  int i;
+  int i = 0;
   struct obj_section *osection;
 
   baselen = dyld_shlib_info_basename_length(s, dyld_reason_all_mask);

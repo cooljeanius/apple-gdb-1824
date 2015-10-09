@@ -1844,7 +1844,15 @@ observer.inc: observer.sh doc/observer.texi
 
 lint: $(LINTFILES)
 	$(LINT) $(INCLUDE_CFLAGS) $(LINTFLAGS) $(LINTFILES) \
-	   `echo $(DEPFILES) | $(SED) 's/\.o /\.c /g'`
+	   `echo $(DEPFILES) | uniq | $(SED) 's/\.o /\.c /g'`
+
+SPLINTFLAGS = $(LINTFLAGS) -posix-lib +gnuextensions -weak \
+  -unrecogcomments +matchanyintegral -redef -fixedformalarray \
+  -Imacosx $(MMALLOC_CFLAGS)
+configured_lint: $(LINTFILES)
+	$(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) \
+	   `echo $(LINTFILES) | uniq | $(SED) 's/\.y /\.c /g'` \
+	   `echo $(DEPFILES) | uniq | $(SED) 's/\.o /\.c /g'`
 
 #TODO: clang static analysis will eventually go here:
 lint-local: $(LINTFILES)
@@ -2110,6 +2118,7 @@ po/$(PACKAGE).pot: force
 	     -e '/include.*malloc.h/d' \
 	     -e 's/\([^x]\)malloc/\1xmalloc/g' \
 	     -e 's/\([^x]\)realloc/\1xrealloc/g' \
+	     -e 's/\([^x]\)free/\1xfree/g' \
 	     -e '/^#line.*y.tab.c/d' \
 	  < $@.tmp > $@.new
 	-rm -f $(AM_V_v) $@.tmp
@@ -2126,6 +2135,7 @@ po/$(PACKAGE).pot: force
 	        -e 's/\([^x]\)malloc/\1xmalloc/g' \
 	        -e 's/\([^x]\)realloc/\1xrealloc/g' \
 		-e 's/yy_flex_xrealloc/yyxrealloc/g' \
+	        -e 's/\([^x]\)free/\1xfree/g' \
 	      < $@ > $@.new && \
 	    rm -f $(AM_V_v) $@ && \
 	    mv $(AM_V_v) $@.new $@; \
@@ -3359,7 +3369,8 @@ cli-logging.o: $(cli_srcdir)/cli-logging.c $(defs_h) $(gdbcmd_h) \
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-logging.c
 cli-script.o: $(cli_srcdir)/cli-script.c $(defs_h) $(value_h) \
   $(language_h) $(ui_out_h) $(gdb_string_h) $(exceptions_h) $(top_h) \
-  $(event_top_h) $(cli_cmds_h) $(cli_decode_h) $(cli_script_h)
+  $(breakpoint_h) $(event_top_h) $(cli_cmds_h) $(cli_decode_h) \
+  $(cli_script_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-script.c
 cli-setshow.o: $(cli_srcdir)/cli-setshow.c $(defs_h) $(readline_tilde_h) \
   $(value_h) $(gdb_string_h) $(ui_out_h) $(cli_decode_h) $(cli_cmds_h) \

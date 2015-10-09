@@ -311,7 +311,7 @@ taloop:
 	    int index = (int)(SCM_CAR(svalue) >> 8);
 #if 1
 	    char str[20];
-	    sprintf(str, "#%d", index);
+	    snprintf(str, sizeof(str), "#%d", index);
 #else
 	    char *str = (index ? SCM_CHARS(scm_heap_org + index) : "");
 # define SCM_CHARS(x) ((char *)(SCM_CDR(x)))

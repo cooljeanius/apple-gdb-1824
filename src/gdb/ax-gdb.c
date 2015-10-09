@@ -1,4 +1,4 @@
-/* GDB-specific functions for operating on agent expressions.
+/* ax-gdb.c: GDB-specific functions for operating on agent expressions.
 
    Copyright 1998, 1999, 2000, 2001, 2003 Free Software Foundation,
    Inc.
@@ -543,8 +543,8 @@ gen_var_ref (struct agent_expr *ax, struct axs_value *value, struct symbol *var)
 
       /* Variable at a fixed location in memory.  Easy.  */
     case LOC_STATIC:
-      /* Push the address of the variable.  */
-      ax_const_l (ax, SYMBOL_VALUE_ADDRESS (var));
+      /* Push the address of the variable: */
+      ax_const_l(ax, (LONGEST)SYMBOL_VALUE_ADDRESS(var));
       value->kind = axs_lvalue_memory;
       break;
 
@@ -578,13 +578,13 @@ gen_var_ref (struct agent_expr *ax, struct axs_value *value, struct symbol *var)
       break;
 
     case LOC_TYPEDEF:
-      error (_("Cannot compute value of typedef `%s'."),
-	     SYMBOL_PRINT_NAME (var));
+      error(_("Cannot compute value of typedef `%s'."),
+	    SYMBOL_PRINT_NAME(var));
       break;
 
     case LOC_BLOCK:
       /* APPLE LOCAL begin address ranges  */
-      ax_const_l (ax, BLOCK_LOWEST_PC (SYMBOL_BLOCK_VALUE (var)));
+      ax_const_l(ax, (LONGEST)BLOCK_LOWEST_PC(SYMBOL_BLOCK_VALUE(var)));
       /* APPLE LOCAL end address ranges  */
       value->kind = axs_rvalue;
       break;
@@ -610,12 +610,12 @@ gen_var_ref (struct agent_expr *ax, struct axs_value *value, struct symbol *var)
     case LOC_UNRESOLVED:
       {
 	struct minimal_symbol *msym
-	= lookup_minimal_symbol (DEPRECATED_SYMBOL_NAME (var), NULL, NULL);
+	  = lookup_minimal_symbol(DEPRECATED_SYMBOL_NAME(var), NULL, NULL);
 	if (!msym)
-	  error (_("Couldn't resolve symbol `%s'."), SYMBOL_PRINT_NAME (var));
+	  error(_("Couldn't resolve symbol `%s'."), SYMBOL_PRINT_NAME(var));
 
-	/* Push the address of the variable.  */
-	ax_const_l (ax, SYMBOL_VALUE_ADDRESS (msym));
+	/* Push the address of the variable: */
+	ax_const_l(ax, (LONGEST)SYMBOL_VALUE_ADDRESS(msym));
 	value->kind = axs_lvalue_memory;
       }
       break;
@@ -1463,13 +1463,13 @@ gen_sizeof (union exp_element **pc, struct agent_expr *ax,
      only way to find an expression's type is to generate code for it.
      So we generate code for the operand, and then throw it away,
      replacing it with code that simply pushes its size.  */
-  int start = ax->len;
-  gen_expr (pc, ax, value);
+  size_t start = ax->len;
+  gen_expr(pc, ax, value);
 
   /* Throw away the code we just generated.  */
   ax->len = start;
 
-  ax_const_l (ax, TYPE_LENGTH (value->type));
+  ax_const_l(ax, TYPE_LENGTH(value->type));
   value->kind = axs_rvalue;
   value->type = builtin_type_int;
 }
@@ -1706,7 +1706,7 @@ gen_expr (union exp_element **pc, struct agent_expr *ax,
 	long length = (long)((*pc)[1].longconst);
 	char *name = &(*pc)[2].string;
 
-	(*pc) += 4 + BYTES_TO_EXP_ELEM (length + 1);
+	(*pc) += 4 + BYTES_TO_EXP_ELEM((size_t)length + 1UL);
 	gen_expr (pc, ax, value);
 	if (op == STRUCTOP_STRUCT)
 	  gen_struct_ref (ax, value, name, ".", "structure or union");

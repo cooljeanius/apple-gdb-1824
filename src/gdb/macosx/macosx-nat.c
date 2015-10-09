@@ -193,7 +193,7 @@ classic_socket_exists_p(pid_t pid)
   char name[PATH_MAX];
   struct stat sb;
 
-  sprintf(name, "/tmp/translate.gdb.%d", pid);
+  snprintf(name, sizeof(name), "/tmp/translate.gdb.%d", pid);
   if (stat(name, &sb) != 0)
     return 0;
   if (S_ISSOCK(sb.st_mode))
@@ -307,7 +307,7 @@ void
 attach_to_classic_process(pid_t pid)
 {
   char name[PATH_MAX];
-  sprintf(name, "unix:/tmp/translate.gdb.%d", pid);
+  snprintf(name, sizeof(name), "unix:/tmp/translate.gdb.%d", pid);
   push_remote_target(name, 0);
   macosx_classic_create_inferior(pid);
   remote_ops.to_stop = macosx_classic_stop_inferior;

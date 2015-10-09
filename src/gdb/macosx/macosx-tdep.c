@@ -47,7 +47,7 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "language.h"
 #include "block.h"
 
-#include "libaout.h"        /* FIXME Secret internal BFD stuff for a.out */
+#include "libaout.h"        /* FIXME: Secret internal BFD stuff for a.out */
 #include "aout/aout64.h"
 #include "complaints.h"
 
@@ -72,6 +72,13 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <mach/machine.h>
 #include <mach/kmod.h>
 #include <libintl.h>
+
+#ifdef HAVE_AVAILABILITYMACROS_H
+# include <AvailabilityMacros.h>
+#endif /* HAVE_AVAILABILITYMACROS_H */
+#ifndef MAC_OS_X_VERSION_MIN_REQUIRED
+# define MAC_OS_X_VERSION_MIN_REQUIRED 1010
+#endif /* !MAC_OS_X_VERSION_MIN_REQUIRED */
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreFoundation/CFPropertyList.h>
@@ -133,8 +140,8 @@ static void get_uuid_t_for_uuidref(CFUUIDRef uuid_in, uuid_t *uuid_out);
 
 static const char dsym_extension[] = ".dSYM";
 static const char dsym_bundle_subdir[] = "Contents/Resources/DWARF/";
-static const int dsym_extension_len = (sizeof(dsym_extension) - 1);
-static const int dsym_bundle_subdir_len = (sizeof(dsym_bundle_subdir) - 1);
+static const size_t dsym_extension_len = (sizeof(dsym_extension) - 1UL);
+static const size_t dsym_bundle_subdir_len = (sizeof(dsym_bundle_subdir) - 1UL);
 static int dsym_locate_enabled = 1;
 static int kaslr_memory_search_enabled = 1;
 #define APPLE_DSYM_EXT_AND_SUBDIRECTORY ".dSYM/Contents/Resources/DWARF/"
@@ -866,16 +873,16 @@ static CFMutableArrayRef
 gdb_DBGCopyMatchingUUIDsForURL(const char *path)
 {
   CFAllocatorRef alloc;
-  CFMutableArrayRef uuid_array;
+  volatile CFMutableArrayRef uuid_array;
   struct gdb_exception e;
-  bfd *abfd;
+  bfd *volatile abfd;
 
   if ((path == NULL) || (path[0] == '\0'))
     return NULL;
 
   alloc = kCFAllocatorDefault;
   uuid_array = (CFMutableArrayRef)NULL;
-  abfd = (bfd *)NULL;
+  abfd = (bfd *volatile)NULL;
 
   TRY_CATCH(e, RETURN_MASK_ERROR)
   {
@@ -922,7 +929,7 @@ gdb_DBGCopyMatchingUUIDsForURL(const char *path)
         }
     }
 
-  bfd_close(abfd);
+  bfd_close((bfd *)abfd);
   return uuid_array;
 }
 
@@ -960,12 +967,12 @@ create_dsym_uuids_for_path(char *dsym_bundle_path)
     }
 
   /* Append the bundle subdirectory path: */
-  if ((dsym_bundle_subdir_len + 1) > (sizeof(path) - path_len))
+  if ((dsym_bundle_subdir_len + 1UL) > (sizeof(path) - path_len))
     return NULL; /* Path is too large.  */
 
   strncat(path, dsym_bundle_subdir, (sizeof(path) - path_len - 1UL));
 
-  if (path[sizeof(path) - 1])
+  if (path[sizeof(path) - 1UL])
     return NULL;  /* Path is too large.  */
 
   dirp = opendir(path);
@@ -1638,9 +1645,13 @@ macosx_locate_executable_by_dbg_shell_command(CFStringRef uuid)
     return NULL;
   }
 
+#if (MAC_OS_X_VERSION_MIN_REQUIRED >= 1060) || defined(HAVE_CFPROPERTYLISTCREATEWITHDATA)
   plist = CFPropertyListCreateWithData(kCFAllocatorDefault, plist_data,
                                        kCFPropertyListImmutable,
                                        NULL, NULL);
+#else
+  plist = NULL;
+#endif /* 10.6+ || HAVE_CFPROPERTYLISTCREATEWITHDATA */
 
   if ((plist == NULL) || (CFGetTypeID(plist) != CFDictionaryGetTypeID()))
     {
@@ -3406,8 +3417,8 @@ exhaustive_search_for_kernel_in_mem(struct objfile *ofile, CORE_ADDR *addr,
 
   struct cleanup *override_trust_readonly;
 
-  CORE_ADDR cur_addr;
-  CORE_ADDR stop_addr;
+  CORE_ADDR cur_addr = 0UL;
+  CORE_ADDR stop_addr = 0UL;
   CORE_ADDR stride;
   CORE_ADDR offset;
 

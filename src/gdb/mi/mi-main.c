@@ -1106,17 +1106,20 @@ get_register (int regnum, int format)
       int j;
       char *ptr, buf[1024];
 
-      strcpy (buf, "0x");
-      ptr = buf + 2;
-      for (j = 0; j < register_size (current_gdbarch, regnum); j++)
+      strcpy(buf, "0x");
+      ptr = (buf + 2);
+      for (j = 0; j < register_size(current_gdbarch, regnum); j++)
 	{
-	  int idx = TARGET_BYTE_ORDER == BFD_ENDIAN_BIG ? j
-	  : register_size (current_gdbarch, regnum) - 1 - j;
-	  sprintf (ptr, "%02x", (unsigned char) buffer[idx]);
+	  int idx =
+	    ((TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
+	     ? j : (register_size(current_gdbarch, regnum) - 1 - j));
+	  sprintf(ptr, "%02x", (unsigned char)buffer[idx]);
 	  ptr += 2;
 	}
-      ui_out_field_string (uiout, "value", buf);
-      /*fputs_filtered (buf, gdb_stdout); */
+      ui_out_field_string(uiout, "value", buf);
+#if 0
+      fputs_filtered(buf, gdb_stdout);
+#endif /* 0 */
     }
   else
     {
@@ -1429,7 +1432,7 @@ enum mi_cmd_result
 mi_cmd_target_load_solib(char *command, char **argv, int argc)
 {
   static int token_ctr = 0;
-  struct value *ret_val = NULL;
+  struct value *volatile ret_val = (struct value *volatile)NULL;
   struct gdb_exception e;
   struct solib_token_elem *new_token;
 
@@ -1462,8 +1465,8 @@ mi_cmd_target_load_solib(char *command, char **argv, int argc)
 
   new_token = (struct solib_token_elem *)xmalloc(sizeof(struct solib_token_elem));
   new_token->token = xstrprintf("%d-solib", token_ctr++);
-  new_token->val = ret_val;
-  release_value(ret_val);
+  new_token->val = (struct value *)ret_val;
+  release_value((struct value *)ret_val);
 
   new_token->next = solib_token_list;
   solib_token_list = new_token;
@@ -2369,12 +2372,12 @@ mi_execute_async_cli_command (char *mi, char *args, int from_tty)
       struct cleanup *old_cleanups = NULL;
       volatile struct gdb_exception except;
 
-      async_args = (char *) xmalloc (strlen (args) + 2);
-      old_cleanups = make_cleanup (free, async_args);
-      strcpy (async_args, args);
-      strcat (async_args, "&");
-      xasprintf (&run, "%s %s", mi, async_args);
-      make_cleanup (free, run);
+      async_args = (char *)xmalloc(strlen(args) + 2UL);
+      old_cleanups = make_cleanup(xfree, async_args);
+      strcpy(async_args, args);
+      strcat(async_args, "&");
+      xasprintf(&run, "%s %s", mi, async_args);
+      make_cleanup(xfree, run);
 
       /* Transfer the command token to the continuation.  That
 	 will now print the results associated with this command.
@@ -2680,14 +2683,15 @@ mi_interp_sync_fake_running(void)
 
   if (current_command_token)
     {
-      prefix = (char *)xmalloc(strlen(current_command_token) + 2UL);
-      sprintf(prefix, "%s^", current_command_token);
+      size_t pfx_len = (strlen(current_command_token) + 2UL);
+      prefix = (char *)xmalloc(pfx_len);
+      snprintf(prefix, pfx_len, "%s^", current_command_token);
       free_me = 1;
     }
   else
     prefix = "^";
 
-  route_output_through_mi(prefix,"running");
+  route_output_through_mi(prefix, "running");
   if (free_me)
     xfree(prefix);
   ui_out_set_annotation_printer(route_output_to_mi_result);
@@ -2876,7 +2880,7 @@ print_diff(struct mi_timestamp *start, struct mi_timestamp *end)
         ",remotestats={packets_sent=\"%d\",packets_received=\"%d\","
         "acks_sent=\"%d\",acks_received=\"%d\","
         "time=\"%0.5f\","
-        "total_packets_sent=\"%lld\",total_packets_received=\"%lld\"}",
+        "total_packets_sent=\"%llu\",total_packets_received=\"%llu\"}",
         start->remotestats.pkt_sent, start->remotestats.pkt_recvd,
         start->remotestats.acks_sent, start->remotestats.acks_recvd,
         ((double)((start->remotestats.totaltime.tv_sec * 1000000) + start->remotestats.totaltime.tv_usec) / (double)1000000.0f),

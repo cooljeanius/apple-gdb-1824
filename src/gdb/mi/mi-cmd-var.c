@@ -65,12 +65,12 @@ extern void _initialize_mi_cmd_var(void);
 enum mi_cmd_result
 mi_cmd_var_create(char *command, char **argv, int argc)
 {
-  CORE_ADDR frameaddr = 0;
+  volatile CORE_ADDR frameaddr = 0UL;
   struct varobj *var;
   char *name;
   char *frame;
   char *expr;
-  struct block *block = NULL;
+  struct block *volatile block = (struct block *volatile)NULL;
   struct cleanup *old_cleanups;
   struct cleanup *mi_out_cleanup;
   /* APPLE LOCAL Disable breakpoints while updating data formatters: */
@@ -256,28 +256,28 @@ mi_cmd_var_create(char *command, char **argv, int argc)
   else
     {
       var_type = USE_SPECIFIED_FRAME;
-      frameaddr = string_to_core_addr (frame);
+      frameaddr = string_to_core_addr(frame);
     }
 
   if (varobjdebug)
-    fprintf_unfiltered (gdb_stdlog,
-			"Name=\"%s\", Frame=\"%s\" (0x%s), Expression=\"%s\"\n",
-			name, frame, paddr (frameaddr), expr);
+    fprintf_unfiltered(gdb_stdlog,
+		       "Name=\"%s\", Frame=\"%s\" (0x%s), Expression=\"%s\"\n",
+		       name, frame, paddr(frameaddr), expr);
 
-  prepare_tmp_mi_out ();
-  mi_out_cleanup = make_cleanup_restore_uiout (uiout);
+  prepare_tmp_mi_out();
+  mi_out_cleanup = make_cleanup_restore_uiout(uiout);
   uiout = tmp_miout;
-  var = varobj_create (name, expr, frameaddr, block, var_type);
+  var = varobj_create(name, expr, frameaddr, (struct block *)block, var_type);
   do_cleanups (mi_out_cleanup);
 
   if (var == NULL)
-    error ("mi_cmd_var_create: unable to create variable object");
+    error("mi_cmd_var_create: unable to create variable object");
 
-  mi_report_var_creation (uiout, var, 1);
+  mi_report_var_creation(uiout, var, 1);
 
   /* APPLE LOCAL Disable breakpoints while updating data formatters.  */
-  do_cleanups (bp_cleanup);
-  do_cleanups (old_cleanups);
+  do_cleanups(bp_cleanup);
+  do_cleanups(old_cleanups);
   return MI_CMD_DONE;
 }
 

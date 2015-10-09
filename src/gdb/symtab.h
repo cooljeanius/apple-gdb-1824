@@ -160,8 +160,7 @@ struct general_symbol_info
 
   short section;
 
-  /* The bfd section associated with this symbol. */
-
+  /* The bfd section associated with this symbol: */
   asection *bfd_section;
 };
 
@@ -195,7 +194,8 @@ extern CORE_ADDR symbol_overlayed_address (CORE_ADDR, asection *);
 #define SYMBOL_INIT_LANGUAGE_SPECIFIC(symbol,language) \
   (symbol_init_language_specific (&(symbol)->ginfo, (language)))
 extern void symbol_init_language_specific (struct general_symbol_info *symbol,
-					   enum language language);
+					   enum language language)
+  ATTRIBUTE_NONNULL(1);
 
 #define SYMBOL_INIT_DEMANGLED_NAME(symbol,obstack) \
   (symbol_init_demangled_name (&(symbol)->ginfo, (obstack)))
@@ -330,7 +330,6 @@ enum minimal_symbol_type
 
 struct minimal_symbol
 {
-
   /* The general symbol info required for all types of symbols.
 
      The SYMBOL_VALUE_ADDRESS contains the address that this symbol
@@ -363,10 +362,9 @@ struct minimal_symbol
 #if defined(SOFUN_ADDRESS_MAYBE_MISSING) && !defined(TM_NEXTSTEP)
   /* Which source file is this symbol in?  Only relevant for mst_file_*.  */
   char *filename;
-#endif
+#endif /* SOFUN_ADDRESS_MAYBE_MISSING && !TM_NEXTSTEP */
 
-  /* Classification type for this minimal symbol.  */
-
+  /* Classification type for this minimal symbol: */
   ENUM_BITFIELD(minimal_symbol_type) type : 8;
 
   /* Minimal symbols with the same hash key are kept on a linked
@@ -435,32 +433,25 @@ typedef enum domain_enum_tag
 }
 domain_enum;
 
-/* An address-class says where to find the value of a symbol.  */
-
+/* An address-class says where to find the value of a symbol: */
 enum address_class
 {
-  /* Not used; catches errors */
-
+  /* Not used; catches errors: */
   LOC_UNDEF,
 
-  /* Value is constant int SYMBOL_VALUE, host byteorder */
-
+  /* Value is constant int SYMBOL_VALUE, host byteorder: */
   LOC_CONST,
 
-  /* Value is at fixed address SYMBOL_VALUE_ADDRESS */
-
+  /* Value is at fixed address SYMBOL_VALUE_ADDRESS: */
   LOC_STATIC,
 
-  /* Value is in register.  SYMBOL_VALUE is the register number.  */
-
+  /* Value is in register.  SYMBOL_VALUE is the register number: */
   LOC_REGISTER,
 
-  /* It's an argument; the value is at SYMBOL_VALUE offset in arglist.  */
-
+  /* It is an argument; the value is at SYMBOL_VALUE offset in arglist: */
   LOC_ARG,
 
-  /* Value address is at SYMBOL_VALUE offset in arglist.  */
-
+  /* Value address is at SYMBOL_VALUE offset in arglist: */
   LOC_REF_ARG,
 
   /* Value is in register number SYMBOL_VALUE.  Just like LOC_REGISTER
@@ -584,7 +575,6 @@ enum address_class
 
 struct symbol_ops
 {
-
   /* Return the value of the variable SYMBOL, relative to the stack
      frame FRAME.  If the variable has been optimized out, return
      zero.
@@ -616,7 +606,6 @@ struct symbol_ops
 
 struct symbol
 {
-
   /* The general symbol info required for all types of symbols. */
 
   struct general_symbol_info ginfo;
@@ -695,7 +684,6 @@ struct symbol
 
 struct partial_symbol
 {
-
   /* The general symbol info required for all types of symbols. */
 
   struct general_symbol_info ginfo;
@@ -1016,29 +1004,22 @@ struct equiv_psym_list {
 
 struct partial_symtab
 {
-
-  /* Chain of all existing partial symtabs.  */
-
+  /* Chain of all existing partial symtabs: */
   struct partial_symtab *next;
 
-  /* Name of the source file which this partial_symtab defines */
-
+  /* Name of the source file which this partial_symtab defines: */
   char *filename;
 
-  /* Full path of the source file.  NULL if not known.  */
-
+  /* Full path of the source file.  NULL if not known: */
   char *fullname;
 
-  /* Directory in which it was compiled, or NULL if we don't know.  */
-
+  /* Directory in which it was compiled, or NULL if we do NOT know: */
   char *dirname;
 
-  /* Information about the object file from which symbols should be read.  */
-
+  /* Information about the object file from which symbols should be read: */
   struct objfile *objfile;
 
-  /* Set of relocation offsets to apply to each section.  */
-
+  /* Set of relocation offsets to apply to each section: */
   struct section_offsets *section_offsets;
 
   /* Range of text addresses covered by this file; texthigh is the

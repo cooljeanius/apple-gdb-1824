@@ -762,9 +762,10 @@ macho_read_indirect_symbols(bfd *abfd,
             }
 
           CHECK_FATAL((strlen(sname) + sizeof("dyld_stub_") + 1UL) < 4096);
-          sprintf(nname, "dyld_stub_%s", sname);
+          snprintf(nname, sizeof(nname), "dyld_stub_%s", sname);
 
           stubaddr += objfile_section_offset(objfile, osect_idx);
+	  CHECK_FATAL(stubaddr != INVALID_ADDRESS);
           prim_record_minimal_symbol_and_info(nname, stubaddr,
                                               mst_solib_trampoline, NULL,
                                               osect_idx,
@@ -1060,12 +1061,12 @@ macho_calculate_offsets_for_dsym(struct objfile *main_objfile,
 static struct sym_fns macho_sym_fns = {
   bfd_target_mach_o_flavour,
 
-  macho_new_init,               /* sym_new_init: init anything gbl to entire symtab */
-  macho_symfile_init,           /* sym_init: read initial info, setup for sym_read() */
-  macho_symfile_read,           /* sym_read: read a symbol file into symtab */
-  macho_symfile_finish,         /* sym_finish: finished with file, cleanup */
-  macho_symfile_offsets,        /* sym_offsets:  xlate external to internal form */
-  NULL                          /* next: pointer to next struct sym_fns */
+  macho_new_init,        /* sym_new_init: init anything gbl to entire symtab */
+  macho_symfile_init,    /* sym_init: read initial info, setup for sym_read() */
+  macho_symfile_read,    /* sym_read: read a symbol file into symtab */
+  macho_symfile_finish,  /* sym_finish: finished with file, cleanup */
+  macho_symfile_offsets, /* sym_offsets:  xlate external to internal form */
+  NULL                   /* next: pointer to next struct sym_fns */
 };
 
 void

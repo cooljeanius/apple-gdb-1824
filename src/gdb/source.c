@@ -359,9 +359,9 @@ init_source_path (void)
 {
   char buf[20];
 
-  sprintf (buf, "$cdir%c$cwd", DIRNAME_SEPARATOR);
-  source_path = xstrdup (buf);
-  forget_cached_source_info ();
+  snprintf(buf, sizeof(buf), "$cdir%c$cwd", DIRNAME_SEPARATOR);
+  source_path = xstrdup(buf);
+  forget_cached_source_info();
 }
 
 void
@@ -868,17 +868,18 @@ open_source_file_fullpath(const char *dirname, const char *filename,
 
   int result;
 
-  CHECK_FATAL (filename != NULL);
+  CHECK_FATAL(filename != NULL);
 
   if (dirname != NULL)
-    path = (char *) alloca (strlen (dirname) + strlen (filename) + 2);
+    path = (char *)alloca(strlen(dirname) + strlen(filename) + 2UL);
   else
-    path = (char *) alloca (strlen (filename) + 2);
+    path = (char *)alloca(strlen(filename) + 2UL);
 
   if (filename[0] == '/' || dirname == NULL)
-    sprintf (path, "%s", filename);
+    snprintf(path, (strlen(filename) + 2UL), "%s", filename);
   else
-    sprintf (path, "%s/%s", dirname, filename);
+    snprintf(path, (strlen(dirname) + strlen(filename) + 2UL), "%s/%s",
+	     dirname, filename);
 
   for (;;)
     {
@@ -911,12 +912,13 @@ open_source_file_fullpath(const char *dirname, const char *filename,
       char *from = psubs[csub * 2];
       char *to = psubs[(csub * 2) + 1];
 
-      if (strncmp (path, from, strlen (from)) == 0)
+      if (strncmp(path, from, strlen(from)) == 0)
         {
-          char *remainder = path + strlen (from);
-          char *npath = (char *) alloca (strlen (to) + strlen (remainder) + 1);
+          char *remainder = path + strlen(from);
+	  size_t npath_len = (strlen(to) + strlen(remainder) + 1UL);
+          char *npath = (char *)alloca(npath_len);
 
-          sprintf (npath, "%s%s", to, remainder);
+          snprintf(npath, npath_len, "%s%s", to, remainder);
 
           result = openp ("", 0, npath, OPEN_MODE, 0, fullname);
 
@@ -1472,9 +1474,10 @@ print_source_lines_base (struct symtab *s, int line, int nlines, int noerror)
 
       if (!noerror)
 	{
-	  char *name = alloca (strlen (s->filename) + 100);
-	  sprintf (name, "%d\t%s", line, s->filename);
-	  print_sys_errmsg (name, errno);
+	  size_t name_len = (strlen(s->filename) + 100UL);
+	  char *name = (char *)alloca(name_len);
+	  snprintf(name, name_len, "%d\t%s", line, s->filename);
+	  print_sys_errmsg(name, errno);
 	}
       else
 	ui_out_field_int (uiout, "line", line);

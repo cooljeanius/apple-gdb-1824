@@ -3,9 +3,8 @@
    1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
-
    NOTE: The canonical source of this file is maintained with the GNU C Library.
-   Bugs can be reported to bug-glibc@gnu.org.
+   Bugs can be reported to <bug-glibc@gnu.org>.
 
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the
@@ -205,6 +204,11 @@ void * obstack_copy (struct obstack *obstack, void *address, int size);
 void * obstack_copy0 (struct obstack *obstack, void *address, int size);
 
 void obstack_free (struct obstack *obstack, void *block);
+  
+/* compatibility define for `sed` stupidity: */
+#ifndef obstack_xfree
+# define obstack_xfree(o, b) obstack_free(o, b)
+#endif /* !obstack_xfree */
 
 void obstack_blank (struct obstack *obstack, int size);
 

@@ -44,6 +44,7 @@
 #include "gdbcore.h"
 #include "inferior.h"
 #include "symfile.h"
+#include "gdb_assert.h"
 #include "gdbthread.h"
 #include "gdb.h"
 #include "ui-out.h"
@@ -993,17 +994,19 @@ find_orig_static_symbols (struct fixinfo *cur,
     {
       /* Don't "find" the original symbol in the currently-being-loaded
          objfile.  */
-      if (!strcmp (f->bundle_filename, cur->most_recent_fix->bundle_filename))
+      if (!strcmp(f->bundle_filename, cur->most_recent_fix->bundle_filename))
         {
           f = f->next;
           continue;
         }
 
-      f_objfile = find_objfile_by_name (f->bundle_filename, 1);
-      f_symtab = find_symtab_by_name (f_objfile, cur->canonical_source_filename);
+      f_objfile = find_objfile_by_name(f->bundle_filename, 1);
+      f_symtab = find_symtab_by_name(f_objfile, cur->canonical_source_filename);
 
-      static_bl = BLOCKVECTOR_BLOCK (BLOCKVECTOR (f_symtab), STATIC_BLOCK);
-      global_bl = BLOCKVECTOR_BLOCK (BLOCKVECTOR (f_symtab), GLOBAL_BLOCK);
+      gdb_assert(f_symtab != NULL);
+      
+      static_bl = BLOCKVECTOR_BLOCK(BLOCKVECTOR(f_symtab), STATIC_BLOCK);
+      global_bl = BLOCKVECTOR_BLOCK(BLOCKVECTOR(f_symtab), GLOBAL_BLOCK);
 
       for (i = 0; i < indirect_entry_count; i++)
         {
@@ -1842,8 +1845,8 @@ check_restrictions_locals (struct fixinfo *cur, struct objfile *newobj)
 }
 
 static void
-check_restrictions_function (const char *funcname, int active,
-                             struct block *oldblock, struct block *newblock)
+check_restrictions_function(const char *funcname, int active,
+                            struct block *oldblock, struct block *newblock)
 {
   int newfunc_args, oldfunc_args;
   int newfunc_locals, oldfunc_locals;
@@ -1852,7 +1855,7 @@ check_restrictions_function (const char *funcname, int active,
   struct symbol *oldsym, *newsym;
   struct cleanup *wipe;
 
-  wipe = make_cleanup (null_cleanup, NULL);
+  wipe = make_cleanup(null_cleanup, NULL);
 
   /* NB: The way I use step through the newblock and oldblock assume that
      the block is not sorted and is not a hashtable.  I believe this is
@@ -1860,14 +1863,14 @@ check_restrictions_function (const char *funcname, int active,
 
   /* Check to see that the function return type matches.  */
 
-  old_type_name = type_sprint (SYMBOL_TYPE (BLOCK_FUNCTION (oldblock)), NULL, 0);
-  make_cleanup (xfree, old_type_name);
-  new_type_name = type_sprint (SYMBOL_TYPE (BLOCK_FUNCTION (newblock)), NULL, 0);
-  make_cleanup (xfree, new_type_name);
+  old_type_name = type_sprint(SYMBOL_TYPE(BLOCK_FUNCTION(oldblock)), NULL, 0);
+  make_cleanup(xfree, old_type_name);
+  new_type_name = type_sprint(SYMBOL_TYPE(BLOCK_FUNCTION(newblock)), NULL, 0);
+  make_cleanup(xfree, new_type_name);
 
-  if (strcmp (old_type_name, new_type_name) != 0)
-    error ("Function '%s' was changed from returning '%s' to '%s', which is "
-           "not supported.", funcname, old_type_name, new_type_name);
+  if (strcmp(old_type_name, new_type_name) != 0)
+    error("Function '%s' was changed from returning '%s' to '%s', which is "
+          "not supported.", funcname, old_type_name, new_type_name);
 
 
   /* Count # of args, locals in old and new blocks.  */

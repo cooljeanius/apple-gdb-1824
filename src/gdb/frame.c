@@ -1621,13 +1621,13 @@ frame_relative_level (struct frame_info *fi)
 }
 
 enum frame_type
-get_frame_type (struct frame_info *frame)
+get_frame_type(struct frame_info *frame)
 {
-  if (frame->unwind == NULL)
+  if ((frame != NULL) && (frame->unwind == NULL))
     /* Initialize the frame's unwinder because that's what
        provides the frame's type.  */
-    frame->unwind = frame_unwind_find_by_frame (frame->next,
-						&frame->prologue_cache);
+    frame->unwind = frame_unwind_find_by_frame(frame->next,
+					       &frame->prologue_cache);
   return frame->unwind->type;
 }
 

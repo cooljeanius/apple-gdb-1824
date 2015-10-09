@@ -69,9 +69,8 @@
 # endif /* __GNUC__ && !__STRICT_ANSI__ && __APPLE__ */
 #endif /* !(__i386 || __i386__ || _I386) */
 
-/* Register names.  */
-
-static char *i386_register_names[] =
+/* Register names: */
+static const char *i386_register_names[] =
 {
   "eax",   "ecx",    "edx",   "ebx",
   "esp",   "ebp",    "esi",   "edi",
@@ -86,24 +85,23 @@ static char *i386_register_names[] =
   "mxcsr"
 };
 
-static const int i386_num_register_names = ARRAY_SIZE (i386_register_names);
+static const int i386_num_register_names = ARRAY_SIZE(i386_register_names);
 
-/* Register names for MMX pseudo-registers.  */
-
-static char *i386_mmx_names[] =
+/* Register names for MMX pseudo-registers: */
+static const char *i386_mmx_names[] =
 {
   "mm0", "mm1", "mm2", "mm3",
   "mm4", "mm5", "mm6", "mm7"
 };
 
-static const int i386_num_mmx_regs = ARRAY_SIZE (i386_mmx_names);
+static const int i386_num_mmx_regs = ARRAY_SIZE(i386_mmx_names);
 
 struct type *builtin_type_vec128i_big = NULL;
 
 static int
-i386_mmx_regnum_p (struct gdbarch *gdbarch, int regnum)
+i386_mmx_regnum_p(struct gdbarch *gdbarch, int regnum)
 {
-  int mm0_regnum = gdbarch_tdep (gdbarch)->mm0_regnum;
+  int mm0_regnum = gdbarch_tdep(gdbarch)->mm0_regnum;
 
   if (mm0_regnum < 0)
     return 0;
@@ -383,7 +381,7 @@ i386_find_picbase_setup(CORE_ADDR pc, CORE_ADDR *picbase_addr,
       if (picbase_addr != NULL)
         *picbase_addr = offset_from;
       if (picbase_reg != NULL)
-        *picbase_reg = ((enum i386_regnum)op & 0x7);
+        *picbase_reg = (enum i386_regnum)(op & 0x7);
       return 1;
     }
 
@@ -939,12 +937,13 @@ i386_reg_struct_return_p (struct gdbarch *gdbarch, struct type *type)
     }
 
   /* Is this a C++ object?  If so, look for a copy constructor.  */
-  //if (i386_non_pod_p (type))
-    //{
-      //return 0;
-      ///*  FIXME copy ctor searching.. */
-      ///* return 0; */
-    //}
+#ifdef SEARCH_FOR_CXX_COPY_CTORS
+  if (i386_non_pod_p(type))
+    {
+      return 0;
+      /* FIXME: copy ctor searching... */
+    }
+#endif /* SEARCH_FOR_CXX_COPY_CTORS */
 
   return (len == 1 || len == 2 || len == 4 || len == 8);
 }

@@ -182,7 +182,7 @@ mi_print_frame_info_lite_base (struct ui_out *uiout,
 
   print_inlined_frames_lite(uiout, with_names, frame_num, pc, fp);
 
-  sprintf(num_buf, "%d", *frame_num);
+  snprintf(num_buf, sizeof(num_buf), "%d", *frame_num);
   ui_out_text(uiout, "Frame ");
   ui_out_text(uiout, num_buf);
   ui_out_text(uiout, ": ");

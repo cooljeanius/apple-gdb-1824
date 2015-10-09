@@ -234,7 +234,7 @@ reopen_exec_file(void)
 
   if (res == -1) {
     warning("stat failed with errno %d (i.e. \"%s\").\n", errno,
-            strerror(errno));
+            safe_strerror(errno));
   }
 
   if (mtime && (mtime != st.st_mtime))

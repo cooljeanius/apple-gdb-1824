@@ -146,11 +146,10 @@ interp_add (struct interp *interp)
    since we are in pretty bad shape at this point. */
 
 struct interp *
-interp_set (struct interp *interp)
+interp_set(struct interp *interp)
 {
   struct interp *old_interp = current_interpreter;
   int first_time = 0;
-
 
   char buffer[64];
 
@@ -161,7 +160,7 @@ interp_set (struct interp *interp)
 	 really be run when that interpreter is in force. */
 #if 0
       do_all_continuations ();
-#endif
+#endif /* 0 */
       ui_out_flush (uiout);
       if (current_interpreter->procs->suspend_proc
 	  && !current_interpreter->procs->suspend_proc (current_interpreter->
@@ -211,7 +210,7 @@ interp_set (struct interp *interp)
 #if 0
   /* Clear out any installed interpreter hooks/event handlers.  */
   clear_interpreter_hooks ();
-#endif
+#endif /* 0 */
 
   if (interp->procs->resume_proc != NULL
       && (!interp->procs->resume_proc (interp->data)))
@@ -229,13 +228,13 @@ interp_set (struct interp *interp)
 
   if (!first_time)
     {
-      if (!interp_quiet_p (interp))
+      if (!interp_quiet_p(interp))
 	{
-	  sprintf (buffer, "Switching to interpreter \"%.24s\".\n",
-		   interp->name);
-	  ui_out_text (uiout, buffer);
+	  snprintf(buffer, sizeof(buffer),
+		   "Switching to interpreter \"%.24s\".\n", interp->name);
+	  ui_out_text(uiout, buffer);
 	}
-      display_gdb_prompt (NULL);
+      display_gdb_prompt(NULL);
     }
 
   /* If there wasn't any interp before, return the current interp.

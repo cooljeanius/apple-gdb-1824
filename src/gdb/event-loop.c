@@ -990,16 +990,18 @@ gdb_wait_for_event (void)
 	         this fd. */
 	      if (file_ptr->ready_mask == 0)
 		{
-		  file_event_ptr = create_file_event (file_ptr->fd);
-		  async_queue_event (file_event_ptr, TAIL);
+		  file_event_ptr = create_file_event(file_ptr->fd);
+		  async_queue_event(file_event_ptr, TAIL);
 		}
 	    }
 
+	  gdb_assert((gdb_notifier.poll_fds + i) != NULL);
+	  
 	  file_ptr->ready_mask = (gdb_notifier.poll_fds + i)->revents;
 	}
 #else
-      internal_error (__FILE__, __LINE__,
-		      _("use_poll without HAVE_POLL"));
+      internal_error(__FILE__, __LINE__,
+		     _("use_poll without HAVE_POLL"));
 #endif /* HAVE_POLL */
     }
   else

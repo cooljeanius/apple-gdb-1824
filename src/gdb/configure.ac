@@ -1971,6 +1971,9 @@ AC_CHECK_FUNCS([atof alarm assert atexit bsearch bzero dup2 exit \
                 strncmp strncpy strndup strpbrk strrchr strspn strstr \
                 strtok strtol strtoul uname wcwidth])dnl
 
+dnl# CoreFoundation:
+AC_CHECK_FUNCS([CFPropertyListCreateWithData])dnl
+
 # ----- #
 # Other #
 # ----- #
@@ -2903,14 +2906,15 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wfloat-conversion -Wmissing-field-initializers \
 -Wno-deprecated-declarations -Wbool-compare -Wlogical-not-parentheses \
 -Wsizeof-array-argument -Wswitch-bool -Wshift-count-negative \
--Wshift-count-overflow -Wshift-negative-value -Wshift-overflow \
--Wmisleading-indentation -Wlto-type-mismatch"
+-Wshift-count-overflow -Wshift-negative-value -Wshift-overflow=2 \
+-Wmisleading-indentation -Wlto-type-mismatch -Wtautological-compare"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
   ## Special warnings only for C++ compilations:
   cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo -Wodr -Wterminate \
--Wno-write-strings -Wno-narrowing"
+-Wmultiple-inheritance -Wvirtual-inheritance -Wpmf-conversions \
+-Wzero-as-null-pointer-constant -Wno-write-strings -Wno-narrowing"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
@@ -2941,8 +2945,8 @@ case "${host}" in
     # -Wnonportable-cfstrings is actually a flag for newer versions of the
     # FSF gcc, but it only makes sense on Apple platforms.
     build_warnings="${build_warnings} -Wmost -Wextra-tokens -Wnewline-eof \
--Wendif-labels -Wformat -Wformat-y2k -Wnonportable-cfstrings \
--Wno-unused-function -std=gnu99"
+-Wendif-labels -Wformat -Wformat-signedness -Wformat-y2k -Wnonnull \
+-Wnonportable-cfstrings -Wno-unused-function -std=gnu99"
     case "${host}" in
       *64*-apple-darwin9* | *64*-apple-darwin1[[0123456789]].*.*)
         build_warnings="${build_warnings} -Wshorten-64-to-32"
@@ -2990,7 +2994,8 @@ fi
 opt_warnings="-Wuninitialized -Winit-self -Wmissing-noreturn \
 -Wvolatile-register-var -Wdisabled-optimization \
 -Waggressive-loop-optimizations -Wvector-operation-performance \
--Wmaybe-uninitialized -Wstrict-overflow=1"
+-Wmaybe-uninitialized -Wstrict-overflow=1 -fno-strict-aliasing \
+-Wnull-dereference -Wduplicated-cond"
 # -Warray-bounds is only for -O2 and up, or when -ftree-vrp is active, so
 # use a separate variable for it:
 opt_warnings_plus="${opt_warnings} -Warray-bounds"
@@ -3022,6 +3027,7 @@ fi
 #  * -Wwrite-strings (would require a lot of const-ifying)
 #  * -Wconversion (would require a lot of casting)
 #  * -Wsign-conversion (likewise)
+#  * -Wtraditional-conversion (likewise)
 #  * -Wmissing-prototypes (C-only; redundant with other flag)
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
 #  * -Winline (I can never tell if the compiler is right or not with this)
@@ -3126,7 +3132,7 @@ then
                               [BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
 	    CFLAGS="${saved_CFLAGS}"
             ;;
-          -Wformat-nonliteral|-Wformat-y2k)
+          -Wformat-nonliteral|-Wformat-signedness|-Wformat-y2k)
             ## (These would be ignored without also using -Wformat)
 	    saved_CFLAGS="${CFLAGS}"
 	    CFLAGS="${CFLAGS} ${w} -Werror -Wformat"
@@ -3642,8 +3648,12 @@ if test "x${target}" = "x${host}"; then
   if test "x${build_gdbserver}" = "xyes"; then
     AC_MSG_RESULT([yes])
     AC_CONFIG_SUBDIRS([gdbserver])
+    ##FIXME: sometimes we fail to recurse into it?
   else
     AC_MSG_RESULT([no])
+    if test -d gdbserver; then
+      export unused_subdirs="${unused_subdirs} gdbserver"
+    fi
   fi
 else
   if test -d gdbserver; then

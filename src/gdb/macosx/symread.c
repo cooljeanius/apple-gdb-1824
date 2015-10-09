@@ -1515,16 +1515,16 @@ sym_dump_command(char *args, int from_tty)
     }
 
   filename = tilde_expand(filename);
-  make_cleanup(free, filename);
+  make_cleanup(xfree, filename);
 
   symname = tilde_expand(symname);
-  make_cleanup(free, symname);
+  make_cleanup(xfree, symname);
 
   f = fopen(filename, "w");
   if (f == NULL)
     {
       error("Unable to open \"%s\" for writing: %s", filename,
-            strerror(errno));
+            safe_strerror(errno));
     }
 
   abfd = bfd_openr(symname, "sym");

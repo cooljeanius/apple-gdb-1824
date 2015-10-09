@@ -1,4 +1,4 @@
-/* Header for GDB line completion.
+/* completer.h: Header for GDB line completion.
    Copyright 2000 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
@@ -16,32 +16,34 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (COMPLETER_H)
+#if !defined(COMPLETER_H)
 #define COMPLETER_H 1
 
-extern char **complete_line (const char *text, char *line_buffer, int point);
+extern char **complete_line(const char *text, char *line_buffer, int point);
 
-extern char *readline_line_completion_function (const char *text, int matches);
+extern char *readline_line_completion_function(const char *text, int matches);
 
-extern char **noop_completer (char *, char *);
+extern char **noop_completer(char *, char *);
 
-extern char **filename_completer (char *, char *);
+extern char **filename_completer(char *, char *);
 
-extern char **location_completer (char *, char *);
+extern char **location_completer(char *, char *);
 
-extern char **command_completer (char *, char *);
+extern char **command_completer(char *, char *);
 
-extern char *get_gdb_completer_quote_characters (void);
+extern char *get_gdb_completer_quote_characters(void);
 
 /* APPLE LOCAL begin completer */
 extern char *gdb_completer_word_break_characters;
-extern char *gdb_completer_filename_word_break_characters;
+extern const char *gdb_completer_filename_word_break_characters;
 /* APPLE LOCAL end completer */
 
 /* Exported to linespec.c */
 
-extern char *skip_quoted_chars (char *, char *, char *);
+extern char *skip_quoted_chars(char *, char *, char *);
 
-extern char *skip_quoted (char *);
+extern char *skip_quoted(char *);
 
-#endif /* defined (COMPLETER_H) */
+#endif /* !defined(COMPLETER_H) */
+
+/* EOF */

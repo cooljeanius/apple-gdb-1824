@@ -502,7 +502,7 @@ child_terminal_info(char *args, int from_tty)
 #endif /* O_BINARY */
 
     if (flags)
-      printf_filtered(" | 0x%x", flags);
+      printf_filtered(" | 0x%x", (unsigned int)flags);
     printf_filtered("\n");
   }
 

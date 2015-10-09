@@ -1182,20 +1182,21 @@ set_async_prompt (char *args, int from_tty, struct cmd_list_element *c)
 {
   /* APPLE LOCAL begin Inform user about debugging optimized code  */
   if (currently_inside_optimized_code
-      && the_prompts.top > 0
-      && (strstr (PROMPT (0), "[opt> ") != 0))
+      && (the_prompts.top > 0)
+      && (strstr(PROMPT(0), "[opt> ") != 0))
     {
       char *new_str;
-      pop_prompt ();
-      PROMPT (0) = savestring (new_async_prompt, strlen (new_async_prompt));
-      new_str = (char *) xmalloc (strlen (new_async_prompt) + 7);
-      sprintf (new_str, "%s[opt> ", new_async_prompt);
-      push_prompt ("", new_str, "");
-      xfree (new_str);
+      size_t new_str_len = (strlen(new_async_prompt) + 7UL);
+      pop_prompt();
+      PROMPT(0) = savestring(new_async_prompt, strlen(new_async_prompt));
+      new_str = (char *)xmalloc(new_str_len);
+      snprintf(new_str, new_str_len, "%s[opt> ", new_async_prompt);
+      push_prompt("", new_str, "");
+      xfree(new_str);
     }
   else
   /* APPLE LOCAL end Inform user about debugging optimized code  */
-    PROMPT (0) = savestring (new_async_prompt, strlen (new_async_prompt));
+    PROMPT(0) = savestring(new_async_prompt, strlen(new_async_prompt));
 }
 
 /* Set things up for readline to be invoked via the alternate
@@ -1301,14 +1302,15 @@ adjust_prompts_for_optimized_code (void)
       if (dwarf2_inform_debugging_optimized_code
 	  && currently_inside_optimized_code)
 	{
-	  char *old_prompt = get_prompt ();
+	  char *old_prompt = get_prompt();
 	  char *new_prompt;
-	  if (strstr (old_prompt, "[opt> ") == 0)
+	  if (strstr(old_prompt, "[opt> ") == 0)
 	    {
-	      new_prompt = (char *) xmalloc (strlen (old_prompt) + 7);
-	      sprintf (new_prompt, "%s[opt> ", old_prompt);
-	      push_prompt ("", new_prompt, "");
-	      xfree (new_prompt);
+	      size_t new_prompt_len = (strlen(old_prompt) + 7UL);
+	      new_prompt = (char *)xmalloc(new_prompt_len);
+	      snprintf(new_prompt, new_prompt_len, "%s[opt> ", old_prompt);
+	      push_prompt("", new_prompt, "");
+	      xfree(new_prompt);
 	    }
 	  gdb_prompt_is_optimized = 1;
 	}

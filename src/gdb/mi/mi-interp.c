@@ -186,7 +186,7 @@ mi_interpreter_suspend(void *data)
 static struct gdb_exception
 mi_interpreter_exec(void *data, const char *command)
 {
-  char *tmp = alloca(strlen(command) + 1);
+  char *tmp = (char *)alloca(strlen(command) + 1UL);
   strcpy(tmp, command);
   mi_execute_command_wrapper(tmp);
   return exception_none;
@@ -270,7 +270,7 @@ mi_cmd_interpreter_exec(char *command, char **argv, int argc)
          asynchronous for commands that run the target.  */
       if (target_can_async_p() && (strncmp(argv[0], "console", 7) == 0))
 	{
-	  int len = strlen(argv[i]);
+	  size_t len = strlen(argv[i]);
 	  buff = (char *)xmalloc(len + 2UL);
 	  memcpy(buff, argv[i], len);
 	  buff[len] = '&';
@@ -526,7 +526,7 @@ mi_interp_read_one_line_hook(char *prompt, int repeat, char *anno)
     internal_error(__FILE__, __LINE__,
                    "Prompt \"%s\" ridiculously long.", prompt);
 
-  sprintf(buff, "read-one-line,prompt=\"%s\"", prompt);
+  snprintf(buff, sizeof(buff), "read-one-line,prompt=\"%s\"", prompt);
   mi_output_async_notification(buff);
 
   (void)fgets(buff, sizeof(buff), stdin);

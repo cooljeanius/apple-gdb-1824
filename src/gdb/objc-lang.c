@@ -1062,7 +1062,8 @@ objc_init_trampoline_observer(void)
 
   while (region_addr != 0)
     {
-      struct objc_trampoline_region *region = NULL;
+      struct objc_trampoline_region *volatile region =
+	(struct objc_trampoline_region *volatile)NULL;
       /* We have to catch this too.  We can get called here when gdb
 	 is running through its cached libraries on rerun or if we have
 	 changed the value of inferior-auto-start-dyld from 0 to 1
@@ -1080,7 +1081,7 @@ objc_init_trampoline_observer(void)
 	{
 	  region_addr = region->next_region_start;
 	  region->next = objc_trampolines.head;
-	  objc_trampolines.head = region;
+	  objc_trampolines.head = (struct objc_trampoline_region *)region;
 	}
       else
 	break;
@@ -2246,7 +2247,7 @@ objc_check_safe_to_run_all_threads(void)
 int
 objc_setup_safe_print(struct cleanup **cleanup)
 {
-  enum objc_debugger_mode_result retval;
+  volatile enum objc_debugger_mode_result retval;
   struct cleanup *ret_cleanup = make_cleanup(null_cleanup, NULL);
   struct cleanup *lock_cleanup;
   int safe_p = 0;
@@ -2777,7 +2778,7 @@ new_objc_runtime_class_getClass(struct value *infargs)
 {
   static struct cached_value *validate_function = NULL;
   static int already_warned = 0;
-  struct value *ret_value = (struct value *)NULL;
+  struct value *volatile ret_value = (struct value *volatile)NULL;
 
   CORE_ADDR in_class_address = (CORE_ADDR)value_as_address(infargs);
 
@@ -2833,7 +2834,8 @@ new_objc_runtime_class_getClass(struct value *infargs)
 	}
       else
         {
-          CORE_ADDR class_address = (CORE_ADDR)value_as_address(ret_value);
+          CORE_ADDR class_address =
+	    (CORE_ADDR)value_as_address((struct value *)ret_value);
           if (debug_objc)
             fprintf_unfiltered(gdb_stdlog,
                                "Found class address: %s for %s.\n",
@@ -3231,7 +3233,7 @@ read_objc_object(CORE_ADDR addr, struct objc_object *object)
     }
   else
     {
-      struct value *ret_value = (struct value *)NULL;
+      struct value *volatile ret_value = (struct value *volatile)NULL;
       struct gdb_exception e;
       int old_timeout = set_hand_function_call_timeout(500000);
       struct value *object_ptr_val;
@@ -3264,7 +3266,7 @@ read_objc_object(CORE_ADDR addr, struct objc_object *object)
       else
         {
 	  CORE_ADDR class_addr;
-          class_addr = (CORE_ADDR)value_as_address(ret_value);
+          class_addr = (CORE_ADDR)value_as_address((struct value *)ret_value);
           if (debug_objc)
             fprintf_unfiltered(gdb_stdlog,
                                "read_objc_object: gdb_object_getClass returned: %s.\n",
@@ -3464,7 +3466,7 @@ find_implementation_from_class(CORE_ADDR objc_class, CORE_ADDR sel)
     /* Here's a quick way to make sure that this pointer really is
        class.  Call objc_lookUpClass on it, and if we find the class,
        then it is real and safe to grub around in.  */
-    CORE_ADDR class_addr;
+    volatile CORE_ADDR class_addr;
     struct objc_class class_str;
     char class_name[2048];
     char *ptr;
@@ -4914,11 +4916,11 @@ make_cleanup_set_restore_debugger_mode(struct cleanup **cleanup, int level)
   static struct cached_value *end_function = NULL;
   struct value *tmp_value;
   struct cleanup *scheduler_cleanup;
-  struct cleanup *timer_cleanup = NULL;
+  struct cleanup *volatile timer_cleanup = (struct cleanup *volatile)NULL;
   struct cleanup *unwind_cleanup;
   struct cleanup *breakpoint_cleanup;
 
-  int success = 0;
+  volatile int success = 0;
   struct gdb_exception e;
 
   if (debug_handcall_setup)
@@ -5139,7 +5141,7 @@ make_cleanup_set_restore_debugger_mode(struct cleanup **cleanup, int level)
   do_cleanups(breakpoint_cleanup);
 
   if (timer_cleanup != NULL)
-    do_cleanups(timer_cleanup);
+    do_cleanups((struct cleanup *)timer_cleanup);
   do_cleanups(unwind_cleanup);
 
   debug_mode_set_p = debug_mode_not_checked;

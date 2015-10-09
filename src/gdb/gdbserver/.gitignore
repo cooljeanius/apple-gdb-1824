@@ -36,3 +36,9 @@ x32-avx.c
 x32-avx512.c
 x32.c
 xml-builtin.c
+# more generated source files:
+i386.c
+i386-mpx.c
+i386-mmx.c
+i386-avx512.c
+i386-avx.c

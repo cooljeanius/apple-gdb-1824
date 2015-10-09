@@ -638,6 +638,8 @@ get_join_type(struct type *in_type)
     case TYPE_CODE_REF:
       {
 	struct type *target = get_target_type(type);
+	gdb_assert(target != NULL);
+	gdb_assert(TYPE_MAIN_TYPE(target) != NULL);
 	switch (TYPE_CODE(target))
 	  {
 	  case TYPE_CODE_STRUCT:
@@ -667,7 +669,7 @@ safe_value_rtti_target_type(struct value *val, int *full, int *top, int *using_e
   volatile struct gdb_exception except;
   struct ui_file *saved_gdb_stderr;
   static struct ui_file *null_stderr = NULL;
-  struct type *dynamic_type = NULL;
+  struct type *volatile dynamic_type = (struct type *volatile)NULL;
 
   /* suppress error messages: */
   if (null_stderr == NULL)
@@ -1257,8 +1259,8 @@ varobj_delete(struct varobj *var, char ***dellist, int only_children)
 	}
 
       if (mycount || (*cp != NULL))
-	warning (_("varobj_delete: assertion failed - mycount(=%d) <> 0"),
-		 mycount);
+	warning(_("varobj_delete: assertion failed - mycount(=%d) <> 0"),
+		mycount);
     }
 
   return delcount;
@@ -1585,9 +1587,8 @@ varobj_list(struct varobj ***varlist)
   *cv = NULL;
 
   if (mycount || (croot != NULL))
-    warning
-      ("varobj_list: assertion failed - wrong tally of root vars (%d:%d)",
-       rootcount, mycount);
+    warning("varobj_list: assertion failed - wrong tally of root vars (%d:%d)",
+	    rootcount, mycount);
 
   return rootcount;
 }
@@ -1968,25 +1969,24 @@ uninstall_variable (struct varobj *var)
   /* Remove varobj from hash table */
   for (chp = var->obj_name; *chp; chp++)
     {
-      index = (index + (i++ * (unsigned int) *chp)) % VAROBJ_TABLE_SIZE;
+      index = (index + (i++ * (unsigned int)*chp)) % VAROBJ_TABLE_SIZE;
     }
 
   cv = *(varobj_table + index);
   prev = NULL;
-  while ((cv != NULL) && (strcmp (cv->var->obj_name, var->obj_name) != 0))
+  while ((cv != NULL) && (strcmp(cv->var->obj_name, var->obj_name) != 0))
     {
       prev = cv;
       cv = cv->next;
     }
 
   if (varobjdebug)
-    fprintf_unfiltered (gdb_stdlog, "Deleting %s\n", var->obj_name);
+    fprintf_unfiltered(gdb_stdlog, "Deleting %s\n", var->obj_name);
 
   if (cv == NULL)
     {
-      warning
-	("Assertion failed: Could not find variable object \"%s\" to delete",
-	 var->obj_name);
+      warning("Assertion failed: Unable to find varobj \"%s\" to delete",
+	      var->obj_name);
       return;
     }
 
@@ -2015,9 +2015,8 @@ uninstall_variable (struct varobj *var)
 	    }
 	  if (cr == NULL)
 	    {
-	      warning
-		("Assertion failed: Could not find varobj \"%s\" in root list",
-		 var->obj_name);
+	      warning("Assertion failed: Could not find varobj \"%s\" in root list",
+		      var->obj_name);
 	      return;
 	    }
 	  if (prer == NULL)
@@ -2341,17 +2340,17 @@ varobj_delete_objfiles_vars (struct objfile *ofile)
 */
 
 static struct type *
-get_type (struct varobj *var)
+get_type(struct varobj *var)
 {
   struct type *type;
 
-  if (varobj_use_dynamic_type && var->dynamic_type != NULL)
+  if (varobj_use_dynamic_type && (var->dynamic_type != NULL))
     type = var->dynamic_type;
   else
     type = var->type;
 
   if (type != NULL)
-    type = check_typedef (type);
+    type = check_typedef(type);
 
   return type;
 }
@@ -2369,8 +2368,10 @@ get_type_deref (struct varobj *var, int *was_ptr)
   if (was_ptr != NULL)
     *was_ptr = 0;
 
-  type = get_type (var);
-  code = TYPE_CODE (type);
+  type = get_type(var);
+  gdb_assert(type != NULL);
+  gdb_assert(TYPE_MAIN_TYPE(type) != NULL);
+  code = TYPE_CODE(type);
 
   if (type != NULL && (code == TYPE_CODE_PTR
 		       || code == TYPE_CODE_REF))
@@ -2431,7 +2432,7 @@ my_value_equal (struct value *val1, struct value *volatile val2, int *error2)
     return 0;
 
   /* The contents of VAL1 are supposed to be known.  */
-  gdb_assert (!value_lazy (val1));
+  gdb_assert(!value_lazy(val1));
 
   /* This is bogus, but unfortunately necessary. We must know
      exactly what caused an error -- reading val1 or val2 --  so
@@ -3185,20 +3186,23 @@ c_number_of_children (struct varobj *var)
 }
 
 static char *
-c_make_name_of_child (struct varobj *parent, int index)
+c_make_name_of_child(struct varobj *parent, int index)
 {
   struct type *type;
   struct type *target;
   char *name;
   char *string;
 
-  type = get_type (parent);
-  target = get_target_type (type);
+  type = get_type(parent);
+  target = get_target_type(type);
+  
+  gdb_assert(type != NULL);
+  gdb_assert(TYPE_MAIN_TYPE(type) != NULL);
 
-  switch (TYPE_CODE (type))
+  switch (TYPE_CODE(type))
     {
     case TYPE_CODE_ARRAY:
-      name = xstrprintf ("%d", index);
+      name = xstrprintf("%d", index);
       break;
 
     case TYPE_CODE_STRUCT:
@@ -3471,49 +3475,49 @@ varobj_lookup_struct_elt_type_by_index (struct varobj *parent, int index)
    failure.  */
 
 static int
-varobj_value_struct_elt_by_index (struct varobj *parent, int index, struct value **ret_val)
+varobj_value_struct_elt_by_index(struct varobj *parent, volatile int iindex,
+				 struct value **ret_val)
 {
   struct type *t;
-  struct value *value;
-  struct value *parent_value;
+  struct value *volatile value;
+  struct value *volatile parent_value;
   int type_index;
   volatile struct gdb_exception e;
 
-  if (CPLUS_FAKE_CHILD (parent))
+  if (CPLUS_FAKE_CHILD(parent))
     parent_value = parent->parent->value;
   else
     parent_value = parent->value;
 
-  parent_value = coerce_array (parent_value);
+  parent_value = coerce_array(parent_value);
 
-  t = check_typedef (value_type (parent_value));
+  t = check_typedef(value_type(parent_value));
 
-  /* Follow pointers until we get to a non-pointer.  */
-
-  while (TYPE_CODE (t) == TYPE_CODE_PTR || TYPE_CODE (t) == TYPE_CODE_REF)
+  /* Follow pointers until we get to a non-pointer: */
+  while (TYPE_CODE(t) == TYPE_CODE_PTR || TYPE_CODE(t) == TYPE_CODE_REF)
     {
-      parent_value = value_ind (parent_value);
-      /* Don't coerce fn pointer to fn and then back again!  */
-      if (TYPE_CODE (value_type (parent_value)) != TYPE_CODE_FUNC)
-        parent_value = coerce_array (parent_value);
-      t = check_typedef (value_type (parent_value));
+      parent_value = value_ind(parent_value);
+      /* Do NOT coerce fn pointer to fn and then back again!  */
+      if (TYPE_CODE(value_type(parent_value)) != TYPE_CODE_FUNC)
+        parent_value = coerce_array(parent_value);
+      t = check_typedef(value_type(parent_value));
     }
 
-  if (TYPE_CODE (t) == TYPE_CODE_MEMBER)
-    error (_("not implemented: member type in varobj_value_struct_elt_by_index"));
+  if (TYPE_CODE(t) == TYPE_CODE_MEMBER)
+    error(_("not implemented: member type in varobj_value_struct_elt_by_index"));
 
-  if (TYPE_CODE (t) != TYPE_CODE_STRUCT
-      && TYPE_CODE (t) != TYPE_CODE_UNION)
-    error (_("Attempt to extract a component of a value that is not a struct or union."));
+  if (TYPE_CODE(t) != TYPE_CODE_STRUCT
+      && TYPE_CODE(t) != TYPE_CODE_UNION)
+    error(_("Attempt to extract a component of a value that is not a struct or union."));
 
-  type_index = varobj_get_type_index_from_fake_child (parent, index);
+  type_index = varobj_get_type_index_from_fake_child(parent, iindex);
 
-  TRY_CATCH (e, RETURN_MASK_ERROR)
+  TRY_CATCH(e, RETURN_MASK_ERROR)
     {
-      if (TYPE_FIELD_STATIC (t, type_index))
-	value = value_static_field (t, type_index);
+      if (TYPE_FIELD_STATIC(t, type_index))
+	value = value_static_field(t, type_index);
       else
-	value = value_primitive_field (parent_value, 0, type_index, t);
+	value = value_primitive_field(parent_value, 0, type_index, t);
     }
   if (e.reason < 0)
     {
@@ -3527,15 +3531,16 @@ varobj_value_struct_elt_by_index (struct varobj *parent, int index, struct value
     }
 }
 
-  /* varobj_get_type_index_from_fake_child: Returns the index
-     of the child in the parent's type's TYPE_FIELD. If PARENT
-     is not a CPLUS_FAKE_CHILD, returns INDEX.
 
-     The fields of the class type are ordered as they appear in the
-     class.  We are given an index for a particular access control
-     type ("public","protected", or "private").  We must skip over
-     fields that don't have the access control we are looking for to
-     properly find the indexed field. */
+/* varobj_get_type_index_from_fake_child: Returns the index
+   of the child in the parent's type's TYPE_FIELD. If PARENT
+   is not a CPLUS_FAKE_CHILD, returns INDEX.
+
+   The fields of the class type are ordered as they appear in the
+   class.  We are given an index for a particular access control
+   type ("public","protected", or "private").  We must skip over
+   fields that don't have the access control we are looking for to
+   properly find the indexed field. */
 
 static int
 varobj_get_type_index_from_fake_child(struct varobj *parent, int index)
@@ -3800,18 +3805,27 @@ c_type_of_child(struct varobj *parent, int index)
       warning (_("Child of parent whose type does not allow children"));
       /* FIXME: Can we still go on? */
       type = NULL;
-      error ("Child of parent: \"%s\" whose type: \"%d\" does not allow children",
-	       name_of_variable (parent), TYPE_CODE (parent_type));
+      error("Child of parent: \"%s\" whose type: \"%d\" does not allow children",
+	    name_of_variable (parent), TYPE_CODE (parent_type));
       break;
     }
 
   return type;
 }
 
-static int
-c_variable_editable (struct varobj *var)
+static int ATTRIBUTE_NONNULL(1)
+c_variable_editable(struct varobj *var)
 {
-  switch (TYPE_CODE (get_type (var)))
+  struct type *vartype;
+  
+  gdb_assert(var != NULL);
+  
+  vartype = get_type(var);
+  
+  gdb_assert(vartype != NULL);
+  gdb_assert(TYPE_MAIN_TYPE(vartype) != NULL);
+  
+  switch (TYPE_CODE(vartype))
     {
     case TYPE_CODE_STRUCT:
     case TYPE_CODE_UNION:
@@ -3828,17 +3842,26 @@ c_variable_editable (struct varobj *var)
     }
 }
 
-static char *
-c_value_of_variable (struct varobj *var)
+static char *ATTRIBUTE_NONNULL(1)
+c_value_of_variable(struct varobj *var)
 {
+  struct type *vartype;
+  
+  gdb_assert(var != NULL);
+  
+  vartype = get_type(var);
+  
+  gdb_assert(vartype != NULL);
+  gdb_assert(TYPE_MAIN_TYPE(vartype) != NULL);
+  
   /* BOGUS: if val_print sees a struct/class, it will print out its
      children instead of "{...}" */
 
-  switch (TYPE_CODE (get_type (var)))
+  switch (TYPE_CODE(vartype))
     {
     case TYPE_CODE_STRUCT:
     case TYPE_CODE_UNION:
-      return xstrdup ("{...}");
+      return xstrdup("{...}");
       /* break; */
 
     case TYPE_CODE_ARRAY:
@@ -3846,7 +3869,7 @@ c_value_of_variable (struct varobj *var)
 	char *number;
         /* APPLE LOCAL: need to call varobj_get_number_of_children,
            since we compute this lazily.  */
-        number = xstrprintf ("[%d]", varobj_get_num_children (var));
+        number = xstrprintf("[%d]", varobj_get_num_children(var));
 	return (number);
       }
       /* break; */
@@ -3870,7 +3893,7 @@ c_value_of_variable (struct varobj *var)
 	    if (value_lazy(var->value))
 	      gdb_value_fetch_lazy(var->value);
 	    /* APPLE LOCAL: It looks ugly to have reference values contain
-	       the contents of the reference.  Just print them like pointers.  */
+	       the contents of the reference.  Just print them like pointers: */
 	    common_val_print(var->value, stb,
                              format_code[(int)var->format], 0, 0,
                              (enum val_prettyprint)0);

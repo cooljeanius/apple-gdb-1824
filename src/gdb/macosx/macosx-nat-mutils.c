@@ -21,6 +21,10 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+/* define this because of <malloc/malloc.h>: */
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* !NO_POISON */
 #include "defs.h"
 #include "inferior.h"
 #include "symtab.h"
@@ -959,9 +963,9 @@ int
 macosx_pid_valid(int pid)
 {
   int ret;
-  ret = kill (pid, 0);
-  mutils_debug ("kill (%d, 0) : ret = %d, errno = %d (%s)\n", pid,
-                ret, errno, strerror (errno));
+  ret = kill(pid, 0);
+  mutils_debug("kill (%d, 0) : ret = %d, errno = %d (%s)\n", pid,
+               ret, errno, safe_strerror(errno));
   return ((ret == 0) || ((errno != ESRCH) && (errno != ECHILD)));
 }
 
@@ -1332,7 +1336,7 @@ do_over_unique_frames(stack_logging_record_t record, void *data)
     {
       struct cleanup *frame_cleanup;
       char *name;
-      int err = 0;
+      volatile int err = 0;
       struct gdb_exception e;
       frame_cleanup = make_cleanup_ui_out_tuple_begin_end(uiout, "frame");
       /* This is cheesy spacing, but we really will NOT get
@@ -1428,7 +1432,7 @@ malloc_history_info_command(char *arg, int from_tty)
 #elif HAVE_32_BIT_STACK_LOGGING
   vm_address_t addr;
 #endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
-  kern_return_t kret = KERN_FAILURE;
+  volatile kern_return_t kret = KERN_FAILURE;
   volatile struct gdb_exception except;
   struct cleanup *cleanup;
   /* APPLE LOCAL - Make "-exact" the default, since there is no way to
@@ -1681,7 +1685,7 @@ get_symbol_at_address_on_stack(CORE_ADDR stack_address, int *frame_level)
   if (found_frame == 1)
     {
       struct symbol *this_symbol = (struct symbol *)NULL;
-      struct block *block = get_frame_block(this_frame, 0);
+      struct block *volatile block = get_frame_block(this_frame, 0);
       if (block != NULL)
 	{
 	  while (block != 0)
@@ -1689,11 +1693,11 @@ get_symbol_at_address_on_stack(CORE_ADDR stack_address, int *frame_level)
 	      /* Look through the block and see if there are
 		 any symbols it would put at this address... */
 	      struct dict_iterator iter;
-	      struct symbol *sym;
+	      struct symbol *volatile sym;
 
 	      ALL_BLOCK_SYMBOLS(block, iter, sym)
 		{
-		  struct value *val = NULL;
+		  struct value *volatile val = (struct value *volatile)NULL;
 		  struct gdb_exception e;
 		  struct type *val_type;
 		  CORE_ADDR val_address;
@@ -1756,10 +1760,10 @@ get_symbol_at_address_on_stack(CORE_ADDR stack_address, int *frame_level)
 #define AUTO_BLOCK_BYTES        3
 #define AUTO_BLOCK_ASSOCIATION  4
 
-static char *auto_kind_strings[5] = {
+static const char *auto_kind_strings[5] = {
   "global", "stack", "object", "bytes", "assoc"
 };
-static char *auto_kind_spacer[5] = { "", " ", "", " ", " " };
+static const char *auto_kind_spacer[5] = { "", " ", "", " ", " " };
 static CORE_ADDR
 gc_print_references(volatile CORE_ADDR list_addr, int wordsize)
 {
@@ -1878,7 +1882,7 @@ gc_print_references(volatile CORE_ADDR list_addr, int wordsize)
 	  /* This is an ObjC object: */
 	  struct gdb_exception e;
 
-	  struct type *dynamic_type = NULL;
+	  struct type *volatile dynamic_type = (struct type *volatile)NULL;
 	  char *dynamic_name = NULL;
 
           struct ui_file *saved_gdb_stderr;

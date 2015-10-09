@@ -209,8 +209,8 @@ dnl# '-W' is redundant with '-Wextra'
 ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings -Wnested-externs \
 -Wstrict-prototypes -Wmissing-prototypes -Wmissing-parameter-type -Wodr \
 -Wold-style-definition -Wold-style-declaration -Wc++-compat -Wswitch \
--Wmissing-format-attribute -Wcast-qual -Wmisleading-indentation -Wabi],
-			 [WARN_FLAGS])dnl
+-Wmissing-format-attribute -Wcast-qual -Wmisleading-indentation -Wabi \
+-Wnull-dereference],[WARN_FLAGS])dnl
 
 # deal with potential name mismatch:
 if test "x${WARN_FLAGS}" = "x" && test "x${WARN_CFLAGS}" != "x"; then

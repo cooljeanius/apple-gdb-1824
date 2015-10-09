@@ -576,7 +576,7 @@ op_name_standard (enum exp_opcode opcode)
       {
 	static char buf[30];
 
-	sprintf (buf, "<unknown %d>", opcode);
+	snprintf(buf, sizeof(buf), "<unknown %d>", opcode);
 	return buf;
       }
     case OP_NULL:

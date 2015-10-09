@@ -101,7 +101,11 @@ void objc_init_runtime_version(void);
 int pc_in_objc_trampoline_p(CORE_ADDR pc, uint32_t *flags);
 
 /* comment in source file says to use debugger "safe mode" instead: */
+#ifdef __OSX_AVAILABLE_BUT_DEPRECATED
 int objc_runtime_lock_taken_p(void) __OSX_AVAILABLE_BUT_DEPRECATED(__MAC_10_0,__MAC_10_6,__IPHONE_NA,__IPHONE_NA);
+#else
+int objc_runtime_lock_taken_p(void);
+#endif /* __OSX_AVAILABLE_BUT_DEPRECATED */
 
 void objc_invalidate_objc_class(struct type *type);
 

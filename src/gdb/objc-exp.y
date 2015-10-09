@@ -26,9 +26,9 @@
    be built up sequentially during the process of parsing; the lower
    levels of the tree always come first in the result.
 
-   Note that malloc's and realloc's in this file are transformed to
-   xmalloc and xrealloc respectively by the same sed command in the
-   makefile that remaps any other malloc/realloc inserted by the
+   Note that malloc's, realloc's, and free's in this file are transformed to
+   xmalloc, xrealloc, and xfree respectively by the same sed command in the
+   makefile that remaps any other malloc/realloc/free inserted by the
    parser generator.  Doing this with #defines and trying to control
    the interaction with include files (<malloc.h> and <stdlib.h> for
    example) just became too messy, particularly when such includes can

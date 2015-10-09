@@ -27,7 +27,19 @@
 
 #include "symtab.h"
 
-#include <CoreFoundation/CoreFoundation.h>
+#ifndef S_SPLINT_S
+# include <CoreFoundation/CoreFoundation.h>
+#else
+# ifndef _UUID_T
+#  if defined(HAVE_UNISTD_H) && (!defined(_POSIX_C_SOURCE) || defined(_DARWIN_C_SOURCE))
+#   include <unistd.h>
+#  else
+#   ifdef HAVE_UUID_UUID_H
+#    include <uuid/uuid.h>
+#   endif /* HAVE_UUID_UUID_H */
+#  endif /* HAVE_UNISTD_H && (!_POSIX_C_SOURCE || _DARWIN_C_SOURCE) */
+# endif /* !_UUID_T */
+#endif /* !S_SPLINT_S */
 
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
@@ -46,14 +58,15 @@
 #ifdef HAVE_MACH_KMOD_H
 # include <mach/kmod.h>
 #else
-# if defined(__APPLE__) && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# if defined(__APPLE__) && defined(__MACH__) && defined(__GNUC__) && \
+     !defined(__STRICT_ANSI__) && defined(SPAM_ME)
 #  if defined(HAVE_CONFIG_H) && \
       (defined(__CONFIG_H__) || defined(__GDB_CONFIG_H__))
 #   warning "We skipped the configure check for <mach/kmod.h>"
 #  else
 #   warning "macosx-tdep.h expects <mach/kmod.h> to be included."
 #  endif /* HAVE_CONFIG_H && (__CONFIG_H__ || __GDB_CONFIG_H__) */
-# endif /* __APPLE__ && __GNUC__ && !__STRICT_ANSI__ */
+# endif /* __APPLE__ && __MACH__ && __GNUC__ && !__STRICT_ANSI__ && SPAM_ME */
 # ifndef KMOD_MAX_NAME
 #  define KMOD_MAX_NAME	64
 # endif /* !KMOD_MAX_NAME */
@@ -93,7 +106,9 @@ int macosx_in_solib_call_trampoline(CORE_ADDR pc, char *name);
 int macosx_record_symbols_from_sect_p(bfd *abfd, unsigned char macho_type,
 				      unsigned char macho_sect);
 
+#if defined(__COREFOUNDATION__) || defined(__COREFOUNDATION_COREFOUNDATION__)
 CFMutableDictionaryRef create_dsym_uuids_for_path(char *dsym_bundle_path);
+#endif /* __COREFOUNDATION__ || __COREFOUNDATION_COREFOUNDATION__ */
 
 void paths_and_uuids_map_func(const void *in_url, const void *in_array,
                               void *in_results);
@@ -105,9 +120,11 @@ void find_source_path_mappings_posix(struct objfile *objfile,
 #endif /* USE_DEBUG_SYMBOLS_FRAMEWORK */
 
 char *macosx_locate_dsym(struct objfile *objfile);
+#if defined(__COREFOUNDATION__) || defined(__COREFOUNDATION_COREFOUNDATION__)
 char *locate_kext_executable_by_dsym_plist(CFDictionaryRef dsym_info,
                                            CFUUIDRef uuid_ref);
 char *locate_kext_executable_by_dsym_url(CFURLRef dsym_url);
+#endif /* __COREFOUNDATION__ || __COREFOUNDATION_COREFOUNDATION__ */
 char *macosx_locate_kext_executable_by_symfile(bfd *abfd);
 struct objfile *macosx_find_objfile_matching_dsym_in_bundle(char *dsym_bundle_path,
 							    char **out_full_path);
@@ -162,12 +179,16 @@ char *strtrunc(char *str, const char *substr);
 
 char *expand_kext_cstr(const char *kext_path);
 
+#if defined(__COREFOUNDATION__) || defined(__COREFOUNDATION_COREFOUNDATION__)
 char *macosx_locate_executable_by_dbg_shell_command(CFStringRef uuid);
+#endif /* __COREFOUNDATION__ || __COREFOUNDATION_COREFOUNDATION__ */
 
 void update_command(char *args, int from_tty);
 void stack_flush_command(char *args, int from_tty);
 
+#if defined(__COREFOUNDATION__) || defined(__COREFOUNDATION_COREFOUNDATION__)
 CFUUIDRef get_uuidref_for_uuid_t(uint8_t *uuid);
+#endif /* __COREFOUNDATION__ || __COREFOUNDATION_COREFOUNDATION__ */
 
 CORE_ADDR get_load_addr_of_macho_on_disk(const char *filename, enum gdb_osabi osabi);
 
@@ -181,7 +202,7 @@ int slide_kernel_objfile(struct objfile *o, CORE_ADDR in_memory_addr, uuid_t in_
 
 int try_to_find_and_load_kernel_via_uuid(CORE_ADDR in_memory_addr, uuid_t in_memory_uuid, enum gdb_osabi osabi);
 
-
+/* title should be self-explanatory: */
 struct gdb_copy_dyld_cache_local_symbols_entry
 {
   uint32_t dylibOffset; /* file (pre-loaded) address of this dylib minus 0x30000000 */
@@ -200,5 +221,6 @@ void free_dyld_shared_cache_local_syms(void);
 void get_dyld_shared_cache_local_syms(void);
 struct gdb_copy_dyld_cache_local_symbols_entry *get_dyld_shared_cache_entry(CORE_ADDR intended_load_addr);
 
-
 #endif /* __GDB_MACOSX_TDEP_H__ */
+
+/* EOF */

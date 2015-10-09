@@ -31,6 +31,7 @@
 #include "gdb_string.h"
 #include "exceptions.h"
 #include "top.h"
+#include "breakpoint.h"
 #include "event-top.h"  /* for async_request_quit */
 #include "cli/cli-cmds.h"
 #include "cli/cli-decode.h"
@@ -211,6 +212,23 @@ print_command_lines (struct ui_out *uiout, struct command_line *cmd,
 	    ui_out_spaces (uiout, 2 * depth);
 	  ui_out_field_string (uiout, NULL, "end");
 	  ui_out_text (uiout, "\n");
+	  list = list->next;
+	  continue;
+	}
+      
+      /* A commands command.  Print the breakpoint commands and continue.  */
+      if (list->control_type == commands_control)
+	{
+	  if (*(list->line))
+	    ui_out_field_fmt(uiout, NULL, "commands %s", list->line);
+	  else
+	    ui_out_field_string(uiout, NULL, "commands");
+	  ui_out_text(uiout, "\n");
+	  print_command_lines(uiout, *list->body_list, (depth + 1));
+	  if (depth)
+	    ui_out_spaces(uiout, (2 * depth));
+	  ui_out_field_string(uiout, NULL, "end");
+	  ui_out_text(uiout, "\n");
 	  list = list->next;
 	  continue;
 	}
@@ -487,9 +505,21 @@ execute_control_command(struct command_line *cmd)
 
 	break;
       }
+	
+    case commands_control:
+      {
+	/* Breakpoint commands list, record the commands in the breakpoint's
+	 command list and return.  */
+	new_line = insert_args(cmd->line);
+	if (!new_line)
+	  break;
+	make_cleanup(free_current_contents, &new_line);
+	ret = commands_from_control_command(new_line, cmd);
+	break;
+      }
 
     default:
-      warning (_("Invalid control type in command structure."));
+      warning(_("Invalid control type in command structure."));
       break;
     }
 
@@ -651,14 +681,15 @@ static char *
 insert_args (char *line)
 {
   char *p, *save_line, *new_line;
-  unsigned len, i;
+  size_t len;
+  unsigned int i;
 
   /* First we need to know how much memory to allocate for the new line: */
   save_line = line;
   len = 0;
   while ((p = locate_arg(line)))
     {
-      len += p - line;
+      len += (p - line);
 
       if (p[4] == 'c')          /* $argc */
         {
@@ -673,9 +704,9 @@ insert_args (char *line)
 	  len += (p - line);
 	  i = (p[4] - '0');
 
-	  if (i >= (unsigned)user_args->count)
+	  if (i >= (unsigned int)user_args->count)
 	    {
-	      error(_("Missing argument %d in user function.\n"), i);
+	      error(_("Missing argument %u in user function.\n"), i);
 	      return NULL;
 	    }
 	  len += user_args->a[i].len;
@@ -683,18 +714,18 @@ insert_args (char *line)
       line = (p + 5);
     }
 
-  /* Don't forget the tail.  */
-  len += strlen (line);
+  /* Do NOT forget the tail: */
+  len += strlen(line);
 
-  /* Allocate space for the new line and fill it in.  */
-  new_line = (char *) xmalloc (len + 1);
+  /* Allocate space for the new line and fill it in: */
+  new_line = (char *)xmalloc(len + 1UL);
   if (new_line == NULL)
     return NULL;
 
-  /* Restore pointer to beginning of old line.  */
+  /* Restore pointer to beginning of old line: */
   line = save_line;
 
-  /* Save pointer to beginning of new line.  */
+  /* Save pointer to beginning of new line: */
   save_line = new_line;
 
   while ((p = locate_arg (line)))
@@ -832,6 +863,14 @@ process_next_line (char *p, struct command_line **command)
         first_arg++;
       *command = build_command_line (if_control, first_arg);
     }
+  else if (p1 - p >= 8 && !strncmp (p, "commands", 8))
+    {
+      char *first_arg;
+      first_arg = p + 8;
+      while (first_arg < p1 && isspace (*first_arg))
+	first_arg++;
+      *command = build_command_line (commands_control, first_arg);
+    }
   else if (p1 - p == 10 && !strncmp (p, "loop_break", 10))
     {
       *command = (struct command_line *)
@@ -908,7 +947,8 @@ recurse_read_control_structure(char *(*read_next_line_func)(void),
       if (val == end_command)
 	{
 	  if (current_cmd->control_type == while_control
-	      || current_cmd->control_type == if_control)
+	      || current_cmd->control_type == if_control
+	      || current_cmd->control_type == commands_control)
 	    {
 	      /* Success reading an entire control structure.  */
 	      ret = simple_control;
@@ -958,7 +998,8 @@ recurse_read_control_structure(char *(*read_next_line_func)(void),
       /* If the latest line is another control structure, then recurse
          on it.  */
       if (next->control_type == while_control
-	  || next->control_type == if_control)
+	  || next->control_type == if_control
+	  || next->control_type == commands_control)
 	{
 	  control_level++;
 	  ret = recurse_read_control_structure (read_next_line_func, next);
@@ -1040,7 +1081,8 @@ read_command_lines_1(char * (*read_next_line_func)(void))
 	}
 
       if (next->control_type == while_control
-	  || next->control_type == if_control)
+	  || next->control_type == if_control
+	  || next->control_type == commands_control)
 	{
 	  control_level++;
 	  ret = recurse_read_control_structure (read_next_line_func, next);
@@ -1260,7 +1302,8 @@ define_command(char *comname, int from_tty)
     if (isupper(*tem))
       *tem = tolower(*tem);
 
-  sprintf(tmpbuf, "Type commands for definition of \"%s\".", comname);
+  snprintf(tmpbuf, sizeof(tmpbuf), "Type commands for definition of \"%s\".",
+	   comname);
   cmds = read_command_lines(tmpbuf, from_tty);
 
   if (c && (c->class == class_user))
@@ -1307,7 +1350,7 @@ document_command(char *comname, int from_tty)
   if (c->class != class_user)
     error(_("Command \"%s\" is built-in."), comname);
 
-  sprintf(tmpbuf, "Type documentation for \"%s\".", comname);
+  snprintf(tmpbuf, sizeof(tmpbuf), "Type documentation for \"%s\".", comname);
   doclines = read_command_lines(tmpbuf, from_tty);
 
   if (c->doc)

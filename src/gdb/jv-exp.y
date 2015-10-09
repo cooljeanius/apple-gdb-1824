@@ -27,9 +27,9 @@ Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA */
    during the process of parsing; the lower levels of the tree always
    come first in the result.  Well, almost always; see ArrayAccess.
 
-   Note that malloc's and realloc's in this file are transformed to
-   xmalloc and xrealloc respectively by the same sed command in the
-   makefile that remaps any other malloc/realloc inserted by the parser
+   Note that malloc's, realloc's, and free's in this file are transformed to
+   xmalloc, xrealloc, and xfree respectively by the same sed command in the
+   makefile that remaps any other malloc/realloc/free inserted by the parser
    generator.  Doing this with #defines and trying to control the interaction
    with include files (<malloc.h> and <stdlib.h> for example) just became
    too messy, particularly when such includes can be inserted at random

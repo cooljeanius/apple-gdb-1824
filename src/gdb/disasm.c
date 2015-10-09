@@ -102,7 +102,13 @@ dump_insns(struct ui_out *uiout, struct disassemble_info * di,
   int unmapped;
   int offset;
   int line;
+  
   struct cleanup *ui_out_chain;
+  
+#ifdef ALLOW_UNUSED_VARIABLES
+  struct cleanup *table_chain;
+  struct cleanup *tuple_chain;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
   for (pc = low; pc < high;)
     {
@@ -129,22 +135,53 @@ dump_insns(struct ui_out *uiout, struct disassemble_info * di,
 	  ui_out_field_string (uiout, "func-name", name);
 	  ui_out_text (uiout, "+");
 	  ui_out_field_int (uiout, "offset", offset);
-	  ui_out_text (uiout, ">:\t");
+	  ui_out_text (uiout, ">:"); /* removed tab */
 	}
       else
-	ui_out_text (uiout, ":\t");
+	ui_out_text (uiout, ":"); /* removed tab */
 
       if (filename != NULL)
 	xfree (filename);
       if (name != NULL)
 	xfree (name);
 
-      ui_file_rewind (stb->stream);
-      pc += TARGET_PRINT_INSN (pc, di);
-      ui_out_field_stream (uiout, "inst", stb);
-      ui_file_rewind (stb->stream);
-      do_cleanups (ui_out_chain);
-      ui_out_text (uiout, "\n");
+      ui_file_rewind(stb->stream);
+      /* dump the disassembly raw bytes - ripped from gnu gdb latest cvs version
+       * fG! - 12/08/2009 */
+      if (pc != INVALID_ADDRESS)
+	{
+	  /* save the initial disassembly address: */
+	  CORE_ADDR old_pc = pc;
+	  bfd_byte data;
+	  int status;
+	  int i;
+      
+	  /* This will return the disassembled instructions, but it will be
+	   * buffered into the stream pc will hold the final address after the
+	   * disassembly, so we can compute the length of the instruction the
+	   * macro returns the number of bytes disassembled: */
+	  pc += TARGET_PRINT_INSN(pc, di);
+	  i = (pc - old_pc);
+	  /* read the bytes from the initial address to the final address: */
+	  for (; old_pc < pc; old_pc++)
+	    {
+	      status = (*di->read_memory_func)(old_pc, &data, 1, di);
+	      if (status != 0) (*di->memory_error_func)(status, old_pc, di);
+	      /* print the raw bytes: */
+	      ui_out_message(uiout, 0, " %02x", (unsigned int)data);
+	    }
+	  /* to align the output... gdb tables fail to work correctly. *sigh* */
+	  for (; i < 10; i++) ui_out_text(uiout, "   ");
+	  ui_out_text(uiout, " ");
+	}
+      else
+	warning("invalid address for disassembly");
+      
+      /* now we can finally print the buffered stream: */
+      ui_out_field_stream(uiout, "inst", stb);
+      ui_file_rewind(stb->stream);
+      do_cleanups(ui_out_chain);
+      ui_out_text(uiout, "\n");
     }
   return num_displayed;
 }
@@ -651,8 +688,43 @@ find_pc_offset(CORE_ADDR start, CORE_ADDR *result, int offset,
 int
 gdb_print_insn(CORE_ADDR memaddr, struct ui_file *stream)
 {
-  struct disassemble_info di = gdb_disassemble_info(current_gdbarch, stream);
+  struct ui_stream *stb = ui_out_stream_new(uiout);
+  struct cleanup *cleanups = make_cleanup_ui_out_stream_delete(stb);
+  struct disassemble_info di = gdb_disassemble_info(current_gdbarch, stb->stream);
+  /* Used to be just stream instead of stb->stream in the previous. */
+  struct disassemble_info *di2 = &di;
+  struct cleanup *ui_out_chain;
+  int i;
+  CORE_ADDR old_pc;
+  CORE_ADDR oldmemaddr;
+  bfd_byte data;
+  int status;
+  
+  ui_out_chain = make_cleanup_ui_out_tuple_begin_end(uiout, NULL);
+  old_pc = memaddr;
+  oldmemaddr = memaddr;
+  ui_file_rewind(stb->stream);
+  memaddr = TARGET_PRINT_INSN(memaddr, &di);
+  oldmemaddr += memaddr;
+  for (; old_pc < oldmemaddr; old_pc++)
+    {
+      status = (*di2->read_memory_func)(old_pc, &data, 1, di2);
+      if (status != 0)
+	(*di2->memory_error_func)(status, old_pc, di2);
+      ui_out_message(uiout, 0, " %02x", (unsigned int)data);
+    }
+  i = memaddr;
+  for (; i < 10; i++) ui_out_text(uiout, "   ");
+  ui_out_text(uiout, " ");
+  ui_out_field_stream(uiout, "inst", stb);
+  ui_file_rewind(stb->stream);
+  do_cleanups(ui_out_chain);
+  do_cleanups(cleanups);
+  
+  return memaddr;
+#if defined(DO_THINGS_THE_OLD_WAY) && defined(TARGET_PRINT_INSN)
   return TARGET_PRINT_INSN(memaddr, &di);
+#endif /* DO_THINGS_THE_OLD_WAY && TARGET_PRINT_INSN */
 }
 
 /* EOF */

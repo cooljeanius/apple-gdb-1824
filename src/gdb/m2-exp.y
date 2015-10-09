@@ -22,7 +22,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA */
 
 /* Parse a Modula-2 expression from text in a string,
-   and return the result as a  struct expression  pointer.
+   and return the result as a struct expression pointer.
    That structure contains arithmetic operations in reverse polish,
    with constants represented by operations that are followed by special data.
    See expression.h for the details of the format.

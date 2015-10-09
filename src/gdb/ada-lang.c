@@ -287,11 +287,13 @@ static int warning_limit = 2;
 static int warnings_issued = 0;
 
 static const char *known_runtime_file_name_patterns[] ATTRIBUTE_USED = {
-  ADA_KNOWN_RUNTIME_FILE_NAME_PATTERNS NULL
+  ADA_KNOWN_RUNTIME_FILE_NAME_PATTERNS /* already ends in a comma */
+  NULL /* FIXME: splint chokes on the "annotations" it suggests itself */
 };
 
 static const char *known_auxiliary_function_name_patterns[] ATTRIBUTE_USED = {
-  ADA_KNOWN_AUXILIARY_FUNCTION_NAME_PATTERNS NULL
+  ADA_KNOWN_AUXILIARY_FUNCTION_NAME_PATTERNS /* already ends in a comma */
+  NULL /* FIXME: splint chokes on the "annotations" it suggests itself */
 };
 
 /* Space for allocating results of ada_lookup_symbol_list.  */
@@ -344,15 +346,15 @@ grow_vect (void *vect, size_t *size, size_t min_size, int element_size)
    suffix of FIELD_NAME beginning "___".  */
 
 static int
-field_name_match (const char *field_name, const char *target)
+field_name_match(const char *field_name, const char *target)
 {
-  int len = strlen (target);
+  size_t len = strlen(target);
   return
-    (strncmp (field_name, target, len) == 0
-     && (field_name[len] == '\0'
-         || (strncmp (field_name + len, "___", 3) == 0
-             && strcmp (field_name + strlen (field_name) - 6,
-                        "___XVN") != 0)));
+    ((strncmp(field_name, target, len) == 0)
+     && ((field_name[len] == '\0')
+         || ((strncmp((field_name + len), "___", 3) == 0)
+             && strcmp((field_name + strlen(field_name) - 6),
+                       "___XVN") != 0)));
 }
 
 
@@ -3681,7 +3683,7 @@ static struct symbol *
 standard_lookup(const char *name, const struct block *block,
                 domain_enum domain)
 {
-  struct symbol *sym;
+  struct symbol *sym = (struct symbol *)NULL;
   struct symtab *symtab;
 
   if (lookup_cached_symbol(name, domain, &sym, NULL, NULL))

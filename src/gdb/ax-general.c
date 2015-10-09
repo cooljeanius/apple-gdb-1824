@@ -80,11 +80,11 @@ make_cleanup_free_agent_expr(struct agent_expr *x)
 static void
 grow_expr(struct agent_expr *x, int n)
 {
-  if ((x->len + n) > x->size)
+  if ((x->len + (size_t)n) > x->size)
     {
-      x->size *= 2;
-      if (x->size < (x->len + n))
-	x->size = (x->len + n + 10);
+      x->size *= 2UL;
+      if (x->size < (x->len + (size_t)n))
+	x->size = (x->len + (size_t)n + 10UL);
       x->buf = (unsigned char *)xrealloc(x->buf, x->size);
     }
 }
@@ -93,34 +93,34 @@ grow_expr(struct agent_expr *x, int n)
 /* Append the low N bytes of VAL as an N-byte integer to the
    expression X, in big-endian order.  */
 static void
-append_const (struct agent_expr *x, LONGEST val, int n)
+append_const(struct agent_expr *x, LONGEST val, int n)
 {
   int i;
 
-  grow_expr (x, n);
-  for (i = n - 1; i >= 0; i--)
+  grow_expr(x, n);
+  for (i = (n - 1); i >= 0; i--)
     {
-      x->buf[x->len + i] = val & 0xff;
+      x->buf[x->len + (size_t)i] = (val & 0xff);
       val >>= 8;
     }
-  x->len += n;
+  x->len += (size_t)n;
 }
 
 
 /* Extract an N-byte big-endian unsigned integer from expression X at
    offset O.  */
 static LONGEST
-read_const (struct agent_expr *x, int o, int n)
+read_const(struct agent_expr *x, int o, int n)
 {
   int i;
-  LONGEST accum = 0;
+  LONGEST accum = 0L;
 
-  /* Make sure we're not reading off the end of the expression.  */
-  if (o + n > x->len)
-    error (_("GDB bug: ax-general.c (read_const): incomplete constant"));
+  /* Make sure we are not reading off the end of the expression: */
+  if ((size_t)(o + n) > x->len)
+    error(_("GDB bug: ax-general.c (read_const): incomplete constant"));
 
   for (i = 0; i < n; i++)
-    accum = (accum << 8) | x->buf[o + i];
+    accum = ((accum << 8) | x->buf[o + i]);
 
   return accum;
 }
@@ -190,14 +190,14 @@ ax_trace_quick (struct agent_expr *x, int n)
    can backpatch it once we do know the target offset.  Use ax_label
    to do the backpatching.  */
 int
-ax_goto (struct agent_expr *x, enum agent_op op)
+ax_goto(struct agent_expr *x, enum agent_op op)
 {
-  grow_expr (x, 3);
+  grow_expr(x, 3);
   x->buf[x->len + 0] = op;
   x->buf[x->len + 1] = 0xff;
   x->buf[x->len + 2] = 0xff;
   x->len += 3;
-  return x->len - 2;
+  return (int)(x->len - 2UL);
 }
 
 /* Suppose a given call to ax_goto returns some value PATCH.  When you
@@ -222,8 +222,7 @@ void
 ax_const_l (struct agent_expr *x, LONGEST l)
 {
   static enum agent_op ops[]
-  =
-  {aop_const8, aop_const16, aop_const32, aop_const64};
+    = { aop_const8, aop_const16, aop_const32, aop_const64 };
   int size;
   int op;
 
@@ -334,8 +333,8 @@ struct aop_map aop_map[] =
 void
 ax_print(struct ui_file *f, struct agent_expr *x)
 {
-  int i;
-  int is_float = 0;
+  long i;
+  bool is_float = 0;
 
   /* Check the size of the name array against the number of entries in
    * the enum, to catch additions that people did NOT sync: */
@@ -343,34 +342,34 @@ ax_print(struct ui_file *f, struct agent_expr *x)
       != aop_last)
     error(_("GDB bug: ax-general.c (ax_print): opcode map out of sync"));
 
-  for (i = 0; i < x->len;)
+  for (i = 0; i < (long)x->len;)
     {
       enum agent_op op = (enum agent_op)x->buf[i];
 
       if ((op >= (sizeof(aop_map) / sizeof(aop_map[0])))
 	  || !aop_map[op].name)
 	{
-	  fprintf_filtered(f, _("%3d  <bad opcode %02x>\n"), i, op);
+	  fprintf_filtered(f, _("%3d  <bad opcode %02x>\n"), (int)i, op);
 	  i++;
 	  continue;
 	}
-      if ((i + 1 + aop_map[op].op_size) > x->len)
+      if (((size_t)(i + 1L) + aop_map[op].op_size) > x->len)
 	{
 	  fprintf_filtered(f, _("%3d  <incomplete opcode %s>\n"),
-			   i, aop_map[op].name);
+			   (int)i, aop_map[op].name);
 	  break;
 	}
 
-      fprintf_filtered(f, "%3d  %s", i, aop_map[op].name);
+      fprintf_filtered(f, "%3d  %s", (int)i, aop_map[op].name);
       if (aop_map[op].op_size > 0)
 	{
 	  fputs_filtered(" ", f);
 
 	  print_longest(f, 'd', 0,
-                        read_const(x, i + 1, aop_map[op].op_size));
+                        read_const(x, (i + 1), (int)aop_map[op].op_size));
 	}
       fprintf_filtered(f, "\n");
-      i += (1 + aop_map[op].op_size);
+      i += (1L + (long)aop_map[op].op_size);
 
       is_float = (op == aop_float);
 
@@ -386,11 +385,11 @@ ax_print(struct ui_file *f, struct agent_expr *x)
 void
 ax_reqs(struct agent_expr *ax, struct agent_reqs *reqs)
 {
-  int i;
+  long i;
   int height;
 
   /* Bit vector for registers used: */
-  int reg_mask_len = 1;
+  size_t reg_mask_len = 1UL;
   unsigned char *reg_mask = (unsigned char *)xmalloc(reg_mask_len * sizeof(reg_mask[0]));
 
   /* Jump target table.  targets[i] is non-zero iff there is a jump to
@@ -409,15 +408,15 @@ ax_reqs(struct agent_expr *ax, struct agent_reqs *reqs)
   /* Pointer to a description of the present op: */
   struct aop_map *op;
 
-  memset(reg_mask, 0, reg_mask_len * sizeof(reg_mask[0]));
-  memset(targets, 0, ax->len * sizeof(targets[0]));
-  memset(boundary, 0, ax->len * sizeof(boundary[0]));
+  memset(reg_mask, 0, (reg_mask_len * sizeof(reg_mask[0])));
+  memset(targets, 0, (ax->len * sizeof(targets[0])));
+  memset(boundary, 0, (ax->len * sizeof(boundary[0])));
 
   reqs->max_height = reqs->min_height = height = 0;
   reqs->flaw = agent_flaw_none;
   reqs->max_data_size = 0;
 
-  for (i = 0; i < ax->len; i += (1 + op->op_size))
+  for (i = 0; i < (long)ax->len; i += (long)(1UL + op->op_size))
     {
       if (ax->buf[i] > (sizeof(aop_map) / sizeof(aop_map[0])))
 	{
@@ -435,7 +434,7 @@ ax_reqs(struct agent_expr *ax, struct agent_reqs *reqs)
 	  return;
 	}
 
-      if ((i + 1 + op->op_size) > ax->len)
+      if (((size_t)(i + 1L) + op->op_size) > ax->len)
 	{
 	  reqs->flaw = agent_flaw_incomplete_instruction;
 	  xfree(reg_mask);
@@ -470,7 +469,7 @@ ax_reqs(struct agent_expr *ax, struct agent_reqs *reqs)
       if ((aop_goto == (op - aop_map)) || (aop_if_goto == (op - aop_map)))
 	{
 	  int target = (int)read_const(ax, (i + 1), 2);
-	  if ((target < 0) || (target >= ax->len))
+	  if ((target < 0) || (target >= (int)ax->len))
 	    {
 	      reqs->flaw = agent_flaw_bad_jump;
 	      xfree(reg_mask);
@@ -495,7 +494,7 @@ ax_reqs(struct agent_expr *ax, struct agent_reqs *reqs)
 
       /* For unconditional jumps with a successor, check that the
          successor is a target, and pick up its stack height.  */
-      if ((aop_goto == (op - aop_map)) && ((i + 3) < ax->len))
+      if ((aop_goto == (op - aop_map)) && ((i + 3L) < (long)ax->len))
 	{
 	  if (!targets[i + 3])
 	    {
@@ -514,15 +513,15 @@ ax_reqs(struct agent_expr *ax, struct agent_reqs *reqs)
 	  int byte = (reg / 8);
 
 	  /* Grow the bit mask if necessary: */
-	  if (byte >= reg_mask_len)
+	  if (byte >= (int)reg_mask_len)
 	    {
 	      /* It is not appropriate to double here.  This is NOT a
 	         string buffer.  */
-	      int new_len = (byte + 1);
+	      size_t new_len = ((size_t)byte + 1UL);
 	      reg_mask = (unsigned char *)xrealloc(reg_mask,
                                                    (new_len * sizeof(reg_mask[0])));
-	      memset(reg_mask + reg_mask_len, 0,
-		     (new_len - reg_mask_len) * sizeof(reg_mask[0]));
+	      memset((reg_mask + reg_mask_len), 0,
+		     ((new_len - reg_mask_len) * sizeof(reg_mask[0])));
 	      reg_mask_len = new_len;
 	    }
 
@@ -531,7 +530,7 @@ ax_reqs(struct agent_expr *ax, struct agent_reqs *reqs)
     }
 
   /* Check that all the targets are on boundaries: */
-  for (i = 0; i < ax->len; i++)
+  for (i = 0L; i < (long)ax->len; i++)
     if (targets[i] && !boundary[i])
       {
 	reqs->flaw = agent_flaw_bad_jump;

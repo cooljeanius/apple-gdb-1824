@@ -80,9 +80,9 @@ open_unix_socket (char *name)
   retval = connect (source_fd, (struct sockaddr *) &sockaddr, len);
   if (retval == -1)
     {
-      warning ("Couldn't connect to unix service: \"%s\", error: \"%s\".",
-	       name, strerror(errno));
-      close (source_fd);
+      warning("Failed to connect to unix service: \"%s\", error: \"%s\".",
+	      name, safe_strerror(errno));
+      close(source_fd);
       return -1;
     }
 
@@ -108,7 +108,7 @@ receive_fd(int source_fd)
   int control_len = CMSG_LEN(sizeof(int));
 
   if (control == NULL)
-    control = (struct cmsghdr *)malloc(control_len);
+    control = (struct cmsghdr *)xmalloc(control_len);
 
   for (;;)
     {
@@ -169,6 +169,7 @@ remote_mobile_open(char *unix_sock_name, int from_tty)
   int source_fd;
   int md_fd;
   char *name;
+  size_t name_len = (strlen("filedesc:") + 12UL);
 
   /* So first we have to get the file descriptor from our provider.  */
   source_fd = open_unix_socket(unix_sock_name);
@@ -184,8 +185,8 @@ remote_mobile_open(char *unix_sock_name, int from_tty)
 
   /* Now construct the file descriptor target name, and push the remote
    * target: */
-  name = (char *)malloc(strlen("filedesc:") + 12);
-  sprintf(name, "filedesc:%d", md_fd);
+  name = (char *)xmalloc(name_len);
+  snprintf(name, name_len, "filedesc:%d", md_fd);
   push_remote_macosx_target(name, from_tty);
 
   /* Now that we have gotten the remote target, let us fix up a few things

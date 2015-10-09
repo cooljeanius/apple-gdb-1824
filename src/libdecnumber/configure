@@ -3614,7 +3614,7 @@ for real_option in -Wall -Wextra -Wno-unused-value -Wwrite-strings \
 -Wmissing-declarations -Wnested-externs -Wundef -Wshadow -Wformat=2 \
 -Wold-style-definition -Wold-style-declaration -Wc++-compat -Wodr -Wabi \
 -Wmissing-format-attribute -Wcast-qual -Wout-of-line-declaration \
--Wmisleading-indentation; do
+-Wmisleading-indentation -Wnull-dereference; do
   # Do the check with the no- prefix removed since gcc silently accepts
   # any -Wno-* option on purpose:
   case ${real_option} in

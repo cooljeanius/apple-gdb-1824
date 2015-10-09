@@ -9,7 +9,7 @@ set -ex
 export AUTOCONF=autoconf264
 export AUTOHEADER=autoheader264
 export AUTOM4TE=autom4te264
-export AUTORECONF=autorecon264
+export AUTORECONF=autoreconf264
 export AUTOSCAN=autoscan264
 export AUTOUPDATE=autoupdate264
 export IFNAMES=ifnames264

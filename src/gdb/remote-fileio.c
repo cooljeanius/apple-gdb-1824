@@ -512,33 +512,33 @@ remote_fileio_ctrl_c_signal_handler (int signo)
 }
 
 static void
-remote_fileio_reply (int retcode, int error)
+remote_fileio_reply(int retcode, int error)
 {
   char buf[32];
 
-  remote_fileio_sig_set (SIG_IGN);
-  strcpy (buf, "F");
+  remote_fileio_sig_set(SIG_IGN);
+  strcpy(buf, "F");
   if (retcode < 0)
     {
-      strcat (buf, "-");
+      strcat(buf, "-");
       retcode = -retcode;
     }
-  sprintf (buf + strlen (buf), "%x", retcode);
+  snprintf((buf + strlen(buf)), (sizeof(buf) + strlen(buf)), "%x", retcode);
   if (error || remote_fio_ctrl_c_flag)
     {
       if (error && remote_fio_ctrl_c_flag)
         error = FILEIO_EINTR;
       if (error < 0)
         {
-	  strcat (buf, "-");
+	  strcat(buf, "-");
 	  error = -error;
 	}
-      sprintf (buf + strlen (buf), ",%x", error);
+      snprintf((buf + strlen(buf)), (sizeof(buf) + strlen(buf)), ",%x", error);
       if (remote_fio_ctrl_c_flag)
-        strcat (buf, ",C");
+        strcat(buf, ",C");
     }
-  remote_fileio_sig_set (remote_fileio_ctrl_c_signal_handler);
-  putpkt (buf);
+  remote_fileio_sig_set(remote_fileio_ctrl_c_signal_handler);
+  putpkt(buf);
 }
 
 static void
@@ -1322,7 +1322,7 @@ remote_fileio_func_system(char *buf)
 }
 
 static struct {
-  char *name;
+  const char *name;
   void (*func)(char *);
 } remote_fio_func_map[] = {
   { "open", remote_fileio_func_open },

@@ -2230,70 +2230,70 @@ struct objfile_data_registry
 static struct objfile_data_registry objfile_data_registry = { NULL, 0 };
 
 const struct objfile_data *
-register_objfile_data (void)
+register_objfile_data(void)
 {
   struct objfile_data_registration **curr;
 
-  /* Append new registration.  */
+  /* Append new registration: */
   for (curr = &objfile_data_registry.registrations;
        *curr != NULL; curr = &(*curr)->next);
 
-  *curr = XMALLOC (struct objfile_data_registration);
+  *curr = XMALLOC(struct objfile_data_registration);
   (*curr)->next = NULL;
-  (*curr)->data = XMALLOC (struct objfile_data);
+  (*curr)->data = XMALLOC(struct objfile_data);
   (*curr)->data->index = objfile_data_registry.num_registrations++;
 
   return (*curr)->data;
 }
 
 static void
-objfile_alloc_data (struct objfile *objfile)
+objfile_alloc_data(struct objfile *objfile)
 {
-  gdb_assert (objfile->data == NULL);
+  gdb_assert(objfile->data == NULL);
   objfile->num_data = objfile_data_registry.num_registrations;
-  objfile->data = XCALLOC (objfile->num_data, void *);
+  objfile->data = XCALLOC(objfile->num_data, void *);
 }
 
 static void
-objfile_free_data (struct objfile *objfile)
+objfile_free_data(struct objfile *objfile)
 {
-  gdb_assert (objfile->data != NULL);
-  xfree (objfile->data);
+  gdb_assert(objfile->data != NULL);
+  xfree(objfile->data);
   objfile->data = NULL;
 }
 
 /* APPLE LOCAL begin dwarf repository  */
 unsigned
-get_objfile_registry_num_registrations (void)
+get_objfile_registry_num_registrations(void)
 {
   return objfile_data_registry.num_registrations;
 }
 /* APPLE LOCAL end dwarf repository  */
 
 void
-clear_objfile_data (struct objfile *objfile)
+clear_objfile_data(struct objfile *objfile)
 {
-  gdb_assert (objfile->data != NULL);
-  memset (objfile->data, 0, objfile->num_data * sizeof (void *));
+  gdb_assert(objfile->data != NULL);
+  memset(objfile->data, 0, objfile->num_data * sizeof(void *));
 }
 
 void
-set_objfile_data (struct objfile *objfile, const struct objfile_data *data,
-		  void *value)
+set_objfile_data(struct objfile *objfile, const struct objfile_data *data,
+		 void *value)
 {
-  gdb_assert (data->index < objfile->num_data);
+  gdb_assert(data->index < objfile->num_data);
   objfile->data[data->index] = value;
 }
 
 void *
-objfile_data (struct objfile *objfile, const struct objfile_data *data)
+objfile_data(struct objfile *objfile, const struct objfile_data *data)
 {
-  gdb_assert (data->index < objfile->num_data);
+  gdb_assert(data->index < objfile->num_data);
   return objfile->data[data->index];
 }
 
 struct objfile *
-executable_objfile (struct objfile *objfile)
+executable_objfile(struct objfile *objfile)
 {
   if (objfile && objfile->separate_debug_objfile_backlink)
     return objfile->separate_debug_objfile_backlink;
@@ -2301,7 +2301,7 @@ executable_objfile (struct objfile *objfile)
 }
 
 struct objfile *
-separate_debug_objfile (struct objfile *objfile)
+separate_debug_objfile(struct objfile *objfile)
 {
   if (objfile && objfile->separate_debug_objfile)
     return objfile->separate_debug_objfile;
@@ -2311,7 +2311,7 @@ separate_debug_objfile (struct objfile *objfile)
 /* APPLE LOCAL: A safer version the ANOFFSET macro that verifies
    that the section index is valid.  */
 CORE_ADDR
-objfile_section_offset (struct objfile *objfile, int sect_idx)
+objfile_section_offset(struct objfile *objfile, int sect_idx)
 {
   /* Get the executable objfile in case this is a dSYM file.  */
   const char* err_str = NULL;
@@ -2348,8 +2348,8 @@ objfile_section_offset (struct objfile *objfile, int sect_idx)
 	 shared cache loaded addresses. Core files currently run into this
 	 issue, and if we decide to load images from memory in the future,
 	 those will as well.  */
-      gdb_assert (exec_objfile->num_sections <= objfile->num_sections);
-      gdb_assert (sect_idx < objfile->num_sections);
+      gdb_assert(exec_objfile->num_sections <= objfile->num_sections);
+      gdb_assert(sect_idx < objfile->num_sections);
       return objfile->section_offsets->offsets[sect_idx];
     }
   /* APPLE LOCAL shared cache end.  */
@@ -2361,28 +2361,28 @@ objfile_section_offset (struct objfile *objfile, int sect_idx)
    objfile_rodata_section_offset and objfile_bss_section_offset
    functions allow quick control over the many places that grab
    common section offsets.  */
-CORE_ADDR
-objfile_text_section_offset (struct objfile *objfile)
+CORE_ADDR ATTRIBUTE_NONNULL(1)
+objfile_text_section_offset(struct objfile *objfile)
 {
-  return objfile_section_offset (objfile, SECT_OFF_TEXT (objfile));
+  return objfile_section_offset(objfile, SECT_OFF_TEXT(objfile));
 }
 
-CORE_ADDR
-objfile_data_section_offset (struct objfile *objfile)
+CORE_ADDR ATTRIBUTE_NONNULL(1)
+objfile_data_section_offset(struct objfile *objfile)
 {
-  return objfile_section_offset (objfile, SECT_OFF_DATA (objfile));
+  return objfile_section_offset(objfile, SECT_OFF_DATA(objfile));
 }
 
-CORE_ADDR
-objfile_rodata_section_offset (struct objfile *objfile)
+CORE_ADDR ATTRIBUTE_NONNULL(1)
+objfile_rodata_section_offset(struct objfile *objfile)
 {
-  return objfile_section_offset (objfile, SECT_OFF_RODATA (objfile));
+  return objfile_section_offset(objfile, SECT_OFF_RODATA(objfile));
 }
 
-CORE_ADDR
-objfile_bss_section_offset (struct objfile *objfile)
+CORE_ADDR ATTRIBUTE_NONNULL(1)
+objfile_bss_section_offset(struct objfile *objfile)
 {
-  return objfile_section_offset (objfile, SECT_OFF_BSS (objfile));
+  return objfile_section_offset(objfile, SECT_OFF_BSS(objfile));
 }
 
 /* APPLE LOCAL END: objfile section offsets.  */
@@ -2591,15 +2591,17 @@ objfile_add_special_psym (struct objfile *objfile,
   if (max_size == 0)
     {
       max_size = 100;
-      objfile->thumb_psyms = (struct partial_symbol **) malloc
-                                  (max_size * sizeof (struct partial_symbol*));
+      objfile->thumb_psyms =
+	((struct partial_symbol **)
+	 xmalloc(max_size * sizeof(struct partial_symbol*)));
     }
   else if (size >= max_size)
     {
-      max_size = 2 * max_size;
-      objfile->thumb_psyms = (struct partial_symbol **) realloc
-           (objfile->thumb_psyms, max_size * sizeof (struct partial_symbol *));
-
+      max_size = (2 * max_size);
+      objfile->thumb_psyms =
+	((struct partial_symbol **)
+	 xrealloc(objfile->thumb_psyms,
+		  (max_size * sizeof(struct partial_symbol *))));
     }
 
   objfile->max_thumb_psyms = max_size;

@@ -49,8 +49,8 @@
    in target.h.  */
 /* *INDENT-OFF* */
 static struct {
-  char *name;
-  char *string;
+  const char *name;
+  const char *string;
   } signals [] =
 {
   {"0", "Signal 0"},

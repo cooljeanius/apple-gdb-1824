@@ -258,17 +258,17 @@ fprint_dummy_frames (struct ui_file *file)
 }
 
 static void
-maintenance_print_dummy_frames (char *args, int from_tty)
+maintenance_print_dummy_frames(char *args, int from_tty)
 {
   if (args == NULL)
-    fprint_dummy_frames (gdb_stdout);
+    fprint_dummy_frames(gdb_stdout);
   else
     {
-      struct ui_file *file = gdb_fopen (args, "w");
+      struct ui_file *file = gdb_fopen(args, "w");
       if (file == NULL)
-	perror_with_name (_("maintenance print dummy-frames"));
-      fprint_dummy_frames (file);
-      ui_file_delete (file);
+	perror_with_name(_("maintenance print dummy-frames"));
+      fprint_dummy_frames(file);
+      ui_file_delete(file);
     }
 }
 

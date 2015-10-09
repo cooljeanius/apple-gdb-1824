@@ -46,12 +46,10 @@
 
 #include <pthread.h>
 
-/* If nonzero, display time usage both at startup and for each command.  */
-
+/* If nonzero, display time usage both at startup and for each command: */
 int display_time;
 
-/* If nonzero, display space usage both at startup and for each command.  */
-
+/* If nonzero, display space usage both at startup and for each command: */
 int display_space;
 
 /* The selected interpreter.  This will be used as a set command
@@ -136,11 +134,10 @@ captured_main(void *data)
   char *corearg = NULL;
   char *cdarg = NULL;
   char *ttyarg = NULL;
-  /* APPLE LOCAL: Set the osabi via option.  */
+  /* APPLE LOCAL: Set the osabi via option: */
   char *osabiarg = NULL;
 
-
-  /* These are static so that we can take their address in an initializer.  */
+  /* These are static so that we can take their address in an initializer: */
   static int print_help;
   static int print_version;
 
@@ -402,8 +399,11 @@ captured_main(void *data)
 	    break;
 	  /* APPLE LOCAL: */
 	  case OPT_WAITFOR:
-	    attach_waitfor = (char *)xmalloc(12UL + strlen(optarg));
-	    sprintf(attach_waitfor, "-waitfor \"%s\"", optarg);
+	    {
+	      size_t a_w_len = (12UL + strlen(optarg));
+	      attach_waitfor = (char *)xmalloc(a_w_len);
+	      snprintf(attach_waitfor, a_w_len, "-waitfor \"%s\"", optarg);
+	    }
 	    break;
 	  /* APPLE LOCAL: */
 	  case OPT_ARCH:

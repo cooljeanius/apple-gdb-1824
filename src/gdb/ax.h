@@ -1,4 +1,4 @@
-/* Definitions for expressions designed to be executed on the agent
+/* ax.h: Definitions for expressions designed to be executed on the agent
    Copyright 1998, 1999, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -23,26 +23,26 @@
 
 #include "doublest.h"		/* For DOUBLEST.  */
 
-/* It's sometimes useful to be able to debug programs that you can't
+/* It is sometimes useful to be able to debug programs that you cannot
    really stop for more than a fraction of a second.  To this end, the
-   user can specify a tracepoint (like a breakpoint, but you don't
+   user can specify a tracepoint (like a breakpoint, but you do NOT
    stop at it), and specify a bunch of expressions to record the
    values of when that tracepoint is reached.  As the program runs,
    GDB collects the values.  At any point (possibly while values are
    still being collected), the user can display the collected values.
 
-   This is used with remote debugging; we don't really support it on
+   This is used with remote debugging; we do NOT really support it on
    native configurations.
 
    This means that expressions are being evaluated by the remote agent,
-   which doesn't have any access to the symbol table information, and
+   which does NOT have any access to the symbol table information, and
    needs to be small and simple.
 
    The agent_expr routines and datatypes are a bytecode language
    designed to be executed by the agent.  Agent expressions work in
    terms of fixed-width values, operators, memory references, and
    register references.  You can evaluate a agent expression just given
-   a bunch of memory and register values to sniff at; you don't need
+   a bunch of memory and register values to sniff at; you do NOT need
    any symbolic information like variable names, types, etc.
 
    GDB translates source expressions, whose meaning depends on
@@ -57,7 +57,7 @@
 /* The type of an element of the agent expression stack.
    The bytecode operation indicates which element we should access;
    the value itself has no typing information.  GDB generates all
-   bytecode streams, so we don't have to worry about type errors.  */
+   bytecode streams, so we do NOT have to worry about type errors.  */
 
 union agent_val
   {
@@ -69,8 +69,8 @@ union agent_val
 struct agent_expr
   {
     unsigned char *buf;
-    int len;			/* number of characters used */
-    int size;			/* allocated size */
+    size_t len;			/* number of characters used */
+    size_t size;		/* allocated size */
     CORE_ADDR scope;
   };
 
@@ -163,8 +163,8 @@ extern void ax_zero_ext (struct agent_expr *EXPR, int N);
 extern void ax_trace_quick (struct agent_expr *EXPR, int N);
 
 /* Append a goto op to EXPR.  OP is the actual op (must be aop_goto or
-   aop_if_goto).  We assume we don't know the target offset yet,
-   because it's probably a forward branch, so we leave space in EXPR
+   aop_if_goto).  We assume we do NOT know the target offset yet,
+   because it is probably a forward branch, so we leave space in EXPR
    for the target, and return the offset in EXPR of that space, so we
    can backpatch it once we do know the target offset.  Use ax_label
    to do the backpatching.  */
@@ -194,10 +194,9 @@ extern void ax_print (struct ui_file *f, struct agent_expr * EXPR);
 /* An entry in the opcode map.  */
 struct aop_map
   {
-
     /* The name of the opcode.  Null means that this entry is not a
        valid opcode --- a hole in the opcode space.  */
-    char *name;
+    const char *name;
 
     /* All opcodes take no operands from the bytecode stream, or take
        unsigned integers of various sizes.  If this is a positive number
@@ -205,14 +204,14 @@ struct aop_map
        be printed as an unsigned integer.  If this is zero, then the
        opcode takes no operands from the bytecode stream.
 
-       If we get more complicated opcodes in the future, don't add other
-       magic values of this; that's a crock.  Add an `enum encoding'
+       If we get more complicated opcodes in the future, do NOT add other
+       magic values of this; that would be a crock.  Add an `enum encoding'
        field to this, or something like that.  */
-    int op_size;
+    size_t op_size;
 
     /* The size of the data operated upon, in bits, for bytecodes that
        care about that (ref and const).  Zero for all others.  */
-    int data_size;
+    size_t data_size;
 
     /* Number of stack elements consumed, and number produced.  */
     int consumed, produced;
@@ -251,7 +250,6 @@ enum agent_flaws
 /* Structure describing the requirements of a bytecode expression.  */
 struct agent_reqs
   {
-
     /* If the following is not equal to agent_flaw_none, the rest of the
        information in this structure is suspect.  */
     enum agent_flaws flaw;
@@ -265,7 +263,7 @@ struct agent_reqs
 
     /* Largest `ref' or `const' opcode used, in bits.  Zero means the
        expression has no such instructions.  */
-    int max_data_size;
+    size_t max_data_size;
 
     /* Bit vector of registers used.  Register R is used iff
 
@@ -277,10 +275,10 @@ struct agent_reqs
        has.  However, the bitmask is reg_mask_len bytes long, so the
        valid register numbers run from 0 to reg_mask_len * 8 - 1.  
 
-       We're assuming eight-bit bytes.  So sue me.
+       We are assuming eight-bit bytes.  So sue me.
 
        The caller should free reg_list when done.  */
-    int reg_mask_len;
+    size_t reg_mask_len;
     unsigned char *reg_mask;
   };
 

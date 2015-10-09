@@ -1023,7 +1023,9 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 	    if (type && (TYPE_CODE(type) == TYPE_CODE_PTR)) {
 	      type = TYPE_TARGET_TYPE(type);
             }
-	    type = TYPE_TARGET_TYPE(type);
+	    if ((type != NULL) && (TYPE_MAIN_TYPE(type) != NULL)) {
+	      type = TYPE_TARGET_TYPE(type);
+	    }
 
 	    if (type) {
               if ((TYPE_CODE(type) == TYPE_CODE_ERROR) && expect_type) {

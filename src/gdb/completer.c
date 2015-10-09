@@ -64,7 +64,7 @@ char *line_completion_function (const char *text, int matches,
    readline library sees one in any of the current completion strings,
    it thinks that the string needs to be quoted and automatically supplies
    a leading quote. */
-static char *gdb_completer_command_word_break_characters =
+static const char *gdb_completer_command_word_break_characters =
 /* APPLE LOCAL begin completer */
 /* Do NOT include '/' in this list.  See also the copy of this string
    in language.c:default_word_break_characters().  */
@@ -78,21 +78,21 @@ static char *gdb_completer_command_word_break_characters =
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
 /* MS-DOS and MS-Windows use colon as part of the drive spec, and most
    programs support @foo style response files.  */
-static char *gdb_completer_file_name_break_characters = " \t\n*|\"';?><@";
+static const char *gdb_completer_file_name_break_characters = " \t\n*|\"';?><@";
 #else
-static char *gdb_completer_file_name_break_characters = " \t\n*|\"';:?><";
+static const char *gdb_completer_file_name_break_characters = " \t\n*|\"';:?><";
 #endif /* HAVE_DOS_BASED_FILE_SYSTEM */
 
 /* APPLE LOCAL begin completer */
 /* When completing a file name, only a space should be considered a
    word break character. */
-char *gdb_completer_filename_word_break_characters = " ";
+const char *gdb_completer_filename_word_break_characters = " ";
 /* APPLE LOCAL end completer */
 
 /* Characters that can be used to quote completion strings.  Note that we
    cannot include '"' because the gdb C parser treats such quoted sequences
    as strings. */
-static char *gdb_completer_quote_characters = "'";
+static const char *gdb_completer_quote_characters = "'";
 
 /* Accessor for some completer data that may interest other files. */
 

@@ -478,7 +478,7 @@ macosx_check_malloc_is_unsafe(void)
 {
   static struct cached_value *malloc_check_fn = NULL;
   struct cleanup *scheduler_cleanup;
-  struct value *tmp_value = NULL;
+  struct value *volatile tmp_value = (struct value *volatile)NULL;
   struct gdb_exception e;
   int success;
 

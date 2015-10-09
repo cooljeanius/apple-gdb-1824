@@ -28,9 +28,9 @@ Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA */
    during the process of parsing; the lower levels of the tree always
    come first in the result.
 
-   Note that malloc's and realloc's in this file are transformed to
-   xmalloc and xrealloc respectively by the same sed command in the
-   makefile that remaps any other malloc/realloc inserted by the parser
+   Note that malloc's, realloc's, and free's in this file are transformed to
+   xmalloc, xrealloc, and xfree respectively by the same sed command in the
+   makefile that remaps any other malloc/realloc/free inserted by the parser
    generator.  Doing this with #defines and trying to control the interaction
    with include files (<malloc.h> and <stdlib.h> for example) just became
    too messy, particularly when such includes can be inserted at random
@@ -891,7 +891,7 @@ array_mod:	'[' ']'
 func_mod:	'(' ')'
 			{ $$ = 0; }
 	|	'(' nonempty_typelist ')'
-			{ free ($2); $$ = 0; }
+			{ free($2); $$ = 0; }
 	;
 
 /* We used to try to recognize more pointer to member types here, but

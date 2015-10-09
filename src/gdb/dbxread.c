@@ -3465,7 +3465,8 @@ open_bfd_from_oso(struct partial_symtab *pst, int *cached)
         {
 	  /* Only error if we do not have a separate debug objfile (dSYM).  */
 	  if (!pst->objfile || pst->objfile->separate_debug_objfile == NULL)
-            warning ("Could not open object file: \"%s\": %s", oso_name, strerror (errno));
+            warning("Could not open object file: \"%s\": %s", oso_name,
+		    safe_strerror(errno));
 	  return NULL;
         }
       if (bfd_check_format(oso_bfd, bfd_archive))
@@ -4203,7 +4204,7 @@ stabsect_read_strtab_from_oso(struct bfd *oso_bfd, int *symcount,
     }
 
   oso_cleanup =
-    (struct oso_data_cleanup *)malloc(sizeof(struct oso_data_cleanup));
+    (struct oso_data_cleanup *)xmalloc(sizeof(struct oso_data_cleanup));
 
   oso_cleanup->stab_data_handle = stab_data_handle;
   oso_cleanup->strtab_data_handle = strtab_data_handle;

@@ -258,17 +258,17 @@ finish_block(struct symbol *symbol, struct pending **listhead,
   struct pending_block *opblock;
   int i;
 
-  block = allocate_block (&objfile->objfile_obstack);
+  block = allocate_block(&objfile->objfile_obstack);
 
   if (symbol)
     {
-      BLOCK_DICT (block) = dict_create_linear (&objfile->objfile_obstack,
-					       *listhead);
+      BLOCK_DICT(block) = dict_create_linear(&objfile->objfile_obstack,
+					     *listhead);
     }
   else
     {
-      BLOCK_DICT (block) = dict_create_hashed (&objfile->objfile_obstack,
-					       *listhead);
+      BLOCK_DICT(block) = dict_create_hashed(&objfile->objfile_obstack,
+					     *listhead);
     }
 
   /* APPLE LOCAL begin address ranges  */
@@ -276,7 +276,7 @@ finish_block(struct symbol *symbol, struct pending **listhead,
     {
       /* Figure out the min and max address for this block from the ranges
          information.  */
-      for (i=0; i<ranges->nelts; i++)
+      for (i = 0; i < ranges->nelts; i++)
 	{
 	  if (ranges->ranges[i].startaddr < start)
 	    start = ranges->ranges[i].startaddr;
@@ -482,14 +482,14 @@ finish_block(struct symbol *symbol, struct pending **listhead,
 	     them. If the compiler/assembler/linker work, this just
 	     burns a small amount of time.  */
 	  /* APPLE LOCAL begin address ranges  */
-	  if (!contained_in (pblock->block, block))
+	  if (!contained_in(pblock->block, block))
 	  /* APPLE LOCAL end address ranges  */
 	    {
 	      if (symbol)
 		{
-		  complaint (&symfile_complaints,
-			     _("inner block not inside outer block in %s"),
-			     SYMBOL_PRINT_NAME (symbol));
+		  complaint(&symfile_complaints,
+			    _("inner block not inside outer block in %s"),
+			    SYMBOL_PRINT_NAME(symbol));
 		}
 	      else
 		{
@@ -497,20 +497,20 @@ finish_block(struct symbol *symbol, struct pending **listhead,
                      its name, clap your hands.  Er, I mean, print it.  */
                   if (pblock->block->function
                       && pblock->block->function->ginfo.name)
-		  complaint (&symfile_complaints,
-			     _("inner block (0x%s-0x%s '%s') not inside outer block (0x%s-0x%s)"),
-			     paddr_nz (BLOCK_START (pblock->block)),
-			     paddr_nz (BLOCK_END (pblock->block)),
-                             pblock->block->function->ginfo.name,
-			     paddr_nz (BLOCK_START (block)),
-			     paddr_nz (BLOCK_END (block)));
+		    complaint(&symfile_complaints,
+			      _("inner block (0x%s-0x%s '%s') not inside outer block (0x%s-0x%s)"),
+			      paddr_nz(BLOCK_START(pblock->block)),
+			      paddr_nz(BLOCK_END(pblock->block)),
+			      pblock->block->function->ginfo.name,
+			      paddr_nz(BLOCK_START(block)),
+			      paddr_nz(BLOCK_END(block)));
                   else
-		  complaint (&symfile_complaints,
-			     _("inner block (0x%s-0x%s) not inside outer block (0x%s-0x%s)"),
-			     paddr_nz (BLOCK_START (pblock->block)),
-			     paddr_nz (BLOCK_END (pblock->block)),
-			     paddr_nz (BLOCK_START (block)),
-			     paddr_nz (BLOCK_END (block)));
+		    complaint(&symfile_complaints,
+			      _("inner block (0x%s-0x%s) not inside outer block (0x%s-0x%s)"),
+			      paddr_nz(BLOCK_START(pblock->block)),
+			      paddr_nz(BLOCK_END(pblock->block)),
+			      paddr_nz(BLOCK_START(block)),
+			      paddr_nz(BLOCK_END(block)));
 		}
 	      /* APPLE LOCAL begin address ranges  */
 	      /* We're trying to fit all the pending blocks into a

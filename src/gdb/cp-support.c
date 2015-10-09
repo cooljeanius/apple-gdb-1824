@@ -132,7 +132,7 @@ mangled_name_to_comp (const char *mangled_name, int options,
 
   if (ret == NULL)
     {
-      free (demangled_name);
+      xfree(demangled_name);
       return NULL;
     }
 

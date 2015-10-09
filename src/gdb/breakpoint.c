@@ -794,7 +794,7 @@ commands_command (char *arg, int from_tty)
      being read from.  */
 
   if (executing_breakpoint_commands)
-    error (_("Can't use the \"commands\" command among a breakpoint's commands."));
+    error (_("Cannot use the \"commands\" command among a breakpoint's commands."));
 
   p = arg;
   bnum = get_number (&p);
@@ -805,8 +805,8 @@ commands_command (char *arg, int from_tty)
   ALL_BREAKPOINTS (b)
     if (b->number == bnum)
       {
-	char *tmpbuf = xstrprintf ("Type commands for when breakpoint %d is hit, one per line.",
-				 bnum);
+	char *tmpbuf = xstrprintf("Type commands for when breakpoint %d is hit, one per line.",
+				  bnum);
 	struct cleanup *cleanups = make_cleanup (xfree, tmpbuf);
 	l = read_command_lines (tmpbuf, from_tty);
 	do_cleanups (cleanups);
@@ -817,6 +817,49 @@ commands_command (char *arg, int from_tty)
 	return;
     }
   error (_("No breakpoint number %d."), bnum);
+}
+
+/* Like commands_command, but instead of reading the commands from
+ * input stream, takes them from an already parsed command structure.
+ *
+ * This is used by cli-script.c to DTRT with breakpoint commands
+ * that are part of if and while bodies.  */
+enum command_control_type
+commands_from_control_command(char *arg, struct command_line *cmd)
+{
+  struct breakpoint *b;
+  char *p;
+  int bnum;
+  
+  /* If we allowed this, then we would have problems with when to free the
+   * storage, if we change the commands from which we are currently reading: */
+  if (executing_breakpoint_commands)
+    error(_("Cannot use the \"commands\" command among a breakpoint's commands."));
+  /* An empty string for the breakpoint number means the last
+   * breakpoint, but get_number expects a NULL pointer.  */
+  if (arg && !*arg)
+    p = NULL;
+  else
+    p = arg;
+  bnum = get_number(&p);
+  
+  if (p && *p)
+    error(_("Unexpected extra arguments following breakpoint number."));
+  
+  ALL_BREAKPOINTS(b)
+    if (b->number == bnum)
+      {
+	free_command_lines (&b->commands);
+	if (cmd->body_count != 1)
+	  error(_("Invalid \"commands\" block structure."));
+	/* We need to copy the commands because if/while will free the
+	 * list after it finishes execution.  */
+	b->commands = copy_command_lines(cmd->body_list[0]);
+	breakpoints_changed();
+	breakpoint_modify_event(b->number);
+	return simple_control;
+      }
+  error(_("No breakpoint number %d."), bnum);
 }
 
 /* APPLE LOCAL begin breakpoint MI */
@@ -3904,7 +3947,7 @@ print_one_breakpoint(struct breakpoint *b,
   struct ep_type_description
     {
       enum bptype type;
-      char *description;
+      const char *description;
     };
   static struct ep_type_description bptypes[] =
   {
@@ -6380,10 +6423,12 @@ parse_breakpoint_sals (char **address,
 	  /* APPLE LOCAL: Supply a "*ADDR" for default case (ADDR is pc value).  */
 	  {
 	    char *s;
-	    s = paddr_u (sal.pc);
-	    *addr_string = (char **) xmalloc (sizeof (char **));
-	    **addr_string = (char *) xmalloc (strlen (s) + 2);
-	    sprintf (**addr_string, "*%s", s);
+	    size_t addr_string_len;
+	    s = paddr_u(sal.pc);
+	    *addr_string = (char **)xmalloc(sizeof(char **));
+	    addr_string_len = (strlen(s) + 2UL);
+	    **addr_string = (char *)xmalloc(addr_string_len);
+	    snprintf(**addr_string, addr_string_len, "*%s", s);
 	  }
 	}
       else
@@ -6619,7 +6664,7 @@ break_command_1(char *arg, int flag, int from_tty,
 	      len = (arg - begin);
 	    }
 
-	  requested_shlib = (char *)malloc(len + 1);
+	  requested_shlib = (char *)xmalloc(len + 1);
 	  strncpy(requested_shlib, begin, len);
 	  requested_shlib[len] = '\0';
 	  /* Now step past any other spaces, the code below requires that: */
@@ -7457,6 +7502,7 @@ watch_command_1(char *arg, int accessflag, int by_location, int from_tty)
   char *cond_start = NULL;
   char *cond_end = NULL;
   char *exp_string = NULL;
+  size_t exp_string_len;
   struct expression *cond = NULL;
   int i, other_type_used, target_resources_ok = 0;
   enum bptype bp_type;
@@ -7497,8 +7543,9 @@ watch_command_1(char *arg, int accessflag, int by_location, int from_tty)
 	 original expression, which might not work anymore.  */
 
       addr_str = paddr_nz(value_as_address(orig_val));
-      exp_string = (char *)xmalloc(2UL + strlen(type_str) + 6UL + strlen(addr_str) + 1UL);
-      sprintf(exp_string, "*((%s) 0x%s)", type_str, addr_str);
+      exp_string_len = (2UL + strlen(type_str) + 6UL + strlen(addr_str) + 1UL);
+      exp_string = (char *)xmalloc(exp_string_len);
+      snprintf(exp_string, exp_string_len, "*((%s) 0x%s)", type_str, addr_str);
       xfree(type_str);
       tmp_str = exp_string;
       exp = parse_exp_1(&tmp_str, 0, 0);
@@ -10558,7 +10605,7 @@ save_breakpoints_command (char *arg, int from_tty)
           stream = gdb_fopen(pathname, FOPEN_WT);
           if (stream == NULL)
             error("Unable to open file '%s' for saving breakpoints (%s)",
-                  arg, strerror(errno));
+                  arg, safe_strerror(errno));
           make_cleanup_ui_file_delete(stream);
           uiout = cli_out_new(stream);
           if (uiout == NULL)

@@ -504,7 +504,7 @@ prepare_threads_before_run(struct macosx_inferior_status *inferior,
   }
 }
 
-char *
+const char *
 unparse_run_state(int run_state)
 {
   switch (run_state) {
@@ -707,7 +707,7 @@ get_dispatch_queue_name(CORE_ADDR dispatch_qaddr)
 
   namebuf[0] = '\0';
 
-  if (dispatch_offsets->version > 3)
+  if ((dispatch_offsets == NULL) || (dispatch_offsets->version > 3))
     return NULL;
 
   if ((dispatch_qaddr != 0)
@@ -762,9 +762,11 @@ get_dispatch_queue_flags(CORE_ADDR dispatch_qaddr, uint32_t *flags)
   return 0;
 }
 
+/* */
 static void
 print_thread_info(thread_t tid, int *gdb_thread_id)
 {
+#if defined(THREAD_IDENTIFIER_INFO) && defined(THREAD_IDENTIFIER_INFO_COUNT)
   struct thread_basic_info info;
   unsigned int info_count = THREAD_BASIC_INFO_COUNT;
   kern_return_t kret;
@@ -890,8 +892,10 @@ print_thread_info(thread_t tid, int *gdb_thread_id)
     printf_filtered("\tCould not find the thread in gdb's internal thread list.\n");
   else if (tp->private->gdb_dont_suspend_stepping)
     printf_filtered("\tSet to run while stepping.\n");
+#endif /* THREAD_IDENTIFIER_INFO && THREAD_IDENTIFIER_INFO_COUNT */
 }
 
+/* */
 void
 info_task_command(char *args, int from_tty)
 {
@@ -927,6 +931,7 @@ info_task_command(char *args, int from_tty)
   MACH_CHECK_ERROR(kret);
 }
 
+/* */
 static thread_t
 parse_thread(char *tidstr, int *gdb_thread_id)
 {
@@ -965,6 +970,7 @@ parse_thread(char *tidstr, int *gdb_thread_id)
   return ptid_get_tid(ptid);
 }
 
+/* */
 void
 info_thread_command(char *tidstr, int from_tty)
 {
@@ -973,6 +979,7 @@ info_thread_command(char *tidstr, int from_tty)
   print_thread_info(thread, &gdb_thread_id);
 }
 
+/* */
 static void
 thread_suspend_command(char *tidstr, int from_tty)
 {
@@ -985,6 +992,7 @@ thread_suspend_command(char *tidstr, int from_tty)
   MACH_CHECK_ERROR(kret);
 }
 
+/* */
 static int
 thread_match_callback(struct thread_info *t, void *thread_ptr)
 {
@@ -998,6 +1006,7 @@ thread_match_callback(struct thread_info *t, void *thread_ptr)
     return 0;
 }
 
+/* */
 static void
 thread_dont_suspend_while_stepping_command(char *arg, int from_tty)
 {
@@ -1063,6 +1072,7 @@ thread_dont_suspend_while_stepping_command(char *arg, int from_tty)
     }
 }
 
+/* */
 static void
 thread_resume_command(char *tidstr, int from_tty)
 {
@@ -1085,6 +1095,7 @@ thread_resume_command(char *tidstr, int from_tty)
   MACH_CHECK_ERROR(kret);
 }
 
+/* */
 static int
 mark_dead_if_thread_is_gone(struct thread_info *tp, void *data)
 {
@@ -1144,6 +1155,7 @@ macosx_prune_threads(thread_array_t thread_list, unsigned int nthreads)
 void
 macosx_print_thread_details(struct ui_out *uiout, ptid_t ptid)
 {
+#if defined(THREAD_IDENTIFIER_INFO) && defined(THREAD_IDENTIFIER_INFO_COUNT)
   thread_t tid = ptid_get_tid(ptid);
   struct thread_basic_info info;
   unsigned int info_count = THREAD_BASIC_INFO_COUNT;
@@ -1195,6 +1207,7 @@ macosx_print_thread_details(struct ui_out *uiout, ptid_t ptid)
                              paddr_nz(struct_addr));
         }
     }
+#endif /* THREAD_IDENTIFIER_INFO && THREAD_IDENTIFIER_INFO_COUNT */
 }
 
 /* keep the condition the same as where we push: */

@@ -21,6 +21,10 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+/* define this because of a header for mmalloc that needs fixing: */
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* !NO_POISON */
 #include "defs.h"
 #include "inferior.h"
 #include "symtab.h"
@@ -272,8 +276,10 @@ dyld_add_image_libraries(struct dyld_objfile_info *info, bfd *abfd)
                   bfd_seek(abfd, dcmd->name_offset, SEEK_SET);
                   if (bfd_bread(name, dcmd->name_len, abfd) != dcmd->name_len)
                     {
-                      warning
-                        ("Unable to find library name for LC_LOAD_DYLIB, LC_LOAD_UPWARD_DYLIB, LC_LOAD_WEAK_DYLIB or LC_REEXPORT_DYLIB command; ignoring");
+		      const char *lcs_str =
+			"LC_LOAD_DYLIB, LC_LOAD_UPWARD_DYLIB, LC_LOAD_WEAK_DYLIB or LC_REEXPORT_DYLIB command";
+                      warning("Unable to find library name for %s; ignoring",
+			      lcs_str);
                       xfree(name);
                       name = NULL;
                       continue;
@@ -381,7 +387,10 @@ dyld_add_image_libraries(struct dyld_objfile_info *info, bfd *abfd)
               case BFD_MACH_O_LC_REEXPORT_DYLIB:
                 break;
               case BFD_MACH_O_LC_LOAD_WEAK_DYLIB:
-                e->reason |= (enum dyld_objfile_reason)dyld_reason_weak_mask;
+                e->reason =
+		  ((enum dyld_objfile_reason)
+		   (e->reason
+		    | (enum dyld_objfile_reason)dyld_reason_weak_mask));
                 break;
               default:
                 abort();
@@ -418,7 +427,9 @@ dyld_resolve_filename_image(const struct macosx_dyld_thread_status *s,
     case MH_DYLIB:
       break;
     case MH_BUNDLE:
+#ifdef MH_KEXT_BUNDLE
     case MH_KEXT_BUNDLE:
+#endif /* MH_KEXT_BUNDLE */
       break;
     default:
       return;
@@ -1415,7 +1426,7 @@ dyld_load_library(const struct dyld_path_info *d,
 	  if (uuid_addr != (bfd_vma)-1L)
 	    {
 	      struct gdb_exception exc;
-	      int error = 0;
+	      volatile int error = 0;
 	      int found_uuid = 0;
 
 	      uuid_addr += e->dyld_addr;
@@ -1564,7 +1575,7 @@ static void
 dyld_load_symfile_internal(struct dyld_objfile_entry *e,
                            int preserving_objfile_p)
 {
-  struct section_addr_info *addrs;
+  struct section_addr_info *volatile addrs;
   size_t i;
   volatile int using_orig_objfile = 0;
 
@@ -1819,7 +1830,7 @@ dyld_load_symfiles(struct dyld_objfile_info *result)
 {
   int i;
   int first = 1;
-  struct dyld_objfile_entry *e;
+  struct dyld_objfile_entry *e = (struct dyld_objfile_entry *)NULL;
   CHECK_FATAL(result != NULL);
 
   DYLD_ALL_OBJFILE_INFO_ENTRIES(result, e, i)
@@ -2290,13 +2301,13 @@ dyld_libraries_compatible (struct dyld_path_info *d,
 	return 0;
       if (oldent->loaded_from_memory && newent->loaded_from_memory)
 	{
-	  char *mem_obj_str = "[memory object \"";
-	  int offset = strlen (mem_obj_str);
-	  if ((strstr (newname, mem_obj_str) == newname
-	       && strstr (newname, oldname) == newname + offset)
-	      ||(strstr (oldname, mem_obj_str) == oldname
-		 && strstr (oldname, newname) == oldname + offset))
-	    return dyld_libraries_similar (d, newent, oldent);
+	  const char *mem_obj_str = "[memory object \"";
+	  size_t offset = strlen(mem_obj_str);
+	  if ((strstr(newname, mem_obj_str) == newname
+	       && strstr(newname, oldname) == (newname + offset))
+	      || (strstr(oldname, mem_obj_str) == oldname
+		  && strstr(oldname, newname) == (oldname + offset)))
+	    return dyld_libraries_similar(d, newent, oldent);
 	}
       else
 	{
@@ -2567,7 +2578,9 @@ dyld_merge_shlibs(const struct macosx_dyld_thread_status *s,
       e = dyld_objfile_entry_alloc(newobj);
       *e = *o;
 
-      e->reason |= (enum dyld_objfile_reason)dyld_reason_cached_mask;
+      e->reason = 
+	((enum dyld_objfile_reason)
+	 (e->reason | (enum dyld_objfile_reason)dyld_reason_cached_mask));
 
       dyld_objfile_entry_clear(o);
     }

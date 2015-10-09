@@ -214,30 +214,29 @@ struct cmd_list_element
 
 /* API to the manipulation of command lists.  */
 
-extern struct cmd_list_element *add_cmd (char *, enum command_class,
-					 void (*fun) (char *, int), char *,
-					 struct cmd_list_element **);
+extern struct cmd_list_element *add_cmd(const char *, enum command_class,
+					void (*fun)(char *, int), const char *,
+					struct cmd_list_element **);
 
-extern struct cmd_list_element *add_alias_cmd (char *, char *,
-					       enum command_class, int,
+extern struct cmd_list_element *add_alias_cmd(const char *, char *,
+					      enum command_class, int,
+					      struct cmd_list_element **);
+
+extern struct cmd_list_element *add_prefix_cmd(const char *, enum command_class,
+					       void (*fun)(char *, int),
+					       const char *,
+					       struct cmd_list_element **,
+					       char *, int,
 					       struct cmd_list_element **);
 
-extern struct cmd_list_element *add_prefix_cmd (char *, enum command_class,
-						void (*fun) (char *, int),
-						char *,
-						struct cmd_list_element **,
-						char *, int,
-						struct cmd_list_element **);
-
-extern struct cmd_list_element *add_abbrev_prefix_cmd (char *,
-						       enum command_class,
-						       void (*fun) (char *,
-								    int),
-						       char *,
-						       struct cmd_list_element
-						       **, char *, int,
-						       struct cmd_list_element
-						       **);
+extern struct cmd_list_element *add_abbrev_prefix_cmd(const char *,
+						      enum command_class,
+						      void (*fun)(char *, int),
+						      const char *,
+						      struct cmd_list_element
+						      **, char *, int,
+						      struct cmd_list_element
+						      **);
 
 /* Set the commands corresponding callback.  */
 
@@ -283,14 +282,14 @@ extern int
                          struct cmd_list_element **prefix_cmd,
                          struct cmd_list_element **cmd);
 
-extern struct cmd_list_element *add_com (char *, enum command_class,
-					 void (*fun) (char *, int), char *);
+extern struct cmd_list_element *add_com(const char *, enum command_class,
+					void (*fun)(char *, int), const char *);
 
 extern struct cmd_list_element *add_com_alias (char *, char *,
 					       enum command_class, int);
 
-extern struct cmd_list_element *add_info (char *, void (*fun) (char *, int),
-					  char *);
+extern struct cmd_list_element *add_info(const char *, void (*fun)(char *, int),
+					 const char *);
 
 extern struct cmd_list_element *add_info_alias (char *, char *, int);
 
@@ -298,7 +297,7 @@ extern char **complete_on_cmdlist (struct cmd_list_element *, char *, char *);
 
 extern char **complete_on_enum (const char *enumlist[], char *, char *);
 
-extern void delete_cmd (char *, struct cmd_list_element **);
+extern void delete_cmd(const char *, struct cmd_list_element **);
 
 extern void help_cmd_list (struct cmd_list_element *, enum command_class,
 			   char *, int, struct ui_file *);

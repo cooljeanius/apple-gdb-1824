@@ -6983,7 +6983,7 @@ build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
 -Wmissing-include-dirs -Woverflow -Woverlength-strings -Woverride-init \
 -Wpragmas -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
--Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc \
+-Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc -Wnull-dereference \
 -Wunsuffixed-float-constants -Wstrict-overflow -Wjump-misses-init \
 -Wmisleading-indentation -Wno-format-security -Wno-format"
 

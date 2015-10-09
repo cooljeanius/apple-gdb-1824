@@ -100,7 +100,7 @@ call_ptrace(int request, int pid, PTRACE_ARG3_TYPE arg3, int arg4)
   inferior_debug(2, "ptrace(%s, %d, %s, %d): %d (%s)\n",
                  ptrace_request_unparse(request),
                  pid, (caddr_t)arg3, arg4, ret,
-                 ((ret != 0) ? strerror(errno) : "no error"));
+                 ((ret != 0) ? safe_strerror(errno) : "no error"));
   return ret;
 }
 
@@ -150,7 +150,8 @@ macosx_inferior_destroy(macosx_inferior_status *s)
       retval = waitpid(s->pid, &stat, 0);
 
       if (retval == -1)
-	inferior_debug(2, "Final waitpid returned error: \"%s\"\n", strerror(errno));
+	inferior_debug(2, "Final waitpid returned error: \"%s\"\n",
+		       safe_strerror(errno));
       else if (retval == 0)
 	inferior_debug(2, "Final waitpid returned 0 - no children.");
       else
@@ -326,7 +327,7 @@ macosx_inferior_resume_ptrace(macosx_inferior_status *s, unsigned int thread,
         warning("Error calling ptrace (%s (0x%lx), %d, 0x%x, %d): %s",
                 ptrace_request_unparse(PTRACE_THUPDATE),
                 (unsigned long)PTRACE_THUPDATE, s->pid, thread, nsignal,
-                strerror(errno));
+                safe_strerror(errno));
     }
 
   if ((s->stopped_in_ptrace && (!s->stopped_in_softexc))
@@ -335,7 +336,7 @@ macosx_inferior_resume_ptrace(macosx_inferior_status *s, unsigned int thread,
       if (call_ptrace(val, s->pid, (PTRACE_ARG3_TYPE)1, nsignal) != 0)
         warning("Error calling ptrace (%s (0x%lx), %d, %d, %d): %s",
                 ptrace_request_unparse(val), (unsigned long)val,
-                s->pid, 1, nsignal, strerror(errno));
+                s->pid, 1, nsignal, safe_strerror(errno));
     }
 
   s->stopped_in_softexc = 0;

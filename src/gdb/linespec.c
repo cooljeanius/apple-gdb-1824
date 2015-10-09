@@ -459,20 +459,20 @@ add_matching_methods (int method_counter, struct type *t,
 
       if (phys_name[0] != '_')
         {
-          char *demangled_name = alloca (strlen (TYPE_NAME (t)) +
-                                         strlen (phys_name) + 3);
-          sprintf (demangled_name, "%s::%s", TYPE_NAME (t), phys_name);
+	  size_t d_n_len = (strlen(TYPE_NAME(t)) + strlen(phys_name) + 3UL);
+          char *demangled_name = (char *)alloca(d_n_len);
+          snprintf(demangled_name, d_n_len, "%s::%s", TYPE_NAME(t), phys_name);
 	  /* APPLE LOCAL begin return multiple symbols  */
-	  syms_found = lookup_symbol_all (demangled_name, NULL, VAR_DOMAIN,
-					  (int *) NULL,
-					  (struct symtab **) NULL,
-					  &sym_list);
+	  syms_found = lookup_symbol_all(demangled_name, NULL, VAR_DOMAIN,
+					 (int *)NULL,
+					 (struct symtab **)NULL,
+					 &sym_list);
         }
       else
-	syms_found = lookup_symbol_all (phys_name, NULL, VAR_DOMAIN,
-					(int *) NULL,
-					(struct symtab **) NULL,
-					&sym_list);
+	syms_found = lookup_symbol_all(phys_name, NULL, VAR_DOMAIN,
+				       (int *)NULL,
+				       (struct symtab **)NULL,
+				       &sym_list);
 
       if (syms_found)
 	{
@@ -697,16 +697,17 @@ build_canonical_line_spec(struct symtab_and_line *sal, char *symname,
   filename = s->filename;
   if (symname != NULL)
     {
+      size_t canon_name_len0 = (strlen(filename) + strlen(symname) + 2UL + 2UL);
       /* APPLE LOCAL: put single quotes around the symbol otherwise we'll
 	 fail to parse it correctly if it has parens or "::".  */
-      canonical_name = (char *)xmalloc(strlen(filename) + strlen(symname)
-                                       + 2UL + 2UL);
-      sprintf(canonical_name, "%s:'%s'", filename, symname);
+      canonical_name = (char *)xmalloc(canon_name_len0);
+      snprintf(canonical_name, canon_name_len0, "%s:'%s'", filename, symname);
     }
   else
     {
-      canonical_name = (char *)xmalloc(strlen(filename) + 30UL);
-      sprintf(canonical_name, "%s:%d", filename, sal->line);
+      size_t canon_name_len1 = (strlen(filename) + 30UL);
+      canonical_name = (char *)xmalloc(canon_name_len1);
+      snprintf(canonical_name, canon_name_len1, "%s:%d", filename, sal->line);
     }
   canonical_arr[0] = canonical_name;
 }
@@ -2225,15 +2226,15 @@ collect_methods(char *copy, struct type *t,
 
 	  if (phys_name[0] != '_')
 	    {
-	      char *demangled_name = alloca(strlen(TYPE_NAME(t)) +
-					    strlen(phys_name) + 3UL);
-	      sprintf(demangled_name, "%s::%s", TYPE_NAME(t), phys_name);
+	      size_t d_n_len = (strlen(TYPE_NAME(t)) + strlen(phys_name) + 3UL);
+	      char *demangled_name = (char *)alloca(d_n_len);
+	      snprintf(demangled_name, d_n_len, "%s::%s", TYPE_NAME(t),
+		       phys_name);
 	      /* APPLE LOCAL begin return multiple symbols  */
 	      syms_found = lookup_symbol_all(demangled_name, NULL, VAR_DOMAIN,
 					     (int *)NULL,
 					     (struct symtab **)NULL,
 					     &sym_list);
-
 	    }
 	  else
 	    syms_found = lookup_symbol_all(phys_name, NULL, VAR_DOMAIN,
@@ -2429,12 +2430,12 @@ one_block_contains_other (struct blockvector *bv, int index1, int index2)
    the other arguments are as usual.  */
 
 static struct symtabs_and_lines
-decode_all_digits_exhaustive (char **argptr, int funfirstline,
-			      struct symtab *default_symtab,
-			      int default_line, char ***canonical,
-			      struct symtab *file_symtab, char *q,
-			      int *parsed_lineno,
-			      int *not_found_ptr)
+decode_all_digits_exhaustive(char **argptr, int funfirstline,
+			     struct symtab *default_symtab,
+			     int default_line, char ***canonical,
+			     struct symtab *file_symtab, char *q,
+			     int *parsed_lineno,
+			     int *not_found_ptr)
 
 {
   struct symtabs_and_lines values;
@@ -2448,7 +2449,7 @@ decode_all_digits_exhaustive (char **argptr, int funfirstline,
   sign = none;
 
   /* We might need a canonical line spec if no file was specified.  */
-  int need_canonical = (file_symtab == 0) ? 1 : 0;
+  int need_canonical = ((file_symtab == 0) ? 1 : 0);
 
   /* This is where we need to make sure that we have good defaults.
      We must guarantee that this section of code is never executed
@@ -2640,8 +2641,7 @@ decode_all_digits_exhaustive (char **argptr, int funfirstline,
 	  }
 	else
 	  {
-	    /* We didn't find ANY match here.  What should we
-	       do?  */
+	    ; /* We didn't find ANY match here.  What should we do?  */
 	  }
       }
 
@@ -2653,60 +2653,58 @@ decode_all_digits_exhaustive (char **argptr, int funfirstline,
 	for (i = 0; i < values.nelts; i++)
 	  {
 	    struct symtab_and_line *val = &(values.sals[i]);
-	    struct symbol *func_sym;
-
-	    /* If we have an objfile for the pc, then be careful to only
-	       look in that objfile for the function symbol.  This is
-	       important because if you are running gdb on a program
-	       BEFORE it has been launched, the shared libraries might
-	       overlay each other, in which case we find_pc_function may
-	       return a function from another of these libraries.  That
-	       might fool us into moving the breakpoint over the
-	       prologue of this function, which is now totally in the
-	       wrong place...  */
-
+	    struct symbol *volatile func_sym = (struct symbol *volatile)NULL;
+	    
+	    /* If we have an objfile for the pc, then be careful to only look
+	     * in that objfile for the function symbol.  This is important
+	     * because if you are running gdb on a program BEFORE it has been
+	     * launched, then the shared libraries might overlay each other,
+	     * in which case we find_pc_function may return a function from
+	     * another of these libraries.  That might fool us into moving the
+	     * breakpoint over the prologue of this function, which is now
+	     * totally in the wrong place...  */
+	    
 	    if (val->symtab && val->symtab->objfile)
-            {
-              struct cleanup *restrict_cleanup;
-              restrict_cleanup =
-                make_cleanup_restrict_to_objfile
-                (val->symtab->objfile);
-              func_sym = find_pc_function (val->pc);
-              do_cleanups (restrict_cleanup);
-            }
-          else
-            {
-              func_sym = find_pc_function (val->pc);
-            }
-          if (func_sym)
-            {
-	      struct symtab_and_line sal;
-	      struct gdb_exception e;
-	      /* APPLE LOCAL: If we can't parse the prologue for some reason,
-		 make sure the breakpoint gets marked as "future".  */
-	      TRY_CATCH(e, RETURN_MASK_ALL)
 	      {
-		sal = find_function_start_sal(func_sym, 1);
+		struct cleanup *restrict_cleanup;
+		restrict_cleanup =
+		  make_cleanup_restrict_to_objfile(val->symtab->objfile);
+		func_sym = find_pc_function(val->pc);
+		do_cleanups(restrict_cleanup);
 	      }
-
-	      if (e.reason != (int)NO_ERROR)
+	    else
+	      {
+		func_sym = find_pc_function(val->pc);
+	      }
+	    if (func_sym)
+	      {
+		struct symtab_and_line sal;
+		struct gdb_exception e;
+		/* APPLE LOCAL: If we cannot parse the prologue for some reason,
+		 * then make sure the breakpoint gets marked as "future": */
+		TRY_CATCH(e, RETURN_MASK_ALL)
 		{
-		  if (not_found_ptr)
-		    *not_found_ptr = 1;
-		  throw_exception(e);
+		  sal = find_function_start_sal((struct symbol *)func_sym, 1);
 		}
-
-              /* Don't move the line, just set the pc
-                 to the right place. */
-	      /* Also, don't move the linenumber if the symtab's
-		 are different.  This will happen for inlined functions,
-		 and then you don't want to move the pc.  */
-
-              if (val->symtab == sal.symtab
-		  &&val->line <= sal.line)
-                val->pc = sal.pc;
-            }
+	      
+		if (e.reason != (int)NO_ERROR)
+		  {
+		    if (not_found_ptr)
+		      *not_found_ptr = 1;
+		    throw_exception(e);
+		  }
+	      
+		/* Do NOT move the line, just set the pc to the right place. */
+		/* Also, do NOT move the linenumber if the symtabs are
+		 * different.  This will happen for inlined functions, and then
+		 * you do NOT want to move the pc.  */
+	      
+		if (val->symtab == sal.symtab
+		    && val->line <= sal.line)
+		  val->pc = sal.pc;
+	      }
 	  }
+	/* end for-loop */
       }
   }
 
@@ -3327,18 +3325,18 @@ symbols_found (int funfirstline, char ***canonical, char *copy,
 		    {
 		      if (copy)
 			{
-			  canonical_name =
-                            (char *)xmalloc(strlen(s->filename) +
-                                            strlen(copy) + 4UL);
-			  sprintf(canonical_name, "%s:'%s'", s->filename,
-				  copy);
+			  size_t c_n_len0 = (strlen(s->filename) + strlen(copy)
+					     + 4UL);
+			  canonical_name = (char *)xmalloc(c_n_len0);
+			  snprintf(canonical_name, c_n_len0, "%s:'%s'",
+				   s->filename, copy);
 			}
 		      else
 			{
-			  canonical_name =
-                            (char *)xmalloc(strlen(s->filename) + 30UL);
-			  sprintf(canonical_name, "%s:%d", s->filename,
-				  values.sals[i].line);
+			  size_t c_n_len1 = (strlen(s->filename) + 30UL);
+			  canonical_name = (char *)xmalloc(c_n_len1);
+			  snprintf(canonical_name, c_n_len1, "%s:%d",
+				   s->filename, values.sals[i].line);
 			}
                       if (canonical_arr)
 		        canonical_arr[i] = canonical_name;

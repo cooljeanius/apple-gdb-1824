@@ -1198,15 +1198,15 @@ static char *dwarf2_name(struct die_info *die, struct dwarf2_cu *);
 static struct die_info *dwarf2_extension(struct die_info *die,
 					 struct dwarf2_cu *);
 
-static char *dwarf_tag_name(unsigned int);
-static char *dwarf_attr_name(unsigned int);
-static char *dwarf_form_name(unsigned int);
-static char *dwarf_stack_op_name(unsigned int);
-static char *dwarf_bool_name(unsigned int);
-static char *dwarf_type_encoding_name(unsigned int);
+static const char *dwarf_tag_name(unsigned int);
+static const char *dwarf_attr_name(unsigned int);
+static const char *dwarf_form_name(unsigned int);
+static const char *dwarf_stack_op_name(unsigned int);
+static const char *dwarf_bool_name(unsigned int);
+static const char *dwarf_type_encoding_name(unsigned int);
 
 #if 0 || 1
-static char *dwarf_cfi_name(unsigned int);
+static const char *dwarf_cfi_name(unsigned int);
 struct die_info *copy_die(struct die_info *);
 #endif /* 0 || 1 */
 
@@ -1556,7 +1556,7 @@ dwarf2_scan_inlined_section_for_psymbols(struct partial_symtab *pst,
   static int timer = -1;
   struct dwarf2_cu fake_cu;
 
-  /* FIXME temporary workaround for debug_inlined sections that cause gdb
+  /* FIXME: temporary workaround for debug_inlined sections that cause gdb
      to provide incorrect backtraces, v. <rdar://problem/6771834>
      jmolenda/2009-04-08  */
   return;
@@ -2195,7 +2195,7 @@ scan_partial_inlined_function_symbols(struct dwarf2_cu *cu)
   const struct partial_symbol *psym = NULL;
   static struct objfile *current_psym_objfile = NULL;
 
-  /* FIXME temporary workaround for debug_inlined sections that cause gdb
+  /* FIXME: temporary workaround for debug_inlined sections that cause gdb
      to provide incorrect backtraces, v. <rdar://problem/6771834>
      jmolenda/2009-04-08  */
   return;
@@ -10659,11 +10659,12 @@ new_symbol (struct die_info *die, struct type *type, struct dwarf2_cu *cu)
 	    {
 	      dwarf2_const_value (attr, sym, cu);
 	    }
-	  /* FIXME:  This assert should be true, but gcc isn't always giving
-	     DW_AT_location for parameters of inlined subroutines yet.
-	     gdb_assert (SYMBOL_CLASS (sym) != LOC_STATIC);
-	  */
-	  add_symbol_to_list (sym, cu->list_in_scope);
+	  /* FIXME:  This assert should be true, but gcc is NOT always giving
+	   * DW_AT_location for parameters of inlined subroutines yet: */
+#ifdef GCC_NOW_ALWAYS_GIVES_DW_AT_LOCATION_FOR_INL_SUBR_PARMS
+	     gdb_assert(SYMBOL_CLASS(sym) != LOC_STATIC);
+#endif /* GCC_NOW_ALWAYS_GIVES_DW_AT_LOCATION_FOR_INL_SUBR_PARMS */
+	  add_symbol_to_list(sym, cu->list_in_scope);
 	  break;
 	case DW_TAG_unspecified_parameters:
 	  /* From varargs functions; gdb doesn't seem to have any
@@ -10939,7 +10940,7 @@ die_type(struct die_info *die, struct dwarf2_cu *cu)
 {
   struct type *type;
   struct attribute *type_attr;
-  struct die_info *type_die;
+  struct die_info *type_die = (struct die_info *)NULL;
   /* APPLE LOCAL avoid unused var warning: */
 #ifdef ALLOW_UNUSED_VARIABLES
   int type_id;
@@ -10963,12 +10964,12 @@ die_type(struct die_info *die, struct dwarf2_cu *cu)
     }
   /* APPLE LOCAL end dwarf repository  */
 
-  type = tag_type_to_type (type_die, cu);
+  type = tag_type_to_type(type_die, cu);
   if (!type)
     {
-      dump_die (type_die);
-      error (_("Dwarf Error: Problem turning type die at offset into gdb type [in module %s]"),
-		      cu->objfile->name);
+      dump_die(type_die);
+      error(_("Dwarf Error: Problem turning type die at offset into gdb type [in module %s]"),
+	    cu->objfile->name);
     }
   return type;
 }
@@ -11227,7 +11228,7 @@ dwarf_base_type (int encoding, int size, struct dwarf2_cu *cu)
 {
   struct objfile *objfile = cu->objfile;
 
-  /* FIXME - this should not produce a new (struct type *)
+  /* FIXME: this should not produce a new (struct type *)
      every time.  It should cache base types.  */
   struct type *type;
   switch (encoding)
@@ -11385,7 +11386,7 @@ dwarf2_extension (struct die_info *die, struct dwarf2_cu *cu)
 }
 
 /* Convert a DIE tag into its string name: */
-static char *
+static const char *
 dwarf_tag_name(unsigned tag)
 {
   switch (tag)
@@ -11458,7 +11459,7 @@ dwarf_tag_name(unsigned tag)
 }
 
 /* Convert a DWARF attribute code into its string name: */
-static char *
+static const char *
 dwarf_attr_name(unsigned int attr)
 {
   switch (attr)
@@ -11572,7 +11573,7 @@ dwarf_attr_name(unsigned int attr)
 }
 
 /* Convert a DWARF value form code into its string name: */
-static char *
+static const char *
 dwarf_form_name(unsigned int form)
 {
   switch (form)
@@ -11605,7 +11606,7 @@ dwarf_form_name(unsigned int form)
 }
 
 /* Convert a DWARF stack opcode into its string name: */
-static char *
+static const char *
 dwarf_stack_op_name(unsigned int op)
 {
   switch (op)
@@ -11769,7 +11770,7 @@ dwarf_stack_op_name(unsigned int op)
     }
 }
 
-static char *
+static const char *
 dwarf_bool_name(unsigned mybool)
 {
   if (mybool)
@@ -11779,7 +11780,7 @@ dwarf_bool_name(unsigned mybool)
 }
 
 /* Convert a DWARF type code into its string name: */
-static char *
+static const char *
 dwarf_type_encoding_name(unsigned int enc)
 {
   switch (enc)
@@ -11799,7 +11800,7 @@ dwarf_type_encoding_name(unsigned int enc)
 
 /* Convert a DWARF call frame info operation to its string name: */
 #if 0 || 1
-static char *
+static const char *
 dwarf_cfi_name(unsigned cfi_opc)
 {
   switch (cfi_opc)
@@ -12607,7 +12608,7 @@ dwarf_decode_macros(struct line_header *lh, unsigned int offset,
 
   if (dwarf2_per_objfile->macinfo_buffer == NULL)
     {
-      complaint (&symfile_complaints, _("missing .debug_macinfo section"));
+      complaint(&symfile_complaints, _("missing .debug_macinfo section"));
       return;
     }
 
@@ -14467,9 +14468,9 @@ read_in_db_abbrev_table(struct abbrev_info **abbrev_table, sqlite3 *db)
 	      else
 		new_size = cur_table_size;
 	      *abbrev_table = ((struct abbrev_info *)
-                               realloc(*abbrev_table,
-                                       (new_size
-                                        * sizeof(struct abbrev_info))));
+                               xrealloc(*abbrev_table,
+					(new_size
+					 * sizeof(struct abbrev_info))));
 	      cur_table_size = new_size;
 	    }
 	  if (abbrev_id > max_id)

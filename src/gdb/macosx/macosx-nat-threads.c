@@ -51,7 +51,7 @@ gdb_pthread_kill(pthread_t pthread)
   if (ret != 0)
     {
       warning("Unable to join to canceled thread: %s (%d)",
-              strerror(errno), errno);
+              safe_strerror(errno), errno);
     }
 }
 
@@ -66,27 +66,27 @@ gdb_pthread_fork(pthread_fn_t function, void *arg)
   if (result != 0)
     {
       error("Unable to initialize thread attributes: %s (%d)",
-            strerror(errno), errno);
+            safe_strerror(errno), errno);
     }
 
   result = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
   if (result != 0)
     {
       error("Unable to initialize thread attributes: %s (%d)",
-            strerror(errno), errno);
+            safe_strerror(errno), errno);
     }
 
   result = pthread_create(&pthread, &attr, function, arg);
   if (result != 0)
     {
-      error("Unable to create thread: %s (%d)", strerror(errno), errno);
+      error("Unable to create thread: %s (%d)", safe_strerror(errno), errno);
     }
 
   result = pthread_attr_destroy(&attr);
   if (result != 0)
     {
       warning("Unable to deallocate thread attributes: %s (%d)",
-              strerror(errno), errno);
+              safe_strerror(errno), errno);
     }
 
   return pthread;

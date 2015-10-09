@@ -320,12 +320,12 @@ lookup_pointer_type (struct type *type)
    We allocate new memory if needed.  */
 
 struct type *
-make_reference_type (struct type *type, struct type **typeptr)
+make_reference_type(struct type *type, struct type **typeptr)
 {
   struct type *ntype;	/* New type */
   struct objfile *objfile;
 
-  ntype = TYPE_REFERENCE_TYPE (type);
+  ntype = TYPE_REFERENCE_TYPE(type);
 
   if (ntype)
     {
@@ -3964,7 +3964,7 @@ get_closure_implementation_fn(struct value *in_value)
      value is the implementation function for this closure.  And the
      first argument of that function is has the real type for this
      block pointer structure.  */
-  struct value *funcPtr_val = (struct value *)NULL;
+  struct value *volatile funcPtr_val = (struct value *volatile)NULL;
   struct gdb_exception e;
   CORE_ADDR func_addr;
   struct symbol *func_sym;
@@ -4005,8 +4005,7 @@ get_closure_implementation_fn(struct value *in_value)
 
   if (!funcPtr_val && (e.reason == RETURN_ERROR))
     {
-      /* See if we've got an old-style block...  */
-
+      /* See if we have got an old-style block...  */
       TRY_CATCH(e, RETURN_MASK_ALL)
 	{
 	  funcPtr_val = value_struct_elt(&in_value, NULL, "FuncPtr", NULL,
@@ -4022,7 +4021,7 @@ get_closure_implementation_fn(struct value *in_value)
   /* The generic block structure only points to a generic function
      type.  To get the real function type, look up the function
      implementation's debug info.  */
-  func_addr = value_as_address(funcPtr_val);
+  func_addr = value_as_address((struct value *)funcPtr_val);
   func_sym = find_pc_function(func_addr);
   if (func_sym != NULL)
     {
@@ -4035,16 +4034,16 @@ get_closure_implementation_fn(struct value *in_value)
 	 you pass it a pointer to the function, it doesn't get
 	 around to checking the parameters.  I don't want to fix
 	 that right now.  */
-      if (TYPE_CODE(value_type(funcPtr_val)) == TYPE_CODE_PTR)
+      if (TYPE_CODE(value_type((struct value *)funcPtr_val)) == TYPE_CODE_PTR)
 	{
 	  func_type = make_pointer_type(func_type, NULL);
-	  funcPtr_val = value_cast(func_type, funcPtr_val);
-	  funcPtr_val = value_ind(funcPtr_val);
+	  funcPtr_val = value_cast(func_type, (struct value *)funcPtr_val);
+	  funcPtr_val = value_ind((struct value *)funcPtr_val);
 	}
       else
-	funcPtr_val = value_cast(func_type, funcPtr_val);
+	funcPtr_val = value_cast(func_type, (struct value *)funcPtr_val);
     }
-  return funcPtr_val;
+  return (struct value *)funcPtr_val;
 }
 
 /* get_closure_dynamic_type returns the "dynamic type" of the generic
@@ -4054,27 +4053,27 @@ get_closure_implementation_fn(struct value *in_value)
    return a TYPE_CODE_STRUCT for the dynamic type, if we get a
    TYPE_CODE_PTR, we will return a pointer.
 
-   FIXME, at this point, we should have some extensible runtime
-   module that provides dynamic type callouts.  But for now just add 'em by
+   FIXME: at this point, we should have some extensible runtime
+   module that provides dynamic type callouts.  But for now just add them by
    hand.  */
 
 struct type *
-get_closure_dynamic_type (struct value *in_value)
+get_closure_dynamic_type(struct value *in_value)
 {
   struct type *deref;
-  struct type *dynamic_type = NULL;
-  struct type *base_type = check_typedef (value_type (in_value));
+  struct type *volatile dynamic_type = (struct type *volatile)NULL;
+  struct type *base_type = check_typedef(value_type(in_value));
 
-  if (TYPE_CODE (base_type) == TYPE_CODE_PTR
-      || TYPE_CODE (base_type) == TYPE_CODE_REF)
-    deref = TYPE_TARGET_TYPE (base_type);
-  else if (TYPE_CODE (base_type) == TYPE_CODE_STRUCT)
+  if (TYPE_CODE(base_type) == TYPE_CODE_PTR
+      || TYPE_CODE(base_type) == TYPE_CODE_REF)
+    deref = TYPE_TARGET_TYPE(base_type);
+  else if (TYPE_CODE(base_type) == TYPE_CODE_STRUCT)
     deref = base_type;
   else
     return NULL;
 
   if (deref
-      && ((TYPE_FLAGS (deref) & TYPE_FLAG_APPLE_CLOSURE) != 0))
+      && ((TYPE_FLAGS(deref) & TYPE_FLAG_APPLE_CLOSURE) != 0))
     {
       /* This is the Apple Closure.  It has a field "FuncPtr" whose
 	 value is the implementation function for this closure.  And the
@@ -4085,7 +4084,7 @@ get_closure_dynamic_type (struct value *in_value)
 
       TRY_CATCH (e, RETURN_MASK_ALL)
 	{
-	  funcPtr_val = get_closure_implementation_fn (in_value);
+	  funcPtr_val = get_closure_implementation_fn(in_value);
 
 	  if (funcPtr_val != NULL)
 	    {
@@ -4093,20 +4092,22 @@ get_closure_dynamic_type (struct value *in_value)
 		 function.  That holds the type pointer for the real
 		 type.  */
 	      struct type *func_type;
-	      func_type = value_type (funcPtr_val);
+	      func_type = value_type(funcPtr_val);
 
-	      if (TYPE_NFIELDS (func_type) > 0)
+	      if (TYPE_NFIELDS(func_type) > 0)
 		{
-		  dynamic_type = TYPE_FIELD_TYPE (func_type, 0);
-		  if (TYPE_CODE (dynamic_type) != TYPE_CODE_PTR)
+		  dynamic_type = TYPE_FIELD_TYPE(func_type, 0);
+		  if (TYPE_CODE(dynamic_type) != TYPE_CODE_PTR)
 		    dynamic_type = NULL;
 		  else
 		    {
-		      if (TYPE_CODE (base_type) == TYPE_CODE_STRUCT)
-			dynamic_type = TYPE_TARGET_TYPE (dynamic_type);
-		      else if (TYPE_CODE (base_type) == TYPE_CODE_REF)
+		      if (TYPE_CODE(base_type) == TYPE_CODE_STRUCT)
+			dynamic_type = TYPE_TARGET_TYPE(dynamic_type);
+		      else if (TYPE_CODE(base_type) == TYPE_CODE_REF)
 			{
-			  dynamic_type = make_reference_type (dynamic_type, NULL);
+			  dynamic_type =
+			    make_reference_type((struct type *)dynamic_type,
+						NULL);
 			}
 		    }
 		}
@@ -4114,7 +4115,7 @@ get_closure_dynamic_type (struct value *in_value)
 	}
     }
 
-  return dynamic_type;
+  return (struct type *)dynamic_type;
 }
 /* END APPLE LOCAL  */
 

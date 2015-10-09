@@ -52,7 +52,7 @@
 /* Register information: */
 struct amd64_register_info
 {
-  char *name;
+  const char *name;
   struct type **type;
 };
 
@@ -258,7 +258,7 @@ swapped_regcache_raw_write_part (struct regcache *regcache, int regnum,
       swapper_buf[16 - j - 1] = tmp;
     }
 
-  memcpy (&swapper_buf[offset], buf, len);
+  memcpy(&swapper_buf[offset], buf, (size_t)len);
   for (j = 0; j < 8; j++)
      {
        gdb_byte tmp = swapper_buf[j];
@@ -303,7 +303,7 @@ swapped_regcache_raw_read_part (struct regcache *regcache, int regnum,
       swapper_buf[16 - j - 1] = tmp;
     }
 
-  memcpy (buf, &swapper_buf[offset], len);
+  memcpy(buf, &swapper_buf[offset], (size_t)len);
 }
 
 /* Return nonzero if a value of type TYPE stored in register REGNUM
@@ -646,7 +646,7 @@ amd64_push_arguments(struct regcache *regcache, int nargs,
     AMD64_XMM0_REGNUM + 4, AMD64_XMM0_REGNUM + 5,
     AMD64_XMM0_REGNUM + 6, AMD64_XMM0_REGNUM + 7,
   };
-  struct value **stack_args = alloca(nargs * sizeof(struct value *));
+  struct value **stack_args = alloca((size_t)nargs * sizeof(struct value *));
   int num_stack_args = 0;
   int num_elements = 0;
   int element = 0;
@@ -725,7 +725,7 @@ amd64_push_arguments(struct regcache *regcache, int nargs,
 
 	      gdb_assert(regnum != -1);
 	      memset(buf, 0, sizeof(buf));
-	      memcpy(buf, (valbuf + j * 8), min(len, 8));
+	      memcpy(buf, (valbuf + j * 8), (size_t)min(len, 8));
 
               /* APPLE LOCAL: We keep the XMM registers in "user's view"
                * byte order inside gdb, so we need to unswap them before
@@ -742,11 +742,11 @@ amd64_push_arguments(struct regcache *regcache, int nargs,
     }
 
   /* Allocate space for the arguments on the stack: */
-  sp -= (num_elements * 8);
+  sp -= (CORE_ADDR)(num_elements * 8);
 
   /* The psABI says that "The end of the input argument area shall be
      aligned on a 16 byte boundary."  */
-  sp &= ~0xf;
+  sp &= (CORE_ADDR)(~0xf);
 
   /* Write out the arguments to the stack: */
   for (i = 0; i < num_stack_args; i++)
@@ -755,7 +755,7 @@ amd64_push_arguments(struct regcache *regcache, int nargs,
       const gdb_byte *valbuf = value_contents(stack_args[i]);
       int len = TYPE_LENGTH(type);
 
-      write_memory(sp + element * 8, valbuf, len);
+      write_memory((sp + (CORE_ADDR)(element * 8)), valbuf, len);
       element += ((len + 7) / 8);
     }
 
@@ -763,7 +763,7 @@ amd64_push_arguments(struct regcache *regcache, int nargs,
      varargs or stdargs (prototype-less calls or calls to functions
      containing ellipsis (...) in the declaration) %al is used as
      hidden argument to specify the number of SSE registers used.  */
-  regcache_raw_write_unsigned(regcache, AMD64_RAX_REGNUM, sse_reg);
+  regcache_raw_write_unsigned(regcache, AMD64_RAX_REGNUM, (ULONGEST)sse_reg);
   return sp;
 }
 
@@ -867,7 +867,7 @@ amd64_sigtramp_frame_cache(struct frame_info *next_frame, void **this_cache)
   gdb_assert(tdep->sc_num_regs <= AMD64_NUM_SAVED_REGS);
   for (i = 0; i < tdep->sc_num_regs; i++)
     if (tdep->sc_reg_offset[i] != -1)
-      cache->saved_regs[i] = (addr + tdep->sc_reg_offset[i]);
+      cache->saved_regs[i] = (addr + (CORE_ADDR)tdep->sc_reg_offset[i]);
   cache->saved_regs_are_absolute = 1;
 
   cache->prologue_scan_status = full_scan_succeeded;

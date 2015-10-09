@@ -826,10 +826,14 @@ deprecated_print_address_numeric(CORE_ADDR addr, int use_local,
    <SYMBOL + OFFSET> after the number.  */
 
 void
-print_address (CORE_ADDR addr, struct ui_file *stream)
+print_address(CORE_ADDR addr, struct ui_file *stream)
 {
-  deprecated_print_address_numeric (addr, 1, stream);
-  print_address_symbolic (addr, stream, asm_demangle, " ");
+  deprecated_print_address_numeric(addr, 1, stream);
+  /* Un-ifdef if you want to have the default symbolic name printing after the
+   * address in every line.  fG! 12/08/2009 */
+#ifdef PRINT_DEFAULT_SYMBOLIC_NAMES
+  print_address_symbolic(addr, stream, asm_demangle, " ");
+#endif /* PRINT_DEFAULT_SYMBOLIC_NAMES */
 }
 
 /* Print address ADDR symbolically on STREAM.  Parameter DEMANGLE
@@ -892,7 +896,7 @@ do_examine (struct format_data fmt, CORE_ADDR addr)
   if (format == 'T')
     size = 'w';
 
-  if (format == 'i')
+  if (format == 'i' || format == 'l')
     val_type = examine_i_type;
   else if (size == 'b')
     val_type = examine_b_type;
@@ -908,47 +912,71 @@ do_examine (struct format_data fmt, CORE_ADDR addr)
     maxelts = 4;
   if (size == 'g')
     maxelts = 2;
-  if (format == 's' || format == 'i')
+  if (format == 's' || format == 'i' || format == 'l')
     maxelts = 1;
 
   /* Print as many objects as specified in COUNT, at most maxelts per line,
      with the address of the next one at the start of each line.  */
 
-  while (count > 0)
+  /* the normal gdb formats: */
+  if (format != 'l')
     {
-      QUIT;
-      print_address (next_address, gdb_stdout);
-      printf_filtered (":");
-      for (i = maxelts;
-	   i > 0 && count > 0;
-	   i--, count--)
+      while (count > 0)
 	{
-	  printf_filtered ("\t");
-	  /* Note that print_formatted sets next_address for the next
-	     object.  */
-	  last_examine_address = next_address;
+	  QUIT;
+	  print_address(next_address, gdb_stdout);
+	  printf_filtered(":");
+	  for (i = maxelts;
+	       (i > 0) && (count > 0);
+	       i--, count--)
+	    {
+	      printf_filtered(" "); /* removed tab */
+	      /* Note that print_formatted sets next_address for the next
+	       * object: */
+	      last_examine_address = next_address;
 
-	  if (last_examine_value)
-	    value_free (last_examine_value);
+	      if (last_examine_value)
+		value_free(last_examine_value);
 
-	  /* The value to be displayed is not fetched greedily.
-	     Instead, to avoid the posibility of a fetched value not
-	     being used, its retreval is delayed until the print code
-	     uses it.  When examining an instruction stream, the
-	     disassembler will perform its own memory fetch using just
-	     the address stored in LAST_EXAMINE_VALUE.  FIXME: Should
-	     the disassembler be modified so that LAST_EXAMINE_VALUE
-	     is left with the byte sequence from the last complete
-	     instruction fetched from memory? */
-	  last_examine_value = value_at_lazy (val_type, next_address);
+	      /* The value to be displayed is not fetched greedily.
+	       * Instead, to avoid the posibility of a fetched value not
+	       * being used, its retreval is delayed until the print code
+	       * uses it.  When examining an instruction stream, the
+	       * disassembler will perform its own memory fetch using just
+	       * the address stored in LAST_EXAMINE_VALUE.  FIXME: Should
+	       * the disassembler be modified so that LAST_EXAMINE_VALUE
+	       * is left with the byte sequence from the last complete
+	       * instruction fetched from memory? */
+	      last_examine_value = value_at_lazy(val_type, next_address);
 
-	  if (last_examine_value)
-	    release_value (last_examine_value);
+	      if (last_examine_value)
+		release_value(last_examine_value);
 
-	  print_formatted (last_examine_value, format, size, gdb_stdout);
+	      print_formatted(last_examine_value, format, size, gdb_stdout);
+	      /* Un-ifdef if you want to have the symbolic name printed in
+	       * every line.  fG! 12/08/2009 */
+#ifdef PRINT_DEFAULT_SYMBOLIC_NAMES
+	      print_address_symbolic(next_address, gdb_stdout, asm_demangle,
+				     " \t\t\t");
+#endif /* PRINT_DEFAULT_SYMBOLIC_NAMES */
+	    }
+	  printf_filtered("\n");
+	  gdb_flush(gdb_stdout);
 	}
-      printf_filtered ("\n");
-      gdb_flush (gdb_stdout);
+    }
+  /* our new format: */
+  else if (format == 'l')
+    {
+      last_examine_address = next_address;
+    
+      if (last_examine_value)
+	value_free(last_examine_value);
+    
+      last_examine_value = value_at_lazy(val_type, next_address);
+    
+      if (last_examine_value)
+	release_value(last_examine_value);
+      print_formatted(last_examine_value, format, size, gdb_null);
     }
 }
 
@@ -1509,6 +1537,13 @@ x_command (char *exp, int from_tty)
 			 allocate_value (builtin_type_void));
       else
 	set_internalvar (lookup_internalvar ("__"), last_examine_value);
+    }
+  if (fmt.format == 'l')
+    {
+      /* lookup_internalvar will create the variable if it does not exist
+       * (and initialize it to void) here: */
+      set_internalvar(lookup_internalvar("insnsize"),
+		      (struct value *)(uintptr_t)next_address);  
     }
 }
 
@@ -2266,7 +2301,7 @@ invoke_block_command(char *args, int from_tty)
   while (argv[nargs] != NULL)
     nargs++;
 
-  val_argv = (struct value **)malloc(nargs * sizeof(struct value *));
+  val_argv = (struct value **)xmalloc(nargs * sizeof(struct value *));
   make_cleanup(xfree, val_argv);
 
   val_argv[0] = block_val;

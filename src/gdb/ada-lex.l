@@ -338,7 +338,15 @@ xor		{ return XOR; }
 %%
 
 #include <ctype.h>
+/* define this because of flex: */
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* !NO_POISON */
+#include "defs.h"
 #include "gdb_string.h"
+#ifndef _STRING_H_
+# include <string.h>
+#endif /* !_STRING_H_ */
 
 /* Initialize the lexer for processing new expression */
 void
@@ -804,14 +812,14 @@ name_lookup(char *name0, char *err_name, int *token_type, int depth)
             if (name[i] == '.')
 	      {
 		name[i] = '\0';
-		yylval.ssym.stoken.length = i;
+		yylval.ssym.stoken.length = (size_t)i;
 		break;
 	      }
 	    else if ((name[i] == '_') && (name[i - 1] == '_'))
 	      {
 		i -= 1;
 		name[i] = '\0';
-		yylval.ssym.stoken.length = i;
+		yylval.ssym.stoken.length = (size_t)i;
 		break;
 	      }
 	  }

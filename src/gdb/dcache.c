@@ -122,7 +122,7 @@ static int g_line_size = LINE_SIZE;
    starting at a multiple-of-g_line_size address.  */
 
 #define XFORM(x) 	((x) & (g_line_size - 1))
-#define MASK(x)         ((x) & ~(g_line_size - 1))
+#define MASK_OF(x)      ((x) & ~(g_line_size - 1))
 
 
 #define ENTRY_BAD   0		/* data at this byte is wrong */
@@ -245,7 +245,7 @@ dcache_hit (DCACHE *dcache, CORE_ADDR addr)
 
   while (db)
     {
-      if (MASK (addr) == db->addr)
+      if (MASK_OF(addr) == db->addr)
 	{
 	  db->refs++;
 	  return db;
@@ -410,16 +410,16 @@ dcache_alloc (DCACHE *dcache, CORE_ADDR addr)
       /* Nothing left on free list, so grab one from the valid list */
       db = dcache->valid_head;
 
-      if (!dcache_write_line (dcache, db))
+      if (!dcache_write_line(dcache, db))
 	return NULL;
 
       dcache->valid_head = db->p;
     }
 
-  db->addr = MASK(addr);
+  db->addr = MASK_OF(addr);
   db->refs = 0;
   db->anydirty = 0;
-  memset (db->state, ENTRY_BAD, g_line_size * sizeof (unsigned char));
+  memset(db->state, ENTRY_BAD, (g_line_size * sizeof(unsigned char)));
 
   /* append this line to end of valid list */
   if (!dcache->valid_head)

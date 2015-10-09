@@ -856,15 +856,16 @@ ui_out_print_annotation_string (struct ui_out *uiout, int tee, const char *name,
 }
 
 void
-ui_out_print_annotation_int (struct ui_out *uiout, int tee, const char *name, const int value)
+ui_out_print_annotation_int(struct ui_out *uiout, int tee, const char *name,
+			    const int value)
 {
   char buffer[32];
 
   /* This is a little lame, I should make a string and an int
      printer to be totally correct.  But that's more work than
      this fix warrants...  */
-  sprintf (buffer, "%d", value);
-  ui_out_print_annotation_string (uiout, tee, name, buffer);
+  snprintf(buffer, sizeof(buffer), "%d", value);
+  ui_out_print_annotation_string(uiout, tee, name, buffer);
 }
 
 /* default gdb-out hook functions begin here: */

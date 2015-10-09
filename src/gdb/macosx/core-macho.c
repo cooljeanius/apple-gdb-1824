@@ -214,7 +214,7 @@ core_open(char *filename, int from_tty)
       filename = temp;
     }
 
-  old_chain = make_cleanup(free, filename);
+  old_chain = make_cleanup(xfree, filename);
 
   scratch_chan = open(filename, (write_files ? O_RDWR : O_RDONLY), 0);
   if (scratch_chan < 0)
@@ -301,7 +301,7 @@ core_open(char *filename, int from_tty)
       if (mem_read_ret && (possible_kernel_address != INVALID_ADDRESS)
           && (possible_kernel_address != 0))
         {
-          CORE_ADDR in_memory_addr;
+          CORE_ADDR in_memory_addr = 0UL;
           uuid_t in_memory_uuid;
           enum gdb_osabi in_memory_osabi = GDB_OSABI_UNKNOWN;
           int got_info;
@@ -982,7 +982,7 @@ static char *
 macosx_core_ptid_to_str(ptid_t pid)
 {
   static char buf[128];
-  sprintf(buf, "core thread %lu", ptid_get_lwp(pid));
+  snprintf(buf, sizeof(buf), "core thread %lu", ptid_get_lwp(pid));
   return buf;
 }
 

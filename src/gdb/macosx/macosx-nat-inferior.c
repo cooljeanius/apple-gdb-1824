@@ -21,6 +21,10 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+/* define this because of a libxml header out of our control: */
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* NO_POISON */
 #include "defs.h"
 #include "top.h"
 #include "inferior.h"
@@ -491,7 +495,7 @@ macosx_fetch_event(struct macosx_inferior_status *inferior,
       if (ret < 0)
         {
           internal_error(__FILE__, __LINE__, "unable to select: %s",
-                         strerror(errno));
+                         safe_strerror(errno));
         }
       if (ret == 0)
         {
@@ -1266,7 +1270,7 @@ macosx_child_stop(void)
 
   if (ret == -1) {
     warning("Unable to kill process-id %d: %s (%d).\n",
-            pid, strerror(errno), errno);
+            pid, safe_strerror(errno), errno);
     /* If we got here, errno should be one of EINVAL, EPERM, or ESRCH */
   }
 }
@@ -1579,12 +1583,12 @@ macosx_lookup_task_local (char *pid_str, int pid, task_t * ptask, int *ppid,
                                                     ignorepids);
       char *tmp = NULL;
       char *tmp2 = NULL;
-      unsigned long lpid = 0;
+      unsigned long lpid = 0UL;
 
       task_t itask;
       kern_return_t kret;
 
-      cleanups = make_cleanup (free, ret);
+      cleanups = make_cleanup(xfree, ret);
 
       if ((ret == NULL) || (ret[0] == NULL))
         {
@@ -1788,7 +1792,7 @@ macosx_lookup_task (char *args, task_t *ptask, int *ppid)
 
   CHECK_FATAL(pid_str != NULL);
   lpid = strtoul(pid_str, &tmp, 10);
-  if (isdigit(*pid_str) && (*tmp == '\0'))
+  if ((pid_str != NULL) && isdigit(*pid_str) && (*tmp == '\0'))
     {
       if ((lpid > INT_MAX) || ((lpid == ULONG_MAX) && (errno == ERANGE)))
         {
@@ -1881,12 +1885,12 @@ macosx_child_attach(char *args, int from_tty ATTRIBUTE_UNUSED)
                     "This request requires that the target process be neither setuid nor "
                     "setgid and have the same real userid as the debugger, or that the "
                     "debugger be running with administrator privileges.",
-                    pid, strerror(errno), errno);
+                    pid, safe_strerror(errno), errno);
             }
           else
             {
               error("Unable to attach to process-id %d: %s (%d)",
-                    pid, strerror(errno), errno);
+                    pid, safe_strerror(errno), errno);
             }
         }
 
@@ -2143,7 +2147,7 @@ macosx_kill_inferior(void *arg)
       if (call_ptrace(PTRACE_KILL, macosx_status->pid, 0, 0) != 0)
         {
           error("macosx_child_detach: ptrace (%d, %d, %d, %d): %s",
-                PTRACE_KILL, macosx_status->pid, 0, 0, strerror(errno));
+                PTRACE_KILL, macosx_status->pid, 0, 0, safe_strerror(errno));
         }
       macosx_status->stopped_in_ptrace = 0;
       macosx_status->stopped_in_softexc = 0;
@@ -2737,6 +2741,7 @@ macosx_child_files_info(struct target_ops *ops ATTRIBUTE_UNUSED)
 static char *
 macosx_get_thread_name (ptid_t ptid)
 {
+#if defined(THREAD_IDENTIFIER_INFO) && defined(THREAD_IDENTIFIER_INFO_COUNT)
   static char buf[128];
   int pid = ptid_get_pid (ptid);
   thread_t tid = ptid_get_tid (ptid);
@@ -2775,6 +2780,9 @@ macosx_get_thread_name (ptid_t ptid)
         }
     }
   return buf;
+#else
+  return "";
+#endif /* THREAD_IDENTIFIER_INFO && THREAD_IDENTIFIER_INFO_COUNT */
 }
 
 
@@ -3193,13 +3201,13 @@ fork_memcache_put(struct checkpoint *cp)
 	  mach_msg_type_number_t memcopied;     /* for vm_read to use */
 
 	  if (0)
-	    printf("count now %d addr 0x%s size 0x%s\n", count,
+	    printf("count now %u addr 0x%s size 0x%s\n", count,
                    paddr_nz(address), paddr_nz(size));
 
 	  rslt = mach_vm_read(itask, address, size, &mempointer, &memcopied);
 
 	  if (0)
-	    printf("rslt is %d, copied %d\n", rslt, memcopied);
+	    printf("rslt is %d, copied %u\n", rslt, memcopied);
 
 	  if (rslt == KERN_SUCCESS)
 	    {

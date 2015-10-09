@@ -109,8 +109,8 @@ struct dict_vector
   /* The type of the dictionary.  This is only here to make debugging
      a bit easier; it's not actually used.  */
   enum dict_type type;
-  /* The function to free a dictionary.  */
-  void (*free) (struct dictionary *dict);
+  /* The function to free a dictionary: */
+  void (*free_f)(struct dictionary *dict);
   /* Add a symbol to a dictionary, if possible.  */
   void (*add_symbol) (struct dictionary *dict, struct symbol *sym);
   /* Iterator functions.  */
@@ -481,13 +481,13 @@ dict_create_linear_expandable(void)
 
 /* The functions providing the dictionary interface.  */
 
-/* Free the memory used by a dictionary that's not on an obstack.  (If
+/* Free the memory used by a dictionary that is not on an obstack.  (If
    any.)  */
 
 void
-dict_free (struct dictionary *dict)
+dict_free(struct dictionary *dict)
 {
-  (DICT_VECTOR (dict))->free (dict);
+  (DICT_VECTOR(dict))->free_f(dict);
 }
 
 /* Add SYM to DICT.  DICT had better be expandable.  */

@@ -55,7 +55,7 @@ kdp_log_packetbuf(kdp_log_function *f, kdp_log_level l, char *prefix,
   char *s = strbuf;
 
   for (i = 0; i < len; i++) {
-    sprintf(s, "0x%02x", (unsigned char)buf[i]);
+    snprintf(s, (KDP_MAX_PACKET_SIZE * 6UL), "0x%02x", (unsigned char)buf[i]);
     s += 4;
     *s++ = ' ';
   }
@@ -103,7 +103,7 @@ kdp_transmit_fd(kdp_connection *c, kdp_pkt_t *packet, int fd)
         {
           c->logger(KDP_LOG_ERROR,
                     "kdp_transmit_fd: sendto returns %d: %s (%d)\n", ret,
-                    strerror(errno), errno);
+                    safe_strerror(errno), errno);
           return RR_IP_ERROR;
         }
     }
@@ -151,7 +151,7 @@ kdp_receive_fd(kdp_connection *c, kdp_pkt_t * packet, int fd, int timeout)
         {
           c->logger(KDP_LOG_ERROR,
                     "kdp_receive_fd: select returns %d: %s (%d)\n", ret,
-                    strerror(errno), errno);
+                    safe_strerror(errno), errno);
           return RR_IP_ERROR;
         }
       else if (ret != 1)
@@ -174,7 +174,7 @@ kdp_receive_fd(kdp_connection *c, kdp_pkt_t * packet, int fd, int timeout)
         {
           c->logger(KDP_LOG_ERROR,
                     "kdp_receive_fd: recvfrom returns %d: %s (%d)\n", rlen,
-                    strerror(errno), errno);
+                    safe_strerror(errno), errno);
           return RR_IP_ERROR;
         }
     }
@@ -244,7 +244,7 @@ kdp_receive(kdp_connection *c, kdp_pkt_t *packet, int to)
         {
           c->logger(KDP_LOG_ERROR,
                     "kdp_receive: select returns %d: %s (%d)\n", ret,
-                    strerror(errno), errno);
+                    safe_strerror(errno), errno);
           return RR_IP_ERROR;
         }
     }
@@ -287,7 +287,7 @@ kdp_bind_socket(kdp_connection *c,
     {
       c->logger(KDP_LOG_ERROR,
                 "kdp_bind_socket: errror creating local socket: %s\n",
-                strerror(errno));
+                safe_strerror(errno));
       return RR_RESOURCE;
     }
 
@@ -302,7 +302,7 @@ kdp_bind_socket(kdp_connection *c,
     {
       c->logger(KDP_LOG_ERROR,
                 "kdp_bind_socket: unable to bind socket: %s\n",
-                strerror(errno));
+                safe_strerror(errno));
       return RR_RESOURCE;
     }
 
@@ -312,7 +312,7 @@ kdp_bind_socket(kdp_connection *c,
     {
       c->logger(KDP_LOG_ERROR,
                 "kdp_bind_socket: unable find socket address: %s\n",
-                strerror(errno));
+                safe_strerror(errno));
       return RR_RESOURCE;
     }
 

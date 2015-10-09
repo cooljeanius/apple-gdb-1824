@@ -65,7 +65,7 @@ struct stoken
     /* Pointer to first byte of char-string or first bit of bit-string */
     char *ptr;
     /* Length of string in bytes for char-string or bits for bit-string */
-    int length;
+    size_t length;
   };
 
 struct ttype
@@ -237,7 +237,7 @@ enum precedence
 
 struct op_print
   {
-    char *string;
+    const char *string;
     enum exp_opcode opcode;
     /* Precedence of operator.  These values are used only by comparisons.  */
     enum precedence precedence;

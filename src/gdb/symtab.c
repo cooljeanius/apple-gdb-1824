@@ -684,8 +684,8 @@ gdb_mangle_name (struct type *type, int method_id, int signature_id)
   int is_constructor;
   int is_destructor = is_destructor_name (physname);
   /* Need a new type prefix.  */
-  char *const_prefix = method->is_const ? "C" : "";
-  char *volatile_prefix = method->is_volatile ? "V" : "";
+  const char *const_prefix = method->is_const ? "C" : "";
+  const char *volatile_prefix = method->is_volatile ? "V" : "";
   char buf[20];
   int len = (newname == NULL ? 0 : strlen (newname));
 
@@ -712,49 +712,51 @@ gdb_mangle_name (struct type *type, int method_id, int signature_id)
 
   if (len == 0)
     {
-      sprintf (buf, "__%s%s", const_prefix, volatile_prefix);
+      snprintf(buf, sizeof(buf), "__%s%s", const_prefix, volatile_prefix);
     }
   else if (physname[0] == 't' || physname[0] == 'Q')
     {
       /* The physname for template and qualified methods already includes
          the class name.  */
-      sprintf (buf, "__%s%s", const_prefix, volatile_prefix);
+      snprintf(buf, sizeof(buf), "__%s%s", const_prefix, volatile_prefix);
       newname = NULL;
       len = 0;
     }
   else
     {
-      sprintf (buf, "__%s%s%d", const_prefix, volatile_prefix, len);
+      snprintf(buf, sizeof(buf), "__%s%s%d", const_prefix, volatile_prefix, len);
     }
   mangled_name_len = ((is_constructor ? 0 : strlen (field_name))
 		      + strlen (buf) + len + strlen (physname) + 1);
 
     {
-      mangled_name = (char *) xmalloc (mangled_name_len);
+      mangled_name = (char *)xmalloc(mangled_name_len);
       if (is_constructor)
 	mangled_name[0] = '\0';
       else
-	strcpy (mangled_name, field_name);
+	strcpy(mangled_name, field_name);
     }
-  strcat (mangled_name, buf);
+  strcat(mangled_name, buf);
   /* If the class doesn't have a name, i.e. newname NULL, then we just
      mangle it using 0 for the length of the class.  Thus it gets mangled
      as something starting with `::' rather than `classname::'. */
   if (newname != NULL)
-    strcat (mangled_name, newname);
+    strcat(mangled_name, newname);
 
-  strcat (mangled_name, physname);
+  strcat(mangled_name, physname);
   return (mangled_name);
 }
 
 
 /* Initialize the language dependent portion of a symbol
    depending upon the language for the symbol. */
-void
-symbol_init_language_specific (struct general_symbol_info *gsymbol,
-			       enum language language)
+void ATTRIBUTE_NONNULL(1)
+symbol_init_language_specific(struct general_symbol_info *gsymbol,
+			      enum language language)
 {
-  gsymbol->language = language;
+  gdb_assert(gsymbol != NULL);
+  
+  gsymbol->language = language; /* FIXME: bad access? */
   if (gsymbol->language == language_cplus
       || gsymbol->language == language_java
       /* APPLE LOCAL Objective-C++ */
@@ -765,8 +767,8 @@ symbol_init_language_specific (struct general_symbol_info *gsymbol,
     }
   else
     {
-      memset (&gsymbol->language_specific, 0,
-	      sizeof (gsymbol->language_specific));
+      memset(&gsymbol->language_specific, 0,
+	     sizeof(gsymbol->language_specific));
     }
 }
 
@@ -865,19 +867,19 @@ symbol_find_demangled_name(struct general_symbol_info *gsymbol,
    calling this function.  */
 
 /* We have to be careful when dealing with Java names: when we run
-   into a Java minimal symbol, we don't know it's a Java symbol, so it
-   gets demangled as a C++ name.  This is unfortunate, but there's not
+   into a Java minimal symbol, we do NOT know it is a Java symbol, so it
+   gets demangled as a C++ name.  This is unfortunate, but there is not
    much we can do about it: but when demangling partial symbols and
-   regular symbols, we'd better not reuse the wrong demangled name.
+   regular symbols, we had better not reuse the wrong demangled name.
    (See PR gdb/1039.)  We solve this by putting a distinctive prefix
    on Java names when storing them in the hash table.  */
 
 /* FIXME: carlton/2003-03-13: This is an unfortunate situation.  I
-   don't mind the Java prefix so much: different languages have
-   different demangling requirements, so it's only natural that we
+   do NOT mind the Java prefix so much: different languages have
+   different demangling requirements, so it is only natural that we
    need to keep language data around in our demangling cache.  But
-   it's not good that the minimal symbol has the wrong demangled name.
-   Unfortunately, I can't think of any easy solution to that
+   it is not good that the minimal symbol has the wrong demangled name.
+   Unfortunately, I cannot think of any easy solution to that
    problem.  */
 
 #define JAVA_PREFIX "##JAVA$$"
@@ -1356,14 +1358,15 @@ fixup_section (struct general_symbol_info *ginfo, struct objfile *objfile)
   if (msym == NULL && objfile && objfile->prefix && objfile->prefix[0] &&
       ginfo->name && ginfo->name[0])
     {
-      int prefixed_name_len = strlen (objfile->prefix) + strlen (ginfo->name)
-			      + 1;
-      char *prefixed_name = (char *)xmalloc (prefixed_name_len);
+      size_t prefixed_name_len = (strlen(objfile->prefix) + strlen(ginfo->name)
+				  + 1UL);
+      char *prefixed_name = (char *)xmalloc(prefixed_name_len);
       if (prefixed_name)
 	{
-	  sprintf (prefixed_name, "%s%s", objfile->prefix, ginfo->name);
-	  msym = lookup_minimal_symbol (prefixed_name, NULL, objfile);
-	  xfree (prefixed_name);
+	  snprintf(prefixed_name, prefixed_name_len, "%s%s", objfile->prefix,
+		   ginfo->name);
+	  msym = lookup_minimal_symbol(prefixed_name, NULL, objfile);
+	  xfree(prefixed_name);
 	}
     }
   /* APPLE LOCAL END.  */
@@ -4540,8 +4543,9 @@ search_symbols (char *regexp, domain_enum kind, int nfiles, char *files[],
 	  /* If wrong number of spaces, fix it. */
 	  if (fix >= 0)
 	    {
-	      char *tmp = (char *)alloca(8UL + fix + strlen(opname) + 1UL);
-	      sprintf(tmp, "operator%.*s%s", fix, " ", opname);
+	      size_t tmplen = (8UL + fix + strlen(opname) + 1UL);
+	      char *tmp = (char *)alloca(tmplen);
+	      snprintf(tmp, tmplen, "operator%.*s%s", fix, " ", opname);
 	      regexp = tmp;
 	    }
 	}
@@ -4892,9 +4896,8 @@ print_msymbol_info (struct minimal_symbol *msymbol)
 static void
 symtab_symbol_info (char *regexp, domain_enum kind, int from_tty)
 {
-  static char *classnames[]
-  =
-  {"variable", "function", "type", "method"};
+  static const char *classnames[] =
+    { "variable", "function", "type", "method" };
   struct symbol_search *symbols;
   struct symbol_search *p;
   struct cleanup *old_chain;

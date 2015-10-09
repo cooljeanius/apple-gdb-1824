@@ -21,7 +21,7 @@ case "${host}" in
 		        # APPLE LOCAL - Allow more than 256 streams to
 			# be open at a time.
 arm-apple-darwin*)	HDEFINES="-D_DARWIN_UNLIMITED_STREAMS -miphoneos-version-min=4.3" ;;
-*-apple-darwin*)	HDEFINES="-D_DARWIN_UNLIMITED_STREAMS -mmacosx-version-min=10.6" ;;
+*-apple-darwin*)	HDEFINES="-D_DARWIN_UNLIMITED_STREAMS -mmacosx-version-min=10.5" ;;
 
 alpha*-*-*)		host64=true; HOST_64BIT_TYPE=long ;;
 

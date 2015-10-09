@@ -168,21 +168,19 @@ child_wait(ptid_t ptid, struct target_waitstatus *ourstatus,
 #endif /* CHILD_WAIT */
 
 #ifndef CHILD_THREAD_ALIVE
-
 /* Check to see if the given thread is alive.
 
    FIXME: Is kill() ever the right way to do this?  I doubt it, but
    for now we're going to try and be compatable with the old thread
    code.  */
 int
-child_thread_alive (ptid_t ptid)
+child_thread_alive(ptid_t ptid)
 {
-  pid_t pid = PIDGET (ptid);
+  pid_t pid = PIDGET(ptid);
 
-  return (kill (pid, 0) != -1);
+  return (kill(pid, 0) != -1);
 }
-
-#endif
+#endif /* !CHILD_THREAD_ALIVE */
 
 /* Attach to process PID, then initialize for debugging it: */
 static void
@@ -199,7 +197,7 @@ child_attach(char *args, int from_tty)
   pid = strtol(args, &dummy, 0);
   /* Some targets do NOT set errno on errors, grrr! */
   if ((pid == 0) && (args == dummy))
-      error(_("Illegal process-id: %s."), args);
+    error(_("Illegal process-id: %s."), args);
 
   if (pid == getpid())	/* Trying to masturbate? (?) */
     error(_("I refuse to debug myself!"));
@@ -561,7 +559,7 @@ child_xfer_partial(struct target_ops *ops, enum target_object object,
 
     case TARGET_OBJECT_AUXV:
 #ifndef NATIVE_XFER_AUXV
-#define NATIVE_XFER_AUXV(OPS,OBJECT,ANNEX,WRITEBUF,READBUF,OFFSET,LEN) (-1)
+# define NATIVE_XFER_AUXV(OPS,OBJECT,ANNEX,WRITEBUF,READBUF,OFFSET,LEN) (-1)
 #endif /* !NATIVE_XFER_AUXV */
       return NATIVE_XFER_AUXV(ops, object, annex, readbuf, writebuf,
                               offset, len);
@@ -591,7 +589,8 @@ init_child_ops(void)
   deprecated_child_ops.to_post_attach = child_post_attach;
   deprecated_child_ops.to_detach = child_detach;
   deprecated_child_ops.to_resume = child_resume;
-  deprecated_child_ops.to_wait = child_wait; /* FIXME: casting fails */
+  deprecated_child_ops.to_wait =
+    (__typeof__(deprecated_child_ops.to_wait))child_wait;
   deprecated_child_ops.to_fetch_registers = fetch_inferior_registers;
   deprecated_child_ops.to_store_registers = store_inferior_registers;
   deprecated_child_ops.to_prepare_to_store = child_prepare_to_store;
@@ -651,7 +650,7 @@ _initialize_inftarg(void)
 # ifndef PROC_NAME_FMT
 #  define PROC_NAME_FMT "/proc/%05d"
 # endif /* !PROC_NAME_FMT */
-  sprintf(procname, PROC_NAME_FMT, getpid ());
+  sprintf(procname, PROC_NAME_FMT, getpid());
   fd = open(procname, O_RDONLY);
   if (fd >= 0)
     {

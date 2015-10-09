@@ -258,17 +258,17 @@ bcache_data(const void *addr, int length, struct bcache *bcache)
 void
 bcache_specify_allocation_with_arg
 (struct bcache *b, void *(* alloc)(void *, size_t),
- void (* free)(void *, void *), void *arg)
+ void (* free_f)(void *, void *), void *arg)
 {
-  obstack_specify_allocation_with_arg(&b->cache, 0, 0, alloc, free, arg);
+  obstack_specify_allocation_with_arg(&b->cache, 0, 0, alloc, free_f, arg);
 }
 
 void
 bcache_specify_allocation
 (struct bcache *b, void *(* alloc)(size_t),
- void (* free)(void *))
+ void (* free_f)(void *))
 {
-  obstack_specify_allocation(&b->cache, 0, 0, alloc, free);
+  obstack_specify_allocation(&b->cache, 0, 0, alloc, free_f);
 }
 /* APPLE LOCAL end bcache pool */
 

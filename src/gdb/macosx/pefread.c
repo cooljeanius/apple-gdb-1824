@@ -93,11 +93,11 @@ pef_symfile_read(struct objfile *objfile, int mainline)
 
   storage_needed = bfd_get_symtab_upper_bound(abfd);
 
-  firstaddr = (CORE_ADDR)-1;
+  firstaddr = (CORE_ADDR)(-1L);
   if (storage_needed > 0)
     {
       symbol_table = (asymbol **)xmalloc(storage_needed);
-      back_to = make_cleanup(free, (PTR)symbol_table);
+      back_to = make_cleanup(xfree, (PTR)symbol_table);
       number_of_symbols = bfd_canonicalize_symtab(abfd, symbol_table);
 
       for (i = 0; i < number_of_symbols; i++)
