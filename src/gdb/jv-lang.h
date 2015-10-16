@@ -25,12 +25,12 @@
 
 struct value;
 
-extern int java_parse (void);	/* Defined in jv-exp.y */
+extern int java_parse(void);	/* Defined in jv-exp.y */
 
-extern void java_error (char *);	/* Defined in jv-exp.y */
+extern void java_error(const char *);	/* Defined in jv-exp.y */
 
-/* sizeof (struct Object) */
-#define JAVA_OBJECT_SIZE (get_java_object_header_size ())
+/* sizeof(struct Object) */
+#define JAVA_OBJECT_SIZE (get_java_object_header_size())
 
 extern struct type *java_int_type;
 extern struct type *java_byte_type;

@@ -584,33 +584,35 @@ execute_stack_op(struct dwarf_expr_context *ctx,
 	    {
 	    case DW_OP_deref:
 	      {
-		gdb_byte *buf = alloca (TARGET_ADDR_BIT / TARGET_CHAR_BIT);
+		gdb_byte *buf =
+		  (gdb_byte *)alloca(TARGET_ADDR_BIT / TARGET_CHAR_BIT);
 		int bytes_read;
 
-		(ctx->read_mem) (ctx->baton, buf, result,
-				 TARGET_ADDR_BIT / TARGET_CHAR_BIT);
-		result = dwarf2_read_address (buf,
-					      buf + (TARGET_ADDR_BIT
-						     / TARGET_CHAR_BIT),
-					      &bytes_read);
+		(ctx->read_mem)(ctx->baton, buf, result,
+				(TARGET_ADDR_BIT / TARGET_CHAR_BIT));
+		result = dwarf2_read_address(buf,
+					     (buf + (TARGET_ADDR_BIT
+						     / TARGET_CHAR_BIT)),
+					     &bytes_read);
 	      }
 	      break;
 
 	    case DW_OP_deref_size:
 	      {
-		gdb_byte *buf = alloca (TARGET_ADDR_BIT / TARGET_CHAR_BIT);
+		gdb_byte *buf =
+		  (gdb_byte *)alloca(TARGET_ADDR_BIT / TARGET_CHAR_BIT);
 		int bytes_read;
 
-		(ctx->read_mem) (ctx->baton, buf, result, *op_ptr++);
-		result = dwarf2_read_address (buf,
-					      buf + (TARGET_ADDR_BIT
-						     / TARGET_CHAR_BIT),
-					      &bytes_read);
+		(ctx->read_mem)(ctx->baton, buf, result, *op_ptr++);
+		result = dwarf2_read_address(buf,
+					     (buf + (TARGET_ADDR_BIT
+						     / TARGET_CHAR_BIT)),
+					     &bytes_read);
 	      }
 	      break;
 
 	    case DW_OP_abs:
-	      if ((signed int) result < 0)
+	      if ((signed int)result < 0)
 		result = -result;
 	      break;
 	    case DW_OP_neg:

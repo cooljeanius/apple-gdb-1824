@@ -646,7 +646,8 @@ amd64_push_arguments(struct regcache *regcache, int nargs,
     AMD64_XMM0_REGNUM + 4, AMD64_XMM0_REGNUM + 5,
     AMD64_XMM0_REGNUM + 6, AMD64_XMM0_REGNUM + 7,
   };
-  struct value **stack_args = alloca((size_t)nargs * sizeof(struct value *));
+  struct value **stack_args =
+    (struct value **)alloca((size_t)nargs * sizeof(struct value *));
   int num_stack_args = 0;
   int num_elements = 0;
   int element = 0;

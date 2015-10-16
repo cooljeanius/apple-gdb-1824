@@ -94,12 +94,12 @@ c_printstr(struct ui_file *stream, const gdb_byte *string,
   int in_quotes = 0;
   int need_comma = 0;
 
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic push
  #  pragma GCC diagnostic warning "-Wtraditional"
 # endif /* gcc 4.6+ */
-#endif /* GCC */
+#endif /* GCC (non-c++) */
 
   /* If the string was not truncated due to `set print elements', and
    * the last byte of it is a null, we do NOT print that, in traditional C
@@ -117,11 +117,11 @@ c_printstr(struct ui_file *stream, const gdb_byte *string,
     }
 
   /* keep condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic pop
 # endif /* gcc 4.6+ */
-#endif /* GCC */
+#endif /* GCC (non-c++) */
 
   for (i = 0; i < length && things_printed < print_max; ++i)
     {

@@ -1,8 +1,8 @@
-/* Read coff symbol tables and convert to internal format, for GDB.
+/* coffread.c: Read coff symbol tables and convert to internal format, for GDB.
    Copyright 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996,
    1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
-   Contributed by David D. Johnson, Brown University (ddj@cs.brown.edu).
+   Contributed by David D. Johnson, Brown University <ddj@cs.brown.edu>.
 
    This file is part of GDB.
 
@@ -34,7 +34,9 @@
 #include <ctype.h>
 
 #include "coff/internal.h"    /* Internal format of COFF symbols in BFD */
-#include "libcoff.h"		/* FIXME secret internal data from BFD */
+#ifndef __cplusplus
+# include "libcoff.h"		/* FIXME: secret internal data from BFD */
+#endif /* !__cplusplus */
 #include "objfiles.h"
 #include "buildsym.h"
 #include "gdb-stabs.h"
@@ -500,7 +502,9 @@ coff_symfile_read(struct objfile *objfile, int mainline)
   struct coff_symfile_info *info;
   struct dbx_symfile_info *dbxinfo;
   bfd *abfd = objfile->obfd;
+#ifndef __cplusplus
   coff_data_type *cdata = coff_data(abfd);
+#endif /* !__cplusplus */
   char *name = bfd_get_filename(abfd);
   int val;
   unsigned int num_symbols;
@@ -520,6 +524,7 @@ coff_symfile_read(struct objfile *objfile, int mainline)
 
 /* WARNING WILL ROBINSON!  ACCESSING BFD-PRIVATE DATA HERE!  FIXME!  */
   num_symbols = bfd_get_symcount(abfd);	/* How many syms */
+#ifndef __cplusplus
   symtab_offset = cdata->sym_filepos;	/* Symbol table file offset */
   stringtab_offset = (symtab_offset	/* String table file offset */
                       + (num_symbols * cdata->local_symesz));
@@ -538,6 +543,10 @@ coff_symfile_read(struct objfile *objfile, int mainline)
      space requirements as reported by BFD.  */
   temp_sym = (char *)xmalloc(cdata->local_symesz + cdata->local_auxesz);
   temp_aux = (temp_sym + cdata->local_symesz);
+#else
+  stringtab_offset = 0L;
+  symtab_offset = 0L;
+#endif /* !__cplusplus */
   back_to = make_cleanup(free_current_contents, &temp_sym);
 
   /* We need to know whether this is a PE file, because in PE files,
@@ -1126,13 +1135,17 @@ read_one_sym(struct coff_symbol *cs, struct internal_syment *sym,
 
   cs->c_symnum = symnum;
   bfd_bread(temp_sym, local_symesz, nlist_bfd_global);
+#if defined(bfd_coff_swap_sym_in) || !defined(__cplusplus)
   bfd_coff_swap_sym_in(symfile_bfd, temp_sym, (char *)sym);
+#endif /* bfd_coff_swap_sym_in || !__cplusplus */
   cs->c_naux = sym->n_numaux & 0xff;
   if (cs->c_naux >= 1)
     {
       bfd_bread(temp_aux, local_auxesz, nlist_bfd_global);
+#if defined(bfd_coff_swap_aux_in) || !defined(__cplusplus)
       bfd_coff_swap_aux_in(symfile_bfd, temp_aux, sym->n_type,
                            sym->n_sclass, 0, cs->c_naux, (char *)aux);
+#endif /* bfd_coff_swap_aux_in || !__cplusplus */
       /* If more than one aux entry, read past it (only the first aux
          is important). */
       for (i = 1; i < cs->c_naux; i++)
@@ -1377,7 +1390,13 @@ enter_linenos(long file_offset, int first_line,
      overstep the table's end in any case.  */
   while (rawptr <= (&linetab[0] + linetab_size))
     {
+#if defined(bfd_coff_swap_lineno_in) || !defined(__cplusplus)
       bfd_coff_swap_lineno_in(symfile_bfd, rawptr, &lptr);
+#else
+# if defined(HAVE_BZERO)
+      bzero((void *)&lptr, sizeof(lptr));
+# endif /* HAVE_BZERO */
+#endif /* bfd_coff_swap_lineno_in || !__cplusplus */
       rawptr += local_linesz;
       /* The next function, or the sentinel, will have L_LNNO32 zero;
 	 we exit. */

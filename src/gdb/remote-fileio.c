@@ -523,7 +523,8 @@ remote_fileio_reply(int retcode, int error)
       strcat(buf, "-");
       retcode = -retcode;
     }
-  snprintf((buf + strlen(buf)), (sizeof(buf) + strlen(buf)), "%x", retcode);
+  snprintf((buf + strlen(buf)), (sizeof(buf) + strlen(buf)), "%x",
+	   (unsigned int)retcode);
   if (error || remote_fio_ctrl_c_flag)
     {
       if (error && remote_fio_ctrl_c_flag)
@@ -533,7 +534,8 @@ remote_fileio_reply(int retcode, int error)
 	  strcat(buf, "-");
 	  error = -error;
 	}
-      snprintf((buf + strlen(buf)), (sizeof(buf) + strlen(buf)), ",%x", error);
+      snprintf((buf + strlen(buf)), (sizeof(buf) + strlen(buf)), ",%x",
+	       (unsigned int)error);
       if (remote_fio_ctrl_c_flag)
         strcat(buf, ",C");
     }

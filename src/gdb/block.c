@@ -155,15 +155,6 @@ block_function (const struct block *bl)
   return BLOCK_FUNCTION (bl);
 }
 
-/* FIXME: need to rename some struct fields that currently live in headers,
- * and deal with all of the resulting fallout, before removing this: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic push
- #  pragma GCC diagnostic ignored "-Wc++-compat"
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
-
 /* APPLE LOCAL begin address ranges  */
 /* Return a 1 if any of the address ranges for block BL begins with START
    and any of the address ranges for BL ends with END; return a 0 otherwise.  */
@@ -236,9 +227,9 @@ blockvector_for_pc_sect (CORE_ADDR pc, struct bfd_section *section,
 
   /* APPLE LOCAL begin cache lookup values for improved performance  */
   if (pc == last_blockvector_lookup_pc
-	   && pc == last_mapped_section_lookup_pc
-	   && section == cached_mapped_section
-	   && cached_blockvector)
+      && pc == last_mapped_section_lookup_pc
+      && section == cached_mapped_section
+      && cached_blockvector)
     {
       *pindex = cached_blockvector_index;
       return cached_blockvector;
@@ -261,22 +252,22 @@ blockvector_for_pc_sect (CORE_ADDR pc, struct bfd_section *section,
         /* APPLE LOCAL end cache lookup values for improved performance  */
     }
 
-  bl = BLOCKVECTOR (symtab);
-  static_block = BLOCKVECTOR_BLOCK (bl, STATIC_BLOCK);
-  b = BLOCKVECTOR_BLOCK (bl, 0);
+  bl = BLOCKVECTOR(symtab);
+  static_block = BLOCKVECTOR_BLOCK(bl, STATIC_BLOCK);
+  b = BLOCKVECTOR_BLOCK(bl, 0);
 
   /* Then search that symtab for the smallest block that wins.  */
   /* Use binary search to find the last block that starts before PC.  */
 
   bot = 0;
-  top = BLOCKVECTOR_NBLOCKS (bl);
+  top = BLOCKVECTOR_NBLOCKS(bl);
 
   while (top - bot > 1)
     {
       half = (top - bot + 1) >> 1;
-      b = BLOCKVECTOR_BLOCK (bl, bot + half);
+      b = BLOCKVECTOR_BLOCK(bl, (bot + half));
       /* APPLE LOCAL begin address ranges  */
-      if (BLOCK_LOWEST_PC (b) <= pc)
+      if (BLOCK_LOWEST_PC(b) <= pc)
       /* APPLE LOCAL end address ranges  */
 	bot += half;
       else
@@ -293,7 +284,7 @@ blockvector_for_pc_sect (CORE_ADDR pc, struct bfd_section *section,
 
   while (bot >= FIRST_LOCAL_BLOCK)
     {
-      b = BLOCKVECTOR_BLOCK (bl, bot);
+      b = BLOCKVECTOR_BLOCK(bl, bot);
       /* APPLE LOCAL begin address ranges  */
 
       /* This condition is a little tricky.
@@ -319,7 +310,7 @@ blockvector_for_pc_sect (CORE_ADDR pc, struct bfd_section *section,
 	}
         /* APPLE LOCAL end cache lookup values for improved performance  */
 
-      if (block_contains_pc (b, pc))
+      if (block_contains_pc(b, pc))
       /* APPLE LOCAL end address ranges  */
 	{
 	  if (pindex)
@@ -530,12 +521,5 @@ allocate_block(struct obstack *obstack)
 
   return bl;
 }
-
-/* keep the condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
 
 /* EOF */

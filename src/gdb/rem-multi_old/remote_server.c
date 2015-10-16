@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
                 break;
 			case 'k':
                 kill_inferior();
-                sprintf(own_buf,"q");
+                snprintf(own_buf, sizeof(own_buf), "q");
                 putpkt(own_buf);
                 printf("\nObtained kill request...terminating\n");
                 close(remote_desc);

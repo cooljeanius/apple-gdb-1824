@@ -30,19 +30,10 @@
 #ifndef XCOFFSOLIB_H
 #define XCOFFSOLIB_H
 
-/* temporary, until I am ready to deal with all of the fallout that would
- * result from fixing these warnings in this header: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic push
- #  pragma GCC diagnostic ignored "-Wc++-compat"
-# endif /* gcc 4.6+ */
-#endif /* GCC */
-
 struct vmap
   {
     struct vmap *nxt;		/* ptr to next in chain                 */
-    bfd *bfd;			/* BFD for mappable object library      */
+    bfd *obfd;			/* BFD for mappable object library      */
     char *name;			/* ptr to object file name              */
     char *member;		/* ptr to member name                   */
     CORE_ADDR tstart;		/* virtual addr where member is mapped  */
@@ -59,13 +50,6 @@ struct vmap
     unsigned loaded:1;		/* True if symbols are loaded           */
     unsigned padding:15;
   };
-
-/* keep condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* GCC */
 
 struct vmap_and_bfd
   {

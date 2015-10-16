@@ -190,6 +190,8 @@ case "${host}" in
     dnl# we are inside a conditional; no "_ONCE" allowed:
     AC_CHECK_HEADERS([spawn.h])dnl
     AC_CHECK_DECLS([POSIX_SPAWN_SETEXEC])
+    AC_CHECK_FUNCS([posix_spawnp])
+    AC_CHECK_TYPES([posix_spawnattr_t])
     AC_MSG_CHECKING([whether posix_spawn supports SETEXEC])
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <spawn.h>
@@ -600,6 +602,14 @@ AC_ARG_PROGRAM
 
 # See if we are building with C++, and substitute COMPILER:
 GDB_AC_BUILD_WITH_CXX
+
+# Dependency checking.
+m4_ifdef([ZW_CREATE_DEPDIR],[
+ZW_CREATE_DEPDIR
+])dnl
+m4_ifdef([ZW_PROG_COMPILER_DEPENDENCIES],[
+ZW_PROG_COMPILER_DEPENDENCIES([CC])dnl
+])dnl
 
 # Some system checks.
 m4_ifdef([ACX_LARGEFILE],[
@@ -1856,6 +1866,7 @@ AC_C_BIGENDIAN([
   AC_CHECK_DECLS([__LITTLE_ENDIAN])dnl
 ])dnl
 AC_C_CHAR_UNSIGNED dnl# can help with conversion warnings eventually
+AC_C_FLEXIBLE_ARRAY_MEMBER dnl# struct hack in at least 1 header (symtab.h)
 AC_C_PROTOTYPES
 AC_C_STRINGIZE
 AC_C_VARARRAYS
@@ -1970,6 +1981,12 @@ AC_CHECK_FUNCS([atof alarm assert atexit bsearch bzero dup2 exit \
                 strerror strlcat strlcpy strlen strncasecmp strncat \
                 strncmp strncpy strndup strpbrk strrchr strspn strstr \
                 strtok strtol strtoul uname wcwidth])dnl
+
+dnl# Use as a replacement for just-plain sprintf:
+if test "x${ac_cv_func_snprintf}" = "x"; then
+  test -z "${ac_cv_func_snprintf}"
+  AC_CHECK_FUNCS([snprintf])
+fi
 
 dnl# CoreFoundation:
 AC_CHECK_FUNCS([CFPropertyListCreateWithData])dnl
@@ -2885,6 +2902,10 @@ AC_ARG_WITH([sysroot],
 AC_SUBST([TARGET_SYSTEM_ROOT])dnl
 AC_SUBST([TARGET_SYSTEM_ROOT_DEFINE])dnl
 
+###########################################################################
+#                      COMPILER WARNINGS SECTION                          #
+###########################################################################
+
 # NOTE: Do NOT add -Wall or -Wunused, they both include
 # -Wunused-parameter which reports bogus warnings.
 ## (they are easy enough to fix though; just put ATTRIBUTE_UNUSED
@@ -2914,13 +2935,14 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
   ## Special warnings only for C++ compilations:
   cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo -Wodr -Wterminate \
 -Wmultiple-inheritance -Wvirtual-inheritance -Wpmf-conversions \
--Wzero-as-null-pointer-constant -Wno-write-strings -Wno-narrowing"
+-Wno-write-strings -Wno-narrowing"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
--Wpointer-sign -Wdeclaration-after-statement -Wc++-compat \
+-Wpointer-sign -Wmissing-prototypes -Wdeclaration-after-statement \
+-Wc++-compat -Woverride-init -Woverride-init-side-effects \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
--Wstrict-prototypes -Woverride-init -Wnested-externs"
+-Wstrict-prototypes -Wnested-externs"
   build_warnings="${build_warnings} ${c_warnings}"
 fi
 
@@ -2940,13 +2962,19 @@ dnl# (we now ensure that 'acl_cv_wl' is set elsewhere above)
 
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
+    stdflag=""
+    if test "x${enable_build_with_cxx}" = "xyes"; then
+      stdflag="-std=gnu++03"
+    else
+      stdflag="-std=gnu99"
+    fi
     # -Wmost is APPLE_LOCAL, as are -Wextra-tokens and -Wnewline-eof
     # (-Wmost might have to be removed for the same reason as -Wall)
     # -Wnonportable-cfstrings is actually a flag for newer versions of the
     # FSF gcc, but it only makes sense on Apple platforms.
     build_warnings="${build_warnings} -Wmost -Wextra-tokens -Wnewline-eof \
--Wendif-labels -Wformat -Wformat-signedness -Wformat-y2k -Wnonnull \
--Wnonportable-cfstrings -Wno-unused-function -std=gnu99"
+-Wendif-labels -Wformat -Wformat-y2k -Wnonnull -Wnonportable-cfstrings \
+-Wno-unused-const-variable -Wno-unused-function ${stdflag}"
     case "${host}" in
       *64*-apple-darwin9* | *64*-apple-darwin1[[0123456789]].*.*)
         build_warnings="${build_warnings} -Wshorten-64-to-32"
@@ -2995,10 +3023,10 @@ opt_warnings="-Wuninitialized -Winit-self -Wmissing-noreturn \
 -Wvolatile-register-var -Wdisabled-optimization \
 -Waggressive-loop-optimizations -Wvector-operation-performance \
 -Wmaybe-uninitialized -Wstrict-overflow=1 -fno-strict-aliasing \
--Wnull-dereference -Wduplicated-cond"
+-Wnull-dereference -Wduplicated-cond -Wframe-address"
 # -Warray-bounds is only for -O2 and up, or when -ftree-vrp is active, so
 # use a separate variable for it:
-opt_warnings_plus="${opt_warnings} -Warray-bounds"
+opt_warnings_plus="${opt_warnings} -Warray-bounds=2"
 if test x${CFLAGS+set} = xset; then
   case "${CFLAGS}" in
     *"-O0"* )
@@ -3028,7 +3056,6 @@ fi
 #  * -Wconversion (would require a lot of casting)
 #  * -Wsign-conversion (likewise)
 #  * -Wtraditional-conversion (likewise)
-#  * -Wmissing-prototypes (C-only; redundant with other flag)
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
 #  * -Winline (I can never tell if the compiler is right or not with this)
 #  * -Wundef (only if we can figure out how to fix the issue with caddr_t)
@@ -3039,6 +3066,8 @@ fi
 #  * -Wenum-compare (not really sure how to solve for now...)
 #  * -Wunsafe-loop-optimizations (lex/yacc generate code that triggers it)
 #  * -Waggregate-return (too noisy and hard to avoid)
+#  * -Wformat-signedness (too noisy)
+#  * -Wpadded (warnings in headers out of our control)
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)

@@ -364,16 +364,16 @@ struct expression
   {
     const struct language_defn *language_defn;	/* language it was entered in */
     int nelts;
-    union exp_element elts[1];
+    union exp_element elts[3];
   };
 
 /* Macros for converting between number of expression elements and bytes
    to store that many expression elements. */
 
 #define EXP_ELEM_TO_BYTES(elements) \
-    ((elements) * sizeof (union exp_element))
+    ((elements) * sizeof(union exp_element))
 #define BYTES_TO_EXP_ELEM(bytes) \
-    (((bytes) + sizeof (union exp_element) - 1) / sizeof (union exp_element))
+    (((bytes) + sizeof(union exp_element) - 1) / sizeof(union exp_element))
 
 /* From parse.c */
 
@@ -414,7 +414,7 @@ extern struct value *evaluate_subexp_standard
 
 extern void print_expression (struct expression *, struct ui_file *);
 
-extern char *op_string (enum exp_opcode);
+extern const char *op_string(enum exp_opcode);
 
 extern void dump_raw_expression (struct expression *, struct ui_file *, char *);
 extern void dump_prefix_expression (struct expression *, struct ui_file *);

@@ -110,7 +110,7 @@ int yyparse(void);
 
 static int yylex(void);
 
-void yyerror(char *);
+void yyerror(const char *);
 
 #if 0
 static char *make_qualname(char *, char *);
@@ -1090,7 +1090,7 @@ make_qualname(char *mod, char *ident)
 #endif /* ALLOW_UNUSED_FUNCTIONS */
 
 void ATTR_NORETURN
-yyerror(char *msg)
+yyerror(const char *msg)
 {
   if (prev_lexptr)
     lexptr = prev_lexptr;

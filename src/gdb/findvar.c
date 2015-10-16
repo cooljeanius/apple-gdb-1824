@@ -726,12 +726,12 @@ value_from_register (struct type *type, int regnum, struct frame_info *frame)
       int local_regnum;
       int mem_stor = 0, reg_stor = 0;
       int mem_tracking = 1;
-      CORE_ADDR last_addr = 0;
-      CORE_ADDR first_addr = 0;
-      int len = TYPE_LENGTH (type);
+      CORE_ADDR last_addr = 0UL;
+      CORE_ADDR first_addr = 0UL;
+      int len = TYPE_LENGTH(type);
       int value_bytes_copied;
       int optimized = 0;
-      gdb_byte *value_bytes = alloca (len + MAX_REGISTER_SIZE);
+      gdb_byte *value_bytes = (gdb_byte *)alloca(len + MAX_REGISTER_SIZE);
 
       /* Copy all of the data out, whereever it may be.  */
       for (local_regnum = regnum, value_bytes_copied = 0;

@@ -1567,9 +1567,9 @@ remove_target_sections (bfd *abfd)
 
       dest = (*t)->to_sections;
       for (src = (*t)->to_sections; src < (*t)->to_sections_end; src++)
-	if (src->bfd != abfd)
+	if (src->abfd != abfd)
 	  {
-	    /* Keep this section.  */
+	    /* Keep this section: */
 	    if (dest < src) *dest = *src;
 	    dest++;
 	  }

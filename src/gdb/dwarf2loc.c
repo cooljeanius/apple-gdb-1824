@@ -285,7 +285,11 @@ dwarf_expr_tls_address (void *baton, CORE_ADDR offset)
 		       objfile->name, ex.message);
 	      break;
 	    default:
-	      throw_exception (ex);
+#ifdef __cplusplus
+	      throw_exception((const gdb_exception&)ex);
+#else
+	      throw_exception(ex);
+#endif /* __cplusplus */
 	      break;
 	    }
 	}
@@ -1036,7 +1040,8 @@ print_single_dwarf_location(struct ui_file *stream, gdb_byte **loc_ptr,
 
 	    case DW_OP_deref_size:
 	      {
-		gdb_byte *buf = alloca(TARGET_ADDR_BIT / TARGET_CHAR_BIT);
+		gdb_byte *buf =
+		  (gdb_byte *)alloca(TARGET_ADDR_BIT / TARGET_CHAR_BIT);
 
 		(ctx->read_mem)(ctx->baton, buf, result, *op_ptr++);
 		fprintf_filtered(stream, "at address 0x%s",

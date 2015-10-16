@@ -195,7 +195,7 @@ tui_field_int (struct ui_out *uiout, int fldno, int width,
 	       enum ui_align alignment,
 	       const char *fldname, int value)
 {
-  char buffer[20];		/* FIXME: how many chars long a %d can become? */
+  char buffer[20];	/* FIXME: how many chars long a %d can become? */
 
   tui_out_data *data = ui_out_data (uiout);
   if (data->suppress_output)
@@ -204,17 +204,16 @@ tui_field_int (struct ui_out *uiout, int fldno, int width,
   /* Don't print line number, keep it for later.  */
   if (data->start_of_line == 0 && strcmp (fldname, "line") == 0)
     {
-      data->start_of_line ++;
+      data->start_of_line++;
       data->line = value;
       return;
     }
-  data->start_of_line ++;
-  sprintf (buffer, "%d", value);
-  tui_field_string (uiout, fldno, width, alignment, fldname, buffer);
+  data->start_of_line++;
+  snprintf(buffer, sizeof(buffer), "%d", value);
+  tui_field_string(uiout, fldno, width, alignment, fldname, buffer);
 }
 
-/* used to ommit a field */
-
+/* This is used to ommit a field: */
 void
 tui_field_skip (struct ui_out *uiout, int fldno, int width,
 		enum ui_align alignment,
@@ -414,5 +413,7 @@ tui_out_new (struct ui_file *stream)
 void
 _initialize_tui_out (void)
 {
-  /* nothing needs to be done */
+  ; /* nothing needs to be done */
 }
+
+/* EOF */

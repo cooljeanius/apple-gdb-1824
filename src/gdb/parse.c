@@ -474,19 +474,19 @@ write_dollar_variable (struct stoken str)
       negate = 1;
       i = 2;
     }
-  if (i == str.length)
+  if (i == (int)str.length)
     {
       /* Just dollars (one or two) */
       i = -negate;
       goto handle_last;
     }
   /* Is the rest of the token digits?  */
-  for (; i < str.length; i++)
+  for (; i < (int)str.length; i++)
     if (!(str.ptr[i] >= '0' && str.ptr[i] <= '9'))
       break;
-  if (i == str.length)
+  if (i == (int)str.length)
     {
-      i = atoi (str.ptr + 1 + negate);
+      i = atoi(str.ptr + 1 + negate);
       if (negate)
 	i = -i;
       goto handle_last;

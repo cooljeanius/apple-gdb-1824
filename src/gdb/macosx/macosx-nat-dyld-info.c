@@ -601,7 +601,7 @@ dyld_offset_string (CORE_ADDR offset)
    return an xmalloc()'ed string with that text in it.  */
 
 char *
-dyld_entry_string (struct dyld_objfile_entry *e, int print_basenames)
+dyld_entry_string(struct dyld_objfile_entry *e, int print_basenames)
 {
   char *name;
   char *objname;
@@ -613,58 +613,62 @@ dyld_entry_string (struct dyld_objfile_entry *e, int print_basenames)
   char *ret;
   int maxlen = 0;
 
-  dyld_entry_info (e, print_basenames, &name, &objname, &symname,
-		   NULL, NULL, NULL,
-                   &addr, &slide, &prefix);
+  dyld_entry_info(e, print_basenames, &name, &objname, &symname,
+		  NULL, NULL, NULL,
+                  &addr, &slide, &prefix);
 
   maxlen = 0;
   if (name != NULL)
-    maxlen += strlen (name);
+    maxlen += strlen(name);
   if (objname != NULL)
-    maxlen += strlen (objname);
+    maxlen += strlen(objname);
   if (symname != NULL)
-    maxlen += strlen (symname);
+    maxlen += strlen(symname);
   if (addr != NULL)
-    maxlen += strlen (addr);
+    maxlen += strlen(addr);
   if (slide != NULL)
-    maxlen += strlen (slide);
+    maxlen += strlen(slide);
   if (prefix != NULL)
-    maxlen += strlen (prefix);
-  maxlen += 128;
+    maxlen += strlen(prefix);
+  maxlen += 128UL;
 
-  ret = (char *) xmalloc (maxlen);
+  ret = (char *)xmalloc(maxlen);
   ret[0] = '\0';
 
   if (name == NULL)
     {
       if (addr == NULL)
-        sprintf (ret + strlen (ret), "[unknown]");
+        snprintf((ret + strlen(ret)), (maxlen + strlen(ret)), "[unknown]");
       else
-        sprintf (ret + strlen (ret), "[memory at %s]", addr);
+        snprintf((ret + strlen(ret)), (maxlen + strlen(ret)), "[memory at %s]",
+		 addr);
     }
   else
     {
       if (addr == NULL)
-        sprintf (ret + strlen (ret), "\"%s\"", name);
+        snprintf((ret + strlen(ret)), (maxlen + strlen(ret)), "\"%s\"", name);
       else
-        sprintf (ret + strlen (ret), "\"%s\" at %s", name, addr);
+        snprintf((ret + strlen(ret)), (maxlen + strlen(ret)), "\"%s\" at %s",
+		 name, addr);
     }
 
   if (symname != NULL)
-    sprintf (ret + strlen (ret), " (symbols from \"%s\")", symname);
+    snprintf((ret + strlen(ret)), (maxlen + strlen(ret)),
+	     " (symbols from \"%s\")", symname);
   if (slide != NULL)
-    sprintf (ret + strlen (ret), " (offset %s)", addr);
+    snprintf((ret + strlen(ret)), (maxlen + strlen(ret)), " (offset %s)", addr);
   if (prefix != NULL)
-    sprintf (ret + strlen (ret), " (prefix %s)", prefix);
+    snprintf((ret + strlen(ret)), (maxlen + strlen(ret)), " (prefix %s)",
+	     prefix);
 
-  xfree (name);
-  xfree (objname);
-  xfree (symname);
-  xfree (addr);
-  xfree (slide);
-  xfree (prefix);
+  xfree(name);
+  xfree(objname);
+  xfree(symname);
+  xfree(addr);
+  xfree(slide);
+  xfree(prefix);
 
-  return xstrdup (ret);
+  return xstrdup(ret);
 }
 
 void

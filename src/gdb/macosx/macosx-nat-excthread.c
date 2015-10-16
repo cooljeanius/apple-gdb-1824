@@ -255,7 +255,9 @@ static macosx_exception_thread_message *static_message = NULL;
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic push
  #  pragma GCC diagnostic ignored "-Wmissing-declarations"
- #  pragma GCC diagnostic ignored "-Wmissing-prototypes"
+#  if !defined(__cplusplus) 
+ #   pragma GCC diagnostic ignored "-Wmissing-prototypes"
+#  endif /* !__cplusplus */
 # endif /* gcc 4.6+ */
 #endif /* GCC */
 

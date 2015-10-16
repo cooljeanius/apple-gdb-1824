@@ -1113,7 +1113,7 @@ get_register (int regnum, int format)
 	  int idx =
 	    ((TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
 	     ? j : (register_size(current_gdbarch, regnum) - 1 - j));
-	  sprintf(ptr, "%02x", (unsigned char)buffer[idx]);
+	  snprintf(ptr, SIZE_T_MAX, "%02x", (unsigned char)buffer[idx]);
 	  ptr += 2;
 	}
       ui_out_field_string(uiout, "value", buf);
@@ -2370,7 +2370,11 @@ mi_execute_async_cli_command (char *mi, char *args, int from_tty)
     {
       struct mi_continuation_arg *arg = NULL;
       struct cleanup *old_cleanups = NULL;
+#ifdef __cplusplus
+      struct gdb_exception except;
+#else
       volatile struct gdb_exception except;
+#endif /* __cplusplus */
 
       async_args = (char *)xmalloc(strlen(args) + 2UL);
       old_cleanups = make_cleanup(xfree, async_args);
@@ -2393,7 +2397,8 @@ mi_execute_async_cli_command (char *mi, char *args, int from_tty)
       arg->exec_error_cleanups
 	= make_exec_error_cleanup (mi_exec_error_cleanup, (void *) arg);
 
-      except = safe_execute_command (uiout, /*ui */ run, 0 /*from_tty */ );
+      /* run means ui, 0 means from_tty: */
+      except = safe_execute_command(uiout, run, 0);
       do_cleanups (old_cleanups);
 
       if (target_executing)

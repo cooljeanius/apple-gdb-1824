@@ -461,19 +461,19 @@ bold-standout   use extra bright or bold with standout mode"),
 
 /* Update gdb's knowledge of the terminal size.  */
 void
-tui_update_gdb_sizes (void)
+tui_update_gdb_sizes(void)
 {
   char cmd[50];
   int screenheight, screenwidth;
 
-  rl_get_screen_size (&screenheight, &screenwidth);
+  rl_get_screen_size(&screenheight, &screenwidth);
   /* Set to TUI command window dimension or use readline values.  */
-  sprintf (cmd, "set width %d",
-           tui_active ? TUI_CMD_WIN->generic.width : screenwidth);
-  execute_command (cmd, 0);
-  sprintf (cmd, "set height %d",
-           tui_active ? TUI_CMD_WIN->generic.height : screenheight);
-  execute_command (cmd, 0);
+  snprintf(cmd, sizeof(cmd), "set width %d",
+           (tui_active ? TUI_CMD_WIN->generic.width : screenwidth));
+  execute_command(cmd, 0);
+  snprintf(cmd, sizeof(cmd), "set height %d",
+           (tui_active ? TUI_CMD_WIN->generic.height : screenheight));
+  execute_command(cmd, 0);
 }
 
 

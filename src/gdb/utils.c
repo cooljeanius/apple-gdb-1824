@@ -410,7 +410,12 @@ make_cleanup_restore_uiout(struct ui_out *old_uiout)
 static void
 do_set_schedlock_mode(void *in_mode)
 {
+#ifdef __cplusplus
+  enum scheduler_locking_mode mode = scheduler_locking_off;
+  (void)in_mode;
+#else
   enum scheduler_locking_mode mode = (enum scheduler_locking_mode)in_mode;
+#endif /* __cplusplus */
   set_scheduler_locking_mode(mode);
 }
 
@@ -1788,7 +1793,7 @@ static NORETURN int
 no_control_char_error(const char *start, const char *end)
 {
   size_t len = (size_t)(end - start);
-  char *copy = alloca(len + 1UL);
+  char *copy = (char *)alloca(len + 1UL);
 
   memcpy(copy, start, len);
   copy[len] = '\0';
@@ -2264,7 +2269,7 @@ wrap_here(const char *indent)
       if (indent == NULL)
 	wrap_indent = "";
       else
-	wrap_indent = indent;
+	wrap_indent = (char *)indent;
     }
 }
 
@@ -3442,7 +3447,7 @@ gdb_realpath(const char *filename)
     if (path_max > 0)
       {
 	/* PATH_MAX is bounded: */
-	char *buf = alloca((size_t)path_max);
+	char *buf = (char *)alloca((size_t)path_max);
 	char *rp = realpath(filename, buf);
 	return xstrdup(rp ? rp : filename);
       }

@@ -1090,7 +1090,9 @@ adapt_store_registers (void)
 void
 adapt_store_register (int regno)
 {
-  /* printf("adapt_store_register() called.\n"); fflush(stdout); /* */
+#if 0
+  printf("adapt_store_register() called.\n"); fflush(stdout); /* */
+#endif /* 0 */
   if (regno == -1)
     adapt_store_registers ();
   else

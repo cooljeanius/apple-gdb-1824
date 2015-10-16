@@ -473,7 +473,7 @@ mi_cmd_stack_info_depth(char *command, char **argv, int argc)
 enum print_values
 mi_decode_print_values(char *arg)
 {
-  enum print_values print_values = 0;
+  enum print_values print_values = (enum print_values)0;
 
   /* APPLE LOCAL: We muck with this a bit.  We set
      2 to mean PRINT_MAKE_VAROBJ as well as 3

@@ -940,14 +940,13 @@ deprecated_register_bytes (void)
   return current_regcache->descr->sizeof_raw_registers;
 }
 
-/* Return the contents of register REGNUM as an unsigned integer.  */
-
+/* Return the contents of register REGNUM as an unsigned integer: */
 ULONGEST
-read_register (int regnum)
+read_register(int regnum)
 {
-  gdb_byte *buf = alloca (register_size (current_gdbarch, regnum));
-  deprecated_read_register_gen (regnum, buf);
-  return (extract_unsigned_integer (buf, register_size (current_gdbarch, regnum)));
+  gdb_byte *buf = (gdb_byte *)alloca(register_size(current_gdbarch, regnum));
+  deprecated_read_register_gen(regnum, buf);
+  return extract_unsigned_integer(buf, register_size(current_gdbarch, regnum));
 }
 
 ULONGEST

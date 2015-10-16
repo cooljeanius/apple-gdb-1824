@@ -2476,15 +2476,15 @@ print_inlined_frame (struct frame_info *fi, int print_level,
 
   if (tmp_name)
     {
-      buffer_len = strlen (tmp_name) + strlen (" [inlined]") + 1;
-      buffer = (char *) xmalloc (buffer_len);
-      sprintf (buffer, "%s [inlined]", tmp_name);
+      buffer_len = (strlen(tmp_name) + strlen(" [inlined]") + 1UL);
+      buffer = (char *)xmalloc(buffer_len);
+      snprintf(buffer, buffer_len, "%s [inlined]", tmp_name);
     }
   else
     {
-      buffer_len = strlen ("<unknown function> [inlined]") + 1;
-      buffer = (char *) xmalloc (buffer_len);
-      sprintf (buffer, "<unknown function> [inlined]");
+      buffer_len = (strlen("<unknown function> [inlined]") + 1UL);
+      buffer = (char *)xmalloc(buffer_len);
+      snprintf(buffer, buffer_len, "<unknown function> [inlined]");
     }
 
   funname = buffer;
@@ -2805,15 +2805,15 @@ inlined_subroutine_adjust_position_for_breakpoint (struct breakpoint *b)
       if (global_inlined_call_stack.records[i].s
 	  && global_inlined_call_stack.records[i].s->filename)
 	{
-	  len += strlen (global_inlined_call_stack.records[i].s->filename);
-          long_name = (char *) xmalloc (len);
-	  sprintf (long_name, "%s:'%s'",
+	  len += strlen(global_inlined_call_stack.records[i].s->filename);
+          long_name = (char *)xmalloc(len);
+	  snprintf(long_name, len, "%s:'%s'",
 		   global_inlined_call_stack.records[i].s->filename,
 		   global_inlined_call_stack.records[i].fn_name);
 	}
 
-      if (((strcmp (global_inlined_call_stack.records[i].fn_name,
-		    b->addr_string) == 0)
+      if (((strcmp(global_inlined_call_stack.records[i].fn_name,
+		   b->addr_string) == 0)
 	   || (long_name != NULL
 	       && (strcmp (long_name, b->addr_string) == 0)))
       /* APPLE LOCAL end radar 6366048 search both minsyms & syms for bps  */
@@ -3710,11 +3710,11 @@ print_inlined_frames_lite(struct ui_out *uiout, int with_names,
               if (stack_ptr->records[i].fn_name)
 		{
 	          char *func_name;
-		  func_name =
-                    (char *)xmalloc(strlen(stack_ptr->records[i].fn_name)
-                                    + 15UL);
-		  sprintf(func_name, "%s [inlined]",
-			  stack_ptr->records[i].fn_name);
+		  size_t funname_len = (strlen(stack_ptr->records[i].fn_name)
+					+ 15UL);
+		  func_name = (char *)xmalloc(funname_len);
+		  snprintf(func_name, funname_len, "%s [inlined]",
+			   stack_ptr->records[i].fn_name);
 		  ui_out_field_string(uiout, "func", func_name);
                   xfree(func_name);
 		}

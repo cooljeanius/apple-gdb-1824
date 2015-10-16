@@ -46,38 +46,39 @@
 #include "jv-lang.h"
 #include "demangle.h"
 
-extern void _initialize_language (void);
+extern void _initialize_language(void);
 
-static void set_case_str (void);
+static void set_case_str(void);
 
-static void set_range_str (void);
+static void set_range_str(void);
 
-static void set_type_str (void);
+static void set_type_str(void);
 
-static void set_lang_str (void);
+static void set_lang_str(void);
 
-static void unk_lang_error (char *);
+static void unk_lang_error(const char *);
 
-static int unk_lang_parser (void);
+static int unk_lang_parser(void);
 
-static void show_check (char *, int);
+static void show_check(char *, int);
 
-static void set_check (char *, int);
+static void set_check(char *, int);
 
-static void set_type_range_case (void);
+static void set_type_range_case(void);
 
-static void unk_lang_emit_char (int c, struct ui_file *stream, int quoter);
+static void unk_lang_emit_char(int c, struct ui_file *stream, int quoter);
 
-static void unk_lang_printchar (int c, struct ui_file *stream);
+static void unk_lang_printchar(int c, struct ui_file *stream);
 
-static struct type *unk_lang_create_fundamental_type (struct objfile *, int);
+static struct type *unk_lang_create_fundamental_type(struct objfile *, int);
 
-static void unk_lang_print_type (struct type *, char *, struct ui_file *,
-				 int, int);
+static void unk_lang_print_type(struct type *, char *, struct ui_file *,
+				int, int);
 
-static int unk_lang_value_print (struct value *, struct ui_file *, int, enum val_prettyprint);
+static int unk_lang_value_print(struct value *, struct ui_file *, int,
+				enum val_prettyprint);
 
-static CORE_ADDR unk_lang_trampoline (CORE_ADDR pc);
+static CORE_ADDR unk_lang_trampoline(CORE_ADDR pc);
 
 /* Forward declaration */
 extern const struct language_defn unknown_language_defn;
@@ -401,17 +402,22 @@ set_language(enum language lang)
 }
 
 static void
-do_set_language (void *in_language)
+do_set_language(void *in_language)
 {
-  enum language lang = (enum language) in_language;
-  set_language (lang);
+#ifdef __cplusplus
+  enum language lang = ((in_language != NULL)
+			? language_auto : language_unknown);
+#else
+  enum language lang = (enum language)in_language;
+#endif /* __cplusplus */
+  set_language(lang);
 }
 
 struct cleanup *
-make_cleanup_restore_language (enum language new_lang)
+make_cleanup_restore_language(enum language new_lang)
 {
-  enum language lang = set_language (new_lang);
-  return make_cleanup (do_set_language, (void *) lang);
+  enum language lang = set_language(new_lang);
+  return make_cleanup(do_set_language, (void *)lang);
 }
 
 
@@ -963,8 +969,8 @@ language_def(enum language lang)
   return NULL;
 }
 
-/* Return the language as a string */
-char *
+/* Return the language as a string: */
+const char *
 language_str(enum language lang)
 {
   size_t i;
@@ -1075,7 +1081,7 @@ language_class_name_from_physname (const struct language_defn *current_language,
 
 /* APPLE LOCAL: Don't include '/' in this list.  See also the copy of this
    string in completer.c:gdb_completer_command_word_break_characters().  */
-char *
+const char *
 default_word_break_characters(void)
 {
   return " \t\n!@#$%^&*()+=|~`}{[]\"';:?>.<,-";
@@ -1090,26 +1096,32 @@ unk_lang_parser(void)
 }
 
 static void ATTR_NORETURN
-unk_lang_error(char *msg ATTRIBUTE_UNUSED)
+unk_lang_error(const char *msg ATTRIBUTE_UNUSED)
 {
   error(_("Attempted to parse an expression with unknown language"));
 }
 
 static void ATTR_NORETURN
-unk_lang_emit_char(int c, struct ui_file *stream, int quoter)
+unk_lang_emit_char(int c ATTRIBUTE_UNUSED,
+		   struct ui_file *stream ATTRIBUTE_UNUSED,
+		   int quoter ATTRIBUTE_UNUSED)
 {
   error(_("internal error - unimplemented function unk_lang_emit_char called."));
 }
 
 static void ATTR_NORETURN
-unk_lang_printchar(int c, struct ui_file *stream)
+unk_lang_printchar(int c ATTRIBUTE_UNUSED,
+		   struct ui_file *stream ATTRIBUTE_UNUSED)
 {
   error (_("internal error - unimplemented function unk_lang_printchar called."));
 }
 
 static void ATTR_NORETURN
-unk_lang_printstr(struct ui_file *stream, const gdb_byte *string,
-		  unsigned int length, int width, int force_ellipses)
+unk_lang_printstr(struct ui_file *stream ATTRIBUTE_UNUSED,
+		  const gdb_byte *string ATTRIBUTE_UNUSED,
+		  unsigned int length ATTRIBUTE_UNUSED,
+		  int width ATTRIBUTE_UNUSED,
+		  int force_ellipses ATTRIBUTE_UNUSED)
 {
   error(_("internal error - unimplemented function unk_lang_printstr called."));
 }
@@ -1122,31 +1134,39 @@ unk_lang_create_fundamental_type(struct objfile *objfile ATTRIBUTE_UNUSED,
 }
 
 static void ATTR_NORETURN
-unk_lang_print_type(struct type *type, char *varstring,
-                    struct ui_file *stream, int show, int level)
+unk_lang_print_type(struct type *type ATTRIBUTE_UNUSED,
+		    char *varstring ATTRIBUTE_UNUSED,
+                    struct ui_file *stream ATTRIBUTE_UNUSED,
+		    int show ATTRIBUTE_UNUSED, int level ATTRIBUTE_UNUSED)
 {
   error(_("internal error - unimplemented function unk_lang_print_type called."));
 }
 
 static int
-unk_lang_val_print(struct type *type, const gdb_byte *valaddr,
-		   int embedded_offset, CORE_ADDR address,
-		   struct ui_file *stream, int format,
-		   int deref_ref, int recurse, enum val_prettyprint pretty)
+unk_lang_val_print(struct type *type ATTRIBUTE_UNUSED,
+		   const gdb_byte *valaddr ATTRIBUTE_UNUSED,
+		   int embedded_offset ATTRIBUTE_UNUSED,
+		   CORE_ADDR address ATTRIBUTE_UNUSED,
+		   struct ui_file *stream ATTRIBUTE_UNUSED,
+		   int format ATTRIBUTE_UNUSED, int deref_ref ATTRIBUTE_UNUSED,
+		   int recurse ATTRIBUTE_UNUSED,
+		   enum val_prettyprint pretty ATTRIBUTE_UNUSED)
 {
   error(_("internal error - unimplemented function unk_lang_val_print called."));
 }
 
 static int
-unk_lang_value_print(struct value *val, struct ui_file *stream, int format,
-		     enum val_prettyprint pretty)
+unk_lang_value_print(struct value *val ATTRIBUTE_UNUSED,
+		     struct ui_file *stream ATTRIBUTE_UNUSED,
+		     int format ATTRIBUTE_UNUSED,
+		     enum val_prettyprint pretty ATTRIBUTE_UNUSED)
 {
-  error (_("internal error - unimplemented function unk_lang_value_print called."));
+  error(_("internal error - unimplemented function unk_lang_value_print called."));
 }
 
-static CORE_ADDR unk_lang_trampoline(CORE_ADDR pc)
+static CORE_ADDR unk_lang_trampoline(CORE_ADDR pc ATTRIBUTE_UNUSED)
 {
-  return 0;
+  return 0UL;
 }
 
 /* Unknown languages just use the cplus demangler: */
@@ -1155,9 +1175,9 @@ static char *unk_lang_demangle(const char *mangled, int options)
   return cplus_demangle(mangled, options);
 }
 
-static char *unk_lang_class_name(const char *mangled)
+static char *unk_lang_class_name(const char *mangled ATTRIBUTE_UNUSED)
 {
-  return NULL;
+  return (char *)NULL;
 }
 
 static const struct op_print unk_op_print_tab[] =

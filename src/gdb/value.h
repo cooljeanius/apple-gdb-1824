@@ -379,17 +379,17 @@ extern struct value *value_pos (struct value *arg1);
 
 extern struct value *value_neg (struct value *arg1);
 
-extern struct value *value_complement (struct value *arg1);
+extern struct value *value_complement(struct value *arg1);
 
-extern struct value *value_struct_elt (struct value **argp,
-				       struct value **args,
-				       char *name, int *static_memfuncp,
-				       char *err);
+extern struct value *value_struct_elt(struct value **argp,
+				      struct value **args,
+				      char *name, int *static_memfuncp,
+				      char *err);
 
-extern struct value *value_aggregate_elt (struct type *curtype,
-					  char *name, enum noside noside);
+extern struct value *value_aggregate_elt(struct type *curtype,
+					 char *name, enum noside noside);
 
-extern struct value *value_static_field (struct type *type, int fieldno);
+extern struct value *value_static_field(struct type *type, int fieldno);
 
 extern struct fn_field *value_find_oload_method_list (struct value **, char *,
 						      int, int *,
@@ -502,20 +502,20 @@ extern void release_value (struct value *val);
 
 extern int record_latest_value (struct value *val);
 
-extern void modify_field (gdb_byte *addr, LONGEST fieldval, int bitpos,
-			  int bitsize);
+extern void modify_field(gdb_byte *addr, LONGEST fieldval, int bitpos,
+			 int bitsize);
 
-extern void type_print (struct type *type, char *varstring,
-			struct ui_file *stream, int show);
+extern void type_print(struct type *type, char *varstring,
+		       struct ui_file *stream, int show);
 
 
-extern char *type_sprint (struct type *type, char *varstring, int show);
+extern char *type_sprint(struct type *type, char *varstring, int show);
 
-extern char *type_sprint_quoted (struct type *type, char *varstring, int show);
+extern char *type_sprint_quoted(struct type *type, char *varstring, int show);
 
-extern gdb_byte *baseclass_addr (struct type *type, int index,
-				 gdb_byte *valaddr,
-				 struct value **valuep, int *errp);
+extern gdb_byte *baseclass_addr(struct type *type, int index,
+				gdb_byte *valaddr,
+				struct value **valuep, int *errp);
 
 extern void print_longest (struct ui_file *stream, int format,
 			   int use_local, LONGEST val);

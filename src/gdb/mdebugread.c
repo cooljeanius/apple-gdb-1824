@@ -4,7 +4,7 @@
    1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
 
-   Original version contributed by Alessandro Forin (af@cs.cmu.edu) at
+   Original version contributed by Alessandro Forin <af@cs.cmu.edu> at
    CMU.  Major work by Per Bothner, John Gilmore and Ian Lance Taylor
    at Cygnus Support.
 
@@ -4491,18 +4491,20 @@ add_symbol (struct symbol *s, struct block *b)
 /* Add a new block B to a symtab S */
 
 static void
-add_block (struct block *b, struct symtab *s)
+add_block(struct block *b, struct symtab *s)
 {
-  struct blockvector *bv = BLOCKVECTOR (s);
+  struct blockvector *bv = BLOCKVECTOR(s);
 
-  bv = (struct blockvector *) xrealloc ((void *) bv,
-					(sizeof (struct blockvector)
-					 + BLOCKVECTOR_NBLOCKS (bv)
-					 * sizeof (bv->block)));
-  if (bv != BLOCKVECTOR (s))
-    BLOCKVECTOR (s) = bv;
+  /* See comment in "config.h" regarding FLEXIBLE_ARRAY_MEMBER for why we use
+   * offsetof instead of sizeof in here: */
+  bv = (struct blockvector *)xrealloc((void *)bv,
+				      (offsetof(struct blockvector, block)
+				       + (BLOCKVECTOR_NBLOCKS(bv)
+					  * sizeof(bv->block[0]))));
+  if (bv != BLOCKVECTOR(s))
+    BLOCKVECTOR(s) = bv;
 
-  BLOCKVECTOR_BLOCK (bv, BLOCKVECTOR_NBLOCKS (bv)++) = b;
+  BLOCKVECTOR_BLOCK(bv, BLOCKVECTOR_NBLOCKS(bv)++) = b;
 }
 
 /* Add a new linenumber entry (LINENO,ADR) to a linevector LT.
@@ -4664,12 +4666,14 @@ new_psymtab (char *name, struct objfile *objfile)
    proper size to allocate.  */
 
 static struct linetable *
-new_linetable (int size)
+new_linetable(int size)
 {
   struct linetable *l;
 
-  size = (size - 1) * sizeof (l->item) + sizeof (struct linetable);
-  l = (struct linetable *) xmalloc (size);
+  /* See comment in "config.h" regarding FLEXIBLE_ARRAY_MEMBER for why we use
+   * offsetof instead of sizeof in here: */
+  size = ((size - 1) * sizeof(l->item[0]) + offsetof(struct linetable, item));
+  l = (struct linetable *)xmalloc(size);
   l->nitems = 0;
   l->lines_are_chars = 0;
   return l;
@@ -4682,27 +4686,27 @@ new_linetable (int size)
    calculating the proper size to allocate.  */
 
 static struct linetable *
-shrink_linetable (struct linetable *lt)
+shrink_linetable(struct linetable *lt)
 {
-
-  return (struct linetable *) xrealloc ((void *) lt,
-					(sizeof (struct linetable)
-					 + ((lt->nitems - 1)
-					    * sizeof (lt->item))));
+  /* See comment in "config.h" regarding FLEXIBLE_ARRAY_MEMBER for why we use
+   * offsetof instead of sizeof in here: */
+  return (struct linetable *)xrealloc((void *)lt,
+				      (offsetof(struct linetable, item)
+				       + ((lt->nitems - 1)
+					  * sizeof(lt->item[0]))));
 }
 
-/* Allocate and zero a new blockvector of NBLOCKS blocks. */
-
+/* Allocate and zero a new blockvector of NBLOCKS blocks: */
 static struct blockvector *
-new_bvect (int nblocks)
+new_bvect(int nblocks)
 {
   struct blockvector *bv;
   int size;
 
-  size = sizeof (struct blockvector) + nblocks * sizeof (struct block *);
-  bv = (struct blockvector *) xzalloc (size);
+  size = (sizeof(struct blockvector) + nblocks * sizeof(struct block *));
+  bv = (struct blockvector *)xzalloc(size);
 
-  BLOCKVECTOR_NBLOCKS (bv) = nblocks;
+  BLOCKVECTOR_NBLOCKS(bv) = nblocks;
 
   return bv;
 }

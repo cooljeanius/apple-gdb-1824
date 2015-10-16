@@ -2374,14 +2374,18 @@ search_for_coalesced_symbol (struct objfile *obj, struct symbol *sym)
 }
 
 static void
-restore_language (void *arg)
+restore_language(void *arg)
 {
-  enum language l = (enum language) arg;
-  set_language (l);
+#ifdef __cplusplus
+  enum language l = ((arg != NULL) ? language_auto : language_unknown);
+#else
+  enum language l = (enum language)arg;
+#endif /* __cplusplus */
+  set_language(l);
 }
 
 static struct cleanup *
-set_current_language (const char *filename)
+set_current_language(const char *filename)
 {
   enum language save_language;
   enum language new_language;

@@ -1746,24 +1746,24 @@ search_struct_method (char *name, struct value **arg1p,
 	         user program. Make sure that it still points to a valid memory
 	         location.  */
 
-	      if (offset < 0 || offset >= TYPE_LENGTH (type))
+	      if ((offset < 0) || (offset >= TYPE_LENGTH(type)))
 		{
-		  gdb_byte *tmp = alloca (TYPE_LENGTH (baseclass));
-		  if (target_read_memory (VALUE_ADDRESS (*arg1p)
-					  + value_offset (*arg1p) + offset,
-					  tmp, TYPE_LENGTH (baseclass)) != 0)
-		    error (_("virtual baseclass botch"));
+		  gdb_byte *tmp = (gdb_byte *)alloca(TYPE_LENGTH(baseclass));
+		  if (target_read_memory((VALUE_ADDRESS(*arg1p)
+					  + value_offset(*arg1p) + offset),
+					 tmp, TYPE_LENGTH(baseclass)) != 0)
+		    error(_("virtual baseclass botch"));
 		  base_valaddr = tmp;
 		}
 	      else
-		base_valaddr = value_contents (*arg1p) + offset;
+		base_valaddr = (value_contents(*arg1p) + offset);
 
 	      base_offset =
-		baseclass_offset (type, i, base_valaddr,
-				  VALUE_ADDRESS (*arg1p)
-				  + value_offset (*arg1p) + offset);
+		baseclass_offset(type, i, base_valaddr,
+				 (VALUE_ADDRESS(*arg1p)
+				  + value_offset(*arg1p) + offset));
 	      if (base_offset == -1)
-		error (_("virtual baseclass botch"));
+		error(_("virtual baseclass botch"));
 	    }
 	}
       else

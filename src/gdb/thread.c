@@ -1,4 +1,4 @@
-/* Multi-process/thread control for GDB, the GNU debugger.
+/* thread.c: Multi-process/thread control for GDB, the GNU debugger.
 
    Copyright 1986, 1987, 1988, 1993, 1994, 1995, 1996, 1997, 1998,
    1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
@@ -98,15 +98,7 @@ delete_step_resume_breakpoint (void *arg)
     }
 }
 
-/* FIXME: need to rename some struct fields that currently live in headers,
- * and deal with all of the resulting fallout, before removing this: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic push
- #  pragma GCC diagnostic ignored "-Wc++-compat"
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
-
+/* FIXME: needs comment */
 static void
 free_thread(struct thread_info *tp)
 {
@@ -117,19 +109,13 @@ free_thread(struct thread_info *tp)
 
   /* FIXME: do I ever need to call the back-end to give it a
      chance at this private data before deleting the thread?  */
-  if (tp->private)
-    xfree(tp->private);
+  if (tp->privatedata)
+    xfree(tp->privatedata);
 
   xfree(tp);
 }
 
-/* keep the condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
-
+/* FIXME: needs comment */
 void
 init_thread_list(void)
 {

@@ -480,7 +480,7 @@ core_detach(char *args, int from_tty)
    registers that a core file for said arch can contain. When a
    core file is opened,  the register contents found in the mach-o
    load commands for each thread will be cached in the
-   "thrd_info->private->core_thread_state" member of the
+   "thrd_info->privatedata->core_thread_state" member of the
    thread_info structure. Any register sets that do NOT have values
    stored in the mach-o load commands will be NULL. This allows
    read/write access to core file registers for all threads and
@@ -521,15 +521,6 @@ struct core_cached_registers_raw
 typedef struct core_cached_registers_raw core_cached_registers_raw_t;
 
 
-/* FIXME: need to rename some struct fields that currently live in headers,
- * and deal with all of the resulting fallout, before removing this: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic push
- #  pragma GCC diagnostic ignored "-Wc++-compat"
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
-
 /* This function will fetch the register values for the current
    thread from the core thread register cache and place the results
    in the thread register cache (regcache.c).  */
@@ -540,11 +531,11 @@ core_fetch_cached_thread_registers(void)
   core_cached_registers_raw_t *cached_regs_raw;
   struct thread_info *thrd_info = find_thread_pid (inferior_ptid);
 
-  if ((thrd_info == NULL) || (thrd_info->private == NULL))
+  if ((thrd_info == NULL) || (thrd_info->privatedata == NULL))
     return 0;
 
   cached_regs_raw = ((core_cached_registers_raw_t *)
-                     thrd_info->private->core_thread_state);
+                     thrd_info->privatedata->core_thread_state);
 
   if (cached_regs_raw == NULL)
     return 0;
@@ -764,17 +755,17 @@ create_private_thread_info(struct thread_info *thrd_info)
 {
   if (thrd_info)
     {
-      if (thrd_info->private != NULL)
+      if (thrd_info->privatedata != NULL)
 	return 1; /* Success: private member already exists.  */
       else
 	{
 	  /* Allocate our private thread info and initialize it: */
-	  thrd_info->private =
+	  thrd_info->privatedata =
             ((struct private_thread_info *)
              xmalloc(sizeof(struct private_thread_info)));
-	  if (thrd_info->private)
+	  if (thrd_info->privatedata)
 	    {
-	      memset(thrd_info->private, 0,
+	      memset(thrd_info->privatedata, 0,
                      sizeof(struct private_thread_info));
 	      /* Success: The private thread info got correctly allocated
 	         and initialized.  */
@@ -793,11 +784,11 @@ create_private_thread_info(struct thread_info *thrd_info)
 void
 delete_private_thread_info(struct thread_info *thrd_info)
 {
-  if ((thrd_info != NULL) && (thrd_info->private != NULL))
+  if ((thrd_info != NULL) && (thrd_info->privatedata != NULL))
     {
       delete_core_thread_state_cache(thrd_info);
-      xfree(thrd_info->private);
-      thrd_info->private = NULL;
+      xfree(thrd_info->privatedata);
+      thrd_info->privatedata = NULL;
     }
 }
 
@@ -811,18 +802,18 @@ create_core_thread_state_cache(struct thread_info *thrd_info)
 {
   if (thrd_info && create_private_thread_info(thrd_info))
     {
-      if (thrd_info->private->core_thread_state != NULL)
+      if (thrd_info->privatedata->core_thread_state != NULL)
 	return 1; /* Success: already have it.  */
       else
 	{
 	  /* Allocate our core thread state struct and initialize it: */
-	  thrd_info->private->core_thread_state =
+	  thrd_info->privatedata->core_thread_state =
 	    ((core_cached_registers_raw_t *)
              xmalloc(sizeof(core_cached_registers_raw_t)));
 
-	  if (thrd_info->private->core_thread_state)
+	  if (thrd_info->privatedata->core_thread_state)
 	    {
-	      memset(thrd_info->private->core_thread_state, 0,
+	      memset(thrd_info->privatedata->core_thread_state, 0,
 		     sizeof(core_cached_registers_raw_t));
 	      return 1;
 	    }
@@ -837,10 +828,11 @@ create_core_thread_state_cache(struct thread_info *thrd_info)
 void
 delete_core_thread_state_cache(struct thread_info *thrd_info)
 {
-  if (thrd_info && thrd_info->private && thrd_info->private->core_thread_state)
+  if (thrd_info && thrd_info->privatedata
+      && thrd_info->privatedata->core_thread_state)
     {
       core_cached_registers_raw_t *cached_regs_raw =
-	(core_cached_registers_raw_t *)thrd_info->private->core_thread_state;
+	(core_cached_registers_raw_t*)thrd_info->privatedata->core_thread_state;
 #if defined(TARGET_POWERPC)
       if (cached_regs_raw->ppc_gp_regs) {
 	xfree(cached_regs_raw->ppc_gp_regs);
@@ -880,8 +872,8 @@ delete_core_thread_state_cache(struct thread_info *thrd_info)
 #else
 # error "unsupported target architecture"
 #endif /* TARGET_foo */
-      xfree(thrd_info->private->core_thread_state);
-      thrd_info->private->core_thread_state = NULL;
+      xfree(thrd_info->privatedata->core_thread_state);
+      thrd_info->privatedata->core_thread_state = NULL;
     }
 }
 
@@ -912,7 +904,7 @@ core_fetch_registers(int regno)
      thread. This allows us to modify the registers found in a core
      file by reading them into a cache and always using that cache
      when reading and writing registers.  */
-  if (thrd_info->private == NULL || thrd_info->private->core_thread_state == NULL)
+  if (thrd_info->privatedata == NULL || thrd_info->privatedata->core_thread_state == NULL)
     {
       for (tid = ptid_get_tid(inferior_ptid);
 	   (tid < (long)bfd_count_sections(abfd))
@@ -962,7 +954,7 @@ core_fetch_registers(int regno)
 		      if (create_core_thread_state_cache(thrd_info))
 			core_cache_section_registers(sec, flavour,
                                                      ((core_cached_registers_raw_t *)
-                                                      thrd_info->private->core_thread_state));
+                                                      thrd_info->privatedata->core_thread_state));
 		    }
 		}
 	    }
@@ -1004,16 +996,16 @@ core_store_registers(int regno)
   core_cached_registers_raw_t *cached_regs_raw;
   struct thread_info *thrd_info = find_thread_pid(inferior_ptid);
 
-  if (thrd_info == NULL || thrd_info->private == NULL)
+  if (thrd_info == NULL || thrd_info->privatedata == NULL)
     return;
 
   cached_regs_raw = ((core_cached_registers_raw_t *)
-                     thrd_info->private->core_thread_state);
+                     thrd_info->privatedata->core_thread_state);
   if (cached_regs_raw == NULL)
     return;
 
   /* We have all core registers in register caches per thread in the
-     thread_info->private->core_thread_state. All we need to do it update
+     thread_info->privatedata->core_thread_state. All we need to do it update
      this information and it will get read back out. The register bytes are
      stored in target endain format just like the register cache, so we must
      make sure to keep them in target endian format during this store.  */
@@ -1058,13 +1050,7 @@ core_store_registers(int regno)
 #endif /* TARGET_foo */
 }
 
-/* keep the condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
-
+/* FIXME: needs comment */
 static void
 init_macho_core_ops(void)
 {

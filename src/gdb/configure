@@ -1021,6 +1021,9 @@ REPORT_BUGS_TEXI
 REPORT_BUGS_TO
 SED
 PKGVERSION
+AM_V_LINKER
+AM_V_COMPILER
+LINKER
 COMPILER
 MAKE_SHOULD_RECURSE_INTO_GNULIB_FALSE
 MAKE_SHOULD_RECURSE_INTO_GNULIB_TRUE
@@ -7171,6 +7174,27 @@ cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_POSIX_SPAWN_SETEXEC $ac_have_decl
 _ACEOF
 
+    for ac_func in posix_spawnp
+do :
+  ac_fn_c_check_func "$LINENO" "posix_spawnp" "ac_cv_func_posix_spawnp"
+if test "x$ac_cv_func_posix_spawnp" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_POSIX_SPAWNP 1
+_ACEOF
+
+fi
+done
+
+    ac_fn_c_check_type "$LINENO" "posix_spawnattr_t" "ac_cv_type_posix_spawnattr_t" "$ac_includes_default"
+if test "x$ac_cv_type_posix_spawnattr_t" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_POSIX_SPAWNATTR_T 1
+_ACEOF
+
+
+fi
+
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether posix_spawn supports SETEXEC" >&5
 $as_echo_n "checking whether posix_spawn supports SETEXEC... " >&6; }
     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -9361,7 +9385,11 @@ fi
   # Check whether --enable-build-with-cxx was given.
 if test "${enable_build_with_cxx+set}" = set; then :
   enableval=$enable_build_with_cxx; case ${enableval} in
-      yes | no)
+      yes)
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: building gdb with a C++ compiler is experimental" >&5
+$as_echo "$as_me: WARNING: building gdb with a C++ compiler is experimental" >&2;}
+        ;;
+      no)
 	;;
       *)
 	as_fn_error $? "bad value ${enableval} for --enable-build-with-cxx" "$LINENO" 5
@@ -9371,12 +9399,21 @@ else
   enable_build_with_cxx=no
 fi
 
+
   if test "x${enable_build_with_cxx}" = "xyes"; then
     COMPILER='$(CXX)'
+    LINKER='$(CXXLD)'
+    AM_V_COMPILER='$(AM_V_CXX)'
+    AM_V_LINKER='$(AM_V_CXXLD)'
    else
     COMPILER='$(CC)'
+    LINKER='$(CCLD)'
+    AM_V_COMPILER='$(AM_V_CC)'
+    AM_V_LINKER='$(AM_V_CCLD)'
   fi
 
+
+# Dependency checking.
 
 # Some system checks.
 
@@ -41665,6 +41702,47 @@ if test $ac_cv_c_char_unsigned = yes && test "$GCC" != yes; then
   $as_echo "#define __CHAR_UNSIGNED__ 1" >>confdefs.h
 
 fi
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for flexible array members" >&5
+$as_echo_n "checking for flexible array members... " >&6; }
+if ${ac_cv_c_flexmember+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdlib.h>
+	    #include <stdio.h>
+	    #include <stddef.h>
+	    struct s { int n; double d[]; };
+int
+main ()
+{
+int m = getchar ();
+	    struct s *p = malloc (offsetof (struct s, d)
+				  + m * sizeof (double));
+	    p->d[0] = 0.0;
+	    return p->d != (double *) NULL;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_c_flexmember=yes
+else
+  ac_cv_c_flexmember=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_flexmember" >&5
+$as_echo "$ac_cv_c_flexmember" >&6; }
+  if test $ac_cv_c_flexmember = yes; then
+
+$as_echo "#define FLEXIBLE_ARRAY_MEMBER /**/" >>confdefs.h
+
+  else
+    $as_echo "#define FLEXIBLE_ARRAY_MEMBER 1" >>confdefs.h
+
+  fi
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for function prototypes" >&5
 $as_echo_n "checking for function prototypes... " >&6; }
 if test "$ac_cv_prog_cc_c89" != no; then
@@ -43579,6 +43657,21 @@ _ACEOF
 
 fi
 done
+
+if test "x${ac_cv_func_snprintf}" = "x"; then
+  test -z "${ac_cv_func_snprintf}"
+  for ac_func in snprintf
+do :
+  ac_fn_c_check_func "$LINENO" "snprintf" "ac_cv_func_snprintf"
+if test "x$ac_cv_func_snprintf" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_SNPRINTF 1
+_ACEOF
+
+fi
+done
+
+fi
 
 for ac_func in CFPropertyListCreateWithData
 do :
@@ -45964,6 +46057,10 @@ else
 
 fi
 
+###########################################################################
+#                      COMPILER WARNINGS SECTION                          #
+###########################################################################
+
 # NOTE: Do NOT add -Wall or -Wunused, they both include
 # -Wunused-parameter which reports bogus warnings.
 ## (they are easy enough to fix though; just put ATTRIBUTE_UNUSED
@@ -45993,13 +46090,14 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
   ## Special warnings only for C++ compilations:
   cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo -Wodr -Wterminate \
 -Wmultiple-inheritance -Wvirtual-inheritance -Wpmf-conversions \
--Wzero-as-null-pointer-constant -Wno-write-strings -Wno-narrowing"
+-Wno-write-strings -Wno-narrowing"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
--Wpointer-sign -Wdeclaration-after-statement -Wc++-compat \
+-Wpointer-sign -Wmissing-prototypes -Wdeclaration-after-statement \
+-Wc++-compat -Woverride-init -Woverride-init-side-effects \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
--Wstrict-prototypes -Woverride-init -Wnested-externs"
+-Wstrict-prototypes -Wnested-externs"
   build_warnings="${build_warnings} ${c_warnings}"
 fi
 
@@ -46018,13 +46116,19 @@ fi
 
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
+    stdflag=""
+    if test "x${enable_build_with_cxx}" = "xyes"; then
+      stdflag="-std=gnu++03"
+    else
+      stdflag="-std=gnu99"
+    fi
     # -Wmost is APPLE_LOCAL, as are -Wextra-tokens and -Wnewline-eof
     # (-Wmost might have to be removed for the same reason as -Wall)
     # -Wnonportable-cfstrings is actually a flag for newer versions of the
     # FSF gcc, but it only makes sense on Apple platforms.
     build_warnings="${build_warnings} -Wmost -Wextra-tokens -Wnewline-eof \
--Wendif-labels -Wformat -Wformat-signedness -Wformat-y2k -Wnonnull \
--Wnonportable-cfstrings -Wno-unused-function -std=gnu99"
+-Wendif-labels -Wformat -Wformat-y2k -Wnonnull -Wnonportable-cfstrings \
+-Wno-unused-const-variable -Wno-unused-function ${stdflag}"
     case "${host}" in
       *64*-apple-darwin9* | *64*-apple-darwin1[0123456789].*.*)
         build_warnings="${build_warnings} -Wshorten-64-to-32"
@@ -46073,10 +46177,10 @@ opt_warnings="-Wuninitialized -Winit-self -Wmissing-noreturn \
 -Wvolatile-register-var -Wdisabled-optimization \
 -Waggressive-loop-optimizations -Wvector-operation-performance \
 -Wmaybe-uninitialized -Wstrict-overflow=1 -fno-strict-aliasing \
--Wnull-dereference -Wduplicated-cond"
+-Wnull-dereference -Wduplicated-cond -Wframe-address"
 # -Warray-bounds is only for -O2 and up, or when -ftree-vrp is active, so
 # use a separate variable for it:
-opt_warnings_plus="${opt_warnings} -Warray-bounds"
+opt_warnings_plus="${opt_warnings} -Warray-bounds=2"
 if test x${CFLAGS+set} = xset; then
   case "${CFLAGS}" in
     *"-O0"* )
@@ -46106,7 +46210,6 @@ fi
 #  * -Wconversion (would require a lot of casting)
 #  * -Wsign-conversion (likewise)
 #  * -Wtraditional-conversion (likewise)
-#  * -Wmissing-prototypes (C-only; redundant with other flag)
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
 #  * -Winline (I can never tell if the compiler is right or not with this)
 #  * -Wundef (only if we can figure out how to fix the issue with caddr_t)
@@ -46117,6 +46220,8 @@ fi
 #  * -Wenum-compare (not really sure how to solve for now...)
 #  * -Wunsafe-loop-optimizations (lex/yacc generate code that triggers it)
 #  * -Waggregate-return (too noisy and hard to avoid)
+#  * -Wformat-signedness (too noisy)
+#  * -Wpadded (warnings in headers out of our control)
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)

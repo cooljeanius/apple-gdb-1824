@@ -37,6 +37,10 @@ You should have received a copy of the GNU General Public License
 along with GDB; see the file COPYING.  If not, write to
 the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
+#ifdef __cplusplus
+# define __STDC_LIMIT_MACROS 1
+#endif /* __cplusplus */
+
 #include "defs.h"
 #include "inferior.h"
 #include "target.h"
@@ -3805,7 +3809,7 @@ try_to_find_and_load_kernel_via_uuid(CORE_ADDR in_memory_addr,
   if (uuid_string)
     {
       char *kernel_path;
-      CORE_ADDR on_disk_load_addr;
+      CORE_ADDR on_disk_load_addr = 0UL;
       kernel_path = macosx_locate_executable_by_dbg_shell_command(uuid_string);
       if (!file_exists_p(kernel_path))
         {
@@ -3822,7 +3826,7 @@ try_to_find_and_load_kernel_via_uuid(CORE_ADDR in_memory_addr,
                                       &on_disk_load_addr, NULL, NULL))
         {
           struct objfile *o;
-          kernel_slide = in_memory_addr - on_disk_load_addr;
+          kernel_slide = (in_memory_addr - on_disk_load_addr);
 
           o = symbol_file_add_name_with_addrs_or_offsets(kernel_path, 1, NULL, NULL,
                                                          0, 1, OBJF_USERLOADED,

@@ -80,7 +80,7 @@ struct ui_file *gdb_stdtargerr;
 /* Whether to enable writing into executable and core files */
 extern int write_files;
 
-static void print_gdb_help (struct ui_file *);
+static void print_gdb_help(struct ui_file *);
 
 /* These two are used to set the external editor commands when gdb is farming
    out files to be edited by another program. */
@@ -91,9 +91,9 @@ extern char *external_editor_command;
    non-zero return status. */
 
 static int
-captured_command_loop (void *data)
+captured_command_loop(void *data)
 {
-  current_interp_command_loop ();
+  current_interp_command_loop();
   /* FIXME: cagney/1999-11-05: A correct command_loop() implementaton
      would clean things up (restoring the cleanup chain) to the state
      they were just prior to the call.  Technically, this means that

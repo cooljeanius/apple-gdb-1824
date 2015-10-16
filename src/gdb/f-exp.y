@@ -114,7 +114,7 @@ int yyparse(void);
 
 static int yylex(void);
 
-void yyerror(char *);
+void yyerror(const char *);
 
 static void growbuf_by_size(int);
 
@@ -1176,7 +1176,7 @@ yylex(void)
 }
 
 void ATTR_NORETURN
-yyerror(char *msg)
+yyerror(const char *msg)
 {
   if (prev_lexptr)
     lexptr = prev_lexptr;

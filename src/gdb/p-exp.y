@@ -120,7 +120,7 @@ int yyparse(void);
 static int yylex(void);
 
 void
-yyerror(char *);
+yyerror(const char *);
 
 static char *uptok(char *, int);
 %}
@@ -1646,7 +1646,7 @@ yylex(void)
 }
 
 void ATTR_NORETURN
-yyerror(char *msg)
+yyerror(const char *msg)
 {
   if (prev_lexptr)
     lexptr = prev_lexptr;

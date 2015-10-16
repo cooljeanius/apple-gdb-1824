@@ -2686,18 +2686,21 @@ path_expr_of_root (struct varobj *var)
       if (root_is_ptr)
 	{
 	  const char *format = "(('%s' *) (%s))";
-	  dynamic_expr = TYPE_NAME (root_type);
+	  dynamic_expr = TYPE_NAME(root_type);
 	  /* I got one report of a crash here because dynamic_expr
 	     is NULL.  I don't know how that could happen, however.  */
 	  if (dynamic_expr)
 	    {
-	      dynamic_expr_len = strlen (dynamic_expr);
+	      dynamic_expr_len = strlen(dynamic_expr);
 	      if (dynamic_expr_len > 0)
 		{
+		  size_t path_expr_len;
 		  root_name_len = strlen(var->name);
-		  path_expr = (char *)xmalloc(dynamic_expr_len + root_name_len +
-                                              strlen(format) - 3);
-		  sprintf(path_expr, format, dynamic_expr, var->name);
+		  path_expr_len = (dynamic_expr_len + root_name_len
+				   + strlen(format) - 3UL);
+		  path_expr = (char *)xmalloc(path_expr_len);
+		  snprintf(path_expr, path_expr_len, format, dynamic_expr,
+			   var->name);
 		}
 	    }
 	}
@@ -3280,34 +3283,33 @@ c_path_expr_of_child (struct varobj *parent, int index)
 	/* We never get here unless parent->num_children is greater than 0... */
 
 	len += 2;
-	path_expr = (char *) xmalloc (len);
-	sprintf (path_expr, "(%s)[%s]", parent_expr, name);
+	path_expr = (char *)xmalloc(len);
+	snprintf(path_expr, len, "(%s)[%s]", parent_expr, name);
       }
       break;
 
     case VAROBJ_AS_STRUCT:
       len += 1;
-      path_expr = (char *) xmalloc (len);
-      sprintf (path_expr, "(%s).%s", parent_expr, name);
+      path_expr = (char *)xmalloc(len);
+      snprintf(path_expr, len, "(%s).%s", parent_expr, name);
       break;
 
     case VAROBJ_AS_PTR_TO_STRUCT:
       len += 2;
-      path_expr = (char *) xmalloc (len);
-      sprintf (path_expr, "(%s)->%s", parent_expr, name);
+      path_expr = (char *)xmalloc(len);
+      snprintf(path_expr, len, "(%s)->%s", parent_expr, name);
       break;
     case VAROBJ_AS_PTR_TO_SCALAR:
-      len += parent_len + 2 + 1 + 1;
-      path_expr = (char *) xmalloc (len);
-      sprintf (path_expr, "*(%s)", parent_expr);
+      len += (parent_len + 2 + 1 + 1);
+      path_expr = (char *)xmalloc(len);
+      snprintf(path_expr, len, "*(%s)", parent_expr);
       break;
 
     case VAROBJ_AS_DUNNO:
       /* This should not happen */
       len = 5;
-      path_expr =
-	(char *) xmalloc (len);
-      sprintf (path_expr, "????");
+      path_expr = (char *)xmalloc(len);
+      snprintf(path_expr, len, "????");
     }
 
   child->path_expr = path_expr;
@@ -3558,6 +3560,8 @@ varobj_get_type_index_from_fake_child(struct varobj *parent, int index)
       type = get_type_deref(parent->parent, NULL);
     }
 
+  gdb_assert(type != NULL);
+  
   if ((TYPE_CODE(type) != TYPE_CODE_STRUCT)
       && (TYPE_CODE(type) != TYPE_CODE_UNION))
     return index;
@@ -3818,7 +3822,9 @@ c_variable_editable(struct varobj *var)
 {
   struct type *vartype;
   
+#ifndef ATTRIBUTE_NONNULL
   gdb_assert(var != NULL);
+#endif /* !ATTRIBUTE_NONNULL */
   
   vartype = get_type(var);
   
@@ -3847,7 +3853,9 @@ c_value_of_variable(struct varobj *var)
 {
   struct type *vartype;
   
+#ifndef ATTRIBUTE_NONNULL
   gdb_assert(var != NULL);
+#endif /* !ATTRIBUTE_NONNULL */
   
   vartype = get_type(var);
   
@@ -4102,16 +4110,17 @@ cplus_make_name_of_child (struct varobj *parent, int index)
   char *name;
   struct type *type;
 
-  if (CPLUS_FAKE_CHILD (parent))
+  if (CPLUS_FAKE_CHILD(parent))
     {
-      /* Looking for children of public, private, or protected. */
-      type = get_type_deref (parent->parent, NULL);
+      /* Looking for children of public, private, or protected: */
+      type = get_type_deref(parent->parent, NULL);
     }
   else
-    type = get_type_deref (parent, NULL);
+    type = get_type_deref(parent, NULL);
 
   name = NULL;
-  switch (TYPE_CODE (type))
+  gdb_assert(type != NULL);
+  switch (TYPE_CODE(type))
     {
     case TYPE_CODE_STRUCT:
     case TYPE_CODE_UNION:
@@ -4297,42 +4306,50 @@ cplus_path_expr_of_child (struct varobj *parent, int index)
 	      join_expr_len = 1;
 	    }
 	  if (dynamic_expr_len > 0)
-		{
-		  const char *format = "(('%s' *) ((%s)%s%s))";
-		  path_expr = (char *)xmalloc(dynamic_expr_len + parent_len
-                                              + join_expr_len + child_len + strlen(format) - 6 + 1);
-		  sprintf(path_expr, format, dynamic_expr, parent_expr,
-                          join_expr, child_name);
-		}
+	    {
+	      const char *format = "(('%s' *) ((%s)%s%s))";
+	      size_t path_expr_len = (dynamic_expr_len + parent_len
+				      + join_expr_len + child_len
+				      + strlen(format) - 6UL + 1UL);
+	      path_expr = (char *)xmalloc(path_expr_len);
+	      snprintf(path_expr, path_expr_len, format, dynamic_expr,
+		       parent_expr, join_expr, child_name);
+	    }
 	  else
 	    {
 	      const char *format = "((%s)%s%s)";
-	      path_expr = (char *)xmalloc(parent_len + join_expr_len
-                                          + child_len + strlen(format) - 4 + 1);
-	      sprintf(path_expr, format, parent_expr, join_expr, child_name);
+	      size_t path_expr_len = (parent_len + join_expr_len
+				      + child_len + strlen(format) - 4UL + 1UL);
+	      path_expr = (char *)xmalloc(path_expr_len);
+	      snprintf(path_expr, path_expr_len, format, parent_expr, join_expr,
+		       child_name);
 	    }
 	}
-      else if (index < TYPE_N_BASECLASSES (type))
+      else if (index < TYPE_N_BASECLASSES(type))
 	{
-	  child_name = TYPE_FIELD_NAME (type, index);
-	  child_len = strlen (child_name);
+	  child_name = TYPE_FIELD_NAME(type, index);
+	  child_len = strlen(child_name);
 
 	  if (is_ptr)
 	    {
-	      path_expr = (char *) xmalloc (parent_len + child_len + 9 + 1);
-	      sprintf (path_expr, "(('%s' *) %s)", child_name, parent_expr);
+	      size_t path_expr_len = (parent_len + child_len + 9UL + 1UL);
+	      path_expr = (char *)xmalloc(path_expr_len);
+	      snprintf(path_expr, path_expr_len, "(('%s' *) %s)", child_name,
+		       parent_expr);
 	    }
 	  else
 	    {
-	      path_expr = (char *) xmalloc (parent_len + child_len + 5 + 1);
-	      sprintf (path_expr, "(('%s') %s)", child_name, parent_expr);
+	      size_t path_expr_len = (parent_len + child_len + 5UL + 1UL);
+	      path_expr = (char *)xmalloc(path_expr_len);
+	      snprintf(path_expr, path_expr_len, "(('%s') %s)", child_name,
+		       parent_expr);
 	    }
 	}
       else
 	{
 	  /* Everything beyond the baseclasses can
 	     only be "public", "private", or "protected" */
-	  index -= TYPE_N_BASECLASSES (type);
+	  index -= TYPE_N_BASECLASSES(type);
 	  switch (index)
 	    {
 	    case 0:
@@ -4588,14 +4605,16 @@ java_number_of_children (struct varobj *var)
 }
 
 static char *
-java_make_name_of_child (struct varobj *parent, int index)
+java_make_name_of_child(struct varobj *parent, int index)
 {
   char *name, *p;
 
-  name = cplus_make_name_of_child (parent, index);
+  name = cplus_make_name_of_child(parent, index);
   /* Escape any periods in the name... */
   p = name;
 
+  gdb_assert(p != NULL);
+  
   while (*p != '\000')
     {
       if (*p == '.')

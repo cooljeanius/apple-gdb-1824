@@ -32,7 +32,9 @@
 #include "gdb_string.h"
 #include "serial.h"
 
-const struct gdb_exception exception_none = { 0, NO_ERROR, NULL };
+const struct gdb_exception exception_none = {
+  (enum return_reason)0, NO_ERROR, NULL
+};
 
 /* Possible catcher states.  */
 enum catcher_state {
@@ -174,13 +176,18 @@ exceptions_state_mc (enum catcher_action action)
 	{
 	case CATCH_ITER:
 	  {
+#ifdef __cplusplus
+	    struct gdb_exception exception =
+	      (const gdb_exception&)*current_catcher->exception;
+#else
 	    struct gdb_exception exception = *current_catcher->exception;
-	    if (current_catcher->mask & RETURN_MASK (exception.reason))
+#endif /* __cplusplus */
+	    if (current_catcher->mask & RETURN_MASK(exception.reason))
 	      {
 		/* Exit normally if this catcher can handle this
 		   exception.  The caller analyses the func return
 		   values.  */
-		catcher_pop ();
+		catcher_pop();
 		return 0;
 	      }
 	    /* The caller didn't request that the event be caught,
@@ -209,31 +216,30 @@ exceptions_state_mc_action_iter_1 (void)
   return exceptions_state_mc (CATCH_ITER_1);
 }
 
-/* Return EXCEPTION to the nearest containing catch_errors().  */
-
+/* Return EXCEPTION to the nearest containing catch_errors() call: */
 NORETURN void
-throw_exception (struct gdb_exception exception)
+throw_exception(struct gdb_exception exception)
 {
   quit_flag = 0;
   immediate_quit = 0;
 
   /* Perhaps it would be cleaner to do this via the cleanup chain (not sure
      I can think of a reason why that is vital, though).  */
-  bpstat_clear_actions (stop_bpstat);	/* Clear queued breakpoint commands */
+  bpstat_clear_actions(stop_bpstat);	/* Clear queued breakpoint commands */
 
-  disable_current_display ();
-  do_cleanups (ALL_CLEANUPS);
-  if (target_can_async_p () && !target_executing)
-    do_exec_cleanups (ALL_CLEANUPS);
+  disable_current_display();
+  do_cleanups(ALL_CLEANUPS);
+  if (target_can_async_p() && !target_executing)
+    do_exec_cleanups(ALL_CLEANUPS);
   if (sync_execution)
-    do_exec_error_cleanups (ALL_CLEANUPS);
+    do_exec_error_cleanups(ALL_CLEANUPS);
 
   /* Jump to the containing catch_errors() call, communicating REASON
      to that call via setjmp's return value.  Note that REASON can't
      be zero, by definition in defs.h. */
-  exceptions_state_mc (CATCH_THROWING);
-  *current_catcher->exception = exception;
-  EXCEPTIONS_SIGLONGJMP (current_catcher->buf, exception.reason);
+  exceptions_state_mc(CATCH_THROWING);
+  *current_catcher->exception = exception; /* Re: warning: I hate C++ */
+  EXCEPTIONS_SIGLONGJMP(current_catcher->buf, exception.reason);
 }
 
 static char *last_message;
@@ -468,35 +474,38 @@ catch_exceptions (struct ui_out *uiout,
 }
 
 struct gdb_exception
-catch_exception (struct ui_out *uiout,
-		 catch_exception_ftype *func,
-		 void *func_args,
-		 return_mask mask)
+catch_exception(struct ui_out *uiout, catch_exception_ftype *func,
+		void *func_args, return_mask mask)
 {
+#ifdef __cplusplus
+  struct gdb_exception exception;
+#else
   volatile struct gdb_exception exception;
-  TRY_CATCH (exception, mask)
+#endif /* __cplusplus */
+  TRY_CATCH(exception, mask)
     {
-      (*func) (uiout, func_args);
+      (*func)(uiout, func_args);
     }
   return exception;
 }
 
 int
-catch_exceptions_with_msg (struct ui_out *uiout,
-		  	   catch_exceptions_ftype *func,
-		  	   void *func_args,
-			   char **gdberrmsg,
-		  	   return_mask mask)
+catch_exceptions_with_msg(struct ui_out *uiout, catch_exceptions_ftype *func,
+		  	  void *func_args, char **gdberrmsg, return_mask mask)
 {
+#ifdef __cplusplus
+  struct gdb_exception exception;
+#else
   volatile struct gdb_exception exception;
+#endif /* __cplusplus */
   volatile int val = 0;
-  TRY_CATCH (exception, mask)
+  TRY_CATCH(exception, mask)
     {
-      val = (*func) (uiout, func_args);
+      val = (*func)(uiout, func_args);
     }
-  print_any_exception (gdb_stderr, NULL, exception);
-  gdb_assert (val >= 0);
-  gdb_assert (exception.reason <= 0);
+  print_any_exception(gdb_stderr, NULL, exception);
+  gdb_assert(val >= 0);
+  gdb_assert(exception.reason <= 0);
   if (exception.reason < 0)
     {
       /* If caller wants a copy of the low-level error message, make
@@ -505,7 +514,7 @@ catch_exceptions_with_msg (struct ui_out *uiout,
       if (gdberrmsg != NULL)
 	{
 	  if (exception.message != NULL)
-	    *gdberrmsg = xstrdup (exception.message);
+	    *gdberrmsg = xstrdup(exception.message);
 	  else
 	    *gdberrmsg = NULL;
 	}
@@ -519,7 +528,11 @@ catch_errors(catch_errors_ftype *func, void *func_args, char *errstring,
 	     return_mask mask)
 {
   volatile int val = 0;
+#ifdef __cplusplus
+  struct gdb_exception exception;
+#else
   volatile struct gdb_exception exception;
+#endif /* __cplusplus */
   TRY_CATCH(exception, mask)
     {
       val = func(func_args);
@@ -531,15 +544,19 @@ catch_errors(catch_errors_ftype *func, void *func_args, char *errstring,
 }
 
 int
-catch_command_errors (catch_command_errors_ftype * command,
-		      char *arg, int from_tty, return_mask mask)
+catch_command_errors(catch_command_errors_ftype * command,
+		     char *arg, int from_tty, return_mask mask)
 {
+#ifdef __cplusplus
+  struct gdb_exception e;
+#else
   volatile struct gdb_exception e;
-  TRY_CATCH (e, mask)
+#endif /* __cplusplus */
+  TRY_CATCH(e, mask)
     {
-      command (arg, from_tty);
+      command(arg, from_tty);
     }
-  print_any_exception (gdb_stderr, NULL, e);
+  print_any_exception(gdb_stderr, NULL, e);
   if (e.reason < 0)
     return 0;
   return 1;

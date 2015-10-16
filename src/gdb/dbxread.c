@@ -664,7 +664,8 @@ dbx_symfile_read(struct objfile *objfile, int mainline)
 
   if (maint_use_timers)
     timer_cleanup = start_timer(&timer, "dbx_symfile_read",
-                                (objfile->name ? objfile->name : "<unknown>"));
+                                (char *)((objfile->name != NULL)
+					 ? objfile->name : "<unknown>"));
 
   sym_bfd = objfile->obfd;
 
@@ -1287,7 +1288,7 @@ set_namestring_1(int strtab_size, char *strtab, char leading_char,
 	      namebuf_len *= 2UL;
 	    }
 	  namebuf = (char *)xrealloc(namebuf, namebuf_len);
-	  sprintf(namebuf, "%c%s%s", leading_char, p, (s + 1));
+	  snprintf(namebuf, namebuf_len, "%c%s%s", leading_char, p, (s + 1));
 	  namestring = namebuf;
 	} else {
 	  namestring = s;

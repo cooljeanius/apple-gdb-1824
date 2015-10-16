@@ -993,13 +993,17 @@ pascal_object_print_value (struct type *type, const gdb_byte *valaddr,
          user program. Make sure that it still points to a valid memory
          location.  */
 
-      if (boffset != -1 && (boffset < 0 || boffset >= TYPE_LENGTH (type)))
+      if ((boffset != -1) && ((boffset < 0) || (boffset >= TYPE_LENGTH(type))))
 	{
-	  /* FIXME (alloc): not safe is baseclass is really really big. */
-	  gdb_byte *buf = alloca (TYPE_LENGTH (baseclass));
+	  gdb_byte *buf;
+	  size_t buflen = (size_t)TYPE_LENGTH(baseclass);
+	  if (buflen > (size_t)INT_MAX)
+	    warning("baseclass is really really big.");
+	  /* FIXME (alloca): not safe is baseclass is really really big: */
+	  buf = (gdb_byte *)alloca(buflen);
 	  base_valaddr = buf;
-	  if (target_read_memory (address + boffset, buf,
-				  TYPE_LENGTH (baseclass)) != 0)
+	  if (target_read_memory((address + boffset), buf,
+				 TYPE_LENGTH(baseclass)) != 0)
 	    boffset = -1;
 	}
       else

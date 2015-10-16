@@ -535,14 +535,13 @@ static int amd64_macosx_thread_state_reg_offset[] =
 
 
 static CORE_ADDR
-i386_integer_to_address (struct gdbarch *gdbarch, struct type *type,
-                         const gdb_byte *buf)
+i386_integer_to_address(struct gdbarch *gdbarch, struct type *type,
+                        const gdb_byte *buf)
 {
-  gdb_byte *tmp = alloca (TYPE_LENGTH (builtin_type_void_data_ptr));
-  LONGEST val = unpack_long (type, buf);
-  store_unsigned_integer (tmp, TYPE_LENGTH (builtin_type_void_data_ptr), val);
-  return extract_unsigned_integer (tmp,
-                                   TYPE_LENGTH (builtin_type_void_data_ptr));
+  gdb_byte *tmp = (gdb_byte *)alloca(TYPE_LENGTH(builtin_type_void_data_ptr));
+  LONGEST val = unpack_long(type, buf);
+  store_unsigned_integer(tmp, TYPE_LENGTH(builtin_type_void_data_ptr), val);
+  return extract_unsigned_integer(tmp, TYPE_LENGTH(builtin_type_void_data_ptr));
 }
 
 

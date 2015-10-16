@@ -116,7 +116,7 @@ int yyparse(void);
 
 static int yylex(void);
 
-void yyerror(char *);
+void yyerror(const char *);
 
 %}
 
@@ -145,7 +145,7 @@ void yyerror(char *);
     enum exp_opcode opcode;
     struct internalvar *ivar;
     /* APPLE LOCAL ObjC */
-    struct objc_class_str class; /* FIXME: rename */
+    struct objc_class_str oclass; /* I hope renaming this was okay... */
 
     struct type **tvec;
     int *ivec;
@@ -182,7 +182,7 @@ static int parse_number(char *, int, int, YYSTYPE *);
 /* APPLE LOCAL begin ObjC */
 %token <sval> OBJC_NSSTRING /* ObjC Foundation "NSString" literal */
 %token <sval> OBJC_SELECTOR /* ObjC "@selector" pseudo-operator   */
-%token <class> OBJC_CLASSNAME /* ObjC Class name */
+%token <oclass> OBJC_CLASSNAME /* ObjC Class name */
 /* APPLE LOCAL end ObjC */
 %token <ssym> NAME /* BLOCKNAME defined below to give it higher precedence. */
 %token <tsym> TYPENAME
@@ -369,7 +369,7 @@ exp	:	'[' OBJC_CLASSNAME
 			{
 			  write_exp_elt_opcode(OP_LONG);
 			  write_exp_elt_type(builtin_type_void_data_ptr);
-			  write_exp_elt_longcst((LONGEST)$2.class);
+			  write_exp_elt_longcst((LONGEST)$2.objc_class);
 			  write_exp_elt_opcode(OP_LONG);
 			  start_msglist();
 			}
@@ -1057,7 +1057,7 @@ qualified_type: typebase COLONCOLON name
 		{
 		  struct type *type = $1;
 		  struct type *new_type;
-		  char *ncopy = alloca ($3.length + 1);
+		  char *ncopy = (char *)alloca($3.length + 1);
 
 		  memcpy (ncopy, $3.ptr, $3.length);
 		  ncopy[$3.length] = '\0';
@@ -1388,7 +1388,7 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 
 struct token
 {
-  char *coperator;
+  const char *coperator;
   int token;
   enum exp_opcode opcode;
 };
@@ -1424,7 +1424,7 @@ static const struct token tokentab2[] =
   };
 
 /* APPLE LOCAL: from objc-lang.c: */
-extern struct symbol *lookup_struct_typedef(char *name,
+extern struct symbol *lookup_struct_typedef(const char *name,
                                             struct block *block,
                                             int noerr);
 /* end APPLE LOCAL prototype */
@@ -1515,12 +1515,12 @@ yylex(void)
 	error ("Empty character constant.");
       else if (! host_char_to_target (c, &c))
         {
-          int toklen = lexptr - tokstart + 1;
-          char *tok = alloca (toklen + 1);
+          int toklen = ((lexptr - tokstart) + 1UL);
+          char *tok = (char *)alloca(toklen + 1UL);
           memcpy (tok, tokstart, toklen);
           tok[toklen] = '\0';
-          error ("There is no character corresponding to %s in the target "
-                 "character set `%s'.", tok, target_charset ());
+          error("There is no character corresponding to %s in the target "
+                "character set `%s'.", tok, target_charset());
         }
 
       yylval.typed_val_int.val = c;
@@ -1753,16 +1753,16 @@ yylex(void)
 	    break;
 	  default:
 	    c = *tokptr++;
-            if (! host_char_to_target (c, &c))
+            if (! host_char_to_target(c, &c))
               {
-                int len = tokptr - char_start_pos;
-                char *copy = alloca (len + 1);
-                memcpy (copy, char_start_pos, len);
+                int len = (tokptr - char_start_pos);
+                char *copy = (char *)alloca(len + 1UL);
+                memcpy(copy, char_start_pos, len);
                 copy[len] = '\0';
 
-                error ("There is no character corresponding to `%s' "
-                       "in the target character set `%s'.",
-                       copy, target_charset ());
+                error("There is no character corresponding to `%s' "
+                      "in the target character set `%s'.",
+                      copy, target_charset());
               }
             tempbuf[tempbufindex++] = c;
 	    break;
@@ -1990,11 +1990,11 @@ yylex(void)
 	  {
 	    sym = lookup_struct_typedef(tmp, expression_context_block, 1);
 	    if (sym)
-	      yylval.class.type = SYMBOL_TYPE(sym);
+	      yylval.oclass.type = SYMBOL_TYPE(sym);
 	    else
-	      yylval.class.type = NULL;
+	      yylval.oclass.type = NULL;
 
-	    yylval.class.class = Class;
+	    yylval.oclass.objc_class = Class;
 	    return OBJC_CLASSNAME;
 	  }
       }
@@ -2024,7 +2024,7 @@ yylex(void)
 }
 
 void ATTR_NORETURN
-yyerror(char *msg)
+yyerror(const char *msg)
 {
   if (prev_lexptr)
     lexptr = prev_lexptr;

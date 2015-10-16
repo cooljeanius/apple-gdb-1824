@@ -120,7 +120,7 @@ int yyparse(void);
 
 static int yylex(void);
 
-void yyerror(char *);
+void yyerror(const char *);
 
 static struct stoken string_to_operator(struct stoken);
 
@@ -624,7 +624,7 @@ ada_parse(void)
 }
 
 void ATTR_NORETURN
-yyerror(char *msg)
+yyerror(const char *msg)
 {
   error("A %s in expression, near `%s'.", (msg ? msg : "error"), lexptr);
 }

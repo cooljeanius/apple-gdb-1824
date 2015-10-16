@@ -100,16 +100,16 @@ Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA */
 #define yycheck	 java_yycheck
 
 #ifndef YYDEBUG
-#define	YYDEBUG 1		/* Default to yydebug support */
-#endif
+# define YYDEBUG 1		/* Default to yydebug support */
+#endif /* !YYDEBUG */
 
 #define YYFPRINTF parser_fprintf
 
-int yyparse (void);
+int yyparse(void);
 
-static int yylex (void);
+static int yylex(void);
 
-void yyerror (char *);
+void yyerror(const char *);
 
 static struct type *java_type_from_name (struct stoken);
 static void push_expression_name (struct stoken);
@@ -339,10 +339,11 @@ QualifiedName:
 		    $$.ptr = $1.ptr;  /* Optimization. */
 		  else
 		    {
-		      $$.ptr = (char *) malloc ($$.length + 1);
-		      make_cleanup (free, $$.ptr);
-		      sprintf ($$.ptr, "%.*s.%.*s",
-			       $1.length, $1.ptr, $3.length, $3.ptr);
+		      size_t thinglen = ($$.length + 1UL);
+		      $$.ptr = (char *)malloc(thinglen);
+		      make_cleanup(free, $$.ptr);
+		      snprintf($$.ptr, thinglen, "%.*s.%.*s",
+			       (int)$1.length, $1.ptr, (int)$3.length, $3.ptr);
 		} }
 ;
 
@@ -825,7 +826,7 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 
 struct token
 {
-  char *joperator;
+  const char *joperator;
   int token;
   enum exp_opcode opcode;
 };
@@ -1206,7 +1207,7 @@ yylex(void)
 }
 
 void ATTR_NORETURN
-yyerror(char *msg)
+yyerror(const char *msg)
 {
   if (prev_lexptr)
     lexptr = prev_lexptr;
@@ -1281,18 +1282,18 @@ push_fieldnames(struct stoken name)
   int i;
   struct stoken token;
   token.ptr = name.ptr;
-  for (i = 0;  ;  i++)
+  for (i = 0; i < INT_MAX; i++)
     {
-      if (i == name.length || name.ptr[i] == '.')
+      if (i == (int)name.length || name.ptr[i] == '.')
 	{
-	  /* token.ptr is start of current field name. */
-	  token.length = &name.ptr[i] - token.ptr;
-	  write_exp_elt_opcode (STRUCTOP_STRUCT);
-	  write_exp_string (token);
-	  write_exp_elt_opcode (STRUCTOP_STRUCT);
-	  token.ptr += token.length + 1;
+	  /* token.ptr is start of current field name: */
+	  token.length = (&name.ptr[i] - token.ptr);
+	  write_exp_elt_opcode(STRUCTOP_STRUCT);
+	  write_exp_string(token);
+	  write_exp_elt_opcode(STRUCTOP_STRUCT);
+	  token.ptr += (token.length + 1);
 	}
-      if (i >= name.length)
+      if (i >= (int)name.length)
 	break;
     }
 }
@@ -1310,11 +1311,11 @@ push_qualified_expression_name(struct stoken name, int dot_index)
   token.ptr = name.ptr;
   token.length = dot_index;
 
-  if (push_variable (token))
+  if (push_variable(token))
     {
-      token.ptr = name.ptr + dot_index + 1;
-      token.length = name.length - dot_index - 1;
-      push_fieldnames (token);
+      token.ptr = (name.ptr + dot_index + 1);
+      token.length = (name.length - dot_index - 1);
+      push_fieldnames(token);
       return;
     }
 
@@ -1322,11 +1323,11 @@ push_qualified_expression_name(struct stoken name, int dot_index)
   for (;;)
     {
       token.length = dot_index;
-      tmp = copy_name (token);
-      typ = java_lookup_class (tmp);
+      tmp = copy_name(token);
+      typ = java_lookup_class(tmp);
       if (typ != NULL)
 	{
-	  if (dot_index == name.length)
+	  if (dot_index == (int)name.length)
 	    {
 	      write_exp_elt_opcode(OP_TYPE);
 	      write_exp_elt_type(typ);
@@ -1337,30 +1338,30 @@ push_qualified_expression_name(struct stoken name, int dot_index)
 	  name.ptr += dot_index;
 	  name.length -= dot_index;
 	  dot_index = 0;
-	  while (dot_index < name.length && name.ptr[dot_index] != '.')
+	  while ((dot_index < (int)name.length) && (name.ptr[dot_index] != '.'))
 	    dot_index++;
 	  token.ptr = name.ptr;
 	  token.length = dot_index;
-	  write_exp_elt_opcode (OP_SCOPE);
-	  write_exp_elt_type (typ);
-	  write_exp_string (token);
-	  write_exp_elt_opcode (OP_SCOPE);
-	  if (dot_index < name.length)
+	  write_exp_elt_opcode(OP_SCOPE);
+	  write_exp_elt_type(typ);
+	  write_exp_string(token);
+	  write_exp_elt_opcode(OP_SCOPE);
+	  if (dot_index < (int)name.length)
 	    {
 	      dot_index++;
 	      name.ptr += dot_index;
 	      name.length -= dot_index;
-	      push_fieldnames (name);
+	      push_fieldnames(name);
 	    }
 	  return;
 	}
-      else if (dot_index >= name.length)
+      else if (dot_index >= (int)name.length)
 	break;
       dot_index++;  /* Skip '.' */
-      while (dot_index < name.length && name.ptr[dot_index] != '.')
+      while ((dot_index < (int)name.length) && (name.ptr[dot_index] != '.'))
 	dot_index++;
     }
-  error (_("unknown type `%.*s'"), name.length, name.ptr);
+  error(_("unknown type `%.*s'"), (int)name.length, name.ptr);
 }
 
 /* Handle Name in an expression (or LHS).
@@ -1373,7 +1374,7 @@ push_expression_name(struct stoken name)
   struct type *typ;
   int i;
 
-  for (i = 0;  i < name.length;  i++)
+  for (i = 0; i < (int)name.length;  i++)
     {
       if (name.ptr[i] == '.')
 	{

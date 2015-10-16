@@ -415,7 +415,7 @@ print_subexp_standard (struct expression *exp, int *pos,
       for (tem = 0; op_print_tab[tem].opcode != OP_NULL; tem++)
 	if (op_print_tab[tem].opcode == opcode)
 	  {
-	    op_str = op_print_tab[tem].string;
+	    op_str = (char *)op_print_tab[tem].string;
 	    break;
 	  }
       if (op_print_tab[tem].opcode != opcode)
@@ -474,7 +474,7 @@ print_subexp_standard (struct expression *exp, int *pos,
       for (tem = 0; op_print_tab[tem].opcode != OP_NULL; tem++)
 	if (op_print_tab[tem].opcode == opcode)
 	  {
-	    op_str = op_print_tab[tem].string;
+	    op_str = (char *)op_print_tab[tem].string;
 	    myprec = op_print_tab[tem].precedence;
 	    assoc = op_print_tab[tem].right_assoc;
 	    break;
@@ -537,8 +537,8 @@ print_subexp_standard (struct expression *exp, int *pos,
 /* Return the operator corresponding to opcode OP as
    a string.   NULL indicates that the opcode was not found in the
    current language table.  */
-char *
-op_string (enum exp_opcode op)
+const char *
+op_string(enum exp_opcode op)
 {
   int tem;
   const struct op_print *op_print_tab;
@@ -547,28 +547,27 @@ op_string (enum exp_opcode op)
   for (tem = 0; op_print_tab[tem].opcode != OP_NULL; tem++)
     if (op_print_tab[tem].opcode == op)
       return op_print_tab[tem].string;
-  return NULL;
+  return (const char *)NULL;
 }
 
 /* Support for dumping the raw data from expressions in a human readable
    form.  */
 
-static char *op_name (struct expression *, enum exp_opcode);
-static int dump_subexp_body (struct expression *exp, struct ui_file *, int);
+static const char *op_name(struct expression *, enum exp_opcode);
+static int dump_subexp_body(struct expression *exp, struct ui_file *, int);
 
-/* Name for OPCODE, when it appears in expression EXP. */
-
-static char *
-op_name (struct expression *exp, enum exp_opcode opcode)
+/* Name for OPCODE, when it appears in expression EXP: */
+static const char *
+op_name(struct expression *exp, enum exp_opcode opcode)
 {
-  return exp->language_defn->la_exp_desc->op_name (opcode);
+  return exp->language_defn->la_exp_desc->op_name(opcode);
 }
 
 /* Default name for the standard operator OPCODE (i.e., one defined in
    the definition of enum exp_opcode).  */
 
-char *
-op_name_standard (enum exp_opcode opcode)
+const char *
+op_name_standard(enum exp_opcode opcode)
 {
   switch (opcode)
     {
@@ -755,39 +754,39 @@ op_name_standard (enum exp_opcode opcode)
 }
 
 void
-dump_raw_expression (struct expression *exp, struct ui_file *stream,
-		     char *note)
+dump_raw_expression(struct expression *exp, struct ui_file *stream,
+		    char *note)
 {
   int elt;
   char *opcode_name;
   char *eltscan;
   int eltsize;
 
-  fprintf_filtered (stream, "Dump of expression @ ");
-  gdb_print_host_address (exp, stream);
-  fprintf_filtered (stream, "'\n\tLanguage %s, %d elements, %ld bytes each.\n",
-		    exp->language_defn->la_name, exp->nelts,
-		    (long) sizeof (union exp_element));
-  fprintf_filtered (stream, "\t%5s  %20s  %16s  %s\n", "Index", "Opcode",
-		    "Hex Value", "String Value");
+  fprintf_filtered(stream, "Dump of expression @ ");
+  gdb_print_host_address(exp, stream);
+  fprintf_filtered(stream, "'\n\tLanguage %s, %d elements, %ld bytes each.\n",
+		   exp->language_defn->la_name, exp->nelts,
+		   (long)sizeof(union exp_element));
+  fprintf_filtered(stream, "\t%5s  %20s  %16s  %s\n", "Index", "Opcode",
+		   "Hex Value", "String Value");
   for (elt = 0; elt < exp->nelts; elt++)
     {
-      fprintf_filtered (stream, "\t%5d  ", elt);
-      opcode_name = op_name (exp, exp->elts[elt].opcode);
+      fprintf_filtered(stream, "\t%5d  ", elt);
+      opcode_name = (char *)op_name(exp, exp->elts[elt].opcode);
 
-      fprintf_filtered (stream, "%20s  ", opcode_name);
-      print_longest (stream, 'd', 0, exp->elts[elt].longconst);
-      fprintf_filtered (stream, "  ");
+      fprintf_filtered(stream, "%20s  ", opcode_name);
+      print_longest(stream, 'd', 0, exp->elts[elt].longconst);
+      fprintf_filtered(stream, "  ");
 
-      for (eltscan = (char *) &exp->elts[elt],
-	   eltsize = sizeof (union exp_element);
+      for (eltscan = (char *)&exp->elts[elt],
+	   eltsize = sizeof(union exp_element);
 	   eltsize-- > 0;
 	   eltscan++)
 	{
-	  fprintf_filtered (stream, "%c",
-			    isprint (*eltscan) ? (*eltscan & 0xFF) : '.');
+	  fprintf_filtered(stream, "%c",
+			   (isprint(*eltscan) ? (*eltscan & 0xFF) : '.'));
 	}
-      fprintf_filtered (stream, "\n");
+      fprintf_filtered(stream, "\n");
     }
 }
 

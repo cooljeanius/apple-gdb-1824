@@ -40,6 +40,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "breakpoint.h"
 #include "gdbcore.h"
 #include "hashtab.h"
+#include "gdb_assert.h"
 #include "gdb_obstack.h"
 #include "ada-lang.h"
 #include "completer.h"
@@ -139,7 +140,7 @@ static void replace_operator_with_call (struct expression **, int, int, int,
 
 static int possible_user_operator_p (enum exp_opcode, struct value **);
 
-static char *ada_op_name (enum exp_opcode);
+static const char *ada_op_name (enum exp_opcode);
 
 static const char *ada_decoded_op_name (enum exp_opcode);
 
@@ -241,9 +242,9 @@ extern void _initialize_ada_language(void);
 /* Maximum-sized dynamic type.  */
 static unsigned int varsize_limit;
 
-/* FIXME: brobecker/2003-09-17: No longer a const because it is
-   returned by a function that does not return a const char *.  */
-static char *ada_completer_word_break_characters =
+/* const again, because it is returned by a function that now returns a
+ * const char *: */
+static const char *ada_completer_word_break_characters =
 #ifdef VMS
   " \t\n!@#%^&*()+=|~`}{[]\";:?/,-";
 #else
@@ -302,7 +303,7 @@ static struct obstack symbol_list_obstack;
                         /* Utilities */
 
 
-static char *
+static const char *
 ada_get_gdb_completer_word_break_characters(void)
 {
   return ada_completer_word_break_characters;
@@ -511,6 +512,7 @@ lim_warning (const char *format, ...)
 static void
 check_size(struct type *the_type)
 {
+  gdb_assert(the_type != NULL);
   if ((unsigned int)TYPE_LENGTH(the_type) > varsize_limit)
     error(_("object size is larger than varsize-limit"));
 }
@@ -968,7 +970,7 @@ Suppress:
   if (encoded[0] == '<')
     strcpy(decoded, encoded);
   else
-    sprintf(decoded, "<%s>", encoded);
+    snprintf(decoded, SIZE_T_MAX, "<%s>", encoded);
   return decoded;
 
 }
@@ -1262,16 +1264,15 @@ fat_pntr_bounds_bitsize (struct type *type)
    ada_type_of_array to get an array type with bounds data.  */
 
 static struct type *
-desc_data_type (struct type *type)
+desc_data_type(struct type *type)
 {
-  type = desc_base_type (type);
+  type = desc_base_type(type);
 
-  /* NOTE: The following is bogus; see comment in desc_bounds.  */
-  if (is_thin_pntr (type))
-    return lookup_pointer_type
-      (desc_base_type (TYPE_FIELD_TYPE (thin_descriptor_type (type), 1)));
-  else if (is_thick_pntr (type))
-    return lookup_struct_elt_type (type, "P_ARRAY", 1);
+  /* NOTE: The following is bogus; see comment in desc_bounds: */
+  if (is_thin_pntr(type) && (thin_descriptor_type(type) != NULL))
+    return lookup_pointer_type(desc_base_type(TYPE_FIELD_TYPE(thin_descriptor_type(type), 1)));
+  else if (is_thick_pntr(type))
+    return lookup_struct_elt_type(type, "P_ARRAY", 1);
   else
     return NULL;
 }
@@ -1393,17 +1394,17 @@ ada_is_direct_array_type (struct type *type)
           || ada_is_array_descriptor_type (type));
 }
 
-/* Non-zero iff TYPE is a simple array type or pointer to one.  */
-
+/* Non-zero iff TYPE is a simple array type or pointer to one: */
 int
-ada_is_simple_array_type (struct type *type)
+ada_is_simple_array_type(struct type *type)
 {
   if (type == NULL)
     return 0;
-  type = ada_check_typedef (type);
-  return (TYPE_CODE (type) == TYPE_CODE_ARRAY
-          || (TYPE_CODE (type) == TYPE_CODE_PTR
-              && TYPE_CODE (TYPE_TARGET_TYPE (type)) == TYPE_CODE_ARRAY));
+  type = ada_check_typedef(type);
+  gdb_assert(type != NULL);
+  return ((TYPE_CODE(type) == TYPE_CODE_ARRAY)
+          || ((TYPE_CODE(type) == TYPE_CODE_PTR)
+              && (TYPE_CODE(TYPE_TARGET_TYPE(type)) == TYPE_CODE_ARRAY)));
 }
 
 /* Non-zero iff TYPE belongs to a GNAT array descriptor.  */
@@ -1904,7 +1905,7 @@ ada_value_primitive_packed_val (struct value *obj, const gdb_byte *valaddr,
       accumSize += (HOST_CHAR_BIT - unusedLS);
       if (accumSize >= HOST_CHAR_BIT)
         {
-          unpacked[targ] = (accum & ~(~0L << HOST_CHAR_BIT));
+          unpacked[targ] = (accum & ~(~0UL << HOST_CHAR_BIT));
           accumSize -= HOST_CHAR_BIT;
           accum >>= HOST_CHAR_BIT;
           ntarg -= 1;
@@ -1918,7 +1919,7 @@ ada_value_primitive_packed_val (struct value *obj, const gdb_byte *valaddr,
   while (ntarg > 0)
     {
       accum |= (sign << accumSize);
-      unpacked[targ] = (accum & ~(~0L << HOST_CHAR_BIT));
+      unpacked[targ] = (accum & ~(~0UL << HOST_CHAR_BIT));
       accumSize -= HOST_CHAR_BIT;
       accum >>= HOST_CHAR_BIT;
       ntarg -= 1;
@@ -2142,23 +2143,24 @@ ada_value_slice (struct value *array, int low, int high)
    type designation.  Otherwise, returns 0.  */
 
 int
-ada_array_arity (struct type *type)
+ada_array_arity(struct type *type)
 {
   int arity;
 
   if (type == NULL)
     return 0;
 
-  type = desc_base_type (type);
+  type = desc_base_type(type);
 
   arity = 0;
-  if (TYPE_CODE (type) == TYPE_CODE_STRUCT)
-    return desc_arity (desc_bounds_type (type));
+  gdb_assert(type != NULL);
+  if (TYPE_CODE(type) == TYPE_CODE_STRUCT)
+    return desc_arity(desc_bounds_type(type));
   else
-    while (TYPE_CODE (type) == TYPE_CODE_ARRAY)
+    while (TYPE_CODE(type) == TYPE_CODE_ARRAY)
       {
         arity += 1;
-        type = ada_check_typedef (TYPE_TARGET_TYPE (type));
+        type = ada_check_typedef(TYPE_TARGET_TYPE(type));
       }
 
   return arity;
@@ -2170,11 +2172,13 @@ ada_array_arity (struct type *type)
    NINDICES is -1.  Otherwise, returns NULL.  */
 
 struct type *
-ada_array_element_type (struct type *type, int nindices)
+ada_array_element_type(struct type *type, int nindices)
 {
-  type = desc_base_type (type);
+  type = desc_base_type(type);
+  
+  gdb_assert(type != NULL);
 
-  if (TYPE_CODE (type) == TYPE_CODE_STRUCT)
+  if (TYPE_CODE(type) == TYPE_CODE_STRUCT)
     {
       int k;
       struct type *p_array_type;
@@ -3539,14 +3543,14 @@ ensure_lval (struct value *val, CORE_ADDR *sp)
    values not residing in memory, updating it as needed.  */
 
 static struct value *
-convert_actual (struct value *actual, struct type *formal_type0,
-                CORE_ADDR *sp)
+convert_actual(struct value *actual, struct type *formal_type0,
+               CORE_ADDR *sp)
 {
-  struct type *actual_type = ada_check_typedef (value_type (actual));
-  struct type *formal_type = ada_check_typedef (formal_type0);
+  struct type *actual_type = ada_check_typedef(value_type(actual));
+  struct type *formal_type = ada_check_typedef(formal_type0);
   struct type *formal_target =
-    TYPE_CODE (formal_type) == TYPE_CODE_PTR
-    ? ada_check_typedef (TYPE_TARGET_TYPE (formal_type)) : formal_type;
+    (((formal_type != NULL) && (TYPE_CODE(formal_type) == TYPE_CODE_PTR))
+     ? ada_check_typedef(TYPE_TARGET_TYPE(formal_type)) : formal_type);
   struct type *actual_target =
     TYPE_CODE (actual_type) == TYPE_CODE_PTR
     ? ada_check_typedef (TYPE_TARGET_TYPE (actual_type)) : actual_type;
@@ -4074,7 +4078,11 @@ add_symbols_from_enclosing_procs(struct obstack *obstackp ATTRIBUTE_UNUSED,
 static void
 restore_language(void *lang)
 {
+#ifdef __cplusplus
+  set_language((lang != NULL) ? language_auto : language_unknown);
+#else
   set_language((enum language)lang);
+#endif /* __cplusplus */
 }
 
 /* As for lookup_symbol, but performed as if the current language
@@ -5136,13 +5144,15 @@ ada_parent_type (struct type *type)
    parent-type (inherited) fields of a derived type.  Assumes TYPE is
    a structure type with at least FIELD_NUM+1 fields.  */
 
-int
-ada_is_parent_field (struct type *type, int field_num)
+int ATTRIBUTE_NONNULL(1)
+ada_is_parent_field(struct type *type, int field_num)
 {
-  const char *name = TYPE_FIELD_NAME (ada_check_typedef (type), field_num);
-  return (name != NULL
-          && (strncmp (name, "PARENT", 6) == 0
-              || strncmp (name, "_parent", 7) == 0));
+  struct type *checked_type = ada_check_typedef(type);
+  const char *name = ((checked_type != NULL)
+		      ? TYPE_FIELD_NAME(checked_type, field_num) : NULL);
+  return ((name != NULL)
+          && ((strncmp(name, "PARENT", 6UL) == 0)
+              || (strncmp(name, "_parent", 7UL) == 0)));
 }
 
 /* True iff field number FIELD_NUM of structure type TYPE is a
@@ -5535,20 +5545,21 @@ ada_value_struct_elt (struct value *arg, char *name, char *err)
         }
     }
 
-  while (TYPE_CODE (t) == TYPE_CODE_PTR)
+  while (TYPE_CODE(t) == TYPE_CODE_PTR)
     {
-      t1 = TYPE_TARGET_TYPE (t);
+      t1 = TYPE_TARGET_TYPE(t);
       if (t1 == NULL)
         {
           if (err == NULL)
             return NULL;
           else
-            error (_("Bad value type in a %s."), err);
+            error(_("Bad value type in a %s."), err);
         }
-      t1 = ada_check_typedef (t1);
-      if (TYPE_CODE (t1) == TYPE_CODE_PTR)
+      t1 = ada_check_typedef(t1);
+      gdb_assert(t1 != NULL);
+      if (TYPE_CODE(t1) == TYPE_CODE_PTR)
         {
-          arg = value_ind (arg);
+          arg = value_ind(arg);
           t = t1;
         }
       else
@@ -5622,22 +5633,23 @@ ada_value_struct_elt (struct value *arg, char *name, char *err)
    TYPE is not a type of the right kind.  */
 
 static struct type *
-ada_lookup_struct_elt_type (struct type *type, char *name, int refok,
-                            int noerr, int *dispp)
+ada_lookup_struct_elt_type(struct type *type, char *name, int refok,
+                           int noerr, int *dispp)
 {
   int i;
 
   if (name == NULL)
     goto BadName;
 
-  if (refok && type != NULL)
+  if (refok && (type != NULL))
     while (1)
       {
-        type = ada_check_typedef (type);
-        if (TYPE_CODE (type) != TYPE_CODE_PTR
-            && TYPE_CODE (type) != TYPE_CODE_REF)
+        type = ada_check_typedef(type);
+	gdb_assert(type != NULL);
+        if ((TYPE_CODE(type) != TYPE_CODE_PTR)
+            && (TYPE_CODE(type) != TYPE_CODE_REF))
           break;
-        type = TYPE_TARGET_TYPE (type);
+        type = TYPE_TARGET_TYPE(type);
       }
 
   if (type == NULL
@@ -5915,30 +5927,33 @@ ada_find_renaming_symbol (const char *name, struct block *block)
          qualified.  This means we need to prepend the function name
          as well as adding the ``___XR'' suffix to build the name of
          the associated renaming symbol.  */
-      char *function_name = SYMBOL_LINKAGE_NAME (function_sym);
-      const int function_name_len = strlen (function_name);
-      const int rename_len = function_name_len + 2      /*  "__" */
-        + strlen (name) + 6 /* "___XR\0" */ ;
+      char *function_name = SYMBOL_LINKAGE_NAME(function_sym);
+      const size_t function_name_len = strlen(function_name);
+      const size_t rename_len = ((function_name_len + 2UL)      /*  "__" */
+				 + (strlen(name) + 6UL) /* "___XR\0" */ );
+      size_t total_rename_len;
 
       /* Library-level functions are a special case, as GNAT adds
          a ``_ada_'' prefix to the function name to avoid namespace
          pollution.  However, the renaming symbol themselves do not
          have this prefix, so we need to skip this prefix if present.  */
-      if (function_name_len > 5 /* "_ada_" */
-          && strstr (function_name, "_ada_") == function_name)
-        function_name = function_name + 5;
+      if ((function_name_len > 5UL) /* "_ada_" */
+          && strstr(function_name, "_ada_") == function_name)
+        function_name = (function_name + 5);
 
-      rename = (char *) alloca (rename_len * sizeof (char));
-      sprintf (rename, "%s__%s___XR", function_name, name);
+      total_rename_len = (rename_len * sizeof(char));
+      rename = (char *)alloca(total_rename_len);
+      snprintf(rename, total_rename_len, "%s__%s___XR", function_name, name);
     }
   else
     {
-      const int rename_len = strlen (name) + 6;
-      rename = (char *) alloca (rename_len * sizeof (char));
-      sprintf (rename, "%s___XR", name);
+      const size_t rename_len = (strlen(name) + 6UL);
+      size_t total_rename_len = (rename_len * sizeof(char));
+      rename = (char *)alloca(total_rename_len);
+      snprintf(rename, total_rename_len, "%s___XR", name);
     }
 
-  return ada_find_any_symbol (rename);
+  return ada_find_any_symbol(rename);
 }
 
 /* Because of GNAT encoding conventions, several GDB symbols may match a
@@ -6579,19 +6594,21 @@ ada_to_fixed_type (struct type *type, const gdb_byte *valaddr,
    TYPE0, but based on no runtime data.  */
 
 static struct type *
-to_static_fixed_type (struct type *type0)
+to_static_fixed_type(struct type *type0)
 {
   struct type *type;
 
   if (type0 == NULL)
     return NULL;
 
-  if (TYPE_FLAGS (type0) & TYPE_FLAG_FIXED_INSTANCE)
+  if (TYPE_FLAGS(type0) & TYPE_FLAG_FIXED_INSTANCE)
     return type0;
 
-  type0 = ada_check_typedef (type0);
+  type0 = ada_check_typedef(type0);
 
-  switch (TYPE_CODE (type0))
+  gdb_assert(type0 != NULL);
+  
+  switch (TYPE_CODE(type0))
     {
     default:
       return type0;
@@ -6610,26 +6627,31 @@ to_static_fixed_type (struct type *type0)
     }
 }
 
-/* A static approximation of TYPE with all type wrappers removed.  */
-
+/* A static approximation of TYPE with all type wrappers removed: */
 static struct type *
-static_unwrap_type (struct type *type)
+static_unwrap_type(struct type *type)
 {
-  if (ada_is_aligner_type (type))
+  struct type *checked_type = ada_check_typedef(type);
+  gdb_assert(checked_type != NULL);
+  gdb_assert(TYPE_MAIN_TYPE(type) != NULL);
+  gdb_assert(TYPE_MAIN_TYPE(checked_type) != NULL);
+  
+  if (ada_is_aligner_type(type))
     {
-      struct type *type1 = TYPE_FIELD_TYPE (ada_check_typedef (type), 0);
-      if (ada_type_name (type1) == NULL)
-        TYPE_NAME (type1) = ada_type_name (type);
+      struct type *type1 = TYPE_FIELD_TYPE(checked_type, 0);
+      gdb_assert(type1 != NULL);
+      if (ada_type_name(type1) == NULL)
+        TYPE_NAME(type1) = ada_type_name(type);
 
-      return static_unwrap_type (type1);
+      return static_unwrap_type(type1);
     }
   else
     {
-      struct type *raw_real_type = ada_get_base_type (type);
+      struct type *raw_real_type = ada_get_base_type(type);
       if (raw_real_type == type)
         return type;
       else
-        return to_static_fixed_type (raw_real_type);
+        return to_static_fixed_type(raw_real_type);
     }
 }
 
@@ -6839,19 +6861,21 @@ ada_is_string_type (struct type *type)
    distinctive name.  */
 
 int
-ada_is_aligner_type (struct type *type)
+ada_is_aligner_type(struct type *type)
 {
-  type = ada_check_typedef (type);
+  type = ada_check_typedef(type);
 
   /* If we can find a parallel XVS type, then the XVS type should
      be used instead of this type.  And hence, this is not an aligner
      type.  */
-  if (ada_find_parallel_type (type, "___XVS") != NULL)
+  if (ada_find_parallel_type(type, "___XVS") != NULL)
     return 0;
 
-  return (TYPE_CODE (type) == TYPE_CODE_STRUCT
-          && TYPE_NFIELDS (type) == 1
-          && strcmp (TYPE_FIELD_NAME (type, 0), "F") == 0);
+  gdb_assert(type != NULL);
+  
+  return ((TYPE_CODE(type) == TYPE_CODE_STRUCT)
+          && (TYPE_NFIELDS(type) == 1)
+          && (strcmp(TYPE_FIELD_NAME(type, 0), "F") == 0));
 }
 
 /* If there is an ___XVS-convention type parallel to SUBTYPE, return
@@ -6945,7 +6969,7 @@ ada_enum_name(const char *name)
       int v;
       if ((name[1] == 'U') || (name[1] == 'W'))
         {
-          if (sscanf((name + 2), "%x", &v) != 1)
+          if (sscanf((name + 2), "%x", (unsigned int *)&v) != 1)
             return name;
         }
       else
@@ -6953,11 +6977,11 @@ ada_enum_name(const char *name)
 
       GROW_VECT(result, result_len, 16UL, char);
       if (isascii(v) && isprint(v))
-        sprintf(result, "'%c'", v);
+        snprintf(result, SIZE_T_MAX, "'%c'", v);
       else if (name[1] == 'U')
-        sprintf(result, "[\"%02x\"]", v);
+        snprintf(result, SIZE_T_MAX, "[\"%02x\"]", (unsigned int)v);
       else
-        sprintf(result, "[\"%04x\"]", v);
+        snprintf(result, SIZE_T_MAX, "[\"%04x\"]", (unsigned int)v);
 
       return result;
     }
@@ -8377,7 +8401,7 @@ ada_operator_length(struct expression *exp, int pc, int *oplenp, int *argsp)
 #undef OP_DEFN
 }
 
-static char *
+static const char *
 ada_op_name(enum exp_opcode opcode)
 {
 #define OP_DEFN(op, len, args, binop) case op: return #op;

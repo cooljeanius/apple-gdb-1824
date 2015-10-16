@@ -2573,11 +2573,11 @@ process_event_stop_test:
 	      struct breakpoint *b;
               /* APPLE LOCAL end cf comment by "solib_step_bp".  */
 
-	      stop_stepping (ecs);
+	      stop_stepping(ecs);
 
               /* APPLE LOCAL begin cf comment by "solib_step_bp".  */
 	      if (((b = step_resume_breakpoint) != NULL)
-		  || ((b = find_finish_breakpoint ()) != NULL))
+		  || ((b = find_finish_breakpoint()) != NULL))
 		{
 		  struct symtab_and_line fsr_sal;
 		  struct breakpoint *new_bp;
@@ -2587,22 +2587,23 @@ process_event_stop_test:
 		  else
 		    new_bp = solib_finish_bp;
 
-		  init_sal (&fsr_sal);
+		  init_sal(&fsr_sal);
 
 		  fsr_sal.symtab = NULL;
 		  fsr_sal.line = 0;
 		  fsr_sal.pc = b->loc->address;
 
-		  new_bp = set_breakpoint_sal (fsr_sal);
+		  new_bp = set_breakpoint_sal(fsr_sal);
 		  new_bp->disposition = disp_del;
 		  new_bp->frame_id = b->frame_id;
 		  /* We have to set addr_string or breakpoint_re_set
 		     will delete the breakpoint. */
-		  sprintf (addr_string, "*0x%s", paddr (new_bp->loc->address));
-		  new_bp->addr_string = xstrdup (addr_string);
+		  snprintf(addr_string, sizeof(addr_string), "*0x%s",
+			   paddr(new_bp->loc->address));
+		  new_bp->addr_string = xstrdup(addr_string);
 
 		  if (breakpoints_inserted)
-		    insert_breakpoints ();
+		    insert_breakpoints();
 		}
               /* APPLE LOCAL end cf comment by "solib_step_bp".  */
 	      return;
@@ -4084,7 +4085,7 @@ Signal        Stop\tPrint\tPass to program\tDescription\n"));
 static void
 sig_print_info(enum target_signal oursig)
 {
-  char *name = target_signal_to_name(oursig);
+  const char *name = target_signal_to_name(oursig);
   int name_padding = (int)(13UL - strlen(name));
 
   if (name_padding <= 0)
@@ -4286,65 +4287,64 @@ xdb_handle_command(char *args, int from_tty)
   char **argv;
   struct cleanup *old_chain;
 
-  /* Break the command line up into args. */
-
-  argv = buildargv (args);
+  /* Break the command line up into args: */
+  argv = buildargv(args);
   if (argv == NULL)
     {
-      nomem (0);
+      nomem(0);
     }
-  old_chain = make_cleanup_freeargv (argv);
-  if (argv[1] != (char *) NULL)
+  old_chain = make_cleanup_freeargv(argv);
+  if (argv[1] != (char *)NULL)
     {
       char *argBuf;
       int bufLen;
 
-      bufLen = strlen (argv[0]) + 20;
-      argBuf = (char *) xmalloc (bufLen);
+      bufLen = (strlen(argv[0]) + 20UL);
+      argBuf = (char *)xmalloc(bufLen);
       if (argBuf)
 	{
 	  int validFlag = 1;
 	  enum target_signal oursig;
 
-	  oursig = target_signal_from_name (argv[0]);
-	  memset (argBuf, 0, bufLen);
-	  if (strcmp (argv[1], "Q") == 0)
-	    sprintf (argBuf, "%s %s", argv[0], "noprint");
+	  oursig = target_signal_from_name(argv[0]);
+	  memset(argBuf, 0, bufLen);
+	  if (strcmp(argv[1], "Q") == 0)
+	    snprintf(argBuf, bufLen, "%s %s", argv[0], "noprint");
 	  else
 	    {
-	      if (strcmp (argv[1], "s") == 0)
+	      if (strcmp(argv[1], "s") == 0)
 		{
 		  if (!signal_stop[oursig])
-		    sprintf (argBuf, "%s %s", argv[0], "stop");
+		    snprintf(argBuf, bufLen, "%s %s", argv[0], "stop");
 		  else
-		    sprintf (argBuf, "%s %s", argv[0], "nostop");
+		    snprintf(argBuf, bufLen, "%s %s", argv[0], "nostop");
 		}
-	      else if (strcmp (argv[1], "i") == 0)
+	      else if (strcmp(argv[1], "i") == 0)
 		{
 		  if (!signal_program[oursig])
-		    sprintf (argBuf, "%s %s", argv[0], "pass");
+		    snprintf(argBuf, bufLen, "%s %s", argv[0], "pass");
 		  else
-		    sprintf (argBuf, "%s %s", argv[0], "nopass");
+		    snprintf(argBuf, bufLen, "%s %s", argv[0], "nopass");
 		}
-	      else if (strcmp (argv[1], "r") == 0)
+	      else if (strcmp(argv[1], "r") == 0)
 		{
 		  if (!signal_print[oursig])
-		    sprintf (argBuf, "%s %s", argv[0], "print");
+		    snprintf(argBuf, bufLen, "%s %s", argv[0], "print");
 		  else
-		    sprintf (argBuf, "%s %s", argv[0], "noprint");
+		    snprintf(argBuf, bufLen, "%s %s", argv[0], "noprint");
 		}
 	      else
 		validFlag = 0;
 	    }
 	  if (validFlag)
-	    handle_command (argBuf, from_tty);
+	    handle_command(argBuf, from_tty);
 	  else
-	    printf_filtered (_("Invalid signal handling flag.\n"));
+	    printf_filtered(_("Invalid signal handling flag.\n"));
 	  if (argBuf)
-	    xfree (argBuf);
+	    xfree(argBuf);
 	}
     }
-  do_cleanups (old_chain);
+  do_cleanups(old_chain);
 }
 
 /* Print current contents of the tables set by the handle command.

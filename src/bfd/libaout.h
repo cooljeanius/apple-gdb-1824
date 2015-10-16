@@ -56,12 +56,12 @@
 # endif /* __LP64__ */
 #endif /* !ARCH_SIZE */
 
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic push
  #  pragma GCC diagnostic warning "-Wtraditional"
 # endif /* gcc 4.6+ */
-#endif /* GCC */
+#endif /* GCC (non-c++) */
 
 /* Parameterize the a.out code based on whether it is being built
  * for a 32-bit architecture or a 64-bit architecture.  */
@@ -112,16 +112,17 @@
 #endif /* ARCH_SIZE && (ARCH_SIZE==64) */
 
 /* keep condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic pop
 # endif /* gcc 4.6+ */
-#endif /* GCC */
+#endif /* GCC (non-c++) */
 
 /* in case the popping failed: */
-#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__) && \
+    !defined(__cplusplus)
  # pragma GCC diagnostic ignored "-Wtraditional"
-#endif /* gcc 4+ && !__clang__ */
+#endif /* gcc 4+ && !__clang__ && !__cplusplus */
 
 /* Declare at file level, since used in parameter lists, which have
  * weird scope.  */

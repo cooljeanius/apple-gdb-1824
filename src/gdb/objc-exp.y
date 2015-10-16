@@ -117,7 +117,7 @@ static int
 yylex PARAMS((void));
 
 void
-yyerror PARAMS((char *));
+yyerror PARAMS((const char *));
 
 %}
 
@@ -145,7 +145,7 @@ yyerror PARAMS((char *));
     struct block *bval;
     enum exp_opcode opcode;
     struct internalvar *ivar;
-    struct objc_class_str class; /* FIXME: rename, if possible */
+    struct objc_class_str oclass; /* I hope renaming this was okay? */
 
     struct type **tvec;
     int *ivec;
@@ -183,7 +183,7 @@ parse_number PARAMS((char *, int, int, YYSTYPE *));
 %token <sval> SELECTOR		/* ObjC "@selector" pseudo-operator   */
 %token <ssym> NAME /* BLOCKNAME defined below to give it higher precedence. */
 %token <tsym> TYPENAME
-%token <class> CLASSNAME	/* ObjC Class name */
+%token <oclass> CLASSNAME	/* ObjC Class name */
 %type <sval> name
 %type <ssym> name_not_typename
 %type <tsym> typename
@@ -357,7 +357,7 @@ exp	:	'[' CLASSNAME
 			{
 			  write_exp_elt_opcode(OP_LONG);
 			  write_exp_elt_type(builtin_type_void_data_ptr);
-			  write_exp_elt_longcst((LONGEST)$2.class);
+			  write_exp_elt_longcst((LONGEST)$2.objc_class);
 			  write_exp_elt_opcode(OP_LONG);
 			  start_msglist();
 			}
@@ -1288,7 +1288,7 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 
 struct token
 {
-  char *ooperator;
+  const char *ooperator;
   int token;
   enum exp_opcode opcode;
 };
@@ -1324,7 +1324,7 @@ static const struct token tokentab2[] =
   };
 
 /* APPLE LOCAL: from objc-lang.c: */
-extern struct symbol *lookup_struct_typedef(char *name,
+extern struct symbol *lookup_struct_typedef(const char *name,
                                             struct block *block,
                                             int noerr);
 /* end APPLE LOCAL prototype */
@@ -1829,24 +1829,24 @@ yylex(void)
 		      struct symbol *cur_sym;
 		      /* As big as the whole rest of the expression,
 			 which is at least big enough.  */
-		      char *ncopy = alloca (strlen (tmp) +
-					    strlen (namestart) + 3);
+		      char *ncopy = (char *)alloca(strlen(tmp)
+						   + strlen(namestart) + 3UL);
 		      char *tmp1;
 
 		      tmp1 = ncopy;
-		      memcpy (tmp1, tmp, strlen (tmp));
-		      tmp1 += strlen (tmp);
-		      memcpy (tmp1, "::", 2);
+		      memcpy(tmp1, tmp, strlen(tmp));
+		      tmp1 += strlen(tmp);
+		      memcpy(tmp1, "::", 2);
 		      tmp1 += 2;
-		      memcpy (tmp1, namestart, p - namestart);
+		      memcpy(tmp1, namestart, (p - namestart));
 		      tmp1[p - namestart] = '\0';
-		      cur_sym = lookup_symbol (ncopy,
-					       expression_context_block,
-					       VAR_DOMAIN, (int *) NULL,
-					       (struct symtab **) NULL);
+		      cur_sym = lookup_symbol(ncopy,
+					      expression_context_block,
+					      VAR_DOMAIN, (int *)NULL,
+					      (struct symtab **)NULL);
 		      if (cur_sym)
 			{
-			  if (SYMBOL_CLASS (cur_sym) == LOC_TYPEDEF)
+			  if (SYMBOL_CLASS(cur_sym) == LOC_TYPEDEF)
 			    {
 			      best_sym = cur_sym;
 			      lexptr = p;
@@ -1888,11 +1888,11 @@ yylex(void)
 	    /* APPLE LOCAL end avoid calling lookup_objc_class unnecessarily  */
 	    if (Class)
 	      {
-	        yylval.class.class = Class;
+	        yylval.oclass.objc_class = Class;
 	        if ((sym = lookup_struct_typedef(tmp,
 					         expression_context_block,
 					         1)))
-	          yylval.class.type = SYMBOL_TYPE(sym);
+	          yylval.oclass.type = SYMBOL_TYPE(sym);
 	        return CLASSNAME;
 	      }
           }
@@ -1923,7 +1923,7 @@ yylex(void)
 }
 
 void ATTR_NORETURN
-yyerror(char *msg)
+yyerror(const char *msg)
 {
   if (*lexptr == '\0')
     error("A %s near end of expression.", (msg ? msg : "error"));

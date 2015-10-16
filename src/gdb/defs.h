@@ -413,6 +413,11 @@ enum return_value_convention
   RETURN_VALUE_ABI_PRESERVES_ADDRESS/*,*/
 };
 
+/* in case we need this for any structs: */
+#ifndef FLEXIBLE_ARRAY_MEMBER
+# define FLEXIBLE_ARRAY_MEMBER 1
+#endif /* !FLEXIBLE_ARRAY_MEMBER */
+
 /* the cleanup list records things that have to be undone
    if an error happens (descriptors to be closed, memory to be freed, etc.)
    Each link in the chain records a function to call and an
@@ -1357,7 +1362,7 @@ enum { MAX_REGISTER_SIZE = 16 };
    the number of bits in a host char.  If not, use the same size
    as the target. */
 
-#if defined (CHAR_BIT)
+#if defined(CHAR_BIT)
 # define HOST_CHAR_BIT CHAR_BIT
 #else
 # define HOST_CHAR_BIT TARGET_CHAR_BIT
@@ -1647,11 +1652,19 @@ void breakup_args(char *scratch, int *argc, char **argv);
 /* APPLE LOCAL begin CHECK macro: */
 #define __CHECK_FUNCTION __PRETTY_FUNCTION__
 
-#define CHECK(expression) \
-  ((void)((expression) ? 0 : gdb_check(#expression, __FILE__, __LINE__, __CHECK_FUNCTION)))
+#ifdef __cplusplus
+# define CHECK(expression) \
+   ((void)((expression) ? (void)0 : gdb_check(#expression, __FILE__, __LINE__, __CHECK_FUNCTION)))
 
-#define CHECK_FATAL(expression) \
-  ((void)((expression) ? 0 : gdb_check_fatal(#expression, __FILE__, __LINE__, __CHECK_FUNCTION)))
+# define CHECK_FATAL(expression) \
+   ((void)((expression) ? (void)0 : gdb_check_fatal(#expression, __FILE__, __LINE__, __CHECK_FUNCTION)))
+#else
+# define CHECK(expression) \
+   ((void)((expression) ? 0 : gdb_check(#expression, __FILE__, __LINE__, __CHECK_FUNCTION)))
+
+# define CHECK_FATAL(expression) \
+   ((void)((expression) ? 0 : gdb_check_fatal(#expression, __FILE__, __LINE__, __CHECK_FUNCTION)))
+#endif /* __cplusplus */
 
 void gdb_check(const char *str, const char *file, unsigned int line, const char *func);
 void gdb_check_fatal(const char *str, const char *file, unsigned int line, const char *func);
@@ -1672,10 +1685,10 @@ struct cleanup *start_timer(int *timer_var, char *timer_name, char *this_mssg);
 #if (defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ >= 3)) && \
     !defined(NO_POISON) && !defined(FLEX_SCANNER)
 /* gdbint.texinfo says to avoid these ones: */
-# pragma GCC poison malloc realloc calloc free strdup
+# pragma GCC poison malloc realloc calloc free strdup sprintf
 /* for similar reasons, such as libiberty also providing replacements: */
 # pragma GCC poison strndup memdup strerror vsprintf vasprintf
-/* also consider poisoining: asprintf sprintf atexit exit */
+/* also consider poisoining: asprintf atexit exit */
 #endif /* gcc3+ && !NO_POISON && !FLEX_SCANNER */
 
 #endif /* #ifndef DEFS_H */

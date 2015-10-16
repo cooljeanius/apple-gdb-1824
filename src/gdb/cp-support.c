@@ -864,15 +864,15 @@ maint_cplus_command (char *arg, int from_tty)
    cp_find_first_component.  */
 
 static void
-first_component_command (char *arg, int from_tty)
+first_component_command(char *arg, int from_tty)
 {
-  int len = cp_find_first_component (arg);
-  char *prefix = alloca (len + 1);
+  size_t len = cp_find_first_component(arg);
+  char *prefix = (char *)alloca(len + 1UL);
 
-  memcpy (prefix, arg, len);
+  memcpy(prefix, arg, len);
   prefix[len] = '\0';
 
-  printf_unfiltered ("%s\n", prefix);
+  printf_unfiltered("%s\n", prefix);
 }
 
 extern initialize_file_ftype _initialize_cp_support; /* -Wmissing-prototypes */

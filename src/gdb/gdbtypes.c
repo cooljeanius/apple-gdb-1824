@@ -1291,28 +1291,28 @@ lookup_typename (char *name, struct block *block, int noerr)
 }
 
 struct type *
-lookup_unsigned_typename (char *name)
+lookup_unsigned_typename(char *name)
 {
-  char *uns = alloca (strlen (name) + 10);
+  char *uns = (char *)alloca(strlen(name) + 10UL);
 
-  strcpy (uns, "unsigned ");
-  strcpy (uns + 9, name);
-  return (lookup_typename (uns, (struct block *) NULL, 0));
+  strcpy(uns, "unsigned ");
+  strcpy((uns + 9), name);
+  return lookup_typename(uns, (struct block *)NULL, 0);
 }
 
 struct type *
-lookup_signed_typename (char *name)
+lookup_signed_typename(char *name)
 {
   struct type *t;
-  char *uns = alloca (strlen (name) + 8);
+  char *uns = (char *)alloca(strlen(name) + 8UL);
 
-  strcpy (uns, "signed ");
-  strcpy (uns + 7, name);
-  t = lookup_typename (uns, (struct block *) NULL, 1);
-  /* If we don't find "signed FOO" just try again with plain "FOO". */
+  strcpy(uns, "signed ");
+  strcpy((uns + 7), name);
+  t = lookup_typename(uns, (struct block *)NULL, 1);
+  /* If we fail to find "signed FOO", then just try again with plain "FOO": */
   if (t != NULL)
     return t;
-  return lookup_typename (name, (struct block *) NULL, 0);
+  return lookup_typename(name, (struct block *)NULL, 0);
 }
 
 /* Lookup a structure type named "struct NAME",
@@ -3838,13 +3838,13 @@ gdbtypes_post_init (struct gdbarch *gdbarch)
   return builtin_type;
 }
 
-
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+/* the consts here are hard to work around: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic push
  #  pragma GCC diagnostic ignored "-Wdeclaration-after-statement"
 # endif /* gcc 4.6+ */
-#endif /* any gcc */
+#endif /* any gcc, but not g++ */
 
 /* APPLE LOCAL BEGIN: Helper functions for easily building bitfield
    built in types.
@@ -3943,11 +3943,11 @@ build_builtin_bitfield(const char *name, uint32_t size,
 }
 
 /* keep the condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic pop
 # endif /* gcc 4.6+ */
-#endif /* any gcc */
+#endif /* any gcc, but not g++ */
 
 /* APPLE LOCAL: closure dynamic type  */
 /* Note, in most functions I'm calling these "closures" not

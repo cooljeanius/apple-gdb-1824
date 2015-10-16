@@ -878,15 +878,6 @@ macosx_backup_before_break(int ignore)
  * '-Wdeclaration-after-statement' and '-Wnested-externs': */
 extern ptid_t get_hand_call_ptid(void);
 
-/* FIXME: need to rename some struct fields that currently live in headers,
- * and deal with all of the resulting fallout, before removing this: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic push
- #  pragma GCC diagnostic ignored "-Wc++-compat"
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
-
 /* This drains the event sources.  The first event found is directly
    handled.  The rest are "pushed back" to the target as best we can.
 
@@ -1013,7 +1004,7 @@ macosx_process_events(struct macosx_inferior_status *inferior,
                * for it to be rewound.  */
 
 	      tp = find_thread_pid(this_ptid);
-	      if ((tp != NULL) && (tp->private->gdb_suspend_count != 0))
+	      if ((tp != NULL) && (tp->privatedata->gdb_suspend_count != 0))
 		{
 		  inferior_debug(2, "Backing up and ignoring event for thread 0x%x since the thread was suspended.\n",
 				 ((macosx_exception_thread_message *)buf)->thread_port);
@@ -1226,16 +1217,16 @@ macosx_check_new_threads(thread_array_t thread_list, unsigned int nthreads)
           struct thread_info *tp;
           tp = add_thread(ptid);
           if (create_private_thread_info(tp))
-            tp->private->app_thread_port =
+            tp->privatedata->app_thread_port =
               get_application_thread_port(thread_list[i]);
         }
-      else if (tp->private && (tp->private->app_thread_port == 0))
+      else if (tp->privatedata && (tp->privatedata->app_thread_port == 0))
 	{
 	  /* This seems a little odd, but it turns out when we stop
 	     early on in the program startup, the mach_thread_names
 	     call does NOT return any threads, even though task_threads
 	     does. So we keep trying and eventually it will work.  */
-	  tp->private->app_thread_port =
+	  tp->privatedata->app_thread_port =
 	    get_application_thread_port(thread_list[i]);
 	}
     }
@@ -1487,6 +1478,7 @@ macosx_process_completer_quoted(char *text, char *word, int quote,
   for (i = 0; i < count; i++)
     {
       char *temp;
+      size_t templen, found_procnames_len;
       /* gdb cannot attach to the same instance of itself: */
       if (proc[i].kp_proc.p_pid == gdb_pid)
         continue;
@@ -1498,14 +1490,17 @@ macosx_process_completer_quoted(char *text, char *word, int quote,
       /* Skip zombie processes: */
       if ((proc[i].kp_proc.p_stat == SZOMB) || proc[i].kp_proc.p_stat == 0)
         continue;
-      temp = (char *)xmalloc(strlen(proc[i].kp_proc.p_comm) + 1UL + 16UL);
-      sprintf(temp, "%s.%d", proc[i].kp_proc.p_comm, proc[i].kp_proc.p_pid);
-      procnames[found] = (char *)xmalloc(strlen(temp) * 2UL + 2UL + 1UL);
+      templen = (strlen(proc[i].kp_proc.p_comm) + 1UL + 16UL);
+      temp = (char *)xmalloc(templen);
+      snprintf(temp, templen, "%s.%d", proc[i].kp_proc.p_comm,
+	       proc[i].kp_proc.p_pid);
+      found_procnames_len = (strlen(temp) * 2UL + 2UL + 1UL);
+      procnames[found] = (char *)xmalloc(found_procnames_len);
       if (quote)
         {
           if (quoted)
             {
-              sprintf(procnames[found], "\"%s\"", temp);
+              snprintf(procnames[found], found_procnames_len, "\"%s\"", temp);
             }
           else
             {
@@ -1513,7 +1508,7 @@ macosx_process_completer_quoted(char *text, char *word, int quote,
               char *t = procnames[found];
               while (*s != '\0')
                 {
-                  if (strchr ("\" ", *s) != NULL)
+                  if (strchr("\" ", *s) != NULL)
                     {
                       *t++ = '\\';
                       *t++ = *s++;
@@ -1528,22 +1523,22 @@ macosx_process_completer_quoted(char *text, char *word, int quote,
         }
       else
         {
-          sprintf (procnames[found], "%s", temp);
+          snprintf(procnames[found], found_procnames_len, "%s", temp);
         }
       found++;
     }
   procnames[found] = NULL;
 
-  ret = complete_on_enum ((const char **) procnames, text, word);
+  ret = complete_on_enum((const char **)procnames, text, word);
 
-  xfree (proc);
+  xfree(proc);
   return ret;
 }
 
 char **
-macosx_process_completer (char *text, char *word)
+macosx_process_completer(char *text, char *word)
 {
-  return macosx_process_completer_quoted (text, word, 1, NULL);
+  return macosx_process_completer_quoted(text, word, 1, NULL);
 }
 
 static void
@@ -2008,11 +2003,11 @@ macosx_child_attach(char *args, int from_tty ATTRIBUTE_UNUSED)
     if (result != 0)
       {
 	char *decorated_dyld_start;
-	decorated_dyld_start = ((char *)
-                                xmalloc(strlen("_dyld_start")
-                                        + strlen(dyld_symbols_prefix)
-                                        + 1UL));
-	sprintf(decorated_dyld_start, "%s_dyld_start", dyld_symbols_prefix);
+	size_t dds_len = (strlen("_dyld_start") + strlen(dyld_symbols_prefix)
+			  + 1UL);
+	decorated_dyld_start = (char *)xmalloc(dds_len);
+	snprintf(decorated_dyld_start, dds_len, "%s_dyld_start",
+		 dyld_symbols_prefix);
 	/* I also check to make sure we are not too far away from
 	   _dyld_start, in case dyld gets stripped and there are a
 	   bunch of functions after dyld_start that do NOT have
@@ -2340,7 +2335,7 @@ macosx_ptrace_him(int pid)
 
   {
     char buf[64];
-    sprintf(buf, "%s=%d", "TASK", itask);
+    snprintf(buf, sizeof(buf), "%s=%d", "TASK", itask);
     putenv(buf);
   }
   if (kret != KERN_SUCCESS)
@@ -2755,7 +2750,7 @@ macosx_get_thread_name (ptid_t ptid)
 
   buf[0] = '\0';
   tp = find_thread_pid(ptid);
-  if ((tp->private == NULL) || (tp->private->app_thread_port == 0))
+  if ((tp->privatedata == NULL) || (tp->privatedata->app_thread_port == 0))
     return NULL;
 
   info_count = THREAD_IDENTIFIER_INFO_COUNT;
@@ -2797,31 +2792,27 @@ macosx_get_thread_id_str(ptid_t ptid)
   struct thread_info *tp;
 
   tp = find_thread_pid(ptid);
-  if ((tp->private == NULL) || (tp->private->app_thread_port == 0))
+  if ((tp->privatedata == NULL) || (tp->privatedata->app_thread_port == 0))
     {
       thread_t thread = ptid_get_tid(ptid);
-      sprintf(buf, "local thread 0x%lx", (unsigned long)thread);
+      snprintf(buf, sizeof(buf), "local thread 0x%lx", (unsigned long)thread);
       return buf;
     }
 
-  sprintf(buf, "port# 0x%s", paddr_nz(tp->private->app_thread_port));
+  snprintf(buf, sizeof(buf), "port# 0x%s",
+	   paddr_nz(tp->privatedata->app_thread_port));
 
   return buf;
 }
 
-/* keep the condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
-
+/* FIXME: needs comment */
 static int
 macosx_child_thread_alive(ptid_t ptid)
 {
   return macosx_thread_valid(macosx_status->task, ptid_get_tid(ptid));
 }
 
+/* FIXME: needs comment */
 void
 macosx_create_inferior_for_task(struct macosx_inferior_status *inferior,
                                 task_t task, int pid)

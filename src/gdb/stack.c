@@ -793,23 +793,23 @@ print_frame (struct frame_info *fi,
 	annotate_frame_address_end ();
 	ui_out_text (uiout, " in ");
 	/* APPLE LOCAL begin FRAME tuple includes an FP field */
-        if (ui_out_is_mi_like_p (uiout))
+        if (ui_out_is_mi_like_p(uiout))
           {
-            ui_out_field_core_addr (uiout, "fp", get_frame_base (fi));
+            ui_out_field_core_addr(uiout, "fp", get_frame_base(fi));
           }
 	/* APPLE LOCAL end FRAME tuple includes an FP field */
       }
-  annotate_frame_function_name ();
-  fprintf_symbol_filtered (stb->stream, funname ? funname : "??", funlang,
-			   DMGL_ANSI);
-  ui_out_field_stream (uiout, "func", stb);
-  ui_out_wrap_hint (uiout, "   ");
+  annotate_frame_function_name();
+  fprintf_symbol_filtered(stb->stream, (char *)(funname ? funname : "??"),
+			  funlang, DMGL_ANSI);
+  ui_out_field_stream(uiout, "func", stb);
+  ui_out_wrap_hint(uiout, "   ");
 
   /* APPLE LOCAL - Inform users about debugging optimized code (mi)  */
-  if (ui_out_is_mi_like_p (uiout))
-    ui_out_field_int (uiout, "optimized", func_is_optimized);
+  if (ui_out_is_mi_like_p(uiout))
+    ui_out_field_int(uiout, "optimized", func_is_optimized);
 
-  annotate_frame_args ();
+  annotate_frame_args();
 
   ui_out_text (uiout, " (");
   if (print_args)

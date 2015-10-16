@@ -2533,19 +2533,19 @@ Show the maximum length of characters to print in the symbol name in disassembly
   /* For examine/instruction a single byte quantity is specified as
      the data.  This avoids problems with value_at_lazy() requiring a
      valid data type (and rejecting VOID). */
-  examine_i_type = init_type (TYPE_CODE_INT, 1, 0, "examine_i_type", NULL);
+  examine_i_type = init_type(TYPE_CODE_INT, 1, 0, "examine_i_type", NULL);
 
-  examine_b_type = init_type (TYPE_CODE_INT, 1, 0, "examine_b_type", NULL);
-  examine_h_type = init_type (TYPE_CODE_INT, 2, 0, "examine_h_type", NULL);
-  examine_w_type = init_type (TYPE_CODE_INT, 4, 0, "examine_w_type", NULL);
-  examine_g_type = init_type (TYPE_CODE_INT, 8, 0, "examine_g_type", NULL);
+  examine_b_type = init_type(TYPE_CODE_INT, 1, 0, "examine_b_type", NULL);
+  examine_h_type = init_type(TYPE_CODE_INT, 2, 0, "examine_h_type", NULL);
+  examine_w_type = init_type(TYPE_CODE_INT, 4, 0, "examine_w_type", NULL);
+  examine_g_type = init_type(TYPE_CODE_INT, 8, 0, "examine_g_type", NULL);
 
-  add_setshow_boolean_cmd ("runs-all-threads", no_class,
-			   &print_command_runs_all_threads_p, _("\
+  add_setshow_boolean_cmd("runs-all-threads", no_class,
+			  &print_command_runs_all_threads_p, _("\
 Set whether the print command allows all threads to run if necessary."), _("\
 Show whether the print command allows all threads to run if necessary."), NULL,
-			   NULL,
-			   NULL,
-			   &setprintlist, &showprintlist);
-
+			  NULL, NULL,
+			  &setprintlist, &showprintlist);
 }
+
+/* EOF */

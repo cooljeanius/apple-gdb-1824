@@ -1,4 +1,4 @@
-/* Support for printing C++ values for GDB, the GNU debugger.
+/* cp-valprint.c: Support for printing C++ values for GDB, the GNU debugger.
 
    Copyright 1986, 1988, 1989, 1991, 1992, 1993, 1994, 1995, 1996,
    1997, 2000, 2001, 2002, 2003, 2005 Free Software Foundation, Inc.
@@ -588,17 +588,17 @@ cp_print_value (struct type *type, struct type *real_type,
 	         clobbered by the user program. Make sure that it
 	         still points to a valid memory location.  */
 
-	      if (boffset != -1
-		  && ((boffset + offset) < 0
-		      || (boffset + offset) >= TYPE_LENGTH (type)))
+	      if ((boffset != -1)
+		  && (((boffset + offset) < 0)
+		      || ((boffset + offset) >= TYPE_LENGTH(type))))
 		{
 		  /* FIXME (alloca): unsafe if baseclass is really really large. */
-		  gdb_byte *buf = alloca (TYPE_LENGTH (baseclass));
+		  gdb_byte *buf = (gdb_byte *)alloca(TYPE_LENGTH(baseclass));
 		  base_valaddr = buf;
-		  if (target_read_memory (address + boffset, buf,
-					  TYPE_LENGTH (baseclass)) != 0)
+		  if (target_read_memory((address + boffset), buf,
+					 TYPE_LENGTH(baseclass)) != 0)
 		    skip = 1;
-		  address = address + boffset;
+		  address = (address + boffset);
 		  thisoffset = 0;
 		  boffset = 0;
 		  thistype = baseclass;

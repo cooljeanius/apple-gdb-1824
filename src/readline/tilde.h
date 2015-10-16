@@ -28,12 +28,12 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic push
  #  pragma GCC diagnostic warning "-Wtraditional"
 # endif /* gcc 4.6+ */
-#endif /* GCC */
+#endif /* GCC (non-c++) */
 
 /* A function can be defined using prototypes and compile on both ANSI C
  * and traditional C compilers with something like this:
@@ -48,16 +48,17 @@ extern "C" {
 #endif /* !PARAMS */
 
 /* keep condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic pop
 # endif /* gcc 4.6+ */
-#endif /* GCC */
+#endif /* GCC (non-c++) */
 
 /* in case the popping failed: */
-#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__) && \
+    !defined(__cplusplus)
  # pragma GCC diagnostic ignored "-Wtraditional"
-#endif /* gcc 4+ && !__clang__ */
+#endif /* gcc 4+ && !__clang__ && !__cplusplus */
 
 typedef char *tilde_hook_func_t PARAMS((char *));
 

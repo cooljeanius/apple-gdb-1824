@@ -764,7 +764,7 @@ struct linetable
   /* Actually NITEMS elements.  If you don't like this use of the
      `struct hack', you can shove it up your ANSI (seriously, if the
      committee tells us how to do it, we can probably go along).  */
-  struct linetable_entry item[1];
+  struct linetable_entry item[FLEXIBLE_ARRAY_MEMBER];
 };
 
 /* How to relocate the symbols from each section in a symbol file.

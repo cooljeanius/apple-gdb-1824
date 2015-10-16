@@ -1,4 +1,4 @@
-/* C language support definitions for GDB, the GNU debugger.
+/* c-lang.h: C language support definitions for GDB, the GNU debugger.
 
    Copyright 1992, 1994, 1995, 1996, 1997, 1998, 2000, 2002, 2005 Free
    Software Foundation, Inc.
@@ -21,7 +21,7 @@
    Boston, MA 02111-1307, USA.  */
 
 
-#if !defined (C_LANG_H)
+#if !defined(C_LANG_H)
 #define C_LANG_H 1
 
 struct ui_file;
@@ -31,9 +31,9 @@ struct language_arch_info;
 #include "macroexp.h"
 
 
-extern int c_parse (void);	/* Defined in c-exp.y */
+extern int c_parse(void);	/* Defined in c-exp.y */
 
-extern void c_error (char *);	/* Defined in c-exp.y */
+extern void c_error(const char *);	/* Defined in c-exp.y */
 
 /* Defined in c-typeprint.c */
 extern void c_print_type (struct type *, char *, struct ui_file *, int,
@@ -93,4 +93,6 @@ extern int cp_is_vtbl_ptr_type (struct type *);
 extern int cp_is_vtbl_member (struct type *);
 
 
-#endif /* !defined (C_LANG_H) */
+#endif /* !defined(C_LANG_H) */
+
+/* EOF */

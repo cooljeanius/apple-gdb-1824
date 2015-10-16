@@ -49,32 +49,23 @@ cmd_types;
 #define DEPRECATED_WARN_USER      0x2
 #define MALLOCED_REPLACEMENT      0x4
 
-/* temporary, until I am ready to deal with all of the fallout that would
- * result from fixing these warnings in this header: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic push
- #  pragma GCC diagnostic ignored "-Wc++-compat"
-# endif /* gcc 4.6+ */
-#endif /* GCC */
-
 struct cmd_list_element
   {
-    /* Points to next command in this list.  */
+    /* Points to next command in this list: */
     struct cmd_list_element *next;
 
-    /* Name of this command.  */
-    char *name;
+    /* Name of this command: */
+    const char *name;
 
-    /* Command class; class values are chosen by application program.  */
-    enum command_class class;
+    /* Command class; class values are chosen by application program: */
+    enum command_class cmdclass;
 
     /* Function definition of this command.  NULL for command class
        names and for help topics that are not really commands.  NOTE:
        cagney/2002-02-02: This function signature is evolving.  For
        the moment suggest sticking with either set_cmd_cfunc() or
        set_cmd_sfunc().  */
-    void (*func) (struct cmd_list_element *c, char *args, int from_tty);
+    void (*func)(struct cmd_list_element *c, char *args, int from_tty);
     /* The command's real callback.  At present func() bounces through
        to one of the below.  */
     union
@@ -127,7 +118,7 @@ struct cmd_list_element
 
     /* If this command represents a show command, then this function
        is called before the variable's value is examined.  */
-    void (*pre_show_hook) (struct cmd_list_element *c);
+    void (*pre_show_hook)(struct cmd_list_element *c);
 
     /* Hook for another command to be executed before this command.  */
     struct cmd_list_element *hook_pre;
@@ -173,7 +164,7 @@ struct cmd_list_element
        returned relative to this position.  For example, suppose TEXT is "foo"
        and we want to complete to "foobar".  If WORD is "oo", return
        "oobar"; if WORD is "baz/foo", return "baz/foobar".  */
-    char **(*completer) (char *text, char *word);
+    char **(*completer)(char *text, char *word);
 
     /* Type of "set" or "show" command (or SET_NOT_SET if not "set"
        or "show").  */
@@ -204,13 +195,6 @@ struct cmd_list_element
        aliased command can be located in case it has been hooked.  */
     struct cmd_list_element *cmd_pointer;
   };
-
-/* keep condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* GCC */
 
 /* API to the manipulation of command lists.  */
 
@@ -320,7 +304,9 @@ extern void not_just_help_class_command (char *arg, int from_tty);
 
 /* Exported to cli/cli-setshow.c */
 
-extern void print_doc_line (struct ui_file *, char *);
+extern void print_doc_line(struct ui_file *, const char *);
 
 
-#endif /* !defined (CLI_DECODE_H) */
+#endif /* !defined(CLI_DECODE_H) */
+
+/* EOF */

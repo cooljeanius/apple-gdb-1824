@@ -709,9 +709,10 @@ extern bfd_boolean _bfd_sh_align_load_span
 # endif /* bfd_section_already_linked */
 #endif /* A_OUT_NEWSOS_THREE_C && !__STDC__ */
 
-#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__) && \
+    !defined(__cplusplus)
  # pragma GCC diagnostic ignored "-Wtraditional"
-#endif /* gcc 4+ && !__clang__ */
+#endif /* gcc 4+ && !__clang__ && !__cplusplus */
 
 /* This is the shape of the elements inside the already_linked hash table.
  * It maps a name onto a list of already_linked elements with the same

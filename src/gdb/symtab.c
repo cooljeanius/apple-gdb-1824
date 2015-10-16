@@ -754,7 +754,9 @@ void ATTRIBUTE_NONNULL(1)
 symbol_init_language_specific(struct general_symbol_info *gsymbol,
 			      enum language language)
 {
+#ifndef ATTRIBUTE_NONNULL
   gdb_assert(gsymbol != NULL);
+#endif /* !ATTRIBUTE_NONNULL */
   
   gsymbol->language = language; /* FIXME: bad access? */
   if (gsymbol->language == language_cplus
@@ -4860,12 +4862,12 @@ print_symbol_info (domain_enum kind, struct symtab *s, struct symbol *sym,
 	   (kind == TYPES_DOMAIN &&
 	    SYMBOL_DOMAIN (sym) == STRUCT_DOMAIN))
     {
-      type_print (SYMBOL_TYPE (sym),
-		  (SYMBOL_CLASS (sym) == LOC_TYPEDEF
-		   ? "" : SYMBOL_PRINT_NAME (sym)),
-		  gdb_stdout, 0);
+      type_print(SYMBOL_TYPE(sym),
+		 (char *)((SYMBOL_CLASS(sym) == LOC_TYPEDEF)
+			  ? "" : SYMBOL_PRINT_NAME(sym)),
+		 gdb_stdout, 0);
 
-      printf_filtered (";\n");
+      printf_filtered(";\n");
     }
 }
 

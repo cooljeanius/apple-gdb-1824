@@ -1283,9 +1283,9 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 	      struct value *temp = arg2;
 	      argvec[0] = value_struct_elt(&temp, (argvec + 1), tstr,
                                            &static_memfuncp,
-                                           ((op == STRUCTOP_STRUCT)
-                                            ? "structure"
-                                            : "structure pointer"));
+                                           (char *)((op == STRUCTOP_STRUCT)
+						    ? "structure"
+						    : "structure pointer"));
 	      /* value_struct_elt updates temp with the correct value
                * of the ``this'' pointer if necessary, so modify argvec[1]
                * to reflect any ``this'' changes: */
@@ -2465,20 +2465,20 @@ evaluate_subexp_for_sizeof (struct expression *exp, int *pos)
 /* Parse a type expression in the string [P..P+LENGTH). */
 
 struct type *
-parse_and_eval_type (char *p, int length)
+parse_and_eval_type(char *p, int length)
 {
-  char *tmp = (char *) alloca (length + 4);
+  char *tmp = (char *)alloca(length + 4UL);
   struct expression *expr;
   tmp[0] = '(';
-  memcpy (tmp + 1, p, length);
+  memcpy((tmp + 1), p, length);
   tmp[length + 1] = ')';
   tmp[length + 2] = '0';
   tmp[length + 3] = '\0';
   /* APPLE LOCAL initialize innermost_block  */
   innermost_block = NULL;
-  expr = parse_expression (tmp);
+  expr = parse_expression(tmp);
   if (expr->elts[0].opcode != UNOP_CAST)
-    error (_("Internal error in eval_type."));
+    error(_("Internal error in eval_type."));
   return expr->elts[1].type;
 }
 

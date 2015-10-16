@@ -1628,6 +1628,10 @@ get_frame_type(struct frame_info *frame)
        provides the frame's type.  */
     frame->unwind = frame_unwind_find_by_frame(frame->next,
 					       &frame->prologue_cache);
+  
+  gdb_assert(frame != NULL);
+  gdb_assert(frame->unwind != NULL);
+  
   return frame->unwind->type;
 }
 

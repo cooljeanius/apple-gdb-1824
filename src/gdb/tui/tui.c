@@ -230,20 +230,20 @@ tui_rl_other_window (int count, int key)
 /* TUI readline command.
    Execute the gdb command bound to the specified key.  */
 static int
-tui_rl_command_key (int count, int key)
+tui_rl_command_key(int count, int key)
 {
   int i;
 
-  reinitialize_more_filter ();
+  reinitialize_more_filter();
   for (i = 0; tui_commands[i].cmd; i++)
     {
       if (tui_commands[i].key == key)
         {
           /* Must save the command because it can be modified
              by execute_command.  */
-          char* cmd = alloca (strlen (tui_commands[i].cmd) + 1);
-          strcpy (cmd, tui_commands[i].cmd);
-          execute_command (cmd, TRUE);
+          char* cmd = (char *)alloca(strlen(tui_commands[i].cmd) + 1UL);
+          strcpy(cmd, tui_commands[i].cmd);
+          execute_command(cmd, TRUE);
           return 0;
         }
     }

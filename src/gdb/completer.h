@@ -31,7 +31,7 @@ extern char **location_completer(char *, char *);
 
 extern char **command_completer(char *, char *);
 
-extern char *get_gdb_completer_quote_characters(void);
+extern const char *get_gdb_completer_quote_characters(void);
 
 /* APPLE LOCAL begin completer */
 extern char *gdb_completer_word_break_characters;

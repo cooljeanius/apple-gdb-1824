@@ -728,7 +728,8 @@ static void
 show_binary_buffer_size(char *args, int from_tty)
 {
     printf_filtered(_("The restore binary buffer size is %ld (0x%lx).\n"),
-		    g_max_binary_file_chunk, g_max_binary_file_chunk);
+		    g_max_binary_file_chunk,
+		    (size_t)g_max_binary_file_chunk);
 }
 
 static void

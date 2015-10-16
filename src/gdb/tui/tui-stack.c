@@ -78,6 +78,7 @@ tui_make_status_line(struct tui_locator_element* loc)
   size_t line_width;
   size_t pc_width;
   struct ui_file *pc_out;
+  size_t string_and_buflen;
 
   if (ptid_equal(inferior_ptid, null_ptid))
     pid_name = "No process";
@@ -93,12 +94,13 @@ tui_make_status_line(struct tui_locator_element* loc)
     pid_width = MAX_PID_WIDTH;
 
   status_size = tui_term_width();
-  string = (char *)xmalloc(status_size + 1UL);
-  buf = (char*)alloca(status_size + 1UL);
+  string_and_buflen = (status_size + 1UL);
+  string = (char *)xmalloc(string_and_buflen);
+  buf = (char *)alloca(string_and_buflen);
 
   /* Translate line number and obtain its size: */
   if (loc->line_no > 0)
-    sprintf(line_buf, "%d", loc->line_no);
+    snprintf(line_buf, sizeof(line_buf), "%d", loc->line_no);
   else
     strcpy(line_buf, "??");
   line_width = strlen(line_buf);
@@ -160,14 +162,14 @@ tui_make_status_line(struct tui_locator_element* loc)
 
   if (target_width > 0UL)
     {
-      sprintf(buf, "%*.*s ",
-              (int)-target_width, (int)target_width, target_shortname);
+      snprintf(buf, string_and_buflen, "%*.*s ",
+	       (int)(-target_width), (int)target_width, target_shortname);
       strcat_to_buf(string, status_size, buf);
     }
   if (pid_width > 0UL)
     {
-      sprintf(buf, "%*.*s ",
-              (int)-pid_width, (int)pid_width, pid_name);
+      snprintf(buf, string_and_buflen, "%*.*s ",
+	       (int)(-pid_width), (int)pid_width, pid_name);
       strcat_to_buf(string, status_size, buf);
     }
 
@@ -182,18 +184,18 @@ tui_make_status_line(struct tui_locator_element* loc)
   if (proc_width > 0UL)
     {
       if (strlen(pname) > proc_width)
-        sprintf(buf, "%s%*.*s* ", PROC_PREFIX,
-                (int)(1 - proc_width), (int)(proc_width - 1), pname);
+        snprintf(buf, string_and_buflen, "%s%*.*s* ", PROC_PREFIX,
+		 (int)(1 - proc_width), (int)(proc_width - 1), pname);
       else
-        sprintf(buf, "%s%*.*s ", PROC_PREFIX,
-                (int)-proc_width, (int)proc_width, pname);
+        snprintf(buf, string_and_buflen, "%s%*.*s ", PROC_PREFIX,
+		 (int)(-proc_width), (int)proc_width, pname);
       strcat_to_buf(string, status_size, buf);
     }
 
   if (line_width > 0UL)
     {
-      sprintf(buf, "%s%*.*s ", LINE_PREFIX,
-              (int)-line_width, (int)line_width, line_buf);
+      snprintf(buf, string_and_buflen, "%s%*.*s ", LINE_PREFIX,
+	       (int)(-line_width), (int)line_width, line_buf);
       strcat_to_buf(string, status_size, buf);
     }
   if (pc_width > 0UL)

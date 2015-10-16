@@ -415,7 +415,7 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
         sym_typename =
           (char *)obstack_alloc(&objfile->objfile_obstack, name[0] + 1);
 
-        sprintf(sym_typename, "%.*s", name[0], name + 1);
+        snprintf(sym_typename, SIZE_T_MAX, "%.*s", name[0], name + 1);
         break;
       }
 
@@ -554,14 +554,14 @@ sym_read_type(struct objfile *objfile, struct type **typevec,
     {
       ntypename =
         (char *)obstack_alloc(&objfile->objfile_obstack, otypename[0] + 1);
-      sprintf(ntypename, "%.*s", otypename[0], otypename + 1);
+      snprintf(ntypename, SIZE_T_MAX, "%.*s", otypename[0], otypename + 1);
     }
   else
     {
       if (0)
         {
           ntypename = (char *)obstack_alloc(&objfile->objfile_obstack, 16);
-          sprintf(ntypename, "type%lu", i);
+          snprintf(ntypename, 17UL, "type%lu", i);
         }
     }
 
@@ -774,8 +774,8 @@ sym_read_contained_variables(struct objfile *objfile,
               FIELD_NAME(argvec[nargs]) =
                 (char *)obstack_alloc(&objfile->objfile_obstack,
                                       nname[0] + 1);
-              sprintf(FIELD_NAME(argvec[nargs]), "%.*s", nname[0],
-                      nname + 1);
+              snprintf(FIELD_NAME(argvec[nargs]), SIZE_T_MAX, "%.*s", nname[0],
+		       (nname + 1));
               FIELD_BITPOS(argvec[nargs]) = 0;
               FIELD_BITSIZE(argvec[nargs]) = 0;
             }
@@ -785,7 +785,6 @@ sym_read_contained_variables(struct objfile *objfile,
 
       if ((localvec != NULL) && (globalvec != NULL))
         {
-
           struct symbol *lsym = NULL;
           lsym =
             (struct symbol *)obstack_alloc(&objfile->objfile_obstack,
@@ -794,7 +793,8 @@ sym_read_contained_variables(struct objfile *objfile,
           SYMBOL_TYPE(lsym) = typevec[cventry.entry.tte_index];
           SYMBOL_LINKAGE_NAME(lsym) =
             (char *)obstack_alloc(&objfile->objfile_obstack, nname[0] + 1);
-          sprintf(SYMBOL_LINKAGE_NAME(lsym), "%.*s", nname[0], nname + 1);
+          snprintf(SYMBOL_LINKAGE_NAME(lsym), SIZE_T_MAX, "%.*s", nname[0],
+		   (nname + 1));
           SYMBOL_LANGUAGE(lsym) = language_cplus;
           SYMBOL_SECTION(lsym) = 0;
           SYMBOL_BFD_SECTION(lsym) = 0;
@@ -1025,13 +1025,13 @@ sym_read_functions(struct objfile *objfile, struct type **typevec,
         (char *)obstack_alloc(&objfile->objfile_obstack, (name[0] + 1));
       if ((name[0] > 0) && (name[1] == '.'))
         {
-          sprintf(SYMBOL_LINKAGE_NAME(fsymbol), "%.*s", (name[0] - 1),
-                  (name + 2));
+          snprintf(SYMBOL_LINKAGE_NAME(fsymbol), SIZE_T_MAX, "%.*s",
+		   (name[0] - 1), (name + 2));
         }
       else
         {
-          sprintf(SYMBOL_LINKAGE_NAME(fsymbol), "%.*s", name[0],
-                  (name + 1));
+          snprintf(SYMBOL_LINKAGE_NAME(fsymbol), SIZE_T_MAX, "%.*s", name[0],
+		   (name + 1));
         }
       SYMBOL_BLOCK_VALUE(fsymbol) = fblock;
       SYMBOL_LANGUAGE(fsymbol) = language_cplus;
@@ -1068,6 +1068,7 @@ sym_symfile_init(struct objfile *objfile)
   objfile->flags |= OBJF_REORDERED;
 }
 
+/* FIXME: needs comment */
 static void
 convert_path_colons (unsigned char *dst, const unsigned char *src, size_t len)
 {
@@ -1094,6 +1095,7 @@ convert_path_colons (unsigned char *dst, const unsigned char *src, size_t len)
   dst[len + 1] = '\0';
 }
 
+/* FIXME: needs comment */
 static void
 convert_path(unsigned char *dst,
              const unsigned char *src, size_t len, bfd_sym_version version)
@@ -1101,7 +1103,7 @@ convert_path(unsigned char *dst,
   switch (version)
     {
     case BFD_SYM_VERSION_3_3R0:
-      sprintf((char *)dst, "%.*s", (int)len, src);
+      snprintf((char *)dst, SIZE_T_MAX, "%.*s", (int)len, src);
       break;
     case BFD_SYM_VERSION_3_5:
     case BFD_SYM_VERSION_3_4:
@@ -1113,8 +1115,9 @@ convert_path(unsigned char *dst,
     }
 }
 
+/* FIXME: needs comment */
 static void
-sym_symfile_read (struct objfile *objfile, int mainline)
+sym_symfile_read(struct objfile *objfile, int mainline)
 {
   bfd *abfd = NULL;
   bfd_sym_data_struct *sdata = NULL;
@@ -1132,104 +1135,105 @@ sym_symfile_read (struct objfile *objfile, int mainline)
   unsigned long maxtypes;
 
   unsigned long i;
-  CORE_ADDR text_section_offset = 0;
+  CORE_ADDR text_section_offset = 0UL;
 
-  CHECK_FATAL (objfile != NULL);
+  CHECK_FATAL(objfile != NULL);
   abfd = objfile->obfd;
-  CHECK_FATAL (abfd != NULL);
-  CHECK_FATAL (abfd->filename != NULL);
+  CHECK_FATAL(abfd != NULL);
+  CHECK_FATAL(abfd->filename != NULL);
 
-  CHECK_FATAL (bfd_sym_valid (abfd));
+  CHECK_FATAL(bfd_sym_valid(abfd));
   sdata = abfd->tdata.sym_data;
 
-  sym_read_types (objfile, &maxtypes, &typevec, &ntypes, &typedefvec,
-                  &ntypedefs);
-  sym_read_functions (objfile, typevec, maxtypes, &funcvec, &nfuncs);
+  sym_read_types(objfile, &maxtypes, &typevec, &ntypes, &typedefvec,
+                 &ntypedefs);
+  sym_read_functions(objfile, typevec, maxtypes, &funcvec, &nfuncs);
 
-  gblock = allocate_block (&objfile->objfile_obstack);
-  BLOCK_DICT (gblock) = dict_create_hashed_expandable ();
+  gblock = allocate_block(&objfile->objfile_obstack);
+  BLOCK_DICT(gblock) = dict_create_hashed_expandable();
 
-  sblock = allocate_block (&objfile->objfile_obstack);
-  BLOCK_SUPERBLOCK (sblock) = gblock;
-  BLOCK_DICT (sblock) = dict_create_hashed_expandable ();
-  text_section_offset = objfile_text_section_offset (objfile);
+  sblock = allocate_block(&objfile->objfile_obstack);
+  BLOCK_SUPERBLOCK(sblock) = gblock;
+  BLOCK_DICT(sblock) = dict_create_hashed_expandable();
+  text_section_offset = objfile_text_section_offset(objfile);
 
-  for (i = 0; i < maxtypes; i++)
+  for (i = 0UL; i < maxtypes; i++)
     {
       if (typedefvec[i] != NULL)
         {
-          dict_add_symbol (BLOCK_DICT (gblock), typedefvec[i]);
+          dict_add_symbol(BLOCK_DICT(gblock), typedefvec[i]);
         }
     }
 
-  for (i = 0; i < nfuncs; i++)
+  for (i = 0UL; i < nfuncs; i++)
     {
-      CHECK_FATAL (funcvec[i] != NULL);
-      dict_add_symbol (BLOCK_DICT (gblock), funcvec[i]);
+      CHECK_FATAL(funcvec[i] != NULL);
+      dict_add_symbol(BLOCK_DICT(gblock), funcvec[i]);
     }
 
-  bv = (struct blockvector *) obstack_alloc
-    (&objfile->objfile_obstack,
-     (sizeof (struct blockvector) +
-      (nfuncs + 2 - 1) * sizeof (struct block *)));
+  bv = 
+    ((struct blockvector *)
+     obstack_alloc(&objfile->objfile_obstack,
+		   (sizeof(struct blockvector)
+		    + ((nfuncs + 2UL - 1UL) * sizeof(struct block *)))));
 
-  BLOCKVECTOR_NBLOCKS (bv) = nfuncs + 2;
+  BLOCKVECTOR_NBLOCKS(bv) = (nfuncs + 2UL);
 
-  BLOCKVECTOR_BLOCK (bv, GLOBAL_BLOCK) = gblock;
-  BLOCKVECTOR_BLOCK (bv, STATIC_BLOCK) = sblock;
+  BLOCKVECTOR_BLOCK(bv, GLOBAL_BLOCK) = gblock;
+  BLOCKVECTOR_BLOCK(bv, STATIC_BLOCK) = sblock;
 
   {
     unsigned long i;
 
-    for (i = 0; i < nfuncs; i++)
+    for (i = 0UL; i < nfuncs; i++)
       {
-        BLOCKVECTOR_BLOCK (bv, i + 2) = SYMBOL_BLOCK_VALUE (funcvec[i]);
-        BLOCK_SUPERBLOCK (SYMBOL_BLOCK_VALUE (funcvec[i])) = sblock;
+        BLOCKVECTOR_BLOCK(bv, (i + 2UL)) = SYMBOL_BLOCK_VALUE(funcvec[i]);
+        BLOCK_SUPERBLOCK(SYMBOL_BLOCK_VALUE(funcvec[i])) = sblock;
       }
   }
 
   {
-    CORE_ADDR minaddr = (CORE_ADDR) - 1;
-    CORE_ADDR maxaddr = 0;
+    CORE_ADDR minaddr = (CORE_ADDR)(-1L);
+    CORE_ADDR maxaddr = 0UL;
     unsigned long i;
 
-    for (i = 0; i < nfuncs; i++)
+    for (i = 0UL; i < nfuncs; i++)
       {
 	/* APPLE LOCAL begin address ranges  */
-        if (BLOCK_LOWEST_PC (BLOCKVECTOR_BLOCK (bv, i + 2)) < minaddr)
+        if (BLOCK_LOWEST_PC(BLOCKVECTOR_BLOCK(bv, (i + 2UL))) < minaddr)
           {
-            minaddr = BLOCK_LOWEST_PC (BLOCKVECTOR_BLOCK (bv, i + 2));
+            minaddr = BLOCK_LOWEST_PC(BLOCKVECTOR_BLOCK(bv, (i + 2UL)));
           }
-        if(!BLOCK_RANGES (BLOCKVECTOR_BLOCK (bv, i + 2))
-	   && BLOCK_END (BLOCKVECTOR_BLOCK (bv, i + 2)) > maxaddr)
+        if(!BLOCK_RANGES(BLOCKVECTOR_BLOCK(bv, (i + 2UL)))
+	   && BLOCK_END(BLOCKVECTOR_BLOCK(bv, (i + 2UL))) > maxaddr)
           {
-            maxaddr = BLOCK_END (BLOCKVECTOR_BLOCK (bv, i + 2));
+            maxaddr = BLOCK_END(BLOCKVECTOR_BLOCK(bv, (i + 2UL)));
           }
-	else if (BLOCK_RANGES (BLOCKVECTOR_BLOCK (bv, i + 2)))
+	else if (BLOCK_RANGES(BLOCKVECTOR_BLOCK(bv, (i + 2UL))))
 	  {
 	    int j;
 
-	    for (j = 0; j < BLOCK_RANGES (BLOCKVECTOR_BLOCK (bv, i + 2))->nelts;
+	    for (j = 0; j < BLOCK_RANGES(BLOCKVECTOR_BLOCK(bv, i + 2))->nelts;
 		 j++)
-	      if (BLOCK_RANGE_END (BLOCKVECTOR_BLOCK (bv, i + 2), j) > maxaddr)
-		maxaddr = BLOCK_RANGE_END (BLOCKVECTOR_BLOCK (bv, i + 2), j);
+	      if (BLOCK_RANGE_END(BLOCKVECTOR_BLOCK(bv, i + 2), j) > maxaddr)
+		maxaddr = BLOCK_RANGE_END(BLOCKVECTOR_BLOCK(bv, i + 2), j);
 	  }
 	/* APPLE LOCAL end address ranges  */
       }
 
-    BLOCK_START (BLOCKVECTOR_BLOCK (bv, GLOBAL_BLOCK)) = minaddr;
-    BLOCK_END (BLOCKVECTOR_BLOCK (bv, GLOBAL_BLOCK)) = maxaddr;
-    BLOCK_START (BLOCKVECTOR_BLOCK (bv, STATIC_BLOCK)) = minaddr;
-    BLOCK_END (BLOCKVECTOR_BLOCK (bv, STATIC_BLOCK)) = maxaddr;
+    BLOCK_START(BLOCKVECTOR_BLOCK(bv, GLOBAL_BLOCK)) = minaddr;
+    BLOCK_END(BLOCKVECTOR_BLOCK(bv, GLOBAL_BLOCK)) = maxaddr;
+    BLOCK_START(BLOCKVECTOR_BLOCK(bv, STATIC_BLOCK)) = minaddr;
+    BLOCK_END(BLOCKVECTOR_BLOCK(bv, STATIC_BLOCK)) = maxaddr;
   }
 
 
   {
-    unsigned int linetable_maxentries = 20000;
+    unsigned int linetable_maxentries = 20000U; /* Is it really that big? */
     struct symtab *symtab = NULL;
     struct linetable *linetable = NULL;
-    unsigned long curpos = 0;
-    unsigned long curitem = 0;
+    unsigned long curpos = 0UL;
+    unsigned long curitem = 0UL;
     int ret = 0;
 
     bfd_sym_contained_statements_table_entry entry;
@@ -1238,11 +1242,10 @@ sym_symfile_read (struct objfile *objfile, int mainline)
 
     unsigned long i;
 
-    for (i = 1; i <= sdata->header.dshb_csnte.dti_object_count; i++)
+    for (i = 1UL; i <= sdata->header.dshb_csnte.dti_object_count; i++)
       {
-
         ret =
-          bfd_sym_fetch_contained_statements_table_entry (abfd, &entry, i);
+          bfd_sym_fetch_contained_statements_table_entry(abfd, &entry, i);
         if (ret < 0)
           {
             break;
@@ -1250,36 +1253,36 @@ sym_symfile_read (struct objfile *objfile, int mainline)
 
         switch (entry.generic.type)
           {
-
           case BFD_SYM_END_OF_LIST:
             {
-
               struct linetable *temp = NULL;
 
               if (curitem >= linetable_maxentries)
                 {
-                  sym_complaint ();
+                  sym_complaint();
                 }
               else if (0)
                 {
                   linetable->item[curitem].line = -1;
                   linetable->item[curitem].pc =
-                    mtentry.mte_res_offset + mtentry.mte_size;
+                    (mtentry.mte_res_offset + mtentry.mte_size);
                   linetable->item[curitem].pc += text_section_offset;
                   curitem++;
                   linetable->nitems = curitem;
                 }
 
-              temp = (struct linetable *) xmalloc
-                (sizeof (struct linetable) +
-                 sizeof (struct linetable_entry) * (linetable->nitems - 1));
-              memcpy (temp, linetable,
-                      sizeof (struct linetable) +
-                      sizeof (struct linetable_entry) * (linetable->nitems -
-                                                         1));
-              xfree (linetable);
+              temp =
+		((struct linetable *)
+		 xmalloc(sizeof(struct linetable)
+			 + (sizeof(struct linetable_entry)
+			    * (linetable->nitems - 1UL))));
+              memcpy(temp, linetable,
+                     (sizeof(struct linetable)
+		      + (sizeof(struct linetable_entry) * (linetable->nitems
+							   - 1UL))));
+              xfree(linetable);
               linetable = temp;
-              LINETABLE (symtab) = linetable;
+              LINETABLE(symtab) = linetable;
 
               symtab = NULL;
               linetable = NULL;
@@ -1290,14 +1293,13 @@ sym_symfile_read (struct objfile *objfile, int mainline)
 
           case BFD_SYM_SOURCE_FILE_CHANGE:
             {
-
               const unsigned char *namebuf = NULL;
               char *name = NULL;
 
               ret =
-                bfd_sym_fetch_file_references_table_entry (abfd, &frtentry,
-                                                           entry.file.fref.
-                                                           fref_frte_index);
+                bfd_sym_fetch_file_references_table_entry(abfd, &frtentry,
+                                                          entry.file.fref.
+                                                          fref_frte_index);
               if ((ret < 0)
                   || (frtentry.generic.type != BFD_SYM_FILE_NAME_INDEX))
                 {
@@ -1307,29 +1309,31 @@ sym_symfile_read (struct objfile *objfile, int mainline)
                 {
                   namebuf =
                     bfd_sym_symbol_name(abfd, frtentry.filename.nte_index);
-                  name = (char *)xmalloc(namebuf[0] + 1 + 1);
+                  name = (char *)xmalloc(namebuf[0] + 1UL + 1UL);
                   convert_path((unsigned char *)name, (namebuf + 1),
                                namebuf[0], sdata->version);
                 }
 
-              symtab = allocate_symtab (name, objfile);
+              symtab = allocate_symtab(name, objfile);
 
-              linetable = (struct linetable *) xmalloc
-                (sizeof (struct linetable) +
-                 sizeof (struct linetable_entry) * linetable_maxentries);
+              linetable =
+		((struct linetable *)
+		 xmalloc(sizeof(struct linetable)
+			 + (sizeof(struct linetable_entry)
+			    * linetable_maxentries)));
               linetable->lines_are_chars = 1;
 
-              BLOCKVECTOR (symtab) = bv;
-              LINETABLE (symtab) = linetable;
+              BLOCKVECTOR(symtab) = bv;
+              LINETABLE(symtab) = linetable;
               symtab->dirname = NULL;
               symtab->free_code = free_nothing;
               symtab->free_func = NULL;
               symtab->primary = 0;
               symtab->debugformat =
-                obsavestring ("xSYM", 4, &objfile->objfile_obstack);
+                obsavestring("xSYM", 4, &objfile->objfile_obstack);
 
               /* APPLE LOCAL fix-and-continue */
-              SYMTAB_OBSOLETED (symtab) = 50;
+              SYMTAB_OBSOLETED(symtab) = 50;
 
               curpos = entry.file.fref.fref_offset;
               curitem = 0;
@@ -1339,10 +1343,9 @@ sym_symfile_read (struct objfile *objfile, int mainline)
 
           default:
             {
-
               ret =
-                bfd_sym_fetch_modules_table_entry (abfd, &mtentry,
-                                                   entry.entry.mte_index);
+                bfd_sym_fetch_modules_table_entry(abfd, &mtentry,
+                                                  entry.entry.mte_index);
               if (ret < 0)
                 {
                   break;
@@ -1352,11 +1355,10 @@ sym_symfile_read (struct objfile *objfile, int mainline)
 
               if (curitem >= linetable_maxentries)
                 {
-                  sym_complaint ();
+                  sym_complaint();
                 }
               else
                 {
-
                   if (curitem == 0)
                     {
                       linetable->item[curitem].line = curpos;
@@ -1365,13 +1367,20 @@ sym_symfile_read (struct objfile *objfile, int mainline)
                       curitem++;
                       linetable->nitems = curitem;
                     }
-
-                  linetable->item[curitem].line = curpos;
-                  linetable->item[curitem].pc =
-                    mtentry.mte_res_offset + entry.entry.mte_offset;
-                  linetable->item[curitem].pc += text_section_offset;
-                  curitem++;
-                  linetable->nitems = curitem;
+		  
+		  if (curitem >= linetable_maxentries)
+		    {
+		      sym_complaint();
+		    }
+		  else
+		    {
+		      linetable->item[curitem].line = curpos;
+		      linetable->item[curitem].pc =
+			(mtentry.mte_res_offset + entry.entry.mte_offset);
+		      linetable->item[curitem].pc += text_section_offset;
+		      curitem++;
+		      linetable->nitems = curitem;
+		    }
                 }
             }
           }
@@ -1381,12 +1390,13 @@ sym_symfile_read (struct objfile *objfile, int mainline)
   if (objfile->symtabs)
     objfile->symtabs->primary = 1;
 
-  init_minimal_symbol_collection ();
-  make_cleanup_discard_minimal_symbols ();
+  init_minimal_symbol_collection();
+  make_cleanup_discard_minimal_symbols();
 
-  install_minimal_symbols (objfile);
+  install_minimal_symbols(objfile);
 }
 
+/* FIXME: needs comment */
 static void
 sym_symfile_finish(struct objfile *objfile ATTRIBUTE_UNUSED)
 {

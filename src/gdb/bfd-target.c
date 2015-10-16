@@ -46,7 +46,7 @@ add_to_section_table(struct bfd *abfd, struct bfd_section *asect,
     return;
   if (bfd_section_size(abfd, asect) == 0)
     return;
-  pp->end->bfd = abfd;
+  pp->end->abfd = abfd;
   pp->end->the_bfd_section = asect;
   pp->end->addr = bfd_section_vma(abfd, asect);
   pp->end->endaddr = (pp->end->addr + bfd_section_size(abfd, asect));
@@ -87,9 +87,9 @@ target_bfd_xfer_partial(struct target_ops *ops,
            length).  */
 	if ((offset - s->addr + len) > (s->endaddr - s->addr))
 	  len = (s->endaddr - s->addr) - (offset - s->addr);
-	if (readbuf != NULL
-	    && !bfd_get_section_contents (s->bfd, s->the_bfd_section,
-					  readbuf, offset - s->addr, len))
+	if ((readbuf != NULL)
+	    && !bfd_get_section_contents(s->abfd, s->the_bfd_section,
+					 readbuf, (offset - s->addr), len))
 	  return -1;
 #if 1
 	if (writebuf != NULL)

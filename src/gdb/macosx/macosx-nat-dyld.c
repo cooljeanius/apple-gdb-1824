@@ -481,7 +481,7 @@ target_read_minimal_segment_32(CORE_ADDR addr, struct segment_command *s)
   return error;
 }
 
-/* */
+/* FIXME: needs comment */
 int
 target_read_minimal_segment_64(CORE_ADDR addr, struct segment_command_64 *s)
 {
@@ -2535,12 +2535,12 @@ dyld_read_raw_infos(CORE_ADDR addr, struct dyld_raw_infos *info)
   /* ignore '-Wdeclaration-after-statement' here, because trying to hack
    * around the use of the C99 designated initializers is more trouble
    * than it seems like it would be worth... */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic push
  #  pragma GCC diagnostic ignored "-Wdeclaration-after-statement"
 # endif /* gcc 4.6+ */
-#endif /* any gcc */
+#endif /* any gcc, but not g++ */
   struct dyld_all_image_infos_offsets offsets =
     { .version                         = 0,
       .infoArrayCount                  = i,
@@ -2567,11 +2567,11 @@ dyld_read_raw_infos(CORE_ADDR addr, struct dyld_raw_infos *info)
       .sharedCacheSlide                = i + i + p + p + b + b + (p - 2 * b) + p + p + p + p + p + p + p + p + p + p + p + p + p + p + p,
     };
 /* keep the condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic pop
 # endif /* gcc 4.6+ */
-#endif /* any gcc */
+#endif /* any gcc, but not g++ */
 
   target_read_memory(addr, version_buf, 4);
   version = (int)extract_unsigned_integer(version_buf, 4);
@@ -3661,7 +3661,7 @@ update_section_tables_dyld(struct dyld_objfile_info *s)
         target->to_sections[csection].addr = osection->addr; \
         target->to_sections[csection].endaddr = osection->endaddr; \
         target->to_sections[csection].the_bfd_section = osection->the_bfd_section; \
-        target->to_sections[csection].bfd = osection->objfile->obfd; \
+        target->to_sections[csection].abfd = osection->objfile->obfd; \
         csection++; \
         }
 
@@ -4058,7 +4058,7 @@ Show if GDB should load symbol information for CFM-based shared libraries."), NU
 #endif /* __APPLE__ && APPLE_MERGE */
 
   add_setshow_string_cmd("dyld-symbols-prefix", class_obscure,
-                         &dyld_symbols_prefix, _("\
+                         (char **)&dyld_symbols_prefix, _("\
 Set the prefix that GDB should prepend to all symbols for the dynamic linker."), _("\
 Show the prefix that GDB should prepend to all symbols for the dynamic linker."), NULL,
                          NULL, NULL,

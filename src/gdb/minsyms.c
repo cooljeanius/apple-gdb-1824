@@ -72,6 +72,9 @@ static struct msym_bunch *msym_bunch;
 /* Number of slots filled in current bunch: */
 static int msym_bunch_index;
 
+/* Total number of bunches: */
+static int bunches_seen;
+
 /* Total number of minimal symbols recorded so far for the objfile: */
 static int msym_count;
 
@@ -755,10 +758,10 @@ get_symbol_leading_char (bfd *abfd)
    symbol to allocate the memory for the first bunch. */
 
 void
-init_minimal_symbol_collection (void)
+init_minimal_symbol_collection(void)
 {
   msym_count = 0;
-  msym_bunch = NULL;
+  msym_bunch = (struct msym_bunch *)NULL;
   msym_bunch_index = BUNCH_SIZE;
 }
 
@@ -834,15 +837,17 @@ prim_record_minimal_symbol_and_info(const char *name, CORE_ADDR address,
 
   if (msym_bunch_index == BUNCH_SIZE)
     {
-      newbunch = (struct msym_bunch *)xmalloc(sizeof(struct msym_bunch));
+      newbunch = (struct msym_bunch *)xmalloc(sizeof(struct msym_bunch) + 2UL);
       msym_bunch_index = 0;
       newbunch->next = msym_bunch;
       msym_bunch = newbunch;
+      bunches_seen++;
     }
-#if defined(DEBUG) || defined(_DEBUG)
-  printf_filtered("using mysm number %d in bunch...\n", msym_bunch_index);
-#endif /* DEBUG || _DEBUG */
-  msymbol = &msym_bunch->contents[msym_bunch_index];
+#if defined(DEBUG) || defined(_DEBUG) || defined(__APPLEHELP__)
+  printf_filtered("using mysm number %d in bunch %d...\n", msym_bunch_index,
+		  bunches_seen);
+#endif /* DEBUG || _DEBUG || __APPLEHELP__ */
+  msymbol = &msym_bunch->contents[msym_bunch_index]; /* This seems suspicious */
   gdb_assert(msymbol != NULL);
 /* APPLE LOCAL: Initialize the msymbol->filename to NULL: */
 #if defined(SOFUN_ADDRESS_MAYBE_MISSING) && !defined(TM_NEXTSTEP)
@@ -1243,3 +1248,5 @@ find_solib_trampoline_target (CORE_ADDR pc)
     }
   return 0;
 }
+
+/* EOF */

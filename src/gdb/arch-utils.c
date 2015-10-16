@@ -1,4 +1,4 @@
-/* Dynamic architecture support for GDB, the GNU debugger.
+/* arch-utils.c: Dynamic architecture support for GDB, the GNU debugger.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -60,17 +60,18 @@ legacy_extract_return_value (struct type *type, struct regcache *regcache,
 /* Implementation of store return value that grubs the register cache.
    Takes a local copy of the buffer to avoid const problems.  */
 void
-legacy_store_return_value (struct type *type, struct regcache *regcache,
-			   const gdb_byte *buf)
+legacy_store_return_value(struct type *type, struct regcache *regcache,
+			  const gdb_byte *buf)
 {
-  gdb_byte *b = alloca (TYPE_LENGTH (type));
-  gdb_assert (regcache == current_regcache);
-  memcpy (b, buf, TYPE_LENGTH (type));
-  DEPRECATED_STORE_RETURN_VALUE (type, b);
+  gdb_byte *b = (gdb_byte *)alloca(TYPE_LENGTH(type));
+  gdb_assert(regcache == current_regcache);
+  memcpy(b, buf, TYPE_LENGTH(type));
+  DEPRECATED_STORE_RETURN_VALUE(type, b);
 }
 
-int
-always_use_struct_convention (int gcc_p, struct type *value_type)
+int ATTRIBUTE_PURE
+always_use_struct_convention(int gcc_p ATTRIBUTE_UNUSED,
+			     struct type *value_type ATTRIBUTE_UNUSED)
 {
   return 1;
 }

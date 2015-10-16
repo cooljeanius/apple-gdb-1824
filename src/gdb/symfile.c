@@ -4567,7 +4567,7 @@ add_psymbol_to_list(char *name, int namelength, domain_enum domain,
 		    enum language language, struct objfile *objfile)
 {
   struct partial_symbol *psym;
-  char *buf = alloca(namelength + 1);
+  char *buf = (char *)alloca(namelength + 1UL);
   /* psymbol is static so that there will be no uninitialized gaps in the
      structure which might contain random data, causing cache misses in
      bcache. */
@@ -4623,7 +4623,7 @@ add_psymbol_with_dem_name_to_list(char *name, int namelength,
 				  struct objfile *objfile)
 {
   struct partial_symbol *psym;
-  char *buf = alloca(namelength + 1);
+  char *buf = (char *)alloca(namelength + 1UL);
   /* psymbol is static so that there will be no uninitialized gaps in the
      structure which might contain random data, causing cache misses in
      bcache. */
@@ -5334,13 +5334,21 @@ simple_free_overlay_region_table(void)
 static void
 read_target_long_array(CORE_ADDR memaddr, unsigned int *myaddr, int len)
 {
-  /* FIXME (alloca): Not safe if array is very large: */
-  char *buf = alloca(len * TARGET_LONG_BYTES);
+  char *buf;
   int i;
+  
+  size_t buflen = (len * TARGET_LONG_BYTES);
+  
+  if (buflen > min(8192000UL, UINT_MAX))
+    warning("array is very large; reading may be unsafe");
+  
+  /* FIXME (alloca): Not safe if array is very large; is warning enough? */
+  buf = (char *)alloca(buflen);
 
-  read_memory(memaddr, (gdb_byte *)buf, len * TARGET_LONG_BYTES);
+  read_memory(memaddr, (gdb_byte *)buf, buflen);
   for (i = 0; i < len; i++)
-    myaddr[i] = extract_unsigned_integer((const gdb_byte *)(TARGET_LONG_BYTES * i + buf),
+    myaddr[i] = extract_unsigned_integer(((const gdb_byte *)
+					  ((TARGET_LONG_BYTES * i) + buf)),
 					 TARGET_LONG_BYTES);
 }
 

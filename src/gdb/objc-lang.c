@@ -1,4 +1,4 @@
-/* Objective-C language support routines for GDB, the GNU debugger.
+/* objc-lang.c: Objective-C language support routines for GDB, the GNU debugger.
 
    Copyright 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
@@ -172,10 +172,10 @@ static struct rb_tree_node *classname_tree = NULL;
 static char *lookup_classname_in_cache(CORE_ADDR);
 static void add_classname_to_cache(CORE_ADDR, char *);
 
-/* This is the current objc objfile.  I mostly use this to tell if it's
+/* This is the current objc objfile.  I mostly use this to tell if it is
    worthwhile trying to call gdb_objc_startDebuggerMode.  */
 static struct objfile *cached_objc_objfile;
-static char *objc_library_name = "libobjc.A.dylib";
+static const char *objc_library_name = "libobjc.A.dylib";
 static void objc_clear_trampoline_data(void);
 
 static void read_objc_object(CORE_ADDR, struct objc_object *);
@@ -198,7 +198,7 @@ extern void _initialize_objc_lang(void);
    suitably defined.  */
 
 struct symbol *
-lookup_struct_typedef(char *name, struct block *block, int noerr)
+lookup_struct_typedef(const char *name, struct block *block, int noerr)
 {
   struct symbol *sym;
 
@@ -600,12 +600,12 @@ objc_printstr(struct ui_file *stream, const gdb_byte *string,
   int in_quotes = 0;
   int need_comma = 0;
 
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic push
  #  pragma GCC diagnostic warning "-Wtraditional"
 # endif /* gcc 4.6+ */
-#endif /* GCC */
+#endif /* GCC (non-c++) */
 
   /* If the string was not truncated due to `set print elements', and
    * the last byte of it is a null, then we do NOT print that, in
@@ -620,11 +620,11 @@ objc_printstr(struct ui_file *stream, const gdb_byte *string,
     }
 
   /* keep condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic pop
 # endif /* gcc 4.6+ */
-#endif /* GCC */
+#endif /* GCC (non-c++) */
 
   for (i = 0; (i < length) && (things_printed < print_max); ++i)
     {
@@ -2492,7 +2492,7 @@ The 'print-object' command requires an argument (an Objective-C object)");
  * ObjC runtime lib functions objc_msgSend, objc_msgSendSuper, etc.),
  * and, ultimately, to find the method being called: */
 struct objc_methcall {
-  char *name;
+  const char *name;
   /* Return instance method to be called: */
   int (*stop_at)(CORE_ADDR, CORE_ADDR *);
   /* Start of pc range corresponding to method invocation: */
@@ -2675,7 +2675,7 @@ int
 find_objc_msgcall(CORE_ADDR pc, CORE_ADDR *new_pc)
 {
   unsigned int i;
-  unsigned int flags;
+  unsigned int flags = 0U;
 
   find_objc_msgsend();
   if (new_pc != NULL)

@@ -25,7 +25,10 @@ AC_DEFUN([GDB_AC_BUILD_WITH_CXX],[
      [AS_HELP_STRING([--enable-build-with-cxx],
                      [build with C++ compiler instead of C compiler])],
     [case ${enableval} in
-      yes | no)
+      yes)
+        AC_MSG_WARN([building gdb with a C++ compiler is experimental])
+        ;;
+      no)
 	;;
       *)
 	AC_MSG_ERROR([bad value ${enableval} for --enable-build-with-cxx])
@@ -33,10 +36,21 @@ AC_DEFUN([GDB_AC_BUILD_WITH_CXX],[
     esac],
     [enable_build_with_cxx=no])dnl
 
+  dnl# Yes, these are actually variable names, and not macro names:
+  m4_pattern_allow([AM_V_])
   if test "x${enable_build_with_cxx}" = "xyes"; then
     COMPILER='$(CXX)'
+    LINKER='$(CXXLD)'
+    AM_V_COMPILER='$(AM_V_CXX)'
+    AM_V_LINKER='$(AM_V_CXXLD)'
    else
     COMPILER='$(CC)'
+    LINKER='$(CCLD)'
+    AM_V_COMPILER='$(AM_V_CC)'
+    AM_V_LINKER='$(AM_V_CCLD)'
   fi
   AC_SUBST([COMPILER])dnl
+  AC_SUBST([LINKER])dnl
+  AC_SUBST([AM_V_COMPILER])dnl
+  AC_SUBST([AM_V_LINKER])dnl
 ])dnl

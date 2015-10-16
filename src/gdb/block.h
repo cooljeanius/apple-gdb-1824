@@ -55,14 +55,6 @@ struct address_range_list
 };
 /* APPLE LOCAL end address ranges  */
 
-/* temporary, until I am ready to deal with all of the fallout that would
- * result from fixing these warnings in this header: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic push
- #  pragma GCC diagnostic ignored "-Wc++-compat"
-# endif /* gcc 4.6+ */
-#endif /* GCC */
 
 /* All of the name-scope contours of the program
    are represented by `struct block' objects.
@@ -132,7 +124,7 @@ struct block
 	 this block: using directives and the current namespace
 	 scope.  */
 
-      struct block_namespace_info *namespace;
+      struct block_namespace_info *namespace_info;
     }
     cplus_specific;
   }
@@ -157,14 +149,8 @@ struct block
 #define BLOCK_SUPERBLOCK(bl)	(bl)->superblock
 #define BLOCK_GCC_COMPILED(bl)	(bl)->gcc_compile_flag
 #define BLOCK_DICT(bl)		(bl)->dict
-#define BLOCK_NAMESPACE(bl)   (bl)->language_specific.cplus_specific.namespace
-
-/* keep condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* GCC */
+#define BLOCK_NAMESPACE(bl) \
+  (bl)->language_specific.cplus_specific.namespace_info
 
 /* APPLE LOCAL begin address ranges  */
 #define BLOCK_RANGES(bl)        (bl)->ranges
@@ -184,10 +170,10 @@ struct block
 
 struct blockvector
 {
-  /* Number of blocks in the list.  */
+  /* Number of blocks in the list: */
   int nblocks;
-  /* The blocks themselves.  */
-  struct block *block[1];
+  /* The blocks themselves: */
+  struct block *block[FLEXIBLE_ARRAY_MEMBER];
 };
 
 #define BLOCKVECTOR_NBLOCKS(blocklist) (blocklist)->nblocks

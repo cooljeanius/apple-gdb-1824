@@ -440,15 +440,6 @@ do_chdir_cleanup(void *old_dir)
  * to go with it: */
 extern void log_command(char *);
 
-/* FIXME: need to rename some struct fields that currently live in headers,
- * and deal with all of the resulting fallout, before removing this: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic push
- #  pragma GCC diagnostic ignored "-Wc++-compat"
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
-
 /* Execute the line P as a command.
  * Pass FROM_TTY as second argument to the defining function.  */
 void
@@ -522,7 +513,7 @@ execute_command(char *p, int from_tty)
       if (c->flags & DEPRECATED_WARN_USER)
 	deprecated_cmd_warning(&tmp_line);
 
-      if (c->class == class_user)
+      if (c->cmdclass == class_user)
 	execute_user_command(c, arg);
       else if (c->type == set_cmd || c->type == show_cmd)
 	do_setshow_command(arg, from_tty & caution, c);
@@ -535,7 +526,6 @@ execute_command(char *p, int from_tty)
 
       /* If this command has been post-hooked, run the hook last. */
       execute_cmd_post_hook(c);
-
     }
 
   /* Tell the user if the language has changed (except first time).  */
@@ -566,13 +556,6 @@ execute_command(char *p, int from_tty)
 	}
     }
 }
-
-/* keep the condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
 
 extern int display_time;
 extern int display_space;
@@ -1488,13 +1471,13 @@ init_history (void)
          directories the file written will be the same as the one
          that was read.  */
 #ifdef __MSDOS__
-      /* No leading dots in file names are allowed on MSDOS.  */
-      history_filename = concat (current_directory, "/_gdb_history",
-				 (char *)NULL);
+      /* No leading dots in file names are allowed on MSDOS: */
+      history_filename = concat(current_directory, "/_gdb_history",
+				(char *)NULL);
 #else
-      history_filename = concat (current_directory, "/.gdb_history",
-				 (char *)NULL);
-#endif
+      history_filename = concat(current_directory, "/.gdb_history",
+				(char *)NULL);
+#endif /* __MSDOS__ */
     }
   /* APPLE LOCAL begin history read error */
   ret = read_history(history_filename);

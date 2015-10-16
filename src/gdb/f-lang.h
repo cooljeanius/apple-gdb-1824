@@ -23,9 +23,9 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-extern int f_parse (void);
+extern int f_parse(void);
 
-extern void f_error (char *);	/* Defined in f-exp.y */
+extern void f_error(const char *);	/* Defined in f-exp.y */
 
 extern void f_print_type (struct type *, char *, struct ui_file *, int,
 			  int);

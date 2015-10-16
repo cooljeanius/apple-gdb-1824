@@ -49,7 +49,7 @@ struct block;
 
 extern int objc_parse(void);	/* Defined in c-exp.y */
 
-extern void objc_error(char *);	/* Defined in c-exp.y */
+extern void objc_error(const char *);	/* Defined in c-exp.y */
 
 extern CORE_ADDR lookup_objc_class(char *);
 extern CORE_ADDR lookup_child_selector(char *);
@@ -88,7 +88,7 @@ extern void start_msglist(void);
 extern void add_msglist(struct stoken *str, int addcolon);
 extern int end_msglist(void);
 
-struct symbol *lookup_struct_typedef(char *name, struct block *block,
+struct symbol *lookup_struct_typedef(const char *name, struct block *block,
 				     int noerr);
 
 /* APPLE LOCAL: We need to control this down in macosx/ when debugging

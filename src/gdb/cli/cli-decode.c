@@ -116,15 +116,6 @@ set_cmd_completer (struct cmd_list_element *cmd,
 }
 
 
-/* FIXME: need to rename some struct fields that currently live in headers,
- * and deal with all of the resulting fallout, before removing this: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic push
- #  pragma GCC diagnostic ignored "-Wc++-compat"
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
-
 /* Add element named NAME.
    CLASS is the top level category into which commands are broken down
    for "help" purposes.
@@ -146,8 +137,8 @@ struct cmd_list_element *
 add_cmd(const char *name, enum command_class cmdclass, void (*fun)(char *, int),
         const char *doc, struct cmd_list_element **list)
 {
-  struct cmd_list_element *c
-    = (struct cmd_list_element *)xmalloc(sizeof(struct cmd_list_element));
+  struct cmd_list_element *c =
+    (struct cmd_list_element *)xmalloc(sizeof(struct cmd_list_element));
   struct cmd_list_element *p;
 
   delete_cmd(name, list);
@@ -169,10 +160,10 @@ add_cmd(const char *name, enum command_class cmdclass, void (*fun)(char *, int),
     }
 
   c->name = name;
-  c->class = cmdclass;
+  c->cmdclass = cmdclass;
   set_cmd_cfunc(c, fun);
   set_cmd_context(c, NULL);
-  c->doc = doc;
+  c->doc = (char *)doc;
   c->flags = 0;
   c->replacement = NULL;
   c->pre_show_hook = NULL;
@@ -744,7 +735,7 @@ help_cmd(char *command, struct ui_file *stream)
 
   /* If this is a class name, print all of the commands in the class */
   if (c->func == NULL)
-    help_list (cmdlist, "", c->class, stream);
+    help_list(cmdlist, "", c->cmdclass, stream);
 
   if (c->hook_pre || c->hook_post)
     fprintf_filtered (stream,
@@ -838,13 +829,13 @@ help_all(struct ui_file *stream)
 
       /* If this is a class name, print all of the commands in the class */
       else if (c->func == NULL)
-        help_cmd_list(cmdlist, c->class, "", 0, stream);
+        help_cmd_list(cmdlist, c->cmdclass, "", 0, stream);
     }
 }
 
 /* Print only the first line of STR on STREAM: */
 void
-print_doc_line(struct ui_file *stream, char *str)
+print_doc_line(struct ui_file *stream, const char *str)
 {
   static char *line_buffer = 0;
   static int line_size;
@@ -856,7 +847,7 @@ print_doc_line(struct ui_file *stream, char *str)
       line_buffer = (char *)xmalloc(line_size);
     }
 
-  p = str;
+  p = (char *)str;
   while (*p && (*p != '\n') && (*p != '.') && (*p != ','))
     p++;
   if ((p - str) > (line_size - 1))
@@ -900,7 +891,7 @@ help_cmd_list(struct cmd_list_element *list, enum command_class cmd_class,
       if ((c->abbrev_flag == 0) &&
 	  ((cmd_class == all_commands)
 	   || ((cmd_class == all_classes) && (c->func == NULL))
-	   || ((cmd_class == c->class) && (c->func != NULL))))
+	   || ((cmd_class == c->cmdclass) && (c->func != NULL))))
 	{
 	  fprintf_filtered(stream, "%s%s -- ", prefix, c->name);
 	  print_doc_line(stream, c->doc);
@@ -910,13 +901,6 @@ help_cmd_list(struct cmd_list_element *list, enum command_class cmd_class,
 	help_cmd_list(*c->prefixlist, cmd_class, c->prefixname, 1, stream);
     }
 }
-
-/* keep the condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
 
 
 /* Search the input clist for 'command'.  Return the command if
@@ -1601,4 +1585,4 @@ cmd_func(struct cmd_list_element *cmd, char *args, int from_tty)
     error(_("Invalid command"));
 }
 
-
+/* EOF */

@@ -94,20 +94,18 @@ const char *gdb_completer_filename_word_break_characters = " ";
    as strings. */
 static const char *gdb_completer_quote_characters = "'";
 
-/* Accessor for some completer data that may interest other files. */
-
-char *
-get_gdb_completer_quote_characters (void)
+/* Accessor for some completer data that may interest other files: */
+const char *
+get_gdb_completer_quote_characters(void)
 {
   return gdb_completer_quote_characters;
 }
 
-/* Line completion interface function for readline.  */
-
+/* Line completion interface function for readline: */
 char *
-readline_line_completion_function (const char *text, int matches)
+readline_line_completion_function(const char *text, int matches)
 {
-  return line_completion_function (text, matches, rl_line_buffer, rl_point);
+  return line_completion_function(text, matches, rl_line_buffer, rl_point);
 }
 
 /* This can be used for functions which don't want to complete on symbols
@@ -694,35 +692,35 @@ line_completion_function (const char *text, int matches, char *line_buffer, int 
    by the completer.  */
 
 char *
-skip_quoted_chars (char *str, char *quotechars, char *breakchars)
+skip_quoted_chars(char *str, char *quotechars, char *breakchars)
 {
   char quote_char = '\0';
   char *scan;
 
   if (quotechars == NULL)
-    quotechars = gdb_completer_quote_characters;
+    quotechars = (char *)gdb_completer_quote_characters;
 
   if (breakchars == NULL)
-    breakchars = current_language->la_word_break_characters();
+    breakchars = (char *)current_language->la_word_break_characters();
 
   for (scan = str; *scan != '\0'; scan++)
     {
       if (quote_char != '\0')
 	{
-	  /* Ignore everything until the matching close quote char */
+	  /* Ignore everything until the matching close quote char: */
 	  if (*scan == quote_char)
 	    {
-	      /* Found matching close quote. */
+	      /* Found matching close quote: */
 	      scan++;
 	      break;
 	    }
 	}
-      else if (strchr (quotechars, *scan))
+      else if (strchr(quotechars, *scan))
 	{
-	  /* Found start of a quoted string. */
+	  /* Found start of a quoted string: */
 	  quote_char = *scan;
 	}
-      else if (strchr (breakchars, *scan))
+      else if (strchr(breakchars, *scan))
 	{
 	  break;
 	}

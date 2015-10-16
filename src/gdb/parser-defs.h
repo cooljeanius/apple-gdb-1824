@@ -81,28 +81,13 @@ struct symtoken
     int is_a_field_of_this;
   };
 
-/* temporary, until I am ready to deal with all of the fallout that would
- * result from fixing these warnings in this header: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic push
- #  pragma GCC diagnostic ignored "-Wc++-compat"
-# endif /* gcc 4.6+ */
-#endif /* GCC */
-
+/* FIXME: needs comment */
 struct objc_class_str
   {
     struct stoken stoken;
     struct type *type;
-    CORE_ADDR class;
+    CORE_ADDR objc_class;
   };
-
-/* keep condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* GCC */
 
 
 /* For parsing of complicated types.
@@ -184,7 +169,7 @@ extern void operator_length(struct expression *, int, int *, int *);
 
 extern void operator_length_standard(struct expression *, int, int *, int *);
 
-extern char *op_name_standard(enum exp_opcode);
+extern const char *op_name_standard(enum exp_opcode);
 
 extern struct type *follow_types(struct type *);
 
@@ -261,7 +246,7 @@ struct exp_descriptor
     void (*operator_length)(struct expression*, int, int*, int *);
 
     /* Name of this operator for dumping purposes: */
-    char *(*op_name)(enum exp_opcode);
+    const char *(*op_name)(enum exp_opcode);
 
     /* Dump the rest of this (prefix) expression after the operator
        itself has been printed.  See dump_subexp_body_standard in

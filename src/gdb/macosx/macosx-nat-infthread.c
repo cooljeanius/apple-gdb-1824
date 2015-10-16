@@ -304,15 +304,7 @@ modify_trace_bit(thread_t thread, int value)
 # error "unknown target architecture"
 #endif /* TARGET */
 
-/* FIXME: need to rename some struct fields that currently live in headers,
- * and deal with all of the resulting fallout, before removing this: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic push
- #  pragma GCC diagnostic ignored "-Wc++-compat"
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
-
+/* FIXME: needs comment */
 void
 prepare_threads_after_stop(struct macosx_inferior_status *inferior)
 {
@@ -351,33 +343,32 @@ prepare_threads_after_stop(struct macosx_inferior_status *inferior)
 			(thread_info_t)&info, &info_count);
           MACH_CHECK_ERROR(kret);
 
-	  if (tp->private->gdb_suspend_count > 0) {
+	  if (tp->privatedata->gdb_suspend_count > 0) {
             inferior_debug(3, "**  Resuming thread 0x%x, gdb suspend count: "
 			   "%d, real suspend count: %d\n",
-			   thread_list[i], tp->private->gdb_suspend_count,
+			   thread_list[i], tp->privatedata->gdb_suspend_count,
 			   info.suspend_count);
-	  } else if (tp->private->gdb_suspend_count < 0) {
+	  } else if (tp->privatedata->gdb_suspend_count < 0) {
 	    inferior_debug(3, "**  Re-suspending thread 0x%x, original suspend count: "
 			   "%d\n",
-			   thread_list[i], tp->private->gdb_suspend_count);
+			   thread_list[i], tp->privatedata->gdb_suspend_count);
           } else {
             inferior_debug(3, "**  Thread 0x%x was not suspended from gdb, "
 			   "real suspend count: %d\n",
 			   thread_list[i], info.suspend_count);
 	  }
       }
-      if (tp->private->gdb_suspend_count > 0) {
-	  while (tp->private->gdb_suspend_count > 0) {
-	      thread_resume (thread_list[i]);
-	      tp->private->gdb_suspend_count--;
+      if (tp->privatedata->gdb_suspend_count > 0) {
+	  while (tp->privatedata->gdb_suspend_count > 0) {
+	      thread_resume(thread_list[i]);
+	      tp->privatedata->gdb_suspend_count--;
 	  }
-      } else if (tp->private->gdb_suspend_count < 0) {
-	  while (tp->private->gdb_suspend_count < 0) {
-	      thread_suspend (thread_list[i]);
-	      tp->private->gdb_suspend_count++;
+      } else if (tp->privatedata->gdb_suspend_count < 0) {
+	  while (tp->privatedata->gdb_suspend_count < 0) {
+	      thread_suspend(thread_list[i]);
+	      tp->privatedata->gdb_suspend_count++;
 	  }
       }
-
 
       kret = clear_trace_bit(thread_list[i]);
       MACH_WARN_ERROR(kret);
@@ -416,16 +407,16 @@ prepare_threads_before_run(struct macosx_inferior_status *inferior,
 	      ptid_t ptid;
 	      struct thread_info *tp = NULL;
 
-	      ptid = ptid_build (inferior->pid, 0, current);
-	      tp = find_thread_pid (ptid);
-	      CHECK_FATAL (tp != NULL);
-	      inferior_debug (3, "Resuming to single-step thread 0x%x "
-			      "(thread is already suspended from outside of GDB)",
-			      current);
+	      ptid = ptid_build(inferior->pid, 0, current);
+	      tp = find_thread_pid(ptid);
+	      CHECK_FATAL(tp != NULL);
+	      inferior_debug(3, "Resuming to single-step thread 0x%x "
+			     "(thread is already suspended from outside of GDB)",
+			     current);
 	      while (info.suspend_count > 0) {
-		  tp->private->gdb_suspend_count--;
+		  tp->privatedata->gdb_suspend_count--;
 		  info.suspend_count--;
-		  thread_resume (current);
+		  thread_resume(current);
 	      }
 	  } else {
 	      error("Unable to run only thread 0x%x "
@@ -457,28 +448,28 @@ prepare_threads_before_run(struct macosx_inferior_status *inferior,
           ptid_t ptid;
           struct thread_info *tp = NULL;
 
-          ptid = ptid_build (inferior->pid, 0, thread_list[i]);
-          tp = find_thread_pid (ptid);
+          ptid = ptid_build(inferior->pid, 0, thread_list[i]);
+          tp = find_thread_pid(ptid);
           if (tp == NULL) {
 	      tp = add_thread(ptid);
 	      if (create_private_thread_info (tp)) {
-		tp->private->app_thread_port =
+		tp->privatedata->app_thread_port =
 		  get_application_thread_port (thread_list[i]);
 	      }
 	      inferior_debug(3, "*** New thread 0x%x appeared while task was stopped.\n",
 			     thread_list[i]);
 	  }
 
-	  if (tp->private->gdb_dont_suspend_stepping) {
+	  if (tp->privatedata->gdb_dont_suspend_stepping) {
 	      inferior_debug(3, "*** Allowing thread 0x%x to run - it is marked do not suspend.\n",
 			     thread_list[i]);
 	      continue;
 	  }
-          kret = thread_suspend (thread_list[i]);
-          MACH_CHECK_ERROR (kret);
-          tp->private->gdb_suspend_count++;
+          kret = thread_suspend(thread_list[i]);
+          MACH_CHECK_ERROR(kret);
+          tp->privatedata->gdb_suspend_count++;
           inferior_debug(3, "*** Suspending thread 0x%x, suspend count %d\n",
-			 thread_list[i], tp->private->gdb_suspend_count);
+			 thread_list[i], tp->privatedata->gdb_suspend_count);
       } else if (stop_others) {
 	  inferior_debug(3, "*** Allowing thread 0x%x to run from gdb\n",
 			 thread_list[i]);
@@ -488,7 +479,7 @@ prepare_threads_before_run(struct macosx_inferior_status *inferior,
   kret =
     vm_deallocate(mach_task_self(), (vm_address_t)thread_list,
 		  (nthreads * sizeof(int)));
-  MACH_CHECK_ERROR (kret);
+  MACH_CHECK_ERROR(kret);
 
   if (step) {
       set_trace_bit(current);
@@ -762,7 +753,7 @@ get_dispatch_queue_flags(CORE_ADDR dispatch_qaddr, uint32_t *flags)
   return 0;
 }
 
-/* */
+/* FIXME: needs comment */
 static void
 print_thread_info(thread_t tid, int *gdb_thread_id)
 {
@@ -789,7 +780,7 @@ print_thread_info(thread_t tid, int *gdb_thread_id)
   if (tp == NULL)
     app_thread_name = get_application_thread_port(tid);
   else
-    app_thread_name = tp->private->app_thread_port;
+    app_thread_name = tp->privatedata->app_thread_port;
 
   if (gdb_thread_id)
     {
@@ -890,12 +881,12 @@ print_thread_info(thread_t tid, int *gdb_thread_id)
     }
   if (tp == NULL)
     printf_filtered("\tCould not find the thread in gdb's internal thread list.\n");
-  else if (tp->private->gdb_dont_suspend_stepping)
+  else if (tp->privatedata->gdb_dont_suspend_stepping)
     printf_filtered("\tSet to run while stepping.\n");
 #endif /* THREAD_IDENTIFIER_INFO && THREAD_IDENTIFIER_INFO_COUNT */
 }
 
-/* */
+/* FIXME: needs comment */
 void
 info_task_command(char *args, int from_tty)
 {
@@ -931,7 +922,7 @@ info_task_command(char *args, int from_tty)
   MACH_CHECK_ERROR(kret);
 }
 
-/* */
+/* FIXME: needs comment */
 static thread_t
 parse_thread(char *tidstr, int *gdb_thread_id)
 {
@@ -970,7 +961,7 @@ parse_thread(char *tidstr, int *gdb_thread_id)
   return ptid_get_tid(ptid);
 }
 
-/* */
+/* FIXME: needs comment */
 void
 info_thread_command(char *tidstr, int from_tty)
 {
@@ -979,7 +970,7 @@ info_thread_command(char *tidstr, int from_tty)
   print_thread_info(thread, &gdb_thread_id);
 }
 
-/* */
+/* FIXME: needs comment */
 static void
 thread_suspend_command(char *tidstr, int from_tty)
 {
@@ -992,21 +983,21 @@ thread_suspend_command(char *tidstr, int from_tty)
   MACH_CHECK_ERROR(kret);
 }
 
-/* */
+/* FIXME: needs comment */
 static int
 thread_match_callback(struct thread_info *t, void *thread_ptr)
 {
   LONGEST desired_thread = *(LONGEST *)thread_ptr;
 
   struct private_thread_info *pt;
-  pt = (struct private_thread_info *)t->private;
+  pt = (struct private_thread_info *)t->privatedata;
   if (pt->app_thread_port == (thread_t)desired_thread)
     return 1;
   else
     return 0;
 }
 
-/* */
+/* FIXME: needs comment */
 static void
 thread_dont_suspend_while_stepping_command(char *arg, int from_tty)
 {
@@ -1068,11 +1059,11 @@ thread_dont_suspend_while_stepping_command(char *arg, int from_tty)
       printf_unfiltered("Setting thread %d to %s while stepping other threads.\n",
                         tp->num,
                         (on_or_off ? "run" : "stop"));
-      tp->private->gdb_dont_suspend_stepping = on_or_off;
+      tp->privatedata->gdb_dont_suspend_stepping = on_or_off;
     }
 }
 
-/* */
+/* FIXME: needs comment */
 static void
 thread_resume_command(char *tidstr, int from_tty)
 {
@@ -1095,7 +1086,7 @@ thread_resume_command(char *tidstr, int from_tty)
   MACH_CHECK_ERROR(kret);
 }
 
-/* */
+/* FIXME: needs comment */
 static int
 mark_dead_if_thread_is_gone(struct thread_info *tp, void *data)
 {
@@ -1175,7 +1166,7 @@ macosx_print_thread_details(struct ui_out *uiout, ptid_t ptid)
   if (tp == NULL)
     app_thread_name = get_application_thread_port(tid);
   else
-    app_thread_name = tp->private->app_thread_port;
+    app_thread_name = tp->privatedata->app_thread_port;
 
   ui_out_field_string(uiout, "state", unparse_run_state(info.run_state));
   ui_out_field_fmt(uiout, "mach-port-number", "0x%s",
@@ -1210,14 +1201,8 @@ macosx_print_thread_details(struct ui_out *uiout, ptid_t ptid)
 #endif /* THREAD_IDENTIFIER_INFO && THREAD_IDENTIFIER_INFO_COUNT */
 }
 
-/* keep the condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
 
-
+/* FIXME: needs comment */
 void
 _initialize_threads(void)
 {

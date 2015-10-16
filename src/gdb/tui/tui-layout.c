@@ -42,6 +42,7 @@
 
 #include "gdb_string.h"
 #include "gdb_curses.h"
+#include "gdb_assert.h"
 
 /*******************************
 ** Static Local Decls
@@ -85,9 +86,9 @@ show_layout (enum tui_layout_type layout)
   if (layout != cur_layout)
     {
       /*
-         ** Since the new layout may cause changes in window size, we
-         ** should free the content and reallocate on next display of
-         ** source/asm
+       ** Since the new layout may cause changes in window size, we
+       ** should free the content and reallocate on next display of
+       ** source/asm
        */
       tui_free_all_source_wins_content ();
       tui_clear_source_windows ();
@@ -219,12 +220,12 @@ tui_set_layout (enum tui_layout_type layout_type,
 		      break;
 		    case DISASSEM_DATA_COMMAND:
 		      /* the previous layout was not showing
-		         ** code. this can happen if there is no
-		         ** source available:
-		         ** 1. if the source file is in another dir OR
-		         ** 2. if target was compiled without -g
-		         ** We still want to show the assembly though!
-		       */
+		      ** code. this can happen if there is no
+		      ** source available:
+		      ** 1. if the source file is in another dir OR
+		      ** 2. if target was compiled without -g
+		      ** We still want to show the assembly though!
+		      */
 		      addr = tui_get_begin_asm_address ();
 		      if (win_with_focus != TUI_DATA_WIN)
 			tui_set_win_focus_to (TUI_DISASM_WIN);
@@ -240,7 +241,7 @@ tui_set_layout (enum tui_layout_type layout_type,
 	      if (new_win_with_focus != (struct tui_win_info *) NULL)
 		tui_set_win_focus_to (new_win_with_focus);
 	      /*
-	         ** Now update the window content
+	      ** Now update the window content
 	       */
 	      if (!regs_populate &&
 		  (new_layout == SRC_DATA_COMMAND ||
@@ -639,18 +640,16 @@ prev_layout (void)
 }
 
 
-
+/* FIXME: needs comment */
 static void
-make_command_window (struct tui_win_info * * win_info_ptr, int height, int origin_y)
+make_command_window(struct tui_win_info **win_info_ptr, int height,
+		    int origin_y)
 {
-  init_and_make_win ((void **) win_info_ptr,
-		   CMD_WIN,
-		   height,
-		   tui_term_width (),
-		   0,
-		   origin_y,
-		   DONT_BOX_WINDOW);
+  init_and_make_win((void **)win_info_ptr, CMD_WIN, height, tui_term_width(),
+		    0, origin_y, DONT_BOX_WINDOW);
 
+  gdb_assert((*win_info_ptr) != NULL);
+  
   (*win_info_ptr)->can_highlight = FALSE;
 }
 
@@ -823,19 +822,20 @@ show_source_disasm_command (void)
 /* Show the Source/Data/Command or the Dissassembly/Data/Command
    layout.  */
 static void
-show_data (enum tui_layout_type new_layout)
+show_data(enum tui_layout_type new_layout)
 {
-  int total_height = (tui_term_height () - TUI_CMD_WIN->generic.height);
+  int total_height = (tui_term_height() - TUI_CMD_WIN->generic.height);
   int src_height, data_height;
   enum tui_win_type win_type;
-  struct tui_gen_win_info * locator = tui_locator_win_info_ptr ();
+  struct tui_gen_win_info *locator = tui_locator_win_info_ptr();
 
 
-  data_height = total_height / 2;
-  src_height = total_height - data_height;
-  tui_make_all_invisible ();
-  tui_make_invisible (locator);
-  make_data_window (&TUI_DATA_WIN, data_height, 0);
+  data_height = (total_height / 2);
+  src_height = (total_height - data_height);
+  tui_make_all_invisible();
+  tui_make_invisible(locator);
+  make_data_window(&TUI_DATA_WIN, data_height, 0);
+  gdb_assert(TUI_DATA_WIN != NULL);
   TUI_DATA_WIN->can_highlight = TRUE;
   if (new_layout == SRC_DATA_COMMAND)
     win_type = SRC_WIN;
@@ -844,53 +844,45 @@ show_data (enum tui_layout_type new_layout)
   if (tui_win_list[win_type] == NULL)
     {
       if (win_type == SRC_WIN)
-	make_source_window (&tui_win_list[win_type], src_height, data_height - 1);
+	make_source_window(&tui_win_list[win_type], src_height,
+			   (data_height - 1));
       else
-	make_disasm_window (&tui_win_list[win_type], src_height, data_height - 1);
-      init_and_make_win ((void **) & locator,
-		       LOCATOR_WIN,
-		       2 /* 1 */ ,
-		       tui_term_width (),
-		       0,
-		       total_height - 1,
-		       DONT_BOX_WINDOW);
+	make_disasm_window(&tui_win_list[win_type], src_height,
+			   (data_height - 1));
+      init_and_make_win((void **)&locator, LOCATOR_WIN,
+			2 /* 1 */,
+			tui_term_width(), 0, (total_height - 1),
+			DONT_BOX_WINDOW);
     }
   else
     {
-      init_gen_win_info (&tui_win_list[win_type]->generic,
-		       tui_win_list[win_type]->generic.type,
-		       src_height,
-		       tui_win_list[win_type]->generic.width,
+      init_gen_win_info(&tui_win_list[win_type]->generic,
+			tui_win_list[win_type]->generic.type,
+			src_height,
+			tui_win_list[win_type]->generic.width,
 		   tui_win_list[win_type]->detail.source_info.execution_info->width,
-		       data_height - 1);
-      init_gen_win_info (tui_win_list[win_type]->detail.source_info.execution_info,
-		       EXEC_INFO_WIN,
-		       src_height,
-		       3,
-		       0,
-		       data_height - 1);
-      tui_make_visible (&tui_win_list[win_type]->generic);
-      tui_make_visible (tui_win_list[win_type]->detail.source_info.execution_info);
-      init_gen_win_info (locator,
-		       LOCATOR_WIN,
-		       2 /* 1 */ ,
-		       tui_term_width (),
-		       0,
-		       total_height - 1);
+			(data_height - 1));
+      init_gen_win_info(tui_win_list[win_type]->detail.source_info.execution_info,
+			EXEC_INFO_WIN, src_height, 3, 0, (data_height - 1));
+      tui_make_visible(&tui_win_list[win_type]->generic);
+      tui_make_visible(tui_win_list[win_type]->detail.source_info.execution_info);
+      init_gen_win_info(locator, LOCATOR_WIN,
+			2 /* 1 */,
+			tui_term_width(), 0, (total_height - 1));
     }
   tui_win_list[win_type]->detail.source_info.has_locator = TRUE;
-  tui_make_visible (locator);
-  tui_show_locator_content ();
-  tui_add_to_source_windows (tui_win_list[win_type]);
-  tui_set_current_layout_to (new_layout);
+  tui_make_visible(locator);
+  tui_show_locator_content();
+  tui_add_to_source_windows(tui_win_list[win_type]);
+  tui_set_current_layout_to(new_layout);
 }
 
 /*
-   ** init_gen_win_info().
+** init_gen_win_info().
  */
 static void
-init_gen_win_info (struct tui_gen_win_info * win_info, enum tui_win_type type,
-                 int height, int width, int origin_x, int origin_y)
+init_gen_win_info(struct tui_gen_win_info *win_info, enum tui_win_type type,
+		  int height, int width, int origin_x, int origin_y)
 {
   int h = height;
 
@@ -912,11 +904,11 @@ init_gen_win_info (struct tui_gen_win_info * win_info, enum tui_win_type type,
 }				/* init_gen_win_info */
 
 /*
-   ** init_and_make_win().
+** init_and_make_win().
  */
 static void
-init_and_make_win (void ** win_info_ptr, enum tui_win_type win_type,
-                 int height, int width, int origin_x, int origin_y, int box_it)
+init_and_make_win(void **win_info_ptr, enum tui_win_type win_type,
+		  int height, int width, int origin_x, int origin_y, int box_it)
 {
   void *opaque_win_info = *win_info_ptr;
   struct tui_gen_win_info * generic;
@@ -948,38 +940,34 @@ init_and_make_win (void ** win_info_ptr, enum tui_win_type win_type,
   *win_info_ptr = opaque_win_info;
 }
 
-
+/* FIXME: needs comment */
 static void
-make_source_or_disasm_window (struct tui_win_info * * win_info_ptr, enum tui_win_type type,
-                             int height, int origin_y)
+make_source_or_disasm_window(struct tui_win_info **win_info_ptr,
+			     enum tui_win_type type, int height, int origin_y)
 {
-  struct tui_gen_win_info * execution_info = (struct tui_gen_win_info *) NULL;
+  struct tui_gen_win_info *execution_info = (struct tui_gen_win_info *)NULL;
 
   /*
-     ** Create the exeuction info window.
+  ** Create the exeuction info window.
    */
   if (type == SRC_WIN)
-    execution_info = tui_source_exec_info_win_ptr ();
+    execution_info = tui_source_exec_info_win_ptr();
   else
-    execution_info = tui_disassem_exec_info_win_ptr ();
-  init_and_make_win ((void **) & execution_info,
-		   EXEC_INFO_WIN,
-		   height,
-		   3,
-		   0,
-		   origin_y,
-		   DONT_BOX_WINDOW);
+    execution_info = tui_disassem_exec_info_win_ptr();
+  init_and_make_win((void **)&execution_info, EXEC_INFO_WIN, height, 3, 0,
+		    origin_y, DONT_BOX_WINDOW);
+  
+  gdb_assert(execution_info != NULL);
+  
   /*
-     ** Now create the source window.
+  ** Now create the source window.
    */
-  init_and_make_win ((void **) win_info_ptr,
-		   type,
-		   height,
-		   tui_term_width () - execution_info->width,
-		   execution_info->width,
-		   origin_y,
-		   BOX_WINDOW);
+  init_and_make_win((void **)win_info_ptr, type, height,
+		    (tui_term_width() - execution_info->width),
+		    execution_info->width, origin_y, BOX_WINDOW);
 
+  gdb_assert((*win_info_ptr) != NULL);
+  
   (*win_info_ptr)->detail.source_info.execution_info = execution_info;
 }
 
@@ -1060,16 +1048,18 @@ show_source_or_disasm_and_command (enum tui_layout_type layout_type)
 	    }
 	  else
 	    {
-	      init_gen_win_info (&TUI_CMD_WIN->generic,
-			       TUI_CMD_WIN->generic.type,
-			       TUI_CMD_WIN->generic.height,
-			       TUI_CMD_WIN->generic.width,
-			       TUI_CMD_WIN->generic.origin.x,
-			       TUI_CMD_WIN->generic.origin.y);
+	      init_gen_win_info(&TUI_CMD_WIN->generic,
+				TUI_CMD_WIN->generic.type,
+				TUI_CMD_WIN->generic.height,
+				TUI_CMD_WIN->generic.width,
+				TUI_CMD_WIN->generic.origin.x,
+				TUI_CMD_WIN->generic.origin.y);
 	      TUI_CMD_WIN->can_highlight = FALSE;
-	      tui_make_visible (&TUI_CMD_WIN->generic);
+	      tui_make_visible(&TUI_CMD_WIN->generic);
 	    }
 	}
-      tui_set_current_layout_to (layout_type);
+      tui_set_current_layout_to(layout_type);
     }
 }
+
+/* EOF */

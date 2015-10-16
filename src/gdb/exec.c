@@ -176,9 +176,9 @@ exec_close(int quitting)
 	  free_objfile(vp->objfile);
 	  need_symtab_cleanup = 1;
 	}
-      else if (vp->bfd != exec_bfd)
+      else if (vp->obfd != exec_bfd)
 	/* FIXME-leak: We should be freeing vp->name too, I think.  */
-	if (!bfd_close(vp->bfd))
+	if (!bfd_close(vp->obfd))
 	  warning(_("cannot close \"%s\": %s"),
 		  vp->name, bfd_errmsg(bfd_get_error()));
 
@@ -485,7 +485,7 @@ add_to_section_table (bfd *abfd, struct bfd_section *asect,
     return;
   if (0 == bfd_section_size (abfd, asect))
     return;
-  (*table_pp)->bfd = abfd;
+  (*table_pp)->abfd = abfd;
   (*table_pp)->the_bfd_section = asect;
   (*table_pp)->addr = bfd_section_vma (abfd, asect);
   (*table_pp)->endaddr = (*table_pp)->addr + bfd_section_size (abfd, asect);
@@ -544,23 +544,23 @@ bfdsec_to_vmap (struct bfd *abfd, struct bfd_section *sect, void *arg3)
    Return the new vmap.  */
 
 struct vmap *
-map_vmap (bfd *abfd, bfd *arch)
+map_vmap(bfd *abfd, bfd *arch)
 {
   struct vmap_and_bfd vmap_bfd;
   struct vmap *vp, **vpp;
 
-  vp = (struct vmap *) xmalloc (sizeof (*vp));
-  memset ((char *) vp, '\0', sizeof (*vp));
+  vp = (struct vmap *)xmalloc(sizeof(*vp));
+  memset((char *)vp, '\0', sizeof(*vp));
   vp->nxt = 0;
-  vp->bfd = abfd;
-  vp->name = bfd_get_filename (arch ? arch : abfd);
-  vp->member = arch ? bfd_get_filename (abfd) : "";
+  vp->obfd = abfd;
+  vp->name = bfd_get_filename(arch ? arch : abfd);
+  vp->member = (char *)(arch ? bfd_get_filename(abfd) : "");
 
   vmap_bfd.pbfd = arch;
   vmap_bfd.pvmap = vp;
-  bfd_map_over_sections (abfd, bfdsec_to_vmap, &vmap_bfd);
+  bfd_map_over_sections(abfd, bfdsec_to_vmap, &vmap_bfd);
 
-  /* Find the end of the list and append. */
+  /* Find the end of the list and append: */
   for (vpp = &vmap; *vpp; vpp = &(*vpp)->nxt)
     ;
   *vpp = vp;
@@ -619,11 +619,11 @@ xfer_memory_1(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
 	    {
 	      /* Entire transfer is within this section: */
 	      if (write)
-		res = bfd_set_section_contents(p->bfd, p->the_bfd_section,
+		res = bfd_set_section_contents(p->abfd, p->the_bfd_section,
                                                myaddr, (memaddr - p->addr),
                                                (bfd_size_type)len);
 	      else
-		res = bfd_get_section_contents(p->bfd, p->the_bfd_section,
+		res = bfd_get_section_contents(p->abfd, p->the_bfd_section,
                                                myaddr, (memaddr - p->addr),
                                                (bfd_size_type)len);
 	      return ((res != 0) ? len : 0);
@@ -638,11 +638,11 @@ xfer_memory_1(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
 	      /* This section overlaps the transfer.  Just do half: */
 	      len = (int)(p->endaddr - memaddr);
 	      if (write)
-		res = bfd_set_section_contents(p->bfd, p->the_bfd_section,
+		res = bfd_set_section_contents(p->abfd, p->the_bfd_section,
                                                myaddr, (memaddr - p->addr),
                                                (bfd_size_type)len);
 	      else
-		res = bfd_get_section_contents(p->bfd, p->the_bfd_section,
+		res = bfd_get_section_contents(p->abfd, p->the_bfd_section,
                                                myaddr, (memaddr - p->addr),
                                                (bfd_size_type)len);
 	      return ((res != 0) ? len : 0);
@@ -753,10 +753,10 @@ print_section_info (struct target_ops *t, bfd *abfd)
 	}
       ui_out_text (uiout, " is ");
       ui_out_field_string (uiout, "name", bfd_section_name (p->bfd, p->the_bfd_section));
-      if (p->bfd != abfd)
+      if (p->abfd != abfd)
 	{
-	  ui_out_text (uiout, " in ");
-	  ui_out_field_string (uiout, "filename", bfd_get_filename (p->bfd));
+	  ui_out_text(uiout, " in ");
+	  ui_out_field_string(uiout, "filename", bfd_get_filename(p->abfd));
 	}
       ui_out_text (uiout, "\n");
       do_cleanups (section_cleanup); /* "section" */
@@ -882,7 +882,7 @@ exec_set_section_address (const char *filename, int index, CORE_ADDR address)
 
   for (p = exec_ops.to_sections; p < exec_ops.to_sections_end; p++)
     {
-      if (strcmp (filename, p->bfd->filename) == 0
+      if (strcmp(filename, p->abfd->filename) == 0
 	  && index == p->the_bfd_section->index
 	  && p->addr == 0)
 	{

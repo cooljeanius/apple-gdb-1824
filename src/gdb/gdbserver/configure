@@ -652,6 +652,9 @@ SET_MAKE
 GMAKE_FALSE
 GMAKE_TRUE
 MAKE
+AM_V_LINKER
+AM_V_COMPILER
+LINKER
 COMPILER
 SED
 RANLIB
@@ -4920,7 +4923,11 @@ program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
   # Check whether --enable-build-with-cxx was given.
 if test "${enable_build_with_cxx+set}" = set; then :
   enableval=$enable_build_with_cxx; case ${enableval} in
-      yes | no)
+      yes)
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: building gdb with a C++ compiler is experimental" >&5
+$as_echo "$as_me: WARNING: building gdb with a C++ compiler is experimental" >&2;}
+        ;;
+      no)
 	;;
       *)
 	as_fn_error $? "bad value ${enableval} for --enable-build-with-cxx" "$LINENO" 5
@@ -4930,10 +4937,17 @@ else
   enable_build_with_cxx=no
 fi
 
+
   if test "x${enable_build_with_cxx}" = "xyes"; then
     COMPILER='$(CXX)'
+    LINKER='$(CXXLD)'
+    AM_V_COMPILER='$(AM_V_CXX)'
+    AM_V_LINKER='$(AM_V_CXXLD)'
    else
     COMPILER='$(CC)'
+    LINKER='$(CCLD)'
+    AM_V_COMPILER='$(AM_V_CC)'
+    AM_V_LINKER='$(AM_V_CCLD)'
   fi
 
 

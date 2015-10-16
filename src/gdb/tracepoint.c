@@ -797,8 +797,9 @@ trace_actions_command(char *args, int from_tty)
   t = get_tracepoint_by_number(&args, 0, 1);
   if (t)
     {
-      sprintf(tmpbuf, "Enter actions for tracepoint %d, one per line.",
-	      t->number);
+      snprintf(tmpbuf, sizeof(tmpbuf),
+	       "Enter actions for tracepoint %d, one per line.",
+	       t->number);
 
       if (from_tty)
 	{
@@ -1382,7 +1383,7 @@ clear_collection_list (struct collection_list *list)
 
 /* reduce a collection list to string form (for gdb protocol) */
 static char **
-stringify_collection_list (struct collection_list *list, char *string)
+stringify_collection_list(struct collection_list *list, char *string)
 {
   char temp_buf[2048];
   char tmp2[40];
@@ -1393,7 +1394,7 @@ stringify_collection_list (struct collection_list *list, char *string)
   long i;
 
   count = 1 + list->next_memrange + list->next_aexpr_elt + 1;
-  str_list = (char *(*)[]) xmalloc (count * sizeof (char *));
+  str_list = (char *(*)[])xmalloc(count * sizeof(char *));
 
   for (i = sizeof (list->regs_mask) - 1; i > 0; i--)
     if (list->regs_mask[i] != 0)	/* skip leading zeroes in regs_mask */
@@ -1409,7 +1410,7 @@ stringify_collection_list (struct collection_list *list, char *string)
 	  QUIT;			/* allow user to bail out with ^C */
 	  if (info_verbose)
 	    printf_filtered ("%02X", list->regs_mask[i]);
-	  sprintf (end, "%02X", list->regs_mask[i]);
+	  snprintf(end, SIZE_T_MAX, "%02X", list->regs_mask[i]);
 	  end += 2;
 	}
       (*str_list)[ndx] = savestring (temp_buf, end - temp_buf);
@@ -1438,12 +1439,10 @@ stringify_collection_list (struct collection_list *list, char *string)
 	  end = temp_buf;
 	}
 
-      sprintf (end, "M%X,%s,%lX",
-	       list->list[i].type,
-	       tmp2,
-	       (long) (list->list[i].end - list->list[i].start));
+      snprintf(end, SIZE_T_MAX, "M%X,%s,%lX", list->list[i].type, tmp2,
+	       (long)(list->list[i].end - list->list[i].start));
 
-      count += strlen (end);
+      count += strlen(end);
       end = temp_buf + count;
     }
 
@@ -1452,18 +1451,19 @@ stringify_collection_list (struct collection_list *list, char *string)
       QUIT;			/* allow user to bail out with ^C */
       if ((count + 10 + 2 * list->aexpr_list[i]->len) > MAX_AGENT_EXPR_LEN)
 	{
-	  (*str_list)[ndx] = savestring (temp_buf, count);
+	  (*str_list)[ndx] = savestring(temp_buf, count);
 	  ndx++;
 	  count = 0;
 	  end = temp_buf;
 	}
-      sprintf (end, "X%08X,", list->aexpr_list[i]->len);
+      snprintf(end, SIZE_T_MAX, "X%08X,",
+	       (unsigned int)list->aexpr_list[i]->len);
       end += 10;		/* 'X' + 8 hex digits + ',' */
       count += 10;
 
-      end = mem2hex (list->aexpr_list[i]->buf,
-		     end, list->aexpr_list[i]->len);
-      count += 2 * list->aexpr_list[i]->len;
+      end = mem2hex(list->aexpr_list[i]->buf,
+		    end, list->aexpr_list[i]->len);
+      count += (2 * list->aexpr_list[i]->len);
     }
 
   if (count != 0)
@@ -1625,7 +1625,7 @@ encode_actions (struct tracepoint *t, char ***tdp_actions,
 			  int ndx1;
 			  int ndx2;
 
-			  for (ndx1 = 0; ndx1 < areqs.reg_mask_len; ndx1++)
+			  for (ndx1 = 0; ndx1 < (int)areqs.reg_mask_len; ndx1++)
 			    {
 			      QUIT;	/* allow user to bail out with ^C */
 			      if (areqs.reg_mask[ndx1] != 0)
@@ -1716,7 +1716,8 @@ remote_set_transparent_ranges(void)
       size = bfd_get_section_size (s);
       sprintf_vma (tmp1, lma);
       sprintf_vma (tmp2, lma + size);
-      sprintf (target_buf + strlen (target_buf),
+      snprintf((target_buf + strlen(target_buf)),
+	       (sizeof(target_buf) + strlen(target_buf)),
 	       ":%s,%s", tmp1, tmp2);
     }
   if (anysecs)
@@ -1756,8 +1757,8 @@ trace_start_command (char *args, int from_tty)
       {
 	char tmp[40];
 
-	sprintf_vma (tmp, t->address);
-	sprintf (buf, "QTDP:%x:%s:%c:%lx:%x", t->number,
+	sprintf_vma(tmp, t->address);
+	snprintf(buf, sizeof(buf), "QTDP:%x:%s:%c:%lx:%x", t->number,
 		 tmp, /* address */
 		 t->enabled_p ? 'E' : 'D',
 		 t->step_count, t->pass_count);
@@ -1777,13 +1778,15 @@ trace_start_command (char *args, int from_tty)
 	    (void) make_cleanup (free_actions_list_cleanup_wrapper,
 				 stepping_actions);
 
-	    /* do_single_steps (t); */
+#if 0
+	    do_single_steps(t);
+#endif /* 0 */
 	    if (tdp_actions)
 	      {
 		for (ndx = 0; tdp_actions[ndx]; ndx++)
 		  {
 		    QUIT;	/* allow user to bail out with ^C */
-		    sprintf (buf, "QTDP:-%x:%s:%s%c",
+		    snprintf(buf, sizeof(buf), "QTDP:-%x:%s:%s%c",
 			     t->number, tmp, /* address */
 			     tdp_actions[ndx],
 			     ((tdp_actions[ndx + 1] || stepping_actions)
@@ -1800,7 +1803,7 @@ trace_start_command (char *args, int from_tty)
 		for (ndx = 0; stepping_actions[ndx]; ndx++)
 		  {
 		    QUIT;	/* allow user to bail out with ^C */
-		    sprintf (buf, "QTDP:-%x:%s:%s%s%s",
+		    snprintf(buf, sizeof(buf), "QTDP:-%x:%s:%s%s%s",
 			     t->number, tmp, /* address */
 			     ((ndx == 0) ? "S" : ""),
 			     stepping_actions[ndx],
@@ -2036,7 +2039,7 @@ trace_find_command(char *args, int from_tty)
       if (frameno < -1)
 	error(_("invalid input (%d is less than zero)"), frameno);
 
-      sprintf(target_buf, "QTFrame:%x", frameno);
+      snprintf(target_buf, sizeof(target_buf), "QTFrame:%x", frameno);
       finish_tfind_command(target_buf, sizeof(target_buf), from_tty);
     }
   else
@@ -2079,7 +2082,7 @@ trace_find_pc_command(char *args, int from_tty)
 	pc = parse_and_eval_address(args);
 
       sprintf_vma(tmp, pc);
-      sprintf(target_buf, "QTFrame:pc:%s", tmp);
+      snprintf(target_buf, sizeof(target_buf), "QTFrame:pc:%s", tmp);
       finish_tfind_command(target_buf, sizeof(target_buf), from_tty);
     }
   else
@@ -2104,7 +2107,7 @@ trace_find_tracepoint_command(char *args, int from_tty)
       else
 	tdp = (int)parse_and_eval_long(args);
 
-      sprintf(target_buf, "QTFrame:tdp:%x", tdp);
+      snprintf(target_buf, sizeof(target_buf), "QTFrame:tdp:%x", tdp);
       finish_tfind_command(target_buf, sizeof(target_buf), from_tty);
     }
   else
@@ -2134,8 +2137,8 @@ trace_find_line_command (char *args, int from_tty)
 	{
 	  sal = find_pc_line (get_frame_pc (get_current_frame ()), 0);
 	  sals.nelts = 1;
-	  sals.sals = (struct symtab_and_line *)
-	    xmalloc (sizeof (struct symtab_and_line));
+	  sals.sals = ((struct symtab_and_line *)
+		       xmalloc(sizeof(struct symtab_and_line)));
 	  sals.sals[0] = sal;
 	}
       else
@@ -2190,36 +2193,36 @@ trace_find_line_command (char *args, int from_tty)
 	/* Is there any case in which we get here, and have an address
 	   which the user would want to see?  If we have debugging
 	   symbols and no line numbers?  */
-	error (_("Line number %d is out of range for \"%s\"."),
-	       sal.line, sal.symtab->filename);
+	error(_("Line number %d is out of range for \"%s\"."),
+	      sal.line, sal.symtab->filename);
 
-      sprintf_vma (startpc_str, start_pc);
-      sprintf_vma (endpc_str, end_pc - 1);
-      /* Find within range of stated line.  */
+      sprintf_vma(startpc_str, start_pc);
+      sprintf_vma(endpc_str, end_pc - 1);
+      /* Find within range of stated line: */
       if (args && *args)
-	sprintf (target_buf, "QTFrame:range:%s:%s",
+	snprintf(target_buf, sizeof(target_buf), "QTFrame:range:%s:%s",
 		 startpc_str, endpc_str);
       /* Find OUTSIDE OF range of CURRENT line.  */
       else
-	sprintf (target_buf, "QTFrame:outside:%s:%s",
+	snprintf(target_buf, sizeof(target_buf), "QTFrame:outside:%s:%s",
 		 startpc_str, endpc_str);
-      finish_tfind_command (target_buf, sizeof (target_buf),
-			    from_tty);
-      do_cleanups (old_chain);
+      finish_tfind_command(target_buf, sizeof(target_buf),
+			   from_tty);
+      do_cleanups(old_chain);
     }
   else
-    error (_("Trace can only be run on remote targets."));
+    error(_("Trace can only be run on remote targets."));
 }
 
 /* tfind range command */
 static void
-trace_find_range_command (char *args, int from_tty)
+trace_find_range_command(char *args, int from_tty)
 {
   static CORE_ADDR start, stop;
   char start_str[40], stop_str[40];
   char *tmp;
 
-  if (target_is_remote ())
+  if (target_is_remote())
     {
       if (args == 0 || *args == 0)
 	{ /* XXX FIXME: what should default behavior be?  */
@@ -2227,66 +2230,68 @@ trace_find_range_command (char *args, int from_tty)
 	  return;
 	}
 
-      if (0 != (tmp = strchr (args, ',')))
+      if (0 != (tmp = strchr(args, ',')))
 	{
 	  *tmp++ = '\0';	/* terminate start address */
-	  while (isspace ((int) *tmp))
+	  while (isspace((int)*tmp))
 	    tmp++;
-	  start = parse_and_eval_address (args);
-	  stop = parse_and_eval_address (tmp);
+	  start = parse_and_eval_address(args);
+	  stop = parse_and_eval_address(tmp);
 	}
       else
 	{			/* no explicit end address? */
-	  start = parse_and_eval_address (args);
-	  stop = start + 1;	/* ??? */
+	  start = parse_and_eval_address(args);
+	  stop = (start + 1);	/* ??? */
 	}
 
-      sprintf_vma (start_str, start);
-      sprintf_vma (stop_str, stop);
-      sprintf (target_buf, "QTFrame:range:%s:%s", start_str, stop_str);
-      finish_tfind_command (target_buf, sizeof (target_buf), from_tty);
+      sprintf_vma(start_str, start);
+      sprintf_vma(stop_str, stop);
+      snprintf(target_buf, sizeof(target_buf), "QTFrame:range:%s:%s",
+	       start_str, stop_str);
+      finish_tfind_command(target_buf, sizeof(target_buf), from_tty);
     }
   else
-    error (_("Trace can only be run on remote targets."));
+    error(_("Trace can only be run on remote targets."));
 }
 
 /* tfind outside command */
 static void
-trace_find_outside_command (char *args, int from_tty)
+trace_find_outside_command(char *args, int from_tty)
 {
   CORE_ADDR start, stop;
   char start_str[40], stop_str[40];
   char *tmp;
 
-  if (target_is_remote ())
+  if (target_is_remote())
     {
       if (args == 0 || *args == 0)
 	{ /* XXX FIXME: what should default behavior be? */
-	  printf_filtered ("Usage: tfind outside <startaddr>,<endaddr>\n");
+	  printf_filtered("Usage: tfind outside <startaddr>,<endaddr>\n");
 	  return;
 	}
 
-      if (0 != (tmp = strchr (args, ',')))
+      if (0 != (tmp = strchr(args, ',')))
 	{
 	  *tmp++ = '\0';	/* terminate start address */
-	  while (isspace ((int) *tmp))
+	  while (isspace((int)*tmp))
 	    tmp++;
-	  start = parse_and_eval_address (args);
-	  stop = parse_and_eval_address (tmp);
+	  start = parse_and_eval_address(args);
+	  stop = parse_and_eval_address(tmp);
 	}
       else
 	{			/* no explicit end address? */
-	  start = parse_and_eval_address (args);
-	  stop = start + 1;	/* ??? */
+	  start = parse_and_eval_address(args);
+	  stop = (start + 1);	/* ??? */
 	}
 
-      sprintf_vma (start_str, start);
-      sprintf_vma (stop_str, stop);
-      sprintf (target_buf, "QTFrame:outside:%s:%s", start_str, stop_str);
-      finish_tfind_command (target_buf, sizeof (target_buf), from_tty);
+      sprintf_vma(start_str, start);
+      sprintf_vma(stop_str, stop);
+      snprintf(target_buf, sizeof(target_buf), "QTFrame:outside:%s:%s",
+	       start_str, stop_str);
+      finish_tfind_command(target_buf, sizeof(target_buf), from_tty);
     }
   else
-    error (_("Trace can only be run on remote targets."));
+    error(_("Trace can only be run on remote targets."));
 }
 
 /* save-tracepoints command */

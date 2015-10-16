@@ -10495,14 +10495,14 @@ write_one_breakpoint(struct breakpoint *b, struct ui_file *stream, struct ui_out
     /* APPLE LOCAL end subroutine inlining  */
     case bp_hardware_breakpoint:
       {
-	char *hardwareflag, *futureflag, *tempflag;
+	const char *hardwareflag = ((b->type == bp_hardware_breakpoint)
+				    ? "h" : "");
+	const char *futureflag = (((b->enable_state == bp_shlib_disabled)
+				   || (b->original_flags & BP_FUTUREFLAG))
+				  ? "future-" : "");
+	const char *tempflag = ((b->disposition == disp_del) ? "t" : "");
 
-	hardwareflag = (b->type == bp_hardware_breakpoint) ? "h" : "";
-	futureflag = ((b->enable_state == bp_shlib_disabled) ||
-		      (b->original_flags & BP_FUTUREFLAG)) ? "future-" : "";
-	tempflag = (b->disposition == disp_del) ? "t" : "";
-
-        fprintf_unfiltered (stream, "%s%s%sbreak", futureflag, tempflag, hardwareflag);
+        fprintf_unfiltered(stream, "%s%s%sbreak", futureflag, tempflag, hardwareflag);
 
 	if (b->addr_string)
 	  {
@@ -10691,7 +10691,12 @@ decode_line_spec_1(char *string, int funfirstline)
 static void
 restore_saved_pending_break_support(void *val)
 {
+#ifdef __cplusplus
+  pending_break_support = ((val != NULL)
+			   ? AUTO_BOOLEAN_TRUE : AUTO_BOOLEAN_FALSE);
+#else
   pending_break_support = (enum auto_boolean)val;
+#endif /* __cplusplus */
 }
 
 void

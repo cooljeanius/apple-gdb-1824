@@ -1,4 +1,4 @@
-/* Do various things to symbol tables (other than lookup), for GDB.
+/* symmisc.c: Do various things to symbol tables (other than lookup), for GDB.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1995, 1996, 1997, 1998, 1999, 2000, 2002, 2003, 2004 Free Software
@@ -390,23 +390,22 @@ dump_psymtab (struct objfile *objfile, struct partial_symtab *psymtab,
 
   if (psymtab->readin)
     {
-      fprintf_filtered (outfile,
-			"  Full symtab was read (at ");
-      gdb_print_host_address (psymtab->symtab, outfile);
-      fprintf_filtered (outfile, " by function at ");
-      gdb_print_host_address (psymtab->read_symtab, outfile);
-      fprintf_filtered (outfile, ")\n");
+      fprintf_filtered(outfile,
+		       "  Full symtab was read (at ");
+      gdb_print_host_address(psymtab->symtab, outfile);
+      fprintf_filtered(outfile, " by function at ");
+      gdb_print_host_address((const void *)psymtab->read_symtab, outfile);
+      fprintf_filtered(outfile, ")\n");
     }
 
-  fprintf_filtered (outfile, "  Relocate symbols by ");
+  fprintf_filtered(outfile, "  Relocate symbols by ");
   for (i = 0; i < psymtab->objfile->num_sections; ++i)
     {
       if (i != 0)
-	fprintf_filtered (outfile, ", ");
-      wrap_here ("    ");
-      deprecated_print_address_numeric (ANOFFSET (psymtab->section_offsets, i),
-			     1,
-			     outfile);
+	fprintf_filtered(outfile, ", ");
+      wrap_here("    ");
+      deprecated_print_address_numeric(ANOFFSET(psymtab->section_offsets, i),
+				       1, outfile);
     }
   fprintf_filtered (outfile, "\n");
 

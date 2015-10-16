@@ -37,15 +37,7 @@ struct symtab;
 
 #include "inlining.h"
 
-/* temporary, until I am ready to deal with all of the fallout that would
- * result from fixing these warnings in this header: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic push
- #  pragma GCC diagnostic ignored "-Wc++-compat"
-# endif /* gcc 4.6+ */
-#endif /* GCC */
-
+/* FIXME: needs comment */
 struct thread_info
 {
   struct thread_info *next;
@@ -90,17 +82,11 @@ struct thread_info
   bpstat stepping_through_solib_catchpoints;
 
   /* Private data used by the target vector implementation.  */
-  struct private_thread_info *private;
+  struct private_thread_info *privatedata;
 
   struct inlined_function_data *thread_inlined_call_stack;
 };
 
-/* keep condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* GCC */
 
 /* APPLE LOCAL begin threads */
 extern struct thread_info *thread_list;

@@ -1214,15 +1214,6 @@ user_defined_command(char *ignore, int from_tty)
   return;
 }
 
-/* FIXME: need to rename some struct fields that currently live in headers,
- * and deal with all of the resulting fallout, before removing this: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic push
- #  pragma GCC diagnostic ignored "-Wc++-compat"
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
-
 void
 define_command(char *comname, int from_tty)
 {
@@ -1255,7 +1246,7 @@ define_command(char *comname, int from_tty)
   if (c)
     {
       int q;
-      if ((c->class == class_user) || (c->class == class_alias))
+      if ((c->cmdclass == class_user) || (c->cmdclass == class_alias))
 	q = query(_("Redefine command \"%s\"? "), c->name);
       else
 	q = query(_("Really redefine built-in command \"%s\"? "), c->name);
@@ -1306,12 +1297,12 @@ define_command(char *comname, int from_tty)
 	   comname);
   cmds = read_command_lines(tmpbuf, from_tty);
 
-  if (c && (c->class == class_user))
+  if (c && (c->cmdclass == class_user))
     free_command_lines(&c->user_commands);
 
   newc = add_cmd(comname, class_user, user_defined_command,
-		 (c && (c->class == class_user))
-		 ? c->doc : savestring ("User-defined.", 13), &cmdlist);
+		 ((c && (c->cmdclass == class_user))
+		  ? c->doc : savestring("User-defined.", 13)), &cmdlist);
   newc->user_commands = cmds;
 
   /* If this new command is a hook, then mark both commands as being
@@ -1347,14 +1338,14 @@ document_command(char *comname, int from_tty)
 
   c = lookup_cmd(&tem, cmdlist, "", 0, 1);
 
-  if (c->class != class_user)
+  if (c->cmdclass != class_user)
     error(_("Command \"%s\" is built-in."), comname);
 
   snprintf(tmpbuf, sizeof(tmpbuf), "Type documentation for \"%s\".", comname);
   doclines = read_command_lines(tmpbuf, from_tty);
 
   if (c->doc)
-    xfree (c->doc);
+    xfree(c->doc);
 
   {
     struct command_line *cl1;
@@ -1376,13 +1367,6 @@ document_command(char *comname, int from_tty)
 
   free_command_lines(&doclines);
 }
-
-/* keep the condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
 
 struct source_cleanup_lines_args
 {

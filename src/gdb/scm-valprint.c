@@ -246,13 +246,13 @@ taloop:
 	  break;
 	case scm_tcs_symbols:
 	  {
-	    int len = SCM_LENGTH (svalue);
+	    int len = SCM_LENGTH(svalue);
 
-	    char *str = alloca (len);
-	    read_memory (SCM_CDR (svalue), (gdb_byte *) str, len + 1);
-	    /* Should handle weird characters FIXME */
+	    char *str = (char *)alloca(len);
+	    read_memory(SCM_CDR(svalue), (gdb_byte *)str, (len + 1));
+	    /* Should handle weird characters, FIXME: do it. */
 	    str[len] = '\0';
-	    fputs_filtered (str, stream);
+	    fputs_filtered(str, stream);
 	    break;
 	  }
 	case scm_tc7_vector:

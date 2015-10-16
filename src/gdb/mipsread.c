@@ -38,31 +38,33 @@
 #include "coff/sym.h"
 #include "coff/internal.h"
 #include "coff/ecoff.h"
-#include "libcoff.h"		/* Private BFD COFF information.  */
-#include "libecoff.h"		/* Private BFD ECOFF information.  */
+#ifndef __cplusplus
+# include "libcoff.h"		/* Private BFD COFF information.  */
+# include "libecoff.h"		/* Private BFD ECOFF information.  */
+#endif /* !__cplusplus */
 #include "elf/common.h"
 #include "elf/mips.h"
 
 static void
-read_alphacoff_dynamic_symtab (struct section_offsets *,
-			       struct objfile *objfile);
+read_alphacoff_dynamic_symtab(struct section_offsets *,
+			      struct objfile *objfile);
 
 /* Initialize anything that needs initializing when a completely new
    symbol file is specified (not just adding some symbols from another
    file, e.g. a shared library).  */
 
 static void
-mipscoff_new_init (struct objfile *ignore)
+mipscoff_new_init(struct objfile *ignore)
 {
-  stabsread_new_init ();
-  buildsym_new_init ();
+  stabsread_new_init();
+  buildsym_new_init();
 }
 
-/* Initialize to read a symbol file (nothing to do).  */
-
+/* Initialize to read a symbol file (nothing to do): */
 static void
-mipscoff_symfile_init (struct objfile *objfile)
+mipscoff_symfile_init(struct objfile *objfile ATTRIBUTE_UNUSED)
 {
+  return;
 }
 
 /* Read a symbol file from a file.  */
@@ -73,28 +75,31 @@ mipscoff_symfile_read (struct objfile *objfile, int mainline)
   bfd *abfd = objfile->obfd;
   struct cleanup *back_to;
 
-  init_minimal_symbol_collection ();
-  back_to = make_cleanup_discard_minimal_symbols ();
+  init_minimal_symbol_collection();
+  back_to = make_cleanup_discard_minimal_symbols();
 
+#if (defined(ecoff_backend) && defined(ecoff_data)) || !defined(__cplusplus)
   /* Now that the executable file is positioned at symbol table,
      process it and define symbols accordingly.  */
 
-  if (!((*ecoff_backend (abfd)->debug_swap.read_debug_info)
-	(abfd, (asection *) NULL, &ecoff_data (abfd)->debug_info)))
-    error (_("Error reading symbol table: %s"), bfd_errmsg (bfd_get_error ()));
+  if (!((*ecoff_backend(abfd)->debug_swap.read_debug_info)
+	(abfd, (asection *)NULL, &ecoff_data(abfd)->debug_info)))
+    error(_("Error reading symbol table: %s"), bfd_errmsg(bfd_get_error()));
 
-  mdebug_build_psymtabs (objfile, &ecoff_backend (abfd)->debug_swap,
-			 &ecoff_data (abfd)->debug_info);
+  mdebug_build_psymtabs(objfile, &ecoff_backend(abfd)->debug_swap,
+			&ecoff_data(abfd)->debug_info);
+#else
+  (void)abfd;
+#endif /* (ecoff_backend && ecoff_data) || !__cplusplus */
 
-  /* Add alpha coff dynamic symbols.  */
-
-  read_alphacoff_dynamic_symtab (objfile->section_offsets, objfile);
+  /* Add alpha coff dynamic symbols: */
+  read_alphacoff_dynamic_symtab(objfile->section_offsets, objfile);
 
   /* Install any minimal symbols that have been collected as the current
      minimal symbols for this objfile. */
 
-  install_minimal_symbols (objfile);
-  do_cleanups (back_to);
+  install_minimal_symbols(objfile);
+  do_cleanups(back_to);
 }
 
 /* Perform any local cleanups required when we are done with a

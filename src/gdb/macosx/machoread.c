@@ -61,6 +61,13 @@
 #include <string.h>
 #include <libintl.h>
 
+#ifndef DEBUG
+# define DEBUG 2
+#endif /* !DEBUG */
+#ifndef _DEBUG
+# define _DEBUG 1
+#endif /* !_DEBUG */
+
 #if HAVE_MMAP
 static int mmap_strtabflag = 1;
 #endif /* HAVE_MMAP */
@@ -608,8 +615,8 @@ macho_symfile_read(struct objfile *objfile, int mainline)
       if (ret != 1)
         {
 #if (defined(DEBUG) || defined(_DEBUG)) && defined(LC_SYMTAB)
-          warning("Error fetching LC_SYMTAB load command from object file \"%s\"",
-                  abfd->filename);
+          warning("Error %d fetching LC_SYMTAB load command from object file \"%s\"",
+                  ret, abfd->filename);
 #endif /* (DEBUG || _DEBUG) && LC_SYMTAB */
           install_minimal_symbols(objfile);
           return;
@@ -621,8 +628,8 @@ macho_symfile_read(struct objfile *objfile, int mainline)
       if (ret != 1)
         {
 #if (defined(DEBUG) || defined(_DEBUG)) && defined(LC_DYSYMTAB)
-          warning("Error fetching LC_DYSYMTAB load command from object file \"%s\"",
-                  abfd->filename);
+          warning("Error %d fetching LC_DYSYMTAB load command from object file \"%s\"",
+                  ret, abfd->filename);
 #endif /* (DEBUG || _DEBUG) && LC_DYSYMTAB */
           install_minimal_symbols(objfile);
           return;
@@ -644,8 +651,8 @@ macho_symfile_read(struct objfile *objfile, int mainline)
           ret = bfd_mach_o_scan_read_symtab_strtab(abfd, symtab);
           if (ret != 0)
             {
-              warning("Unable to read symbol table for \"%s\": %s",
-                      abfd->filename, bfd_errmsg(bfd_get_error()));
+              warning("Unable to read symbol table for \"%s\": %s (ret is %d)",
+                      abfd->filename, bfd_errmsg(bfd_get_error()), ret);
               install_minimal_symbols(objfile);
               return;
             }
@@ -688,8 +695,8 @@ macho_read_indirect_symbols(bfd *abfd,
       if (ret != 1)
         {
 #if (defined(DEBUG) || defined(_DEBUG)) && defined(bfd_section_name)
-          warning("error fetching section %s from object file",
-                  bfd_section_name(abfd, bfdsec));
+          warning("Error %d fetching section %s from object file \"%s\"",
+                  ret, bfd_section_name(abfd, bfdsec), abfd->filename);
 #endif /* (DEBUG || _DEBUG) && bfd_section_name */
           continue;
         }
@@ -738,6 +745,12 @@ macho_read_indirect_symbols(bfd *abfd,
           CORE_ADDR stubaddr = (section->addr + (i * section->reserved2));
           const char *sname = NULL;
           char nname[4096];
+	  int printed;
+	  void *nameptr;
+	  
+	  nameptr = memset((void *)&nname, 0, sizeof(nname));
+	  
+	  CHECK_FATAL(nameptr != NULL);
 
           if (cursym >= dysymtab->nindirectsyms)
             {
@@ -761,8 +774,10 @@ macho_read_indirect_symbols(bfd *abfd,
               sname++;
             }
 
-          CHECK_FATAL((strlen(sname) + sizeof("dyld_stub_") + 1UL) < 4096);
-          snprintf(nname, sizeof(nname), "dyld_stub_%s", sname);
+          CHECK_FATAL((strlen(sname) + sizeof("dyld_stub_") + 1UL) < 4096UL);
+          printed = snprintf(nname, sizeof(nname), "dyld_stub_%s", sname);
+	  
+	  CHECK_FATAL(printed < 4096);
 
           stubaddr += objfile_section_offset(objfile, osect_idx);
 	  CHECK_FATAL(stubaddr != INVALID_ADDRESS);

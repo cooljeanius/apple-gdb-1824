@@ -150,6 +150,15 @@
 /* Define to 1 if NLS is requested */
 #undef ENABLE_NLS
 
+/* Define to nothing if C supports flexible array members, and to 1 if it does
+   not. That way, with a declaration like `struct s { int n; double
+   d[FLEXIBLE_ARRAY_MEMBER]; };', the struct hack can be used with pre-C99
+   compilers. When computing the size of such an object, don't use 'sizeof
+   (struct s)' as it overestimates the size. Use 'offsetof (struct s, d)'
+   instead. Don't use 'offsetof (struct s, d[0])', as this doesn't work with
+   MSVC and with C++ compilers. */
+#undef FLEXIBLE_ARRAY_MEMBER
+
 /* The .gdbinit filename. */
 #undef GDBINIT
 
@@ -844,6 +853,12 @@
 /* Define to 1 if you have the `posix_madvise' function. */
 #undef HAVE_POSIX_MADVISE
 
+/* Define to 1 if the system has the type `posix_spawnattr_t'. */
+#undef HAVE_POSIX_SPAWNATTR_T
+
+/* Define to 1 if you have the `posix_spawnp' function. */
+#undef HAVE_POSIX_SPAWNP
+
 /* Define to 1 if you have the `pow' function. */
 #undef HAVE_POW
 
@@ -1072,6 +1087,9 @@
 
 /* Define to 1 if you have the `sigsetmask' function. */
 #undef HAVE_SIGSETMASK
+
+/* Define to 1 if you have the `snprintf' function. */
+#undef HAVE_SNPRINTF
 
 /* Define to 1 if you have the `socket' function. */
 #undef HAVE_SOCKET

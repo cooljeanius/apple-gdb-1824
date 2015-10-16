@@ -1934,10 +1934,11 @@ again:
         } *arg_types = 0;
         int num_args = 0;
 
-        while (**pp && **pp != '#')
+        while (**pp && (**pp != '#'))
           {
             struct type *arg_type = read_type(pp, objfile);
-            struct type_list *new_tlist = alloca(sizeof(*new_tlist));
+            struct type_list *new_tlist =
+	      (struct type_list *)alloca(sizeof(*new_tlist));
             new_tlist->type = arg_type;
             new_tlist->next = arg_types;
             arg_types = new_tlist;

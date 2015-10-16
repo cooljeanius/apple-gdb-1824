@@ -54,6 +54,10 @@ infodir = @infodir@
 htmldir = $(prefix)/html
 includedir = @includedir@
 datarootdir = @datarootdir@
+docdir = @docdir@
+pdfdir = @pdfdir@
+
+install_sh = @install_sh@
 
 # This can be referenced by `INTLDEPS' as computed by CY_GNU_GETTEXT.
 top_builddir = .
@@ -70,6 +74,8 @@ GREP = @GREP@
 
 INSTALL = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@
 
 MKDIR_P = @MKDIR_P@
@@ -107,6 +113,13 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 # The name of the compiler to use.
 COMPILER = @COMPILER@
 
+# The name of the linker to use.
+LINKER = @LINKER@
+
+# These are for use with the automake-style verbosity control below:
+AM_V_COMPILER = @AM_V_COMPILER@
+AM_V_LINKER = @AM_V_LINKER@
+
 # If you are compiling with GCC, make sure that either 1) You have the
 # fixed include files where GCC can reach them, or 2) You use the
 # -traditional flag.  Otherwise the ioctl calls in inflow.c
@@ -115,12 +128,27 @@ COMPILER = @COMPILER@
 CC=@CC@
 CXX=@CXX@
 
+# Dependency tracking information.
+DEPMODE = @CCDEPMODE@
+DEPDIR = @DEPDIR@
+depcomp = $(SHELL) $(srcdir)/../depcomp
+
+# Note that these are overridden by GNU make-specific code below if
+# GNU make is used.  The overrides implement dependency tracking. (TODO)
+COMPILE.pre = $(COMPILER)
+COMPILE.post = -c -o $@
+COMPILE = $(AM_V_COMPILER)$(COMPILE.pre) $(INTERNAL_CFLAGS) $(COMPILE.post)
+POSTCOMPILE = @echo "Used $(COMPILER) to compile $< into $@."
+
 ## an alias for use when linking:
 CCLD = $(CC)
+## likewise:
+CXXLD = $(CXX)
 
 # Directory containing source files.
 srcdir = @srcdir@
 VPATH = @srcdir@:@srcdir@/macosx
+top_srcdir = @top_srcdir@
 
 ## automake-style verbosity control:
 V = @V@
@@ -153,6 +181,16 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
+
+AM_V_CXX = $(am__v_CXX_@AM_V@)
+am__v_CXX_ = $(am__v_CXX_@AM_DEFAULT_V@)
+am__v_CXX_0 = @echo "  CXX      " $@;
+am__v_CXX_1 = 
+
+AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
+am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
+am__v_CXXLD_0 = @echo "  CXXLD    " $@;
+am__v_CXXLD_1 = 
 
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -199,11 +237,14 @@ MAKEHTMLFLAGS = -glossary -menu -split_chapter
 CONFIGURED_MAKEINFO = @MAKEINFO@
 MAKEINFOFLAGS = @MAKEINFOFLAGS@
 MAKEINFO_EXTRA_FLAGS = @MAKEINFO_EXTRA_FLAGS@
+MAKEINFO_CMD = $(MAKEINFO) $(MAKEINFOFLAGS) $(MAKEINFO_EXTRA_FLAGS)
 
 # Set this up with gcc if you have gnu ld and the loader will print out
 # line numbers for undefined references.
 CC_LD_STATIC="gcc -static"
 CC_LD=$(CC)
+CXX_LD=$(CXX)
+COMPILER_LD=$(COMPILER)
 
 # Where is our "include" directory?  Typically $(srcdir)/../include.
 # This is essentially the header file directory for the library
@@ -236,6 +277,12 @@ BFD_CFLAGS = -I$(BFD_DIR) -I$(BFD_SRC)
 ZLIB = @zlibdir@ -lz
 ZLIBINC = @zlibinc@
 
+# Where is the decnumber library?  Typically in ../libdecnumber.
+LIBDECNUMBER_DIR = ../libdecnumber
+LIBDECNUMBER = $(LIBDECNUMBER_DIR)/libdecnumber.a
+LIBDECNUMBER_SRC = $(srcdir)/$(LIBDECNUMBER_DIR)
+LIBDECNUMBER_CFLAGS = -I$(LIBDECNUMBER_DIR) -I$(LIBDECNUMBER_SRC)
+
 # Where is the READLINE library?  Typically in ../readline.
 READLINE_DIR = ../readline
 READLINE_DEP = ../readline/libreadline.a
@@ -249,6 +296,13 @@ WARN_LDFLAGS = @WARN_LDFLAGS@
 GDB_WARN_CFLAGS = $(WARN_CFLAGS) @MAINT@# $(MH_WARN_CFLAGS)
 GDB_WERROR_CFLAGS = $(WERROR_CFLAGS)
 GDB_WARN_LDFLAGS = $(WARN_LDFLAGS)
+
+GDB_WARN_CFLAGS_NO_FORMAT = `echo " $(GDB_WARN_CFLAGS) " \
+             | $(SED) "s/ -Wformat-nonliteral / -Wno-format-nonliteral /g"`
+GDB_WARN_CFLAGS_NO_DEFS = `echo " $(GDB_WARN_CFLAGS) " \
+       | $(SED) "s/ -Wold-style-definition / -Wno-old-style-definition /g"`
+
+RDYNAMIC = @RDYNAMIC@
 
 # Where is the INTL library? Typically in ../intl.
 INTL_DIR = ../intl
@@ -296,6 +350,17 @@ CODESIGN_ALLOCATE = @CODESIGN_ALLOCATE@
 # Did the user give us a --with-sysroot option?
 TARGET_SYSTEM_ROOT = @TARGET_SYSTEM_ROOT@
 TARGET_SYSTEM_ROOT_DEFINE = @TARGET_SYSTEM_ROOT_DEFINE@
+
+# Did the user give us a --with-gdb-datadir option?
+GDB_DATADIR = @GDB_DATADIR@
+
+# Flags to pass to gdb when invoked with "make run".
+GDBFLAGS =
+
+# Helper code from gnulib.
+GNULIB_BUILDDIR = build-gnulib
+LIBGNU = $(GNULIB_BUILDDIR)/import/libgnu.a
+INCGNU = -I$(srcdir)/gnulib/import -I$(GNULIB_BUILDDIR)/import
 
 #
 # CLI sub directory definitons
@@ -504,6 +569,9 @@ C_TARGARCHFLAGS = -arch $(TARGET_ARCHITECTURE)
 # when running make.  I.E.  "make CFLAGS=-Wmissing-prototypes".
 CFLAGS = @CFLAGS@
 
+# Set by configure
+INTERNAL_CPPFLAGS = @CPPFLAGS@
+
 # Need to pass this to testsuite for "make check". Probably should be
 # consistent with top-level Makefile.in and gdb/testsuite/Makefile.in
 # so "make check" has the same result no matter where it is run.
@@ -660,7 +728,7 @@ CC_FOR_TARGET = ` \
     fi; \
   fi`
 
-CXX = gcc
+UNCONFIGURED_CXX = gcc
 CXX_FOR_TARGET = ` \
   if [ -f $${rootme}/../gcc/xgcc ]; then \
     if [ -f $${rootme}/../$(target_subdir)newlib/Makefile ]; then \
@@ -1323,10 +1391,17 @@ YYOBJ = c-exp.o \
 
 DISTSTUFF = $(YYFILES)
 
+# All generated files which can be included by another file.
+generated_files = config.h observer.h observer.inc ada-lex.c jit-reader.h \
+        $(GNULIB_H) $(NAT_GENERATED_FILES) gcore
+
 # Prevent Sun make from putting in the machine type.  Setting
 # TARGET_ARCH to nothing works for SunOS 3, 4.0, but not for 4.1.
 .c.o:
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $<
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+
+## Old rule was: $(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $<
 
 all: gdb$(EXEEXT) $(CONFIG_ALL)
 	@$(MAKE) $(FLAGS_TO_PASS) DO=all \
@@ -1453,11 +1528,11 @@ uninstall-tui:
 # The C++ name parser can be built standalone for testing.
 test-cp-name-parser.o: cp-name-parser.c $(safe_ctype_h) $(libiberty_h) \
   $(demangle_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) -DTEST_CPNAMES \
+	$(AM_V_CC)$(COMPILER) -c $(INTERNAL_CFLAGS) -DTEST_CPNAMES \
 	  -o test-cp-name-parser.o cp-name-parser.c
 
 test-cp-name-parser$(EXEEXT): test-cp-name-parser.o $(LIBIBERTY_DEP)
-	$(AM_V_CCLD)$(CC_LD) $(INTERNAL_LDFLAGS) \
+	$(AM_V_CCLD)$(COMPILER_LD) $(INTERNAL_LDFLAGS) \
 	  -o test-cp-name-parser$(EXEEXT) test-cp-name-parser.o \
 	  $(LIBIBERTY)
 
@@ -1570,6 +1645,7 @@ init.c: $(INIT_FILES)
 init.o: init.c $(defs_h) $(call_cmds_h)
 
 LIBTOOL = @LIBTOOL@
+##FIXME: fix the linking when doing build_with_cxx:
 LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(LIBTOOLFLAGS) --mode=link $(CC_LD)
 
 TMPDIR = /tmp
@@ -1835,6 +1911,8 @@ version.c: version.in @MAINT@ Makefile
 	echo 'const char build_date[] = "$(shell date -u)";' >> version.c-tmp 
 	$(RUN_MOVEIFCHANGE) version.c-tmp version.c
 version.o: version.c $(version_h)
+	$(COMPILE) $<
+	$(POSTCOMPILE)
 
 observer.h: observer.sh doc/observer.texi
 	${srcdir}/observer.sh h ${srcdir}/doc/observer.texi observer.h
@@ -1960,8 +2038,8 @@ ALLDEPFILES = \
 
 # Provide explicit rule/dependency - works for more makes.
 copying.o: $(srcdir)/copying.c @MAINT@ $(defs_h) $(command_h) $(gdbcmd_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) -Wno-overlength-strings \
-	  $(srcdir)/copying.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  -Wno-overlength-strings $(srcdir)/copying.c
 
 hpux-thread.o: $(srcdir)/hpux-thread.c @MAINT@ $(defs_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) -I$(srcdir)/osf-share \
@@ -1970,7 +2048,7 @@ hpux-thread.o: $(srcdir)/hpux-thread.c @MAINT@ $(defs_h)
 
 # main.o needs an explicit build rule to get TARGET_SYSTEM_ROOT and BINDIR.
 main.o: main.c @MAINT@ $(defs_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) \
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(TARGET_SYSTEM_ROOT_DEFINE) -DBINDIR=\"$(bindir)\" \
 	  $(srcdir)/main.c
 
@@ -1979,8 +2057,8 @@ main.o: main.c @MAINT@ $(defs_h)
 # return types - "enum gnu_v3_dtor_kinds" vs "enum ctor_kinds" -
 # conflict.
 gnu-v3-abi.o: $(srcdir)/gnu-v3-abi.c @MAINT@ $(defs_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
-	  $(srcdir)/gnu-v3-abi.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_WARN_CFLAGS) \
+	  $(NO_WERROR_CFLAGS) $(srcdir)/gnu-v3-abi.c
 
 # FIXME: cagney/2003-08-10: "monitor.c" gets -Wformat-nonliteral
 # errors. It turns out that that is the least of monitor.c's
@@ -1997,8 +2075,8 @@ monitor.o: $(srcdir)/monitor.c @MAINT@ $(defs_h)
 # pass user input strings as the format parameter to host printf
 # function calls.
 printcmd.o: $(srcdir)/printcmd.c @MAINT@ $(defs_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
-	  $(srcdir)/printcmd.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_WARN_CFLAGS) \
+	  $(NO_WERROR_CFLAGS) $(srcdir)/printcmd.c
 
 # FIXME: Procfs.o gets -Wformat errors because things like pid_t do not
 # match output format strings.
@@ -2016,6 +2094,17 @@ v850ice.o: $(srcdir)/v850ice.c @MAINT@ $(defs_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
 	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(srcdir)/v850ice.c
+
+# ada-exp.c can appear in srcdir, for releases; or in ., for
+# development builds.
+ADA_EXP_C = `if test -f ada-exp.c; then echo ada-exp.c; else echo $(srcdir)/ada-exp.c; fi`
+
+# Some versions of flex give output that triggers
+# -Wold-style-definition.
+ada-exp.o: ada-exp.c
+	$(AM_V_COMPILER)$(COMPILE.pre) $(INTERNAL_CFLAGS) \
+	  $(GDB_WARN_CFLAGS_NO_DEFS) $(COMPILE.post) $(ADA_EXP_C)
+	$(POSTCOMPILE)
 
 # Message files.  Based on code in gcc/Makefile.in.
 
@@ -3350,34 +3439,42 @@ cli-cmds.o: $(cli_srcdir)/cli-cmds.c $(defs_h) $(readline_h) \
   $(objfiles_h) $(source_h) $(disasm_h) $(ui_out_h) $(top_h) \
   $(cli_decode_h) $(cli_script_h) $(cli_setshow_h) $(cli_cmds_h) \
   $(tui_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-cmds.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(cli_srcdir)/cli-cmds.c
 cli-decode.o: $(cli_srcdir)/cli-decode.c $(defs_h) $(symtab_h) \
   $(gdb_regex_h) $(gdb_string_h) $(completer_h) $(ui_out_h) $(cli_cmds_h) \
   $(cli_decode_h) $(tui_h) $(gdb_assert_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-decode.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(cli_srcdir)/cli-decode.c
 cli-dump.o: $(cli_srcdir)/cli-dump.c $(defs_h) $(gdb_string_h) \
   $(cli_decode_h) $(cli_cmds_h) $(value_h) $(completer_h) \
   $(cli_dump_h) $(gdb_assert_h) $(target_h) $(readline_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-dump.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(cli_srcdir)/cli-dump.c
 cli-interp.o: $(cli_srcdir)/cli-interp.c $(defs_h) $(interps_h) \
   $(wrapper_h) $(event_top_h) $(ui_out_h) $(cli_out_h) $(top_h) \
   $(inferior_h) $(mi_console_h) $(gdb_string_h) $(cli_cmds_h) \
   $(exceptions_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-interp.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(cli_srcdir)/cli-interp.c
 cli-logging.o: $(cli_srcdir)/cli-logging.c $(defs_h) $(gdbcmd_h) \
   $(ui_out_h) $(gdb_string_h) $(cli_logging_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-logging.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(cli_srcdir)/cli-logging.c
 cli-script.o: $(cli_srcdir)/cli-script.c $(defs_h) $(value_h) \
   $(language_h) $(ui_out_h) $(gdb_string_h) $(exceptions_h) $(top_h) \
   $(breakpoint_h) $(event_top_h) $(cli_cmds_h) $(cli_decode_h) \
   $(cli_script_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-script.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(cli_srcdir)/cli-script.c
 cli-setshow.o: $(cli_srcdir)/cli-setshow.c $(defs_h) $(readline_tilde_h) \
   $(value_h) $(gdb_string_h) $(ui_out_h) $(cli_decode_h) $(cli_cmds_h) \
   $(cli_setshow_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-setshow.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(cli_srcdir)/cli-setshow.c
 cli-utils.o: $(cli_srcdir)/cli-utils.c $(defs_h) $(cli_utils_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(cli_srcdir)/cli-utils.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(cli_srcdir)/cli-utils.c
 
 #
 # GDBTK sub-directory
@@ -3770,59 +3867,73 @@ mi-cmd-break.o: $(mi_srcdir)/mi-cmd-break.c $(defs_h) $(target_h) \
   $(mi_cmds_h) $(ui_out_h) $(mi_out_h) $(breakpoint_h) $(gdb_string_h) \
   $(mi_getopt_h) $(mi_main_h) $(gdb_events_h) $(interps_h) $(gdb_h) \
   $(gdbcmd_h) $(filenames_h) $(mi_cmd_break_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-break.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-cmd-break.c
 mi-cmd-catch.o: $(mi_srcdir)/mi-cmd-catch.c $(defs_h) $(arch_utils_h) \
   $(breakpoint_h) $(gdb_h) $(libiberty_h) $(ada_lang_h) $(mi_cmds_h) \
   $(mi_getopt_h) $(mi_cmd_break_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-catch.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-cmd-catch.c
 mi-cmd-disas.o: $(mi_srcdir)/mi-cmd-disas.c $(defs_h) $(target_h) \
   $(value_h) $(mi_cmds_h) $(mi_getopt_h) $(gdb_string_h) $(ui_out_h) \
   $(disasm_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-disas.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-cmd-disas.c
 mi-cmd-env.o: $(mi_srcdir)/mi-cmd-env.c $(defs_h) $(inferior_h) \
   $(value_h) $(mi_out_h) $(mi_cmds_h) $(mi_getopt_h) $(symtab_h) \
   $(target_h) $(environ_h) $(command_h) $(ui_out_h) $(top_h) \
   $(gdb_string_h) $(gdb_stat_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-env.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-cmd-env.c
 mi-cmd-file.o: $(mi_srcdir)/mi-cmd-file.c $(defs_h) $(mi_cmds_h) \
   $(mi_getopt_h) $(ui_out_h) $(symtab_h) $(source_h) $(objfiles_h) \
   $(gdbcore_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-file.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-cmd-file.c
 mi-cmd-info.o: $(mi_srcdir)/mi-cmd-info.c $(defs_h) $(osdata_h) \
   $(mi_cmds_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-info.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-cmd-info.c
 mi-cmds.o: $(mi_srcdir)/mi-cmds.c $(defs_h) $(top_h) $(mi_cmds_h) \
   $(gdb_string_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmds.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-cmds.c
 # APPLE LOCAL begin subroutine inlining:
 mi-cmd-stack.o: $(mi_srcdir)/mi-cmd-stack.c $(defs_h) $(target_h) \
   $(frame_h) $(value_h) $(mi_cmds_h) $(mi_main_h) $(ui_out_h) $(varobj_h) \
   $(wrapper_h) $(interps_h) $(symtab_h) $(block_h) $(stack_h) \
   $(dictionary_h) $(gdb_string_h) $(objfiles_h) $(gdb_regex_h) \
   $(inlining_h) $(tm_i386_macosx_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-stack.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-cmd-stack.c
 # APPLE LOCAL end subroutine inlining
 mi-cmd-target.o: $(mi_srcdir)/mi-cmd-target.c $(defs_h) $(mi_cmds_h) \
   $(mi_getopt_h) $(remote_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-target.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-cmd-target.c
 mi-cmd-var.o: $(mi_srcdir)/mi-cmd-var.c $(defs_h) $(mi_cmds_h) \
   $(ui_out_h) $(mi_out_h) $(varobj_h) $(value_h) $(gdb_string_h) \
   $(frame_h) $(block_h) $(linespec_h) $(exceptions_h) $(inlining_h) \
   $(breakpoint_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-cmd-var.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-cmd-var.c
 mi-common.o: $(mi_srcdir)/mi-common.c $(defs_h) $(mi_common_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-common.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-common.c
 mi-console.o: $(mi_srcdir)/mi-console.c $(defs_h) $(mi_console_h) \
   $(gdb_string_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-console.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-console.c
 mi-getopt.o: $(mi_srcdir)/mi-getopt.c $(defs_h) $(mi_getopt_h) \
   $(gdb_string_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-getopt.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-getopt.c
 mi-interp.o: $(mi_srcdir)/mi-interp.c $(defs_h) $(gdb_string_h) \
   $(interps_h) $(event_top_h) $(event_loop_h) $(inferior_h) $(ui_out_h) \
   $(top_h) $(exceptions_h) $(mi_main_h) $(mi_cmds_h) $(mi_out_h) \
   $(mi_console_h) $(mi_common_h) $(inlining_h) $(gdbthread_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-interp.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-interp.c
 # APPLE LOCAL begin subroutine inlining:
 mi-main.o: $(mi_srcdir)/mi-main.c $(defs_h) $(target_h) $(inferior_h) \
   $(gdb_string_h) $(exceptions_h) $(top_h) $(gdbthread_h) $(gdbcmd_h) \
@@ -3831,17 +3942,21 @@ mi-main.o: $(mi_srcdir)/mi-main.c $(defs_h) $(target_h) $(inferior_h) \
   $(value_h) $(regcache_h) $(gdb_h) $(frame_h) $(wrapper_h) $(source_h) \
   $(mi_main_h) $(block_h) $(version_h) $(mi_common_h) $(inlining_h) \
   $(objc_lang_h) $(breakpoint_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-main.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-main.c
 # APPLE LOCAL end subroutine inlining
 mi-out.o: $(mi_srcdir)/mi-out.c $(defs_h) $(ui_out_h) $(ui_file_h) \
   $(mi_out_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-out.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-out.c
 mi-parse.o: $(mi_srcdir)/mi-parse.c $(defs_h) $(mi_cmds_h) $(mi_parse_h) \
   $(gdb_string_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-parse.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-parse.c
 mi-symbol-cmds.o: $(mi_srcdir)/mi-symbol-cmds.c $(defs_h) $(mi_cmds_h) \
   $(symtab_h) $(ui_out_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(mi_srcdir)/mi-symbol-cmds.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(mi_srcdir)/mi-symbol-cmds.c
 
 #
 # rdi-share sub-directory
@@ -3867,7 +3982,8 @@ rdi-share/libangsd.a:	force
 
 signals.o: $(srcdir)/signals/signals.c $(server_h) $(defs_h) $(target_h) \
   $(gdb_string_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/signals/signals.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(srcdir)/signals/signals.c
 
 #
 # gdb/tui/ dependencies

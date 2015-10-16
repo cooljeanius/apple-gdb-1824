@@ -118,12 +118,12 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 extern "C" {
 #endif /* __cplusplus */
 
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic push
  #  pragma GCC diagnostic warning "-Wtraditional"
 # endif /* gcc 4.6+ */
-#endif /* GCC */
+#endif /* GCC (non-c++) */
 
 /* Every source file includes this file,
    so they will all get the switch for lint.  */
@@ -481,16 +481,17 @@ So instead we use the macro below and test it against specific values.  */
 #endif /* __cplusplus */
 
 /* keep condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic pop
 # endif /* gcc 4.6+ */
-#endif /* GCC */
+#endif /* GCC (non-c++) */
 
 /* in case the popping failed: */
-#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__) && \
+    !defined(__cplusplus)
  # pragma GCC diagnostic ignored "-Wtraditional"
-#endif /* gcc 4+ && !__clang__ */
+#endif /* gcc 4+ && !__clang__ && !__cplusplus */
 
 #ifdef __cplusplus
 }

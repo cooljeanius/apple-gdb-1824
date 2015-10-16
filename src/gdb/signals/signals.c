@@ -216,9 +216,9 @@ static struct {
 
 
 
-/* Return the string for a signal.  */
-char *
-target_signal_to_string (enum target_signal sig)
+/* Return the string for a signal: */
+const char *
+target_signal_to_string(enum target_signal sig)
 {
   if ((sig >= TARGET_SIGNAL_FIRST) && (sig <= TARGET_SIGNAL_LAST))
     return signals[sig].string;
@@ -226,12 +226,12 @@ target_signal_to_string (enum target_signal sig)
     return signals[TARGET_SIGNAL_UNKNOWN].string;
 }
 
-/* Return the name for a signal.  */
-char *
-target_signal_to_name (enum target_signal sig)
+/* Return the name for a signal: */
+const char *
+target_signal_to_name(enum target_signal sig)
 {
   if ((sig >= TARGET_SIGNAL_FIRST) && (sig <= TARGET_SIGNAL_LAST)
-      && signals[sig].name != NULL)
+      && (signals[sig].name != NULL))
     return signals[sig].name;
   else
     /* I think the code which prints this will always print it along
@@ -490,22 +490,22 @@ target_signal_from_host (int hostsig)
     return TARGET_SIGNAL_INFO;
 #endif
 
-#if defined (REALTIME_LO)
-  if (hostsig >= REALTIME_LO && hostsig < REALTIME_HI)
+#if defined(REALTIME_LO)
+  if ((hostsig >= REALTIME_LO) && (hostsig < REALTIME_HI))
     {
-      /* This block of TARGET_SIGNAL_REALTIME value is in order.  */
-      if (33 <= hostsig && hostsig <= 63)
-	return (enum target_signal)
-	  (hostsig - 33 + (int) TARGET_SIGNAL_REALTIME_33);
+      /* This block of TARGET_SIGNAL_REALTIME value is in order: */
+      if ((33 <= hostsig) && (hostsig <= 63))
+	return ((enum target_signal)
+		(hostsig - 33 + (int)TARGET_SIGNAL_REALTIME_33));
       else if (hostsig == 32)
 	return TARGET_SIGNAL_REALTIME_32;
-      else if (64 <= hostsig && hostsig <= 127)
-	return (enum target_signal)
-	  (hostsig - 64 + (int) TARGET_SIGNAL_REALTIME_64);
+      else if ((64 <= hostsig) && (hostsig <= 127))
+	return ((enum target_signal)
+		(hostsig - 64 + (int)TARGET_SIGNAL_REALTIME_64));
       else
-	error ("GDB bug: target.c (target_signal_from_host): unrecognized real-time signal");
+	error("GDB bug: target.c (target_signal_from_host): unrecognized real-time signal");
     }
-#endif
+#endif /* REALTIME_LO */
 
   return TARGET_SIGNAL_UNKNOWN;
 }

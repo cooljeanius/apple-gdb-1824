@@ -1,4 +1,4 @@
-/* Source-language-related definitions for GDB.
+/* language.h: Source-language-related definitions for GDB.
 
    Copyright 1991, 1992, 1993, 1994, 1995, 1998, 1999, 2000, 2003,
    2004 Free Software Foundation, Inc.
@@ -23,7 +23,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (LANGUAGE_H)
+#if !defined(LANGUAGE_H)
 #define LANGUAGE_H 1
 
 /* Forward decls for prototypes */
@@ -32,11 +32,15 @@ struct objfile;
 struct expression;
 struct ui_file;
 
-/* enum exp_opcode;     ANSI's `wisdom' didn't include forward enum decls. */
+#ifdef FORWARD_ENUM_DECLS_ALLOWED
+enum exp_opcode;     /* ANSI's `wisdom' failed to include forward enum decls. */
+#endif /* FORWARD_ENUM_DECLS_ALLOWED */
 
 /* This used to be included to configure GDB for one or more specific
    languages.  Now it is left out to configure for all of them.  FIXME.  */
-/* #include "lang_def.h" */
+#ifdef CONFIGURE_GDB_FOR_ONE_OR_MORE_SPECIFIC_LANGUAGES
+# include "lang_def.h"
+#endif /* CONFIGURE_GDB_FOR_ONE_OR_MORE_SPECIFIC_LANGUAGES */
 #define	_LANG_c
 #define	_LANG_m2
 #define  _LANG_fortran
@@ -141,9 +145,8 @@ struct type *language_lookup_primitive_type_by_name (const struct language_defn 
 
 struct language_defn
   {
-    /* Name of the language */
-
-    char *la_name;
+    /* Name of the language: */
+    const char *la_name;
 
     /* its symtab language-enum (defs.h) */
 
@@ -179,9 +182,8 @@ struct language_defn
 
     int (*la_parser) (void);
 
-    /* Parser error function */
-
-    void (*la_error) (char *);
+    /* Parser error function: */
+    void (*la_error)(const char *);
 
     /* Given an expression *EXPP created by prefixifying the result of
        la_parser, perform any remaining processing necessary to complete
@@ -268,18 +270,16 @@ struct language_defn
     /* Type of elements of strings. */
     struct type **string_char_type;
 
-    /* The list of characters forming word boundaries.  */
-    char *(*la_word_break_characters) (void);
+    /* The list of characters forming word boundaries: */
+    const char *(*la_word_break_characters)(void);
 
     /* The per-architecture (OS/ABI) language information.  */
     void (*la_language_arch_info) (struct gdbarch *,
 				   struct language_arch_info *);
 
     /* Add fields above this point, so the magic number is always last. */
-    /* Magic number for compat checking */
-
+    /* Magic number for compat checking: */
     long la_magic;
-
   };
 
 #define LANG_MAGIC	910823L
@@ -375,14 +375,14 @@ extern enum language set_language (enum language);
    && ((c) < 0x7F || (c) >= 0xA0)	\
    && (!sevenbit_strings || (c) < 0x80))
 
-#if 0
+#ifdef ALLOW_UNUSED_FUNCTIONS
 /* FIXME: cagney/2000-03-04: This function does not appear to be used.
    It can be deleted once 5.0 has been released. */
 /* Return a string that contains the hex digits of the number.  No preceeding
    "0x" */
 
-extern char *longest_raw_hex_string (LONGEST);
-#endif
+extern char *longest_raw_hex_string(LONGEST);
+#endif /* ALLOW_UNUSED_FUNCTIONS */
 
 /* Type predicates */
 
@@ -442,7 +442,7 @@ extern enum language language_enum(char *str);
 
 extern const struct language_defn *language_def(enum language);
 
-extern char *language_str(enum language);
+extern const char *language_str(enum language);
 
 /* Add a language to the set known by GDB (at initialization time): */
 extern void add_language(const struct language_defn *);
@@ -461,6 +461,8 @@ extern char *language_class_name_from_physname(const struct language_defn *,
 					       const char *physname);
 
 /* Splitting strings into words: */
-extern char *default_word_break_characters(void);
+extern const char *default_word_break_characters(void);
 
-#endif /* defined (LANGUAGE_H) */
+#endif /* defined(LANGUAGE_H) */
+
+/* EOF */
