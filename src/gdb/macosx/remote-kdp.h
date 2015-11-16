@@ -1,4 +1,4 @@
-/* remote-kdp.h -*- C -*- */
+/* macosx/remote-kdp.h -*- C -*- */
 
 #ifndef __GDB_REMOTE_KDP_H__
 #define __GDB_REMOTE_KDP_H__

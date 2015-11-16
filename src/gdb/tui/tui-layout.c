@@ -1,4 +1,4 @@
-/* tui-layout.c: TUI layout window management.
+/* tui/tui-layout.c: TUI layout window management.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -62,9 +62,9 @@ static void show_source_disasm_command(void);
 static void show_data(enum tui_layout_type);
 static enum tui_layout_type next_layout(void);
 static enum tui_layout_type prev_layout(void);
-static void tui_layout_command(char *, int);
-static void tui_toggle_layout_command(char *, int);
-static void tui_toggle_split_layout_command(char *, int);
+static void tui_layout_command(const char *, int);
+static void tui_toggle_layout_command(const char *, int);
+static void tui_toggle_split_layout_command(const char *, int);
 static CORE_ADDR extract_display_start_addr(void);
 static void tui_handle_xdb_layout(struct tui_layout_def *);
 
@@ -558,51 +558,50 @@ tui_handle_xdb_layout (struct tui_layout_def * layout_def)
     }
 }
 
-
+/* FIXME: needs comment: */
 static void
-tui_toggle_layout_command (char *arg, int from_tty)
+tui_toggle_layout_command(const char *arg, int from_tty)
 {
-  struct tui_layout_def * layout_def = tui_layout_def ();
+  struct tui_layout_def *layout_def = tui_layout_def();
 
-  /* Make sure the curses mode is enabled.  */
-  tui_enable ();
+  /* Make sure the curses mode is enabled: */
+  tui_enable();
   if (layout_def->display_mode == SRC_WIN)
     layout_def->display_mode = DISASSEM_WIN;
   else
     layout_def->display_mode = SRC_WIN;
 
   if (!layout_def->split)
-    tui_handle_xdb_layout (layout_def);
+    tui_handle_xdb_layout(layout_def);
 }
 
-
+/* FIXME: needs comment: */
 static void
-tui_toggle_split_layout_command (char *arg, int from_tty)
+tui_toggle_split_layout_command(const char *arg, int from_tty)
 {
-  struct tui_layout_def * layout_def = tui_layout_def ();
+  struct tui_layout_def *layout_def = tui_layout_def();
 
-  /* Make sure the curses mode is enabled.  */
-  tui_enable ();
+  /* Make sure the curses mode is enabled: */
+  tui_enable();
   layout_def->split = (!layout_def->split);
-  tui_handle_xdb_layout (layout_def);
+  tui_handle_xdb_layout(layout_def);
 }
 
-
+/* FIXME: needs comment: */
 static void
-tui_layout_command (char *arg, int from_tty)
+tui_layout_command(const char *arg, int from_tty)
 {
-  /* Make sure the curses mode is enabled.  */
-  tui_enable ();
+  /* Make sure the curses mode is enabled: */
+  tui_enable();
 
-  /* Switch to the selected layout.  */
-  if (tui_set_layout_for_display_command (arg) != TUI_SUCCESS)
-    warning (_("Invalid layout specified.\n%s"), LAYOUT_USAGE);
-
+  /* Switch to the selected layout: */
+  if (tui_set_layout_for_display_command(arg) != TUI_SUCCESS)
+    warning(_("Invalid layout specified.\n%s"), LAYOUT_USAGE);
 }
 
-/* Answer the previous layout to cycle to.  */
+/* Answer the previous layout to cycle to: */
 static enum tui_layout_type
-next_layout (void)
+next_layout(void)
 {
   enum tui_layout_type new_layout;
 

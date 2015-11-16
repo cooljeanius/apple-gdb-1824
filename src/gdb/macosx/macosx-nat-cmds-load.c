@@ -1,4 +1,4 @@
-/* macosx-nat-cmds-load.c
+/* macosx/macosx-nat-cmds-load.c
    Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
@@ -64,7 +64,7 @@ void
 load_plugin(char *arg, int from_tty)
 {
   void (*fptr)(void) = NULL;
-  char *init_func_name = "init_from_gdb";
+  const char *init_func_name = "init_from_gdb";
   char *p, path[PATH_MAX + 1];
   struct stat sb;
 
@@ -89,7 +89,7 @@ load_plugin(char *arg, int from_tty)
       if ((getegid() != sb.st_gid) || ((sb.st_mode & S_ISGID) == 0))
         {
           struct group *gr;
-          char *grpname = "";
+          const char *grpname = "";
           gr = getgrgid(getegid());
           if (gr && (gr->gr_name != NULL))
             grpname = gr->gr_name;
@@ -153,8 +153,9 @@ load_plugin(char *arg, int from_tty)
   (*fptr)();
 }
 
+/* FIXME: needs comment: */
 void
-info_plugins_command(char *arg, int from_tty)
+info_plugins_command(const char *arg, int from_tty)
 {
   size_t i;
   for (i = 0UL; i < pstate.num; i++)

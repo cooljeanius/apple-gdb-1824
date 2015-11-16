@@ -1,4 +1,4 @@
-/* rdi.h
+/* arm/multi-ice/rdi.h
  * based on ardi.h in ../rdi-share
  * RDI basic types and defintions
  * Copyright (C) 2001 Free Software Foundation, Inc. */

@@ -1,4 +1,4 @@
-/* ax.h
+/* gdbserver/ax.h
    Data structures and functions associated with agent expressions in GDB.
    Copyright (C) 2009-2013 Free Software Foundation, Inc.
 

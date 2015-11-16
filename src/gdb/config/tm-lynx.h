@@ -1,4 +1,4 @@
-/* tm-lynx.h
+/* config/tm-lynx.h
    Macro definitions for LynxOS targets.
    Copyright 1993, 1995 Free Software Foundation, Inc.
 

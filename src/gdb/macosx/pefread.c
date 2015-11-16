@@ -1,4 +1,4 @@
-/* pefread.c
+/* macosx/pefread.c
    Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.

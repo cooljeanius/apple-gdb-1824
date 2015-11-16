@@ -1,4 +1,4 @@
-/* arm-regnums.h
+/* gdbserver/arm-regnums.h
    Common target dependent code for GDB on ARM systems.
    Copyright 2002, 2003 Free Software Foundation, Inc.
 

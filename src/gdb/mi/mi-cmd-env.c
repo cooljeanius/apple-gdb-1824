@@ -1,4 +1,4 @@
-/* mi-cmd-env.c: MI Command Set - environment commands.
+/* mi/mi-cmd-env.c: MI Command Set - environment commands.
 
    Copyright 2002, 2003, 2004 Free Software Foundation, Inc.
 
@@ -114,7 +114,7 @@ enum mi_cmd_result
 mi_cmd_env_path (char *command, char **argv, int argc)
 {
   char *exec_path;
-  char *env;
+  const char *env;
   int reset = 0;
   int optind = 0;
   int i;
@@ -268,10 +268,11 @@ mi_cmd_inferior_tty_show (char *command, char **argv, int argc)
   return MI_CMD_DONE;
 }
 
+/* module initialization: */
 void
 _initialize_mi_cmd_env(void)
 {
-  char *env;
+  const char *env;
 
   /* We want original execution path to reset to, if desired later: */
   env = get_in_environ(inferior_environ, path_var_name);

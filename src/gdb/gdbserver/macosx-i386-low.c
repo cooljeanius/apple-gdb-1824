@@ -1,5 +1,5 @@
 /*
- * macosx-i386-low.c
+ * gdbserver/macosx-i386-low.c
  */
 
 /* TODO: Put more stuff in this file */

@@ -57,7 +57,7 @@ extern void _initialize_inflow(void);
 
 static void pass_signal(int);
 
-static void kill_command(char *, int);
+static void kill_command(const char *, int);
 
 static void terminal_ours_1(int);
 
@@ -433,12 +433,14 @@ terminal_ours_1(int output_only)
     }
 }
 
+/* FIXME: needs comment: */
 void
-term_info (char *arg, int from_tty)
+term_info(const char *arg, int from_tty)
 {
-  target_terminal_info (arg, from_tty);
+  target_terminal_info(arg, from_tty);
 }
 
+/* FIXME: needs comment: */
 void
 child_terminal_info(char *args, int from_tty)
 {
@@ -586,7 +588,7 @@ new_tty(void)
 
 /* Kill the inferior process.  Make us have no inferior: */
 static void
-kill_command(char *arg, int from_tty)
+kill_command(const char *arg, int from_tty)
 {
   /* FIXME:  This should not really be inferior_ptid (or target_has_execution).
      It should be a distinct flag that indicates that a target is active, cuz
@@ -745,14 +747,15 @@ gdb_setpgid(void)
 #   endif /* SETPGRP_VOID */
 #  endif /* HAVE_SETPGRP */
 # endif /* HAVE_SETPGID */
-#endif /* defined (HAVE_TERMIOS) || defined (TIOCGPGRP) */
+#endif /* defined(HAVE_TERMIOS) || defined(TIOCGPGRP) */
     }
 
   return retval;
 }
 
+/* module initialization: */
 void
-_initialize_inflow (void)
+_initialize_inflow(void)
 {
   add_info("terminal", term_info,
            _("Print inferior's saved terminal status."));

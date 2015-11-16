@@ -1,4 +1,4 @@
-/* macosx-tdep.c: Mac OS X support for GDB, the GNU debugger.
+/* macosx/macosx-tdep.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -133,6 +133,7 @@ static char *find_info_plist_filename_from_bundle_name(const char *bundle,
                                                      const char *bundle_suffix);
 
 #if defined(USE_DEBUG_SYMBOLS_FRAMEWORK) && USE_DEBUG_SYMBOLS_FRAMEWORK
+/* FIXME: might need 'extern "C"' if building as C++: */
 extern CFArrayRef DBGCopyMatchingUUIDsForURL(CFURLRef path,
                                              int /* cpu_type_t */ cpuType,
                                            int /* cpu_subtype_t */ cpuSubtype);
@@ -198,11 +199,12 @@ struct deprecated_complaint unsupported_indirect_symtype_complaint =
 
 unsigned char macosx_symbol_types[256];
 
+/* */
 static unsigned char
 macosx_symbol_type_base(unsigned char macho_type)
 {
   unsigned char mtype = macho_type;
-  unsigned char ntype = 0;
+  unsigned char ntype = 0U;
 
   if (macho_type & BFD_MACH_O_N_STAB)
     {
@@ -259,6 +261,7 @@ macosx_symbol_type_base(unsigned char macho_type)
   return ntype;
 }
 
+/* */
 static void
 macosx_symbol_types_init(void)
 {
@@ -269,6 +272,7 @@ macosx_symbol_types_init(void)
     }
 }
 
+/* */
 static unsigned char
 macosx_symbol_type(unsigned char macho_type, unsigned char macho_sect,
                    bfd *abfd)
@@ -341,6 +345,7 @@ macosx_symbol_type(unsigned char macho_type, unsigned char macho_sect,
   return ntype;
 }
 
+/* */
 void
 macosx_internalize_symbol(struct internal_nlist *in, int *sect_p,
                           struct external_nlist *ext, bfd *abfd)
@@ -379,6 +384,7 @@ macosx_internalize_symbol(struct internal_nlist *in, int *sect_p,
   in->n_other = ext->e_other[0];
 }
 
+/* */
 CORE_ADDR
 dyld_symbol_stub_function_address(CORE_ADDR pc, const char **name)
 {
@@ -432,6 +438,7 @@ dyld_symbol_stub_function_name(CORE_ADDR pc)
   return SYMBOL_LINKAGE_NAME(msymbol) + strlen(DYLD_PREFIX);
 }
 
+/* */
 CORE_ADDR
 macosx_skip_trampoline_code(CORE_ADDR pc)
 {
@@ -482,13 +489,15 @@ macosx_record_symbols_from_sect_p(bfd *abfd, unsigned char macho_type ATTRIBUTE_
     return 1;
 }
 
-int
+/* */
+int ATTRIBUTE_CONST
 macosx_in_solib_return_trampoline(CORE_ADDR pc ATTRIBUTE_UNUSED,
                                   char *name ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
+/* */
 int
 macosx_in_solib_call_trampoline(CORE_ADDR pc, char *name ATTRIBUTE_UNUSED)
 {
@@ -499,8 +508,9 @@ macosx_in_solib_call_trampoline(CORE_ADDR pc, char *name ATTRIBUTE_UNUSED)
   return 0;
 }
 
+/* */
 static void
-info_trampoline_command(char *exp, int from_tty ATTRIBUTE_UNUSED)
+info_trampoline_command(const char *exp, int from_tty ATTRIBUTE_UNUSED)
 {
   struct expression *expr;
   struct value *val;
@@ -537,9 +547,8 @@ struct sal_chain
 
 /* On some platforms, you need to turn on the exception callback
    to hit the catchpoints for exceptions.  Not on Mac OS X. */
-
-int
-macosx_enable_exception_callback(enum exception_event_kind kind ATTRIBUTE_UNUSED,
+int ATTRIBUTE_CONST
+macosx_enable_exception_callback(enum exception_event_kind k ATTRIBUTE_UNUSED,
                                  int enable ATTRIBUTE_UNUSED)
 {
   return 1;
@@ -554,11 +563,11 @@ macosx_find_exception_catchpoints(enum exception_event_kind kind,
                                   struct objfile *restrict_objfile ATTRIBUTE_UNUSED)
 {
   struct symtabs_and_lines *return_sals;
-  char *symbol_name;
+  const char *symbol_name;
   struct objfile *objfile;
   struct minimal_symbol *msymbol;
   unsigned int hash;
-  struct sal_chain *sal_chain = 0;
+  struct sal_chain *sal_chain = (struct sal_chain *)0;
 
   switch (kind)
     {
@@ -713,15 +722,18 @@ macosx_get_current_exception_event(void)
   return exception_event;
 }
 
+/* */
 void
-update_command(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
+update_command(const char *args ATTRIBUTE_UNUSED,
+	       int from_tty ATTRIBUTE_UNUSED)
 {
   registers_changed();
   reinit_frame_cache();
 }
 
+/* */
 void
-stack_flush_command(char *args ATTRIBUTE_UNUSED, int from_tty)
+stack_flush_command(const char *args ATTRIBUTE_UNUSED, int from_tty)
 {
   reinit_frame_cache();
   if (from_tty)
@@ -734,7 +746,7 @@ stack_flush_command(char *args ATTRIBUTE_UNUSED, int from_tty)
    open the that file & try to put the selection on that line.  */
 
 static void
-open_command(char *args, int from_tty ATTRIBUTE_UNUSED)
+open_command(const char *args, int from_tty ATTRIBUTE_UNUSED)
 {
   const char *filename = NULL;  /* Possibly directory-less filename */
   const char *fullname = NULL;  /* Fully qualified on-disk filename */
@@ -2521,8 +2533,8 @@ fast_show_stack_trace_prologue (unsigned int count_limit,
           struct objfile *libsystem_objfile = NULL;
 
 	  if (ofile->name == NULL
-	      || (strstr (ofile->name, "libSystem.B.dylib") == NULL
-		  && strstr (ofile->name, "/usr/lib/system") != ofile->name))
+	      || (strstr(ofile->name, "libSystem.B.dylib") == NULL
+		  && (strstr(ofile->name, "/usr/lib/system") != ofile->name)))
 	    continue;
 
           /* APPLE LOCAL - Check to see if the libSystem objfile has a
@@ -2554,21 +2566,21 @@ fast_show_stack_trace_prologue (unsigned int count_limit,
               pc = SYMBOL_VALUE_ADDRESS (msymbol);
 
               /* Warn if this is the second sigtramp we have found.  */
-              if (*sigtramp_start_ptr != 0 && *sigtramp_start_ptr != (CORE_ADDR) -1)
+              if ((*sigtramp_start_ptr != 0)
+		  && (*sigtramp_start_ptr != (CORE_ADDR)-1))
                 {
-                  warning ("Found two versions of sigtramp, one at 0x%s and one at 0x%s."
-                           "  Using the latter.",
-                           paddr_nz (*sigtramp_start_ptr), paddr_nz (pc));
+                  warning("Found two versions of sigtramp, one at 0x%s and one at 0x%s."
+                          "  Using the latter.",
+                          paddr_nz(*sigtramp_start_ptr), paddr_nz(pc));
                 }
 
-              if (find_pc_partial_function (pc, &name, sigtramp_start_ptr,
-                                            sigtramp_end_ptr) == 0)
+              if (find_pc_partial_function(pc, &name, sigtramp_start_ptr,
+                                           sigtramp_end_ptr) == 0)
                 {
-                  warning
-                    ("Could NOT find minimal bounds for \"_sigtramp\" - "
-                     "backtraces may be unreliable");
-                  *sigtramp_start_ptr = (CORE_ADDR) -1;
-                  *sigtramp_end_ptr = (CORE_ADDR) -1;
+                  warning("Could NOT find minimal bounds for \"_sigtramp\" - "
+			  "backtraces may be unreliable");
+                  *sigtramp_start_ptr = (CORE_ADDR)-1;
+                  *sigtramp_end_ptr = (CORE_ADDR)-1;
                 }
               else
                   break;
@@ -2612,25 +2624,14 @@ fast_show_stack_trace_prologue (unsigned int count_limit,
      do that with mi_out_put, but that is not a generic command.
      This looks stupid, but should NOT be all that inefficient.  */
 
-  actually_do_stack_frame_prologue (count_limit,
-				    print_start,
-				    print_end,
-				    wordsize,
-				    count,
-				    out_fi,
-				    NULL);
+  actually_do_stack_frame_prologue(count_limit, print_start, print_end,
+				   wordsize, count, out_fi, NULL);
 
-  return actually_do_stack_frame_prologue (count_limit,
-					   print_start,
-					   print_end,
-					   wordsize,
-					   count,
-					   out_fi,
-					   print_fun);
-
+  return actually_do_stack_frame_prologue(count_limit, print_start, print_end,
+					  wordsize, count, out_fi, print_fun);
 }
 
-
+/* */
 int
 actually_do_stack_frame_prologue(unsigned int count_limit,
                                  unsigned int print_start,
@@ -2638,8 +2639,9 @@ actually_do_stack_frame_prologue(unsigned int count_limit,
                                  unsigned int wordsize ATTRIBUTE_UNUSED,
                                  unsigned int *count,
                                  struct frame_info **out_fi,
-                                 void (print_fun)(struct ui_out * uiout, int *frame_num,
-                                                  CORE_ADDR pc, CORE_ADDR fp))
+                                 void (print_fun)(struct ui_out *uiout,
+						  int *frame_num, CORE_ADDR pc,
+						  CORE_ADDR fp))
 {
   CORE_ADDR fp;
   ULONGEST pc;
@@ -3221,8 +3223,9 @@ macosx_get_kext_sect_addrs_from_kernel(const char *filename ATTRIBUTE_UNUSED,
   return get_section_addresses_for_macho_in_memory(mh_addr);
 }
 
+/* */
 static void
-add_all_kexts_command(char *args ATTRIBUTE_UNUSED, int from_tty)
+add_all_kexts_command(const char *args ATTRIBUTE_UNUSED, int from_tty)
 {
 #if !defined(USE_DEBUG_SYMBOLS_FRAMEWORK)
   error("DebugSymbols framework not available, add-all-kexts command not unavailable.");
@@ -3283,7 +3286,12 @@ add_all_kexts_command(char *args ATTRIBUTE_UNUSED, int from_tty)
             convert_sect_addrs_to_offsets_via_on_disk_file(sect_addrs,
                                                            symbol_rich,
                                                            &num_offsets);
-          symbol_file_add_name_with_addrs_or_offsets(symbol_rich, from_tty, NULL, sect_offsets, num_offsets, 0, OBJF_USERLOADED, OBJF_SYM_ALL, 0, NULL, NULL);
+          symbol_file_add_name_with_addrs_or_offsets(symbol_rich, from_tty,
+						     NULL, sect_offsets,
+						     num_offsets, 0,
+						     OBJF_USERLOADED,
+						     OBJF_SYM_ALL, 0,
+						     NULL, NULL);
            xfree(sect_offsets);
         }
       else
@@ -3363,25 +3371,28 @@ add_all_kexts_command(char *args ATTRIBUTE_UNUSED, int from_tty)
    Returns 0 if a kernel was not found at ADDR.  */
 
 static int
-mach_kernel_starts_here_p (CORE_ADDR addr, uuid_t *file_uuid, uuid_t *discovered_uuid, enum gdb_osabi *discovered_osabi)
+mach_kernel_starts_here_p(CORE_ADDR addr, uuid_t *file_uuid,
+			  uuid_t *discovered_uuid,
+			  enum gdb_osabi *discovered_osabi)
 {
   uuid_t mem_uuid;
   enum gdb_osabi mem_osabi;
-  if (!get_information_about_macho (NULL, addr, NULL, 1, 1, &mem_uuid, &mem_osabi, NULL, NULL, NULL, NULL))
+  if (!get_information_about_macho(NULL, addr, NULL, 1, 1, &mem_uuid,
+				   &mem_osabi, NULL, NULL, NULL, NULL))
     return 0;
 
   if (file_uuid)
     {
-      if (memcmp (*file_uuid, mem_uuid, sizeof (uuid_t)) != 0)
+      if (memcmp(*file_uuid, mem_uuid, sizeof(uuid_t)) != 0)
         {
-          warning ("Kernel found in memory at 0x%s has a UUID of %s but the binary specified to gdb has a UUID of %s\n",
-                   paddr_nz (addr), puuid (*file_uuid), puuid (mem_uuid));
+          warning("Kernel found in memory at 0x%s has a UUID of %s but the binary specified to gdb has a UUID of %s\n",
+                  paddr_nz(addr), puuid(*file_uuid), puuid(mem_uuid));
         }
     }
   if (discovered_osabi)
     *discovered_osabi = mem_osabi;
   if (discovered_uuid)
-    memcpy (*discovered_uuid, mem_uuid, sizeof (uuid_t));
+    memcpy(*discovered_uuid, mem_uuid, sizeof(uuid_t));
   return 1;
 }
 
@@ -3609,8 +3620,8 @@ exhaustive_search_for_kernel_in_mem(struct objfile *ofile, CORE_ADDR *addr,
     }
 
 
-  /* Fifth, start iterating from the beginning of the possible kernel region of memory
-     until we run out of address space or find a kernel.  */
+  /* Fifth, start iterating from the beginning of the possible kernel region of
+   * memory until we run out of address space or find a kernel.  */
 
   if ((wordsize == 4) && !found_kernel)
     {
@@ -3889,8 +3900,9 @@ try_to_find_and_load_kernel_via_uuid(CORE_ADDR in_memory_addr,
   return 1;
 }
 
+/* */
 static void
-maintenance_list_kexts(char *arg ATTRIBUTE_UNUSED,
+maintenance_list_kexts(const char *arg ATTRIBUTE_UNUSED,
                        int from_tty ATTRIBUTE_UNUSED)
 {
   struct loaded_kexts_table *kexts = get_list_of_loaded_kexts();
@@ -4005,7 +4017,7 @@ free_dyld_shared_cache_local_syms(void)
   dyld_shared_cache_entries_count = 0;
 }
 
-
+/* */
 void
 get_dyld_shared_cache_local_syms(void)
 {
@@ -4089,10 +4101,12 @@ get_dyld_shared_cache_local_syms(void)
   dyld_shared_cache_entries = ((struct gdb_copy_dyld_cache_local_symbols_entry *)dyld_shared_cache_raw + locsyms_header->entriesOffset);
   dyld_shared_cache_entries_count = locsyms_header->entriesCount;
 #else
+  warning(_("Can only get dyld_shared_cache local symbols on ARM"));
   return;
 #endif /* TARGET_ARM && NM_NEXTSTEP */
 }
 
+/* */
 struct gdb_copy_dyld_cache_local_symbols_entry *
 get_dyld_shared_cache_entry(CORE_ADDR intended_load_addr)
 {
@@ -4108,7 +4122,7 @@ get_dyld_shared_cache_entry(CORE_ADDR intended_load_addr)
   return NULL;
 }
 
-
+/* Standard gdb initialization hook: */
 void
 _initialize_macosx_tdep(void)
 {

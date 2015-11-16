@@ -1798,15 +1798,17 @@ extern initialize_file_ftype _initialize_frame; /* -Wmissing-prototypes */
 static struct cmd_list_element *set_backtrace_cmdlist;
 static struct cmd_list_element *show_backtrace_cmdlist;
 
+/* FIXME: needs comment: */
 static void
-set_backtrace_cmd(char *args, int from_tty)
+set_backtrace_cmd(const char *args, int from_tty)
 {
   help_list(set_backtrace_cmdlist, "set backtrace ",
             (enum command_class)-1, gdb_stdout);
 }
 
+/* FIXME: needs comment: */
 static void
-show_backtrace_cmd(char *args, int from_tty)
+show_backtrace_cmd(const char *args, int from_tty)
 {
   cmd_show_list(show_backtrace_cmdlist, from_tty, "");
 }

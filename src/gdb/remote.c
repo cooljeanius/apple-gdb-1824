@@ -132,7 +132,7 @@ static void remote_async_kill(void);
 
 static int tohex(int nib);
 
-static void remote_detach(char *args, int from_tty);
+static void remote_detach(const char *args, int from_tty);
 
 static void remote_interrupt(int signo);
 
@@ -170,13 +170,13 @@ static int hexnumnstr(char *, ULONGEST, int);
 
 static CORE_ADDR remote_address_masked(CORE_ADDR);
 
-static void print_packet(char *);
+static void print_packet(const char *);
 
 static unsigned long crc32(unsigned char *, int, unsigned int);
 
-static void compare_sections_command(char *, int);
+static void compare_sections_command(const char *, int);
 
-static void packet_command(char *, int);
+static void packet_command(const char *, int);
 
 static int stub_unpack_int(char *buff, int fieldlength);
 
@@ -192,7 +192,7 @@ static int hex2bin(const char *hex, char *bin, int count);
 
 static int bin2hex(const char *bin, char *hex, int count);
 
-static int putpkt_binary(char *buf, int cnt);
+static int putpkt_binary(const char *buf, int cnt);
 
 static void check_binary_download(CORE_ADDR addr);
 
@@ -477,7 +477,7 @@ static int remote_async_terminal_ours_p;
 
 struct memory_packet_config
 {
-  char *name;
+  const char *name;
   size_t size; /* 'size_t' is a better type for this than 'long' */
   int fixed_p;
 };
@@ -592,12 +592,13 @@ dump_protocol_log (const char *message)
     }
 }
 
+/* FIXME: add comment: */
 void
-dump_packets_command (char *unused, int fromtty)
+dump_packets_command(const char *unused ATTRIBUTE_UNUSED, int fromtty)
 {
   if (!remote_desc)
-    error (_("command can only be used with remote target"));
-  dump_protocol_log (NULL);
+    error(_("command can only be used with remote target"));
+  dump_protocol_log(NULL);
 }
 
 /* Compute the current size of a read/write packet.  Since this makes
@@ -650,56 +651,58 @@ get_memory_packet_size(struct memory_packet_config *config)
    something really big then do a sanity check.  */
 
 static void
-set_memory_packet_size (char *args, struct memory_packet_config *config)
+set_memory_packet_size(const char *args, struct memory_packet_config *config)
 {
   int fixed_p = config->fixed_p;
   long size = config->size;
   if (args == NULL)
-    error (_("Argument required (integer, `fixed' or `limited')."));
-  else if (strcmp (args, "hard") == 0
-      || strcmp (args, "fixed") == 0)
+    error(_("Argument required (integer, `fixed' or `limited')."));
+  else if ((strcmp(args, "hard") == 0)
+	   || (strcmp(args, "fixed") == 0))
     fixed_p = 1;
-  else if (strcmp (args, "soft") == 0
-	   || strcmp (args, "limit") == 0)
+  else if ((strcmp(args, "soft") == 0)
+	   || (strcmp(args, "limit") == 0))
     fixed_p = 0;
   else
     {
       char *end;
-      size = strtoul (args, &end, 0);
+      size = strtoul(args, &end, 0);
       if (args == end)
-	error (_("Invalid %s (bad syntax)."), config->name);
-#if 0
+	error(_("Invalid %s (bad syntax)."), config->name);
+#if defined(MAX_REMOTE_PACKET_SIZE) && defined(LONG_MAX) && \
+    (MAX_REMOTE_PACKET_SIZE > LONG_MAX)
       /* Instead of explicitly capping the size of a packet to
          MAX_REMOTE_PACKET_SIZE or dissallowing it, the user is
          instead allowed to set the size to something arbitrarily
          large.  */
       if (size > MAX_REMOTE_PACKET_SIZE)
-	error (_("Invalid %s (too large)."), config->name);
-#endif
+	error(_("Invalid %s (too large)."), config->name);
+#endif /* MAX_REMOTE_PACKET_SIZE > LONG_MAX */
     }
   /* Extra checks?  */
   if (fixed_p && !config->fixed_p)
     {
-      if (! query (_("The target may not be able to correctly handle a %s\n"
+      if (!query(_("The target may not be able to correctly handle a %s\n"
 		   "of %ld bytes. Change the packet size? "),
-		   config->name, size))
-	error (_("Packet size not changed."));
+		 config->name, size))
+	error(_("Packet size not changed."));
     }
   /* Update the config.  */
   config->fixed_p = fixed_p;
   config->size = size;
 }
 
+/* FIXME: add comment: */
 static void
-show_memory_packet_size (struct memory_packet_config *config)
+show_memory_packet_size(struct memory_packet_config *config)
 {
-  printf_filtered (_("The %s is %ld. "), config->name, config->size);
+  printf_filtered(_("The %s is %ld. "), config->name, config->size);
   if (config->fixed_p)
-    printf_filtered (_("Packets are fixed at %ld bytes.\n"),
-		     get_memory_packet_size (config));
+    printf_filtered(_("Packets are fixed at %ld bytes.\n"),
+		    get_memory_packet_size(config));
   else
-    printf_filtered (_("Packets are limited to %ld bytes.\n"),
-		     get_memory_packet_size (config));
+    printf_filtered(_("Packets are limited to %ld bytes.\n"),
+		    get_memory_packet_size(config));
 }
 
 static struct memory_packet_config memory_write_packet_config =
@@ -712,14 +715,15 @@ static struct memory_packet_config memory_write_packet_config =
  * download performance.
  */
 static void
-show_max_remote_packet_size (char *args, int from_tty)
+show_max_remote_packet_size(const char *args, int from_tty)
 {
-    printf_filtered (_("The max remote packet size is %ld (0x%lx).\n"),
-		     g_max_remote_packet_size, g_max_remote_packet_size);
+    printf_filtered(_("The max remote packet size is %ld (0x%lx).\n"),
+		    g_max_remote_packet_size, g_max_remote_packet_size);
 }
 
+/* This one does the actual increasing: */
 static void
-set_max_remote_packet_size (char *args, int from_tty)
+set_max_remote_packet_size(const char *args, int from_tty)
 {
   if (args == NULL)
     {
@@ -729,13 +733,13 @@ set_max_remote_packet_size (char *args, int from_tty)
   else
     {
       char *end = NULL;
-      long remote_packet_size = strtol (args, &end, 0);
+      long remote_packet_size = strtol(args, &end, 0);
       /* Make sure that the new value is larger than the the
          minimum max remote packet size so we all remote
          command packets can still function properly.  */
       if (end == NULL || *end != '\0')
 	{
-	  error (_("Invalid remote packet size integer string: %s"), args);
+	  error(_("Invalid remote packet size integer string: %s"), args);
 	}
       else
         {
@@ -746,41 +750,50 @@ set_max_remote_packet_size (char *args, int from_tty)
 
 /* APPLE LOCAL END: dynamic remote packet size  */
 
+/* FIXME: add comment: */
 static void
-set_memory_write_packet_size (char *args, int from_tty)
+set_memory_write_packet_size(const char *args, int from_tty ATTRIBUTE_UNUSED)
 {
-  set_memory_packet_size (args, &memory_write_packet_config);
+  set_memory_packet_size(args, &memory_write_packet_config);
 }
 
+/* FIXME: add comment: */
 static void
-show_memory_write_packet_size (char *args, int from_tty)
+show_memory_write_packet_size(const char *args ATTRIBUTE_UNUSED,
+			      int from_tty ATTRIBUTE_UNUSED)
 {
-  show_memory_packet_size (&memory_write_packet_config);
+  show_memory_packet_size(&memory_write_packet_config);
 }
 
+/* FIXME: add comment: */
 static long
-get_memory_write_packet_size (void)
+get_memory_write_packet_size(void)
 {
-  return get_memory_packet_size (&memory_write_packet_config);
+  return get_memory_packet_size(&memory_write_packet_config);
 }
 
+/* FIXME: add comment: */
 static struct memory_packet_config memory_read_packet_config =
 {
   "memory-read-packet-size", 0, 0
 };
 
+/* FIXME: add comment: */
 static void
-set_memory_read_packet_size(char *args, int from_tty)
+set_memory_read_packet_size(const char *args, int from_tty ATTRIBUTE_UNUSED)
 {
   set_memory_packet_size(args, &memory_read_packet_config);
 }
 
+/* FIXME: add comment: */
 static void
-show_memory_read_packet_size(char *args, int from_tty)
+show_memory_read_packet_size(const char *args ATTRIBUTE_UNUSED,
+			     int from_tty ATTRIBUTE_UNUSED)
 {
   show_memory_packet_size(&memory_read_packet_config);
 }
 
+/* FIXME: add comment: */
 static size_t
 get_memory_read_packet_size(void)
 {
@@ -808,8 +821,8 @@ enum packet_support
 
 struct packet_config
   {
-    char *name;
-    char *title;
+    const char *name;
+    const char *title;
     enum auto_boolean detect;
     enum packet_support support;
   };
@@ -824,8 +837,9 @@ enum packet_result
   PACKET_UNKNOWN
 };
 
+/* FIXME: add comment: */
 static void
-update_packet_config (struct packet_config *config)
+update_packet_config(struct packet_config *config)
 {
   switch (config->detect)
     {
@@ -841,10 +855,11 @@ update_packet_config (struct packet_config *config)
     }
 }
 
+/* FIXME: add comment: */
 static void
-show_packet_config_cmd (struct packet_config *config)
+show_packet_config_cmd(struct packet_config *config)
 {
-  char *support = "internal-error";
+  const char *support = "internal-error";
   switch (config->support)
     {
     case PACKET_ENABLE:
@@ -860,26 +875,27 @@ show_packet_config_cmd (struct packet_config *config)
   switch (config->detect)
     {
     case AUTO_BOOLEAN_AUTO:
-      printf_filtered (_("Support for remote protocol `%s' (%s) packet is auto-detected, currently %s.\n"),
-		       config->name, config->title, support);
+      printf_filtered(_("Support for remote protocol `%s' (%s) packet is auto-detected, currently %s.\n"),
+		      config->name, config->title, support);
       break;
     case AUTO_BOOLEAN_TRUE:
     case AUTO_BOOLEAN_FALSE:
-      printf_filtered (_("Support for remote protocol `%s' (%s) packet is currently %s.\n"),
-		       config->name, config->title, support);
+      printf_filtered(_("Support for remote protocol `%s' (%s) packet is currently %s.\n"),
+		      config->name, config->title, support);
       break;
     }
 }
 
+/* FIXME: add comment: */
 static void
-add_packet_config_cmd (struct packet_config *config,
-		       char *name,
-		       char *title,
-		       cmd_sfunc_ftype *set_func,
-		       show_value_ftype *show_func,
-		       struct cmd_list_element **set_remote_list,
-		       struct cmd_list_element **show_remote_list,
-		       int legacy)
+add_packet_config_cmd(struct packet_config *config,
+		      const char *name,
+		      const char *title,
+		      cmd_sfunc_ftype *set_func,
+		      show_value_ftype *show_func,
+		      struct cmd_list_element **set_remote_list,
+		      struct cmd_list_element **show_remote_list,
+		      int legacy)
 {
   char *set_doc;
   char *show_doc;
@@ -1158,8 +1174,8 @@ static void
 start_no_ack_mode(void)
 {
   char buf[256];
-  putpkt ("QStartNoAckMode");
-  getpkt (buf, sizeof (buf) - 1, 0);
+  putpkt("QStartNoAckMode");
+  getpkt(buf, sizeof(buf) - 1, 0);
   if (buf[0] == 'O' && buf[1] == 'K')
     no_ack_mode = 1;
   return;
@@ -1200,15 +1216,15 @@ show_no_ack_mode_cmd (struct ui_file *file, int from_tty,
 static int
 send_remote_debugflags_pkt (const char *flags)
 {
-  char *pkt = (char *) alloca (sizeof ("QSetLogging:bitmask=") +
-                                       strlen (flags) + 1);
+  char *pkt = (char *)alloca(sizeof("QSetLogging:bitmask=")
+			     + strlen(flags) + 1UL);
   char buf[128];
-  strcpy (pkt, "QSetLogging:bitmask=");
-  strcat (pkt, flags);
-  strcat (pkt, ";");
-  putpkt (pkt);
-  getpkt (buf, sizeof (buf) - 1, 0);
-  if (buf[0] != 'O' || buf[1] != 'K')
+  strcpy(pkt, "QSetLogging:bitmask=");
+  strcat(pkt, flags);
+  strcat(pkt, ";");
+  putpkt(pkt);
+  getpkt(buf, (sizeof(buf) - 1), 0);
+  if ((buf[0] != 'O') || (buf[1] != 'K'))
     return 0;
   return 1;
 }
@@ -1474,11 +1490,11 @@ set_thread(int th, int gen)
       buf[3] = '\0';
     }
   else if (th < 0)
-    xsnprintf (&buf[2], rs->remote_packet_size - 2, "-%x", -th);
+    xsnprintf(&buf[2], (rs->remote_packet_size - 2), "-%x", -th);
   else
-    xsnprintf (&buf[2], rs->remote_packet_size - 2, "%x", th);
-  putpkt (buf);
-  getpkt (buf, (rs->remote_packet_size), 0);
+    xsnprintf(&buf[2], (rs->remote_packet_size - 2), "%x", th);
+  putpkt(buf);
+  getpkt(buf, (rs->remote_packet_size), 0);
   if (gen)
     general_thread = th;
   else
@@ -1488,17 +1504,17 @@ set_thread(int th, int gen)
 /*  Return nonzero if the thread TH is still alive on the remote system.  */
 
 static int
-remote_thread_alive (ptid_t ptid)
+remote_thread_alive(ptid_t ptid)
 {
-  int tid = PIDGET (ptid);
+  int tid = PIDGET(ptid);
   char buf[16];
 
   if (tid < 0)
-    xsnprintf (buf, sizeof (buf), "T-%08x", -tid);
+    xsnprintf(buf, sizeof(buf), "T-%08x", -tid);
   else
-    xsnprintf (buf, sizeof (buf), "T%08x", tid);
-  putpkt (buf);
-  getpkt (buf, sizeof (buf), 0);
+    xsnprintf(buf, sizeof(buf), "T%08x", tid);
+  putpkt(buf);
+  getpkt(buf, sizeof(buf), 0);
   return (buf[0] == 'O' && buf[1] == 'K');
 }
 
@@ -2247,29 +2263,26 @@ remote_threads_info(void)
 
   if (use_threadinfo_query)
     {
-      putpkt ("qfThreadInfo");
+      putpkt("qfThreadInfo");
       bufp = buf;
       getpkt (bufp, (rs->remote_packet_size), 0);
       if (bufp[0] != '\0')		/* q packet recognized */
 	{
 	  while (*bufp++ == 'm')	/* reply contains one or more TID */
 	    {
-	      do
-		{
-		  /* Use strtoul here, so we'll correctly parse values
-		     whose highest bit is set.  The protocol carries
-		     them as a simple series of hex digits; in the
-		     absence of a sign, strtol will see such values as
-		     positive numbers out of range for signed 'long',
-		     and return LONG_MAX to indicate an overflow.  */
-		  tid = strtoul (bufp, &bufp, 16);
-		  if (tid != 0 && !in_thread_list (ptid_build (tid, 0, tid)))
-		    add_thread (ptid_build (tid, 0, tid));
-		}
-	      while (*bufp++ == ',');	/* comma-separated list */
-	      putpkt ("qsThreadInfo");
+	      do {
+		/* Use strtoul here, so we shall correctly parse values whose
+		 * highest bit is set.  The protocol carries them as a simple
+		 * series of hex digits; in the absence of a sign, strtol will
+		 * see such values as positive numbers out of range for signed
+		 * 'long', and return LONG_MAX to indicate an overflow.  */
+		tid = strtoul(bufp, &bufp, 16);
+		if ((tid != 0) && !in_thread_list(ptid_build(tid, 0, tid)))
+		  add_thread(ptid_build(tid, 0, tid));
+	      } while (*bufp++ == ',');	/* comma-separated list */
+	      putpkt("qsThreadInfo");
 	      bufp = buf;
-	      getpkt (bufp, (rs->remote_packet_size), 0);
+	      getpkt(bufp, (rs->remote_packet_size), 0);
 	    }
 	  return;	/* done */
 	}
@@ -2308,15 +2321,15 @@ remote_threads_extra_info(struct thread_info *tp)
 
   if (use_threadextra_query)
     {
-      xsnprintf (bufp, rs->remote_packet_size, "qThreadExtraInfo,%x",
-		 PIDGET (tp->ptid));
-      putpkt (bufp);
-      getpkt (bufp, (rs->remote_packet_size), 0);
+      xsnprintf(bufp, rs->remote_packet_size, "qThreadExtraInfo,%x",
+		PIDGET(tp->ptid));
+      putpkt(bufp);
+      getpkt(bufp, (rs->remote_packet_size), 0);
       if (bufp[0] != 0)
 	{
-	  n = min (strlen (bufp) / 2, sizeof (display_buf));
-	  result = hex2bin (bufp, display_buf, n);
-	  display_buf [result] = '\0';
+	  n = min((strlen(bufp) / 2UL), sizeof(display_buf));
+	  result = hex2bin(bufp, display_buf, n);
+	  display_buf[result] = '\0';
 	  return display_buf;
 	}
     }
@@ -2389,9 +2402,9 @@ get_offsets(void)
   CORE_ADDR text_addr, data_addr, bss_addr;
   struct section_offsets *offs;
 
-  putpkt ("qOffsets");
+  putpkt("qOffsets");
 
-  getpkt (buf, (rs->remote_packet_size), 0);
+  getpkt(buf, (rs->remote_packet_size), 0);
 
   if (buf[0] == '\000')
     return;			/* Return silently.  Stub doesn't support
@@ -2513,15 +2526,15 @@ remote_start_remote (struct ui_out *uiout, void *dummy)
 
       /* APPLE LOCAL */
       if (user_requested_no_ack_mode == AUTO_BOOLEAN_TRUE)
-        start_no_ack_mode ();
+        start_no_ack_mode();
       if (remote_debugflags != NULL)
-        send_remote_debugflags_pkt (remote_debugflags);
-      send_remote_max_payload_size ();
+        send_remote_debugflags_pkt(remote_debugflags);
+      send_remote_max_payload_size();
 
-      putpkt ("?");		/* Initiate a query from remote machine.  */
+      putpkt("?");		/* Initiate a query from remote machine.  */
       immediate_quit--;
 
-      remote_start_remote_dummy (uiout, dummy);
+      remote_start_remote_dummy(uiout, dummy);
     }
 }
 
@@ -2596,29 +2609,30 @@ remote_check_symbols (struct objfile *objfile)
 
   /* Invite target to request symbol lookups.  */
 
-  putpkt ("qSymbol::");
-  getpkt (reply, (rs->remote_packet_size), 0);
-  packet_ok (reply, &remote_protocol_qSymbol);
+  putpkt("qSymbol::");
+  getpkt(reply, (rs->remote_packet_size), 0);
+  packet_ok(reply, &remote_protocol_qSymbol);
 
   while (strncmp (reply, "qSymbol:", 8) == 0)
     {
       tmp = &reply[8];
-      end = hex2bin (tmp, msg, strlen (tmp) / 2);
+      end = hex2bin(tmp, msg, (strlen(tmp) / 2));
       msg[end] = '\0';
-      sym = lookup_minimal_symbol (msg, NULL, NULL);
+      sym = lookup_minimal_symbol(msg, NULL, NULL);
       if (sym == NULL)
-	xsnprintf (msg, rs->remote_packet_size, "qSymbol::%s", &reply[8]);
+	xsnprintf(msg, rs->remote_packet_size, "qSymbol::%s", &reply[8]);
       else
-	xsnprintf (msg, rs->remote_packet_size, "qSymbol:%s:%s",
-		   paddr_nz (SYMBOL_VALUE_ADDRESS (sym)),
-		   &reply[8]);
-      putpkt (msg);
-      getpkt (reply, (rs->remote_packet_size), 0);
+	xsnprintf(msg, rs->remote_packet_size, "qSymbol:%s:%s",
+		  paddr_nz(SYMBOL_VALUE_ADDRESS(sym)),
+		  &reply[8]);
+      putpkt(msg);
+      getpkt(reply, (rs->remote_packet_size), 0);
     }
 }
 
+/* FIXME: add comment: */
 static struct serial *
-remote_serial_open (char *name)
+remote_serial_open(char *name)
 {
   static int udp_warning = 0;
 
@@ -2811,7 +2825,7 @@ remote_open_1 (char *name, int from_tty, struct target_ops *target,
    die when it hits one.  */
 
 static void
-remote_detach (char *args, int from_tty)
+remote_detach(const char *args, int from_tty)
 {
   struct remote_state *rs = get_remote_state();
   char *buf = (char *)alloca(rs->remote_packet_size);
@@ -2823,53 +2837,52 @@ remote_detach (char *args, int from_tty)
   strcpy(buf, "D");
   remote_send(buf, (rs->remote_packet_size));
 
-  /* Unregister the file descriptor from the event loop.  */
-  if (target_is_async_p ())
-    serial_async (remote_desc, NULL, 0);
+  /* Unregister the file descriptor from the event loop: */
+  if (target_is_async_p())
+    serial_async(remote_desc, NULL, 0);
 
-  target_mourn_inferior ();
+  target_mourn_inferior();
   if (from_tty)
-    puts_filtered ("Ending remote debugging.\n");
+    puts_filtered("Ending remote debugging.\n");
 }
 
-/* Same as remote_detach, but don't send the "D" packet; just disconnect.  */
-
+/* Same as remote_detach, but do NOT send the "D" packet; just disconnect: */
 static void
-remote_disconnect (char *args, int from_tty)
+remote_disconnect(char *args, int from_tty)
 {
   if (args)
-    error (_("Argument given to \"detach\" when remotely debugging."));
+    error(_("Argument given to \"disconnect\" when remotely debugging."));
 
-  /* Unregister the file descriptor from the event loop.  */
-  if (target_is_async_p ())
-    serial_async (remote_desc, NULL, 0);
+  /* Unregister the file descriptor from the event loop: */
+  if (target_is_async_p())
+    serial_async(remote_desc, NULL, 0);
 
-  target_mourn_inferior ();
+  target_mourn_inferior();
   if (from_tty)
-    puts_filtered ("Ending remote debugging.\n");
+    puts_filtered("Ending remote debugging.\n");
 }
 
-/* Convert hex digit A to a number.  */
-
+/* Convert hex digit A to a number: */
 static int
-fromhex (int a)
+fromhex(int a)
 {
-  if (a >= '0' && a <= '9')
-    return a - '0';
-  else if (a >= 'a' && a <= 'f')
-    return a - 'a' + 10;
-  else if (a >= 'A' && a <= 'F')
-    return a - 'A' + 10;
+  if ((a >= '0') && (a <= '9'))
+    return (a - '0');
+  else if ((a >= 'a') && (a <= 'f'))
+    return (a - 'a' + 10);
+  else if ((a >= 'A') && (a <= 'F'))
+    return (a - 'A' + 10);
   else
     {
-      remote_backtrace_self ("gdb stack trace around reply contains invalid hex digit:\n");
-      dump_protocol_log ("recent remote packet log at point of error:\n");
-      error (_("Reply contains invalid hex digit %d"), a);
+      remote_backtrace_self("gdb stack trace around reply contains invalid hex digit:\n");
+      dump_protocol_log("recent remote packet log at point of error:\n");
+      error(_("Reply contains invalid hex digit %d"), a);
     }
 }
 
+/* FIXME: add comment: */
 static int
-hex2bin (const char *hex, char *bin, int count)
+hex2bin(const char *hex, char *bin, int count)
 {
   int i;
 
@@ -2919,14 +2932,14 @@ bin2hex (const char *bin, char *hex, int count)
    the response.  */
 
 static void
-remote_vcont_probe (struct remote_state *rs, char *buf)
+remote_vcont_probe(struct remote_state *rs, char *buf)
 {
-  strcpy (buf, "vCont?");
-  putpkt (buf);
-  getpkt (buf, rs->remote_packet_size, 0);
+  strcpy(buf, "vCont?");
+  putpkt(buf);
+  getpkt(buf, rs->remote_packet_size, 0);
 
-  /* Make sure that the features we assume are supported.  */
-  if (strncmp (buf, "vCont", 5) == 0)
+  /* Make sure that the features we assume are supported: */
+  if (strncmp(buf, "vCont", 5) == 0)
     {
       char *p = &buf[5];
       int support_s, support_S, support_c, support_C;
@@ -3077,15 +3090,15 @@ remote_resume(ptid_t ptid, int step, enum target_signal siggnal)
 
   if (siggnal != TARGET_SIGNAL_0)
     {
-      buf[0] = step ? 'S' : 'C';
-      buf[1] = tohex (((int) siggnal >> 4) & 0xf);
-      buf[2] = tohex (((int) siggnal) & 0xf);
+      buf[0] = (step ? 'S' : 'C');
+      buf[1] = tohex(((int)siggnal >> 4) & 0xf);
+      buf[2] = tohex(((int)siggnal) & 0xf);
       buf[3] = '\0';
     }
   else
-    strcpy (buf, step ? "s" : "c");
+    strcpy(buf, (step ? "s" : "c"));
 
-  putpkt (buf);
+  putpkt(buf);
 }
 
 /* Same as remote_resume, but with async support.  */
@@ -3525,7 +3538,7 @@ Packet: '%s'\n"),
 	      target_terminal_inferior();
 
 	      strcpy((char *)buf, (last_sent_step ? "s" : "c"));
-	      putpkt((char *)buf);
+	      putpkt((const char *)buf);
 	      continue;
 	    }
 	  /* else fallthrough to: */
@@ -3721,7 +3734,7 @@ Packet: '%s'\n"),
 	      target_terminal_inferior();
 
 	      strcpy((char *)buf, (last_sent_step ? "s" : "c"));
-	      putpkt((char *)buf);
+	      putpkt((const char *)buf);
 	      continue;
 	    }
 	  /* else fallthrough to: */
@@ -4331,8 +4344,8 @@ remote_read_bytes(CORE_ADDR memaddr, char *myaddr, int len)
   long sizeof_buf;
   int origlen;
 
-  /* Create a buffer big enough for this packet.  */
-  max_buf_size = get_memory_read_packet_size ();
+  /* Create a buffer big enough for this packet: */
+  max_buf_size = get_memory_read_packet_size();
   sizeof_buf = max_buf_size + 1; /* Space for trailing NULL.  */
   buf = (char *)alloca(sizeof_buf);
 
@@ -4343,20 +4356,22 @@ remote_read_bytes(CORE_ADDR memaddr, char *myaddr, int len)
       int todo;
       int i;
 
-      todo = min (len, max_buf_size / 2);	/* num bytes that will fit */
+      todo = min(len, (max_buf_size / 2));	/* num bytes that will fit */
 
       /* construct "m"<memaddr>","<len>" */
-      /* sprintf (buf, "m%lx,%x", (unsigned long) memaddr, todo); */
-      memaddr = remote_address_masked (memaddr);
+#if 0
+      sprintf(buf, "m%lx,%x", (unsigned long)memaddr, todo);
+#endif /* 0 */
+      memaddr = remote_address_masked(memaddr);
       p = buf;
       *p++ = 'm';
-      p += hexnumstr (p, (ULONGEST) memaddr);
+      p += hexnumstr(p, (ULONGEST)memaddr);
       *p++ = ',';
-      p += hexnumstr (p, (ULONGEST) todo);
+      p += hexnumstr(p, (ULONGEST)todo);
       *p = '\0';
 
-      putpkt (buf);
-      getpkt (buf, sizeof_buf, 0);
+      putpkt(buf);
+      getpkt(buf, sizeof_buf, 0);
 
       if (buf[0] == 'E'
 	  && isxdigit (buf[1]) && isxdigit (buf[2])
@@ -4452,29 +4467,29 @@ readchar (int timeout)
    into BUF.  Report an error if we get an error reply.  */
 
 static void
-remote_send (char *buf,
-	     long sizeof_buf)
+remote_send(char *buf, long sizeof_buf)
 {
-  putpkt (buf);
-  getpkt (buf, sizeof_buf, 0);
+  putpkt(buf);
+  getpkt(buf, sizeof_buf, 0);
 
   if (buf[0] == 'E')
-    error (_("Remote failure reply: %s"), buf);
+    error(_("Remote failure reply: %s"), buf);
 }
 
 /* Display a null-terminated packet on stdout, for debugging, using C
    string notation.  */
 
 static void
-print_packet(char *buf)
+print_packet(const char *buf)
 {
   puts_filtered("\"");
   fputstr_filtered(buf, '"', gdb_stdout);
   puts_filtered("\"");
 }
 
+/* Currently just implemented as a simple wrapper func around putpkt_binary: */
 int
-putpkt(char *buf)
+putpkt(const char *buf)
 {
   return putpkt_binary(buf, strlen(buf));
 }
@@ -4486,7 +4501,7 @@ putpkt(char *buf)
    to print the sent packet as a string.  */
 
 static int
-putpkt_binary(char *buf, int cnt)
+putpkt_binary(const char *buf, int cnt)
 {
   struct remote_state *rs = get_remote_state();
   int i;
@@ -4984,8 +4999,8 @@ extended_remote_mourn (void)
 
      FIXME: What is the right thing to do here?  */
 #if 0
-  remote_mourn_1 (&extended_remote_ops);
-#endif
+  remote_mourn_1(&extended_remote_ops);
+#endif /* 0 */
 }
 
 /* Worker function for remote_mourn.  */
@@ -5473,7 +5488,7 @@ extern bfd *exec_bfd;
    generic_load()) to make use of this target functionality.  */
 
 static void
-compare_sections_command(char *args, int from_tty)
+compare_sections_command(const char *args, int from_tty)
 {
   struct remote_state *rs = get_remote_state();
   asection *s;
@@ -5612,7 +5627,7 @@ remote_xfer_partial(struct target_ops *ops, enum target_object object,
                        "qPart:auxv:read::%s,%s",
                        phex_nz(offset, sizeof(offset)),
                        phex_nz(n, sizeof(n)));
-	      i = putpkt (buf2);
+	      i = putpkt(buf2);
 	      if (i < 0)
 		return (LONGEST)((total > 0U) ? (LONGEST)total : i);
 	      buf2[0] = '\0';
@@ -5684,6 +5699,7 @@ remote_xfer_partial(struct target_ops *ops, enum target_object object,
   return strlen((char *)readbuf);
 }
 
+/* FIXME: add comment: */
 static void
 remote_rcmd(char *command, struct ui_file *outbuf)
 {
@@ -5696,71 +5712,72 @@ remote_rcmd(char *command, struct ui_file *outbuf)
 
   /* Send a NULL command across as an empty command: */
   if (command == NULL)
-    command = "";
+    command = (char *)"";
 
-  /* The query prefix.  */
-  strcpy (buf, "qRcmd,");
-  p = strchr (buf, '\0');
+  /* The query prefix: */
+  strcpy(buf, "qRcmd,");
+  p = strchr(buf, '\0');
 
-  if ((strlen (buf) + strlen (command) * 2 + 8/*misc*/) > (rs->remote_packet_size))
-    error (_("\"monitor\" command ``%s'' is too long."), command);
+  if ((strlen(buf) + strlen(command) * 2 + 8/*misc*/) > (rs->remote_packet_size))
+    error(_("\"monitor\" command ``%s'' is too long."), command);
 
-  /* Encode the actual command.  */
-  bin2hex (command, p, 0);
+  /* Encode the actual command: */
+  bin2hex(command, p, 0);
 
-  if (putpkt (buf) < 0)
-    error (_("Communication problem with target."));
+  if (putpkt(buf) < 0)
+    error(_("Communication problem with target."));
 
   /* get/display the response */
   while (1)
     {
       /* XXX - see also tracepoint.c:remote_get_noisy_reply().  */
       buf[0] = '\0';
-      getpkt (buf, (rs->remote_packet_size), 0);
+      getpkt(buf, (rs->remote_packet_size), 0);
       if (buf[0] == '\0')
-	error (_("Target does not support this command."));
+	error(_("Target does not support this command."));
       if (buf[0] == 'O' && buf[1] != 'K')
 	{
-	  remote_console_output (buf + 1); /* 'O' message from stub.  */
+	  remote_console_output(buf + 1); /* 'O' message from stub.  */
 	  continue;
 	}
-      if (strcmp (buf, "OK") == 0)
+      if (strcmp(buf, "OK") == 0)
 	break;
-      if (strlen (buf) == 3 && buf[0] == 'E'
-	  && isdigit (buf[1]) && isdigit (buf[2]))
+      if ((strlen(buf) == 3UL) && (buf[0] == 'E')
+	  && isdigit(buf[1]) && isdigit(buf[2]))
 	{
-	  error (_("Protocol error with Rcmd"));
+	  error(_("Protocol error with Rcmd"));
 	}
-      for (p = buf; p[0] != '\0' && p[1] != '\0'; p += 2)
+      for (p = buf; (p[0] != '\0') && (p[1] != '\0'); p += 2)
 	{
-	  char c = (fromhex (p[0]) << 4) + fromhex (p[1]);
-	  fputc_unfiltered (c, outbuf);
+	  char c = ((fromhex(p[0]) << 4) + fromhex(p[1]));
+	  fputc_unfiltered(c, outbuf);
 	}
       break;
     }
 }
 
+/* FIXME: add comment: */
 static void
-packet_command(char *args, int from_tty)
+packet_command(const char *args, int from_tty)
 {
   struct remote_state *rs = get_remote_state();
   char *buf = (char *)alloca(rs->remote_packet_size);
 
   if (!remote_desc)
-    error (_("command can only be used with remote target"));
+    error(_("command can only be used with remote target"));
 
   if (!args)
-    error (_("remote-packet command requires packet text as argument"));
+    error(_("remote-packet command requires packet text as argument"));
 
-  puts_filtered ("sending: ");
-  print_packet (args);
-  puts_filtered ("\n");
-  putpkt (args);
+  puts_filtered("sending: ");
+  print_packet(args);
+  puts_filtered("\n");
+  putpkt(args);
 
-  getpkt (buf, (rs->remote_packet_size), 0);
-  puts_filtered ("received: ");
-  print_packet (buf);
-  puts_filtered ("\n");
+  getpkt(buf, (rs->remote_packet_size), 0);
+  puts_filtered("received: ");
+  print_packet(buf);
+  puts_filtered("\n");
 }
 
 #if defined(UNIT_TEST) || (defined(DEBUG) && defined(_DEBUG)) || defined(TEST)
@@ -5977,7 +5994,7 @@ remote_get_thread_local_address(ptid_t ptid, CORE_ADDR lm, CORE_ADDR offset)
 }
 
 static void
-init_remote_ops (void)
+init_remote_ops(void)
 {
   remote_ops.to_shortname = "remote";
   remote_ops.to_longname = "Remote serial target in gdb-specific protocol";
@@ -6176,13 +6193,16 @@ Specify the serial device it is connected to (e.g. /dev/ttya).",
   extended_async_remote_ops.to_mourn_inferior = extended_remote_mourn;
 }
 
+/* FIXME: should this actually do something? */
 static void
-set_remote_cmd (char *args, int from_tty)
+set_remote_cmd(const char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
+  return;
 }
 
+/* FIXME: add comment: */
 static void
-show_remote_cmd (char *args, int from_tty)
+show_remote_cmd(const char *args, int from_tty)
 {
   /* FIXME: cagney/2002-06-15: This function should iterate over
      remote_show_cmdlist for a list of sub commands to show.  */
@@ -6259,11 +6279,12 @@ end_remote_timer(void)
 #endif /* TARGET_ARM */
 
 static struct target_ops remote_macosx_ops;
-static char *remote_macosx_shortname = "remote-macosx";
-static char *remote_macosx_longname = "Remote connection to a macosx device "
-				      "with shared library support.";
-static char *remote_macosx_doc = "Connect to a remote macosx device with "
-				 "shared library support using remote target.";
+static const char *remote_macosx_shortname = "remote-macosx";
+static const char *remote_macosx_longname =
+  "Remote connection to a macosx device with shared library support.";
+static const char *remote_macosx_doc =
+  "Connect to a remote macosx device with shared library support "
+  "using remote target.";
 /* The executable might not have the same location on the remote system as it
    does here, provide the correct path here.  */
 static char *remote_macosx_exec_dir;

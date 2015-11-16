@@ -1,4 +1,4 @@
-/* i386.c */
+/* nlm/i386.c */
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"

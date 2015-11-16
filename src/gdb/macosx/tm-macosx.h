@@ -1,4 +1,4 @@
-/* tm-macosx.h: Target support for Mac OS X for GDB, the GNU debugger.
+/* macosx/tm-macosx.h: Target support for Mac OS X for GDB, the GNU debugger.
  * Copyright (C) 1997-2002, 2005,
  * Free Software Foundation, Inc.  */
 /*

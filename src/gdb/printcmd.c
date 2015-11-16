@@ -595,7 +595,7 @@ set_next_address (CORE_ADDR addr)
 
 void
 print_address_symbolic(CORE_ADDR addr, struct ui_file *stream, int do_demangle,
-                       char *leadin)
+                       const char *leadin)
 {
   char *name = NULL;
   char *filename = NULL;
@@ -630,28 +630,28 @@ print_address_symbolic(CORE_ADDR addr, struct ui_file *stream, int do_demangle,
 
   fputs_filtered(leadin, stream);
   if (unmapped)
-    fputs_filtered ("<*", stream);
+    fputs_filtered("<*", stream);
   else
-    fputs_filtered ("<", stream);
-  fputs_filtered (name, stream);
+    fputs_filtered("<", stream);
+  fputs_filtered(name, stream);
   if (offset != 0)
-    fprintf_filtered (stream, "+%u", (unsigned int) offset);
+    fprintf_filtered(stream, "+%u", (unsigned int)offset);
 
   /* Append source filename and line number if desired.  Give specific
      line # of this addr, if we have it; else line # of the nearest symbol.  */
-  if (print_symbol_filename && filename != NULL)
+  if (print_symbol_filename && (filename != NULL))
     {
       if (line != -1)
-	fprintf_filtered (stream, " at %s:%d", filename, line);
+	fprintf_filtered(stream, " at %s:%d", filename, line);
       else
-	fprintf_filtered (stream, " in %s", filename);
+	fprintf_filtered(stream, " in %s", filename);
     }
   if (unmapped)
-    fputs_filtered ("*>", stream);
+    fputs_filtered("*>", stream);
   else
-    fputs_filtered (">", stream);
+    fputs_filtered(">", stream);
 
-  do_cleanups (cleanup_chain);
+  do_cleanups(cleanup_chain);
 }
 
 /* Given an address ADDR return all the elements needed to print the

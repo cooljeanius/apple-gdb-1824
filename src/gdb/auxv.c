@@ -272,18 +272,19 @@ fprint_target_auxv(struct ui_file *file, struct target_ops *ops)
   return ents;
 }
 
+/* FIXME: add comment: */
 static void
-info_auxv_command (char *cmd, int from_tty)
+info_auxv_command(const char *cmd, int from_tty)
 {
   if (! target_has_stack)
-    error (_("The program has no auxiliary information now."));
+    error(_("The program has no auxiliary information now."));
   else
     {
-      int ents = fprint_target_auxv (gdb_stdout, &current_target);
+      const int ents = fprint_target_auxv(gdb_stdout, &current_target);
       if (ents < 0)
-	error (_("No auxiliary vector found, or failed reading it."));
+	error(_("No auxiliary vector found, or failed reading it."));
       else if (ents == 0)
-	error (_("Auxiliary vector is empty."));
+	error(_("Auxiliary vector is empty."));
     }
 }
 
@@ -291,9 +292,11 @@ info_auxv_command (char *cmd, int from_tty)
 extern initialize_file_ftype _initialize_auxv; /* -Wmissing-prototypes; */
 
 void
-_initialize_auxv (void)
+_initialize_auxv(void)
 {
-  add_info ("auxv", info_auxv_command,
-	    _("Display the inferior's auxiliary vector.\n\
+  add_info("auxv", info_auxv_command,
+	   _("Display the inferior's auxiliary vector.\n\
 This is information provided by the operating system at program startup."));
 }
+
+/* EOF */

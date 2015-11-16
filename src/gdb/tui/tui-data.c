@@ -1,4 +1,4 @@
-/* tui-data.c: TUI data manipulation routines.
+/* tui/tui-data.c: TUI data manipulation routines.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -67,27 +67,28 @@ static void free_content_elements(tui_win_content, int, enum tui_win_type);
 ** PUBLIC FUNCTIONS
 **********************************/
 
-int
-tui_win_is_source_type (enum tui_win_type win_type)
+int ATTRIBUTE_CONST
+tui_win_is_source_type(enum tui_win_type win_type)
 {
   return (win_type == SRC_WIN || win_type == DISASSEM_WIN);
 }
 
-int
-tui_win_is_auxillary (enum tui_win_type win_type)
+/* */
+int ATTRIBUTE_CONST
+tui_win_is_auxillary(enum tui_win_type win_type)
 {
   return (win_type > MAX_MAJOR_WINDOWS);
 }
 
 int
-tui_win_has_locator (struct tui_win_info *win_info)
+tui_win_has_locator(struct tui_win_info *win_info)
 {
-  return (win_info != NULL \
+  return ((win_info != NULL) \
 	  && win_info->detail.source_info.has_locator);
 }
 
 void
-tui_set_win_highlight (struct tui_win_info *win_info, int highlight)
+tui_set_win_highlight(struct tui_win_info *win_info, int highlight)
 {
   if (win_info != NULL)
     win_info->is_highlighted = highlight;
@@ -97,57 +98,57 @@ tui_set_win_highlight (struct tui_win_info *win_info, int highlight)
 ** ACCESSORS & MUTATORS FOR PRIVATE DATA
 ******************************************/
 
-/* Answer a whether the terminal window has been resized or not.   */
+/* Answer a whether the terminal window has been resized or not: */
 int
-tui_win_resized (void)
+tui_win_resized(void)
 {
   return win_resized;
 }
 
 
-/* Set a whether the terminal window has been resized or not.   */
+/* Set a whether the terminal window has been resized or not: */
 void
-tui_set_win_resized_to (int resized)
+tui_set_win_resized_to(int resized)
 {
   win_resized = resized;
 }
 
 
-/* Answer a pointer to the current layout definition.   */
-struct tui_layout_def *
-tui_layout_def (void)
+/* Answer a pointer to the current layout definition: */
+struct tui_layout_def * ATTRIBUTE_CONST
+tui_layout_def(void)
 {
   return &layout_def;
 }
 
 
-/* Answer the window with the logical focus.    */
+/* Answer the window with the logical focus: */
 struct tui_win_info *
-tui_win_with_focus (void)
+tui_win_with_focus(void)
 {
   return win_with_focus;
 }
 
 
-/* Set the window that has the logical focus.   */
+/* Set the window that has the logical focus: */
 void
-tui_set_win_with_focus (struct tui_win_info * win_info)
+tui_set_win_with_focus(struct tui_win_info *win_info)
 {
   win_with_focus = win_info;
 }
 
 
-/* Answer the length in chars, of tabs.    */
+/* Answer the length in chars, of tabs: */
 int
-tui_default_tab_len (void)
+tui_default_tab_len(void)
 {
   return default_tab_len;
 }
 
 
-/* Set the length in chars, of tabs.   */
+/* Set the length in chars, of tabs: */
 void
-tui_set_default_tab_len (int len)
+tui_set_default_tab_len(int len)
 {
   default_tab_len = len;
 }
@@ -156,8 +157,8 @@ tui_set_default_tab_len (int len)
 /* Accessor for the current source window.  Usually there is only one
    source window (either source or disassembly), but both can be
    displayed at the same time.  */
-struct tui_list *
-tui_source_windows (void)
+struct tui_list * ATTRIBUTE_CONST
+tui_source_windows(void)
 {
   return &source_windows;
 }
@@ -233,17 +234,17 @@ tui_clear_win_detail (struct tui_win_info * win_info)
 }
 
 
-/* Accessor for the source execution info ptr.  */
-struct tui_gen_win_info *
-tui_source_exec_info_win_ptr (void)
+/* Accessor for the source execution info ptr: */
+struct tui_gen_win_info * ATTRIBUTE_CONST
+tui_source_exec_info_win_ptr(void)
 {
   return &exec_info[0];
 }
 
 
-/* Accessor for the disassem execution info ptr.  */
-struct tui_gen_win_info *
-tui_disassem_exec_info_win_ptr (void)
+/* Accessor for the disassem execution info ptr: */
+struct tui_gen_win_info * ATTRIBUTE_CONST
+tui_disassem_exec_info_win_ptr(void)
 {
   return &exec_info[1];
 }
@@ -251,8 +252,8 @@ tui_disassem_exec_info_win_ptr (void)
 
 /* Accessor for the locator win info.  Answers a pointer to the static
    locator win info struct.  */
-struct tui_gen_win_info *
-tui_locator_win_info_ptr (void)
+struct tui_gen_win_info * ATTRIBUTE_CONST
+tui_locator_win_info_ptr(void)
 {
   return &_locator;
 }
@@ -392,9 +393,9 @@ tui_partial_win_by_name(char *name)
 	{
           if (tui_win_list[i] != 0)
             {
-              char *cur_name = tui_win_name (&tui_win_list[i]->generic);
-              if (strlen (name) <= strlen (cur_name) &&
-                  strncmp (name, cur_name, strlen (name)) == 0)
+              const char *cur_name = tui_win_name(&tui_win_list[i]->generic);
+              if ((strlen(name) <= strlen(cur_name)) &&
+                  (strncmp(name, cur_name, strlen(name)) == 0))
                 win_info = tui_win_list[i];
             }
 	  i++;
@@ -405,11 +406,11 @@ tui_partial_win_by_name(char *name)
 }
 
 
-/* Answer the name of the window.  */
-char *
-tui_win_name (struct tui_gen_win_info * win_info)
+/* Answer the name of the window: */
+const char *
+tui_win_name(struct tui_gen_win_info *win_info)
 {
-  char *name = (char *) NULL;
+  const char *name = (const char *)NULL;
 
   switch (win_info->type)
     {

@@ -1,5 +1,5 @@
 /*
- * macosx-nat-cfm-io.h
+ * macosx/macosx-nat-cfm-io.h
  */
 
 #ifndef __GDB_MACOSX_NAT_CFM_IO_H__

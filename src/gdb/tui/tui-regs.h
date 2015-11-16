@@ -1,4 +1,4 @@
-/* tui-regs.h: TUI display registers in window.
+/* tui/tui-regs.h: TUI display registers in window.
 
    Copyright 1998, 1999, 2000, 2001, 2004 Free Software Foundation,
    Inc.

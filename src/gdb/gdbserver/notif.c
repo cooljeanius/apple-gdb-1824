@@ -1,4 +1,4 @@
-/* notif.c
+/* gdbserver/notif.c
    Notification to GDB.
    Copyright (C) 1989-2013 Free Software Foundation, Inc.
 

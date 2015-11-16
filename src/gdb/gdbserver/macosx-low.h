@@ -1,5 +1,5 @@
 /*
- * macosx-low.h
+ * gdbserver/macosx-low.h
  */
 
 #include "server.h"

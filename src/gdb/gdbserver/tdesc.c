@@ -1,4 +1,4 @@
-/* tdesc.c: Copyright (C) 2012-2014 Free Software Foundation, Inc.
+/* gdbserver/tdesc.c: Copyright (C) 2012-2014 Free Software Foundation, Inc.
  *
  * This file is part of GDB.
  *

@@ -1,4 +1,4 @@
-/* tui-stack.c: TUI display locator.
+/* tui/tui-stack.c: TUI display locator.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -54,7 +54,7 @@ static void tui_set_locator_info(const char *filename,
                                  const char *procname, int lineno,
                                  CORE_ADDR addr);
 
-static void tui_update_command(char *, int);
+static void tui_update_command(const char *, int);
 
 extern void _initialize_tui_stack(void);
 
@@ -217,56 +217,57 @@ tui_make_status_line(struct tui_locator_element* loc)
    The symbol name is demangled if demangling is turned on.
    Returns a pointer to a static area holding the result.  */
 static char*
-tui_get_function_from_frame (struct frame_info *fi)
+tui_get_function_from_frame(struct frame_info *fi)
 {
   static char name[256];
-  struct ui_file *stream = tui_sfileopen (256);
+  struct ui_file *stream = tui_sfileopen(256);
   char *p;
 
-  print_address_symbolic (get_frame_pc (fi), stream, demangle, "");
-  p = tui_file_get_strbuf (stream);
+  print_address_symbolic(get_frame_pc(fi), stream, demangle, "");
+  p = tui_file_get_strbuf(stream);
 
   /* Use simple heuristics to isolate the function name.  The symbol can
      be demangled and we can have function parameters.  Remove them because
      the status line is too short to display them.  */
   if (*p == '<')
     p++;
-  strncpy (name, p, sizeof (name));
-  p = strchr (name, '(');
+  strncpy(name, p, sizeof(name));
+  p = strchr(name, '(');
   if (!p)
-    p = strchr (name, '>');
+    p = strchr(name, '>');
   if (p)
     *p = 0;
-  p = strchr (name, '+');
+  p = strchr(name, '+');
   if (p)
     *p = 0;
-  ui_file_delete (stream);
+  ui_file_delete(stream);
   return name;
 }
 
+/* FIXME: needs comment: */
 void
-tui_show_locator_content (void)
+tui_show_locator_content(void)
 {
   char *string;
-  struct tui_gen_win_info * locator;
+  struct tui_gen_win_info *locator;
 
-  locator = tui_locator_win_info_ptr ();
+  locator = tui_locator_win_info_ptr();
 
-  if (locator != NULL && locator->handle != (WINDOW *) NULL)
+  if ((locator != NULL) && (locator->handle != (WINDOW *)NULL))
     {
-      struct tui_win_element * element;
+      struct tui_win_element *element;
 
-      element = (struct tui_win_element *) locator->content[0];
+      element = (struct tui_win_element *)locator->content[0];
 
-      string = tui_make_status_line (&element->which_element.locator);
-      wmove (locator->handle, 0, 0);
-      wstandout (locator->handle);
-      waddstr (locator->handle, string);
-      wclrtoeol (locator->handle);
-      wstandend (locator->handle);
-      tui_refresh_win (locator);
-      wmove (locator->handle, 0, 0);
-      xfree (string);
+      string = tui_make_status_line(&element->which_element.locator);
+      wmove(locator->handle, 0, 0);
+      wstandout(locator->handle);
+      waddstr(locator->handle, string);
+      wclrtoeol(locator->handle);
+      wstandend(locator->handle);
+      tui_refresh_win(locator);
+      wmove(locator->handle, 0, 0);
+      xfree(string);
       locator->content_in_use = TRUE;
     }
 }
@@ -424,7 +425,7 @@ Update the source window and locator to display the current execution point.\n")
 
 /* Command to update the display with the current execution point: */
 static void
-tui_update_command(char *arg, int from_tty)
+tui_update_command(const char *arg, int from_tty)
 {
   char cmd[sizeof("frame 0")];
 

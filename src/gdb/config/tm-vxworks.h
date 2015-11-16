@@ -1,4 +1,4 @@
-/* tm-vxworks.h
+/* config/tm-vxworks.h
    Target machine description for VxWorks, for GDB, the GNU debugger.
    Copyright 1999 Free Software Foundation, Inc.
 

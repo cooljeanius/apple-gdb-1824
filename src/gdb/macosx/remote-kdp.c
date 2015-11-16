@@ -1,4 +1,4 @@
-/* remote-kdp.c
+/* macosx/remote-kdp.c
    Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
@@ -129,7 +129,7 @@ extern int standard_can_async_p(void);
 static unsigned int kdp_debug_level = 3;
 static unsigned int kdp_default_port = 41139;
 
-static char *kdp_default_host_type_str = "powerpc";
+static const char *kdp_default_host_type_str = "powerpc";
 static int kdp_default_cpu_type = CPU_TYPE_POWERPC;
 
 static kdp_connection c;
@@ -346,8 +346,9 @@ kdp_remove_breakpoint(CORE_ADDR addr, gdb_byte *contents_cache)
   return 0;
 }
 
+/* */
 static void
-kdp_kernelversion_command(char *args, int from_tty)
+kdp_kernelversion_command(const char *args, int from_tty)
 {
   kdp_return_t kdpret;
 
@@ -589,53 +590,53 @@ kdp_uuid_and_load_addr(void)
 
 
 static void
-kdp_attach (char *args, int from_tty)
+kdp_attach(char *args, int from_tty)
 {
   kdp_return_t kdpret, kdpret2;
   unsigned int old_seqno, old_exc_seqno;
 
   if (args == NULL)
     {
-      args = "";
+      args = (char *)"";
     }
 
   {
     char *s = args;
-    while ((*s != '\0') && isspace (*s))
+    while ((*s != '\0') && isspace(*s))
       {
         s++;
       }
     if (*s == '\0')
       {
-        error ("usage: attach <hostname>");
+        error("usage: attach <hostname>");
       }
-    while ((*s != '\0') && !isspace (*s))
+    while ((*s != '\0') && !isspace(*s))
       {
         s++;
       }
-    while ((*s != '\0') && isspace (*s))
+    while ((*s != '\0') && isspace(*s))
       {
         s++;
       }
     if (*s != '\0')
       {
-        error ("usage: attach <hostname>");
+        error("usage: attach <hostname>");
       }
   }
 
-  if (kdp_is_connected (&c))
+  if (kdp_is_connected(&c))
     {
-      kdpret = kdp_disconnect (&c);
+      kdpret = kdp_disconnect(&c);
       if (kdpret != RR_SUCCESS)
         {
-          error ("unable to disconnect from host: %s",
-                 kdp_return_string (kdpret));
+          error("unable to disconnect from host: %s",
+                kdp_return_string(kdpret));
         }
     }
 
-  if (kdp_is_bound (&c))
+  if (kdp_is_bound(&c))
     {
-      kdpret = kdp_destroy (&c);
+      kdpret = kdp_destroy(&c);
       if (kdpret != RR_SUCCESS)
         {
           error("unable to deallocate KDP connection: %s",
@@ -739,14 +740,15 @@ kdp_attach (char *args, int from_tty)
   printf_unfiltered ("Connected.\n");
 }
 
+/* */
 static void
-kdp_detach (char *args, int from_tty)
+kdp_detach(const char *args, int from_tty)
 {
   kdp_return_t kdpret;
 
-  if (kdp_is_connected (&c))
+  if (kdp_is_connected(&c))
     {
-      kdpret = kdp_disconnect (&c);
+      kdpret = kdp_disconnect(&c);
       if (kdpret != RR_SUCCESS)
         {
           warning ("unable to disconnect from host: %s",
@@ -767,17 +769,18 @@ kdp_detach (char *args, int from_tty)
       kdpret = kdp_destroy (&c);
       if (kdpret != RR_SUCCESS)
         {
-          error ("unable to deallocate KDP connection: %s",
-                 kdp_return_string (kdpret));
+          error("unable to deallocate KDP connection: %s",
+                kdp_return_string(kdpret));
         }
     }
-  kdp_mourn_inferior ();
+  kdp_mourn_inferior();
 
-  printf_unfiltered ("Disconnected.\n");
+  printf_unfiltered("Disconnected.\n");
 }
 
+/* */
 static void
-kdp_reattach_command(char *args, int from_tty)
+kdp_reattach_command(const char *args, int from_tty)
 {
   kdp_return_t kdpret;
   char **argv;
@@ -831,22 +834,23 @@ kdp_reattach_command(char *args, int from_tty)
 
   update_current_target ();
 
-  kdp_mourn_inferior ();
+  kdp_mourn_inferior();
 
-  kdp_open (NULL, 0);
+  kdp_open(NULL, 0);
 
-  kdp_attach (host, 0);
+  kdp_attach(host, 0);
 }
 
+/* */
 static void
-kdp_reboot_command (char *args, int from_tty)
+kdp_reboot_command(const char *args, int from_tty)
 {
   kdp_return_t kdpret;
   char **argv;
 
-  argv = buildargv (args);
+  argv = buildargv(args);
   if (!c.connected)
-    error ("Must already be connected to the remote machine.");
+    error("Must already be connected to the remote machine.");
 
   if (!((argv == NULL) || (argv[0] == NULL)))
     {
@@ -876,8 +880,9 @@ kdp_reboot_command (char *args, int from_tty)
   kdp_mourn_inferior();
 }
 
+/* */
 static void
-kdp_detach_command(char *args, int from_tty)
+kdp_detach_command(const char *args, int from_tty)
 {
   kdp_connection c2;
   kdp_return_t kdpret;
@@ -2213,7 +2218,7 @@ kdp_async(void (*callback)(enum inferior_event_type event_type,
    have to be sure to set them, so we do NOT pick up the ones from the
    macosx "exec" target.  */
 
-int
+int ATTRIBUTE_CONST
 kdp_can_use_hw_breakpoint(int unused1 ATTRIBUTE_UNUSED,
                           int unused2 ATTRIBUTE_UNUSED,
                           int unused3 ATTRIBUTE_UNUSED)
@@ -2221,20 +2226,23 @@ kdp_can_use_hw_breakpoint(int unused1 ATTRIBUTE_UNUSED,
   return 0;
 }
 
-int
+/* */
+int ATTRIBUTE_CONST
 kdp_stopped_by_watchpoint(void)
 {
   return 0;
 }
 
-int
+/* */
+int ATTRIBUTE_CONST
 kdp_stopped_data_address(struct target_ops *unused1 ATTRIBUTE_UNUSED,
                          CORE_ADDR *unused2 ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
-int
+/* */
+int ATTRIBUTE_CONST
 kdp_insert_watchpoint(CORE_ADDR unused1 ATTRIBUTE_UNUSED,
                       int unused2 ATTRIBUTE_UNUSED,
                       int unused3 ATTRIBUTE_UNUSED)
@@ -2242,7 +2250,8 @@ kdp_insert_watchpoint(CORE_ADDR unused1 ATTRIBUTE_UNUSED,
   return 0;
 }
 
-int
+/* */
+int ATTRIBUTE_CONST
 kdp_remove_watchpoint(CORE_ADDR unused1 ATTRIBUTE_UNUSED,
                       int unused2 ATTRIBUTE_UNUSED,
                       int unused3 ATTRIBUTE_UNUSED)
@@ -2250,14 +2259,16 @@ kdp_remove_watchpoint(CORE_ADDR unused1 ATTRIBUTE_UNUSED,
   return 0;
 }
 
-int
+/* */
+int ATTRIBUTE_CONST
 kdp_insert_hw_breakpoint(CORE_ADDR unused1 ATTRIBUTE_UNUSED,
                          gdb_byte *unused2 ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
-int
+/* */
+int ATTRIBUTE_CONST
 kdp_remove_hw_breakpoint(CORE_ADDR unused1 ATTRIBUTE_UNUSED,
                          gdb_byte *unused2 ATTRIBUTE_UNUSED)
 {
@@ -2321,7 +2332,7 @@ update_kdp_default_host_type(char *args, int from_tty,
 
   if (args == NULL)
     {
-      args = kdp_default_host_type_str;
+      args = (char *)kdp_default_host_type_str;
     }
   htype = parse_host_type(args);
   if (htype < 0)

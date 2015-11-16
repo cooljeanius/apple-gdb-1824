@@ -1046,17 +1046,17 @@ prefixify_subexp (struct expression *inexpr,
    If COMMA is nonzero, stop if a comma is reached.  */
 
 struct expression *
-parse_exp_1 (char **stringptr, struct block *block, int comma)
+parse_exp_1(const char **stringptr, struct block *block, int comma)
 {
-  return parse_exp_in_context (stringptr, block, comma, 0);
+  return parse_exp_in_context(stringptr, block, comma, 0);
 }
 
 /* As for parse_exp_1, except that if VOID_CONTEXT_P, then
    no value is expected from the expression.  */
 
 static struct expression *
-parse_exp_in_context (char **stringptr, struct block *block, int comma,
-		      int void_context_p)
+parse_exp_in_context(char **stringptr, struct block *block, int comma,
+		     int void_context_p)
 {
   struct cleanup *old_chain;
   /* APPLE LOCAL: Suppress the hook_stub while parsing expressions.
@@ -1142,12 +1142,12 @@ parse_exp_in_context (char **stringptr, struct block *block, int comma,
    to use up all of the contents of STRING.  */
 
 struct expression *
-parse_expression (char *string)
+parse_expression(const char *string)
 {
   struct expression *exp;
-  exp = parse_exp_1 (&string, 0, 0);
+  exp = parse_exp_1(&string, 0, 0);
   if (*string)
-    error (_("Junk after end of expression."));
+    error(_("Junk after end of expression."));
   return exp;
 }
 
@@ -1440,3 +1440,5 @@ When non-zero, the internal representation of expressions will be printed."),
 			    show_expressiondebug,
 			    &setdebuglist, &showdebuglist);
 }
+
+/* EOF */

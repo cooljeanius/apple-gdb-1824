@@ -1,4 +1,4 @@
-/* tui-win.c: TUI window generic functions.
+/* tui/tui-win.c: TUI window generic functions.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -60,17 +60,17 @@ static void make_visible_with_new_height(struct tui_win_info *);
 static void make_invisible_and_set_new_height(struct tui_win_info *, int);
 static enum tui_status tui_adjust_win_heights(struct tui_win_info *, int);
 static int new_height_ok(struct tui_win_info *, int);
-static void tui_set_tab_width_command(char *, int);
-static void tui_refresh_all_command(char *, int);
-static void tui_set_win_height_command(char *, int);
-static void tui_xdb_set_win_height_command(char *, int);
-static void tui_all_windows_info(char *, int);
-static void tui_set_focus_command(char *, int);
-static void tui_scroll_forward_command(char *, int);
-static void tui_scroll_backward_command(char *, int);
-static void tui_scroll_left_command(char *, int);
-static void tui_scroll_right_command(char *, int);
-static void parse_scrolling_args(char *, struct tui_win_info * *, int *);
+static void tui_set_tab_width_command(const char *, int);
+static void tui_refresh_all_command(const char *, int);
+static void tui_set_win_height_command(const char *, int);
+static void tui_xdb_set_win_height_command(const char *, int);
+static void tui_all_windows_info(const char *, int);
+static void tui_set_focus_command(const char *, int);
+static void tui_scroll_forward_command(const char *, int);
+static void tui_scroll_backward_command(const char *, int);
+static void tui_scroll_left_command(const char *, int);
+static void tui_scroll_right_command(const char *, int);
+static void parse_scrolling_args(const char *, struct tui_win_info **, int *);
 
 /* not exactly static, but might as well be: */
 extern void _initialize_tui_win(void);
@@ -223,11 +223,11 @@ The attribute mode to use for the TUI window borders is \"%s\".\n"),
 
 const char *tui_border_kind = "acs";
 static void
-show_tui_border_kind (struct ui_file *file, int from_tty,
-		      struct cmd_list_element *c, const char *value)
+show_tui_border_kind(struct ui_file *file, int from_tty,
+		     struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("The kind of border for TUI windows is \"%s\".\n"),
-		    value);
+  fprintf_filtered(file, _("The kind of border for TUI windows is \"%s\".\n"),
+		   value);
 }
 
 
@@ -316,28 +316,32 @@ tui_update_variables(void)
   return need_redraw;
 }
 
+/* FIXME: needs comment: */
 static void
-set_tui_cmd(char *args, int from_tty)
+set_tui_cmd(const char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
   return;
 }
 
+/* FIXME: needs comment: */
 static void
-show_tui_cmd(char *args, int from_tty)
+show_tui_cmd(const char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
   return;
 }
 
 static struct cmd_list_element *tuilist;
 
+/* FIXME: needs comment: */
 static void
-tui_command(char *args, int from_tty)
+tui_command(const char *args, int from_tty)
 {
   printf_unfiltered(_("\"tui\" must be followed by the name of a "
                     "tui command.\n"));
   help_list(tuilist, "tui ", (enum command_class)-1, gdb_stdout);
 }
 
+/* FIXME: needs comment: */
 struct cmd_list_element **
 tui_get_cmd_list(void)
 {
@@ -384,10 +388,10 @@ src  : the source window\n\
 cmd  : the command window\n\
 asm  : the disassembly window\n\
 regs : the register display\n"));
-  add_com_alias ("wh", "winheight", class_tui, 0);
-  add_info ("win", tui_all_windows_info,
-	    _("List of all displayed windows.\n"));
-  add_com ("focus", class_tui, tui_set_focus_command, _("\
+  add_com_alias("wh", "winheight", class_tui, 0);
+  add_info("win", tui_all_windows_info,
+	   _("List of all displayed windows.\n"));
+  add_com("focus", class_tui, tui_set_focus_command, _("\
 Set focus to named window or next/prev window.\n\
 Usage: focus {<win> | next | prev}\n\
 Valid Window names are:\n\
@@ -395,7 +399,7 @@ src  : the source window\n\
 asm  : the disassembly window\n\
 regs : the register display\n\
 cmd  : the command window\n"));
-  add_com_alias ("fs", "focus", class_tui, 0);
+  add_com_alias("fs", "focus", class_tui, 0);
   add_com ("+", class_tui, tui_scroll_forward_command, _("\
 Scroll window forward.\n\
 Usage: + [win] [n]\n"));
@@ -405,11 +409,11 @@ Usage: - [win] [n]\n"));
   add_com ("<", class_tui, tui_scroll_left_command, _("\
 Scroll window forward.\n\
 Usage: < [win] [n]\n"));
-  add_com (">", class_tui, tui_scroll_right_command, _("\
+  add_com(">", class_tui, tui_scroll_right_command, _("\
 Scroll window backward.\n\
 Usage: > [win] [n]\n"));
   if (xdb_commands)
-    add_com ("w", class_xdb, tui_xdb_set_win_height_command, _("\
+    add_com("w", class_xdb, tui_xdb_set_win_height_command, _("\
 XDB compatibility command for setting the height of a command window.\n\
 Usage: w <#lines>\n"));
 
@@ -807,13 +811,13 @@ tui_resize_all (void)
    called, even when the readline package clears signals because it is
    set as the old_sigwinch() (TUI only).  */
 void
-tui_sigwinch_handler (int signal)
+tui_sigwinch_handler(int signal)
 {
   /*
-     ** Say that a resize was done so that the readline can do it
-     ** later when appropriate.
+  ** Say that a resize was done so that the readline can do it
+  ** later when appropriate.
    */
-  tui_set_win_resized_to (TRUE);
+  tui_set_win_resized_to(TRUE);
 }
 
 
@@ -822,70 +826,70 @@ tui_sigwinch_handler (int signal)
 ** STATIC LOCAL FUNCTIONS
 **************************/
 
-
+/* FIXME: needs comment: */
 static void
-tui_scroll_forward_command (char *arg, int from_tty)
+tui_scroll_forward_command(const char *arg, int from_tty)
 {
   int num_to_scroll = 1;
-  struct tui_win_info * win_to_scroll;
+  struct tui_win_info *win_to_scroll;
 
-  /* Make sure the curses mode is enabled.  */
-  tui_enable ();
-  if (arg == (char *) NULL)
-    parse_scrolling_args (arg, &win_to_scroll, (int *) NULL);
+  /* Make sure the curses mode is enabled: */
+  tui_enable();
+  if (arg == (const char *)NULL)
+    parse_scrolling_args(arg, &win_to_scroll, (int *)NULL);
   else
-    parse_scrolling_args (arg, &win_to_scroll, &num_to_scroll);
-  tui_scroll (FORWARD_SCROLL, win_to_scroll, num_to_scroll);
+    parse_scrolling_args(arg, &win_to_scroll, &num_to_scroll);
+  tui_scroll(FORWARD_SCROLL, win_to_scroll, num_to_scroll);
 }
 
-
+/* FIXME: needs comment: */
 static void
-tui_scroll_backward_command (char *arg, int from_tty)
+tui_scroll_backward_command(const char *arg, int from_tty)
 {
   int num_to_scroll = 1;
-  struct tui_win_info * win_to_scroll;
+  struct tui_win_info *win_to_scroll;
 
   /* Make sure the curses mode is enabled.  */
-  tui_enable ();
-  if (arg == (char *) NULL)
-    parse_scrolling_args (arg, &win_to_scroll, (int *) NULL);
+  tui_enable();
+  if (arg == (const char *)NULL)
+    parse_scrolling_args(arg, &win_to_scroll, (int *)NULL);
   else
-    parse_scrolling_args (arg, &win_to_scroll, &num_to_scroll);
-  tui_scroll (BACKWARD_SCROLL, win_to_scroll, num_to_scroll);
+    parse_scrolling_args(arg, &win_to_scroll, &num_to_scroll);
+  tui_scroll(BACKWARD_SCROLL, win_to_scroll, num_to_scroll);
 }
 
-
+/* FIXME: needs comment: */
 static void
-tui_scroll_left_command (char *arg, int from_tty)
+tui_scroll_left_command(const char *arg, int from_tty)
 {
   int num_to_scroll;
-  struct tui_win_info * win_to_scroll;
+  struct tui_win_info *win_to_scroll;
 
-  /* Make sure the curses mode is enabled.  */
-  tui_enable ();
-  parse_scrolling_args (arg, &win_to_scroll, &num_to_scroll);
-  tui_scroll (LEFT_SCROLL, win_to_scroll, num_to_scroll);
+  /* Make sure the curses mode is enabled: */
+  tui_enable();
+  parse_scrolling_args(arg, &win_to_scroll, &num_to_scroll);
+  tui_scroll(LEFT_SCROLL, win_to_scroll, num_to_scroll);
 }
 
-
+/* FIXME: needs comment: */
 static void
-tui_scroll_right_command (char *arg, int from_tty)
+tui_scroll_right_command(const char *arg, int from_tty)
 {
   int num_to_scroll;
-  struct tui_win_info * win_to_scroll;
+  struct tui_win_info *win_to_scroll;
 
-  /* Make sure the curses mode is enabled.  */
-  tui_enable ();
-  parse_scrolling_args (arg, &win_to_scroll, &num_to_scroll);
-  tui_scroll (RIGHT_SCROLL, win_to_scroll, num_to_scroll);
+  /* Make sure the curses mode is enabled: */
+  tui_enable();
+  parse_scrolling_args(arg, &win_to_scroll, &num_to_scroll);
+  tui_scroll(RIGHT_SCROLL, win_to_scroll, num_to_scroll);
 }
 
 
 /* Set focus to the window named by 'arg'.  */
 static void
-tui_set_focus(char *arg, int from_tty)
+tui_set_focus(const char *arg, int from_tty)
 {
-  if (arg != (char *)NULL)
+  if (arg != (const char *)NULL)
     {
       char *buf_ptr = (char *)xstrdup(arg);
       size_t i;
@@ -920,72 +924,73 @@ The window name specified must be valid and visible.\n"));
     warning(_("Incorrect Number of Arguments.\n%s"), FOCUS_USAGE);
 }
 
+/* FIXME: needs comment: */
 static void
-tui_set_focus_command (char *arg, int from_tty)
+tui_set_focus_command(const char *arg, int from_tty)
 {
-  /* Make sure the curses mode is enabled.  */
-  tui_enable ();
-  tui_set_focus (arg, from_tty);
+  /* Make sure the curses mode is enabled: */
+  tui_enable();
+  tui_set_focus(arg, from_tty);
 }
 
-
+/* FIXME: needs comment: */
 static void
-tui_all_windows_info (char *arg, int from_tty)
+tui_all_windows_info(const char *arg, int from_tty)
 {
   enum tui_win_type type;
-  struct tui_win_info * win_with_focus = tui_win_with_focus ();
+  struct tui_win_info *win_with_focus = tui_win_with_focus();
 
   for (type = SRC_WIN; (type < MAX_MAJOR_WINDOWS); type++)
     if (tui_win_list[type] && tui_win_list[type]->generic.is_visible)
       {
 	if (win_with_focus == tui_win_list[type])
-	  printf_filtered ("        %s\t(%d lines)  <has focus>\n",
-			   tui_win_name (&tui_win_list[type]->generic),
-			   tui_win_list[type]->generic.height);
+	  printf_filtered("        %s\t(%d lines)  <has focus>\n",
+			  tui_win_name(&tui_win_list[type]->generic),
+			  tui_win_list[type]->generic.height);
 	else
-	  printf_filtered ("        %s\t(%d lines)\n",
-			   tui_win_name (&tui_win_list[type]->generic),
-			   tui_win_list[type]->generic.height);
+	  printf_filtered("        %s\t(%d lines)\n",
+			  tui_win_name(&tui_win_list[type]->generic),
+			  tui_win_list[type]->generic.height);
       }
 }
 
-
+/* FIXME: needs comment: */
 static void
-tui_refresh_all_command (char *arg, int from_tty)
+tui_refresh_all_command(const char *arg, int from_tty)
 {
-  /* Make sure the curses mode is enabled.  */
-  tui_enable ();
+  /* Make sure the curses mode is enabled: */
+  tui_enable();
 
-  tui_refresh_all_win ();
+  tui_refresh_all_win();
 }
 
 
-/* Set the height of the specified window.   */
+/* Set the height of the specified window: */
 static void
-tui_set_tab_width_command (char *arg, int from_tty)
+tui_set_tab_width_command(const char *arg, int from_tty)
 {
-  /* Make sure the curses mode is enabled.  */
-  tui_enable ();
-  if (arg != (char *) NULL)
+  /* Make sure the curses mode is enabled: */
+  tui_enable();
+  if (arg != (const char *)NULL)
     {
       int ts;
 
-      ts = atoi (arg);
+      ts = atoi(arg);
       if (ts > 0)
-	tui_set_default_tab_len (ts);
+	tui_set_default_tab_len(ts);
       else
-	warning (_("Tab widths greater than 0 must be specified."));
+	warning(_("Tab widths greater than 0 must be specified."));
     }
 }
 
 
-/* Set the height of the specified window.   */
+/* Set the height of the specified window: */
 static void
-tui_set_win_height(char *arg, int from_tty)
+tui_set_win_height(const char *arg, int from_tty)
 {
   /* Make sure the curses mode is enabled: */
   tui_enable();
-  if (arg != (char *)NULL)
+  if (arg != (const char *)NULL)
     {
       char *buf = xstrdup(arg);
       char *buf_ptr = buf;
@@ -1001,7 +1006,7 @@ tui_set_win_height(char *arg, int from_tty)
 	  *buf_ptr = (char)0;
 
 	  /*
-	     ** Validate the window name
+	  ** Validate the window name
 	   */
 	  for (i = 0UL; i < strlen(wname); i++)
 	    wname[i] = toupper(wname[i]);
@@ -1039,11 +1044,11 @@ The window name specified must be valid and visible.\n"));
 		      else
 			new_height = (win_info->generic.height + input_no);
 		      /*
-		         ** Now change the window's height, and adjust all
-		         ** other windows around it
+		      ** Now change the window's height, and adjust all
+		      ** other windows around it
 		       */
 		      if (tui_adjust_win_heights(win_info,
-						new_height) == TUI_FAILURE)
+						 new_height) == TUI_FAILURE)
 			warning(_("Invalid window height specified.\n%s"),
                                 WIN_HEIGHT_USAGE);
 		      else
@@ -1065,26 +1070,26 @@ The window name specified must be valid and visible.\n"));
     printf_filtered(WIN_HEIGHT_USAGE);
 }
 
-/* Set the height of the specified window, with va_list.    */
+/* Set the height of the specified window, with va_list:  */
 static void
-tui_set_win_height_command (char *arg, int from_tty)
+tui_set_win_height_command(const char *arg, int from_tty)
 {
-  /* Make sure the curses mode is enabled.  */
-  tui_enable ();
-  tui_set_win_height (arg, from_tty);
+  /* Make sure the curses mode is enabled: */
+  tui_enable();
+  tui_set_win_height(arg, from_tty);
 }
 
 
 /* XDB Compatibility command for setting the window height.  This will
    increase or decrease the command window by the specified amount.  */
 static void
-tui_xdb_set_win_height (char *arg, int from_tty)
+tui_xdb_set_win_height(const char *arg, int from_tty)
 {
-  /* Make sure the curses mode is enabled.  */
-  tui_enable ();
-  if (arg != (char *) NULL)
+  /* Make sure the curses mode is enabled: */
+  tui_enable();
+  if (arg != (const char *)NULL)
     {
-      int input_no = atoi (arg);
+      int input_no = atoi(arg);
 
       if (input_no > 0)
 	{			/* Add 1 for the locator */
@@ -1104,17 +1109,17 @@ tui_xdb_set_win_height (char *arg, int from_tty)
     warning (_("Invalid window height specified.\n%s"), XDBWIN_HEIGHT_USAGE);
 }
 
-/* Set the height of the specified window, with va_list.  */
+/* Set the height of the specified window, with va_list: */
 static void
-tui_xdb_set_win_height_command (char *arg, int from_tty)
+tui_xdb_set_win_height_command(const char *arg, int from_tty)
 {
-  tui_xdb_set_win_height (arg, from_tty);
+  tui_xdb_set_win_height(arg, from_tty);
 }
 
 
-/* Function to adjust all window heights around the primary.   */
+/* Function to adjust all window heights around the primary: */
 static enum tui_status
-tui_adjust_win_heights (struct tui_win_info * primary_win_info, int new_height)
+tui_adjust_win_heights(struct tui_win_info *primary_win_info, int new_height)
 {
   enum tui_status status = TUI_FAILURE;
 
@@ -1499,40 +1504,40 @@ new_height_ok (struct tui_win_info * primary_win_info, int new_height)
   return ok;
 }
 
-
+/* FIXME: needs comment: */
 static void
-parse_scrolling_args (char *arg, struct tui_win_info * * win_to_scroll,
-		      int *num_to_scroll)
+parse_scrolling_args(const char *arg, struct tui_win_info **win_to_scroll,
+		     int *num_to_scroll)
 {
   if (num_to_scroll)
     *num_to_scroll = 0;
-  *win_to_scroll = tui_win_with_focus ();
+  *win_to_scroll = tui_win_with_focus();
 
   /*
-     ** First set up the default window to scroll, in case there is no
-     ** window name arg
+  ** First set up the default window to scroll, in case there is no
+  ** window name arg
    */
-  if (arg != (char *) NULL)
+  if (arg != (const char *)NULL)
     {
       char *buf, *buf_ptr;
 
-      /* process the number of lines to scroll */
-      buf = buf_ptr = xstrdup (arg);
-      if (isdigit (*buf_ptr))
+      /* process the number of lines to scroll: */
+      buf = buf_ptr = xstrdup(arg);
+      if (isdigit(*buf_ptr))
 	{
 	  char *num_str;
 
 	  num_str = buf_ptr;
-	  buf_ptr = strchr (buf_ptr, ' ');
-	  if (buf_ptr != (char *) NULL)
+	  buf_ptr = strchr(buf_ptr, ' ');
+	  if (buf_ptr != (char *)NULL)
 	    {
-	      *buf_ptr = (char) 0;
+	      *buf_ptr = (char)0;
 	      if (num_to_scroll)
-		*num_to_scroll = atoi (num_str);
+		*num_to_scroll = atoi(num_str);
 	      buf_ptr++;
 	    }
 	  else if (num_to_scroll)
-	    *num_to_scroll = atoi (num_str);
+	    *num_to_scroll = atoi(num_str);
 	}
 
       /* process the window name if one is specified */
@@ -1548,15 +1553,15 @@ parse_scrolling_args (char *arg, struct tui_win_info * * win_to_scroll,
 	  if (*buf_ptr != (char)0)
 	    wname = buf_ptr;
 	  else
-	    wname = "?";
+	    wname = (char *)"?";
 
 	  /* Validate the window name: */
 	  for (i = 0UL; i < strlen(wname); i++)
 	    wname[i] = toupper(wname[i]);
 	  *win_to_scroll = tui_partial_win_by_name(wname);
 
-	  if ((*win_to_scroll == (struct tui_win_info *)NULL) ||
-	      !(*win_to_scroll)->generic.is_visible)
+	  if ((*win_to_scroll == (struct tui_win_info *)NULL)
+	      || !(*win_to_scroll)->generic.is_visible)
 	    error(_("Invalid window specified. \n\
 The window name specified must be valid and visible.\n"));
 	  else if (*win_to_scroll == TUI_CMD_WIN)

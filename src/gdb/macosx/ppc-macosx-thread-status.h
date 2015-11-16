@@ -1,4 +1,4 @@
-/* ppc-macosx-thread-status.h */
+/* macosx/ppc-macosx-thread-status.h */
 
 #ifndef __GDB_PPC_MACOSX_THREAD_STATUS_H__
 #define __GDB_PPC_MACOSX_THREAD_STATUS_H__
@@ -10,7 +10,6 @@
 
 struct gdb_ppc_thread_state
 {
-
   unsigned int srr0;            /* program counter */
   unsigned int srr1;            /* machine state register */
 

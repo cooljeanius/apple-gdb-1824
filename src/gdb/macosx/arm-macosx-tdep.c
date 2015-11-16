@@ -1,4 +1,4 @@
-/* arm-macosx-tdep.c
+/* macosx/arm-macosx-tdep.c
    Mac OS X support for ARM targets for GDB, the GNU debugger.
    Copyright 2005
    Free Software Foundation, Inc.

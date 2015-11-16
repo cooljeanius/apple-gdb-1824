@@ -1,4 +1,4 @@
-/* macosx-nat-inferior-util.c: Mac OS X support for GDB, the GNU debugger.
+/* macosx/macosx-nat-inferior-util.c: Mac OS X support for GDB.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -50,7 +50,7 @@
 
 extern macosx_dyld_thread_status macosx_dyld_status;
 
-const char *
+const char * ATTRIBUTE_CONST
 ptrace_request_unparse(int request)
 {
   switch (request)

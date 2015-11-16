@@ -1,4 +1,4 @@
-/* APPLE LOCAL file (core-macho.c) for Darwin */
+/* APPLE LOCAL file (macosx/core-macho.c) for Darwin */
 /* Mac OS X support for mach-o core files for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.

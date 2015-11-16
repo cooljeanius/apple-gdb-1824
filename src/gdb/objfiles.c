@@ -2097,7 +2097,7 @@ pc_set_load_state (CORE_ADDR pc, int load_state, int force)
   if (s->objfile == NULL)
     return -1;
 
-  return objfile_set_load_state (s->objfile, load_state, force);
+  return objfile_set_load_state(s->objfile, load_state, force);
 
 }
 
@@ -2105,7 +2105,7 @@ pc_set_load_state (CORE_ADDR pc, int load_state, int force)
    and the return value are the same as for objfile_set_load_state.  */
 
 int
-objfile_name_set_load_state (char *name, int load_state, int force)
+objfile_name_set_load_state(const char *name, int load_state, int force)
 {
   struct objfile *tmp_obj;
 

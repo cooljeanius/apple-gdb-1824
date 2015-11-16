@@ -1,4 +1,4 @@
-/* kdp-transactions.c
+/* macosx/kdp-transactions.c
    Mac OS X kdp support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
@@ -209,9 +209,10 @@ kdp_reply_wait(kdp_connection *c, kdp_pkt_t * response, int timeout)
   return RR_SUCCESS;
 }
 
+/* */
 kdp_return_t
 kdp_transaction(kdp_connection *c,
-                kdp_pkt_t *request, kdp_pkt_t *response, char *name)
+                kdp_pkt_t *request, kdp_pkt_t *response, const char *name)
 {
   kdp_return_t rtn;
   int retries = c->retries;

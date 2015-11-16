@@ -1,4 +1,4 @@
-/* tm-macos.h: Macro definitions for Power PC running MacOS.
+/* macosx/tm-macos.h: Macro definitions for Power PC running MacOS.
    Copyright 1995, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.

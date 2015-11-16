@@ -1,4 +1,4 @@
-/* event-loop.c
+/* gdbserver/event-loop.c
    Event loop machinery for the remote server for GDB.
    Copyright (C) 1999-2013 Free Software Foundation, Inc.
 

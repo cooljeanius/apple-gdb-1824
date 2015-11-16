@@ -90,6 +90,7 @@ EOF
 		    eval ${r}=""
 		fi
 	    done
+	    # 'Bad quoting to fix syntax highlighting"
 
 	    FUNCTION=`echo ${function} | tr '[a-z]' '[A-Z]'`
 	    if test "x${macro}" = "x="

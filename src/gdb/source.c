@@ -1815,6 +1815,7 @@ forward_search_command(char *regex, int from_tty)
   fclose(stream);
 }
 
+/* FIXME: needs comment: */
 static void
 reverse_search_command(char *regex, int from_tty)
 {
@@ -1826,52 +1827,50 @@ reverse_search_command(char *regex, int from_tty)
 
   line = last_line_listed - 1;
 
-  msg = (char *) re_comp (regex);
+  msg = (char *)re_comp(regex);
   if (msg)
-    error (("%s"), msg);
+    error(("%s"), msg);
 
   if (current_source_symtab == 0)
-    select_source_symtab (0);
+    select_source_symtab(0);
 
-  desc = open_source_file (current_source_symtab);
+  desc = open_source_file(current_source_symtab);
   if (desc < 0)
-    perror_with_name (current_source_symtab->filename);
+    perror_with_name(current_source_symtab->filename);
 
   if (current_source_symtab->line_charpos == 0)
-    find_source_lines (current_source_symtab, desc);
+    find_source_lines(current_source_symtab, desc);
 
-  if (line < 1 || line > current_source_symtab->nlines)
+  if ((line < 1) || (line > current_source_symtab->nlines))
     {
-      close (desc);
-      error (_("Expression not found"));
+      close(desc);
+      error(_("Expression not found"));
     }
 
-  if (lseek (desc, current_source_symtab->line_charpos[line - 1], 0) < 0)
+  if (lseek(desc, current_source_symtab->line_charpos[line - 1], 0) < 0)
     {
-      close (desc);
-      perror_with_name (current_source_symtab->filename);
+      close(desc);
+      perror_with_name(current_source_symtab->filename);
     }
 
-  stream = fdopen (desc, FDOPEN_MODE);
-  clearerr (stream);
+  stream = fdopen(desc, FDOPEN_MODE);
+  clearerr(stream);
   while (line > 1)
     {
 /* FIXME!!!  We walk right off the end of buf if we get a long line!!! */
       char buf[4096];		/* Should be reasonable??? */
       char *p = buf;
 
-      c = getc (stream);
+      c = getc(stream);
       if (c == EOF)
 	break;
-      do
-	{
-	  *p++ = c;
-	}
-      while (c != '\n' && (c = getc (stream)) >= 0);
+      do {
+	*p++ = c;
+      } while ((c != '\n') && ((c = getc(stream)) >= 0));
 
       /* Remove the \r, if any, at the end of the line, otherwise
          regular expressions that end with $ or \n won't work.  */
-      if (p - buf > 1 && p[-2] == '\r')
+      if (((p - buf) > 1) && (p[-2] == '\r'))
 	{
 	  p--;
 	  p[-1] = '\n';
@@ -1879,78 +1878,82 @@ reverse_search_command(char *regex, int from_tty)
 
       /* We now have a source line in buf; null terminate and match.  */
       *p = 0;
-      if (re_exec (buf) > 0)
+      if (re_exec(buf) > 0)
 	{
 	  /* Match! */
-	  fclose (stream);
+	  fclose(stream);
 	  /* APPLE LOCAL nlines instead of stopline */
-	  print_source_lines (current_source_symtab, line, 1, 0);
-	  set_internalvar (lookup_internalvar ("_"),
-			   value_from_longest (builtin_type_int,
-					       (LONGEST) line));
-	  current_source_line = max (line - lines_to_list / 2, 1);
+	  print_source_lines(current_source_symtab, line, 1, 0);
+	  set_internalvar(lookup_internalvar("_"),
+			  value_from_longest(builtin_type_int,
+					     (LONGEST)line));
+	  current_source_line = max(line - lines_to_list / 2, 1);
 	  return;
 	}
       line--;
-      if (fseek (stream, current_source_symtab->line_charpos[line - 1], 0) < 0)
+      if (fseek(stream, current_source_symtab->line_charpos[line - 1], 0) < 0)
 	{
-	  fclose (stream);
-	  perror_with_name (current_source_symtab->filename);
+	  fclose(stream);
+	  perror_with_name(current_source_symtab->filename);
 	}
     }
 
-  printf_filtered (_("Expression not found\n"));
-  fclose (stream);
+  printf_filtered(_("Expression not found\n"));
+  fclose(stream);
   return;
 }
 
+/* module initialization: */
 void
-_initialize_source (void)
+_initialize_source(void)
 {
   struct cmd_list_element *c;
   current_source_symtab = 0;
-  init_source_path ();
+  init_source_path();
 
   /* The intention is to use POSIX Basic Regular Expressions.
      Always use the GNU regex routine for consistency across all hosts.
      Our current GNU regex.c does not have all the POSIX features, so this is
      just an approximation.  */
-  re_set_syntax (REG_BASIC);
+  re_set_syntax(REG_BASIC);
 
-  c = add_cmd ("directory", class_files, directory_command, _("\
+  c = add_cmd("directory", class_files, directory_command, _("\
 Add directory DIR to beginning of search path for source files.\n\
 Forget cached info on source file locations and line positions.\n\
 DIR can also be $cwd for the current working directory, or $cdir for the\n\
 directory in which the source file was compiled into object code.\n\
 With no argument, reset the search path to $cdir:$cwd, the default."),
-	       &cmdlist);
+	      &cmdlist);
 
   if (dbx_commands)
-    add_com_alias ("use", "directory", class_files, 0);
+    add_com_alias("use", "directory", class_files, 0);
 
-  set_cmd_completer (c, filename_completer);
-  /* c->completer_word_break_characters = gdb_completer_filename_word_break_characters; */ /* FIXME */
+  set_cmd_completer(c, filename_completer);
+#if 0
+  c->completer_word_break_characters =
+    gdb_completer_filename_word_break_characters; /* FIXME */
+#endif /* 0 */
 
-  add_cmd ("directories", no_class, show_directories, _("\
+  add_cmd("directories", no_class, show_directories, _("\
 Current search path for finding source files.\n\
 $cwd in the path means the current working directory.\n\
 $cdir in the path means the compilation directory of the source file."),
-	   &showlist);
+	  &showlist);
 
   if (xdb_commands)
     {
-      add_com_alias ("D", "directory", class_files, 0);
-      add_cmd ("ld", no_class, show_directories, _("\
+      add_com_alias("D", "directory", class_files, 0);
+      add_cmd("ld", no_class, show_directories, _("\
 Current search path for finding source files.\n\
 $cwd in the path means the current working directory.\n\
 $cdir in the path means the compilation directory of the source file."),
-	       &cmdlist);
+	      &cmdlist);
     }
 
-  add_info ("source", source_info,
-	    _("Information about the current source file."));
+  add_info("source", source_info,
+	   _("Information about the current source file."));
 
-  add_info ("line", line_info, _("\
+  add_info("line", line_info, _("\
 Core addresses of the code for a source line.\n\
 Line can be specified as\n\
   LINENUM, to list around that line in current file,\n\
@@ -1962,31 +1965,30 @@ This sets the default address for \"x\" to the line's first instruction\n\
 so that \"x/i\" suffices to start examining the machine code.\n\
 The address is also stored as the value of \"$_\"."));
 
-  add_com ("forward-search", class_files, forward_search_command, _("\
+  add_com("forward-search", class_files, forward_search_command, _("\
 Search for regular expression (see regex(3)) from last line listed.\n\
 The matching line number is also stored as the value of \"$_\"."));
-  add_com_alias ("search", "forward-search", class_files, 0);
+  add_com_alias("search", "forward-search", class_files, 0);
 
-  add_com ("reverse-search", class_files, reverse_search_command, _("\
+  add_com("reverse-search", class_files, reverse_search_command, _("\
 Search backward for regular expression (see regex(3)) from last line listed.\n\
 The matching line number is also stored as the value of \"$_\"."));
 
   if (xdb_commands)
     {
-      add_com_alias ("/", "forward-search", class_files, 0);
-      add_com_alias ("?", "reverse-search", class_files, 0);
+      add_com_alias("/", "forward-search", class_files, 0);
+      add_com_alias("?", "reverse-search", class_files, 0);
     }
 
-  add_setshow_integer_cmd ("listsize", class_support, &lines_to_list, _("\
+  add_setshow_integer_cmd("listsize", class_support, &lines_to_list, _("\
 Set number of source lines gdb will list by default."), _("\
 Show number of source lines gdb will list by default."), NULL,
-			    NULL,
-			    show_lines_to_list,
-			    &setlist, &showlist);
+			  NULL, show_lines_to_list,
+			  &setlist, &showlist);
 
   /* APPLE LOCAL begin pathname substitution */
-  add_setshow_string_cmd ("pathname-substitutions", class_support,
-			  &pathname_substitutions, _("\
+  add_setshow_string_cmd("pathname-substitutions", class_support,
+			 &pathname_substitutions, _("\
 Set string substitutions to be used when searching for source files."), _("\
 Show string substitutions to be used when searching for source files."), _("\
 The string substitutions are space separated pairs of paths where each\n\
@@ -1994,9 +1996,9 @@ string can be surrounded by quotes if a path contains spaces.\n\
 \n\
 Example:\n\
 pathname-substitutions /path1/from /new/path1/to '/path2/with space/from' /path2/to"),
-			  set_pathname_substitution,
-			  show_pathname_substitutions,
-			  &setlist, &showlist);
+			 set_pathname_substitution,
+			 show_pathname_substitutions,
+			 &setlist, &showlist);
   /* APPLE LOCAL end pathname substitution */
 }
 

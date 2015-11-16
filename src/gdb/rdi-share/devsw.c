@@ -1,4 +1,4 @@
-/* devsw.c
+/* rdi-share/devsw.c
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
  *
  * This software may be freely used, copied, modified, and distributed
@@ -108,9 +108,9 @@ void DevSW_SetLogfile (const char *filename)
 }
 
 
-#define WordAt(p)  ((unsigned long) ((p)[0] | ((p)[1]<<8) | ((p)[2]<<16) | ((p)[3]<<24)))
+#define WordAt(p)  ((unsigned long)((p)[0] | ((p)[1]<<8) | ((p)[2]<<16) | ((p)[3]<<24)))
 
-static void dumpPacket(FILE *fp, char *label, struct data_packet *p)
+static void dumpPacket(FILE *fp, const char *label, struct data_packet *p)
 {
   unsigned r;
   int i;

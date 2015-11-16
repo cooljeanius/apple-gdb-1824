@@ -1,4 +1,4 @@
-/* mi-symbol-cmds.c: MI Command Set - symbol commands.
+/* mi/mi-symbol-cmds.c: MI Command Set - symbol commands.
    Copyright 2003 Free Software Foundation, Inc.
 
    This file is part of GDB.

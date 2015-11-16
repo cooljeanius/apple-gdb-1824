@@ -1,4 +1,4 @@
-/* tui-disasm.c: Disassembly display.
+/* tui/tui-disasm.c: Disassembly display.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.

@@ -1,4 +1,4 @@
-/* tm-nto.h
+/* config/tm-nto.h
    Target machine sub-description for QNX Neutrino version 6.
    This is included by other tm-*.h files to specify nto specific
    stuff.

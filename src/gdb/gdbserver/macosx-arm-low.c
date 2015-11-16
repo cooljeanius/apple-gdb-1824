@@ -1,5 +1,5 @@
 /*
- * macosx-arm-low.c
+ * gdbserver/macosx-arm-low.c
  */
 
 #include <sys/wait.h>

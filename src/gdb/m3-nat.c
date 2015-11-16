@@ -2824,7 +2824,7 @@ thread_list_command (void)
 }
 
 void
-thread_select_command (char *args, int from_tty)
+thread_select_command(char *args, int from_tty)
 {
   int mid;
   thread_array_t thread_list;
@@ -2835,7 +2835,7 @@ thread_select_command (char *args, int from_tty)
   MACH_ERROR_NO_INFERIOR;
 
   if (!args)
-    error_no_arg ("MID or @SLOTNUMBER to specify a thread to select");
+    error_no_arg(_("MID or @SLOTNUMBER to specify a thread to select"));
 
   while (*args == ' ' || *args == '\t')
     args++;
@@ -3151,7 +3151,7 @@ thread_kill_command (char *args, int from_tty)
   MACH_ERROR_NO_INFERIOR;
 
   if (!args)
-    error_no_arg ("thread mid to kill from the inferior task");
+    error_no_arg(_("thread mid to kill from the inferior task"));
 
   mid = parse_thread_id (args, 0, 0);
 
@@ -3372,7 +3372,7 @@ exception_command (char *args, int from_tty)
   int len;
 
   if (!args)
-    error_no_arg ("exception number action");
+    error_no_arg(_("exception number action"));
 
   while (*scan == ' ' || *scan == '\t')
     scan++;
@@ -4038,18 +4038,18 @@ m3_do_attach (int pid)
    and wait for the trace-trap that results from attaching.  */
 
 static void
-m3_attach (char *args, int from_tty)
+m3_attach(char *args, int from_tty)
 {
   char *exec_file;
   int pid;
 
   if (!args)
-    error_no_arg ("process-id to attach");
+    error_no_arg(_("process-id to attach"));
 
-  pid = atoi (args);
+  pid = atoi(args);
 
-  if (pid == getpid ())		/* Trying to masturbate? */
-    error ("I refuse to debug myself!");
+  if (pid == getpid())		/* Trying to masturbate? */
+    error("I refuse to debug myself!");
 
   if (from_tty)
     {

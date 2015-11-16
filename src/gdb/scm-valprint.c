@@ -32,11 +32,11 @@
 #include "gdbcore.h"
 #include "c-lang.h"
 
-static void scm_ipruk (char *, LONGEST, struct ui_file *);
-static void scm_scmlist_print (LONGEST, struct ui_file *, int, int,
-			       int, enum val_prettyprint);
-static int scm_inferior_print (LONGEST, struct ui_file *, int, int,
-			       int, enum val_prettyprint);
+static void scm_ipruk(const char *, LONGEST, struct ui_file *);
+static void scm_scmlist_print(LONGEST, struct ui_file *, int, int,
+			      int, enum val_prettyprint);
+static int scm_inferior_print(LONGEST, struct ui_file *, int, int,
+			      int, enum val_prettyprint);
 
 /* Prints the SCM value VALUE by invoking the inferior, if appropraite.
    Returns >= 0 on succes;  retunr -1 if the inferior cannot/should not
@@ -52,7 +52,7 @@ scm_inferior_print (LONGEST value, struct ui_file *stream, int format,
 /* {Names of immediate symbols}
  * This table must agree with the declarations in scm.h: {Immediate Symbols}.*/
 
-static char *scm_isymnames[] =
+static const char *scm_isymnames[] =
 {
   /* This table must agree with the declarations */
   "and",
@@ -122,17 +122,19 @@ scm_scmlist_print (LONGEST svalue, struct ui_file *stream, int format,
     }
 }
 
+/* FIXME: needs comment: */
 static void
-scm_ipruk (char *hdr, LONGEST ptr, struct ui_file *stream)
+scm_ipruk(const char *hdr, LONGEST ptr, struct ui_file *stream)
 {
-  fprintf_filtered (stream, "#<unknown-%s", hdr);
-#define SCM_SIZE TYPE_LENGTH (builtin_type_scm)
-  if (SCM_CELLP (ptr))
-    fprintf_filtered (stream, " (0x%lx . 0x%lx) @",
-		      (long) SCM_CAR (ptr), (long) SCM_CDR (ptr));
-  fprintf_filtered (stream, " 0x%s>", paddr_nz (ptr));
+  fprintf_filtered(stream, "#<unknown-%s", hdr);
+#define SCM_SIZE TYPE_LENGTH(builtin_type_scm)
+  if (SCM_CELLP(ptr))
+    fprintf_filtered(stream, " (0x%lx . 0x%lx) @",
+		     (long)SCM_CAR(ptr), (long)SCM_CDR(ptr));
+  fprintf_filtered(stream, " 0x%s>", paddr_nz(ptr));
 }
 
+/* FIXME: needs comment: */
 void
 scm_scmval_print(LONGEST svalue, struct ui_file *stream, int format,
 		 int deref_ref, int recurse, enum val_prettyprint pretty)

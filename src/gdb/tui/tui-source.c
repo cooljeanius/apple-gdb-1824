@@ -1,4 +1,4 @@
-/* tui-source.c: TUI display source window.
+/* tui/tui-source.c: TUI display source window.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -235,7 +235,8 @@ tui_set_source_content(struct symtab *s, int line_no, int noerror)
    source files cannot be accessed.  */
 
 void
-tui_set_source_content_nil(struct tui_win_info *win_info, char *warning_string)
+tui_set_source_content_nil(struct tui_win_info *win_info,
+			   const char *warning_string)
 {
   int line_width;
   int n_lines;

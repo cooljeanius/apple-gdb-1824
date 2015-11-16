@@ -1,4 +1,4 @@
-/* Vector API for GDB.
+/* common/vec.c: Vector API for GDB.
    Copyright (C) 2004-2013 Free Software Foundation, Inc.
    Contributed by Nathan Sidwell <nathan@codesourcery.com>
 

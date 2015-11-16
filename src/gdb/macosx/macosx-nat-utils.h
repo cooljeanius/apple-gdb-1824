@@ -1,5 +1,5 @@
 /*
- * macosx-nat-utils.h
+ * macosx/macosx-nat-utils.h
  */
 
 #ifndef __GDB_MACOSX_NAT_UTILS_H__

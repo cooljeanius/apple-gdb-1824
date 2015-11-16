@@ -1,4 +1,4 @@
-/* low.h
+/* multi-ice/low.h
  *
  * Contains the defines for the target side of the multi-ice server.
  *

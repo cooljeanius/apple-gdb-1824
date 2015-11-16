@@ -1,4 +1,4 @@
-/* Header file for GDB CLI utility library.
+/* cli/cli-utils.h: Header file for GDB CLI utility library.
    Copyright 2001 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify

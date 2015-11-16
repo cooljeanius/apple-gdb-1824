@@ -31,18 +31,22 @@ struct psymbol_allocation_list;
    on a  partial symtab list and which points to the corresponding 
    normal symtab once the partial_symtab has been referenced.  */
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic warning "-Wpadded"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* This structure is space critical.  See space comments at the top of
    symtab.h.  */
 
 struct partial_symbol
 {
-
-  /* The general symbol info required for all types of symbols.  */
-
+  /* The general symbol info required for all types of symbols: */
   struct general_symbol_info ginfo;
 
-  /* Name space code.  */
-
+  /* Name space code: */
   ENUM_BITFIELD(domain_enum_tag) domain : 6;
 
   /* Address class (for info_symbols).  Note that we don't allow
@@ -50,11 +54,17 @@ struct partial_symbol
      no need.  */
 
   ENUM_BITFIELD(address_class) aclass : 6;
-
 };
 
 #define PSYMBOL_DOMAIN(psymbol)	(psymbol)->domain
 #define PSYMBOL_CLASS(psymbol)		(psymbol)->aclass
+
+/* keep this condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* A convenience enum to give names to some constants used when
    searching psymtabs.  This is internal to psymtab and should not be

@@ -1,5 +1,5 @@
 /*
- * cached-symfiles.h
+ * macosx/cached-symfiles.h
  */
 
 #ifndef __GDB_MACOSX_CACHED_SYMFILE_H__

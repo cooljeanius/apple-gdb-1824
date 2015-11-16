@@ -2,7 +2,7 @@
  * for the Multi-ICE gdb server.
  * Copyright (C) 1999
  * Free Software Foundation, Inc. */
-/* arm-singlestep.c
+/* multi-ice/arm-singlestep.c
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify

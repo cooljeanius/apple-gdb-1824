@@ -1,4 +1,4 @@
-/* macosx-nat-excthread.c: Mac OS X support for GDB, the GNU debugger.
+/* macosx/macosx-nat-excthread.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -261,7 +261,7 @@ static macosx_exception_thread_message *static_message = NULL;
 # endif /* gcc 4.6+ */
 #endif /* GCC */
 
-kern_return_t
+kern_return_t ATTRIBUTE_CONST
 #ifdef HAVE_64_BIT_MACH_EXCEPTIONS
   catch_mach_exception_raise_state
 #else

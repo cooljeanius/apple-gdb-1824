@@ -2499,7 +2499,7 @@ AC_CACHE_CHECK([for long long support in printf],
   l = (l << 16) + 0x4567;
   l = (l << 16) + 0x89ab;
   l = (l << 16) + 0xcdef;
-  sprintf(buf, "0x%016llx", l);
+  snprintf(buf, sizeof(buf), "0x%016llx", l);
   return (strcmp("0x0123456789abcdef", buf));]])],
                               [gdb_cv_printf_has_long_long=yes],
                               [gdb_cv_printf_has_long_long=no],
@@ -2521,7 +2521,7 @@ AC_CACHE_CHECK([for decfloat support in printf],
   _Decimal32 d32 = 1.2345df;
   _Decimal64 d64 = 1.2345dd;
   _Decimal128 d128 = 1.2345dl;
-  sprintf(buf, "Decimal32: %H\nDecimal64: %D\nDecimal128: %DD", d32, d64, d128);
+  snprintf(buf, sizeof(buf), "Decimal32: %H\nDecimal64: %D\nDecimal128: %DD", d32, d64, d128);
   return (strcmp("Decimal32: 1.2345\nDecimal64: 1.2345\nDecimal128: 1.2345", buf));]])],
                               [gdb_cv_printf_has_decfloat=yes],
                               [gdb_cv_printf_has_decfloat=no],
@@ -2561,8 +2561,8 @@ AC_CACHE_CHECK([for long double support in printf],
                [AC_RUN_IFELSE([AC_LANG_PROGRAM([AC_INCLUDES_DEFAULT],
 [[char buf[16];
   long double f = 3.141592653;
-  sprintf (buf, "%Lg", f);
-  return (strncmp ("3.14159", buf, 7));]])],
+  snprintf(buf, sizeof(buf), "%Lg", f);
+  return (strncmp("3.14159", buf, 7));]])],
                               [gdb_cv_printf_has_long_double=yes],
                               [gdb_cv_printf_has_long_double=no],
                               [gdb_cv_printf_has_long_double=no])])dnl
@@ -2928,14 +2928,15 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wno-deprecated-declarations -Wbool-compare -Wlogical-not-parentheses \
 -Wsizeof-array-argument -Wswitch-bool -Wshift-count-negative \
 -Wshift-count-overflow -Wshift-negative-value -Wshift-overflow=2 \
--Wmisleading-indentation -Wlto-type-mismatch -Wtautological-compare"
+-Wmisleading-indentation -Wlto-type-mismatch -Wtautological-compare \
+-Wduplicated-cond -Wwrite-strings -Wenum-compare"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
   ## Special warnings only for C++ compilations:
   cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo -Wodr -Wterminate \
 -Wmultiple-inheritance -Wvirtual-inheritance -Wpmf-conversions \
--Wno-write-strings -Wno-narrowing"
+-Wtemplates -Wno-narrowing"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
@@ -3023,10 +3024,14 @@ opt_warnings="-Wuninitialized -Winit-self -Wmissing-noreturn \
 -Wvolatile-register-var -Wdisabled-optimization \
 -Waggressive-loop-optimizations -Wvector-operation-performance \
 -Wmaybe-uninitialized -Wstrict-overflow=1 -fno-strict-aliasing \
--Wnull-dereference -Wduplicated-cond -Wframe-address"
+-Wnull-dereference -Wframe-address -Wsuggest-attribute=const"
 # -Warray-bounds is only for -O2 and up, or when -ftree-vrp is active, so
 # use a separate variable for it:
-opt_warnings_plus="${opt_warnings} -Warray-bounds=2"
+if test "x${enable_build_with_cxx}" = "xyes"; then
+  opt_warnings_plus="${opt_warnings} -Warray-bounds"
+else
+  opt_warnings_plus="${opt_warnings} -Warray-bounds=2"
+fi
 if test x${CFLAGS+set} = xset; then
   case "${CFLAGS}" in
     *"-O0"* )
@@ -3048,11 +3053,9 @@ fi
 # Up for debate (i.e. for debating adding to existing flags): 
 #  * -trigraphs (only assuming we leave -Wtrigraphs in, see below)
 #  * -Wunused-variable (to go with -Wunused-value)
-#  * -Wtraditional (yeah right)
 #  * -Wshadow (usually easy enough to fix, if you are using an IDE)
 #  * -Wcast-qual (casting can silence other warnings, so this can conflict)
 #  * -Wcast-align (same as with -Wcast-qual, and also makes clang noisy)
-#  * -Wwrite-strings (would require a lot of const-ifying)
 #  * -Wconversion (would require a lot of casting)
 #  * -Wsign-conversion (likewise)
 #  * -Wtraditional-conversion (likewise)
@@ -3061,9 +3064,8 @@ fi
 #  * -Wundef (only if we can figure out how to fix the issue with caddr_t)
 #  * -Wunused-macros (if we also add back -Wundef as per above)
 #  * -Wunused-function (had been added, but I hate fixing it)
-#  * -Wchar-subscripts (upstream FSF gdb explicitly disables this)
+#  * -Wchar-subscripts (upstream FSF gdb explicitly disables this, but...)
 #  * -Wunused-local-typedefs (`mig` generates code that triggers this)
-#  * -Wenum-compare (not really sure how to solve for now...)
 #  * -Wunsafe-loop-optimizations (lex/yacc generate code that triggers it)
 #  * -Waggregate-return (too noisy and hard to avoid)
 #  * -Wformat-signedness (too noisy)
@@ -3087,6 +3089,7 @@ fi
 #    others such as -Wformat-nonliteral, so I added it back)
 #  * -Wnested-externs (if it gets redundant with -Wimplicit again)
 #  * -Wtype-limits (often triggered on purpose, so okay to just ignore it)
+#  * -Wwrite-strings (in case all the const-ifying gets to be too much)
 # Up for debate in some other way:
 #  * -Wstrict-overflow (i.e., could change the value assigned to it. We use
 #    "1" now because that is the default for "-Wall", but "2" is the

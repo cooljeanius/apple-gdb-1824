@@ -1,4 +1,4 @@
-/* cli-interp.c: CLI Definitions for GDB, the GNU debugger.
+/* cli/cli-interp.c: CLI Definitions for GDB, the GNU debugger.
 
    Copyright 2002, 2003 Free Software Foundation, Inc.
 
@@ -222,16 +222,18 @@ _initialize_cli_interp (void)
   /* APPLE LOCAL end console-quoted interpreter */
 
   /* Create a default uiout builder for the CLI.  */
-  cli_uiout = cli_out_new (gdb_stdout);
-  cli_interp = interp_new (INTERP_CONSOLE, NULL, cli_uiout, &procs);
+  cli_uiout = cli_out_new(gdb_stdout);
+  cli_interp = interp_new(INTERP_CONSOLE, NULL, cli_uiout, &procs);
 
-  interp_add (cli_interp);
+  interp_add(cli_interp);
 
   /* APPLE LOCAL begin console-quoted interpreter */
-  raw_stdout = stdio_fileopen (stdout);
-  tmp_ui_out = cli_quoted_out_new (raw_stdout);
-  cli_interp = interp_new ("console-quoted", NULL, tmp_ui_out,
-			   &quoted_procs);
-  interp_add (cli_interp); /* second call */
+  raw_stdout = stdio_fileopen(stdout);
+  tmp_ui_out = cli_quoted_out_new(raw_stdout);
+  cli_interp = interp_new("console-quoted", NULL, tmp_ui_out,
+			  &quoted_procs);
+  interp_add(cli_interp); /* second call */
   /* APPLE LOCAL end console-quoted interpreter */
 }
+
+/* EOF */

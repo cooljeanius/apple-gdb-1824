@@ -1,4 +1,4 @@
-/* inferiors.h
+/* gdbserver/inferiors.h
    Inferior process information for the remote server for GDB.
    Copyright (C) 1993-2013 Free Software Foundation, Inc.
 

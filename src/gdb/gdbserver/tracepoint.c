@@ -1,4 +1,4 @@
-/* tracepoint.c
+/* gdbserver/tracepoint.c
    Tracepoint code for remote server for GDB.
    Copyright (C) 2009-2013 Free Software Foundation, Inc.
 

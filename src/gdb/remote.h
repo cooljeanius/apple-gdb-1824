@@ -26,7 +26,7 @@ Boston, MA 02111-1307, USA.  */
 
 #include <sys/time.h>
 
-/* FIXME?: move this interface down to tgt vector) */
+/* (FIXME?: move this interface down to tgt vector) */
 
 /* Read a packet from the remote machine, with error checking, and
    store it in BUF.  BUF is expected to be of size PBUFSIZ.  If
@@ -41,7 +41,7 @@ extern void getpkt(char *buf, long sizeof_buf, int forever);
    we are debugging (remote_debug) and want to print the sent packet
    as a string */
 
-extern int putpkt(char *buf);
+extern int putpkt(const char *buf);
 
 /* Send HEX encoded string to the target console (gdb_stdtarg): */
 extern void remote_console_output(char *);
@@ -68,7 +68,7 @@ extern void (*deprecated_target_resume_hook)(void)
 extern void (*deprecated_target_wait_loop_hook)(void)
   ATTRIBUTE_DEPRECATED;
 
-extern void dump_packets_command(char *unused, int fromtty);
+extern void dump_packets_command(const char *unused, int fromtty);
 
 extern CORE_ADDR remote_macosx_get_all_image_infos_addr(void);
 

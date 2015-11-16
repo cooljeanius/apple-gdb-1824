@@ -897,15 +897,15 @@ decode_line_2(struct symbol *sym_arr[], int nelts, int nsyms,
 
   if (!accept_all)
     {
-      prompt = getenv ("PS2");
+      prompt = getenv("PS2");
       if (prompt == NULL)
 	{
 	  prompt = "> ";
 	}
-      args = command_line_input (prompt, 0, "overload-choice");
+      args = command_line_input(prompt, 0, "overload-choice");
 
       if (args == 0 || *args == 0)
-	error_no_arg ("one or more choice numbers");
+	error_no_arg(_("one or more choice numbers"));
     }
   else
     args = "1";
@@ -1111,14 +1111,14 @@ intersect_sals (struct symtabs_and_lines *dst_sals,
    on ALL occurrences of a function with a given name (e.g. multiple
    constructors & destructors).  */
 struct symtabs_and_lines
-decode_line_1 (char **argptr, int funfirstline, struct symtab *default_symtab,
-	       int default_line, char ***canonical, int *not_found_ptr,
-	       int find_all_occurrences)
+decode_line_1(const char **argptr, int funfirstline, struct symtab *default_symtab,
+	      int default_line, char ***canonical, int *not_found_ptr,
+	      int find_all_occurrences)
 /* APPLE LOCAL end return multiple symbols  */
 {
   char *p;
   char *q;
-  /* If a file name is specified, this is its symtab.  */
+  /* If a file name is specified, then this is its symtab: */
   struct symtab *file_symtab = NULL;
   struct symtab **file_symtab_arr = NULL;
 

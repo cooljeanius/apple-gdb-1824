@@ -1,4 +1,4 @@
-/* cli-dump.c: Dump-to-file commands, for GDB, the GNU debugger.
+/* cli/cli-dump.c: Dump-to-file commands, for GDB, the GNU debugger.
 
    Copyright 2002, 2005 Free Software Foundation, Inc.
 
@@ -42,8 +42,9 @@
 #define DEFAULT_MAX_BINARY_FILE_CHUNK LONG_MAX
 static long g_max_binary_file_chunk = DEFAULT_MAX_BINARY_FILE_CHUNK;
 
-char *
-skip_spaces(char *chp)
+/* FIXME: add comment: */
+const char *
+skip_spaces(const char *chp)
 {
   if (chp == NULL)
     return NULL;
@@ -52,8 +53,9 @@ skip_spaces(char *chp)
   return chp;
 }
 
+/* FIXME: add comment: */
 char *
-scan_expression_with_cleanup(char **cmd, const char *def)
+scan_expression_with_cleanup(const char **cmd, const char *def)
 {
   if (((*cmd) == NULL) || ((**cmd) == '\0'))
     {
@@ -64,7 +66,7 @@ scan_expression_with_cleanup(char **cmd, const char *def)
   else
     {
       char *exp;
-      char *end;
+      const char *end;
 
       end = ((*cmd) + strcspn(*cmd, " \t"));
       exp = savestring((*cmd), (end - (*cmd)));
@@ -74,21 +76,23 @@ scan_expression_with_cleanup(char **cmd, const char *def)
     }
 }
 
-
+/* FIXME: add comment: */
 static void
 do_fclose_cleanup(void *arg)
 {
   fclose((FILE *)arg);
 }
 
+/* FIXME: add comment: */
 static struct cleanup *
 make_cleanup_fclose(FILE *file)
 {
   return make_cleanup(do_fclose_cleanup, file);
 }
 
+/* FIXME: add comment: */
 char *
-scan_filename_with_cleanup(char **cmd, const char *defname)
+scan_filename_with_cleanup(const char **cmd, const char *defname)
 {
   char *filename;
   char *fullname;
@@ -106,7 +110,7 @@ scan_filename_with_cleanup(char **cmd, const char *defname)
   else
     {
       /* FIXME: should parse a possibly quoted string: */
-      char *end;
+      const char *end;
 
       (*cmd) = skip_spaces(*cmd);
       end = (*cmd + strcspn(*cmd, " \t"));
@@ -183,20 +187,23 @@ struct cmd_list_element *tekhex_cmdlist;
 struct cmd_list_element *binary_dump_cmdlist;
 struct cmd_list_element *binary_append_cmdlist;
 
+/* FIXME: add comment: */
 static void
-dump_command(char *cmd, int from_tty)
+dump_command(const char *cmd, int from_tty)
 {
   printf_unfiltered(_("\"dump\" must be followed by a subcommand.\n\n"));
   help_list(dump_cmdlist, "dump ", (enum command_class)-1, gdb_stdout);
 }
 
+/* FIXME: add comment: */
 static void
-append_command(char *cmd, int from_tty)
+append_command(const char *cmd, int from_tty)
 {
   printf_unfiltered(_("\"append\" must be followed by a subcommand.\n\n"));
   help_list(dump_cmdlist, "append ", (enum command_class)-1, gdb_stdout);
 }
 
+/* FIXME: add comment: */
 static void
 dump_binary_file(const char *filename, const char *mode,
 		 const bfd_byte *buf, int len)
@@ -210,6 +217,7 @@ dump_binary_file(const char *filename, const char *mode,
     perror_with_name(filename);
 }
 
+/* FIXME: add comment: */
 static void
 dump_bfd_file(const char *filename, const char *mode,
 	      const char *target, CORE_ADDR vaddr,
@@ -233,8 +241,9 @@ dump_bfd_file(const char *filename, const char *mode,
   bfd_set_section_contents(obfd, osection, buf, 0, len);
 }
 
+/* FIXME: needs comment: */
 static void
-dump_memory_to_file(char *cmd, char *mode, char *file_format)
+dump_memory_to_file(const char *cmd, const char *mode, const char *file_format)
 {
   struct cleanup *old_cleanups = make_cleanup(null_cleanup, NULL);
   CORE_ADDR lo;
@@ -243,7 +252,7 @@ dump_memory_to_file(char *cmd, char *mode, char *file_format)
   char *filename;
   void *buf;
   char *lo_exp;
-  char *hi_exp;
+  const char *hi_exp;
 
   /* Open the file: */
   filename = scan_filename_with_cleanup(&cmd, NULL);
@@ -284,14 +293,16 @@ dump_memory_to_file(char *cmd, char *mode, char *file_format)
   do_cleanups(old_cleanups);
 }
 
+/* FIXME: needs comment: */
 static void
-dump_memory_command(char *cmd, char *mode)
+dump_memory_command(char *cmd, const char *mode)
 {
   dump_memory_to_file(cmd, mode, "binary");
 }
 
+/* FIXME: needs comment: */
 static void
-dump_value_to_file(char *cmd, char *mode, char *file_format)
+dump_value_to_file(const char *cmd, const char *mode, const char *file_format)
 {
   struct cleanup *old_cleanups = make_cleanup(null_cleanup, NULL);
   struct value *val;
@@ -335,78 +346,90 @@ dump_value_to_file(char *cmd, char *mode, char *file_format)
   do_cleanups(old_cleanups);
 }
 
+/* FIXME: needs comment: */
 static void
-dump_value_command(char *cmd, char *mode)
+dump_value_command(char *cmd, const char *mode)
 {
   dump_value_to_file(cmd, mode, "binary");
 }
 
+/* FIXME: needs comment: */
 static void
-dump_srec_memory(char *args, int from_tty)
+dump_srec_memory(const char *args, int from_tty)
 {
   dump_memory_to_file(args, FOPEN_WB, "srec");
 }
 
+/* FIXME: needs comment: */
 static void
-dump_srec_value(char *args, int from_tty)
+dump_srec_value(const char *args, int from_tty)
 {
-  dump_value_to_file (args, FOPEN_WB, "srec");
+  dump_value_to_file(args, FOPEN_WB, "srec");
+}
+
+/* FIXME: needs comment: */
+static void
+dump_ihex_memory(const char *args, int from_tty)
+{
+  dump_memory_to_file(args, FOPEN_WB, "ihex");
+}
+
+/* FIXME: needs comment: */
+static void
+dump_ihex_value(const char *args, int from_tty)
+{
+  dump_value_to_file(args, FOPEN_WB, "ihex");
+}
+
+/* FIXME: needs comment: */
+static void
+dump_tekhex_memory(const char *args, int from_tty)
+{
+  dump_memory_to_file(args, FOPEN_WB, "tekhex");
 }
 
 static void
-dump_ihex_memory (char *args, int from_tty)
-{
-  dump_memory_to_file (args, FOPEN_WB, "ihex");
-}
-
-static void
-dump_ihex_value (char *args, int from_tty)
-{
-  dump_value_to_file (args, FOPEN_WB, "ihex");
-}
-
-static void
-dump_tekhex_memory (char *args, int from_tty)
-{
-  dump_memory_to_file (args, FOPEN_WB, "tekhex");
-}
-
-static void
-dump_tekhex_value(char *args, int from_tty)
+dump_tekhex_value(const char *args, int from_tty)
 {
   dump_value_to_file(args, FOPEN_WB, "tekhex");
 }
 
+/* FIXME: needs comment: */
 static void
-dump_binary_memory(char *args, int from_tty)
+dump_binary_memory(const char *args, int from_tty)
 {
   dump_memory_to_file(args, FOPEN_WB, "binary");
 }
 
+/* FIXME: needs comment: */
 static void
-dump_binary_value(char *args, int from_tty)
+dump_binary_value(const char *args, int from_tty)
 {
   dump_value_to_file(args, FOPEN_WB, "binary");
 }
 
+/* FIXME: needs comment: */
 static void
-append_binary_memory(char *args, int from_tty)
+append_binary_memory(const char *args, int from_tty)
 {
   dump_memory_to_file(args, FOPEN_AB, "binary");
 }
 
+/* FIXME: needs comment: */
 static void
-append_binary_value(char *args, int from_tty)
+append_binary_value(const char *args, int from_tty)
 {
   dump_value_to_file(args, FOPEN_AB, "binary");
 }
 
+/* FIXME: needs comment: */
 struct dump_context
 {
-  void (*func)(char *cmd, char *mode);
-  char *mode;
+  void (*func)(char *cmd, const char *mode);
+  const char *mode;
 };
 
+/* FIXME: needs comment: */
 static void
 call_dump_func(struct cmd_list_element *c, char *args, int from_tty)
 {
@@ -414,9 +437,10 @@ call_dump_func(struct cmd_list_element *c, char *args, int from_tty)
   d->func(args, d->mode);
 }
 
+/* FIXME: needs comment: */
 void
-add_dump_command(char *name, void (*func)(char *args, char *mode),
-		 char *descr)
+add_dump_command(const char *name, void (*func)(char *args, const char *mode),
+		 const char *descr)
 {
   struct cmd_list_element *c;
   struct dump_context *d;
@@ -612,7 +636,7 @@ restore_binary_file(char *filename, struct callback_data *data)
 /* APPLE LOCAL END: segment binary file downloads  */
 
 static void
-restore_command(char *args, int from_tty)
+restore_command(const char *args, int from_tty)
 {
   char *filename;
   struct callback_data data;
@@ -630,7 +654,7 @@ restore_command(char *args, int from_tty)
   filename = scan_filename_with_cleanup(&args, NULL);
   if ((args != NULL) && (*args != '\0'))
     {
-      char *binary_string = "binary";
+      const char *binary_string = "binary";
 
       /* Look for optional "binary" flag: */
       if (strncmp(args, binary_string, strlen(binary_string)) == 0)
@@ -680,40 +704,45 @@ restore_command(char *args, int from_tty)
   return;
 }
 
+/* FIXME: add comment: */
 static void
-srec_dump_command(char *cmd, int from_tty)
+srec_dump_command(const char *cmd, int from_tty)
 {
   printf_unfiltered("\"dump srec\" must be followed by a subcommand.\n");
   help_list(srec_cmdlist, "dump srec ",
             (enum command_class)-1, gdb_stdout);
 }
 
+/* FIXME: add comment: */
 static void
-ihex_dump_command (char *cmd, int from_tty)
+ihex_dump_command(const char *cmd, int from_tty)
 {
   printf_unfiltered("\"dump ihex\" must be followed by a subcommand.\n");
   help_list(ihex_cmdlist, "dump ihex ",
             (enum command_class)-1, gdb_stdout);
 }
 
+/* FIXME: add comment: */
 static void
-tekhex_dump_command(char *cmd, int from_tty)
+tekhex_dump_command(const char *cmd, int from_tty)
 {
   printf_unfiltered("\"dump tekhex\" must be followed by a subcommand.\n");
   help_list(tekhex_cmdlist, "dump tekhex ",
             (enum command_class)-1, gdb_stdout);
 }
 
+/* FIXME: add comment: */
 static void
-binary_dump_command (char *cmd, int from_tty)
+binary_dump_command(const char *cmd, int from_tty)
 {
   printf_unfiltered("\"dump binary\" must be followed by a subcommand.\n");
   help_list(binary_dump_cmdlist, "dump binary ",
             (enum command_class)-1, gdb_stdout);
 }
 
+/* FIXME: add comment: */
 static void
-binary_append_command(char *cmd, int from_tty)
+binary_append_command(const char *cmd, int from_tty)
 {
   printf_unfiltered("\"append binary\" must be followed by a subcommand.\n");
   help_list(binary_append_cmdlist, "append binary ",
@@ -725,7 +754,7 @@ extern initialize_file_ftype _initialize_cli_dump; /* -Wmissing-prototypes */
 /* APPLE LOCAL BEGIN: segment binary file downloads  */
 
 static void
-show_binary_buffer_size(char *args, int from_tty)
+show_binary_buffer_size(const char *args, int from_tty)
 {
     printf_filtered(_("The restore binary buffer size is %ld (0x%lx).\n"),
 		    g_max_binary_file_chunk,
@@ -733,40 +762,43 @@ show_binary_buffer_size(char *args, int from_tty)
 }
 
 static void
-set_binary_buffer_size (char *args, int from_tty)
+set_binary_buffer_size(const char *args, int from_tty)
 {
   if (args == NULL)
     {
-      printf_filtered (_("Reverting the restore binary buffer size to the default value.\n"));
+      printf_filtered(_("Reverting the restore binary buffer size to the default value.\n"));
       g_max_binary_file_chunk = DEFAULT_MAX_BINARY_FILE_CHUNK;
     }
   else
     {
       char *end;
-      long binary_file_chunk = strtol (args, &end, 0);
+      long binary_file_chunk = strtol(args, &end, 0);
       /* Make sure that the new value is larger than the the
          minimum max remote packet size so we all remote
          command packets can still function properly.  */
       if (end == NULL || *end != '\0')
         {
-          error (_("Invalid binary buffer size argument '%s'."), args);
+          error(_("Invalid binary buffer size argument '%s'."), args);
         }
       else
 	{
           g_max_binary_file_chunk = binary_file_chunk;
         }
     }
-  show_binary_buffer_size (NULL, from_tty);
+  show_binary_buffer_size(NULL, from_tty);
 }
 
+/* FIXME: add comment: */
 static void
-set_restore_cmd(char *args, int from_tty)
+set_restore_cmd(const char *args ATTRIBUTE_UNUSED,
+		int from_tty ATTRIBUTE_UNUSED)
 {
   return;
 }
 
+/* FIXME: add comment: */
 static void
-show_restore_cmd(char *args, int from_tty)
+show_restore_cmd(const char *args, int from_tty)
 {
   show_binary_buffer_size(args, from_tty);
 }
@@ -783,14 +815,14 @@ _initialize_cli_dump(void)
   static struct cmd_list_element *restore_set_cmdlist;
   static struct cmd_list_element *restore_show_cmdlist;
 
-  add_prefix_cmd ("restore", no_class, set_restore_cmd,
-		  _("Set restore specific command settings\n"),
-		  &restore_set_cmdlist, "set restore ",
-		  0 /* allow-unknown */, &setlist);
-  add_prefix_cmd ("restore", no_class, show_restore_cmd,
-		  _("Show current restore specific command settings"),
-		  &restore_show_cmdlist, "show restore ",
-		  0 /* allow-unknown */, &showlist);
+  add_prefix_cmd("restore", no_class, set_restore_cmd,
+		 _("Set restore specific command settings\n"),
+		 &restore_set_cmdlist, "set restore ",
+		 0 /* allow-unknown */, &setlist);
+  add_prefix_cmd("restore", no_class, show_restore_cmd,
+		 _("Show current restore specific command settings"),
+		 &restore_show_cmdlist, "show restore ",
+		 0 /* allow-unknown */, &showlist);
 
   add_cmd ("binary-buffer-size",
            no_class, set_binary_buffer_size, _("\
@@ -819,12 +851,12 @@ Append target code/data to a local file."),
 		  0/*allow-unknown*/,
 		  &cmdlist);
 
-  add_dump_command ("memory", dump_memory_command, "\
+  add_dump_command("memory", dump_memory_command, "\
 Write contents of memory to a raw binary file.\n\
 Arguments are FILE START STOP.  Writes the contents of memory within the\n\
 range [START .. STOP) to the specifed FILE in raw target ordered bytes.");
 
-  add_dump_command ("value", dump_value_command, "\
+  add_dump_command("value", dump_value_command, "\
 Write the value of an expression to a raw binary file.\n\
 Arguments are FILE EXPRESSION.  Writes the value of EXPRESSION to\n\
 the specified FILE in raw target ordered bytes.");

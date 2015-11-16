@@ -98,23 +98,24 @@ static void gen_usual_arithmetic (struct agent_expr *ax,
 				  struct axs_value *value2);
 static void gen_integral_promotions (struct agent_expr *ax,
 				     struct axs_value *value);
-static void gen_cast (struct agent_expr *ax,
-		      struct axs_value *value, struct type *type);
-static void gen_scale (struct agent_expr *ax,
-		       enum agent_op op, struct type *type);
-static void gen_add (struct agent_expr *ax,
-		     struct axs_value *value,
-		     struct axs_value *value1,
-		     struct axs_value *value2, char *name);
-static void gen_sub (struct agent_expr *ax,
-		     struct axs_value *value,
-		     struct axs_value *value1, struct axs_value *value2);
-static void gen_binop (struct agent_expr *ax,
-		       struct axs_value *value,
-		       struct axs_value *value1,
-		       struct axs_value *value2,
-		       enum agent_op op,
-		       enum agent_op op_unsigned, int may_carry, char *name);
+static void gen_cast(struct agent_expr *ax,
+		     struct axs_value *value, struct type *type);
+static void gen_scale(struct agent_expr *ax,
+		      enum agent_op op, struct type *type);
+static void gen_add(struct agent_expr *ax,
+		    struct axs_value *value,
+		    struct axs_value *value1,
+		    struct axs_value *value2, const char *name);
+static void gen_sub(struct agent_expr *ax,
+		    struct axs_value *value,
+		    struct axs_value *value1, struct axs_value *value2);
+static void gen_binop(struct agent_expr *ax,
+		      struct axs_value *value,
+		      struct axs_value *value1,
+		      struct axs_value *value2,
+		      enum agent_op op,
+		      enum agent_op op_unsigned, int may_carry,
+		      const char *name);
 static void gen_logical_not (struct agent_expr *ax, struct axs_value *value);
 static void gen_complement (struct agent_expr *ax, struct axs_value *value);
 static void gen_deref (struct agent_expr *, struct axs_value *);
@@ -123,10 +124,10 @@ static int find_field (struct type *type, char *name);
 static void gen_bitfield_ref (struct agent_expr *ax,
 			      struct axs_value *value,
 			      struct type *type, int start, int end);
-static void gen_struct_ref (struct agent_expr *ax,
-			    struct axs_value *value,
-			    char *field,
-			    char *operator_name, char *operand_name);
+static void gen_struct_ref(struct agent_expr *ax,
+			   struct axs_value *value,
+			   char *field,
+			   const char *operator_name, const char *operand_name);
 static void gen_repeat (union exp_element **pc,
 			struct agent_expr *ax, struct axs_value *value);
 static void gen_sizeof (union exp_element **pc,
@@ -134,7 +135,7 @@ static void gen_sizeof (union exp_element **pc,
 static void gen_expr (union exp_element **pc,
 		      struct agent_expr *ax, struct axs_value *value);
 
-static void agent_command (char *exp, int from_tty);
+static void agent_command(const char *exp, int from_tty);
 
 
 /* Detecting constant expressions.  */
@@ -958,43 +959,40 @@ gen_scale (struct agent_expr *ax, enum agent_op op, struct type *type)
    they've undergone the usual binary conversions.  Used by both
    BINOP_ADD and BINOP_SUBSCRIPT.  NAME is used in error messages.  */
 static void
-gen_add (struct agent_expr *ax, struct axs_value *value,
-	 struct axs_value *value1, struct axs_value *value2, char *name)
+gen_add(struct agent_expr *ax, struct axs_value *value,
+	struct axs_value *value1, struct axs_value *value2, const char *name)
 {
   /* Is it INT+PTR?  */
-  if (TYPE_CODE (value1->type) == TYPE_CODE_INT
-      && TYPE_CODE (value2->type) == TYPE_CODE_PTR)
+  if ((TYPE_CODE(value1->type) == TYPE_CODE_INT)
+      && (TYPE_CODE(value2->type) == TYPE_CODE_PTR))
     {
-      /* Swap the values and proceed normally.  */
-      ax_simple (ax, aop_swap);
-      gen_scale (ax, aop_mul, value2->type);
-      ax_simple (ax, aop_add);
-      gen_extend (ax, value2->type);	/* Catch overflow.  */
+      /* Swap the values and proceed normally: */
+      ax_simple(ax, aop_swap);
+      gen_scale(ax, aop_mul, value2->type);
+      ax_simple(ax, aop_add);
+      gen_extend(ax, value2->type);	/* Catch overflow.  */
       value->type = value2->type;
     }
-
   /* Is it PTR+INT?  */
-  else if (TYPE_CODE (value1->type) == TYPE_CODE_PTR
-	   && TYPE_CODE (value2->type) == TYPE_CODE_INT)
+  else if ((TYPE_CODE(value1->type) == TYPE_CODE_PTR)
+	   && (TYPE_CODE(value2->type) == TYPE_CODE_INT))
     {
-      gen_scale (ax, aop_mul, value1->type);
-      ax_simple (ax, aop_add);
-      gen_extend (ax, value1->type);	/* Catch overflow.  */
+      gen_scale(ax, aop_mul, value1->type);
+      ax_simple(ax, aop_add);
+      gen_extend(ax, value1->type);	/* Catch overflow.  */
       value->type = value1->type;
     }
-
   /* Must be number + number; the usual binary conversions will have
      brought them both to the same width.  */
-  else if (TYPE_CODE (value1->type) == TYPE_CODE_INT
-	   && TYPE_CODE (value2->type) == TYPE_CODE_INT)
+  else if ((TYPE_CODE(value1->type) == TYPE_CODE_INT)
+	   && (TYPE_CODE(value2->type) == TYPE_CODE_INT))
     {
-      ax_simple (ax, aop_add);
-      gen_extend (ax, value1->type);	/* Catch overflow.  */
+      ax_simple(ax, aop_add);
+      gen_extend(ax, value1->type);	/* Catch overflow.  */
       value->type = value1->type;
     }
-
   else
-    error (_("Invalid combination of types in %s."), name);
+    error(_("Invalid combination of types in %s."), name);
 
   value->kind = axs_rvalue;
 }
@@ -1058,47 +1056,46 @@ an integer nor a pointer of the same type."));
    result needs to be extended.  NAME is the English name of the
    operator, used in error messages */
 static void
-gen_binop (struct agent_expr *ax, struct axs_value *value,
-	   struct axs_value *value1, struct axs_value *value2, enum agent_op op,
-	   enum agent_op op_unsigned, int may_carry, char *name)
+gen_binop(struct agent_expr *ax, struct axs_value *value,
+	  struct axs_value *value1, struct axs_value *value2, enum agent_op op,
+	  enum agent_op op_unsigned, int may_carry, const char *name)
 {
   /* We only handle INT op INT.  */
-  if ((TYPE_CODE (value1->type) != TYPE_CODE_INT)
-      || (TYPE_CODE (value2->type) != TYPE_CODE_INT))
-    error (_("Invalid combination of types in %s."), name);
+  if ((TYPE_CODE(value1->type) != TYPE_CODE_INT)
+      || (TYPE_CODE(value2->type) != TYPE_CODE_INT))
+    error(_("Invalid combination of types in %s."), name);
 
-  ax_simple (ax,
-	     TYPE_UNSIGNED (value1->type) ? op_unsigned : op);
+  ax_simple(ax, (TYPE_UNSIGNED(value1->type) ? op_unsigned : op));
   if (may_carry)
-    gen_extend (ax, value1->type);	/* catch overflow */
+    gen_extend(ax, value1->type);	/* catch overflow */
   value->type = value1->type;
   value->kind = axs_rvalue;
 }
 
-
+/* FIXME: needs comment: */
 static void
-gen_logical_not (struct agent_expr *ax, struct axs_value *value)
+gen_logical_not(struct agent_expr *ax, struct axs_value *value)
 {
-  if (TYPE_CODE (value->type) != TYPE_CODE_INT
-      && TYPE_CODE (value->type) != TYPE_CODE_PTR)
-    error (_("Invalid type of operand to `!'."));
+  if ((TYPE_CODE(value->type) != TYPE_CODE_INT)
+      && (TYPE_CODE(value->type) != TYPE_CODE_PTR))
+    error(_("Invalid type of operand to `!'."));
 
-  gen_usual_unary (ax, value);
-  ax_simple (ax, aop_log_not);
+  gen_usual_unary(ax, value);
+  ax_simple(ax, aop_log_not);
   value->type = builtin_type_int;
 }
 
-
+/* FIXME: needs comment: */
 static void
-gen_complement (struct agent_expr *ax, struct axs_value *value)
+gen_complement(struct agent_expr *ax, struct axs_value *value)
 {
-  if (TYPE_CODE (value->type) != TYPE_CODE_INT)
-    error (_("Invalid type of operand to `~'."));
+  if (TYPE_CODE(value->type) != TYPE_CODE_INT)
+    error(_("Invalid type of operand to `~'."));
 
-  gen_usual_unary (ax, value);
-  gen_integral_promotions (ax, value);
-  ax_simple (ax, aop_bit_not);
-  gen_extend (ax, value->type);
+  gen_usual_unary(ax, value);
+  gen_integral_promotions(ax, value);
+  ax_simple(ax, aop_bit_not);
+  gen_extend(ax, value->type);
 }
 
 
@@ -1356,8 +1353,8 @@ gen_bitfield_ref (struct agent_expr *ax, struct axs_value *value,
    the operator being compiled, and OPERAND_NAME is the kind of thing
    it operates on; we use them in error messages.  */
 static void
-gen_struct_ref (struct agent_expr *ax, struct axs_value *value, char *field,
-		char *operator_name, char *operand_name)
+gen_struct_ref(struct agent_expr *ax, struct axs_value *value, char *field,
+	       const char *operator_name, const char *operand_name)
 {
   struct type *type;
   int i;
@@ -1515,57 +1512,57 @@ gen_expr (union exp_element **pc, struct agent_expr *ax,
     case BINOP_BITWISE_IOR:
     case BINOP_BITWISE_XOR:
       (*pc)++;
-      gen_expr (pc, ax, &value1);
-      gen_usual_unary (ax, &value1);
-      gen_expr (pc, ax, &value2);
-      gen_usual_unary (ax, &value2);
-      gen_usual_arithmetic (ax, &value1, &value2);
+      gen_expr(pc, ax, &value1);
+      gen_usual_unary(ax, &value1);
+      gen_expr(pc, ax, &value2);
+      gen_usual_unary(ax, &value2);
+      gen_usual_arithmetic(ax, &value1, &value2);
       switch (op)
 	{
 	case BINOP_ADD:
-	  gen_add (ax, value, &value1, &value2, "addition");
+	  gen_add(ax, value, &value1, &value2, "addition");
 	  break;
 	case BINOP_SUB:
-	  gen_sub (ax, value, &value1, &value2);
+	  gen_sub(ax, value, &value1, &value2);
 	  break;
 	case BINOP_MUL:
-	  gen_binop (ax, value, &value1, &value2,
-		     aop_mul, aop_mul, 1, "multiplication");
+	  gen_binop(ax, value, &value1, &value2,
+		    aop_mul, aop_mul, 1, "multiplication");
 	  break;
 	case BINOP_DIV:
-	  gen_binop (ax, value, &value1, &value2,
-		     aop_div_signed, aop_div_unsigned, 1, "division");
+	  gen_binop(ax, value, &value1, &value2,
+		    aop_div_signed, aop_div_unsigned, 1, "division");
 	  break;
 	case BINOP_REM:
-	  gen_binop (ax, value, &value1, &value2,
-		     aop_rem_signed, aop_rem_unsigned, 1, "remainder");
+	  gen_binop(ax, value, &value1, &value2,
+		    aop_rem_signed, aop_rem_unsigned, 1, "remainder");
 	  break;
 	case BINOP_SUBSCRIPT:
-	  gen_add (ax, value, &value1, &value2, "array subscripting");
+	  gen_add(ax, value, &value1, &value2, "array subscripting");
 	  if (TYPE_CODE (value->type) != TYPE_CODE_PTR)
-	    error (_("Invalid combination of types in array subscripting."));
-	  gen_deref (ax, value);
+	    error(_("Invalid combination of types in array subscripting."));
+	  gen_deref(ax, value);
 	  break;
 	case BINOP_BITWISE_AND:
-	  gen_binop (ax, value, &value1, &value2,
-		     aop_bit_and, aop_bit_and, 0, "bitwise and");
+	  gen_binop(ax, value, &value1, &value2,
+		    aop_bit_and, aop_bit_and, 0, "bitwise and");
 	  break;
 
 	case BINOP_BITWISE_IOR:
-	  gen_binop (ax, value, &value1, &value2,
-		     aop_bit_or, aop_bit_or, 0, "bitwise or");
+	  gen_binop(ax, value, &value1, &value2,
+		    aop_bit_or, aop_bit_or, 0, "bitwise or");
 	  break;
 
 	case BINOP_BITWISE_XOR:
-	  gen_binop (ax, value, &value1, &value2,
-		     aop_bit_xor, aop_bit_xor, 0, "bitwise exclusive-or");
+	  gen_binop(ax, value, &value1, &value2,
+		    aop_bit_xor, aop_bit_xor, 0, "bitwise exclusive-or");
 	  break;
 
 	default:
 	  /* We should only list operators in the outer case statement
 	     that we actually handle in the inner case statement.  */
-	  internal_error (__FILE__, __LINE__,
-			  _("gen_expr: op case sets don't match"));
+	  internal_error(__FILE__, __LINE__,
+			 _("gen_expr: op case sets don't match"));
 	}
       break;
 
@@ -1707,17 +1704,17 @@ gen_expr (union exp_element **pc, struct agent_expr *ax,
 	char *name = &(*pc)[2].string;
 
 	(*pc) += 4 + BYTES_TO_EXP_ELEM((size_t)length + 1UL);
-	gen_expr (pc, ax, value);
+	gen_expr(pc, ax, value);
 	if (op == STRUCTOP_STRUCT)
-	  gen_struct_ref (ax, value, name, ".", "structure or union");
+	  gen_struct_ref(ax, value, name, ".", "structure or union");
 	else if (op == STRUCTOP_PTR)
-	  gen_struct_ref (ax, value, name, "->",
-			  "pointer to a structure or union");
+	  gen_struct_ref(ax, value, name, "->",
+			 "pointer to a structure or union");
 	else
-	  /* If this `if' chain doesn't handle it, then the case list
+	  /* If this `if' chain fails to handle it, then the case list
 	     shouldn't mention it, and we shouldn't be here.  */
-	  internal_error (__FILE__, __LINE__,
-			  _("gen_expr: unhandled struct case"));
+	  internal_error(__FILE__, __LINE__,
+			 _("gen_expr: unhandled struct case"));
       }
       break;
 
@@ -1815,47 +1812,50 @@ gen_trace_for_expr (CORE_ADDR scope, struct expression *expr)
   return ax;
 }
 
+/* FIXME: add comment: */
 static void
-agent_command (char *exp, int from_tty)
+agent_command(const char *exp, int from_tty)
 {
   struct cleanup *old_chain = 0;
   struct expression *expr;
   struct agent_expr *agent;
-  struct frame_info *fi = get_current_frame ();	/* need current scope */
+  struct frame_info *fi = get_current_frame();	/* need current scope */
 
   /* We don't deal with overlay debugging at the moment.  We need to
      think more carefully about this.  If you copy this code into
      another command, change the error message; the user shouldn't
      have to know anything about agent expressions.  */
   if (overlay_debugging)
-    error (_("GDB can't do agent expression translation with overlays."));
+    error(_("GDB cannot do agent expression translation with overlays."));
 
   if (exp == 0)
-    error_no_arg (_("expression to translate"));
+    error_no_arg(_("expression to translate"));
 
   /* APPLE LOCAL initialize innermost_block  */
   innermost_block = NULL;
-  expr = parse_expression (exp);
-  old_chain = make_cleanup (free_current_contents, &expr);
-  agent = gen_trace_for_expr (get_frame_pc (fi), expr);
-  make_cleanup_free_agent_expr (agent);
-  ax_print (gdb_stdout, agent);
+  expr = parse_expression(exp);
+  old_chain = make_cleanup(free_current_contents, &expr);
+  agent = gen_trace_for_expr(get_frame_pc(fi), expr);
+  make_cleanup_free_agent_expr(agent);
+  ax_print(gdb_stdout, agent);
 
   /* It would be nice to call ax_reqs here to gather some general info
      about the expression, and then print out the result.  */
 
-  do_cleanups (old_chain);
-  dont_repeat ();
+  do_cleanups(old_chain);
+  dont_repeat();
 }
 
 
 /* Initialization code.  */
 
-void _initialize_ax_gdb (void);
+void _initialize_ax_gdb(void);
 void
-_initialize_ax_gdb (void)
+_initialize_ax_gdb(void)
 {
-  add_cmd ("agent", class_maintenance, agent_command,
-	   _("Translate an expression into remote agent bytecode."),
-	   &maintenancelist);
+  add_cmd("agent", class_maintenance, agent_command,
+	  _("Translate an expression into remote agent bytecode."),
+	  &maintenancelist);
 }
+
+/* EOF */

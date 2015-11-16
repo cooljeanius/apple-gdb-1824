@@ -1,4 +1,4 @@
-/* i386-macosx-thread-status.h */
+/* macosx/i386-macosx-thread-status.h */
 
 #ifndef __GDB_I386_MACOSX_THREAD_STATUS_H__
 #define __GDB_I386_MACOSX_THREAD_STATUS_H__

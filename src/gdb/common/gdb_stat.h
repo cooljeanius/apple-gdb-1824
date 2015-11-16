@@ -1,4 +1,4 @@
-/* Portable <sys/stat.h>
+/* common/gdb_stat.h: Portable <sys/stat.h>
    Copyright (C) 1995-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.

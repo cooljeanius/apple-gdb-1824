@@ -147,17 +147,16 @@ set_demangling_command (char *ignore, int from_tty, struct cmd_list_element *c)
     }
 }
 
-/* Fake a "set demangle-style" command. */
-
+/* Fake a "set demangle-style" command: */
 void
-set_demangling_style (char *style)
+set_demangling_style(const char *style)
 {
   if (current_demangling_style_string != NULL)
     {
-      xfree (current_demangling_style_string);
+      xfree(current_demangling_style_string);
     }
-  current_demangling_style_string = savestring (style, strlen (style));
-  set_demangling_command ((char *) NULL, 0, (struct cmd_list_element *) NULL);
+  current_demangling_style_string = savestring(style, strlen(style));
+  set_demangling_command((char *)NULL, 0, (struct cmd_list_element *)NULL);
 }
 
 /* G++ uses a special character to indicate certain internal names.  Which

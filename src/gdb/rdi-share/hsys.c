@@ -1,4 +1,4 @@
-/* hsys.c
+/* rdi-share/hsys.c
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
  *
  * This software may be freely used, copied, modified, and distributed

@@ -828,7 +828,7 @@ static struct internalvar *internalvars;
    one is created, with a void value.  */
 
 struct internalvar *
-lookup_internalvar (char *name)
+lookup_internalvar(const char *name)
 {
   struct internalvar *var;
 

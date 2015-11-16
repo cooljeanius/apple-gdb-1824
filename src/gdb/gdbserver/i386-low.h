@@ -1,4 +1,4 @@
-/* i386-low.h
+/* gdbserver/i386-low.h
    Misc. low level support for i386.
 
    Copyright (C) 2009

@@ -1,4 +1,4 @@
-/* mi-parse.c: MI Command Set - MI parser.
+/* mi/mi-parse.c: MI Command Set - MI parser.
 
    Copyright 2000, 2001, 2002 Free Software Foundation, Inc.
 
@@ -65,7 +65,7 @@ mi_parse_argv(char *args, struct mi_parse *parse)
 		if (*chp == '\\')
 		  {
 		    chp++;
-		    if (parse_escape(&chp) <= 0)
+		    if (parse_escape((const char **)&chp) <= 0)
 		      {
 			/* Do not allow split lines or "\000" */
 			freeargv(argv);
@@ -98,7 +98,7 @@ mi_parse_argv(char *args, struct mi_parse *parse)
 		if (*chp == '\\')
 		  {
 		    chp++;
-		    arg[len] = parse_escape(&chp);
+		    arg[len] = parse_escape((const char **)&chp);
 		  }
 		else
 		  arg[len] = *chp++;

@@ -915,21 +915,21 @@ stop_report_timer (void *ptr)
    the same scope where you start it.  */
 
 static struct cleanup *
-make_cleanup_start_report_timer (int timer_id, char *string)
+make_cleanup_start_report_timer(int timer_id, char *string)
 {
   struct gdb_timer *timer;
   if (timer_id == -1)
-    return make_cleanup (null_cleanup, NULL);
+    return make_cleanup(null_cleanup, NULL);
 
   if (timer_id > n_timers)
-    error ("Invalid timer in start_timers");
+    error(_("Invalid timer in start_timers"));
 
   timer = &timer_list[timer_id];
 
-  push_timer (timer);
-  timer->last_start = get_run_time ();
+  push_timer(timer);
+  timer->last_start = get_run_time();
   if (string == NULL)
-    string = "<Unknown>";
+    string = (char *)"<Unknown>";
 
   timer->last_mssg = xstrdup(string);
   timer->last_interval = 0;
@@ -971,14 +971,14 @@ find_timer(char *name)
    use to stop the timer.  */
 
 struct cleanup *
-start_timer(int *timer_var, char *timer_name, char *this_mssg)
+start_timer(int *timer_var, const char *timer_name, const char *this_mssg)
 {
   if (*timer_var == -1)
-    *timer_var = find_timer (timer_name);
+    *timer_var = find_timer(timer_name);
   if (*timer_var == -1)
-    return make_cleanup (null_cleanup, 0);
+    return make_cleanup(null_cleanup, 0);
 
-  return make_cleanup_start_report_timer (*timer_var, this_mssg);
+  return make_cleanup_start_report_timer(*timer_var, this_mssg);
 }
 
 

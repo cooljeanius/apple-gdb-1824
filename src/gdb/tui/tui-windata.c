@@ -1,4 +1,4 @@
-/* tui-windata.c: Data/register window display.
+/* tui/tui-windata.c: Data/register window display.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -107,11 +107,11 @@ tui_delete_data_content_windows(void)
 
 
 void
-tui_erase_data_content(char *prompt)
+tui_erase_data_content(const char *prompt)
 {
-  werase (TUI_DATA_WIN->generic.handle);
+  werase(TUI_DATA_WIN->generic.handle);
   tui_check_and_display_highlight_if_needed(TUI_DATA_WIN);
-  if (prompt != (char *)NULL)
+  if (prompt != (const char *)NULL)
     {
       size_t half_width = ((TUI_DATA_WIN->generic.width - 2UL) / 2UL);
       int x_pos;
@@ -137,7 +137,7 @@ tui_display_all_data(void)
     tui_erase_data_content(NO_DATA_STRING);
   else
     {
-      tui_erase_data_content((char *)NULL);
+      tui_erase_data_content((const char *)NULL);
       tui_delete_data_content_windows();
       tui_check_and_display_highlight_if_needed(TUI_DATA_WIN);
       tui_display_registers_from(0);
@@ -217,7 +217,7 @@ tui_display_data_from (int element_no, int reuse_windows)
 
   if (first_line >= 0)
     {
-      tui_erase_data_content((char *)NULL);
+      tui_erase_data_content((const char *)NULL);
       if (!reuse_windows)
 	tui_delete_data_content_windows();
       tui_display_data_from_line(first_line);
@@ -229,7 +229,7 @@ tui_display_data_from (int element_no, int reuse_windows)
 void
 tui_refresh_data_win(void)
 {
-  tui_erase_data_content((char *)NULL);
+  tui_erase_data_content((const char *)NULL);
   if (TUI_DATA_WIN->generic.content_size > 0)
     {
       int first_element = tui_first_data_item_displayed();
@@ -304,7 +304,7 @@ tui_vertical_data_scroll(enum tui_scroll_direction scroll_direction,
 	first_line += num_to_scroll;
       else
 	first_line -= num_to_scroll;
-      tui_erase_data_content((char *)NULL);
+      tui_erase_data_content((const char *)NULL);
       tui_delete_data_content_windows();
       tui_display_data_from_line(first_line);
     }

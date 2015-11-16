@@ -1,4 +1,4 @@
-/* i386.h */
+/* nlm/i386.h */
 
 /* Register values. All of these values *MUST* agree with tm.h */
 #define SP_REGNUM 4		/* Contains address of top of stack */

@@ -1,4 +1,4 @@
-/* host.h - adapted from the one for rdi-share
+/* arm/multi-ice/host.h - adapted from the one for rdi-share
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
  *
  * This software may be freely used, copied, modified, and distributed
@@ -265,4 +265,4 @@ extern double strtod(const char *str, char **ptr);
 /* Needs to be supplied by the host: */
 extern void Fail(const char *, ...);
 
-/* end of host.h */
+/* end of arm/multi-ice/host.h */

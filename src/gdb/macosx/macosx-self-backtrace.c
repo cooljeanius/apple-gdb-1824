@@ -1,4 +1,4 @@
-/* macosx-self-backtrace.c: Mac OS X support for GDB, the GNU debugger.
+/* macosx/macosx-self-backtrace.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 2007.
    Free Software Foundation, Inc.
 

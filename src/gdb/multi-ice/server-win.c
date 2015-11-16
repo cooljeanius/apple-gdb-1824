@@ -1,4 +1,4 @@
-/* server-win.c: Main code for multi-ice server for GDB on Windows.
+/* multi-ice/server-win.c: Main code for multi-ice server for GDB on Windows.
  * Copyright (C) 1999 Free Software Foundation, Inc. */
 /*
 This file is part of GDB.

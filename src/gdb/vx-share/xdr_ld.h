@@ -1,4 +1,4 @@
-/* xdr_ld.h - xdr for additional dbxWorks structures */
+/* vx-share/xdr_ld.h - xdr for additional dbxWorks structures */
 
 /*  Copyright 1992 Free Software Foundation, Inc.
 

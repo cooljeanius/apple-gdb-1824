@@ -1,4 +1,4 @@
-/* mi-cmd-file.c: MI Command Set - breakpoint and watchpoint commands.
+/* mi/mi-cmd-file.c: MI Command Set - breakpoint and watchpoint commands.
    Copyright 2000, 2001, 2002 Free Software Foundation, Inc.
    Contributed by Cygnus Solutions (a Red Hat company).
 

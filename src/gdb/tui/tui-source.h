@@ -1,4 +1,4 @@
-/* tui-source.h: TUI display source window.
+/* tui/tui-source.h: TUI display source window.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2004 Free Software
    Foundation, Inc.
@@ -30,11 +30,13 @@
 struct symtab;
 struct tui_win_info;
 
-extern void tui_set_source_content_nil (struct tui_win_info *, char *);
+extern void tui_set_source_content_nil(struct tui_win_info *, const char *);
 
-extern enum tui_status tui_set_source_content (struct symtab *, int, int);
-extern void tui_show_symtab_source (struct symtab *, union tui_line_or_address, int);
-extern int tui_source_is_displayed (char *);
-extern void tui_vertical_source_scroll (enum tui_scroll_direction, int);
+extern enum tui_status tui_set_source_content(struct symtab *, int, int);
+extern void tui_show_symtab_source(struct symtab *, union tui_line_or_address, int);
+extern int tui_source_is_displayed(char *);
+extern void tui_vertical_source_scroll(enum tui_scroll_direction, int);
 
-#endif
+#endif /* !TUI_SOURCE_H */
+
+/* EOF */

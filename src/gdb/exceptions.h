@@ -199,7 +199,7 @@ extern NORETURN void deprecated_throw_reason(enum return_reason reason)
    FIXME; cagney/2001-08-13: The need to override the global UIOUT
    builder variable should just go away.
 
-   This function superseeds catch_errors().
+   This function supercedes catch_errors().
 
    This function uses SETJMP() and LONGJUMP().  */
 
@@ -226,14 +226,15 @@ extern struct gdb_exception catch_exception (struct ui_out *uiout,
 /* If CATCH_ERRORS_FTYPE throws an error, catch_errors() returns zero
    otherwize the result from CATCH_ERRORS_FTYPE is returned. It is
    probably useful for CATCH_ERRORS_FTYPE to always return a non-zero
-   value. It's unfortunate that, catch_errors() does not return an
+   value. It is unfortunate that, catch_errors() does not return an
    indication of the exact exception that it caught - quit_flag might
    help.
 
-   This function is superseeded by catch_exceptions().  */
+   This function is superceded by catch_exceptions().  */
 
-typedef int (catch_errors_ftype) (void *);
-extern int catch_errors (catch_errors_ftype *, void *, char *, return_mask);
+typedef int (catch_errors_ftype)(void *);
+extern int catch_errors(catch_errors_ftype *, void *, const char *,
+			return_mask);
 
 /* Template to catch_errors() that wraps calls to command
    functions. */

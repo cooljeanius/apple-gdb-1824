@@ -208,7 +208,7 @@ struct serial
 
 struct serial_ops
   {
-    char *name;
+    const char *name;
     struct serial_ops *next;
     int (*open) (struct serial *, const char *name);
     void (*close) (struct serial *);

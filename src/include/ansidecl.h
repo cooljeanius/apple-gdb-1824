@@ -356,6 +356,15 @@ So instead we use the macro below and test it against specific values.  */
 #  define ATTRIBUTE_PURE
 # endif /* GNUC >= 3.0 */
 #endif /* ATTRIBUTE_PURE */
+  
+/* Assume likewise about attribute `const': */
+#ifndef ATTRIBUTE_CONST
+# if (GCC_VERSION >= 3000)
+#  define ATTRIBUTE_CONST __attribute__((__const__))
+# else
+#  define ATTRIBUTE_CONST
+# endif /* GNUC >= 3.0 */
+#endif /* ATTRIBUTE_CONST */
 
 /* Use ATTRIBUTE_PRINTF when the format specifier must not be NULL.
    This was the case for the `printf' format attribute by itself

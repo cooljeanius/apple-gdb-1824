@@ -1,5 +1,5 @@
 /*
- * tm-i386-macosx.h
+ * macosx/tm-i386-macosx.h
  */
 
 #ifndef __GDB_TM_i386_MACOSX_H__

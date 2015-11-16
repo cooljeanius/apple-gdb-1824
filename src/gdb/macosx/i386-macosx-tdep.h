@@ -1,4 +1,4 @@
-/* i386-macosx-tdep.h -*- C -*- */
+/* macosx/i386-macosx-tdep.h -*- C -*- */
 
 #ifndef __GDB_I386_MACOSX_TDEP_H__
 #define __GDB_I386_MACOSX_TDEP_H__

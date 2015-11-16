@@ -1672,7 +1672,7 @@ i386_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 
 /* APPLE LOCAL: a function for checking the prologue parser by hand: */
 static void
-maintenance_i386_prologue_parser(char *arg, int from_tty)
+maintenance_i386_prologue_parser(const char *arg, int from_tty)
 {
   char **argv;
   CORE_ADDR start_address, end_address;

@@ -1,4 +1,4 @@
-/* mi-main.c: MI Command Set.
+/* mi/mi-main.c: MI Command Set.
 
    Copyright 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation,
    Inc.
@@ -138,17 +138,19 @@ struct interp *mi0_interp;
 struct interp *mi1_interp;
 struct interp *mi2_interp;
 
-extern void _initialize_mi_main (void);
-static enum mi_cmd_result mi_cmd_execute (struct mi_parse *parse);
+extern void _initialize_mi_main(void);
+static enum mi_cmd_result mi_cmd_execute(struct mi_parse *parse);
 
-static void mi_execute_cli_command (const char *cmd, int arg_p, char *args);
-static enum mi_cmd_result mi_execute_async_cli_command (char *mi, char *args, int from_tty);
+static void mi_execute_cli_command(const char *cmd, int arg_p, char *args);
+static enum mi_cmd_result mi_execute_async_cli_command(const char *mi,
+						       char *args,
+						       int from_tty);
 
-void mi_exec_async_cli_cmd_continuation (struct continuation_arg *arg);
-void mi_exec_error_cleanup (void *in_arg);
+void mi_exec_async_cli_cmd_continuation(struct continuation_arg *arg);
+void mi_exec_error_cleanup(void *in_arg);
 
-static int register_changed_p (int regnum);
-static int get_register (int regnum, int format);
+static int register_changed_p(int regnum);
+static int get_register(int regnum, int format);
 
 /* FIXME: these should go in some .h file, but infcmd.c doesn't have a
    corresponding .h file. These wrappers will be obsolete anyway, once
@@ -167,19 +169,19 @@ extern void return_command_wrapper (char *, int);
    They will ensure that the output doesn't get munged by the console
    interpreter */
 
-static void output_control_change_notification(char *notification);
+static void output_control_change_notification(const char *notification);
 
-static int mi_command_completes_while_target_executing (char *command);
-static void timestamp (struct mi_timestamp *tv);
-static void print_diff_now (struct mi_timestamp *start);
-static void copy_timestamp (struct mi_timestamp *dst, struct mi_timestamp *src);
+static int mi_command_completes_while_target_executing(char *command);
+static void timestamp(struct mi_timestamp *tv);
+static void print_diff_now(struct mi_timestamp *start);
+static void copy_timestamp(struct mi_timestamp *dst, struct mi_timestamp *src);
 
-static void print_diff (struct mi_timestamp *start, struct mi_timestamp *end);
-static long wallclock_diff (struct mi_timestamp *start, struct mi_timestamp *end);
-static long user_diff (struct mi_timestamp *start, struct mi_timestamp *end);
-static long system_diff (struct mi_timestamp *start, struct mi_timestamp *end);
-static void start_remote_counts (struct mi_timestamp *tv, const char *token);
-static void end_remote_counts (struct mi_timestamp *tv);
+static void print_diff(struct mi_timestamp *start, struct mi_timestamp *end);
+static long wallclock_diff(struct mi_timestamp *start, struct mi_timestamp *end);
+static long user_diff(struct mi_timestamp *start, struct mi_timestamp *end);
+static long system_diff(struct mi_timestamp *start, struct mi_timestamp *end);
+static void start_remote_counts(struct mi_timestamp *tv, const char *token);
+static void end_remote_counts(struct mi_timestamp *tv);
 
  /* When running a synchronous target, we would like to have interpreter-exec
     give the same output as for an asynchronous one.  Use this to tell us that
@@ -309,15 +311,16 @@ mi_cmd_exec_interrupt (char *args, int from_tty)
   return MI_CMD_QUIET;
 }
 
+/* FIXME: needs comment: */
 enum mi_cmd_result
-mi_cmd_exec_status (char *command, char **argv, int argc)
+mi_cmd_exec_status(char *command, char **argv, int argc)
 {
-  char *status;
+  const char *status;
 
   if (argc != 0)
     {
-      xasprintf (&mi_error_message,
-		 "mi_cmd_exec_status takes no arguments.");
+      xasprintf(&mi_error_message,
+		"mi_cmd_exec_status takes no arguments.");
       return MI_CMD_ERROR;
     }
 
@@ -333,17 +336,17 @@ mi_cmd_exec_status (char *command, char **argv, int argc)
 	 games to get their returns out properly... */
       {
 	status = "running";
-	fputs_unfiltered ("^done", raw_stdout);
-	ui_out_field_string (uiout, "status", status);
-	mi_out_put (uiout, raw_stdout);
-	mi_out_rewind (uiout);
-	fputs_unfiltered ("\n", raw_stdout);
+	fputs_unfiltered("^done", raw_stdout);
+	ui_out_field_string(uiout, "status", status);
+	mi_out_put(uiout, raw_stdout);
+	mi_out_rewind(uiout);
+	fputs_unfiltered("\n", raw_stdout);
 	return MI_CMD_DONE;
       }
     else
       status = "stopped";
 
-  ui_out_field_string (uiout, "status", status);
+  ui_out_field_string(uiout, "status", status);
 
   return MI_CMD_DONE;
 
@@ -1863,12 +1866,12 @@ mi_cmd_pid_info (char *command, char **argv, int argc)
   return MI_CMD_DONE;
 }
 
-enum mi_cmd_result
-mi_cmd_mi_no_op (char *command, char **argv, int argc)
+/* FIXME: add comment out here: */
+enum mi_cmd_result ATTRIBUTE_CONST
+mi_cmd_mi_no_op(char *command, char **argv, int argc)
 {
-  /* how does one know when a bunch of MI commands have finished being processed?
-     just send a no-op as the last command and look for that...
-   */
+  /* How does 1 know when a bunch of MI commands have finished being processed?
+   * Just send a no-op as the last command and look for that...  */
   return MI_CMD_DONE;
 }
 
@@ -2310,32 +2313,33 @@ mi_execute_cli_command (const char *cmd, int args_p, char *args)
     }
 }
 
+/* FIXME: needs comment: */
 enum mi_cmd_result
-mi_execute_async_cli_command (char *mi, char *args, int from_tty)
+mi_execute_async_cli_command(const char *mi, char *args, int from_tty)
 {
   char *run;
   char *async_args;
 
-  if (!target_can_async_p ())
+  if (!target_can_async_p())
     {
       struct cleanup *old_cleanups;
-      xasprintf (&run, "%s %s", mi, args);
-      old_cleanups = make_cleanup (xfree, run);
+      xasprintf(&run, "%s %s", mi, args);
+      old_cleanups = make_cleanup(xfree, run);
 
       /* NOTE: For synchronous targets asynchronous behavour is faked by
          printing out the GDB prompt before we even try to execute the
          command. */
       if (current_command_token)
-	fputs_unfiltered (current_command_token, raw_stdout);
-      fputs_unfiltered ("^running\n", raw_stdout);
-      fputs_unfiltered ("(gdb) \n", raw_stdout);
-      gdb_flush (raw_stdout);
+	fputs_unfiltered(current_command_token, raw_stdout);
+      fputs_unfiltered("^running\n", raw_stdout);
+      fputs_unfiltered("(gdb) \n", raw_stdout);
+      gdb_flush(raw_stdout);
 
-      execute_command ( /*ui */ run, 0 /*from_tty */ );
+      execute_command(/*ui */ run, 0 /*from_tty */);
 
       /* Do this before doing any printing.  It would appear that some
          print code leaves garbage around in the buffer. */
-      do_cleanups (old_cleanups);
+      do_cleanups(old_cleanups);
 
       /* We should do whatever breakpoint actions are pending.
        This works even if the breakpoint command causes the target
@@ -2348,20 +2352,20 @@ mi_execute_async_cli_command (char *mi, char *args, int from_tty)
        easier.  If the command continues the target, the UI will
        just think it hasn't stopped yet, which is probably also
        okay.  */
-       bpstat_do_actions (&stop_bpstat);
+       bpstat_do_actions(&stop_bpstat);
 
       /* If the target was doing the operation synchronously we fake
          the stopped message. */
       if (current_command_token)
         {
-	  fputs_unfiltered (current_command_token, raw_stdout);
+	  fputs_unfiltered(current_command_token, raw_stdout);
         }
-      fputs_unfiltered ("*stopped", raw_stdout);
+      fputs_unfiltered("*stopped", raw_stdout);
       if (current_command_ts)
         {
-          end_remote_counts (current_command_ts);
-	  print_diff_now (current_command_ts);
-          xfree (current_command_ts);
+          end_remote_counts(current_command_ts);
+	  print_diff_now(current_command_ts);
+          xfree(current_command_ts);
           current_command_ts = NULL;  /* Indicate that the ts was printed */
         }
       return MI_CMD_QUIET;
@@ -2390,65 +2394,64 @@ mi_execute_async_cli_command (char *mi, char *args, int from_tty)
          that might get added by execute_command, in which case the
          cleanups will be out of order. */
 
-      arg = mi_setup_continuation_arg (NULL);
-      add_continuation (mi_exec_async_cli_cmd_continuation,
-			(struct continuation_arg *) arg);
+      arg = mi_setup_continuation_arg(NULL);
+      add_continuation(mi_exec_async_cli_cmd_continuation,
+		       (struct continuation_arg *)arg);
 
       arg->exec_error_cleanups
-	= make_exec_error_cleanup (mi_exec_error_cleanup, (void *) arg);
+	= make_exec_error_cleanup(mi_exec_error_cleanup, (void *)arg);
 
       /* run means ui, 0 means from_tty: */
       except = safe_execute_command(uiout, run, 0);
-      do_cleanups (old_cleanups);
+      do_cleanups(old_cleanups);
 
       if (target_executing)
 	{
 	  if (current_command_token)
-	    fputs_unfiltered (current_command_token, raw_stdout);
-	  fputs_unfiltered ("^running\n", raw_stdout);
+	    fputs_unfiltered(current_command_token, raw_stdout);
+	  fputs_unfiltered("^running\n", raw_stdout);
 
 	}
       /* APPLE LOCAL begin inlined subroutine  */
       /* If we are stepping from an inlined subroutine call site into the
 	 inlined subroutine, the target will not be executing, but it is
 	 not an error.  */
-      else if (strcmp (mi, "step") == 0
+      else if ((strcmp(mi, "step") == 0)
 	       && stepping_into_inlined_subroutine)
 	{
 	  stop_step = 1;
 	  if (current_command_token)
-	    fputs_unfiltered (current_command_token, raw_stdout);
-	  fputs_unfiltered ("^running\n", raw_stdout);
+	    fputs_unfiltered(current_command_token, raw_stdout);
+	  fputs_unfiltered("^running\n", raw_stdout);
 
-	  ui_out_field_string (uiout, "reason",
-			       async_reason_lookup
-			       (EXEC_ASYNC_END_STEPPING_RANGE));
-	  ui_out_print_annotation_int (uiout, 0, "thread-id",
-				       pid_to_thread_id (inferior_ptid));
-	  mi_exec_async_cli_cmd_continuation ((struct continuation_arg *) arg);
+	  ui_out_field_string(uiout, "reason",
+			   async_reason_lookup(EXEC_ASYNC_END_STEPPING_RANGE));
+	  ui_out_print_annotation_int(uiout, 0, "thread-id",
+				      pid_to_thread_id(inferior_ptid));
+	  mi_exec_async_cli_cmd_continuation((struct continuation_arg *)arg);
 	}
       /* APPLE LOCAL end inlined subroutine  */
       else
 	{
-	  /* If we didn't manage to set the inferior going, that's
+	  /* If we failed to manage to set the inferior going, then that is
 	     most likely an error... */
-	  discard_all_continuations ();
-	  if (arg->exec_error_cleanups != (struct cleanup *) -1)
-	    discard_exec_error_cleanups (arg->exec_error_cleanups);
-	  free_continuation_arg (arg);
+	  discard_all_continuations();
+	  if (arg->exec_error_cleanups != (struct cleanup *)-1)
+	    discard_exec_error_cleanups(arg->exec_error_cleanups);
+	  free_continuation_arg(arg);
 	  if (except.message != NULL)
-	    mi_error_message = xstrdup (except.message);
+	    mi_error_message = xstrdup(except.message);
 	  else
 	    mi_error_message = NULL;
 
 	  return MI_CMD_ERROR;
 	}
-
     }
 
   return MI_CMD_DONE;
 }
 
+/* FIXME: needs comment: */
 void
 mi_exec_error_cleanup (void *in_arg)
 {
@@ -2630,9 +2633,9 @@ mi_interpreter_exec_bp_cmd(char *command, char **argv, int argc)
    instance, with console-quoted). */
 
 static void
-route_output_through_mi(char *prefix, char *notification)
+route_output_through_mi(const char *prefix, const char *notification)
 {
-  static struct ui_file *rerouting_ui_file = NULL;
+  static struct ui_file *rerouting_ui_file = (struct ui_file *)NULL;
 
   if (rerouting_ui_file == NULL)
     {
@@ -2657,13 +2660,13 @@ route_output_to_mi_result(const char *name, const char *string)
 }
 
 void
-mi_output_async_notification(char *notification)
+mi_output_async_notification(const char *notification)
 {
   route_output_through_mi("=", notification);
 }
 
 static void
-output_control_change_notification(char *notification)
+output_control_change_notification(const char *notification)
 {
   route_output_through_mi("^", notification);
 }
@@ -2694,7 +2697,7 @@ mi_interp_sync_fake_running(void)
       free_me = 1;
     }
   else
-    prefix = "^";
+    prefix = (char *)"^";
 
   route_output_through_mi(prefix, "running");
   if (free_me)
@@ -2721,8 +2724,8 @@ mi_interp_sync_continue_command_hook(void)
 int
 mi_interp_run_command_hook(void)
 {
-  /* request that the ide initiate a restart of the target */
-  mi_output_async_notification ("rerun");
+  /* Request that the IDE initiate a restart of the target: */
+  mi_output_async_notification("rerun");
   return 0;
 }
 

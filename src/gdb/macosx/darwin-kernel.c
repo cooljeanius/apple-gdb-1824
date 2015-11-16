@@ -1,4 +1,4 @@
-/* darwin-kernel.c
+/* macosx/darwin-kernel.c
    Mac OS X kernel support for GDB, the GNU debugger.
    Copyright 2007
    Free Software Foundation, Inc.
@@ -97,11 +97,11 @@ typedef enum
 } darwin_kernel_log_level;
 
 /* prototype: */
-static void darwin_kernel_logger(darwin_kernel_log_level, char *,
+static void darwin_kernel_logger(darwin_kernel_log_level, const char *,
                                  const char *, ...)
   ATTR_FORMAT(gnu_printf, 3, 4);
 
-static void darwin_kernel_logger(darwin_kernel_log_level l, char *call,
+static void darwin_kernel_logger(darwin_kernel_log_level l, const char *call,
                                  const char *format, ...)
 {
   va_list ap;
@@ -159,7 +159,8 @@ static void darwin_kernel_attach(char *args, int from_tty)
   printf_unfiltered("Connected.\n");
 }
 
-static void darwin_kernel_detach(char *args, int from_tty)
+/* FIXME: add comment: */
+static void darwin_kernel_detach(const char *args, int from_tty)
 {
   close(darwin_kernel_fd);
 

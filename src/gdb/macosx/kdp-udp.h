@@ -1,4 +1,4 @@
-/* kdp-udp.h */
+/* macosx/kdp-udp.h */
 
 #ifndef __GDB_KDP_UDP_H__
 #define __GDB_KDP_UDP_H__

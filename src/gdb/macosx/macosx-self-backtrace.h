@@ -1,5 +1,5 @@
 /*
- * macosx-self-backtrace.h
+ * macosx/macosx-self-backtrace.h
  */
 
 #ifndef __GDB_MACOSX_SELF_BACKTRACE_H__

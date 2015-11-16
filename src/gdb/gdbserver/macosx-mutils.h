@@ -1,5 +1,5 @@
 /*
- * macosx-mutils.h
+ * gdbserver/macosx-mutils.h
  */
 
 #ifndef __GDBSERVER_MACOSX_MUTILS_H__

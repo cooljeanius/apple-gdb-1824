@@ -1,4 +1,4 @@
-/* symread.c
+/* macosx/symread.c
    Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
@@ -116,17 +116,18 @@ sym_lookup_builtin_type(unsigned int num)
     }
 }
 
+/* */
 int
 sym_parse_type(struct objfile *objfile, struct type **typevec,
                size_t ntypes, unsigned char *buf, size_t len,
                size_t offset, size_t *offsetptr, struct type **tptr,
-               char **nptr, unsigned long *vptr)
+               const char **nptr, unsigned long *vptr)
 {
   unsigned int typecode = 0U;
-  struct type *type = NULL;
-  char *sym_typename = NULL;
-  struct type *target = NULL;
-  char *targname = NULL;
+  struct type *type = (struct type *)NULL;
+  char *sym_typename = (char *)NULL;
+  struct type *target = (struct type *)NULL;
+  const char *targname = (const char *)NULL;
   unsigned long value = 0UL;
   int retval = 0;
   int ret = retval;
@@ -256,7 +257,7 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
               }
 
             TYPE_FIELD_TYPE(type, i) = target;
-            TYPE_FIELD_NAME(type, i) = targname;
+            TYPE_FIELD_NAME(type, i) = (char *)targname;
             TYPE_FIELD_BITPOS_ASSIGN(type, i) = value;
             TYPE_FIELD_BITSIZE(type, i) = 0;
           }
@@ -348,7 +349,7 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
               }
 
             TYPE_FIELD_TYPE(type, i) = target;
-            TYPE_FIELD_NAME(type, i) = targname;
+            TYPE_FIELD_NAME(type, i) = (char *)targname;
             TYPE_FIELD_BITPOS_ASSIGN(type, i) = (TARGET_CHAR_BIT * eloff);
             TYPE_FIELD_BITSIZE(type, i) = 0;
             TYPE_LENGTH_ASSIGN(type) = (eloff + TYPE_LENGTH(target));
@@ -1294,7 +1295,7 @@ sym_symfile_read(struct objfile *objfile, int mainline)
           case BFD_SYM_SOURCE_FILE_CHANGE:
             {
               const unsigned char *namebuf = NULL;
-              char *name = NULL;
+              const char *name = (const char *)NULL;
 
               ret =
                 bfd_sym_fetch_file_references_table_entry(abfd, &frtentry,
@@ -1486,17 +1487,18 @@ static struct sym_fns sym_sym_fns = {
   NULL                          /* next: pointer to next struct sym_fns */
 };
 
+/* */
 void
-sym_dump_command(char *args, int from_tty)
+sym_dump_command(const char *args, int from_tty)
 {
   char **argv;
   struct cleanup *cleanups;
 
   char *symname = NULL;
-  char *filename = "/dev/tty";
+  const char *filename = "/dev/tty";
 
-  FILE *f = NULL;
-  bfd *abfd = NULL;
+  FILE *f = (FILE *)NULL;
+  bfd *abfd = (bfd *)NULL;
 
   dont_repeat();
 
@@ -1525,7 +1527,7 @@ sym_dump_command(char *args, int from_tty)
     }
 
   filename = tilde_expand(filename);
-  make_cleanup(xfree, filename);
+  make_cleanup(xfree, (void *)filename);
 
   symname = tilde_expand(symname);
   make_cleanup(xfree, symname);

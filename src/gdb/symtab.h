@@ -89,9 +89,18 @@ struct agent_expr;
    multilanguage environment, some language specific information may need to
    be recorded along with each symbol. */
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic warning "-Wpadded"
+#  pragma GCC diagnostic warning "-Wpacked"
+/* "-Wpacked-bitfield-compat" is already on by default. */
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* This structure is space critical.  See space comments at the top. */
 
-struct general_symbol_info
+typedef struct general_symbol_info
 {
   /* Name of the symbol.  This is a required field.  Storage for the
      name is allocated on the objfile_obstack for the associated
@@ -162,9 +171,16 @@ struct general_symbol_info
 
   /* The bfd section associated with this symbol: */
   asection *bfd_section;
-};
+} ATTRIBUTE_PACKED gensyminfo_t;
 
-extern CORE_ADDR symbol_overlayed_address (CORE_ADDR, asection *);
+/* keep this condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
+extern CORE_ADDR symbol_overlayed_address(CORE_ADDR, asection *);
 
 /* Note that all the following SYMBOL_* macros are used with the
    SYMBOL argument being either a partial symbol, a minimal symbol or
@@ -192,21 +208,21 @@ extern CORE_ADDR symbol_overlayed_address (CORE_ADDR, asection *);
 /* Initializes the language dependent portion of a symbol
    depending upon the language for the symbol. */
 #define SYMBOL_INIT_LANGUAGE_SPECIFIC(symbol,language) \
-  (symbol_init_language_specific (&(symbol)->ginfo, (language)))
-extern void symbol_init_language_specific (struct general_symbol_info *symbol,
-					   enum language language)
+  (symbol_init_language_specific(&(symbol)->ginfo, (language)))
+extern void symbol_init_language_specific(struct general_symbol_info *symbol,
+					  enum language language)
   ATTRIBUTE_NONNULL(1);
 
 #define SYMBOL_INIT_DEMANGLED_NAME(symbol,obstack) \
-  (symbol_init_demangled_name (&(symbol)->ginfo, (obstack)))
-extern void symbol_init_demangled_name (struct general_symbol_info *symbol,
-					struct obstack *obstack);
+  (symbol_init_demangled_name(&(symbol)->ginfo, (obstack)))
+extern void symbol_init_demangled_name(struct general_symbol_info *symbol,
+				       struct obstack *obstack);
 
 #define SYMBOL_SET_NAMES(symbol,linkage_name,len,objfile) \
-  symbol_set_names (&(symbol)->ginfo, linkage_name, len, objfile)
-extern void symbol_set_names (struct general_symbol_info *symbol,
-			      const char *linkage_name, int len,
-			      struct objfile *objfile);
+  symbol_set_names(&(symbol)->ginfo, linkage_name, len, objfile)
+extern void symbol_set_names(struct general_symbol_info *symbol,
+			     const char *linkage_name, int len,
+			     struct objfile *objfile);
 
 /* Now come lots of name accessor macros.  Short version as to when to
    use which: Use SYMBOL_NATURAL_NAME to refer to the name of the
@@ -225,8 +241,8 @@ extern void symbol_set_names (struct general_symbol_info *symbol,
    demangled name.  */
 
 #define SYMBOL_NATURAL_NAME(symbol) \
-  (symbol_natural_name (&(symbol)->ginfo))
-extern char *symbol_natural_name (const struct general_symbol_info *symbol);
+  (symbol_natural_name(&(symbol)->ginfo))
+extern char *symbol_natural_name(const struct general_symbol_info *symbol);
 
 /* Return SYMBOL's name from the point of view of the linker.  In
    languages like C++ where symbols may be mangled for ease of
@@ -242,8 +258,8 @@ extern char *symbol_natural_name (const struct general_symbol_info *symbol);
 /* Return the demangled name for a symbol based on the language for
    that symbol.  If no demangled name exists, return NULL. */
 #define SYMBOL_DEMANGLED_NAME(symbol) \
-  (symbol_demangled_name (&(symbol)->ginfo))
-extern char *symbol_demangled_name (struct general_symbol_info *symbol);
+  (symbol_demangled_name(&(symbol)->ginfo))
+extern char *symbol_demangled_name(struct general_symbol_info *symbol);
 
 /* Macro that returns a version of the name of a symbol that is
    suitable for output.  In C++ this is the "demangled" form of the
@@ -254,7 +270,7 @@ extern char *symbol_demangled_name (struct general_symbol_info *symbol);
    output.  */
 
 #define SYMBOL_PRINT_NAME(symbol)					\
-  (demangle ? SYMBOL_NATURAL_NAME (symbol) : SYMBOL_LINKAGE_NAME (symbol))
+  (demangle ? SYMBOL_NATURAL_NAME(symbol) : SYMBOL_LINKAGE_NAME(symbol))
 
 /* Macro that tests a symbol for a match against a specified name string.
    First test the unencoded name, then looks for and test a C++ encoded
@@ -269,7 +285,7 @@ extern char *symbol_demangled_name (struct general_symbol_info *symbol);
    about its behavior.)  */
 
 #define SYMBOL_MATCHES_NATURAL_NAME(symbol, name)			\
-  (strcmp_iw (SYMBOL_NATURAL_NAME (symbol), (name)) == 0)
+  (strcmp_iw(SYMBOL_NATURAL_NAME(symbol), (name)) == 0)
 
 /* Macro that returns the name to be used when sorting and searching symbols.
    In  C++, Chill, and Java, we search for the demangled form of a name,
@@ -277,13 +293,13 @@ extern char *symbol_demangled_name (struct general_symbol_info *symbol);
    name.  If there is no distinct demangled name, then SYMBOL_SEARCH_NAME
    returns the same value (same pointer) as SYMBOL_LINKAGE_NAME. */
 #define SYMBOL_SEARCH_NAME(symbol)					 \
-   (symbol_search_name (&(symbol)->ginfo))
-extern char *symbol_search_name (const struct general_symbol_info *);
+   (symbol_search_name(&(symbol)->ginfo))
+extern char *symbol_search_name(const struct general_symbol_info *);
 
 /* Analogous to SYMBOL_MATCHES_NATURAL_NAME, but uses the search
    name.  */
 #define SYMBOL_MATCHES_SEARCH_NAME(symbol, name)			\
-  (strcmp_iw (SYMBOL_SEARCH_NAME (symbol), (name)) == 0)
+  (strcmp_iw(SYMBOL_SEARCH_NAME(symbol), (name)) == 0)
 
 /* Classification types for a minimal symbol.  These should be taken as
    "advisory only", since if gdb can't easily figure out a
@@ -602,20 +618,28 @@ struct symbol_ops
 			      struct axs_value * value);
 };
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  if defined(__clang__)
+#   pragma GCC diagnostic warning "-Wpadded"
+#  endif /* __clang__ */
+#  pragma GCC diagnostic warning "-Wpacked"
+/* "-Wpacked-bitfield-compat" is already on by default. */
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* This structure is space critical.  See space comments at the top. */
 
-struct symbol
+typedef struct symbol
 {
-  /* The general symbol info required for all types of symbols. */
-
+  /* The general symbol info required for all types of symbols: */
   struct general_symbol_info ginfo;
 
-  /* Data type of value */
-
+  /* Data type of value: */
   struct type *type;
 
-  /* Domain code.  */
-
+  /* Domain code: */
   ENUM_BITFIELD(domain_enum_tag) domain : 6;
 
   /* Address class */
@@ -632,7 +656,7 @@ struct symbol
      that nobody will try to debug files longer than 64K lines?  What about
      machine generated programs? */
 
-  unsigned short line;
+  unsigned short line ATTRIBUTE_ALIGNED_ALIGNOF(enum address_class);
 
   /* Method's for symbol's of this class.  */
   /* NOTE: cagney/2003-11-02: See comment above attached to "aclass".  */
@@ -662,7 +686,7 @@ struct symbol
   aux_value;
 
   struct symbol *hash_next;
-};
+} ATTRIBUTE_PACKED symtab_h_symbol_t;
 
 
 #define SYMBOL_DOMAIN(symbol)	(symbol)->domain
@@ -682,21 +706,26 @@ struct symbol
 
 /* This structure is space critical.  See space comments at the top. */
 
-struct partial_symbol
+typedef struct partial_symbol
 {
-  /* The general symbol info required for all types of symbols. */
-
+  /* The general symbol info required for all types of symbols: */
   struct general_symbol_info ginfo;
 
-  /* Name space code.  */
-
+  /* Name space code: */
   ENUM_BITFIELD(domain_enum_tag) domain : 6;
 
-  /* Address class (for info_symbols) */
-
+  /* Address class (for info_symbols): */
   ENUM_BITFIELD(address_class) aclass : 6;
+  
+  /* FIXME: not packed hard enough; need some extra padding... */
+} ATTRIBUTE_PACKED partial_symbol_t;
 
-};
+/* keep this condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 #define PSYMBOL_DOMAIN(psymbol)	(psymbol)->domain
 #define PSYMBOL_CLASS(psymbol)		(psymbol)->aclass
@@ -1235,9 +1264,9 @@ extern struct symbol *lookup_block_symbol (const struct block *, const char *,
 /* lookup a symbol by name, within a specified block, and return
    all matching symbols in the block.  */
 
-extern struct symbol_search *lookup_block_symbol_all (const struct block *,
-						      const char *, const char *,
-						      const domain_enum);
+extern struct symbol_search *lookup_block_symbol_all(const struct block *,
+						     const char *, const char *,
+						     const domain_enum);
 /* APPLE LOCAL end return multiple symbols  */
 
 /* lookup a [struct, union, enum] by name, within a specified block */
@@ -1328,15 +1357,15 @@ extern struct type *basic_lookup_transparent_type (const char *);
 
 /* Macro for name of symbol to indicate a file compiled with gcc2. */
 #ifndef GCC2_COMPILED_FLAG_SYMBOL
-#define GCC2_COMPILED_FLAG_SYMBOL "gcc2_compiled."
-#endif
+# define GCC2_COMPILED_FLAG_SYMBOL "gcc2_compiled."
+#endif /* !GCC2_COMPILED_FLAG_SYMBOL */
 
 /* Functions for dealing with the minimal symbol table, really a misc
    address<->symbol mapping for things we don't have debug symbols for.  */
 
-extern void prim_record_minimal_symbol (const char *, CORE_ADDR,
-					enum minimal_symbol_type,
-					struct objfile *);
+extern void prim_record_minimal_symbol(const char *, CORE_ADDR,
+				       enum minimal_symbol_type,
+				       struct objfile *);
 
 extern struct minimal_symbol *prim_record_minimal_symbol_and_info
   (const char *, CORE_ADDR,
@@ -1355,29 +1384,27 @@ add_minsym_to_hash_table (struct minimal_symbol *sym,
 extern struct minimal_symbol *lookup_minimal_symbol_by_pc_section_from_objfile
   (CORE_ADDR pc, asection *section, struct objfile *objfile);
 
-extern struct minimal_symbol *lookup_minimal_symbol (const char *,
-						     const char *,
-						     struct objfile *);
+extern struct minimal_symbol *lookup_minimal_symbol(const char *,
+						    const char *,
+						    struct objfile *);
 
 /* APPLE LOCAL begin return multiple symbols  */
-extern struct minimal_symbol *lookup_minimal_symbol_all (const char *,
-							 const char *,
-							 struct objfile *,
+extern struct minimal_symbol *lookup_minimal_symbol_all(const char *,
+							const char *,
+							struct objfile *,
 						      struct symbol_search **);
 /* APPLE LOCAL end return multiply symbols  */
 
-extern struct minimal_symbol *lookup_minimal_symbol_text (const char *,
-							  struct objfile *);
+extern struct minimal_symbol *lookup_minimal_symbol_text(const char *,
+							 struct objfile *);
 
-struct minimal_symbol *lookup_minimal_symbol_solib_trampoline (const char *,
-							       struct objfile
-							       *);
+struct minimal_symbol *lookup_minimal_symbol_solib_trampoline(const char *,
+							      struct objfile *);
 
-extern struct minimal_symbol *lookup_minimal_symbol_by_pc (CORE_ADDR);
+extern struct minimal_symbol *lookup_minimal_symbol_by_pc(CORE_ADDR);
 
-extern struct minimal_symbol *lookup_minimal_symbol_by_pc_section (CORE_ADDR,
-								   asection
-								   *);
+extern struct minimal_symbol *lookup_minimal_symbol_by_pc_section(CORE_ADDR,
+								  asection *);
 
 extern struct minimal_symbol
   *lookup_minimal_symbol_by_pc_section_objfile (CORE_ADDR, asection *,
@@ -1421,7 +1448,7 @@ struct symtab_and_line
   /* APPLE LOCAL end subroutine inlining  */
 };
 
-extern void init_sal (struct symtab_and_line *sal);
+extern void init_sal(struct symtab_and_line *sal);
 
 struct symtabs_and_lines
 {
@@ -1442,7 +1469,7 @@ struct address_context
   struct symtab_and_line sal;
 };
 
-extern void init_address_context (struct address_context *addr_ctx);
+extern void init_address_context(struct address_context *addr_ctx);
 
 /* APPLE LOCAL begin address context.  */
 
@@ -1507,9 +1534,9 @@ extern void resolve_sal_pc (struct symtab_and_line *);
 /* Given a string, return the line specified by it.  For commands like "list"
    and "breakpoint".  */
 
-extern struct symtabs_and_lines decode_line_spec (char *, int);
+extern struct symtabs_and_lines decode_line_spec(const char *, int);
 
-extern struct symtabs_and_lines decode_line_spec_1 (char *, int);
+extern struct symtabs_and_lines decode_line_spec_1(const char *, int);
 
 /* Symmisc.c */
 
@@ -1580,9 +1607,8 @@ extern CORE_ADDR skip_prologue_using_sal (CORE_ADDR func_addr);
 extern struct symbol *fixup_symbol_section (struct symbol *,
 					    struct objfile *);
 
-extern struct partial_symbol *fixup_psymbol_section (struct partial_symbol
-						     *psym,
-						     struct objfile *objfile);
+extern struct partial_symbol *fixup_psymbol_section(struct partial_symbol *psym,
+						    struct objfile *objfile);
 
 /* Symbol searching */
 
@@ -1619,23 +1645,23 @@ extern int lookup_symbol_all (const char *, const struct block *,
 extern void search_symbols (char *, domain_enum, int, char **,
 			    struct symbol_search **);
 extern void free_search_symbols (struct symbol_search *);
-extern struct cleanup *make_cleanup_free_search_symbols (struct symbol_search
-							 *);
+extern struct cleanup *make_cleanup_free_search_symbols(struct symbol_search *);
 
 /* The name of the ``main'' function.
    FIXME: cagney/2001-03-20: Can't make main_name() const since some
    of the calling code currently assumes that the string isn't
    const. */
-extern void set_main_name (const char *name);
-extern /*const */ char *main_name (void);
+extern void set_main_name(const char *name);
+extern /*const */ char *main_name(void);
 
 /* APPLE LOCAL: Defines for the machinery to handle Darwin symbol versioning
    in libSystem.  */
 
-void equivalence_table_delete (struct objfile *);
-void equivalence_table_add (struct objfile *, const char *, const char *, struct minimal_symbol *);
-void equivalence_table_build (struct objfile *);
-struct minimal_symbol **find_equivalent_msymbol (struct minimal_symbol *msymbol);
+void equivalence_table_delete(struct objfile *);
+void equivalence_table_add(struct objfile *, const char *, const char *,
+			   struct minimal_symbol *);
+void equivalence_table_build(struct objfile *);
+struct minimal_symbol **find_equivalent_msymbol(struct minimal_symbol *msymbol);
 /* END APPLE LOCAL */
 
 /* Global to indicate presence of HP-compiled objects,
@@ -1644,8 +1670,8 @@ struct minimal_symbol **find_equivalent_msymbol (struct minimal_symbol *msymbol)
 extern int deprecated_hp_som_som_object_present ATTRIBUTE_DEPRECATED;
 
 /* APPLE LOCAL begin address ranges  */
-extern void update_inlined_function_line_table_entry (CORE_ADDR, CORE_ADDR,
-						      CORE_ADDR);
+extern void update_inlined_function_line_table_entry(CORE_ADDR, CORE_ADDR,
+						     CORE_ADDR);
 
 /* APPLE LOCAL end address ranges  */
 /* APPLE LOCAL begin psym equivalences  */

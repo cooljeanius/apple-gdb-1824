@@ -1,4 +1,4 @@
-/* Auxiliary vector support for GDB, the GNU debugger.
+/* auxv.h: Auxiliary vector support for GDB, the GNU debugger.
 
    Copyright 2004 Free Software Foundation, Inc.
 
@@ -35,25 +35,25 @@ struct target_ops;		/* Forward declaration.  */
    stored in *DATA.  Return the size in bytes of this data.
    If zero, there is no data and *DATA is null.
    if < 0, there was an error and *DATA is null.  */
-extern LONGEST target_auxv_read (struct target_ops *ops, gdb_byte **data);
+extern LONGEST target_auxv_read(struct target_ops *ops, gdb_byte **data);
 
 /* Read one auxv entry from *READPTR, not reading locations >= ENDPTR.
    Return 0 if *READPTR is already at the end of the buffer.
    Return -1 if there is insufficient buffer for a whole entry.
    Return 1 if an entry was read into *TYPEP and *VALP.  */
-extern int target_auxv_parse (struct target_ops *ops,
-			      gdb_byte **readptr, gdb_byte *endptr,
-			      CORE_ADDR *typep, CORE_ADDR *valp);
+extern int target_auxv_parse(struct target_ops *ops,
+			     gdb_byte **readptr, gdb_byte *endptr,
+			     CORE_ADDR *typep, CORE_ADDR *valp);
 
 /* Extract the auxiliary vector entry with a_type matching MATCH.
    Return zero if no such entry was found, or -1 if there was
    an error getting the information.  On success, return 1 after
    storing the entry's value field in *VALP.  */
-extern int target_auxv_search (struct target_ops *ops,
-			       CORE_ADDR match, CORE_ADDR *valp);
+extern int target_auxv_search(struct target_ops *ops,
+			      CORE_ADDR match, CORE_ADDR *valp);
 
-/* Print the contents of the target's AUXV on the specified file. */
-extern int fprint_target_auxv (struct ui_file *file, struct target_ops *ops);
+/* Print the contents of the target's AUXV on the specified file: */
+extern int fprint_target_auxv(struct ui_file *file, struct target_ops *ops);
 
 
 /* This function is called like a to_xfer_partial hook,
@@ -63,13 +63,14 @@ extern int fprint_target_auxv (struct ui_file *file, struct target_ops *ops);
 	   #define NATIVE_XFER_AUXV	procfs_xfer_auxv
    for a native target that uses inftarg.c's child_xfer_partial hook.  */
 
-extern LONGEST procfs_xfer_auxv (struct target_ops *ops,
-				 int /* enum target_object */ object,
-				 const char *annex,
-				 gdb_byte *readbuf,
-				 const gdb_byte *writebuf,
-				 ULONGEST offset,
-				 LONGEST len);
+extern LONGEST procfs_xfer_auxv(struct target_ops *ops,
+				int /* enum target_object */ object,
+				const char *annex,
+				gdb_byte *readbuf,
+				const gdb_byte *writebuf,
+				ULONGEST offset,
+				LONGEST len);
 
+#endif /* !AUXV_H */
 
-#endif
+/* EOF */

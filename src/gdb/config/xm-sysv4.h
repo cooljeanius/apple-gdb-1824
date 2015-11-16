@@ -1,7 +1,7 @@
-/* xm-sysv4.h
+/* config/xm-sysv4.h
    Definitions for running gdb on a host machine running a flavor of SVR4.
    Copyright 1991, 1992, 1993, 1995, 1998 Free Software Foundation, Inc.
-   Written by Fred Fish at Cygnus Support (fnf@cygnus.com).
+   Written by Fred Fish at Cygnus Support <fnf@cygnus.com>.
 
    This file is part of GDB.
 

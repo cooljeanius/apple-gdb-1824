@@ -1,4 +1,4 @@
-/* ppc-macosx-regnums.h -*- C -*- */
+/* macosx/ppc-macosx-regnums.h -*- C -*- */
 
 #ifndef __GDB_PPC_MACOSX_REGNUMS_H__
 #define __GDB_PPC_MACOSX_REGNUMS_H__

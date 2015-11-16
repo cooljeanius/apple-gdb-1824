@@ -1,4 +1,4 @@
-/* i386-macosx-nat-exec.c
+/* macosx/i386-macosx-nat-exec.c
    Mac OS X execution support for i386 for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
@@ -633,7 +633,8 @@ i386_macosx_target_stopped_data_address(struct target_ops *target ATTRIBUTE_UNUS
   return i386_stopped_data_address(addr);
 }
 
-int
+/* */
+int ATTRIBUTE_CONST
 i386_macosx_can_use_hw_breakpoint(int unused1 ATTRIBUTE_UNUSED,
                                   int unused2 ATTRIBUTE_UNUSED,
                                   int unused3 ATTRIBUTE_UNUSED)

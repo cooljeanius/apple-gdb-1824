@@ -109,10 +109,10 @@ typedef_print(struct type *type, struct symbol *newsym,
    If SHOW is negative, we never show the details of elements' types.  */
 
 void
-type_print (struct type *type, char *varstring, struct ui_file *stream,
-	    int show)
+type_print(struct type *type, const char *varstring, struct ui_file *stream,
+	   int show)
 {
-  LA_PRINT_TYPE (type, varstring, stream, show, 0);
+  LA_PRINT_TYPE(type, varstring, stream, show, 0);
 }
 
 /* APPLE LOCAL: Returns a xmalloc'ed string of the type name instead of
@@ -120,19 +120,19 @@ type_print (struct type *type, char *varstring, struct ui_file *stream,
    have the same meaning as type_print()'s -- see the comment there.  */
 
 char *
-type_sprint (struct type *type, char *varstring, int show)
+type_sprint(struct type *type, char *varstring, int show)
 {
   struct ui_file *stb;
   struct cleanup *wipe;
   long length;
   char *type_name;
 
-  stb = mem_fileopen ();
-  wipe = make_cleanup_ui_file_delete (stb);
+  stb = mem_fileopen();
+  wipe = make_cleanup_ui_file_delete(stb);
 
-  type_print (type, varstring, stb, show);
-  type_name = ui_file_xstrdup (stb, &length);
-  do_cleanups (wipe);
+  type_print(type, varstring, stb, show);
+  type_name = ui_file_xstrdup(stb, &length);
+  do_cleanups(wipe);
 
   return type_name;
 }

@@ -106,7 +106,7 @@ extern struct cmd_list_element *setchecklist ATTRIBUTE_DEPRECATED;
 
 extern struct cmd_list_element *showchecklist ATTRIBUTE_DEPRECATED;
 
-extern void execute_command(char *, int)
+extern void execute_command(const char *, int)
   ATTRIBUTE_DEPRECATED;
 
 enum command_control_type execute_control_command(struct command_line *)

@@ -1,4 +1,4 @@
-/* mi-cmd-catch.c: MI Command Set - catch commands.
+/* mi/mi-cmd-catch.c: MI Command Set - catch commands.
    Copyright (C) 2012-2013 Free Software Foundation, Inc.
 
    Contributed by Intel Corporation.

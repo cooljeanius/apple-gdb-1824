@@ -1,4 +1,4 @@
-/* cli-script.c: GDB CLI command scripting.
+/* cli/cli-script.c: GDB CLI command scripting.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2004, 2005 Free
@@ -60,7 +60,7 @@ static char *insert_args(char *line);
 
 static struct cleanup *setup_user_args(char *p);
 
-static void validate_comname(char *);
+static void validate_comname(const char *);
 
 static char *read_next_line(void);
 
@@ -87,23 +87,23 @@ struct user_args
    control commands (if/while).  */
 
 static struct command_line *
-build_command_line (enum command_control_type type, char *args)
+build_command_line(enum command_control_type type, const char *args)
 {
   struct command_line *cmd;
 
   if (args == NULL)
-    error (_("if/while commands require arguments."));
+    error(_("if/while commands require arguments."));
 
-  cmd = (struct command_line *) xmalloc (sizeof (struct command_line));
+  cmd = (struct command_line *)xmalloc(sizeof(struct command_line));
   cmd->next = NULL;
   cmd->control_type = type;
 
   cmd->body_count = 1;
-  cmd->body_list
-    = (struct command_line **) xmalloc (sizeof (struct command_line *)
-					* cmd->body_count);
-  memset (cmd->body_list, 0, sizeof (struct command_line *) * cmd->body_count);
-  cmd->line = savestring (args, strlen (args));
+  cmd->body_list =
+    (struct command_line **)xmalloc(sizeof(struct command_line *)
+				    * cmd->body_count);
+  memset(cmd->body_list, 0, (sizeof(struct command_line *) * cmd->body_count));
+  cmd->line = savestring(args, strlen(args));
   return cmd;
 }
 
@@ -111,25 +111,25 @@ build_command_line (enum command_control_type type, char *args)
    such as "if" and "while".  */
 
 static struct command_line *
-get_command_line (enum command_control_type type, char *arg)
+get_command_line(enum command_control_type type, const char *arg)
 {
   struct command_line *cmd;
   struct cleanup *old_chain = NULL;
 
-  /* Allocate and build a new command line structure.  */
-  cmd = build_command_line (type, arg);
+  /* Allocate and build a new command line structure: */
+  cmd = build_command_line(type, arg);
 
-  old_chain = make_cleanup_free_command_lines (&cmd);
+  old_chain = make_cleanup_free_command_lines(&cmd);
 
-  /* Read in the body of this command.  */
-  if (recurse_read_control_structure (read_next_line, cmd) == invalid_control)
+  /* Read in the body of this command: */
+  if (recurse_read_control_structure(read_next_line, cmd) == invalid_control)
     {
-      warning (_("Error reading in control structure."));
-      do_cleanups (old_chain);
+      warning(_("Error reading in control structure."));
+      do_cleanups(old_chain);
       return NULL;
     }
 
-  discard_cleanups (old_chain);
+  discard_cleanups(old_chain);
   return cmd;
 }
 
@@ -354,11 +354,11 @@ execute_control_command(struct command_line *cmd)
   switch (cmd->control_type)
     {
     case simple_control:
-      /* A simple command, execute it and return.  */
-      new_line = insert_args (cmd->line);
+      /* A simple command, execute it and return: */
+      new_line = insert_args(cmd->line);
       if (!new_line)
 	break;
-      old_chain = make_cleanup (free_current_contents, &new_line);
+      old_chain = make_cleanup(free_current_contents, &new_line);
 
       /* Control commands are only run when we are doing console
        interpreter commands (either a breakpoint command, or a
@@ -374,16 +374,16 @@ execute_control_command(struct command_line *cmd)
          command which we can use here, rather than having to
          special case interpreters as we do here. */
 
-      if (ui_out_is_mi_like_p (uiout))
+      if (ui_out_is_mi_like_p(uiout))
 	{
 	  char *argv[2];
 	  int argc = 2;
-	  argv[0] = "console-quoted";
+	  argv[0] = (char *)"console-quoted";
 	  argv[1] = new_line;
-	  mi_interpreter_exec_bp_cmd (new_line, argv, argc);
+	  mi_interpreter_exec_bp_cmd(new_line, argv, argc);
 	}
       else
-	execute_command (new_line, 0);
+	execute_command(new_line, 0);
 
       ret = cmd->control_type;
       break;
@@ -532,36 +532,36 @@ execute_control_command(struct command_line *cmd)
    loop condition is nonzero.  */
 
 void
-while_command (char *arg, int from_tty)
+while_command(const char *arg, int from_tty)
 {
   struct command_line *command = NULL;
 
   control_level = 1;
-  command = get_command_line (while_control, arg);
+  command = get_command_line(while_control, arg);
 
   if (command == NULL)
     return;
 
-  execute_control_command (command);
-  free_command_lines (&command);
+  execute_control_command(command);
+  free_command_lines(&command);
 }
 
 /* "if" command support.  Execute either the true or false arm depending
    on the value of the if conditional.  */
 
 void
-if_command (char *arg, int from_tty)
+if_command(const char *arg, int from_tty)
 {
   struct command_line *command = NULL;
 
   control_level = 1;
-  command = get_command_line (if_control, arg);
+  command = get_command_line(if_control, arg);
 
   if (command == NULL)
     return;
 
-  execute_control_command (command);
-  free_command_lines (&command);
+  execute_control_command(command);
+  free_command_lines(&command);
 }
 
 /* Cleanup */
@@ -663,11 +663,11 @@ setup_user_args (char *p)
    or NULL if P contains no arguments.  */
 
 static char *
-locate_arg (char *p)
+locate_arg(char *p)
 {
-  while ((p = strchr (p, '$')))
+  while ((p = strchr(p, '$')))
     {
-      if (strncmp (p, "$arg", 4) == 0 && (p[4] == 'c' || isdigit (p[4])))
+      if ((strncmp(p, "$arg", 4) == 0) && ((p[4] == 'c') || isdigit(p[4])))
 	return p;
       p++;
     }
@@ -1023,7 +1023,7 @@ recurse_read_control_structure(char *(*read_next_line_func)(void),
 #define END_MESSAGE "End with a line saying just \"end\"."
 
 struct command_line *
-read_command_lines (char *prompt_arg, int from_tty)
+read_command_lines(char *prompt_arg, int from_tty)
 {
   struct command_line *head;
 
@@ -1031,19 +1031,19 @@ read_command_lines (char *prompt_arg, int from_tty)
   if (deprecated_readline_begin_hook)
     {
       /* Note - intentional to merge messages with no newline */
-      (*deprecated_readline_begin_hook) ("%s  %s\n", prompt_arg, END_MESSAGE);
+      (*deprecated_readline_begin_hook)("%s  %s\n", prompt_arg, END_MESSAGE);
     }
-  else if (from_tty && input_from_terminal_p ())
+  else if (from_tty && input_from_terminal_p())
     {
-      printf_unfiltered ("%s\n%s\n", prompt_arg, END_MESSAGE);
-      gdb_flush (gdb_stdout);
+      printf_unfiltered("%s\n%s\n", prompt_arg, END_MESSAGE);
+      gdb_flush(gdb_stdout);
     }
 
-  head = read_command_lines_1 (read_next_line);
+  head = read_command_lines_1(read_next_line);
 
   if (deprecated_readline_end_hook)
     {
-      (*deprecated_readline_end_hook) ();
+      (*deprecated_readline_end_hook)();
     }
   return (head);
 }
@@ -1190,15 +1190,16 @@ copy_command_lines(struct command_line *cmds)
   return result;
 }
 
+/* FIXME: needs comment: */
 static void
-validate_comname(char *comname)
+validate_comname(const char *comname)
 {
   char *p;
 
   if (comname == 0)
     error_no_arg(_("name of command to define"));
 
-  p = comname;
+  p = (char *)comname;
   while (*p)
     {
       if (!isalnum(*p) && (*p != '-') && (*p != '_'))
@@ -1209,13 +1210,15 @@ validate_comname(char *comname)
 
 /* This is just a placeholder in the command data structures: */
 static void
-user_defined_command(char *ignore, int from_tty)
+user_defined_command(const char *ignore ATTRIBUTE_UNUSED,
+		     int from_tty ATTRIBUTE_UNUSED)
 {
   return;
 }
 
+/* FIXME: needs comment: */
 void
-define_command(char *comname, int from_tty)
+define_command(const char *comname, int from_tty)
 {
 #define MAX_TMPBUF 128
   enum cmd_hook_type
@@ -1226,7 +1229,7 @@ define_command(char *comname, int from_tty)
     };
   struct command_line *cmds;
   struct cmd_list_element *c, *newc, *hookc = 0;
-  char *tem = comname;
+  char *tem = (char *)comname;
   char tmpbuf[MAX_TMPBUF];
   int hook_type = CMD_NO_HOOK;
   int hook_name_size = 0;
@@ -1239,7 +1242,7 @@ define_command(char *comname, int from_tty)
   validate_comname(comname);
 
   /* Look it up, and verify that we got an exact match: */
-  c = lookup_cmd(&tem, cmdlist, "", -1, 1);
+  c = lookup_cmd((const char **)&tem, cmdlist, "", -1, 1);
   if (c && (strcmp(comname, c->name) != 0))
     c = 0;
 
@@ -1265,23 +1268,23 @@ define_command(char *comname, int from_tty)
     }
   else if (!strncmp (comname, HOOK_POST_STRING, HOOK_POST_LEN))
     {
-      hook_type      = CMD_POST_HOOK;
+      hook_type = CMD_POST_HOOK;
       hook_name_size = HOOK_POST_LEN;
     }
 
   if (hook_type != CMD_NO_HOOK)
     {
-      /* Look up cmd it hooks, and verify that we got an exact match.  */
-      tem = comname + hook_name_size;
-      hookc = lookup_cmd (&tem, cmdlist, "", -1, 0);
-      if (hookc && strcmp (comname + hook_name_size, hookc->name) != 0)
+      /* Look up cmd it hooks, and verify that we got an exact match: */
+      tem = (char *)(comname + hook_name_size);
+      hookc = lookup_cmd((const char **)&tem, cmdlist, "", -1, 0);
+      if (hookc && strcmp((comname + hook_name_size), hookc->name) != 0)
 	hookc = 0;
       if (!hookc)
 	{
-	  warning (_("Your new `%s' command does not hook any existing command."),
-		   comname);
-	  if (!query ("Proceed? "))
-	    error (_("Not confirmed."));
+	  warning(_("Your new `%s' command does not hook any existing command."),
+		  comname);
+	  if (!query("Proceed? "))
+	    error(_("Not confirmed."));
 	}
     }
 
@@ -1289,7 +1292,7 @@ define_command(char *comname, int from_tty)
 
   /* If the rest of the commands will be case insensitive, this one
      should behave in the same manner. */
-  for (tem = comname; *tem; tem++)
+  for (tem = (char *)comname; *tem; tem++)
     if (isupper(*tem))
       *tem = tolower(*tem);
 
@@ -1326,12 +1329,13 @@ define_command(char *comname, int from_tty)
     }
 }
 
+/* FIXME: needs comment, for "documentation" (ha ha, ironic...) */
 void
-document_command(char *comname, int from_tty)
+document_command(const char *comname, int from_tty)
 {
   struct command_line *doclines;
   struct cmd_list_element *c;
-  char *tem = comname;
+  const char *tem = comname;
   char tmpbuf[128];
 
   validate_comname(comname);
@@ -1404,7 +1408,7 @@ wrapped_read_command_file(struct ui_out *uiout, void *data)
 
 /* Used to implement source_command: */
 void
-script_from_file(FILE *stream, char *file)
+script_from_file(FILE *stream, const char *file)
 {
   struct cleanup *old_cleanups;
   struct source_cleanup_lines_args old_lines;
@@ -1423,10 +1427,10 @@ script_from_file(FILE *stream, char *file)
   old_lines.old_file = source_file_name;
   make_cleanup(source_cleanup_lines, &old_lines);
   source_line_number = 0;
-  source_file_name = file;
+  source_file_name = (char *)file;
   /* This will get set every time we read a line.  So it will NOT stay ""
    * for long: */
-  error_pre_print = "";
+  error_pre_print = (char *)"";
 
 #if defined(__APPLE__) && defined(__APPLE_CC__) && defined(APPLE_MERGE)
   needed_length = (strlen(source_file_name) + strlen(source_pre_error)

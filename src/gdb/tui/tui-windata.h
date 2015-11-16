@@ -1,4 +1,4 @@
-/* tui-windata.h: Data/register window display.
+/* tui/tui-windata.h: Data/register window display.
 
    Copyright 1998, 1999, 2000, 2001, 2004 Free Software Foundation,
    Inc.
@@ -27,15 +27,17 @@
 
 #include "tui/tui-data.h"
 
-extern void tui_erase_data_content (char *);
-extern void tui_display_all_data (void);
-extern void tui_check_data_values (struct frame_info *);
-extern void tui_display_data_from_line (int);
-extern int tui_first_data_item_displayed (void);
-extern int tui_first_data_element_no_in_line (int);
-extern void tui_delete_data_content_windows (void);
-extern void tui_refresh_data_win (void);
-extern void tui_display_data_from (int, int);
-extern void tui_vertical_data_scroll (enum tui_scroll_direction, int);
+extern void tui_erase_data_content(const char *);
+extern void tui_display_all_data(void);
+extern void tui_check_data_values(struct frame_info *);
+extern void tui_display_data_from_line(int);
+extern int tui_first_data_item_displayed(void);
+extern int tui_first_data_element_no_in_line(int);
+extern void tui_delete_data_content_windows(void);
+extern void tui_refresh_data_win(void);
+extern void tui_display_data_from(int, int);
+extern void tui_vertical_data_scroll(enum tui_scroll_direction, int);
 
-#endif
+#endif /* !TUI_WINDATA_H */
+
+/* EOF */

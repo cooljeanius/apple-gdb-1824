@@ -1,4 +1,4 @@
-/* xm-aix4.h
+/* config/xm-aix4.h
    Parameters for hosting on an PowerPC, for GDB, the GNU debugger.
    Copyright 1995, 1996, 1998, 1999, 2000, 2001
    Free Software Foundation, Inc.

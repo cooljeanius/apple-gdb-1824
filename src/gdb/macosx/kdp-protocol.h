@@ -1,4 +1,4 @@
-/* kdp-protocol.h */
+/* macosx/kdp-protocol.h */
 
 #ifndef __GDB_KDP_PROTOCOL_H__
 #define __GDB_KDP_PROTOCOL_H__

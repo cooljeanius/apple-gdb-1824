@@ -1,4 +1,4 @@
-/* mi-getopt.c: MI Command Set - MI Option Parser.
+/* mi/mi-getopt.c: MI Command Set - MI Option Parser.
    Copyright 2000, 2001 Free Software Foundation, Inc.
    Contributed by Cygnus Solutions (a Red Hat company).
 

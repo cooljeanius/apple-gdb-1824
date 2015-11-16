@@ -1,4 +1,4 @@
-/* tui-out.c: Output generating routines for GDB CLI.
+/* tui/tui-out.c: Output generating routines for GDB CLI.
 
    Copyright 1999, 2000, 2001, 2002, 2003, 2005
    Free Software Foundation, Inc.
@@ -28,6 +28,11 @@
 #include "tui.h"
 #include "gdb_string.h"
 #include "gdb_assert.h"
+
+#ifdef __clang__
+extern int tui_out_c_inited;
+#endif /* __clang__ */
+int tui_out_c_inited = 0;
 
 struct ui_out_data
   {
@@ -397,23 +402,23 @@ field_separator (void)
 /* initalize private members at startup */
 
 struct ui_out *
-tui_out_new (struct ui_file *stream)
+tui_out_new(struct ui_file *stream)
 {
   int flags = 0;
 
-  tui_out_data *data = XMALLOC (tui_out_data);
+  tui_out_data *data = XMALLOC(tui_out_data);
   data->stream = stream;
   data->suppress_output = 0;
   data->line = -1;
   data->start_of_line = 0;
-  return ui_out_new (&tui_ui_out_impl, data, flags);
+  return ui_out_new(&tui_ui_out_impl, data, flags);
 }
 
-/* standard gdb initialization hook */
-void
-_initialize_tui_out (void)
+/* standard gdb initialization hook: */
+void 
+_initialize_tui_out(void)
 {
-  ; /* nothing needs to be done */
+  tui_out_c_inited = 1;
 }
 
 /* EOF */

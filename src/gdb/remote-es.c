@@ -303,11 +303,11 @@ es1800_open (char *name, int from_tty)
 
   if (!name)			/* no device name given in target command */
     {
-      error_no_arg ("serial port device name");
+      error_no_arg(_("serial port device name"));
     }
 
-  target_preopen (from_tty);
-  es1800_close (0);
+  target_preopen(from_tty);
+  es1800_close(0);
 
   /* open the device and configure it for communication */
 
@@ -1880,7 +1880,7 @@ es1800_transparent (char *args, int from_tty)
 #endif /* PROVIDE_TRANSPARENT */
 
 static void
-es1800_init_break (char *args, int from_tty)
+es1800_init_break(char *args, int from_tty)
 {
   CORE_ADDR memaddress = 0;
   char buf[PBUFSIZ];
@@ -1891,12 +1891,12 @@ es1800_init_break (char *args, int from_tty)
 
   if (args == NULL)
     {
-      error_no_arg ("a trap vector");
+      error_no_arg(_("a trap vector"));
     }
 
-  if (!(space_index = strchr (args, ' ')))
+  if (!(space_index = strchr(args, ' ')))
     {
-      error ("Two arguments needed (trap vector and address of break routine).\n");
+      error("Two arguments needed (trap vector and address of break routine).\n");
     }
 
   *space_index = '\0';

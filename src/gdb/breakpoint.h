@@ -821,20 +821,20 @@ extern void set_longjmp_resume_breakpoint (CORE_ADDR, struct frame_id);
    that are unable to unwind through the call dummy frame, watches
    of stack-based storage may then be deleted, because gdb will
    believe that their watched storage is out of scope.  (Sigh.) */
-extern void disable_watchpoints_before_interactive_call_start (void);
+extern void disable_watchpoints_before_interactive_call_start(void);
 
-extern void enable_watchpoints_after_interactive_call_stop (void);
+extern void enable_watchpoints_after_interactive_call_stop(void);
 
 /* For script interpreters that need to define breakpoint commands
  * after they have already read the commands into a struct command_line: */
 extern enum command_control_type commands_from_control_command
   (char *arg, struct command_line *cmd);
 
-extern void clear_breakpoint_hit_counts (void);
+extern void clear_breakpoint_hit_counts(void);
 
-extern int get_number (char **);
+extern int get_number(const char **);
 
-extern int get_number_or_range (char **);
+extern int get_number_or_range(const char **);
 
 /* The following are for displays, which aren't really breakpoints, but
    here is as good a place as any for them.  */

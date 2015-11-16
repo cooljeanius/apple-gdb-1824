@@ -1,4 +1,4 @@
-/* Basic host-specific definitions for GDB.
+/* common/host-defs.h: Basic host-specific definitions for GDB.
    Copyright (C) 1986-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -23,18 +23,20 @@
 # define CANT_FORK
 # define GLOBAL_CURDIR
 # define DIRNAME_SEPARATOR ';'
-#endif
+#endif /* __MSDOS__ */
 
-#if !defined (__CYGWIN__) && defined (_WIN32)
+#if !defined(__CYGWIN__) && defined(_WIN32)
 # define DIRNAME_SEPARATOR ';'
-#endif
+#endif /* !__CYGWIN__ && _WIN32 */
 
 #ifndef DIRNAME_SEPARATOR
-#define DIRNAME_SEPARATOR ':'
-#endif
+# define DIRNAME_SEPARATOR ':'
+#endif /* !DIRNAME_SEPARATOR */
 
 #ifndef SLASH_STRING
-#define SLASH_STRING "/"
-#endif
+# define SLASH_STRING "/"
+#endif /* !SLASH_STRING */
 
 #endif /* HOST_DEFS_H */
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* macosx-nat-infthread.c
+/* macosx/macosx-nat-infthread.c
  * Mac OS X support for GDB, the GNU debugger.
  * Copyright 1997, 1998, 1999, 2000, 2001, 2002
  * Free Software Foundation, Inc.
@@ -495,7 +495,8 @@ prepare_threads_before_run(struct macosx_inferior_status *inferior,
   }
 }
 
-const char *
+/* FIXME: add comment: */
+const char * ATTRIBUTE_CONST
 unparse_run_state(int run_state)
 {
   switch (run_state) {
@@ -537,7 +538,7 @@ get_application_thread_port(thread_t our_name)
   ret = mach_port_names(macosx_status->task, &names, &names_count, &types,
                         &types_count);
   if (ret != KERN_SUCCESS) {
-      warning("Error %d getting port names from mach_port_names", ret);
+      warning(_("Error %d getting port names from mach_port_names"), ret);
       return (thread_t)0x0;
   }
 
@@ -886,9 +887,9 @@ print_thread_info(thread_t tid, int *gdb_thread_id)
 #endif /* THREAD_IDENTIFIER_INFO && THREAD_IDENTIFIER_INFO_COUNT */
 }
 
-/* FIXME: needs comment */
+/* FIXME: needs comment: */
 void
-info_task_command(char *args, int from_tty)
+info_task_command(const char *args, int from_tty)
 {
   struct task_basic_info info;
   unsigned int info_count = TASK_BASIC_INFO_COUNT;
@@ -922,9 +923,9 @@ info_task_command(char *args, int from_tty)
   MACH_CHECK_ERROR(kret);
 }
 
-/* FIXME: needs comment */
+/* FIXME: needs comment: */
 static thread_t
-parse_thread(char *tidstr, int *gdb_thread_id)
+parse_thread(const char *tidstr, int *gdb_thread_id)
 {
   ptid_t ptid;
 
@@ -961,18 +962,18 @@ parse_thread(char *tidstr, int *gdb_thread_id)
   return ptid_get_tid(ptid);
 }
 
-/* FIXME: needs comment */
+/* FIXME: needs comment: */
 void
-info_thread_command(char *tidstr, int from_tty)
+info_thread_command(const char *tidstr, int from_tty)
 {
   int gdb_thread_id;
   thread_t thread = parse_thread(tidstr, &gdb_thread_id);
   print_thread_info(thread, &gdb_thread_id);
 }
 
-/* FIXME: needs comment */
+/* FIXME: needs comment: */
 static void
-thread_suspend_command(char *tidstr, int from_tty)
+thread_suspend_command(const char *tidstr, int from_tty)
 {
   kern_return_t kret;
   thread_t thread;
@@ -997,9 +998,9 @@ thread_match_callback(struct thread_info *t, void *thread_ptr)
     return 0;
 }
 
-/* FIXME: needs comment */
+/* FIXME: needs comment: */
 static void
-thread_dont_suspend_while_stepping_command(char *arg, int from_tty)
+thread_dont_suspend_while_stepping_command(const char *arg, int from_tty)
 {
   struct thread_info *tp;
   int on_or_off = 0;
@@ -1063,9 +1064,9 @@ thread_dont_suspend_while_stepping_command(char *arg, int from_tty)
     }
 }
 
-/* FIXME: needs comment */
+/* FIXME: needs comment: */
 static void
-thread_resume_command(char *tidstr, int from_tty)
+thread_resume_command(const char *tidstr, int from_tty)
 {
   kern_return_t kret;
   thread_t tid;
@@ -1188,16 +1189,20 @@ macosx_print_thread_details(struct ui_out *uiout, ptid_t ptid)
     ui_out_field_string(uiout, "name", pth.pth_name);
 
   if (tident.thread_handle != 0) {
-      char *queue_name = get_dispatch_queue_name((CORE_ADDR)tident.dispatch_qaddr);
-      if (queue_name && (queue_name[0] != '\0')) {
-          CORE_ADDR struct_addr;
-          ui_out_field_string(uiout, "workqueue", queue_name);
-          struct_addr = get_dispatch_queue_addr((CORE_ADDR)tident.dispatch_qaddr);
-          if (struct_addr != 0)
-            ui_out_field_fmt(uiout, "workqueue_addr", "0x%s",
-                             paddr_nz(struct_addr));
-        }
+    char *queue_name;
+    queue_name = get_dispatch_queue_name((CORE_ADDR)tident.dispatch_qaddr);
+    if (queue_name && (queue_name[0] != '\0')) {
+      CORE_ADDR struct_addr;
+      ui_out_field_string(uiout, "workqueue", queue_name);
+      struct_addr = get_dispatch_queue_addr((CORE_ADDR)tident.dispatch_qaddr);
+      if (struct_addr != 0)
+	ui_out_field_fmt(uiout, "workqueue_addr", "0x%s",
+			  paddr_nz(struct_addr));
     }
+  }
+#else
+  warning(_("gdb was not built with support for printing thread details"));
+  return;
 #endif /* THREAD_IDENTIFIER_INFO && THREAD_IDENTIFIER_INFO_COUNT */
 }
 

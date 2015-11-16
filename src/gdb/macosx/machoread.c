@@ -1,4 +1,4 @@
-/* machoread.c
+/* macosx/machoread.c
    Mac OS X support for mach-o executables for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
@@ -89,11 +89,13 @@ static int macho_read_indirect_symbols(bfd *abfd,
                                        *symtab, struct objfile *objfile);
 
 extern void macho_build_psymtabs(struct objfile *objfile, int mainline,
-                                 char *stab_name, char *stabstr_name,
-                                 char *text_name, char *local_stab_name,
-                                 char *nonlocal_stab_name,
-                                 char *coalesced_text_name,
-                                 char *data_name, char *bss_name);
+                                 const char *stab_name,
+				 const char *stabstr_name,
+                                 const char *text_name,
+				 const char *local_stab_name,
+                                 const char *nonlocal_stab_name,
+                                 const char *coalesced_text_name,
+                                 const char *data_name, const char *bss_name);
 
 extern void _initialize_machoread(void);
 
@@ -141,11 +143,11 @@ void dbx_symfile_read(struct objfile *objfile, int mainline);
 
 void
 macho_build_psymtabs(struct objfile *objfile, int mainline,
-                     char *stab_name, char *stabstr_name,
-                     char *text_name,
-                     char *local_stab_name, char *nonlocal_stab_name,
-                     char *coalesced_text_name,
-                     char *data_name, char *bss_name)
+                     const char *stab_name, const char *stabstr_name,
+                     const char *text_name, const char *local_stab_name,
+		     const char *nonlocal_stab_name,
+                     const char *coalesced_text_name,
+                     const char *data_name, const char *bss_name)
 {
   int val;
   bfd *sym_bfd = objfile->obfd;
@@ -541,6 +543,7 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
   dbx_symfile_read(objfile, mainline);
 }
 
+/* FIXME: needs comment: */
 static void
 macho_symfile_read(struct objfile *objfile, int mainline)
 {
@@ -582,9 +585,7 @@ macho_symfile_read(struct objfile *objfile, int mainline)
       mainline = 0;
     }
 
-  if (info_verbose
-      && macosx_bfd_is_in_memory(abfd)
-      && target_is_remote()
+  if (info_verbose && macosx_bfd_is_in_memory(abfd) && target_is_remote()
       && !target_is_kdp_remote())
     {
       warning("Copying %s from device memory...", abfd->filename);
@@ -669,8 +670,8 @@ macho_symfile_read(struct objfile *objfile, int mainline)
   do_cleanups(minsym_cleanup);
 }
 
-/* Record minsyms for the dyld stub trampolines; prefix them with "dyld_stub_".  */
-
+/* Record minsyms for the dyld stub trampolines, and prefix them with
+ * "dyld_stub_": */
 int
 macho_read_indirect_symbols(bfd *abfd,
                             struct bfd_mach_o_dysymtab_command *dysymtab,
@@ -739,11 +740,11 @@ macho_read_indirect_symbols(bfd *abfd,
 
       nsyms = (unsigned int)(section->size / section->reserved2);
 
-      for (i = 0; i < nsyms; i++)
+      for (i = 0U; i < nsyms; i++)
         {
           CORE_ADDR cursym = (section->reserved1 + i);
           CORE_ADDR stubaddr = (section->addr + (i * section->reserved2));
-          const char *sname = NULL;
+          const char *sname = (const char *)NULL;
           char nname[4096];
 	  int printed;
 	  void *nameptr;
@@ -791,6 +792,7 @@ macho_read_indirect_symbols(bfd *abfd,
   return 1;
 }
 
+/* FIXME: add comment: */
 static void
 macho_symfile_finish(struct objfile *objfile ATTRIBUTE_UNUSED)
 {

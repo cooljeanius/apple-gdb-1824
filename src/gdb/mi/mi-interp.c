@@ -89,7 +89,7 @@ static void mi1_command_loop(void);
 static void mi0_command_loop(void);
 
 static char *
-mi_interp_read_one_line_hook(char *prompt, int repeat, char *anno);
+mi_interp_read_one_line_hook(char *prompt, int repeat, const char *anno);
 
 static void mi_load_progress(const char *section_name,
 			     unsigned long sent_so_far,
@@ -466,7 +466,7 @@ mi_insert_notify_hooks (void)
   deprecated_query_hook = mi_interp_query_hook;
   command_line_input_hook = mi_interp_read_one_line_hook;
 
-  if (target_can_async_p ())
+  if (target_can_async_p())
     {
       stepping_command_hook = mi_interp_stepping_command_hook;
       continue_command_hook = mi_interp_continue_command_hook;
@@ -507,18 +507,21 @@ mi_remove_notify_hooks(void)
 
   /* If we ran the target in sync mode, we will have set the
      annotation printer to "route_through_mi".  Undo that here.  */
-  ui_out_set_annotation_printer (NULL);
+  ui_out_set_annotation_printer(NULL);
 
 }
 
+/* FIXME: needs comment: */
 int
-mi_interp_query_hook(const char *ctlstr, va_list ap)
+mi_interp_query_hook(const char *ctlstr ATTRIBUTE_UNUSED,
+		     va_list ap ATTRIBUTE_UNUSED)
 {
   return 1;
 }
 
+/* FIXME: needs comment: */
 static char *
-mi_interp_read_one_line_hook(char *prompt, int repeat, char *anno)
+mi_interp_read_one_line_hook(char *prompt, int repeat, const char *anno)
 {
   static char buff[256];
 
@@ -530,10 +533,9 @@ mi_interp_read_one_line_hook(char *prompt, int repeat, char *anno)
   mi_output_async_notification(buff);
 
   (void)fgets(buff, sizeof(buff), stdin);
-  buff[(strlen(buff) - 1)] = 0;
+  buff[(strlen(buff) - 1UL)] = 0;
 
   return buff;
-
 }
 
 static void

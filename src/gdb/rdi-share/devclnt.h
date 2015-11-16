@@ -1,4 +1,4 @@
-/* devcInt.h
+/* rdi-share/devcInt.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
  *
  * This software may be freely used, copied, modified, and distributed

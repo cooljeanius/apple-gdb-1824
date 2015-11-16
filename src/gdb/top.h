@@ -42,11 +42,11 @@ extern char gdbinit_global[];
 
 extern void print_gdb_version(struct ui_file *);
 
-extern void source_command(char *, int);
+extern void source_command(const char *, int);
 /* APPLE LOCAL cf cli/cli-cmds.c */
-extern void source_file(char *, int);
+extern void source_file(const char *, int);
 
-extern void cd_command(char *, int);
+extern void cd_command(const char *, int);
 extern void read_command_file(FILE *);
 extern void init_history(void);
 extern void command_loop(void);
@@ -54,10 +54,10 @@ extern void simplified_command_loop(char *(*read_input_func)(char *),
 				    void (*execute_command_func)(char *,
                                                                  int));
 extern int quit_confirm(void);
-extern NORETURN void quit_force(char *, int);
-extern void quit_command(char *, int);
+extern NORETURN void quit_force(const char *, int);
+extern void quit_command(const char *, int);
 extern int quit_cover(void *);
-extern void execute_command(char *, int);
+extern void execute_command(const char *, int);
 
 /* This function returns a pointer to the string that is used
    by gdb for its command prompt. */
@@ -81,11 +81,11 @@ extern int history_expansion_p;
 extern int server_command;
 extern char *lim_at_start;
 
-extern void show_commands(char *args, int from_tty);
+extern void show_commands(const char *args, int from_tty);
 
-extern void set_history(char *, int);
+extern void set_history(const char *, int);
 
-extern void show_history(char *, int);
+extern void show_history(const char *, int);
 
 extern void set_verbose(char *, int, struct cmd_list_element *);
 

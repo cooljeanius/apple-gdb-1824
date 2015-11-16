@@ -1,4 +1,4 @@
-/* Header file for GDB CLI command implementation library.
+/* cli/cli-cmds.h: Header file for GDB CLI command implementation library.
    Copyright 2000 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
@@ -16,75 +16,58 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (CLI_CMDS_H)
+#if !defined(CLI_CMDS_H)
 #define CLI_CMDS_H 1
 
-/* Chain containing all defined commands.  */
-
+/* Chain containing all defined commands: */
 extern struct cmd_list_element *cmdlist;
 
-/* Chain containing all defined info subcommands.  */
-
+/* Chain containing all defined info subcommands: */
 extern struct cmd_list_element *infolist;
 
-/* Chain containing all defined enable subcommands. */
-
+/* Chain containing all defined enable subcommands: */
 extern struct cmd_list_element *enablelist;
 
-/* Chain containing all defined disable subcommands. */
-
+/* Chain containing all defined disable subcommands: */
 extern struct cmd_list_element *disablelist;
 
-/* Chain containing all defined delete subcommands. */
-
+/* Chain containing all defined delete subcommands: */
 extern struct cmd_list_element *deletelist;
 
-/* Chain containing all defined toggle subcommands. */
-
+/* Chain containing all defined toggle subcommands: */
 extern struct cmd_list_element *togglelist;
 
-/* Chain containing all defined stop subcommands. */
-
+/* Chain containing all defined stop subcommands: */
 extern struct cmd_list_element *stoplist;
 
-/* Chain containing all defined "enable breakpoint" subcommands. */
-
+/* Chain containing all defined "enable breakpoint" subcommands: */
 extern struct cmd_list_element *enablebreaklist;
 
-/* Chain containing all defined set subcommands */
-
+/* Chain containing all defined set subcommands: */
 extern struct cmd_list_element *setlist;
 
-/* Chain containing all defined unset subcommands */
-
+/* Chain containing all defined unset subcommands: */
 extern struct cmd_list_element *unsetlist;
 
-/* Chain containing all defined show subcommands.  */
-
+/* Chain containing all defined show subcommands: */
 extern struct cmd_list_element *showlist;
 
-/* Chain containing all defined \"set history\".  */
-
+/* Chain containing all defined \"set history\": */
 extern struct cmd_list_element *sethistlist;
 
-/* Chain containing all defined \"show history\".  */
-
+/* Chain containing all defined \"show history\": */
 extern struct cmd_list_element *showhistlist;
 
-/* Chain containing all defined \"unset history\".  */
-
+/* Chain containing all defined \"unset history\": */
 extern struct cmd_list_element *unsethistlist;
 
-/* Chain containing all defined maintenance subcommands. */
-
+/* Chain containing all defined maintenance subcommands: */
 extern struct cmd_list_element *maintenancelist;
 
-/* Chain containing all defined "maintenance info" subcommands. */
-
+/* Chain containing all defined "maintenance info" subcommands: */
 extern struct cmd_list_element *maintenanceinfolist;
 
-/* Chain containing all defined "maintenance print" subcommands. */
-
+/* Chain containing all defined "maintenance print" subcommands: */
 extern struct cmd_list_element *maintenanceprintlist;
 
 extern struct cmd_list_element *setprintlist;
@@ -101,28 +84,32 @@ extern struct cmd_list_element *showchecklist;
 
 /* Exported to gdb/top.c */
 
-void init_cmd_lists (void);
+void init_cmd_lists(void);
 
-void init_cli_cmds (void);
+void init_cli_cmds(void);
 
-int is_complete_command (struct cmd_list_element *cmd);
+int is_complete_command(struct cmd_list_element *cmd);
 
 /* Exported to gdb/main.c */
 
-extern void cd_command (char *, int);
+extern void cd_command(const char *, int);
 
 /* Exported to gdb/top.c and gdb/main.c */
 
-extern void quit_command (char *, int);
+extern void quit_command(const char *, int);
 
-extern void source_command (char *, int);
+extern void source_command(const char *, int);
 
 /* APPLE LOCAL export to cli-out.h */
-extern int cli_interpreter_complete (void *data, char *word, char *command_buffer, int cursor, int limit);
+extern int cli_interpreter_complete(void *data, const char *word,
+				    const char *command_buffer, int cursor,
+				    int limit);
 
 /* Used everywhere whenever at least one parameter is required and
   none is specified. */
 
-extern NORETURN void error_no_arg (char *) ATTR_NORETURN;
+extern NORETURN void error_no_arg(const char *) ATTR_NORETURN;
 
-#endif /* !defined (CLI_CMDS_H) */
+#endif /* !defined(CLI_CMDS_H) */
+
+/* EOF */

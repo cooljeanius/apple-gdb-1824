@@ -1,4 +1,4 @@
-/* tdesc.h
+/* gdbserver/tdesc.h
    Target description definitions for remote server for GDB.
    Copyright (C) 2012-2013 Free Software Foundation, Inc.
 

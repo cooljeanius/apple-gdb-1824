@@ -1,5 +1,5 @@
 /*
- * tm-ppc-macosx.h
+ * macosx/tm-ppc-macosx.h
  */
 
 #ifndef __GDB_TM_PPC_MACOSX_H__

@@ -1,11 +1,11 @@
 /*
- * tm-arm-macosx.h
+ * macosx/tm-arm-macosx.h
  */
 
- /* Target support for Mac OS X on ARM for GDB, the GNU debugger.
-   Copyright (C) 1997-2002,
-   Free Software Foundation, Inc.
-
+/* Target support for Mac OS X on ARM for GDB, the GNU debugger.
+ * Copyright (C) 1997-2002,
+ * Free Software Foundation, Inc.  */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify

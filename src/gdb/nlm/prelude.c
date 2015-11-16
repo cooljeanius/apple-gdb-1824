@@ -1,4 +1,4 @@
-/* prelude.c */
+/* nlm/prelude.c */
 /*===========================================================================
 = Novell Standard C Library for NetWare Loadable Modules
 =

@@ -1,4 +1,4 @@
-/* sh-stub.c -- debugging stub for the Renesas-SH.
+/* stubs/sh-stub.c -- debugging stub for the Renesas-SH.
 
  NOTE!! This code has to be compiled with optimization, otherwise the
  function inlining which generates the exception handlers won't work.

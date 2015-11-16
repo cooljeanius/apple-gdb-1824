@@ -1,4 +1,4 @@
-/* proc-service.c
+/* gdbserver/proc-service.c
    libthread_db helper functions for the remote server for GDB.
    Copyright 2002, 2004, 2005
    Free Software Foundation, Inc.

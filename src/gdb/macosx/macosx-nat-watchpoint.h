@@ -1,4 +1,4 @@
-/* macosx-nat-watchpoint.h -*- C -*- */
+/* macosx/macosx-nat-watchpoint.h -*- C -*- */
 
 #ifndef __GDB_MACOSX_NAT_WATCHPOINT_H__
 #define __GDB_MACOSX_NAT_WATCHPOINT_H__ 1

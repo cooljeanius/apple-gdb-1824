@@ -1,4 +1,4 @@
-/* remote-utils.h
+/* gdbserver/remote-utils.h
    Remote utility routines for the remote server for GDB.
    Copyright (C) 1993-2013 Free Software Foundation, Inc.
 

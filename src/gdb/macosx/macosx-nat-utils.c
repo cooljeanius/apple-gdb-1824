@@ -1,4 +1,4 @@
-/* macosx-nat-utils.c: Mac OS X support for GDB, the GNU debugger.
+/* macosx/macosx-nat-utils.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002, 2004
    Free Software Foundation, Inc.
 
@@ -555,11 +555,13 @@ enum {
   LAST_SUBSYSTEM_INDEX = 4,
 };
 
-static char *macosx_unsafe_regexes[] = {"(^(m|c|re|v)?alloca*)|(::[^ ]*allocator)|(^szone_)",
-					 "(^dlopen)|(^__dyld)|(^dyld)|(NSBundle load)|"
-					"(NSBundle unload)|(CFBundleLoad)|(CFBundleUnload)",
-					"(_class_lookup)|(^objc_lookUpClass)|(^look_up_class)",
-                                        "(^__spin_lock)|(^pthread_mutex_lock)|(^pthread_mutex_unlock)|(^__spin_unlock)"};
+static const char *macosx_unsafe_regexes[] = {
+ "(^(m|c|re|v)?alloca*)|(::[^ ]*allocator)|(^szone_)",
+ "(^dlopen)|(^__dyld)|(^dyld)|(NSBundle load)|"
+ "(NSBundle unload)|(CFBundleLoad)|(CFBundleUnload)",
+ "(_class_lookup)|(^objc_lookUpClass)|(^look_up_class)",
+ "(^__spin_lock)|(^pthread_mutex_lock)|(^pthread_mutex_unlock)|(^__spin_unlock)"
+};
 
 /* This is the Mac OS X implementation of target_check_safe_call: */
 int

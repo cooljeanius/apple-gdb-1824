@@ -1,4 +1,4 @@
-/* Header file for GDB CLI set and show commands implementation.
+/* cli/cli-setshow.h: Header file for GDB CLI set&show commands implementation.
    Copyright 2000, 2001 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (CLI_SETSHOW_H)
+#if !defined(CLI_SETSHOW_H)
 #define CLI_SETSHOW_H 1
 
 struct cmd_list_element;
@@ -27,12 +27,14 @@ struct cmd_list_element;
    of the argument, and FROM_TTY is nonzero if this command is being entered
    directly by the user (i.e. these are just like any other
    command).  C is the command list element for the command.  */
-extern void do_setshow_command (char *arg, int from_tty,
-				struct cmd_list_element *c);
+extern void do_setshow_command(const char *arg, int from_tty,
+			       struct cmd_list_element *c);
 
 /* Exported to cli/cli-cmds.c and gdb/top.c, language.c and valprint.c */
 
-extern void cmd_show_list (struct cmd_list_element *list, int from_tty,
-			   char *prefix);
+extern void cmd_show_list(struct cmd_list_element *list, int from_tty,
+			  const char *prefix);
 
-#endif /* !defined (CLI_SETSHOW_H) */
+#endif /* !defined(CLI_SETSHOW_H) */
+
+/* EOF */

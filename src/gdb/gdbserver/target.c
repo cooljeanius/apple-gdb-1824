@@ -1,4 +1,4 @@
-/* target.c
+/* gdbserver/target.c
    Target operations for the remote server for GDB.
    Copyright 2002, 2004, 2005
    Free Software Foundation, Inc.

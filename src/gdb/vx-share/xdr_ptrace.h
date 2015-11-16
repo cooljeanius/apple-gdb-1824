@@ -1,4 +1,4 @@
-/* xdr_ptrace.h - xdr header for remote ptrace structures */
+/* vx-share/xdr_ptrace.h - xdr header for remote ptrace structures */
 
 /*  Copyright 1992, 1998 Free Software Foundation, Inc.
 

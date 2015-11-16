@@ -1,4 +1,4 @@
-/* nindy.c */
+/* nindy-share/nindy.c */
 /* This file is part of GDB.
 
    This program is free software; you can redistribute it and/or modify

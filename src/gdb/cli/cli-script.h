@@ -1,4 +1,4 @@
-/* Header file for GDB CLI command implementation library.
+/* cli/cli-script.h: Header file for GDB CLI command implementation library.
    Copyright 2000, 2002 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
@@ -25,17 +25,17 @@ struct cmd_list_element;
 
 /* Exported to cli/cli-cmds.c */
 
-extern void script_from_file (FILE *stream, char *file);
+extern void script_from_file(FILE *stream, const char *file);
 
-extern void document_command (char *, int);
+extern void document_command(const char *, int);
 
-extern void define_command (char *, int);
+extern void define_command(const char *, int);
 
-extern void while_command (char *arg, int from_tty);
+extern void while_command(const char *arg, int from_tty);
 
-extern void if_command (char *arg, int from_tty);
+extern void if_command(const char *arg, int from_tty);
 
-extern void show_user_1 (struct cmd_list_element *c, struct ui_file *stream);
+extern void show_user_1(struct cmd_list_element *c, struct ui_file *stream);
 
 /* Exported to gdb/breakpoint.c */
 

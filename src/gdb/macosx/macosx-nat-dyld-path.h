@@ -1,4 +1,4 @@
-/* macosx-nat-dyld-path.h */
+/* macosx/macosx-nat-dyld-path.h */
 
 #ifndef __GDB_MACOSX_NAT_DYLD_PATH_H__
 #define __GDB_MACOSX_NAT_DYLD_PATH_H__

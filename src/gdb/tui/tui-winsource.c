@@ -1,4 +1,4 @@
-/* tui-winsource.c: TUI display source/assembly window.
+/* tui/tui-winsource.c: TUI display source/assembly window.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -227,7 +227,7 @@ tui_erase_source_content(struct tui_win_info *win_info, int display_prompt)
       tui_check_and_display_highlight_if_needed(win_info);
       if (display_prompt == EMPTY_SOURCE_PROMPT)
 	{
-	  char *no_src_str;
+	  const char *no_src_str;
 
 	  if (win_info->generic.type == SRC_WIN)
 	    no_src_str = NO_SRC_STRING;
@@ -605,8 +605,8 @@ tui_alloc_source_buffer (struct tui_win_info *win_info)
 /* Answer whether the a particular line number or address is displayed
    in the current source window.  */
 int
-tui_line_is_displayed (int line, struct tui_win_info * win_info,
-		       int check_threshold)
+tui_line_is_displayed(int line, struct tui_win_info *win_info,
+		      int check_threshold)
 {
   int is_displayed = FALSE;
   int i, threshold;
@@ -616,11 +616,11 @@ tui_line_is_displayed (int line, struct tui_win_info * win_info,
   else
     threshold = 0;
   i = 0;
-  while (i < win_info->generic.content_size - threshold && !is_displayed)
+  while ((i < (win_info->generic.content_size - threshold)) && !is_displayed)
     {
       is_displayed = (((struct tui_win_element *)
-		      win_info->generic.content[i])->which_element.source.line_or_addr.line_no
-		     == (int) line);
+		       win_info->generic.content[i])->which_element.source.line_or_addr.line_no
+		      == (int)line);
       i++;
     }
 
@@ -631,8 +631,8 @@ tui_line_is_displayed (int line, struct tui_win_info * win_info,
 /* Answer whether the a particular line number or address is displayed
    in the current source window.  */
 int
-tui_addr_is_displayed (CORE_ADDR addr, struct tui_win_info * win_info,
-		    int check_threshold)
+tui_addr_is_displayed(CORE_ADDR addr, struct tui_win_info * win_info,
+		      int check_threshold)
 {
   int is_displayed = FALSE;
   int i, threshold;
@@ -642,11 +642,11 @@ tui_addr_is_displayed (CORE_ADDR addr, struct tui_win_info * win_info,
   else
     threshold = 0;
   i = 0;
-  while (i < win_info->generic.content_size - threshold && !is_displayed)
+  while ((i < (win_info->generic.content_size - threshold)) && !is_displayed)
     {
       is_displayed = (((struct tui_win_element *)
-		      win_info->generic.content[i])->which_element.source.line_or_addr.addr
-		     == addr);
+		       win_info->generic.content[i])->which_element.source.line_or_addr.addr
+		      == addr);
       i++;
     }
 

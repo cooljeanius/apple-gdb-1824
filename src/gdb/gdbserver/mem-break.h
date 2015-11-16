@@ -1,4 +1,4 @@
-/* mem-break.h
+/* gdbserver/mem-break.h
    Memory breakpoint interfaces for the remote server for GDB.
    Copyright 2002, 2005
    Free Software Foundation, Inc.

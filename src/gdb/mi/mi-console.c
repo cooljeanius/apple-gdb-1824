@@ -1,4 +1,4 @@
-/* mi-console.c: MI Console code.
+/* mi/mi-console.c: MI Console code.
 
    Copyright 2000, 2001, 2002 Free Software Foundation, Inc.
 

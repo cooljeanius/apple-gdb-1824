@@ -1,4 +1,4 @@
-/* Version information for GDB.
+/* common/version.h: Version information for GDB.
    Copyright (C) 1999-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.

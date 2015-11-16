@@ -1,4 +1,4 @@
-/* rdi150.h: RDI 1.5.0 definitions
+/* arm/multi-ice/rdi150.h: RDI 1.5.0 definitions
  * Copyright (C) 2001 Free Software Foundation, Inc. */
 /*
  This file is part of GDB.

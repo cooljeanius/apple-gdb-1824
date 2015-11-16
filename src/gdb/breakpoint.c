@@ -618,11 +618,11 @@ get_number_trailer (char **pp, int trailer)
 }
 
 
-/* Like get_number_trailer, but don't allow a trailer.  */
+/* Like get_number_trailer, but do NOT allow a trailer: */
 int
-get_number (char **pp)
+get_number(const char **pp)
 {
-  return get_number_trailer (pp, '\0');
+  return get_number_trailer(pp, '\0');
 }
 
 /* Parse a number or a range.
@@ -640,9 +640,8 @@ get_number (char **pp)
  * is completed.  The call that completes the range will advance
  * pointer PP past <number2>.
  */
-
 int
-get_number_or_range (char **pp)
+get_number_or_range(const char **pp)
 {
   static int last_retval, end_value;
   static char *end_ptr;
@@ -3985,7 +3984,7 @@ print_one_breakpoint(struct breakpoint *b,
     /* APPLE LOCAL end gnu_v3 */
   };
 
-  static char *bpdisps[] =
+  static const char *bpdisps[] =
   { "del", "dstp", "dis", "keep" };
   /* APPLE LOCAL: bpenables is "nynny" in the FSF code.  We want
      them all to be distinct.  */
@@ -8241,8 +8240,8 @@ catch_unload_command_1(char *arg, int tempflag, int from_tty)
 /* Commands to deal with catching exceptions.  */
 
 /* APPLE LOCAL begin gnu v3 */
-static char * gnu_v3_catch_symbol = "__cxa_begin_catch";
-static char *gnu_v3_throw_symbol = "__cxa_throw";
+static const char *gnu_v3_catch_symbol = "__cxa_begin_catch";
+static const char *gnu_v3_throw_symbol = "__cxa_throw";
 
 static enum print_stop_action print_exception_catchpoint (struct breakpoint *b);
 static void print_one_exception_catchpoint (struct breakpoint *b, CORE_ADDR *last_addr);
@@ -10665,7 +10664,7 @@ save_breakpoints_command (char *arg, int from_tty)
 
 /* Use default_breakpoint_'s, or nothing if they are NOT valid: */
 struct symtabs_and_lines
-decode_line_spec_1(char *string, int funfirstline)
+decode_line_spec_1(const char *string, int funfirstline)
 {
   struct symtabs_and_lines sals;
   if (string == 0)

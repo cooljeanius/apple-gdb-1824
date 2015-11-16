@@ -1,4 +1,4 @@
-/* server-unix.c: Main code for multi-ice server for GDB on Unix-like
+/* multi-ice/server-unix.c: Main code for multi-ice server for GDB on Unix-like
  * systems, such as GNU/Linux, Darwin, and the various BSD systems.
  * Based on server-win.c which was originally for Windows.
  * Copyright (C) 1999 Free Software Foundation, Inc. */

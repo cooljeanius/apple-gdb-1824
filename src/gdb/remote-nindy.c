@@ -172,17 +172,17 @@ nindy_close (int quitting)
    now specified with gdb command-line options (old_protocol,
    and initial_brk).  */
 void
-nindy_open (char *name,		/* "/dev/ttyXX", "ttyXX", or "XX": tty to be opened */
-	    int from_tty)
+nindy_open(char *name,	/* "/dev/ttyXX", "ttyXX", or "XX": tty to be opened */
+	   int from_tty)
 {
   char baudrate[1024];
 
   if (!name)
-    error_no_arg ("serial port device name");
+    error_no_arg(_("serial port device name"));
 
-  target_preopen (from_tty);
+  target_preopen(from_tty);
 
-  nindy_close (0);
+  nindy_close(0);
 
   have_regs = regs_changed = 0;
 

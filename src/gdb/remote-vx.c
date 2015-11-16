@@ -1076,13 +1076,13 @@ vx_open (char *args, int from_tty)
   int symbols_added = 0;
 
   if (!args)
-    error_no_arg ("target machine name");
+    error_no_arg(_("target machine name"));
 
-  target_preopen (from_tty);
+  target_preopen(from_tty);
 
-  unpush_target (&vx_ops);
-  printf_unfiltered ("Attaching remote machine across net...\n");
-  gdb_flush (gdb_stdout);
+  unpush_target(&vx_ops);
+  printf_unfiltered("Attaching remote machine across net...\n");
+  gdb_flush(gdb_stdout);
 
   /* Allow the user to kill the connect attempt by typing ^C.
      Wait until the call to target_has_fp () completes before
@@ -1175,7 +1175,7 @@ vx_open (char *args, int from_tty)
    This stops it cold in its tracks and allows us to start tracing it.  */
 
 static void
-vx_attach (char *args, int from_tty)
+vx_attach(char *args, int from_tty)
 {
   unsigned long pid;
   char *cptr = 0;
@@ -1184,9 +1184,9 @@ vx_attach (char *args, int from_tty)
   int status;
 
   if (!args)
-    error_no_arg ("process-id to attach");
+    error_no_arg(_("process-id to attach"));
 
-  pid = strtoul (args, &cptr, 0);
+  pid = strtoul(args, &cptr, 0);
   if ((cptr == args) || (*cptr != '\0'))
     error ("Invalid process-id -- give a single number in decimal or 0xhex");
 

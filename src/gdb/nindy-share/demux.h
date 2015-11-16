@@ -1,4 +1,4 @@
-/* demux.h (old) */
+/* nindy-share/demux.h (old) */
 /******************************************************************************
  * This include file supports demultiplexing of input from two sources:
  * stdin and one external source (normally the NINDY monitor).

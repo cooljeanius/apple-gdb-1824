@@ -1,4 +1,4 @@
-/* unixcomm.c
+/* rdi-share/unixcomm.c
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
  *
  * This software may be freely used, copied, modified, and distributed
@@ -145,8 +145,8 @@ static int parpfd = -1;
 
 extern const char *Unix_MatchValidSerialDevice(const char *name)
 {
-  int i=0;
-  char *sername=NULL;
+  int i = 0;
+  const char *sername = (const char *)NULL;
 
   /* Accept no name as the default serial port */
   if (name == NULL) {
@@ -202,7 +202,7 @@ extern const char *Unix_MatchValidSerialDevice(const char *name)
          */
         if (name[++i] == 0 || name[i] == ',') {
           if (ch=='s')
-              sername=SERPORT1;
+              sername = SERPORT1;
           break;
         }
 

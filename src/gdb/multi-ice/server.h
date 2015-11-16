@@ -1,5 +1,5 @@
 /*
- * server.h
+ * multi-ice/server.h
  *
  * Main header file for multi-ice server for GDB.
  *

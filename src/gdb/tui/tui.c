@@ -1,4 +1,4 @@
-/* tui.c: General functions for the WDB TUI.
+/* tui/tui.c: General functions for the WDB TUI.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -525,26 +525,29 @@ tui_reset(void)
 }
 #endif /* HAVE_TERMIO_H */
 
+/* FIXME: add comment: */
 void
-tui_show_source (const char *file, int line)
+tui_show_source(const char *file, int line)
 {
-  struct symtab_and_line cursal = get_current_source_symtab_and_line ();
+  struct symtab_and_line cursal = get_current_source_symtab_and_line();
   /* make sure that the source window is displayed */
-  tui_add_win_to_layout (SRC_WIN);
+  tui_add_win_to_layout(SRC_WIN);
 
-  tui_update_source_windows_with_line (cursal.symtab, line);
-  tui_update_locator_filename (file);
+  tui_update_source_windows_with_line(cursal.symtab, line);
+  tui_update_locator_filename(file);
 }
 
+/* FIXME: add comment: */
 void
-tui_show_assembly (CORE_ADDR addr)
+tui_show_assembly(CORE_ADDR addr)
 {
-  tui_add_win_to_layout (DISASSEM_WIN);
-  tui_update_source_windows_with_addr (addr);
+  tui_add_win_to_layout(DISASSEM_WIN);
+  tui_update_source_windows_with_addr(addr);
 }
 
-int
-tui_is_window_visible (enum tui_win_type type)
+/* FIXME: add comment: */
+int ATTRIBUTE_PURE
+tui_is_window_visible(enum tui_win_type type)
 {
   if (tui_active == 0)
     return 0;
@@ -555,6 +558,7 @@ tui_is_window_visible (enum tui_win_type type)
   return tui_win_list[type]->generic.is_visible;
 }
 
+/* FIXME: add comment: */
 int
 tui_get_command_dimension(unsigned int *width, unsigned int *height)
 {

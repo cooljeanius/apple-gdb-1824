@@ -1,4 +1,4 @@
-/* xm-mpw.h: Macro definitions for running GDB on Apple Macintoshes.
+/* config/xm-mpw.h: Macro definitions for running GDB on Apple Macintoshes.
  * Copyright 1994, 1995, 2001 Free Software Foundation, Inc.
  *
  * This file is part of GDB.

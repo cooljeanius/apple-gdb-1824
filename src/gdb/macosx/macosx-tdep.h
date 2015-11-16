@@ -1,5 +1,5 @@
 /*
- * macosx-tdep.h
+ * macosx/macosx-tdep.h
  */
 
 #ifndef __GDB_MACOSX_TDEP_H__
@@ -183,8 +183,8 @@ char *expand_kext_cstr(const char *kext_path);
 char *macosx_locate_executable_by_dbg_shell_command(CFStringRef uuid);
 #endif /* __COREFOUNDATION__ || __COREFOUNDATION_COREFOUNDATION__ */
 
-void update_command(char *args, int from_tty);
-void stack_flush_command(char *args, int from_tty);
+void update_command(const char *args, int from_tty);
+void stack_flush_command(const char *args, int from_tty);
 
 #if defined(__COREFOUNDATION__) || defined(__COREFOUNDATION_COREFOUNDATION__)
 CFUUIDRef get_uuidref_for_uuid_t(uint8_t *uuid);

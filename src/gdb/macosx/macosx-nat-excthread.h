@@ -1,5 +1,5 @@
 /*
- * macosx-nat-excthread.h
+ * macosx/macosx-nat-excthread.h
  */
 
 #ifndef __GDB_MACOSX_NAT_EXCTHREAD_H__

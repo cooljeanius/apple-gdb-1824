@@ -726,21 +726,24 @@ ui_out_cleanup_after_error(struct ui_out *uiout)
     }
 }
 
+/* FIXME: needs comment: */
 static void
 ui_out_notify_begin(struct ui_out *uiout, char *the_class)
 {
   uo_notify_begin(uiout, the_class);
 }
 
+/* FIXME: needs comment: */
 static void
 ui_out_notify_end(void *uiout)
 {
   uo_notify_end((struct ui_out *)uiout);
 }
 
+/* FIXME: needs comment: */
 struct cleanup *
 make_cleanup_ui_out_notify_begin_end(struct ui_out *uiout,
-                                     char *class_in)
+                                     const char *class_in)
 {
   ui_out_notify_begin(uiout, class_in);
   return make_cleanup(ui_out_notify_end, uiout);

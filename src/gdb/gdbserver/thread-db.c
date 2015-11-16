@@ -1,4 +1,4 @@
-/* thread-db.c
+/* gdbserver/thread-db.c
    Thread management interface, for the remote server for GDB.
    Copyright 2002
    Free Software Foundation, Inc.

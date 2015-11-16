@@ -1,4 +1,4 @@
-/* cli-setshow.c: Handle set and show GDB commands.
+/* cli/cli-setshow.c: Handle set and show GDB commands.
 
    Copyright 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
@@ -31,16 +31,16 @@
 
 /* Prototypes for local functions */
 
-static int parse_binary_operation (char *);
+static int parse_binary_operation(const char *);
 
 
 static enum auto_boolean
-parse_auto_binary_operation (const char *arg)
+parse_auto_binary_operation(const char *arg)
 {
-  if (arg != NULL && *arg != '\0')
+  if ((arg != NULL) && (*arg != '\0'))
     {
-      int length = strlen (arg);
-      while (isspace (arg[length - 1]) && length > 0)
+      size_t length = strlen(arg);
+      while (isspace(arg[length - 1]) && (length > 0UL))
 	length--;
       if (strncmp (arg, "on", length) == 0
 	  || strncmp (arg, "1", length) == 0
@@ -56,19 +56,20 @@ parse_auto_binary_operation (const char *arg)
 	       || (strncmp (arg, "-1", length) == 0 && length > 1))
 	return AUTO_BOOLEAN_AUTO;
     }
-  error (_("\"on\", \"off\" or \"auto\" expected."));
+  error(_("\"on\", \"off\" or \"auto\" expected."));
   return AUTO_BOOLEAN_AUTO; /* pacify GCC */
 }
 
+/* FIXME: needs comment: */
 static int
-parse_binary_operation (char *arg)
+parse_binary_operation(const char *arg)
 {
-  int length;
+  size_t length;
 
   if (!arg || !*arg)
     return 1;
 
-  length = strlen (arg);
+  length = strlen(arg);
 
   while (arg[length - 1] == ' ' || arg[length - 1] == '\t')
     length--;
@@ -85,11 +86,12 @@ parse_binary_operation (char *arg)
     return 0;
   else
     {
-      error (_("\"on\" or \"off\" expected."));
+      error(_("\"on\" or \"off\" expected."));
       return 0;
     }
 }
 
+/* FIXME: needs comment: */
 void
 deprecated_show_value_hack (struct ui_file *ignore_file,
 			    int ignore_from_tty,
@@ -122,7 +124,7 @@ deprecated_show_value_hack (struct ui_file *ignore_file,
    command).  C is the command list element for the command.  */
 
 void
-do_setshow_command(char *arg, int from_tty, struct cmd_list_element *c)
+do_setshow_command(const char *arg, int from_tty, struct cmd_list_element *c)
 {
   if (c->type == set_cmd)
     {
@@ -131,13 +133,13 @@ do_setshow_command(char *arg, int from_tty, struct cmd_list_element *c)
 	case var_string:
 	  {
 	    char *newstr;
-	    char *p;
+	    const char *p;
 	    char *q;
 	    int ch;
 
 	    if (arg == NULL)
 	      arg = "";
-	    newstr = (char *)xmalloc(strlen(arg) + 2);
+	    newstr = (char *)xmalloc(strlen(arg) + 2UL);
 	    p = arg;
 	    q = newstr;
 	    while ((ch = *p++) != '\000')
@@ -399,7 +401,7 @@ do_setshow_command(char *arg, int from_tty, struct cmd_list_element *c)
 
 /* Show all the settings in a list of show commands: */
 void
-cmd_show_list(struct cmd_list_element *list, int from_tty, char *prefix)
+cmd_show_list(struct cmd_list_element *list, int from_tty, const char *prefix)
 {
   struct cleanup *showlist_chain;
 

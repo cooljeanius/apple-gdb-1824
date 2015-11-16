@@ -40,7 +40,7 @@ extern int strcmp_iw_ordered(const char *, const char *);
 
 extern int streq(const char *, const char *);
 
-extern int subset_compare(char *, char *);
+extern int subset_compare(char *, const char *);
 
 ULONGEST strtoulst(const char *num, const char **trailer, int base);
 

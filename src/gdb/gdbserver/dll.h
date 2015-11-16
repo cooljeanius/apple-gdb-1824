@@ -1,4 +1,4 @@
-/* dll.h
+/* gdbserver/dll.h
    Copyright (C) 1993-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.

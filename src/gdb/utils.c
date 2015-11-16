@@ -243,7 +243,7 @@ char *error_pre_print;
 char *quit_pre_print;
 
 /* String to be printed before warning messages, if any: */
-char *warning_pre_print = "\nwarning: ";
+const char *warning_pre_print = "\nwarning: ";
 
 int pagination_enabled = 1;
 static void
@@ -631,8 +631,7 @@ free_current_contents(void *ptr)
    with cleanups that need to be done as a result of a call to error().
    In such cases, we may not be certain where the first cleanup is, unless
    we have a do-nothing one to always use as the base. */
-
-void
+void ATTRIBUTE_CONST
 null_cleanup(void *arg ATTRIBUTE_UNUSED)
 {
   return;
@@ -1655,17 +1654,17 @@ query(const char *ctlstr, ...)
    ARGS are the arguments passed along with the CTLSTR argument to
    printf.  */
 
-static int ATTR_FORMAT (printf, 1, 0)
-defaulted_query (const char *ctlstr, const char defchar, va_list args)
+static int ATTR_FORMAT(printf, 1, 0)
+defaulted_query(const char *ctlstr, const char defchar, va_list args)
 {
   int answer;
   int ans2;
   int retval;
   int def_value;
   char def_answer, not_def_answer;
-  char *y_string, *n_string;
+  const char *y_string, *n_string;
 
-  /* Set up according to which answer is the default.  */
+  /* Set up according to which answer is the default: */
   if (defchar == 'y')
     {
       def_value = 1;
@@ -1818,7 +1817,7 @@ no_control_char_error(const char *start, const char *end)
    after the zeros.  A value of 0 does not mean end of string.  */
 
 int
-parse_escape(char **string_ptr)
+parse_escape(const char **string_ptr)
 {
   int target_char;
   int c = *(*string_ptr)++;
@@ -1836,7 +1835,7 @@ parse_escape(char **string_ptr)
 	{
 	  /* Remember where this escape sequence started, for reporting
 	     errors.  */
-	  char *sequence_start_pos = (*string_ptr - 1);
+	  const char *sequence_start_pos = (*string_ptr - 1);
 
 	  c = *(*string_ptr)++;
 
@@ -2033,7 +2032,7 @@ static char *wrap_pointer;
 
 /* String to indent by if the wrap occurs.  Must not be NULL if wrap_column
    is non-zero.  */
-static char *wrap_indent;
+static const char *wrap_indent;
 
 /* Column number on the screen where wrap_buffer begins, or 0 if wrapping
    is not in effect.  */
@@ -2066,7 +2065,7 @@ init_page_info (void)
       chars_per_line = (unsigned int)cols;
 
       /* Readline should have fetched the termcap entry for us: */
-      if ((tgetnum("li") < 0) || getenv("EMACS"))
+      if ((tgetnum((NCURSES_CONST char *)"li") < 0) || getenv("EMACS"))
         {
           /* The number of lines per page is not mentioned in the
              terminal description.  This probably means that paging is
@@ -2269,7 +2268,7 @@ wrap_here(const char *indent)
       if (indent == NULL)
 	wrap_indent = "";
       else
-	wrap_indent = (char *)indent;
+	wrap_indent = indent;
     }
 }
 
@@ -2501,11 +2500,11 @@ puts_debug(char *prefix, char *string, char *suffix)
 {
   int ch;
 
-  /* Print prefix and suffix after each line.  */
+  /* Print prefix and suffix after each line: */
   static int new_line = 1;
   static int return_p = 0;
-  static char *prev_prefix = "";
-  static char *prev_suffix = "";
+  static const char *prev_prefix = "";
+  static const char *prev_suffix = "";
 
   if (*string == '\n')
     return_p = 0;
@@ -2905,16 +2904,16 @@ streq(const char *lhs, const char *rhs)
 
 
 /*
-   ** subset_compare()
-   **    Answer whether string_to_compare is a full or partial match to
-   **    template_string.  The partial match must be in sequence starting
-   **    at index 0.
+** subset_compare()
+**    Answer whether string_to_compare is a full or partial match to
+**    template_string.  The partial match must be in sequence starting
+**    at index 0.
  */
 int ATTRIBUTE_PURE
-subset_compare(char *string_to_compare, char *template_string)
+subset_compare(char *string_to_compare, const char *template_string)
 {
   int match;
-  if ((template_string != (char *)NULL)
+  if ((template_string != (const char *)NULL)
       && (string_to_compare != (char *)NULL)
       && (strlen(string_to_compare) <= strlen(template_string)))
     match =
@@ -3068,8 +3067,9 @@ paddress(CORE_ADDR addr)
   return hex_string((LONGEST)addr);
 }
 
+/* */
 static char *
-decimal2str(char *sign, ULONGEST addr, int width)
+decimal2str(const char *sign, ULONGEST addr, int width)
 {
   /* Steal code from valprint.c:print_decimal().  Should this worry
      about the real size of addr as the above does? */
@@ -3109,6 +3109,7 @@ decimal2str(char *sign, ULONGEST addr, int width)
   return str;
 }
 
+/* */
 static char *
 octal2str(ULONGEST addr, int width)
 {

@@ -163,7 +163,7 @@ extern void gdbarch_info_fill (struct gdbarch *gdbarch,
 extern struct gdbarch *gdbarch_from_bfd (bfd *abfd);
 
 /* APPLE LOCAL: I need a way to programmatically do "set architecture": */
-int set_architecture_from_string (char *);
+int set_architecture_from_string(const char *);
 
 #if 1
 /* This is used various places, but I failed to find a prototype for it

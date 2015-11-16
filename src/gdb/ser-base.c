@@ -369,14 +369,16 @@ ser_base_write (struct serial *scb, const char *str, int len)
   return 0;
 }
 
-int
-ser_base_flush_output (struct serial *scb)
+/* */
+int ATTRIBUTE_CONST
+ser_base_flush_output(struct serial *scb ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
+/* */
 int
-ser_base_flush_input (struct serial *scb)
+ser_base_flush_input(struct serial *scb)
 {
   if (scb->bufcnt >= 0)
     {
@@ -388,71 +390,81 @@ ser_base_flush_input (struct serial *scb)
     return SERIAL_ERROR;
 }
 
-int
-ser_base_send_break (struct serial *scb)
+/* */
+int ATTRIBUTE_CONST
+ser_base_send_break(struct serial *scb ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
-int
-ser_base_drain_output (struct serial *scb)
+/* */
+int ATTRIBUTE_CONST
+ser_base_drain_output(struct serial *scb ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
-void
-ser_base_raw (struct serial *scb)
+/* */
+void ATTRIBUTE_CONST
+ser_base_raw(struct serial *scb ATTRIBUTE_UNUSED)
 {
   return;			/* Always in raw mode */
 }
 
+/* */
 serial_ttystate
-ser_base_get_tty_state (struct serial *scb)
+ser_base_get_tty_state(struct serial *scb)
 {
-  /* allocate a dummy */
-  return (serial_ttystate) XMALLOC (int);
+  /* allocate a dummy: */
+  return (serial_ttystate)XMALLOC(int);
 }
 
-int
-ser_base_set_tty_state (struct serial *scb, serial_ttystate ttystate)
-{
-  return 0;
-}
-
-int
-ser_base_noflush_set_tty_state (struct serial *scb,
-				serial_ttystate new_ttystate,
-				serial_ttystate old_ttystate)
+/* */
+int ATTRIBUTE_CONST
+ser_base_set_tty_state(struct serial *scb ATTRIBUTE_UNUSED,
+		       serial_ttystate ttystate ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
-void
-ser_base_print_tty_state (struct serial *scb,
-			  serial_ttystate ttystate,
-			  struct ui_file *stream)
+/* */
+int ATTRIBUTE_CONST
+ser_base_noflush_set_tty_state(struct serial *scb ATTRIBUTE_UNUSED,
+			       serial_ttystate new_ttystate ATTRIBUTE_UNUSED,
+			       serial_ttystate old_ttystate ATTRIBUTE_UNUSED)
+{
+  return 0;
+}
+
+/* */
+void ATTRIBUTE_CONST
+ser_base_print_tty_state(struct serial *scb ATTRIBUTE_UNUSED,
+			 serial_ttystate ttystate ATTRIBUTE_UNUSED,
+			 struct ui_file *stream ATTRIBUTE_UNUSED)
 {
   /* Nothing to print.  */
   return;
 }
 
-int
-ser_base_setbaudrate (struct serial *scb, int rate)
+/* */
+int ATTRIBUTE_CONST
+ser_base_setbaudrate(struct serial *scb ATTRIBUTE_UNUSED,
+		     int rate ATTRIBUTE_UNUSED)
 {
   return 0;			/* Never fails! */
 }
 
-int
-ser_base_setstopbits (struct serial *scb, int num)
+/* */
+int ATTRIBUTE_CONST
+ser_base_setstopbits(struct serial *scb ATTRIBUTE_UNUSED,
+		     int num ATTRIBUTE_UNUSED)
 {
   return 0;			/* Never fails! */
 }
 
-/* Put the SERIAL device into/out-of ASYNC mode.  */
-
+/* Put the SERIAL device into/out-of ASYNC mode: */
 void
-ser_base_async (struct serial *scb,
-		int async_p)
+ser_base_async(struct serial *scb, int async_p)
 {
   if (async_p)
     {

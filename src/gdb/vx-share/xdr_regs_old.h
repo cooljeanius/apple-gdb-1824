@@ -1,4 +1,4 @@
-/* xdr_regs.h - xdr header for 68k registers */
+/* vx-share/xdr_regs_old.h - xdr header for 68k registers */
 
 /*
 modification history

@@ -1,4 +1,4 @@
-/* xdr_rdb.h - xdr for additional rdb structures */
+/* vx-share/xdr_rdb.h - xdr for additional rdb structures */
 
 /* Copyright 1992 Free Software Foundation, Inc.
 

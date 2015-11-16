@@ -1,4 +1,4 @@
-/* xdr_regs.c - xdr routines for 68k registers */
+/* vx-share/xdr_regs_old.c - xdr routines for 68k registers */
 
 /* Copyright 1984,1985,1986,1987,1988,1989 Wind River Systems, Inc. */
 

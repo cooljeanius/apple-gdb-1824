@@ -1,4 +1,4 @@
-/* nm-nbsd.h
+/* config/nm-nbsd.h
    Native-dependent definitions for NetBSD.
 
    Copyright 1994, 1996, 1999, 2004 Free Software Foundation, Inc.

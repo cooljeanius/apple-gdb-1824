@@ -1,4 +1,4 @@
-/* rem-mulit_old/remote_utils.c
+/* rem-multi_old/remote_utils.c
  * Remote utility routines for the remote server for GDB, the GNU debugger.
  * Copyright (C) 1986, 1989 Free Software Foundation, Inc. */
 /*

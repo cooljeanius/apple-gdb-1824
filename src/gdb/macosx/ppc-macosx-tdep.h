@@ -1,4 +1,4 @@
-/* ppc-macosx-tdep.h -*- C -*- */
+/* macosx/ppc-macosx-tdep.h -*- C -*- */
 
 #ifndef __GDB_PPC_MACOSX_TDEP_H__
 #define __GDB_PPC_MACOSX_TDEP_H__

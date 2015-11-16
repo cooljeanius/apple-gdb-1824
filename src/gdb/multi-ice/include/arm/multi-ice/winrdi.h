@@ -1,4 +1,4 @@
-/* winrdi.h
+/* arm/multi-ice/winrdi.h
  * WinRDI - Interface to a Win32 DLL containing an RDI target
  * Copyright (C) 2001 Free Software Foundation, Inc. */
 /*

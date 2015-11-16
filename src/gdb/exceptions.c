@@ -524,7 +524,7 @@ catch_exceptions_with_msg(struct ui_out *uiout, catch_exceptions_ftype *func,
 }
 
 int
-catch_errors(catch_errors_ftype *func, void *func_args, char *errstring,
+catch_errors(catch_errors_ftype *func, void *func_args, const char *errstring,
 	     return_mask mask)
 {
   volatile int val = 0;

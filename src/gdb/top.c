@@ -260,7 +260,7 @@ void (*deprecated_warning_hook)(const char *, va_list);
    called to notify the GUI that we are done with the interaction
    window and it can close it.  */
 
-void (*deprecated_readline_begin_hook)(char *, ...);
+void (*deprecated_readline_begin_hook)(const char *, ...);
 char *(*deprecated_readline_hook)(char *);
 void (*deprecated_readline_end_hook)(void);
 
@@ -332,7 +332,7 @@ void (*stack_changed_hook)(void);
 
 /* called when command line input is needed */
 
-char *(*command_line_input_hook)(char *, int, char *);
+char *(*command_line_input_hook)(char *, int, const char *);
 
 /* Called when the current thread changes.  Argument is thread id.  */
 
@@ -436,14 +436,14 @@ do_chdir_cleanup(void *old_dir)
 }
 #endif /* __MSDOS__ */
 
-/* need to put this prototype here, because cli/cli-logging.c has no header
- * to go with it: */
-extern void log_command(char *);
+/* We (used to) need to put this prototype here, because cli/cli-logging.c
+ * previously had no header to go with it: */
+extern void log_command(const char *);
 
 /* Execute the line P as a command.
  * Pass FROM_TTY as second argument to the defining function.  */
 void
-execute_command(char *p, int from_tty)
+execute_command(const char *p, int from_tty)
 {
   struct cmd_list_element *c;
   enum language flang;
@@ -457,7 +457,7 @@ execute_command(char *p, int from_tty)
 
   /* Force cleanup of any alloca areas if using C alloca instead of
      a builtin alloca.  */
-  alloca(0);
+  alloca(0UL);
 
   /* This can happen when command_line_input hits end of file.  */
   if (p == NULL)
@@ -470,7 +470,7 @@ execute_command(char *p, int from_tty)
     p++;
   if (*p)
     {
-      char *arg;
+      const char *arg;
       tmp_line = p;
 
       c = lookup_cmd(&p, cmdlist, "", 0, 1);
@@ -501,10 +501,10 @@ execute_command(char *p, int from_tty)
 	  && (c->type != set_cmd)
 	  && !is_complete_command(c))
 	{
-	  p = (arg + strlen(arg) - 1);
-	  while (p >= arg && (*p == ' ' || *p == '\t'))
+	  p = (arg + strlen(arg) - 1UL);
+	  while ((p >= arg) && ((*p == ' ') || (*p == '\t')))
 	    p--;
-	  *(p + 1) = '\0';
+	  *((char *)p + 1UL) = '\0';
 	}
 
       /* If this command has been pre-hooked, run the hook first. */
@@ -921,7 +921,7 @@ gdb_rl_operate_and_get_next(int count, int key)
    simple input as the user has requested.  */
 
 char *
-command_line_input(char *prompt_arg, int repeat, char *annotation_suffix)
+command_line_input(char *prompt_arg, int repeat, const char *annotation_suffix)
 {
   static char *linebuffer = 0;
   static unsigned linelength = 0;
@@ -1267,7 +1267,7 @@ quit_target(void *arg)
 
 /* Quit without asking for confirmation: */
 NORETURN void ATTR_NORETURN
-quit_force(char *args, int from_tty)
+quit_force(const char *args, int from_tty)
 {
   int exit_code = 0;
   struct qt_args qt;
@@ -1305,7 +1305,8 @@ input_from_terminal_p(void)
 }
 
 static void
-dont_repeat_command (char *ignored, int from_tty)
+dont_repeat_command(const char *ignored ATTRIBUTE_UNUSED,
+		    int from_tty ATTRIBUTE_UNUSED)
 {
   *line = 0;	/* Cannot call dont_repeat here, because we are not
 		 * necessarily reading from stdin.  */
@@ -1316,7 +1317,7 @@ dont_repeat_command (char *ignored, int from_tty)
 /* Number of commands to print in each call to show_commands.  */
 #define Hist_print 10
 void
-show_commands (char *args, int from_tty)
+show_commands(const char *args, int from_tty)
 {
   /* Index for history commands.  Relative to history_base.  */
   int offset;
@@ -1334,7 +1335,7 @@ show_commands (char *args, int from_tty)
   hist_len = history_size;
   for (offset = 0; offset < history_size; offset++)
     {
-      if (!history_get (history_base + offset))
+      if (!history_get(history_base + offset))
 	{
 	  hist_len = offset;
 	  break;
@@ -1343,7 +1344,7 @@ show_commands (char *args, int from_tty)
 
   if (args)
     {
-      if (args[0] == '+' && args[1] == '\0')
+      if ((args[0] == '+') && (args[1] == '\0'))
 	/* "info editing +" should print from the stored position.  */
 	;
       else
@@ -1354,7 +1355,7 @@ show_commands (char *args, int from_tty)
   /* "show commands" means print the last Hist_print commands.  */
   else
     {
-      num = hist_len - Hist_print;
+      num = (hist_len - Hist_print);
     }
 
   if (num < 0)
@@ -1362,17 +1363,18 @@ show_commands (char *args, int from_tty)
 
   /* If there are at least Hist_print commands, we want to display the last
      Hist_print rather than, say, the last 6.  */
-  if (hist_len - num < Hist_print)
+  if ((hist_len - num) < Hist_print)
     {
-      num = hist_len - Hist_print;
+      num = (hist_len - Hist_print);
       if (num < 0)
 	num = 0;
     }
 
-  for (offset = num; offset < num + Hist_print && offset < hist_len; offset++)
+  for (offset = num; (offset < (num + Hist_print)) && (offset < hist_len);
+       offset++)
     {
-      printf_filtered ("%5d  %s\n", history_base + offset,
-		       (history_get (history_base + offset))->line);
+      printf_filtered("%5d  %s\n", (history_base + offset),
+		      (history_get(history_base + offset))->line);
     }
 
   /* The next command we want to display is the next one that we haven't
@@ -1384,8 +1386,8 @@ show_commands (char *args, int from_tty)
      because "show commands +" is not useful after "show commands".  */
   if (from_tty && args)
     {
-      args[0] = '+';
-      args[1] = '\0';
+      *(char *)args = '+'; /* same as args[0] */
+      *((char *)args + 1U) = '\0'; /* same as args[1] */
     }
 }
 
@@ -1404,30 +1406,32 @@ set_history_size_command(char *args, int from_tty, struct cmd_list_element *c)
     }
 }
 
+/* FIXME: needs comment: */
 void
-set_history(char *args, int from_tty)
+set_history(const char *args, int from_tty)
 {
   printf_unfiltered(_("\"set history\" must be followed by the name of a history subcommand.\n"));
   help_list(sethistlist, "set history ", (enum command_class)-1,
             gdb_stdout);
 }
 
+/* FIXME: needs comment: */
 void
-show_history(char *args, int from_tty)
+show_history(const char *args, int from_tty)
 {
-  cmd_show_list (showhistlist, from_tty, "");
+  cmd_show_list(showhistlist, from_tty, "");
 }
 
 int info_verbose = 0;		/* Default verbose msgs off */
 
 /* Called by do_setshow_command.  An elaborate joke.  */
 void
-set_verbose (char *args, int from_tty, struct cmd_list_element *c)
+set_verbose(char *args, int from_tty, struct cmd_list_element *c)
 {
-  char *cmdname = "verbose";
+  const char *cmdname = "verbose";
   struct cmd_list_element *showcmd;
 
-  showcmd = lookup_cmd_1 (&cmdname, showlist, NULL, 1);
+  showcmd = lookup_cmd_1(&cmdname, showlist, NULL, 1);
 
   if (info_verbose)
     {
@@ -1446,25 +1450,24 @@ set_verbose (char *args, int from_tty, struct cmd_list_element *c)
  * .gdbinit file (for instance).  The GDBHISTFILE environment variable
  * overrides all of this.
  */
-
 void
-init_history (void)
+init_history(void)
 {
   char *tmpenv;
   /* APPLE LOCAL history read error */
   int ret;
 
-  tmpenv = getenv ("HISTSIZE");
+  tmpenv = getenv("HISTSIZE");
   if (tmpenv)
-    history_size = atoi (tmpenv);
+    history_size = atoi(tmpenv);
   else if (!history_size)
     history_size = 256;
 
-  stifle_history (history_size);
+  stifle_history(history_size);
 
-  tmpenv = getenv ("GDBHISTFILE");
+  tmpenv = getenv("GDBHISTFILE");
   if (tmpenv)
-    history_filename = savestring (tmpenv, strlen (tmpenv));
+    history_filename = savestring(tmpenv, strlen(tmpenv));
   else if (!history_filename)
     {
       /* We include the current directory so that if the user changes
@@ -1487,69 +1490,75 @@ init_history (void)
   /* APPLE LOCAL end history read error */
 }
 
+/* FIXME: needs comment: */
 static void
-show_new_async_prompt (struct ui_file *file, int from_tty,
-		       struct cmd_list_element *c, const char *value)
+show_new_async_prompt(struct ui_file *file, int from_tty,
+		      struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("Gdb's prompt is \"%s\".\n"), value);
+  fprintf_filtered(file, _("Gdb's prompt is \"%s\".\n"), value);
 }
 
+/* FIXME: needs comment: */
 static void
-show_async_command_editing_p (struct ui_file *file, int from_tty,
-			      struct cmd_list_element *c, const char *value)
+show_async_command_editing_p(struct ui_file *file, int from_tty,
+			     struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("\
+  fprintf_filtered(file, _("\
 Editing of command lines as they are typed is %s.\n"),
-		    value);
+		   value);
 }
 
+/* FIXME: needs comment: */
 static void
-show_annotation_level (struct ui_file *file, int from_tty,
-		       struct cmd_list_element *c, const char *value)
+show_annotation_level(struct ui_file *file, int from_tty,
+		      struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("Annotation_level is %s.\n"), value);
+  fprintf_filtered(file, _("Annotation_level is %s.\n"), value);
 }
 
+/* FIXME: needs comment: */
 static void
-show_exec_done_display_p (struct ui_file *file, int from_tty,
-			  struct cmd_list_element *c, const char *value)
+show_exec_done_display_p(struct ui_file *file, int from_tty,
+			 struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("\
+  fprintf_filtered(file, _("\
 Notification of completion for asynchronous execution commands is %s.\n"),
-		    value);
+		   value);
 }
+
+/* FIXME: needs comment: */
 static void
-init_main (void)
+init_main(void)
 {
   /* initialize the prompt stack to a simple "(gdb) " prompt or to
      whatever the DEFAULT_PROMPT is.  */
   the_prompts.top = 0;
-  PREFIX (0) = "";
-  PROMPT (0) = savestring (DEFAULT_PROMPT, strlen (DEFAULT_PROMPT));
-  SUFFIX (0) = "";
+  PREFIX(0) = "";
+  PROMPT(0) = savestring(DEFAULT_PROMPT, strlen(DEFAULT_PROMPT));
+  SUFFIX(0) = "";
   /* Set things up for annotation_level > 1, if the user ever decides
      to use it.  */
   async_annotation_suffix = "prompt";
   /* Set the variable associated with the setshow prompt command.  */
-  new_async_prompt = savestring (PROMPT (0), strlen (PROMPT (0)));
+  new_async_prompt = savestring(PROMPT(0), strlen(PROMPT(0)));
 
   /* If gdb was started with --annotate=2, this is equivalent to the
      user entering the command 'set annotate 2' at the gdb prompt, so
      we need to do extra processing.  */
   if (annotation_level > 1)
-    set_async_annotation_level (NULL, 0, NULL);
+    set_async_annotation_level(NULL, 0, NULL);
 
-  /* Set the important stuff up for command editing.  */
+  /* Set the important stuff up for command editing: */
   command_editing_p = 1;
   history_expansion_p = 0;
   write_history_p = 0;
 
-  /* Setup important stuff for command line editing.  */
+  /* Setup important stuff for command line editing: */
   rl_completion_entry_function = readline_line_completion_function;
-  rl_completer_word_break_characters = default_word_break_characters ();
-  rl_completer_quote_characters = get_gdb_completer_quote_characters ();
+  rl_completer_word_break_characters = default_word_break_characters();
+  rl_completer_quote_characters = get_gdb_completer_quote_characters();
   rl_readline_name = "gdb";
-  rl_terminal_name = getenv ("TERM");
+  rl_terminal_name = getenv("TERM");
 
   /* The name for this defun comes from Bash, where it originated.
      15 is Control-o, the same binding this function has in Bash.  */
@@ -1563,7 +1572,7 @@ Show gdb's prompt"), NULL,
 			  show_new_async_prompt,
 			  &setlist, &showlist);
 
-  add_com ("dont-repeat", class_support, dont_repeat_command, _("\
+  add_com("dont-repeat", class_support, dont_repeat_command, _("\
 Don't repeat this command.\n\
 Primarily used inside of user-defined commands that should not be repeated when\n\
 hitting return."));
@@ -1579,7 +1588,10 @@ EMACS-like or VI-like commands like control-P or ESC."),
 			   show_async_command_editing_p,
 			   &setlist, &showlist);
 
-  /* c->completer_word_break_characters = gdb_completer_filename_word_break_characters; */ /* FIXME */
+#if 0
+  c->completer_word_break_characters =
+    gdb_completer_filename_word_break_characters; /* FIXME */
+#endif /* 0 */
 
   add_setshow_boolean_cmd ("save", no_class, &write_history_p, _("\
 Set saving of the history record on exit."), _("\
@@ -1632,42 +1644,45 @@ Use \"on\" to enable the notification, and \"off\" to disable it."),
 			   &setlist, &showlist);
 }
 
+/* FIXME: needs comment: */
 void
 gdb_init (char *argv0)
 {
   if (pre_init_ui_hook)
-    pre_init_ui_hook ();
+    pre_init_ui_hook();
 
-  /* Run the init function of each source file */
+  /* Run the init function of each source file. */
 
-  getcwd (gdb_dirbuf, sizeof (gdb_dirbuf));
+  getcwd(gdb_dirbuf, sizeof(gdb_dirbuf));
   current_directory = gdb_dirbuf;
 
 #ifdef __MSDOS__
   /* Make sure we return to the original directory upon exit, come
-     what may, since the OS doesn't do that for us.  */
-  make_final_cleanup (do_chdir_cleanup, xstrdup (current_directory));
-#endif
+     what may, since the OS fails to do that for us.  */
+  make_final_cleanup(do_chdir_cleanup, xstrdup(current_directory));
+#endif /* __MSDOS__ */
 
-  init_cmd_lists ();		/* This needs to be done first */
-  initialize_targets ();	/* Setup target_terminal macros for utils.c */
-  initialize_utils ();		/* Make errors and warnings possible */
-  initialize_all_files ();
-  initialize_current_architecture ();
+  init_cmd_lists();		/* This needs to be done first */
+  initialize_targets(); 	/* Setup target_terminal macros for utils.c */
+  initialize_utils();		/* Make errors and warnings possible */
+  initialize_all_files();
+  initialize_current_architecture();
   init_cli_cmds();
-  init_main ();			/* But that omits this file!  Do it now */
+  init_main();			/* But that omits this file!  Do it now */
 
-  async_init_signals ();
+  async_init_signals();
 
   /* We need a default language for parsing expressions, so simple things like
      "set width 0" won't fail if no language is explicitly set in a config file
      or implicitly set by reading an executable during startup. */
-  set_language (language_c);
-  expected_language = current_language;		/* don't warn about the change.  */
+  set_language(language_c);
+  expected_language = current_language;	 /* do NOT warn about the change.  */
 
   /* Allow another UI to initialize. If the UI fails to initialize,
      and it wants GDB to revert to the CLI, it should clear
      deprecated_init_ui_hook.  */
   if (deprecated_init_ui_hook)
-    deprecated_init_ui_hook (argv0);
+    deprecated_init_ui_hook(argv0);
 }
+
+/* EOF */

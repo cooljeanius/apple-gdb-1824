@@ -1,4 +1,4 @@
-/* ppc.h */
+/* nlm/ppc.h */
 
 typedef long Long;
 

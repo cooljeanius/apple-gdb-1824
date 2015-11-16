@@ -1,5 +1,5 @@
 /*
- * macosx-ppc-low.c
+ * gdbserver/macosx-ppc-low.c
  */
 
 #include <sys/wait.h>

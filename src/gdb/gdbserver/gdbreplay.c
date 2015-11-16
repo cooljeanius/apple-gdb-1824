@@ -1,4 +1,4 @@
-/* gdbreplay.c
+/* gdbserver/gdbreplay.c
    Replay a remote debug session logfile for GDB.
    Copyright 1996, 1998, 1999, 2000, 2002, 2003, 2005
    Free Software Foundation, Inc.

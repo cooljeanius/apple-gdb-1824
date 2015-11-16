@@ -1,4 +1,4 @@
-/* xdr_ld.c  - xdr routines for remote dbx interface to VxWorks  */
+/* vx-share/xdr_ld.c  - xdr routines for remote dbx interface to VxWorks  */
 
 /*  Copyright 1984, 1985, 1986, 1987, 1988, 1989, 1992, 1993, 1998
     Free Software Foundation, Inc.

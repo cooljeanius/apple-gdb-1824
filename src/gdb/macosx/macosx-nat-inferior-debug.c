@@ -1,4 +1,4 @@
-/* macosx-nat-inferior-debug.c: Mac OS X support for GDB, the GNU debugger.
+/* macosx/macosx-nat-inferior-debug.c: Mac OS X support for GDB.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -72,6 +72,7 @@ int timestamps_debug_flag = 0;
 
 extern void _initialize_macosx_inferior_debug(void);
 
+/* */
 void
 inferior_debug(int level, const char *fmt, ...)
 {
@@ -88,6 +89,7 @@ inferior_debug(int level, const char *fmt, ...)
 
 char unknown_exception_buf[32];
 
+/* */
 const char *
 unparse_exception_type(unsigned int i)
 {
@@ -121,7 +123,8 @@ unparse_exception_type(unsigned int i)
     }
 }
 
-const char *
+/* */
+const char * ATTRIBUTE_CONST
 unparse_protection(vm_prot_t p)
 {
   switch (p)
@@ -147,7 +150,8 @@ unparse_protection(vm_prot_t p)
     }
 }
 
-const char *
+/* */
+const char * ATTRIBUTE_CONST
 unparse_inheritance(vm_inherit_t i)
 {
   switch (i)
@@ -163,14 +167,16 @@ unparse_inheritance(vm_inherit_t i)
     }
 }
 
+/* */
 void
 macosx_debug_region(task_t task, mach_vm_address_t address)
 {
   macosx_debug_regions(task, address, 1);
 }
 
+/* */
 void
-macosx_debug_regions(task_t task, mach_vm_address_t address, int max)
+macosx_debug_regions(task_t task, mach_vm_address_t address, int maxnum)
 {
   kern_return_t kret;
   vm_region_basic_info_data_64_t info, prev_info;
@@ -264,7 +270,7 @@ macosx_debug_regions(task_t task, mach_vm_address_t address, int max)
           nsubregions++;
         }
 
-      if ((max > 0) && (num_printed >= max))
+      if ((maxnum > 0) && (num_printed >= maxnum))
         done = 1;
 
       if (done)
@@ -272,6 +278,7 @@ macosx_debug_regions(task_t task, mach_vm_address_t address, int max)
     }
 }
 
+/* */
 void
 macosx_debug_port_info(task_t task, mach_port_t port)
 {
@@ -296,10 +303,12 @@ macosx_debug_port_info(task_t task, mach_port_t port)
   printf_unfiltered(" nsrequest: 0x%lx\n", status.mps_nsrequest);
   printf_unfiltered("     flags: 0x%lx\n", status.mps_flags);
 #else
+  warning(_("gdb is not configured for macosx_debug_port_info() to work"));
   return;
 #endif /* (DEBUG || _DEBUG || __APPLE__) && mach_port_get_receive_status */
 }
 
+/* */
 void
 macosx_debug_task_port_info(mach_port_t task)
 {
@@ -366,10 +375,12 @@ macosx_debug_task_port_info(mach_port_t task)
                   ntypes * sizeof(port_type_t));
   MACH_WARN_ERROR(ret);
 #else
+  warning(_("gdb is not configured for macosx_debug_task_port_info() to work"));
   return;
 #endif /* (DEBUG || _DEBUG) && __APPLE__ && pre-conformance */
 }
 
+/* */
 void
 macosx_debug_inferior_status(macosx_inferior_status *s)
 {

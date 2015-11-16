@@ -1,4 +1,4 @@
-/* mi-cmd-var.c: MI Command Set - varobj commands.
+/* mi/mi-cmd-var.c: MI Command Set - varobj commands.
 
    Copyright 2000, 2002, 2004, 2005 Free Software Foundation, Inc.
 
@@ -48,7 +48,7 @@ extern int varobjdebug;		/* defined in varobj.c */
  * a standard way: */
 void mi_report_var_creation(struct ui_out *uiout, struct varobj *var, int is_root);
 
-static char *typecode_as_string(struct varobj* var);
+static const char *typecode_as_string(struct varobj *var);
 
 static struct ui_out *tmp_miout = NULL;
 
@@ -151,7 +151,7 @@ mi_cmd_var_create(char *command, char **argv, int argc)
 	      TRY_CATCH(except, RETURN_MASK_ALL)
 		{
 		  /* The variable 's' will be advanced by decode_line_1: */
-		  char *s = block_addr;
+		  const char *s = block_addr;
 		  /* APPLE LOCAL begin return multiple symbols  */
 		  sals = decode_line_1(&s, 1, (struct symtab *)NULL, 0,
                                        NULL, NULL, 0);
@@ -330,12 +330,12 @@ mi_report_var_creation (struct ui_out *uiout, struct varobj *var, int is_root)
     }
   else
     {
-      char *typecode;
-      ui_out_field_string (uiout, "type", type);
-      typecode = typecode_as_string (var);
-      ui_out_field_string (uiout, "typecode", typecode);
-      xfree (type);
-      resolved_type_string = varobj_get_resolved_type (var);
+      const char *typecode;
+      ui_out_field_string(uiout, "type", type);
+      typecode = typecode_as_string(var);
+      ui_out_field_string(uiout, "typecode", typecode);
+      xfree(type);
+      resolved_type_string = varobj_get_resolved_type(var);
     }
 
   type = varobj_get_dynamic_type (var);
@@ -384,21 +384,21 @@ mi_report_var_creation (struct ui_out *uiout, struct varobj *var, int is_root)
 	  ui_out_field_core_addr (uiout, "block_end_addr", block_end);
 	}
     }
-
 }
 
-static char *
-typecode_as_string (struct varobj *var)
+/* FIXME: needs comment: */
+static const char *
+typecode_as_string(struct varobj *var)
 {
   enum type_code type_code;
-  char *type_code_as_str;
-  struct type* type;
+  const char *type_code_as_str;
+  struct type *type;
 
-  type = varobj_get_type_struct (var);
+  type = varobj_get_type_struct(var);
   if (type == NULL)
     type_code = TYPE_CODE_UNDEF;
   else
-    type_code = TYPE_CODE (type);
+    type_code = TYPE_CODE(type);
 
   switch (type_code)
     {
@@ -477,6 +477,7 @@ typecode_as_string (struct varobj *var)
   return type_code_as_str;
 }
 
+/* FIXME: needs comment: */
 enum mi_cmd_result
 mi_cmd_var_delete (char *command, char **argv, int argc)
 {
@@ -625,21 +626,21 @@ mi_cmd_var_info_num_children (char *command, char **argv, int argc)
 /* Parse a string argument into a print_values value.  */
 
 static enum print_values
-mi_parse_values_option (const char *arg)
+mi_parse_values_option(const char *arg)
 {
-  if (strcmp (arg, "0") == 0
-      || strcmp (arg, mi_no_values) == 0)
+  if ((strcmp(arg, "0") == 0)
+      || (strcmp(arg, mi_no_values) == 0))
     return PRINT_NO_VALUES;
-  else if (strcmp (arg, "1") == 0
-	   || strcmp (arg, mi_all_values) == 0)
+  else if ((strcmp(arg, "1") == 0)
+	   || (strcmp(arg, mi_all_values) == 0))
     return PRINT_ALL_VALUES;
-  else if (strcmp (arg, "2") == 0
-	   || strcmp (arg, mi_simple_values) == 0)
+  else if ((strcmp(arg, "2") == 0)
+	   || (strcmp(arg, mi_simple_values) == 0))
     return PRINT_SIMPLE_VALUES;
   else
-    error (_("Unknown value for PRINT_VALUES\n\
+    error(_("Unknown value for PRINT_VALUES\n\
 Must be: 0 or \"%s\", 1 or \"%s\", 2 or \"%s\""),
-	   mi_no_values, mi_simple_values, mi_all_values);
+	  mi_no_values, mi_simple_values, mi_all_values);
 }
 
 /* Return 1 if given the argument PRINT_VALUES we should display
@@ -969,32 +970,34 @@ mi_cmd_var_info_expression (char *command, char **argv, int argc)
   return MI_CMD_DONE;
 }
 
+/* FIXME: needs comment: */
 enum mi_cmd_result
-mi_cmd_var_show_attributes (char *command, char **argv, int argc)
+mi_cmd_var_show_attributes(char *command, char **argv, int argc)
 {
   int attr;
-  char *attstr;
+  const char *attstr;
   struct varobj *var;
 
   if (argc != 1)
-    error (_("mi_cmd_var_show_attributes: Usage: NAME."));
+    error(_("mi_cmd_var_show_attributes: Usage: NAME."));
 
-  /* Get varobj handle, if a valid var obj name was specified */
-  var = varobj_get_handle (argv[0]);
+  /* Get varobj handle, if a valid var obj name was specified: */
+  var = varobj_get_handle(argv[0]);
   if (var == NULL)
-    error (_("mi_cmd_var_show_attributes: Variable object not found"));
+    error(_("mi_cmd_var_show_attributes: Variable object not found"));
 
-  attr = varobj_get_attributes (var);
+  attr = varobj_get_attributes(var);
   /* FIXME: define masks for attributes */
   if (attr & 0x00000001)
     attstr = "editable";
   else
     attstr = "noneditable";
 
-  ui_out_field_string (uiout, "attr", attstr);
+  ui_out_field_string(uiout, "attr", attstr);
   return MI_CMD_DONE;
 }
 
+/* FIXME: needs comment: */
 enum mi_cmd_result
 mi_cmd_var_evaluate_expression (char *command, char **argv, int argc)
 {
@@ -1209,7 +1212,7 @@ varobj_update_one (struct varobj *var, enum print_values print_values)
     }
   else if (nc == -2)
     {
-      char *typecode;
+      const char *typecode;
       char *type;
 
       /* APPLE LOCAL: each varobj tuple is named with VAROBJ; not anonymous */
@@ -1244,7 +1247,7 @@ varobj_update_one (struct varobj *var, enum print_values print_values)
       else
 	ui_out_field_skip (uiout, "new_resolved_type");
 
-      typecode = typecode_as_string (var);
+      typecode = typecode_as_string(var);
       ui_out_field_string (uiout, "new_typecode", typecode);
       ui_out_field_int (uiout, "new_num_children",
 			   varobj_get_num_children(var));

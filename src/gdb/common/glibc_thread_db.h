@@ -1,4 +1,5 @@
-/* thread_db.h -- interface to libthread_db.so library for debugging -lpthread
+/* common/glibc_thread_db.h -- interface to libthread_db.so library for
+   debugging -lpthread issues.
    Copyright (C) 1999-2013 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 

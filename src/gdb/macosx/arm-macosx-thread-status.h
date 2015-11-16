@@ -1,4 +1,4 @@
-/* arm-macosx-thread-status.h */
+/* macosx/arm-macosx-thread-status.h */
 
 #ifndef __GDB_ARM_MACOSX_THREAD_STATUS_H__
 #define __GDB_ARM_MACOSX_THREAD_STATUS_H__

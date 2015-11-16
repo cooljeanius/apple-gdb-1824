@@ -1,4 +1,4 @@
-/* macosx-nat-inferior-stubs.h -*- C -*- */
+/* macosx/macosx-nat-inferior-stubs.h -*- C -*- */
 
 #ifndef __GDB_MACOSX_NAT_INFERIOR_STUBS_H__
 #define __GDB_MACOSX_NAT_INFERIOR_STUBS_H__ 1

@@ -1,4 +1,4 @@
-/* i386-macosx-nat-exec.h -*- C -*- */
+/* macosx/i386-macosx-nat-exec.h -*- C -*- */
 
 #ifndef __GDB_I386_MACOSX_NAT_EXEC_H__
 #define __GDB_I386_MACOSX_NAT_EXEC_H__ 1

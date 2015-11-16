@@ -1,4 +1,4 @@
-/* mi-cmds.c: MI Command Set for GDB, the GNU debugger.
+/* mi/mi-cmds.c: MI Command Set for GDB, the GNU debugger.
 
    Copyright 2000, 2001, 2003 Free Software Foundation, Inc.
 

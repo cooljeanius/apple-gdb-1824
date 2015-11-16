@@ -1,4 +1,4 @@
-/* mi-out.c: MI Command Set - output generating routines.
+/* mi/mi-out.c: MI Command Set - output generating routines.
 
    Copyright 2000, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
@@ -31,6 +31,8 @@
    it. */
 
 extern struct ui_file *raw_stdout;
+
+int mi_out_c_inited = 0;
 
 struct ui_out_data
   {
@@ -267,39 +269,48 @@ mi_field_fmt(struct ui_out *uiout, int fldno, int width,
   fputs_unfiltered("\"", data->buffer);
 }
 
+/* FIXME: add comment: */
 void
-mi_spaces(struct ui_out *uiout, int numspaces)
+mi_spaces(struct ui_out *uiout ATTRIBUTE_UNUSED, int numspaces ATTRIBUTE_UNUSED)
 {
   return;
 }
 
+/* FIXME: add comment: */
 void
-mi_text(struct ui_out *uiout, const char *string)
+mi_text(struct ui_out *uiout ATTRIBUTE_UNUSED,
+	const char *string ATTRIBUTE_UNUSED)
 {
   return;
 }
 
+/* FIXME: add comment: */
 void
-mi_text_fmt(struct ui_out *uiout, const char *format, va_list args)
+mi_text_fmt(struct ui_out *uiout ATTRIBUTE_UNUSED,
+	    const char *format ATTRIBUTE_UNUSED, va_list args ATTRIBUTE_UNUSED)
 {
   return;
 }
 
+/* FIXME: add comment: */
 void
-mi_message(struct ui_out *uiout, int verbosity, const char *format,
-           va_list args)
+mi_message(struct ui_out *uiout ATTRIBUTE_UNUSED,
+	   int verbosity ATTRIBUTE_UNUSED, const char *format ATTRIBUTE_UNUSED,
+           va_list args ATTRIBUTE_UNUSED)
 {
   return;
 }
 
+/* FIXME: add comment: */
 void
-mi_wrap_hint(struct ui_out *uiout, const char *identstring)
+mi_wrap_hint(struct ui_out *uiout ATTRIBUTE_UNUSED, const char *identstring)
 {
   wrap_here((char *)identstring);
 }
 
+/* FIXME: add comment: */
 void
-mi_flush (struct ui_out *uiout)
+mi_flush(struct ui_out *uiout)
 {
   mi_out_data *data = ui_out_data(uiout);
   gdb_flush(data->buffer);
@@ -470,7 +481,9 @@ mi_out_new(int mi_version)
 void
 _initialize_mi_out(void)
 {
-  return; /* nothing happens here */
+  mi_out_c_inited = 1;
+  
+  return; /* nothing much really happens here */
 }
 
 /* EOF */

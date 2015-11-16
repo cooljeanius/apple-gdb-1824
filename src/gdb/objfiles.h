@@ -741,62 +741,62 @@ struct obj_section *find_pc_sect_in_ordered_sections (CORE_ADDR addr,
 /* APPLE LOCAL: These set the load state for the debug info based on the
    pc or by objfile.  */
 
-int objfile_set_load_state (struct objfile *, int, int);
-int pc_set_load_state (CORE_ADDR, int, int);
-int objfile_name_set_load_state (char *, int, int);
+int objfile_set_load_state(struct objfile *, int, int);
+int pc_set_load_state(CORE_ADDR, int, int);
+int objfile_name_set_load_state(const char *, int, int);
 
 /* APPLE LOCAL begin dwarf repository  */
-extern unsigned get_objfile_registry_num_registrations (void);
+extern unsigned get_objfile_registry_num_registrations(void);
 /* APPLE LOCAL end dwarf repository  */
 
 /* APPLE LOCAL */
-struct objfile *find_objfile_by_name (const char *name, int exact);
+struct objfile *find_objfile_by_name(const char *name, int exact);
 
-struct objfile *find_objfile_by_uuid (uuid_t uuid);
+struct objfile *find_objfile_by_uuid(uuid_t uuid);
 
 /* APPLE LOCAL begin fix-and-continue */
-struct symtab *symtab_get_first (struct objfile *, int );
-struct symtab *symtab_get_next (struct symtab *, int );
-struct partial_symtab *psymtab_get_first (struct objfile *, int );
-struct partial_symtab *psymtab_get_next (struct partial_symtab *, int );
+struct symtab *symtab_get_first(struct objfile *, int );
+struct symtab *symtab_get_next(struct symtab *, int );
+struct partial_symtab *psymtab_get_first(struct objfile *, int );
+struct partial_symtab *psymtab_get_next(struct partial_symtab *, int );
 /* APPLE LOCAL end fix-and-continue */
 
 #define	ALL_OBJFILES(obj) \
-  for ((obj) = objfile_get_first (); \
+  for ((obj) = objfile_get_first(); \
        (obj) != NULL; \
-       (obj) = objfile_get_next (obj))
+       (obj) = objfile_get_next(obj))
 
 #define	ALL_OBJFILES_SAFE(obj,nxt) \
   for ((obj) = objfile_get_first(); 	   \
-       (obj) != NULL? ((nxt)=objfile_get_next((obj)),1) :0;	\
+       ((obj) != NULL) ? ((nxt) = objfile_get_next((obj)), 1) : 0;	\
        (obj) = (nxt))
 
 /* Traverse all symtabs in one objfile.  */
 
 /* APPLE LOCAL fix-and-continue */
 #define	ALL_OBJFILE_SYMTABS(objfile, s) \
-    for ((s) = symtab_get_first (objfile, 1);  \
+    for ((s) = symtab_get_first(objfile, 1);  \
          (s) != NULL; \
-         (s) = symtab_get_next (s, 1))
+         (s) = symtab_get_next(s, 1))
 
 #define	ALL_OBJFILE_SYMTABS_INCL_OBSOLETED(objfile, s) \
-    for ((s) = symtab_get_first (objfile, 0);  \
+    for ((s) = symtab_get_first(objfile, 0);  \
          (s) != NULL; \
-         (s) = symtab_get_next (s, 0))
+         (s) = symtab_get_next(s, 0))
 
 /* Traverse all psymtabs in one objfile.  */
 
 /* APPLE LOCAL fix-and-continue */
 #define	ALL_OBJFILE_PSYMTABS(objfile, p) \
-    for ((p) = psymtab_get_first (objfile, 1); \
+    for ((p) = psymtab_get_first(objfile, 1); \
          (p) != NULL; \
-         (p) = psymtab_get_next (p, 1))
+         (p) = psymtab_get_next(p, 1))
 
 /* APPLE LOCAL fix-and-continue */
 #define	ALL_OBJFILE_PSYMTABS_INCL_OBSOLETED(objfile, p) \
-    for ((p) = psymtab_get_first (objfile, 0); \
+    for ((p) = psymtab_get_first(objfile, 0); \
          (p) != NULL; \
-         (p) = psymtab_get_next (p, 0))
+         (p) = psymtab_get_next(p, 0))
 
 /* Traverse all minimal symbols in one objfile.  */
 
@@ -807,57 +807,57 @@ struct partial_symtab *psymtab_get_next (struct partial_symtab *, int );
 /* Traverse all symtabs in all objfiles.  */
 
 #define	ALL_SYMTABS(objfile, s) \
-  ALL_OBJFILES (objfile)	 \
-    ALL_OBJFILE_SYMTABS (objfile, s)
+  ALL_OBJFILES(objfile)	 \
+    ALL_OBJFILE_SYMTABS(objfile, s)
 
 /* APPLE LOCAL fix-and-continue */
 #define	ALL_SYMTABS_INCL_OBSOLETED(objfile, s) \
-  ALL_OBJFILES (objfile)	 \
-    ALL_OBJFILE_SYMTABS_INCL_OBSOLETED (objfile, s)
+  ALL_OBJFILES(objfile)	 \
+    ALL_OBJFILE_SYMTABS_INCL_OBSOLETED(objfile, s)
 
 /* Traverse all psymtabs in all objfiles.  */
 
 #define	ALL_PSYMTABS(objfile, p) \
-  ALL_OBJFILES (objfile)	 \
-    ALL_OBJFILE_PSYMTABS (objfile, p)
+  ALL_OBJFILES(objfile)	 \
+    ALL_OBJFILE_PSYMTABS(objfile, p)
 
 /* Traverse all minimal symbols in all objfiles.  */
 
 #define	ALL_MSYMBOLS(objfile, m) \
-  ALL_OBJFILES (objfile)	 \
-    ALL_OBJFILE_MSYMBOLS (objfile, m)
+  ALL_OBJFILES(objfile)	 \
+    ALL_OBJFILE_MSYMBOLS(objfile, m)
 
 #define ALL_OBJFILE_OSECTIONS(objfile, osect)	\
   for (osect = objfile->sections; osect < objfile->sections_end; osect++)
 
 #define ALL_OBJSECTIONS(objfile, osect)		\
-  ALL_OBJFILES (objfile)			\
-    ALL_OBJFILE_OSECTIONS (objfile, osect)
+  ALL_OBJFILES(objfile)			\
+    ALL_OBJFILE_OSECTIONS(objfile, osect)
 
 /* APPLE LOCAL BEGIN: dSYM support
    Always grab the executable objfile when getting section information.  */
 
 /* Given and objfile, always return the main executable objfile
    if one exists. It is safe to call this macro with NULL.  */
-struct objfile *executable_objfile (struct objfile *objfile);
+struct objfile *executable_objfile(struct objfile *objfile);
 
 /* Given and objfile, always return the separate debug objfile
    if one exists. It is safe to call this macro with NULL.  */
-struct objfile *separate_debug_objfile (struct objfile *objfile);
+struct objfile *separate_debug_objfile(struct objfile *objfile);
 
 #define SECT_OFF_DATA(objfile) \
      ((executable_objfile(objfile)->sect_index_data == -1) \
-      ? (internal_error (__FILE__, __LINE__, _("sect_index_data not initialized")), -1) \
+      ? (internal_error(__FILE__, __LINE__, _("sect_index_data not initialized")), -1) \
       : executable_objfile(objfile)->sect_index_data)
 
 #define SECT_OFF_RODATA(objfile) \
      ((executable_objfile(objfile)->sect_index_rodata == -1) \
-      ? (internal_error (__FILE__, __LINE__, _("sect_index_rodata not initialized")), -1) \
+      ? (internal_error(__FILE__, __LINE__, _("sect_index_rodata not initialized")), -1) \
       : executable_objfile(objfile)->sect_index_rodata)
 
 #define SECT_OFF_TEXT(objfile) \
      ((executable_objfile(objfile)->sect_index_text == -1) \
-      ? (internal_error (__FILE__, __LINE__, _("sect_index_text not initialized")), -1) \
+      ? (internal_error(__FILE__, __LINE__, _("sect_index_text not initialized")), -1) \
       : executable_objfile(objfile)->sect_index_text)
 
 /* Sometimes the .bss section is missing from the objfile, so we don't
@@ -865,11 +865,11 @@ struct objfile *separate_debug_objfile (struct objfile *objfile);
    uninitialized section index. */
 #define SECT_OFF_BSS(objfile) (executable_objfile(objfile))->sect_index_bss
 
-CORE_ADDR objfile_section_offset (struct objfile *objfile, int sect_idx);
-CORE_ADDR objfile_text_section_offset (struct objfile *objfile);
-CORE_ADDR objfile_data_section_offset (struct objfile *objfile);
-CORE_ADDR objfile_rodata_section_offset (struct objfile *objfile);
-CORE_ADDR objfile_bss_section_offset (struct objfile *objfile);
+CORE_ADDR objfile_section_offset(struct objfile *objfile, int sect_idx);
+CORE_ADDR objfile_text_section_offset(struct objfile *objfile);
+CORE_ADDR objfile_data_section_offset(struct objfile *objfile);
+CORE_ADDR objfile_rodata_section_offset(struct objfile *objfile);
+CORE_ADDR objfile_bss_section_offset(struct objfile *objfile);
 
 /* APPLE LOCAL END: Use EXECUTABLE_OBJFILE.  */
 
@@ -878,24 +878,26 @@ struct objfile *find_libobjc_objfile(void);
 /* APPLE LOCAL: recording which objfiles get hit in symbol lookup.  */
 struct objfile_hitlist;
 struct objfile_hitlist *objfile_detach_hitlist(void);
-int objfile_on_hitlist_p (struct objfile_hitlist *, struct objfile *);
+int objfile_on_hitlist_p(struct objfile_hitlist *, struct objfile *);
 struct cleanup *make_cleanup_objfile_init_clear_hitlist(void);
-void objfile_add_to_hitlist (struct objfile *);
+void objfile_add_to_hitlist(struct objfile *);
 
 
 /* APPLE LOCAL begin differentiate arm & thumb msymbols */
-extern char *partial_symbol_special_info (struct objfile *objfile,
-                                          struct partial_symbol *psym);
+extern char *partial_symbol_special_info(struct objfile *objfile,
+                                         struct partial_symbol *psym);
 
-void sort_objfile_thumb_psyms (struct objfile *objfile);
+void sort_objfile_thumb_psyms(struct objfile *objfile);
 
-extern void objfile_add_special_psym (struct objfile *objfile,
-                                      struct partial_symbol *psym,
-                                      int short isa_value);
+extern void objfile_add_special_psym(struct objfile *objfile,
+                                     struct partial_symbol *psym,
+                                     int short isa_value);
 /* APPLE LOCAL begin differentiate arm & thumb msymbols */
 
-void slide_objfile (struct objfile *objfile, CORE_ADDR dyld_slide,
-                    struct section_offsets *new_offsets);
+void slide_objfile(struct objfile *objfile, CORE_ADDR dyld_slide,
+                   struct section_offsets *new_offsets);
 
 
-#endif /* !defined (OBJFILES_H) */
+#endif /* !defined(OBJFILES_H) */
+
+/* EOF */

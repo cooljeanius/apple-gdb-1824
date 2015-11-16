@@ -1,4 +1,4 @@
-/* tui-io.c: TUI support I/O functions.
+/* tui/tui-io.c: TUI support I/O functions.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -48,32 +48,36 @@
    "gdb_curses.h".  */
 #include "readline/readline.h"
 
-int
+/* FIXME: add comment: */
+int ATTRIBUTE_CONST
 key_is_start_sequence(int ch)
 {
   return (ch == 27);
 }
 
-int
-key_is_end_sequence (int ch)
+/* FIXME: add comment: */
+int ATTRIBUTE_CONST
+key_is_end_sequence(int ch)
 {
   return (ch == 126);
 }
 
-int
-key_is_backspace (int ch)
+/* FIXME: add comment: */
+int ATTRIBUTE_CONST
+key_is_backspace(int ch)
 {
   return (ch == 8);
 }
 
-int
-key_is_command_char (int ch)
+/* FIXME: add comment: */
+int ATTRIBUTE_CONST
+key_is_command_char(int ch)
 {
   return ((ch == KEY_NPAGE) || (ch == KEY_PPAGE)
 	  || (ch == KEY_LEFT) || (ch == KEY_RIGHT)
 	  || (ch == KEY_UP) || (ch == KEY_DOWN)
 	  || (ch == KEY_SF) || (ch == KEY_SR)
-	  || (ch == (int)'\f') || key_is_start_sequence (ch));
+	  || (ch == (int)'\f') || key_is_start_sequence(ch));
 }
 
 /* Use definition from readline 4.3.  */
@@ -203,7 +207,7 @@ tui_redisplay_readline(void)
   int c_line;
   int in;
   WINDOW *w;
-  char *prompt;
+  const char *prompt;
   int start_line;
 
   /* Detect when we temporarily left SingleKey and now the readline

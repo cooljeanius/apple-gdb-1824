@@ -1,4 +1,4 @@
-/* ttycntl.h (old) */
+/* nindy-share/ttycntl.h (old) */
 /******************************************************************************
  * This include file provides BSD/USG-compatible tty control for a host utility
  * that interacts with NINDY.  As of this writing, it is used by the gdb960

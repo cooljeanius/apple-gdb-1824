@@ -1,4 +1,4 @@
-/* terminal.h
+/* gdbserver/terminal.h
    Terminal interface definitions for the GDB remote server.
    Copyright 2002, Free Software Foundation, Inc.
 

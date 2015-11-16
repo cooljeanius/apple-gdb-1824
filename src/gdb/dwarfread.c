@@ -1799,21 +1799,20 @@ read_func_scope(struct dieinfo *dip, char *thisdie, char *enddie,
  */
 
 static void
-handle_producer (char *producer)
+handle_producer(char *producer)
 {
-
   /* If this compilation unit was compiled with g++ or gcc, then set the
      processing_gcc_compilation flag. */
 
-  if (DEPRECATED_STREQN (producer, GCC_PRODUCER, strlen (GCC_PRODUCER)))
+  if (DEPRECATED_STREQN(producer, GCC_PRODUCER, strlen(GCC_PRODUCER)))
     {
-      char version = producer[strlen (GCC_PRODUCER)];
-      processing_gcc_compilation = (version == '2' ? 2 : 1);
+      const char version = producer[strlen(GCC_PRODUCER)];
+      processing_gcc_compilation = ((version == '2') ? 2 : 1);
     }
   else
     {
       processing_gcc_compilation =
-	strncmp (producer, GPLUS_PRODUCER, strlen (GPLUS_PRODUCER)) == 0;
+	(strncmp(producer, GPLUS_PRODUCER, strlen(GPLUS_PRODUCER)) == 0);
     }
 
   /* Select a demangling style if we can identify the producer and if
@@ -1823,17 +1822,17 @@ handle_producer (char *producer)
 
   if (AUTO_DEMANGLING)
     {
-      if (DEPRECATED_STREQN (producer, GPLUS_PRODUCER, strlen (GPLUS_PRODUCER)))
+      if (DEPRECATED_STREQN(producer, GPLUS_PRODUCER, strlen(GPLUS_PRODUCER)))
 	{
-#if 0
+#if defined(GNU_DEMANGLING_STYLE_STRING) && !defined(AUTO_DEMANGLING)
 	  /* For now, stay with AUTO_DEMANGLING for g++ output, as we don't
 	     know whether it will use the old style or v3 mangling.  */
-	  set_demangling_style (GNU_DEMANGLING_STYLE_STRING);
-#endif /* 0 */
+	  set_demangling_style(GNU_DEMANGLING_STYLE_STRING);
+#endif /* GNU_DEMANGLING_STYLE_STRING && !AUTO_DEMANGLING */
 	}
-      else if (DEPRECATED_STREQN (producer, LCC_PRODUCER, strlen (LCC_PRODUCER)))
+      else if (DEPRECATED_STREQN(producer, LCC_PRODUCER, strlen(LCC_PRODUCER)))
 	{
-	  set_demangling_style (LUCID_DEMANGLING_STYLE_STRING);
+	  set_demangling_style(LUCID_DEMANGLING_STYLE_STRING);
 	}
     }
 }
@@ -1861,33 +1860,33 @@ handle_producer (char *producer)
  */
 
 static void
-read_file_scope (struct dieinfo *dip, char *thisdie, char *enddie,
-		 struct objfile *objfile)
+read_file_scope(struct dieinfo *dip, char *thisdie, char *enddie,
+		struct objfile *objfile)
 {
   struct cleanup *back_to;
   struct symtab *symtab;
 
-  set_cu_language (dip);
+  set_cu_language(dip);
   if (dip->at_producer != NULL)
     {
-      handle_producer (dip->at_producer);
+      handle_producer(dip->at_producer);
     }
-  numutypes = (enddie - thisdie) / 4;
-  utypes = (struct type **) xmalloc (numutypes * sizeof (struct type *));
-  back_to = make_cleanup (free_utypes, NULL);
-  memset (utypes, 0, numutypes * sizeof (struct type *));
-  memset (ftypes, 0, FT_NUM_MEMBERS * sizeof (struct type *));
-  start_symtab (dip->at_name, dip->at_comp_dir, dip->at_low_pc);
-  record_debugformat ("DWARF 1");
-  decode_line_numbers (lnbase);
-  process_dies (thisdie + dip->die_length, enddie, objfile);
+  numutypes = ((enddie - thisdie) / 4);
+  utypes = (struct type **)xmalloc(numutypes * sizeof(struct type *));
+  back_to = make_cleanup(free_utypes, NULL);
+  memset(utypes, 0, (numutypes * sizeof(struct type *)));
+  memset(ftypes, 0, (FT_NUM_MEMBERS * sizeof(struct type *)));
+  start_symtab(dip->at_name, dip->at_comp_dir, dip->at_low_pc);
+  record_debugformat("DWARF 1");
+  decode_line_numbers(lnbase);
+  process_dies((thisdie + dip->die_length), enddie, objfile);
 
-  symtab = end_symtab (dip->at_high_pc, objfile, 0);
+  symtab = end_symtab(dip->at_high_pc, objfile, 0);
   if (symtab != NULL)
     {
       symtab->language = cu_language;
     }
-  do_cleanups (back_to);
+  do_cleanups(back_to);
 }
 
 /*

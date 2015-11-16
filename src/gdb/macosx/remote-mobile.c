@@ -1,4 +1,4 @@
-/* remote-mobile.c
+/* macosx/remote-mobile.c
    Mac OS X support for GDB, the GNU debugger.
    Copyright 2007
    Free Software Foundation, Inc.
@@ -46,9 +46,9 @@
 
 static struct target_ops remote_mobile_ops;
 
-static char *remote_mobile_shortname = "remote-mobile";
-static char *remote_mobile_longname = "Remote connection to a mobile device using gdb-specific protocol";
-static char *remote_mobile_doc = "Connect to a remote mobile device, using a gdb-specific protocol.\n\
+static const char *remote_mobile_shortname = "remote-mobile";
+static const char *remote_mobile_longname = "Remote connection to a mobile device using gdb-specific protocol";
+static const char *remote_mobile_doc = "Connect to a remote mobile device, using a gdb-specific protocol.\n\
 Specify the port which we should connect to to receive the filedescriptor for remote connections.";
 
 extern void _initialize_remote_mobile(void);
@@ -56,9 +56,8 @@ extern void _initialize_remote_mobile(void);
 /* This is standard socket code to open an unnamed UNIX domain socket,
    and connect it to another UNIX domain socket whose name is given in
    NAME.  The opened socket is returned, or -1 on error.  */
-
 static int
-open_unix_socket (char *name)
+open_unix_socket(char *name)
 {
   struct sockaddr_un sockaddr;
   int source_fd;

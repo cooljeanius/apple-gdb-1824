@@ -1,4 +1,4 @@
-/* mi-cmd-disas.c: MI Command Set - disassemble commands.
+/* mi/mi-cmd-disas.c: MI Command Set - disassemble commands.
    Copyright 2000, 2001, 2002 Free Software Foundation, Inc.
    Contributed by Cygnus Solutions (a Red Hat company).
 

@@ -1,4 +1,4 @@
-/* tui-command.h: Specific command window processing.
+/* tui/tui-command.h: Specific command window processing.
 
    Copyright 1998, 1999, 2000, 2001, 2004 Free Software Foundation,
    Inc.

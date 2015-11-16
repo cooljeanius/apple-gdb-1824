@@ -21,7 +21,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (VALUE_H)
+#if !defined(VALUE_H)
 #define VALUE_H 1
 
 #include "ansidecl.h"
@@ -439,19 +439,19 @@ extern struct value *evaluate_type (struct expression *exp);
 extern struct value *evaluate_subexp_with_coercion (struct expression *,
 						    int *, enum noside);
 
-extern struct value *parse_and_eval (char *exp);
+extern struct value *parse_and_eval(const char *exp);
 
-extern struct value *parse_to_comma_and_eval (char **expp);
+extern struct value *parse_to_comma_and_eval(char **expp);
 
-extern struct type *parse_and_eval_type (char *p, int length);
+extern struct type *parse_and_eval_type(char *p, int length);
 
-extern CORE_ADDR parse_and_eval_address (char *exp);
+extern CORE_ADDR parse_and_eval_address(const char *exp);
 
-extern CORE_ADDR parse_and_eval_address_1 (char **expptr);
+extern CORE_ADDR parse_and_eval_address_1(char **expptr);
 
-extern LONGEST parse_and_eval_long (char *exp);
+extern LONGEST parse_and_eval_long(const char *exp);
 
-extern struct value *access_value_history (int num);
+extern struct value *access_value_history(int num);
 
 extern struct value *value_of_internalvar (struct internalvar *var);
 
@@ -462,7 +462,7 @@ extern void set_internalvar_component (struct internalvar *var,
 				       int bitpos, int bitsize,
 				       struct value *newvalue);
 
-extern struct internalvar *lookup_internalvar (char *name);
+extern struct internalvar *lookup_internalvar(const char *name);
 
 extern int value_equal (struct value *arg1, struct value *arg2);
 
@@ -505,7 +505,7 @@ extern int record_latest_value (struct value *val);
 extern void modify_field(gdb_byte *addr, LONGEST fieldval, int bitpos,
 			 int bitsize);
 
-extern void type_print(struct type *type, char *varstring,
+extern void type_print(struct type *type, const char *varstring,
 		       struct ui_file *stream, int show);
 
 
@@ -639,4 +639,6 @@ struct cleanup *make_cleanup_set_restore_unwind_on_signal (int newval);
 /* APPLE LOCAL: control casting closures to dynamic type.  */
 struct cleanup *make_cleanup_set_restore_print_closure (int newval);
 
-#endif /* !defined (VALUE_H) */
+#endif /* !defined(VALUE_H) */
+
+/* EOF */

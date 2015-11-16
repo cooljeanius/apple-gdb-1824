@@ -1,4 +1,4 @@
-/* cli-cmds.c: GDB CLI commands.
+/* cli/cli-cmds.c: GDB CLI commands.
 
    Copyright 2000-2005 Free Software Foundation, Inc.
 
@@ -47,117 +47,100 @@
 #include "cli/cli-cmds.h"
 
 #ifdef TUI
-#include "tui/tui.h"		/* For tui_active et.al.   */
-#endif
+# include "tui/tui.h"		/* For tui_active et.al.   */
+#endif /* TUI */
 
 /* Prototypes for local command functions */
 
-static void complete_command (char *, int);
+static void complete_command(const char *, int);
 
-static void echo_command (char *, int);
+static void echo_command(const char *, int);
 
-static void pwd_command (char *, int);
+static void pwd_command(const char *, int);
 
-static void show_version (char *, int);
+static void show_version(const char *, int);
 
-static void help_command (char *, int);
+static void help_command(const char *, int);
 
-static void show_command (char *, int);
+static void show_command(const char *, int);
 
-static void info_command (char *, int);
+static void info_command(const char *, int);
 
-static void show_debug (char *, int);
+static void show_debug(const char *, int);
 
-static void set_debug (char *, int);
+static void set_debug(const char *, int);
 
-static void show_user (char *, int);
+static void show_user(const char *, int);
 
-static void make_command (char *, int);
+static void make_command(const char *, int);
 
-static void shell_escape (char *, int);
+static void shell_escape(const char *, int);
 
-static void edit_command (char *, int);
+static void edit_command(const char *, int);
 
-static void list_command (char *, int);
+static void list_command(const char *, int);
 
-void apropos_command (char *, int);
+void apropos_command(const char *, int);
 
 /* Prototypes for local utility functions */
 
 /* APPLE LOCAL: return type changed to int.  */
-static int ambiguous_line_spec (struct symtabs_and_lines *);
+static int ambiguous_line_spec(struct symtabs_and_lines *);
 
 /* Limit the call depth of user-defined commands */
 int max_user_call_depth;
 
 /* Define all cmd_list_elements.  */
 
-/* Chain containing all defined commands.  */
-
+/* Chain containing all defined commands: */
 struct cmd_list_element *cmdlist;
 
-/* Chain containing all defined info subcommands.  */
-
+/* Chain containing all defined info subcommands: */
 struct cmd_list_element *infolist;
 
-/* Chain containing all defined enable subcommands. */
-
+/* Chain containing all defined enable subcommands: */
 struct cmd_list_element *enablelist;
 
-/* Chain containing all defined disable subcommands. */
-
+/* Chain containing all defined disable subcommands: */
 struct cmd_list_element *disablelist;
 
-/* Chain containing all defined toggle subcommands. */
-
+/* Chain containing all defined toggle subcommands: */
 struct cmd_list_element *togglelist;
 
-/* Chain containing all defined stop subcommands. */
-
+/* Chain containing all defined stop subcommands: */
 struct cmd_list_element *stoplist;
 
-/* Chain containing all defined delete subcommands. */
-
+/* Chain containing all defined delete subcommands: */
 struct cmd_list_element *deletelist;
 
-/* Chain containing all defined "enable breakpoint" subcommands. */
-
+/* Chain containing all defined "enable breakpoint" subcommands: */
 struct cmd_list_element *enablebreaklist;
 
-/* Chain containing all defined set subcommands */
-
+/* Chain containing all defined set subcommands: */
 struct cmd_list_element *setlist;
 
-/* Chain containing all defined unset subcommands */
-
+/* Chain containing all defined unset subcommands: */
 struct cmd_list_element *unsetlist;
 
-/* Chain containing all defined show subcommands.  */
-
+/* Chain containing all defined show subcommands: */
 struct cmd_list_element *showlist;
 
-/* Chain containing all defined \"set history\".  */
-
+/* Chain containing all defined \"set history\": */
 struct cmd_list_element *sethistlist;
 
-/* Chain containing all defined \"show history\".  */
-
+/* Chain containing all defined \"show history\": */
 struct cmd_list_element *showhistlist;
 
-/* Chain containing all defined \"unset history\".  */
-
+/* Chain containing all defined \"unset history\": */
 struct cmd_list_element *unsethistlist;
 
-/* Chain containing all defined maintenance subcommands. */
-
+/* Chain containing all defined maintenance subcommands: */
 struct cmd_list_element *maintenancelist;
 
-/* Chain containing all defined "maintenance info" subcommands. */
-
+/* Chain containing all defined "maintenance info" subcommands: */
 struct cmd_list_element *maintenanceinfolist;
 
-/* Chain containing all defined "maintenance print" subcommands. */
-
+/* Chain containing all defined "maintenance print" subcommands: */
 struct cmd_list_element *maintenanceprintlist;
 
 struct cmd_list_element *setprintlist;
@@ -176,15 +159,15 @@ struct cmd_list_element *showchecklist;
    none is supplied. */
 
 void
-error_no_arg (char *why)
+error_no_arg(const char *why)
 {
-  error (_("Argument required (%s)."), why);
+  error(_("Argument required (%s)."), why);
 }
 
 /* The "info" command is defined as a prefix, with allow_unknown = 0.
  * Therefore, its own definition is called only for "info" with no args: */
 static void
-info_command(char *arg, int from_tty)
+info_command(const char *arg, int from_tty)
 {
   printf_unfiltered(_("\"info\" must be followed by the name of an info command.\n"));
   help_list(infolist, "info ", (enum command_class)-1, gdb_stdout);
@@ -192,7 +175,7 @@ info_command(char *arg, int from_tty)
 
 /* The "show" command with no arguments shows all the settings: */
 static void
-show_command(char *arg, int from_tty)
+show_command(const char *arg, int from_tty)
 {
   cmd_show_list(showlist, from_tty, "");
 }
@@ -201,35 +184,34 @@ show_command(char *arg, int from_tty)
    is ignored.  */
 
 static void
-help_command (char *command, int from_tty)
+help_command(const char *command, int from_tty)
 {
-  help_cmd (command, gdb_stdout);
+  help_cmd(command, gdb_stdout);
 }
 
-/* String compare function for qsort.  */
+/* String compare function for qsort(): */
 static int
-compare_strings (const void *arg1, const void *arg2)
+compare_strings(const void *arg1, const void *arg2)
 {
-  const char **s1 = (const char **) arg1;
-  const char **s2 = (const char **) arg2;
-  return strcmp (*s1, *s2);
+  const char **s1 = (const char **)arg1;
+  const char **s2 = (const char **)arg2;
+  return strcmp(*s1, *s2);
 }
 
-/* The "complete" command is used by Emacs to implement completion.  */
-
+/* The "complete" command is used by Emacs to implement completion: */
 static void
-complete_command (char *arg, int from_tty)
+complete_command(const char *arg, int from_tty)
 {
   /* APPLE LOCAL refactor command completion */
   int argpoint;
 
-  dont_repeat ();
+  dont_repeat();
 
   if (arg == NULL)
     arg = "";
-  argpoint = strlen (arg);
+  argpoint = strlen(arg);
   /* APPLE LOCAL refactor command completion */
-  cli_interpreter_complete (NULL, arg, arg, argpoint, -1);
+  cli_interpreter_complete(NULL, arg, arg, argpoint, -1);
 }
 
 /* APPLE LOCAL begin refactor command completion */
@@ -239,16 +221,15 @@ complete_command (char *arg, int from_tty)
    into the COMMAND_BUFFER where you think completion should start,
    and CURSOR as the logical end of input, and it will output the set
    of completions to the current uiout.  */
-
 int
-cli_interpreter_complete (void *data, char *word, char *command_buffer,
-			  int cursor, int limit)
+cli_interpreter_complete(void *data, const char *word,
+			 const char *command_buffer, int cursor, int limit)
 {
   char **completions;
   struct cleanup *old_chain;
 
-  completions = complete_line (word, command_buffer, cursor);
-  old_chain = make_cleanup_ui_out_list_begin_end (uiout, "completions");
+  completions = complete_line(word, command_buffer, cursor);
+  old_chain = make_cleanup_ui_out_list_begin_end(uiout, "completions");
   /* APPLE LOCAL end refactor command completion */
   if (completions)
     {
@@ -310,29 +291,30 @@ cli_interpreter_complete (void *data, char *word, char *command_buffer,
   /* APPLE LOCAL end refactor command completion */
 }
 
+/* FIXME: needs comment: */
 int
-is_complete_command (struct cmd_list_element *c)
+is_complete_command(struct cmd_list_element *c)
 {
-  return cmd_cfunc_eq (c, complete_command);
+  return cmd_cfunc_eq(c, complete_command);
 }
 
+/* FIXME: needs comment: */
 static void
-show_version (char *args, int from_tty)
+show_version(const char *args, int from_tty)
 {
   immediate_quit++;
-  print_gdb_version (gdb_stdout);
-  printf_filtered ("\n");
+  print_gdb_version(gdb_stdout);
+  printf_filtered("\n");
   immediate_quit--;
 }
 
-/* Handle the quit command.  */
-
+/* Handle the quit command: */
 void
-quit_command (char *args, int from_tty)
+quit_command(const char *args, int from_tty)
 {
-  if (!quit_confirm ())
-    error (_("Not confirmed."));
-  quit_force (args, from_tty);
+  if (!quit_confirm())
+    error(_("Not confirmed."));
+  quit_force(args, from_tty);
 }
 
 /* APPLE LOCAL begin hack hack */
@@ -341,98 +323,98 @@ struct cleanup *old_cleanups;
 /* APPLE LOCAL end hack hack */
 
 static void
-pwd_command (char *args, int from_tty)
+pwd_command(const char *args, int from_tty)
 {
   if (args)
-    error (_("The \"pwd\" command does not take an argument: %s"), args);
-  getcwd (gdb_dirbuf, sizeof (gdb_dirbuf));
+    error(_("The \"pwd\" command does not take an argument: %s"), args);
+  getcwd(gdb_dirbuf, sizeof(gdb_dirbuf));
 
-  if (strcmp (gdb_dirbuf, current_directory) != 0)
-    printf_unfiltered (_("Working directory %s\n (canonically %s).\n"),
-		       current_directory, gdb_dirbuf);
+  if (strcmp(gdb_dirbuf, current_directory) != 0)
+    printf_unfiltered(_("Working directory %s\n (canonically %s).\n"),
+		      current_directory, gdb_dirbuf);
   else
-    printf_unfiltered (_("Working directory %s.\n"), current_directory);
+    printf_unfiltered(_("Working directory %s.\n"), current_directory);
 }
 
+/* FIXME: needs comment: */
 void
-cd_command (char *dir, int from_tty)
+cd_command(const char *dir, int from_tty)
 {
-  int len;
+  size_t len;
   /* Found something other than leading repetitions of "/..".  */
   int found_real_path;
   char *p;
 
   /* If the new directory is absolute, repeat is a no-op; if relative,
      repeat might be useful but is more likely to be a mistake.  */
-  dont_repeat ();
+  dont_repeat();
 
   if (dir == 0)
-    error_no_arg (_("new working directory"));
+    error_no_arg(_("new working directory"));
 
   /* APPLE LOCAL begin */
-  argv = buildargv (dir);
+  argv = buildargv(dir);
   if (argv == NULL)
-    nomem (0);
+    nomem(0);
 
-  make_cleanup_freeargv (argv);
+  make_cleanup_freeargv(argv);
 
-  dir = tilde_expand (*argv);
-  old_cleanups = make_cleanup (xfree, dir);
+  dir = tilde_expand(*argv);
+  old_cleanups = make_cleanup(xfree, (void *)dir);
   /* APPLE LOCAL end */
 
-  if (chdir (dir) < 0)
-    perror_with_name (dir);
+  if (chdir(dir) < 0)
+    perror_with_name(dir);
 
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
   /* There's too much mess with DOSish names like "d:", "d:.",
      "d:./foo" etc.  Instead of having lots of special #ifdef'ed code,
      simply get the canonicalized name of the current directory.  */
-  dir = getcwd (gdb_dirbuf, sizeof (gdb_dirbuf));
-#endif
+  dir = getcwd(gdb_dirbuf, sizeof(gdb_dirbuf));
+#endif /* HAVE_DOS_BASED_FILE_SYSTEM */
 
-  len = strlen (dir);
-  if (IS_DIR_SEPARATOR (dir[len - 1]))
+  len = strlen(dir);
+  if (IS_DIR_SEPARATOR(dir[len - 1UL]))
     {
       /* Remove the trailing slash unless this is a root directory
          (including a drive letter on non-Unix systems).  */
-      if (!(len == 1)		/* "/" */
+      if (!(len == 1UL)		/* "/" */
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
-	  && !(len == 3 && dir[1] == ':') /* "d:/" */
-#endif
-	  )
+	  && !(len == 3UL && dir[1] == ':') /* "d:/" */
+#endif /* HAVE_DOS_BASED_FILE_SYSTEM */
+	  && (len != 0UL))
 	len--;
     }
 
-  dir = savestring (dir, len);
-  if (IS_ABSOLUTE_PATH (dir))
-    current_directory = dir;
+  dir = savestring(dir, len);
+  if (IS_ABSOLUTE_PATH(dir))
+    current_directory = (char *)dir;
   else
     {
-      if (IS_DIR_SEPARATOR (current_directory[strlen (current_directory) - 1]))
-	current_directory = concat (current_directory, dir, (char *)NULL);
+      if (IS_DIR_SEPARATOR(current_directory[strlen(current_directory) - 1UL]))
+	current_directory = concat(current_directory, dir, (char *)NULL);
       else
-	current_directory = concat (current_directory, SLASH_STRING,
-				    dir, (char *)NULL);
-      xfree (dir);
+	current_directory = concat(current_directory, SLASH_STRING,
+				   dir, (char *)NULL);
+      xfree((void *)dir);
     }
 
-  /* Now simplify any occurrences of `.' and `..' in the pathname.  */
-
+  /* Now simplify any occurrences of `.' and `..' in the pathname: */
   found_real_path = 0;
   for (p = current_directory; *p;)
     {
-      if (IS_DIR_SEPARATOR (p[0]) && p[1] == '.'
-	  && (p[2] == 0 || IS_DIR_SEPARATOR (p[2])))
-	strcpy (p, p + 2);
-      else if (IS_DIR_SEPARATOR (p[0]) && p[1] == '.' && p[2] == '.'
-	       && (p[3] == 0 || IS_DIR_SEPARATOR (p[3])))
+      if (IS_DIR_SEPARATOR(p[0]) && (p[1] == '.')
+	  && ((p[2] == 0) || IS_DIR_SEPARATOR(p[2])))
+	strcpy(p, (p + 2));
+      else if (IS_DIR_SEPARATOR(p[0]) && (p[1] == '.') && (p[2] == '.')
+	       && ((p[3] == 0) || IS_DIR_SEPARATOR(p[3])))
 	{
 	  if (found_real_path)
 	    {
 	      /* Search backwards for the directory just before the "/.."
 	         and obliterate it and the "/..".  */
 	      char *q = p;
-	      while (q != current_directory && !IS_DIR_SEPARATOR (q[-1]))
+	      while (q != current_directory && !IS_DIR_SEPARATOR(q[-1]))
 		--q;
 
 	      if (q == current_directory)
@@ -441,8 +423,8 @@ cd_command (char *dir, int from_tty)
 		++p;
 	      else
 		{
-		  strcpy (q - 1, p + 3);
-		  p = q - 1;
+		  strcpy((q - 1), (p + 3));
+		  p = (q - 1);
 		}
 	    }
 	  else
@@ -457,16 +439,17 @@ cd_command (char *dir, int from_tty)
 	}
     }
 
-  forget_cached_source_info ();
+  forget_cached_source_info();
 
   if (from_tty)
-    pwd_command ((char *) 0, 1);
+    pwd_command((char *)0, 1);
 
-  do_cleanups (old_cleanups);
+  do_cleanups(old_cleanups);
 }
 
+/* FIXME: needs comment: */
 void
-source_command (char *args, int from_tty)
+source_command(const char *args, int from_tty)
 {
   /* APPLE LOCAL begin refactor source command */
   char *file;
@@ -475,19 +458,19 @@ source_command (char *args, int from_tty)
 
   if (args == NULL)
     {
-      error (_("source command requires pathname of file to source."));
+      error(_("source command requires pathname of file to source."));
     }
 
-  argv = buildargv (args);
+  argv = buildargv(args);
   if (argv == NULL)
-    nomem (0);
+    nomem(0);
 
-  make_cleanup_freeargv (argv);
+  make_cleanup_freeargv(argv);
 
-  file = tilde_expand (*argv);
-  old_cleanups = make_cleanup (xfree, file);
-  source_file (file, from_tty);
-  do_cleanups (old_cleanups);
+  file = tilde_expand(*argv);
+  old_cleanups = make_cleanup(xfree, file);
+  source_file(file, from_tty);
+  do_cleanups(old_cleanups);
 }
 
 /* APPLE LOCAL: We split the file-source code out of the CLI command
@@ -500,28 +483,29 @@ source_command (char *args, int from_tty)
    more work, so here it stays.  */
 
 void
-source_file (char *file, int from_tty)
+source_file(const char *file, int from_tty)
 {
   FILE *stream;
   /* APPLE LOCAL end refactor source command */
 
-  stream = fopen (file, FOPEN_RT);
+  stream = fopen(file, FOPEN_RT);
   if (!stream)
     {
       if (from_tty)
-	perror_with_name (file);
+	perror_with_name(file);
       else
 	return;
     }
 
-  script_from_file (stream, file);
+  script_from_file(stream, file);
   /* APPLE LOCAL end refactor source command */
 }
 
+/* FIXME: needs comment: */
 static void
-echo_command (char *text, int from_tty)
+echo_command(const char *text, int from_tty)
 {
-  char *p = text;
+  const char *p = text;
   int c;
 
   if (text)
@@ -534,104 +518,108 @@ echo_command (char *text, int from_tty)
 	    if (*p == 0)
 	      return;
 
-	    c = parse_escape (&p);
+	    c = parse_escape(&p);
 	    if (c >= 0)
-	      printf_filtered ("%c", c);
+	      printf_filtered("%c", c);
 	  }
 	else
-	  printf_filtered ("%c", c);
+	  printf_filtered("%c", c);
       }
 
-  /* Force this output to appear now.  */
-  wrap_here ("");
-  gdb_flush (gdb_stdout);
+  /* Force this output to appear now: */
+  wrap_here("");
+  gdb_flush(gdb_stdout);
 }
 
+/* FIXME: needs comment: */
 static void
-shell_escape (char *arg, int from_tty)
+shell_escape(const char *arg, int from_tty)
 {
 #if defined(CANT_FORK) || \
       (!defined(HAVE_WORKING_VFORK) && !defined(HAVE_WORKING_FORK))
   /* If ARG is NULL, they want an inferior shell, but `system' just
      reports if the shell is available when passed a NULL arg.  */
-  int rc = system (arg ? arg : "");
+  int rc = system(arg ? arg : "");
 
   if (!arg)
     arg = "inferior shell";
 
   if (rc == -1)
     {
-      fprintf_unfiltered (gdb_stderr, "Cannot execute %s: %s\n", arg,
-			  safe_strerror (errno));
-      gdb_flush (gdb_stderr);
+      fprintf_unfiltered(gdb_stderr, "Cannot execute %s: %s\n", arg,
+			 safe_strerror(errno));
+      gdb_flush(gdb_stderr);
     }
   else if (rc)
     {
-      fprintf_unfiltered (gdb_stderr, "%s exited with status %d\n", arg, rc);
-      gdb_flush (gdb_stderr);
+      fprintf_unfiltered(gdb_stderr, "%s exited with status %d\n", arg, rc);
+      gdb_flush(gdb_stderr);
     }
-#ifdef GLOBAL_CURDIR
+# ifdef GLOBAL_CURDIR
   /* Make sure to return to the directory GDB thinks it is, in case the
      shell command we just ran changed it.  */
-  chdir (current_directory);
-#endif
-#else /* Can fork.  */
+  chdir(current_directory);
+# endif /* GLOBAL_CURDIR */
+#else /* Can fork: */
   int rc, status, pid;
 
-  if ((pid = vfork ()) == 0)
+  if ((pid = vfork()) == 0)
     {
-      char *p, *user_shell;
+      char *p;
+      const char *user_shell;
 
-      if ((user_shell = (char *) getenv ("SHELL")) == NULL)
+      if ((user_shell = (const char *)getenv("SHELL")) == NULL)
 	user_shell = "/bin/sh";
 
       /* Get the name of the shell for arg0 */
-      if ((p = strrchr (user_shell, '/')) == NULL)
-	p = user_shell;
+      if ((p = strrchr(user_shell, '/')) == NULL)
+	p = (char *)user_shell;
       else
 	p++;			/* Get past '/' */
 
       /* APPLE LOCAL: gdb is setgid to give it extra special debuggizer
          powers; we need to drop those privileges before executing the
          inferior process.  */
-      setgid (getgid ());
+      setgid(getgid());
 
       if (!arg)
-	execl (user_shell, p, (char *) 0);
+	execl(user_shell, p, (char *)0);
       else
-	execl (user_shell, p, "-c", arg, (char *) 0);
+	execl(user_shell, p, "-c", arg, (char *)0);
 
-      fprintf_unfiltered (gdb_stderr, "Cannot execute %s: %s\n", user_shell,
-			  safe_strerror (errno));
-      gdb_flush (gdb_stderr);
-      _exit (0177);
+      fprintf_unfiltered(gdb_stderr, "Cannot execute %s: %s\n", user_shell,
+			 safe_strerror(errno));
+      gdb_flush(gdb_stderr);
+      _exit(0177);
     }
 
   if (pid != -1)
-    while ((rc = wait (&status)) != pid && rc != -1)
+    while (((rc = wait(&status)) != pid) && (rc != -1))
       ;
   else
-    error (_("Fork failed"));
+    error(_("Fork failed"));
 #endif /* Can fork.  */
 }
 
+/* FIXME: needs comment: */
 static void
-edit_command (char *arg, int from_tty)
+edit_command(const char *arg, int from_tty)
 {
   struct symtabs_and_lines sals;
   struct symtab_and_line sal;
   struct symbol *sym;
-  char *arg1;
+  const char *arg1;
   int log10;
-  unsigned m;
-  char *editor;
-  char *p, *fn;
+  unsigned int m;
+  const char *editor;
+  char *p;
+  const char *fn;
 
-  /* Pull in the current default source line if necessary */
+  /* Pull in the current default source line if necessary: */
   if (arg == 0)
     {
-      set_default_source_symtab_and_line ();
-      sal = get_current_source_symtab_and_line ();
+      set_default_source_symtab_and_line();
+      sal = get_current_source_symtab_and_line();
     }
 
   /* bare "edit" edits file with present line.  */
@@ -639,37 +627,33 @@ edit_command (char *arg, int from_tty)
   if (arg == 0)
     {
       if (sal.symtab == 0)
-	error (_("No default source file yet."));
-      sal.line += get_lines_to_list () / 2;
+	error(_("No default source file yet."));
+      sal.line += (get_lines_to_list() / 2);
     }
   else
     {
-
-      /* Now should only be one argument -- decode it in SAL */
-
+      /* Now should only be one argument -- decode it in SAL: */
       arg1 = arg;
       /* APPLE LOCAL begin return multiple symbols  */
-      sals = decode_line_1 (&arg1, 0, 0, 0, 0, 0, 0);
+      sals = decode_line_1(&arg1, 0, 0, 0, 0, 0, 0);
       /* APPLE LOCAL end return multiple symbols  */
 
-      if (! sals.nelts) return;  /*  C++  */
+      if (!sals.nelts) return;  /*  C++  */
       if (sals.nelts > 1) {
-	/* APPLE LOCAL: ambiguous_line_spec returns
-	   1 if the line spec really was ambiguous -
-	   rather than just being many matches of the
-	   same line.  */
-        if (ambiguous_line_spec (&sals) == 1)
+	/* APPLE LOCAL: ambiguous_line_spec returns 1 if the linespec really was
+	 * ambiguous, rather than just being many matches of the same line: */
+        if (ambiguous_line_spec(&sals) == 1)
 	  {
-	    xfree (sals.sals);
+	    xfree(sals.sals);
 	    return;
 	  }
       }
 
       sal = sals.sals[0];
-      xfree (sals.sals);
+      xfree(sals.sals);
 
       if (*arg1)
-        error (_("Junk at end of line specification."));
+        error(_("Junk at end of line specification."));
 
       /* if line was specified by address,
          first print exactly which line, and which file.
@@ -680,20 +664,20 @@ edit_command (char *arg, int from_tty)
           if (sal.symtab == 0)
 	    /* FIXME-32x64--assumes sal.pc fits in long.  */
             /* APPLE LOCAL: Fixed by using paddr_nz.  */
-	    error (_("No source file for address 0x%s."), paddr_nz (sal.pc));
-          sym = find_pc_function (sal.pc);
+	    error(_("No source file for address 0x%s."), paddr_nz(sal.pc));
+          sym = find_pc_function(sal.pc);
           if (sym)
 	    {
-	      deprecated_print_address_numeric (sal.pc, 1, gdb_stdout);
-	      printf_filtered (" is in ");
-	      fputs_filtered (SYMBOL_PRINT_NAME (sym), gdb_stdout);
-	      printf_filtered (" (%s:%d).\n", sal.symtab->filename, sal.line);
+	      deprecated_print_address_numeric(sal.pc, 1, gdb_stdout);
+	      printf_filtered(" is in ");
+	      fputs_filtered(SYMBOL_PRINT_NAME(sym), gdb_stdout);
+	      printf_filtered(" (%s:%d).\n", sal.symtab->filename, sal.line);
 	    }
           else
 	    {
-	      deprecated_print_address_numeric (sal.pc, 1, gdb_stdout);
-	      printf_filtered (" is at %s:%d.\n",
-			       sal.symtab->filename, sal.line);
+	      deprecated_print_address_numeric(sal.pc, 1, gdb_stdout);
+	      printf_filtered(" is at %s:%d.\n",
+			      sal.symtab->filename, sal.line);
 	    }
         }
 
@@ -704,11 +688,13 @@ edit_command (char *arg, int from_tty)
         error(_("No line number known for %s."), arg);
     }
 
-  if ((editor = (char *)getenv("EDITOR")) == NULL)
+  if ((editor = (const char *)getenv("EDITOR")) == NULL)
     editor = "/bin/ex";  /* is this really a sane default? */
 
-  /* Approximate base-10 log of line to 1 unit for digit count */
-  for (log10 = 32, m = 0x80000000; !(sal.line & m) && (log10 > 0); log10--, m = (m >> 1));
+  /* Approximate base-10 log of line to 1 unit for digit count: */
+  for (log10 = 32, m = 0x80000000; !(sal.line & m) && (log10 > 0);
+       log10--, m = (m >> 1))
+    ; /* (do nothing) */
   log10 = (1 + (int)((log10 + (0 == ((m - 1) & sal.line))) / 3.32192809f));
 
   /* If we do NOT already know the full absolute file name of the source
@@ -724,20 +710,21 @@ edit_command (char *arg, int from_tty)
 
   /* Quote the file name, in case it has whitespace or other special
      characters.  */
-  p = xstrprintf ("%s +%d \"%s\"", editor, sal.line, fn);
+  p = xstrprintf("%s +%d \"%s\"", editor, sal.line, fn);
   shell_escape(p, from_tty);
   xfree(p);
 }
 
+/* FIXME: needs comment: */
 static void
-list_command (char *arg, int from_tty)
+list_command(const char *arg, int from_tty)
 {
   struct symtabs_and_lines sals, sals_end;
   struct symtab_and_line sal = { };
   struct symtab_and_line sal_end = { };
   struct symtab_and_line cursal = { };
   struct symbol *sym;
-  char *arg1;
+  const char *arg1;
   int no_end = 1;
   int dummy_end = 0;
   int dummy_beg = 0;
@@ -747,25 +734,25 @@ list_command (char *arg, int from_tty)
   /* Pull in the current default source line if necessary */
   if (arg == 0 || arg[0] == '+' || arg[0] == '-')
     {
-      set_default_source_symtab_and_line ();
-      cursal = get_current_source_symtab_and_line ();
+      set_default_source_symtab_and_line();
+      cursal = get_current_source_symtab_and_line();
     }
 
   /* "l" or "l +" lists next ten lines.  */
 
-  if (arg == 0 || strcmp (arg, "+") == 0)
+  if (arg == 0 || strcmp(arg, "+") == 0)
     {
-      print_source_lines (cursal.symtab, cursal.line,
-			  get_lines_to_list (), 0);
+      print_source_lines(cursal.symtab, cursal.line,
+			 get_lines_to_list(), 0);
       return;
     }
 
   /* "l -" lists previous ten lines, the ones before the ten just listed.  */
-  if (strcmp (arg, "-") == 0)
+  if (strcmp(arg, "-") == 0)
     {
-      int first = max (get_first_line_listed () - get_lines_to_list (), 1);
-      print_source_lines (cursal.symtab, first,
-			  get_first_line_listed () - first, 0);
+      const int first = max((get_first_line_listed() - get_lines_to_list()), 1);
+      print_source_lines(cursal.symtab, first,
+			 (get_first_line_listed() - first), 0);
       return;
     }
 
@@ -775,8 +762,8 @@ list_command (char *arg, int from_tty)
      and clear NO_END; however, if one of the arguments is blank,
      set DUMMY_BEG or DUMMY_END to record that fact.  */
 
-  if (!have_full_symbols () && !have_partial_symbols ())
-    error (_("No symbol table is loaded.  Use the \"file\" command."));
+  if (!have_full_symbols() && !have_partial_symbols())
+    error(_("No symbol table is loaded.  Use the \"file\" command."));
 
   arg1 = arg;
   if (*arg1 == ',')
@@ -784,7 +771,7 @@ list_command (char *arg, int from_tty)
   else
     {
       /* APPLE LOCAL begin return multiple symbols  */
-      sals = decode_line_1 (&arg1, 0, 0, 0, 0, 0, 0);
+      sals = decode_line_1(&arg1, 0, 0, 0, 0, 0, 0);
       /* APPLE LOCAL end return multiple symbols  */
 
       if (!sals.nelts)
@@ -795,20 +782,20 @@ list_command (char *arg, int from_tty)
 	   1 if the line spec really was ambiguous -
 	   rather than just being many matches of the
 	   same line.  */
-        if (ambiguous_line_spec (&sals) == 1)
+        if (ambiguous_line_spec(&sals) == 1)
 	  {
-	    xfree (sals.sals);
+	    xfree(sals.sals);
 	    return;
 	  }
 	}
 
       sal = sals.sals[0];
-      xfree (sals.sals);
+      xfree(sals.sals);
     }
 
-  /* Record whether the BEG arg is all digits.  */
-
-  for (p = arg; p != arg1 && *p >= '0' && *p <= '9'; p++);
+  /* Record whether the BEG arg is all digits: */
+  for (p = (char *)arg; (p != arg1) && (*p >= '0') && (*p <= '9'); p++)
+    ; /* (do nothing) */
   linenum_beg = (p == arg1);
 
   while (*arg1 == ' ' || *arg1 == '\t')
@@ -825,38 +812,36 @@ list_command (char *arg, int from_tty)
 	{
 	  if (dummy_beg)
 	    /* APPLE LOCAL begin return multiple symbols  */
-	    sals_end = decode_line_1 (&arg1, 0, 0, 0, 0, 0, 0);
+	    sals_end = decode_line_1(&arg1, 0, 0, 0, 0, 0, 0);
 	  else
-	    sals_end = decode_line_1 (&arg1, 0, sal.symtab, sal.line, 0, 0, 0);
+	    sals_end = decode_line_1(&arg1, 0, sal.symtab, sal.line, 0, 0, 0);
 	    /* APPLE LOCAL end return multiple symbols  */
 	  if (sals_end.nelts == 0)
 	    return;
 	  if (sals_end.nelts > 1)
 	    {
-
-	      /* APPLE LOCAL: ambiguous_line_spec returns
-		 1 if the line spec really was ambiguous -
-		 rather than just being many matches of the
-		 same line.  */
-	      if (ambiguous_line_spec (&sals) == 1)
+	      /* APPLE LOCAL: ambiguous_line_spec returns 1 if the line spec
+	       * really was ambiguous - rather than just being many matches of
+	       * the same line: */
+	      if (ambiguous_line_spec(&sals) == 1)
 		{
-		  xfree (sals.sals);
+		  xfree(sals.sals);
 		  return;
 		}
 	    }
 	  sal_end = sals_end.sals[0];
-	  xfree (sals_end.sals);
+	  xfree(sals_end.sals);
 	}
     }
 
   if (*arg1)
-    error (_("Junk at end of line specification."));
+    error(_("Junk at end of line specification."));
 
   if (!no_end && !dummy_beg && !dummy_end
-      && sal.symtab != sal_end.symtab)
-    error (_("Specified start and end are in different files."));
+      && (sal.symtab != sal_end.symtab))
+    error(_("Specified start and end are in different files."));
   if (dummy_beg && dummy_end)
-    error (_("Two empty args do not say what lines to list."));
+    error(_("Two empty args do not say what lines to list."));
 
   /* if line was specified by address,
      first print exactly which line, and which file.
@@ -867,20 +852,20 @@ list_command (char *arg, int from_tty)
       if (sal.symtab == 0)
 	/* FIXME-32x64--assumes sal.pc fits in long.  */
         /* APPLE LOCAL: Fixed by using paddr_nz.  */
-	error (_("No source file for address 0x%s."), paddr_nz (sal.pc));
-      sym = find_pc_function (sal.pc);
+	error(_("No source file for address 0x%s."), paddr_nz(sal.pc));
+      sym = find_pc_function(sal.pc);
       if (sym)
 	{
-	  deprecated_print_address_numeric (sal.pc, 1, gdb_stdout);
-	  printf_filtered (" is in ");
-	  fputs_filtered (SYMBOL_PRINT_NAME (sym), gdb_stdout);
-	  printf_filtered (" (%s:%d).\n", sal.symtab->filename, sal.line);
+	  deprecated_print_address_numeric(sal.pc, 1, gdb_stdout);
+	  printf_filtered(" is in ");
+	  fputs_filtered(SYMBOL_PRINT_NAME(sym), gdb_stdout);
+	  printf_filtered(" (%s:%d).\n", sal.symtab->filename, sal.line);
 	}
       else
 	{
-	  deprecated_print_address_numeric (sal.pc, 1, gdb_stdout);
-	  printf_filtered (" is at %s:%d.\n",
-			   sal.symtab->filename, sal.line);
+	  deprecated_print_address_numeric(sal.pc, 1, gdb_stdout);
+	  printf_filtered(" is at %s:%d.\n",
+			  sal.symtab->filename, sal.line);
 	}
     }
 
@@ -889,38 +874,36 @@ list_command (char *arg, int from_tty)
      which means no source code.  */
 
   if (!linenum_beg && sal.symtab == 0)
-    error (_("No line number known for %s."), arg);
+    error(_("No line number known for %s."), arg);
 
-  /* If this command is repeated with RET,
-     turn it into the no-arg variant.  */
-
+  /* If this command is repeated w/RET, then turn it into the no-arg variant: */
   if (from_tty)
-    *arg = 0;
+    *(char *)arg = 0;
 
   if (dummy_beg && sal_end.symtab == 0)
-    error (_("No default source file yet.  Do \"help list\"."));
+    error(_("No default source file yet.  Do \"help list\"."));
   if (dummy_beg)
     {
-      int first = max (sal_end.line - (get_lines_to_list () - 1), 1);
-      print_source_lines (sal_end.symtab, first,
-			  sal_end.line - first + 1, 0);
+      const int first = max((sal_end.line - (get_lines_to_list() - 1)), 1);
+      print_source_lines(sal_end.symtab, first,
+			 (sal_end.line - first + 1), 0);
     }
   else if (sal.symtab == 0)
-    error (_("No default source file yet.  Do \"help list\"."));
+    error(_("No default source file yet.  Do \"help list\"."));
   else if (no_end)
     {
-      int first_line = sal.line - get_lines_to_list () / 2;
+      int first_line = (sal.line - get_lines_to_list() / 2);
 
       if (first_line < 1) first_line = 1;
 
-      print_source_lines (sal.symtab, first_line, get_lines_to_list (), 0);
+      print_source_lines(sal.symtab, first_line, get_lines_to_list(), 0);
     }
   else
-    print_source_lines (sal.symtab, sal.line,
-			(dummy_end ?
-			 get_lines_to_list ()
-			 : sal_end.line - sal.line + 1),
-			0);
+    print_source_lines(sal.symtab, sal.line,
+		       (dummy_end ?
+			get_lines_to_list()
+			: (sal_end.line - sal.line + 1)),
+		       0);
 }
 
 /* Dump a specified section of assembly code.  With no command line
@@ -931,7 +914,7 @@ list_command (char *arg, int from_tty)
    assembly.  */
 
 static void
-disassemble_command (char *arg, int from_tty)
+disassemble_command(const char *arg, int from_tty)
 {
   CORE_ADDR low, high;
   char *name;
@@ -1015,18 +998,19 @@ disassemble_command (char *arg, int from_tty)
 #endif /* TUI */
 }
 
+/* FIXME: needs comment: */
 static void
-make_command(char *arg, int from_tty)
+make_command(const char *arg, int from_tty)
 {
   char *p;
 
   if (arg == 0)
-    p = "make";
+    p = (char *)"make";
   else
     {
       p = (char *)xmalloc(sizeof("make ") + strlen(arg));
       strcpy(p, "make ");
-      strcpy(p + sizeof("make ") - 1, arg);
+      strcpy((p + sizeof("make ") - 1UL), arg);
     }
 
   shell_escape(p, from_tty);
@@ -1035,8 +1019,9 @@ make_command(char *arg, int from_tty)
 /* just declare this once, up here: */
 extern struct cmd_list_element *cmdlist; /*This is the main command list*/
 
+/* FIXME: needs comment: */
 static void
-show_user(char *args, int from_tty)
+show_user(const char *args, int from_tty)
 {
   struct cmd_list_element *c;
 
@@ -1060,7 +1045,7 @@ show_user(char *args, int from_tty)
 /* Search through names of commands and documentations for a certain
  * regular expression: */
 void
-apropos_command(char *searchstr, int from_tty)
+apropos_command(const char *searchstr, int from_tty)
 {
   regex_t pattern;
   char errorbuffer[512UL];
@@ -1084,9 +1069,8 @@ apropos_command(char *searchstr, int from_tty)
    `list classname::overloadedfuncname', or 'list objectiveCSelector:).
    The vector in SALS provides the filenames and line numbers.
    NOTE: some of the SALS may have no filename or line information! */
-  /* APPLE LOCAL: Don't print anything (and return 0) if all the files
-     and lines are the same.  Otherwise return 1.  */
-
+/* APPLE LOCAL: Don't print anything (and return 0) if all the files
+   and lines are the same.  Otherwise return 1.  */
 static int
 ambiguous_line_spec (struct symtabs_and_lines *sals)
 {
@@ -1135,21 +1119,24 @@ ambiguous_line_spec (struct symtabs_and_lines *sals)
   return 1;
 }
 
+/* FIXME: needs comment: */
 static void
-set_debug(char *arg, int from_tty)
+set_debug(const char *arg, int from_tty)
 {
   printf_unfiltered(_("\"set debug\" must be followed by the name of a print subcommand.\n"));
   help_list(setdebuglist, "set debug ", (enum command_class)-1, gdb_stdout);
 }
 
+/* FIXME: needs comment: */
 static void
-show_debug (char *args, int from_tty)
+show_debug(const char *args, int from_tty)
 {
-  cmd_show_list (showdebuglist, from_tty, "");
+  cmd_show_list(showdebuglist, from_tty, "");
 }
 
+/* FIXME: needs comment: */
 void
-init_cmd_lists (void)
+init_cmd_lists(void)
 {
   max_user_call_depth = 1024;
 
@@ -1315,19 +1302,19 @@ when gdb is started."), gdbinit);
   add_com_alias ("q", "quit", class_support, 1);
   add_com_alias ("h", "help", class_support, 1);
 
-  add_setshow_boolean_cmd ("verbose", class_support, &info_verbose, _("\
+  add_setshow_boolean_cmd("verbose", class_support, &info_verbose, _("\
 Set verbosity."), _("\
 Show verbosity."), NULL,
-			   set_verbose,
-			   show_info_verbose,
-			   &setlist, &showlist);
+			  set_verbose,
+			  show_info_verbose,
+			  &setlist, &showlist);
 
-  add_prefix_cmd ("history", class_support, set_history,
-		  _("Generic command for setting command history parameters."),
-		  &sethistlist, "set history ", 0, &setlist);
-  add_prefix_cmd ("history", class_support, show_history,
-		  _("Generic command for showing command history parameters."),
-		  &showhistlist, "show history ", 0, &showlist);
+  add_prefix_cmd("history", class_support, set_history,
+		 _("Generic command for setting command history parameters."),
+		 &sethistlist, "set history ", 0, &setlist);
+  add_prefix_cmd("history", class_support, show_history,
+		 _("Generic command for showing command history parameters."),
+		 &showhistlist, "show history ", 0, &showlist);
 
   add_setshow_boolean_cmd ("expansion", no_class, &history_expansion_p, _("\
 Set history expansion on command input."), _("\
@@ -1349,24 +1336,24 @@ Generic command for showing things about the program being debugged."),
 		  _("Generic command for showing things about the debugger."),
 		  &showlist, "show ", 0, &cmdlist);
   /* Another way to get at the same thing.  */
-  add_info ("set", show_command, _("Show all GDB settings."));
+  add_info("set", show_command, _("Show all GDB settings."));
 
-  add_cmd ("commands", no_class, show_commands, _("\
+  add_cmd("commands", no_class, show_commands, _("\
 Show the history of commands you typed.\n\
 You can supply a command number to start with, or a `+' to start after\n\
 the previous command number shown."),
-	   &showlist);
+	  &showlist);
 
-  add_cmd ("version", no_class, show_version,
-	   _("Show what version of GDB this is."), &showlist);
+  add_cmd("version", no_class, show_version,
+	  _("Show what version of GDB this is."), &showlist);
 
-  add_com ("while", class_support, while_command, _("\
+  add_com("while", class_support, while_command, _("\
 Execute nested commands WHILE the conditional expression is non zero.\n\
 The conditional expression must follow the word `while' and must in turn be\n\
 followed by a new line.  The nested commands must be entered one per line,\n\
 and should be terminated by the word `end'."));
 
-  add_com ("if", class_support, if_command, _("\
+  add_com("if", class_support, if_command, _("\
 Execute nested commands once IF the conditional expression is non zero.\n\
 The conditional expression must follow the word `if' and must in turn be\n\
 followed by a new line.  The nested commands must be entered one per line,\n\
@@ -1485,3 +1472,5 @@ Show the max call depth for user-defined commands."), NULL,
 			   show_max_user_call_depth,
 			   &setlist, &showlist);
 }
+
+/* EOF */

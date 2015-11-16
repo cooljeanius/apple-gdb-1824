@@ -1,4 +1,4 @@
-/* param.h */
+/* rem-multi_old/param_old.h */
 /* Copyright (C) 1990 Free Software Foundation, Inc.
 
 This file is part of GDB.

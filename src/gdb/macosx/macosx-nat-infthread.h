@@ -1,5 +1,5 @@
 /*
- * macosx-nat-infthread.h
+ * macosx/macosx-nat-infthread.h
  */
 
 #ifndef __GDB_MACOSX_NAT_INFTHREAD_H__
@@ -22,8 +22,8 @@ const char *unparse_run_state(int run_state);
 
 void macosx_setup_registers_before_hand_call(void);
 
-void info_task_command(char *args, int from_tty);
-void info_thread_command(char *tidstr, int from_tty);
+void info_task_command(const char *args, int from_tty);
+void info_thread_command(const char *tidstr, int from_tty);
 thread_t get_application_thread_port(thread_t our_name);
 
 void macosx_prune_threads(thread_array_t thread_list, unsigned int nthreads);

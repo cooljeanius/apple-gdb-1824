@@ -76,11 +76,11 @@ struct _sr_settings sr_settings =
 
 struct gr_settings *gr_settings = NULL;
 
-static void usage(char *, char *);
-static void sr_com(char *, int);
+static void usage(const char *, char *);
+static void sr_com(const char *, int);
 
 static void ATTR_NORETURN
-usage(char *proto, char *junk)
+usage(const char *proto, char *junk)
 {
   if (junk != NULL) {
     fprintf_unfiltered(gdb_stderr, "Unrecognized arguments: `%s'.\n",
@@ -106,8 +106,9 @@ where DEVICE is the name of a device or HOST:PORT"), proto);
     } \
 }
 
+/* FIXME: add comment: */
 void
-sr_scan_args(char *proto, char *args)
+sr_scan_args(const char *proto, char *args)
 {
   int n;
   char *p, *q;
@@ -149,18 +150,19 @@ sr_scan_args(char *proto, char *args)
     ; /* (do nothing) */
   };
 
-  /* if not end of string, then there's unrecognized junk. */
+  /* if not end of string, then there is/was unrecognized junk: */
   if (*p != '\0')
     usage(proto, p);
 
   return;
 }
 
+/* FIXME: add comment: */
 void
-gr_generic_checkin (void)
+gr_generic_checkin(void)
 {
-  sr_write_cr ("");
-  gr_expect_prompt ();
+  sr_write_cr("");
+  gr_expect_prompt();
 }
 
 void
@@ -286,31 +288,34 @@ sr_expect (char *string)
     }
 }
 
+/* FIXME: add comment: */
 void
-sr_write (char *a, int l)
+sr_write(const char *a, int l)
 {
   int i;
 
-  if (serial_write (sr_get_desc (), a, l) != 0)
-    perror_with_name (_("sr_write: Error writing to remote"));
+  if (serial_write(sr_get_desc(), a, l) != 0)
+    perror_with_name(_("sr_write: Error writing to remote"));
 
-  if (sr_get_debug () > 0)
+  if (sr_get_debug() > 0)
     for (i = 0; i < l; i++)
-      printf_unfiltered ("%c", a[i]);
+      printf_unfiltered("%c", a[i]);
 
   return;
 }
 
+/* FIXME: add comment: */
 void
-sr_write_cr (char *s)
+sr_write_cr(const char *s)
 {
-  sr_write (s, strlen (s));
-  sr_write ("\r", 1);
+  sr_write(s, strlen(s));
+  sr_write("\r", 1);
   return;
 }
 
+/* FIXME: add comment: */
 int
-sr_timed_read (char *buf, int n)
+sr_timed_read(char *buf, int n)
 {
   int i;
   char c;
@@ -318,7 +323,7 @@ sr_timed_read (char *buf, int n)
   i = 0;
   while (i < n)
     {
-      c = sr_readchar ();
+      c = sr_readchar();
 
       if (c == 0)
 	return i;
@@ -386,30 +391,30 @@ sr_get_hex_word (void)
    FIXME: Can't handle commands that take input.  */
 
 static void
-sr_com (char *args, int fromtty)
+sr_com(const char *args, int fromtty)
 {
-  sr_check_open ();
+  sr_check_open();
 
   if (!args)
     return;
 
-  /* Clear all input so only command relative output is displayed */
-
-  sr_write_cr (args);
-  sr_write ("\030", 1);
-  registers_changed ();
-  gr_expect_prompt ();
+  /* Clear all input so only command relative output is displayed: */
+  sr_write_cr(args);
+  sr_write("\030", 1);
+  registers_changed();
+  gr_expect_prompt();
 }
 
+/* FIXME: add comment: */
 void
-gr_close (int quitting)
+gr_close(int quitting)
 {
-  gr_clear_all_breakpoints ();
+  gr_clear_all_breakpoints();
 
-  if (sr_is_open ())
+  if (sr_is_open())
     {
-      serial_close (sr_get_desc ());
-      sr_set_desc (NULL);
+      serial_close(sr_get_desc());
+      sr_set_desc(NULL);
     }
 
   return;
@@ -424,51 +429,54 @@ gr_close (int quitting)
    with your gdb.  */
 
 void
-gr_detach (char *args, int from_tty)
+gr_detach(char *args, int from_tty)
 {
   if (args)
-    error (_("Argument given to \"detach\" when remotely debugging."));
+    error(_("Argument given to \"detach\" when remotely debugging."));
 
-  if (sr_is_open ())
-    gr_clear_all_breakpoints ();
+  if (sr_is_open())
+    gr_clear_all_breakpoints();
 
-  pop_target ();
+  pop_target();
   if (from_tty)
-    puts_filtered ("Ending remote debugging.\n");
+    puts_filtered("Ending remote debugging.\n");
 
   return;
 }
 
+/* FIXME: add comment: */
 void
-gr_files_info (struct target_ops *ops)
+gr_files_info(struct target_ops *ops)
 {
 #ifdef __GO32__
-  printf_filtered ("\tAttached to DOS asynctsr\n");
+  printf_filtered("\tAttached to DOS asynctsr\n");
 #else
-  printf_filtered ("\tAttached to %s", sr_get_device ());
+  printf_filtered("\tAttached to %s", sr_get_device());
   if (baud_rate != -1)
-    printf_filtered ("at %d baud", baud_rate);
-  printf_filtered ("\n");
-#endif
+    printf_filtered("at %d baud", baud_rate);
+  printf_filtered("\n");
+#endif /* __GO32__ */
 
   if (exec_bfd)
     {
-      printf_filtered ("\tand running program %s\n",
-		       bfd_get_filename (exec_bfd));
+      printf_filtered("\tand running program %s\n",
+		      bfd_get_filename(exec_bfd));
     }
-  printf_filtered ("\tusing the %s protocol.\n", ops->to_shortname);
+  printf_filtered("\tusing the %s protocol.\n", ops->to_shortname);
 }
 
+/* FIXME: add comment: */
 void
-gr_mourn (void)
+gr_mourn(void)
 {
-  gr_clear_all_breakpoints ();
-  unpush_target (gr_get_ops ());
-  generic_mourn_inferior ();
+  gr_clear_all_breakpoints();
+  unpush_target(gr_get_ops());
+  generic_mourn_inferior();
 }
 
-void
-gr_kill (void)
+/* FIXME: add comment: */
+void ATTRIBUTE_CONST
+gr_kill(void)
 {
   return;
 }
@@ -596,10 +604,10 @@ gr_multi_scan(char *list[], int passthrough)
    that registers contains all the registers from the program being
    debugged.  */
 
-void
+void ATTRIBUTE_CONST
 gr_prepare_to_store(void)
 {
-  ; /* Do nothing, since we assume we can store individual regs */
+  return; /* Do nothing, since we assume we can store individual regs */
 }
 
 void

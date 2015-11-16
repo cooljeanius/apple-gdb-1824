@@ -1,4 +1,4 @@
-/* i386-low.c
+/* gdbserver/i386-low.c
    Debug register code for the i386.
 
    Copyright (C) 2009

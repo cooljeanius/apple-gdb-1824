@@ -1,4 +1,4 @@
-/* Portable <dirent.h>.
+/* common/gdb_dirent.h: Portable <dirent.h>.
    Copyright (C) 2000-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.

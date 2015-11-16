@@ -1,4 +1,4 @@
-/* macosx-nat-watchpoint.c: Mac OS X support for GDB, the GNU debugger.
+/* macosx/macosx-nat-watchpoint.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -384,14 +384,14 @@ hppa_remove_hw_watchpoint(int pid, CORE_ADDR start, LONGEST len,
    query that answers whether a particular range should be watched via
    hardware support.
  */
-int
+int ATTRIBUTE_CONST
 macosx_can_use_hw_watchpoint(int type, int cnt ATTRIBUTE_UNUSED,
                              int ot ATTRIBUTE_UNUSED)
 {
   return (type == bp_hardware_watchpoint);
 }
 
-int
+int ATTRIBUTE_CONST
 macosx_region_ok_for_hw_watchpoint(CORE_ADDR start ATTRIBUTE_UNUSED,
                                    LONGEST len ATTRIBUTE_UNUSED)
 {

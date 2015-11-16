@@ -1,4 +1,4 @@
-/* tui-main.c: Main function for TUI gdb.
+/* tui/tui-main.c: Main function for TUI gdb.
 
    Copyright 2002, 2004 Free Software Foundation, Inc.
 

@@ -339,7 +339,7 @@ udi_attach (char *args, int from_tty)
   UDIError err;
 
   if (args == NULL)
-    error_no_arg ("program to attach");
+    error_no_arg(_("program to attach"));
 
   if (udi_session_id < 0)
     error ("UDI connection not opened yet, use the 'target udi' command.\n");

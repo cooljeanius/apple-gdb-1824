@@ -1,5 +1,5 @@
 /*
- * macosx-nat-inferior.h
+ * macosx/macosx-nat-inferior.h
  */
 
 #ifndef __GDB_MACOSX_NAT_INFERIOR_H__

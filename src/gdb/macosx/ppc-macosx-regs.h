@@ -1,4 +1,4 @@
-/* ppc-macosx-regs.h -*- C -*- */
+/* macosx/ppc-macosx-regs.h -*- C -*- */
 
 #ifndef __GDB_PPC_MACOSX_REGS_H__
 #define __GDB_PPC_MACOSX_REGS_H__

@@ -1,4 +1,4 @@
-/* macosx-nat-mutils.c: Mac OS X support for GDB, the GNU debugger.
+/* macosx/macosx-nat-mutils.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -1422,16 +1422,17 @@ macosx_clear_logging_path(void)
 }
 #endif /* HAVE_64_BIT_STACK_LOGGING */
 
+/* */
 void
-malloc_history_info_command(char *arg, int from_tty)
+malloc_history_info_command(const char *arg, int from_tty)
 {
 #if HAVE_64_BIT_STACK_LOGGING || HAVE_32_BIT_STACK_LOGGING
 
-#if HAVE_64_BIT_STACK_LOGGING
+# if HAVE_64_BIT_STACK_LOGGING
   mach_vm_address_t addr;
-#elif HAVE_32_BIT_STACK_LOGGING
+# elif HAVE_32_BIT_STACK_LOGGING
   vm_address_t addr;
-#endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
+# endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
   volatile kern_return_t kret = KERN_FAILURE;
   volatile struct gdb_exception except;
   struct cleanup *cleanup;
@@ -1451,29 +1452,30 @@ malloc_history_info_command(char *arg, int from_tty)
   if (strstr(arg, "-exact") == arg)
     {
       exact = 1;
-      arg += sizeof("-exact") - 1;
+      arg += (sizeof("-exact") - 1);
       while (*arg == ' ')
 	arg++;
     }
   else if (strstr(arg, "-range") == arg)
     {
       exact = 0;
-      arg += sizeof("-range") - 1;
+      arg += (sizeof("-range") - 1);
       while (*arg == ' ')
 	arg++;
     }
 
-#if HAVE_64_BIT_STACK_LOGGING
+# if HAVE_64_BIT_STACK_LOGGING
   addr = (mach_vm_address_t)parse_and_eval_address(arg);
-#elif HAVE_32_BIT_STACK_LOGGING
+# elif HAVE_32_BIT_STACK_LOGGING
   addr = parse_and_eval_address(arg);
-#endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
+# endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
 
   if (!target_has_execution)
     error("Cannot get malloc history: target is not running");
 
   if ((inferior_environ == NULL)
-      || (get_in_environ(inferior_environ, "MallocStackLoggingNoCompact") == NULL))
+      || (get_in_environ(inferior_environ,
+                         "MallocStackLoggingNoCompact") == NULL))
     {
       warning("MallocStackLoggingNoCompact not set in target's environment"
 	      " so the malloc history will not be available.");
@@ -1493,7 +1495,7 @@ malloc_history_info_command(char *arg, int from_tty)
       passed_state = &state;
     }
 
-#if HAVE_64_BIT_STACK_LOGGING
+# if HAVE_64_BIT_STACK_LOGGING
   /* If the function __mach_stack_logging_set_file_path is defined,
      and we can find the char * variable STACK_LOG_FILENAME_VARIABLE
      in the target, then we read that variable as a string, and pass
@@ -1509,82 +1511,89 @@ malloc_history_info_command(char *arg, int from_tty)
       static int already_looked = 0;
 
       if (!already_looked)
-        logging_file_path_fn = (set_logging_file_path_ptr)dlsym(RTLD_DEFAULT, stack_logging_set_file_function);
+        logging_file_path_fn = 
+          (set_logging_file_path_ptr)dlsym(RTLD_DEFAULT,
+                                           stack_logging_set_file_function);
       already_looked = 1;
 
       if (logging_file_path_fn != NULL)
         {
           /* Okay, look for the symbol in question: */
-
-          struct minimal_symbol *filename_variable
-            = lookup_minimal_symbol(stack_log_filename_variable, NULL, NULL);
+          struct minimal_symbol *filename_variable =
+            lookup_minimal_symbol(stack_log_filename_variable, NULL, NULL);
           if (filename_variable)
             {
               TRY_CATCH (except, RETURN_MASK_ERROR)
                 {
-                  CORE_ADDR string_addr
-                    = read_memory_unsigned_integer (SYMBOL_VALUE_ADDRESS(filename_variable),
-                                                    TARGET_PTR_BIT/TARGET_CHAR_BIT);
-                  read_memory_string (string_addr, malloc_path_string_buffer, 2047);
+                  CORE_ADDR string_addr =
+                    read_memory_unsigned_integer(SYMBOL_VALUE_ADDRESS(filename_variable),
+                                                 (TARGET_PTR_BIT
+                                                  / TARGET_CHAR_BIT));
+                  read_memory_string(string_addr, malloc_path_string_buffer,
+                                     2047);
                 }
               if (except.reason == (volatile enum return_reason)NO_ERROR)
                 {
-                  kern_return_t kret = logging_file_path_fn (macosx_status->task,
-                                                             malloc_path_string_buffer);
+                  kern_return_t kret = logging_file_path_fn(macosx_status->task,
+                                                            malloc_path_string_buffer);
                   if (kret != KERN_SUCCESS)
                     {
-                      warning ("Got an error setting the logging file path: %d.", kret);
+                      warning("Got an error setting the logging file path: %d.",
+                              kret);
                     }
                 }
               else
                 {
-                  warning ("Error reading the string for \"%s\" out of target memory, "
-                           "cannot set logging filepath.", stack_log_filename_variable);
+                  warning("Error reading the string for \"%s\" out of target memory, "
+                          "cannot set logging filepath.",
+                          stack_log_filename_variable);
                 }
             }
           else
             {
-              warning ("Could not find variable \"%s\", so "
-                       "I cannot set the logging filename.", stack_log_filename_variable);
+              warning("Could not find variable \"%s\", so "
+                      "I cannot set the logging filename.",
+                      stack_log_filename_variable);
             }
         }
     }
-#endif /* HAVE_64_BIT_STACK_LOGGING */
+# endif /* HAVE_64_BIT_STACK_LOGGING */
 
   TRY_CATCH(except, RETURN_MASK_ERROR)
     {
-#if HAVE_64_BIT_STACK_LOGGING
+# if HAVE_64_BIT_STACK_LOGGING
       kret = __mach_stack_logging_enumerate_records(macosx_status->task,
                                                     passed_addr,
                                                     do_over_unique_frames,
                                                     (void *)passed_state);
-#elif HAVE_32_BIT_STACK_LOGGING
+# elif HAVE_32_BIT_STACK_LOGGING
       kret = stack_logging_enumerate_records(macosx_status->task,
                                              gdb_malloc_reader,
                                              passed_addr,
                                              do_over_unique_frames,
                                              (void *)passed_state);
-#endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
+# endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
     }
 
-#if HAVE_32_BIT_STACK_LOGGING
+# if HAVE_32_BIT_STACK_LOGGING
   /* Remember to reset the memory copy areas.  */
   free_malloc_history_buffers();
-#endif /* HAVE_32_BIT_STACK_LOGGING */
+# endif /* HAVE_32_BIT_STACK_LOGGING */
   do_cleanups (cleanup);
 
   if (except.reason < 0)
     {
-      error ("Caught an error while enumerating stack logging records: %s", except.message);
+      error("Caught an error while enumerating stack logging records: %s",
+            except.message);
     }
 
   if (kret != KERN_SUCCESS)
     {
-      error ("Unable to enumerate stack logging records: %s (ox%lx).",
-             MACH_ERROR_STRING (kret), (unsigned long) kret);
+      error("Unable to enumerate stack logging records: %s (ox%lx).",
+            MACH_ERROR_STRING(kret), (unsigned long)kret);
     }
 #else  /* HAVE_64_BIT_STACK_LOGGING || HAVE_32_BIT_STACK_LOGGING  */
-  error ("Stack logging not supported for this target.");
+  error("Stack logging not supported for this target.");
 #endif /* "" */
 }
 
@@ -2040,19 +2049,20 @@ get_zone_finder(void)
     {
       /* objc_collectableZone is the 10.7 version of auto_zone.
          Use it if it exists.  */
-      if (lookup_minimal_symbol ("objc_collectableZone", 0, 0))
-        auto_zone_fn = create_cached_function ("objc_collectableZone",
-                                               builtin_type_voidptrfuncptr);
+      if (lookup_minimal_symbol("objc_collectableZone", 0, 0))
+        auto_zone_fn = create_cached_function("objc_collectableZone",
+                                              builtin_type_voidptrfuncptr);
 
-      if (auto_zone_fn == NULL && lookup_minimal_symbol ("auto_zone", 0, 0))
-        auto_zone_fn = create_cached_function ("auto_zone",
-                                               builtin_type_voidptrfuncptr);
+      if (auto_zone_fn == NULL && lookup_minimal_symbol("auto_zone", 0, 0))
+        auto_zone_fn = create_cached_function("auto_zone",
+                                              builtin_type_voidptrfuncptr);
     }
   return auto_zone_fn;
 }
 
+/* */
 static void
-gc_root_tracing_command (char *arg, int from_tty)
+gc_root_tracing_command(const char *arg, int from_tty)
 {
   static struct cached_value *enumerate_root_fn = NULL;
   struct cached_value *zone_finder_fn;
@@ -2060,23 +2070,23 @@ gc_root_tracing_command (char *arg, int from_tty)
   struct cleanup *cleanup_chain;
   CORE_ADDR addr, list_addr;
   LONGEST num_roots;
-  int wordsize = gdbarch_tdep (current_gdbarch)->wordsize;
+  int wordsize = gdbarch_tdep(current_gdbarch)->wordsize;
   int root_index;
 
   if (arg == NULL || *arg == '\0')
-    error ("Address expression required.");
+    error("Address expression required.");
 
   if (!target_has_execution)
-    error ("The program is not running.");
+    error("The program is not running.");
 
-  addr = parse_and_eval_address (arg);
+  addr = parse_and_eval_address(arg);
 
   /* First we have to make sure that the symbols
      for libauto.dylib are raised to all.  */
 
-  if (objfile_name_set_load_state ("libauto.dylib", OBJF_SYM_ALL, 1)
+  if (objfile_name_set_load_state("libauto.dylib", OBJF_SYM_ALL, 1)
       == -1)
-    warning ("Could NOT raise the load level of libauto.dylib.");
+    warning("Could NOT raise the load level of libauto.dylib.");
 
 
   /* Now we have to cons up a gdb type for the root tracing
@@ -2148,24 +2158,24 @@ gc_root_tracing_command (char *arg, int from_tty)
     {
       struct cleanup *root_cleanup;
 
-      ui_out_text (uiout, "Root:\n");
+      ui_out_text(uiout, "Root:\n");
 
-      root_cleanup = make_cleanup_ui_out_tuple_begin_end (uiout, "root");
+      root_cleanup = make_cleanup_ui_out_tuple_begin_end(uiout, "root");
 
-      list_addr = gc_print_references (list_addr, wordsize);
+      list_addr = gc_print_references(list_addr, wordsize);
 
-      do_cleanups (root_cleanup);
-
+      do_cleanups(root_cleanup);
     }
 
-  do_cleanups (cleanup_chain);
-  /* Finally, we need to free the root list.  */
+  do_cleanups(cleanup_chain);
+  /* Finally, we need to free the root list: */
   if (num_roots > 0)
-    gc_free_data (root_list_val);
+    gc_free_data(root_list_val);
 }
 
+/* */
 void
-gc_reference_tracing_command(char *arg, int from_tty)
+gc_reference_tracing_command(const char *arg, int from_tty)
 {
   static struct cached_value *enumerate_ref_fn = NULL;
   struct cached_value *zone_finder_fn;
@@ -2173,22 +2183,22 @@ gc_reference_tracing_command(char *arg, int from_tty)
   struct cleanup *cleanup_chain;
   CORE_ADDR addr, list_addr;
   LONGEST num_refs;
-  int wordsize = gdbarch_tdep (current_gdbarch)->wordsize;
+  int wordsize = gdbarch_tdep(current_gdbarch)->wordsize;
 
   if (arg == NULL || *arg == '\0')
-    error ("Address expression required.");
+    error("Address expression required.");
 
   if (!target_has_execution)
-    error ("The program is not running.");
+    error("The program is not running.");
 
-  addr = parse_and_eval_address (arg);
+  addr = parse_and_eval_address(arg);
 
   /* First we have to make sure that the symbols
      for libauto.dylib are raised to all.  */
 
-  if (objfile_name_set_load_state ("libauto.dylib", OBJF_SYM_ALL, 1)
+  if (objfile_name_set_load_state("libauto.dylib", OBJF_SYM_ALL, 1)
       == -1)
-    warning ("Could NOT raise the load level of libauto.dylib.");
+    warning("Could NOT raise the load level of libauto.dylib.");
 
 
   /* Now we have to cons up a gdb type for the root tracing
@@ -2199,9 +2209,9 @@ gc_reference_tracing_command(char *arg, int from_tty)
      auto_zone and auto_gdb_enumerate_roots. Get the auto_zone,
      and then call the root function.  */
 
-  zone_finder_fn = get_zone_finder ();
+  zone_finder_fn = get_zone_finder();
   if (zone_finder_fn == NULL)
-    error ("Could NOT find \"objc_collectableZone\" or \"auto_zone\" function in inferior.");
+    error("Could NOT find \"objc_collectableZone\" or \"auto_zone\" function in inferior.");
 
   if (enumerate_ref_fn == NULL)
     enumerate_ref_fn = create_cached_function ("auto_gdb_enumerate_references",

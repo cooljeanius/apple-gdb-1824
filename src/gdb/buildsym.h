@@ -1,4 +1,4 @@
-/* Build symbol tables in GDB's internal format.
+/* buildsym.h: Build symbol tables in GDB's internal format.
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1995, 1996,
    1997, 1998, 1999, 2000, 2002, 2003 Free Software Foundation, Inc.
 
@@ -19,7 +19,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (BUILDSYM_H)
+#if !defined(BUILDSYM_H)
 #define BUILDSYM_H 1
 
 struct objfile;
@@ -43,8 +43,8 @@ struct address_range_list;
 /* APPLE LOCAL end address ranges  */
 
 #ifndef EXTERN
-#define	EXTERN extern
-#endif
+# define EXTERN extern
+#endif /* !EXTERN */
 
 #define HASHSIZE 127		/* Size of things hashed via
 				   hashname() */
@@ -289,16 +289,16 @@ extern void free_pending_blocks (void);
    which should be fixed to not need direct access to
    record_pending_block. */
 
-extern void record_pending_block (struct objfile *objfile,
-				  struct block *block,
-				  struct pending_block *opblock);
+extern void record_pending_block(struct objfile *objfile,
+				 struct block *block,
+				 struct pending_block *opblock);
 
-extern void record_debugformat (char *format);
+extern void record_debugformat(const char *format);
 
-extern void record_producer (const char *producer);
+extern void record_producer(const char *producer);
 
-extern void merge_symbol_lists (struct pending **srclist,
-				struct pending **targetlist);
+extern void merge_symbol_lists(struct pending **srclist,
+			       struct pending **targetlist);
 
 /* The macro table for the compilation unit whose symbols we're
    currently reading.  All the symtabs for this CU will point to this.  */
@@ -306,4 +306,6 @@ EXTERN struct macro_table *pending_macros;
 
 #undef EXTERN
 
-#endif /* defined (BUILDSYM_H) */
+#endif /* !defined(BUILDSYM_H) */
+
+/* EOF */

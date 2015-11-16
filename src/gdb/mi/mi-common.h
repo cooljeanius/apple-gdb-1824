@@ -1,4 +1,4 @@
-/* Interface for common GDB/MI data
+/* mi/mi-common.h: Interface for common GDB/MI data
    Copyright 2005 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -22,7 +22,7 @@
 #define MI_COMMON_H
 
 /* Represents the reason why GDB is sending an asynchronous command to the
-   front end.  NOTE: When modifing this, don't forget to update gdb.texinfo!  */
+   front end.  NOTE: When modifying this, remember to update gdb.texinfo!  */
 enum async_reply_reason
 {
   EXEC_ASYNC_BREAKPOINT_HIT = 0,
@@ -41,6 +41,10 @@ enum async_reply_reason
   EXEC_ASYNC_LAST
 };
 
-const char *async_reason_lookup (enum async_reply_reason reason);
+const char *async_reason_lookup(enum async_reply_reason reason);
 
-#endif
+extern int mi_common_c_inited;
+
+#endif /* !MI_COMMON_H */
+
+/* EOF */

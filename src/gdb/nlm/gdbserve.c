@@ -1,4 +1,4 @@
-/* gdbserve.c -- NLM debugging stub for Novell NetWare.
+/* nlm/gdbserve.c -- NLM debugging stub for Novell NetWare.
  *
  * This is originally based on an m68k software stub written by Glenn
  * Engel at HP, but has changed quite a bit. It was modified for the

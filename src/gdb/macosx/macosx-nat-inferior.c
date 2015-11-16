@@ -1,4 +1,4 @@
-/* macosx-nat-inferior.c: Mac OS X support for GDB, the GNU debugger.
+/* macosx/macosx-nat-inferior.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002, 2004
    Free Software Foundation, Inc.
 
@@ -234,11 +234,11 @@ static ptid_t macosx_child_wait(ptid_t ptid,
 
 static void macosx_mourn_inferior(void);
 
-static int macosx_lookup_task(char *args, task_t * ptask, int *ppid);
+static int macosx_lookup_task(const char *args, task_t * ptask, int *ppid);
 
 static void macosx_child_attach(char *args, int from_tty);
 
-static void macosx_child_detach(char *args, int from_tty);
+static void macosx_child_detach(const char *args, int from_tty);
 
 static int macosx_kill_inferior(void *);
 static void macosx_kill_inferior_safe(void);
@@ -269,7 +269,7 @@ static const char *get_bundle_executable_from_plist(const char *pathname);
 static const char *find_executable_name_in_xml_tree(xmlNode * a_node);
 #endif /* LIBXML2_IS_USABLE */
 
-/* static */ void cpfork_info(char *args, int from_tty);
+/* static */ void cpfork_info(const char *args, int from_tty);
 
 extern void _initialize_macosx_inferior(void);
 
@@ -284,7 +284,7 @@ macosx_handle_signal(macosx_signal_thread_message *msg,
   CHECK_FATAL(macosx_status->attached_in_ptrace);
   CHECK_FATAL(!macosx_status->stopped_in_ptrace);
 #if 0
-  CHECK_FATAL(! macosx_status->stopped_in_softexc);
+  CHECK_FATAL(!macosx_status->stopped_in_softexc);
 #endif /* 0 */
 
   if (inferior_debug_flag)
@@ -1722,8 +1722,9 @@ pid_present_on_pidlist (pid_t pid, struct pid_list *proclist)
   return 0;
 }
 
+/* FIXME: needs comment: */
 static int
-macosx_lookup_task (char *args, task_t *ptask, int *ppid)
+macosx_lookup_task(const char *args, task_t *ptask, int *ppid)
 {
   char *pid_str = NULL;
   char *tmp = NULL;
@@ -1818,7 +1819,7 @@ macosx_child_attach(char *args, int from_tty ATTRIBUTE_UNUSED)
 
   if (args == NULL)
     {
-      error_no_arg("process-id to attach");
+      error_no_arg(_("process-id to attach"));
     }
 
   macosx_lookup_task(args, &itask, &pid);
@@ -2024,8 +2025,9 @@ macosx_child_attach(char *args, int from_tty ATTRIBUTE_UNUSED)
   }
 }
 
+/* FIXME: needs comment: */
 static void
-macosx_child_detach(char *args ATTRIBUTE_UNUSED, int from_tty)
+macosx_child_detach(const char *args ATTRIBUTE_UNUSED, int from_tty)
 {
   kern_return_t kret;
 
@@ -2609,9 +2611,9 @@ macosx_get_task_for_pid_rights(void)
      I want to do this way first, however, since I would prefer the dialog
      box - for instance if I am running under Xcode - to trying to prompt.  */
 
-  stat = AuthorizationCopyRights(author, &rights, kAuthorizationEmptyEnvironment,
-				 auth_flags,
-				 &out_rights);
+  stat = AuthorizationCopyRights(author, &rights,
+				 kAuthorizationEmptyEnvironment,
+				 auth_flags, &out_rights);
   if (stat == errAuthorizationSuccess)
     {
       retval = 1;
@@ -2670,7 +2672,8 @@ macosx_get_task_for_pid_rights(void)
       if (out_rights != NULL)
 	AuthorizationFreeItemSet(out_rights);
 
-      stat = AuthorizationCopyRights(author, &rights, &env, auth_flags, &out_rights);
+      stat = AuthorizationCopyRights(author, &rights, &env, auth_flags,
+				     &out_rights);
 
       bzero(pass, strlen(pass));
       if (stat == errAuthorizationSuccess)
@@ -2696,8 +2699,7 @@ macosx_child_create_inferior(char *exec_file, char *allargs, char **env,
       ((exec_bfd->xvec->flavour == bfd_target_pef_flavour)
        || (exec_bfd->xvec->flavour == bfd_target_pef_xlib_flavour)))
     {
-      error
-        ("Cannot run a PEF binary - use LaunchCFMApp as the executable file.");
+      error("Cannot run PEF binary; use LaunchCFMApp as the executable file.");
     }
 
   /* It is not safe to call functions in the target until we have initialized
@@ -2734,7 +2736,7 @@ macosx_child_files_info(struct target_ops *ops ATTRIBUTE_UNUSED)
    reused on subsequent calls.  */
 
 static char *
-macosx_get_thread_name (ptid_t ptid)
+macosx_get_thread_name(ptid_t ptid)
 {
 #if defined(THREAD_IDENTIFIER_INFO) && defined(THREAD_IDENTIFIER_INFO_COUNT)
   static char buf[128];
@@ -2767,7 +2769,8 @@ macosx_get_thread_name (ptid_t ptid)
     {
       if (tident.thread_handle)
         {
-          char *queue_name = get_dispatch_queue_name((CORE_ADDR)tident.dispatch_qaddr);
+          char *queue_name =
+	    get_dispatch_queue_name((CORE_ADDR)tident.dispatch_qaddr);
           if (queue_name && (queue_name[0] != '\0'))
             {
               strlcpy(buf, queue_name, sizeof(buf));
@@ -2776,7 +2779,7 @@ macosx_get_thread_name (ptid_t ptid)
     }
   return buf;
 #else
-  return "";
+  return (char *)"";
 #endif /* THREAD_IDENTIFIER_INFO && THREAD_IDENTIFIER_INFO_COUNT */
 }
 
@@ -3009,7 +3012,7 @@ macosx_async(void (*callback)(enum inferior_event_type event_type,
    are fully functional, this can go away.  */
 
 /* static */ void
-cpfork_info(char *args, int from_tty ATTRIBUTE_UNUSED)
+cpfork_info(const char *args, int from_tty ATTRIBUTE_UNUSED)
 {
   task_t itask;
   int pid;
@@ -3043,7 +3046,7 @@ cpfork_info(char *args, int from_tty ATTRIBUTE_UNUSED)
       if (err == KERN_INVALID_ADDRESS) {
 	break;
       } else if (err) {
-	mach_error("vm_region", err);
+	mach_error((char *)"vm_region", err);
 	break; /* reached last region */
       }
 
@@ -3125,7 +3128,7 @@ direct_memcache_get(struct checkpoint *cp)
 	}
       else if (err)
 	{
-	  mach_error("vm_region",err);
+	  mach_error((char *)"vm_region", err);
 	  break; /* reached last region */
 	}
 
@@ -3181,7 +3184,7 @@ fork_memcache_put(struct checkpoint *cp)
 	}
       else if (err)
 	{
-	  mach_error("vm_region",err);
+	  mach_error((char *)"vm_region", err);
 	  break; /* reached last region */
 	}
 
@@ -3421,15 +3424,15 @@ Show if GDB should bind the task exception port."), NULL,
 
   add_setshow_boolean_cmd("inferior-ptrace", class_obscure,
 			  &inferior_ptrace_flag, _("\
-Set if GDB should attach to the subprocess using ptrace ()."), _("\
-Show if GDB should attach to the subprocess using ptrace ()."), NULL,
+Set if GDB should attach to the subprocess using ptrace()."), _("\
+Show if GDB should attach to the subprocess using ptrace()."), NULL,
 			  NULL, NULL,
 			  &setlist, &showlist);
 
   add_setshow_boolean_cmd("inferior-ptrace-on-attach", class_obscure,
 			  &inferior_ptrace_on_attach_flag, _("\
-Set if GDB should attach to the subprocess using ptrace ()."), _("\
-Show if GDB should attach to the subprocess using ptrace ()."), NULL,
+Set if GDB should attach to the subprocess using ptrace()."), _("\
+Show if GDB should attach to the subprocess using ptrace()."), NULL,
 			  NULL, NULL,
 			  &setlist, &showlist);
 

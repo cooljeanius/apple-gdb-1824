@@ -1,4 +1,4 @@
-/* tui-regs.c: TUI display registers in window.
+/* tui/tui-regs.c: TUI display registers in window.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
    Foundation, Inc.
@@ -60,8 +60,8 @@ tui_get_register(struct gdbarch *gdbarch, struct frame_info *frame,
                  struct tui_data_element *data, int regnum, int *changedp);
 static void tui_register_format
   (struct gdbarch *, struct frame_info *, struct tui_data_element*, int);
-static void tui_scroll_regs_forward_command(char *, int);
-static void tui_scroll_regs_backward_command(char *, int);
+static void tui_scroll_regs_forward_command(const char *, int);
+static void tui_scroll_regs_backward_command(const char *, int);
 
 extern void _initialize_tui_regs(void);
 
@@ -72,16 +72,16 @@ extern void _initialize_tui_regs(void);
 /* Answer the number of the last line in the regs display.  If there
    are no registers (-1) is returned.  */
 int
-tui_last_regs_line_no (void)
+tui_last_regs_line_no(void)
 {
   int num_lines = (-1);
 
   if (TUI_DATA_WIN->detail.data_display_info.regs_content_count > 0)
     {
-      num_lines = (TUI_DATA_WIN->detail.data_display_info.regs_content_count /
-		  TUI_DATA_WIN->detail.data_display_info.regs_column_count);
-      if (TUI_DATA_WIN->detail.data_display_info.regs_content_count %
-	  TUI_DATA_WIN->detail.data_display_info.regs_column_count)
+      num_lines = (TUI_DATA_WIN->detail.data_display_info.regs_content_count
+		   / TUI_DATA_WIN->detail.data_display_info.regs_column_count);
+      if (TUI_DATA_WIN->detail.data_display_info.regs_content_count
+	  % TUI_DATA_WIN->detail.data_display_info.regs_column_count)
 	num_lines++;
     }
   return num_lines;
@@ -146,42 +146,42 @@ tui_last_reg_element_no_in_line(int line_no)
 /* Show the registers of the given group in the data window
    and refresh the window.  */
 void
-tui_show_registers (struct reggroup *group)
+tui_show_registers(struct reggroup *group)
 {
   enum tui_status ret = TUI_FAILURE;
   struct tui_data_info *display_info;
 
-  /* Make sure the curses mode is enabled.  */
-  tui_enable ();
+  /* Make sure the curses mode is enabled: */
+  tui_enable();
 
   /* Make sure the register window is visible.  If not, select an
      appropriate layout.  */
   if (TUI_DATA_WIN == NULL || !TUI_DATA_WIN->generic.is_visible)
-    tui_set_layout_for_display_command (DATA_NAME);
+    tui_set_layout_for_display_command(DATA_NAME);
 
   display_info = &TUI_DATA_WIN->detail.data_display_info;
   if (group == 0)
     group = general_reggroup;
 
-  /* Say that registers should be displayed, even if there is a problem.  */
+  /* Say that registers should be displayed, even if there is a problem: */
   display_info->display_regs = TRUE;
 
   if (target_has_registers && target_has_stack && target_has_memory)
     {
-      ret = tui_show_register_group (current_gdbarch, group,
-                                     get_current_frame (),
-                                     group == display_info->current_group);
+      ret = tui_show_register_group(current_gdbarch, group,
+                                    get_current_frame(),
+                                    group == display_info->current_group);
     }
   if (ret == TUI_FAILURE)
     {
       display_info->current_group = 0;
-      tui_erase_data_content (NO_REGS_STRING);
+      tui_erase_data_content(NO_REGS_STRING);
     }
   else
     {
       int i;
 
-      /* Clear all notation of changed values */
+      /* Clear all notation of changed values: */
       for (i = 0; i < display_info->regs_content_count; i++)
 	{
 	  struct tui_gen_win_info *data_item_win;
@@ -247,7 +247,7 @@ tui_show_register_group (struct gdbarch *gdbarch, struct reggroup *group,
     {
       if (!refresh_values_only || allocated_here)
 	{
-	  TUI_DATA_WIN->generic.content = (void*) NULL;
+	  TUI_DATA_WIN->generic.content = (void **)NULL;
 	  TUI_DATA_WIN->generic.content_size = 0;
 	  tui_add_content_elements (&TUI_DATA_WIN->generic, nr_regs);
 	  display_info->regs_content
@@ -526,74 +526,83 @@ tui_check_register_values(struct frame_info *frame)
 /* Display a register in a window.  If hilite is TRUE,
    then the value will be displayed in reverse video  */
 static void
-tui_display_register (struct tui_data_element *data,
-                      struct tui_gen_win_info *win_info)
+tui_display_register(struct tui_data_element *data,
+                     struct tui_gen_win_info *win_info)
 {
-  if (win_info->handle != (WINDOW *) NULL)
+  if (win_info->handle != (WINDOW *)NULL)
     {
       int i;
 
       if (data->highlight)
-	wstandout (win_info->handle);
+	wstandout(win_info->handle);
 
-      wmove (win_info->handle, 0, 0);
+      wmove(win_info->handle, 0, 0);
       for (i = 1; i < win_info->width; i++)
-        waddch (win_info->handle, ' ');
-      wmove (win_info->handle, 0, 0);
+        waddch(win_info->handle, ' ');
+      wmove(win_info->handle, 0, 0);
       if (data->content)
-        waddstr (win_info->handle, data->content);
+        waddstr(win_info->handle, data->content);
 
       if (data->highlight)
-	wstandend (win_info->handle);
-      tui_refresh_win (win_info);
+	wstandend(win_info->handle);
+      tui_refresh_win(win_info);
     }
 }
 
+/* FIXME: needs comment: */
 static void
-tui_reg_next_command (char *arg, int from_tty)
+tui_reg_next_command(const char *arg, int from_tty)
 {
   if (TUI_DATA_WIN != 0)
     {
-      struct reggroup *group
-        = TUI_DATA_WIN->detail.data_display_info.current_group;
+      struct reggroup *group =
+	TUI_DATA_WIN->detail.data_display_info.current_group;
 
-      group = reggroup_next (current_gdbarch, group);
+      group = reggroup_next(current_gdbarch, group);
       if (group == 0)
-        group = reggroup_next (current_gdbarch, 0);
+        group = reggroup_next(current_gdbarch, 0);
 
       if (group)
-        tui_show_registers (group);
+        tui_show_registers(group);
     }
 }
 
+/* FIXME: needs comment: */
 static void
-tui_reg_float_command(char *arg, int from_tty)
+tui_reg_float_command(const char *arg ATTRIBUTE_UNUSED,
+		      int from_tty ATTRIBUTE_UNUSED)
 {
   tui_show_registers(float_reggroup);
 }
 
+/* FIXME: needs comment: */
 static void
-tui_reg_general_command(char *arg, int from_tty)
+tui_reg_general_command(const char *arg ATTRIBUTE_UNUSED,
+			int from_tty ATTRIBUTE_UNUSED)
 {
   tui_show_registers(general_reggroup);
 }
 
+/* FIXME: needs comment: */
 static void
-tui_reg_system_command(char *arg, int from_tty)
+tui_reg_system_command(const char *arg ATTRIBUTE_UNUSED,
+		       int from_tty ATTRIBUTE_UNUSED)
 {
   tui_show_registers(system_reggroup);
 }
 
 static struct cmd_list_element *tuireglist;
 
+/* FIXME: needs comment: */
 static void
-tui_reg_command(char *args, int from_tty)
+tui_reg_command(const char *args, int from_tty)
 {
   printf_unfiltered(_("\"tui reg\" must be followed by the name of a "
                     "tui reg command.\n"));
   help_list(tuireglist, "tui reg ", (enum command_class)-1, gdb_stdout);
 }
 
+/* module initialization: */
 void
 _initialize_tui_regs(void)
 {
@@ -601,36 +610,36 @@ _initialize_tui_regs(void)
 
   tuicmd = tui_get_cmd_list();
 
-  add_prefix_cmd ("reg", class_tui, tui_reg_command,
-                  _("TUI commands to control the register window."),
-                  &tuireglist, "tui reg ", 0,
-                  tuicmd);
+  add_prefix_cmd("reg", class_tui, tui_reg_command,
+                 _("TUI commands to control the register window."),
+                 &tuireglist, "tui reg ", 0,
+                 tuicmd);
 
-  add_cmd ("float", class_tui, tui_reg_float_command,
-           _("Display only floating point registers."),
-           &tuireglist);
-  add_cmd ("general", class_tui, tui_reg_general_command,
-           _("Display only general registers."),
-           &tuireglist);
-  add_cmd ("system", class_tui, tui_reg_system_command,
-           _("Display only system registers."),
-           &tuireglist);
-  add_cmd ("next", class_tui, tui_reg_next_command,
-           _("Display next register group."),
-           &tuireglist);
+  add_cmd("float", class_tui, tui_reg_float_command,
+          _("Display only floating point registers."),
+          &tuireglist);
+  add_cmd("general", class_tui, tui_reg_general_command,
+          _("Display only general registers."),
+          &tuireglist);
+  add_cmd("system", class_tui, tui_reg_system_command,
+          _("Display only system registers."),
+          &tuireglist);
+  add_cmd("next", class_tui, tui_reg_next_command,
+          _("Display next register group."),
+          &tuireglist);
 
   if (xdb_commands)
     {
-      add_com ("fr", class_tui, tui_reg_float_command,
-	       _("Display only floating point registers\n"));
-      add_com ("gr", class_tui, tui_reg_general_command,
-	       _("Display only general registers\n"));
-      add_com ("sr", class_tui, tui_reg_system_command,
-	       _("Display only special registers\n"));
-      add_com ("+r", class_tui, tui_scroll_regs_forward_command,
-	       _("Scroll the registers window forward\n"));
-      add_com ("-r", class_tui, tui_scroll_regs_backward_command,
-	       _("Scroll the register window backward\n"));
+      add_com("fr", class_tui, tui_reg_float_command,
+	      _("Display only floating point registers\n"));
+      add_com("gr", class_tui, tui_reg_general_command,
+	      _("Display only general registers\n"));
+      add_com("sr", class_tui, tui_reg_system_command,
+	      _("Display only special registers\n"));
+      add_com("+r", class_tui, tui_scroll_regs_forward_command,
+	      _("Scroll the registers window forward\n"));
+      add_com("-r", class_tui, tui_scroll_regs_backward_command,
+	      _("Scroll the register window backward\n"));
     }
 }
 
@@ -749,15 +758,18 @@ tui_get_register (struct gdbarch *gdbarch, struct frame_info *frame,
   return ret;
 }
 
+/* FIXME: needs comment: */
 static void
-tui_scroll_regs_forward_command(char *arg, int from_tty)
+tui_scroll_regs_forward_command(const char *arg ATTRIBUTE_UNUSED,
+				int from_tty ATTRIBUTE_UNUSED)
 {
   tui_scroll(FORWARD_SCROLL, TUI_DATA_WIN, 1);
 }
 
-
+/* FIXME: needs comment: */
 static void
-tui_scroll_regs_backward_command(char *arg, int from_tty)
+tui_scroll_regs_backward_command(const char *arg ATTRIBUTE_UNUSED,
+				 int from_tty ATTRIBUTE_UNUSED)
 {
   tui_scroll(BACKWARD_SCROLL, TUI_DATA_WIN, 1);
 }

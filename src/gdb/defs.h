@@ -531,7 +531,7 @@ extern int strcmp_iw_ordered(const char *, const char *);
 
 extern int streq(const char *, const char *);
 
-extern int subset_compare(char *, char *);
+extern int subset_compare(char *, const char *);
 
 extern char *safe_strerror(int);
 
@@ -633,7 +633,7 @@ void restore_file_rlimit(void);
 
 /* From demangle.c */
 
-extern void set_demangling_style(char *);
+extern void set_demangling_style(const char *);
 
 /* APPLE LOCAL fix-and-continue */
 /* From fix-and-continue.h */
@@ -790,7 +790,7 @@ extern void print_sys_errmsg(const char *, int);
 
 /* From symfile.c */
 
-extern void symbol_file_command(char *, int);
+extern void symbol_file_command(const char *, int);
 
 /* Remote targets may wish to use this as their load function: */
 extern void generic_load(char *name, int from_tty);
@@ -813,7 +813,7 @@ extern char *gdb_readline(char *);
 
 extern char *gdb_readline_wrapper(char *);
 
-extern char *command_line_input(char *, int, char *);
+extern char *command_line_input(char *, int, const char *);
 
 extern void print_prompt(void);
 
@@ -829,7 +829,7 @@ extern int gdb_quitting;
 extern void set_next_address (CORE_ADDR);
 
 extern void print_address_symbolic(CORE_ADDR, struct ui_file *, int,
-				   char *);
+				   const char *);
 
 extern int build_address_symbolic(CORE_ADDR addr, int do_demangle,
 				  char **name, int *offset,
@@ -1239,7 +1239,7 @@ extern char *xstrvprintf(const char *format, va_list ap)
 extern int xsnprintf(char *str, size_t size, const char *format, ...)
      ATTR_FORMAT(printf, 3, 4);
 
-extern int parse_escape(char **);
+extern int parse_escape(const char **);
 
 /* Message to be printed before the error message, when an error occurs: */
 extern char *error_pre_print;
@@ -1248,7 +1248,7 @@ extern char *error_pre_print;
 extern char *quit_pre_print;
 
 /* Message to be printed before the warning message, when a warning occurs: */
-extern char *warning_pre_print;
+extern const char *warning_pre_print;
 
 extern NORETURN void verror(const char *fmt, va_list ap)
      ATTR_NORETURN ATTR_FORMAT(printf, 1, 0);
@@ -1488,7 +1488,7 @@ extern void (*frame_changed_hook)(int new_frame_number);
 extern void (*stack_changed_hook)(void);
 
 /* called when command line input is needed: */
-extern char *(*command_line_input_hook)(char *, int, char *);
+extern char *(*command_line_input_hook)(char *, int, const char *);
 
 /* these <command>_hooks are called after the command has processed its arguments
    and just before it calls out to do the work of the command */
@@ -1513,7 +1513,7 @@ extern void (*deprecated_interactive_hook)(void)
   ATTRIBUTE_DEPRECATED;
 extern void (*deprecated_registers_changed_hook)(void)
   ATTRIBUTE_DEPRECATED;
-extern void (*deprecated_readline_begin_hook)(char *, ...)
+extern void (*deprecated_readline_begin_hook)(const char *, ...)
      ATTRIBUTE_FPTR_PRINTF_1 ATTRIBUTE_DEPRECATED;
 extern char *(*deprecated_readline_hook)(char *)
   ATTRIBUTE_DEPRECATED;
@@ -1672,7 +1672,7 @@ void gdb_check_fatal(const char *str, const char *file, unsigned int line, const
 
 /* APPLE LOCAL: Local timer stuff */
 extern int maint_use_timers;
-struct cleanup *start_timer(int *timer_var, char *timer_name, char *this_mssg);
+struct cleanup *start_timer(int *timer_var, const char *timer_name, const char *this_mssg);
 
 /* APPLE LOCAL: Used in target_check_safe_call:  */
 #define MALLOC_SUBSYSTEM (1 << 0)

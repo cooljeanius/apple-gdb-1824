@@ -392,9 +392,19 @@ struct field
   char *name;
 };
 
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic warning "-Wpadded"
+#  pragma GCC diagnostic warning "-Wpacked"
+/* "-Wpacked-bitfield-compat" is already on by default. */
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* This structure is space-critical.
    Its layout has been tweaked to reduce the space used.  */
-struct main_type
+typedef struct main_type
 {
   /* Code for kind of type: */
   ENUM_BITFIELD(type_code) code : 8;
@@ -510,7 +520,14 @@ struct main_type
 
     const struct floatformat *floatformat;
   } type_specific;
-};
+} ATTRIBUTE_PACKED gdbtypes_h_main_type_t;
+
+/* keep this condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* A ``struct type'' describes a particular instance of a type, with
    some particular qualification.  */
@@ -1285,14 +1302,14 @@ extern struct type *builtin_type_f_void;
    the same as for the type structure. */
 
 #define TYPE_ALLOC(t,size)  \
-   (TYPE_OBJFILE (t) != NULL  \
-    ? obstack_alloc (&TYPE_OBJFILE (t) -> objfile_obstack, size) \
-    : xmalloc (size))
+   ((TYPE_OBJFILE(t) != NULL)  \
+    ? obstack_alloc(&TYPE_OBJFILE(t)->objfile_obstack, size) \
+    : xmalloc(size))
 
-extern struct type *alloc_type (struct objfile *);
+extern struct type *alloc_type(struct objfile *);
 
-extern struct type *init_type (enum type_code, int, int, char *,
-			       struct objfile *);
+extern struct type *init_type(enum type_code, int, int, const char *,
+			      struct objfile *);
 
 /* Helper functions to construct a struct or record type.  An
    initially empty type is created using init_composite_type().
@@ -1300,21 +1317,21 @@ extern struct type *init_type (enum type_code, int, int, char *,
    type has its size set to the largest field.  A struct type has each
    field packed against the previous.  */
 
-extern struct type *init_composite_type (char *name, enum type_code code);
-extern void append_composite_type_field (struct type *t, char *name,
-					 struct type *field);
+extern struct type *init_composite_type(char *name, enum type_code code);
+extern void append_composite_type_field(struct type *t, const char *name,
+					struct type *field);
 
-extern struct type *lookup_reference_type (struct type *);
+extern struct type *lookup_reference_type(struct type *);
 
-extern struct type *make_reference_type (struct type *, struct type **);
+extern struct type *make_reference_type(struct type *, struct type **);
 
-extern struct type *make_cvr_type (int, int, int, struct type *, struct type **);
+extern struct type *make_cvr_type(int, int, int, struct type *, struct type **);
 
-extern void replace_type (struct type *, struct type *);
+extern void replace_type(struct type *, struct type *);
 
-extern int address_space_name_to_int (char *);
+extern int address_space_name_to_int(char *);
 
-extern const char *address_space_int_to_name (int);
+extern const char *address_space_int_to_name(int);
 
 extern struct type *make_type_with_address_space (struct type *type,
 						  int space_identifier);

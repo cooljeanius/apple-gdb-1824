@@ -1,4 +1,4 @@
-/* utils.c: General utility routines for the remote server for GDB.
+/* multi-ice/utils.c: General utility routines for the remote server for GDB.
  * Copyright (C) 1986, 1989, 1993 Free Software Foundation, Inc. */
 /*
 This file is part of GDB.

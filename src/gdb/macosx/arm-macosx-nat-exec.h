@@ -1,4 +1,4 @@
-/* arm-macosx-nat-exec.h -*- C -*- */
+/* macosx/arm-macosx-nat-exec.h -*- C -*- */
 
 #ifndef __GDB_ARM_MACOSX_NAT_EXEC_H__
 #define __GDB_ARM_MACOSX_NAT_EXEC_H__

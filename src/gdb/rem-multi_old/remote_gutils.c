@@ -71,7 +71,7 @@ typedef struct cleanup {
 static struct cleanup *cleanup_chain;
 
 /* Nonzero means a quit has been requested: */
-int quit_flag;
+extern int quit_flag;
 
 /* Nonzero means quit immediately if Control-C is typed now,
  * rather than waiting until QUIT is executed: */

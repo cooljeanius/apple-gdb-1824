@@ -1,4 +1,4 @@
-/* nm-nbsdaout.h
+/* config/nm-nbsdaout.h
    Native-dependent definitions for NetBSD a.out.
    Copyright 1994, 1996, 1999 Free Software Foundation, Inc.
 

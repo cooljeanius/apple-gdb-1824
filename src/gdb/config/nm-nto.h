@@ -1,4 +1,4 @@
-/* nm-nto.h
+/* config/nm-nto.h
    Native support for QNX Neutrino version 6.
 
    Copyright 2003,2006,2007,2008,2009 Free Software Foundation, Inc.

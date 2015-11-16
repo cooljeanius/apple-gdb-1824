@@ -1,4 +1,4 @@
-/* kdp-udp.c
+/* macosx/kdp-udp.c
    Mac OS X kdp support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.

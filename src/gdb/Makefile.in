@@ -1645,8 +1645,8 @@ init.c: $(INIT_FILES)
 init.o: init.c $(defs_h) $(call_cmds_h)
 
 LIBTOOL = @LIBTOOL@
-##FIXME: fix the linking when doing build_with_cxx:
-LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(LIBTOOLFLAGS) --mode=link $(CC_LD)
+TAG_FOR_LIBTOOL = @TAG_FOR_LIBTOOL@
+LINK = $(LIBTOOL) $(AM_V_lt) $(TAG_FOR_LIBTOOL) $(LIBTOOLFLAGS) --mode=link $(LINKER)
 
 TMPDIR = /tmp
 
@@ -1655,7 +1655,7 @@ gdb$(EXEEXT): gdb.o libgdb.a $(CONFIG_OBS) $(ADD_DEPS) $(CDEPS) $(TDEPLIBS)
 	$(MAKE) version.o
 	$(AM_V_at)rm -f $(AM_V_v) gdb$(EXEEXT)
 	$(AM_V_at)rm -f -r $(AM_V_v) gdb$(EXEEXT).dSYM
-	$(AM_V_CCLD)$(LINK) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
+	$(AM_V_LINKER)$(LINK) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
 		$(ADD_INFO_PLIST) \
 		-o gdb$(EXEEXT) gdb.o $(CONFIG_OBS) libgdb.a \
 		$(TDEPLIBS) $(TUI_LIBRARY) $(CLIBS) $(LOADLIBES)
@@ -1672,7 +1672,7 @@ gdb$(EXEEXT): gdb.o libgdb.a $(CONFIG_OBS) $(ADD_DEPS) $(CDEPS) $(TDEPLIBS)
 $(TUI)$(EXEEXT): tui-main.o libgdb.a $(ADD_DEPS) $(CDEPS) $(TDEPLIBS)
 	$(AM_V_at)rm -f $(AM_V_v) $(TUI)$(EXEEXT)
 	$(AM_V_at)rm -f -r $(AM_V_v) $(TUI)$(EXEEXT).dSYM
-	$(AM_V_CCLD)$(LINK) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
+	$(AM_V_LINKER)$(LINK) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
 	  $(ADD_INFO_PLIST) \
 	  -o $(TUI)$(EXEEXT) tui-main.o libgdb.a \
 	  $(TDEPLIBS) $(TUI_LIBRARY) $(CLIBS) $(LOADLIBES)
@@ -2040,17 +2040,20 @@ ALLDEPFILES = \
 copying.o: $(srcdir)/copying.c @MAINT@ $(defs_h) $(command_h) $(gdbcmd_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  -Wno-overlength-strings $(srcdir)/copying.c
+	$(POSTCOMPILE)
 
 hpux-thread.o: $(srcdir)/hpux-thread.c @MAINT@ $(defs_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) -I$(srcdir)/osf-share \
 	  -I$(srcdir)/osf-share/HP800 -I/usr/include/dce \
 	  $(srcdir)/hpux-thread.c
+	$(POSTCOMPILE)
 
 # main.o needs an explicit build rule to get TARGET_SYSTEM_ROOT and BINDIR.
 main.o: main.c @MAINT@ $(defs_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(TARGET_SYSTEM_ROOT_DEFINE) -DBINDIR=\"$(bindir)\" \
 	  $(srcdir)/main.c
+	$(POSTCOMPILE)
 
 # FIXME: cagney/2004-09-16: "gnu-v3-abi.c", with a GCC 3.4 compiler,
 # gets a "assignment from incompatible pointer type" warning. The
@@ -2059,6 +2062,7 @@ main.o: main.c @MAINT@ $(defs_h)
 gnu-v3-abi.o: $(srcdir)/gnu-v3-abi.c @MAINT@ $(defs_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_WARN_CFLAGS) \
 	  $(NO_WERROR_CFLAGS) $(srcdir)/gnu-v3-abi.c
+	$(POSTCOMPILE)
 
 # FIXME: cagney/2003-08-10: "monitor.c" gets -Wformat-nonliteral
 # errors. It turns out that that is the least of monitor.c's
@@ -2069,6 +2073,7 @@ gnu-v3-abi.o: $(srcdir)/gnu-v3-abi.c @MAINT@ $(defs_h)
 monitor.o: $(srcdir)/monitor.c @MAINT@ $(defs_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
 	  $(srcdir)/monitor.c
+	$(POSTCOMPILE)
 
 # FIXME: cagney/2003-08-10: Do not try to build "printcmd.c" with
 # -Wformat-nonliteral. It needs to be overhauled so that it does NOT
@@ -2077,23 +2082,27 @@ monitor.o: $(srcdir)/monitor.c @MAINT@ $(defs_h)
 printcmd.o: $(srcdir)/printcmd.c @MAINT@ $(defs_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_WARN_CFLAGS) \
 	  $(NO_WERROR_CFLAGS) $(srcdir)/printcmd.c
+	$(POSTCOMPILE)
 
 # FIXME: Procfs.o gets -Wformat errors because things like pid_t do not
 # match output format strings.
 procfs.o: $(srcdir)/procfs.c @MAINT@ $(defs_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
 	  $(srcdir)/procfs.c
+	$(POSTCOMPILE)
 
 # FIXME: Thread-db.o gets warnings because the definitions of the register
 # sets are different from kernel to kernel.
 linux-thread-db.o: $(srcdir)/linux-thread-db.c @MAINT@ $(defs_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_WARN_CFLAGS) $(NO_WERROR_CFLAGS) \
 	  $(srcdir)/linux-thread-db.c
+	$(POSTCOMPILE)
 
 v850ice.o: $(srcdir)/v850ice.c @MAINT@ $(defs_h)
 	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
 	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(srcdir)/v850ice.c
+	$(POSTCOMPILE)
 
 # ada-exp.c can appear in srcdir, for releases; or in ., for
 # development builds.
@@ -3441,40 +3450,48 @@ cli-cmds.o: $(cli_srcdir)/cli-cmds.c $(defs_h) $(readline_h) \
   $(tui_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(cli_srcdir)/cli-cmds.c
+	$(POSTCOMPILE)
 cli-decode.o: $(cli_srcdir)/cli-decode.c $(defs_h) $(symtab_h) \
   $(gdb_regex_h) $(gdb_string_h) $(completer_h) $(ui_out_h) $(cli_cmds_h) \
   $(cli_decode_h) $(tui_h) $(gdb_assert_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(cli_srcdir)/cli-decode.c
+	$(POSTCOMPILE)
 cli-dump.o: $(cli_srcdir)/cli-dump.c $(defs_h) $(gdb_string_h) \
   $(cli_decode_h) $(cli_cmds_h) $(value_h) $(completer_h) \
   $(cli_dump_h) $(gdb_assert_h) $(target_h) $(readline_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(cli_srcdir)/cli-dump.c
+	$(POSTCOMPILE)
 cli-interp.o: $(cli_srcdir)/cli-interp.c $(defs_h) $(interps_h) \
   $(wrapper_h) $(event_top_h) $(ui_out_h) $(cli_out_h) $(top_h) \
   $(inferior_h) $(mi_console_h) $(gdb_string_h) $(cli_cmds_h) \
   $(exceptions_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(cli_srcdir)/cli-interp.c
+	$(POSTCOMPILE)
 cli-logging.o: $(cli_srcdir)/cli-logging.c $(defs_h) $(gdbcmd_h) \
   $(ui_out_h) $(gdb_string_h) $(cli_logging_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(cli_srcdir)/cli-logging.c
+	$(POSTCOMPILE)
 cli-script.o: $(cli_srcdir)/cli-script.c $(defs_h) $(value_h) \
   $(language_h) $(ui_out_h) $(gdb_string_h) $(exceptions_h) $(top_h) \
   $(breakpoint_h) $(event_top_h) $(cli_cmds_h) $(cli_decode_h) \
   $(cli_script_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(cli_srcdir)/cli-script.c
+	$(POSTCOMPILE)
 cli-setshow.o: $(cli_srcdir)/cli-setshow.c $(defs_h) $(readline_tilde_h) \
   $(value_h) $(gdb_string_h) $(ui_out_h) $(cli_decode_h) $(cli_cmds_h) \
   $(cli_setshow_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(cli_srcdir)/cli-setshow.c
+	$(POSTCOMPILE)
 cli-utils.o: $(cli_srcdir)/cli-utils.c $(defs_h) $(cli_utils_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(cli_srcdir)/cli-utils.c
+	$(POSTCOMPILE)
 
 #
 # GDBTK sub-directory
@@ -3869,35 +3886,42 @@ mi-cmd-break.o: $(mi_srcdir)/mi-cmd-break.c $(defs_h) $(target_h) \
   $(gdbcmd_h) $(filenames_h) $(mi_cmd_break_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-cmd-break.c
+	$(POSTCOMPILE)
 mi-cmd-catch.o: $(mi_srcdir)/mi-cmd-catch.c $(defs_h) $(arch_utils_h) \
   $(breakpoint_h) $(gdb_h) $(libiberty_h) $(ada_lang_h) $(mi_cmds_h) \
   $(mi_getopt_h) $(mi_cmd_break_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-cmd-catch.c
+	$(POSTCOMPILE)
 mi-cmd-disas.o: $(mi_srcdir)/mi-cmd-disas.c $(defs_h) $(target_h) \
   $(value_h) $(mi_cmds_h) $(mi_getopt_h) $(gdb_string_h) $(ui_out_h) \
   $(disasm_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-cmd-disas.c
+	$(POSTCOMPILE)
 mi-cmd-env.o: $(mi_srcdir)/mi-cmd-env.c $(defs_h) $(inferior_h) \
   $(value_h) $(mi_out_h) $(mi_cmds_h) $(mi_getopt_h) $(symtab_h) \
   $(target_h) $(environ_h) $(command_h) $(ui_out_h) $(top_h) \
   $(gdb_string_h) $(gdb_stat_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-cmd-env.c
+	$(POSTCOMPILE)
 mi-cmd-file.o: $(mi_srcdir)/mi-cmd-file.c $(defs_h) $(mi_cmds_h) \
   $(mi_getopt_h) $(ui_out_h) $(symtab_h) $(source_h) $(objfiles_h) \
   $(gdbcore_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-cmd-file.c
+	$(POSTCOMPILE)
 mi-cmd-info.o: $(mi_srcdir)/mi-cmd-info.c $(defs_h) $(osdata_h) \
   $(mi_cmds_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-cmd-info.c
+	$(POSTCOMPILE)
 mi-cmds.o: $(mi_srcdir)/mi-cmds.c $(defs_h) $(top_h) $(mi_cmds_h) \
   $(gdb_string_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-cmds.c
+	$(POSTCOMPILE)
 # APPLE LOCAL begin subroutine inlining:
 mi-cmd-stack.o: $(mi_srcdir)/mi-cmd-stack.c $(defs_h) $(target_h) \
   $(frame_h) $(value_h) $(mi_cmds_h) $(mi_main_h) $(ui_out_h) $(varobj_h) \
@@ -3906,34 +3930,41 @@ mi-cmd-stack.o: $(mi_srcdir)/mi-cmd-stack.c $(defs_h) $(target_h) \
   $(inlining_h) $(tm_i386_macosx_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-cmd-stack.c
+	$(POSTCOMPILE)
 # APPLE LOCAL end subroutine inlining
 mi-cmd-target.o: $(mi_srcdir)/mi-cmd-target.c $(defs_h) $(mi_cmds_h) \
   $(mi_getopt_h) $(remote_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-cmd-target.c
+	$(POSTCOMPILE)
 mi-cmd-var.o: $(mi_srcdir)/mi-cmd-var.c $(defs_h) $(mi_cmds_h) \
   $(ui_out_h) $(mi_out_h) $(varobj_h) $(value_h) $(gdb_string_h) \
   $(frame_h) $(block_h) $(linespec_h) $(exceptions_h) $(inlining_h) \
   $(breakpoint_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-cmd-var.c
+	$(POSTCOMPILE)
 mi-common.o: $(mi_srcdir)/mi-common.c $(defs_h) $(mi_common_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-common.c
+	$(POSTCOMPILE)
 mi-console.o: $(mi_srcdir)/mi-console.c $(defs_h) $(mi_console_h) \
   $(gdb_string_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-console.c
+	$(POSTCOMPILE)
 mi-getopt.o: $(mi_srcdir)/mi-getopt.c $(defs_h) $(mi_getopt_h) \
   $(gdb_string_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-getopt.c
+	$(POSTCOMPILE)
 mi-interp.o: $(mi_srcdir)/mi-interp.c $(defs_h) $(gdb_string_h) \
   $(interps_h) $(event_top_h) $(event_loop_h) $(inferior_h) $(ui_out_h) \
   $(top_h) $(exceptions_h) $(mi_main_h) $(mi_cmds_h) $(mi_out_h) \
   $(mi_console_h) $(mi_common_h) $(inlining_h) $(gdbthread_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-interp.c
+	$(POSTCOMPILE)
 # APPLE LOCAL begin subroutine inlining:
 mi-main.o: $(mi_srcdir)/mi-main.c $(defs_h) $(target_h) $(inferior_h) \
   $(gdb_string_h) $(exceptions_h) $(top_h) $(gdbthread_h) $(gdbcmd_h) \
@@ -3944,25 +3975,29 @@ mi-main.o: $(mi_srcdir)/mi-main.c $(defs_h) $(target_h) $(inferior_h) \
   $(objc_lang_h) $(breakpoint_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-main.c
+	$(POSTCOMPILE)
 # APPLE LOCAL end subroutine inlining
 mi-out.o: $(mi_srcdir)/mi-out.c $(defs_h) $(ui_out_h) $(ui_file_h) \
   $(mi_out_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-out.c
+	$(POSTCOMPILE)
 mi-parse.o: $(mi_srcdir)/mi-parse.c $(defs_h) $(mi_cmds_h) $(mi_parse_h) \
   $(gdb_string_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-parse.c
+	$(POSTCOMPILE)
 mi-symbol-cmds.o: $(mi_srcdir)/mi-symbol-cmds.c $(defs_h) $(mi_cmds_h) \
   $(symtab_h) $(ui_out_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-symbol-cmds.c
+	$(POSTCOMPILE)
 
 #
 # rdi-share sub-directory
 #
 # Need to explicitly specify the compile rule as make will do nothing
-# or try to compile the object file into the mi directory.
+# or try to compile the object file into the rdi-share directory.
 
 rdi-share/libangsd.a:	force
 	@dir=rdi-share; \
@@ -3984,6 +4019,7 @@ signals.o: $(srcdir)/signals/signals.c $(server_h) $(defs_h) $(target_h) \
   $(gdb_string_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(srcdir)/signals/signals.c
+	$(POSTCOMPILE)
 
 #
 # gdb/tui/ dependencies
@@ -3996,22 +4032,32 @@ tui.o: $(tui_srcdir)/tui.c $(defs_h) $(gdbcmd_h) $(tui_h) $(tui_hooks_h) \
   $(tui_win_h) $(tui_winsource_h) $(tui_windata_h) $(target_h) $(frame_h) \
   $(breakpoint_h) $(inferior_h) $(symtab_h) $(source_h) $(gdb_curses_h) \
   $(readline_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(tui_srcdir)/tui.c
+	$(POSTCOMPILE)
 tui-command.o: $(tui_srcdir)/tui-command.c $(defs_h) $(tui_h) \
   $(tui_command_h) $(tui_data_h) $(tui_win_h) $(tui_io_h) $(gdb_curses_h) \
   $(gdb_string_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-command.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(tui_srcdir)/tui-command.c
+	$(POSTCOMPILE)
 tui-data.o: $(tui_srcdir)/tui-data.c $(defs_h) $(symtab_h) $(tui_h) \
   $(tui_data_h) $(tui_wingeneral_h) $(gdb_string_h) $(gdb_curses_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-data.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(tui_srcdir)/tui-data.c
+	$(POSTCOMPILE)
 tui-disasm.o: $(tui_srcdir)/tui-disasm.c $(defs_h) $(symtab_h) \
   $(breakpoint_h) $(frame_h) $(value_h) $(source_h) $(disasm_h) \
   $(gdb_string_h) $(tui_h) $(tui_data_h) $(tui_win_h) $(tui_layout_h) \
   $(tui_winsource_h) $(tui_stack_h) $(tui_file_h) $(gdb_curses_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-disasm.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(tui_srcdir)/tui-disasm.c
+	$(POSTCOMPILE)
 tui-file.o: $(tui_srcdir)/tui-file.c $(defs_h) $(ui_file_h) $(tui_file_h) \
   $(tui_io_h) $(tui_h) $(gdb_string_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-file.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(tui_srcdir)/tui-file.c
+	$(POSTCOMPILE)
 tui-hooks.o: $(tui_srcdir)/tui-hooks.c $(defs_h) $(symtab_h) \
   $(inferior_h) $(command_h) $(bfd_h) $(symfile_h) $(objfiles_h) \
   $(target_h) $(gdbcore_h) $(event_loop_h) $(event_top_h) $(frame_h) \
@@ -4019,65 +4065,90 @@ tui-hooks.o: $(tui_srcdir)/tui-hooks.c $(defs_h) $(symtab_h) \
   $(tui_hooks_h) $(tui_data_h) $(tui_layout_h) $(tui_io_h) \
   $(tui_regs_h) $(tui_win_h) $(tui_stack_h) $(tui_windata_h) \
   $(tui_winsource_h) $(gdb_curses_h) $(readline_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-hooks.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(tui_srcdir)/tui-hooks.c
+	$(POSTCOMPILE)
 tui-interp.o: $(tui_srcdir)/tui-interp.c $(defs_h) $(interps_h) $(top_h) \
   $(event_top_h) $(event_loop_h) $(ui_out_h) $(cli_out_h) \
   $(tui_data_h) $(readline_h) $(tui_win_h) $(tui_h) $(tui_io_h) \
   $(exceptions_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-interp.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(tui_srcdir)/tui-interp.c
+	$(POSTCOMPILE)
 tui-io.o: $(tui_srcdir)/tui-io.c $(defs_h) $(target_h) $(event_loop_h) \
   $(event_top_h) $(command_h) $(top_h) $(tui_h) $(tui_data_h) $(tui_io_h) \
   $(tui_command_h) $(tui_win_h) $(tui_wingeneral_h) $(tui_file_h) \
   $(ui_out_h) $(cli_out_h) $(gdb_curses_h) $(readline_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-io.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(tui_srcdir)/tui-io.c
+	$(POSTCOMPILE)
 tui-layout.o: $(tui_srcdir)/tui-layout.c $(defs_h) $(command_h) \
   $(symtab_h) $(frame_h) $(source_h) $(tui_h) $(tui_data_h) \
   $(tui_layout_h) $(tui_windata_h) $(tui_wingeneral_h) $(tui_stack_h) \
   $(tui_regs_h) $(tui_win_h) $(tui_winsource_h) $(tui_disasm_h) \
   $(gdb_string_h) $(gdb_curses_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-layout.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(tui_srcdir)/tui-layout.c
+	$(POSTCOMPILE)
 tui-main.o: $(tui_srcdir)/tui-main.c $(defs_h) $(main_h) $(gdb_string_h) \
   $(interps_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-main.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(tui_srcdir)/tui-main.c
+	$(POSTCOMPILE)
 tui-out.o: $(tui_srcdir)/tui-out.c $(defs_h) $(ui_out_h) $(tui_h) \
   $(gdb_string_h) $(gdb_assert_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-out.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(tui_srcdir)/tui-out.c
+	$(POSTCOMPILE)
 tui-regs.o: $(tui_srcdir)/tui-regs.c $(defs_h) $(tui_h) $(tui_data_h) \
   $(symtab_h) $(gdbtypes_h) $(gdbcmd_h) $(frame_h) $(regcache_h) \
   $(inferior_h) $(target_h) $(gdb_string_h) $(tui_layout_h) $(tui_regs_h) \
   $(tui_win_h) $(tui_windata_h) $(tui_wingeneral_h) $(tui_file_h) \
   $(reggroups_h) $(gdb_curses_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-regs.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(tui_srcdir)/tui-regs.c
+	$(POSTCOMPILE)
 tui-source.o: $(tui_srcdir)/tui-source.c $(defs_h) $(symtab_h) $(frame_h) \
   $(breakpoint_h) $(source_h) $(tui_h) $(tui_data_h) $(tui_stack_h) \
   $(tui_winsource_h) $(tui_source_h) $(gdb_string_h) $(gdb_curses_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-source.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(tui_srcdir)/tui-source.c
+	$(POSTCOMPILE)
 tui-stack.o: $(tui_srcdir)/tui-stack.c $(defs_h) $(symtab_h) \
   $(breakpoint_h) $(frame_h) $(command_h) $(inferior_h) $(target_h) \
   $(top_h) $(gdb_string_h) $(tui_h) $(tui_data_h) $(tui_stack_h) \
   $(tui_wingeneral_h) $(tui_source_h) $(tui_winsource_h) $(tui_file_h) \
   $(gdb_curses_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-stack.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(tui_srcdir)/tui-stack.c
+	$(POSTCOMPILE)
 tui-win.o: $(tui_srcdir)/tui-win.c $(defs_h) $(command_h) $(symtab_h) \
   $(breakpoint_h) $(frame_h) $(cli_cmds_h) $(top_h) $(source_h) \
   $(tui_h) $(tui_data_h) $(tui_win_h) $(tui_wingeneral_h) $(tui_stack_h) \
   $(tui_regs_h) $(tui_disasm_h) $(tui_source_h) $(tui_winsource_h) \
   $(tui_windata_h) $(gdb_curses_h) $(gdb_string_h) $(readline_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-win.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(tui_srcdir)/tui-win.c
+	$(POSTCOMPILE)
 tui-windata.o: $(tui_srcdir)/tui-windata.c $(defs_h) $(tui_h) \
   $(tui_data_h) $(tui_wingeneral_h) $(tui_regs_h) $(gdb_string_h) \
   $(gdb_curses_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-windata.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(tui_srcdir)/tui-windata.c
+	$(POSTCOMPILE)
 tui-wingeneral.o: $(tui_srcdir)/tui-wingeneral.c $(defs_h) $(tui_h) \
   $(tui_data_h) $(tui_wingeneral_h) $(tui_win_h) $(gdb_curses_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) \
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(tui_srcdir)/tui-wingeneral.c
+	$(POSTCOMPILE)
 tui-winsource.o: $(tui_srcdir)/tui-winsource.c $(defs_h) $(symtab_h) \
   $(frame_h) $(breakpoint_h) $(value_h) $(source_h) $(tui_h) \
   $(tui_data_h) $(tui_stack_h) $(tui_win_h) $(tui_wingeneral_h) \
   $(tui_winsource_h) $(tui_source_h) $(tui_disasm_h) $(gdb_string_h) \
   $(gdb_curses_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(tui_srcdir)/tui-winsource.c
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  $(tui_srcdir)/tui-winsource.c
+	$(POSTCOMPILE)
 
 ### end of the gdb Makefile.in.
 

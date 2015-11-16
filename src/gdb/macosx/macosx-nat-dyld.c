@@ -1,4 +1,4 @@
-/* macosx-nat-dyld.c: Mac OS X support for GDB, the GNU debugger.
+/* macosx/macosx-nat-dyld.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -263,9 +263,10 @@ dyld_debug(const char *fmt, ...)
     }
 }
 
+/* */
 void
 dyld_print_status_info(struct macosx_dyld_thread_status *s,
-                       unsigned int mask, char *args)
+                       unsigned int mask, const char *args)
 {
   switch (s->state)
     {
@@ -294,6 +295,7 @@ dyld_print_status_info(struct macosx_dyld_thread_status *s,
   dyld_print_shlib_info(&s->current_info, mask, 1, args);
 }
 
+/* */
 void
 macosx_clear_start_breakpoint(void)
 {
@@ -1868,21 +1870,21 @@ macosx_init_dyld (struct macosx_dyld_thread_status *s,
   struct cleanup *timer_cleanup = NULL;
 
   if (maint_use_timers)
-    timer_cleanup = start_timer (&timer_id, "macosx_init_dyld", "");
+    timer_cleanup = start_timer(&timer_id, "macosx_init_dyld", "");
 
-  DYLD_ALL_OBJFILE_INFO_ENTRIES (&s->current_info, e, i)
+  DYLD_ALL_OBJFILE_INFO_ENTRIES(&s->current_info, e, i)
     if (e->reason & dyld_reason_executable_mask)
-      dyld_objfile_entry_clear (e);
+      dyld_objfile_entry_clear(e);
 
-  dyld_init_paths (&s->path_info);
+  dyld_init_paths(&s->path_info);
 
-  dyld_objfile_info_init (&previous_info);
+  dyld_objfile_info_init(&previous_info);
 
   if (pre_slide_libraries_flag && s->pre_run_memory_map == NULL && abfd != NULL)
-    s->pre_run_memory_map = create_pre_run_memory_map (abfd);
+    s->pre_run_memory_map = create_pre_run_memory_map(abfd);
 
-  dyld_objfile_info_copy (&previous_info, &s->current_info);
-  dyld_objfile_info_free (&s->current_info);
+  dyld_objfile_info_copy(&previous_info, &s->current_info);
+  dyld_objfile_info_free(&s->current_info);
 
   if (o != NULL)
     {
@@ -2000,14 +2002,17 @@ macosx_get_osabi_from_dyld_entry(bfd *abfd)
   return bfd_osabi;
 }
 
+/* */
 void
 macosx_init_dyld_symfile(struct objfile *o, bfd *abfd)
 {
   macosx_init_dyld(&macosx_dyld_status, o, abfd);
 }
 
+/* */
 static void
-dyld_cache_purge_command(char *exp, int from_tty)
+dyld_cache_purge_command(const char *exp ATTRIBUTE_UNUSED,
+			 int from_tty ATTRIBUTE_UNUSED)
 {
   dyld_purge_cached_libraries(&macosx_dyld_status.current_info);
 }
@@ -2984,15 +2989,17 @@ macosx_dyld_mourn_inferior(void)
   status->pre_run_memory_map = NULL;
 }
 
+/* */
 static void
-macosx_dyld_update_command(char *args, int from_tty)
+macosx_dyld_update_command(const char *args, int from_tty)
 {
   macosx_dyld_update(0);
   macosx_init_dyld(&macosx_dyld_status, symfile_objfile, exec_bfd);
 }
 
+/* */
 static void
-map_shlib_numbers(char *args,
+map_shlib_numbers(const char *args,
                   void (*function)(struct dyld_path_info *,
                                    struct dyld_objfile_entry *,
                                    struct objfile *,
@@ -3006,9 +3013,9 @@ map_shlib_numbers(char *args,
   struct cleanup *cleanups;
 
   if (args == 0)
-    error_no_arg("one or more shlib numbers");
+    error_no_arg(_("one or more shlib numbers"));
 
-  p = args;
+  p = (char *)args;
   while (isspace(*p) && (*p != '\0'))
     p++;
 
@@ -3042,7 +3049,7 @@ map_shlib_numbers(char *args,
       p[-1] = '\0';
     }
 
-  p = args;
+  p = (char *)args;
 
   if (strcmp(p, "all") == 0)
     {
@@ -3077,7 +3084,7 @@ map_shlib_numbers(char *args,
 
       match = 0;
       p1 = p;
-      num = get_number_or_range(&p);
+      num = get_number_or_range((const char **)&p);
 
       if (num == 0)
         {
@@ -3106,8 +3113,9 @@ map_shlib_numbers(char *args,
   }
 }
 
+/* */
 static void
-dyld_generic_command_with_helper(char *args,
+dyld_generic_command_with_helper(const char *args,
                                  int from_tty,
                                  void (*function)(struct dyld_path_info *,
                                                   struct dyld_objfile_entry *,
@@ -3147,20 +3155,23 @@ dyld_generic_command_with_helper(char *args,
     do_cleanups(timer_cleanup);
 }
 
+/* */
 static void
-add_helper (struct dyld_path_info *d,
-            struct dyld_objfile_entry *e, struct objfile *o, int index, const char *arg)
+add_helper(struct dyld_path_info *d, struct dyld_objfile_entry *e,
+	   struct objfile *o, int index, const char *arg)
 {
   if (e != NULL)
     e->load_flag = OBJF_SYM_ALL;
 }
 
+/* */
 static void
-dyld_add_symbol_file_command(char *args, int from_tty)
+dyld_add_symbol_file_command(const char *args, int from_tty)
 {
   dyld_generic_command_with_helper(args, from_tty, add_helper);
 }
 
+/* */
 static void
 remove_helper(struct dyld_path_info *d, struct dyld_objfile_entry *e,
               struct objfile *o, int index, const char *arg)
@@ -3169,8 +3180,9 @@ remove_helper(struct dyld_path_info *d, struct dyld_objfile_entry *e,
     e->load_flag = (OBJF_SYM_NONE | dyld_minimal_load_flag(d, e));
 }
 
+/* */
 static void
-dyld_remove_symbol_file_command(char *args, int from_tty)
+dyld_remove_symbol_file_command(const char *args, int from_tty)
 {
   dyld_generic_command_with_helper(args, from_tty, remove_helper);
 }
@@ -3214,8 +3226,9 @@ apply_load_rules_helper(struct dyld_path_info *d,
   set_load_state_1(e, d, index, load_state);
 }
 
+/* */
 static void
-dyld_apply_load_rules_command(char *args, int from_tty)
+dyld_apply_load_rules_command(const char *args, int from_tty)
 {
   map_shlib_numbers(args, apply_load_rules_helper,
                     &macosx_dyld_status.path_info,
@@ -3363,8 +3376,9 @@ set_load_state_helper(struct dyld_path_info *d, struct dyld_objfile_entry *e,
   set_load_state_1(e, d, index, load_state);
 }
 
+/* */
 static void
-dyld_set_load_state_command(char *args, int from_tty)
+dyld_set_load_state_command(const char *args, int from_tty)
 {
   map_shlib_numbers(args, set_load_state_helper,
                     &macosx_dyld_status.path_info,
@@ -3455,8 +3469,9 @@ section_info_helper(struct dyld_path_info *d, struct dyld_objfile_entry *e,
     }
 }
 
+/* */
 static void
-dyld_section_info_command(char *args, int from_tty)
+dyld_section_info_command(const char *args, int from_tty)
 {
   map_shlib_numbers(args, section_info_helper,
                     &macosx_dyld_status.path_info,
@@ -3480,7 +3495,7 @@ dyld_section_info_command(char *args, int from_tty)
    to handle the other two here.  */
 
 static void
-info_sharedlibrary_command(char *args, int from_tty)
+info_sharedlibrary_command(const char *args, int from_tty)
 {
   char **argv = (char **)NULL;
   struct cleanup *wipe;
@@ -3546,15 +3561,17 @@ info_sharedlibrary_address(CORE_ADDR address)
     error("[unknown]");
 }
 
+/* */
 static void
-info_sharedlibrary_all_command(char *args, int from_tty)
+info_sharedlibrary_all_command(const char *args, int from_tty)
 {
   dyld_print_shlib_info(&macosx_dyld_status.current_info,
-                        dyld_reason_all_mask | dyld_reason_user, 1, args);
+                        (dyld_reason_all_mask | dyld_reason_user), 1, args);
 }
 
+/* */
 static void
-info_sharedlibrary_dyld_command(char *args, int from_tty)
+info_sharedlibrary_dyld_command(const char *args, int from_tty)
 {
   dyld_print_shlib_info(&macosx_dyld_status.current_info,
                         dyld_reason_dyld, 1, args);
@@ -3581,8 +3598,9 @@ info_sharedlibrary_raw_cfm_command(char *args, int from_tty)
 }
 #endif /* WITH_CFM && NM_NEXTSTEP */
 
+/* */
 static void
-info_sharedlibrary_raw_dyld_command(char *args, int from_tty)
+info_sharedlibrary_raw_dyld_command(const char *args, int from_tty)
 {
   struct dyld_objfile_info info;
 
@@ -3612,16 +3630,20 @@ dyld_lookup_and_bind_function(char *name)
   return 1;
 }
 
+/* */
 static void ATTR_NORETURN
-dyld_cache_symfiles_command(char *args, int from_tty)
+dyld_cache_symfiles_command(const char *args ATTRIBUTE_UNUSED,
+			    int from_tty ATTRIBUTE_UNUSED)
 {
-  error("Cached symfiles are not supported on this configuration of GDB.");
+  error(_("Cached symfiles are not supported on this configuration of GDB."));
 }
 
+/* */
 static void ATTR_NORETURN
-dyld_cache_symfile_command(char *args, int from_tty)
+dyld_cache_symfile_command(const char *args ATTRIBUTE_UNUSED,
+			   int from_tty ATTRIBUTE_UNUSED)
 {
-  error("Cached symfiles are not supported on this configuration of GDB.");
+  error(_("Cached symfiles are not supported on this configuration of GDB."));
 }
 
 
@@ -3711,10 +3733,10 @@ update_section_tables_dyld(struct dyld_objfile_info *s)
 /* FIXME: This is used in the test to determine whether to re-enable
  * a shlib breakpoint in re_enable_breakpoints_in_shlibs.  I had to
  * disable that test.  Re-enable it when this function works: */
-const char *
+const char * ATTRIBUTE_CONST
 macosx_pc_solib(CORE_ADDR addr ATTRIBUTE_UNUSED)
 {
-  return NULL;
+  return (const char *)NULL;
 }
 
 
@@ -3818,16 +3840,18 @@ struct cmd_list_element *infoshliblist = NULL;
 struct cmd_list_element *shliblist = NULL;
 struct cmd_list_element *maintenanceshliblist = NULL;
 
+/* */
 static void
-maintenance_sharedlibrary_command(char *arg, int from_tty)
+maintenance_sharedlibrary_command(const char *arg, int from_tty)
 {
   printf_unfiltered("\"maintenance sharedlibrary\" must be followed by the name of a sharedlibrary command.\n");
   help_list(maintenanceshliblist, "maintenance sharedlibrary ",
             (enum command_class)-1, gdb_stdout);
 }
 
+/* */
 static void
-sharedlibrary_command(char *arg, int from_tty)
+sharedlibrary_command(const char *arg, int from_tty)
 {
   printf_unfiltered("\"sharedlibrary\" must be followed by the name of a sharedlibrary command.\n");
   help_list(shliblist, "sharedlibrary ", (enum command_class)-1,

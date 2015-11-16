@@ -1,4 +1,4 @@
-/* mem-break.c
+/* gdbserver/mem-break.c
    Memory breakpoint operations for the remote server for GDB.
    Copyright 2002, 2003, 2005
    Free Software Foundation, Inc.

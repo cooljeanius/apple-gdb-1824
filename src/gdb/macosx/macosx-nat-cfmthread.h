@@ -1,5 +1,5 @@
 /*
- * macosx-nat-cfmthread.h
+ * macosx/macosx-nat-cfmthread.h
  */
 
 #ifndef __GDB_MACOSX_NAT_CFMTHREAD_H__

@@ -1,4 +1,4 @@
-/* ppc-macosx-frameinfo.h -*- C -*- */
+/* macosx/ppc-macosx-frameinfo.h -*- C -*- */
 
 #ifndef __GDB_PPC_MACOSX_FRAMEINFO_H__
 #define __GDB_PPC_MACOSX_FRAMEINFO_H__

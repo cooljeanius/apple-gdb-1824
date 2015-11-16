@@ -1,4 +1,4 @@
-/* i386-macosx-tdep.c
+/* macosx/i386-macosx-tdep.c
    Mac OS X support for i386 targets for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002, 2005
    Free Software Foundation, Inc.

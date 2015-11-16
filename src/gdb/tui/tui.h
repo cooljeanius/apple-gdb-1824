@@ -1,4 +1,4 @@
-/* tui.h: External/Public TUI Header File.
+/* tui/tui.h: External/Public TUI Header File.
 
    Copyright 1998, 1999, 2000, 2001, 2004 Free Software Foundation,
    Inc.

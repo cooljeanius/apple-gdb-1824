@@ -1,4 +1,4 @@
-/* tui-interp.c: TUI Interpreter definitions for GDB, the GNU debugger.
+/* tui/tui-interp.c: TUI Interpreter definitions for GDB, the GNU debugger.
 
    Copyright 2003 Free Software Foundation, Inc.
 
@@ -149,7 +149,7 @@ tui_command_loop (void *data)
      longer any event sources registered.  */
   while (1)
     {
-      int result = catch_errors (gdb_do_one_event, 0, "", RETURN_MASK_ALL);
+      int result = catch_errors(gdb_do_one_event, 0, "", RETURN_MASK_ALL);
       if (result < 0)
 	break;
 

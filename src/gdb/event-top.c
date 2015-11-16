@@ -112,7 +112,7 @@ char *new_async_prompt;
 
 /* This is the annotation suffix that will be used when the
    annotation_level is 2. */
-char *async_annotation_suffix;
+const char *async_annotation_suffix;
 
 /* This is used to display the notification of the completion of an
    asynchronous execution command. */
@@ -351,42 +351,42 @@ display_gdb_prompt (char *new_prompt)
    it pops the top of the prompt stack when we want the annotation level
    to be the normal ones (1 or 0). */
 static void
-change_annotation_level (void)
+change_annotation_level(void)
 {
   char *prefix, *suffix;
 
-  if (!PREFIX (0) || !PROMPT (0) || !SUFFIX (0))
+  if (!PREFIX(0) || !PROMPT(0) || !SUFFIX(0))
     {
       /* The prompt stack has not been initialized to "", we are
          using gdb w/o the --async switch */
-      warning (_("Command has same effect as set annotate"));
+      warning(_("Command has same effect as set annotate"));
       return;
     }
 
   if (annotation_level > 1)
     {
-      if (!strcmp (PREFIX (0), "") && !strcmp (SUFFIX (0), ""))
+      if (!strcmp(PREFIX(0), "") && !strcmp(SUFFIX(0), ""))
 	{
 	  /* Push a new prompt if the previous annotation_level was not >1. */
-	  prefix = (char *) alloca (strlen (async_annotation_suffix) + 10);
-	  strcpy (prefix, "\n\032\032pre-");
-	  strcat (prefix, async_annotation_suffix);
-	  strcat (prefix, "\n");
+	  prefix = (char *)alloca(strlen(async_annotation_suffix) + 10UL);
+	  strcpy(prefix, "\n\032\032pre-");
+	  strcat(prefix, async_annotation_suffix);
+	  strcat(prefix, "\n");
 
-	  suffix = (char *) alloca (strlen (async_annotation_suffix) + 6);
-	  strcpy (suffix, "\n\032\032");
-	  strcat (suffix, async_annotation_suffix);
-	  strcat (suffix, "\n");
+	  suffix = (char *)alloca(strlen(async_annotation_suffix) + 6UL);
+	  strcpy(suffix, "\n\032\032");
+	  strcat(suffix, async_annotation_suffix);
+	  strcat(suffix, "\n");
 
-	  push_prompt (prefix, (char *) 0, suffix);
+	  push_prompt(prefix, (char *)0, suffix);
 	}
     }
   else
     {
-      if (strcmp (PREFIX (0), "") && strcmp (SUFFIX (0), ""))
+      if (strcmp(PREFIX(0), "") && strcmp(SUFFIX(0), ""))
 	{
 	  /* Pop the top of the stack, we are going back to annotation < 1. */
-	  pop_prompt ();
+	  pop_prompt();
 	}
     }
 }

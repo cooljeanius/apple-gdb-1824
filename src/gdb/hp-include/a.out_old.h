@@ -1,4 +1,4 @@
-/* a.out.h (old version)
+/* hp-include/a.out.h (old version)
  * Special version of <a.out.h> for use under hp-ux.
  * Copyright (C) 1988 Free Software Foundation, Inc. */
 /*

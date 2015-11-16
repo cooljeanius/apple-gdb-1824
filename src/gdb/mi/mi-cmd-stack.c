@@ -1,4 +1,4 @@
-/* mi-cmd-stack.c: MI Command Set - stack commands.
+/* mi/mi-cmd-stack.c: MI Command Set - stack commands.
    Copyright 2000, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
    Contributed by Cygnus Solutions (a Red Hat company).
 
@@ -68,7 +68,7 @@ void mi_interp_context_hook(int thread_id);
 
 regex_t mi_symbol_filter;
 
-static char *print_values_bad_input_string =
+static const char *print_values_bad_input_string =
          "Unknown value for PRINT_VALUES: must be: 0 or \"--no-values\", "
 	 "1 or \"--all-values\", 2 or \"--simple-values\", "
          "3 or \"--make-varobj\"";
@@ -470,7 +470,7 @@ mi_cmd_stack_info_depth(char *command, char **argv, int argc)
 
 /* mi_decode_print_values, ARG is the mi standard "print-values"
  * argument.  We decode this into an enum print_values: */
-enum print_values
+enum print_values ATTRIBUTE_PURE
 mi_decode_print_values(char *arg)
 {
   enum print_values print_values = (enum print_values)0;
@@ -480,18 +480,18 @@ mi_decode_print_values(char *arg)
      and --make-varobjs.  To get the "2" behavior
      you have to explicitly use --simple-values.  */
 
-  if (strcmp (arg, "0") == 0
-      || strcmp (arg, "--no-values") == 0)
+  if ((strcmp(arg, "0") == 0)
+      || (strcmp(arg, "--no-values") == 0))
     print_values = PRINT_NO_VALUES;
-  else if (strcmp (arg, "1") == 0
-	   || strcmp (arg, "--all-values") == 0)
+  else if ((strcmp(arg, "1") == 0)
+	   || (strcmp(arg, "--all-values") == 0))
     print_values = PRINT_ALL_VALUES;
-  else if (strcmp (arg, "2") == 0)
+  else if (strcmp(arg, "2") == 0)
     print_values = PRINT_MAKE_VAROBJ;
-  else if (strcmp (arg, "--simple-values") == 0)
+  else if (strcmp(arg, "--simple-values") == 0)
     print_values = PRINT_SIMPLE_VALUES;
-  else if (strcmp (arg, "3") == 0
-	   || strcmp (arg, "--make-varobjs") == 0)
+  else if ((strcmp(arg, "3") == 0)
+	   || (strcmp(arg, "--make-varobjs") == 0))
     print_values = PRINT_MAKE_VAROBJ;
   else
     print_values = PRINT_BAD_INPUT;
@@ -1355,33 +1355,33 @@ print_syms_for_block (struct block *block,
 	      struct type *type;
 
 	      cleanup_tuple =
-		make_cleanup_ui_out_tuple_begin_end (uiout, NULL);
+		make_cleanup_ui_out_tuple_begin_end(uiout, NULL);
 
-	      ui_out_field_string (uiout, "name", SYMBOL_PRINT_NAME (sym));
+	      ui_out_field_string(uiout, "name", SYMBOL_PRINT_NAME(sym));
 
 	      switch (values)
 		{
 		case PRINT_SIMPLE_VALUES:
-		  type = check_typedef (sym2->type);
-		  type_print (sym2->type, "", stb->stream, -1);
-		  ui_out_field_stream (uiout, "type", stb);
-		  if (TYPE_CODE (type) != TYPE_CODE_ARRAY
-		      && TYPE_CODE (type) != TYPE_CODE_STRUCT
-		      && TYPE_CODE (type) != TYPE_CODE_UNION)
+		  type = check_typedef(sym2->type);
+		  type_print(sym2->type, "", stb->stream, -1);
+		  ui_out_field_stream(uiout, "type", stb);
+		  if ((TYPE_CODE(type) != TYPE_CODE_ARRAY)
+		      && (TYPE_CODE(type) != TYPE_CODE_STRUCT)
+		      && (TYPE_CODE(type) != TYPE_CODE_UNION))
 		    {
-		      print_variable_value (sym2, fi, stb->stream);
-		      ui_out_field_stream (uiout, "value", stb);
+		      print_variable_value(sym2, fi, stb->stream);
+		      ui_out_field_stream(uiout, "value", stb);
 		    }
-		  do_cleanups (cleanup_tuple);
+		  do_cleanups(cleanup_tuple);
 		  break;
 		case PRINT_ALL_VALUES:
-		  print_variable_value (sym2, fi, stb->stream);
-		  ui_out_field_stream (uiout, "value", stb);
-		  do_cleanups (cleanup_tuple);
+		  print_variable_value(sym2, fi, stb->stream);
+		  ui_out_field_stream(uiout, "value", stb);
+		  do_cleanups(cleanup_tuple);
 		  break;
 		default:
-		  internal_error (__FILE__, __LINE__,
-				  "Wrong print_values value for this branch.\n");
+		  internal_error(__FILE__, __LINE__,
+				 "Wrong print_values value for this branch.\n");
 		}
               /* Re-fetch FI in case we ran the inferior and the frame cache
                  was flushed.  */

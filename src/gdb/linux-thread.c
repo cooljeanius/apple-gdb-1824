@@ -1085,12 +1085,12 @@ linuxthreads_pid_to_str (ptid_t ptid)
    and wait for the trace-trap that results from attaching.  */
 
 static void
-linuxthreads_attach (char *args, int from_tty)
+linuxthreads_attach(char *args, int from_tty)
 {
   if (!args)
-    error_no_arg ("process-id to attach");
+    error_no_arg(_("process-id to attach"));
 
-  push_target (&linuxthreads_ops);
+  push_target(&linuxthreads_ops);
   linuxthreads_breakpoints_inserted = 1;
   linuxthreads_breakpoint_last = -1;
   linuxthreads_wait_last = -1;

@@ -1,4 +1,4 @@
-/* agent.c: Shared utility routines for GDB to interact with agent.
+/* common/agent.c: Shared utility routines for GDB to interact with agent.
 
    Copyright (C) 2009-2013 Free Software Foundation, Inc.
 

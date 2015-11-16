@@ -1,4 +1,4 @@
-/* xdr_rdb.c  - xdr routines for Remote Debug interface to VxWorks  */
+/* vx-share/xdr_rdb.c - xdr routines for Remote Debug interface to VxWorks  */
 
 /* Copyright 1992, 1993 Free Software Foundation, Inc.
 

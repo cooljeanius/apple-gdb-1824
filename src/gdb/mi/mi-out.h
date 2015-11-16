@@ -1,4 +1,4 @@
-/* MI Command Set - MI output generating routines for GDB.
+/* mi/mi-out.h: MI Command Set - MI output generating routines for GDB.
    Copyright 2000 Free Software Foundation, Inc.
    Contributed by Cygnus Solutions (a Red Hat company).
 
@@ -25,12 +25,16 @@
 struct ui_out;
 struct ui_file;
 
-extern struct ui_out *mi_out_new (int mi_version);
-extern void mi_out_put (struct ui_out *uiout, struct ui_file *stream);
-extern void mi_out_rewind (struct ui_out *uiout);
-extern void mi_out_buffered (struct ui_out *uiout, char *string);
+extern int mi_out_c_inited;
 
-/* Return the version number of the current MI.  */
-extern int mi_version (struct ui_out *uiout);
+extern struct ui_out *mi_out_new(int mi_version);
+extern void mi_out_put(struct ui_out *uiout, struct ui_file *stream);
+extern void mi_out_rewind(struct ui_out *uiout);
+extern void mi_out_buffered(struct ui_out *uiout, char *string);
 
-#endif /* MI_OUT_H */
+/* Return the version number of the current MI: */
+extern int mi_version(struct ui_out *uiout);
+
+#endif /* !MI_OUT_H */
+
+/* EOF */

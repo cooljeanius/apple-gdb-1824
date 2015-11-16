@@ -1,5 +1,5 @@
 /*
- * macosx-nat-sigthread.h
+ * macosx/macosx-nat-sigthread.h
  */
 
 #ifndef __GDB_MACOSX_NAT_SIGTHREAD_H__

@@ -1,5 +1,5 @@
 /*
- * arm-macosx-tdep.h
+ * macosx/arm-macosx-tdep.h
  */
 
 #ifndef __GDB_ARM_MACOSX_TDEP_H__

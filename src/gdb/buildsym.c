@@ -1242,19 +1242,18 @@ pop_context (void)
 
 
 
-/* Compute a small integer hash code for the given name. */
-
+/* Compute a small integer hash code for the given name: */
 int
-hashname (char *name)
+hashname(char *name)
 {
-    return (hash(name,strlen(name)) % HASHSIZE);
+    return (hash(name, strlen(name)) % HASHSIZE);
 }
 
-
+/* FIXME: add comment: */
 void
-record_debugformat (char *format)
+record_debugformat(const char *format)
 {
-  current_subfile->debugformat = savestring (format, strlen (format));
+  current_subfile->debugformat = savestring(format, strlen(format));
 }
 
 void

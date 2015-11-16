@@ -1,4 +1,4 @@
-/* cli-decode.h: Header file for GDB command decoding library.
+/* cli/cli-decode.h: Header file for GDB command decoding library.
 
    Copyright 2000, 2003 Free Software Foundation, Inc.
 
@@ -139,7 +139,7 @@ struct cmd_list_element
        plus any others needed to get to it.  Should end in a space.
        It is used before the word "command" in describing the
        commands reached through this prefix.  */
-    char *prefixname;
+    const char *prefixname;
 
     /* For prefix commands only:
        nonzero means do not get an error if subcommand is not
@@ -199,23 +199,25 @@ struct cmd_list_element
 /* API to the manipulation of command lists.  */
 
 extern struct cmd_list_element *add_cmd(const char *, enum command_class,
-					void (*fun)(char *, int), const char *,
+					void (*fun)(const char *, int),
+					const char *,
 					struct cmd_list_element **);
 
-extern struct cmd_list_element *add_alias_cmd(const char *, char *,
+extern struct cmd_list_element *add_alias_cmd(const char *, const char *,
 					      enum command_class, int,
 					      struct cmd_list_element **);
 
 extern struct cmd_list_element *add_prefix_cmd(const char *, enum command_class,
-					       void (*fun)(char *, int),
+					       void (*fun)(const char *, int),
 					       const char *,
 					       struct cmd_list_element **,
-					       char *, int,
+					       const char *, int,
 					       struct cmd_list_element **);
 
 extern struct cmd_list_element *add_abbrev_prefix_cmd(const char *,
 						      enum command_class,
-						      void (*fun)(char *, int),
+						      void (*fun)(const char *,
+								  int),
 						      const char *,
 						      struct cmd_list_element
 						      **, char *, int,
@@ -224,83 +226,85 @@ extern struct cmd_list_element *add_abbrev_prefix_cmd(const char *,
 
 /* Set the commands corresponding callback.  */
 
-extern void set_cmd_cfunc (struct cmd_list_element *cmd,
-			   void (*cfunc) (char *args, int from_tty));
+extern void set_cmd_cfunc(struct cmd_list_element *cmd,
+			  void (*cfunc)(const char *args, int from_tty));
 
 extern void set_cmd_sfunc (struct cmd_list_element *cmd,
-			   void (*sfunc) (char *args, int from_tty,
-					  struct cmd_list_element * c));
+			   void (*sfunc)(char *args, int from_tty,
+					 struct cmd_list_element * c));
 
-extern void set_cmd_completer (struct cmd_list_element *cmd,
-			       char **(*completer) (char *text, char *word));
+extern void set_cmd_completer(struct cmd_list_element *cmd,
+			      char **(*completer)(char *text, char *word));
 
 /* HACK: cagney/2002-02-23: Code, mostly in tracepoints.c, grubs
    around in cmd objects to test the value of the commands sfunc().  */
-extern int cmd_cfunc_eq (struct cmd_list_element *cmd,
-			 void (*cfunc) (char *args, int from_tty));
+extern int cmd_cfunc_eq(struct cmd_list_element *cmd,
+			void (*cfunc)(const char *args, int from_tty));
 
 /* Access to the command's local context.  */
-extern void set_cmd_context (struct cmd_list_element *cmd, void *context);
-extern void *get_cmd_context (struct cmd_list_element *cmd);
+extern void set_cmd_context(struct cmd_list_element *cmd, void *context);
+extern void *get_cmd_context(struct cmd_list_element *cmd);
 
-extern struct cmd_list_element *lookup_cmd (char **,
-					    struct cmd_list_element *, char *,
-					    int, int);
+extern struct cmd_list_element *lookup_cmd(const char **,
+					   struct cmd_list_element *,
+					   const char *, int, int);
 
-extern struct cmd_list_element *lookup_cmd_1 (char **,
-					      struct cmd_list_element *,
-					      struct cmd_list_element **,
-					      int);
+extern struct cmd_list_element *lookup_cmd_1(const char **,
+					     struct cmd_list_element *,
+					     struct cmd_list_element **,
+					     int);
 
 extern struct cmd_list_element *
-  deprecate_cmd(struct cmd_list_element *, char * );
+  deprecate_cmd(struct cmd_list_element *, char *);
 
 /* FIXME: should this get ATTRIBUTE_DEPRECATED? Or is the "deprecated" in
  * its name just part of what it does? */
 extern void
-  deprecated_cmd_warning(char **);
+  deprecated_cmd_warning(const char **);
 
 extern int
-  lookup_cmd_composition(char *text,
+  lookup_cmd_composition(const char *text,
                          struct cmd_list_element **alias,
                          struct cmd_list_element **prefix_cmd,
                          struct cmd_list_element **cmd);
 
 extern struct cmd_list_element *add_com(const char *, enum command_class,
-					void (*fun)(char *, int), const char *);
+					void (*fun)(const char *, int),
+					const char *);
 
-extern struct cmd_list_element *add_com_alias (char *, char *,
-					       enum command_class, int);
+extern struct cmd_list_element *add_com_alias(const char *, const char *,
+					      enum command_class, int);
 
-extern struct cmd_list_element *add_info(const char *, void (*fun)(char *, int),
+extern struct cmd_list_element *add_info(const char *,
+					 void (*fun)(const char *, int),
 					 const char *);
 
-extern struct cmd_list_element *add_info_alias (char *, char *, int);
+extern struct cmd_list_element *add_info_alias(const char *, const char *, int);
 
-extern char **complete_on_cmdlist (struct cmd_list_element *, char *, char *);
+extern char **complete_on_cmdlist(struct cmd_list_element *, char *, char *);
 
-extern char **complete_on_enum (const char *enumlist[], char *, char *);
+extern char **complete_on_enum(const char *enumlist[], char *, char *);
 
 extern void delete_cmd(const char *, struct cmd_list_element **);
 
-extern void help_cmd_list (struct cmd_list_element *, enum command_class,
-			   char *, int, struct ui_file *);
+extern void help_cmd_list(struct cmd_list_element *, enum command_class,
+			  const char *, int, struct ui_file *);
 
 /* Functions that implement commands about CLI commands. */
 
-extern void help_cmd (char *, struct ui_file *);
+extern void help_cmd(const char *, struct ui_file *);
 
-extern void help_list (struct cmd_list_element *, char *,
-		       enum command_class, struct ui_file *);
+extern void help_list(struct cmd_list_element *, const char *,
+		      enum command_class, struct ui_file *);
 
-extern void apropos_cmd (struct ui_file *, struct cmd_list_element *,
-                         regex_t *, char *);
+extern void apropos_cmd(struct ui_file *, struct cmd_list_element *,
+                        regex_t *, const char *);
 
 /* Used to mark commands that don't do anything.  If we just leave the
    function field NULL, the command is interpreted as a help topic, or
    as a class of commands.  */
 
-extern void not_just_help_class_command (char *arg, int from_tty);
+extern void not_just_help_class_command(const char *arg, int from_tty);
 
 /* Exported to cli/cli-setshow.c */
 

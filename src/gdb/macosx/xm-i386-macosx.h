@@ -1,4 +1,4 @@
-/* xm-i386-macosx.h: Host support for NeXTStep, for GDB, the GNU debugger.
+/* macosx/xm-i386-macosx.h: Host support for NeXTStep-derived systems, for GDB.
  * Copyright (C) 1986, 1987, 1989, 1992 Free Software Foundation, Inc.  */
 /*
 This file is part of GDB.

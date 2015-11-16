@@ -111,7 +111,7 @@ extern void async_enable_stdin (void *dummy);
 
 extern int async_command_editing_p;
 extern int exec_done_display_p;
-extern char *async_annotation_suffix;
+extern const char *async_annotation_suffix;
 extern char *new_async_prompt;
 extern struct prompts the_prompts;
 extern void (*call_readline) (void *);

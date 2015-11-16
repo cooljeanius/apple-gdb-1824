@@ -1,4 +1,4 @@
-/* ttybreak.c */
+/* nindy-share/ttybreak.c */
 /*****************************************************************************
  * 		Copyright (c) 1990, Intel Corporation
  *

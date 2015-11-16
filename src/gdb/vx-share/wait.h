@@ -1,4 +1,4 @@
-/* wait.h - header file for remote wait call */
+/* vx-share/wait.h - header file for remote wait call */
 
 /*  Copyright 1992 Free Software Foundation, Inc.
 

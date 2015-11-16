@@ -38,14 +38,14 @@ struct tracepoint
 
     int enabled_p;
 
-#if 0
+#ifdef MVS_NEEDED
     /* Type of tracepoint.  (MVS FIXME: needed?) */
     enum tptype type;
 
     /* What to do with this tracepoint after we hit it
-       MVS FIXME: needed?).  */
+       (MVS FIXME: needed?).  */
     enum tpdisp disposition;
-#endif
+#endif /* MVS_NEEDED */
     /* Number assigned to distinguish tracepoints.  */
     int number;
 
@@ -121,15 +121,15 @@ void (*deprecated_delete_tracepoint_hook)(struct tracepoint *)
   ATTRIBUTE_DEPRECATED;
 void (*deprecated_modify_tracepoint_hook)(struct tracepoint *)
   ATTRIBUTE_DEPRECATED;
-void (*deprecated_trace_find_hook)(char *arg, int from_tty)
+void (*deprecated_trace_find_hook)(const char *arg, int from_tty)
   ATTRIBUTE_DEPRECATED;
 void (*deprecated_trace_start_stop_hook)(int start, int from_tty)
   ATTRIBUTE_DEPRECATED;
 
-struct tracepoint *get_tracepoint_by_number (char **, int, int);
-int get_traceframe_number (void);
-void free_actions (struct tracepoint *);
-enum actionline_type validate_actionline (char **, struct tracepoint *);
+struct tracepoint *get_tracepoint_by_number(const char **, int, int);
+int get_traceframe_number(void);
+void free_actions(struct tracepoint *);
+enum actionline_type validate_actionline(char **, struct tracepoint *);
 
 
 /* Walk the following statement or block through all tracepoints.
@@ -143,3 +143,5 @@ enum actionline_type validate_actionline (char **, struct tracepoint *);
 	     t ? (tmp = t->next, 1) : 0;\
 	     t = tmp)
 #endif	/* TRACEPOINT_H */
+
+/* EOF */

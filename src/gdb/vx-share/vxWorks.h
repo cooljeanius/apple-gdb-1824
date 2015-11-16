@@ -1,4 +1,4 @@
-/* vxWorks.h - VxWorks standard definitions header */
+/* vx-share/vxWorks.h - VxWorks standard definitions header */
 
 /*  Copyright 1984, 1985, 1986, 1987, 1988, 1989, 1990, 1992, 1993
     Free Software Foundation, Inc.

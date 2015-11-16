@@ -1,4 +1,4 @@
-/* rdi_info.h: RDI Info subcodes
+/* arm/multi-ice/rdi_info.h: RDI Info subcodes
  Copyright (C) 2001 Free Software Foundation, Inc.
 
 

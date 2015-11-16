@@ -1,4 +1,4 @@
-/* xm-nbsd.h
+/* config/xm-nbsd.h
    Host-dependent definitions for any CPU running NetBSD.
    Copyright 1993, 1994, 1995, 1996, 1999 Free Software Foundation, Inc.
 

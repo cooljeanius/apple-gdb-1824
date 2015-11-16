@@ -1,4 +1,4 @@
-/* mi-cmd-target.c: MI Command Set - target commands.
+/* mi/mi-cmd-target.c: MI Command Set - target commands.
    Copyright (C) 2007, 2008, 2009 Free Software Foundation, Inc.
 
    This file is part of GDB.

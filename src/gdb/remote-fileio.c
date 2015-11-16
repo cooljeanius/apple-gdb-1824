@@ -1392,13 +1392,14 @@ remote_fileio_request(char *buf)
   remote_fileio_sig_exit();
 }
 
+/* FIXME: add comment: */
 static void
-set_system_call_allowed(char *args, int from_tty)
+set_system_call_allowed(const char *args, int from_tty)
 {
   if (args)
     {
       char *arg_end;
-      int val = strtoul(args, &arg_end, 10);
+      const int val = (const int)strtoul(args, &arg_end, 10);
       if (*args && (*arg_end == '\0'))
         {
 	  remote_fio_system_call_allowed = !!val;
@@ -1408,8 +1409,9 @@ set_system_call_allowed(char *args, int from_tty)
   error(_("Illegal argument for \"set remote system-call-allowed\" command"));
 }
 
+/* FIXME: add comment: */
 static void
-show_system_call_allowed(char *args, int from_tty)
+show_system_call_allowed(const char *args, int from_tty)
 {
   if (args)
     error(_("Garbage after \"show remote system-call-allowed\" command: `%s'"), args);
@@ -1417,6 +1419,7 @@ show_system_call_allowed(char *args, int from_tty)
                     remote_fio_system_call_allowed ? "" : "not ");
 }
 
+/* FIXME: add comment: */
 void
 initialize_remote_fileio(struct cmd_list_element *remote_set_cmdlist,
 			 struct cmd_list_element *remote_show_cmdlist)

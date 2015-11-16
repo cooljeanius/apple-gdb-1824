@@ -1,4 +1,4 @@
-/* xm-nextstep.h
+/* config/xm-nextstep.h
  * Host support for NextStep/Rhapsody for GDB, the GNU debugger.
  * Copyright (C) 1997
  * Free Software Foundation, Inc. */

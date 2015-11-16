@@ -1,4 +1,4 @@
-/* drivers.h
+/* rdi-share/drivers.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
  *
  * This software may be freely used, copied, modified, and distributed
@@ -40,7 +40,7 @@ struct DriverCall
  */
 struct DeviceDescr
 {
-    char  *DeviceName;
+    const char *DeviceName;
     int  (*DeviceOpen)(const char *name, const char *arg);
     int  (*DeviceMatch)(const char *name, const char *arg);
     void (*DeviceClose)(void);

@@ -1540,12 +1540,12 @@ dwarf2_scan_inlined_section_for_psymbols(struct partial_symtab *pst,
 {
   struct bfd *abfd;
   int cached;
-  asection *inlined_section = NULL;
+  asection *inlined_section = (asection *)NULL;
   bfd_window inlined_window;
   char *inlined_data, *inlined_ptr;
   bfd_size_type inlined_size;
 
-  asection *str_section = NULL;
+  asection *str_section = (asection *)NULL;
   bfd_window str_window;
   char *str_data;
   bfd_size_type str_size;
@@ -1559,7 +1559,8 @@ dwarf2_scan_inlined_section_for_psymbols(struct partial_symtab *pst,
   /* FIXME: temporary workaround for debug_inlined sections that cause gdb
      to provide incorrect backtraces, v. <rdar://problem/6771834>
      jmolenda/2009-04-08  */
-  return;
+  if (1)
+    return;
 
   if (maint_use_timers)
     timing_cleanup = start_timer(&timer, "debug_inlined",
@@ -2149,7 +2150,7 @@ static void dwarf2_read_repository_abbrevs(struct dwarf2_cu *);
 static struct dwarf2_cu *build_dummy_cu(struct objfile *, struct dwarf2_cu *);
 static struct objfile *build_dummy_objfile(struct objfile *);
 static void read_in_db_abbrev_table(struct abbrev_info **, sqlite3 *);
-static void db_error(char *, char *, sqlite3 *);
+static void db_error(const char *, const char *, sqlite3 *);
 static struct die_info *db_lookup_type(int, sqlite3 *, struct abbrev_info *);
 static void fill_in_die_info(struct die_info *, int, uint8_t *, uint8_t *,
 			     struct abbrev_info *, sqlite3 *);
@@ -5076,7 +5077,7 @@ read_file_scope(struct die_info *die, struct dwarf2_cu *cu)
   CORE_ADDR lowpc = ((CORE_ADDR)(-1L));
   CORE_ADDR highpc = ((CORE_ADDR)0UL);
   struct attribute *attr;
-  char *name = "<unknown>";
+  const char *name = "<unknown>";
   char *comp_dir = NULL;
   struct die_info *child_die;
   bfd *abfd = objfile->obfd;
@@ -5910,12 +5911,12 @@ dwarf2_add_field(struct field_info *fip, struct die_info *die,
   struct nextfield *new_field;
   struct attribute *attr;
   struct field *fp;
-  char *fieldname = "";
+  const char *fieldname = "";
 
-  /* Allocate a new field list entry and link it in.  */
-  new_field = (struct nextfield *) xmalloc (sizeof (struct nextfield));
-  make_cleanup (xfree, new_field);
-  memset (new_field, 0, sizeof (struct nextfield));
+  /* Allocate a new field list entry and link it in: */
+  new_field = (struct nextfield *)xmalloc(sizeof(struct nextfield));
+  make_cleanup(xfree, new_field);
+  memset(new_field, 0, sizeof(struct nextfield));
   new_field->next = fip->fields;
   fip->fields = new_field;
   fip->nfields++;
@@ -14645,8 +14646,10 @@ db_lookup_type(int type_id, sqlite3 *db, struct abbrev_info *abbrev_table)
   return new_die;
 }
 
+/* */
 static void ATTR_NORETURN
-db_error(char *function_name, char *db_action_description, sqlite3 *db)
+db_error(const char *function_name, const char *db_action_description,
+	 sqlite3 *db)
 {
   size_t len = (strlen(sqlite3_errmsg(db)) + 1UL);
   char *message = (char *)xmalloc(len);
@@ -14656,6 +14659,7 @@ db_error(char *function_name, char *db_action_description, sqlite3 *db)
   internal_error(__FILE__, __LINE__, "%s", message);
 }
 
+/* */
 static struct dwarf2_cu *
 build_dummy_cu(struct objfile *old_objfile, struct dwarf2_cu *old_cu)
 {

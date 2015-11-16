@@ -3,7 +3,7 @@
 # create an initialization procedure from a list of .o files
 
 echo '/* Do not modify this file.  It is created automatically by "munch". */'
-echo 'void initialize_all_files () {'
+echo 'void initialize_all_files(void) {'
 
 # make it easy to use a different nm, e.g. for cross-developing
 MUNCH_NM=${MUNCH_NM-nm}

@@ -1,5 +1,5 @@
 /*
- * macosx-nat-dyld-process.h
+ * macosx/macosx-nat-dyld-process.h
  */
 
 #ifndef __GDB_MACOSX_NAT_DYLD_PROCESS_H__

@@ -1,4 +1,4 @@
-/* Some commonly-used VEC types.
+/* common/gdb_vecs.h: Some commonly-used VEC types.
 
    Copyright (C) 2012-2013 Free Software Foundation, Inc.
 

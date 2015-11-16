@@ -1,4 +1,4 @@
-/* gdbthread.h
+/* gdbserver/gdbthread.h
    Multi-thread control defs for remote server for GDB.
    Copyright (C) 1993-2013 Free Software Foundation, Inc.
 

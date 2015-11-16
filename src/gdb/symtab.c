@@ -5877,27 +5877,28 @@ skip_prologue_using_sal (CORE_ADDR func_addr)
   return prologue_sal.end;
 }
 
+/* FIXME: needs comment: */
 struct symtabs_and_lines
-decode_line_spec (char *string, int funfirstline)
+decode_line_spec(const char *string, int funfirstline)
 {
   struct symtabs_and_lines sals;
   struct symtab_and_line cursal;
 
   if (string == 0)
-    error (_("Empty line specification."));
+    error(_("Empty line specification."));
 
   /* We use whatever is set as the current source line. We do not try
      and get a default  or it will recursively call us! */
-  cursal = get_current_source_symtab_and_line ();
+  cursal = get_current_source_symtab_and_line();
 
   /* APPLE LOCAL begin return multiple symbols  */
-  sals = decode_line_1 (&string, funfirstline,
-			cursal.symtab, cursal.line,
-			(char ***) NULL, NULL, 0);
+  sals = decode_line_1(&string, funfirstline,
+		       cursal.symtab, cursal.line,
+		       (char ***)NULL, NULL, 0);
   /* APPLE LOCAL end return multiple symbols  */
 
   if (*string)
-    error (_("Junk at end of line specification: %s"), string);
+    error(_("Junk at end of line specification: %s"), string);
   return sals;
 }
 

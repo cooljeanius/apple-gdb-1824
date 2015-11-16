@@ -381,7 +381,7 @@ command_completer(char *text, char *word)
    should pretend that the line ends at POINT.  */
 
 char **
-complete_line (const char *text, char *line_buffer, int point)
+complete_line(const char *text, const char *line_buffer, int point)
 {
   char **list = NULL;
   char *tmp_command, *p;
@@ -399,27 +399,27 @@ complete_line (const char *text, char *line_buffer, int point)
   rl_completer_word_break_characters =
     current_language->la_word_break_characters();
 
-      /* Decide whether to complete on a list of gdb commands or on symbols. */
-  tmp_command = (char *) alloca (point + 1);
+  /* Decide whether to complete on a list of gdb commands or on symbols: */
+  tmp_command = (char *)alloca(point + 1UL);
   p = tmp_command;
 
-  strncpy (tmp_command, line_buffer, point);
+  strncpy(tmp_command, line_buffer, point);
   tmp_command[point] = '\0';
   /* Since text always contains some number of characters leading up
      to point, we can find the equivalent position in tmp_command
      by subtracting that many characters from the end of tmp_command.  */
-  word = tmp_command + point - strlen (text);
+  word = (tmp_command + point - strlen(text));
 
   if (point == 0)
     {
       /* An empty line we want to consider ambiguous; that is, it
 	 could be any command.  */
-      c = (struct cmd_list_element *) -1;
+      c = (struct cmd_list_element *)-1;
       result_list = 0;
     }
   else
     {
-      c = lookup_cmd_1 (&p, cmdlist, &result_list, 1);
+      c = lookup_cmd_1(&p, cmdlist, &result_list, 1);
     }
 
   /* Move p up to the next interesting thing.  */
@@ -650,11 +650,11 @@ line_completion_function (const char *text, int matches, char *line_buffer, int 
       if (list)
 	{
 	  /* Free the storage used by LIST, but not by the strings inside.
-	     This is because rl_complete_internal () frees the strings. */
-	  xfree (list);
+	     This is because rl_complete_internal() frees the strings. */
+	  xfree(list);
 	}
       index = 0;
-      list = complete_line (text, line_buffer, point);
+      list = complete_line(text, line_buffer, point);
     }
 
   /* If we found a list of potential completions during initialization then

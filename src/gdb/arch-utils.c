@@ -483,9 +483,9 @@ The target architecture is set automatically (currently %s)\n"), arch);
 The target architecture is assumed to be %s\n"), arch);
 }
 
-
+/* */
 int
-set_architecture_from_string (char *new_arch)
+set_architecture_from_string(const char *new_arch)
 {
   struct gdbarch_info info;
   set_architecture_string = xstrdup(new_arch);

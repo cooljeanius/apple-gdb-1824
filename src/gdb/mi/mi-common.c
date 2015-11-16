@@ -1,4 +1,4 @@
-/* mi-common.c: Interface for common GDB/MI data
+/* mi/mi-common.c: Interface for common GDB/MI data
    Copyright 2005 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -23,6 +23,8 @@
 
 extern void _initialize_gdb_mi_common(void);
 
+int mi_common_c_inited = 0;
+
 static const char * const async_reason_string_lookup[] =
 {
   "breakpoint-hit",
@@ -40,18 +42,22 @@ static const char * const async_reason_string_lookup[] =
   NULL
 };
 
-const char *
+/* FIXME: add comment: */
+const char * ATTRIBUTE_CONST
 async_reason_lookup(enum async_reply_reason reason)
 {
   return async_reason_string_lookup[reason];
 }
 
+/* standard gdb initialization hook: */
 void
 _initialize_gdb_mi_common(void)
 {
   if (ARRAY_SIZE(async_reason_string_lookup) != (EXEC_ASYNC_LAST + 1))
     internal_error(__FILE__, __LINE__,
                    _("async_reason_string_lookup is inconsistent"));
+  
+  mi_common_c_inited = 1;
 }
 
 /* EOF */

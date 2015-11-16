@@ -1,4 +1,4 @@
-/* tui-data.h: TUI data manipulation routines.
+/* tui/tui-data.h: TUI data manipulation routines.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2004 Free Software
    Foundation, Inc.
@@ -323,7 +323,7 @@ extern void tui_free_all_source_wins_content(void);
 extern void tui_del_window(struct tui_win_info *);
 extern void tui_del_data_windows(tui_win_content, int);
 extern struct tui_win_info *tui_partial_win_by_name(char *);
-extern char *tui_win_name(struct tui_gen_win_info *);
+extern const char *tui_win_name(struct tui_gen_win_info *);
 extern enum tui_layout_type tui_current_layout(void);
 extern void tui_set_current_layout_to(enum tui_layout_type);
 extern void set_gen_win_origin(struct tui_gen_win_info *win_info,

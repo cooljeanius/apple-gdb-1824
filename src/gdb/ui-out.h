@@ -154,37 +154,37 @@ extern void ui_out_stream_delete(struct ui_stream *buf);
 
 struct cleanup *make_cleanup_ui_out_stream_delete(struct ui_stream *buf);
 
-extern void ui_out_wrap_hint (struct ui_out *uiout, char *identstring);
+extern void ui_out_wrap_hint(struct ui_out *uiout, char *identstring);
 
-extern void ui_out_flush (struct ui_out *uiout);
+extern void ui_out_flush(struct ui_out *uiout);
 
-extern void ui_out_get_field_separator (struct ui_out *uiout);
+extern void ui_out_get_field_separator(struct ui_out *uiout);
 
-extern int ui_out_set_flags (struct ui_out *uiout, int mask);
+extern int ui_out_set_flags(struct ui_out *uiout, int mask);
 
-extern int ui_out_clear_flags (struct ui_out *uiout, int mask);
+extern int ui_out_clear_flags(struct ui_out *uiout, int mask);
 
-extern int ui_out_get_verblvl (struct ui_out *uiout);
+extern int ui_out_get_verblvl(struct ui_out *uiout);
 
-extern int ui_out_test_flags (struct ui_out *uiout, int mask);
+extern int ui_out_test_flags(struct ui_out *uiout, int mask);
 
-extern void ui_out_cleanup_after_error (struct ui_out *uiout);
+extern void ui_out_cleanup_after_error(struct ui_out *uiout);
 
 struct cleanup *
-make_cleanup_ui_out_notify_begin_end (struct ui_out *uiout, char *);
+make_cleanup_ui_out_notify_begin_end(struct ui_out *uiout, const char *);
 
 #if 0
-extern void ui_out_result_begin (struct ui_out *uiout, char *);
+extern void ui_out_result_begin(struct ui_out *uiout, char *);
 
-extern void ui_out_result_end (struct ui_out *uiout);
+extern void ui_out_result_end(struct ui_out *uiout);
 
-extern void ui_out_info_begin (struct ui_out *uiout, char *);
+extern void ui_out_info_begin(struct ui_out *uiout, char *);
 
-extern void ui_out_info_end (struct ui_out *uiout);
+extern void ui_out_info_end(struct ui_out *uiout);
 
-extern void ui_out_error_begin (struct ui_out *uiout, char *);
+extern void ui_out_error_begin(struct ui_out *uiout, char *);
 
-extern void ui_out_error_end (struct ui_out *uiout);
+extern void ui_out_error_end(struct ui_out *uiout);
 #endif /* 0 */
 
 #if 0

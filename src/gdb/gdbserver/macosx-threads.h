@@ -1,5 +1,5 @@
 /*
- * macosx-threads.h
+ * gdbserver/macosx-threads.h
  */
 
 #ifndef __GDB_MACOSX_NAT_THREADS_H__

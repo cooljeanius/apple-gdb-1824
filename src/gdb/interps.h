@@ -29,29 +29,31 @@
 struct ui_out;
 struct interp;
 
-extern int interp_resume (struct interp *interp);
-extern int interp_suspend (struct interp *interp);
-extern int interp_prompt_p (struct interp *interp);
-extern int interp_exec_p (struct interp *interp);
-extern struct gdb_exception interp_exec (struct interp *interp,
-					 const char *command);
-extern int interp_quiet_p (struct interp *interp);
+extern int interp_resume(struct interp *interp);
+extern int interp_suspend(struct interp *interp);
+extern int interp_prompt_p(struct interp *interp);
+extern int interp_exec_p(struct interp *interp);
+extern struct gdb_exception interp_exec(struct interp *interp,
+					const char *command);
+extern int interp_quiet_p(struct interp *interp);
 /* APPLE LOCAL: The complete function...  */
-extern int interp_complete (struct interp *interp,
-			    char *word, char *command_buffer,
-			    int cursor, int limit);
+extern int interp_complete(struct interp *interp,
+			   char *word, char *command_buffer,
+			   int cursor, int limit);
 
-typedef void *(interp_init_ftype) (void);
-typedef int (interp_resume_ftype) (void *data);
-typedef int (interp_suspend_ftype) (void *data);
-typedef int (interp_prompt_p_ftype) (void *data);
-typedef struct gdb_exception (interp_exec_ftype) (void *data,
-						  const char *command);
-typedef void (interp_command_loop_ftype) (void *data);
+typedef void *(interp_init_ftype)(void);
+typedef int (interp_resume_ftype)(void *data);
+typedef int (interp_suspend_ftype)(void *data);
+typedef int (interp_prompt_p_ftype)(void *data);
+typedef struct gdb_exception (interp_exec_ftype)(void *data,
+						 const char *command);
+typedef void (interp_command_loop_ftype)(void *data);
 
 /* APPLE LOCAL: The complete function is important for cross-interpreter calls
    when one interpreter (like the CLI) has does auto-completions.  */
-typedef int (interp_complete_ftype) (void *data, char *word, char *command_buffer, int cursor, int limit);
+typedef int (interp_complete_ftype)(void *data, const char *word,
+				    const char *command_buffer, int cursor,
+				    int limit);
 
 
 struct interp_procs
@@ -65,27 +67,27 @@ struct interp_procs
   interp_complete_ftype *complete_proc;
 };
 
-extern struct interp *interp_new (const char *name, void *data,
-				  struct ui_out *uiout,
-				  const struct interp_procs *procs);
-extern void interp_add (struct interp *interp);
-extern struct interp *interp_set (struct interp *interp);
-int interp_set_quiet (struct interp *interp, int quiet);
-extern struct interp *interp_lookup (const char *name);
+extern struct interp *interp_new(const char *name, void *data,
+				 struct ui_out *uiout,
+				 const struct interp_procs *procs);
+extern void interp_add(struct interp *interp);
+extern struct interp *interp_set(struct interp *interp);
+int interp_set_quiet(struct interp *interp, int quiet);
+extern struct interp *interp_lookup(const char *name);
 /* APPLE LOCAL: This is a useful function: */
-extern struct interp *current_interp (void);
-extern struct ui_out *interp_ui_out (struct interp *interp);
+extern struct interp *current_interp(void);
+extern struct ui_out *interp_ui_out(struct interp *interp);
 /* APPLE LOCAL: Use for redirection an extant interpreter's output: */
-extern struct ui_out *interp_set_ui_out (struct interp *interp,
-					 struct ui_out *new_uiout);
+extern struct ui_out *interp_set_ui_out(struct interp *interp,
+					struct ui_out *new_uiout);
 
-extern int current_interp_named_p (const char *name);
-extern int current_interp_display_prompt_p (void);
-extern void current_interp_command_loop (void);
+extern int current_interp_named_p(const char *name);
+extern int current_interp_display_prompt_p(void);
+extern void current_interp_command_loop(void);
 
-extern void clear_interpreter_hooks (void);
+extern void clear_interpreter_hooks(void);
 
-/* well-known interpreters */
+/* well-known interpreters: */
 #define INTERP_CONSOLE		"console"
 #define INTERP_MI1             "mi1"
 #define INTERP_MI2             "mi2"
@@ -94,3 +96,5 @@ extern void clear_interpreter_hooks (void);
 #define INTERP_TUI		"tui"
 
 #endif /* !INTERPS_H */
+
+/* EOF */

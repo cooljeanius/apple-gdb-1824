@@ -1,4 +1,4 @@
-/* i387-fp.h
+/* gdbserver/i387-fp.h
    i387-specific utility functions, for the remote server for GDB.
    Copyright 2000, 2001, 2002
    Free Software Foundation, Inc.

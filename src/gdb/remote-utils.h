@@ -1,4 +1,4 @@
-/* Generic support for remote debugging interfaces.
+/* remote-utils.h: Generic support for remote debugging interfaces.
 
    Copyright 1993, 1994, 2000, 2001 Free Software Foundation, Inc.
 
@@ -124,12 +124,16 @@ void gr_generic_checkin (void);
 void gr_kill (void);
 void gr_mourn (void);
 void gr_prepare_to_store (void);
-void sr_expect (char *string);
-void sr_get_hex_byte (char *byt);
-void sr_scan_args (char *proto, char *args);
-void sr_write (char *a, int l);
-void sr_write_cr (char *s);
 
-void gr_open (char *args, int from_tty, struct gr_settings *gr_settings);
-void gr_load_image (char *, int from_tty);
+void sr_expect(char *string);
+void sr_get_hex_byte(char *byt);
+void sr_scan_args(const char *proto, char *args);
+void sr_write(const char *a, int l);
+void sr_write_cr(const char *s);
+
+void gr_open(char *args, int from_tty, struct gr_settings *gr_settings);
+void gr_load_image(char *, int from_tty);
+
 #endif /* REMOTE_UTILS_H */
+
+/* EOF */

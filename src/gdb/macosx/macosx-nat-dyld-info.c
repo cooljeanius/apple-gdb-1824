@@ -1,4 +1,4 @@
-/* macosx-nat-dyld-info.c: Mac OS X support for GDB, the GNU debugger.
+/* macosx/macosx-nat-dyld-info.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002, 2004
    Free Software Foundation, Inc.
 
@@ -39,8 +39,8 @@
 
 #include "mach-o.h" /* for BFD mach definitions.  */
 
-const char *
-dyld_reason_string (dyld_objfile_reason r)
+const char * ATTRIBUTE_CONST
+dyld_reason_string(dyld_objfile_reason r)
 {
   if (r == 0)
     {
@@ -49,7 +49,6 @@ dyld_reason_string (dyld_objfile_reason r)
 
   switch (r & dyld_reason_flags_mask)
     {
-
     case 0:
       switch (r)
         {
@@ -129,12 +128,14 @@ dyld_reason_string (dyld_objfile_reason r)
   return "INVALID";
 }
 
-void
+/* */
+void ATTRIBUTE_CONST
 dyld_check_entry(struct dyld_objfile_entry *e ATTRIBUTE_UNUSED)
 {
   return;
 }
 
+/* */
 int
 dyld_objfile_entry_in_shared_cache(struct dyld_objfile_entry *e)
 {
@@ -1076,27 +1077,27 @@ dyld_shlib_info_basename_length (struct dyld_objfile_info *s,
    warning messages only if 'verbose' is passed as true. */
 
 int
-dyld_entry_shlib_num_matches (int shlibnum, char *args, int verbose)
+dyld_entry_shlib_num_matches(int shlibnum, const char *args, int verbose)
 {
-  char *p, *p1;
+  const char *p, *p1;
   int num;
 
   if (args == NULL)
-    error_no_arg ("one or more shlib numbers");
+    error_no_arg(_("one or more shlib numbers"));
 
   if (args[0] == '\0')
-    error_no_arg ("one or more shlib numbers");
+    error_no_arg(_("one or more shlib numbers"));
 
   p = args;
   while (*p)
     {
       p1 = p;
 
-      num = get_number_or_range (&p1);
+      num = get_number_or_range(&p1);
       if (num == 0)
         {
           if (verbose)
-            warning ("bad shlib number at or near '%s'", p);
+            warning("bad shlib number at or near '%s'", p);
           return 0;
         }
 
@@ -1109,6 +1110,7 @@ dyld_entry_shlib_num_matches (int shlibnum, char *args, int verbose)
   return 0;
 }
 
+/* */
 void
 dyld_print_entry_info(struct dyld_objfile_entry *j, int shlibnum,
                       size_t baselen)
@@ -1455,9 +1457,10 @@ dyld_convert_entry (struct objfile *o, struct dyld_objfile_entry *e)
   e->loaded_name = o->name;
 }
 
+/* */
 void
-dyld_print_shlib_info (struct dyld_objfile_info *s, unsigned int reason_mask,
-                       int header, char *args)
+dyld_print_shlib_info(struct dyld_objfile_info *s, unsigned int reason_mask,
+                      int header, const char *args)
 {
   int baselen = 0;
   char *basepad = NULL;

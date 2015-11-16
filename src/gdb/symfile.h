@@ -175,17 +175,17 @@ extern void add_psymbol_with_dem_name_to_list (char *, int, char *, int,
 					       struct objfile *);
 
 
-extern void init_psymbol_list (struct objfile *, int);
+extern void init_psymbol_list(struct objfile *, int);
 
-extern void sort_pst_symbols (struct partial_symtab *);
+extern void sort_pst_symbols(struct partial_symtab *);
 
-extern struct symtab *allocate_symtab (char *, struct objfile *);
+extern struct symtab *allocate_symtab(const char *, struct objfile *);
 
-extern int free_named_symtabs (char *);
+extern int free_named_symtabs(char *);
 
-extern void fill_in_vptr_fieldno (struct type *);
+extern void fill_in_vptr_fieldno(struct type *);
 
-extern void add_symtab_fns (struct sym_fns *);
+extern void add_symtab_fns(struct sym_fns *);
 
 extern void syms_from_objfile (struct objfile *,
 			       struct section_addr_info *,

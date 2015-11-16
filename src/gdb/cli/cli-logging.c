@@ -1,4 +1,4 @@
-/* cli-logging.c: Command-line output logging for GDB, the GNU debugger.
+/* cli/cli-logging.c: Command-line output logging for GDB, the GNU debugger.
 
    Copyright 2003, 2004 Free Software Foundation, Inc.
 
@@ -59,9 +59,9 @@ Whether logging writes commands to the log file is %s.\n"),
                    value);
 }
 
-
+/* FIXME: needs comment: */
 void
-log_command(char *command)
+log_command(const char *command)
 {
   if (!logging_commands)
     return;
@@ -156,10 +156,11 @@ handle_redirections(int from_tty)
     warning(_("Current output protocol does not support redirection"));
 }
 
+/* FIXME: needs comment: */
 static void
-set_logging_on(char *args, int from_tty)
+set_logging_on(const char *args, int from_tty)
 {
-  char *rest = args;
+  const char *rest = args;
   if (rest && *rest)
     {
       xfree(logging_filename);
@@ -168,8 +169,9 @@ set_logging_on(char *args, int from_tty)
   handle_redirections(from_tty);
 }
 
+/* FIXME: needs comment: */
 static void
-set_logging_off(char *args, int from_tty)
+set_logging_off(const char *args, int from_tty)
 {
   if (saved_filename == NULL)
     return;
@@ -182,8 +184,9 @@ set_logging_off(char *args, int from_tty)
   saved_filename = NULL;
 }
 
+/* FIXME: needs comment: */
 static void
-set_logging_command(char *args, int from_tty)
+set_logging_command(const char *args, int from_tty)
 {
   printf_unfiltered(_("\
 \"set logging\" lets you log output to a file.\n\
@@ -194,8 +197,9 @@ Usage: set logging on [FILENAME]\n\
        set logging redirect [on|off]\n"));
 }
 
+/* FIXME: needs comment: */
 void
-show_logging_command(char *args, int from_tty)
+show_logging_command(const char *args, int from_tty)
 {
   if (saved_filename)
     printf_unfiltered(_("Currently logging to \"%s\".\n"), saved_filename);

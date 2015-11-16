@@ -1,4 +1,4 @@
-/* macosx-nat-dyld-process.c: Mac OS X support for GDB, the GNU debugger.
+/* macosx/macosx-nat-dyld-process.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002, 2004
    Free Software Foundation, Inc.
 
@@ -2598,27 +2598,28 @@ dyld_shlibs_updated (struct dyld_objfile_info *info)
 }
 
 void
-dyld_update_shlibs (struct dyld_path_info *d, struct dyld_objfile_info *result)
+dyld_update_shlibs(struct dyld_path_info *d, struct dyld_objfile_info *result)
 {
   struct cleanup *timer_cleanup = NULL;
   static int dyld_timer = -1;
-  CHECK_FATAL (result != NULL);
+  CHECK_FATAL(result != NULL);
 
   if (maint_use_timers)
-    timer_cleanup = start_timer (&dyld_timer, "dyld_update_shlibs", "");
+    timer_cleanup = start_timer(&dyld_timer, "dyld_update_shlibs", "");
 
-  dyld_debug ("dyld_update_shlibs: updating shared library information\n");
+  dyld_debug("dyld_update_shlibs: updating shared library information\n");
 
-  dyld_remove_objfiles (d, result);
-  dyld_load_libraries (d, result);
-  dyld_load_symfiles (result);
+  dyld_remove_objfiles(d, result);
+  dyld_load_libraries(d, result);
+  dyld_load_symfiles(result);
 
-  dyld_shlibs_updated (result);
-  if (maint_use_timers)
-    do_cleanups (timer_cleanup);
-
+  dyld_shlibs_updated(result);
+  if (maint_use_timers) {
+    do_cleanups(timer_cleanup);
+  }
 }
 
+/* FIXME: add comment: */
 void
 dyld_purge_cached_libraries(struct dyld_objfile_info *info)
 {

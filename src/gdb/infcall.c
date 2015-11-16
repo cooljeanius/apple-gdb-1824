@@ -1045,7 +1045,7 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
       if (stopped_by_random_signal
 	  || objc_pc_at_fail_point (stop_pc) != objc_no_fail)
 	{
-	  char *errstr = "";
+	  const char *errstr = "";
 
 	  if (stopped_by_random_signal)
 	    errstr = "The program being debugged was signaled while in a function called from GDB.";

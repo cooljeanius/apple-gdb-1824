@@ -1,5 +1,5 @@
 /*
- * macosx-nat-mutils.h
+ * macosx/macosx-nat-mutils.h
  */
 
 #ifndef __GDB_MACOSX_NAT_MUTILS_H__
@@ -55,7 +55,7 @@ CORE_ADDR macosx_allocate_space_in_inferior(int len);
 void macosx_clear_logging_path(void);
 # endif /* HAVE_64_BIT_STACK_LOGGING */
 
-void malloc_history_info_command(char *arg, int from_tty);
+void malloc_history_info_command(const char *arg, int from_tty);
 
 int build_path_to_element(struct type *type, CORE_ADDR offset,
                           char **symbol_name);
@@ -63,7 +63,7 @@ int build_path_to_element(struct type *type, CORE_ADDR offset,
 char *
 get_symbol_at_address_on_stack(CORE_ADDR stack_address, int *frame_level);
 
-void gc_reference_tracing_command(char *arg, int from_tty);
+void gc_reference_tracing_command(const char *arg, int from_tty);
 #endif /* __GDB_MACOSX_NAT_MUTILS_H__ */
 
 /* EOF */

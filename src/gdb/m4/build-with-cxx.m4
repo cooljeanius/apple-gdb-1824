@@ -43,14 +43,17 @@ AC_DEFUN([GDB_AC_BUILD_WITH_CXX],[
     LINKER='$(CXXLD)'
     AM_V_COMPILER='$(AM_V_CXX)'
     AM_V_LINKER='$(AM_V_CXXLD)'
+    TAG_FOR_LIBTOOL='--tag=CXX'
    else
     COMPILER='$(CC)'
     LINKER='$(CCLD)'
     AM_V_COMPILER='$(AM_V_CC)'
     AM_V_LINKER='$(AM_V_CCLD)'
+    TAG_FOR_LIBTOOL='--tag=CC'
   fi
   AC_SUBST([COMPILER])dnl
   AC_SUBST([LINKER])dnl
   AC_SUBST([AM_V_COMPILER])dnl
   AC_SUBST([AM_V_LINKER])dnl
+  AC_SUBST([TAG_FOR_LIBTOOL])dnl
 ])dnl

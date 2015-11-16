@@ -1,5 +1,5 @@
 /*
- * macosx-nat-dyld.h
+ * macosx/macosx-nat-dyld.h
  */
 
 #ifndef __GDB_MACOSX_NAT_DYLD_H__
@@ -104,7 +104,7 @@ void dyld_debug(const char *fmt, ...)
 /* ...duplicate symbol(?) */
 
 void dyld_print_status_info(macosx_dyld_thread_status *s, unsigned int mask,
-                            char *args);
+                            const char *args);
 int dyld_objfile_set_load_state(struct objfile *o, int load_state);
 void macosx_clear_start_breakpoint(void);
 void macosx_set_start_breakpoint(macosx_dyld_thread_status *s,

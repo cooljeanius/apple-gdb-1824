@@ -1,4 +1,4 @@
-/* server-main.c: Main code for multi-ice server for GDB.
+/* multi-ice/server-main.c: Main code for multi-ice server for GDB.
  * Copyright (C) 1999 Free Software Foundation, Inc. */
 /*
 This file is part of GDB.

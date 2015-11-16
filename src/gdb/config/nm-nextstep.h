@@ -1,4 +1,4 @@
-/* nm-nextstep.h
+/* config/nm-nextstep.h
  * Native support for NextStep/Rhapsody for GDB, the GNU debugger.
  * Copyright (C) 1997
  * Free Software Foundation, Inc. */

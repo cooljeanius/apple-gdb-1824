@@ -1,4 +1,4 @@
-/* macosx-nat.h -*- C -*- */
+/* macosx/macosx-nat.h -*- C -*- */
 
 #ifndef __GDB_MACOSX_NAT_H__
 #define __GDB_MACOSX_NAT_H__ 1

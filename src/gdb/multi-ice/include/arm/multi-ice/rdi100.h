@@ -1,4 +1,4 @@
-/* rdi100.h: RDI 1.0 defintions
+/* arm/multi-ice/rdi100.h: RDI 1.0 defintions
  * Copyright (C) 2001 Free Software Foundation, Inc. */
 /*
  This file is part of GDB.

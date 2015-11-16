@@ -1,4 +1,4 @@
-/*  regPacket.h - register packet definitions for rdb */
+/* vx-share/regPacket.h - register packet definitions for rdb */
 
 /* Copyright 1992-1993 Wind River Systems, Inc. */
 

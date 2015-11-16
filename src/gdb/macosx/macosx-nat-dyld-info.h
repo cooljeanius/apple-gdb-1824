@@ -1,4 +1,4 @@
-/* macosx-nat-dyld-info.h */
+/* macosx/macosx-nat-dyld-info.h */
 
 #ifndef __GDB_MACOSX_NAT_DYLD_INFO_H__
 #define __GDB_MACOSX_NAT_DYLD_INFO_H__
@@ -57,7 +57,7 @@ struct dyld_objfile_entry
   int dyld_valid;
 
 #if defined(WITH_CFM) && WITH_CFM
-  unsigned long cfm_container;  /* it really is 32 bits - CFM will NOT go 64bit */
+  unsigned long cfm_container; /* it really is 32 bits; CFM will NOT go 64bit */
 #endif /* WITH_CFM */
 
   /* Names names names.
@@ -65,7 +65,7 @@ struct dyld_objfile_entry
      What use can they possibly have? */
 
   /* USER_NAME is a name coming from the user.  This can happen with
-     a DYLD_INSERT_LIBRARY name, or it can happen if we've got an
+     a DYLD_INSERT_LIBRARY name, or it can happen if we have got an
      objfile w/o a corresponding dyld_objfile_entry - we will use the
      objfile->name and put it in the d_o_e's user_name field.  */
 
@@ -164,37 +164,38 @@ enum dyld_entry_filename_type
   DYLD_ENTRY_FILENAME_USER = 2
 };
 
-const char *dyld_entry_filename (const struct dyld_objfile_entry *e,
-                                 const struct dyld_path_info *d,
-                                 enum dyld_entry_filename_type type);
+const char *dyld_entry_filename(const struct dyld_objfile_entry *e,
+                                const struct dyld_path_info *d,
+                                enum dyld_entry_filename_type type);
 
-char *dyld_offset_string (CORE_ADDR offset);
+char *dyld_offset_string(CORE_ADDR offset);
 
-char *dyld_entry_string (struct dyld_objfile_entry *e, int use_shortnames);
+char *dyld_entry_string(struct dyld_objfile_entry *e, int use_shortnames);
 
-const char *dyld_reason_string (dyld_objfile_reason r);
+const char *dyld_reason_string(dyld_objfile_reason r);
 
-void dyld_objfile_entry_clear (struct dyld_objfile_entry *e);
+void dyld_objfile_entry_clear(struct dyld_objfile_entry *e);
 
-void dyld_objfile_info_init (struct dyld_objfile_info *i);
+void dyld_objfile_info_init(struct dyld_objfile_info *i);
 
-void dyld_objfile_info_clear_objfiles (struct dyld_objfile_info *i);
+void dyld_objfile_info_clear_objfiles(struct dyld_objfile_info *i);
 
-void dyld_objfile_info_pack (struct dyld_objfile_info *i);
+void dyld_objfile_info_pack(struct dyld_objfile_info *i);
 
-void dyld_objfile_info_free (struct dyld_objfile_info *i);
+void dyld_objfile_info_free(struct dyld_objfile_info *i);
 
-void dyld_objfile_info_copy (struct dyld_objfile_info *d,
-                             struct dyld_objfile_info *s);
+void dyld_objfile_info_copy(struct dyld_objfile_info *d,
+                            struct dyld_objfile_info *s);
 
-void dyld_objfile_info_copy_entries (struct dyld_objfile_info *d,
-                                     struct dyld_objfile_info *s,
-                                     unsigned int mask);
+void dyld_objfile_info_copy_entries(struct dyld_objfile_info *d,
+                                    struct dyld_objfile_info *s,
+                                    unsigned int mask);
 
-struct dyld_objfile_entry *dyld_objfile_entry_alloc (struct dyld_objfile_info *i);
+struct dyld_objfile_entry *dyld_objfile_entry_alloc(struct dyld_objfile_info *i);
 
-void dyld_print_shlib_info (struct dyld_objfile_info *s,
-                            unsigned int reason_mask, int header, char *args);
+void dyld_print_shlib_info(struct dyld_objfile_info *s,
+                           unsigned int reason_mask, int header,
+			   const char *args);
 
 int dyld_resolve_shlib_num(struct dyld_objfile_info *s, int num,
                            struct dyld_objfile_entry **eptr,
@@ -216,13 +217,13 @@ void dyld_entry_info(struct dyld_objfile_entry *e, int print_basenames,
 void dyld_print_entry_info(struct dyld_objfile_entry *j, int shlibnum,
                            size_t baselen);
 
-int dyld_shlib_info_basename_length (struct dyld_objfile_info *, unsigned int);
+int dyld_shlib_info_basename_length(struct dyld_objfile_info *, unsigned int);
 
 int dyld_entry_shlib_num(struct dyld_objfile_info *s,
                          struct dyld_objfile_entry *eptr,
                          int *numptr);
 
-int dyld_entry_shlib_num_matches(int shlibnum, char *args, int verbose);
+int dyld_entry_shlib_num_matches(int shlibnum, const char *args, int verbose);
 
 int dyld_next_allocated_shlib(struct dyld_objfile_info *info, int n);
 

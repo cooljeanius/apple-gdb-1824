@@ -106,7 +106,7 @@ evaluate_subexp(struct type *expect_type, struct expression *exp,
    and return the result as a number.  */
 
 CORE_ADDR
-parse_and_eval_address (char *exp)
+parse_and_eval_address(const char *exp)
 {
   /* APPLE LOCAL begin initialize innermost_block  */
   struct expression *expr;
@@ -145,7 +145,7 @@ parse_and_eval_address_1 (char **expptr)
 /* Like parse_and_eval_address, but treats the value of the expression
    as an integer, not an address, returns a LONGEST, not a CORE_ADDR */
 LONGEST
-parse_and_eval_long(char *exp)
+parse_and_eval_long(const char *exp)
 {
   /* APPLE LOCAL begin initialize innermost_block  */
   struct expression *expr;
@@ -161,8 +161,9 @@ parse_and_eval_long(char *exp)
   return (retval);
 }
 
+/* prototype is in "value.h": */
 struct value *
-parse_and_eval (char *exp)
+parse_and_eval(const char *exp)
 {
   /* APPLE LOCAL begin initialize innermost_block  */
   struct expression *expr;

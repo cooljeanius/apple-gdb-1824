@@ -1,5 +1,5 @@
 /*
- * macosx-low.c
+ * gdbserver/macosx-low.c
  */
 
 #ifdef HAVE_CONFIG_H

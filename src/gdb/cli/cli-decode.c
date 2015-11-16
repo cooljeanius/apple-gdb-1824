@@ -1,4 +1,5 @@
-/* Handle lists of commands, their decoding and documentation, for GDB.
+/* cli/cli-decode.c: Handle lists of commands, their decoding & documentation,
+   for GDB, the GNU debugger.
 
    Copyright 1986, 1989, 1990, 1991, 1998, 2000, 2001, 2002, 2004 Free
    Software Foundation, Inc.
@@ -30,35 +31,36 @@
 #include "cli/cli-decode.h"
 
 #ifdef TUI
-#include "tui/tui.h"		/* For tui_active et.al.   */
-#endif
+# include "tui/tui.h"		/* For tui_active et.al.   */
+#endif /* TUI */
 
 #include "gdb_assert.h"
 
 /* Prototypes for local functions */
 
-static void undef_cmd_error (char *, char *);
+static void undef_cmd_error(const char *, const char *);
 
-static struct cmd_list_element *find_cmd (char *command,
-					  int len,
-					  struct cmd_list_element *clist,
-					  int ignore_help_classes,
-					  int *nfound);
+static struct cmd_list_element *find_cmd(char *command,
+					 int len,
+					 struct cmd_list_element *clist,
+					 int ignore_help_classes,
+					 int *nfound);
 
-static void help_all (struct ui_file *stream);
+static void help_all(struct ui_file *stream);
 
 /* Set the callback function for the specified command.  For each both
    the commands callback and func() are set.  The latter set to a
    bounce function (unless cfunc / sfunc is NULL that is).  */
 
 static void
-do_cfunc (struct cmd_list_element *c, char *args, int from_tty)
+do_cfunc(struct cmd_list_element *c, char *args, int from_tty)
 {
-  c->function.cfunc (args, from_tty); /* Ok.  */
+  c->function.cfunc(args, from_tty); /* Ok.  */
 }
 
+/* FIXME: needs comment: */
 void
-set_cmd_cfunc (struct cmd_list_element *cmd, cmd_cfunc_ftype *cfunc)
+set_cmd_cfunc(struct cmd_list_element *cmd, cmd_cfunc_ftype *cfunc)
 {
   if (cfunc == NULL)
     cmd->func = NULL;
@@ -67,14 +69,16 @@ set_cmd_cfunc (struct cmd_list_element *cmd, cmd_cfunc_ftype *cfunc)
   cmd->function.cfunc = cfunc; /* Ok.  */
 }
 
+/* FIXME: needs comment: */
 static void
-do_sfunc (struct cmd_list_element *c, char *args, int from_tty)
+do_sfunc(struct cmd_list_element *c, char *args, int from_tty)
 {
-  c->function.sfunc (args, from_tty, c); /* Ok.  */
+  c->function.sfunc(args, from_tty, c); /* Ok.  */
 }
 
+/* FIXME: needs comment: */
 void
-set_cmd_sfunc (struct cmd_list_element *cmd, cmd_sfunc_ftype *sfunc)
+set_cmd_sfunc(struct cmd_list_element *cmd, cmd_sfunc_ftype *sfunc)
 {
   if (sfunc == NULL)
     cmd->func = NULL;
@@ -83,34 +87,39 @@ set_cmd_sfunc (struct cmd_list_element *cmd, cmd_sfunc_ftype *sfunc)
   cmd->function.sfunc = sfunc; /* Ok.  */
 }
 
+/* FIXME: needs comment: */
 int
-cmd_cfunc_eq (struct cmd_list_element *cmd,
-	      void (*cfunc) (char *args, int from_tty))
+cmd_cfunc_eq(struct cmd_list_element *cmd,
+	     void (*cfunc)(const char *args, int from_tty))
 {
-  return cmd->func == do_cfunc && cmd->function.cfunc == cfunc;
+  return (cmd->func == do_cfunc) && (cmd->function.cfunc == cfunc);
 }
 
+/* FIXME: needs comment: */
 void
-set_cmd_context (struct cmd_list_element *cmd, void *context)
+set_cmd_context(struct cmd_list_element *cmd, void *context)
 {
   cmd->context = context;
 }
 
+/* FIXME: needs comment: */
 void *
-get_cmd_context (struct cmd_list_element *cmd)
+get_cmd_context(struct cmd_list_element *cmd)
 {
   return cmd->context;
 }
 
+/* FIXME: needs comment: */
 enum cmd_types
-cmd_type (struct cmd_list_element *cmd)
+cmd_type(struct cmd_list_element *cmd)
 {
   return cmd->type;
 }
 
+/* FIXME: needs comment: */
 void
-set_cmd_completer (struct cmd_list_element *cmd,
-		   char **(*completer) (char *text, char *word))
+set_cmd_completer(struct cmd_list_element *cmd,
+		  char **(*completer)(char *text, char *word))
 {
   cmd->completer = completer; /* Ok.  */
 }
@@ -134,8 +143,9 @@ set_cmd_completer (struct cmd_list_element *cmd,
    of *LIST). */
 
 struct cmd_list_element *
-add_cmd(const char *name, enum command_class cmdclass, void (*fun)(char *, int),
-        const char *doc, struct cmd_list_element **list)
+add_cmd(const char *name, enum command_class cmdclass,
+	void (*fun)(const char *, int), const char *doc,
+	struct cmd_list_element **list)
 {
   struct cmd_list_element *c =
     (struct cmd_list_element *)xmalloc(sizeof(struct cmd_list_element));
@@ -211,8 +221,9 @@ deprecate_cmd (struct cmd_list_element *cmd, char *replacement)
 }
 
 struct cmd_list_element *
-add_alias_cmd(const char *name, char *oldname, enum command_class cmd_class,
-	      int abbrev_flag, struct cmd_list_element **list)
+add_alias_cmd(const char *name, const char *oldname,
+	      enum command_class cmd_class, int abbrev_flag,
+	      struct cmd_list_element **list)
 {
   /* Must do this since lookup_cmd tries to side-effect its first arg */
   char *copied_name;
@@ -220,7 +231,7 @@ add_alias_cmd(const char *name, char *oldname, enum command_class cmd_class,
   struct cmd_list_element *c;
   copied_name = (char *)alloca(strlen(oldname) + 1UL);
   strcpy(copied_name, oldname);
-  old = lookup_cmd(&copied_name, *list, "", 1, 1);
+  old = lookup_cmd((const char **)&copied_name, *list, "", 1, 1);
 
   if (old == 0)
     {
@@ -247,8 +258,8 @@ add_alias_cmd(const char *name, char *oldname, enum command_class cmd_class,
 
 struct cmd_list_element *
 add_prefix_cmd(const char *name, enum command_class cclass,
-               void (*fun)(char *, int), const char *doc,
-               struct cmd_list_element **prefixlist, char *prefixname,
+               void (*fun)(const char *, int), const char *doc,
+               struct cmd_list_element **prefixlist, const char *prefixname,
                int allow_unknown, struct cmd_list_element **list)
 {
   struct cmd_list_element *c = add_cmd(name, cclass, fun, doc, list);
@@ -261,7 +272,7 @@ add_prefix_cmd(const char *name, enum command_class cclass,
 /* Like add_prefix_cmd but sets the abbrev_flag on the new command: */
 struct cmd_list_element *
 add_abbrev_prefix_cmd(const char *name, enum command_class the_class,
-		      void (*fun)(char *, int), const char *doc,
+		      void (*fun)(const char *, int), const char *doc,
 		      struct cmd_list_element **prefixlist,
                       char *prefixname, int allow_unknown,
                       struct cmd_list_element **list)
@@ -275,8 +286,8 @@ add_abbrev_prefix_cmd(const char *name, enum command_class the_class,
 }
 
 /* This is an empty "cfunc".  */
-void
-not_just_help_class_command(char *args ATTRIBUTE_UNUSED,
+void ATTRIBUTE_CONST
+not_just_help_class_command(const char *args ATTRIBUTE_UNUSED,
                             int from_tty ATTRIBUTE_UNUSED)
 {
   return;
@@ -565,11 +576,11 @@ delete_cmd(const char *name, struct cmd_list_element **list)
   while (*list && strcmp((*list)->name, name) == 0)
     {
       if ((*list)->hookee_pre)
-      (*list)->hookee_pre->hook_pre = 0;   /* Hook slips out of its mouth */
+	(*list)->hookee_pre->hook_pre = 0;   /* Hook slips out of its mouth */
       if ((*list)->hookee_post)
-      (*list)->hookee_post->hook_post = 0; /* Hook slips out of its bottom  */
+	(*list)->hookee_post->hook_post = 0; /* Hook slips out of its bottom */
       p = (*list)->next;
-      xfree(* list);
+      xfree(*list);
       *list = p;
     }
 
@@ -578,14 +589,14 @@ delete_cmd(const char *name, struct cmd_list_element **list)
       {
 	if (strcmp(c->next->name, name) == 0)
 	  {
-          if (c->next->hookee_pre)
-            c->next->hookee_pre->hook_pre = 0; /* hooked cmd gets away.  */
-          if (c->next->hookee_post)
-            c->next->hookee_post->hook_post = 0; /* remove post hook */
-                                               /* :( no fishing metaphor */
-          p = c->next->next;
-          xfree(c->next);
-          c->next = p;
+	    if (c->next->hookee_pre)
+	      c->next->hookee_pre->hook_pre = 0; /* hooked cmd gets away.  */
+	    if (c->next->hookee_post)
+	      c->next->hookee_post->hook_post = 0; /* remove post hook */
+						/* no fishing metaphor, sadly */
+	    p = c->next->next;
+	    xfree(c->next);
+	    c->next = p;
 	  }
 	else
 	  c = c->next;
@@ -596,14 +607,14 @@ delete_cmd(const char *name, struct cmd_list_element **list)
 
 /* Add an element to the list of info subcommands: */
 struct cmd_list_element *
-add_info(const char *name, void (*fun)(char *, int), const char *doc)
+add_info(const char *name, void (*fun)(const char *, int), const char *doc)
 {
   return add_cmd(name, no_class, fun, doc, &infolist);
 }
 
 /* Add an alias to the list of info subcommands: */
 struct cmd_list_element *
-add_info_alias(char *name, char *oldname, int abbrev_flag)
+add_info_alias(const char *name, const char *oldname, int abbrev_flag)
 {
   return add_alias_cmd(name, oldname, (enum command_class)0, abbrev_flag,
                        &infolist);
@@ -612,15 +623,15 @@ add_info_alias(char *name, char *oldname, int abbrev_flag)
 /* Add an element to the list of commands: */
 struct cmd_list_element *
 add_com(const char *name, enum command_class our_class,
-	void (*fun)(char *, int), const char *doc)
+	void (*fun)(const char *, int), const char *doc)
 {
   return add_cmd(name, our_class, fun, doc, &cmdlist);
 }
 
 /* Add an alias or abbreviation command to the list of commands: */
 struct cmd_list_element *
-add_com_alias(char *name, char *oldname, enum command_class com_class,
-              int abbrev_flag)
+add_com_alias(const char *name, const char *oldname,
+	      enum command_class com_class, int abbrev_flag)
 {
   return add_alias_cmd(name, oldname, com_class, abbrev_flag, &cmdlist);
 }
@@ -630,7 +641,7 @@ add_com_alias(char *name, char *oldname, enum command_class com_class,
  * name, or their documentation: */
 void
 apropos_cmd(struct ui_file *stream, struct cmd_list_element *commandlist,
-            regex_t *regex, char *prefix)
+            regex_t *regex, const char *prefix)
 {
   struct cmd_list_element *c;
   int returnvalue = 1; /* Needed to avoid double printing. */
@@ -689,7 +700,7 @@ extern struct cmd_list_element *cmdlist;
  *   I am going to split this into two seperate comamnds, help_cmd and
  * help_list: */
 void
-help_cmd(char *command, struct ui_file *stream)
+help_cmd(const char *command, struct ui_file *stream)
 {
   struct cmd_list_element *c;
 
@@ -764,7 +775,7 @@ help_cmd(char *command, struct ui_file *stream)
  * If you call this routine with a class >= 0, it recurses.
  */
 void
-help_list(struct cmd_list_element *list, char *cmdtype,
+help_list(struct cmd_list_element *list, const char *cmdtype,
           enum command_class cmdclass, struct ui_file *stream)
 {
   size_t len;
@@ -882,7 +893,7 @@ print_doc_line(struct ui_file *stream, const char *str)
  */
 void
 help_cmd_list(struct cmd_list_element *list, enum command_class cmd_class,
-	      char *prefix, int recurse, struct ui_file *stream)
+	      const char *prefix, int recurse, struct ui_file *stream)
 {
   struct cmd_list_element *c;
 
@@ -967,13 +978,13 @@ find_cmd (char *command, int len, struct cmd_list_element *clist,
    the struct cmd_list_element is NULL).  */
 
 struct cmd_list_element *
-lookup_cmd_1 (char **text, struct cmd_list_element *clist,
-	      struct cmd_list_element **result_list, int ignore_help_classes)
+lookup_cmd_1(const char **text, struct cmd_list_element *clist,
+	     struct cmd_list_element **result_list, int ignore_help_classes)
 {
   char *p, *command;
   int len, tmp, nfound;
   struct cmd_list_element *found, *c;
-  char *line = *text;
+  const char *line = *text;
 
   while (**text == ' ' || **text == '\t')
     (*text)++;
@@ -983,12 +994,12 @@ lookup_cmd_1 (char **text, struct cmd_list_element *clist,
      "set args _foo()".  */
   /* NOTE: cagney/2003-02-13 The `tui_active' was previously
      `tui_version'.  */
-  for (p = *text;
+  for (p = (char *)*text;
        *p && (isalnum (*p) || *p == '-' || *p == '_' ||
 #if defined(TUI)
 	      (tui_active &&
 	       (*p == '+' || *p == '<' || *p == '>' || *p == '$')) ||
-#endif
+#endif /* TUI */
 	      (xdb_commands && (*p == '!' || *p == '/' || *p == '?')));
        p++)
     ;
@@ -1057,15 +1068,15 @@ lookup_cmd_1 (char **text, struct cmd_list_element *clist,
        flags */
 
       if (found->flags & DEPRECATED_WARN_USER)
-      deprecated_cmd_warning (&line);
+	deprecated_cmd_warning(&line);
       found = found->cmd_pointer;
     }
   /* If we found a prefix command, keep looking.  */
 
   if (found->prefixlist)
     {
-      c = lookup_cmd_1 (text, *found->prefixlist, result_list,
-			ignore_help_classes);
+      c = lookup_cmd_1(text, *found->prefixlist, result_list,
+		       ignore_help_classes);
       if (!c)
 	{
 	  /* Didn't find anything; this is as far as we got.  */
@@ -1103,7 +1114,7 @@ lookup_cmd_1 (char **text, struct cmd_list_element *clist,
 
 /* All this hair to move the space to the front of cmdtype: */
 static void ATTR_NORETURN
-undef_cmd_error(char *cmdtype, char *q)
+undef_cmd_error(const char *cmdtype, const char *q)
 {
   error(_("Undefined %scommand: \"%s\".  Try \"help%s%.*s\"."),
         cmdtype, q, (*cmdtype ? " " : ""), ((int)strlen(cmdtype) - 1),
@@ -1125,12 +1136,12 @@ undef_cmd_error(char *cmdtype, char *q)
    the function field of the struct cmd_list_element is 0).  */
 
 struct cmd_list_element *
-lookup_cmd (char **line, struct cmd_list_element *list, char *cmdtype,
-	    int allow_unknown, int ignore_help_classes)
+lookup_cmd(const char **line, struct cmd_list_element *list, const char *cmdtype,
+	   int allow_unknown, int ignore_help_classes)
 {
   struct cmd_list_element *last_list = 0;
   struct cmd_list_element *c =
-  lookup_cmd_1 (line, list, &last_list, ignore_help_classes);
+    lookup_cmd_1(line, list, &last_list, ignore_help_classes);
 
   /* Note: Do not remove trailing whitespace here because this
      would be wrong for complete_command.  Jim Kingdon  */
@@ -1140,32 +1151,33 @@ lookup_cmd (char **line, struct cmd_list_element *list, char *cmdtype,
       if (!allow_unknown)
 	{
 	  if (!*line)
-	    error (_("Lack of needed %scommand"), cmdtype);
+	    error(_("Lack of needed %scommand"), cmdtype);
 	  else
 	    {
-	      char *p = *line, *q;
+	      const char *p = *line;
+	      char *q;
 
-	      while (isalnum (*p) || *p == '-')
+	      while (isalnum(*p) || *p == '-')
 		p++;
 
-	      q = (char *) alloca (p - *line + 1);
-	      strncpy (q, *line, p - *line);
+	      q = (char *)alloca(p - *line + 1);
+	      strncpy(q, *line, (p - *line));
 	      q[p - *line] = '\0';
-	      undef_cmd_error (cmdtype, q);
+	      undef_cmd_error(cmdtype, q);
 	    }
 	}
       else
 	return 0;
     }
-  else if (c == (struct cmd_list_element *) -1)
+  else if (c == (struct cmd_list_element *)-1)
     {
       /* Ambigous.  Local values should be off prefixlist or called
          values.  */
       int local_allow_unknown = (last_list ? last_list->allow_unknown :
 				 allow_unknown);
-      char *local_cmdtype = last_list ? last_list->prefixname : cmdtype;
+      const char *local_cmdtype = (last_list ? last_list->prefixname : cmdtype);
       struct cmd_list_element *local_list =
-      (last_list ? *(last_list->prefixlist) : list);
+	(last_list ? *(last_list->prefixlist) : list);
 
       if (local_allow_unknown < 0)
 	{
@@ -1215,9 +1227,9 @@ lookup_cmd (char **line, struct cmd_list_element *list, char *cmdtype,
 	(*line)++;
 
       if (c->prefixlist && **line && !c->allow_unknown)
-	undef_cmd_error (c->prefixname, *line);
+	undef_cmd_error(c->prefixname, *line);
 
-      /* Seems to be what he wants.  Return it.  */
+      /* Seems to be what he wants.  Return it: */
       return c;
     }
   return 0;
@@ -1243,17 +1255,16 @@ lookup_cmd (char **line, struct cmd_list_element *list, char *cmdtype,
 
    After the message has been sent, clear the appropriate flags in the
    command and/or the alias so the user is no longer bothered.
-
 */
 void
-deprecated_cmd_warning (char **text)
+deprecated_cmd_warning(const char **text)
 {
   struct cmd_list_element *alias = NULL;
   struct cmd_list_element *prefix_cmd = NULL;
   struct cmd_list_element *cmd = NULL;
 
-  if (!lookup_cmd_composition (*text, &alias, &prefix_cmd, &cmd))
-    /* return if text doesn't evaluate to a command */
+  if (!lookup_cmd_composition(*text, &alias, &prefix_cmd, &cmd))
+    /* return if text fails to evaluate to a command */
     return;
 
   if (!((alias ? (alias->flags & DEPRECATED_WARN_USER) : 0)
@@ -1318,13 +1329,11 @@ deprecated_cmd_warning (char **text)
 
    If any of *alias, *prefix_cmd, or *cmd cannot be determined or do not
    exist, they are NULL when we return.
-
 */
 int
-lookup_cmd_composition (char *text,
-                      struct cmd_list_element **alias,
-                      struct cmd_list_element **prefix_cmd,
-                      struct cmd_list_element **cmd)
+lookup_cmd_composition(const char *text, struct cmd_list_element **alias,
+		       struct cmd_list_element **prefix_cmd,
+		       struct cmd_list_element **cmd)
 {
   char *p, *command;
   int len, tmp, nfound;
@@ -1344,22 +1353,22 @@ lookup_cmd_composition (char *text,
       prev_cmd = *cmd;
 
       while (*text == ' ' || *text == '\t')
-      (text)++;
+	(text)++;
 
       /* Treating underscores as part of command words is important
        so that "set args_foo()" doesn't get interpreted as
        "set args _foo()".  */
       /* NOTE: cagney/2003-02-13 The `tui_active' was previously
 	 `tui_version'.  */
-      for (p = text;
-         *p && (isalnum (*p) || *p == '-' || *p == '_' ||
+      for (p = (char *)text;
+	   *p && (isalnum(*p) || *p == '-' || *p == '_' ||
 #if defined(TUI)
-                (tui_active &&
-                 (*p == '+' || *p == '<' || *p == '>' || *p == '$')) ||
-#endif
-                (xdb_commands && (*p == '!' || *p == '/' || *p == '?')));
-         p++)
-      ;
+		  (tui_active &&
+		   (*p == '+' || *p == '<' || *p == '>' || *p == '$')) ||
+#endif /* TUI */
+		  (xdb_commands && (*p == '!' || *p == '/' || *p == '?')));
+	   p++)
+	; /* (do nothing) */
 
       /* If nothing but whitespace, return.  */
       if (p == text)

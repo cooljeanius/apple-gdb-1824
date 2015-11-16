@@ -1,4 +1,4 @@
-/* regcache.h
+/* gdbserver/regcache.h
    Register support routines for the remote server for GDB.
    Copyright 2001, 2002 Free Software Foundation, Inc.
 

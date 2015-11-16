@@ -309,9 +309,9 @@ struct thread_info;		/* fwd decl for parameter list below: */
 struct target_ops
   {
     struct target_ops *beneath;	/* To the target under this one.  */
-    char *to_shortname;		/* Name this target type */
-    char *to_longname;		/* Name for printing */
-    char *to_doc;		/* Documentation.  Does not include trailing
+    const char *to_shortname;		/* Name this target type */
+    const char *to_longname;		/* Name for printing */
+    const char *to_doc;		/* Documentation.  Does not include trailing
 				   newline, and starts with a one-line descrip-
 				   tion (probably similar to to_longname).  */
     /* Per-target scratch pad.  */
@@ -328,7 +328,7 @@ struct target_ops
     void (*to_close) (int);
     void (*to_attach) (char *, int);
     void (*to_post_attach) (int);
-    void (*to_detach) (char *, int);
+    void (*to_detach)(const char *, int);
     void (*to_disconnect) (char *, int);
     void (*to_resume) (ptid_t, int, enum target_signal);
     /* APPLE LOCAL target */
@@ -382,7 +382,7 @@ struct target_ops
     void (*to_terminal_ours_for_output) (void);
     void (*to_terminal_ours) (void);
     void (*to_terminal_save_ours) (void);
-    void (*to_terminal_info) (char *, int);
+    void (*to_terminal_info)(const char *, int);
     void (*to_kill) (void);
     void (*to_load) (char *, int);
     int (*to_lookup_symbol) (char *, CORE_ADDR *);
@@ -748,17 +748,16 @@ extern void print_section_info_objfile (struct objfile *o);
    to take this change into account.  */
 
 #define target_terminal_save_ours() \
-     (*current_target.to_terminal_save_ours) ()
+     (*current_target.to_terminal_save_ours)()
 
 /* Print useful information about our terminal status, if such a thing
    exists.  */
 
 #define target_terminal_info(arg, from_tty) \
-     (*current_target.to_terminal_info) (arg, from_tty)
+     (*current_target.to_terminal_info)(arg, from_tty)
 
-/* Kill the inferior process.   Make it go away.  */
-
-extern void target_kill (void);
+/* Kill the inferior process.   Make it go away: */
+extern void target_kill(void);
 
 /* Load an executable file into the target process.  This is expected
    to not only bring new code into the target process, but also to

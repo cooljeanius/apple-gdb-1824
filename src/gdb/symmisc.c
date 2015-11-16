@@ -569,14 +569,15 @@ dump_symtab (struct objfile *objfile, struct symtab *symtab,
   set_language (saved_lang);
 }
 
+/* FIXME: needs comment: */
 void
-maintenance_print_symbols (char *args, int from_tty)
+maintenance_print_symbols(char *args, int from_tty)
 {
   char **argv;
   struct ui_file *outfile;
   struct cleanup *cleanups;
   char *symname = NULL;
-  char *filename = DEV_TTY;
+  const char *filename = DEV_TTY;
   struct objfile *objfile;
   struct symtab *s;
 
@@ -834,14 +835,15 @@ print_symbol (void *args)
   return 1;
 }
 
+/* FIXME: needs comment: */
 void
-maintenance_print_psymbols (char *args, int from_tty)
+maintenance_print_psymbols(char *args, int from_tty)
 {
   char **argv;
   struct ui_file *outfile;
   struct cleanup *cleanups;
   char *symname = NULL;
-  char *filename = DEV_TTY;
+  const char *filename = DEV_TTY;
   struct objfile *objfile;
   struct partial_symtab *ps;
 
@@ -982,13 +984,14 @@ print_partial_symbols (struct partial_symbol **p, int count, char *what,
     }
 }
 
+/* FIXME: needs comment: */
 void
-maintenance_print_msymbols (char *args, int from_tty)
+maintenance_print_msymbols(char *args, int from_tty)
 {
   char **argv;
   struct ui_file *outfile;
   struct cleanup *cleanups;
-  char *filename = DEV_TTY;
+  const char *filename = DEV_TTY;
   char *symname = NULL;
   struct objfile *objfile;
 

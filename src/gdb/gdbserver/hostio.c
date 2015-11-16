@@ -1,4 +1,4 @@
-/* hostio.c
+/* gdbserver/hostio.c
    Host file transfer support for gdbserver.
    Copyright (C) 2007, 2008, 2009 Free Software Foundation, Inc.
 

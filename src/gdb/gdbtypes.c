@@ -2034,7 +2034,7 @@ allocate_cplus_struct_type (struct type *type)
    in particular, where init_type is called with a NULL value for NAME). */
 
 struct type *
-init_type (enum type_code code, int length, int flags, char *name,
+init_type (enum type_code code, int length, int flags, const char *name,
 	   struct objfile *objfile)
 {
   struct type *type;
@@ -2095,7 +2095,8 @@ init_composite_type (char *name, enum type_code code)
 
 /* Helper function.  Append a field to a composite type: */
 void
-append_composite_type_field(struct type *t, char *name, struct type *field)
+append_composite_type_field(struct type *t, const char *name,
+			    struct type *field)
 {
   struct field *f;
   TYPE_NFIELDS(t) = (TYPE_NFIELDS(t) + 1);

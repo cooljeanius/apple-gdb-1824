@@ -1,4 +1,4 @@
-/* Portable <string.h>
+/* common/gdb_string.h: Portable <string.h>
 
    Copyright (C) 1995-2013 Free Software Foundation, Inc.
 

@@ -1,4 +1,4 @@
-/* arm-macosx-regnums.h */
+/* macosx/arm-macosx-regnums.h */
 
 #ifndef __GDB_ARM_MACOSX_REGNUMS_H__
 #define __GDB_ARM_MACOSX_REGNUMS_H__

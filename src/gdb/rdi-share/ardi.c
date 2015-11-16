@@ -1,4 +1,4 @@
-/* ardi.c
+/* rdi-share/ardi.c
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
  *
  * This software may be freely used, copied, modified, and distributed
@@ -2629,7 +2629,7 @@ int angel_RDI_LoadAgent(ARMword dest, unsigned long size,
 }
 
 static int angel_RDI_errmess(char *buf, int blen, int errnum) {
-  char *s=NULL;
+  const char *s = (const char *)NULL;
   int n;
 
   switch (errnum) {
@@ -2716,9 +2716,9 @@ const struct RDIProcVec angel_rdi = {
 /* Not strictly necessary, but allows linking this code into armsd. */
 
 struct foo {
-    char *name;
+    const char *name;
     int (*action)(void);
-    char *syntax;
+    const char *syntax;
     char **helpmessage;
     int doafterend;
     int dobeforestart;
