@@ -1830,30 +1830,27 @@ lookup_symbol_aux (const char *name, const char *linkage_name,
    Don't search STATIC_BLOCK or GLOBAL_BLOCK.  */
 
 static struct symbol *
-lookup_symbol_aux_local (const char *name, const char *linkage_name,
-			 const struct block *block,
-			 const domain_enum domain,
-			 struct symtab **symtab)
+lookup_symbol_aux_local(const char *name, const char *linkage_name,
+			const struct block *block, const domain_enum domain,
+			struct symtab **symtab)
 {
   struct symbol *sym;
-  const struct block *static_block = block_static_block (block);
+  const struct block *static_block = block_static_block(block);
 
-  /* Check if either no block is specified or it's a global block.  */
-
+  /* Check if either no block is specified or it is a global block: */
   if (static_block == NULL)
     return NULL;
 
-  while (block != static_block)
+  while ((block != static_block) && (block != NULL))
     {
-      sym = lookup_symbol_aux_block (name, linkage_name, block, domain,
-				     symtab);
+      sym = lookup_symbol_aux_block(name, linkage_name, block, domain,
+				    symtab);
       if (sym != NULL)
 	return sym;
-      block = BLOCK_SUPERBLOCK (block);
+      block = BLOCK_SUPERBLOCK(block);
     }
 
-  /* We've reached the static block without finding a result.  */
-
+  /* We have reached the static block without finding a result: */
   return NULL;
 }
 
@@ -3732,11 +3729,11 @@ find_line_symtab (struct symtab *symtab, int line, int *index, int *exact_match)
   struct linetable *best_linetable;
   struct symtab *best_symtab;
 
-  /* First try looking it up in the given symtab.  */
-  best_linetable = LINETABLE (symtab);
+  /* First try looking it up in the given symtab: */
+  best_linetable = LINETABLE(symtab);
   best_symtab = symtab;
-  best_index = find_line_common (best_linetable, line, &exact);
-  if (best_index < 0 || !exact)
+  best_index = find_line_common(best_linetable, line, &exact);
+  if ((best_index < 0) || !exact)
     {
       /* Didn't find an exact match.  So we better keep looking for
          another symtab with the same name.  In the case of xcoff,
@@ -3787,6 +3784,8 @@ find_line_symtab (struct symtab *symtab, int line, int *index, int *exact_match)
       }
     }
 done:
+  if (best_linetable == (struct linetable *)NULL)
+    ; /* ??? */
   if (best_index < 0)
     return NULL;
 
@@ -3858,16 +3857,17 @@ find_line_pc_range (struct symtab_and_line sal, CORE_ADDR *startptr,
       struct linetable *l;
       int ind;
 
-      symtab = find_line_symtab (sal.symtab, line, &ind, NULL);
+      symtab = find_line_symtab(sal.symtab, line, &ind, NULL);
       if (symtab == NULL)
 	return 0;
 
-      l = LINETABLE (symtab);
+      l = LINETABLE(symtab);
+      gdb_assert(l != NULL);
       /* APPLE LOCAL: We KNOW that this is found by file & line, so the
 	 comment below is not relevant.  We already found the start &
 	 end addresses, let's just record them and get out of here... */
       *startptr = l->item[ind].pc;
-      if (ind == l->nitems - 1)
+      if (ind == (l->nitems - 1))
 	/* This shouldn't happen, since there is always a function ending
 	   marker entry in the linetable, but I am not sure we should error
 	   out here... */
@@ -4257,38 +4257,38 @@ operator_chars (char *p, char **end)
    is non-zero.  If *FIRST is non-zero, forget the old table
    contents.  */
 static int
-filename_seen (const char *file, int add, int *first)
+filename_seen(const char *file, int add, int *first)
 {
-  /* Table of files seen so far.  */
+  /* Table of files seen so far: */
   static const char **tab = NULL;
   /* Allocated size of tab in elements.
      Start with one 256-byte block (when using GNU malloc.c).
      24 is the malloc overhead when range checking is in effect.  */
-  static int tab_alloc_size = (256 - 24) / sizeof (char *);
-  /* Current size of tab in elements.  */
+  static int tab_alloc_size = ((256 - 24) / sizeof(char *));
+  /* Current size of tab in elements: */
   static int tab_cur_size;
   const char **p;
 
   if (*first)
     {
       if (tab == NULL)
-	tab = (const char **) xmalloc (tab_alloc_size * sizeof (*tab));
+	tab = (const char **)xmalloc(tab_alloc_size * sizeof(*tab));
       tab_cur_size = 0;
     }
 
   /* Is FILE in tab?  */
-  for (p = tab; p < tab + tab_cur_size; p++)
-    if (strcmp (*p, file) == 0)
+  for (p = tab; p < (tab + tab_cur_size); p++)
+    if (strcmp(*p, file) == 0)
       return 1;
 
-  /* No; maybe add it to tab.  */
+  /* No; maybe add it to tab: */
   if (add)
     {
       if (tab_cur_size == tab_alloc_size)
 	{
 	  tab_alloc_size *= 2;
-	  tab = (const char **) xrealloc ((char *) tab,
-					  tab_alloc_size * sizeof (*tab));
+	  tab = (const char **)xrealloc((char *)tab,
+					(tab_alloc_size * sizeof(*tab)) + 1UL);
 	}
       tab[tab_cur_size++] = file;
     }
@@ -5037,6 +5037,7 @@ rbreak_command(char *regexp, int from_tty)
 
 	  strcat(string, p->symtab->filename);
 	  strcat(string, ":");
+	  gdb_assert(p->symbol != NULL);
           /* FIXME: not sure if min or max is better for len here: */
 	  strlcat(string, SYMBOL_LINKAGE_NAME(p->symbol),
                   max(shlib_len, 4096UL));

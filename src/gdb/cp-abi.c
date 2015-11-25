@@ -247,33 +247,32 @@ list_cp_abis (int from_tty)
    argument is given.  */
 
 static void
-set_cp_abi_cmd (char *args, int from_tty)
+set_cp_abi_cmd(const char *args, int from_tty)
 {
   if (args == NULL)
     {
-      list_cp_abis (from_tty);
+      list_cp_abis(from_tty);
       return;
     }
 
-  if (!switch_to_cp_abi (args))
-    error (_("Could not find \"%s\" in ABI list"), args);
+  if (!switch_to_cp_abi(args))
+    error(_("Could not find \"%s\" in ABI list"), args);
 }
 
-/* Show the currently selected C++ ABI.  */
-
+/* Show the currently selected C++ ABI: */
 static void
-show_cp_abi_cmd (char *args, int from_tty)
+show_cp_abi_cmd(const char *args, int from_tty)
 {
-  ui_out_text (uiout, "The currently selected C++ ABI is \"");
+  ui_out_text(uiout, "The currently selected C++ ABI is \"");
 
-  ui_out_field_string (uiout, "cp-abi", current_cp_abi.shortname);
-  ui_out_text (uiout, "\" (");
-  ui_out_field_string (uiout, "longname", current_cp_abi.longname);
-  ui_out_text (uiout, ").\n");
+  ui_out_field_string(uiout, "cp-abi", current_cp_abi.shortname);
+  ui_out_text(uiout, "\" (");
+  ui_out_field_string(uiout, "longname", current_cp_abi.longname);
+  ui_out_text(uiout, ").\n");
 }
 
+/* Usual gdb initialization hook: */
 extern initialize_file_ftype _initialize_cp_abi; /* -Wmissing-prototypes */
-
 void
 _initialize_cp_abi(void)
 {

@@ -544,14 +544,14 @@ cp_print_value (struct type *type, struct type *real_type,
     {
       int boffset;
       int skip;
-      struct type *baseclass = check_typedef (TYPE_BASECLASS (type, i));
-      char *basename = TYPE_NAME (baseclass);
+      struct type *baseclass = check_typedef(TYPE_BASECLASS(type, i));
+      const char *basename = TYPE_NAME(baseclass);
       const gdb_byte *base_valaddr;
 
-      if (BASETYPE_VIA_VIRTUAL (type, i))
+      if (BASETYPE_VIA_VIRTUAL(type, i))
 	{
-	  struct type **first_dont_print
-	    = (struct type **) obstack_base (&dont_print_vb_obstack);
+	  struct type **first_dont_print =
+	    (struct type **)obstack_base(&dont_print_vb_obstack);
 
 	  int j = (struct type **) obstack_next_free (&dont_print_vb_obstack)
 	    - first_dont_print;

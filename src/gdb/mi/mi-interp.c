@@ -89,7 +89,7 @@ static void mi1_command_loop(void);
 static void mi0_command_loop(void);
 
 static char *
-mi_interp_read_one_line_hook(char *prompt, int repeat, const char *anno);
+mi_interp_read_one_line_hook(const char *prompt, int repeat, const char *anno);
 
 static void mi_load_progress(const char *section_name,
 			     unsigned long sent_so_far,
@@ -521,7 +521,7 @@ mi_interp_query_hook(const char *ctlstr ATTRIBUTE_UNUSED,
 
 /* FIXME: needs comment: */
 static char *
-mi_interp_read_one_line_hook(char *prompt, int repeat, const char *anno)
+mi_interp_read_one_line_hook(const char *prompt, int repeat, const char *anno)
 {
   static char buff[256];
 

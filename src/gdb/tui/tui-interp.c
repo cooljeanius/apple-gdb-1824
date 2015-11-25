@@ -118,11 +118,11 @@ tui_exec (void *data, const char *command_str)
    register readline, and stdin, start the loop.  */
 
 static void
-tui_command_loop (void *data)
+tui_command_loop(void *data)
 {
   int length;
   char *a_prompt;
-  char *gdb_prompt = get_prompt ();
+  const char *gdb_prompt = get_prompt();
 
   /* If we are using readline, set things up and display the first
      prompt, otherwise just print the prompt.  */

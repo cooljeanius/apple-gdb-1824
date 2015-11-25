@@ -41,9 +41,11 @@
 #define TRUNCATION_TOWARDS_ZERO ((-5 / 2) == -2)
 #endif
 
-static struct value *value_subscripted_rvalue (struct value *, struct value *);
+static struct value *value_subscripted_rvalue(struct value *, struct value *);
 
-void _initialize_valarith (void);
+int valarith_c_inited = 0;
+
+void _initialize_valarith(void);
 
 
 /* Given a pointer, return the size of its target.
@@ -1687,9 +1689,11 @@ value_in (struct value *element, struct value *set)
   return value_from_longest(LA_BOOL_TYPE, member);
 }
 
+/* */
 void
 _initialize_valarith(void)
 {
+  valarith_c_inited = 1;
   return;
 }
 

@@ -389,7 +389,7 @@ struct field
   /* Name of field, value or argument.
    * NULL for range bounds, array domains, and member function
    * arguments: */
-  char *name;
+  const char *name;
 };
 
 
@@ -420,7 +420,7 @@ typedef struct main_type
      This is used for printing only, except by poorly designed C++ code.
      For looking up a name, look for a symbol in the VAR_DOMAIN.  */
 
-  char *name;
+  const char *name;
 
   /* Tag name for this type, or NULL if none.  This means that the
      name of the type consists of a keyword followed by the tag name.
@@ -433,7 +433,7 @@ typedef struct main_type
      One more legitimate use is that if TYPE_FLAG_STUB is set, this is
      the name to use to look for definitions in other files.  */
 
-  char *tag_name;
+  const char *tag_name;
 
   /* Every type is now associated with a particular objfile, and the
      type is allocated on the objfile_obstack for that objfile.  One problem
@@ -1167,7 +1167,7 @@ extern struct type *builtin_type_void_data_ptr;
    and pointers to data are not interconvertible --- that is, you
    can't cast a function pointer to void * and back, and expect to get
    the same value.  However, all function pointer types are
-   interconvertible, so void (*) () can server as a generic function
+   interconvertible, so void (*)() can server as a generic function
    pointer.  */
 extern struct type *builtin_type_void_func_ptr;
 
@@ -1317,7 +1317,7 @@ extern struct type *init_type(enum type_code, int, int, const char *,
    type has its size set to the largest field.  A struct type has each
    field packed against the previous.  */
 
-extern struct type *init_composite_type(char *name, enum type_code code);
+extern struct type *init_composite_type(const char *name, enum type_code code);
 extern void append_composite_type_field(struct type *t, const char *name,
 					struct type *field);
 
@@ -1349,7 +1349,7 @@ extern struct type *allocate_stub_method (struct type *);
 
 extern char *type_name_no_tag (const struct type *);
 
-extern struct type *lookup_struct_elt_type (struct type *, char *, int);
+extern struct type *lookup_struct_elt_type(struct type *, const char *, int);
 
 extern struct type *make_pointer_type (struct type *, struct type **);
 
@@ -1360,25 +1360,25 @@ extern struct type *make_function_type (struct type *, struct type **, int);
 
 extern struct type *lookup_function_type (struct type *);
 
-extern struct type *create_range_type (struct type *, struct type *, int,
-				       int);
+extern struct type *create_range_type(struct type *, struct type *, int,
+				      int);
 
-extern struct type *create_array_type (struct type *, struct type *,
-				       struct type *);
+extern struct type *create_array_type(struct type *, struct type *,
+				      struct type *);
 
-extern struct type *create_string_type (struct type *, struct type *);
+extern struct type *create_string_type(struct type *, struct type *);
 
-extern struct type *create_set_type (struct type *, struct type *);
+extern struct type *create_set_type(struct type *, struct type *);
 
-extern struct type *lookup_unsigned_typename (char *);
+extern struct type *lookup_unsigned_typename(const char *);
 
-extern struct type *lookup_signed_typename (char *);
+extern struct type *lookup_signed_typename(const char *);
 
-extern struct type *check_typedef (struct type *);
+extern struct type *check_typedef(struct type *);
 
-#define CHECK_TYPEDEF(TYPE) (TYPE) = check_typedef (TYPE)
+#define CHECK_TYPEDEF(TYPE) (TYPE) = check_typedef(TYPE)
 
-extern void check_stub_method_group (struct type *, int);
+extern void check_stub_method_group(struct type *, int);
 
 extern char *gdb_mangle_name (struct type *, int, int);
 

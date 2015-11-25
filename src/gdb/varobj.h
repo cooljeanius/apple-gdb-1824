@@ -1,4 +1,4 @@
-/* GDB variable objects API.
+/* varobj.h: GDB variable objects API.
    Copyright 1999, 2000, 2001, 2005 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
@@ -48,7 +48,7 @@ enum varobj_type
   };
     
 /* String representations of gdb's format codes (defined in varobj.c) */
-extern char *varobj_format_string[];
+extern const char *varobj_format_string[];
 
 /* Languages supported by this variable objects system. */
 enum varobj_languages
@@ -57,7 +57,7 @@ enum varobj_languages
   };
 
 /* String representations of gdb's known languages (defined in varobj.c) */
-extern char *varobj_language_string[];
+extern const char *varobj_language_string[];
 
 /* This represents the possible type-changed states: */
 

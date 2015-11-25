@@ -107,7 +107,6 @@ The search path for loading non-absolute shared library symbol files is %s.\n"),
 }
 
 /*
-
    GLOBAL FUNCTION
 
    solib_open -- Find a shared library file and open it.
@@ -233,7 +232,6 @@ solib_open (char *in_pathname, char **found_pathname)
 
 
 /*
-
    LOCAL FUNCTION
 
    solib_map_sections -- open bfd and build sections for shared lib
@@ -379,7 +377,7 @@ free_so (struct so_list *so)
 }
 
 
-/* Return address of first so_list entry in master shared object list.  */
+/* Return address of first so_list entry in master shared object list: */
 struct so_list *
 master_so_list (void)
 {
@@ -387,8 +385,7 @@ master_so_list (void)
 }
 
 
-/* A small stub to get us past the arg-passing pinhole of catch_errors.  */
-
+/* A small stub to get us past the arg-passing pinhole of catch_errors: */
 static int
 symbol_add_stub (void *arg)
 {
@@ -619,13 +616,13 @@ update_solib_list (int from_tty, struct target_ops *target)
 
    SYNOPSIS
 
-   void solib_add (char *pattern, int from_tty, struct target_ops
+   void solib_add(const char *pattern, int from_tty, struct target_ops
    *TARGET, int readsyms)
 
    DESCRIPTION
 
    Read in symbolic information for any shared objects whose names
-   match PATTERN.  (If we've already read a shared object's symbol
+   match PATTERN.  (If we have already read a shared object's symbol
    info, leave it alone.)  If PATTERN is zero, read them all.
 
    If READSYMS is 0, defer reading symbolic information until later
@@ -635,7 +632,8 @@ update_solib_list (int from_tty, struct target_ops *target)
 
 /* APPLE LOCAL return a value */
 int
-solib_add(char *pattern, int from_tty, struct target_ops *target, int readsyms)
+solib_add(const char *pattern, int from_tty, struct target_ops *target,
+	  int readsyms)
 {
   struct so_list *gdb;
 
@@ -686,23 +684,21 @@ solib_add(char *pattern, int from_tty, struct target_ops *target, int readsyms)
 
 
 /*
-
    LOCAL FUNCTION
 
    info_sharedlibrary_command -- code for "info sharedlibrary"
 
    SYNOPSIS
 
-   static void info_sharedlibrary_command ()
+   static void info_sharedlibrary_command()
 
    DESCRIPTION
 
    Walk through the shared library list and print information
    about each attached library.
  */
-
 static void
-info_sharedlibrary_command (char *ignore, int from_tty)
+info_sharedlibrary_command(const char *ignore ATTRIBUTE_UNUSED, int from_tty)
 {
   struct so_list *so = NULL;	/* link map state variable */
   int header_done = 0;
@@ -756,14 +752,13 @@ info_sharedlibrary_command (char *ignore, int from_tty)
 }
 
 /*
-
    GLOBAL FUNCTION
 
    solib_address -- check to see if an address is in a shared lib
 
    SYNOPSIS
 
-   char * solib_address (CORE_ADDR address)
+   char *solib_address(CORE_ADDR address)
 
    DESCRIPTION
 
@@ -775,9 +770,8 @@ info_sharedlibrary_command (char *ignore, int from_tty)
    breakpoints which are in shared libraries that are not currently
    mapped in.
  */
-
 char *
-solib_address (CORE_ADDR address)
+solib_address(CORE_ADDR address)
 {
   struct so_list *so = 0;	/* link map state variable */
 
@@ -795,12 +789,11 @@ solib_address (CORE_ADDR address)
   return (0);
 }
 
-/* Called by free_all_symtabs */
-
+/* Called by free_all_symtabs: */
 void
-clear_solib (void)
+clear_solib(void)
 {
-  struct target_so_ops *ops = solib_ops (current_gdbarch);
+  struct target_so_ops *ops = solib_ops(current_gdbarch);
 
   /* This function is expected to handle ELF shared libraries.  It is
      also used on Solaris, which can run either ELF or a.out binaries
@@ -838,11 +831,12 @@ clear_solib (void)
   ops->clear_solib ();
 }
 
+/* */
 static void
-do_clear_solib (void *dummy)
+do_clear_solib(void *dummy)
 {
   solib_cleanup_queued = 0;
-  clear_solib ();
+  clear_solib();
 }
 
 /* GLOBAL FUNCTION
@@ -851,7 +845,7 @@ do_clear_solib (void *dummy)
 
    SYNOPSIS
 
-   void solib_create_inferior_hook ()
+   void solib_create_inferior_hook()
 
    DESCRIPTION
 
@@ -875,40 +869,38 @@ solib_create_inferior_hook (void)
 
    SYNOPSIS
 
-   int in_solib_dynsym_resolve_code (CORE_ADDR pc)
+   int in_solib_dynsym_resolve_code(CORE_ADDR pc)
 
    DESCRIPTION
 
    Determine if PC is in the dynamic linker's symbol resolution
    code.  Return 1 if so, 0 otherwise.
 */
-
 int
-in_solib_dynsym_resolve_code (CORE_ADDR pc)
+in_solib_dynsym_resolve_code(CORE_ADDR pc)
 {
-  struct target_so_ops *ops = solib_ops (current_gdbarch);
-  return ops->in_dynsym_resolve_code (pc);
+  struct target_so_ops *ops = solib_ops(current_gdbarch);
+  return ops->in_dynsym_resolve_code(pc);
 }
 
 /*
-
    LOCAL FUNCTION
 
    sharedlibrary_command -- handle command to explicitly add library
 
    SYNOPSIS
 
-   static void sharedlibrary_command (char *args, int from_tty)
+   static void sharedlibrary_command(const char *args, int from_tty)
 
    DESCRIPTION
 
+   TODO: describe.
  */
-
 static void
-sharedlibrary_command (char *args, int from_tty)
+sharedlibrary_command(const char *args, int from_tty)
 {
-  dont_repeat ();
-  solib_add (args, from_tty, (struct target_ops *) 0, 1);
+  dont_repeat();
+  solib_add(args, from_tty, (struct target_ops *)0, 1);
 }
 
 /* LOCAL FUNCTION
@@ -924,26 +916,28 @@ sharedlibrary_command (char *args, int from_tty)
    are not discarded.  Also called from remote.c.  */
 
 void
-no_shared_libraries (char *ignored, int from_tty)
+no_shared_libraries(const char *ignored ATTRIBUTE_UNUSED, int from_tty)
 {
-  objfile_purge_solibs ();
-  do_clear_solib (NULL);
+  objfile_purge_solibs();
+  do_clear_solib(NULL);
 }
 
+/* */
 static void
-reload_shared_libraries (char *ignored, int from_tty,
-			 struct cmd_list_element *e)
+reload_shared_libraries(const char *ignored ATTRIBUTE_UNUSED, int from_tty,
+			struct cmd_list_element *e)
 {
-  no_shared_libraries (NULL, from_tty);
-  solib_add (NULL, from_tty, NULL, auto_solib_add);
+  no_shared_libraries(NULL, from_tty);
+  solib_add(NULL, from_tty, NULL, auto_solib_add);
 }
 
+/* */
 static void
-show_auto_solib_add (struct ui_file *file, int from_tty,
-		     struct cmd_list_element *c, const char *value)
+show_auto_solib_add(struct ui_file *file, int from_tty,
+		    struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("Autoloading of shared library symbols is %s.\n"),
-		    value);
+  fprintf_filtered(file, _("Autoloading of shared library symbols is %s.\n"),
+		   value);
 }
 
 
@@ -995,3 +989,5 @@ This takes precedence over the environment variables PATH and LD_LIBRARY_PATH.")
 				     show_solib_search_path,
 				     &setlist, &showlist);
 }
+
+/* EOF */

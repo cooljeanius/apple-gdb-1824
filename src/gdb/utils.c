@@ -124,7 +124,7 @@ static void do_my_cleanups(struct cleanup **, struct cleanup *);
 
 static void prompt_for_continue(void);
 
-static void set_width_command(char *, int, struct cmd_list_element *);
+static void set_width_command(const char *, int, struct cmd_list_element *);
 
 /* Chain of cleanup actions established with make_cleanup,
    to be executed if an error happens.  */
@@ -2135,8 +2135,9 @@ set_width(void)
   wrap_pointer = wrap_buffer;	/* Start it at the beginning.  */
 }
 
+/* */
 static void
-set_width_command(char *args ATTRIBUTE_UNUSED,
+set_width_command(const char *args ATTRIBUTE_UNUSED,
                   int from_tty ATTRIBUTE_UNUSED,
                   struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
@@ -2144,8 +2145,9 @@ set_width_command(char *args ATTRIBUTE_UNUSED,
   set_width();
 }
 
+/* */
 static void
-set_height_command(char *args ATTRIBUTE_UNUSED,
+set_height_command(const char *args ATTRIBUTE_UNUSED,
                    int from_tty ATTRIBUTE_UNUSED,
                    struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
@@ -2756,8 +2758,8 @@ print_spaces_filtered (int n, struct ui_file *stream)
    demangling is off, the name is printed in its "raw" form. */
 
 void
-fprintf_symbol_filtered (struct ui_file *stream, char *name,
-			 enum language lang, int arg_mode)
+fprintf_symbol_filtered(struct ui_file *stream, const char *name,
+			enum language lang, int arg_mode)
 {
   char *demangled;
 
@@ -2924,18 +2926,19 @@ subset_compare(char *string_to_compare, const char *template_string)
   return match;
 }
 
-
-static void pagination_on_command(char *arg, int from_tty);
+/* */
+static void pagination_on_command(const char *, int);
 static void
-pagination_on_command(char *arg ATTRIBUTE_UNUSED,
+pagination_on_command(const char *arg ATTRIBUTE_UNUSED,
                       int from_tty ATTRIBUTE_UNUSED)
 {
   pagination_enabled = 1;
 }
 
-static void pagination_off_command(char *arg, int from_tty);
+/* */
+static void pagination_off_command(const char *, int);
 static void
-pagination_off_command(char *arg ATTRIBUTE_UNUSED,
+pagination_off_command(const char *arg ATTRIBUTE_UNUSED,
                        int from_tty ATTRIBUTE_UNUSED)
 {
   pagination_enabled = 0;

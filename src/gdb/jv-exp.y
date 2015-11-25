@@ -718,15 +718,15 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
       else
 	{
 #ifdef SCANF_HAS_LONG_DOUBLE
-	  num = sscanf (p, "%Lg%c", &putithere->typed_val_float.dval, &c);
+	  num = sscanf(p, "%Lg%c", &putithere->typed_val_float.dval, &c);
 #else
 	  /* Scan it into a double, then assign it to the long double.
 	     This at least wins with values representable in the range
 	     of doubles. */
 	  double temp;
-	  num = sscanf (p, "%lg%c", &temp, &c);
+	  num = sscanf(p, "%lg%c", &temp, &c);
 	  putithere->typed_val_float.dval = temp;
-#endif
+#endif /* SCANF_HAS_LONG_DOUBLE */
 	}
       p[len] = saved_char;	/* restore the input stream */
       if (num != 1) 		/* check scanf found ONLY a float ... */
@@ -867,7 +867,7 @@ yylex(void)
   int namelen;
   unsigned int i;
   char *tokstart;
-  char *tokptr;
+  const char *tokptr;
   int tempbufindex;
   static char *tempbuf;
   static int tempbufsize;
@@ -913,7 +913,7 @@ yylex(void)
       lexptr++;
       c = *lexptr++;
       if (c == '\\')
-	c = parse_escape (&lexptr);
+	c = parse_escape((const char **)&lexptr);
       else if (c == '\'')
 	error (_("Empty character constant"));
 
@@ -1076,7 +1076,7 @@ yylex(void)
 	    break;
 	  case '\\':
 	    tokptr++;
-	    c = parse_escape (&tokptr);
+	    c = parse_escape(&tokptr);
 	    if (c == -1)
 	      {
 		continue;
@@ -1095,7 +1095,7 @@ yylex(void)
       tempbuf[tempbufindex] = '\0';	/* See note above */
       yylval.sval.ptr = tempbuf;
       yylval.sval.length = tempbufindex;
-      lexptr = tokptr;
+      lexptr = (char *)tokptr;
       return (STRING_LITERAL);
     }
 

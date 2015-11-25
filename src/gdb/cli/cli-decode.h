@@ -65,7 +65,7 @@ struct cmd_list_element
        cagney/2002-02-02: This function signature is evolving.  For
        the moment suggest sticking with either set_cmd_cfunc() or
        set_cmd_sfunc().  */
-    void (*func)(struct cmd_list_element *c, char *args, int from_tty);
+    void (*func)(struct cmd_list_element *c, const char *args, int from_tty);
     /* The command's real callback.  At present func() bounces through
        to one of the below.  */
     union
@@ -85,7 +85,7 @@ struct cmd_list_element
        First line is brief documentation; remaining lines form, with it,
        the full documentation.  First line should end with a period.
        Entire string should also end with a period, not a newline.  */
-    char *doc;
+    const char *doc;
 
     /* For set/show commands.  A method for printing the output to the
        specified stream.  */
@@ -229,9 +229,9 @@ extern struct cmd_list_element *add_abbrev_prefix_cmd(const char *,
 extern void set_cmd_cfunc(struct cmd_list_element *cmd,
 			  void (*cfunc)(const char *args, int from_tty));
 
-extern void set_cmd_sfunc (struct cmd_list_element *cmd,
-			   void (*sfunc)(char *args, int from_tty,
-					 struct cmd_list_element * c));
+extern void set_cmd_sfunc(struct cmd_list_element *cmd,
+			  void (*sfunc)(const char *args, int from_tty,
+					struct cmd_list_element *c));
 
 extern void set_cmd_completer(struct cmd_list_element *cmd,
 			      char **(*completer)(char *text, char *word));

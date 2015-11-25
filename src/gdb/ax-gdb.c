@@ -1157,31 +1157,31 @@ gen_address_of (struct agent_expr *ax, struct axs_value *value)
 /* Find the field in the structure type TYPE named NAME, and return
    its index in TYPE's field array.  */
 static int
-find_field (struct type *type, char *name)
+find_field(struct type *type, char *name)
 {
   int i;
 
-  CHECK_TYPEDEF (type);
+  CHECK_TYPEDEF(type);
 
-  /* Make sure this isn't C++.  */
-  if (TYPE_N_BASECLASSES (type) != 0)
-    internal_error (__FILE__, __LINE__,
-		    _("find_field: derived classes supported"));
+  /* Make sure this is NOT C++: */
+  if (TYPE_N_BASECLASSES(type) != 0)
+    internal_error(__FILE__, __LINE__,
+		   _("find_field: derived classes supported"));
 
-  for (i = 0; i < TYPE_NFIELDS (type); i++)
+  for (i = 0; i < TYPE_NFIELDS(type); i++)
     {
-      char *this_name = TYPE_FIELD_NAME (type, i);
+      const char *this_name = TYPE_FIELD_NAME(type, i);
 
-      if (this_name && strcmp (name, this_name) == 0)
+      if (this_name && strcmp(name, this_name) == 0)
 	return i;
 
       if (this_name[0] == '\0')
-	internal_error (__FILE__, __LINE__,
-			_("find_field: anonymous unions not supported"));
+	internal_error(__FILE__, __LINE__,
+		       _("find_field: anonymous unions not supported"));
     }
 
-  error (_("Couldn't find member named `%s' in struct/union `%s'"),
-	 name, TYPE_TAG_NAME (type));
+  error(_("Failed to find member named `%s' in struct/union `%s'"),
+	name, TYPE_TAG_NAME(type));
 
   return 0;
 }

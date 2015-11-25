@@ -136,7 +136,7 @@ typedef void cmd_cfunc_ftype(const char *args, int from_tty);
 extern void set_cmd_cfunc(struct cmd_list_element *cmd,
 			  cmd_cfunc_ftype *cfunc);
 
-typedef void cmd_sfunc_ftype(char *args, int from_tty,
+typedef void cmd_sfunc_ftype(const char *args, int from_tty,
 			     struct cmd_list_element *c);
 extern void set_cmd_sfunc(struct cmd_list_element *cmd,
 			  cmd_sfunc_ftype *sfunc);
@@ -349,7 +349,8 @@ extern void not_just_help_class_command(const char *, int);
 extern int cmd_func_p(struct cmd_list_element *cmd);
 
 /* call the command function: */
-extern void cmd_func(struct cmd_list_element *cmd, char *args, int from_tty);
+extern void cmd_func(struct cmd_list_element *cmd, const char *args,
+		     int from_tty);
 
 #endif /* !defined(COMMAND_H) */
 

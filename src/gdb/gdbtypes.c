@@ -1290,8 +1290,9 @@ lookup_typename (char *name, struct block *block, int noerr)
   return (SYMBOL_TYPE (sym));
 }
 
+/* */
 struct type *
-lookup_unsigned_typename(char *name)
+lookup_unsigned_typename(const char *name)
 {
   char *uns = (char *)alloca(strlen(name) + 10UL);
 
@@ -1300,8 +1301,9 @@ lookup_unsigned_typename(char *name)
   return lookup_typename(uns, (struct block *)NULL, 0);
 }
 
+/* */
 struct type *
-lookup_signed_typename(char *name)
+lookup_signed_typename(const char *name)
 {
   struct type *t;
   char *uns = (char *)alloca(strlen(name) + 8UL);
@@ -1453,7 +1455,7 @@ lookup_template_type(char *name, struct type *type, struct block *block)
    If NAME is the name of a baseclass type, return that type.  */
 
 struct type *
-lookup_struct_elt_type (struct type *type, char *name, int noerr)
+lookup_struct_elt_type(struct type *type, const char *name, int noerr)
 {
   int i;
   char *type_for_printing;
@@ -2080,16 +2082,15 @@ init_type (enum type_code code, int length, int flags, const char *name,
   return (type);
 }
 
-/* Helper function.  Create an empty composite type.  */
-
+/* Helper function.  Create an empty composite type: */
 struct type *
-init_composite_type (char *name, enum type_code code)
+init_composite_type(const char *name, enum type_code code)
 {
   struct type *t;
-  gdb_assert (code == TYPE_CODE_STRUCT
-	      || code == TYPE_CODE_UNION);
-  t = init_type (code, 0, 0, NULL, NULL);
-  TYPE_TAG_NAME (t) = name;
+  gdb_assert((code == TYPE_CODE_STRUCT)
+	     || (code == TYPE_CODE_UNION));
+  t = init_type(code, 0, 0, NULL, NULL);
+  TYPE_TAG_NAME(t) = name;
   return t;
 }
 

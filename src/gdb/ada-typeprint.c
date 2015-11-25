@@ -700,7 +700,7 @@ print_unchecked_union_type (struct type *type, struct ui_file *stream,
    for function or procedure NAME if NAME is not null.  */
 
 static void
-print_func_type (struct type *type, struct ui_file *stream, char *name)
+print_func_type(struct type *type, struct ui_file *stream, const char *name)
 {
   int i, len = TYPE_NFIELDS (type);
 
@@ -750,8 +750,8 @@ print_func_type (struct type *type, struct ui_file *stream, char *name)
    LEVEL indicates level of recursion (for nested definitions).  */
 
 void
-ada_print_type (struct type *type0, char *varstring, struct ui_file *stream,
-		int show, int level)
+ada_print_type(struct type *type0, const char *varstring,
+	       struct ui_file *stream, int show, int level)
 {
   struct type *type = ada_check_typedef (ada_get_base_type (type0));
   char *type_name = decoded_type_name (type);
@@ -788,9 +788,9 @@ ada_print_type (struct type *type0, char *varstring, struct ui_file *stream,
     switch (TYPE_CODE (type))
       {
       default:
-	fprintf_filtered (stream, "<");
-	c_print_type (type, "", stream, show, level);
-	fprintf_filtered (stream, ">");
+	fprintf_filtered(stream, "<");
+	c_print_type(type, "", stream, show, level);
+	fprintf_filtered(stream, ">");
 	break;
       case TYPE_CODE_PTR:
 	fprintf_filtered (stream, "access ");

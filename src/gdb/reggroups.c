@@ -181,15 +181,13 @@ default_register_reggroup_p (struct gdbarch *gdbarch, int regnum,
   return 0;
 }
 
-/* Dump out a table of register groups for the current architecture.  */
-
+/* Dump out a table of register groups for the current architecture: */
 static void
-reggroups_dump (struct gdbarch *gdbarch, struct ui_file *file)
+reggroups_dump(struct gdbarch *gdbarch, struct ui_file *file)
 {
   struct reggroup *group = NULL;
 
-  do
-    {
+  do {
       /* Group name.  */
       {
 	const char *name;
@@ -225,29 +223,29 @@ reggroups_dump (struct gdbarch *gdbarch, struct ui_file *file)
       /* Note: If you change this, be sure to also update the
          documentation.  */
 
-      fprintf_unfiltered (file, "\n");
+      fprintf_unfiltered(file, "\n");
 
-      group = reggroup_next (gdbarch, group);
-    }
-  while (group != NULL);
+      group = reggroup_next(gdbarch, group);
+  } while (group != NULL);
 }
 
+/* */
 static void
-maintenance_print_reggroups (char *args, int from_tty)
+maintenance_print_reggroups(const char *args, int from_tty)
 {
   if (args == NULL)
-    reggroups_dump (current_gdbarch, gdb_stdout);
+    reggroups_dump(current_gdbarch, gdb_stdout);
   else
     {
-      struct ui_file *file = gdb_fopen (args, "w");
+      struct ui_file *file = gdb_fopen(args, "w");
       if (file == NULL)
-	perror_with_name (_("maintenance print reggroups"));
-      reggroups_dump (current_gdbarch, file);
-      ui_file_delete (file);
+	perror_with_name(_("maintenance print reggroups"));
+      reggroups_dump(current_gdbarch, file);
+      ui_file_delete(file);
     }
 }
 
-/* Pre-defined register groups.  */
+/* Pre-defined register groups: */
 static struct reggroup general_group = { "general", USER_REGGROUP };
 static struct reggroup float_group = { "float", USER_REGGROUP };
 static struct reggroup system_group = { "system", USER_REGGROUP };

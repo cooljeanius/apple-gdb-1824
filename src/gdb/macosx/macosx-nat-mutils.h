@@ -18,10 +18,10 @@ struct target_ops;
 void mutils_debug(const char *fmt, ...)
   ATTR_FORMAT(gnu_printf, 1, 2);
 
-void gdb_check(const char *str, const char *file, unsigned int line,
-               const char *func);
-void gdb_check_fatal(const char *str, const char *file, unsigned int line,
-                     const char *func);
+void ATTR_NORETURN gdb_check(const char *str, const char *file,
+			     unsigned int line, const char *func);
+void ATTR_NORETURN gdb_check_fatal(const char *str, const char *file,
+				   unsigned int line, const char *func);
 
 int
 mach_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr,

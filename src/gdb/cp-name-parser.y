@@ -149,14 +149,14 @@ extern struct demangle_component *cp_demangled_name_to_comp(const char *,
 #define yytable	 cpname_yytable
 #define yycheck	 cpname_yycheck
 
-int yyparse (void);
-static int yylex (void);
-static void yyerror (char *);
+int yyparse(void);
+static int yylex(void);
+static void yyerror(const char *);
 
-/* Enable yydebug for the stand-alone parser.  */
+/* Enable yydebug for the stand-alone parser: */
 #ifdef TEST_CPNAMES
 # define YYDEBUG	1
-#endif
+#endif /* TEST_CPNAMES */
 
 /* Helper functions.  These wrap the demangler tree interface, handle
    allocation from our global store, and return the allocated component.  */
@@ -1917,8 +1917,9 @@ yylex (void)
   return NAME;
 }
 
+/* */
 static void
-yyerror(char *msg)
+yyerror(const char *msg)
 {
   if (global_errmsg)
     return;
@@ -1952,7 +1953,9 @@ allocate_info(int comps)
 char *
 cp_comp_to_string(struct demangle_component *result, int estimated_len)
 {
-  char *str, *prefix = NULL, *buf;
+  char *str;
+  const char *prefix = (const char *)NULL;
+  char *buf;
   size_t err = 0UL;
 
   if (result->type == (enum demangle_component_type)GLOBAL_DESTRUCTORS)

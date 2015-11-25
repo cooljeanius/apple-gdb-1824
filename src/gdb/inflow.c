@@ -442,7 +442,7 @@ term_info(const char *arg, int from_tty)
 
 /* FIXME: needs comment: */
 void
-child_terminal_info(char *args, int from_tty)
+child_terminal_info(const char *args, int from_tty)
 {
   if (!gdb_has_a_terminal())
     {

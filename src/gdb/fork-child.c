@@ -193,7 +193,7 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
 	 "arch" command-line utility for that.  */
 #ifdef USE_ARCH_FOR_EXEC
       {
-	char *arch_string = NULL;
+	const char *arch_string = (const char *)NULL;
 	const char *osabi_name = gdbarch_osabi_name(gdbarch_osabi(current_gdbarch));
 # if defined(TARGET_POWERPC)
 	if (strcmp(osabi_name, "Darwin") == 0)
@@ -288,9 +288,9 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
        * and execve for the non-shell case.  Let us just build up an
        * appropriate argv array and use it for both: */
 
-      argv = (char **)xmalloc(4 * sizeof(char *));
+      argv = (char **)xmalloc(4UL * sizeof(char *));
       argv[0] = shell_file;
-      argv[1] = "-c";
+      argv[1] = (char *)"-c";
       argv[2] = shell_command;
       argv[3] = NULL;
     }

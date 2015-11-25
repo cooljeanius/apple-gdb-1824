@@ -643,8 +643,9 @@ dcache_info(const char *exp, int tty)
     }
 }
 
+/* */
 static void
-set_cache_line_power (char *args, int from_tty, struct cmd_list_element *c)
+set_cache_line_power(const char *args, int from_tty, struct cmd_list_element *c)
 {
   int i;
   if (g_num_caches == 0)

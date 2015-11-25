@@ -62,6 +62,10 @@ install_sh = @install_sh@
 # This can be referenced by `INTLDEPS' as computed by CY_GNU_GETTEXT.
 top_builddir = .
 
+# Where build output is put.
+builddir = @builddir@
+analysisdir = $(builddir)/clang_static_analysis
+
 ACLOCAL_AMFLAGS = -I./m4 -I./gnulib/m4 -I./gnulib/import/m4 --install
 
 SHELL = @SHELL@
@@ -641,6 +645,10 @@ LINT_CONFIGURED=@LINT@
 LINTFLAGS= $(CXREF_FLAGS) @MAINT@ @LINT_OPTS@
 
 CLANG_ANALYZER = @CLANG_ANALYZER@
+
+RUN_CLANG_ANALYZER = $(CLANG_ANALYZER) $(DEFS) $(INCLUDE_CFLAGS) \
+  $(CXREF_FLAGS) $(INTERNAL_CPPFLAGS) $(MYCPPFLAGS) $(MT_CFLAGS) \
+  $(C_ARCHFLAGS) $(MMALLOC_CFLAGS) -DDEBUG -D_DEBUG -Dlint -I. --analyze
 
 RUNTEST = `if [ -f $${rootsrc}/../dejagnu/runtest ]; then \
 		echo $${rootsrc}/../dejagnu/runtest; else echo runtest; \
@@ -1932,8 +1940,15 @@ configured_lint: $(LINTFILES)
 	   `echo $(LINTFILES) | uniq | $(SED) 's/\.y /\.c /g'` \
 	   `echo $(DEPFILES) | uniq | $(SED) 's/\.o /\.c /g'`
 
-#TODO: clang static analysis will eventually go here:
+# clang analysis output:
+.SUFFIXES: .c .plist
+.c.plist:
+	@if test ! -d $(analysisdir); then $(MKDIR_P) $(analysisdir); fi
+	$(RUN_CLANG_ANALYZER) -Wall -Wextra -o $(analysisdir)/$@ $<
+
+# To actually run clang:
 lint-local: $(LINTFILES)
+	$(MAKE) `echo $(LINTFILES) | uniq | $(SED) 's/\.c /\.plist /g'`
 .PHONY: lint-local
 
 #FIXME: cxref has trouble with frameworks...

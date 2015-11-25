@@ -284,12 +284,13 @@ hpacc_value_rtti_type (struct value *v, int *full, int *top, int *using_enc)
   return rtti_type;
 }
 
+/* */
 static void
-init_hpacc_ops (void)
+init_hpacc_ops(void)
 {
   hpacc_abi_ops.shortname = "hpaCC";
-  hpacc_abi_ops.longname = "HP aCC ABI";
-  hpacc_abi_ops.doc = "HP aCC ABI";
+  hpacc_abi_ops.longname = (char *)"HP aCC ABI";
+  hpacc_abi_ops.doc = (char *)"HP aCC ABI";
   hpacc_abi_ops.is_destructor_name = hpacc_is_destructor_name;
   hpacc_abi_ops.is_constructor_name = hpacc_is_constructor_name;
   hpacc_abi_ops.is_vtable_name = hpacc_is_vtable_name;

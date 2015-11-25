@@ -934,7 +934,8 @@ processAttribute(const char *str)
   return attributes[k].code;
 }
 
-int
+/* */
+int ATTRIBUTE_CONST
 yywrap(void)
 {
   return 1;

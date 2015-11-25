@@ -5,7 +5,7 @@
 
    Contributed by Cygnus Support.
 
-   ## Contains temporary hacks...
+   ## Contains "temporary" hacks...
 
    This file is part of GDB.
 
@@ -65,7 +65,7 @@ static void child_open(char *, int);
 
 static void child_files_info(struct target_ops *);
 
-static void child_detach(char *, int);
+static void child_detach(const char *, int);
 
 static void child_attach(char *, int);
 
@@ -227,7 +227,7 @@ child_attach(char *args, int from_tty)
 }
 
 #if !defined(CHILD_POST_ATTACH)
-void
+void ATTRIBUTE_CONST
 child_post_attach(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix does NOT require a meaningful "post attach"
@@ -243,14 +243,14 @@ child_post_attach(int pid ATTRIBUTE_UNUSED)
  * process to have been previously attached.  It *might* work if the
  * program was started via the normal ptrace (PTRACE_TRACEME): */
 static void
-child_detach(char *args, int from_tty)
+child_detach(const char *args, int from_tty)
 {
   int siggnal = 0;
   int pid = PIDGET(inferior_ptid);
 
   if (from_tty)
     {
-      char *exec_file = get_exec_file(0);
+      const char *exec_file = get_exec_file(0);
       if (exec_file == 0)
 	exec_file = "";
       printf_unfiltered(_("Detaching from program: %s, %s\n"), exec_file,
@@ -353,7 +353,7 @@ child_post_startup_inferior(ptid_t ptid ATTRIBUTE_UNUSED)
 #endif /* !CHILD_POST_STARTUP_INFERIOR */
 
 #if !defined(CHILD_ACKNOWLEDGE_CREATED_INFERIOR)
-void
+void ATTRIBUTE_CONST
 child_acknowledge_created_inferior(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix does NOT require a meaningful
@@ -364,7 +364,7 @@ child_acknowledge_created_inferior(int pid ATTRIBUTE_UNUSED)
 
 
 #if !defined(CHILD_INSERT_FORK_CATCHPOINT)
-void
+void ATTRIBUTE_CONST
 child_insert_fork_catchpoint(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix does NOT support notification of fork events: */
@@ -373,7 +373,7 @@ child_insert_fork_catchpoint(int pid ATTRIBUTE_UNUSED)
 #endif /* !CHILD_INSERT_FORK_CATCHPOINT */
 
 #if !defined(CHILD_REMOVE_FORK_CATCHPOINT)
-int
+int ATTRIBUTE_CONST
 child_remove_fork_catchpoint(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix does NOT support notification of fork events: */
@@ -382,7 +382,7 @@ child_remove_fork_catchpoint(int pid ATTRIBUTE_UNUSED)
 #endif /* !CHILD_REMOVE_FORK_CATCHPOINT */
 
 #if !defined(CHILD_INSERT_VFORK_CATCHPOINT)
-void
+void ATTRIBUTE_CONST
 child_insert_vfork_catchpoint(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix does NOT support notification of vfork events: */
@@ -391,7 +391,7 @@ child_insert_vfork_catchpoint(int pid ATTRIBUTE_UNUSED)
 #endif /* !CHILD_INSERT_VFORK_CATCHPOINT */
 
 #if !defined(CHILD_REMOVE_VFORK_CATCHPOINT)
-int
+int ATTRIBUTE_CONST
 child_remove_vfork_catchpoint(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix does NOT support notification of vfork events: */
@@ -400,7 +400,7 @@ child_remove_vfork_catchpoint(int pid ATTRIBUTE_UNUSED)
 #endif /* !CHILD_REMOVE_VFORK_CATCHPOINT */
 
 #if !defined(CHILD_FOLLOW_FORK)
-int
+int ATTRIBUTE_CONST
 child_follow_fork(int follow_child ATTRIBUTE_UNUSED)
 {
   /* This version of Unix does NOT support following fork or vfork
@@ -410,7 +410,7 @@ child_follow_fork(int follow_child ATTRIBUTE_UNUSED)
 #endif /* !CHILD_FOLLOW_FORK */
 
 #if !defined(CHILD_INSERT_EXEC_CATCHPOINT)
-void
+void ATTRIBUTE_CONST
 child_insert_exec_catchpoint(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix does NOT support notification of exec events: */
@@ -419,7 +419,7 @@ child_insert_exec_catchpoint(int pid ATTRIBUTE_UNUSED)
 #endif /* !CHILD_INSERT_EXEC_CATCHPOINT */
 
 #if !defined(CHILD_REMOVE_EXEC_CATCHPOINT)
-int
+int ATTRIBUTE_CONST
 child_remove_exec_catchpoint(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix does NOT support notification of exec events: */
@@ -428,7 +428,7 @@ child_remove_exec_catchpoint(int pid ATTRIBUTE_UNUSED)
 #endif /* !CHILD_REMOVE_EXEC_CATCHPOINT */
 
 #if !defined(CHILD_REPORTED_EXEC_EVENTS_PER_EXEC_CALL)
-int
+int ATTRIBUTE_CONST
 child_reported_exec_events_per_exec_call(void)
 {
   /* This version of Unix does NOT support notification of exec events: */
@@ -489,7 +489,7 @@ child_stop(void)
 
 #if !defined(CHILD_ENABLE_EXCEPTION_CALLBACK)
 /* APPLE LOCAL begin exception catchpoints */
-struct symtabs_and_lines *
+struct symtabs_and_lines * ATTRIBUTE_CONST
 child_find_exception_catchpoints(enum exception_event_kind kind ATTRIBUTE_UNUSED,
                                  struct objfile *objfile ATTRIBUTE_UNUSED)
 {
@@ -497,7 +497,7 @@ child_find_exception_catchpoints(enum exception_event_kind kind ATTRIBUTE_UNUSED
 }
 /* APPLE LOCAL end exception catchpoints */
 
-int
+int ATTRIBUTE_CONST
 child_enable_exception_callback(enum exception_event_kind kind ATTRIBUTE_UNUSED,
                                 int enable ATTRIBUTE_UNUSED)
 {
@@ -506,7 +506,7 @@ child_enable_exception_callback(enum exception_event_kind kind ATTRIBUTE_UNUSED,
 #endif /* !CHILD_ENABLE_EXCEPTION_CALLBACK */
 
 #if !defined(CHILD_GET_CURRENT_EXCEPTION_EVENT)
-struct exception_event_record *
+struct exception_event_record * ATTRIBUTE_CONST
 child_get_current_exception_event(void)
 {
   return (struct exception_event_record *)NULL;
@@ -515,7 +515,7 @@ child_get_current_exception_event(void)
 
 
 #if !defined(CHILD_PID_TO_EXEC_FILE)
-char *
+char * ATTRIBUTE_CONST
 child_pid_to_exec_file(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix does NOT support translation of a process ID
@@ -524,7 +524,7 @@ child_pid_to_exec_file(int pid ATTRIBUTE_UNUSED)
 }
 #endif /* !CHILD_PID_TO_EXEC_FILE */
 
-char *
+char * ATTRIBUTE_CONST
 child_core_file_to_sym_file(char *core)
 {
   /* The target stratum for a running executable need not support
@@ -640,7 +640,7 @@ init_child_ops(void)
 void
 _initialize_inftarg(void)
 {
-#ifdef HAVE_OPTIONAL_PROC_FS
+#if defined(HAVE_OPTIONAL_PROC_FS)
   char procname[32];
   int fd;
 
@@ -650,7 +650,7 @@ _initialize_inftarg(void)
 # ifndef PROC_NAME_FMT
 #  define PROC_NAME_FMT "/proc/%05d"
 # endif /* !PROC_NAME_FMT */
-  sprintf(procname, PROC_NAME_FMT, getpid());
+  snprintf(procname, sizeof(procname), PROC_NAME_FMT, getpid());
   fd = open(procname, O_RDONLY);
   if (fd >= 0)
     {

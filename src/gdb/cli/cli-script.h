@@ -40,17 +40,19 @@ extern void show_user_1(struct cmd_list_element *c, struct ui_file *stream);
 /* Exported to gdb/breakpoint.c */
 
 extern enum command_control_type
-	execute_control_command (struct command_line *cmd);
+  execute_control_command(struct command_line *cmd);
 
-extern void print_command_lines (struct ui_out *,
-				 struct command_line *, unsigned int);
+extern void print_command_lines(struct ui_out *, struct command_line *,
+				unsigned int);
 
-extern struct command_line * copy_command_lines (struct command_line *cmds);
+extern struct command_line *copy_command_lines(struct command_line *cmds);
 
-struct cleanup *make_cleanup_free_command_lines (struct command_line **arg);
+struct cleanup *make_cleanup_free_command_lines(struct command_line **arg);
 
 /* Exported to gdb/infrun.c */
 
-extern void execute_user_command (struct cmd_list_element *c, char *args);
+extern void execute_user_command(struct cmd_list_element *c, const char *args);
 
-#endif /* !defined (CLI_SCRIPT_H) */
+#endif /* !defined(CLI_SCRIPT_H) */
+
+/* EOF */

@@ -62,9 +62,9 @@ struct prompts
   {
     struct
       {
-	char *prefix;
-	char *prompt;
-	char *suffix;
+	const char *prefix;
+	const char *prompt;
+	const char *suffix;
       }
     prompt_stack[MAXPROMPTS];
     int top;
@@ -77,34 +77,34 @@ struct prompts
 /* Exported functions from event-top.c. 
    FIXME: these should really go into top.h.  */
 
-extern void display_gdb_prompt (char *new_prompt);
-void gdb_setup_readline (void);
-void gdb_disable_readline (void);
-extern void async_init_signals (void);
-extern void set_async_editing_command (char *args, int from_tty,
+extern void display_gdb_prompt(char *new_prompt);
+void gdb_setup_readline(void);
+void gdb_disable_readline(void);
+extern void async_init_signals(void);
+extern void set_async_editing_command(const char *args, int from_tty,
+				      struct cmd_list_element *c);
+extern void set_async_annotation_level(const char *args, int from_tty,
 				       struct cmd_list_element *c);
-extern void set_async_annotation_level (char *args, int from_tty,
-					struct cmd_list_element *c);
-extern void set_async_prompt (char *args, int from_tty,
-			      struct cmd_list_element *c);
+extern void set_async_prompt(const char *args, int from_tty,
+			     struct cmd_list_element *c);
 
 /* Signal to catch ^Z typed while reading a command: SIGTSTP or SIGCONT.  */
 #ifndef STOP_SIGNAL
-#include <signal.h>
-#ifdef SIGTSTP
-#define STOP_SIGNAL SIGTSTP
-extern void handle_stop_sig (int sig);
-#endif
-#endif
-extern void handle_sigint (int sig);
-extern void pop_prompt (void);
-extern void push_prompt (char *prefix, char *prompt, char *suffix);
-extern void gdb_readline2 (void *client_data);
-extern void mark_async_signal_handler_wrapper (void *token);
-extern void async_request_quit (void *arg);
-extern void stdin_event_handler (int error, void *client_data);
-extern void async_disable_stdin (void);
-extern void async_enable_stdin (void *dummy);
+# include <signal.h>
+# ifdef SIGTSTP
+#  define STOP_SIGNAL SIGTSTP
+extern void handle_stop_sig(int sig);
+# endif /* SIGTSTP */
+#endif /* !STOP_SIGNAL */
+extern void handle_sigint(int sig);
+extern void pop_prompt(void);
+extern void push_prompt(char *prefix, char *prompt, char *suffix);
+extern void gdb_readline2(void *client_data);
+extern void mark_async_signal_handler_wrapper(void *token);
+extern void async_request_quit(void *arg);
+extern void stdin_event_handler(int error, void *client_data);
+extern void async_disable_stdin(void);
+extern void async_enable_stdin(void *dummy);
 
 /* Exported variables from event-top.c.
    FIXME: these should really go into top.h.  */

@@ -53,7 +53,7 @@ static void help_all(struct ui_file *stream);
    bounce function (unless cfunc / sfunc is NULL that is).  */
 
 static void
-do_cfunc(struct cmd_list_element *c, char *args, int from_tty)
+do_cfunc(struct cmd_list_element *c, const char *args, int from_tty)
 {
   c->function.cfunc(args, from_tty); /* Ok.  */
 }
@@ -71,7 +71,7 @@ set_cmd_cfunc(struct cmd_list_element *cmd, cmd_cfunc_ftype *cfunc)
 
 /* FIXME: needs comment: */
 static void
-do_sfunc(struct cmd_list_element *c, char *args, int from_tty)
+do_sfunc(struct cmd_list_element *c, const char *args, int from_tty)
 {
   c->function.sfunc(args, from_tty, c); /* Ok.  */
 }
@@ -294,10 +294,10 @@ not_just_help_class_command(const char *args ATTRIBUTE_UNUSED,
 }
 
 /* This is an empty "sfunc".  */
-static void empty_sfunc(char *, int, struct cmd_list_element *);
+static void empty_sfunc(const char *, int, struct cmd_list_element *);
 
-static void
-empty_sfunc(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED,
+static void ATTRIBUTE_CONST
+empty_sfunc(const char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED,
             struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
   return;
@@ -1586,7 +1586,7 @@ cmd_func_p(struct cmd_list_element *cmd)
 
 /* call the command function: */
 void
-cmd_func(struct cmd_list_element *cmd, char *args, int from_tty)
+cmd_func(struct cmd_list_element *cmd, const char *args, int from_tty)
 {
   if (cmd_func_p(cmd))
     (*cmd->func)(cmd, args, from_tty);

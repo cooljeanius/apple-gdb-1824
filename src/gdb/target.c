@@ -294,14 +294,15 @@ information on the arguments for a particular protocol, type\n\
 
 /* Stub functions */
 
-void
+void ATTRIBUTE_CONST
 target_ignore(void)
 {
   return;
 }
 
+/* */
 void
-target_load(char *arg, int from_tty)
+target_load(const char *arg, int from_tty)
 {
   dcache_invalidate(target_dcache);
   (*current_target.to_load)(arg, from_tty);
@@ -1370,15 +1371,14 @@ target_preopen (int from_tty)
    first.  */
 
 void
-target_kill (void)
+target_kill(void)
 {
-  (current_target.to_kill) ();
+  (current_target.to_kill)();
 }
 
-/* Detach a target after doing deferred register stores.  */
-
+/* Detach a target after doing deferred register stores: */
 void
-target_detach (char *args, int from_tty)
+target_detach(const char *args, int from_tty)
 {
   /* Make sure to turn off debugger mode -
      we will let the target run a bit before killing it.  */

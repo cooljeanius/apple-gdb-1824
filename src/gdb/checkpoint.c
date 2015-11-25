@@ -191,7 +191,7 @@ load_helpers(void)
    but not harmful either.  */
 
 static void
-create_checkpoint_command(char *args ATTRIBUTE_UNUSED,
+create_checkpoint_command(const char *args ATTRIBUTE_UNUSED,
                           int from_tty ATTRIBUTE_UNUSED)
 {
   struct checkpoint *cp;
@@ -514,10 +514,11 @@ end_inferior_call_checkpoints(void)
   }
 }
 
+/* */
 static void
-rollback_to_checkpoint_command(char *args, int from_tty ATTRIBUTE_UNUSED)
+rollback_to_checkpoint_command(const char *args, int from_tty ATTRIBUTE_UNUSED)
 {
-  char *p;
+  const char *p;
   int num = 1;
   struct checkpoint *cp;
 
@@ -611,8 +612,9 @@ find_checkpoint(int num)
   return NULL;
 }
 
-/* static */ void
-checkpoints_info(char *args ATTRIBUTE_UNUSED,
+/* Formerly static: */
+void
+checkpoints_info(const char *args ATTRIBUTE_UNUSED,
                  int from_tty ATTRIBUTE_UNUSED)
 {
   struct checkpoint *cp;
@@ -682,7 +684,7 @@ print_checkpoint_info(struct checkpoint *cp)
 /* Checkpoint commands.  */
 
 static void
-undo_command(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
+undo_command(const char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
   if (current_checkpoint == NULL)
     error("No current checkpoint");
@@ -692,8 +694,9 @@ undo_command(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
     rollback_to_checkpoint(current_checkpoint->lprev);
 }
 
+/* */
 static void
-redo_command(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
+redo_command(const char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
   if (current_checkpoint == NULL)
     error("No current checkpoint");
@@ -703,8 +706,9 @@ redo_command(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
     rollback_to_checkpoint(current_checkpoint->lnext);
 }
 
+/* */
 static void
-now_command(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
+now_command(const char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
   if (original_latest_checkpoint == NULL)
     error("No original latest checkpoint");
@@ -764,26 +768,26 @@ delete_checkpoint(struct checkpoint *cp)
    ARGS.  */
 
 static void
-map_checkpoint_numbers (char *args, void (*function) (struct checkpoint *))
+map_checkpoint_numbers(const char *args, void (*function)(struct checkpoint *))
 {
-  char *p = args;
-  char *p1;
+  const char *p = args;
+  const char *p1;
   int num;
   struct checkpoint *cpi;
   int match;
 
   if (p == 0)
-    error_no_arg (_("one or more checkpoint numbers"));
+    error_no_arg(_("one or more checkpoint numbers"));
 
   while (*p)
     {
       match = 0;
       p1 = p;
 
-      num = get_number_or_range (&p1);
+      num = get_number_or_range(&p1);
       if (num == 0)
 	{
-	  warning (_("bad checkpoint number at or near '%s'"), p);
+	  warning(_("bad checkpoint number at or near '%s'"), p);
 	}
       else
 	{
@@ -791,17 +795,18 @@ map_checkpoint_numbers (char *args, void (*function) (struct checkpoint *))
 	    if (cpi->number == num)
 	      {
 		match = 1;
-		function (cpi);
+		function(cpi);
 	      }
 	  if (match == 0)
-	    printf_unfiltered (_("No checkpoint number %d.\n"), num);
+	    printf_unfiltered(_("No checkpoint number %d.\n"), num);
 	}
       p = p1;
     }
 }
 
+/* */
 static void
-delete_checkpoint_command (char *args, int from_tty)
+delete_checkpoint_command(const char *args, int from_tty)
 {
   dont_repeat();
 
@@ -911,8 +916,9 @@ clear_all_checkpoints(void)
   collecting_checkpoint = 0;
 }
 
+/* */
 void
-set_max_checkpoints(char *args ATTRIBUTE_UNUSED,
+set_max_checkpoints(const char *args ATTRIBUTE_UNUSED,
                     int from_tty ATTRIBUTE_UNUSED,
 		    struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {

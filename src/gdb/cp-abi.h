@@ -151,8 +151,8 @@ struct cp_abi_ops
 {
   const char *shortname;
   /* APPLE LOCAL begin C++ auto abi */
-  /* These two can't be const, because we need to change the name for
-     the auto abi. */
+  /* These two cannot be const, because then we would need to change the name
+   * for the auto abi... really, though? */
   char *longname;
   char *doc;
   /* APPLE LOCAL end C++ auto abi */

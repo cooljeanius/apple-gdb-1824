@@ -5167,14 +5167,19 @@ resolve_pending_breakpoint (struct breakpoint *b)
    not good.  Better to let each system deal with the breakpoints it
    is holding onto.  */
 void
-remove_solib_event_breakpoints (void)
+remove_solib_event_breakpoints(void)
 {
   struct breakpoint *b, *temp;
 
-  return;
-  ALL_BREAKPOINTS_SAFE (b, temp)
+#if defined(__GNUC__) && defined(__APPLE__)
+  asm("");
+#endif /* __GNUC__ && __APPLE__ */
+
+  return; /* APPLE LOCAL: return early */
+  /*NOTREACHED*/
+  ALL_BREAKPOINTS_SAFE(b, temp)
     if (b->type == bp_shlib_event)
-      delete_breakpoint (b);
+      delete_breakpoint(b);
 }
 
 struct breakpoint *

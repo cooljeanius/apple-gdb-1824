@@ -158,15 +158,20 @@ lookup_minimal_symbol_all (const char *name, const char *sfile,
 #ifdef SOFUN_ADDRESS_MAYBE_MISSING
   if (sfile != NULL)
     {
-      char *p = strrchr (sfile, '/');
+      char *p = strrchr(sfile, '/');
       if (p != NULL)
-	sfile = p + 1;
+	{
+	  sfile = (p + 1);
+	  if (sfile == NULL) {
+	    warning(_("possible issue with sfile"));
+	  }
+	}
     }
 #endif /* SOFUN_ADDRESS_MAYBE_MISSING */
 
-  for (objfile = objfile_get_first ();
+  for (objfile = objfile_get_first();
        objfile != NULL;
-       objfile = objfile_get_next (objfile))
+       objfile = objfile_get_next(objfile))
     {
       if (objf == NULL || objf == objfile)
 	{
@@ -257,8 +262,8 @@ lookup_minimal_symbol_all (const char *name, const char *sfile,
 		      && (!MSYMBOL_OBSOLETED (msym)))
 		    {
 
-		      node = (struct symbol_search *) xmalloc
-			                                 (sizeof (struct symbol_search));
+		      node = ((struct symbol_search *)
+			      xmalloc(sizeof(struct symbol_search)));
 		      node->block = 0;
 		      node->symtab = NULL;
 		      node->symbol = NULL;
@@ -323,9 +328,14 @@ lookup_minimal_symbol (const char *name, const char *sfile,
 #ifdef SOFUN_ADDRESS_MAYBE_MISSING
   if (sfile != NULL)
     {
-      char *p = strrchr (sfile, '/');
+      char *p = strrchr(sfile, '/');
       if (p != NULL)
-	sfile = p + 1;
+	{
+	  sfile = (p + 1);
+	  if (sfile == NULL) {
+	    warning(_("possible issue with sfile"));
+	  }
+	}
     }
 #endif /* SOFUN_ADDRESS_MAYBE_MISSING */
 
@@ -710,8 +720,8 @@ lookup_minimal_symbol_by_pc_section(CORE_ADDR pc, asection *section)
        objfile != NULL;
        objfile = objfile->next)
     {
-      msymbol = lookup_minimal_symbol_by_pc_section_from_objfile
-	(pc, section, objfile);
+      msymbol =
+	lookup_minimal_symbol_by_pc_section_from_objfile(pc, section, objfile);
       if (msymbol
 	  && (!best_symbol ||
 	      (SYMBOL_VALUE_ADDRESS (best_symbol) <
@@ -733,7 +743,7 @@ lookup_minimal_symbol_by_pc (CORE_ADDR pc)
      overlapping sections.  There is code in
      lookup_minimal_symbol_by_pc_section to find the "best" symbol;
      the FSF code overrides it by selecting the first one found by
-     find_pc_section ().  */
+     find_pc_section().  */
   return lookup_minimal_symbol_by_pc_section (pc, NULL);
 }
 
@@ -838,6 +848,7 @@ prim_record_minimal_symbol_and_info(const char *name, CORE_ADDR address,
   if (msym_bunch_index == BUNCH_SIZE)
     {
       newbunch = (struct msym_bunch *)xmalloc(sizeof(struct msym_bunch) + 2UL);
+      /* maybe need to do something else with newbunch here? */
       msym_bunch_index = 0;
       newbunch->next = msym_bunch;
       msym_bunch = newbunch;

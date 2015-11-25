@@ -92,9 +92,9 @@ set_only_read_from_live_memory_cleanup(void *newptr)
 
 
 /* APPLE LOCAL begin async */
-static void
+static inline void
 standard_async(void (*callback)(enum inferior_event_type event_type,
-                                void *context), void *context)
+                                void *context), void *context ATTRIBUTE_UNUSED)
 {
   return;
 }
@@ -116,20 +116,20 @@ void (*deprecated_file_changed_hook)(char *);
 
 /* Prototypes for local functions */
 
-static void exec_close (int);
+static void exec_close(int);
 
-static void file_command (char *, int);
+static void file_command(const char *, int);
 
-static void set_section_command (char *, int);
+static void set_section_command(const char *, int);
 
-static void exec_files_info (struct target_ops *);
+static void exec_files_info(struct target_ops *);
 
-static int ignore (CORE_ADDR, bfd_byte *);
+static int ignore(CORE_ADDR, bfd_byte *);
 
 /* APPLE LOCAL make globally visible */
-void init_exec_ops (void);
+void init_exec_ops(void);
 
-void _initialize_exec (void);
+void _initialize_exec(void);
 
 /* The target vector for executable files: */
 struct target_ops exec_ops;
@@ -140,23 +140,25 @@ bfd *exec_bfd = NULL;
 /* Whether to open exec and core files read-only or read-write: */
 int write_files = 0;
 static void
-show_write_files (struct ui_file *file, int from_tty,
-		  struct cmd_list_element *c, const char *value)
+show_write_files(struct ui_file *file, int from_tty,
+		 struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("Writing into executable and core files is %s.\n"),
-		    value);
+  fprintf_filtered(file, _("Writing into executable and core files is %s.\n"),
+		   value);
 }
 
 
 struct vmap *vmap;
 
+/* */
 void
-exec_open (char *args, int from_tty)
+exec_open(char *args, int from_tty)
 {
-  target_preopen (from_tty);
-  exec_file_attach (args, from_tty);
+  target_preopen(from_tty);
+  exec_file_attach(args, from_tty);
 }
 
+/* */
 static void
 exec_close(int quitting)
 {
@@ -421,7 +423,7 @@ exec_file_attach (char *filename, int from_tty)
    If ARGS is NULL, we just want to close the exec file. */
 
 static void
-exec_file_command (char *args, int from_tty)
+exec_file_command(const char *args, int from_tty)
 {
   char **argv;
   char *filename;
@@ -458,14 +460,14 @@ exec_file_command (char *args, int from_tty)
    command was added?  */
 
 static void
-file_command (char *arg, int from_tty)
+file_command(const char *arg, int from_tty)
 {
   /* FIXME, if we lose on reading the symbol file, we should revert
      the exec file, but that's rough.  */
-  exec_file_command (arg, from_tty);
-  symbol_file_command (arg, from_tty);
+  exec_file_command(arg, from_tty);
+  symbol_file_command(arg, from_tty);
   if (deprecated_file_changed_hook)
-    deprecated_file_changed_hook (arg);
+    deprecated_file_changed_hook(arg);
 }
 
 
@@ -724,21 +726,21 @@ print_section_info (struct target_ops *t, bfd *abfd)
   struct section_table *p;
   struct cleanup *info_cleanup, *section_cleanup;
 
-  info_cleanup = make_cleanup_ui_out_list_begin_end (uiout, "section-info");
-  ui_out_text (uiout, "\t");
-  ui_out_field_string (uiout, "filename", bfd_get_filename (abfd));
-  ui_out_text (uiout, ", ");
-  ui_out_wrap_hint (uiout, "        ");
-  ui_out_text (uiout, "file type ");
-  ui_out_field_string (uiout, "filetype", bfd_get_target (abfd));
-  ui_out_text (uiout, ".\n");
+  info_cleanup = make_cleanup_ui_out_list_begin_end(uiout, "section-info");
+  ui_out_text(uiout, "\t");
+  ui_out_field_string(uiout, "filename", bfd_get_filename(abfd));
+  ui_out_text(uiout, ", ");
+  ui_out_wrap_hint(uiout, "        ");
+  ui_out_text(uiout, "file type ");
+  ui_out_field_string(uiout, "filetype", bfd_get_target(abfd));
+  ui_out_text(uiout, ".\n");
   if (abfd == exec_bfd)
     {
-      ui_out_text (uiout, "\tEntry point: ");
-      ui_out_field_core_addr (uiout, "entry-point", bfd_get_start_address (abfd));
-      ui_out_text (uiout, "\n");
+      ui_out_text(uiout, "\tEntry point: ");
+      ui_out_field_core_addr(uiout, "entry-point", bfd_get_start_address(abfd));
+      ui_out_text(uiout, "\n");
     }
-  make_cleanup_ui_out_list_begin_end (uiout, "sections");
+  make_cleanup_ui_out_list_begin_end(uiout, "sections");
   for (p = t->to_sections; p < t->to_sections_end; p++)
     {
       section_cleanup = make_cleanup_ui_out_list_begin_end (uiout, "section");
@@ -830,14 +832,15 @@ exec_set_section_offsets (bfd_signed_vma text_off, bfd_signed_vma data_off,
     }
 }
 
+/* */
 static void
-set_section_command(char *args, int from_tty)
+set_section_command(const char *args, int from_tty)
 {
   struct section_table *p;
   char *secname;
-  unsigned seclen;
+  unsigned int seclen;
   CORE_ADDR secaddr;
-  char secprint[100];
+  char secprint[127]; /* formerly just 100; seeing if I can increase it... */
   off_t offset;
 
   if (args == 0)
@@ -866,7 +869,9 @@ set_section_command(char *args, int from_tty)
     }
   if (seclen >= sizeof(secprint))
     seclen = (sizeof(secprint) - 1UL);
-  strncpy(secprint, secname, seclen);
+  if (seclen >= 100U)
+    seclen = 99U;
+  strncpy(secprint, secname, max(seclen, (sizeof(secprint) - 1UL)));
   secprint[seclen] = '\0';
   error(_("Section %s not found"), secprint);
 }
@@ -946,23 +951,25 @@ Specify the filename of the executable file.";
 }
 
 void
-_initialize_exec (void)
+_initialize_exec(void)
 {
   struct cmd_list_element *c;
 
-  init_exec_ops ();
+  init_exec_ops();
 
   if (!dbx_commands)
     {
-      c = add_cmd ("file", class_files, file_command, _("\
+      c = add_cmd("file", class_files, file_command, _("\
 Use FILE as program to be debugged.\n\
 It is read for its symbols, for getting the contents of pure memory,\n\
 and it is the program executed when you use the `run' command.\n\
 If FILE cannot be found as specified, your execution directory path\n\
 ($PATH) is searched for a command of that name.\n\
 No arg means to have no executable file and no symbols."), &cmdlist);
-      set_cmd_completer (c, filename_completer);
-      /* c->completer_word_break_characters = gdb_completer_filename_word_break_characters; */ /* FIXME */
+      set_cmd_completer(c, filename_completer);
+#if 0
+      c->completer_word_break_characters = gdb_completer_filename_word_break_characters; /* FIXME */
+#endif /* 0 */
     }
 
   c = add_cmd ("exec-file", class_files, exec_file_command, _("\

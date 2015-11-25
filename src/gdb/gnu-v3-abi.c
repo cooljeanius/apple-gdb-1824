@@ -437,11 +437,12 @@ gnuv3_baseclass_offset(struct type *type, int index, const bfd_byte *valaddr,
 static void
 init_gnuv3_ops(void)
 {
-  vtable_type_gdbarch_data = gdbarch_data_register_post_init(build_gdb_vtable_type);
+  vtable_type_gdbarch_data =
+    gdbarch_data_register_post_init(build_gdb_vtable_type);
 
   gnu_v3_abi_ops.shortname = "gnu-v3";
-  gnu_v3_abi_ops.longname = "GNU G++ Version 3 ABI";
-  gnu_v3_abi_ops.doc = "G++ Version 3 ABI";
+  gnu_v3_abi_ops.longname = (char *)"GNU G++ Version 3 ABI";
+  gnu_v3_abi_ops.doc = (char *)"G++ Version 3 ABI";
   gnu_v3_abi_ops.is_destructor_name =
     (enum dtor_kinds (*)(const char *))is_gnu_v3_mangled_dtor;
   gnu_v3_abi_ops.is_constructor_name =

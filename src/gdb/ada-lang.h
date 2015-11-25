@@ -183,12 +183,12 @@ extern int ada_parse(void);    /* Defined in ada-exp.y */
 extern void ada_error(const char *); /* Defined in ada-exp.y */
 
                         /* Defined in ada-typeprint.c */
-extern void ada_print_type (struct type *, char *, struct ui_file *, int,
-                            int);
+extern void ada_print_type(struct type *, const char *, struct ui_file *, int,
+                           int);
 
-extern int ada_val_print (struct type *, const gdb_byte *, int, CORE_ADDR,
-                          struct ui_file *, int, int, int,
-                          enum val_prettyprint);
+extern int ada_val_print(struct type *, const gdb_byte *, int, CORE_ADDR,
+                         struct ui_file *, int, int, int,
+                         enum val_prettyprint);
 
 extern int ada_value_print (struct value *, struct ui_file *, int,
                             enum val_prettyprint);
@@ -257,7 +257,7 @@ extern void ada_fill_in_ada_prototype (struct symbol *);
 
 extern int user_select_syms (struct ada_symbol_info *, int, int);
 
-extern int get_selections (int *, int, int, int, char *);
+extern int get_selections(int *, int, int, int, const char *);
 
 extern char *ada_start_decode_line_1 (char *);
 
@@ -309,9 +309,10 @@ extern int ada_is_others_clause (struct type *, int);
 
 extern int ada_in_variant (LONGEST, struct type *, int);
 
-extern char *ada_variant_discrim_name (struct type *);
+extern const char *ada_variant_discrim_name(struct type *);
 
-extern struct value *ada_value_struct_elt (struct value *, char *, char *);
+extern struct value *ada_value_struct_elt(struct value *, const char *,
+					  const char *);
 
 extern int ada_is_aligner_type (struct type *);
 
@@ -354,7 +355,7 @@ extern struct type *ada_template_to_fixed_record_type_1 (struct type *type,
 
 extern int ada_name_prefix_len (const char *);
 
-extern char *ada_type_name (struct type *);
+extern const char *ada_type_name(struct type *);
 
 extern struct type *ada_find_parallel_type (struct type *,
                                             const char *suffix);

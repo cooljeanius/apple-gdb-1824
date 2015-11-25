@@ -1,4 +1,4 @@
-/* Stack manipulation commands, for GDB the GNU Debugger.
+/* stack.h: Stack manipulation commands, for GDB the GNU Debugger.
 
    Copyright 2003 Free Software Foundation, Inc.
 
@@ -22,6 +22,8 @@
 #ifndef STACK_H
 #define STACK_H
 
-void select_frame_command (char *level_exp, int from_tty);
+void select_frame_command(const char *level_exp, int from_tty);
 
 #endif /* #ifndef STACK_H */
+
+/* EOF */

@@ -30,8 +30,8 @@ struct objfile;
    using this technique.  */
 
 #ifndef EXTERN
-#define	EXTERN extern
-#endif
+# define EXTERN extern
+#endif /* !EXTERN */
 
 /* Hash table of global symbols whose values are not known yet.
    They are chained thru the SYMBOL_VALUE_CHAIN, since we don't
@@ -86,9 +86,7 @@ EXTERN int previous_stab_code;
 
 struct header_file
   {
-
-    /* Name of header file */
-
+    /* Name of header file: */
     char *name;
 
     /* Numeric code distinguishing instances of one header file that produced
@@ -96,14 +94,11 @@ struct header_file
 
     int instance;
 
-    /* Pointer to vector of types */
-
+    /* Pointer to vector of types: */
     struct type **vector;
 
-    /* Allocated length (# elts) of that vector */
-
+    /* Allocated length (# elts) of that vector: */
     int length;
-
   };
 
 /* The table of header_files of this OBJFILE. */
@@ -216,8 +211,8 @@ extern void coffstab_build_psymtabs
    file_ptr stabstroffset, unsigned int stabstrsize);
 
 extern void stabsect_build_psymtabs
-  (struct objfile *objfile,
-   int mainline, char *stab_name, char *stabstr_name, char *text_name);
+  (struct objfile *objfile, int mainline, const char *stab_name,
+   const char *stabstr_name, const char *text_name);
 
 extern void elfstab_offset_sections(struct objfile *,
 				    struct partial_symtab *);
@@ -233,6 +228,8 @@ extern void init_header_files(void);
 
 /* APPLE LOCAL make globally visible */
 extern char *find_name_end(char *name);
+
+extern int stabsread_c_inited;
 
 #undef EXTERN
 

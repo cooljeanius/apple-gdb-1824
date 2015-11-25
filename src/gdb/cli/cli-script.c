@@ -58,7 +58,7 @@ recurse_read_control_structure(char *(*read_next_line_func)(void),
 
 static char *insert_args(char *line);
 
-static struct cleanup *setup_user_args(char *p);
+static struct cleanup *setup_user_args(const char *p);
 
 static void validate_comname(const char *);
 
@@ -67,14 +67,14 @@ static char *read_next_line(void);
 /* Level of control structure: */
 static int control_level;
 
-/* Structure for arguments to user defined functions.  */
+/* Structure for arguments to user defined functions: */
 #define MAXUSERARGS 10
 struct user_args
   {
     struct user_args *next;
     struct
       {
-	char *arg;
+	const char *arg;
 	int len;
       }
     a[MAXUSERARGS];
@@ -283,7 +283,7 @@ do_restore_user_call_depth(void *call_depth)
 extern int max_user_call_depth;
 
 void
-execute_user_command(struct cmd_list_element *c, char *args)
+execute_user_command(struct cmd_list_element *c, const char *args)
 {
   struct command_line *cmdlines;
   struct cleanup *old_chain;
@@ -581,14 +581,14 @@ arg_cleanup (void *ignore)
    $arg0, $arg1 ... $argMAXUSERARGS.  */
 
 static struct cleanup *
-setup_user_args (char *p)
+setup_user_args(const char *p)
 {
   struct user_args *args;
   struct cleanup *old_chain;
-  unsigned int arg_count = 0;
+  unsigned int arg_count = 0U;
 
-  args = (struct user_args *) xmalloc (sizeof (struct user_args));
-  memset (args, 0, sizeof (struct user_args));
+  args = (struct user_args *)xmalloc(sizeof(struct user_args));
+  memset(args, 0, sizeof(struct user_args));
 
   args->next = user_args;
   user_args = args;
@@ -600,15 +600,15 @@ setup_user_args (char *p)
 
   while (*p)
     {
-      char *start_arg;
+      const char *start_arg;
       int squote = 0;
       int dquote = 0;
       int bsquote = 0;
 
       if (arg_count >= MAXUSERARGS)
 	{
-	  error (_("user defined function may only have %d arguments."),
-		 MAXUSERARGS);
+	  error(_("user defined function may only have %d arguments."),
+		MAXUSERARGS);
 	  return old_chain;
 	}
 
@@ -1349,7 +1349,7 @@ document_command(const char *comname, int from_tty)
   doclines = read_command_lines(tmpbuf, from_tty);
 
   if (c->doc)
-    xfree(c->doc);
+    xfree((void *)c->doc);
 
   {
     struct command_line *cl1;
@@ -1358,14 +1358,14 @@ document_command(const char *comname, int from_tty)
     for (cl1 = doclines; cl1; cl1 = cl1->next)
       len += (strlen(cl1->line) + 1);
 
-    c->doc = (char *)xmalloc(len + 1);
-    *c->doc = 0;
+    c->doc = (const char *)xmalloc(len + 1);
+    *(char *)c->doc = 0;
 
     for (cl1 = doclines; cl1; cl1 = cl1->next)
       {
-	strcat(c->doc, cl1->line);
+	strcat((char *)c->doc, cl1->line);
 	if (cl1->next)
-	  strcat(c->doc, "\n");
+	  strcat((char *)c->doc, "\n");
       }
   }
 

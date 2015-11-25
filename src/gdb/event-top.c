@@ -1097,38 +1097,41 @@ async_disconnect (gdb_client_data arg)
 
 #ifdef STOP_SIGNAL
 void
-handle_stop_sig (int sig)
+handle_stop_sig(int sig)
 {
-  mark_async_signal_handler_wrapper (sigtstp_token);
-  signal (sig, handle_stop_sig);
+  mark_async_signal_handler_wrapper(sigtstp_token);
+  signal(sig, handle_stop_sig);
 }
 
+/* */
 static void
-async_stop_sig (gdb_client_data arg)
+async_stop_sig(gdb_client_data arg)
 {
-  char *prompt = get_prompt ();
-#if STOP_SIGNAL == SIGTSTP
-  signal (SIGTSTP, SIG_DFL);
-#if HAVE_SIGPROCMASK
+  const char *prompt = get_prompt();
+# if STOP_SIGNAL == SIGTSTP
+  signal(SIGTSTP, SIG_DFL);
+#  if HAVE_SIGPROCMASK
   {
     sigset_t zero;
 
-    sigemptyset (&zero);
-    sigprocmask (SIG_SETMASK, &zero, 0);
+    sigemptyset(&zero);
+    sigprocmask(SIG_SETMASK, &zero, 0);
   }
-#elif HAVE_SIGSETMASK
-  sigsetmask (0);
-#endif
-  kill (getpid (), SIGTSTP);
-  signal (SIGTSTP, handle_stop_sig);
-#else
-  signal (STOP_SIGNAL, handle_stop_sig);
-#endif
-  printf_unfiltered ("%s", prompt);
-  gdb_flush (gdb_stdout);
+#  else
+#   if HAVE_SIGSETMASK
+  sigsetmask(0);
+#   endif /* HAVE_SIGSETMASK */
+#  endif /* HAVE_SIGPROCMASK */
+  kill(getpid(), SIGTSTP);
+  signal(SIGTSTP, handle_stop_sig);
+# else
+  signal(STOP_SIGNAL, handle_stop_sig);
+# endif /* STOP_SIGNAL == SIGTSTP */
+  printf_unfiltered("%s", prompt);
+  gdb_flush(gdb_stdout);
 
-  /* Forget about any previous command -- null line now will do nothing.  */
-  dont_repeat ();
+  /* Forget about any previous command -- null line now will do nothing: */
+  dont_repeat();
 }
 #endif /* STOP_SIGNAL */
 
@@ -1154,31 +1157,35 @@ async_float_handler(gdb_client_data arg)
    See event-signal.c. */
 #if defined(SIGWINCH) && defined(SIGWINCH_HANDLER)
 static void
-handle_sigwinch (int sig)
+handle_sigwinch(int sig)
 {
   mark_async_signal_handler_wrapper (sigwinch_token);
   signal (sig, handle_sigwinch);
 }
-#endif
+#endif /* SIGWINCH && SIGWINCH_HANDLER */
 
 
-/* Called by do_setshow_command.  */
+/* Called by do_setshow_command: */
 void
-set_async_editing_command (char *args, int from_tty, struct cmd_list_element *c)
+set_async_editing_command(const char *args ATTRIBUTE_UNUSED,
+			  int from_tty ATTRIBUTE_UNUSED,
+			  struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
-  change_line_handler ();
+  change_line_handler();
 }
 
-/* Called by do_setshow_command.  */
+/* Called by do_setshow_command: */
 void
-set_async_annotation_level (char *args, int from_tty, struct cmd_list_element *c)
+set_async_annotation_level(const char *args ATTRIBUTE_UNUSED,
+			   int from_tty ATTRIBUTE_UNUSED,
+			   struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
-  change_annotation_level ();
+  change_annotation_level();
 }
 
-/* Called by do_setshow_command.  */
+/* Called by do_setshow_command: */
 void
-set_async_prompt (char *args, int from_tty, struct cmd_list_element *c)
+set_async_prompt(const char *args, int from_tty, struct cmd_list_element *c)
 {
   /* APPLE LOCAL begin Inform user about debugging optimized code  */
   if (currently_inside_optimized_code
@@ -1326,12 +1333,12 @@ adjust_prompts_for_optimized_code (void)
       if (!dwarf2_inform_debugging_optimized_code
 	  || !currently_inside_optimized_code)
 	{
-	  if (the_prompts.top > 0
-	      && strstr (PROMPT (0), "[opt> ") != 0)
+	  if ((the_prompts.top > 0)
+	      && (strstr(PROMPT(0), "[opt> ") != 0))
 	    {
-	      xfree (PREFIX (0));
-	      xfree (PROMPT (0));
-	      xfree (SUFFIX (0));
+	      xfree((void *)PREFIX(0));
+	      xfree((void *)PROMPT(0));
+	      xfree((void *)SUFFIX(0));
 	      the_prompts.top--;
 	    }
 	  gdb_prompt_is_optimized = 0;

@@ -137,7 +137,8 @@ x86_picbase_setup_pattern_p(CORE_ADDR memaddr, int *regnum)
   return 1;
 }
 
-int
+/* */
+int ATTRIBUTE_CONST
 i386_nonvolatile_regnum_p(int r)
 {
   if ((r == I386_EBX_REGNUM) || (r == I386_EBP_REGNUM)
@@ -148,13 +149,15 @@ i386_nonvolatile_regnum_p(int r)
     return 0;
 }
 
-int
-i386_argument_regnum_p(int r)
+/* */
+int ATTRIBUTE_CONST
+i386_argument_regnum_p(int r ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
-int
+/* */
+int ATTRIBUTE_CONST
 x86_64_nonvolatile_regnum_p(int r)
 {
   if ((r == AMD64_RBX_REGNUM) || (r == AMD64_RSP_REGNUM)
@@ -166,7 +169,8 @@ x86_64_nonvolatile_regnum_p(int r)
     return 0;
 }
 
-int
+/* */
+int ATTRIBUTE_CONST
 x86_64_argument_regnum_p(int r)
 {
   if ((r == AMD64_RDI_REGNUM) || (r == AMD64_RSI_REGNUM)
@@ -177,7 +181,8 @@ x86_64_argument_regnum_p(int r)
     return 0;
 }
 
-int
+/* */
+int ATTRIBUTE_CONST
 i386_machine_regno_to_gdb_regno(int r)
 {
   return r;
@@ -189,7 +194,7 @@ i386_machine_regno_to_gdb_regno(int r)
    So we need to reorder a few of the first 8 registers when we're
    getting reg nums from assembly instructions.  */
 
-int
+int ATTRIBUTE_CONST
 x86_64_machine_regno_to_gdb_regno(int r)
 {
   switch (r)

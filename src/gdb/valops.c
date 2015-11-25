@@ -1281,15 +1281,15 @@ value_clear_inferior_string_pool(void)
    embedded null bytes. */
 
 struct value *
-value_string (char *ptr, int len)
+value_string(const char *ptr, int len)
 {
   struct value *val;
   int lowbound = current_language->string_lower_bound;
-  struct type *rangetype = create_range_type ((struct type *) NULL,
-					      builtin_type_int,
-					      lowbound, len + lowbound - 1);
-  struct type *stringtype
-  = create_string_type ((struct type *) NULL, rangetype);
+  struct type *rangetype = create_range_type((struct type *)NULL,
+					     builtin_type_int,
+					     lowbound, (len + lowbound - 1));
+  struct type *stringtype =
+    create_string_type((struct type *)NULL, rangetype);
   CORE_ADDR addr;
 
   if (current_language->c_style_arrays == 0)
@@ -1804,8 +1804,8 @@ search_struct_method (char *name, struct value **arg1p,
    ERR is an error message to be printed in case the field is not found.  */
 
 struct value *
-value_struct_elt (struct value **argp, struct value **args,
-		  char *name, int *static_memfuncp, char *err)
+value_struct_elt(struct value **argp, struct value **args,
+		 const char *name, int *static_memfuncp, const char *err)
 {
   struct type *t;
   struct value *v;

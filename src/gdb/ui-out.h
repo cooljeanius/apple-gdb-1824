@@ -154,7 +154,7 @@ extern void ui_out_stream_delete(struct ui_stream *buf);
 
 struct cleanup *make_cleanup_ui_out_stream_delete(struct ui_stream *buf);
 
-extern void ui_out_wrap_hint(struct ui_out *uiout, char *identstring);
+extern void ui_out_wrap_hint(struct ui_out *uiout, const char *identstring);
 
 extern void ui_out_flush(struct ui_out *uiout);
 

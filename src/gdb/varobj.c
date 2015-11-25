@@ -64,12 +64,12 @@ show_varobjdebug(struct ui_file *file, int from_tty,
 }
 
 /* String representations of gdb's format codes */
-char *varobj_format_string[] =
+const char *varobj_format_string[] =
   /* APPLE LOCAL: add "unsigned", "OSType", "floating point hex" */
   { "natural", "binary", "decimal", "hexadecimal", "octal", "unsigned", "OSType", "floating point hex" };
 
 /* String representations of gdb's known languages */
-char *varobj_language_string[] = { "unknown", "C", "C++", "Java" };
+const char *varobj_language_string[] = { "unknown", "C", "C++", "Java" };
 
 /* Data structures */
 

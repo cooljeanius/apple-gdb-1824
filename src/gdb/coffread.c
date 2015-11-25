@@ -358,7 +358,7 @@ coff_alloc_type (int index)
    it indicates the start of data for one original source file.  */
 
 static void
-coff_start_symtab (char *name)
+coff_start_symtab(const char *name)
 {
   start_symtab (
   /* We fill in the filename later.  start_symtab puts
@@ -371,7 +371,7 @@ coff_start_symtab (char *name)
   /* The start address is irrelevant, since we set
      last_source_start_addr in coff_end_symtab.  */
 		 0);
-  record_debugformat ("COFF");
+  record_debugformat("COFF");
 }
 
 /* Save the vital information from when starting to read a file,
@@ -380,13 +380,13 @@ coff_start_symtab (char *name)
    text address for the file, and SIZE is the number of bytes of text.  */
 
 static void
-complete_symtab (char *name, CORE_ADDR start_addr, unsigned int size)
+complete_symtab(const char *name, CORE_ADDR start_addr, unsigned int size)
 {
   if (last_source_file != NULL)
-    xfree (last_source_file);
-  last_source_file = savestring (name, strlen (name));
+    xfree(last_source_file);
+  last_source_file = savestring(name, strlen(name));
   current_source_start_addr = start_addr;
-  current_source_end_addr = start_addr + size;
+  current_source_end_addr = (start_addr + size);
 }
 
 /* Finish the symbol definitions for one main source file,
@@ -699,7 +699,7 @@ coff_symtab_read(long symtab_offset, unsigned int nsyms,
   int in_source_file = 0;
   int next_file_symnum = -1;
   /* Name of the current file: */
-  char *filestring = "";
+  const char *filestring = "";
   int depth = 0;
   int fcn_first_line = 0;
   CORE_ADDR fcn_first_line_addr = 0UL;
@@ -1412,24 +1412,25 @@ enter_linenos(long file_offset, int first_line,
     }
 }
 
+/* */
 static void
-patch_type (struct type *type, struct type *real_type)
+patch_type(struct type *type, struct type *real_type)
 {
-  struct type *target = TYPE_TARGET_TYPE (type);
-  struct type *real_target = TYPE_TARGET_TYPE (real_type);
-  int field_size = TYPE_NFIELDS (real_target) * sizeof (struct field);
+  struct type *target = TYPE_TARGET_TYPE(type);
+  struct type *real_target = TYPE_TARGET_TYPE(real_type);
+  size_t field_size = (TYPE_NFIELDS(real_target) * sizeof(struct field));
 
-  TYPE_LENGTH_ASSIGN (target) = TYPE_LENGTH (real_target);
-  TYPE_NFIELDS (target) = TYPE_NFIELDS (real_target);
-  TYPE_FIELDS (target) = (struct field *) TYPE_ALLOC (target, field_size);
+  TYPE_LENGTH_ASSIGN(target) = TYPE_LENGTH(real_target);
+  TYPE_NFIELDS(target) = TYPE_NFIELDS(real_target);
+  TYPE_FIELDS(target) = (struct field *)TYPE_ALLOC(target, field_size);
 
-  memcpy (TYPE_FIELDS (target), TYPE_FIELDS (real_target), field_size);
+  memcpy(TYPE_FIELDS(target), TYPE_FIELDS(real_target), field_size);
 
-  if (TYPE_NAME (real_target))
+  if (TYPE_NAME(real_target))
     {
-      if (TYPE_NAME (target))
-	xfree (TYPE_NAME (target));
-      TYPE_NAME (target) = concat (TYPE_NAME (real_target), (char *)NULL);
+      if (TYPE_NAME(target))
+	xfree((void *)TYPE_NAME(target));
+      TYPE_NAME(target) = concat(TYPE_NAME(real_target), (char *)NULL);
     }
 }
 

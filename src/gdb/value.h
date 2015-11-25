@@ -349,8 +349,8 @@ extern struct value *value_mark (void);
 
 extern void value_free_to_mark (struct value *mark);
 
-extern struct value *value_string (char *ptr, int len);
-extern struct value *value_bitstring (char *ptr, int len);
+extern struct value *value_string(const char *ptr, int len);
+extern struct value *value_bitstring(char *ptr, int len);
 
 extern struct value *value_array (int lowbound, int highbound,
 				  struct value **elemvec);
@@ -383,8 +383,8 @@ extern struct value *value_complement(struct value *arg1);
 
 extern struct value *value_struct_elt(struct value **argp,
 				      struct value **args,
-				      char *name, int *static_memfuncp,
-				      char *err);
+				      const char *name, int *static_memfuncp,
+				      const char *err);
 
 extern struct value *value_aggregate_elt(struct type *curtype,
 					 char *name, enum noside noside);
@@ -627,17 +627,18 @@ enum check_which_threads
     CHECK_ALL_THREADS
   };
 
-extern int check_safe_call (regex_t unsafe[],
-			    int npatterns,
-			    int stack_depth,
-			    enum check_which_threads which_thread);
+extern int check_safe_call(regex_t unsafe[], int npatterns, int stack_depth,
+			   enum check_which_threads which_thread);
 /* APPLE LOCAL end check safe call  */
-int set_unwind_on_signal (int new_val);
-/* APPLE LOCAL: Variant for use in make_cleanup calls.  */
-struct cleanup *make_cleanup_set_restore_unwind_on_signal (int newval);
+int set_unwind_on_signal(int new_val);
+/* APPLE LOCAL: Variant for use in make_cleanup calls: */
+struct cleanup *make_cleanup_set_restore_unwind_on_signal(int newval);
 
-/* APPLE LOCAL: control casting closures to dynamic type.  */
-struct cleanup *make_cleanup_set_restore_print_closure (int newval);
+/* APPLE LOCAL: control casting closures to dynamic type: */
+struct cleanup *make_cleanup_set_restore_print_closure(int newval);
+
+/* for valarith.c: */
+extern int valarith_c_inited;
 
 #endif /* !defined(VALUE_H) */
 

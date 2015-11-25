@@ -20,7 +20,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (FRAME_H)
+#if !defined(FRAME_H)
 #define FRAME_H 1
 
 /* The following is the intended naming schema for frame functions.
@@ -607,20 +607,21 @@ extern int frame_register_read (struct frame_info *frame, int regnum,
 				gdb_byte *buf);
 
 /* APPLE LOCAL */
-extern CORE_ADDR refine_prologue_limit (CORE_ADDR pc, CORE_ADDR lim_pc, int max_skip_non_prologue_insns);
+extern CORE_ADDR refine_prologue_limit(CORE_ADDR pc, CORE_ADDR lim_pc,
+				       int max_skip_non_prologue_insns);
 
 /* APPLE LOCAL */
-int inside_main_func (struct frame_info *this_frame);
+int inside_main_func(struct frame_info *this_frame);
 
 /* From stack.c.  */
-extern void args_info (char *, int);
+extern void args_info(const char *, int);
 
-extern void locals_info (char *, int);
+extern void locals_info(const char *, int);
 
 extern void (*deprecated_selected_frame_level_changed_hook)(int)
   ATTRIBUTE_DEPRECATED;
 
-extern void return_command (char *, int);
+extern void return_command(const char *, int);
 
 
 /* NOTE: cagney/2002-11-27:
@@ -689,7 +690,7 @@ extern void deprecated_update_frame_base_hack(struct frame_info *frame,
   ATTRIBUTE_DEPRECATED;
 
 /* APPLE LOCAL begin */
-/* See comments in frame_info (). */
+/* See comments in frame_info(). */
 extern struct frame_info *frame_next_hack (struct frame_info *frame);
 extern void *frame_cache_hack (struct frame_info *frame);
 /* APPLE LOCAL end */
@@ -697,4 +698,6 @@ extern void *frame_cache_hack (struct frame_info *frame);
 /* APPLE LOCAL: Need this for the fast_show_stack routines.  */
 extern int backtrace_past_main;
 
-#endif /* !defined (FRAME_H)  */
+#endif /* !defined(FRAME_H)  */
+
+/* EOF */

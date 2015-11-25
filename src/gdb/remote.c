@@ -995,36 +995,38 @@ packet_ok (const char *buf, struct packet_config *config)
 static struct packet_config remote_protocol_vcont;
 
 static void
-set_remote_protocol_vcont_packet_cmd (char *args, int from_tty,
-				      struct cmd_list_element *c)
+set_remote_protocol_vcont_packet_cmd(const char *args, int from_tty,
+				     struct cmd_list_element *c)
 {
-  update_packet_config (&remote_protocol_vcont);
+  update_packet_config(&remote_protocol_vcont);
 }
 
+/* */
 static void
-show_remote_protocol_vcont_packet_cmd (struct ui_file *file, int from_tty,
-				       struct cmd_list_element *c,
-				       const char *value)
+show_remote_protocol_vcont_packet_cmd(struct ui_file *file, int from_tty,
+				      struct cmd_list_element *c,
+				      const char *value)
 {
-  show_packet_config_cmd (&remote_protocol_vcont);
+  show_packet_config_cmd(&remote_protocol_vcont);
 }
 
 /* Should we try the 'qSymbol' (target symbol lookup service) request?  */
 static struct packet_config remote_protocol_qSymbol;
 
 static void
-set_remote_protocol_qSymbol_packet_cmd (char *args, int from_tty,
-				  struct cmd_list_element *c)
+set_remote_protocol_qSymbol_packet_cmd(const char *args, int from_tty,
+				       struct cmd_list_element *c)
 {
-  update_packet_config (&remote_protocol_qSymbol);
+  update_packet_config(&remote_protocol_qSymbol);
 }
 
+/* */
 static void
-show_remote_protocol_qSymbol_packet_cmd (struct ui_file *file, int from_tty,
-					 struct cmd_list_element *c,
-					 const char *value)
+show_remote_protocol_qSymbol_packet_cmd(struct ui_file *file, int from_tty,
+					struct cmd_list_element *c,
+					const char *value)
 {
-  show_packet_config_cmd (&remote_protocol_qSymbol);
+  show_packet_config_cmd(&remote_protocol_qSymbol);
 }
 
 /* Should we try the 'P' (set register) request?  */
@@ -1032,18 +1034,19 @@ show_remote_protocol_qSymbol_packet_cmd (struct ui_file *file, int from_tty,
 static struct packet_config remote_protocol_P;
 
 static void
-set_remote_protocol_P_packet_cmd (char *args, int from_tty,
-				  struct cmd_list_element *c)
+set_remote_protocol_P_packet_cmd(const char *args, int from_tty,
+				 struct cmd_list_element *c)
 {
-  update_packet_config (&remote_protocol_P);
+  update_packet_config(&remote_protocol_P);
 }
 
+/* */
 static void
-show_remote_protocol_P_packet_cmd (struct ui_file *file, int from_tty,
-				   struct cmd_list_element *c,
-				   const char *value)
+show_remote_protocol_P_packet_cmd(struct ui_file *file, int from_tty,
+				  struct cmd_list_element *c,
+				  const char *value)
 {
-  show_packet_config_cmd (&remote_protocol_P);
+  show_packet_config_cmd(&remote_protocol_P);
 }
 
 /* Should we try one of the 'Z' requests?  */
@@ -1064,78 +1067,88 @@ static struct packet_config remote_protocol_Z[NR_Z_PACKET_TYPES];
    command callback should include a context argument.  */
 
 static void
-set_remote_protocol_Z_software_bp_packet_cmd (char *args, int from_tty,
-					      struct cmd_list_element *c)
+set_remote_protocol_Z_software_bp_packet_cmd(const char *args, int from_tty,
+					     struct cmd_list_element *c)
 {
-  update_packet_config (&remote_protocol_Z[Z_PACKET_SOFTWARE_BP]);
+  update_packet_config(&remote_protocol_Z[Z_PACKET_SOFTWARE_BP]);
 }
 
+/* */
 static void
-show_remote_protocol_Z_software_bp_packet_cmd (struct ui_file *file, int from_tty,
-					       struct cmd_list_element *c,
-					       const char *value)
+show_remote_protocol_Z_software_bp_packet_cmd(struct ui_file *file, int from_tty,
+					      struct cmd_list_element *c,
+					      const char *value)
 {
-  show_packet_config_cmd (&remote_protocol_Z[Z_PACKET_SOFTWARE_BP]);
+  show_packet_config_cmd(&remote_protocol_Z[Z_PACKET_SOFTWARE_BP]);
 }
 
+/* */
 static void
-set_remote_protocol_Z_hardware_bp_packet_cmd (char *args, int from_tty,
-					      struct cmd_list_element *c)
+set_remote_protocol_Z_hardware_bp_packet_cmd(const char *args, int from_tty,
+					     struct cmd_list_element *c)
 {
-  update_packet_config (&remote_protocol_Z[Z_PACKET_HARDWARE_BP]);
+  update_packet_config(&remote_protocol_Z[Z_PACKET_HARDWARE_BP]);
 }
 
+/* */
 static void
-show_remote_protocol_Z_hardware_bp_packet_cmd (struct ui_file *file, int from_tty,
-					       struct cmd_list_element *c,
-					       const char *value)
+show_remote_protocol_Z_hardware_bp_packet_cmd(struct ui_file *file,
+					      int from_tty,
+					      struct cmd_list_element *c,
+					      const char *value)
 {
-  show_packet_config_cmd (&remote_protocol_Z[Z_PACKET_HARDWARE_BP]);
+  show_packet_config_cmd(&remote_protocol_Z[Z_PACKET_HARDWARE_BP]);
 }
 
+/* */
 static void
-set_remote_protocol_Z_write_wp_packet_cmd (char *args, int from_tty,
-					      struct cmd_list_element *c)
+set_remote_protocol_Z_write_wp_packet_cmd(const char *args, int from_tty,
+					  struct cmd_list_element *c)
 {
-  update_packet_config (&remote_protocol_Z[Z_PACKET_WRITE_WP]);
+  update_packet_config(&remote_protocol_Z[Z_PACKET_WRITE_WP]);
 }
 
+/* */
 static void
-show_remote_protocol_Z_write_wp_packet_cmd (struct ui_file *file, int from_tty,
-					    struct cmd_list_element *c,
-					    const char *value)
-{
-  show_packet_config_cmd (&remote_protocol_Z[Z_PACKET_WRITE_WP]);
-}
-
-static void
-set_remote_protocol_Z_read_wp_packet_cmd (char *args, int from_tty,
-					      struct cmd_list_element *c)
-{
-  update_packet_config (&remote_protocol_Z[Z_PACKET_READ_WP]);
-}
-
-static void
-show_remote_protocol_Z_read_wp_packet_cmd (struct ui_file *file, int from_tty,
+show_remote_protocol_Z_write_wp_packet_cmd(struct ui_file *file, int from_tty,
 					   struct cmd_list_element *c,
 					   const char *value)
 {
-  show_packet_config_cmd (&remote_protocol_Z[Z_PACKET_READ_WP]);
+  show_packet_config_cmd(&remote_protocol_Z[Z_PACKET_WRITE_WP]);
 }
 
+/* */
 static void
-set_remote_protocol_Z_access_wp_packet_cmd (char *args, int from_tty,
-					      struct cmd_list_element *c)
+set_remote_protocol_Z_read_wp_packet_cmd(const char *args, int from_tty,
+					 struct cmd_list_element *c)
 {
-  update_packet_config (&remote_protocol_Z[Z_PACKET_ACCESS_WP]);
+  update_packet_config(&remote_protocol_Z[Z_PACKET_READ_WP]);
 }
 
+/* */
 static void
-show_remote_protocol_Z_access_wp_packet_cmd (struct ui_file *file, int from_tty,
-					     struct cmd_list_element *c,
-					     const char *value)
+show_remote_protocol_Z_read_wp_packet_cmd(struct ui_file *file, int from_tty,
+					  struct cmd_list_element *c,
+					  const char *value)
 {
-  show_packet_config_cmd (&remote_protocol_Z[Z_PACKET_ACCESS_WP]);
+  show_packet_config_cmd(&remote_protocol_Z[Z_PACKET_READ_WP]);
+}
+
+/* */
+static void
+set_remote_protocol_Z_access_wp_packet_cmd(const char *args, int from_tty,
+					   struct cmd_list_element *c)
+{
+  update_packet_config(&remote_protocol_Z[Z_PACKET_ACCESS_WP]);
+}
+
+/* */
+static void
+show_remote_protocol_Z_access_wp_packet_cmd(struct ui_file *file, int from_tty,
+					    struct cmd_list_element *c,
+					    const char *value)
+{
+  show_packet_config_cmd(&remote_protocol_Z[Z_PACKET_ACCESS_WP]);
 }
 
 /* For compatibility with older distributions.  Provide a ``set remote
@@ -1144,14 +1157,14 @@ show_remote_protocol_Z_access_wp_packet_cmd (struct ui_file *file, int from_tty,
 static enum auto_boolean remote_Z_packet_detect;
 
 static void
-set_remote_protocol_Z_packet_cmd (char *args, int from_tty,
-				  struct cmd_list_element *c)
+set_remote_protocol_Z_packet_cmd(const char *args, int from_tty,
+				 struct cmd_list_element *c)
 {
   int i;
   for (i = 0; i < NR_Z_PACKET_TYPES; i++)
     {
       remote_protocol_Z[i].detect = remote_Z_packet_detect;
-      update_packet_config (&remote_protocol_Z[i]);
+      update_packet_config(&remote_protocol_Z[i]);
     }
 }
 
@@ -1181,20 +1194,22 @@ start_no_ack_mode(void)
   return;
 }
 
+/* */
 static void
-set_no_ack_mode_cmd (char *args, int from_tty, struct cmd_list_element *c)
+set_no_ack_mode_cmd(const char *args, int from_tty, struct cmd_list_element *c)
 {
   user_requested_no_ack_mode = AUTO_BOOLEAN_TRUE;
 
   if (remote_desc == NULL)  /* Are we connected yet? */
     return;
 
-  start_no_ack_mode ();
+  start_no_ack_mode();
 }
 
+/* */
 static void
-show_no_ack_mode_cmd (struct ui_file *file, int from_tty,
-                      struct cmd_list_element *c, const char *value)
+show_no_ack_mode_cmd(struct ui_file *file, int from_tty,
+                     struct cmd_list_element *c, const char *value)
 {
   if (user_requested_no_ack_mode != AUTO_BOOLEAN_TRUE)
     {
@@ -1295,8 +1310,8 @@ send_disable_aslr(void)
    */
 
 static void
-set_remote_debugflags_command (char *ignore, int from_tty,
-                               struct cmd_list_element *unused)
+set_remote_debugflags_command(const char *ignore, int from_tty,
+                              struct cmd_list_element *unused)
 {
   const char *c;
 
@@ -1313,8 +1328,8 @@ set_remote_debugflags_command (char *ignore, int from_tty,
       c++;
   if (*c != '\0')
     {
-      // I should probably xfree the existing value or something but I'm not
-      // positive how this memory is managed by the add_setshow cmds.
+      /* I should probably xfree the existing value or something, but I am not
+       * positive how this memory is managed by the add_setshow cmds: */
       remote_debugflags = NULL;
       error ("set remote debugflags expects arguments like "
              "`LOG_MEMORY|LOG_RNB_REMOTE' unexpected character seen instead.");
@@ -1361,72 +1376,76 @@ static int use_threadinfo_query;
 static int use_threadextra_query;
 
 static void
-set_remote_protocol_binary_download_cmd (char *args,
-					 int from_tty,
-					 struct cmd_list_element *c)
+set_remote_protocol_binary_download_cmd(const char *args, int from_tty,
+					struct cmd_list_element *c)
 {
-  update_packet_config (&remote_protocol_binary_download);
+  update_packet_config(&remote_protocol_binary_download);
 }
 
+/* */
 static void
-show_remote_protocol_binary_download_cmd (struct ui_file *file, int from_tty,
-					  struct cmd_list_element *c,
-					  const char *value)
+show_remote_protocol_binary_download_cmd(struct ui_file *file, int from_tty,
+					 struct cmd_list_element *c,
+					 const char *value)
 {
-  show_packet_config_cmd (&remote_protocol_binary_download);
+  show_packet_config_cmd(&remote_protocol_binary_download);
 }
 
 /* Should we try the 'qPart:auxv' (target auxiliary vector read) request?  */
 static struct packet_config remote_protocol_qPart_auxv;
 
 static void
-set_remote_protocol_qPart_auxv_packet_cmd (char *args, int from_tty,
-					   struct cmd_list_element *c)
+set_remote_protocol_qPart_auxv_packet_cmd(const char *args, int from_tty,
+					  struct cmd_list_element *c)
 {
-  update_packet_config (&remote_protocol_qPart_auxv);
+  update_packet_config(&remote_protocol_qPart_auxv);
 }
 
+/* */
 static void
-show_remote_protocol_qPart_auxv_packet_cmd (struct ui_file *file, int from_tty,
-					    struct cmd_list_element *c,
-					    const char *value)
+show_remote_protocol_qPart_auxv_packet_cmd(struct ui_file *file, int from_tty,
+					   struct cmd_list_element *c,
+					   const char *value)
 {
-  show_packet_config_cmd (&remote_protocol_qPart_auxv);
+  show_packet_config_cmd(&remote_protocol_qPart_auxv);
 }
 
 /* Should we try the 'qGetTLSAddr' (Get Thread Local Storage Address) request? */
 static struct packet_config remote_protocol_qGetTLSAddr;
 
 static void
-set_remote_protocol_qGetTLSAddr_packet_cmd (char *args, int from_tty,
-				  struct cmd_list_element *c)
+set_remote_protocol_qGetTLSAddr_packet_cmd(const char *args, int from_tty,
+					   struct cmd_list_element *c)
 {
-  update_packet_config (&remote_protocol_qGetTLSAddr);
+  update_packet_config(&remote_protocol_qGetTLSAddr);
 }
 
+/* */
 static void
-show_remote_protocol_qGetTLSAddr_packet_cmd (struct ui_file *file, int from_tty,
-					     struct cmd_list_element *c,
-					     const char *value)
+show_remote_protocol_qGetTLSAddr_packet_cmd(struct ui_file *file, int from_tty,
+					    struct cmd_list_element *c,
+					    const char *value)
 {
-  show_packet_config_cmd (&remote_protocol_qGetTLSAddr);
+  show_packet_config_cmd(&remote_protocol_qGetTLSAddr);
 }
 
 static struct packet_config remote_protocol_p;
 
+/* */
 static void
-set_remote_protocol_p_packet_cmd (char *args, int from_tty,
-				  struct cmd_list_element *c)
+set_remote_protocol_p_packet_cmd(const char *args, int from_tty,
+				 struct cmd_list_element *c)
 {
-  update_packet_config (&remote_protocol_p);
+  update_packet_config(&remote_protocol_p);
 }
 
+/* */
 static void
-show_remote_protocol_p_packet_cmd (struct ui_file *file, int from_tty,
-				   struct cmd_list_element *c,
-				   const char *value)
+show_remote_protocol_p_packet_cmd(struct ui_file *file, int from_tty,
+				  struct cmd_list_element *c,
+				  const char *value)
 {
-  show_packet_config_cmd (&remote_protocol_p);
+  show_packet_config_cmd(&remote_protocol_p);
 }
 
 
@@ -1438,8 +1457,8 @@ static void *sigint_remote_token;
 /* These are pointers to hook functions that may be set in order to
    modify resume/wait behavior for a particular architecture.  */
 
-void (*deprecated_target_resume_hook) (void);
-void (*deprecated_target_wait_loop_hook) (void);
+void (*deprecated_target_resume_hook)(void);
+void (*deprecated_target_wait_loop_hook)(void);
 
 
 
@@ -2789,34 +2808,33 @@ remote_open_1 (char *name, int from_tty, struct target_ops *target,
      start up connecting to a stub that isn't running the
      target yet.  We shouldn't try to inspect it in that
      case.  */
-  if (exec_bfd && !ptid_equal (inferior_ptid, null_ptid)) 	/* No use without an exec file.  */
+  if (exec_bfd && !ptid_equal(inferior_ptid, null_ptid)) /* No use without an exec file.  */
     {
-
 #ifdef SOLIB_CREATE_INFERIOR_HOOK
-      SOLIB_CREATE_INFERIOR_HOOK (PIDGET (inferior_ptid));
+      SOLIB_CREATE_INFERIOR_HOOK(PIDGET(inferior_ptid));
 #else
-      solib_create_inferior_hook ();
-#endif
+      solib_create_inferior_hook();
+#endif /* SOLIB_CREATE_INFERIOR_HOOK */
 
       remote_check_symbols (symfile_objfile);
 
       /* APPLE LOCAL: make sure any breakpoints that had their ENABLE_STATE set
          to BP_SHLIB_DISABLED in disable_breakpoints_in_shlibs from our
          call to no_shared_libraries() above, get re-enabled.  */
-      re_enable_breakpoints_in_shlibs (1);
+      re_enable_breakpoints_in_shlibs(1);
     }
 
-  if (!ptid_equal (inferior_ptid, null_ptid))
-      observer_notify_inferior_created (&current_target, from_tty);
+  if (!ptid_equal(inferior_ptid, null_ptid))
+    observer_notify_inferior_created(&current_target, from_tty);
 
-  // If SYMFILE_OBJFILE is a kernel, try to find it in the remote memory
-  // and relocate SYMFILE_OBJFILE to have the correct addresses.
+  /* If SYMFILE_OBJFILE is a kernel, then try to find it in the remote memory
+   * and relocate SYMFILE_OBJFILE to have the correct addresses.  */
 
-  // Only do this for "target remote" -- e.g. "target remote-macosx" should
-  // not search through memory for a kernel.
+  /* Only do this for "target remote" -- e.g. "target remote-macosx" should
+   * not search through memory for a kernel.  */
 
-  if (target->to_shortname && strcmp (target->to_shortname, "remote") == 0)
-    exhaustive_search_for_kernel_in_mem (symfile_objfile, NULL, NULL);
+  if (target->to_shortname && (strcmp(target->to_shortname, "remote") == 0))
+    exhaustive_search_for_kernel_in_mem(symfile_objfile, NULL, NULL);
 }
 
 /* This takes a program previously attached to and detaches it.  After

@@ -86,7 +86,7 @@ extern void load_helpers(void);
 
 extern void clear_checkpoints(void);
 extern void clear_all_checkpoints(void);
-extern void set_max_checkpoints(char *, int, struct cmd_list_element *);
+extern void set_max_checkpoints(const char *, int, struct cmd_list_element *);
 extern struct checkpoint *create_checkpoint(void);
 extern struct checkpoint *collect_checkpoint(void);
 extern struct checkpoint *finish_checkpoint(struct checkpoint *cp);
@@ -95,7 +95,7 @@ extern void maybe_create_checkpoint(void);
 extern void begin_inferior_call_checkpoints(void);
 extern void end_inferior_call_checkpoints(void);
 extern void rollback_to_checkpoint(struct checkpoint *cp);
-extern void checkpoints_info(char *args, int from_tty);
+extern void checkpoints_info(const char *args, int from_tty);
 extern void print_checkpoint_info(struct checkpoint *cp);
 extern int checkpoint_compare(struct checkpoint *cp1,
                               struct checkpoint *cp2);

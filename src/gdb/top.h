@@ -50,7 +50,7 @@ extern void cd_command(const char *, int);
 extern void read_command_file(FILE *);
 extern void init_history(void);
 extern void command_loop(void);
-extern void simplified_command_loop(char *(*read_input_func)(char *),
+extern void simplified_command_loop(char *(*read_input_func)(const char *),
 				    void (*execute_command_func)(char *,
                                                                  int));
 extern int quit_confirm(void);
@@ -61,7 +61,7 @@ extern void execute_command(const char *, int);
 
 /* This function returns a pointer to the string that is used
    by gdb for its command prompt. */
-extern char *get_prompt(void);
+extern const char *get_prompt(void);
 
 /* This function copies the specified string into the string that
    is used by gdb for its command prompt. */
@@ -87,7 +87,7 @@ extern void set_history(const char *, int);
 
 extern void show_history(const char *, int);
 
-extern void set_verbose(char *, int, struct cmd_list_element *);
+extern void set_verbose(const char *, int, struct cmd_list_element *);
 
 extern void do_restore_instream_cleanup(void *stream);
 

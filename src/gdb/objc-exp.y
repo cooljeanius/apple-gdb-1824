@@ -974,11 +974,11 @@ typebase  /* Implements (approximately): (type-qualifier)* type-specifier.  */
 			{ $$ = lookup_enum (copy_name ($2),
 					    expression_context_block); }
 	|	UNSIGNED typename
-			{ $$ = lookup_unsigned_typename (TYPE_NAME($2.type)); }
+			{ $$ = lookup_unsigned_typename(TYPE_NAME($2.type)); }
 	|	UNSIGNED
 			{ $$ = builtin_type_unsigned_int; }
 	|	SIGNED_KEYWORD typename
-			{ $$ = lookup_signed_typename (TYPE_NAME($2.type)); }
+			{ $$ = lookup_signed_typename(TYPE_NAME($2.type)); }
 	|	SIGNED_KEYWORD
 			{ $$ = builtin_type_int; }
 	|	TEMPLATE name '<' type '>'
@@ -995,19 +995,19 @@ typebase  /* Implements (approximately): (type-qualifier)* type-specifier.  */
 typename:	TYPENAME
 	|	INT_KEYWORD
 		{
-		  $$.stoken.ptr = "int";
+		  $$.stoken.ptr = (char *)"int";
 		  $$.stoken.length = 3;
 		  $$.type = builtin_type_int;
 		}
 	|	LONG
 		{
-		  $$.stoken.ptr = "long";
+		  $$.stoken.ptr = (char *)"long";
 		  $$.stoken.length = 4;
 		  $$.type = builtin_type_long;
 		}
 	|	SHORT
 		{
-		  $$.stoken.ptr = "short";
+		  $$.stoken.ptr = (char *)"short";
 		  $$.stoken.length = 5;
 		  $$.type = builtin_type_short;
 		}
@@ -1337,7 +1337,7 @@ yylex(void)
   int namelen;
   unsigned int i;
   char *tokstart;
-  char *tokptr;
+  const char *tokptr;
   int tempbufindex;
   static char *tempbuf;
   static int tempbufsize;
@@ -1383,7 +1383,7 @@ yylex(void)
       lexptr++;
       c = *lexptr++;
       if (c == '\\')
-	c = parse_escape (&lexptr);
+	c = parse_escape((const char **)&lexptr);
       else if (c == '\'')
 	error ("Empty character constant.");
 
@@ -1578,7 +1578,7 @@ yylex(void)
 	  tempbuf[tempbufindex] = '\0';
 	  yylval.sval.ptr = tempbuf;
 	  yylval.sval.length = tempbufindex;
-	  lexptr = tokptr;
+	  lexptr = (char *)tokptr;
 	  return SELECTOR;
 	}
       if (tokstart[1] != '"')
@@ -1610,7 +1610,7 @@ yylex(void)
 	   allocating the first one on demand.  */
 	if (tempbufindex + 1 >= tempbufsize)
 	  {
-	    tempbuf = (char *) realloc (tempbuf, tempbufsize += 64);
+	    tempbuf = (char *)realloc(tempbuf, tempbufsize += 64);
 	  }
 	switch (*tokptr)
 	  {
@@ -1620,7 +1620,7 @@ yylex(void)
 	    break;
 	  case '\\':
 	    tokptr++;
-	    c = parse_escape (&tokptr);
+	    c = parse_escape(&tokptr);
 	    if (c == -1)
 	      {
 		continue;
@@ -1639,7 +1639,7 @@ yylex(void)
       tempbuf[tempbufindex] = '\0';	/* See note above.  */
       yylval.sval.ptr = tempbuf;
       yylval.sval.length = tempbufindex;
-      lexptr = tokptr;
+      lexptr = (char *)tokptr;
       return (tokchr == '@' ? NSSTRING : STRING);
     }
 

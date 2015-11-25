@@ -75,7 +75,7 @@ c_print_typename_possibly_quoted (struct type *type, struct ui_file *stream)
 /* LEVEL is the depth to indent lines by.  */
 
 void
-c_print_type (struct type *type, char *varstring, struct ui_file *stream,
+c_print_type (struct type *type, const char *varstring, struct ui_file *stream,
 	      int show, int level)
 {
   enum type_code code;

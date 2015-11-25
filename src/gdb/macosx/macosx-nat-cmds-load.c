@@ -60,8 +60,9 @@ extern void _initialize_load_plugin(void);
 
 extern void **_plugin_private_data(char *plugin_name);
 
+/* */
 void
-load_plugin(char *arg, int from_tty)
+load_plugin(const char *arg, int from_tty)
 {
   void (*fptr)(void) = NULL;
   const char *init_func_name = "init_from_gdb";
@@ -164,6 +165,7 @@ info_plugins_command(const char *arg, int from_tty)
     }
 }
 
+/* Usual gdb initialization hook: */
 void
 _initialize_load_plugin(void)
 {

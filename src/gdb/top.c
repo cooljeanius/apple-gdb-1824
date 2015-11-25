@@ -306,13 +306,13 @@ ptid_t (*deprecated_target_wait_hook)(ptid_t ptid,
 /* Used by UI as a wrapper around command execution.  May do various things
    like enabling/disabling buttons, etc...  */
 
-void (*deprecated_call_command_hook)(struct cmd_list_element *c, char *cmd,
-				     int from_tty);
+void (*deprecated_call_command_hook)(struct cmd_list_element *c,
+				     const char *cmd, int from_tty);
 
 /* Called after a `set' command has finished.  Is only run if the
    `set' command succeeded.  */
 
-void (*deprecated_set_hook)(struct cmd_list_element * c);
+void (*deprecated_set_hook)(struct cmd_list_element *c);
 
 /* called in place of printing a source line */
 
@@ -332,7 +332,7 @@ void (*stack_changed_hook)(void);
 
 /* called when command line input is needed */
 
-char *(*command_line_input_hook)(char *, int, const char *);
+char *(*command_line_input_hook)(const char *, int, const char *);
 
 /* Called when the current thread changes.  Argument is thread id.  */
 
@@ -448,7 +448,7 @@ execute_command(const char *p, int from_tty)
   struct cmd_list_element *c;
   enum language flang;
   static int warned = 0;
-  char *tmp_line;
+  const char *tmp_line;
 
   free_all_values();
   /* APPLE LOCAL begin subroutine inlining  */
@@ -576,12 +576,12 @@ command_loop(void)
   while (instream && !feof(instream))
     {
       if (window_hook && instream == stdin)
-	(*window_hook)(instream, get_prompt());
+	(*window_hook)(instream, (char *)get_prompt());
 
       quit_flag = 0;
       if (instream == stdin && stdin_is_tty)
-	reinitialize_more_filter ();
-      old_chain = make_cleanup (null_cleanup, 0);
+	reinitialize_more_filter();
+      old_chain = make_cleanup(null_cleanup, 0);
 
       /* Get a command-line. This calls the readline package. */
       command = command_line_input (instream == stdin ?
@@ -634,30 +634,30 @@ command_loop(void)
    such things as displaying time and space usage. If the user asks
    for those, they won't work. */
 void
-simplified_command_loop (char *(*read_input_func) (char *),
-			 void (*execute_command_func) (char *, int))
+simplified_command_loop(char *(*read_input_func)(const char *),
+			void (*execute_command_func)(char *, int))
 {
   struct cleanup *old_chain;
   char *command;
-  int stdin_is_tty = ISATTY (stdin);
+  int stdin_is_tty = ISATTY(stdin);
 
-  while (instream && !feof (instream))
+  while (instream && !feof(instream))
     {
       quit_flag = 0;
       if (instream == stdin && stdin_is_tty)
-	reinitialize_more_filter ();
-      old_chain = make_cleanup (null_cleanup, 0);
+	reinitialize_more_filter();
+      old_chain = make_cleanup(null_cleanup, 0);
 
       /* Get a command-line. */
-      command = (*read_input_func) (instream == stdin ?
-				    get_prompt () : (char *) NULL);
+      command = (*read_input_func)((instream == stdin)
+				   ? get_prompt() : (const char *)NULL);
 
       if (command == 0)
 	return;
 
-      (*execute_command_func) (command, instream == stdin);
+      (*execute_command_func)(command, instream == stdin);
 
-      /* Do any commands attached to breakpoint we stopped at.  */
+      /* Do any commands attached to breakpoint at which we stopped: */
       bpstat_do_actions(&stop_bpstat);
 
       do_cleanups(old_chain);
@@ -921,14 +921,15 @@ gdb_rl_operate_and_get_next(int count, int key)
    simple input as the user has requested.  */
 
 char *
-command_line_input(char *prompt_arg, int repeat, const char *annotation_suffix)
+command_line_input(const char *prompt_arg, int repeat,
+		   const char *annotation_suffix)
 {
-  static char *linebuffer = 0;
-  static unsigned linelength = 0;
+  static char *linebuffer = (char *)0;
+  static unsigned int linelength = 0U;
   char *p;
   char *p1;
   char *rl;
-  char *local_prompt = prompt_arg;
+  char *local_prompt = (char *)prompt_arg;
   char *nline;
   char got_eof = 0;
 
@@ -1138,61 +1139,65 @@ command_line_input(char *prompt_arg, int repeat, const char *annotation_suffix)
 
 /* Print the GDB banner. */
 void
-print_gdb_version (struct ui_file *stream)
+print_gdb_version(struct ui_file *stream)
 {
   /* From GNU coding standards, first line is meant to be easy for a
      program to parse, and is just canonical program name and version
      number, which starts after last space. */
 
-  /* APPLE LOCAL build date */
-  fprintf_filtered (stream, "GNU gdb %s (%s)\n", version, build_date);
+  /* APPLE LOCAL build date: */
+  fprintf_filtered(stream, "GNU gdb (with Apple modifications) %s (%s)\n",
+		   version, build_date);
 
-  /* Second line is a copyright notice. */
-
-  fprintf_filtered (stream, "Copyright 2004 Free Software Foundation, Inc.\n");
+  /* Second line is a copyright notice; keep synced with the latest date in the
+   * copyright notice in the comment at the top of this file: */
+  fprintf_filtered(stream, "Copyright 2005 Free Software Foundation, Inc.\n");
 
   /* Following the copyright is a brief statement that the program is
      free software, that users are free to copy and change it on
      certain conditions, that it is covered by the GNU GPL, and that
      there is no warranty. */
 
-  fprintf_filtered (stream, "\
+  fprintf_filtered(stream, "\
 GDB is free software, covered by the GNU General Public License, and you are\n\
 welcome to change it and/or distribute copies of it under certain conditions.\n\
 Type \"show copying\" to see the conditions.\n\
 There is absolutely no warranty for GDB.  Type \"show warranty\" for details.\n");
 
-  /* After the required info we print the configuration information. */
-
-  fprintf_filtered (stream, "This GDB was configured as \"");
-  if (strcmp (host_name, target_name) != 0)
+  /* After the required info we print the configuration information: */
+  fprintf_filtered(stream, "This GDB was configured as \"");
+  if (strcmp(host_name, target_name) != 0)
     {
-      fprintf_filtered (stream, "--host=%s --target=%s", host_name, target_name);
+      fprintf_filtered(stream, "--host=%s --target=%s", host_name, target_name);
     }
   else
     {
-      fprintf_filtered (stream, "%s", host_name);
+      fprintf_filtered(stream, "%s", host_name);
+      if (strcmp(host_name, "") == 0) {
+	fprintf_filtered(stream, "%s", "<error retrieving host name>");
+      }
     }
-  fprintf_filtered (stream, "\".");
+  fprintf_filtered(stream, "\".\n");
 }
 
-/* get_prompt: access method for the GDB prompt string.  */
-
-char *
-get_prompt (void)
+/* get_prompt: access method for the GDB prompt string: */
+const char *
+get_prompt(void)
 {
-  return PROMPT (0);
+  return PROMPT(0);
 }
 
+/* */
 void
-set_prompt (char *s)
+set_prompt(char *s)
 {
-/* ??rehrauer: I don't know why this fails, since it looks as though
-   assignments to prompt are wrapped in calls to savestring...
-   if (prompt != NULL)
-   xfree (prompt);
- */
-  PROMPT (0) = savestring (s, strlen (s));
+/* ??rehrauer: I do NOT know why this fails, since it looks as though
+   assignments to prompt are wrapped in calls to savestring...  */
+#ifdef FIGURED_OUT_WHY_THIS_FAILS
+  if (prompt != NULL)
+    xfree(prompt);
+#endif /* FIGURED_OUT_WHY_THIS_FAILS */
+  PROMPT(0) = savestring(s, strlen(s));
 }
 
 
@@ -1204,10 +1209,10 @@ quit_confirm (void)
 {
   if (! ptid_equal (inferior_ptid, null_ptid) && target_has_execution)
     {
-      char *s;
+      const char *s;
 
-      /* This is something of a hack.  But there's no reliable way to
-         see if a GUI is running.  The `use_windows' variable doesn't
+      /* This is something of a hack.  But there is no reliable way to
+         see if a GUI is running.  The `use_windows' variable fails to
          cut it.  */
       if (deprecated_init_ui_hook)
 	s = "A debugging session is active.\nDo you still want to close the debugger?";
@@ -1226,7 +1231,7 @@ quit_confirm (void)
 /* Helper routine for quit_force that requires error handling: */
 struct qt_args
 {
-  char *args;
+  const char *args;
   int from_tty;
 };
 
@@ -1238,16 +1243,16 @@ quit_target(void *arg)
   if (! ptid_equal (inferior_ptid, null_ptid) && target_has_execution)
     {
       if (attach_flag)
-        target_detach (qt->args, qt->from_tty);
+        target_detach(qt->args, qt->from_tty);
       else
-        target_kill ();
+        target_kill();
     }
 
   /* APPLE LOCAL checkpoints */
-  clear_all_checkpoints ();
+  clear_all_checkpoints();
 
   /* UDI wants this, to kill the TIP.  */
-  target_close (&current_target, 1);
+  target_close(&current_target, 1);
 
   /* Save the history information if it is appropriate to do so.  */
   if (write_history_p && history_filename) {
@@ -1391,9 +1396,10 @@ show_commands(const char *args, int from_tty)
     }
 }
 
-/* Called by do_setshow_command.  */
+/* Called by do_setshow_command: */
 static void
-set_history_size_command(char *args, int from_tty, struct cmd_list_element *c)
+set_history_size_command(const char *args, int from_tty,
+			 struct cmd_list_element *c)
 {
   if (history_size == INT_MAX)
     unstifle_history();
@@ -1426,7 +1432,7 @@ int info_verbose = 0;		/* Default verbose msgs off */
 
 /* Called by do_setshow_command.  An elaborate joke.  */
 void
-set_verbose(char *args, int from_tty, struct cmd_list_element *c)
+set_verbose(const char *args, int from_tty, struct cmd_list_element *c)
 {
   const char *cmdname = "verbose";
   struct cmd_list_element *showcmd;

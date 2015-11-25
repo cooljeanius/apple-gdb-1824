@@ -545,6 +545,7 @@ ui_out_field_skip(struct ui_out *uiout, const char *fldname)
   uo_field_skip(uiout, fldno, width, (enum ui_align)align, fldname);
 }
 
+/* */
 void
 ui_out_field_string(struct ui_out *uiout, const char *fldname,
 		    const char *string)
@@ -579,18 +580,21 @@ ui_out_field_fmt(struct ui_out *uiout, const char *fldname,
   va_end(args);
 }
 
+/* */
 void
 ui_out_spaces(struct ui_out *uiout, int numspaces)
 {
   uo_spaces(uiout, numspaces);
 }
 
+/* */
 void
 ui_out_text(struct ui_out *uiout, const char *string)
 {
   uo_text(uiout, string);
 }
 
+/* */
 void
 ui_out_text_fmt(struct ui_out *uiout, const char *format, ...)
 {
@@ -603,6 +607,7 @@ ui_out_text_fmt(struct ui_out *uiout, const char *format, ...)
   va_end(args);
 }
 
+/* */
 void
 ui_out_message(struct ui_out *uiout, int verbosity,
                const char *format, ...)
@@ -616,6 +621,7 @@ ui_out_message(struct ui_out *uiout, int verbosity,
   va_end(args);
 }
 
+/* */
 struct ui_stream *
 ui_out_stream_new(struct ui_out *uiout)
 {
@@ -627,6 +633,7 @@ ui_out_stream_new(struct ui_out *uiout)
   return tempbuf;
 }
 
+/* */
 void
 ui_out_stream_delete(struct ui_stream *buf)
 {
@@ -634,40 +641,44 @@ ui_out_stream_delete(struct ui_stream *buf)
   xfree(buf);
 }
 
+/* */
 static void
 do_stream_delete(void *buf)
 {
   ui_out_stream_delete((struct ui_stream *)buf);
 }
 
+/* */
 struct cleanup *
-make_cleanup_ui_out_stream_delete (struct ui_stream *buf)
+make_cleanup_ui_out_stream_delete(struct ui_stream *buf)
 {
-  return make_cleanup (do_stream_delete, buf);
+  return make_cleanup(do_stream_delete, buf);
 }
 
-
+/* */
 void
-ui_out_wrap_hint (struct ui_out *uiout, char *identstring)
+ui_out_wrap_hint(struct ui_out *uiout, const char *identstring)
 {
-  uo_wrap_hint (uiout, identstring);
+  uo_wrap_hint(uiout, identstring);
 }
 
+/* */
 void
-ui_out_flush (struct ui_out *uiout)
+ui_out_flush(struct ui_out *uiout)
 {
-  uo_flush (uiout);
+  uo_flush(uiout);
 }
 
+/* */
 int
-ui_out_redirect (struct ui_out *uiout, struct ui_file *outstream)
+ui_out_redirect(struct ui_out *uiout, struct ui_file *outstream)
 {
-  return uo_redirect (uiout, outstream);
+  return uo_redirect(uiout, outstream);
 }
 
 /* set the flags specified by the mask given */
 int
-ui_out_set_flags (struct ui_out *uiout, int mask)
+ui_out_set_flags(struct ui_out *uiout, int mask)
 {
   int oldflags = uiout->flags;
 

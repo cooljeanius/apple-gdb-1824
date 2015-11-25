@@ -337,7 +337,7 @@ int fix_and_continue_debug_flag = 0;
 #endif /* !TARGET_ADDRESS_BYTES */
 
 static void
-fix_command(char *args, int from_tty)
+fix_command(const char *args, int from_tty)
 {
   char **argv;
   char *source_filename, *bundle_filename;
@@ -380,25 +380,22 @@ fix_command(char *args, int from_tty)
 }
 
 
-/* All filename arguments should be tilde expanded, and the bundle
-   filename should be run through realpath() before getting here so
-   it's the same form that dyld will report.  */
-
+/* All filename arguments should be tilde expanded, and the bundle filename
+ * should be run through realpath() before getting here so that it is the same
+ * form that dyld will report: */
 void
-fix_command_1 (const char *source_filename,
-               const char *bundle_filename,
-               const char *solib_filename)
+fix_command_1(const char *source_filename, const char *bundle_filename,
+              const char *solib_filename)
 {
   struct fixinfo *cur;
   struct cleanup *wipe;
   char tmpbuf[MAXPATHLEN];
   char *fn;
 
-  /* source_filename and bundle_filename must be set.  */
-
+  /* source_filename and bundle_filename must both be set: */
   if (source_filename == NULL || *source_filename == '\0' ||
       bundle_filename == NULL || *bundle_filename == '\0')
-    error ("Source or bundle filename not provided.");
+    error(_("Source or bundle filename not provided."));
 
   if (bundle_filename && *bundle_filename == '\0')
     bundle_filename = NULL;
@@ -557,8 +554,8 @@ mark_previous_fixes_obsolete(struct fixinfo *cur)
               for (i = 0; i < BLOCKVECTOR_NBLOCKS(BLOCKVECTOR(st)); i++) {
                 ALL_BLOCK_SYMBOLS(BLOCKVECTOR_BLOCK(BLOCKVECTOR(st), i), j, sym)
                   {
-                    if ((SYMBOL_DOMAIN(sym) != VAR_DOMAIN) ||
-                        (SYMBOL_CLASS(sym) != LOC_STATIC))
+                    if ((SYMBOL_DOMAIN(sym) != VAR_DOMAIN)
+			|| (SYMBOL_CLASS(sym) != LOC_STATIC))
                       {
                         SYMTAB_OBSOLETED(st) = 51;
                       }
@@ -2552,6 +2549,7 @@ fix_and_continue_supported(void)
   return 1;
 }
 
+/* Usual gdb initialization hook: */
 void
 _initialize_fix(void)
 {

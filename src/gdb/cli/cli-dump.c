@@ -295,7 +295,7 @@ dump_memory_to_file(const char *cmd, const char *mode, const char *file_format)
 
 /* FIXME: needs comment: */
 static void
-dump_memory_command(char *cmd, const char *mode)
+dump_memory_command(const char *cmd, const char *mode)
 {
   dump_memory_to_file(cmd, mode, "binary");
 }
@@ -348,7 +348,7 @@ dump_value_to_file(const char *cmd, const char *mode, const char *file_format)
 
 /* FIXME: needs comment: */
 static void
-dump_value_command(char *cmd, const char *mode)
+dump_value_command(const char *cmd, const char *mode)
 {
   dump_value_to_file(cmd, mode, "binary");
 }
@@ -425,13 +425,13 @@ append_binary_value(const char *args, int from_tty)
 /* FIXME: needs comment: */
 struct dump_context
 {
-  void (*func)(char *cmd, const char *mode);
+  void (*func)(const char *cmd, const char *mode);
   const char *mode;
 };
 
 /* FIXME: needs comment: */
 static void
-call_dump_func(struct cmd_list_element *c, char *args, int from_tty)
+call_dump_func(struct cmd_list_element *c, const char *args, int from_tty)
 {
   struct dump_context *d = (struct dump_context *)get_cmd_context(c);
   d->func(args, d->mode);
@@ -439,7 +439,8 @@ call_dump_func(struct cmd_list_element *c, char *args, int from_tty)
 
 /* FIXME: needs comment: */
 void
-add_dump_command(const char *name, void (*func)(char *args, const char *mode),
+add_dump_command(const char *name,
+		 void (*func)(const char *args, const char *mode),
 		 const char *descr)
 {
   struct cmd_list_element *c;

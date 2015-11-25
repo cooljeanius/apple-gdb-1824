@@ -464,11 +464,12 @@ core_open(char *filename, int from_tty)
 # endif /* gcc 4.6+ */
 #endif /* any gcc */
 
+/* */
 static void
-core_detach(char *args, int from_tty)
+core_detach(const char *args, int from_tty)
 {
   if (args)
-    error("Too many arguments");
+    error(_("Too many arguments"));
   unpush_target(&macho_core_ops);
   reinit_frame_cache();
   if (from_tty)

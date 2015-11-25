@@ -140,8 +140,9 @@ write64u (unsigned char *s, uint64_t i, int bigendian)
     }
 }
 
-const char *
-kdp_req_string (kdp_req_t req)
+/* */
+const char * ATTRIBUTE_CONST
+kdp_req_string(kdp_req_t req)
 {
   switch (req)
     {
@@ -200,8 +201,9 @@ kdp_req_string (kdp_req_t req)
     }
 }
 
-const char *
-kdp_error_string (kdp_error_t error)
+/* */
+const char * ATTRIBUTE_CONST
+kdp_error_string(kdp_error_t error)
 {
   switch (error)
     {
@@ -218,8 +220,9 @@ kdp_error_string (kdp_error_t error)
     }
 }
 
-const char *
-kdp_return_string (kdp_return_t error)
+/* */
+const char * ATTRIBUTE_CONST
+kdp_return_string(kdp_return_t error)
 {
   switch (error)
     {
@@ -262,6 +265,7 @@ kdp_return_string (kdp_return_t error)
     }
 }
 
+/* */
 void
 kdp_log_data (kdp_log_function * f,
               kdp_log_level l, const unsigned char *data, unsigned int nbytes)

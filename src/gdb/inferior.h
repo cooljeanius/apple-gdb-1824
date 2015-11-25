@@ -203,7 +203,7 @@ extern void default_print_registers_info(struct gdbarch *gdbarch,
 extern void store_inferior_registers(int);
 extern void fetch_inferior_registers(int);
 extern void solib_create_inferior_hook(void);
-extern void child_terminal_info(char *, int);
+extern void child_terminal_info(const char *, int);
 extern void term_info(const char *, int);
 extern void terminal_ours_for_output(void);
 extern void terminal_inferior(void);

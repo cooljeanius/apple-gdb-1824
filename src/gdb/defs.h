@@ -781,7 +781,7 @@ extern CORE_ADDR string_to_core_addr(const char *my_string);
 extern char *hex_string(LONGEST);
 extern char *hex_string_custom(LONGEST, int);
 
-extern void fprintf_symbol_filtered(struct ui_file *, char *,
+extern void fprintf_symbol_filtered(struct ui_file *, const char *,
 				    enum language, int);
 
 extern NORETURN void perror_with_name(const char *) ATTR_NORETURN;
@@ -813,7 +813,7 @@ extern char *gdb_readline(char *);
 
 extern char *gdb_readline_wrapper(char *);
 
-extern char *command_line_input(char *, int, const char *);
+extern char *command_line_input(const char *, int, const char *);
 
 extern void print_prompt(void);
 
@@ -1488,7 +1488,7 @@ extern void (*frame_changed_hook)(int new_frame_number);
 extern void (*stack_changed_hook)(void);
 
 /* called when command line input is needed: */
-extern char *(*command_line_input_hook)(char *, int, const char *);
+extern char *(*command_line_input_hook)(const char *, int, const char *);
 
 /* these <command>_hooks are called after the command has processed its arguments
    and just before it calls out to do the work of the command */
@@ -1536,10 +1536,10 @@ extern void (*deprecated_attach_hook)(void)
 extern void (*deprecated_detach_hook)(void)
   ATTRIBUTE_DEPRECATED;
 extern void (*deprecated_call_command_hook)(struct cmd_list_element * c,
-					    char *cmd, int from_tty)
+					    const char *cmd, int from_tty)
   ATTRIBUTE_DEPRECATED;
 
-extern void (*deprecated_set_hook)(struct cmd_list_element * c)
+extern void (*deprecated_set_hook)(struct cmd_list_element *c)
   ATTRIBUTE_DEPRECATED;
 
 extern void (*deprecated_error_hook)(void)
@@ -1666,8 +1666,10 @@ void breakup_args(char *scratch, int *argc, char **argv);
    ((void)((expression) ? 0 : gdb_check_fatal(#expression, __FILE__, __LINE__, __CHECK_FUNCTION)))
 #endif /* __cplusplus */
 
-void gdb_check(const char *str, const char *file, unsigned int line, const char *func);
-void gdb_check_fatal(const char *str, const char *file, unsigned int line, const char *func);
+void ATTR_NORETURN gdb_check(const char *str, const char *file,
+			     unsigned int line, const char *func);
+void ATTR_NORETURN gdb_check_fatal(const char *str, const char *file,
+				   unsigned int line, const char *func);
 /* APPLE LOCAL end CHECK macro */
 
 /* APPLE LOCAL: Local timer stuff */

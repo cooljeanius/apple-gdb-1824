@@ -72,7 +72,17 @@
 
 #include "macosx-tdep.h"
 
+#if defined(HAVE_AVAILABILITY_H) || (defined(__APPLE__) && defined(NM_NEXTSTEP))
+# include <Availability.h>
+#else
+# ifndef __MAC_10_5
+#  define __MAC_10_5      1050
+# endif /* !__MAC_10_5 */
+#endif /* HAVE_AVAILABILITY_H || (__APPLE__ && NM_NEXTSTEP) */
 #include <AvailabilityMacros.h>
+#ifndef MAC_OS_X_VERSION_MIN_REQUIRED
+# define MAC_OS_X_VERSION_MIN_REQUIRED 1010
+#endif /* !MAC_OS_X_VERSION_MIN_REQUIRED */
 
 #include <mach/mach_vm.h>
 
@@ -239,7 +249,7 @@ static int dyld_info_process_raw(struct macosx_dyld_thread_status *status,
                                  CORE_ADDR name, uint64_t modtime,
                                  CORE_ADDR header_addr);
 
-static void macosx_set_auto_start_dyld(char *args, int from_tty,
+static void macosx_set_auto_start_dyld(const char *args, int from_tty,
                                        struct cmd_list_element *c);
 
 static int target_read_dylib_command(CORE_ADDR addr,
@@ -633,6 +643,9 @@ dyld_starts_here_p(mach_vm_address_t addr)
   if (data_count < sizeof(struct mach_header))
     {
       ret = vm_deallocate(mach_task_self(), data, data_count);
+      if (ret != KERN_SUCCESS) {
+	warning(_("possible issue with vm_deallocate()"));
+      }
       return 0;
     }
 
@@ -646,6 +659,9 @@ dyld_starts_here_p(mach_vm_address_t addr)
       (data_count < (sizeof(struct mach_header) + mh->sizeofcmds)))
     {
       ret = vm_deallocate(mach_task_self(), data, data_count);
+      if (ret != KERN_SUCCESS) {
+	warning(_("possible issue with vm_deallocate()"));
+      }
       return 0;
     }
 
@@ -702,6 +718,10 @@ dyld_starts_here_p(mach_vm_address_t addr)
     }
 
   ret = vm_deallocate(mach_task_self(), data, data_count);
+  
+  if (ret != KERN_SUCCESS) {
+    warning(_("possible issue with vm_deallocate()"));
+  }
 
   return 1;
 #else
@@ -866,7 +886,10 @@ macosx_locate_dyld_via_taskinfo(macosx_dyld_thread_status *s)
 
   if (s->dyld_image_infos != INVALID_ADDRESS)
     {
-      struct dyld_raw_infos raw_infos;
+      struct dyld_raw_infos raw_infos = {
+	((MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_5) ? 1U : 2U),
+	0U, 0UL, 0UL, 0, 0, 0UL, 0UL
+      };
       struct gdb_exception e;
       TRY_CATCH(e, RETURN_MASK_ERROR)
         {
@@ -3009,7 +3032,7 @@ map_shlib_numbers(const char *args,
 {
   char *p, *p1, *val;
   char **argv;
-  int num, match;
+  int num, match = 0;
   struct cleanup *cleanups;
 
   if (args == 0)
@@ -3858,8 +3881,9 @@ sharedlibrary_command(const char *arg, int from_tty)
             gdb_stdout);
 }
 
+/* */
 static void
-macosx_set_auto_start_dyld(char *args, int from_tty,
+macosx_set_auto_start_dyld(const char *args, int from_tty,
                            struct cmd_list_element *c)
 {
   /* Do NOT want to bother with stopping the target to set this... */
@@ -3904,7 +3928,7 @@ macosx_set_auto_start_dyld(char *args, int from_tty,
    of any used shared libraries.  */
 
 static void
-set_shlib_path_substitutions_cmd(char *args, int from_tty,
+set_shlib_path_substitutions_cmd(const char *args, int from_tty,
                                  struct cmd_list_element * c)
 {
   int success = 0;

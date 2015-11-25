@@ -125,18 +125,19 @@ show_frame_debug (struct ui_file *file, int from_tty,
 }
 
 /* APPLE LOCAL begin extra frame info */
-/* See comments in frame_info (). */
+/* See comments in frame_info(). */
 
 struct frame_info *
-frame_next_hack (struct frame_info *frame)
+frame_next_hack(struct frame_info *frame)
 {
   return frame->next;
 }
 
 void *
-frame_cache_hack (struct frame_info *frame)
+frame_cache_hack(struct frame_info *frame)
 {
-  return & (frame->prologue_cache);
+  gdb_assert(frame != NULL);
+  return &(frame->prologue_cache);
 }
 /* APPLE LOCAL end extra frame info */
 

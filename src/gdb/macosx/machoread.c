@@ -920,7 +920,7 @@ macho_calculate_offsets_for_dsym(struct objfile *main_objfile,
 				 int *sym_num_offsets)
 {
   bfd_boolean in_mem_shared_cache;
-  int i;
+  int i = 0;
   CORE_ADDR dsym_offset;
   in_mem_shared_cache = bfd_mach_o_in_shared_cached_memory(main_objfile->obfd);
 
@@ -944,7 +944,6 @@ macho_calculate_offsets_for_dsym(struct objfile *main_objfile,
 	  memset(*sym_offsets, 0,
 		 SIZEOF_N_SECTION_OFFSETS(in_num_offsets));
 
-	  i = 0;
 	  exe_sect = exe_bfd->sections;
 	  sym_sect = sym_bfd->sections;
 	  for (i = 0;

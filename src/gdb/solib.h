@@ -34,8 +34,8 @@ extern void clear_solib(void);
 
 /* Called to add symbols from a shared library to gdb's symbol table. */
 
-/* APPLE LOCAL return a value */
-extern int solib_add(char *, int, struct target_ops *, int);
+/* APPLE LOCAL return a value: */
+extern int solib_add(const char *, int, struct target_ops *, int);
 extern int solib_read_symbols(struct so_list *, int);
 
 /* Function to be called when the inferior starts up, to discover the
@@ -54,7 +54,7 @@ extern char *solib_address(CORE_ADDR);
 extern int in_solib_dynsym_resolve_code(CORE_ADDR);
 
 /* Discard symbols that were auto-loaded from shared libraries: */
-extern void no_shared_libraries(char *ignored, int from_tty);
+extern void no_shared_libraries(const char *ignored, int from_tty);
 
 #endif /* SOLIB_H */
 

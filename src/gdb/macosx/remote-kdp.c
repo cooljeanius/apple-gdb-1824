@@ -151,8 +151,9 @@ static void kdp_mourn_inferior(void);
 
 extern void _initialize_remote_kdp(void);
 
+/* */
 static void
-set_timeouts(char *args, int from_tty, struct cmd_list_element *cmd)
+set_timeouts(const char *args, int from_tty, struct cmd_list_element *cmd)
 {
   kdp_set_timeouts(&c, kdp_timeout, kdp_retries);
 }
@@ -2324,8 +2325,9 @@ init_kdp_ops(void)
   kdp_ops.to_magic = OPS_MAGIC;
 }
 
+/* */
 static void
-update_kdp_default_host_type(char *args, int from_tty,
+update_kdp_default_host_type(const char *args, int from_tty,
                              struct cmd_list_element *c)
 {
   int htype;

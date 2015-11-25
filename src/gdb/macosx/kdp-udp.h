@@ -12,7 +12,6 @@
 struct kdp_connection
 {
   /* connection information */
-
   kdp_log_function *logger;
 
   kdp_pkt_t *request;
@@ -49,10 +48,10 @@ struct kdp_connection
 
 typedef struct kdp_connection kdp_connection;
 
-void kdp_log_packetbuf(kdp_log_function *f, kdp_log_level l, char *prefix,
+void kdp_log_packetbuf(kdp_log_function *f, kdp_log_level l, const char *prefix,
                        const char *buf, size_t len);
 
-kdp_return_t kdp_transmit_fd(kdp_connection *c, kdp_pkt_t * packet, int fd);
+kdp_return_t kdp_transmit_fd(kdp_connection *c, kdp_pkt_t *packet, int fd);
 
 kdp_return_t kdp_receive_fd
   (kdp_connection *c, kdp_pkt_t *packet, int fd, int timeout);

@@ -281,9 +281,9 @@ tui_detach_hook (void)
   tui_display_main ();
 }
 
-/* Install the TUI specific hooks.  */
+/* Install the TUI specific hooks: */
 void
-tui_install_hooks (void)
+tui_install_hooks(void)
 {
   deprecated_target_wait_hook = tui_target_wait_hook;
   deprecated_selected_frame_level_changed_hook = tui_selected_frame_level_changed_hook;

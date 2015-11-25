@@ -571,6 +571,7 @@ dyld_parse_load_level (const char *s)
     }
 }
 
+/* */
 int
 dyld_resolve_load_flag(const struct dyld_path_info *d,
                        struct dyld_objfile_entry *e, const char *rules)
@@ -583,20 +584,24 @@ dyld_resolve_load_flag(const struct dyld_path_info *d,
   int nrules = 0;
   int crule = 0;
 
-  name = dyld_entry_string (e, 1);
+  name = dyld_entry_string(e, 1);
 
   if (name == NULL)
     return OBJF_SYM_NONE;
 
-  leaf = strrchr (name, '/');
+  leaf = strrchr(name, '/');
   leaf = ((leaf != NULL) ? leaf : name);
+  
+  if (leaf == NULL) {
+    warning(_("possible issue with leaf"));
+  }
 
   if (rules != NULL)
     {
-      prules = buildargv (rules);
+      prules = buildargv(rules);
       if (prules == NULL)
         {
-          warning ("unable to parse load rules");
+          warning(_("unable to parse load rules"));
           return OBJF_SYM_NONE;
         }
     }
@@ -613,9 +618,8 @@ dyld_resolve_load_flag(const struct dyld_path_info *d,
 
   if ((nrules % 3) != 0)
     {
-      warning
-        ("unable to parse load-rules (number of rule clauses must be a "
-         "multiple of 3)");
+      warning("unable to parse load-rules (number of rule clauses must be a "
+	      "multiple of 3)");
       return OBJF_SYM_NONE;
     }
   nrules /= 3;
@@ -670,50 +674,51 @@ dyld_resolve_load_flag(const struct dyld_path_info *d,
         }
       else
         {
-          name = dyld_entry_filename (e, d, DYLD_ENTRY_FILENAME_LOADED);
+          name = dyld_entry_filename(e, d, DYLD_ENTRY_FILENAME_LOADED);
           if (name == NULL)
             {
               if (!(e->reason & dyld_reason_weak_mask))
                 {
-                  warning ("Unable to resolve \"%s\"; not loading.", name);
+                  warning("Unable to resolve \"%s\"; not loading.", name);
                 }
               return OBJF_SYM_NONE;
             }
         }
 
-      ret = regcomp (&reasonbuf, matchreason, REG_NOSUB);
+      ret = regcomp(&reasonbuf, matchreason, REG_NOSUB);
       if (ret != 0)
         {
-          warning ("unable to compile regular expression \"%s\"",
-                   matchreason);
+          warning("unable to compile regular expression \"%s\"",
+                  matchreason);
           continue;
         }
 
-      ret = regcomp (&namebuf, matchname, REG_NOSUB);
+      ret = regcomp(&namebuf, matchname, REG_NOSUB);
       if (ret != 0)
         {
-          warning ("unable to compile regular expression \"%s\"",
-                   matchreason);
+          warning("unable to compile regular expression \"%s\"",
+                  matchreason);
           continue;
         }
 
-      ret = regexec (&reasonbuf, reason, 0, 0, 0);
+      ret = regexec(&reasonbuf, reason, 0, 0, 0);
       if (ret != 0)
         continue;
 
-      ret = regexec (&namebuf, name, 0, 0, 0);
+      ret = regexec(&namebuf, name, 0, 0, 0);
       if (ret != 0)
         continue;
 
-      return dyld_parse_load_level (setting);
+      return dyld_parse_load_level(setting);
     }
 
   return -1;
 }
 
+/* */
 int
-dyld_minimal_load_flag (const struct dyld_path_info *d,
-                        struct dyld_objfile_entry *e)
+dyld_minimal_load_flag(const struct dyld_path_info *d,
+                       struct dyld_objfile_entry *e)
 {
   int ret = dyld_resolve_load_flag (d, e, dyld_minimal_load_rules);
   return (ret >= 0) ? ret : OBJF_SYM_NONE;
@@ -1742,6 +1747,7 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
 
           len = bfd_section_size(e->objfile->obfd, commsec);
           buf = (char *)xmalloc((size_t)len * sizeof(char));
+	  gdb_assert(e->objfile->obfd != NULL);
           bfdname = (char *)xmalloc(strlen(e->objfile->obfd->filename)
                                     + 128UL);
 

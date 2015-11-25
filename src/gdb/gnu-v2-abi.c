@@ -304,17 +304,17 @@ static int
 vb_match (struct type *type, int index, struct type *basetype)
 {
   struct type *fieldtype;
-  char *name = TYPE_FIELD_NAME (type, index);
-  char *field_class_name = NULL;
+  const char *name = TYPE_FIELD_NAME(type, index);
+  const char *field_class_name = (const char *)NULL;
 
   if (*name != '_')
     return 0;
   /* gcc 2.4 uses _vb$.  */
-  if (name[1] == 'v' && name[2] == 'b' && is_cplus_marker (name[3]))
-    field_class_name = name + 4;
+  if (name[1] == 'v' && name[2] == 'b' && is_cplus_marker(name[3]))
+    field_class_name = (name + 4);
   /* gcc 2.5 will use __vb_.  */
   if (name[1] == '_' && name[2] == 'v' && name[3] == 'b' && name[4] == '_')
-    field_class_name = name + 5;
+    field_class_name = (name + 5);
 
   if (field_class_name == NULL)
     /* This field is not a virtual base class pointer.  */
@@ -392,12 +392,13 @@ gnuv2_baseclass_offset (struct type *type, int index,
   return TYPE_BASECLASS_BITPOS (type, index) / 8;
 }
 
+/* */
 static void
-init_gnuv2_ops (void)
+init_gnuv2_ops(void)
 {
   gnu_v2_abi_ops.shortname = "gnu-v2";
-  gnu_v2_abi_ops.longname = "GNU G++ Version 2 ABI";
-  gnu_v2_abi_ops.doc = "G++ Version 2 ABI";
+  gnu_v2_abi_ops.longname = (char *)"GNU G++ Version 2 ABI";
+  gnu_v2_abi_ops.doc = (char *)"G++ Version 2 ABI";
   gnu_v2_abi_ops.is_destructor_name = gnuv2_is_destructor_name;
   gnu_v2_abi_ops.is_constructor_name = gnuv2_is_constructor_name;
   gnu_v2_abi_ops.is_vtable_name = gnuv2_is_vtable_name;

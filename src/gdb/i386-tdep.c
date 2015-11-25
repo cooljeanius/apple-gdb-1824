@@ -1010,26 +1010,26 @@ i386_return_value (struct gdbarch *gdbarch, struct type *type,
 /* Types for the MMX and SSE registers.  */
 static struct type *i386_mmx_type;
 
-/* Construct the type for MMX registers.  */
+/* Construct the type for MMX registers: */
 static struct type *
-i386_build_mmx_type (void)
+i386_build_mmx_type(void)
 {
-  /* The type we're building is this: */
-#if 0
+  /* The type we are building is this: */
+#ifdef EMIT_THE_TYPE_WE_ARE_BUILDING
   union __gdb_builtin_type_vec64i
   {
-    int64_t uint64;
+    int64_t _uint64;
     int32_t v2_int32[2];
     int16_t v4_int16[4];
     int8_t v8_int8[8];
   };
-#endif
+#endif /* EMIT_THE_TYPE_WE_ARE_BUILDING */
 
   if (! i386_mmx_type)
     {
       struct type *t;
 
-      t = init_composite_type ("__gdb_builtin_type_vec64i", TYPE_CODE_UNION);
+      t = init_composite_type("__gdb_builtin_type_vec64i", TYPE_CODE_UNION);
       append_composite_type_field (t, "uint64", builtin_type_int64);
       append_composite_type_field (t, "v2_int32", builtin_type_v2_int32);
       append_composite_type_field (t, "v4_int16", builtin_type_v4_int16);

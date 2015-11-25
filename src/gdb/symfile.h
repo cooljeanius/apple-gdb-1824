@@ -69,7 +69,7 @@ struct psymbol_allocation_list
 struct other_sections
 {
   CORE_ADDR addr;
-  char *name;
+  const char *name;
   int sectindex;
 };
 
@@ -231,11 +231,11 @@ extern struct section_addr_info
 extern void free_section_addr_info (struct section_addr_info *);
 
 
-extern struct partial_symtab *start_psymtab_common (struct objfile *,
-						    struct section_offsets *,
-						    char *, CORE_ADDR,
-						    struct partial_symbol **,
-						    struct partial_symbol **);
+extern struct partial_symtab *start_psymtab_common(struct objfile *,
+						   struct section_offsets *,
+						   const char *, CORE_ADDR,
+						   struct partial_symbol **,
+						   struct partial_symbol **);
 
 /* Make a copy of the string at PTR with SIZE characters in the symbol
    obstack (and add a null character at the end in the copy).  Returns
@@ -274,16 +274,16 @@ extern int auto_solib_limit;
 
 /* From symfile.c */
 
-extern struct partial_symtab *allocate_psymtab (char *, struct objfile *);
+extern struct partial_symtab *allocate_psymtab(const char *, struct objfile *);
 
-extern void discard_psymtab (struct partial_symtab *);
+extern void discard_psymtab(struct partial_symtab *);
 
-extern void find_lowest_section (bfd *, asection *, void *);
+extern void find_lowest_section(bfd *, asection *, void *);
 
 /* APPLE LOCAL begin symfile bfd open */
-extern bfd *symfile_bfd_open (const char *, int mainline, enum gdb_osabi osabi);
+extern bfd *symfile_bfd_open(const char *, int mainline, enum gdb_osabi osabi);
 
-extern int get_section_index (struct objfile *, char *);
+extern int get_section_index(struct objfile *, const char *);
 
 /* Utility functions for overlay sections: */
 extern enum overlay_debugging_state
@@ -295,7 +295,7 @@ extern enum overlay_debugging_state
 extern int overlay_cache_invalid;
 
 /* Return the "mapped" overlay section containing the PC.  */
-extern asection *find_pc_mapped_section (CORE_ADDR);
+extern asection *find_pc_mapped_section(CORE_ADDR);
 
 /* Return any overlay section containing the PC (even in its LMA
    region).  */
@@ -432,3 +432,5 @@ struct objfile *find_objfile(const char *name);
 /* APPLE LOCAL end remove symbol file */
 
 #endif /* !defined(SYMFILE_H) */
+
+/* EOF */

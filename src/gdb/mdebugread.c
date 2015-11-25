@@ -248,54 +248,54 @@ static int found_ecoff_debugging_info;
 
 /* Forward declarations */
 
-static int upgrade_type (int, struct type **, int, union aux_ext *,
-			 int, char *);
+static int upgrade_type(int, struct type **, int, union aux_ext *,
+			int, const char *);
 
-static void parse_partial_symbols (struct objfile *);
+static void parse_partial_symbols(struct objfile *);
 
-static int has_opaque_xref (FDR *, SYMR *);
+static int has_opaque_xref(FDR *, SYMR *);
 
-static int cross_ref (int, union aux_ext *, struct type **, enum type_code,
-		      char **, int, char *);
+static int cross_ref(int, union aux_ext *, struct type **, enum type_code,
+		     const char **, int, const char *);
 
-static struct symbol *new_symbol (char *);
+static struct symbol *new_symbol(const char *);
 
-static struct type *new_type (char *);
+static struct type *new_type(char *);
 
 enum block_type { FUNCTION_BLOCK, NON_FUNCTION_BLOCK };
 
-static struct block *new_block (enum block_type);
+static struct block *new_block(enum block_type);
 
-static struct symtab *new_symtab (char *, int, struct objfile *);
+static struct symtab *new_symtab(const char *, int, struct objfile *);
 
-static struct linetable *new_linetable (int);
+static struct linetable *new_linetable(int);
 
-static struct blockvector *new_bvect (int);
+static struct blockvector *new_bvect(int);
 
-static struct type *parse_type (int, union aux_ext *, unsigned int, int *,
-				int, char *);
+static struct type *parse_type(int, union aux_ext *, unsigned int, int *,
+			       int, const char *);
 
-static struct symbol *mylookup_symbol (char *, struct block *, domain_enum,
-				       enum address_class);
+static struct symbol *mylookup_symbol(const char *, struct block *, domain_enum,
+				      enum address_class);
 
-static void sort_blocks (struct symtab *);
+static void sort_blocks(struct symtab *);
 
-static struct partial_symtab *new_psymtab (char *, struct objfile *);
+static struct partial_symtab *new_psymtab(const char *, struct objfile *);
 
-static void psymtab_to_symtab_1 (struct partial_symtab *, char *);
+static void psymtab_to_symtab_1(struct partial_symtab *, char *);
 
-static void add_block (struct block *, struct symtab *);
+static void add_block(struct block *, struct symtab *);
 
-static void add_symbol (struct symbol *, struct block *);
+static void add_symbol(struct symbol *, struct block *);
 
-static int add_line (struct linetable *, int, CORE_ADDR, int);
+static int add_line(struct linetable *, int, CORE_ADDR, int);
 
-static struct linetable *shrink_linetable (struct linetable *);
+static struct linetable *shrink_linetable(struct linetable *);
 
-static void handle_psymbol_enumerators (struct objfile *, FDR *, int,
-					CORE_ADDR);
+static void handle_psymbol_enumerators(struct objfile *, FDR *, int,
+				       CORE_ADDR);
 
-static char *mdebug_next_symbol_text (struct objfile *);
+static char *mdebug_next_symbol_text(struct objfile *);
 
 /* Exported procedure: Builds a symtab from the PST partial one.
    Restores the environment in effect when PST was created, delegates
@@ -351,16 +351,15 @@ get_rfd (int cf, int rf)
   return fdrs + rfd;
 }
 
-/* Return a safer print NAME for a file descriptor */
-
-static char *
-fdr_name (FDR *f)
+/* Return a safer print NAME for a file descriptor: */
+static const char *
+fdr_name(FDR *f)
 {
   if (f->rss == -1)
     return "<stripped file>";
   if (f->rss == 0)
     return "<NFY>";
-  return debug_info->ss + f->issBase + f->rss;
+  return (debug_info->ss + f->issBase + f->rss);
 }
 
 
@@ -568,7 +567,7 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
 {
   const bfd_size_type external_sym_size = debug_swap->external_sym_size;
   void (*const swap_sym_in)(bfd *, void *, SYMR *) = debug_swap->swap_sym_in;
-  char *name;
+  const char *name;
   struct symbol *s;
   struct block *b;
   struct mdebug_pending *pend;
@@ -1251,13 +1250,14 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
       break;
 
     case stMember:		/* member of struct or union */
-      f = &TYPE_FIELDS (top_stack->cur_type)[top_stack->cur_field++];
-      FIELD_NAME (*f) = name;
-      FIELD_BITPOS (*f) = sh->value;
+      f = &TYPE_FIELDS(top_stack->cur_type)[top_stack->cur_field++];
+      FIELD_NAME(*f) = name;
+      FIELD_BITPOS(*f) = sh->value;
       bitsize = 0;
-      FIELD_TYPE (*f) = parse_type (cur_fd, ax, sh->index, &bitsize, bigend, name);
-      FIELD_BITSIZE (*f) = bitsize;
-      FIELD_STATIC_KIND (*f) = 0;
+      FIELD_TYPE(*f) = parse_type(cur_fd, ax, sh->index, &bitsize, bigend,
+				  name);
+      FIELD_BITSIZE(*f) = bitsize;
+      FIELD_STATIC_KIND(*f) = 0;
       break;
 
     case stIndirect:		/* forward declaration on Irix5 */
@@ -1371,7 +1371,7 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
 
 static struct type *
 parse_type(int fd, union aux_ext *ax, unsigned int aux_index, int *bs,
-	   int bigend, char *sym_name)
+	   int bigend, const char *sym_name)
 {
   /* Null entries in this map are treated specially */
   static struct type **map_bt[] =
@@ -1548,7 +1548,7 @@ parse_type(int fd, union aux_ext *ax, unsigned int aux_index, int *bs,
      name.  This apparently is a MIPS extension for C sets.  */
       t->bt == btSet)
     {
-      char *name;
+      const char *name;
 
       /* Try to cross reference this type, build new type on failure.  */
       ax += cross_ref (fd, ax, &tp, type_code, &name, bigend, sym_name);
@@ -1607,7 +1607,7 @@ parse_type(int fd, union aux_ext *ax, unsigned int aux_index, int *bs,
      FIXME: We are not doing any guessing on range types.  */
   if (t->bt == btRange)
     {
-      char *name;
+      const char *name;
 
       /* Try to cross reference this type, build new type on failure.  */
       ax += cross_ref (fd, ax, &tp, type_code, &name, bigend, sym_name);
@@ -1638,7 +1638,7 @@ parse_type(int fd, union aux_ext *ax, unsigned int aux_index, int *bs,
     }
   if (t->bt == btTypedef)
     {
-      char *name;
+      const char *name;
 
       /* Try to cross reference this type, it should succeed.  */
       ax += cross_ref (fd, ax, &tp, type_code, &name, bigend, sym_name);
@@ -1708,8 +1708,8 @@ parse_type(int fd, union aux_ext *ax, unsigned int aux_index, int *bs,
    Returns the number of aux symbols we parsed. */
 
 static int
-upgrade_type (int fd, struct type **tpp, int tq, union aux_ext *ax, int bigend,
-	      char *sym_name)
+upgrade_type(int fd, struct type **tpp, int tq, union aux_ext *ax, int bigend,
+	     const char *sym_name)
 {
   int off;
   struct type *t;
@@ -1885,19 +1885,18 @@ parse_procedure (PDR *pr, struct symtab *search_symtab,
          the same name exists, lookup_symbol will eventually read in the symtab
          for the global function and clobber cur_fdr.  */
       FDR *save_cur_fdr = cur_fdr;
-      s = lookup_symbol (sh_name, NULL, VAR_DOMAIN, 0, NULL);
+      s = lookup_symbol(sh_name, NULL, VAR_DOMAIN, 0, NULL);
       cur_fdr = save_cur_fdr;
 #else
-      s = mylookup_symbol
-	(sh_name,
-	 BLOCKVECTOR_BLOCK (BLOCKVECTOR (search_symtab), STATIC_BLOCK),
-	 VAR_DOMAIN,
-	 LOC_BLOCK);
-#endif
+      s = mylookup_symbol(sh_name,
+			  BLOCKVECTOR_BLOCK(BLOCKVECTOR(search_symtab),
+					    STATIC_BLOCK),
+			  VAR_DOMAIN, LOC_BLOCK);
+#endif /* 0 */
     }
   else
-    s = mylookup_symbol (sh_name, top_stack->cur_block,
-			 VAR_DOMAIN, LOC_BLOCK);
+    s = mylookup_symbol(sh_name, top_stack->cur_block,
+			VAR_DOMAIN, LOC_BLOCK);
 
   if (s != 0)
     {
@@ -2016,7 +2015,7 @@ parse_external (EXTR *es, int bigend, struct section_offsets *section_offsets,
   /* Reading .o files */
   if (SC_IS_UNDEF (es->asym.sc) || es->asym.sc == scNil)
     {
-      char *what;
+      const char *what;
       switch (es->asym.st)
 	{
 	case stNil:
@@ -2529,13 +2528,13 @@ parse_partial_symbols (struct objfile *objfile)
 	    }
           else if (SC_IS_SBSS (ext_in->asym.sc))
             {
-              const int sbss_sect_index = get_section_index (objfile, ".sbss");
+              const int sbss_sect_index = get_section_index(objfile, ".sbss");
 
               if (sbss_sect_index == -1)
                 continue;
 
               ms_type = mst_file_bss;
-              svalue += ANOFFSET (objfile->section_offsets, sbss_sect_index);
+              svalue += ANOFFSET(objfile->section_offsets, sbss_sect_index);
             }
 	  else
 	    ms_type = mst_abs;
@@ -2580,19 +2579,19 @@ parse_partial_symbols (struct objfile *objfile)
 	{
 	  textlow = fh->adr;
 	  if (relocatable || textlow != 0)
-	    textlow += ANOFFSET (objfile->section_offsets, SECT_OFF_TEXT (objfile));
+	    textlow += ANOFFSET(objfile->section_offsets,
+				SECT_OFF_TEXT(objfile));
 	}
       else
 	textlow = 0;
-      pst = start_psymtab_common (objfile, objfile->section_offsets,
-				  fdr_name (fh),
-				  textlow,
-				  objfile->global_psymbols.next,
-				  objfile->static_psymbols.next);
+      pst = start_psymtab_common(objfile, objfile->section_offsets,
+				 fdr_name(fh), textlow,
+				 objfile->global_psymbols.next,
+				 objfile->static_psymbols.next);
       pst->read_symtab_private = ((char *)
-				  obstack_alloc (&objfile->objfile_obstack,
-						 sizeof (struct symloc)));
-      memset (pst->read_symtab_private, 0, sizeof (struct symloc));
+				  obstack_alloc(&objfile->objfile_obstack,
+						sizeof(struct symloc)));
+      memset(pst->read_symtab_private, 0, sizeof(struct symloc));
 
       save_pst = pst;
       FDR_IDX (pst) = f_idx;
@@ -3984,18 +3983,18 @@ psymtab_to_symtab_1 (struct partial_symtab *pst, char *filename)
 		  /* Make up special symbol to contain
 		     procedure specific info */
 		  struct mdebug_extra_func_info *e =
-		  ((struct mdebug_extra_func_info *)
-		   obstack_alloc (&current_objfile->objfile_obstack,
-				  sizeof (struct mdebug_extra_func_info)));
-		  struct symbol *s = new_symbol (MDEBUG_EFI_SYMBOL_NAME);
+		    ((struct mdebug_extra_func_info *)
+		     obstack_alloc(&current_objfile->objfile_obstack,
+				   sizeof(struct mdebug_extra_func_info)));
+		  struct symbol *s = new_symbol(MDEBUG_EFI_SYMBOL_NAME);
 
-		  memset (e, 0, sizeof (struct mdebug_extra_func_info));
-		  SYMBOL_DOMAIN (s) = LABEL_DOMAIN;
-		  SYMBOL_CLASS (s) = LOC_CONST;
-		  SYMBOL_TYPE (s) = mdebug_type_void;
-		  SYMBOL_VALUE (s) = (long) e;
+		  memset(e, 0, sizeof(struct mdebug_extra_func_info));
+		  SYMBOL_DOMAIN(s) = LABEL_DOMAIN;
+		  SYMBOL_CLASS(s) = LOC_CONST;
+		  SYMBOL_TYPE(s) = mdebug_type_void;
+		  SYMBOL_VALUE(s) = (long)e;
 		  e->pdr.framereg = -1;
-		  add_symbol_to_list (s, &local_symbols);
+		  add_symbol_to_list(s, &local_symbols);
 		}
 	    }
 	  else if (sh.st == stLabel)
@@ -4085,16 +4084,16 @@ psymtab_to_symtab_1 (struct partial_symtab *pst, char *filename)
       if (fh == 0)
 	{
 	  maxlines = 0;
-	  st = new_symtab ("unknown", 0, pst->objfile);
+	  st = new_symtab("unknown", 0, pst->objfile);
 	}
       else
 	{
-	  maxlines = 2 * fh->cline;
-	  st = new_symtab (pst->filename, maxlines, pst->objfile);
+	  maxlines = (2 * fh->cline);
+	  st = new_symtab(pst->filename, maxlines, pst->objfile);
 
 	  /* The proper language was already determined when building
 	     the psymtab, use it.  */
-	  st->language = PST_PRIVATE (pst)->pst_language;
+	  st->language = PST_PRIVATE(pst)->pst_language;
 	}
 
       psymtab_language = st->language;
@@ -4262,7 +4261,7 @@ has_opaque_xref(FDR *fh, SYMR *sh)
 static int
 cross_ref(int fd, union aux_ext *ax, struct type **tpp,
           enum type_code type_code, /* Use to alloc new type if none is found */
-          char **pname, int bigend, char *sym_name)
+          const char **pname, int bigend, const char *sym_name)
 {
   RNDXR rn[1];
   unsigned int rf;
@@ -4456,7 +4455,7 @@ cross_ref(int fd, union aux_ext *ax, struct type **tpp,
    keeping the symtab sorted */
 
 static struct symbol *
-mylookup_symbol(char *name, struct block *block,
+mylookup_symbol(const char *name, struct block *block,
                 domain_enum domain, enum address_class addrclass)
 {
   struct dict_iterator iter;
@@ -4613,11 +4612,11 @@ sort_blocks (struct symtab *s)
    linenumbers MAXLINES we'll put in it */
 
 static struct symtab *
-new_symtab (char *name, int maxlines, struct objfile *objfile)
+new_symtab(const char *name, int maxlines, struct objfile *objfile)
 {
-  struct symtab *s = allocate_symtab (name, objfile);
+  struct symtab *s = allocate_symtab(name, objfile);
 
-  LINETABLE (s) = new_linetable (maxlines);
+  LINETABLE(s) = new_linetable(maxlines);
 
   /* All symtabs must have at least two blocks */
   BLOCKVECTOR (s) = new_bvect (2);
@@ -4634,14 +4633,13 @@ new_symtab (char *name, int maxlines, struct objfile *objfile)
   return (s);
 }
 
-/* Allocate a new partial_symtab NAME */
-
+/* Allocate a new partial_symtab NAME: */
 static struct partial_symtab *
-new_psymtab (char *name, struct objfile *objfile)
+new_psymtab(const char *name, struct objfile *objfile)
 {
   struct partial_symtab *psymtab;
 
-  psymtab = allocate_psymtab (name, objfile);
+  psymtab = allocate_psymtab(name, objfile);
   psymtab->section_offsets = objfile->section_offsets;
 
   /* Keep a backpointer to the file's symbols */
@@ -4736,30 +4734,28 @@ new_block(enum block_type type)
   return retval;
 }
 
-/* Create a new symbol with printname NAME */
-
+/* Create a new symbol with printname NAME: */
 static struct symbol *
-new_symbol (char *name)
+new_symbol(const char *name)
 {
   struct symbol *s = ((struct symbol *)
-		      obstack_alloc (&current_objfile->objfile_obstack,
-				     sizeof (struct symbol)));
+		      obstack_alloc(&current_objfile->objfile_obstack,
+				    sizeof(struct symbol)));
 
-  memset (s, 0, sizeof (*s));
-  SYMBOL_LANGUAGE (s) = psymtab_language;
-  SYMBOL_SET_NAMES (s, name, strlen (name), current_objfile);
+  memset(s, 0, sizeof (*s));
+  SYMBOL_LANGUAGE(s) = psymtab_language;
+  SYMBOL_SET_NAMES(s, name, strlen(name), current_objfile);
   return s;
 }
 
-/* Create a new type with printname NAME */
-
+/* Create a new type with printname NAME: */
 static struct type *
-new_type (char *name)
+new_type(char *name)
 {
   struct type *t;
 
-  t = alloc_type (current_objfile);
-  TYPE_NAME (t) = name;
+  t = alloc_type(current_objfile);
+  TYPE_NAME(t) = name;
   return t;
 }
 

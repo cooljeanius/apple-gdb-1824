@@ -1072,7 +1072,7 @@ yylex(void)
   unsigned int i;
   char *tokstart;
   char *uptokstart;
-  char *tokptr;
+  const char *tokptr;
   int explen, tempbufindex;
   static char *tempbuf;
   static int tempbufsize;
@@ -1125,7 +1125,7 @@ yylex(void)
       lexptr++;
       c = *lexptr++;
       if (c == '\\')
-	c = parse_escape(&lexptr);
+	c = parse_escape((const char **)&lexptr);
       else if (c == '\'')
 	error("Empty character constant.");
 
@@ -1312,7 +1312,7 @@ yylex(void)
       tempbuf[tempbufindex] = '\0';	/* See note above */
       yylval.sval.ptr = tempbuf;
       yylval.sval.length = tempbufindex;
-      lexptr = tokptr;
+      lexptr = (char *)tokptr;
       return (STRING);
     }
 

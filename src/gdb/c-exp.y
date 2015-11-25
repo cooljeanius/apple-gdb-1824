@@ -987,13 +987,13 @@ typebase  /* Implements (approximately): (type-qualifier)* type-specifier */
 			{ $$ = lookup_enum (copy_name ($2),
 					    expression_context_block); }
 	|	UNSIGNED typename
-			{ $$ = lookup_unsigned_typename (TYPE_NAME($2.type)); }
+			{ $$ = lookup_unsigned_typename(TYPE_NAME($2.type)); }
 	|	UNSIGNED
-			{ $$ = builtin_type (current_gdbarch)->builtin_unsigned_int; }
+			{ $$ = builtin_type(current_gdbarch)->builtin_unsigned_int; }
 	|	SIGNED_KEYWORD typename
-			{ $$ = lookup_signed_typename (TYPE_NAME($2.type)); }
+			{ $$ = lookup_signed_typename(TYPE_NAME($2.type)); }
 	|	SIGNED_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_int; }
+			{ $$ = builtin_type(current_gdbarch)->builtin_int; }
                 /* It appears that this rule for templates is never
                    reduced; template recognition happens by lookahead
                    in the token processing code in yylex. */
@@ -1081,21 +1081,21 @@ qualified_type: typebase COLONCOLON name
 typename:	TYPENAME
 	|	INT_KEYWORD
 		{
-		  $$.stoken.ptr = "int";
+		  $$.stoken.ptr = (char *)"int";
 		  $$.stoken.length = 3;
-		  $$.type = builtin_type (current_gdbarch)->builtin_int;
+		  $$.type = builtin_type(current_gdbarch)->builtin_int;
 		}
 	|	LONG
 		{
-		  $$.stoken.ptr = "long";
+		  $$.stoken.ptr = (char *)"long";
 		  $$.stoken.length = 4;
-		  $$.type = builtin_type (current_gdbarch)->builtin_long;
+		  $$.type = builtin_type(current_gdbarch)->builtin_long;
 		}
 	|	SHORT
 		{
-		  $$.stoken.ptr = "short";
+		  $$.stoken.ptr = (char *)"short";
 		  $$.stoken.length = 5;
-		  $$.type = builtin_type (current_gdbarch)->builtin_short;
+		  $$.type = builtin_type(current_gdbarch)->builtin_short;
 		}
 	;
 
@@ -1438,7 +1438,7 @@ yylex(void)
   int namelen;
   unsigned int i;
   char *tokstart;
-  char *tokptr;
+  const char *tokptr;
   int tempbufindex;
   static char *tempbuf;
   static int tempbufsize;
@@ -1450,14 +1450,14 @@ yylex(void)
  retry:
 
   /* Check if this is a macro invocation that we need to expand.  */
-  if (! scanning_macro_expansion ())
+  if (! scanning_macro_expansion())
     {
-      char *expanded = macro_expand_next (&lexptr,
-                                          expression_macro_lookup_func,
-                                          expression_macro_lookup_baton);
+      char *expanded = macro_expand_next(&lexptr,
+                                         expression_macro_lookup_func,
+                                         expression_macro_lookup_baton);
 
       if (expanded)
-        scan_macro_expansion (expanded);
+        scan_macro_expansion(expanded);
     }
 
   prev_lexptr = lexptr;
@@ -1465,8 +1465,8 @@ yylex(void)
 
   tokstart = lexptr;
   /* See if it is a special token of length 3.  */
-  for (i = 0; i < sizeof tokentab3 / sizeof tokentab3[0]; i++)
-    if (strncmp (tokstart, tokentab3[i].coperator, 3) == 0)
+  for (i = 0; i < (sizeof(tokentab3) / sizeof(tokentab3[0])); i++)
+    if (strncmp(tokstart, tokentab3[i].coperator, 3) == 0)
       {
 	lexptr += 3;
 	yylval.opcode = tokentab3[i].opcode;
@@ -1474,8 +1474,8 @@ yylex(void)
       }
 
   /* See if it is a special token of length 2.  */
-  for (i = 0; i < sizeof tokentab2 / sizeof tokentab2[0]; i++)
-    if (strncmp (tokstart, tokentab2[i].coperator, 2) == 0)
+  for (i = 0; i < (sizeof(tokentab2) / sizeof(tokentab2[0])); i++)
+    if (strncmp(tokstart, tokentab2[i].coperator, 2) == 0)
       {
 	lexptr += 2;
 	yylval.opcode = tokentab2[i].opcode;
@@ -1489,9 +1489,9 @@ yylex(void)
          then we need to resume scanning the original text.
          Otherwise, we were already scanning the original text, and
          we're really done.  */
-      if (scanning_macro_expansion ())
+      if (scanning_macro_expansion())
         {
-          finished_macro_expansion ();
+          finished_macro_expansion();
           goto retry;
         }
       else
@@ -1510,10 +1510,10 @@ yylex(void)
       lexptr++;
       c = *lexptr++;
       if (c == '\\')
-	c = parse_escape (&lexptr);
+	c = parse_escape((const char **)&lexptr);
       else if (c == '\'')
-	error ("Empty character constant.");
-      else if (! host_char_to_target (c, &c))
+	error("Empty character constant.");
+      else if (! host_char_to_target(c, &c))
         {
           int toklen = ((lexptr - tokstart) + 1UL);
           char *tok = (char *)alloca(toklen + 1UL);
@@ -1702,7 +1702,7 @@ yylex(void)
 	  tempbuf[tempbufindex] = '\0';
 	  yylval.sval.ptr = tempbuf;
 	  yylval.sval.length = tempbufindex;
-	  lexptr = tokptr;
+	  lexptr = (char *)tokptr;
 	  return OBJC_SELECTOR;
 	}
       if (tokstart[1] != '"')
@@ -1728,13 +1728,13 @@ yylex(void)
       tempbufindex = 0;
 
       do {
-        char *char_start_pos = tokptr;
+        const char *char_start_pos = tokptr;
 
 	/* Grow the static temp buffer if necessary, including allocating
 	   the first one on demand. */
 	if (tempbufindex + 1 >= tempbufsize)
 	  {
-	    tempbuf = (char *) realloc (tempbuf, tempbufsize += 64);
+	    tempbuf = (char *)realloc(tempbuf, tempbufsize += 64);
 	  }
 	switch (*tokptr)
 	  {
@@ -1744,7 +1744,7 @@ yylex(void)
 	    break;
 	  case '\\':
 	    tokptr++;
-	    c = parse_escape (&tokptr);
+	    c = parse_escape(&tokptr);
 	    if (c == -1)
 	      {
 		continue;
@@ -1775,7 +1775,7 @@ yylex(void)
       tempbuf[tempbufindex] = '\0';	/* See note above */
       yylval.sval.ptr = tempbuf;
       yylval.sval.length = tempbufindex;
-      lexptr = tokptr;
+      lexptr = (char *)tokptr;
       return (tokchar == '@' ? OBJC_NSSTRING : STRING);
     }
 

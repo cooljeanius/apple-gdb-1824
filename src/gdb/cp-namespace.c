@@ -107,7 +107,7 @@ static
 struct symbol *lookup_possible_namespace_symbol (const char *name,
 						 struct symtab **symtab);
 
-static void maintenance_cplus_namespace (char *args, int from_tty);
+static void maintenance_cplus_namespace(const char *args, int from_tty);
 
 extern void _initialize_cp_namespace(void);
 
@@ -827,7 +827,7 @@ lookup_possible_namespace_symbol (const char *name, struct symtab **symtab)
 
 /* Print out all the possible namespace symbols: */
 static void
-maintenance_cplus_namespace(char *args, int from_tty)
+maintenance_cplus_namespace(const char *args, int from_tty)
 {
   struct objfile *objfile;
   printf_unfiltered(_("Possible namespaces:\n"));
@@ -843,6 +843,7 @@ maintenance_cplus_namespace(char *args, int from_tty)
     }
 }
 
+/* Usual gdb initialization hook: */
 void
 _initialize_cp_namespace(void)
 {

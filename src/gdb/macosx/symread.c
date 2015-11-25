@@ -775,8 +775,8 @@ sym_read_contained_variables(struct objfile *objfile,
               FIELD_NAME(argvec[nargs]) =
                 (char *)obstack_alloc(&objfile->objfile_obstack,
                                       nname[0] + 1);
-              snprintf(FIELD_NAME(argvec[nargs]), SIZE_T_MAX, "%.*s", nname[0],
-		       (nname + 1));
+              snprintf((char *)FIELD_NAME(argvec[nargs]), SIZE_T_MAX, "%.*s",
+		       nname[0], (nname + 1));
               FIELD_BITPOS(argvec[nargs]) = 0;
               FIELD_BITSIZE(argvec[nargs]) = 0;
             }

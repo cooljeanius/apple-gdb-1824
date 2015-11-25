@@ -562,12 +562,12 @@ void target_close (struct target_ops *targ, int quitting);
    typed by the user (e.g. a signal to send the process).  FROM_TTY
    says whether to be verbose or not.  */
 
-extern void target_detach (char *, int);
+extern void target_detach(const char *, int);
 
 /* Disconnect from the current target without resuming it (leaving it
    waiting for a debugger).  */
 
-extern void target_disconnect (char *, int);
+extern void target_disconnect(char *, int);
 
 /* Resume execution of the target process PTID.  STEP says whether to
    single-step or to run free; SIGGNAL is the signal to be given to
@@ -763,7 +763,7 @@ extern void target_kill(void);
    to not only bring new code into the target process, but also to
    update GDB's symbol tables to match.  */
 
-extern void target_load (char *arg, int from_tty);
+extern void target_load(const char *arg, int from_tty);
 
 /* Look up a symbol in the target's symbol table.  NAME is the symbol
    name.  ADDRP is a CORE_ADDR * pointing to where the value of the

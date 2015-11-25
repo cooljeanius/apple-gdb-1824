@@ -66,8 +66,8 @@ struct cmd_list_element *maint_cplus_cmd_list = NULL;
 
 /* The actual commands.  */
 
-static void maint_cplus_command (char *arg, int from_tty);
-static void first_component_command (char *arg, int from_tty);
+static void maint_cplus_command(const char *arg, int from_tty);
+static void first_component_command(const char *arg, int from_tty);
 
 /* Return the canonicalized form of STRING, or NULL if STRING can not be
    parsed.  The return value is allocated via xmalloc.
@@ -852,7 +852,7 @@ cp_lookup_rtti_type (const char *name, struct block *block)
 
 /* Do NOT allow just "maintenance cplus": */
 static  void
-maint_cplus_command (char *arg, int from_tty)
+maint_cplus_command(const char *arg, int from_tty)
 {
   printf_unfiltered(_("\"maintenance cplus\" must be followed by the name of a command.\n"));
   help_list(maint_cplus_cmd_list, "maintenance cplus ",
@@ -864,7 +864,7 @@ maint_cplus_command (char *arg, int from_tty)
    cp_find_first_component.  */
 
 static void
-first_component_command(char *arg, int from_tty)
+first_component_command(const char *arg, int from_tty)
 {
   size_t len = cp_find_first_component(arg);
   char *prefix = (char *)alloca(len + 1UL);
@@ -875,10 +875,10 @@ first_component_command(char *arg, int from_tty)
   printf_unfiltered("%s\n", prefix);
 }
 
+/* Usual gdb initialization hook: */
 extern initialize_file_ftype _initialize_cp_support; /* -Wmissing-prototypes */
-
 void
-_initialize_cp_support (void)
+_initialize_cp_support(void)
 {
   add_prefix_cmd ("cplus", class_maintenance, maint_cplus_command,
 		  _("C++ maintenance commands."), &maint_cplus_cmd_list,
@@ -889,3 +889,5 @@ _initialize_cp_support (void)
 	   _("Print the first class/namespace component of NAME."),
 	   &maint_cplus_cmd_list);
 }
+
+/* EOF */

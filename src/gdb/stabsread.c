@@ -68,6 +68,8 @@
 
 extern void _initialize_stabsread(void);
 
+int stabsread_c_inited = 0;
+
 /* These structs are un-nested from the struct following them to silence
  * '-Wc++-compat': */
 struct nextfield
@@ -370,15 +372,17 @@ dbx_fixup_variants (struct type *real_type)
    definition.  */
 
 static struct type *
-dbx_fixup_type (int typenums[2], struct type *new_type, struct objfile *objfile)
+dbx_fixup_type(int typenums[2], struct type *new_type, struct objfile *objfile)
 {
   struct type **type_slot;
 
-  type_slot = dbx_lookup_type (typenums, objfile);
+  type_slot = dbx_lookup_type(typenums, objfile);
+  
+  gdb_assert(type_slot != NULL);
 
   if (*type_slot)
     {
-      replace_type (*type_slot, new_type);
+      replace_type(*type_slot, new_type);
       return *type_slot;
     }
   else
@@ -2952,7 +2956,7 @@ read_cpp_abbrev (struct field_info *fip, char **pp, struct type *type,
 		 struct objfile *objfile)
 {
   char *p;
-  char *name;
+  const char *name;
   char cpp_abbrev;
   struct type *context;
 
@@ -2976,9 +2980,9 @@ read_cpp_abbrev (struct field_info *fip, char **pp, struct type *type,
 	case 'f':		/* $vf -- a virtual function table pointer */
 	  name = type_name_no_tag (context);
 	  if (name == NULL)
-	  {
-		  name = "";
-	  }
+	    {
+	      name = "";
+	    }
 	  fip->list->field.name =
 	    obconcat (&objfile->objfile_obstack, vptr_name, name, "");
 	  break;
@@ -3471,18 +3475,18 @@ read_tilde_fields (struct field_info *fip, char **pp, struct type *type,
 	      return 0;
 	    }
 
-	  TYPE_VPTR_BASETYPE (type) = t;
+	  TYPE_VPTR_BASETYPE(type) = t;
 	  if (type == t)	/* Our own class provides vtbl ptr */
 	    {
-	      for (i = TYPE_NFIELDS (t) - 1;
-		   i >= TYPE_N_BASECLASSES (t);
+	      for (i = (TYPE_NFIELDS(t) - 1);
+		   i >= TYPE_N_BASECLASSES(t);
 		   --i)
 		{
-		  char *name = TYPE_FIELD_NAME (t, i);
-		  if (!strncmp (name, vptr_name, sizeof (vptr_name) - 2)
-		      && is_cplus_marker (name[sizeof (vptr_name) - 2]))
+		  const char *name = TYPE_FIELD_NAME(t, i);
+		  if (!strncmp(name, vptr_name, (sizeof(vptr_name) - 2UL))
+		      && is_cplus_marker(name[sizeof(vptr_name) - 2]))
 		    {
-		      TYPE_VPTR_FIELDNO (type) = i;
+		      TYPE_VPTR_FIELDNO(type) = i;
 		      goto gotit;
 		    }
 		}
@@ -3622,25 +3626,25 @@ attach_fields_to_type (struct field_info *fip, struct type *type,
 /* Complain that the compiler has emitted more than one definition for the
    structure type TYPE.  */
 static void
-complain_about_struct_wipeout (struct type *type)
+complain_about_struct_wipeout(struct type *type)
 {
-  char *name = "";
-  char *kind = "";
+  const char *name = "";
+  const char *kind = "";
 
-  if (TYPE_TAG_NAME (type))
+  if (TYPE_TAG_NAME(type))
     {
-      name = TYPE_TAG_NAME (type);
-      switch (TYPE_CODE (type))
+      name = TYPE_TAG_NAME(type);
+      switch (TYPE_CODE(type))
         {
         case TYPE_CODE_STRUCT: kind = "struct "; break;
-        case TYPE_CODE_UNION:  kind = "union ";  break;
-        case TYPE_CODE_ENUM:   kind = "enum ";   break;
+        case TYPE_CODE_UNION: kind = "union "; break;
+        case TYPE_CODE_ENUM: kind = "enum "; break;
         default: kind = "";
         }
     }
-  else if (TYPE_NAME (type))
+  else if (TYPE_NAME(type))
     {
-      name = TYPE_NAME (type);
+      name = TYPE_NAME(type);
       kind = "";
     }
   else
@@ -3649,8 +3653,8 @@ complain_about_struct_wipeout (struct type *type)
       kind = "";
     }
 
-  complaint (&symfile_complaints,
-	     _("struct/union type gets multiply defined: %s%s"), kind, name);
+  complaint(&symfile_complaints,
+	    _("struct/union type gets multiply defined: %s%s"), kind, name);
 }
 
 
@@ -4658,7 +4662,7 @@ cleanup_undefined_types (void)
 		struct pending *ppt;
 		int i;
 		/* Name of the type, without "struct" or "union" */
-		char *type_name = TYPE_TAG_NAME(*type);
+		const char *type_name = TYPE_TAG_NAME(*type);
 
 		if (type_name == NULL)
 		  {
@@ -4863,12 +4867,13 @@ scan_file_globals (struct objfile *objfile)
 }
 
 /* Initialize anything that needs initializing when starting to read
-   a fresh piece of a symbol file, e.g. reading in the stuff corresponding
-   to a psymtab.  */
-
+ * a fresh piece of a symbol file, e.g. reading in the stuff corresponding
+ * to a psymtab: */
 void
-stabsread_init (void)
+stabsread_init(void)
 {
+  stabsread_c_inited = 1;
+  /* FIXME: actually do what the comment describing this function says? */
 }
 
 /* Initialize anything that needs initializing when a completely new

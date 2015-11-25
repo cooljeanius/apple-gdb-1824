@@ -47,7 +47,7 @@
 #endif /* !assert */
 
 void
-kdp_log_packetbuf(kdp_log_function *f, kdp_log_level l, char *prefix,
+kdp_log_packetbuf(kdp_log_function *f, kdp_log_level l, const char *prefix,
                   const char *buf, size_t len)
 {
   char strbuf[KDP_MAX_PACKET_SIZE * 6];

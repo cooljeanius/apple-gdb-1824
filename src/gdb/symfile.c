@@ -147,7 +147,7 @@ static int compare_psymbols(const void *, const void *);
 /* APPLE LOCAL symfile bfd open */
 bfd *symfile_bfd_open(const char *, int mainline, int osabi);
 
-int get_section_index(struct objfile *, char *);
+int get_section_index(struct objfile *, const char *);
 
 static void find_sym_fns(struct objfile *);
 
@@ -483,7 +483,7 @@ free_section_addr_info(struct section_addr_info *sap)
 
   for (idx = 0UL; idx < sap->num_sections; idx++)
     if (sap->other[idx].name)
-      xfree(sap->other[idx].name);
+      xfree((void *)sap->other[idx].name);
   xfree(sap);
 }
 
@@ -1243,6 +1243,9 @@ append_psymbols_as_msymbols(struct objfile *objfile)
                                                              SECT_OFF_TEXT(objfile),
                                                              psym_osect->the_bfd_section,
                                                              objfile);
+		  if (msym == NULL) {
+		    warning(_("possible minimal symbol issue"));
+		  }
                 }
             }
         }
@@ -1295,13 +1298,16 @@ append_psymbols_as_msymbols(struct objfile *objfile)
                                                              SECT_OFF_TEXT(objfile),
                                                              psym_osect->the_bfd_section,
                                                              objfile);
+		  if (msym == NULL) {
+		    warning(_("possible minimal symbol issue"));
+		  }
                 }
             }
         }
     }
 
-  install_minimal_symbols (objfile);
-  do_cleanups (back_to);
+  install_minimal_symbols(objfile);
+  do_cleanups(back_to);
 }
 
 /* HACK: I copy the private 'struct symloc' definition from dbxread.c
@@ -1959,7 +1965,7 @@ symbol_file_clear (int from_tty)
 /* APPLE LOCAL: I #ifdef'ed the next two functions out because they
    are only used in the FSF version of find_separate_debug_file, which
    we also #ifdef out.  */
-#if 0
+#ifdef ALLOW_UNUSED_FUNCTIONS
 static char *
 get_debug_link_info (struct objfile *objfile, unsigned long *crc32_out)
 {
@@ -2009,7 +2015,7 @@ separate_debug_file_exists (const char *name, unsigned long crc)
 
   return crc == file_crc;
 }
-#endif /* APPLE LOCAL - unused. (0) */
+#endif /* APPLE LOCAL - unused. (ALLOW_UNUSED_FUNCTIONS) */
 
 static char *debug_file_directory = NULL;
 static void
@@ -2123,7 +2129,6 @@ find_separate_debug_file (struct objfile *objfile)
   xfree (dir);
   return NULL;
 }
-
 #endif /* TM_NEXTSTEP */
 
 /* This is the symbol-file command.  Read the file, analyze its
@@ -2333,7 +2338,7 @@ symfile_bfd_open(const char *name, int mainline, enum gdb_osabi osabi)
 /* Return the section index for the given section name. Return -1 if
    the section was not found. */
 int
-get_section_index(struct objfile *objfile, char *section_name)
+get_section_index(struct objfile *objfile, const char *section_name)
 {
   asection *sect = bfd_get_section_by_name(objfile->obfd, section_name);
   if (sect)
@@ -2696,7 +2701,7 @@ add_symbol_file_command(const char *args, int from_tty)
 
   struct sect_opt
   {
-    char *name;
+    const char *name;
     char *value;
   };
 
@@ -2706,8 +2711,8 @@ add_symbol_file_command(const char *args, int from_tty)
   struct cleanup *my_cleanups = make_cleanup(null_cleanup, NULL);
 
   num_sect_opts = 16;
-  sect_opts = (struct sect_opt *) xmalloc (num_sect_opts
-					   * sizeof(struct sect_opt));
+  sect_opts = (struct sect_opt *)xmalloc(num_sect_opts
+					 * sizeof(struct sect_opt));
 
   dont_repeat();
 
@@ -2847,7 +2852,7 @@ add_symbol_file_command(const char *args, int from_tty)
 	{
 	  CORE_ADDR addr;
 	  char *val = sect_opts[i].value;
-	  char *sec = sect_opts[i].name;
+	  const char *sec = sect_opts[i].name;
 
 	  addr = parse_and_eval_address(val);
 
@@ -2925,7 +2930,7 @@ add_kext_command(const char *args, int from_tty)
   int symflags = OBJF_SYM_ALL;
 
   char *kextload_symbol_filename;
-  char *kext_bundle_executable_filename;
+  char *kext_bundle_executable_filename = NULL;
   struct section_addr_info *section_addrs = NULL;
 
   const char *const usage_string =
@@ -3006,8 +3011,8 @@ add_kext_command(const char *args, int from_tty)
 
   if (section_addrs)
     {
-      struct section_offsets *sect_offsets;
-      int num_offsets;
+      struct section_offsets *sect_offsets = (struct section_offsets *)NULL;
+      int num_offsets = 0;
       sect_offsets = convert_sect_addrs_to_offsets_via_on_disk_file(section_addrs,
                                                                     kext_bundle_executable_filename,
                                                                     &num_offsets);
@@ -3810,7 +3815,8 @@ reread_symbols(void)
 
 /* APPLE LOCAL begin reread symbols */
 static void
-reread_symbols_command(char *args, int from_tty)
+reread_symbols_command(const char *args ATTRIBUTE_UNUSED,
+		       int from_tty ATTRIBUTE_UNUSED)
 {
   reread_symbols();
 }
@@ -4035,8 +4041,9 @@ Mapping between filename extension and source language is \"%s\".\n"),
                    value);
 }
 
+/* */
 static void
-set_ext_lang_command(char *args, int from_tty, struct cmd_list_element *e)
+set_ext_lang_command(const char *args, int from_tty, struct cmd_list_element *e)
 {
   int i;
   char *cp = ext_args;
@@ -4209,7 +4216,7 @@ allocate_symtab(const char *filename, struct objfile *objfile)
 
 /* */
 struct partial_symtab *
-allocate_psymtab (char *filename, struct objfile *objfile)
+allocate_psymtab(const char *filename, struct objfile *objfile)
 {
   struct partial_symtab *psymtab;
 
@@ -4421,9 +4428,15 @@ cashier_psymtab (struct partial_symtab *pst)
    all stray pointers into the freed symtab.  */
 
 int
-free_named_symtabs (char *name)
+free_named_symtabs(char *name)
 {
-#if 0
+#if defined(SERIOUS_RETHINKING_HAS_BEEN_DONE) || \
+    (defined(BLOCK_NSYMS) && defined(partial_symtab_list) && \
+     defined(symtab_list) && defined(clear_symtab_users_queued) && \
+     defined(clear_symtab_users_once))
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && defined(lint)
+#  warning "FIXME: see comment"
+# endif /* __GNUC__ && !__STRICT_ANSI__ && lint */
   /* FIXME:  With the new method of each objfile having its own
      psymtab list, this function needs serious rethinking. In particular,
      why was it ever necessary to toss psymtabs with specific compilation
@@ -4447,20 +4460,18 @@ free_named_symtabs (char *name)
   if (name == 0 || *name == '\0')
     return 0;
 
-  /* Look for a psymtab with the specified name.  */
-
+  /* Look for a psymtab with the specified name: */
 again2:
   for (ps = partial_symtab_list; ps; ps = ps->next)
     {
       if (strcmp (name, ps->filename) == 0)
 	{
-	  cashier_psymtab (ps);	/* Blow it away...and its little dog, too.  */
+	  cashier_psymtab (ps);	/* Blow it away... and its little dog, too.  */
 	  goto again2;		/* Must restart, chain has been munged */
 	}
     }
 
-  /* Look for a symtab with the specified name.  */
-
+  /* Look for a symtab with the specified name:  */
   for (s = symtab_list; s; s = s->next)
     {
       if (strcmp (name, s->filename) == 0)
@@ -4516,8 +4527,11 @@ again2:
   /* FIXME, what about the minimal symbol table? */
   return blewit;
 #else
+# if defined(__GNUC__)
+  asm("");
+# endif /* __GNUC__ */
   return (0);
-#endif /* 0 */
+#endif /* SERIOUS_RETHINKING_HAS_BEEN_DONE || (BLOCK_NSYMS and the rest) */
 }
 
 /* Allocate and partially fill a partial symtab.  It will be
@@ -4526,19 +4540,20 @@ again2:
    FILENAME is the name of the symbol-file we are reading from. */
 
 struct partial_symtab *
-start_psymtab_common (struct objfile *objfile,
-		      struct section_offsets *section_offsets, char *filename,
-		      CORE_ADDR textlow, struct partial_symbol **global_syms,
-		      struct partial_symbol **static_syms)
+start_psymtab_common(struct objfile *objfile,
+		     struct section_offsets *section_offsets,
+		     const char *filename, CORE_ADDR textlow,
+		     struct partial_symbol **global_syms,
+		     struct partial_symbol **static_syms)
 {
   struct partial_symtab *psymtab;
 
-  psymtab = allocate_psymtab (filename, objfile);
+  psymtab = allocate_psymtab(filename, objfile);
   psymtab->section_offsets = section_offsets;
   psymtab->textlow = textlow;
   psymtab->texthigh = psymtab->textlow;		/* default */
-  psymtab->globals_offset = global_syms - objfile->global_psymbols.list;
-  psymtab->statics_offset = static_syms - objfile->static_psymbols.list;
+  psymtab->globals_offset = (global_syms - objfile->global_psymbols.list);
+  psymtab->statics_offset = (static_syms - objfile->static_psymbols.list);
   return (psymtab);
 }
 
@@ -5871,11 +5886,12 @@ open_bfd_matching_arch(bfd *archive_bfd, bfd_format expected_format,
         }
     }
   return abfd;
-#endif	/* defined (TARGET_ARM) && defined (TM_NEXTSTEP)  */
+#endif	/* defined(TARGET_ARM) && defined(TM_NEXTSTEP)  */
 }
 
+/* Usual gdb initialization hook: */
 void
-_initialize_symfile (void)
+_initialize_symfile(void)
 {
   struct cmd_list_element *c;
 
@@ -5889,10 +5905,14 @@ Show if GDB should use mmap() to read from external symbol files."), NULL,
 			    &setlist, &showlist);
 #endif /* HAVE_MMAP */
 
-   c = add_cmd ("reread-symbols", class_files, reread_symbols_command,
+   c = add_cmd("reread-symbols", class_files, reread_symbols_command,
  	       "Usage: reread-symbols\n\
  Re-load the symbols from all known object files.",
  	       &cmdlist);
+  
+  if (c == NULL) {
+    warning(_("possible issue adding command"));
+  }
 
    c = add_cmd("remove-symbol-file", class_files, remove_symbol_file_command,
  	       "Usage: remove-symbol-file FILE\n\
@@ -5926,25 +5946,36 @@ was loaded in the kernel and you need the .dSYM file in that directory as well.\
 	      &cmdlist);
   set_cmd_completer(c, filename_completer);
 
-  c = add_cmd ("add-dsym", class_files, add_dsym_command, _("\
+  c = add_cmd("add-dsym", class_files, add_dsym_command, _("\
 Usage: add-dsym DSYM_FILE\n\
 Load the symbols from DSYM_FILE, adding them to a library with\n\
 the matching UUID."),
-	       &cmdlist);
-  set_cmd_completer (c, filename_completer);
+	      &cmdlist);
+  set_cmd_completer(c, filename_completer);
 
-  c = add_cmd ("add-shared-symbol-files", class_files,
-	       add_shared_symbol_files_command, _("\
+  c = add_cmd("add-shared-symbol-files", class_files,
+	      add_shared_symbol_files_command, _("\
 Load the symbols from shared objects in the dynamic linker's link map."),
-	       &cmdlist);
-  c = add_alias_cmd ("assf", "add-shared-symbol-files", class_files, 1,
-		     &cmdlist);
+	      &cmdlist);
+  
+  if (c == NULL) {
+    warning(_("possible issue adding command"));
+  }
+  
+  c = add_alias_cmd("assf", "add-shared-symbol-files", class_files, 1,
+		    &cmdlist);
+  
+  if (c == NULL) {
+    warning(_("possible issue adding command"));
+  }
 
-  c = add_cmd ("load", class_files, load_command, _("\
+  c = add_cmd("load", class_files, load_command, _("\
 Dynamically load FILE into the running program, and record its symbols\n\
 for access from GDB."), &cmdlist);
-  set_cmd_completer (c, filename_completer);
-  /* c->completer_word_break_characters = gdb_completer_filename_word_break_characters; */ /* FIXME */
+  set_cmd_completer(c, filename_completer);
+#if 0
+  c->completer_word_break_characters = gdb_completer_filename_word_break_characters; /* FIXME */
+#endif /* 0 */
 
   add_setshow_boolean_cmd ("symbol-reloading", class_support,
 			   &symbol_reloading, _("\

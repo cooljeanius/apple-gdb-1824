@@ -1,4 +1,4 @@
-/* Low level interface to ptrace, for GDB when running under Unix.
+/* inflow.h: Low level interface to ptrace, for GDB when running under Unix.
 
    Copyright 2003, 2005 Free Software Foundation, Inc.
 

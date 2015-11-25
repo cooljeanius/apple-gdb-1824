@@ -1258,12 +1258,12 @@ make_cleanup_free_bincl_list(struct objfile *objfile)
    give a fake name, and print a single error message per symbol file read,
    rather than abort the symbol reading or flood the user with messages.  */
 
-static char *
+static const char *
 /* APPLE LOCAL symbol prefixes */
 set_namestring_1(int strtab_size, char *strtab, char leading_char,
                  struct internal_nlist nlist, const char *prefix)
 {
-  char *namestring;
+  const char *namestring;
   static char *namebuf = NULL;
   static size_t namebuf_len = 0UL;
 
@@ -1298,14 +1298,14 @@ set_namestring_1(int strtab_size, char *strtab, char leading_char,
   return namestring;
 }
 
-static char *
-set_namestring (struct objfile *objfile, struct internal_nlist nlist, const char *prefix)
+/* */
+static const char *
+set_namestring(struct objfile *objfile, struct internal_nlist nlist,
+	       const char *prefix)
 {
-  return set_namestring_1 (DBX_STRINGTAB_SIZE (objfile),
-			   DBX_STRINGTAB (objfile),
-			   bfd_get_symbol_leading_char (objfile->obfd),
-			   nlist,
-			   prefix);
+  return set_namestring_1(DBX_STRINGTAB_SIZE(objfile), DBX_STRINGTAB(objfile),
+			  bfd_get_symbol_leading_char(objfile->obfd),
+			  nlist, prefix);
 }
 
 /* Scan a SunOs dynamic symbol table for symbols of interest and
@@ -1646,7 +1646,7 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
   CORE_ADDR text_addr;
   int text_size;
 
-  char *namestring;
+  const char *namestring;
   int nsl;
   int past_first_source_file = 0;
   CORE_ADDR last_o_file_start = 0UL;
@@ -3587,15 +3587,16 @@ open_bfd_from_oso(struct partial_symtab *pst, int *cached)
       do_cleanups (free_member_name);
     }
 
-  if (retval != NULL && mtime && oso_mtime && mtime != oso_mtime)
+  if ((retval != NULL) && mtime && oso_mtime && (mtime != oso_mtime))
     {
-      char *name;
+      const char *name;
       if (pst->objfile->name != NULL)
 	name = pst->objfile->name;
       else
 	name = "<Unknown objfile>";
 
-      warning(".o file \"%s\" more recent than executable timestamp in \"%s\"", oso_name, name);
+      warning(".o file \"%s\" more recent than executable timestamp in \"%s\"",
+	      oso_name, name);
       if (cached)
 	clear_containing_archive_cache();
       else
@@ -3687,7 +3688,7 @@ oso_scan_partial_symtab(struct partial_symtab *pst)
 	    char *p;
 	    static int prev_so_symnum = -10;
 	    static int first_so_symnum;
-	    char *namestring;
+	    const char *namestring;
 	    namestring = set_namestring_1(strtab_size, strtab_data,
 					  leading_char, nlist, prefix);
 
@@ -3746,16 +3747,16 @@ oso_scan_partial_symtab(struct partial_symtab *pst)
 	       in read_dbx_symtab we also make partial_symtab's for each
 	       include we discover.  But for BINCL/EINCL headers, this
 	       serves no purpose that I can detect, so I neglect it here.  */
-	    char *namestring;
-	    namestring = set_namestring_1 (strtab_size, strtab_data,
-                                     leading_char, nlist, prefix);
-	    add_bincl_to_list (current_pst, namestring, nlist.n_value);
+	    const char *namestring;
+	    namestring = set_namestring_1(strtab_size, strtab_data,
+					  leading_char, nlist, prefix);
+	    add_bincl_to_list(current_pst, namestring, nlist.n_value);
 	    break;
 	  }
 	case N_EXCL:
 	  {
 	    struct partial_symtab *needed_pst;
-	    char *namestring;
+	    const char *namestring;
 	    namestring = set_namestring_1 (strtab_size, strtab_data,
 					   leading_char, nlist, prefix);
 
@@ -3840,7 +3841,7 @@ read_oso_nlists(bfd *oso_bfd, struct partial_symtab *pst,
   int sect_p;
   int nlists_arr_size = 256;
   int common_symnames_arr_size = 32;
-  char *namestring;
+  const char *namestring;
   struct cleanup *oso_data_cleanup;
 
   *nlists = ((struct nlist_rec *)
@@ -3855,7 +3856,7 @@ read_oso_nlists(bfd *oso_bfd, struct partial_symtab *pst,
   objfile = pst->objfile;
 
   if (objfile == NULL) {
-    ; /* ??? */
+    warning(_("Possible issue with objfile"));
   }
 
   processing_objfile = pst->objfile; /* Initialize for NEXT_SYMBOL's use */
@@ -4339,11 +4340,11 @@ static void
 read_ofile_symtab (struct partial_symtab *pst)
 {
   /* APPLE LOCAL */
-  char *namestring = NULL;
+  const char *namestring = NULL;
   struct internal_nlist nlist;
   int sect_p; /* APPLE LOCAL - need this for N_SECT  */
   unsigned char type;
-  unsigned max_symnum;
+  unsigned int max_symnum;
   bfd *abfd;
   struct objfile *objfile;
   int sym_offset;		/* Offset to start of symbols to read */
@@ -4624,7 +4625,7 @@ oso_statics_pop (struct oso_fun_list *list_ptr)
 static void
 read_ofile_symtab_from_oso(struct partial_symtab *pst, struct bfd *oso_bfd)
 {
-  char *namestring = NULL;
+  const char *namestring = (const char *)NULL;
   struct internal_nlist nlist;
   int sect_p;
   unsigned char type;
@@ -4670,7 +4671,7 @@ read_ofile_symtab_from_oso(struct partial_symtab *pst, struct bfd *oso_bfd)
   abfd = oso_bfd;
 
   if (abfd == NULL) {
-    ; /* ??? */
+    warning(_("Possible issue getting binary file descriptor"));
   }
 
   processing_objfile = objfile;	/* Implicit param to next_text_symbol */
@@ -4720,7 +4721,7 @@ read_ofile_symtab_from_oso(struct partial_symtab *pst, struct bfd *oso_bfd)
 	{
 	  struct internal_nlist tmp_nlist;
 	  struct partial_symbol *fun_psym = NULL;
-	  char *fun_namestring;
+	  const char *fun_namestring;
 	  int scan_ptr = symnum;
 	  int old_symbuf_idx = symbuf_idx;
 	  int found_it = 0;
@@ -4778,7 +4779,7 @@ read_ofile_symtab_from_oso(struct partial_symtab *pst, struct bfd *oso_bfd)
 	      symbuf_idx = old_symbuf_idx;
 	      while (symnum < (size_t)num_syms)
 		{
-		  char *tmp_namestring;
+		  const char *tmp_namestring;
 		  NEXT_SYMBOL(tmp_nlist, sect_p, oso_bfd);
 		  if (tmp_nlist.n_type == N_ENSYM)
 		    {
@@ -4797,10 +4798,12 @@ read_ofile_symtab_from_oso(struct partial_symtab *pst, struct bfd *oso_bfd)
 		    case N_GSYM:
 		    case N_PSYM:
 		    case N_RSYM:
-		      tmp_namestring = set_namestring_1 (strtab_size, strtab_data,
-						 leading_char, tmp_nlist, prefix);
-		      process_symbol_types_only (tmp_namestring, prefix, tmp_nlist.n_desc,
-						 tmp_nlist.n_type, objfile);
+		      tmp_namestring =
+			set_namestring_1(strtab_size, strtab_data,
+					 leading_char, tmp_nlist, prefix);
+		      process_symbol_types_only(tmp_namestring, prefix,
+						tmp_nlist.n_desc,
+						tmp_nlist.n_type, objfile);
 		      break;
 		    default:
 		      break;
@@ -4820,8 +4823,8 @@ read_ofile_symtab_from_oso(struct partial_symtab *pst, struct bfd *oso_bfd)
 		 have to add it in, we have to subtract the load address from
 	         our offset or we'll add it twice.  */
 
-	      offset = SYMBOL_VALUE_ADDRESS (fun_psym) - nlist.n_value
-		- objfile_text_section_offset (objfile);
+	      offset = (SYMBOL_VALUE_ADDRESS(fun_psym) - nlist.n_value
+			- objfile_text_section_offset(objfile));
 
 	      symbuf_idx = old_symbuf_idx;
 	    }
@@ -4845,11 +4848,13 @@ read_ofile_symtab_from_oso(struct partial_symtab *pst, struct bfd *oso_bfd)
 		  if (list_ptr)
 		    {
 		      if (list_ptr->name == NULL)
-			warning ("OSO fun missing name for pst: %s", pst->filename);
+			warning("OSO fun missing name for pst: %s",
+				pst->filename);
 		      else if (!cur_fun_name)
-			warning ("Current function name not found for pst: \"%s\" and fun: \"%s\"", pst->filename, list_ptr->name);
-		      else if (strcmp (list_ptr->name, cur_fun_name) == 0)
-			PSYMTAB_OSO_STATICS(pst) = oso_statics_pop (list_ptr);
+			warning("Current function name not found for pst: \"%s\" and fun: \"%s\"",
+				pst->filename, list_ptr->name);
+		      else if (strcmp(list_ptr->name, cur_fun_name) == 0)
+			PSYMTAB_OSO_STATICS(pst) = oso_statics_pop(list_ptr);
 		    }
 		  if (cur_fun_name)
 		    xfree(cur_fun_name);
@@ -5743,7 +5748,7 @@ coffstab_build_psymtabs(struct objfile *objfile, int mainline,
   info = objfile->deprecated_sym_stab_info;
 
   if (info == NULL) {
-    ; /* ??? */
+    warning(_("Possible issue with dbx_symfile_info here"));
   }
 
   DBX_TEXT_ADDR(objfile) = textaddr;
@@ -5840,7 +5845,7 @@ elfstab_build_psymtabs(struct objfile *objfile, int mainline,
   info = objfile->deprecated_sym_stab_info;
 
   if (info == NULL) {
-    ; /* ??? */
+    warning(_("Possible issue with dbx_symfile_info here"));
   }
 
   /* Find the first and last text address.  dbx_symfile_read seems to
@@ -5914,18 +5919,19 @@ elfstab_build_psymtabs(struct objfile *objfile, int mainline,
    This routine is mostly copied from dbx_symfile_init and dbx_symfile_read. */
 
 void
-stabsect_build_psymtabs (struct objfile *objfile, int mainline, char *stab_name,
-			 char *stabstr_name, char *text_name)
+stabsect_build_psymtabs(struct objfile *objfile, int mainline,
+			const char *stab_name, const char *stabstr_name,
+			const char *text_name)
 {
   int val;
   bfd *sym_bfd = objfile->obfd;
-  char *name = bfd_get_filename (sym_bfd);
+  char *name = bfd_get_filename(sym_bfd);
   asection *stabsect;
   asection *stabstrsect;
   asection *text_sect;
 
-  stabsect = bfd_get_section_by_name (sym_bfd, stab_name);
-  stabstrsect = bfd_get_section_by_name (sym_bfd, stabstr_name);
+  stabsect = bfd_get_section_by_name(sym_bfd, stab_name);
+  stabstrsect = bfd_get_section_by_name(sym_bfd, stabstr_name);
 
   if (!stabsect)
     return;
@@ -6076,6 +6082,9 @@ add_dyld_shared_cache_local_symbols(struct objfile *objfile, uint8_t *nlist_reco
       i++;
     }
 #else
+# if defined(__GNUC__)
+  asm("");
+# endif /* __GNUC__ */
   return;
 #endif /* TARGET_ARM && NM_NEXTSTEP */
 }
