@@ -59,7 +59,7 @@ static void
 print_dynamic_range_bound(struct type *, const char *, int,
 			  const char *, struct ui_file *);
 
-static void print_range_type_named(char *, struct ui_file *);
+static void print_range_type_named(const char *, struct ui_file *);
 
 
 static char *name_buffer;
@@ -75,7 +75,7 @@ decoded_type_name(struct type *the_type)
     return NULL;
   else
     {
-      char *raw_name = ada_type_name(the_type);
+      const char *raw_name = ada_type_name(the_type);
       char *s, *q;
 
       if ((name_buffer == NULL) || (name_buffer_len <= strlen(raw_name)))
@@ -237,24 +237,24 @@ print_dynamic_range_bound(struct type *type, const char *name, int name_len,
 {
   static char *name_buf = NULL;
   static size_t name_buf_len = 0UL;
-  LONGEST B;
-  int OK;
+  LONGEST Bval;
+  int isOK;
 
   GROW_VECT(name_buf, name_buf_len, (name_len + strlen(suffix) + 1UL),
             char);
   strncpy(name_buf, name, name_len);
   strcpy((name_buf + name_len), suffix);
 
-  B = get_int_var_value(name_buf, &OK);
-  if (OK)
-    ada_print_scalar(type, B, stream);
+  Bval = get_int_var_value(name_buf, &isOK);
+  if (isOK)
+    ada_print_scalar(type, Bval, stream);
   else
     fprintf_filtered(stream, "?");
 }
 
 /* Print the range type named NAME: */
 static void
-print_range_type_named(char *name, struct ui_file *stream)
+print_range_type_named(const char *name, struct ui_file *stream)
 {
   struct type *raw_type = ada_find_any_type(name);
   struct type *base_type;
@@ -804,20 +804,20 @@ ada_print_type(struct type *type0, const char *varstring,
 	print_array_type (type, stream, show, level);
 	break;
       case TYPE_CODE_INT:
-	if (ada_is_fixed_point_type (type))
-	  print_fixed_point_type (type, stream);
-	else if (ada_is_vax_floating_type (type))
-	  print_vax_floating_point_type (type, stream);
+	if (ada_is_fixed_point_type(type))
+	  print_fixed_point_type(type, stream);
+	else if (ada_is_vax_floating_type(type))
+	  print_vax_floating_point_type(type, stream);
 	else
 	  {
-	    char *name = ada_type_name (type);
-	    if (!ada_is_range_type_name (name))
-	      fprintf_filtered (stream, "<%d-byte integer>",
-				TYPE_LENGTH (type));
+	    const char *name = ada_type_name(type);
+	    if (!ada_is_range_type_name(name))
+	      fprintf_filtered(stream, "<%d-byte integer>",
+			       TYPE_LENGTH(type));
 	    else
 	      {
-		fprintf_filtered (stream, "range ");
-		print_range_type_named (name, stream);
+		fprintf_filtered(stream, "range ");
+		print_range_type_named(name, stream);
 	      }
 	  }
 	break;

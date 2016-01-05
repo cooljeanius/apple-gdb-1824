@@ -617,7 +617,7 @@ struct fn_field
    * arguments.  See gdb_mangle_name for the conversion from this
    * format to the one used if is_stub is clear.  */
 
-  char *physname;
+  const char *physname;
 
   /* The function type for the method.
    * (This comment used to say "The return value of the method",
@@ -666,7 +666,7 @@ struct fn_field
 struct fn_fieldlist
 {
   /* The overloaded name: */
-  char *name;
+  const char *name;
 
   /* The number of methods with this name: */
   int length;
@@ -1347,7 +1347,7 @@ extern void smash_to_member_type (struct type *, struct type *, struct type *);
 
 extern struct type *allocate_stub_method (struct type *);
 
-extern char *type_name_no_tag (const struct type *);
+extern const char *type_name_no_tag(const struct type *);
 
 extern struct type *lookup_struct_elt_type(struct type *, const char *, int);
 
@@ -1382,7 +1382,7 @@ extern void check_stub_method_group(struct type *, int);
 
 extern char *gdb_mangle_name (struct type *, int, int);
 
-extern struct type *lookup_typename (char *, struct block *, int);
+extern struct type *lookup_typename(const char *, struct block *, int);
 
 extern struct type *lookup_template_type (char *, struct type *,
 					  struct block *);

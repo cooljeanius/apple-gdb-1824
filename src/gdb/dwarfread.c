@@ -499,7 +499,7 @@ static struct type *decode_modified_type (char *, unsigned int, int);
 
 static struct type *decode_fund_type (unsigned int);
 
-static char *create_name (char *, struct obstack *);
+static char *create_name(const char *, struct obstack *);
 
 static struct type *lookup_utype (DIE_REF);
 
@@ -3355,16 +3355,15 @@ decode_fund_type (unsigned int fundtype)
    Given a pointer to a string and a pointer to an obstack, allocates
    a fresh copy of the string on the specified obstack.
  */
-
 static char *
-create_name (char *name, struct obstack *obstackp)
+create_name(const char *name, struct obstack *obstackp)
 {
-  int length;
+  size_t length;
   char *newname;
 
-  length = strlen (name) + 1;
-  newname = (char *) obstack_alloc (obstackp, length);
-  strcpy (newname, name);
+  length = (strlen(name) + 1UL);
+  newname = (char *)obstack_alloc(obstackp, length);
+  strcpy(newname, name);
   return (newname);
 }
 

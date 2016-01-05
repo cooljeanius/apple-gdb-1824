@@ -26,6 +26,10 @@
 #ifndef CALL_CMDS_H
 #define CALL_CMDS_H
 
+#if defined(__GNUC__) && !defined(__STRICT_ANSI__) && defined(CHECK_INCLUDES)
+# warning "Including call-cmds.h is deprecated."
+#endif /* __GNUC__ && !__STRICT_ANSI__ && CHECK_INCLUDES */
+
 #include "ansidecl.h"
 
 /* Since this file is deprecated overall, mark all prototypes in it as
@@ -34,10 +38,10 @@
 extern void initialize_all_files(void)
   ATTRIBUTE_DEPRECATED;
 
-extern void core_file_command(char *, int)
+extern void core_file_command(const char *, int)
   ATTRIBUTE_DEPRECATED;
 
-extern void break_command(char *, int)
+extern void break_command(const char *, int)
   ATTRIBUTE_DEPRECATED;
 
 #endif /* !CALL_CMDS_H */

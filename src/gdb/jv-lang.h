@@ -42,34 +42,36 @@ extern struct type *java_float_type;
 extern struct type *java_double_type;
 extern struct type *java_void_type;
 
-extern int java_val_print (struct type *, const gdb_byte *, int, CORE_ADDR,
-			   struct ui_file *, int, int, int,
-			   enum val_prettyprint);
+extern int java_val_print(struct type *, const gdb_byte *, int, CORE_ADDR,
+			  struct ui_file *, int, int, int,
+			  enum val_prettyprint);
 
-extern int java_value_print (struct value *, struct ui_file *, int,
-			     enum val_prettyprint);
+extern int java_value_print(struct value *, struct ui_file *, int,
+			    enum val_prettyprint);
 
-extern struct value *java_class_from_object (struct value *);
+extern struct value *java_class_from_object(struct value *);
 
-extern struct type *type_from_class (struct value *);
+extern struct type *type_from_class(struct value *);
 
-extern struct type *java_primitive_type (int signature);
+extern struct type *java_primitive_type(int signature);
 
-extern struct type *java_primitive_type_from_name (char *, int);
+extern struct type *java_primitive_type_from_name(const char *, int);
 
-extern struct type *java_array_type (struct type *, int);
+extern struct type *java_array_type(struct type *, int);
 
-extern struct type *get_java_object_type (void);
-extern int get_java_object_header_size (void);
+extern struct type *get_java_object_type(void);
+extern int get_java_object_header_size(void);
 
-extern struct type *java_lookup_class (char *);
+extern struct type *java_lookup_class(char *);
 
-extern int is_object_type (struct type *);
+extern int is_object_type(struct type *);
 
 /* Defined in jv-typeprint.c */
-extern void java_print_type (struct type *, char *, struct ui_file *, int,
-			     int);
+extern void java_print_type(struct type *, const char *, struct ui_file *, int,
+			    int);
 
-extern char *java_demangle_type_signature (char *);
+extern char *java_demangle_type_signature(const char *);
 
-#endif
+#endif /* !JV_LANG_H */
+
+/* EOF */

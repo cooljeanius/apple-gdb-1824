@@ -113,6 +113,10 @@ static void out_field_fmt(struct ui_out *uiout, int fldno,
 			  const char *fldname,
 			  const char *format, ...) ATTR_FORMAT(printf, 4, 5);
 
+/* exported global variables */
+
+int cli_out_c_inited = 0;
+
 /* local variables */
 
 /* (none yet) */
@@ -180,24 +184,20 @@ cli_begin (struct ui_out *uiout,
     return;
 }
 
-/* Mark end of a list */
-
+/* Mark end of a list: */
 void
-cli_end (struct ui_out *uiout,
-	 enum ui_out_type type,
-	 int level)
+cli_end(struct ui_out *uiout, enum ui_out_type type, int level)
 {
-  cli_out_data *data = ui_out_data (uiout);
+  cli_out_data *data = ui_out_data(uiout);
   if (data->suppress_output)
     return;
 }
 
-/* output an int field */
-
+/* Output an int field: */
 void
-cli_field_int (struct ui_out *uiout, int fldno, int width,
-	       enum ui_align alignment,
-	       const char *fldname, int value)
+cli_field_int(struct ui_out *uiout, int fldno, int width,
+	      enum ui_align alignment,
+	      const char *fldname, int value)
 {
   char buffer[20];	/* FIXME: how many chars long a %d can become? */
 
@@ -208,8 +208,7 @@ cli_field_int (struct ui_out *uiout, int fldno, int width,
   cli_field_string(uiout, fldno, width, alignment, fldname, buffer);
 }
 
-/* used to omit a field */
-
+/* Used to omit a field: */
 void
 cli_field_skip (struct ui_out *uiout, int fldno, int width,
 		enum ui_align alignment,
@@ -424,9 +423,9 @@ cli_out_set_stream(struct ui_out *uiout, struct ui_file *stream)
 
 /* Standard gdb initialization hook: */
 void
-_initialize_cli_out (void)
+_initialize_cli_out(void)
 {
-  /* nothing needs to be done, so just return: */
+  cli_out_c_inited = 1;
   return;
 }
 

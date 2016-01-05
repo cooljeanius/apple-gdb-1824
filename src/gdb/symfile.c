@@ -4573,7 +4573,7 @@ start_psymtab_common(struct objfile *objfile,
    cache.  */
 
 const struct partial_symbol *
-add_psymbol_to_list(char *name, int namelength, domain_enum domain,
+add_psymbol_to_list(const char *name, int namelength, domain_enum domain,
 		    enum address_class addrclass,
 		    struct psymbol_allocation_list *list,
                     long val, /* Value as a long */

@@ -38,6 +38,9 @@ struct ui_file;
    or top.c */
 extern struct ui_out *uiout;
 
+/* Other globals: */
+extern int ui_out_c_inited;
+
 /* alignment enum */
 enum ui_align
   {
@@ -258,7 +261,7 @@ typedef void (wrap_hint_ftype)(struct ui_out *uiout,
 typedef void (flush_ftype)(struct ui_out *uiout);
 typedef int (redirect_ftype)(struct ui_out *uiout,
                              struct ui_file *outstream);
-typedef void (notify_begin_ftype)(struct ui_out *uiout, char *);
+typedef void (notify_begin_ftype)(struct ui_out *uiout, const char *);
 typedef void (notify_end_ftype)(struct ui_out *uiout);
 
 /* ui-out-impl */
@@ -306,3 +309,5 @@ extern int ui_out_redirect (struct ui_out *uiout, struct ui_file *outstream);
 void ui_out_delete (struct ui_out *uiout);
 
 #endif /* UI_OUT_H */
+
+/* EOF */

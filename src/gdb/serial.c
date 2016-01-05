@@ -29,19 +29,15 @@
 extern void _initialize_serial(void);
 
 /* Is serial being debugged? */
-
 static int global_serial_debug_p;
 
-/* Linked list of serial I/O handlers */
-
+/* Linked list of serial I/O handlers: */
 static struct serial_ops *serial_ops_list = NULL;
 
-/* This is the last serial stream opened.  Used by connect command. */
-
+/* This is the last serial stream opened.  Used by connect command: */
 static struct serial *last_serial_opened = NULL;
 
-/* Pointer to list of scb's. */
-
+/* Pointer to list of scb's: */
 static struct serial *scb_base;
 
 /* Non-NULL gives filename which contains a recording of the remote session,
@@ -50,13 +46,13 @@ static struct serial *scb_base;
 static char *serial_logfile = NULL;
 static struct ui_file *serial_logfp = NULL;
 
-static struct serial_ops *serial_interface_lookup (char *);
-static void serial_logchar (struct ui_file *stream, int ch_type, int ch, int timeout);
+static struct serial_ops *serial_interface_lookup(const char *);
+static void serial_logchar(struct ui_file *, int, int, int);
 static const char logbase_hex[] = "hex";
 static const char logbase_octal[] = "octal";
 static const char logbase_ascii[] = "ascii";
 static const char *logbase_enums[] =
-{logbase_hex, logbase_octal, logbase_ascii, NULL};
+{ logbase_hex, logbase_octal, logbase_ascii, NULL };
 static const char *serial_logbase = logbase_ascii;
 
 
@@ -148,7 +144,7 @@ serial_log_command (const char *cmd)
 
 
 static struct serial_ops *
-serial_interface_lookup (char *name)
+serial_interface_lookup(const char *name)
 {
   struct serial_ops *ops;
 
@@ -664,7 +660,7 @@ static struct cmd_list_element *serial_set_cmdlist;
 static struct cmd_list_element *serial_show_cmdlist;
 
 static void
-serial_set_cmd(char *args, int from_tty)
+serial_set_cmd(const char *args, int from_tty)
 {
   printf_unfiltered("\"set serial\" must be followed by the name of a command.\n");
   help_list(serial_set_cmdlist, "set serial ",
@@ -672,7 +668,7 @@ serial_set_cmd(char *args, int from_tty)
 }
 
 static void
-serial_show_cmd(char *args, int from_tty)
+serial_show_cmd(const char *args, int from_tty)
 {
   cmd_show_list(serial_show_cmdlist, from_tty, "");
 }

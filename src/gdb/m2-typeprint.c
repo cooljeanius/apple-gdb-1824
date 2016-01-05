@@ -30,11 +30,11 @@
 #include "m2-lang.h"
 #include <errno.h>
 
-extern void c_print_type(struct type *, char *, struct ui_file *, int,
+extern void c_print_type(struct type *, const char *, struct ui_file *, int,
                          int);
 
 void
-m2_print_type(struct type *type, char *varstring, struct ui_file *stream,
+m2_print_type(struct type *type, const char *varstring, struct ui_file *stream,
 	      int show, int level)
 {
   c_print_type(type, varstring, stream, show, level);	/* FIXME */

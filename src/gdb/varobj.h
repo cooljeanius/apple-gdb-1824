@@ -78,71 +78,71 @@ struct varobj_changelist;
 
 /* API functions */
 
-extern struct varobj *varobj_create (char *objname,
-				     char *expression, CORE_ADDR frame,
-				     struct block *block,
-				     enum varobj_type type);
+extern struct varobj *varobj_create(char *objname,
+				    char *expression, CORE_ADDR frame,
+				    struct block *block,
+				    enum varobj_type type);
 
-extern char *varobj_gen_name (void);
+extern char *varobj_gen_name(void);
 
-extern struct varobj *varobj_get_handle (char *name);
+extern struct varobj *varobj_get_handle(char *name);
 
-extern char *varobj_get_objname (struct varobj *var);
+extern char *varobj_get_objname(struct varobj *var);
 
-extern char *varobj_get_expression (struct varobj *var);
+extern char *varobj_get_expression(struct varobj *var);
 
-extern int varobj_delete (struct varobj *var, char ***dellist,
-			  int only_children);
+extern int varobj_delete(struct varobj *var, char ***dellist,
+			 int only_children);
 
-extern enum varobj_display_formats varobj_set_display_format (
-							 struct varobj *var,
-					enum varobj_display_formats format);
+extern enum varobj_display_formats varobj_set_display_format(struct varobj *var,
+					      enum varobj_display_formats frmt);
 
-extern enum varobj_display_formats varobj_get_display_format (
-							struct varobj *var);
+extern enum varobj_display_formats varobj_get_display_format(struct varobj *vo);
 
-extern int varobj_get_num_children (struct varobj *var);
+extern int varobj_get_num_children(struct varobj *var);
 
-extern int varobj_list_children (struct varobj *var,
-				 struct varobj ***childlist);
+extern int varobj_list_children(struct varobj *var,
+				struct varobj ***childlist);
 
-extern int varobj_is_fake_child (struct varobj *var);
+extern int varobj_is_fake_child(struct varobj *var);
 
-extern char *varobj_get_type (struct varobj *var);
+extern char *varobj_get_type(struct varobj *var);
 
-/* APPLE LOCAL: Get the type without typedef's.  */
-char *varobj_get_resolved_type (struct varobj *var);
+/* APPLE LOCAL: Get the type without typedef's: */
+char *varobj_get_resolved_type(struct varobj *var);
 
-extern char *varobj_get_dynamic_type (struct varobj *var);
+extern char *varobj_get_dynamic_type(struct varobj *var);
 
-extern char *varobj_get_path_expr (struct varobj *var);
+extern char *varobj_get_path_expr(struct varobj *var);
 
-extern struct type *varobj_get_type_struct (struct varobj *var);
+extern struct type *varobj_get_type_struct(struct varobj *var);
 
-extern struct type *varobj_get_gdb_type (struct varobj *var);
+extern struct type *varobj_get_gdb_type(struct varobj *var);
 
-extern enum varobj_languages varobj_get_language (struct varobj *var);
+extern enum varobj_languages varobj_get_language(struct varobj *var);
 
-extern int varobj_get_attributes (struct varobj *var);
+extern int varobj_get_attributes(struct varobj *var);
 
-extern char *varobj_get_value (struct varobj *var);
+extern char *varobj_get_value(struct varobj *var);
 
-extern int varobj_set_value (struct varobj *var, char *expression);
+extern int varobj_set_value(struct varobj *var, char *expression);
 
-extern int varobj_list (struct varobj ***rootlist);
+extern int varobj_list(struct varobj ***rootlist);
 
-extern int varobj_in_scope_p (struct varobj *var);
+extern int varobj_in_scope_p(struct varobj *var);
 
-extern int varobj_pc_in_valid_block_p (struct varobj *var);
+extern int varobj_pc_in_valid_block_p(struct varobj *var);
 
-extern int varobj_update (struct varobj **varp, 
-			  struct varobj_changelist **changelist);
+extern int varobj_update(struct varobj **varp, 
+			 struct varobj_changelist **changelist);
 
-extern struct varobj *varobj_changelist_pop (struct varobj_changelist *changelist, 
-			    enum varobj_type_change *type_changed);
+extern struct varobj *varobj_changelist_pop(struct varobj_changelist *chglst, 
+					    enum varobj_type_change *typchgd);
 
-extern void varobj_get_valid_block (struct varobj *var, CORE_ADDR *start,
-				    CORE_ADDR *end);
+extern void varobj_get_valid_block(struct varobj *var, CORE_ADDR *start,
+				   CORE_ADDR *end);
 
-extern void varobj_delete_objfiles_vars (struct objfile *ofile);
+extern void varobj_delete_objfiles_vars(struct objfile *ofile);
 #endif /* VAROBJ_H */
+
+/* EOF */

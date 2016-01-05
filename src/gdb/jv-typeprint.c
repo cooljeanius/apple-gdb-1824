@@ -1,4 +1,4 @@
-/* Support for printing Java types for GDB, the GNU debugger.
+/* jv-typeprint.c: Support for printing Java types for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -39,7 +39,7 @@ static void java_type_print_base (struct type * type,
 static void
 java_type_print_derivation_info (struct ui_file *stream, struct type *type)
 {
-  char *name;
+  const char *name;
   int i;
   int n_bases;
   int prev;
@@ -83,61 +83,60 @@ java_type_print_derivation_info (struct ui_file *stream, struct type *type)
    We increase it for some recursive calls.  */
 
 static void
-java_type_print_base (struct type *type, struct ui_file *stream, int show,
-		      int level)
+java_type_print_base(struct type *type, struct ui_file *stream, int show,
+		     int level)
 {
   int i;
   int len;
-  char *mangled_name;
+  const char *mangled_name;
   char *demangled_name;
   QUIT;
 
-  wrap_here ("    ");
+  wrap_here("    ");
 
   if (type == NULL)
     {
-      fputs_filtered ("<type unknown>", stream);
+      fputs_filtered("<type unknown>", stream);
       return;
     }
 
   /* When SHOW is zero or less, and there is a valid type name, then always
      just print the type name directly from the type.  */
 
-  if (show <= 0
-      && TYPE_NAME (type) != NULL)
+  if ((show <= 0) && (TYPE_NAME(type) != NULL))
     {
-      fputs_filtered (TYPE_NAME (type), stream);
+      fputs_filtered(TYPE_NAME(type), stream);
       return;
     }
 
-  CHECK_TYPEDEF (type);
+  CHECK_TYPEDEF(type);
 
-  switch (TYPE_CODE (type))
+  switch (TYPE_CODE(type))
     {
     case TYPE_CODE_PTR:
-      java_type_print_base (TYPE_TARGET_TYPE (type), stream, show, level);
+      java_type_print_base(TYPE_TARGET_TYPE(type), stream, show, level);
       break;
 
     case TYPE_CODE_STRUCT:
-      if (TYPE_TAG_NAME (type) != NULL && TYPE_TAG_NAME (type)[0] == '[')
+      if (TYPE_TAG_NAME(type) != NULL && TYPE_TAG_NAME(type)[0] == '[')
 	{			/* array type */
-	  char *name = java_demangle_type_signature (TYPE_TAG_NAME (type));
-	  fputs_filtered (name, stream);
-	  xfree (name);
+	  const char *name = java_demangle_type_signature(TYPE_TAG_NAME(type));
+	  fputs_filtered(name, stream);
+	  xfree((void *)name);
 	  break;
 	}
 
       if (show >= 0)
-	fprintf_filtered (stream, "class ");
+	fprintf_filtered(stream, "class ");
 
-      if (TYPE_TAG_NAME (type) != NULL)
+      if (TYPE_TAG_NAME(type) != NULL)
 	{
-	  fputs_filtered (TYPE_TAG_NAME (type), stream);
+	  fputs_filtered(TYPE_TAG_NAME(type), stream);
 	  if (show > 0)
-	    fputs_filtered (" ", stream);
+	    fputs_filtered(" ", stream);
 	}
 
-      wrap_here ("    ");
+      wrap_here("    ");
 
       if (show < 0)
 	{
@@ -189,11 +188,11 @@ java_type_print_base (struct type *type, struct ui_file *stream, int show,
 	      if (TYPE_FIELD_STATIC (type, i))
 		fprintf_filtered (stream, "static ");
 
-	      java_print_type (TYPE_FIELD_TYPE (type, i),
-			       TYPE_FIELD_NAME (type, i),
-			       stream, show - 1, level + 4);
+	      java_print_type(TYPE_FIELD_TYPE(type, i),
+			      TYPE_FIELD_NAME(type, i),
+			      stream, show - 1, level + 4);
 
-	      fprintf_filtered (stream, ";\n");
+	      fprintf_filtered(stream, ";\n");
 	    }
 
 	  /* If there are both fields and methods, put a space between. */
@@ -207,8 +206,8 @@ java_type_print_base (struct type *type, struct ui_file *stream, int show,
 	    {
 	      struct fn_field *f;
 	      int j;
-	      char *method_name;
-	      char *name;
+	      const char *method_name;
+	      const char *name;
 	      int is_constructor;
 	      int n_overloads;
 
@@ -220,7 +219,7 @@ java_type_print_base (struct type *type, struct ui_file *stream, int show,
 
 	      for (j = 0; j < n_overloads; j++)
 		{
-		  char *physname;
+		  const char *physname;
 		  int is_full_physname_constructor;
 
 		  physname = TYPE_FN_FIELD_PHYSNAME (f, j);
@@ -296,18 +295,18 @@ java_type_print_base (struct type *type, struct ui_file *stream, int show,
 			  demangled_no_class = ptr;
 		      }
 
-		    fputs_filtered (demangled_no_class, stream);
-		    xfree (demangled_name);
+		    fputs_filtered(demangled_no_class, stream);
+		    xfree(demangled_name);
 		  }
 
-		  if (TYPE_FN_FIELD_STUB (f, j))
-		    xfree (mangled_name);
+		  if (TYPE_FN_FIELD_STUB(f, j))
+		    xfree((char *)mangled_name);
 
-		  fprintf_filtered (stream, ";\n");
+		  fprintf_filtered(stream, ";\n");
 		}
 	    }
 
-	  fprintfi_filtered (level, stream, "}");
+	  fprintfi_filtered(level, stream, "}");
 	}
       break;
 
@@ -318,12 +317,12 @@ java_type_print_base (struct type *type, struct ui_file *stream, int show,
 
 /* LEVEL is the depth to indent lines by.  */
 
-extern void c_type_print_varspec_suffix (struct type *, struct ui_file *,
-					 int, int, int);
+extern void c_type_print_varspec_suffix(struct type *, struct ui_file *,
+					int, int, int);
 
 void
-java_print_type (struct type *type, char *varstring, struct ui_file *stream,
-		 int show, int level)
+java_print_type(struct type *type, const char *varstring,
+		struct ui_file *stream, int show, int level)
 {
   int demangled_args;
 
@@ -341,3 +340,5 @@ java_print_type (struct type *type, char *varstring, struct ui_file *stream,
   demangled_args = strchr (varstring, '(') != NULL;
   c_type_print_varspec_suffix (type, stream, show, 0, demangled_args);
 }
+
+/* EOF */

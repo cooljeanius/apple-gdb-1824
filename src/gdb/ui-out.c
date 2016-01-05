@@ -1,4 +1,4 @@
-/* Output generating routines for GDB.
+/* ui-out.c: Output generating routines for GDB.
 
    Copyright 1999, 2000, 2001, 2002, 2004, 2005
    Free Software Foundation, Inc.
@@ -185,7 +185,8 @@ static void default_message(struct ui_out *uiout, int verbosity,
 static void default_wrap_hint(struct ui_out *uiout,
                               const char *identstring);
 static void default_flush(struct ui_out *uiout);
-static void default_notify_begin(struct ui_out *uiout, char *unused_class);
+static void default_notify_begin(struct ui_out *uiout,
+				 const char *unused_class);
 static void default_notify_end(struct ui_out *uiout);
 
 /* This is the default ui-out implementation functions vector: */
@@ -272,9 +273,9 @@ static void uo_text_fmt(struct ui_out *uiout, const char *format,
 static void uo_message(struct ui_out *uiout, int verbosity,
                        const char *format, va_list args)
      ATTR_FORMAT(printf, 3, 0);
-static void uo_wrap_hint(struct ui_out *uiout, char *identstring);
+static void uo_wrap_hint(struct ui_out *uiout, const char *identstring);
 static void uo_flush(struct ui_out *uiout);
-static void uo_notify_begin(struct ui_out *uiout, char *classp);
+static void uo_notify_begin(struct ui_out *uiout, const char *classp);
 static void uo_notify_end(struct ui_out *uiout);
 static int uo_redirect(struct ui_out *uiout, struct ui_file *outstream);
 
@@ -290,6 +291,11 @@ static void verify_field(struct ui_out *uiout, int *fldno, int *width,
 			 int *align);
 
 /* exported functions (ui_out API) */
+
+/* (none with prototypes here) */
+
+/* exported global variables */
+int ui_out_c_inited = 0;
 
 /* Mark beginning of a table */
 
@@ -709,9 +715,12 @@ ui_out_test_flags(struct ui_out *uiout, int mask)
    'set verbositylevel' command */
 
 int
-ui_out_get_verblvl(struct ui_out *uiout)
+ui_out_get_verblvl(struct ui_out *uiout ATTRIBUTE_UNUSED)
 {
   /* FIXME: not implemented yet */
+#if defined(__GNUC__)
+  asm("");
+#endif /* __GNUC__ */
   return 0;
 }
 
@@ -739,7 +748,7 @@ ui_out_cleanup_after_error(struct ui_out *uiout)
 
 /* FIXME: needs comment: */
 static void
-ui_out_notify_begin(struct ui_out *uiout, char *the_class)
+ui_out_notify_begin(struct ui_out *uiout, const char *the_class)
 {
   uo_notify_begin(uiout, the_class);
 }
@@ -992,7 +1001,7 @@ default_flush(struct ui_out *uiout)
 }
 
 static void
-default_notify_begin(struct ui_out *uiout, char *unused_class)
+default_notify_begin(struct ui_out *uiout, const char *unused_class)
 {
   return;
 }
@@ -1093,6 +1102,7 @@ uo_field_fmt(struct ui_out *uiout, int fldno, int width,
   uiout->impl->field_fmt(uiout, fldno, width, align, fldname, format, args);
 }
 
+/* */
 void
 uo_spaces(struct ui_out *uiout, int numspaces)
 {
@@ -1101,6 +1111,7 @@ uo_spaces(struct ui_out *uiout, int numspaces)
   uiout->impl->spaces(uiout, numspaces);
 }
 
+/* */
 void
 uo_text(struct ui_out *uiout, const char *string)
 {
@@ -1109,6 +1120,7 @@ uo_text(struct ui_out *uiout, const char *string)
   uiout->impl->text(uiout, string);
 }
 
+/* */
 void
 uo_text_fmt(struct ui_out *uiout, const char *format, va_list args)
 {
@@ -1117,6 +1129,7 @@ uo_text_fmt(struct ui_out *uiout, const char *format, va_list args)
   uiout->impl->text_fmt(uiout, format, args);
 }
 
+/* */
 void
 uo_message(struct ui_out *uiout, int verbosity,
 	   const char *format, va_list args)
@@ -1126,14 +1139,16 @@ uo_message(struct ui_out *uiout, int verbosity,
   uiout->impl->message(uiout, verbosity, format, args);
 }
 
+/* */
 void
-uo_wrap_hint(struct ui_out *uiout, char *identstring)
+uo_wrap_hint(struct ui_out *uiout, const char *identstring)
 {
   if (!uiout->impl->wrap_hint)
     return;
   uiout->impl->wrap_hint(uiout, identstring);
 }
 
+/* */
 void
 uo_flush(struct ui_out *uiout)
 {
@@ -1142,14 +1157,16 @@ uo_flush(struct ui_out *uiout)
   uiout->impl->flush(uiout);
 }
 
+/* */
 static void
-uo_notify_begin(struct ui_out *uiout, char *classp)
+uo_notify_begin(struct ui_out *uiout, const char *classp)
 {
   if (!uiout->impl->notify_begin)
     return;
   uiout->impl->notify_begin(uiout, classp);
 }
 
+/* */
 static void
 uo_notify_end(struct ui_out *uiout)
 {
@@ -1158,6 +1175,7 @@ uo_notify_end(struct ui_out *uiout)
   uiout->impl->notify_end(uiout);
 }
 
+/* */
 int
 uo_redirect(struct ui_out *uiout, struct ui_file *outstream)
 {
@@ -1289,29 +1307,25 @@ specified after table_body and inside a list."));
 }
 
 
-/* access to ui_out format private members */
-
-void
-ui_out_get_field_separator (struct ui_out *uiout)
+/* Access to ui_out format private members: */
+void ATTRIBUTE_CONST
+ui_out_get_field_separator(struct ui_out *uiout ATTRIBUTE_UNUSED)
 {
+  return;
 }
 
-/* Access to ui-out members data */
-
+/* Access to ui-out members data: */
 struct ui_out_data *
-ui_out_data (struct ui_out *uiout)
+ui_out_data(struct ui_out *uiout)
 {
   return uiout->data;
 }
 
-/* initalize private members at startup */
-
+/* initalize private members at startup: */
 struct ui_out *
-ui_out_new (struct ui_out_impl *impl,
-	    struct ui_out_data *data,
-	    int flags)
+ui_out_new(struct ui_out_impl *impl, struct ui_out_data *data, int flags)
 {
-  struct ui_out *uiout = XMALLOC (struct ui_out);
+  struct ui_out *uiout = XMALLOC(struct ui_out);
   uiout->data = data;
   uiout->impl = impl;
   uiout->flags = flags;
@@ -1337,7 +1351,8 @@ ui_out_delete(struct ui_out *uiout)
 void
 _initialize_ui_out(void)
 {
-  return; /* nothing needs to be done here */
+  ui_out_c_inited = 1;
+  return; /* nothing more really needs to be done here */
 }
 
 /* EOF */

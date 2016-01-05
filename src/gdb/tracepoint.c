@@ -2378,7 +2378,8 @@ scope_info(const char *args, int from_tty)
   struct symbol *sym;
   struct minimal_symbol *msym;
   struct block *block;
-  char **canonical, *symname;
+  char **canonical;
+  const char *symname;
   const char *save_args = args;
   struct dict_iterator iter;
   int j, count = 0;

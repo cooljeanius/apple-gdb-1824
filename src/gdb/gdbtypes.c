@@ -1101,19 +1101,17 @@ create_set_type(struct type *result_type, struct type *domain_type)
    The type returned is a permanent type, allocated using malloc; it
    doesn't live in any objfile's obstack.  */
 static struct type *
-init_simd_type (char *name,
-		struct type *elt_type,
-		char *elt_name,
-		int n)
+init_simd_type(const char *name, struct type *elt_type,
+	       const char *elt_name, int n)
 {
   struct type *simd_type;
   struct type *array_type;
 
-  simd_type = init_composite_type (name, TYPE_CODE_STRUCT);
-  array_type = create_array_type (0, elt_type,
-				  create_range_type (0, builtin_type_int,
-						     0, n-1));
-  append_composite_type_field (simd_type, elt_name, array_type);
+  simd_type = init_composite_type(name, TYPE_CODE_STRUCT);
+  array_type = create_array_type(0, elt_type,
+				 create_range_type(0, builtin_type_int,
+						   0, (n - 1)));
+  append_composite_type_field(simd_type, elt_name, array_type);
   return simd_type;
 }
 
@@ -1246,16 +1244,16 @@ smash_to_method_type (struct type *type, struct type *domain,
 /* Return a typename for a struct/union/enum type without "struct ",
    "union ", or "enum ".  If the type has a NULL name, return NULL.  */
 
-char *
-type_name_no_tag (const struct type *type)
+const char *
+type_name_no_tag(const struct type *type)
 {
-  if (TYPE_TAG_NAME (type) != NULL)
-    return TYPE_TAG_NAME (type);
+  if (TYPE_TAG_NAME(type) != NULL)
+    return TYPE_TAG_NAME(type);
 
   /* Is there code which expects this to return the name if there is no
      tag name?  My guess is that this is mainly used for C++ in cases where
      the two will always be the same.  */
-  return TYPE_NAME (type);
+  return TYPE_NAME(type);
 }
 
 /* Lookup a typedef or primitive type named NAME,
@@ -1263,7 +1261,7 @@ type_name_no_tag (const struct type *type)
    If NOERR is nonzero, return zero if NAME is not suitably defined.  */
 
 struct type *
-lookup_typename (char *name, struct block *block, int noerr)
+lookup_typename(const char *name, struct block *block, int noerr)
 {
   struct symbol *sym;
   struct type *tmp;
@@ -1462,21 +1460,21 @@ lookup_struct_elt_type(struct type *type, const char *name, int noerr)
 
   for (;;)
     {
-      CHECK_TYPEDEF (type);
-      if (TYPE_CODE (type) != TYPE_CODE_PTR
-	  && TYPE_CODE (type) != TYPE_CODE_REF)
+      CHECK_TYPEDEF(type);
+      if ((TYPE_CODE(type) != TYPE_CODE_PTR)
+	  && (TYPE_CODE(type) != TYPE_CODE_REF))
 	break;
-      type = TYPE_TARGET_TYPE (type);
+      type = TYPE_TARGET_TYPE(type);
     }
 
-  if (TYPE_CODE (type) != TYPE_CODE_STRUCT &&
-      TYPE_CODE (type) != TYPE_CODE_UNION)
+  if ((TYPE_CODE(type) != TYPE_CODE_STRUCT)
+      && (TYPE_CODE(type) != TYPE_CODE_UNION))
     {
-      target_terminal_ours ();
-      gdb_flush (gdb_stdout);
-      type_for_printing = type_sprint (type, "", -1);
-      make_cleanup (xfree, type_for_printing);
-      error ("Type %s is not a structure or union type.", type_for_printing);
+      target_terminal_ours();
+      gdb_flush(gdb_stdout);
+      type_for_printing = type_sprint(type, "", -1);
+      make_cleanup(xfree, type_for_printing);
+      error("Type %s is not a structure or union type.", type_for_printing);
     }
 
 #if 0
@@ -1493,13 +1491,13 @@ lookup_struct_elt_type(struct type *type, const char *name, int noerr)
   }
 #endif /* 0 */
 
-  for (i = TYPE_NFIELDS (type) - 1; i >= TYPE_N_BASECLASSES (type); i--)
+  for (i = (TYPE_NFIELDS(type) - 1); i >= TYPE_N_BASECLASSES(type); i--)
     {
-      char *t_field_name = TYPE_FIELD_NAME (type, i);
+      const char *t_field_name = TYPE_FIELD_NAME(type, i);
 
-      if (t_field_name && (strcmp_iw (t_field_name, name) == 0))
+      if (t_field_name && (strcmp_iw(t_field_name, name) == 0))
 	{
-	  return TYPE_FIELD_TYPE (type, i);
+	  return TYPE_FIELD_TYPE(type, i);
 	}
     }
 
@@ -2008,7 +2006,7 @@ check_stub_method_group(struct type *type, int method_id)
 	{
 	  TYPE_FN_FIELDLIST_NAME(type, method_id) =
 	    (char *)TYPE_ALLOC(type, (strlen(dem_opname) + 1UL));
-	  strcpy(TYPE_FN_FIELDLIST_NAME(type, method_id), dem_opname);
+	  strcpy((char *)TYPE_FN_FIELDLIST_NAME(type, method_id), dem_opname);
 	}
     }
 }
@@ -3190,97 +3188,74 @@ print_cplus_stuff (struct type *type, int spaces)
     }
 }
 
+/* */
 static void
-print_bound_type (int bt)
+print_bound_type(int bt)
 {
   switch (bt)
     {
     case BOUND_CANNOT_BE_DETERMINED:
-      printf_filtered ("(BOUND_CANNOT_BE_DETERMINED)");
+      printf_filtered("(BOUND_CANNOT_BE_DETERMINED)");
       break;
     case BOUND_BY_REF_ON_STACK:
-      printf_filtered ("(BOUND_BY_REF_ON_STACK)");
+      printf_filtered("(BOUND_BY_REF_ON_STACK)");
       break;
     case BOUND_BY_VALUE_ON_STACK:
-      printf_filtered ("(BOUND_BY_VALUE_ON_STACK)");
+      printf_filtered("(BOUND_BY_VALUE_ON_STACK)");
       break;
     case BOUND_BY_REF_IN_REG:
-      printf_filtered ("(BOUND_BY_REF_IN_REG)");
+      printf_filtered("(BOUND_BY_REF_IN_REG)");
       break;
     case BOUND_BY_VALUE_IN_REG:
-      printf_filtered ("(BOUND_BY_VALUE_IN_REG)");
+      printf_filtered("(BOUND_BY_VALUE_IN_REG)");
       break;
     case BOUND_SIMPLE:
-      printf_filtered ("(BOUND_SIMPLE)");
+      printf_filtered("(BOUND_SIMPLE)");
       break;
     default:
-      printf_filtered (_("(unknown bound type)"));
+      printf_filtered(_("(unknown bound type)"));
       break;
     }
 }
 
 static struct obstack dont_print_type_obstack;
 
-const char *type_code_name (int code)
+/* */
+const char * ATTRIBUTE_CONST
+type_code_name(int code)
 {
   switch (code)
     {
-    case TYPE_CODE_UNDEF:
-      return "TYPE_CODE_UNDEF";
-    case TYPE_CODE_PTR:
-      return "TYPE_CODE_PTR";
-    case TYPE_CODE_ARRAY:
-      return "TYPE_CODE_ARRAY";
-    case TYPE_CODE_STRUCT:
-      return "TYPE_CODE_STRUCT";
-    case TYPE_CODE_UNION:
-      return "TYPE_CODE_UNION";
-    case TYPE_CODE_ENUM:
-      return "TYPE_CODE_ENUM";
-    case TYPE_CODE_FUNC:
-      return "TYPE_CODE_FUNC";
-    case TYPE_CODE_INT:
-      return "TYPE_CODE_INT";
-    case TYPE_CODE_FLT:
-      return "TYPE_CODE_FLT";
-    case TYPE_CODE_VOID:
-      return "TYPE_CODE_VOID";
-    case TYPE_CODE_SET:
-      return "TYPE_CODE_SET";
-    case TYPE_CODE_RANGE:
-      return "TYPE_CODE_RANGE";
-    case TYPE_CODE_STRING:
-      return "TYPE_CODE_STRING";
-    case TYPE_CODE_BITSTRING:
-      return "TYPE_CODE_BITSTRING";
-    case TYPE_CODE_ERROR:
-      return "TYPE_CODE_ERROR";
-    case TYPE_CODE_MEMBER:
-      return "TYPE_CODE_MEMBER";
-    case TYPE_CODE_METHOD:
-      return "TYPE_CODE_METHOD";
-    case TYPE_CODE_REF:
-      return "TYPE_CODE_REF";
-    case TYPE_CODE_CHAR:
-      return "TYPE_CODE_CHAR";
-    case TYPE_CODE_BOOL:
-      return "TYPE_CODE_BOOL";
-    case TYPE_CODE_COMPLEX:
-      return "TYPE_CODE_COMPLEX";
-    case TYPE_CODE_TYPEDEF:
-      return "TYPE_CODE_TYPEDEF";
-    case TYPE_CODE_TEMPLATE:
-      return "TYPE_CODE_TEMPLATE";
-    case TYPE_CODE_TEMPLATE_ARG:
-      return "TYPE_CODE_TEMPLATE_ARG";
-    case TYPE_CODE_NAMESPACE:
-      return "TYPE_CODE_NAMESPACE";
-    default:
-      return "UNKNOWN TYPE CODE";
+    case TYPE_CODE_UNDEF: return "TYPE_CODE_UNDEF";
+    case TYPE_CODE_PTR: return "TYPE_CODE_PTR";
+    case TYPE_CODE_ARRAY: return "TYPE_CODE_ARRAY";
+    case TYPE_CODE_STRUCT: return "TYPE_CODE_STRUCT";
+    case TYPE_CODE_UNION: return "TYPE_CODE_UNION";
+    case TYPE_CODE_ENUM: return "TYPE_CODE_ENUM";
+    case TYPE_CODE_FUNC: return "TYPE_CODE_FUNC";
+    case TYPE_CODE_INT: return "TYPE_CODE_INT";
+    case TYPE_CODE_FLT: return "TYPE_CODE_FLT";
+    case TYPE_CODE_VOID: return "TYPE_CODE_VOID";
+    case TYPE_CODE_SET: return "TYPE_CODE_SET";
+    case TYPE_CODE_RANGE: return "TYPE_CODE_RANGE";
+    case TYPE_CODE_STRING: return "TYPE_CODE_STRING";
+    case TYPE_CODE_BITSTRING: return "TYPE_CODE_BITSTRING";
+    case TYPE_CODE_ERROR: return "TYPE_CODE_ERROR";
+    case TYPE_CODE_MEMBER: return "TYPE_CODE_MEMBER";
+    case TYPE_CODE_METHOD: return "TYPE_CODE_METHOD";
+    case TYPE_CODE_REF: return "TYPE_CODE_REF";
+    case TYPE_CODE_CHAR: return "TYPE_CODE_CHAR";
+    case TYPE_CODE_BOOL: return "TYPE_CODE_BOOL";
+    case TYPE_CODE_COMPLEX: return "TYPE_CODE_COMPLEX";
+    case TYPE_CODE_TYPEDEF: return "TYPE_CODE_TYPEDEF";
+    case TYPE_CODE_TEMPLATE: return "TYPE_CODE_TEMPLATE";
+    case TYPE_CODE_TEMPLATE_ARG: return "TYPE_CODE_TEMPLATE_ARG";
+    case TYPE_CODE_NAMESPACE: return "TYPE_CODE_NAMESPACE";
+    default: return "UNKNOWN TYPE CODE";
     }
 }
 
-
+/* */
 void
 recursive_dump_type (struct type *type, int spaces)
 {
@@ -3686,9 +3661,9 @@ builtin_type(struct gdbarch *gdbarch)
   return (const struct builtin_type *)gdbarch_data(gdbarch, gdbtypes_data);
 }
 
-
+/* */
 static struct type *
-build_flt(int bit, char *name, const struct floatformat *floatformat)
+build_flt(int bit, const char *name, const struct floatformat *floatformat)
 {
   struct type *t;
   if (bit <= 0 || floatformat == NULL)
@@ -3702,8 +3677,9 @@ build_flt(int bit, char *name, const struct floatformat *floatformat)
   return t;
 }
 
+/* */
 static struct type *
-build_complex(int bit, char *name, struct type *target_type)
+build_complex(int bit, const char *name, struct type *target_type)
 {
   struct type *t;
   if (bit <= 0 || target_type == builtin_type_error)

@@ -75,34 +75,32 @@ show_static_field_print (struct ui_file *file, int from_tty,
 static struct obstack dont_print_vb_obstack;
 static struct obstack dont_print_statmem_obstack;
 
-extern void _initialize_cp_valprint (void);
+extern void _initialize_cp_valprint(void);
 
-static void cp_print_static_field (struct type *, struct value *,
-				   struct ui_file *, int, int,
-				   enum val_prettyprint);
+static void cp_print_static_field(struct type *, struct value *,
+				  struct ui_file *, int, int,
+				  enum val_prettyprint);
 
-static void cp_print_value (struct type *, struct type *, const gdb_byte *,
-			    int, CORE_ADDR, struct ui_file *, int, int,
-			    enum val_prettyprint, struct type **);
+static void cp_print_value(struct type *, struct type *, const gdb_byte *,
+			   int, CORE_ADDR, struct ui_file *, int, int,
+			   enum val_prettyprint, struct type **);
 
-static void cp_print_hpacc_virtual_table_entries (struct type *, int *,
-						  struct value *,
-						  struct ui_file *, int,
-						  int,
-						  enum val_prettyprint);
+static void cp_print_hpacc_virtual_table_entries(struct type *, int *,
+						 struct value *,
+						 struct ui_file *, int, int,
+						 enum val_prettyprint);
 
 
 void
-cp_print_class_method (const gdb_byte *valaddr,
-		       struct type *type,
-		       struct ui_file *stream)
+cp_print_class_method(const gdb_byte *valaddr, struct type *type,
+		      struct ui_file *stream)
 {
   struct type *domain;
   struct fn_field *f = NULL;
   int j = 0;
   int len2;
   int offset;
-  char *kind = "";
+  const char *kind = "";
   CORE_ADDR addr;
   struct symbol *sym;
   unsigned len;
@@ -158,7 +156,8 @@ cp_print_class_method (const gdb_byte *valaddr,
 	  check_stub_method_group (domain, i);
 	  for (j = 0; j < len2; j++)
 	    {
-	      if (strcmp (DEPRECATED_SYMBOL_NAME (sym), TYPE_FN_FIELD_PHYSNAME (f, j))
+	      if (strcmp(DEPRECATED_SYMBOL_NAME(sym),
+			 TYPE_FN_FIELD_PHYSNAME(f, j))
 		  == 0)
 		goto common;
 	    }
@@ -203,7 +202,7 @@ const char hpacc_vtbl_ptr_type_name[] = "__vftyp";
 int
 cp_is_vtbl_ptr_type(struct type *the_type)
 {
-  char *cp_typename = type_name_no_tag(the_type);
+  const char *cp_typename = type_name_no_tag(the_type);
 
   return ((cp_typename != NULL) && !strcmp(cp_typename, vtbl_ptr_name));
 }
@@ -703,10 +702,9 @@ cp_print_static_field (struct type *type,
 }
 
 void
-cp_print_class_member (const gdb_byte *valaddr, struct type *domain,
-		       struct ui_file *stream, char *prefix)
+cp_print_class_member(const gdb_byte *valaddr, struct type *domain,
+		      struct ui_file *stream, const char *prefix)
 {
-
   /* VAL is a byte offset into the structure type DOMAIN.
      Find the name of the field for that offset and
      print it.  */
@@ -745,7 +743,7 @@ cp_print_class_member (const gdb_byte *valaddr, struct type *domain,
     }
   if (i < len)
     {
-      char *name;
+      const char *name;
       fputs_filtered (prefix, stream);
       name = type_name_no_tag (domain);
       if (name)
@@ -867,3 +865,5 @@ Show printing of object's derived type based on vtable info."), NULL,
 			      32 * sizeof (CORE_ADDR), sizeof (CORE_ADDR),
 			      xmalloc, xfree);
 }
+
+/* EOF */

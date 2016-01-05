@@ -44,13 +44,13 @@ extern int objectprint;	/* Controls looking up an object's derived type
 
 extern void _initialize_typeprint(void);
 
-static void ptype_command(char *, int);
+static void ptype_command(const char *, int);
 
 static struct type *ptype_eval(struct expression *);
 
-static void whatis_command(char *, int);
+static void whatis_command(const char *, int);
 
-static void whatis_exp(char *, int);
+static void whatis_exp(const char *, int);
 
 /* Print a description of a type in the format of a
    typedef for the current language.
@@ -120,7 +120,7 @@ type_print(struct type *type, const char *varstring, struct ui_file *stream,
    have the same meaning as type_print()'s -- see the comment there.  */
 
 char *
-type_sprint(struct type *type, char *varstring, int show)
+type_sprint(struct type *type, const char *varstring, int show)
 {
   struct ui_file *stb;
   struct cleanup *wipe;
@@ -139,6 +139,7 @@ type_sprint(struct type *type, char *varstring, int show)
 
 static int single_quote_typename = 1;
 
+/* */
 int
 set_single_quote_typename(int new_value)
 {
@@ -147,14 +148,16 @@ set_single_quote_typename(int new_value)
   return old_value;
 }
 
+/* */
 int
 get_single_quote_typename(void)
 {
   return single_quote_typename;
 }
 
+/* */
 char *
-type_sprint_quoted(struct type *type, char *varstring, int show)
+type_sprint_quoted(struct type *type, const char *varstring, int show)
 {
   char *volatile ret_val;
   struct gdb_exception e;
@@ -175,7 +178,7 @@ type_sprint_quoted(struct type *type, char *varstring, int show)
    show is passed to type_print.  */
 
 static void
-whatis_exp (char *exp, int show)
+whatis_exp(const char *exp, int show)
 {
   struct expression *expr;
   struct value *val;
@@ -190,14 +193,14 @@ whatis_exp (char *exp, int show)
     {
       /* APPLE LOCAL initialize innermost_block  */
       innermost_block = NULL;
-      expr = parse_expression (exp);
-      old_chain = make_cleanup (free_current_contents, &expr);
-      val = evaluate_type (expr);
+      expr = parse_expression(exp);
+      old_chain = make_cleanup(free_current_contents, &expr);
+      val = evaluate_type(expr);
     }
   else
-    val = access_value_history (0);
+    val = access_value_history(0);
 
-  type = value_type (val);
+  type = value_type(val);
 
   if (objectprint)
     {
@@ -226,8 +229,7 @@ whatis_exp (char *exp, int show)
 	full = 1;
     }
 
-
-  printf_filtered ("type = ");
+  printf_filtered("type = ");
 
   if (real_type)
     {
@@ -242,16 +244,17 @@ whatis_exp (char *exp, int show)
   printf_filtered ("\n");
 
   if (exp)
-    do_cleanups (old_chain);
+    do_cleanups(old_chain);
 }
 
+/* */
 static void
-whatis_command (char *exp, int from_tty)
+whatis_command(const char *exp, int from_tty)
 {
   /* Most of the time users do not want to see all the fields
      in a structure.  If they do they can use the "ptype" command.
      Hence the "-1" below.  */
-  whatis_exp (exp, -1);
+  whatis_exp(exp, -1);
 }
 
 /* Simple subroutine for ptype_command.  */
@@ -271,7 +274,7 @@ ptype_eval (struct expression *exp)
 
 /* TYPENAME is either the name of a type, or an expression: */
 static void
-ptype_command(char *the_typename, int from_tty)
+ptype_command(const char *the_typename, int from_tty)
 {
   struct type *type;
   struct expression *expr;
@@ -319,7 +322,7 @@ ptype_command(char *the_typename, int from_tty)
    that come from the inferior in target byte order and target size. */
 
 void
-print_type_scalar (struct type *type, LONGEST val, struct ui_file *stream)
+print_type_scalar(struct type *type, LONGEST val, struct ui_file *stream)
 {
   unsigned int i;
   unsigned len;
@@ -328,7 +331,6 @@ print_type_scalar (struct type *type, LONGEST val, struct ui_file *stream)
 
   switch (TYPE_CODE (type))
     {
-
     case TYPE_CODE_ENUM:
       len = TYPE_NFIELDS (type);
       for (i = 0; i < len; i++)

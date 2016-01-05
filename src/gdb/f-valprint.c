@@ -1,4 +1,4 @@
-/* Support for printing Fortran values for GDB, the GNU debugger.
+/* f-valprint.c: Support for printing Fortran values for GDB, the GNU debugger.
 
    Copyright 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2003, 2005 Free
    Software Foundation, Inc.
@@ -42,8 +42,8 @@ static int there_is_a_visible_common_named(char *);
 #endif /* 0 */
 
 extern void _initialize_f_valprint(void);
-static void info_common_command(char *, int);
-static void list_all_visible_commons(char *);
+static void info_common_command(const char *, int);
+static void list_all_visible_commons(const char *);
 static void f77_create_arrayprint_offset_tbl(struct type *,
 					     struct ui_file *);
 static void f77_get_dynamic_length_of_aggregate(struct type *);
@@ -586,19 +586,20 @@ f_val_print (struct type *type, const gdb_byte *valaddr, int embedded_offset,
   return 0;
 }
 
+/* */
 static void
-list_all_visible_commons (char *funname)
+list_all_visible_commons(const char *funname)
 {
   SAVED_F77_COMMON_PTR tmp;
 
   tmp = head_common_list;
 
-  printf_filtered (_("All COMMON blocks visible at this level:\n\n"));
+  printf_filtered(_("All COMMON blocks visible at this level:\n\n"));
 
   while (tmp != NULL)
     {
-      if (strcmp (tmp->owning_function, funname) == 0)
-	printf_filtered ("%s\n", tmp->name);
+      if (strcmp(tmp->owning_function, funname) == 0)
+	printf_filtered("%s\n", tmp->name);
 
       tmp = tmp->next;
     }
@@ -609,12 +610,12 @@ list_all_visible_commons (char *funname)
    given name */
 
 static void
-info_common_command (char *comname, int from_tty)
+info_common_command(const char *comname, int from_tty)
 {
   SAVED_F77_COMMON_PTR the_common;
   COMMON_ENTRY_PTR entry;
   struct frame_info *fi;
-  char *funname = 0;
+  const char *funname = (const char *)0;
   struct symbol *func;
 
   /* We have been told to display the contents of F77 COMMON
@@ -625,12 +626,12 @@ info_common_command (char *comname, int from_tty)
   fi = deprecated_selected_frame;
 
   if (fi == NULL)
-    error (_("No frame selected"));
+    error(_("No frame selected"));
 
   /* The following is generally ripped off from stack.c's routine
      print_frame_info() */
 
-  func = find_pc_function (get_frame_pc (fi));
+  func = find_pc_function(get_frame_pc(fi));
   if (func)
     {
       /* In certain pathological cases, the symtabs give the wrong
@@ -647,24 +648,25 @@ info_common_command (char *comname, int from_tty)
          be any minimal symbols in the middle of a function.
          FIXME:  (Not necessarily true.  What about text labels) */
 
-      struct minimal_symbol *msymbol = lookup_minimal_symbol_by_pc (get_frame_pc (fi));
+      struct minimal_symbol *msymbol =
+	lookup_minimal_symbol_by_pc(get_frame_pc(fi));
 
       /* APPLE LOCAL begin address ranges  */
-      if (msymbol != NULL
-	  && SYMBOL_VALUE_ADDRESS (msymbol)
-	  > BLOCK_LOWEST_PC (SYMBOL_BLOCK_VALUE (func)))
+      if ((msymbol != NULL)
+	  && (SYMBOL_VALUE_ADDRESS(msymbol)
+	      > BLOCK_LOWEST_PC(SYMBOL_BLOCK_VALUE(func))))
       /* APPLE LOCAL end address ranges  */
-	funname = DEPRECATED_SYMBOL_NAME (msymbol);
+	funname = DEPRECATED_SYMBOL_NAME(msymbol);
       else
-	funname = DEPRECATED_SYMBOL_NAME (func);
+	funname = DEPRECATED_SYMBOL_NAME(func);
     }
   else
     {
       struct minimal_symbol *msymbol =
-      lookup_minimal_symbol_by_pc (get_frame_pc (fi));
+	lookup_minimal_symbol_by_pc(get_frame_pc(fi));
 
       if (msymbol != NULL)
-	funname = DEPRECATED_SYMBOL_NAME (msymbol);
+	funname = DEPRECATED_SYMBOL_NAME(msymbol);
     }
 
   /* If comname is NULL, we assume the user wishes to see the
@@ -672,33 +674,33 @@ info_common_command (char *comname, int from_tty)
 
   if (comname == 0)
     {
-      list_all_visible_commons (funname);
+      list_all_visible_commons(funname);
       return;
     }
 
-  the_common = find_common_for_function (comname, funname);
+  the_common = find_common_for_function(comname, funname);
 
   if (the_common)
     {
-      if (strcmp (comname, BLANK_COMMON_NAME_LOCAL) == 0)
-	printf_filtered (_("Contents of blank COMMON block:\n"));
+      if (strcmp(comname, BLANK_COMMON_NAME_LOCAL) == 0)
+	printf_filtered(_("Contents of blank COMMON block:\n"));
       else
-	printf_filtered (_("Contents of F77 COMMON block '%s':\n"), comname);
+	printf_filtered(_("Contents of F77 COMMON block '%s':\n"), comname);
 
-      printf_filtered ("\n");
+      printf_filtered("\n");
       entry = the_common->entries;
 
       while (entry != NULL)
 	{
-	  printf_filtered ("%s = ", DEPRECATED_SYMBOL_NAME (entry->symbol));
-	  print_variable_value (entry->symbol, fi, gdb_stdout);
-	  printf_filtered ("\n");
+	  printf_filtered("%s = ", DEPRECATED_SYMBOL_NAME(entry->symbol));
+	  print_variable_value(entry->symbol, fi, gdb_stdout);
+	  printf_filtered("\n");
 	  entry = entry->next;
 	}
     }
   else
-    printf_filtered (_("Cannot locate the common block %s in function '%s'\n"),
-		     comname, funname);
+    printf_filtered(_("Cannot locate the common block %s in function '%s'\n"),
+		    comname, funname);
 }
 
 /* This function is used to determine whether there is a

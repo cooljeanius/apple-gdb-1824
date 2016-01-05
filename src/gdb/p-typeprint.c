@@ -37,26 +37,27 @@
 #include <errno.h>
 #include <ctype.h>
 
-static void pascal_type_print_varspec_suffix (struct type *, struct ui_file *, int, int, int);
+static void pascal_type_print_varspec_suffix(struct type *, struct ui_file *,
+					     int, int, int);
 
-static void pascal_type_print_derivation_info (struct ui_file *, struct type *);
+static void pascal_type_print_derivation_info(struct ui_file *, struct type *);
 
-void pascal_type_print_varspec_prefix (struct type *, struct ui_file *, int, int);
+void pascal_type_print_varspec_prefix(struct type *, struct ui_file *,
+				      int, int);
 
 
-/* LEVEL is the depth to indent lines by.  */
-
+/* LEVEL is the depth by which to indent lines: */
 void
-pascal_print_type (struct type *type, char *varstring, struct ui_file *stream,
-		   int show, int level)
+pascal_print_type(struct type *type, const char *varstring,
+		  struct ui_file *stream, int show, int level)
 {
   enum type_code code;
   int demangled_args;
 
-  code = TYPE_CODE (type);
+  code = TYPE_CODE(type);
 
   if (show > 0)
-    CHECK_TYPEDEF (type);
+    CHECK_TYPEDEF(type);
 
   if ((code == TYPE_CODE_FUNC ||
        code == TYPE_CODE_METHOD))
@@ -115,7 +116,7 @@ pascal_print_type (struct type *type, char *varstring, struct ui_file *stream,
 static void
 pascal_type_print_derivation_info (struct ui_file *stream, struct type *type)
 {
-  char *name;
+  const char *name;
   int i;
 
   for (i = 0; i < TYPE_N_BASECLASSES (type); i++)
@@ -133,49 +134,48 @@ pascal_type_print_derivation_info (struct ui_file *stream, struct type *type)
     }
 }
 
-/* Print the Pascal method arguments ARGS to the file STREAM.  */
-
+/* Print the Pascal method arguments ARGS to the file STREAM: */
 void
-pascal_type_print_method_args (char *physname, char *methodname,
-			       struct ui_file *stream)
+pascal_type_print_method_args(char *physname, const char *methodname,
+			      struct ui_file *stream)
 {
-  int is_constructor = DEPRECATED_STREQN (physname, "__ct__", 6);
-  int is_destructor = DEPRECATED_STREQN (physname, "__dt__", 6);
+  int is_constructor = DEPRECATED_STREQN(physname, "__ct__", 6);
+  int is_destructor = DEPRECATED_STREQN(physname, "__dt__", 6);
 
   if (is_constructor || is_destructor)
     {
       physname += 6;
     }
 
-  fputs_filtered (methodname, stream);
+  fputs_filtered(methodname, stream);
 
   if (physname && (*physname != 0))
     {
-      int i = 0;
+      long i = 0L;
       int len = 0;
       char storec;
       char *argname;
-      fputs_filtered (" (", stream);
-      /* we must demangle this */
-      while (isdigit (physname[0]))
+      fputs_filtered(" (", stream);
+      /* we must demangle this: */
+      while (isdigit(physname[0]))
 	{
-	  while (isdigit (physname[len]))
+	  while (isdigit(physname[len]))
 	    {
 	      len++;
 	    }
-	  i = strtol (physname, &argname, 0);
+	  i = strtol(physname, &argname, 0);
 	  physname += len;
 	  storec = physname[i];
 	  physname[i] = 0;
-	  fputs_filtered (physname, stream);
+	  fputs_filtered(physname, stream);
 	  physname[i] = storec;
 	  physname += i;
 	  if (physname[0] != 0)
 	    {
-	      fputs_filtered (", ", stream);
+	      fputs_filtered(", ", stream);
 	    }
 	}
-      fputs_filtered (")", stream);
+      fputs_filtered(")", stream);
     }
 }
 
@@ -191,7 +191,7 @@ void
 pascal_type_print_varspec_prefix (struct type *type, struct ui_file *stream,
 				  int show, int passed_a_ptr)
 {
-  char *name;
+  const char *name;
   if (type == 0)
     return;
 
@@ -354,23 +354,21 @@ pascal_type_print_varspec_suffix (struct type *type, struct ui_file *stream,
 
     case TYPE_CODE_MEMBER:
       if (passed_a_ptr)
-	fprintf_filtered (stream, ")");
-      pascal_type_print_varspec_suffix (TYPE_TARGET_TYPE (type), stream, 0, 0, 0);
+	fprintf_filtered(stream, ")");
+      pascal_type_print_varspec_suffix(TYPE_TARGET_TYPE(type), stream, 0, 0, 0);
       break;
 
     case TYPE_CODE_METHOD:
       if (passed_a_ptr)
-	fprintf_filtered (stream, ")");
-      pascal_type_print_method_args ("",
-				     "",
-				     stream);
-      if (TYPE_CODE (TYPE_TARGET_TYPE (type)) != TYPE_CODE_VOID)
+	fprintf_filtered(stream, ")");
+      pascal_type_print_method_args((char *)"", "", stream);
+      if (TYPE_CODE(TYPE_TARGET_TYPE(type)) != TYPE_CODE_VOID)
 	{
-	  fprintf_filtered (stream, " : ");
-	  pascal_type_print_varspec_prefix (TYPE_TARGET_TYPE (type), stream, 0, 0);
-	  pascal_type_print_base (TYPE_TARGET_TYPE (type), stream, show, 0);
-	  pascal_type_print_varspec_suffix (TYPE_TARGET_TYPE (type), stream, 0,
-					    passed_a_ptr, 0);
+	  fprintf_filtered(stream, " : ");
+	  pascal_type_print_varspec_prefix(TYPE_TARGET_TYPE(type), stream, 0, 0);
+	  pascal_type_print_base(TYPE_TARGET_TYPE(type), stream, show, 0);
+	  pascal_type_print_varspec_suffix(TYPE_TARGET_TYPE (type), stream, 0,
+					   passed_a_ptr, 0);
 	}
       break;
 
@@ -626,21 +624,21 @@ pascal_type_print_base (struct type *type, struct ui_file *stream, int show,
 
 	  for (i = 0; i < len; i++)
 	    {
-	      struct fn_field *f = TYPE_FN_FIELDLIST1 (type, i);
-	      int j, len2 = TYPE_FN_FIELDLIST_LENGTH (type, i);
-	      char *method_name = TYPE_FN_FIELDLIST_NAME (type, i);
+	      struct fn_field *f = TYPE_FN_FIELDLIST1(type, i);
+	      int j, len2 = TYPE_FN_FIELDLIST_LENGTH(type, i);
+	      const char *method_name = TYPE_FN_FIELDLIST_NAME(type, i);
 	      /* this is GNU C++ specific
 	         how can we know constructor/destructor?
 	         It might work for GNU pascal */
 	      for (j = 0; j < len2; j++)
 		{
-		  char *physname = TYPE_FN_FIELD_PHYSNAME (f, j);
+		  const char *physname = TYPE_FN_FIELD_PHYSNAME(f, j);
 
-		  int is_constructor = DEPRECATED_STREQN (physname, "__ct__", 6);
-		  int is_destructor = DEPRECATED_STREQN (physname, "__dt__", 6);
+		  int is_constructor = DEPRECATED_STREQN(physname, "__ct__", 6);
+		  int is_destructor = DEPRECATED_STREQN(physname, "__dt__", 6);
 
 		  QUIT;
-		  if (TYPE_FN_FIELD_PROTECTED (f, j))
+		  if (TYPE_FN_FIELD_PROTECTED(f, j))
 		    {
 		      if (section_type != s_protected)
 			{
@@ -696,12 +694,12 @@ pascal_type_print_base (struct type *type, struct ui_file *stream, int show,
 		    }
 		  /* this does not work, no idea why !! */
 
-		  pascal_type_print_method_args (physname,
-						 method_name,
-						 stream);
+		  pascal_type_print_method_args((char *)physname, method_name,
+						stream);
 
-		  if (TYPE_TARGET_TYPE (TYPE_FN_FIELD_TYPE (f, j)) != 0 &&
-		      TYPE_CODE (TYPE_TARGET_TYPE (TYPE_FN_FIELD_TYPE (f, j))) != TYPE_CODE_VOID)
+		  if ((TYPE_TARGET_TYPE(TYPE_FN_FIELD_TYPE(f, j)) != 0)
+		      && (TYPE_CODE(TYPE_TARGET_TYPE(TYPE_FN_FIELD_TYPE(f, j)))
+			  != TYPE_CODE_VOID))
 		    {
 		      fputs_filtered (" : ", stream);
 		      type_print (TYPE_TARGET_TYPE (TYPE_FN_FIELD_TYPE (f, j)),
@@ -800,17 +798,19 @@ pascal_type_print_base (struct type *type, struct ui_file *stream, int show,
          such as fundamental types.  For these, just print whatever
          the type name is, as recorded in the type itself.  If there
          is no type name, then complain. */
-      if (TYPE_NAME (type) != NULL)
+      if (TYPE_NAME(type) != NULL)
 	{
-	  fputs_filtered (TYPE_NAME (type), stream);
+	  fputs_filtered(TYPE_NAME(type), stream);
 	}
       else
 	{
 	  /* At least for dump_symtab, it is important that this not be
-	     an error ().  */
-	  fprintf_filtered (stream, "<invalid unnamed pascal type code %d>",
-			    TYPE_CODE (type));
+	     an error().  */
+	  fprintf_filtered(stream, "<invalid unnamed pascal type code %d>",
+			   TYPE_CODE(type));
 	}
       break;
     }
 }
+
+/* EOF */

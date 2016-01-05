@@ -33,14 +33,21 @@ typedef struct _acl *acl_t;
 /* try to deal with struct opacity: */
 #ifdef OPAQUE_TOOLBOX_STRUCTS
 # undef OPAQUE_TOOLBOX_STRUCTS
-# define OPAQUE_TOOLBOX_STRUCTS 0
 #endif  /* OPAQUE_TOOLBOX_STRUCTS */
-/* (does NOT seem to solve it...) */
+#define OPAQUE_TOOLBOX_STRUCTS 0
+#ifndef MenuRef
+# define MenuRef MenuHandle
+#endif /* !MenuRef */
 
 #ifdef OPAQUE_UPP_TYPES
 # undef OPAQUE_UPP_TYPES
-# define OPAQUE_UPP_TYPES 0
 #endif  /* OPAQUE_UPP_TYPES */
+#define OPAQUE_UPP_TYPES 0
+
+#ifdef CALL_NOT_IN_CARBON
+# undef CALL_NOT_IN_CARBON
+#endif /* CALL_NOT_IN_CARBON */
+#define CALL_NOT_IN_CARBON 1
 
 #if !defined(__LP64__) || (defined(__LP64__) && !__LP64__)
 # if !defined(_MSC_VER)
@@ -54,6 +61,12 @@ typedef struct _acl *acl_t;
 #include <readline/readline.h>
 #include <readline/history.h>
 
+#ifndef ALLOW_OBSOLETE_CARBON
+/* Not quite sure if 0 or 1 is what I want; comments in headers kind of seem to
+ * disagree with what the headers actually do... */
+# define ALLOW_OBSOLETE_CARBON 1
+#endif /* !ALLOW_OBSOLETE_CARBON */
+
 #include <ApplicationServices/ApplicationServices.h>
 #include <QuickDraw.h>
 #include <Carbon/Carbon.h>
@@ -65,6 +78,29 @@ typedef struct _acl *acl_t;
 #include <Traps.h>
 #include <PPCToolbox.h>
 #include <StandardFile.h>
+#ifdef USE_CARBON_FRAMEWORK
+# ifndef __MACERRORS__
+#  include <CarbonCore/MacErrors.h>
+# endif /* !__MACERRORS__ */
+# ifndef __OSUTILS__
+#  include <CarbonCore/OSUtils.h>
+# endif /* !__OSUTILS__ */
+# ifndef __DIALOGS__
+#  include <HIToolbox/Dialogs.h>
+# endif /* !__DIALOGS__ */
+# ifndef __MACTEXTEDITOR__
+#  include <HIToolbox/MacTextEditor.h>
+# endif /* __MACTEXTEDITOR__ */
+# ifndef __MENUS__
+#  include <HIToolbox/Menus.h>
+# endif /* !__MENUS__ */
+# ifndef __TEXTEDIT__
+#  include <HIToolbox/TextEdit.h>
+# endif /* !__TEXTEDIT__ */
+# ifndef __QUICKDRAWTYPES__
+#  include <QD/QuickdrawTypes.h>
+# endif /* !__QUICKDRAWTYPES__ */
+#endif /* USE_CARBON_FRAMEWORK */
 
 #ifdef MPW
 # define QD(whatever) (qd.##whatever)
@@ -80,11 +116,13 @@ typedef struct _acl *acl_t;
   cbuf[pstr[0]] = '\0';
 
 #define pascalify(STR) \
-  sprintf(tmpbuf, " %s", STR);  \
+  snprintf(tmpbuf, sizeof(tmpbuf), " %s", STR);  \
   tmpbuf[0] = strlen(STR);
 
 #include "gdbcmd.h"
-#include "call-cmds.h"
+#ifdef ALLOW_OLD_INCLUDES
+# include "call-cmds.h"
+#endif /* ALLOW_OLD_INCLUDES */
 #include "symtab.h"
 #include "inferior.h"
 #include <signal.h>
@@ -133,8 +171,50 @@ Rect sizerect;
 
 NSInteger sbarwid = 15;
 
+#ifndef OPAQUE_TOOLBOX_STRUCTS
+struct GrafPort {
+  short      device;     /* not available in Carbon*/
+  BitMap    portBits; /* in Carbon use GetPortBitMapForCopyBits or IsPortColor*/
+  Rect       portRect;   /* in Carbon use Get/SetPortBounds*/
+  RgnHandle  visRgn;     /* in Carbon use Get/SetPortVisibleRegion*/
+  RgnHandle  clipRgn;    /* in Carbon use Get/SetPortClipRegion*/
+  Pattern    bkPat;    /* not available in Carbon all GrafPorts are CGrafPorts*/
+  Pattern    fillPat;  /* not available in Carbon all GrafPorts are CGrafPorts*/
+  Point      pnLoc;      /* in Carbon use GetPortPenLocation or MoveTo*/
+  Point      pnSize;     /* in Carbon use Get/SetPortPenSize*/
+  short      pnMode;     /* in Carbon use Get/SetPortPenMode*/
+  Pattern    pnPat;    /* not available in Carbon all GrafPorts are CGrafPorts*/
+  short      pnVis;      /* in Carbon use GetPortPenVisibility or Show/HidePen*/
+  short      txFont;     /* in Carbon use GetPortTextFont or TextFont*/
+  StyleField txFace;     /* in Carbon use GetPortTextFace or TextFace*/
+  short      txMode;     /* in Carbon use GetPortTextMode or TextMode*/
+  short      txSize;     /* in Carbon use GetPortTextSize or TextSize*/
+  Fixed      spExtra;    /* in Carbon use GetPortSpExtra or SpaceExtra*/
+  long       fgColor;    /* not available in Carbon */
+  long       bkColor;    /* not available in Carbon*/
+  short      colrBit;    /* not available in Carbon*/
+  short      patStretch; /* not available in Carbon*/
+  Handle     picSave;    /* in Carbon use IsPortPictureBeingDefined*/
+  Handle     rgnSave;    /* not available in Carbon*/
+  Handle     polySave;   /* not available in Carbon*/
+  QDProcsPtr grafProcs;/* not available in Carbon all GrafPorts are CGrafPorts*/
+};
+typedef struct GrafPort                 GrafPort;
+typedef GrafPort *                      TransparentGrafPtr;
+typedef TransparentGrafPtr              TransparentWindowPtr;
+typedef TransparentWindowPtr            TransparentDialogPtr;
+#endif /* !defined(OPAQUE_TOOLBOX_STRUCTS) */
+
 /* Globals for the console window: */
+#ifndef OPAQUE_TOOLBOX_STRUCTS
+TransparentWindowPtr console_window;
+#else
+# if !OPAQUE_TOOLBOX_STRUCTS
 WindowPtr console_window;
+# else
+#  error "Window pointers need to be transparent."
+# endif /* !OPAQUE_TOOLBOX_STRUCTS */
+#endif /* !defined(OPAQUE_TOOLBOX_STRUCTS) */
 
 /* FIXME: the opacity of this struct is problematic: */
 #ifdef __HIOBJECT__
@@ -212,6 +292,7 @@ extern struct {
 } qd;
 #endif /* !__QUICKDRAW__ && !qd */
 
+/* */
 int mac_init(void)
 {
   SysEnvRec se;
@@ -261,7 +342,9 @@ int mac_init(void)
 #if defined(qd) || (defined(__QUICKDRAW__) && defined(QD) && defined(InitGraf))
   InitGraf(&QD(thePort));
 #endif /* qd || (__QUICKDRAW__ && QD && InitGraf) */
+#if (!defined(__LP64__) || !__LP64__) && (defined(WITH_CFM) && WITH_CFM)
   InitFonts();
+#endif /* !__LP64__ && WITH_CFM */
   FlushEvents((EventMask)everyEvent, (EventMask)0U);
   InitWindows();
   InitMenus();
@@ -295,8 +378,11 @@ int mac_init(void)
   DrawMenuBar();
 
   new_console_window();
+  
+  return 0;
 }
 
+/* */
 int new_console_window(void)
 {
   /* Create the main window we are going to play in: */
@@ -330,12 +416,15 @@ int new_console_window(void)
 
   ShowWindow(console_window);
   SelectWindow(console_window);
+  
+  return 0;
 }
 
 #if !defined(OSTrap) && !defined(ToolTrap) && !defined(__OSUTILS__)
 enum { OSTrap, ToolTrap };
 #endif /* !OSTrap && !ToolTrap */
 
+/* */
 int mac_command_loop(void)
 {
 #ifdef ALLOW_UNUSED_VARIABLES
@@ -395,6 +484,8 @@ int mac_command_loop(void)
           do_idle();
       }
   }
+  
+  return 0;
 }
 
 /* Collect the global coordinates of the mouse pointer: */
@@ -404,6 +495,8 @@ int get_global_mouse(Point *mouse)
 
   OSEventAvail((short)0, &evt);
   *mouse = evt.where;
+  
+  return 0;
 }
 
 /* Change cursor appearance to be appropriate for the given mouse location: */
@@ -527,8 +620,11 @@ int do_event(EventRecord *evt)
 int do_idle(void)
 {
   TEIdle(console_text);
+  
+  return 0;
 }
 
+/* */
 int grow_window(WindowPtr win, Point where)
 {
 #if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -552,8 +648,11 @@ int grow_window(WindowPtr win, Point where)
       }
       SetPort((GrafPtr)oldport);
   }
+  
+  return 0;
 }
 
+/* */
 int zoom_window(WindowPtr win, Point where, short part)
 {
 # if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
@@ -563,8 +662,11 @@ int zoom_window(WindowPtr win, Point where, short part)
   if (win == console_window) {
       resize_console_window();
   }
+  
+  return 0;
 }
 
+/* */
 int resize_console_window(void)
 {
   adjust_console_sizes();
@@ -573,8 +675,10 @@ int resize_console_window(void)
 #if 0
   InvalRect(&console_window->portRect);
 #endif /* 0 */
+  return 0;
 }
 
+/* 0 */
 int close_window(WindowPtr win)
 {
 #if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
@@ -660,8 +764,11 @@ int do_mouse_down(WindowPtr win, EventRecord * event)
           TEClick(mouse, (Boolean)0U, console_text);
       }
   }
+  
+  return 0;
 }
 
+/* */
 int scroll_text(NSInteger hlines, NSInteger vlines)
 {
 #if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
@@ -671,6 +778,7 @@ int scroll_text(NSInteger hlines, NSInteger vlines)
   return 0;
 }
 
+/* */
 int activate_window(WindowPtr win, NSInteger activate)
 {
   Rect grow_rect;
@@ -685,12 +793,16 @@ int activate_window(WindowPtr win, NSInteger activate)
   /* Activate the console window's scrollbar. */
   if (win == console_window) {
       if (activate) {
-	TEActivate (console_text);
+	TEActivate(console_text);
 	/* Cause the grow icon to be redrawn at the next update: */
 	grow_rect = console_window->portRect;
 	grow_rect.top = (grow_rect.bottom - sbarwid);
 	grow_rect.left = (grow_rect.right - sbarwid);
+#if defined(USE_CARBON_FRAMEWORK) && (!defined(__LP64__) || !__LP64__)
+	TXNForceUpdate((TXNObject)&grow_rect);
+#else
 	InvalRect(&grow_rect);
+#endif /* USE_CARBON_FRAMEWORK && !__LP64__ */
       } else {
 	TEDeactivate(console_text);
 	DrawGrowIcon(console_window);
@@ -698,8 +810,11 @@ int activate_window(WindowPtr win, NSInteger activate)
       HiliteControl(console_v_scrollbar,
                     (ControlPartCode)(activate ? 0 : 255));
   }
+  
+  return 0;
 }
 
+/* */
 int update_window(WindowPtr win)
 {
   NSInteger controls = 1, growbox = 0;
@@ -725,8 +840,11 @@ int update_window(WindowPtr win)
   }
   EndUpdate(win);
   SetPort((GrafPtr)oldport);
+  
+  return 0;
 }
 
+/* */
 int adjust_menus(void)
 {
   /* do nothing, besides return: */
@@ -820,31 +938,31 @@ int do_menu_command(long which)
 #if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
 # warning "64BIT: Check formatting arguments"
 #endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
-          sprintf(cmdbuf, "target %s", "remote");
+          snprintf(cmdbuf, sizeof(cmdbuf), "target %s", "remote");
           break;
         case miDebugRun:
 #if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
 # warning "64BIT: Check formatting arguments"
 #endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
-          sprintf(cmdbuf, "run");
+          snprintf(cmdbuf, sizeof(cmdbuf), "run");
           break;
         case miDebugContinue:
 #if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
 # warning "64BIT: Check formatting arguments"
 #endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
-          sprintf(cmdbuf, "continue");
+          snprintf(cmdbuf, sizeof(cmdbuf), "continue");
           break;
         case miDebugStep:
 #if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
 # warning "64BIT: Check formatting arguments"
 #endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
-          sprintf(cmdbuf, "step");
+          snprintf(cmdbuf, sizeof(cmdbuf), "step");
           break;
         case miDebugNext:
 #if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
 # warning "64BIT: Check formatting arguments"
 #endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
-          sprintf(cmdbuf, "next");
+          snprintf(cmdbuf, sizeof(cmdbuf), "next");
           break;
       } /* end "switch (menuitem)" */
       break;
@@ -855,10 +973,13 @@ int do_menu_command(long which)
   if (strlen(cmdbuf) > 0) {
     execute_command(cmdbuf, 0);
   }
+  
+  return 0;
 }
 
 char commandbuf[1000];
 
+/* */
 int do_keyboard_command(NSInteger key)
 {
   NSInteger startpos, endpos, i, len;
@@ -913,6 +1034,8 @@ int do_keyboard_command(NSInteger key)
       /* A self-inserting character. This includes delete: */
       TEKey((CharParameter)key, console_text);
   }
+  
+  return 0;
 }
 
 /* Draw all graphical stuff in the console window: */
@@ -920,6 +1043,8 @@ int draw_console(void)
 {
   SetPort((GrafPtr)console_window);
   TEUpdate(&(console_window->portRect), console_text);
+  
+  return 0;
 }
 
 /* Cause an update of a given window's entire contents: */
@@ -933,10 +1058,17 @@ int force_update(WindowPtr win)
   GetPort(&oldport);
   SetPort((GrafPtr)win);
   EraseRect(&win->portRect);
+#if defined(USE_CARBON_FRAMEWORK) && (!defined(__LP64__) || !__LP64__)
+  TXNForceUpdate((TXNObject)&win->portRect);
+#else
   InvalRect(&win->portRect);
+#endif /* USE_CARBON_FRAMEWORK && !__LP64__ */
   SetPort((GrafPtr)oldport);
+  
+  return 0;
 }
 
+/* */
 int adjust_console_sizes(void)
 {
   Rect tmprect;
@@ -959,13 +1091,18 @@ int adjust_console_sizes(void)
                        / (*console_text)->lineHeight)
                     * (*console_text)->lineHeight);
   (*console_text)->viewRect = tmprect;
+  
+  return 0;
 }
 
+/* */
 int adjust_console_scrollbars(void)
 {
   NSInteger lines, newmax, value;
 
+#if 0
   (*console_v_scrollbar)->contrlVis = 0;
+#endif /* 0 */
   lines = (*console_text)->nLines;
   newmax = (lines - (((*console_text)->viewRect.bottom
                       - (*console_text)->viewRect.top)
@@ -977,8 +1114,12 @@ int adjust_console_scrollbars(void)
   value = (((*console_text)->viewRect.top - (*console_text)->destRect.top)
            / (*console_text)->lineHeight);
   SetControlValue(console_v_scrollbar, (SInt16)value);
+#if 0
   (*console_v_scrollbar)->contrlVis = 0xff;
+#endif /* 0 */
   ShowControl(console_v_scrollbar);
+  
+  return 0;
 }
 
 /* Scroll the TE record so that it is consistent with the scrollbar(s): */
@@ -992,6 +1133,8 @@ int adjust_console_text(void)
                     - GetCtlValue(console_v_scrollbar))
                    * (*console_text)->lineHeight),
 	    console_text);
+  
+  return 0;
 }
 
 #ifndef _READLINE_H_
@@ -1093,7 +1236,7 @@ char *tilde_expand(char *str)
 #endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
 #undef fprintf
 extern NSInteger hacked_fprintf(FILE *, const char *, ...);
-NSInteger hacked_fprintf(FILE * fp, const char *fmt, ...)
+NSInteger hacked_fprintf(FILE *fp, const char *fmt, ...)
 {
   NSInteger ret;
   va_list ap;
@@ -1102,7 +1245,7 @@ NSInteger hacked_fprintf(FILE * fp, const char *fmt, ...)
   if (mac_app && ((fp == stdout) || (fp == stderr))) {
       char buf[1000];
 
-      ret = vsprintf(buf, fmt, ap);
+      ret = vsnprintf(buf, sizeof(buf), fmt, ap);
       TEInsert(buf, (long)strlen(buf), console_text);
   } else {
 #if defined(__LP64__) && __LP64__ && defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -1119,13 +1262,13 @@ NSInteger hacked_fprintf(FILE * fp, const char *fmt, ...)
 #endif /* __LP64__ && __GNUC__ && !__STRICT_ANSI__ */
 #undef vfprintf
 extern NSInteger hacked_vfprintf(FILE *, const char *, va_list);
-NSInteger hacked_vfprintf(FILE * fp, const char *format, va_list args)
+NSInteger hacked_vfprintf(FILE *fp, const char *format, va_list args)
 {
   if (mac_app && ((fp == stdout) || (fp == stderr))) {
       char buf[1000];
       NSInteger ret;
 
-      ret = vsprintf(buf, format, args);
+      ret = vsnprintf(buf, sizeof(buf), format, args);
       TEInsert(buf, (long)strlen(buf), console_text);
       if (strchr(buf, '\n')) {
 	adjust_console_sizes();
@@ -1159,7 +1302,7 @@ NSInteger hacked_printf(const char *fmt, ...)
 
 #undef fputs
 extern int hacked_fputs(const char *, FILE *);
-int hacked_fputs(const char *s, FILE * fp)
+int hacked_fputs(const char *s, FILE *fp)
 {
   if (mac_app && ((fp == stdout) || (fp == stderr))) {
       TEInsert(s, (long)strlen(s), console_text);
@@ -1176,7 +1319,7 @@ int hacked_fputs(const char *s, FILE * fp)
 
 #undef fputc
 extern int hacked_fputc(const char, FILE *);
-int hacked_fputc(const char c, FILE * fp)
+int hacked_fputc(const char c, FILE *fp)
 {
   if (mac_app && ((fp == stdout) || (fp == stderr))) {
       char buf[1];
@@ -1196,7 +1339,7 @@ int hacked_fputc(const char c, FILE * fp)
 
 #undef putc
 extern int hacked_putc(const char, FILE *);
-int hacked_putc(const char c, FILE * fp)
+int hacked_putc(const char c, FILE *fp)
 {
   if (mac_app && ((fp == stdout) || (fp == stderr))) {
       char buf[1];
@@ -1216,7 +1359,7 @@ int hacked_putc(const char c, FILE * fp)
 
 #undef fflush
 extern int hacked_fflush(FILE *);
-int hacked_fflush(FILE * fp)
+int hacked_fflush(FILE *fp)
 {
   if (mac_app && ((fp == stdout) || (fp == stderr))) {
       adjust_console_sizes();
@@ -1229,7 +1372,7 @@ int hacked_fflush(FILE * fp)
 
 #undef fgetc
 extern int hacked_fgetc(FILE *);
-int hacked_fgetc(FILE * fp)
+int hacked_fgetc(FILE *fp)
 {
   if (mac_app && (fp == stdin)) {
       /* Catch any attempts to use this: */

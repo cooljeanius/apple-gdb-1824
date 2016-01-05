@@ -2000,26 +2000,25 @@ expand_all_objfile_psymtabs (struct objfile *obj)
    file it points to.  */
 
 int
-file_exists_p (const char *filename)
+file_exists_p(const char *filename)
 {
   struct stat sb;
 
   if (filename == NULL || filename[0] == '\0')
     return 0;
 
-  if (stat (filename, &sb) != 0)
+  if (stat(filename, &sb) != 0)
     return 0;
 
-  if (S_ISREG (sb.st_mode))
+  if (S_ISREG(sb.st_mode))
     return 1;
   else
     return 0;
 }
 
-/* Free all active_func structures in every active_threads structure */
-
+/* Free all active_func structures in every active_threads structure: */
 static void
-free_active_threads_struct (struct active_threads *head)
+free_active_threads_struct(struct active_threads *head)
 {
   struct active_threads *i = head, *j;
   struct active_func *k, *l;
@@ -2029,20 +2028,20 @@ free_active_threads_struct (struct active_threads *head)
       k = head->active_func_chain;
       while (k != NULL)
         {
-          xfree (SYMBOL_LINKAGE_NAME (k->sym));
-          if (SYMBOL_CPLUS_DEMANGLED_NAME (k->sym))
-            xfree (SYMBOL_CPLUS_DEMANGLED_NAME (k->sym));
-          xfree (k->sym);
+          xfree((void *)SYMBOL_LINKAGE_NAME(k->sym));
+          if (SYMBOL_CPLUS_DEMANGLED_NAME(k->sym))
+            xfree(SYMBOL_CPLUS_DEMANGLED_NAME(k->sym));
+          xfree(k->sym);
           if (k->file != NULL)
-            xfree ((void *)k->file);
+            xfree((void *)k->file);
           if (k->dir != NULL)
-            xfree ((void *)k->dir);
+            xfree((void *)k->dir);
           l = k->next;
-          xfree (k);
+          xfree(k);
           k = l;
         }
       j = i->next;
-      xfree (i);
+      xfree(i);
       i = j;
     }
 }

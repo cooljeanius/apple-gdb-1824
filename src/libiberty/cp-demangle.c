@@ -3857,15 +3857,17 @@ static int d_demangle_callback(const char *mangled, int options,
   cplus_demangle_init_info(mangled, options, strlen(mangled), &di);
 
   {
-#ifdef CP_DYNAMIC_ARRAYS
+#if defined(CP_DYNAMIC_ARRAYS)
     __extension__ struct demangle_component comps[di.num_comps];
     __extension__ struct demangle_component *subs[di.num_subs];
 
     di.comps = comps;
     di.subs = subs;
 #else
-    di.comps = alloca(di.num_comps * sizeof(*di.comps));
-    di.subs = alloca(di.num_subs * sizeof(*di.subs));
+    di.comps = ((struct demangle_component *)
+		alloca(di.num_comps * sizeof(*di.comps)));
+    di.subs = ((struct demangle_component **)
+	       alloca(di.num_subs * sizeof(*di.subs)));
 #endif /* CP_DYNAMIC_ARRAYS */
 
     if (type) {
@@ -4049,7 +4051,7 @@ __gcclibcxx_demangle_callback(const char *mangled_name,
  * Otherwise, return NULL. */
 char *cplus_demangle_v3(const char *mangled, int options)
 {
-  size_t alc;
+  static size_t alc;
 
   return d_demangle(mangled, options, &alc);
 }

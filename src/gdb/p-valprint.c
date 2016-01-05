@@ -611,51 +611,52 @@ show_pascal_static_field_print (struct ui_file *file, int from_tty,
 static struct obstack dont_print_vb_obstack;
 static struct obstack dont_print_statmem_obstack;
 
-static void pascal_object_print_static_field (struct value *,
-					      struct ui_file *, int, int,
-					      enum val_prettyprint);
+static void pascal_object_print_static_field(struct value *,
+					     struct ui_file *, int, int,
+					     enum val_prettyprint);
 
-static void pascal_object_print_value (struct type *, const gdb_byte *,
-				       CORE_ADDR, struct ui_file *,
-				       int, int, enum val_prettyprint,
-				       struct type **);
+static void pascal_object_print_value(struct type *, const gdb_byte *,
+				      CORE_ADDR, struct ui_file *,
+				      int, int, enum val_prettyprint,
+				      struct type **);
 
+/* */
 void
-pascal_object_print_class_method (const gdb_byte *valaddr, struct type *type,
-				  struct ui_file *stream)
+pascal_object_print_class_method(const gdb_byte *valaddr, struct type *type,
+				 struct ui_file *stream)
 {
   struct type *domain;
   struct fn_field *f = NULL;
   int j = 0;
   int len2;
   int offset;
-  char *kind = "";
+  const char *kind = "";
   CORE_ADDR addr;
   struct symbol *sym;
-  unsigned len;
+  size_t len;
   unsigned int i;
-  struct type *target_type = check_typedef (TYPE_TARGET_TYPE (type));
+  struct type *target_type = check_typedef(TYPE_TARGET_TYPE(type));
 
-  domain = TYPE_DOMAIN_TYPE (target_type);
-  if (domain == (struct type *) NULL)
+  domain = TYPE_DOMAIN_TYPE(target_type);
+  if (domain == (struct type *)NULL)
     {
-      fprintf_filtered (stream, "<unknown>");
+      fprintf_filtered(stream, "<unknown>");
       return;
     }
-  addr = unpack_pointer (lookup_pointer_type (builtin_type_void), valaddr);
-  if (METHOD_PTR_IS_VIRTUAL (addr))
+  addr = unpack_pointer(lookup_pointer_type(builtin_type_void), valaddr);
+  if (METHOD_PTR_IS_VIRTUAL(addr))
     {
-      offset = METHOD_PTR_TO_VOFFSET (addr);
-      len = TYPE_NFN_FIELDS (domain);
+      offset = METHOD_PTR_TO_VOFFSET(addr);
+      len = TYPE_NFN_FIELDS(domain);
       for (i = 0; i < len; i++)
 	{
-	  f = TYPE_FN_FIELDLIST1 (domain, i);
-	  len2 = TYPE_FN_FIELDLIST_LENGTH (domain, i);
+	  f = TYPE_FN_FIELDLIST1(domain, i);
+	  len2 = TYPE_FN_FIELDLIST_LENGTH(domain, i);
 
-	  check_stub_method_group (domain, i);
+	  check_stub_method_group(domain, i);
 	  for (j = 0; j < len2; j++)
 	    {
-	      if (TYPE_FN_FIELD_VOFFSET (f, j) == offset)
+	      if (TYPE_FN_FIELD_VOFFSET(f, j) == offset)
 		{
 		  kind = "virtual ";
 		  goto common;
@@ -665,21 +666,22 @@ pascal_object_print_class_method (const gdb_byte *valaddr, struct type *type,
     }
   else
     {
-      sym = find_pc_function (addr);
+      sym = find_pc_function(addr);
       if (sym == 0)
 	{
-	  error (_("invalid pointer to member function"));
+	  error(_("invalid pointer to member function"));
 	}
-      len = TYPE_NFN_FIELDS (domain);
+      len = TYPE_NFN_FIELDS(domain);
       for (i = 0; i < len; i++)
 	{
-	  f = TYPE_FN_FIELDLIST1 (domain, i);
-	  len2 = TYPE_FN_FIELDLIST_LENGTH (domain, i);
+	  f = TYPE_FN_FIELDLIST1(domain, i);
+	  len2 = TYPE_FN_FIELDLIST_LENGTH(domain, i);
 
-	  check_stub_method_group (domain, i);
+	  check_stub_method_group(domain, i);
 	  for (j = 0; j < len2; j++)
 	    {
-	      if (DEPRECATED_STREQ (DEPRECATED_SYMBOL_NAME (sym), TYPE_FN_FIELD_PHYSNAME (f, j)))
+	      if (DEPRECATED_STREQ(DEPRECATED_SYMBOL_NAME(sym),
+				   TYPE_FN_FIELD_PHYSNAME(f, j)))
 		goto common;
 	    }
 	}
@@ -689,24 +691,24 @@ common:
     {
       char *demangled_name;
 
-      fprintf_filtered (stream, "&");
-      fputs_filtered (kind, stream);
-      demangled_name = cplus_demangle (TYPE_FN_FIELD_PHYSNAME (f, j),
-				       DMGL_ANSI | DMGL_PARAMS);
+      fprintf_filtered(stream, "&");
+      fputs_filtered(kind, stream);
+      demangled_name = cplus_demangle(TYPE_FN_FIELD_PHYSNAME(f, j),
+				      (DMGL_ANSI | DMGL_PARAMS));
       if (demangled_name == NULL)
-	fprintf_filtered (stream, "<badly mangled name %s>",
-			  TYPE_FN_FIELD_PHYSNAME (f, j));
+	fprintf_filtered(stream, "<badly mangled name %s>",
+			 TYPE_FN_FIELD_PHYSNAME(f, j));
       else
 	{
-	  fputs_filtered (demangled_name, stream);
-	  xfree (demangled_name);
+	  fputs_filtered(demangled_name, stream);
+	  xfree(demangled_name);
 	}
     }
   else
     {
-      fprintf_filtered (stream, "(");
-      type_print (type, "", stream, -1);
-      fprintf_filtered (stream, ") %d", (int) addr >> 3);
+      fprintf_filtered(stream, "(");
+      type_print(type, "", stream, -1);
+      fprintf_filtered(stream, ") %d", ((int)addr >> 3));
     }
 }
 
@@ -720,7 +722,7 @@ const char pascal_vtbl_ptr_name[] =
 int
 pascal_object_is_vtbl_ptr_type(struct type *type)
 {
-  char *ptypename = type_name_no_tag(type);
+  const char *ptypename = type_name_no_tag(type);
 
   return ((ptypename != NULL)
 	  && (strcmp(ptypename, pascal_vtbl_ptr_name) == 0));
@@ -956,26 +958,27 @@ pascal_object_print_value (struct type *type, const gdb_byte *valaddr,
   for (i = 0; i < n_baseclasses; i++)
     {
       int boffset;
-      struct type *baseclass = check_typedef (TYPE_BASECLASS (type, i));
-      char *basename = TYPE_NAME (baseclass);
+      struct type *baseclass = check_typedef(TYPE_BASECLASS(type, i));
+      const char *basename = TYPE_NAME(baseclass);
       const gdb_byte *base_valaddr;
 
-      if (BASETYPE_VIA_VIRTUAL (type, i))
+      if (BASETYPE_VIA_VIRTUAL(type, i))
 	{
-	  struct type **first_dont_print
-	  = (struct type **) obstack_base (&dont_print_vb_obstack);
+	  struct type **first_dont_print =
+	    (struct type **)obstack_base(&dont_print_vb_obstack);
 
-	  int j = (struct type **) obstack_next_free (&dont_print_vb_obstack)
-	  - first_dont_print;
+	  ptrdiff_t j = 
+	    ((struct type **)obstack_next_free(&dont_print_vb_obstack)
+	     - first_dont_print);
 
-	  while (--j >= 0)
+	  while (--j >= 0L)
 	    if (baseclass == first_dont_print[j])
 	      goto flush_it;
 
-	  obstack_ptr_grow (&dont_print_vb_obstack, baseclass);
+	  obstack_ptr_grow(&dont_print_vb_obstack, baseclass);
 	}
 
-      boffset = baseclass_offset (type, i, valaddr, address);
+      boffset = baseclass_offset(type, i, valaddr, address);
 
       if (pretty)
 	{
@@ -1082,7 +1085,7 @@ pascal_object_print_static_field (struct value *val,
 
 void
 pascal_object_print_class_member(const gdb_byte *valaddr, struct type *domain,
-				 struct ui_file *stream, char *prefix)
+				 struct ui_file *stream, const char *prefix)
 {
   /* VAL is a byte offset into the structure type DOMAIN.
      Find the name of the field for that offset and
@@ -1113,9 +1116,9 @@ pascal_object_print_class_member(const gdb_byte *valaddr, struct type *domain,
     }
   if (i < len)
     {
-      char *name;
-      fputs_filtered (prefix, stream);
-      name = type_name_no_tag (domain);
+      const char *name;
+      fputs_filtered(prefix, stream);
+      name = type_name_no_tag(domain);
       if (name)
 	fputs_filtered (name, stream);
       else

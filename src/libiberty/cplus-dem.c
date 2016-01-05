@@ -1,9 +1,9 @@
-/* Demangler for GNU C++
+/* cplus-dem.c: Demangler for GNU C++
    Copyright 1989, 1991, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004, 2010 Free Software Foundation, Inc.
-   Written by James Clark (jjc@jclark.uucp)
-   Rewritten by Fred Fish (fnf@cygnus.com) for ARM and Lucid demangling
-   Modified by Satish Pai (pai@apollo.hp.com) for HP demangling
+   Written by James Clark <jjc@jclark.uucp>
+   Rewritten by Fred Fish <fnf@cygnus.com> for ARM and Lucid demangling
+   Modified by Satish Pai <pai@apollo.hp.com> for HP demangling
 
 This file is part of the libiberty library.
 Libiberty is free software; you can redistribute it and/or
@@ -40,8 +40,8 @@ Boston, MA 02110-1301, USA.  */
    try not to break either.  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 
 #include "safe-ctype.h"
 
@@ -50,11 +50,11 @@ Boston, MA 02110-1301, USA.  */
 #include <stdio.h>
 
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
+# include <stdlib.h>
 #else
-void * malloc ();
-void * realloc ();
-#endif
+void *malloc();
+void *realloc();
+#endif /* HAVE_STDLIB_H */
 
 #include <demangle.h>
 #undef CURRENT_DEMANGLING_STYLE
@@ -65,7 +65,7 @@ void * realloc ();
 #ifndef DEMANGLE_H
 static
 #endif /* !DEMANGLE_H */
-char *ada_demangle (const char *, int);
+char *ada_demangle(const char *, int);
 
 #define min(X,Y) (((X) < (Y)) ? (X) : (Y))
 
@@ -73,7 +73,7 @@ char *ada_demangle (const char *, int);
    that will be output when using the `%d' format with `printf'.  */
 #define INTBUF_SIZE 32
 
-extern void fancy_abort (void) ATTRIBUTE_NORETURN;
+extern void fancy_abort(void) ATTRIBUTE_NORETURN;
 
 /* In order to allow a single demangler executable to demangle strings
    using various common values of CPLUS_MARKER, as well as any specific
@@ -91,15 +91,19 @@ extern void fancy_abort (void) ATTRIBUTE_NORETURN;
    ensuring that it is the character that terminates the gcc<n>_compiled
    marker symbol (FIXME).  */
 
-#if !defined (CPLUS_MARKER)
-#define CPLUS_MARKER '$'
-#endif
+#if !defined(CPLUS_MARKER)
+# define CPLUS_MARKER '$'
+#endif /* !CPLUS_MARKER */
 
 enum demangling_styles current_demangling_style = auto_demangling;
 
 static char cplus_markers[] = { CPLUS_MARKER, '.', '$', '\0' };
 
 static char char_str[2] = { '\000', '\000' };
+
+#if (defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ >= 3))
+# pragma GCC poison sprintf
+#endif /* gcc 3+ */
 
 void
 set_cplus_marker_for_demangling (int ch)
@@ -932,7 +936,7 @@ ada_demangle(const char *mangled, int option ATTRIBUTE_UNUSED)
   const char* p;
   char *demangled = NULL;
   int changed;
-  size_t demangled_size = 0;
+  size_t demangled_size = 0UL;
 
   changed = 0;
 
@@ -1016,9 +1020,9 @@ ada_demangle(const char *mangled, int option ATTRIBUTE_UNUSED)
 	     sizeof (char));
 
   if (mangled[0] == '<')
-     strcpy (demangled, mangled);
+    strcpy(demangled, mangled);
   else
-    sprintf (demangled, "<%s>", mangled);
+    snprintf(demangled, demangled_size, "<%s>", mangled);
 
   return demangled;
 }
@@ -1780,7 +1784,7 @@ demangle_integral_value (struct work_stuff *work,
       if (value != -1)
 	{
 	  char buf[INTBUF_SIZE];
-	  sprintf (buf, "%d", value);
+	  snprintf(buf, sizeof(buf), "%d", value);
 	  string_append (s, buf);
 
 	  /* Numbers not otherwise delimited, might have an underscore
@@ -2970,7 +2974,8 @@ gnu_special (struct work_stuff *work, const char **mangled, string *declp)
 	  if (method)
 	    {
 	      char buf[50];
-	      sprintf (buf, "virtual function thunk (delta:%d) for ", -delta);
+	      snprintf(buf, sizeof(buf),
+		       "virtual function thunk (delta:%d) for ", -delta);
 	      string_append (declp, buf);
 	      string_append (declp, method);
 	      free (method);
@@ -3874,8 +3879,8 @@ demangle_fund_type (struct work_stuff *work,
 	  buf[2] = '\0';
 	  *mangled += min (strlen (*mangled), 2);
 	}
-      sscanf (buf, "%x", &dec);
-      sprintf (buf, "int%u_t", dec);
+      sscanf(buf, "%x", &dec);
+      snprintf(buf, sizeof(buf), "int%u_t", dec);
       APPEND_BLANK (result);
       string_append (result, buf);
       break;
@@ -4760,6 +4765,8 @@ static void
 string_append_template_idx (string *s, int idx)
 {
   char buf[INTBUF_SIZE + 1 /* 'T' */];
-  sprintf(buf, "T%d", idx);
+  snprintf(buf, sizeof(buf), "T%d", idx);
   string_append (s, buf);
 }
+
+/* EOF */

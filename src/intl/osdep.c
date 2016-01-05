@@ -22,6 +22,7 @@
 #else
 /* Avoid AIX compiler warning: */
 typedef int osdep_c_dummy_t;
+extern osdep_c_dummy_t osdep_c_dummy_var;
 #endif /* __EMX__ */
 
 /* EOF */

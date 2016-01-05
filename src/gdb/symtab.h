@@ -108,7 +108,7 @@ typedef struct general_symbol_info
      the mangled name and demangled name, this is the mangled
      name.  */
 
-  char *name;
+  const char *name;
 
   /* Value of the symbol.  Which member of this union to use, and what
      it means, depends on what kind of symbol this is and its

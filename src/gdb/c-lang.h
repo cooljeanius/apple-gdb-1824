@@ -76,21 +76,21 @@ extern int vtblprint;		/* Controls printing of vtbl's */
 
 extern int static_field_print;
 
-extern void cp_print_class_member (const gdb_byte *, struct type *,
-				   struct ui_file *, char *);
+extern void cp_print_class_member(const gdb_byte *, struct type *,
+				  struct ui_file *, const char *);
 
-extern void cp_print_class_method (const gdb_byte *, struct type *,
-				   struct ui_file *);
+extern void cp_print_class_method(const gdb_byte *, struct type *,
+				  struct ui_file *);
 
-extern void cp_print_value_fields (struct type *, struct type *,
-				   const gdb_byte *, int, CORE_ADDR,
-				   struct ui_file *, int,
-				   int, enum val_prettyprint,
-				   struct type **, int);
+extern void cp_print_value_fields(struct type *, struct type *,
+				  const gdb_byte *, int, CORE_ADDR,
+				  struct ui_file *, int,
+				  int, enum val_prettyprint,
+				  struct type **, int);
 
-extern int cp_is_vtbl_ptr_type (struct type *);
+extern int cp_is_vtbl_ptr_type(struct type *);
 
-extern int cp_is_vtbl_member (struct type *);
+extern int cp_is_vtbl_member(struct type *);
 
 
 #endif /* !defined(C_LANG_H) */

@@ -51,9 +51,9 @@ extern int objc_parse(void);	/* Defined in c-exp.y */
 
 extern void objc_error(const char *);	/* Defined in c-exp.y */
 
-extern CORE_ADDR lookup_objc_class(char *);
-extern CORE_ADDR lookup_child_selector(char *);
-extern CORE_ADDR lookup_child_selector_nocache(char *);
+extern CORE_ADDR lookup_objc_class(const char *);
+extern CORE_ADDR lookup_child_selector(const char *);
+extern CORE_ADDR lookup_child_selector_nocache(const char *);
 
 extern char *objc_demangle(const char *, int);
 extern char *objcplus_demangle(const char *, int);

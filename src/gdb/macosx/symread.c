@@ -794,8 +794,8 @@ sym_read_contained_variables(struct objfile *objfile,
           SYMBOL_TYPE(lsym) = typevec[cventry.entry.tte_index];
           SYMBOL_LINKAGE_NAME(lsym) =
             (char *)obstack_alloc(&objfile->objfile_obstack, nname[0] + 1);
-          snprintf(SYMBOL_LINKAGE_NAME(lsym), SIZE_T_MAX, "%.*s", nname[0],
-		   (nname + 1));
+          snprintf((char *)SYMBOL_LINKAGE_NAME(lsym), SIZE_T_MAX, "%.*s",
+		   nname[0], (nname + 1));
           SYMBOL_LANGUAGE(lsym) = language_cplus;
           SYMBOL_SECTION(lsym) = 0;
           SYMBOL_BFD_SECTION(lsym) = 0;
@@ -1026,13 +1026,13 @@ sym_read_functions(struct objfile *objfile, struct type **typevec,
         (char *)obstack_alloc(&objfile->objfile_obstack, (name[0] + 1));
       if ((name[0] > 0) && (name[1] == '.'))
         {
-          snprintf(SYMBOL_LINKAGE_NAME(fsymbol), SIZE_T_MAX, "%.*s",
+          snprintf((char *)SYMBOL_LINKAGE_NAME(fsymbol), SIZE_T_MAX, "%.*s",
 		   (name[0] - 1), (name + 2));
         }
       else
         {
-          snprintf(SYMBOL_LINKAGE_NAME(fsymbol), SIZE_T_MAX, "%.*s", name[0],
-		   (name + 1));
+          snprintf((char *)SYMBOL_LINKAGE_NAME(fsymbol), SIZE_T_MAX, "%.*s",
+		   name[0], (name + 1));
         }
       SYMBOL_BLOCK_VALUE(fsymbol) = fblock;
       SYMBOL_LANGUAGE(fsymbol) = language_cplus;

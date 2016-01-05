@@ -1,4 +1,4 @@
-/* Get info from stack frames; convert between frames, blocks,
+/* blockframe.c: Get info from stack frames; convert between frames, blocks,
    functions and pc values.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
@@ -338,14 +338,13 @@ find_pc_function_no_inlined (CORE_ADDR pc)
 
 static CORE_ADDR cache_pc_function_low = 0;
 static CORE_ADDR cache_pc_function_high = 0;
-static char *cache_pc_function_name = 0;
+static const char *cache_pc_function_name = (const char *)0;
 static int cache_pc_function_inlining = -1;
 static struct bfd_section *cache_pc_function_section = NULL;
 
-/* Clear cache, e.g. when symbol table is discarded. */
-
+/* Clear cache, e.g. when symbol table is discarded: */
 void
-clear_pc_function_cache (void)
+clear_pc_function_cache(void)
 {
   cache_pc_function_low = 0;
   cache_pc_function_high = 0;
@@ -455,7 +454,7 @@ find_pc_partial_function_impl (CORE_ADDR pc, char **name, CORE_ADDR *address,
 	      else
 		cache_pc_function_high = BLOCK_END (SYMBOL_BLOCK_VALUE (f));
 	  /* APPLE LOCAL end address ranges  */
-	      cache_pc_function_name = DEPRECATED_SYMBOL_NAME (f);
+	      cache_pc_function_name = DEPRECATED_SYMBOL_NAME(f);
 	      cache_pc_function_section = section;
 	      goto return_cached_value;
 	    }
@@ -474,9 +473,9 @@ find_pc_partial_function_impl (CORE_ADDR pc, char **name, CORE_ADDR *address,
 	    {
 	      /* This case isn't being cached currently. */
 	      if (address)
-		*address = SYMBOL_VALUE_ADDRESS (psb);
+		*address = SYMBOL_VALUE_ADDRESS(psb);
 	      if (name)
-		*name = DEPRECATED_SYMBOL_NAME (psb);
+		*name = (char *)DEPRECATED_SYMBOL_NAME(psb);
 	      /* endaddr non-NULL can't happen here.  */
 	      return 1;
 	    }
@@ -506,8 +505,8 @@ find_pc_partial_function_impl (CORE_ADDR pc, char **name, CORE_ADDR *address,
       return 0;
     }
 
-  cache_pc_function_low = SYMBOL_VALUE_ADDRESS (msymbol);
-  cache_pc_function_name = DEPRECATED_SYMBOL_NAME (msymbol);
+  cache_pc_function_low = SYMBOL_VALUE_ADDRESS(msymbol);
+  cache_pc_function_name = DEPRECATED_SYMBOL_NAME(msymbol);
   cache_pc_function_section = section;
 
   /* Use the lesser of the next minimal symbol in the same section, or
@@ -543,11 +542,11 @@ find_pc_partial_function_impl (CORE_ADDR pc, char **name, CORE_ADDR *address,
     }
 
   if (name)
-    *name = cache_pc_function_name;
+    *name = (char *)cache_pc_function_name;
 
   if (endaddr)
     {
-      if (pc_in_unmapped_range (pc, section))
+      if (pc_in_unmapped_range(pc, section))
 	{
 	  /* Because the high address is actually beyond the end of
 	     the function (and therefore possibly beyond the end of
@@ -589,3 +588,5 @@ block_innermost_frame (struct block *block)
 	return frame;
     }
 }
+
+/* EOF */

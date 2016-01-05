@@ -4227,11 +4227,13 @@ MAC_DEFS = -DWITH_CFM=1 -DTARGET_RT_MAC_CFM=1 -DTARGET_CPU_68K=1 \
   -DTARGET_OS_MAC=1 -D__MACOS_CLASSIC__=1 -DOLDROUTINENAMES=1 \
   -DUSE_PTHREADS=1 -D_DARWIN_UNLIMITED_STREAMS -DMI_OUT=1 -DHAVE_CONFIG_H \
   -D__MigTypeCheck=1
+##FIXME: make configurable:
+MAC_SDKROOT = -iwithsysroot /Developer/SDKs/MacOSX10.4u.sdk
 MAC_INCLUDES = -I./macosx -I. -I./config -I./../include/mpw \
   -I./../include/mpw/CIncludes-needed -I./../include/opcode \
   -I./../readline/.. -I../bfd -I./../bfd -I./../include -I../intl \
   -I./../intl -I/Developer/Headers/FlatCarbon \
-  -I/Developer/usr/local/include
+  -I/Developer/usr/local/include $(MAC_SDKROOT)
 MAC_WARNINGS = -Wno-deprecated-declarations -Wno-four-char-constants \
   -Wno-multichar -Wno-system-headers -Wimplicit -Wmain -Wparentheses \
   -Wmissing-include-dirs -Wdeclaration-after-statement -Wlong-long \

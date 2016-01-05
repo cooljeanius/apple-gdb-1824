@@ -84,7 +84,11 @@ unlock_1 (FILE *const fp ATTRIBUTE_UNUSED)
 #if defined(HAVE___FSETLOCKING) && defined(FSETLOCKING_BYCALLER)
   if (fp)
     __fsetlocking (fp, FSETLOCKING_BYCALLER);
-#endif
+#else
+# if defined(__GNUC__)
+  asm("");
+# endif /* __GNUC__ */
+#endif /* HAVE___FSETLOCKING && FSETLOCKING_BYCALLER */
 }
 
 void

@@ -71,6 +71,7 @@ struct gdbarch
   gdbarch_deprecated_register_byte_ftype *deprecated_register_byte;
 };
 
+/* */
 int generic_register_byte(int regnum)
 {
   int byte;
@@ -80,6 +81,9 @@ int generic_register_byte(int regnum)
   for ((i = 0); (i < regnum); i++) {
     byte++;
   }
+#if defined(__GNUC__)
+  asm("");
+#endif /* __GNUC__ */
   return byte;
 }
 

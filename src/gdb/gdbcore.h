@@ -125,19 +125,19 @@ extern bfd *exec_bfd;
 
 extern int write_files;
 
-extern void core_file_command (char *filename, int from_tty);
+extern void core_file_command(const char *filename, int from_tty);
 
-extern void core_file_attach (char *filename, int from_tty);
+extern void core_file_attach(char *filename, int from_tty);
 
-extern void exec_open (char *filename, int from_tty);
+extern void exec_open(char *filename, int from_tty);
 
-extern void exec_file_attach (char *filename, int from_tty);
+extern void exec_file_attach(char *filename, int from_tty);
 
-extern void exec_file_clear (int from_tty);
+extern void exec_file_clear(int from_tty);
 
-extern void validate_files (void);
+extern void validate_files(void);
 
-extern CORE_ADDR register_addr (int regno, CORE_ADDR blockend);
+extern CORE_ADDR register_addr(int regno, CORE_ADDR blockend);
 
 #if !defined(KERNEL_U_ADDR)
 extern CORE_ADDR kernel_u_addr;
@@ -152,7 +152,7 @@ extern struct target_ops core_ops;
 
 extern char *gnutarget;
 
-extern void set_gnutarget (char *);
+extern void set_gnutarget(const char *);
 
 /* Structure to keep track of core register reading functions for
    various core file types.  */

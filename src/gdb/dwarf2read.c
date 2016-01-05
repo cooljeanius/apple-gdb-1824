@@ -642,13 +642,13 @@ struct partial_die_info
     /* The name of this DIE.  Normally the value of DW_AT_name, but
        sometimes DW_TAG_MIPS_linkage_name or a string computed in some
        other fashion.  */
-    char *name;
+    const char *name;
     char *dirname;
 
     /* The scope to prepend to our children.  This is generally
        allocated on the comp_unit_obstack, so will disappear
        when this compilation unit leaves the cache.  */
-    char *scope;
+    const char *scope;
 
     /* The location description associated with this DIE, if any: */
     struct dwarf_block *locdesc;
@@ -684,7 +684,7 @@ struct partial_die_info
 
     /* APPLE LOCAL begin psym equivalences  */
     /* The psym equivalence name this die contains, if any: */
-    char *equiv_name;
+    const char *equiv_name;
     /* APPLE LOCAL end psym equivalences  */
 
     /* APPLE LOCAL begin differentiate between Arm & Thumb */
@@ -1552,7 +1552,7 @@ dwarf2_scan_inlined_section_for_psymbols(struct partial_symtab *pst,
 
   int noerr;
   int bytes_read;
-  struct cleanup *timing_cleanup;
+  struct cleanup *timing_cleanup = (struct cleanup *)NULL;
   static int timer = -1;
   struct dwarf2_cu fake_cu;
 
@@ -1560,7 +1560,10 @@ dwarf2_scan_inlined_section_for_psymbols(struct partial_symtab *pst,
      to provide incorrect backtraces, v. <rdar://problem/6771834>
      jmolenda/2009-04-08  */
   if (1)
-    return;
+    {
+      warning("Skipping actually scanning inlined section for psymbols");
+      return;
+    }
 
   if (maint_use_timers)
     timing_cleanup = start_timer(&timer, "debug_inlined",
@@ -2667,7 +2670,7 @@ create_all_comp_units (struct objfile *objfile)
 
 static void
 add_equiv_psym(struct equiv_psym_list **equiv_psyms,
-               char *name)
+               const char *name)
 {
   int i;
 
@@ -2688,17 +2691,16 @@ add_equiv_psym(struct equiv_psym_list **equiv_psyms,
   if ((*equiv_psyms)->num_syms == (*equiv_psyms)->list_size)
     {
       int new_size;
-      new_size = (*equiv_psyms)->list_size * 2;
-      (*equiv_psyms)->sym_list = (char **) xrealloc ((*equiv_psyms)->sym_list,
-						     new_size * sizeof (char *));
+      new_size = ((*equiv_psyms)->list_size * 2);
+      (*equiv_psyms)->sym_list = (char **)xrealloc((*equiv_psyms)->sym_list,
+						   (new_size * sizeof(char *)));
       for (i = (*equiv_psyms)->list_size; i < new_size; i++)
 	(*equiv_psyms)->sym_list[i] = NULL;
       (*equiv_psyms)->list_size = new_size;
     }
 
-  /* Insert NAME into the list.  */
-
-  (*equiv_psyms)->sym_list[(*equiv_psyms)->num_syms++] = name;
+  /* Insert NAME into the list: */
+  (*equiv_psyms)->sym_list[(*equiv_psyms)->num_syms++] = (char *)name;
 }
 /* APPLE LOCAL end psym equivalences  */
 
@@ -2825,16 +2827,14 @@ scan_partial_symbols(struct partial_die_info *first_die, CORE_ADDR *lowpc,
    compilation unit CU.  The result will be allocated on CU's
    comp_unit_obstack, or a copy of the already allocated PDI->NAME
    field.  NULL is returned if no prefix is necessary.  */
-static char *
-partial_die_parent_scope (struct partial_die_info *pdi,
-			  struct dwarf2_cu *cu)
+static const char *
+partial_die_parent_scope(struct partial_die_info *pdi, struct dwarf2_cu *cu)
 {
-  char *grandparent_scope;
+  const char *grandparent_scope;
   struct partial_die_info *parent, *real_pdi;
 
   /* We need to look at our parent DIE; if we have a DW_AT_specification,
-     then this means the parent of the specification DIE.  */
-
+     then this means the parent of the specification DIE: */
   real_pdi = pdi;
   while (real_pdi->has_specification)
     real_pdi = find_partial_die (real_pdi->spec_offset, cu);
@@ -2882,10 +2882,9 @@ partial_die_parent_scope (struct partial_die_info *pdi,
 /* Return the fully scoped name associated with PDI, from compilation unit
    CU.  The result will be allocated with malloc.  */
 static char *
-partial_die_full_name(struct partial_die_info *pdi,
-		      struct dwarf2_cu *cu)
+partial_die_full_name(struct partial_die_info *pdi, struct dwarf2_cu *cu)
 {
-  char *parent_scope;
+  const char *parent_scope;
 
   parent_scope = partial_die_parent_scope(pdi, cu);
   if (parent_scope == NULL)
@@ -2898,8 +2897,8 @@ static void
 add_partial_symbol(struct partial_die_info *pdi, struct dwarf2_cu *cu)
 {
   struct objfile *objfile = cu->objfile;
-  CORE_ADDR addr = 0;
-  char *actual_name;
+  CORE_ADDR addr = 0UL;
+  const char *actual_name;
   /* APPLE LOCAL avoid unused var warning: */
 #ifdef ALLOW_UNUSED_VARIABLES
   const char *my_prefix;
@@ -3070,7 +3069,7 @@ add_partial_symbol(struct partial_die_info *pdi, struct dwarf2_cu *cu)
                                         objfile);
 
   if (built_actual_name)
-    xfree(actual_name);
+    xfree((void *)actual_name);
 }
 
 /* Determine whether a die of type TAG living in a C++ class or
@@ -6491,21 +6490,21 @@ read_structure_type (struct die_info *die, struct dwarf2_cu *cu)
 	    {
 	      struct type *t = die_containing_type (die, cu);
 
-	      TYPE_VPTR_BASETYPE (type) = t;
+	      TYPE_VPTR_BASETYPE(type) = t;
 	      if (type == t)
 		{
 		  int i;
 
-		  /* Our own class provides vtbl ptr.  */
-		  for (i = TYPE_NFIELDS (t) - 1;
-		       i >= TYPE_N_BASECLASSES (t);
+		  /* Our own class provides vtbl ptr: */
+		  for (i = (TYPE_NFIELDS(t) - 1);
+		       i >= TYPE_N_BASECLASSES(t);
 		       --i)
 		    {
-		      char *fieldname = TYPE_FIELD_NAME (t, i);
+		      const char *fieldname = TYPE_FIELD_NAME(t, i);
 
-                      if (is_vtable_name (fieldname, cu))
+                      if (is_vtable_name(fieldname, cu))
 			{
-			  TYPE_VPTR_FIELDNO (type) = i;
+			  TYPE_VPTR_FIELDNO(type) = i;
 			  break;
 			}
 		    }
@@ -8119,10 +8118,10 @@ load_partial_dies(bfd *abfd, char *info_ptr, int building_psymtab,
 	  else if (building_psymtab)
             /* APPLE LOCAL: Put it in the global_psymbols list regardless
                of language.  */
-	    add_psymbol_to_list(part_die->name, strlen (part_die->name),
-				 VAR_DOMAIN, LOC_CONST,
-				 &cu->objfile->global_psymbols,
-				 0, (CORE_ADDR) 0, cu->language, cu->objfile);
+	    add_psymbol_to_list(part_die->name, strlen(part_die->name),
+				VAR_DOMAIN, LOC_CONST,
+				&cu->objfile->global_psymbols,
+				0, (CORE_ADDR)0UL, cu->language, cu->objfile);
 
 	  info_ptr = locate_pdi_sibling (part_die, info_ptr, abfd, cu);
 	  continue;
@@ -8288,10 +8287,10 @@ read_partial_die(struct partial_die_info *part_die,
 		  && part_die->name[0] == '*'
 		  && part_die->name[1] == '_')
 		{
-		  char *short_name;
+		  const char *short_name;
 		  char *extension;
 		  char *short_end;
-		  char *end = part_die->name + strlen(part_die->name);
+		  const char *end = part_die->name + strlen(part_die->name);
 		  int is_equivalence_name = 1;
 
 		  short_name = part_die->name + 2;
@@ -10492,11 +10491,11 @@ var_decode_location(struct attribute *attr, struct symbol *sym,
    used the passed type.  */
 
 static struct symbol *
-new_symbol (struct die_info *die, struct type *type, struct dwarf2_cu *cu)
+new_symbol(struct die_info *die, struct type *type, struct dwarf2_cu *cu)
 {
   struct objfile *objfile = cu->objfile;
   struct symbol *sym = NULL;
-  char *name;
+  const char *name;
   struct attribute *attr = NULL;
   struct attribute *attr2 = NULL;
   CORE_ADDR baseaddr;
@@ -11174,7 +11173,7 @@ static char *
 typename_concat (struct obstack *obs, const char *prefix, const char *suffix,
 		 struct dwarf2_cu *cu)
 {
-  char *sep;
+  const char *sep;
 
   if (suffix == NULL || suffix[0] == '\0' || prefix == NULL || prefix[0] == '\0')
     sep = "";
@@ -13230,15 +13229,17 @@ partial_die_eq(const void *item_lhs, const void *item_rhs)
 static struct cmd_list_element *set_dwarf2_cmdlist;
 static struct cmd_list_element *show_dwarf2_cmdlist;
 
+/* */
 static void
-set_dwarf2_cmd(char *args, int from_tty)
+set_dwarf2_cmd(const char *args, int from_tty)
 {
   help_list(set_dwarf2_cmdlist, "maintenance set dwarf2 ",
             (enum command_class)-1, gdb_stdout);
 }
 
+/* */
 static void
-show_dwarf2_cmd(char *args, int from_tty)
+show_dwarf2_cmd(const char *args, int from_tty)
 {
   cmd_show_list(show_dwarf2_cmdlist, from_tty, "");
 }

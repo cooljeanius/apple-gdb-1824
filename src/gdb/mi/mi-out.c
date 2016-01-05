@@ -75,7 +75,7 @@ static void mi_message(struct ui_out *uiout, int verbosity,
      ATTR_FORMAT(printf, 3, 0);
 static void mi_wrap_hint(struct ui_out *uiout, const char *identstring);
 static void mi_flush(struct ui_out *uiout);
-static void mi_notify_begin(struct ui_out *uiout, char *classp);
+static void mi_notify_begin(struct ui_out *uiout, const char *classp);
 static void mi_notify_end(struct ui_out *uiout);
 
 /* This is the MI ui-out implementation functions vector */
@@ -320,8 +320,9 @@ static struct ui_file *notify_buffer;
 static struct ui_out_data notify_suspended_data;
 static int notify_suspended = 0;
 
+/* */
 static void
-mi_notify_begin(struct ui_out *uiout, char *classp)
+mi_notify_begin(struct ui_out *uiout, const char *classp)
 {
   struct ui_out_data *data = ui_out_data(uiout);
   if (notify_buffer != NULL)

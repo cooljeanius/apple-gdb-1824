@@ -126,7 +126,7 @@ parse_and_eval_address(const char *exp)
    and advanced that variable across the characters parsed.  */
 
 CORE_ADDR
-parse_and_eval_address_1 (char **expptr)
+parse_and_eval_address_1(const char **expptr)
 {
   /* APPLE LOCAL begin initialize innermost_block  */
   struct expression *expr;
@@ -134,8 +134,8 @@ parse_and_eval_address_1 (char **expptr)
   struct cleanup *old_chain;
 
   innermost_block = NULL;
-  expr = parse_exp_1 (expptr, (struct block *) 0, 0);
-  old_chain = make_cleanup (free_current_contents, &expr);
+  expr = parse_exp_1(expptr, (struct block *)0, 0);
+  old_chain = make_cleanup(free_current_contents, &expr);
   /* APPLE LOCAL end initialize innermost_block  */
   addr = value_as_address(evaluate_expression(expr));
   do_cleanups(old_chain);
@@ -184,7 +184,7 @@ parse_and_eval(const char *exp)
    EXPP is advanced to point to the comma.  */
 
 struct value *
-parse_to_comma_and_eval (char **expp)
+parse_to_comma_and_eval(const char **expp)
 {
   /* APPLE LOCAL begin initialize innermost_block  */
   struct expression *expr;
@@ -192,11 +192,11 @@ parse_to_comma_and_eval (char **expp)
   struct cleanup *old_chain;
 
   innermost_block = NULL;
-  expr = parse_exp_1 (expp, (struct block *) 0, 1);
-  old_chain = make_cleanup (free_current_contents, &expr);
+  expr = parse_exp_1(expp, (struct block *)0, 1);
+  old_chain = make_cleanup(free_current_contents, &expr);
   /* APPLE LOCAL end initialize innermost_block  */
-  val = evaluate_expression (expr);
-  do_cleanups (old_chain);
+  val = evaluate_expression(expr);
+  do_cleanups(old_chain);
   return val;
 }
 
@@ -260,20 +260,21 @@ evaluate_struct_tuple(struct value *struct_val, struct expression *exp,
       int bitpos, bitsize;
       bfd_byte *addr;
 
-      /* Skip past the labels, and count them. */
-      while (get_label (exp, pos) != NULL)
+      /* Skip past the labels, and count them: */
+      while (get_label(exp, pos) != NULL)
 	nlabels++;
 
       do
 	{
-	  char *label = get_label (exp, &pc);
+	  char *label = get_label(exp, &pc);
 	  if (label)
 	    {
-	      for (fieldno = 0; fieldno < TYPE_NFIELDS (struct_type);
+	      for (fieldno = 0; fieldno < TYPE_NFIELDS(struct_type);
 		   fieldno++)
 		{
-		  char *field_name = TYPE_FIELD_NAME (struct_type, fieldno);
-		  if (field_name != NULL && strcmp (field_name, label) == 0)
+		  const char *field_name = TYPE_FIELD_NAME(struct_type,
+							   fieldno);
+		  if (field_name != NULL && strcmp(field_name, label) == 0)
 		    {
 		      variantno = -1;
 		      subfieldno = fieldno;
@@ -281,28 +282,29 @@ evaluate_struct_tuple(struct value *struct_val, struct expression *exp,
 		      goto found;
 		    }
 		}
-	      for (fieldno = 0; fieldno < TYPE_NFIELDS (struct_type);
+	      for (fieldno = 0; fieldno < TYPE_NFIELDS(struct_type);
 		   fieldno++)
 		{
-		  char *field_name = TYPE_FIELD_NAME (struct_type, fieldno);
-		  field_type = TYPE_FIELD_TYPE (struct_type, fieldno);
+		  const char *field_name = TYPE_FIELD_NAME(struct_type,
+							   fieldno);
+		  field_type = TYPE_FIELD_TYPE(struct_type, fieldno);
 		  if ((field_name == 0 || *field_name == '\0')
-		      && TYPE_CODE (field_type) == TYPE_CODE_UNION)
+		      && TYPE_CODE(field_type) == TYPE_CODE_UNION)
 		    {
 		      variantno = 0;
-		      for (; variantno < TYPE_NFIELDS (field_type);
+		      for (; variantno < TYPE_NFIELDS(field_type);
 			   variantno++)
 			{
 			  substruct_type
-			    = TYPE_FIELD_TYPE (field_type, variantno);
-			  if (TYPE_CODE (substruct_type) == TYPE_CODE_STRUCT)
+			    = TYPE_FIELD_TYPE(field_type, variantno);
+			  if (TYPE_CODE(substruct_type) == TYPE_CODE_STRUCT)
 			    {
 			      for (subfieldno = 0;
-				 subfieldno < TYPE_NFIELDS (substruct_type);
+				   subfieldno < TYPE_NFIELDS(substruct_type);
 				   subfieldno++)
 				{
-				  if (strcmp(TYPE_FIELD_NAME (substruct_type,
-							      subfieldno),
+				  if (strcmp(TYPE_FIELD_NAME(substruct_type,
+							     subfieldno),
 					     label) == 0)
 				    {
 				      goto found;

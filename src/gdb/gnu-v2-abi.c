@@ -177,7 +177,7 @@ gnuv2_virtual_fn_field (struct value **arg1p, struct fn_field * f, int j,
   else if (TYPE_CODE (entry_type) == TYPE_CODE_PTR)
     vfn = entry;
   else
-    error (_("I'm confused:  virtual function table has bad type"));
+    error (_("I am confused:  virtual function table has bad type"));
   /* Reinstantiate the function pointer with the correct type.  */
   deprecated_set_value_type (vfn, lookup_pointer_type (TYPE_FN_FIELD_TYPE (f, j)));
 
@@ -193,7 +193,7 @@ gnuv2_value_rtti_type (struct value *v, int *full, int *top, int *using_enc)
   struct type *rtti_type;
   CORE_ADDR vtbl;
   struct minimal_symbol *minsym;
-  char *demangled_name;
+  const char *demangled_name;
   struct type *btype;
 
   if (full)
@@ -210,7 +210,7 @@ gnuv2_value_rtti_type (struct value *v, int *full, int *top, int *using_enc)
   if (TYPE_CODE (known_type) != TYPE_CODE_CLASS)
     return NULL;
 
-  /* Plan on this changing in the future as i get around to setting
+  /* Plan on this changing in the future as I get around to setting
      the vtables properly for G++ compiled stuff.  Also, I'll be using
      the type info functions, which are always right.  Deal with it
      until then.
@@ -222,7 +222,7 @@ gnuv2_value_rtti_type (struct value *v, int *full, int *top, int *using_enc)
      and this is not a symbol gdb can resolve, so we fail & return
      NULL anyway.  Seems like this really isn't going to work till
      we actually call the RTTI function & parse it.
-*/
+   */
 
   /* If the type has no vptr fieldno, try to get it filled in */
   if (TYPE_VPTR_FIELDNO(known_type) < 0)
@@ -232,66 +232,66 @@ gnuv2_value_rtti_type (struct value *v, int *full, int *top, int *using_enc)
   if (TYPE_VPTR_FIELDNO(known_type) < 0)
     return NULL;
 
-  /* Make sure our basetype and known type match, otherwise, cast
-     so we can get at the vtable properly.
-  */
-  btype = TYPE_VPTR_BASETYPE (known_type);
-  CHECK_TYPEDEF (btype);
-  if (btype != known_type )
+  /* Make sure our basetype and known type match, otherwise, cast so we can get
+   * at the vtable properly: */
+  btype = TYPE_VPTR_BASETYPE(known_type);
+  CHECK_TYPEDEF(btype);
+  if (btype != known_type)
     {
-      v = value_cast (btype, v);
+      v = value_cast(btype, v);
       if (using_enc)
-        *using_enc=1;
+        *using_enc = 1;
     }
   /*
     We can't use value_ind here, because it would want to use RTTI, and
     we'd waste a bunch of time figuring out we already know the type.
     Besides, we don't care about the type, just the actual pointer
   */
-  if (VALUE_ADDRESS (value_field (v, TYPE_VPTR_FIELDNO (known_type))) == 0)
+  if (VALUE_ADDRESS(value_field(v, TYPE_VPTR_FIELDNO(known_type))) == 0)
     return NULL;
 
-  vtbl=value_as_address(value_field(v,TYPE_VPTR_FIELDNO(known_type)));
+  vtbl = value_as_address(value_field(v,TYPE_VPTR_FIELDNO(known_type)));
 
   /* Try to find a symbol that is the vtable */
-  minsym=lookup_minimal_symbol_by_pc(vtbl);
-  if (minsym==NULL
-      || (demangled_name=DEPRECATED_SYMBOL_NAME (minsym))==NULL
-      || !is_vtable_name (demangled_name))
+  minsym = lookup_minimal_symbol_by_pc(vtbl);
+  if ((minsym == NULL)
+      || ((demangled_name = DEPRECATED_SYMBOL_NAME(minsym)) == NULL)
+      || !is_vtable_name(demangled_name))
     return NULL;
 
   /* If we just skip the prefix, we get screwed by namespaces */
-  demangled_name=cplus_demangle(demangled_name,DMGL_PARAMS|DMGL_ANSI);
-  *(strchr(demangled_name,' '))=0;
+  demangled_name = cplus_demangle(demangled_name, (DMGL_PARAMS | DMGL_ANSI));
+  *(strchr(demangled_name, ' ')) = 0;
 
   /* Lookup the type for the name */
   /* FIXME: chastain/2003-11-26: block=NULL is bogus.  See pr gdb/1465. */
-  rtti_type = cp_lookup_rtti_type (demangled_name, NULL);
+  rtti_type = cp_lookup_rtti_type(demangled_name, NULL);
   if (rtti_type == NULL)
     return NULL;
 
-  if (TYPE_N_BASECLASSES(rtti_type) > 1 &&  full && (*full) != 1)
+  if ((TYPE_N_BASECLASSES(rtti_type) > 1) && full && ((*full) != 1))
     {
       if (top)
-        *top=TYPE_BASECLASS_BITPOS(rtti_type,TYPE_VPTR_FIELDNO(rtti_type))/8;
-      if (top && ((*top) >0))
+        *top = (TYPE_BASECLASS_BITPOS(rtti_type, TYPE_VPTR_FIELDNO(rtti_type))
+		/ 8);
+      if (top && ((*top) > 0))
         {
           if (TYPE_LENGTH(rtti_type) > TYPE_LENGTH(known_type))
             {
               if (full)
-                *full=0;
+                *full = 0;
             }
           else
             {
               if (full)
-                *full=1;
+                *full = 1;
             }
         }
     }
   else
     {
       if (full)
-        *full=1;
+        *full = 1;
     }
 
   return rtti_type;

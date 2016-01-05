@@ -28,14 +28,14 @@
 #include "objc-lang.h"
 
 int
-gdb_parse_exp_1 (char **stringptr, struct block *block, int comma,
-		 struct expression **expression)
+gdb_parse_exp_1(const char **stringptr, struct block *block, int comma,
+		struct expression **expression)
 {
   volatile struct gdb_exception except;
 
-  TRY_CATCH (except, RETURN_MASK_ERROR)
+  TRY_CATCH(except, RETURN_MASK_ERROR)
     {
-      *expression = parse_exp_1 (stringptr, block, comma);
+      *expression = parse_exp_1(stringptr, block, comma);
     }
 
   if (except.reason < 0)

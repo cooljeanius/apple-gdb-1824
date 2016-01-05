@@ -1,4 +1,4 @@
-/* Support for printing Java values for GDB, the GNU debugger.
+/* jv-valprint.c: Support for printing Java values for GDB, the GNU debugger.
 
    Copyright 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free
    Software Foundation, Inc.
@@ -43,7 +43,7 @@ java_value_print(struct value *val, struct ui_file *stream, int format,
   struct type *type;
   CORE_ADDR address;
   int i;
-  char *name;
+  const char *name;
 
   type = value_type(val);
   address = (VALUE_ADDRESS(val) + value_offset(val));
@@ -75,7 +75,7 @@ java_value_print(struct value *val, struct ui_file *stream, int format,
       long length;
       unsigned int things_printed = 0U;
       int reps;
-      struct type *el_type = java_primitive_type_from_name(name, i - 2);
+      struct type *el_type = java_primitive_type_from_name(name, (i - 2));
 
       i = 0;
       read_memory(address + JAVA_OBJECT_SIZE, buf4, 4);
@@ -263,7 +263,7 @@ java_print_value_fields (struct type *type, const gdb_byte *valaddr,
 	{
 	  int boffset;
 	  struct type *baseclass = check_typedef (TYPE_BASECLASS (type, i));
-	  char *basename = TYPE_NAME (baseclass);
+	  const char *basename = TYPE_NAME(baseclass);
 	  const gdb_byte *base_valaddr;
 
 	  if (BASETYPE_VIA_VIRTUAL (type, i))
@@ -305,7 +305,7 @@ java_print_value_fields (struct type *type, const gdb_byte *valaddr,
 	  /* If requested, skip printing of static fields.  */
 	  if (TYPE_FIELD_STATIC (type, i))
 	    {
-	      char *name = TYPE_FIELD_NAME (type, i);
+	      const char *name = TYPE_FIELD_NAME(type, i);
 	      if (!static_field_print)
 		continue;
 	      if (name != NULL && strcmp (name, "class") == 0)

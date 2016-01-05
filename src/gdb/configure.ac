@@ -1980,7 +1980,7 @@ AC_CHECK_FUNCS([atof alarm assert atexit bsearch bzero dup2 exit \
                 socket strcasecmp strcat strchr strcpy strcspn strdup \
                 strerror strlcat strlcpy strlen strncasecmp strncat \
                 strncmp strncpy strndup strpbrk strrchr strspn strstr \
-                strtok strtol strtoul uname wcwidth])dnl
+                strtok strtok_r strtol strtoul uname wcwidth])dnl
 
 dnl# Use as a replacement for just-plain sprintf:
 if test "x${ac_cv_func_snprintf}" = "x"; then

@@ -1,4 +1,4 @@
-/* Longjump free calls to GDB internal routines.
+/* wrapper.h: Longjump free calls to GDB internal routines.
 
    Copyright 1999, 2000, 2005 Free Software Foundation, Inc.
 
@@ -27,8 +27,8 @@ struct value;
 struct expression;
 struct block;
 
-extern int gdb_parse_exp_1 (char **, struct block *,
-			    int, struct expression **);
+extern int gdb_parse_exp_1(const char **, struct block *,
+			   int, struct expression **);
 
 extern int gdb_evaluate_expression (struct expression *, struct value **);
 
@@ -54,7 +54,7 @@ extern enum gdb_rc gdb_value_struct_elt (struct ui_out *uiout,
 extern int gdb_value_ind (struct value *val, struct value ** rval);
 
 extern int
-gdb_value_cast (struct type *type, struct value *in_val, struct value **out_val);
+gdb_value_cast(struct type *type, struct value *in_val, struct value **out_val);
 
 extern int gdb_parse_and_eval_type (char *, int, struct type **);
 
@@ -67,3 +67,5 @@ int safe_value_objc_target_type (struct value *val, struct block *block,
 struct gdb_exception safe_execute_command (struct ui_out *uiout, char *command,
 					   int from_tty);
 #endif /* wrapper.h */
+
+/* EOF */

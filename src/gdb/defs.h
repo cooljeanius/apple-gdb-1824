@@ -1690,7 +1690,19 @@ struct cleanup *start_timer(int *timer_var, const char *timer_name, const char *
 # pragma GCC poison malloc realloc calloc free strdup sprintf
 /* for similar reasons, such as libiberty also providing replacements: */
 # pragma GCC poison strndup memdup strerror vsprintf vasprintf
-/* also consider poisoining: asprintf atexit exit */
+/* also consider poisoining for similar reasons: asprintf atexit exit */
+# if defined(HAVE_STRLCPY) && defined(PREFER_BSDISMS)
+#  pragma GCC poison strcpy
+# endif /* HAVE_STRLCPY && PREFER_BSDISMS */
+# if defined(HAVE_STRLCAT) && defined(PREFER_BSDISMS)
+#  pragma GCC poison strcat
+# endif /* HAVE_STRLCAT && PREFER_BSDISMS */
+# if defined(HAVE_FGETS)
+#  pragma GCC poison gets
+# endif /* HAVE_FGETS */
+# if defined(HAVE_STRTOK_R) && defined(_REENTRANT)
+#  pragma GCC poison strtok
+# endif /* HAVE_STRTOK_R && _REENTRANT */
 #endif /* gcc3+ && !NO_POISON && !FLEX_SCANNER */
 
 #endif /* #ifndef DEFS_H */

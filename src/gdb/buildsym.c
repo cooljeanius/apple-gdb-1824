@@ -149,15 +149,15 @@ struct symbol *
 find_symbol_in_list (struct pending *list, char *name, int length)
 {
   int j;
-  char *pp;
+  const char *pp;
 
   while (list != NULL)
     {
       for (j = list->nsyms; --j >= 0;)
 	{
-	  pp = DEPRECATED_SYMBOL_NAME (list->symbol[j]);
-	  if (*pp == *name && strncmp (pp, name, length) == 0 &&
-	      pp[length] == '\0')
+	  pp = DEPRECATED_SYMBOL_NAME(list->symbol[j]);
+	  if ((*pp == *name) && (strncmp(pp, name, length) == 0)
+	      && (pp[length] == '\0'))
 	    {
 	      return (list->symbol[j]);
 	    }
@@ -670,7 +670,7 @@ make_blockvector (struct objfile *objfile)
    the directory in which it resides (or NULL if not known).  */
 
 void
-start_subfile (char *name, char *dirname)
+start_subfile(const char *name, char *dirname)
 {
   struct subfile *subfile;
 
@@ -934,9 +934,8 @@ compare_line_numbers (const void *ln1p, const void *ln2p)
    one original source file.  */
 
 void
-start_symtab (char *name, char *dirname, CORE_ADDR start_addr)
+start_symtab(const char *name, char *dirname, CORE_ADDR start_addr)
 {
-
   last_source_file = name;
   last_source_start_addr = start_addr;
   file_symbols = NULL;
@@ -954,16 +953,15 @@ start_symtab (char *name, char *dirname, CORE_ADDR start_addr)
     }
   context_stack_depth = 0;
 
-  /* Set up support for C++ namespace support, in case we need it.  */
-
-  cp_initialize_namespace ();
+  /* Set up support for C++ namespace support, in case we need it: */
+  cp_initialize_namespace();
 
   /* Initialize the list of sub source files with one entry for this
      file (the top-level source file).  */
 
   subfiles = NULL;
   current_subfile = NULL;
-  start_subfile (name, dirname);
+  start_subfile(name, dirname);
 }
 
 /* Finish the symbol definitions for one main source file, close off
@@ -1244,9 +1242,9 @@ pop_context (void)
 
 /* Compute a small integer hash code for the given name: */
 int
-hashname(char *name)
+hashname(const char *name)
 {
-    return (hash(name, strlen(name)) % HASHSIZE);
+  return (hash(name, strlen(name)) % HASHSIZE);
 }
 
 /* FIXME: add comment: */

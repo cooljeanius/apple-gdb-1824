@@ -419,7 +419,7 @@ show_endian (struct ui_file *file, int from_tty, struct cmd_list_element *c,
 }
 
 static void
-set_endian (char *ignore_args, int from_tty, struct cmd_list_element *c)
+set_endian(const char *ignore_args, int from_tty, struct cmd_list_element *c)
 {
   if (set_endian_string == endian_auto)
     {
@@ -509,7 +509,8 @@ set_architecture_from_string(const char *new_arch)
    argument. */
 
 static void
-set_architecture (char *ignore_args, int from_tty, struct cmd_list_element *c)
+set_architecture(const char *ignore_args, int from_tty,
+		 struct cmd_list_element *c)
 {
   if (strcmp (set_architecture_string, "auto") == 0)
     {

@@ -1,6 +1,6 @@
 /* test-demangle.c: Demangler test program,
    Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
-   Written by Zack Weinberg <zack@codesourcery.com
+   Written by Zack Weinberg <zack@codesourcery.com>
 
    This file is part of GNU libiberty.
 
@@ -62,14 +62,14 @@ get_line(struct line *buf)
       alloc = LINELEN;
     }
 
-  /* Skip comment lines.  */
+  /* Skip comment lines: */
   while ((c = getchar()) == '#')
     {
       while (((c = getchar()) != EOF) && (c != '\n'));
       lineno++;
     }
 
-  /* c is the first character on the line, and it's not a comment
+  /* c is the first character on the line, and it is not a comment
      line: copy this line into the buffer and return.  */
   while ((c != EOF) && (c != '\n'))
     {

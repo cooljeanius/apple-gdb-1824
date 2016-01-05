@@ -728,17 +728,17 @@ extern void mark_breakpoints_out (void);
 
 extern void breakpoint_init_inferior (enum inf_context);
 
-extern struct cleanup *make_cleanup_delete_breakpoint (struct breakpoint *);
+extern struct cleanup *make_cleanup_delete_breakpoint(struct breakpoint *);
 
-extern struct cleanup *make_exec_cleanup_delete_breakpoint (struct breakpoint *);
+extern struct cleanup *make_exec_cleanup_delete_breakpoint(struct breakpoint *);
 
-extern void delete_breakpoint (struct breakpoint *);
+extern void delete_breakpoint(struct breakpoint *);
 
-extern void breakpoint_auto_delete (bpstat);
+extern void breakpoint_auto_delete(bpstat);
 
-extern void breakpoint_clear_ignore_counts (void);
+extern void breakpoint_clear_ignore_counts(void);
 
-extern void break_command (char *, int);
+extern void break_command(const char *, int);
 
 /* APPLE LOCAL: for rbreak_command's setting of breakpoints */
 /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps.  */
@@ -862,7 +862,7 @@ extern void remove_solib_event_breakpoints (void);
 extern void remove_thread_event_breakpoints (void);
 
 /* APPLE LOCAL: ObjC hand-call fail point breakpoint: */
-extern struct breakpoint *create_objc_hook_breakpoint(char *);
+extern struct breakpoint *create_objc_hook_breakpoint(const char *);
 
 /* APPLE LOCAL breakpoints */
 extern void disable_breakpoints_in_shlibs(int silent);

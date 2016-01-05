@@ -188,6 +188,10 @@ hex_init (void)
 	  break;
 	}
     }
+#else
+# if defined(__GNUC__)
+  asm("");
+# endif /* __GNUC__ */
 #endif /* !HEX_TABLE_INITIALIZED */
 }
 

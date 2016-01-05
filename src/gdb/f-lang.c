@@ -1,4 +1,4 @@
-/* Fortran language support routines for GDB, the GNU debugger.
+/* f-lang.c: Fortran language support routines for GDB, the GNU debugger.
 
    Copyright 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001, 2002,
    2003, 2004, 2005 Free Software Foundation, Inc.
@@ -774,7 +774,7 @@ find_first_common_named (char *name)
    that belongs to function funcname */
 
 SAVED_F77_COMMON_PTR
-find_common_for_function (char *name, char *funcname)
+find_common_for_function(const char *name, const char *funcname)
 {
 
   SAVED_F77_COMMON_PTR tmp;

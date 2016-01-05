@@ -441,13 +441,13 @@ extern struct value *evaluate_subexp_with_coercion (struct expression *,
 
 extern struct value *parse_and_eval(const char *exp);
 
-extern struct value *parse_to_comma_and_eval(char **expp);
+extern struct value *parse_to_comma_and_eval(const char **expp);
 
 extern struct type *parse_and_eval_type(char *p, int length);
 
 extern CORE_ADDR parse_and_eval_address(const char *exp);
 
-extern CORE_ADDR parse_and_eval_address_1(char **expptr);
+extern CORE_ADDR parse_and_eval_address_1(const char **expptr);
 
 extern LONGEST parse_and_eval_long(const char *exp);
 
@@ -509,9 +509,10 @@ extern void type_print(struct type *type, const char *varstring,
 		       struct ui_file *stream, int show);
 
 
-extern char *type_sprint(struct type *type, char *varstring, int show);
+extern char *type_sprint(struct type *type, const char *varstring, int show);
 
-extern char *type_sprint_quoted(struct type *type, char *varstring, int show);
+extern char *type_sprint_quoted(struct type *type, const char *varstring,
+				int show);
 
 extern gdb_byte *baseclass_addr(struct type *type, int index,
 				gdb_byte *valaddr,

@@ -27,12 +27,12 @@ extern int f_parse(void);
 
 extern void f_error(const char *);	/* Defined in f-exp.y */
 
-extern void f_print_type (struct type *, char *, struct ui_file *, int,
-			  int);
+extern void f_print_type(struct type *, const char *, struct ui_file *, int,
+			 int);
 
-extern int f_val_print (struct type *, const gdb_byte *, int, CORE_ADDR,
-			struct ui_file *, int, int, int,
-			enum val_prettyprint);
+extern int f_val_print(struct type *, const gdb_byte *, int, CORE_ADDR,
+		       struct ui_file *, int, int, int,
+		       enum val_prettyprint);
 
 /* Language-specific data structures */
 
@@ -63,7 +63,8 @@ extern SAVED_F77_COMMON_PTR head_common_list;	/* Ptr to 1st saved COMMON  */
 extern SAVED_F77_COMMON_PTR tail_common_list;	/* Ptr to last saved COMMON  */
 extern SAVED_F77_COMMON_PTR current_common;	/* Ptr to current COMMON */
 
-extern SAVED_F77_COMMON_PTR find_common_for_function (char *, char *);
+extern SAVED_F77_COMMON_PTR find_common_for_function(const char *,
+						     const char *);
 
 #define UNINITIALIZED_SECNUM -1
 #define COMMON_NEEDS_PATCHING(blk) ((blk)->secnum == UNINITIALIZED_SECNUM)

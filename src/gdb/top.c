@@ -23,7 +23,7 @@
 
 #include "defs.h"
 #include "gdbcmd.h"
-#include "call-cmds.h"
+#include "call-cmds.h" /* Still needed for initialize_all_files().  */
 #include "cli/cli-cmds.h"
 #include "cli/cli-script.h"
 #include "cli/cli-setshow.h"

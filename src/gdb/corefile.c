@@ -89,14 +89,14 @@ bfd *core_bfd = NULL;
 
 void
 /* APPLE LOCAL arguments to corefile */
-core_file_command (char *args, int from_tty)
+core_file_command(const char *args, int from_tty)
 {
   /* APPLE LOCAL begin refactor corefile */
   struct cleanup *cleanups;
   char *filename;
   char **argv;
 
-  dont_repeat ();
+  dont_repeat();
 
   if (args == NULL)
     {
@@ -194,12 +194,16 @@ specify_exec_file_hook (void (*hook) (char *))
    be reopened.  */
 
 void
-close_exec_file (void)
+close_exec_file(void)
 {
-#if 0				/* FIXME */
+#ifdef HAVE_BFD_TEMPCLOSE				/* FIXME */
   if (exec_bfd)
-    bfd_tempclose (exec_bfd);
-#endif /* 0 */
+    bfd_tempclose(exec_bfd);
+#else
+# ifdef __GNUC__
+  asm("");
+# endif /* __GNUC__ */
+#endif /* HAVE_BFD_TEMPCLOSE */
 }
 
 void
@@ -535,10 +539,12 @@ show_gnutarget_string(struct ui_file *file, int from_tty,
   fprintf_filtered(file, _("The current BFD target is \"%s\".\n"), value);
 }
 
-static void set_gnutarget_command(char *, int, struct cmd_list_element *);
+static void set_gnutarget_command(const char *, int, struct cmd_list_element *);
 
+/* */
 static void
-set_gnutarget_command(char *ignore, int from_tty, struct cmd_list_element *c)
+set_gnutarget_command(const char *ignore ATTRIBUTE_UNUSED, int from_tty,
+		      struct cmd_list_element *c)
 {
   if (strcmp(gnutarget_string, "auto") == 0)
     gnutarget = NULL;
@@ -548,7 +554,7 @@ set_gnutarget_command(char *ignore, int from_tty, struct cmd_list_element *c)
 
 /* Set the gnutarget: */
 void
-set_gnutarget(char *newtarget)
+set_gnutarget(const char *newtarget)
 {
   if (gnutarget_string != NULL)
     xfree(gnutarget_string);

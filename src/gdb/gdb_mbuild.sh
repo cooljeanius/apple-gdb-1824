@@ -5,7 +5,7 @@
 
 #  Copyright 2002, 2003 Free Software Foundation, Inc.
 
-#  Contributed by Richard Earnshaw  (rearnsha@arm.com)
+#  Contributed by Richard Earnshaw  <rearnsha@arm.com>
 
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by

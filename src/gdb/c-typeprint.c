@@ -38,9 +38,9 @@
 #include "gdb_string.h"
 #include <errno.h>
 
-static void cp_type_print_method_args (struct type *mtype, char *prefix,
-				       char *varstring, int staticp,
-				       struct ui_file *stream);
+static void cp_type_print_method_args(struct type *mtype, const char *prefix,
+				      const char *varstring, int staticp,
+				      struct ui_file *stream);
 
 static void c_type_print_args (struct type *, struct ui_file *);
 
@@ -142,36 +142,37 @@ c_print_type (struct type *type, const char *varstring, struct ui_file *stream,
    derivation via protected inheritance, so gdb can print it out */
 
 static void
-cp_type_print_derivation_info (struct ui_file *stream, struct type *type)
+cp_type_print_derivation_info(struct ui_file *stream, struct type *type)
 {
-  char *name;
+  const char *name;
   int i;
 
   for (i = 0; i < TYPE_N_BASECLASSES (type); i++)
     {
-      fputs_filtered (i == 0 ? ": " : ", ", stream);
-      fprintf_filtered (stream, "%s%s ",
-			BASETYPE_VIA_PUBLIC (type, i) ? "public"
-	       : (TYPE_FIELD_PROTECTED (type, i) ? "protected" : "private"),
-			BASETYPE_VIA_VIRTUAL (type, i) ? " virtual" : "");
-      name = type_name_no_tag (TYPE_BASECLASS (type, i));
-      fprintf_filtered (stream, "%s", name ? name : "(null)");
+      fputs_filtered(((i == 0) ? ": " : ", "), stream);
+      fprintf_filtered(stream, "%s%s ",
+		       (BASETYPE_VIA_PUBLIC(type, i)
+			? "public" : (TYPE_FIELD_PROTECTED(type, i)
+				      ? "protected" : "private")),
+		       (BASETYPE_VIA_VIRTUAL(type, i) ? " virtual" : ""));
+      name = type_name_no_tag(TYPE_BASECLASS(type, i));
+      fprintf_filtered(stream, "%s", (name ? name : "(null)"));
     }
   if (i > 0)
     {
-      fputs_filtered (" ", stream);
+      fputs_filtered(" ", stream);
     }
 }
 
-/* Print the C++ method arguments ARGS to the file STREAM.  */
-
+/* Print the C++ method arguments ARGS to the file STREAM: */
 static void
-cp_type_print_method_args (struct type *mtype, char *prefix, char *varstring,
-			   int staticp, struct ui_file *stream)
+cp_type_print_method_args(struct type *mtype, const char *prefix,
+			  const char *varstring, int staticp,
+			  struct ui_file *stream)
 {
-  struct field *args = TYPE_FIELDS (mtype);
-  int nargs = TYPE_NFIELDS (mtype);
-  int varargs = TYPE_VARARGS (mtype);
+  struct field *args = TYPE_FIELDS(mtype);
+  int nargs = TYPE_NFIELDS(mtype);
+  int varargs = TYPE_VARARGS(mtype);
   int i;
 
   fprintf_symbol_filtered (stream, prefix, language_cplus, DMGL_ANSI);
@@ -220,7 +221,7 @@ void
 c_type_print_varspec_prefix (struct type *type, struct ui_file *stream,
 			     int show, int passed_a_ptr, int need_post_space)
 {
-  char *name;
+  const char *name;
   if (type == 0)
     return;
 
@@ -407,33 +408,33 @@ c_type_print_args (struct type *type, struct ui_file *stream)
    When listing a class's methods, we don't print the return type of
    such operators.  */
 static int
-is_type_conversion_operator (struct type *type, int i, int j)
+is_type_conversion_operator(struct type *type, int i, int j)
 {
   /* I think the whole idea of recognizing type conversion operators
      by their name is pretty terrible.  But I don't think our present
      data structure gives us any other way to tell.  If you know of
      some other way, feel free to rewrite this function.  */
-  char *name = TYPE_FN_FIELDLIST_NAME (type, i);
+  const char *name = TYPE_FN_FIELDLIST_NAME(type, i);
 
-  if (strncmp (name, "operator", 8) != 0)
+  if (strncmp(name, "operator", 8) != 0)
     return 0;
 
   name += 8;
-  if (! strchr (" \t\f\n\r", *name))
+  if (! strchr(" \t\f\n\r", *name))
     return 0;
 
-  while (strchr (" \t\f\n\r", *name))
+  while (strchr(" \t\f\n\r", *name))
     name++;
 
-  if (!('a' <= *name && *name <= 'z')
-      && !('A' <= *name && *name <= 'Z')
-      && *name != '_')
+  if (!(('a' <= *name) && (*name <= 'z'))
+      && !(('A' <= *name) && (*name <= 'Z'))
+      && (*name != '_'))
     /* If this doesn't look like the start of an identifier, then it
        isn't a type conversion operator.  */
     return 0;
-  else if (strncmp (name, "new", 3) == 0)
+  else if (strncmp(name, "new", 3) == 0)
     name += 3;
-  else if (strncmp (name, "delete", 6) == 0)
+  else if (strncmp(name, "delete", 6) == 0)
     name += 6;
   else
     /* If it doesn't look like new or delete, it's a type conversion
@@ -441,10 +442,10 @@ is_type_conversion_operator (struct type *type, int i, int j)
     return 1;
 
   /* Is that really the end of the name?  */
-  if (('a' <= *name && *name <= 'z')
-      || ('A' <= *name && *name <= 'Z')
-      || ('0' <= *name && *name <= '9')
-      || *name == '_')
+  if ((('a' <= *name) && (*name <= 'z'))
+      || (('A' <= *name) && (*name <= 'Z'))
+      || (('0' <= *name) && (*name <= '9'))
+      || (*name == '_'))
     /* No, so the identifier following "operator" must be a type name,
        and this is a type conversion operator.  */
     return 1;
@@ -674,28 +675,25 @@ c_type_print_varspec_suffix (struct type *type, struct ui_file *stream,
 
    LEVEL is the number of spaces to indent by.
    We increase it for some recursive calls.  */
-
 void
-c_type_print_base (struct type *type, struct ui_file *stream, int show,
-		   int level)
+c_type_print_base(struct type *type, struct ui_file *stream, int show,
+		  int level)
 {
   int i;
   int len, real_len;
   int lastval;
-  char *mangled_name;
+  const char *mangled_name;
   char *demangled_name;
   char *demangled_no_static;
-  enum
-    {
-      s_none, s_public, s_private, s_protected
-    }
-  section_type;
+  enum possible_secttypes_e {
+    s_none, s_public, s_private, s_protected
+  } section_type;
   int need_access_label = 0;
   int j, len2;
 
   QUIT;
 
-  wrap_here ("    ");
+  wrap_here("    ");
   if (type == NULL)
     {
       fputs_filtered (_("<type unknown>"), stream);
@@ -964,21 +962,21 @@ c_type_print_base (struct type *type, struct ui_file *stream, int show,
 	  /* C++: print out the methods */
 	  for (i = 0; i < len; i++)
 	    {
-	      struct fn_field *f = TYPE_FN_FIELDLIST1 (type, i);
-	      int j, len2 = TYPE_FN_FIELDLIST_LENGTH (type, i);
-	      char *method_name = TYPE_FN_FIELDLIST_NAME (type, i);
-	      char *name = type_name_no_tag (type);
-	      int is_constructor = name && strcmp (method_name, name) == 0;
+	      struct fn_field *f = TYPE_FN_FIELDLIST1(type, i);
+	      int j, len2 = TYPE_FN_FIELDLIST_LENGTH(type, i);
+	      const char *method_name = TYPE_FN_FIELDLIST_NAME(type, i);
+	      const char *name = type_name_no_tag(type);
+	      int is_constructor = (name && (strcmp(method_name, name) == 0));
 	      for (j = 0; j < len2; j++)
 		{
-		  char *physname = TYPE_FN_FIELD_PHYSNAME (f, j);
+		  const char *physname = TYPE_FN_FIELD_PHYSNAME(f, j);
 		  int is_full_physname_constructor =
-		   is_constructor_name (physname)
-		   || is_destructor_name (physname)
-		   || method_name[0] == '~';
+		    (is_constructor_name(physname)
+		     || is_destructor_name(physname)
+		     || (method_name[0] == '~'));
 
-		  /* Do not print out artificial methods.  */
-		  if (TYPE_FN_FIELD_ARTIFICIAL (f, j))
+		  /* Do not print out artificial methods: */
+		  if (TYPE_FN_FIELD_ARTIFICIAL(f, j))
 		    continue;
 
 		  QUIT;
@@ -1061,33 +1059,33 @@ c_type_print_base (struct type *type, struct ui_file *stream, int show,
 		  else
 		    {
 		      char *p;
-		      char *demangled_no_class
-			= remove_qualifiers (demangled_name);
+		      char *demangled_no_class =
+			remove_qualifiers(demangled_name);
 
-		      /* get rid of the `static' appended by the demangler */
-		      p = strstr (demangled_no_class, " static");
+		      /* get rid of the `static' appended by the demangler: */
+		      p = strstr(demangled_no_class, " static");
 		      if (p != NULL)
 			{
-			  int length = p - demangled_no_class;
-			  demangled_no_static = (char *) xmalloc (length + 1);
-			  strncpy (demangled_no_static, demangled_no_class, length);
+			  ptrdiff_t length = (p - demangled_no_class);
+			  demangled_no_static = (char *)xmalloc(length + 1UL);
+			  strncpy(demangled_no_static, demangled_no_class, length);
 			  *(demangled_no_static + length) = '\0';
-			  fputs_filtered (demangled_no_static, stream);
-			  xfree (demangled_no_static);
+			  fputs_filtered(demangled_no_static, stream);
+			  xfree(demangled_no_static);
 			}
 		      else
-			fputs_filtered (demangled_no_class, stream);
-		      xfree (demangled_name);
+			fputs_filtered(demangled_no_class, stream);
+		      xfree(demangled_name);
 		    }
 
-		  if (TYPE_FN_FIELD_STUB (f, j))
-		    xfree (mangled_name);
+		  if (TYPE_FN_FIELD_STUB(f, j))
+		    xfree((void *)mangled_name);
 
-		  fprintf_filtered (stream, ";\n");
+		  fprintf_filtered(stream, ";\n");
 		}
 	    }
 
-	  fprintfi_filtered (level, stream, "}");
+	  fprintfi_filtered(level, stream, "}");
 
 	  if (TYPE_LOCALTYPE_PTR (type) && show >= 0)
 	    fprintfi_filtered (level, stream, _(" (Local at %s:%d)\n"),
@@ -1230,7 +1228,7 @@ c_type_print_base (struct type *type, struct ui_file *stream, int show,
       else
 	{
 	  /* At least for dump_symtab, it is important that this not be
-	     an error ().  */
+	     an error().  */
 	  fprintf_filtered (stream, _("<invalid type code %d>"),
 			    TYPE_CODE (type));
 	}

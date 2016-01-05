@@ -223,8 +223,9 @@ lookup_struct_typedef(const char *name, struct block *block, int noerr)
   return sym;
 }
 
+/* */
 CORE_ADDR
-lookup_objc_class(char *classname)
+lookup_objc_class(const char *classname)
 {
   static struct cached_value *function = NULL;
   struct value *classval;
@@ -280,8 +281,9 @@ lookup_objc_class(char *classname)
   return retval;
 }
 
+/* */
 CORE_ADDR
-lookup_child_selector_nocache(char *selname)
+lookup_child_selector_nocache(const char *selname)
 {
   static struct cached_value *function = (struct cached_value *)NULL;
   struct value *selstring;
@@ -359,7 +361,7 @@ reset_child_selector_cache(void)
    any cached value that might be present. */
 
 CORE_ADDR
-lookup_child_selector(char *selname)
+lookup_child_selector(const char *selname)
 {
   struct selector_entry *entry;
   int hash;
@@ -1374,10 +1376,12 @@ start_msglist(void)
   selname_chain = newsel;
 }
 
+/* */
 void
 add_msglist(struct stoken *str, int addcolon)
 {
-  char *s, *p;
+  char *s;
+  const char *p;
   size_t len, plen;
 
   if (str == 0) {		/* Unnamed arg, or...  */
@@ -1435,7 +1439,7 @@ end_msglist(void)
  * Used for qsorting lists of objc methods (either by class or selector).
  */
 static int
-specialcmp(char *a, char *b)
+specialcmp(const char *a, const char *b)
 {
   while ((*a && (*a != ' ') && (*a != ']'))
          && (*b && (*b != ' ') && (*b != ']')))
@@ -1460,7 +1464,7 @@ specialcmp(char *a, char *b)
 static int
 compare_selectors(const void *a, const void *b)
 {
-  char *aname, *bname;
+  const char *aname, *bname;
 
   aname = SYMBOL_PRINT_NAME(*(struct symbol **)a);
   bname = SYMBOL_PRINT_NAME(*(struct symbol **)b);
@@ -1484,7 +1488,7 @@ compare_selectors(const void *a, const void *b)
  * is sorted and uniqued.
  */
 static void
-selectors_info(char *regexp, int from_tty)
+selectors_info(const char *regexp, int from_tty)
 {
   struct objfile *objfile;
   struct minimal_symbol *msymbol;
@@ -1614,7 +1618,7 @@ selectors_info(char *regexp, int from_tty)
 static int
 compare_classes(const void *a, const void *b)
 {
-  char *aname, *bname;
+  const char *aname, *bname;
 
   aname = SYMBOL_PRINT_NAME(*(struct symbol **)a);
   bname = SYMBOL_PRINT_NAME(*(struct symbol **)b);
@@ -1634,7 +1638,7 @@ compare_classes(const void *a, const void *b)
  * BUGS: will not list a class that has no methods.
  */
 static void
-classes_info(char *regexp, int from_tty)
+classes_info(const char *regexp, int from_tty)
 {
   struct objfile *objfile;
   struct minimal_symbol *msymbol;
@@ -2296,8 +2300,8 @@ objc_setup_safe_print(struct cleanup **cleanup)
 
       if (debug_handcall_setup)
         {
-          char *data = (char *)ui_file_data(gdb_null);
-          if (data == (char *)NULL)
+          const char *data = (const char *)ui_file_data(gdb_null);
+          if (data == (const char *)NULL)
             data = "";
 
           fprintf_unfiltered(gdb_stdout,
@@ -2378,8 +2382,9 @@ objc_setup_safe_print(struct cleanup **cleanup)
   return safe_p;
 }
 
+/* */
 static void
-print_object_command(char *args, int from_tty)
+print_object_command(const char *args, int from_tty)
 {
   struct value *object, *function, *description;
   struct cleanup *cleanup_chain = NULL;
@@ -4321,7 +4326,7 @@ value_objc_target_type (struct value *val, struct block *block,
 
   if (TYPE_CODE (base_type) == TYPE_CODE_CLASS)
     {
-      char *t_field_name;
+      const char *t_field_name;
       short nfields;
 
       t_field_name = NULL;
@@ -4499,8 +4504,8 @@ static int first_bitfield_offset = 0;
 int
 objc_fixup_ivar_offset(struct type *type, int ivar)
 {
-  char *class_name;
-  char *field_name;
+  const char *class_name;
+  const char *field_name;
   char *symbol_name;
   struct minimal_symbol *ivar_sym;
   size_t len;
@@ -5459,14 +5464,16 @@ is_objc_exception_throw_breakpoint(struct breakpoint *b)
 
 static int use_non_blocking_mode = 1;
 
+/* */
 int
 objc_runtime_check_enabled_p(void)
 {
   return use_non_blocking_mode;
 }
 
+/* */
 static void
-set_non_blocking_mode_func(char *args, int from_tty,
+set_non_blocking_mode_func(const char *args, int from_tty,
                            struct cmd_list_element *c)
 {
   /* If we're turning off the non-blocking mode, then we need to
@@ -5477,6 +5484,7 @@ set_non_blocking_mode_func(char *args, int from_tty,
     }
 }
 
+/* */
 void
 _initialize_objc_lang(void)
 {

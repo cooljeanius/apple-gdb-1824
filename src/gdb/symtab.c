@@ -31,7 +31,9 @@
 #include "symfile.h"
 #include "objfiles.h"
 #include "gdbcmd.h"
-#include "call-cmds.h"
+#ifdef ALLOW_OLD_INCLUDES
+# include "call-cmds.h"
+#endif /* ALLOW_OLD_INCLUDES */
 #include "gdb_regex.h"
 #include "expression.h"
 #include "language.h"
@@ -3785,7 +3787,7 @@ find_line_symtab (struct symtab *symtab, int line, int *index, int *exact_match)
     }
 done:
   if (best_linetable == (struct linetable *)NULL)
-    ; /* ??? */
+    warning(_("best_linetable is NULL"));
   if (best_index < 0)
     return NULL;
 

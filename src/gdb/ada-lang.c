@@ -3007,7 +3007,7 @@ ada_resolve_function (struct ada_symbol_info syms[],
    such symbols by their trailing number (__N  or $N).  */
 
 static int
-encoded_ordered_before (char *N0, char *N1)
+encoded_ordered_before(const char *N0, const char *N1)
 {
   if (N1 == NULL)
     return 0;
@@ -3761,8 +3761,8 @@ lesseq_defined_than (struct symbol *sym0, struct symbol *sym1)
       {
         struct type *type0 = SYMBOL_TYPE(sym0);
         struct type *type1 = SYMBOL_TYPE(sym1);
-        char *name0 = SYMBOL_LINKAGE_NAME(sym0);
-        char *name1 = SYMBOL_LINKAGE_NAME(sym1);
+        const char *name0 = SYMBOL_LINKAGE_NAME(sym0);
+        const char *name1 = SYMBOL_LINKAGE_NAME(sym1);
         size_t len0 = strlen(name0);
         return
           ((TYPE_CODE(type0) == TYPE_CODE(type1))
@@ -4233,14 +4233,14 @@ is_package_name (const char *name)
    visible from FUNCTION_NAME.  */
 
 static int
-renaming_is_visible (const struct symbol *sym, char *function_name)
+renaming_is_visible(const struct symbol *sym, const char *function_name)
 {
-  char *scope = xget_renaming_scope (SYMBOL_TYPE (sym));
+  char *scope = xget_renaming_scope(SYMBOL_TYPE(sym));
 
-  make_cleanup (xfree, scope);
+  make_cleanup(xfree, scope);
 
   /* If the rename has been defined in a package, then it is visible.  */
-  if (is_package_name (scope))
+  if (is_package_name(scope))
     return 1;
 
   /* Check that the rename is in the current function scope by checking
@@ -4287,11 +4287,11 @@ renaming_is_visible (const struct symbol *sym, char *function_name)
         the user will be unable to print such rename entities.  */
 
 static int
-remove_out_of_scope_renamings (struct ada_symbol_info *syms,
-                               int nsyms, struct block *current_block)
+remove_out_of_scope_renamings(struct ada_symbol_info *syms,
+                              int nsyms, struct block *current_block)
 {
   struct symbol *current_function;
-  char *current_function_name;
+  const char *current_function_name;
   int i;
 
   /* Extract the function name associated to CURRENT_BLOCK.
@@ -4300,11 +4300,11 @@ remove_out_of_scope_renamings (struct ada_symbol_info *syms,
   if (current_block == NULL)
     return nsyms;
 
-  current_function = block_function (current_block);
+  current_function = block_function(current_block);
   if (current_function == NULL)
     return nsyms;
 
-  current_function_name = SYMBOL_LINKAGE_NAME (current_function);
+  current_function_name = SYMBOL_LINKAGE_NAME(current_function);
   if (current_function_name == NULL)
     return nsyms;
 
@@ -5926,7 +5926,7 @@ ada_find_renaming_symbol (const char *name, struct block *block)
          qualified.  This means we need to prepend the function name
          as well as adding the ``___XR'' suffix to build the name of
          the associated renaming symbol.  */
-      char *function_name = SYMBOL_LINKAGE_NAME(function_sym);
+      const char *function_name = SYMBOL_LINKAGE_NAME(function_sym);
       const size_t function_name_len = strlen(function_name);
       const size_t rename_len = ((function_name_len + 2UL)      /*  "__" */
 				 + (strlen(name) + 6UL) /* "___XR\0" */ );
@@ -6679,9 +6679,9 @@ ada_check_typedef (struct type *type)
     return type;
   else
     {
-      char *name = TYPE_TAG_NAME (type);
-      struct type *type1 = ada_find_any_type (name);
-      return (type1 == NULL) ? type : type1;
+      const char *name = TYPE_TAG_NAME(type);
+      struct type *type1 = ada_find_any_type(name);
+      return ((type1 == NULL) ? type : type1);
     }
 }
 

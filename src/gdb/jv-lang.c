@@ -53,8 +53,8 @@ struct type *java_void_type;
 /* Local function prototypes: */
 extern void _initialize_java_language(void);
 
-static size_t java_demangled_signature_length(char *);
-static void java_demangled_signature_copy(char *, char *);
+static size_t java_demangled_signature_length(const char *);
+static void java_demangled_signature_copy(char *, const char *);
 
 static struct symtab *get_java_class_symtab(void);
 static char *get_java_utf8_name(struct obstack *obstack, struct value *name);
@@ -138,19 +138,21 @@ add_class_symtab_symbol (struct symbol *sym)
 static struct symbol *add_class_symbol (struct type *type, CORE_ADDR addr);
 
 static struct symbol *
-add_class_symbol (struct type *type, CORE_ADDR addr)
+add_class_symbol(struct type *type, CORE_ADDR addr)
 {
   struct symbol *sym;
   sym = (struct symbol *)
-    obstack_alloc (&dynamics_objfile->objfile_obstack, sizeof (struct symbol));
-  memset (sym, 0, sizeof (struct symbol));
-  SYMBOL_LANGUAGE (sym) = language_java;
-  DEPRECATED_SYMBOL_NAME (sym) = TYPE_TAG_NAME (type);
-  SYMBOL_CLASS (sym) = LOC_TYPEDEF;
-  /*  SYMBOL_VALUE (sym) = valu; */
-  SYMBOL_TYPE (sym) = type;
-  SYMBOL_DOMAIN (sym) = STRUCT_DOMAIN;
-  SYMBOL_VALUE_ADDRESS (sym) = addr;
+    obstack_alloc(&dynamics_objfile->objfile_obstack, sizeof(struct symbol));
+  memset(sym, 0, sizeof(struct symbol));
+  SYMBOL_LANGUAGE(sym) = language_java;
+  DEPRECATED_SYMBOL_NAME(sym) = TYPE_TAG_NAME(type);
+  SYMBOL_CLASS(sym) = LOC_TYPEDEF;
+#if 0
+  SYMBOL_VALUE(sym) = valu;
+#endif /* 0 */
+  SYMBOL_TYPE(sym) = type;
+  SYMBOL_DOMAIN(sym) = STRUCT_DOMAIN;
+  SYMBOL_VALUE_ADDRESS(sym) = addr;
   return sym;
 }
 
@@ -338,8 +340,8 @@ struct type *
 java_link_class_type(struct type *type, struct value *clas)
 {
   struct value *temp;
-  char *unqualified_name;
-  char *name = TYPE_TAG_NAME(type);
+  const char *unqualified_name;
+  const char *name = TYPE_TAG_NAME(type);
   int ninterfaces;
   long nfields, nmethods;
   int type_is_object = 0;
@@ -511,13 +513,13 @@ java_link_class_type(struct type *type, struct value *clas)
   methods = NULL;
   for (i = 0; i < nmethods; i++)
     {
-      char *mname;
+      const char *mname;
       int k;
       if (methods == NULL)
 	{
 	  temp = clas;
-	  methods = value_struct_elt (&temp, NULL, "methods", NULL, "structure");
-	  method = value_ind (methods);
+	  methods = value_struct_elt(&temp, NULL, "methods", NULL, "structure");
+	  method = value_ind(methods);
 	}
       else
 	{			/* Re-use method value for next method. */
@@ -608,23 +610,25 @@ get_java_object_header_size (void)
     return TYPE_LENGTH (objtype);
 }
 
+/* */
 int
-is_object_type (struct type *type)
+is_object_type(struct type *type)
 {
-  CHECK_TYPEDEF (type);
-  if (TYPE_CODE (type) == TYPE_CODE_PTR)
+  CHECK_TYPEDEF(type);
+  if (TYPE_CODE(type) == TYPE_CODE_PTR)
     {
-      struct type *ttype = check_typedef (TYPE_TARGET_TYPE (type));
-      char *name;
-      if (TYPE_CODE (ttype) != TYPE_CODE_STRUCT)
+      struct type *ttype = check_typedef(TYPE_TARGET_TYPE(type));
+      const char *name;
+      if (TYPE_CODE(ttype) != TYPE_CODE_STRUCT)
 	return 0;
-      while (TYPE_N_BASECLASSES (ttype) > 0)
-	ttype = TYPE_BASECLASS (ttype, 0);
-      name = TYPE_TAG_NAME (ttype);
-      if (name != NULL && strcmp (name, "java.lang.Object") == 0)
+      while (TYPE_N_BASECLASSES(ttype) > 0)
+	ttype = TYPE_BASECLASS(ttype, 0);
+      name = TYPE_TAG_NAME(ttype);
+      if ((name != NULL) && strcmp(name, "java.lang.Object") == 0)
 	return 1;
-      name = TYPE_NFIELDS (ttype) > 0 ? TYPE_FIELD_NAME (ttype, 0) : (char *) 0;
-      if (name != NULL && strcmp (name, "vtable") == 0)
+      name = ((TYPE_NFIELDS(ttype) > 0)
+	      ? TYPE_FIELD_NAME(ttype, 0) : (const char *)0);
+      if ((name != NULL) && strcmp(name, "vtable") == 0)
 	{
 	  if (java_object_type == NULL)
 	    java_object_type = type;
@@ -665,7 +669,7 @@ java_primitive_type (int signature)
    return that type.  Otherwise, return NULL. */
 
 struct type *
-java_primitive_type_from_name (char *name, int namelen)
+java_primitive_type_from_name(const char *name, int namelen)
 {
   switch (name[0])
     {
@@ -710,7 +714,7 @@ java_primitive_type_from_name (char *name, int namelen)
    signature string SIGNATURE. */
 
 static size_t
-java_demangled_signature_length(char *signature)
+java_demangled_signature_length(const char *signature)
 {
   int array = 0;
   for (; *signature == '['; signature++)
@@ -728,7 +732,7 @@ java_demangled_signature_length(char *signature)
 /* Demangle the Java type signature SIGNATURE, leaving the result in RESULT. */
 
 static void
-java_demangled_signature_copy (char *result, char *signature)
+java_demangled_signature_copy(char *result, const char *signature)
 {
   int array = 0;
   char *ptr;
@@ -744,7 +748,7 @@ java_demangled_signature_copy (char *result, char *signature)
       /* Subtract 2 for 'L' and ';', but add 1 for final nul. */
       signature++;
       ptr = result;
-      for (; *signature != ';' && *signature != '\0'; signature++)
+      for (; (*signature != ';') && (*signature != '\0'); signature++)
 	{
 	  if (*signature == '/')
 	    *ptr++ = '.';
@@ -753,10 +757,10 @@ java_demangled_signature_copy (char *result, char *signature)
 	}
       break;
     default:
-      ptr = TYPE_NAME (java_primitive_type (signature[0]));
-      i = strlen (ptr);
-      strcpy (result, ptr);
-      ptr = result + i;
+      ptr = (char *)TYPE_NAME(java_primitive_type(signature[0]));
+      i = strlen(ptr);
+      strcpy(result, ptr);
+      ptr = (result + i);
       break;
     }
   while (--array >= 0)
@@ -770,10 +774,10 @@ java_demangled_signature_copy (char *result, char *signature)
    as a freshly allocated copy. */
 
 char *
-java_demangle_type_signature (char *signature)
+java_demangle_type_signature(const char *signature)
 {
-  size_t length = java_demangled_signature_length (signature);
-  char *result = (char *)xmalloc(length + 1);
+  size_t length = java_demangled_signature_length(signature);
+  char *result = (char *)xmalloc(length + 1UL);
   java_demangled_signature_copy(result, signature);
   result[length] = '\0';
   return result;
@@ -847,7 +851,7 @@ evaluate_subexp_java (struct type *expect_type, struct expression *exp,
 {
   int pc = *pos;
   int i;
-  char *name;
+  const char *name;
   enum exp_opcode op = exp->elts[*pos].opcode;
   struct value *arg1;
   struct value *arg2;

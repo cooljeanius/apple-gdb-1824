@@ -246,31 +246,30 @@ tui_make_all_invisible (void)
   make_all_visible (0);
 }
 
-/* Function to refresh all the windows currently displayed.  */
-
+/* Function to refresh all the windows currently displayed: */
 void
-tui_refresh_all (struct tui_win_info * * list)
+tui_refresh_all(struct tui_win_info **list)
 {
   enum tui_win_type type;
-  struct tui_gen_win_info * locator = tui_locator_win_info_ptr ();
+  struct tui_gen_win_info *locator = tui_locator_win_info_ptr();
 
-  for (type = SRC_WIN; (type < MAX_MAJOR_WINDOWS); type++)
+  for (type = SRC_WIN; (type < MAX_MAJOR_WINDOWS) && (type <= 9); type++)
     {
       if (list[type] && list[type]->generic.is_visible)
 	{
 	  if (type == SRC_WIN || type == DISASSEM_WIN)
 	    {
-	      touchwin (list[type]->detail.source_info.execution_info->handle);
-	      tui_refresh_win (list[type]->detail.source_info.execution_info);
+	      touchwin(list[type]->detail.source_info.execution_info->handle);
+	      tui_refresh_win(list[type]->detail.source_info.execution_info);
 	    }
-	  touchwin (list[type]->generic.handle);
-	  tui_refresh_win (&list[type]->generic);
+	  touchwin(list[type]->generic.handle);
+	  tui_refresh_win(&list[type]->generic);
 	}
     }
   if (locator->is_visible)
     {
-      touchwin (locator->handle);
-      tui_refresh_win (locator);
+      touchwin(locator->handle);
+      tui_refresh_win(locator);
     }
 }
 
@@ -278,3 +277,7 @@ tui_refresh_all (struct tui_win_info * * list)
 /*********************************
 ** Local Static Functions
 *********************************/
+
+/* (none) */
+
+/* EOF */

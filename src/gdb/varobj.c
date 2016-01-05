@@ -294,7 +294,7 @@ static void uninstall_variable(struct varobj *);
 /* APPLE LOCAL */
 static struct varobj *child_exists(struct varobj *, int index);
 
-static struct varobj *create_child(struct varobj *, int, char *);
+static struct varobj *create_child(struct varobj *, int, const char *);
 
 static void save_child_in_parent(struct varobj *, struct varobj *);
 
@@ -344,7 +344,7 @@ static char *name_of_variable(struct varobj *);
 
 static char *path_expr_of_variable(struct varobj *);
 
-static char *make_name_of_child(struct varobj *, int);
+static const char *make_name_of_child(struct varobj *, int);
 
 static char *path_expr_of_child(struct varobj *, int);
 
@@ -373,7 +373,7 @@ static enum varobj_join_type get_join_type(struct type *type);
 
 static int c_number_of_children(struct varobj *var);
 
-static char *c_make_name_of_child(struct varobj *parent, int index);
+static const char *c_make_name_of_child(struct varobj *parent, int index);
 
 static char *c_path_expr_of_child(struct varobj *parent, int index);
 
@@ -393,7 +393,7 @@ static int cplus_number_of_children(struct varobj *var);
 
 static void cplus_class_num_children(struct type *type, int children[3]);
 
-static char *cplus_make_name_of_child(struct varobj *parent, int index);
+static const char *cplus_make_name_of_child(struct varobj *parent, int index);
 
 static char *cplus_path_expr_of_child(struct varobj *parent, int index);
 
@@ -411,7 +411,7 @@ static char *cplus_value_of_variable(struct varobj *var);
 
 static int java_number_of_children(struct varobj *var);
 
-static char *java_make_name_of_child(struct varobj *parent, int index);
+static const char *java_make_name_of_child(struct varobj *parent, int index);
 
 static char *java_path_expr_of_child(struct varobj *parent, int index);
 
@@ -426,7 +426,7 @@ static int java_variable_editable(struct varobj *var);
 static char *java_value_of_variable(struct varobj *var);
 
 /* FIXME: move these elsewhere: */
-extern int varobj_parse_exp_1(char **, struct block *, int,
+extern int varobj_parse_exp_1(const char **, struct block *, int,
                               struct expression **);
 extern int varobj_evaluate_type(struct expression *, struct value **);
 extern char *varobj_get_type_internal(struct varobj *, int);
@@ -442,7 +442,7 @@ struct language_specific
   int (*number_of_children)(struct varobj * parent);
 
   /* The makes & returns the name of the INDEX'th child of PARENT. */
-  char *(*make_name_of_child)(struct varobj *parent, int index);
+  const char *(*make_name_of_child)(struct varobj *parent, int index);
 
   /* Returns the rooted expression of the INDEX'th child of PARENT: */
   char *(*path_expr_of_child)(struct varobj *parent, int index);
@@ -555,8 +555,8 @@ int varobj_runs_all_threads = 0;
 
 /* Is the variable X one of our "fake" children? */
 #define CPLUS_FAKE_CHILD(x) \
-/* APPLE LOCAL fake child */ \
-((x) != NULL && (x)->fake_child)
+  /* APPLE LOCAL fake child */ \
+  (((x) != NULL) && (x)->fake_child)
 
 
 /* These wrappers of "evaluate_expression" and "evaluate_type" turn off
@@ -564,7 +564,7 @@ int varobj_runs_all_threads = 0;
    up as a "dynamic" type, and we won't notice they have changed.  */
 
 int
-varobj_parse_exp_1(char **stringptr, struct block *block, int comma,
+varobj_parse_exp_1(const char **stringptr, struct block *block, int comma,
                    struct expression **expression)
 {
   struct cleanup *print_closure_cleanup;
@@ -876,10 +876,8 @@ find_frame_addr_in_frame_chain (CORE_ADDR frame_addr)
 }
 
 struct varobj *
-varobj_create (char *objname,
-	       char *expression, CORE_ADDR frame,
-	       struct block *block,
-	       enum varobj_type type)
+varobj_create(char *objname, char *expression, CORE_ADDR frame,
+	      struct block *block, enum varobj_type type)
 {
   struct varobj *var;
   struct frame_info *fi;
@@ -890,11 +888,11 @@ varobj_create (char *objname,
   /* APPLE LOCAL radar 6529939  */
   struct block *superblock;
 
-  /* Fill out a varobj structure for the (root) variable being constructed. */
-  var = new_root_variable ();
-  old_chain = make_cleanup_free_variable (var);
+  /* Fill out a varobj structure for the (root) variable being constructed: */
+  var = new_root_variable();
+  old_chain = make_cleanup_free_variable(var);
 
-  make_cleanup_objfile_init_clear_hitlist ();
+  make_cleanup_objfile_init_clear_hitlist();
 
   /* We are also going to fix the scheduler-locking here so we
      don't end up running other threads.  Note that not only can
@@ -903,13 +901,13 @@ varobj_create (char *objname,
      call. */
 
   if (!varobj_runs_all_threads)
-    schedlock_chain = make_cleanup_set_restore_scheduler_locking_mode (scheduler_locking_on);
+    schedlock_chain = make_cleanup_set_restore_scheduler_locking_mode(scheduler_locking_on);
   else
-    schedlock_chain = make_cleanup (null_cleanup, NULL);
+    schedlock_chain = make_cleanup(null_cleanup, NULL);
 
   if (expression != NULL)
     {
-      char *p;
+      const char *p;
       enum varobj_languages lang;
 
       /* Parse and evaluate the expression, filling in as much
@@ -928,11 +926,11 @@ varobj_create (char *objname,
 	   However, with out that interface change ISAs, such as the
 	   ia64 with its two stacks, won't work.  Similar goes for the
 	   case where there is a frameless function.  */
-	fi = find_frame_addr_in_frame_chain (frame);
+	fi = find_frame_addr_in_frame_chain(frame);
 
 
       if (fi != NULL)
-	var_frame_id = get_frame_id (fi);
+	var_frame_id = get_frame_id(fi);
 
       /* APPLE LOCAL begin radar 6529939  */
       /* If we're trying to create a variable using a block for a
@@ -940,8 +938,7 @@ varobj_create (char *objname,
 	 actually correspond!  */
 
       superblock = block;
-      if ((type == USE_BLOCK_IN_FRAME)
-	  && block)
+      if ((type == USE_BLOCK_IN_FRAME) && block)
 	{
 	  /* For purposes of the test below, find the outermost
 	     block for the current function.  */
@@ -951,12 +948,11 @@ varobj_create (char *objname,
 	}
 
 
-      if (type == USE_BLOCK_IN_FRAME
-	  && block && fi
-	  && ((get_frame_pc (fi) <  superblock->startaddr)
-	      || get_frame_pc (fi) > superblock->endaddr))
+      if ((type == USE_BLOCK_IN_FRAME) && (block && fi)
+	  && ((get_frame_pc(fi) <  superblock->startaddr)
+	      || (get_frame_pc(fi) > superblock->endaddr)))
 	{
-	  warning ("Attempting to create USE_BLOCK_IN_FRAME variable with block that isn't in the frame.");
+	  warning("Attempting to create USE_BLOCK_IN_FRAME variable with block that isn't in the frame.");
 	  goto error_cleanup;
 	}
       /* APPLE LOCAL end radar 6529939  */
@@ -969,16 +965,16 @@ varobj_create (char *objname,
 	{
 	  if (type == USE_BLOCK_IN_FRAME)
 	    {
-	      warning ("Attempting to create USE_BLOCK_IN_FRAME variable with NULL block.");
+	      warning("Attempting to create USE_BLOCK_IN_FRAME variable with NULL block.");
 	      goto error_cleanup;
 	    }
 	  else if (type == NO_FRAME_NEEDED)
 	    {
-	      warning ("Attempting to create NO_FRAME_NEEDED variable with NULL block.");
+	      warning("Attempting to create NO_FRAME_NEEDED variable with NULL block.");
 	      goto error_cleanup;
 	    }
 	  else if (fi != NULL)
-	    block = get_frame_block (fi, 0);
+	    block = get_frame_block(fi, 0);
 	}
 
       p = expression;
@@ -998,22 +994,23 @@ varobj_create (char *objname,
          create a dummy here that will get filled in later when
          we get to a frame that actually has this variable.  */
 
-      if (varobj_parse_exp_1 (&p, block, 0, &var->root->exp))
+      if (varobj_parse_exp_1(&p, block, 0, &var->root->exp))
 	{
-
 	  /* Don't allow variables to be created for types. */
 	  if (var->root->exp->elts[0].opcode == OP_TYPE)
 	    {
 	      /* APPLE LOCAL: suppress this warning, since Xcode does this
-		 when raising tooltips over the cast part of an expression.
-		 warning ("Attempt to use a type name as an expression."); */
+		 when raising tooltips over the cast part of an expression: */
+#if !(defined(__APPLE__) || defined(__XCODE__))
+	      warning("Attempt to use a type name as an expression.");
+#endif /* !(__APPLE__ || __XCODE__) */
 	      goto error_cleanup;
 	    }
 	}
       else if (var->root->use_selected_frame != 1)
 	goto error_cleanup;
 
-      var->format = variable_default_display (var);
+      var->format = variable_default_display(var);
       var->root->valid_block = innermost_block;
 
       /* APPLE LOCAL: Cache expr_len so we don't compute it twice.  */
@@ -1053,7 +1050,7 @@ varobj_create (char *objname,
              exist yet...  */
 
 
-	  if ((var->root->use_selected_frame || varobj_pc_in_valid_block_p (var)
+	  if ((var->root->use_selected_frame || varobj_pc_in_valid_block_p(var)
 	       || type == NO_FRAME_NEEDED)
 	      && varobj_evaluate_expression (var->root->exp, &var->value))
 	    {
@@ -1317,10 +1314,10 @@ varobj_get_num_children (struct varobj *var)
    the return code is the number of such children or -1 on error */
 
 int
-varobj_list_children (struct varobj *var, struct varobj ***childlist)
+varobj_list_children(struct varobj *var, struct varobj ***childlist)
 {
   struct varobj *child;
-  char *name;
+  const char *name;
   int i;
 
   /* sanity check: have we been passed a pointer? */
@@ -1506,7 +1503,7 @@ varobj_get_value(struct varobj *var)
 /* Note: Invokes functions that can call error() */
 
 int
-varobj_set_value (struct varobj *var, char *expression)
+varobj_set_value(struct varobj *var, char *expression)
 {
   struct value *val;
   int error = 0;
@@ -1522,9 +1519,9 @@ varobj_set_value (struct varobj *var, char *expression)
 
   schedlock_chain = make_cleanup_set_restore_scheduler_locking_mode(scheduler_locking_on);
 
-  if (var->value != NULL && variable_editable(var) && !var->error)
+  if ((var->value != NULL) && variable_editable(var) && !var->error)
     {
-      char *s = expression;
+      const char *s = expression;
 
       input_radix = 10;		/* ALWAYS reset to decimal temporarily */
 
@@ -2053,17 +2050,17 @@ child_exists (struct varobj *var, int index)
 
 /* Create and install a child of the parent of the given name */
 static struct varobj *
-create_child (struct varobj *parent, int index, char *name)
+create_child(struct varobj *parent, int index, const char *name)
 {
   struct varobj *child;
   char *childs_name;
   enum varobj_type_change type_changed;
   struct type *target;
 
-  child = new_variable ();
+  child = new_variable();
 
   /* name is allocated by make_name_of_child */
-  child->name = name;
+  child->name = (char *)name;
   child->index = index;
   child->parent = parent;
   child->root = parent->root;
@@ -2664,25 +2661,25 @@ name_of_variable (struct varobj *var)
    (and if the language is one that allows type casting), and if so return
    a path expr for the varobj that casts it to its dynamic type.  */
 static char *
-path_expr_of_root (struct varobj *var)
+path_expr_of_root(struct varobj *var)
 {
   char *path_expr = var->name;
-  char *dynamic_expr;
+  const char *dynamic_expr;
   int dynamic_expr_len;
   int root_name_len;
 
-  if (var->root->lang->language != vlang_cplus
-      && var->root->lang->language != vlang_c)
+  if ((var->root->lang->language != vlang_cplus)
+      && (var->root->lang->language != vlang_c))
     return path_expr;
 
-  if (varobj_use_dynamic_type != 0
-      && var->dynamic_type != NULL
-      && var->dynamic_type != var->type)
+  if ((varobj_use_dynamic_type != 0)
+      && (var->dynamic_type != NULL)
+      && (var->dynamic_type != var->type))
     {
       struct type *root_type = NULL;
       int root_is_ptr;
 
-      root_type = get_type_deref (var, &root_is_ptr);
+      root_type = get_type_deref(var, &root_is_ptr);
       if (root_is_ptr)
 	{
 	  const char *format = "(('%s' *) (%s))";
@@ -2703,6 +2700,8 @@ path_expr_of_root (struct varobj *var)
 			   var->name);
 		}
 	    }
+	  else
+	    warning(_("NULL dynamic_expr for root_type of varobj"));
 	}
     }
 
@@ -2742,7 +2741,7 @@ path_expr_of_variable(struct varobj *var)
 /* APPLE LOCAL end */
 
 /* What is the name of the INDEX'th child of VAR? Returns a malloc'd string. */
-static char *
+static const char *
 make_name_of_child(struct varobj *var, int index)
 {
   return (*var->root->lang->make_name_of_child)(var, index);
@@ -3188,13 +3187,14 @@ c_number_of_children (struct varobj *var)
   return children;
 }
 
-static char *
+/* */
+static const char *
 c_make_name_of_child(struct varobj *parent, int index)
 {
   struct type *type;
   struct type *target;
-  char *name;
-  char *string;
+  const char *name;
+  const char *string;
 
   type = get_type(parent);
   target = get_target_type(type);
@@ -3210,47 +3210,48 @@ c_make_name_of_child(struct varobj *parent, int index)
 
     case TYPE_CODE_STRUCT:
     case TYPE_CODE_UNION:
-      string = TYPE_FIELD_NAME (type, index);
-      name = savestring (string, strlen (string));
+      string = TYPE_FIELD_NAME(type, index);
+      name = savestring(string, strlen(string));
       break;
 
     case TYPE_CODE_PTR:
-      switch (TYPE_CODE (target))
+      switch (TYPE_CODE(target))
 	{
 	case TYPE_CODE_STRUCT:
 	case TYPE_CODE_UNION:
-	  string = TYPE_FIELD_NAME (target, index);
-	  name = savestring (string, strlen (string));
+	  string = TYPE_FIELD_NAME(target, index);
+	  name = savestring(string, strlen(string));
 	  break;
 
 	default:
-	  name = xstrprintf ("*%s", parent->name);
+	  name = xstrprintf("*%s", parent->name);
 	  break;
 	}
       break;
     case TYPE_CODE_REF:
-      switch (TYPE_CODE (target))
+      switch (TYPE_CODE(target))
 	{
 	case TYPE_CODE_STRUCT:
 	case TYPE_CODE_UNION:
-	  string = TYPE_FIELD_NAME (target, index);
-	  name = savestring (string, strlen (string));
+	  string = TYPE_FIELD_NAME(target, index);
+	  name = savestring(string, strlen(string));
 	  break;
 
 	default:
-	  name = xstrprintf ("*%s", parent->name);
+	  name = xstrprintf("*%s", parent->name);
 	  break;
 	}
       break;
 
     default:
-      /* This should not happen */
-      name = xstrdup ("???");
+      /* This should not happen: */
+      name = xstrdup("???");
     }
 
   return name;
 }
 
+/* */
 static char *
 c_path_expr_of_child (struct varobj *parent, int index)
 {
@@ -3431,42 +3432,42 @@ c_value_of_root (struct varobj **var_handle, enum varobj_type_change *type_chang
    structures.  */
 
 static struct type *
-varobj_lookup_struct_elt_type_by_index (struct varobj *parent, int index)
+varobj_lookup_struct_elt_type_by_index(struct varobj *parent, int index)
 {
   struct type *type;
   int type_index;
   char *type_for_printing;
 
-  if (CPLUS_FAKE_CHILD (parent))
+  if (CPLUS_FAKE_CHILD(parent))
     {
-      type_index = varobj_get_type_index_from_fake_child (parent, index);
-      type = get_type (parent->parent);
+      type_index = varobj_get_type_index_from_fake_child(parent, index);
+      type = get_type(parent->parent);
     }
   else
     {
-      type = get_type (parent);
+      type = get_type(parent);
       type_index = index;
     }
 
   for (;;)
     {
-      CHECK_TYPEDEF (type);
-      if (TYPE_CODE (type) != TYPE_CODE_PTR
-	  && TYPE_CODE (type) != TYPE_CODE_REF)
+      CHECK_TYPEDEF(type);
+      if ((TYPE_CODE(type) != TYPE_CODE_PTR)
+	  && (TYPE_CODE(type) != TYPE_CODE_REF))
 	break;
-      type = TYPE_TARGET_TYPE (type);
+      type = TYPE_TARGET_TYPE(type);
     }
 
-  if (TYPE_CODE (type) != TYPE_CODE_STRUCT &&
-      TYPE_CODE (type) != TYPE_CODE_UNION)
+  if ((TYPE_CODE(type) != TYPE_CODE_STRUCT)
+      && (TYPE_CODE(type) != TYPE_CODE_UNION))
     {
-      target_terminal_ours ();
-      gdb_flush (gdb_stdout);
-      type_for_printing = type_sprint (type, "", -1);
-      make_cleanup (xfree, type_for_printing);
-      error ("Type %s is not a structure or union type.", type_for_printing);
+      target_terminal_ours();
+      gdb_flush(gdb_stdout);
+      type_for_printing = type_sprint(type, "", -1);
+      make_cleanup(xfree, type_for_printing);
+      error("Type %s is not a structure or union type.", type_for_printing);
     }
-  return TYPE_FIELD_TYPE (type, type_index);
+  return TYPE_FIELD_TYPE(type, type_index);
 }
 
 /* APPLE LOCAL: varobj_value_struct_elt_by_index does the same
@@ -3805,8 +3806,8 @@ c_type_of_child(struct varobj *parent, int index)
       break;
 
     default:
-      /* This should not happen as only the above types have children */
-      warning (_("Child of parent whose type does not allow children"));
+      /* This should not happen, as only the above types have children: */
+      warning(_("Child of parent whose type does not allow children"));
       /* FIXME: Can we still go on? */
       type = NULL;
       error("Child of parent: \"%s\" whose type: \"%d\" does not allow children",
@@ -4013,9 +4014,8 @@ cplus_class_num_children (struct type *type, int children[3])
 /* Compute the index in the type structure TYPE of the NUM'th field
    of protection level PROT */
 static int
-cplus_real_type_index_for_fake_child_index (struct type *type,
-                                      enum vsections prot,
-                                      int num)
+cplus_real_type_index_for_fake_child_index(struct type *type,
+					   enum vsections prot, int num)
 {
   int num_found = 0;
   int foundit = 0;
@@ -4029,7 +4029,7 @@ cplus_real_type_index_for_fake_child_index (struct type *type,
             /* If we have a virtual table pointer, omit it. */
             if (TYPE_VPTR_BASETYPE (type) == type
 	        && TYPE_VPTR_FIELDNO (type) == i)
-	        continue;
+	      continue;
 	    /* APPLE LOCAL: Don't include static members in the
 	       object printing.  */
 	    if (TYPE_FIELD_STATIC (type, i))
@@ -4046,15 +4046,15 @@ cplus_real_type_index_for_fake_child_index (struct type *type,
                 else
 	          num_found++;
               }
-            }
-          break;
+	  }
+	break;
       case v_protected:
         for (i = TYPE_N_BASECLASSES (type); i < TYPE_NFIELDS (type); i++)
           {
             /* If we have a virtual table pointer, omit it. */
             if (TYPE_VPTR_BASETYPE (type) == type
 	        && TYPE_VPTR_FIELDNO (type) == i)
-	        continue;
+	      continue;
 	    /* APPLE LOCAL: Don't include static members in the
 	       object printing.  */
 	    if (TYPE_FIELD_STATIC (type, i))
@@ -4070,15 +4070,15 @@ cplus_real_type_index_for_fake_child_index (struct type *type,
                 else
 	          num_found++;
               }
-            }
-          break;
+	  }
+	break;
       case v_private:
         for (i = TYPE_N_BASECLASSES (type); i < TYPE_NFIELDS (type); i++)
           {
             /* If we have a virtual table pointer, omit it. */
             if (TYPE_VPTR_BASETYPE (type) == type
 	        && TYPE_VPTR_FIELDNO (type) == i)
-	        continue;
+	      continue;
 	    /* APPLE LOCAL: Don't include static members in the
 	       object printing.  */
 	    if (TYPE_FIELD_STATIC (type, i))
@@ -4094,20 +4094,21 @@ cplus_real_type_index_for_fake_child_index (struct type *type,
                 else
 	          num_found++;
               }
-            }
-          break;
+	  }
+	break;
     }
 
-    if (!foundit)
-      return -1;
+  if (!foundit)
+    return -1;
 
-    return i;
- }
+  return i;
+}
 
-static char *
-cplus_make_name_of_child (struct varobj *parent, int index)
+/* */
+static const char *
+cplus_make_name_of_child(struct varobj *parent, int index)
 {
-  char *name;
+  const char *name;
   struct type *type;
 
   if (CPLUS_FAKE_CHILD(parent))
@@ -4124,14 +4125,14 @@ cplus_make_name_of_child (struct varobj *parent, int index)
     {
     case TYPE_CODE_STRUCT:
     case TYPE_CODE_UNION:
-      if (CPLUS_FAKE_CHILD (parent))
+      if (CPLUS_FAKE_CHILD(parent))
 	{
-	  int type_index = varobj_get_type_index_from_fake_child (parent, index);
-	  name = TYPE_FIELD_NAME (type, type_index);
+	  int type_index = varobj_get_type_index_from_fake_child(parent, index);
+	  name = TYPE_FIELD_NAME(type, type_index);
 	}
-      else if (index < TYPE_N_BASECLASSES (type))
+      else if (index < TYPE_N_BASECLASSES(type))
 	/* We are looking up the name of a base class */
-	name = TYPE_FIELD_NAME (type, index);
+	name = TYPE_FIELD_NAME(type, index);
       else
 	{
 	  int children[3];
@@ -4142,7 +4143,7 @@ cplus_make_name_of_child (struct varobj *parent, int index)
 
 	     The special "fake" children are always output by varobj in
 	     this order. So if INDEX == 2, it MUST be "protected". */
-	  index -= TYPE_N_BASECLASSES (type);
+	  index -= TYPE_N_BASECLASSES(type);
           switch (index)
             {
 	    case 0:
@@ -4192,17 +4193,18 @@ cplus_make_name_of_child (struct varobj *parent, int index)
   return name;
 }
 
+/* */
 static char *
 cplus_path_expr_of_child (struct varobj *parent, int index)
 {
   char *path_expr;
   struct type *type;
   int children[3];
-  struct varobj *child = child_exists (parent, index);
-  char *parent_expr = path_expr_of_variable (parent);
-  int parent_len = strlen (parent_expr);
+  struct varobj *child = child_exists(parent, index);
+  char *parent_expr = path_expr_of_variable(parent);
+  size_t parent_len = strlen(parent_expr);
   int child_len;
-  char *child_name;
+  const char *child_name;
   int is_ptr;
 
   if (child == NULL)
@@ -4218,8 +4220,8 @@ cplus_path_expr_of_child (struct varobj *parent, int index)
   /* The path expression for a fake child is just the parent,
      that way we can just concatenate the fake child's expr and
      its real children. */
-  if (CPLUS_FAKE_CHILD (child))
-      return parent_expr;
+  if (CPLUS_FAKE_CHILD(child))
+    return parent_expr;
 
   if (CPLUS_FAKE_CHILD (parent))
     {
@@ -4249,7 +4251,7 @@ cplus_path_expr_of_child (struct varobj *parent, int index)
 	  char *parent_name = name_of_variable (parent);
 	  int child_is_ptr;
 	  int dynamic_expr_len, join_expr_len;
-	  char *dynamic_expr, *join_expr;
+	  const char *dynamic_expr, *join_expr;
 
 	  if (strcmp (parent_name, "private") == 0)
             prot = v_private;
@@ -4355,19 +4357,19 @@ cplus_path_expr_of_child (struct varobj *parent, int index)
 	    case 0:
 	      if (children[v_public] != 0)
 		{
-		  path_expr = "public";
+		  path_expr = (char *)"public";
 		  break;
 		}
 	    case 1:
 	      if (children[v_private] != 0)
 		{
-		  path_expr = "private";
+		  path_expr = (char *)"private";
 		  break;
 		}
 	    case 2:
 	      if (children[v_protected] != 0)
 		{
-		  path_expr = "protected";
+		  path_expr = (char *)"protected";
 		  break;
 		}
 	    default:
@@ -4391,11 +4393,14 @@ cplus_path_expr_of_child (struct varobj *parent, int index)
   return path_expr;
 }
 
+/* */
 static struct value *
 cplus_value_of_root (struct varobj **var_handle, enum varobj_type_change *type_changed)
 {
   return c_value_of_root (var_handle, type_changed);
 }
+
+/* */
 static struct value *
 cplus_value_of_child (struct varobj *parent, int index, int *lookup_dynamic_type)
 {
@@ -4604,14 +4609,16 @@ java_number_of_children (struct varobj *var)
   return cplus_number_of_children (var);
 }
 
-static char *
+/* */
+static const char *
 java_make_name_of_child(struct varobj *parent, int index)
 {
-  char *name, *p;
+  const char *name;
+  char *p;
 
   name = cplus_make_name_of_child(parent, index);
   /* Escape any periods in the name... */
-  p = name;
+  p = (char *)name;
 
   gdb_assert(p != NULL);
   
@@ -4654,6 +4661,7 @@ java_value_of_variable (struct varobj *var)
 {
   return cplus_value_of_variable (var);
 }
+
 static char *
 java_path_expr_of_child (struct varobj *parent, int index)
 {
@@ -4694,3 +4702,5 @@ When non-zero, varobj debugging is enabled."),
 			    show_varobjdebug,
 			    &setdebuglist, &showdebuglist);
 }
+
+/* EOF */

@@ -671,7 +671,7 @@ tui_resize_all (void)
 
 #ifdef HAVE_RESIZE_TERM
       resize_term (screenheight, screenwidth);
-#endif
+#endif /* HAVE_RESIZE_TERM */
       /* turn keypad off while we resize */
       if (win_with_focus != TUI_CMD_WIN)
 	keypad (TUI_CMD_WIN->generic.handle, FALSE);
@@ -787,19 +787,19 @@ tui_resize_all (void)
 	  break;
 	}
       /*
-         ** Now remove all invisible windows, and their content so that they get
-         ** created again when called for with the new size
+      ** Now remove all invisible windows, and their content so that they get
+      ** created again when called for with the new size
        */
       for (win_type = SRC_WIN; (win_type < MAX_MAJOR_WINDOWS); win_type++)
 	{
-	  if (win_type != CMD_WIN && (tui_win_list[win_type] != NULL)
+	  if ((win_type != CMD_WIN) && (tui_win_list[win_type] != NULL)
 	      && !tui_win_list[win_type]->generic.is_visible)
 	    {
-	      tui_free_window (tui_win_list[win_type]);
-	      tui_win_list[win_type] = (struct tui_win_info *) NULL;
+	      tui_free_window(tui_win_list[win_type]);
+	      tui_win_list[win_type] = (struct tui_win_info *)NULL;
 	    }
 	}
-      tui_set_win_resized_to (TRUE);
+      tui_set_win_resized_to(TRUE);
       /* turn keypad back on, unless focus is in the command window */
       if (win_with_focus != TUI_CMD_WIN)
 	keypad (TUI_CMD_WIN->generic.handle, TRUE);
@@ -940,7 +940,7 @@ tui_all_windows_info(const char *arg, int from_tty)
   enum tui_win_type type;
   struct tui_win_info *win_with_focus = tui_win_with_focus();
 
-  for (type = SRC_WIN; (type < MAX_MAJOR_WINDOWS); type++)
+  for (type = SRC_WIN; (type < MAX_MAJOR_WINDOWS) && (type <= 9); type++)
     if (tui_win_list[type] && tui_win_list[type]->generic.is_visible)
       {
 	if (win_with_focus == tui_win_list[type])
@@ -1129,14 +1129,14 @@ tui_adjust_win_heights(struct tui_win_info *primary_win_info, int new_height)
       if (new_height != primary_win_info->generic.height)
 	{
 	  int diff;
-	  struct tui_win_info * win_info;
-	  struct tui_gen_win_info * locator = tui_locator_win_info_ptr ();
-	  enum tui_layout_type cur_layout = tui_current_layout ();
+	  struct tui_win_info *win_info;
+	  struct tui_gen_win_info *locator = tui_locator_win_info_ptr();
+	  enum tui_layout_type cur_layout = tui_current_layout();
 
 	  diff = (new_height - primary_win_info->generic.height) * (-1);
 	  if (cur_layout == SRC_COMMAND || cur_layout == DISASSEM_COMMAND)
 	    {
-	      struct tui_win_info * src_win_info;
+	      struct tui_win_info *src_win_info;
 
 	      make_invisible_and_set_new_height (primary_win_info, new_height);
 	      if (primary_win_info->generic.type == CMD_WIN)
@@ -1149,8 +1149,9 @@ tui_adjust_win_heights(struct tui_win_info *primary_win_info, int new_height)
 		  win_info = tui_win_list[CMD_WIN];
 		  src_win_info = primary_win_info;
 		}
-	      make_invisible_and_set_new_height (win_info,
-					     win_info->generic.height + diff);
+	      make_invisible_and_set_new_height(win_info,
+						(win_info->generic.height
+						 + diff));
 	      TUI_CMD_WIN->generic.origin.y = locator->origin.y + 1;
 	      make_visible_with_new_height (win_info);
 	      make_visible_with_new_height (primary_win_info);

@@ -1,4 +1,4 @@
-/* Output generating routines for GDB CLI.
+/* cli-out.h: Output generating routines for GDB CLI.
    Copyright 1999, 2000 Free Software Foundation, Inc.
    Contributed by Cygnus Solutions.
 
@@ -24,10 +24,14 @@
 
 struct ui_file;
 
-extern struct ui_out *cli_out_new (struct ui_file *stream);
-extern struct ui_out *cli_quoted_out_new (struct ui_file *stream);
+extern struct ui_out *cli_out_new(struct ui_file *stream);
+extern struct ui_out *cli_quoted_out_new(struct ui_file *stream);
 
-extern struct ui_file *cli_out_set_stream (struct ui_out *uiout,
-					   struct ui_file *stream);
+extern struct ui_file *cli_out_set_stream(struct ui_out *uiout,
+					  struct ui_file *stream);
 
-#endif
+extern int cli_out_c_inited;
+
+#endif /* !CLI_OUT_H */
+
+/* EOF */

@@ -383,7 +383,7 @@ static void
 complete_symtab(const char *name, CORE_ADDR start_addr, unsigned int size)
 {
   if (last_source_file != NULL)
-    xfree(last_source_file);
+    xfree((void *)last_source_file);
   last_source_file = savestring(name, strlen(name));
   current_source_start_addr = start_addr;
   current_source_end_addr = (start_addr + size);
@@ -1457,7 +1457,7 @@ patch_opaque_types (struct symtab *s)
 	  TYPE_CODE (SYMBOL_TYPE (real_sym)) == TYPE_CODE_PTR &&
 	  TYPE_LENGTH (TYPE_TARGET_TYPE (SYMBOL_TYPE (real_sym))) != 0)
 	{
-	  char *name = DEPRECATED_SYMBOL_NAME (real_sym);
+	  const char *name = DEPRECATED_SYMBOL_NAME(real_sym);
 	  int hash = hashname (name);
 	  struct symbol *sym, *prev;
 

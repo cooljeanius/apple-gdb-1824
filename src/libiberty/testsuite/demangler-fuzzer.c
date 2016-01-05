@@ -61,8 +61,7 @@ main (int argc, char *argv[])
 
   program_name = argv[0];
 
-  do
-    {
+  do {
       optchr = getopt (argc, argv, "hs:m:t:");
       switch (optchr)
 	{
@@ -83,8 +82,7 @@ main (int argc, char *argv[])
 	  maxcount = atoi (optarg);
 	  break;
 	}
-    }
-  while (optchr != -1);
+  } while (optchr != -1);
 
   if (!seed_set)
     seed = time (NULL);
