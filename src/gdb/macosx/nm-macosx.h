@@ -1,4 +1,4 @@
-/* APPLE LOCAL file Darwin */
+/* APPLE LOCAL file for Darwin: nm-macosx.h */
 /* Native support for Mac OS X for GDB, the GNU debugger.
    Copyright (C) 1997-2002,
    Free Software Foundation, Inc.
@@ -100,3 +100,5 @@ char **macosx_process_completer (char *text, char *word);
 #define NM_NEXTSTEP
 
 #endif /* _NM_NEXTSTEP_H_ */
+
+/* EOF */

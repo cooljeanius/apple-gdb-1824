@@ -90,7 +90,7 @@ to use @file{host-aout.c}, specify:
        TDEPFILES= host-aout.o trad-core.o
 @end example
 
-in the @file{config/@var{XXX}.mt} file, and modify @file{configure.in}
+in the @file{config/@var{XXX}.mt} file, and modify @file{configure.ac}
 to use the
 @file{@var{XXX}.mt} file (by setting "@code{bfd_target=XXX}") when your
 configuration is selected.

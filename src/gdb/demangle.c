@@ -60,12 +60,13 @@ static void
 show_demangling_style_names(struct ui_file *file, int from_tty,
 			    struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("The current C++ demangling style is \"%s\".\n"),
-		    value);
+  fprintf_filtered(file, _("The current C++ demangling style is \"%s\".\n"),
+		   value);
 }
 
 
-static void set_demangling_command (char *, int, struct cmd_list_element *);
+static void set_demangling_command(const char *, int,
+				   struct cmd_list_element *);
 
 /* Set current demangling style.  Called by the "set demangle-style"
    command after it has updated the current_demangling_style_string to
@@ -84,7 +85,8 @@ static void set_demangling_command (char *, int, struct cmd_list_element *);
    a malloc'd string, even if it is a null-string. */
 
 static void
-set_demangling_command (char *ignore, int from_tty, struct cmd_list_element *c)
+set_demangling_command(const char *ignore, int from_tty,
+		       struct cmd_list_element *c)
 {
   const struct demangler_engine *dem;
 
@@ -156,7 +158,8 @@ set_demangling_style(const char *style)
       xfree(current_demangling_style_string);
     }
   current_demangling_style_string = savestring(style, strlen(style));
-  set_demangling_command((char *)NULL, 0, (struct cmd_list_element *)NULL);
+  set_demangling_command((const char *)NULL, 0,
+			 (struct cmd_list_element *)NULL);
 }
 
 /* G++ uses a special character to indicate certain internal names.  Which

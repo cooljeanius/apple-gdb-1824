@@ -6694,7 +6694,7 @@ remote_macosx_query_step_packet_supported(void)
 {
   int result = 0;
   struct remote_state *rs = get_remote_state();
-  char *buf = alloca(rs->remote_packet_size);
+  char *buf = (char *)alloca(rs->remote_packet_size);
   int old_remote_timeout;
   int timed_out;
   putpkt("qStepPacketSupported");

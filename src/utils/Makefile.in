@@ -312,36 +312,36 @@ check-wince: configure-wince
 configure-amd-udi: amd-udi/Makefile
 amd-udi/Makefile: config.status
 	test -d amd-udi || mkdir amd-udi ; \
-	cd amd-udi && $(abs_srcdir)/amd-udi/configure $(subconfigure_args)/amd-udi
+	unset CPP && cd amd-udi && $(abs_srcdir)/amd-udi/configure $(subconfigure_args)/amd-udi
 .PHONY: configure-amd-udi
 
 configure-misc: misc/Makefile
 misc/Makefile: config.status
 	test -d misc || mkdir misc ; \
-	cd misc && $(abs_srcdir)/misc/configure $(subconfigure_args)/misc
+	unset CPP && cd misc && $(abs_srcdir)/misc/configure $(subconfigure_args)/misc
 .PHONY: configure-misc
 
 configure-msdos: msdos/Makefile
 msdos/Makefile: config.status
 	test -d msdos || mkdir msdos ; \
-	cd msdos && $(abs_srcdir)/msdos/configure $(subconfigure_args)/msdos
+	unset CPP && cd msdos && $(abs_srcdir)/msdos/configure $(subconfigure_args)/msdos
 .PHONY: configure-msdos
 
 configure-spu: spu/Makefile
 spu/Makefile: config.status
 	test -d spu || mkdir spu ; \
-	cd spu && $(abs_srcdir)/spu/configure $(subconfigure_args)/spu
+	unset CPP && cd spu && $(abs_srcdir)/spu/configure $(subconfigure_args)/spu
 .PHONY: configure-spu
 
 configure-sparclite: sparclite/Makefile
 sparclite/Makefile: config.status
 	test -d sparclite || mkdir sparclite ; \
-	cd sparclite && $(abs_srcdir)/sparclite/configure $(subconfigure_args)/sparclite
+	unset CPP && cd sparclite && $(abs_srcdir)/sparclite/configure $(subconfigure_args)/sparclite
 .PHONY: configure-sparclite
 
 configure-wince: wince/Makefile
 wince/Makefile: config.status
 	test -d wince || mkdir wince ; \
-	cd wince && $(abs_srcdir)/wince/configure $(subconfigure_args)/wince
+	unset CPP && cd wince && $(abs_srcdir)/wince/configure $(subconfigure_args)/wince
 .PHONY: configure-wince
 

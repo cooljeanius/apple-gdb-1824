@@ -41,4 +41,6 @@ enum ptracereq {
 	PTRACE_GETFPAREGS,		/* 20, get all fpa regs */
 	PTRACE_SETFPAREGS		/* 21, set all fpa regs */
 };
-#endif !_PTRACE
+#endif /* !_PTRACE */
+
+/* EOF */

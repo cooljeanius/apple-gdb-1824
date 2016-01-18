@@ -43,10 +43,10 @@ struct objfile;
 
 EXTERN struct symbol *global_sym_chain[HASHSIZE];
 
-extern void common_block_start (char *, struct objfile *);
-extern void common_block_end (struct objfile *);
+extern void common_block_start(const char *, struct objfile *);
+extern void common_block_end(struct objfile *);
 
-void cleanup_undefined_fields (void);
+void cleanup_undefined_fields(void);
 
 /* Kludge for xcoffread.c */
 
@@ -136,23 +136,23 @@ extern struct type **dbx_lookup_type (int[2], struct objfile *objfile);
 extern long read_number (char **, int);
 
 /* APPLE LOCAL symbol prefixes */
-extern struct symbol *define_symbol (CORE_ADDR, char *, const char *, int, int,
-				     struct objfile *);
+extern struct symbol *define_symbol(CORE_ADDR, const char *, const char *, int,
+				    int, struct objfile *);
 
 /* APPLE LOCAL: This is added to read stabs in .o files for code that gets
    elided from the final linked image.  */
-void process_symbol_types_only (char *string, const char *prefix,
-                          int desc, int type, struct objfile *objfile);
+void process_symbol_types_only(const char *string, const char *prefix,
+			       int desc, int type, struct objfile *objfile);
 
-extern void stabsread_init (void);
+extern void stabsread_init(void);
 
-extern void stabsread_new_init (void);
+extern void stabsread_new_init(void);
 
-extern void start_stabs (void);
+extern void start_stabs(void);
 
-extern void end_stabs (void);
+extern void end_stabs(void);
 
-extern void finish_global_stabs (struct objfile *objfile);
+extern void finish_global_stabs(struct objfile *objfile);
 
 /* COFF files can have multiple .stab sections, if they are linked
    using --split-by-reloc.  This linked list is used to pass the
@@ -179,11 +179,11 @@ extern void add_oso_pst_to_list(struct oso_pst_list *list,
 extern void end_oso_pst_list(struct oso_pst_list *list,
                              struct objfile *objfile);
 
-extern int parse_archive_name(char *oso_name, char **archive_name,
+extern int parse_archive_name(const char *oso_name, char **archive_name,
                               char **module_name);
 
 extern struct partial_symtab *end_psymtab(struct partial_symtab *pst,
-					  char **include_list,
+					  const char **include_list,
 					  int num_includes,
 					  int capping_symbol_offset,
 					  CORE_ADDR capping_text,
@@ -194,7 +194,7 @@ extern struct partial_symtab *end_psymtab(struct partial_symtab *pst,
 
 extern void
 /* APPLE LOCAL symbol prefixes */
-process_one_symbol(int, int, CORE_ADDR, char *, const char *,
+process_one_symbol(int, int, CORE_ADDR, const char *, const char *,
 		   struct section_offsets *, struct objfile *);
 
 extern void elfstab_build_psymtabs(struct objfile *objfile,
@@ -216,9 +216,9 @@ extern void stabsect_build_psymtabs
 
 extern void elfstab_offset_sections(struct objfile *,
 				    struct partial_symtab *);
-extern int symbol_reference_defined(char **);
+extern int symbol_reference_defined(const char **);
 
-extern void ref_add(int, struct symbol *, char *, CORE_ADDR);
+extern void ref_add(int, struct symbol *, const char *, CORE_ADDR);
 
 extern struct symbol *ref_search(int);
 
@@ -227,7 +227,7 @@ extern void free_header_files(void);
 extern void init_header_files(void);
 
 /* APPLE LOCAL make globally visible */
-extern char *find_name_end(char *name);
+extern char *find_name_end(const char *name);
 
 extern int stabsread_c_inited;
 

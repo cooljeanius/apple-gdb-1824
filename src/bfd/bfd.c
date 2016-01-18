@@ -572,7 +572,10 @@ _bfd_default_error_handler(const char *fmt, ...)
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
 #  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-Wmissing-format-attribute"
+/* FIXME: gcc bug; it should be fixed the next time I pull from gcc trunk: */
+#  if (__GNUC__ > 6)
+#   pragma GCC diagnostic ignored "-Wmissing-format-attribute"
+#  endif /* gcc >6 */
 #  pragma GCC diagnostic ignored "-Wsuggest-attribute=format"
 # endif /* gcc 4.6+ */
 #endif /* any gcc */

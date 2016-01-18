@@ -61,12 +61,12 @@ extern int overload_debug;
 static int typecmp (int staticp, int varargs, int nargs,
 		    struct field t1[], struct value *t2[]);
 
-static struct value *search_struct_field (char *, struct value *, int,
-				      struct type *, int);
+static struct value *search_struct_field(const char *, struct value *, int,
+					 struct type *, int);
 
-static struct value *search_struct_method (char *, struct value **,
-				       struct value **,
-				       int, int *, struct type *);
+static struct value *search_struct_method(const char *, struct value **,
+					  struct value **,
+					  int, int *, struct type *);
 
 static int find_oload_champ_namespace (struct type **arg_types, int nargs,
 				       const char *func_name,
@@ -1203,8 +1203,9 @@ inferior_string_hash(const char *string, int len)
   return hash;
 }
 
+/* */
 static CORE_ADDR
-allocate_string_in_inferior(char *str, int len)
+allocate_string_in_inferior(const char *str, int len)
 {
   struct string_in_child *ptr;
   unsigned int hash;
@@ -1417,8 +1418,8 @@ typecmp (int staticp, int varargs, int nargs,
    look for a baseclass named NAME.  */
 
 static struct value *
-search_struct_field (char *name, struct value *arg1, int offset,
-		     struct type *type, int looking_for_baseclass)
+search_struct_field(const char *name, struct value *arg1, int offset,
+		    struct type *type, int looking_for_baseclass)
 {
   int i;
   int nbases = TYPE_N_BASECLASSES (type);
@@ -1428,7 +1429,7 @@ search_struct_field (char *name, struct value *arg1, int offset,
   if (!looking_for_baseclass)
     for (i = TYPE_NFIELDS (type) - 1; i >= nbases; i--)
       {
-	char *t_field_name = TYPE_FIELD_NAME (type, i);
+	const char *t_field_name = TYPE_FIELD_NAME(type, i);
 
 	if (t_field_name && (strcmp_iw (t_field_name, name) == 0))
 	  {
@@ -1660,9 +1661,9 @@ find_rt_vbase_offset(struct type *type, struct type *basetype,
    else return NULL. */
 
 static struct value *
-search_struct_method (char *name, struct value **arg1p,
-		      struct value **args, int offset,
-		      int *static_memfuncp, struct type *type)
+search_struct_method(const char *name, struct value **arg1p,
+		     struct value **args, int offset,
+		     int *static_memfuncp, struct type *type)
 {
   int i;
   struct value *v;
@@ -1672,7 +1673,7 @@ search_struct_method (char *name, struct value **arg1p,
   CHECK_TYPEDEF (type);
   for (i = TYPE_NFN_FIELDS (type) - 1; i >= 0; i--)
     {
-      char *t_field_name = TYPE_FN_FIELDLIST_NAME (type, i);
+      const char *t_field_name = TYPE_FN_FIELDLIST_NAME(type, i);
       /* FIXME!  May need to check for ARM demangling here */
       if (strncmp (t_field_name, "__", 2) == 0 ||
 	  strncmp (t_field_name, "op", 2) == 0 ||
@@ -1935,8 +1936,8 @@ find_method_list (struct value **argp, char *method, int offset,
   /* First check in object itself */
   for (i = TYPE_NFN_FIELDS (type) - 1; i >= 0; i--)
     {
-      /* pai: FIXME What about operators and type conversions? */
-      char *fn_field_name = TYPE_FN_FIELDLIST_NAME (type, i);
+      /* pai: FIXME: What about operators and type conversions? */
+      const char *fn_field_name = TYPE_FN_FIELDLIST_NAME (type, i);
       if (fn_field_name && (strcmp_iw (fn_field_name, method) == 0))
 	{
 	  int len = TYPE_FN_FIELDLIST_LENGTH (type, i);
@@ -2501,7 +2502,7 @@ destructor_name_p (const char *name, const struct type *type)
 
   if (name[0] == '~')
     {
-      char *dname = type_name_no_tag (type);
+      const char *dname = type_name_no_tag (type);
       char *cp = strchr (dname, '<');
       unsigned int len;
 
@@ -2536,7 +2537,7 @@ check_field_in(struct type *type, const char *name)
 
   for (i = (TYPE_NFIELDS(type) - 1); i >= TYPE_N_BASECLASSES(type); i--)
     {
-      char *t_field_name = TYPE_FIELD_NAME(type, i);
+      const char *t_field_name = TYPE_FIELD_NAME(type, i);
       if (t_field_name && (strcmp_iw(t_field_name, name) == 0))
 	return 1;
     }
@@ -2680,7 +2681,7 @@ value_struct_elt_for_reference (struct type *domain, int offset,
 
   for (i = TYPE_NFIELDS (t) - 1; i >= TYPE_N_BASECLASSES (t); i--)
     {
-      char *t_field_name = TYPE_FIELD_NAME (t, i);
+      const char *t_field_name = TYPE_FIELD_NAME (t, i);
 
       if (t_field_name && strcmp (t_field_name, name) == 0)
 	{
@@ -2717,7 +2718,7 @@ value_struct_elt_for_reference (struct type *domain, int offset,
 
   for (i = TYPE_NFN_FIELDS (t) - 1; i >= 0; --i)
     {
-      char *t_field_name = TYPE_FN_FIELDLIST_NAME (t, i);
+      const char *t_field_name = TYPE_FN_FIELDLIST_NAME(t, i);
       char dem_opname[64];
 
       if (strncmp (t_field_name, "__", 2) == 0 ||

@@ -66,16 +66,20 @@
 
 /* APPLE LOCAL begin cache lookup values for improved performance  */
 
-asection * cached_mapped_section = NULL;
-asection * cached_overlay_section = NULL;
-struct obj_section * cached_sect_section = NULL;
-struct symtab * cached_symtab = NULL;
-struct partial_symtab * cached_psymtab = NULL;
-struct symtab_and_line * cached_pc_line = NULL;
-struct symbol * cached_pc_function = NULL;
-struct blockvector * cached_blockvector = NULL;
+asection *cached_mapped_section = (asection *)NULL;
+asection *cached_overlay_section = (asection *)NULL;
+struct obj_section *cached_sect_section = (struct obj_section *)NULL;
+struct symtab *cached_symtab = (struct symtab *)NULL;
+struct partial_symtab *cached_psymtab = (struct partial_symtab *)NULL;
+struct symtab_and_line *cached_pc_line = (struct symtab_and_line *)NULL;
+struct symbol *cached_pc_function = (struct symbol *)NULL;
+struct blockvector *cached_blockvector = (struct blockvector *)NULL;
 int cached_blockvector_index = -1;
-struct block * cached_block = NULL;
+struct block *cached_block = (struct block *)NULL;
+
+#ifndef INVALID_ADDRESS
+# define INVALID_ADDRESS ((CORE_ADDR)(-1L))
+#endif /* !INVALID_ADDRESS */
 
 CORE_ADDR last_block_lookup_pc = INVALID_ADDRESS;
 CORE_ADDR last_blockvector_lookup_pc = INVALID_ADDRESS;

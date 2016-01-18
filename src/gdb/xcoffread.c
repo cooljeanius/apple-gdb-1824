@@ -115,7 +115,7 @@ static CORE_ADDR first_object_file_end;
 /* Nonzero if within a function (so symbols should be local,
    if nothing says specifically).  */
 
-int within_function;
+extern int within_function;
 
 /* Size of a COFF symbol.  I think it is always 18, so I'm not sure
    there is any reason not to just use a #define, but might as well
@@ -174,7 +174,7 @@ static void xcoff_initial_scan(struct objfile *, int);
 
 static void scan_xcoff_symtab(struct objfile *);
 
-static char *xcoff_next_symbol_text(struct objfile *);
+static const char *xcoff_next_symbol_text(struct objfile *);
 
 static void record_include_begin(struct coff_symbol *);
 
@@ -653,7 +653,7 @@ process_linenos (CORE_ADDR start, CORE_ADDR end)
 
   for (ii = 0; ii < inclIndx; ++ii)
     {
-      if ((inclTable[ii].subfile)->line_vector)		/* Useless if!!! FIXMEmgo */
+      if ((inclTable[ii].subfile)->line_vector)	   /* Useless if!!! FIXMEmgo */
 	{
 	  struct linetable *lineTb, *lv;
 
@@ -681,20 +681,20 @@ process_linenos (CORE_ADDR start, CORE_ADDR end)
 	     fool it.  */
 
 #if 0
-	  start_subfile (inclTable[ii].name, (char *) 0);
+	  start_subfile(inclTable[ii].name, (char * 0);
 #else
 	  {
 	    /* Pick a fake name that will produce the same results as this
 	       one when passed to deduce_language_from_filename.  Kludge on
 	       top of kludge.  */
-	    char *fakename = strrchr (inclTable[ii].name, '.');
+	    const char *fakename = strrchr(inclTable[ii].name, '.');
 	    if (fakename == NULL)
 	      fakename = " ?";
-	    start_subfile (fakename, (char *) 0);
-	    xfree (current_subfile->name);
+	    start_subfile(fakename, (char *)0);
+	    xfree(current_subfile->name);
 	  }
-	  current_subfile->name = xstrdup (inclTable[ii].name);
-#endif
+	  current_subfile->name = xstrdup(inclTable[ii].name);
+#endif /* 0 */
 
 	  if (lv == lineTb)
 	    {
@@ -863,11 +863,11 @@ static char *raw_symbol;
 /* This is the function which stabsread.c calls to get symbol
    continuations.  */
 
-static char *
-xcoff_next_symbol_text (struct objfile *objfile)
+static const char *
+xcoff_next_symbol_text(struct objfile *objfile)
 {
   struct internal_syment symbol;
-  char *retval;
+  const char *retval;
   /* FIXME: is this the same as the passed arg? */
   objfile = this_symtab_psymtab->objfile;
 
@@ -908,16 +908,16 @@ read_xcoff_symtab (struct partial_symtab *pst)
   struct objfile *objfile = pst->objfile;
   bfd *abfd = objfile->obfd;
   char *raw_auxptr;		/* Pointer to first raw aux entry for sym */
-  char *strtbl = ((struct coff_symfile_info *) objfile->deprecated_sym_private)->strtbl;
+  char *strtbl = ((struct coff_symfile_info *)objfile->deprecated_sym_private)->strtbl;
   char *debugsec =
-  ((struct coff_symfile_info *) objfile->deprecated_sym_private)->debugsec;
-  char *debugfmt = bfd_xcoff_is_xcoff64 (abfd) ? "XCOFF64" : "XCOFF";
+    ((struct coff_symfile_info *)objfile->deprecated_sym_private)->debugsec;
+  const char *debugfmt = (bfd_xcoff_is_xcoff64(abfd) ? "XCOFF64" : "XCOFF");
 
   struct internal_syment symbol[1];
   union internal_auxent main_aux;
   struct coff_symbol cs[1];
-  CORE_ADDR file_start_addr = 0;
-  CORE_ADDR file_end_addr = 0;
+  CORE_ADDR file_start_addr = 0UL;
+  CORE_ADDR file_end_addr = 0UL;
 
   int next_file_symnum = -1;
   unsigned int max_symnum;
@@ -928,14 +928,14 @@ read_xcoff_symtab (struct partial_symtab *pst)
   /* remember, this struct as used in this file is different from the one
    * found in "../binutils/coffgrok.h": */
   struct coff_symbol fcn_stab_saved = {
-    "", 0, 0, 0L, 0U, 0, 0U
+    (char *)"", 0, 0, 0L, 0U, 0, 0U
   };
 
   /* fcn_cs_saved is global because process_xcoff_symbol needs it. */
   union internal_auxent fcn_aux_saved;
   struct context_stack *newstack;
 
-  char *filestring = " _start_ ";	/* Name of the current file. */
+  const char *filestring = " _start_ ";	/* Name of the current file. */
 
   char *last_csect_name;	/* last seen csect's name and value */
   CORE_ADDR last_csect_val;
@@ -1747,9 +1747,9 @@ xcoff_psymtab_to_symtab_1 (struct partial_symtab *pst)
 
   if (pst->readin)
     {
-      fprintf_unfiltered
-	(gdb_stderr, "Psymtab for %s already read in.  Shouldn't happen.\n",
-	 pst->filename);
+      fprintf_unfiltered(gdb_stderr,
+			 "Psymtab for %s already read in.  Shouldn't happen.\n",
+			 pst->filename);
       return;
     }
 
@@ -1820,7 +1820,7 @@ xcoff_psymtab_to_symtab (struct partial_symtab *pst)
       sym_bfd = pst->objfile->obfd;
 
       if (sym_bfd == NULL) {
-        ; /* ??? */
+        warning(_("Null bfd for symbols"));
       }
 
       next_symbol_text_func = xcoff_next_symbol_text;
@@ -2587,11 +2587,11 @@ scan_xcoff_symtab(struct objfile *objfile)
 	case C_DECL:
 	case C_STSYM:
 	  {
-	    char *p;
-	    swap_sym (&symbol, &main_aux[0], &namestring, &sraw_symbol,
-		      &ssymnum, objfile);
+	    const char *p;
+	    swap_sym(&symbol, &main_aux[0], &namestring, &sraw_symbol,
+		     &ssymnum, objfile);
 
-	    p = (char *) strchr (namestring, ':');
+	    p = (const char *)strchr(namestring, ':');
 	    if (!p)
 	      continue;			/* Not a debugging symbol.   */
 
@@ -2708,7 +2708,7 @@ scan_xcoff_symtab(struct objfile *objfile)
 		       Accept either.  */
 		    while (*p && *p != ';' && *p != ',')
 		      {
-			char *q;
+			const char *q;
 
 			/* Check for and handle cretinous dbx symbol name
 			   continuation!  */

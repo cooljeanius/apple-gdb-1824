@@ -157,7 +157,9 @@ extern void extend_psymbol_list(struct psymbol_allocation_list *,
 
 /* Add any kind of symbol to a psymbol_allocation_list.  */
 
-/* #include "demangle.h" */
+#if 0
+# include "demangle.h"
+#endif /* 0 */
 
 extern const
 struct partial_symbol *add_psymbol_to_list(const char *, int, domain_enum,

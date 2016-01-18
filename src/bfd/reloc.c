@@ -1300,7 +1300,7 @@ space consuming.  For each target:
 
     case 4:
       {
-	bfd_vma x = bfd_get_64(abfd, data);
+	bfd_vma x = (bfd_vma)bfd_get_64(abfd, data);
 	DOIT(x, bfd_vma);
 	bfd_put_64(abfd, x, data);
       }

@@ -222,6 +222,11 @@ typedef bfd_byte gdb_byte;
 typedef bfd_vma CORE_ADDR;
 #define CORE_ADDR_DEFINED 1
 
+/* For use with the CORE_ADDR type: */
+#ifndef INVALID_ADDRESS
+# define INVALID_ADDRESS ((CORE_ADDR)(-1L))
+#endif /* !INVALID_ADDRESS */
+
 /* This is to make sure that LONGEST is at least as big as CORE_ADDR: */
 #ifndef LONGEST
 # ifdef BFD64

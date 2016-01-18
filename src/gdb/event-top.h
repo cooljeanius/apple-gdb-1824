@@ -98,7 +98,8 @@ extern void handle_stop_sig(int sig);
 #endif /* !STOP_SIGNAL */
 extern void handle_sigint(int sig);
 extern void pop_prompt(void);
-extern void push_prompt(char *prefix, char *prompt, char *suffix);
+extern void push_prompt(const char *prefix, const char *prompt,
+			const char *suffix);
 extern void gdb_readline2(void *client_data);
 extern void mark_async_signal_handler_wrapper(void *token);
 extern void async_request_quit(void *arg);

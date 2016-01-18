@@ -112,7 +112,7 @@ int standard_can_async_p(void)
 
 struct vmap *map_vmap(bfd *, bfd *);
 
-void (*deprecated_file_changed_hook)(char *);
+void (*deprecated_file_changed_hook)(const char *);
 
 /* Prototypes for local functions */
 
@@ -837,7 +837,7 @@ static void
 set_section_command(const char *args, int from_tty)
 {
   struct section_table *p;
-  char *secname;
+  const char *secname;
   unsigned int seclen;
   CORE_ADDR secaddr;
   char secprint[127]; /* formerly just 100; seeing if I can increase it... */

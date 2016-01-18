@@ -735,8 +735,8 @@ extern int gdbtk_test(char *);
 #if defined(USE_POSIX_SPAWN) || defined(USE_ARCH_FOR_EXEC)
   if (initial_arch != NULL)
     {
-      char *arch_string = NULL;
-      char *osabi_string;
+      const char *arch_string = NULL;
+      const char *osabi_string;
 # if defined(TARGET_POWERPC)
       if (strcmp(initial_arch, "ppc") == 0)
 	{

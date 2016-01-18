@@ -39,7 +39,17 @@
 
 #include <stdio.h>
 
-#include <mach.h>
+#ifdef HAVE_MACH_H
+# include <mach.h>
+#else
+# if defined(HAVE_MACH_MACH_H) || (defined(__APPLE__) && defined(__MACH__))
+#  include <mach/mach.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "m3-nat.c expects a mach header file to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_MACH_MACH_H || (__APPLE__ && __MACH__) */
+#endif /* HAVE_MACH_H */
 #include <servers/netname.h>
 #include <servers/machid.h>
 #include <mach/message.h>

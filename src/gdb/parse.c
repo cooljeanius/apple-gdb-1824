@@ -104,7 +104,7 @@ static void prefixify_expression(struct expression *);
 static void prefixify_subexp(struct expression *, struct expression *, int,
 			     int);
 
-static struct expression *parse_exp_in_context(char **, struct block *,
+static struct expression *parse_exp_in_context(const char **, struct block *,
                                                int, int);
 
 /* APPLE LOCAL: Fix expressions containing references to variables the
@@ -1055,7 +1055,7 @@ parse_exp_1(const char **stringptr, struct block *block, int comma)
    no value is expected from the expression.  */
 
 static struct expression *
-parse_exp_in_context(char **stringptr, struct block *block, int comma,
+parse_exp_in_context(const char **stringptr, struct block *block, int comma,
 		     int void_context_p)
 {
   struct cleanup *old_chain;
@@ -1328,14 +1328,14 @@ follow_types (struct type *follow_type)
 /* APPLE LOCAL: I want to treat "no debug info" differently from
    "not prototyped" so I need to know whether the type had no debug
    info or not.  */
-static char *ftype_no_debug_info_name =
+static const char *ftype_no_debug_info_name =
   "<text variable, no debug info>";
 
 int
 ftype_has_debug_info_p (struct type *type)
 {
-  return ! (TYPE_NAME (type) != NULL
-	  && strcmp (TYPE_NAME (type), ftype_no_debug_info_name) == 0);
+  return !((TYPE_NAME(type) != NULL)
+	   && (strcmp(TYPE_NAME(type), ftype_no_debug_info_name) == 0));
 }
 /* END APPLE LOCAL */
 static void build_parse (void);

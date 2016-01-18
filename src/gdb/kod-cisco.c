@@ -34,8 +34,8 @@ Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA.  */
 #define PBUFSIZ 400
 
 /* Pointers to gdb callbacks.  */
-static void (*gdb_kod_display) (char *);
-static void (*gdb_kod_query) (char *, char *, int *);
+static void (*gdb_kod_display)(const char *);
+static void (*gdb_kod_query)(const char *, char *, int *);
 
 
 
@@ -44,8 +44,8 @@ static void (*gdb_kod_query) (char *, char *, int *);
    displaying output (presumably to the user) and the other for
    querying the target.  */
 char *
-cisco_kod_open (kod_display_callback_ftype *display_func,
-		kod_query_callback_ftype *query_func)
+cisco_kod_open(kod_display_callback_ftype *display_func,
+	       kod_query_callback_ftype *query_func)
 {
   char buffer[PBUFSIZ];
   int bufsiz = PBUFSIZ;
@@ -88,17 +88,18 @@ cisco_kod_open (kod_display_callback_ftype *display_func,
   return (xstrdup ("gdbkodcisco v0.0.0 - Cisco Kernel Object Display"));
 }
 
-/* Close the connection.  */
-void
-cisco_kod_close (void)
+/* Close the connection: */
+void ATTRIBUTE_CONST
+cisco_kod_close(void)
 {
+  return;
 }
 
-/* Print a "bad packet" message.  */
+/* Print a "bad packet" message: */
 static void
-bad_packet (void)
+bad_packet(void)
 {
-  (*gdb_kod_display) ("Remote target returned malformed packet.\n");
+  (*gdb_kod_display)("Remote target returned malformed packet.\n");
 }
 
 /* Print information about currently known kernel objects.
@@ -315,3 +316,5 @@ cisco_kod_request (char *arg, int from_tty)
     xfree (sync_ids[i]);
   xfree (sync_ids);
 }
+
+/* EOF */

@@ -46,13 +46,15 @@ extern int stop_soon_quietly;	/* for wait_for_inferior */
 extern struct target_ops bug_ops;	/* Forward declaration */
 
 /* Forward function declarations */
-static int bug_clear_breakpoints (void);
+static int bug_clear_breakpoints(void);
 
-static int bug_read_memory (CORE_ADDR memaddr,
+static int bug_read_memory(CORE_ADDR memaddr,
+			   unsigned char *myaddr, int len);
+
+static int bug_write_memory(CORE_ADDR memaddr,
 			    unsigned char *myaddr, int len);
 
-static int bug_write_memory (CORE_ADDR memaddr,
-			     unsigned char *myaddr, int len);
+extern void _initialize_remote_bug(void);
 
 /* This variable is somewhat arbitrary.  It's here so that it can be
    set from within a running gdb.  */
@@ -139,28 +141,31 @@ bug_load (char *args, int fromtty)
 	{
 	  int i;
 
-	  char *buffer = xmalloc (srec_frame);
+	  char *buffer = (char *)xmalloc(srec_frame);
 
-	  printf_filtered ("%s\t: 0x%4lx .. 0x%4lx  ", s->name, s->vma, s->vma + s->_raw_size);
-	  gdb_flush (gdb_stdout);
+	  printf_filtered("%s\t: 0x%4lx .. 0x%4lx  ", s->name, s->vma,
+			  (s->vma + s->_raw_size));
+	  gdb_flush(gdb_stdout);
 	  for (i = 0; i < s->_raw_size; i += srec_frame)
 	    {
-	      if (srec_frame > s->_raw_size - i)
-		srec_frame = s->_raw_size - i;
+	      if (srec_frame > (s->_raw_size - i))
+		srec_frame = (s->_raw_size - i);
 
-	      bfd_get_section_contents (abfd, s, buffer, i, srec_frame);
-	      bug_write_memory (s->vma + i, buffer, srec_frame);
-	      printf_filtered ("*");
-	      gdb_flush (gdb_stdout);
+	      bfd_get_section_contents(abfd, s, buffer, i, srec_frame);
+	      bug_write_memory((s->vma + i), (unsigned char *)buffer,
+			       srec_frame);
+	      printf_filtered("*");
+	      gdb_flush(gdb_stdout);
 	    }
-	  printf_filtered ("\n");
-	  xfree (buffer);
+	  printf_filtered("\n");
+	  xfree(buffer);
 	}
       s = s->next;
     }
-  sprintf (buffer, "rs ip %lx", (unsigned long) abfd->start_address);
-  sr_write_cr (buffer);
-  gr_expect_prompt ();
+  snprintf(buffer, sizeof(buffer), "rs ip %lx",
+	   (unsigned long)abfd->start_address);
+  sr_write_cr(buffer);
+  gr_expect_prompt();
 }
 
 #if 0
@@ -335,9 +340,9 @@ bug_wait (ptid_t ptid, struct target_waitstatus *status)
 
    Returns a pointer to a static buffer containing the answer.  */
 static char *
-get_reg_name (int regno)
+get_reg_name(int regno)
 {
-  static char *rn[] =
+  static const char *rn[] =
   {
     "r00", "r01", "r02", "r03", "r04", "r05", "r06", "r07",
     "r08", "r09", "r10", "r11", "r12", "r13", "r14", "r15",
@@ -513,15 +518,15 @@ bug_store_register (int regno)
       if (target_is_m88110 && regno == SFIP_REGNUM)
 	return;
       else if (regno < XFP_REGNUM)
-	sprintf (buffer, "rs %s %08lx",
-		 regname,
-		 (long) read_register (regno));
+	snprintf(buffer, sizeof(buffer), "rs %s %08lx",
+		 regname, (long)read_register(regno));
       else
 	{
 	  unsigned char *fpreg_buf =
-	  (unsigned char *) &registers[REGISTER_BYTE (regno)];
+	    (unsigned char *)&registers[REGISTER_BYTE(regno)];
 
-	  sprintf (buffer, "rs %s %1x_%02x%1x_%1x%02x%02x%02x%02x%02x%02x;d",
+	  snprintf(buffer, sizeof(buffer),
+		   "rs %s %1x_%02x%1x_%1x%02x%02x%02x%02x%02x%02x;d",
 		   regname,
 	  /* sign */
 		   (fpreg_buf[0] >> 7) & 0xf,
@@ -603,13 +608,14 @@ static char *srecord_strings[] =
 };
 
 static int
-bug_write_memory (CORE_ADDR memaddr, unsigned char *myaddr, int len)
+bug_write_memory(CORE_ADDR memaddr, unsigned char *myaddr, int len)
 {
   int done;
   int checksum;
   int x;
   int retries;
-  char *buffer = alloca ((srec_bytes + 8) << 1);
+  size_t size_for_buffer = ((srec_bytes + 8UL) << 1);
+  char *buffer = (char *)alloca(size_for_buffer);
 
   retries = 0;
 
@@ -648,7 +654,8 @@ bug_write_memory (CORE_ADDR memaddr, unsigned char *myaddr, int len)
 	    thisgo = srec_bytes;
 
 	  address = memaddr + done;
-	  sprintf (buf, "S3%02X%08lX", thisgo + 4 + 1, (long) address);
+	  snprintf(buf, (size_for_buffer + 2UL), "S3%02X%08lX",
+		   (thisgo + 4 + 1), (long)address);
 	  buf += 12;
 
 	  checksum += (thisgo + 4 + 1
@@ -659,7 +666,7 @@ bug_write_memory (CORE_ADDR memaddr, unsigned char *myaddr, int len)
 
 	  for (idx = 0; idx < thisgo; idx++)
 	    {
-	      sprintf (buf, "%02X", myaddr[idx + done]);
+	      snprintf(buf, size_for_buffer, "%02X", myaddr[idx + done]);
 	      checksum += myaddr[idx + done];
 	      buf += 2;
 	    }
@@ -677,7 +684,7 @@ bug_write_memory (CORE_ADDR memaddr, unsigned char *myaddr, int len)
 		}
 	    }
 
-	  sprintf (buf, "%02X", ~checksum & 0xff);
+	  snprintf(buf, size_for_buffer, "%02X", ~checksum & 0xff);
 	  bug_srec_write_cr (buffer);
 
 	  if (srec_sleep != 0)
@@ -738,10 +745,10 @@ bug_read_memory (CORE_ADDR memaddr, unsigned char *myaddr, int len)
   unsigned int inaddr;
   unsigned int checksum;
 
-  sprintf (request, "du 0 %lx:&%d", (long) memaddr, len);
-  sr_write_cr (request);
+  snprintf(request, sizeof(request), "du 0 %lx:&%d", (long)memaddr, len);
+  sr_write_cr(request);
 
-  p = buffer = alloca (len);
+  p = buffer = (char *)alloca(len);
 
   /* scan up through the header */
   sr_expect ("S0030000FC");
@@ -840,7 +847,7 @@ bug_insert_breakpoint (CORE_ADDR addr, char *save)
       char buffer[100];
 
       num_brkpts++;
-      sprintf (buffer, "br %lx", (long) addr);
+      snprintf(buffer, sizeof(buffer), "br %lx", (long)addr);
       sr_write_cr (buffer);
       gr_expect_prompt ();
       return (0);
@@ -859,16 +866,16 @@ bug_insert_breakpoint (CORE_ADDR addr, char *save)
    for saving/restoring instructions. */
 
 static int
-bug_remove_breakpoint (CORE_ADDR addr, char *save)
+bug_remove_breakpoint(CORE_ADDR addr, char *save)
 {
   if (num_brkpts > 0)
     {
       char buffer[100];
 
       num_brkpts--;
-      sprintf (buffer, "nobr %lx", (long) addr);
-      sr_write_cr (buffer);
-      gr_expect_prompt ();
+      snprintf(buffer, sizeof(buffer), "nobr %lx", (long)addr);
+      sr_write_cr(buffer);
+      gr_expect_prompt();
 
     }
   return (0);
@@ -959,11 +966,12 @@ init_bug_ops (void)
   bug_ops.to_magic = OPS_MAGIC;	/* Always the last thing */
 }				/* init_bug_ops */
 
+/* */
 void
-_initialize_remote_bug (void)
+_initialize_remote_bug(void)
 {
-  init_bug_ops ();
-  add_target (&bug_ops);
+  init_bug_ops();
+  add_target(&bug_ops);
 
   add_show_from_set
     (add_set_cmd ("srec-bytes", class_support, var_uinteger,

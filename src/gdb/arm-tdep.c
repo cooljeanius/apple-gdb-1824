@@ -217,10 +217,10 @@ static int current_option;
 
 /* This is used to keep the bfd arch_info in sync with the disassembly
    style.  */
-static void set_disassembly_style_sfunc(char *, int,
-					 struct cmd_list_element *);
+static void set_disassembly_style_sfunc(const char *, int,
+					struct cmd_list_element *);
 
-static void arm_set_show_opcode_bytes(char *args, int from_tty,
+static void arm_set_show_opcode_bytes(const char *args, int from_tty,
 				      struct cmd_list_element *c);
 
 static void set_disassembly_style(void);
@@ -3130,7 +3130,7 @@ arm_print_float_info(struct gdbarch *gdbarch ATTRIBUTE_UNUSED,
   int type;
 
   type = ((status >> 24) & 127);
-  if (status & (1 << 31))
+  if (status & (1UL << 31))
     printf(_("Hardware FPU type %d\n"), type);
   else
     printf(_("Software FPU type %d\n"), type);
@@ -3280,9 +3280,9 @@ arm_scan_prolog_insn_mov_ip_sp(const uint32_t insn ATTRIBUTE_UNUSED,
    are addressing mode 1 data processing commands whose shifter operand
    is an immediate (bit 25 set).  */
 static int
-arm_scan_prolog_insn_data_proc_imm (const uint32_t insn,
-				  arm_prologue_cache_t *cache,
-				  arm_prologue_state_t *state)
+arm_scan_prolog_insn_data_proc_imm(const uint32_t insn,
+				   arm_prologue_cache_t *cache,
+				   arm_prologue_state_t *state)
 {
   uint32_t data_processing_op = bits (insn, 21, 24);
   int Rd = bits (insn, 12, 15);
@@ -5425,7 +5425,7 @@ arm_skip_stub(CORE_ADDR pc)
     {
       /* Use the name suffix to determine which register contains the
          target PC.  */
-      static char *table[15] =
+      static const char *table[15] =
       {"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
        "r8", "r9", "sl", "fp", "ip", "sp", "lr"
       };
@@ -5439,20 +5439,24 @@ arm_skip_stub(CORE_ADDR pc)
   return 0;			/* not a stub */
 }
 
+/* */
 static void
-set_arm_command(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
+set_arm_command(const char *args ATTRIBUTE_UNUSED,
+		int from_tty ATTRIBUTE_UNUSED)
 {
   printf_unfiltered(_("\
 \"set arm\" must be followed by an apporpriate subcommand.\n"));
   help_list(setarmcmdlist, "set arm ", all_commands, gdb_stdout);
 }
 
+/* */
 static void
-show_arm_command(char *args ATTRIBUTE_UNUSED, int from_tty)
+show_arm_command(const char *args ATTRIBUTE_UNUSED, int from_tty)
 {
   cmd_show_list(showarmcmdlist, from_tty, "");
 }
 
+/* */
 static void
 arm_update_current_architecture(void)
 {
@@ -5469,8 +5473,9 @@ arm_update_current_architecture(void)
     internal_error(__FILE__, __LINE__, "could not update architecture");
 }
 
+/* */
 static void
-set_fp_model_sfunc(char *args ATTRIBUTE_UNUSED,
+set_fp_model_sfunc(const char *args ATTRIBUTE_UNUSED,
                    int from_tty ATTRIBUTE_UNUSED,
 		   struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
@@ -5508,8 +5513,9 @@ The current ARM floating point model is \"%s\".\n"),
                      fp_model_strings[arm_fp_model]);
 }
 
+/* */
 static void
-arm_set_abi(char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED,
+arm_set_abi(const char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED,
 	    struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
   enum arm_abi_kind arm_abi;
@@ -5551,15 +5557,16 @@ The current ARM ABI is \"auto\" (currently \"%s\").\n"),
    arm disassembly" command, and does that.  */
 
 static void
-set_disassembly_style_sfunc(char *args ATTRIBUTE_UNUSED,
+set_disassembly_style_sfunc(const char *args ATTRIBUTE_UNUSED,
                             int from_tty ATTRIBUTE_UNUSED,
                             struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
   set_disassembly_style();
 }
 
+/* */
 static void
-set_arm_single_step_mode_sfunc(char *args ATTRIBUTE_UNUSED,
+set_arm_single_step_mode_sfunc(const char *args ATTRIBUTE_UNUSED,
                                int from_tty ATTRIBUTE_UNUSED,
                                struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
@@ -5603,8 +5610,9 @@ get_arm_single_step_mode(void)
   return arm_single_step_mode;
 }
 
+/* */
 void
-arm_set_show_opcode_bytes(char *args ATTRIBUTE_UNUSED,
+arm_set_show_opcode_bytes(const char *args ATTRIBUTE_UNUSED,
                           int from_tty ATTRIBUTE_UNUSED,
                           struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {

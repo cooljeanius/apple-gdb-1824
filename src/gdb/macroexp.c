@@ -202,9 +202,9 @@ is_identifier_nondigit (int c)
           || ('A' <= c && c <= 'Z'));
 }
 
-
+/* */
 static void
-set_token (struct macro_buffer *tok, char *start, char *end)
+set_token(struct macro_buffer *tok, const char *start, const char *end)
 {
   init_shared_buffer (tok, start, end - start);
   tok->last_token = 0;
@@ -316,7 +316,7 @@ get_pp_number (struct macro_buffer *tok, char *p, char *end)
    Signal an error if it contains a malformed or incomplete character
    constant.  */
 static int
-get_character_constant (struct macro_buffer *tok, char *p, char *end)
+get_character_constant(struct macro_buffer *tok, const char *p, char *end)
 {
   /* ISO/IEC 9899:1999 (E)  Section 6.4.4.4  paragraph 1
      But of course, what really matters is that we handle it the same
@@ -325,7 +325,7 @@ get_character_constant (struct macro_buffer *tok, char *p, char *end)
   if ((p + 1 <= end && *p == '\'')
       || (p + 2 <= end && p[0] == 'L' && p[1] == '\''))
     {
-      char *tok_start = p;
+      const char *tok_start = p;
       char *body_start;
 
       if (*p == '\'')
@@ -351,7 +351,7 @@ get_character_constant (struct macro_buffer *tok, char *p, char *end)
           else if (*p == '\\')
             {
               p++;
-              parse_escape (&p);
+              parse_escape(&p);
             }
           else
             p++;
@@ -370,7 +370,7 @@ get_character_constant (struct macro_buffer *tok, char *p, char *end)
    literal, and return 1.  Otherwise, return zero.  Signal an error if
    it contains a malformed or incomplete string literal.  */
 static int
-get_string_literal (struct macro_buffer *tok, char *p, char *end)
+get_string_literal(struct macro_buffer *tok, const char *p, char *end)
 {
   if ((p + 1 <= end
        && *p == '\"')
@@ -378,7 +378,7 @@ get_string_literal (struct macro_buffer *tok, char *p, char *end)
           && p[0] == 'L'
           && p[1] == '\"'))
     {
-      char *tok_start = p;
+      const char *tok_start = p;
 
       if (*p == '\"')
         p++;
@@ -402,7 +402,7 @@ get_string_literal (struct macro_buffer *tok, char *p, char *end)
           else if (*p == '\\')
             {
               p++;
-              parse_escape (&p);
+              parse_escape(&p);
             }
           else
             p++;

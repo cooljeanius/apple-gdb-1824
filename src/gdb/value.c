@@ -259,9 +259,9 @@ lookup_cached_function (struct cached_value *cval)
 
 /* Prototypes for local functions. */
 
-static void show_values (char *, int);
+static void show_values(const char *, int);
 
-static void show_convenience (char *, int);
+static void show_convenience(const char *, int);
 
 
 /* The value-history records all the values printed
@@ -770,12 +770,13 @@ clear_value_history (void)
   value_history_count = 0;
 }
 
+/* */
 static void
-show_values (char *num_exp, int from_tty)
+show_values(const char *num_exp, int from_tty)
 {
   int i;
   struct value *val;
-  static long num = 1;
+  static long num = 1L;
 
   if (num_exp)
     {
@@ -809,8 +810,8 @@ show_values (char *num_exp, int from_tty)
      "info history +" is not useful after "info history".  */
   if (from_tty && num_exp)
     {
-      num_exp[0] = '+';
-      num_exp[1] = '\0';
+      *(char *)num_exp = '+'; /* same as 'num_exp[0]' */
+      *(char *)(num_exp + 1u) = '\0'; /* same as 'num_exp[1]' */
     }
 }
 
@@ -921,8 +922,9 @@ clear_internalvars (void)
     }
 }
 
+/* */
 static void
-show_convenience (char *ignore, int from_tty)
+show_convenience(const char *ignore, int from_tty)
 {
   struct internalvar *var;
   int varseen = 0;
@@ -1394,12 +1396,12 @@ value_field (struct value *arg1, int fieldno)
  */
 
 struct value *
-value_fn_field (struct value **arg1p, struct fn_field *f, int j, struct type *type,
-		int offset)
+value_fn_field(struct value **arg1p, struct fn_field *f, int j,
+	       struct type *type, int offset)
 {
   struct value *v;
   struct type *ftype = TYPE_FN_FIELD_TYPE (f, j);
-  char *physname = TYPE_FN_FIELD_PHYSNAME (f, j);
+  const char *physname = TYPE_FN_FIELD_PHYSNAME(f, j);
   struct symbol *sym;
   struct minimal_symbol *msym;
 

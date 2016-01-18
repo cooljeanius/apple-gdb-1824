@@ -121,7 +121,7 @@ bfd_bread(void *ptr, bfd_size_type size, bfd *abfd)
           if (bim->size < (bfd_size_type)abfd->where)
             get = 0UL;
           else
-            get = (bim->size - abfd->where);
+            get = (bfd_size_type)(bim->size - abfd->where);
           bfd_set_error(bfd_error_file_truncated);
         }
       memcpy(ptr, (bim->buffer + abfd->where), (size_t)get);
@@ -157,7 +157,7 @@ bfd_bwrite(const void *ptr, bfd_size_type size, bfd *abfd)
 	  bfd_size_type newsize, oldsize;
 
 	  oldsize = ((bim->size + 127UL) & ~(bfd_size_type)127L);
-	  bim->size = (abfd->where + size);
+	  bim->size = (bfd_size_type)(abfd->where + size);
 	  /* Round up to cut down on memory fragmentation: */
 	  newsize = ((bim->size + 127UL) & ~(bfd_size_type)127L);
 	  if (newsize > oldsize)
@@ -303,7 +303,7 @@ bfd_seek(bfd *abfd, file_ptr position, int direction)
 	      bfd_size_type newsize, oldsize;
 
 	      oldsize = ((bim->size + 127) & ~(bfd_size_type)127);
-	      bim->size = abfd->where;
+	      bim->size = (bfd_size_type)abfd->where;
 	      /* Round up to cut down on memory fragmentation: */
 	      newsize = ((bim->size + 127) & ~(bfd_size_type)127);
 	      if (newsize > oldsize)

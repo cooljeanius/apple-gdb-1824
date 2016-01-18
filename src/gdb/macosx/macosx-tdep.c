@@ -73,6 +73,7 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/param.h>
+#include <mach/mach.h>
 #include <mach/machine.h>
 #include <mach/kmod.h>
 #include <libintl.h>

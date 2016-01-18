@@ -1137,7 +1137,7 @@ static const bfd_target * const _bfd_target_vector[] = {
 # endif /* DEFAULT_VECTOR */
 	/* This list is alphabetized to make it easy to compare
 	   with other vector lists -- the decls above and
-	   the case statement in configure.in.
+	   the case statement in configure.ac.
 	   Vectors that do NOT compile on all systems, or aren't finished,
 	   should have an entry here with #if 0 around it, to show that
 	   it was NOT omitted by mistake.  */

@@ -295,7 +295,7 @@ static struct linetable *shrink_linetable(struct linetable *);
 static void handle_psymbol_enumerators(struct objfile *, FDR *, int,
 				       CORE_ADDR);
 
-static char *mdebug_next_symbol_text(struct objfile *);
+static const char *mdebug_next_symbol_text(struct objfile *);
 
 /* Exported procedure: Builds a symtab from the PST partial one.
    Restores the environment in effect when PST was created, delegates
@@ -411,7 +411,7 @@ mdebug_build_psymtabs (struct objfile *objfile,
       printf_unfiltered (_("You should compile with -g2 or -g3 for best debugging support.\n"));
       gdb_flush (gdb_stdout);
     }
-#endif
+#endif /* 0 */
 }
 
 /* Local utilities */
@@ -926,7 +926,7 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
 		  /* This is a no-op; is it trying to tell us something
 		     we should be checking?  */
 		  if (tsym.sc == scVariant);	/*UNIMPLEMENTED */
-#endif
+#endif /* 0 */
 		  if (tsym.index != 0)
 		    {
 		      /* This is something like a struct within a
@@ -1925,7 +1925,7 @@ parse_procedure (PDR *pr, struct symtab *search_symtab,
       BLOCK_END (b) = bound;
       BLOCK_SUPERBLOCK (b) = top_stack->cur_block;
       add_block (b, top_stack->cur_st);
-#endif
+#endif /* 1 */
     }
 
   i = mylookup_symbol(MDEBUG_EFI_SYMBOL_NAME, b, LABEL_DOMAIN, LOC_CONST);
@@ -1958,7 +1958,7 @@ parse_procedure (PDR *pr, struct symtab *search_symtab,
 	  e->pdr.pcreg = RA_REGNUM;
 #else
 	  e->pdr.pcreg = 0;
-#endif
+#endif /* RA_REGNUM */
 	  e->pdr.regmask = 0x80000000;
 	  e->pdr.regoffset = -4;
 	}
@@ -2223,13 +2223,13 @@ record_minimal_symbol (const char *name, const CORE_ADDR address,
         section = get_section_index (objfile, ".tlsdata");
         bfd_section = bfd_get_section_by_name (cur_bfd, ".tlsdata");
         break;
-#endif
+#endif /* scTlsData */
 #ifdef scTlsBss
       case scTlsBss:
         section = get_section_index (objfile, ".tlsbss");
         bfd_section = bfd_get_section_by_name (cur_bfd, ".tlsbss");
         break;
-#endif
+#endif /* scTlsBss */
       default:
         /* This kind of symbol is not associated to a section.  */
         section = -1;
@@ -2267,7 +2267,7 @@ parse_partial_symbols (struct objfile *objfile)
   int past_first_source_file = 0;
 
   /* List of current psymtab's include files */
-  char **psymtab_include_list;
+  const char **psymtab_include_list;
   int includes_allocated;
   int includes_used;
   EXTR *extern_tab;
@@ -2297,8 +2297,8 @@ parse_partial_symbols (struct objfile *objfile)
 
   includes_allocated = 30;
   includes_used = 0;
-  psymtab_include_list = (char **) alloca (includes_allocated *
-					   sizeof (char *));
+  psymtab_include_list = (const char **)alloca(includes_allocated *
+					       sizeof(const char *));
   next_symbol_text_func = mdebug_next_symbol_text;
 
   dependencies_allocated = 30;
@@ -2776,7 +2776,7 @@ parse_partial_symbols (struct objfile *objfile)
 
 		switch (type_code)
 		  {
-		    char *p;
+		    const char *p;
 		    /*
 		     * Standard, external, non-debugger, symbols
 		     */
@@ -2860,7 +2860,7 @@ parse_partial_symbols (struct objfile *objfile)
 		      CORE_ADDR valu;
 		      static int prev_so_symnum = -10;
 		      static int first_so_symnum;
-		      char *p;
+		      const char *p;
 		      int prev_textlow_not_set;
 
 		      valu = (sh.value + ANOFFSET(objfile->section_offsets,
@@ -2946,8 +2946,9 @@ parse_partial_symbols (struct objfile *objfile)
 		    {
 		      enum language tmp_language;
 		      /* Mark down an include file in the current psymtab */
-
-		      /* SET_NAMESTRING ();*/
+#if defined(SET_NAMESTRING) && defined(VT) && defined(VT_SIZE)
+		      SET_NAMESTRING();
+#endif /* SET_NAMESTRING && VT && VT_SIZE */
 		      namestring = stabstring;
 
 		      tmp_language = deduce_language_from_filename (namestring);
@@ -2989,41 +2990,40 @@ parse_partial_symbols (struct objfile *objfile)
 		      psymtab_include_list[includes_used++] = namestring;
 		      if (includes_used >= includes_allocated)
 			{
-			  char **orig = psymtab_include_list;
+			  const char **orig = psymtab_include_list;
 
-			  psymtab_include_list = (char **)
-			    alloca ((includes_allocated *= 2) *
-				    sizeof (char *));
-			  memcpy (psymtab_include_list, orig,
-				  includes_used * sizeof (char *));
+			  psymtab_include_list =
+			    ((const char **)alloca((includes_allocated *= 2UL)
+						   * sizeof(const char *)));
+			  memcpy(psymtab_include_list, orig,
+				 includes_used * sizeof(char *));
 			}
 		      continue;
 		    }
-		  case N_LSYM:			/* Typedef or automatic variable. */
+		  case N_LSYM:		/* Typedef or automatic variable. */
 		  case N_STSYM:		/* Data seg var -- static  */
 		  case N_LCSYM:		/* BSS      "  */
 		  case N_ROSYM:		/* Read-only data seg var -- static.  */
 		  case N_NBSTS:		/* Gould nobase.  */
 		  case N_NBLCS:		/* symbols.  */
 		  case N_FUN:
-		  case N_GSYM:			/* Global (extern) variable; can be
-						   data or bss (sigh FIXME).  */
+		  case N_GSYM:		/* Global (extern) variable; can be
+					   data or bss (sigh FIXME).  */
 
 		    /* Following may probably be ignored; I'll leave them here
 		       for now (until I do Pascal and Modula 2 extensions).  */
 
 		  case N_PC:			/* I may or may not need this; I
 						   suspect not.  */
-		  case N_M2C:			/* I suspect that I can ignore this here. */
+		  case N_M2C:	    /* I suspect that I can ignore this here. */
 		  case N_SCOPE:		/* Same.   */
-
-		    /*    SET_NAMESTRING ();*/
+#if defined(SET_NAMESTRING) && defined(VT) && defined(VT_SIZE)
+		    SET_NAMESTRING();
+#endif /* SET_NAMESTRING && VT && VT_SIZE */
 		    namestring = stabstring;
 		    p = (char *) strchr (namestring, ':');
 		    if (!p)
 		      continue;			/* Not a debugging symbol.   */
-
-
 
 		    /* Main processing section for debugging symbols which
 		       the initial read through the symbol tables needs to worry
@@ -3038,7 +3038,7 @@ parse_partial_symbols (struct objfile *objfile)
 			sh.value += ANOFFSET (objfile->section_offsets, SECT_OFF_DATA (objfile));
 #ifdef STATIC_TRANSFORM_NAME
 			namestring = STATIC_TRANSFORM_NAME (namestring);
-#endif
+#endif /* STATIC_TRANSFORM_NAME */
 			add_psymbol_to_list (namestring, p - namestring,
 					     VAR_DOMAIN, LOC_STATIC,
 					     &objfile->static_psymbols,
@@ -3136,7 +3136,7 @@ parse_partial_symbols (struct objfile *objfile)
 			       Accept either.  */
 			    while (*p && (*p != ';') && (*p != ','))
 			      {
-				char *q;
+				const char *q;
 
 				/* Check for and handle cretinous dbx symbol name
 				   continuation!  */
@@ -3639,9 +3639,10 @@ parse_partial_symbols (struct objfile *objfile)
       /* Link pst to FDR. end_psymtab returns NULL if the psymtab was
          empty and put on the free list.  */
       fdr_to_pst[f_idx].pst = end_psymtab(save_pst,
-					psymtab_include_list, includes_used,
+					  psymtab_include_list, includes_used,
                                           -1, save_pst->texthigh,
-		       dependency_list, dependencies_used, textlow_not_set);
+					  dependency_list, dependencies_used,
+					  textlow_not_set);
       includes_used = 0;
       dependencies_used = 0;
 
@@ -3803,20 +3804,18 @@ handle_psymbol_enumerators (struct objfile *objfile, FDR *fh, int stype,
     }
 }
 
-/* Get the next symbol.  OBJFILE is unused. */
-
-static char *
-mdebug_next_symbol_text (struct objfile *objfile)
+/* Get the next symbol.  OBJFILE is unused: */
+static const char *
+mdebug_next_symbol_text(struct objfile *objfile)
 {
   SYMR sh;
 
   cur_sdx++;
-  (*debug_swap->swap_sym_in) (cur_bfd,
-			      ((char *) debug_info->external_sym
-			       + ((cur_fdr->isymBase + cur_sdx)
-				  * debug_swap->external_sym_size)),
-			      &sh);
-  return debug_info->ss + cur_fdr->issBase + sh.iss;
+  (*debug_swap->swap_sym_in)(cur_bfd,
+			     ((char *)debug_info->external_sym
+			      + ((cur_fdr->isymBase + cur_sdx)
+				 * debug_swap->external_sym_size)), &sh);
+  return (debug_info->ss + cur_fdr->issBase + sh.iss);
 }
 
 /* Ancillary function to psymtab_to_symtab().  Does all the work

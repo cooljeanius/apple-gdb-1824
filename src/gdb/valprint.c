@@ -41,26 +41,26 @@
 
 /* Prototypes for local functions */
 
-static int partial_memory_read (CORE_ADDR memaddr, char *myaddr,
-				int len, int *errnoptr);
+static int partial_memory_read(CORE_ADDR memaddr, char *myaddr,
+			       int len, int *errnoptr);
 
-static void show_print (char *, int);
+static void show_print(const char *, int);
 
-static void set_print (char *, int);
+static void set_print(const char *, int);
 
-static void set_radix (char *, int);
+static void set_radix(const char *, int);
 
-static void show_radix (char *, int);
+static void show_radix(const char *, int);
 
-static void set_input_radix (char *, int, struct cmd_list_element *);
+static void set_input_radix(const char *, int, struct cmd_list_element *);
 
-static void set_input_radix_1 (int, unsigned);
+static void set_input_radix_1(int, unsigned int);
 
-static void set_output_radix (char *, int, struct cmd_list_element *);
+static void set_output_radix(const char *, int, struct cmd_list_element *);
 
-static void set_output_radix_1 (int, unsigned);
+static void set_output_radix_1(int, unsigned int);
 
-void _initialize_valprint (void);
+void _initialize_valprint(void);
 
 /* Maximum number of chars to print for a string pointer value or vector
    contents, or UINT_MAX for no limit.  Note that "set print elements 0"
@@ -1335,13 +1335,13 @@ val_print_string(CORE_ADDR addr, int len, int width, struct ui_file *stream)
    setting the input radix to "10" never changes it!  */
 
 static void
-set_input_radix (char *args, int from_tty, struct cmd_list_element *c)
+set_input_radix(const char *args, int from_tty, struct cmd_list_element *c)
 {
-  set_input_radix_1 (from_tty, input_radix);
+  set_input_radix_1(from_tty, input_radix);
 }
 
 static void
-set_input_radix_1 (int from_tty, unsigned radix)
+set_input_radix_1(int from_tty, unsigned int radix)
 {
   /* We don't currently disallow any input radix except 0 or 1, which don't
      make any mathematical sense.  In theory, we can deal with any input
@@ -1367,14 +1367,16 @@ set_input_radix_1 (int from_tty, unsigned radix)
     }
 }
 
+/* */
 static void
-set_output_radix (char *args, int from_tty, struct cmd_list_element *c)
+set_output_radix(const char *args, int from_tty, struct cmd_list_element *c)
 {
-  set_output_radix_1 (from_tty, output_radix);
+  set_output_radix_1(from_tty, output_radix);
 }
 
+/* */
 static void
-set_output_radix_1 (int from_tty, unsigned radix)
+set_output_radix_1(int from_tty, unsigned int radix)
 {
   /* Validate the radix and disallow ones that we aren't prepared to
      handle correctly, leaving the radix unchanged. */
@@ -1414,7 +1416,7 @@ set_output_radix_1 (int from_tty, unsigned radix)
    the 'set input-radix' command. */
 
 static void
-set_radix(char *arg, int from_tty)
+set_radix(const char *arg, int from_tty)
 {
   unsigned long radix;
 
@@ -1428,10 +1430,9 @@ set_radix(char *arg, int from_tty)
     }
 }
 
-/* Show both the input and output radices. */
-
+/* Show both the input and output radices: */
 static void
-show_radix (char *arg, int from_tty)
+show_radix(const char *arg, int from_tty)
 {
   if (from_tty)
     {
@@ -1450,9 +1451,9 @@ show_radix (char *arg, int from_tty)
     }
 }
 
-
+/* */
 static void
-set_print(char *arg, int from_tty)
+set_print(const char *arg, int from_tty)
 {
   printf_unfiltered("\
      \"set print\" must be followed by the name of a print subcommand.\n");
@@ -1460,14 +1461,16 @@ set_print(char *arg, int from_tty)
             gdb_stdout);
 }
 
+/* */
 static void
-show_print (char *args, int from_tty)
+show_print(const char *args, int from_tty)
 {
-  cmd_show_list (showprintlist, from_tty, "");
+  cmd_show_list(showprintlist, from_tty, "");
 }
 
+/* */
 void
-_initialize_valprint (void)
+_initialize_valprint(void)
 {
   add_prefix_cmd ("print", no_class, set_print,
 		  _("Generic command for setting how things print."),

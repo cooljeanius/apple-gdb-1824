@@ -111,10 +111,10 @@ extern void (*deprecated_exec_file_display_hook)(char *filename)
 /* Hook for "file_command", which is more useful than above
    (because it is invoked AFTER symbols are read, not before).  */
 
-extern void (*deprecated_file_changed_hook)(char *filename)
+extern void (*deprecated_file_changed_hook)(const char *filename)
   ATTRIBUTE_DEPRECATED;
 
-extern void specify_exec_file_hook (void (*hook) (char *filename));
+extern void specify_exec_file_hook(void (*hook)(char *filename));
 
 /* Binary File Diddlers for the exec and core files.  */
 

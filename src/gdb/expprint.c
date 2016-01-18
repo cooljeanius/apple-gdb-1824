@@ -61,11 +61,11 @@ void
 print_subexp_standard (struct expression *exp, int *pos,
 		       struct ui_file *stream, enum precedence prec)
 {
-  unsigned tem;
+  unsigned int tem;
   const struct op_print *op_print_tab;
   int pc;
-  unsigned nargs;
-  char *op_str;
+  unsigned int nargs;
+  const char *op_str;
   int assign_modify = 0;
   enum exp_opcode opcode;
   enum precedence myprec = PREC_NULL;
@@ -302,7 +302,7 @@ print_subexp_standard (struct expression *exp, int *pos,
       fputs_filtered (".", stream);
       fputs_filtered (&exp->elts[pc + 2].string, stream);
       fputs_filtered ("=", stream);
-#endif
+#endif /* 1 */
       print_subexp (exp, pos, stream, PREC_SUFFIX);
       return;
 

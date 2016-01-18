@@ -30,6 +30,10 @@
 #include "dis-asm.h"
 #include "gdb_assert.h"
 
+#ifndef INVALID_ADDRESS
+# define INVALID_ADDRESS ((CORE_ADDR)(-1L))
+#endif /* !INVALID_ADDRESS */
+
 /* Disassemble functions.
    FIXME: We should get rid of all the duplicate code in gdb that does
    the same thing: disassemble_command() and the gdbtk variation. */

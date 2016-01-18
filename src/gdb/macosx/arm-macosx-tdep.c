@@ -109,13 +109,13 @@
 #ifdef HAVE_MALLOC_H
 # include <malloc.h>
 #else
-# ifdef HAVE_MALLOC_MALLOC_H
+# if defined(HAVE_MALLOC_MALLOC_H) && defined(NO_POISON)
 #  include <malloc/malloc.h>
 # else
-#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__) && defined(NO_POISON)
 #   warning "arm-macosx-tdep.c wants to include a malloc-related header."
-#  endif /* __GNUC__ && !__STRICT_ANSI__ */
-# endif /* HAVE_MALLOC_MALLOC_H */
+#  endif /* __GNUC__ && !__STRICT_ANSI__ && NO_POISON */
+# endif /* HAVE_MALLOC_MALLOC_H && NO_POISON */
 #endif /* HAVE_MALLOC_H */
 
 /* end prologue */
@@ -1170,15 +1170,16 @@ arm_macosx_register_byte_vfpv3(int regnum)
   return 0;
 }
 
+/* */
 static CORE_ADDR
-arm_integer_to_address (struct gdbarch *gdbarch, struct type *type,
-                        const gdb_byte *buf)
+arm_integer_to_address(struct gdbarch *gdbarch, struct type *type,
+                       const gdb_byte *buf)
 {
-  gdb_byte *tmp = alloca (TYPE_LENGTH (builtin_type_void_data_ptr));
-  LONGEST val = unpack_long (type, buf);
-  store_unsigned_integer (tmp, TYPE_LENGTH (builtin_type_void_data_ptr), val);
-  return extract_unsigned_integer (tmp,
-                                   TYPE_LENGTH (builtin_type_void_data_ptr));
+  gdb_byte *tmp = (gdb_byte *)alloca(TYPE_LENGTH(builtin_type_void_data_ptr));
+  LONGEST val = unpack_long(type, buf);
+  store_unsigned_integer(tmp, TYPE_LENGTH(builtin_type_void_data_ptr), val);
+  return extract_unsigned_integer(tmp,
+                                  TYPE_LENGTH(builtin_type_void_data_ptr));
 }
 
 

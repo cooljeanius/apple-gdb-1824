@@ -1663,7 +1663,7 @@ check_typedef (struct type *type)
 
       if (!TYPE_TARGET_TYPE (type))
 	{
-	  char *name;
+	  const char *name;
 	  struct symbol *sym;
 
 	  /* It is dangerous to call lookup_symbol if we are currently
@@ -1709,7 +1709,7 @@ check_typedef (struct type *type)
 
   if (TYPE_IS_OPAQUE(type) && opaque_type_resolution && !currently_reading_symtab)
     {
-      char *name = type_name_no_tag(type);
+      const char *name = type_name_no_tag(type);
       struct type *newtype;
       if (name == NULL)
 	{
@@ -1739,7 +1739,7 @@ check_typedef (struct type *type)
   /* Otherwise, rely on the stub flag being set for opaque/stubbed types */
   else if (TYPE_STUB(type) && !currently_reading_symtab)
     {
-      char *name = type_name_no_tag(type);
+      const char *name = type_name_no_tag(type);
       /* FIXME: shouldn't we separately check the TYPE_NAME and the
          TYPE_TAG_NAME, and look in STRUCT_DOMAIN and/or VAR_DOMAIN
          as appropriate?  (this code was written before TYPE_NAME and

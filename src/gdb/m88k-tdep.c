@@ -1,4 +1,4 @@
-/* Target-dependent code for the Motorola 88000 series.
+/* m88k-tdep.c: Target-dependent code for the Motorola 88000 series.
 
    Copyright 2004, 2005 Free Software Foundation, Inc.
 
@@ -51,9 +51,9 @@ m88k_fetch_instruction (CORE_ADDR pc)
 /* Return the name of register REGNUM.  */
 
 static const char *
-m88k_register_name (int regnum)
+m88k_register_name(int regnum)
 {
-  static char *register_names[] =
+  static const char *register_names[] =
   {
     "r0",  "r1",  "r2",  "r3",  "r4",  "r5",  "r6",  "r7",
     "r8",  "r9",  "r10", "r11", "r12", "r13", "r14", "r15",
@@ -62,7 +62,7 @@ m88k_register_name (int regnum)
     "epsr", "fpsr", "fpcr", "sxip", "snip", "sfip"
   };
 
-  if (regnum >= 0 && regnum < ARRAY_SIZE (register_names))
+  if ((regnum >= 0) && ((size_t)regnum < ARRAY_SIZE(register_names)))
     return register_names[regnum];
 
   return NULL;
@@ -653,7 +653,7 @@ m88k_frame_cache (struct frame_info *next_frame, void **this_cache)
   CORE_ADDR frame_sp;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct m88k_frame_cache *)*this_cache;
 
   cache = FRAME_OBSTACK_ZALLOC (struct m88k_frame_cache);
   cache->saved_regs = trad_frame_alloc_saved_regs (next_frame);
@@ -800,7 +800,7 @@ m88k_supply_gregset (const struct regset *regset,
 		     struct regcache *regcache,
 		     int regnum, const void *gregs, size_t len)
 {
-  const gdb_byte *regs = gregs;
+  const gdb_byte *regs = (const gdb_byte *)gregs;
   int i;
 
   for (i = 0; i < M88K_NUM_REGS; i++)

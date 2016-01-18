@@ -95,6 +95,13 @@
 # include "arm-macosx-tdep.h"
 #endif /* TARGET_ARM && !__GDB_ARM_MACOSX_TDEP_H__ */
 
+#if !defined(_PTRACE_) && !defined(PTRACE_CONT) && !defined(PTRACE_DETACH) && \
+    !defined(PTRACE_KILL) && !defined(PTRACE_TRACEME)
+# if !defined(_NM_NEXTSTEP_H_) && !defined(NM_NEXTSTEP)
+#  include "vx-share/ptrace.h"
+# endif /* !_NM_NEXTSTEP_H_ && !NM_NEXTSTEP */
+#endif /* !_PTRACE_ && !PTRACE_CONT && !PTRACE_DETACH && !PTRACE_KILL && !PTRACE_TRACEME */
+
 #include <mach/mach_vm.h>
 
 #if defined(LIBXML2_IS_USABLE) && LIBXML2_IS_USABLE
@@ -1250,7 +1257,6 @@ macosx_check_new_threads(thread_array_t thread_list, unsigned int nthreads)
    stuff in inflow.c looks bogus to me, we ought to use MacOS X
    specific versions everywhere we can, and avoid that mess...
 */
-
 static void
 macosx_child_stop(void)
 {
@@ -1266,6 +1272,7 @@ macosx_child_stop(void)
   }
 }
 
+/* */
 static void
 macosx_child_resume(ptid_t ptid, int step, enum target_signal signal)
 {
@@ -1286,6 +1293,7 @@ macosx_child_resume(ptid_t ptid, int step, enum target_signal signal)
   pid = ptid_get_pid(ptid);
   thread = ptid_get_tid(ptid);
 
+  /* pid 0 is reserved for kernel_task on OS X: */
   if (pid == 0) {
     ; /* should probably do something; right now just silence a warning */
   }
@@ -1360,7 +1368,6 @@ macosx_process_pending_event(struct macosx_inferior_status *ns ATTRIBUTE_UNUSED,
  * hold a macosx_pending_event structure, and in that case, this just
  * processes that event.
  */
-
 ptid_t
 macosx_wait(struct macosx_inferior_status *ns,
             struct target_waitstatus *status, gdb_client_data client_data)
@@ -1813,7 +1820,10 @@ macosx_child_attach(char *args, int from_tty ATTRIBUTE_UNUSED)
 {
   task_t itask;
   int pid;
+  /* Keep the preprocessor condition the same as where the variable is used: */
+#ifdef PTRACE_ATTACHEXC
   int ret;
+#endif /* PTRACE_ATTACHEXC */
   kern_return_t kret;
   char *exec_file = NULL;
 
@@ -1871,6 +1881,7 @@ macosx_child_attach(char *args, int from_tty ATTRIBUTE_UNUSED)
 
   if (inferior_ptrace_on_attach_flag)
     {
+#ifdef PTRACE_ATTACHEXC
       ret = call_ptrace(PTRACE_ATTACHEXC, pid, 0, 0);
       if (ret != 0)
         {
@@ -1889,17 +1900,18 @@ macosx_child_attach(char *args, int from_tty ATTRIBUTE_UNUSED)
                     pid, safe_strerror(errno), errno);
             }
         }
+#else
+      error(_("PTRACE_ATTACHEXC not defined for this configuration."));
+#endif /* PTRACE_ATTACHEXC */
 
       macosx_status->attached_in_ptrace = 1;
       macosx_status->stopped_in_ptrace = 0;
       macosx_status->stopped_in_softexc = 0;
 
       macosx_status->suspend_count = 0;
-
     }
   else if (inferior_bind_exception_port_flag)
     {
-
       kret = macosx_inferior_suspend_mach(macosx_status);
       if (kret != KERN_SUCCESS)
         {
@@ -2277,7 +2289,11 @@ macosx_ptrace_me(void)
     }
 
   call_ptrace(PTRACE_TRACEME, 0, 0, 0);
+#ifdef PTRACE_SIGEXC
   call_ptrace(PTRACE_SIGEXC, 0, 0, 0);
+#else
+  warning(_("PTRACE_SIGEXC not defined for this configuration."));
+#endif /* PTRACE_SIGEXC */
 }
 
 static void
@@ -2419,6 +2435,10 @@ macosx_get_task_for_pid_rights(void)
   return 1;
 }
 
+/* These comes from fork_child.c; un-nested for '-Wnested-externs': */
+extern char *exec_pathname;
+extern char *exec_argv0;
+
 /* This version of macosx_child_create_inferior is needed to work
    around the fact that the task port does NOT persist across a
    fork/exec.  It would be nice if we could just switch to the new
@@ -2445,10 +2465,11 @@ macosx_child_create_inferior(char *exec_file, char *allargs, char **env,
   cpu_type_t cpu = 0;
   const char *osabi_name = gdbarch_osabi_name(gdbarch_osabi(current_gdbarch));
   struct gdb_exception e;
-
-  /* These comes from fork_child.c:  */
-  extern char *exec_pathname;
-  extern char *exec_argv0;
+  int ps_flags;
+  
+  if (osabi_name == NULL) {
+    warning(_("Null osabi name for current architecture."));
+  }
 
   /* If no exec file handed to us, get it from the exec-file command
      -- with a good, common error message if none is specified.  */
@@ -2522,9 +2543,9 @@ macosx_child_create_inferior(char *exec_file, char *allargs, char **env,
 
   retval = posix_spawnattr_init(&attr);
   if (retval != 0)
-    error("Could NOT initialize attributes for posix_spawn, error: %d", retval);
+    error("Failed to initialize attributes for posix_spawn, error: %d", retval);
 
-  int ps_flags = 0;
+  ps_flags = 0;
 
 # ifndef _POSIX_SPAWN_DISABLE_ASLR
 #  define _POSIX_SPAWN_DISABLE_ASLR 0x0100
@@ -2566,15 +2587,14 @@ macosx_child_create_inferior(char *exec_file, char *allargs, char **env,
      running.  */
   attach_flag = 0;
 
-  if (e.reason != NO_ERROR)
+  if (e.reason != (int)NO_ERROR)
     throw_exception(e);
 
   if (target_can_async_p())
     target_async(inferior_event_handler, 0);
 
   clear_proceed_status();
-  proceed((CORE_ADDR)-1, TARGET_SIGNAL_0, 0);
-
+  proceed((CORE_ADDR)(-1L), TARGET_SIGNAL_0, 0);
 }
 #else /* #if defined(TARGET_ARM)  */
 

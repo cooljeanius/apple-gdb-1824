@@ -405,7 +405,7 @@ alpha_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	    }
 	  else
 	    {
-	      int tlen = sizeof(arg_reg_buffer) - offset;
+	      size_t tlen = sizeof(arg_reg_buffer) - offset;
 	      memcpy (arg_reg_buffer + offset, contents, tlen);
 	      offset += tlen;
 	      contents += tlen;

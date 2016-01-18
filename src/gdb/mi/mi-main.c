@@ -2836,8 +2836,8 @@ start_remote_counts (struct mi_timestamp *tv, const char *token)
   tv->saved_remotestats = current_remote_stats;
   if (token)
     {
-      int bufsz = sizeof (tv->remotestats.mi_token);
-      strncpy (tv->remotestats.mi_token, token, bufsz - 1);
+      size_t bufsz = sizeof(tv->remotestats.mi_token);
+      strncpy(tv->remotestats.mi_token, token, (bufsz - 1UL));
       tv->remotestats.mi_token[bufsz - 1] = '\0';
     }
   else

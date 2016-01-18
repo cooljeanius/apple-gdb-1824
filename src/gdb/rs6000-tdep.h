@@ -35,7 +35,7 @@ extern CORE_ADDR rs6000_push_dummy_call(struct gdbarch *, struct value *,
                                         struct regcache *, CORE_ADDR, int,
                                         struct value **, CORE_ADDR, int,
                                         CORE_ADDR);
-extern int rs6000_in_solib_return_trampoline(CORE_ADDR, char *);
+extern int rs6000_in_solib_return_trampoline(CORE_ADDR, const char *);
 extern CORE_ADDR rs6000_skip_trampoline_code(CORE_ADDR);
 extern void rs6000_register_to_value(struct frame_info *, int,
                                      struct type *, gdb_byte *);

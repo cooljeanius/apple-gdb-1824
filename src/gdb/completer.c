@@ -384,7 +384,8 @@ char **
 complete_line(const char *text, const char *line_buffer, int point)
 {
   char **list = NULL;
-  char *tmp_command, *p;
+  char *tmp_command;
+  const char *p;
   /* Pointer within tmp_command which corresponds to text.  */
   char *word;
   struct cmd_list_element *c, *result_list;

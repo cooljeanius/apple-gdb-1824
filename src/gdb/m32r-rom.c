@@ -73,7 +73,7 @@ static char *download_path;	/* user-settable path for SREC files     */
 static void
 m32r_load_section (bfd *abfd, asection *s, void *obj)
 {
-  unsigned int *data_count = obj;
+  unsigned int *data_count = (unsigned int *)obj;
   if (s->flags & SEC_LOAD)
     {
       bfd_size_type section_size = bfd_section_size (abfd, s);
@@ -199,7 +199,7 @@ static void mon2000_open (char *args, int from_tty);
    different names than GDB does, and don't support all the registers
    either. So, typing "info reg sp" becomes an "A7". */
 
-static char *m32r_regnames[] =
+static const char *m32r_regnames[] =
   { "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
   "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15",
   "psw", "cbr", "spi", "spu", "bpc", "pc", "accl", "acch",
@@ -209,7 +209,7 @@ static void
 m32r_supply_register (char *regname, int regnamelen, char *val, int vallen)
 {
   int regno;
-  int num_regs = sizeof (m32r_regnames) / sizeof (m32r_regnames[0]);
+  size_t num_regs = (sizeof(m32r_regnames) / sizeof(m32r_regnames[0]));
 
   for (regno = 0; regno < num_regs; regno++)
     if (strncmp (regname, m32r_regnames[regno], regnamelen) == 0)
@@ -282,7 +282,7 @@ m32r_supply_register (char *regname, int regnamelen, char *val, int vallen)
 
 static struct target_ops m32r_ops;
 
-static char *m32r_inits[] = { "\r", NULL };
+static const char *m32r_inits[] = { "\r", NULL };
 
 static struct monitor_ops m32r_cmds;
 
@@ -533,8 +533,10 @@ m32r_upload_command (char *args, int from_tty)
   clear_symtab_users ();
 }
 
+extern void _initialize_m32r_rom(void); /* -Wmissing-prototypes */
+
 void
-_initialize_m32r_rom (void)
+_initialize_m32r_rom(void)
 {
   /* Initialize m32r RevC monitor target */
   init_m32r_cmds ();

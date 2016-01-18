@@ -3148,7 +3148,7 @@ read_objc_object(CORE_ADDR addr, struct objc_object *object)
   gdb_stderr = gdb_null;
 
   success = safe_read_memory_unsigned_integer(addr, addrsize,
-                                              &(object->isa));
+                                              (ULONGEST *)&(object->isa));
   if (debug_objc) {
     fprintf_unfiltered(gdb_stdlog,
                        "read_objc_object: success reading object: %d.\n",

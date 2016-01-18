@@ -1,4 +1,4 @@
-/* Target-dependent code for GDB, the GNU debugger.
+/* rs6000-tdep.c: Target-dependent code for GDB, the GNU debugger.
 
    Copyright 1986, 1987, 1989, 1991, 1992, 1993, 1994, 1995, 1996,
    1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software
@@ -107,7 +107,7 @@ struct rs6000_framedata
 
 struct reg
   {
-    char *name;			/* name of register */
+    const char *name;		/* name of register */
     unsigned char sz32;		/* size on 32-bit arch, 0 if nonextant */
     unsigned char sz64;		/* size on 64-bit arch, 0 if nonextant */
     unsigned char fpr;		/* whether register is floating-point */
@@ -899,15 +899,13 @@ skip_prologue (CORE_ADDR pc, CORE_ADDR lim_pc, struct rs6000_framedata *fdata)
 	      fdata->fpr_offset = SIGNED_SHORT (op) + offset;
 	    }
 	  continue;
-
 	}
       else if (((op & 0xfc1f0000) == 0xbc010000) ||	/* stm Rx, NUM(r1) */
 	       (((op & 0xfc1f0000) == 0x90010000 ||	/* st rx,NUM(r1) */
 		 (op & 0xfc1f0003) == 0xf8010000) &&	/* std rx,NUM(r1) */
 		(op & 0x03e00000) >= 0x01a00000))	/* rx >= r13 */
 	{
-
-	  reg = GET_SRC_REG (op);
+	  reg = GET_SRC_REG(op);
 	  if (fdata->saved_gpr == -1 || fdata->saved_gpr > reg)
 	    {
 	      fdata->saved_gpr = reg;
@@ -916,7 +914,6 @@ skip_prologue (CORE_ADDR pc, CORE_ADDR lim_pc, struct rs6000_framedata *fdata)
 	      fdata->gpr_offset = SIGNED_SHORT (op) + offset;
 	    }
 	  continue;
-
 	}
       else if ((op & 0xffff0000) == 0x60000000)
         {
@@ -926,7 +923,6 @@ skip_prologue (CORE_ADDR pc, CORE_ADDR lim_pc, struct rs6000_framedata *fdata)
 	     instructions. */
 	  prev_insn_was_prologue_insn = 0;
 	  continue;
-
 	}
       else if ((op & 0xffff0000) == 0x3c000000)
 	{			/* addis 0,0,NUM, used
@@ -935,7 +931,6 @@ skip_prologue (CORE_ADDR pc, CORE_ADDR lim_pc, struct rs6000_framedata *fdata)
 	  fdata->frameless = 0;
           r0_contains_arg = 0;
 	  continue;
-
 	}
       else if ((op & 0xffff0000) == 0x60000000)
 	{			/* ori 0,0,NUM, 2nd ha
@@ -944,7 +939,6 @@ skip_prologue (CORE_ADDR pc, CORE_ADDR lim_pc, struct rs6000_framedata *fdata)
 	  fdata->frameless = 0;
           r0_contains_arg = 0;
 	  continue;
-
 	}
       else if (lr_reg >= 0 &&
 	       /* std Rx, NUM(r1) || stdu Rx, NUM(r1) */
@@ -966,7 +960,6 @@ skip_prologue (CORE_ADDR pc, CORE_ADDR lim_pc, struct rs6000_framedata *fdata)
 	      fdata->lr_offset += SIGNED_SHORT (op);
 	    }
 	  continue;
-
 	}
       else if (cr_reg >= 0 &&
 	       /* std Rx, NUM(r1) || stdu Rx, NUM(r1) */
@@ -987,30 +980,25 @@ skip_prologue (CORE_ADDR pc, CORE_ADDR lim_pc, struct rs6000_framedata *fdata)
 	      fdata->cr_offset += SIGNED_SHORT (op);
 	    }
 	  continue;
-
 	}
       else if (op == 0x48000005)
 	{			/* bl .+4 used in
 				   -mrelocatable */
 	  continue;
-
 	}
       else if (op == 0x48000004)
 	{			/* b .+4 (xlc) */
 	  break;
-
 	}
       else if ((op & 0xffff0000) == 0x3fc00000 ||  /* addis 30,0,foo@ha, used
 						      in V.4 -mminimal-toc */
 	       (op & 0xffff0000) == 0x3bde0000)
 	{			/* addi 30,30,foo@l */
 	  continue;
-
 	}
       else if ((op & 0xfc000001) == 0x48000001)
 	{			/* bl foo,
 				   to save fprs??? */
-
 	  fdata->frameless = 0;
 	  /* Don't skip over the subroutine call if it is not within
 	     the first three instructions of the prologue and either
@@ -1040,7 +1028,6 @@ skip_prologue (CORE_ADDR pc, CORE_ADDR lim_pc, struct rs6000_framedata *fdata)
 	    break;		/* don't skip over
 				   this branch */
 	  continue;
-
 	}
       /* update stack pointer */
       else if ((op & 0xfc1f0000) == 0x94010000)
@@ -1289,7 +1276,6 @@ skip_prologue (CORE_ADDR pc, CORE_ADDR lim_pc, struct rs6000_framedata *fdata)
             }
 	}
       /* End BookE related instructions.  */
-
       else
 	{
 	  /* Not a recognized prologue instruction.
@@ -1338,7 +1324,6 @@ skip_prologue (CORE_ADDR pc, CORE_ADDR lim_pc, struct rs6000_framedata *fdata)
 
       if (op == 0x4def7b82)
 	{			/* cror 0xf, 0xf, 0xf (nop) */
-
 	  /* Check and see if we are in main.  If so, skip over this
 	     initializer function as well.  */
 
@@ -1702,7 +1687,7 @@ rs6000_extract_return_value (struct type *valtype, gdb_byte *regbuf,
    @FIX code.  */
 
 int
-rs6000_in_solib_return_trampoline(CORE_ADDR pc, char *name)
+rs6000_in_solib_return_trampoline(CORE_ADDR pc, const char *name)
 {
   return (name && !strncmp(name, "@FIX", 4));
 }
@@ -2638,10 +2623,10 @@ static const struct reg registers_e500[] =
 struct variant
   {
     /* Name of this variant.  */
-    char *name;
+    const char *name;
 
     /* English description of the variant.  */
-    char *description;
+    const char *description;
 
     /* bfd_arch_info.arch corresponding to variant.  */
     enum bfd_architecture arch;
@@ -3402,9 +3387,9 @@ rs6000_dump_tdep (struct gdbarch *current_gdbarch, struct ui_file *file)
 static struct cmd_list_element *info_powerpc_cmdlist = NULL;
 
 static void
-rs6000_info_powerpc_command (char *args, int from_tty)
+rs6000_info_powerpc_command(const char *args, int from_tty)
 {
-  help_list (info_powerpc_cmdlist, "info powerpc ", class_info, gdb_stdout);
+  help_list(info_powerpc_cmdlist, "info powerpc ", class_info, gdb_stdout);
 }
 
 /* Initialization code.  */
@@ -3418,7 +3403,7 @@ _initialize_rs6000_tdep (void)
 #ifdef TM_NEXTSTEP
   /* We have our own bits we want to use instead.  */
   return;
-#endif
+#endif /* TM_NEXTSTEP */
   /* APPLE LOCAL end Darwin hack */
 
   gdbarch_register (bfd_arch_rs6000, rs6000_gdbarch_init, rs6000_dump_tdep);
@@ -3429,3 +3414,5 @@ _initialize_rs6000_tdep (void)
 		  _("Various POWERPC info specific commands."),
 		  &info_powerpc_cmdlist, "info powerpc ", 0, &infolist);
 }
+
+/* EOF */

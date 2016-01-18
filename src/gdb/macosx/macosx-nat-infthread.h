@@ -5,6 +5,10 @@
 #ifndef __GDB_MACOSX_NAT_INFTHREAD_H__
 #define __GDB_MACOSX_NAT_INFTHREAD_H__
 
+#ifdef HAVE_MACH_MACH_H
+# include <mach/mach.h>
+#endif /* HAVE_MACH_MACH_H */
+
 struct macosx_inferior_status;
 
 extern kern_return_t modify_trace_bit(thread_t thread, int value);

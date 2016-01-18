@@ -70,17 +70,17 @@ find_size_for_pointer_math (struct type *ptr_type)
 	sz = 1;
       else
 	{
-	  char *name;
+	  const char *name;
 
-	  name = TYPE_NAME (ptr_target);
+	  name = TYPE_NAME(ptr_target);
 	  if (name == NULL)
-	    name = TYPE_TAG_NAME (ptr_target);
+	    name = TYPE_TAG_NAME(ptr_target);
 	  if (name == NULL)
-	    error (_("Cannot perform pointer math on incomplete types, "
-		   "try casting to a known type, or void *."));
+	    error(_("Cannot perform pointer math on incomplete types, "
+		    "try casting to a known type, or void *."));
 	  else
-	    error (_("Cannot perform pointer math on incomplete type \"%s\", "
-		   "try casting to a known type, or void *."), name);
+	    error(_("Cannot perform pointer math on incomplete type \"%s\", "
+		    "try casting to a known type, or void *."), name);
 	}
     }
   return sz;

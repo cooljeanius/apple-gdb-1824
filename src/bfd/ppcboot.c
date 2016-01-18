@@ -468,6 +468,10 @@ ppcboot_bfd_print_private_bfd_data(bfd *abfd, PTR farg)
 # define ppcboot_bfd_print_private_bfd_dat ppcboot_bfd_print_private_bfd_data
 #endif /* !ppcboot_bfd_print_private_bfd_dat */
 
+#ifndef ppcboot_vec
+# define ppcboot_vec powerpc_boot_vec
+#endif /* !ppcboot_vec */
+
 const bfd_target ppcboot_vec =
 {
   (char *)"ppcboot",		/* name */

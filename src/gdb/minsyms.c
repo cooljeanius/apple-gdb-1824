@@ -915,11 +915,11 @@ compare_minimal_symbols (const void *fn1p, const void *fn2p)
   else
     /* addrs are equal: sort by name */
     {
-      char *name1 = SYMBOL_LINKAGE_NAME (fn1);
-      char *name2 = SYMBOL_LINKAGE_NAME (fn2);
+      const char *name1 = SYMBOL_LINKAGE_NAME(fn1);
+      const char *name2 = SYMBOL_LINKAGE_NAME(fn2);
 
       if (name1 && name2)	/* both have names */
-	return strcmp (name1, name2);
+	return strcmp(name1, name2);
       else if (name2)
 	return 1;		/* fn1 has no name, so it is "less" */
       else if (name1)		/* fn2 has no name, so it is "less" */

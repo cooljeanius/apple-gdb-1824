@@ -4,7 +4,7 @@
    Free Software Foundation, Inc.
 
    Contributed by the Center for Software Science at the
-   University of Utah (pa-gdb-bugs@cs.utah.edu).
+   University of Utah <pa-gdb-bugs@cs.utah.edu>.
 
    This file is part of GDB.
 

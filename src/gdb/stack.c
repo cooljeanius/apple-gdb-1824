@@ -629,7 +629,7 @@ print_frame(struct frame_info *fi, int print_level, enum print_what print_what,
 	    int print_args, struct symtab_and_line sal)
 {
   struct symbol *func;
-  char *funname = 0;
+  const char *funname = (const char *)0;
   /* APPLE LOCAL begin subroutine inlining  */
   char *filename = NULL;
   int line_num = 0;
@@ -1057,7 +1057,7 @@ frame_info(const char *addr_exp, int from_tty)
   struct symtab *s;
   struct frame_info *calling_frame_info;
   int numregs;
-  char *funname = 0;
+  const char *funname = (const char *)0;
   enum language funlang = language_unknown;
   const char *pc_regname;
   int selected_frame_p;

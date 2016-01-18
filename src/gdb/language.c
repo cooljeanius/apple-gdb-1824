@@ -60,9 +60,9 @@ static void unk_lang_error(const char *);
 
 static int unk_lang_parser(void);
 
-static void show_check(char *, int);
+static void show_check(const char *, int);
 
-static void set_check(char *, int);
+static void set_check(const char *, int);
 
 static void set_type_range_case(void);
 
@@ -72,7 +72,7 @@ static void unk_lang_printchar(int c, struct ui_file *stream);
 
 static struct type *unk_lang_create_fundamental_type(struct objfile *, int);
 
-static void unk_lang_print_type(struct type *, char *, struct ui_file *,
+static void unk_lang_print_type(struct type *, const char *, struct ui_file *,
 				int, int);
 
 static int unk_lang_value_print(struct value *, struct ui_file *, int,
@@ -149,9 +149,10 @@ show_language_command (struct ui_file *file, int from_tty,
 
 /* Set command.  Change the current working language. */
 static void
-set_language_command (char *ignore, int from_tty, struct cmd_list_element *c)
+set_language_command(const char *ignore, int from_tty,
+		     struct cmd_list_element *c)
 {
-  unsigned i;
+  unsigned int i;
   enum language flang;
   char *err_lang;
 
@@ -233,7 +234,7 @@ show_type_command (struct ui_file *file, int from_tty,
 
 /* Set command.  Change the setting for type checking. */
 static void
-set_type_command (char *ignore, int from_tty, struct cmd_list_element *c)
+set_type_command(const char *ignore, int from_tty, struct cmd_list_element *c)
 {
   if (strcmp (type, "on") == 0)
     {
@@ -280,7 +281,7 @@ show_range_command (struct ui_file *file, int from_tty,
 
 /* Set command.  Change the setting for range checking. */
 static void
-set_range_command (char *ignore, int from_tty, struct cmd_list_element *c)
+set_range_command(const char *ignore, int from_tty, struct cmd_list_element *c)
 {
   if (strcmp (range, "on") == 0)
     {
@@ -327,7 +328,7 @@ show_case_command (struct ui_file *file, int from_tty,
 
 /* Set command.  Change the setting for case sensitivity. */
 static void
-set_case_command (char *ignore, int from_tty, struct cmd_list_element *c)
+set_case_command(const char *ignore, int from_tty, struct cmd_list_element *c)
 {
    if (DEPRECATED_STREQ (case_sensitive, "on"))
    {
@@ -424,9 +425,9 @@ make_cleanup_restore_language(enum language new_lang)
 /* This page contains functions that update the global vars
    language, type and range. */
 static void
-set_lang_str (void)
+set_lang_str(void)
 {
-  char *prefix = "";
+  const char *prefix = "";
 
   if (language)
     xfree (language);
@@ -436,10 +437,11 @@ set_lang_str (void)
   language = concat (prefix, current_language->la_name, (char *)NULL);
 }
 
+/* */
 static void
-set_type_str (void)
+set_type_str(void)
 {
-  char *tmp = NULL, *prefix = "";
+  const char *tmp = NULL, *prefix = "";
 
   if (type)
     xfree (type);
@@ -464,10 +466,11 @@ set_type_str (void)
   type = concat (prefix, tmp, (char *)NULL);
 }
 
+/* */
 static void
-set_range_str (void)
+set_range_str(void)
 {
-  char *tmp, *pref = "";
+  const char *tmp, *pref = "";
 
   if (range_mode == range_mode_auto)
     pref = "auto; currently ";
@@ -492,12 +495,13 @@ set_range_str (void)
   range = concat (pref, tmp, (char *)NULL);
 }
 
+/* */
 static void
-set_case_str (void)
+set_case_str(void)
 {
-   char *tmp = NULL, *prefix = "";
+   const char *tmp = NULL, *prefix = "";
 
-   if (case_mode==case_mode_auto)
+   if (case_mode == case_mode_auto)
       prefix = "auto; currently ";
 
    switch (case_sensitivity)
@@ -985,22 +989,23 @@ language_str(enum language lang)
   return "Unknown";
 }
 
+/* */
 static void
-set_check(char *ignore, int from_tty)
+set_check(const char *ignore ATTRIBUTE_UNUSED, int from_tty)
 {
   printf_unfiltered("\"set check\" must be followed by the name of a check subcommand.\n");
   help_list(setchecklist, "set check ", (enum command_class)-1,
             gdb_stdout);
 }
 
+/* */
 static void
-show_check (char *ignore, int from_tty)
+show_check(const char *ignore ATTRIBUTE_UNUSED, int from_tty)
 {
-  cmd_show_list (showchecklist, from_tty, "");
+  cmd_show_list(showchecklist, from_tty, "");
 }
 
-/* Add a language to the set of known languages.  */
-
+/* Add a language to the set of known languages: */
 void
 add_language (const struct language_defn *lang)
 {
@@ -1135,7 +1140,7 @@ unk_lang_create_fundamental_type(struct objfile *objfile ATTRIBUTE_UNUSED,
 
 static void ATTR_NORETURN
 unk_lang_print_type(struct type *type ATTRIBUTE_UNUSED,
-		    char *varstring ATTRIBUTE_UNUSED,
+		    const char *varstring ATTRIBUTE_UNUSED,
                     struct ui_file *stream ATTRIBUTE_UNUSED,
 		    int show ATTRIBUTE_UNUSED, int level ATTRIBUTE_UNUSED)
 {

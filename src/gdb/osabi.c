@@ -606,8 +606,9 @@ set_osabi_from_string(char *in_osabi_string)
   return 1;
 }
 
+/* */
 static void
-set_osabi(char *args, int from_tty, struct cmd_list_element *c)
+set_osabi(const char *args, int from_tty, struct cmd_list_element *c)
 {
   struct gdbarch_info info;
 

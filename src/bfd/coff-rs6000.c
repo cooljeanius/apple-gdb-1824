@@ -1762,9 +1762,9 @@ xcoff_write_armap_big(bfd *abfd, unsigned int elength ATTRIBUTE_UNUSED,
 
   current_bfd = abfd->archive_head;
   if (current_bfd != NULL)
-    arch_info = bfd_get_arch_info (current_bfd);
-    i = 0;
-    while (current_bfd != NULL && i < orl_count)
+    arch_info = bfd_get_arch_info(current_bfd);
+  i = 0;
+  while ((current_bfd != NULL) && (i < orl_count))
     {
       while (map[i].u.abfd == current_bfd)
 	{

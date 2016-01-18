@@ -193,7 +193,7 @@ enum gdb_regnum {
 #define FLAG_V		(1<<28)
 #define FLAG_C		(1<<29)
 #define FLAG_Z		(1<<30)
-#define FLAG_N		(1<<31)
+#define FLAG_N		(1U<<31)
 
 /* Type of floating-point code in use by inferior.  There are really 3 models
    that are traditionally supported (plus the endianness issue), but gcc can
@@ -261,7 +261,7 @@ struct gdbarch_tdep
 
 struct register_info
 {
-  char *name;
+  const char *name;
   int offset;
   struct type **type;
 };

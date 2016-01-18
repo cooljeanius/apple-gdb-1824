@@ -80,6 +80,10 @@
 # define BREAKPOINT_C_NOT_ON_i386 1
 #endif /* __i386__ */
 
+#ifndef INVALID_ADDRESS
+# define INVALID_ADDRESS ((CORE_ADDR)(-1L))
+#endif /* !INVALID_ADDRESS */
+
 /* Prototypes for local functions. */
 
 static void until_break_command_continuation(struct continuation_arg *arg);
@@ -317,7 +321,7 @@ static void restore_saved_pending_break_support(void *val);
    handling the shared library event.  In any case, it's stupid
    to let one unresolvable breakpoint scotch setting all the rest.  */
 
-static void breakpoint_sals_to_pc(struct symtabs_and_lines *, char *);
+static void breakpoint_sals_to_pc(struct symtabs_and_lines *, const char *);
 /* APPLE LOCAL:  */
 static int safe_breakpoint_sals_to_pc(struct symtabs_and_lines *, const char *);
 
@@ -6515,7 +6519,7 @@ parse_breakpoint_sals(const char **address,
 
 static void
 breakpoint_sals_to_pc(struct symtabs_and_lines *sals,
-		      char *address)
+		      const char *address)
 {
   int i;
   for (i = 0; i < sals->nelts; i++)

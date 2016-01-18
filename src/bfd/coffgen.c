@@ -1034,7 +1034,7 @@ coff_write_native_symbol(bfd *abfd, coff_symbol_type *symbol,
      point to the right place in the lineno table.  */
   if (lineno && !symbol->done_lineno && symbol->symbol.section->owner != NULL)
     {
-      unsigned int count = 0;
+      unsigned int count = 0U;
 
       lineno[count].u.offset = *written;
       if (native->u.syment.n_numaux)
@@ -1042,7 +1042,8 @@ coff_write_native_symbol(bfd *abfd, coff_symbol_type *symbol,
 	  union internal_auxent *a = &((native + 1)->u.auxent);
 
 	  a->x_sym.x_fcnary.x_fcn.x_lnnoptr =
-	    symbol->symbol.section->output_section->moving_line_filepos;
+	    ((bfd_signed_vma)
+	     symbol->symbol.section->output_section->moving_line_filepos);
 	}
 
       /* Count and relocate all other linenumbers.  */

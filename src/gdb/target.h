@@ -385,7 +385,7 @@ struct target_ops
     void (*to_terminal_info)(const char *, int);
     void (*to_kill) (void);
     void (*to_load) (char *, int);
-    int (*to_lookup_symbol) (char *, CORE_ADDR *);
+    int (*to_lookup_symbol)(const char *, CORE_ADDR *);
     void (*to_create_inferior) (char *, char *, char **, int);
     void (*to_post_startup_inferior) (ptid_t);
     void (*to_acknowledge_created_inferior) (int);

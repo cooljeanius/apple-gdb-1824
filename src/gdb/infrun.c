@@ -54,7 +54,11 @@
 /* APPLE LOCAL - subroutine inlining  */
 #include "inlining.h"
 
-#include "macosx-nat-dyld.h"
+#ifdef MACOSX_DYLD
+# include "macosx/macosx-nat-dyld.h"
+#else
+# define INFRUN_C_NO_DYLD 1
+#endif /* MACOSX_DYLD */
 
 /* APPLE LOCAL: need objfile.h for pc_set_load_state.  */
 #include "objfiles.h"
@@ -639,7 +643,7 @@ set_scheduler_locking_mode (enum scheduler_locking_mode new_mode)
 
   if (debug_handcall_setup)
     {
-      char *old_str = "UNKNOWN", *new_str = "UNKNOWN";
+      const char *old_str = "UNKNOWN", *new_str = "UNKNOWN";
 
       switch (old_mode)
 	{

@@ -1101,13 +1101,13 @@ typename:	TYPENAME
 
 nonempty_typelist
 	:	type
-		{ $$ = (struct type **) malloc (sizeof (struct type *) * 2);
+		{ $$ = (struct type **)malloc(sizeof(struct type *) * 2UL);
 		  $<ivec>$[0] = 1;	/* Number of types in vector */
 		  $$[1] = $1;
 		}
 	|	nonempty_typelist ',' type
-		{ int len = sizeof (struct type *) * (++($<ivec>1[0]) + 1);
-		  $$ = (struct type **) realloc ((char *) $1, len);
+		{ size_t len = (sizeof(struct type *) * (++($<ivec>1[0]) + 1));
+		  $$ = (struct type **)realloc((char *)$1, len);
 		  $$[$<ivec>$[0]] = $3;
 		}
 	;

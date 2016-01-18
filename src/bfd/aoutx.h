@@ -102,7 +102,7 @@ DESCRIPTION
 |	TDEFAULTS = -DDEFAULT_VECTOR=host_aout_big_vec
 |	TDEPFILES= host-aout.o trad-core.o
 
-	in the @file{config/@var{XXX}.mt} file, and modify @file{configure.in}
+	in the @file{config/@var{XXX}.mt} file, and modify @file{configure.ac}
 	to use the
 	@file{@var{XXX}.mt} file (by setting "<<bfd_target=XXX>>") when your
 	configuration is selected.  */
@@ -303,7 +303,7 @@ NAME (aout, reloc_type_lookup) (bfd *abfd, bfd_reloc_code_real_type code)
 	code = BFD_RELOC_14;
 	break;
       default:
-	code = 0; /* not sure if correct... */
+	code = (enum bfd_reloc_code_real)0; /* not sure if correct... */
 	break;
     }
   }
@@ -386,13 +386,13 @@ NAME(aout, swap_exec_header_in)(bfd *abfd,
   memset((void *)execp, 0, sizeof(struct internal_exec));
   /* Now fill in fields in the execp, from the bytes in the raw data.  */
   execp->a_info = (long)H_GET_32(abfd, bytes->e_info);
-  execp->a_text = GET_WORD(abfd, bytes->e_text);
-  execp->a_data = GET_WORD(abfd, bytes->e_data);
-  execp->a_bss = GET_WORD(abfd, bytes->e_bss);
-  execp->a_syms = GET_WORD(abfd, bytes->e_syms);
-  execp->a_entry = GET_WORD(abfd, bytes->e_entry);
-  execp->a_trsize = GET_WORD(abfd, bytes->e_trsize);
-  execp->a_drsize = GET_WORD(abfd, bytes->e_drsize);
+  execp->a_text = (bfd_vma)GET_WORD(abfd, bytes->e_text);
+  execp->a_data = (bfd_vma)GET_WORD(abfd, bytes->e_data);
+  execp->a_bss = (bfd_vma)GET_WORD(abfd, bytes->e_bss);
+  execp->a_syms = (bfd_vma)GET_WORD(abfd, bytes->e_syms);
+  execp->a_entry = (bfd_vma)GET_WORD(abfd, bytes->e_entry);
+  execp->a_trsize = (bfd_vma)GET_WORD(abfd, bytes->e_trsize);
+  execp->a_drsize = (bfd_vma)GET_WORD(abfd, bytes->e_drsize);
 }
 # define NAME_swap_exec_header_in NAME(aout, swap_exec_header_in)
 #endif /* !NAME_swap_exec_header_in */
@@ -988,27 +988,30 @@ adjust_z_magic (bfd *abfd, struct internal_exec *execp)
          may need to pad it such that the .data section starts at a page
          boundary.  */
       if (ztih)
-	text_pad = ((obj_textsec (abfd)->filepos - obj_textsec (abfd)->vma)
-		    & (adata (abfd).page_size - 1));
+	text_pad = (bfd_size_type)((obj_textsec(abfd)->filepos
+				    - obj_textsec(abfd)->vma)
+				   & (adata(abfd).page_size - 1UL));
       else
-	text_pad = ((- obj_textsec (abfd)->vma)
-		    & (adata (abfd).page_size - 1));
+	text_pad = ((0UL - obj_textsec(abfd)->vma)
+		    & (adata(abfd).page_size - 1UL));
     }
 
   /* Find start of data.  */
   if (ztih)
     {
-      text_end = obj_textsec (abfd)->filepos + obj_textsec (abfd)->size;
-      text_pad += BFD_ALIGN (text_end, adata (abfd).page_size) - text_end;
+      text_end = (obj_textsec(abfd)->filepos + obj_textsec(abfd)->size);
+      text_pad += (bfd_size_type)(BFD_ALIGN(text_end, adata(abfd).page_size)
+				  - text_end);
     }
   else
     {
       /* Note that if page_size == zmagic_disk_block_size, then
 	 filepos == page_size, and this case is the same as the ztih
 	 case.  */
-      text_end = obj_textsec (abfd)->size;
-      text_pad += BFD_ALIGN (text_end, adata (abfd).page_size) - text_end;
-      text_end += obj_textsec (abfd)->filepos;
+      text_end = obj_textsec(abfd)->size;
+      text_pad += (bfd_size_type)(BFD_ALIGN(text_end, adata(abfd).page_size)
+				  - text_end);
+      text_end += obj_textsec(abfd)->filepos;
     }
   obj_textsec (abfd)->size += text_pad;
   text_end += text_pad;
@@ -1349,9 +1352,9 @@ aout_get_external_symbols(bfd *abfd)
 
       /* Get the size of the strings: */
       if ((bfd_seek(abfd, obj_str_filepos(abfd), SEEK_SET) != 0)
-	  || (bfd_bread((void *) string_chars, amt, abfd) != amt))
+	  || (bfd_bread((void *)string_chars, amt, abfd) != amt))
 	return FALSE;
-      stringsize = GET_WORD(abfd, string_chars);
+      stringsize = (bfd_size_type)GET_WORD(abfd, string_chars);
 
 #ifdef USE_MMAP
       if (! bfd_get_file_window(abfd, (ufile_ptr)obj_str_filepos(abfd),
@@ -1672,14 +1675,14 @@ asymbol *NAME(aout, make_empty_symbol)(bfd *abfd)
 {
   bfd_size_type amt = sizeof(aout_symbol_type);
 
-  aout_symbol_type *new;
-  new = (aout_symbol_type *)bfd_zalloc(abfd, amt);
-  if (!new) {
+  aout_symbol_type *newsym;
+  newsym = (aout_symbol_type *)bfd_zalloc(abfd, amt);
+  if (!newsym) {
       return NULL;
   }
-  new->symbol.the_bfd = abfd;
+  newsym->symbol.the_bfd = abfd;
 
-  return &new->symbol;
+  return &newsym->symbol;
 }
 
 /* Translate a set of internal symbols into external symbols: */
@@ -1696,7 +1699,7 @@ NAME(aout, translate_symbol_table)(bfd *abfd, aout_symbol_type *in,
     {
       bfd_vma x;
 
-      x = GET_WORD (abfd, ext->e_strx);
+      x = (bfd_vma)GET_WORD(abfd, ext->e_strx);
       in->symbol.the_bfd = abfd;
 
       /* For the normal symbols, the zero index points at the number
@@ -1711,10 +1714,10 @@ NAME(aout, translate_symbol_table)(bfd *abfd, aout_symbol_type *in,
       else
 	return FALSE;
 
-      in->symbol.value = GET_SWORD (abfd,  ext->e_value);
-      in->desc = H_GET_16 (abfd, ext->e_desc);
-      in->other = H_GET_8 (abfd, ext->e_other);
-      in->type = H_GET_8 (abfd,  ext->e_type);
+      in->symbol.value = (symvalue)GET_SWORD(abfd,  ext->e_value);
+      in->desc = H_GET_16(abfd, ext->e_desc);
+      in->other = H_GET_8(abfd, ext->e_other);
+      in->type = H_GET_8(abfd,  ext->e_type);
       in->symbol.udata.p = NULL;
 
       if (! translate_from_native_sym_flags (abfd, in))
@@ -2091,7 +2094,7 @@ NAME (aout, swap_ext_reloc_out) (bfd *abfd,
     {									\
       /* Undefined symbol.  */						\
       cache_ptr->sym_ptr_ptr = symbols + r_index;			\
-      cache_ptr->addend = ad;						\
+      cache_ptr->addend = (ad);						\
     }									\
    else									\
     {									\
@@ -2102,23 +2105,23 @@ NAME (aout, swap_ext_reloc_out) (bfd *abfd,
 	case N_TEXT:							\
 	case N_TEXT | N_EXT:						\
 	  cache_ptr->sym_ptr_ptr = obj_textsec (abfd)->symbol_ptr_ptr;	\
-	  cache_ptr->addend = ad - su->textsec->vma;			\
+	  cache_ptr->addend = ((ad) - su->textsec->vma);		\
 	  break;							\
 	case N_DATA:							\
 	case N_DATA | N_EXT:						\
 	  cache_ptr->sym_ptr_ptr = obj_datasec (abfd)->symbol_ptr_ptr;	\
-	  cache_ptr->addend = ad - su->datasec->vma;			\
+	  cache_ptr->addend = ((ad) - su->datasec->vma);		\
 	  break;							\
 	case N_BSS:							\
 	case N_BSS | N_EXT:						\
 	  cache_ptr->sym_ptr_ptr = obj_bsssec (abfd)->symbol_ptr_ptr;	\
-	  cache_ptr->addend = ad - su->bsssec->vma;			\
+	  cache_ptr->addend = ((ad) - su->bsssec->vma);			\
 	  break;							\
 	default:							\
 	case N_ABS:							\
 	case N_ABS | N_EXT:						\
 	  cache_ptr->sym_ptr_ptr = bfd_abs_section_ptr->symbol_ptr_ptr;	\
-	  cache_ptr->addend = ad;					\
+	  cache_ptr->addend = (ad);					\
 	  break;							\
 	}								\
     }
@@ -2135,7 +2138,7 @@ NAME (aout, swap_ext_reloc_in) (bfd *abfd,
   unsigned int r_type;
   struct aoutdata *su = &(abfd->tdata.aout_data->a);
 
-  cache_ptr->address = (GET_SWORD (abfd, bytes->r_address));
+  cache_ptr->address = (bfd_size_type)(GET_SWORD(abfd, bytes->r_address));
 
   /* Now the fun stuff.  */
   if (bfd_header_big_endian (abfd))
@@ -2175,7 +2178,7 @@ NAME (aout, swap_ext_reloc_in) (bfd *abfd,
       r_index = N_ABS;
     }
 
-  MOVE_ADDRESS (GET_SWORD (abfd, bytes->r_addend));
+  MOVE_ADDRESS((bfd_vma)GET_SWORD(abfd, bytes->r_addend));
 }
 
 void
@@ -2964,8 +2967,8 @@ aout_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
       if ((type & N_STAB) != 0)
 	continue;
 
-      name = strings + GET_WORD (abfd, p->e_strx);
-      value = GET_WORD (abfd, p->e_value);
+      name = (strings + GET_WORD(abfd, p->e_strx));
+      value = (bfd_vma)GET_WORD(abfd, p->e_value);
       flags = BSF_GLOBAL;
       string = NULL;
       switch (type)
@@ -3273,7 +3276,7 @@ aout_link_check_ar_symbols (bfd *abfd,
 	{
 	  bfd_vma value;
 
-	  value = GET_WORD (abfd, p->e_value);
+	  value = (bfd_vma)GET_WORD(abfd, p->e_value);
 	  if (value != 0)
 	    {
 	      /* This symbol is common in the object from the archive
@@ -3904,7 +3907,7 @@ aout_link_input_section_std (struct aout_final_link_info *finfo,
       bfd_vma relocation;
       bfd_reloc_status_type r;
 
-      r_addr = GET_SWORD (input_bfd, rel->r_address);
+      r_addr = (bfd_vma)GET_SWORD(input_bfd, rel->r_address);
 
 #ifdef MY_reloc_howto
       howto = MY_reloc_howto (input_bfd, rel, r_index, r_extern, r_pcrel);
@@ -4036,15 +4039,15 @@ aout_link_input_section_std (struct aout_final_link_info *finfo,
 	      /* Write out the new r_index value.  */
 	      if (bfd_header_big_endian (output_bfd))
 		{
-		  rel->r_index[0] = r_index >> 16;
-		  rel->r_index[1] = r_index >> 8;
-		  rel->r_index[2] = r_index;
+		  rel->r_index[0] = (bfd_byte)(r_index >> 16);
+		  rel->r_index[1] = (bfd_byte)(r_index >> 8);
+		  rel->r_index[2] = (bfd_byte)r_index;
 		}
 	      else
 		{
-		  rel->r_index[2] = r_index >> 16;
-		  rel->r_index[1] = r_index >> 8;
-		  rel->r_index[0] = r_index;
+		  rel->r_index[2] = (bfd_byte)(r_index >> 16);
+		  rel->r_index[1] = (bfd_byte)(r_index >> 8);
+		  rel->r_index[0] = (bfd_byte)r_index;
 		}
 	    }
 	  else
@@ -4074,14 +4077,13 @@ aout_link_input_section_std (struct aout_final_link_info *finfo,
 
 #ifdef MY_relocatable_reloc
 	  MY_relocatable_reloc (howto, output_bfd, rel, relocation, r_addr);
-#endif
+#endif /* MY_relocatable_reloc */
 
 	  if (relocation == 0)
 	    r = bfd_reloc_ok;
 	  else
-	    r = MY_relocate_contents (howto,
-					input_bfd, relocation,
-					contents + r_addr);
+	    r = MY_relocate_contents(howto, input_bfd, relocation,
+				     (contents + r_addr));
 	}
       else
 	{
@@ -4247,7 +4249,7 @@ aout_link_input_section_ext (struct aout_final_link_info *finfo,
       asection *r_section = NULL;
       bfd_vma relocation;
 
-      r_addr = GET_SWORD (input_bfd, rel->r_address);
+      r_addr = (bfd_vma)GET_SWORD(input_bfd, rel->r_address);
 
       if (bfd_header_big_endian (input_bfd))
 	{
@@ -4268,7 +4270,7 @@ aout_link_input_section_ext (struct aout_final_link_info *finfo,
 		      >> RELOC_EXT_BITS_TYPE_SH_LITTLE);
 	}
 
-      r_addend = GET_SWORD (input_bfd, rel->r_addend);
+      r_addend = (bfd_vma)GET_SWORD(input_bfd, rel->r_addend);
 
       BFD_ASSERT (r_type < TABLE_SIZE (howto_table_ext));
 
@@ -4478,11 +4480,11 @@ aout_link_input_section_ext (struct aout_final_link_info *finfo,
 		       || type == N_WEAKA)
 		r_section = bfd_abs_section_ptr;
 	      else
-		abort ();
-	      relocation = (r_section->output_section->vma
-			    + r_section->output_offset
-			    + (GET_WORD (input_bfd, sym->e_value)
-			       - r_section->vma));
+		abort();
+	      relocation = (bfd_vma)(r_section->output_section->vma
+				     + r_section->output_offset
+				     + (GET_WORD(input_bfd, sym->e_value)
+					- r_section->vma));
 	    }
 	  else
 	    {
@@ -4755,7 +4757,7 @@ aout_link_write_symbols(struct aout_final_link_info *finfo, bfd *input_bfd)
       struct aout_link_hash_entry *h;
       bfd_boolean skip;
       asection *symsec;
-      bfd_vma val = 0;
+      bfd_vma val = 0UL;
       bfd_boolean copy;
 
       /* We set *symbol_map to 0 above for all symbols.  If it has
@@ -4779,7 +4781,7 @@ aout_link_write_symbols(struct aout_final_link_info *finfo, bfd *input_bfd)
 	{
 	  /* Pass this symbol through.  It is the target of an
 	     indirect or warning symbol.  */
-	  val = GET_WORD (input_bfd, sym->e_value);
+	  val = (bfd_vma)GET_WORD(input_bfd, sym->e_value);
 	  pass = FALSE;
 	}
       else if (skip_next)
@@ -4888,12 +4890,12 @@ aout_link_write_symbols(struct aout_final_link_info *finfo, bfd *input_bfd)
 		 the correct definition so the debugger will
 		 understand it.  */
 	      pass = TRUE;
-	      val = GET_WORD (input_bfd, sym->e_value);
+	      val = (bfd_vma)GET_WORD(input_bfd, sym->e_value);
 	      symsec = NULL;
 	    }
 	  else if ((type & N_STAB) != 0)
 	    {
-	      val = GET_WORD (input_bfd, sym->e_value);
+	      val = (bfd_vma)GET_WORD(input_bfd, sym->e_value);
 	      symsec = NULL;
 	    }
 	  else
@@ -4986,10 +4988,10 @@ aout_link_write_symbols(struct aout_final_link_info *finfo, bfd *input_bfd)
 		val = 0;
 	    }
 	  if (symsec != NULL)
-	    val = (symsec->output_section->vma
-		   + symsec->output_offset
-		   + (GET_WORD (input_bfd, sym->e_value)
-		      - symsec->vma));
+	    val = (bfd_vma)(symsec->output_section->vma
+			    + symsec->output_offset
+			    + (GET_WORD(input_bfd, sym->e_value)
+			       - symsec->vma));
 
 	  /* If this is a global symbol, then set the written flag, and if it is
 	   * a local symbol, then see if we should discard it.  */
@@ -5189,6 +5191,10 @@ aout_link_input_bfd (struct aout_final_link_info *finfo, bfd *input_bfd)
     return FALSE;
 
   sym_count = obj_aout_external_sym_count (input_bfd);
+  
+  if (sym_count == 0UL) {
+    ; /* ??? */
+  }
 
   /* Write out the symbols and get a map of the new indices.  The map
      is placed into finfo->symbol_map.  */

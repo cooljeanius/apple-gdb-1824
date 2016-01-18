@@ -188,7 +188,7 @@ cli_command_loop(void *data /* unused */)
 {
   int length;
   char *a_prompt;
-  char *gdb_prompt = get_prompt();
+  const char *gdb_prompt = get_prompt();
 
   /* If we are using readline, set things up and display the first
      prompt, otherwise just print the prompt. */
@@ -259,7 +259,7 @@ void
 display_gdb_prompt (char *new_prompt)
 {
   int prompt_length = 0;
-  char *gdb_prompt = get_prompt ();
+  const char *gdb_prompt = get_prompt();
   static int stdin_handler_removed = 0;
 
   /* APPLE LOCAL begin Inform user about debugging optimized code  */
@@ -396,7 +396,7 @@ change_annotation_level(void)
    strings, except when the annotation level is 2. Memory is allocated
    within savestring for the new prompt. */
 void
-push_prompt (char *prefix, char *prompt, char *suffix)
+push_prompt(const char *prefix, const char *prompt, const char *suffix)
 {
   the_prompts.top++;
   PREFIX (0) = savestring (prefix, strlen (prefix));
@@ -425,13 +425,13 @@ pop_prompt (void)
        in effect, until the user does another 'set prompt'. */
     if (strcmp (PROMPT (0), PROMPT (-1)))
       {
-	xfree (PROMPT (-1));
+	xfree((void *)PROMPT(-1));
 	PROMPT (-1) = savestring (PROMPT (0), strlen (PROMPT (0)));
       }
 
-  xfree (PREFIX (0));
-  xfree (PROMPT (0));
-  xfree (SUFFIX (0));
+  xfree((void *)PREFIX(0));
+  xfree((void *)PROMPT(0));
+  xfree((void *)SUFFIX(0));
   the_prompts.top--;
 }
 
@@ -1309,7 +1309,7 @@ adjust_prompts_for_optimized_code (void)
       if (dwarf2_inform_debugging_optimized_code
 	  && currently_inside_optimized_code)
 	{
-	  char *old_prompt = get_prompt();
+	  const char *old_prompt = get_prompt();
 	  char *new_prompt;
 	  if (strstr(old_prompt, "[opt> ") == 0)
 	    {

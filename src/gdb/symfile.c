@@ -97,6 +97,10 @@
 # define O_BINARY 0
 #endif /* !O_BINARY */
 
+#ifndef INVALID_ADDRESS
+# define INVALID_ADDRESS ((CORE_ADDR)(-1L))
+#endif /* !INVALID_ADDRESS */
+
 #if HAVE_MMAP
 static int mmap_symbol_files_flag = 0;
 #endif /* HAVE_MMAP */
@@ -2062,12 +2066,12 @@ find_separate_debug_file (struct objfile *objfile)
   unsigned long crc32;
   int i;
 
-  basename = get_debug_link_info (objfile, &crc32);
+  basename = get_debug_link_info(objfile, &crc32);
 
   if (basename == NULL)
     return NULL;
 
-  dir = xstrdup (objfile->name);
+  dir = xstrdup(objfile->name);
 
   /* Strip off the final filename part, leaving the directory name,
      followed by a slash.  Objfile names should always be absolute and
@@ -2081,22 +2085,22 @@ find_separate_debug_file (struct objfile *objfile)
   gdb_assert((i >= 0) && IS_DIR_SEPARATOR(dir[i]));
   dir[i + 1] = '\0';
 
-  debugfile = alloca(strlen(debug_file_directory) + 1UL
-                     + strlen(dir)
-                     + strlen(DEBUG_SUBDIRECTORY)
-                     + strlen("/")
-                     + strlen(basename)
-                     + 1UL);
+  debugfile = (char *)alloca(strlen(debug_file_directory) + 1UL
+			     + strlen(dir)
+			     + strlen(DEBUG_SUBDIRECTORY)
+			     + strlen("/")
+			     + strlen(basename)
+			     + 1UL);
 
   /* First try in the same directory as the original file.  */
-  strcpy (debugfile, dir);
-  strcat (debugfile, basename);
+  strcpy(debugfile, dir);
+  strcat(debugfile, basename);
 
-  if (separate_debug_file_exists (debugfile, crc32))
+  if (separate_debug_file_exists(debugfile, crc32))
     {
-      xfree (basename);
-      xfree (dir);
-      return xstrdup (debugfile);
+      xfree(basename);
+      xfree(dir);
+      return xstrdup(debugfile);
     }
 
   /* Then try in the subdirectory named DEBUG_SUBDIRECTORY.  */
@@ -2986,6 +2990,7 @@ add_kext_command(const char *args, int from_tty)
     {
       find_kext_files_by_symfile(filename, &kext_bundle_executable_filename);
       kextload_symbol_filename = xstrdup(filename);
+#ifdef TM_NEXTSTEP
       if ((kernel_slide != 0) && (kernel_slide != INVALID_ADDRESS) && (section_addrs == NULL))
         {
           size_t i = 0UL;
@@ -2993,6 +2998,7 @@ add_kext_command(const char *args, int from_tty)
           for (i = 0UL; i < section_addrs->num_sections; i++)
             section_addrs->other[i].addr += kernel_slide;
         }
+#endif /* TM_NEXTSTEP */
     }
   else
       error(usage_string, "supplied file must have a .kext or .sym extension");

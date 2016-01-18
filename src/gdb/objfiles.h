@@ -721,7 +721,8 @@ enum objfile_matches_name_return
     objfile_match_base
   };
 
-enum objfile_matches_name_return objfile_matches_name(struct objfile *objfile, char *name);
+enum objfile_matches_name_return objfile_matches_name(struct objfile *objfile,
+						      const char *name);
 void do_cleanup_restrict_to_objfile(void *arg);
 struct cleanup *make_cleanup_restrict_to_objfile(struct objfile *objfile);
 /* APPLE LOCAL radar 5273932  */

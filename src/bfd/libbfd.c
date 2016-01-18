@@ -512,7 +512,10 @@ DESCRIPTION
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic push
- #  pragma GCC diagnostic ignored "-Wsign-conversion"
+/* FIXME: gcc bug; it should be fixed the next time I pull from gcc trunk: */
+#  if (__GNUC__ > 6)
+ #   pragma GCC diagnostic ignored "-Wsign-conversion"
+#  endif /* gcc >6 */
  #  pragma GCC diagnostic ignored "-Wshift-count-overflow"
 # else
 #  if ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2))) && \

@@ -3821,10 +3821,9 @@ arm_symbol_is_valid (asymbol * sym,
   return (name && *name != '$');
 }
 
-/* Parse an individual disassembler option.  */
-
+/* Parse an individual disassembler option: */
 void
-parse_arm_disassembler_option (char *option)
+parse_arm_disassembler_option(const char *option)
 {
   if (option == NULL)
     return;

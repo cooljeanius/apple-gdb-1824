@@ -109,6 +109,58 @@ bfd_boolean elf64_alpha_use_secureplt = FALSE;
 #define MAX_GOT_SIZE		(64*1024)
 
 #define ELF_DYNAMIC_INTERPRETER "/usr/lib/ld.so"
+
+/* These 2 structs are un-nested from the one that follows them for the sake
+ * of '-Wc++-compat': */
+struct alpha_elf_got_entry
+{
+  struct alpha_elf_got_entry *next;
+  
+  /* Which .got subsection?  */
+  bfd *gotobj;
+  
+  /* The addend in effect for this entry: */
+  bfd_vma addend;
+  
+  /* The .got offset for this entry: */
+  int got_offset;
+  
+  /* The .plt offset for this entry: */
+  int plt_offset;
+  
+  /* How many references to this entry?  */
+  int use_count;
+  
+  /* The relocation type of this entry: */
+  unsigned char reloc_type;
+  
+  /* How a LITERAL is used: */
+  unsigned char flags;
+  
+  /* Have we initialized the dynamic relocation for this entry?  */
+  unsigned char reloc_done;
+  
+  /* Have we adjusted this entry for SEC_MERGE?  */
+  unsigned char reloc_xlated;
+};
+
+/* See note above previous: */
+struct alpha_elf_reloc_entry
+{
+  struct alpha_elf_reloc_entry *next;
+  
+  /* Which .reloc section? */
+  asection *srel;
+  
+  /* What kind of relocation? */
+  unsigned int rtype;
+  
+  /* Is this against read-only section? */
+  unsigned int reltext : 1;
+  
+  /* How many did we find?  */
+  unsigned long count;
+};
 
 struct alpha_elf_link_hash_entry
 {
@@ -134,56 +186,11 @@ struct alpha_elf_link_hash_entry
 #define ALPHA_ELF_LINK_HASH_TLS_IE	 0x80
 
   /* Used to implement multiple .got subsections.  */
-  struct alpha_elf_got_entry
-  {
-    struct alpha_elf_got_entry *next;
-
-    /* Which .got subsection?  */
-    bfd *gotobj;
-
-    /* The addend in effect for this entry.  */
-    bfd_vma addend;
-
-    /* The .got offset for this entry.  */
-    int got_offset;
-
-    /* The .plt offset for this entry.  */
-    int plt_offset;
-
-    /* How many references to this entry?  */
-    int use_count;
-
-    /* The relocation type of this entry.  */
-    unsigned char reloc_type;
-
-    /* How a LITERAL is used.  */
-    unsigned char flags;
-
-    /* Have we initialized the dynamic relocation for this entry?  */
-    unsigned char reloc_done;
-
-    /* Have we adjusted this entry for SEC_MERGE?  */
-    unsigned char reloc_xlated;
-  } *got_entries;
+  struct alpha_elf_got_entry *got_entries;
 
   /* Used to count non-got, non-plt relocations for delayed sizing
      of relocation sections.  */
-  struct alpha_elf_reloc_entry
-  {
-    struct alpha_elf_reloc_entry *next;
-
-    /* Which .reloc section? */
-    asection *srel;
-
-    /* What kind of relocation? */
-    unsigned int rtype;
-
-    /* Is this against read-only section? */
-    unsigned int reltext : 1;
-
-    /* How many did we find?  */
-    unsigned long count;
-  } *reloc_entries;
+  struct alpha_elf_reloc_entry *reloc_entries;
 };
 
 /* Alpha ELF linker hash table.  */
@@ -3449,6 +3456,9 @@ elf64_alpha_relax_tls_get_addr(struct alpha_relax_info *info, bfd_vma symval,
 	  && (lit_gotent->addend == irel[1].r_addend))
 	break;
     BFD_ASSERT(lit_gotent);
+#if !defined(__clang_analyzer__) && defined(assert) && defined(__GNUC__)
+    assert(lit_gotent != NULL);
+#endif /* !__clang_analyzer__ && assert && __GNUC__ */
 
     if (--lit_gotent->use_count == 0)
       {

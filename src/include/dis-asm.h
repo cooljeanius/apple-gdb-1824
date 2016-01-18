@@ -283,29 +283,29 @@ extern int print_insn_z80		(bfd_vma, disassemble_info *);
 extern int print_insn_z8001		(bfd_vma, disassemble_info *);
 extern int print_insn_z8002		(bfd_vma, disassemble_info *);
 
-extern disassembler_ftype arc_get_disassembler (void *);
-extern disassembler_ftype cris_get_disassembler (bfd *);
+extern disassembler_ftype arc_get_disassembler(void *);
+extern disassembler_ftype cris_get_disassembler(bfd *);
 
-extern void print_i386_disassembler_options (FILE *);
-extern void print_mips_disassembler_options (FILE *);
-extern void print_ppc_disassembler_options (FILE *);
-extern void print_arm_disassembler_options (FILE *);
-extern void parse_arm_disassembler_option (char *);
-extern int  get_arm_regname_num_options (void);
-extern int  set_arm_regname_option (int);
-extern int  get_arm_regnames (int, const char **, const char **, const char *const **);
-extern bfd_boolean arm_symbol_is_valid (asymbol *, struct disassemble_info *);
-extern bfd_boolean set_arm_show_opcode_bytes_option (bfd_boolean);
+extern void print_i386_disassembler_options(FILE *);
+extern void print_mips_disassembler_options(FILE *);
+extern void print_ppc_disassembler_options(FILE *);
+extern void print_arm_disassembler_options(FILE *);
+extern void parse_arm_disassembler_option(const char *);
+extern int get_arm_regname_num_options(void);
+extern int set_arm_regname_option(int);
+extern int get_arm_regnames(int, const char **, const char **, const char *const **);
+extern bfd_boolean arm_symbol_is_valid(asymbol *, struct disassemble_info *);
+extern bfd_boolean set_arm_show_opcode_bytes_option(bfd_boolean);
 
-/* Fetch the disassembler for a given BFD, if that support is available.  */
-extern disassembler_ftype disassembler (bfd *);
+/* Fetch the disassembler for a given BFD, if that support is available: */
+extern disassembler_ftype disassembler(bfd *);
 
 /* Amend the disassemble_info structure as necessary for the target architecture.
    Should only be called after initialising the info->arch field.  */
-extern void disassemble_init_for_target (struct disassemble_info * info);
+extern void disassemble_init_for_target(struct disassemble_info *info);
 
 /* Document any target specific options available from the disassembler.  */
-extern void disassembler_usage (FILE *);
+extern void disassembler_usage(FILE *);
 
 
 /* This block of definitions is for particular callers who read instructions

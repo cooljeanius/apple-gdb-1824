@@ -1,4 +1,4 @@
-/* Target-dependent code for the HP PA-RISC architecture.
+/* hppa-tdep.c: Target-dependent code for the HP PA-RISC architecture.
 
    Copyright 1986, 1987, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
    1996, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
@@ -589,7 +589,7 @@ hppa_breakpoint_from_pc (CORE_ADDR *pc, int *len)
 static const char *
 hppa32_register_name (int i)
 {
-  static char *names[] = {
+  static const char *names[] = {
     "flags",  "r1",      "rp",     "r3",
     "r4",     "r5",      "r6",     "r7",
     "r8",     "r9",      "r10",    "r11",
@@ -632,7 +632,7 @@ hppa32_register_name (int i)
 static const char *
 hppa64_register_name (int i)
 {
-  static char *names[] = {
+  static const char *names[] = {
     "flags",  "r1",      "rp",     "r3",
     "r4",     "r5",      "r6",     "r7",
     "r8",     "r9",      "r10",    "r11",

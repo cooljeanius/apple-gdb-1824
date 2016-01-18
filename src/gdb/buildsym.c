@@ -774,7 +774,7 @@ start_subfile(const char *name, char *dirname)
    directory name actually is (by checking for a trailing '/'). */
 
 void
-patch_subfile_names (struct subfile *subfile, char *name)
+patch_subfile_names(struct subfile *subfile, const char *name)
 {
   if (subfile != NULL && subfile->dirname == NULL && subfile->name != NULL
       && subfile->name[strlen (subfile->name) - 1] == '/')

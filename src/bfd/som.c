@@ -6311,4 +6311,10 @@ const bfd_target som_vec =
   NULL
 };
 
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(__STDC__)
+#  warning "som.c is empty on non-HP hosts"
+# endif /* __GNUC__ && !__STRICT_ANSI__ && !__STDC__ */
 #endif /* HOST_HPPAHPUX || HOST_HPPABSD || HOST_HPPAOSF */
+
+/* EOF */

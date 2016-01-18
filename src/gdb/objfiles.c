@@ -48,7 +48,7 @@
 #include "block.h"
 #include "dictionary.h"
 #include "objc-lang.h"
-#include "macosx-nat-inferior.h" /* need to pick up macho_calculate_offsets_for_dsym() in machoread.c */
+#include "macosx/macosx-nat-inferior.h" /* need to pick up macho_calculate_offsets_for_dsym() in machoread.c */
 
 #include "db-access-functions.h"
 
@@ -1844,7 +1844,7 @@ make_cleanup_restrict_to_objfile_list(struct objfile_list *objlist)
    no match.  */
 
 enum objfile_matches_name_return
-objfile_matches_name(struct objfile *objfile, char *name)
+objfile_matches_name(struct objfile *objfile, const char *name)
 {
   const char *filename;
   const char *bundlename;
@@ -2115,12 +2115,12 @@ objfile_name_set_load_state(const char *name, int load_state, int force)
   if (name == NULL)
     return -1;
 
-  ALL_OBJFILES (tmp_obj)
+  ALL_OBJFILES(tmp_obj)
     {
-      enum objfile_matches_name_return match
-	= objfile_matches_name (tmp_obj, name);
+      enum objfile_matches_name_return match =
+	objfile_matches_name(tmp_obj, name);
       if (match == objfile_match_exact || match == objfile_match_base)
-	return objfile_set_load_state (tmp_obj, load_state, force);
+	return objfile_set_load_state(tmp_obj, load_state, force);
     }
 
   return -1;

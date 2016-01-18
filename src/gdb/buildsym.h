@@ -209,7 +209,7 @@ EXTERN struct subfile_stack *subfile_stack;
 
 /* Function to invoke get the next symbol.  Return the symbol name. */
 
-EXTERN char *(*next_symbol_text_func) (struct objfile *);
+EXTERN const char *(*next_symbol_text_func)(struct objfile *);
 
 /* Vector of types defined so far, indexed by their type numbers.
    Used for both stabs and coff.  (In newer sun systems, dbx uses a
@@ -245,18 +245,18 @@ extern void finish_block (struct symbol *symbol,
 			  struct objfile *objfile);
 /* APPLE LOCAL end address ranges  */
 
-extern void really_free_pendings (void *dummy);
+extern void really_free_pendings(void *dummy);
 
 extern void start_subfile(const char *name, char *dirname);
 
-extern void patch_subfile_names (struct subfile *subfile, char *name);
+extern void patch_subfile_names(struct subfile *subfile, const char *name);
 
-extern void push_subfile (void);
+extern void push_subfile(void);
 
-extern char *pop_subfile (void);
+extern char *pop_subfile(void);
 
-extern struct symtab *end_symtab (CORE_ADDR end_addr,
-				  struct objfile *objfile, int section);
+extern struct symtab *end_symtab(CORE_ADDR end_addr,
+				 struct objfile *objfile, int section);
 
 /* Defined in stabsread.c.  */
 

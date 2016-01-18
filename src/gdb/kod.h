@@ -20,8 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #ifndef KOD_H
 #define KOD_H
 
-typedef void kod_display_callback_ftype (char *);
-typedef void kod_query_callback_ftype (char *, char *, int *);
+typedef void kod_display_callback_ftype (const char *);
+typedef void kod_query_callback_ftype (const char *, char *, int *);
 
 /* ???/???: Functions imported from the library for all supported
    OSes.  FIXME: we really should do something better, such as

@@ -3113,6 +3113,7 @@ bfd_mach_o_openr_next_archived_file(bfd *archive, bfd *prev)
   return entry->abfd;
 }
 
+/* FIXME: describe arguments and return value: */
 int
 bfd_mach_o_lookup_section(bfd *abfd, asection *section,
                           bfd_mach_o_load_command **mcommand,
@@ -3127,8 +3128,8 @@ bfd_mach_o_lookup_section(bfd *abfd, asection *section,
   BFD_ASSERT(mcommand != NULL);
   BFD_ASSERT(msection != NULL);
 
-  num = 0;
-  for (i = 0; i < md->header.ncmds; i++)
+  num = 0U;
+  for (i = 0U; i < md->header.ncmds; i++)
     {
       struct bfd_mach_o_load_command *cmd = &md->commands[i];
       struct bfd_mach_o_segment_command *seg = NULL;
@@ -3140,18 +3141,18 @@ bfd_mach_o_lookup_section(bfd *abfd, asection *section,
 
       if (seg->segment == section)
 	{
-	  if (num == 0)
+	  if (num == 0U)
 	    ncmd = cmd;
 	  num++;
 	}
 
-      for (j = 0; j < seg->nsects; j++)
+      for (j = 0U; j < seg->nsects; j++)
 	{
 	  struct bfd_mach_o_section *sect = &seg->sections[j];
 
 	  if (sect->bfdsection == section)
 	    {
-	      if (num == 0)
+	      if (num == 0U)
 		nsect = sect;
 	      num++;
 	    }

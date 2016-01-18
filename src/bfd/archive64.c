@@ -85,7 +85,7 @@ bfd_elf64_archive_slurp_armap(bfd *abfd)
       return FALSE;
     }
 
-  nsymz = bfd_getb64(int_buf);
+  nsymz = (bfd_size_type)bfd_getb64(int_buf);
   stringsize = (parsed_size - 8 * nsymz - 8);
 
   carsym_size = (nsymz * sizeof(carsym));
