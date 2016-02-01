@@ -76,7 +76,7 @@ static size_t round_up(size_t size, size_t page_size)
   size_t nsize = size;
   nsize += (page_size - 1);
   nsize -= (nsize % page_size);
-  assert ((nsize - size) < page_size);
+  assert((nsize - size) < page_size);
   return nsize;
 }
 
@@ -105,7 +105,7 @@ static void check_filled(void *buf, unsigned long c, size_t n)
   }
 }
 
-static PTR
+static ATTRIBUTE_NORETURN PTR
 morecore_pagecheck(struct mdesc *mdp, int size)
 {
 #if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
@@ -141,9 +141,11 @@ alloc_buffer(size_t size, int at_end)
   post_guard = (buffer + buffer_size);
 
   if (mmalloc_pagecheck_check_info_guard) {
-    fill((void *)info_page, MAGIC_GUARD, (page_size() / 4));
+    fill((void *)info_page, (unsigned long)MAGIC_GUARD,
+	 (size_t)(page_size() / 4UL));
   } else {
-    fill((void *)(info_page + sizeof(size_t)), MAGIC_GUARD, 1);
+    fill((void *)(info_page + sizeof(size_t)), (unsigned long)MAGIC_GUARD,
+	 (size_t)1UL);
   }
 
   *((size_t *)info_page) = size;
@@ -161,7 +163,8 @@ alloc_buffer(size_t size, int at_end)
   MACH_CHECK_ERROR(kret);
 
   if (mmalloc_pagecheck_check_buffer_guard) {
-    fill((void *)buffer, MAGIC_GUARD, (buffer_size / 4));
+    fill((void *)buffer, (unsigned long)MAGIC_GUARD,
+	 (size_t)(buffer_size / 4UL));
   }
 
   if (at_end) {
@@ -194,10 +197,11 @@ validate_buffer(vm_address_t address, vm_address_t *pbuffer, size_t *psize)
 
   if (mmalloc_pagecheck_check_info_guard) {
     check_filled((void *)(info_page + sizeof(size_t)),
-                 MAGIC_GUARD, ((page_size() - sizeof(size_t)) / 4));
+                 (unsigned long)MAGIC_GUARD,
+		 (size_t)((page_size() - sizeof(size_t)) / 4UL));
   } else {
     check_filled((void *)(info_page + sizeof(size_t)),
-                 MAGIC_GUARD, 1);
+                 (unsigned long)MAGIC_GUARD, (size_t)1UL);
   }
 
   *pbuffer = buffer;
@@ -243,7 +247,7 @@ mfree_pagecheck(PTR md, PTR ptr)
   MACH_CHECK_ERROR(kret);
 
   if (mmalloc_pagecheck_zero_free)
-    fill((void *)buffer, MAGIC_GUARD, (size / 4));
+    fill((void *)buffer, (unsigned long)MAGIC_GUARD, (size_t)(size / 4UL));
 
   kret = vm_protect(mach_task_self(), buffer, size, 0, VM_PROT_NONE);
   MACH_CHECK_ERROR(kret);
@@ -267,7 +271,7 @@ mrealloc_pagecheck(PTR md, PTR ptr, size_t nsize)
   }
 
   if (mmalloc_pagecheck_zero_free) {
-    fill((void *)buffer, MAGIC_GUARD, (size / 4));
+    fill((void *)buffer, (unsigned long)MAGIC_GUARD, (size_t)(size / 4UL));
   }
 
   kret = vm_protect(mach_task_self(), buffer, size, 0, VM_PROT_NONE);

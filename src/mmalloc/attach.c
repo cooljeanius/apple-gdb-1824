@@ -160,7 +160,7 @@ mmalloc_attach(int fd, PTR baseaddr, int flags)
       fails, then close the file descriptor if it was opened by us, and arrange
       to return a NULL. */
 
-  if ((mbase = mdp->morecore(mdp, sizeof(mtemp))) != NULL)
+  if ((mbase = mdp->morecore(mdp, (int)sizeof(mtemp))) != NULL)
     {
       memcpy(mbase, mdp, sizeof(mtemp));
       mdp = (struct mdesc *)mbase;

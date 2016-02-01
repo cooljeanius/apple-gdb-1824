@@ -182,11 +182,11 @@ static void inspect_command (char *, int);
 
 static void print_command (char *, int);
 
-static void print_command_1 (char *, int, int);
+static void print_command_1(char *, int, int);
 
-static void validate_format (struct format_data, char *);
+static void validate_format(struct format_data, const char *);
 
-static void print_formatted (struct value *, int, int, struct ui_file *);
+static void print_formatted(struct value *, int, int, struct ui_file *);
 
 static struct format_data decode_format (char **, int, int);
 
@@ -674,7 +674,7 @@ build_address_symbolic (CORE_ADDR addr,  /* IN */
   struct symtab *symtab = 0;
   CORE_ADDR name_location = 0;
   asection *section = 0;
-  char *name_temp = "";
+  const char *name_temp = "";
 
   /* Let's say it is unmapped. */
   *unmapped = 0;
@@ -980,8 +980,9 @@ do_examine (struct format_data fmt, CORE_ADDR addr)
     }
 }
 
+/* */
 static void
-validate_format (struct format_data fmt, char *cmdname)
+validate_format(struct format_data fmt, const char *cmdname)
 {
   if (fmt.size != 0)
     error (_("Size letters are meaningless in \"%s\" command."), cmdname);
@@ -2126,7 +2127,7 @@ printf_command(char *arg, int from_tty)
 
     while (*s != '\0')
       {
-	char *s1;
+	const char *s1;
 	if (nargs == allocated_args)
 	  val_args = (struct value **)xrealloc((char *)val_args,
                                                (allocated_args *= 2)

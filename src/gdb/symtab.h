@@ -1540,31 +1540,31 @@ extern struct symtabs_and_lines decode_line_spec_1(const char *, int);
 
 /* Symmisc.c */
 
-void maintenance_print_symbols (char *, int);
+void maintenance_print_symbols(const char *, int);
 
-void maintenance_print_psymbols (char *, int);
+void maintenance_print_psymbols(const char *, int);
 
-void maintenance_print_msymbols (char *, int);
+void maintenance_print_msymbols(const char *, int);
 
-void maintenance_print_objfiles (char *, int);
+void maintenance_print_objfiles(const char *, int);
 
-void maintenance_info_symtabs (char *, int);
+void maintenance_info_symtabs(const char *, int);
 
-void maintenance_info_psymtabs (char *, int);
+void maintenance_info_psymtabs(const char *, int);
 
-void maintenance_check_symtabs (char *, int);
+void maintenance_check_symtabs(const char *, int);
 
 /* maint.c */
 
-void maintenance_print_statistics (char *, int);
+void maintenance_print_statistics(const char *, int);
 
-extern void free_symtab (struct symtab *);
+extern void free_symtab(struct symtab *);
 
 /* Symbol-reading stuff in symfile.c and solib.c.  */
 
-extern struct symtab *psymtab_to_symtab (struct partial_symtab *);
+extern struct symtab *psymtab_to_symtab(struct partial_symtab *);
 
-extern void clear_solib (void);
+extern void clear_solib(void);
 
 /* source.c */
 

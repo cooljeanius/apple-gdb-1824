@@ -21,6 +21,25 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		619631691C55A125001EA510 /* mmalloc.h in Headers */ = {isa = PBXBuildFile; fileRef = A53AC06B1A3A8CBE002F20B2 /* mmalloc.h */; };
+		6196316A1C55A125001EA510 /* mmprivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A53AC0761A3A8CBE002F20B2 /* mmprivate.h */; };
+		6196316B1C55A13B001EA510 /* mmstats.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC0771A3A8CBE002F20B2 /* mmstats.c */; };
+		6196316C1C55A13B001EA510 /* mmtrace.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC0791A3A8CBE002F20B2 /* mmtrace.c */; };
+		6196316D1C55A13B001EA510 /* mrealloc.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC07A1A3A8CBE002F20B2 /* mrealloc.c */; };
+		6196316E1C55A13B001EA510 /* mvalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC07B1A3A8CBE002F20B2 /* mvalloc.c */; };
+		6196316F1C55A13B001EA510 /* pagecheck-sup.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC07C1A3A8CBE002F20B2 /* pagecheck-sup.c */; };
+		619631701C55A13B001EA510 /* sbrk-sup.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC07D1A3A8CBE002F20B2 /* sbrk-sup.c */; };
+		619631711C55A146001EA510 /* mmap-sup.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC0731A3A8CBE002F20B2 /* mmap-sup.c */; };
+		619631721C55A146001EA510 /* mmcheck.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC0741A3A8CBE002F20B2 /* mmcheck.c */; };
+		619631731C55A146001EA510 /* mmemalign.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC0751A3A8CBE002F20B2 /* mmemalign.c */; };
+		619631741C55A155001EA510 /* attach.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC04D1A3A8CBE002F20B2 /* attach.c */; };
+		619631751C55A155001EA510 /* check-sup.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC0511A3A8CBE002F20B2 /* check-sup.c */; };
+		619631761C55A155001EA510 /* detach.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC05D1A3A8CBE002F20B2 /* detach.c */; };
+		619631771C55A155001EA510 /* keys.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC05E1A3A8CBE002F20B2 /* keys.c */; };
+		619631781C55A155001EA510 /* malloc-sup.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC0611A3A8CBE002F20B2 /* malloc-sup.c */; };
+		619631791C55A155001EA510 /* mcalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC0621A3A8CBE002F20B2 /* mcalloc.c */; };
+		6196317A1C55A155001EA510 /* mfree.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC0631A3A8CBE002F20B2 /* mfree.c */; };
+		6196317C1C55A155001EA510 /* mmalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC0661A3A8CBE002F20B2 /* mmalloc.c */; };
 		61D2205D192D610A00FA979E /* aix386-core.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE560E82C407008125DE /* aix386-core.c */; settings = {COMPILER_FLAGS = "-Wunused-parameter"; }; };
 		61D2205E192D610A00FA979E /* aix5ppc-core.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE570E82C407008125DE /* aix5ppc-core.c */; };
 		61D22060192D610A00FA979E /* aout-arm.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE590E82C407008125DE /* aout-arm.c */; };
@@ -2728,6 +2747,7 @@
 		61265A121BA8A37B000CA982 /* scm-type.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "scm-type.c"; sourceTree = "<group>"; };
 		61265A131BA8A37B000CA982 /* scm-utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "scm-utils.c"; sourceTree = "<group>"; };
 		61265A141BA8A37B000CA982 /* scm-value.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "scm-value.c"; sourceTree = "<group>"; };
+		619631631C55A0B4001EA510 /* libmmalloc.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libmmalloc.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		61D22058192D60D100FA979E /* libbfd-shared.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libbfd-shared.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		61D8186E192FE3AB00E440C0 /* chew */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = chew; sourceTree = BUILT_PRODUCTS_DIR; };
 		A50DD7D41B30D2AC00F50318 /* AppleMakefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = AppleMakefile; sourceTree = "<group>"; };
@@ -5620,6 +5640,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		619631611C55A0B4001EA510 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		61D22056192D60D100FA979E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -9313,6 +9340,7 @@
 				A53B876A1AE585030067328B /* libreadline.a */,
 				A53F04941B45F52C005B5360 /* libiberty.a */,
 				A53F07921B4636AE005B5360 /* test_expandargv */,
+				619631631C55A0B4001EA510 /* libmmalloc.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -12421,6 +12449,15 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		6196315F1C55A0B4001EA510 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				619631691C55A125001EA510 /* mmalloc.h in Headers */,
+				6196316A1C55A125001EA510 /* mmprivate.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		61D22054192D60D100FA979E /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -12646,6 +12683,23 @@
 /* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
+		619631621C55A0B4001EA510 /* mmalloc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 619631661C55A0E3001EA510 /* Build configuration list for PBXNativeTarget "mmalloc" */;
+			buildPhases = (
+				6196315F1C55A0B4001EA510 /* Headers */,
+				619631601C55A0B4001EA510 /* Sources */,
+				619631611C55A0B4001EA510 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = mmalloc;
+			productName = mmalloc;
+			productReference = 619631631C55A0B4001EA510 /* libmmalloc.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 		61D22057192D60D100FA979E /* bfd-shared */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 61D2205C192D60D200FA979E /* Build configuration list for PBXNativeTarget "bfd-shared" */;
@@ -12841,6 +12895,7 @@
 				A53B87691AE585030067328B /* readline */,
 				A53F04931B45F52C005B5360 /* libiberty */,
 				A53F07911B4636AE005B5360 /* test_expandargv */,
+				619631621C55A0B4001EA510 /* mmalloc */,
 			);
 		};
 /* End PBXProject section */
@@ -12899,6 +12954,30 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		619631601C55A0B4001EA510 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				619631741C55A155001EA510 /* attach.c in Sources */,
+				619631751C55A155001EA510 /* check-sup.c in Sources */,
+				619631761C55A155001EA510 /* detach.c in Sources */,
+				619631771C55A155001EA510 /* keys.c in Sources */,
+				619631781C55A155001EA510 /* malloc-sup.c in Sources */,
+				619631791C55A155001EA510 /* mcalloc.c in Sources */,
+				6196317A1C55A155001EA510 /* mfree.c in Sources */,
+				6196317C1C55A155001EA510 /* mmalloc.c in Sources */,
+				619631711C55A146001EA510 /* mmap-sup.c in Sources */,
+				619631721C55A146001EA510 /* mmcheck.c in Sources */,
+				619631731C55A146001EA510 /* mmemalign.c in Sources */,
+				6196316B1C55A13B001EA510 /* mmstats.c in Sources */,
+				6196316C1C55A13B001EA510 /* mmtrace.c in Sources */,
+				6196316D1C55A13B001EA510 /* mrealloc.c in Sources */,
+				6196316E1C55A13B001EA510 /* mvalloc.c in Sources */,
+				6196316F1C55A13B001EA510 /* pagecheck-sup.c in Sources */,
+				619631701C55A13B001EA510 /* sbrk-sup.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		61D22055192D60D100FA979E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -13630,6 +13709,78 @@
 			buildSettings = {
 				CDEBUGFLAGS = "-g -Os";
 				PRODUCT_NAME = i386;
+			};
+			name = Release;
+		};
+		619631641C55A0B5001EA510 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_PREFIX = lib;
+				"GCC_ALTIVEC_EXTENSIONS[arch=ppc64]" = YES;
+				GCC_CHECK_RETURN_VALUE_OF_OPERATOR_NEW = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "HAVE_CONFIG_H=1";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS = YES;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_PROTOTYPE_CONVERSION = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				INSTALL_PATH = /usr/local/lib;
+				OTHER_CFLAGS = "-ggdb";
+				PREBINDING = NO;
+				PRODUCT_NAME = mmalloc;
+				SDKROOT = macosx10.5;
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wimplicit",
+					"-Wformat=2",
+					"-Wundef",
+					"-Wno-unused",
+					"-Wextra-tokens",
+					"-Wdeclaration-after-statement",
+					"-Wstrict-prototypes",
+					"-Wold-style-definition",
+					"-Winline",
+					"-Winvalid-pch",
+					"-Wnested-externs",
+					"-Wmissing-format-attribute",
+					"-Wwrite-strings",
+					"-Wswitch-default",
+				);
+			};
+			name = Debug;
+		};
+		619631651C55A0B5001EA510 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = mmalloc;
+				ZERO_LINK = NO;
 			};
 			name = Release;
 		};
@@ -15178,6 +15329,15 @@
 			buildConfigurations = (
 				26CBBF55094E223500EFCA93 /* Debug */,
 				26CBBF56094E223500EFCA93 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		619631661C55A0E3001EA510 /* Build configuration list for PBXNativeTarget "mmalloc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				619631641C55A0B5001EA510 /* Debug */,
+				619631651C55A0B5001EA510 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

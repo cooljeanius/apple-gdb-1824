@@ -151,7 +151,7 @@ So instead we use the macro below and test it against specific values.  */
 /* All known AIX compilers implement these things (but do NOT always
    define __STDC__).  The RISC/OS MIPS compiler defines these things
    in SVR4 mode, but does not define __STDC__.  */
-/* eraxxon@alumni.rice.edu: The Compaq C++ compiler, unlike many other
+/* <eraxxon@alumni.rice.edu>: The Compaq C++ compiler, unlike many other
    C++ compilers, does not define __STDC__, though it acts as if this
    was so. (Verified versions: 5.7, 6.2, 6.3, 6.5) */
 
@@ -497,10 +497,10 @@ So instead we use the macro below and test it against specific values.  */
 #endif /* GCC (non-c++) */
 
 /* in case the popping failed: */
-#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__) && \
-    !defined(__cplusplus)
+#if defined(__GNUC__) && (__GNUC__ >= 4) && defined(__GNUC_MINOR__) && \
+    (__GNUC_MINOR__ >= 2) && !defined(__clang__) && !defined(__cplusplus)
  # pragma GCC diagnostic ignored "-Wtraditional"
-#endif /* gcc 4+ && !__clang__ && !__cplusplus */
+#endif /* gcc 4.2+ && !__clang__ && !__cplusplus */
 
 #ifdef __cplusplus
 }

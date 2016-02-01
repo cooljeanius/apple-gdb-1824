@@ -96,15 +96,15 @@ static void free_symtab_block (struct objfile *, struct block *);
    used.  */
 
 static void
-free_symtab_block (struct objfile *objfile, struct block *b)
+free_symtab_block(struct objfile *objfile, struct block *b)
 {
   struct dict_iterator iter;
   struct symbol *sym;
 
   ALL_BLOCK_SYMBOLS (b, iter, sym)
     {
-      xfree (DEPRECATED_SYMBOL_NAME (sym));
-      xfree (sym);
+      xfree((void *)DEPRECATED_SYMBOL_NAME(sym));
+      xfree(sym);
     }
 
   dict_free (BLOCK_DICT (b));
@@ -571,7 +571,7 @@ dump_symtab (struct objfile *objfile, struct symtab *symtab,
 
 /* FIXME: needs comment: */
 void
-maintenance_print_symbols(char *args, int from_tty)
+maintenance_print_symbols(const char *args, int from_tty)
 {
   char **argv;
   struct ui_file *outfile;
@@ -837,7 +837,7 @@ print_symbol (void *args)
 
 /* FIXME: needs comment: */
 void
-maintenance_print_psymbols(char *args, int from_tty)
+maintenance_print_psymbols(const char *args, int from_tty)
 {
   char **argv;
   struct ui_file *outfile;
@@ -986,7 +986,7 @@ print_partial_symbols (struct partial_symbol **p, int count, char *what,
 
 /* FIXME: needs comment: */
 void
-maintenance_print_msymbols(char *args, int from_tty)
+maintenance_print_msymbols(const char *args, int from_tty)
 {
   char **argv;
   struct ui_file *outfile;
@@ -1040,8 +1040,9 @@ maintenance_print_msymbols(char *args, int from_tty)
   do_cleanups (cleanups);
 }
 
+/* */
 void
-maintenance_print_objfiles (char *ignore, int from_tty)
+maintenance_print_objfiles(const char *ignore, int from_tty)
 {
   struct objfile *objfile;
 
@@ -1056,7 +1057,7 @@ maintenance_print_objfiles (char *ignore, int from_tty)
 
 /* List all the symbol tables whose names match REGEXP (optional).  */
 void
-maintenance_info_symtabs (char *regexp, int from_tty)
+maintenance_info_symtabs(const char *regexp, int from_tty)
 {
   struct objfile *objfile;
 
@@ -1105,7 +1106,7 @@ maintenance_info_symtabs (char *regexp, int from_tty)
 
 /* List all the partial symbol tables whose names match REGEXP (optional).  */
 void
-maintenance_info_psymtabs (char *regexp, int from_tty)
+maintenance_info_psymtabs(const char *regexp, int from_tty)
 {
   struct objfile *objfile;
 
@@ -1192,10 +1193,9 @@ maintenance_info_psymtabs (char *regexp, int from_tty)
 }
 
 
-/* Check consistency of psymtabs and symtabs.  */
-
+/* Check consistency of psymtabs and symtabs: */
 void
-maintenance_check_symtabs (char *ignore, int from_tty)
+maintenance_check_symtabs(const char *ignore, int from_tty)
 {
   struct symbol *sym;
   struct partial_symbol **psym;
@@ -1488,7 +1488,7 @@ find_equivalent_msymbol (struct minimal_symbol *msymbol)
   struct obj_section *osect;
   struct minimal_symbol **msymbol_list;
   int nsyms = 0, max_nsyms = 5;
-  char *name = SYMBOL_LINKAGE_NAME (msymbol);
+  const char *name = SYMBOL_LINKAGE_NAME(msymbol);
 
   if (name == NULL)
     return NULL;

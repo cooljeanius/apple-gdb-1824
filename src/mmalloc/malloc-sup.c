@@ -22,7 +22,7 @@ Boston, MA 02111-1307, USA.  */
 
 #include "mmprivate.h"
 
-static PTR
+static ATTRIBUTE_NORETURN PTR
 morecore_malloc(struct mdesc *mdp, int size)
 {
 #if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)

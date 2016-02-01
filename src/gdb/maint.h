@@ -30,7 +30,7 @@ extern struct cleanup *make_command_stats_cleanup(int);
 
 extern void pop_timer(void);
 
-extern int find_timer(char *name);
+extern int find_timer(const char *name);
 
 #endif /* MAINT_H */
 

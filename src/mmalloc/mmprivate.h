@@ -65,7 +65,7 @@ Boston, MA 02111-1307, USA.
 #endif /* !MIN */
 
 #define MMALLOC_MAGIC		"mmalloc"    /* Mapped file magic number */
-#define MMALLOC_MAGIC_SIZE	8	     /* Size of magic number buf */
+#define MMALLOC_MAGIC_SIZE	(size_t)8UL  /* Size of magic number buf */
 #define MMALLOC_VERSION		1	      /* Current mmalloc version */
 #define MMALLOC_KEYS		16	     /* Keys for application use */
 
@@ -179,7 +179,7 @@ struct mdesc
 
   /* The size in bytes of this structure, used as a sanity check when reusing
      a previously created mapped file. */
-  unsigned int headersize;
+  size_t headersize;
 
   /* The version number of the mmalloc package that created this file: */
   unsigned char version;

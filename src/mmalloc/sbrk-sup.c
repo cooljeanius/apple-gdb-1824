@@ -78,7 +78,7 @@ mmalloc_sbrk_init(void)
       sbrk((int)(BLOCKSIZE - adj));
       base = sbrk(0);
     }
-  ret = (struct mdesc *)sbrk(sizeof(struct mdesc));
+  ret = (struct mdesc *)sbrk((int)sizeof(struct mdesc));
   memset((char *)ret, 0, sizeof(struct mdesc));
   ret->morecore = sbrk_morecore;
   ret->base = (char *)base;

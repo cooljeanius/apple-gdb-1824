@@ -39,10 +39,10 @@ mrealloc(PTR md, PTR ptr, size_t size)
   int type;
   size_t block, blocks, oldlimit;
 
-  if (size == 0)
+  if (size == 0UL)
     {
       mfree(md, ptr);
-      return (mmalloc(md, 0));
+      return (mmalloc(md, (size_t)0UL));
     }
   else if (ptr == NULL)
     {
