@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2015 Free Software Foundation, Inc.
+# Copyright (C) 2002-2016 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +37,11 @@ AC_DEFUN([gl_EARLY],
   m4_pattern_allow([^gl_ES$])dnl a valid locale name
   m4_pattern_allow([^gl_LIBOBJS$])dnl a variable
   m4_pattern_allow([^gl_LTLIBOBJS$])dnl a variable
+
+  # Pre-early section.
+  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
   AC_REQUIRE([gl_PROG_AR_RANLIB])
+
   AC_REQUIRE([AM_PROG_CC_C_O])
   # Code from module absolute-header:
   # Code from module alignof:
@@ -82,7 +86,6 @@ AC_DEFUN([gl_EARLY],
   # Code from module error:
   # Code from module exitfail:
   # Code from module extensions:
-  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
   # Code from module extern-inline:
   # Code from module fchdir:
   # Code from module fcntl:
@@ -141,6 +144,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module lstat:
   # Code from module malloc-gnu:
   # Code from module malloc-posix:
+  # Code from module malloca:
   # Code from module manywarnings:
   # Code from module math:
   # Code from module mbchar:
@@ -220,10 +224,14 @@ AC_DEFUN([gl_EARLY],
   # Code from module strerror_r-posix:
   # Code from module string:
   # Code from module strings:
+  # Code from module strncat:
+  # Code from module strndup:
   # Code from module strnlen:
   # Code from module strnlen1:
+  # Code from module strpbrk:
   # Code from module strstr:
   # Code from module strstr-simple:
+  # Code from module strtok_r:
   # Code from module sys_select:
   # Code from module sys_stat:
   # Code from module sys_time:
@@ -254,6 +262,9 @@ AC_DEFUN([gl_EARLY],
   # Code from module xalloc:
   # Code from module xalloc-die:
   # Code from module xalloc-oversized:
+  # Code from module xmalloca:
+  # Code from module xmemdup0:
+  # Code from module xstrndup:
 ])
 
 # This macro should be invoked from ./configure.ac, in the section
@@ -315,7 +326,8 @@ AC_DEFUN([gl_INIT],
   gl_DIRENT_SAFER
   gl_MODULE_INDICATOR([dirent-safer])
   gl_FUNC_DIRFD
-  if test $ac_cv_func_dirfd = no && test $gl_cv_func_dirfd_macro = no; then
+  if test $ac_cv_func_dirfd = no && test $gl_cv_func_dirfd_macro = no \
+     || test $REPLACE_DIRFD = 1; then
     AC_LIBOBJ([dirfd])
     gl_PREREQ_DIRFD
   fi
@@ -506,6 +518,7 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([malloc])
   fi
   gl_STDLIB_MODULE_INDICATOR([malloc-posix])
+  gl_MALLOCA
   gl_MATH_H
   gl_MBCHAR
   gl_FUNC_MBRTOWC
@@ -578,7 +591,7 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_MKDTEMP
   fi
   gl_STDLIB_MODULE_INDICATOR([mkdtemp])
-  gl_MSVC_INVAL
+  AC_REQUIRE([gl_MSVC_INVAL])
   if test $HAVE_MSVC_INVALID_PARAMETER_HANDLER = 1; then
     AC_LIBOBJ([msvc-inval])
   fi
@@ -761,12 +774,29 @@ AC_DEFUN([gl_INIT],
   gl_STRING_MODULE_INDICATOR([strerror_r])
   gl_HEADER_STRING_H
   gl_HEADER_STRINGS_H
+  gl_FUNC_STRNCAT
+  if test $REPLACE_STRNCAT = 1; then
+    AC_LIBOBJ([strncat])
+    gl_PREREQ_STRNCAT
+  fi
+  gl_STRING_MODULE_INDICATOR([strncat])
+  gl_FUNC_STRNDUP
+  if test $HAVE_STRNDUP = 0 || test $REPLACE_STRNDUP = 1; then
+    AC_LIBOBJ([strndup])
+  fi
+  gl_STRING_MODULE_INDICATOR([strndup])
   gl_FUNC_STRNLEN
   if test $HAVE_DECL_STRNLEN = 0 || test $REPLACE_STRNLEN = 1; then
     AC_LIBOBJ([strnlen])
     gl_PREREQ_STRNLEN
   fi
   gl_STRING_MODULE_INDICATOR([strnlen])
+  gl_FUNC_STRPBRK
+  if test $HAVE_STRPBRK = 0; then
+    AC_LIBOBJ([strpbrk])
+    gl_PREREQ_STRPBRK
+  fi
+  gl_STRING_MODULE_INDICATOR([strpbrk])
   gl_FUNC_STRSTR
   if test $REPLACE_STRSTR = 1; then
     AC_LIBOBJ([strstr])
@@ -776,6 +806,12 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([strstr])
   fi
   gl_STRING_MODULE_INDICATOR([strstr])
+  gl_FUNC_STRTOK_R
+  if test $HAVE_STRTOK_R = 0 || test $REPLACE_STRTOK_R = 1; then
+    AC_LIBOBJ([strtok_r])
+    gl_PREREQ_STRTOK_R
+  fi
+  gl_STRING_MODULE_INDICATOR([strtok_r])
   gl_HEADER_SYS_SELECT
   AC_PROG_MKDIR_P
   gl_HEADER_SYS_STAT_H
@@ -831,6 +867,8 @@ AC_DEFUN([gl_INIT],
   gl_HEADER_TIOCGWINSZ_IN_TERMIOS_H
   gl_WINSIZE_IN_PTEM
   gl_XALLOC
+  AC_LIBOBJ([xmemdup0])
+  gl_XSTRNDUP
   # End of code from modules
   m4_ifval(gl_LIBSOURCES_LIST, [
     m4_syscmd([test ! -d ]m4_defn([gl_LIBSOURCES_DIR])[ ||
@@ -1087,6 +1125,9 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/localeconv.c
   lib/lstat.c
   lib/malloc.c
+  lib/malloca.c
+  lib/malloca.h
+  lib/malloca.valgrind
   lib/math.c
   lib/math.in.h
   lib/mbchar.c
@@ -1178,10 +1219,14 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/string.in.h
   lib/strings.in.h
   lib/stripslash.c
+  lib/strncat.c
+  lib/strndup.c
   lib/strnlen.c
   lib/strnlen1.c
   lib/strnlen1.h
+  lib/strpbrk.c
   lib/strstr.c
+  lib/strtok_r.c
   lib/sys_select.in.h
   lib/sys_stat.in.h
   lib/sys_time.in.h
@@ -1214,6 +1259,12 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/xalloc-oversized.h
   lib/xalloc.h
   lib/xmalloc.c
+  lib/xmalloca.c
+  lib/xmalloca.h
+  lib/xmemdup0.c
+  lib/xmemdup0.h
+  lib/xstrndup.c
+  lib/xstrndup.h
   m4/00gnulib.m4
   m4/absolute-header.m4
   m4/alloca.m4
@@ -1315,6 +1366,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/longlong.m4
   m4/lstat.m4
   m4/malloc.m4
+  m4/malloca.m4
   m4/manywarnings.m4
   m4/math_h.m4
   m4/mathfunc.m4
@@ -1385,8 +1437,12 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/strerror_r.m4
   m4/string_h.m4
   m4/strings_h.m4
+  m4/strncat.m4
+  m4/strndup.m4
   m4/strnlen.m4
+  m4/strpbrk.m4
   m4/strstr.m4
+  m4/strtok_r.m4
   m4/sys_select_h.m4
   m4/sys_socket_h.m4
   m4/sys_stat_h.m4
@@ -1415,4 +1471,5 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/wint_t.m4
   m4/xalloc.m4
   m4/xsize.m4
+  m4/xstrndup.m4
 ])

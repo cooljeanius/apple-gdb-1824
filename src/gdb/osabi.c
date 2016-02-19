@@ -582,9 +582,10 @@ generic_elf_osabi_sniffer (bfd *abfd)
 
   return osabi;
 }
-
+
+/* */
 int
-set_osabi_from_string(char *in_osabi_string)
+set_osabi_from_string(const char *in_osabi_string)
 {
   struct gdbarch_info info;
   int i;

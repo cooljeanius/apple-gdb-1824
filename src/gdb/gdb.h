@@ -67,16 +67,15 @@ enum gdb_rc fsf_gdb_breakpoint(char *address, char *condition,
                                char **error_message);
 
 /* Switch thread and print notification. */
-enum gdb_rc gdb_thread_select (struct ui_out *uiout, char *tidstr,
-			       /* APPLE LOCAL print flag */
-			       int print,
-			       char **error_message);
+enum gdb_rc gdb_thread_select(struct ui_out *uiout, const char *tidstr,
+			      /* APPLE LOCAL print flag */
+			      int print, char **error_message);
 
-struct cleanup *make_cleanup_restore_current_thread (ptid_t inferior_ptid, int print);
+struct cleanup *make_cleanup_restore_current_thread(ptid_t inferior_ptid,
+						    int print);
 
-/* Print a list of known thread ids. */
-enum gdb_rc gdb_list_thread_ids (struct ui_out *uiout,
-				 char **error_message);
+/* Print a list of known thread ids: */
+enum gdb_rc gdb_list_thread_ids(struct ui_out *uiout, char **error_message);
 
 #endif /* !GDB_H */
 

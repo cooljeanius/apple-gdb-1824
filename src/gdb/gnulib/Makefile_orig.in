@@ -269,7 +269,11 @@ $(srcdir)/config.in: @MAINTAINER_MODE_TRUE@ $(configure_deps)
 # the desired updates through the implicit regeneration of the Makefile
 # and all of its prerequisites.
 am--refresh:
-	@:
+	@if test "x$(subdir)" != "xgnulib"; then \
+	  echo "warning: autoreconf screwed up..." >&2; \
+	else \
+	  echo "making '$@'"; \
+	fi
 
 force:
 

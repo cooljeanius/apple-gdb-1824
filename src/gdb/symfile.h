@@ -323,14 +323,14 @@ extern CORE_ADDR overlay_unmapped_address (CORE_ADDR, asection *);
 /* Convert an address in an overlay section (force into VMA range).  */
 extern CORE_ADDR symbol_overlayed_address (CORE_ADDR, asection *);
 
-/* Load symbols from a file.  */
-extern void symbol_file_add_main (char *args, int from_tty);
+/* Load symbols from a file: */
+extern void symbol_file_add_main(const char *args, int from_tty);
 
-/* Clear GDB symbol tables.  */
-extern void symbol_file_clear (int from_tty);
+/* Clear GDB symbol tables: */
+extern void symbol_file_clear(int from_tty);
 
-extern bfd_byte *symfile_relocate_debug_section (bfd *abfd, asection *sectp,
-						 bfd_byte * buf);
+extern bfd_byte *symfile_relocate_debug_section(bfd *abfd, asection *sectp,
+						bfd_byte *buf);
 
 /* From dwarfread.c */
 

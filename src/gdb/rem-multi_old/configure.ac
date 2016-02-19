@@ -71,10 +71,17 @@ AC_REQUIRE_HEADER_STDC
 AC_HEADER_DIRENT
 AC_HEADER_SYS_WAIT
 unset ac_cv_header_sys_types_h
-AC_CHECK_HEADERS([a.out.h errno.h fcntl.h limits.h locale.h mach/kmod.h \
-                  machine/reg.h sgtty.h signal.h stdarg.h stddef.h \
-                  stdio.h sys/dir.h sys/file.h sys/ioctl.h sys/param.h \
-                  sys/ptrace.h sys/types.h sys/user.h varargs.h])dnl
+AC_CHECK_HEADERS([a.out.h errno.h fcntl.h limits.h locale.h mach/mach.h \
+                  mach/vm_types.h machine/reg.h sgtty.h signal.h stdarg.h \
+                  stddef.h stdio.h sys/dir.h sys/file.h sys/ioctl.h \
+                  sys/param.h sys/ptrace.h sys/types.h sys/user.h \
+                  varargs.h wait.h])dnl
+  ## needs other headers first on some systems:
+AC_CHECK_HEADERS([mach/kmod.h],[],[],[[
+#ifdef HAVE_MACH_VM_TYPES_H
+# include <mach/vm_types.h>
+#endif /* HAVE_MACH_VM_TYPES_H */
+]])dnl
   ## for "../config.h":
 EXTRA_DEFS=""
 if test "x${ac_cv_header_sys_types_h}" = "xyes"; then

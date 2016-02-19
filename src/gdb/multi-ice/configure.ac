@@ -168,12 +168,18 @@ AC_HEADER_TIOCGWINSZ
 AC_SYS_POSIX_TERMIOS
 unset ac_cv_header_sys_types_h
 AC_CHECK_HEADERS([arpa/inet.h basetsd.h errno.h fcntl.h getopt.h \
-                  intsafe.h limits.h locale.h mach/kmod.h \
+                  intsafe.h limits.h locale.h mach/vm_types.h \
                   netdb.h netinet/in.h netinet/tcp.h \
                   signal.h stdarg.h stddef.h stdio.h \
                   sys/file.h sys/ioctl.h sys/signal.h sys/time.h \
                   sys/types.h termios.h termio.h unix.h \
                   wincon.h windef.h windows.h winnt.h])dnl
+  ## needs other headers first on some systems:
+AC_CHECK_HEADERS([mach/kmod.h],[],[],[[
+#ifdef HAVE_MACH_VM_TYPES_H
+# include <mach/vm_types.h>
+#endif /* HAVE_MACH_VM_TYPES_H */
+]])dnl
   ## for "../config.h":
 EXTRA_DEFS=""
 if test "x${ac_cv_header_sys_types_h}" = "xyes"; then

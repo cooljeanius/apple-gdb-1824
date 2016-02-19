@@ -243,7 +243,7 @@ static void macosx_mourn_inferior(void);
 
 static int macosx_lookup_task(const char *args, task_t * ptask, int *ppid);
 
-static void macosx_child_attach(char *args, int from_tty);
+static void macosx_child_attach(const char *args, int from_tty);
 
 static void macosx_child_detach(const char *args, int from_tty);
 
@@ -1461,12 +1461,13 @@ macosx_fetch_task_info(struct kinfo_proc **info, size_t * count)
   *info = proc;
 }
 
+/* */
 char **
-macosx_process_completer_quoted(char *text, char *word, int quote,
+macosx_process_completer_quoted(const char *text, char *word, int quote,
                                 struct pid_list *ignorepids)
 {
-  struct kinfo_proc *proc = NULL;
-  size_t count, i, found = 0;
+  struct kinfo_proc *proc = (struct kinfo_proc *)NULL;
+  size_t count, i, found = 0UL;
   pid_t gdb_pid = getpid();
 
   char **procnames = NULL;
@@ -1542,15 +1543,17 @@ macosx_process_completer_quoted(char *text, char *word, int quote,
   return ret;
 }
 
+/* */
 char **
-macosx_process_completer(char *text, char *word)
+macosx_process_completer(const char *text, char *word)
 {
   return macosx_process_completer_quoted(text, word, 1, NULL);
 }
 
+/* */
 static void
-macosx_lookup_task_local (char *pid_str, int pid, task_t * ptask, int *ppid,
-                          struct pid_list *ignorepids)
+macosx_lookup_task_local(char *pid_str, int pid, task_t *ptask, int *ppid,
+                         struct pid_list *ignorepids)
 {
   CHECK_FATAL (ptask != NULL);
   CHECK_FATAL (ppid != NULL);
@@ -1816,7 +1819,7 @@ macosx_lookup_task(const char *args, task_t *ptask, int *ppid)
 extern char *dyld_symbols_prefix;
 
 static void
-macosx_child_attach(char *args, int from_tty ATTRIBUTE_UNUSED)
+macosx_child_attach(const char *args, int from_tty ATTRIBUTE_UNUSED)
 {
   task_t itask;
   int pid;
@@ -2009,7 +2012,7 @@ macosx_child_attach(char *args, int from_tty ATTRIBUTE_UNUSED)
      But I cannot think of anything better to do.  */
   {
     int result;
-    char *name;
+    const char *name;
     CORE_ADDR addr;
 
     result = find_pc_partial_function_no_inlined(stop_pc, &name, &addr, NULL);

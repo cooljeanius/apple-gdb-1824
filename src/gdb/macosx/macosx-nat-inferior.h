@@ -68,7 +68,7 @@ struct pid_list
 struct private_thread_info
 {
   thread_t app_thread_port;
-  void* core_thread_state;
+  void *core_thread_state;
   int gdb_suspend_count;
   int gdb_dont_suspend_stepping;
 };
@@ -86,9 +86,9 @@ extern int inferior_bind_notify_port_flag;
 void macosx_create_inferior_for_task(struct macosx_inferior_status *inferior,
                                      task_t task, int pid);
 
-void macosx_fetch_task_info(struct kinfo_proc ** info, size_t * count);
+void macosx_fetch_task_info(struct kinfo_proc **info, size_t *count);
 
-char **macosx_process_completer(char *text, char *word);
+char **macosx_process_completer(const char *text, char *word);
 
 int create_private_thread_info(struct thread_info *thrd_info);
 void delete_private_thread_info(struct thread_info *thrd_info);
@@ -115,7 +115,7 @@ int macosx_get_task_for_pid_rights(void);
  * macosx-nat-inferior.c: */
 int macosx_service_one_other_event(struct target_waitstatus *status);
 struct macosx_pending_event *macosx_backup_before_break(int ignore);
-char **macosx_process_completer_quoted(char *text, char *word, int quote,
+char **macosx_process_completer_quoted(const char *text, char *word, int quote,
                                        struct pid_list *ignorepids);
 void direct_memcache_get(struct checkpoint *cp);
 void fork_memcache_put(struct checkpoint *cp);

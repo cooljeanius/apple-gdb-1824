@@ -43,7 +43,7 @@
 
 extern void _initialize_blockframe(void);
 
-static int find_pc_partial_function_impl(CORE_ADDR, char **, CORE_ADDR *,
+static int find_pc_partial_function_impl(CORE_ADDR, const char **, CORE_ADDR *,
 					 CORE_ADDR *, int);
 
 /* APPLE LOCAL: Test whether PC is in the range of addresses that
@@ -354,17 +354,17 @@ clear_pc_function_cache(void)
 }
 
 int
-find_pc_partial_function (CORE_ADDR pc, char **name, CORE_ADDR *address,
-			  CORE_ADDR *endaddr)
+find_pc_partial_function(CORE_ADDR pc, const char **name, CORE_ADDR *address,
+			 CORE_ADDR *endaddr)
 {
-  return find_pc_partial_function_impl (pc, name, address, endaddr, 1);
+  return find_pc_partial_function_impl(pc, name, address, endaddr, 1);
 }
 
 int
-find_pc_partial_function_no_inlined (CORE_ADDR pc, char **name,
-				     CORE_ADDR *address, CORE_ADDR *endaddr)
+find_pc_partial_function_no_inlined(CORE_ADDR pc, const char **name,
+				    CORE_ADDR *address, CORE_ADDR *endaddr)
 {
-  return find_pc_partial_function_impl (pc, name, address, endaddr, 0);
+  return find_pc_partial_function_impl(pc, name, address, endaddr, 0);
 }
 
 /* Finds the "function" (text symbol) that is smaller than PC but
@@ -381,8 +381,9 @@ find_pc_partial_function_no_inlined (CORE_ADDR pc, char **name,
 /* Backward compatibility, no section argument.  */
 
 static int
-find_pc_partial_function_impl (CORE_ADDR pc, char **name, CORE_ADDR *address,
-			       CORE_ADDR *endaddr, int inlining_flag)
+find_pc_partial_function_impl(CORE_ADDR pc, const char **name,
+			      CORE_ADDR *address, CORE_ADDR *endaddr,
+			      int inlining_flag)
 {
   struct bfd_section *section;
   struct partial_symtab *pst;

@@ -2924,7 +2924,7 @@ new_objc_runtime_find_impl(CORE_ADDR objc_class, CORE_ADDR sel, int stret)
     {
       struct value *classval, *selval;
       struct value *infargs[2];
-      char *imp_name;
+      const char *imp_name;
       struct cleanup *value_cleanup;
 
       classval =
@@ -3015,7 +3015,7 @@ new_objc_runtime_find_impl(CORE_ADDR objc_class, CORE_ADDR sel, int stret)
           struct cleanup *make_call_cleanup;
           struct value *classval, *selval;
           struct value *infargs[2];
-          char *imp_name;
+          const char *imp_name;
 
           make_cleanup_set_restore_debugger_mode(&make_call_cleanup, 0);
 
@@ -4580,7 +4580,8 @@ objc_fixup_ivar_offset(struct type *type, int ivar)
 
   /* Otherwise, I do NOT think that the bitpos should ever be negative: */
   if ((TYPE_CODE(type) != TYPE_CODE_STRUCT)
-      && (TYPE_CODE(type) != TYPE_CODE_CLASS))
+      && ((TYPE_CODE_STRUCT != TYPE_CODE_CLASS)
+	  && (TYPE_CODE(type) != TYPE_CODE_CLASS)))
     {
       if (info_verbose)
 	{

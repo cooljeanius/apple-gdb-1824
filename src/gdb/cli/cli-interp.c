@@ -40,13 +40,13 @@ struct ui_out *cli_uiout;
 /* Longjmp-safe wrapper for "execute_command".  */
 /* APPLE LOCAL Make globally visible: */
 struct gdb_exception safe_execute_command(struct ui_out *uiout,
-                                          char *command, int from_tty);
+                                          const char *command, int from_tty);
 
 extern int cli_quoted_interpreter_resume(void *data);
 
 struct captured_execute_command_args
 {
-  char *command;
+  const char *command;
   int from_tty;
 };
 
@@ -140,7 +140,7 @@ do_captured_execute_command (struct ui_out *uiout, void *data)
 
 /* APPLE LOCAL make globally visible because the MI needs it */
 struct gdb_exception
-safe_execute_command (struct ui_out *uiout, char *command, int from_tty)
+safe_execute_command(struct ui_out *uiout, const char *command, int from_tty)
 {
   struct gdb_exception e;
   struct captured_execute_command_args args;

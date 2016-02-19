@@ -278,7 +278,7 @@ find_methods (struct type *t, char *name, struct symbol ***sym_arr,
 {
   int i1 = 0;
   int ibase;
-  char *class_name = type_name_no_tag (t);
+  const char *class_name = type_name_no_tag(t);
   struct cleanup *old_chain;
 
   /* APPLE LOCAL: The whole point of this exercise is to look for
@@ -299,7 +299,7 @@ find_methods (struct type *t, char *name, struct symbol ***sym_arr,
 			 (struct symtab **) NULL)))
     {
       int method_counter;
-      int name_len = strlen (name);
+      size_t name_len = strlen(name);
 
       CHECK_TYPEDEF (t);
 
@@ -311,7 +311,7 @@ find_methods (struct type *t, char *name, struct symbol ***sym_arr,
 	   method_counter >= 0;
 	   --method_counter)
 	{
-	  char *method_name = TYPE_FN_FIELDLIST_NAME (t, method_counter);
+	  const char *method_name = TYPE_FN_FIELDLIST_NAME(t, method_counter);
 	  char dem_opname[64];
 
 	  if (strncmp (method_name, "__", 2) == 0 ||
@@ -1132,7 +1132,7 @@ decode_line_1(const char **argptr, int funfirstline, struct symtab *default_symt
   /* Is part of *ARGPTR is enclosed in double quotes?  */
   int is_quote_enclosed;
   int is_objc_method = 0;
-  char *saved_arg = *argptr;
+  const char *saved_arg = *argptr;
 
   if (not_found_ptr)
     *not_found_ptr = 0;
@@ -2222,7 +2222,7 @@ collect_methods(char *copy, struct type *t,
 	     doesn't have the mangled name, so the PHYSNAME is the
 	     bare ctor or dtor.  */
 
-	  char *phys_name = TYPE_FN_FIELD_PHYSNAME(f, f_index);
+	  const char *phys_name = TYPE_FN_FIELD_PHYSNAME(f, f_index);
 
 	  if (phys_name[0] != '_')
 	    {

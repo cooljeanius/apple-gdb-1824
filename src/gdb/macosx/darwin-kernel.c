@@ -119,7 +119,8 @@ static void darwin_kernel_logger(darwin_kernel_log_level l, const char *call,
   va_end(ap);
 }
 
-static void darwin_kernel_open(char *name, int from_tty)
+/* */
+static void darwin_kernel_open(const char *name, int from_tty)
 {
   inferior_function_calls_disabled_p = 1;
   push_target(&darwin_kernel_ops);
@@ -130,12 +131,14 @@ static void darwin_kernel_close (int quitting)
   return; /* FIXME: actually put something here */
 }
 
-static void darwin_kernel_attach(char *args, int from_tty)
+/* */
+static void darwin_kernel_attach(const char *args, int from_tty)
 {
   if ((darwin_kernel_fd = open("/dev/kmem", O_RDONLY)) < 0) {
-    char errstr[128];
+    char errstr[256];
     if (errno == ENOENT) {
-      strcpy(errstr, "The /dev/kmem device does NOT exist; perhaps this kernel was NOT started with the kmem=1 kernel boot-arg, or was compiled without support for it.\n");
+      strcpy(errstr,
+	     "The /dev/kmem device is missing; perhaps this kernel was NOT started w/the kmem=1 kernel boot-arg, or was compiled w/out support for it.\n");
     } else {
       if (errno == EACCES) {
         strcpy(errstr, "The /dev/kmem device is inaccessible; GDB must run as the superuser to access the kernel address space.\n");
@@ -228,10 +231,12 @@ static void darwin_kernel_kill(void)
   darwin_kernel_detach("", 0);
 }
 
+/* */
 static void ATTR_NORETURN
-darwin_kernel_load(char *args, int from_tty)
+darwin_kernel_load(const char *args ATTRIBUTE_UNUSED,
+		   int from_tty ATTRIBUTE_UNUSED)
 {
-  error("Unsupported operation darwin_kernel_load\n");
+  error(_("Unsupported operation darwin_kernel_load\n"));
 }
 
 static void ATTR_NORETURN

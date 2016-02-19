@@ -63,7 +63,7 @@
 /* Local function declarations: */
 
 extern void _initialize_core(void);
-static void call_extra_exec_file_hooks(char *filename);
+static void call_extra_exec_file_hooks(const char *filename);
 
 /* You can have any number of hooks for `exec_file_command' command to
    call.  If there is only one hook, then it is set in exec_file_display
@@ -74,7 +74,7 @@ static void call_extra_exec_file_hooks(char *filename);
    only one hook could be set, and which called
    deprecated_exec_file_display_hook directly.  */
 
-typedef void (*hook_type) (char *);
+typedef void (*hook_type)(const char *);
 
 hook_type deprecated_exec_file_display_hook;	/* the original hook */
 static hook_type *exec_file_extra_hooks;   /* array of additional hooks */
@@ -124,8 +124,9 @@ core_file_command(const char *args, int from_tty)
     do_cleanups (cleanups);
 }
 
+/* */
 void
-core_file_attach (char *filename, int from_tty)
+core_file_attach(const char *filename, int from_tty)
 {
   /* APPLE LOCAL end refactor corefile */
   struct target_ops *t;
@@ -146,19 +147,19 @@ core_file_attach (char *filename, int from_tty)
    functions.  */
 
 static void
-call_extra_exec_file_hooks (char *filename)
+call_extra_exec_file_hooks(const char *filename)
 {
   int i;
 
   for (i = 0; i < exec_file_hook_count; i++)
-    (*exec_file_extra_hooks[i]) (filename);
+    (*exec_file_extra_hooks[i])(filename);
 }
 
 /* Call this to specify the hook for exec_file_command to call back.
    This is called from the x-window display code.  */
 
 void
-specify_exec_file_hook (void (*hook) (char *))
+specify_exec_file_hook(void (*hook)(const char *))
 {
   hook_type *new_array;
 

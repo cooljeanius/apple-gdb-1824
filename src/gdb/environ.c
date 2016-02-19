@@ -219,7 +219,7 @@ set_in_environ(struct gdb_environ *e, const char *var, const char *value)
 
 /* Remove the setting for variable VAR from environment E: */
 void
-unset_in_environ(struct gdb_environ *e, char *var)
+unset_in_environ(struct gdb_environ *e, const char *var)
 {
   size_t len = strlen(var);
   char **vector = e->vector;

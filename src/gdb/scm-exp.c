@@ -306,8 +306,8 @@ tryagain:
       goto tryagain;
     case '\'':
     case '`':
-      str.ptr = lexptr - 1;
-      scm_lreadr (skipping);
+      str.ptr = (char *)(lexptr - 1);
+      scm_lreadr(skipping);
       if (!skipping)
 	{
 	  struct value *val = scm_evaluate_string (str.ptr, lexptr - str.ptr);
@@ -433,7 +433,7 @@ tryagain:
     case '+':
     num:
       {
-	str.ptr = (lexptr - 1);
+	str.ptr = (char *)(lexptr - 1);
 	scm_read_token(c, 0);
 	if (!skipping)
 	  {
@@ -451,7 +451,7 @@ tryagain:
     do_symbol:
 #endif /* 0 */
     default:
-      str.ptr = (lexptr - 1);
+      str.ptr = (char *)(lexptr - 1);
       scm_read_token(c, 0);
     tok:
       if (!skipping)
@@ -478,10 +478,11 @@ handle_immediate:
     }
 }
 
+/* */
 int
 scm_parse(void)
 {
-  char *start;
+  const char *start;
   while (*lexptr == ' ')
     lexptr++;
   start = lexptr;

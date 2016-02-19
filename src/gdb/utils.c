@@ -237,10 +237,10 @@ Printing of 8-bit characters in strings as \\nnn is %s.\n"),
 }
 
 /* String to be printed before error messages, if any: */
-char *error_pre_print;
+const char *error_pre_print;
 
 /* String to be printed before quit messages, if any: */
-char *quit_pre_print;
+const char *quit_pre_print;
 
 /* String to be printed before warning messages, if any: */
 const char *warning_pre_print = "\nwarning: ";

@@ -135,7 +135,7 @@ static void set_initial_language(void);
 
 static void load_command(const char *, int);
 
-static void symbol_file_add_main_1(char *args, int from_tty, int flags);
+static void symbol_file_add_main_1(const char *args, int from_tty, int flags);
 
 static void add_symbol_file_command(const char *, int);
 
@@ -1873,13 +1873,14 @@ symbol_file_add_using_objfile (struct objfile *in_objfile,
    command itself.  */
 
 void
-symbol_file_add_main (char *args, int from_tty)
+symbol_file_add_main(const char *args, int from_tty)
 {
-  symbol_file_add_main_1 (args, from_tty, 0);
+  symbol_file_add_main_1(args, from_tty, 0);
 }
 
+/* */
 static void
-symbol_file_add_main_1 (char *args, int from_tty, int flags)
+symbol_file_add_main_1(const char *args, int from_tty, int flags)
 {
   /* APPLE LOCAL begin load levels */
   int symflags = OBJF_SYM_ALL;
@@ -2536,8 +2537,9 @@ load_section_callback(bfd *abfd, asection *asec, void *data)
   do_cleanups(old_chain);
 }
 
+/* */
 void
-generic_load(char *args, int from_tty)
+generic_load(const char *args, int from_tty)
 {
   bfd *loadfile_bfd;
   struct timeval start_time, end_time;

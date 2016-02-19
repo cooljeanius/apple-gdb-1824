@@ -703,19 +703,19 @@ extern void breakpoint_print_commands (struct ui_out *, struct breakpoint *);
 extern void breakpoint_add_commands (struct breakpoint *, struct command_line *);
 /* APPLE LOCAL end breakpoint MI */
 
-extern int breakpoint_thread_match (CORE_ADDR, ptid_t);
+extern int breakpoint_thread_match(CORE_ADDR, ptid_t);
 
-extern void until_break_command (char *, int, int);
-
-/* APPLE LOCAL breakpoints */
-extern void breakpoint_update (void);
+extern void until_break_command(const char *, int, int);
 
 /* APPLE LOCAL breakpoints */
-extern void breakpoint_re_set (struct objfile *);
+extern void breakpoint_update(void);
 
-extern void breakpoint_re_set_thread (struct breakpoint *);
+/* APPLE LOCAL breakpoints */
+extern void breakpoint_re_set(struct objfile *);
 
-extern int ep_is_exception_catchpoint (struct breakpoint *);
+extern void breakpoint_re_set_thread(struct breakpoint *);
+
+extern int ep_is_exception_catchpoint(struct breakpoint *);
 
 extern struct breakpoint *set_momentary_breakpoint
   (struct symtab_and_line, struct frame_id, enum bptype);
@@ -742,18 +742,18 @@ extern void break_command(const char *, int);
 
 /* APPLE LOCAL: for rbreak_command's setting of breakpoints */
 /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps.  */
-extern void rbr_break_command(char *, int, int);
+extern void rbr_break_command(const char *, int, int);
 
-extern void hbreak_command_wrapper(char *, int);
-extern void thbreak_command_wrapper(char *, int);
-extern void rbreak_command_wrapper(char *, int);
+extern void hbreak_command_wrapper(const char *, int);
+extern void thbreak_command_wrapper(const char *, int);
+extern void rbreak_command_wrapper(const char *, int);
 /* APPLE LOCAL: Added by_location argument.  */
-extern void watch_command_wrapper(char *, int, int);
-extern void awatch_command_wrapper(char *, int, int);
-extern void rwatch_command_wrapper(char *, int, int);
-extern int detect_location_arg(char **);
+extern void watch_command_wrapper(const char *, int, int);
+extern void awatch_command_wrapper(const char *, int, int);
+extern void rwatch_command_wrapper(const char *, int, int);
+extern int detect_location_arg(const char **);
 /* END APPLE LOCAL */
-extern void tbreak_command(char *, int);
+extern void tbreak_command(const char *, int);
 
 extern int insert_breakpoints(void);
 
@@ -878,11 +878,11 @@ extern void create_solib_load_event_breakpoint(char *, int, char *, char *);
 extern void create_solib_unload_event_breakpoint(char *, int,
 						 char *, char *);
 
-extern void create_fork_event_catchpoint(int, char *);
+extern void create_fork_event_catchpoint(int, const char *);
 
-extern void create_vfork_event_catchpoint(int, char *);
+extern void create_vfork_event_catchpoint(int, const char *);
 
-extern void create_exec_event_catchpoint(int, char *);
+extern void create_exec_event_catchpoint(int, const char *);
 
 /* This function returns TRUE if ep is a catchpoint: */
 extern int ep_is_catchpoint(struct breakpoint *);
@@ -896,7 +896,7 @@ extern struct breakpoint *set_breakpoint_sal(struct symtab_and_line);
 
 /* Enable breakpoints and delete when hit.  Called with ARG == NULL
    deletes all breakpoints. */
-extern void delete_command(char *arg, int from_tty);
+extern void delete_command(const char *arg, int from_tty);
 
 /* Pull all H/W watchpoints from the target. Return non-zero if the
    remove fails. */
@@ -913,7 +913,7 @@ int update_exception_catchpoints(enum exception_event_kind, int, char *,
                                  int, struct objfile *);
 int handle_gnu_v3_exceptions(enum exception_event_kind);
 
-void future_break_command(char *, int);
+void future_break_command(const char *, int);
 
 void tell_breakpoints_objfile_changed(struct objfile *);
 void tell_breakpoints_objfile_removed(struct objfile *);

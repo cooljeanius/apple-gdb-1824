@@ -350,8 +350,8 @@ AC_FUNC_STRNLEN dnl# (might create libobj)
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([getcwd isascii iswprint localeconv memset putenv re_comp \
                 regcomp rmdir setlocale stpcpy strcasecmp strchr strcmp \
-                strcspn strerror strncasecmp strndup strpbrk strrchr \
-                strspn strstr tzset])dnl
+                strcspn strerror strncasecmp strrchr strspn strstr \
+                tzset tzunset])dnl
   ## dummies to keep autoscan happy:
 if test "x${ac_cv_func_atexit}" = "x"; then
   test -z "${ac_cv_func_atexit}"
@@ -400,6 +400,14 @@ fi
 if test "x${ac_cv_func_strdup}" = "x"; then
   test -z "${ac_cv_func_strdup}"
   AC_CHECK_FUNCS([strdup])
+fi
+if test "x${ac_cv_func_strndup}" = "x"; then
+  test -z "${ac_cv_func_strndup}"
+  AC_CHECK_FUNCS([strndup])
+fi
+if test "x${ac_cv_func_strpbrk}" = "x"; then
+  test -z "${ac_cv_func_strpbrk}"
+  AC_CHECK_FUNCS([strpbrk])
 fi
 if test "x${ac_cv_func_wcwidth}" = "x"; then
   test -z "${ac_cv_func_wcwidth}"

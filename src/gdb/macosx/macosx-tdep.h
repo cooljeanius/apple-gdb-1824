@@ -101,7 +101,7 @@ const char *dyld_symbol_stub_function_name(CORE_ADDR pc);
 CORE_ADDR dyld_symbol_stub_function_address(CORE_ADDR pc, const char **name);
 
 CORE_ADDR macosx_skip_trampoline_code(CORE_ADDR pc);
-int macosx_in_solib_return_trampoline(CORE_ADDR pc, char *name);
+int macosx_in_solib_return_trampoline(CORE_ADDR pc, const char *name);
 int macosx_in_solib_call_trampoline(CORE_ADDR pc, char *name);
 int macosx_record_symbols_from_sect_p(bfd *abfd, unsigned char macho_type,
 				      unsigned char macho_sect);

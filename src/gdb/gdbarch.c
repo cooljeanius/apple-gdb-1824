@@ -1,6 +1,7 @@
 /* *INDENT-OFF* */ /* THIS FILE IS GENERATED */
+#line 725 "gdbarch.sh"
 
-/* Dynamic architecture support for GDB, the GNU debugger.
+/* gdbarch.[hc]: Dynamic architecture support for GDB, the GNU debugger.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free
    Software Foundation, Inc.
@@ -34,6 +35,7 @@
    to this file, modifying gdbarch.sh and using its output may prove
    easier. */
 
+#line 1177 "gdbarch.sh"
 
 #include "defs.h"
 #include "arch-utils.h"
@@ -104,6 +106,7 @@ struct gdbarch
   /* per-architecture swap-regions */
   struct gdbarch_swap *swap;
 
+#line 1256 "gdbarch.sh"
   /* Multi-arch values.
 
      When extending this structure you must:
@@ -242,6 +245,7 @@ struct gdbarch
 };
 
 
+#line 1303 "gdbarch.sh"
 /* The default architecture uses host values (for want of a better
    choice). */
 
@@ -255,6 +259,7 @@ struct gdbarch startup_gdbarch =
   &bfd_default_arch_struct,  /* bfd_arch_info */
   BFD_ENDIAN_BIG,  /* byte_order */
   GDB_OSABI_UNKNOWN,  /* osabi */
+#line 1323 "gdbarch.sh"
   /* target specific vector and its dump routine */
   NULL, NULL,
   /*per-architecture data-pointers and swap regions */
@@ -369,14 +374,16 @@ struct gdbarch startup_gdbarch =
   0,  /* fetch_pointer_argument */
   0,  /* regset_from_core_section */
   default_adjust_ehframe_regnum,  /* adjust_ehframe_regnum */
+#line 1338 "gdbarch.sh"
   /* startup_gdbarch() */
 };
 
 struct gdbarch *current_gdbarch = &startup_gdbarch;
-
+#line 1347 "gdbarch.sh"
 /* Create a new ``struct gdbarch'' based on information provided by
    ``struct gdbarch_info''. */
 
+#line 1356 "gdbarch.sh"
 struct gdbarch *
 gdbarch_alloc (const struct gdbarch_info *info,
                struct gdbarch_tdep *tdep)
@@ -393,7 +400,8 @@ gdbarch_alloc (const struct gdbarch_info *info,
      then use that to allocate the architecture vector.  */
   struct obstack *obstack = XMALLOC(struct obstack);
   obstack_init(obstack);
-  current_gdbarch = (struct gdbarch *)obstack_alloc(obstack, sizeof(*current_gdbarch));
+  current_gdbarch = (struct gdbarch *)obstack_alloc(obstack,
+						    sizeof(*current_gdbarch));
   memset(current_gdbarch, 0, sizeof(*current_gdbarch));
   current_gdbarch->obstack = obstack;
 
@@ -460,12 +468,14 @@ gdbarch_alloc (const struct gdbarch_info *info,
   current_gdbarch->name_of_malloc = "malloc";
   current_gdbarch->register_reggroup_p = default_register_reggroup_p;
   current_gdbarch->adjust_ehframe_regnum = default_adjust_ehframe_regnum;
+#line 1406 "gdbarch.sh"
   /* gdbarch_alloc() */
 
   return current_gdbarch;
 }
 
 
+#line 1417 "gdbarch.sh"
 /* Allocate extra space using the per-architecture obstack.  */
 
 void *
@@ -478,8 +488,8 @@ gdbarch_obstack_zalloc (struct gdbarch *arch, long size)
 
 
 /* Free a gdbarch struct.  This should never happen in normal
-   operation --- once you've created a gdbarch, you keep it around.
-   However, if an architecture's init function encounters an error
+   operation --- once you have created a gdbarch, you keep it around.
+   However, if an init function of an architecture encounters an error
    building the structure, it may need to clean up a partially
    constructed gdbarch.  */
 
@@ -493,7 +503,7 @@ gdbarch_free (struct gdbarch *arch)
   obstack_free (obstack, 0); /* Includes the ARCH.  */
   xfree (obstack);
 }
-
+#line 1449 "gdbarch.sh"
 
 /* Ensure that all values in a GDBARCH are reasonable.  */
 
@@ -629,6 +639,7 @@ verify_gdbarch (struct gdbarch *current_gdbarch)
   /* Skip verify of fetch_pointer_argument, has predicate */
   /* Skip verify of regset_from_core_section, has predicate */
   /* Skip verify of adjust_ehframe_regnum, invalid_p == 0 */
+#line 1513 "gdbarch.sh"
   buf = ui_file_xstrdup (log, &dummy);
   make_cleanup (xfree, buf);
   if (strlen (buf) > 0)
@@ -639,6 +650,7 @@ verify_gdbarch (struct gdbarch *current_gdbarch)
 }
 
 
+#line 1528 "gdbarch.sh"
 /* Print out the details of the current architecture. */
 
 /* NOTE/WARNING: The parameter is called ``current_gdbarch'' so that it
@@ -653,21 +665,21 @@ gdbarch_dump (struct gdbarch *current_gdbarch, struct ui_file *file)
   const char *gdb_xm_file = "<not-defined>";
   const char *gdb_nm_file = "<not-defined>";
   const char *gdb_tm_file = "<not-defined>";
-#if defined (GDB_XM_FILE)
+#if defined(GDB_XM_FILE)
   gdb_xm_file = GDB_XM_FILE;
-#endif
+#endif /* GDB_XM_FILE */
   fprintf_unfiltered (file,
                       "gdbarch_dump: GDB_XM_FILE = %s\n",
                       gdb_xm_file);
-#if defined (GDB_NM_FILE)
+#if defined(GDB_NM_FILE)
   gdb_nm_file = GDB_NM_FILE;
-#endif
+#endif /* GDB_NM_FILE */
   fprintf_unfiltered (file,
                       "gdbarch_dump: GDB_NM_FILE = %s\n",
                       gdb_nm_file);
-#if defined (GDB_TM_FILE)
+#if defined(GDB_TM_FILE)
   gdb_tm_file = GDB_TM_FILE;
-#endif
+#endif /* GDB_TM_FILE */
   fprintf_unfiltered (file,
                       "gdbarch_dump: GDB_TM_FILE = %s\n",
                       gdb_tm_file);
@@ -1690,10 +1702,12 @@ gdbarch_dump (struct gdbarch *current_gdbarch, struct ui_file *file)
   fprintf_unfiltered (file,
                       "gdbarch_dump: write_pc = <0x%lx>\n",
                       (long) current_gdbarch->write_pc);
+#line 1627 "gdbarch.sh"
   if (current_gdbarch->dump_tdep != NULL)
     current_gdbarch->dump_tdep (current_gdbarch, file);
 }
 
+#line 1637 "gdbarch.sh"
 struct gdbarch_tdep *
 gdbarch_tdep (struct gdbarch *gdbarch)
 {
@@ -3521,7 +3535,7 @@ set_gdbarch_skip_solib_resolver (struct gdbarch *gdbarch,
 }
 
 int
-gdbarch_in_solib_return_trampoline (struct gdbarch *gdbarch, CORE_ADDR pc, char *name)
+gdbarch_in_solib_return_trampoline (struct gdbarch *gdbarch, CORE_ADDR pc, const char *name)
 {
   gdb_assert (gdbarch != NULL);
   gdb_assert (gdbarch->in_solib_return_trampoline != NULL);
@@ -3826,7 +3840,7 @@ set_gdbarch_adjust_ehframe_regnum (struct gdbarch *gdbarch,
 {
   gdbarch->adjust_ehframe_regnum = adjust_ehframe_regnum;
 }
-
+#line 1755 "gdbarch.sh"
 
 /* Keep a registry of per-architecture data-pointers required by GDB
    modules. */
@@ -3920,11 +3934,11 @@ gdbarch_data (struct gdbarch *gdbarch, struct gdbarch_data *data)
   gdb_assert (data->index < gdbarch->nr_data);
   if (gdbarch->data[data->index] == NULL)
     {
-      /* The data-pointer isn't initialized, call init() to get a
+      /* The data-pointer is NOT initialized, call init() to get a
 	 value.  */
       if (data->pre_init != NULL)
 	/* Mid architecture creation: pass just the obstack, and not
-	   the entire architecture, as that way it isn't possible for
+	   the entire architecture, as that way it is NOT possible for
 	   pre-init code to refer to undefined architecture
 	   fields.  */
 	gdbarch->data[data->index] = data->pre_init (gdbarch->obstack);
@@ -3940,7 +3954,7 @@ gdbarch_data (struct gdbarch *gdbarch, struct gdbarch_data *data)
 	  data->init_p = 1;
 	}
       else
-	/* The architecture initialization hasn't completed - punt -
+	/* The architecture initialization has NOT completed - punt -
 	 hope that the caller knows what they are doing.  Once
 	 deprecated_set_gdbarch_data has been initialized, this can be
 	 changed to an internal error.  */
@@ -3950,7 +3964,7 @@ gdbarch_data (struct gdbarch *gdbarch, struct gdbarch_data *data)
   return gdbarch->data[data->index];
 }
 
-
+#line 1879 "gdbarch.sh"
 
 /* Keep a registry of swapped data required by GDB modules. */
 
@@ -3975,7 +3989,7 @@ struct gdbarch_swap_registry
   struct gdbarch_swap_registration *registrations;
 };
 
-struct gdbarch_swap_registry gdbarch_swap_registry =
+struct gdbarch_swap_registry gdbarch_swap_registry = 
 {
   0, NULL,
 };
@@ -4051,7 +4065,7 @@ current_gdbarch_swap_in_hack (struct gdbarch *new_gdbarch)
   current_gdbarch = new_gdbarch;
 }
 
-
+#line 1980 "gdbarch.sh"
 /* Keep a registry of the architectures known by GDB: */
 struct gdbarch_registration
 {
@@ -4062,21 +4076,26 @@ struct gdbarch_registration
   struct gdbarch_registration *next;
 };
 
+#line 1991 "gdbarch.sh"
 static struct gdbarch_registration *gdbarch_registry = NULL;
 
 static void
 append_name(const char ***buf, int *nr, const char *name)
 {
-  *buf = (const char **)xrealloc(*buf, sizeof(char **) * (*nr + 1));
+  *buf = (const char **)xrealloc(*buf, sizeof(char**) * (*nr + 1));
   (*buf)[*nr] = name;
   *nr += 1;
 }
 
+#line 2002 "gdbarch.sh"
 const char **
 gdbarch_printable_names(void)
 {
   /* Accumulate a list of names based on the registed list of
      architectures. */
+#ifdef ALLOW_UNUSED_VARIABLES
+  enum bfd_architecture a;
+#endif /* ALLOW_UNUSED_VARIABLES */
   int nr_arches = 0;
   const char **arches = NULL;
   struct gdbarch_registration *rego;
@@ -4100,7 +4119,7 @@ gdbarch_printable_names(void)
   return arches;
 }
 
-
+#line 2034 "gdbarch.sh"
 void
 gdbarch_register (enum bfd_architecture bfd_architecture,
                   gdbarch_init_ftype *init,
@@ -4116,7 +4135,7 @@ gdbarch_register (enum bfd_architecture bfd_architecture,
                       _("gdbarch: Attempt to register unknown architecture (%d)"),
                       bfd_architecture);
     }
-  /* Check that we haven't seen this architecture before */
+  /* Check that we have NOT seen this architecture before */
   for (curr = &gdbarch_registry;
        (*curr) != NULL;
        curr = &(*curr)->next)
@@ -4260,23 +4279,23 @@ find_arch_by_info (struct gdbarch *old_gdbarch, struct gdbarch_info info)
 	   list = &(*list)->next);
       /* It had better be in the list of architectures: */
       gdb_assert((*list) != NULL && (*list)->gdbarch == new_gdbarch);
-      /* Unlink THISLIST: */
+      /* Unlink THIS.  */
       thislist = (*list);
       (*list) = thislist->next;
-      /* Insert THISLIST at the front: */
+      /* Insert THIS at the front: */
       thislist->next = rego->arches;
       rego->arches = thislist;
       /* Return it: */
       return new_gdbarch;
     }
 
-  /* It's a new architecture.  */
+  /* It is a new architecture: */
   if (gdbarch_debug)
     fprintf_unfiltered (gdb_stdlog, "find_arch_by_info: "
 			"New architecture 0x%08lx (%s) selected\n",
 			(long) new_gdbarch,
 			new_gdbarch->bfd_arch_info->printable_name);
-
+  
   /* Insert the new architecture into the front of the architecture
      list (keep the list sorted Most Recently Used).  */
   {
@@ -4284,7 +4303,7 @@ find_arch_by_info (struct gdbarch *old_gdbarch, struct gdbarch_info info)
     thislist->next = rego->arches;
     thislist->gdbarch = new_gdbarch;
     rego->arches = thislist;
-  }
+  }    
 
   /* Check that the newly installed architecture is valid.  Plug in
      any post init values.  */
@@ -4310,7 +4329,7 @@ gdbarch_find_by_info (struct gdbarch_info info)
 {
   /* Save the previously selected architecture, setting the global to
      NULL.  This stops things like gdbarch->init() trying to use the
-     previous architecture's configuration.  The previous architecture
+     configuration of the previous architecture.  The previous architecture
      may not even be of the same architecture family.  The most recent
      architecture of the same family is found at the head of the
      rego->arches list.  */
@@ -4341,11 +4360,16 @@ deprecated_current_gdbarch_select_hack (struct gdbarch *new_gdbarch)
   flush_cached_frames ();
 }
 
+#line 2275 "gdbarch.sh"
 extern void _initialize_gdbarch (void);
 
 void
 _initialize_gdbarch (void)
 {
+#ifdef ALLOW_UNUSED_VARIABLES
+  struct cmd_list_element *c;
+#endif /* ALLOW_UNUSED_VARIABLES */
+
   add_setshow_zinteger_cmd ("arch", class_maintenance, &gdbarch_debug, _("\
 Set architecture debugging."), _("\
 Show architecture debugging."), _("\
@@ -4354,3 +4378,7 @@ When non-zero, architecture debugging is enabled."),
                             show_gdbarch_debug,
                             &setdebuglist, &showdebuglist);
 }
+
+#line 2294 "gdbarch.sh"
+
+/* End of gdbarch.c */

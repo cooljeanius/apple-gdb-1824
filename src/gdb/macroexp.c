@@ -79,14 +79,14 @@ struct macro_buffer
    doesn't, so the guess doesn't have to be right.)  Allocate the
    initial storage with xmalloc.  */
 static void
-init_buffer (struct macro_buffer *b, int n)
+init_buffer(struct macro_buffer *b, int n)
 {
   /* Small value for initial testing.  */
   n = 1;
 
   b->size = n;
   if (n > 0)
-    b->text = (char *) xmalloc (n);
+    b->text = (char *)xmalloc(n);
   else
     b->text = NULL;
   b->len = 0;
@@ -98,9 +98,9 @@ init_buffer (struct macro_buffer *b, int n)
 /* Set the macro buffer *BUF to refer to the LEN bytes at ADDR, as a
    shared substring.  */
 static void
-init_shared_buffer (struct macro_buffer *buf, char *addr, int len)
+init_shared_buffer(struct macro_buffer *buf, const char *addr, int len)
 {
-  buf->text = addr;
+  buf->text = (char *)addr;
   buf->len = len;
   buf->shared = 1;
   buf->size = 0;
@@ -326,7 +326,7 @@ get_character_constant(struct macro_buffer *tok, const char *p, char *end)
       || (p + 2 <= end && p[0] == 'L' && p[1] == '\''))
     {
       const char *tok_start = p;
-      char *body_start;
+      const char *body_start;
 
       if (*p == '\'')
         p++;
@@ -1124,8 +1124,9 @@ macro_expand_once(const char *source, macro_lookup_ftype *lookup_func,
 }
 
 
+/* */
 char *
-macro_expand_next(char **lexptr, macro_lookup_ftype *lookup_func,
+macro_expand_next(const char **lexptr, macro_lookup_ftype *lookup_func,
                   void *lookup_baton)
 {
   struct macro_buffer src, dest, tok;

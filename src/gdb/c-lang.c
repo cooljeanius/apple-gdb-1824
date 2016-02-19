@@ -390,7 +390,7 @@ c_create_fundamental_type(struct objfile *objfile, int ctypeid)
    we evaluate ADDRESS in the scope of the current frame, but we
    evaluate CONDITION in the scope of the breakpoint's location.  So
    it's simply wrong to try to macro-expand the whole thing at once.  */
-static char *macro_original_text;
+static const char *macro_original_text;
 static char *macro_expanded_text;
 
 
@@ -550,32 +550,33 @@ enum c_primitive_types {
   nr_c_primitive_types
 };
 
+/* */
 void
-c_language_arch_info (struct gdbarch *gdbarch,
-		      struct language_arch_info *lai)
+c_language_arch_info(struct gdbarch *gdbarch,
+		     struct language_arch_info *lai)
 {
-  const struct builtin_type *builtin = builtin_type (gdbarch);
+  const struct builtin_type *builtin = builtin_type(gdbarch);
   lai->string_char_type = builtin->builtin_char;
-  lai->primitive_type_vector
-    = GDBARCH_OBSTACK_CALLOC (gdbarch, nr_c_primitive_types + 1,
-			      struct type *);
-  lai->primitive_type_vector [c_primitive_type_int] = builtin->builtin_int;
-  lai->primitive_type_vector [c_primitive_type_long] = builtin->builtin_long;
-  lai->primitive_type_vector [c_primitive_type_short] = builtin->builtin_short;
-  lai->primitive_type_vector [c_primitive_type_char] = builtin->builtin_char;
-  lai->primitive_type_vector [c_primitive_type_float] = builtin->builtin_float;
-  lai->primitive_type_vector [c_primitive_type_double] = builtin->builtin_double;
-  lai->primitive_type_vector [c_primitive_type_void] = builtin->builtin_void;
-  lai->primitive_type_vector [c_primitive_type_long_long] = builtin->builtin_long_long;
-  lai->primitive_type_vector [c_primitive_type_signed_char] = builtin->builtin_signed_char;
-  lai->primitive_type_vector [c_primitive_type_unsigned_char] = builtin->builtin_unsigned_char;
-  lai->primitive_type_vector [c_primitive_type_unsigned_short] = builtin->builtin_unsigned_short;
-  lai->primitive_type_vector [c_primitive_type_unsigned_int] = builtin->builtin_unsigned_int;
-  lai->primitive_type_vector [c_primitive_type_unsigned_long] = builtin->builtin_unsigned_long;
-  lai->primitive_type_vector [c_primitive_type_unsigned_long_long] = builtin->builtin_unsigned_long_long;
-  lai->primitive_type_vector [c_primitive_type_long_double] = builtin->builtin_long_double;
-  lai->primitive_type_vector [c_primitive_type_complex] = builtin->builtin_complex;
-  lai->primitive_type_vector [c_primitive_type_double_complex] = builtin->builtin_double_complex;
+  lai->primitive_type_vector =
+    GDBARCH_OBSTACK_CALLOC(gdbarch, (nr_c_primitive_types + 1),
+			   struct type *);
+  lai->primitive_type_vector[c_primitive_type_int] = builtin->builtin_int;
+  lai->primitive_type_vector[c_primitive_type_long] = builtin->builtin_long;
+  lai->primitive_type_vector[c_primitive_type_short] = builtin->builtin_short;
+  lai->primitive_type_vector[c_primitive_type_char] = builtin->builtin_char;
+  lai->primitive_type_vector[c_primitive_type_float] = builtin->builtin_float;
+  lai->primitive_type_vector[c_primitive_type_double] = builtin->builtin_double;
+  lai->primitive_type_vector[c_primitive_type_void] = builtin->builtin_void;
+  lai->primitive_type_vector[c_primitive_type_long_long] = builtin->builtin_long_long;
+  lai->primitive_type_vector[c_primitive_type_signed_char] = builtin->builtin_signed_char;
+  lai->primitive_type_vector[c_primitive_type_unsigned_char] = builtin->builtin_unsigned_char;
+  lai->primitive_type_vector[c_primitive_type_unsigned_short] = builtin->builtin_unsigned_short;
+  lai->primitive_type_vector[c_primitive_type_unsigned_int] = builtin->builtin_unsigned_int;
+  lai->primitive_type_vector[c_primitive_type_unsigned_long] = builtin->builtin_unsigned_long;
+  lai->primitive_type_vector[c_primitive_type_unsigned_long_long] = builtin->builtin_unsigned_long_long;
+  lai->primitive_type_vector[c_primitive_type_long_double] = builtin->builtin_long_double;
+  lai->primitive_type_vector[c_primitive_type_complex] = builtin->builtin_complex;
+  lai->primitive_type_vector[c_primitive_type_double_complex] = builtin->builtin_double_complex;
 };
 
 const struct language_defn c_language_defn =
@@ -746,6 +747,7 @@ const struct language_defn minimal_language_defn =
   LANG_MAGIC
 };
 
+/* */
 void
 _initialize_c_language(void)
 {

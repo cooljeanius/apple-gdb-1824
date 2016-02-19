@@ -82,9 +82,9 @@
 
 /* Prototypes for local functions */
 
-static void signals_info(char *, int);
+static void signals_info(const char *, int);
 
-static void handle_command(char *, int);
+static void handle_command(const char *, int);
 
 static void sig_print_info(enum target_signal);
 
@@ -100,14 +100,14 @@ static void build_infrun(void);
 
 static int follow_fork(void);
 
-static void set_schedlock_func(char *args, int from_tty,
+static void set_schedlock_func(const char *args, int from_tty,
                                struct cmd_list_element *c);
 
 struct execution_control_state;
 
 static int currently_stepping(struct execution_control_state *ecs);
 
-static void xdb_handle_command(char *args, int from_tty);
+static void xdb_handle_command(const char *args, int from_tty);
 
 static int prepare_to_proceed(void);
 
@@ -689,11 +689,12 @@ Mode for locking scheduler during execution is \"%s\".\n"),
 		    value);
 }
 
+/* */
 static void
-set_schedlock_func (char *args, int from_tty, struct cmd_list_element *c)
+set_schedlock_func(const char *args, int from_tty, struct cmd_list_element *c)
 {
   /* APPLE LOCAL:  Handle this in our helper func.  */
-  set_schedlock_helper ();
+  set_schedlock_helper();
 }
 
 
@@ -996,12 +997,12 @@ proceed (CORE_ADDR addr, enum target_signal siggnal, int step)
 
   if (debug_infrun)
     {
-      char *name;
-      if (!find_pc_partial_function_no_inlined (addr, &name, NULL, NULL))
+      const char *name;
+      if (!find_pc_partial_function_no_inlined(addr, &name, NULL, NULL))
 	name = "<unknown>";
-      fprintf_unfiltered (gdb_stdlog,
-			  "infrun: proceed (addr=0x%s, function=%s signal=%d, step=%d)\n",
-			  paddr_nz (addr), name, siggnal, step);
+      fprintf_unfiltered(gdb_stdlog,
+			 "infrun: proceed (addr=0x%s, function=%s signal=%d, step=%d)\n",
+			 paddr_nz(addr), name, siggnal, step);
     }
 
   /* In a multi-threaded task we may select another thread
@@ -1178,7 +1179,7 @@ struct execution_control_state
   int random_signal;
   CORE_ADDR stop_func_start;
   CORE_ADDR stop_func_end;
-  char *stop_func_name;
+  const char *stop_func_name;
   struct symtab_and_line sal;
   int current_line;
   struct symtab *current_symtab;
@@ -4103,10 +4104,9 @@ sig_print_info(enum target_signal oursig)
   printf_filtered("%s\n", target_signal_to_string (oursig));
 }
 
-/* Specify how various signals in the inferior should be handled.  */
-
+/* Specify how various signals in the inferior should be handled: */
 static void
-handle_command (char *args, int from_tty)
+handle_command(const char *args, int from_tty)
 {
   char **argv;
   int digits, wordlen;
@@ -4285,8 +4285,9 @@ Are you sure you want to change it? ", target_signal_to_name ((enum target_signa
   do_cleanups(old_chain);
 }
 
+/* */
 static void
-xdb_handle_command(char *args, int from_tty)
+xdb_handle_command(const char *args, int from_tty)
 {
   char **argv;
   struct cleanup *old_chain;
@@ -4357,7 +4358,7 @@ xdb_handle_command(char *args, int from_tty)
    targets, all signals should be in the signal tables).  */
 
 static void
-signals_info(char *signum_exp, int from_tty)
+signals_info(const char *signum_exp, int from_tty)
 {
   enum target_signal oursig;
   sig_print_header();
@@ -4424,11 +4425,11 @@ allocate_signal_set (unsigned char **stop,
   return numsigs;
 }
 
+/* */
 static void
-set_minimal_signal_handling (char *args, int from_tty,
-			       struct cmd_list_element *c)
+set_minimal_signal_handling(const char *args, int from_tty,
+			    struct cmd_list_element *c)
 {
-
   if (minimal_signal_handling)
     {
       signal_stop = minimal_signal_stop;

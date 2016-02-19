@@ -74,8 +74,8 @@ struct block *innermost_block;
 int arglist_len;
 union type_stack_elt *type_stack;
 int type_stack_depth, type_stack_size;
-char *lexptr;
-char *prev_lexptr;
+const char *lexptr;
+const char *prev_lexptr;
 int paren_depth;
 int comma_terminates;
 
@@ -567,8 +567,8 @@ static const char coloncolon[2] =
 {':', ':'};
 
 struct symbol *
-parse_nested_classes_for_hpacc (char *name, int len, char **token,
-				int *class_prefix, char **argptr)
+parse_nested_classes_for_hpacc(char *name, int len, char **token,
+			       int *class_prefix, const char **argptr)
 {
   /* Comment below comes from decode_line_1 which has very similar
      code, which is called for "break" command parsing. */
@@ -1156,20 +1156,21 @@ parse_expression(const char *string)
    no value is expected from the expression.  */
 
 struct expression *
-parse_expression_in_context (char *string, int void_context_p)
+parse_expression_in_context(const char *string, int void_context_p)
 {
   struct expression *exp;
-  exp = parse_exp_in_context (&string, 0, 0, void_context_p);
+  exp = parse_exp_in_context(&string, 0, 0, void_context_p);
   if (*string != '\000')
-    error (_("Junk after end of expression."));
+    error(_("Junk after end of expression."));
   return exp;
 }
 
-/* A post-parser that does nothing */
-
-void
-null_post_parser (struct expression **exp, int void_context_p)
+/* A post-parser that does nothing, besides return: */
+void ATTRIBUTE_CONST
+null_post_parser(struct expression **exp ATTRIBUTE_UNUSED,
+		 int void_context_p ATTRIBUTE_UNUSED)
 {
+  return;
 }
 
 /* Stuff for maintaining a stack of types.  Currently just used by C, but

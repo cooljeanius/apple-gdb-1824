@@ -64,8 +64,8 @@ int safe_value_objc_target_type (struct value *val, struct block *block,
 				 struct type **dynamic_type,
 				 char **dynamic_type_handle);
 
-struct gdb_exception safe_execute_command (struct ui_out *uiout, char *command,
-					   int from_tty);
+struct gdb_exception safe_execute_command(struct ui_out *uiout,
+					  const char *command, int from_tty);
 #endif /* wrapper.h */
 
 /* EOF */

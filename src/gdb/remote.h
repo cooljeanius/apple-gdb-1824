@@ -74,7 +74,7 @@ extern CORE_ADDR remote_macosx_get_all_image_infos_addr(void);
 
 extern void remote_macosx_create_inferior(char *exec_file, char *allargs,
                                           char **env, int from_tty);
-extern void remote_macosx_attach(char *args, int from_tty);
+extern void remote_macosx_attach(const char *args, int from_tty);
 
 
 /* APPLE LOCAL

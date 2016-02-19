@@ -1,4 +1,4 @@
-/* Kernel Object Display facility for Cisco
+/* kod.h: Kernel Object Display facility for Cisco
    Copyright 1999 Free Software Foundation, Inc.
    
 This file is part of GDB.
@@ -34,28 +34,30 @@ typedef void kod_query_callback_ftype (const char *, char *, int *);
    modules should call.  An example of this mechanism can be seen in
    gdbarch.c:register_gdbarch_init(). */
 
-#if 0
-/* Don't have ecos code yet. */
-extern char *ecos_kod_open (kod_display_callback_ftype *display_func,
-			    kod_query_callback_ftype *query_func);
-extern void ecos_kod_request (char *, int);
-extern void ecos_kod_close (void);
-#endif
+#ifdef HAVE_THE_ECOS_CODE_HERE
+/* Do NOT have ecos code here (yet): */
+extern char *ecos_kod_open(kod_display_callback_ftype *display_func,
+			   kod_query_callback_ftype *query_func);
+extern void ecos_kod_request(char *, int);
+extern void ecos_kod_close(void);
+#endif /* HAVE_THE_ECOS_CODE_HERE */
 
 /* Initialize and return library name and version.  The gdb side of
    KOD, kod.c, passes us two functions: one for displaying output
    (presumably to the user) and the other for querying the target.  */
 
-extern char *cisco_kod_open (kod_display_callback_ftype *display_func,
-			     kod_query_callback_ftype *query_func);
+extern char *cisco_kod_open(kod_display_callback_ftype *display_func,
+			    kod_query_callback_ftype *query_func);
 
 /* Print information about currently known kernel objects.  We
    currently ignore the argument.  There is only one mode of querying
    the Cisco kernel: we ask for a dump of everything, and it returns
    it.  */
 
-extern void cisco_kod_request (char *arg, int from_tty);
+extern void cisco_kod_request(const char *arg, int from_tty);
 
-extern void cisco_kod_close (void);
+extern void cisco_kod_close(void);
 
-#endif
+#endif /* !KOD_H */
+
+/* EOF */

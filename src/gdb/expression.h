@@ -379,7 +379,7 @@ struct expression
 
 extern struct expression *parse_expression(const char *);
 
-extern struct expression *parse_expression_in_context(char *, int);
+extern struct expression *parse_expression_in_context(const char *, int);
 
 extern struct expression *parse_exp_1(const char **, struct block *, int);
 
@@ -412,11 +412,14 @@ extern struct value *evaluate_subexp_standard
 
 /* From expprint.c */
 
-extern void print_expression (struct expression *, struct ui_file *);
+extern void print_expression(struct expression *, struct ui_file *);
 
 extern const char *op_string(enum exp_opcode);
 
-extern void dump_raw_expression (struct expression *, struct ui_file *, char *);
-extern void dump_prefix_expression (struct expression *, struct ui_file *);
+extern void dump_raw_expression(struct expression *, struct ui_file *,
+				const char *);
+extern void dump_prefix_expression(struct expression *, struct ui_file *);
 
-#endif /* !defined (EXPRESSION_H) */
+#endif /* !defined(EXPRESSION_H) */
+
+/* EOF */

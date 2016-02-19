@@ -564,8 +564,8 @@ i386_macosx_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   set_gdbarch_skip_trampoline_code (gdbarch, macosx_skip_trampoline_code);
   set_gdbarch_get_longjmp_target (gdbarch, i386_macosx_get_longjmp_target);
 
-  set_gdbarch_in_solib_return_trampoline (gdbarch,
-                                          macosx_in_solib_return_trampoline);
+  set_gdbarch_in_solib_return_trampoline(gdbarch,
+                                         macosx_in_solib_return_trampoline);
 
   tdep->struct_return = reg_struct_return;
 

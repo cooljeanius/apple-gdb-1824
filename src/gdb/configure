@@ -38651,9 +38651,9 @@ for ac_header in Availability.h AvailabilityMacros.h \
                   architecture/byte_order.h bits/endian.h crt_externs.h \
                   libgen.h libgettext.h linux/byteorder/big_endian.h \
                   linux/byteorder/little_endian.h mach.h mach_error.h \
-                  mach/kern_return.h mach/kmod.h mach/mach_error.h \
-                  mach/mach_init.h mach/mach_port.h mach/message.h \
-                  mach/port.h mach/thread_info.h mach/thread_status.h \
+                  mach/kern_return.h mach/mach_error.h mach/mach_init.h \
+                  mach/mach_port.h mach/message.h mach/port.h \
+                  mach/thread_info.h mach/thread_status.h mach/vm_types.h \
                   mach-o/loader.h mach-o/nlist.h memory.h pc.h pthread.h \
                   rpc/rpc.h servers/netname.h servers/netname_defs.h \
                   setjmp.h sys/uio.h sys/utsname.h uuid/uuid.h
@@ -38663,6 +38663,23 @@ ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_include
 if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
   cat >>confdefs.h <<_ACEOF
 #define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+  ## needs other headers first on some systems:
+for ac_header in mach/kmod.h
+do :
+  ac_fn_c_check_header_compile "$LINENO" "mach/kmod.h" "ac_cv_header_mach_kmod_h" "
+#ifdef HAVE_MACH_VM_TYPES_H
+# include <mach/vm_types.h>
+#endif /* HAVE_MACH_VM_TYPES_H */
+
+"
+if test "x$ac_cv_header_mach_kmod_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_MACH_KMOD_H 1
 _ACEOF
 
 fi
@@ -39734,6 +39751,7 @@ cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_ATOF $ac_have_decl
 _ACEOF
 
+unset ac_cv_have_decl_strpbrk
 ac_fn_c_check_decl "$LINENO" "strchr" "ac_cv_have_decl_strchr" "
 #ifdef HAVE_STRING_H
 # include <string.h>
@@ -40225,6 +40243,9 @@ $as_echo "#define HAVE_LC_MESSAGES 1" >>confdefs.h
     fi
   fi
 
+  ## the libiberty macro might have already checked this for us, but avoid
+  ## un-setting the cache value, though, as that can lead to redefinition
+  ## warnings in config.log:
 ac_fn_c_check_decl "$LINENO" "basename" "ac_cv_have_decl_basename" "
 #ifdef HAVE_LIBGEN_H
 # include <libgen.h>
@@ -43643,13 +43664,14 @@ unset ac_cv_func_strchr
 for ac_func in atof alarm assert atexit bsearch bzero dup2 exit \
                 fflush fgets fprintf fwrite getcwd gethostbyaddr \
                 gethostbyname gethostname getpass gets gettimeofday \
-                inet_ntoa isascii mach_error_string memchr memcmp memcpy \
-                memmove mempcpy memset mkdir netname_look_up nl_langinfo \
-                pathconf pclose popen pow readdir re_comp regcomp select \
-                socket strcasecmp strcat strchr strcpy strcspn strdup \
-                strerror strlcat strlcpy strlen strncasecmp strncat \
-                strncmp strncpy strndup strpbrk strrchr strspn strstr \
-                strtok strtok_r strtol strtoul uname wcwidth
+                inet_ntoa isascii ishexnumber isnumber mach_error_string \
+                memchr memcmp memcpy memmove mempcpy memset mkdir \
+                netname_look_up nl_langinfo pathconf pclose popen pow \
+                readdir re_comp regcomp select socket strcasecmp strcat \
+                strchr strcpy strcspn strdup strerror strlcat strlcpy \
+                strlen strncasecmp strncat strncmp strncpy strndup \
+                strpbrk strrchr strspn strstr strtok strtok_r strtol \
+                strtoul uname wcwidth
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -48299,6 +48321,7 @@ $as_echo "$as_me: skipping gdbtk tests" >&6;}
 fi
 
 
+unset ac_cv_func_gethostbyname
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for X" >&5
 $as_echo_n "checking for X... " >&6; }
 

@@ -88,7 +88,7 @@ struct dyld_objfile_entry
 
   /* We got this name from the executable's mach_header load commands,
      or we copied it from the bfd of the specified executable file.  */
-  char *text_name;
+  const char *text_name;
   int text_name_valid;
 
   const char *loaded_name;

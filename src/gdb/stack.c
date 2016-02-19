@@ -2304,7 +2304,7 @@ func_command(const char *arg, int from_tty)
     {
       if (sals.sals[i].pc == (CORE_ADDR)0UL ||
 	  find_pc_partial_function(sals.sals[i].pc,
-				   (char **)NULL,
+				   (const char **)NULL,
 				   &func_bounds[i].low,
 				   &func_bounds[i].high) == 0)
 	{

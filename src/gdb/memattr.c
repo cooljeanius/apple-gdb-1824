@@ -105,8 +105,8 @@ lookup_mem_region(CORE_ADDR addr)
      that contains ADDR.  If a memory region is disabled, it is
      treated as if it does not exist.  */
 
-  lo = (CORE_ADDR) 0;
-  hi = (CORE_ADDR) ~ 0;
+  lo = (CORE_ADDR)0UL;
+  hi = (CORE_ADDR)(~0);
 
   for (m = mem_region_chain; m; m = m->next)
     {
@@ -131,43 +131,42 @@ lookup_mem_region(CORE_ADDR addr)
   return &region;
 }
 
-
+/* 0 */
 static void
-mem_command (char *args, int from_tty)
+mem_command(const char *args, int from_tty)
 {
   CORE_ADDR lo, hi;
   char *tok;
   struct mem_attrib attrib;
 
   if (!args)
-    error_no_arg (_("No mem"));
+    error_no_arg(_("No mem"));
 
-  tok = strtok (args, " \t");
+  tok = strtok((char *)args, " \t");
   if (!tok)
-    error (_("no lo address"));
-  lo = parse_and_eval_address (tok);
+    error(_("no lo address"));
+  lo = parse_and_eval_address(tok);
 
-  tok = strtok (NULL, " \t");
+  tok = strtok(NULL, " \t");
   if (!tok)
-    error (_("no hi address"));
-  hi = parse_and_eval_address (tok);
+    error(_("no hi address"));
+  hi = parse_and_eval_address(tok);
 
   attrib = default_mem_attrib;
-  while ((tok = strtok (NULL, " \t")) != NULL)
+  while ((tok = strtok(NULL, " \t")) != NULL)
     {
-      if (strcmp (tok, "rw") == 0)
+      if (strcmp(tok, "rw") == 0)
 	attrib.mode = MEM_RW;
-      else if (strcmp (tok, "ro") == 0)
+      else if (strcmp(tok, "ro") == 0)
 	attrib.mode = MEM_RO;
-      else if (strcmp (tok, "wo") == 0)
+      else if (strcmp(tok, "wo") == 0)
 	attrib.mode = MEM_WO;
-      /* APPLE LOCAL: Don't touch memory regions.  */
-      else if (strcmp (tok, "none") == 0)
+      /* APPLE LOCAL: Do NOT touch memory regions: */
+      else if (strcmp(tok, "none") == 0)
 	attrib.mode = MEM_NONE;
-
-      else if (strcmp (tok, "8") == 0)
+      else if (strcmp(tok, "8") == 0)
 	attrib.width = MEM_WIDTH_8;
-      else if (strcmp (tok, "16") == 0)
+      else if (strcmp(tok, "16") == 0)
 	{
 	  if ((lo % 2 != 0) || (hi % 2 != 0))
 	    error (_("region bounds not 16 bit aligned"));
@@ -185,26 +184,22 @@ mem_command (char *args, int from_tty)
 	    error (_("region bounds not 64 bit aligned"));
 	  attrib.width = MEM_WIDTH_64;
 	}
-
 #if 0
       else if (strcmp (tok, "hwbreak") == 0)
 	attrib.hwbreak = 1;
       else if (strcmp (tok, "swbreak") == 0)
 	attrib.hwbreak = 0;
-#endif
-
+#endif /* 0 */
       else if (strcmp (tok, "cache") == 0)
 	attrib.cache = 1;
       else if (strcmp (tok, "nocache") == 0)
 	attrib.cache = 0;
-
 #if 0
       else if (strcmp (tok, "verify") == 0)
 	attrib.verify = 1;
       else if (strcmp (tok, "noverify") == 0)
 	attrib.verify = 0;
-#endif
-
+#endif /* 0 */
       else
 	error (_("unknown attribute: %s"), tok);
     }
@@ -212,9 +207,9 @@ mem_command (char *args, int from_tty)
   create_mem_region (lo, hi, &attrib);
 }
 
-
+/* */
 static void
-mem_info_command (char *args, int from_tty)
+mem_info_command(const char *args, int from_tty)
 {
   struct mem_region *m;
   struct mem_attrib *attrib;
@@ -238,33 +233,31 @@ mem_info_command (char *args, int from_tty)
 
   for (m = mem_region_chain; m; m = m->next)
     {
-      char *tmp;
-      printf_filtered ("%-3d %-3c\t",
-		       m->number,
-		       m->enabled_p ? 'y' : 'n');
+      const char *tmp;
+      printf_filtered("%-3d %-3c\t", m->number, (m->enabled_p ? 'y' : 'n'));
       if (TARGET_ADDR_BIT <= 32)
-	tmp = hex_string_custom ((unsigned long) m->lo, 8);
+	tmp = hex_string_custom((unsigned long)m->lo, 8);
       else
-	tmp = hex_string_custom ((unsigned long) m->lo, 16);
+	tmp = hex_string_custom((unsigned long)m->lo, 16);
 
-      printf_filtered ("%s ", tmp);
+      printf_filtered("%s ", tmp);
 
       if (TARGET_ADDR_BIT <= 32)
 	{
 	if (m->hi == 0)
 	  tmp = "0x100000000";
 	else
-	  tmp = hex_string_custom ((unsigned long) m->hi, 8);
+	  tmp = hex_string_custom((unsigned long)m->hi, 8);
 	}
       else
 	{
 	if (m->hi == 0)
 	  tmp = "0x10000000000000000";
 	else
-	  tmp = hex_string_custom ((unsigned long) m->hi, 16);
+	  tmp = hex_string_custom((unsigned long)m->hi, 16);
 	}
 
-      printf_filtered ("%s ", tmp);
+      printf_filtered("%s ", tmp);
 
       /* Print a token for each attribute.
 
@@ -282,17 +275,17 @@ mem_info_command (char *args, int from_tty)
       switch (attrib->mode)
 	{
 	case MEM_RW:
-	  printf_filtered ("rw ");
+	  printf_filtered("rw ");
 	  break;
 	case MEM_RO:
-	  printf_filtered ("ro ");
+	  printf_filtered("ro ");
 	  break;
 	case MEM_WO:
-	  printf_filtered ("wo ");
+	  printf_filtered("wo ");
 	  break;
-	  /* APPLE LOCAL: Don't touch memory regions.  */
+	/* APPLE LOCAL: Do NOT touch memory regions: */
 	case MEM_NONE:
-	  printf_filtered ("none ");
+	  printf_filtered("none ");
 	  break;
 	}
 
@@ -319,7 +312,7 @@ mem_info_command (char *args, int from_tty)
 	printf_filtered ("hwbreak");
       else
 	printf_filtered ("swbreak");
-#endif
+#endif /* 0 */
 
       if (attrib->cache == 1)
 	printf_filtered ("cache ");
@@ -334,7 +327,7 @@ mem_info_command (char *args, int from_tty)
 	printf_filtered ("verify ");
       else
 	printf_filtered ("noverify ");
-#endif
+#endif /* 0 */
 
       printf_filtered ("\n");
 
@@ -359,11 +352,12 @@ mem_enable (int num)
   printf_unfiltered (_("No memory region number %d.\n"), num);
 }
 
+/* */
 static void
-mem_enable_command (char *args, int from_tty)
+mem_enable_command(const char *args, int from_tty)
 {
-  char *p = args;
-  char *p1;
+  const char *p = args;
+  const char *p1;
   int num;
   struct mem_region *m;
 
@@ -409,11 +403,12 @@ mem_disable (int num)
   printf_unfiltered (_("No memory region number %d.\n"), num);
 }
 
+/* */
 static void
-mem_disable_command (char *args, int from_tty)
+mem_disable_command(const char *args, int from_tty)
 {
-  char *p = args;
-  char *p1;
+  const char *p = args;
+  const char *p1;
   int num;
   struct mem_region *m;
 
@@ -488,11 +483,12 @@ mem_delete (int num)
       }
 }
 
+/* */
 static void
-mem_delete_command (char *args, int from_tty)
+mem_delete_command(const char *args, int from_tty)
 {
-  char *p = args;
-  char *p1;
+  const char *p = args;
+  const char *p1;
   int num;
 
   dcache_invalidate (target_dcache);
@@ -539,8 +535,9 @@ mem_disable_caching (void)
     }
 }
 
+/* */
 void
-mem_enable_caching (void *unusued)
+mem_enable_caching(void *unusued ATTRIBUTE_UNUSED)
 {
   struct mem_region *mreg;
 

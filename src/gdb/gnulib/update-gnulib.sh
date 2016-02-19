@@ -56,13 +56,14 @@ IMPORTED_GNULIB_MODULES="\
     snippet/_Noreturn snippet/arg-nonnull snippet/c++defs snippet/link-warning \
     snippet/warn-on-use \
     ssize_t stat stat-macros stat-size stat-time stdbool stddef stdint stdlib \
-    streq strerror strerror_r-posix strerror-override string strnlen strnlen1 \
-    strstr strstr-simple sys_select sys_stat sys_time sys_types sys_wait \
+    streq strerror strerror_r-posix strerror-override string strncat strndup \
+    strnlen strnlen1 strstr strstr-simple strtok_r sys_select sys_stat \
+    sys_time sys_types sys_wait \
     tempname time \
     unistd unistd-safer unlink unlink-busy update-copyright usleep \
     vc-list-files verify \
     warnings wchar wcsncasecmp wctype-h winsz-ioctl winsz-termios \
-    xalloc xalloc-die xalloc-oversized"
+    xalloc xalloc-die xalloc-oversized xmalloca xmemdup0 xstrndup"
 # (might want to check to see if any of the libiberty/gettext duplicates cause
 # any conflicts...)
 
@@ -71,19 +72,19 @@ IMPORTED_GNULIB_MODULES="\
 # - dup2-obsolete
 # - memchr-obsolete
 # - memmove
-# - strdup
+# - strdup (or strdup-posix)
 # - wctype
 # (even though I cannot add them, there is no need to explicitly ignore them
 # below, though, so they may still get dragged in as dependencies)
 
 # The gnulib commit ID to use for the update.
-GNULIB_COMMIT_SHA1="49078a780041205fbbab56802033595eb44f854d"
+GNULIB_COMMIT_SHA1="54615b95ff238e235e806855efc46a9abad09f2e"
 # (feel free to update if you know that your version works and is newer)
 
 # The expected version number for the various auto tools we will
 # use after the import.
 AUTOCONF_VERSION="2.64"
-AUTOMAKE_VERSION="1.11.1"
+AUTOMAKE_VERSION="1.11.6"
 ACLOCAL_VERSION="$AUTOMAKE_VERSION"
 
 if [ $# -ne 1 ]; then

@@ -668,10 +668,10 @@ uoverflow(unsigned long a, unsigned long b)
 static int
 parse_number(int olen)
 {
-  char *p = lexptr;
-  LONGEST n = 0;
-  LONGEST prevn = 0;
-  int c, i, ischar=0;
+  const char *p = lexptr;
+  LONGEST n = 0L;
+  LONGEST prevn = 0L;
+  int c, i, ischar = 0;
   int base = input_radix;
   int len = olen;
   int unsigned_p = ((number_sign == 1) ? 1 : 0);
@@ -824,7 +824,7 @@ yylex(void)
 
   prev_lexptr = lexptr;
 
-  tokstart = lexptr;
+  tokstart = (char *)lexptr;
 
 
   /* See if it is a special token of length 2 */

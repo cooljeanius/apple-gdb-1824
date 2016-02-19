@@ -546,6 +546,12 @@
 /* Define to 1 if you have the `isascii' function. */
 #undef HAVE_ISASCII
 
+/* Define to 1 if you have the `ishexnumber' function. */
+#undef HAVE_ISHEXNUMBER
+
+/* Define to 1 if you have the `isnumber' function. */
+#undef HAVE_ISNUMBER
+
 /* Define to 1 if the system has the type `kern_return_t'. */
 #undef HAVE_KERN_RETURN_T
 
@@ -737,6 +743,9 @@
 
 /* Define to 1 if the system has the type `mach_vm_address_t'. */
 #undef HAVE_MACH_VM_ADDRESS_T
+
+/* Define to 1 if you have the <mach/vm_types.h> header file. */
+#undef HAVE_MACH_VM_TYPES_H
 
 /* Define to 1 if your system has a GNU libc compatible `malloc' function, and
    to 0 otherwise. */

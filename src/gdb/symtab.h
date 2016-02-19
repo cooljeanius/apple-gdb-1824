@@ -1298,14 +1298,13 @@ extern struct symbol *find_pc_sect_function_no_inlined (CORE_ADDR, asection *);
 
 /* lookup function from address, return name, start addr and end addr */
 
-extern int find_pc_partial_function (CORE_ADDR, char **, CORE_ADDR *,
-				     CORE_ADDR *);
+extern int find_pc_partial_function(CORE_ADDR, const char **, CORE_ADDR *,
+				    CORE_ADDR *);
 
-extern int find_pc_partial_function_no_inlined (CORE_ADDR, char **,
-						CORE_ADDR *,
-						CORE_ADDR *);
+extern int find_pc_partial_function_no_inlined(CORE_ADDR, const char **,
+					       CORE_ADDR *, CORE_ADDR *);
 
-extern void clear_pc_function_cache (void);
+extern void clear_pc_function_cache(void);
 
 /* from symtab.c: */
 
@@ -1568,19 +1567,19 @@ extern void clear_solib(void);
 
 /* source.c */
 
-extern int identify_source_line (struct symtab *, int, int, CORE_ADDR);
+extern int identify_source_line(struct symtab *, int, int, CORE_ADDR);
 
-extern void print_source_lines (struct symtab *, int, int, int);
+extern void print_source_lines(struct symtab *, int, int, int);
 
-extern void forget_cached_source_info (void);
+extern void forget_cached_source_info(void);
 
-extern void select_source_symtab (struct symtab *);
+extern void select_source_symtab(struct symtab *);
 
-extern char **make_symbol_completion_list (char *, char *);
+extern char **make_symbol_completion_list(const char *, char *);
 
-extern char **make_file_symbol_completion_list (char *, char *, char *);
+extern char **make_file_symbol_completion_list(const char *, char *, char *);
 
-extern char **make_source_files_completion_list (char *, char *);
+extern char **make_source_files_completion_list(const char *, const char *);
 
 /* symtab.c */
 

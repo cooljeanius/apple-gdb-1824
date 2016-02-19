@@ -370,37 +370,35 @@ init_last_source_visited (void)
   last_source_visited = NULL;
 }
 
-/* Add zero or more directories to the front of the source path.  */
-
+/* Add zero or more directories to the front of the source path: */
 void
-directory_command (char *dirname, int from_tty)
+directory_command(const char *dirname, int from_tty)
 {
-  dont_repeat ();
+  dont_repeat();
   /* FIXME, this goes to "delete dir"... */
   if (dirname == 0)
     {
-      if (from_tty && query (_("Reinitialize source path to empty? ")))
+      if (from_tty && query(_("Reinitialize source path to empty? ")))
 	{
-	  xfree (source_path);
-	  init_source_path ();
+	  xfree(source_path);
+	  init_source_path();
 	}
     }
   else
     {
-      mod_path (dirname, &source_path);
+      mod_path(dirname, &source_path);
       last_source_visited = NULL;
     }
   if (from_tty)
-    show_directories ((char *) 0, from_tty);
-  forget_cached_source_info ();
+    show_directories((char *)0, from_tty);
+  forget_cached_source_info();
 }
 
-/* Add zero or more directories to the front of an arbitrary path.  */
-
+/* Add zero or more directories to the front of an arbitrary path: */
 void
-mod_path (char *dirname, char **which_path)
+mod_path(const char *dirname, char **which_path)
 {
-  add_path (dirname, which_path, 1);
+  add_path(dirname, which_path, 1);
 }
 
 /* Workhorse of mod_path.  Takes an extra argument to determine
@@ -410,7 +408,7 @@ mod_path (char *dirname, char **which_path)
    as space or tab. */
 
 void
-add_path (char *dirname, char **which_path, int parse_separators)
+add_path(const char *dirname, char **which_path, int parse_separators)
 {
   char *old = *which_path;
   int prefix = 0;

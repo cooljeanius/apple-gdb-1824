@@ -42,9 +42,8 @@
 
 /* Prototypes for local functions */
 static
-char *line_completion_function (const char *text, int matches,
-				char *line_buffer,
-				int point);
+char *line_completion_function(const char *text, int matches,
+			       char *line_buffer, int point);
 
 /* readline uses the word breaks for two things:
    (1) In figuring out where to point the TEXT parameter to the
@@ -111,14 +110,14 @@ readline_line_completion_function(const char *text, int matches)
 /* This can be used for functions which don't want to complete on symbols
    but don't want to complete on anything else either.  */
 char **
-noop_completer (char *text, char *prefix)
+noop_completer(const char *text ATTRIBUTE_UNUSED, char *prefix ATTRIBUTE_UNUSED)
 {
-  return NULL;
+  return (char **)NULL;
 }
 
 /* Complete on filenames: */
 char **
-filename_completer(char *text, char *word)
+filename_completer(const char *text, char *word)
 {
   int subsequent_name;
   char **return_val;
@@ -201,19 +200,19 @@ filename_completer(char *text, char *word)
 
    This is intended to be used in commands that set breakpoints etc.  */
 char **
-location_completer (char *text, char *word)
+location_completer(const char *text, char *word)
 {
   int n_syms = 0, n_files = 0;
-  char ** fn_list = NULL;
-  char ** list = NULL;
-  char *p;
+  char **fn_list = NULL;
+  char **list = NULL;
+  const char *p;
   int quote_found = 0;
-  int quoted = *text == '\'' || *text == '"';
+  int quoted = ((*text == '\'') || (*text == '"'));
   int quote_char = '\0';
-  char *colon = NULL;
+  const char *colon = (const char *)NULL;
   char *file_to_match = NULL;
-  char *symbol_start = text;
-  char *orig_text = text;
+  const char *symbol_start = text;
+  const char *orig_text = text;
   size_t text_len;
 
   /* Do we have an unquoted colon, as in "break foo.c::bar"?  */
@@ -247,23 +246,23 @@ location_completer (char *text, char *word)
       else if (*p == ':' && !colon)
 	{
 	  colon = p;
-	  symbol_start = p + 1;
+	  symbol_start = (p + 1);
 	}
-      else if (strchr (current_language->la_word_break_characters(), *p))
-	symbol_start = p + 1;
+      else if (strchr(current_language->la_word_break_characters(), *p))
+	symbol_start = (p + 1);
     }
 
   if (quoted)
     text++;
-  text_len = strlen (text);
+  text_len = strlen(text);
 
   /* Where is the file name?  */
   if (colon)
     {
       char *s;
 
-      file_to_match = (char *) xmalloc (colon - text + 1);
-      strncpy (file_to_match, text, colon - text + 1);
+      file_to_match = (char *)xmalloc(colon - text + 1UL);
+      strncpy(file_to_match, text, (colon - text + 1UL));
       /* Remove trailing colons and quotes from the file name.  */
       for (s = file_to_match + (colon - text);
 	   s > file_to_match;
@@ -342,7 +341,7 @@ location_completer (char *text, char *word)
 
 /* Complete on command names.  Used by "help": */
 char **
-command_completer(char *text, char *word)
+command_completer(const char *text, char *word)
 {
   return complete_on_cmdlist(cmdlist, text, word);
 }
@@ -435,16 +434,16 @@ complete_line(const char *text, const char *line_buffer, int point)
 	 possible completions.  */
       list = NULL;
     }
-  else if (c == (struct cmd_list_element *) -1)
+  else if (c == (struct cmd_list_element *)-1)
     {
-      char *q;
+      const char *q;
 
       /* lookup_cmd_1 advances p up to the first ambiguous thing, but
 	 doesn't advance over that thing itself.  Do so now.  */
       q = p;
-      while (*q && (isalnum (*q) || *q == '-' || *q == '_'))
+      while (*q && (isalnum(*q) || (*q == '-') || (*q == '_')))
 	++q;
-      if (q != tmp_command + point)
+      if (q != (tmp_command + point))
 	{
 	  /* There is something beyond the ambiguous
 	     command, so there are no possible completions.  For
@@ -533,7 +532,7 @@ complete_line(const char *text, const char *line_buffer, int point)
 			   p--)
 			;
 		    }
-		  list = (*c->completer) (p, word);
+		  list = (*c->completer)(p, word);
 		}
 	    }
 	  else
@@ -542,13 +541,13 @@ complete_line(const char *text, const char *line_buffer, int point)
 		 complete on the command itself.  e.g. "p" which is a
 		 command itself but also can complete to "print", "ptype"
 		 etc.  */
-	      char *q;
+	      const char *q;
 
 	      /* Find the command we are completing on.  */
 	      q = p;
 	      while (q > tmp_command)
 		{
-		  if (isalnum (q[-1]) || q[-1] == '-' || q[-1] == '_')
+		  if (isalnum(q[-1]) || (q[-1] == '-') || (q[-1] == '_'))
 		    --q;
 		  else
 		    break;
@@ -606,7 +605,7 @@ complete_line(const char *text, const char *line_buffer, int point)
 		       p--)
 		    ;
 		}
-	      list = (*c->completer) (p, word);
+	      list = (*c->completer)(p, word);
 	    }
 	}
     }
@@ -681,7 +680,7 @@ line_completion_function (const char *text, int matches, char *line_buffer, int 
        next time that readline tries to complete something.  */
     rl_completer_word_break_characters =
       current_language->la_word_break_characters();
-#endif
+#endif /* 0 */
 
   return (output);
 }
@@ -735,7 +734,9 @@ skip_quoted_chars(char *str, char *quotechars, char *breakchars)
    Returns pointer to the location after the "word". */
 
 char *
-skip_quoted (char *str)
+skip_quoted(char *str)
 {
-  return skip_quoted_chars (str, NULL, NULL);
+  return skip_quoted_chars(str, NULL, NULL);
 }
+
+/* EOF */

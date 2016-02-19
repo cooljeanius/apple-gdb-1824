@@ -50,15 +50,19 @@ inf_child_fetch_inferior_registers(int regnum)
    this for all registers (including the floating point registers).  */
 
 static void
-inf_child_store_inferior_registers (int regnum)
+inf_child_store_inferior_registers(int regnum)
 {
+  if (regnum == -1) {
+    ; /* FIXME: TODO */
+  }
 }
 
 static void
-inf_child_post_attach (int pid)
+inf_child_post_attach(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix doesn't require a meaningful "post attach"
      operation by a debugger.  */
+  return;
 }
 
 /* Get ready to modify the registers array.  On machines which store
@@ -74,7 +78,7 @@ inf_child_prepare_to_store(void)
 }
 
 static void ATTR_NORETURN
-inf_child_open(char *arg, int from_tty)
+inf_child_open(const char *arg ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
   error(_("Use the \"run\" command to start a Unix child process."));
 }

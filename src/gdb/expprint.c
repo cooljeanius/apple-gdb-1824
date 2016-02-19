@@ -753,9 +753,10 @@ op_name_standard(enum exp_opcode opcode)
     }
 }
 
+/* */
 void
 dump_raw_expression(struct expression *exp, struct ui_file *stream,
-		    char *note)
+		    const char *note)
 {
   int elt;
   char *opcode_name;

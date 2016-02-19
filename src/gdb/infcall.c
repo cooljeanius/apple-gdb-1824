@@ -461,7 +461,7 @@ hand_function_call(struct value *function, struct type *expect_type,
 
   if ((values_type == NULL) || (TYPE_CODE(values_type) == TYPE_CODE_ERROR))
     {
-      char *sym_name;
+      const char *sym_name;
       find_pc_partial_function(funaddr, &sym_name, NULL, NULL);
 
       error("Unable to call function \"%s\" at 0x%s: "
@@ -757,12 +757,13 @@ hand_function_call(struct value *function, struct type *expect_type,
 		       this point.  */
 		    /* Go see if the actual parameter is a variable of
 		       type pointer to function or just a function.  */
-		    if (VALUE_LVAL (args[i]) == not_lval)
+		    if (VALUE_LVAL(args[i]) == not_lval)
 		      {
-			char *arg_name;
+			const char *arg_name;
 			/* NOTE: cagney/2005-01-02: THIS IS BOGUS.  */
-			if (find_pc_partial_function ((CORE_ADDR) value_contents (args[i])[0], &arg_name, NULL, NULL))
-			  error (_("\
+			if (find_pc_partial_function((CORE_ADDR)value_contents(args[i])[0],
+						     &arg_name, NULL, NULL))
+			  error(_("\
 You cannot use function <%s> as argument. \n\
 You must use a pointer to function type variable. Command ignored."), arg_name);
 		      }

@@ -95,21 +95,21 @@ CORE_ADDR last_overlay_section_lookup_pc = INVALID_ADDRESS;
 
 /* Prototypes for local functions */
 
-static void completion_list_add_name (char *, char *, int, char *, char *);
+static void completion_list_add_name(char *, char *, int, char *, char *);
 
-static void rbreak_command (char *, int);
+static void rbreak_command(const char *, int);
 
-static void types_info (char *, int);
+static void types_info(const char *, int);
 
-static void functions_info (char *, int);
+static void functions_info(const char *, int);
 
-static void variables_info (char *, int);
+static void variables_info(const char *, int);
 
-static void sources_info (char *, int);
+static void sources_info(const char *, int);
 
-static void output_source_filename (const char *, int *);
+static void output_source_filename(const char *, int *);
 
-static int find_line_common (struct linetable *, int, int *);
+static int find_line_common(struct linetable *, int, int *);
 
 /* This one is used by linespec.c */
 
@@ -156,7 +156,7 @@ struct symbol *lookup_symbol_aux_minsyms (const char *name,
 					  const domain_enum domain,
 					  int *is_a_field_of_this,
 					  struct symtab **symtab);
-#endif
+#endif /* 0 */
 
 /* This flag is used in hppa-tdep.c, and set in hp-symtab-read.c.
    Signals the presence of objects compiled by HP compilers.  */
@@ -4337,8 +4337,9 @@ output_source_filename (const char *name, int *first)
   fputs_filtered (name, gdb_stdout);
 }
 
+/* */
 static void
-sources_info (char *ignore, int from_tty)
+sources_info(const char *ignore, int from_tty)
 {
   struct symtab *s;
   struct partial_symtab *ps;
@@ -4931,54 +4932,53 @@ symtab_symbol_info (char *regexp, domain_enum kind, int from_tty)
 	{
 	  if (first)
 	    {
-	      printf_filtered ("\nNon-debugging symbols:\n");
+	      printf_filtered("\nNon-debugging symbols:\n");
 	      first = 0;
 	    }
-	  print_msymbol_info (p->msymbol);
+	  print_msymbol_info(p->msymbol);
 	}
       else
 	{
-	  print_symbol_info (kind,
-			     p->symtab,
-			     p->symbol,
-			     p->block,
-			     last_filename);
+	  print_symbol_info(kind, p->symtab, p->symbol, p->block,
+			    last_filename);
 	  last_filename = p->symtab->filename;
 	}
     }
 
-  do_cleanups (old_chain);
+  do_cleanups(old_chain);
 }
 
+/* */
 static void
-variables_info (char *regexp, int from_tty)
+variables_info(const char *regexp, int from_tty)
 {
-  symtab_symbol_info (regexp, VARIABLES_DOMAIN, from_tty);
+  symtab_symbol_info(regexp, VARIABLES_DOMAIN, from_tty);
 }
 
+/* */
 static void
-functions_info (char *regexp, int from_tty)
+functions_info(const char *regexp, int from_tty)
 {
-  symtab_symbol_info (regexp, FUNCTIONS_DOMAIN, from_tty);
+  symtab_symbol_info(regexp, FUNCTIONS_DOMAIN, from_tty);
 }
 
-
+/* */
 static void
-types_info (char *regexp, int from_tty)
+types_info(const char *regexp, int from_tty)
 {
-  symtab_symbol_info (regexp, TYPES_DOMAIN, from_tty);
+  symtab_symbol_info(regexp, TYPES_DOMAIN, from_tty);
 }
 
-/* Breakpoint all functions matching regular expression. */
-
+/* Breakpoint all functions matching regular expression: */
 void
-rbreak_command_wrapper (char *regexp, int from_tty)
+rbreak_command_wrapper(const char *regexp, int from_tty)
 {
-  rbreak_command (regexp, from_tty);
+  rbreak_command(regexp, from_tty);
 }
 
+/* */
 static void
-rbreak_command(char *regexp, int from_tty)
+rbreak_command(const char *regexp, int from_tty)
 {
   struct symbol_search *ss;
   struct symbol_search *p;
@@ -5288,7 +5288,7 @@ language_search_unquoted_string (char *text, char *p)
    I'm not going to worry about this; hopefully there won't be that many.  */
 
 char **
-make_symbol_completion_list (char *text, char *word)
+make_symbol_completion_list(const char *text, char *word)
 {
   struct symbol *sym;
   struct symtab *s;
@@ -5477,7 +5477,7 @@ make_symbol_completion_list (char *text, char *word)
    defined in a source file FILE.  */
 
 char **
-make_file_symbol_completion_list (char *text, char *word, char *srcfile)
+make_file_symbol_completion_list(const char *text, char *word, char *srcfile)
 {
   struct symbol *sym;
   struct symtab *s;
@@ -5583,7 +5583,7 @@ make_file_symbol_completion_list (char *text, char *word, char *srcfile)
    list as necessary.  */
 
 static void
-add_filename_to_list(const char *fname, char *text, char *word,
+add_filename_to_list(const char *fname, const char *text, const char *word,
 		     char ***list, int *list_used, int *list_alloced)
 {
   char *newstr;
@@ -5643,7 +5643,7 @@ not_interesting_fname (const char *fname)
    the return value is an array which contains only a NULL pointer.  */
 
 char **
-make_source_files_completion_list (char *text, char *word)
+make_source_files_completion_list(const char *text, const char *word)
 {
   struct symtab *s;
   struct partial_symtab *ps;

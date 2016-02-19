@@ -1383,7 +1383,7 @@ static int
 i386_sigtramp_p (struct frame_info *next_frame)
 {
   CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  const char *name;
 
   find_pc_partial_function_no_inlined (pc, &name, NULL, NULL);
   return (name && strcmp ("_sigtramp", name) == 0);

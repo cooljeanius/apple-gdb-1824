@@ -30,7 +30,8 @@ MOSTLYCLEANFILES = core *.stackdump
 MOSTLYCLEANDIRS =
 CLEANFILES =
 DISTCLEANFILES = .DS_Store *~ import/.DS_Store import/*~ m4/.DS_Store m4/*~
-DISTCLEANFILES += import/extra/.DS_Store import/extra/*~ import/m4/*~
+DISTCLEANFILES += import/extra/.DS_Store import/extra/*~
+DISTCLEANFILES += import/extra/snippet/*~ import/m4/*~ import/uniwidth/*~
 DISTCLEANFILES += Makefile*orig libgnu.log libgnu.sum config.log
 DISTCLEANFILES += config.h config.status stamp-h1
 MAINTAINERCLEANFILES = autoscan*.log configure.scan
@@ -430,10 +431,23 @@ import/fnmatch.h: import/fnmatch.in.h
 
 BUILT_SOURCES += fnmatch_loop.c fnmatch.c fnmatch.h
 
+fstatat.c: import/fstatat.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += fstatat.c
+
 fts.c: import/fts.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += fts.c
+
+getcwd.c: import/getcwd.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+getcwd-lgpl.c: import/getcwd-lgpl.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += getcwd.c getcwd-lgpl.c
 
 gettext.h: import/gettext.h
 	if test ! -e $@; then $(LN_S) $< $@; fi

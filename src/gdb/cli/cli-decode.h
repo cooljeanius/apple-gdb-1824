@@ -164,7 +164,7 @@ struct cmd_list_element
        returned relative to this position.  For example, suppose TEXT is "foo"
        and we want to complete to "foobar".  If WORD is "oo", return
        "oobar"; if WORD is "baz/foo", return "baz/foobar".  */
-    char **(*completer)(char *text, char *word);
+    char **(*completer)(const char *text, char *word);
 
     /* Type of "set" or "show" command (or SET_NOT_SET if not "set"
        or "show").  */
@@ -234,7 +234,8 @@ extern void set_cmd_sfunc(struct cmd_list_element *cmd,
 					struct cmd_list_element *c));
 
 extern void set_cmd_completer(struct cmd_list_element *cmd,
-			      char **(*completer)(char *text, char *word));
+			      char **(*completer)(const char *text,
+						  char *word));
 
 /* HACK: cagney/2002-02-23: Code, mostly in tracepoints.c, grubs
    around in cmd objects to test the value of the commands sfunc().  */
@@ -281,9 +282,10 @@ extern struct cmd_list_element *add_info(const char *,
 
 extern struct cmd_list_element *add_info_alias(const char *, const char *, int);
 
-extern char **complete_on_cmdlist(struct cmd_list_element *, char *, char *);
+extern char **complete_on_cmdlist(struct cmd_list_element *, const char *,
+				  char *);
 
-extern char **complete_on_enum(const char *enumlist[], char *, char *);
+extern char **complete_on_enum(const char *enumlist[], const char *, char *);
 
 extern void delete_cmd(const char *, struct cmd_list_element **);
 

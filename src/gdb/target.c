@@ -48,13 +48,13 @@
 #include "exceptions.h"
 #include "exec.h"
 
-static void target_info(char *, int);
+static void target_info(const char *, int);
 
-static void maybe_kill_then_attach(char *, int);
+static void maybe_kill_then_attach(const char *, int);
 
 static void kill_or_be_killed(int);
 
-static void default_terminal_info(char *, int);
+static void default_terminal_info(const char *, int);
 
 static int default_region_size_ok_for_hw_watchpoint(int);
 
@@ -72,9 +72,9 @@ static int return_minus_one(void);
 
 void target_ignore(void);
 
-static void target_command(char *, int);
+static void target_command(const char *, int);
 
-static struct target_ops *find_default_run_target(char *);
+static struct target_ops *find_default_run_target(const char *);
 
 static void nosupport_runtime(void);
 
@@ -100,15 +100,15 @@ static void init_dummy_target(void);
 
 static struct target_ops debug_target;
 
-static void debug_to_open(char *, int);
+static void debug_to_open(const char *, int);
 
 static void debug_to_close(int);
 
-static void debug_to_attach(char *, int);
+static void debug_to_attach(const char *, int);
 
-static void debug_to_detach(char *, int);
+static void debug_to_detach(const char *, int);
 
-static void debug_to_disconnect(char *, int);
+static void debug_to_disconnect(const char *, int);
 
 static void debug_to_resume(ptid_t, int, enum target_signal);
 
@@ -152,13 +152,13 @@ static void debug_to_terminal_save_ours(void);
 
 static void debug_to_terminal_ours(void);
 
-static void debug_to_terminal_info(char *, int);
+static void debug_to_terminal_info(const char *, int);
 
 static void debug_to_kill(void);
 
-static void debug_to_load(char *, int);
+static void debug_to_load(const char *, int);
 
-static int debug_to_lookup_symbol(char *, CORE_ADDR *);
+static int debug_to_lookup_symbol(const char *, CORE_ADDR *);
 
 static void debug_to_mourn_inferior(void);
 
@@ -250,7 +250,7 @@ int gdb_override_async = 0;
 /* The user just typed 'target' without the name of a target.  */
 
 static void
-target_command(char *arg, int from_tty)
+target_command(const char *arg, int from_tty)
 {
   fputs_filtered("Argument required (target name).  Try `help target'\n",
                  gdb_stdout);
@@ -344,9 +344,9 @@ nosupport_runtime(void)
     error(_("No run-time support for this"));
 }
 
-
+/* */
 static void
-default_terminal_info(char *args, int from_tty)
+default_terminal_info(const char *args, int from_tty)
 {
   printf_unfiltered(_("No saved terminal information.\n"));
 }
@@ -387,19 +387,21 @@ kill_or_be_killed(int from_tty)
   tcomplain();
 }
 
+/* */
 static void
-maybe_kill_then_attach (char *args, int from_tty)
+maybe_kill_then_attach(const char *args, int from_tty)
 {
-  kill_or_be_killed (from_tty);
-  target_attach (args, from_tty);
+  kill_or_be_killed(from_tty);
+  target_attach(args, from_tty);
 }
 
+/* */
 static void
-maybe_kill_then_create_inferior (char *exec, char *args, char **env,
-				 int from_tty)
+maybe_kill_then_create_inferior(char *exec, char *args, char **env,
+				int from_tty)
 {
-  kill_or_be_killed (0);
-  target_create_inferior (exec, args, env, from_tty);
+  kill_or_be_killed(0);
+  target_create_inferior(exec, args, env, from_tty);
 }
 
 /* Go through the target stack from top to bottom, copying over zero
@@ -542,12 +544,12 @@ update_current_target(void)
   if (!current_target.field)               \
     current_target.field = value
 
-  de_fault(to_open, (void (*)(char *, int))tcomplain);
+  de_fault(to_open, (void (*)(const char *, int))tcomplain);
   de_fault(to_close, (void (*)(int))target_ignore);
   de_fault(to_attach, maybe_kill_then_attach);
   de_fault(to_post_attach, (void (*)(int))target_ignore);
-  de_fault(to_detach, (void (*)(char *, int))target_ignore);
-  de_fault(to_disconnect, (void (*)(char *, int))tcomplain);
+  de_fault(to_detach, (void (*)(const char *, int))target_ignore);
+  de_fault(to_disconnect, (void (*)(const char *, int))tcomplain);
   de_fault(to_resume,
            (void (*)(ptid_t, int, enum target_signal))noprocess);
   de_fault(to_wait,
@@ -585,8 +587,8 @@ update_current_target(void)
   de_fault(to_terminal_save_ours, (void (*)(void))target_ignore);
   de_fault(to_terminal_info, default_terminal_info);
   de_fault(to_kill, (void (*)(void))noprocess);
-  de_fault(to_load, (void (*)(char *, int))tcomplain);
-  de_fault(to_lookup_symbol, (int (*)(char *, CORE_ADDR *))nosymbol);
+  de_fault(to_load, (void (*)(const char *, int))tcomplain);
+  de_fault(to_lookup_symbol, (int (*)(const char *, CORE_ADDR *))nosymbol);
   de_fault(to_create_inferior, maybe_kill_then_create_inferior);
   de_fault(to_post_startup_inferior, (void (*)(ptid_t))target_ignore);
   de_fault(to_acknowledge_created_inferior, (void (*)(int))target_ignore);
@@ -609,7 +611,7 @@ update_current_target(void)
            (char *(*)(struct thread_info *))return_zero);
   de_fault(to_stop, (void (*)(void))target_ignore);
   current_target.to_xfer_partial = default_xfer_partial;
-  de_fault(to_rcmd, (void (*)(char *, struct ui_file *))tcomplain);
+  de_fault(to_rcmd, (void (*)(const char *, struct ui_file *))tcomplain);
   de_fault(to_enable_exception_callback,
 	   /* APPLE LOCAL return int */
 	   (int (*)(enum exception_event_kind, int))
@@ -1313,8 +1315,9 @@ get_target_memory_unsigned(struct target_ops *ops,
   return extract_unsigned_integer((const gdb_byte *)buf, len);
 }
 
+/* */
 static void
-target_info(char *args, int from_tty)
+target_info(const char *args, int from_tty)
 {
   struct target_ops *t;
   int has_all_mem = 0;
@@ -1382,18 +1385,20 @@ target_detach(const char *args, int from_tty)
 {
   /* Make sure to turn off debugger mode -
      we will let the target run a bit before killing it.  */
-  do_hand_call_cleanups (ALL_CLEANUPS);
-  (current_target.to_detach) (args, from_tty);
+  do_hand_call_cleanups(ALL_CLEANUPS);
+  (current_target.to_detach)(args, from_tty);
 }
 
+/* */
 void
-target_disconnect (char *args, int from_tty)
+target_disconnect(const char *args, int from_tty)
 {
-  (current_target.to_disconnect) (args, from_tty);
+  (current_target.to_disconnect)(args, from_tty);
 }
 
+/* */
 int
-target_async_mask (int mask)
+target_async_mask(int mask)
 {
   int saved_async_masked_status = target_async_mask_value;
   target_async_mask_value = mask;
@@ -1424,7 +1429,7 @@ do_restore_target_async_mask(int mask)
    Result is always valid (error() is called for errors).  */
 
 static struct target_ops *
-find_default_run_target (char *do_mesg)
+find_default_run_target(const char *do_mesg)
 {
   struct target_ops **t;
   struct target_ops *runable = NULL;
@@ -1432,7 +1437,7 @@ find_default_run_target (char *do_mesg)
 
   count = 0;
 
-  for (t = target_structs; t < target_structs + target_struct_size;
+  for (t = target_structs; t < (target_structs + target_struct_size);
        ++t)
     {
       if ((*t)->to_can_run && target_can_run (*t))
@@ -1448,8 +1453,9 @@ find_default_run_target (char *do_mesg)
   return runable;
 }
 
+/* */
 void
-find_default_attach (char *args, int from_tty)
+find_default_attach(const char *args, int from_tty)
 {
   struct target_ops *t;
 
@@ -1820,15 +1826,17 @@ init_dummy_target(void)
   dummy_target.to_xfer_partial = default_xfer_partial;
   dummy_target.to_magic = OPS_MAGIC;
 }
-
+
+/* */
 static void
-debug_to_open(char *args, int from_tty)
+debug_to_open(const char *args, int from_tty)
 {
   debug_target.to_open(args, from_tty);
 
   fprintf_unfiltered(gdb_stdlog, "target_open (%s, %d)\n", args, from_tty);
 }
 
+/* */
 static void
 debug_to_close(int quitting)
 {
@@ -1845,15 +1853,16 @@ target_close(struct target_ops *targ, int quitting)
     targ->to_close(quitting);
 }
 
+/* */
 static void
-debug_to_attach(char *args, int from_tty)
+debug_to_attach(const char *args, int from_tty)
 {
   debug_target.to_attach(args, from_tty);
 
   fprintf_unfiltered(gdb_stdlog, "target_attach (%s, %d)\n", args, from_tty);
 }
 
-
+/* */
 static void
 debug_to_post_attach(int pid)
 {
@@ -1862,16 +1871,18 @@ debug_to_post_attach(int pid)
   fprintf_unfiltered(gdb_stdlog, "target_post_attach (%d)\n", pid);
 }
 
+/* */
 static void
-debug_to_detach(char *args, int from_tty)
+debug_to_detach(const char *args, int from_tty)
 {
   debug_target.to_detach(args, from_tty);
 
   fprintf_unfiltered(gdb_stdlog, "target_detach (%s, %d)\n", args, from_tty);
 }
 
+/* */
 static void
-debug_to_disconnect(char *args, int from_tty)
+debug_to_disconnect(const char *args, int from_tty)
 {
   debug_target.to_disconnect(args, from_tty);
 
@@ -2228,13 +2239,14 @@ debug_to_terminal_save_ours (void)
   fprintf_unfiltered (gdb_stdlog, "target_terminal_save_ours ()\n");
 }
 
+/* */
 static void
-debug_to_terminal_info (char *arg, int from_tty)
+debug_to_terminal_info(const char *arg, int from_tty)
 {
-  debug_target.to_terminal_info (arg, from_tty);
+  debug_target.to_terminal_info(arg, from_tty);
 
-  fprintf_unfiltered (gdb_stdlog, "target_terminal_info (%s, %d)\n", arg,
-		      from_tty);
+  fprintf_unfiltered(gdb_stdlog, "target_terminal_info (%s, %d)\n", arg,
+		     from_tty);
 }
 
 static void
@@ -2245,20 +2257,22 @@ debug_to_kill (void)
   fprintf_unfiltered (gdb_stdlog, "target_kill ()\n");
 }
 
+/* */
 static void
-debug_to_load (char *args, int from_tty)
+debug_to_load(const char *args, int from_tty)
 {
-  debug_target.to_load (args, from_tty);
+  debug_target.to_load(args, from_tty);
 
-  fprintf_unfiltered (gdb_stdlog, "target_load (%s, %d)\n", args, from_tty);
+  fprintf_unfiltered(gdb_stdlog, "target_load (%s, %d)\n", args, from_tty);
 }
 
+/* */
 static int
-debug_to_lookup_symbol (char *name, CORE_ADDR *addrp)
+debug_to_lookup_symbol(const char *name, CORE_ADDR *addrp)
 {
   int retval;
 
-  retval = debug_target.to_lookup_symbol (name, addrp);
+  retval = debug_target.to_lookup_symbol(name, addrp);
 
   fprintf_unfiltered (gdb_stdlog, "target_lookup_symbol (%s, xxx)\n", name);
 
@@ -2470,8 +2484,9 @@ debug_to_stop(void)
   fprintf_unfiltered(gdb_stdlog, "target_stop ()\n");
 }
 
+/* */
 static void
-debug_to_rcmd(char *command, struct ui_file *outbuf)
+debug_to_rcmd(const char *command, struct ui_file *outbuf)
 {
   debug_target.to_rcmd(command, outbuf);
   fprintf_unfiltered(gdb_stdlog, "target_rcmd (%s, ...)\n", command);
@@ -2675,19 +2690,20 @@ setup_target_debug(void)
 }
 
 
-static char targ_desc[] =
+static const char targ_desc[] =
 "Names of targets and files being debugged.\n\
 Shows the entire stack of targets currently in use (including the exec-file,\n\
 core-file, and process, if any), as well as the symbol file name.";
 
+/* */
 static void
-do_monitor_command(char *cmd, int from_tty)
+do_monitor_command(const char *cmd, int from_tty)
 {
   if ((current_target.to_rcmd
-       == (void (*)(char *, struct ui_file *))tcomplain)
+       == (void (*)(const char *, struct ui_file *))tcomplain)
       || ((current_target.to_rcmd == debug_to_rcmd)
 	  && (debug_target.to_rcmd
-	      == (void (*)(char *, struct ui_file *))tcomplain)))
+	      == (void (*)(const char *, struct ui_file *))tcomplain)))
     error(_("\"monitor\" command not supported by this target."));
   target_rcmd(cmd, gdb_stdtarg);
 }

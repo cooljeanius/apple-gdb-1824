@@ -274,6 +274,8 @@ dnl# from gnulib module malloc-posix:
 AC_REQUIRE([gl_FUNC_MALLOC_POSIX])dnl
 dnl# (libobj is already set above)
 gl_STDLIB_MODULE_INDICATOR([malloc-posix])dnl
+dnl# from gnulib module malloca:
+AC_REQUIRE([gl_MALLOCA])dnl
 dnl# from gnulib module math:
 AC_REQUIRE([gl_MATH_H])dnl
 dnl# from gnulib module mbrtowc:
@@ -498,6 +500,22 @@ if test -n "${ERRNO_H}" || test ${REPLACE_STRERROR_0} = 1; then
 fi
 dnl# from gnulib module string:
 AC_REQUIRE([gl_HEADER_STRING_H])dnl
+dnl# from gnulib module strncat:
+AC_REQUIRE([gl_FUNC_STRNCAT])dnl
+  ## set up libobj if needed:
+if test ${REPLACE_STRNCAT} = 1; then
+  AC_LIBOBJ([strncat])dnl
+  gl_PREREQ_STRNCAT
+fi
+gl_STRING_MODULE_INDICATOR([strncat])dnl
+dnl# from gnulib module strndup:
+AC_REQUIRE([gl_FUNC_STRNDUP])dnl
+  ## set up libobj if needed:
+if test ${HAVE_STRNDUP} = 0 || test ${REPLACE_STRNDUP} = 1; then
+  AC_LIBOBJ([strndup])dnl
+  ## end libobj
+fi
+gl_STRING_MODULE_INDICATOR([strndup])dnl
 dnl# from gnulib module strnlen:
 AC_REQUIRE([gl_FUNC_STRNLEN])dnl
   ## set up libobj if needed:
@@ -506,6 +524,16 @@ if test ${HAVE_DECL_STRNLEN} = 0 || test ${REPLACE_STRNLEN} = 1; then
   gl_PREREQ_STRNLEN
 fi
 gl_STRING_MODULE_INDICATOR([strnlen])dnl
+dnl# from gnulib module strpbrk:
+m4_ifdef([gl_FUNC_STRPBRK],[
+  AC_REQUIRE([gl_FUNC_STRPBRK])dnl
+  ## set up libobj if needed:
+  if test ${HAVE_STRPBRK} = 0; then
+    AC_LIBOBJ([strpbrk])dnl
+    gl_PREREQ_STRPBRK
+  fi
+  gl_STRING_MODULE_INDICATOR([strpbrk])dnl
+])dnl
 dnl# from gnulib module strstr:
 AC_REQUIRE([gl_FUNC_STRSTR])dnl
   ## set up libobj if needed:
@@ -517,6 +545,14 @@ dnl# from gnulib module strstr-simple:
 AC_REQUIRE([gl_FUNC_STRSTR_SIMPLE])dnl
 dnl# (libobj is already set above)
 gl_STRING_MODULE_INDICATOR([strstr])dnl
+dnl# from gnulib module strtok_r:
+AC_REQUIRE([gl_FUNC_STRTOK_R])dnl
+  ## set up libobj if needed:
+if test ${HAVE_STRTOK_R} = 0 || test ${REPLACE_STRTOK_R} = 1; then
+  AC_LIBOBJ([strtok_r])dnl
+  gl_PREREQ_STRTOK_R
+fi
+gl_STRING_MODULE_INDICATOR([strtok_r])dnl
 dnl# from gnulib module sys_select:
 AC_REQUIRE([gl_HEADER_SYS_SELECT])dnl
 AC_REQUIRE([AC_PROG_MKDIR_P])dnl
@@ -567,6 +603,10 @@ AC_REQUIRE([gl_HEADER_TIOCGWINSZ_IN_TERMIOS_H])dnl
 AC_REQUIRE([gl_WINSIZE_IN_PTEM])dnl
 dnl# from gnulib module xalloc:
 AC_REQUIRE([gl_XALLOC])dnl
+dnl# from gnulib module xmemdup0:
+AC_LIBOBJ([xmemdup0])dnl
+dnl# from gnulib module xstrndup:
+AC_REQUIRE([gl_XSTRNDUP])dnl
 dnl# other:
 AC_REQUIRE([gl_INCLUDE_NEXT])dnl
   ## need this variable:

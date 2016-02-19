@@ -7,17 +7,15 @@ BEGIN	{
 	  print "#include \"command.h\""
 	  print "#include \"gdbcmd.h\""
 	  print ""
-	  print "static void show_copying_command (char *, int);"
+	  print "static void show_copying_command(const char *, int);"
 	  print ""
-	  print "static void show_warranty_command (char *, int);"
+	  print "static void show_warranty_command(const char *, int);"
 	  print ""
-	  print "void _initialize_copying (void);"
+	  print "void _initialize_copying(void);"
 	  print ""
 	  print "extern int immediate_quit;";
 	  print "static void";
-	  print "show_copying_command (ignore, from_tty)";
-	  print "     char *ignore;";
-	  print "     int from_tty;";
+	  print "show_copying_command(const char *ignore, int from_tty)";
 	  print "{";
 	  print "  immediate_quit++;";
 	}
@@ -38,10 +36,9 @@ NR == 1,/^[ 	]*NO WARRANTY[ 	]*$/	{
 	  print "  immediate_quit--;";
 	  print "}";
 	  print "";
+	  print "/* */";
 	  print "static void";
-	  print "show_warranty_command (ignore, from_tty)";
-	  print "     char *ignore;";
-	  print "     int from_tty;";
+	  print "show_warranty_command(const char *ignore, int from_tty)";
 	  print "{";
 	  print "  immediate_quit++;";
 	}
@@ -58,20 +55,24 @@ END	{
 	  print "  immediate_quit--;";
 	  print "}";
 	  print "";
+	  print "/* */";
 	  print "void"
-	  print "_initialize_copying ()";
+	  print "_initialize_copying(void)";
 	  print "{";
-	  print "  add_cmd (\"copying\", no_class, show_copying_command,";
-	  print "	   \"Conditions for redistributing copies of GDB.\",";
-	  print "	   &showlist);";
-	  print "  add_cmd (\"warranty\", no_class, show_warranty_command,";
-	  print "	   \"Various kinds of warranty you do not have.\",";
-	  print "	   &showlist);";
+	  print "  add_cmd(\"copying\", no_class, show_copying_command,";
+	  print "	  \"Conditions for redistributing copies of GDB.\",";
+	  print "	  &showlist);";
+	  print "  add_cmd(\"warranty\", no_class, show_warranty_command,";
+	  print "	  \"Various kinds of warranty you do not have.\",";
+	  print "	  &showlist);";
 	  print "";
 	  print "  /* For old-timers, allow \"info copying\", etc.  */";
-	  print "  add_info (\"copying\", show_copying_command,";
-	  print "	    \"Conditions for redistributing copies of GDB.\");";
-	  print "  add_info (\"warranty\", show_warranty_command,";
-	  print "	    \"Various kinds of warranty you do not have.\");";
+	  print "  add_info(\"copying\", show_copying_command,";
+	  print "	   \"Conditions for redistributing copies of GDB.\");";
+	  print "  add_info(\"warranty\", show_warranty_command,";
+	  print "	   \"Various kinds of warranty you do not have.\");";
 	  print "}";
+	  print "";
+	  print "/* EOF */";
+	  print ""
 	}

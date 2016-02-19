@@ -94,14 +94,14 @@ static void remote_resume(ptid_t ptid, int step,
                           enum target_signal siggnal);
 static void remote_async_resume(ptid_t ptid, int step,
                                 enum target_signal siggnal);
-static void remote_open(char *name, int from_tty);
-static void remote_async_open(char *name, int from_tty);
+static void remote_open(const char *name, int from_tty);
+static void remote_async_open(const char *name, int from_tty);
 
-static void extended_remote_open(char *name, int from_tty);
-static void extended_remote_async_open(char *name, int from_tty);
+static void extended_remote_open(const char *name, int from_tty);
+static void extended_remote_async_open(const char *name, int from_tty);
 
-static void remote_open_1(char *, int, struct target_ops *, int extended_p,
-			  int async_p);
+static void remote_open_1(const char *, int, struct target_ops *,
+			  int extended_p, int async_p);
 
 static void remote_close(int quitting);
 
@@ -2561,40 +2561,39 @@ remote_start_remote (struct ui_out *uiout, void *dummy)
    NAME is the filename used for communication.  */
 
 static void
-remote_open (char *name, int from_tty)
+remote_open(const char *name, int from_tty)
 {
-  remote_open_1 (name, from_tty, &remote_ops, 0, 0);
+  remote_open_1(name, from_tty, &remote_ops, 0, 0);
 }
 
-/* Just like remote_open, but with asynchronous support.  */
+/* Just like remote_open, but with asynchronous support: */
 static void
-remote_async_open (char *name, int from_tty)
+remote_async_open(const char *name, int from_tty)
 {
-  remote_open_1 (name, from_tty, &remote_async_ops, 0, 1);
+  remote_open_1(name, from_tty, &remote_async_ops, 0, 1);
 }
 
 /* Open a connection to a remote debugger using the extended
    remote gdb protocol.  NAME is the filename used for communication.  */
 
 static void
-extended_remote_open (char *name, int from_tty)
+extended_remote_open(const char *name, int from_tty)
 {
-  remote_open_1 (name, from_tty, &extended_remote_ops, 1 /*extended_p */,
-		 0 /* async_p */);
+  remote_open_1(name, from_tty, &extended_remote_ops, 1 /*extended_p */,
+		0 /* async_p */);
 }
 
-/* Just like extended_remote_open, but with asynchronous support.  */
+/* Just like extended_remote_open, but with asynchronous support: */
 static void
-extended_remote_async_open (char *name, int from_tty)
+extended_remote_async_open(const char *name, int from_tty)
 {
-  remote_open_1 (name, from_tty, &extended_async_remote_ops,
-		 1 /*extended_p */, 1 /* async_p */);
+  remote_open_1(name, from_tty, &extended_async_remote_ops,
+		1 /*extended_p */, 1 /* async_p */);
 }
 
-/* Generic code for opening a connection to a remote target.  */
-
+/* Generic code for opening a connection to a remote target: */
 static void
-init_all_packet_configs (void)
+init_all_packet_configs(void)
 {
   int i;
   update_packet_config (&remote_protocol_P);
@@ -2651,7 +2650,7 @@ remote_check_symbols (struct objfile *objfile)
 
 /* FIXME: add comment: */
 static struct serial *
-remote_serial_open(char *name)
+remote_serial_open(const char *name)
 {
   static int udp_warning = 0;
 
@@ -2670,11 +2669,12 @@ Some events may be lost, rendering further debugging impossible."));
   return serial_open (name);
 }
 
+/* */
 static void
-remote_open_1 (char *name, int from_tty, struct target_ops *target,
-	       int extended_p, int async_p)
+remote_open_1(const char *name, int from_tty, struct target_ops *target,
+	      int extended_p, int async_p)
 {
-  struct remote_state *rs = get_remote_state ();
+  struct remote_state *rs = get_remote_state();
   if (name == 0)
     error (_("To open a remote debug connection, you need to specify what\n"
 	   "serial device is attached to the remote system\n"
@@ -2684,16 +2684,16 @@ remote_open_1 (char *name, int from_tty, struct target_ops *target,
   if (!async_p)
     wait_forever_enabled_p = 1;
 
-  reopen_exec_file ();
-  reread_symbols ();
+  reopen_exec_file();
+  reread_symbols();
 
-  target_preopen (from_tty);
+  target_preopen(from_tty);
 
-  unpush_target (target);
+  unpush_target(target);
 
-  remote_desc = remote_serial_open (name);
+  remote_desc = remote_serial_open(name);
   if (!remote_desc)
-    perror_with_name (name);
+    perror_with_name(name);
 
   if (baud_rate != -1)
     {
@@ -2866,7 +2866,7 @@ remote_detach(const char *args, int from_tty)
 
 /* Same as remote_detach, but do NOT send the "D" packet; just disconnect: */
 static void
-remote_disconnect(char *args, int from_tty)
+remote_disconnect(const char *args, int from_tty)
 {
   if (args)
     error(_("Argument given to \"disconnect\" when remotely debugging."));
@@ -5454,16 +5454,15 @@ remote_remove_hw_breakpoint(CORE_ADDR addr, gdb_byte *shadow)
    already..." message.  Usually a call to pop_target() suffices.  */
 
 void
-push_remote_target (char *name, int from_tty)
+push_remote_target(const char *name, int from_tty)
 {
-  printf_filtered (_("Switching to remote protocol\n"));
-  remote_open (name, from_tty);
+  printf_filtered(_("Switching to remote protocol\n"));
+  remote_open(name, from_tty);
 }
 
-/* Table used by the crc32 function to calcuate the checksum.  */
-
+/* Table used by the crc32 function to calcuate the checksum: */
 static unsigned long crc32_table[256] =
-{0, 0};
+{ 0UL, 0UL };
 
 static unsigned long
 crc32 (unsigned char *buf, int len, unsigned int crc)
@@ -5719,7 +5718,7 @@ remote_xfer_partial(struct target_ops *ops, enum target_object object,
 
 /* FIXME: add comment: */
 static void
-remote_rcmd(char *command, struct ui_file *outbuf)
+remote_rcmd(const char *command, struct ui_file *outbuf)
 {
   struct remote_state *rs = get_remote_state();
   char *buf = (char *)alloca(rs->remote_packet_size);
@@ -6591,8 +6590,9 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int fr
   do_cleanups(cleanup);
 }
 
+/* */
 void
-remote_macosx_attach(char *args, int from_tty)
+remote_macosx_attach(const char *args, int from_tty)
 {
 #if 0
   if (exec_bfd == NULL)
@@ -6612,7 +6612,7 @@ remote_macosx_attach(char *args, int from_tty)
 
   if (strstr(args, "-waitfor") == args)
     {
-      char *process = (args + strlen("-waitfor"));
+      const char *process = (args + strlen("-waitfor"));
       int name_len;
       int prepend_path = 0;
       char *out_ptr;
@@ -6746,10 +6746,9 @@ remote_macosx_query_qenvironment_hex_packet_supported(void)
    NAME is the filename used for communication.  */
 
 static void
-remote_macosx_open (char *name, int from_tty)
+remote_macosx_open(const char *name, int from_tty)
 {
-
-  remote_open_1 (name, from_tty, &remote_macosx_ops, 0, 0);
+  remote_open_1(name, from_tty, &remote_macosx_ops, 0, 0);
 
   /* Tell the remote that we are using the extended protocol.  */
 #if defined (TARGET_ARM)

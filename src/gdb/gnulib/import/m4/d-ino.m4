@@ -1,11 +1,11 @@
-# serial 14
+# serial 15
 
 dnl From Jim Meyering.
 dnl
 dnl Check whether struct dirent has a member named d_ino.
 dnl
 
-# Copyright (C) 1997, 1999-2001, 2003-2004, 2006-2007, 2009-2015 Free Software
+# Copyright (C) 1997, 1999-2001, 2003-2004, 2006-2007, 2009-2016 Free Software
 # Foundation, Inc.
 
 # This file is free software; the Free Software Foundation
@@ -34,6 +34,7 @@ AC_DEFUN([gl_CHECK_TYPE_STRUCT_DIRENT_D_INO],
                return 3;
              if (e->d_ino != st.st_ino)
                return 4;
+             closedir (dp);
              return 0;
            ]])],
            [gl_cv_struct_dirent_d_ino=yes],

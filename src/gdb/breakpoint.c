@@ -88,34 +88,34 @@
 
 static void until_break_command_continuation(struct continuation_arg *arg);
 
-static void catch_command_1(char *, int, int);
+static void catch_command_1(const char *, int, int);
 
-static void enable_delete_command(char *, int);
+static void enable_delete_command(const char *, int);
 
 static void enable_delete_breakpoint(struct breakpoint *);
 
-static void enable_once_command(char *, int);
+static void enable_once_command(const char *, int);
 
 static void enable_once_breakpoint(struct breakpoint *);
 
-static void disable_command(char *, int);
+static void disable_command(const char *, int);
 
-static void enable_command(char *, int);
+static void enable_command(const char *, int);
 
-static void map_breakpoint_numbers(char *, void (*)(struct breakpoint *));
+static void map_breakpoint_numbers(const char *, void (*)(struct breakpoint *));
 
-static void ignore_command(char *, int);
+static void ignore_command(const char *, int);
 
 static int breakpoint_re_set_one(void *);
 
 /* APPLE LOCAL breakpoints */
 static void breakpoint_re_set_all(void);
 
-static void clear_command(char *, int);
+static void clear_command(const char *, int);
 
-static void catch_command(char *, int);
+static void catch_command(const char *, int);
 
-static void watch_command(char *, int);
+static void watch_command(const char *, int);
 
 static int can_use_hardware_watchpoint(struct value *);
 
@@ -170,7 +170,7 @@ static CORE_ADDR adjust_breakpoint_address(CORE_ADDR bpaddr,
 
 static void describe_other_breakpoints(CORE_ADDR, asection *);
 
-static void breakpoints_info(char *, int);
+static void breakpoints_info(const char *, int);
 
 static void breakpoint_1(int, int);
 
@@ -194,9 +194,9 @@ static int current_exception_should_stop(void);
 
 static void cleanup_executing_breakpoints(void *);
 
-static void commands_command(char *, int);
+static void commands_command(const char *, int);
 
-static void condition_command(char *, int);
+static void condition_command(const char *, int);
 
 /* APPLE LOCAL begin refactor condition_command */
 /* We want to use condition_command to set the condition from
@@ -249,7 +249,7 @@ static int watchpoint_check(void *);
 
 static int cover_target_enable_exception_callback(void *);
 
-static void maintenance_info_breakpoints(char *, int);
+static void maintenance_info_breakpoints(const char *, int);
 
 static void create_longjmp_breakpoint(const char *);
 
@@ -259,16 +259,16 @@ static int hw_breakpoint_used_count(void);
 
 static int hw_watchpoint_used_count(enum bptype, int *);
 
-static void hbreak_command(char *, int);
+static void hbreak_command(const char *, int);
 
-static void thbreak_command(char *, int);
+static void thbreak_command(const char *, int);
 
 /* APPLE LOCAL: Added the by_location arg.  */
-static void watch_command_1(char *, int, int, int);
+static void watch_command_1(const char *, int, int, int);
 
-static void rwatch_command(char *, int);
+static void rwatch_command(const char *, int);
 
-static void awatch_command(char *, int);
+static void awatch_command(const char *, int);
 
 static void do_enable_breakpoint(struct breakpoint *, enum bpdisp);
 
@@ -276,20 +276,21 @@ static void solib_load_unload_1(const char *hookname, int tempflag,
 				char *dll_pathname, char *cond_string,
 				enum bptype bp_kind);
 
-static void create_fork_vfork_event_catchpoint(int tempflag, char *cond_string,
+static void create_fork_vfork_event_catchpoint(int tempflag,
+					       const char *cond_string,
                                                enum bptype bp_kind);
 
-static void stop_command(char *arg, int from_tty);
+static void stop_command(const char *arg, int from_tty);
 
-static void stopin_command(char *arg, int from_tty);
+static void stopin_command(const char *arg, int from_tty);
 
-static void stopat_command(char *arg, int from_tty);
+static void stopat_command(const char *arg, int from_tty);
 
-static char *ep_find_event_name_end(char *arg);
+static const char *ep_find_event_name_end(const char *arg);
 
-static char *ep_parse_optional_if_clause(char **arg);
+static const char *ep_parse_optional_if_clause(const char **arg);
 
-static char *ep_parse_optional_filename(char **arg);
+static char *ep_parse_optional_filename(const char **arg);
 
 /* APPLE LOCAL return a value */
 static struct breakpoint *create_exception_catchpoint(int tempflag, char *cond_string,
@@ -299,11 +300,12 @@ static struct breakpoint *create_exception_catchpoint(int tempflag, char *cond_s
 					 struct symtab_and_line *sal);
 
 static void catch_exception_command_1(enum exception_event_kind ex_event,
-				      char *arg, int tempflag, int from_tty);
+				      const char *arg, int tempflag,
+				      int from_tty);
 
-static void tcatch_command(char *arg, int from_tty);
+static void tcatch_command(const char *arg, int from_tty);
 
-static void ep_skip_leading_whitespace(char **s);
+static void ep_skip_leading_whitespace(const char **s);
 
 /* APPLE LOCAL - We may have more than one breakpoint implementing the
    exception catch & exception throw breaks.  So it is convenient to keep
@@ -705,7 +707,7 @@ get_number_or_range(const char **pp)
 
 /* condition N EXP -- set break condition of breakpoint N to EXP: */
 static void
-condition_command(char *arg, int from_tty)
+condition_command(const char *arg, int from_tty)
 {
   struct breakpoint *b;
   const char *p;
@@ -781,7 +783,7 @@ condition_command_1(struct breakpoint *b, const char *condition, int from_tty)
 
 /* */
 static void
-commands_command(char *arg, int from_tty)
+commands_command(const char *arg, int from_tty)
 {
   struct breakpoint *b;
   const char *p;
@@ -4459,8 +4461,9 @@ breakpoint_1 (int bnum, int allflag)
   annotate_breakpoints_table_end ();
 }
 
+/* */
 static void
-breakpoints_info(char *bnum_exp, int from_tty)
+breakpoints_info(const char *bnum_exp, int from_tty)
 {
   long bnum = -1L;
 
@@ -4470,8 +4473,9 @@ breakpoints_info(char *bnum_exp, int from_tty)
   breakpoint_1(bnum, 0);
 }
 
+/* */
 static void
-maintenance_info_breakpoints(char *bnum_exp, int from_tty)
+maintenance_info_breakpoints(const char *bnum_exp, int from_tty)
 {
   long bnum = -1L;
 
@@ -5423,9 +5427,10 @@ create_solib_unload_event_breakpoint (char *hookname, int tempflag,
 		       cond_string, bp_catch_unload);
 }
 
+/* */
 static void
-create_fork_vfork_event_catchpoint (int tempflag, char *cond_string,
-				    enum bptype bp_kind)
+create_fork_vfork_event_catchpoint(int tempflag, const char *cond_string,
+				   enum bptype bp_kind)
 {
   struct symtab_and_line sal;
   struct breakpoint *b;
@@ -5451,20 +5456,23 @@ create_fork_vfork_event_catchpoint (int tempflag, char *cond_string,
   mention (b);
 }
 
+/* */
 void
-create_fork_event_catchpoint (int tempflag, char *cond_string)
+create_fork_event_catchpoint(int tempflag, const char *cond_string)
 {
-  create_fork_vfork_event_catchpoint (tempflag, cond_string, bp_catch_fork);
+  create_fork_vfork_event_catchpoint(tempflag, cond_string, bp_catch_fork);
 }
 
+/* */
 void
-create_vfork_event_catchpoint (int tempflag, char *cond_string)
+create_vfork_event_catchpoint(int tempflag, const char *cond_string)
 {
-  create_fork_vfork_event_catchpoint (tempflag, cond_string, bp_catch_vfork);
+  create_fork_vfork_event_catchpoint(tempflag, cond_string, bp_catch_vfork);
 }
 
+/* */
 void
-create_exec_event_catchpoint (int tempflag, char *cond_string)
+create_exec_event_catchpoint(int tempflag, const char *cond_string)
 {
   struct symtab_and_line sal;
   struct breakpoint *b;
@@ -7362,32 +7370,32 @@ resolve_sal_pc(struct symtab_and_line *sal)
 void
 break_command(const char *arg, int from_tty)
 {
-  /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps.  */
+  /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps: */
   break_command_1(arg, 0, from_tty, NULL, 0);
 }
 
 /* */
 void
-tbreak_command (char *arg, int from_tty)
+tbreak_command(const char *arg, int from_tty)
 {
-  /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps.  */
-  break_command_1 (arg, BP_TEMPFLAG, from_tty, NULL, 0);
+  /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps: */
+  break_command_1(arg, BP_TEMPFLAG, from_tty, NULL, 0);
 }
 
 /* */
 static void
-hbreak_command (char *arg, int from_tty)
+hbreak_command(const char *arg, int from_tty)
 {
-  /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps.  */
-  break_command_1 (arg, BP_HARDWAREFLAG, from_tty, NULL, 0);
+  /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps: */
+  break_command_1(arg, BP_HARDWAREFLAG, from_tty, NULL, 0);
 }
 
 /* */
 static void
-thbreak_command (char *arg, int from_tty)
+thbreak_command(const char *arg, int from_tty)
 {
-  /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps.  */
-  break_command_1 (arg, (BP_TEMPFLAG | BP_HARDWAREFLAG), from_tty, NULL, 0);
+  /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps: */
+  break_command_1(arg, (BP_TEMPFLAG | BP_HARDWAREFLAG), from_tty, NULL, 0);
 }
 
 /* APPLE LOCAL: Force a future break if the symbol isn't found.
@@ -7398,7 +7406,7 @@ thbreak_command (char *arg, int from_tty)
 
 void
 /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps.  */
-rbr_break_command (char *arg, int from_tty, int use_msymbol_p)
+rbr_break_command(const char *arg, int from_tty, int use_msymbol_p)
 {
   struct cleanup *cleans;
 
@@ -7413,24 +7421,26 @@ rbr_break_command (char *arg, int from_tty, int use_msymbol_p)
   do_cleanups (cleans);
 }
 
+/* */
 static void
-stop_command (char *arg, int from_tty)
+stop_command(const char *arg, int from_tty)
 {
   printf_filtered (_("Specify the type of breakpoint to set.\n\
 Usage: stop in <function | address>\n\
        stop at <line>\n"));
 }
 
+/* */
 static void
-stopin_command (char *arg, int from_tty)
+stopin_command(const char *arg, int from_tty)
 {
   int badInput = 0;
 
-  if (arg == (char *) NULL)
+  if (arg == (const char *)NULL)
     badInput = 1;
   else if (*arg != '*')
     {
-      char *argptr = arg;
+      const char *argptr = arg;
       int hasColon = 0;
 
       /* look for a ':'.  If this is a line number specification, then
@@ -7455,16 +7465,17 @@ stopin_command (char *arg, int from_tty)
     break_command_1 (arg, 0, from_tty, NULL, 0);
 }
 
+/* */
 static void
-stopat_command (char *arg, int from_tty)
+stopat_command(const char *arg, int from_tty)
 {
   int badInput = 0;
 
-  if (arg == (char *) NULL || *arg == '*')	/* no line number */
+  if (arg == (const char *)NULL || *arg == '*')	/* no line number */
     badInput = 1;
   else
     {
-      char *argptr = arg;
+      const char *argptr = arg;
       int hasColon = 0;
 
       /* look for a ':'.  If there is a '::' then get out, otherwise
@@ -7495,7 +7506,7 @@ stopat_command (char *arg, int from_tty)
    pointed to by the expression in ARG, not all the locations leading
    up to it.  Also, do NOT tie the watch to the current scope.  */
 static void
-watch_command_1(char *arg, int accessflag, int by_location, int from_tty)
+watch_command_1(const char *arg, int accessflag, int by_location, int from_tty)
 {
   struct breakpoint *b;
   struct symtab_and_line sal;
@@ -7504,12 +7515,12 @@ watch_command_1(char *arg, int accessflag, int by_location, int from_tty)
   struct value *val, *mark;
   struct frame_info *frame;
   struct frame_info *prev_frame = NULL;
-  char *exp_start = NULL;
-  char *exp_end = NULL;
-  char *tok, *end_tok;
+  const char *exp_start = NULL;
+  const char *exp_end = NULL;
+  const char *tok, *end_tok;
   int toklen;
   char *cond_start = NULL;
-  char *cond_end = NULL;
+  const char *cond_end = NULL;
   char *exp_string = NULL;
   size_t exp_string_len;
   struct expression *cond = NULL;
@@ -7532,7 +7543,8 @@ watch_command_1(char *arg, int accessflag, int by_location, int from_tty)
   if (by_location)
     {
       struct value *orig_val;
-      char *addr_str, *type_str, *tmp_str;
+      char *addr_str, *type_str;
+      const char *tmp_str;
 
       exp_start = arg;
       exp = parse_exp_1(&arg, 0, 0);
@@ -7809,14 +7821,16 @@ can_use_hardware_watchpoint (struct value *v)
   return found_memory_cnt;
 }
 
+/* */
 void
-watch_command_wrapper(char *arg, int by_location, int from_tty)
+watch_command_wrapper(const char *arg, int by_location, int from_tty)
 {
   watch_command_1(arg, hw_write, by_location, from_tty);
 }
 
+/* */
 int
-detect_location_arg(char **arg)
+detect_location_arg(const char **arg)
 {
   int by_location = 0;
   if (arg == NULL || *arg == NULL)
@@ -7833,34 +7847,39 @@ detect_location_arg(char **arg)
   return by_location;
 }
 
+/* */
 static void
-watch_command(char *arg, int from_tty)
+watch_command(const char *arg, int from_tty)
 {
   int by_location = detect_location_arg(&arg);
   watch_command_1(arg, hw_write, by_location, from_tty);
 }
 
+/* */
 void
-rwatch_command_wrapper(char *arg, int by_location, int from_tty)
+rwatch_command_wrapper(const char *arg, int by_location, int from_tty)
 {
   watch_command_1(arg, hw_read, by_location, from_tty);
 }
 
+/* */
 static void
-rwatch_command(char *arg, int from_tty)
+rwatch_command(const char *arg, int from_tty)
 {
   int by_location = detect_location_arg(&arg);
   watch_command_1(arg, hw_read, by_location, from_tty);
 }
 
+/* */
 void
-awatch_command_wrapper(char *arg, int by_location, int from_tty)
+awatch_command_wrapper(const char *arg, int by_location, int from_tty)
 {
   watch_command_1(arg, hw_access, by_location, from_tty);
 }
 
+/* */
 static void
-awatch_command(char *arg, int from_tty)
+awatch_command(const char *arg, int from_tty)
 {
   int by_location = detect_location_arg(&arg);
   watch_command_1(arg, hw_access, by_location, from_tty);
@@ -7883,8 +7902,9 @@ until_break_command_continuation (struct continuation_arg *arg)
   do_exec_cleanups (cleanups);
 }
 
+/* */
 void
-until_break_command (char *arg, int from_tty, int anywhere)
+until_break_command(const char *arg, int from_tty, int anywhere)
 {
   struct symtabs_and_lines sals;
   struct symtab_and_line sal;
@@ -7987,12 +8007,13 @@ until_break_command (char *arg, int from_tty, int anywhere)
     do_cleanups (old_chain);
 }
 
+/* */
 static void
-ep_skip_leading_whitespace (char **s)
+ep_skip_leading_whitespace(const char **s)
 {
   if ((s == NULL) || (*s == NULL))
     return;
-  while (isspace (**s))
+  while (isspace(**s))
     *s += 1;
 }
 
@@ -8001,11 +8022,11 @@ ep_skip_leading_whitespace (char **s)
    possible match is found, a pointer to the last character of
    the token is returned.  Else, NULL is returned. */
 
-static char *
-ep_find_event_name_end (char *arg)
+static const char *
+ep_find_event_name_end(const char *arg)
 {
-  char *s = arg;
-  char *event_name_end = NULL;
+  const char *s = arg;
+  const char *event_name_end = NULL;
 
   /* If we could depend upon the presense of strrpbrk, we'd use that... */
   if (arg == NULL)
@@ -8016,7 +8037,7 @@ ep_find_event_name_end (char *arg)
      anything else delimites the token. */
   while (*s != '\0')
     {
-      if (!isalnum (*s) && (*s != '_'))
+      if (!isalnum(*s) && (*s != '_'))
 	break;
       event_name_end = s;
       s++;
@@ -8034,12 +8055,12 @@ ep_find_event_name_end (char *arg)
    it updates arg to point to the first character following the parsed
    if clause in the arg string. */
 
-static char *
-ep_parse_optional_if_clause (char **arg)
+static const char *
+ep_parse_optional_if_clause(const char **arg)
 {
-  char *cond_string;
+  const char *cond_string;
 
-  if (((*arg)[0] != 'i') || ((*arg)[1] != 'f') || !isspace ((*arg)[2]))
+  if (((*arg)[0] != 'i') || ((*arg)[1] != 'f') || !isspace((*arg)[2]))
     return NULL;
 
   /* Skip the "if" keyword. */
@@ -8047,11 +8068,11 @@ ep_parse_optional_if_clause (char **arg)
 
   /* Skip any extra leading whitespace, and record the start of the
      condition string. */
-  ep_skip_leading_whitespace (arg);
+  ep_skip_leading_whitespace(arg);
   cond_string = *arg;
 
-  /* Assume that the condition occupies the remainder of the arg string. */
-  (*arg) += strlen (cond_string);
+  /* Assume that the condition occupies the remainder of the arg string: */
+  (*arg) += strlen(cond_string);
 
   return cond_string;
 }
@@ -8067,20 +8088,21 @@ ep_parse_optional_if_clause (char **arg)
    Note that clients needing to preserve the returned filename for
    future access should copy it to their own buffers. */
 static char *
-ep_parse_optional_filename (char **arg)
+ep_parse_optional_filename(const char **arg)
 {
+  /* FIXME: 1024 might be too small; use a relevant macro instead: */
   static char filename[1024];
-  char *arg_p = *arg;
+  const char *arg_p = *arg;
   int i;
   char c;
 
-  if ((*arg_p == '\0') || isspace (*arg_p))
+  if ((*arg_p == '\0') || isspace(*arg_p))
     return NULL;
 
-  for (i = 0;; i++)
+  for (i = 0; i < 1024; i++)
     {
       c = *arg_p;
-      if (isspace (c))
+      if (isspace(c))
 	c = '\0';
       filename[i] = c;
       if (c == '\0')
@@ -8102,10 +8124,10 @@ typedef enum
 catch_fork_kind;
 
 static void
-catch_fork_command_1 (catch_fork_kind fork_kind, char *arg, int tempflag,
-		      int from_tty)
+catch_fork_command_1(catch_fork_kind fork_kind, const char *arg, int tempflag,
+		     int from_tty)
 {
-  char *cond_string = NULL;
+  const char *cond_string = NULL;
 
   ep_skip_leading_whitespace (&arg);
 
@@ -8135,10 +8157,11 @@ catch_fork_command_1 (catch_fork_kind fork_kind, char *arg, int tempflag,
     }
 }
 
+/* */
 static void
-catch_exec_command_1 (char *arg, int tempflag, int from_tty)
+catch_exec_command_1(const char *arg, int tempflag, int from_tty)
 {
-  char *cond_string = NULL;
+  const char *cond_string = NULL;
 
   ep_skip_leading_whitespace (&arg);
 
@@ -8157,11 +8180,12 @@ catch_exec_command_1 (char *arg, int tempflag, int from_tty)
   create_exec_event_catchpoint(tempflag, cond_string);
 }
 
+/* */
 static void ATTR_NORETURN
-catch_load_command_1(char *arg, int tempflag, int from_tty)
+catch_load_command_1(const char *arg, int tempflag, int from_tty)
 {
   char *dll_pathname = NULL;
-  char *cond_string = NULL;
+  const char *cond_string = NULL;
 
   ep_skip_leading_whitespace(&arg);
 
@@ -8202,11 +8226,12 @@ catch_load_command_1(char *arg, int tempflag, int from_tty)
                                dll_pathname, cond_string);
 }
 
+/* */
 static void ATTR_NORETURN
-catch_unload_command_1(char *arg, int tempflag, int from_tty)
+catch_unload_command_1(const char *arg, int tempflag, int from_tty)
 {
   char *dll_pathname = NULL;
-  char *cond_string = NULL;
+  const char *cond_string = NULL;
 
   ep_skip_leading_whitespace(&arg);
 
@@ -8693,12 +8718,12 @@ current_exception_should_stop(void)
     return 1;
 }
 
-/* Deal with "catch catch" and "catch throw" commands */
+/* Deal with "catch catch" and "catch throw" commands: */
 static void
-catch_exception_command_1 (enum exception_event_kind ex_event, char *arg,
-			   int tempflag, int from_tty)
+catch_exception_command_1(enum exception_event_kind ex_event, const char *arg,
+			  int tempflag, int from_tty)
 {
-  char *cond_string = NULL;
+  const char *cond_string = NULL;
   int retval;
 
   ep_skip_leading_whitespace (&arg);
@@ -8742,8 +8767,9 @@ cover_target_enable_exception_callback(void *arg)
   return target_enable_exception_callback(args->kind, args->enable_p);
 }
 
+/* */
 static void
-catch_command_1 (char *arg, int tempflag, int from_tty)
+catch_command_1(const char *arg, int tempflag, int from_tty)
 {
   /* The first argument may be an event name, such as "start" or "load".
      If so, then handle it as such.  If it doesn't match an event name,
@@ -8751,42 +8777,43 @@ catch_command_1 (char *arg, int tempflag, int from_tty)
      the v4.16-and-earlier GDB meaning of the "catch" command.)
 
      First, try to find the bounds of what might be an event name. */
-  char *arg1_start = arg;
-  char *arg1_end;
-  int arg1_length;
+  const char *arg1_start = arg;
+  const char *arg1_end;
+  ptrdiff_t arg1_length;
 
   if (arg1_start == NULL)
     {
-      /* Old behaviour was to use pre-v-4.16 syntax */
-      /* catch_throw_command_1 (arg1_start, tempflag, from_tty); */
-      /* return; */
-      /* Now, this is not allowed */
-      error (_("Catch requires an event name."));
-
+      /* Old behavior was to use pre-v-4.16 syntax: */
+#ifdef __PRE_v4_16_BEHAVIOR__
+      catch_throw_command_1(arg1_start, tempflag, from_tty);
+      return;
+#endif /* __PRE_v4_16_BEHAVIOR__ */
+      /* Now, this is not allowed: */
+      error(_("Catch requires an event name."));
     }
-  arg1_end = ep_find_event_name_end (arg1_start);
+  arg1_end = ep_find_event_name_end(arg1_start);
   if (arg1_end == NULL)
-    error (_("catch requires an event"));
-  arg1_length = arg1_end + 1 - arg1_start;
+    error(_("catch requires an event"));
+  arg1_length = (arg1_end + 1 - arg1_start);
 
   /* Try to match what we found against known event names. */
-  if (strncmp (arg1_start, "signal", arg1_length) == 0)
+  if (strncmp(arg1_start, "signal", arg1_length) == 0)
     {
-      error (_("Catch of signal not yet implemented"));
+      error(_("Catch of signal not yet implemented"));
     }
-  else if (strncmp (arg1_start, "catch", arg1_length) == 0)
+  else if (strncmp(arg1_start, "catch", arg1_length) == 0)
     {
       /* APPLE LOCAL exception catchpoints */
       exception_catchpoint_catch_enabled = 1;
-      catch_exception_command_1 (EX_EVENT_CATCH, arg1_end + 1,
-				 tempflag, from_tty);
+      catch_exception_command_1(EX_EVENT_CATCH, (arg1_end + 1),
+				tempflag, from_tty);
     }
-  else if (strncmp (arg1_start, "throw", arg1_length) == 0)
+  else if (strncmp(arg1_start, "throw", arg1_length) == 0)
     {
       /* APPLE LOCAL exception catchpoints */
       exception_catchpoint_throw_enabled = 1;
-      catch_exception_command_1 (EX_EVENT_THROW, arg1_end + 1,
-				 tempflag, from_tty);
+      catch_exception_command_1(EX_EVENT_THROW, (arg1_end + 1),
+				tempflag, from_tty);
     }
   else if (strncmp (arg1_start, "thread_start", arg1_length) == 0)
     {
@@ -8915,22 +8942,23 @@ set_breakpoint_sal (struct symtab_and_line sal)
   return b;
 }
 
+/* */
 static void
-catch_command (char *arg, int from_tty)
+catch_command(const char *arg, int from_tty)
 {
-  catch_command_1 (arg, 0, from_tty);
+  catch_command_1(arg, 0, from_tty);
 }
 
-
+/* */
 static void
-tcatch_command (char *arg, int from_tty)
+tcatch_command(const char *arg, int from_tty)
 {
-  catch_command_1 (arg, 1, from_tty);
+  catch_command_1(arg, 1, from_tty);
 }
 
 /* Delete breakpoints by address or line: */
 static void
-clear_command (char *arg, int from_tty)
+clear_command(const char *arg, int from_tty)
 {
   struct breakpoint *b, *tmp, *prev, *found;
   int default_match;
@@ -9301,8 +9329,9 @@ make_exec_cleanup_delete_breakpoint(struct breakpoint *b)
   return make_exec_cleanup(do_delete_breakpoint_cleanup, b);
 }
 
+/* */
 void
-delete_command(char *arg, int from_tty)
+delete_command(const char *arg, int from_tty)
 {
   struct breakpoint *b, *temp;
 
@@ -9345,10 +9374,10 @@ delete_command(char *arg, int from_tty)
    The value we return ends up being the return value from catch_errors.  */
 
 static int
-breakpoint_re_set_one (void *bint)
+breakpoint_re_set_one(void *bint)
 {
   /* get past catch_errs */
-  struct breakpoint *b = (struct breakpoint *) bint;
+  struct breakpoint *b = (struct breakpoint *)bint;
   struct value *mark;
   int i;
   /* APPLE LOCAL begin dealing correctly with multiple sals.  */
@@ -9358,7 +9387,7 @@ breakpoint_re_set_one (void *bint)
   /* APPLE LOCAL breakpoint fix */
   /* Don't need locals not_found or not_found_ptr */
   struct symtabs_and_lines sals;
-  char *s;
+  const char *s;
   enum enable_state save_enable;
   struct expression *s_exp;
   struct cleanup *restrict_cleanup;
@@ -9796,11 +9825,11 @@ breakpoint_re_set_one (void *bint)
 		 to parse_exp_1.  */
 	      b->cond = NULL;
 	    }
-	  b->cond = parse_exp_1 (&s, (struct block *) 0, 0);
+	  b->cond = parse_exp_1(&s, (struct block *)0, 0);
 	}
-      if (breakpoint_enabled (b))
-	mention (b);
-      value_free_to_mark (mark);
+      if (breakpoint_enabled(b))
+	mention(b);
+      value_free_to_mark(mark);
       break;
     case bp_catch_catch:
     case bp_catch_throw:
@@ -10080,12 +10109,11 @@ breakpoint_clear_ignore_counts (void)
     b->ignore_count = 0;
 }
 
-/* Command to set ignore-count of breakpoint N to COUNT.  */
-
+/* Command to set ignore-count of breakpoint N to COUNT: */
 static void
-ignore_command (char *args, int from_tty)
+ignore_command(const char *args, int from_tty)
 {
-  char *p = args;
+  const char *p = args;
   int num;
 
   if (p == 0)
@@ -10108,26 +10136,26 @@ ignore_command (char *args, int from_tty)
    whose numbers are given in ARGS.  */
 
 static void
-map_breakpoint_numbers (char *args, void (*function) (struct breakpoint *))
+map_breakpoint_numbers(const char *args, void (*function)(struct breakpoint *))
 {
-  char *p = args;
-  char *p1;
+  const char *p = args;
+  const char *p1;
   int num;
   struct breakpoint *b, *tmp;
   int match;
 
   if (p == 0)
-    error_no_arg (_("one or more breakpoint numbers"));
+    error_no_arg(_("one or more breakpoint numbers"));
 
   while (*p)
     {
       match = 0;
       p1 = p;
 
-      num = get_number_or_range (&p1);
+      num = get_number_or_range(&p1);
       if (num == 0)
 	{
-	  warning (_("bad breakpoint number at or near '%s'"), p);
+	  warning(_("bad breakpoint number at or near '%s'"), p);
 	}
       else
 	{
@@ -10179,8 +10207,9 @@ disable_breakpoint (struct breakpoint *bpt)
   breakpoint_modify_event (bpt->number);
 }
 
+/* */
 static void
-disable_command (char *args, int from_tty)
+disable_command(const char *args, int from_tty)
 {
   struct breakpoint *bpt;
   if (args == 0)
@@ -10344,7 +10373,7 @@ enable_breakpoint (struct breakpoint *bpt)
    in stopping the inferior.  */
 
 static void
-enable_command (char *args, int from_tty)
+enable_command(const char *args, int from_tty)
 {
   struct breakpoint *bpt;
   struct breakpoint *tmp;
@@ -10386,38 +10415,46 @@ enable_command (char *args, int from_tty)
     map_breakpoint_numbers (args, enable_breakpoint);
 }
 
+/* */
 static void
-enable_once_breakpoint (struct breakpoint *bpt)
+enable_once_breakpoint(struct breakpoint *bpt)
 {
-  do_enable_breakpoint (bpt, disp_disable);
+  do_enable_breakpoint(bpt, disp_disable);
 }
 
+/* */
 static void
-enable_once_command (char *args, int from_tty)
+enable_once_command(const char *args, int from_tty)
 {
-  map_breakpoint_numbers (args, enable_once_breakpoint);
+  map_breakpoint_numbers(args, enable_once_breakpoint);
 }
 
+/* */
 static void
-enable_delete_breakpoint (struct breakpoint *bpt)
+enable_delete_breakpoint(struct breakpoint *bpt)
 {
-  do_enable_breakpoint (bpt, disp_del);
+  do_enable_breakpoint(bpt, disp_del);
 }
 
+/* */
 static void
-enable_delete_command (char *args, int from_tty)
+enable_delete_command(const char *args, int from_tty)
 {
-  map_breakpoint_numbers (args, enable_delete_breakpoint);
+  map_breakpoint_numbers(args, enable_delete_breakpoint);
 }
 
+/* */
 static void
-set_breakpoint_cmd(char *args, int from_tty)
+set_breakpoint_cmd(const char *args ATTRIBUTE_UNUSED,
+		   int from_tty ATTRIBUTE_UNUSED)
 {
   return;
 }
 
+/* */
 static void
-show_breakpoint_cmd(char *args, int from_tty)
+show_breakpoint_cmd(const char *args ATTRIBUTE_UNUSED,
+		    int from_tty ATTRIBUTE_UNUSED)
 {
   return;
 }
@@ -10567,8 +10604,9 @@ write_one_breakpoint(struct breakpoint *b, struct ui_file *stream,
       fputs_unfiltered ("disable $bpnum\n", stream);
 }
 
+/* */
 static void
-save_breakpoints_command (char *arg, int from_tty)
+save_breakpoints_command(const char *arg, int from_tty)
 {
   struct cleanup *cleanups;
   register struct breakpoint *b;
@@ -10717,8 +10755,9 @@ restore_saved_pending_break_support(void *val)
 #endif /* __cplusplus */
 }
 
+/* */
 void
-future_break_command(char *arg, int from_tty)
+future_break_command(const char *arg, int from_tty)
 {
   struct cleanup *wipe = make_cleanup(restore_saved_pending_break_support,
                                       (void *)pending_break_support);

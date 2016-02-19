@@ -469,7 +469,7 @@ maintenance_print_command(const char *arg, int from_tty)
  */
 
 static void
-maintenance_translate_address (char *arg, int from_tty)
+maintenance_translate_address(const char *arg, int from_tty)
 {
   CORE_ADDR address;
   asection *sect;
@@ -478,47 +478,47 @@ maintenance_translate_address (char *arg, int from_tty)
   struct objfile *objfile;
 
   if (arg == NULL || *arg == 0)
-    error (_("requires argument (address or section + address)"));
+    error(_("requires argument (address or section + address)"));
 
   sect = NULL;
-  p = arg;
+  p = (char *)arg;
 
-  if (!isdigit (*p))
+  if (!isdigit(*p))
     {				/* See if we have a valid section name */
-      while (*p && !isspace (*p))	/* Find end of section name */
+      while (*p && !isspace(*p))	/* Find end of section name */
 	p++;
       if (*p == '\000')		/* End of command? */
-	error (_("Need to specify <section-name> and <address>"));
+	error(_("Need to specify <section-name> and <address>"));
       *p++ = '\000';
-      while (isspace (*p))
+      while (isspace(*p))
 	p++;			/* Skip whitespace */
 
-      ALL_OBJFILES (objfile)
+      ALL_OBJFILES(objfile)
       {
-	sect = bfd_get_section_by_name (objfile->obfd, arg);
+	sect = bfd_get_section_by_name(objfile->obfd, arg);
 	if (sect != NULL)
 	  break;
       }
 
       if (!sect)
-	error (_("Unknown section %s."), arg);
+	error(_("Unknown section %s."), arg);
     }
 
-  address = parse_and_eval_address (p);
+  address = parse_and_eval_address(p);
 
   if (sect)
-    sym = lookup_minimal_symbol_by_pc_section (address, sect);
+    sym = lookup_minimal_symbol_by_pc_section(address, sect);
   else
-    sym = lookup_minimal_symbol_by_pc (address);
+    sym = lookup_minimal_symbol_by_pc(address);
 
   if (sym)
-    printf_filtered ("%s+%s\n",
-		     SYMBOL_PRINT_NAME (sym),
-		     paddr_u (address - SYMBOL_VALUE_ADDRESS (sym)));
+    printf_filtered("%s+%s\n",
+		    SYMBOL_PRINT_NAME(sym),
+		    paddr_u(address - SYMBOL_VALUE_ADDRESS(sym)));
   else if (sect)
-    printf_filtered (_("no symbol at %s:0x%s\n"), sect->name, paddr (address));
+    printf_filtered(_("no symbol at %s:0x%s\n"), sect->name, paddr(address));
   else
-    printf_filtered (_("no symbol at 0x%s\n"), paddr (address));
+    printf_filtered(_("no symbol at 0x%s\n"), paddr(address));
 
   return;
 }
@@ -529,7 +529,7 @@ maintenance_translate_address (char *arg, int from_tty)
    offered. */
 
 static void
-maintenance_deprecate (char *args, int from_tty)
+maintenance_deprecate(const char *args, int from_tty)
 {
   if (args == NULL || *args == '\0')
     {
@@ -539,12 +539,11 @@ enclosed in quotes.\n"));
     }
 
   maintenance_do_deprecate (args, 1);
-
 }
 
-
+/* */
 static void
-maintenance_undeprecate (char *args, int from_tty)
+maintenance_undeprecate(const char *args, int from_tty)
 {
   if (args == NULL || *args == '\0')
     {
@@ -553,7 +552,6 @@ the command you want to undeprecate.\n"));
     }
 
   maintenance_do_deprecate (args, 0);
-
 }
 
 /* You really shouldn't be using this. It is just for the testsuite.
@@ -762,7 +760,7 @@ int maint_use_timers = 0;
    is an all or nothing thing.  But we could ass a timer regexp
    or timer list or something and check the timers against that.  */
 static void
-maintenance_interval_display (char *args, int from_tty)
+maintenance_interval_display(const char *args, int from_tty)
 {
   if (args == NULL || *args == '\0')
     printf_unfiltered(_("\"maintenance interval\" takes \"all\", \"off\" or a list of timers.\n"));
@@ -889,7 +887,7 @@ report_timer_internal(struct gdb_timer *timer, int last_interval_p)
 
 /* Report summary times for all timers: */
 static void
-maintenance_report_interval_command(char *args, int is_tty)
+maintenance_report_interval_command(const char *args, int is_tty)
 {
   int i;
   for (i = 0; i < n_timers; i++)

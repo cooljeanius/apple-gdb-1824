@@ -1,6 +1,7 @@
 /* *INDENT-OFF* */ /* THIS FILE IS GENERATED */
+#line 725 "gdbarch.sh"
 
-/* Dynamic architecture support for GDB, the GNU debugger.
+/* gdbarch.[hc]: Dynamic architecture support for GDB, the GNU debugger.
 
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free
    Software Foundation, Inc.
@@ -34,6 +35,7 @@
    to this file, modifying gdbarch.sh and using its output may prove
    easier. */
 
+#line 773 "gdbarch.sh"
 #ifndef GDBARCH_H
 #define GDBARCH_H
 
@@ -89,7 +91,7 @@ extern enum gdb_osabi gdbarch_osabi (struct gdbarch *gdbarch);
 /* Number of bits in a char or unsigned char for the target machine.
    Just like CHAR_BIT in <limits.h> but describes the target machine.
    v:TARGET_CHAR_BIT:int:char_bit::::8 * sizeof (char):8::0:
-
+  
    Number of bits in a short or unsigned short for the target machine. */
 
 extern int gdbarch_short_bit (struct gdbarch *gdbarch);
@@ -197,10 +199,10 @@ extern void set_gdbarch_long_double_format (struct gdbarch *gdbarch, const struc
    address in GDB have the same size and "look the same".  For such a
    target, you need only set TARGET_PTR_BIT / ptr_bit and TARGET_ADDR_BIT
    / addr_bit will be set from it.
-
+  
    If TARGET_PTR_BIT and TARGET_ADDR_BIT are different, you'll probably
    also need to set POINTER_TO_ADDRESS and ADDRESS_TO_POINTER as well.
-
+  
    ptr_bit is the size of a pointer on the target */
 
 extern int gdbarch_ptr_bit (struct gdbarch *gdbarch);
@@ -488,12 +490,11 @@ extern void set_gdbarch_register_type (struct gdbarch *gdbarch, gdbarch_register
 #endif
 #endif
 
-extern int gdbarch_deprecated_register_byte_p(struct gdbarch *gdbarch)
-  ATTRIBUTE_DEPRECATED;
-#if !defined(GDB_TM_FILE) && defined(DEPRECATED_REGISTER_BYTE_P)
-# error "Non multi-arch definition of DEPRECATED_REGISTER_BYTE"
-#endif /* !GDB_TM_FILE && DEPRECATED_REGISTER_BYTE_P */
-#if !defined(DEPRECATED_REGISTER_BYTE_P)
+extern int gdbarch_deprecated_register_byte_p (struct gdbarch *gdbarch);
+#if !defined (GDB_TM_FILE) && defined (DEPRECATED_REGISTER_BYTE_P)
+#error "Non multi-arch definition of DEPRECATED_REGISTER_BYTE"
+#endif
+#if !defined (DEPRECATED_REGISTER_BYTE_P)
 #define DEPRECATED_REGISTER_BYTE_P() (gdbarch_deprecated_register_byte_p (current_gdbarch))
 #endif
 
@@ -1221,10 +1222,10 @@ extern void set_gdbarch_smash_text_address (struct gdbarch *gdbarch, gdbarch_sma
 
 /* FIXME/cagney/2001-01-18: This should be split in two.  A target method that indicates if
    the target needs software single step.  An ISA method to implement it.
-
+  
    FIXME/cagney/2001-01-18: This should be replaced with something that inserts breakpoints
    using the breakpoint system instead of blatting memory directly (as with rs6000).
-
+  
    FIXME/cagney/2001-01-18: The logic is backwards.  It should be asking if the target can
    single step.  If not, then implement single step using breakpoints. */
 
@@ -1295,8 +1296,8 @@ extern void set_gdbarch_skip_solib_resolver (struct gdbarch *gdbarch, gdbarch_sk
 
 /* Some systems also have trampoline code for returning from shared libs. */
 
-typedef int (gdbarch_in_solib_return_trampoline_ftype) (CORE_ADDR pc, char *name);
-extern int gdbarch_in_solib_return_trampoline (struct gdbarch *gdbarch, CORE_ADDR pc, char *name);
+typedef int (gdbarch_in_solib_return_trampoline_ftype) (CORE_ADDR pc, const char *name);
+extern int gdbarch_in_solib_return_trampoline (struct gdbarch *gdbarch, CORE_ADDR pc, const char *name);
 extern void set_gdbarch_in_solib_return_trampoline (struct gdbarch *gdbarch, gdbarch_in_solib_return_trampoline_ftype *in_solib_return_trampoline);
 #if !defined (GDB_TM_FILE) && defined (IN_SOLIB_RETURN_TRAMPOLINE)
 #error "Non multi-arch definition of IN_SOLIB_RETURN_TRAMPOLINE"
@@ -1475,6 +1476,7 @@ extern void set_gdbarch_regset_from_core_section (struct gdbarch *gdbarch, gdbar
 typedef int (gdbarch_adjust_ehframe_regnum_ftype) (struct gdbarch *gdbarch, int regnum, int eh_frame_p);
 extern int gdbarch_adjust_ehframe_regnum (struct gdbarch *gdbarch, int regnum, int eh_frame_p);
 extern void set_gdbarch_adjust_ehframe_regnum (struct gdbarch *gdbarch, gdbarch_adjust_ehframe_regnum_ftype *adjust_ehframe_regnum);
+#line 920 "gdbarch.sh"
 
 extern struct gdbarch_tdep *gdbarch_tdep (struct gdbarch *gdbarch);
 
@@ -1494,7 +1496,7 @@ extern struct gdbarch_tdep *gdbarch_tdep (struct gdbarch *gdbarch);
    Pragmatics:
 
    Previously, a single TARGET_ARCHITECTURE_HOOK was provided.  It
-   didn't scale.
+   did NOT scale.
 
    The more traditional mega-struct containing architecture specific
    data for all the various GDB components was also considered.  Since
@@ -1566,7 +1568,9 @@ typedef struct gdbarch *(gdbarch_init_ftype) (struct gdbarch_info info, struct g
 typedef void (gdbarch_dump_tdep_ftype) (struct gdbarch *gdbarch, struct ui_file *file);
 
 /* DEPRECATED - use gdbarch_register() */
-extern void register_gdbarch_init (enum bfd_architecture architecture, gdbarch_init_ftype *);
+extern void register_gdbarch_init(enum bfd_architecture architecture,
+				  gdbarch_init_ftype *)
+  ATTRIBUTE_DEPRECATED_FOR(gdbarch_register);
 
 extern void gdbarch_register (enum bfd_architecture architecture,
                               gdbarch_init_ftype *,
@@ -1674,7 +1678,7 @@ extern void deprecated_set_gdbarch_data (struct gdbarch *gdbarch,
 
 extern void *gdbarch_data (struct gdbarch *gdbarch, struct gdbarch_data *);
 
-
+#line 1122 "gdbarch.sh"
 
 /* Register per-architecture memory region.
 
@@ -1689,10 +1693,12 @@ extern void *gdbarch_data (struct gdbarch *gdbarch, struct gdbarch_data *);
    New code should use gdbarch_data_register_*(). */
 
 typedef void (gdbarch_swap_ftype) (void);
-extern void deprecated_register_gdbarch_swap (void *data, unsigned long size, gdbarch_swap_ftype *init);
-#define DEPRECATED_REGISTER_GDBARCH_SWAP(VAR) deprecated_register_gdbarch_swap (&(VAR), sizeof ((VAR)), NULL)
+extern void deprecated_register_gdbarch_swap(void *data, unsigned long size,
+					     gdbarch_swap_ftype *init)
+  ATTRIBUTE_DEPRECATED;
+#define DEPRECATED_REGISTER_GDBARCH_SWAP(VAR) deprecated_register_gdbarch_swap(&(VAR), sizeof((VAR)), NULL)
 
-
+#line 1142 "gdbarch.sh"
 
 /* Set the dynamic target-system-dependent parameters (architecture,
    byte-order, ...) using information found in the BFD */
@@ -1710,4 +1716,6 @@ extern int gdbarch_debug;
 
 extern void gdbarch_dump (struct gdbarch *gdbarch, struct ui_file *file);
 
-#endif
+#endif /* !GDBARCH_H */
+
+/* End of gdbarch.h */

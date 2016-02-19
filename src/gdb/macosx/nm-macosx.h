@@ -90,7 +90,7 @@ int macosx_remove_watchpoint (CORE_ADDR addr, size_t len, int type);
 #endif /* MACOSX_ACTUAL_HARDWARE_WATCHPOINTS_ARE_SUPPORTED */
 
 
-char **macosx_process_completer (char *text, char *word);
+char **macosx_process_completer(const char *text, char *word);
 #define PROCESS_COMPLETER \
   macosx_process_completer
 

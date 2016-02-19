@@ -1,6 +1,6 @@
 /* Traverse a file hierarchy.
 
-   Copyright (C) 2004-2015 Free Software Foundation, Inc.
+   Copyright (C) 2004-2016 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@ static char sccsid[] = "@(#)fts.c       8.6 (Berkeley) 8/14/94";
 #include <errno.h>
 #include <stdalign.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -664,6 +665,7 @@ fts_close (FTS *sp)
 # define S_MAGIC_TMPFS 0x1021994
 # define S_MAGIC_NFS 0x6969
 # define S_MAGIC_REISERFS 0x52654973
+# define S_MAGIC_XFS 0x58465342
 # define S_MAGIC_PROC 0x9FA0
 
 /* Return false if it is easy to determine the file system type of
@@ -719,13 +721,20 @@ leaf_optimization_applies (int dir_fd)
       /* List here the file system types that lack usable dirent.d_type
          info, yet for which the optimization does apply.  */
     case S_MAGIC_REISERFS:
+    case S_MAGIC_XFS:
       return true;
 
+      /* Explicitly list here any other file system type for which the
+         optimization is not applicable, but need documentation.  */
+    case S_MAGIC_NFS:
+      /* NFS provides usable dirent.d_type but not necessarily for all entries
+         of large directories, so as per <https://bugzilla.redhat.com/1252549>
+         NFS should return true.  However st_nlink values are not accurate on
+         all implementations as per <https://bugzilla.redhat.com/1299169>.  */
+      /* fall through */
     case S_MAGIC_PROC:
-      /* Explicitly listing this or any other file system type for which
-         the optimization is not applicable is not necessary, but we leave
-         it here to document the risk.  Per http://bugs.debian.org/143111,
-         /proc may have bogus stat.st_nlink values.  */
+      /* Per <http://bugs.debian.org/143111> /proc may have
+         bogus stat.st_nlink values.  */
       /* fall through */
     default:
       return false;
@@ -1907,12 +1916,16 @@ fts_alloc (FTS *sp, const char *name, register size_t namelen)
          * structure and the file name in one chunk.
          */
         len = offsetof(FTSENT, fts_name) + namelen + 1;
-        /* Round the allocation up so it has the same alignment as FTSENT,
+        /* Align the allocation size so that it works for FTSENT,
            so that trailing padding may be referenced by direct access
            to the flexible array members, without triggering undefined behavior
            by accessing bytes beyond the heap allocation.  This implicit access
-           was seen for example with ISDOT() and GCC 5.1.1 at -O2.  */
-        len = (len + alignof(FTSENT) - 1) & ~(alignof(FTSENT) - 1);
+           was seen for example with ISDOT() and GCC 5.1.1 at -O2.
+           Do not use alignof (FTSENT) here, since C11 prohibits
+           taking the alignment of a structure containing a flexible
+           array member.  */
+        len += alignof (max_align_t) - 1;
+        len &= ~ (alignof (max_align_t) - 1);
         if ((p = malloc(len)) == NULL)
                 return (NULL);
 

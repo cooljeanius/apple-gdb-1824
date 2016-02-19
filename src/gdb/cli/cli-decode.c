@@ -119,7 +119,7 @@ cmd_type(struct cmd_list_element *cmd)
 /* FIXME: needs comment: */
 void
 set_cmd_completer(struct cmd_list_element *cmd,
-		  char **(*completer)(char *text, char *word))
+		  char **(*completer)(const char *text, char *word))
 {
   cmd->completer = completer; /* Ok.  */
 }
@@ -1444,16 +1444,16 @@ lookup_cmd_composition(const char *text, struct cmd_list_element **alias,
    "oobar"; if WORD is "baz/foo", return "baz/foobar".  */
 
 char **
-complete_on_cmdlist (struct cmd_list_element *list, char *text, char *word)
+complete_on_cmdlist(struct cmd_list_element *list, const char *text, char *word)
 {
   struct cmd_list_element *ptr;
   char **matchlist;
-  int sizeof_matchlist;
+  size_t sizeof_matchlist;
   int matches;
-  int textlen = strlen (text);
+  size_t textlen = strlen(text);
 
-  sizeof_matchlist = 10;
-  matchlist = (char **) xmalloc (sizeof_matchlist * sizeof (char *));
+  sizeof_matchlist = 10UL;
+  matchlist = (char **)xmalloc(sizeof_matchlist * sizeof(char *));
   matches = 0;
 
   for (ptr = list; ptr; ptr = ptr->next)
@@ -1462,7 +1462,7 @@ complete_on_cmdlist (struct cmd_list_element *list, char *text, char *word)
 	&& (ptr->func
 	    || ptr->prefixlist))
       {
-	if (matches == sizeof_matchlist)
+	if (matches == (int)sizeof_matchlist)
 	  {
 	    sizeof_matchlist *= 2;
 	    matchlist = (char **) xrealloc ((char *) matchlist,
@@ -1515,25 +1515,23 @@ complete_on_cmdlist (struct cmd_list_element *list, char *text, char *word)
    "oobar"; if WORD is "baz/foo", return "baz/foobar".  */
 
 char **
-complete_on_enum (const char *enumlist[],
-		  char *text,
-		  char *word)
+complete_on_enum(const char *enumlist[], const char *text, char *word)
 {
   char **matchlist;
-  int sizeof_matchlist;
+  size_t sizeof_matchlist;
   int matches;
-  int textlen = strlen (text);
+  size_t textlen = strlen(text);
   int i;
   const char *name;
 
-  sizeof_matchlist = 10;
-  matchlist = (char **) xmalloc (sizeof_matchlist * sizeof (char *));
+  sizeof_matchlist = 10UL;
+  matchlist = (char **)xmalloc(sizeof_matchlist * sizeof(char *));
   matches = 0;
 
   for (i = 0; (name = enumlist[i]) != NULL; i++)
     if (strncmp (name, text, textlen) == 0)
       {
-	if (matches == sizeof_matchlist)
+	if (matches == (int)sizeof_matchlist)
 	  {
 	    sizeof_matchlist *= 2;
 	    matchlist = (char **) xrealloc ((char *) matchlist,

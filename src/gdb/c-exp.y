@@ -1463,7 +1463,7 @@ yylex(void)
   prev_lexptr = lexptr;
   unquoted_expr = 1;
 
-  tokstart = lexptr;
+  tokstart = (char *)lexptr;
   /* See if it is a special token of length 3.  */
   for (i = 0; i < (sizeof(tokentab3) / sizeof(tokentab3[0])); i++)
     if (strncmp(tokstart, tokentab3[i].coperator, 3) == 0)

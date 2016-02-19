@@ -1081,7 +1081,7 @@ yylex(void)
 
   prev_lexptr = lexptr;
 
-  tokstart = lexptr;
+  tokstart = (char *)lexptr;
   explen = strlen(lexptr);
   /* See if it is a special token of length 3.  */
   if (explen > 2)
@@ -1536,8 +1536,8 @@ yylex(void)
 	     distinction) named x, then this code incorrectly thinks we
 	     are dealing w/nested types rather than a member function.  */
 
-	  char *p;
-	  char *namestart;
+	  const char *p;
+	  const char *namestart;
 	  struct symbol *best_sym;
 
 	  /* Look ahead to detect nested types.  This probably should be

@@ -138,7 +138,7 @@ extern void write_exp_msymbol(struct minimal_symbol *,
 extern void write_dollar_variable(struct stoken str);
 
 extern struct symbol *parse_nested_classes_for_hpacc(char *, int, char **,
-						     int *, char **);
+						     int *, const char **);
 
 extern char *find_template_name_end(char *);
 
@@ -178,11 +178,11 @@ extern void null_post_parser(struct expression **, int);
 /* During parsing of a C expression, the pointer to the next character
    is in this variable.  */
 
-extern char *lexptr;
+extern const char *lexptr;
 
 /* After a token has been recognized, this variable points to it.
    Currently used only for error reporting.  */
-extern char *prev_lexptr;
+extern const char *prev_lexptr;
 
 /* Tokens that refer to names do so with explicit pointer and length,
    so they can share the storage that lexptr is parsing.

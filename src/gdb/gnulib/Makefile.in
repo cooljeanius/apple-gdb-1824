@@ -713,11 +713,12 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-silent-rules
 # This is ensured by the applicability 'all' defined above.
 BUILT_SOURCES = link-warning.h $(STDINT_H) string.h $(WCHAR_H) \
 	alignof.h chdir-long.c dosname.h error.c exitfail.h fcntl.c \
-	fdopendir.c float+.h fnmatch_loop.c fnmatch.c fnmatch.h fts.c \
-	gettext.h gettimeofday.c isnan.c isnanl.c iswctype.c lstat.c \
-	mbrtowc.c mbsinit.c mbsrtowcs.c mbsrtowcs-state.c mempcpy.c \
-	memrchr.c obstack.c obstack.h open.c openat.c openat-proc.c \
-	readlink.c secure_getenv.c stat.c strerror.c strerror_r.c \
+	fdopendir.c float+.h fnmatch_loop.c fnmatch.c fnmatch.h \
+	fstatat.c fts.c getcwd.c getcwd-lgpl.c gettext.h \
+	gettimeofday.c isnan.c isnanl.c iswctype.c lstat.c mbrtowc.c \
+	mbsinit.c mbsrtowcs.c mbsrtowcs-state.c mempcpy.c memrchr.c \
+	obstack.c obstack.h open.c openat.c openat-proc.c readlink.c \
+	secure_getenv.c stat.c strerror.c strerror_r.c \
 	strerror-override.c strnlen.c strstr.c unlink.c wcsncasecmp.c \
 	wcsncasecmp-impl.h
 SUFFIXES = 
@@ -726,7 +727,8 @@ MOSTLYCLEANFILES = core *.stackdump link-warning.h link-warning.h-t \
 MOSTLYCLEANDIRS = 
 CLEANFILES = 
 DISTCLEANFILES = .DS_Store *~ import/.DS_Store import/*~ m4/.DS_Store \
-	m4/*~ import/extra/.DS_Store import/extra/*~ import/m4/*~ \
+	m4/*~ import/extra/.DS_Store import/extra/*~ \
+	import/extra/snippet/*~ import/m4/*~ import/uniwidth/*~ \
 	Makefile*orig libgnu.log libgnu.sum config.log config.h \
 	config.status stamp-h1
 MAINTAINERCLEANFILES = autoscan*.log configure.scan
@@ -1402,7 +1404,16 @@ fnmatch.h: import/fnmatch.h
 import/fnmatch.h: import/fnmatch.in.h
 	$(MAKE) -C import fnmatch.h
 
+fstatat.c: import/fstatat.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
 fts.c: import/fts.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+getcwd.c: import/getcwd.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+getcwd-lgpl.c: import/getcwd-lgpl.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 gettext.h: import/gettext.h

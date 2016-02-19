@@ -239,7 +239,10 @@ extern int catch_errors(catch_errors_ftype *, void *, const char *,
 /* Template to catch_errors() that wraps calls to command
    functions. */
 
-typedef void (catch_command_errors_ftype) (char *, int);
-extern int catch_command_errors (catch_command_errors_ftype *func, char *command, int from_tty, return_mask);
+typedef void (catch_command_errors_ftype)(const char *, int);
+extern int catch_command_errors(catch_command_errors_ftype *func, char *command,
+				int from_tty, return_mask);
 
-#endif
+#endif /* !EXCEPTIONS_H */
+
+/* EOF */

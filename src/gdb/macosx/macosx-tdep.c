@@ -493,7 +493,7 @@ macosx_record_symbols_from_sect_p(bfd *abfd, unsigned char macho_type ATTRIBUTE_
 /* */
 int ATTRIBUTE_CONST
 macosx_in_solib_return_trampoline(CORE_ADDR pc ATTRIBUTE_UNUSED,
-                                  char *name ATTRIBUTE_UNUSED)
+                                  const char *name ATTRIBUTE_UNUSED)
 {
   return 0;
 }
@@ -646,7 +646,7 @@ macosx_get_current_exception_event(void)
   struct frame_info *fi;
   CORE_ADDR pc;
   int stop_func_found;
-  char *stop_name;
+  const char *stop_name;
   char *typeinfo_str;
 
   if (exception_event == NULL)
@@ -660,7 +660,7 @@ macosx_get_current_exception_event(void)
   if (!curr_frame)
     return (struct exception_event_record *)NULL;
 
-  pc = get_frame_pc (curr_frame);
+  pc = get_frame_pc(curr_frame);
   stop_func_found = find_pc_partial_function(pc, &stop_name, NULL, NULL);
   if (!stop_func_found)
     return (struct exception_event_record *)NULL;
@@ -2499,26 +2499,24 @@ generic_mach_o_osabi_sniffer(bfd *abfd, enum bfd_architecture arch,
    are done, and -1 if there was an error.  Note, this is separate
    from COUNT, since you can reach main before you exceed
    COUNT_LIMIT. */
-
 int
-fast_show_stack_trace_prologue (unsigned int count_limit,
-				unsigned int print_start,
-				unsigned int print_end,
-				unsigned int wordsize,
-				CORE_ADDR *sigtramp_start_ptr,
-				CORE_ADDR *sigtramp_end_ptr,
-				unsigned int *count,
-				struct frame_info **out_fi,
-				void (print_fun) (struct ui_out * uiout, int *frame_num,
-						  CORE_ADDR pc, CORE_ADDR fp))
+fast_show_stack_trace_prologue(unsigned int count_limit,
+			       unsigned int print_start,
+			       unsigned int print_end, unsigned int wordsize,
+			       CORE_ADDR *sigtramp_start_ptr,
+			       CORE_ADDR *sigtramp_end_ptr, unsigned int *count,
+			       struct frame_info **out_fi,
+			       void (print_fun)(struct ui_out *uiout,
+						int *frame_num, CORE_ADDR pc,
+						CORE_ADDR fp))
 {
-  ULONGEST pc = 0;
+  ULONGEST pc = 0UL;
   struct frame_id selected_frame_id;
   struct frame_info *selected_frame;
 
   if (*sigtramp_start_ptr == 0)
     {
-      char *name;
+      const char *name;
       struct minimal_symbol *msymbol;
       struct objfile *ofile;
       struct objfile *temp;
@@ -2584,7 +2582,7 @@ fast_show_stack_trace_prologue (unsigned int count_limit,
                   *sigtramp_end_ptr = (CORE_ADDR)-1;
                 }
               else
-                  break;
+		break;
             }
         }
     }

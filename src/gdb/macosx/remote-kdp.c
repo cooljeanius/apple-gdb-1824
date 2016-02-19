@@ -215,7 +215,7 @@ extern int set_arm_single_step_mode(struct gdbarch *, int);
 #endif /* KDP_TARGET_ARM */
 
 static void
-kdp_open(char *name, int from_tty)
+kdp_open(const char *name, int from_tty)
 {
   push_target(&kdp_ops);
   /* KDP cannot do inferior function calls: */
@@ -589,9 +589,9 @@ kdp_uuid_and_load_addr(void)
   }
 }
 
-
+/* */
 static void
-kdp_attach(char *args, int from_tty)
+kdp_attach(const char *args, int from_tty)
 {
   kdp_return_t kdpret, kdpret2;
   unsigned int old_seqno, old_exc_seqno;
@@ -602,7 +602,7 @@ kdp_attach(char *args, int from_tty)
     }
 
   {
-    char *s = args;
+    const char *s = args;
     while ((*s != '\0') && isspace(*s))
       {
         s++;
@@ -1974,10 +1974,11 @@ kdp_kill(void)
   kdp_detach("", 0);
 }
 
+/* */
 static void ATTR_NORETURN
-kdp_load(char *args, int from_tty)
+kdp_load(const char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
-  error("unsupported operation kdp_load");
+  error(_("unsupported operation kdp_load"));
 }
 
 static void ATTR_NORETURN

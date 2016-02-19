@@ -64,7 +64,7 @@ int xdb_commands = 0;
 int dbx_commands = 0;
 
 /* System root path, used to find libraries etc.  */
-char *gdb_sysroot = 0;
+const char *gdb_sysroot = (const char *)0;
 
 struct ui_file *gdb_stdout;
 struct ui_file *gdb_stderr;
@@ -373,7 +373,9 @@ captured_main(void *data)
 	    cdarg = optarg;
 	    break;
 	  case OPT_ANNOTATE:
-	    /* FIXME: what if the syntax is wrong (e.g. not digits)?  */
+	    if (!isdigit(optarg[0])) {
+	      ; /* FIXME: what if the syntax is wrong (e.g. not digits)?  */
+	    }
 	    annotation_level = atoi(optarg);
 	    break;
 	  case OPT_STATISTICS:

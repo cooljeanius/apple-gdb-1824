@@ -3190,7 +3190,7 @@ do_check_is_thread_unsafe(void *argptr)
   while (frame_relative_level(fi) < args->stack_depth)
     {
       CORE_ADDR pc;
-      char *sym_name;
+      const char *sym_name;
 
       pc = get_frame_pc(fi);
 

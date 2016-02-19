@@ -152,7 +152,7 @@ struct vmap *vmap;
 
 /* */
 void
-exec_open(char *args, int from_tty)
+exec_open(const char *args, int from_tty)
 {
   target_preopen(from_tty);
   exec_file_attach(args, from_tty);
@@ -261,13 +261,12 @@ solib_add_stub(PTR from_ttyp)
    ARGS is assumed to be the filename. */
 
 void
-exec_file_attach (char *filename, int from_tty)
+exec_file_attach(const char *filename, int from_tty)
 {
-  /* Remove any previous exec file.  */
-  unpush_target (&exec_ops);
+  /* Remove any previous exec file: */
+  unpush_target(&exec_ops);
 
-  /* Now open and digest the file the user requested, if any.  */
-
+  /* Now open and digest the file the user requested, if any: */
   if (!filename)
     {
       if (from_tty)

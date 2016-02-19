@@ -61,13 +61,13 @@ static ptid_t child_wait(ptid_t, struct target_waitstatus *,
                          gdb_client_data client_data);
 #endif /* CHILD_WAIT */
 
-static void child_open(char *, int);
+static void child_open(const char *, int);
 
 static void child_files_info(struct target_ops *);
 
 static void child_detach(const char *, int);
 
-static void child_attach(char *, int);
+static void child_attach(const char *, int);
 
 #if !defined(CHILD_POST_ATTACH)
 extern void child_post_attach(int);
@@ -184,17 +184,17 @@ child_thread_alive(ptid_t ptid)
 
 /* Attach to process PID, then initialize for debugging it: */
 static void
-child_attach(char *args, int from_tty)
+child_attach(const char *args, int from_tty)
 {
   char *exec_file;
   int pid;
-  char *dummy;
+  const char *dummy;
 
   if (!args)
     error_no_arg(_("process-id to attach"));
 
   dummy = args;
-  pid = strtol(args, &dummy, 0);
+  pid = strtol(args, (char **)&dummy, 0);
   /* Some targets do NOT set errno on errors, grrr! */
   if ((pid == 0) && (args == dummy))
     error(_("Illegal process-id: %s."), args);
@@ -290,7 +290,7 @@ child_files_info(struct target_ops *ignore)
 }
 
 static void ATTR_NORETURN
-child_open(char *arg ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
+child_open(const char *arg ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
   error(_("Use the \"run\" command to start a Unix child process."));
 }

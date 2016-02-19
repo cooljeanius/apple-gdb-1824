@@ -88,26 +88,26 @@
 # define PROCESS_COMPLETER noop_completer
 #endif /* !PROCESS_COMPLETER */
 
-extern char **process_completer(char *, char *);
+extern char **process_completer(const char *, char *);
 /* APPLE LOCAL end process completer */
 
 /* Functions exported for general use, in inferior.h: */
 
-void all_registers_info(char *, int);
+void all_registers_info(const char *, int);
 
-void registers_info(char *, int);
+void registers_info(const char *, int);
 
-void nexti_command(char *, int);
+void nexti_command(const char *, int);
 
-void stepi_command(char *, int);
+void stepi_command(const char *, int);
 
-void continue_command(char *, int);
+void continue_command(const char *, int);
 
-void interrupt_target_command(char *args, int from_tty);
+void interrupt_target_command(const char *args, int from_tty);
 
 /* Local functions: */
 
-static void nofp_registers_info(char *, int);
+static void nofp_registers_info(const char *, int);
 
 static void print_return_value(int struct_return, struct type *value_type);
 
@@ -115,40 +115,40 @@ static void finish_command_continuation(struct continuation_arg *);
 
 static void until_next_command(int);
 
-static void until_command(char *, int);
+static void until_command(const char *, int);
 
-static void path_info(char *, int);
+static void path_info(const char *, int);
 
-static void path_command(char *, int);
+static void path_command(const char *, int);
 
-static void unset_command(char *, int);
+static void unset_command(const char *, int);
 
-static void float_info(char *, int);
+static void float_info(const char *, int);
 
-static void detach_command(char *, int);
+static void detach_command(const char *, int);
 
-static void disconnect_command(char *, int);
+static void disconnect_command(const char *, int);
 
-static void unset_environment_command(char *, int);
+static void unset_environment_command(const char *, int);
 
-static void set_environment_command(char *, int);
+static void set_environment_command(const char *, int);
 
-static void environment_info(char *, int);
+static void environment_info(const char *, int);
 
-static void program_info(char *, int);
+static void program_info(const char *, int);
 
 /* APPLE LOCAL pid info */
-void pid_info(char *, int);
+void pid_info(const char *, int);
 
-static void finish_command(char *, int);
+static void finish_command(const char *, int);
 
-static void signal_command(char *, int);
+static void signal_command(const char *, int);
 
-static void jump_command(char *, int);
+static void jump_command(const char *, int);
 
-static void step_1(int, int, char *);
-static void step_1_inlining(int, int, char *);
-static void step_1_no_inlining(int, int, char *);
+static void step_1(int, int, const char *);
+static void step_1_inlining(int, int, const char *);
+static void step_1_no_inlining(int, int, const char *);
 /* APPLE LOCAL make step_once globally visible */
 static void step_1_continuation(struct continuation_arg *arg);
 
@@ -158,17 +158,17 @@ void re_exec_1_continuation(struct continuation_arg *arg);
 void re_exec_once(int count);
 /* APPLE LOCAL end checkpoints */
 
-static void next_command(char *, int);
+static void next_command(const char *, int);
 
-static void step_command(char *, int);
+static void step_command(const char *, int);
 
-static void run_command(char *, int);
+static void run_command(const char *, int);
 
-static void run_no_args_command(char *args, int from_tty);
+static void run_no_args_command(const char *args, int from_tty);
 
-static void go_command(char *line_no, int from_tty);
+static void go_command(const char *line_no, int from_tty);
 
-int strip_bg_char(char **);
+int strip_bg_char(const char **);
 
 void _initialize_infcmd(void);
 
@@ -341,9 +341,9 @@ set_inferior_args_vector (int argc, char **argv)
   inferior_argv = argv;
 }
 
-/* Notice when `set args' is run.  */
+/* Notice when `set args' is run: */
 static void
-notice_args_set (char *args, int from_tty, struct cmd_list_element *c)
+notice_args_set(const char *args, int from_tty, struct cmd_list_element *c)
 {
   inferior_argc = 0;
   inferior_argv = 0;
@@ -373,7 +373,7 @@ construct_inferior_arguments (struct gdbarch *gdbarch, int argc, char **argv)
       /* This holds all the characters considered special to the
 	 typical Unix shells.  We include `^' because the SunOS
 	 /bin/sh treats it as a synonym for `|'.  */
-      char *special = "\"!#$&*()\\|[]{}<>?'\"`~^; \t\n";
+      const char *special = "\"!#$&*()\\|[]{}<>?'\"`~^; \t\n";
       int i;
       int length = 0;
       char *out, *cp;
@@ -447,7 +447,7 @@ construct_inferior_arguments (struct gdbarch *gdbarch, int argc, char **argv)
    does nothing and returns 0. */
 /* APPLE LOCAL make globally visible */
 int
-strip_bg_char (char **args)
+strip_bg_char(const char **args)
 {
   char *p = NULL;
 
@@ -472,13 +472,14 @@ strip_bg_char (char **args)
   return 0;
 }
 
+/* */
 void
-tty_command (char *file, int from_tty)
+tty_command(const char *file, int from_tty)
 {
   if (file == 0)
-    error_no_arg (_("terminal name for running target process"));
+    error_no_arg(_("terminal name for running target process"));
 
-  set_inferior_io_terminal (file);
+  set_inferior_io_terminal(file);
 }
 
 /* Kill the inferior if already running.  This function is designed
@@ -511,14 +512,14 @@ Start it from the beginning? "))
    running the program.  */
 
 static void
-run_command_1 (char *args, int from_tty, int tbreak_at_main)
+run_command_1(const char *args, int from_tty, int tbreak_at_main)
 {
   char *exec_file;
 
-  dont_repeat ();
+  dont_repeat();
 
-  kill_if_already_running (from_tty);
-  clear_breakpoint_hit_counts ();
+  kill_if_already_running(from_tty);
+  clear_breakpoint_hit_counts();
 
   /* APPLE LOCAL checkpoints */
   clear_all_checkpoints ();
@@ -573,7 +574,7 @@ run_command_1 (char *args, int from_tty, int tbreak_at_main)
     }
   else
     {
-      int async_exec = strip_bg_char (&args);
+      int async_exec = strip_bg_char(&args);
 
       /* If we get a request for running in the bg but the target
          doesn't support it, error out. */
@@ -645,17 +646,19 @@ run_command_1 (char *args, int from_tty, int tbreak_at_main)
   /* APPLE LOCAL end async */
 }
 
+/* */
 static void
-run_command (char *args, int from_tty)
+run_command(const char *args, int from_tty)
 {
-  run_command_1 (args, from_tty, 0);
+  run_command_1(args, from_tty, 0);
 }
 
+/* */
 static void
-run_no_args_command (char *args, int from_tty)
+run_no_args_command(const char *args, int from_tty)
 {
-  char *old_args = set_inferior_args (xstrdup (""));
-  xfree (old_args);
+  char *old_args = set_inferior_args(xstrdup(""));
+  xfree(old_args);
 }
 
 
@@ -663,7 +666,7 @@ run_no_args_command (char *args, int from_tty)
    program.  */
 
 static void
-start_command (char *args, int from_tty)
+start_command(const char *args, int from_tty)
 {
   /* Some languages such as Ada need to search inside the program
      minimal symbols for the location where to put the temporary
@@ -675,8 +678,9 @@ start_command (char *args, int from_tty)
   run_command_1 (args, from_tty, 1);
 }
 
+/* */
 void
-continue_command (char *proc_count_exp, int from_tty)
+continue_command(const char *proc_count_exp, int from_tty)
 {
   int async_exec = 0;
   ERROR_NO_INFERIOR;
@@ -741,40 +745,39 @@ continue_command (char *proc_count_exp, int from_tty)
   proceed ((CORE_ADDR) -1, TARGET_SIGNAL_DEFAULT, 0);
 }
 
-/* Step until outside of current statement.  */
-
+/* Step until outside of current statement: */
 static void
-step_command (char *count_string, int from_tty)
+step_command(const char *count_string, int from_tty)
 {
-  step_1 (0, 0, count_string);
+  step_1(0, 0, count_string);
 }
 
-/* Likewise, but skip over subroutine calls as if single instructions.  */
-
+/* Likewise, but skip over subroutine calls as if single instructions: */
 static void
-next_command (char *count_string, int from_tty)
+next_command(const char *count_string, int from_tty)
 {
-  step_1 (1, 0, count_string);
+  step_1(1, 0, count_string);
 }
 
-/* Likewise, but step only one instruction.  */
-
+/* Likewise, but step only one instruction: */
 void
-stepi_command (char *count_string, int from_tty)
+stepi_command(const char *count_string, int from_tty)
 {
-  step_1 (0, 1, count_string);
+  step_1(0, 1, count_string);
 }
 
+/* */
 void
-nexti_command (char *count_string, int from_tty)
+nexti_command(const char *count_string, int from_tty)
 {
-  step_1 (1, 1, count_string);
+  step_1(1, 1, count_string);
 }
 
+/* */
 static void
-disable_longjmp_breakpoint_cleanup (void *ignore)
+disable_longjmp_breakpoint_cleanup(void *ignore)
 {
-  disable_longjmp_breakpoint ();
+  disable_longjmp_breakpoint();
 }
 
 /* APPLE LOCAL begin stepping through inlined subroutines  */
@@ -787,19 +790,20 @@ disable_longjmp_breakpoint_cleanup (void *ignore)
    which the user can control with 'set inlined-stepping <on/off>'.  */
 
 static void
-step_1 (int skip_subroutines, int single_inst, char *count_string)
+step_1(int skip_subroutines, int single_inst, const char *count_string)
 {
   if (dwarf2_allow_inlined_stepping)
-    step_1_inlining (skip_subroutines, single_inst, count_string);
+    step_1_inlining(skip_subroutines, single_inst, count_string);
   else
-    step_1_no_inlining (skip_subroutines, single_inst, count_string);
+    step_1_no_inlining(skip_subroutines, single_inst, count_string);
 }
 
 /* This is the original step_1 routine, which will be called if the
    inlined-stepping option is turned off.  */
 
 static void
-step_1_no_inlining(int skip_subroutines, int single_inst, char *count_string)
+step_1_no_inlining(int skip_subroutines, int single_inst,
+		   const char *count_string)
 /* APPLE LOCAL end stepping through inlined subroutines  */
 {
   long count = 1L;
@@ -866,17 +870,18 @@ step_1_no_inlining(int skip_subroutines, int single_inst, char *count_string)
 
 	  if (!single_inst)
 	    {
-	      find_pc_line_pc_range (stop_pc, &step_range_start, &step_range_end);
+	      find_pc_line_pc_range(stop_pc, &step_range_start,
+				    &step_range_end);
 	      if (step_range_end == 0)
 		{
-		  char *name;
-		  if (find_pc_partial_function_no_inlined (stop_pc, &name,
-							   &step_range_start,
-							   &step_range_end) == 0)
-		    error (_("Cannot find bounds of current function"));
+		  const char *name;
+		  if (find_pc_partial_function_no_inlined(stop_pc, &name,
+							  &step_range_start,
+							  &step_range_end) == 0)
+		    error(_("Cannot find bounds of current function"));
 
-		  target_terminal_ours ();
-		  printf_filtered (_("\
+		  target_terminal_ours();
+		  printf_filtered(_("\
 Single stepping until exit from function %s, \n\
 which has no line number information.\n"), name);
 		}
@@ -931,7 +936,7 @@ which has no line number information.\n"), name);
    step_once.  */
 
 static void
-step_1_inlining(int skip_subroutines, int single_inst, char *count_string)
+step_1_inlining(int skip_subroutines, int single_inst, const char *count_string)
 {
   long count = 1L;
   struct frame_info *frame;
@@ -1276,14 +1281,14 @@ step_1_inlining(int skip_subroutines, int single_inst, char *count_string)
 
 		  if (step_range_end == 0)
 		    {
-		      char *name;
-		      if (find_pc_partial_function (stop_pc, &name,
-						    &step_range_start,
-						&step_range_end) == 0)
-			error (_("Cannot find bounds of current function"));
+		      const char *name;
+		      if (find_pc_partial_function(stop_pc, &name,
+						   &step_range_start,
+						   &step_range_end) == 0)
+			error(_("Cannot find bounds of current function"));
 
-		      target_terminal_ours ();
-		      printf_filtered (_("\
+		      target_terminal_ours();
+		      printf_filtered(_("\
 Single stepping until exit from function %s, \n\
 which has no line number information.\n"), name);
 		    }
@@ -1669,13 +1674,14 @@ step_once (int skip_subroutines, int single_inst, int count)
 		}
 	      else if (step_range_end == 0)
 		{
-		  char *name;
-		  if (find_pc_partial_function (stop_pc, &name, &step_range_start,
-						&step_range_end) == 0)
-		    error (_("Cannot find bounds of current function"));
+		  const char *name;
+		  if (find_pc_partial_function(stop_pc, &name,
+					       &step_range_start,
+					       &step_range_end) == 0)
+		    error(_("Cannot find bounds of current function"));
 
-		  target_terminal_ours ();
-		  printf_filtered (_("\
+		  target_terminal_ours();
+		  printf_filtered(_("\
 Single stepping until exit from function %s, \n\
 which has no line number information.\n"), name);
 		}
@@ -1724,7 +1730,7 @@ struct checkpoint *active_checkpoint;
 int magic_flag = 0;
 
 void
-re_execute_command(char *args, int from_tty)
+re_execute_command(const char *args, int from_tty)
 {
   long cpn = (args ? (long)parse_and_eval_long(args) : 1L);
 
@@ -1874,10 +1880,9 @@ re_exec_once (int count)
 /* APPLE LOCAL end checkpoints */
 
 
-/* Continue program at specified address.  */
-
+/* Continue program at specified address: */
 static void
-jump_command (char *arg, int from_tty)
+jump_command(const char *arg, int from_tty)
 {
   CORE_ADDR addr;
   struct symtabs_and_lines sals;
@@ -1969,30 +1974,29 @@ jump_command (char *arg, int from_tty)
 
 /* Go to line or address in current procedure */
 static void
-go_command (char *line_no, int from_tty)
+go_command(const char *line_no, int from_tty)
 {
-  if (line_no == (char *) NULL || !*line_no)
-    printf_filtered (GO_USAGE);
+  if ((line_no == (const char *)NULL) || !*line_no)
+    printf_filtered(GO_USAGE);
   else
     {
-      tbreak_command (line_no, from_tty);
-      jump_command (line_no, from_tty);
+      tbreak_command(line_no, from_tty);
+      jump_command(line_no, from_tty);
     }
 }
 
 
-/* Continue program giving it specified signal.  */
-
+/* Continue program giving it specified signal: */
 static void
-signal_command (char *signum_exp, int from_tty)
+signal_command(const char *signum_exp, int from_tty)
 {
   enum target_signal oursig;
 
-  dont_repeat ();		/* Too dangerous.  */
+  dont_repeat();		/* Too dangerous.  */
   ERROR_NO_INFERIOR;
 
   if (!signum_exp)
-    error_no_arg (_("signal number"));
+    error_no_arg(_("signal number"));
 
   /* It would be even slicker to make signal names be valid expressions,
      (the type could be "enum $signal" or some such), then the user could
@@ -2093,8 +2097,9 @@ until_next_command (int from_tty)
   proceed ((CORE_ADDR) -1, TARGET_SIGNAL_DEFAULT, 1);
 }
 
+/* */
 static void
-until_command (char *arg, int from_tty)
+until_command(const char *arg, int from_tty)
 {
   int async_exec = 0;
 
@@ -2112,20 +2117,21 @@ until_command (char *arg, int from_tty)
 
   /* If we are not asked to run in the bg, then prepare to run in the
      foreground, synchronously. */
-  if (!async_exec && target_can_async_p ())
+  if (!async_exec && target_can_async_p())
     {
-      /* Simulate synchronous execution */
-      async_disable_stdin ();
+      /* Simulate synchronous execution: */
+      async_disable_stdin();
     }
 
   if (arg)
-    until_break_command (arg, from_tty, 0);
+    until_break_command(arg, from_tty, 0);
   else
-    until_next_command (from_tty);
+    until_next_command(from_tty);
 }
 
+/* */
 static void
-advance_command (char *arg, int from_tty)
+advance_command(const char *arg, int from_tty)
 {
   int async_exec = 0;
 
@@ -2146,19 +2152,18 @@ advance_command (char *arg, int from_tty)
 
   /* If we are not asked to run in the bg, then prepare to run in the
      foreground, synchronously.  */
-  if (!async_exec && target_can_async_p ())
+  if (!async_exec && target_can_async_p())
     {
-      /* Simulate synchronous execution.  */
-      async_disable_stdin ();
+      /* Simulate synchronous execution: */
+      async_disable_stdin();
     }
 
-  until_break_command (arg, from_tty, 1);
+  until_break_command(arg, from_tty, 1);
 }
 
-/* Print the result of a function at the end of a 'finish' command.  */
-
+/* Print the result of a function at the end of a 'finish' command: */
 static void
-print_return_value (int struct_return, struct type *value_type)
+print_return_value(int struct_return, struct type *value_type)
 {
   struct gdbarch *gdbarch = current_gdbarch;
   struct cleanup *old_chain;
@@ -2445,7 +2450,7 @@ finish_inlined_subroutine_command(CORE_ADDR inline_end_pc)
    frame will return to, then continue.  */
 
 static void
-finish_command (char *arg, int from_tty)
+finish_command(const char *arg, int from_tty)
 {
   struct symtab_and_line sal;
   struct frame_info *frame;
@@ -2586,9 +2591,9 @@ finish_command (char *arg, int from_tty)
     /* APPLE LOCAL end subroutine inlining  */
 }
 
-
+/* */
 static void
-program_info (char *args, int from_tty)
+program_info(const char *args, int from_tty)
 {
   bpstat bs = stop_bpstat;
   int num = bpstat_num (&bs);
@@ -2637,25 +2642,26 @@ Type \"info stack\" or \"info registers\" for more information.\n"));
 /* APPLE LOCAL: A command to get the inferior's process ID, useful for
    an IDE in some circumstances.  So pid_info() was added.  */
 void
-pid_info (char *args, int from_tty)
+pid_info(const char *args, int from_tty)
 {
   if (!target_has_execution)
     {
-      error ("The program being debugged is not being run.");
+      error(_("The program being debugged is not being run."));
     }
 
-  ui_out_text (uiout, "Inferior has process ID ");
-  ui_out_field_int (uiout, "process-id", PIDGET (inferior_ptid));
-  ui_out_text (uiout, ".\n");
-  ui_out_flush (uiout);
+  ui_out_text(uiout, "Inferior has process ID ");
+  ui_out_field_int(uiout, "process-id", PIDGET(inferior_ptid));
+  ui_out_text(uiout, ".\n");
+  ui_out_flush(uiout);
 }
 
+/* */
 static void
-environment_info (char *var, int from_tty)
+environment_info(const char *var, int from_tty)
 {
   if (var)
     {
-      char *val = get_in_environ (inferior_environ, var);
+      char *val = get_in_environ(inferior_environ, var);
       if (val)
 	{
 	  puts_filtered (var);
@@ -2681,20 +2687,23 @@ environment_info (char *var, int from_tty)
     }
 }
 
+/* */
 static void
-set_environment_command (char *arg, int from_tty)
+set_environment_command(const char *arg, int from_tty)
 {
-  char *p, *val, *var;
+  const char *p;
+  const char *val;
+  char *var;
   int nullset = 0;
 
   if (arg == 0)
-    error_no_arg (_("environment variable and value"));
+    error_no_arg(_("environment variable and value"));
 
-  /* Find seperation between variable name and value */
-  p = (char *) strchr (arg, '=');
-  val = (char *) strchr (arg, ' ');
+  /* Find separation between variable name and value: */
+  p = (const char *)strchr(arg, '=');
+  val = (const char *)strchr(arg, ' ');
 
-  if (p != 0 && val != 0)
+  if ((p != 0) && (val != 0))
     {
       /* We have both a space and an equals.  If the space is before the
          equals, walk forward over the spaces til we see a nonspace
@@ -2718,12 +2727,12 @@ set_environment_command (char *arg, int from_tty)
     {
       nullset = 1;
       if (p == 0)
-	p = arg + strlen (arg);	/* So that savestring below will work */
+	p = (arg + strlen(arg)); /* So that savestring below will work */
     }
   else
     {
       /* Not setting variable value to null */
-      val = p + 1;
+      val = (p + 1);
       while (*val == ' ' || *val == '\t')
 	val++;
     }
@@ -2744,8 +2753,9 @@ Setting environment variable \"%s\" to null value.\n"),
   xfree (var);
 }
 
+/* */
 static void
-unset_environment_command (char *var, int from_tty)
+unset_environment_command(const char *var, int from_tty)
 {
   if (var == 0)
     {
@@ -2766,31 +2776,30 @@ unset_environment_command (char *var, int from_tty)
 static const char path_var_name[] = "PATH";
 
 static void
-path_info (char *args, int from_tty)
+path_info(const char *args, int from_tty)
 {
-  puts_filtered ("Executable and object file path: ");
-  puts_filtered (get_in_environ (inferior_environ, path_var_name));
-  puts_filtered ("\n");
+  puts_filtered("Executable and object file path: ");
+  puts_filtered(get_in_environ(inferior_environ, path_var_name));
+  puts_filtered("\n");
 }
 
-/* Add zero or more directories to the front of the execution path.  */
-
+/* Add zero or more directories to the front of the execution path: */
 static void
-path_command (char *dirname, int from_tty)
+path_command(const char *dirname, int from_tty)
 {
   char *exec_path;
-  char *env;
-  dont_repeat ();
-  env = get_in_environ (inferior_environ, path_var_name);
+  const char *env;
+  dont_repeat();
+  env = get_in_environ(inferior_environ, path_var_name);
   /* Can be null if path is not set */
   if (!env)
     env = "";
-  exec_path = xstrdup (env);
-  mod_path (dirname, &exec_path);
-  set_in_environ (inferior_environ, path_var_name, exec_path);
-  xfree (exec_path);
+  exec_path = xstrdup(env);
+  mod_path(dirname, &exec_path);
+  set_in_environ(inferior_environ, path_var_name, exec_path);
+  xfree(exec_path);
   if (from_tty)
-    path_info ((char *) NULL, from_tty);
+    path_info((char *)NULL, from_tty);
 }
 
 
@@ -2899,12 +2908,15 @@ default_print_registers_info (struct gdbarch *gdbarch,
     }
 }
 
+/* */
 void
-registers_info (char *addr_exp, int fpregs)
+registers_info(const char *addr_exp, int fpregs)
 {
   /* APPLE LOCAL begin eliminate unused variable warnings  */
-  /* int regnum, numregs;  */
-  /* char *end; */
+#ifdef ALLOW_UNUSED_VARIABLES
+  int regnum, numregs;
+  char *end;
+#endif /* ALLOW_UNUSED_VARIABLES */
   /* APPLE LOCAL end eliminate unused variable warnings  */
 
   if (!target_has_registers)
@@ -2921,7 +2933,7 @@ registers_info (char *addr_exp, int fpregs)
 
   while (*addr_exp != '\0')
     {
-      char *start;
+      const char *start;
       const char *end;
 
       /* Keep skipping leading white space.  */
@@ -3005,21 +3017,24 @@ registers_info (char *addr_exp, int fpregs)
     }
 }
 
+/* */
 void
-all_registers_info (char *addr_exp, int from_tty)
+all_registers_info(const char *addr_exp, int from_tty)
 {
-  registers_info (addr_exp, 1);
+  registers_info(addr_exp, 1);
 }
 
+/* */
 static void
-nofp_registers_info (char *addr_exp, int from_tty)
+nofp_registers_info(const char *addr_exp, int from_tty)
 {
-  registers_info (addr_exp, 0);
+  registers_info(addr_exp, 0);
 }
 
+/* */
 static void
-print_vector_info (struct gdbarch *gdbarch, struct ui_file *file,
-		   struct frame_info *frame, const char *args)
+print_vector_info(struct gdbarch *gdbarch, struct ui_file *file,
+		  struct frame_info *frame, const char *args)
 {
   if (!target_has_registers)
     error (_("The program has no registers now."));
@@ -3046,10 +3061,12 @@ print_vector_info (struct gdbarch *gdbarch, struct ui_file *file,
     }
 }
 
+/* */
 static void
-vector_info (char *args, int from_tty)
+vector_info(const char *args, int from_tty)
 {
-  print_vector_info (current_gdbarch, gdb_stdout, deprecated_selected_frame, args);
+  print_vector_info(current_gdbarch, gdb_stdout, deprecated_selected_frame,
+		    args);
 }
 
 
@@ -3070,12 +3087,12 @@ vector_info (char *args, int from_tty)
    and wait for the trace-trap that results from attaching.  */
 
 void
-attach_command (char *args, int from_tty)
+attach_command(const char *args, int from_tty)
 {
   char *exec_file;
   char *full_exec_path = NULL;
 
-  dont_repeat ();		/* Not for the faint of heart */
+  dont_repeat();		/* Not for the faint of heart */
 
   if (target_has_execution)
     {
@@ -3102,10 +3119,10 @@ attach_command (char *args, int from_tty)
      Cannot access memory at address 0xdeadbeef
   */
 #ifdef CLEAR_SOLIB
-      CLEAR_SOLIB ();
+      CLEAR_SOLIB();
 #else
-      clear_solib ();
-#endif
+      clear_solib();
+#endif /* CLEAR_SOLIB */
 
   /* APPLE LOCAL checkpoints */
   clear_all_checkpoints ();
@@ -3131,7 +3148,7 @@ attach_command (char *args, int from_tty)
   stop_soon = STOP_QUIETLY_NO_SIGSTOP;
   wait_for_inferior ();
   stop_soon = NO_STOP_QUIETLY;
-#endif
+#endif /* !ATTACH_NO_WAIT */
 
   /*
    * If no exec file is yet known, try to determine it from the
@@ -3169,7 +3186,7 @@ attach_command (char *args, int from_tty)
   SOLIB_ADD ((char *) 0, from_tty, &current_target, auto_solib_add);
 #else
   solib_add (NULL, from_tty, &current_target, auto_solib_add);
-#endif
+#endif /* SOLIB_ADD */
   /* APPLE LOCAL control breakpoint re-enable messages */
   re_enable_breakpoints_in_shlibs (0);
 
@@ -3196,15 +3213,14 @@ attach_command (char *args, int from_tty)
  * previously attached.  It *might* work if the program was
  * started via the normal ptrace (PTRACE_TRACEME).
  */
-
 static void
-detach_command (char *args, int from_tty)
+detach_command(const char *args, int from_tty)
 {
-  dont_repeat ();		/* Not for the faint of heart.  */
-  target_detach (args, from_tty);
+  dont_repeat();		/* Not for the faint of heart.  */
+  target_detach(args, from_tty);
 #if defined(SOLIB_RESTART)
-  SOLIB_RESTART ();
-#endif
+  SOLIB_RESTART();
+#endif /* SOLIB_RESTART */
   if (deprecated_detach_hook)
     deprecated_detach_hook ();
 }
@@ -3218,32 +3234,33 @@ detach_command (char *args, int from_tty)
    stopped processes on some native platforms (e.g. GNU/Linux).  */
 
 static void
-disconnect_command (char *args, int from_tty)
+disconnect_command(const char *args, int from_tty)
 {
-  dont_repeat ();		/* Not for the faint of heart */
-  target_disconnect (args, from_tty);
+  dont_repeat();		/* Not for the faint of heart */
+  target_disconnect(args, from_tty);
 #if defined(SOLIB_RESTART)
-  SOLIB_RESTART ();
-#endif
+  SOLIB_RESTART();
+#endif /* SOLIB_RESTART */
   if (deprecated_detach_hook)
-    deprecated_detach_hook ();
+    deprecated_detach_hook();
 }
 
 /* Stop the execution of the target while running in async mode, in
    the backgound. */
 void
-interrupt_target_command (char *args, int from_tty)
+interrupt_target_command(const char *args, int from_tty)
 {
-  if (target_can_async_p ())
+  if (target_can_async_p())
     {
-      dont_repeat ();		/* Not for the faint of heart */
-      target_stop ();
+      dont_repeat();		/* Not for the faint of heart */
+      target_stop();
     }
 }
 
+/* */
 static void
-print_float_info (struct gdbarch *gdbarch, struct ui_file *file,
-		  struct frame_info *frame, const char *args)
+print_float_info(struct gdbarch *gdbarch, struct ui_file *file,
+		 struct frame_info *frame, const char *args)
 {
   if (!target_has_registers)
     error (_("The program has no registers now."));
@@ -3271,21 +3288,24 @@ No floating-point info available for this processor.\n");
     }
 }
 
+/* */
 static void
-float_info (char *args, int from_tty)
+float_info(const char *args, int from_tty)
 {
-  print_float_info (current_gdbarch, gdb_stdout,
-		    deprecated_selected_frame, args);
+  print_float_info(current_gdbarch, gdb_stdout,
+		   deprecated_selected_frame, args);
 }
-
+
+/* */
 static void
-unset_command(char *args, int from_tty)
+unset_command(const char *args, int from_tty)
 {
   printf_filtered(_("\
 \"unset\" must be followed by the name of an unset subcommand.\n"));
   help_list(unsetlist, "unset ", (enum command_class)-1, gdb_stdout);
 }
 
+/* */
 void
 _initialize_infcmd(void)
 {

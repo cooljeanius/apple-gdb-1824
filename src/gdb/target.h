@@ -187,7 +187,7 @@ extern const char *target_signal_to_string(enum target_signal);
 extern const char *target_signal_to_name(enum target_signal);
 
 /* Given a name (SIGHUP, etc.), return its signal: */
-enum target_signal target_signal_from_name(char *);
+enum target_signal target_signal_from_name(const char *);
 
 /* Request the transfer of up to LEN 8-bit bytes of the target's
    OBJECT.  The OFFSET, for a seekable object, specifies the starting
@@ -320,23 +320,24 @@ struct target_ops
        command, and (if successful) pushes a new target onto the
        stack.  Targets should supply this routine, if only to provide
        an error message.  */
-    void (*to_open) (char *, int);
+    void (*to_open)(const char *, int);
     /* Old targets with a static target vector provide "to_close".
        New re-entrant targets provide "to_xclose" and that is expected
        to xfree everything (including the "struct target_ops").  */
-    void (*to_xclose) (struct target_ops *targ, int quitting);
-    void (*to_close) (int);
-    void (*to_attach) (char *, int);
-    void (*to_post_attach) (int);
+    void (*to_xclose)(struct target_ops *targ, int quitting);
+    void (*to_close)(int);
+    void (*to_attach)(const char *, int);
+    void (*to_post_attach)(int);
     void (*to_detach)(const char *, int);
-    void (*to_disconnect) (char *, int);
-    void (*to_resume) (ptid_t, int, enum target_signal);
+    void (*to_disconnect)(const char *, int);
+    void (*to_resume)(ptid_t, int, enum target_signal);
     /* APPLE LOCAL target */
-    ptid_t (*to_wait) (ptid_t, struct target_waitstatus *, gdb_client_data client_data);
-    void (*to_post_wait) (ptid_t, int);
-    void (*to_fetch_registers) (int);
-    void (*to_store_registers) (int);
-    void (*to_prepare_to_store) (void);
+    ptid_t (*to_wait)(ptid_t, struct target_waitstatus *,
+		      gdb_client_data client_data);
+    void (*to_post_wait)(ptid_t, int);
+    void (*to_fetch_registers)(int);
+    void (*to_store_registers)(int);
+    void (*to_prepare_to_store)(void);
 
     /* Transfer LEN bytes of memory between GDB address MYADDR and
        target address MEMADDR.  If WRITE, transfer them to the target, else
@@ -380,13 +381,13 @@ struct target_ops
     void (*to_terminal_init) (void);
     void (*to_terminal_inferior) (void);
     void (*to_terminal_ours_for_output) (void);
-    void (*to_terminal_ours) (void);
-    void (*to_terminal_save_ours) (void);
+    void (*to_terminal_ours)(void);
+    void (*to_terminal_save_ours)(void);
     void (*to_terminal_info)(const char *, int);
-    void (*to_kill) (void);
-    void (*to_load) (char *, int);
+    void (*to_kill)(void);
+    void (*to_load)(const char *, int);
     int (*to_lookup_symbol)(const char *, CORE_ADDR *);
-    void (*to_create_inferior) (char *, char *, char **, int);
+    void (*to_create_inferior)(char *, char *, char **, int);
     void (*to_post_startup_inferior) (ptid_t);
     void (*to_acknowledge_created_inferior) (int);
     void (*to_insert_fork_catchpoint) (int);
@@ -405,8 +406,8 @@ struct target_ops
     void (*to_find_new_threads) (void);
     char *(*to_pid_to_str) (ptid_t);
     char *(*to_extra_thread_info) (struct thread_info *);
-    void (*to_stop) (void);
-    void (*to_rcmd) (char *command, struct ui_file *output);
+    void (*to_stop)(void);
+    void (*to_rcmd)(const char *command, struct ui_file *output);
     int (*to_enable_exception_callback) (enum exception_event_kind, int);
     struct symtabs_and_lines *
     (*to_find_exception_catchpoints) (enum exception_event_kind, struct objfile *);
@@ -545,7 +546,7 @@ void target_close (struct target_ops *targ, int quitting);
    (without waiting) to an upcoming target_wait call.  */
 
 #define	target_attach(args, from_tty)	\
-     (*current_target.to_attach) (args, from_tty)
+     (*current_target.to_attach)(args, from_tty)
 
 /* The target_attach operation places a process under debugger control,
    and stops the process.
@@ -567,7 +568,7 @@ extern void target_detach(const char *, int);
 /* Disconnect from the current target without resuming it (leaving it
    waiting for a debugger).  */
 
-extern void target_disconnect(char *, int);
+extern void target_disconnect(const char *, int);
 
 /* Resume execution of the target process PTID.  STEP says whether to
    single-step or to run free; SIGGNAL is the signal to be given to
@@ -896,7 +897,7 @@ extern void target_load(const char *arg, int from_tty);
    placed in OUTBUF.  */
 
 #define target_rcmd(command, outbuf) \
-     (*current_target.to_rcmd) (command, outbuf)
+     (*current_target.to_rcmd)(command, outbuf)
 
 
 /* Get the symbol information for a breakpointable routine called when
@@ -1323,24 +1324,24 @@ extern int default_memory_insert_breakpoint (CORE_ADDR, gdb_byte *);
 
 /* From target.c */
 
-extern void initialize_targets (void);
+extern void initialize_targets(void);
 
-extern void noprocess (void);
+extern void noprocess(void);
 
-extern void find_default_attach (char *, int);
+extern void find_default_attach(const char *, int);
 
-extern void find_default_create_inferior (char *, char *, char **, int);
+extern void find_default_create_inferior(char *, char *, char **, int);
 
-extern struct target_ops *find_run_target (void);
+extern struct target_ops *find_run_target(void);
 
-extern struct target_ops *find_core_target (void);
+extern struct target_ops *find_core_target(void);
 
-extern struct target_ops *find_target_beneath (struct target_ops *);
+extern struct target_ops *find_target_beneath(struct target_ops *);
 
-extern int target_resize_to_sections (struct target_ops *target,
-				      int num_added);
+extern int target_resize_to_sections(struct target_ops *target,
+				     int num_added);
 
-extern void remove_target_sections (bfd *abfd);
+extern void remove_target_sections(bfd *abfd);
 
 
 /* Stuff that should be shared among the various remote targets.  */
@@ -1386,7 +1387,7 @@ extern int target_signal_to_host(enum target_signal);
 extern enum target_signal target_signal_from_command(int);
 
 /* Any target can call this to switch to remote protocol (in remote.c). */
-extern void push_remote_target(char *name, int from_tty);
+extern void push_remote_target(const char *name, int from_tty);
 
 /* APPLE LOCAL: target remote-macosx equivalent of push_remote_target(): */
 extern void push_remote_macosx_target(char *name, int from_tty);

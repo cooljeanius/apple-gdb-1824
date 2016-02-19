@@ -239,9 +239,9 @@ target_signal_to_name(enum target_signal sig)
     return "?";
 }
 
-/* Given a name, return its signal.  */
+/* Given a name, return its signal: */
 enum target_signal
-target_signal_from_name (char *name)
+target_signal_from_name(const char *name)
 {
   enum target_signal sig;
 

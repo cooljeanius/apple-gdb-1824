@@ -266,19 +266,19 @@ extern void step_once(int, int, int);
 extern void follow_inferior_reset_breakpoints(void);
 
 /* From infcmd.c */
-extern void tty_command(char *, int);
-extern void attach_command(char *, int);
+extern void tty_command(const char *, int);
+extern void attach_command(const char *, int);
 extern char *get_inferior_args(void);
 extern char *set_inferior_args(char *);
 extern void set_inferior_args_vector(int, char **);
-extern void registers_info(char *, int);
-extern void nexti_command(char *, int);
-extern void stepi_command(char *, int);
-extern void continue_command(char *, int);
-extern void interrupt_target_command(char *args, int from_tty);
+extern void registers_info(const char *, int);
+extern void nexti_command(const char *, int);
+extern void stepi_command(const char *, int);
+extern void continue_command(const char *, int);
+extern void interrupt_target_command(const char *args, int from_tty);
 
 /* APPLE LOCAL: Need to use this in the MI: */
-extern void pid_info(char *args, int from_tty);
+extern void pid_info(const char *args, int from_tty);
 
 /* Last signal that the inferior received (why it stopped): */
 extern enum target_signal stop_signal;

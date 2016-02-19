@@ -917,7 +917,7 @@ static void
 disassemble_command(const char *arg, int from_tty)
 {
   CORE_ADDR low, high;
-  char *name;
+  const char *name;
   CORE_ADDR pc;
   char *space_index;
 #if 0
@@ -928,11 +928,11 @@ disassemble_command(const char *arg, int from_tty)
   if (!arg)
     {
       if (!deprecated_selected_frame)
-	error (_("No frame selected."));
+	error(_("No frame selected."));
 
-      pc = get_frame_pc (deprecated_selected_frame);
-      if (find_pc_partial_function_no_inlined (pc, &name, &low, &high) == 0)
-	error (_("No function contains program counter for selected frame."));
+      pc = get_frame_pc(deprecated_selected_frame);
+      if (find_pc_partial_function_no_inlined(pc, &name, &low, &high) == 0)
+	error(_("No function contains program counter for selected frame."));
 #if defined(TUI)
       /* NOTE: cagney/2003-02-13 The `tui_active' was previously
 	 `tui_version'.  */

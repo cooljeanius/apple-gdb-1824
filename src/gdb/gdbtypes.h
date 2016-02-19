@@ -1481,27 +1481,27 @@ extern int count_virtual_fns (struct type *);
 #define NS_POINTER_CONVERSION_BADNESS 10
 
 
-extern int compare_badness (struct badness_vector *, struct badness_vector *);
+extern int compare_badness(struct badness_vector *, struct badness_vector *);
 
-extern struct badness_vector *rank_function (struct type **, int,
-					     struct type **, int);
+extern struct badness_vector *rank_function(struct type **, int,
+					    struct type **, int);
 
-extern int rank_one_type (struct type *, struct type *);
+extern int rank_one_type(struct type *, struct type *);
 
-extern const char *type_code_name (int code);
+extern const char *type_code_name(int code);
 
-extern void recursive_dump_type (struct type *, int);
+extern void recursive_dump_type(struct type *, int);
 
 /* printcmd.c */
 
-extern void print_scalar_formatted (const void *, struct type *, int, int,
-				    struct ui_file *);
+extern void print_scalar_formatted(const void *, struct type *, int, int,
+				   struct ui_file *);
 
-extern int can_dereference (struct type *);
+extern int can_dereference(struct type *);
 
-extern int is_integral_type (struct type *);
+extern int is_integral_type(struct type *);
 
-extern void maintenance_print_type (char *, int);
+extern void maintenance_print_type(const char *, int);
 
 /* APPLE LOCAL: This is to handle arrays whose element types were undefined
    when the array type was constructed.  */

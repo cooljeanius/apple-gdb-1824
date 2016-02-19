@@ -1335,7 +1335,7 @@ do_over_unique_frames(stack_logging_record_t record, void *data)
   for (i = 0U; i < num_frames; i++)
     {
       struct cleanup *frame_cleanup;
-      char *name;
+      const char *name;
       volatile int err = 0;
       struct gdb_exception e;
       frame_cleanup = make_cleanup_ui_out_tuple_begin_end(uiout, "frame");

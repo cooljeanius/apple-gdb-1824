@@ -24,13 +24,13 @@ extern char **complete_line(const char *text, const char *line_buffer,
 
 extern char *readline_line_completion_function(const char *text, int matches);
 
-extern char **noop_completer(char *, char *);
+extern char **noop_completer(const char *, char *);
 
-extern char **filename_completer(char *, char *);
+extern char **filename_completer(const char *, char *);
 
-extern char **location_completer(char *, char *);
+extern char **location_completer(const char *, char *);
 
-extern char **command_completer(char *, char *);
+extern char **command_completer(const char *, char *);
 
 extern const char *get_gdb_completer_quote_characters(void);
 

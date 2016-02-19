@@ -127,35 +127,43 @@ legacy_register_sim_regno (int regnum)
     return LEGACY_SIM_REGNO_IGNORE;
 }
 
-CORE_ADDR
-generic_skip_trampoline_code (CORE_ADDR pc)
+/* */
+CORE_ADDR ATTRIBUTE_CONST
+generic_skip_trampoline_code(CORE_ADDR pc ATTRIBUTE_UNUSED)
+{
+  return 0UL;
+}
+
+/* */
+CORE_ADDR ATTRIBUTE_CONST
+generic_skip_solib_resolver(struct gdbarch *gdbarch ATTRIBUTE_UNUSED,
+			    CORE_ADDR pc ATTRIBUTE_UNUSED)
+{
+  return 0UL;
+}
+
+/* */
+int ATTRIBUTE_CONST
+generic_in_solib_return_trampoline(CORE_ADDR pc ATTRIBUTE_UNUSED,
+				   const char *name ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
-CORE_ADDR
-generic_skip_solib_resolver (struct gdbarch *gdbarch, CORE_ADDR pc)
+/* */
+int ATTRIBUTE_CONST
+generic_in_function_epilogue_p(struct gdbarch *gdbarch ATTRIBUTE_UNUSED,
+			       CORE_ADDR pc ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
-int
-generic_in_solib_return_trampoline (CORE_ADDR pc, char *name)
-{
-  return 0;
-}
-
-int
-generic_in_function_epilogue_p (struct gdbarch *gdbarch, CORE_ADDR pc)
-{
-  return 0;
-}
-
+/* */
 void
-generic_remote_translate_xfer_address (struct gdbarch *gdbarch,
-				       struct regcache *regcache,
-				       CORE_ADDR gdb_addr, int gdb_len,
-				       CORE_ADDR * rem_addr, int *rem_len)
+generic_remote_translate_xfer_address(struct gdbarch *gdbarch,
+				      struct regcache *regcache,
+				      CORE_ADDR gdb_addr, int gdb_len,
+				      CORE_ADDR *rem_addr, int *rem_len)
 {
   *rem_addr = gdb_addr;
   *rem_len = gdb_len;

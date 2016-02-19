@@ -57,26 +57,26 @@ extern void _initialize_remote_mobile(void);
    and connect it to another UNIX domain socket whose name is given in
    NAME.  The opened socket is returned, or -1 on error.  */
 static int
-open_unix_socket(char *name)
+open_unix_socket(const char *name)
 {
   struct sockaddr_un sockaddr;
   int source_fd;
   int len;
   int retval;
 
-  source_fd = socket (AF_UNIX, SOCK_STREAM, 0);
+  source_fd = socket(AF_UNIX, SOCK_STREAM, 0);
   if (source_fd < 0)
     {
-      warning ("Couldn't open a unix domain socket: %d.\n", source_fd);
+      warning("Failed to open a unix domain socket: %d.\n", source_fd);
       return -1;
     }
 
-  memset (&sockaddr, 0, sizeof (sockaddr));
+  memset(&sockaddr, 0, sizeof(sockaddr));
   sockaddr.sun_family = AF_UNIX;
-  strcpy (sockaddr.sun_path, name);
-  len = offsetof (struct sockaddr_un, sun_path) + strlen (name);
+  strcpy(sockaddr.sun_path, name);
+  len = (offsetof(struct sockaddr_un, sun_path) + strlen(name));
 
-  retval = connect (source_fd, (struct sockaddr *) &sockaddr, len);
+  retval = connect(source_fd, (struct sockaddr *)&sockaddr, len);
   if (retval == -1)
     {
       warning("Failed to connect to unix service: \"%s\", error: \"%s\".",
@@ -163,7 +163,7 @@ receive_fd(int source_fd)
    filedescriptor as a "filedesc" type serial device.  */
 
 static void
-remote_mobile_open(char *unix_sock_name, int from_tty)
+remote_mobile_open(const char *unix_sock_name, int from_tty)
 {
   int source_fd;
   int md_fd;

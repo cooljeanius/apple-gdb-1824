@@ -67,24 +67,25 @@ void _initialize_thread(void);
 
 /* Prototypes for local functions. */
 
-struct thread_info *thread_list = NULL;
+struct thread_info *thread_list = (struct thread_info *)NULL;
 int highest_thread_num;
 
-static void thread_command (char *tidstr, int from_tty);
-static void thread_apply_all_command (char *, int);
-static int thread_alive (struct thread_info *);
-static void info_threads_command (char *, int);
-static void thread_apply_command (char *, int);
-static void restore_current_thread (ptid_t, int);
+static void thread_command(const char *tidstr, int from_tty);
+static void thread_apply_all_command(const char *, int);
+static int thread_alive(struct thread_info *);
+static void info_threads_command(const char *, int);
+static void thread_apply_command(const char *, int);
+static void restore_current_thread(ptid_t, int);
 /* APPLE LOCAL: I need this; move it to "gdbthreads.h": */
 #if defined(__APPLE__) && !defined(GDBTHREAD_H)
 static void prune_threads(void);
 #endif /* __APPLE__ && !GDBTHREAD_H */
 
+/* */
 void
-delete_step_resume_breakpoint (void *arg)
+delete_step_resume_breakpoint(void *arg)
 {
-  struct breakpoint **breakpointp = (struct breakpoint **) arg;
+  struct breakpoint **breakpointp = (struct breakpoint **)arg;
   struct thread_info *tp;
 
   if (*breakpointp != NULL)
@@ -454,7 +455,7 @@ prune_threads (void)
  */
 
 static void
-info_threads_command(char *arg, int from_tty)
+info_threads_command(const char *arg, int from_tty)
 {
   struct thread_info *tp;
   ptid_t current_ptid;
@@ -668,9 +669,8 @@ make_cleanup_restore_current_thread(ptid_t inferior_ptid, int print)
    thread apply 2-7 9 p foo(1)  Apply p foo(1) cmd to threads 2->7 & 9
    thread apply all p x/i $pc   Apply x/i $pc cmd to all threads
  */
-
 static void
-thread_apply_all_command (char *cmd, int from_tty)
+thread_apply_all_command(const char *cmd, int from_tty)
 {
   struct thread_info *tp;
   struct cleanup *old_chain;
@@ -701,18 +701,19 @@ thread_apply_all_command (char *cmd, int from_tty)
 	   has an error for one thread, that is no reason not to run it for
 	   the next thread.  */
 
-	safe_execute_command (uiout, cmd, from_tty);
-	strcpy (cmd, saved_cmd);	/* Restore exact command used previously */
+	safe_execute_command(uiout, cmd, from_tty);
+	strcpy((char *)cmd, saved_cmd); /* Restore exact command used prev. */
       }
 
   do_cleanups (saved_cmd_cleanup_chain);
   do_cleanups (old_chain);
 }
 
+/* */
 static void
-thread_apply_command (char *tidlist, int from_tty)
+thread_apply_command(const char *tidlist, int from_tty)
 {
-  char *cmd;
+  const char *cmd;
   char *p;
   struct cleanup *old_chain;
   struct cleanup *saved_cmd_cleanup_chain;
@@ -721,7 +722,7 @@ thread_apply_command (char *tidlist, int from_tty)
   if (tidlist == NULL || *tidlist == '\000')
     error (_("Please specify a thread ID list"));
 
-  for (cmd = tidlist; *cmd != '\000' && !isalpha (*cmd); cmd++);
+  for (cmd = tidlist; (*cmd != '\000') && !isalpha(*cmd); cmd++);
 
   if (*cmd == '\000')
     error (_("Please specify a command following the thread ID list"));
@@ -773,7 +774,7 @@ thread_apply_command (char *tidlist, int from_tty)
 	      printf_filtered (_("\nThread %d (%s):\n"), tp->num,
 			       target_tid_to_str (inferior_ptid));
 	      execute_command (cmd, from_tty);
-	      strcpy (cmd, saved_cmd);	/* Restore exact command used previously */
+	      strcpy((char *)cmd, saved_cmd); /* Restore exact cmd used prev. */
 	    }
 	}
     }
@@ -784,7 +785,7 @@ thread_apply_command (char *tidlist, int from_tty)
 
 struct select_thread_args
 {
-  char *tidstr;
+  const char *tidstr;
   int print;
 };
 
@@ -792,7 +793,7 @@ struct select_thread_args
    if prefix of arg is `apply'.  */
 
 static void
-thread_command (char *tidstr, int from_tty)
+thread_command(const char *tidstr, int from_tty)
 {
   if (!tidstr)
     {
@@ -882,8 +883,9 @@ do_captured_thread_select(struct ui_out *uiout,
   return GDB_RC_OK;
 }
 
+/* */
 enum gdb_rc
-gdb_thread_select(struct ui_out *uiout, char *tidstr, int print,
+gdb_thread_select(struct ui_out *uiout, const char *tidstr, int print,
 		  char **error_message)
 {
   struct select_thread_args args;

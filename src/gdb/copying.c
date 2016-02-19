@@ -1,22 +1,23 @@
 /* ==> Do not modify this file!!  It is created automatically
    by copying.awk.  Modify copying.awk instead.  <== */
+/* (but that no longer seems to happen though?) */
 
 #include "defs.h"
 #include "command.h"
 #include "gdbcmd.h"
 
-static void show_copying_command (char *, int);
+static void show_copying_command(const char *, int);
 
-static void show_warranty_command (char *, int);
+static void show_warranty_command(const char *, int);
 
-void _initialize_copying (void);
+void _initialize_copying(void);
 
 extern int immediate_quit;
 static void
-show_copying_command (char *ignore, int from_tty)
+show_copying_command(const char *ignore ATTRIBUTE_UNUSED, int from_tty)
 {
   immediate_quit++;
-  printf_filtered (_("\
+  printf_filtered(_("\
                     GNU GENERAL PUBLIC LICENSE\n\
 		       Version 2, June 1991\n\
 \n\
@@ -277,8 +278,9 @@ of promoting the sharing and reuse of software generally.\n\
   immediate_quit--;
 }
 
+/* */
 static void
-show_warranty_command (char *ignore, int from_tty)
+show_warranty_command(const char *ignore ATTRIBUTE_UNUSED, int from_tty)
 {
   immediate_quit++;
   printf_filtered (_("\
@@ -307,19 +309,22 @@ POSSIBILITY OF SUCH DAMAGES.\n\
   immediate_quit--;
 }
 
+/* */
 void
-_initialize_copying (void)
+_initialize_copying(void)
 {
-  add_cmd ("copying", no_class, show_copying_command,
-	   _("Conditions for redistributing copies of GDB."),
-	   &showlist);
-  add_cmd ("warranty", no_class, show_warranty_command,
-	   _("Various kinds of warranty you do not have."),
-	   &showlist);
+  add_cmd("copying", no_class, show_copying_command,
+	  _("Conditions for redistributing copies of GDB."),
+	  &showlist);
+  add_cmd("warranty", no_class, show_warranty_command,
+	  _("Various kinds of warranty you do not have."),
+	  &showlist);
 
-  /* For old-timers, allow "info copying", etc.  */
-  add_info ("copying", show_copying_command,
-	    _("Conditions for redistributing copies of GDB."));
-  add_info ("warranty", show_warranty_command,
-	    _("Various kinds of warranty you do not have."));
+  /* For old-timers, allow "info copying", and so on: */
+  add_info("copying", show_copying_command,
+	   _("Conditions for redistributing copies of GDB."));
+  add_info("warranty", show_warranty_command,
+	   _("Various kinds of warranty you do not have."));
 }
+
+/* EOF */

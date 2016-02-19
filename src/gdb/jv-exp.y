@@ -876,7 +876,7 @@ yylex(void)
 
   prev_lexptr = lexptr;
 
-  tokstart = lexptr;
+  tokstart = (char *)lexptr;
   /* See if it is a special token of length 3.  */
   for (i = 0; i < (sizeof(tokentab3) / sizeof(tokentab3[0])); i++)
     if (strncmp(tokstart, tokentab3[i].joperator, 3) == 0)

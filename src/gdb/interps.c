@@ -86,16 +86,15 @@ struct interp
 };
 
 /* Functions local to this file. */
-static void initialize_interps (void);
-static void set_interpreter_cmd (char *args, int from_tty,
-				 struct cmd_list_element *c);
-static void list_interpreter_cmd (char *args, int from_tty);
+static void initialize_interps(void);
+static void set_interpreter_cmd(const char *args, int from_tty,
+				struct cmd_list_element *c);
+static void list_interpreter_cmd(const char *args, int from_tty);
 
-static char **interpreter_completer (char *text, char *word);
+static char **interpreter_completer(const char *text, char *word);
 
-/* The magic initialization routine for this module. */
-
-void _initialize_interpreter (void);
+/* The magic initialization routine for this module: */
+void _initialize_interpreter(void);
 
 /* Variables local to this file: */
 
@@ -448,8 +447,9 @@ initialize_interps (void)
   /* Don't know if anything needs to be done here... */
 }
 
+/* */
 static void
-interpreter_exec_cmd (char *args, int from_tty)
+interpreter_exec_cmd(const char *args, int from_tty)
 {
   struct interp *old_interp, *interp_to_use;
   char **prules = NULL;
@@ -508,7 +508,7 @@ interpreter_exec_cmd (char *args, int from_tty)
 
 /* List the possible interpreters which could complete the given text. */
 static char **
-interpreter_completer (char *text, char *word)
+interpreter_completer(const char *text, char *word)
 {
   int alloced = 0;
   int textlen;
@@ -567,9 +567,8 @@ interpreter_completer (char *text, char *word)
  * an interpreter completer?  Don't see why, though...
  * list_interpreter_cmd - This implements "info interpreters".
  */
-
 void
-list_interpreter_cmd (char *args, int from_tty)
+list_interpreter_cmd(const char *args, int from_tty)
 {
   struct interp *interp_ptr;
   struct cleanup *list_cleanup;
@@ -587,15 +586,14 @@ list_interpreter_cmd (char *args, int from_tty)
 
 /* APPLE LOCAL: Keith cut this command out, but I like it...
     set_interpreter_cmd - This implements "set interpreter foo". */
-
 static void
-set_interpreter_cmd (char *args, int from_tty, struct cmd_list_element * c)
+set_interpreter_cmd(const char *args, int from_tty, struct cmd_list_element *c)
 {
   struct interp *interp_ptr;
 
-  dont_repeat ();
+  dont_repeat();
 
-  if (cmd_type (c) != set_cmd)
+  if (cmd_type(c) != set_cmd)
     return;
 
   interp_ptr = interp_lookup (interpreter_p);
@@ -646,7 +644,7 @@ Show the interpreter for gdb."), NULL,
 Execute a command in an interpreter.  It takes two arguments:\n\
 The first argument is the name of the interpreter to use.\n\
 The second argument is the command to execute.\n"), &cmdlist);
-  set_cmd_completer (c, interpreter_completer);
+  set_cmd_completer(c, interpreter_completer);
 }
 
 /* EOF */

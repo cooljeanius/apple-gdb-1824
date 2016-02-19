@@ -105,7 +105,7 @@ extern void generic_search (int len, char *data, char *mask,
 			    CORE_ADDR * addr_found, char *data_found);
 
 /* Hook for `exec_file_command' command to call: */
-extern void (*deprecated_exec_file_display_hook)(char *filename)
+extern void (*deprecated_exec_file_display_hook)(const char *filename)
   ATTRIBUTE_DEPRECATED;
 
 /* Hook for "file_command", which is more useful than above
@@ -114,7 +114,7 @@ extern void (*deprecated_exec_file_display_hook)(char *filename)
 extern void (*deprecated_file_changed_hook)(const char *filename)
   ATTRIBUTE_DEPRECATED;
 
-extern void specify_exec_file_hook(void (*hook)(char *filename));
+extern void specify_exec_file_hook(void (*hook)(const char *filename));
 
 /* Binary File Diddlers for the exec and core files.  */
 
@@ -127,11 +127,11 @@ extern int write_files;
 
 extern void core_file_command(const char *filename, int from_tty);
 
-extern void core_file_attach(char *filename, int from_tty);
+extern void core_file_attach(const char *filename, int from_tty);
 
-extern void exec_open(char *filename, int from_tty);
+extern void exec_open(const char *filename, int from_tty);
 
-extern void exec_file_attach(char *filename, int from_tty);
+extern void exec_file_attach(const char *filename, int from_tty);
 
 extern void exec_file_clear(int from_tty);
 

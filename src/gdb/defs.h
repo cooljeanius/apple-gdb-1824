@@ -318,8 +318,8 @@ extern int xdb_commands;
 /* enable dbx commands if set */
 extern int dbx_commands;
 
-/* System root path, used to find libraries etc.  */
-extern char *gdb_sysroot;
+/* System root path, used to find libraries and so on: */
+extern const char *gdb_sysroot;
 
 extern int quit_flag;
 extern int immediate_quit;
@@ -798,7 +798,7 @@ extern void print_sys_errmsg(const char *, int);
 extern void symbol_file_command(const char *, int);
 
 /* Remote targets may wish to use this as their load function: */
-extern void generic_load(char *name, int from_tty);
+extern void generic_load(const char *name, int from_tty);
 
 /* Summarise a download */
 struct timeval;
@@ -856,11 +856,11 @@ extern int openp(const char *, int, const char *, int, int, char **);
 
 extern int source_full_path_of(char *, char **);
 
-extern void mod_path(char *, char **);
+extern void mod_path(const char *, char **);
 
-extern void add_path(char *, char **, int);
+extern void add_path(const char *, char **, int);
 
-extern void directory_command(char *, int);
+extern void directory_command(const char *, int);
 
 extern char *source_path;
 
@@ -1247,10 +1247,10 @@ extern int xsnprintf(char *str, size_t size, const char *format, ...)
 extern int parse_escape(const char **);
 
 /* Message to be printed before the error message, when an error occurs: */
-extern char *error_pre_print;
+extern const char *error_pre_print;
 
 /* Message to be printed before the error message, when an error occurs: */
-extern char *quit_pre_print;
+extern const char *quit_pre_print;
 
 /* Message to be printed before the warning message, when a warning occurs: */
 extern const char *warning_pre_print;

@@ -1344,7 +1344,7 @@ yylex(void)
 
  retry:
 
-  tokstart = lexptr;
+  tokstart = (char *)lexptr;
   /* See if it is a special token of length 3.  */
   for (i = 0; i < (sizeof(tokentab3) / sizeof(tokentab3[0])); i++)
     if (DEPRECATED_STREQN(tokstart, tokentab3[i].ooperator, 3))
@@ -1790,8 +1790,8 @@ yylex(void)
 	     incorrectly thinks we are dealing with nested types
 	     rather than a member function.  */
 
-	  char *p;
-	  char *namestart;
+	  const char *p;
+	  const char *namestart;
 	  struct symbol *best_sym;
 
 	  /* Look ahead to detect nested types.  This probably should

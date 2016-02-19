@@ -185,8 +185,9 @@ core_close(int quitting)
 # endif /* gcc 4.6+ */
 #endif /* any gcc */
 
+/* */
 static void
-core_open(char *filename, int from_tty)
+core_open(const char *filename, int from_tty)
 {
   const char *p;
   int siggy;
@@ -210,11 +211,11 @@ core_open(char *filename, int from_tty)
   if (filename[0] != '/')
     {
       temp = concat(current_directory, "/", filename, NULL);
-      xfree(filename);
+      xfree((void *)filename);
       filename = temp;
     }
 
-  old_chain = make_cleanup(xfree, filename);
+  old_chain = make_cleanup(xfree, (void *)filename);
 
   scratch_chan = open(filename, (write_files ? O_RDWR : O_RDONLY), 0);
   if (scratch_chan < 0)

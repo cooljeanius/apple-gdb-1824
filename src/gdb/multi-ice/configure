@@ -5624,7 +5624,7 @@ $as_echo "$ac_cv_sys_posix_termios" >&6; }
 
 unset ac_cv_header_sys_types_h
 for ac_header in arpa/inet.h basetsd.h errno.h fcntl.h getopt.h \
-                  intsafe.h limits.h locale.h mach/kmod.h \
+                  intsafe.h limits.h locale.h mach/vm_types.h \
                   netdb.h netinet/in.h netinet/tcp.h \
                   signal.h stdarg.h stddef.h stdio.h \
                   sys/file.h sys/ioctl.h sys/signal.h sys/time.h \
@@ -5636,6 +5636,23 @@ ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_include
 if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
   cat >>confdefs.h <<_ACEOF
 #define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+  ## needs other headers first on some systems:
+for ac_header in mach/kmod.h
+do :
+  ac_fn_c_check_header_compile "$LINENO" "mach/kmod.h" "ac_cv_header_mach_kmod_h" "
+#ifdef HAVE_MACH_VM_TYPES_H
+# include <mach/vm_types.h>
+#endif /* HAVE_MACH_VM_TYPES_H */
+
+"
+if test "x$ac_cv_header_mach_kmod_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_MACH_KMOD_H 1
 _ACEOF
 
 fi

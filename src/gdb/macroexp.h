@@ -1,4 +1,4 @@
-/* Interface to C preprocessor macro expansion for GDB.
+/* macroexp.h: Interface to C preprocessor macro expansion for GDB.
    Copyright 2002 Free Software Foundation, Inc.
    Contributed by Red Hat, Inc.
 
@@ -82,9 +82,11 @@ char *macro_expand_once (const char *source,
    much have to do tokenization to find the end of the string that
    needs to be macro-expanded.  Our C/C++ tokenizer isn't really
    designed to be called by anything but the yacc parser engine.  */
-char *macro_expand_next (char **lexptr,
-                         macro_lookup_ftype *lookup_func,
-                         void *lookup_baton);
+char *macro_expand_next(const char **lexptr,
+                        macro_lookup_ftype *lookup_func,
+                        void *lookup_baton);
 
 
 #endif /* MACROEXP_H */
+
+/* EOF */

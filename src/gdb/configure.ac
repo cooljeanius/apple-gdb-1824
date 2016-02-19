@@ -1502,12 +1502,18 @@ AC_CHECK_HEADERS([Availability.h AvailabilityMacros.h \
                   architecture/byte_order.h bits/endian.h crt_externs.h \
                   libgen.h libgettext.h linux/byteorder/big_endian.h \
                   linux/byteorder/little_endian.h mach.h mach_error.h \
-                  mach/kern_return.h mach/kmod.h mach/mach_error.h \
-                  mach/mach_init.h mach/mach_port.h mach/message.h \
-                  mach/port.h mach/thread_info.h mach/thread_status.h \
+                  mach/kern_return.h mach/mach_error.h mach/mach_init.h \
+                  mach/mach_port.h mach/message.h mach/port.h \
+                  mach/thread_info.h mach/thread_status.h mach/vm_types.h \
                   mach-o/loader.h mach-o/nlist.h memory.h pc.h pthread.h \
                   rpc/rpc.h servers/netname.h servers/netname_defs.h \
                   setjmp.h sys/uio.h sys/utsname.h uuid/uuid.h])dnl
+  ## needs other headers first on some systems:
+AC_CHECK_HEADERS([mach/kmod.h],[],[],[[
+#ifdef HAVE_MACH_VM_TYPES_H
+# include <mach/vm_types.h>
+#endif /* HAVE_MACH_VM_TYPES_H */
+]])dnl
   ## be careful in case we find the in-tree one:
 AC_CHECK_HEADERS([gettext.h],[],[],[
 #ifndef HAVE_CONFDEFS_H
@@ -1542,6 +1548,7 @@ AC_CHECK_DECLS([atof],[],[],[
 #endif /* HAVE_STDLIB_H */
 ])dnl
 
+unset ac_cv_have_decl_strpbrk
 AC_CHECK_DECLS([strchr, strpbrk],[],[],[
 #ifdef HAVE_STRING_H
 # include <string.h>
@@ -1628,6 +1635,9 @@ m4_ifdef([AM_LC_MESSAGES],[
     AC_MSG_WARN([we might be missing support for LC_MESSAGES])
   fi
 ])dnl
+  ## the libiberty macro might have already checked this for us, but avoid
+  ## un-setting the cache value, though, as that can lead to redefinition
+  ## warnings in config.log:
 AC_CHECK_DECLS([basename],[],[],[
 #ifdef HAVE_LIBGEN_H
 # include <libgen.h>
@@ -1974,13 +1984,14 @@ unset ac_cv_func_strchr
 AC_CHECK_FUNCS([atof alarm assert atexit bsearch bzero dup2 exit \
                 fflush fgets fprintf fwrite getcwd gethostbyaddr \
                 gethostbyname gethostname getpass gets gettimeofday \
-                inet_ntoa isascii mach_error_string memchr memcmp memcpy \
-                memmove mempcpy memset mkdir netname_look_up nl_langinfo \
-                pathconf pclose popen pow readdir re_comp regcomp select \
-                socket strcasecmp strcat strchr strcpy strcspn strdup \
-                strerror strlcat strlcpy strlen strncasecmp strncat \
-                strncmp strncpy strndup strpbrk strrchr strspn strstr \
-                strtok strtok_r strtol strtoul uname wcwidth])dnl
+                inet_ntoa isascii ishexnumber isnumber mach_error_string \
+                memchr memcmp memcpy memmove mempcpy memset mkdir \
+                netname_look_up nl_langinfo pathconf pclose popen pow \
+                readdir re_comp regcomp select socket strcasecmp strcat \
+                strchr strcpy strcspn strdup strerror strlcat strlcpy \
+                strlen strncasecmp strncat strncmp strncpy strndup \
+                strpbrk strrchr strspn strstr strtok strtok_r strtol \
+                strtoul uname wcwidth])dnl
 
 dnl# Use as a replacement for just-plain sprintf:
 if test "x${ac_cv_func_snprintf}" = "x"; then
@@ -3495,6 +3506,7 @@ AC_SUBST([GDBTKLIBS])dnl
 AC_SUBST([GDBTK_CFLAGS])dnl
 AC_SUBST([GDBTK_SRC_DIR])dnl
 
+unset ac_cv_func_gethostbyname
 AC_PATH_XTRA dnl# calls AC_PATH_X as well
 
 # Check whether we should enable the TUI, but only do so if we really

@@ -67,3 +67,7 @@ p-exp.c
 # artifacts of codesigning:
 _CodeSignature/*
 CodeResources
+
+# gdbarch.sh creates these:
+new-gdbarch.c
+new-gdbarch.h

@@ -5239,16 +5239,34 @@ fi
 done
 
 
-for ac_header in a.out.h errno.h fcntl.h limits.h locale.h mach/kmod.h \
-                  machine/reg.h sgtty.h signal.h stdarg.h stddef.h \
-                  stdio.h sys/dir.h sys/file.h sys/ioctl.h sys/param.h \
-                  sys/ptrace.h sys/types.h sys/user.h varargs.h
+for ac_header in a.out.h errno.h fcntl.h limits.h locale.h mach/mach.h \
+                  mach/vm_types.h machine/reg.h sgtty.h signal.h stdarg.h \
+                  stddef.h stdio.h sys/dir.h sys/file.h sys/ioctl.h \
+                  sys/param.h sys/ptrace.h sys/types.h sys/user.h \
+                  varargs.h wait.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
 if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
   cat >>confdefs.h <<_ACEOF
 #define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+  ## needs other headers first on some systems:
+for ac_header in mach/kmod.h
+do :
+  ac_fn_c_check_header_compile "$LINENO" "mach/kmod.h" "ac_cv_header_mach_kmod_h" "
+#ifdef HAVE_MACH_VM_TYPES_H
+# include <mach/vm_types.h>
+#endif /* HAVE_MACH_VM_TYPES_H */
+
+"
+if test "x$ac_cv_header_mach_kmod_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_MACH_KMOD_H 1
 _ACEOF
 
 fi

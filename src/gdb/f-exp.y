@@ -882,7 +882,7 @@ growbuf_by_size(int count)
 static int
 match_string_literal(void)
 {
-  char *tokptr = lexptr;
+  const char *tokptr = lexptr;
 
   for (tempbufindex = 0, tokptr++; *tokptr != '\0'; tokptr++)
     {
@@ -922,7 +922,7 @@ yylex(void)
 
   prev_lexptr = lexptr;
 
-  tokstart = lexptr;
+  tokstart = (char *)lexptr;
 
   /* First of all, let us make sure we are not dealing with the
      special tokens .true. and .false. which evaluate to 1 and 0.  */
