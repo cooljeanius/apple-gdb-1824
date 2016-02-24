@@ -908,8 +908,8 @@ extern struct breakpoint *find_finish_breakpoint(void);
 extern int exception_catchpoints_enabled(enum exception_event_kind);
 extern void disable_exception_catch(enum exception_event_kind);
 void gnu_v3_update_exception_catchpoints(enum exception_event_kind,
-                                         int, char *);
-int update_exception_catchpoints(enum exception_event_kind, int, char *,
+                                         int, const char *);
+int update_exception_catchpoints(enum exception_event_kind, int, const char *,
                                  int, struct objfile *);
 int handle_gnu_v3_exceptions(enum exception_event_kind);
 

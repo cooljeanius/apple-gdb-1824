@@ -875,8 +875,9 @@ find_frame_addr_in_frame_chain (CORE_ADDR frame_addr)
     }
 }
 
+/* */
 struct varobj *
-varobj_create(char *objname, char *expression, CORE_ADDR frame,
+varobj_create(char *objname, const char *expression, CORE_ADDR frame,
 	      struct block *block, enum varobj_type type)
 {
   struct varobj *var;

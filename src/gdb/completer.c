@@ -692,16 +692,16 @@ line_completion_function (const char *text, int matches, char *line_buffer, int 
    by the completer.  */
 
 char *
-skip_quoted_chars(char *str, char *quotechars, char *breakchars)
+skip_quoted_chars(const char *str, char *quotechars, const char *breakchars)
 {
   char quote_char = '\0';
-  char *scan;
+  const char *scan;
 
   if (quotechars == NULL)
     quotechars = (char *)gdb_completer_quote_characters;
 
   if (breakchars == NULL)
-    breakchars = (char *)current_language->la_word_break_characters();
+    breakchars = current_language->la_word_break_characters();
 
   for (scan = str; *scan != '\0'; scan++)
     {
@@ -726,7 +726,7 @@ skip_quoted_chars(char *str, char *quotechars, char *breakchars)
 	}
     }
 
-  return (scan);
+  return (char *)(scan);
 }
 
 /* Skip over the possibly quoted word STR (as defined by the quote
@@ -734,7 +734,7 @@ skip_quoted_chars(char *str, char *quotechars, char *breakchars)
    Returns pointer to the location after the "word". */
 
 char *
-skip_quoted(char *str)
+skip_quoted(const char *str)
 {
   return skip_quoted_chars(str, NULL, NULL);
 }

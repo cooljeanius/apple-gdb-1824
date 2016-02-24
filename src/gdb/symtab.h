@@ -242,7 +242,7 @@ extern void symbol_set_names(struct general_symbol_info *symbol,
 
 #define SYMBOL_NATURAL_NAME(symbol) \
   (symbol_natural_name(&(symbol)->ginfo))
-extern char *symbol_natural_name(const struct general_symbol_info *symbol);
+extern const char *symbol_natural_name(const struct general_symbol_info *);
 
 /* Return SYMBOL's name from the point of view of the linker.  In
    languages like C++ where symbols may be mangled for ease of
@@ -259,7 +259,7 @@ extern char *symbol_natural_name(const struct general_symbol_info *symbol);
    that symbol.  If no demangled name exists, return NULL. */
 #define SYMBOL_DEMANGLED_NAME(symbol) \
   (symbol_demangled_name(&(symbol)->ginfo))
-extern char *symbol_demangled_name(struct general_symbol_info *symbol);
+extern const char *symbol_demangled_name(struct general_symbol_info *symbol);
 
 /* Macro that returns a version of the name of a symbol that is
    suitable for output.  In C++ this is the "demangled" form of the
@@ -294,7 +294,7 @@ extern char *symbol_demangled_name(struct general_symbol_info *symbol);
    returns the same value (same pointer) as SYMBOL_LINKAGE_NAME. */
 #define SYMBOL_SEARCH_NAME(symbol)					 \
    (symbol_search_name(&(symbol)->ginfo))
-extern char *symbol_search_name(const struct general_symbol_info *);
+extern const char *symbol_search_name(const struct general_symbol_info *);
 
 /* Analogous to SYMBOL_MATCHES_NATURAL_NAME, but uses the search
    name.  */
@@ -1641,9 +1641,9 @@ extern int lookup_symbol_all (const char *, const struct block *,
 			      struct symbol_search **);
 /* APPLE LOCAL end return multiple symbols  */
 
-extern void search_symbols (char *, domain_enum, int, char **,
-			    struct symbol_search **);
-extern void free_search_symbols (struct symbol_search *);
+extern void search_symbols(const char *, domain_enum, int, char **,
+			   struct symbol_search **);
+extern void free_search_symbols(struct symbol_search *);
 extern struct cleanup *make_cleanup_free_search_symbols(struct symbol_search *);
 
 /* The name of the ``main'' function.

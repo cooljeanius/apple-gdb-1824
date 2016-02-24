@@ -168,14 +168,14 @@ extern void bcache_specify_allocation(struct bcache *b,
 
 /* Create a new bcache object.  */
 /* APPLE LOCAL bcache */
-extern struct bcache *bcache_xmalloc (void *);
+extern struct bcache *bcache_xmalloc(void *);
 
 /* Print statistics on BCACHE's memory usage and efficacity at
    eliminating duplication.  TYPE should be a string describing the
    kind of data BCACHE holds.  Statistics are printed using
    `printf_filtered' and its ilk.  */
-extern void print_bcache_statistics (struct bcache *bcache, char *type);
-extern int bcache_memory_used (struct bcache *bcache);
+extern void print_bcache_statistics(struct bcache *bcache, const char *type);
+extern int bcache_memory_used(struct bcache *bcache);
 
 /* The hash function */
 extern unsigned long hash(const void *addr, int length);

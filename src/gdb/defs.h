@@ -812,7 +812,7 @@ extern void print_transfer_performance(struct ui_file *stream,
 
 typedef void initialize_file_ftype(void);
 
-extern char *skip_quoted(char *);
+extern char *skip_quoted(const char *);
 
 extern char *gdb_readline(char *);
 

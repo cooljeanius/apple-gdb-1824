@@ -213,7 +213,7 @@ mi_print_frame_info_lite_base (struct ui_out *uiout,
 	ui_out_field_string (uiout, "func", "<\?\?\?\?>");
       else
 	{
-	  char *name = SYMBOL_NATURAL_NAME (msym);
+	  const char *name = SYMBOL_NATURAL_NAME(msym);
 	  if (name == NULL)
 	    ui_out_field_string (uiout, "func", "<\?\?\?\?>");
 	  else
@@ -1268,18 +1268,18 @@ print_syms_for_block (struct block *block,
 	         to keep the uglification to a minimum.  */
 	      struct varobj *new_var;
 	      struct cleanup *tuple_cleanup, *expr_cleanup;
-	      char *expr = SYMBOL_NATURAL_NAME(sym2);
+	      const char *expr = SYMBOL_NATURAL_NAME(sym2);
 	      if (strstr(expr, "::") != NULL)
 		{
 		  char *tmp;
-		  int len = strlen(expr);
-		  tmp = (char *)xmalloc(len + 3);
+		  size_t len = strlen(expr);
+		  tmp = (char *)xmalloc(len + 3UL);
 		  tmp[0] = '\'';
 		  memcpy(tmp + 1, expr, len);
 		  tmp[len + 1] = '\'';
 		  tmp[len + 2] = '\0';
 		  expr = tmp;
-		  expr_cleanup = make_cleanup(xfree, expr);
+		  expr_cleanup = make_cleanup(xfree, (void *)expr);
 		}
 	      else
 		{

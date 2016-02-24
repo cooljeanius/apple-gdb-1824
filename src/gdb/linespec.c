@@ -57,38 +57,38 @@ extern char *operator_chars (char *, char **);
 static void initialize_defaults (struct symtab **default_symtab,
 				 int *default_line);
 
-static void set_flags (char *arg, int *is_quoted, char **paren_pointer);
+static void set_flags(const char *arg, int *is_quoted, char **paren_pointer);
 
-static struct symtabs_and_lines decode_indirect (char **argptr);
+static struct symtabs_and_lines decode_indirect(const char **argptr);
 
-static char *locate_first_half (char **argptr, int *is_quote_enclosed);
+static char *locate_first_half(const char **argptr, int *is_quote_enclosed);
 
-static struct symtabs_and_lines decode_objc (char **argptr,
-					     int funfirstline,
-					     struct symtab *file_symtab,
-					     char ***canonical,
-					     char *saved_arg);
+static struct symtabs_and_lines decode_objc(const char **argptr,
+					    int funfirstline,
+					    struct symtab *file_symtab,
+					    char ***canonical,
+					    const char *saved_arg);
 /* APPLE LOCAL: decode_compound needs the not_found_ptr or future-break
    won't work.  */
-static struct symtabs_and_lines decode_compound (char **argptr,
-						 int funfirstline,
-						 char ***canonical,
-						 char *saved_arg,
-						 char *p,
-						 int *not_found_ptr);
+static struct symtabs_and_lines decode_compound(const char **argptr,
+						int funfirstline,
+						char ***canonical,
+						const char *saved_arg,
+						char *p,
+						int *not_found_ptr);
 
-static struct symbol *lookup_prefix_sym (char **argptr, char *p);
+static struct symbol *lookup_prefix_sym(const char **argptr, char *p);
 
 /* APPLE LOCAL: find_method needs the not_found_ptr or future-break
    won't work.  */
 
-static struct symtabs_and_lines find_method (int funfirstline,
-					     char ***canonical,
-					     char *saved_arg,
-					     char *copy,
-					     struct type *t,
-					     struct symbol *sym_class,
-					     int *not_found_ptr);
+static struct symtabs_and_lines find_method(int funfirstline,
+					    char ***canonical,
+					    const char *saved_arg,
+					    char *copy,
+					    struct type *t,
+					    struct symbol *sym_class,
+					    int *not_found_ptr);
 
 /* APPLE LOCAL begin return multiple symbols  */
 static int collect_methods (char *copy, struct type *t,
@@ -114,17 +114,17 @@ static int add_constructors (int method_counter, struct type *t,
 			     int *sym_arr_pos);
 /* APPLE LOCAL end return multiple symbols  */
 
-static void build_canonical_line_spec (struct symtab_and_line *,
-				       char *, char ***);
+static void build_canonical_line_spec(struct symtab_and_line *,
+				      const char *, char ***);
 
-static char *find_toplevel_char (char *s, char c);
+static char *find_toplevel_char(const char *s, char c);
 
-static int is_objc_method_format (const char *s);
+static int is_objc_method_format(const char *s);
 
-static struct symtabs_and_lines decode_line_2 (struct symbol *[],
-					       int, int, int, int, char ***);
+static struct symtabs_and_lines decode_line_2(struct symbol *[],
+					      int, int, int, int, char ***);
 
-static struct symtab **symtab_from_filename (char **argptr,
+static struct symtab **symtab_from_filename(const char **argptr,
 					    char *p, int is_quote_enclosed,
 					    int *not_found_ptr);
 
@@ -142,14 +142,14 @@ symtabs_and_lines decode_all_digits_exhaustive (char **argptr,
 				   int *not_found_ptr);
 
 static struct
-symtabs_and_lines decode_all_digits (char **argptr,
-				     /* APPLE LOCAL linespec */
-				     int funfirstline,
-				     struct symtab *default_symtab,
-				     int default_line,
-				     char ***canonical,
-				     struct symtab *file_symtab,
-				     char *q);
+symtabs_and_lines decode_all_digits(const char **argptr,
+				    /* APPLE LOCAL linespec */
+				    int funfirstline,
+				    struct symtab *default_symtab,
+				    int default_line,
+				    char ***canonical,
+				    struct symtab *file_symtab,
+				    char *q);
 
 static struct symtabs_and_lines decode_dollar (char *copy,
 					       int funfirstline,
@@ -678,7 +678,7 @@ add_constructors (int method_counter, struct type *t,
    line spec is `filename:linenum'.  */
 
 static void
-build_canonical_line_spec(struct symtab_and_line *sal, char *symname,
+build_canonical_line_spec(struct symtab_and_line *sal, const char *symname,
 			  char ***canonical)
 {
   char **canonical_arr;
@@ -720,7 +720,7 @@ build_canonical_line_spec(struct symtab_and_line *sal, char *symname,
    within foo<int, int>.  */
 
 static char *
-find_toplevel_char(char *s, char c)
+find_toplevel_char(const char *s, char c)
 {
   int quoted = 0;		/* zero if we're not in quotes;
 				   '"' if we're in a double-quoted string;
@@ -1544,7 +1544,7 @@ initialize_defaults (struct symtab **default_symtab, int *default_line)
 }
 
 static void
-set_flags (char *arg, int *is_quoted, char **paren_pointer)
+set_flags(const char *arg, int *is_quoted, char **paren_pointer)
 {
   char *ii;
   int has_if = 0;
@@ -1581,12 +1581,10 @@ set_flags (char *arg, int *is_quoted, char **paren_pointer)
     *ii = ' ';
 }
 
-
 
-/* Decode arg of the form *PC.  */
-
+/* Decode arg of the form *PC: */
 static struct symtabs_and_lines
-decode_indirect (char **argptr)
+decode_indirect(const char **argptr)
 {
   struct symtabs_and_lines values;
   CORE_ADDR pc;
@@ -1617,7 +1615,7 @@ decode_indirect (char **argptr)
    at the end.  */
 
 static char *
-locate_first_half (char **argptr, int *is_quote_enclosed)
+locate_first_half(const char **argptr, int *is_quote_enclosed)
 {
   char *ii;
   char *p, *p1;
@@ -1732,8 +1730,8 @@ locate_first_half (char **argptr, int *is_quote_enclosed)
    the existing C++ code to let the user choose one.  */
 
 struct symtabs_and_lines
-decode_objc (char **argptr, int funfirstline, struct symtab *file_symtab,
-	     char ***canonical, char *saved_arg)
+decode_objc(const char **argptr, int funfirstline, struct symtab *file_symtab,
+	    char ***canonical, const char *saved_arg)
 {
   struct symtabs_and_lines values;
   struct symbol **sym_arr = NULL;
@@ -1857,13 +1855,13 @@ decode_objc (char **argptr, int funfirstline, struct symtab *file_symtab,
    pointing to "AAA::inA::fun" and P pointing to "::inA::fun".  */
 
 static struct symtabs_and_lines
-decode_compound (char **argptr, int funfirstline, char ***canonical,
-		 char *saved_arg, char *p, int *not_found_ptr)
+decode_compound(const char **argptr, int funfirstline, char ***canonical,
+		const char *saved_arg, char *p, int *not_found_ptr)
 {
   char *p2;
-  char *saved_arg2 = *argptr;
+  const char *saved_arg2 = *argptr;
   char *temp_end;
-  /* The symtab that SYM was found in.  */
+  /* The symtab in which SYM was found: */
   struct symtab *sym_symtab;
   char *copy;
   struct symbol *sym_class;
@@ -2075,7 +2073,7 @@ decode_compound (char **argptr, int funfirstline, char ***canonical,
    example, say ARGPTR is "AAA::inA::fun" and P is "::inA::fun".  */
 
 static struct symbol *
-lookup_prefix_sym (char **argptr, char *p)
+lookup_prefix_sym(const char **argptr, char *p)
 {
   char *p1;
   char *copy;
@@ -2105,12 +2103,12 @@ lookup_prefix_sym (char **argptr, char *p)
    symbol is SYM_CLASS.  */
 
 static struct symtabs_and_lines
-find_method(int funfirstline, char ***canonical, char *saved_arg,
+find_method(int funfirstline, char ***canonical, const char *saved_arg,
 	    char *copy, struct type *t, struct symbol *sym_class,
 	    int *not_found_ptr)
 {
   struct symtabs_and_lines values;
-  struct symbol *sym = 0;
+  struct symbol *sym = (struct symbol *)0;
   int i1;	/*  Counter for the symbol array.  */
   /* APPLE LOCAL begin return multiple symbols  */
   int sym_arr_size = total_number_of_methods(t);
@@ -2303,8 +2301,8 @@ collect_methods(char *copy, struct type *t,
    This will look through all the objfiles for symtabs that match.  */
 
 static struct symtab **
-symtab_from_filename (char **argptr, char *p, int is_quote_enclosed,
-		      int *not_found_ptr)
+symtab_from_filename(const char **argptr, char *p, int is_quote_enclosed,
+		     int *not_found_ptr)
 {
   char *p1;
   char *copy;
@@ -2719,7 +2717,7 @@ decode_all_digits_exhaustive(char **argptr, int funfirstline,
 
 static struct symtabs_and_lines
 /* APPLE LOCAL begin linespec */
-decode_all_digits (char **argptr, int funfirstline,
+decode_all_digits (const char **argptr, int funfirstline,
 		   struct symtab *default_symtab,
 /* APPLE LOCAL end linespec */
 		   int default_line, char ***canonical,

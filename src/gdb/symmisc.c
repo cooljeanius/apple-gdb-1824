@@ -59,24 +59,24 @@ FILE *std_err;
 
 /* Prototypes for local functions */
 
-static void dump_symtab (struct objfile *, struct symtab *,
+static void dump_symtab(struct objfile *, struct symtab *,
+			struct ui_file *);
+
+static void dump_psymtab(struct objfile *, struct partial_symtab *,
 			 struct ui_file *);
 
-static void dump_psymtab (struct objfile *, struct partial_symtab *,
-			  struct ui_file *);
+static void dump_msymbols(struct objfile *, struct ui_file *);
 
-static void dump_msymbols (struct objfile *, struct ui_file *);
+static void dump_objfile(struct objfile *);
 
-static void dump_objfile (struct objfile *);
+static int block_depth(struct block *);
 
-static int block_depth (struct block *);
+static void print_partial_symbols(struct partial_symbol **, int,
+				  const char *, struct ui_file *);
 
-static void print_partial_symbols (struct partial_symbol **, int,
-				   char *, struct ui_file *);
+static void free_symtab_block(struct objfile *, struct block *);
 
-static void free_symtab_block (struct objfile *, struct block *);
-
-void _initialize_symmisc (void);
+void _initialize_symmisc(void);
 
 struct print_symbol_args
   {
@@ -85,9 +85,9 @@ struct print_symbol_args
     struct ui_file *outfile;
   };
 
-static int print_symbol (void *);
+static int print_symbol(void *);
 
-static void free_symtab_block (struct objfile *, struct block *);
+static void free_symtab_block(struct objfile *, struct block *);
 
 
 /* Free a struct block <- B and all the symbols defined in that block.  */
@@ -604,8 +604,8 @@ Arguments missing: an output file name and an optional symbol file name"));
 	}
     }
 
-  filename = tilde_expand (filename);
-  make_cleanup (xfree, filename);
+  filename = tilde_expand(filename);
+  make_cleanup(xfree, (void *)filename);
 
   outfile = gdb_fopen (filename, FOPEN_WT);
   if (outfile == 0)
@@ -869,8 +869,8 @@ maintenance_print_psymbols(const char *args, int from_tty)
 	}
     }
 
-  filename = tilde_expand (filename);
-  make_cleanup (xfree, filename);
+  filename = tilde_expand(filename);
+  make_cleanup(xfree, (void *)filename);
 
   outfile = gdb_fopen (filename, FOPEN_WT);
   if (outfile == 0)
@@ -885,9 +885,10 @@ maintenance_print_psymbols(const char *args, int from_tty)
   do_cleanups (cleanups);
 }
 
+/* */
 static void
-print_partial_symbols (struct partial_symbol **p, int count, char *what,
-		       struct ui_file *outfile)
+print_partial_symbols(struct partial_symbol **p, int count, const char *what,
+		      struct ui_file *outfile)
 {
   fprintf_filtered (outfile, "  %s partial symbols:\n", what);
   while (count-- > 0)
@@ -1022,8 +1023,8 @@ maintenance_print_msymbols(const char *args, int from_tty)
 	}
     }
 
-  filename = tilde_expand (filename);
-  make_cleanup (xfree, filename);
+  filename = tilde_expand(filename);
+  make_cleanup(xfree, (void *)filename);
 
   outfile = gdb_fopen (filename, FOPEN_WT);
   if (outfile == 0)

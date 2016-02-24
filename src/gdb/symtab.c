@@ -95,7 +95,8 @@ CORE_ADDR last_overlay_section_lookup_pc = INVALID_ADDRESS;
 
 /* Prototypes for local functions */
 
-static void completion_list_add_name(char *, char *, int, char *, char *);
+static void completion_list_add_name(const char *, char *, int, const char *,
+				     char *);
 
 static void rbreak_command(const char *, int);
 
@@ -113,7 +114,7 @@ static int find_line_common(struct linetable *, int, int *);
 
 /* This one is used by linespec.c */
 
-char *operator_chars (char *p, char **end);
+const char *operator_chars(const char *p, const char **end);
 
 static struct symbol *lookup_symbol_aux (const char *name,
 					 const char *linkage_name,
@@ -162,18 +163,18 @@ struct symbol *lookup_symbol_aux_minsyms (const char *name,
    Signals the presence of objects compiled by HP compilers.  */
 int deprecated_hp_som_som_object_present = 0;
 
-static void fixup_section (struct general_symbol_info *, struct objfile *);
+static void fixup_section(struct general_symbol_info *, struct objfile *);
 
-static int file_matches (char *, char **, int);
+static int file_matches(char *, char **, int);
 
-static void print_symbol_info (domain_enum,
-			       struct symtab *, struct symbol *, int, char *);
+static void print_symbol_info(domain_enum, struct symtab *, struct symbol *,
+			      int, char *);
 
-static void print_msymbol_info (struct minimal_symbol *);
+static void print_msymbol_info(struct minimal_symbol *);
 
-static void symtab_symbol_info (char *, domain_enum, int);
+static void symtab_symbol_info(const char *, domain_enum, int);
 
-void _initialize_symtab (void);
+void _initialize_symtab(void);
 
 /* APPLE LOCAL begin */
 /* skip_non_matching_bfd returns 1 if the bfd in SECTION doesn't
@@ -677,11 +678,11 @@ gdb_mangle_name (struct type *type, int method_id, int signature_id)
 {
   int mangled_name_len;
   char *mangled_name;
-  struct fn_field *f = TYPE_FN_FIELDLIST1 (type, method_id);
+  struct fn_field *f = TYPE_FN_FIELDLIST1(type, method_id);
   struct fn_field *method = &f[signature_id];
-  char *field_name = TYPE_FN_FIELDLIST_NAME (type, method_id);
-  char *physname = TYPE_FN_FIELD_PHYSNAME (f, signature_id);
-  char *newname = type_name_no_tag (type);
+  const char *field_name = TYPE_FN_FIELDLIST_NAME(type, method_id);
+  const char *physname = TYPE_FN_FIELD_PHYSNAME(f, signature_id);
+  const char *newname = type_name_no_tag(type);
 
   /* Does the form of physname indicate that it is the full mangled name
      of a constructor (not just the args)?  */
@@ -994,7 +995,7 @@ void
 symbol_init_demangled_name (struct general_symbol_info *gsymbol,
                             struct obstack *obstack)
 {
-  char *mangled = gsymbol->name;
+  const char *mangled = gsymbol->name;
   char *demangled = NULL;
 
   demangled = symbol_find_demangled_name (gsymbol, mangled);
@@ -1024,8 +1025,8 @@ symbol_init_demangled_name (struct general_symbol_info *gsymbol,
 /* Return the source code name of a symbol.  In languages where
    demangling is necessary, this is the demangled name.  */
 
-char *
-symbol_natural_name (const struct general_symbol_info *gsymbol)
+const char *
+symbol_natural_name(const struct general_symbol_info *gsymbol)
 {
   switch (gsymbol->language)
     {
@@ -1041,7 +1042,7 @@ symbol_natural_name (const struct general_symbol_info *gsymbol)
       if (gsymbol->language_specific.cplus_specific.demangled_name != NULL)
 	return gsymbol->language_specific.cplus_specific.demangled_name;
       else
-	return ada_decode_symbol (gsymbol);
+	return ada_decode_symbol(gsymbol);
       break;
     default:
       break;
@@ -1051,8 +1052,8 @@ symbol_natural_name (const struct general_symbol_info *gsymbol)
 
 /* Return the demangled name for a symbol based on the language for
    that symbol.  If no demangled name exists, return NULL. */
-char *
-symbol_demangled_name (struct general_symbol_info *gsymbol)
+const char *
+symbol_demangled_name(struct general_symbol_info *gsymbol)
 {
   switch (gsymbol->language)
     {
@@ -1068,7 +1069,7 @@ symbol_demangled_name (struct general_symbol_info *gsymbol)
       if (gsymbol->language_specific.cplus_specific.demangled_name != NULL)
 	return gsymbol->language_specific.cplus_specific.demangled_name;
       else
-	return ada_decode_symbol (gsymbol);
+	return ada_decode_symbol(gsymbol);
       break;
     default:
       break;
@@ -1080,13 +1081,13 @@ symbol_demangled_name (struct general_symbol_info *gsymbol)
    linkage name of the symbol, depending on how it will be searched for.
    If there is no distinct demangled name, then returns the same value
    (same pointer) as SYMBOL_LINKAGE_NAME. */
-char *
-symbol_search_name (const struct general_symbol_info *gsymbol)
+const char *
+symbol_search_name(const struct general_symbol_info *gsymbol)
 {
   if (gsymbol->language == language_ada)
     return gsymbol->name;
   else
-    return symbol_natural_name (gsymbol);
+    return symbol_natural_name(gsymbol);
 }
 
 /* Initialize the structure fields to zero values: */
@@ -1763,25 +1764,28 @@ lookup_symbol_aux (const char *name, const char *linkage_name,
 
 	  struct type *val_type;
 
-	  val_type = value_type (v);
+	  val_type = value_type(v);
 	  if (val_type)
 	    {
-	      CHECK_TYPEDEF (val_type);
-	      if (TYPE_CODE (val_type) == TYPE_CODE_PTR)
-		val_type = TYPE_TARGET_TYPE (val_type);
+	      CHECK_TYPEDEF(val_type);
+	      if (TYPE_CODE(val_type) == TYPE_CODE_PTR)
+		val_type = TYPE_TARGET_TYPE(val_type);
 
-	      if (TYPE_CODE (val_type) == TYPE_CODE_STRUCT)
+	      if (TYPE_CODE(val_type) == TYPE_CODE_STRUCT)
 		{
-		  char *this_class_name;
-		  this_class_name = TYPE_NAME (val_type);
-		  if ((this_class_name != NULL && strcmp (this_class_name, name) == 0)
+		  const char *this_class_name;
+		  this_class_name = TYPE_NAME(val_type);
+		  if (((this_class_name != NULL)
+		       && (strcmp(this_class_name, name) == 0))
 		      || is_ancestor_by_name (name, val_type))
 		    {
-		      const struct block *global_block = block_global_block (block);
+		      const struct block *global_block;
+		      global_block = block_global_block(block);
 
 		      if (global_block != NULL)
-			sym = lookup_symbol_aux_block (name, linkage_name, global_block,
-						       domain, symtab);
+			sym = lookup_symbol_aux_block(name, linkage_name,
+						      global_block, domain,
+						      symtab);
 		      if (sym != NULL)
 			goto foundit;
 		    }
@@ -4067,7 +4071,7 @@ find_function_start_sal (struct symbol *sym, int funfirstline)
 
   return pc.sal;
 }
-#if defined (USE_OLD_FIND_FUNCTION_START_SAL)
+#if defined(USE_OLD_FIND_FUNCTION_START_SAL)
 /* Given a function symbol SYM, find the symtab and line for the start
    of the function.
    If the argument FUNFIRSTLINE is nonzero, we want the first line
@@ -4124,13 +4128,14 @@ find_function_start_sal (struct symbol *sym, int funfirstline)
 
   return sal;
 }
-#endif
+#endif /* USE_OLD_FIND_FUNCTION_START_SAL */
+
 /* If P is of the form "operator[ \t]+..." where `...' is
    some legitimate operator text, return a pointer to the
    beginning of the substring of the operator text.
    Otherwise, return "".  */
-char *
-operator_chars (char *p, char **end)
+const char *
+operator_chars(const char *p, const char **end)
 {
   *end = "";
   if (strncmp (p, "operator", 8))
@@ -4150,7 +4155,7 @@ operator_chars (char *p, char **end)
 
   if (isalpha (*p) || *p == '_' || *p == '$')
     {
-      char *q = p + 1;
+      const char *q = p + 1;
       while (isalnum (*q) || *q == '_' || *q == '$')
 	q++;
       *end = q;
@@ -4482,13 +4487,13 @@ sort_search_symbols (struct symbol_search *prevtail, int nfound)
    separately alphabetized.
  */
 void
-search_symbols (char *regexp, domain_enum kind, int nfiles, char *files[],
-		struct symbol_search **matches)
+search_symbols(const char *regexp, domain_enum kind, int nfiles, char *files[],
+	       struct symbol_search **matches)
 {
   struct symtab *s;
   struct partial_symtab *ps;
   struct blockvector *bv;
-  struct blockvector *prev_bv = 0;
+  struct blockvector *prev_bv = (struct blockvector *)0;
   struct block *b;
   int i = 0;
   struct dict_iterator iter;
@@ -4532,8 +4537,8 @@ search_symbols (char *regexp, domain_enum kind, int nfiles, char *files[],
          This is just a courtesy to make the matching less sensitive
          to how many spaces the user leaves between 'operator'
          and <TYPENAME> or <OPERATOR>. */
-      char *opend;
-      char *opname = operator_chars(regexp, &opend);
+      const char *opend;
+      const char *opname = operator_chars(regexp, &opend);
       if (*opname)
 	{
 	  int fix = -1; /* -1 means ok; otherwise number of spaces needed. */
@@ -4903,7 +4908,7 @@ print_msymbol_info (struct minimal_symbol *msymbol)
    matches.
  */
 static void
-symtab_symbol_info (char *regexp, domain_enum kind, int from_tty)
+symtab_symbol_info(const char *regexp, domain_enum kind, int from_tty)
 {
   static const char *classnames[] =
     { "variable", "function", "type", "method" };
@@ -5125,8 +5130,8 @@ static char **return_val;
    characters.  If so, add it to the current completion list. */
 
 static void
-completion_list_add_name(char *symname, char *sym_text, int sym_text_len,
-			 char *text, char *word)
+completion_list_add_name(const char *symname, char *sym_text, int sym_text_len,
+			 const char *text, char *word)
 {
   int newsize;
 
@@ -5176,12 +5181,13 @@ completion_list_add_name(char *symname, char *sym_text, int sym_text_len,
 
 static void
 completion_list_objc_symbol(struct minimal_symbol *msymbol, char *sym_text,
-			    int sym_text_len, char *text, char *word)
+			    int sym_text_len, const char *text, char *word)
 {
   static char *tmp = NULL;
   static unsigned int tmplen = 0U;
 
-  char *method, *category, *selector;
+  const char *method;
+  char *category, *selector;
   char *tmp2 = NULL;
 
   method = SYMBOL_NATURAL_NAME(msymbol);
@@ -5237,7 +5243,7 @@ completion_list_objc_symbol(struct minimal_symbol *msymbol, char *sym_text,
    symbols. FIXME: This should probably be language-specific. */
 
 static char *
-language_search_unquoted_string (char *text, char *p)
+language_search_unquoted_string(const char *text, char *p)
 {
   for (; p > text; --p)
     {
@@ -5307,7 +5313,7 @@ make_symbol_completion_list(const char *text, char *word)
   /* Now look for the symbol we are supposed to complete on.
      FIXME: This should be language-specific.  */
   {
-    char *p;
+    const char *p;
     char quote_found;
     char *quote_pos = NULL;
 
@@ -5491,7 +5497,7 @@ make_file_symbol_completion_list(const char *text, char *word, char *srcfile)
   /* Now look for the symbol we are supposed to complete on.
      FIXME: This should be language-specific.  */
   {
-    char *p;
+    const char *p;
     char quote_found;
     char *quote_pos = NULL;
 

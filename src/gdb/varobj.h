@@ -78,9 +78,8 @@ struct varobj_changelist;
 
 /* API functions */
 
-extern struct varobj *varobj_create(char *objname,
-				    char *expression, CORE_ADDR frame,
-				    struct block *block,
+extern struct varobj *varobj_create(char *objname, const char *expression,
+				    CORE_ADDR frame, struct block *block,
 				    enum varobj_type type);
 
 extern char *varobj_gen_name(void);

@@ -70,7 +70,7 @@ extern char *parse_selector(char *, char **);
 
 extern char *parse_method(char *, char *, char **, char **, char **);
 
-extern char *find_imps(struct symtab *, struct block *, char *,
+extern char *find_imps(struct symtab *, struct block *, const char *,
                        struct symbol **, unsigned int *, unsigned int *);
 
 extern struct value *value_nsstring(char *, int);

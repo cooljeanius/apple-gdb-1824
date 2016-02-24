@@ -301,7 +301,6 @@ lookup_child_selector_nocache(const char *selname)
       if (lookup_minimal_symbol("sel_getUid", 0, 0))
 	function = create_cached_function("sel_getUid",
 					  builtin_type_voidptrfuncptr);
-
       else if (lookup_minimal_symbol("sel_get_any_uid", 0, 0))
     	function = create_cached_function("sel_get_any_uid",
 					  builtin_type_voidptrfuncptr);
@@ -393,6 +392,7 @@ lookup_child_selector(const char *selname)
   return entry->val;
 }
 
+/* */
 struct value *
 value_nsstring(char *ptr, int len)
 {
@@ -1492,7 +1492,7 @@ selectors_info(const char *regexp, int from_tty)
 {
   struct objfile *objfile;
   struct minimal_symbol *msymbol;
-  char *name;
+  const char *name;
   char *val;
   int matches = 0;
   size_t maxlen = 0UL;
@@ -1547,7 +1547,7 @@ selectors_info(const char *regexp, int from_tty)
 	  name = (char *)strchr((name + 2UL), ' ');
 	  if (regexp == NULL || re_exec(++name) != 0)
 	    {
-	      char *mystart = name;
+	      const char *mystart = name;
 	      char *myend = (char *)strchr(mystart, ']');
 
 	      if (myend && ((size_t)(myend - mystart) > maxlen))
@@ -1642,7 +1642,7 @@ classes_info(const char *regexp, int from_tty)
 {
   struct objfile *objfile;
   struct minimal_symbol *msymbol;
-  char *name;
+  const char *name;
   char *val;
   int matches = 0;
   size_t maxlen = 0UL;
@@ -1674,14 +1674,14 @@ classes_info(const char *regexp, int from_tty)
   ALL_MSYMBOLS(objfile, msymbol)
     {
       QUIT;
-      name = SYMBOL_NATURAL_NAME (msymbol);
+      name = SYMBOL_NATURAL_NAME(msymbol);
       if (name &&
           (name[0] == '-' || name[0] == '+') &&
 	  name[1] == '[')			/* Got a method name.  */
 	if (regexp == NULL || (re_exec(name + 2) != 0))
 	  {
 	    /* Compute length of classname part: */
-	    char *mystart = (name + 2UL);
+	    const char *mystart = (name + 2UL);
 	    char *myend = (char *)strchr(mystart, ' ');
 
 	    if (myend && ((size_t)(myend - mystart) > maxlen))
@@ -1944,7 +1944,7 @@ find_methods(struct symtab *symtab, char type,
   struct symbol *sym = NULL;
   struct cleanup *old_list = NULL;
 
-  char *symname = NULL;
+  const char *symname = NULL;
 
   char ntype = '\0';
   char *nclass = NULL;
@@ -2089,9 +2089,10 @@ debugging symbol \"%s\" does not match minimal symbol (\"%s\"); ignoring",
     *ndebug = cdebug;
 }
 
+/* */
 char *
 find_imps(struct symtab *symtab, struct block *block,
-          char *method, struct symbol **syms,
+          const char *method, struct symbol **syms,
           unsigned int *nsym, unsigned int *ndebug)
 {
   char type = '\0';
@@ -2159,7 +2160,7 @@ find_imps(struct symtab *symtab, struct block *block,
 
   /* If we did NOT find any methods, then just return: */
   if (ncsym == 0 && ncdebug == 0)
-    return method;
+    return (char *)method;
 
   /* Take debug symbols from the second batch of symbols and swap them
    * with debug symbols from the first batch.  Repeat until either the
@@ -2196,7 +2197,7 @@ find_imps(struct symtab *symtab, struct block *block,
     *ndebug = cdebug;
 
   if (syms == NULL)
-    return (method + (tmp - buf));
+    return (char *)(method + (tmp - buf));
 
   if (csym > 1)
     {
@@ -2213,7 +2214,7 @@ find_imps(struct symtab *symtab, struct block *block,
   /* Terminate the sym_arr list: */
   syms[csym] = 0;
 
-  return (method + (tmp - buf));
+  return (char *)(method + (tmp - buf));
 }
 
 /* This is a little utility routine that checks malloc, spinlock & objc
@@ -5531,8 +5532,7 @@ _initialize_objc_lang(void)
   add_setshow_zinteger_cmd("objc", class_maintenance, &debug_objc, "Set objc debugging.",
                            "Show objc debugging.",
                            "When non-zero, objc specific debugging is enabled.",
-			   NULL,
-			   NULL,
+			   NULL, NULL,
 			   &setdebuglist, &showdebuglist);
 }
 

@@ -293,11 +293,12 @@ static const char *ep_parse_optional_if_clause(const char **arg);
 static char *ep_parse_optional_filename(const char **arg);
 
 /* APPLE LOCAL return a value */
-static struct breakpoint *create_exception_catchpoint(int tempflag, char *cond_string,
-					 /* APPLE LOCAL gnu v3 */
-					 int gnu_v3_p,
-					 enum exception_event_kind ex_event,
-					 struct symtab_and_line *sal);
+static struct breakpoint *create_exception_catchpoint(int tempflag,
+						      const char *cond_string,
+						      /* APPLE LOCAL gnu v3 */
+						      int gnu_v3_p,
+						      enum exception_event_kind,
+						      struct symtab_and_line *);
 
 static void catch_exception_command_1(enum exception_event_kind ex_event,
 				      const char *arg, int tempflag,
@@ -913,8 +914,8 @@ breakpoint_print_commands(struct ui_out *uiout, struct breakpoint *b)
    shadow contents, not the breakpoints themselves.  From breakpoint.c.  */
 
 int
-deprecated_read_memory_nobpt (CORE_ADDR memaddr, gdb_byte *myaddr,
-			      unsigned len)
+deprecated_read_memory_nobpt(CORE_ADDR memaddr, gdb_byte *myaddr,
+			     unsigned int len)
 {
   int status;
   struct bp_location *b;
@@ -8295,11 +8296,11 @@ static struct breakpoint_ops gnu_v3_exception_catchpoint_ops = {
 
 /* APPLE LOCAL return a value */
 struct breakpoint *
-create_exception_catchpoint (int tempflag, char *cond_string,
-			     /* APPLE LOCAL gnu v3 */
-			     int gnu_v3_p,
-                             enum exception_event_kind ex_event,
-                             struct symtab_and_line *sal)
+create_exception_catchpoint(int tempflag, const char *cond_string,
+			    /* APPLE LOCAL gnu v3 */
+			    int gnu_v3_p,
+                            enum exception_event_kind ex_event,
+                            struct symtab_and_line *sal)
 {
   struct breakpoint *b;
   int thread = -1;		/* All threads. */
@@ -8493,9 +8494,10 @@ struct sal_chain
   struct symtab_and_line sal;
 };
 
+/* */
 void
 gnu_v3_update_exception_catchpoints(enum exception_event_kind ex_event,
-                                    int tempflag, char *cond_string)
+                                    int tempflag, const char *cond_string)
 {
   enum bptype type;
   char *trigger_func_name, *nameptr;
@@ -8594,7 +8596,7 @@ gnu_v3_update_exception_catchpoints(enum exception_event_kind ex_event,
 
 int
 update_exception_catchpoints(enum exception_event_kind ex_event,
-			     int tempflag, char *cond_string,
+			     int tempflag, const char *cond_string,
 			     int delete_it, struct objfile *objfile)
 {
   struct symtabs_and_lines *sals;
