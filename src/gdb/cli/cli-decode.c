@@ -274,7 +274,7 @@ struct cmd_list_element *
 add_abbrev_prefix_cmd(const char *name, enum command_class the_class,
 		      void (*fun)(const char *, int), const char *doc,
 		      struct cmd_list_element **prefixlist,
-                      char *prefixname, int allow_unknown,
+                      const char *prefixname, int allow_unknown,
                       struct cmd_list_element **list)
 {
   struct cmd_list_element *c = add_cmd(name, the_class, fun, doc, list);

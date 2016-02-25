@@ -5242,8 +5242,8 @@ completion_list_objc_symbol(struct minimal_symbol *msymbol, char *sym_text,
 /* Break the non-quoted text based on the characters which are in
    symbols. FIXME: This should probably be language-specific. */
 
-static char *
-language_search_unquoted_string(const char *text, char *p)
+static const char *
+language_search_unquoted_string(const char *text, const char *p)
 {
   for (; p > text; --p)
     {
@@ -5259,7 +5259,7 @@ language_search_unquoted_string(const char *text, char *p)
 		p -= 2;             /* beginning of a method name */
 	      else if (p[-1] == ' ' || p[-1] == '(' || p[-1] == ')')
 		{                   /* might be part of a method name */
-		  char *t = p;
+		  const char *t = p;
 
 		  /* Seeing a ' ' or a '(' is not conclusive evidence
 		     that we are in the middle of a method name.  However,
@@ -5305,8 +5305,8 @@ make_symbol_completion_list(const char *text, char *word)
   struct dict_iterator iter;
   int j;
   struct partial_symbol **psym;
-  /* The symbol we are completing on.  Points in same buffer as text.  */
-  char *sym_text;
+  /* The symbol on which we are completing.  Points in same buffer as text: */
+  const char *sym_text;
   /* Length of sym_text.  */
   int sym_text_len;
 
@@ -5315,7 +5315,7 @@ make_symbol_completion_list(const char *text, char *word)
   {
     const char *p;
     char quote_found;
-    char *quote_pos = NULL;
+    const char *quote_pos = NULL;
 
     /* First see if this is a quoted string.  */
     quote_found = '\0';
@@ -5489,8 +5489,8 @@ make_file_symbol_completion_list(const char *text, char *word, char *srcfile)
   struct symtab *s;
   struct block *b;
   struct dict_iterator iter;
-  /* The symbol we are completing on.  Points in same buffer as text.  */
-  char *sym_text;
+  /* The symbol on which we are completing.  Points in same buffer as text: */
+  const char *sym_text;
   /* Length of sym_text.  */
   int sym_text_len;
 
@@ -5499,7 +5499,7 @@ make_file_symbol_completion_list(const char *text, char *word, char *srcfile)
   {
     const char *p;
     char quote_found;
-    char *quote_pos = NULL;
+    const char *quote_pos = NULL;
 
     /* First see if this is a quoted string.  */
     quote_found = '\0';

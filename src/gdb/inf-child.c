@@ -71,7 +71,7 @@ inf_child_post_attach(int pid ATTRIBUTE_UNUSED)
    makes sure that registers contains all the registers from the
    program being debugged.  */
 
-static void
+static void ATTRIBUTE_CONST
 inf_child_prepare_to_store(void)
 {
   return;
@@ -84,28 +84,31 @@ inf_child_open(const char *arg ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 }
 
 static void
-inf_child_post_startup_inferior(ptid_t ptid)
+inf_child_post_startup_inferior(ptid_t ptid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix doesn't require a meaningful "post startup
      inferior" operation by a debugger.  */
+  return;
 }
 
 static void
-inf_child_acknowledge_created_inferior (int pid)
+inf_child_acknowledge_created_inferior(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix doesn't require a meaningful "acknowledge
      created inferior" operation by a debugger.  */
+  return;
 }
 
 static void
-inf_child_insert_fork_catchpoint (int pid)
+inf_child_insert_fork_catchpoint(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix doesn't support notification of fork
      events.  */
+  return;
 }
 
 static int
-inf_child_remove_fork_catchpoint (int pid)
+inf_child_remove_fork_catchpoint(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix doesn't support notification of fork
      events.  */
@@ -113,14 +116,15 @@ inf_child_remove_fork_catchpoint (int pid)
 }
 
 static void
-inf_child_insert_vfork_catchpoint (int pid)
+inf_child_insert_vfork_catchpoint(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix doesn't support notification of vfork
      events.  */
+  return;
 }
 
 static int
-inf_child_remove_vfork_catchpoint (int pid)
+inf_child_remove_vfork_catchpoint(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix doesn't support notification of vfork
      events.  */
@@ -128,7 +132,7 @@ inf_child_remove_vfork_catchpoint (int pid)
 }
 
 static int
-inf_child_follow_fork (int follow_child)
+inf_child_follow_fork(int follow_child ATTRIBUTE_UNUSED)
 {
   /* This version of Unix doesn't support following fork or vfork
      events.  */
@@ -136,14 +140,15 @@ inf_child_follow_fork (int follow_child)
 }
 
 static void
-inf_child_insert_exec_catchpoint (int pid)
+inf_child_insert_exec_catchpoint(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix doesn't support notification of exec
      events.  */
+  return;
 }
 
 static int
-inf_child_remove_exec_catchpoint (int pid)
+inf_child_remove_exec_catchpoint(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix doesn't support notification of exec
      events.  */
@@ -165,7 +170,7 @@ inf_child_can_run(void)
 }
 
 /* APPLE LOCAL */
-int
+int ATTRIBUTE_CONST
 inf_child_enable_exception_callback(enum exception_event_kind kind ATTRIBUTE_UNUSED,
 				    int enable ATTRIBUTE_UNUSED)
 {
@@ -179,7 +184,7 @@ inf_child_get_current_exception_event(void)
 }
 
 static char *
-inf_child_pid_to_exec_file (int pid)
+inf_child_pid_to_exec_file(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix doesn't support translation of a process ID
      to the filename of the executable file.  */

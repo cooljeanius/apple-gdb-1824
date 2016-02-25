@@ -7520,7 +7520,7 @@ watch_command_1(const char *arg, int accessflag, int by_location, int from_tty)
   const char *exp_end = NULL;
   const char *tok, *end_tok;
   int toklen;
-  char *cond_start = NULL;
+  const char *cond_start = NULL;
   const char *cond_end = NULL;
   char *exp_string = NULL;
   size_t exp_string_len;
@@ -7610,7 +7610,8 @@ watch_command_1(const char *arg, int accessflag, int by_location, int from_tty)
   toklen = (end_tok - tok);
   if (toklen >= 1 && strncmp(tok, "if", toklen) == 0)
     {
-      tok = cond_start = (end_tok + 1);
+      cond_start = (end_tok + 1);
+      tok = cond_start;
       cond = parse_exp_1(&tok, 0, 0);
       cond_end = tok;
     }

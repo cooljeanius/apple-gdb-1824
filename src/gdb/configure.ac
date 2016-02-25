@@ -2926,7 +2926,7 @@ AC_SUBST([TARGET_SYSTEM_ROOT_DEFINE])dnl
 build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wparentheses -Wpointer-arith \
 -Wno-unused -Wunused-value -Wunused-label -Wunused-result \
--Wunused-variable -Wunused-but-set-variable \
+-Wunused-variable -Wunused-but-set-variable -Wunused-function \
 -Wempty-body -Wmissing-declarations -Wignored-qualifiers \
 -Wmissing-format-attribute -Wno-format-security -Waddress -Wattributes \
 -Wswitch -Wclobbered -Wcoverage-mismatch -Wdiv-by-zero \
@@ -3063,8 +3063,7 @@ fi
 
 # Up for debate (i.e. for debating adding to existing flags): 
 #  * -trigraphs (only assuming we leave -Wtrigraphs in, see below)
-#  * -Wunused-variable (to go with -Wunused-value)
-#  * -Wshadow (usually easy enough to fix, if you are using an IDE)
+#  * -Wshadow (noisy, but usually easy enough to fix if you use an IDE)
 #  * -Wcast-qual (casting can silence other warnings, so this can conflict)
 #  * -Wcast-align (same as with -Wcast-qual, and also makes clang noisy)
 #  * -Wconversion (would require a lot of casting)
@@ -3074,7 +3073,6 @@ fi
 #  * -Winline (I can never tell if the compiler is right or not with this)
 #  * -Wundef (only if we can figure out how to fix the issue with caddr_t)
 #  * -Wunused-macros (if we also add back -Wundef as per above)
-#  * -Wunused-function (had been added, but I hate fixing it)
 #  * -Wchar-subscripts (upstream FSF gdb explicitly disables this, but...)
 #  * -Wunused-local-typedefs (`mig` generates code that triggers this)
 #  * -Wunsafe-loop-optimizations (lex/yacc generate code that triggers it)
@@ -3165,7 +3163,7 @@ then
     # Do need to use it for these conftests though.
     for w in ${build_warnings}; do
 	case ${w} in
-          -Wold-style-definition|-Wstrict-prototypes)
+          -Wold-style-definition|-Wstrict-prototypes|-Wsuggest-attribute=const)
 	    saved_CFLAGS="${CFLAGS}"
 	    CFLAGS="${CFLAGS} ${w} -Werror"
             dnl# Use "_SOURCE" instead of "_PROGRAM" here to keep us from

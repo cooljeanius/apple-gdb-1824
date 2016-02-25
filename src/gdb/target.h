@@ -1386,6 +1386,9 @@ extern int target_signal_to_host(enum target_signal);
 /* Convert from a number used in a GDB command to an enum target_signal: */
 extern enum target_signal target_signal_from_command(int);
 
+/* Speaking of signals, external variable from signals/signals.c: */
+extern int signals_c_inited;
+
 /* Any target can call this to switch to remote protocol (in remote.c). */
 extern void push_remote_target(const char *name, int from_tty);
 

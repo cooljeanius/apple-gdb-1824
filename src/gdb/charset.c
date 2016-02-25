@@ -1094,7 +1094,7 @@ set_target_charset(const char *charset)
 
 /* This is the sfunc for the 'set charset' command: */
 static void
-set_charset_sfunc(char *charset, int from_tty, struct cmd_list_element *c)
+set_charset_sfunc(const char *charset, int from_tty, struct cmd_list_element *c)
 {
   struct charset *cs = lookup_charset_or_error(host_charset_name);
   check_valid_host_charset(cs);
@@ -1106,7 +1106,7 @@ set_charset_sfunc(char *charset, int from_tty, struct cmd_list_element *c)
 /* 'set host-charset' command sfunc.  We need a wrapper here because
    the function needs to have a specific signature.  */
 static void
-set_host_charset_sfunc(char *charset, int from_tty,
+set_host_charset_sfunc(const char *charset, int from_tty,
                        struct cmd_list_element *c)
 {
   set_host_charset(host_charset_name);
@@ -1114,7 +1114,7 @@ set_host_charset_sfunc(char *charset, int from_tty,
 
 /* Wrapper for the 'set target-charset' command: */
 static void
-set_target_charset_sfunc(char *charset, int from_tty,
+set_target_charset_sfunc(const char *charset, int from_tty,
                          struct cmd_list_element *c)
 {
   set_target_charset(target_charset_name);
@@ -1207,7 +1207,7 @@ target_char_to_host (int target_char, int *host_char)
 
 /* The charset.c module initialization function.  */
 
-extern initialize_file_ftype _initialize_charset; /* -Wmissing-prototype */
+extern initialize_file_ftype _initialize_charset; /* -Wmissing-prototypes */
 
 void
 _initialize_charset(void)

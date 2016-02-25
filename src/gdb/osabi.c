@@ -87,10 +87,11 @@ static const char * const gdb_osabi_names[] =
   "<invalid>"
 };
 
-const char *
-gdbarch_osabi_name (enum gdb_osabi osabi)
+/* */
+const char * ATTRIBUTE_CONST
+gdbarch_osabi_name(enum gdb_osabi osabi)
 {
-  if (osabi >= GDB_OSABI_UNKNOWN && osabi < GDB_OSABI_INVALID)
+  if ((osabi >= GDB_OSABI_UNKNOWN) && (osabi < GDB_OSABI_INVALID))
     return gdb_osabi_names[osabi];
 
   return gdb_osabi_names[GDB_OSABI_INVALID];
@@ -679,7 +680,7 @@ show_osabi (struct ui_file *file, int from_tty, struct cmd_list_element *c,
 		      gdbarch_osabi_name (GDB_OSABI_DEFAULT));
 }
 
-extern initialize_file_ftype _initialize_gdb_osabi; /* -Wmissing-prototype */
+extern initialize_file_ftype _initialize_gdb_osabi; /* -Wmissing-prototypes */
 
 void
 _initialize_gdb_osabi(void)

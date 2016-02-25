@@ -63,15 +63,15 @@ extern void _initialize_source(void);
 
 static int get_filename_and_charpos(struct symtab *, char **);
 
-static void reverse_search_command(char *, int);
+static void reverse_search_command(const char *, int);
 
-static void forward_search_command(char *, int);
+static void forward_search_command(const char *, int);
 
-static void line_info(char *, int);
+static void line_info(const char *, int);
 
-static void source_info(char *, int);
+static void source_info(const char *, int);
 
-static void show_directories(char *, int);
+static void show_directories(const char *, int);
 
 /* Path of directories to search for source files.
    Same format as the PATH environment variable's value.  */
@@ -215,9 +215,9 @@ clear_current_source_symtab_and_line (void)
 
 /* Set the source file default for the "list" command to be S.
 
-   If S is NULL, and we don't have a default, find one.  This
+   If S is NULL, and we do NOT have a default, then find one.  This
    should only be called when the user actually tries to use the
-   default, since we produce an error if we can't find a reasonable
+   default, since we produce an error if we cannot find a reasonable
    default.  Also, since this can cause symbols to be read, doing it
    before we need to would make things slower than necessary.  */
 
@@ -263,7 +263,7 @@ select_source_symtab (struct symtab *s)
       ALL_SYMTABS (ofp, s)
 	{
 	  char *name = s->filename;
-	  int len = strlen (name);
+	  size_t len = strlen(name);
 	  if (!(len > 2 && (DEPRECATED_STREQ (&name[len - 2], ".h"))))
 	    {
 	      current_source_symtab = s;
@@ -281,7 +281,7 @@ select_source_symtab (struct symtab *s)
       ALL_OBJFILE_PSYMTABS (ofp, ps)
 	{
 	  char *name = ps->filename;
-	  int len = strlen (name);
+	  size_t len = strlen(name);
 	  if (!(len > 2 && (DEPRECATED_STREQ (&name[len - 2], ".h"))))
 	    {
 	      cs_pst = ps;
@@ -292,9 +292,9 @@ select_source_symtab (struct symtab *s)
     {
       if (cs_pst->readin)
 	{
-	  internal_error (__FILE__, __LINE__,
-			  _("select_source_symtab: "
-			  "readin pst found and no symtabs."));
+	  internal_error(__FILE__, __LINE__,
+			 _("select_source_symtab: "
+			   "readin pst found and no symtabs."));
 	}
       else
 	{
@@ -304,15 +304,16 @@ select_source_symtab (struct symtab *s)
   if (current_source_symtab)
     return;
 
-  error (_("Can't find a default source file"));
+  error (_("Cannot find a default source file"));
 }
-
+
+/* */
 static void
-show_directories (char *ignore, int from_tty)
+show_directories(const char *ignore, int from_tty)
 {
-  puts_filtered ("Source directories searched: ");
-  puts_filtered (source_path);
-  puts_filtered ("\n");
+  puts_filtered("Source directories searched: ");
+  puts_filtered(source_path);
+  puts_filtered("\n");
 }
 
 /* Forget what we learned about line positions in source files, and
@@ -375,7 +376,7 @@ void
 directory_command(const char *dirname, int from_tty)
 {
   dont_repeat();
-  /* FIXME, this goes to "delete dir"... */
+  /* FIXME: this goes to "delete dir"... */
   if (dirname == 0)
     {
       if (from_tty && query(_("Reinitialize source path to empty? ")))
@@ -416,12 +417,11 @@ add_path(const char *dirname, char **which_path, int parse_separators)
   if (dirname == 0)
     return;
 
-  dirname = xstrdup (dirname);
-  make_cleanup (xfree, dirname);
+  dirname = xstrdup(dirname);
+  make_cleanup(xfree, (void *)dirname);
 
-  do
-    {
-      char *name = dirname;
+  do {
+      const char *name = dirname;
       char *p;
       struct stat st;
 
@@ -438,11 +438,14 @@ add_path(const char *dirname, char **which_path, int parse_separators)
 	  }
 
 	if (separator == 0 && space == 0 && tab == 0)
-	  p = dirname = name + strlen (name);
+	  {
+	    dirname = (name + strlen(name));
+	    p = (char *)dirname;
+	  }
 	/* APPLE LOCAL begin huh? */
 	else if (parse_separators && *name == '"')
 	  {
-	    p = name + 1;
+	    p = (char *)(name + 1UL);
 
 	    while (*p != '\0')
 	      {
@@ -483,7 +486,7 @@ add_path(const char *dirname, char **which_path, int parse_separators)
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
       /* On MS-DOS and MS-Windows, h:\ is different from h: */
 	  && !(p == name + 3 && name[1] == ':') 	 /* "d:/" */
-#endif
+#endif /* HAVE_DOS_BASED_FILE_SYSTEM */
 	  && IS_DIR_SEPARATOR (p[-1]))
 	/* Sigh. "foo/" => "foo" */
 	--p;
@@ -522,17 +525,17 @@ add_path(const char *dirname, char **which_path, int parse_separators)
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
       else if (IS_ABSOLUTE_PATH (name) && p == name + 2) /* "d:" => "d:." */
 	name = concat (name, ".", (char *)NULL);
-#endif
+#endif /* HAVE_DOS_BASED_FILE_SYSTEM */
       else if (!IS_ABSOLUTE_PATH (name) && name[0] != '$')
 	name = concat (current_directory, SLASH_STRING, name, (char *)NULL);
       else
 	name = savestring (name, p - name);
-      make_cleanup (xfree, name);
+      make_cleanup(xfree, (void *)name);
 
-      /* Unless it's a variable, check existence.  */
+      /* Unless it is/was a variable, check existence: */
       if (name[0] != '$')
 	{
-	  /* These are warnings, not errors, since we don't want a
+	  /* These are warnings, not errors, since we do NOT want a
 	     non-existent directory in a .gdbinit file to stop processing
 	     of the .gdbinit file.
 
@@ -553,7 +556,7 @@ add_path(const char *dirname, char **which_path, int parse_separators)
 
     append:
       {
-	unsigned int len = strlen (name);
+	size_t len = strlen(name);
 
 	p = *which_path;
 	while (1)
@@ -614,13 +617,12 @@ add_path(const char *dirname, char **which_path, int parse_separators)
 	  }
       }
     skip_dup:;
-    }
-  while (*dirname != '\0');
+  } while (*dirname != '\0');
 }
 
-
+/* */
 static void
-source_info (char *ignore, int from_tty)
+source_info(const char *ignore, int from_tty)
 {
   struct symtab *s = current_source_symtab;
 
@@ -688,7 +690,7 @@ is_regular_file (const char *name)
    Otherwise, return -1, with errno set for the last name we tried to open.  */
 
 /*  >>>> This should only allow files of certain types,
-    >>>>  eg executable, non-directory */
+    >>>>  e.g. executable, non-directory */
 int
 openp(const char *path, int opts, const char *string,
       int mode, int prot, char **filename_opened)
@@ -737,7 +739,7 @@ openp(const char *path, int opts, const char *string,
 	    goto done;
     }
 
-  /* /foo => foo, to avoid multiple slashes that Emacs doesn't like. */
+  /* /foo => foo, to avoid multiple slashes that bother Emacs: */
   while (IS_DIR_SEPARATOR(string[0]))
     string++;
 
@@ -824,7 +826,7 @@ done:
 
 
 /* This is essentially a convenience, for clients that want the behaviour
-   of openp, using source_path, but that really don't want the file to be
+   of openp, using source_path, but that really do NOT want the file to be
    opened but want instead just to know what the full pathname is (as
    qualified against source_path).
 
@@ -930,10 +932,11 @@ open_source_file_fullpath(const char *dirname, const char *filename,
 
 /* Set the pairs of pathname substitutions to use when loading source
    files. We parse this option list into PATHNAME_SUBSTITUTIONS_ARGV once
-   and then re-use it in open_source_file_fullpath ().  */
+   and then re-use it in open_source_file_fullpath().  */
 
 static void
-set_pathname_substitution (char *args, int from_tty, struct cmd_list_element * c)
+set_pathname_substitution(const char *args, int from_tty,
+			  struct cmd_list_element *c)
 {
   int success;
   forget_cached_source_info();
@@ -1103,7 +1106,7 @@ find_and_open_source(struct objfile *objfile, const char *filename,
     result = openp (path, OPF_SEARCH_IN_PATH, filename, OPEN_MODE, 0, fullname);
   if (result < 0)
     {
-      /* Didn't work.  Try using just the basename. */
+      /* Failed.  Try using just the basename. */
       p = lbasename (filename);
       if (p != filename)
         result = openp (path, OPF_SEARCH_IN_PATH, p, OPEN_MODE, 0, fullname);
@@ -1156,7 +1159,7 @@ symtab_to_fullname (struct symtab *s)
   if (s->fullname)
     return s->fullname;
 
-  /* Don't check s->fullname here, the file could have been
+  /* Do NOT check s->fullname here, the file could have been
      deleted/moved/..., look for it again */
   r = find_and_open_source (s->objfile, s->filename, s->dirname,
 			    &s->fullname);
@@ -1191,7 +1194,7 @@ psymtab_to_fullname (struct partial_symtab *ps)
   if (ps->fullname)
     return ps->fullname;
 
-  /* Don't check ps->fullname here, the file could have been
+  /* Do NOT check ps->fullname here, the file could have been
      deleted/moved/..., look for it again */
   r = find_and_open_source (ps->objfile, ps->filename, ps->dirname,
 			    &ps->fullname);
@@ -1319,7 +1322,7 @@ find_source_lines (struct symtab *s, int desc)
 /* Return the character position of a line LINE in symtab S.
    Return 0 if anything is invalid.  */
 
-#if 0				/* Currently unused */
+#ifdef ALLOW_UNUSED_FUNCTIONS			/* Currently unused */
 
 int
 source_line_charpos (struct symtab *s, int line)
@@ -1355,7 +1358,7 @@ source_charpos_line (struct symtab *s, int chr)
   return line;
 }
 
-#endif /* 0 */
+#endif /* ALLOW_UNUSED_FUNCTIONS */
 
 
 /* Get full pathname and line number positions for a symtab.
@@ -1403,7 +1406,7 @@ identify_source_line (struct symtab *s, int line, int mid_statement,
   if (s->fullname == 0)
     return 0;
   if (line > s->nlines)
-    /* Don't index off the end of the line_charpos array.  */
+    /* Do NOT index off the end of the line_charpos array: */
     return 0;
   annotate_source (s->fullname, line, s->line_charpos[line - 1],
 		   mid_statement, pc);
@@ -1457,11 +1460,11 @@ print_source_lines_base (struct symtab *s, int line, int nlines, int noerror)
     {
       desc = -1;
       noerror = 1;
-      /* We're overloading desc == 0 here to get the case where the ui_out
-	 doesn't want to do source listing not to do that.  But if we allow
+      /* We are/were overloading desc == 0 here to get the case where the ui_out
+	 does NOT want to do source listing not to do that.  But if we allow
 	 that to set last_source_error we permanently scotch any more source
 	 listing (for instance through "interpreter-exec" in the mi.  So
-	 remind ourselves we didn't mean that...  */
+	 remind ourselves we did NOT mean that...  */
       just_kidding_about_error = 1;
     }
 
@@ -1579,10 +1582,9 @@ print_source_lines (struct symtab *s, int line, int nlines, int noerror)
   print_source_lines_base (s, line, nlines, noerror);
 }
 
-/* Print info on range of pc's in a specified line.  */
-
+/* Print info on range of pc's in a specified line: */
 static void
-line_info (char *arg, int from_tty)
+line_info(const char *arg, int from_tty)
 {
   struct symtabs_and_lines sals;
   struct symtab_and_line sal;
@@ -1618,7 +1620,7 @@ line_info (char *arg, int from_tty)
 	  printf_filtered (_("No line number information available"));
 	  if (sal.pc != 0)
 	    {
-	      /* This is useful for "info line *0x7f34".  If we can't tell the
+	      /* This is useful for "info line *0x7f34".  If we cannot tell the
 	         user about a source line, at least let them have the symbolic
 	         address.  */
 	      printf_filtered (" for address ");
@@ -1662,7 +1664,7 @@ line_info (char *arg, int from_tty)
 	  last_line_listed = sal.line + 1;
 
 	  /* If this is the only line, show the source code.  If it could
-	     not find the file, don't do anything special.  */
+	     not find the file, then do NOT do anything special.  */
 	  if (annotation_level && sals.nelts == 1)
 	    identify_source_line (sal.symtab, sal.line, 0, start_pc);
 	}
@@ -1722,7 +1724,7 @@ void convert_sal(struct symtab_and_line *sal)
 
 /* Commands to search the source file for a regexp: */
 static void
-forward_search_command(char *regex, int from_tty)
+forward_search_command(const char *regex, int from_tty)
 {
   int c;
   int desc;
@@ -1785,7 +1787,7 @@ forward_search_command(char *regex, int from_tty)
       } while ((c != '\n') && ((c = getc(stream)) >= 0));
 
       /* Remove the \r, if any, at the end of the line, otherwise
-         regular expressions that end with $ or \n won't work.  */
+         regular expressions that end with $ or \n will fail.  */
       if (((p - buf) > 1) && (p[-2] == '\r'))
 	{
 	  p--;
@@ -1815,7 +1817,7 @@ forward_search_command(char *regex, int from_tty)
 
 /* FIXME: needs comment: */
 static void
-reverse_search_command(char *regex, int from_tty)
+reverse_search_command(const char *regex, int from_tty)
 {
   int c;
   int desc;
@@ -1867,7 +1869,7 @@ reverse_search_command(char *regex, int from_tty)
       } while ((c != '\n') && ((c = getc(stream)) >= 0));
 
       /* Remove the \r, if any, at the end of the line, otherwise
-         regular expressions that end with $ or \n won't work.  */
+         regular expressions that end with $ or \n will fail.  */
       if (((p - buf) > 1) && (p[-2] == '\r'))
 	{
 	  p--;

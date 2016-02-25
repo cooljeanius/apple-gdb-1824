@@ -4743,29 +4743,29 @@ ptid_t pid_to_ptid(int pid)
 }
 
 /* Fetch the pid (process id) component from a ptid: */
-int ptid_get_pid(ptid_t ptid)
+int ATTRIBUTE_CONST
+ptid_get_pid(ptid_t ptid)
 {
   return ptid.pid;
 }
 
 /* Fetch the lwp (lightweight process) component from a ptid: */
-long ptid_get_lwp(ptid_t ptid)
+long ATTRIBUTE_CONST
+ptid_get_lwp(ptid_t ptid)
 {
   return ptid.lwp;
 }
 
-/* Fetch the tid (thread id) component from a ptid.  */
-
-long
-ptid_get_tid (ptid_t ptid)
+/* Fetch the tid (thread id) component from a ptid: */
+long ATTRIBUTE_CONST
+ptid_get_tid(ptid_t ptid)
 {
   return ptid.tid;
 }
 
-/* ptid_equal() is used to test equality of two ptids.  */
-
-int
-ptid_equal (ptid_t ptid1, ptid_t ptid2)
+/* ptid_equal() is used to test equality of two ptids: */
+int ATTRIBUTE_CONST
+ptid_equal(ptid_t ptid1, ptid_t ptid2)
 {
   return (ptid1.pid == ptid2.pid && ptid1.lwp == ptid2.lwp
 	  && ptid1.tid == ptid2.tid);

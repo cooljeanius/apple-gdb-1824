@@ -464,7 +464,7 @@ struct cleanup
 
 #ifndef ATTR_NORETURN
 # if defined(__GNUC__) && ((__GNUC__ > 2) || ((__GNUC__ == 2) && (__GNUC_MINOR__ >= 7)))
-#  define ATTR_NORETURN __attribute__ ((noreturn))
+#  define ATTR_NORETURN __attribute__((noreturn))
 # else
 #  define ATTR_NORETURN		/* nothing */
 # endif /* __GNUC__ version check */
@@ -472,7 +472,7 @@ struct cleanup
 
 #ifndef ATTR_FORMAT
 # if defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 4))
-#  define ATTR_FORMAT(type, x, y) __attribute__ ((format(type, x, y)))
+#  define ATTR_FORMAT(type, x, y) __attribute__((format(type, x, y)))
 # else
 #  define ATTR_FORMAT(type, x, y)	/* nothing */
 # endif /* __GNUC__ version check */

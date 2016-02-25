@@ -827,7 +827,7 @@ target_signal_from_command (int num)
 Use \"info signals\" for a list of symbolic signals.");
 }
 
-extern initialize_file_ftype _initialize_signals; /* -Wmissing-prototype */
+extern initialize_file_ftype _initialize_signals; /* -Wmissing-prototypes */
 
 void
 _initialize_signals (void)

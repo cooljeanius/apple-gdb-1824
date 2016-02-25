@@ -799,9 +799,10 @@ variable:	name_not_typename
 					 name.  That will start with "-[" or "+[", and since
 					 those aren't legal C++ names that's a pretty good
 					 test.  */
-				      char *name = SYMBOL_NATURAL_NAME (func);
-				      if (name != NULL
-					  && strlen (name) > 2
+				      const char *name;
+				      name = SYMBOL_NATURAL_NAME(func);
+				      if ((name != NULL)
+					  && (strlen(name) > 2UL)
 					  && ((name[0] == '-' || name[0] == '+')
 					      && name[1] == '['))
 					{

@@ -126,7 +126,7 @@ extern struct cmd_list_element *add_abbrev_prefix_cmd(const char *,
 								  int),
 						      const char *,
 						      struct cmd_list_element
-						      **, char *, int,
+						      **, const char *, int,
 						      struct cmd_list_element
 						      **);
 

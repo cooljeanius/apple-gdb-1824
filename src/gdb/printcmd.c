@@ -80,7 +80,7 @@ static CORE_ADDR last_examine_address;
 
 static struct value *last_examine_value;
 
-/* APPLE LOCAL: Use this to truncate the symbolic name in disassembly output.  */
+/* APPLE LOCAL: Use this to truncate the symbolic name in disassembly output: */
 int disassembly_name_length = -1;
 
 /* Largest offset between a symbolic value and an address, that will be
@@ -146,51 +146,51 @@ static int display_number;
 
 /* Prototypes for exported functions. */
 
-void output_command (char *, int);
+void output_command(const char *, int);
 
-void _initialize_printcmd (void);
+void _initialize_printcmd(void);
 
 /* Prototypes for local functions. */
 
-static void delete_display (int);
+static void delete_display(int);
 
-static void enable_display (char *, int);
+static void enable_display(const char *, int);
 
-static void disable_display_command (char *, int);
+static void disable_display_command(const char *, int);
 
-static void printf_command (char *, int);
+static void printf_command(const char *, int);
 
-static void display_info (char *, int);
+static void display_info(const char *, int);
 
-static void do_one_display (struct display *);
+static void do_one_display(struct display *);
 
-static void undisplay_command (char *, int);
+static void undisplay_command(const char *, int);
 
-static void free_display (struct display *);
+static void free_display(struct display *);
 
-static void display_command (char *, int);
+static void display_command(const char *, int);
 
-void x_command (char *, int);
+void x_command(const char *, int);
 
-static void address_info (char *, int);
+static void address_info(const char *, int);
 
-static void set_command (char *, int);
+static void set_command(const char *, int);
 
-static void call_command (char *, int);
+static void call_command(const char *, int);
 
-static void inspect_command (char *, int);
+static void inspect_command(const char *, int);
 
-static void print_command (char *, int);
+static void print_command(const char *, int);
 
-static void print_command_1(char *, int, int);
+static void print_command_1(const char *, int, int);
 
 static void validate_format(struct format_data, const char *);
 
 static void print_formatted(struct value *, int, int, struct ui_file *);
 
-static struct format_data decode_format (char **, int, int);
+static struct format_data decode_format(const char **, int, int);
 
-static void sym_info (char *, int);
+static void sym_info(const char *, int);
 
 
 /* Decode a format specification.  *STRING_PTR should point to it.
@@ -204,10 +204,10 @@ static void sym_info (char *, int);
    past the specification and past all whitespace following it.  */
 
 static struct format_data
-decode_format (char **string_ptr, int oformat, int osize)
+decode_format(const char **string_ptr, int oformat, int osize)
 {
   struct format_data val;
-  char *p = *string_ptr;
+  const char *p = *string_ptr;
 
   val.format = '?';
   val.size = '?';
@@ -1002,7 +1002,7 @@ validate_format(struct format_data fmt, const char *cmdname)
 static int print_command_runs_all_threads_p = 1;
 
 static void
-print_command_1 (char *exp, int inspect, int voidprint)
+print_command_1(const char *exp, int inspect, int voidprint)
 {
   struct expression *expr;
   struct cleanup *old_chain = 0;
@@ -1092,7 +1092,7 @@ print_command_1 (char *exp, int inspect, int voidprint)
 }
 
 static void
-print_command(char *exp, int from_tty)
+print_command(const char *exp, int from_tty)
 {
   print_command_1(exp, 0, 1);
 }
@@ -1102,20 +1102,21 @@ extern int epoch_interface;
 
 /* Same as print, except in epoch, it gets its own window: */
 static void
-inspect_command(char *exp, int from_tty)
+inspect_command(const char *exp, int from_tty)
 {
   print_command_1(exp, epoch_interface, 1);
 }
 
 /* Same as print, except it does NOT print void results: */
 static void
-call_command(char *exp, int from_tty)
+call_command(const char *exp, int from_tty)
 {
   print_command_1(exp, 0, 0);
 }
 
+/* */
 void
-output_command(char *exp, int from_tty)
+output_command(const char *exp, int from_tty)
 {
   struct expression *expr;
   struct cleanup *old_chain;
@@ -1150,8 +1151,9 @@ output_command(char *exp, int from_tty)
   do_cleanups(old_chain);
 }
 
+/* */
 static void
-set_command (char *exp, int from_tty)
+set_command(const char *exp, int from_tty)
 {
   /* APPLE LOCAL begin initialize innermost_block  */
   struct expression *expr;
@@ -1165,8 +1167,9 @@ set_command (char *exp, int from_tty)
   do_cleanups (old_chain);
 }
 
+/* */
 static void
-sym_info (char *arg, int from_tty)
+sym_info(const char *arg, int from_tty)
 {
   struct minimal_symbol *msymbol;
   struct objfile *objfile;
@@ -1211,8 +1214,9 @@ sym_info (char *arg, int from_tty)
     printf_filtered (_("No symbol matches %s.\n"), arg);
 }
 
+/* */
 static void
-address_info (char *exp, int from_tty)
+address_info(const char *exp, int from_tty)
 {
   struct symbol *sym;
   struct block *bl;
@@ -1456,9 +1460,10 @@ address_info (char *exp, int from_tty)
     }
   printf_filtered (".\n");
 }
-
+
+/* */
 void
-x_command (char *exp, int from_tty)
+x_command(const char *exp, int from_tty)
 {
   struct expression *expr;
   struct format_data fmt;
@@ -1486,7 +1491,7 @@ x_command (char *exp, int from_tty)
          if this command is repeated with Newline.
          But don't clobber a user-defined command's definition.  */
       if (from_tty)
-	*exp = 0;
+	*(char *)exp = 0;
       old_chain = make_cleanup (free_current_contents, &expr);
       val = evaluate_expression (expr);
       if (TYPE_CODE (value_type (val)) == TYPE_CODE_REF)
@@ -1553,7 +1558,7 @@ x_command (char *exp, int from_tty)
    Specify the expression.  */
 
 static void
-display_command(char *exp, int from_tty)
+display_command(const char *exp, int from_tty)
 {
   struct format_data fmt;
   struct expression *expr;
@@ -1670,10 +1675,10 @@ delete_display (int num)
    Specify the element numbers.  */
 
 static void
-undisplay_command (char *args, int from_tty)
+undisplay_command(const char *args, int from_tty)
 {
-  char *p = args;
-  char *p1;
+  const char *p = args;
+  const char *p1;
   int num;
 
   if (args == 0)
@@ -1830,8 +1835,9 @@ disable_current_display (void)
   current_display_number = -1;
 }
 
+/* */
 static void
-display_info (char *ignore, int from_tty)
+display_info(const char *ignore, int from_tty)
 {
   struct display *d;
 
@@ -1857,11 +1863,12 @@ Num Enb Expression\n"));
     }
 }
 
+/* */
 static void
-enable_display (char *args, int from_tty)
+enable_display(const char *args, int from_tty)
 {
-  char *p = args;
-  char *p1;
+  const char *p = args;
+  const char *p1;
   int num;
   struct display *d;
 
@@ -1895,11 +1902,12 @@ enable_display (char *args, int from_tty)
       }
 }
 
+/* */
 static void
-disable_display_command (char *args, int from_tty)
+disable_display_command(const char *args, int from_tty)
 {
-  char *p = args;
-  char *p1;
+  const char *p = args;
+  const char *p1;
   struct display *d;
 
   if (p == 0)
@@ -1947,10 +1955,10 @@ print_variable_value(struct symbol *var, struct frame_info *frame,
 #endif /* any gcc */
 
 static void
-printf_command(char *arg, int from_tty)
+printf_command(const char *arg, int from_tty)
 {
   char *f = NULL;
-  char *s = arg;
+  const char *s = arg;
   char *string = NULL;
   struct value **val_args;
   char *substrings;
@@ -2238,7 +2246,7 @@ printf_command(char *arg, int from_tty)
 
 /* APPLE LOCAL: invoke-block */
 static void
-invoke_block_command(char *args, int from_tty)
+invoke_block_command(const char *args, int from_tty)
 {
   char **argv;
   struct cleanup *argv_cleanup;

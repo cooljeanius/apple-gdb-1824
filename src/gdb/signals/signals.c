@@ -217,7 +217,7 @@ static struct {
 
 
 /* Return the string for a signal: */
-const char *
+const char * ATTRIBUTE_CONST
 target_signal_to_string(enum target_signal sig)
 {
   if ((sig >= TARGET_SIGNAL_FIRST) && (sig <= TARGET_SIGNAL_LAST))
@@ -227,7 +227,7 @@ target_signal_to_string(enum target_signal sig)
 }
 
 /* Return the name for a signal: */
-const char *
+const char * ATTRIBUTE_CONST
 target_signal_to_name(enum target_signal sig)
 {
   if ((sig >= TARGET_SIGNAL_FIRST) && (sig <= TARGET_SIGNAL_LAST)
@@ -266,7 +266,7 @@ target_signal_from_name(const char *name)
 
 /* Convert host signal to our signals.  */
 enum target_signal
-target_signal_from_host (int hostsig)
+target_signal_from_host(int hostsig)
 {
   /* A switch statement would make sense but would require special kludges
      to deal with the cases where more than one signal has the same number.  */
@@ -274,221 +274,221 @@ target_signal_from_host (int hostsig)
   if (hostsig == 0)
     return TARGET_SIGNAL_0;
 
-#if defined (SIGHUP)
+#if defined(SIGHUP)
   if (hostsig == SIGHUP)
     return TARGET_SIGNAL_HUP;
-#endif
-#if defined (SIGINT)
+#endif /* SIGHUP */
+#if defined(SIGINT)
   if (hostsig == SIGINT)
     return TARGET_SIGNAL_INT;
-#endif
-#if defined (SIGQUIT)
+#endif /* SIGINT */
+#if defined(SIGQUIT)
   if (hostsig == SIGQUIT)
     return TARGET_SIGNAL_QUIT;
-#endif
-#if defined (SIGILL)
+#endif /* SIGQUIT */
+#if defined(SIGILL)
   if (hostsig == SIGILL)
     return TARGET_SIGNAL_ILL;
-#endif
-#if defined (SIGTRAP)
+#endif /* SIGILL */
+#if defined(SIGTRAP)
   if (hostsig == SIGTRAP)
     return TARGET_SIGNAL_TRAP;
-#endif
-#if defined (SIGABRT)
+#endif /* SIGTRAP */
+#if defined(SIGABRT)
   if (hostsig == SIGABRT)
     return TARGET_SIGNAL_ABRT;
-#endif
-#if defined (SIGEMT)
+#endif /* SIGABRT */
+#if defined(SIGEMT)
   if (hostsig == SIGEMT)
     return TARGET_SIGNAL_EMT;
-#endif
-#if defined (SIGFPE)
+#endif /* SIGEMT */
+#if defined(SIGFPE)
   if (hostsig == SIGFPE)
     return TARGET_SIGNAL_FPE;
-#endif
-#if defined (SIGKILL)
+#endif /* SIGFPE */
+#if defined(SIGKILL)
   if (hostsig == SIGKILL)
     return TARGET_SIGNAL_KILL;
-#endif
-#if defined (SIGBUS)
+#endif /* SIGKILL */
+#if defined(SIGBUS)
   if (hostsig == SIGBUS)
     return TARGET_SIGNAL_BUS;
-#endif
-#if defined (SIGSEGV)
+#endif /* SIGBUS */
+#if defined(SIGSEGV)
   if (hostsig == SIGSEGV)
     return TARGET_SIGNAL_SEGV;
-#endif
-#if defined (SIGSYS)
+#endif /* SIGSEGV */
+#if defined(SIGSYS)
   if (hostsig == SIGSYS)
     return TARGET_SIGNAL_SYS;
-#endif
-#if defined (SIGPIPE)
+#endif /* SIGSYS */
+#if defined(SIGPIPE)
   if (hostsig == SIGPIPE)
     return TARGET_SIGNAL_PIPE;
-#endif
-#if defined (SIGALRM)
+#endif /* SIGPIPE */
+#if defined(SIGALRM)
   if (hostsig == SIGALRM)
     return TARGET_SIGNAL_ALRM;
-#endif
-#if defined (SIGTERM)
+#endif /* SIGALRM */
+#if defined(SIGTERM)
   if (hostsig == SIGTERM)
     return TARGET_SIGNAL_TERM;
-#endif
-#if defined (SIGUSR1)
+#endif /* SIGTERM */
+#if defined(SIGUSR1)
   if (hostsig == SIGUSR1)
     return TARGET_SIGNAL_USR1;
-#endif
-#if defined (SIGUSR2)
+#endif /* SIGUSR1 */
+#if defined(SIGUSR2)
   if (hostsig == SIGUSR2)
     return TARGET_SIGNAL_USR2;
-#endif
-#if defined (SIGCLD)
+#endif /* SIGUSR2 */
+#if defined(SIGCLD)
   if (hostsig == SIGCLD)
     return TARGET_SIGNAL_CHLD;
-#endif
-#if defined (SIGCHLD)
+#endif /* SIGCLD */
+#if defined(SIGCHLD)
   if (hostsig == SIGCHLD)
     return TARGET_SIGNAL_CHLD;
-#endif
-#if defined (SIGPWR)
+#endif /* SIGCHLD */
+#if defined(SIGPWR)
   if (hostsig == SIGPWR)
     return TARGET_SIGNAL_PWR;
-#endif
-#if defined (SIGWINCH)
+#endif /* SIGPWR */
+#if defined(SIGWINCH)
   if (hostsig == SIGWINCH)
     return TARGET_SIGNAL_WINCH;
-#endif
-#if defined (SIGURG)
+#endif /* SIGWINCH */
+#if defined(SIGURG)
   if (hostsig == SIGURG)
     return TARGET_SIGNAL_URG;
-#endif
-#if defined (SIGIO)
+#endif /* SIGURG */
+#if defined(SIGIO)
   if (hostsig == SIGIO)
     return TARGET_SIGNAL_IO;
-#endif
-#if defined (SIGPOLL)
+#endif /* SIGIO */
+#if defined(SIGPOLL)
   if (hostsig == SIGPOLL)
     return TARGET_SIGNAL_POLL;
-#endif
-#if defined (SIGSTOP)
+#endif /* SIGPOLL */
+#if defined(SIGSTOP)
   if (hostsig == SIGSTOP)
     return TARGET_SIGNAL_STOP;
-#endif
-#if defined (SIGTSTP)
+#endif /* SIGSTOP */
+#if defined(SIGTSTP)
   if (hostsig == SIGTSTP)
     return TARGET_SIGNAL_TSTP;
-#endif
-#if defined (SIGCONT)
+#endif /* SIGTSTP */
+#if defined(SIGCONT)
   if (hostsig == SIGCONT)
     return TARGET_SIGNAL_CONT;
-#endif
-#if defined (SIGTTIN)
+#endif /* SIGCONT */
+#if defined(SIGTTIN)
   if (hostsig == SIGTTIN)
     return TARGET_SIGNAL_TTIN;
-#endif
-#if defined (SIGTTOU)
+#endif /* SIGTTIN */
+#if defined(SIGTTOU)
   if (hostsig == SIGTTOU)
     return TARGET_SIGNAL_TTOU;
-#endif
-#if defined (SIGVTALRM)
+#endif /* SIGTTOU */
+#if defined(SIGVTALRM)
   if (hostsig == SIGVTALRM)
     return TARGET_SIGNAL_VTALRM;
-#endif
-#if defined (SIGPROF)
+#endif /* SIGVTALRM */
+#if defined(SIGPROF)
   if (hostsig == SIGPROF)
     return TARGET_SIGNAL_PROF;
-#endif
-#if defined (SIGXCPU)
+#endif /* SIGPROF */
+#if defined(SIGXCPU)
   if (hostsig == SIGXCPU)
     return TARGET_SIGNAL_XCPU;
-#endif
-#if defined (SIGXFSZ)
+#endif /* SIGXCPU */
+#if defined(SIGXFSZ)
   if (hostsig == SIGXFSZ)
     return TARGET_SIGNAL_XFSZ;
-#endif
-#if defined (SIGWIND)
+#endif /* SIGXFSZ */
+#if defined(SIGWIND)
   if (hostsig == SIGWIND)
     return TARGET_SIGNAL_WIND;
-#endif
-#if defined (SIGPHONE)
+#endif /* SIGWIND */
+#if defined(SIGPHONE)
   if (hostsig == SIGPHONE)
     return TARGET_SIGNAL_PHONE;
-#endif
-#if defined (SIGLOST)
+#endif /* SIGPHONE */
+#if defined(SIGLOST)
   if (hostsig == SIGLOST)
     return TARGET_SIGNAL_LOST;
-#endif
-#if defined (SIGWAITING)
+#endif /* SIGLOST */
+#if defined(SIGWAITING)
   if (hostsig == SIGWAITING)
     return TARGET_SIGNAL_WAITING;
-#endif
-#if defined (SIGCANCEL)
+#endif /* SIGWAITING */
+#if defined(SIGCANCEL)
   if (hostsig == SIGCANCEL)
     return TARGET_SIGNAL_CANCEL;
-#endif
-#if defined (SIGLWP)
+#endif /* SIGCANCEL */
+#if defined(SIGLWP)
   if (hostsig == SIGLWP)
     return TARGET_SIGNAL_LWP;
-#endif
-#if defined (SIGDANGER)
+#endif /* SIGLWP */
+#if defined(SIGDANGER)
   if (hostsig == SIGDANGER)
     return TARGET_SIGNAL_DANGER;
-#endif
-#if defined (SIGGRANT)
+#endif /* SIGDANGER */
+#if defined(SIGGRANT)
   if (hostsig == SIGGRANT)
     return TARGET_SIGNAL_GRANT;
-#endif
-#if defined (SIGRETRACT)
+#endif /* SIGGRANT */
+#if defined(SIGRETRACT)
   if (hostsig == SIGRETRACT)
     return TARGET_SIGNAL_RETRACT;
-#endif
-#if defined (SIGMSG)
+#endif /* SIGRETRACT */
+#if defined(SIGMSG)
   if (hostsig == SIGMSG)
     return TARGET_SIGNAL_MSG;
-#endif
-#if defined (SIGSOUND)
+#endif /* SIGMSG */
+#if defined(SIGSOUND)
   if (hostsig == SIGSOUND)
     return TARGET_SIGNAL_SOUND;
-#endif
-#if defined (SIGSAK)
+#endif /* SIGSOUND */
+#if defined(SIGSAK)
   if (hostsig == SIGSAK)
     return TARGET_SIGNAL_SAK;
-#endif
-#if defined (SIGPRIO)
+#endif /* SIGSAK */
+#if defined(SIGPRIO)
   if (hostsig == SIGPRIO)
     return TARGET_SIGNAL_PRIO;
-#endif
+#endif /* SIGPRIO */
 
   /* Mach exceptions.  Assumes that the values for EXC_ are positive! */
-#if defined (EXC_BAD_ACCESS) && defined (_NSIG)
-  if (hostsig == _NSIG + EXC_BAD_ACCESS)
+#if defined(EXC_BAD_ACCESS) && defined(_NSIG)
+  if (hostsig == (_NSIG + EXC_BAD_ACCESS))
     return TARGET_EXC_BAD_ACCESS;
-#endif
-#if defined (EXC_BAD_INSTRUCTION) && defined (_NSIG)
-  if (hostsig == _NSIG + EXC_BAD_INSTRUCTION)
+#endif /* EXC_BAD_ACCESS && _NSIG */
+#if defined(EXC_BAD_INSTRUCTION) && defined(_NSIG)
+  if (hostsig == (_NSIG + EXC_BAD_INSTRUCTION))
     return TARGET_EXC_BAD_INSTRUCTION;
-#endif
-#if defined (EXC_ARITHMETIC) && defined (_NSIG)
-  if (hostsig == _NSIG + EXC_ARITHMETIC)
+#endif /* EXC_BAD_INSTRUCTION && _NSIG */
+#if defined(EXC_ARITHMETIC) && defined(_NSIG)
+  if (hostsig == (_NSIG + EXC_ARITHMETIC))
     return TARGET_EXC_ARITHMETIC;
-#endif
-#if defined (EXC_EMULATION) && defined (_NSIG)
-  if (hostsig == _NSIG + EXC_EMULATION)
+#endif /* EXC_ARITHMETIC && _NSIG */
+#if defined(EXC_EMULATION) && defined(_NSIG)
+  if (hostsig == (_NSIG + EXC_EMULATION))
     return TARGET_EXC_EMULATION;
-#endif
-#if defined (EXC_SOFTWARE) && defined (_NSIG)
-  if (hostsig == _NSIG + EXC_SOFTWARE)
+#endif /* EXC_EMULATION && _NSIG */
+#if defined(EXC_SOFTWARE) && defined(_NSIG)
+  if (hostsig == (_NSIG + EXC_SOFTWARE))
     return TARGET_EXC_SOFTWARE;
-#endif
-#if defined (EXC_BREAKPOINT) && defined (_NSIG)
-  if (hostsig == _NSIG + EXC_BREAKPOINT)
+#endif /* EXC_SOFTWARE && _NSIG */
+#if defined(EXC_BREAKPOINT) && defined(_NSIG)
+  if (hostsig == (_NSIG + EXC_BREAKPOINT))
     return TARGET_EXC_BREAKPOINT;
-#endif
+#endif /* EXC_BREAKPOINT && _NSIG */
 
-#if defined (SIGINFO)
+#if defined(SIGINFO)
   if (hostsig == SIGINFO)
     return TARGET_SIGNAL_INFO;
-#endif
+#endif /* SIGINFO */
 
 #if defined(REALTIME_LO)
   if ((hostsig >= REALTIME_LO) && (hostsig < REALTIME_HI))
@@ -503,8 +503,12 @@ target_signal_from_host (int hostsig)
 	return ((enum target_signal)
 		(hostsig - 64 + (int)TARGET_SIGNAL_REALTIME_64));
       else
-	error("GDB bug: target.c (target_signal_from_host): unrecognized real-time signal");
+	error("GDB bug: signals/signals.c (target_signal_from_host): unrecognized real-time signal");
     }
+#else
+# if defined(__GNUC__) && defined(ATTRIBUTE_CONST)
+  asm("");
+# endif /* __GNUC__ && ATTRIBUTE_CONST */
 #endif /* REALTIME_LO */
 
   return TARGET_SIGNAL_UNKNOWN;
@@ -823,11 +827,14 @@ Use \"info signals\" for a list of symbolic signals.");
 }
 
 #ifndef GDBSERVER
-extern initialize_file_ftype _initialize_signals; /* -Wmissing-prototype */
+extern initialize_file_ftype _initialize_signals; /* -Wmissing-prototypes */
+
+int signals_c_inited = 0; /* Declared in "target.h" */
 
 void
 _initialize_signals(void)
 {
+  signals_c_inited = 1;
   if (strcmp(signals[TARGET_SIGNAL_LAST].string, "TARGET_SIGNAL_MAGIC") != 0)
     internal_error(__FILE__, __LINE__, "failed internal consistency check");
 }

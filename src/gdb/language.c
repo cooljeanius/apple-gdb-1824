@@ -1086,7 +1086,7 @@ language_class_name_from_physname (const struct language_defn *current_language,
 
 /* APPLE LOCAL: Don't include '/' in this list.  See also the copy of this
    string in completer.c:gdb_completer_command_word_break_characters().  */
-const char *
+const char * ATTRIBUTE_CONST
 default_word_break_characters(void)
 {
   return " \t\n!@#$%^&*()+=|~`}{[]\"';:?>.<,-";

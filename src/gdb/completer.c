@@ -94,7 +94,7 @@ const char *gdb_completer_filename_word_break_characters = " ";
 static const char *gdb_completer_quote_characters = "'";
 
 /* Accessor for some completer data that may interest other files: */
-const char *
+const char * ATTRIBUTE_CONST
 get_gdb_completer_quote_characters(void)
 {
   return gdb_completer_quote_characters;
@@ -109,7 +109,7 @@ readline_line_completion_function(const char *text, int matches)
 
 /* This can be used for functions which don't want to complete on symbols
    but don't want to complete on anything else either.  */
-char **
+char ** ATTRIBUTE_CONST
 noop_completer(const char *text ATTRIBUTE_UNUSED, char *prefix ATTRIBUTE_UNUSED)
 {
   return (char **)NULL;
