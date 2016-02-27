@@ -593,8 +593,8 @@ parse_nested_classes_for_hpacc(char *name, int len, char **token,
      consider *prefixes* of the string; there is no need to look up
      "B::C" separately as a symbol in the previous example. */
 
-  char *p;
-  char *start, *end;
+  const char *p;
+  const char *start, *end;
   char *prefix = NULL;
   char *tmp;
   struct symbol *sym_class = NULL;
@@ -602,7 +602,7 @@ parse_nested_classes_for_hpacc(char *name, int len, char **token,
   struct type *t;
   int prefix_len = 0;
   int done = 0;
-  char *q;
+  const char *q;
 
   /* Check for HP-compiled executable -- in other cases
      return NULL, and caller must default to standard GDB
@@ -721,8 +721,9 @@ parse_nested_classes_for_hpacc(char *name, int len, char **token,
   return sym_var ? sym_var : sym_class;		/* found */
 }
 
-char *
-find_template_name_end (char *p)
+/* */
+const char *
+find_template_name_end(const char *p)
 {
   int depth = 1;
   int just_seen_right = 0;

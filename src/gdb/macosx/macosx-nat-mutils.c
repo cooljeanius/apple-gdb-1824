@@ -57,7 +57,11 @@
 #elif defined(TARGET_AARCH64)
 # include "aarch64-tdep.h"
 #else
-# error "Unrecognized target architecture."
+# ifdef S_SPLINT_S
+#  include "macosx-tdep.h"
+# else
+#  error "Unrecognized target architecture."
+# endif /* S_SPLINT_S */
 #endif /* TARGET_foo */
 
 #include "macosx-nat-mutils.h"

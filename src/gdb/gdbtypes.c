@@ -3816,14 +3816,6 @@ gdbtypes_post_init (struct gdbarch *gdbarch)
   return builtin_type;
 }
 
-/* the consts here are hard to work around: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic push
- #  pragma GCC diagnostic ignored "-Wdeclaration-after-statement"
-# endif /* gcc 4.6+ */
-#endif /* any gcc, but not g++ */
-
 /* APPLE LOCAL BEGIN: Helper functions for easily building bitfield
    built in types.
 
@@ -3858,8 +3850,9 @@ build_builtin_enum(const char *name, uint32_t size, int flags,
   int i;
   struct type *t = init_type(TYPE_CODE_ENUM, size, flags, xstrdup(name),
 			     (struct objfile *)NULL);
+  size_t fields_size;
   TYPE_NFIELDS(t) = num_enums;
-  const size_t fields_size = (sizeof(struct field) * TYPE_NFIELDS(t));
+  fields_size = (sizeof(struct field) * TYPE_NFIELDS(t));
   TYPE_FIELDS(t) = (struct field *)xmalloc(fields_size);
   memset(TYPE_FIELDS(t), 0, fields_size);
   for (i = 0; i < (int)num_enums; i++)
@@ -3902,9 +3895,10 @@ build_builtin_bitfield(const char *name, uint32_t size,
 {
   struct type *t;
   int i;
+  size_t fields_size;
   t = init_composite_type(xstrdup(name), TYPE_CODE_STRUCT);
   TYPE_NFIELDS(t) = num_bitfields;
-  const size_t fields_size = (sizeof(struct field) * TYPE_NFIELDS(t));
+  fields_size = (sizeof(struct field) * TYPE_NFIELDS(t));
   TYPE_FIELDS(t) = (struct field *)xmalloc(fields_size);
   memset(TYPE_FIELDS(t), 0, fields_size);
 
@@ -3919,13 +3913,6 @@ build_builtin_bitfield(const char *name, uint32_t size,
   TYPE_LENGTH_ASSIGN(t) = size;
   return t;
 }
-
-/* keep the condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* any gcc, but not g++ */
 
 /* APPLE LOCAL: closure dynamic type  */
 /* Note, in most functions I'm calling these "closures" not

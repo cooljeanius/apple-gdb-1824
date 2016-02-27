@@ -1911,11 +1911,12 @@ symbol_file_add_main_1(const char *args, int from_tty, int flags)
   e.loaded_addr = 0;
   e.loaded_addrisoffset = 1;
 
-  symflags = dyld_default_load_flag (NULL, &e) | dyld_minimal_load_flag (NULL, &e);
+  symflags = (dyld_default_load_flag(NULL, &e)
+	      | dyld_minimal_load_flag(NULL, &e));
 #endif /* MACOSX_DYLD */
 
-  symbol_file_add_name_with_addrs_or_offsets
-    (args, from_tty, NULL, 0, 0, 1, flags, symflags, 0, NULL, NULL);
+  symbol_file_add_name_with_addrs_or_offsets(args, from_tty, NULL, 0, 0, 1,
+					     flags, symflags, 0, NULL, NULL);
   /* APPLE LOCAL end load levels */
 
   /* Getting new symbols may change our opinion about
@@ -5332,7 +5333,7 @@ enum ovly_index
 static void
 simple_free_overlay_table(void)
 {
-  if (cache_ovly_table)
+  if (cache_ovly_table != NULL)
     xfree(cache_ovly_table);
   cache_novlys = 0;
   cache_ovly_table = NULL;

@@ -53,6 +53,16 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "dictionary.h"
 #include "exceptions.h"
 
+#if defined(HAVE_LIMITS_H) && !defined(_I386_LIMITS_H_)
+# include <limits.h>
+#endif /* HAVE_LIMITS_H && !_I386_LIMITS_H_ */
+
+#if !defined(SIZE_T_MAX)
+# if defined(ULONG_MAX)
+#  define SIZE_T_MAX	ULONG_MAX
+# endif /* ULONG_MAX */
+#endif /* !SIZE_T_MAX */
+
 #ifndef ADA_RETAIN_DOTS
 # define ADA_RETAIN_DOTS 0
 #endif /* !ADA_RETAIN_DOTS */
@@ -255,6 +265,7 @@ static const char *ada_completer_word_break_characters =
 static const char ADA_MAIN_PROGRAM_SYMBOL_NAME[] =
   "__gnat_ada_main_program_name";
 
+#ifndef S_SPLINT_S
 /* The name of the runtime function called when an exception is raised: */
 static const char raise_sym_name[] ATTRIBUTE_USED =
   "__gnat_raise_nodefer_with_msg";
@@ -279,6 +290,7 @@ static const char process_raise_exception_name[] ATTRIBUTE_USED =
    aside from the exception name.  */
 static const char longest_exception_template[] ATTRIBUTE_USED =
   "'__gnat_raise_nodefer_with_msg' if long_integer(e) = long_integer(&)";
+#endif /* !S_SPLINT_S */
 
 /* Limit on the number of warnings to raise per expression evaluation.  */
 static int warning_limit = 2;
@@ -287,6 +299,7 @@ static int warning_limit = 2;
    expression evaluation.  */
 static int warnings_issued = 0;
 
+#ifndef S_SPLINT_S
 static const char *known_runtime_file_name_patterns[] ATTRIBUTE_USED = {
   ADA_KNOWN_RUNTIME_FILE_NAME_PATTERNS /* already ends in a comma */
   NULL /* FIXME: splint chokes on the "annotations" it suggests itself */
@@ -296,6 +309,7 @@ static const char *known_auxiliary_function_name_patterns[] ATTRIBUTE_USED = {
   ADA_KNOWN_AUXILIARY_FUNCTION_NAME_PATTERNS /* already ends in a comma */
   NULL /* FIXME: splint chokes on the "annotations" it suggests itself */
 };
+#endif /* !S_SPLINT_S */
 
 /* Space for allocating results of ada_lookup_symbol_list.  */
 static struct obstack symbol_list_obstack;
@@ -972,7 +986,6 @@ Suppress:
   else
     snprintf(decoded, SIZE_T_MAX, "<%s>", encoded);
   return decoded;
-
 }
 
 /* Table for keeping permanent unique copies of decoded names.  Once

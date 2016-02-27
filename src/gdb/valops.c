@@ -2876,8 +2876,8 @@ value_rtti_target_type (struct value *v, int *full, int *top, int *using_enc)
    (Pass RTYPE == NULL if they're not available) */
 
 struct value *
-value_full_object(struct value *argp, struct type *rtype, int xfull, int xtop,
-		  int xusing_enc)
+value_full_object(struct value *volatile argp, struct type *rtype, int xfull,
+		  int xtop, int xusing_enc)
 {
   struct type *volatile real_type = (struct type *volatile)NULL;
   int full = 0;

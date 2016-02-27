@@ -22,6 +22,12 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#if defined(S_SPLINT_S)
+# if !defined(_DARWIN_C_SOURCE)
+#  define _DARWIN_C_SOURCE 1
+# endif /* !_DARWIN_C_SOURCE */
+#endif /* S_SPLINT_S */
+
 #include <errno.h>
 #include <netdb.h>
 #include <stdio.h>

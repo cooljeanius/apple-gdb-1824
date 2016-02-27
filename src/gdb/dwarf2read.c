@@ -787,12 +787,6 @@ struct dwarf_block
 #endif /* !TARGET_ADDRESS_BYTES */
 /* APPLE LOCAL end radar 6568709  */
 
-/* A zeroed version of a partial die for initialization purposes.  */
-/* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-static struct partial_die_info zeroed_partial_die;
-#endif /* ALLOW_UNUSED_VARIABLES */
-
 /* APPLE LOCAL: Track the current common block symbol so we can properly
    offset addresses within that common block.  */
 static char *decode_locdesc_common = NULL;
@@ -802,9 +796,8 @@ static char *decode_locdesc_common = NULL;
    none of the flags are set, the object lives at the address returned
    by decode_locdesc.  */
 
-static int isreg;		/* Object lives in register.
-				   decode_locdesc's return value is
-				   the register number.  */
+static int isreg; /* Object lives in register.  decode_locdesc's return value is
+		     the register number.  */
 
 /* FIXME: We might want to set this from BFD via bfd_arch_bits_per_byte,
    but this would require a corresponding change in unpack_field_as_long
@@ -1483,15 +1476,6 @@ dwarf2_build_psymtabs(struct objfile *objfile, int mainline)
       init_psymbol_list(objfile, 1024);
     }
 
-#if 0
-  if (dwarf_aranges_offset && dwarf_pubnames_offset)
-    {
-      /* Things are significantly easier if we have .debug_aranges and
-       * .debug_pubnames sections: */
-      dwarf2_build_psymtabs_easy(objfile, mainline);
-    }
-  else
-#endif /* 0 */
     /* only test this case for now */
     {
       /* In this case we have to work a bit harder: */
@@ -1980,9 +1964,6 @@ dwarf2_build_psymtabs_easy(struct objfile *objfile, int mainline)
 {
   bfd *abfd = objfile->obfd;
   char *aranges_buffer, *pubnames_buffer;
-# ifdef ALLOW_UNUSED_VARIABLES
-  char *aranges_ptr;
-# endif /* ALLOW_UNUSED_VARIABLES */
   char *pubnames_ptr;
   unsigned int entry_length, version, info_offset, info_size;
 
@@ -2034,10 +2015,6 @@ static char *
 read_comp_unit_head(struct comp_unit_head *cu_header,
 		    char *info_ptr, bfd *abfd)
 {
-  /* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-  int signed_addr;
-#endif /* ALLOW_UNUSED_VARIABLES */
   int bytes_read;
   cu_header->length = read_initial_length(abfd, info_ptr, cu_header,
                                           &bytes_read);
@@ -2612,10 +2589,6 @@ create_all_comp_units (struct objfile *objfile)
   while (info_ptr < dwarf2_per_objfile->info_buffer + dwarf2_per_objfile->info_size)
     {
       struct comp_unit_head cu_header;
-      /* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-      char *beg_of_comp_unit;
-#endif /* ALLOW_UNUSED_VARIABLES */
       struct dwarf2_per_cu_data *this_cu;
       unsigned long offset;
       int bytes_read;
@@ -2715,11 +2688,6 @@ scan_partial_symbols(struct partial_die_info *first_die, CORE_ADDR *lowpc,
 		     struct equiv_psym_list **equiv_psyms)
 /* APPLE LOCAL end psym equivalences  */
 {
-  /* APPLE LOCAL avoid unused var warnings: */
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct objfile *objfile = cu->objfile;
-  bfd *abfd = objfile->obfd;
-#endif /* ALLOW_UNUSED_VARIABLES */
   struct partial_die_info *pdi;
 
   /* Now, march along the PDI's, descending into ones which have
@@ -2899,10 +2867,6 @@ add_partial_symbol(struct partial_die_info *pdi, struct dwarf2_cu *cu)
   struct objfile *objfile = cu->objfile;
   CORE_ADDR addr = 0UL;
   const char *actual_name;
-  /* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-  const char *my_prefix;
-#endif /* ALLOW_UNUSED_VARIABLES */
   const struct partial_symbol *psym = NULL;
   CORE_ADDR baseaddr;
   int built_actual_name = 0;
@@ -3103,10 +3067,6 @@ add_partial_namespace(struct partial_die_info *pdi,
 		      CORE_ADDR *lowpc, CORE_ADDR *highpc,
 		      struct dwarf2_cu *cu)
 {
-  /* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct objfile *objfile = cu->objfile;
-#endif /* ALLOW_UNUSED_VARIABLES */
   /* APPLE LOCAL psym equivalences  */
   struct equiv_psym_list *equiv_psyms = NULL;
 
@@ -3182,11 +3142,6 @@ static void
 add_partial_enumeration(struct partial_die_info *enum_pdi,
                         struct dwarf2_cu *cu)
 {
-  /* APPLE LOCAL avoid unused var warnings: */
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct objfile *objfile = cu->objfile;
-  bfd *abfd = objfile->obfd;
-#endif /* ALLOW_UNUSED_VARIABLES */
   struct partial_die_info *pdi;
 
   if (enum_pdi->name != NULL)
@@ -3235,8 +3190,8 @@ peek_die_abbrev(char *info_ptr, int *bytes_read, struct dwarf2_cu *cu)
   abbrev = dwarf2_lookup_abbrev (abbrev_number, cu);
   if (!abbrev)
     {
-      error (_("Dwarf Error: Could not find abbrev number %d [in module %s]"), abbrev_number,
-		      bfd_get_filename (abfd));
+      error(_("Dwarf Error: Could not find abbrev number %d [in module %s]"),
+	    abbrev_number, bfd_get_filename(abfd));
     }
 
   return abbrev;
@@ -3503,10 +3458,6 @@ convert_oso_map_to_final_map(struct nlist_rec *nlists,
   struct oso_to_final_addr_map *map =
     ((struct oso_to_final_addr_map *)
      xmalloc(sizeof(struct oso_to_final_addr_map)));
-  /* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct objfile *minsym_lookup_objfile;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   /* Store the load address of the objfile in a convenient local variable.
      For an executable or dylib with a seg1addr that was honored, this
@@ -4243,15 +4194,7 @@ dwarf2_kext_psymtab_to_symtab(struct partial_symtab *pst)
   struct dwarf2_per_cu_data *this_cu;
   int bytes_read;
   int i;
-  /* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-  int kext_plus_dsym = 0;
-#endif /* ALLOW_UNUSED_VARIABLES */
   char *kext_dsym_comp_unit_start;
-  /* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-  unsigned int kext_dsym_comp_unit_length;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   for (i = 0; i < pst->number_of_dependencies; i++)
     if (!pst->dependencies[i]->readin)
@@ -4531,10 +4474,6 @@ find_debug_info_for_pst(struct partial_symtab *pst, int match_amount)
       struct dwarf2_cu cu;
       struct abbrev_info *abbrev;
       unsigned int bytes_read;
-      /* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-      struct dwarf2_per_cu_data *this_cu;
-#endif /* ALLOW_UNUSED_VARIABLES */
       char *beg_of_comp_unit;
       struct partial_die_info comp_unit_die;
 
@@ -4751,10 +4690,6 @@ load_full_comp_unit (struct dwarf2_per_cu_data *per_cu,
   char *info_ptr;
   struct cleanup *back_to, *free_cu_cleanup;
   struct attribute *attr;
-  /* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-  CORE_ADDR baseaddr;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   /* Set local variables from the partial symbol table info: */
   offset = per_cu->offset;
@@ -5903,10 +5838,6 @@ static void
 dwarf2_add_field(struct field_info *fip, struct die_info *die,
 		 struct dwarf2_cu *cu)
 {
-  /* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct objfile *objfile = cu->objfile;
-#endif /* ALLOW_UNUSED_VARIABLES */
   struct nextfield *new_field;
   struct attribute *attr;
   struct field *fp;
@@ -6629,10 +6560,6 @@ read_structure_type (struct die_info *die, struct dwarf2_cu *cu)
 static void
 process_structure_scope(struct die_info *die, struct dwarf2_cu *cu)
 {
-  /* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct objfile *objfile = cu->objfile;
-#endif /* ALLOW_UNUSED_VARIABLES */
   const char *previous_prefix = processing_current_prefix;
   struct die_info *child_die = die->child;
 
@@ -6783,10 +6710,6 @@ determine_class_name (struct die_info *die, struct dwarf2_cu *cu)
 static void
 process_enumeration_scope(struct die_info *die, struct dwarf2_cu *cu)
 {
-  /* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct objfile *objfile = cu->objfile;
-#endif /* ALLOW_UNUSED_VARIABLES */
   struct die_info *child_die;
   struct field *fields;
   struct attribute *attr;
@@ -7055,10 +6978,6 @@ read_namespace(struct die_info *die, struct dwarf2_cu *cu)
   const char *previous_prefix = processing_current_prefix;
   const char *name;
   int is_anonymous;
-  /* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct die_info *current_die;
-#endif /* ALLOW_UNUSED_VARIABLES */
   struct cleanup *back_to = make_cleanup(null_cleanup, 0);
 
   name = namespace_name(die, &is_anonymous, cu);
@@ -7335,9 +7254,8 @@ read_tag_const_type (struct die_info *die, struct dwarf2_cu *cu)
     }
 
   base_type = die_type (die, cu);
-  set_die_type (die, make_cvr_type (1, TYPE_VOLATILE (base_type),
-                                    TYPE_RESTRICT (base_type), base_type, 0),
-		cu);
+  set_die_type(die, make_cvr_type(1, TYPE_VOLATILE(base_type),
+                                  TYPE_RESTRICT(base_type), base_type, 0), cu);
 }
 
 static void
@@ -7352,8 +7270,7 @@ read_tag_volatile_type (struct die_info *die, struct dwarf2_cu *cu)
 
   base_type = die_type (die, cu);
   set_die_type(die, make_cvr_type(TYPE_CONST(base_type), 1,
-                                  TYPE_RESTRICT(base_type), base_type, 0),
-               cu);
+                                  TYPE_RESTRICT(base_type), base_type, 0), cu);
 }
 
 static void
@@ -8208,10 +8125,6 @@ read_partial_die(struct partial_die_info *part_die,
                  struct abbrev_info *abbrev, unsigned int abbrev_len,
                  bfd *abfd, char *info_ptr, struct dwarf2_cu *cu)
 {
-  /* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-  unsigned int bytes_read;
-#endif /* ALLOW_UNUSED_VARIABLES */
   unsigned int i;
   struct attribute attr;
   int has_low_pc_attr = 0;
@@ -10936,10 +10849,6 @@ die_type(struct die_info *die, struct dwarf2_cu *cu)
   struct type *type;
   struct attribute *type_attr;
   struct die_info *type_die = (struct die_info *)NULL;
-  /* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-  int type_id;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   type_attr = dwarf2_attr(die, DW_AT_type, cu);
   /* APPLE LOCAL begin dwarf repository  */
@@ -11295,41 +11204,6 @@ dwarf_base_type (int encoding, int size, struct dwarf2_cu *cu)
       return type;
     }
 }
-
-#if 0
-struct die_info *
-copy_die(struct die_info *old_die)
-{
-  struct die_info *new_die;
-  unsigned int i, num_attrs;
-
-  new_die = (struct die_info *)xmalloc(sizeof(struct die_info));
-  memset(new_die, 0, sizeof(struct die_info));
-
-  new_die->tag = old_die->tag;
-  new_die->has_children = old_die->has_children;
-  new_die->abbrev = old_die->abbrev;
-  new_die->offset = old_die->offset;
-  /* APPLE LOCAL - dwarf repository  */
-  new_die->repository_id = old_die->repository_id;
-  new_die->type = NULL;
-
-  num_attrs = old_die->num_attrs;
-  new_die->num_attrs = num_attrs;
-  new_die->attrs = ((struct attribute *)
-                    xmalloc(num_attrs * sizeof(struct attribute)));
-
-  for (i = 0; i < old_die->num_attrs; ++i)
-    {
-      new_die->attrs[i].name = old_die->attrs[i].name;
-      new_die->attrs[i].form = old_die->attrs[i].form;
-      new_die->attrs[i].u.addr = old_die->attrs[i].u.addr;
-    }
-
-  new_die->next = NULL; /* no member named 'next' */
-  return new_die;
-}
-#endif /* 0 */
 
 /* Return sibling of die, NULL if no sibling: */
 static struct die_info *
@@ -11838,7 +11712,7 @@ dwarf_cfi_name(unsigned cfi_opc)
     default: return "DW_CFA_<unknown>";
     }
 }
-#endif /* 0 */
+#endif /* 0 || 1 */
 
 static void
 dump_die(struct die_info *die)
@@ -11991,10 +11865,6 @@ follow_die_ref(struct die_info *src_die, struct attribute *attr,
   struct die_info *die;
   unsigned int offset;
   int h;
-  /* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct die_info temp_die;
-#endif /* ALLOW_UNUSED_VARIABLES */
   struct dwarf2_cu *target_cu;
 
   offset = dwarf2_get_ref_die_offset (attr, cu);
@@ -12085,10 +11955,6 @@ static CORE_ADDR
 decode_locdesc(struct dwarf_block *blk, struct dwarf2_cu *cu)
 {
   struct objfile *objfile = cu->objfile;
-  /* APPLE LOCAL avoid unused var warning: */
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct comp_unit_head *cu_header = &cu->header;
-#endif /* ALLOW_UNUSED_VARIABLES */
   int i;
   int size = blk->size;
   char *data = blk->data;
@@ -12434,7 +12300,7 @@ copy_string(const char *buf, int len)
   return s;
 }
 
-
+/* */
 static const char *
 consume_improper_spaces(const char *p, const char *body)
 {
@@ -12451,7 +12317,7 @@ consume_improper_spaces(const char *p, const char *body)
   return p;
 }
 
-
+/* */
 static void
 parse_macro_definition(struct macro_source_file *file, int line,
                        const char *body)
@@ -12592,7 +12458,7 @@ parse_macro_definition(struct macro_source_file *file, int line,
     dwarf2_macro_malformed_definition_complaint (body);
 }
 
-
+/* */
 static void
 dwarf_decode_macros(struct line_header *lh, unsigned int offset,
                     char *comp_dir, bfd *abfd,
@@ -12605,7 +12471,9 @@ dwarf_decode_macros(struct line_header *lh, unsigned int offset,
 
   if (dwarf2_per_objfile->macinfo_buffer == NULL)
     {
+#if defined(DEBUG) || defined(_DEBUG) || defined(GTHREE_FLAG_SUPPORTED)
       complaint(&symfile_complaints, _("missing .debug_macinfo section"));
+#endif /* DEBUG || _DEBUG || GTHREE_FLAG_SUPPORTED */
       return;
     }
 
@@ -13309,7 +13177,7 @@ caching, which can slow down startup."),
 
 /* APPLE LOCAL begin dwarf repository  */
 /* NOTE:  Everything from here to the end of the file is APPLE LOCAL  */
-/* *********************** REPOSITORY STUFF STARTS HERE *********************** */
+/* ********************** REPOSITORY STUFF STARTS HERE ********************** */
 /*
   This "section" contains several sub-sections:
 
@@ -13326,7 +13194,6 @@ caching, which can slow down startup."),
   low-level database access functions.  It includes the code for reading and
   decoding the dies, and translating the dwarf type information into gdb
   type structures.
-
 */
 
 /* APPLE LOCAL begin red-black trees, part 2.  */

@@ -69,13 +69,15 @@ legacy_store_return_value(struct type *type, struct regcache *regcache,
   DEPRECATED_STORE_RETURN_VALUE(type, b);
 }
 
-int ATTRIBUTE_PURE
+/* */
+int ATTRIBUTE_CONST
 always_use_struct_convention(int gcc_p ATTRIBUTE_UNUSED,
 			     struct type *value_type ATTRIBUTE_UNUSED)
 {
   return 1;
 }
 
+/* */
 enum return_value_convention
 legacy_return_value (struct gdbarch *gdbarch, struct type *valtype,
 		     struct regcache *regcache, gdb_byte *readbuf,
@@ -171,14 +173,14 @@ generic_remote_translate_xfer_address(struct gdbarch *gdbarch,
 
 /* Helper functions for INNER_THAN */
 
-int
-core_addr_lessthan (CORE_ADDR lhs, CORE_ADDR rhs)
+int ATTRIBUTE_CONST
+core_addr_lessthan(CORE_ADDR lhs, CORE_ADDR rhs)
 {
   return (lhs < rhs);
 }
 
-int
-core_addr_greaterthan (CORE_ADDR lhs, CORE_ADDR rhs)
+int ATTRIBUTE_CONST
+core_addr_greaterthan(CORE_ADDR lhs, CORE_ADDR rhs)
 {
   return (lhs > rhs);
 }
@@ -221,51 +223,63 @@ default_double_format (struct gdbarch *gdbarch)
 
 /* Misc helper functions for targets. */
 
-CORE_ADDR
-core_addr_identity (CORE_ADDR addr)
+CORE_ADDR ATTRIBUTE_CONST
+core_addr_identity(CORE_ADDR addr)
 {
   return addr;
 }
 
-CORE_ADDR
-convert_from_func_ptr_addr_identity (struct gdbarch *gdbarch, CORE_ADDR addr,
-				     struct target_ops *targ)
+/* */
+CORE_ADDR ATTRIBUTE_CONST
+convert_from_func_ptr_addr_identity(struct gdbarch *gdbarch ATTRIBUTE_UNUSED,
+				    CORE_ADDR addr,
+				    struct target_ops *targ ATTRIBUTE_UNUSED)
 {
   return addr;
 }
 
-int
-no_op_reg_to_regnum (int reg)
+/* */
+int ATTRIBUTE_CONST
+no_op_reg_to_regnum(int reg)
 {
   return reg;
 }
 
-int
-default_adjust_ehframe_regnum (struct gdbarch *gdbarch, int regnum, int eh_frame_p)
+/* */
+int ATTRIBUTE_CONST
+default_adjust_ehframe_regnum(struct gdbarch *gdbarch ATTRIBUTE_UNUSED,
+			      int regnum, int eh_frame_p ATTRIBUTE_UNUSED)
 {
   return regnum;
 }
 
-void
-default_elf_make_msymbol_special (asymbol *sym, struct minimal_symbol *msym)
+/* */
+void ATTRIBUTE_CONST
+default_elf_make_msymbol_special(asymbol *sym ATTRIBUTE_UNUSED,
+				 struct minimal_symbol *msym ATTRIBUTE_UNUSED)
 {
   return;
 }
 
-void
-default_coff_make_msymbol_special (int val, struct minimal_symbol *msym)
+/* */
+void ATTRIBUTE_CONST
+default_coff_make_msymbol_special(int val ATTRIBUTE_UNUSED,
+				  struct minimal_symbol *msym ATTRIBUTE_UNUSED)
 {
   return;
 }
 
-void
-default_dbx_make_msymbol_special (int16_t val, struct minimal_symbol *msym)
+/* */
+void ATTRIBUTE_CONST
+default_dbx_make_msymbol_special(int16_t val ATTRIBUTE_UNUSED,
+				 struct minimal_symbol *msym ATTRIBUTE_UNUSED)
 {
   return;
 }
 
-int
-cannot_register_not (int regnum)
+/* */
+int ATTRIBUTE_CONST
+cannot_register_not(int regnum ATTRIBUTE_UNUSED)
 {
   return 0;
 }
@@ -332,12 +346,15 @@ legacy_pc_in_sigtramp (CORE_ADDR pc, char *name)
 #endif
 }
 
-int
-generic_convert_register_p (int regnum, struct type *type)
+/* */
+int ATTRIBUTE_CONST
+generic_convert_register_p(int regnum ATTRIBUTE_UNUSED,
+			   struct type *type ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
+/* */
 int
 default_stabs_argument_has_addr (struct gdbarch *gdbarch, struct type *type)
 {
@@ -355,9 +372,10 @@ default_stabs_argument_has_addr (struct gdbarch *gdbarch, struct type *type)
   return 0;
 }
 
-int
-generic_instruction_nullified (struct gdbarch *gdbarch,
-			       struct regcache *regcache)
+/* */
+int ATTRIBUTE_CONST
+generic_instruction_nullified(struct gdbarch *gdbarch ATTRIBUTE_UNUSED,
+			      struct regcache *regcache ATTRIBUTE_UNUSED)
 {
   return 0;
 }

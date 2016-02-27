@@ -23,6 +23,11 @@
    Boston, MA 02111-1307, USA.  */
 
 #include "defs.h"
+#if defined(S_SPLINT_S)
+# if !defined(_DARWIN_C_SOURCE)
+#  define _DARWIN_C_SOURCE 1
+# endif /* !_DARWIN_C_SOURCE */
+#endif /* S_SPLINT_S */
 #include "symtab.h"
 #include "gdbtypes.h"
 #include "breakpoint.h"
@@ -43,6 +48,16 @@
 #include "xsym.h"
 
 #include "symread.h"
+
+#if defined(HAVE_LIMITS_H) && !defined(_I386_LIMITS_H_)
+# include <limits.h>
+#endif /* HAVE_LIMITS_H && !_I386_LIMITS_H_ */
+
+#if !defined(SIZE_T_MAX)
+# if defined(ULONG_MAX)
+#  define SIZE_T_MAX	ULONG_MAX
+# endif /* ULONG_MAX */
+#endif /* !SIZE_T_MAX */
 
 #include <string.h>
 #include <stdio.h>

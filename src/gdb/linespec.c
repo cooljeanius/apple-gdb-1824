@@ -61,7 +61,8 @@ static void set_flags(const char *arg, int *is_quoted, char **paren_pointer);
 
 static struct symtabs_and_lines decode_indirect(const char **argptr);
 
-static char *locate_first_half(const char **argptr, int *is_quote_enclosed);
+static const char *locate_first_half(const char **argptr,
+				     int *is_quote_enclosed);
 
 static struct symtabs_and_lines decode_objc(const char **argptr,
 					    int funfirstline,
@@ -74,10 +75,10 @@ static struct symtabs_and_lines decode_compound(const char **argptr,
 						int funfirstline,
 						char ***canonical,
 						const char *saved_arg,
-						char *p,
+						const char *p,
 						int *not_found_ptr);
 
-static struct symbol *lookup_prefix_sym(const char **argptr, char *p);
+static struct symbol *lookup_prefix_sym(const char **argptr, const char *p);
 
 /* APPLE LOCAL: find_method needs the not_found_ptr or future-break
    won't work.  */
@@ -117,7 +118,7 @@ static int add_constructors (int method_counter, struct type *t,
 static void build_canonical_line_spec(struct symtab_and_line *,
 				      const char *, char ***);
 
-static char *find_toplevel_char(const char *s, char c);
+static const char *find_toplevel_char(const char *s, char c);
 
 static int is_objc_method_format(const char *s);
 
@@ -125,21 +126,22 @@ static struct symtabs_and_lines decode_line_2(struct symbol *[],
 					      int, int, int, int, char ***);
 
 static struct symtab **symtab_from_filename(const char **argptr,
-					    char *p, int is_quote_enclosed,
+					    const char *p,
+					    int is_quote_enclosed,
 					    int *not_found_ptr);
 
 /* APPLE LOCAL: I added the parsed_lineno so we could directly do error
    reporting if there were no actual matches to that file & lineno.  */
- static struct
-symtabs_and_lines decode_all_digits_exhaustive (char **argptr,
-                                   int funfirstline,
-                                   struct symtab *default_symtab,
-                                   int default_line,
-                                   char ***canonical,
-                                   struct symtab *file_symtab,
-                                   char *q,
-				   int *parsed_lineno,
-				   int *not_found_ptr);
+static struct
+symtabs_and_lines decode_all_digits_exhaustive(const char **argptr,
+					       int funfirstline,
+					       struct symtab *default_symtab,
+					       int default_line,
+					       char ***canonical,
+					       struct symtab *file_symtab,
+					       const char *q,
+					       int *parsed_lineno,
+					       int *not_found_ptr);
 
 static struct
 symtabs_and_lines decode_all_digits(const char **argptr,
@@ -149,7 +151,7 @@ symtabs_and_lines decode_all_digits(const char **argptr,
 				    int default_line,
 				    char ***canonical,
 				    struct symtab *file_symtab,
-				    char *q);
+				    const char *q);
 
 static struct symtabs_and_lines decode_dollar (char *copy,
 					       int funfirstline,
@@ -424,7 +426,7 @@ add_matching_methods (int method_counter, struct type *t,
        --field_counter)
     {
       struct fn_field *f;
-      char *phys_name;
+      const char *phys_name;
       /* APPLE LOCAL begin return multiple symbols  */
       syms_found = 0;
       sym_list = NULL;
@@ -437,8 +439,8 @@ add_matching_methods (int method_counter, struct type *t,
 	  char *tmp_name;
 
 	  tmp_name = gdb_mangle_name(t, method_counter, field_counter);
-	  phys_name = (char *)alloca(strlen(tmp_name) + 1UL);
-	  strcpy(phys_name, tmp_name);
+	  phys_name = (const char *)alloca(strlen(tmp_name) + 1UL);
+	  strcpy((char *)phys_name, tmp_name);
 	  xfree(tmp_name);
 	}
       else
@@ -582,7 +584,7 @@ add_constructors (int method_counter, struct type *t,
        --field_counter)
     {
       struct fn_field *f;
-      char *phys_name;
+      const char *phys_name;
 
       f = TYPE_FN_FIELDLIST1 (t, method_counter);
 
@@ -590,7 +592,7 @@ add_constructors (int method_counter, struct type *t,
 	 we don't need to handle this case.  */
       if (TYPE_FN_FIELD_STUB (f, field_counter))
 	continue;
-      phys_name = TYPE_FN_FIELD_PHYSNAME (f, field_counter);
+      phys_name = TYPE_FN_FIELD_PHYSNAME(f, field_counter);
       if (! is_constructor_name (phys_name))
 	continue;
 
@@ -620,14 +622,11 @@ add_constructors (int method_counter, struct type *t,
 	     sym_arr_pos (i.e. it always points at the next open
 	     position in the array).  */
 
-
-	  /* Remove symbols from sym_list that are already in sym_arr  */
-
+	  /* Remove symbols from sym_list that are already in sym_arr: */
 	  remove_duplicate_symbols (*sym_arr, *sym_arr_pos,
 				    &sym_list);
 
-	  /* Count the number of new symbols we found.  */
-
+	  /* Count the number of new symbols we found: */
 	  for (cur = sym_list; cur; cur = cur->next)
 	    num_syms++;
 
@@ -660,8 +659,7 @@ add_constructors (int method_counter, struct type *t,
 	      new_pos++;
 	    }
 
-	  /* Update sym_arr_pos appropriately.  */
-
+	  /* Update sym_arr_pos appropriately: */
 	  *sym_arr_pos = new_pos;
 	}
       /* APPLE LOCAL end return multiple symbols  */
@@ -719,14 +717,14 @@ build_canonical_line_spec(struct symtab_and_line *sal, const char *symname,
    strings.  Also, ignore the char within a template name, like a ','
    within foo<int, int>.  */
 
-static char *
+static const char *
 find_toplevel_char(const char *s, char c)
 {
   int quoted = 0;		/* zero if we're not in quotes;
 				   '"' if we're in a double-quoted string;
 				   '\'' if we're in a single-quoted string.  */
-  int depth = 0;		/* Number of unclosed parens we've seen.  */
-  char *scan;
+  int depth = 0;		/* Number of unclosed parens we have seen.  */
+  const char *scan;
 
   for (scan = s; *scan; scan++)
     {
@@ -747,7 +745,7 @@ find_toplevel_char(const char *s, char c)
 	depth--;
     }
 
-  return 0;
+  return (const char *)0;
 }
 
 /* Determines if the gives string corresponds to an Objective-C method
@@ -789,10 +787,11 @@ decode_line_2(struct symbol *sym_arr[], int nelts, int nsyms,
               int funfirstline, int accept_all, char ***canonical)
 {
   struct symtabs_and_lines values, return_values;
-  char *args, *arg1;
+  const char *args;
+  const char *arg1;
   int i;
-  char *prompt;
-  char *symname;
+  const char *prompt;
+  const char *symname;
   struct cleanup *old_chain;
   char **canonical_arr = (char **)NULL;
 
@@ -957,7 +956,7 @@ decode_line_2(struct symbol *sym_arr[], int nelts, int nsyms,
 	      if (canonical_arr)
 		{
 		  symname = DEPRECATED_SYMBOL_NAME (sym_arr[num]);
-		  make_cleanup (xfree, symname);
+		  make_cleanup(xfree, (void *)symname);
 		  canonical_arr[i] = savestring (symname, strlen (symname));
 		}
 	      return_values.sals[i++] = values.sals[num];
@@ -1116,8 +1115,8 @@ decode_line_1(const char **argptr, int funfirstline, struct symtab *default_symt
 	      int find_all_occurrences)
 /* APPLE LOCAL end return multiple symbols  */
 {
-  char *p;
-  char *q;
+  const char *p;
+  const char *q;
   /* If a file name is specified, then this is its symtab: */
   struct symtab *file_symtab = NULL;
   struct symtab **file_symtab_arr = NULL;
@@ -1249,7 +1248,7 @@ decode_line_1(const char **argptr, int funfirstline, struct symtab *default_symt
 	  goto start_over;
 	}
     }
-#if 0
+#ifdef I_KNOW_WHY_THIS_WAS_ADDED
   /* No one really seems to know why this was added. It certainly
      breaks the command line, though, whenever the passed
      name is of the form ClassName::Method. This bit of code
@@ -1282,7 +1281,7 @@ decode_line_1(const char **argptr, int funfirstline, struct symtab *default_symt
       /* Otherwise fall out from here and go to file/line spec
          processing, etc. */
     }
-#endif
+#endif /* I_KNOW_WHY_THIS_WAS_ADDED */
 
   /* S is specified file's symtab, or 0 if no file specified.
      arg no longer contains the file name.  */
@@ -1305,7 +1304,7 @@ decode_line_1(const char **argptr, int funfirstline, struct symtab *default_symt
       {
         int i;
         struct symtabs_and_lines final_result = {NULL, 0};
-        char *start_here;
+        const char *start_here;
         for (i = 0; file_symtab_arr[i] != NULL; i++)
           {
             struct symtabs_and_lines this_result;
@@ -1614,11 +1613,12 @@ decode_indirect(const char **argptr)
    If ARGPTR is just a simple name like "main", p will point to ""
    at the end.  */
 
-static char *
+static const char *
 locate_first_half(const char **argptr, int *is_quote_enclosed)
 {
   char *ii;
-  char *p, *p1;
+  const char *p;
+  const char *p1;
   int has_comma;
 
   /* Maybe we were called with a line range FILENAME:LINENUM,FILENAME:LINENUM
@@ -1628,7 +1628,7 @@ locate_first_half(const char **argptr, int *is_quote_enclosed)
      Don't count commas that appear in argument lists of overloaded
      functions, or in quoted strings.  It's stupid to go to this much
      trouble when the rest of the function is such an obvious roach hotel.  */
-  ii = find_toplevel_char (*argptr, ',');
+  ii = (char *)find_toplevel_char(*argptr, ',');
   has_comma = (ii != 0);
 
   /* Temporarily zap out second half to not confuse the code below.
@@ -1655,7 +1655,7 @@ locate_first_half(const char **argptr, int *is_quote_enclosed)
     {
       if (p[0] == '<')
 	{
-	  char *temp_end = find_template_name_end (p);
+	  const char *temp_end = find_template_name_end(p);
 	  if (!temp_end)
 	    error (_("malformed template specification in command"));
 	  p = temp_end;
@@ -1719,10 +1719,9 @@ locate_first_half(const char **argptr, int *is_quote_enclosed)
 
   return p;
 }
-
 
 
-/* Here's where we recognise an Objective-C Selector.  An Objective C
+/* Here is where we recognise an Objective-C Selector.  An Objective C
    selector may be implemented by more than one class, therefore it
    may represent more than one method/function.  This gives us a
    situation somewhat analogous to C++ overloading.  If there's more
@@ -1856,11 +1855,11 @@ decode_objc(const char **argptr, int funfirstline, struct symtab *file_symtab,
 
 static struct symtabs_and_lines
 decode_compound(const char **argptr, int funfirstline, char ***canonical,
-		const char *saved_arg, char *p, int *not_found_ptr)
+		const char *saved_arg, const char *p, int *not_found_ptr)
 {
-  char *p2;
+  const char *p2;
   const char *saved_arg2 = *argptr;
-  char *temp_end;
+  const char *temp_end;
   /* The symtab in which SYM was found: */
   struct symtab *sym_symtab;
   char *copy;
@@ -1918,7 +1917,7 @@ decode_compound(const char **argptr, int funfirstline, char ***canonical,
 	{
 	  if (p[0] == '<')
 	    {
-	      temp_end = find_template_name_end (p);
+	      temp_end = find_template_name_end(p);
 	      if (!temp_end)
 		error (_("malformed template specification in command"));
 	      p = temp_end;
@@ -2073,12 +2072,12 @@ decode_compound(const char **argptr, int funfirstline, char ***canonical,
    example, say ARGPTR is "AAA::inA::fun" and P is "::inA::fun".  */
 
 static struct symbol *
-lookup_prefix_sym(const char **argptr, char *p)
+lookup_prefix_sym(const char **argptr, const char *p)
 {
-  char *p1;
+  const char *p1;
   char *copy;
 
-  /* Extract the class name.  */
+  /* Extract the class name: */
   p1 = p;
   while (p != *argptr && p[-1] == ' ')
     --p;
@@ -2301,10 +2300,10 @@ collect_methods(char *copy, struct type *t,
    This will look through all the objfiles for symtabs that match.  */
 
 static struct symtab **
-symtab_from_filename(const char **argptr, char *p, int is_quote_enclosed,
+symtab_from_filename(const char **argptr, const char *p, int is_quote_enclosed,
 		     int *not_found_ptr)
 {
-  char *p1;
+  const char *p1;
   char *copy;
   struct symtab **file_symtab_arr;
 
@@ -2428,13 +2427,11 @@ one_block_contains_other (struct blockvector *bv, int index1, int index2)
    the other arguments are as usual.  */
 
 static struct symtabs_and_lines
-decode_all_digits_exhaustive(char **argptr, int funfirstline,
-			     struct symtab *default_symtab,
-			     int default_line, char ***canonical,
-			     struct symtab *file_symtab, char *q,
-			     int *parsed_lineno,
+decode_all_digits_exhaustive(const char **argptr, int funfirstline,
+			     struct symtab *default_symtab, int default_line,
+			     char ***canonical, struct symtab *file_symtab,
+			     const char *q, int *parsed_lineno,
 			     int *not_found_ptr)
-
 {
   struct symtabs_and_lines values;
   int nvalues_allocated;
@@ -2717,12 +2714,11 @@ decode_all_digits_exhaustive(char **argptr, int funfirstline,
 
 static struct symtabs_and_lines
 /* APPLE LOCAL begin linespec */
-decode_all_digits (const char **argptr, int funfirstline,
-		   struct symtab *default_symtab,
+decode_all_digits(const char **argptr, int funfirstline,
+		  struct symtab *default_symtab,
+		  int default_line, char ***canonical,
+		  struct symtab *file_symtab, const char *q)
 /* APPLE LOCAL end linespec */
-		   int default_line, char ***canonical,
-		   struct symtab *file_symtab, char *q)
-
 {
   struct symtabs_and_lines values;
   struct symtab_and_line val;

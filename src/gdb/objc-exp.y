@@ -1667,7 +1667,7 @@ yylex(void)
 	      characters; for comparison expressions, e.g. "a < b > c",
 	      there must be spaces before the '<', etc. */
 
-	   char * p = find_template_name_end (tokstart + namelen);
+	   const char *p = find_template_name_end(tokstart + namelen);
 	   if (p)
 	     namelen = p - tokstart;
 	   break;

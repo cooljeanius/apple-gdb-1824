@@ -3879,34 +3879,32 @@ bpstat_have_active_hw_watchpoints (void)
 
 
 /* Given a bpstat that records zero or more triggered eventpoints, this
-   function returns another bpstat which contains only the catchpoints
+   function returns(?) another bpstat which contains only the catchpoints
    on that first list, if any. */
 void
-bpstat_get_triggered_catchpoints (bpstat ep_list, bpstat *cp_list)
+bpstat_get_triggered_catchpoints(bpstat ep_list, bpstat *cp_list)
 {
   struct bpstats root_bs[1];
   bpstat bs = root_bs;
   struct breakpoint *ep;
   char *dll_pathname;
 
-  bpstat_clear (cp_list);
+  bpstat_clear(cp_list);
   root_bs->next = NULL;
 
   for (; ep_list != NULL; ep_list = ep_list->next)
     {
-      /* Is this eventpoint a catchpoint?  If not, ignore it. */
+      /* Is this eventpoint a catchpoint?  If not, then ignore it: */
       ep = ep_list->breakpoint_at;
       if (ep == NULL)
 	break;
-      if ((ep->type != bp_catch_load) &&
-	  (ep->type != bp_catch_unload) &&
-	  (ep->type != bp_catch_catch) &&
-	  (ep->type != bp_catch_throw))
+      if ((ep->type != bp_catch_load) && (ep->type != bp_catch_unload)
+	  && (ep->type != bp_catch_catch) && (ep->type != bp_catch_throw))
 	/* pai: (temp) ADD fork/vfork here!!  */
 	continue;
 
-      /* Yes; add it to the list. */
-      bs = bpstat_alloc (ep, bs);
+      /* Yes; add it to the list: */
+      bs = bpstat_alloc(ep, bs);
       *bs = *ep_list;
       bs->next = NULL;
       bs = root_bs->next;
@@ -3918,7 +3916,7 @@ bpstat_get_triggered_catchpoints (bpstat ep_list, bpstat *cp_list)
          catchpoint triggers.  Clients who may wish to know the name
          later must get it from the catchpoint itself.) */
       if (ep->triggered_dll_pathname != NULL)
-	xfree (ep->triggered_dll_pathname);
+	xfree(ep->triggered_dll_pathname);
       if (ep->type == bp_catch_load)
 	dll_pathname = SOLIB_LOADED_LIBRARY_PATHNAME(PIDGET(inferior_ptid));
       else
@@ -3928,21 +3926,22 @@ bpstat_get_triggered_catchpoints (bpstat ep_list, bpstat *cp_list)
 #endif /* SOLIB_ADD */
       if (dll_pathname)
 	{
-	  ep->triggered_dll_pathname = (char *)
-	    xmalloc (strlen (dll_pathname) + 1);
-	  strcpy (ep->triggered_dll_pathname, dll_pathname);
+	  ep->triggered_dll_pathname = ((char *)
+					xmalloc(strlen(dll_pathname) + 1UL));
+	  strcpy(ep->triggered_dll_pathname, dll_pathname);
 	}
       else
 	ep->triggered_dll_pathname = NULL;
     }
 
   *cp_list = bs;
+  /* FIXME: comment makes it seem like we should return a value? */
+  return;
 }
 
-/* Print B to gdb_stdout. */
+/* Print B to gdb_stdout: */
 static void
-print_one_breakpoint(struct breakpoint *b,
-		     CORE_ADDR *last_addr)
+print_one_breakpoint(struct breakpoint *b, CORE_ADDR *last_addr)
 {
   struct command_line *l;
   struct symbol *sym;
@@ -7774,10 +7773,12 @@ can_use_hardware_watchpoint (struct value *v)
       if (VALUE_LVAL(v) == lval_memory)
 	{
 	  if (value_lazy(v))
-	    /* A lazy memory lvalue is one that GDB never needed to fetch;
-	       we either just used its address (e.g., `a' in `a.b') or
-	       we never needed it at all (e.g., `a' in `a,b').  */
-	    ;
+	    {
+	      /* A lazy memory lvalue is one that GDB never needed to fetch;
+	       * we either just used its address (e.g., `a' in `a.b') or
+	       * we never needed it at all (e.g., `a' in `a,b').  */
+	      ;
+	    }
 	  else
 	    {
 	      /* Ahh, memory we actually used!  Check if we can cover

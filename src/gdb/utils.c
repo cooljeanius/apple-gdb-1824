@@ -1487,7 +1487,7 @@ xstrvprintf(const char *format, va_list ap)
   return ret;
 }
 
-/* Should we recommend using this instead of the regular snprintf() function? */
+/* Should we recommend using this instead of the usual snprintf() function? */
 int
 xsnprintf(char *str, size_t size, const char *format, ...)
 {
@@ -1898,10 +1898,9 @@ parse_escape(const char **string_ptr)
 	}
       default:
 	if (!host_char_to_target(c, &target_char))
-	  error
-	    ("The escape sequence `\%c' is equivalent to plain `%c', which"
-	     " has no equivalent\n" "in the `%s' character set.", c, c,
-	     target_charset());
+	  error("The escape sequence `\%c' is equivalent to plain `%c', which"
+		" has no equivalent\n" "in the `%s' character set.", c, c,
+		target_charset());
 	return target_char;
       }
 }
@@ -3390,6 +3389,7 @@ string_to_core_addr(const char *my_string)
   return addr;
 }
 
+/* Should we recommend using this instead of the usual realpath() function? */
 char *
 gdb_realpath(const char *filename)
 {
@@ -3745,9 +3745,7 @@ strrchr_bounded(const char *beg, const char *end, char c)
   "Versions" to indicate a framework bundle, etc.  This works fine until
   someone has Versions.app or Contents.framework with that name repeated
   down lower in the bundle.
-
 */
-
 const char *
 bundle_basename(const char *filepath)
 {

@@ -32,7 +32,14 @@
 # include "arm-macosx-thread-status.h"
 # include "arm-macosx-tdep.h"
 #else
-# error "unsupported target architecture"
+# ifdef S_SPLINT_S
+#  include "macosx-tdep.h"
+#  ifdef HAVE_STDINT_H
+#   include <stdint.h>
+#  endif /* HAVE_STDINT_H */
+# else
+#  error "unsupported target architecture"
+# endif /* S_SPLINT_S */
 #endif /* TARGET_foo */
 
 #include "defs.h"
@@ -111,7 +118,14 @@ check_thread(bfd *abfd, asection *asect, unsigned int num)
       "LC_THREAD.ARM_THREAD_STATE."
     };
 #else
-# error "unsupported target architecture"
+# ifdef S_SPLINT_S
+  const char *names[] =
+    {
+      "LC_THREAD.THREAD_STATE."
+    };
+# else
+#  error "unsupported target architecture"
+# endif /* S_SPLINT_S */
 #endif /* TARGET_foo */
   const size_t num_names = (sizeof(names) / sizeof(const char *));
 

@@ -669,15 +669,17 @@ set_memory_packet_size(const char *args, struct memory_packet_config *config)
       size = strtoul(args, &end, 0);
       if (args == end)
 	error(_("Invalid %s (bad syntax)."), config->name);
-#if defined(MAX_REMOTE_PACKET_SIZE) && defined(LONG_MAX) && \
-    (MAX_REMOTE_PACKET_SIZE > LONG_MAX)
+#if !defined(S_SPLINT_S)
+# if defined(MAX_REMOTE_PACKET_SIZE) && defined(LONG_MAX) && \
+     (MAX_REMOTE_PACKET_SIZE > LONG_MAX)
       /* Instead of explicitly capping the size of a packet to
          MAX_REMOTE_PACKET_SIZE or dissallowing it, the user is
          instead allowed to set the size to something arbitrarily
          large.  */
       if (size > MAX_REMOTE_PACKET_SIZE)
 	error(_("Invalid %s (too large)."), config->name);
-#endif /* MAX_REMOTE_PACKET_SIZE > LONG_MAX */
+# endif /* MAX_REMOTE_PACKET_SIZE > LONG_MAX */
+#endif /* !S_SPLINT_S */
     }
   /* Extra checks?  */
   if (fixed_p && !config->fixed_p)
@@ -4072,17 +4074,20 @@ remote_store_registers (int regnum)
 }
 
 
-/* Return the number of hex digits in num.  */
-
+/* Return the number of hex digits in num: */
 static int
-hexnumlen (ULONGEST num)
+hexnumlen(ULONGEST num)
 {
   int i;
+  
+#if defined(__GNUC__) && defined(ATTRIBUTE_CONST)
+  asm("");
+#endif /* __GNUC__ && ATTRIBUTE_CONST */
 
   for (i = 0; num != 0; i++)
     num >>= 4;
 
-  return max (i, 1);
+  return max(i, 1);
 }
 
 /* Set BUF to the minimum number of hex digits representing NUM.  */

@@ -99,7 +99,9 @@
 #elif defined(TARGET_AARCH64)
 # include "aarch64-tdep.h"
 #else
-# error "Unrecognized target architecture."
+# ifndef S_SPLINT_S
+#  error "Unrecognized target architecture."
+# endif /* !S_SPLINT_S */
 #endif /* TARGET_foo */
 
 #if WITH_CFM
@@ -1419,7 +1421,6 @@ macosx_set_start_breakpoint (macosx_dyld_thread_status *s, bfd *exec_bfd)
 
   if (changed_breakpoints)
     breakpoints_changed();
-
 }
 
 #if defined(TARGET_POWERPC)
@@ -1462,7 +1463,19 @@ FETCH_ARGUMENT(int i)
   return read_register(i);
 }
 #else
-# error "unknown architecture"
+# ifdef S_SPLINT_S
+static ULONGEST
+FETCH_ARGUMENT(int i)
+{
+  if (i > 0) {
+    return (ULONGEST)i;
+  } else {
+    return ULONG_MAX;
+  }
+}
+# else
+#  error "unknown architecture"
+# endif /* S_SPLINT_S */
 #endif /* TARGET_foo */
 
 /* Remove NUM dyld_objfile_entries listed in ENTRIES from DYLD_STATUS: */

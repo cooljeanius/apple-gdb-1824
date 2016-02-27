@@ -1934,7 +1934,7 @@ lint: $(LINTFILES)
 
 SPLINTFLAGS = $(LINTFLAGS) -posix-lib +gnuextensions -weak \
   -unrecogcomments +matchanyintegral -redef -fixedformalarray \
-  -Imacosx $(MMALLOC_CFLAGS)
+  +ignoresigns -sysunrecog -type -retvalother -Imacosx $(MMALLOC_CFLAGS)
 configured_lint: $(LINTFILES)
 	$(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) \
 	   `echo $(LINTFILES) | uniq | $(SED) 's/\.y /\.c /g'` \

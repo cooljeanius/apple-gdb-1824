@@ -4723,10 +4723,9 @@ inferior_has_execd (int pid, char **execd_pathname)
 ptid_t null_ptid;
 ptid_t minus_one_ptid;
 
-/* Create a ptid given the necessary PID, LWP, and TID components.  */
-
-ptid_t
-ptid_build (int pid, long lwp, long tid)
+/* Create a ptid given the necessary PID, LWP, and TID components: */
+ptid_t ATTRIBUTE_CONST
+ptid_build(int pid, long lwp, long tid)
 {
   ptid_t ptid;
 
@@ -4737,7 +4736,8 @@ ptid_build (int pid, long lwp, long tid)
 }
 
 /* Create a ptid from just a pid: */
-ptid_t pid_to_ptid(int pid)
+ptid_t ATTRIBUTE_CONST
+pid_to_ptid(int pid)
 {
   return ptid_build(pid, 0, 0);
 }

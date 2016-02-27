@@ -42,6 +42,10 @@
 #include "gdbarch.h"
 #include "symfile.h"
 
+#ifndef _I386_LIMITS_H_
+# include <limits.h>
+#endif /* !_I386_LIMITS_H_ */
+
 /* we already included "gdb_stat.h" once above */
 
 #include <mach-o/nlist.h>
@@ -104,7 +108,11 @@ static int dyld_check_uuids_flag = 0;
 #elif defined(TARGET_AARCH64)
 # include "aarch64-tdep.h"
 #else
-# error "Unrecognized target architecture."
+# ifdef S_SPLINT_S
+#  include "macosx-tdep.h"
+# else
+#  error "Unrecognized target architecture."
+# endif /* S_SPLINT_S */
 #endif /* TARGET */
 
 #if WITH_CFM
@@ -910,6 +918,12 @@ scan_bfd_for_memory_groups(struct bfd *abfd, struct pre_run_memory_map *map)
 
   return fp;
 }
+
+#ifdef S_SPLINT_S
+# ifndef ULLONG_MAX
+#  define ULLONG_MAX 0xffffffffffffffffULL
+# endif /* !ULLONG_MAX */
+#endif /* S_SPLINT_S */
 
 /* Allocate and initialize a new pre-run representation of the inferior's
    address space.  ABFD is the main executable; its memory regions will be
@@ -1744,14 +1758,18 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
           char *buf;
           bfd_size_type len;
           char *bfdname;
+	  size_t buf_len;
+	  size_t bfdnamelen;
 
           len = bfd_section_size(e->objfile->obfd, commsec);
-          buf = (char *)xmalloc((size_t)len * sizeof(char));
+	  buf_len = ((size_t)len * sizeof(char));
+          buf = (char *)xmalloc(buf_len);
 	  gdb_assert(e->objfile->obfd != NULL);
-          bfdname = (char *)xmalloc(strlen(e->objfile->obfd->filename)
-                                    + 128UL);
+	  bfdnamelen = (strlen(e->objfile->obfd->filename) + 128UL);
+          bfdname = (char *)xmalloc(bfdnamelen);
 
-          sprintf(bfdname, "%s[%s]", e->objfile->obfd->filename, segname);
+          snprintf(bfdname, bfdnamelen, "%s[%s]", e->objfile->obfd->filename,
+		   segname);
 
           if (bfd_get_section_contents(e->objfile->obfd, commsec, buf,
                                        0, len) != TRUE)
@@ -1773,14 +1791,8 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
                      adjust/slide any of the comm page symbols. Their
                      addresses are absolute and are already correct.  */
 		  e->commpage_objfile =
-		    symbol_file_add_bfd_safe (e->commpage_bfd,
-					      0,
-					      NULL,
-					      0,
-					      0, 0,
-					      e->load_flag,
-					      0,
-					      e->prefix, NULL);
+		    symbol_file_add_bfd_safe(e->commpage_bfd, 0, NULL, 0, 0, 0,
+					     e->load_flag, 0, e->prefix, NULL);
 		}
 	      else
 		{
@@ -1790,15 +1802,11 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
                          adjust/slide any of the comm page symbols. Their
                          addresses are absolute and are already correct.  */
 		      e->commpage_objfile =
-			symbol_file_add_bfd_using_objfile (e->commpage_objfile,
-							   e->commpage_bfd,
-							   0,
-							   NULL,
-							   0,
-							   0, 0,
-							   e->load_flag,
-							   0,
-							   e->prefix);
+			symbol_file_add_bfd_using_objfile(e->commpage_objfile,
+							  e->commpage_bfd, 0,
+							  NULL, 0, 0, 0,
+							  e->load_flag, 0,
+							  e->prefix);
 		    }
 		  if (exc.reason == RETURN_ERROR)
 		    e->commpage_objfile = NULL;

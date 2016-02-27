@@ -775,12 +775,14 @@ init_minimal_symbol_collection(void)
   msym_bunch_index = BUNCH_SIZE;
 }
 
+/* */
 void
-prim_record_minimal_symbol (const char *name, CORE_ADDR address,
-			    enum minimal_symbol_type ms_type,
-			    struct objfile *objfile)
+prim_record_minimal_symbol(const char *name, CORE_ADDR address,
+			   enum minimal_symbol_type ms_type,
+			   struct objfile *objfile)
 {
   int section;
+  struct minimal_symbol *msymbol;
 
   switch (ms_type)
     {
@@ -801,8 +803,9 @@ prim_record_minimal_symbol (const char *name, CORE_ADDR address,
       section = -1;
     }
 
-  prim_record_minimal_symbol_and_info (name, address, ms_type,
-				       NULL, section, NULL, objfile);
+  msymbol = prim_record_minimal_symbol_and_info(name, address, ms_type,
+						NULL, section, NULL, objfile);
+  gdb_assert(msymbol != NULL);
 }
 
 /* Record a minimal symbol in the msym bunches.  Returns the symbol
@@ -858,6 +861,7 @@ prim_record_minimal_symbol_and_info(const char *name, CORE_ADDR address,
   printf_filtered("using mysm number %d in bunch %d...\n", msym_bunch_index,
 		  bunches_seen);
 #endif /* DEBUG || _DEBUG || __APPLEHELP__ */
+  gdb_assert(msym_bunch_index < BUNCH_SIZE);
   msymbol = &msym_bunch->contents[msym_bunch_index]; /* This seems suspicious */
   gdb_assert(msymbol != NULL);
 /* APPLE LOCAL: Initialize the msymbol->filename to NULL: */

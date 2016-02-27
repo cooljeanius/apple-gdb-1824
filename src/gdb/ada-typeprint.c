@@ -593,7 +593,9 @@ print_record_field_types (struct type *type, struct type *outer_type,
       QUIT;
 
       if (ada_is_parent_field (type, i) || ada_is_ignored_field (type, i))
-	;
+	{
+	  ; /* FIXME: ??? */
+	}
       else if (ada_is_wrapper_field (type, i))
 	flds += print_record_field_types (TYPE_FIELD_TYPE (type, i), type,
 					  stream, show, level);

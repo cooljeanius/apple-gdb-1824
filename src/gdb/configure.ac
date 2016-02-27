@@ -1498,9 +1498,10 @@ AC_HEADER_ASSERT
 AC_CHECK_HEADERS([Availability.h AvailabilityMacros.h \
                   CoreFoundation/CoreFoundation.h \
                   CoreFoundation/CFPropertyList.h \
-                  CoreFoundation/CFURLAccess.h assert.h \
-                  architecture/byte_order.h bits/endian.h crt_externs.h \
-                  libgen.h libgettext.h linux/byteorder/big_endian.h \
+                  CoreFoundation/CFURLAccess.h Security/Security.h \
+                  assert.h architecture/byte_order.h bits/endian.h \
+                  crt_externs.h libgen.h libgettext.h \
+                  linux/byteorder/big_endian.h \
                   linux/byteorder/little_endian.h mach.h mach_error.h \
                   mach/kern_return.h mach/mach_error.h mach/mach_init.h \
                   mach/mach_port.h mach/message.h mach/port.h \
@@ -1651,6 +1652,11 @@ AC_CHECK_DECLS([name_server_port],[],[],[
 #  warning "This conftest for name_server_port wants <mach/mach_init.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_MACH_INIT_H */
+])dnl
+AC_CHECK_DECLS([timeradd, timerclear, timersub],[],[],[
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif /* HAVE_SYS_TIME_H */
 ])dnl
 
 # ----------------------- #
@@ -1804,7 +1810,9 @@ AC_CHECK_TYPES([mach_vm_address_t],[],[],[
 ])dnl
 AC_CHECK_TYPES([mach_msg_header_t],[
   # Found the type, so check a member:
-  AC_CHECK_MEMBER([mach_msg_header_t.msgh_seqno],[],[],[
+  AC_CHECK_MEMBER([mach_msg_header_t.msgh_seqno],[
+  ##FIXME: choose a good define to put here
+  ],[],[
 #ifdef HAVE_MACH_MESSAGE_H
 # include <mach/message.h>
 #else
@@ -1981,17 +1989,18 @@ unset ac_cv_func_getcwd
 unset ac_cv_func_gethostbyname
 unset ac_cv_func_strcasecmp
 unset ac_cv_func_strchr
-AC_CHECK_FUNCS([atof alarm assert atexit bsearch bzero dup2 exit \
+AC_CHECK_FUNCS([atof alarm assert atexit bcopy bsearch bzero dup2 exit \
                 fflush fgets fprintf fwrite getcwd gethostbyaddr \
                 gethostbyname gethostname getpass gets gettimeofday \
                 inet_ntoa isascii ishexnumber isnumber mach_error_string \
                 memchr memcmp memcpy memmove mempcpy memset mkdir \
                 netname_look_up nl_langinfo pathconf pclose popen pow \
-                readdir re_comp regcomp select socket strcasecmp strcat \
-                strchr strcpy strcspn strdup strerror strlcat strlcpy \
-                strlen strncasecmp strncat strncmp strncpy strndup \
-                strpbrk strrchr strspn strstr strtok strtok_r strtol \
-                strtoul uname wcwidth])dnl
+                qsort qsort_r readdir re_comp regcomp select setitimer \
+                socket strcasecmp strcat strchr strcpy strcspn strdup \
+                strerror strlcat strlcpy strlen strncasecmp strncat \
+                strncmp strncpy strndup strpbrk strrchr strspn strstr \
+                strtok strtok_r strtol strtoul timeradd timerclear \
+                timersub uname vasprintf wcwidth])dnl
 
 dnl# Use as a replacement for just-plain sprintf:
 if test "x${ac_cv_func_snprintf}" = "x"; then
@@ -2295,7 +2304,7 @@ AC_SUBST([MIG_CHECKING])dnl
 # whether we can use the i386 hardware registers for watchpoints or if
 # we will need to use the old page-protection method.
 
-AC_CHECK_TYPES([x86_debug_state32_t],[],[],
+AC_CHECK_TYPES([x86_debug_state_t, x86_debug_state32_t],[],[],
                [#include <mach/mach_types.h>])dnl
 
 AC_CHECK_TYPES([thread_identifier_info_data_t],[],[],

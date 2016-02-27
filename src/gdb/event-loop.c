@@ -34,7 +34,15 @@
 #endif /* HAVE_POLL */
 
 #include <sys/types.h>
+#if defined(S_SPLINT_S)
+# if !defined(_DARWIN_C_SOURCE)
+#  define _DARWIN_C_SOURCE 1
+# endif /* !_DARWIN_C_SOURCE */
+#endif /* S_SPLINT_S */
 #include "gdb_string.h"
+#ifndef _STRING_H_
+# include <string.h>
+#endif /* !_STRING_H_ */
 #include <errno.h>
 #include <sys/time.h>
 #include "exceptions.h"

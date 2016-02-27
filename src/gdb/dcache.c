@@ -21,9 +21,17 @@
    Boston, MA 02111-1307, USA.  */
 
 #include "defs.h"
+#if defined(S_SPLINT_S)
+# if !defined(_DARWIN_C_SOURCE)
+#  define _DARWIN_C_SOURCE 1
+# endif /* !_DARWIN_C_SOURCE */
+#endif /* S_SPLINT_S */
 #include "dcache.h"
 #include "gdbcmd.h"
 #include "gdb_string.h"
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#endif /* HAVE_STRINGS_H */
 #include "gdbcore.h"
 #include "target.h"
 
@@ -560,13 +568,14 @@ dcache_free (DCACHE *dcache)
   for (i = 0; i < g_num_caches; i++)
     {
       if (g_cache_array[i] == dcache)
-          break;
+	break;
     }
 
   g_num_caches--;
   if (i < g_num_caches)
     {
-      bcopy (g_cache_array + i + 1, g_cache_array + i, (g_num_caches - i) * sizeof (DCACHE *));
+      bcopy((g_cache_array + i + 1), (g_cache_array + i),
+	    ((g_num_caches - i) * sizeof(DCACHE *)));
     }
 
   xfree (dcache->the_cache);

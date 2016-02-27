@@ -38647,9 +38647,10 @@ $as_echo "$ac_enable_assert" >&6; }
 for ac_header in Availability.h AvailabilityMacros.h \
                   CoreFoundation/CoreFoundation.h \
                   CoreFoundation/CFPropertyList.h \
-                  CoreFoundation/CFURLAccess.h assert.h \
-                  architecture/byte_order.h bits/endian.h crt_externs.h \
-                  libgen.h libgettext.h linux/byteorder/big_endian.h \
+                  CoreFoundation/CFURLAccess.h Security/Security.h \
+                  assert.h architecture/byte_order.h bits/endian.h \
+                  crt_externs.h libgen.h libgettext.h \
+                  linux/byteorder/big_endian.h \
                   linux/byteorder/little_endian.h mach.h mach_error.h \
                   mach/kern_return.h mach/mach_error.h mach/mach_init.h \
                   mach/mach_port.h mach/message.h mach/port.h \
@@ -40280,6 +40281,51 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_NAME_SERVER_PORT $ac_have_decl
 _ACEOF
+ac_fn_c_check_decl "$LINENO" "timeradd" "ac_cv_have_decl_timeradd" "
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif /* HAVE_SYS_TIME_H */
+
+"
+if test "x$ac_cv_have_decl_timeradd" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_TIMERADD $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "timerclear" "ac_cv_have_decl_timerclear" "
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif /* HAVE_SYS_TIME_H */
+
+"
+if test "x$ac_cv_have_decl_timerclear" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_TIMERCLEAR $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "timersub" "ac_cv_have_decl_timersub" "
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif /* HAVE_SYS_TIME_H */
+
+"
+if test "x$ac_cv_have_decl_timersub" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_TIMERSUB $ac_have_decl
+_ACEOF
 
 # ----------------------- #
 # Checks for structures.  #
@@ -41279,6 +41325,8 @@ _ACEOF
 
 "
 if test "x$ac_cv_member_mach_msg_header_t_msgh_seqno" = xyes; then :
+
+  ##FIXME: choose a good define to put here
 
 fi
   ## might also want to check some other members here...
@@ -43661,17 +43709,18 @@ unset ac_cv_func_getcwd
 unset ac_cv_func_gethostbyname
 unset ac_cv_func_strcasecmp
 unset ac_cv_func_strchr
-for ac_func in atof alarm assert atexit bsearch bzero dup2 exit \
+for ac_func in atof alarm assert atexit bcopy bsearch bzero dup2 exit \
                 fflush fgets fprintf fwrite getcwd gethostbyaddr \
                 gethostbyname gethostname getpass gets gettimeofday \
                 inet_ntoa isascii ishexnumber isnumber mach_error_string \
                 memchr memcmp memcpy memmove mempcpy memset mkdir \
                 netname_look_up nl_langinfo pathconf pclose popen pow \
-                readdir re_comp regcomp select socket strcasecmp strcat \
-                strchr strcpy strcspn strdup strerror strlcat strlcpy \
-                strlen strncasecmp strncat strncmp strncpy strndup \
-                strpbrk strrchr strspn strstr strtok strtok_r strtol \
-                strtoul uname wcwidth
+                qsort qsort_r readdir re_comp regcomp select setitimer \
+                socket strcasecmp strcat strchr strcpy strcspn strdup \
+                strerror strlcat strlcpy strlen strncasecmp strncat \
+                strncmp strncpy strndup strpbrk strrchr strspn strstr \
+                strtok strtok_r strtol strtoul timeradd timerclear \
+                timersub uname wcwidth
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"

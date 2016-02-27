@@ -218,6 +218,9 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
 	  arch_string = "armv7k";
 	else if (strcmp(osabi_name, "DarwinV7F") == 0)
 	  arch_string = "armv7f";
+# else
+	if (strcmp(osabi_name, "Darwin") == 0)
+	  (void)arch_string;
 # endif /* TARGET_[POWERPC|I386|ARM] */
 	if (arch_string != NULL)
 	  snprintf(shell_command, shell_cmd_len,
@@ -484,6 +487,12 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
 	      {
 		cpu = CPU_TYPE_ARM;
 		count = 1;
+	      }
+# else
+	    if (strcmp(osabi_name, "Darwin") == 0)
+	      {
+		cpu = CPU_TYPE_ANY;
+		count = 0;
 	      }
 # endif /* TARGET_POWERPC || TARGET_I386 || TARGET_ARM */
 

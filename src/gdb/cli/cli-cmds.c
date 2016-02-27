@@ -720,9 +720,18 @@ static void
 list_command(const char *arg, int from_tty)
 {
   struct symtabs_and_lines sals, sals_end;
-  struct symtab_and_line sal = { };
-  struct symtab_and_line sal_end = { };
-  struct symtab_and_line cursal = { };
+  struct symtab_and_line sal = {
+    (struct symtab *)NULL, (asection *)NULL, 0, 0UL, 0UL, NORMAL_LT_ENTRY,
+    (struct symtab_and_line *)NULL
+  };
+  struct symtab_and_line sal_end = {
+    (struct symtab *)NULL, (asection *)NULL, 0, 0UL, 0UL, NORMAL_LT_ENTRY,
+    (struct symtab_and_line *)NULL
+  };
+  struct symtab_and_line cursal = {
+    (struct symtab *)NULL, (asection *)NULL, 0, 0UL, 0UL, NORMAL_LT_ENTRY,
+    (struct symtab_and_line *)NULL
+  };
   struct symbol *sym;
   const char *arg1;
   int no_end = 1;

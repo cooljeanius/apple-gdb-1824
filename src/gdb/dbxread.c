@@ -463,7 +463,7 @@ add_new_header_file(const char *name, int instance)
   add_this_object_header_file(i);
 }
 
-#if 0 || 1
+#if defined(ALLOW_UNUSED_FUNCTIONS) || !defined(S_SPLINT_S)
 static struct type **
 explicit_lookup_type(int real_filenum, int index)
 {
@@ -480,7 +480,7 @@ explicit_lookup_type(int real_filenum, int index)
     }
   return &f->vector[index];
 }
-#endif /* 0 || 1 */
+#endif /* ALLOW_UNUSED_FUNCTIONS || !S_SPLINT_S */
 
 /* APPLE LOCAL: Pass in the desc along with the the type so we can
    see if this is a "special" symbol. */

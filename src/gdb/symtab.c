@@ -22,6 +22,11 @@
    Boston, MA 02111-1307, USA.  */
 
 #include "defs.h"
+#if defined(S_SPLINT_S)
+# if !defined(_DARWIN_C_SOURCE)
+#  define _DARWIN_C_SOURCE 1
+# endif /* !_DARWIN_C_SOURCE */
+#endif /* S_SPLINT_S */
 #include "symtab.h"
 #include "gdbtypes.h"
 #include "gdbcore.h"
@@ -95,8 +100,8 @@ CORE_ADDR last_overlay_section_lookup_pc = INVALID_ADDRESS;
 
 /* Prototypes for local functions */
 
-static void completion_list_add_name(const char *, char *, int, const char *,
-				     char *);
+static void completion_list_add_name(const char *, const char *, int,
+				     const char *, char *);
 
 static void rbreak_command(const char *, int);
 
@@ -3295,20 +3300,25 @@ find_pc_sect_line (CORE_ADDR pc, struct bfd_section *section, int notcurrent)
 	   * so of course we can't find the real func/line info,
 	   * but the "break" still works, and the warning is annoying.
 	   * So I commented out the warning. RT */
-	  /* warning ("In stub for %s; unable to find real function/line info", SYMBOL_LINKAGE_NAME (msymbol)) */ ;
+	  /* Adding it back though, because I need all the warnings I can get
+	   * to debug an issue: */
+	  warning("In stub for %s; unable to find real function/line info",
+		  SYMBOL_LINKAGE_NAME(msymbol));
 	/* fall through */
-	else if (SYMBOL_VALUE_ADDRESS (mfunsym) == SYMBOL_VALUE_ADDRESS (msymbol))
+	else if (SYMBOL_VALUE_ADDRESS(mfunsym) == SYMBOL_VALUE_ADDRESS(msymbol))
 	  /* Avoid infinite recursion */
-	  /* See above comment about why warning is commented out */
-	  /* warning ("In stub for %s; unable to find real function/line info", SYMBOL_LINKAGE_NAME (msymbol)) */ ;
+	  /* See above comment about why warning was commented out, but then
+	   * added back: */
+	  warning("In stub for %s; unable to find real function/line info",
+		  SYMBOL_LINKAGE_NAME(msymbol));
 	/* fall through */
 	else
 	  /* APPLE LOCAL end cache lookup values for improved performance  */
 	  {
-	    struct symtab_and_line sal = find_pc_line
-                                            (SYMBOL_VALUE_ADDRESS (mfunsym), 0);
-	    cached_pc_line = copy_sal (&sal);
-	    return find_pc_line (SYMBOL_VALUE_ADDRESS (mfunsym), 0);
+	    struct symtab_and_line sal;
+	    sal = find_pc_line(SYMBOL_VALUE_ADDRESS(mfunsym), 0);
+	    cached_pc_line = copy_sal(&sal);
+	    return find_pc_line(SYMBOL_VALUE_ADDRESS(mfunsym), 0);
 	  }
 	  /* APPLE LOCAL end cache lookup values for improved performance  */
       }
@@ -5130,8 +5140,8 @@ static char **return_val;
    characters.  If so, add it to the current completion list. */
 
 static void
-completion_list_add_name(const char *symname, char *sym_text, int sym_text_len,
-			 const char *text, char *word)
+completion_list_add_name(const char *symname, const char *sym_text,
+			 int sym_text_len, const char *text, char *word)
 {
   int newsize;
 
@@ -5180,8 +5190,9 @@ completion_list_add_name(const char *symname, char *sym_text, int sym_text_len,
    again and feed all the selectors into the mill.  */
 
 static void
-completion_list_objc_symbol(struct minimal_symbol *msymbol, char *sym_text,
-			    int sym_text_len, const char *text, char *word)
+completion_list_objc_symbol(struct minimal_symbol *msymbol,
+			    const char *sym_text, int sym_text_len,
+			    const char *text, char *word)
 {
   static char *tmp = NULL;
   static unsigned int tmplen = 0U;

@@ -71,6 +71,15 @@
 # define GDB_MESSAGE_ID_STOP 0x41151
 #endif /* !GDB_MESSAGE_ID_STOP */
 
+/* FIXME: these next 2 are arbitrarily chosen; not sure if correct: */
+#ifndef GDB_DEF_NAME
+# define GDB_DEF_NAME "gdb"
+#endif /* !GDB_DEF_NAME */
+
+#ifndef GDB_NAME_PREFIX
+# define GDB_NAME_PREFIX ""
+#endif /* !GDB_NAME_PREFIX */
+
 int main(int argc, char **argv)
 {
   kern_return_t kr;
@@ -80,7 +89,7 @@ int main(int argc, char **argv)
   char *name;
 
   if (argc == 1) {
-      argv[argc++] = GDB_DEF_NAME;
+      argv[argc++] = (char *)GDB_DEF_NAME;
   }
 
   if (argc != 2) {
@@ -96,7 +105,7 @@ int main(int argc, char **argv)
       host = (char *)"";
   }
 
-  name = malloc(strlen(argv[1]) + sizeof(GDB_NAME_PREFIX));
+  name = (char *)xmalloc(strlen(argv[1]) + sizeof(GDB_NAME_PREFIX));
   if (name == NULL) {
       fprintf(stderr, "Unable to allocate memory for name.");
       exit(1);
@@ -127,7 +136,10 @@ int main(int argc, char **argv)
   msg.msgh_remote_port = gdb_port;
   msg.msgh_local_port = MACH_PORT_NULL;
   msg.msgh_size = sizeof(msg);
+  /* FIXME: use proper condition: */
+#if defined(HAVE_MACH_MSG_HEADER_T) && defined(__MACH__) && !defined(__APPLE__)
   msg.msgh_seqno = 0;
+#endif /* HAVE_MACH_MSG_HEADER_T && __MACH__ && !__APPLE__ */
   msg.msgh_id = GDB_MESSAGE_ID_STOP;
 
   kr = mach_msg_send(&msg);

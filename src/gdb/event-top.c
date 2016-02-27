@@ -49,10 +49,6 @@ static void command_line_handler_continuation(struct continuation_arg *arg);
 static void change_line_handler(void);
 static void change_annotation_level(void);
 static void command_handler(char *command);
-static void async_do_nothing(gdb_client_data arg);
-static void async_disconnect(gdb_client_data arg);
-static void async_stop_sig(gdb_client_data arg);
-static void async_float_handler(gdb_client_data arg);
 
 extern void _initialize_event_loop(void);
 
@@ -60,7 +56,9 @@ extern void _initialize_event_loop(void);
 #ifdef SIGQUIT
 static void handle_sigquit(int sig);
 #endif /* SIGQUIT */
-static void handle_sighup(int sig);
+#ifdef SIGHUP
+static void handle_sighup(int sig) ATTRIBUTE_USED;
+#endif /* SIGHUP */
 static void handle_sigfpe(int sig);
 #if defined(SIGWINCH) && defined(SIGWINCH_HANDLER)
 static void handle_sigwinch(int sig);
@@ -68,10 +66,14 @@ static void handle_sigwinch(int sig);
 
 /* Functions to be invoked by the event loop in response to
    signals. */
-static void async_do_nothing(gdb_client_data);
-static void async_disconnect(gdb_client_data);
+#ifdef SIGHUP
+static void async_disconnect(gdb_client_data) ATTRIBUTE_USED;
+#endif /* SIGHUP */
+#ifndef S_SPLINT_S
+static void async_do_nothing(gdb_client_data) ATTRIBUTE_USED;
+static void async_stop_sig(gdb_client_data) ATTRIBUTE_USED;
+#endif /* !S_SPLINT_S */
 static void async_float_handler(gdb_client_data);
-static void async_stop_sig(gdb_client_data);
 
 /* Readline offers an alternate interface, via callback
    functions. These are all included in the file callback.c in the
@@ -957,7 +959,7 @@ async_init_signals (void)
      to the inferior and breakpoints will be ignored.  */
 #ifdef SIGTRAP
   signal (SIGTRAP, SIG_DFL);
-#endif
+#endif /* SIGTRAP */
 
 #ifdef SIGQUIT
   /* If we initialize SIGQUIT to SIG_IGN, then the SIG_IGN will get
@@ -971,7 +973,7 @@ async_init_signals (void)
   signal (SIGQUIT, handle_sigquit);
   sigquit_token =
     create_async_signal_handler (async_do_nothing, NULL);
-#endif
+#endif /* SIGQUIT */
 #ifdef SIGHUP
   if (signal (SIGHUP, handle_sighup) != SIG_IGN)
     sighup_token =
@@ -979,7 +981,7 @@ async_init_signals (void)
   else
     sighup_token =
       create_async_signal_handler (async_do_nothing, NULL);
-#endif
+#endif /* SIGHUP */
   signal (SIGFPE, handle_sigfpe);
   sigfpe_token =
     create_async_signal_handler (async_float_handler, NULL);
@@ -988,11 +990,11 @@ async_init_signals (void)
   signal (SIGWINCH, handle_sigwinch);
   sigwinch_token =
     create_async_signal_handler (SIGWINCH_HANDLER, NULL);
-#endif
+#endif /* SIGWINCH && SIGWINCH_HANDLER */
 #ifdef STOP_SIGNAL
   sigtstp_token =
     create_async_signal_handler (async_stop_sig, NULL);
-#endif
+#endif /* STOP_SIGNAL */
 
 }
 
@@ -1064,13 +1066,13 @@ handle_sigquit (int sig)
   mark_async_signal_handler_wrapper (sigquit_token);
   signal (sig, handle_sigquit);
 }
-#endif
+#endif /* SIGQUIT */
 
 /* Called by the event loop in response to a SIGQUIT. */
 static void
-async_do_nothing (gdb_client_data arg)
+async_do_nothing(gdb_client_data arg ATTRIBUTE_UNUSED)
 {
-  /* Empty function body. */
+  return; /* Empty function body. */
 }
 
 #ifdef SIGHUP
@@ -1093,7 +1095,7 @@ async_disconnect (gdb_client_data arg)
   signal (SIGHUP, SIG_DFL);	/*FIXME: ??????????? */
   kill (getpid (), SIGHUP);
 }
-#endif
+#endif /* SIGHUP */
 
 #ifdef STOP_SIGNAL
 void
@@ -1288,7 +1290,7 @@ gdb_disable_readline (void)
   ui_file_delete (gdb_stderr);
   gdb_stdlog = NULL;
   gdb_stdtarg = NULL;
-#endif
+#endif /* 0 */
 
   rl_callback_handler_remove ();
   delete_file_handler (input_fd);

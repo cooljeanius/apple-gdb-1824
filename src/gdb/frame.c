@@ -324,7 +324,8 @@ const struct frame_id null_frame_id = {
   0UL, 0UL, 0UL, 0U, 0U, 0U
 };
 
-struct frame_id
+/* */
+struct frame_id ATTRIBUTE_CONST
 frame_id_build_special(CORE_ADDR stack_addr, CORE_ADDR code_addr,
                        CORE_ADDR special_addr)
 {
@@ -338,7 +339,8 @@ frame_id_build_special(CORE_ADDR stack_addr, CORE_ADDR code_addr,
   return id;
 }
 
-struct frame_id
+/* */
+struct frame_id ATTRIBUTE_CONST
 frame_id_build(CORE_ADDR stack_addr, CORE_ADDR code_addr)
 {
   struct frame_id id = null_frame_id;
@@ -349,7 +351,8 @@ frame_id_build(CORE_ADDR stack_addr, CORE_ADDR code_addr)
   return id;
 }
 
-struct frame_id
+/* */
+struct frame_id ATTRIBUTE_CONST
 frame_id_build_wild(CORE_ADDR stack_addr)
 {
   struct frame_id id = null_frame_id;

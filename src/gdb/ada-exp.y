@@ -43,7 +43,15 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #endif /* !NO_POISON */
 
 #include "defs.h"
+#if defined(S_SPLINT_S)
+# if !defined(_DARWIN_C_SOURCE)
+#  define _DARWIN_C_SOURCE 1
+# endif /* !_DARWIN_C_SOURCE */
+#endif /* S_SPLINT_S */
 #include "gdb_string.h"
+#ifndef _STRING_H_
+# include <string.h>
+#endif /* !_STRING_H_ */
 #include <ctype.h>
 #include "expression.h"
 #include "value.h"
@@ -894,7 +902,7 @@ convert_char_literal(struct type *type, LONGEST val)
 
   if ((type == NULL) || (TYPE_CODE(type) != TYPE_CODE_ENUM))
     return val;
-  sprintf(name, "QU%02x", (unsigned int)val);
+  snprintf(name, sizeof(name), "QU%02x", (unsigned int)val);
   for (f = 0; f < TYPE_NFIELDS(type); f += 1)
     {
       if (strcmp(name, TYPE_FIELD_NAME(type, f)) == 0)

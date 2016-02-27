@@ -129,7 +129,13 @@
 #  include "arm-macosx-tdep.h"
 # endif /* !__GDB_ARM_MACOSX_TDEP_H__ */
 #else
-# error "unknown architecture"
+# ifdef S_SPLINT_S
+#  ifndef SINGLE_STEP
+#   define SINGLE_STEP 0
+#  endif /* !SINGLE_STEP */
+# else
+#  error "unknown architecture"
+# endif /* S_SPLINT_S */
 #endif /* TARGET_(arch) */
 
 #define _dyld_debug_make_runnable(a, b) DYLD_FAILURE
