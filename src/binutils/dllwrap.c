@@ -340,6 +340,7 @@ cleanup_and_exit (int status)
   exit (status);
 }
 
+/* FIXME: -Wstack-usage */
 static int
 run(const char *what, char *args)
 {

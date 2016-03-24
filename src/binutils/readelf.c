@@ -3348,6 +3348,9 @@ process_program_headers(FILE *file)
 		    program_interpreter);
 	    }
 	  break;
+	    
+	default:
+	  break;
 	}
 
       if (do_segments)
@@ -7344,7 +7347,7 @@ read_leb128 (unsigned char *data, unsigned int *length_return, int sign)
     *length_return = num_read;
 
   if (sign && (shift < 8 * sizeof (result)) && (byte & 0x40))
-    result |= -1L << shift;
+    result |= -1UL << shift;
 
   return result;
 }

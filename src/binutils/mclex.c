@@ -76,41 +76,41 @@ mc_set_inputfile (const char *name)
     }
 }
 
-static void
+static void ATTRIBUTE_PRINTF(2, 0)
 show_msg (const char *kind, const char *msg, va_list argp)
 {
-  fprintf (stderr, "In %s at line %d: %s: ", input_filename, input_line, kind);
-  vfprintf (stderr, msg, argp);
-  fprintf (stderr, ".\n");
+  fprintf(stderr, "In %s at line %d: %s: ", input_filename, input_line, kind);
+  vfprintf(stderr, msg, argp);
+  fprintf(stderr, ".\n");
 }
 
-void
-mc_warn (const char *s, ...)
+void ATTRIBUTE_PRINTF_1
+mc_warn(const char *s, ...)
 {
   va_list argp;
-  va_start (argp, s);
-  show_msg ("warning", s, argp);
-  va_end (argp);
+  va_start(argp, s);
+  show_msg("warning", s, argp);
+  va_end(argp);
 }
 
-void
-mc_fatal (const char *s, ...)
+void ATTRIBUTE_PRINTF_1 ATTRIBUTE_NORETURN
+mc_fatal(const char *s, ...)
 {
   va_list argp;
-  va_start (argp, s);
-  show_msg ("fatal", s, argp);
-  va_end (argp);
-  xexit (1);
+  va_start(argp, s);
+  show_msg("fatal", s, argp);
+  va_end(argp);
+  xexit(1);
 }
 
 
-int
-yyerror (const char *s, ...)
+int ATTRIBUTE_PRINTF_1
+yyerror(const char *s, ...)
 {
   va_list argp;
-  va_start (argp, s);
-  show_msg ("parser", s, argp);
-  va_end (argp);
+  va_start(argp, s);
+  show_msg("parser", s, argp);
+  va_end(argp);
   return 1;
 }
 
@@ -139,6 +139,7 @@ parse_digit (unichar ch)
 	case 'x': case 'X': base = 16; input_stream_pos++; break;
 	case 'o': case 'O': base = 8; input_stream_pos++; break;
 	case 'b': case 'B': base = 2; input_stream_pos++; break;
+	default: break;
 	}
     }
   else

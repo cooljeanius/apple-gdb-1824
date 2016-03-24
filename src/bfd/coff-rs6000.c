@@ -86,12 +86,13 @@ void xcoff_rtype2howto
 
 #define SELECT_RELOC(internal, howto)					\
   {									\
-    internal.r_type = howto->type;					\
+    internal.r_type = (unsigned short)howto->type;			\
     internal.r_size =							\
-      ((howto->complain_on_overflow == complain_overflow_signed		\
-	? 0x80								\
-	: 0)								\
-       | (howto->bitsize - 1));						\
+      ((unsigned char)  						\
+       ((howto->complain_on_overflow == complain_overflow_signed	\
+	 ? 0x80								\
+	 : 0)								\
+	| (howto->bitsize - 1)));					\
   }
 
 #define COFF_DEFAULT_SECTION_ALIGNMENT_POWER (3)
@@ -327,12 +328,13 @@ _bfd_xcoff_is_local_label_name(bfd *abfd ATTRIBUTE_UNUSED,
 {
   return FALSE;
 }
-
+
+/* */
 void
 _bfd_xcoff_swap_sym_in(bfd *abfd, PTR ext1, PTR in1)
 {
   SYMENT *ext = (SYMENT *)ext1;
-  struct internal_syment * in = (struct internal_syment *)in1;
+  struct internal_syment *in = (struct internal_syment *)in1;
 
   if (ext->e.e_name[0] != 0)
     {
@@ -351,6 +353,7 @@ _bfd_xcoff_swap_sym_in(bfd *abfd, PTR ext1, PTR in1)
   in->n_numaux = H_GET_8(abfd, ext->e_numaux);
 }
 
+/* */
 unsigned int
 _bfd_xcoff_swap_sym_out(bfd *abfd, PTR inp, PTR extp)
 {
@@ -375,6 +378,7 @@ _bfd_xcoff_swap_sym_out(bfd *abfd, PTR inp, PTR extp)
   return bfd_coff_symesz(abfd);
 }
 
+/* */
 void
 _bfd_xcoff_swap_aux_in(bfd *abfd, PTR ext1, int type, int classp, int indx,
                        int numaux, PTR in1)
@@ -397,7 +401,7 @@ _bfd_xcoff_swap_aux_in(bfd *abfd, PTR ext1, int type, int classp, int indx,
 	    {
 	      if (indx == 0)
 		memcpy(in->x_file.x_fname, ext->x_file.x_fname,
-                       numaux * sizeof(AUXENT));
+                       ((size_t)numaux * sizeof(AUXENT)));
 	    }
 	  else
 	    {
@@ -412,17 +416,20 @@ _bfd_xcoff_swap_aux_in(bfd *abfd, PTR ext1, int type, int classp, int indx,
     case C_HIDEXT:
       if ((indx + 1) == numaux)
 	{
-	  in->x_csect.x_scnlen.l = H_GET_32(abfd, ext->x_csect.x_scnlen);
+	  in->x_csect.x_scnlen.l =
+	    (bfd_signed_vma)H_GET_32(abfd, ext->x_csect.x_scnlen);
 	  in->x_csect.x_parmhash = (long)H_GET_32(abfd,
                                                   ext->x_csect.x_parmhash);
-	  in->x_csect.x_snhash = H_GET_16(abfd, ext->x_csect.x_snhash);
+	  in->x_csect.x_snhash = 
+	    (unsigned short)H_GET_16(abfd, ext->x_csect.x_snhash);
 	  /* We do NOT have to hack bitfields in x_smtyp because it is
 	     defined by shifts-and-ands, which are equivalent on all
 	     byte orders.  */
 	  in->x_csect.x_smtyp = H_GET_8(abfd, ext->x_csect.x_smtyp);
 	  in->x_csect.x_smclas = H_GET_8(abfd, ext->x_csect.x_smclas);
 	  in->x_csect.x_stab = (long)H_GET_32(abfd, ext->x_csect.x_stab);
-	  in->x_csect.x_snstab = H_GET_16(abfd, ext->x_csect.x_snstab);
+	  in->x_csect.x_snstab = (unsigned short)H_GET_16(abfd,
+							  ext->x_csect.x_snstab);
 	  goto end;
 	}
       break;
@@ -433,8 +440,10 @@ _bfd_xcoff_swap_aux_in(bfd *abfd, PTR ext1, int type, int classp, int indx,
       if (type == T_NULL)
 	{
 	  in->x_scn.x_scnlen = (long)H_GET_32(abfd, ext->x_scn.x_scnlen);
-	  in->x_scn.x_nreloc = H_GET_16(abfd, ext->x_scn.x_nreloc);
-	  in->x_scn.x_nlinno = H_GET_16(abfd, ext->x_scn.x_nlinno);
+	  in->x_scn.x_nreloc = (unsigned short)H_GET_16(abfd,
+							ext->x_scn.x_nreloc);
+	  in->x_scn.x_nlinno = (unsigned short)H_GET_16(abfd,
+							ext->x_scn.x_nlinno);
 	  /* PE defines some extra fields; we zero them out for
 	     safety.  */
 	  in->x_scn.x_checksum = 0;
@@ -450,26 +459,26 @@ _bfd_xcoff_swap_aux_in(bfd *abfd, PTR ext1, int type, int classp, int indx,
     }
 
   in->x_sym.x_tagndx.l = (long)H_GET_32(abfd, ext->x_sym.x_tagndx);
-  in->x_sym.x_tvndx = H_GET_16(abfd, ext->x_sym.x_tvndx);
+  in->x_sym.x_tvndx = (unsigned short)H_GET_16(abfd, ext->x_sym.x_tvndx);
 
   if ((classp == C_BLOCK) || (classp == C_FCN) || ISFCN(type)
       || ISTAG(classp))
     {
       in->x_sym.x_fcnary.x_fcn.x_lnnoptr =
-	H_GET_32(abfd, ext->x_sym.x_fcnary.x_fcn.x_lnnoptr);
+	(bfd_signed_vma)H_GET_32(abfd, ext->x_sym.x_fcnary.x_fcn.x_lnnoptr);
       in->x_sym.x_fcnary.x_fcn.x_endndx.l =
 	(long)H_GET_32(abfd, ext->x_sym.x_fcnary.x_fcn.x_endndx);
     }
   else
     {
       in->x_sym.x_fcnary.x_ary.x_dimen[0] =
-	H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[0]);
+	(unsigned short)H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[0]);
       in->x_sym.x_fcnary.x_ary.x_dimen[1] =
-	H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[1]);
+	(unsigned short)H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[1]);
       in->x_sym.x_fcnary.x_ary.x_dimen[2] =
-	H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[2]);
+	(unsigned short)H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[2]);
       in->x_sym.x_fcnary.x_ary.x_dimen[3] =
-	H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[3]);
+	(unsigned short)H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[3]);
     }
 
   if (ISFCN(type))
@@ -480,9 +489,9 @@ _bfd_xcoff_swap_aux_in(bfd *abfd, PTR ext1, int type, int classp, int indx,
   else
     {
       in->x_sym.x_misc.x_lnsz.x_lnno =
-	H_GET_16 (abfd, ext->x_sym.x_misc.x_lnsz.x_lnno);
+	(unsigned short)H_GET_16(abfd, ext->x_sym.x_misc.x_lnsz.x_lnno);
       in->x_sym.x_misc.x_lnsz.x_size =
-	H_GET_16 (abfd, ext->x_sym.x_misc.x_lnsz.x_size);
+	(unsigned short)H_GET_16(abfd, ext->x_sym.x_misc.x_lnsz.x_size);
     }
 
  end: ;

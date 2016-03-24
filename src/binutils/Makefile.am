@@ -264,17 +264,17 @@ BFD_A = ../bfd/libbfd.a
 BFD_DEP = $(BFD)
 BFDLIB = $(BFD)
 
-bfdtest1_LDADD = $(BFD)
-bfdtest1_DEPENDENCIES = $(BFD_DEP)
-
-bfdtest2_LDADD = $(BFD)
-bfdtest2_DEPENDENCIES = $(BFD_DEP)
-
 OPCODES = ../opcodes/libopcodes.la
 OPCODES_DEP = $(OPCODES)
 
 LIBIBERTY = ../libiberty/libiberty.a
 LIBIBERTY_DEP = $(LIBIBERTY)
+
+bfdtest1_LDADD = $(BFD) $(LIBIBERTY)
+bfdtest1_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP)
+
+bfdtest2_LDADD = $(BFD) $(LIBIBERTY)
+bfdtest2_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP)
 
 INTLLIBS = ../intl/libintl.a @INTLLIBS@
 lt_INTLLIBS = ../intl/libintl.la

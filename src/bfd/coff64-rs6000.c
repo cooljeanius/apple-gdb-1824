@@ -2954,5 +2954,155 @@ const bfd_target aix5coff64_vec =
     /* Opposite endian version, none exists.  */
     NULL,
 
-    (void *) & bfd_xcoff_aix5_backend_data,
+    (void *)&bfd_xcoff_aix5_backend_data,
   };
+
+/* FIXME: this is pretty much just the 32-bit one from coff-rs6000.c copied and
+ * pasted here, with a few tweaks to get to compile: */
+const bfd_target pmac_xcoff64_vec =
+  {
+    "xcoff64-powermac",
+    bfd_target_xcoff_flavour,
+    BFD_ENDIAN_BIG,		/* data byte order is big */
+    BFD_ENDIAN_BIG,		/* header byte order is big */
+
+    (HAS_RELOC | EXEC_P | HAS_LINENO | HAS_DEBUG | DYNAMIC
+     | HAS_SYMS | HAS_LOCALS | WP_TEXT),
+
+    SEC_HAS_CONTENTS | SEC_ALLOC | SEC_LOAD | SEC_RELOC | SEC_CODE | SEC_DATA,
+    0,				/* leading char */
+    '/',			/* ar_pad_char */
+    15,				/* ar_max_namelen */
+
+    /* data: */
+    bfd_getb64,
+    bfd_getb_signed_64,
+    bfd_putb64,
+    bfd_getb32,
+    bfd_getb_signed_32,
+    bfd_putb32,
+    bfd_getb16,
+    bfd_getb_signed_16,
+    bfd_putb16,
+
+    /* hdrs: */
+    bfd_getb64,
+    bfd_getb_signed_64,
+    bfd_putb64,
+    bfd_getb32,
+    bfd_getb_signed_32,
+    bfd_putb32,
+    bfd_getb16,
+    bfd_getb_signed_16,
+    bfd_putb16,
+
+    { /* bfd_check_format: */
+      _bfd_dummy_target,
+      coff_object_p,
+      xcoff64_archive_p,
+      CORE_FILE_P
+    },
+
+    { /* bfd_set_format: */
+      bfd_false,
+      coff_mkobject,
+      _bfd_generic_mkarchive,
+      bfd_false
+    },
+
+    {/* bfd_write_contents: */
+      bfd_false,
+      coff_write_object_contents,
+      _bfd_xcoff_write_archive_contents,
+      bfd_false
+    },
+
+    /* Generic: */
+    bfd_true,
+    bfd_true,
+    coff_new_section_hook,
+    _bfd_generic_get_section_contents,
+    _bfd_generic_get_section_contents_in_window,
+    _bfd_generic_get_section_contents_in_window_with_mode, /* (???) */
+
+    /* Copy: */
+    _bfd_xcoff_copy_private_bfd_data,
+    ((bfd_boolean (*) (bfd *, bfd *)) bfd_true),
+    ((bfd_boolean (*) (bfd *, asection *, bfd *, asection *)) bfd_true),
+    ((bfd_boolean (*) (bfd *, asymbol *, bfd *, asymbol *)) bfd_true),
+    ((bfd_boolean (*) (bfd *, bfd *)) bfd_true),
+    ((bfd_boolean (*) (bfd *, flagword)) bfd_true),
+    ((bfd_boolean (*) (bfd *, void * )) bfd_true),
+
+    /* Core: */
+    coff_core_file_failing_command,
+    coff_core_file_failing_signal,
+    coff_core_file_matches_executable_p,
+
+    /* Archive: */
+    _bfd_xcoff_slurp_armap,
+    bfd_false,
+    ((bfd_boolean (*)(bfd *, char **, bfd_size_type *, const char **))bfd_false),
+    bfd_dont_truncate_arname,
+    _bfd_xcoff_write_armap,
+    _bfd_xcoff_read_ar_hdr,
+    _bfd_xcoff_openr_next_archived_file,
+    _bfd_generic_get_elt_at_index,
+    _bfd_xcoff_stat_arch_elt,
+    bfd_true,
+
+    /* Symbols: */
+    coff_get_symtab_upper_bound,
+    coff_canonicalize_symtab,
+    coff_make_empty_symbol,
+    coff_print_symbol,
+    coff_get_symbol_info,
+    _bfd_xcoff_is_local_label_name,
+    coff_bfd_is_target_special_symbol,
+    coff_get_lineno,
+    coff_find_nearest_line,
+    _bfd_generic_find_line,
+    coff_find_inliner_info,
+    coff_bfd_make_debug_symbol,
+    _bfd_generic_read_minisymbols,
+    _bfd_generic_minisymbol_to_symbol,
+
+    /* Reloc: */
+    coff_get_reloc_upper_bound,
+    coff_canonicalize_reloc,
+    xcoff64_reloc_type_lookup,
+
+    /* Write: */
+    coff_set_arch_mach,
+    coff_set_section_contents,
+
+    /* Link: */
+    _bfd_xcoff_sizeof_headers,
+    bfd_generic_get_relocated_section_contents,
+    bfd_generic_relax_section,
+    _bfd_xcoff_bfd_link_hash_table_create,
+    _bfd_generic_link_hash_table_free,
+    _bfd_xcoff_bfd_link_add_symbols,
+    _bfd_generic_link_just_syms,
+    _bfd_xcoff_bfd_final_link,
+    _bfd_generic_link_split_section,
+    bfd_generic_gc_sections,
+    bfd_generic_merge_sections,
+    bfd_generic_is_group_section,
+    bfd_generic_discard_group,
+    _bfd_generic_section_already_linked,
+
+    /* Dynamic: */
+    _bfd_xcoff_get_dynamic_symtab_upper_bound,
+    _bfd_xcoff_canonicalize_dynamic_symtab,
+    _bfd_nodynamic_get_synthetic_symtab,
+    _bfd_xcoff_get_dynamic_reloc_upper_bound,
+    _bfd_xcoff_canonicalize_dynamic_reloc,
+
+    /* Opposite endian version, none exists: */
+    NULL,
+
+    (const struct bfd_target *)(void *)&bfd_xcoff_aix5_backend_data,
+  };
+
+/* End of coff64-rs6000.c */

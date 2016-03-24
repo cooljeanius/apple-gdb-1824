@@ -3315,7 +3315,7 @@ debug_class_type_samep (struct debug_handle *info, struct debug_type *t1,
 	      struct debug_method_variant **pv1, **pv2;
 
 	      for (pv1 = m1->variants, pv2 = m2->variants;
-		   *pv1 != NULL && *pv2 != NULL;
+		   (pv1 != NULL) && (*pv1 != NULL) && (*pv2 != NULL);
 		   ++pv1, ++pv2)
 		{
 		  struct debug_method_variant *v1, *v2;
@@ -3338,7 +3338,7 @@ debug_class_type_samep (struct debug_handle *info, struct debug_type *t1,
 			return FALSE;
 		    }
 		}
-	      if (*pv1 != NULL || *pv2 != NULL)
+	      if (((pv1 != NULL) && (*pv1 != NULL)) || (*pv2 != NULL))
 		return FALSE;
 	    }
 	}

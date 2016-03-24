@@ -995,12 +995,12 @@ struct _frvfdpic_dynamic_got_plt_info
 /* Create an FRV ELF linker hash table.  */
 
 static struct bfd_link_hash_table *
-frvfdpic_elf_link_hash_table_create (bfd *abfd)
+frvfdpic_elf_link_hash_table_create(bfd *abfd)
 {
   struct frvfdpic_elf_link_hash_table *ret;
-  bfd_size_type amt = sizeof (struct frvfdpic_elf_link_hash_table);
+  bfd_size_type amt = sizeof(struct frvfdpic_elf_link_hash_table);
 
-  ret = bfd_zalloc (abfd, amt);
+  ret = (struct frvfdpic_elf_link_hash_table *)bfd_zalloc(abfd, amt);
   if (ret == NULL)
     return NULL;
 
@@ -1141,7 +1141,8 @@ struct frvfdpic_relocs_info
 static hashval_t
 frvfdpic_relocs_info_hash (const void *entry_)
 {
-  const struct frvfdpic_relocs_info *entry = entry_;
+  const struct frvfdpic_relocs_info *entry =
+    (const struct frvfdpic_relocs_info *)entry_;
 
   return (entry->symndx == -1
 	  ? (long) entry->d.h->root.root.hash
@@ -1153,8 +1154,10 @@ frvfdpic_relocs_info_hash (const void *entry_)
 static int
 frvfdpic_relocs_info_eq (const void *entry1, const void *entry2)
 {
-  const struct frvfdpic_relocs_info *e1 = entry1;
-  const struct frvfdpic_relocs_info *e2 = entry2;
+  const struct frvfdpic_relocs_info *e1 =
+    (const struct frvfdpic_relocs_info *)entry1;
+  const struct frvfdpic_relocs_info *e2 =
+    (const struct frvfdpic_relocs_info *)entry2;
 
   return e1->symndx == e2->symndx && e1->addend == e2->addend
     && (e1->symndx == -1 ? e1->d.h == e2->d.h : e1->d.abfd == e2->d.abfd);
@@ -1178,7 +1181,7 @@ frvfdpic_relocs_info_find (struct htab *ht,
   if (*loc)
     return *loc;
 
-  *loc = bfd_zalloc (abfd, sizeof (**loc));
+  *loc = (struct frvfdpic_relocs_info *)bfd_zalloc(abfd, sizeof(**loc));
 
   if (! *loc)
     return *loc;
@@ -2188,14 +2191,10 @@ _frvfdpic_emit_got_relocs_plt_entries (struct frvfdpic_relocs_info *entry,
 /* Handle an FRV small data reloc.  */
 
 static bfd_reloc_status_type
-elf32_frv_relocate_gprel12(info, input_bfd, input_section, relocation,
-			   contents, value)
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     Elf_Internal_Rela *relocation;
-     bfd_byte *contents;
-     bfd_vma value;
+elf32_frv_relocate_gprel12(struct bfd_link_info *info, bfd *input_bfd,
+			   asection *input_section,
+			   Elf_Internal_Rela *relocation,
+			   bfd_byte *contents, bfd_vma value)
 {
   bfd_vma insn;
   bfd_vma gp;
@@ -2227,14 +2226,10 @@ elf32_frv_relocate_gprel12(info, input_bfd, input_section, relocation,
 /* Handle an FRV small data reloc. for the u12 field.  */
 
 static bfd_reloc_status_type
-elf32_frv_relocate_gprelu12(info, input_bfd, input_section, relocation,
-			    contents, value)
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     Elf_Internal_Rela *relocation;
-     bfd_byte *contents;
-     bfd_vma value;
+elf32_frv_relocate_gprelu12(struct bfd_link_info *info, bfd *input_bfd,
+			    asection *input_section,
+			    Elf_Internal_Rela *relocation,
+			    bfd_byte *contents, bfd_vma value)
 {
   bfd_vma insn;
   bfd_vma gp;
@@ -2310,12 +2305,9 @@ elf32_frv_relocate_lo16(bfd *input_bfd, Elf_Internal_Rela *rello,
 /* Perform the relocation for the CALL label24 instruction.  */
 
 static bfd_reloc_status_type
-elf32_frv_relocate_label24 (input_bfd, input_section, rello, contents, value)
-     bfd *input_bfd;
-     asection *input_section;
-     Elf_Internal_Rela *rello;
-     bfd_byte *contents;
-     bfd_vma value;
+elf32_frv_relocate_label24(bfd *input_bfd, asection *input_section,
+			   Elf_Internal_Rela *rello, bfd_byte *contents,
+			   bfd_vma value)
 {
   bfd_vma insn;
   bfd_vma label6;
@@ -2424,9 +2416,8 @@ elf32_frv_relocate_gprello (info, input_bfd, input_section, relocation,
 }
 
 static reloc_howto_type *
-frv_reloc_type_lookup (abfd, code)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+frv_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+		      bfd_reloc_code_real_type code)
 {
   switch (code)
     {
@@ -2583,13 +2574,10 @@ frv_reloc_type_lookup (abfd, code)
   return NULL;
 }
 
-/* Set the howto pointer for an FRV ELF reloc.  */
-
+/* Set the howto pointer for an FRV ELF reloc: */
 static void
-frv_info_to_howto_rela (abfd, cache_ptr, dst)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *cache_ptr;
-     Elf_Internal_Rela *dst;
+frv_info_to_howto_rela(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+		       Elf_Internal_Rela *dst)
 {
   unsigned int r_type;
 
@@ -4805,10 +4793,11 @@ _frvfdpic_relax_tls_entries (struct frvfdpic_relocs_info *entry,
    private function descriptors taking two words.  */
 
 static int
-_frvfdpic_count_got_plt_entries (void **entryp, void *dinfo_)
+_frvfdpic_count_got_plt_entries(void **entryp, void *dinfo_)
 {
-  struct frvfdpic_relocs_info *entry = *entryp;
-  struct _frvfdpic_dynamic_got_info *dinfo = dinfo_;
+  struct frvfdpic_relocs_info *entry = (struct frvfdpic_relocs_info *)*entryp;
+  struct _frvfdpic_dynamic_got_info *dinfo =
+    (struct _frvfdpic_dynamic_got_info *)dinfo_;
 
   _frvfdpic_count_nontls_entries (entry, dinfo);
 
@@ -6097,11 +6086,8 @@ frvfdpic_elf_encode_eh_address (bfd *abfd,
    Given infinite time and money... :-)  */
 
 static bfd_boolean
-elf32_frv_check_relocs (abfd, info, sec, relocs)
-     bfd *abfd;
-     struct bfd_link_info *info;
-     asection *sec;
-     const Elf_Internal_Rela *relocs;
+elf32_frv_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
+		       const Elf_Internal_Rela *relocs)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes, **sym_hashes_end;
@@ -6355,11 +6341,9 @@ elf32_frv_check_relocs (abfd, info, sec, relocs)
 }
 
 
-/* Return the machine subcode from the ELF e_flags header.  */
-
+/* Return the machine subcode from the ELF e_flags header: */
 static int
-elf32_frv_machine (abfd)
-     bfd *abfd;
+elf32_frv_machine(bfd *abfd)
 {
   switch (elf_elfheader (abfd)->e_flags & EF_FRV_CPU_MASK)
     {
@@ -6377,35 +6361,27 @@ elf32_frv_machine (abfd)
   return bfd_mach_frv;
 }
 
-/* Set the right machine number for a FRV ELF file.  */
-
+/* Set the right machine number for a FRV ELF file: */
 static bfd_boolean
-elf32_frv_object_p (abfd)
-     bfd *abfd;
+elf32_frv_object_p(bfd *abfd)
 {
   bfd_default_set_arch_mach (abfd, bfd_arch_frv, elf32_frv_machine (abfd));
   return (((elf_elfheader (abfd)->e_flags & EF_FRV_FDPIC) != 0)
 	  == (IS_FDPIC (abfd)));
 }
 
-/* Function to set the ELF flag bits.  */
-
+/* Function to set the ELF flag bits: */
 static bfd_boolean
-frv_elf_set_private_flags (abfd, flags)
-     bfd *abfd;
-     flagword flags;
+frv_elf_set_private_flags(bfd *abfd, flagword flags)
 {
   elf_elfheader (abfd)->e_flags = flags;
   elf_flags_init (abfd) = TRUE;
   return TRUE;
 }
 
-/* Copy backend specific data from one object module to another.  */
-
+/* Copy backend specific data from one object module to another: */
 static bfd_boolean
-frv_elf_copy_private_bfd_data (ibfd, obfd)
-     bfd *ibfd;
-     bfd *obfd;
+frv_elf_copy_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
   if (bfd_get_flavour (ibfd) != bfd_target_elf_flavour
       || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
@@ -6494,9 +6470,7 @@ elf32_frvfdpic_copy_private_bfd_data (bfd *ibfd, bfd *obfd)
    object file when linking.  */
 
 static bfd_boolean
-frv_elf_merge_private_bfd_data (ibfd, obfd)
-     bfd *ibfd;
-     bfd *obfd;
+frv_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
   flagword old_flags, old_partial;
   flagword new_flags, new_partial;
@@ -6765,9 +6739,7 @@ frv_elf_merge_private_bfd_data (ibfd, obfd)
 
 
 bfd_boolean
-frv_elf_print_private_bfd_data (abfd, ptr)
-     bfd *abfd;
-     PTR ptr;
+frv_elf_print_private_bfd_data(bfd *abfd, PTR ptr)
 {
   FILE *file = (FILE *) ptr;
   flagword flags;

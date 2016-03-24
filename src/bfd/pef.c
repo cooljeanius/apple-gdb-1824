@@ -242,8 +242,9 @@ bfd_pef_parse_traceback_table(bfd *abfd, asection *section,
   return (int)offset;
 }
 
+/* FIXME: -Wstack-usage */
 static void
-bfd_pef_print_symbol(bfd *abfd, void * afile, asymbol *symbol,
+bfd_pef_print_symbol(bfd *abfd, void *afile, asymbol *symbol,
                      bfd_print_symbol_type how)
 {
   FILE *file = (FILE *)afile;
@@ -265,7 +266,7 @@ bfd_pef_print_symbol(bfd *abfd, void * afile, asymbol *symbol,
 	  size_t len = (size_t)symbol->udata.i;
 	  int ret;
 
-          buf = (unsigned char *)alloca((size_t)symbol->udata.i);
+          buf = (unsigned char *)alloca((const size_t)symbol->udata.i);
 
 	  bfd_get_section_contents(abfd, symbol->section, buf,
                                    (file_ptr)offset, (bfd_size_type)len);

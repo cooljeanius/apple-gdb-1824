@@ -344,7 +344,15 @@ get_symbol_type (unsigned int type)
       return buff;
     }
 }
-
+
+/* FIXME: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wformat-nonliteral"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* Print symbol name NAME, read from ABFD, with printf format FORMAT,
    demangling it if requested.  */
 
@@ -362,6 +370,13 @@ print_symname(const char *format_string, const char *name, bfd *abfd)
 
   printf(format_string, name);
 }
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 static void
 print_symdef_entry (bfd *abfd)
@@ -1359,6 +1374,14 @@ print_value(bfd *abfd ATTRIBUTE_UNUSED, bfd_vma val)
 #endif
 }
 
+/* FIXME: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wformat-nonliteral"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* Print a line of information about a symbol: */
 static void
 print_symbol_info_bsd(struct extended_symbol_info *ext_syminfo, bfd *abfd)
@@ -1451,6 +1474,14 @@ print_symbol_info_sysv(struct extended_symbol_info *ext_syminfo, bfd *abfd)
     }
 }
 
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
+/* */
 static void
 print_symbol_info_posix (struct extended_symbol_info *ext_syminfo, bfd *abfd)
 {
@@ -1468,6 +1499,7 @@ print_symbol_info_posix (struct extended_symbol_info *ext_syminfo, bfd *abfd)
     }
 }
 
+/* */
 int
 main (int argc, char **argv)
 {

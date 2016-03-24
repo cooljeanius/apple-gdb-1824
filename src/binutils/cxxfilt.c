@@ -2,9 +2,9 @@
  * Demangler for GNU C++ - main program
  * Copyright 1989, 1991, 1994, 1995, 1996, 1997, 1998, 1999,
  * 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
- * Written by James Clark (jjc@jclark.uucp)
- * Rewritten by Fred Fish (fnf@cygnus.com) for ARM and Lucid demangling
- * Modified by Satish Pai (pai@apollo.hp.com) for HP demangling */
+ * Written by James Clark <jjc@jclark.uucp>
+ * Rewritten by Fred Fish <fnf@cygnus.com> for ARM and Lucid demangling
+ * Modified by Satish Pai <pai@apollo.hp.com> for HP demangling */
 /*
 This file is part of GCC.
 

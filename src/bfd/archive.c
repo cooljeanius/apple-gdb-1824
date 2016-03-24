@@ -165,7 +165,14 @@ struct ar_cache {
 
 #define arch_eltdata(bfd) ((struct areltdata *)((bfd)->arelt_data))
 #define arch_hdr(bfd) ((struct ar_hdr *)arch_eltdata(bfd)->arch_header)
-
+
+/* FIXME: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wformat-nonliteral"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 void _bfd_ar_spacepad(char *p, size_t n, const char *fmt, long val)
 {
   static char buf[20];
@@ -179,6 +186,12 @@ void _bfd_ar_spacepad(char *p, size_t n, const char *fmt, long val)
       memcpy(p, buf, n);
   }
 }
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 bfd_boolean
 _bfd_generic_mkarchive(bfd *abfd)

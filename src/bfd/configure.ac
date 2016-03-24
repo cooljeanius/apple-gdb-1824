@@ -325,6 +325,9 @@ m4_ifdef([ACX_BUGURL],[
   echo "Bug report URL: http://www.sourceware.org/bugzilla/"
 ])dnl
 
+if test "x${WANT_CONVERSION_WARNS}" = "x"; then
+  test -z "${WANT_CONVERSION_WARNS}" && export WANT_CONVERSION_WARNS=1
+fi
 AM_BINUTILS_WARNINGS
 AM_BINUTILS_CLANG_STATIC_ANALYSIS
 

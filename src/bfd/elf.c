@@ -1555,15 +1555,14 @@ _bfd_elf_link_hash_table_init
   return ret;
 }
 
-/* Create an ELF linker hash table.  */
-
+/* Create an ELF linker hash table: */
 struct bfd_link_hash_table *
-_bfd_elf_link_hash_table_create (bfd *abfd)
+_bfd_elf_link_hash_table_create(bfd *abfd)
 {
   struct elf_link_hash_table *ret;
-  bfd_size_type amt = sizeof (struct elf_link_hash_table);
+  bfd_size_type amt = sizeof(struct elf_link_hash_table);
 
-  ret = bfd_malloc (amt);
+  ret = (struct elf_link_hash_table *)bfd_malloc(amt);
   if (ret == NULL)
     return NULL;
 
@@ -1704,8 +1703,8 @@ bfd_elf_get_bfd_needed_list (bfd *abfd,
 	  if (string == NULL)
 	    goto error_return;
 
-	  amt = sizeof *l;
-	  l = bfd_alloc (abfd, amt);
+	  amt = sizeof(*l);
+	  l = (struct bfd_link_needed_list *)bfd_alloc(abfd, amt);
 	  if (l == NULL)
 	    goto error_return;
 
@@ -2023,32 +2022,32 @@ bfd_section_from_shdr (bfd *abfd, unsigned int shindex)
 	   try. We just present it as a normal section. We also
 	   cannot use it as a reloc section if it points to the null
 	   section.  */
-		if (hdr->sh_link != elf_onesymtab (abfd) || hdr->sh_info == SHN_UNDEF) {
-			return _bfd_elf_make_section_from_shdr (abfd, hdr, name,
-						  shindex);
-		}
+	if (hdr->sh_link != elf_onesymtab(abfd) || hdr->sh_info == SHN_UNDEF) {
+	  return _bfd_elf_make_section_from_shdr(abfd, hdr, name,
+						 shindex);
+	}
 
 	/* Prevent endless recursion on broken objects.  */
-	if (elf_elfsections (abfd)[hdr->sh_info]->sh_type == SHT_REL
-	    || elf_elfsections (abfd)[hdr->sh_info]->sh_type == SHT_RELA) {
-		return FALSE;
+	if ((elf_elfsections(abfd)[hdr->sh_info]->sh_type == SHT_REL)
+	    || (elf_elfsections(abfd)[hdr->sh_info]->sh_type == SHT_RELA)) {
+	  return FALSE;
 	}
-		  if (! bfd_section_from_shdr (abfd, hdr->sh_info)) {
-			  return FALSE;
-		  }
+	if (! bfd_section_from_shdr (abfd, hdr->sh_info)) {
+	  return FALSE;
+	}
 	target_sect = bfd_section_from_elf_index (abfd, hdr->sh_info);
-		  if (target_sect == NULL) {
-			  return FALSE;
-		  }
+	if (target_sect == NULL) {
+	  return FALSE;
+	}
 
 	if ((target_sect->flags & SEC_RELOC) == 0
 	    || target_sect->reloc_count == 0) {
-	  hdr2 = &elf_section_data (target_sect)->rel_hdr;
+	    hdr2 = &elf_section_data (target_sect)->rel_hdr;
 	} else {
 	    bfd_size_type amt;
-	    BFD_ASSERT (elf_section_data (target_sect)->rel_hdr2 == NULL);
-	    amt = sizeof (*hdr2);
-	    hdr2 = bfd_alloc (abfd, amt);
+	    BFD_ASSERT(elf_section_data(target_sect)->rel_hdr2 == NULL);
+	    amt = sizeof(*hdr2);
+	    hdr2 = (Elf_Internal_Shdr *)bfd_alloc(abfd, amt);
 	    elf_section_data (target_sect)->rel_hdr2 = hdr2;
 	  }
 	*hdr2 = *hdr;
@@ -2406,10 +2405,10 @@ _bfd_elf_new_section_hook (bfd *abfd, asection *sec)
   const struct elf_backend_data *bed;
   const struct bfd_elf_special_section *ssect;
 
-  sdata = (struct bfd_elf_section_data *) sec->used_by_bfd;
+  sdata = (struct bfd_elf_section_data *)sec->used_by_bfd;
   if (sdata == NULL)
     {
-      sdata = bfd_zalloc (abfd, sizeof (*sdata));
+      sdata = (struct bfd_elf_section_data *)bfd_zalloc(abfd, sizeof(*sdata));
       if (sdata == NULL)
 	return FALSE;
       sec->used_by_bfd = sdata;
@@ -3543,20 +3542,17 @@ _bfd_elf_compute_section_file_positions (bfd *abfd,
 /* Create a mapping from a set of sections to a program segment.  */
 
 static struct elf_segment_map *
-make_mapping (bfd *abfd,
-	      asection **sections,
-	      unsigned int from,
-	      unsigned int to,
-	      bfd_boolean phdr)
+make_mapping(bfd *abfd, asection **sections, unsigned int from,
+	     unsigned int to, bfd_boolean phdr)
 {
   struct elf_segment_map *m;
   unsigned int i;
   asection **hdrpp;
   bfd_size_type amt;
 
-  amt = sizeof (struct elf_segment_map);
-  amt += (to - from - 1) * sizeof (asection *);
-  m = bfd_zalloc (abfd, amt);
+  amt = sizeof(struct elf_segment_map);
+  amt += ((to - from - 1U) * sizeof(asection *));
+  m = (struct elf_segment_map *)bfd_zalloc(abfd, amt);
   if (m == NULL)
     return NULL;
   m->next = NULL;
@@ -3579,11 +3575,12 @@ make_mapping (bfd *abfd,
    on failure.  */
 
 struct elf_segment_map *
-_bfd_elf_make_dynamic_segment (bfd *abfd, asection *dynsec)
+_bfd_elf_make_dynamic_segment(bfd *abfd, asection *dynsec)
 {
   struct elf_segment_map *m;
 
-  m = bfd_zalloc (abfd, sizeof (struct elf_segment_map));
+  m = (struct elf_segment_map *)bfd_zalloc(abfd,
+					   sizeof(struct elf_segment_map));
   if (m == NULL)
     return NULL;
   m->next = NULL;

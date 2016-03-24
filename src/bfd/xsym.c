@@ -2095,6 +2095,7 @@ bfd_sym_print_type_information(bfd *abfd, FILE *f, unsigned char *buf,
     *offsetptr = offset;
 }
 
+/* FIXME: -Wstack-usage */
 void
 bfd_sym_print_type_information_table_entry(bfd *abfd, FILE *f,
 					   bfd_sym_type_information_table_entry *entry)
@@ -2111,7 +2112,7 @@ bfd_sym_print_type_information_table_entry(bfd *abfd, FILE *f,
 
   fprintf(f, "\n            ");
 
-  buf = (unsigned char *)alloca(entry->physical_size);
+  buf = (unsigned char *)alloca((const size_t)entry->physical_size);
   if (buf == NULL) {
       fprintf(f, "[ERROR]\n");
       return;

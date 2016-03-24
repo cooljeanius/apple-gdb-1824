@@ -26,12 +26,13 @@
 
 #define SELECT_RELOC(internal, howto)					\
   {									\
-    internal.r_type = howto->type;					\
+    internal.r_type = (unsigned short)howto->type;			\
     internal.r_size =							\
-      ((howto->complain_on_overflow == complain_overflow_signed		\
-	? 0x80								\
-	: 0)								\
-       | (howto->bitsize - 1));						\
+      ((unsigned char)							\
+       ((howto->complain_on_overflow == complain_overflow_signed	\
+	 ? 0x80								\
+	 : 0)								\
+	| (howto->bitsize - 1)));					\
   }
 
 #define COFF_DEFAULT_SECTION_ALIGNMENT_POWER 3

@@ -641,7 +641,7 @@ mtable[] =
     arm_jtab, sizeof (arm_jtab), 8
   }
   ,
-  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, bfd_arch_unknown, 0, 0, 0 }
 };
 
 typedef struct dlist
@@ -659,7 +659,7 @@ typedef struct export_struct
     int ordinal;
     int constant;
     int noname;		/* Do NOT put name in image file.  */
-    int private;	/* Do NOT put reference in import lib.  */
+    int pvt;		/* Do NOT put reference in import lib.  */
     int data;
     int hint;
     int forward;	/* Number of forward label, 0 means no forward.  */
@@ -720,7 +720,7 @@ static void set_dll_name_from_def (const char *);
 static char *
 prefix_encode (char *start, unsigned code)
 {
-  static char alpha[26] = "abcdefghijklmnopqrstuvwxyz";
+  static char alpha[27] = "abcdefghijklmnopqrstuvwxyz";
   static char buf[32];
   char *p;
   strcpy (buf, start);
@@ -737,8 +737,9 @@ dlltmp(char **buf, const char *fmt)
 {
   if (!*buf)
     {
-      *buf = (char *)malloc(strlen(tmp_prefix) + 64);
-      sprintf(*buf, fmt, tmp_prefix);
+      const size_t buflen = (strlen(tmp_prefix) + 64UL);
+      *buf = (char *)malloc(buflen);
+      snprintf(*buf, buflen, fmt, tmp_prefix);
     }
   return *buf;
 }
@@ -904,7 +905,7 @@ yyerror (const char * err ATTRIBUTE_UNUSED)
 
 void
 def_exports (const char *name, const char *internal_name, int ordinal,
-	     int noname, int constant, int data, int private)
+	     int noname, int constant, int data, int isprivate)
 {
   struct export_struct *p = (struct export_struct *) xmalloc (sizeof (*p));
 
@@ -914,7 +915,7 @@ def_exports (const char *name, const char *internal_name, int ordinal,
   p->ordinal = ordinal;
   p->constant = constant;
   p->noname = noname;
-  p->private = private;
+  p->pvt = isprivate;
   p->data = data;
   p->next = d_exports;
   d_exports = p;
@@ -1022,23 +1023,23 @@ append_import (const char *symbol_name, const char *dll_name, int func_ordinal)
       if (strcmp ((*pq)->dllname, dll_name) == 0)
 	{
 	  q = *pq;
-	  q->functail->next = xmalloc (sizeof (ifunctype));
+	  q->functail->next = (struct ifunct *)xmalloc(sizeof(ifunctype));
 	  q->functail = q->functail->next;
 	  q->functail->ord  = func_ordinal;
-	  q->functail->name = xstrdup (symbol_name);
+	  q->functail->name = xstrdup(symbol_name);
 	  q->functail->next = NULL;
 	  q->nfuncs++;
 	  return;
 	}
     }
 
-  q = xmalloc (sizeof (iheadtype));
-  q->dllname = xstrdup (dll_name);
+  q = (iheadtype *)xmalloc(sizeof(iheadtype));
+  q->dllname = xstrdup(dll_name);
   q->nfuncs = 1;
-  q->funchead = xmalloc (sizeof (ifunctype));
+  q->funchead = (struct ifunct *)xmalloc(sizeof(ifunctype));
   q->functail = q->funchead;
   q->next = NULL;
-  q->functail->name = xstrdup (symbol_name);
+  q->functail->name = xstrdup(symbol_name);
   q->functail->ord  = func_ordinal;
   q->functail->next = NULL;
 
@@ -1076,8 +1077,8 @@ append_import (const char *symbol_name, const char *dll_name, int func_ordinal)
              present (i.e., not NULL).  */
 
 void
-def_import (const char *app_name, const char *module, const char *dllext,
-	    const char *entry, int ord_val)
+def_import(const char *app_name, const char *module, const char *dllext,
+	   const char *entry, int ord_val)
 {
   const char *application_name;
   char *buf;
@@ -1094,8 +1095,9 @@ def_import (const char *app_name, const char *module, const char *dllext,
 
   if (dllext != NULL)
     {
-      buf = (char *) alloca (strlen (module) + strlen (dllext) + 2);
-      sprintf (buf, "%s.%s", module, dllext);
+      const size_t buflen = (strlen(module) + strlen(dllext) + 2UL);
+      buf = (char *)alloca(buflen);
+      snprintf(buf, buflen, "%s.%s", module, dllext);
       module = buf;
     }
 
@@ -1142,9 +1144,9 @@ def_data (int attr)
 }
 
 /**********************************************************************/
-
+/* FIXME: -Wstack-usage */
 static void
-run (const char *what, char *args)
+run(const char *what, char *args)
 {
   char *s;
   int pid, wait_status;
@@ -1161,7 +1163,7 @@ run (const char *what, char *args)
     if (*s == ' ')
       i++;
   i++;
-  argv = alloca (sizeof (char *) * (i + 3));
+  argv = (const char **)alloca(sizeof(const char *) * (i + 3UL));
   i = 0;
   argv[i++] = what;
   s = args;
@@ -1183,9 +1185,9 @@ run (const char *what, char *args)
 
   if (pid == -1)
     {
-      inform (strerror (errno));
+      inform("%s", strerror(errno));
 
-      fatal (errmsg_fmt, errmsg_arg);
+      fatal(errmsg_fmt, errmsg_arg);
     }
 
   pid = pwait (pid, & wait_status, 0);
@@ -1230,7 +1232,7 @@ scan_drectve_symbols (bfd *abfd)
     return;
 
   size = bfd_get_section_size (s);
-  buf  = xmalloc (size);
+  buf = (char *)xmalloc(size);
 
   bfd_get_section_contents (abfd, s, buf, 0, size);
 
@@ -1256,7 +1258,7 @@ scan_drectve_symbols (bfd *abfd)
 	  name = p;
 	  while (p < e && *p != ',' && *p != ' ' && *p != '-')
 	    p++;
-	  c = xmalloc (p - name + 1);
+	  c = (char *)xmalloc(p - name + 1);
 	  memcpy (c, name, p - name);
 	  c[p - name] = 0;
 	  if (p < e && *p == ',')       /* found type tag.  */
@@ -1550,7 +1552,7 @@ dump_def_info (FILE *f)
 	       exp->internal_name,
 	       exp->ordinal,
 	       exp->noname ? "NONAME " : "",
-	       exp->private ? "PRIVATE " : "",
+	       exp->pvt ? "PRIVATE " : "",
 	       exp->constant ? "CONSTANT" : "",
 	       exp->data ? "DATA" : "");
     }
@@ -1627,7 +1629,7 @@ gen_def_file (void)
 		   quote,
 		   exp->ordinal,
 		   exp->noname ? " NONAME" : "",
-		   exp->private ? "PRIVATE " : "",
+		   exp->pvt ? "PRIVATE " : "",
 		   exp->data ? " DATA" : "");
 	}
       else
@@ -1643,7 +1645,7 @@ gen_def_file (void)
 		   quote1,
 		   exp->ordinal,
 		   exp->noname ? " NONAME" : "",
-		   exp->private ? "PRIVATE " : "",
+		   exp->pvt ? "PRIVATE " : "",
 		   exp->data ? " DATA" : "");
 	}
     }
@@ -1746,18 +1748,19 @@ generate_idata_ofile (FILE *filvar)
     }
 }
 
-/* Assemble the specified file.  */
+/* Assemble the specified file: */
 static void
-assemble_file (const char * source, const char * dest)
+assemble_file(const char *source, const char *dest)
 {
-  char * cmd;
+  char *cmd;
+  const size_t cmdlen = (strlen(ASM_SWITCHES) + strlen(as_flags)
+			 + strlen(source) + strlen(dest) + 50UL);
 
-  cmd = (char *) alloca (strlen (ASM_SWITCHES) + strlen (as_flags)
-			 + strlen (source) + strlen (dest) + 50);
+  cmd = (char *)alloca(cmdlen);
 
-  sprintf (cmd, "%s %s -o %s %s", ASM_SWITCHES, as_flags, dest, source);
+  snprintf(cmd, cmdlen, "%s %s -o %s %s", ASM_SWITCHES, as_flags, dest, source);
 
-  run (as_name, cmd);
+  run(as_name, cmd);
 }
 
 static void
@@ -1950,7 +1953,7 @@ gen_exp_file (void)
       fseek (base_file, 0, SEEK_END);
       numbytes = ftell (base_file);
       fseek (base_file, 0, SEEK_SET);
-      copy = xmalloc (numbytes);
+      copy = (long *)xmalloc(numbytes);
       fread (copy, 1, numbytes, base_file);
       num_entries = numbytes / sizeof (long);
 
@@ -2009,7 +2012,7 @@ xlate (const char *name)
 
   if (add_underscore &&  !lead_at)
     {
-      char *copy = xmalloc (strlen (name) + 2);
+      char *copy = (char *)xmalloc(strlen(name) + 2UL);
 
       copy[0] = '_';
       strcpy (copy + 1, name);
@@ -2142,8 +2145,8 @@ ID2:	.short	2
 static char *
 make_label (const char *prefix, const char *name)
 {
-  int len = strlen (ASM_PREFIX (name)) + strlen (prefix) + strlen (name);
-  char *copy = xmalloc (len + 1);
+  size_t len = (strlen(ASM_PREFIX(name)) + strlen(prefix) + strlen(name));
+  char *copy = (char *)xmalloc(len + 1UL);
 
   strcpy (copy, ASM_PREFIX (name));
   strcat (copy, prefix);
@@ -2154,20 +2157,20 @@ make_label (const char *prefix, const char *name)
 static char *
 make_imp_label (const char *prefix, const char *name)
 {
-  int len;
+  size_t len;
   char *copy;
 
   if (name[0] == '@')
     {
       len = strlen (prefix) + strlen (name);
-      copy = xmalloc (len + 1);
+      copy = (char *)xmalloc(len + 1UL);
       strcpy (copy, prefix);
       strcat (copy, name);
     }
   else
     {
       len = strlen (ASM_PREFIX (name)) + strlen (prefix) + strlen (name);
-      copy = xmalloc (len + 1);
+      copy = (char *)xmalloc(len + 1UL);
       strcpy (copy, prefix);
       strcat (copy, ASM_PREFIX (name));
       strcat (copy, name);
@@ -2193,10 +2196,10 @@ make_one_lib_file (export_type *exp, int i)
 #ifndef EXTRA
 #define EXTRA    0
 #endif
-  asymbol *  ptrs[NSECS + 4 + EXTRA + 1];
-  flagword   applicable;
-  char *     outname = xmalloc (strlen (TMP_STUB) + 10);
-  int        oidx = 0;
+  asymbol *ptrs[NSECS + 4 + EXTRA + 1];
+  flagword applicable;
+  char *outname = (char *)xmalloc(strlen(TMP_STUB) + 10UL);
+  int oidx = 0;
 
 
   sprintf (outname, "%s%05d.o", TMP_STUB, i);
@@ -2232,7 +2235,9 @@ make_one_lib_file (export_type *exp, int i)
 			     si->sec,
 			     si->flags & applicable);
 
-      bfd_set_section_alignment(abfd, si->sec, si->align);
+      if (bfd_set_section_alignment(abfd, si->sec, si->align)) {
+	; /* ??? */
+      }
       si->sec->output_section = si->sec;
       si->sym = bfd_make_empty_symbol(abfd);
       si->sym->name = si->sec->name;
@@ -2351,13 +2356,13 @@ make_one_lib_file (export_type *exp, int i)
 	  if (! exp->data)
 	    {
 	      si->size = HOW_JTAB_SIZE;
-	      si->data = xmalloc (HOW_JTAB_SIZE);
-	      memcpy (si->data, HOW_JTAB, HOW_JTAB_SIZE);
+	      si->data = (unsigned char *)xmalloc(HOW_JTAB_SIZE);
+	      memcpy(si->data, HOW_JTAB, HOW_JTAB_SIZE);
 
 	      /* add the reloc into idata$5 */
-	      rel = xmalloc (sizeof (arelent));
+	      rel = (arelent *)xmalloc(sizeof(arelent));
 
-	      rpp = xmalloc (sizeof (arelent *) * 2);
+	      rpp = (arelent **)xmalloc(sizeof(arelent *) * 2UL);
 	      rpp[0] = rel;
 	      rpp[1] = 0;
 
@@ -2384,7 +2389,7 @@ make_one_lib_file (export_type *exp, int i)
 	  /* An idata$4 or idata$5 is one word long, and has an
 	     rva to idata$6.  */
 
-	  si->data = xmalloc (4);
+	  si->data = (unsigned char *)xmalloc(4UL);
 	  si->size = 4;
 
 	  if (exp->noname)
@@ -2397,9 +2402,9 @@ make_one_lib_file (export_type *exp, int i)
 	  else
 	    {
 	      sec->reloc_count = 1;
-	      memset (si->data, 0, si->size);
-	      rel = xmalloc (sizeof (arelent));
-	      rpp = xmalloc (sizeof (arelent *) * 2);
+	      memset(si->data, 0, si->size);
+	      rel = (arelent *)xmalloc(sizeof(arelent));
+	      rpp = (arelent **)xmalloc(sizeof(arelent *) * 2UL);
 	      rpp[0] = rel;
 	      rpp[1] = 0;
 	      rel->address = 0;
@@ -2418,19 +2423,19 @@ make_one_lib_file (export_type *exp, int i)
 		 why it did that, and it does not match what I see
 		 in programs compiled with the MS tools.  */
 	      int idx = exp->hint;
-	      si->size = strlen (xlate (exp->import_name)) + 3;
-	      si->data = xmalloc (si->size);
+	      si->size = (strlen(xlate(exp->import_name)) + 3UL);
+	      si->data = (unsigned char *)xmalloc(si->size);
 	      si->data[0] = idx & 0xff;
 	      si->data[1] = idx >> 8;
-	      strcpy ((char *) si->data + 2, xlate (exp->import_name));
+	      strcpy((char *)si->data + 2, xlate(exp->import_name));
 	    }
 	  break;
 	case IDATA7:
 	  si->size = 4;
-	  si->data = xmalloc (4);
-	  memset (si->data, 0, si->size);
-	  rel = xmalloc (sizeof (arelent));
-	  rpp = xmalloc (sizeof (arelent *) * 2);
+	  si->data = (unsigned char *)xmalloc(4UL);
+	  memset(si->data, 0, si->size);
+	  rel = (arelent *)xmalloc(sizeof(arelent));
+	  rpp = (arelent **)xmalloc(sizeof(arelent *) * 2UL);
 	  rpp[0] = rel;
 	  rel->address = 0;
 	  rel->addend = 0;
@@ -2547,6 +2552,9 @@ make_one_lib_file (export_type *exp, int i)
 	  sec->reloc_count = 2;
 	  break;
 #endif /* DLLTOOL_PPC */
+	    
+	default:
+	  break;
 	}
     }
 
@@ -2557,8 +2565,10 @@ make_one_lib_file (export_type *exp, int i)
       {
 	sinfo *si = secdata + i;
 
-	bfd_set_section_size (abfd, si->sec, si->size);
-	bfd_set_section_vma (abfd, si->sec, vma);
+	bfd_set_section_size(abfd, si->sec, si->size);
+	if (bfd_set_section_vma(abfd, si->sec, vma)) {
+	  ; /* ??? */
+	}
       }
   }
   /* Write them out.  */
@@ -2700,23 +2710,24 @@ make_tail (void)
   return bfd_openr (TMP_TAIL_O, HOW_BFD_READ_TARGET);
 }
 
+/* FIXME: -Wstack-usage */
 static void
-gen_lib_file (void)
+gen_lib_file(void)
 {
   int i;
   export_type *exp;
   bfd *ar_head;
   bfd *ar_tail;
   bfd *outarch;
-  bfd * head  = 0;
+  bfd *head = (bfd *)0;
 
-  unlink (imp_name);
+  unlink(imp_name);
 
-  outarch = bfd_openw (imp_name, HOW_BFD_WRITE_TARGET);
+  outarch = bfd_openw(imp_name, HOW_BFD_WRITE_TARGET);
 
   if (!outarch)
     /* xgettext:c-format */
-    fatal (_("Can't open .lib file: %s"), imp_name);
+    fatal (_("Cannot open .lib file: %s"), imp_name);
 
   /* xgettext:c-format */
   inform (_("Creating library file: %s"), imp_name);
@@ -2735,7 +2746,7 @@ gen_lib_file (void)
     {
       bfd *n;
       /* Don't add PRIVATE entries to import lib.  */
-      if (exp->private)
+      if (exp->pvt)
 	continue;
       n = make_one_lib_file (exp, i);
       n->next = head;
@@ -2751,7 +2762,7 @@ gen_lib_file (void)
 	  alias_exp.ordinal = exp->ordinal;
 	  alias_exp.constant = exp->constant;
 	  alias_exp.noname = exp->noname;
-	  alias_exp.private = exp->private;
+	  alias_exp.pvt = exp->pvt;
 	  alias_exp.data = exp->data;
 	  alias_exp.hint = exp->hint;
 	  alias_exp.forward = exp->forward;
@@ -2792,20 +2803,22 @@ gen_lib_file (void)
   if (dontdeltemps < 2)
     {
       char *name;
+      const size_t namelen = (strlen(TMP_STUB) + 10UL);
 
-      name = (char *) alloca (strlen (TMP_STUB) + 10);
+      name = (char *)alloca(namelen);
       for (i = 0; (exp = d_exports_lexically[i]); i++)
 	{
 	  /* Don't delete non-existent stubs for PRIVATE entries.  */
-          if (exp->private)
+          if (exp->pvt)
 	    continue;
-	  sprintf (name, "%s%05d.o", TMP_STUB, i);
+	  snprintf(name, namelen, "%s%05d.o", TMP_STUB, i);
 	  if (unlink (name) < 0)
 	    /* xgettext:c-format */
 	    non_fatal (_("cannot delete %s: %s"), name, strerror (errno));
 	  if (ext_prefix_alias)
 	    {
-	      sprintf (name, "%s%05d.o", TMP_STUB, i + PREFIX_ALIAS_BASE);
+	      snprintf(name, namelen, "%s%05d.o", TMP_STUB,
+		       (i + PREFIX_ALIAS_BASE));
 	      if (unlink (name) < 0)
 		/* xgettext:c-format */
 		non_fatal (_("cannot delete %s: %s"), name, strerror (errno));
@@ -3001,7 +3014,8 @@ mangle_defs (void)
 
   int i;
   int hint = 0;
-  export_type **d_export_vec = xmalloc (sizeof (export_type *) * d_nfuncs);
+  export_type **d_export_vec =
+    (export_type **)xmalloc(sizeof(export_type *) * d_nfuncs);
 
   inform (_("Processing definitions"));
 

@@ -1555,7 +1555,7 @@ static const unsigned int coff_section_alignment_table_size =
 
 /* Initialize a section structure with information peculiar to this
  * particular implementation of COFF: */
-static bfd_boolean coff_new_section_hook(bfd * abfd, asection * section)
+static bfd_boolean coff_new_section_hook(bfd *abfd, asection *section)
 {
   combined_entry_type *native;
   bfd_size_type amt;
@@ -1565,11 +1565,11 @@ static bfd_boolean coff_new_section_hook(bfd * abfd, asection * section)
 #ifdef RS6000COFF_C
   if ((bfd_xcoff_text_align_power(abfd) != 0)
       && (strcmp(bfd_get_section_name(abfd, section), ".text") == 0)) {
-      section->alignment_power = bfd_xcoff_text_align_power(abfd);
+      section->alignment_power = (unsigned int)bfd_xcoff_text_align_power(abfd);
   }
   if ((bfd_xcoff_data_align_power(abfd) != 0)
       && (strcmp(bfd_get_section_name(abfd, section), ".data") == 0)) {
-      section->alignment_power = bfd_xcoff_data_align_power(abfd);
+      section->alignment_power = (unsigned int)bfd_xcoff_data_align_power(abfd);
   }
 #endif /* RS6000COFF_C */
 
@@ -1795,7 +1795,7 @@ coff_mkobject_hook(bfd *abfd, void *filehdr,
 
   coff = coff_data(abfd);
 
-  coff->sym_filepos = internal_f->f_symptr;
+  coff->sym_filepos = (file_ptr)internal_f->f_symptr;
 
   /* These members communicate important constants about the symbol
      table to GDB's symbol-reading code.  These `constants'
@@ -1810,9 +1810,8 @@ coff_mkobject_hook(bfd *abfd, void *filehdr,
 
   coff->timestamp = internal_f->f_timdat;
 
-  obj_raw_syment_count(abfd) =
-    obj_conv_table_size(abfd) =
-      (int)internal_f->f_nsyms;
+  obj_conv_table_size(abfd) = (int)internal_f->f_nsyms;
+  obj_raw_syment_count(abfd) = (unsigned long)obj_conv_table_size(abfd);
 
 #ifdef RS6000COFF_C
   if ((internal_f->f_flags & F_SHROBJ) != 0) {
@@ -3281,6 +3280,7 @@ coff_compute_section_file_positions(bfd *abfd)
 static unsigned int pelength;
 static unsigned int peheader;
 
+/* */
 static bfd_boolean
 coff_read_word(bfd *abfd, unsigned int *value)
 {
@@ -3304,6 +3304,7 @@ coff_read_word(bfd *abfd, unsigned int *value)
   return TRUE;
 }
 
+/* */
 static unsigned int
 coff_compute_checksum(bfd *abfd)
 {
@@ -3329,6 +3330,7 @@ coff_compute_checksum(bfd *abfd)
   return (0xffff & (total + (total >> 0x10)));
 }
 
+/* */
 static bfd_boolean
 coff_apply_checksum(bfd *abfd)
 {
@@ -3368,6 +3370,7 @@ coff_apply_checksum(bfd *abfd)
 }
 #endif /* COFF_IMAGE_WITH_PE */
 
+/* */
 static bfd_boolean
 coff_write_object_contents(bfd *abfd)
 {
@@ -3741,10 +3744,10 @@ coff_write_object_contents(bfd *abfd)
 	  scnhdr.s_vaddr = current->lineno_count;
 	  scnhdr.s_size = 0;
 	  scnhdr.s_scnptr = 0;
-	  scnhdr.s_relptr = current->rel_filepos;
-	  scnhdr.s_lnnoptr = current->line_filepos;
-	  scnhdr.s_nreloc = current->target_index;
-	  scnhdr.s_nlnno = current->target_index;
+	  scnhdr.s_relptr = (bfd_vma)current->rel_filepos;
+	  scnhdr.s_lnnoptr = (bfd_vma)current->line_filepos;
+	  scnhdr.s_nreloc = (unsigned long)current->target_index;
+	  scnhdr.s_nlnno = (unsigned long)current->target_index;
 	  scnhdr.s_flags = STYP_OVRFLO;
 	  amt = bfd_coff_scnhsz (abfd);
 	  if ((coff_swap_scnhdr_out(abfd, &scnhdr, &buff) == 0)
@@ -3774,7 +3777,7 @@ coff_write_object_contents(bfd *abfd)
 #ifdef RS6000COFF_C
 # ifndef XCOFF64
     if (xcoff_data(abfd)->full_aouthdr) {
-        internal_f.f_opthdr = bfd_coff_aoutsz(abfd);
+        internal_f.f_opthdr = (unsigned short)bfd_coff_aoutsz(abfd);
     } else {
         internal_f.f_opthdr = SMALL_AOUTSZ;
     }

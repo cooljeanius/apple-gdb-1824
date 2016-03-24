@@ -6,11 +6,14 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wmissing-declarations -Wimplicit -Wparentheses -Wextra -Wc++-compat \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
 -Wmissing-parameter-type -Wshadow -Wabi -Wmissing-include-dirs \
--Wconversion -Wfloat-conversion -Wsign-conversion -Wsign-compare \
--Wshorten-64-to-32 -Wshadow -Wdouble-promotion -Wmisleading-indentation \
--Wformat -Wmissing-format-attribute -Wswitch -Wswitch-default -Wpacked \
--Wnull-dereference"
-# "-Wconversion" and friends are because of a comment in libbfd.c
+-Wshadow -Wmisleading-indentation -Wformat=2 -Wmissing-format-attribute \
+-Wswitch -Wswitch-default -Wpacked -Wnull-dereference -Wstack-usage=262144"
+if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
+  test -n "${WANT_CONVERSION_WARNS}"
+  # "-Wconversion" and friends are because of a comment in libbfd.c
+  WARN_CFLAGS="${WARN_CFLAGS} -Wconversion -Wfloat-conversion \
+  -Wsign-conversion -Wsign-compare -Wshorten-64-to-32 -Wdouble-promotion"
+fi
 WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint"
 WARN_LDFLAGS=""
 

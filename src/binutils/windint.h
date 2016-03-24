@@ -20,6 +20,7 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
    02110-1301, USA.  */
 
+#include "ansidecl.h"
 #include "winduni.h"
 
 #ifndef WINDINT_H
@@ -39,14 +40,14 @@ typedef struct res_hdr
   rc_uint_type header_size;
 } res_hdr;
 
-struct __attribute__ ((__packed__)) bin_res_hdr
+struct ATTRIBUTE_PACKED bin_res_hdr
 {
   bfd_byte data_size[4];
   bfd_byte header_size[4];
 };
 #define BIN_RES_HDR_SIZE 8
 
-struct __attribute__ ((__packed__)) bin_res_id
+struct ATTRIBUTE_PACKED bin_res_id
 {
   bfd_byte sig[2]; /* Has to be 0xffff for unnamed ids.  */
   bfd_byte id[2];
@@ -199,7 +200,7 @@ typedef struct rc_res_res_info
 
 /* Binary layout of rc_res_info.  */
 
-struct __attribute__ ((__packed__)) bin_res_info
+struct ATTRIBUTE_PACKED bin_res_info
 {
   bfd_byte version[4];
   bfd_byte memflags[2];
@@ -306,7 +307,7 @@ typedef struct rc_accelerator
   rc_uint_type id;
 } rc_accelerator;
 
-struct __attribute__ ((__packed__)) bin_accelerator
+struct ATTRIBUTE_PACKED bin_accelerator
 {
   bfd_byte flags[2];
   bfd_byte key[2];
@@ -339,7 +340,7 @@ typedef struct rc_cursor
   const bfd_byte *data;
 } rc_cursor;
 
-struct __attribute__ ((__packed__)) bin_cursor
+struct ATTRIBUTE_PACKED bin_cursor
 {
   bfd_byte xhotspot[2];
   bfd_byte yhotspot[2];
@@ -366,7 +367,7 @@ typedef struct rc_group_cursor
   rc_uint_type index;
 } rc_group_cursor;
 
-struct __attribute__ ((__packed__)) bin_group_cursor_item
+struct ATTRIBUTE_PACKED bin_group_cursor_item
 {
   bfd_byte width[2];
   bfd_byte height[2];
@@ -377,7 +378,7 @@ struct __attribute__ ((__packed__)) bin_group_cursor_item
 };
 #define BIN_GROUP_CURSOR_ITEM_SIZE 14
 
-struct __attribute__ ((__packed__)) bin_group_cursor
+struct ATTRIBUTE_PACKED bin_group_cursor
 {
   bfd_byte sig1[2];
   bfd_byte sig2[2];
@@ -418,7 +419,7 @@ typedef struct rc_dialog
   struct rc_dialog_control *controls;
 } rc_dialog;
 
-struct __attribute__ ((__packed__)) bin_dialog
+struct ATTRIBUTE_PACKED bin_dialog
 {
   bfd_byte style[4];
   bfd_byte exstyle[4];
@@ -444,7 +445,7 @@ typedef struct rc_dialog_ex
   bfd_byte charset;
 } rc_dialog_ex;
 
-struct __attribute__ ((__packed__)) bin_dialogex
+struct ATTRIBUTE_PACKED bin_dialogex
 {
   bfd_byte sig1[2];
   bfd_byte sig2[2];
@@ -459,13 +460,13 @@ struct __attribute__ ((__packed__)) bin_dialogex
 };
 #define BIN_DIALOGEX_SIZE 26
 
-struct __attribute__ ((__packed__)) bin_dialogfont
+struct ATTRIBUTE_PACKED bin_dialogfont
 {
   bfd_byte pointsize[2];
 };
 #define BIN_DIALOGFONT_SIZE 2
 
-struct __attribute__ ((__packed__)) bin_dialogexfont
+struct ATTRIBUTE_PACKED bin_dialogexfont
 {
   bfd_byte pointsize[2];
   bfd_byte weight[2];
@@ -655,7 +656,7 @@ typedef struct rc_dialog_control
   rc_uint_type help;
 } rc_dialog_control;
 
-struct __attribute__ ((__packed__)) bin_dialog_control
+struct ATTRIBUTE_PACKED bin_dialog_control
 {
   bfd_byte style[4];
   bfd_byte exstyle[4];
@@ -667,7 +668,7 @@ struct __attribute__ ((__packed__)) bin_dialog_control
 };
 #define BIN_DIALOG_CONTROL_SIZE 18
 
-struct __attribute__ ((__packed__)) bin_dialogex_control
+struct ATTRIBUTE_PACKED bin_dialogex_control
 {
   bfd_byte help[4];
   bfd_byte exstyle[4];
@@ -702,7 +703,7 @@ typedef struct rc_fontdir
   const bfd_byte *data;
 } rc_fontdir;
 
-struct __attribute__ ((__packed__)) bin_fontdir_item
+struct ATTRIBUTE_PACKED bin_fontdir_item
 {
   bfd_byte index[2];
   bfd_byte header[54];
@@ -732,7 +733,7 @@ typedef struct rc_group_icon
   rc_uint_type index;
 } rc_group_icon;
 
-struct __attribute__ ((__packed__)) bin_group_icon
+struct ATTRIBUTE_PACKED bin_group_icon
 {
   bfd_byte sig1[2];
   bfd_byte sig2[2];
@@ -740,7 +741,7 @@ struct __attribute__ ((__packed__)) bin_group_icon
 };
 #define BIN_GROUP_ICON_SIZE 6
 
-struct __attribute__ ((__packed__)) bin_group_icon_item
+struct ATTRIBUTE_PACKED bin_group_icon_item
 {
   bfd_byte width[1];
   bfd_byte height[1];
@@ -764,14 +765,14 @@ typedef struct rc_menu
   rc_uint_type help;
 } rc_menu;
 
-struct __attribute__ ((__packed__)) bin_menu
+struct ATTRIBUTE_PACKED bin_menu
 {
   bfd_byte sig1[2];
   bfd_byte sig2[2];
 };
 #define BIN_MENU_SIZE 4
 
-struct __attribute__ ((__packed__)) bin_menuex
+struct ATTRIBUTE_PACKED bin_menuex
 {
   bfd_byte sig1[2];
   bfd_byte sig2[2];
@@ -800,7 +801,7 @@ typedef struct rc_menuitem
   rc_uint_type help;
 } rc_menuitem;
 
-struct __attribute__ ((__packed__)) bin_menuitem
+struct ATTRIBUTE_PACKED bin_menuitem
 {
   bfd_byte flags[2];
   bfd_byte id[2];
@@ -808,7 +809,7 @@ struct __attribute__ ((__packed__)) bin_menuitem
 #define BIN_MENUITEM_SIZE  4
 #define BIN_MENUITEM_POPUP_SIZE  2
 
-struct __attribute__ ((__packed__)) bin_menuitemex
+struct ATTRIBUTE_PACKED bin_menuitemex
 {
   bfd_byte type[4];
   bfd_byte state[4];
@@ -893,7 +894,7 @@ typedef struct rc_versioninfo
   struct rc_ver_info *var;
 } rc_versioninfo;
 
-struct __attribute__ ((__packed__)) bin_versioninfo
+struct ATTRIBUTE_PACKED bin_versioninfo
 {
   bfd_byte size[2];
   bfd_byte fixed_size[2];
@@ -926,7 +927,7 @@ typedef struct rc_fixed_versioninfo
   rc_uint_type file_date_ls;
 } rc_fixed_versioninfo;
 
-struct __attribute__ ((__packed__)) bin_fixed_versioninfo
+struct ATTRIBUTE_PACKED bin_fixed_versioninfo
 {
   bfd_byte sig1[4];
   bfd_byte sig2[4];
@@ -983,7 +984,7 @@ typedef struct rc_ver_info
   } u;
 } rc_ver_info;
 
-struct __attribute__ ((__packed__)) bin_ver_info
+struct ATTRIBUTE_PACKED bin_ver_info
 {
   bfd_byte size[2];
   bfd_byte sig1[2];
@@ -1022,7 +1023,7 @@ typedef struct rc_toolbar_item
   rc_res_id id;
 } rc_toolbar_item;
 
-struct __attribute__ ((__packed__)) bin_messagetable_item
+struct ATTRIBUTE_PACKED bin_messagetable_item
 {
   bfd_byte length[2];
   bfd_byte flags[2];
@@ -1032,7 +1033,7 @@ struct __attribute__ ((__packed__)) bin_messagetable_item
 
 #define MESSAGE_RESOURCE_UNICODE  0x0001
 
-struct __attribute__ ((__packed__)) bin_messagetable_block
+struct ATTRIBUTE_PACKED bin_messagetable_block
 {
   bfd_byte lowid[4];
   bfd_byte highid[4];
@@ -1040,7 +1041,7 @@ struct __attribute__ ((__packed__)) bin_messagetable_block
 };
 #define BIN_MESSAGETABLE_BLOCK_SIZE 12
 
-struct __attribute__ ((__packed__)) bin_messagetable
+struct ATTRIBUTE_PACKED bin_messagetable
 {
   bfd_byte cblocks[4];
   struct bin_messagetable_block items[1];
@@ -1055,7 +1056,7 @@ typedef struct rc_toolbar
   rc_toolbar_item *items;
 } rc_toolbar;
 
-struct __attribute__ ((__packed__)) bin_toolbar
+struct ATTRIBUTE_PACKED bin_toolbar
 {
   bfd_byte button_width[4];
   bfd_byte button_height[4];

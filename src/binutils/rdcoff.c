@@ -440,6 +440,9 @@ parse_coff_struct_type (bfd *abfd, struct coff_symbols *symbols,
 	case C_EOS:
 	  done = TRUE;
 	  break;
+	    
+	default:
+	  break;
 	}
 
       if (! done)
@@ -533,6 +536,9 @@ parse_coff_enum_type (bfd *abfd, struct coff_symbols *symbols,
 
 	case C_EOS:
 	  done = TRUE;
+	  break;
+	    
+	default:
 	  break;
 	}
     }

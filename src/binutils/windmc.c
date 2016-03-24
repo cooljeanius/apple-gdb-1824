@@ -172,9 +172,9 @@ res_init(void)
 
 /* Allocate space on the resource building obstack: */
 void *
-res_alloc(rc_uint_type bytes)
+res_alloc(size_t bytes)
 {
-  return obstack_alloc(&res_obstack, (size_t)bytes);
+  return obstack_alloc(&res_obstack, bytes);
 }
 
 static FILE *

@@ -472,15 +472,10 @@ cris_info_to_howto_rela(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
 }
 
 bfd_reloc_status_type
-cris_elf_pcrel_reloc(abfd, reloc_entry, symbol, data, input_section,
-		     output_bfd, error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry;
-     asymbol *symbol;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section;
-     bfd *output_bfd;
-     char **error_message ATTRIBUTE_UNUSED;
+cris_elf_pcrel_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
+		     asymbol *symbol, PTR data ATTRIBUTE_UNUSED,
+		     asection *input_section, bfd *output_bfd,
+		     char **error_message ATTRIBUTE_UNUSED)
 {
   /* By default (using only bfd_elf_generic_reloc when linking to
      non-ELF formats) PC-relative relocs are relative to the beginning

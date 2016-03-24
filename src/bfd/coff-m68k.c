@@ -195,7 +195,7 @@ m68k_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
   m68k_rtype2howto(internal, (relocentry)->r_type)
 
 #define SELECT_RELOC(external, internal) \
-  external.r_type = m68k_howto2rtype (internal)
+  external.r_type = (unsigned short)m68k_howto2rtype(internal)
 
 #define coff_bfd_reloc_type_lookup m68k_reloc_type_lookup
 
@@ -283,7 +283,7 @@ m68kcoff_common_addend_special_fn(bfd *abfd, arelent *reloc_entry,
     }
 
 #define DOIT(x, t) \
-  x = (t)((x & ~howto->dst_mask) | (((x & howto->src_mask) + diff) & howto->dst_mask))
+  x = (t)((x & (t)(~howto->dst_mask)) | (((x & (t)howto->src_mask) + (t)diff) & (t)howto->dst_mask))
 
   if (diff != 0)
     {
@@ -294,15 +294,15 @@ m68kcoff_common_addend_special_fn(bfd *abfd, arelent *reloc_entry,
 	{
 	case 0:
 	  {
-	    char x = bfd_get_8(abfd, addr);
+	    char x = (char)bfd_get_8(abfd, addr);
 	    DOIT(x, char);
-	    bfd_put_8(abfd, x, addr);
+	    bfd_put_8(abfd, (unsigned char)x, addr);
 	  }
 	  break;
 
 	case 1:
 	  {
-	    short x = bfd_get_16(abfd, addr);
+	    short x = (short)bfd_get_16(abfd, addr);
 	    DOIT(x, short);
 	    bfd_put_16(abfd, (bfd_vma)x, addr);
 	  }
@@ -482,8 +482,9 @@ bfd_m68k_coff_create_embedded_relocs(bfd *abfd, struct bfd_link_info *info,
 	    {
 	      struct internal_syment isym;
 
-	      bfd_coff_swap_sym_in (abfd, extsyms + symesz * irel->r_symndx,
-				    &isym);
+	      bfd_coff_swap_sym_in(abfd,
+				   (extsyms + (symesz * (bfd_size_type)irel->r_symndx)),
+				   &isym);
 	      targetsec = coff_section_from_bfd_index (abfd, isym.n_scnum);
 	    }
 	  else if (h->root.type == bfd_link_hash_defined

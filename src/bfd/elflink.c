@@ -5901,8 +5901,8 @@ struct elf_link_sort_rela
 static int
 elf_link_sort_cmp1 (const void *A, const void *B)
 {
-  const struct elf_link_sort_rela *a = A;
-  const struct elf_link_sort_rela *b = B;
+  const struct elf_link_sort_rela *a = (const struct elf_link_sort_rela *)A;
+  const struct elf_link_sort_rela *b = (const struct elf_link_sort_rela *)B;
   int relativea, relativeb;
 
   relativea = a->type == reloc_class_relative;
@@ -5926,8 +5926,8 @@ elf_link_sort_cmp1 (const void *A, const void *B)
 static int
 elf_link_sort_cmp2 (const void *A, const void *B)
 {
-  const struct elf_link_sort_rela *a = A;
-  const struct elf_link_sort_rela *b = B;
+  const struct elf_link_sort_rela *a = (const struct elf_link_sort_rela *)A;
+  const struct elf_link_sort_rela *b = (const struct elf_link_sort_rela *)B;
   int copya, copyb;
 
   if (a->u.offset < b->u.offset)
