@@ -21,6 +21,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		611906B01CA5D0B800AD73D8 /* coff-x86_64.c in Sources */ = {isa = PBXBuildFile; fileRef = A5924F601ABFA13200050903 /* coff-x86_64.c */; };
+		611906D11CA5D4B900AD73D8 /* x86_64.h in Headers */ = {isa = PBXBuildFile; fileRef = 611906D01CA5D4B900AD73D8 /* x86_64.h */; };
 		619631691C55A125001EA510 /* mmalloc.h in Headers */ = {isa = PBXBuildFile; fileRef = A53AC06B1A3A8CBE002F20B2 /* mmalloc.h */; };
 		6196316A1C55A125001EA510 /* mmprivate.h in Headers */ = {isa = PBXBuildFile; fileRef = A53AC0761A3A8CBE002F20B2 /* mmprivate.h */; };
 		6196316B1C55A13B001EA510 /* mmstats.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC0771A3A8CBE002F20B2 /* mmstats.c */; };
@@ -2703,6 +2705,9 @@
 		2609DFCD0E82C412008125DE /* xmalloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xmalloc.h; sourceTree = "<group>"; };
 		2633ABCC101A22EC00337952 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../tot/gdb/Makefile; sourceTree = "<group>"; };
 		6108ED351BB0866700696685 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
+		611906D01CA5D4B900AD73D8 /* x86_64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x86_64.h; path = "/var/root/apple-gdb-1824/src/include/coff/x86_64.h"; sourceTree = "<absolute>"; };
+		6119070A1CA5E5E400AD73D8 /* elfnn-aarch64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "elfnn-aarch64.c"; path = "/var/root/apple-gdb-1824/src/bfd/elfnn-aarch64.c"; sourceTree = "<absolute>"; };
+		611907221CA6311F00AD73D8 /* elf-attrs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "elf-attrs.c"; path = "/var/root/apple-gdb-1824/src/bfd/elf-attrs.c"; sourceTree = "<absolute>"; };
 		6125D9D91BD56BFE001CF3C9 /* CFDataFormatters.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CFDataFormatters.plist; sourceTree = "<group>"; };
 		6125D9DA1BD56BFE001CF3C9 /* CoreGraphics.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CoreGraphics.plist; sourceTree = "<group>"; };
 		6125D9DB1BD56BFE001CF3C9 /* CoreServices.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CoreServices.plist; sourceTree = "<group>"; };
@@ -6145,6 +6150,7 @@
 				2609CEFB0E82C407008125DE /* ecoffswap.h */,
 				2609CEFC0E82C407008125DE /* efi-app-ia32.c */,
 				2609CEFD0E82C407008125DE /* efi-app-ia64.c */,
+				611907221CA6311F00AD73D8 /* elf-attrs.c */,
 				2609CEFE0E82C407008125DE /* elf-bfd.h */,
 				2609CEFF0E82C407008125DE /* elf-eh-frame.c */,
 				2609CF000E82C407008125DE /* elf-hppa.h */,
@@ -6226,6 +6232,7 @@
 				2609CF4C0E82C407008125DE /* elflink.c */,
 				2609CF4D0E82C407008125DE /* elflink.h */,
 				2609CF4E0E82C407008125DE /* elfn32-mips.c */,
+				6119070A1CA5E5E400AD73D8 /* elfnn-aarch64.c */,
 				2609CF4F0E82C407008125DE /* elfxx-ia64.c */,
 				2609CF500E82C408008125DE /* elfxx-mips.c */,
 				2609CF510E82C408008125DE /* elfxx-mips.h */,
@@ -8817,6 +8824,7 @@
 				2609DD270E82C410008125DE /* tic80.h */,
 				2609DD280E82C410008125DE /* w65.h */,
 				2609DD290E82C410008125DE /* we32k.h */,
+				611906D01CA5D4B900AD73D8 /* x86_64.h */,
 				2609DD2A0E82C410008125DE /* xcoff.h */,
 				2609DD2B0E82C410008125DE /* z8k.h */,
 			);
@@ -13072,6 +13080,7 @@
 				A51B3F1A1A493694002170CE /* plugin.h in Headers */,
 				A5A66DD41A54CA6000EDD221 /* trad-user.h in Headers */,
 				A5FE69901A9E935D005583F9 /* macosx-nat-info.h in Headers */,
+				611906D11CA5D4B900AD73D8 /* x86_64.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -13588,6 +13597,7 @@
 				61D22095192D613F00FA979E /* coff-u68k.c in Sources */,
 				61D22096192D613F00FA979E /* coff-w65.c in Sources */,
 				61D22097192D613F00FA979E /* coff-we32k.c in Sources */,
+				611906B01CA5D0B800AD73D8 /* coff-x86_64.c in Sources */,
 				61D22098192D613F00FA979E /* coff-z8k.c in Sources */,
 				61D22099192D613F00FA979E /* coff64-rs6000.c in Sources */,
 				61D2209B192D613F00FA979E /* coffgen.c in Sources */,

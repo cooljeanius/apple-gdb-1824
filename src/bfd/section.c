@@ -382,6 +382,11 @@ CODE_FRAGMENT
 .#define ELF_INFO_TYPE_MERGE     2
 .#define ELF_INFO_TYPE_EH_FRAME  3
 .#define ELF_INFO_TYPE_JUST_SYMS 4
+.#define SEC_INFO_TYPE_NONE      ELF_INFO_TYPE_NONE
+.#define SEC_INFO_TYPE_STABS     ELF_INFO_TYPE_STABS
+.#define SEC_INFO_TYPE_MERGE     ELF_INFO_TYPE_MERGE
+.#define SEC_INFO_TYPE_EH_FRAME  ELF_INFO_TYPE_EH_FRAME
+.#define SEC_INFO_TYPE_JUST_SYMS ELF_INFO_TYPE_JUST_SYMS
 .
 .  {* Nonzero if this section uses RELA relocations, rather than REL.  *}
 .  unsigned int use_rela_p:1;

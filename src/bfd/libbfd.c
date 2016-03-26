@@ -263,6 +263,33 @@ bfd_realloc2(void *ptr, bfd_size_type nmemb, bfd_size_type size)
   return ret;
 }
 
+/* Reallocate memory using realloc.
+ * If this fails, then the pointer is freed before returning: */
+void *
+bfd_realloc_or_free(void *ptr, bfd_size_type size)
+{
+  size_t amount = (size_t)size;
+  void *ret;
+  
+  if (size != amount)
+    ret = NULL;
+  else if (ptr == NULL)
+    ret = malloc(amount);
+  else
+    ret = realloc(ptr, amount);
+  
+  if (ret == NULL)
+    {
+      if (amount > 0)
+	bfd_set_error(bfd_error_no_memory);
+    
+      if (ptr != NULL)
+	free(ptr);
+    }
+  
+  return ret;
+}
+
 /* Allocate memory using malloc and clear it: */
 void *
 bfd_zmalloc(bfd_size_type size)

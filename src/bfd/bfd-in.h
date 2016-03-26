@@ -127,9 +127,15 @@ typedef BFD_HOST_U_64_BIT symvalue;
 
 #ifndef fprintf_vma
 # if BFD_HOST_64BIT_LONG
+#  define BFD_VMA_FMT "l"
 #  define sprintf_vma(s,x) sprintf(s, "%016lx", x)
 #  define fprintf_vma(f,x) fprintf(f, "%016lx", x)
 # else
+#  if defined(__MSVCRT__)
+#   define BFD_VMA_FMT "I64"
+#  else
+#   define BFD_VMA_FMT "ll"
+#  endif /* __MSVCRT__ */
 #  define _bfd_int64_low(x) ((unsigned long)(((x) & 0xffffffff)))
 #  define _bfd_int64_high(x) ((unsigned long)(((x) >> 32) & 0xffffffff))
 #  define fprintf_vma(s,x) \
@@ -156,6 +162,9 @@ typedef unsigned long symvalue;
 typedef unsigned long bfd_size_type;
 
 /* Print a bfd_vma x on stream s: */
+# ifndef BFD_VMA_FMT
+#  define BFD_VMA_FMT "l"
+# endif /* !BFD_VMA_FMT */
 # define fprintf_vma(s,x) fprintf(s, "%08lx", x)
 # define sprintf_vma(s,x) sprintf(s, "%08lx", x)
 
@@ -354,6 +363,15 @@ typedef struct bfd_section *sec_ptr;
 #define bfd_get_section_limit(bfd, sec) \
   (((sec)->rawsize ? (sec)->rawsize : (sec)->size) \
    / bfd_octets_per_byte(bfd))
+  
+/* Return TRUE if input section SEC has been discarded: */
+#ifndef discarded_section
+# define discarded_section(sec)				\
+   (!bfd_is_abs_section (sec)					\
+    && bfd_is_abs_section ((sec)->output_section)		\
+    && (sec)->sec_info_type != SEC_INFO_TYPE_MERGE		\
+    && (sec)->sec_info_type != SEC_INFO_TYPE_JUST_SYMS)
+#endif /* !discarded_section */
 
 typedef struct stat stat_type;
 
@@ -878,6 +896,76 @@ extern bfd_boolean bfd_is_arm_mapping_symbol_name(const char * name);
 extern bfd_boolean bfd_arm_merge_machines(bfd *, bfd *);
 extern bfd_boolean bfd_arm_update_notes(bfd *, const char *);
 extern unsigned int bfd_arm_get_mach_from_notes(bfd *, const char *);
+  
+  /* ARM stub generation support.  Called from the linker.  */
+extern int elf32_arm_setup_section_lists
+  (bfd *, struct bfd_link_info *);
+extern void elf32_arm_next_input_section
+  (struct bfd_link_info *, struct bfd_section *);
+extern bfd_boolean elf32_arm_size_stubs
+  (bfd *, bfd *, struct bfd_link_info *, bfd_signed_vma,
+   struct bfd_section * (*) (const char *, struct bfd_section *, unsigned int),
+   void (*) (void));
+extern bfd_boolean elf32_arm_build_stubs
+  (struct bfd_link_info *);
+
+/* ARM unwind section editing support.  */
+extern bfd_boolean elf32_arm_fix_exidx_coverage
+(struct bfd_section **, unsigned int, struct bfd_link_info *, bfd_boolean);
+
+/* C6x unwind section editing support.  */
+extern bfd_boolean elf32_tic6x_fix_exidx_coverage
+(struct bfd_section **, unsigned int, struct bfd_link_info *, bfd_boolean);
+
+/* PowerPC @tls opcode transform/validate.  */
+extern unsigned int _bfd_elf_ppc_at_tls_transform
+  (unsigned int, unsigned int);
+/* PowerPC @tprel opcode transform/validate.  */
+extern unsigned int _bfd_elf_ppc_at_tprel_transform
+  (unsigned int, unsigned int);
+
+extern void bfd_elf64_aarch64_init_maps
+  (bfd *);
+
+extern void bfd_elf32_aarch64_init_maps
+  (bfd *);
+
+extern void bfd_elf64_aarch64_set_options
+  (bfd *, struct bfd_link_info *, int, int, int);
+
+extern void bfd_elf32_aarch64_set_options
+  (bfd *, struct bfd_link_info *, int, int, int);
+
+/* ELF AArch64 mapping symbol support.  */
+#define BFD_AARCH64_SPECIAL_SYM_TYPE_MAP	(1 << 0)
+#define BFD_AARCH64_SPECIAL_SYM_TYPE_TAG	(1 << 1)
+#define BFD_AARCH64_SPECIAL_SYM_TYPE_OTHER	(1 << 2)
+#define BFD_AARCH64_SPECIAL_SYM_TYPE_ANY	(~0)
+extern bfd_boolean bfd_is_aarch64_special_symbol_name
+  (const char * name, int type);
+
+/* AArch64 stub generation support for ELF64.  Called from the linker.  */
+extern int elf64_aarch64_setup_section_lists
+  (bfd *, struct bfd_link_info *);
+extern void elf64_aarch64_next_input_section
+  (struct bfd_link_info *, struct bfd_section *);
+extern bfd_boolean elf64_aarch64_size_stubs
+  (bfd *, bfd *, struct bfd_link_info *, bfd_signed_vma,
+   struct bfd_section * (*) (const char *, struct bfd_section *),
+   void (*) (void));
+extern bfd_boolean elf64_aarch64_build_stubs
+  (struct bfd_link_info *);
+/* AArch64 stub generation support for ELF32.  Called from the linker.  */
+extern int elf32_aarch64_setup_section_lists
+  (bfd *, struct bfd_link_info *);
+extern void elf32_aarch64_next_input_section
+  (struct bfd_link_info *, struct bfd_section *);
+extern bfd_boolean elf32_aarch64_size_stubs
+  (bfd *, bfd *, struct bfd_link_info *, bfd_signed_vma,
+   struct bfd_section * (*) (const char *, struct bfd_section *),
+   void (*) (void));
+extern bfd_boolean elf32_aarch64_build_stubs
+  (struct bfd_link_info *);
 
 /* TI COFF load page support: */
 extern void bfd_ticoff_set_section_load_page(struct bfd_section *, int);

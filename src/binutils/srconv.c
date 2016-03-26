@@ -19,7 +19,7 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
    02110-1301, USA.  */
 
-/* Written by Steve Chamberlain (sac@cygnus.com)
+/* Written by Steve Chamberlain <sac@cygnus.com>
 
    This program can be used to convert a coff object file
    into a Hitachi OM/LM (Sysroff) format.
@@ -699,6 +699,9 @@ walk_tree_type_1 (struct coff_sfile *sfile, struct coff_symbol *symbol,
 	    dbt.btype = BTYPE_INT;
 	    dbt.sign = SIGN_UNSIGNED;
 	    dbt.fptype = FPTYPE_NOTSPEC;
+	    break;
+	      
+	  default:
 	    break;
 	  }
 

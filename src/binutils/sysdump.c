@@ -1,4 +1,4 @@
-/* Sysroff object format dumper.
+/* sysdump.c: Sysroff object format dumper.
    Copyright 1994, 1995, 1998, 1999, 2000, 2001, 2002, 2003, 2005
    Free Software Foundation, Inc.
 
@@ -522,9 +522,9 @@ tab (int i, char *s)
 
   if (s)
     {
-      p ();
-      printf (s);
-      printf ("\n");
+      p();
+      printf("%s", s);
+      printf("\n");
     }
 }
 

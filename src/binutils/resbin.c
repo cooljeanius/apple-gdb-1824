@@ -491,7 +491,7 @@ bin_to_res_dialog (const unsigned char *data, unsigned long length,
   sublen = get_resid (&d->menu, data + off, length - off, big_endian);
   off += sublen;
 
-  sublen = get_resid (&d->class, data + off, length - off, big_endian);
+  sublen = get_resid (&d->classname, data + off, length - off, big_endian);
   off += sublen;
 
   d->caption = get_unicode (data + off, length - off, big_endian, &sublen);
@@ -579,7 +579,7 @@ bin_to_res_dialog (const unsigned char *data, unsigned long length,
 
       off += 10 + (d->ex != NULL ? 2 : 0);
 
-      sublen = get_resid (&dc->class, data + off, length - off, big_endian);
+      sublen = get_resid (&dc->classname, data + off, length - off, big_endian);
       off += sublen;
 
       sublen = get_resid (&dc->text, data + off, length - off, big_endian);
@@ -1545,7 +1545,7 @@ res_to_bin_dialog (const struct dialog *dialog, int big_endian)
   length += (*pp)->length;
   pp = &(*pp)->next;
 
-  *pp = resid_to_bin (dialog->class, big_endian);
+  *pp = resid_to_bin (dialog->classname, big_endian);
   length += (*pp)->length;
   pp = &(*pp)->next;
 
@@ -1632,7 +1632,7 @@ res_to_bin_dialog (const struct dialog *dialog, int big_endian)
       *pp = d;
       pp = &d->next;
 
-      *pp = resid_to_bin (dc->class, big_endian);
+      *pp = resid_to_bin (dc->classname, big_endian);
       length += (*pp)->length;
       pp = &(*pp)->next;
 

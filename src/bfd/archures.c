@@ -372,6 +372,28 @@ DESCRIPTION
 .   bfd_arch_maxq,     {* Dallas MAXQ 10/20 *}
 .#define bfd_mach_maxq10    10
 .#define bfd_mach_maxq20    20
+.  bfd_arch_z80,
+.#define bfd_mach_z80strict      1 {* No undocumented opcodes.  *}
+.#define bfd_mach_z80            3 {* With ixl, ixh, iyl, and iyh.  *}
+.#define bfd_mach_z80full        7 {* All undocumented instructions.  *}
+.#define bfd_mach_r800           11 {* R800: successor with multiplication.  *}
+.  bfd_arch_lm32,      {* Lattice Mico32 *}
+.#define bfd_mach_lm32      1
+.  bfd_arch_microblaze,{* Xilinx MicroBlaze. *}
+.  bfd_arch_tilepro,   {* Tilera TILEPro *}
+.  bfd_arch_tilegx, {* Tilera TILE-Gx *}
+.#define bfd_mach_tilepro   1
+.#define bfd_mach_tilegx    1
+.#define bfd_mach_tilegx32  2
+.  bfd_arch_aarch64,   {* AArch64  *}
+.#define bfd_mach_aarch64 0
+.#define bfd_mach_aarch64_ilp32	32
+.  bfd_arch_nios2,	{* Nios II *}
+.#define bfd_mach_nios2		0
+.#define bfd_mach_nios2r1	1
+.#define bfd_mach_nios2r2	2
+.  bfd_arch_visium,	{* Visium *}
+.#define bfd_mach_visium	1
 .  bfd_arch_last
 .  };
 */
@@ -411,6 +433,7 @@ DESCRIPTION
 */
 
 extern const bfd_arch_info_type bfd_a29k_arch;
+extern const bfd_arch_info_type bfd_aarch64_arch;
 extern const bfd_arch_info_type bfd_alpha_arch;
 extern const bfd_arch_info_type bfd_arc_arch;
 extern const bfd_arch_info_type bfd_arm_arch;

@@ -16,9 +16,9 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA.  */
 
-/* Written by Steve Chamberlain (sac@cygnus.com)
+/* Written by Steve Chamberlain <sac@cygnus.com>
 
    This module reads a coff file and builds a really simple type tree
    which can be read by other programs.  The first application is a
@@ -444,6 +444,8 @@ do_type(size_t i)
       break;
     case T_MOE:
       break;
+    default:
+      break;
     }
 
   for (which_dt = 5; which_dt >= 0; which_dt--)
@@ -490,6 +492,8 @@ do_type(size_t i)
 	    res = ptr;
 	    break;
 	  }
+	default:
+	  break;
 	}
     }
   return res;

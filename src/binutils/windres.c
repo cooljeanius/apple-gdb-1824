@@ -608,6 +608,7 @@ format_from_filename (const char *filename, int input)
     case 0x1f0: /* PowerPC */
     case 0x290: /* PA */
       return RES_FORMAT_COFF;
+    default: break; /* ??? */
     }
 
   /* A RES file starts with 0x0 0x0 0x0 0x0 0x20 0x0 0x0 0x0.  */

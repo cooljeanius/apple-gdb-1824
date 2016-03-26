@@ -135,6 +135,10 @@
 
   Fixup the R_AARCH64_TLSGD_{ADR_PREL21, ADD_LO12_NC} relocations.  */
 
+#ifndef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+# define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
+#endif /* !USE_NEW_ELF_BFD_STRUCT_MEMBERS */
+
 #include "sysdep.h"
 #include "bfd.h"
 #include "libiberty.h"
@@ -1388,7 +1392,7 @@ elfNN_aarch64_bfd_reloc_from_howto (reloc_howto_type *howto)
     = howto - elfNN_aarch64_howto_table;
 
   if (offset > 0 && offset < size - 1)
-    return BFD_RELOC_AARCH64_RELOC_START + offset;
+    return (bfd_reloc_code_real_type)(BFD_RELOC_AARCH64_RELOC_START + offset);
 
   if (howto == &elfNN_aarch64_howto_none)
     return BFD_RELOC_AARCH64_NONE;
@@ -1419,7 +1423,8 @@ elfNN_aarch64_bfd_reloc_from_type (unsigned int r_type)
   if (r_type == R_AARCH64_NONE || r_type == R_AARCH64_NULL)
     return BFD_RELOC_AARCH64_NONE;
 
-  return BFD_RELOC_AARCH64_RELOC_START + offsets[r_type];
+  return (bfd_reloc_code_real_type)(BFD_RELOC_AARCH64_RELOC_START
+				    + offsets[r_type]);
 }
 
 struct elf_aarch64_reloc_map
@@ -1778,6 +1783,15 @@ elfNN_aarch64_symbol_got_type (struct elf_link_hash_entry *h,
   ((struct elf_aarch64_stub_hash_entry *)				\
    bfd_hash_lookup ((table), (string), (create), (copy)))
 
+/* Un-nested from following struct for -Wc++-compat: */
+struct map_stub
+{
+  /* This is the section to which stubs in the group will be attached: */
+  asection *link_sec;
+  /* The stub section: */
+  asection *stub_sec;
+};
+
 /* AArch64 ELF linker hash table.  */
 struct elf_aarch64_link_hash_table
 {
@@ -1819,14 +1833,7 @@ struct elf_aarch64_link_hash_table
 
   /* Array to keep track of which stub sections have been created, and
      information on stub grouping.  */
-  struct map_stub
-  {
-    /* This is the section to which stubs in the group will be
-       attached.  */
-    asection *link_sec;
-    /* The stub section.  */
-    asection *stub_sec;
-  } *stub_group;
+  struct map_stub *stub_group;
 
   /* Assorted information used by elfNN_aarch64_size_stubs.  */
   unsigned int bfd_count;
@@ -1862,8 +1869,9 @@ elfNN_aarch64_link_hash_newfunc (struct bfd_hash_entry *entry,
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
   if (ret == NULL)
-    ret = bfd_hash_allocate (table,
-			     sizeof (struct elf_aarch64_link_hash_entry));
+    ret = ((struct elf_aarch64_link_hash_entry *)
+	   bfd_hash_allocate(table,
+			     sizeof(struct elf_aarch64_link_hash_entry)));
   if (ret == NULL)
     return (struct bfd_hash_entry *) ret;
 
@@ -1875,9 +1883,9 @@ elfNN_aarch64_link_hash_newfunc (struct bfd_hash_entry *entry,
     {
       ret->dyn_relocs = NULL;
       ret->got_type = GOT_UNKNOWN;
-      ret->plt_got_offset = (bfd_vma) - 1;
+      ret->plt_got_offset = (bfd_signed_vma)(-1L);
       ret->stub_cache = NULL;
-      ret->tlsdesc_got_jump_table_offset = (bfd_vma) - 1;
+      ret->tlsdesc_got_jump_table_offset = (bfd_vma)(-1);
     }
 
   return (struct bfd_hash_entry *) ret;
@@ -1893,9 +1901,10 @@ stub_hash_newfunc (struct bfd_hash_entry *entry,
      subclass.  */
   if (entry == NULL)
     {
-      entry = bfd_hash_allocate (table,
-				 sizeof (struct
-					 elf_aarch64_stub_hash_entry));
+      entry =
+	((struct bfd_hash_entry *)
+	 bfd_hash_allocate(table,
+			   sizeof(struct elf_aarch64_stub_hash_entry)));
       if (entry == NULL)
 	return entry;
     }
@@ -1930,7 +1939,8 @@ elfNN_aarch64_local_htab_hash (const void *ptr)
 {
   struct elf_link_hash_entry *h
     = (struct elf_link_hash_entry *) ptr;
-  return ELF_LOCAL_SYMBOL_HASH (h->indx, h->dynstr_index);
+  return (hashval_t)ELF_LOCAL_SYMBOL_HASH((unsigned long)h->indx,
+					  h->dynstr_index);
 }
 
 /* Compare local hash entries.  */
@@ -1955,14 +1965,14 @@ elfNN_aarch64_get_local_sym_hash (struct elf_aarch64_link_hash_table *htab,
 {
   struct elf_aarch64_link_hash_entry e, *ret;
   asection *sec = abfd->sections;
-  hashval_t h = ELF_LOCAL_SYMBOL_HASH (sec->id,
-				       ELFNN_R_SYM (rel->r_info));
+  hashval_t h = (hashval_t)ELF_LOCAL_SYMBOL_HASH((bfd_vma)sec->id,
+						 ELFNN_R_SYM(rel->r_info));
   void **slot;
 
   e.root.indx = sec->id;
-  e.root.dynstr_index = ELFNN_R_SYM (rel->r_info);
-  slot = htab_find_slot_with_hash (htab->loc_hash_table, &e, h,
-				   create ? INSERT : NO_INSERT);
+  e.root.dynstr_index = (unsigned long)ELFNN_R_SYM(rel->r_info);
+  slot = htab_find_slot_with_hash(htab->loc_hash_table, &e, h,
+				  (create ? INSERT : NO_INSERT));
 
   if (!slot)
     return NULL;
@@ -1980,7 +1990,7 @@ elfNN_aarch64_get_local_sym_hash (struct elf_aarch64_link_hash_table *htab,
     {
       memset (ret, 0, sizeof (*ret));
       ret->root.indx = sec->id;
-      ret->root.dynstr_index = ELFNN_R_SYM (rel->r_info);
+      ret->root.dynstr_index = (unsigned long)ELFNN_R_SYM(rel->r_info);
       ret->root.dynindx = -1;
       *slot = ret;
     }
@@ -2051,7 +2061,7 @@ elfNN_aarch64_link_hash_table_create (bfd *abfd)
   struct elf_aarch64_link_hash_table *ret;
   bfd_size_type amt = sizeof (struct elf_aarch64_link_hash_table);
 
-  ret = bfd_zmalloc (amt);
+  ret = (struct elf_aarch64_link_hash_table *)bfd_zmalloc(amt);
   if (ret == NULL)
     return NULL;
 
@@ -2193,24 +2203,24 @@ elfNN_aarch64_stub_name (const asection *input_section,
 
   if (hash)
     {
-      len = 8 + 1 + strlen (hash->root.root.root.string) + 1 + 16 + 1;
-      stub_name = bfd_malloc (len);
+      len = (8UL + 1UL + strlen(hash->root.root.root.string) + 1UL + 16UL + 1U);
+      stub_name = (char *)bfd_malloc(len);
       if (stub_name != NULL)
-	snprintf (stub_name, len, "%08x_%s+%" BFD_VMA_FMT "x",
-		  (unsigned int) input_section->id,
-		  hash->root.root.root.string,
-		  rel->r_addend);
+	snprintf(stub_name, (size_t)len, "%08x_%s+%" BFD_VMA_FMT "x",
+		 (unsigned int)input_section->id,
+		 hash->root.root.root.string,
+		 rel->r_addend);
     }
   else
     {
-      len = 8 + 1 + 8 + 1 + 8 + 1 + 16 + 1;
-      stub_name = bfd_malloc (len);
+      len = (8UL + 1UL + 8UL + 1UL + 8UL + 1UL + 16UL + 1UL);
+      stub_name = (char *)bfd_malloc(len);
       if (stub_name != NULL)
-	snprintf (stub_name, len, "%08x_%x:%x+%" BFD_VMA_FMT "x",
-		  (unsigned int) input_section->id,
-		  (unsigned int) sym_sec->id,
-		  (unsigned int) ELFNN_R_SYM (rel->r_info),
-		  rel->r_addend);
+	snprintf(stub_name, (size_t)len, "%08x_%x:%x+%" BFD_VMA_FMT "x",
+		 (unsigned int)input_section->id,
+		 (unsigned int)sym_sec->id,
+		 (unsigned int)ELFNN_R_SYM(rel->r_info),
+		 rel->r_addend);
     }
 
   return stub_name;
@@ -2290,7 +2300,7 @@ elfNN_aarch64_add_stub (const char *stub_name,
 
 	  namelen = strlen (link_sec->name);
 	  len = namelen + sizeof (STUB_SUFFIX);
-	  s_name = bfd_alloc (htab->stub_bfd, len);
+	  s_name = (char *)bfd_alloc(htab->stub_bfd, len);
 	  if (s_name == NULL)
 	    return NULL;
 
@@ -2331,7 +2341,7 @@ aarch64_build_one_stub (struct bfd_hash_entry *gen_entry,
   bfd_byte *loc;
   bfd_vma sym_value;
   unsigned int template_size;
-  const uint32_t *template;
+  const uint32_t *utemplate;
   unsigned int i;
 
   /* Massage our args to the form they really have.  */
@@ -2363,11 +2373,11 @@ aarch64_build_one_stub (struct bfd_hash_entry *gen_entry,
   switch (stub_entry->stub_type)
     {
     case aarch64_stub_adrp_branch:
-      template = aarch64_adrp_branch_stub;
+      utemplate = aarch64_adrp_branch_stub;
       template_size = sizeof (aarch64_adrp_branch_stub);
       break;
     case aarch64_stub_long_branch:
-      template = aarch64_long_branch_stub;
+      utemplate = aarch64_long_branch_stub;
       template_size = sizeof (aarch64_long_branch_stub);
       break;
     default:
@@ -2375,13 +2385,13 @@ aarch64_build_one_stub (struct bfd_hash_entry *gen_entry,
       return FALSE;
     }
 
-  for (i = 0; i < (template_size / sizeof template[0]); i++)
+  for (i = 0; i < (template_size / sizeof utemplate[0]); i++)
     {
-      bfd_putl32 (template[i], loc);
+      bfd_putl32 (utemplate[i], loc);
       loc += 4;
     }
 
-  template_size = (template_size + 7) & ~7;
+  template_size = (template_size + 7U) & ~7U;
   stub_sec->size += template_size;
 
   switch (stub_entry->stub_type)
@@ -2427,7 +2437,7 @@ aarch64_size_one_stub (struct bfd_hash_entry *gen_entry,
 		       void *in_arg ATTRIBUTE_UNUSED)
 {
   struct elf_aarch64_stub_hash_entry *stub_entry;
-  int size;
+  bfd_size_type size;
 
   /* Massage our args to the form they really have.  */
   stub_entry = (struct elf_aarch64_stub_hash_entry *) gen_entry;
@@ -2446,7 +2456,7 @@ aarch64_size_one_stub (struct bfd_hash_entry *gen_entry,
       break;
     }
 
-  size = (size + 7) & ~7;
+  size = (size + 7U) & ~7U;
   stub_entry->stub_sec->size += size;
   return TRUE;
 }
@@ -2487,8 +2497,8 @@ elfNN_aarch64_setup_section_lists (bfd *output_bfd,
     }
   htab->bfd_count = bfd_count;
 
-  amt = sizeof (struct map_stub) * (top_id + 1);
-  htab->stub_group = bfd_zmalloc (amt);
+  amt = (sizeof(struct map_stub) * ((size_t)top_id + 1UL));
+  htab->stub_group = (struct map_stub *)bfd_zmalloc(amt);
   if (htab->stub_group == NULL)
     return -1;
 
@@ -2503,8 +2513,8 @@ elfNN_aarch64_setup_section_lists (bfd *output_bfd,
     }
 
   htab->top_index = top_index;
-  amt = sizeof (asection *) * (top_index + 1);
-  input_list = bfd_malloc (amt);
+  amt = (sizeof(asection *) * ((size_t)top_index + 1UL));
+  input_list = (asection **)bfd_malloc(amt);
   htab->input_list = input_list;
   if (input_list == NULL)
     return -1;
@@ -2659,15 +2669,15 @@ elfNN_aarch64_size_stubs (bfd *output_bfd,
   htab->layout_sections_again = layout_sections_again;
   stubs_always_before_branch = group_size < 0;
   if (group_size < 0)
-    stub_group_size = -group_size;
+    stub_group_size = (bfd_size_type)(-group_size);
   else
-    stub_group_size = group_size;
+    stub_group_size = (bfd_size_type)group_size;
 
   if (stub_group_size == 1)
     {
       /* Default values.  */
       /* AArch64 branch range is +-128MB. The value used is 1MB less.  */
-      stub_group_size = 127 * 1024 * 1024;
+      stub_group_size = 127UL * 1024UL * 1024UL;
     }
 
   group_sections (htab, stub_group_size, stubs_always_before_branch);
@@ -2734,8 +2744,8 @@ elfNN_aarch64_size_stubs (bfd *output_bfd,
 		  unsigned char st_type;
 		  bfd_size_type len;
 
-		  r_type = ELFNN_R_TYPE (irela->r_info);
-		  r_indx = ELFNN_R_SYM (irela->r_info);
+		  r_type = ELFNN_R_TYPE(irela->r_info);
+		  r_indx = (unsigned int)ELFNN_R_SYM(irela->r_info);
 
 		  if (r_type >= (unsigned int) R_AARCH64_end)
 		    {
@@ -2799,9 +2809,9 @@ elfNN_aarch64_size_stubs (bfd *output_bfd,
 		    }
 		  else
 		    {
-		      int e_indx;
+		      ptrdiff_t e_indx;
 
-		      e_indx = r_indx - symtab_hdr->sh_info;
+		      e_indx = (ptrdiff_t)(r_indx - symtab_hdr->sh_info);
 		      hash = ((struct elf_aarch64_link_hash_entry *)
 			      elf_sym_hashes (input_bfd)[e_indx]);
 
@@ -2872,8 +2882,9 @@ elfNN_aarch64_size_stubs (bfd *output_bfd,
 		    }
 
 		  /* Determine what (if any) linker stub is needed.  */
-		  stub_type = aarch64_type_of_stub
-		    (info, section, irela, st_type, hash, destination);
+		  stub_type =
+		    aarch64_type_of_stub(info, section, irela, st_type, hash,
+					 destination);
 		  if (stub_type == aarch64_stub_none)
 		    continue;
 
@@ -2912,16 +2923,17 @@ elfNN_aarch64_size_stubs (bfd *output_bfd,
 
 		  if (sym_name == NULL)
 		    sym_name = "unnamed";
-		  len = sizeof (STUB_ENTRY_NAME) + strlen (sym_name);
-		  stub_entry->output_name = bfd_alloc (htab->stub_bfd, len);
+		  len = (sizeof(STUB_ENTRY_NAME) + strlen(sym_name));
+		  stub_entry->output_name = (char *)bfd_alloc(htab->stub_bfd,
+							      len);
 		  if (stub_entry->output_name == NULL)
 		    {
 		      free (stub_name);
 		      goto error_ret_free_internal;
 		    }
 
-		  snprintf (stub_entry->output_name, len, STUB_ENTRY_NAME,
-			    sym_name);
+		  snprintf(stub_entry->output_name, (size_t)len,
+			   STUB_ENTRY_NAME, sym_name);
 
 		  stub_changed = TRUE;
 		}
@@ -2980,7 +2992,7 @@ elfNN_aarch64_build_stubs (struct bfd_link_info *info)
 
       /* Allocate memory to hold the linker stubs.  */
       size = stub_sec->size;
-      stub_sec->contents = bfd_zalloc (htab->stub_bfd, size);
+      stub_sec->contents = (unsigned char *)bfd_zalloc(htab->stub_bfd, size);
       if (stub_sec->contents == NULL && size != 0)
 	return FALSE;
       stub_sec->size = 0;
@@ -3005,7 +3017,8 @@ elfNN_aarch64_section_map_add (asection *sec, char type, bfd_vma vma)
 
   if (sec_data->map == NULL)
     {
-      sec_data->map = bfd_malloc (sizeof (elf_aarch64_section_map));
+      sec_data->map = ((elf_aarch64_section_map *)
+		       bfd_malloc(sizeof(elf_aarch64_section_map)));
       sec_data->mapcount = 0;
       sec_data->mapsize = 1;
     }
@@ -3015,8 +3028,11 @@ elfNN_aarch64_section_map_add (asection *sec, char type, bfd_vma vma)
   if (sec_data->mapcount > sec_data->mapsize)
     {
       sec_data->mapsize *= 2;
-      sec_data->map = bfd_realloc_or_free
-	(sec_data->map, sec_data->mapsize * sizeof (elf_aarch64_section_map));
+      sec_data->map =
+        ((elf_aarch64_section_map *)
+	 bfd_realloc_or_free(sec_data->map,
+			     (sec_data->mapsize
+			      * sizeof(elf_aarch64_section_map))));
     }
 
   if (sec_data->map)
@@ -3122,7 +3138,7 @@ aarch64_calculate_got_entry_vma (struct elf_link_hash_entry *h,
 	     entry to initialize the value.  This is done in the
 	     finish_dynamic_symbol routine.  */
 	  if ((off & 1) != 0)
-	    off &= ~1;
+	    off &= ~1U;
 	  else
 	    {
 	      bfd_put_NN (output_bfd, value, basegot->contents + off);
@@ -3339,7 +3355,7 @@ symbol_got_offset (bfd *input_bfd, struct elf_link_hash_entry *h,
 {
   bfd_vma value;
   value = * symbol_got_offset_ref (input_bfd, h, r_symndx);
-  value &= ~1;
+  value &= ~1U;
   return value;
 }
 
@@ -3390,7 +3406,7 @@ symbol_tlsdesc_got_offset (bfd *input_bfd, struct elf_link_hash_entry *h,
 {
   bfd_vma value;
   value = * symbol_tlsdesc_got_offset_ref (input_bfd, h, r_symndx);
-  value &= ~1;
+  value &= ~1U;
   return value;
 }
 
@@ -3429,7 +3445,7 @@ elfNN_aarch64_final_link_relocate (reloc_howto_type *howto,
 
   BFD_ASSERT (is_aarch64_elf (input_bfd));
 
-  r_symndx = ELFNN_R_SYM (rel->r_info);
+  r_symndx = (unsigned long)ELFNN_R_SYM(rel->r_info);
 
   /* It is possible to have linker relaxations on some TLS access
      models.  Update our information here.  */
@@ -3447,8 +3463,8 @@ elfNN_aarch64_final_link_relocate (reloc_howto_type *howto,
 
   /* Get addend, accumulating the addend for consecutive relocs
      which refer to the same offset.  */
-  signed_addend = saved_addend ? *saved_addend : 0;
-  signed_addend += rel->r_addend;
+  signed_addend = (bfd_signed_vma)(saved_addend ? *saved_addend : 0);
+  signed_addend += (bfd_signed_vma)rel->r_addend;
 
   weak_undef_p = (h ? h->root.type == bfd_link_hash_undefweak
 		  : bfd_is_und_section (sym_sec));
@@ -3485,7 +3501,7 @@ elfNN_aarch64_final_link_relocate (reloc_howto_type *howto,
 	       "symbol `%s' isn't handled by %s"), input_bfd,
 	     howto->name, name, __FUNCTION__);
 	  bfd_set_error (bfd_error_bad_value);
-	  return FALSE;
+	  return (bfd_reloc_status_type)FALSE;
 
 	case BFD_RELOC_AARCH64_NN:
 	  if (rel->r_addend != 0)
@@ -3500,7 +3516,7 @@ elfNN_aarch64_final_link_relocate (reloc_howto_type *howto,
 		   "symbol `%s' has non-zero addend: %d"),
 		 input_bfd, howto->name, name, rel->r_addend);
 	      bfd_set_error (bfd_error_bad_value);
-	      return FALSE;
+	      return (bfd_reloc_status_type)FALSE;
 	    }
 
 	  /* Generate dynamic relocation only when there is a
@@ -3535,7 +3551,7 @@ elfNN_aarch64_final_link_relocate (reloc_howto_type *howto,
 		}
 	      else
 		{
-		  outrel.r_info = ELFNN_R_INFO (h->dynindx, r_type);
+		  outrel.r_info = ELFNN_R_INFO((bfd_vma)h->dynindx, r_type);
 		  outrel.r_addend = 0;
 		}
 
@@ -3602,7 +3618,7 @@ elfNN_aarch64_final_link_relocate (reloc_howto_type *howto,
 		     relocation entry to initialize the value.  This
 		     is done in the finish_dynamic_symbol routine.	 */
 		  if ((off & 1) != 0)
-		    off &= ~1;
+		    off &= ~1U;
 		  else
 		    {
 		      bfd_put_NN (output_bfd, value,
@@ -3675,7 +3691,7 @@ elfNN_aarch64_final_link_relocate (reloc_howto_type *howto,
 	  else if (h != NULL
 		   && h->dynindx != -1
 		   && (!info->shared || !info->symbolic || !h->def_regular))
-	    outrel.r_info = ELFNN_R_INFO (h->dynindx, r_type);
+	    outrel.r_info = ELFNN_R_INFO((bfd_vma)h->dynindx, r_type);
 	  else
 	    {
 	      int symbol;
@@ -3684,7 +3700,8 @@ elfNN_aarch64_final_link_relocate (reloc_howto_type *howto,
 		 relocate the text and data segments independently,
 		 so the symbol does not matter.  */
 	      symbol = 0;
-	      outrel.r_info = ELFNN_R_INFO (symbol, AARCH64_R (RELATIVE));
+	      outrel.r_info = ELFNN_R_INFO((bfd_vma)symbol,
+					   AARCH64_R(RELATIVE));
 	      outrel.r_addend += value;
 	    }
 
@@ -3714,7 +3731,7 @@ elfNN_aarch64_final_link_relocate (reloc_howto_type *howto,
 					   signed_addend);
 	}
       else
-	value += signed_addend;
+	value += (bfd_vma)signed_addend;
       break;
 
     case BFD_RELOC_AARCH64_JUMP26:
@@ -3926,7 +3943,7 @@ elfNN_aarch64_tls_relax (struct elf_aarch64_link_hash_table *globals,
 	     or
 	     adrp x0, :tlsdesc:var   =>   adrp x0, :gottprel:var
 	   */
-	  insn = bfd_getl32 (contents + rel->r_offset);
+	  insn = (unsigned long)bfd_getl32(contents + rel->r_offset);
 	  return bfd_reloc_continue;
 	}
 
@@ -3944,7 +3961,7 @@ elfNN_aarch64_tls_relax (struct elf_aarch64_link_hash_table *globals,
 	  /* GD->IE relaxation:
 	     ldr xd, [x0, #:tlsdesc_lo12:var] => ldr x0, [x0, #:gottprel_lo12:var]
 	   */
-	  insn = bfd_getl32 (contents + rel->r_offset);
+	  insn = (unsigned long)bfd_getl32(contents + rel->r_offset);
 	  insn &= 0xfffffff0;
 	  bfd_putl32 (insn, contents + rel->r_offset);
 	  return bfd_reloc_continue;
@@ -4007,7 +4024,7 @@ elfNN_aarch64_tls_relax (struct elf_aarch64_link_hash_table *globals,
        */
       if (is_local)
 	{
-	  insn = bfd_getl32 (contents + rel->r_offset);
+	  insn = (unsigned long)bfd_getl32(contents + rel->r_offset);
 	  bfd_putl32 (0xd2a00000 | (insn & 0x1f), contents + rel->r_offset);
 	}
       return bfd_reloc_continue;
@@ -4018,7 +4035,7 @@ elfNN_aarch64_tls_relax (struct elf_aarch64_link_hash_table *globals,
        */
       if (is_local)
 	{
-	  insn = bfd_getl32 (contents + rel->r_offset);
+	  insn = (unsigned long)bfd_getl32(contents + rel->r_offset);
 	  bfd_putl32 (0xf2800000 | (insn & 0x1f), contents + rel->r_offset);
 	}
       return bfd_reloc_continue;
@@ -4055,6 +4072,10 @@ elfNN_aarch64_relocate_section (bfd *output_bfd,
 
   symtab_hdr = &elf_symtab_hdr (input_bfd);
   sym_hashes = elf_sym_hashes (input_bfd);
+  
+  if (sym_hashes == NULL) {
+    ; /* ??? */
+  }
 
   rel = relocs;
   relend = relocs + input_section->reloc_count;
@@ -4075,8 +4096,8 @@ elfNN_aarch64_relocate_section (bfd *output_bfd,
       bfd_boolean unresolved_reloc = FALSE;
       char *error_message = NULL;
 
-      r_symndx = ELFNN_R_SYM (rel->r_info);
-      r_type = ELFNN_R_TYPE (rel->r_info);
+      r_symndx = (unsigned long)ELFNN_R_SYM(rel->r_info);
+      r_type = ELFNN_R_TYPE(rel->r_info);
 
       bfd_reloc.howto = elfNN_aarch64_howto_from_type (r_type);
       howto = bfd_reloc.howto;
@@ -4132,14 +4153,15 @@ elfNN_aarch64_relocate_section (bfd *output_bfd,
 	}
       else
 	{
-	  bfd_boolean warned, ignored;
+	  bfd_boolean warned ATTRIBUTE_UNUSED;
+	  bfd_boolean ignored ATTRIBUTE_UNUSED;
 
 	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
 				   r_symndx, symtab_hdr, sym_hashes,
 				   h, sec, relocation,
 				   unresolved_reloc, warned, ignored);
 
-	  sym_type = h->type;
+	  sym_type = (char)h->type;
 	}
 
       if (sec != NULL && discarded_section (sec))

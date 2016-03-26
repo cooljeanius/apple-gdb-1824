@@ -294,7 +294,7 @@ struct dialog
   /* Menu name.  */
   struct res_id menu;
   /* Class name.  */
-  struct res_id class;
+  struct res_id classname;
   /* Caption.  */
   unichar *caption;
   /* Font point size.  */
@@ -494,7 +494,7 @@ struct dialog_control
   /* Height.  */
   unsigned short height;
   /* Class name.  */
-  struct res_id class;
+  struct res_id classname;
   /* Associated text.  */
   struct res_id text;
   /* Extra data for the window procedure.  */
@@ -594,6 +594,16 @@ struct menuitem
 #define MENUITEM_ENDMENU	0x080
 #define MENUITEM_HELP	       0x4000
 
+/* Unnested from the following struct for -Wc++-compat: */
+enum rcdata_types_e
+{
+  RCDATA_WORD,
+  RCDATA_DWORD,
+  RCDATA_STRING,
+  RCDATA_WSTRING,
+  RCDATA_BUFFER
+};
+
 /* An rcdata resource is a pointer to a list of rcdata_item
    structures.  */
 
@@ -602,14 +612,7 @@ struct rcdata_item
   /* Next data item.  */
   struct rcdata_item *next;
   /* Type of data.  */
-  enum
-  {
-    RCDATA_WORD,
-    RCDATA_DWORD,
-    RCDATA_STRING,
-    RCDATA_WSTRING,
-    RCDATA_BUFFER
-  } type;
+  enum rcdata_types_e type;
   union
   {
     unsigned int word;
@@ -681,14 +684,16 @@ struct fixed_versioninfo
   unsigned long file_date_ls;
 };
 
-/* A list of variable version information.  */
+/* Un-nested from the following struct for -Wc++-compat: */
+enum verinfo_types_e { VERINFO_STRING, VERINFO_VAR };
 
+/* A list of variable version information: */
 struct ver_info
 {
   /* Next item.  */
   struct ver_info *next;
   /* Type of data.  */
-  enum { VERINFO_STRING, VERINFO_VAR } type;
+  enum verinfo_types_e type;
   union
   {
     /* StringFileInfo data.  */

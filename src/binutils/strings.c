@@ -129,6 +129,7 @@ typedef off64_t file_off;
 typedef off_t file_off;
 # define file_open(s,m) fopen(s, m)
 #endif /* HAVE_FOPEN64 */
+/* Workaround for __APPLE__ case included above: */
 #ifdef HAVE_STAT64
 typedef struct stat64 statbuf;
 # define file_stat(f,s) stat64(f, s)

@@ -113,7 +113,7 @@ static unsigned long style;
    control_params.  */
 static unsigned long base_style;
 static unsigned long default_style;
-static unsigned long class;
+static unsigned long controlclass;
 static struct res_id res_text_field;
 static unichar null_unichar;
 
@@ -768,7 +768,7 @@ static const yytype_uint16 yyrline[] =
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE || 1
+#if YYDEBUG || YYERROR_VERBOSE || 0
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
@@ -2258,7 +2258,7 @@ yyreduce:
 	      dialog.style = WS_POPUP | WS_BORDER | WS_SYSMENU;
 	      dialog.exstyle = (yyvsp[(4) - (8)].il);
 	      dialog.menu.named = 1;
-	      dialog.class.named = 1;
+	      dialog.classname.named = 1;
 	      dialog.font = NULL;
 	      dialog.ex = NULL;
 	      dialog.controls = NULL;
@@ -2290,7 +2290,7 @@ yyreduce:
 	      dialog.style = WS_POPUP | WS_BORDER | WS_SYSMENU;
 	      dialog.exstyle = (yyvsp[(4) - (8)].il);
 	      dialog.menu.named = 1;
-	      dialog.class.named = 1;
+	      dialog.classname.named = 1;
 	      dialog.font = NULL;
 	      dialog.ex = ((struct dialog_ex *)
 			   res_alloc (sizeof (struct dialog_ex)));
@@ -2324,7 +2324,7 @@ yyreduce:
 	      dialog.style = (WS_POPUP | WS_BORDER | WS_SYSMENU);
 	      dialog.exstyle = (yyvsp[(4) - (9)].il);
 	      dialog.menu.named = 1;
-	      dialog.class.named = 1;
+	      dialog.classname.named = 1;
 	      dialog.font = NULL;
 	      dialog.ex = ((struct dialog_ex *)
 			   res_alloc (sizeof (struct dialog_ex)));
@@ -2377,7 +2377,7 @@ yyreduce:
 /* Line 1787 of yacc.c  */
 #line 433 "rcparse.y"
     {
-	    dialog.class = (yyvsp[(3) - (3)].id);
+	    dialog.classname = (yyvsp[(3) - (3)].id);
 	  }
     break;
 
@@ -2401,7 +2401,7 @@ yyreduce:
 /* Line 1787 of yacc.c  */
 #line 446 "rcparse.y"
     {
-	    res_string_to_id(& dialog.class, (yyvsp[(3) - (3)].s));
+	    res_string_to_id(& dialog.classname, (yyvsp[(3) - (3)].s));
 	  }
     break;
 
@@ -2529,7 +2529,7 @@ yyreduce:
     {
 	      default_style = BS_AUTO3STATE | WS_TABSTOP;
 	      base_style = BS_AUTO3STATE;
-	      class = CTL_BUTTON;
+	      controlclass = CTL_BUTTON;
 	      res_text_field = (yyvsp[(2) - (2)].id);
 	    }
     break;
@@ -2548,7 +2548,7 @@ yyreduce:
     {
 	      default_style = BS_AUTOCHECKBOX | WS_TABSTOP;
 	      base_style = BS_AUTOCHECKBOX;
-	      class = CTL_BUTTON;
+	      controlclass = CTL_BUTTON;
 	      res_text_field = (yyvsp[(2) - (2)].id);
 	    }
     break;
@@ -2567,7 +2567,7 @@ yyreduce:
     {
 	      default_style = BS_AUTORADIOBUTTON | WS_TABSTOP;
 	      base_style = BS_AUTORADIOBUTTON;
-	      class = CTL_BUTTON;
+	      controlclass = CTL_BUTTON;
 	      res_text_field = (yyvsp[(2) - (2)].id);
 	    }
     break;
@@ -2586,7 +2586,7 @@ yyreduce:
     {
 	      default_style = ES_LEFT | WS_BORDER | WS_TABSTOP;
 	      base_style = ES_LEFT | WS_BORDER | WS_TABSTOP;
-	      class = CTL_EDIT;
+	      controlclass = CTL_EDIT;
 	      res_text_field = (yyvsp[(2) - (2)].id);
 	    }
     break;
@@ -2598,7 +2598,7 @@ yyreduce:
 	    (yyval.dialog_control) = (yyvsp[(4) - (4)].dialog_control);
 	    if (dialog.ex == NULL)
 	      rcparse_warning (_("BEDIT requires DIALOGEX"));
-	    res_string_to_id (&(yyval.dialog_control)->class, "BEDIT");
+	    res_string_to_id (&(yyval.dialog_control)->classname, "BEDIT");
 	  }
     break;
 
@@ -2608,7 +2608,7 @@ yyreduce:
     {
 	      default_style = BS_CHECKBOX | WS_TABSTOP;
 	      base_style = BS_CHECKBOX | WS_TABSTOP;
-	      class = CTL_BUTTON;
+	      controlclass = CTL_BUTTON;
 	      res_text_field = (yyvsp[(2) - (2)].id);
 	    }
     break;
@@ -2629,7 +2629,7 @@ yyreduce:
 		 versions of MS rc.exe their is no default style.  */
 	      default_style = CBS_SIMPLE | WS_TABSTOP;
 	      base_style = 0;
-	      class = CTL_COMBOBOX;
+	      controlclass = CTL_COMBOBOX;
 	      res_text_field = res_null_text;
 	    }
     break;
@@ -2679,8 +2679,8 @@ yyreduce:
 		  rcparse_warning ("control data requires DIALOGEX");
 		(yyval.dialog_control)->data = (yyvsp[(12) - (12)].rcdata_item);
 	      }
-	    (yyval.dialog_control)->class.named = 1;
-  	    unicode_from_ascii_old(&(yyval.dialog_control)->class.u.n.length, &(yyval.dialog_control)->class.u.n.name, (yyvsp[(5) - (12)].s));
+	    (yyval.dialog_control)->classname.named = 1;
+  	    unicode_from_ascii_old(&(yyval.dialog_control)->classname.u.n.length, &(yyval.dialog_control)->classname.u.n.name, (yyvsp[(5) - (12)].s));
 	  }
     break;
 
@@ -2693,8 +2693,8 @@ yyreduce:
 	      rcparse_warning("help ID requires DIALOGEX");
 	    (yyval.dialog_control)->help = (yyvsp[(12) - (13)].il);
 	    (yyval.dialog_control)->data = (yyvsp[(13) - (13)].rcdata_item);
-	    (yyval.dialog_control)->class.named = 1;
-  	    unicode_from_ascii_old(&(yyval.dialog_control)->class.u.n.length, &(yyval.dialog_control)->class.u.n.name, (yyvsp[(5) - (13)].s));
+	    (yyval.dialog_control)->classname.named = 1;
+  	    unicode_from_ascii_old(&(yyval.dialog_control)->classname.u.n.length, &(yyval.dialog_control)->classname.u.n.name, (yyvsp[(5) - (13)].s));
 	  }
     break;
 
@@ -2704,7 +2704,7 @@ yyreduce:
     {
 	      default_style = SS_CENTER | WS_GROUP;
 	      base_style = SS_CENTER;
-	      class = CTL_STATIC;
+	      controlclass = CTL_STATIC;
 	      res_text_field = (yyvsp[(2) - (2)].id);
 	    }
     break;
@@ -2723,7 +2723,7 @@ yyreduce:
     {
 	      default_style = BS_DEFPUSHBUTTON | WS_TABSTOP;
 	      base_style = BS_DEFPUSHBUTTON | WS_TABSTOP;
-	      class = CTL_BUTTON;
+	      controlclass = CTL_BUTTON;
 	      res_text_field = (yyvsp[(2) - (2)].id);
 	    }
     break;
@@ -2742,7 +2742,7 @@ yyreduce:
     {
 	      default_style = ES_LEFT | WS_BORDER | WS_TABSTOP;
 	      base_style = ES_LEFT | WS_BORDER | WS_TABSTOP;
-	      class = CTL_EDIT;
+	      controlclass = CTL_EDIT;
 	      res_text_field = res_null_text;
 	    }
     break;
@@ -2761,7 +2761,7 @@ yyreduce:
     {
 	      default_style = BS_GROUPBOX;
 	      base_style = BS_GROUPBOX;
-	      class = CTL_BUTTON;
+	      controlclass = CTL_BUTTON;
 	      res_text_field = (yyvsp[(2) - (2)].id);
 	    }
     break;
@@ -2780,7 +2780,7 @@ yyreduce:
     {
 	      default_style = ES_LEFT | WS_BORDER | WS_TABSTOP;
 	      base_style = ES_LEFT | WS_BORDER | WS_TABSTOP;
-	      class = CTL_EDIT;
+	      controlclass = CTL_EDIT;
 	      res_text_field = (yyvsp[(2) - (2)].id);
 	    }
     break;
@@ -2792,7 +2792,7 @@ yyreduce:
 	    (yyval.dialog_control) = (yyvsp[(4) - (4)].dialog_control);
 	    if (dialog.ex == NULL)
 	      rcparse_warning (_("IEDIT requires DIALOGEX"));
-	    res_string_to_id (&(yyval.dialog_control)->class, "HEDIT");
+	    res_string_to_id (&(yyval.dialog_control)->classname, "HEDIT");
 	  }
     break;
 
@@ -2838,7 +2838,7 @@ yyreduce:
     {
 	      default_style = ES_LEFT | WS_BORDER | WS_TABSTOP;
 	      base_style = ES_LEFT | WS_BORDER | WS_TABSTOP;
-	      class = CTL_EDIT;
+	      controlclass = CTL_EDIT;
 	      res_text_field = (yyvsp[(2) - (2)].id);
 	    }
     break;
@@ -2850,7 +2850,7 @@ yyreduce:
 	    (yyval.dialog_control) = (yyvsp[(4) - (4)].dialog_control);
 	    if (dialog.ex == NULL)
 	      rcparse_warning (_("IEDIT requires DIALOGEX"));
-	    res_string_to_id (&(yyval.dialog_control)->class, "IEDIT");
+	    res_string_to_id (&(yyval.dialog_control)->classname, "IEDIT");
 	  }
     break;
 
@@ -2860,7 +2860,7 @@ yyreduce:
     {
 	      default_style = LBS_NOTIFY | WS_BORDER;
 	      base_style = LBS_NOTIFY | WS_BORDER;
-	      class = CTL_LISTBOX;
+	      controlclass = CTL_LISTBOX;
 	      res_text_field = res_null_text;
 	    }
     break;
@@ -2879,7 +2879,7 @@ yyreduce:
     {
 	      default_style = SS_LEFT | WS_GROUP;
 	      base_style = SS_LEFT;
-	      class = CTL_STATIC;
+	      controlclass = CTL_STATIC;
 	      res_text_field = (yyvsp[(2) - (2)].id);
 	    }
     break;
@@ -2898,7 +2898,7 @@ yyreduce:
     {
 	      default_style = BS_PUSHBOX | WS_TABSTOP;
 	      base_style = BS_PUSHBOX;
-	      class = CTL_BUTTON;
+	      controlclass = CTL_BUTTON;
 	    }
     break;
 
@@ -2916,7 +2916,7 @@ yyreduce:
     {
 	      default_style = BS_PUSHBUTTON | WS_TABSTOP;
 	      base_style = BS_PUSHBUTTON | WS_TABSTOP;
-	      class = CTL_BUTTON;
+	      controlclass = CTL_BUTTON;
 	      res_text_field = (yyvsp[(2) - (2)].id);
 	    }
     break;
@@ -2935,7 +2935,7 @@ yyreduce:
     {
 	      default_style = BS_RADIOBUTTON | WS_TABSTOP;
 	      base_style = BS_RADIOBUTTON;
-	      class = CTL_BUTTON;
+	      controlclass = CTL_BUTTON;
 	      res_text_field = (yyvsp[(2) - (2)].id);
 	    }
     break;
@@ -2954,7 +2954,7 @@ yyreduce:
     {
 	      default_style = SS_RIGHT | WS_GROUP;
 	      base_style = SS_RIGHT;
-	      class = CTL_STATIC;
+	      controlclass = CTL_STATIC;
 	      res_text_field = (yyvsp[(2) - (2)].id);
 	    }
     break;
@@ -2973,7 +2973,7 @@ yyreduce:
     {
 	      default_style = SBS_HORZ;
 	      base_style = 0;
-	      class = CTL_SCROLLBAR;
+	      controlclass = CTL_SCROLLBAR;
 	      res_text_field = res_null_text;
 	    }
     break;
@@ -2992,7 +2992,7 @@ yyreduce:
     {
 	      default_style = BS_3STATE | WS_TABSTOP;
 	      base_style = BS_3STATE;
-	      class = CTL_BUTTON;
+	      controlclass = CTL_BUTTON;
 	      res_text_field = (yyvsp[(2) - (2)].id);
 	    }
     break;
@@ -3024,7 +3024,7 @@ yyreduce:
 /* Line 1787 of yacc.c  */
 #line 854 "rcparse.y"
     {
-	    (yyval.dialog_control) = define_control (res_text_field, (yyvsp[(1) - (6)].il), (yyvsp[(2) - (6)].il), (yyvsp[(3) - (6)].il), (yyvsp[(4) - (6)].il), (yyvsp[(5) - (6)].il), class,
+	    (yyval.dialog_control) = define_control (res_text_field, (yyvsp[(1) - (6)].il), (yyvsp[(2) - (6)].il), (yyvsp[(3) - (6)].il), (yyvsp[(4) - (6)].il), (yyvsp[(5) - (6)].il), controlclass,
 				 default_style | WS_CHILD | WS_VISIBLE, 0);
 	    if ((yyvsp[(6) - (6)].rcdata_item) != NULL)
 	      {
@@ -3039,7 +3039,7 @@ yyreduce:
 /* Line 1787 of yacc.c  */
 #line 866 "rcparse.y"
     {
-	    (yyval.dialog_control) = define_control (res_text_field, (yyvsp[(1) - (8)].il), (yyvsp[(2) - (8)].il), (yyvsp[(3) - (8)].il), (yyvsp[(4) - (8)].il), (yyvsp[(5) - (8)].il), class, style, (yyvsp[(7) - (8)].il));
+	    (yyval.dialog_control) = define_control (res_text_field, (yyvsp[(1) - (8)].il), (yyvsp[(2) - (8)].il), (yyvsp[(3) - (8)].il), (yyvsp[(4) - (8)].il), (yyvsp[(5) - (8)].il), controlclass, style, (yyvsp[(7) - (8)].il));
 	    if ((yyvsp[(8) - (8)].rcdata_item) != NULL)
 	      {
 		if (dialog.ex == NULL)
@@ -3053,7 +3053,7 @@ yyreduce:
 /* Line 1787 of yacc.c  */
 #line 877 "rcparse.y"
     {
-	    (yyval.dialog_control) = define_control (res_text_field, (yyvsp[(1) - (9)].il), (yyvsp[(2) - (9)].il), (yyvsp[(3) - (9)].il), (yyvsp[(4) - (9)].il), (yyvsp[(5) - (9)].il), class, style, (yyvsp[(7) - (9)].il));
+	    (yyval.dialog_control) = define_control (res_text_field, (yyvsp[(1) - (9)].il), (yyvsp[(2) - (9)].il), (yyvsp[(3) - (9)].il), (yyvsp[(4) - (9)].il), (yyvsp[(5) - (9)].il), controlclass, style, (yyvsp[(7) - (9)].il));
 	    if (dialog.ex == NULL)
 	      rcparse_warning (_("help ID requires DIALOGEX"));
 	    (yyval.dialog_control)->help = (yyvsp[(8) - (9)].il);

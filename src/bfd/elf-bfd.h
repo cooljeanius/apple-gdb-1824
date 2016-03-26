@@ -351,6 +351,57 @@ struct eh_frame_hdr_info
   bfd_boolean table;
   bfd_boolean offsets_adjusted;
 };
+  
+/* Enum used to identify target specific extensions to the elf_obj_tdata
+   and elf_link_hash_table structures.  Note the enums deliberately start
+   from 1 so that we can detect an uninitialized field.  The generic value
+   is last so that additions to this enum do not need to modify more than
+   one line.  */
+enum elf_target_id
+{
+  AARCH64_ELF_DATA = 1,
+  ALPHA_ELF_DATA,
+  ARM_ELF_DATA,
+  AVR_ELF_DATA,
+  BFIN_ELF_DATA,
+  CRIS_ELF_DATA,
+  FRV_ELF_DATA,
+  HPPA32_ELF_DATA,
+  HPPA64_ELF_DATA,
+  I386_ELF_DATA,
+  IA64_ELF_DATA,
+  LM32_ELF_DATA,
+  M32R_ELF_DATA,
+  M68HC11_ELF_DATA,
+  M68K_ELF_DATA,
+  METAG_ELF_DATA,
+  MICROBLAZE_ELF_DATA,
+  MIPS_ELF_DATA,
+  MN10300_ELF_DATA,
+  NDS32_ELF_DATA,
+  NIOS2_ELF_DATA,
+  OR1K_ELF_DATA,
+  PPC32_ELF_DATA,
+  PPC64_ELF_DATA,
+  S390_ELF_DATA,
+  SH_ELF_DATA,
+  SPARC_ELF_DATA,
+  SPU_ELF_DATA,
+  TIC6X_ELF_DATA,
+  X86_64_ELF_DATA,
+  XTENSA_ELF_DATA,
+  XGATE_ELF_DATA,
+  TILEGX_ELF_DATA,
+  TILEPRO_ELF_DATA,
+  GENERIC_ELF_DATA
+};
+
+struct elf_sym_strtab
+{
+  Elf_Internal_Sym sym;
+  unsigned long dest_index;
+  unsigned long destshndx_index;
+};
 
 /* ELF linker hash table.  */
 
@@ -358,6 +409,12 @@ struct elf_link_hash_table
 {
   struct bfd_link_hash_table root;
 
+#ifdef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+  /* An identifier used to distinguish different target
+     specific extensions to this structure.  */
+  enum elf_target_id hash_table_id;
+#endif /* USE_NEW_ELF_BFD_STRUCT_MEMBERS */
+  
   /* Whether we have created the special dynamic sections required
      when linking against or generating a shared object.  */
   bfd_boolean dynamic_sections_created;
@@ -424,6 +481,20 @@ struct elf_link_hash_table
   /* True if this target has relocatable executables, so needs dynamic
      section symbols.  */
   bfd_boolean is_relocatable_executable;
+  
+#ifdef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+  /* Short-cuts to get to dynamic linker sections.  */
+  asection *sgot;
+  asection *sgotplt;
+  asection *srelgot;
+  asection *splt;
+  asection *srelplt;
+  asection *igotplt;
+  asection *iplt;
+  asection *irelplt;
+  asection *irelifunc;
+  asection *dynsym;
+#endif /* USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 };
 
 /* Look up an entry in an ELF linker hash table.  */
@@ -457,6 +528,15 @@ struct sym_sec_cache
   bfd *abfd;
   unsigned long indx[LOCAL_SYM_CACHE_SIZE];
   asection *sec[LOCAL_SYM_CACHE_SIZE];
+};
+  
+/* Used by bfd_sym_from_r_symndx to cache a small number of local
+   symbols.  */
+struct sym_cache
+{
+  bfd *abfd;
+  unsigned long indx[LOCAL_SYM_CACHE_SIZE];
+  Elf_Internal_Sym sym[LOCAL_SYM_CACHE_SIZE];
 };
 
 /* Constant information held for an ELF backend.  */
@@ -1042,6 +1122,21 @@ struct elf_backend_data
   /* The size in bytes of the header for the GOT.  This includes the
      so-called reserved entries on some systems.  */
   bfd_vma got_header_size;
+  
+#ifdef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+  /* The vendor name to use for a processor-standard attributes section.  */
+  const char *obj_attrs_vendor;
+
+  /* The section name to use for a processor-standard attributes section.  */
+  const char *obj_attrs_section;
+
+  /* Return 1, 2 or 3 to indicate what type of arguments a
+     processor-specific tag takes.  */
+  int (*obj_attrs_arg_type) (int);
+
+  /* The section type to use for an attributes section.  */
+  unsigned int obj_attrs_section_type;
+#endif /* USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 
   /* This is TRUE if the linker should act like collect and gather
      global constructors and destructors by name.  This is TRUE for
@@ -1071,6 +1166,11 @@ struct elf_backend_data
      and the backend wants RELA relocations for a particular
      section.  */
   unsigned int default_use_rela_p : 1;
+  
+#ifdef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+  /* True if PLT and copy relocations should be RELA by default.  */
+  unsigned int rela_plts_and_copies_p : 1;
+#endif /* USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 
   /* Set if RELA relocations for a relocatable link can be handled by
      generic code.  Backends that set this flag need do nothing in the
@@ -1235,6 +1335,46 @@ struct elf_find_verdep_info
   bfd_boolean failed;
 };
 
+/* The maximum number of known object attributes for any target.  */
+#define NUM_KNOWN_OBJ_ATTRIBUTES 32
+
+/* The value of an object attribute.  type & 1 indicates whether there
+   is an integer value; type & 2 indicates whether there is a string
+   value.  */
+
+typedef struct obj_attribute
+{
+  int type;
+  unsigned int i;
+  char *s;
+} obj_attribute;
+
+typedef struct obj_attribute_list
+{
+  struct obj_attribute_list *next;
+  int tag;
+  obj_attribute attr;
+} obj_attribute_list;
+
+/* Object attributes may either be defined by the processor ABI, index
+   OBJ_ATTR_PROC in the *_obj_attributes arrays, or be GNU-specific
+   (and possibly also processor-specific), index OBJ_ATTR_GNU.  */
+#define OBJ_ATTR_PROC 0
+#define OBJ_ATTR_GNU 1
+#define OBJ_ATTR_FIRST OBJ_ATTR_PROC
+#define OBJ_ATTR_LAST OBJ_ATTR_GNU
+
+/* The following object attribute tags are taken as generic, for all
+   targets and for "gnu" where there is no target standard.  */
+enum
+{
+  Tag_NULL = 0,
+  Tag_File = 1,
+  Tag_Section = 2,
+  Tag_Symbol = 3,
+  Tag_compatibility = 32
+};
+
 /* Some private data is stashed away for future use using the tdata pointer
    in the bfd structure.  */
 
@@ -1372,15 +1512,26 @@ struct elf_obj_tdata
 
   /* Used to determine if the e_flags field has been initialized */
   bfd_boolean flags_init;
+  
+  /* An identifier used to distinguish different target
+     specific extensions to this structure.  */
+  enum elf_target_id object_id;
+  
+  obj_attribute known_obj_attributes[2][NUM_KNOWN_OBJ_ATTRIBUTES];
+  obj_attribute_list *other_obj_attributes[2];
 };
 
 #define elf_tdata(bfd)		((bfd) -> tdata.elf_obj_data)
+  
+#define elf_object_id(bfd)      (elf_tdata(bfd) -> object_id)
+#define elf_program_header_size(bfd) (elf_tdata(bfd) -> program_header_size)
 #define elf_elfheader(bfd)	(elf_tdata(bfd) -> elf_header)
 #define elf_elfsections(bfd)	(elf_tdata(bfd) -> elf_sect_ptr)
 #define elf_numsections(bfd)	(elf_tdata(bfd) -> num_elf_sections)
 #define elf_shstrtab(bfd)	(elf_tdata(bfd) -> strtab_ptr)
 #define elf_onesymtab(bfd)	(elf_tdata(bfd) -> symtab_section)
 #define elf_symtab_shndx(bfd)	(elf_tdata(bfd) -> symtab_shndx_section)
+#define elf_symtab_hdr(bfd)     (elf_tdata(bfd) -> symtab_hdr)
 #define elf_dynsymtab(bfd)	(elf_tdata(bfd) -> dynsymtab_section)
 #define elf_dynversym(bfd)	(elf_tdata(bfd) -> dynversym_section)
 #define elf_dynverdef(bfd)	(elf_tdata(bfd) -> dynverdef_section)
@@ -1401,6 +1552,12 @@ struct elf_obj_tdata
 #define elf_dyn_lib_class(bfd)	(elf_tdata(bfd) -> dyn_lib_class)
 #define elf_bad_symtab(bfd)	(elf_tdata(bfd) -> bad_symtab)
 #define elf_flags_init(bfd)	(elf_tdata(bfd) -> flags_init)
+#define elf_known_obj_attributes(bfd) (elf_tdata (bfd) -> known_obj_attributes)
+#define elf_other_obj_attributes(bfd) (elf_tdata (bfd) -> other_obj_attributes)
+#define elf_known_obj_attributes_proc(bfd) \
+  (elf_known_obj_attributes (bfd) [OBJ_ATTR_PROC])
+#define elf_other_obj_attributes_proc(bfd) \
+  (elf_other_obj_attributes (bfd) [OBJ_ATTR_PROC])
 
 extern void _bfd_elf_swap_verdef_in
   (bfd *, const Elf_External_Verdef *, Elf_Internal_Verdef *);
@@ -1469,6 +1626,8 @@ extern unsigned long bfd_elf_hash
 
 extern bfd_reloc_status_type bfd_elf_generic_reloc
   (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+extern bfd_boolean bfd_elf_allocate_object
+  (bfd *, size_t, enum elf_target_id);
 extern bfd_boolean bfd_elf_mkobject
   (bfd *);
 extern bfd_boolean bfd_elf_mkcorefile
@@ -1482,6 +1641,8 @@ extern bfd_boolean _bfd_elf_make_section_from_phdr
 extern struct bfd_hash_entry *_bfd_elf_link_hash_newfunc
   (struct bfd_hash_entry *, struct bfd_hash_table *, const char *);
 extern struct bfd_link_hash_table *_bfd_elf_link_hash_table_create
+  (bfd *);
+extern void _bfd_elf_link_hash_table_free
   (bfd *);
 extern void _bfd_elf_link_hash_copy_indirect
   (const struct elf_backend_data *, struct elf_link_hash_entry *,
@@ -1581,6 +1742,8 @@ extern int _bfd_elf_symbol_from_bfd_symbol
 
 extern asection *bfd_section_from_r_symndx
   (bfd *, struct sym_sec_cache *, asection *, unsigned long);
+extern Elf_Internal_Sym *bfd_sym_from_r_symndx 
+  (struct sym_cache *, bfd *, unsigned long);
 extern asection *bfd_section_from_elf_index
   (bfd *, unsigned int);
 extern struct bfd_strtab_hash *_bfd_elf_stringtab_init
@@ -1866,6 +2029,64 @@ extern bfd *_bfd_elf32_bfd_from_remote_memory
 extern bfd *_bfd_elf64_bfd_from_remote_memory
   (bfd *templ, bfd_vma ehdr_vma, bfd_vma *loadbasep,
    int (*target_read_memory) (bfd_vma, bfd_byte *, int));
+  
+extern bfd_vma bfd_elf_obj_attr_size (bfd *);
+extern void bfd_elf_set_obj_attr_contents (bfd *, bfd_byte *, bfd_vma);
+extern int bfd_elf_get_obj_attr_int (bfd *, int, int);
+extern void bfd_elf_add_obj_attr_int (bfd *, int, int, unsigned int);
+#define bfd_elf_add_proc_attr_int(BFD, TAG, VALUE) \
+  bfd_elf_add_obj_attr_int ((BFD), OBJ_ATTR_PROC, (TAG), (VALUE))
+extern void bfd_elf_add_obj_attr_string (bfd *, int, int, const char *);
+#define bfd_elf_add_proc_attr_string(BFD, TAG, VALUE) \
+  bfd_elf_add_obj_attr_string ((BFD), OBJ_ATTR_PROC, (TAG), (VALUE))
+extern void bfd_elf_add_obj_attr_compat (bfd *, int, unsigned int,
+                                        const char *);
+#define bfd_elf_add_proc_attr_compat(BFD, INTVAL, STRVAL) \
+  bfd_elf_add_obj_attr_compat ((BFD), OBJ_ATTR_PROC, (INTVAL), (STRVAL))
+
+extern char *_bfd_elf_attr_strdup (bfd *, const char *);
+extern void _bfd_elf_copy_obj_attributes (bfd *, bfd *);
+extern int _bfd_elf_obj_attrs_arg_type (bfd *, int, int);
+extern void _bfd_elf_parse_attributes (bfd *, Elf_Internal_Shdr *);
+extern bfd_boolean _bfd_elf_merge_object_attributes (bfd *, bfd *);
+extern Elf_Internal_Shdr *_bfd_elf_single_rel_hdr (asection *sec);
+
+/* The linker may need to keep track of the number of relocs that it
+   decides to copy as dynamic relocs in check_relocs for each symbol.
+   This is so that it can later discard them if they are found to be
+   unnecessary.  We can store the information in a field extending the
+   regular ELF linker hash table.  */
+
+struct elf_dyn_relocs
+{
+  struct elf_dyn_relocs *next;
+
+  /* The input section of the reloc.  */
+  asection *sec;
+
+  /* Total number of relocs copied for the input section.  */
+  bfd_size_type count;
+
+  /* Number of pc-relative relocs copied for the input section.  */
+  bfd_size_type pc_count;
+};
+
+extern bfd_boolean _bfd_elf_create_ifunc_sections
+  (bfd *, struct bfd_link_info *);
+extern bfd_boolean _bfd_elf_allocate_ifunc_dyn_relocs
+  (struct bfd_link_info *, struct elf_link_hash_entry *,
+   struct elf_dyn_relocs **, unsigned int, unsigned int, unsigned int);
+extern long _bfd_elf_ifunc_get_synthetic_symtab
+  (bfd *, long, asymbol **, long, asymbol **, asymbol **, asection *,
+   bfd_vma *(*) (bfd *, asymbol **, asection *, asection *));
+  
+extern void elf_append_rela(bfd *, asection *, Elf_Internal_Rela *);
+extern void elf_append_rel(bfd *, asection *, Elf_Internal_Rela *);
+
+extern bfd_vma elf64_r_info(bfd_vma, bfd_vma);
+extern bfd_vma elf64_r_sym(bfd_vma);
+extern bfd_vma elf32_r_info(bfd_vma, bfd_vma);
+extern bfd_vma elf32_r_sym(bfd_vma);
 
 /* Large common section.  */
 extern asection _bfd_elf_large_com_section;
@@ -1874,6 +2095,12 @@ extern asection _bfd_elf_large_com_section;
 
 extern bfd_boolean _sh_elf_set_mach_from_flags
   (bfd *);
+  
+/* Hash for local symbol with the first section id, ID, in the input
+   file and the local symbol index, SYM.  */
+#define ELF_LOCAL_SYMBOL_HASH(ID, SYM) \
+  (((((ID) & 0xff) << 24) | (((ID) & 0xff00) << 8)) \
+   ^ (SYM) ^ ((ID) >> 16))
 
 /* This is the condition under which finish_dynamic_symbol will be called.
    If our finish_dynamic_symbol isn't called, we'll need to do something
@@ -1941,6 +2168,62 @@ extern bfd_boolean _sh_elf_set_mach_from_flags
 	}								\
     }									\
   while (0)
+  
+/* This macro is to avoid lots of duplicated code in the body of the
+   loop over relocations in xxx_relocate_section() in the various
+   elfxx-xxxx.c files.
+
+   Handle relocations against symbols from removed linkonce sections,
+   or sections discarded by a linker script.  When doing a relocatable
+   link, we remove such relocations.  Otherwise, we just want the
+   section contents zeroed and avoid any special processing.  */
+#define RELOC_AGAINST_DISCARDED_SECTION(info, input_bfd, input_section,	\
+					rel, count, relend,		\
+					howto, index, contents)		\
+  {									\
+    _bfd_clear_contents (howto, input_bfd, input_section,		\
+			 contents + rel[index].r_offset);		\
+									\
+    if (info->relocatable						\
+	&& (input_section->flags & SEC_DEBUGGING))			\
+      {									\
+	/* Only remove relocations in debug sections since other	\
+	   sections may require relocations.  */			\
+	Elf_Internal_Shdr *rel_hdr;					\
+									\
+	rel_hdr = _bfd_elf_single_rel_hdr (input_section->output_section); \
+									\
+	/* Avoid empty output section.  */				\
+	if (rel_hdr->sh_size > count * rel_hdr->sh_entsize)		\
+	  {								\
+	    rel_hdr->sh_size -= count * rel_hdr->sh_entsize;		\
+	    rel_hdr = _bfd_elf_single_rel_hdr (input_section);		\
+	    rel_hdr->sh_size -= count * rel_hdr->sh_entsize;		\
+									\
+	    memmove (rel, rel + count,					\
+		     (relend - rel - count) * sizeof (*rel));		\
+									\
+	    input_section->reloc_count -= count;			\
+	    relend -= count;						\
+	    rel--;							\
+	    continue;							\
+	  }								\
+      }									\
+									\
+    for (i = 0; i < count; i++)						\
+      {									\
+	rel[i].r_info = 0;						\
+	rel[i].r_addend = 0;						\
+      }									\
+    rel += count - 1;							\
+    continue;								\
+  }
+  
+/* Will a symbol be bound to the the definition within the shared
+   library, if any.  A unique symbol can never be bound locally.  */
+#define SYMBOLIC_BIND(INFO, H) \
+    (!(H)->unique_global \
+     && ((INFO)->symbolic || ((INFO)->dynamic && !(H)->dynamic)))
 
 #ifdef __cplusplus
 }

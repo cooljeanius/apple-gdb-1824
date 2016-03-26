@@ -9850,4 +9850,52 @@ _bfd_elf_common_section(asection *sec ATTRIBUTE_UNUSED)
   return bfd_com_section_ptr;
 }
 
+/* Append a RELA relocation REL to section S in BFD.  */
+void
+elf_append_rela(bfd *abfd, asection *s, Elf_Internal_Rela *rel)
+{
+  const struct elf_backend_data *bed = get_elf_backend_data(abfd);
+  bfd_byte *loc = (s->contents + (s->reloc_count++ * bed->s->sizeof_rela));
+  BFD_ASSERT((loc + bed->s->sizeof_rela) <= (s->contents + s->size));
+  bed->s->swap_reloca_out(abfd, rel, loc);
+}
+
+/* Append a REL relocation REL to section S in BFD: */
+void
+elf_append_rel(bfd *abfd, asection *s, Elf_Internal_Rela *rel)
+{
+  const struct elf_backend_data *bed = get_elf_backend_data(abfd);
+  bfd_byte *loc = (s->contents + (s->reloc_count++ * bed->s->sizeof_rel));
+  BFD_ASSERT((loc + bed->s->sizeof_rel) <= (s->contents + s->size));
+  bed->s->swap_reloca_out(abfd, rel, loc);
+}
+
+/* Function for ELF64_R_INFO: */
+bfd_vma
+elf64_r_info(bfd_vma sym, bfd_vma type)
+{
+  return ELF64_R_INFO(sym, type);
+}
+
+/* Function for ELF32_R_INFO: */
+bfd_vma
+elf32_r_info(bfd_vma sym, bfd_vma type)
+{
+  return ELF32_R_INFO(sym, type);
+}
+
+/* Function for ELF64_R_SYM: */
+bfd_vma
+elf64_r_sym(bfd_vma r_info)
+{
+  return ELF64_R_SYM(r_info);
+}
+
+/* Function for ELF32_R_SYM: */
+bfd_vma
+elf32_r_sym(bfd_vma r_info)
+{
+  return ELF32_R_SYM(r_info);
+}
+
 /* EOF */

@@ -494,7 +494,7 @@ close_input_stream(void)
 }
 
 /* Report an error while reading an rc file: */
-void
+void ATTRIBUTE_NORETURN
 yyerror(const char *msg)
 {
   fatal("%s:%d: %s", rc_filename, rc_lineno, msg);
@@ -762,7 +762,7 @@ define_dialog (struct res_id id, const struct res_res_info *resinfo,
 struct dialog_control *
 define_control (const struct res_id iid, unsigned long id, unsigned long x,
 		unsigned long y, unsigned long width, unsigned long height,
-		unsigned long class, unsigned long style,
+		unsigned long classnum, unsigned long style,
 		unsigned long exstyle)
 {
   struct dialog_control *n;
@@ -776,8 +776,8 @@ define_control (const struct res_id iid, unsigned long id, unsigned long x,
   n->y = y;
   n->width = width;
   n->height = height;
-  n->class.named = 0;
-  n->class.u.id = class;
+  n->classname.named = 0;
+  n->classname.u.id = classnum;
   n->text = iid;
   n->data = NULL;
   n->help = 0;
@@ -1967,11 +1967,11 @@ write_rc_dialog (FILE *e, const struct dialog *dialog)
   if (dialog->exstyle != 0)
     fprintf (e, "EXSTYLE 0x%lx\n", dialog->exstyle);
 
-  if ((dialog->class.named && dialog->class.u.n.length > 0)
-      || dialog->class.u.id != 0)
+  if ((dialog->classname.named && dialog->classname.u.n.length > 0)
+      || dialog->classname.u.id != 0)
     {
       fprintf (e, "CLASS ");
-      res_id_print (e, dialog->class, 1);
+      res_id_print (e, dialog->classname, 1);
       fprintf (e, "\n");
     }
 
@@ -2018,7 +2018,7 @@ write_rc_dialog (FILE *e, const struct dialog *dialog)
 struct control_info
 {
   const char *name;
-  unsigned short class;
+  unsigned short classname;
   unsigned long style;
 };
 
@@ -2057,12 +2057,12 @@ write_rc_dialog_control (FILE *e, const struct dialog_control *control)
 
   fprintf (e, "  ");
 
-  if (control->class.named)
+  if (control->classname.named)
     ci = NULL;
   else
     {
       for (ci = control_info; ci->name != NULL; ++ci)
-	if (ci->class == control->class.u.id
+	if (ci->classname == control->classname.u.id
 	    && (ci->style == (unsigned long) -1
 		|| ci->style == (control->style & 0xff)))
 	  break;
@@ -2085,10 +2085,10 @@ write_rc_dialog_control (FILE *e, const struct dialog_control *control)
 
   if (ci == NULL)
     {
-      if (control->class.named)
+      if (control->classname.named)
 	fprintf (e, "\"");
-      res_id_print (e, control->class, 0);
-      if (control->class.named)
+      res_id_print (e, control->classname, 0);
+      if (control->classname.named)
 	fprintf (e, "\"");
       fprintf (e, ", 0x%lx, ", control->style);
     }
@@ -2526,6 +2526,12 @@ write_rc_versioninfo (FILE *e, const struct versioninfo *versioninfo)
 
 	    fprintf (e, "\n  END\n");
 
+	    break;
+	  }
+	    
+	default:
+	  {
+	    fprintf(e, "%s", "");
 	    break;
 	  }
 	}

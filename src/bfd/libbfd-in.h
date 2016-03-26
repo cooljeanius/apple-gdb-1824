@@ -99,6 +99,7 @@ struct areltdata {
 
 extern void *bfd_malloc(bfd_size_type);
 extern void *bfd_realloc(void *, bfd_size_type);
+extern void *bfd_realloc_or_free(void *, bfd_size_type);
 extern void *bfd_zmalloc(bfd_size_type);
 extern void *bfd_malloc2(bfd_size_type, bfd_size_type);
 extern void *bfd_realloc2(void *, bfd_size_type, bfd_size_type);
@@ -539,6 +540,10 @@ extern bfd_reloc_status_type _bfd_final_link_relocate
 /* Relocate a particular location by a howto and a value.  */
 extern bfd_reloc_status_type _bfd_relocate_contents
   (reloc_howto_type *, bfd *, bfd_vma, bfd_byte *);
+
+/* Clear a given location using a given howto: */
+extern void _bfd_clear_contents(reloc_howto_type *howto, bfd *input_bfd,
+				asection *input_section, bfd_byte *location);
 
 /* Link stabs in sections in the first pass.  */
 

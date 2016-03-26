@@ -116,16 +116,17 @@ struct coff_sfile
   struct coff_isection *section;
 };
 
+enum coff_types_e
+{
+  coff_pointer_type, coff_function_type, coff_array_type,
+  coff_structdef_type, coff_basic_type, coff_structref_type,
+  coff_enumref_type, coff_enumdef_type, coff_secdef_type
+};
 
 struct coff_type
 {
   int size;
-  enum
-    {
-      coff_pointer_type, coff_function_type, coff_array_type,
-      coff_structdef_type, coff_basic_type, coff_structref_type,
-      coff_enumref_type, coff_enumdef_type, coff_secdef_type
-    } type;
+  enum coff_types_e type;
   union
     {
       struct
@@ -217,32 +218,36 @@ struct coff_scope
     struct coff_scope *list_tail;
   };
 
+enum coff_vis_type
+{
+  coff_vis_ext_def,
+  coff_vis_ext_ref,
+  coff_vis_int_def,
+  coff_vis_common,
+  coff_vis_auto,
+  coff_vis_register,
+  coff_vis_tag,
+  coff_vis_member_of_struct,
+  coff_vis_member_of_enum,
+  coff_vis_autoparam,
+  coff_vis_regparam,
+};
+
 struct coff_visible
   {
-    enum coff_vis_type
-      {
-	 coff_vis_ext_def,
-	 coff_vis_ext_ref,
-	 coff_vis_int_def,
-	 coff_vis_common,
-	 coff_vis_auto,
-	 coff_vis_register,
-	 coff_vis_tag,
-	 coff_vis_member_of_struct,
-	 coff_vis_member_of_enum,
-	 coff_vis_autoparam,
-	 coff_vis_regparam,
-      } type;
+    enum coff_vis_type type;
   };
+
+enum coff_locations
+{
+  coff_where_stack, coff_where_memory, coff_where_register,
+  coff_where_unknown, coff_where_strtag, coff_where_member_of_struct,
+  coff_where_member_of_enum, coff_where_entag, coff_where_typedef
+};
 
 struct coff_where
   {
-    enum
-      {
-        coff_where_stack, coff_where_memory, coff_where_register,
-        coff_where_unknown, coff_where_strtag, coff_where_member_of_struct,
-        coff_where_member_of_enum, coff_where_entag, coff_where_typedef
-      } where;
+    enum coff_locations where;
 #if defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)
     off_t offset;
 #else
