@@ -93,61 +93,61 @@ nlm_swap_fixed_header_in (bfd *abfd,
    an NLM file header in external format.  */
 
 static void
-nlm_swap_fixed_header_out (bfd *abfd,
-			   Nlm_Internal_Fixed_Header *src,
-			   void * realdst)
+nlm_swap_fixed_header_out(bfd *abfd,
+			  Nlm_Internal_Fixed_Header *src,
+			  void *realdst)
 {
-  Nlm_External_Fixed_Header *dst = (Nlm_External_Fixed_Header *) realdst;
+  Nlm_External_Fixed_Header *dst = (Nlm_External_Fixed_Header *)realdst;
 
-  memset (dst, 0, sizeof *dst);
-  memcpy (dst->signature, src->signature, NLM_SIGNATURE_SIZE);
-  memcpy (dst->moduleName, src->moduleName, NLM_MODULE_NAME_SIZE);
-  H_PUT_32 (abfd, src->version,
-	    dst->version);
-  H_PUT_32 (abfd, src->codeImageOffset,
-	    dst->codeImageOffset);
-  H_PUT_32 (abfd, src->codeImageSize,
-	    dst->codeImageSize);
-  H_PUT_32 (abfd, src->dataImageOffset,
-	    dst->dataImageOffset);
-  H_PUT_32 (abfd, src->dataImageSize,
-	    dst->dataImageSize);
-  H_PUT_32 (abfd, src->uninitializedDataSize,
-	    dst->uninitializedDataSize);
-  H_PUT_32 (abfd, src->customDataOffset,
-	    dst->customDataOffset);
-  H_PUT_32 (abfd, src->customDataSize,
-	    dst->customDataSize);
-  H_PUT_32 (abfd, src->moduleDependencyOffset,
-	    dst->moduleDependencyOffset);
-  H_PUT_32 (abfd, src->numberOfModuleDependencies,
-	    dst->numberOfModuleDependencies);
-  H_PUT_32 (abfd, src->relocationFixupOffset,
-	    dst->relocationFixupOffset);
-  H_PUT_32 (abfd, src->numberOfRelocationFixups,
-	    dst->numberOfRelocationFixups);
-  H_PUT_32 (abfd, src->externalReferencesOffset,
-	    dst->externalReferencesOffset);
-  H_PUT_32 (abfd, src->numberOfExternalReferences,
-	    dst->numberOfExternalReferences);
-  H_PUT_32 (abfd, src->publicsOffset,
-	    dst->publicsOffset);
-  H_PUT_32 (abfd, src->numberOfPublics,
-	    dst->numberOfPublics);
-  H_PUT_32 (abfd, src->debugInfoOffset,
-	    dst->debugInfoOffset);
-  H_PUT_32 (abfd, src->numberOfDebugRecords,
-	    dst->numberOfDebugRecords);
-  H_PUT_32 (abfd, src->codeStartOffset,
-	    dst->codeStartOffset);
-  H_PUT_32 (abfd, src->exitProcedureOffset,
-	    dst->exitProcedureOffset);
-  H_PUT_32 (abfd, src->checkUnloadProcedureOffset,
-	    dst->checkUnloadProcedureOffset);
-  H_PUT_32 (abfd, src->moduleType,
-	    dst->moduleType);
-  H_PUT_32 (abfd, src->flags,
-	    dst->flags);
+  memset(dst, 0, sizeof(*dst));
+  memcpy(dst->signature, src->signature, NLM_SIGNATURE_SIZE);
+  memcpy(dst->moduleName, src->moduleName, NLM_MODULE_NAME_SIZE);
+  H_PUT_32(abfd, (bfd_vma)src->version,
+	   dst->version);
+  H_PUT_32(abfd, (bfd_vma)src->codeImageOffset,
+	   dst->codeImageOffset);
+  H_PUT_32(abfd, (bfd_vma)src->codeImageSize,
+	   dst->codeImageSize);
+  H_PUT_32(abfd, (bfd_vma)src->dataImageOffset,
+	   dst->dataImageOffset);
+  H_PUT_32(abfd, (bfd_vma)src->dataImageSize,
+	   dst->dataImageSize);
+  H_PUT_32(abfd, (bfd_vma)src->uninitializedDataSize,
+	   dst->uninitializedDataSize);
+  H_PUT_32(abfd, (bfd_vma)src->customDataOffset,
+	   dst->customDataOffset);
+  H_PUT_32(abfd, (bfd_vma)src->customDataSize,
+	   dst->customDataSize);
+  H_PUT_32(abfd, (bfd_vma)src->moduleDependencyOffset,
+	   dst->moduleDependencyOffset);
+  H_PUT_32(abfd, (bfd_vma)src->numberOfModuleDependencies,
+	   dst->numberOfModuleDependencies);
+  H_PUT_32(abfd, (bfd_vma)src->relocationFixupOffset,
+	   dst->relocationFixupOffset);
+  H_PUT_32(abfd, (bfd_vma)src->numberOfRelocationFixups,
+	   dst->numberOfRelocationFixups);
+  H_PUT_32(abfd, (bfd_vma)src->externalReferencesOffset,
+	   dst->externalReferencesOffset);
+  H_PUT_32(abfd, (bfd_vma)src->numberOfExternalReferences,
+	   dst->numberOfExternalReferences);
+  H_PUT_32(abfd, (bfd_vma)src->publicsOffset,
+	   dst->publicsOffset);
+  H_PUT_32(abfd, (bfd_vma)src->numberOfPublics,
+	   dst->numberOfPublics);
+  H_PUT_32(abfd, (bfd_vma)src->debugInfoOffset,
+	   dst->debugInfoOffset);
+  H_PUT_32(abfd, (bfd_vma)src->numberOfDebugRecords,
+	   dst->numberOfDebugRecords);
+  H_PUT_32(abfd, (bfd_vma)src->codeStartOffset,
+	   dst->codeStartOffset);
+  H_PUT_32(abfd, (bfd_vma)src->exitProcedureOffset,
+	   dst->exitProcedureOffset);
+  H_PUT_32(abfd, (bfd_vma)src->checkUnloadProcedureOffset,
+	   dst->checkUnloadProcedureOffset);
+  H_PUT_32(abfd, (bfd_vma)src->moduleType,
+	   dst->moduleType);
+  H_PUT_32(abfd, (bfd_vma)src->flags,
+	   dst->flags);
 }
 
 /* EOF */

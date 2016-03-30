@@ -551,9 +551,7 @@ cris_elf_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 }
 
 static bfd_boolean
-cris_elf_grok_psinfo (abfd, note)
-     bfd *abfd;
-     Elf_Internal_Note *note;
+cris_elf_grok_psinfo(bfd *abfd, Elf_Internal_Note *note)
 {
   if (bfd_get_mach (abfd) == bfd_mach_cris_v32)
     switch (note->descsz)
@@ -787,13 +785,10 @@ struct elf_cris_link_hash_table
 #define elf_cris_hash_table(p) \
   ((struct elf_cris_link_hash_table *) (p)->hash)
 
-/* Create an entry in a CRIS ELF linker hash table.  */
-
+/* Create an entry in a CRIS ELF linker hash table: */
 static struct bfd_hash_entry *
-elf_cris_link_hash_newfunc (entry, table, string)
-     struct bfd_hash_entry *entry;
-     struct bfd_hash_table *table;
-     const char *string;
+elf_cris_link_hash_newfunc(struct bfd_hash_entry *entry,
+			   struct bfd_hash_table *table, const char *string)
 {
   struct elf_cris_link_hash_entry *ret =
     (struct elf_cris_link_hash_entry *) entry;
@@ -821,11 +816,9 @@ elf_cris_link_hash_newfunc (entry, table, string)
   return (struct bfd_hash_entry *) ret;
 }
 
-/* Create a CRIS ELF linker hash table.  */
-
+/* Create a CRIS ELF linker hash table: */
 static struct bfd_link_hash_table *
-elf_cris_link_hash_table_create (abfd)
-     bfd *abfd;
+elf_cris_link_hash_table_create(bfd *abfd)
 {
   struct elf_cris_link_hash_table *ret;
   bfd_size_type amt = sizeof (struct elf_cris_link_hash_table);
@@ -852,14 +845,9 @@ elf_cris_link_hash_table_create (abfd)
    routines, with a few tweaks.  */
 
 static bfd_reloc_status_type
-cris_final_link_relocate (howto, input_bfd, input_section, contents, rel,
-			  relocation)
-     reloc_howto_type *  howto;
-     bfd *               input_bfd;
-     asection *          input_section;
-     bfd_byte *          contents;
-     Elf_Internal_Rela * rel;
-     bfd_vma             relocation;
+cris_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
+			 asection *input_section, bfd_byte *contents,
+			 Elf_Internal_Rela *rel, bfd_vma relocation)
 {
   bfd_reloc_status_type r;
 
@@ -898,16 +886,12 @@ cris_final_link_relocate (howto, input_bfd, input_section, contents, rel,
    copied, for further comments.  */
 
 static bfd_boolean
-cris_elf_relocate_section (output_bfd, info, input_bfd, input_section,
-			   contents, relocs, local_syms, local_sections)
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     Elf_Internal_Rela *relocs;
-     Elf_Internal_Sym *local_syms;
-     asection **local_sections;
+cris_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
+			  struct bfd_link_info *info, bfd *input_bfd,
+			  asection *input_section, bfd_byte *contents,
+			  Elf_Internal_Rela *relocs,
+			  Elf_Internal_Sym *local_syms,
+			  asection **local_sections)
 {
   bfd *dynobj;
   Elf_Internal_Shdr *symtab_hdr;
@@ -1525,11 +1509,9 @@ cris_elf_relocate_section (output_bfd, info, input_bfd, input_section,
    dynamic sections here.  */
 
 static bfd_boolean
-elf_cris_finish_dynamic_symbol (output_bfd, info, h, sym)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
-     struct elf_link_hash_entry *h;
-     Elf_Internal_Sym *sym;
+elf_cris_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
+			       struct elf_link_hash_entry *h,
+			       Elf_Internal_Sym *sym)
 {
   bfd *dynobj;
 
@@ -1764,12 +1746,9 @@ elf_cris_finish_dynamic_symbol (output_bfd, info, h, sym)
   return TRUE;
 }
 
-/* Finish up the dynamic sections.  */
-
+/* Finish up the dynamic sections: */
 static bfd_boolean
-elf_cris_finish_dynamic_sections (output_bfd, info)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
+elf_cris_finish_dynamic_sections(bfd *output_bfd, struct bfd_link_info *info)
 {
   bfd *dynobj;
   asection *sgot;
@@ -1911,12 +1890,10 @@ elf_cris_finish_dynamic_sections (output_bfd, info)
    relocation.  */
 
 static asection *
-cris_elf_gc_mark_hook (sec, info, rel, h, sym)
-     asection *sec;
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
-     Elf_Internal_Rela *rel;
-     struct elf_link_hash_entry *h;
-     Elf_Internal_Sym *sym;
+cris_elf_gc_mark_hook(asection *sec,
+		      struct bfd_link_info *info ATTRIBUTE_UNUSED,
+		      Elf_Internal_Rela *rel, struct elf_link_hash_entry *h,
+		      Elf_Internal_Sym *sym)
 {
   if (h != NULL)
     {
@@ -1947,14 +1924,12 @@ cris_elf_gc_mark_hook (sec, info, rel, h, sym)
   return NULL;
 }
 
-/* Update the got entry reference counts for the section being removed.  */
-
+/* Update the got entry reference counts for the section being removed: */
 static bfd_boolean
-cris_elf_gc_sweep_hook (abfd, info, sec, relocs)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
-     asection *sec ATTRIBUTE_UNUSED;
-     const Elf_Internal_Rela *relocs ATTRIBUTE_UNUSED;
+cris_elf_gc_sweep_hook(bfd *abfd ATTRIBUTE_UNUSED,
+		       struct bfd_link_info *info ATTRIBUTE_UNUSED,
+		       asection *sec ATTRIBUTE_UNUSED,
+		       const Elf_Internal_Rela *relocs ATTRIBUTE_UNUSED)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
@@ -2067,9 +2042,7 @@ cris_elf_gc_sweep_hook (abfd, info, sec, relocs)
    created (we're only linking static objects).  */
 
 static bfd_boolean
-elf_cris_adjust_gotplt_to_got (h, p)
-     struct elf_cris_link_hash_entry *h;
-     PTR p;
+elf_cris_adjust_gotplt_to_got(struct elf_cris_link_hash_entry *h, PTR p)
 {
   struct bfd_link_info *info = (struct bfd_link_info *) p;
   bfd *dynobj = elf_hash_table (info)->dynobj;
@@ -2142,9 +2115,7 @@ elf_cris_adjust_gotplt_to_got (h, p)
    elf_cris_hide_symbol.  */
 
 static bfd_boolean
-elf_cris_try_fold_plt_to_got (h, p)
-     struct elf_cris_link_hash_entry *h;
-     PTR p;
+elf_cris_try_fold_plt_to_got(struct elf_cris_link_hash_entry *h, PTR p)
 {
   struct bfd_link_info *info = (struct bfd_link_info *) p;
 
@@ -2176,10 +2147,8 @@ elf_cris_try_fold_plt_to_got (h, p)
    entry.  */
 
 static void
-elf_cris_hide_symbol (info, h, force_local)
-     struct bfd_link_info *info;
-     struct elf_link_hash_entry *h;
-     bfd_boolean force_local;
+elf_cris_hide_symbol(struct bfd_link_info *info, struct elf_link_hash_entry *h,
+		     bfd_boolean force_local)
 {
   elf_cris_adjust_gotplt_to_got ((struct elf_cris_link_hash_entry *) h, info);
 
@@ -2193,9 +2162,8 @@ elf_cris_hide_symbol (info, h, force_local)
    understand.  */
 
 static bfd_boolean
-elf_cris_adjust_dynamic_symbol (info, h)
-     struct bfd_link_info *info;
-     struct elf_link_hash_entry *h;
+elf_cris_adjust_dynamic_symbol(struct bfd_link_info *info,
+			       struct elf_link_hash_entry *h)
 {
   bfd *dynobj;
   asection *s;
@@ -2427,14 +2395,10 @@ elf_cris_adjust_dynamic_symbol (info, h)
   return TRUE;
 }
 
-/* Look through the relocs for a section during the first phase.  */
-
+/* Look through the relocs for a section during the first phase: */
 static bfd_boolean
-cris_elf_check_relocs (abfd, info, sec, relocs)
-     bfd *abfd;
-     struct bfd_link_info *info;
-     asection *sec;
-     const Elf_Internal_Rela *relocs;
+cris_elf_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
+		      const Elf_Internal_Rela *relocs)
 {
   bfd *dynobj;
   Elf_Internal_Shdr *symtab_hdr;
@@ -2862,12 +2826,10 @@ cris_elf_check_relocs (abfd, info, sec, relocs)
   return TRUE;
 }
 
-/* Set the sizes of the dynamic sections.  */
-
+/* Set the sizes of the dynamic sections: */
 static bfd_boolean
-elf_cris_size_dynamic_sections (output_bfd, info)
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info;
+elf_cris_size_dynamic_sections(bfd *output_bfd ATTRIBUTE_UNUSED,
+			       struct bfd_link_info *info)
 {
   bfd *dynobj;
   asection *s;
@@ -3046,9 +3008,8 @@ elf_cris_size_dynamic_sections (output_bfd, info)
    relocate_section routine.  */
 
 static bfd_boolean
-elf_cris_discard_excess_dso_dynamics (h, inf)
-     struct elf_cris_link_hash_entry *h;
-     PTR inf;
+elf_cris_discard_excess_dso_dynamics(struct elf_cris_link_hash_entry *h,
+				     PTR inf)
 {
   struct elf_cris_pcrel_relocs_copied *s;
   struct bfd_link_info *info = (struct bfd_link_info *) inf;
@@ -3075,9 +3036,8 @@ elf_cris_discard_excess_dso_dynamics (h, inf)
    in the .got, but which we found we do not have to resolve at run-time.  */
 
 static bfd_boolean
-elf_cris_discard_excess_program_dynamics (h, inf)
-     struct elf_cris_link_hash_entry *h;
-     PTR inf;
+elf_cris_discard_excess_program_dynamics(struct elf_cris_link_hash_entry *h,
+					 PTR inf)
 {
   struct bfd_link_info *info = (struct bfd_link_info *) inf;
 
@@ -3133,8 +3093,7 @@ elf_cris_discard_excess_program_dynamics (h, inf)
    underscores on symbols.  */
 
 static bfd_boolean
-cris_elf_object_p (abfd)
-     bfd *abfd;
+cris_elf_object_p(bfd *abfd)
 {
   if (! cris_elf_set_mach_from_flags (abfd, elf_elfheader (abfd)->e_flags))
     return FALSE;
@@ -3149,9 +3108,7 @@ cris_elf_object_p (abfd)
    flags from mach type.  */
 
 static void
-cris_elf_final_write_processing (abfd, linker)
-     bfd *abfd;
-     bfd_boolean linker ATTRIBUTE_UNUSED;
+cris_elf_final_write_processing(bfd *abfd, bfd_boolean linker ATTRIBUTE_UNUSED)
 {
   unsigned long e_flags = elf_elfheader (abfd)->e_flags;
 
@@ -3181,12 +3138,9 @@ cris_elf_final_write_processing (abfd, linker)
   elf_elfheader (abfd)->e_flags = e_flags;
 }
 
-/* Set the mach type from e_flags value.  */
-
+/* Set the mach type from e_flags value: */
 static bfd_boolean
-cris_elf_set_mach_from_flags (abfd, flags)
-     bfd *abfd;
-     unsigned long flags;
+cris_elf_set_mach_from_flags(bfd *abfd, unsigned long flags)
 {
   switch (flags & EF_CRIS_VARIANT_MASK)
     {
@@ -3213,12 +3167,9 @@ cris_elf_set_mach_from_flags (abfd, flags)
   return TRUE;
 }
 
-/* Display the flags field.  */
-
+/* Display the flags field: */
 static bfd_boolean
-cris_elf_print_private_bfd_data (abfd, ptr)
-     bfd *abfd;
-     PTR ptr;
+cris_elf_print_private_bfd_data(bfd *abfd, PTR ptr)
 {
   FILE *file = (FILE *) ptr;
 
@@ -3241,12 +3192,9 @@ cris_elf_print_private_bfd_data (abfd, ptr)
   return TRUE;
 }
 
-/* Don't mix files with and without a leading underscore.  */
-
+/* Avoid mixing files with and without a leading underscore: */
 static bfd_boolean
-cris_elf_merge_private_bfd_data (ibfd, obfd)
-     bfd *ibfd;
-     bfd *obfd;
+cris_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
   int imach, omach;
 
@@ -3320,12 +3268,9 @@ cris_elf_merge_private_bfd_data (ibfd, obfd)
   return TRUE;
 }
 
-/* Do side-effects of e_flags copying to obfd.  */
-
+/* Do side-effects of e_flags copying to obfd: */
 static bfd_boolean
-cris_elf_copy_private_bfd_data (ibfd, obfd)
-     bfd *ibfd;
-     bfd *obfd;
+cris_elf_copy_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
   /* Call the base function.  */
   if (!_bfd_elf_copy_private_bfd_data (ibfd, obfd))
@@ -3344,8 +3289,7 @@ cris_elf_copy_private_bfd_data (ibfd, obfd)
 }
 
 static enum elf_reloc_type_class
-elf_cris_reloc_type_class (rela)
-     const Elf_Internal_Rela *rela;
+elf_cris_reloc_type_class(const Elf_Internal_Rela *rela)
 {
   switch ((int) ELF32_R_TYPE (rela->r_info))
     {

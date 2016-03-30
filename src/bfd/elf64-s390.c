@@ -236,9 +236,8 @@ static reloc_howto_type elf64_s390_vtentry_howto =
   HOWTO (R_390_GNU_VTENTRY, 0,4,0,FALSE,0,complain_overflow_dont, _bfd_elf_rel_vtable_reloc_fn,"R_390_GNU_VTENTRY", FALSE,0,0, FALSE);
 
 static reloc_howto_type *
-elf_s390_reloc_type_lookup (abfd, code)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+elf_s390_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+			   bfd_reloc_code_real_type code)
 {
   switch (code)
     {
@@ -395,15 +394,10 @@ elf_s390_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
 
 /* A relocation function which doesn't do anything.  */
 static bfd_reloc_status_type
-s390_tls_reloc (abfd, reloc_entry, symbol, data, input_section,
-		output_bfd, error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry;
-     asymbol *symbol ATTRIBUTE_UNUSED;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section;
-     bfd *output_bfd;
-     char **error_message ATTRIBUTE_UNUSED;
+s390_tls_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
+	       asymbol *symbol ATTRIBUTE_UNUSED, PTR data ATTRIBUTE_UNUSED,
+	       asection *input_section, bfd *output_bfd,
+	       char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd)
     reloc_entry->address += input_section->output_offset;
@@ -412,15 +406,9 @@ s390_tls_reloc (abfd, reloc_entry, symbol, data, input_section,
 
 /* Handle the large displacement relocs.  */
 static bfd_reloc_status_type
-s390_elf_ldisp_reloc (abfd, reloc_entry, symbol, data, input_section,
-                      output_bfd, error_message)
-     bfd *abfd;
-     arelent *reloc_entry;
-     asymbol *symbol;
-     PTR data;
-     asection *input_section;
-     bfd *output_bfd;
-     char **error_message ATTRIBUTE_UNUSED;
+s390_elf_ldisp_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+		     PTR data, asection *input_section, bfd *output_bfd,
+		     char **error_message ATTRIBUTE_UNUSED)
 {
   reloc_howto_type *howto = reloc_entry->howto;
   bfd_vma relocation;
@@ -463,9 +451,7 @@ s390_elf_ldisp_reloc (abfd, reloc_entry, symbol, data, input_section,
 }
 
 static bfd_boolean
-elf_s390_is_local_label_name (abfd, name)
-     bfd *abfd;
-     const char *name;
+elf_s390_is_local_label_name(bfd *abfd, const char *name)
 {
   if (name[0] == '.' && (name[1] == 'X' || name[1] == 'L'))
     return TRUE;
@@ -631,8 +617,7 @@ struct elf_s390_obj_tdata
   (elf_s390_tdata (abfd)->local_got_tls_type)
 
 static bfd_boolean
-elf_s390_mkobject (abfd)
-     bfd *abfd;
+elf_s390_mkobject(bfd *abfd)
 {
   bfd_size_type amt = sizeof (struct elf_s390_obj_tdata);
   abfd->tdata.any = bfd_zalloc (abfd, amt);
@@ -642,8 +627,7 @@ elf_s390_mkobject (abfd)
 }
 
 static bfd_boolean
-elf_s390_object_p (abfd)
-     bfd *abfd;
+elf_s390_object_p(bfd *abfd)
 {
   /* Set the right machine number for an s390 elf32 file.  */
   return bfd_default_set_arch_mach (abfd, bfd_arch_s390, bfd_mach_s390_64);
@@ -710,11 +694,9 @@ link_hash_newfunc(struct bfd_hash_entry *entry,
   return entry;
 }
 
-/* Create an s390 ELF linker hash table.  */
-
+/* Create an s390 ELF linker hash table: */
 static struct bfd_link_hash_table *
-elf_s390_link_hash_table_create (abfd)
-     bfd *abfd;
+elf_s390_link_hash_table_create(bfd *abfd)
 {
   struct elf_s390_link_hash_table *ret;
   bfd_size_type amt = sizeof (struct elf_s390_link_hash_table);
@@ -746,9 +728,7 @@ elf_s390_link_hash_table_create (abfd)
    shortcuts to them in our hash table.  */
 
 static bfd_boolean
-create_got_section (dynobj, info)
-     bfd *dynobj;
-     struct bfd_link_info *info;
+create_got_section(bfd *dynobj, struct bfd_link_info *info)
 {
   struct elf_s390_link_hash_table *htab;
 
@@ -778,9 +758,7 @@ create_got_section (dynobj, info)
    hash table.  */
 
 static bfd_boolean
-elf_s390_create_dynamic_sections (dynobj, info)
-     bfd *dynobj;
-     struct bfd_link_info *info;
+elf_s390_create_dynamic_sections(bfd *dynobj, struct bfd_link_info *info)
 {
   struct elf_s390_link_hash_table *htab;
 
@@ -804,12 +782,11 @@ elf_s390_create_dynamic_sections (dynobj, info)
   return TRUE;
 }
 
-/* Copy the extra info we tack onto an elf_link_hash_entry.  */
-
+/* Copy the extra info we tack onto an elf_link_hash_entry: */
 static void
-elf_s390_copy_indirect_symbol (bed, dir, ind)
-     const struct elf_backend_data *bed;
-     struct elf_link_hash_entry *dir, *ind;
+elf_s390_copy_indirect_symbol(const struct elf_backend_data *bed,
+			      struct elf_link_hash_entry *dir,
+			      struct elf_link_hash_entry *ind)
 {
   struct elf_s390_link_hash_entry *edir, *eind;
 
@@ -1341,12 +1318,10 @@ elf_s390_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
    relocation.  */
 
 static asection *
-elf_s390_gc_mark_hook (sec, info, rel, h, sym)
-     asection *sec;
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
-     Elf_Internal_Rela *rel;
-     struct elf_link_hash_entry *h;
-     Elf_Internal_Sym *sym;
+elf_s390_gc_mark_hook(asection *sec,
+		      struct bfd_link_info *info ATTRIBUTE_UNUSED,
+		      Elf_Internal_Rela *rel, struct elf_link_hash_entry *h,
+		      Elf_Internal_Sym *sym)
 {
   if (h != NULL)
     {
@@ -1377,14 +1352,10 @@ elf_s390_gc_mark_hook (sec, info, rel, h, sym)
   return NULL;
 }
 
-/* Update the got entry reference counts for the section being removed.  */
-
+/* Update the got entry reference counts for the section being removed: */
 static bfd_boolean
-elf_s390_gc_sweep_hook (abfd, info, sec, relocs)
-     bfd *abfd;
-     struct bfd_link_info *info;
-     asection *sec;
-     const Elf_Internal_Rela *relocs;
+elf_s390_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info, asection *sec,
+		       const Elf_Internal_Rela *relocs)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
@@ -1530,8 +1501,7 @@ elf_s390_gc_sweep_hook (abfd, info, sec, relocs)
    created (we're only linking static objects).  */
 
 static void
-elf_s390_adjust_gotplt (h)
-     struct elf_s390_link_hash_entry *h;
+elf_s390_adjust_gotplt(struct elf_s390_link_hash_entry *h)
 {
   if (h->elf.root.type == bfd_link_hash_warning)
     h = (struct elf_s390_link_hash_entry *) h->elf.root.u.i.link;
@@ -1552,9 +1522,8 @@ elf_s390_adjust_gotplt (h)
    understand.  */
 
 static bfd_boolean
-elf_s390_adjust_dynamic_symbol (info, h)
-     struct bfd_link_info *info;
-     struct elf_link_hash_entry *h;
+elf_s390_adjust_dynamic_symbol(struct bfd_link_info *info,
+			       struct elf_link_hash_entry *h)
 {
   struct elf_s390_link_hash_table *htab;
   asection *s;
@@ -1701,9 +1670,7 @@ elf_s390_adjust_dynamic_symbol (info, h)
    dynamic relocs.  */
 
 static bfd_boolean
-allocate_dynrelocs (h, inf)
-     struct elf_link_hash_entry *h;
-     PTR inf;
+allocate_dynrelocs(struct elf_link_hash_entry *h, PTR inf)
 {
   struct bfd_link_info *info;
   struct elf_s390_link_hash_table *htab;
@@ -1918,12 +1885,9 @@ allocate_dynrelocs (h, inf)
   return TRUE;
 }
 
-/* Find any dynamic relocs that apply to read-only sections.  */
-
+/* Find any dynamic relocs that apply to read-only sections: */
 static bfd_boolean
-readonly_dynrelocs (h, inf)
-     struct elf_link_hash_entry *h;
-     PTR inf;
+readonly_dynrelocs(struct elf_link_hash_entry *h, PTR inf)
 {
   struct elf_s390_link_hash_entry *eh;
   struct elf_s390_dyn_relocs *p;
@@ -1949,12 +1913,10 @@ readonly_dynrelocs (h, inf)
   return TRUE;
 }
 
-/* Set the sizes of the dynamic sections.  */
-
+/* Set the sizes of the dynamic sections: */
 static bfd_boolean
-elf_s390_size_dynamic_sections (output_bfd, info)
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info;
+elf_s390_size_dynamic_sections(bfd *output_bfd ATTRIBUTE_UNUSED,
+			       struct bfd_link_info *info)
 {
   struct elf_s390_link_hash_table *htab;
   bfd *dynobj;
@@ -2177,8 +2139,7 @@ elf_s390_size_dynamic_sections (output_bfd, info)
    This is PT_TLS segment p_vaddr.  */
 
 static bfd_vma
-dtpoff_base (info)
-     struct bfd_link_info *info;
+dtpoff_base(struct bfd_link_info *info)
 {
   /* If tls_sec is NULL, we should have signalled an error already.  */
   if (elf_hash_table (info)->tls_sec == NULL)
@@ -2190,9 +2151,7 @@ dtpoff_base (info)
    if STT_TLS virtual address is ADDRESS.  */
 
 static bfd_vma
-tpoff (info, address)
-     struct bfd_link_info *info;
-     bfd_vma address;
+tpoff(struct bfd_link_info *info, bfd_vma address)
 {
   struct elf_link_hash_table *htab = elf_hash_table (info);
 
@@ -2206,10 +2165,8 @@ tpoff (info, address)
    instruction.  */
 
 static void
-invalid_tls_insn (input_bfd, input_section, rel)
-     bfd *input_bfd;
-     asection *input_section;
-     Elf_Internal_Rela *rel;
+invalid_tls_insn(bfd *input_bfd, asection *input_section,
+		 Elf_Internal_Rela *rel)
 {
   reloc_howto_type *howto;
 
@@ -2222,19 +2179,13 @@ invalid_tls_insn (input_bfd, input_section, rel)
      howto->name);
 }
 
-/* Relocate a 390 ELF section.  */
-
+/* Relocate a 390 ELF section: */
 static bfd_boolean
-elf_s390_relocate_section (output_bfd, info, input_bfd, input_section,
-			      contents, relocs, local_syms, local_sections)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     Elf_Internal_Rela *relocs;
-     Elf_Internal_Sym *local_syms;
-     asection **local_sections;
+elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+			  bfd *input_bfd, asection *input_section,
+			  bfd_byte *contents, Elf_Internal_Rela *relocs,
+			  Elf_Internal_Sym *local_syms,
+			  asection **local_sections)
 {
   struct elf_s390_link_hash_table *htab;
   Elf_Internal_Shdr *symtab_hdr;
@@ -3077,11 +3028,9 @@ elf_s390_relocate_section (output_bfd, info, input_bfd, input_section,
    dynamic sections here.  */
 
 static bfd_boolean
-elf_s390_finish_dynamic_symbol (output_bfd, info, h, sym)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
-     struct elf_link_hash_entry *h;
-     Elf_Internal_Sym *sym;
+elf_s390_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
+			       struct elf_link_hash_entry *h,
+			       Elf_Internal_Sym *sym)
 {
   struct elf_s390_link_hash_table *htab;
 
@@ -3254,8 +3203,7 @@ elf_s390_finish_dynamic_symbol (output_bfd, info, h, sym)
    dynamic linker, before writing them out.  */
 
 static enum elf_reloc_type_class
-elf_s390_reloc_type_class (rela)
-     const Elf_Internal_Rela *rela;
+elf_s390_reloc_type_class(const Elf_Internal_Rela *rela)
 {
   switch ((int) ELF64_R_TYPE (rela->r_info))
     {
@@ -3270,12 +3218,9 @@ elf_s390_reloc_type_class (rela)
     }
 }
 
-/* Finish up the dynamic sections.  */
-
+/* Finish up the dynamic sections: */
 static bfd_boolean
-elf_s390_finish_dynamic_sections (output_bfd, info)
-     bfd *output_bfd;
-     struct bfd_link_info *info;
+elf_s390_finish_dynamic_sections(bfd *output_bfd, struct bfd_link_info *info)
 {
   struct elf_s390_link_hash_table *htab;
   bfd *dynobj;

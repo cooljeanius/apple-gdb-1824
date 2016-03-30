@@ -80,6 +80,8 @@ make_bfd_asection(bfd *abfd, const char *name, flagword flags,
 
 static const bfd_target *osf_core_core_file_p(bfd *abfd)
 {
+  /* FIXME: add a proper configure check for these: */
+#if defined(HAVE_STRUCT_CORE_FILEHDR) && defined(HAVE_STRUCT_CORE_SCNHDR)
   int val;
   int i;
   char *secname;
@@ -118,24 +120,24 @@ static const bfd_target *osf_core_core_file_p(bfd *abfd)
 
       switch (core_scnhdr.scntype)
 	{
-#ifdef SCNRGN
+# ifdef SCNRGN
 	case SCNRGN:
 	  secname = ".data";
 	  flags = (SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS);
 	  break;
-#endif /* SCNRGN */
-#ifdef SCNSTACK
+# endif /* SCNRGN */
+# ifdef SCNSTACK
 	case SCNSTACK:
 	  secname = ".stack";
 	  flags = (SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS);
 	  break;
-#endif /* SCNSTACK */
-#ifdef SCNREGS
+# endif /* SCNSTACK */
+# ifdef SCNREGS
 	case SCNREGS:
 	  secname = ".reg";
 	  flags = SEC_HAS_CONTENTS;
 	  break;
-#endif /* SCNREGS */
+# endif /* SCNREGS */
 	default:
 	  (*_bfd_error_handler)(_("Unhandled OSF/1 core file section type %d\n"),
                                 core_scnhdr.scntype);
@@ -158,6 +160,14 @@ static const bfd_target *osf_core_core_file_p(bfd *abfd)
   core_hdr(abfd) = NULL;
   bfd_section_list_clear(abfd);
   return NULL;
+#else
+  BFD_ASSERT(abfd != (bfd *)NULL);
+  asection *asect = make_bfd_asection(abfd, "secname", (flagword)0L,
+				      (bfd_size_type)0UL, (bfd_vma)0UL,
+				      (file_ptr)0L);
+  BFD_ASSERT(asect != (asection *)NULL);
+  return (const bfd_target *)NULL;
+#endif /* HAVE_STRUCT_CORE_FILEHDR && HAVE_STRUCT_CORE_SCNHDR */
 }
 
 static char *

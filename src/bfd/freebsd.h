@@ -46,10 +46,12 @@
 	 | (((flags) & 0x3f) << 26))
 #define N_SET_MACHTYPE(exec, machtype) \
 	((exec).a_info = \
-         ((exec).a_info & 0xfb00ffff) | ((((int) (machtype)) & 0x3ff) << 16))
+         (long)((unsigned long)(exec).a_info & 0xfb00ffff) \
+	 | ((((int)(machtype)) & 0x3ff) << 16))
 #define N_SET_FLAGS(exec, flags) \
 	((exec).a_info = \
-	 ((exec).a_info & 0x03ffffff) | ((flags & 0x03f) << 26))
+	 (long)((unsigned long)(exec).a_info & 0x03ffffff) \
+	 | ((flags & 0x03f) << 26))
 
 #include "bfd.h"
 #include "sysdep.h"

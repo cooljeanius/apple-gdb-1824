@@ -1277,6 +1277,105 @@ ARC 26 bit absolute branch.  The lowest two bits must be zero and are not
 stored in the instruction.  The high 24 bits are installed in bits 23
 through 0.
 @end deffn
+@deffn {} BFD_RELOC_BFIN_16_IMM
+ADI Blackfin 16 bit immediate absolute reloc.
+@end deffn
+@deffn {} BFD_RELOC_BFIN_16_HIGH
+ADI Blackfin 16 bit immediate absolute reloc higher 16 bits.
+@end deffn
+@deffn {} BFD_RELOC_BFIN_4_PCREL
+ADI Blackfin 'a' part of LSETUP.
+@end deffn
+@deffn {} BFD_RELOC_BFIN_5_PCREL
+ADI Blackfin.
+@end deffn
+@deffn {} BFD_RELOC_BFIN_16_LOW
+ADI Blackfin 16 bit immediate absolute reloc lower 16 bits.
+@end deffn
+@deffn {} BFD_RELOC_BFIN_10_PCREL
+ADI Blackfin.
+@end deffn
+@deffn {} BFD_RELOC_BFIN_11_PCREL
+ADI Blackfin 'b' part of LSETUP.
+@end deffn
+@deffn {} BFD_RELOC_BFIN_12_PCREL_JUMP
+ADI Blackfin.
+@end deffn
+@deffn {} BFD_RELOC_BFIN_12_PCREL_JUMP_S
+ADI Blackfin Short jump, pcrel.
+@end deffn
+@deffn {} BFD_RELOC_BFIN_24_PCREL_CALL_X
+ADI Blackfin Call.x not implemented.
+@end deffn
+@deffn {} BFD_RELOC_BFIN_24_PCREL_JUMP_L
+ADI Blackfin Long Jump pcrel.
+@end deffn
+@deffn {} BFD_RELOC_BFIN_GOT
+ADI Blackfin GOT relocation.
+@end deffn
+@deffn {} BFD_RELOC_BFIN_PLTPC
+ADI Blackfin PLTPC relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_PUSH
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_CONST
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_ADD
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_SUB
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_MULT
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_DIV
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_MOD
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_LSHIFT
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_RSHIFT
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_AND
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_OR
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_XOR
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_LAND
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_LOR
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_LEN
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_NEG
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_COMP
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_PAGE
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_HWPAGE
+ADI Blackfin arithmetic relocation.
+@end deffn
+@deffn {} BFD_ARELOC_BFIN_ADDR
+ADI Blackfin arithmetic relocation.
+@end deffn
 @deffn {} BFD_RELOC_D10V_10_PCREL_R
 Mitsubishi D10V relocs.
 This is a 10-bit reloc with the right 2 bits

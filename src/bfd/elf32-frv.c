@@ -2345,14 +2345,10 @@ elf32_frv_relocate_label24(bfd *input_bfd, asection *input_section,
 }
 
 static bfd_reloc_status_type
-elf32_frv_relocate_gprelhi (info, input_bfd, input_section, relocation,
-			    contents, value)
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     Elf_Internal_Rela *relocation;
-     bfd_byte *contents;
-     bfd_vma value;
+elf32_frv_relocate_gprelhi(struct bfd_link_info *info, bfd *input_bfd,
+			   asection *input_section,
+			   Elf_Internal_Rela *relocation,
+			   bfd_byte *contents, bfd_vma value)
 {
   bfd_vma insn;
   bfd_vma gp;
@@ -2380,14 +2376,10 @@ elf32_frv_relocate_gprelhi (info, input_bfd, input_section, relocation,
 }
 
 static bfd_reloc_status_type
-elf32_frv_relocate_gprello (info, input_bfd, input_section, relocation,
-			    contents, value)
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     Elf_Internal_Rela *relocation;
-     bfd_byte *contents;
-     bfd_vma value;
+elf32_frv_relocate_gprello(struct bfd_link_info *info, bfd *input_bfd,
+			   asection *input_section,
+			   Elf_Internal_Rela *relocation,
+			   bfd_byte *contents, bfd_vma value)
 {
   bfd_vma insn;
   bfd_vma gp;
@@ -2638,14 +2630,9 @@ frvfdpic_info_to_howto_rel (bfd *abfd ATTRIBUTE_UNUSED,
    routines, but a few relocs, we have to do them ourselves.  */
 
 static bfd_reloc_status_type
-frv_final_link_relocate (howto, input_bfd, input_section, contents, rel,
-			 relocation)
-     reloc_howto_type *howto;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     Elf_Internal_Rela *rel;
-     bfd_vma relocation;
+frv_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
+			asection *input_section, bfd_byte *contents,
+			Elf_Internal_Rela *rel, bfd_vma relocation)
 {
   return _bfd_final_link_relocate (howto, input_bfd, input_section,
 				   contents, rel->r_offset, relocation,
@@ -2684,16 +2671,12 @@ frv_final_link_relocate (howto, input_bfd, input_section, contents, rel,
    accordingly.  */
 
 static bfd_boolean
-elf32_frv_relocate_section (output_bfd, info, input_bfd, input_section,
-			    contents, relocs, local_syms, local_sections)
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     Elf_Internal_Rela *relocs;
-     Elf_Internal_Sym *local_syms;
-     asection **local_sections;
+elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
+			   struct bfd_link_info *info, bfd *input_bfd,
+			   asection *input_section, bfd_byte *contents,
+			   Elf_Internal_Rela *relocs,
+			   Elf_Internal_Sym *local_syms,
+			   asection **local_sections)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
@@ -4121,12 +4104,10 @@ elf32_frv_relocate_section (output_bfd, info, input_bfd, input_section,
    relocation.  */
 
 static asection *
-elf32_frv_gc_mark_hook (sec, info, rel, h, sym)
-     asection *sec;
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
-     Elf_Internal_Rela *rel;
-     struct elf_link_hash_entry *h;
-     Elf_Internal_Sym *sym;
+elf32_frv_gc_mark_hook(asection *sec,
+		       struct bfd_link_info *info ATTRIBUTE_UNUSED,
+		       Elf_Internal_Rela *rel, struct elf_link_hash_entry *h,
+		       Elf_Internal_Sym *sym)
 {
   if (h != NULL)
     {
@@ -4160,11 +4141,10 @@ elf32_frv_gc_mark_hook (sec, info, rel, h, sym)
 /* Update the got entry reference counts for the section being removed.  */
 
 static bfd_boolean
-elf32_frv_gc_sweep_hook (abfd, info, sec, relocs)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
-     asection *sec ATTRIBUTE_UNUSED;
-     const Elf_Internal_Rela *relocs ATTRIBUTE_UNUSED;
+elf32_frv_gc_sweep_hook(bfd *abfd ATTRIBUTE_UNUSED,
+			struct bfd_link_info *info ATTRIBUTE_UNUSED,
+			asection *sec ATTRIBUTE_UNUSED,
+			const Elf_Internal_Rela *relocs ATTRIBUTE_UNUSED)
 {
   return TRUE;
 }
@@ -4174,14 +4154,11 @@ elf32_frv_gc_sweep_hook (abfd, info, sec, relocs)
    file.  We use it to put .comm items in .scomm, and not .comm.  */
 
 static bfd_boolean
-elf32_frv_add_symbol_hook (abfd, info, sym, namep, flagsp, secp, valp)
-     bfd *abfd;
-     struct bfd_link_info *info;
-     Elf_Internal_Sym *sym;
-     const char **namep ATTRIBUTE_UNUSED;
-     flagword *flagsp ATTRIBUTE_UNUSED;
-     asection **secp;
-     bfd_vma *valp;
+elf32_frv_add_symbol_hook(bfd *abfd, struct bfd_link_info *info,
+			  Elf_Internal_Sym *sym,
+			  const char **namep ATTRIBUTE_UNUSED,
+			  flagword *flagsp ATTRIBUTE_UNUSED,
+			  asection **secp, bfd_vma *valp)
 {
   if (sym->st_shndx == SHN_COMMON
       && !info->relocatable
@@ -5069,8 +5046,9 @@ _frvfdpic_get_tlsdesc_entry (struct _frvfdpic_dynamic_got_alloc_data *gad)
 static int
 _frvfdpic_assign_got_entries (void **entryp, void *info_)
 {
-  struct frvfdpic_relocs_info *entry = *entryp;
-  struct _frvfdpic_dynamic_got_plt_info *dinfo = info_;
+  struct frvfdpic_relocs_info *entry = (struct frvfdpic_relocs_info *)*entryp;
+  struct _frvfdpic_dynamic_got_plt_info *dinfo =
+    (struct _frvfdpic_dynamic_got_plt_info *)info_;
 
   if (entry->got12)
     entry->got_entry = _frvfdpic_get_got_entry (&dinfo->got12);
@@ -5145,10 +5123,11 @@ _frvfdpic_assign_got_entries (void **entryp, void *info_)
    and lazy PLT entries.  */
 
 static int
-_frvfdpic_assign_plt_entries (void **entryp, void *info_)
+_frvfdpic_assign_plt_entries(void **entryp, void *info_)
 {
-  struct frvfdpic_relocs_info *entry = *entryp;
-  struct _frvfdpic_dynamic_got_plt_info *dinfo = info_;
+  struct frvfdpic_relocs_info *entry = (struct frvfdpic_relocs_info *)*entryp;
+  struct _frvfdpic_dynamic_got_plt_info *dinfo =
+    (struct _frvfdpic_dynamic_got_plt_info *)info_;
 
   if (entry->privfd)
     BFD_ASSERT (entry->fd_entry);
@@ -5249,7 +5228,7 @@ _frvfdpic_assign_plt_entries (void **entryp, void *info_)
 static int
 _frvfdpic_reset_got_plt_entries (void **entryp, void *ignore ATTRIBUTE_UNUSED)
 {
-  struct frvfdpic_relocs_info *entry = *entryp;
+  struct frvfdpic_relocs_info *entry = (struct frvfdpic_relocs_info *)*entryp;
 
   entry->got_entry = 0;
   entry->fdgot_entry = 0;
@@ -5272,8 +5251,8 @@ _frvfdpic_reset_got_plt_entries (void **entryp, void *ignore ATTRIBUTE_UNUSED)
 static int
 _frvfdpic_resolve_final_relocs_info (void **entryp, void *p)
 {
-  struct frvfdpic_relocs_info *entry = *entryp;
-  htab_t *htab = p;
+  struct frvfdpic_relocs_info *entry = (struct frvfdpic_relocs_info *)*entryp;
+  htab_t *htab = (htab_t *)p;
 
   if (entry->symndx == -1)
     {
@@ -5572,7 +5551,8 @@ elf32_frvfdpic_size_dynamic_sections (bfd *output_bfd,
 
   /* Allocate space to save the summary information, we're going to
      use it if we're doing relaxations.  */
-  frvfdpic_dynamic_got_plt_info (info) = bfd_alloc (dynobj, sizeof (gpinfo.g));
+  frvfdpic_dynamic_got_plt_info(info) =
+    (struct _frvfdpic_dynamic_got_info *)bfd_alloc(dynobj, sizeof(gpinfo.g));
 
   if (!_frvfdpic_size_got_plt (output_bfd, &gpinfo))
     return FALSE;
@@ -5653,8 +5633,9 @@ elf32_frvfdpic_always_size_sections (bfd *output_bfd,
 static int
 _frvfdpic_relax_got_plt_entries (void **entryp, void *dinfo_)
 {
-  struct frvfdpic_relocs_info *entry = *entryp;
-  struct _frvfdpic_dynamic_got_info *dinfo = dinfo_;
+  struct frvfdpic_relocs_info *entry = (struct frvfdpic_relocs_info *)*entryp;
+  struct _frvfdpic_dynamic_got_info *dinfo =
+    (struct _frvfdpic_dynamic_got_info *)dinfo_;
 
   _frvfdpic_relax_tls_entries (entry, dinfo, TRUE);
 

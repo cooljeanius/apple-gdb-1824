@@ -69,9 +69,9 @@ msdos_write_object_contents(bfd *abfd)
 	}
       if (bfd_get_section_flags(abfd, sec) & SEC_LOAD)
         {
-	  file_ptr sec_end = (sizeof(hdr)
-			      + bfd_get_section_vma(abfd, sec)
-			      + sec->size);
+	  file_ptr sec_end = (file_ptr)(sizeof(hdr)
+					+ bfd_get_section_vma(abfd, sec)
+					+ sec->size);
 	  if (sec_end > outfile_size)
 	    outfile_size = sec_end;
 	}
@@ -85,19 +85,19 @@ msdos_write_object_contents(bfd *abfd)
     }
 
   /* Constants: */
-  H_PUT_16(abfd, EXE_MAGIC, &hdr[0]);
-  H_PUT_16(abfd, (EXE_PAGE_SIZE / 16), &hdr[8]);
-  H_PUT_16(abfd, EXE_LOAD_LOW, &hdr[12]);
-  H_PUT_16(abfd, 0x3e, &hdr[24]);
-  H_PUT_16(abfd, 0x0001, &hdr[28]); /* XXX??? */
-  H_PUT_16(abfd, 0x30fb, &hdr[30]); /* XXX??? */
-  H_PUT_16(abfd, 0x726a, &hdr[32]); /* XXX??? */
+  H_PUT_16(abfd, (bfd_vma)EXE_MAGIC, &hdr[0]);
+  H_PUT_16(abfd, (bfd_vma)(EXE_PAGE_SIZE / 16), &hdr[8]);
+  H_PUT_16(abfd, (bfd_vma)EXE_LOAD_LOW, &hdr[12]);
+  H_PUT_16(abfd, (bfd_vma)0x3e, &hdr[24]);
+  H_PUT_16(abfd, (bfd_vma)0x0001, &hdr[28]); /* XXX??? */
+  H_PUT_16(abfd, (bfd_vma)0x30fb, &hdr[30]); /* XXX??? */
+  H_PUT_16(abfd, (bfd_vma)0x726a, &hdr[32]); /* XXX??? */
 
   /* Bytes in last page (0 = full page): */
-  H_PUT_16(abfd, (outfile_size & (EXE_PAGE_SIZE - 1)), &hdr[2]);
+  H_PUT_16(abfd, (bfd_vma)(outfile_size & (EXE_PAGE_SIZE - 1)), &hdr[2]);
 
   /* Number of pages: */
-  H_PUT_16(abfd, ((outfile_size + EXE_PAGE_SIZE - 1) / EXE_PAGE_SIZE),
+  H_PUT_16(abfd, (bfd_vma)((outfile_size + EXE_PAGE_SIZE - 1) / EXE_PAGE_SIZE),
            &hdr[4]);
 
   /* Set the initial stack pointer to the end of the bss.
@@ -118,7 +118,8 @@ msdos_set_section_contents(bfd *abfd, sec_ptr section, const PTR location,
   if (count == 0)
     return TRUE;
 
-  section->filepos = (EXE_PAGE_SIZE + bfd_get_section_vma(abfd, section));
+  section->filepos = (file_ptr)(EXE_PAGE_SIZE
+				+ bfd_get_section_vma(abfd, section));
 
   if (bfd_get_section_flags(abfd, section) & SEC_LOAD)
     {

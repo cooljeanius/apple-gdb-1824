@@ -1,4 +1,4 @@
-/* BFD back-end for Zilog Z80 COFF binaries.
+/* coff-z80.c: BFD back-end for Zilog Z80 COFF binaries.
    Copyright 2005, 2006, 2007, 2008  Free Software Foundation, Inc.
    Contributed by Arnold Metselaar <arnold_m@operamail.com>
 
@@ -123,9 +123,9 @@ coff_z80_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
     }
 }
 
-static reloc_howto_type *
-coff_z80_reloc_name_lookup (bfd *abfd ATTRIBUTE_UNUSED,
-			    const char *r_name)
+static reloc_howto_type * ATTRIBUTE_USED
+coff_z80_reloc_name_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+			   const char *r_name)
 {
   if (strcasecmp (r_imm8.name, r_name) == 0)
     return &r_imm8;
@@ -210,27 +210,27 @@ extra_case (bfd *in_abfd,
       break;
 
     case R_IMM16:
-      val = bfd_get_16 ( in_abfd, data+*src_ptr)
-	+ bfd_coff_reloc16_get_value (reloc, link_info, input_section);
-      bfd_put_16 (in_abfd, val, data + *dst_ptr);
+      val = (bfd_get_16(in_abfd, (data + *src_ptr))
+	     + bfd_coff_reloc16_get_value(reloc, link_info, input_section));
+      bfd_put_16(in_abfd, (bfd_vma)val, (data + *dst_ptr));
       (*dst_ptr) += 2;
       (*src_ptr) += 2;
       break;
 
     case R_IMM24:
-      val = bfd_get_16 ( in_abfd, data+*src_ptr)
-	+ (bfd_get_8 ( in_abfd, data+*src_ptr+2) << 16)
-	+ bfd_coff_reloc16_get_value (reloc, link_info, input_section);
-      bfd_put_16 (in_abfd, val, data + *dst_ptr);
-      bfd_put_8 (in_abfd, val >> 16, data + *dst_ptr+2);
+      val = (bfd_get_16(in_abfd, (data + *src_ptr))
+	     + (bfd_get_8(in_abfd, (data + *src_ptr + 2)) << 16)
+	     + bfd_coff_reloc16_get_value(reloc, link_info, input_section));
+      bfd_put_16(in_abfd, (bfd_vma)val, (data + *dst_ptr));
+      bfd_put_8(in_abfd, (val >> 16), (data + (*dst_ptr + 2)));
       (*dst_ptr) += 3;
       (*src_ptr) += 3;
       break;
 
     case R_IMM32:
-      val = bfd_get_32 ( in_abfd, data+*src_ptr)
-	+ bfd_coff_reloc16_get_value (reloc, link_info, input_section);
-      bfd_put_32 (in_abfd, val, data + *dst_ptr);
+      val = (bfd_get_32(in_abfd, (data + *src_ptr))
+	     + bfd_coff_reloc16_get_value(reloc, link_info, input_section));
+      bfd_put_32(in_abfd, (bfd_vma)val, (data + *dst_ptr));
       (*dst_ptr) += 4;
       (*src_ptr) += 4;
       break;
@@ -271,8 +271,8 @@ extra_case (bfd *in_abfd,
 #define coff_bfd_reloc_name_lookup coff_z80_reloc_name_lookup
 
 #ifndef bfd_pe_print_pdata
-#define bfd_pe_print_pdata	NULL
-#endif
+# define bfd_pe_print_pdata	NULL
+#endif /* !bfd_pe_print_pdata */
 
 #include "coffcode.h"
 
@@ -283,7 +283,19 @@ extra_case (bfd *in_abfd,
 #undef  coff_bfd_relax_section
 #define coff_bfd_relax_section bfd_coff_reloc16_relax_section
 
-CREATE_LITTLE_COFF_TARGET_VEC (z80coff_vec, "coff-z80", 0,
-			       SEC_CODE | SEC_DATA, '\0', NULL,
-			       COFF_SWAP_TABLE)
+CREATE_LITTLE_COFF_TARGET_VEC(z80_coff_vec, "coff-z80", 0,
+			      (SEC_CODE | SEC_DATA), '\0', NULL,
+			      COFF_SWAP_TABLE)
 
+/* silence -Wunused-macros: */
+#ifdef Z80
+# undef Z80
+#endif /* Z80 */
+#ifdef coff_bfd_reloc_name_lookup
+# undef coff_bfd_reloc_name_lookup
+#endif /* coff_bfd_reloc_name_lookup */
+#ifdef bfd_pe_print_pdata
+# undef bfd_pe_print_pdata
+#endif /* bfd_pe_print_pdata */
+
+/* EOF */

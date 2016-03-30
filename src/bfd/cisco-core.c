@@ -85,10 +85,10 @@ cisco_core_file_validate(bfd *abfd, int crash_info_loc)
   char buf[4];
   unsigned int crashinfo_offset;
   crashinfo_external crashinfo;
-  int nread;
-  unsigned int magic;
-  unsigned int version;
-  unsigned int rambase;
+  bfd_size_type nread;
+  unsigned long magic;
+  unsigned long version;
+  bfd_vma rambase;
   sec_ptr asect;
   struct stat statbuf;
   bfd_size_type amt;
@@ -126,14 +126,14 @@ cisco_core_file_validate(bfd *abfd, int crash_info_loc)
       return NULL;
     }
 
-  magic = bfd_get_32 (abfd, crashinfo.magic);
+  magic = (unsigned long)bfd_get_32(abfd, crashinfo.magic);
   if (magic != CRASH_MAGIC)
     {
       bfd_set_error (bfd_error_wrong_format);
       return NULL;
     }
 
-  version = bfd_get_32 (abfd, crashinfo.version);
+  version = (unsigned long)bfd_get_32(abfd, crashinfo.version);
   if (version == 0)
     {
       bfd_set_error (bfd_error_wrong_format);
@@ -142,11 +142,11 @@ cisco_core_file_validate(bfd *abfd, int crash_info_loc)
   else if (version == 1)
     {
       /* V1 core dumps don't specify the dump base, assume 0 */
-      rambase = 0;
+      rambase = 0UL;
     }
   else
     {
-      rambase = bfd_get_32 (abfd, crashinfo.rambase);
+      rambase = bfd_get_32(abfd, crashinfo.rambase);
     }
 
   /* OK, we believe you.  You're a core file.  */
@@ -223,8 +223,8 @@ cisco_core_file_validate(bfd *abfd, int crash_info_loc)
 	case 54: abfd->tdata.cisco_core_data->sig = SIGFPE;  break;
 	default:
 #ifndef SIGEMT
-#define SIGEMT SIGTRAP
-#endif
+# define SIGEMT SIGTRAP
+#endif /* !SIGEMT */
 	  /* "software generated"*/
 	  abfd->tdata.cisco_core_data->sig = SIGEMT;
 	}
@@ -243,7 +243,7 @@ cisco_core_file_validate(bfd *abfd, int crash_info_loc)
     goto error_return;
   asect->flags = SEC_ALLOC | SEC_LOAD | SEC_HAS_CONTENTS;
   /* The size of memory is the size of the core file itself.  */
-  asect->size = statbuf.st_size;
+  asect->size = (bfd_size_type)statbuf.st_size;
   asect->vma = rambase;
   asect->filepos = 0;
 
@@ -266,12 +266,12 @@ cisco_core_file_validate(bfd *abfd, int crash_info_loc)
     goto error_return;
   asect->flags = SEC_HAS_CONTENTS;
   asect->vma = 0;
-  asect->filepos = bfd_get_32 (abfd, crashinfo.registers) - rambase;
+  asect->filepos = (file_ptr)(bfd_get_32(abfd, crashinfo.registers) - rambase);
   /* Since we don't know the exact size of the saved register info,
      choose a register section size that is either the remaining part
      of the file, or 1024, whichever is smaller.  */
-  nread = statbuf.st_size - asect->filepos;
-  asect->size = (nread < 1024) ? nread : 1024;
+  nread = (bfd_size_type)(statbuf.st_size - asect->filepos);
+  asect->size = ((nread < 1024UL) ? nread : 1024UL);
 
   return abfd->xvec;
 

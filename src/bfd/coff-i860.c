@@ -1,4 +1,4 @@
-/* BFD back-end for Intel i860 COFF files.
+/* coff-i860.c: BFD back-end for Intel i860 COFF files.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1999, 2000, 2001, 2002,
    2003, 2004, 2005 Free Software Foundation, Inc.
    Created mostly by substituting "860" for "386" in coff-i386.c
@@ -575,7 +575,7 @@ i860_reloc_processing (arelent *cache_ptr, struct internal_reloc *dst,
     {
       /* For every other relocation, do exactly what coff_slurp_reloc_table
          would do (which this code is taken directly from).  */
-      asymbol *ptr = NULL;
+      asymbol *ptr = (asymbol *)NULL;
       cache_ptr->address = dst->r_vaddr;
 
       if (dst->r_symndx != -1)
@@ -686,3 +686,5 @@ const bfd_target
 
   COFF_SWAP_TABLE
 };
+
+/* EOF */

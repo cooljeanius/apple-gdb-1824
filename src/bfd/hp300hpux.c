@@ -325,7 +325,8 @@ MY(write_object_contents)(bfd *abfd)
   /* update fields not covered by default swap_exec_header_out */
 
   /* this is really the sym table size but we store it in drelocs */
-  H_PUT_32 (abfd, (bfd_get_symcount (abfd) * 12), exec_bytes.e_drelocs);
+  H_PUT_32(abfd, (bfd_vma)(bfd_get_symcount(abfd) * 12UL),
+	   exec_bytes.e_drelocs);
 
   if (bfd_seek (abfd, (file_ptr) 0, FALSE) != 0
       || (bfd_bwrite ((PTR) &exec_bytes, (bfd_size_type) EXEC_BYTES_SIZE, abfd)

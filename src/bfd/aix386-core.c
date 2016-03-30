@@ -355,8 +355,8 @@ aix386_core_file_p(bfd *abfd)
 
       core_section(abfd, n)->flags = flags;
 #if defined(core_section) && defined(ACTUALLY_CAN_USE_AIX_I386_STUFF)
-      core_section(abfd, n)->size = core->cd_segs[i].cs_len;
-      core_section(abfd, n)->vma = core->cd_segs[i].cs_address;
+      core_section(abfd, n)->size = (bfd_size_type)core->cd_segs[i].cs_len;
+      core_section(abfd, n)->vma = (bfd_vma)core->cd_segs[i].cs_address;
       core_section(abfd, n)->filepos = core->cd_segs[i].cs_offset;
 #else
 # ifdef core_section

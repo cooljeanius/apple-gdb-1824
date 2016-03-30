@@ -896,7 +896,7 @@ handle_COMDAT(bfd *abfd, flagword sec_flags, void *hdr, const char *name,
 #ifdef STRICT_PE_FORMAT
 		    sec_flags |= SEC_LINK_DUPLICATES_ONE_ONLY;
 #else
-		    sec_flags &= ~SEC_LINK_ONCE;
+		    sec_flags &= (flagword)(~SEC_LINK_ONCE);
 #endif /* STRICT_PE_FORMAT */
 		    break;
 
@@ -925,7 +925,7 @@ handle_COMDAT(bfd *abfd, flagword sec_flags, void *hdr, const char *name,
 		    /* FIXME: This is not currently implemented: */
 		    sec_flags |= SEC_LINK_DUPLICATES_DISCARD;
 #else
-		    sec_flags &= ~SEC_LINK_ONCE;
+		    sec_flags &= (flagword)(~SEC_LINK_ONCE);
 #endif /* STRICT_PE_FORMAT */
 		    break;
 
@@ -2536,14 +2536,14 @@ static bfd_boolean coff_write_relocs(bfd *abfd, int first_undef)
 	      }
 
 #ifdef SWAP_OUT_RELOC_OFFSET
-	  n.r_offset = q->addend;
+	  n.r_offset = (unsigned long)q->addend;
 #endif /* SWAP_OUT_RELOC_OFFSET */
 
 #ifdef SELECT_RELOC
 	  /* Work out reloc type from what is required: */
 	  SELECT_RELOC(n, q->howto);
 #else
-	  n.r_type = q->howto->type;
+	  n.r_type = (unsigned short)q->howto->type;
 #endif /* SELECT_RELOC */
 	  coff_swap_reloc_out(abfd, &n, &dst);
 
@@ -3598,7 +3598,7 @@ coff_write_object_contents(bfd *abfd)
 #endif /* I960 */
 #ifdef TIC80COFF
       /* TI COFF puts the alignment power in bits 8-11 of the flags: */
-      section.s_flags |= ((current->alignment_power & 0xF) << 8);
+      section.s_flags |= (long)((current->alignment_power & 0xF) << 8);
 #endif /* TIC80COFF */
 #ifdef COFF_ENCODE_ALIGNMENT
       COFF_ENCODE_ALIGNMENT(section, current->alignment_power);
@@ -5028,6 +5028,10 @@ coff_slurp_reloc_table(bfd * abfd, sec_ptr asect, asymbol ** symbols)
 
       /* Fill in the cache_ptr->howto field from dst.r_type: */
       RTYPE2HOWTO(cache_ptr, &dst);
+      
+      if (ptr == NULL) {
+	; /* ??? */
+      }
 #endif	/* RELOC_PROCESSING */
 
       if (cache_ptr->howto == NULL)

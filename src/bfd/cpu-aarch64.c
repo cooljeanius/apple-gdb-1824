@@ -1,4 +1,4 @@
-/* BFD support for AArch64.
+/* cpu-aarch64.c: BFD support for AArch64.
    Copyright 2009, 2010, 2011, 2012  Free Software Foundation, Inc.
    Contributed by ARM Ltd.
 

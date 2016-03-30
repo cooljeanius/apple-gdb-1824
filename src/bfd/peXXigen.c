@@ -1695,7 +1695,7 @@ static const char * const tbl[] =
 };
 
 static bfd_boolean
-pe_print_reloc (bfd * abfd, void * vfile)
+pe_print_reloc(bfd *abfd, void *vfile)
 {
   FILE *file = (FILE *) vfile;
   bfd_byte *data = 0;
@@ -1733,8 +1733,8 @@ pe_print_reloc (bfd * abfd, void * vfile)
 
       /* The .reloc section is a sequence of blocks, with a header consisting
 	 of two 32 bit quantities, followed by a number of 16 bit entries.  */
-      virtual_address = bfd_get_32 (abfd, data+i);
-      size = bfd_get_32 (abfd, data+i+4);
+      virtual_address = bfd_get_32(abfd, (data + i));
+      size = bfd_get_32(abfd, (data + i + 4));
       number = (size - 8) / 2;
 
       if (size == 0)
@@ -1772,6 +1772,10 @@ pe_print_reloc (bfd * abfd, void * vfile)
 
       i += size;
     }
+  
+  if (i > datasize) {
+    ; /* ??? */
+  }
 
   free (data);
 

@@ -1,4 +1,4 @@
-/* BFD back-end for ieee-695 objects.
+/* ieee.c: BFD back-end for ieee-695 objects.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -1495,7 +1495,8 @@ do_one(ieee_data_type *ieee, ieee_per_section_type *current_map,
 		  asection *section;
 		  ieee_reloc_type *r;
 
-		  r = (ieee_reloc_type *)bfd_alloc(ieee->h.abfd, sizeof(* r));
+		  r = (ieee_reloc_type *)bfd_alloc(ieee->h.abfd,
+						   (bfd_size_type)sizeof(* r));
 		  if (!r)
 		    return FALSE;
 

@@ -55,7 +55,7 @@ aout_adobe_swap_exec_header_out(bfd *abfd, struct internal_exec *execp,
 {
   /* Now fill in fields in the raw data, from the fields in the exec
      struct.  */
-  H_PUT_32(abfd, execp->a_info, bytes->e_info);
+  H_PUT_32(abfd, (bfd_vma)execp->a_info, bytes->e_info);
   PUT_WORD(abfd, execp->a_text, bytes->e_text);
   PUT_WORD(abfd, execp->a_data, bytes->e_data);
   PUT_WORD(abfd, execp->a_bss, bytes->e_bss);

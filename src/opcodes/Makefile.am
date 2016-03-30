@@ -23,7 +23,7 @@ AUTOMAKE_OPTIONS = 1.11.6 gnits no-dist dejagnu -Wall -Wno-override
 ## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
-ACLOCAL_AMFLAGS = -I m4 --install
+ACLOCAL_AMFLAGS = -I m4 -I ../bfd --install
 
 # APPLE LOCAL: dynamiclib building method:
 NSLIBTOOL = cc -dynamiclib
@@ -101,6 +101,7 @@ CFILES = \
 	arc-ext.c \
 	arm-dis.c \
 	avr-dis.c \
+	bfin-dis.c \
 	cgen-asm.c \
 	cgen-dis.c \
 	cgen-opc.c \
@@ -237,6 +238,7 @@ ALL_MACHINES = \
 	arc-ext.lo \
 	arm-dis.lo \
 	avr-dis.lo \
+	bfin-dis.lo \
 	cgen-asm.lo \
 	cgen-dis.lo \
 	cgen-opc.lo \
@@ -785,6 +787,9 @@ arm-dis.lo: arm-dis.c sysdep.h config.h $(INCDIR)/ansidecl.h \
 avr-dis.lo: avr-dis.c sysdep.h config.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/dis-asm.h $(BFD_H) $(INCDIR)/symcat.h opintl.h \
   $(INCDIR)/libiberty.h $(INCDIR)/opcode/avr.h $(INTLDIR)/libintl.h
+bfin-dis.lo: bfin-dis.c sysdep.h config.h $(INCDIR)/ansidecl.h \
+  $(INCDIR)/dis-asm.h $(BFD_H) $(INCDIR)/symcat.h opintl.h \
+  $(INCDIR)/libiberty.h $(INCDIR)/opcode/bfin.h
 cgen-asm.lo: cgen-asm.c sysdep.h config.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/libiberty.h $(INCDIR)/safe-ctype.h $(BFD_H) \
   $(INCDIR)/symcat.h $(INCDIR)/opcode/cgen.h opintl.h $(INTLDIR)/libintl.h

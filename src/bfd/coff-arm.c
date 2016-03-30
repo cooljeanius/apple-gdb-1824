@@ -1518,7 +1518,7 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
           else
             {
               bfd_vma relocation = (val + addend);
-	      int size = bfd_get_reloc_size(howto);
+	      size_t size = bfd_get_reloc_size(howto);
 	      bfd_boolean overflow = FALSE;
 	      bfd_byte *location = (contents + address);
 	      bfd_vma x = bfd_get_32(input_bfd, location);

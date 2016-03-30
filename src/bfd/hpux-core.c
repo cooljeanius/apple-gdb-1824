@@ -184,25 +184,31 @@ hpux_core_core_file_p(bfd *abfd)
 
   while (1) {
       int val;
+      /* FIXME: properly check for this with configure: */
+#ifdef HAVE_STRUCT_COREHEAD
       struct corehead core_header;
 
       val = bfd_bread((void *)&core_header,
                       (bfd_size_type)sizeof(core_header), abfd);
+#else
+      val = -1;
+#endif /* HAVE_STRUCT_COREHEAD */
       if (val <= 0)
 	break;
+#ifdef HAVE_STRUCT_COREHEAD
       switch (core_header.type)
 	{
-#ifdef CORE_FORMAT
-# ifdef CORE_KERNEL
+# ifdef CORE_FORMAT
+#  ifdef CORE_KERNEL
 	case CORE_KERNEL: /* fall through (needs to be in same ifdef): */
-# endif /* CORE_KERNEL */
+#  endif /* CORE_KERNEL */
 	case CORE_FORMAT:
 	  /* Just skip this: */
 	  bfd_seek(abfd, (file_ptr)core_header.len, SEEK_CUR);
           good_sections++;
 	  break;
-#endif /* CORE_FORMAT */
-#ifdef CORE_EXEC
+# endif /* CORE_FORMAT */
+# ifdef CORE_EXEC
  	case CORE_EXEC:
 	  {
 	    struct proc_exec proc_exec;
@@ -213,8 +219,8 @@ hpux_core_core_file_p(bfd *abfd)
             good_sections++;
 	  }
 	  break;
-#endif /* CORE_EXEC */
-#ifdef CORE_PROC
+# endif /* CORE_EXEC */
+# ifdef CORE_PROC
  	case CORE_PROC:
 	  {
 	    struct proc_info proc_info;
@@ -232,13 +238,13 @@ hpux_core_core_file_p(bfd *abfd)
             if (bfd_seek(abfd, -((file_ptr)core_header.len), SEEK_CUR) != 0)
               break;
 
-#if defined(PROC_INFO_HAS_THREAD_ID)
+# if defined(PROC_INFO_HAS_THREAD_ID)
             core_kernel_thread_id(abfd) = proc_info.lwpid;
             core_user_thread_id(abfd) = proc_info.user_tid;
-#else
+# else
             core_kernel_thread_id(abfd) = 0;
             core_user_thread_id(abfd) = 0;
-#endif /* PROC_INFO_HAS_THREAD_ID */
+# endif /* PROC_INFO_HAS_THREAD_ID */
             /* If the program was unthreaded, then we shall just create a
                .reg section.
 
@@ -258,8 +264,7 @@ hpux_core_core_file_p(bfd *abfd)
                                        SEC_HAS_CONTENTS,
                                        core_header.len,
                                        (bfd_vma)offsetof(struct proc_info,
-                                                         hw_regs),
-                                       2))
+                                                         hw_regs), 2))
 		  goto fail;
               }
             else
@@ -272,8 +277,7 @@ hpux_core_core_file_p(bfd *abfd)
 					   SEC_HAS_CONTENTS,
 					   core_header.len,
 					   (bfd_vma)offsetof(struct proc_info,
-                                                             hw_regs),
-					   2))
+                                                             hw_regs), 2))
 		      goto fail;
                   }
                 /* We always make one of these sections, for every thread: */
@@ -282,8 +286,7 @@ hpux_core_core_file_p(bfd *abfd)
                                        SEC_HAS_CONTENTS,
                                        core_header.len,
                                        (bfd_vma)offsetof(struct proc_info,
-                                                         hw_regs),
-                                       2))
+                                                         hw_regs), 2))
 		  goto fail;
               }
 	    core_signal(abfd) = proc_info.sig;
@@ -292,22 +295,22 @@ hpux_core_core_file_p(bfd *abfd)
             good_sections++;
 	  }
 	  break;
-#endif /* CORE_PROC */
-#ifdef CORE_DATA
+# endif /* CORE_PROC */
+# ifdef CORE_DATA
 	case CORE_DATA: /* Fall through: */
-#endif /* CORE_DATA */
-#ifdef CORE_STACK
+# endif /* CORE_DATA */
+# ifdef CORE_STACK
 	case CORE_STACK: /* Fall through: */
-#endif /* CORE_STACK */
-#ifdef CORE_TEXT
+# endif /* CORE_STACK */
+# ifdef CORE_TEXT
 	case CORE_TEXT: /* Fall through: */
-#endif /* CORE_TEXT */
-#ifdef CORE_MMF
+# endif /* CORE_TEXT */
+# ifdef CORE_MMF
 	case CORE_MMF: /* Fall through: */
-#endif /* CORE_MMF */
-#ifdef CORE_SHM
+# endif /* CORE_MMF */
+# ifdef CORE_SHM
 	case CORE_SHM: /* Fall through: */
-#endif /* CORE_SHM */
+# endif /* CORE_SHM */
 	case CORE_ANON_SHMEM:
 	  if (!make_bfd_asection(abfd, ".data",
 				 (SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS),
@@ -331,6 +334,9 @@ hpux_core_core_file_p(bfd *abfd)
          default:
 	   goto fail; /* unrecognized core file type */
 	}
+#else
+      break;
+#endif /* HAVE_STRUCT_COREHEAD */
     }
 
   /* OK, we believe you.  You are a core file (sure, sure).  */

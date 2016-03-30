@@ -1,8 +1,8 @@
 /* coff-maxq.c: BFD back-end for MAXQ COFF binaries.
    Copyright 2004    Free Software Foundation, Inc.
 
-   Contributed by Vineet Sharma (vineets@noida.hcltech.com) Inderpreet S.
-   (inderpreetb@noida.hcltech.com)
+   Contributed by Vineet Sharma <vineets@noida.hcltech.com> Inderpreet S.
+   <inderpreetb@noida.hcltech.com>
 
    HCL Technologies Ltd.
 
@@ -82,8 +82,8 @@ coff_maxq20_reloc (bfd *      abfd,
 		   bfd *      output_bfd    ATTRIBUTE_UNUSED,
 		   char **    error_message ATTRIBUTE_UNUSED)
 {
-  reloc_howto_type *howto = NULL;
-  unsigned char *addr = NULL;
+  reloc_howto_type *howto = (reloc_howto_type *)NULL;
+  unsigned char *addr = (unsigned char *)NULL;
   unsigned long x = 0;
   long call_addr = 0;
   short addend = 0;
@@ -336,10 +336,15 @@ coff_maxq20_reloc (bfd *      abfd,
 	  return bfd_reloc_notsupported;
 	}
     }
+  
+  if (howto == NULL) {
+    ; /* ??? */
+  }
 
   return bfd_reloc_notsupported;
 }
 
+/* */
 static reloc_howto_type howto_table[] =
 {
   EMPTY_HOWTO (0),
@@ -401,6 +406,10 @@ maxq_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
       const reloc_map *entry;
 
       entry = (maxq_reloc_map + i);
+      
+      if (entry == NULL) {
+	; /* ??? */
+      }
 
       switch (code)
 	{

@@ -266,7 +266,8 @@ coff_swap_filehdr_in(bfd *abfd, void *src, void *dst)
   filehdr_dst->f_opthdr = (unsigned short)H_GET_16(abfd, filehdr_src->f_opthdr);
   filehdr_dst->f_flags = (unsigned short)H_GET_16(abfd, filehdr_src->f_flags);
 #ifdef TIC80_TARGET_ID
-  filehdr_dst->f_target_id = H_GET_16(abfd, filehdr_src->f_target_id);
+  filehdr_dst->f_target_id =
+    (unsigned short)H_GET_16(abfd, filehdr_src->f_target_id);
 #endif /* TIC80_TARGET_ID */
 
 #ifdef COFF_ADJUST_FILEHDR_IN_POST
@@ -715,24 +716,24 @@ coff_swap_aouthdr_out(bfd * abfd, void * in, void * out)
 #endif
 
 #ifdef MIPSECOFF
-  H_PUT_32 (abfd, aouthdr_in->bss_start, aouthdr_out->bss_start);
-  H_PUT_32 (abfd, aouthdr_in->gp_value, aouthdr_out->gp_value);
-  H_PUT_32 (abfd, aouthdr_in->gprmask, aouthdr_out->gprmask);
-  H_PUT_32 (abfd, aouthdr_in->cprmask[0], aouthdr_out->cprmask[0]);
-  H_PUT_32 (abfd, aouthdr_in->cprmask[1], aouthdr_out->cprmask[1]);
-  H_PUT_32 (abfd, aouthdr_in->cprmask[2], aouthdr_out->cprmask[2]);
-  H_PUT_32 (abfd, aouthdr_in->cprmask[3], aouthdr_out->cprmask[3]);
-#endif
+  H_PUT_32(abfd, aouthdr_in->bss_start, aouthdr_out->bss_start);
+  H_PUT_32(abfd, aouthdr_in->gp_value, aouthdr_out->gp_value);
+  H_PUT_32(abfd, (bfd_vma)aouthdr_in->gprmask, aouthdr_out->gprmask);
+  H_PUT_32(abfd, (bfd_vma)aouthdr_in->cprmask[0], aouthdr_out->cprmask[0]);
+  H_PUT_32(abfd, (bfd_vma)aouthdr_in->cprmask[1], aouthdr_out->cprmask[1]);
+  H_PUT_32(abfd, (bfd_vma)aouthdr_in->cprmask[2], aouthdr_out->cprmask[2]);
+  H_PUT_32(abfd, (bfd_vma)aouthdr_in->cprmask[3], aouthdr_out->cprmask[3]);
+#endif /* MIPSECOFF */
 
 #ifdef ALPHAECOFF
-  /* FIXME: What does bldrev mean?  */
-  H_PUT_16 (abfd, 2, aouthdr_out->bldrev);
-  H_PUT_16 (abfd, 0, aouthdr_out->padding);
-  H_PUT_64 (abfd, aouthdr_in->bss_start, aouthdr_out->bss_start);
-  H_PUT_64 (abfd, aouthdr_in->gp_value, aouthdr_out->gp_value);
-  H_PUT_32 (abfd, aouthdr_in->gprmask, aouthdr_out->gprmask);
-  H_PUT_32 (abfd, aouthdr_in->fprmask, aouthdr_out->fprmask);
-#endif
+  /* FIXME: What does bldrev mean? Build revision, perhaps? */
+  H_PUT_16(abfd, (bfd_vma)2UL, aouthdr_out->bldrev);
+  H_PUT_16(abfd, (bfd_vma)0UL, aouthdr_out->padding);
+  H_PUT_64(abfd, aouthdr_in->bss_start, aouthdr_out->bss_start);
+  H_PUT_64(abfd, aouthdr_in->gp_value, aouthdr_out->gp_value);
+  H_PUT_32(abfd, (bfd_vma)aouthdr_in->gprmask, aouthdr_out->gprmask);
+  H_PUT_32(abfd, (bfd_vma)aouthdr_in->fprmask, aouthdr_out->fprmask);
+#endif /* ALPHAECOFF */
 
   return AOUTSZ;
 }

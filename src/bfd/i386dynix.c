@@ -68,18 +68,20 @@ i386dynix_32_swap_exec_header_in(bfd *abfd,
      configuration (IE for i960), so ensure that all such uninitialized
      fields are zero'd out.  There are places where two of these structs
      are memcmp'd, and thus the contents do matter. */
-  memset ((PTR) execp, 0, sizeof (struct internal_exec));
+  memset((PTR)execp, 0, sizeof(struct internal_exec));
   /* Now fill in fields in the execp, from the bytes in the raw data.  */
-  execp->a_info   = H_GET_32 (abfd, bytes->e_info);
-  execp->a_text   = GET_WORD (abfd, bytes->e_text);
-  execp->a_data   = GET_WORD (abfd, bytes->e_data);
-  execp->a_bss    = GET_WORD (abfd, bytes->e_bss);
-  execp->a_syms   = GET_WORD (abfd, bytes->e_syms);
-  execp->a_entry  = GET_WORD (abfd, bytes->e_entry);
-  execp->a_trsize = GET_WORD (abfd, bytes->e_trsize);
-  execp->a_drsize = GET_WORD (abfd, bytes->e_drsize);
-  execp->a_shdata = GET_WORD (abfd, bytes->e_shdata);
-  execp->a_shdrsize = GET_WORD (abfd, bytes->e_shdrsize);
+  execp->a_info = (long)H_GET_32(abfd, bytes->e_info);
+  execp->a_text = GET_WORD(abfd, bytes->e_text);
+  execp->a_data = GET_WORD(abfd, bytes->e_data);
+  execp->a_bss = GET_WORD(abfd, bytes->e_bss);
+  execp->a_syms = GET_WORD(abfd, bytes->e_syms);
+  execp->a_entry = GET_WORD(abfd, bytes->e_entry);
+  execp->a_trsize = GET_WORD(abfd, bytes->e_trsize);
+  execp->a_drsize = GET_WORD(abfd, bytes->e_drsize);
+  execp->a_shdata = GET_WORD(abfd, bytes->e_shdata);
+  execp->a_shdrsize = GET_WORD(abfd, bytes->e_shdrsize);
 }
 
 #include "aout-target.h"
+
+/* EOF */

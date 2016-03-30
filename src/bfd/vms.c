@@ -1679,3 +1679,5 @@ const bfd_target vms_vax_vec =
 
   NULL
 };
+
+/* EOF */

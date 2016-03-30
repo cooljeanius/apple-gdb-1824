@@ -1867,7 +1867,8 @@ sunos_scan_dynamic_symbol (struct sunos_link_hash_entry *h, void * data)
       BFD_ASSERT (s != NULL);
 
       if (GET_SWORD (dynobj, s->contents + hash * HASH_ENTRY_SIZE) == -1)
-	PUT_WORD (dynobj, h->dynindx, s->contents + hash * HASH_ENTRY_SIZE);
+	PUT_WORD(dynobj, (bfd_vma)h->dynindx,
+		 (s->contents + hash * HASH_ENTRY_SIZE));
       else
 	{
 	  bfd_vma next;
@@ -1876,10 +1877,10 @@ sunos_scan_dynamic_symbol (struct sunos_link_hash_entry *h, void * data)
 			   (s->contents
 			    + hash * HASH_ENTRY_SIZE
 			    + BYTES_IN_WORD));
-	  PUT_WORD (dynobj, s->size / HASH_ENTRY_SIZE,
-		    s->contents + hash * HASH_ENTRY_SIZE + BYTES_IN_WORD);
-	  PUT_WORD (dynobj, h->dynindx, s->contents + s->size);
-	  PUT_WORD (dynobj, next, s->contents + s->size + BYTES_IN_WORD);
+	  PUT_WORD(dynobj, (s->size / HASH_ENTRY_SIZE),
+		   (s->contents + hash * HASH_ENTRY_SIZE + BYTES_IN_WORD));
+	  PUT_WORD(dynobj, (bfd_vma)h->dynindx, s->contents + s->size);
+	  PUT_WORD(dynobj, next, (s->contents + s->size + BYTES_IN_WORD));
 	  s->size += HASH_ENTRY_SIZE;
 	}
     }
@@ -2343,10 +2344,10 @@ sunos_write_dynamic_symbol (bfd *output_bfd,
   /* FIXME: The native linker doesn't use 0 for desc.  It seems to use
      one less than the desc value in the shared library, although that
      seems unlikely.  */
-  H_PUT_16 (output_bfd, 0, outsym->e_desc);
+  H_PUT_16(output_bfd, (bfd_vma)0UL, outsym->e_desc);
 
-  PUT_WORD (output_bfd, h->dynstr_index, outsym->e_strx);
-  PUT_WORD (output_bfd, val, outsym->e_value);
+  PUT_WORD(output_bfd, (bfd_vma)h->dynstr_index, outsym->e_strx);
+  PUT_WORD(output_bfd, val, outsym->e_value);
 
   return TRUE;
 }
@@ -2492,9 +2493,9 @@ sunos_check_dynamic_reloc (struct bfd_link_info *info,
 	      || (! info->shared
 		  && ((h->flags & SUNOS_DEF_DYNAMIC) == 0
 		      || (h->flags & SUNOS_DEF_REGULAR) != 0)))
-	    PUT_WORD (dynobj, *relocationp, sgot->contents + *got_offsetp);
+	    PUT_WORD(dynobj, *relocationp, sgot->contents + *got_offsetp);
 	  else
-	    PUT_WORD (dynobj, 0, sgot->contents + *got_offsetp);
+	    PUT_WORD(dynobj, (bfd_vma)0UL, sgot->contents + *got_offsetp);
 
 	  if (info->shared
 	      || (h != NULL
@@ -2593,7 +2594,7 @@ sunos_check_dynamic_reloc (struct bfd_link_info *info,
 			   | (RELOC_GLOB_DAT
 			      << RELOC_EXT_BITS_TYPE_SH_LITTLE));
 		    }
-		  PUT_WORD (dynobj, 0, erel->r_addend);
+		  PUT_WORD(dynobj, (bfd_vma)0UL, erel->r_addend);
 		}
 
 	      ++s->reloc_count;
@@ -2765,10 +2766,10 @@ sunos_finish_dynamic_link (bfd *abfd, struct bfd_link_info *info)
   s = bfd_get_section_by_name (dynobj, ".got");
   BFD_ASSERT (s != NULL);
   if (info->shared || sdyn->size == 0)
-    PUT_WORD (dynobj, 0, s->contents);
+    PUT_WORD(dynobj, (bfd_vma)0UL, s->contents);
   else
-    PUT_WORD (dynobj, sdyn->output_section->vma + sdyn->output_offset,
-	      s->contents);
+    PUT_WORD(dynobj, (sdyn->output_section->vma + sdyn->output_offset),
+	     s->contents);
 
   for (o = dynobj->sections; o != NULL; o = o->next)
     {

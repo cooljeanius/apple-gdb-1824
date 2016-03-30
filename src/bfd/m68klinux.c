@@ -625,7 +625,7 @@ linux_finish_dynamic_link(bfd *output_bfd, struct bfd_link_info *info)
   fixups_written = 0;
 
 #ifdef LINUX_LINK_DEBUG
-  printf("Fixup table file offset: %lx  VMA: %lx\n",
+  printf("Fixup table file offset: %lx  VMA: %"BFD_VMA_FMT"x\n",
 	 (os->filepos + s->output_offset),
 	 (os->vma + s->output_offset));
 #endif /* LINUX_LINK_DEBUG */

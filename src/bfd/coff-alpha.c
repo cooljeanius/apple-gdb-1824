@@ -600,8 +600,8 @@ alpha_ecoff_swap_reloc_out(bfd *abfd, const struct internal_reloc *intern,
   BFD_ASSERT (intern->r_extern
 	      || (intern->r_symndx >= 0 && intern->r_symndx <= 15));
 
-  H_PUT_64 (abfd, intern->r_vaddr, ext->r_vaddr);
-  H_PUT_32 (abfd, symndx, ext->r_symndx);
+  H_PUT_64(abfd, intern->r_vaddr, ext->r_vaddr);
+  H_PUT_32(abfd, (bfd_vma)symndx, ext->r_symndx);
 
   BFD_ASSERT (bfd_header_little_endian (abfd));
 
@@ -776,7 +776,8 @@ alpha_ecoff_get_relocated_section_contents(bfd *abfd,
     goto error_return;
 
   sz = input_section->rawsize ? input_section->rawsize : input_section->size;
-  if (! bfd_get_section_contents (input_bfd, input_section, data, 0, sz))
+  if (! bfd_get_section_contents(input_bfd, input_section, data,
+				 (file_ptr)0L, sz))
     goto error_return;
 
   reloc_count = bfd_canonicalize_reloc (input_bfd, input_section,
@@ -1325,7 +1326,7 @@ alpha_convert_external_reloc(bfd *output_bfd ATTRIBUTE_UNUSED,
       /* Change the symndx value to the right one for
 	 the output BFD.  */
       r_symndx = h->indx;
-      if (r_symndx == (unsigned long) -1)
+      if (r_symndx == (unsigned long)(-1L))
 	{
 	  /* Caller must give an error.  */
 	  r_symndx = 0;
@@ -1333,8 +1334,8 @@ alpha_convert_external_reloc(bfd *output_bfd ATTRIBUTE_UNUSED,
       relocation = 0;
     }
 
-  /* Write out the new r_symndx value.  */
-  H_PUT_32 (input_bfd, r_symndx, ext_rel->r_symndx);
+  /* Write out the new r_symndx value: */
+  H_PUT_32(input_bfd, (bfd_vma)r_symndx, ext_rel->r_symndx);
 
   return relocation;
 }

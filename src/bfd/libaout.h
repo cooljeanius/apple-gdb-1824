@@ -351,8 +351,9 @@ enum machine_type
 
 #ifndef N_SET_MAGIC
 # define N_SET_MAGIC(exec, magic) \
-((exec).a_info = (((exec).a_info & 0xffff0000) | ((magic) & 0xffff)))
-#endif
+((exec).a_info = (long)(((unsigned long)(exec).a_info & 0xffff0000) \
+			| ((magic) & 0xffff)))
+#endif /* !N_SET_MAGIC */
 
 #ifndef N_SET_MACHTYPE
 # define N_SET_MACHTYPE(exec, machtype) \
@@ -374,13 +375,23 @@ typedef struct aout_symbol
   unsigned char type;
 } aout_symbol_type;
 
-/* un-nested from the struct that follows it, for '-Wc++-compat': */
+/* These are both un-nested from the struct that follows them, for the sake of
+ * '-Wc++-compat': */
 enum magic_values
 {
   undecided_magic = 0,
   z_magic,
   o_magic,
   n_magic
+};
+
+enum aout_formats_e
+{
+  default_format = 0,
+  /* Used on HP 9000/300 running HP/UX.  See hp300hpux.c.  */
+  gnu_encap_format,
+  /* Used on Linux, 386BSD, etc.  See include/aout/aout64.h.  */
+  q_magic_format
 };
 
 /* The `tdata' struct for all a.out-like object file formats.
@@ -402,41 +413,34 @@ struct aoutdata
   file_ptr sym_filepos;
   file_ptr str_filepos;
 
-  /* Size of a relocation entry in external form.  */
-  unsigned reloc_entry_size;
+  /* Size of a relocation entry in external form: */
+  unsigned int reloc_entry_size;
 
-  /* Size of a symbol table entry in external form.  */
-  unsigned symbol_entry_size;
+  /* Size of a symbol table entry in external form: */
+  unsigned int symbol_entry_size;
 
-  /* Page size - needed for alignment of demand paged files.  */
+  /* Page size - needed for alignment of demand paged files: */
   unsigned long page_size;
 
-  /* Segment size - needed for alignment of demand paged files.  */
+  /* Segment size - needed for alignment of demand paged files: */
   unsigned long segment_size;
 
   /* Zmagic disk block size - need to align the start of the text
      section in ZMAGIC binaries.  Normally the same as page_size.  */
   unsigned long zmagic_disk_block_size;
 
-  unsigned exec_bytes_size;
-  unsigned vma_adjusted : 1;
+  unsigned int exec_bytes_size;
+  unsigned int vma_adjusted : 1;
 
-  /* Used when a bfd supports several highly similar formats.  */
-  enum
-    {
-      default_format = 0,
-      /* Used on HP 9000/300 running HP/UX.  See hp300hpux.c.  */
-      gnu_encap_format,
-      /* Used on Linux, 386BSD, etc.  See include/aout/aout64.h.  */
-      q_magic_format
-    } subformat;
+  /* Used when a bfd supports several highly similar formats: */
+  enum aout_formats_e subformat;
 
   enum magic_values magic;
 
-  /* A buffer for find_nearest_line.  */
+  /* A buffer for find_nearest_line: */
   char *line_buf;
 
-  /* The external symbol information.  */
+  /* The external symbol information: */
   struct external_nlist *external_syms;
   bfd_size_type external_sym_count;
   bfd_window sym_window;
@@ -445,8 +449,8 @@ struct aoutdata
   bfd_window string_window;
   struct aout_link_hash_entry **sym_hashes;
 
-  /* A pointer for shared library information.  */
-  void * dynamic_info;
+  /* A pointer for shared library information: */
+  void *dynamic_info;
 
   /* A mapping from local symbols to offsets into the global offset
      table, used when linking on SunOS.  This is indexed by the symbol

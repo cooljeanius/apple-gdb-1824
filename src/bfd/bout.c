@@ -1,4 +1,4 @@
-/* BFD back-end for Intel 960 b.out binaries.
+/* bout.c: BFD back-end for Intel 960 b.out binaries.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -109,20 +109,20 @@ bout_swap_exec_header_out (bfd *abfd,
 			   struct internal_exec *execp,
 			   struct external_exec *bytes)
 {
-  /* Now fill in fields in the raw data, from the fields in the exec struct.  */
-  H_PUT_32 (abfd, execp->a_info  , bytes->e_info);
-  PUT_WORD (abfd, execp->a_text  , bytes->e_text);
-  PUT_WORD (abfd, execp->a_data  , bytes->e_data);
-  PUT_WORD (abfd, execp->a_bss   , bytes->e_bss);
-  PUT_WORD (abfd, execp->a_syms  , bytes->e_syms);
-  PUT_WORD (abfd, execp->a_entry , bytes->e_entry);
-  PUT_WORD (abfd, execp->a_trsize, bytes->e_trsize);
-  PUT_WORD (abfd, execp->a_drsize, bytes->e_drsize);
-  PUT_WORD (abfd, execp->a_tload , bytes->e_tload);
-  PUT_WORD (abfd, execp->a_dload , bytes->e_dload);
-  bytes->e_talign[0]    = execp->a_talign;
-  bytes->e_dalign[0]    = execp->a_dalign;
-  bytes->e_balign[0]    = execp->a_balign;
+  /* Now fill in fields in the raw data, from the fields in the exec struct: */
+  H_PUT_32(abfd, (bfd_vma)execp->a_info, bytes->e_info);
+  PUT_WORD(abfd, execp->a_text, bytes->e_text);
+  PUT_WORD(abfd, execp->a_data, bytes->e_data);
+  PUT_WORD(abfd, execp->a_bss, bytes->e_bss);
+  PUT_WORD(abfd, execp->a_syms, bytes->e_syms);
+  PUT_WORD(abfd, execp->a_entry, bytes->e_entry);
+  PUT_WORD(abfd, execp->a_trsize, bytes->e_trsize);
+  PUT_WORD(abfd, execp->a_drsize, bytes->e_drsize);
+  PUT_WORD(abfd, execp->a_tload, bytes->e_tload);
+  PUT_WORD(abfd, execp->a_dload, bytes->e_dload);
+  bytes->e_talign[0] = execp->a_talign;
+  bytes->e_dalign[0] = execp->a_dalign;
+  bytes->e_balign[0] = execp->a_balign;
   bytes->e_relaxable[0] = execp->a_relaxable;
 }
 
@@ -1015,9 +1015,8 @@ perform_slip(bfd *abfd, unsigned int slip, asection *input_section,
   s = _bfd_generic_link_get_symbols(abfd);
   BFD_ASSERT(s != (asymbol **)NULL);
 
-  /* Find all symbols past this point, and make them know what ha
-   * happened: */
-  while (*s)
+  /* Find all symbols past this point, and make them know what has happened: */
+  while ((s != NULL) && *s)
     {
       asymbol *p = *s;
 

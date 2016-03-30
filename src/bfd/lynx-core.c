@@ -1,4 +1,4 @@
-/* BFD back end for Lynx core files
+/* lynx-core.c: BFD back end for Lynx core files
    Copyright 1993, 1994, 1995, 2001, 2002, 2004
    Free Software Foundation, Inc.
    Written by Stu Grossman of Cygnus Support.
@@ -17,7 +17,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -29,8 +29,8 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #include <sys/kernel.h>
 /* sys/kernel.h should define this, but doesn't always, sigh.  */
 #ifndef __LYNXOS
-#define __LYNXOS
-#endif
+# define __LYNXOS
+#endif /* !__LYNXOS */
 #include <sys/mem.h>
 #include <sys/signal.h>
 #include <sys/time.h>
@@ -39,8 +39,19 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #include <sys/file.h>
 #include <sys/proc.h>
 
-/* These are stored in the bfd's tdata */
+/* Found by a Google search: */
+#ifndef PNMLEN
+# define PNMLEN 32
+#endif /* PNMLEN */
 
+/* Prototypes: */
+extern const bfd_target *lynx_core_file_p(bfd *);
+extern char *lynx_core_file_failing_command(bfd *);
+extern int lynx_core_file_failing_signal(bfd *);
+extern int lynx_core_file_failing_signal(bfd *);
+extern bfd_boolean lynx_core_file_matches_executable_p(bfd *, bfd *);
+
+/* These are stored in the bfd's tdata: */
 struct lynx_core_struct
 {
   int sig;
@@ -51,21 +62,15 @@ struct lynx_core_struct
 #define core_signal(bfd) (core_hdr(bfd)->sig)
 #define core_command(bfd) (core_hdr(bfd)->cmd)
 
-/* Handle Lynx core dump file.  */
-
+/* Handle Lynx core dump file: */
 static asection *
-make_bfd_asection (abfd, name, flags, size, vma, filepos)
-     bfd *abfd;
-     const char *name;
-     flagword flags;
-     bfd_size_type size;
-     bfd_vma vma;
-     file_ptr filepos;
+make_bfd_asection(bfd *abfd, const char *name, flagword flags,
+		  bfd_size_type size, bfd_vma vma, file_ptr filepos)
 {
   asection *asect;
   char *newname;
 
-  newname = bfd_alloc (abfd, (bfd_size_type) strlen (name) + 1);
+  newname = (char *)bfd_alloc(abfd, (bfd_size_type)(strlen(name) + 1UL));
   if (!newname)
     return NULL;
 
@@ -85,8 +90,7 @@ make_bfd_asection (abfd, name, flags, size, vma, filepos)
 }
 
 const bfd_target *
-lynx_core_file_p (abfd)
-     bfd *abfd;
+lynx_core_file_p(bfd *abfd)
 {
   int secnum;
   struct pssentry pss;
@@ -191,8 +195,13 @@ lynx_core_file_p (abfd)
   for (secnum = 0; secnum < pss.threadcnt; secnum++)
     {
       char secname[100];
+      
+#ifndef BUILDPID
+# define BUILDPID(pid, tid) (pid)
+#endif /* !BUILDPID */
 
-      sprintf (secname, ".reg/%d", BUILDPID (0, threadp[secnum].tid));
+      snprintf(secname, sizeof(secname), ".reg/%d",
+	       BUILDPID(0, threadp[secnum].tid));
       newsect = make_bfd_asection (abfd, secname,
 				   SEC_HAS_CONTENTS,
 				   sizeof (core_st_t),
@@ -212,24 +221,31 @@ lynx_core_file_p (abfd)
 }
 
 char *
-lynx_core_file_failing_command (abfd)
-     bfd *abfd;
+lynx_core_file_failing_command(bfd *abfd)
 {
-  return core_command (abfd);
+  return core_command(abfd);
 }
 
 int
-lynx_core_file_failing_signal (abfd)
-     bfd *abfd;
+lynx_core_file_failing_signal(bfd *abfd)
 {
-  return core_signal (abfd);
+  return core_signal(abfd);
 }
 
 bfd_boolean
-lynx_core_file_matches_executable_p  (core_bfd, exec_bfd)
-     bfd *core_bfd, *exec_bfd;
+lynx_core_file_matches_executable_p(bfd *core_bfd, bfd *exec_bfd)
 {
-  return TRUE;		/* FIXME, We have no way of telling at this point */
+  return TRUE;		/* FIXME: We have no way of telling at this point */
 }
-
+#ifdef __LYNXOS
+# undef __LYNXOS
+#endif /* __LYNXOS */
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(__STDC__)
+#  warning "lynx-core.c will be empty in this configuration"
+# endif /* __GNUC__ && !__STRICT_ANSI__ && !__STDC__ */
+typedef int lynx_core_c_dummy_t;
+extern lynx_core_c_dummy_t lynx_core_c_dummy_var;
 #endif /* LYNX_CORE */
+
+/* EOF */

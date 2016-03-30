@@ -690,9 +690,9 @@ coff_amd64_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED, bfd_reloc_code_real_typ
     }
 }
 
-static reloc_howto_type *
-coff_amd64_reloc_name_lookup (bfd *abfd ATTRIBUTE_UNUSED,
-			      const char *r_name)
+static reloc_howto_type * ATTRIBUTE_USED
+coff_amd64_reloc_name_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+			     const char *r_name)
 {
   unsigned int i;
 
@@ -726,16 +726,16 @@ coff_amd64_is_local_label_name (bfd *abfd, const char *name)
 #endif /* TARGET_UNDERSCORE */
 
 #ifndef bfd_pe_print_pdata
-#define bfd_pe_print_pdata   NULL
-#endif
+# define bfd_pe_print_pdata   NULL
+#endif /* !bfd_pe_print_pdata */
 
 #include "coffcode.h"
 
 #ifdef PE
-#define amd64coff_object_p pe_bfd_object_p
+# define amd64coff_object_p pe_bfd_object_p
 #else
-#define amd64coff_object_p coff_object_p
-#endif
+# define amd64coff_object_p coff_object_p
+#endif /* PE */
 
 #ifndef _bfd_generic_find_nearest_line_discriminator
 # define _bfd_generic_find_nearest_line_discriminator \
@@ -813,5 +813,22 @@ const bfd_target
 
   COFF_SWAP_TABLE
 };
+
+/* Silence -Wunused-macros: */
+#ifdef PEAOUTHDR
+# undef PEAOUTHDR
+#endif /* PEAOUTHDR */
+#ifdef AMD64
+# undef AMD64
+#endif /* AMD64 */
+#ifdef bfd_pe_print_pdata
+# undef bfd_pe_print_pdata
+#endif /* bfd_pe_print_pdata */
+#ifdef _bfd_generic_find_nearest_line_discriminator
+# undef _bfd_generic_find_nearest_line_discriminator
+#endif /* _bfd_generic_find_nearest_line_discriminator */
+#ifdef coff_bfd_reloc_name_lookup
+# undef coff_bfd_reloc_name_lookup
+#endif /* coff_bfd_reloc_name_lookup */
 
 /* EOF */

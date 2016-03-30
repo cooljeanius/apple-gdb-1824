@@ -1,7 +1,7 @@
-/* BFD back-end for Apollo 68000 COFF binaries.
+/* coff-apollo.c: BFD back-end for Apollo 68000 COFF binaries.
    Copyright 1990, 1991, 1992, 1993, 1994, 1999, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
-   By Troy Rollo (troy@cbme.unsw.edu.au)
+   By Troy Rollo <troy@cbme.unsw.edu.au>
    Based on m68k standard COFF version Written by Cygnus Support.
 
 This file is part of BFD, the Binary File Descriptor library.
@@ -97,7 +97,7 @@ int apollo_howto2rtype(reloc_howto_type *internal)
   apollo_rtype2howto (internal, (relocentry)->r_type)
 
 #define SELECT_RELOC(external, internal) \
-  external.r_type = apollo_howto2rtype (internal);
+  external.r_type = (unsigned short)apollo_howto2rtype(internal);
 
 #include "coffcode.h"
 
@@ -114,3 +114,5 @@ CREATE_BIG_COFF_TARGET_VEC (TARGET_SYM, TARGET_NAME, 0, 0, '_', NULL, COFF_SWAP_
 #else
 CREATE_BIG_COFF_TARGET_VEC (TARGET_SYM, TARGET_NAME, 0, 0, 0, NULL, COFF_SWAP_TABLE)
 #endif
+
+/* EOF */

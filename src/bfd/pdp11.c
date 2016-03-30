@@ -431,26 +431,26 @@ NAME (aout, swap_exec_header_out) (bfd *abfd,
 				   struct internal_exec *execp,
 				   struct external_exec *bytes)
 {
-  /* Now fill in fields in the raw data, from the fields in the exec struct.  */
-  PUT_MAGIC (abfd, execp->a_info,		bytes->e_info);
-  PUT_WORD (abfd, execp->a_text,		bytes->e_text);
-  PUT_WORD (abfd, execp->a_data,		bytes->e_data);
-  PUT_WORD (abfd, execp->a_bss,			bytes->e_bss);
-  PUT_WORD (abfd, execp->a_syms,		bytes->e_syms);
-  PUT_WORD (abfd, execp->a_entry,		bytes->e_entry);
-  PUT_WORD (abfd, 0,				bytes->e_unused);
+  /* Now fill in fields in the raw data, from the fields in the exec struct: */
+  PUT_MAGIC(abfd, (bfd_vma)execp->a_info, bytes->e_info);
+  PUT_WORD(abfd, execp->a_text, bytes->e_text);
+  PUT_WORD(abfd, execp->a_data, bytes->e_data);
+  PUT_WORD(abfd, execp->a_bss, bytes->e_bss);
+  PUT_WORD(abfd, execp->a_syms, bytes->e_syms);
+  PUT_WORD(abfd, execp->a_entry, bytes->e_entry);
+  PUT_WORD(abfd, (bfd_vma)0UL, bytes->e_unused);
 
   if ((execp->a_trsize == 0 || execp->a_text == 0)
       && (execp->a_drsize == 0 || execp->a_data == 0))
-    PUT_WORD (abfd, A_FLAG_RELOC_STRIPPED, bytes->e_flag);
+    PUT_WORD(abfd, (bfd_vma)A_FLAG_RELOC_STRIPPED, bytes->e_flag);
   else if (execp->a_trsize == execp->a_text
 	   && execp->a_drsize == execp->a_data)
-    PUT_WORD (abfd, 0, bytes->e_flag);
+    PUT_WORD(abfd, (bfd_vma)0UL, bytes->e_flag);
   else
     {
-      /* TODO: print a proper warning message.  */
-      fprintf (stderr, "BFD:%s:%d: internal error\n", __FILE__, __LINE__);
-      PUT_WORD (abfd, 0,			bytes->e_flag);
+      /* TODO: print a proper warning message: */
+      fprintf(stderr, "BFD:%s:%d: internal error\n", __FILE__, __LINE__);
+      PUT_WORD(abfd, (bfd_vma)0, bytes->e_flag);
     }
 }
 
@@ -1224,7 +1224,7 @@ aout_get_external_symbols (bfd *abfd)
       count = exec_hdr (abfd)->a_syms / EXTERNAL_NLIST_SIZE;
 
 #ifdef USE_MMAP
-      if (! bfd_get_file_window(abfd, obj_sym_filepos(abfd),
+      if (! bfd_get_file_window(abfd, (ufile_ptr)obj_sym_filepos(abfd),
                                 exec_hdr(abfd)->a_syms,
                                 &obj_aout_sym_window(abfd), TRUE))
 	return FALSE;
@@ -1265,8 +1265,9 @@ aout_get_external_symbols (bfd *abfd)
       stringsize = H_GET_32(abfd, string_chars);
 
 #ifdef USE_MMAP
-      if (! bfd_get_file_window(abfd, obj_str_filepos(abfd), stringsize,
-                                &obj_aout_string_window(abfd), TRUE))
+      if (! bfd_get_file_window(abfd, (ufile_ptr)obj_str_filepos(abfd),
+				stringsize, &obj_aout_string_window(abfd),
+				TRUE))
 	return FALSE;
       strings = (char *)obj_aout_string_window(abfd).data;
 #else
@@ -1657,7 +1658,7 @@ NAME (aout, write_syms) (bfd *abfd)
       bfd_size_type indx;
       struct external_nlist nsp;
 
-      PUT_WORD (abfd, 0, nsp.e_unused);
+      PUT_WORD(abfd, (bfd_vma)0UL, nsp.e_unused);
 
       indx = add_to_stringtab (abfd, strtab, g->name, FALSE);
       if (indx == (bfd_size_type) -1)
@@ -1751,9 +1752,9 @@ pdp11_aout_swap_reloc_out (bfd *abfd, arelent *g, bfd_byte *natptr)
   else
     r_index = (*(g->sym_ptr_ptr))->KEEPIT;
 
-  reloc_entry = r_index << 4 | r_type | r_pcrel;
+  reloc_entry = (r_index << 4 | r_type | r_pcrel);
 
-  PUT_WORD (abfd, reloc_entry, natptr);
+  PUT_WORD(abfd, (bfd_vma)reloc_entry, natptr);
 }
 
 /* BFD deals internally with all things based from the section they're
@@ -3377,7 +3378,7 @@ pdp11_aout_link_input_section (struct aout_final_link_info *finfo,
 	      reloc_entry = GET_WORD (input_bfd, rel);
 	      reloc_entry &= RIDXMASK;
 	      reloc_entry |= r_index << 4;
-	      PUT_WORD (input_bfd, reloc_entry, rel);
+	      PUT_WORD(input_bfd, (bfd_vma)reloc_entry, rel);
 	    }
 	  else
 	    {

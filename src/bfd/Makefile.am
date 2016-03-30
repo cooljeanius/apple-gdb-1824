@@ -945,20 +945,24 @@ all: info @MAINT@ config.status
 diststuff: info @MAINT@ config.status
 .PHONY: diststuff
 
-## currently breaks on cpu-aarch64.c:
+## currently succeeds:
 all_machines: $(ALL_MACHINES)
+	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: all_machines
 
-## currently breaks on coff-z80.c:
+## currently breaks on elf32-bfin.c:
 bfd32_backends: $(BFD32_BACKENDS)
+	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: bfd32_backends
 
-## currently breaks on coff-x86_64.c:
+## currently breaks on elf32-aarch64.c:
 bfd64_backends: $(BFD64_BACKENDS)
+	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: bfd64_backends
 
-## currently breaks on hpux-core.c:
+## currently breaks on sco5-core.c:
 optional_backends: $(OPTIONAL_BACKENDS)
+	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: optional_backends
 
 # dummy target that does nothing, not even an "echo"; for potential future
@@ -1067,7 +1071,7 @@ libbfd_a_DEPENDENCIES = stamp-ofiles ofiles $(srcdir)/ofiles @MAINT@ bfd.h
 EXTRA_libbfd_a_DEPENDENCIES = stamp-staticlib @MAINT@ Makefile # $(BFD_H)
 libbfd_a_LIBADD = `cat ofiles` @WIN32LIBADD@
 ## see if this will cause automake to give its objfiles a different name:
-libbfd_a_CFLAGS = $(AM_CFLAGS) # -fkeep-inline-functions
+libbfd_a_CFLAGS = $(AM_CFLAGS) -gtoggle
 libbfd_a_LDFLAGS = -static
 
 # FIXME: Even the hack fails now... (does it still? I think we are okay...)

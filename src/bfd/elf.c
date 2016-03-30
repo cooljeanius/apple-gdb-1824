@@ -227,7 +227,8 @@ bfd_elf_mkobject (bfd *abfd)
 {
   /* This just does initialization.  */
   /* coff_mkobject zalloc's space for tdata.coff_obj_data ...  */
-  elf_tdata (abfd) = bfd_zalloc (abfd, sizeof (struct elf_obj_tdata));
+  elf_tdata(abfd) = 
+    (struct elf_obj_tdata *)bfd_zalloc(abfd, sizeof(struct elf_obj_tdata));
   if (elf_tdata (abfd) == 0)
     return FALSE;
   /* Since everything is done at close time, do we need any
@@ -371,8 +372,9 @@ bfd_elf_get_elf_syms(bfd *ibfd, Elf_Internal_Shdr *symtab_hdr,
       pos = shndx_hdr->sh_offset + symoffset * sizeof(Elf_External_Sym_Shndx);
       if (extshndx_buf == NULL)
 	{
-	  alloc_extshndx = bfd_malloc2(symcount,
-                                       sizeof(Elf_External_Sym_Shndx));
+	  alloc_extshndx = ((Elf_External_Sym_Shndx *)
+			    bfd_malloc2(symcount,
+					sizeof(Elf_External_Sym_Shndx)));
 	  extshndx_buf = alloc_extshndx;
 	}
       if ((extshndx_buf == NULL)
@@ -509,10 +511,11 @@ setup_group (bfd *abfd, Elf_Internal_Shdr *hdr, asection *newsect)
 	     so we can find them quickly.  */
 	  bfd_size_type amt;
 
-	  elf_tdata (abfd)->num_group = num_group;
-	  elf_tdata (abfd)->group_sect_ptr
-	    = bfd_alloc2 (abfd, num_group, sizeof (Elf_Internal_Shdr *));
-	  if (elf_tdata (abfd)->group_sect_ptr == NULL)
+	  elf_tdata(abfd)->num_group = num_group;
+	  elf_tdata(abfd)->group_sect_ptr =
+	    (Elf_Internal_Shdr **)bfd_alloc2(abfd, num_group,
+					     sizeof(Elf_Internal_Shdr *));
+	  if (elf_tdata(abfd)->group_sect_ptr == NULL)
 	    return FALSE;
 
 	  num_group = 0;
@@ -1411,7 +1414,8 @@ _bfd_elf_link_hash_newfunc (struct bfd_hash_entry *entry,
      subclass.  */
   if (entry == NULL)
     {
-      entry = bfd_hash_allocate (table, sizeof (struct elf_link_hash_entry));
+      entry = ((struct bfd_hash_entry *)
+	       bfd_hash_allocate(table, sizeof(struct elf_link_hash_entry)));
       if (entry == NULL)
 	return entry;
     }
@@ -4137,7 +4141,8 @@ assign_file_positions_for_segments (bfd *abfd, struct bfd_link_info *link_info)
   if (alloc == 0)
     alloc = count;
 
-  phdrs = bfd_alloc2 (abfd, alloc, sizeof (Elf_Internal_Phdr));
+  phdrs = (Elf_Internal_Phdr *)bfd_alloc2(abfd, alloc,
+					  sizeof(Elf_Internal_Phdr));
   if (phdrs == NULL)
     return FALSE;
 
@@ -5307,40 +5312,40 @@ copy_private_bfd_data (bfd *ibfd, bfd *obfd)
   /* The second scan attempts to assign sections to segments.  */
   for (i = 0, segment = elf_tdata (ibfd)->phdr;
        i < num_segments;
-       i ++, segment ++)
+       i++, segment++)
     {
-      unsigned int  section_count;
-      asection **   sections;
-      asection *    output_section;
-      unsigned int  isec;
-      bfd_vma       matching_lma;
-      bfd_vma       suggested_lma;
-      unsigned int  j;
+      unsigned int section_count;
+      asection **sections;
+      asection *output_section;
+      unsigned int isec;
+      bfd_vma matching_lma;
+      bfd_vma suggested_lma;
+      unsigned int j;
       bfd_size_type amt;
 
-		if (segment->p_type == PT_NULL) {
-			continue;
-		}
+      if (segment->p_type == PT_NULL) {
+	continue;
+      }
 
       /* Compute how many sections might be placed into this segment.  */
       for (section = ibfd->sections, section_count = 0;
 	   section != NULL;
 	   section = section->next)
-		  if (INCLUDE_SECTION_IN_SEGMENT (section, segment, bed)) {
-			  ++section_count;
-		  }
+	if (INCLUDE_SECTION_IN_SEGMENT(section, segment, bed)) {
+	  ++section_count;
+	}
 
       /* Allocate a segment map big enough to contain
 	 all of the sections we have selected.  */
-      amt = sizeof (struct elf_segment_map);
-      amt += ((bfd_size_type) section_count - 1) * sizeof (asection *);
-      map = bfd_alloc (obfd, amt);
-		if (map == NULL) {
-			return FALSE;
-		}
+      amt = sizeof(struct elf_segment_map);
+      amt += (((bfd_size_type)section_count - 1UL) * sizeof(asection *));
+      map = (struct elf_segment_map *)bfd_alloc(obfd, amt);
+      if (map == NULL) {
+	return FALSE;
+      }
 
       /* Initialise the fields of the segment map.  Default to
-	   * using the physical address of the segment in the input BFD.  */
+       * using the physical address of the segment in the input BFD.  */
       map->next          = NULL;
       map->p_type        = segment->p_type;
       map->p_flags       = segment->p_flags;
@@ -5621,9 +5626,9 @@ copy_private_bfd_data (bfd *ibfd, bfd *obfd)
 	      /* We still have not allocated all of the sections to
 		 segments.  Create a new segment here, initialise it
 		 and carry on looping.  */
-	      amt = sizeof (struct elf_segment_map);
-	      amt += ((bfd_size_type) section_count - 1) * sizeof (asection *);
-	      map = bfd_alloc (obfd, amt);
+	      amt = sizeof(struct elf_segment_map);
+	      amt += (((bfd_size_type)section_count - 1) * sizeof(asection *));
+	      map = (struct elf_segment_map *)bfd_alloc(obfd, amt);
 	      if (map == NULL)
 		{
 		  free (sections);
@@ -6281,7 +6286,8 @@ _bfd_elf_slurp_version_tables(bfd *abfd, bfd_boolean default_imported_symver)
 
       hdr = &elf_tdata(abfd)->dynverref_hdr;
 
-      elf_tdata(abfd)->verref = bfd_zalloc2(abfd, hdr->sh_info,
+      elf_tdata(abfd)->verref =
+	(Elf_Internal_Verneed *)bfd_zalloc2(abfd, hdr->sh_info,
                                             sizeof(Elf_Internal_Verneed));
       if (elf_tdata(abfd)->verref == NULL)
 	goto error_return;
@@ -6328,8 +6334,10 @@ error_return_verref:
 	    iverneed->vn_auxptr = NULL;
 	  else
 	    {
-	      iverneed->vn_auxptr = bfd_alloc2 (abfd, iverneed->vn_cnt,
-						sizeof (Elf_Internal_Vernaux));
+	      iverneed->vn_auxptr = 
+		((Elf_Internal_Vernaux *)
+		 bfd_alloc2(abfd, iverneed->vn_cnt,
+			    sizeof(Elf_Internal_Vernaux)));
 	      if (iverneed->vn_auxptr == NULL)
 		goto error_return_verref;
 	    }
@@ -6441,8 +6449,9 @@ error_return_verref:
 	  else
 	    freeidx = ++maxidx;
 	}
-      elf_tdata (abfd)->verdef = bfd_zalloc2 (abfd, maxidx,
-					      sizeof (Elf_Internal_Verdef));
+      elf_tdata(abfd)->verdef = ((Elf_Internal_Verdef *)
+				 bfd_zalloc2(abfd, maxidx,
+					     sizeof(Elf_Internal_Verdef)));
       if (elf_tdata (abfd)->verdef == NULL)
 	goto error_return;
 
@@ -6475,8 +6484,10 @@ error_return_verdef:
 	    iverdef->vd_auxptr = NULL;
 	  else
 	    {
-	      iverdef->vd_auxptr = bfd_alloc2 (abfd, iverdef->vd_cnt,
-					       sizeof (Elf_Internal_Verdaux));
+	      iverdef->vd_auxptr =
+		((Elf_Internal_Verdaux *)
+		 bfd_alloc2(abfd, iverdef->vd_cnt,
+			    sizeof(Elf_Internal_Verdaux)));
 	      if (iverdef->vd_auxptr == NULL)
 		goto error_return_verdef;
 	    }
@@ -6533,8 +6544,9 @@ error_return_verdef:
       else
 	freeidx++;
 
-      elf_tdata (abfd)->verdef = bfd_zalloc2 (abfd, freeidx,
-					      sizeof (Elf_Internal_Verdef));
+      elf_tdata(abfd)->verdef =
+	(Elf_Internal_Verdef *)bfd_zalloc2(abfd, freeidx,
+					   sizeof(Elf_Internal_Verdef));
       if (elf_tdata (abfd)->verdef == NULL)
 	goto error_return;
 
@@ -6560,7 +6572,8 @@ error_return_verdef:
       if (iverdef->vd_nodename == NULL)
 	goto error_return_verdef;
       iverdef->vd_nextdef = NULL;
-      iverdef->vd_auxptr = bfd_alloc (abfd, sizeof (Elf_Internal_Verdaux));
+      iverdef->vd_auxptr =
+	(Elf_Internal_Verdaux *)bfd_alloc(abfd, sizeof(Elf_Internal_Verdaux));
       if (iverdef->vd_auxptr == NULL)
 	goto error_return_verdef;
 
@@ -6583,7 +6596,7 @@ _bfd_elf_make_empty_symbol (bfd *abfd)
   elf_symbol_type *newsym;
   bfd_size_type amt = sizeof (elf_symbol_type);
 
-  newsym = bfd_zalloc (abfd, amt);
+  newsym = (elf_symbol_type *)bfd_zalloc(abfd, amt);
   if (!newsym)
     return NULL;
   else

@@ -751,6 +751,11 @@ struct internal_reloc
 #define R_IMM4H   0x24		/* high nibble */
 #define R_DISP7   0x25          /* djnz displacement */
 
+/* Z80 modes */
+#define R_OFF8    0x32		/* 8 bit signed abs, for (i[xy]+d) */
+#define R_IMM24   0x33          /* 24 bit abs */
+/* R_JR, R_IMM8, R_IMM16, R_IMM32 - as for Z8k */
+
 /* H8500 modes */
 
 #define R_H8500_IMM8  	1		/*  8 bit immediate 	*/

@@ -161,7 +161,7 @@ static const bfd_target *MY(object_p)(bfd *abfd)
     }
 
 #ifdef SWAP_MAGIC
-  exec.a_info = SWAP_MAGIC(exec_bytes.e_info);
+  exec.a_info = (long)SWAP_MAGIC(exec_bytes.e_info);
 #else
   exec.a_info = (long)GET_MAGIC(abfd, exec_bytes.e_info);
 #endif /* SWAP_MAGIC */
@@ -178,7 +178,7 @@ static const bfd_target *MY(object_p)(bfd *abfd)
 
 #ifdef SWAP_MAGIC
   /* Swap_exec_header_in read in a_info with the wrong byte order: */
-  exec.a_info = SWAP_MAGIC(exec_bytes.e_info);
+  exec.a_info = (long)SWAP_MAGIC(exec_bytes.e_info);
 #endif /* SWAP_MAGIC */
 
   target = NAME(aout, some_aout_object_p)(abfd, &exec, MY(callback));

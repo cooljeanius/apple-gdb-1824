@@ -1846,6 +1846,10 @@ enum bfd_architecture
 #define bfd_mach_i960_jx        7
 #define bfd_mach_i960_hx        8
 
+  bfd_arch_or1k,      /* OpenRISC 1000 */
+#define bfd_mach_or1k           1
+#define bfd_mach_or1knd         2
+
   bfd_arch_or32,      /* OpenRISC 32 */
 
   bfd_arch_a29k,      /* AMD 29000 */
@@ -1868,6 +1872,8 @@ enum bfd_architecture
 /* Nonzero if MACH is a 64 bit sparc architecture.  */
 #define bfd_mach_sparc_64bit_p(mach) \
   ((mach) >= bfd_mach_sparc_v9 && (mach) != bfd_mach_sparc_v8plusb)
+  bfd_arch_spu,       /* PowerPC SPU */
+#define bfd_mach_spu           256
   bfd_arch_mips,      /* MIPS Rxxxx */
 #define bfd_mach_mips3000              3000
 #define bfd_mach_mips3900              3900
@@ -1900,8 +1906,16 @@ enum bfd_architecture
 #define bfd_mach_i386_i386 1
 #define bfd_mach_i386_i8086 2
 #define bfd_mach_i386_i386_intel_syntax 3
+#define bfd_mach_x64_32 32
+#define bfd_mach_x64_32_intel_syntax 33
 #define bfd_mach_x86_64 64
 #define bfd_mach_x86_64_intel_syntax 65
+  bfd_arch_l1om,   /* Intel L1OM */
+#define bfd_mach_l1om 66
+#define bfd_mach_l1om_intel_syntax 67
+  bfd_arch_k1om,   /* Intel K1OM */
+#define bfd_mach_k1om 68
+#define bfd_mach_k1om_intel_syntax 69
   bfd_arch_we32k,     /* AT&T WE32xxx */
   bfd_arch_tahoe,     /* CCI/Harris Tahoe */
   bfd_arch_i860,      /* Intel 860 */
@@ -1921,6 +1935,7 @@ enum bfd_architecture
 #define bfd_mach_h8300sx  6
 #define bfd_mach_h8300sxn 7
   bfd_arch_pdp11,     /* DEC PDP-11 */
+  bfd_arch_plugin,
   bfd_arch_powerpc,   /* PowerPC */
 #define bfd_mach_ppc           32
 #define bfd_mach_ppc64         64
@@ -1963,6 +1978,8 @@ enum bfd_architecture
 #define bfd_mach_m6812_default 0
 #define bfd_mach_m6812         1
 #define bfd_mach_m6812s        2
+  bfd_arch_m9s12x,   /* Freescale S12X */
+  bfd_arch_m9s12xg,  /* Freescale XGATE */
   bfd_arch_z8k,       /* Zilog Z8000 */
 #define bfd_mach_z8001         1
 #define bfd_mach_z8002         2
@@ -2013,6 +2030,12 @@ enum bfd_architecture
 #define bfd_mach_arm_7f        16
 #define bfd_mach_arm_7s        17
 #define bfd_mach_arm_7k        18
+  bfd_arch_nds32,     /* Andes NDS32 */
+#define bfd_mach_n1            1
+#define bfd_mach_n1h           2
+#define bfd_mach_n1h_v2        3
+#define bfd_mach_n1h_v3        4
+#define bfd_mach_n1h_v3m       5
   bfd_arch_ns32k,     /* National Semiconductors ns32000 */
   bfd_arch_w65,       /* WDC 65816 */
   bfd_arch_tic30,     /* Texas Instruments TMS320C30 */
@@ -2020,11 +2043,16 @@ enum bfd_architecture
 #define bfd_mach_tic3x         30
 #define bfd_mach_tic4x         40
   bfd_arch_tic54x,    /* Texas Instruments TMS320C54X */
+  bfd_arch_tic6x,     /* Texas Instruments TMS320C6X */
   bfd_arch_tic80,     /* TI TMS320c80 (MVP) */
   bfd_arch_v850,      /* NEC V850 */
+  bfd_arch_v850_rh850,/* NEC V850 (using RH850 ABI) */
 #define bfd_mach_v850          1
 #define bfd_mach_v850e         'E'
 #define bfd_mach_v850e1        '1'
+#define bfd_mach_v850e2        0x4532
+#define bfd_mach_v850e2v3      0x45325633
+#define bfd_mach_v850e3v5      0x45335635 /* ('E'|'3'|'V'|'5') */
   bfd_arch_arc,       /* ARC Cores */
 #define bfd_mach_arc_5         5
 #define bfd_mach_arc_6         6
@@ -2053,7 +2081,17 @@ enum bfd_architecture
 #define bfd_mach_frvtomcat     499     /* fr500 prototype */
 #define bfd_mach_fr500         500
 #define bfd_mach_fr550         550
+  bfd_arch_moxie,       /* The moxie processor */
+#define bfd_mach_moxie         1
+  bfd_arch_ft32,       /* The ft32 processor */
+#define bfd_mach_ft32          1
   bfd_arch_mcore,
+  bfd_arch_mep,
+#define bfd_mach_mep           1
+#define bfd_mach_mep_h1        0x6831
+#define bfd_mach_mep_c5        0x6335
+  bfd_arch_metag,
+#define bfd_mach_metag         1
   bfd_arch_ia64,      /* HP/Intel ia64 */
 #define bfd_mach_ia64_elf64    64
 #define bfd_mach_ia64_elf32    32
@@ -2063,9 +2101,14 @@ enum bfd_architecture
  bfd_arch_iq2000,     /* Vitesse IQ2000.  */
 #define bfd_mach_iq2000        1
 #define bfd_mach_iq10          2
+  bfd_arch_epiphany,  /* Adapteva EPIPHANY */
+#define bfd_mach_epiphany16   1
+#define bfd_mach_epiphany32   2
   bfd_arch_ms1,
+  bfd_arch_mt,
 #define bfd_mach_ms1           1
 #define bfd_mach_mrisc2        2
+#define bfd_mach_ms2           3
   bfd_arch_pj,
   bfd_arch_avr,       /* Atmel AVR microcontrollers.  */
 #define bfd_mach_avr1          1
@@ -2073,6 +2116,10 @@ enum bfd_architecture
 #define bfd_mach_avr3          3
 #define bfd_mach_avr4          4
 #define bfd_mach_avr5          5
+  bfd_arch_bfin,        /* ADI Blackfin */
+#define bfd_mach_bfin          1
+  bfd_arch_cr16,       /* National Semiconductor CompactRISC (i.e. CR16). */
+#define bfd_mach_cr16          1
   bfd_arch_cr16c,       /* National Semiconductor CompactRISC. */
 #define bfd_mach_cr16c         1
   bfd_arch_crx,       /*  National Semiconductor CRX.  */
@@ -2081,9 +2128,16 @@ enum bfd_architecture
 #define bfd_mach_cris_v0_v10   255
 #define bfd_mach_cris_v32      32
 #define bfd_mach_cris_v10_v32  1032
+  bfd_arch_rl78,
+#define bfd_mach_rl78  0x75
+  bfd_arch_rx,        /* Renesas RX.  */
+#define bfd_mach_rx            0x75
   bfd_arch_s390,      /* IBM s390 */
 #define bfd_mach_s390_31       31
 #define bfd_mach_s390_64       64
+  bfd_arch_score,     /* Sunplus score */
+#define bfd_mach_score3         3
+#define bfd_mach_score7         7
   bfd_arch_openrisc,  /* OpenRISC */
   bfd_arch_mmix,      /* Donald Knuth's educational processor.  */
   bfd_arch_xstormy16,
@@ -2104,6 +2158,16 @@ enum bfd_architecture
 #define bfd_mach_msp42          42
 #define bfd_mach_msp43          43
 #define bfd_mach_msp44          44
+#define bfd_mach_msp430x        45
+#define bfd_mach_msp46          46
+#define bfd_mach_msp47          47
+#define bfd_mach_msp54          54
+  bfd_arch_xc16x,     /* Infineon's XC16X Series.               */
+#define bfd_mach_xc16x         1
+#define bfd_mach_xc16xl        2
+#define bfd_mach_xc16xs        3
+  bfd_arch_xgate,   /* Freescale XGATE */
+#define bfd_mach_xgate         1
   bfd_arch_xtensa,    /* Tensilica's Xtensa cores.  */
 #define bfd_mach_xtensa        1
    bfd_arch_maxq,     /* Dallas MAXQ 10/20 */
@@ -3179,6 +3243,105 @@ through 7 of the instruction.  */
 stored in the instruction.  The high 24 bits are installed in bits 23
 through 0.  */
   BFD_RELOC_ARC_B26,
+
+/* ADI Blackfin 16 bit immediate absolute reloc.  */
+  BFD_RELOC_BFIN_16_IMM,
+
+/* ADI Blackfin 16 bit immediate absolute reloc higher 16 bits.  */
+  BFD_RELOC_BFIN_16_HIGH,
+
+/* ADI Blackfin 'a' part of LSETUP.  */
+  BFD_RELOC_BFIN_4_PCREL,
+
+/* ADI Blackfin.  */
+  BFD_RELOC_BFIN_5_PCREL,
+
+/* ADI Blackfin 16 bit immediate absolute reloc lower 16 bits.  */
+  BFD_RELOC_BFIN_16_LOW,
+
+/* ADI Blackfin.  */
+  BFD_RELOC_BFIN_10_PCREL,
+
+/* ADI Blackfin 'b' part of LSETUP.  */
+  BFD_RELOC_BFIN_11_PCREL,
+
+/* ADI Blackfin.  */
+  BFD_RELOC_BFIN_12_PCREL_JUMP,
+
+/* ADI Blackfin Short jump, pcrel.  */
+  BFD_RELOC_BFIN_12_PCREL_JUMP_S,
+
+/* ADI Blackfin Call.x not implemented.  */
+  BFD_RELOC_BFIN_24_PCREL_CALL_X,
+
+/* ADI Blackfin Long Jump pcrel.  */
+  BFD_RELOC_BFIN_24_PCREL_JUMP_L,
+
+/* ADI Blackfin GOT relocation.  */
+  BFD_RELOC_BFIN_GOT,
+
+/* ADI Blackfin PLTPC relocation.  */
+  BFD_RELOC_BFIN_PLTPC,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_PUSH,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_CONST,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_ADD,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_SUB,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_MULT,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_DIV,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_MOD,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_LSHIFT,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_RSHIFT,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_AND,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_OR,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_XOR,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_LAND,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_LOR,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_LEN,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_NEG,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_COMP,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_PAGE,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_HWPAGE,
+
+/* ADI Blackfin arithmetic relocation.  */
+  BFD_ARELOC_BFIN_ADDR,
 
 /* Mitsubishi D10V relocs.
 This is a 10-bit reloc with the right 2 bits

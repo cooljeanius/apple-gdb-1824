@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -355,28 +355,34 @@ const bfd_arch_info_type bfd_sh_arch =
 
 static struct { unsigned long bfd_mach, arch, arch_up; } bfd_to_arch_table[] =
 {
-  { bfd_mach_sh,              arch_sh1,             arch_sh_up },
-  { bfd_mach_sh2,             arch_sh2,             arch_sh2_up },
+  { bfd_mach_sh,              arch_sh1,             (unsigned long)arch_sh_up },
+  { bfd_mach_sh2,             arch_sh2,            (unsigned long)arch_sh2_up },
   { bfd_mach_sh2e,            arch_sh2e,            arch_sh2e_up },
-  { bfd_mach_sh_dsp,          arch_sh_dsp,          arch_sh_dsp_up },
+  { bfd_mach_sh_dsp, (unsigned long)arch_sh_dsp,
+    (unsigned long)arch_sh_dsp_up },
   { bfd_mach_sh2a,            arch_sh2a,            arch_sh2a_up },
   { bfd_mach_sh2a_nofpu,      arch_sh2a_nofpu,      arch_sh2a_nofpu_up },
 
-  { bfd_mach_sh2a_nofpu_or_sh4_nommu_nofpu,         arch_sh2a_nofpu_or_sh4_nommu_nofpu,   arch_sh2a_nofpu_or_sh4_nommu_nofpu_up },
-  { bfd_mach_sh2a_nofpu_or_sh3_nommu,               arch_sh2a_nofpu_or_sh3_nommu,         arch_sh2a_nofpu_or_sh3_nommu_up },
+  { bfd_mach_sh2a_nofpu_or_sh4_nommu_nofpu, arch_sh2a_nofpu_or_sh4_nommu_nofpu,
+    (unsigned long)arch_sh2a_nofpu_or_sh4_nommu_nofpu_up },
+  { bfd_mach_sh2a_nofpu_or_sh3_nommu, arch_sh2a_nofpu_or_sh3_nommu, 
+    (unsigned long)arch_sh2a_nofpu_or_sh3_nommu_up },
   { bfd_mach_sh2a_or_sh4,     arch_sh2a_or_sh4,     arch_sh2a_or_sh4_up },
   { bfd_mach_sh2a_or_sh3e,    arch_sh2a_or_sh3e,    arch_sh2a_or_sh3e_up },
   
-  { bfd_mach_sh3,             arch_sh3,             arch_sh3_up },
-  { bfd_mach_sh3_nommu,       arch_sh3_nommu,       arch_sh3_nommu_up },
-  { bfd_mach_sh3_dsp,         arch_sh3_dsp,         arch_sh3_dsp_up },
+  { bfd_mach_sh3,             arch_sh3, (unsigned long)arch_sh3_up },
+  { bfd_mach_sh3_nommu,      arch_sh3_nommu, (unsigned long)arch_sh3_nommu_up },
+  { bfd_mach_sh3_dsp, (unsigned long)arch_sh3_dsp,
+    (unsigned long)arch_sh3_dsp_up },
   { bfd_mach_sh3e,            arch_sh3e,            arch_sh3e_up },
   { bfd_mach_sh4,             arch_sh4,             arch_sh4_up },
   { bfd_mach_sh4a,            arch_sh4a,            arch_sh4a_up },
-  { bfd_mach_sh4al_dsp,       arch_sh4al_dsp,       arch_sh4al_dsp_up },
-  { bfd_mach_sh4_nofpu,       arch_sh4_nofpu,       arch_sh4_nofpu_up },
-  { bfd_mach_sh4_nommu_nofpu, arch_sh4_nommu_nofpu, arch_sh4_nommu_nofpu_up },
-  { bfd_mach_sh4a_nofpu,      arch_sh4a_nofpu,      arch_sh4a_nofpu_up },
+  { bfd_mach_sh4al_dsp, (unsigned long)arch_sh4al_dsp,
+    (unsigned long)arch_sh4al_dsp_up },
+  { bfd_mach_sh4_nofpu,      arch_sh4_nofpu, (unsigned long)arch_sh4_nofpu_up },
+  { bfd_mach_sh4_nommu_nofpu, arch_sh4_nommu_nofpu,
+    (unsigned long)arch_sh4_nommu_nofpu_up },
+  { bfd_mach_sh4a_nofpu, arch_sh4a_nofpu, (unsigned long)arch_sh4a_nofpu_up },
   { 0, 0, 0 }   /* Terminator.  */
 };
 
@@ -434,7 +440,7 @@ sh_get_bfd_mach_from_arch_set (unsigned int arch_set)
 {
   unsigned long result = 0;
   unsigned int best = ~arch_set;
-  unsigned int co_mask = ~0;
+  unsigned int co_mask = ~0U;
   int i = 0;
 
   /* If arch_set permits variants with no coprocessor then do not allow
@@ -450,20 +456,20 @@ sh_get_bfd_mach_from_arch_set (unsigned int arch_set)
 
   while (bfd_to_arch_table[i].bfd_mach != 0)
     {
-      unsigned int try = bfd_to_arch_table[i].arch_up & co_mask;
+      unsigned int attempt = (bfd_to_arch_table[i].arch_up & co_mask);
 
       /* Conceptually: Find the architecture with the least number
 	 of extra features or, if they have the same number, then
 	 the greatest number of required features.  Disregard
          architectures where the required features alone do
 	 not describe a valid architecture.  */
-      if (((try & ~arch_set) < (best & ~arch_set)
-	   || ((try & ~arch_set) == (best & ~arch_set)
-	       && (~try & arch_set) < (~best & arch_set)))
-	  && SH_MERGE_ARCH_SET_VALID (try, arch_set))
+      if (((attempt & ~arch_set) < (best & ~arch_set)
+	   || ((attempt & ~arch_set) == (best & ~arch_set)
+	       && (~attempt & arch_set) < (~best & arch_set)))
+	  && SH_MERGE_ARCH_SET_VALID(attempt, arch_set))
 	{
 	  result = bfd_to_arch_table[i].bfd_mach;
-	  best = try;
+	  best = attempt;
 	}
 
       i++;
@@ -522,3 +528,5 @@ sh_merge_bfd_arch (bfd *ibfd, bfd *obfd)
   
   return TRUE;
 }
+
+/* EOF */

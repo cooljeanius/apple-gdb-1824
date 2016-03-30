@@ -1,4 +1,4 @@
-/* Random host-dependent support code.
+/* opcodes/sysdep.h: Random host-dependent support code.
    Copyright 1995, 1997, 2000 Free Software Foundation, Inc.
    Written by Ken Raeburn.
 
@@ -31,13 +31,15 @@
 #include "ansidecl.h"
 
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 
 #ifdef HAVE_STRING_H
-#include <string.h>
+# include <string.h>
 #else
-#ifdef HAVE_STRINGS_H
-#include <strings.h>
-#endif
-#endif
+# ifdef HAVE_STRINGS_H
+#  include <strings.h>
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H */
+
+/* EOf */

@@ -1,8 +1,8 @@
-/* Generic ECOFF (Extended-COFF) routines.
+/* ecoff.c: Generic ECOFF (Extended-COFF) routines.
    Copyright 1990, 1991, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001,
    2002, 2003, 2004, 2005 Free Software Foundation, Inc.
    Original version by Per Bothner.
-   Full support added by Ian Lance Taylor, ian@cygnus.com.
+   Full support added by Ian Lance Taylor, <ian@cygnus.com>.
 
    This file is part of BFD, the Binary File Descriptor library.
 
@@ -18,7 +18,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -44,6 +44,10 @@
 #include "libcoff.h"
 #include "libecoff.h"
 #include "libiberty.h"
+
+#if defined(HAVE_LIMITS_H) && !defined(INT_MIN)
+# include <limits.h>
+#endif /* HAVE_LIMITS_H && !INT_MIN */
 
 #define streq(a, b)	(strcmp ((a), (b)) == 0)
 #define strneq(a, b, n)	(strncmp ((a), (b), (n)) == 0)
@@ -1297,7 +1301,7 @@ ecoff_type_to_string (bfd *abfd, FDR *fdr, unsigned int indx)
 		while ((i < 5) && (qualifiers[i + 1].type == tqArray))
 		  i++;
 
-		for (j = i; j >= first_array; j--)
+		for (j = i; (j >= first_array) && (j > INT_MIN); j--)
 		  {
 		    strcpy(p2, "array [");
 		    p2 += (sizeof("array [") - 1UL);
@@ -2494,7 +2498,7 @@ _bfd_ecoff_write_object_contents(bfd *abfd)
     }
 
   /* Set up the file header: */
-  internal_f.f_magic = ecoff_get_magic(abfd);
+  internal_f.f_magic = (unsigned short)ecoff_get_magic(abfd);
 
   /* We will NOT put a fucking timestamp in the header here.  Every
      time you put it back, I will come in and take it out again.  I am
@@ -2507,8 +2511,8 @@ _bfd_ecoff_write_object_contents(bfd *abfd)
     {
       /* The ECOFF f_nsyms field is not actually the number of
 	 symbols, it is the size of symbolic information header.  */
-      internal_f.f_nsyms = external_hdr_size;
-      internal_f.f_symptr = ecoff_data(abfd)->sym_filepos;
+      internal_f.f_nsyms = (long)external_hdr_size;
+      internal_f.f_symptr = (bfd_vma)ecoff_data(abfd)->sym_filepos;
     }
   else
     {
@@ -2516,7 +2520,7 @@ _bfd_ecoff_write_object_contents(bfd *abfd)
       internal_f.f_symptr = 0;
     }
 
-  internal_f.f_opthdr = aoutsz;
+  internal_f.f_opthdr = (unsigned short)aoutsz;
 
   internal_f.f_flags = F_LNNO;
   if (reloc_size == 0)
@@ -2654,11 +2658,11 @@ _bfd_ecoff_write_object_contents(bfd *abfd)
 
 	      in.r_vaddr = (reloc->address
 			    + bfd_get_section_vma(abfd, current));
-	      in.r_type = reloc->howto->type;
+	      in.r_type = (unsigned short)reloc->howto->type;
 
 	      if ((sym->flags & BSF_SECTION_SYM) == 0)
 		{
-		  in.r_symndx = ecoff_get_sym_index(*reloc->sym_ptr_ptr);
+		  in.r_symndx = (long)ecoff_get_sym_index(*reloc->sym_ptr_ptr);
 		  in.r_extern = 1;
 		}
 	      else
@@ -2821,12 +2825,12 @@ ecoff_armap_hash (const char *s,
 
   if (hlog == 0)
     return 0;
-  hash = *s++;
+  hash = (unsigned int)(*s++);
   while (*s != '\0')
-    hash = ((hash >> 27) | (hash << 5)) + *s++;
+    hash = (((hash >> 27) | (hash << 5)) + (unsigned int)(*s++));
   hash *= ARMAP_HASH_MAGIC;
-  *rehash = (hash & (size - 1)) | 1;
-  return hash >> (32 - hlog);
+  *rehash = ((hash & (size - 1)) | 1);
+  return (hash >> (32 - hlog));
 }
 
 /* Read in the armap.  */
@@ -2846,8 +2850,8 @@ _bfd_ecoff_slurp_armap (bfd *abfd)
   char *stringbase;
   bfd_size_type amt;
 
-  /* Get the name of the first element.  */
-  i = bfd_bread ((void *) nextname, (bfd_size_type) 16, abfd);
+  /* Get the name of the first element: */
+  i = (unsigned int)bfd_bread((void *)nextname, (bfd_size_type)16UL, abfd);
   if (i == 0)
       return TRUE;
   if (i != 16)
@@ -2908,9 +2912,9 @@ _bfd_ecoff_slurp_armap (bfd *abfd)
       return FALSE;
     }
 
-  ardata->tdata = (void *) raw_armap;
+  ardata->tdata = (void *)raw_armap;
 
-  count = H_GET_32 (abfd, raw_armap);
+  count = (unsigned int)H_GET_32(abfd, raw_armap);
 
   ardata->symdef_count = 0;
   ardata->cache = NULL;
@@ -2971,12 +2975,12 @@ _bfd_ecoff_slurp_armap (bfd *abfd)
   raw_ptr = raw_armap + 4;
   for (i = 0; i < count; i++, raw_ptr += 8)
     {
-      unsigned int name_offset, file_offset;
+      unsigned long name_offset, file_offset;
 
-      file_offset = H_GET_32 (abfd, (raw_ptr + 4));
+      file_offset = (unsigned long)H_GET_32(abfd, (raw_ptr + 4));
       if (file_offset == 0)
 	continue;
-      name_offset = H_GET_32 (abfd, raw_ptr);
+      name_offset = (unsigned long)H_GET_32(abfd, raw_ptr);
       symdef_ptr->s.name = stringbase + name_offset;
       symdef_ptr->file_offset = file_offset;
       ++symdef_ptr;
@@ -2994,17 +2998,14 @@ _bfd_ecoff_slurp_armap (bfd *abfd)
 /* Write out an armap.  */
 
 bfd_boolean
-_bfd_ecoff_write_armap (bfd *abfd,
-			unsigned int elength,
-			struct orl *map,
-			unsigned int orl_count,
-			int stridx)
+_bfd_ecoff_write_armap(bfd *abfd, unsigned int elength, struct orl *map,
+		       unsigned int orl_count, int stridx)
 {
   unsigned int hashsize, hashlog;
   bfd_size_type symdefsize;
   int padit;
-  unsigned int stringsize;
-  unsigned int mapsize;
+  bfd_size_type stringsize;
+  bfd_size_type mapsize;
   file_ptr firstreal;
   struct ar_hdr hdr;
   struct stat statbuf;
@@ -3016,23 +3017,24 @@ _bfd_ecoff_write_armap (bfd *abfd,
 
   /* Ultrix appears to use as a hash table size the least power of two
      greater than twice the number of entries.  */
-  for (hashlog = 0; ((unsigned int) 1 << hashlog) <= 2 * orl_count; hashlog++)
+  for (hashlog = 0U; ((unsigned int)1U << hashlog) <= (2U * orl_count);
+       hashlog++)
     ;
-  hashsize = 1 << hashlog;
+  hashsize = (1U << hashlog);
 
-  symdefsize = hashsize * 8;
-  padit = stridx % 2;
-  stringsize = stridx + padit;
+  symdefsize = (hashsize * 8U);
+  padit = (stridx % 2);
+  stringsize = (bfd_size_type)(stridx + padit);
 
-  /* Include 8 bytes to store symdefsize and stringsize in output.  */
-  mapsize = symdefsize + stringsize + 8;
+  /* Include 8 bytes to store symdefsize and stringsize in output: */
+  mapsize = (symdefsize + stringsize + 8UL);
 
-  firstreal = SARMAG + sizeof (struct ar_hdr) + mapsize + elength;
+  firstreal = (file_ptr)(SARMAG + sizeof(struct ar_hdr) + mapsize + elength);
 
-  memset ((void *) &hdr, 0, sizeof hdr);
+  memset((void *)&hdr, 0, sizeof(hdr));
 
-  /* Work out the ECOFF armap name.  */
-  strcpy (hdr.ar_name, ecoff_backend (abfd)->armap_start);
+  /* Work out the ECOFF armap name: */
+  strcpy(hdr.ar_name, ecoff_backend(abfd)->armap_start);
   hdr.ar_name[ARMAP_HEADER_MARKER_INDEX] = ARMAP_MARKER;
   hdr.ar_name[ARMAP_HEADER_ENDIAN_INDEX] =
     (bfd_header_big_endian (abfd)
@@ -3074,7 +3076,7 @@ _bfd_ecoff_write_armap (bfd *abfd,
       != sizeof (struct ar_hdr))
     return FALSE;
 
-  H_PUT_32(abfd, hashsize, temp);
+  H_PUT_32(abfd, (bfd_vma)hashsize, temp);
   if (bfd_bwrite((void *)temp, (bfd_size_type)4UL, abfd) != 4)
     return FALSE;
 
@@ -3119,8 +3121,8 @@ _bfd_ecoff_write_armap (bfd *abfd,
 	  hash = srch;
 	}
 
-      H_PUT_32 (abfd, map[i].namidx, (hashtable + hash * 8));
-      H_PUT_32 (abfd, firstreal, (hashtable + hash * 8 + 4));
+      H_PUT_32(abfd, (bfd_vma)map[i].namidx, (hashtable + hash * 8));
+      H_PUT_32(abfd, (bfd_vma)firstreal, (hashtable + hash * 8 + 4));
     }
 
   if (bfd_bwrite ((void *) hashtable, symdefsize, abfd) != symdefsize)
@@ -3128,8 +3130,8 @@ _bfd_ecoff_write_armap (bfd *abfd,
 
   bfd_release (abfd, hashtable);
 
-  /* Now write the strings.  */
-  H_PUT_32 (abfd, stringsize, temp);
+  /* Now write the strings: */
+  H_PUT_32(abfd, (bfd_vma)stringsize, temp);
   if (bfd_bwrite ((void *) temp, (bfd_size_type) 4, abfd) != 4)
     return FALSE;
   for (i = 0; i < orl_count; i++)
@@ -3330,7 +3332,8 @@ ecoff_link_add_externals(bfd *abfd, struct bfd_link_info *info,
   char *ext_end;
   bfd_size_type amt;
 
-  ext_count = ecoff_data(abfd)->debug_info.symbolic_header.iextMax;
+  ext_count =
+    (unsigned long)ecoff_data(abfd)->debug_info.symbolic_header.iextMax;
 
   amt = ext_count;
   amt *= sizeof(struct bfd_link_hash_entry *);
@@ -3531,16 +3534,16 @@ ecoff_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
   if (! ecoff_slurp_symbolic_header (abfd))
     return FALSE;
 
-  /* If there are no symbols, we don't want it.  */
-  if (bfd_get_symcount (abfd) == 0)
+  /* If there are no symbols, then we do NOT want it: */
+  if (bfd_get_symcount(abfd) == 0)
     return TRUE;
 
-  symhdr = &ecoff_data (abfd)->debug_info.symbolic_header;
+  symhdr = &ecoff_data(abfd)->debug_info.symbolic_header;
 
-  /* Read in the external symbols and external strings.  */
-  external_ext_size = ecoff_backend (abfd)->debug_swap.external_ext_size;
-  esize = symhdr->iextMax * external_ext_size;
-  external_ext = bfd_malloc (esize);
+  /* Read in the external symbols and external strings: */
+  external_ext_size = ecoff_backend(abfd)->debug_swap.external_ext_size;
+  esize = ((bfd_size_type)symhdr->iextMax * external_ext_size);
+  external_ext = bfd_malloc(esize);
   if ((external_ext == NULL) && (esize != 0))
     goto error_return;
 
@@ -3605,7 +3608,7 @@ ecoff_link_check_archive_element (bfd *abfd,
 
   /* Read in the external symbols and external strings.  */
   external_ext_size = backend->debug_swap.external_ext_size;
-  esize = (symhdr->iextMax * external_ext_size);
+  esize = ((bfd_size_type)symhdr->iextMax * external_ext_size);
   external_ext = bfd_malloc(esize);
   if ((external_ext == NULL) && (esize != 0))
     goto error_return;
@@ -3712,7 +3715,7 @@ ecoff_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
   const struct ecoff_backend_data * const backend = ecoff_backend (abfd);
   const bfd_byte *raw_armap;
   struct bfd_link_hash_entry **pundef;
-  unsigned int armap_count;
+  unsigned long armap_count;
   unsigned int armap_log;
   unsigned int i;
   const bfd_byte *hashtable;
@@ -3736,7 +3739,7 @@ ecoff_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
     return (_bfd_generic_link_add_archive_symbols
 	    (abfd, info, ecoff_link_check_archive_element));
 
-  armap_count = H_GET_32 (abfd, raw_armap);
+  armap_count = (unsigned long)H_GET_32(abfd, raw_armap);
 
   armap_log = 0;
   for (i = 1; i < armap_count; i <<= 1)
@@ -3753,7 +3756,7 @@ ecoff_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
       struct bfd_link_hash_entry *h;
       unsigned int hash;
       unsigned int rehash = 0U;
-      unsigned int file_offset;
+      unsigned long file_offset;
       const char *name;
       bfd *element;
 
@@ -3790,7 +3793,7 @@ ecoff_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
       hash = ecoff_armap_hash (h->root.string, &rehash, armap_count,
 			       armap_log);
 
-      file_offset = H_GET_32 (abfd, hashtable + (hash * 8) + 4);
+      file_offset = (unsigned long)H_GET_32(abfd, hashtable + (hash * 8) + 4);
       if (file_offset == 0)
 	{
 	  /* Nothing in this slot.  */
@@ -3811,7 +3814,8 @@ ecoff_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
 	       srch != hash;
 	       srch = (srch + rehash) & (armap_count - 1))
 	    {
-	      file_offset = H_GET_32 (abfd, hashtable + (srch * 8) + 4);
+	      file_offset =
+		(unsigned long)H_GET_32(abfd, hashtable + (srch * 8) + 4);
 	      if (file_offset == 0)
 		break;
 	      name = stringbase + H_GET_32 (abfd, hashtable + (srch * 8));
@@ -3903,7 +3907,7 @@ ecoff_final_link_debug_accumulate (bfd *output_bfd,
     debug->ptr = NULL;							 \
   else									 \
     {									 \
-      bfd_size_type amt = ((bfd_size_type)size * symhdr->count);	 \
+      bfd_size_type amt = (size * (bfd_size_type)symhdr->count);	 \
       debug->ptr = (type)bfd_malloc(amt);				 \
       if (debug->ptr == NULL)						 \
 	{								 \
@@ -4038,12 +4042,12 @@ ecoff_indirect_link_order (bfd *output_bfd,
 	  external_relocs)))
     goto error_return;
 
-  /* Write out the relocated section.  */
-  if (! bfd_set_section_contents (output_bfd,
-				  output_section,
-				  contents,
-				  input_section->output_offset,
-				  input_section->size))
+  /* Write out the relocated section: */
+  if (! bfd_set_section_contents(output_bfd,
+				 output_section,
+				 contents,
+				 (file_ptr)input_section->output_offset,
+				 input_section->size))
     goto error_return;
 
   /* If we are producing relocatable output, the relocs were
@@ -4053,7 +4057,8 @@ ecoff_indirect_link_order (bfd *output_bfd,
   if (info->relocatable)
     {
       file_ptr pos = (output_section->rel_filepos
-		      + output_section->reloc_count * external_reloc_size);
+		      + (file_ptr)(output_section->reloc_count
+				   * external_reloc_size));
       if (bfd_seek (output_bfd, pos, SEEK_SET) != 0
 	  || (bfd_bwrite (external_relocs, external_relocs_size, output_bfd)
 	      != external_relocs_size))
@@ -4192,7 +4197,7 @@ ecoff_reloc_link_order (bfd *output_bfd,
   /* Move the information into an internal_reloc structure.  */
   in.r_vaddr = (rel.address
 		+ bfd_get_section_vma (output_bfd, output_section));
-  in.r_type = rel.howto->type;
+  in.r_type = (unsigned short)rel.howto->type;
 
   if (type == bfd_symbol_reloc_link_order)
     {
@@ -4270,7 +4275,7 @@ ecoff_reloc_link_order (bfd *output_bfd,
   (*ecoff_backend(output_bfd)->swap_reloc_out)(output_bfd, &in, (void *)rbuf);
 
   pos = (output_section->rel_filepos
-	 + output_section->reloc_count * external_reloc_size);
+	 + (file_ptr)(output_section->reloc_count * external_reloc_size));
   ok = (bfd_seek (output_bfd, pos, SEEK_SET) == 0
 	&& (bfd_bwrite ((void *) rbuf, external_reloc_size, output_bfd)
 	    == external_reloc_size));
@@ -4360,7 +4365,8 @@ ecoff_link_write_external (struct ecoff_link_hash_entry *h, void * data)
 	  for (i = 0; i < ARRAY_SIZE (section_storage_classes); i++)
 	    if (streq (name, section_storage_classes[i].name))
 	      {
-		h->esym.asym.sc = section_storage_classes[i].sc;
+		h->esym.asym.sc =
+		  (unsigned char)section_storage_classes[i].sc;/*GCC PR 39170*/
 		break;
 	      }
 
@@ -4626,9 +4632,9 @@ _bfd_ecoff_bfd_final_link (bfd *abfd, struct bfd_link_info *info)
 	}
     }
 
-  bfd_get_symcount (abfd) = symhdr->iextMax + symhdr->isymMax;
+  bfd_get_symcount(abfd) = (unsigned int)(symhdr->iextMax + symhdr->isymMax);
 
-  ecoff_data (abfd)->linker = TRUE;
+  ecoff_data(abfd)->linker = TRUE;
 
   return TRUE;
 }

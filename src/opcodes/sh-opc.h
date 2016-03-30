@@ -199,10 +199,10 @@ typedef enum
 sh_dsp_reg_nums;
 
 /* Return a mask with bits LO to HI (inclusive) set.  */
-#define MASK(LO,HI)  (  LO < 1   ? ((1 << (HI + 1)) - 1) \
-		      : HI > 30  ? (-1 << LO) \
-		      : LO == HI ? (1 << LO) \
-		      :            (((1 << (HI + 1)) - 1) & (-1 << LO)))
+#define MASK(LO,HI)  ((LO < 1U) ? ((1U << (HI + 1U)) - 1U) \
+		      : (HI > 30U) ? (-1U << LO) \
+		      : (LO == HI) ? (1U << LO) \
+		      : (((1U << (HI + 1U)) - 1U) & (-1U << LO)))
 
 #define arch_sh1_base	    (1 << 0)
 #define arch_sh2_base	    (1 << 1)
@@ -267,7 +267,7 @@ sh_dsp_reg_nums;
 #define SH_ARCH_SET_HAS_FPU(SET) \
   (((SET) & (arch_sh_sp_fpu | arch_sh_dp_fpu)) != 0)
 #define SH_ARCH_SET_HAS_DSP(SET) \
-  (((SET) & arch_sh_has_dsp) != 0)
+  (((SET) & (unsigned long)arch_sh_has_dsp) != 0)
 
 /* This is returned from the functions below when an error occurs
    (in addition to a call to BFD_FAIL). The value should allow

@@ -104,7 +104,7 @@ bfd_perform_slip(bfd *abfd, unsigned int slip, asection *input_section,
 
   /* Find all symbols past this point, and make them know what has
    * happened: */
-  while (*s)
+  while ((s != NULL) && *s)
     {
       asymbol *p = *s;
       if (p->section == input_section)
@@ -255,7 +255,8 @@ bfd_coff_reloc16_get_relocated_section_contents(bfd *in_abfd,
   /* Read in the section: */
   sz = (input_section->rawsize
         ? input_section->rawsize : input_section->size);
-  if (!bfd_get_section_contents(input_bfd, input_section, data, 0, sz))
+  if (!bfd_get_section_contents(input_bfd, input_section, data,
+				(file_ptr)0L, sz))
     return NULL;
 
   reloc_vector = (arelent **)bfd_malloc((bfd_size_type)reloc_size);

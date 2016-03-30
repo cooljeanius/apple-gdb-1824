@@ -67,10 +67,10 @@ nlm_alpha_write_prefix (bfd *abfd)
 {
   struct nlm32_alpha_external_prefix_header s;
 
-  memset (&s, 0, sizeof s);
-  H_PUT_32 (abfd, NLM32_ALPHA_MAGIC, s.magic);
-  H_PUT_32 (abfd, 2, s.format);
-  H_PUT_32 (abfd, sizeof s, s.size);
+  memset(&s, 0, sizeof(s));
+  H_PUT_32(abfd, (bfd_vma)NLM32_ALPHA_MAGIC, s.magic);
+  H_PUT_32(abfd, (bfd_vma)2UL, s.format);
+  H_PUT_32(abfd, (bfd_vma)sizeof(s), s.size);
   if (bfd_bwrite (&s, (bfd_size_type) sizeof s, abfd) != sizeof s)
     return FALSE;
   return TRUE;
@@ -721,9 +721,9 @@ nlm_alpha_write_import (bfd * abfd, asection * sec, arelent * rel)
       r_offset = 0;
     }
 
-  /* Swap out the relocation fields.  */
-  H_PUT_64 (abfd, r_vaddr, ext.r_vaddr);
-  H_PUT_32 (abfd, r_symndx, ext.r_symndx);
+  /* Swap out the relocation fields: */
+  H_PUT_64(abfd, r_vaddr, ext.r_vaddr);
+  H_PUT_32(abfd, (bfd_vma)r_symndx, ext.r_symndx);
 
   BFD_ASSERT (bfd_little_endian (abfd));
 
@@ -830,7 +830,7 @@ nlm_alpha_write_external (bfd *abfd,
 
 static const struct nlm_backend_data nlm32_alpha_backend =
 {
-  "NetWare Alpha Module   \032",
+  "NetWare Alpha Module  \032",
   sizeof (Nlm32_alpha_External_Fixed_Header),
   sizeof (struct nlm32_alpha_external_prefix_header),
   bfd_arch_alpha,

@@ -91,7 +91,8 @@ if test -n "${SANDBOX_EXEC}" -a -n "${MAKE_BIN}"; then
   fi
   if test -n "${sb_build_profile}" -a -n "${sb_dummy_Makefile}"; then
     AC_MSG_CHECKING([if ${MAKE_BIN} can be run by ${SANDBOX_EXEC} with profile ${sb_build_profile}])
-    if (${SANDBOX_EXEC} -f ${sb_build_profile} ${MAKE_BIN} --quiet --no-print-directory -f ${sb_dummy_Makefile} nothing); then
+    ##FIXME: make portable to different OSX versions:
+    if (${SANDBOX_EXEC} -f ${sb_build_profile} ${MAKE_BIN} --quiet --no-print-directory -f ${sb_dummy_Makefile} nothing 2>&5); then
       AC_MSG_RESULT([yes])
       # this does not actually work yet, so hide it in a dummy condition
       # to prevent it from actually being done:
@@ -1352,6 +1353,7 @@ do
     bfd_efi_app_ia64_vec) tb="${tb} efi-app-ia64.lo pepigen.lo cofflink.lo"; target_size=64 ;;
     bfd_elf32_am33lin_vec) tb="${tb} elf32-am33lin.lo elf32.lo ${elf}" ;;
     bfd_elf32_avr_vec) tb="${tb} elf32-avr.lo elf32.lo ${elf}" ;;
+    bfd_elf32_bfin_vec) tb="${tb} elf32-bfin.lo elf32.lo ${elf}" ;;
     bfd_elf32_big_generic_vec) tb="${tb} elf32-gen.lo elf32.lo ${elf}" ;;
     bfd_elf32_bigarc_vec) tb="${tb} elf32-arc.lo elf32.lo ${elf}" ;;
     bfd_elf32_bigarm_vec) tb="${tb} elf32-arm.lo elf32.lo ${elf}" ;;
@@ -1360,12 +1362,14 @@ do
     bfd_elf32_bigarm_vxworks_vec)	
                                 tb="${tb} elf32-arm.lo elf32.lo ${elf}" ;;
     bfd_elf32_bigmips_vec) tb="${tb} elf32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo" ;;
+    bfd_elf32_cr16_vec) tb="${tb} elf32-cr16.lo elf32.lo ${elf}" ;;
     bfd_elf32_cr16c_vec) tb="${tb} elf32-cr16c.lo elf32.lo ${elf}" ;;
     bfd_elf32_cris_vec) tb="${tb} elf32-cris.lo elf32.lo ${elf}" ;;
     bfd_elf32_crx_vec) tb="${tb} elf32-crx.lo elf32.lo ${elf}" ;;    
     bfd_elf32_d10v_vec) tb="${tb} elf32-d10v.lo elf32.lo ${elf}" ;;
     bfd_elf32_d30v_vec) tb="${tb} elf32-d30v.lo elf32.lo ${elf}" ;;
     bfd_elf32_dlx_big_vec) tb="${tb} elf32-dlx.lo elf32.lo ${elf}" ;;
+    bfd_elf32_epiphany_vec) tb="${tb} elf32-epiphany.lo elf32.lo ${elf}" ;;
     bfd_elf32_fr30_vec) tb="${tb} elf32-fr30.lo elf32.lo ${elf}" ;;
     bfd_elf32_frv_vec) tb="${tb} elf32-frv.lo elf32.lo ${elf}" ;;
     bfd_elf32_frvfdpic_vec) tb="${tb} elf32-frv.lo elf32.lo ${elf}" ;;

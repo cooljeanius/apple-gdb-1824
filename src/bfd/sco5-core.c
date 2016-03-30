@@ -126,8 +126,9 @@ read_uarea(bfd *abfd, int filepos)
 const bfd_target *
 sco5_core_file_p(bfd *abfd)
 {
-  int coffset_siz, val, nsecs, cheadoffs;
-  int coresize;
+  size_t coffset_siz;
+  int val, nsecs, cheadoffs;
+  size_t coresize;
   user_struct_t *u;
   struct coreoffsets coffsets;
   struct coresecthead chead;
@@ -146,7 +147,7 @@ sco5_core_file_p(bfd *abfd)
 	bfd_set_error(bfd_error_system_call);
 	return NULL;
       }
-    coresize = statbuf.st_size;
+    coresize = (size_t)statbuf.st_size;
   }
   /* Last long in core is sizeof struct coreoffsets, read it: */
   if ((bfd_seek(abfd, (file_ptr)(coresize - sizeof(coffset_siz)),
@@ -178,7 +179,7 @@ sco5_core_file_p(bfd *abfd)
 
       if (!make_bfd_asection(abfd, ".reg", SEC_HAS_CONTENTS,
                              (bfd_size_type)coffsets.u_usize,
-                             (0 - (bfd_vma)u->u_ar0),
+                             (0 - (bfd_vma)(uintptr_t)u->u_ar0),
                              (file_ptr)coffsets.u_user))
 	goto fail;
 
@@ -212,7 +213,7 @@ sco5_core_file_p(bfd *abfd)
      coresecthead and check its validity */
 
   if ((bfd_seek(abfd,
-                (file_ptr)(coresize - coffset_siz - 2 * sizeof(coffset_siz)),
+                (file_ptr)(coresize - coffset_siz - 2UL * sizeof(coffset_siz)),
                 SEEK_SET) != 0)
       || (bfd_bread((void *)&nsecs, (bfd_size_type)sizeof(nsecs), abfd)
 	  != sizeof(nsecs))
