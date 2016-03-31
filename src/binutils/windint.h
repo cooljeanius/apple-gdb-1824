@@ -32,6 +32,13 @@
 typedef bfd_size_type rc_uint_type;
 #endif
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wpacked"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* Resource directory structure.  */
 
 typedef struct res_hdr
@@ -406,7 +413,7 @@ typedef struct rc_dialog
   /* Menu name.  */
   rc_res_id menu;
   /* Class name.  */
-  rc_res_id class;
+  rc_res_id classname;
   /* Caption.  */
   unichar *caption;
   /* Font point size.  */
@@ -647,7 +654,7 @@ typedef struct rc_dialog_control
   /* Height.  */
   rc_uint_type height;
   /* Class name.  */
-  rc_res_id class;
+  rc_res_id classname;
   /* Associated text.  */
   rc_res_id text;
   /* Extra data for the window procedure.  */
@@ -1074,6 +1081,13 @@ typedef struct windres_bfd
   rc_uint_type kind : 4;
 } windres_bfd;
 
+/* keep condition same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 #define WR_KIND_TARGET	  0
 #define WR_KIND_BFD	  1
 #define WR_KIND_BFD_BIN_L 2
@@ -1097,3 +1111,5 @@ extern void set_windres_bfd (windres_bfd *, bfd *, asection *, rc_uint_type);
 extern void set_windres_bfd_endianness (windres_bfd *, int);
 
 #endif
+
+/* EOF */

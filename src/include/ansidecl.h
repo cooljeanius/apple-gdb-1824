@@ -334,6 +334,14 @@ So instead we use the macro below and test it against specific values.  */
 #else /* !__cplusplus || GNUC >= 3.4 */
 # define ARG_UNUSED(NAME) NAME
 #endif /* !__cplusplus || GNUC >= 3.4 */
+  
+#ifndef ATTRIBUTE_NOCLONE
+# define ATTRIBUTE_NOCLONE __attribute__((__noclone__))
+#endif /* !ATTRIBUTE_NOCLONE */
+  
+#ifndef ATTRIBUTE_NOINLINE
+# define ATTRIBUTE_NOINLINE __attribute__((__noinline__))
+#endif /* !ATTRIBUTE_NOINLINE */
 
 #ifndef ATTRIBUTE_NORETURN
 # define ATTRIBUTE_NORETURN __attribute__((__noreturn__))

@@ -1770,3 +1770,5 @@ rcparse_set_language (int lang)
 {
   language = lang;
 }
+
+/* End of rcparse.y */

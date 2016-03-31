@@ -52,7 +52,8 @@
 
 /* FIXME: There is no general mi header to put these kinds of utility
  * functions: */
-extern void mi_report_var_creation(struct ui_out *uiout, struct varobj *var);
+extern void mi_report_var_creation(struct ui_out *uiout, struct varobj *var,
+				   int is_root);
 extern enum print_values mi_decode_print_values(char *arg);
 
 void mi_interp_stack_changed_hook(void);
@@ -1338,16 +1339,17 @@ print_syms_for_block (struct block *block,
                      was flushed.  */
                   if (fi)
                     {
-                      fi = frame_find_by_id (stack_frame_id);
+                      fi = frame_find_by_id(stack_frame_id);
                       if (fi == NULL)
-                        error ("Could not rediscover frame when getting value");
+                        error(_("Failed to rediscover frame when getting value"));
                     }
 		}
 	      else
-		ui_out_field_skip (uiout, "value");
+		ui_out_field_skip(uiout, "value");
 
-	      mi_report_var_creation (uiout, new_var);
-	      do_cleanups (tuple_cleanup);
+	      /* unsure about 3rd arg added here: */
+	      mi_report_var_creation(uiout, new_var, 0);
+	      do_cleanups(tuple_cleanup);
 	    }
 	  else
 	    {

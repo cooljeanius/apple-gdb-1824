@@ -45,7 +45,7 @@
 
 #include "readline/tilde.h"
 
-#include "xsym.h"
+#include "xsym.h" /* in ../../bfd */
 
 #include "symread.h"
 

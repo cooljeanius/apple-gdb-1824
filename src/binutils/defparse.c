@@ -83,7 +83,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+    Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "bucomm.h"
@@ -156,6 +156,36 @@ extern int yydebug;
      NUMBER = 285
    };
 #endif
+/* Tokens.  */
+#define NAME 258
+#define LIBRARY 259
+#define DESCRIPTION 260
+#define STACKSIZE 261
+#define HEAPSIZE 262
+#define CODE 263
+#define DATA 264
+#define SECTIONS 265
+#define EXPORTS 266
+#define IMPORTS 267
+#define VERSIONK 268
+#define BASE 269
+#define CONSTANT 270
+#define READ 271
+#define WRITE 272
+#define EXECUTE 273
+#define SHARED 274
+#define NONSHARED 275
+#define NONAME 276
+#define PRIVATE 277
+#define SINGLE 278
+#define MULTIPLE 279
+#define INITINSTANCE 280
+#define INITGLOBAL 281
+#define TERMINSTANCE 282
+#define TERMGLOBAL 283
+#define ID 284
+#define NUMBER 285
+
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -169,7 +199,7 @@ typedef union YYSTYPE
 
 
 /* Line 387 of yacc.c  */
-#line 173 "defparse.c"
+#line 203 "defparse.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -197,7 +227,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 201 "defparse.c"
+#line 231 "defparse.c"
 
 #ifdef short
 # undef short
@@ -531,7 +561,7 @@ static const yytype_uint8 yyrline[] =
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE || 1
+#if YYDEBUG || YYERROR_VERBOSE || 0
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
@@ -1767,7 +1797,7 @@ yyreduce:
 
 
 /* Line 1787 of yacc.c  */
-#line 1771 "defparse.c"
+#line 1801 "defparse.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

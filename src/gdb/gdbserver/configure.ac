@@ -270,11 +270,16 @@ AC_MSG_RESULT([ ])
 AC_CHECK_DECLS([child_get_pagesize])dnl
 AC_CHECK_DECLS([strerror, strstr, perror, vasprintf, vsnprintf])dnl
 AC_CHECK_DECLS([NULL])dnl
-AC_CHECK_DECLS([basename],[],[],[
+  ## try to avoid redefinition warnings:
+if test "x${ac_cv_have_decl_basename}" = "x"; then
+  test -z "${ac_cv_have_decl_basename}"
+  AC_CHECK_DECLS([basename],[],[],[
 #ifdef HAVE_LIBGEN_H
 # include <libgen.h>
 #endif /* HAVE_LIBGEN_H */
-])dnl
+  ])dnl
+  ## ...or maybe it is below?
+fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_MSG_CHECKING([C compiler characteristics])

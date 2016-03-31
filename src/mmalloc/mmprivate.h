@@ -109,6 +109,10 @@ Boston, MA 02111-1307, USA.
 
 #define ADDRESS(B) ((PTR)(((B) - 1) * BLOCKSIZE + mdp->heapbase))
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 /* Data structure giving per-block information: */
 typedef union
   {
@@ -306,6 +310,10 @@ extern PTR __mmalloc_mmap_morecore PARAMS((struct mdesc *, int));
  * if necessary.  Otherwise just cast the user supplied version
  * (which is void *) to the proper type (struct mdesc *): */
 extern struct mdesc *__mmalloc_default_mdp;
+  
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #define MD_TO_MDP(md) \
   ((md) == NULL \

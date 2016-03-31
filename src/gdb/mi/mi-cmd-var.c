@@ -1297,8 +1297,7 @@ _initialize_mi_cmd_var(void)
   add_setshow_boolean_cmd("mi-show-protections", class_obscure, &mi_show_protections,
 			  _("Set whether to show \"public\", \"protected\" and \"private\" nodes in variable objects."),
 			  _("Show whether to show \"public\", \"protected\" and \"private\" nodes in variable objects."),
-			  NULL,
-			  NULL, NULL,
+			  NULL, NULL, NULL,
 			  &setlist, &showlist);
 }
 

@@ -136,12 +136,18 @@ static char *find_info_plist_filename_from_bundle_name(const char *bundle,
                                                      const char *bundle_suffix);
 
 #if defined(USE_DEBUG_SYMBOLS_FRAMEWORK) && USE_DEBUG_SYMBOLS_FRAMEWORK
-/* FIXME: might need 'extern "C"' if building as C++: */
+# ifndef EXTERN_C
+#  ifdef __cplusplus
+#   define EXTERN_C extern "C"
+#  else
+#   define EXTERN_C extern
+#  endif /* __cplusplus */
+# endif /* !EXTERN_C */
 extern CFArrayRef DBGCopyMatchingUUIDsForURL(CFURLRef path,
                                              int /* cpu_type_t */ cpuType,
                                            int /* cpu_subtype_t */ cpuSubtype);
-extern CFURLRef DBGCopyDSYMURLForUUID(CFUUIDRef uuid);
-extern CFDictionaryRef DBGCopyDSYMPropertyLists(CFURLRef dsym_url);
+EXTERN_C CFURLRef DBGCopyDSYMURLForUUID(CFUUIDRef uuid);
+EXTERN_C CFDictionaryRef DBGCopyDSYMPropertyLists(CFURLRef dsym_url);
 #endif /* USE_DEBUG_SYMBOLS_FRAMEWORK */
 
 static void get_uuid_t_for_uuidref(CFUUIDRef uuid_in, uuid_t *uuid_out);
@@ -2324,7 +2330,7 @@ find_info_plist_filename_from_bundle_name(const char *bundle,
 
 /* FIXME: We should NOT be grabbing internal functions from bfd! It is
  * used in both the osabi sniffers.  */
-extern const bfd_arch_info_type *bfd_default_compatible
+EXTERN_C const bfd_arch_info_type *bfd_default_compatible
   (const bfd_arch_info_type *a, const bfd_arch_info_type *b);
 
 /* If we are attaching to a process, we start by finding the dyld that

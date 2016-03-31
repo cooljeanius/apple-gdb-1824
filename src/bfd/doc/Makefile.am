@@ -366,7 +366,8 @@ LIBBFD_H_DEP = \
 	$(srcdir)/proto.str		\
 	$(MKDOC) $(src_MKDOC)
 
-libbfd.h: $(LIBBFD_H_DEP) @MAINT@ $(src_MKDOC)
+##FIXME: use libbfd-post.h?
+libbfd.h: $(LIBBFD_H_DEP) @MAINT@ $(src_MKDOC) Makefile.am
 	echo "$(LIBBFD_H_DEP)" | $(SED) -f $(srcdir)/header.sed \
 	  $(AM_V_redir) $@
 	for file in $(LIBBFD_H_DEP); do \
@@ -378,7 +379,13 @@ libbfd.h: $(LIBBFD_H_DEP) @MAINT@ $(src_MKDOC)
 		$(src_MKDOC) -i -f $(srcdir)/proto.str < $${file} >>$@ ;; \
 	  esac; \
 	done
+	echo "#ifdef __cplusplus" >> $@
+	echo "}" >> $@
+	echo "#endif /* __cplusplus */" >> $@
+	echo "" >> $@
 	echo "#endif /* __LIBBFD_H__ */" >> $@
+	echo "" >> $@
+	echo "/* End of libbfd.h */" >> $@
 
 LIBCOFF_H_DEP = \
 	$(srcdir_up)/libcoff-in.h	\

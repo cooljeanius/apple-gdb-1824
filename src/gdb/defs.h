@@ -767,7 +767,7 @@ extern char *paddr_nz(CORE_ADDR addr);
 extern char *paddr_u(CORE_ADDR addr);
 extern char *paddr_d(LONGEST addr);
 
-/* Like 0x%lx, replaces deprecated_print_address_numeric.  */
+/* Like 0x%lx, replaces deprecated_print_address_numeric: */
 extern const char *paddress(CORE_ADDR addr);
 
 extern char *phex(ULONGEST l, int sizeof_l);

@@ -124,6 +124,10 @@
  # pragma GCC diagnostic ignored "-Wtraditional"
 #endif /* gcc 4+ && !__clang__ && !__cplusplus */
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 /* Declare at file level, since used in parameter lists, which have
  * weird scope.  */
 struct external_exec;
@@ -660,6 +664,10 @@ const bfd_target *aout_32_some_aout_object_p(bfd *, struct internal_exec *,
 #  endif /* !aout_32_some_aout_object_p */
 # endif /* c99 */
 #endif /* __STDC__ */
+  
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #ifndef WRITE_HEADERS
 # define WRITE_HEADERS(abfd, execp)					      \
@@ -727,3 +735,5 @@ const bfd_target *aout_32_some_aout_object_p(bfd *, struct internal_exec *,
    && ((abfd)->flags & D_PAGED) != 0)
 
 #endif /* ! defined (LIBAOUT_H) */
+  
+/* EOF */

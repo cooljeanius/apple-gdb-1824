@@ -224,7 +224,7 @@ core_open(const char *filename, int from_tty)
   filename = tilde_expand(filename);
   if (filename[0] != '/')
     {
-      temp = concat(current_directory, "/", filename, NULL);
+      temp = concat(current_directory, "/", filename, (const char *)NULL);
       xfree((void *)filename);
       filename = temp;
     }

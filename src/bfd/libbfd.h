@@ -58,6 +58,13 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
  * casts, and casting to the left of assignment is bad and NOT portable: */
 #define set_tdata(bfd, v) ((bfd)->tdata.any = (v))
 
+/* As with the header guard, this 'extern "C"' likewise remains unterminated in
+ * "libbfd-in.h"; the closing brace is in "libbfd-post.h": */
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+/* (actually, the Makefile adds the closing brace currently...) */
+
 /* If BFD_IN_MEMORY is set for a BFD, then the iostream fields points
  * to an instance of this structure: */
 struct bfd_in_memory
@@ -2270,4 +2277,10 @@ void *bfd_arch_default_fill (bfd_size_type count,
 /* Extracted from elf.c.  */
 struct elf_internal_shdr *bfd_elf_find_section (bfd *abfd, char *name);
 
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
 #endif /* __LIBBFD_H__ */
+
+/* End of libbfd.h */

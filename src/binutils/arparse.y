@@ -22,8 +22,7 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 
 /* Contributed by Steve Chamberlain
-   		  sac@cygnus.com
-
+   		  <sac@cygnus.com>
 */
 #ifndef DONTDECLARE_MALLOC
 # define DONTDECLARE_MALLOC 1
@@ -31,6 +30,14 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 #include "bfd.h"
 #include "bucomm.h"
 #include "arsup.h"
+  
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 extern int verbose;
 extern int yylex(void);
 static int yyerror(const char *);
@@ -204,8 +211,15 @@ yyerror(const char *x ATTRIBUTE_UNUSED)
   return 0;
 }
 
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 #ifdef DONTDECLARE_MALLOC
 # undef DONTDECLARE_MALLOC
 #endif /* DONTDECLARE_MALLOC */
 
-/* EOF */
+/* End of arparse.y */

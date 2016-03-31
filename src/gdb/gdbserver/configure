@@ -6582,7 +6582,10 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_NULL $ac_have_decl
 _ACEOF
-ac_fn_c_check_decl "$LINENO" "basename" "ac_cv_have_decl_basename" "
+  ## try to avoid redefinition warnings:
+if test "x${ac_cv_have_decl_basename}" = "x"; then
+  test -z "${ac_cv_have_decl_basename}"
+  ac_fn_c_check_decl "$LINENO" "basename" "ac_cv_have_decl_basename" "
 #ifdef HAVE_LIBGEN_H
 # include <libgen.h>
 #endif /* HAVE_LIBGEN_H */
@@ -6597,6 +6600,8 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_BASENAME $ac_have_decl
 _ACEOF
+  ## ...or maybe it is below?
+fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking C compiler characteristics" >&5
@@ -8965,17 +8970,6 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-ac_fn_c_check_decl "$LINENO" "basename" "ac_cv_have_decl_basename" "$ac_includes_default"
-if test "x$ac_cv_have_decl_basename" = xyes; then :
-  ac_have_decl=1
-else
-  ac_have_decl=0
-fi
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_DECL_BASENAME $ac_have_decl
-_ACEOF
-
 ac_fn_c_check_decl "$LINENO" "ffs" "ac_cv_have_decl_ffs" "$ac_includes_default"
 if test "x$ac_cv_have_decl_ffs" = xyes; then :
   ac_have_decl=1
@@ -9164,13 +9158,15 @@ else
 fi
 
     ## basename is weird:
-  if test "x${enable_build_with_cxx}" = "xyes"; then
-    ac_ext=cpp
+  if test "x${ac_cv_have_decl_basename}" = "x"; then
+    test -z "${ac_cv_have_decl_basename}"
+    if test "x${enable_build_with_cxx}" = "xyes"; then
+      ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-    as_ac_Symbol=`$as_echo "ac_cv_have_decl_basename(char *)" | $as_tr_sh`
+      as_ac_Symbol=`$as_echo "ac_cv_have_decl_basename(char *)" | $as_tr_sh`
 ac_fn_cxx_check_decl "$LINENO" "basename(char *)" "$as_ac_Symbol" "$ac_includes_default"
 if eval test \"x\$"$as_ac_Symbol"\" = x"yes"; then :
   ac_have_decl=1
@@ -9181,17 +9177,30 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_BASENAME $ac_have_decl
 _ACEOF
-    ac_ext=c
+      ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-  elif test "x${enable_build_with_cxx}" = "xno"; then
-    test -n "${enable_build_with_cxx}"
-    if test "x${ac_cv_have_decl_basename}" = "x"; then
-      test -z "${ac_cv_have_decl_basename}"
+    elif test "x${enable_build_with_cxx}" = "xno"; then
+      test -n "${enable_build_with_cxx}"
+      ac_fn_c_check_decl "$LINENO" "basename" "ac_cv_have_decl_basename" "
+#ifdef HAVE_LIBGEN_H
+# include <libgen.h>
+#endif /* HAVE_LIBGEN_H */
 
+"
+if test "x$ac_cv_have_decl_basename" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_BASENAME $ac_have_decl
+_ACEOF
+      ## end C++ conditional
     fi
   fi
 

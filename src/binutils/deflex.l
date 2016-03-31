@@ -101,3 +101,5 @@ int linenumber;
 /* Needed for lex, though not flex. */
 int yywrap(void) { return 1; }
 #endif /* !yywrap */
+
+/* End of deflex.l */

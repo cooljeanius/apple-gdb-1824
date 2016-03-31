@@ -12,6 +12,10 @@
 
 #include "ansidecl.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 /* Allocate SIZE bytes of memory: */
 extern PTR mmalloc PARAMS((PTR, size_t));
 
@@ -64,6 +68,10 @@ extern struct mdesc * mmalloc_check_create PARAMS((struct mdesc *child));
 
 PTR mmalloc_attach PARAMS((int fd, PTR baseaddr, int flags));
 void mmalloc_endpoints PARAMS((PTR md, size_t *start, size_t *end));
+  
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif  /* MMALLOC_H */
 

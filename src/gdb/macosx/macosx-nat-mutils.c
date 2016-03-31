@@ -1115,18 +1115,26 @@ typedef struct {
 
 #define STACK_LOGGING_ENUMERATION_PROVIDED 1 /* temporary to avoid dependencies between projects */
 
-extern kern_return_t __mach_stack_logging_enumerate_records(task_t task,
-							    mach_vm_address_t address,
-							    void enumerator(mach_stack_logging_record_t, void *),
-							    void *context);
+#ifndef EXTERN_C
+# ifdef __cplusplus
+#  define EXTERN_C extern "C"
+# else
+#  define EXTERN_C extern
+# endif /* __cplusplus */
+#endif /* !EXTERN_C */
+
+EXTERN_C kern_return_t __mach_stack_logging_enumerate_records(task_t task,
+                                                              mach_vm_address_t address,
+                                                              void enumerator(mach_stack_logging_record_t, void *),
+                                                              void *context);
 /* Gets all the records about address;
    If !address, gets all records */
 
-extern kern_return_t __mach_stack_logging_frames_for_uniqued_stack(task_t task,
-								   uint64_t stack_identifier,
-								   mach_vm_address_t *stack_frames_buffer,
-								   uint32_t max_stack_frames,
-								   uint32_t *num_frames);
+EXTERN_C kern_return_t __mach_stack_logging_frames_for_uniqued_stack(task_t task,
+                                                                     uint64_t stack_identifier,
+                                                                     mach_vm_address_t *stack_frames_buffer,
+                                                                     uint32_t max_stack_frames,
+                                                                     uint32_t *num_frames);
 
 /* This one may not be present, so I will have to dlsym it... */
 extern kern_return_t __mach_stack_logging_set_file_path(task_t task, char* file_path);

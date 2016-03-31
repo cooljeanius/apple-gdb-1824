@@ -487,6 +487,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+runstatedir = @runstatedir@
 sb_build_profile = @sb_build_profile@
 sbindir = @sbindir@
 selarchs = @selarchs@
@@ -1443,7 +1444,7 @@ linker.texi: $(srcdir_up)/linker.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MO
 	$(RUN_MOVEIFCHANGE) linker.tmp $@
 	$(AM_V_at)touch $@
 
-libbfd.h: $(LIBBFD_H_DEP) @MAINT@ $(src_MKDOC)
+libbfd.h: $(LIBBFD_H_DEP) @MAINT@ $(src_MKDOC) Makefile.am
 	echo "$(LIBBFD_H_DEP)" | $(SED) -f $(srcdir)/header.sed \
 	  $(AM_V_redir) $@
 	for file in $(LIBBFD_H_DEP); do \
@@ -1455,7 +1456,13 @@ libbfd.h: $(LIBBFD_H_DEP) @MAINT@ $(src_MKDOC)
 		$(src_MKDOC) -i -f $(srcdir)/proto.str < $${file} >>$@ ;; \
 	  esac; \
 	done
+	echo "#ifdef __cplusplus" >> $@
+	echo "}" >> $@
+	echo "#endif /* __cplusplus */" >> $@
+	echo "" >> $@
 	echo "#endif /* __LIBBFD_H__ */" >> $@
+	echo "" >> $@
+	echo "/* End of libbfd.h */" >> $@
 
 libcoff.h: $(LIBCOFF_H_DEP) @MAINT@ $(src_MKDOC)
 	echo "$(LIBCOFF_H_DEP)" | $(SED) -f $(srcdir)/header.sed \

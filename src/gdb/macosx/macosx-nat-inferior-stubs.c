@@ -56,7 +56,7 @@ kill_inferior(void)
 }
 
 void ATTR_NORETURN
-child_resume(int pid, int step, enum target_signal sig)
+child_resume(ptid_t ptid, int step, enum target_signal sig)
 {
   internal_error(__FILE__, __LINE__,
                  "macosx_nat_inferior: unexpected call to child_resume()");

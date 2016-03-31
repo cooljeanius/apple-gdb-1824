@@ -16,7 +16,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include <stdio.h>
@@ -45,6 +45,10 @@
 #define BFD_SYM_MAXIMUM_LEGAL_INDEX_3_2 0xfffd
 #define BFD_SYM_MAXIMUM_LEGAL_INDEX_3_4 0xfffffffd
 #define BFD_SYM_MAXIMUM_LEGAL_INDEX	BFD_SYM_MAXIMUM_LEGAL_INDEX_3_4
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 enum bfd_sym_storage_class
 {
@@ -736,6 +740,10 @@ bfd_sym_parse_file_references_table_entry_v33r0(unsigned char *buf, size_t len, 
 
 extern void
 bfd_sym_parse_resources_table_entry_v33r0(unsigned char *buf, size_t len, bfd_sym_resources_table_entry *entry);
+  
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* __xSYM_H__ */
 

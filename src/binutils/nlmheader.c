@@ -248,6 +248,43 @@ extern int yydebug;
      QUOTED_STRING = 292
    };
 #endif
+/* Tokens.  */
+#define CHECK 258
+#define CODESTART 259
+#define COPYRIGHT 260
+#define CUSTOM 261
+#define DATE 262
+#define DEBUG 263
+#define DESCRIPTION 264
+#define EXIT 265
+#define EXPORT 266
+#define FLAG_ON 267
+#define FLAG_OFF 268
+#define FULLMAP 269
+#define HELP 270
+#define IMPORT 271
+#define INPUT 272
+#define MAP 273
+#define MESSAGES 274
+#define MODULE 275
+#define MULTIPLE 276
+#define OS_DOMAIN 277
+#define OUTPUT 278
+#define PSEUDOPREEMPTION 279
+#define REENTRANT 280
+#define SCREENNAME 281
+#define SHARELIB 282
+#define STACK 283
+#define START 284
+#define SYNCHRONIZE 285
+#define THREADNAME 286
+#define TYPE 287
+#define VERBOSE 288
+#define VERSIONK 289
+#define XDCDATA 290
+#define STRING 291
+#define QUOTED_STRING 292
+
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -261,7 +298,7 @@ typedef union YYSTYPE
 
 
 /* Line 387 of yacc.c  */
-#line 265 "nlmheader.c"
+#line 302 "nlmheader.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -289,7 +326,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 293 "nlmheader.c"
+#line 330 "nlmheader.c"
 
 #ifdef short
 # undef short
@@ -615,7 +652,7 @@ static const yytype_uint16 yyrline[] =
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE || 1
+#if YYDEBUG || YYERROR_VERBOSE || 0
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
@@ -2049,7 +2086,7 @@ yyreduce:
 
 
 /* Line 1787 of yacc.c  */
-#line 2053 "nlmheader.c"
+#line 2090 "nlmheader.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2751,3 +2788,5 @@ xstrdup (const char *s)
   strcpy (ret, s);
   return ret;
 }
+
+/* End of nlmheader.y */

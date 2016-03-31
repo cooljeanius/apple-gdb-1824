@@ -17,10 +17,14 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #ifndef BFDLINK_H
 #define BFDLINK_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 /* Which symbols to strip during a link.  */
 enum bfd_link_strip
@@ -711,5 +715,11 @@ struct bfd_elf_version_tree
     (struct bfd_elf_version_expr_head *head,
      struct bfd_elf_version_expr *prev, const char *sym);
 };
+  
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
-#endif
+#endif /* !BFDLINK_H */
+
+/* EOF */

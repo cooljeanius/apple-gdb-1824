@@ -958,3 +958,5 @@ xstrdup (const char *s)
   strcpy (ret, s);
   return ret;
 }
+
+/* End of nlmheader.y */

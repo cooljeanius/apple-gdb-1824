@@ -30,11 +30,12 @@
 #include "alloca-conf.h"
 #include "bfd.h"
 
+#include "libbfd.h"
+#include "safe-ctype.h"
+
 #if defined(HOST_HPPAHPUX) || defined(HOST_HPPABSD) || defined(HOST_HPPAOSF) || defined(HOST_HPPAMPEIX)
 
-#include "libbfd.h"
 #include "som.h"
-#include "safe-ctype.h"
 
 #include <sys/param.h>
 #include <signal.h>
@@ -6312,15 +6313,78 @@ const bfd_target som_vec =
 };
 
 #else
-# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(__STDC__)
-#  warning "som.c is empty on non-HP hosts"
-# endif /* __GNUC__ && !__STRICT_ANSI__ && !__STDC__ */
-typedef int som_c_dummy_t;
-# ifdef __clang__
-extern som_c_dummy_t som_c_dummy_var;
-# endif /* __clang__ */
-som_c_dummy_t som_c_dummy_var = 0;
-const bfd_target som_vec;
+/* Dummy in as much as we can: */
+const bfd_target som_vec =
+{
+  "som",			/* Name.  */
+  bfd_target_som_flavour,
+  BFD_ENDIAN_BIG,		/* Target byte order.  */
+  BFD_ENDIAN_BIG,		/* Target headers byte order.  */
+  (HAS_RELOC | EXEC_P |		/* Object flags.  */
+   HAS_LINENO | HAS_DEBUG |
+   HAS_SYMS | HAS_LOCALS | WP_TEXT | D_PAGED | DYNAMIC),
+  (SEC_CODE | SEC_DATA | SEC_ROM | SEC_HAS_CONTENTS | SEC_LINK_ONCE
+   | SEC_ALLOC | SEC_LOAD | SEC_RELOC),		/* Section flags.  */
+
+  /* Leading_symbol_char: is the first char of a user symbol
+     predictable, and if so what is it.  */
+  0,
+  '/',				/* AR_pad_char.  */
+  14,				/* AR_max_namelen.  */
+  bfd_getb64, bfd_getb_signed_64, bfd_putb64,
+  bfd_getb32, bfd_getb_signed_32, bfd_putb32,
+  bfd_getb16, bfd_getb_signed_16, bfd_putb16,	/* Data.  */
+  bfd_getb64, bfd_getb_signed_64, bfd_putb64,
+  bfd_getb32, bfd_getb_signed_32, bfd_putb32,
+  bfd_getb16, bfd_getb_signed_16, bfd_putb16,	/* Headers.  */
+  {_bfd_dummy_target,
+   (const struct bfd_target *(*)(bfd *))bfd_check_format,
+   bfd_generic_archive_p,
+   _bfd_dummy_target
+  },
+  {
+    bfd_false,
+    bfd_false,
+    _bfd_generic_mkarchive,
+    bfd_false
+  },
+  {
+    bfd_false,
+    bfd_false,
+    _bfd_write_archive_contents,
+    bfd_false,
+  },
+#ifdef som
+# undef som
+#endif /* som */
+
+  /* BFD_JUMP_TABLE_GENERIC: */
+  NULL, /* _close_and_cleanup */
+  NULL, /* _bfd_free_cached_info */
+  NULL, /* _new_section_hook */
+  NULL, /* _get_section_contents */
+  NULL, /* _get_section_contents_in_window */
+  NULL, /* _get_section_contents_in_window_with_mode */
+  /* BFD_JUMP_TABLE_COPY: */
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  BFD_JUMP_TABLE_CORE(_bfd_nocore),
+  BFD_JUMP_TABLE_ARCHIVE(_bfd_noarchive),
+  BFD_JUMP_TABLE_SYMBOLS(_bfd_nosymbols),
+  BFD_JUMP_TABLE_RELOCS(_bfd_norelocs),
+  BFD_JUMP_TABLE_WRITE(_bfd_nowrite),
+  BFD_JUMP_TABLE_LINK(_bfd_nolink),
+  BFD_JUMP_TABLE_DYNAMIC(_bfd_nodynamic),
+
+  NULL,
+
+  NULL
+};
 #endif /* HOST_HPPAHPUX || HOST_HPPABSD || HOST_HPPAOSF */
 
 /* EOF */

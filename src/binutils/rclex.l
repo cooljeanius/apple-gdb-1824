@@ -491,4 +491,4 @@ rcparse_normal(void)
   rcdata_mode = 0;
 }
 
-/* EOF */
+/* End of rclex.l */

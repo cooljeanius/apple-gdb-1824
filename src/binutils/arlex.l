@@ -123,4 +123,4 @@ extern int yyinunput(void)
 # undef YY_NO_UNPUT
 #endif /* YY_NO_UNPUT */
 
-/* EOF */
+/* End of arlex.l */

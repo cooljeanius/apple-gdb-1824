@@ -1639,11 +1639,15 @@ m4_ifdef([AM_LC_MESSAGES],[
   ## the libiberty macro might have already checked this for us, but avoid
   ## un-setting the cache value, though, as that can lead to redefinition
   ## warnings in config.log:
-AC_CHECK_DECLS([basename],[],[],[
+if test "x${ac_cv_have_decl_basename}" = "x" && test "x${ac_cv_have_decl_basename_char_p_}" = "x"; then
+  test -z "${ac_cv_have_decl_basename}" && test -z "${ac_cv_have_decl_basename_char_p_}"
+  AC_CHECK_DECLS([basename],[],[],[
 #ifdef HAVE_LIBGEN_H
 # include <libgen.h>
 #endif /* HAVE_LIBGEN_H */
-])dnl
+  ])dnl
+  ## blah... darn it, basename...
+fi
 AC_CHECK_DECLS([name_server_port],[],[],[
 #ifdef HAVE_MACH_MACH_INIT_H
 # include <mach/mach_init.h>
@@ -2949,14 +2953,18 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wsizeof-array-argument -Wswitch-bool -Wshift-count-negative \
 -Wshift-count-overflow -Wshift-negative-value -Wshift-overflow=2 \
 -Wmisleading-indentation -Wlto-type-mismatch -Wtautological-compare \
--Wduplicated-cond -Wwrite-strings -Wenum-compare"
+-Wduplicated-cond -Wwrite-strings -Wenum-compare -Wnonnull-compare"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
   ## Special warnings only for C++ compilations:
-  cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo -Wodr -Wterminate \
+  cxx_warnings="-Wabi -Wabi-tag -Woverloaded-virtual -Wsign-promo -Wodr \
+-Wsubobject-linkage -Wctor-dtor-privacy -Wterminate -Wc++11-compat \
+-Wdelete-incomplete -Wdelete-non-virtual-dtor -Wglobal-constructors \
+-Winherited-variadic-ctor -Winvalid-offsetof -Wliteral-suffix -Wnoexcept \
+-Wnon-template-friend -Wnon-virtual-dtor -Wreorder -Wstrict-null-sentinel \
 -Wmultiple-inheritance -Wvirtual-inheritance -Wpmf-conversions \
--Wtemplates -Wno-narrowing"
+-Wtemplates -Wvirtual-move-assign"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
@@ -3088,6 +3096,9 @@ fi
 #  * -Waggregate-return (too noisy and hard to avoid)
 #  * -Wformat-signedness (too noisy)
 #  * -Wpadded (warnings in headers out of our control)
+#  * -Wsuggest-attribute=pure (less obvious than its const counterpart)
+#  * -Wstack-usage=262144 (as in bfd/binutils)
+#  * -Wconditionally-supported (for C++)
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)

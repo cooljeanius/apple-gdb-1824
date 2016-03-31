@@ -1493,6 +1493,9 @@
 /* Define to 1 if you have the <varargs.h> header file. */
 #undef HAVE_VARARGS_H
 
+/* Define to 1 if you have the `vasprintf' function. */
+#undef HAVE_VASPRINTF
+
 /* Define to 1 if you have the `vfork' function. */
 #undef HAVE_VFORK
 
@@ -1538,6 +1541,9 @@
 
 /* Define to 1 if the system has the type `x86_debug_state32_t'. */
 #undef HAVE_X86_DEBUG_STATE32_T
+
+/* Define to 1 if the system has the type `x86_debug_state_t'. */
+#undef HAVE_X86_DEBUG_STATE_T
 
 /* Define to 1 if you have the <zlib.h> header file. */
 #undef HAVE_ZLIB_H

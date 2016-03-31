@@ -68,8 +68,16 @@ static int dont_handle_bad_access = 0;
 static void excthread_debug_re(int level, const char *fmt, ...)
   ATTR_FORMAT(gnu_printf, 2, 3);
 
+#ifndef EXTERN_C
+# ifdef __cplusplus
+#  define EXTERN_C extern "C"
+# else
+#  define EXTERN_C extern
+# endif /* __cplusplus */
+#endif /* !EXTERN_C */
+
 extern boolean_t mach_exc_server(mach_msg_header_t *in,
-                                 mach_msg_header_t *out);
+				 mach_msg_header_t *out);
 
 extern void _initialize_macosx_nat_excthread(void);
 

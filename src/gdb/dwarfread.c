@@ -2124,7 +2124,7 @@ locval (struct dieinfo *dip)
 {
   unsigned short nbytes;
   unsigned short locsize;
-  auto long stack[64];
+  /*auto*/ long stack[64];
   int stacki;
   char *loc;
   char *end;

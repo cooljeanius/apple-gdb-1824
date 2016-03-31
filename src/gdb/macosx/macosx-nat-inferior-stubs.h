@@ -9,7 +9,7 @@
 extern int attach(int);
 extern void detach(int);
 extern void kill_inferior(void);
-extern void child_resume(int, int, enum target_signal);
+extern void child_resume(ptid_t, int, enum target_signal);
 
 #endif /* !__GDB_MACOSX_NAT_INFERIOR_STUBS_H__ */
 

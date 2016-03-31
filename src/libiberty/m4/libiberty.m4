@@ -1,4 +1,4 @@
-# libiberty.m4 serial 1                                    -*- Autoconf -*-
+# libiberty.m4 serial 2                                    -*- Autoconf -*-
 dnl# Bits libiberty clients must do on their autoconf step.
 dnl#
 dnl#   Copyright (C) 2012-2015 Free Software Foundation, Inc.
@@ -32,15 +32,20 @@ AC_DEFUN([libiberty_INIT],[
 
   AC_CHECK_DECLS_ONCE([alloca])dnl
   ## basename is weird:
-  if test "x${enable_build_with_cxx}" = "xyes"; then
-    AC_LANG_PUSH([C++])dnl
-    AC_CHECK_DECLS([basename(char *)])dnl
-    AC_LANG_POP([C++])
-  elif test "x${enable_build_with_cxx}" = "xno"; then
-    test -n "${enable_build_with_cxx}"
-    if test "x${ac_cv_have_decl_basename}" = "x"; then
-      test -z "${ac_cv_have_decl_basename}"
-      AC_CHECK_DECLS_ONCE([basename])
+  if test "x${ac_cv_have_decl_basename}" = "x"; then
+    test -z "${ac_cv_have_decl_basename}"
+    if test "x${enable_build_with_cxx}" = "xyes"; then
+      AC_LANG_PUSH([C++])dnl
+      AC_CHECK_DECLS([basename(char *)])dnl
+      AC_LANG_POP([C++])
+    elif test "x${enable_build_with_cxx}" = "xno"; then
+      test -n "${enable_build_with_cxx}"
+      AC_CHECK_DECLS([basename],[],[],[
+#ifdef HAVE_LIBGEN_H
+# include <libgen.h>
+#endif /* HAVE_LIBGEN_H */
+      ])dnl
+      ## end C++ conditional
     fi
   fi
   AC_CHECK_DECLS_ONCE([ffs, asprintf, vasprintf, snprintf, vsnprintf])dnl

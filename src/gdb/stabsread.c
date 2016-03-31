@@ -753,9 +753,12 @@ process_symbol_types_only(const char *string, const char *prefix,
     }
 }
 
+/* FIXME: broken in C++, so ifdef-ed out: */
+#ifdef HAVE_FVTABLE_THUNKS_FLAG
 /* gcc-2.6 or later (when using -fvtable-thunks) emits a unique named type
  * for a vtable entry.  Some gdb code depends on that specific name: */
 extern const char vtbl_ptr_name[];
+#endif /* HAVE_FVTABLE_THUNKS_FLAG */
 
 struct symbol *
 /* APPLE LOCAL symbol prefixes */
@@ -1350,8 +1353,12 @@ define_symbol(CORE_ADDR valu, const char *string, const char *prefix,
       if (TYPE_NAME(SYMBOL_TYPE(sym)) == NULL)
 	{
 	  if ((TYPE_CODE(SYMBOL_TYPE(sym)) == TYPE_CODE_PTR
-	       && strcmp(DEPRECATED_SYMBOL_NAME(sym), vtbl_ptr_name))
-	      || TYPE_CODE(SYMBOL_TYPE(sym)) == TYPE_CODE_FUNC)
+#ifdef HAVE_FVTABLE_THUNKS_FLAG
+	       && strcmp(DEPRECATED_SYMBOL_NAME(sym), vtbl_ptr_name)
+#else
+	       && 0
+#endif /* HAVE_FVTABLE_THUNKS_FLAG */
+	      ) || TYPE_CODE(SYMBOL_TYPE(sym)) == TYPE_CODE_FUNC)
 	    {
 	      /* If we are giving a name to a type such as "pointer to
 	         foo" or "function returning foo", we better not set
