@@ -310,16 +310,16 @@ hexify (char *hex, const char *bin, int count)
    The data of the packet is in BUF.  Returns >= 0 on success, -1 otherwise. */
 
 int
-putpkt (char *buf)
+putpkt(char *buf)
 {
-  int i;
-  unsigned char csum = 0;
+  unsigned int i;
+  unsigned char csum = 0U;
   char *buf2;
   char buf3[1];
-  int cnt = strlen (buf);
+  size_t cnt = strlen(buf);
   char *p;
 
-  buf2 = malloc (PBUFSIZ);
+  buf2 = (char *)malloc(PBUFSIZ);
 
   /* Copy the packet into buffer BUF2, encapsulating it
      and giving it a checksum.  */
@@ -327,7 +327,7 @@ putpkt (char *buf)
   p = buf2;
   *p++ = '$';
 
-  for (i = 0; i < cnt; i++)
+  for (i = 0U; i < cnt; i++)
     {
       csum += buf[i];
       *p++ = buf[i];
@@ -870,7 +870,7 @@ look_up_one_symbol (const char *name, CORE_ADDR *addrp)
   decode_address(addrp, p, (q - p));
 
   /* Save the symbol in our cache: */
-  sym = malloc(sizeof(*sym));
+  sym = (struct sym_cache *)malloc(sizeof(*sym));
   sym->name = strdup(name);
   sym->addr = *addrp;
   sym->next = symbol_cache;

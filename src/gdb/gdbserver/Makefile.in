@@ -63,6 +63,13 @@ TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 # The name of the compiler to use:
 COMPILER = @COMPILER@
 
+# The name of the linker to use:
+LINKER = @LINKER@
+
+# These are for use with the automake-style verbosity control below:
+AM_V_COMPILER = @AM_V_COMPILER@
+AM_V_LINKER = @AM_V_LINKER@
+
 CC = @CC@
 CXX = @CXX@
 
@@ -78,10 +85,10 @@ depcomp = $(SHELL) $(srcdir)/../depcomp
 
 # Note that these are overridden by GNU make-specific code below if
 # GNU make is used.  The overrides implement dependency tracking.
-COMPILE.pre = $(CC)
-COMPILE.post = -c -o $@
-COMPILE = $(COMPILE.pre) $(INTERNAL_CFLAGS) $(COMPILE.post)
-POSTCOMPILE = @echo "done compiling '$@'"
+COMPILE.pre = $(COMPILER)
+COMPILE.post = $(CPPFLAGS) -c -o $@
+COMPILE = $(AM_V_COMPILER)$(COMPILE.pre) $(INTERNAL_CFLAGS) $(COMPILE.post)
+POSTCOMPILE = @echo "Used $(COMPILER) to compile $< into $@."
 
 # Directory containing source files.  Do NOT clean up the spacing,
 # this exact string is matched for by the "configure" script.
@@ -99,6 +106,7 @@ VPATH = @srcdir@
 CC_LD_STATIC="gcc -static"
 CC_LD=${CC}
 CXX_LD=${CXX}
+COMPILER_LD=${COMPILER}
 
 # Where is the "include" directory?  Traditionally ../include or ./include
 INCLUDE_DIR =  ${srcdir}/../../include
@@ -107,7 +115,8 @@ INCLUDE_DEP = $$(INCLUDE_DIR)
 # gnulib
 GNULIB_BUILDDIR = ../gnulib
 LIBGNU = $(GNULIB_BUILDDIR)/import/libgnu.a
-INCGNU = -I$(srcdir)/../gnulib/import -I$(GNULIB_BUILDDIR)/import
+INCGNU = -I$(srcdir)/../gnulib -I$(srcdir)/../gnulib/import \
+  -I$(GNULIB_BUILDDIR)/import
 
 # Generated headers in the gnulib directory. These must be listed
 # so that they are generated before other files are compiled.
@@ -160,6 +169,16 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 
+AM_V_CXX = $(am__v_CXX_@AM_V@)
+am__v_CXX_ = $(am__v_CXX_@AM_DEFAULT_V@)
+am__v_CXX_0 = @echo "  CXX      " $@;
+am__v_CXX_1 = 
+
+AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
+am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
+am__v_CXXLD_0 = @echo "  CXXLD    " $@;
+am__v_CXXLD_1 = 
+
 # All the includes used for CFLAGS and for lint.
 # -I. for config files.
 # -I${srcdir} for our headers.
@@ -185,6 +204,8 @@ HARDCODED_PROFILE_CFLAGS = -pg
 
 # Warnings:
 WARN_CFLAGS = -Wall -Wno-unused -Wextra -Wimplicit -std=gnu99
+WARN_CXXFLAGS = -Wall -Wabi -Wno-unused -Wextra -Wundef -Wno-long-long \
+  -std=gnu++03 -fpermissive
 CONFIGURED_WARN_CFLAGS = @WARN_CFLAGS@
 WARN_CFLAGS_NO_FORMAT = `echo " $(CONFIGURED_WARN_CFLAGS) " \
 	 | $(SED) "s/ -Wformat-nonliteral / -Wno-format-nonliteral /g"`
@@ -207,7 +228,7 @@ INTERNAL_DEFS = $(CONFIGURED_DEFS) $(DEFS)
 # INTERNAL_CFLAGS is the aggregate of all other *CFLAGS macros.
 INTERNAL_CFLAGS_BASE = ${CFLAGS} ${GLOBAL_CFLAGS} \
 	${PROFILE_CFLAGS} ${INCLUDE_CFLAGS}
-INTERNAL_WARN_CFLAGS = ${INTERNAL_CFLAGS_BASE} $(WARN_CFLAGS) $(CONFIGURED_WARN_CFLAGS)
+INTERNAL_WARN_CFLAGS = ${INTERNAL_CFLAGS_BASE} @WARN_COMPILER_FLAGS@ $(CONFIGURED_WARN_CFLAGS)
 INTERNAL_CFLAGS = ${INTERNAL_WARN_CFLAGS} ${BFD_CFLAGS} $(INTERNAL_DEFS)
 
 # LDFLAGS is specifically reserved for setting from the command line
@@ -344,7 +365,10 @@ generated_files = config.h $(GNULIB_H)
 # Prevent Sun make from putting in the machine type.  Setting
 # TARGET_ARCH to nothing works for SunOS 3, 4.0, but not for 4.1.
 .c.o:
-	$(AM_V_CC)${CC} -c $(CPPFLAGS) ${INTERNAL_CFLAGS} $<
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+
+## Old rule was: $(AM_V_CC)${CC} -c $(CPPFLAGS) ${INTERNAL_CFLAGS} $<
 
 all: gdbserver$(EXEEXT) gdbreplay$(EXEEXT) $(extra_libraries)
 
@@ -650,7 +674,7 @@ ax_h = $(srcdir)/ax.h $(server_h) $(regcache_h)
 tracepoint_h = $(srcdir)/tracepoint.h
 
 ax.o: ax.c $(server_h) $(ax_h) $(tracepoint_h)
-	$(AM_V_CC)$(COMPILE) $(WARN_CFLAGS_NO_FORMAT) $<
+	$(COMPILE) $(WARN_CFLAGS_NO_FORMAT) $<
 	$(POSTCOMPILE)
 
 gdbthread_h = $(srcdir)/gdbthread.h $(server_h) $(inferiors_h)
@@ -660,66 +684,67 @@ tracepoint.o: tracepoint.c $(server_h) $(tracepoint_h) $(gdbthread_h) \
 
 # objects whose sources are from ../signals:
 signals.o: ../signals/signals.c $(server_h)
-	$(AM_V_CC)$(CC) -c $(CPPFLAGS) $(INTERNAL_CFLAGS) $< -DGDBSERVER
+	$(AM_V_COMPILER)$(COMPILER) -c $(CPPFLAGS) $(INTERNAL_CFLAGS) $< \
+	  -DGDBSERVER
 
 # non-ipa objects whose sources are from ../common:
 print-utils.o: ../common/print-utils.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 rsp-low.o: ../common/rsp-low.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 linux-procfs.o: ../common/linux-procfs.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 linux-ptrace.o: ../common/linux-ptrace.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 common-utils.o: ../common/common-utils.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 vec.o: ../common/vec.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 gdb_vecs.o: ../common/gdb_vecs.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 xml-utils.o: ../common/xml-utils.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 linux-osdata.o: ../common/linux-osdata.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 ptid.o: ../common/ptid.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 buffer.o: ../common/buffer.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 format.o: ../common/format.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 filestuff.o: ../common/filestuff.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 agent.o: ../common/agent.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 linux-btrace.o: ../common/linux-btrace.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 mips-linux-watch.o: ../common/mips-linux-watch.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 
 # Native object files rules from ../nat:
 linux-waitpid.o: ../nat/linux-waitpid.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 
 # objects whose sources are from ../target:
 waitstatus.o: ../target/waitstatus.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 
 # We build vasprintf with -DHAVE_CONFIG_H because we want that unit to
@@ -727,16 +752,16 @@ waitstatus.o: ../target/waitstatus.c
 # included, and the compiler emits a warning about implicitly defined
 # functions (missing declaration).
 vasprintf.o: $(LIBIBERTY_DIR)/vasprintf.c
-	$(AM_V_CC)$(COMPILE) $< -DHAVE_CONFIG_H
+	$(COMPILE) $< -DHAVE_CONFIG_H
 	$(POSTCOMPILE)
 vsnprintf.o: $(LIBIBERTY_DIR)/vsnprintf.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 safe-ctype.o: $(LIBIBERTY_DIR)/safe-ctype.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 lbasename.o: $(LIBIBERTY_DIR)/lbasename.c
-	$(AM_V_CC)$(COMPILE) $<
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 
 i387_fp_h = $(srcdir)/i387-fp.h

@@ -304,7 +304,7 @@ struct process_info *add_process(int pid, int attached)
   struct process_info *process;
   ptid_t temp_ptid;
 
-  process = xcalloc(1, sizeof(*process));
+  process = (struct process_info *)xcalloc(1, sizeof(*process));
 
 #ifdef _INFERIOR_LIST_ENTRY_ID_IS_UNSIGNED_LONG
   /* as in dll.c, need to choose a member... a little trickier here though,

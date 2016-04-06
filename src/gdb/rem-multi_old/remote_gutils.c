@@ -166,7 +166,7 @@ extern int errno;
 /* Print the system error message for errno, and also mention STRING
  * as the file name for which the error was encountered.
  * Then return to command level.  */
-void perror_with_name(char *string)
+void perror_with_name(const char *string)
 {
   const char *err;
   char *combined;

@@ -1,4 +1,4 @@
-/* Shared helper routines for manipulating XML.
+/* common/xml-utils.c: Shared helper routines for manipulating XML.
 
    Copyright (C) 2006-2013 Free Software Foundation, Inc.
 
@@ -55,8 +55,8 @@ xml_escape_text (const char *text)
 	break;
       }
 
-  /* Expand the result.  */
-  result = xmalloc (i + special + 1);
+  /* Expand the result: */
+  result = (char *)xmalloc(i + special + 1);
   for (i = 0, special = 0; text[i] != '\0'; i++)
     switch (text[i])
       {

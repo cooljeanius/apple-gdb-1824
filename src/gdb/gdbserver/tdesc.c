@@ -38,15 +38,18 @@ void init_target_desc(struct target_desc *tdesc)
 
   /* Make sure PBUFSIZ is large enough to hold a full register packet: */
   if (((2 * tdesc->registers_size) + 32) > PBUFSIZ) {
-	  fatal("Register packet size exceeds PBUFSIZ.");
+    fatal("Register packet size exceeds PBUFSIZ.");
   }
 }
 
 #ifndef IN_PROCESS_AGENT
-static const struct target_desc default_description;
+static const struct target_desc default_description =
+{
+  (struct reg *)NULL, 0, 0, (const char **)NULL, (const char *)NULL
+};
 
 void copy_target_description(struct target_desc *dest,
-							 const struct target_desc *src)
+			     const struct target_desc *src)
 {
   dest->reg_defs = src->reg_defs;
   dest->num_registers = src->num_registers;
@@ -58,7 +61,7 @@ void copy_target_description(struct target_desc *dest,
 const struct target_desc *current_target_desc(void)
 {
   if (current_inferior == NULL) {
-	  return &default_description;
+    return &default_description;
   }
 
   return current_process()->tdesc;

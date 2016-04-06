@@ -74,17 +74,17 @@ write_inferior_memory (CORE_ADDR memaddr, const unsigned char *myaddr,
   /* Lacking cleanups, there is some potential for a memory leak if the
      write fails and we go through error().  Make sure that no more than
      one buffer is ever pending by making BUFFER static.  */
-  static unsigned char *buffer = 0;
+  static unsigned char *buffer = (unsigned char *)0U;
   int res;
 
   if (buffer != NULL)
-    free (buffer);
+    free(buffer);
 
-  buffer = malloc (len);
-  memcpy (buffer, myaddr, len);
-  check_mem_write (memaddr, buffer, len);
-  res = (*the_target->write_memory) (memaddr, buffer, len);
-  free (buffer);
+  buffer = (unsigned char *)malloc(len);
+  memcpy(buffer, myaddr, len);
+  check_mem_write(memaddr, buffer, len);
+  res = (*the_target->write_memory)(memaddr, buffer, len);
+  free(buffer);
   buffer = NULL;
 
   return res;

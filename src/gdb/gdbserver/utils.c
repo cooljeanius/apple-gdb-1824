@@ -31,7 +31,7 @@
    Then return to command level.  */
 
 void
-perror_with_name(char *string)
+perror_with_name(const char *string)
 {
 #ifndef STDC_HEADERS
   extern int errno;

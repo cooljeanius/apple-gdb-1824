@@ -626,6 +626,7 @@ ac_header_list=
 ac_subst_vars='LTLIBOBJS
 WERROR_CFLAGS
 WARN_CFLAGS
+WARN_COMPILER_FLAGS
 USE_THREAD_DB
 extra_libraries
 IPA_DEPFILES
@@ -10034,23 +10035,30 @@ fi
 
 
 build_warnings="-Wmain -Wpointer-arith -Wformat-security \
--Wno-char-subscripts -Wempty-body -Wnested-externs -Wno-unused-parameter \
--Wundef -Wswitch -Wparentheses -Winline -Wvolatile-register-var \
--Warray-bounds -Wdiv-by-zero -Wdouble-promotion -Wfree-nonheap-object \
--pedantic -Winvalid-memory-model -Wmissing-braces -Wmissing-include-dirs \
--Woverflow -Woverlength-strings -Woverride-init -Wreturn-local-addr \
--Wsequence-point -Wsizeof-pointer-memaccess -Wunsuffixed-float-constants \
--Wstrict-overflow -Wtrampolines -Wjump-misses-init -Wcoverage-mismatch \
--Wmisleading-indentation -Wno-strict-aliasing -Wno-unused-function"
+-Wno-char-subscripts -Wempty-body -Wno-unused-parameter -Wundef -Wswitch \
+-Wparentheses -Winline -Wvolatile-register-var -Warray-bounds \
+-Wdiv-by-zero -Wdouble-promotion -Wfree-nonheap-object -pedantic \
+-Winvalid-memory-model -Wmissing-braces -Wmissing-include-dirs -Woverflow \
+-Woverlength-strings -Wreturn-local-addr -Wsequence-point \
+-Wsizeof-pointer-memaccess -Wstrict-overflow -Wtrampolines \
+-Wcoverage-mismatch -Wmisleading-indentation -Wno-strict-aliasing \
+-Wno-unused-function"
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
-  cxx_warnings="-Wabi -Woverloaded-virtual -Wsign-promo \
--Wno-sign-compare -Wno-write-strings -Wno-narrowing"
-  build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
+  cxx_warnings="-Wabi -Wabi-tag -Woverloaded-virtual -Wsign-promo -Wodr \
+-Winvalid-offsetof -Wstrict-null-sentinel -Wlto-type-mismatch \
+-Wc++11-compat -Wmultiple-inheritance -Wvirtual-inheritance"
+  build_warnings="${build_warnings} ${cxx_warnings} -std=gnu++03 \
+-fpermissive"
+  WARN_COMPILER_FLAGS='$(WARN_CXXFLAGS)'
 else
   c_warnings="-Wdeclaration-after-statement -Wmissing-parameter-type \
--Wstrict-prototypes -Wold-style-declaration -Wold-style-definition"
-  build_warnings="${build_warnings} ${c_warnings}"
+-Wstrict-prototypes -Wold-style-declaration -Wold-style-definition \
+-Wc++-compat -Wjump-misses-init -Wunsuffixed-float-constants \
+-Wpointer-sign -Woverride-init -Woverride-init-side-effects \
+-Wnested-externs"
+  build_warnings="${build_warnings} ${c_warnings} -std=gnu99"
+  WARN_COMPILER_FLAGS='$(WARN_CFLAGS)'
 fi
 
 # left out on purpose:

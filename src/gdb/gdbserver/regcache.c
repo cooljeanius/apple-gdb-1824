@@ -100,12 +100,12 @@ new_register_cache(void)
 {
   struct inferior_regcache_data *regcache;
 
-  regcache = malloc (sizeof (*regcache));
+  regcache = (struct inferior_regcache_data *)malloc(sizeof(*regcache));
 
   /* Make sure to zero-initialize the register cache when it is created,
      in case there are registers the target never fetches. This way they will
      read as zero instead of garbage.  */
-  regcache->registers = calloc (1, register_bytes);
+  regcache->registers = (unsigned char *)calloc(1, register_bytes);
   if (regcache->registers == NULL)
     fatal ("Could not allocate register cache.");
 

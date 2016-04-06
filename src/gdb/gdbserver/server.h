@@ -192,12 +192,12 @@ void remove_thread(struct thread_info *thread);
 void add_thread(unsigned long thread_id, void *target_data, unsigned int);
 struct inferior_list_entry *
 find_inferior(struct inferior_list *,
-			  int (*func)(struct inferior_list_entry *, void *),
-			  void *arg);
+	      int (*func)(struct inferior_list_entry *, void *),
+	      void *arg);
 #ifndef _HAVE_ID_CONVERSION_FUNCS
 # define _HAVE_ID_CONVERSION_FUNCS 1
 struct inferior_list_entry *find_inferior_id(struct inferior_list *list,
-											 unsigned long id);
+					     unsigned long id);
 unsigned int thread_id_to_gdb_id(unsigned long);
 unsigned int thread_to_gdb_id(struct thread_info *);
 unsigned long gdb_id_to_thread_id(unsigned int);
@@ -252,14 +252,14 @@ int look_up_one_symbol(const char *name, CORE_ADDR *addrp);
 #endif /* !REMOTE_UTILS_H */
 
 /* Functions from ``signals.c''.  */
-enum target_signal target_signal_from_host (int hostsig);
-int target_signal_to_host_p (enum target_signal oursig);
-int target_signal_to_host (enum target_signal oursig);
-char *target_signal_to_name (enum target_signal oursig);
+enum target_signal target_signal_from_host(int hostsig);
+int target_signal_to_host_p(enum target_signal oursig);
+int target_signal_to_host(enum target_signal oursig);
+const char *target_signal_to_name(enum target_signal oursig);
 
 /* Functions from utils.c */
 
-void perror_with_name(char *string);
+void perror_with_name(const char *string);
 void error(const char *string,...) ATTR_NORETURN ATTR_FORMAT(printf, 1, 2);
 void fatal(const char *string,...) ATTR_NORETURN ATTR_FORMAT(printf, 1, 2);
 void warning(const char *string,...) ATTR_FORMAT(printf, 1, 2);

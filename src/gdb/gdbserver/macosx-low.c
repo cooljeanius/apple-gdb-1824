@@ -233,7 +233,7 @@ static int macosx_create_inferior(char *program, char **allargs)
 
   pid = fork();
   if (pid < 0) {
-	  perror_with_name("fork");
+    perror_with_name("fork");
   }
 
   if (pid == 0)
@@ -242,15 +242,17 @@ static int macosx_create_inferior(char *program, char **allargs)
       ptrace (PT_TRACE_ME, 0, 0, 0);
       ptrace (PT_SIGEXC, 0, 0, 0);
 
-      /* signal (__SIGRTMIN + 1, SIG_DFL); */
+#if defined(__SIGRTMIN) && defined(SIG_DFL) && defined(HAVE_SIGNAL)
+      signal(__SIGRTMIN + 1, SIG_DFL);
+#endif /* __SIGRTMIN && SIG_DFL && HAVE_SIGNAL */
 
       /* Set the process group ID of the child process (from within the
        * child process) to be in its own process group. One of the
-	   * SETPGID calls in the parent or child process will be redundant,
-	   * but both are needed to avoid a race condition since we do NOT
-	   * know which process will get to execute first. Passing zero for
-	   * the pid and pgrp will set the child's process group ID to match
-	   * its pid. */
+       * SETPGID calls in the parent or child process will be redundant,
+       * but both are needed to avoid a race condition since we do NOT
+       * know which process will get to execute first. Passing zero for
+       * the pid and pgrp will set the child's process group ID to match
+       * its pid. */
       setpgid (0, 0);
 
       /* I am not sure why I need to sleep a bit here...
@@ -337,7 +339,8 @@ macosx_process_resume_requests(struct inferior_list_entry *entry)
 {
   struct thread_info *thread = (struct thread_info *)entry;
   struct macosx_process_info *process;
-  struct macosx_thread_info *macosx_thread = inferior_target_data(thread);
+  struct macosx_thread_info *macosx_thread =
+    (struct macosx_thread_info *)inferior_target_data(thread);
   int index = 0;
   int ret;
 
@@ -576,14 +579,14 @@ struct macosx_event
 {
   enum macosx_event_source source;
   enum macosx_event_type type;
-  char *data;
+  void *data;
   struct macosx_event *next;
   struct macosx_event *prev;
 };
 
 static struct macosx_event *
 macosx_add_to_events(struct macosx_process_info *inferior,
-                     enum macosx_event_source source, char *data);
+                     enum macosx_event_source source, void *data);
 static void macosx_clear_events(struct macosx_process_info *inferior);
 
 
@@ -611,14 +614,14 @@ macosx_exception_event_type(struct macosx_process_info *inferior,
 }
 
 static struct macosx_event *
-macosx_add_to_events (struct macosx_process_info *inferior,
-		      enum macosx_event_source source,
-		      char *data)
+macosx_add_to_events(struct macosx_process_info *inferior,
+		     enum macosx_event_source source,
+		     void *data)
 {
   struct macosx_event *new_event;
 
-  new_event = (struct macosx_event *)
-    malloc (sizeof (struct macosx_event));
+  new_event = ((struct macosx_event *)
+	       malloc(sizeof(struct macosx_event)));
   new_event->type = MACOSX_TYPE_UNKNOWN;
   new_event->source = source;
 
@@ -1458,7 +1461,7 @@ static struct target_ops macosx_target_ops = {
 };
 
 int using_threads;
-int debug_threads;
+extern int debug_threads;
 
 void initialize_low(void)
 {

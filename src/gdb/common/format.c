@@ -1,4 +1,4 @@
-/* Parse a printf-style format string.
+/* common/format.c: Parse a printf-style format string.
 
    Copyright (C) 1986-2013 Free Software Foundation, Inc.
 
@@ -104,9 +104,8 @@ parse_format_string (const char **arg)
      done with it; it's up to callers to complain about syntax.  */
   *arg = s;
 
-  /* Need extra space for the '\0's.  Doubling the size is sufficient.  */
-
-  current_substring = xmalloc (strlen (string) * 2 + 1000);
+  /* Need extra space for the '\0's.  Doubling the size is sufficient: */
+  current_substring = (char *)xmalloc((strlen(string) * 2UL) + 1000UL);
 
   max_pieces = strlen (string) + 2;
 
@@ -389,14 +388,14 @@ free_format_pieces (struct format_piece *pieces)
 void
 free_format_pieces_cleanup (void *ptr)
 {
-  void **location = ptr;
+  void **location = (void **)ptr;
 
   if (location == NULL)
     return;
 
   if (*location != NULL)
     {
-      free_format_pieces (*location);
+      free_format_pieces((struct format_piece *)*location);
       *location = NULL;
     }
 }

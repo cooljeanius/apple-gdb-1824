@@ -57,8 +57,8 @@ set_breakpoint_at (CORE_ADDR where, void (*handler) (CORE_ADDR))
   if (breakpoint_data == NULL)
     error ("Target does not support breakpoints.");
 
-  bp = malloc (sizeof (struct breakpoint));
-  memset (bp, 0, sizeof (struct breakpoint));
+  bp = (struct breakpoint *)malloc(sizeof(struct breakpoint));
+  memset(bp, 0, sizeof(struct breakpoint));
 
   (*the_target->read_memory) (where, bp->old_data,
 			      breakpoint_len);

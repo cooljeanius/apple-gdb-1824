@@ -158,7 +158,8 @@ handle_query (char *own_buf)
   if (the_target->read_auxv != NULL
       && strncmp ("qPart:auxv:read::", own_buf, 17) == 0)
     {
-      unsigned char data[(PBUFSIZ - 1) / 2];
+      const int data_arrsiz = ((PBUFSIZ - 1) / 2);
+      unsigned char data[data_arrsiz];
       CORE_ADDR ofs;
       unsigned int len;
       int n;
@@ -200,7 +201,8 @@ handle_v_cont (char *own_buf, char *status, int *signal)
   /* Allocate room for one extra action, for the default remain-stopped
      behavior; if no default action is in the list, we will need the extra
      slot.  */
-  resume_info = malloc ((n + 1) * sizeof (resume_info[0]));
+  resume_info = ((struct thread_resume *)
+		 malloc((n + 1) * sizeof(resume_info[0])));
 
   default_action.thread = -1;
   default_action.leave_stopped = 1;
@@ -230,9 +232,9 @@ handle_v_cont (char *own_buf, char *status, int *signal)
 	    goto err;
 	  p = q;
 
-	  if (!target_signal_to_host_p (sig))
+	  if (!target_signal_to_host_p((enum target_signal)sig))
 	    goto err;
-	  resume_info[i].sig = target_signal_to_host (sig);
+	  resume_info[i].sig = target_signal_to_host((enum target_signal)sig);
 	}
       else
 	{
@@ -407,9 +409,9 @@ main(volatile int argc, char *argv[])
   if (argc < 3 || bad_attach)
     gdbserver_usage();
 
-  initialize_low ();
+  initialize_low();
 
-  own_buf = malloc (PBUFSIZ);
+  own_buf = (char *)malloc(PBUFSIZ);
 
   if (pid == 0)
     {
@@ -565,8 +567,8 @@ main(volatile int argc, char *argv[])
 	      break;
 	    case 'C':
 	      convert_ascii_to_int (own_buf + 1, &sig, 1);
-	      if (target_signal_to_host_p (sig))
-		signal = target_signal_to_host (sig);
+	      if (target_signal_to_host_p((enum target_signal)sig))
+		signal = target_signal_to_host((enum target_signal)sig);
 	      else
 		signal = 0;
 	      set_desired_inferior (0);
@@ -576,8 +578,8 @@ main(volatile int argc, char *argv[])
 	      break;
 	    case 'S':
 	      convert_ascii_to_int (own_buf + 1, &sig, 1);
-	      if (target_signal_to_host_p (sig))
-		signal = target_signal_to_host (sig);
+	      if (target_signal_to_host_p((enum target_signal)sig))
+		signal = target_signal_to_host((enum target_signal)sig);
 	      else
 		signal = 0;
 	      set_desired_inferior (0);
@@ -733,12 +735,11 @@ main(volatile int argc, char *argv[])
 	  putpkt (own_buf);
 
 	  if (status == 'W')
-	    fprintf (stderr,
-		     "\nChild exited with status %d\n", signal);
+	    fprintf(stderr, "\nChild exited with status %d\n", signal);
 	  if (status == 'X')
-	    fprintf (stderr, "\nChild terminated with signal = 0x%x (%s)\n",
-		     target_signal_to_host (signal),
-		     target_signal_to_name (signal));
+	    fprintf(stderr, "\nChild terminated with signal = 0x%x (%s)\n",
+		    target_signal_to_host((enum target_signal)signal),
+		    target_signal_to_name((enum target_signal)signal));
 	  if (status == 'W' || status == 'X')
 	    {
 	      if (extended_protocol)

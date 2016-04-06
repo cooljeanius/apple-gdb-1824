@@ -45,16 +45,16 @@ static void free_one_dll(struct inferior_list_entry *inf)
  * is ignored; so is an all-ones base address: */
 static int match_dll(struct inferior_list_entry *inf, void *arg)
 {
-  struct dll_info *iter = (void *)inf;
-  struct dll_info *key = arg;
+  struct dll_info *iter = (struct dll_info *)(void *)inf;
+  struct dll_info *key = (struct dll_info *)arg;
 
-  if ((key->base_addr != ~(CORE_ADDR)0)
+  if ((key->base_addr != ~(CORE_ADDR)0UL)
       && (iter->base_addr == key->base_addr)) {
-	  return 1;
+    return 1;
   } else if ((key->name != NULL)
-			 && (iter->name != NULL)
-			 && (strcmp(key->name, iter->name) == 0)) {
-	  return 1;
+	     && (iter->name != NULL)
+	     && (strcmp(key->name, iter->name) == 0)) {
+    return 1;
   }
 
   return 0;
@@ -63,7 +63,7 @@ static int match_dll(struct inferior_list_entry *inf, void *arg)
 /* Record a newly loaded DLL at BASE_ADDR: */
 void loaded_dll(const char *name, CORE_ADDR base_addr)
 {
-  struct dll_info *new_dll = xmalloc(sizeof(*new_dll));
+  struct dll_info *new_dll = (struct dll_info *)xmalloc(sizeof(*new_dll));
   memset(new_dll, 0, sizeof(*new_dll));
 
 #if defined(_INFERIOR_LIST_ENTRY_ID_IS_UNSIGNED_LONG)
@@ -92,24 +92,24 @@ void unloaded_dll(const char *name, CORE_ADDR base_addr)
   key_dll.name = (char *)name;
   key_dll.base_addr = base_addr;
 
-  dll = (void *)find_inferior(&all_dlls, match_dll, &key_dll);
+  dll = (struct dll_info *)find_inferior(&all_dlls, match_dll, &key_dll);
 
-	if (dll == NULL) {
-		/* For some inferiors we might get unloaded_dll events without having
-		 * a corresponding loaded_dll. In that case, the dll cannot be found
-		 * in ALL_DLL, and there is nothing further for us to do.
-		 *
-		 * This has been observed when running 32bit executables on Windows64
-		 * (i.e. through WOW64, the interface between the 32bits and 64bits
-		 * worlds). In that case, the inferior always does some strange
-		 * unloading of unnamed dll.  */
-		return;
-	} else {
-		/* DLL has been found, so remove entry & free associated resources: */
-		remove_inferior(&all_dlls, &dll->entry);
-		free_one_dll(&dll->entry);
-		dlls_changed = 1;
-    }
+  if (dll == NULL) {
+    /* For some inferiors we might get unloaded_dll events without having
+     * a corresponding loaded_dll. In that case, the dll cannot be found
+     * in ALL_DLL, and there is nothing further for us to do.
+     *
+     * This has been observed when running 32bit executables on Windows64
+     * (i.e. through WOW64, the interface between the 32bits and 64bits
+     * worlds). In that case, the inferior always does some strange
+     * unloading of unnamed dll.  */
+    return;
+  } else {
+    /* DLL has been found, so remove entry & free associated resources: */
+    remove_inferior(&all_dlls, &dll->entry);
+    free_one_dll(&dll->entry);
+    dlls_changed = 1;
+  }
 }
 
 void clear_dlls(void)

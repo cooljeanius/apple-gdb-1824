@@ -2,7 +2,7 @@
    Replay a remote debug session logfile for GDB.
    Copyright 1996, 1998, 1999, 2000, 2002, 2003, 2005
    Free Software Foundation, Inc.
-   Written by Fred Fish (fnf@cygnus.com) from pieces of gdbserver.
+   Written by Fred Fish <fnf@cygnus.com> from pieces of gdbserver.
 
    This file is part of GDB.
 
@@ -69,7 +69,7 @@ static int remote_desc;
    Then return to command level.  */
 
 static void
-perror_with_name(char *string)
+perror_with_name(const char *string)
 {
 #ifndef STDC_HEADERS
   extern int errno;
@@ -83,7 +83,7 @@ perror_with_name(char *string)
   if (err == NULL)
     err = "unknown error";
 
-  combined = (char *)alloca(strlen(err) + strlen(string) + 3);
+  combined = (char *)alloca(strlen(err) + strlen(string) + 3UL);
   strcpy(combined, string);
   strcat(combined, ": ");
   strcat(combined, err);
@@ -93,19 +93,19 @@ perror_with_name(char *string)
 }
 
 static void
-sync_error (FILE *fp, char *desc, int expect, int got)
+sync_error(FILE *fp, const char *desc, int expect, int got)
 {
-  fprintf (stderr, "\n%s\n", desc);
-  fprintf (stderr, "At logfile offset %ld, expected '0x%x' got '0x%x'\n",
-	   ftell (fp), expect, got);
-  fflush (stderr);
-  exit (1);
+  fprintf(stderr, "\n%s\n", desc);
+  fprintf(stderr, "At logfile offset %ld, expected '0x%x' got '0x%x'\n",
+	  ftell(fp), expect, got);
+  fflush(stderr);
+  exit(1);
 }
 
 static void
-remote_close (void)
+remote_close(void)
 {
-  close (remote_desc);
+  close(remote_desc);
 }
 
 /* in case gnulib redefined this on us: */
@@ -161,28 +161,29 @@ remote_open (char *name)
 
       /* Enable TCP keep alive process. */
       tmp = 1;
-      setsockopt (tmp_desc, SOL_SOCKET, SO_KEEPALIVE, (char *) &tmp, sizeof (tmp));
+      setsockopt(tmp_desc, SOL_SOCKET, SO_KEEPALIVE, (char *)&tmp, sizeof(tmp));
 
       /* Tell TCP not to delay small packets. This greatly speeds up
          interactive response. */
       tmp = 1;
-      setsockopt (remote_desc, IPPROTO_TCP, TCP_NODELAY,
-		  (char *) &tmp, sizeof (tmp));
+      setsockopt(remote_desc, IPPROTO_TCP, TCP_NODELAY,
+		 (char *)&tmp, sizeof(tmp));
 
-      close (tmp_desc);		/* No longer need this */
+      close(tmp_desc);		/* No longer need this */
 
-      signal (SIGPIPE, SIG_IGN); /* If we do NOT do this, then gdbreplay simply
-								  * exits when the remote side dies.  */
+      signal(SIGPIPE, SIG_IGN); /* If we do NOT do this, then gdbreplay simply
+				 * exits when the remote side dies.  */
     }
 
-  fcntl (remote_desc, F_SETFL, FASYNC);
+  fcntl(remote_desc, F_SETFL, FASYNC);
 
-  fprintf (stderr, "Replay logfile using %s\n", name);
-  fflush (stderr);
+  fprintf(stderr, "Replay logfile using %s\n", name);
+  fflush(stderr);
 }
 
+/* */
 static int
-tohex (int ch)
+tohex(int ch)
 {
   if (ch >= '0' && ch <= '9')
     {

@@ -1,4 +1,4 @@
-/* A simple growing buffer for GDB.
+/* common/buffer.c: A simple growing buffer for GDB.
   
    Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
@@ -16,6 +16,19 @@
 
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+
+
+#if defined(__cplusplus)
+# if !defined(__STDC_CONSTANT_MACROS)
+#  define __STDC_CONSTANT_MACROS 1
+# endif /* !__STDC_CONSTANT_MACROS */
+# if !defined(__STDC_FORMAT_MACROS)
+#  define __STDC_FORMAT_MACROS 1
+# endif /* !__STDC_FORMAT_MACROS */
+# if !defined(__STDC_LIMIT_MACROS)
+#  define __STDC_LIMIT_MACROS 1
+# endif /* !__STDC_LIMIT_MACROS */
+#endif /* __cplusplus */
 
 #ifdef GDBSERVER
 #include "server.h"
@@ -48,8 +61,8 @@ buffer_grow (struct buffer *buffer, const char *data, size_t size)
 
   while (buffer->used_size + size > new_buffer_size)
     new_buffer_size *= 2;
-  new_buffer = xrealloc (buffer->buffer, new_buffer_size);
-  memcpy (new_buffer + buffer->used_size, data, size);
+  new_buffer = (char *)xrealloc(buffer->buffer, new_buffer_size);
+  memcpy((new_buffer + buffer->used_size), data, size);
   buffer->buffer = new_buffer;
   buffer->buffer_size = new_buffer_size;
   buffer->used_size += size;
