@@ -222,7 +222,8 @@ coff_swap_reloc_in(bfd *abfd, void *src, void *dst)
   reloc_dst->r_type = (unsigned short)H_GET_16(abfd, reloc_src->r_type);
 
 # ifdef SWAP_IN_RELOC_OFFSET
-  reloc_dst->r_offset = SWAP_IN_RELOC_OFFSET(abfd, reloc_src->r_offset);
+  reloc_dst->r_offset =
+    (unsigned long)SWAP_IN_RELOC_OFFSET(abfd, reloc_src->r_offset);
 # endif /* SWAP_IN_RELOC_OFFSET */
 }
 

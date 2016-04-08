@@ -59,6 +59,14 @@ static bfd_boolean coff_link_add_symbols(bfd *, struct bfd_link_info *);
 #define N_BTSHFT n_btshft
 #define N_BTMASK n_btmask
 
+/* FIXME: would have to fix header first: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 /* Create an entry in a COFF linker hash table: */
 struct bfd_hash_entry *
 _bfd_coff_link_hash_newfunc(struct bfd_hash_entry *entry,
@@ -3053,3 +3061,12 @@ _bfd_coff_generic_relocate_section (bfd *output_bfd,
     }
   return TRUE;
 }
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
+/* EOF */

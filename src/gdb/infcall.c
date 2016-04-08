@@ -462,7 +462,13 @@ hand_function_call(struct value *function, struct type *expect_type,
   if ((values_type == NULL) || (TYPE_CODE(values_type) == TYPE_CODE_ERROR))
     {
       const char *sym_name;
-      find_pc_partial_function(funaddr, &sym_name, NULL, NULL);
+      int foundit = find_pc_partial_function(funaddr, &sym_name, NULL, NULL);
+      
+      if (foundit == 0) {
+	warning(_("Unable to even find function \"%s\" at 0x%s."),
+		(sym_name ? sym_name : "<unknown>"),
+		paddr_nz(funaddr));
+      }
 
       error("Unable to call function \"%s\" at 0x%s: "
 	    "no return type information available.\n"
@@ -1213,8 +1219,7 @@ information to determine that a function is prototyped.  If this flag is\n\
 set, GDB will perform the conversion for a function it considers\n\
 unprototyped.\n\
 The default is to perform the conversion.\n"),
-			   NULL,
-			   show_coerce_float_to_double_p,
+			   NULL, show_coerce_float_to_double_p,
 			   &setlist, &showlist);
 
   add_setshow_boolean_cmd ("unwindonsignal", no_class,
@@ -1225,8 +1230,7 @@ The unwindonsignal lets the user determine what gdb should do if a signal\n\
 is received while in a function called from gdb (call dummy).  If set, gdb\n\
 unwinds the stack and restore the context to what as it was before the call.\n\
 The default is to stop in the frame where the signal was received."),
-			   NULL,
-			   show_unwind_on_signal_p,
+			   NULL, show_unwind_on_signal_p,
 			   &setlist, &showlist);
 
   add_setshow_boolean_cmd ("objc-exceptions-interrupt-hand-call-fns", class_obscure,
@@ -1238,9 +1242,7 @@ stopping on objc exceptions while calling functions by hand.  If the function yo
 are calling relies on being able to throw and catch exceptions, you may need to turn this\n\
 off.  An uncaught exception, however, will unwind past the point where you were stopped\n\
 in the debugger, so for the most part you will want to leave this on."),
-			   NULL,
-			   NULL,
-			   &setlist, &showlist);
+			   NULL, NULL, &setlist, &showlist);
 
 /* APPLE LOCAL for Greg */
   add_setshow_boolean_cmd ("disable-inferior-function-calls", no_class,
@@ -1252,9 +1254,7 @@ executing functions in the debugee program's context.  Many gdb commands\n\
 can result in functions being run in the target program, e.g. malloc or objc\n\
 class lookup functions, when you may not expect.  It is rare that people need\n\
 to disable these inferior function calls."),
-			   NULL,
-			   NULL,
-			   &setlist, &showlist);
+			   NULL, NULL, &setlist, &showlist);
 
 /* APPLE LOCAL: one way to protect against deadlocking inferior function calls.  */
   add_setshow_zinteger_cmd ("target-function-call-timeout", class_obscure,
@@ -1264,9 +1264,7 @@ Show the timeout for gdb issued function calls in the target program.", " \
 The hand-function-call-timeout sets a watchdog timer on calls made by gdb in\n \
 the address space of the program being debugged.  The value is in microseconds.\n\
 A value of zero disables the timer.",
-                            NULL,
-                            NULL,
-			    &setlist, &showlist);
+                            NULL, NULL, &setlist, &showlist);
 
 }
 

@@ -180,7 +180,8 @@ typedef struct general_symbol_info
 # endif /* gcc 4.6+ */
 #endif /* any gcc */
 
-extern CORE_ADDR symbol_overlayed_address(CORE_ADDR, asection *);
+extern CORE_ADDR symbol_overlayed_address(CORE_ADDR, asection *)
+  ATTRIBUTE_W_U_R;
 
 /* Note that all the following SYMBOL_* macros are used with the
    SYMBOL argument being either a partial symbol, a minimal symbol or
@@ -242,7 +243,8 @@ extern void symbol_set_names(struct general_symbol_info *symbol,
 
 #define SYMBOL_NATURAL_NAME(symbol) \
   (symbol_natural_name(&(symbol)->ginfo))
-extern const char *symbol_natural_name(const struct general_symbol_info *);
+extern const char *symbol_natural_name(const struct general_symbol_info *)
+  ATTRIBUTE_W_U_R;
 
 /* Return SYMBOL's name from the point of view of the linker.  In
    languages like C++ where symbols may be mangled for ease of
@@ -259,7 +261,8 @@ extern const char *symbol_natural_name(const struct general_symbol_info *);
    that symbol.  If no demangled name exists, return NULL. */
 #define SYMBOL_DEMANGLED_NAME(symbol) \
   (symbol_demangled_name(&(symbol)->ginfo))
-extern const char *symbol_demangled_name(struct general_symbol_info *symbol);
+extern const char *symbol_demangled_name(struct general_symbol_info *symbol)
+  ATTRIBUTE_W_U_R;
 
 /* Macro that returns a version of the name of a symbol that is
    suitable for output.  In C++ this is the "demangled" form of the
@@ -294,7 +297,8 @@ extern const char *symbol_demangled_name(struct general_symbol_info *symbol);
    returns the same value (same pointer) as SYMBOL_LINKAGE_NAME. */
 #define SYMBOL_SEARCH_NAME(symbol)					 \
    (symbol_search_name(&(symbol)->ginfo))
-extern const char *symbol_search_name(const struct general_symbol_info *);
+extern const char *symbol_search_name(const struct general_symbol_info *)
+  ATTRIBUTE_W_U_R;
 
 /* Analogous to SYMBOL_MATCHES_NATURAL_NAME, but uses the search
    name.  */
@@ -597,15 +601,15 @@ struct symbol_ops
 
      Iff `read_needs_frame (SYMBOL)' is zero, then FRAME may be zero.  */
 
-  struct value *(*read_variable) (struct symbol * symbol,
-				  struct frame_info * frame);
+  struct value *(*read_variable)(struct symbol *symbol,
+				 struct frame_info *frame);
 
   /* Return non-zero if we need a frame to find the value of the SYMBOL.  */
-  int (*read_needs_frame) (struct symbol * symbol);
+  int (*read_needs_frame)(struct symbol *symbol);
 
   /* Write to STREAM a natural-language description of the location of
      SYMBOL.  */
-  int (*describe_location) (struct symbol * symbol, struct ui_file * stream);
+  int (*describe_location)(struct symbol *symbol, struct ui_file *stream);
 
   /* Tracepoint support.  Append bytecodes to the tracepoint agent
      expression AX that push the address of the object SYMBOL.  Set
@@ -614,8 +618,8 @@ struct symbol_ops
      the caller will generate the right code in the process of
      treating this as an lvalue or rvalue.  */
 
-  void (*tracepoint_var_ref) (struct symbol * symbol, struct agent_expr * ax,
-			      struct axs_value * value);
+  void (*tracepoint_var_ref)(struct symbol *symbol, struct agent_expr *ax,
+			     struct axs_value *value);
 };
 
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
@@ -1189,11 +1193,11 @@ extern int asm_demangle;
 
 /* lookup a symbol table by source file name */
 
-extern struct symtab *lookup_symtab (const char *);
+extern struct symtab *lookup_symtab(const char *) ATTRIBUTE_W_U_R;
 
 /* APPLE LOCAL: lookup a symbol table by source file name,
    returning all matches.  */
-extern struct symtab **lookup_symtab_all (const char *);
+extern struct symtab **lookup_symtab_all(const char *) ATTRIBUTE_W_U_R;
 
 /* lookup a symbol by name (optional block, optional symtab) */
 
@@ -1266,7 +1270,8 @@ extern struct symbol *lookup_block_symbol (const struct block *, const char *,
 
 extern struct symbol_search *lookup_block_symbol_all(const struct block *,
 						     const char *, const char *,
-						     const domain_enum);
+						     const domain_enum)
+  ATTRIBUTE_W_U_R;
 /* APPLE LOCAL end return multiple symbols  */
 
 /* lookup a [struct, union, enum] by name, within a specified block */
@@ -1312,8 +1317,9 @@ extern void clear_pc_function_cache(void);
 
 extern struct partial_symtab *lookup_partial_symtab (const char *);
 
-/* APPLE LOCAL: This version returns all the matches to the argument.  */
-extern struct partial_symtab **lookup_partial_symtab_all (const char *, int);
+/* APPLE LOCAL: This version returns all the matches to the argument: */
+extern struct partial_symtab **lookup_partial_symtab_all(const char *, int)
+  ATTRIBUTE_W_U_R;
 
 /* lookup partial symbol table by address */
 
@@ -1367,9 +1373,8 @@ extern void prim_record_minimal_symbol(const char *, CORE_ADDR,
 				       struct objfile *);
 
 extern struct minimal_symbol *prim_record_minimal_symbol_and_info
-  (const char *, CORE_ADDR,
-   enum minimal_symbol_type,
-   char *info, int section, asection * bfd_section, struct objfile *);
+  (const char *, CORE_ADDR, enum minimal_symbol_type, char *info, int section,
+   asection *bfd_section, struct objfile *) ATTRIBUTE_W_U_R;
 
 extern unsigned int msymbol_hash_iw (const char *);
 
@@ -1391,8 +1396,9 @@ extern struct minimal_symbol *lookup_minimal_symbol(const char *,
 extern struct minimal_symbol *lookup_minimal_symbol_all(const char *,
 							const char *,
 							struct objfile *,
-						      struct symbol_search **);
-/* APPLE LOCAL end return multiply symbols  */
+							struct symbol_search **)
+  ATTRIBUTE_W_U_R;
+/* APPLE LOCAL end return multiple symbols  */
 
 extern struct minimal_symbol *lookup_minimal_symbol_text(const char *,
 							 struct objfile *);
@@ -1515,7 +1521,7 @@ struct exception_event_record
 /* Given a pc value, return line number it is in.  Second arg nonzero means
    if pc is on the boundary use the previous statement's line number.  */
 
-extern struct symtab_and_line find_pc_line (CORE_ADDR, int);
+extern struct symtab_and_line find_pc_line(CORE_ADDR, int) ATTRIBUTE_W_U_R;
 
 /* Same function, but specify a section as well as an address */
 
@@ -1523,7 +1529,7 @@ extern struct symtab_and_line find_pc_sect_line (CORE_ADDR, asection *, int);
 
 /* Given a symtab and line number, return the pc there.  */
 
-extern int find_line_pc (struct symtab *, int, CORE_ADDR *);
+extern int find_line_pc(struct symtab *, int, CORE_ADDR *) ATTRIBUTE_W_U_R;
 
 extern int find_line_pc_range (struct symtab_and_line, CORE_ADDR *,
 			       CORE_ADDR *);
@@ -1533,9 +1539,11 @@ extern void resolve_sal_pc (struct symtab_and_line *);
 /* Given a string, return the line specified by it.  For commands like "list"
    and "breakpoint".  */
 
-extern struct symtabs_and_lines decode_line_spec(const char *, int);
+extern struct symtabs_and_lines decode_line_spec(const char *, int)
+  ATTRIBUTE_W_U_R;
 
-extern struct symtabs_and_lines decode_line_spec_1(const char *, int);
+extern struct symtabs_and_lines decode_line_spec_1(const char *, int)
+  ATTRIBUTE_W_U_R;
 
 /* Symmisc.c */
 
@@ -1636,9 +1644,9 @@ struct symbol_search
 
 /* APPLE LOCAL begin return multiple symbols  */
 /* lookup by name and return all matching symbols found  */
-extern int lookup_symbol_all (const char *, const struct block *,
-			      const domain_enum, int *, struct symtab **,
-			      struct symbol_search **);
+extern int lookup_symbol_all(const char *, const struct block *,
+			     const domain_enum, int *, struct symtab **,
+			     struct symbol_search **) ATTRIBUTE_W_U_R;
 /* APPLE LOCAL end return multiple symbols  */
 
 extern void search_symbols(const char *, domain_enum, int, char **,

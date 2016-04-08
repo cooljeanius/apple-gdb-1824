@@ -55,7 +55,7 @@ static reloc_howto_type howto_table[] =
 
 /* Turn a howto into a reloc  nunmber */
 
-#define SELECT_RELOC(x,howto) { x.r_type = howto->type; }
+#define SELECT_RELOC(x,howto) { x.r_type = (unsigned short)howto->type; }
 #define BADMAG(x) WE32KBADMAG(x)
 #define WE32K	1
 

@@ -80,6 +80,9 @@ struct ui_file *gdb_stdtargerr;
 /* Whether to enable writing into executable and core files */
 extern int write_files;
 
+/* Whether we can use malloc */
+int can_use_malloc_now = 0;
+
 static void print_gdb_help(struct ui_file *);
 
 /* These two are used to set the external editor commands when gdb is farming
@@ -115,7 +118,7 @@ captured_command_loop(void *data)
 extern char **environ;
 #endif /* HAVE_SBRK */
 
-static int
+static ATTRIBUTE_W_U_R int
 captured_main(void *data)
 {
   /* If you add initializations here, you also need to add then to the
@@ -166,6 +169,8 @@ captured_main(void *data)
   int i;
 
   long time_at_startup = get_run_time();
+  
+  int command_errors_ret = 0;
 
 #if defined(HAVE_SETLOCALE) && defined(HAVE_LC_MESSAGES)
   setlocale(LC_MESSAGES, "");
@@ -182,7 +187,9 @@ captured_main(void *data)
 #endif /* USE_MMALLOC */
 
   /* This needs to happen before the first use of malloc: */
-  init_malloc(NULL);
+  if (init_malloc(NULL)) {
+    can_use_malloc_now = 1;
+  }
 
 #ifdef HAVE_SBRK
   lim_at_start = (char *)sbrk(0);
@@ -685,7 +692,9 @@ extern int gdbtk_test(char *);
   stat(gdbinit_global, &globalbuf);
   if (!inhibit_gdbinit)
     {
-      /* if (!SET_TOP_LEVEL()) */
+#if defined(SET_TOP_LEVEL) && defined(HAVE_SETJMP)
+      if (!SET_TOP_LEVEL())
+#endif /* SET_TOP_LEVEL && HAVE_SETJMP */
 	 source_file(gdbinit_global, 0);
     }
   do_cleanups(ALL_CLEANUPS);
@@ -714,18 +723,22 @@ extern int gdbtk_test(char *);
 	if ((globalbuf.st_dev != homebuf.st_dev)
             || (globalbuf.st_ino != homebuf.st_ino))
 	  {
-	    catch_command_errors(source_file, homeinit, 0, RETURN_MASK_ALL);
+	    command_errors_ret = catch_command_errors(source_file, homeinit, 0,
+						      RETURN_MASK_ALL);
 	  }
     }
 
   /* Now perform all the actions indicated by the arguments: */
   if (cdarg != NULL)
     {
-      catch_command_errors(cd_command, cdarg, 0, RETURN_MASK_ALL);
+      command_errors_ret = catch_command_errors(cd_command, cdarg, 0,
+						RETURN_MASK_ALL);
     }
 
-  for (i = 0; i < ndir; i++)
-    catch_command_errors(directory_command, dirarg[i], 0, RETURN_MASK_ALL);
+  for (i = 0; i < ndir; i++) {
+    command_errors_ret = catch_command_errors(directory_command, dirarg[i], 0,
+					      RETURN_MASK_ALL);
+  }
   xfree(dirarg);
 
   /* APPLE LOCAL: If an architecture has been supplied, process it.
@@ -833,15 +846,21 @@ extern int gdbtk_test(char *);
       /* The exec file and the symbol-file are the same. If we cannot
          open it, better only print one error message.
          catch_command_errors returns non-zero on success! */
-      if (catch_command_errors(exec_file_attach, execarg, !batch, RETURN_MASK_ALL))
-	catch_command_errors(symbol_file_add_main, symarg, 0, RETURN_MASK_ALL);
+      if (catch_command_errors(exec_file_attach, execarg, !batch, RETURN_MASK_ALL)) {
+	command_errors_ret = catch_command_errors(symbol_file_add_main, symarg,
+						  0, RETURN_MASK_ALL);
+      }
     }
   else
     {
-      if (execarg != NULL)
-	catch_command_errors(exec_file_attach, execarg, !batch, RETURN_MASK_ALL);
-      if (symarg != NULL)
-	catch_command_errors(symbol_file_add_main, symarg, 0, RETURN_MASK_ALL);
+      if (execarg != NULL) {
+	command_errors_ret = catch_command_errors(exec_file_attach, execarg,
+						  !batch, RETURN_MASK_ALL);
+      }
+      if (symarg != NULL) {
+	command_errors_ret = catch_command_errors(symbol_file_add_main, symarg,
+						  0, RETURN_MASK_ALL);
+      }
     }
 
   /* APPLE LOCAL begin */
@@ -855,7 +874,8 @@ extern int gdbtk_test(char *);
   if (attach_waitfor != NULL)
     {
       printf_filtered("\n");
-      catch_command_errors(attach_command, attach_waitfor, 0, RETURN_MASK_ALL);
+      command_errors_ret = catch_command_errors(attach_command, attach_waitfor,
+						0, RETURN_MASK_ALL);
     }
 
   /* After the symbol file has been read, print a newline to get us
@@ -883,13 +903,17 @@ extern int gdbtk_test(char *);
 		}
 	    }
 
-	  if (isdigit(corearg[0]))
-	    catch_command_errors(attach_command, corearg, !batch, RETURN_MASK_ALL);
+	  if (isdigit(corearg[0])) {
+	    command_errors_ret = catch_command_errors(attach_command, corearg,
+						      !batch, RETURN_MASK_ALL);
+	  }
 	}
     }
 
-  if (ttyarg != NULL)
-    catch_command_errors(tty_command, ttyarg, !batch, RETURN_MASK_ALL);
+  if (ttyarg != NULL) {
+    command_errors_ret = catch_command_errors(tty_command, ttyarg, !batch,
+					      RETURN_MASK_ALL);
+  }
 
   /* Error messages should no longer be distinguished with extra output. */
   error_pre_print = NULL;
@@ -905,8 +929,10 @@ extern int gdbtk_test(char *);
 	&& ((homebuf.st_dev != cwdbuf.st_dev) || (homebuf.st_ino != cwdbuf.st_ino)))
       {
         /* APPLE LOCAL: fix for CVE-2005-1705 */
-        if (cwdbuf.st_uid == getuid())
-	  catch_command_errors(source_file, gdbinit, 0, RETURN_MASK_ALL);
+        if (cwdbuf.st_uid == getuid()) {
+	  command_errors_ret = catch_command_errors(source_file, gdbinit, 0,
+						    RETURN_MASK_ALL);
+	}
       }
 
   /* These need to be set this late in the initialization to ensure that
@@ -922,26 +948,31 @@ extern int gdbtk_test(char *);
 
   for (i = 0; i < ncmd; i++)
     {
-#if 0
+#if defined(SET_TOP_LEVEL) && defined(ALL_CLEANUPS) && defined(HAVE_SETJMP)
       /* NOTE: cagney/1999-11-03: SET_TOP_LEVEL() was a macro that
          expanded into a call to setjmp().  */
-      if (!SET_TOP_LEVEL()) /* NB: This is #if 0'd out */
+      if (!SET_TOP_LEVEL()) /* NB: This is #ifdef'd out */
 	{
-	  /* NOTE: I am commenting this out, because it is not clear
+	  /* NOTE: I ifdefing this out, because it is not clear
 	     where this feature is used. It is very old and
 	     undocumented. ezannoni: 1999-05-04 */
-# if 0
+# if defined(stdin) && defined(THIS_FEATURE_IS_USED)
 	  if ((cmdarg[i][0] == '-') && (cmdarg[i][1] == '\0'))
 	    read_command_file(stdin);
 	  else
-# endif /* 0 */
+# endif /* stdin && THIS_FEATURE_IS_USED */
 	    source_file(cmdarg[i], !batch);
 	  do_cleanups(ALL_CLEANUPS);
 	}
-#endif /* 0 */
-      catch_command_errors(source_file, cmdarg[i], !batch, RETURN_MASK_ALL);
+#endif /* SET_TOP_LEVEL && ALL_CLEANUPS && HAVE_SETJMP */
+      command_errors_ret = catch_command_errors(source_file, cmdarg[i], !batch,
+						RETURN_MASK_ALL);
     }
   xfree(cmdarg);
+  
+  if (command_errors_ret == 0) {
+    ; /* ??? */
+  }
 
   /* Read in the old history after all the command files have been read. */
   init_history();
@@ -985,7 +1016,8 @@ extern int gdbtk_test(char *);
 #endif /* HAVE_SBRK */
     }
 
-#if 0
+#if defined(SET_TOP_LEVEL) && defined(ALL_CLEANUPS) && \
+    defined(deprecated_command_loop) && defined(stdin)
   /* FIXME: cagney/1999-11-06: The original main loop was like: */
   while (1)
     {
@@ -1011,14 +1043,18 @@ extern int gdbtk_test(char *);
      was thrown, everything would have already been cleaned up.  If
      command_loop() returned normally and quit_command() was called,
      either exit() or error() (again cleaning up) would be called. */
-#endif /* 0 */
+#endif /* SET_TOP_LEVEL && ALL_CLEANUPS && deprecated_command_loop && stdin */
   /* NOTE: cagney/1999-11-07: There is probably no reason for not
      moving this loop and the code found in captured_command_loop()
      into the command_loop() proper.  The main thing holding back that
      change - SET_TOP_LEVEL() - has been eliminated. */
   while (1)
     {
-      catch_errors(captured_command_loop, 0, "", RETURN_MASK_ALL);
+      int errors_ret = catch_errors(captured_command_loop, 0, "",
+				    RETURN_MASK_ALL);
+      if (errors_ret == 0) {
+	; /* ??? */
+      }
     }
   /* No exit -- exit is through quit_command.  */
 }
@@ -1026,8 +1062,12 @@ extern int gdbtk_test(char *);
 int
 gdb_main(struct captured_main_args *args)
 {
+  int errors_ret = 0;
   use_windows = args->use_windows;
-  catch_errors(captured_main, args, "", RETURN_MASK_ALL);
+  errors_ret = catch_errors(captured_main, args, "", RETURN_MASK_ALL);
+  if (errors_ret == 0) {
+    ; /* ??? */
+  }
   /* The only way to end up here is by an error (normal exit is
      handled by quit_force()), hence always return an error status.  */
   return 1;

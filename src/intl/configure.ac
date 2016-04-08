@@ -61,8 +61,15 @@ m4_ifdef([AM_SANITY_CHECK],[
 AC_SYS_LARGEFILE
 AC_SYS_LONG_FILE_NAMES
 
+if test -e ./config.cache; then
+  echo "hacking ./config.cache"
+  sed -i "s|ac_cv_env_CPP_set|bad_CPP_status|g" ./config.cache
+  sed -i "s|ac_cv_env_CPP_value|bad_CPP|g" ./config.cache
+fi
+
 # Checks for programs.
 AM_PROG_AR
+AC_PROG_CPP
 AC_PROG_CXX
 AC_DEFUN([AC_REQUIRE_GREPS],[
   AC_REQUIRE([AC_PROG_GREP])dnl
@@ -297,6 +304,9 @@ if test "x${srcdir}" != "x."; then
   fi
 fi
 ],[])dnl
+
+dnl#FIXME: what is supposed to go in this variable?
+AC_SUBST([POMAKEFILEDEPS])dnl
 
 AC_CONFIG_FILES([Makefile \
                  Makefile_orig \

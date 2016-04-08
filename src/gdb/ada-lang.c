@@ -1346,9 +1346,11 @@ desc_one_bound (struct value *bounds, int i, int which)
    bound, if WHICH is 1.  The first bound is I=1.  */
 
 static int
-desc_bound_bitpos (struct type *type, int i, int which)
+desc_bound_bitpos(struct type *type, int i, int which)
 {
-  return TYPE_FIELD_BITPOS (desc_base_type (type), 2 * i + which - 2);
+  type = desc_base_type(type);
+  gdb_assert(type != NULL);
+  return TYPE_FIELD_BITPOS(type, ((2 * i) + which - 2));
 }
 
 /* If BOUNDS is an array-bounds structure type, return the bit field size
@@ -1356,14 +1358,15 @@ desc_bound_bitpos (struct type *type, int i, int which)
    bound, if WHICH is 1.  The first bound is I=1.  */
 
 static int
-desc_bound_bitsize (struct type *type, int i, int which)
+desc_bound_bitsize(struct type *type, int i, int which)
 {
-  type = desc_base_type (type);
-
-  if (TYPE_FIELD_BITSIZE (type, 2 * i + which - 2) > 0)
-    return TYPE_FIELD_BITSIZE (type, 2 * i + which - 2);
+  type = desc_base_type(type);
+  gdb_assert(type != NULL);
+  
+  if (TYPE_FIELD_BITSIZE(type, ((2 * i) + which - 2)) > 0)
+    return TYPE_FIELD_BITSIZE(type, ((2 * i) + which - 2));
   else
-    return 8 * TYPE_LENGTH (TYPE_FIELD_TYPE (type, 2 * i + which - 2));
+    return (8 * TYPE_LENGTH(TYPE_FIELD_TYPE(type, ((2 * i) + which - 2))));
 }
 
 /* If TYPE is the type of an array-bounds structure, the type of its
@@ -3570,34 +3573,36 @@ convert_actual(struct value *actual, struct type *formal_type0,
     (((formal_type != NULL) && (TYPE_CODE(formal_type) == TYPE_CODE_PTR))
      ? ada_check_typedef(TYPE_TARGET_TYPE(formal_type)) : formal_type);
   struct type *actual_target =
-    TYPE_CODE (actual_type) == TYPE_CODE_PTR
-    ? ada_check_typedef (TYPE_TARGET_TYPE (actual_type)) : actual_type;
+    ((TYPE_CODE(actual_type) == TYPE_CODE_PTR)
+     ? ada_check_typedef(TYPE_TARGET_TYPE(actual_type)) : actual_type);
 
-  if (ada_is_array_descriptor_type (formal_target)
-      && TYPE_CODE (actual_target) == TYPE_CODE_ARRAY)
-    return make_array_descriptor (formal_type, actual, sp);
-  else if (TYPE_CODE (formal_type) == TYPE_CODE_PTR)
+  if (ada_is_array_descriptor_type(formal_target)
+      && (TYPE_CODE(actual_target) == TYPE_CODE_ARRAY))
+    return make_array_descriptor(formal_type, actual, sp);
+  else if ((formal_type != NULL) && (TYPE_CODE(formal_type) == TYPE_CODE_PTR))
     {
-      if (TYPE_CODE (formal_target) == TYPE_CODE_ARRAY
-          && ada_is_array_descriptor_type (actual_target))
-        return desc_data (actual);
-      else if (TYPE_CODE (actual_type) != TYPE_CODE_PTR)
+      if ((TYPE_CODE(formal_target) == TYPE_CODE_ARRAY)
+          && ada_is_array_descriptor_type(actual_target))
+        return desc_data(actual);
+      else if (TYPE_CODE(actual_type) != TYPE_CODE_PTR)
         {
-          if (VALUE_LVAL (actual) != lval_memory)
+          if (VALUE_LVAL(actual) != lval_memory)
             {
               struct value *val;
-              actual_type = ada_check_typedef (value_type (actual));
-              val = allocate_value (actual_type);
-              memcpy ((char *) value_contents_raw (val),
-                      (char *) value_contents (actual),
-                      TYPE_LENGTH (actual_type));
-              actual = ensure_lval (val, sp);
+              actual_type = ada_check_typedef(value_type(actual));
+              val = allocate_value(actual_type);
+              memcpy((char *)value_contents_raw(val),
+                     (char *)value_contents(actual),
+                     TYPE_LENGTH(actual_type));
+              actual = ensure_lval(val, sp);
             }
-          return value_addr (actual);
+          return value_addr(actual);
         }
     }
-  else if (TYPE_CODE (actual_type) == TYPE_CODE_PTR)
-    return ada_value_ind (actual);
+  else if (TYPE_CODE(actual_type) == TYPE_CODE_PTR)
+    return ada_value_ind(actual);
+  else if (formal_type == NULL)
+    warning(_("formal_type is NULL."));
 
   return actual;
 }
@@ -5131,11 +5136,15 @@ const char *
 ada_tag_name (struct value *tag)
 {
   struct tag_args args;
+  int err_ret = 0;
   if (!ada_is_tag_type (value_type (tag)))
     return NULL;
   args.tag = tag;
   args.name = NULL;
-  catch_errors (ada_tag_name_1, &args, NULL, RETURN_MASK_ALL);
+  err_ret = catch_errors(ada_tag_name_1, &args, NULL, RETURN_MASK_ALL);
+  if (err_ret == 0) {
+    ; /* ??? */
+  }
   return args.name;
 }
 

@@ -5322,8 +5322,12 @@ re_enable_breakpoints_in_shlibs(int silent)
 	char *message = xstrprintf("Error resolving pending breakpoint %d: ",
 				   b->number);
 	struct cleanup *cleanups = make_cleanup(xfree, message);
-	catch_errors((catch_errors_ftype *)resolve_pending_breakpoint,
-		     (void *)b, message, RETURN_MASK_ALL);
+	int errors_ret =
+	  catch_errors((catch_errors_ftype *)resolve_pending_breakpoint,
+		       (void *)b, message, RETURN_MASK_ALL);
+	if (errors_ret == 0) {
+	  ; /* ??? */
+	}
 	do_cleanups(cleanups);
       }
   }
@@ -9162,16 +9166,20 @@ delete_breakpoint (struct breakpoint *bpt)
   if (ep_is_exception_catchpoint (bpt) && target_has_execution)
     {
       /* Format possible error msg */
-      char *message = xstrprintf ("Error in deleting catchpoint %d:\n",
-				  bpt->number);
-      struct cleanup *cleanups = make_cleanup (xfree, message);
+      char *message = xstrprintf("Error in deleting catchpoint %d:\n",
+				 bpt->number);
+      struct cleanup *cleanups = make_cleanup(xfree, message);
+      int errors_ret = 0;
       args_for_catchpoint_enable args;
-      args.kind = bpt->type == bp_catch_catch ?
-	EX_EVENT_CATCH : EX_EVENT_THROW;
+      args.kind = ((bpt->type == bp_catch_catch)
+		   ? EX_EVENT_CATCH : EX_EVENT_THROW);
       args.enable_p = 0;
-      catch_errors (cover_target_enable_exception_callback, &args,
-		    message, RETURN_MASK_ALL);
-      do_cleanups (cleanups);
+      errors_ret = catch_errors(cover_target_enable_exception_callback, &args,
+				message, RETURN_MASK_ALL);
+      if (errors_ret == 0) {
+	; /* ??? */
+      }
+      do_cleanups(cleanups);
     }
 
 
@@ -9921,6 +9929,7 @@ breakpoint_update(void)
 	struct cleanup *restrict_cleanups;
 	/* Format possible error msg */
 	char *message;
+	int errors_ret = 0;
 
 	if (b->bp_set_state != bp_state_waiting_load
 	    || b->bp_objfile == NULL)
@@ -9937,16 +9946,21 @@ breakpoint_update(void)
 
 	/* APPLE LOCAL: Don't complain about not being able to reset internal
 	   breakpoints.  */
-	if (user_settable_breakpoint (b))
-	  message = xstrprintf ("Error in re-setting breakpoint %d:\n",
-				b->number);
-	else
+	if (user_settable_breakpoint(b)) {
+	  message = xstrprintf("Error in re-setting breakpoint %d:\n",
+			       b->number);
+	} else {
 	  message = NULL;
+	}
 
-	restrict_cleanups = make_cleanup_restrict_to_objfile (b->bp_objfile);
-	make_cleanup (xfree, message);
-	catch_errors (breakpoint_re_set_one, b, message, RETURN_MASK_ALL);
-	do_cleanups (restrict_cleanups);
+	restrict_cleanups = make_cleanup_restrict_to_objfile(b->bp_objfile);
+	make_cleanup(xfree, message);
+	errors_ret = catch_errors(breakpoint_re_set_one, b, message,
+				  RETURN_MASK_ALL);
+	if (errors_ret == 0) {
+	  ; /* ??? */
+	}
+	do_cleanups(restrict_cleanups);
       }
     }
 }
@@ -9993,6 +10007,7 @@ breakpoint_re_set_all (void)
     /* APPLE LOCAL: Do NOT complain about not being able to reset
      * internal breakpoints.  */
     char *message;
+    int errors_ret = 0;
     if (user_settable_breakpoint(b)) {
       message = xstrprintf("Error in re-setting breakpoint %d:\n",
                            b->number);
@@ -10027,7 +10042,11 @@ breakpoint_re_set_all (void)
       objfile_restrict_search (1);
     /* APPLE LOCAL end subroutine inlining  */
     /* END APPLE LOCAL */
-    catch_errors (breakpoint_re_set_one, b, message, RETURN_MASK_ALL);
+    errors_ret = catch_errors(breakpoint_re_set_one, b, message,
+			      RETURN_MASK_ALL);
+    if (errors_ret == 0) {
+      ; /* ??? */
+    }
     /* APPLE LOCAL: So we have to clear the search here...  */
     objfile_restrict_search (0);
     /* END APPLE LOCAL */

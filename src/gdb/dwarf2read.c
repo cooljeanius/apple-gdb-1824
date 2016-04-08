@@ -67,6 +67,10 @@
 #include <ctype.h>
 /* APPLE LOCAL objc_invalidate_objc_class */
 #include "objc-lang.h"
+/* APPLE LOCAL basename */
+#ifdef HAVE_LIBGEN_H
+# include <libgen.h>
+#endif /* HAVE_LIBGEN_H */
 
 /* A note on memory usage for this file.
 
@@ -8368,11 +8372,11 @@ find_partial_die_in_comp_unit(unsigned long offset, struct dwarf2_cu *cu)
       char tmpname[PATH_MAX];
       /* only advertise for lldb if we are Apple, otherwise promote the
        * improvement of gdb: */
-#ifdef __APPLE__
+#if defined(__APPLE__) && defined(__APPLE_CC__) && defined(__APPLEHELP__)
       const char *what_to_do_instead = "please use lldb if you need to debug code in this framework";
 #else
       const char *what_to_do_instead = "FIXME";
-#endif /* __APPLE__ */
+#endif /* __APPLE__ && __APPLE_CC__ && __APPLEHELP__ */
       if (cu->objfile && cu->objfile->name)
         strcpy(tmpname, cu->objfile->name);
       else

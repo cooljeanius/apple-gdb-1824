@@ -37,17 +37,17 @@ reloc_howto_type * tic30_coff_reloc_type_lookup PARAMS ((bfd *, bfd_reloc_code_r
 
 reloc_howto_type tic30_coff_howto_table[] =
   {
-    HOWTO (R_TIC30_ABS16, 2, 1, 16, FALSE, 0, 0, NULL,
-	   "16", FALSE, 0x0000FFFF, 0x0000FFFF, FALSE),
-    HOWTO (R_TIC30_ABS24, 2, 2, 24, FALSE, 8, complain_overflow_bitfield, NULL,
-	   "24", FALSE, 0xFFFFFF00, 0xFFFFFF00, FALSE),
-    HOWTO (R_TIC30_LDP, 18, 0, 24, FALSE, 0, complain_overflow_bitfield, NULL,
-	   "LDP", FALSE, 0x00FF0000, 0x000000FF, FALSE),
-    HOWTO (R_TIC30_ABS32, 2, 2, 32, FALSE, 0, complain_overflow_bitfield, NULL,
-	   "32", FALSE, 0xFFFFFFFF, 0xFFFFFFFF, FALSE),
-    HOWTO (R_TIC30_PC16, 2, 1, 16, TRUE, 0, complain_overflow_signed, NULL,
-	   "PCREL", FALSE, 0x0000FFFF, 0x0000FFFF, FALSE),
-    EMPTY_HOWTO (-1)
+    HOWTO(R_TIC30_ABS16, 2, 1, 16, FALSE, 0, (enum complain_overflow)0, NULL,
+	  "16", FALSE, 0x0000FFFF, 0x0000FFFF, FALSE),
+    HOWTO(R_TIC30_ABS24, 2, 2, 24, FALSE, 8, complain_overflow_bitfield, NULL,
+	  "24", FALSE, 0xFFFFFF00, 0xFFFFFF00, FALSE),
+    HOWTO(R_TIC30_LDP, 18, 0, 24, FALSE, 0, complain_overflow_bitfield, NULL,
+	  "LDP", FALSE, 0x00FF0000, 0x000000FF, FALSE),
+    HOWTO(R_TIC30_ABS32, 2, 2, 32, FALSE, 0, complain_overflow_bitfield, NULL,
+	  "32", FALSE, 0xFFFFFFFF, 0xFFFFFFFF, FALSE),
+    HOWTO(R_TIC30_PC16, 2, 1, 16, TRUE, 0, complain_overflow_signed, NULL,
+	  "PCREL", FALSE, 0x0000FFFF, 0x0000FFFF, FALSE),
+    EMPTY_HOWTO(-1)
   };
 
 #ifndef coff_bfd_reloc_type_lookup

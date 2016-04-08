@@ -1950,7 +1950,7 @@ allocate_info(int comps)
    cplus_demangle_print does not, specifically the global destructor
    and constructor labels.  */
 
-char *
+ATTRIBUTE_NOINLINE char *
 cp_comp_to_string(struct demangle_component *result, int estimated_len)
 {
   char *str;
@@ -1989,7 +1989,7 @@ cp_comp_to_string(struct demangle_component *result, int estimated_len)
    tree.  On error, NULL is returned, and an error message will be
    set in *ERRMSG (which does not need to be freed).  */
 
-struct demangle_component *
+ATTRIBUTE_NOINLINE struct demangle_component *
 cp_demangled_name_to_comp(const char *demangled_name, void **memory,
 			  const char **errmsg)
 {

@@ -33,7 +33,7 @@ extern struct target_ops exec_ops;
 /* Builds a section table, given args BFD, SECTABLE_PTR, SECEND_PTR.
  * Returns 0 if OK, 1 on error: */
 extern int build_section_table(struct bfd *, struct section_table **,
-                               struct section_table **);
+                               struct section_table **) ATTRIBUTE_W_U_R;
 
 /* Set the loaded address of a section: */
 extern void exec_set_section_address(const char *, int, CORE_ADDR);

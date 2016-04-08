@@ -77,14 +77,14 @@ static void first_component_command(const char *arg, int from_tty);
    efficient.  */
 
 char *
-cp_canonicalize_string (const char *string)
+cp_canonicalize_string(const char *string)
 {
   void *storage;
   struct demangle_component *ret_comp;
   char *ret;
-  int len = strlen (string);
+  size_t len = strlen(string);
 
-  len = len + len / 8;
+  len = (len + len / 8);
 
   ret_comp = cp_demangled_name_to_comp (string, &storage, NULL);
   if (ret_comp == NULL)

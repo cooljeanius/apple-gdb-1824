@@ -22,9 +22,11 @@ extern void bcopy(const void *, void *, size_t) ATTRIBUTE_DEPRECATED;
 
 extern void bzero(void *, size_t) ATTRIBUTE_DEPRECATED_FOR(memset);
 
-extern char *index(const char *, int) ATTRIBUTE_DEPRECATED_FOR(strchr);
+extern char *index(const char *, int) ATTRIBUTE_DEPRECATED_FOR(strchr)
+  ATTRIBUTE_W_U_R;
 
-extern char *rindex(const char *s, int c) ATTRIBUTE_DEPRECATED_FOR(strrchr);
+extern char *rindex(const char *s, int c) ATTRIBUTE_DEPRECATED_FOR(strrchr)
+  ATTRIBUTE_W_U_R;
 
 #ifdef __cplusplus
 }

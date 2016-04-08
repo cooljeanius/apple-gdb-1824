@@ -4955,6 +4955,8 @@ getpkt_sane (char *buf,
 static void
 remote_kill (void)
 {
+  int errors_ret = 0;
+
   /* For some mysterious reason, wait_for_inferior calls kill instead of
      mourn after it gets TARGET_WAITKIND_SIGNALLED.  Work around it.  */
   if (kill_kludge)
@@ -4966,8 +4968,12 @@ remote_kill (void)
 
   /* Use catch_errors so the user can quit from gdb even when we aren't on
      speaking terms with the remote system.  */
-  catch_errors((catch_errors_ftype *)putpkt, (void *)"k", "",
-	       RETURN_MASK_ERROR);
+  errors_ret = catch_errors((catch_errors_ftype *)putpkt, (void *)"k", "",
+			    RETURN_MASK_ERROR);
+  
+  if (errors_ret == 0) {
+    ; /* ??? */
+  }
 
   /* Don't wait for it to die.  I'm not really sure it matters whether
      we do or not.  For the existing stubs, kill is a noop.  */
@@ -4978,6 +4984,7 @@ remote_kill (void)
 static void
 remote_async_kill (void)
 {
+  int errors_ret = 0;
   /* Unregister the file descriptor from the event loop.  */
   if (target_is_async_p ())
     serial_async (remote_desc, NULL, 0);
@@ -4993,8 +5000,12 @@ remote_async_kill (void)
 
   /* Use catch_errors so the user can quit from gdb even when we
      aren't on speaking terms with the remote system.  */
-  catch_errors((catch_errors_ftype *)putpkt, (void *)"k", "",
-	       RETURN_MASK_ERROR);
+  errors_ret = catch_errors((catch_errors_ftype *)putpkt, (void *)"k", "",
+			    RETURN_MASK_ERROR);
+  
+  if (errors_ret == 0) {
+    ; /* ??? */
+  }
 
   /* Don't wait for it to die.  I'm not really sure it matters whether
      we do or not.  For the existing stubs, kill is a noop.  */

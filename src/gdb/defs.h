@@ -538,10 +538,10 @@ extern int streq(const char *, const char *);
 
 extern int subset_compare(char *, const char *);
 
-extern char *safe_strerror(int);
+extern char *safe_strerror(int) ATTRIBUTE_W_U_R;
 
 /* APPLE LOCAL begin mmalloc */
-extern void *init_malloc(void *);
+extern void *init_malloc(void *) ATTRIBUTE_W_U_R ATTRIBUTE_MALLOC;
 extern void init_mmalloc_default_pool(void *);
 /* APPLE LOCAL end mmalloc */
 
@@ -625,16 +625,16 @@ extern int yquery(const char *, ...) ATTR_FORMAT(printf, 1, 2);
 
 extern void init_page_info(void);
 
-extern char *gdb_realpath(const char *);
-extern char *xfullpath(const char *);
+extern char *gdb_realpath(const char *) ATTRIBUTE_W_U_R;
+extern char *xfullpath(const char *) ATTRIBUTE_W_U_R;
 
 extern unsigned long gnu_debuglink_crc32(unsigned long crc,
                                          unsigned char *buf, size_t len);
 
-const char *bundle_basename(const char *filepath);
+extern const char *bundle_basename(const char *filepath) ATTRIBUTE_W_U_R;
 
-void unlimit_file_rlimit(void);
-void restore_file_rlimit(void);
+extern void unlimit_file_rlimit(void);
+extern void restore_file_rlimit(void);
 
 /* From demangle.c */
 
@@ -646,8 +646,8 @@ extern void set_demangling_style(const char *);
 extern CORE_ADDR decode_fix_and_continue_trampoline(CORE_ADDR);
 extern void update_picbase_register(struct symbol *);
 extern void fix_command_1(const char *, const char *, const char *);
-int fix_and_continue_supported(void);
-int file_exists_p(const char *);
+extern int fix_and_continue_supported(void);
+extern int file_exists_p(const char *);
 
 /* From tm.h */
 
@@ -1047,29 +1047,29 @@ enum scheduler_locking_mode {
   scheduler_locking_step = 2
 };
 
-enum scheduler_locking_mode
+extern enum scheduler_locking_mode
   set_scheduler_locking_mode(enum scheduler_locking_mode new_mode);
-void scheduler_run_this_ptid(struct ptid this_ptid);
-int scheduler_lock_on_p(void);
-struct ptid get_scheduler_lock_ptid(void);
-struct cleanup *
-  make_cleanup_set_restore_scheduler_locking_mode(enum scheduler_locking_mode new_mode);
+extern void scheduler_run_this_ptid(struct ptid this_ptid);
+extern int scheduler_lock_on_p(void);
+extern struct ptid get_scheduler_lock_ptid(void);
+extern struct cleanup *
+  make_cleanup_set_restore_scheduler_locking_mode(enum scheduler_locking_mode);
 /* APPLE LOCAL end scheduler locking */
 
-uint8_t **get_binary_file_uuids(const char *filename);
+extern uint8_t **get_binary_file_uuids(const char *filename);
 
-void free_uuids_array(uint8_t **uuids);
+extern void free_uuids_array(uint8_t **uuids);
 
-char *puuid(uint8_t *uuid);
+extern char *puuid(uint8_t *uuid);
 
-const char *re_comp(const char *str);
+extern const char *re_comp(const char *str);
 
-int re_exec(const char *str);
+extern int re_exec(const char *str);
 
-int re_set_syntax(int newflags);
+extern int re_set_syntax(int newflags);
 
-int re_search_oneshot(regex_t *patbuf, const char *str, int size,
-                      int start, int range, void *regs);
+extern int re_search_oneshot(regex_t *patbuf, const char *str, int size,
+			     int start, int range, void *regs);
 
 
 /* List of known OS ABIs.  If you change this, make sure to update the
@@ -1188,25 +1188,33 @@ enum gdb_osabi
    arguments to a function, number in a value history, register number, etc.)
    where the value must not be larger than can fit in an int.  */
 
-extern int longest_to_int(LONGEST);
+extern int longest_to_int(LONGEST)
+  ATTRIBUTE_W_U_R;
 
 /* Assorted functions we can declare, now that const and volatile are
    defined.  */
 
-extern char *savestring(const char *, size_t);
+extern char *savestring(const char *, size_t)
+  ATTRIBUTE_W_U_R;
 
 /* APPLE LOCAL begin mmalloc */
-extern char *msavestring(void *, const char *, size_t);
+extern char *msavestring(void *, const char *, size_t)
+  ATTRIBUTE_W_U_R;
 
-char *strsave(const char *ptr);
+extern char *strsave(const char *ptr)
+  ATTRIBUTE_W_U_R;
 
-extern char *mstrsave(void *, const char *);
+extern char *mstrsave(void *, const char *)
+  ATTRIBUTE_W_U_R;
 
 /* Robust versions of same.  Throw an internal error when no memory,
    guard against stray NULL arguments. */
-extern void *xmmalloc(void *md, size_t size);
-extern void *xmrealloc(void *md, void *ptr, size_t size);
-extern void *xmcalloc(void *md, size_t number, size_t size);
+extern void *xmmalloc(void *md, size_t size)
+  ATTRIBUTE_W_U_R ATTRIBUTE_MALLOC;
+extern void *xmrealloc(void *md, void *ptr, size_t size)
+  ATTRIBUTE_W_U_R ATTRIBUTE_MALLOC;
+extern void *xmcalloc(void *md, size_t number, size_t size)
+  ATTRIBUTE_W_U_R ATTRIBUTE_MALLOC;
 extern void xmfree(void *md, void *ptr);
 /* APPLE LOCAL end mmalloc */
 
@@ -1217,7 +1225,8 @@ extern void xfree(void *);
 #endif /* !LIBIBERTY_H */
 
 /* Like xmalloc, but zero the memory.  */
-extern void *xzalloc(size_t);
+extern void *xzalloc(size_t)
+  ATTRIBUTE_W_U_R ATTRIBUTE_MALLOC;
 
 /* Utility macros to allocate typed memory.  Avoids errors like:
    struct foo *foo = xmalloc (sizeof struct bar); and memset (foo,
@@ -1399,7 +1408,7 @@ extern int extract_long_unsigned_integer(const gdb_byte *, int, LONGEST *);
 extern int extract_long_unsigned_integer_with_byte_order(const gdb_byte *, int, LONGEST *, int);
 
 extern CORE_ADDR extract_typed_address(const gdb_byte *buf,
-                                       struct type *type);
+                                       struct type *type) ATTRIBUTE_W_U_R;
 
 extern void store_signed_integer(gdb_byte *, int, LONGEST);
 
@@ -1648,11 +1657,11 @@ extern int use_windows;
    "align_..." instead of "round_..." as the latter reads better with
    this incorrect coding style.  */
 
-extern ULONGEST align_up(ULONGEST v, int n);
-extern ULONGEST align_down(ULONGEST v, int n);
+extern ULONGEST align_up(ULONGEST v, int n) ATTRIBUTE_W_U_R;
+extern ULONGEST align_down(ULONGEST v, int n) ATTRIBUTE_W_U_R;
 
 /* APPLE LOCAL: Make this public since fork-child.c and remote.c now use it: */
-void breakup_args(char *scratch, int *argc, char **argv);
+extern void breakup_args(char *scratch, int *argc, char **argv);
 
 /* APPLE LOCAL begin CHECK macro: */
 #define __CHECK_FUNCTION __PRETTY_FUNCTION__
@@ -1671,15 +1680,16 @@ void breakup_args(char *scratch, int *argc, char **argv);
    ((void)((expression) ? 0 : gdb_check_fatal(#expression, __FILE__, __LINE__, __CHECK_FUNCTION)))
 #endif /* __cplusplus */
 
-void ATTR_NORETURN gdb_check(const char *str, const char *file,
-			     unsigned int line, const char *func);
-void ATTR_NORETURN gdb_check_fatal(const char *str, const char *file,
-				   unsigned int line, const char *func);
+extern void ATTR_NORETURN gdb_check(const char *str, const char *file,
+				    unsigned int line, const char *func);
+extern void ATTR_NORETURN gdb_check_fatal(const char *str, const char *file,
+					  unsigned int line, const char *func);
 /* APPLE LOCAL end CHECK macro */
 
 /* APPLE LOCAL: Local timer stuff */
 extern int maint_use_timers;
-struct cleanup *start_timer(int *timer_var, const char *timer_name, const char *this_mssg);
+extern struct cleanup *start_timer(int *timer_var, const char *timer_name,
+				   const char *this_mssg) ATTRIBUTE_W_U_R;
 
 /* APPLE LOCAL: Used in target_check_safe_call:  */
 #define MALLOC_SUBSYSTEM (1 << 0)

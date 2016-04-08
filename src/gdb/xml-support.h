@@ -1,4 +1,4 @@
-/* Helper routines for parsing XML using Expat.
+/* xml-support.h: Helper routines for parsing XML using Expat.
 
    Copyright (C) 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 
@@ -21,6 +21,7 @@
 #ifndef XML_SUPPORT_H
 #define XML_SUPPORT_H
 
+#include "ansidecl.h"
 #include "gdb_obstack.h"
 #include "vec.h"
 
@@ -194,7 +195,8 @@ void gdb_xml_use_dtd (struct gdb_xml_parser *parser, const char *dtd_name);
    but only if something unexpected goes wrong during parsing; parse
    errors will be caught, warned about, and reported as failure.  */
 
-int gdb_xml_parse (struct gdb_xml_parser *parser, const char *buffer);
+int gdb_xml_parse(struct gdb_xml_parser *parser, const char *buffer)
+  ATTRIBUTE_W_U_R;
 
 /* Issue a debugging message from one of PARSER's handlers.  */
 

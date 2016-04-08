@@ -23,6 +23,8 @@
 #if !defined (SYMFILE_H)
 #define SYMFILE_H
 
+#include "ansidecl.h"
+
 /* APPLE LOCAL: Need domain_enum decl from symtab.h */
 #include "symtab.h"
 
@@ -44,7 +46,6 @@ struct block;
 
 struct psymbol_allocation_list
 {
-
   /* Pointer to beginning of dynamically allocated array of pointers
      to partial symbols.  The array is dynamically expanded as
      necessary to accommodate more pointers.  */
@@ -215,7 +216,8 @@ extern struct section_addr_info *alloc_section_addr_info (size_t
 /* Return a freshly allocated copy of ADDRS.  The section names, if
    any, are also freshly allocated copies of those in ADDRS.  */
 extern struct section_addr_info *(copy_section_addr_info
-                                  (struct section_addr_info *addrs));
+                                  (struct section_addr_info *addrs))
+  ATTRIBUTE_W_U_R;
 
 /* Build (allocate and populate) a section_addr_info struct from an
    existing section table.  */
@@ -242,13 +244,13 @@ extern struct partial_symtab *start_psymtab_common(struct objfile *,
    obstack (and add a null character at the end in the copy).  Returns
    the address of the copy.  */
 
-extern char *obsavestring (const char *, int, struct obstack *);
+extern char *obsavestring(const char *, int, struct obstack *) ATTRIBUTE_W_U_R;
 
 /* Concatenate strings S1, S2 and S3; return the new string.  Space is
    found in the OBSTACKP  */
 
-extern char *obconcat (struct obstack *obstackp, const char *, const char *,
-		       const char *);
+extern char *obconcat(struct obstack *obstackp, const char *, const char *,
+		      const char *) ATTRIBUTE_W_U_R;
 
 			/*   Variables   */
 
@@ -296,23 +298,23 @@ extern enum overlay_debugging_state
 extern int overlay_cache_invalid;
 
 /* Return the "mapped" overlay section containing the PC.  */
-extern asection *find_pc_mapped_section(CORE_ADDR);
+extern asection *find_pc_mapped_section(CORE_ADDR) ATTRIBUTE_W_U_R;
 
 /* Return any overlay section containing the PC (even in its LMA
    region).  */
-extern asection *find_pc_overlay (CORE_ADDR);
+extern asection *find_pc_overlay(CORE_ADDR) ATTRIBUTE_W_U_R;
 
 /* Return true if the section is an overlay.  */
-extern int section_is_overlay (asection *);
+extern int section_is_overlay(asection *) ATTRIBUTE_W_U_R;
 
 /* Return true if the overlay section is currently "mapped".  */
-extern int section_is_mapped (asection *);
+extern int section_is_mapped(asection *) ATTRIBUTE_W_U_R;
 
 /* Return true if pc belongs to section's VMA.  */
-extern CORE_ADDR pc_in_mapped_range (CORE_ADDR, asection *);
+extern CORE_ADDR pc_in_mapped_range(CORE_ADDR, asection *) ATTRIBUTE_W_U_R;
 
 /* Return true if pc belongs to section's LMA.  */
-extern CORE_ADDR pc_in_unmapped_range (CORE_ADDR, asection *);
+extern CORE_ADDR pc_in_unmapped_range(CORE_ADDR, asection *) ATTRIBUTE_W_U_R;
 
 /* Map an address from a section's LMA to its VMA.  */
 extern CORE_ADDR overlay_mapped_address (CORE_ADDR, asection *);
@@ -405,9 +407,9 @@ int reread_symbols_for_objfile (struct objfile *objfile,
 extern struct objfile *symbol_file_add_bfd_safe
 (bfd *abfd, int from_tty, struct section_addr_info *addrs, struct section_offsets *offsets,
  int mainline, int flags, int symflags, CORE_ADDR mapaddr, const char *prefix,
- char *kext_bundle);
+ char *kext_bundle) ATTRIBUTE_W_U_R;
 
-extern int symbol_file_add_bfd_helper(void *v);
+extern int symbol_file_add_bfd_helper(void *v) ATTRIBUTE_W_U_R;
 
 extern struct objfile *symbol_file_add_bfd_using_objfile
 (struct objfile *, bfd *abfd, int from_tty, struct section_addr_info *addrs,
@@ -422,14 +424,16 @@ extern void append_psymbols_as_msymbols(struct objfile *objfile);
 
 void replace_psymbols_with_correct_psymbols(struct objfile *exe_obj);
 
-struct objfile *symbol_file_add_with_addrs_or_offsets_using_objfile(struct objfile *, bfd *, int, struct section_addr_info *, struct section_offsets *, int, int, int, int, CORE_ADDR, const char *, char *);
+struct objfile *symbol_file_add_with_addrs_or_offsets_using_objfile(struct objfile *, bfd *, int, struct section_addr_info *, struct section_offsets *, int, int, int, int, CORE_ADDR, const char *, char *) ATTRIBUTE_W_U_R;
 
-struct objfile *symbol_file_add_name_with_addrs_or_offsets(const char *name, int from_tty, struct section_addr_info *addrs, struct section_offsets *offsets, int num_offsets, int mainline, int flags, int symflags, CORE_ADDR mapaddr, const char *prefix, char *kext_bundle);
+struct objfile *symbol_file_add_name_with_addrs_or_offsets(const char *name, int from_tty, struct section_addr_info *addrs, struct section_offsets *offsets, int num_offsets, int mainline, int flags, int symflags, CORE_ADDR mapaddr, const char *prefix, char *kext_bundle)
+  ATTRIBUTE_W_U_R;
 
-struct section_offsets *convert_sect_addrs_to_offsets_via_on_disk_file(struct section_addr_info *sect_addrs, const char *file, int *num_offsets);
+struct section_offsets *convert_sect_addrs_to_offsets_via_on_disk_file(struct section_addr_info *sect_addrs, const char *file, int *num_offsets)
+  ATTRIBUTE_W_U_R;
 
 /* APPLE LOCAL begin remove symbol file */
-struct objfile *find_objfile(const char *name);
+struct objfile *find_objfile(const char *name) ATTRIBUTE_W_U_R;
 /* APPLE LOCAL end remove symbol file */
 
 #endif /* !defined(SYMFILE_H) */

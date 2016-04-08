@@ -2823,7 +2823,7 @@ coff_set_flags(bfd *abfd, unsigned int *magicp,
 
 #ifdef MCOREMAGIC
     case bfd_arch_mcore:
-      * magicp = MCOREMAGIC;
+      *magicp = MCOREMAGIC;
       return TRUE;
 #endif /* MCOREMAGIC */
 
@@ -2845,7 +2845,7 @@ coff_set_flags(bfd *abfd, unsigned int *magicp,
 
 #ifdef MAXQ20MAGIC
     case bfd_arch_maxq:
-      * magicp = MAXQ20MAGIC;
+      *magicp = MAXQ20MAGIC;
       switch (bfd_get_mach(abfd))
 	{
 	case bfd_mach_maxq10: *flagsp = F_MAXQ10; return TRUE;
@@ -2855,6 +2855,7 @@ coff_set_flags(bfd *abfd, unsigned int *magicp,
 #endif /* MAXQ20MAGIC */
 
     default:			/* Unknown architecture.  */
+      *magicp = 0x0;
       /* Fall through to "return FALSE" below, to avoid
        * "statement never reached" errors on the one below: */
       break;
@@ -2863,8 +2864,8 @@ coff_set_flags(bfd *abfd, unsigned int *magicp,
   return FALSE;
 }
 
-static bfd_boolean
-coff_set_arch_mach(bfd * abfd, enum bfd_architecture arch,
+static ATTRIBUTE_USED bfd_boolean
+coff_set_arch_mach(bfd *abfd, enum bfd_architecture arch,
                    unsigned long machine)
 {
   unsigned dummy1;

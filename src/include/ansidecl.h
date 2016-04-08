@@ -466,6 +466,11 @@ So instead we use the macro below and test it against specific values.  */
 #  define ATTRIBUTE_NO_SANITIZE_UNDEFINED
 # endif /* GNUC >= 4.9 */
 #endif /* ATTRIBUTE_NO_SANITIZE_UNDEFINED */
+  
+/* FIXME: check version of gcc: */
+#ifndef ATTRIBUTE_W_U_R
+# define ATTRIBUTE_W_U_R __attribute__((warn_unused_result))
+#endif /* ATTRIBUTE_W_U_R */
 
 /* We use __extension__ in some places to suppress -pedantic warnings about
  * GCC extensions. This feature did NOT work properly before gcc 2.8. */

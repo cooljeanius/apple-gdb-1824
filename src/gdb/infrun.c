@@ -2094,8 +2094,8 @@ handle_inferior_event(struct execution_control_state *ecs)
   ecs->stop_func_name = 0;
   /* Don't care about return value; stop_func_start and stop_func_name
      will both be 0 if it doesn't work.  */
-  find_pc_partial_function(stop_pc, &ecs->stop_func_name,
-			   &ecs->stop_func_start, &ecs->stop_func_end);
+  (void)find_pc_partial_function(stop_pc, &ecs->stop_func_name,
+				 &ecs->stop_func_start, &ecs->stop_func_end);
   ecs->stop_func_start += DEPRECATED_FUNCTION_START_OFFSET;
   ecs->another_trap = 0;
   bpstat_clear(&stop_bpstat);
@@ -2865,8 +2865,12 @@ process_event_stop_test:
     load_state = pc_set_load_state(stop_pc, OBJF_SYM_ALL, 0);
     if ((OBJF_SYM_LEVELS_MASK & load_state) != OBJF_SYM_ALL)
       {
-        find_pc_partial_function(stop_pc, &ecs->stop_func_name,
-                                 &ecs->stop_func_start, &ecs->stop_func_end);
+	int foundit = find_pc_partial_function(stop_pc, &ecs->stop_func_name,
+					       &ecs->stop_func_start,
+					       &ecs->stop_func_end);
+	if (foundit == 0) {
+	  warning(_("infrun: unable to find function."));
+	}
       }
   }
   /* END APPLE LOCAL */
@@ -3764,9 +3768,14 @@ Further execution is probably impossible.\n"));
 
       /* Look up the hook_stop and run it (CLI internally handles problem
 	 of stop_command's pre-hook not existing).  */
-      if (stop_command)
-	catch_errors (hook_stop_stub, stop_command,
-		      "Error while running hook_stop:\n", RETURN_MASK_ALL);
+      if (stop_command) {
+	int errors_ret =
+	  catch_errors(hook_stop_stub, stop_command,
+		       "Error while running hook_stop:\n", RETURN_MASK_ALL);
+	if (errors_ret == 0) {
+	  ; /* ??? */
+	}
+      }
 
       goto done;
     }
@@ -3925,9 +3934,14 @@ Further execution is probably impossible.\n"));
 
   /* Look up the hook_stop and run it (CLI internally handles problem
      of stop_command's pre-hook not existing).  */
-  if (stop_command)
-    catch_errors (hook_stop_stub, stop_command,
-		  "Error while running hook_stop:\n", RETURN_MASK_ALL);
+  if (stop_command) {
+    int errors_ret =
+      catch_errors(hook_stop_stub, stop_command,
+		   "Error while running hook_stop:\n", RETURN_MASK_ALL);
+    if (errors_ret == 0) {
+      ; /* ??? */
+    }
+  }
 
   /* END APPLE LOCAL  */
 

@@ -1,4 +1,4 @@
-/* BFD library support routines for the Z80 architecture.
+/* cpu-z80.c: BFD library support routines for the Z80 architecture.
    Copyright 2005, 2007 Free Software Foundation, Inc.
    Contributed by Arnold Metselaar <arnold_m@operamail.com>
 
@@ -23,7 +23,8 @@
 #include "bfd.h"
 #include "libbfd.h"
 
-const bfd_arch_info_type bfd_z80_arch;
+/* Forward declaration: */
+extern const bfd_arch_info_type bfd_z80_arch;
 
 /* This routine is provided two arch_infos and
    returns whether they'd be compatible.  */
@@ -55,3 +56,5 @@ static const bfd_arch_info_type arch_info_struct[] =
 };
 
 const bfd_arch_info_type bfd_z80_arch = N (0, "z80-any", TRUE, M(0));
+
+/* EOF */

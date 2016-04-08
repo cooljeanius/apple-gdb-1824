@@ -505,6 +505,7 @@ dyld_find_dylib_name(CORE_ADDR addr, int cputype, int ncmds)
   return image_name;
 }
 
+/* */
 void
 dyld_resolve_filenames(const struct macosx_dyld_thread_status *s,
                        struct dyld_objfile_info *newinfo)
@@ -523,6 +524,7 @@ dyld_resolve_filenames(const struct macosx_dyld_thread_status *s,
     }
 }
 
+/* */
 static CORE_ADDR
 library_offset(struct dyld_objfile_entry *e)
 {
@@ -553,6 +555,7 @@ library_offset(struct dyld_objfile_entry *e)
     return 0;
 }
 
+/* */
 int
 dyld_parse_load_level (const char *s)
 {
@@ -728,15 +731,16 @@ int
 dyld_minimal_load_flag(const struct dyld_path_info *d,
                        struct dyld_objfile_entry *e)
 {
-  int ret = dyld_resolve_load_flag (d, e, dyld_minimal_load_rules);
-  return (ret >= 0) ? ret : OBJF_SYM_NONE;
+  int ret = dyld_resolve_load_flag(d, e, dyld_minimal_load_rules);
+  return ((ret >= 0) ? ret : OBJF_SYM_NONE);
 }
 
+/* */
 int
-dyld_default_load_flag (const struct dyld_path_info *d,
-                        struct dyld_objfile_entry *e)
+dyld_default_load_flag(const struct dyld_path_info *d,
+                       struct dyld_objfile_entry *e)
 {
-  int ret = dyld_resolve_load_flag (d, e, dyld_load_rules);
+  int ret = dyld_resolve_load_flag(d, e, dyld_load_rules);
   if (ret >= 0)
     return ret;
 
@@ -1489,12 +1493,12 @@ dyld_load_library(const struct dyld_path_info *d,
 		{
                   if (!info_verbose)
 		    warning(_("UUID mismatch detected with the loaded library "
-			    "- on disk is:\n\t%s"),
+			      "- on disk is:\n\t%s"),
                             e->abfd->filename);
                   else
 		    warning(_("UUID mismatch detected with the loaded library "
-			    "- on host side:\n\t%s (UUID %s)\n"
-                            "- on device side:\n\tUUID %s"),
+			      "- on host side:\n\t%s (UUID %s)\n"
+			      "- on device side:\n\tUUID %s"),
                             e->abfd->filename, puuid(file_uuid),
                             puuid(mem_uuid));
 
@@ -1713,19 +1717,18 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
 	    }
 
 	  TRY_CATCH(exc, RETURN_MASK_ALL)
-	    {
-	      e->objfile =
-		symbol_file_add_with_addrs_or_offsets_using_objfile(e->objfile,
-						   e->abfd,
-						   0,
-						   addrs,
-						   e->dyld_section_offsets,
-                                                   num_offsets,
-						   0, 0,
-						   e->load_flag,
-						   0,
-						   e->prefix, NULL);
-	    }
+	  {
+	    e->objfile =
+	      symbol_file_add_with_addrs_or_offsets_using_objfile(e->objfile,
+								  e->abfd, 0,
+								  addrs,
+							e->dyld_section_offsets,
+								  num_offsets,
+								  0, 0,
+								  e->load_flag,
+								  0, e->prefix,
+								  NULL);
+	  }
 	  if (exc.reason == RETURN_ERROR)
 	    e->objfile = NULL;
 	}
@@ -1827,18 +1830,21 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
     }
 }
 
+/* */
 void
 dyld_load_symfile(struct dyld_objfile_entry *e)
 {
   dyld_load_symfile_internal(e, 0);
 }
 
+/* */
 void
 dyld_load_symfile_preserving_objfile(struct dyld_objfile_entry *e)
 {
   dyld_load_symfile_internal(e, 1);
 }
 
+/* */
 void
 dyld_load_symfiles(struct dyld_objfile_info *result)
 {
@@ -2563,6 +2569,7 @@ dyld_prune_shlib(struct dyld_path_info *d,
     }
 }
 
+/* */
 void
 dyld_merge_shlibs(const struct macosx_dyld_thread_status *s,
                   struct dyld_path_info *d,
@@ -2600,17 +2607,19 @@ dyld_merge_shlibs(const struct macosx_dyld_thread_status *s,
     }
 }
 
+/* */
 static void
-dyld_shlibs_updated (struct dyld_objfile_info *info)
+dyld_shlibs_updated(struct dyld_objfile_info *info)
 {
-  dyld_objfile_info_pack (info);
-  update_section_tables_dyld (info);
-  update_current_target ();
-  reread_symbols ();
-  breakpoint_update ();
-  re_enable_breakpoints_in_shlibs (0);
+  dyld_objfile_info_pack(info);
+  update_section_tables_dyld(info);
+  update_current_target();
+  reread_symbols();
+  breakpoint_update();
+  re_enable_breakpoints_in_shlibs(0);
 }
 
+/* */
 void
 dyld_update_shlibs(struct dyld_path_info *d, struct dyld_objfile_info *result)
 {
@@ -2651,6 +2660,7 @@ dyld_purge_cached_libraries(struct dyld_objfile_info *info)
   dyld_shlibs_updated(info);
 }
 
+/* Usual gdb initialization hook: */
 void
 _initialize_macosx_nat_dyld_process(void)
 {
@@ -2658,8 +2668,7 @@ _initialize_macosx_nat_dyld_process(void)
                           &dyld_check_uuids_flag, _("\
 Set if GDB should check the binary UUID between the file on disk and the one loaded in memory."), _("\
 Set if GDB should check the binary UUID between the file on disk and the one loaded in memory."), NULL,
-                          NULL, NULL,
-                          &setshliblist, &showshliblist);
+                          NULL, NULL, &setshliblist, &showshliblist);
 }
 
 /* EOF */

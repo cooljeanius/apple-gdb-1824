@@ -106,7 +106,10 @@ mrealloc(PTR md, PTR ptr, size_t size)
 	  result = mmalloc(md, size);
 	  if (result == NULL)
 	    {
-	      mmalloc(md, blocks * BLOCKSIZE);
+	      void *unused_buf = mmalloc(md, blocks * BLOCKSIZE);
+	      if (unused_buf == NULL) {
+		; /* ??? */
+	      }
 	      return (NULL);
 	    }
 	  if (ptr != result)

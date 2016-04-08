@@ -228,9 +228,9 @@ vms_object_p (bfd * abfd)
       if (target_vector == NULL)
 	{
 	  if (prev_type <= OBJ_S_C_MAXRECTYP)
-	    target_vector = & vms_vax_vec;
+	    target_vector = &vms_vax_vec;
 	  else
-	    target_vector = & vms_alpha_vec;
+	    target_vector = &vms_alpha_vec;
 	}
 
       switch (prev_type)
@@ -294,15 +294,15 @@ vms_object_p (bfd * abfd)
       vms_debug (2, "arch is vax\n");
 #endif
     }
-  else if (target_vector == & vms_alpha_vec)
+  else if (target_vector == &vms_alpha_vec)
     {
-      /* Set arch_info to alpha.   */
-
-      arch = bfd_scan_arch ("alpha");
+      /* Set arch_info to alpha: */
+      const char *alphastr = "alpha";
+      arch = bfd_scan_arch(alphastr);
       PRIV (is_vax) = FALSE;
 #if defined(VMS_DEBUG) && VMS_DEBUG
-      vms_debug (2, "arch is alpha\n");
-#endif
+      vms_debug(2, "arch is %s\n", alphastr);
+#endif /* VMS_DEBUG */
     }
 
   if (arch == NULL)
@@ -353,10 +353,11 @@ vms_mkobject (bfd * abfd)
 
   {
 #ifdef __VAX
-    const bfd_arch_info_type *arch = bfd_scan_arch ("vax");
+    const char *tmpstr = "vax";
 #else
-    const bfd_arch_info_type *arch = bfd_scan_arch ("alpha");
-#endif
+    const char *tmpstr = "alpha";
+#endif /* __VAX */
+    const bfd_arch_info_type *arch = bfd_scan_arch(tmpstr);
     if (arch == NULL)
       {
 	bfd_set_error (bfd_error_wrong_format);
@@ -801,7 +802,7 @@ vms_get_symtab_upper_bound (bfd * abfd)
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (1, "vms_get_symtab_upper_bound (%p), %d symbols\n", abfd, PRIV (gsd_sym_count));
 #endif
-  return (PRIV (gsd_sym_count) + 1) * sizeof (asymbol *);
+  return (long)(((size_t)PRIV(gsd_sym_count) + 1UL) * sizeof(asymbol *));
 }
 
 /* Copy symbols from hash table to symbol vector
@@ -1365,14 +1366,15 @@ vms_bfd_reloc_type_lookup (bfd * abfd ATTRIBUTE_UNUSED,
    pointer.  */
 
 static bfd_boolean
-vms_set_arch_mach (bfd * abfd,
-		   enum bfd_architecture arch ATTRIBUTE_UNUSED,
-		   unsigned long mach ATTRIBUTE_UNUSED)
+vms_set_arch_mach(bfd *abfd,
+		  enum bfd_architecture arch ATTRIBUTE_UNUSED,
+		  unsigned long mach ATTRIBUTE_UNUSED)
 {
+  const char *archstr = "alpha";
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (1, "vms_set_arch_mach (%p, %d, %ld)\n", abfd, arch, mach);
 #endif
-  abfd->arch_info = bfd_scan_arch ("alpha");
+  abfd->arch_info = bfd_scan_arch(archstr);
 
   return TRUE;
 }

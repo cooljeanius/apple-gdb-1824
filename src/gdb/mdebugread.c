@@ -2171,6 +2171,7 @@ record_minimal_symbol (const char *name, const CORE_ADDR address,
 {
   int section;
   asection *bfd_section;
+  struct minimal_symbol *our_msym = (struct minimal_symbol *)NULL;
 
   switch (storage_class)
     {
@@ -2236,8 +2237,9 @@ record_minimal_symbol (const char *name, const CORE_ADDR address,
         bfd_section = NULL;
     }
 
-  prim_record_minimal_symbol_and_info (name, address, ms_type, NULL,
-                                       section, bfd_section, objfile);
+  our_msym = prim_record_minimal_symbol_and_info(name, address, ms_type, NULL,
+						 section, bfd_section, objfile);
+  gdb_assert(our_msym != (struct minimal_symbol *)NULL);
 }
 
 /* Master parsing procedure for first-pass reading of file symbols
@@ -3386,11 +3388,14 @@ parse_partial_symbols (struct objfile *objfile)
 		  int new_sdx;
 
 		case stStaticProc:
-		  prim_record_minimal_symbol_and_info(name, sh.value,
-						      mst_file_text, NULL,
-						      SECT_OFF_TEXT(objfile),
-                                                      NULL, objfile);
-
+		  {
+		    struct minimal_symbol *themsym =
+		      prim_record_minimal_symbol_and_info(name, sh.value,
+							  mst_file_text, NULL,
+							  SECT_OFF_TEXT(objfile),
+							  NULL, objfile);
+		    gdb_assert(themsym != (struct minimal_symbol *)NULL);
+		  }
 		  /* FALLTHROUGH */
 
 		case stProc:
@@ -3471,17 +3476,24 @@ parse_partial_symbols (struct objfile *objfile)
 		  continue;
 
 		case stStatic:	/* Variable */
-		  if (SC_IS_DATA (sh.sc))
-		    prim_record_minimal_symbol_and_info(name, sh.value,
-                                                        mst_file_data, NULL,
-                                                        SECT_OFF_DATA(objfile),
-                                                        NULL, objfile);
-		  else
-		    prim_record_minimal_symbol_and_info(name, sh.value,
-                                                        mst_file_bss, NULL,
-                                                        SECT_OFF_BSS(objfile),
-                                                        NULL, objfile);
-		  addrclass = LOC_STATIC;
+		  {
+		    struct minimal_symbol *an_msym = NULL;
+		    if (SC_IS_DATA(sh.sc)) {
+		      an_msym =
+			prim_record_minimal_symbol_and_info(name, sh.value,
+							    mst_file_data, NULL,
+							    SECT_OFF_DATA(objfile),
+							    NULL, objfile);
+		    } else {
+		      an_msym =
+			prim_record_minimal_symbol_and_info(name, sh.value,
+							    mst_file_bss, NULL,
+							    SECT_OFF_BSS(objfile),
+							    NULL, objfile);
+		    }
+		    addrclass = LOC_STATIC;
+		    gdb_assert(an_msym != (struct minimal_symbol *)NULL);
+		  }
 		  break;
 
 		case stIndirect:	/* Irix5 forward declaration */

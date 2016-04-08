@@ -1062,7 +1062,7 @@ abs32code (bfd *abfd,
      jump we were going to.  */
   gap = value - (dot - shrink);
 
-  if (-1 << 23 < (long)gap && (long)gap < 1 << 23)
+  if (((-1U << 23) < gap) && (gap < (1U << 23)))
     {
       /* Change the reloc type from 32bitcode possible 24, to 24bit
 	 possible 32.  */

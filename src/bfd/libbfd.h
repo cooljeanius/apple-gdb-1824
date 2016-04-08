@@ -109,23 +109,25 @@ struct areltdata {
 
 #define arelt_size(bfd) (((struct areltdata *)((bfd)->arelt_data))->parsed_size)
 
-extern void *bfd_malloc(bfd_size_type);
-extern void *bfd_realloc(void *, bfd_size_type);
-extern void *bfd_realloc_or_free(void *, bfd_size_type);
-extern void *bfd_zmalloc(bfd_size_type);
-extern void *bfd_malloc2(bfd_size_type, bfd_size_type);
-extern void *bfd_realloc2(void *, bfd_size_type, bfd_size_type);
-extern void *bfd_zmalloc2(bfd_size_type, bfd_size_type);
+extern void *bfd_malloc(bfd_size_type) ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
+extern void *bfd_realloc(void *, bfd_size_type) ATTRIBUTE_W_U_R;
+extern void *bfd_realloc_or_free(void *, bfd_size_type) ATTRIBUTE_W_U_R;
+extern void *bfd_zmalloc(bfd_size_type) ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
+extern void *bfd_malloc2(bfd_size_type, bfd_size_type)
+  ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
+extern void *bfd_realloc2(void *, bfd_size_type, bfd_size_type) ATTRIBUTE_W_U_R;
+extern void *bfd_zmalloc2(bfd_size_type, bfd_size_type)
+  ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
 
 extern void _bfd_default_error_handler(const char *s, ...)
   ATTRIBUTE_PRINTF_1;
 extern bfd_error_handler_type _bfd_error_handler;
 
 /* These routines allocate and free things on the BFD's objalloc: */
-extern void *bfd_alloc(bfd *, bfd_size_type);
-extern void *bfd_zalloc(bfd *, bfd_size_type);
-extern void *bfd_alloc2(bfd *, bfd_size_type, bfd_size_type);
-extern void *bfd_zalloc2(bfd *, bfd_size_type, bfd_size_type);
+extern void *bfd_alloc(bfd *, bfd_size_type) ATTRIBUTE_W_U_R;
+extern void *bfd_zalloc(bfd *, bfd_size_type) ATTRIBUTE_W_U_R;
+extern void *bfd_alloc2(bfd *, bfd_size_type, bfd_size_type) ATTRIBUTE_W_U_R;
+extern void *bfd_zalloc2(bfd *, bfd_size_type, bfd_size_type) ATTRIBUTE_W_U_R;
 extern void bfd_release(bfd *, void *);
 
 bfd * _bfd_create_empty_archive_element_shell

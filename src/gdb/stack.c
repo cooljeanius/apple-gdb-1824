@@ -159,13 +159,18 @@ print_stack_frame(struct frame_info *fi, int print_level,
 		  enum print_what print_what)
 {
   struct print_stack_frame_args args;
+  int errors_ret = 0;
 
   args.fi = fi;
   args.print_level = print_level;
   args.print_what = print_what;
   args.print_args = 1;
 
-  catch_errors(print_stack_frame_stub, (char *)&args, "", RETURN_MASK_ALL);
+  errors_ret = catch_errors(print_stack_frame_stub, (char *)&args, "",
+			    RETURN_MASK_ALL);
+  if (errors_ret == 0) {
+    ; /* ??? */
+  }
 }
 
 struct print_args_args
@@ -817,13 +822,17 @@ print_frame(struct frame_info *fi, int print_level, enum print_what print_what,
     {
       struct print_args_args args;
       struct cleanup *args_list_chain;
+      int errors_ret = 0;
       args.fi = fi;
       args.func = func;
       args.stream = gdb_stdout;
-      args_list_chain = make_cleanup_ui_out_list_begin_end (uiout, "args");
-      catch_errors (print_args_stub, &args, "", RETURN_MASK_ALL);
+      args_list_chain = make_cleanup_ui_out_list_begin_end(uiout, "args");
+      errors_ret = catch_errors(print_args_stub, &args, "", RETURN_MASK_ALL);
       /* FIXME: args must be a list. If one argument is a string it will
 	       have " that will not be properly escaped.  */
+      if (errors_ret == 0) {
+	; /* ??? */
+      }
       /* Invoke ui_out_tuple_end.  */
       do_cleanups (args_list_chain);
       QUIT;
@@ -1492,6 +1501,7 @@ backtrace_command(const char *arg, int from_tty)
   int argIndicatingFullTrace = (-1), totArgLen = 0, argc = 0;
   const char *argPtr = arg;
   struct backtrace_command_args btargs;
+  int errors_ret = 0;
 
   if (arg != (char *)NULL)
     {
@@ -1544,7 +1554,12 @@ backtrace_command(const char *arg, int from_tty)
   btargs.count_exp = argPtr;
   btargs.show_locals = (argIndicatingFullTrace >= 0);
   btargs.from_tty = from_tty;
-  catch_errors(backtrace_command_stub, (char *)&btargs, "", RETURN_MASK_ERROR);
+  errors_ret = catch_errors(backtrace_command_stub, (char *)&btargs, "",
+			    RETURN_MASK_ERROR);
+  
+  if (errors_ret == 0) {
+    ; /* ??? */
+  }
 
   if ((argIndicatingFullTrace >= 0) && (totArgLen > 0))
     xfree((void *)argPtr);
@@ -1559,10 +1574,15 @@ static void
 backtrace_full_command(const char *arg, int from_tty)
 {
   struct backtrace_command_args btargs;
+  int errors_ret = 0;
   btargs.count_exp = arg;
   btargs.show_locals = 1;
   btargs.from_tty = from_tty;
-  catch_errors(backtrace_command_stub, (char *)&btargs, "", RETURN_MASK_ERROR);
+  errors_ret = catch_errors(backtrace_command_stub, (char *)&btargs, "",
+			    RETURN_MASK_ERROR);
+  if (errors_ret == 0) {
+    ; /* ??? */
+  }
 }
 
 

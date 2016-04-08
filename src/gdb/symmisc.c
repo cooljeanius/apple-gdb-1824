@@ -538,11 +538,16 @@ dump_symtab_1 (struct objfile *objfile, struct symtab *symtab,
 	  ALL_BLOCK_SYMBOLS (b, iter, sym)
 	    {
 	      struct print_symbol_args s;
+	      int errors_ret = 0;
 	      s.symbol = sym;
 	      s.depth = depth + 1;
 	      s.outfile = outfile;
-	      catch_errors (print_symbol, &s, "Error printing symbol:\n",
-			    RETURN_MASK_ALL);
+	      errors_ret = catch_errors(print_symbol, &s,
+					"Error printing symbol:\n",
+					RETURN_MASK_ALL);
+	      if (errors_ret == 0) {
+		; /* ??? */
+	      }
 	    }
 	}
       fprintf_filtered (outfile, "\n");

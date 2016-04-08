@@ -22,6 +22,7 @@
 #ifndef _BFD_MACH_O_H_
 #define _BFD_MACH_O_H_ 1
 
+#include "ansidecl.h"
 #include "bfd.h"
 #ifdef HAVE_MACH_O_LOADER_H
 # include <mach-o/loader.h>
@@ -1052,7 +1053,7 @@ const bfd_target *bfd_mach_o_archive_p(bfd *);
 bfd *bfd_mach_o_openr_next_archived_file(bfd *, bfd *);
 int bfd_mach_o_lookup_section(bfd *, asection *,
                               bfd_mach_o_load_command **,
-                              bfd_mach_o_section **);
+                              bfd_mach_o_section **) ATTRIBUTE_W_U_R;
 int bfd_mach_o_lookup_command(bfd *, bfd_mach_o_load_command_type,
                               bfd_mach_o_load_command **);
 unsigned long bfd_mach_o_stack_addr(enum bfd_mach_o_cpu_type);

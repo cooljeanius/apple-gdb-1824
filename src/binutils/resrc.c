@@ -277,6 +277,8 @@ run_cmd(char *cmd, const char *redir)
 static FILE *
 open_input_stream (char *cmd)
 {
+  int xatexit_ret = 0;
+
   if (istream_type == ISTREAM_FILE)
     {
       char *fileprefix;
@@ -308,7 +310,11 @@ open_input_stream (char *cmd)
 	fprintf (stderr, _("Using popen to read preprocessor output\n"));
     }
 
-  xatexit (close_input_stream);
+  xatexit_ret = xatexit(close_input_stream);
+  if (xatexit_ret == -1) {
+    fprintf(stderr, _("Failed to register close_input_stream with xatexit."));
+  }
+  
   return cpp_pipe;
 }
 

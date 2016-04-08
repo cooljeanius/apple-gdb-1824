@@ -1,6 +1,6 @@
-/* m68hc11.h -- Header file for Motorola 68HC11 & 68HC12 opcode table
+/* include/opcode/m68hc11.h: Header for Motorola 68HC11 & 68HC12 opcode table
    Copyright 1999, 2000, 2002, 2003 Free Software Foundation, Inc.
-   Written by Stephane Carrez (stcarrez@nerim.fr)
+   Written by Stephane Carrez <stcarrez@nerim.fr>
 
 This file is part of GDB, GAS, and the GNU binutils.
 
@@ -16,7 +16,7 @@ the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this file; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Software Foundation, 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #ifndef _OPCODE_M68HC11_H
 #define _OPCODE_M68HC11_H

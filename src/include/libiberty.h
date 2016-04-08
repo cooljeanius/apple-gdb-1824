@@ -67,20 +67,21 @@ extern void unlock_std_streams(void);
 /* Open and return a FILE pointer.  If the OS supports it, ensure that
    the stream is setup to avoid any multi-threaded locking.  Otherwise
    return the FILE pointer unchanged.  */
-extern FILE *fopen_unlocked(const char *, const char *);
-extern FILE *fdopen_unlocked(int, const char *);
-extern FILE *freopen_unlocked(const char *, const char *, FILE *);
+extern FILE *fopen_unlocked(const char *, const char *) ATTRIBUTE_W_U_R;
+extern FILE *fdopen_unlocked(int, const char *) ATTRIBUTE_W_U_R;
+extern FILE *freopen_unlocked(const char *, const char *, FILE *)
+  ATTRIBUTE_W_U_R;
 
 /* Build an argument vector from a string.  Allocates memory using
    malloc.  Use freeargv to free the vector.  */
-extern char **buildargv(const char *) ATTRIBUTE_MALLOC;
+extern char **buildargv(const char *) ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
 
 /* Free a vector returned by buildargv: */
 extern void freeargv(char **);
 
 /* Duplicate an argument vector. Allocates memory using malloc.  Use
    freeargv to free the vector.  */
-extern char **dupargv(char *const *) ATTRIBUTE_MALLOC;
+extern char **dupargv(char *const *) ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
 
 /* Expand "@file" arguments in argv: */
 extern void expandargv(int *, char ***);
@@ -89,7 +90,7 @@ extern void expandargv(int *, char ***);
 extern int writeargv(char *const *, FILE *);
 
 /* Return the number of elements in argv: */
-extern int countargv(char *const *);
+extern int countargv(char *const *) ATTRIBUTE_W_U_R;
 
 /* Return the last component of a path name.  Note that we cannot use a
    prototype here because the parameter is declared inconsistently
@@ -117,24 +118,25 @@ extern char *basename(char *);
 #endif /* !HAVE_DECL_BASENAME */
 
 /* A well-defined basename() that is always compiled in: */
-extern const char *lbasename (const char *);
+extern const char *lbasename(const char *) ATTRIBUTE_W_U_R;
 
 /* Same, but assumes DOS semantics (drive name, backslash is also a
  * dir separator) regardless of host: */
-extern const char *dos_lbasename(const char *);
+extern const char *dos_lbasename(const char *) ATTRIBUTE_W_U_R;
 
 /* Same, but assumes Unix semantics (absolute paths always start with
  * a slash, only forward slash is accepted as dir separator)
  * regardless of host: */
-extern const char *unix_lbasename(const char *);
+extern const char *unix_lbasename(const char *) ATTRIBUTE_W_U_R;
 
 /* A well-defined realpath() that is always compiled in: */
-extern char *lrealpath(const char *);
+extern char *lrealpath(const char *) ATTRIBUTE_W_U_R;
 
 /* Concatenate an arbitrary number of strings.  You must pass NULL as
    the last argument of this function, to terminate the list of
    strings.  Allocates memory using xmalloc.  */
-extern char *concat(const char *, ...) ATTRIBUTE_MALLOC ATTRIBUTE_SENTINEL;
+extern char *concat(const char *, ...)
+  ATTRIBUTE_MALLOC ATTRIBUTE_SENTINEL ATTRIBUTE_W_U_R;
 
 /* Concatenate an arbitrary number of strings.  You must pass NULL as
    the last argument of this function, to terminate the list of
@@ -142,24 +144,28 @@ extern char *concat(const char *, ...) ATTRIBUTE_MALLOC ATTRIBUTE_SENTINEL;
    not one of the strings to be concatenated, but if not NULL is a
    pointer to be freed after the new string is created, similar to the
    way xrealloc works.  */
-extern char *reconcat(char *, const char *, ...) ATTRIBUTE_MALLOC ATTRIBUTE_SENTINEL;
+extern char *reconcat(char *, const char *, ...)
+  ATTRIBUTE_MALLOC ATTRIBUTE_SENTINEL ATTRIBUTE_W_U_R;
 
 /* Determine the length of concatenating an arbitrary number of
    strings.  You must pass NULL as the last argument of this function,
    to terminate the list of strings.  */
-extern unsigned long concat_length(const char *, ...) ATTRIBUTE_SENTINEL;
+extern unsigned long concat_length(const char *, ...)
+  ATTRIBUTE_SENTINEL ATTRIBUTE_W_U_R;
 
 /* Concatenate an arbitrary number of strings into a SUPPLIED area of
    memory.  You must pass NULL as the last argument of this function,
    to terminate the list of strings.  The supplied memory is assumed
    to be large enough.  */
-extern char *concat_copy(char *, const char *, ...) ATTRIBUTE_SENTINEL;
+extern char *concat_copy(char *, const char *, ...)
+  ATTRIBUTE_SENTINEL ATTRIBUTE_W_U_R;
 
 /* Concatenate an arbitrary number of strings into a GLOBAL area of
    memory.  You must pass NULL as the last argument of this function,
    to terminate the list of strings.  The supplied memory is assumed
    to be large enough.  */
-extern char *concat_copy2(const char *, ...) ATTRIBUTE_SENTINEL;
+extern char *concat_copy2(const char *, ...)
+  ATTRIBUTE_SENTINEL ATTRIBUTE_W_U_R;
 
 /* This is the global area used by concat_copy2: */
 extern char *libiberty_concat_ptr;
@@ -173,7 +179,7 @@ extern char *libiberty_concat_ptr;
    concat_copy2 ACONCAT_PARAMS)
 
 /* Check whether two file descriptors refer to the same file: */
-extern int fdmatch(int fd1, int fd2);
+extern int fdmatch(int fd1, int fd2) ATTRIBUTE_W_U_R;
 
 /* Return the position of the first bit set in the argument.  */
 /* Prototypes vary from system to system, so we only provide a
@@ -184,7 +190,7 @@ extern int ffs(int);
 
 /* Get the working directory.  The result is cached, so do NOT call
    chdir() between calls to getpwd().  */
-extern char *getpwd(void);
+extern char *getpwd(void) ATTRIBUTE_W_U_R;
 
 /* Get the current time.  */
 /* Prototypes vary from system to system, so we only provide a
@@ -196,48 +202,49 @@ extern int gettimeofday(struct timeval *, void *);
 #endif /* __MINGW32__ */
 
 /* Get the amount of time the process has run, in microseconds: */
-extern long get_run_time(void);
+extern long get_run_time(void) ATTRIBUTE_W_U_R;
 
 /* Generate a relocated path to some installation directory.  Allocates
    return value using malloc.  */
-extern char *make_relative_prefix(const char *, const char *,
-                                  const char *) ATTRIBUTE_MALLOC;
+extern char *make_relative_prefix(const char *, const char *, const char *)
+  ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
 
 /* Generate a relocated path to some installation directory without
  * attempting to follow any soft links. Allocates
  * return value using malloc.  */
 extern char *make_relative_prefix_ignore_links(const char *, const char *,
-                                               const char *) ATTRIBUTE_MALLOC;
+                                               const char *)
+  ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
 
 /* Choose a temporary directory to use for scratch files: */
-extern char *choose_temp_base(void) ATTRIBUTE_MALLOC;
+extern char *choose_temp_base(void) ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
 
 /* Return a temporary file name or NULL if unable to create one: */
-extern char *make_temp_file(const char *) ATTRIBUTE_MALLOC;
+extern char *make_temp_file(const char *) ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
 
 /* Remove a link to a file unless it is special: */
-extern int unlink_if_ordinary (const char *);
+extern int unlink_if_ordinary(const char *);
 
 /* Allocate memory filled with spaces.  Allocates using malloc: */
-extern const char *spaces(int count);
+extern const char *spaces(int count) ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
 
 /* Return the maximum error number for which strerror will return a
    string.  */
-extern int errno_max(void);
+extern int errno_max(void) ATTRIBUTE_W_U_R;
 
 /* Return the name of an errno value (e.g., strerrno (EINVAL) returns
    "EINVAL").  */
-extern const char *strerrno(int);
+extern const char *strerrno(int) ATTRIBUTE_W_U_R;
 
 /* Given the name of an errno value, return the value: */
-extern int strtoerrno(const char *);
+extern int strtoerrno(const char *) ATTRIBUTE_W_U_R;
 
 /* ANSI's strerror(), but more robust: */
-extern char *xstrerror(int);
+extern char *xstrerror(int) ATTRIBUTE_W_U_R;
 
 /* Return the maximum signal number for which strsignal will return a
    string.  */
-extern int signo_max(void);
+extern int signo_max(void) ATTRIBUTE_W_U_R;
 
 /* Return a signal message string for a signal number
    (e.g., strsignal (SIGHUP) returns something like "Hangup").  */
@@ -249,13 +256,13 @@ extern const char *strsignal(int);
 
 /* Return the name of a signal number (e.g., strsigno (SIGHUP) returns
    "SIGHUP").  */
-extern const char *strsigno(int);
+extern const char *strsigno(int) ATTRIBUTE_W_U_R;
 
 /* Given the name of a signal, return its number: */
-extern int strtosigno(const char *);
+extern int strtosigno(const char *) ATTRIBUTE_W_U_R;
 
 /* Register a function to be run by xexit.  Returns 0 on success: */
-extern int xatexit(void (*fn) (void));
+extern int xatexit(void (*fn)(void)) ATTRIBUTE_W_U_R;
 
 /* Exit, calling all the functions registered with xatexit: */
 extern void xexit(int status) ATTRIBUTE_NORETURN;
@@ -278,38 +285,40 @@ extern void xmalloc_failed(size_t) ATTRIBUTE_NORETURN;
    message to stderr (using the name set by xmalloc_set_program_name,
    if any) and then call xexit.  */
 
-extern void *xmalloc(size_t) ATTRIBUTE_MALLOC;
+extern void *xmalloc(size_t) ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
 
 /* Reallocate memory without fail.  This works like xmalloc.  Note,
    realloc type functions are not suitable for attribute malloc since
    they may return the same address across multiple calls. */
 
-extern void *xrealloc(void *, size_t);
+extern void *xrealloc(void *, size_t) ATTRIBUTE_W_U_R;
 
 /* Allocate memory without fail and set it to zero.  This works like
    xmalloc.  */
 
-extern void *xcalloc(size_t, size_t) ATTRIBUTE_MALLOC;
+extern void *xcalloc(size_t, size_t) ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
 
   /* APPLE LOCAL xmalloc */
 /* Free memory allocated with xmalloc, xrealloc, or xcalloc: */
 extern void xfree PARAMS((PTR));
 
 /* Copy a string into a memory buffer without fail: */
-extern char *xstrdup(const char *) ATTRIBUTE_MALLOC;
+extern char *xstrdup(const char *) ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
 
 /* Copy at most N characters from string into a buffer without fail: */
-extern char *xstrndup(const char *, size_t) ATTRIBUTE_MALLOC;
+extern char *xstrndup(const char *, size_t) ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
 
 /* Copy an existing memory buffer to a new memory buffer without fail: */
-extern void *xmemdup(const void *, size_t, size_t) ATTRIBUTE_MALLOC;
+extern void *xmemdup(const void *, size_t, size_t)
+  ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
 
 /* Physical memory routines.  Return values are in BYTES: */
-extern double physmem_total(void);
-extern double physmem_available(void);
+extern double physmem_total(void) ATTRIBUTE_W_U_R;
+extern double physmem_available(void) ATTRIBUTE_W_U_R;
 
 /* Compute the 32-bit CRC of a block of memory: */
-extern unsigned int xcrc32(const unsigned char *, int, unsigned int);
+extern unsigned int xcrc32(const unsigned char *, int, unsigned int)
+  ATTRIBUTE_W_U_R;
 
 /* These macros provide a K&R/C89/C++-friendly way of allocating structures
    with nice encapsulation.  The XDELETE*() macros are technically
@@ -375,7 +384,8 @@ extern void hex_init(void);
    Returns NULL on error.  */
 
 extern struct pex_obj *pex_init(int flags, const char *pname,
-                                const char *tempbase);
+                                const char *tempbase)
+  ATTRIBUTE_W_U_R;
 
 /* Flags for pex_run.  These are bits to be or'ed together.  */
 
@@ -481,9 +491,9 @@ extern struct pex_obj *pex_init(int flags, const char *pname,
 extern const char *pex_run(struct pex_obj *obj, int flags,
 			   const char *executable, char * const *argv,
 			   const char *outname, const char *errname,
-			   int *err);
+			   int *err) ATTRIBUTE_W_U_R;
 
-/* As for pex_run (), but takes an extra parameter to enable the
+/* As for pex_run(), but takes an extra parameter to enable the
  * environment for the child process to be specified.
  *
  * ENV		The environment for the child process, specified as
@@ -497,39 +507,45 @@ extern const char *pex_run_in_environment(struct pex_obj *obj, int flags,
                                           char * const *argv,
                                           char * const *env,
                                           const char *outname,
-                                          const char *errname, int *err);
+                                          const char *errname, int *err)
+  ATTRIBUTE_W_U_R;
 
 /* Return a stream for a temporary file to pass to the first program
  * in the pipeline as input. The file name is chosen as for pex_run.
  * pex_run closes the file automatically; do NOT close it yourself. */
 extern FILE *pex_input_file(struct pex_obj *obj, int flags,
-                            const char *in_name);
+                            const char *in_name)
+  ATTRIBUTE_W_U_R;
 
 /* Return a stream for a pipe connected to the standard input of the
  * first program in the pipeline. You must have passed
  * `PEX_USE_PIPES' to `pex_init'. Close the returned stream
  * yourself.  */
-extern FILE *pex_input_pipe(struct pex_obj *obj, int binary);
+extern FILE *pex_input_pipe(struct pex_obj *obj, int binary)
+  ATTRIBUTE_W_U_R;
 
 /* Read the standard output of the last program to be executed.
  * pex_run can not be called after this. BINARY should be non-zero if
  * the file should be opened in binary mode; this is ignored on Unix.
  * Returns NULL on error. Do NOT call fclose on the returned FILE; it
  * will be closed by pex_free.  */
-extern FILE *pex_read_output(struct pex_obj *, int binary);
+extern FILE *pex_read_output(struct pex_obj *, int binary)
+  ATTRIBUTE_W_U_R;
 
 /* Read the standard error of the last program to be executed.
  * pex_run can not be called after this. BINARY should be non-zero if
  * the file should be opened in binary mode; this is ignored on Unix.
  * Returns NULL on error. Do NOT call fclose on the returned FILE; it
  * will be closed by pex_free.  */
-extern FILE *pex_read_err(struct pex_obj *, int binary);
+extern FILE *pex_read_err(struct pex_obj *, int binary)
+  ATTRIBUTE_W_U_R;
 
 /* Return exit status of all programs in VECTOR.  COUNT indicates the
    size of VECTOR.  The status codes in the vector are in the order of
    the calls to pex_run.  Returns 0 on error, 1 on success.  */
 
-extern int pex_get_status(struct pex_obj *, int count, int *vector);
+extern int pex_get_status(struct pex_obj *, int count, int *vector)
+  ATTRIBUTE_W_U_R;
 
 /* Return times of all programs in VECTOR.  COUNT indicates the size
    of VECTOR.  struct pex_time is really just struct timeval, but that
@@ -545,7 +561,7 @@ struct pex_time
 };
 
 extern int pex_get_times(struct pex_obj *, int count,
-                         struct pex_time *vector);
+                         struct pex_time *vector) ATTRIBUTE_W_U_R;
 
 /* Clean up a pex_obj: */
 extern void pex_free(struct pex_obj *);
@@ -564,7 +580,7 @@ extern void pex_free(struct pex_obj *);
 extern const char *pex_one(int flags, const char *executable,
 			   char * const *argv, const char *pname,
 			   const char *outname, const char *errname,
-			   int *status, int *err);
+			   int *status, int *err) ATTRIBUTE_W_U_R;
 
 /* pexecute and pwait are the old pexecute interface, still here for
    backward compatibility.  Do NOT use these for new code.  Instead,
@@ -580,10 +596,10 @@ extern const char *pex_one(int flags, const char *executable,
 
 /* Execute a program: */
 extern int pexecute(const char *, char * const *, const char *,
-                    const char *, char **, char **, int);
+                    const char *, char **, char **, int) ATTRIBUTE_W_U_R;
 
 /* Wait for pexecute to finish: */
-extern int pwait(int, int *, int);
+extern int pwait(int, int *, int) ATTRIBUTE_W_U_R;
 
 #if !defined(HAVE_DECL_ASPRINTF) || (defined(HAVE_DECL_ASPRINTF) && !HAVE_DECL_ASPRINTF)
 /* Like sprintf but provides a pointer to malloc'd storage, which must be freed
@@ -660,7 +676,7 @@ extern void stack_limit_increase(unsigned long);
    USE_C_ALLOCA yourself.  The canonical autoconf macro C_ALLOCA is
    also set/unset as it is often used to indicate whether code needs
    to call alloca(0).  */
-extern void *C_alloca(size_t) ATTRIBUTE_MALLOC;
+extern void *C_alloca(size_t) ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
 #undef alloca
 #if (GCC_VERSION >= 2000) && !defined(USE_C_ALLOCA)
 # define alloca(x) __builtin_alloca(x)

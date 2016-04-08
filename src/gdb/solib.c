@@ -476,11 +476,15 @@ update_solib_list (int from_tty, struct target_ops *target)
   /* If we are attaching to a running process for which we
      have not opened a symbol file, we may be able to get its
      symbols now!  */
-  if (attach_flag &&
-      symfile_objfile == NULL)
-    catch_errors (ops->open_symbol_file_object, &from_tty,
-		  "Error reading attached process's symbol file.\n",
-		  RETURN_MASK_ALL);
+  if (attach_flag && (symfile_objfile == NULL)) {
+    int error_ret;
+    error_ret = catch_errors(ops->open_symbol_file_object, &from_tty,
+			     "Error reading attached process's symbol file.\n",
+			     RETURN_MASK_ALL);
+    if (error_ret == 0) {
+      ; /* ??? */
+    }
+  }
 
   /* Since this function might actually add some elements to the
      so_list_head list, arrange for it to be cleaned up when
@@ -572,6 +576,7 @@ update_solib_list (int from_tty, struct target_ops *target)
   if (inferior)
     {
       struct so_list *i;
+      int errors_ret = 0;
 
       /* Add the new shared objects to GDB's list.  */
       *gdb_link = inferior;
@@ -582,9 +587,13 @@ update_solib_list (int from_tty, struct target_ops *target)
 	  i->from_tty = from_tty;
 
 	  /* Fill in the rest of the `struct so_list' node.  */
-	  catch_errors (solib_map_sections, i,
-			"Error while mapping shared library sections:\n",
-			RETURN_MASK_ALL);
+	  errors_ret = catch_errors(solib_map_sections, i,
+				    "Error while mapping shared library sections:\n",
+				    RETURN_MASK_ALL);
+	  
+	  if (errors_ret == 0) {
+	    ; /* ??? */
+	  }
 
 	  /* If requested, add the shared object's sections to the TARGET's
 	     section table.  Do this immediately after mapping the object so

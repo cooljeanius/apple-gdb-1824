@@ -732,6 +732,14 @@ prefix_encode (char *start, unsigned code)
   return buf;
 }
 
+/* FIXME: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wformat-nonliteral"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 static char *
 dlltmp(char **buf, const char *fmt)
 {
@@ -743,6 +751,13 @@ dlltmp(char **buf, const char *fmt)
     }
   return *buf;
 }
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 static void
 inform VPARAMS ((const char * message, ...))
@@ -1144,6 +1159,15 @@ def_data (int attr)
 }
 
 /**********************************************************************/
+
+/* FIXME: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wformat-nonliteral"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* FIXME: -Wstack-usage */
 static void
 run(const char *what, char *args)
@@ -1212,6 +1236,13 @@ run(const char *what, char *args)
   else
     abort ();
 }
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* Look for a list of symbols to export in the .drectve section of
    ABFD.  Pass each one to def_exports.  */

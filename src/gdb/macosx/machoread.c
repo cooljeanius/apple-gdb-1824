@@ -88,7 +88,8 @@ static int macho_read_indirect_symbols(bfd *abfd,
                                        struct bfd_mach_o_dysymtab_command
                                        *dysymtab,
                                        struct bfd_mach_o_symtab_command
-                                       *symtab, struct objfile *objfile);
+                                       *symtab, struct objfile *objfile)
+  ATTRIBUTE_W_U_R;
 
 extern void macho_build_psymtabs(struct objfile *objfile, int mainline,
                                  const char *stab_name,
@@ -698,8 +699,8 @@ macho_read_indirect_symbols(bfd *abfd,
       if (ret != 1)
         {
 #if (defined(DEBUG) || defined(_DEBUG)) && defined(bfd_section_name)
-          warning("Error %d fetching section %s from object file \"%s\"",
-                  ret, bfd_section_name(abfd, bfdsec), abfd->filename);
+          warning("Error fetching section %s from object file \"%s\"; %d such sections found.",
+                  bfd_section_name(abfd, bfdsec), abfd->filename, ret);
 #endif /* (DEBUG || _DEBUG) && bfd_section_name */
           continue;
         }
@@ -750,6 +751,7 @@ macho_read_indirect_symbols(bfd *abfd,
           char nname[4096];
 	  int printed;
 	  void *nameptr;
+	  struct minimal_symbol *myminsym = (struct minimal_symbol *)NULL;
 	  
 	  nameptr = memset((void *)&nname, 0, sizeof(nname));
 	  
@@ -767,6 +769,10 @@ macho_read_indirect_symbols(bfd *abfd,
                                                  &sym, (unsigned long)cursym);
           if (ret != 0)
             {
+#if (defined(DEBUG) || defined(_DEBUG))
+	      warning(_("Issue reading dysymtab symbol; cursym: %lu, ret: %d."),
+		      (unsigned long)cursym, ret);
+#endif /* DEBUG || _DEBUG */
               return 0;
             }
 
@@ -779,15 +785,18 @@ macho_read_indirect_symbols(bfd *abfd,
 
           CHECK_FATAL((strlen(sname) + sizeof("dyld_stub_") + 1UL) < 4096UL);
           printed = snprintf(nname, sizeof(nname), "dyld_stub_%s", sname);
-	  
+#if (defined(DEBUG) || defined(_DEBUG))
+	  printf_filtered(_("\nRecording minsym %s...\n"), nname);
+#endif /* DEBUG || _DEBUG */
 	  CHECK_FATAL(printed < 4096);
 
           stubaddr += objfile_section_offset(objfile, osect_idx);
 	  CHECK_FATAL(stubaddr != INVALID_ADDRESS);
-          prim_record_minimal_symbol_and_info(nname, stubaddr,
-                                              mst_solib_trampoline, NULL,
-                                              osect_idx,
-                                              bfdsec, objfile);
+          myminsym = prim_record_minimal_symbol_and_info(nname, stubaddr,
+							 mst_solib_trampoline,
+							 NULL, osect_idx,
+							 bfdsec, objfile);
+	  CHECK_FATAL(myminsym != (struct minimal_symbol *)NULL);
         }
     }
 
@@ -801,6 +810,7 @@ macho_symfile_finish(struct objfile *objfile ATTRIBUTE_UNUSED)
   return;
 }
 
+/* */
 static void
 macho_symfile_offsets(struct objfile *objfile,
                       struct section_addr_info *addrs)

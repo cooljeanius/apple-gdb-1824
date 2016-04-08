@@ -179,7 +179,7 @@ extern NORETURN void deprecated_throw_reason(enum return_reason reason)
 
 /* Call FUNC(UIOUT, FUNC_ARGS) but wrapped within an exception
    handler.  If an exception (enum return_reason) is thrown using
-   throw_exception() than all cleanups installed since
+   throw_exception(), then all cleanups installed since
    catch_exceptions() was entered are invoked, the (-ve) exception
    value is then returned by catch_exceptions.  If FUNC() returns
    normally (with a postive or zero return value) then that value is
@@ -204,24 +204,22 @@ extern NORETURN void deprecated_throw_reason(enum return_reason reason)
    This function uses SETJMP() and LONGJUMP().  */
 
 struct ui_out;
-typedef int (catch_exceptions_ftype) (struct ui_out *ui_out, void *args);
-extern int catch_exceptions (struct ui_out *uiout,
-			     catch_exceptions_ftype *func, void *func_args,
-			     return_mask mask);
-typedef void (catch_exception_ftype) (struct ui_out *ui_out, void *args);
-extern int catch_exceptions_with_msg (struct ui_out *uiout,
-			     	      catch_exceptions_ftype *func,
-			     	      void *func_args,
-			     	      char **gdberrmsg,
-				      return_mask mask);
+typedef int (catch_exceptions_ftype)(struct ui_out *ui_out, void *args);
+extern int catch_exceptions(struct ui_out *uiout, catch_exceptions_ftype *func,
+			    void *func_args, return_mask mask) ATTRIBUTE_W_U_R;
+typedef void (catch_exception_ftype)(struct ui_out *ui_out, void *args);
+extern int catch_exceptions_with_msg(struct ui_out *uiout,
+				     catch_exceptions_ftype *func,
+				     void *func_args, char **gdberrmsg,
+				     return_mask mask) ATTRIBUTE_W_U_R;
 
 /* This function, in addition, suppresses the printing of the captured
    error message.  It's up to the client to print it.  */
 
-extern struct gdb_exception catch_exception (struct ui_out *uiout,
-					     catch_exception_ftype *func,
-					     void *func_args,
-					     return_mask mask);
+extern struct gdb_exception catch_exception(struct ui_out *uiout,
+					    catch_exception_ftype *func,
+					    void *func_args,
+					    return_mask mask) ATTRIBUTE_W_U_R;
 
 /* If CATCH_ERRORS_FTYPE throws an error, catch_errors() returns zero
    otherwize the result from CATCH_ERRORS_FTYPE is returned. It is
@@ -234,14 +232,14 @@ extern struct gdb_exception catch_exception (struct ui_out *uiout,
 
 typedef int (catch_errors_ftype)(void *);
 extern int catch_errors(catch_errors_ftype *, void *, const char *,
-			return_mask);
+			return_mask) ATTRIBUTE_W_U_R;
 
 /* Template to catch_errors() that wraps calls to command
    functions. */
 
 typedef void (catch_command_errors_ftype)(const char *, int);
 extern int catch_command_errors(catch_command_errors_ftype *func, char *command,
-				int from_tty, return_mask);
+				int from_tty, return_mask) ATTRIBUTE_W_U_R;
 
 #endif /* !EXCEPTIONS_H */
 

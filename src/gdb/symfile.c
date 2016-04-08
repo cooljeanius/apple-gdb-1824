@@ -362,8 +362,11 @@ psymtab_to_symtab (struct partial_symtab *pst)
   if (!pst->readin)
     {
       struct cleanup *back_to = make_cleanup (decrement_reading_symtab, NULL);
-      start_timer(&timer, "psymtab-to-symtab",
-		  (pst->fullname ? pst->fullname : pst->filename));
+      struct cleanup *timer_cleanup =
+	start_timer(&timer, "psymtab-to-symtab",
+		    (pst->fullname ? pst->fullname : pst->filename));
+      
+      gdb_assert(timer_cleanup != NULL);
 
       currently_reading_symtab++;
       (*pst->read_symtab)(pst);
@@ -1763,7 +1766,7 @@ symbol_file_add_with_addrs_or_offsets_using_objfile(struct objfile *in_objfile,
    Upon success, returns a pointer to the objfile that was added.
    Upon failure, jumps back to command level (never returns). */
 
-static struct objfile *
+static ATTRIBUTE_W_U_R struct objfile *
 symbol_file_add_with_addrs_or_offsets (bfd *abfd, int from_tty,
 				       struct section_addr_info *addrs,
 				       struct section_offsets *offsets,
@@ -1884,6 +1887,7 @@ symbol_file_add_main_1(const char *args, int from_tty, int flags)
 {
   /* APPLE LOCAL begin load levels */
   int symflags = OBJF_SYM_ALL;
+  struct objfile *myobjfile = (struct objfile *)NULL;
 
 #ifdef MACOSX_DYLD
   /* We need to check the desired load rules for type 'exec' to
@@ -1915,8 +1919,11 @@ symbol_file_add_main_1(const char *args, int from_tty, int flags)
 	      | dyld_minimal_load_flag(NULL, &e));
 #endif /* MACOSX_DYLD */
 
-  symbol_file_add_name_with_addrs_or_offsets(args, from_tty, NULL, 0, 0, 1,
-					     flags, symflags, 0, NULL, NULL);
+  myobjfile = symbol_file_add_name_with_addrs_or_offsets(args, from_tty, NULL,
+							 0, 0, 1, flags,
+							 symflags, 0, NULL,
+							 NULL);
+  gdb_assert(myobjfile != NULL);
   /* APPLE LOCAL end load levels */
 
   /* Getting new symbols may change our opinion about

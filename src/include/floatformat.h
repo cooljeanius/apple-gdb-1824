@@ -91,25 +91,21 @@ struct floatformat
   int (*is_valid) (const struct floatformat *fmt, const void *from);
 };
 
-/* floatformats for IEEE single and double, big and little endian.  */
-
+/* floatformats for IEEE single and double, big and little endian: */
 extern const struct floatformat floatformat_ieee_single_big;
 extern const struct floatformat floatformat_ieee_single_little;
 extern const struct floatformat floatformat_ieee_double_big;
 extern const struct floatformat floatformat_ieee_double_little;
 
-/* floatformat for ARM IEEE double, little endian bytes and big endian words */
-
+/* floatformat for ARM IEEE double, little endian bytes and big endian words: */
 extern const struct floatformat floatformat_ieee_double_littlebyte_bigword;
 
-/* floatformats for VAX.  */
-
+/* floatformats for VAX: */
 extern const struct floatformat floatformat_vax_f;
 extern const struct floatformat floatformat_vax_d;
 extern const struct floatformat floatformat_vax_g;
 
-/* floatformats for various extendeds.  */
-
+/* floatformats for various extendeds: */
 extern const struct floatformat floatformat_i387_ext;
 extern const struct floatformat floatformat_m68881_ext;
 extern const struct floatformat floatformat_i960_ext;
@@ -117,7 +113,7 @@ extern const struct floatformat floatformat_m88110_ext;
 extern const struct floatformat floatformat_m88110_harris_ext;
 extern const struct floatformat floatformat_arm_ext_big;
 extern const struct floatformat floatformat_arm_ext_littlebyte_bigword;
-/* IA-64 Floating Point register spilt into memory.  */
+/* IA-64 Floating Point register spilt into memory: */
 extern const struct floatformat floatformat_ia64_spill_big;
 extern const struct floatformat floatformat_ia64_spill_little;
 extern const struct floatformat floatformat_ia64_quad_big;
@@ -128,22 +124,23 @@ extern const struct floatformat floatformat_ia64_quad_little;
    Store the double in *TO.  */
 
 extern void
-floatformat_to_double (const struct floatformat *, const void *, double *);
+floatformat_to_double(const struct floatformat *, const void *, double *);
 
 /* The converse: convert the double *FROM to FMT
    and store where TO points.  */
 
 extern void
-floatformat_from_double (const struct floatformat *, const double *, void *);
+floatformat_from_double(const struct floatformat *, const double *, void *);
 
 /* Return non-zero iff the data at FROM is a valid number in format FMT: */
 extern int
-floatformat_is_valid (const struct floatformat *fmt, const void *from);
+floatformat_is_valid(const struct floatformat *fmt, const void *from)
+  ATTRIBUTE_W_U_R;
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif	/* defined (FLOATFORMAT_H) */
+#endif	/* defined(FLOATFORMAT_H) */
 
 /* EOF */

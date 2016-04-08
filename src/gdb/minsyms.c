@@ -52,6 +52,11 @@
 #include "value.h"
 #include "cp-abi.h"
 
+/* FIXME: has conflicting prototypes: */
+#if 0
+# include "minsyms.h"
+#endif /* 0 */
+
 /* Accumulate the minimal symbols for each objfile in bunches of BUNCH_SIZE.
    At the end, copy them all into one newly allocated location on an objfile's
    symbol obstack.  */
@@ -656,12 +661,16 @@ lookup_minimal_symbol_by_pc_section_from_objfile
 		     /* Some types of debug info, such as COFF,
 			don't fill the bfd_section member, so don't
 			throw away symbols on those platforms.  */
-		     /* APPLE LOCAL: On MacOS X the only symbols which
-			don't have sections are eh frame info, and we
-			pretty much never want to find them accidentally.
-			&& SYMBOL_BFD_SECTION (&msymbol[hi]) != NULL */
 		     && (SYMBOL_BFD_SECTION(&msymbol[hi]) != section))
-		--hi;
+		{
+		  /* APPLE LOCAL: On MacOS X the only symbols which do NOT have
+		   * sections are eh frame info, and we pretty much never want
+		   * to find them accidentally: */
+		  if (SYMBOL_BFD_SECTION(&msymbol[hi]) == NULL) {
+		    warning(_("Symbol without a section; probably eh frame info."));
+		  }
+		  --hi;
+		}
 	      /* If there are NO section matches at all, return NULL
 		 rather than accidentally returning the lowest msymbol
 		 in the objfile. */
@@ -843,6 +852,12 @@ prim_record_minimal_symbol_and_info(const char *name, CORE_ADDR address,
           ++tempstring;
         if (strncmp(tempstring, "__gnu_compiled", 14) == 0)
           return (NULL);
+	if (strncmp(tempstring, "dyld_stub", 9) == 0)
+	  {
+	    warning(_("Skipping putting symbol %s in with minimal symbols"),
+		    tempstring);
+	    return (NULL);
+	  }
       }
     }
 
@@ -850,12 +865,13 @@ prim_record_minimal_symbol_and_info(const char *name, CORE_ADDR address,
 
   if (msym_bunch_index == BUNCH_SIZE)
     {
-      newbunch = (struct msym_bunch *)xmalloc(sizeof(struct msym_bunch) + 2UL);
+      newbunch = (struct msym_bunch *)xmalloc((sizeof(struct msym_bunch) * BUNCH_SIZE) + 2UL);
       /* maybe need to do something else with newbunch here? */
       msym_bunch_index = 0;
       newbunch->next = msym_bunch;
       msym_bunch = newbunch;
       bunches_seen++;
+      /* Does newbunch ever get freed? */
     }
 #if defined(DEBUG) || defined(_DEBUG) || defined(__APPLEHELP__)
   printf_filtered("using mysm number %d in bunch %d...\n", msym_bunch_index,

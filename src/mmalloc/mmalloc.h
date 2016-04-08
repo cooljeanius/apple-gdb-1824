@@ -17,23 +17,23 @@ extern "C" {
 #endif /* __cplusplus */
 
 /* Allocate SIZE bytes of memory: */
-extern PTR mmalloc PARAMS((PTR, size_t));
+extern PTR mmalloc PARAMS((PTR, size_t)) ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
 
 /* Re-allocate the previously allocated block in PTR, making the new block
  * SIZE bytes long: */
-extern PTR mrealloc PARAMS((PTR, PTR, size_t));
+extern PTR mrealloc PARAMS((PTR, PTR, size_t)) ATTRIBUTE_W_U_R;
 
 /* Allocate NMEMB elements of SIZE bytes each, all initialized to 0: */
-extern PTR mcalloc PARAMS((PTR, size_t, size_t));
+extern PTR mcalloc PARAMS((PTR, size_t, size_t)) ATTRIBUTE_W_U_R;
 
 /* Free a block allocated by `mmalloc', `mrealloc' or `mcalloc': */
 extern void mfree PARAMS((PTR, PTR));
 
 /* Allocate SIZE bytes allocated to ALIGNMENT bytes: */
-extern PTR mmemalign PARAMS((PTR, size_t, size_t));
+extern PTR mmemalign PARAMS((PTR, size_t, size_t)) ATTRIBUTE_W_U_R;
 
 /* Allocate SIZE bytes on a page boundary: */
-extern PTR mvalloc PARAMS((PTR, size_t));
+extern PTR mvalloc PARAMS((PTR, size_t)) ATTRIBUTE_W_U_R;
 
 /* Activate a standard collection of debugging hooks.: */
 extern int mmcheck PARAMS((PTR, void (*)(void)));

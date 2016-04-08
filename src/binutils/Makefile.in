@@ -725,6 +725,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -770,8 +771,9 @@ am__skiplex =
 am__skipyacc = 
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_CFLAGS = $(WARN_CFLAGS) $(C_ARCHFLAGS)
+AM_DEFS = @WARN_DEFS@
 AM_LDFLAGS = -framework CoreFoundation -L../readline -L../intl \
-  -L../libiberty -L../bfd -L../opcodes
+  -L../libiberty -L../bfd -L../opcodes @WARN_LDFLAGS@
 
 
 # these two are almost the same program (really?):

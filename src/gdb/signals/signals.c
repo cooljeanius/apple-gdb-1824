@@ -785,6 +785,9 @@ do_target_signal_to_host(enum target_signal oursig,
 }
 
 int
+#ifdef __OPTIMIZE__
+ATTRIBUTE_CONST
+#endif /* __OPTIMIZE__ */
 target_signal_to_host_p(enum target_signal oursig)
 {
   int oursig_ok;
@@ -801,7 +804,7 @@ target_signal_to_host(enum target_signal oursig)
     {
       /* The user might be trying to do "signal SIGSAK" where this system
          does NOT have SIGSAK.  */
-      warning("Signal %s does not exist on this system.\n",
+      warning(_("Signal %s does not exist on this system.\n"),
 	      target_signal_to_name(oursig));
       return 0;
     }
@@ -822,8 +825,8 @@ target_signal_from_command(int num)
 {
   if ((num >= 1) && (num <= 15))
     return (enum target_signal)num;
-  error("Only signals 1-15 are valid as numeric signals.\n\
-Use \"info signals\" for a list of symbolic signals.");
+  error(_("Only signals 1-15 are valid as numeric signals.\n\
+Use \"info signals\" for a list of symbolic signals."));
 }
 
 #ifndef GDBSERVER

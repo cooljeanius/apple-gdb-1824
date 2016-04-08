@@ -1,4 +1,4 @@
-/* BFD back-end for Zilog Z800n COFF binaries.
+/* coff-z8k.c: BFD back-end for Zilog Z800n COFF binaries.
    Copyright 1992, 1993, 1994, 1995, 1997, 1999, 2000, 2001, 2002, 2003,
    2004 Free Software Foundation, Inc.
    Contributed by Cygnus Support.
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -71,10 +71,11 @@ HOWTO (R_CALLR, 0, 1, 12, TRUE, 0, complain_overflow_signed, 0,
 static int
 coff_z8k_select_reloc (reloc_howto_type *howto)
 {
-  return howto->type;
+  return (int)howto->type;
 }
 
-#define SELECT_RELOC(x,howto) x.r_type = coff_z8k_select_reloc(howto)
+#define SELECT_RELOC(x,howto) \
+  x.r_type = (unsigned short)coff_z8k_select_reloc(howto)
 
 #define BADMAG(x) Z8KBADMAG(x)
 #ifndef Z8K
@@ -226,22 +227,23 @@ extra_case (bfd *in_abfd,
 	bfd_vma dot = (link_order->offset
 		       + *dst_ptr
 		       + input_section->output_section->vma);
-	int gap = dst - dot - 1;  /* -1, since we're in the odd byte of the
-                                     word and the pc's been incremented.  */
+	/* -1L, since we are in the odd byte of the word, and the pc has been
+	 * incremented: */
+	ptrdiff_t gap = ((ptrdiff_t)(dst - dot) - 1L); 
 
-	if (gap & 1)
-	  abort ();
-	gap /= 2;
-	if (gap > 128 || gap < -128)
+	if (gap & 1L)
+	  abort();
+	gap /= 2L;
+	if ((gap > 128L) || (gap < -128L))
 	  {
-	    if (! ((*link_info->callbacks->reloc_overflow)
-		   (link_info, NULL,
-		    bfd_asymbol_name (*reloc->sym_ptr_ptr),
-		    reloc->howto->name, reloc->addend, input_section->owner,
-		    input_section, reloc->address)))
-	      abort ();
+	    if (!((*link_info->callbacks->reloc_overflow)
+		  (link_info, NULL,
+		   bfd_asymbol_name(*reloc->sym_ptr_ptr),
+		   reloc->howto->name, reloc->addend, input_section->owner,
+		   input_section, reloc->address)))
+	      abort();
 	  }
-	bfd_put_8 (in_abfd, gap, data + *dst_ptr);
+	bfd_put_8(in_abfd, gap, (data + *dst_ptr));
 	(*dst_ptr)++;
 	(*src_ptr)++;
 	break;
@@ -254,25 +256,26 @@ extra_case (bfd *in_abfd,
 	bfd_vma dot = (link_order->offset
 		       + *dst_ptr
 		       + input_section->output_section->vma);
-	int gap = dst - dot - 1;  /* -1, since we're in the odd byte of the
-                                     word and the pc's been incremented.  */
+	/* -1L, since we are in the odd byte of the word, and the pc has been
+	 * incremented: */
+	ptrdiff_t gap = ((ptrdiff_t)(dst - dot) - 1L);
 
-	if (gap & 1)
-	  abort ();
-	gap /= 2;
+	if (gap & 1L)
+	  abort();
+	gap /= 2L;
 
-	if (gap > 0 || gap < -127)
+	if ((gap > 0L) || (gap < -127L))
 	  {
-	    if (! ((*link_info->callbacks->reloc_overflow)
-		   (link_info, NULL,
-		    bfd_asymbol_name (*reloc->sym_ptr_ptr),
-		    reloc->howto->name, reloc->addend, input_section->owner,
-		    input_section, reloc->address)))
-	      abort ();
+	    if (!((*link_info->callbacks->reloc_overflow)
+		  (link_info, NULL,
+		   bfd_asymbol_name(*reloc->sym_ptr_ptr),
+		   reloc->howto->name, reloc->addend, input_section->owner,
+		   input_section, reloc->address)))
+	      abort();
 	  }
-	bfd_put_8 (in_abfd,
-                   (bfd_get_8 ( in_abfd, data + *dst_ptr) & 0x80) + (-gap & 0x7f),
-                   data + *dst_ptr);
+	bfd_put_8(in_abfd,
+                  (bfd_get_8(in_abfd, data + *dst_ptr) & 0x80) + (-gap & 0x7f),
+                  (data + *dst_ptr));
 	(*dst_ptr)++;
 	(*src_ptr)++;
 	break;
@@ -285,23 +288,24 @@ extra_case (bfd *in_abfd,
 	bfd_vma dot = (link_order->offset
 		       + *dst_ptr
 		       + input_section->output_section->vma);
-	int gap = dst - dot - 2;
+	ptrdiff_t gap = ((ptrdiff_t)(dst - dot) - 2L);
 
-	if (gap & 1)
-	  abort ();
-	if (gap > 4096 || gap < -4095)
+	if (gap & 1L)
+	  abort();
+	if ((gap > 4096L) || (gap < -4095L))
 	  {
-	    if (! ((*link_info->callbacks->reloc_overflow)
-		   (link_info, NULL,
-		    bfd_asymbol_name (*reloc->sym_ptr_ptr),
-		    reloc->howto->name, reloc->addend, input_section->owner,
-		    input_section, reloc->address)))
-	      abort ();
+	    if (!((*link_info->callbacks->reloc_overflow)
+		  (link_info, NULL,
+		   bfd_asymbol_name(*reloc->sym_ptr_ptr),
+		   reloc->howto->name, reloc->addend, input_section->owner,
+		   input_section, reloc->address)))
+	      abort();
 	  }
-	gap /= 2;
-	bfd_put_16 (in_abfd,
-                    (bfd_get_16 ( in_abfd, data + *dst_ptr) & 0xf000) | (-gap & 0x0fff),
-                    data + *dst_ptr);
+	gap /= 2L;
+	bfd_put_16(in_abfd,
+                   ((bfd_get_16(in_abfd, (data + *dst_ptr)) & 0xf000)
+		    | (-gap & 0x0fff)),
+                   (data + *dst_ptr));
 	(*dst_ptr) += 2;
 	(*src_ptr) += 2;
 	break;
@@ -314,18 +318,18 @@ extra_case (bfd *in_abfd,
 	bfd_vma dot = (link_order->offset
 		       + *dst_ptr
 		       + input_section->output_section->vma);
-	int gap = dst - dot - 2;
+	ptrdiff_t gap = ((ptrdiff_t)(dst - dot) - 2L);
 
-	if (gap > 32767 || gap < -32768)
+	if ((gap > 32767L) || (gap < -32768L))
 	  {
-	    if (! ((*link_info->callbacks->reloc_overflow)
-		   (link_info, NULL,
-		    bfd_asymbol_name (*reloc->sym_ptr_ptr),
-		    reloc->howto->name, reloc->addend, input_section->owner,
-		    input_section, reloc->address)))
-	      abort ();
+	    if (!((*link_info->callbacks->reloc_overflow)
+		  (link_info, NULL,
+		   bfd_asymbol_name(*reloc->sym_ptr_ptr),
+		   reloc->howto->name, reloc->addend, input_section->owner,
+		   input_section, reloc->address)))
+	      abort();
 	  }
-	bfd_put_16 (in_abfd, (bfd_vma) gap, data + *dst_ptr);
+	bfd_put_16(in_abfd, (bfd_vma)gap, (data + *dst_ptr));
 	(*dst_ptr) += 2;
 	(*src_ptr) += 2;
 	break;

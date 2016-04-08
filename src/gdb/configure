@@ -1133,6 +1133,7 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
+APPLE_MAINT
 MAINT
 MAINTAINER_MODE_FALSE
 MAINTAINER_MODE_TRUE
@@ -3817,6 +3818,11 @@ fi
   MAINT=$MAINTAINER_MODE_TRUE
 
 
+
+export APPLE_MAINT=""
+if test "x${APPLE_INTERNAL_DIR}" = "x/AppleInternal"; then
+  test -d "${APPLE_INTERNAL_DIR}" && export APPLE_MAINT='#'
+fi
 
 
 if test -e ${srcdir}/development.sh; then
@@ -46160,7 +46166,7 @@ fi
 # NOTE: If you add to this list, remember to update
 # gdb/doc/gdbint.texinfo.
 build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
--Wparentheses -Wpointer-arith \
+-Wparentheses -Wpointer-arith -Wchar-subscripts \
 -Wno-unused -Wunused-value -Wunused-label -Wunused-result \
 -Wunused-variable -Wunused-but-set-variable -Wunused-function \
 -Wempty-body -Wmissing-declarations -Wignored-qualifiers \
@@ -46187,7 +46193,7 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Winherited-variadic-ctor -Winvalid-offsetof -Wliteral-suffix -Wnoexcept \
 -Wnon-template-friend -Wnon-virtual-dtor -Wreorder -Wstrict-null-sentinel \
 -Wmultiple-inheritance -Wvirtual-inheritance -Wpmf-conversions \
--Wtemplates -Wvirtual-move-assign"
+-Wtemplates -Wvirtual-move-assign -Wconversion-null -Weffc++"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
@@ -46271,7 +46277,7 @@ fi
 # Others in this section are technically supported at other optimization
 # levels, but really only make sense with it on.
 opt_warnings="-Wuninitialized -Winit-self -Wmissing-noreturn \
--Wvolatile-register-var -Wdisabled-optimization \
+-Wvolatile-register-var -Wdisabled-optimization -Winline \
 -Waggressive-loop-optimizations -Wvector-operation-performance \
 -Wmaybe-uninitialized -Wstrict-overflow=1 -fno-strict-aliasing \
 -Wnull-dereference -Wframe-address -Wsuggest-attribute=const"
@@ -46309,10 +46315,8 @@ fi
 #  * -Wsign-conversion (likewise)
 #  * -Wtraditional-conversion (likewise)
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
-#  * -Winline (I can never tell if the compiler is right or not with this)
 #  * -Wundef (only if we can figure out how to fix the issue with caddr_t)
 #  * -Wunused-macros (if we also add back -Wundef as per above)
-#  * -Wchar-subscripts (upstream FSF gdb explicitly disables this, but...)
 #  * -Wunused-local-typedefs (`mig` generates code that triggers this)
 #  * -Wunsafe-loop-optimizations (lex/yacc generate code that triggers it)
 #  * -Waggregate-return (too noisy and hard to avoid)

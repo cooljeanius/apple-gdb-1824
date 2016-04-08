@@ -3249,12 +3249,17 @@ safe_check_is_thread_unsafe(struct thread_info *tp, void *data)
 {
   struct thread_is_safe_args *args = (struct thread_is_safe_args *)data;
   struct cleanup *old_chain;
+  int errors_ret = 0;
   args->tp = tp;
 
   old_chain = make_cleanup_restore_current_thread(inferior_ptid, 0);
 
-  catch_errors((catch_errors_ftype *)do_check_is_thread_unsafe, args,
-               "", RETURN_MASK_ERROR);
+  errors_ret = catch_errors((catch_errors_ftype *)do_check_is_thread_unsafe,
+			    args, "", RETURN_MASK_ERROR);
+  
+  if (errors_ret == 0) {
+    ; /* ??? */
+  }
 
   do_cleanups(old_chain);
 

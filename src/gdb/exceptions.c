@@ -473,6 +473,7 @@ catch_exceptions (struct ui_out *uiout,
   return catch_exceptions_with_msg (uiout, func, func_args, NULL, mask);
 }
 
+/* */
 struct gdb_exception
 catch_exception(struct ui_out *uiout, catch_exception_ftype *func,
 		void *func_args, return_mask mask)
@@ -489,6 +490,7 @@ catch_exception(struct ui_out *uiout, catch_exception_ftype *func,
   return exception;
 }
 
+/* */
 int
 catch_exceptions_with_msg(struct ui_out *uiout, catch_exceptions_ftype *func,
 		  	  void *func_args, char **gdberrmsg, return_mask mask)
@@ -523,6 +525,7 @@ catch_exceptions_with_msg(struct ui_out *uiout, catch_exceptions_ftype *func,
   return val;
 }
 
+/* */
 int
 catch_errors(catch_errors_ftype *func, void *func_args, const char *errstring,
 	     return_mask mask)
@@ -543,6 +546,7 @@ catch_errors(catch_errors_ftype *func, void *func_args, const char *errstring,
   return val;
 }
 
+/* */
 int
 catch_command_errors(catch_command_errors_ftype * command,
 		     char *arg, int from_tty, return_mask mask)

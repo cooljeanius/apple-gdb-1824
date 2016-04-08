@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* Bugs:
  * * Should use getopt the way tar does (complete w/optional -) and
@@ -479,6 +479,7 @@ main(int argc, char **argv)
   int show_version;  /* becomes global in newer versions */
   int i;  /* stays in main() in newer versions */
   int do_posix = 0;
+  int xatexit_ret = 0;
 
 #if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES)
   setlocale(LC_MESSAGES, "");
@@ -555,7 +556,11 @@ main(int argc, char **argv)
 
   show_version = 0;
 
-  xatexit(remove_output);
+  xatexit_ret = xatexit(remove_output);
+  
+  if (xatexit_ret == -1) {
+    ; /* FIXME: warn */
+  }
 
   for (i = 1; i < argc; i++) {
     if (! ar_emul_parse_arg(argv[i])) {

@@ -490,7 +490,7 @@ struct target_ops
     /* APPLE LOCAL: How do we load a shared library into the target?
        Returns a value containing the return value of the native
        loader function.  */
-    struct value *(*to_load_solib) (char *path, char *flags);
+    struct value *(*to_load_solib)(char *path, char *flags) ATTRIBUTE_W_U_R;
 
     /* APPLE LOCAL: Check if a step is not completed due to target specific
        circumstances. This was added for ARM (Thumb actually) seeing as a

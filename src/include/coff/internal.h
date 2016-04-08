@@ -342,11 +342,11 @@ struct internal_scnhdr
 #define STYP_GROUP	 (0x0004)	/* "grouped": formed of input sections */
 #define STYP_PAD	 (0x0008)	/* "padding": not allocated, not relocated, loaded */
 #define STYP_COPY	 (0x0010)	/* "copy": for decision function used by field update;  not allocated, not relocated,
-									     loaded; reloc & lineno entries processed normally */
+					   loaded; reloc & lineno entries processed normally */
 #define STYP_TEXT	 (0x0020)	/* section contains text only */
 #define S_SHRSEG	 (0x0020)	/* In 3b Update files (output of ogen), sections which appear in SHARED segments of the Pfile
-									     will have the S_SHRSEG flag set by ogen, to inform dufr that updating 1 copy of the proc. will
-									     update all process invocations. */
+					   will have the S_SHRSEG flag set by ogen, to inform dufr that updating 1 copy of the proc. will
+					   update all process invocations. */
 #define STYP_DATA	 (0x0040)	/* section contains data only */
 #define STYP_BSS	 (0x0080)	/* section contains bss only */
 #define S_NEWFCN	 (0x0100)	/* In a minimal file or an update file, a new function (as compared with a replaced function) */
@@ -786,3 +786,5 @@ struct internal_reloc
 #define R_W65_DP       10  /* direct page 8 bits only   */
 
 #endif /* GNU_COFF_INTERNAL_H */
+
+/* EOF */

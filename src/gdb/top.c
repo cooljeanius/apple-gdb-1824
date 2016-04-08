@@ -1276,6 +1276,7 @@ quit_force(const char *args, int from_tty)
 {
   int exit_code = 0;
   struct qt_args qt;
+  int error_ret = 0;
 
   /* APPLE LOCAL begin gdb_quitting */
   /* See comments on gdb_quitting def'n above.  */
@@ -1295,8 +1296,12 @@ quit_force(const char *args, int from_tty)
   qt.from_tty = from_tty;
 
   /* We want to handle any quit errors and exit regardless: */
-  catch_errors(quit_target, &qt,
-               "Quitting: ", RETURN_MASK_ALL);
+  error_ret = catch_errors(quit_target, &qt,
+			   "Quitting: ", RETURN_MASK_ALL);
+  
+  if (error_ret == 0) {
+    ; /* ??? */
+  }
 
   exit(exit_code);
 }

@@ -139,6 +139,7 @@ excthread_debug_re(int level, const char *fmt, ...)
     }
 }
 
+/* */
 static void excthread_debug_re_endline(int level)
 {
   if (excthread_debugflag >= level)
@@ -148,6 +149,7 @@ static void excthread_debug_re_endline(int level)
     }
 }
 
+/* */
 static void excthread_debug_exception(int level, mach_msg_header_t *msg)
 {
   if (excthread_debugflag < level)
@@ -180,6 +182,7 @@ static void excthread_debug_exception(int level, mach_msg_header_t *msg)
   fprintf(excthread_stderr_re, " }");
 }
 
+/* */
 static void
 excthread_debug_message(int level, macosx_exception_thread_message *msg)
 {
@@ -240,6 +243,7 @@ macosx_exception_get_write_lock(macosx_exception_thread_status *s)
   pthread_mutex_lock(&write_mutex);
 }
 
+/* */
 void
 macosx_exception_release_write_lock(macosx_exception_thread_status *s)
 {
@@ -347,6 +351,7 @@ kern_return_t
 # endif /* gcc 4.6+ */
 #endif /* GCC */
 
+/* */
 void
 macosx_exception_thread_init(macosx_exception_thread_status *s)
 {
@@ -370,6 +375,7 @@ macosx_exception_thread_init(macosx_exception_thread_status *s)
 pthread_mutex_t excthread_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t excthread_cond = PTHREAD_COND_INITIALIZER;
 
+/* */
 void
 macosx_exception_thread_create(macosx_exception_thread_status *s,
                                task_t task)
@@ -446,6 +452,7 @@ macosx_exception_thread_create(macosx_exception_thread_status *s,
   pthread_mutex_unlock(&excthread_mutex);
 }
 
+/* */
 void
 macosx_exception_thread_destroy(macosx_exception_thread_status *s)
 {
@@ -496,6 +503,7 @@ macosx_exception_thread_destroy(macosx_exception_thread_status *s)
   macosx_exception_thread_init(s);
 }
 
+/* */
 static void
 macosx_exception_thread(void *arg)
 {
@@ -615,8 +623,13 @@ macosx_exception_thread(void *arg)
 	    }
 	  excthread_debug_re(3, "parsing exception\n");
 	  static_message = &msg_data[next_msg_ctr].msgsend;
+	  /* FIXME: I have started seeing link errors about this: */
+#ifdef mach_exc_server
 	  kret = mach_exc_server(&msg_data[next_msg_ctr].msgin.hdr,
                                  &msg_data[next_msg_ctr].msgout.hdr);
+#else
+	  kret = KERN_FAILURE;
+#endif /* mach_exc_server */
 	  static_message = NULL;
 
 	  excthread_debug_re(2, "received exception %d:", next_msg_ctr);
@@ -719,6 +732,7 @@ macosx_exception_thread(void *arg)
     }
 }
 
+/* */
 void
 _initialize_macosx_nat_excthread(void)
 {

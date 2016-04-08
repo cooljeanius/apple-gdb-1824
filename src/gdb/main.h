@@ -22,6 +22,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#include "ansidecl.h"
+
 struct captured_main_args
 {
   int argc;
@@ -30,7 +32,9 @@ struct captured_main_args
   const char *interpreter_p;
 };
 
-extern int gdb_main(struct captured_main_args *);
+extern int gdb_main(struct captured_main_args *) ATTRIBUTE_W_U_R;
+
+extern int can_use_malloc_now;
 
 #endif /* !MAIN_H */
 

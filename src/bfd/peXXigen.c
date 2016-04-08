@@ -225,7 +225,7 @@ _bfd_XXi_swap_sym_out(bfd *abfd, void *inp, void *extp)
 }
 
 void
-_bfd_XXi_swap_aux_in(bfd *abfd, void *ext1, int type, int class,
+_bfd_XXi_swap_aux_in(bfd *abfd, void *ext1, int type, int theclass,
 		     int indx ATTRIBUTE_UNUSED,
 		     int numaux ATTRIBUTE_UNUSED,
 		     void *in1)
@@ -233,7 +233,7 @@ _bfd_XXi_swap_aux_in(bfd *abfd, void *ext1, int type, int class,
   AUXENT *ext = (AUXENT *)ext1;
   union internal_auxent *in = (union internal_auxent *)in1;
 
-  switch (class) {
+  switch (theclass) {
     case C_FILE:
       if (ext->x_file.x_fname[0] == 0) {
 	  in->x_file.x_n.x_zeroes = 0;
@@ -264,7 +264,8 @@ _bfd_XXi_swap_aux_in(bfd *abfd, void *ext1, int type, int class,
   in->x_sym.x_tagndx.l = H_GET_32(abfd, ext->x_sym.x_tagndx);
   in->x_sym.x_tvndx = H_GET_16(abfd, ext->x_sym.x_tvndx);
 
-  if ((class == C_BLOCK) || (class == C_FCN) || ISFCN(type) || ISTAG(class)) {
+  if ((theclass == C_BLOCK) || (theclass == C_FCN) || ISFCN(type)
+      || ISTAG(theclass)) {
       in->x_sym.x_fcnary.x_fcn.x_lnnoptr = GET_FCN_LNNOPTR(abfd, ext);
       in->x_sym.x_fcnary.x_fcn.x_endndx.l = GET_FCN_ENDNDX(abfd, ext);
   } else {
@@ -289,8 +290,9 @@ _bfd_XXi_swap_aux_in(bfd *abfd, void *ext1, int type, int class,
     }
 }
 
+/* */
 unsigned int
-_bfd_XXi_swap_aux_out(bfd *abfd, void *inp, int type, int class,
+_bfd_XXi_swap_aux_out(bfd *abfd, void *inp, int type, int theclass,
 		      int indx ATTRIBUTE_UNUSED,
 		      int numaux ATTRIBUTE_UNUSED,
 		      void *extp)
@@ -300,7 +302,7 @@ _bfd_XXi_swap_aux_out(bfd *abfd, void *inp, int type, int class,
 
   memset(ext, 0, (size_t)AUXESZ);
 
-  switch (class) {
+  switch (theclass) {
     case C_FILE:
       if (in->x_file.x_fname[0] == 0) {
 	  H_PUT_32(abfd, (bfd_vma)0UL, ext->x_file.x_n.x_zeroes);
@@ -334,8 +336,8 @@ _bfd_XXi_swap_aux_out(bfd *abfd, void *inp, int type, int class,
   H_PUT_32(abfd, (bfd_vma)in->x_sym.x_tagndx.l, ext->x_sym.x_tagndx);
   H_PUT_16(abfd, (bfd_vma)in->x_sym.x_tvndx, ext->x_sym.x_tvndx);
 
-  if ((class == C_BLOCK) || (class == C_FCN) || ISFCN(type)
-      || ISTAG(class))
+  if ((theclass == C_BLOCK) || (theclass == C_FCN) || ISFCN(type)
+      || ISTAG(theclass))
     {
       PUT_FCN_LNNOPTR(abfd, (bfd_vma)in->x_sym.x_fcnary.x_fcn.x_lnnoptr,
                       ext);

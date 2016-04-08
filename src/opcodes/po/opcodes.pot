@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-16 14:41-0400\n"
+"POT-Creation-Date: 2016-04-07 18:29-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -116,18 +116,18 @@ msgid "<illegal precision>"
 msgstr ""
 
 #. XXX - should break 'option' at following delimiter.
-#: arm-dis.c:3847
+#: arm-dis.c:3846
 #, c-format
 msgid "Unrecognised register name set: %s\n"
 msgstr ""
 
 #. XXX - should break 'option' at following delimiter.
-#: arm-dis.c:3859
+#: arm-dis.c:3858
 #, c-format
 msgid "Unrecognised disassembler option: %s\n"
 msgstr ""
 
-#: arm-dis.c:4259
+#: arm-dis.c:4258
 #, c-format
 msgid ""
 "\n"
@@ -135,17 +135,17 @@ msgid ""
 "the -M switch:\n"
 msgstr ""
 
-#: avr-dis.c:109 avr-dis.c:119
+#: avr-dis.c:110 avr-dis.c:120
 #, c-format
 msgid "undefined"
 msgstr ""
 
-#: avr-dis.c:176
+#: avr-dis.c:177
 #, c-format
 msgid "Internal disassembler error"
 msgstr ""
 
-#: avr-dis.c:225
+#: avr-dis.c:226
 #, c-format
 msgid "unknown constraint `%c'"
 msgstr ""

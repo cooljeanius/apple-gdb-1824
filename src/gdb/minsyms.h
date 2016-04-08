@@ -1,4 +1,4 @@
-/* Minimal symbol table definitions for GDB.
+/* minsyms.h: Minimal symbol table definitions for GDB.
 
    Copyright (C) 2011-2013 Free Software Foundation, Inc.
 
@@ -19,6 +19,8 @@
 
 #ifndef MINSYMS_H
 #define MINSYMS_H
+
+#include "ansidecl.h"
 
 /* Several lookup functions return both a minimal symbol and the
    objfile in which it is found.  This structure is used in these
@@ -67,7 +69,8 @@ void init_minimal_symbol_collection (void);
    regardless of whether they are installed or not, the cleanup
    returned by this function should be run.  */
 
-struct cleanup *make_cleanup_discard_minimal_symbols (void);
+struct cleanup *make_cleanup_discard_minimal_symbols(void)
+  ATTRIBUTE_W_U_R;
 
 /* Record a new minimal symbol.  This is the "full" entry point;
    simpler convenience entry points are also provided below.
@@ -98,7 +101,7 @@ struct minimal_symbol *prim_record_minimal_symbol_full
      CORE_ADDR address,
      enum minimal_symbol_type ms_type,
      int section,
-     struct objfile *objfile);
+     struct objfile *objfile) ATTRIBUTE_W_U_R;
 
 /* Like prim_record_minimal_symbol_full, but:
    - uses strlen to compute NAME_LEN,
@@ -169,19 +172,21 @@ unsigned int msymbol_hash_iw (const char *);
    still preferred).  Returns a pointer to the minimal symbol that
    matches, or NULL if no match is found.  */
 
-struct minimal_symbol *lookup_minimal_symbol (const char *,
-					      const char *,
-					      struct objfile *);
+struct minimal_symbol *lookup_minimal_symbol(const char *, const char *,
+					     struct objfile *)
+  ATTRIBUTE_W_U_R;
 
 /* Like lookup_minimal_symbol, but searches all files and objfiles
    and returns a bound minimal symbol.  */
 
-struct bound_minimal_symbol lookup_bound_minimal_symbol (const char *);
+struct bound_minimal_symbol lookup_bound_minimal_symbol(const char *)
+  ATTRIBUTE_W_U_R;
 
 /* Find the minimal symbol named NAME, and return both the minsym
    struct and its objfile.  This only checks the linkage name.  */
 
-struct bound_minimal_symbol lookup_minimal_symbol_and_objfile (const char *);
+struct bound_minimal_symbol lookup_minimal_symbol_and_objfile(const char *)
+  ATTRIBUTE_W_U_R;
 
 /* Look through all the current minimal symbol tables and find the
    first minimal symbol that matches NAME and has text type.  If OBJF
@@ -190,8 +195,9 @@ struct bound_minimal_symbol lookup_minimal_symbol_and_objfile (const char *);
 
    This function only searches the mangled (linkage) names.  */
 
-struct minimal_symbol *lookup_minimal_symbol_text (const char *,
-						   struct objfile *);
+struct minimal_symbol *lookup_minimal_symbol_text(const char *,
+						  struct objfile *)
+  ATTRIBUTE_W_U_R;
 
 /* Look through all the current minimal symbol tables and find the
    first minimal symbol that matches NAME and is a solib trampoline.
@@ -202,8 +208,7 @@ struct minimal_symbol *lookup_minimal_symbol_text (const char *,
    This function only searches the mangled (linkage) names.  */
 
 struct minimal_symbol *lookup_minimal_symbol_solib_trampoline
-    (const char *,
-     struct objfile *);
+    (const char *, struct objfile *) ATTRIBUTE_W_U_R;
 
 /* Look through all the current minimal symbol tables and find the
    first minimal symbol that matches NAME and PC.  If OBJF is non-NULL,
@@ -211,7 +216,7 @@ struct minimal_symbol *lookup_minimal_symbol_solib_trampoline
    symbol that matches, or NULL if no match is found.  */
 
 struct minimal_symbol *lookup_minimal_symbol_by_pc_name
-    (CORE_ADDR, const char *, struct objfile *);
+    (CORE_ADDR, const char *, struct objfile *) ATTRIBUTE_W_U_R;
 
 /* Search through the minimal symbol table for each objfile and find
    the symbol whose address is the largest address that is still less
@@ -233,7 +238,7 @@ struct bound_minimal_symbol lookup_minimal_symbol_by_pc_section
    This is a wrapper that calls lookup_minimal_symbol_by_pc_section
    with a NULL section argument.  */
 
-struct bound_minimal_symbol lookup_minimal_symbol_by_pc (CORE_ADDR);
+struct bound_minimal_symbol lookup_minimal_symbol_by_pc(CORE_ADDR);
 
 /* Iterate over all the minimal symbols in the objfile OBJF which
    match NAME.  Both the ordinary and demangled names of each symbol
@@ -243,10 +248,12 @@ struct bound_minimal_symbol lookup_minimal_symbol_by_pc (CORE_ADDR);
    For each matching symbol, CALLBACK is called with the symbol and
    USER_DATA as arguments.  */
 
-void iterate_over_minimal_symbols (struct objfile *objf,
-				   const char *name,
-				   void (*callback) (struct minimal_symbol *,
-						     void *),
-				   void *user_data);
+void iterate_over_minimal_symbols(struct objfile *objf,
+				  const char *name,
+				  void (*callback)(struct minimal_symbol *,
+						   void *),
+				  void *user_data);
 
 #endif /* MINSYMS_H */
+
+/* EOF */

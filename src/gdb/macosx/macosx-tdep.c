@@ -63,6 +63,7 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "source.h"
 #include "completer.h"
 #include "exceptions.h"
+#include "gdb_assert.h"
 #include "gdbcmd.h"
 
 #include "gdbcore.h"
@@ -3288,18 +3289,21 @@ add_all_kexts_command(const char *args ATTRIBUTE_UNUSED, int from_tty)
       if (have_symbol_rich_exe)
         {
           struct section_offsets *sect_offsets;
+	  struct objfile *myobjfile = (struct objfile *)NULL;
           int num_offsets;
           sect_offsets =
             convert_sect_addrs_to_offsets_via_on_disk_file(sect_addrs,
                                                            symbol_rich,
                                                            &num_offsets);
-          symbol_file_add_name_with_addrs_or_offsets(symbol_rich, from_tty,
-						     NULL, sect_offsets,
-						     num_offsets, 0,
-						     OBJF_USERLOADED,
-						     OBJF_SYM_ALL, 0,
-						     NULL, NULL);
-           xfree(sect_offsets);
+	  myobjfile =
+	    symbol_file_add_name_with_addrs_or_offsets(symbol_rich, from_tty,
+						       NULL, sect_offsets,
+						       num_offsets, 0,
+						       OBJF_USERLOADED,
+						       OBJF_SYM_ALL, 0,
+						       NULL, NULL);
+	  gdb_assert(myobjfile != NULL);
+	  xfree(sect_offsets);
         }
       else
         {

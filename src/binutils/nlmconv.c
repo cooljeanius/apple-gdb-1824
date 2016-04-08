@@ -16,7 +16,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* Written by Ian Lance Taylor <ian@cygnus.com>.
 
@@ -2037,12 +2037,20 @@ powerpc_mangle_relocs (bfd *outbfd, asection *insec,
 # define LD_NAME "ld"
 #endif /* !LD_NAME */
 
+/* FIXME: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wformat-nonliteral"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* The user has specified several input files.  Invoke the linker to
    link them all together, and convert and delete the resulting output
    file.  */
 
 static char *
-link_inputs (struct string_list *inputs, char *ld, char * map_file)
+link_inputs(struct string_list *inputs, char *ld, char *map_file)
 {
   size_t c;
   struct string_list *q;
@@ -2139,3 +2147,12 @@ link_inputs (struct string_list *inputs, char *ld, char * map_file)
 
   return unlink_on_exit;
 }
+
+/* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
+/* EOF */

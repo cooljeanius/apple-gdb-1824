@@ -297,7 +297,7 @@ READLINE_CFLAGS = -I$(READLINE_SRC)/..
 WARN_CFLAGS = @WARN_CFLAGS@
 WERROR_CFLAGS = @WERROR_CFLAGS@
 WARN_LDFLAGS = @WARN_LDFLAGS@
-GDB_WARN_CFLAGS = $(WARN_CFLAGS) @MAINT@# $(MH_WARN_CFLAGS)
+GDB_WARN_CFLAGS = $(WARN_CFLAGS) @MAINT@@APPLE_MAINT@ $(MH_WARN_CFLAGS)
 GDB_WERROR_CFLAGS = $(WERROR_CFLAGS)
 GDB_WARN_LDFLAGS = $(WARN_LDFLAGS)
 
@@ -892,7 +892,7 @@ symcat_h = $(INCLUDE_DIR)/symcat.h
 hashtab_h =	$(INCLUDE_DIR)/hashtab.h $(ansidecl_h)
 mmalloc_h = $(MMALLOC_DIR)/mmalloc.h $(ansidecl_h)
 mmprivate_h = $(MMALLOC_DIR)/mmprivate.h $(config_h) $(mmalloc_h)
-mach_o_h = $(BFD_SRC)/mach-o.h $(bfd_h)
+mach_o_h = $(BFD_SRC)/mach-o.h $(ansidecl_h) $(bfd_h)
 xsym_h = $(BFD_SRC)/xsym.h $(bfd_h)
 xregex_h = $(INCLUDE_DIR)/xregex.h $(xregex2_h)
 xregex2_h = $(INCLUDE_DIR)/xregex2.h
@@ -1038,10 +1038,11 @@ m88k_tdep_h = m88k-tdep.h
 macroexp_h = macroexp.h
 macroscope_h = macroscope.h $(macrotab_h) $(symtab_h)
 macrotab_h = macrotab.h
-main_h = main.h
+main_h = main.h $(ansidecl_h)
 maint_h = maint.h
 mdebugread_h = mdebugread.h $(coff_sym_h) $(coff_symconst_h)
 memattr_h = memattr.h
+minsyms_h = minsyms.h $(ansidecl_h)
 mips_mdebug_tdep_h = mips-mdebug-tdep.h
 mipsnbsd_tdep_h = mipsnbsd-tdep.h
 mips_tdep_h = mips-tdep.h $(ansidecl_h)
@@ -1090,7 +1091,7 @@ sparc_tdep_h = sparc-tdep.h
 srec_h = srec.h
 stabsread_h = stabsread.h
 stack_h = stack.h
-symfile_h = symfile.h $(symtab_h)
+symfile_h = symfile.h $(ansidecl_h) $(symtab_h)
 symtab_h = symtab.h $(defs_h) $(ansidecl_h)
 target_h = target.h $(bfd_h) $(symtab_h) $(dcache_h) $(memattr_h)
 terminal_h = terminal.h
@@ -2933,7 +2934,8 @@ memattr.o: memattr.c $(defs_h) $(command_h) $(gdbcmd_h) $(memattr_h) \
 mem-break.o: mem-break.c $(defs_h) $(symtab_h) $(breakpoint_h) \
   $(inferior_h) $(target_h)
 minsyms.o: minsyms.c $(defs_h) $(gdb_string_h) $(symtab_h) $(bfd_h) \
-  $(symfile_h) $(objfiles_h) $(demangle_h) $(value_h) $(cp_abi_h)
+  $(symfile_h) $(objfiles_h) $(demangle_h) $(value_h) $(cp_abi_h) \
+  $(minsyms_h)
 mips64obsd-nat.o: mips64obsd-nat.c $(defs_h) $(inferior_h) $(regcache_h) \
   $(target_h) $(mips_tdep_h) $(inf_ptrace_h)
 mips64obsd-tdep.o: mips64obsd-tdep.c $(defs_h) $(osabi_h) $(regcache_h) \
@@ -3845,8 +3847,8 @@ macosx-tdep.o: $(macosxsrcdir)/macosx-tdep.c $(defs_h) $(inferior_h) \
   $(target_h) $(symfile_h) $(symtab_h) $(objfiles_h) $(gdbcmd_h) \
   $(language_h) $(block_h) $(libaout_h) $(aout_aout64_h) $(complaints_h) \
   $(mach_o_h) $(objc_lang_h) $(macosx_tdep_h) $(regcache_h) $(source_h) \
-  $(completer_h) $(exceptions_h) $(gdbcmd_h) $(gdbcore_h) $(exec_h) \
-  $(readline_tilde_h) $(arch_utils_h) $(macosx_nat_utils_h) \
+  $(completer_h) $(exceptions_h) $(gdb_assert_h) $(gdbcmd_h) $(gdbcore_h) \
+  $(exec_h) $(readline_tilde_h) $(arch_utils_h) $(macosx_nat_utils_h) \
   $(x86_shared_tdep_h) $(osabi_h) $(macosx_nat_dyld_h) $(gdbarch_h) \
   $(macosx_nat_infthread_h)
 macosx-xdep.o: $(macosxsrcdir)/macosx-xdep.c $(defs_h) $(inferior_h) \

@@ -1034,6 +1034,14 @@ static const insn32 t2a5_pop_insn   = 0xe8bd4040;
 static const insn32 t2a6_bx_insn    = 0xe12fff1e;
 #endif /* !ARM_WINCE */
 
+/* FIXME: would require changing a header to fix: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 /* TODO:
      We should really create new local (static) symbols in destination
      object for each stub we create.  We should also create local
@@ -2048,6 +2056,13 @@ bfd_arm_process_before_allocation (bfd *                   abfd,
 
   return TRUE;
 }
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 #endif /* ! defined (COFF_IMAGE_WITH_PE) */
 

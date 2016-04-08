@@ -1087,13 +1087,16 @@ handle_sighup (int sig)
 
 /* Called by the event loop to process a SIGHUP */
 static void
-async_disconnect (gdb_client_data arg)
+async_disconnect(gdb_client_data arg)
 {
-  catch_errors (quit_cover, NULL,
-		"Could not kill the program being debugged",
-		RETURN_MASK_ALL);
-  signal (SIGHUP, SIG_DFL);	/*FIXME: ??????????? */
-  kill (getpid (), SIGHUP);
+  int errors_ret = catch_errors(quit_cover, NULL,
+				"Could not kill the program being debugged",
+				RETURN_MASK_ALL);
+  if (errors_ret == 0) {
+    ; /* ??? */
+  }
+  signal(SIGHUP, SIG_DFL); /* FIXME: ??????????? */
+  kill(getpid(), SIGHUP);
 }
 #endif /* SIGHUP */
 

@@ -4777,8 +4777,10 @@ do_end_debugger_mode(void *arg)
   make_cleanup_enable_disable_bpts_during_operation();
 
   if (maint_use_timers) {
-    start_timer(&debug_mode_timer, "objc-debug-mode",
-                "Turning off debugger mode");
+    struct cleanup *timer_cleanup =
+      start_timer(&debug_mode_timer, "objc-debug-mode",
+		  "Turning off debugger mode");
+    gdb_assert(timer_cleanup != NULL);
   }
 
   hidden_step_resume_bp = hide_step_resume_breakpoint();

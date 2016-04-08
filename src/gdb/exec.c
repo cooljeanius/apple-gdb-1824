@@ -276,6 +276,10 @@ exec_file_attach(const char *filename, int from_tty)
     {
       char *scratch_pathname;
       int scratch_chan;
+      /* keep condition same as where var is used: */
+#ifdef SOLIB_ADD
+      int errors_ret = 0;
+#endif /* SOLIB_ADD */
 
       scratch_chan = openp (getenv ("PATH"), OPF_TRY_CWD_FIRST, filename,
 		   write_files ? O_RDWR | O_BINARY : O_RDONLY | O_BINARY, 0,
@@ -401,8 +405,11 @@ exec_file_attach(const char *filename, int from_tty)
 #endif /* MACOSX_DYLD */
 
 #ifdef SOLIB_ADD
-      catch_errors(solib_add_stub, &from_tty, (char *)0,
-		   RETURN_MASK_ALL);
+      errors_ret = catch_errors(solib_add_stub, &from_tty, (char *)0,
+				RETURN_MASK_ALL);
+      if (errors_ret == 0) {
+	; /* ??? */
+      }
 #endif /* SOLIB_ADD */
 
       /* Tell display code (if any) about the changed file name: */

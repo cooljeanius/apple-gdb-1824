@@ -74,7 +74,7 @@ void
   PARAMS ((struct res_directory **, struct res_resource *,
 	   int, const struct res_id *, int));
 
-static struct res_directory *resources = NULL;
+static struct res_directory *global_resources = NULL;
 
 static FILE *fres;
 static const char *filename;
@@ -97,7 +97,7 @@ read_res_file(const char *fn)
 
   fclose(fres);
 
-  return resources;
+  return global_resources;
 }
 
 /* Write resource file: */
@@ -531,14 +531,14 @@ res_add_resource(struct res_resource *r, const struct res_id *type,
   a[1] = *id;
   a[2].named = 0;
   a[2].u.id = language;
-  res_append_resource (&resources, r, 3, a, dupok);
+  res_append_resource(&global_resources, r, 3, a, dupok);
 }
 
 /* Append a resource to resource directory.
  * This is just copied from define_resource, and modified to add
  * an existing resource: */
 void
-res_append_resource(struct res_directory **resources,
+res_append_resource(struct res_directory **resource_directories,
                     struct res_resource *resource, int cids,
                     const struct res_id *ids, int dupok)
 {
@@ -550,7 +550,7 @@ res_append_resource(struct res_directory **resources,
     {
       struct res_entry **pp;
 
-      if (*resources == NULL)
+      if (*resource_directories == NULL)
 	{
 	  static unsigned long timeval;
 
@@ -559,15 +559,17 @@ res_append_resource(struct res_directory **resources,
 	  if (timeval == 0)
 	    timeval = time(NULL);
 
-	  *resources = ((struct res_directory *)res_alloc(sizeof **resources));
-	  (*resources)->characteristics = 0;
-	  (*resources)->time = timeval;
-	  (*resources)->major = 0;
-	  (*resources)->minor = 0;
-	  (*resources)->entries = NULL;
+	  *resource_directories = ((struct res_directory *)
+				   res_alloc(sizeof **resource_directories));
+	  (*resource_directories)->characteristics = 0;
+	  (*resource_directories)->time = timeval;
+	  (*resource_directories)->major = 0;
+	  (*resource_directories)->minor = 0;
+	  (*resource_directories)->entries = NULL;
 	}
 
-      for (pp = &(*resources)->entries; *pp != NULL; pp = &(*pp)->next)
+      for (pp = &(*resource_directories)->entries; *pp != NULL;
+	   pp = &(*pp)->next)
 	if (res_id_cmp((*pp)->id, ids[i]) == 0)
 	  break;
 
@@ -602,7 +604,7 @@ res_append_resource(struct res_directory **resources,
 	      xexit(1);
 	    }
 
-	  resources = &re->u.dir;
+	  resource_directories = &re->u.dir;
 	}
     }
 
