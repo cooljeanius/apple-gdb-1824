@@ -4070,27 +4070,30 @@ signal_pass_state (int signo)
   return signal_program[signo];
 }
 
+/* */
 int
-signal_stop_update (int signo, int state)
+signal_stop_update(int signo, int state)
 {
   int ret = signal_stop[signo];
-  signal_stop[signo] = state;
+  signal_stop[signo] = (unsigned char)state;
   return ret;
 }
 
+/* */
 int
-signal_print_update (int signo, int state)
+signal_print_update(int signo, int state)
 {
   int ret = signal_print[signo];
-  signal_print[signo] = state;
+  signal_print[signo] = (unsigned char)state;
   return ret;
 }
 
+/* */
 int
-signal_pass_update (int signo, int state)
+signal_pass_update(int signo, int state)
 {
   int ret = signal_program[signo];
-  signal_program[signo] = state;
+  signal_program[signo] = (unsigned char)state;
   return ret;
 }
 

@@ -300,7 +300,7 @@ cp_print_value_fields (struct type *type, struct type *real_type,
 	     chunk of the obstack and use that until this particular
 	     invocation returns.  */
 	  tmp_obstack = dont_print_statmem_obstack;
-	  obstack_finish (&dont_print_statmem_obstack);
+	  obstack_finish(&dont_print_statmem_obstack);
 	}
 
       for (i = n_baseclasses; i < len; i++)
@@ -441,10 +441,10 @@ cp_print_value_fields (struct type *type, struct type *real_type,
       /* First get the virtual table pointer and print it out */
 
 #if 0
-      fputs_filtered ("__vfp = ", stream);
-#endif
+      fputs_filtered("__vfp = ", stream);
+#endif /* 0 */
 
-      fputs_filtered (", Virtual table at ", stream);
+      fputs_filtered(", Virtual table at ", stream);
 
       /* pai: FIXME 32x64 problem? */
       /* Not sure what the best notation is in the case where there is no
@@ -471,34 +471,32 @@ cp_print_value_fields (struct type *type, struct type *real_type,
 	      /* no RRBC support; function pointers embedded directly
                  in vtable */
 
-	      fputs_filtered (" {", stream);
+	      fputs_filtered(" {", stream);
 
-	      /* FIXME : doesn't work at present */
-#if 0
-	      int vfuncs = count_virtual_fns (real_type);
-	      fprintf_filtered (stream, "%d entr%s: ", vfuncs,
-				vfuncs == 1 ? "y" : "ies");
+	      /* FIXME: does NOT work at present: */
+#ifdef WORKS_NOW_AT_PRESENT
+	      int vfuncs = count_virtual_fns(real_type);
+	      fprintf_filtered(stream, "%d entr%s: ", vfuncs,
+			       vfuncs == 1 ? "y" : "ies");
 #else
-	      fputs_filtered ("not implemented", stream);
-
-
-#endif
+	      fputs_filtered("not implemented", stream);
+	      (void)fields_seen;
+#endif /* WORKS_NOW_AT_PRESENT */
 
 	      /* recursive function that prints all virtual function entries */
 #if 0
-	      cp_print_hpacc_virtual_table_entries (real_type, &vfuncs, v,
-						    stream, format, recurse,
-						    pretty);
-#endif
-	      fputs_filtered ("}", stream);
+	      cp_print_hpacc_virtual_table_entries(real_type, &vfuncs, v,
+						   stream, format, recurse,
+						   pretty);
+#endif /* 0 */
+	      fputs_filtered("}", stream);
 	    }			/* non-RRBC case */
 	  else
 	    {
-	      /* FIXME -- see comments above */
+	      /* FIXME: see comments above */
+	      warning(_("FIXME: unimplemented"));
 	      /* RRBC support present; function pointers are found
 	       * by indirection through the class segment entries. */
-
-
 	    }			/* RRBC case */
 	}			/* if vtblprint */
 
@@ -535,8 +533,8 @@ cp_print_value (struct type *type, struct type *real_type,
          chunk of the obstack and use that until this particular
          invocation returns.  */
       tmp_obstack = dont_print_vb_obstack;
-      /* Bump up the high-water mark.  Now alpha is omega.  */
-      obstack_finish (&dont_print_vb_obstack);
+      /* Bump up the high-water mark.  Now alpha is omega: */
+      obstack_finish(&dont_print_vb_obstack);
     }
 
   for (i = 0; i < n_baseclasses; i++)
@@ -774,12 +772,11 @@ cp_print_class_member(const gdb_byte *valaddr, struct type *domain,
  * the HP aCC compiler; RRBC code is stubbed out and will have to be
  * added later. */
 
-
-static void
-cp_print_hpacc_virtual_table_entries (struct type *type, int *vfuncs,
-				      struct value *v, struct ui_file *stream,
-				      int format, int recurse,
-				      enum val_prettyprint pretty)
+static void ATTRIBUTE_USED
+cp_print_hpacc_virtual_table_entries(struct type *type, int *vfuncs,
+				     struct value *v, struct ui_file *stream,
+				     int format, int recurse,
+				     enum val_prettyprint pretty)
 {
   int fn, oi;
 
@@ -805,22 +802,23 @@ cp_print_hpacc_virtual_table_entries (struct type *type, int *vfuncs,
 	  int vx = (TYPE_FN_FIELD_VOFFSET (TYPE_FN_FIELDLIST1 (type, fn), oi)
 		    - 1);
 
-	  /* Get the address of the vfunction entry */
-	  struct value *vf = value_copy (v);
-	  if (value_lazy (vf))
-	    (void) value_fetch_lazy (vf);
+	  /* Get the address of the vfunction entry: */
+	  struct value *vf = value_copy(v);
+	  if (value_lazy(vf))
+	    (void)value_fetch_lazy(vf);
 	  /* adjust by offset */
 	  /* NOTE: cagney/2005-01-02: THIS IS BOGUS.  */
-	  value_contents_writeable (vf)[0] += 4 * (HP_ACC_VFUNC_START + vx);
-	  vf = value_ind (vf);	/* get the entry */
+	  value_contents_writeable(vf)[0] +=
+	    (gdb_byte)(4U * (HP_ACC_VFUNC_START + vx));
+	  vf = value_ind(vf);	/* get the entry */
 	  /* make it a pointer */
-	  deprecated_set_value_type (vf, value_type (v));
+	  deprecated_set_value_type(vf, value_type(v));
 
 	  /* print out the entry */
-	  common_val_print (vf, stream, format, 0, recurse + 1, pretty);
-	  field_physname
-	    = TYPE_FN_FIELD_PHYSNAME (TYPE_FN_FIELDLIST1 (type, fn), oi);
-	  /* pai: (temp) FIXME Maybe this should be DMGL_ANSI */
+	  common_val_print(vf, stream, format, 0, (recurse + 1), pretty);
+	  field_physname =
+	    TYPE_FN_FIELD_PHYSNAME(TYPE_FN_FIELDLIST1(type, fn), oi);
+	  /* pai: (temp) FIXME: Maybe this should be DMGL_ANSI */
 	  vf_name = cplus_demangle (field_physname, DMGL_ARM);
 	  fprintf_filtered (stream, " %s", vf_name);
 	  if (--(*vfuncs) > 0)

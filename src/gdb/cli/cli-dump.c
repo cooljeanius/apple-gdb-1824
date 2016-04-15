@@ -572,7 +572,7 @@ restore_binary_file(char *filename, struct callback_data *data)
   if (bytes_to_read_from_file == 0)
     bytes_to_read_from_file = total_file_bytes;
   if (data->load_start > 0)
-    bytes_to_read_from_file -= data->load_start;
+    bytes_to_read_from_file -= (int)data->load_start;
 
   if (bytes_to_read_from_file > total_file_bytes)
     bytes_to_read_from_file = total_file_bytes;

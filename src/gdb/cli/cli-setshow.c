@@ -159,10 +159,10 @@ do_setshow_command(const char *arg, int from_tty, struct cmd_list_element *c)
 		    if (ch == 0)
 		      break;	/* C loses */
 		    else if (ch > 0)
-		      *q++ = ch;
+		      *q++ = (char)ch;
 		  }
 		else
-		  *q++ = ch;
+		  *q++ = (char)ch;
 	      }
 #if 0
 	    if (*(p - 1) != '\\')

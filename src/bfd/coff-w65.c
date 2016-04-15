@@ -1,4 +1,4 @@
-/* BFD back-end for WDC 65816 COFF binaries.
+/* coff-w65.c: BFD back-end for WDC 65816 COFF binaries.
    Copyright 1995, 1996, 1997, 1999, 2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
    Written by Steve Chamberlain, <sac@cygnus.com>.
@@ -17,7 +17,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA.  */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -27,31 +27,36 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #include "coff/internal.h"
 #include "libcoff.h"
 
-static int  select_reloc              PARAMS ((reloc_howto_type *));
-static void rtype2howto               PARAMS ((arelent *, struct internal_reloc *));
-static void reloc_processing          PARAMS ((arelent *, struct internal_reloc *, asymbol **, bfd *, asection *));
-static int  w65_reloc16_estimate    PARAMS ((bfd *, asection *, arelent *, unsigned int, struct bfd_link_info *));
-static void w65_reloc16_extra_cases PARAMS ((bfd *,struct bfd_link_info *, struct bfd_link_order *, arelent *, bfd_byte *, unsigned int *, unsigned int *));
+static int  select_reloc PARAMS((reloc_howto_type *));
+static void rtype2howto PARAMS((arelent *, struct internal_reloc *));
+static void reloc_processing PARAMS((arelent *, struct internal_reloc *,
+				     asymbol **, bfd *, asection *));
+static int  w65_reloc16_estimate PARAMS((bfd *, asection *, arelent *,
+					 unsigned int, struct bfd_link_info *));
+static void w65_reloc16_extra_cases PARAMS((bfd *,struct bfd_link_info *,
+					    struct bfd_link_order *, arelent *,
+					    bfd_byte *, unsigned int *,
+					    unsigned int *));
 
 #define COFF_DEFAULT_SECTION_ALIGNMENT_POWER (1)
 static reloc_howto_type howto_table[] =
   {
-    HOWTO (R_W65_ABS8,    0,  0, 8,  FALSE, 0, complain_overflow_bitfield, 0, "abs8", TRUE, 0x000000ff, 0x000000ff, FALSE),
-    HOWTO (R_W65_ABS16,   1,  0, 16, FALSE, 0, complain_overflow_bitfield, 0, "abs16", TRUE, 0x0000ffff, 0x0000ffff, FALSE),
-    HOWTO (R_W65_ABS24,   0,  2, 32, FALSE, 0, complain_overflow_bitfield, 0, "abs24", TRUE, 0x00ffffff, 0x00ffffff, FALSE),
-    HOWTO (R_W65_ABS8S8,  0,  0, 8,  FALSE, 0, complain_overflow_bitfield, 0, ">abs8", TRUE, 0x000000ff, 0x000000ff, FALSE),
-    HOWTO (R_W65_ABS8S16, 0,  0, 8,  FALSE, 0, complain_overflow_bitfield, 0, "^abs8", TRUE, 0x000000ff, 0x000000ff, FALSE),
-    HOWTO (R_W65_ABS16S8, 1,  0, 16, FALSE, 0, complain_overflow_bitfield, 0, ">abs16", TRUE, 0x0000ffff, 0x0000ffff, FALSE),
-    HOWTO (R_W65_ABS16S16,1,  0, 16, FALSE, 0, complain_overflow_bitfield, 0, "^abs16", TRUE, 0x0000ffff, 0x0000ffff, FALSE),
-    HOWTO (R_W65_PCR8,    0,  0, 8,  FALSE, 0, complain_overflow_bitfield, 0, "pcrel8", TRUE, 0x000000ff, 0x000000ff, TRUE),
-    HOWTO (R_W65_PCR16,   1,  0, 16, FALSE, 0, complain_overflow_bitfield, 0, "pcrel16", TRUE, 0x0000ffff, 0x0000ffff, TRUE),
-    HOWTO (R_W65_DP,      0,  0, 8,  FALSE, 0, complain_overflow_bitfield, 0, "dp", TRUE, 0x000000ff, 0x000000ff, FALSE),
+    HOWTO(R_W65_ABS8,    0,  0, 8,  FALSE, 0, complain_overflow_bitfield, 0, "abs8", TRUE, 0x000000ff, 0x000000ff, FALSE),
+    HOWTO(R_W65_ABS16,   1,  0, 16, FALSE, 0, complain_overflow_bitfield, 0, "abs16", TRUE, 0x0000ffff, 0x0000ffff, FALSE),
+    HOWTO(R_W65_ABS24,   0,  2, 32, FALSE, 0, complain_overflow_bitfield, 0, "abs24", TRUE, 0x00ffffff, 0x00ffffff, FALSE),
+    HOWTO(R_W65_ABS8S8,  0,  0, 8,  FALSE, 0, complain_overflow_bitfield, 0, ">abs8", TRUE, 0x000000ff, 0x000000ff, FALSE),
+    HOWTO(R_W65_ABS8S16, 0,  0, 8,  FALSE, 0, complain_overflow_bitfield, 0, "^abs8", TRUE, 0x000000ff, 0x000000ff, FALSE),
+    HOWTO(R_W65_ABS16S8, 1,  0, 16, FALSE, 0, complain_overflow_bitfield, 0, ">abs16", TRUE, 0x0000ffff, 0x0000ffff, FALSE),
+    HOWTO(R_W65_ABS16S16,1,  0, 16, FALSE, 0, complain_overflow_bitfield, 0, "^abs16", TRUE, 0x0000ffff, 0x0000ffff, FALSE),
+    HOWTO(R_W65_PCR8,    0,  0, 8,  FALSE, 0, complain_overflow_bitfield, 0, "pcrel8", TRUE, 0x000000ff, 0x000000ff, TRUE),
+    HOWTO(R_W65_PCR16,   1,  0, 16, FALSE, 0, complain_overflow_bitfield, 0, "pcrel16", TRUE, 0x0000ffff, 0x0000ffff, TRUE),
+    HOWTO(R_W65_DP,      0,  0, 8,  FALSE, 0, complain_overflow_bitfield, 0, "dp", TRUE, 0x000000ff, 0x000000ff, FALSE),
   };
 
 /* Turn a howto into a reloc number.  */
 
 #define SELECT_RELOC(x,howto) \
-  { x.r_type = select_reloc(howto); }
+  { x.r_type = (unsigned short)select_reloc(howto); }
 
 #define BADMAG(x) (W65BADMAG(x))
 #ifndef W65
@@ -69,7 +74,7 @@ static reloc_howto_type howto_table[] =
 static int
 select_reloc(reloc_howto_type *howto)
 {
-  return howto->type;
+  return (int)howto->type;
 }
 
 /* Code to turn a r_type into a howto ptr, uses the above howto table: */
@@ -204,7 +209,7 @@ w65_reloc16_estimate(bfd *abfd, asection *input_section, arelent *reloc,
       break;
     }
 
-  return shrink;
+  return (int)shrink;
 }
 
 /* First phase of a relaxing link.  */
@@ -231,9 +236,9 @@ w65_reloc16_extra_cases(bfd *abfd, struct bfd_link_info *link_info,
     case R_W65_ABS8:
     case R_W65_DP:
       {
-	unsigned int gap = bfd_coff_reloc16_get_value (reloc, link_info,
-						       input_section);
-	bfd_put_8 (abfd, gap, data + dst_address);
+	bfd_vma gap = bfd_coff_reloc16_get_value(reloc, link_info,
+						 input_section);
+	bfd_put_8(abfd, gap, (data + dst_address));
 	dst_address += 1;
 	src_address += 1;
       }
@@ -241,10 +246,10 @@ w65_reloc16_extra_cases(bfd *abfd, struct bfd_link_info *link_info,
 
     case R_W65_ABS8S8:
       {
-	unsigned int gap = bfd_coff_reloc16_get_value (reloc, link_info,
-						       input_section);
+	bfd_vma gap = bfd_coff_reloc16_get_value(reloc, link_info,
+						 input_section);
 	gap >>= 8;
-	bfd_put_8 (abfd, gap, data + dst_address);
+	bfd_put_8(abfd, gap, (data + dst_address));
 	dst_address += 1;
 	src_address += 1;
       }
@@ -252,10 +257,10 @@ w65_reloc16_extra_cases(bfd *abfd, struct bfd_link_info *link_info,
 
     case R_W65_ABS8S16:
       {
-	unsigned int gap = bfd_coff_reloc16_get_value (reloc, link_info,
-						       input_section);
+	bfd_vma gap = bfd_coff_reloc16_get_value(reloc, link_info,
+						 input_section);
 	gap >>= 16;
-	bfd_put_8 (abfd, gap, data + dst_address);
+	bfd_put_8(abfd, gap, (data + dst_address));
 	dst_address += 1;
 	src_address += 1;
       }
@@ -263,30 +268,30 @@ w65_reloc16_extra_cases(bfd *abfd, struct bfd_link_info *link_info,
 
     case R_W65_ABS16:
       {
-	unsigned int gap = bfd_coff_reloc16_get_value (reloc, link_info,
-						       input_section);
+	bfd_vma gap = bfd_coff_reloc16_get_value(reloc, link_info,
+						 input_section);
 
-	bfd_put_16 (abfd, (bfd_vma) gap, data + dst_address);
+	bfd_put_16(abfd, gap, (data + dst_address));
 	dst_address += 2;
 	src_address += 2;
       }
       break;
     case R_W65_ABS16S8:
       {
-	unsigned int gap = bfd_coff_reloc16_get_value (reloc, link_info,
-						       input_section);
+	bfd_vma gap = bfd_coff_reloc16_get_value(reloc, link_info,
+						 input_section);
 	gap >>= 8;
-	bfd_put_16 (abfd, (bfd_vma) gap, data + dst_address);
+	bfd_put_16(abfd, gap, (data + dst_address));
 	dst_address += 2;
 	src_address += 2;
       }
       break;
     case R_W65_ABS16S16:
       {
-	unsigned int gap = bfd_coff_reloc16_get_value (reloc, link_info,
-						       input_section);
+	bfd_vma gap = bfd_coff_reloc16_get_value(reloc, link_info,
+						 input_section);
 	gap >>= 16;
-	bfd_put_16 (abfd, (bfd_vma) gap, data + dst_address);
+	bfd_put_16(abfd, gap, (data + dst_address));
 	dst_address += 2;
 	src_address += 2;
       }
@@ -294,10 +299,10 @@ w65_reloc16_extra_cases(bfd *abfd, struct bfd_link_info *link_info,
 
     case R_W65_ABS24:
       {
-	unsigned int gap = bfd_coff_reloc16_get_value (reloc, link_info,
-						       input_section);
-	bfd_put_16 (abfd, (bfd_vma) gap, data + dst_address);
-	bfd_put_8 (abfd, gap >> 16, data+dst_address + 2);
+	bfd_vma gap = bfd_coff_reloc16_get_value(reloc, link_info,
+						 input_section);
+	bfd_put_16(abfd, gap, (data + dst_address));
+	bfd_put_8(abfd, (gap >> 16), ((data + dst_address) + 2));
 	dst_address += 3;
 	src_address += 3;
       }
@@ -305,23 +310,23 @@ w65_reloc16_extra_cases(bfd *abfd, struct bfd_link_info *link_info,
 
     case R_W65_PCR8:
       {
-	int gap = bfd_coff_reloc16_get_value (reloc, link_info,
-					      input_section);
-	bfd_vma dot = link_order->offset
-	  + dst_address
-	    + link_order->u.indirect.section->output_section->vma;
+	int gap = (int)bfd_coff_reloc16_get_value(reloc, link_info,
+						  input_section);
+	bfd_vma dot = (link_order->offset
+		       + dst_address
+		       + link_order->u.indirect.section->output_section->vma);
 
-	gap -= dot + 1;
-	if (gap < -128 || gap > 127)
+	gap -= (int)(dot + 1);
+	if ((gap < -128) || (gap > 127))
 	  {
-	    if (! ((*link_info->callbacks->reloc_overflow)
-		   (link_info, NULL,
-		    bfd_asymbol_name (*reloc->sym_ptr_ptr),
-		    reloc->howto->name, reloc->addend, input_section->owner,
-		    input_section, reloc->address)))
-	      abort ();
+	    if (!((*link_info->callbacks->reloc_overflow)
+		  (link_info, NULL,
+		   bfd_asymbol_name(*reloc->sym_ptr_ptr),
+		   reloc->howto->name, reloc->addend, input_section->owner,
+		   input_section, reloc->address)))
+	      abort();
 	  }
-	bfd_put_8 (abfd, gap, data + dst_address);
+	bfd_put_8(abfd, gap, (data + dst_address));
 	dst_address += 1;
 	src_address += 1;
       }

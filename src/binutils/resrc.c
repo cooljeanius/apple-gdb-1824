@@ -403,13 +403,12 @@ read_rc_file (const char *filename, const char *preprocessor,
 #endif /* HAVE_EXECUTABLE_SUFFIX */
                             + 10);
 
-
       dash = slash = 0;
       for (cp = program_name; *cp; cp++)
 	{
 	  if (*cp == '-')
 	    dash = cp;
-	  if (
+	  if ((cp != NULL) && 
 #if defined(__DJGPP__) || defined(__CYGWIN__) || defined(_WIN32)
 	      (*cp == ':') || (*cp == '\\') ||
 #endif /* __DJGPP__ || __CYGWIN__ || _WIN32 */
@@ -514,7 +513,7 @@ rcparse_warning(const char *msg)
 }
 
 /* Die if we get an unexpected end of file: */
-static void
+static void ATTRIBUTE_NORETURN
 unexpected_eof(const char *msg)
 {
   fatal(_("%s: unexpected EOF"), msg);

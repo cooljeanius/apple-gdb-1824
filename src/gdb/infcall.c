@@ -424,7 +424,7 @@ hand_function_call(struct value *function, struct type *expect_type,
   struct type *values_type;
   struct type *orig_return_type = NULL;
   unsigned char struct_return;
-  volatile CORE_ADDR struct_addr = 0;
+  volatile CORE_ADDR struct_addr = 0UL;
   struct regcache *retbuf;
   struct cleanup *retbuf_cleanup;
   struct cleanup *runtime_cleanup;
@@ -627,13 +627,13 @@ hand_function_call(struct value *function, struct type *expect_type,
   {
     struct block *b = block_for_pc (funaddr);
     /* If compiled without -g, assume GCC 2.  */
-    using_gcc = (b == NULL ? 2 : BLOCK_GCC_COMPILED (b));
+    using_gcc = ((b == NULL) ? 2 : BLOCK_GCC_COMPILED(b));
   }
 
   /* Are we returning a value using a structure return or a normal
      value return? */
 
-  struct_return = using_struct_return (values_type, using_gcc);
+  struct_return = (unsigned char)using_struct_return(values_type, using_gcc);
 
   /* Determine the location of the breakpoint (and possibly other
      stuff) that the called function will return to.  The SPARC, for a
@@ -649,20 +649,23 @@ hand_function_call(struct value *function, struct type *expect_type,
     case ON_STACK:
       /* "dummy_addr" is here just to keep old targets happy.  New
 	 targets return that same information via "sp" and "bp_addr".  */
-      if (INNER_THAN (1, 2))
+      if (INNER_THAN(1, 2))
 	{
-	  sp = push_dummy_code (current_gdbarch, sp, funaddr,
-				using_gcc, args, nargs, values_type,
-				&real_pc, &bp_addr);
+	  sp = push_dummy_code(current_gdbarch, sp, funaddr,
+			       using_gcc, args, nargs, values_type,
+			       &real_pc, &bp_addr);
 	  dummy_addr = sp;
 	}
       else
 	{
 	  dummy_addr = sp;
-	  sp = push_dummy_code (current_gdbarch, sp, funaddr,
-				using_gcc, args, nargs, values_type,
-				&real_pc, &bp_addr);
+	  sp = push_dummy_code(current_gdbarch, sp, funaddr,
+			       using_gcc, args, nargs, values_type,
+			       &real_pc, &bp_addr);
 	}
+      if (dummy_addr == INVALID_ADDRESS) {
+	warning(_("Invalid dummy_addr.\n"));
+      }
       break;
     case AT_ENTRY_POINT:
       real_pc = funaddr;
@@ -1016,7 +1019,7 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
   if (timer_fired)
     {
       frame_pop(get_current_frame());
-      error("User called function timer expired.  Aborting call.");
+      error(_("User called function timer expired.  Aborting call."));
     }
 
   if (stopped_by_random_signal || !stop_stack_dummy)

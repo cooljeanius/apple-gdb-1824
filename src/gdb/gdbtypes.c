@@ -1227,18 +1227,18 @@ smash_to_method_type (struct type *type, struct type *domain,
 {
   struct objfile *objfile;
 
-  objfile = TYPE_OBJFILE (type);
+  objfile = TYPE_OBJFILE(type);
 
-  smash_type (type);
-  TYPE_OBJFILE (type) = objfile;
-  TYPE_TARGET_TYPE (type) = to_type;
-  TYPE_DOMAIN_TYPE (type) = domain;
-  TYPE_FIELDS (type) = args;
-  TYPE_NFIELDS (type) = nargs;
+  smash_type(type);
+  TYPE_OBJFILE(type) = objfile;
+  TYPE_TARGET_TYPE(type) = to_type;
+  TYPE_DOMAIN_TYPE(type) = domain;
+  TYPE_FIELDS(type) = args;
+  TYPE_NFIELDS(type) = (short)nargs;
   if (varargs)
-    TYPE_FLAGS (type) |= TYPE_FLAG_VARARGS;
-  TYPE_LENGTH_ASSIGN (type) = 1;	/* In practice, this is never needed.  */
-  TYPE_CODE (type) = TYPE_CODE_METHOD;
+    TYPE_FLAGS(type) |= TYPE_FLAG_VARARGS;
+  TYPE_LENGTH_ASSIGN(type) = 1;  /* In practice, this is never needed.  */
+  TYPE_CODE(type) = TYPE_CODE_METHOD;
 }
 
 /* Return a typename for a struct/union/enum type without "struct ",
@@ -1948,19 +1948,19 @@ check_stub_method (struct type *type, int method_id, int signature_id)
 	}
     }
 
-  TYPE_FN_FIELD_PHYSNAME (f, signature_id) = mangled_name;
+  TYPE_FN_FIELD_PHYSNAME(f, signature_id) = mangled_name;
 
-  /* Now update the old "stub" type into a real type.  */
-  mtype = TYPE_FN_FIELD_TYPE (f, signature_id);
-  TYPE_DOMAIN_TYPE (mtype) = type;
-  TYPE_FIELDS (mtype) = argtypes;
-  TYPE_NFIELDS (mtype) = argcount;
-  TYPE_FLAGS (mtype) &= ~TYPE_FLAG_STUB;
-  TYPE_FN_FIELD_STUB (f, signature_id) = 0;
+  /* Now update the old "stub" type into a real type: */
+  mtype = TYPE_FN_FIELD_TYPE(f, signature_id);
+  TYPE_DOMAIN_TYPE(mtype) = type;
+  TYPE_FIELDS(mtype) = argtypes;
+  TYPE_NFIELDS(mtype) = (short)argcount;
+  TYPE_FLAGS(mtype) &= ~TYPE_FLAG_STUB;
+  TYPE_FN_FIELD_STUB(f, signature_id) = 0;
   if (p[-2] == '.')
-    TYPE_FLAGS (mtype) |= TYPE_FLAG_VARARGS;
+    TYPE_FLAGS(mtype) |= TYPE_FLAG_VARARGS;
 
-  xfree (demangled_name);
+  xfree(demangled_name);
 }
 
 /* This is the external interface to check_stub_method, above.  This function
@@ -3851,7 +3851,7 @@ build_builtin_enum(const char *name, uint32_t size, int flags,
   struct type *t = init_type(TYPE_CODE_ENUM, size, flags, xstrdup(name),
 			     (struct objfile *)NULL);
   size_t fields_size;
-  TYPE_NFIELDS(t) = num_enums;
+  TYPE_NFIELDS(t) = (short)num_enums;
   fields_size = (sizeof(struct field) * TYPE_NFIELDS(t));
   TYPE_FIELDS(t) = (struct field *)xmalloc(fields_size);
   memset(TYPE_FIELDS(t), 0, fields_size);
@@ -3897,7 +3897,7 @@ build_builtin_bitfield(const char *name, uint32_t size,
   int i;
   size_t fields_size;
   t = init_composite_type(xstrdup(name), TYPE_CODE_STRUCT);
-  TYPE_NFIELDS(t) = num_bitfields;
+  TYPE_NFIELDS(t) = (short)num_bitfields;
   fields_size = (sizeof(struct field) * TYPE_NFIELDS(t));
   TYPE_FIELDS(t) = (struct field *)xmalloc(fields_size);
   memset(TYPE_FIELDS(t), 0, fields_size);

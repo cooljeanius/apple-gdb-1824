@@ -170,57 +170,57 @@ reloc_processing (arelent *relent,
   relent->address -= section->vma;
 }
 
+/* */
 static void
-extra_case (bfd *in_abfd,
-            struct bfd_link_info *link_info,
-            struct bfd_link_order *link_order,
-            arelent *reloc,
-            bfd_byte *data,
-            unsigned int *src_ptr,
-            unsigned int *dst_ptr)
+extra_case(bfd *in_abfd, struct bfd_link_info *link_info,
+	   struct bfd_link_order *link_order, arelent *reloc, bfd_byte *data,
+           unsigned int *src_ptr, unsigned int *dst_ptr)
 {
-  asection * input_section = link_order->u.indirect.section;
+  asection *input_section = link_order->u.indirect.section;
   int val;
 
   switch (reloc->howto->type)
     {
     case R_OFF8:
-	val = bfd_coff_reloc16_get_value (reloc, link_info,
-					   input_section);
-	if (val>127 || val<-128) /* Test for overflow.  */
+	val = (int)bfd_coff_reloc16_get_value(reloc, link_info,
+					      input_section);
+	if ((val > 127) || (val < -128)) /* Test for overflow.  */
 	  {
-	    if (! ((*link_info->callbacks->reloc_overflow)
-		   (link_info, NULL,
-		    bfd_asymbol_name (*reloc->sym_ptr_ptr),
-		    reloc->howto->name, reloc->addend, input_section->owner,
-		    input_section, reloc->address)))
-	      abort ();
+	    if (!((*link_info->callbacks->reloc_overflow)
+		  (link_info, NULL,
+		   bfd_asymbol_name(*reloc->sym_ptr_ptr),
+		   reloc->howto->name, reloc->addend, input_section->owner,
+		   input_section, reloc->address)))
+	      abort();
 	  }
-	bfd_put_8 (in_abfd, val, data + *dst_ptr);
+	bfd_put_8(in_abfd, val, (data + *dst_ptr));
 	(*dst_ptr) += 1;
 	(*src_ptr) += 1;
       break;
 
     case R_IMM8:
-      val = bfd_get_8 ( in_abfd, data+*src_ptr)
-	+ bfd_coff_reloc16_get_value (reloc, link_info, input_section);
-      bfd_put_8 (in_abfd, val, data + *dst_ptr);
+      val = (int)(bfd_get_8(in_abfd, (data + *src_ptr))
+		  + bfd_coff_reloc16_get_value(reloc, link_info,
+					       input_section));
+      bfd_put_8(in_abfd, val, (data + *dst_ptr));
       (*dst_ptr) += 1;
       (*src_ptr) += 1;
       break;
 
     case R_IMM16:
-      val = (bfd_get_16(in_abfd, (data + *src_ptr))
-	     + bfd_coff_reloc16_get_value(reloc, link_info, input_section));
+      val = (int)(bfd_get_16(in_abfd, (data + *src_ptr))
+		  + bfd_coff_reloc16_get_value(reloc, link_info,
+					       input_section));
       bfd_put_16(in_abfd, (bfd_vma)val, (data + *dst_ptr));
       (*dst_ptr) += 2;
       (*src_ptr) += 2;
       break;
 
     case R_IMM24:
-      val = (bfd_get_16(in_abfd, (data + *src_ptr))
-	     + (bfd_get_8(in_abfd, (data + *src_ptr + 2)) << 16)
-	     + bfd_coff_reloc16_get_value(reloc, link_info, input_section));
+      val = (int)(bfd_get_16(in_abfd, (data + *src_ptr))
+		  + (bfd_vma)(bfd_get_8(in_abfd, (data + *src_ptr + 2)) << 16)
+		  + bfd_coff_reloc16_get_value(reloc, link_info,
+					       input_section));
       bfd_put_16(in_abfd, (bfd_vma)val, (data + *dst_ptr));
       bfd_put_8(in_abfd, (val >> 16), (data + (*dst_ptr + 2)));
       (*dst_ptr) += 3;
@@ -228,8 +228,9 @@ extra_case (bfd *in_abfd,
       break;
 
     case R_IMM32:
-      val = (bfd_get_32(in_abfd, (data + *src_ptr))
-	     + bfd_coff_reloc16_get_value(reloc, link_info, input_section));
+      val = (int)(bfd_get_32(in_abfd, (data + *src_ptr))
+		  + bfd_coff_reloc16_get_value(reloc, link_info,
+					       input_section));
       bfd_put_32(in_abfd, (bfd_vma)val, (data + *dst_ptr));
       (*dst_ptr) += 4;
       (*src_ptr) += 4;
@@ -242,27 +243,27 @@ extra_case (bfd *in_abfd,
 	bfd_vma dot = (*dst_ptr
 		       + input_section->output_offset
 		       + input_section->output_section->vma);
-	int gap = dst - dot - 1;  /* -1, Since the offset is relative
-				     to the value of PC after reading
-				     the offset.  */
+	/* -1L, Since the offset is relative to the value of PC after reading
+	 * the offset.  */
+	ptrdiff_t gap = ((ptrdiff_t)(dst - dot) - 1L);
 
-	if (gap >= 128 || gap < -128)
+	if ((gap >= 128L) || (gap < -128L))
 	  {
-	    if (! ((*link_info->callbacks->reloc_overflow)
-		   (link_info, NULL,
-		    bfd_asymbol_name (*reloc->sym_ptr_ptr),
-		    reloc->howto->name, reloc->addend, input_section->owner,
-		    input_section, reloc->address)))
-	      abort ();
+	    if (!((*link_info->callbacks->reloc_overflow)
+		  (link_info, NULL,
+		   bfd_asymbol_name(*reloc->sym_ptr_ptr),
+		   reloc->howto->name, reloc->addend, input_section->owner,
+		   input_section, reloc->address)))
+	      abort();
 	  }
-	bfd_put_8 (in_abfd, gap, data + *dst_ptr);
+	bfd_put_8(in_abfd, gap, (data + *dst_ptr));
 	(*dst_ptr)++;
 	(*src_ptr)++;
 	break;
       }
 
     default:
-      abort ();
+      abort();
     }
 }
 

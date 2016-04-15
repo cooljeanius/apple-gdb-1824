@@ -370,7 +370,7 @@ parse_i(common_header_type *ieee, bfd_boolean *ok)
 {
   bfd_vma x = 0UL;
   *ok = parse_int(ieee, &x);
-  return x;
+  return (int)x;
 }
 
 static bfd_vma
@@ -532,7 +532,7 @@ parse_expression (ieee_data_type *ieee,
 
 	    next_byte (&(ieee->h));
 	    *pcrel = TRUE;
-	    section_n = must_parse_int (&(ieee->h));
+	    section_n = (int)must_parse_int(&(ieee->h));
 	    PUSH (NOSYMBOL, bfd_abs_section_ptr, 0);
 	    break;
 	  }
@@ -685,7 +685,7 @@ get_symbol (bfd *abfd ATTRIBUTE_UNUSED,
 	    int this_type)
 {
   /* Need a new symbol.  */
-  unsigned int new_index = must_parse_int (&(ieee->h));
+  unsigned int new_index = (unsigned int)must_parse_int(&(ieee->h));
 
   if ((new_index != last_index) || (this_type != last_type))
     {
@@ -772,9 +772,9 @@ ieee_slurp_external_symbols (bfd *abfd)
 	    switch (read_2bytes(&ieee->h))
 	      {
 	      case ieee_attribute_record_enum:
-		symbol_name_index = must_parse_int(&(ieee->h));
-		symbol_type_index = must_parse_int(&(ieee->h));
-		symbol_attribute_def = must_parse_int(&(ieee->h));
+		symbol_name_index = (unsigned int)must_parse_int(&(ieee->h));
+		symbol_type_index = (unsigned int)must_parse_int(&(ieee->h));
+		symbol_attribute_def = (unsigned int)must_parse_int(&(ieee->h));
 		switch (symbol_attribute_def)
 		  {
 		  case 8:
@@ -849,13 +849,9 @@ ieee_slurp_external_symbols (bfd *abfd)
 	    next_byte (&(ieee->h));
 	    next_byte (&(ieee->h));
 
-	    symbol_name_index = must_parse_int (&(ieee->h));
-	    parse_expression (ieee,
-			      &symbol->symbol.value,
-			      &symbol_ignore,
-			      &pcrel_ignore,
-			      &extra,
-			      &symbol->symbol.section);
+	    symbol_name_index = (unsigned int)must_parse_int(&(ieee->h));
+	    parse_expression(ieee, &symbol->symbol.value, &symbol_ignore,
+			     &pcrel_ignore, &extra, &symbol->symbol.section);
 
 	    /* Fully linked IEEE-695 files tend to give every symbol
                an absolute value.  Try to convert that back into a
@@ -1111,7 +1107,7 @@ ieee_slurp_sections (bfd *abfd)
 		unsigned int section_index;
 
 		next_byte (&(ieee->h));
-		section_index = must_parse_int (&(ieee->h));
+		section_index = (unsigned int)must_parse_int(&(ieee->h));
 
 		section = get_section_entry (abfd, ieee, section_index);
 
@@ -1203,8 +1199,8 @@ ieee_slurp_sections (bfd *abfd)
 		bfd_vma value;
 		asection *section;
 
-		next_byte (&(ieee->h));
-		section_index = must_parse_int (&ieee->h);
+		next_byte(&(ieee->h));
+		section_index = (unsigned int)must_parse_int(&ieee->h);
 		section = get_section_entry (abfd, ieee, section_index);
 		if (section_index > ieee->section_count)
 		  ieee->section_count = section_index;
@@ -1465,7 +1461,7 @@ do_one(ieee_data_type *ieee, ieee_per_section_type *current_map,
 	unsigned int i;
 
 	next_byte(&(ieee->h));
-	number_of_maus = must_parse_int(&(ieee->h));
+	number_of_maus = (unsigned int)must_parse_int(&(ieee->h));
 
 	for (i = 0; i < number_of_maus; i++)
 	  {
@@ -1523,7 +1519,7 @@ do_one(ieee_data_type *ieee, ieee_per_section_type *current_map,
 		    {
 		      next_byte(&(ieee->h));
 		      /* Fetch number of bytes to pad: */
-		      extra = must_parse_int(&(ieee->h));
+		      extra = (unsigned int)must_parse_int(&(ieee->h));
 		    };
 
 		  switch (this_byte(&(ieee->h)))
@@ -1698,7 +1694,7 @@ ieee_slurp_section_data (bfd *abfd)
 
 	case ieee_set_current_section_enum:
 	  next_byte(&(ieee->h));
-	  section_number = must_parse_int(&(ieee->h));
+	  section_number = (unsigned int)must_parse_int(&(ieee->h));
 	  s = ieee->section_table[section_number];
 	  s->flags |= (SEC_LOAD | SEC_HAS_CONTENTS);
 	  current_map = ieee_per_section(s);
@@ -1752,8 +1748,8 @@ ieee_slurp_section_data (bfd *abfd)
 	    unsigned int iterations;
 	    unsigned char *start;
 
-	    next_byte (&(ieee->h));
-	    iterations = must_parse_int (&(ieee->h));
+	    next_byte(&(ieee->h));
+	    iterations = (unsigned int)must_parse_int(&(ieee->h));
 	    start = ieee->h.input_p;
 	    if (start[0] == (int) ieee_load_constant_bytes_enum
 		&& start[1] == 1)
@@ -2096,11 +2092,11 @@ ieee_canonicalize_reloc(bfd *abfd, sec_ptr section, arelent **relptr,
 }
 
 static int
-comp(const void * ap, const void * bp)
+comp(const void *ap, const void *bp)
 {
   arelent *a = *((arelent **)ap);
   arelent *b = *((arelent **)bp);
-  return a->address - b->address;
+  return (int)(a->address - b->address);
 }
 
 /* Write the section headers: */
@@ -2611,8 +2607,8 @@ copy_expression(void)
 	    s = ieee->section_table[section_number];
 	    value = 0;
 	    if (s->output_section)
-	      value = s->output_section->lma;
-	    value += s->output_offset;
+	      value = (int)s->output_section->lma;
+	    value += (int)s->output_offset;
 	    *tos++ = value;
 	  }
 	  break;

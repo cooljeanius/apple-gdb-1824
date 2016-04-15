@@ -437,27 +437,27 @@ i386_remove_aligned_watchpoint (CORE_ADDR addr, unsigned len_rw_bits)
    valid value, bombs through internal_error.  */
 
 static int
-i386_handle_nonaligned_watchpoint (i386_wp_op_t what, CORE_ADDR addr, int len,
-				   enum target_hw_bp_type type)
+i386_handle_nonaligned_watchpoint(i386_wp_op_t what, CORE_ADDR addr, int len,
+				  enum target_hw_bp_type type)
 {
   int retval = 0, status = 0;
-  int max_wp_len = wordsize ();
+  int max_wp_len = wordsize();
 
   static int size_try_array[8][8] =
   {
-    {1, 1, 1, 1, 1, 1, 1, 1},	/* Trying size one.  */
-    {2, 1, 2, 1, 2, 1, 2, 1},	/* Trying size two.  */
-    {2, 1, 2, 1, 2, 1, 2, 1},	/* Trying size three.  */
-    {4, 1, 2, 1, 4, 1, 2, 1},	/* Trying size four.  */
-    {4, 1, 2, 1, 4, 1, 2, 1},	/* Trying size five.  */
-    {4, 1, 2, 1, 4, 1, 2, 1},	/* Trying size six.  */
-    {4, 1, 2, 1, 4, 1, 2, 1},	/* Trying size seven.  */
-    {8, 1, 2, 1, 4, 1, 2, 1},	/* Trying size eight.  */
+    { 1, 1, 1, 1, 1, 1, 1, 1 },	/* Trying size one.  */
+    { 2, 1, 2, 1, 2, 1, 2, 1 },	/* Trying size two.  */
+    { 2, 1, 2, 1, 2, 1, 2, 1 },	/* Trying size three.  */
+    { 4, 1, 2, 1, 4, 1, 2, 1 },	/* Trying size four.  */
+    { 4, 1, 2, 1, 4, 1, 2, 1 },	/* Trying size five.  */
+    { 4, 1, 2, 1, 4, 1, 2, 1 },	/* Trying size six.  */
+    { 4, 1, 2, 1, 4, 1, 2, 1 },	/* Trying size seven.  */
+    { 8, 1, 2, 1, 4, 1, 2, 1 },	/* Trying size eight.  */
   };
 
   while (len > 0)
     {
-      int align = addr % max_wp_len;
+      long align = (long)(addr % max_wp_len);
       /* Four (eight on AMD64) is the maximum length a debug register
 	 can watch.  */
       int tryit = ((len > max_wp_len) ? (max_wp_len - 1) : (len - 1));
@@ -475,7 +475,7 @@ i386_handle_nonaligned_watchpoint (i386_wp_op_t what, CORE_ADDR addr, int len,
 	}
       else
 	{
-	  unsigned len_rw = i386_length_and_rw_bits (size, type);
+	  unsigned int len_rw = i386_length_and_rw_bits(size, type);
 
 	  if (what == WP_INSERT)
 	    status = i386_insert_aligned_watchpoint (addr, len_rw);

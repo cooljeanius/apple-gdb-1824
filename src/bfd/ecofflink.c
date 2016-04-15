@@ -632,17 +632,18 @@ bfd_ecoff_debug_accumulate(PTR handle, bfd *output_bfd,
   fdr_end = fdr_start + input_symhdr->ifdMax * fdr_add;
 
   amt = input_symhdr->ifdMax;
-  amt *= sizeof (RFDT);
-  input_debug->ifdmap = (RFDT *) bfd_alloc (input_bfd, amt);
+  amt *= sizeof(RFDT);
+  input_debug->ifdmap = (RFDT *)bfd_alloc(input_bfd, amt);
 
-  sz = (input_symhdr->crfd + input_symhdr->ifdMax) * external_rfd_size;
-  rfd_out = (bfd_byte *) objalloc_alloc (ainfo->memory, sz);
+  sz = (unsigned long)((input_symhdr->crfd + input_symhdr->ifdMax)
+		       * external_rfd_size);
+  rfd_out = (bfd_byte *)objalloc_alloc(ainfo->memory, sz);
   if (!input_debug->ifdmap || !rfd_out)
     {
-      bfd_set_error (bfd_error_no_memory);
+      bfd_set_error(bfd_error_no_memory);
       return FALSE;
     }
-  if (!add_memory_shuffle (ainfo, &ainfo->rfd, &ainfo->rfd_end, rfd_out, sz))
+  if (!add_memory_shuffle(ainfo, &ainfo->rfd, &ainfo->rfd_end, rfd_out, sz))
     return FALSE;
 
   copied = 0;
@@ -736,8 +737,8 @@ bfd_ecoff_debug_accumulate(PTR handle, bfd *output_bfd,
 
   /* Look through the FDR's and copy over all associated debugging
      information.  */
-  sz = copied * external_fdr_size;
-  fdr_out = (bfd_byte *) objalloc_alloc (ainfo->memory, sz);
+  sz = (unsigned long)(copied * external_fdr_size);
+  fdr_out = (bfd_byte *)objalloc_alloc(ainfo->memory, sz);
   if (!fdr_out)
     {
       bfd_set_error (bfd_error_no_memory);
@@ -777,8 +778,8 @@ bfd_ecoff_debug_accumulate(PTR handle, bfd *output_bfd,
       /* Swap in the local symbols, adjust their values, and swap them
 	 out again.  */
       fgotfilename = FALSE;
-      sz = fdr.csym * external_sym_size;
-      sym_out = (bfd_byte *) objalloc_alloc (ainfo->memory, sz);
+      sz = (unsigned long)(fdr.csym * external_sym_size);
+      sym_out = (bfd_byte *)objalloc_alloc(ainfo->memory, sz);
       if (!sym_out)
 	{
 	  bfd_set_error (bfd_error_no_memory);
@@ -931,7 +932,7 @@ bfd_ecoff_debug_accumulate(PTR handle, bfd *output_bfd,
 	    {
 	      file_ptr pos = (input_symhdr->cbPdOffset
 			      + fdr.ipdFirst * external_pdr_size);
-	      unsigned long size = fdr.cpd * external_pdr_size;
+	      unsigned long size = (unsigned long)(fdr.cpd * external_pdr_size);
 	      if (!add_file_shuffle (ainfo, &ainfo->pdr, &ainfo->pdr_end,
 				     input_bfd, pos, size))
 		return FALSE;
@@ -940,8 +941,9 @@ bfd_ecoff_debug_accumulate(PTR handle, bfd *output_bfd,
 	  if (fdr.copt > 0)
 	    {
 	      file_ptr pos = (input_symhdr->cbOptOffset
-			      + fdr.ioptBase * external_opt_size);
-	      unsigned long size = fdr.copt * external_opt_size;
+			      + (fdr.ioptBase * external_opt_size));
+	      unsigned long size =
+		(unsigned long)(fdr.copt * external_opt_size);
 	      if (!add_file_shuffle (ainfo, &ainfo->opt, &ainfo->opt_end,
 				     input_bfd, pos, size))
 		return FALSE;
@@ -962,8 +964,8 @@ bfd_ecoff_debug_accumulate(PTR handle, bfd *output_bfd,
 	  in = ((bfd_byte *) input_debug->external_pdr
 		+ fdr.ipdFirst * insz);
 	  end = in + fdr.cpd * insz;
-	  sz = fdr.cpd * outsz;
-	  out = (bfd_byte *) objalloc_alloc (ainfo->memory, sz);
+	  sz = (unsigned long)(fdr.cpd * outsz);
+	  out = (bfd_byte *)objalloc_alloc(ainfo->memory, sz);
 	  if (!out)
 	    {
 	      bfd_set_error (bfd_error_no_memory);
@@ -986,8 +988,8 @@ bfd_ecoff_debug_accumulate(PTR handle, bfd *output_bfd,
 	  in = ((bfd_byte *) input_debug->external_opt
 		+ fdr.ioptBase * insz);
 	  end = in + fdr.copt * insz;
-	  sz = fdr.copt * outsz;
-	  out = (bfd_byte *) objalloc_alloc (ainfo->memory, sz);
+	  sz = (unsigned long)(fdr.copt * outsz);
+	  out = (bfd_byte *)objalloc_alloc(ainfo->memory, sz);
 	  if (!out)
 	    {
 	      bfd_set_error (bfd_error_no_memory);

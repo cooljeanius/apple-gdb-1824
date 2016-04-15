@@ -189,9 +189,9 @@ hex_init (void)
 	}
     }
 #else
-# if defined(__GNUC__)
-  asm("");
-# endif /* __GNUC__ */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+  __asm__("");
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* !HEX_TABLE_INITIALIZED */
 }
 

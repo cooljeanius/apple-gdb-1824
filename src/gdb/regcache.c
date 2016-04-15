@@ -426,7 +426,7 @@ set_register_cached(int regnum, int state)
 {
   gdb_assert(regnum >= 0);
   gdb_assert(regnum < current_regcache->descr->nr_raw_registers);
-  current_regcache->register_valid_p[regnum] = state;
+  current_regcache->register_valid_p[regnum] = (gdb_byte)state;
 }
 
 /* Observer for the target_changed event: */
@@ -452,23 +452,25 @@ registers_changed (void)
 {
   int i;
 
-  registers_ptid = pid_to_ptid (-1);
+  registers_ptid = pid_to_ptid(-1);
 
+#if defined(HAVE_ALLOCA) && !defined(__clang_analyzer__)
   /* Force cleanup of any alloca areas if using C alloca instead of
      a builtin alloca.  This particular call is used to clean up
      areas allocated by low level target code which may build up
      during lengthy interactions between gdb and the target before
-     gdb gives control to the user (ie watchpoints).  */
-  alloca (0);
+     gdb gives control to the user (i.e. watchpoints).  */
+  alloca(0UL);
+#endif /* HAVE_ALLOCA && !__clang_analyzer__ */
 
   for (i = 0; i < current_regcache->descr->nr_raw_registers; i++)
-    set_register_cached (i, 0);
+    set_register_cached(i, 0);
 
   if (deprecated_registers_changed_hook)
-    deprecated_registers_changed_hook ();
+    deprecated_registers_changed_hook();
 }
 
-/* DEPRECATED_REGISTERS_FETCHED ()
+/* DEPRECATED_REGISTERS_FETCHED()
 
    Indicate that all registers have been fetched, so mark them all valid.  */
 

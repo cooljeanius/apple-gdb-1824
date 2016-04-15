@@ -306,7 +306,7 @@ dcache_write_line (DCACHE *dcache, struct dcache_block *db)
 
       while (reg_len > 0)
 	{
-	  s = XFORM(memaddr);
+	  s = (int)XFORM(memaddr);
 	  while (reg_len > 0) {
 	    if (db->state[s] == ENTRY_DIRTY)
 	      break;

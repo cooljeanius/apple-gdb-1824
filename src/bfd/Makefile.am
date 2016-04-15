@@ -1071,7 +1071,7 @@ libbfd_a_DEPENDENCIES = stamp-ofiles ofiles $(srcdir)/ofiles @MAINT@ bfd.h
 EXTRA_libbfd_a_DEPENDENCIES = stamp-staticlib @MAINT@ Makefile # $(BFD_H)
 libbfd_a_LIBADD = `cat ofiles` @WIN32LIBADD@
 ## see if this will cause automake to give its objfiles a different name:
-libbfd_a_CFLAGS = $(AM_CFLAGS) -gtoggle
+libbfd_a_CFLAGS = $(AM_CFLAGS) @MAINT@ -gtoggle
 libbfd_a_LDFLAGS = -static
 
 # FIXME: Even the hack fails now... (does it still? I think we are okay...)

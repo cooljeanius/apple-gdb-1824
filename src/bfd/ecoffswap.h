@@ -558,7 +558,7 @@ ecoff_swap_ext_in(bfd *abfd, void *ext_copy, EXTR *intern)
   intern->reserved = 0;
 
 #if defined(ECOFF_32) || defined(ECOFF_SIGNED_32)
-  intern->ifd = H_GET_S16(abfd, ext->es_ifd);
+  intern->ifd = (int)H_GET_S16(abfd, ext->es_ifd);
 #endif /* ECOFF_32 || ECOFF_SIGNED_32 */
 #if defined(ECOFF_64) || defined(ECOFF_SIGNED_64)
   intern->ifd = (int)H_GET_S32(abfd, ext->es_ifd);

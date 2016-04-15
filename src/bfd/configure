@@ -18863,6 +18863,7 @@ fi
 # "-W" and "-Wextra" are redundant.
 WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wmissing-declarations -Wimplicit -Wparentheses -Wextra -Wc++-compat \
+-Wgcc-compat -Wasm -Wdangling-else -Wused-but-marked-unused \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
 -Wmissing-parameter-type -Wshadow -Wabi -Wmissing-include-dirs \
 -Wshadow -Wmisleading-indentation -Wformat=2 -Wmissing-format-attribute \
@@ -18870,7 +18871,7 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
   test -n "${WANT_CONVERSION_WARNS}"
   # "-Wconversion" and friends are because of a comment in libbfd.c
-  WARN_CFLAGS="${WARN_CFLAGS} -Wconversion -Wfloat-conversion \
+  WARN_CFLAGS="${WARN_CFLAGS} -Wnon-gcc -Wconversion -Wfloat-conversion \
   -Wsign-conversion -Wsign-compare -Wshorten-64-to-32 -Wdouble-promotion"
 fi
 WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint"

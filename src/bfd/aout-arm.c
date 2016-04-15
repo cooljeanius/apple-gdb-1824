@@ -414,7 +414,7 @@ MY_swap_std_reloc_out (bfd *abfd,
 	{
 	  /* Fill in symbol.  */
 	  r_extern = 1;
-	  r_index = (*(g->sym_ptr_ptr))->KEEPIT;
+	  r_index = (int)(*(g->sym_ptr_ptr))->KEEPIT;
 	}
     }
   else

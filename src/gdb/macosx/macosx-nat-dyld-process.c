@@ -122,6 +122,18 @@ extern int inferior_auto_start_cfm_flag;
 extern macosx_inferior_status *macosx_status;
 extern macosx_dyld_thread_status macosx_dyld_status;
 
+/* call tracing */
+#if defined(DEBUG) || defined(_DEBUG) || defined(GDB_DEBUG) || defined(stderr)
+# ifndef DYLD_TRACE_NUM_DECLARED
+#  define DYLD_TRACE_NUM_DECLARED 1
+int dyld_trace_num = 0;
+# endif /* !DYLD_TRACE_NUM_DECLARED */
+# define NSTRACE(x)        fprintf(stderr, "%s:%d: [%d] " #x "\n",        \
+				   __FILE__, __LINE__, ++dyld_trace_num)
+#else
+# define NSTRACE(x)
+#endif /* DEBUG || _DEBUG || GLYPH_DEBUG || stderr */
+
 /* We describe the memory that a bfd will occupy when loaded as a
    series of memory groups.  If a file's text+data loads together, there
    will be one group.  If its text and data are separate, there are two
@@ -146,6 +158,7 @@ static void mark_buckets_as_used(struct pre_run_memory_map *map, int i,
 
 extern void _initialize_macosx_nat_dyld_process(void);
 
+/* */
 static int
 dyld_print_status(void)
 {
@@ -153,6 +166,7 @@ dyld_print_status(void)
   return !ui_out_is_mi_like_p(uiout);
 }
 
+/* */
 void
 dyld_add_inserted_libraries(struct dyld_objfile_info *info,
                             const struct dyld_path_info *d)
@@ -170,7 +184,6 @@ dyld_add_inserted_libraries(struct dyld_objfile_info *info,
 
   while (*s1 != '\0')
     {
-
       struct dyld_objfile_entry *e = NULL;
       char *tmp_name, *real_name, *fixed_name;
 
@@ -231,7 +244,7 @@ dyld_add_image_libraries(struct dyld_objfile_info *info, bfd *abfd)
 
   if (mdata == NULL)
     {
-      dyld_debug("dyld_add_image_libraries: mdata == NULL\n");
+      dyld_debug(_("dyld_add_image_libraries: mdata == NULL\n"));
       return;
     }
 
@@ -261,8 +274,7 @@ dyld_add_image_libraries(struct dyld_objfile_info *info, bfd *abfd)
                   bfd_seek(abfd, dcmd->name_offset, SEEK_SET);
                   if (bfd_bread(name, dcmd->name_len, abfd) != dcmd->name_len)
                     {
-                      warning
-                        ("Unable to find library name for LC_LOAD_DYLINKER command; ignoring");
+                      warning(_("Unable to find library name for LC_LOAD_DYLINKER command; ignoring"));
                       xfree(name);
                       continue;
                     }
@@ -324,8 +336,7 @@ dyld_add_image_libraries(struct dyld_objfile_info *info, bfd *abfd)
 
             if (name[0] == '\0')
               {
-                warning
-                  ("No image name specified by LC_LOAD command; ignoring");
+                warning("No image name specified by LC_LOAD command; ignoring");
                 xfree(name);
                 name = NULL;
               }
@@ -637,7 +648,6 @@ dyld_resolve_load_flag(const struct dyld_path_info *d,
 
   for (crule = 0; crule < nrules; crule++)
     {
-
       char *matchreason = prules[crule * 3];
       char *matchname = prules[(crule * 3) + 1];
       char *setting = prules[(crule * 3) + 2];
@@ -977,9 +987,8 @@ create_pre_run_memory_map(struct bfd *abfd)
    -1 if no matching spot could be found.  */
 
 static int
-find_next_hole (struct pre_run_memory_map *map,
-                int starting_bucket,
-                int buckets)
+find_next_hole(struct pre_run_memory_map *map, int starting_bucket,
+               int buckets)
 {
   int i;
   i = starting_bucket;
@@ -1026,23 +1035,22 @@ find_next_hole (struct pre_run_memory_map *map,
    in a row; 0 if not.  */
 
 static int
-hole_at_p (struct pre_run_memory_map *map,
-           int starting_bucket,
-           int buckets)
+hole_at_p(struct pre_run_memory_map *map, int starting_bucket,
+          int buckets)
 {
   int i = starting_bucket;
 
   if (starting_bucket >= map->number_of_buckets)
     return 0;
 
-  while (i - starting_bucket < buckets
-         && i < map->number_of_buckets
+  while (((i - starting_bucket) < buckets)
+         && (i < map->number_of_buckets)
          && map->buckets[i] == 0)
     {
       i++;
     }
 
-  if (i - starting_bucket == buckets)
+  if ((i - starting_bucket) == buckets)
     return 1;
   else
     return 0;
@@ -1071,6 +1079,7 @@ mark_buckets_as_used (struct pre_run_memory_map *map, int startingbucket,
     }
 }
 
+/* */
 void
 free_pre_run_memory_map(struct pre_run_memory_map *map)
 {
@@ -1079,6 +1088,7 @@ free_pre_run_memory_map(struct pre_run_memory_map *map)
   xfree(map);
 }
 
+/* */
 static void
 free_memory_footprint(struct bfd_memory_footprint *fp)
 {
@@ -1164,6 +1174,7 @@ slide_bfd_in_pre_run_memory_map (struct bfd *abfd,
   return 0;
 }
 
+/* */
 void
 dyld_load_library_from_file(const struct dyld_path_info *d,
 			    struct dyld_objfile_entry *e,
@@ -1252,6 +1263,7 @@ dyld_load_library_from_file(const struct dyld_path_info *d,
   e->loaded_error = 0;
 }
 
+/* */
 void
 dyld_load_library_from_memory(const struct dyld_path_info *d,
 			      struct dyld_objfile_entry *e,
@@ -1558,6 +1570,7 @@ dyld_load_library(const struct dyld_path_info *d,
     symfile_objfile = e->objfile;
 }
 
+/* */
 void
 dyld_load_libraries(const struct dyld_path_info *d,
                     struct dyld_objfile_info *result)
@@ -1580,9 +1593,11 @@ dyld_load_libraries(const struct dyld_path_info *d,
     }
 }
 
+/* */
 void
 dyld_symfile_loaded_hook(struct objfile *o)
 {
+  NSTRACE(dyld_symfile_loaded_hook);
   /* I have to do this here as well as in macosx_dyld_update or
      this will NOT get re-initialized if you originally saw
      /usr/lib/libobjc.A.dylib, THEN set DYLD_LIBRARY_PATH to point to an
@@ -1594,6 +1609,7 @@ dyld_symfile_loaded_hook(struct objfile *o)
     }
 }
 
+/* */
 static void
 dyld_load_symfile_internal(struct dyld_objfile_entry *e,
                            int preserving_objfile_p)
@@ -1601,6 +1617,8 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
   struct section_addr_info *volatile addrs;
   size_t i;
   volatile int using_orig_objfile = 0;
+  
+  NSTRACE(dyld_load_symfile_internal);
 
   if (e->loaded_error)
     return;
@@ -1773,10 +1791,14 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
 
           snprintf(bfdname, bfdnamelen, "%s[%s]", e->objfile->obfd->filename,
 		   segname);
+	  
+#if (defined(DEBUG) || defined(_DEBUG))
+	  printf_filtered(_("bfdname: %s.\n"), bfdname);
+#endif /* DEBUG || _DEBUG */
 
           if (bfd_get_section_contents(e->objfile->obfd, commsec, buf,
                                        0, len) != TRUE)
-            warning("unable to read commpage data");
+            warning(_("unable to read commpage data"));
 
           e->commpage_bfd = bfd_memopenr(bfdname, NULL, (bfd_byte *)buf, len);
 
@@ -1819,12 +1841,12 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
         }
     }
 
-  dyld_symfile_loaded_hook (e->objfile);
+  dyld_symfile_loaded_hook(e->objfile);
 
   if (e->reason & dyld_reason_executable_mask)
     {
-      CHECK_FATAL ((symfile_objfile == NULL)
-                   || (symfile_objfile == e->objfile));
+      CHECK_FATAL((symfile_objfile == NULL)
+                  || (symfile_objfile == e->objfile));
       symfile_objfile = e->objfile;
       return;
     }
@@ -1834,6 +1856,7 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
 void
 dyld_load_symfile(struct dyld_objfile_entry *e)
 {
+  NSTRACE(dyld_load_symfile);
   dyld_load_symfile_internal(e, 0);
 }
 
@@ -1841,6 +1864,7 @@ dyld_load_symfile(struct dyld_objfile_entry *e)
 void
 dyld_load_symfile_preserving_objfile(struct dyld_objfile_entry *e)
 {
+  NSTRACE(dyld_load_symfile_preserving_objfile);
   dyld_load_symfile_internal(e, 1);
 }
 
@@ -1851,6 +1875,8 @@ dyld_load_symfiles(struct dyld_objfile_info *result)
   int i;
   int first = 1;
   struct dyld_objfile_entry *e = (struct dyld_objfile_entry *)NULL;
+  
+  NSTRACE(dyld_load_symfiles);
   CHECK_FATAL(result != NULL);
 
   DYLD_ALL_OBJFILE_INFO_ENTRIES(result, e, i)
@@ -1877,25 +1903,25 @@ dyld_load_symfiles(struct dyld_objfile_info *result)
             continue;
         }
 
-      load_char = (e->objfile != NULL) ? '+' : '.';
-      if (first && !info_verbose && dyld_print_status ())
+      load_char = ((e->objfile != NULL) ? '+' : '.');
+      if (first && !info_verbose && dyld_print_status())
         {
           first = 0;
-          printf_filtered ("Reading symbols for shared libraries ");
-          gdb_flush (gdb_stdout);
+          printf_filtered(_("Reading symbols for shared libraries \n"));
+          gdb_flush(gdb_stdout);
         }
-      dyld_load_symfile (e);
-      if (!info_verbose && dyld_print_status ())
+      dyld_load_symfile(e);
+      if (!info_verbose && dyld_print_status())
         {
-          printf_filtered ("%c", load_char);
-          gdb_flush (gdb_stdout);
+          printf_filtered("%c", load_char);
+          gdb_flush(gdb_stdout);
         }
     }
 
-  if (!first && !info_verbose && dyld_print_status ())
+  if (!first && !info_verbose && dyld_print_status())
     {
-      printf_filtered (" done\n");
-      gdb_flush (gdb_stdout);
+      printf_filtered(" done\n");
+      gdb_flush(gdb_stdout);
     }
 }
 
@@ -1915,6 +1941,7 @@ dyld_lookup_objfile_safe(struct dyld_objfile_entry *e)
   return NULL;
 }
 
+/* */
 int
 dyld_objfile_allocated(struct objfile *o)
 {
@@ -1930,6 +1957,7 @@ dyld_objfile_allocated(struct objfile *o)
   return 0;
 }
 
+/* */
 void
 dyld_purge_objfiles(struct dyld_objfile_info *info)
 {
@@ -1981,11 +2009,11 @@ dyld_should_reload_objfile_for_flags (struct dyld_objfile_entry *e)
     return DYLD_UPGRADE;
   else
     {
-		if (dyld_reload_on_downgrade_flag) {
-			return DYLD_DOWNGRADE;
-		} else {
-			return DYLD_NO_CHANGE;
-		}
+      if (dyld_reload_on_downgrade_flag) {
+	return DYLD_DOWNGRADE;
+      } else {
+	return DYLD_NO_CHANGE;
+      }
     }
 }
 
@@ -2018,7 +2046,7 @@ remove_objfile_from_dyld_records (struct objfile *obj)
    (has been target_mourn_inferior'ed), we return 0.  */
 extern int inferior_auto_start_dyld_flag;
 
-int
+ATTRIBUTE_W_U_R int
 dyld_is_objfile_loaded(struct objfile *obj)
 {
   struct dyld_objfile_entry *e;
@@ -2212,7 +2240,8 @@ dyld_remove_objfiles (const struct dyld_path_info *d,
     }
 }
 
-static int
+/* */
+static ATTRIBUTE_W_U_R int
 dyld_libraries_similar (struct dyld_path_info *d,
 			struct dyld_objfile_entry *f,
 			struct dyld_objfile_entry *l)
@@ -2238,7 +2267,6 @@ dyld_libraries_similar (struct dyld_path_info *d,
 
   if (lname != NULL && fname != NULL)
     {
-
       int f_is_framework, f_is_bundle;
       int l_is_framework, l_is_bundle;
 
@@ -2272,7 +2300,7 @@ dyld_libraries_similar (struct dyld_path_info *d,
  /* Do dyld_objfile_entry OLDENT and NEWENT have the same filename?  In
     other words, are they the same dylib/bundle/executable/etc ?  */
 
-int
+ATTRIBUTE_W_U_R int
 dyld_libraries_compatible (struct dyld_path_info *d,
                            struct dyld_objfile_entry *newent,
                            struct dyld_objfile_entry *oldent)
@@ -2285,14 +2313,14 @@ dyld_libraries_compatible (struct dyld_path_info *d,
 
   /* If either prefix is non-NULL, then they must both be the same string. */
 
-  if (oldent->prefix != NULL || newent->prefix != NULL)
+  if ((oldent->prefix != NULL) || (newent->prefix != NULL))
     {
-		if (oldent->prefix == NULL || newent->prefix == NULL) {
-			return 0;
-		}
-		if (strcmp (oldent->prefix, newent->prefix) != 0) {
-			return 0;
-		}
+      if ((oldent->prefix == NULL) || (newent->prefix == NULL)) {
+	return 0;
+      }
+      if (strcmp(oldent->prefix, newent->prefix) != 0) {
+	return 0;
+      }
     }
 
   newname = dyld_entry_filename (newent, d, DYLD_ENTRY_FILENAME_LOADED);

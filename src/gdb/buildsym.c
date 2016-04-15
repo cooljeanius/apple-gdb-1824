@@ -337,19 +337,20 @@ finish_block(struct symbol *symbol, struct pending **listhead,
 	    }
 	  if (nparams > 0)
 	    {
-	      TYPE_NFIELDS (ftype) = nparams;
-	      TYPE_FIELDS (ftype) = (struct field *)
-		TYPE_ALLOC (ftype, nparams * sizeof (struct field));
+	      TYPE_NFIELDS(ftype) = (short)nparams;
+	      TYPE_FIELDS(ftype) =
+		(struct field *)TYPE_ALLOC(ftype,
+					   (nparams * sizeof(struct field)));
 	      /* APPLE LOCAL ??? */
-	      memset (TYPE_FIELDS (ftype), 0, sizeof (struct field) * nparams);
+	      memset(TYPE_FIELDS(ftype), 0, (sizeof(struct field) * nparams));
 
 	      iparams = 0;
-	      ALL_BLOCK_SYMBOLS (block, iter, sym)
+	      ALL_BLOCK_SYMBOLS(block, iter, sym)
 		{
 		  if (iparams == nparams)
 		    break;
 
-		  switch (SYMBOL_CLASS (sym))
+		  switch (SYMBOL_CLASS(sym))
 		    {
 		    case LOC_ARG:
 		    case LOC_REF_ARG:

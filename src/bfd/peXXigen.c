@@ -510,7 +510,7 @@ add_data_entry (bfd * abfd,
       && (pei_section_data (abfd, sec) != NULL))
     {
       /* If data directory is empty, rva also should be 0.  */
-      int size = pei_section_data (abfd, sec)->virt_size;
+      size_t size = pei_section_data(abfd, sec)->virt_size;
       aout->DataDirectory[idx].Size = size;
 
       if (size)
@@ -625,7 +625,7 @@ _bfd_XXi_swap_aouthdr_out (bfd * abfd, void * in, void * out)
 
     for (sec = abfd->sections; sec; sec = sec->next)
       {
-	int rounded = FA (sec->size);
+	int rounded = (int)FA(sec->size);
 
 	/* The first non-zero section filepos is the header size.
 	   Sections without contents will have a filepos of 0.  */
@@ -1224,11 +1224,11 @@ pe_print_idata (bfd * abfd, void * vfile)
 
 	  fprintf (file, _("\tvma:  Hint/Ord Member-Name Bound-To\n"));
 
-	  idx = hint_addr - adj;
+	  idx = (int)(hint_addr - adj);
 
 	  ft_addr = first_thunk + extra->ImageBase;
 	  ft_data = data;
-	  ft_idx = first_thunk - adj;
+	  ft_idx = (int)(first_thunk - adj);
 	  ft_allocated = 0;
 
 	  if (first_thunk != hint_addr)
@@ -1256,11 +1256,12 @@ pe_print_idata (bfd * abfd, void * vfile)
 	      if (ft_section == section)
 		{
 		  ft_data = data;
-		  ft_idx = (first_thunk - adj);
+		  ft_idx = (int)(first_thunk - adj);
 		}
 	      else
 		{
-		  ft_idx = (first_thunk - (ft_section->vma - extra->ImageBase));
+		  ft_idx =
+		    (int)(first_thunk - (ft_section->vma - extra->ImageBase));
 		  ft_data = (bfd_byte *)bfd_malloc(datasize);
 		  if (ft_data == NULL)
 		    continue;
@@ -1282,7 +1283,8 @@ pe_print_idata (bfd * abfd, void * vfile)
 	  /* Print HintName vector entries.  */
 	  for (j = 0; j < datasize; j += 4)
 	    {
-	      unsigned long member = bfd_get_32 (abfd, data + idx + j);
+	      unsigned long member =
+		(unsigned long)bfd_get_32(abfd, data + idx + j);
 
 	      /* Print single IMAGE_IMPORT_BY_NAME vector.  */
 	      if (member == 0)
@@ -1296,7 +1298,7 @@ pe_print_idata (bfd * abfd, void * vfile)
 		  int ordinal;
 		  char *member_name;
 
-		  ordinal = bfd_get_16 (abfd, data + member - adj);
+		  ordinal = (int)bfd_get_16(abfd, data + member - adj);
 		  member_name = (char *) data + member - adj + 2;
 		  fprintf (file, "\t%04lx\t %4d  %s",
 			   member, ordinal, member_name);
@@ -1608,7 +1610,7 @@ pe_print_pdata (bfd * abfd, void * vfile)
       bfd_vma eh_data;
       bfd_vma prolog_end_addr;
       int em_data;
-      int tmp_i = i;  /* (loop counter may overflow otherwise) */
+      int tmp_i = (int)i;  /* (loop counter may overflow otherwise) */
 
       if (((bfd_size_type)tmp_i + PDATA_ROW_SIZE) > stop) {
 	break;
@@ -1628,7 +1630,7 @@ pe_print_pdata (bfd * abfd, void * vfile)
 	/* We are probably into the padding of the section now: */
 	break;
 
-      em_data = (((eh_handler & 0x1) << 2) | (prolog_end_addr & 0x3));
+      em_data = (int)(((eh_handler & 0x1) << 2) | (prolog_end_addr & 0x3));
       eh_handler &= ~(bfd_vma)0x3;
       prolog_end_addr &= ~(bfd_vma)0x3;
 
@@ -1736,7 +1738,7 @@ pe_print_reloc(bfd *abfd, void *vfile)
       /* The .reloc section is a sequence of blocks, with a header consisting
 	 of two 32 bit quantities, followed by a number of 16 bit entries.  */
       virtual_address = bfd_get_32(abfd, (data + i));
-      size = bfd_get_32(abfd, (data + i + 4));
+      size = (long)bfd_get_32(abfd, (data + i + 4));
       number = (size - 8) / 2;
 
       if (size == 0)

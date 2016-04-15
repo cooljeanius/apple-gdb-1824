@@ -901,7 +901,7 @@ alpha_ecoff_get_relocated_section_contents(bfd *abfd,
 
 	    /* I believe that the LITERAL reloc will only apply to a
 	       ldq or ldl instruction, so check my assumption.  */
-	    insn = bfd_get_32 (input_bfd, data + rel->address);
+	    insn = (unsigned long)bfd_get_32(input_bfd, (data + rel->address));
 	    BFD_ASSERT (((insn >> 26) & 0x3f) == 0x29
 			|| ((insn >> 26) & 0x3f) == 0x28);
 
@@ -933,9 +933,12 @@ alpha_ecoff_get_relocated_section_contents(bfd *abfd,
 	    unsigned long insn1, insn2;
 	    bfd_vma addend;
 
-	    /* Get the two instructions.  */
-	    insn1 = bfd_get_32 (input_bfd, data + rel->address);
-	    insn2 = bfd_get_32 (input_bfd, data + rel->address + rel->addend);
+	    /* Get the two instructions: */
+	    insn1 =
+	      (unsigned long)bfd_get_32(input_bfd, (data + rel->address));
+	    insn2 =
+	      (unsigned long)bfd_get_32(input_bfd,
+					(data + rel->address + rel->addend));
 
 	    BFD_ASSERT (((insn1 >> 26) & 0x3f) == 0x09); /* ldah */
 	    BFD_ASSERT (((insn2 >> 26) & 0x3f) == 0x08); /* lda */
@@ -1016,7 +1019,8 @@ alpha_ecoff_get_relocated_section_contents(bfd *abfd,
 	  /* Store a value from the reloc stack into a bitfield.  */
 	  {
 	    bfd_vma val;
-	    int offset, size;
+	    off_t offset;
+	    size_t size;
 
 	    if (relocatable)
 	      {
@@ -1025,12 +1029,12 @@ alpha_ecoff_get_relocated_section_contents(bfd *abfd,
 	      }
 
 	    if (tos == 0)
-	      abort ();
+	      abort();
 
 	    /* The offset and size for this reloc are encoded into the
 	       addend field by alpha_adjust_reloc_in.  */
-	    offset = (rel->addend >> 8) & 0xff;
-	    size = rel->addend & 0xff;
+	    offset = ((rel->addend >> 8) & 0xff);
+	    size = (size_t)(rel->addend & 0xff);
 
 	    val = bfd_get_64 (abfd, data + rel->address);
 	    val &=~ (((1 << size) - 1) << offset);
@@ -1492,8 +1496,8 @@ alpha_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
       bfd_boolean gp_usedp;
       bfd_vma addend;
 
-      r_vaddr = H_GET_64 (input_bfd, ext_rel->r_vaddr);
-      r_symndx = H_GET_32 (input_bfd, ext_rel->r_symndx);
+      r_vaddr = H_GET_64(input_bfd, ext_rel->r_vaddr);
+      r_symndx = (unsigned long)H_GET_32(input_bfd, ext_rel->r_symndx);
 
       r_type = ((ext_rel->r_bits[0] & RELOC_BITS0_TYPE_LITTLE)
 		>> RELOC_BITS0_TYPE_SH_LITTLE);

@@ -169,20 +169,19 @@ _bfd_vms_hash_newfunc (struct bfd_hash_entry *entry,
 /* Return type and length from record header (buf) on Alpha.  */
 
 void
-_bfd_vms_get_header_values (bfd * abfd ATTRIBUTE_UNUSED,
-			    unsigned char *buf,
-			    int *type,
-			    int *length)
+_bfd_vms_get_header_values(bfd *abfd ATTRIBUTE_UNUSED, unsigned char *buf,
+			   int *type, int *length)
 {
   if (type != 0)
-    *type = bfd_getl16 (buf);
+    *type = (int)bfd_getl16(buf);
   buf += 2;
   if (length != 0)
-    *length = bfd_getl16 (buf);
+    *length = (int)bfd_getl16(buf);
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  vms_debug (10, "_bfd_vms_get_header_values type %x, length %x\n", (type?*type:0), (length?*length:0));
-#endif
+  vms_debug(10, "_bfd_vms_get_header_values type %x, length %x\n",
+	    (type ? *type : 0), (length ? *length : 0));
+#endif /* VMS_DEBUG */
 }
 
 /* Get next record from object file to vms_buf.
@@ -235,27 +234,27 @@ _bfd_vms_get_record (bfd * abfd)
      On the VAX there's no length information in the record
      so start with OBJ_S_C_MAXRECSIZ.   */
 
-  if (PRIV (buf_size) == 0)
+  if (PRIV(buf_size) == 0)
     {
       bfd_size_type amt;
 
-      if (PRIV (is_vax))
+      if (PRIV(is_vax))
 	{
 	  amt = OBJ_S_C_MAXRECSIZ;
-	  PRIV (file_format) = FF_VAX;
+	  PRIV(file_format) = FF_VAX;
 	}
       else
 	amt = 6;
       PRIV(vms_buf) = (unsigned char *)bfd_malloc(amt);
-      PRIV(buf_size) = amt;
+      PRIV(buf_size) = (int)amt;
     }
 
-  vms_buf = PRIV (vms_buf);
+  vms_buf = PRIV(vms_buf);
 
   if (vms_buf == 0)
     return -1;
 
-  switch (PRIV (file_format))
+  switch (PRIV(file_format))
     {
     case FF_UNKNOWN:
     case FF_FOREIGN:
@@ -296,31 +295,31 @@ _bfd_vms_get_record (bfd * abfd)
     }
 
   /* Check file format on first call.  */
-  if (PRIV (file_format) == FF_UNKNOWN)
+  if (PRIV(file_format) == FF_UNKNOWN)
     {						/* Record length repeats ?  */
       if (vms_buf[0] == vms_buf[4]
 	  && vms_buf[1] == vms_buf[5])
 	{
-	  PRIV (file_format) = FF_FOREIGN;	/* Y: foreign environment.  */
+	  PRIV(file_format) = FF_FOREIGN;	/* Y: foreign environment.  */
 	  test_start = 2;
 	}
       else
 	{
-	  PRIV (file_format) = FF_NATIVE;	/* N: native environment.  */
+	  PRIV(file_format) = FF_NATIVE;	/* N: native environment.  */
 	  test_start = 0;
 	}
     }
 
-  if (PRIV (is_vax))
+  if (PRIV(is_vax))
     {
-      PRIV (rec_length) = bfd_bread (vms_buf, (bfd_size_type) PRIV (buf_size),
-				     abfd);
-      if (PRIV (rec_length) <= 0)
+      PRIV(rec_length) = (int)bfd_bread(vms_buf, (bfd_size_type)PRIV(buf_size),
+					abfd);
+      if (PRIV(rec_length) <= 0)
 	{
-	  bfd_set_error (bfd_error_file_truncated);
+	  bfd_set_error(bfd_error_file_truncated);
 	  return 0;
 	}
-      PRIV (vms_rec) = vms_buf;
+      PRIV(vms_rec) = vms_buf;
     }
   else
     {
@@ -791,7 +790,7 @@ _bfd_vms_output_quad (bfd * abfd, uquad value)
 void
 _bfd_vms_output_counted (bfd * abfd, char *value)
 {
-  int len;
+  size_t len;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "_bfd_vms_output_counted (%s)\n", value);
@@ -800,16 +799,16 @@ _bfd_vms_output_counted (bfd * abfd, char *value)
   len = strlen (value);
   if (len == 0)
     {
-      (*_bfd_error_handler) (_("_bfd_vms_output_counted called with zero bytes"));
+      (*_bfd_error_handler)(_("_bfd_vms_output_counted called with zero bytes"));
       return;
     }
   if (len > 255)
     {
-      (*_bfd_error_handler) (_("_bfd_vms_output_counted called with too many bytes"));
+      (*_bfd_error_handler)(_("_bfd_vms_output_counted called with too many bytes"));
       return;
     }
-  _bfd_vms_output_byte (abfd, (unsigned int) len & 0xff);
-  _bfd_vms_output_dump (abfd, (unsigned char *) value, len);
+  _bfd_vms_output_byte(abfd, ((unsigned int)len & 0xff));
+  _bfd_vms_output_dump(abfd, (unsigned char *)value, (int)len);
 }
 
 /* Output character area.  */
@@ -871,11 +870,11 @@ char *
 _bfd_vms_length_hash_symbol (bfd * abfd, const char *in, int maxlen)
 {
   long int result;
-  int in_len;
+  size_t in_len;
   char *new_name;
   const char *old_name;
   int i;
-  static char outbuf[EOBJ_S_C_SYMSIZ+1];
+  static char outbuf[EOBJ_S_C_SYMSIZ + 1];
   char *out = outbuf;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
@@ -888,29 +887,29 @@ _bfd_vms_length_hash_symbol (bfd * abfd, const char *in, int maxlen)
   /* Save this for later.  */
   new_name = out;
 
-  /* We may need to truncate the symbol, save the hash for later.  */
-  in_len = strlen (in);
+  /* We may need to truncate the symbol; save the hash for later: */
+  in_len = strlen(in);
 
-  result = (in_len > maxlen) ? hash_string (in) : 0;
+  result = (((int)in_len > maxlen) ? hash_string(in) : 0);
 
   old_name = in;
 
   /* Do the length checking.  */
-  if (in_len <= maxlen)
-    i = in_len;
+  if ((int)in_len <= maxlen)
+    i = (int)in_len;
   else
     {
-      if (PRIV (flag_hash_long_names))
-	i = maxlen-9;
+      if (PRIV(flag_hash_long_names))
+	i = (maxlen - 9);
       else
 	i = maxlen;
     }
 
-  strncpy (out, in, (size_t) i);
+  strncpy(out, in, (size_t)i);
   in += i;
   out += i;
 
-  if ((in_len > maxlen)
+  if (((int)in_len > maxlen)
       && PRIV(flag_hash_long_names)) {
       sprintf(out, "_%08lx", result);
   } else {
@@ -921,7 +920,7 @@ _bfd_vms_length_hash_symbol (bfd * abfd, const char *in, int maxlen)
   vms_debug(4, "--> [%d]\"%s\"\n", strlen (outbuf), outbuf);
 #endif /* VMS_DEBUG */
 
-  if ((in_len > maxlen)
+  if (((int)in_len > maxlen)
       && PRIV(flag_hash_long_names)
       && PRIV(flag_show_after_trunc)) {
       printf(_("Symbol %s replaced by %s\n"), old_name, new_name);

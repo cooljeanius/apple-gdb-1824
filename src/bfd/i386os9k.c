@@ -46,14 +46,14 @@ os9k_swap_exec_header_in(bfd *abfd, mh_com *raw_bytes,
   unsigned int dload, dmemsize, dmemstart;
 
   /* Now fill in fields in the execp, from the bytes in the raw data: */
-  execp->a_info = H_GET_16(abfd, bytes->m_sync);
+  execp->a_info = (long)H_GET_16(abfd, bytes->m_sync);
   execp->a_syms = 0;
   execp->a_entry = H_GET_32(abfd, bytes->m_exec);
   execp->a_talign = 2;
   execp->a_dalign = 2;
   execp->a_balign = 2;
 
-  dload = H_GET_32(abfd, bytes->m_idata);
+  dload = (unsigned int)H_GET_32(abfd, bytes->m_idata);
   execp->a_data = (dload + 8);
 
   if ((bfd_seek(abfd, (file_ptr)dload, SEEK_SET) != 0)
@@ -89,7 +89,7 @@ os9k_object_p(bfd *abfd)
       return 0;
     }
 
-  anexec.a_info = H_GET_16 (abfd, exec_bytes.m_sync);
+  anexec.a_info = (long)H_GET_16(abfd, exec_bytes.m_sync);
   if (N_BADMAG(anexec))
     {
       bfd_set_error(bfd_error_wrong_format);
@@ -133,12 +133,13 @@ os9k_callback(bfd *abfd)
   /* And reload the sizes, since the aout module zaps them: */
   obj_textsec(abfd)->size = execp->a_text;
 
-  bss_start = (execp->a_dload + execp->a_data); /* BSS = end of data section.  */
+  /* BSS = end of data section: */
+  bss_start = (unsigned long)(execp->a_dload + execp->a_data);
   obj_bsssec(abfd)->vma = align_power(bss_start, execp->a_balign);
 
   /* The file positions of the sections: */
-  obj_textsec(abfd)->filepos = execp->a_entry;
-  obj_datasec(abfd)->filepos = execp->a_dload;
+  obj_textsec(abfd)->filepos = (file_ptr)execp->a_entry;
+  obj_datasec(abfd)->filepos = (file_ptr)execp->a_dload;
 
   /* The file positions of the relocation info: */
 #if 0

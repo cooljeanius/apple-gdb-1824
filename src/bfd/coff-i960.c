@@ -138,9 +138,10 @@ optcall_callback(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
   	/* This is a call to a leaf procedure, replace instruction with a bal
 	   to the correct location.  */
 	{
-	  union internal_auxent *aux = &((cs->native+2)->u.auxent);
-	  int word = bfd_get_32 (abfd, (bfd_byte *)data + reloc_entry->address);
-	  int olf = (aux->x_bal.x_balntry - cs->native->u.syment.n_value);
+	  union internal_auxent *aux = &((cs->native + 2)->u.auxent);
+	  int word = (int)bfd_get_32(abfd,
+				     (bfd_byte *)data + reloc_entry->address);
+	  int olf = (int)(aux->x_bal.x_balntry - cs->native->u.syment.n_value);
 	  BFD_ASSERT(cs->native->u.syment.n_numaux==2);
 
 	  /* We replace the original call instruction with a bal to
@@ -494,10 +495,11 @@ coff_i960_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 		    olf = aux.x_bal.x_balntry;
 		  }
 
-		word = bfd_get_32(input_bfd,
-                                  (contents
-                                   + (rel->r_vaddr - input_section->vma)));
-		word = (((word + olf - val) & BAL_MASK) | BAL);
+		word = (unsigned long)bfd_get_32(input_bfd,
+						 (contents
+						  + (rel->r_vaddr
+						     - input_section->vma)));
+		word = (unsigned long)(((word + olf - val) & BAL_MASK) | BAL);
 		bfd_put_32(input_bfd,
                            (bfd_vma)word,
                            contents + (rel->r_vaddr - input_section->vma));

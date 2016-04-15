@@ -2674,12 +2674,13 @@ static struct option options[] =
   {0,		       no_argument, 0, 0}
 };
 
-static void
-usage (void)
+/* */
+static void ATTRIBUTE_NORETURN
+usage(void)
 {
-  fprintf (stdout, _("Usage: readelf <option(s)> elf-file(s)\n"));
-  fprintf (stdout, _(" Display information about the contents of ELF format files\n"));
-  fprintf (stdout, _(" Options are:\n\
+  fprintf(stdout, _("Usage: readelf <option(s)> elf-file(s)\n"));
+  fprintf(stdout, _(" Display information about the contents of ELF format files\n"));
+  fprintf(stdout, _(" Options are:\n\
   -a --all               Equivalent to: -h -l -S -s -r -d -V -A -I\n\
   -h --file-header       Display the ELF file header\n\
   -l --program-headers   Display the program headers\n\
@@ -2703,18 +2704,18 @@ usage (void)
   --debug-dump[=line,=info,=abbrev,=pubnames,=aranges,=macro,=frames,=str,=loc,=Ranges]\n\
                          Display the contents of DWARF2 debug sections\n"));
 #ifdef SUPPORT_DISASSEMBLY
-  fprintf (stdout, _("\
+  fprintf(stdout, _("\
   -i --instruction-dump=<number>\n\
                          Disassemble the contents of section <number>\n"));
 #endif /* SUPPORT_DISASSEMBLY */
-  fprintf (stdout, _("\
+  fprintf(stdout, _("\
   -I --histogram         Display histogram of bucket list lengths\n\
   -W --wide              Allow output width to exceed 80 characters\n\
   -H --help              Display this information\n\
   -v --version           Display the version number of readelf\n"));
-  fprintf (stdout, _("Report bugs to %s\n"), REPORT_BUGS_TO);
+  fprintf(stdout, _("Report bugs to %s\n"), REPORT_BUGS_TO);
 
-  exit (0);
+  exit(0);
 }
 
 /* Record the fact that the user wants the contents of section number
@@ -10085,15 +10086,14 @@ display_debug_aranges (Elf_Internal_Shdr *section,
 }
 
 static int
-display_debug_ranges (Elf_Internal_Shdr *section,
-		      unsigned char *start,
-		      FILE *file ATTRIBUTE_UNUSED)
+display_debug_ranges(Elf_Internal_Shdr *section, unsigned char *start,
+		     FILE *file)
 {
   unsigned char *section_end;
   unsigned long bytes;
   unsigned char *section_begin = start;
-  unsigned int num_range_list = 0;
-  unsigned long last_offset = 0;
+  unsigned int num_range_list = 0U;
+  unsigned long last_offset = 0UL;
   unsigned int first = 0;
   unsigned int i;
   unsigned int j;
@@ -10374,21 +10374,21 @@ get_encoded_value (unsigned char *data, int encoding)
 #define LEB()	read_leb128 (start, & length_return, 0); start += length_return
 #define SLEB()	read_leb128 (start, & length_return, 1); start += length_return
 
+/* */
 static int
-display_debug_frames (Elf_Internal_Shdr *section,
-		      unsigned char *start,
-		      FILE *file ATTRIBUTE_UNUSED)
+display_debug_frames(Elf_Internal_Shdr *section, unsigned char *start,
+		     FILE *file)
 {
-  unsigned char *end = start + section->sh_size;
+  unsigned char *end = (start + section->sh_size);
   unsigned char *section_start = start;
-  Frame_Chunk *chunks = 0;
-  Frame_Chunk *remembered_state = 0;
+  Frame_Chunk *chunks = (Frame_Chunk *)0;
+  Frame_Chunk *remembered_state = (Frame_Chunk *)0;
   Frame_Chunk *rs;
-  int is_eh = streq (SECTION_NAME (section), ".eh_frame");
+  int is_eh = streq(SECTION_NAME(section), ".eh_frame");
   unsigned int length_return;
   int max_regs = 0;
 
-  printf (_("The section %s contains:\n"), SECTION_NAME (section));
+  printf(_("The section %s contains:\n"), SECTION_NAME(section));
 
   while (start < end)
     {
@@ -10406,12 +10406,12 @@ display_debug_frames (Elf_Internal_Shdr *section,
       int initial_length_size;
 
       saved_start = start;
-      length = byte_get (start, 4); start += 4;
+      length = byte_get(start, 4); start += 4;
 
       if (length == 0)
 	{
-	  printf ("\n%08lx ZERO terminator\n\n",
-		    (unsigned long)(saved_start - section_start));
+	  printf("\n%08lx ZERO terminator\n\n",
+		 (unsigned long)(saved_start - section_start));
 	  return 1;
 	}
 
@@ -10432,8 +10432,8 @@ display_debug_frames (Elf_Internal_Shdr *section,
       cie_id = byte_get (start, offset_size); start += offset_size;
 
       if (elf_header.e_type == ET_REL
-	  && !debug_apply_rela_addends (file, section, offset_size,
-					section_start, start, block_end))
+	  && !debug_apply_rela_addends(file, section, offset_size,
+				       section_start, start, block_end))
 	return 0;
 
       if (is_eh ? (cie_id == 0) : (cie_id == DW_CIE_ID))

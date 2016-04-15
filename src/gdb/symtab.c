@@ -1457,13 +1457,14 @@ fixup_section (struct general_symbol_info *ginfo, struct objfile *objfile)
 	  if (s->addr - offset <= addr && addr < s->endaddr - offset)
 	    {
 	      ginfo->bfd_section = s->the_bfd_section;
-	      ginfo->section = idx;
+	      ginfo->section = (short)idx;
 	      return;
 	    }
 	}
     }
 }
 
+/* */
 struct symbol *
 fixup_symbol_section (struct symbol *sym, struct objfile *objfile)
 {
@@ -1547,7 +1548,7 @@ lookup_symbol_all(const char *name, const struct block *block,
       len = strlen(name);
       copy = (char *)alloca(len + 1UL);
       for (i = 0; i < (int)len; i++)
-        copy[i] = tolower(name[i]);
+        copy[i] = (char)tolower(name[i]);
       copy[len] = 0;
       modified_name = copy;
     }
@@ -1692,12 +1693,12 @@ lookup_symbol (const char *name, const struct block *block,
   if (case_sensitivity == case_sensitive_off)
     {
       char *copy;
-      int len, i;
+      size_t len, i;
 
-      len = strlen (name);
-      copy = (char *) alloca (len + 1);
-      for (i= 0; i < len; i++)
-        copy[i] = tolower (name[i]);
+      len = strlen(name);
+      copy = (char *)alloca(len + 1UL);
+      for (i = 0UL; i < len; i++)
+        copy[i] = (char)tolower(name[i]);
       copy[len] = 0;
       modified_name = copy;
     }

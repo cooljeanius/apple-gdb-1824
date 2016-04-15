@@ -1178,7 +1178,7 @@ define_symbol(CORE_ADDR valu, const char *string, const char *prefix,
 	}
 
       /* If it's gcc-compiled, if it says `short', believe it.  */
-      if (processing_gcc_compilation || BELIEVE_PCC_PROMOTION)
+      if (processing_gcc_compilation || (BELIEVE_PCC_PROMOTION >= 1))
 	break;
 
       if (!BELIEVE_PCC_PROMOTION)

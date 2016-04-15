@@ -163,7 +163,7 @@ build_gdb_vtable_type(struct gdbarch *arch)
   gdb_assert(field == (field_list + 4));
 
   t = init_type(TYPE_CODE_STRUCT, offset, 0, 0, 0);
-  TYPE_NFIELDS(t) = field - field_list;
+  TYPE_NFIELDS(t) = (short)(field - field_list);
   TYPE_FIELDS(t) = field_list;
   TYPE_TAG_NAME(t) = "gdb_gnu_v3_abi_vtable";
 

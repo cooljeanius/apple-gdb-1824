@@ -408,7 +408,7 @@ get_symbol_value(asymbol *symbol)
 		  symbol->section->output_section->vma +
 		  symbol->section->output_offset);
 
-  return relocation;
+  return (long)relocation;
 }
 
 #ifdef COFF_WITH_PE
@@ -589,9 +589,9 @@ sh_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
 #ifdef COFF_WITH_PE
     case R_SH_IMM32CE:
 #endif
-      insn = bfd_get_32 (abfd, hit_data);
-      insn += sym_value + reloc_entry->addend;
-      bfd_put_32 (abfd, (bfd_vma) insn, hit_data);
+      insn = (unsigned long)bfd_get_32(abfd, hit_data);
+      insn += (unsigned long)(sym_value + reloc_entry->addend);
+      bfd_put_32(abfd, (bfd_vma)insn, hit_data);
       break;
 #ifdef COFF_WITH_PE
     case R_SH_IMAGEBASE:
@@ -602,7 +602,7 @@ sh_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
       break;
 #endif
     case R_SH_PCDISP:
-      insn = bfd_get_16 (abfd, hit_data);
+      insn = (unsigned long)bfd_get_16(abfd, hit_data);
       sym_value += reloc_entry->addend;
       sym_value -= (input_section->output_section->vma
 		    + input_section->output_offset
@@ -611,7 +611,7 @@ sh_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
       sym_value += (insn & 0xfff) << 1;
       if (insn & 0x800)
 	sym_value -= 0x1000;
-      insn = (insn & 0xf000) | (sym_value & 0xfff);
+      insn = (unsigned long)((insn & 0xf000) | (sym_value & 0xfff));
       bfd_put_16 (abfd, (bfd_vma) insn, hit_data);
       if (sym_value < (bfd_vma) -0x1000 || sym_value >= 0x1000)
 	return bfd_reloc_overflow;
@@ -1131,7 +1131,7 @@ sh_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr, int count)
 	case R_SH_PCRELIMM8BY2:
 	case R_SH_PCRELIMM8BY4:
 	  start = irel->r_vaddr - sec->vma;
-	  insn = bfd_get_16 (abfd, contents + nraddr);
+	  insn = (unsigned long)bfd_get_16(abfd, (contents + nraddr));
 	  break;
 	}
 
@@ -2320,7 +2320,7 @@ _bfd_sh_align_load_span(bfd *abfd, asection *sec, bfd_byte *contents,
       unsigned int prev_insn = 0U;
       const struct sh_opcode *prev_op = NULL;
 
-      insn = bfd_get_16(abfd, (contents + i));
+      insn = (unsigned int)bfd_get_16(abfd, (contents + i));
       op = sh_insn_info(insn);
       if ((op == NULL)
 	  || ((op->flags & (LOAD | STORE)) == 0))
@@ -2332,7 +2332,7 @@ _bfd_sh_align_load_span(bfd *abfd, asection *sec, bfd_byte *contents,
 
       if (i > start)
 	{
-	  prev_insn = bfd_get_16(abfd, (contents + i - 2UL));
+	  prev_insn = (unsigned int)bfd_get_16(abfd, (contents + i - 2UL));
           /* If INSN is the field b of a parallel processing insn, then it
            * is not a load/store after all.  Note that the test here might
            * mistake the field_b of a pcopy insn for the starting code of
@@ -2346,7 +2346,8 @@ _bfd_sh_align_load_span(bfd *abfd, asection *sec, bfd_byte *contents,
 	     after a pcopy.  */
 	  if (dsp && ((i - 2) > start))
 	    {
-	      unsigned pprev_insn = bfd_get_16(abfd, (contents + i - 4UL));
+	      unsigned int pprev_insn =
+		(unsigned int)bfd_get_16(abfd, (contents + i - 4UL));
 
 	      if ((pprev_insn & 0xfc00) == 0xf800)
 		prev_op = NULL;
@@ -2382,7 +2383,7 @@ _bfd_sh_align_load_span(bfd *abfd, asection *sec, bfd_byte *contents,
 	      unsigned int prev2_insn;
 	      const struct sh_opcode *prev2_op;
 
-	      prev2_insn = bfd_get_16(abfd, (contents + i - 4UL));
+	      prev2_insn = (unsigned int)bfd_get_16(abfd, (contents + i - 4UL));
 	      prev2_op = sh_insn_info(prev2_insn);
 
 	      /* If the instruction before PREV_INSN has a delay
@@ -2423,7 +2424,7 @@ _bfd_sh_align_load_span(bfd *abfd, asection *sec, bfd_byte *contents,
 
 	  /* There is an instruction after the load/store
 	     instruction, and it does not have a label.  */
-	  next_insn = bfd_get_16(abfd, (contents + i + 2UL));
+	  next_insn = (unsigned int)bfd_get_16(abfd, (contents + i + 2UL));
 	  next_op = sh_insn_info(next_insn);
 	  if ((next_op != NULL)
 	      && ((next_op->flags & (LOAD | STORE)) == 0)
@@ -2461,7 +2462,8 @@ _bfd_sh_align_load_span(bfd *abfd, asection *sec, bfd_byte *contents,
 		  unsigned int next2_insn;
 		  const struct sh_opcode *next2_op;
 
-		  next2_insn = bfd_get_16(abfd, (contents + i + 4UL));
+		  next2_insn =
+		    (unsigned int)bfd_get_16(abfd, (contents + i + 4UL));
 		  next2_op = sh_insn_info(next2_insn);
 		  if (((next2_op->flags & (LOAD | STORE)) == 0)
 		      && sh_load_use(insn, op, next2_insn, next2_op))

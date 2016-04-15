@@ -607,7 +607,8 @@ coff_swap_aouthdr_in(bfd * abfd, void * aouthdr_ext1, void * aouthdr_int1)
 #endif /* !IA64 || (IA64 && !BFD64) */
 
 #ifdef I960
-  aouthdr_int->tagentries = H_GET_32(abfd, aouthdr_ext->tagentries);
+  aouthdr_int->tagentries = (unsigned long)H_GET_32(abfd,
+						    aouthdr_ext->tagentries);
 #endif /* I960 */
 
 #ifdef APOLLO_M68
@@ -645,26 +646,30 @@ coff_swap_aouthdr_in(bfd * abfd, void * aouthdr_ext1, void * aouthdr_int1)
 #ifdef MIPSECOFF
   aouthdr_int->bss_start = H_GET_32(abfd, aouthdr_ext->bss_start);
   aouthdr_int->gp_value = H_GET_32(abfd, aouthdr_ext->gp_value);
-  aouthdr_int->gprmask = H_GET_32(abfd, aouthdr_ext->gprmask);
-  aouthdr_int->cprmask[0] = H_GET_32(abfd, aouthdr_ext->cprmask[0]);
-  aouthdr_int->cprmask[1] = H_GET_32(abfd, aouthdr_ext->cprmask[1]);
-  aouthdr_int->cprmask[2] = H_GET_32(abfd, aouthdr_ext->cprmask[2]);
-  aouthdr_int->cprmask[3] = H_GET_32(abfd, aouthdr_ext->cprmask[3]);
+  aouthdr_int->gprmask = (unsigned long)H_GET_32(abfd, aouthdr_ext->gprmask);
+  aouthdr_int->cprmask[0] = (unsigned long)H_GET_32(abfd,
+						    aouthdr_ext->cprmask[0]);
+  aouthdr_int->cprmask[1] = (unsigned long)H_GET_32(abfd,
+						    aouthdr_ext->cprmask[1]);
+  aouthdr_int->cprmask[2] = (unsigned long)H_GET_32(abfd,
+						    aouthdr_ext->cprmask[2]);
+  aouthdr_int->cprmask[3] = (unsigned long)H_GET_32(abfd,
+						    aouthdr_ext->cprmask[3]);
 #endif /* MIPSECOFF */
 
 #ifdef ALPHAECOFF
   aouthdr_int->bss_start = H_GET_64(abfd, aouthdr_ext->bss_start);
   aouthdr_int->gp_value = H_GET_64(abfd, aouthdr_ext->gp_value);
-  aouthdr_int->gprmask = H_GET_32(abfd, aouthdr_ext->gprmask);
-  aouthdr_int->fprmask = H_GET_32(abfd, aouthdr_ext->fprmask);
+  aouthdr_int->gprmask = (unsigned long)H_GET_32(abfd, aouthdr_ext->gprmask);
+  aouthdr_int->fprmask = (unsigned long)H_GET_32(abfd, aouthdr_ext->fprmask);
 #endif /* ALPHAECOFF */
 }
 
 static unsigned int
-coff_swap_aouthdr_out(bfd * abfd, void * in, void * out)
+coff_swap_aouthdr_out(bfd *abfd, void *input_data, void *output_data)
 {
-  struct internal_aouthdr *aouthdr_in = (struct internal_aouthdr *)in;
-  AOUTHDR *aouthdr_out = (AOUTHDR *)out;
+  struct internal_aouthdr *aouthdr_in = (struct internal_aouthdr *)input_data;
+  AOUTHDR *aouthdr_out = (AOUTHDR *)output_data;
 
   H_PUT_16(abfd, (bfd_vma)aouthdr_in->magic, aouthdr_out->magic);
   H_PUT_16(abfd, (bfd_vma)aouthdr_in->vstamp, aouthdr_out->vstamp);
@@ -764,7 +769,7 @@ coff_swap_scnhdr_in(bfd *abfd, void *ext, void *in)
   scnhdr_int->s_nlnno = (unsigned long)GET_SCNHDR_NLNNO(abfd,
                                                         scnhdr_ext->s_nlnno);
 #ifdef I960
-  scnhdr_int->s_align = GET_SCNHDR_ALIGN(abfd, scnhdr_ext->s_align);
+  scnhdr_int->s_align = (long)GET_SCNHDR_ALIGN(abfd, scnhdr_ext->s_align);
 #endif /* I960 */
 #ifdef COFF_ADJUST_SCNHDR_IN_POST
   COFF_ADJUST_SCNHDR_IN_POST(abfd, ext, in);

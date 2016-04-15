@@ -163,13 +163,13 @@ sunos_read_dynamic_info(bfd *abfd)
      symbols for the __DYNAMIC symbol.  */
   if ((abfd->flags & DYNAMIC) == 0)
     return TRUE;
-  if (! bfd_get_section_contents (abfd, obj_datasec (abfd), (void *) &dyninfo,
-				  (file_ptr) 0,
-				  (bfd_size_type) sizeof dyninfo))
+  if (!bfd_get_section_contents(abfd, obj_datasec(abfd), (void *)&dyninfo,
+				(file_ptr)0L,
+				(bfd_size_type)sizeof(dyninfo)))
     return TRUE;
 
-  dynver = GET_WORD (abfd, dyninfo.ld_version);
-  if (dynver != 2 && dynver != 3)
+  dynver = (unsigned long)GET_WORD(abfd, dyninfo.ld_version);
+  if ((dynver != 2UL) && (dynver != 3UL))
     return TRUE;
 
   dynoff = GET_WORD (abfd, dyninfo.ld);
@@ -186,32 +186,32 @@ sunos_read_dynamic_info(bfd *abfd)
 
   /* This executable appears to be dynamically linked in a way that we
      can understand.  */
-  if (! bfd_get_section_contents (abfd, dynsec, (void *) &linkinfo,
-				  (file_ptr) dynoff,
-				  (bfd_size_type) sizeof linkinfo))
+  if (!bfd_get_section_contents(abfd, dynsec, (void *)&linkinfo,
+				(file_ptr)dynoff,
+				(bfd_size_type)sizeof(linkinfo)))
     return TRUE;
 
   /* Swap in the dynamic link information.  */
-  info->dyninfo.ld_loaded = GET_WORD (abfd, linkinfo.ld_loaded);
-  info->dyninfo.ld_need = GET_WORD (abfd, linkinfo.ld_need);
-  info->dyninfo.ld_rules = GET_WORD (abfd, linkinfo.ld_rules);
-  info->dyninfo.ld_got = GET_WORD (abfd, linkinfo.ld_got);
-  info->dyninfo.ld_plt = GET_WORD (abfd, linkinfo.ld_plt);
-  info->dyninfo.ld_rel = GET_WORD (abfd, linkinfo.ld_rel);
-  info->dyninfo.ld_hash = GET_WORD (abfd, linkinfo.ld_hash);
-  info->dyninfo.ld_stab = GET_WORD (abfd, linkinfo.ld_stab);
-  info->dyninfo.ld_stab_hash = GET_WORD (abfd, linkinfo.ld_stab_hash);
-  info->dyninfo.ld_buckets = GET_WORD (abfd, linkinfo.ld_buckets);
-  info->dyninfo.ld_symbols = GET_WORD (abfd, linkinfo.ld_symbols);
-  info->dyninfo.ld_symb_size = GET_WORD (abfd, linkinfo.ld_symb_size);
-  info->dyninfo.ld_text = GET_WORD (abfd, linkinfo.ld_text);
-  info->dyninfo.ld_plt_sz = GET_WORD (abfd, linkinfo.ld_plt_sz);
+  info->dyninfo.ld_loaded = GET_WORD(abfd, linkinfo.ld_loaded);
+  info->dyninfo.ld_need = GET_WORD(abfd, linkinfo.ld_need);
+  info->dyninfo.ld_rules = GET_WORD(abfd, linkinfo.ld_rules);
+  info->dyninfo.ld_got = GET_WORD(abfd, linkinfo.ld_got);
+  info->dyninfo.ld_plt = GET_WORD(abfd, linkinfo.ld_plt);
+  info->dyninfo.ld_rel = GET_WORD(abfd, linkinfo.ld_rel);
+  info->dyninfo.ld_hash = GET_WORD(abfd, linkinfo.ld_hash);
+  info->dyninfo.ld_stab = GET_WORD(abfd, linkinfo.ld_stab);
+  info->dyninfo.ld_stab_hash = GET_WORD(abfd, linkinfo.ld_stab_hash);
+  info->dyninfo.ld_buckets = GET_WORD(abfd, linkinfo.ld_buckets);
+  info->dyninfo.ld_symbols = GET_WORD(abfd, linkinfo.ld_symbols);
+  info->dyninfo.ld_symb_size = GET_WORD(abfd, linkinfo.ld_symb_size);
+  info->dyninfo.ld_text = GET_WORD(abfd, linkinfo.ld_text);
+  info->dyninfo.ld_plt_sz = GET_WORD(abfd, linkinfo.ld_plt_sz);
 
   /* Reportedly the addresses need to be offset by the size of the
      exec header in an NMAGIC file.  */
-  if (adata (abfd).magic == n_magic)
+  if (adata(abfd).magic == n_magic)
     {
-      unsigned long exec_bytes_size = adata (abfd).exec_bytes_size;
+      unsigned long exec_bytes_size = adata(abfd).exec_bytes_size;
 
       info->dyninfo.ld_need += exec_bytes_size;
       info->dyninfo.ld_rules += exec_bytes_size;
@@ -961,11 +961,11 @@ sunos_add_dynamic_symbols (bfd *abfd,
 
       /* For the format of an ld_need entry, see aout/sun4.h.  We
 	 should probably define structs for this manipulation.  */
-      name = bfd_get_32(abfd, buf);
-      flags = bfd_get_32(abfd, buf + 4);
-      major_vno = (unsigned short)bfd_get_16(abfd, buf + 8);
-      minor_vno = (unsigned short)bfd_get_16(abfd, buf + 10);
-      need = bfd_get_32(abfd, buf + 12);
+      name = (unsigned long)bfd_get_32(abfd, buf);
+      flags = (unsigned long)bfd_get_32(abfd, (buf + 4));
+      major_vno = (unsigned short)bfd_get_16(abfd, (buf + 8));
+      minor_vno = (unsigned short)bfd_get_16(abfd, (buf + 10));
+      need = (unsigned long)bfd_get_32(abfd, (buf + 12));
 
       alc = sizeof(struct bfd_link_needed_list);
       needed = (struct bfd_link_needed_list *)bfd_alloc(abfd, alc);
@@ -2014,9 +2014,9 @@ bfd_sunos_size_dynamic_sections (bfd *output_bfd,
 	 symbol will hash to the same bucket, and we will need
 	 BUCKETCOUNT - 1 extra entries.  */
       if (dynsymcount >= 4)
-	bucketcount = dynsymcount / 4;
+	bucketcount = (size_t)(dynsymcount / 4UL);
       else if (dynsymcount > 0)
-	bucketcount = dynsymcount;
+	bucketcount = (size_t)dynsymcount;
       else
 	bucketcount = 1;
       s = bfd_get_section_by_name (dynobj, ".hash");

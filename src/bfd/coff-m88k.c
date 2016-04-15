@@ -70,20 +70,20 @@ m88k_special_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 	}
       else
 	{
-	  bfd_vma output_base = 0;
+	  bfd_vma output_base = 0UL;
 	  bfd_vma addr = reloc_entry->address;
-	  bfd_vma x = bfd_get_16 (abfd, (bfd_byte *) data + addr);
+	  bfd_vma x = bfd_get_16(abfd, (bfd_byte *)data + addr);
 	  asection *reloc_target_output_section;
-	  long relocation = 0;
+	  long relocation = 0L;
 
 	  /* Work out which section the relocation is targeted at and the
 	     initial relocation command value.  */
 
 	  /* Get symbol value.  (Common symbols are special.)  */
-	  if (bfd_is_com_section (symbol->section))
-	    relocation = 0;
+	  if (bfd_is_com_section(symbol->section))
+	    relocation = 0L;
 	  else
-	    relocation = symbol->value;
+	    relocation = (long)symbol->value;
 
 	  reloc_target_output_section = symbol->section->output_section;
 

@@ -919,18 +919,18 @@ deprecated_read_memory_nobpt(CORE_ADDR memaddr, gdb_byte *myaddr,
 {
   int status;
   struct bp_location *b;
-  CORE_ADDR bp_addr = 0;
-  int bp_size = 0;
+  CORE_ADDR bp_addr = 0UL;
+  size_t bp_size = 0UL;
 
-  if (BREAKPOINT_FROM_PC (&bp_addr, &bp_size) == NULL)
-    /* No breakpoints on this machine. */
-    return target_read_memory (memaddr, myaddr, len);
+  if (BREAKPOINT_FROM_PC(&bp_addr, (int *)&bp_size) == NULL)
+    /* No breakpoints on this machine: */
+    return target_read_memory(memaddr, myaddr, len);
 
-  ALL_BP_LOCATIONS (b)
+  ALL_BP_LOCATIONS(b)
   {
     if (b->owner->type == bp_none)
-      warning (_("reading through apparently deleted breakpoint #%d?"),
-              b->owner->number);
+      warning(_("reading through apparently deleted breakpoint #%d?"),
+	      b->owner->number);
 
     if (b->loc_type != bp_loc_software_breakpoint)
       continue;
@@ -944,12 +944,12 @@ deprecated_read_memory_nobpt(CORE_ADDR memaddr, gdb_byte *myaddr,
        for these targets. */
     bp_addr = b->address;
     bp_size = 0;
-    if (BREAKPOINT_FROM_PC (&bp_addr, &bp_size) == NULL)
+    if (BREAKPOINT_FROM_PC(&bp_addr, (int *)&bp_size) == NULL)
       continue;
-    if (bp_size == 0)
+    if (bp_size == 0UL)
       /* bp isn't valid */
       continue;
-    if (bp_addr + bp_size <= memaddr)
+    if ((bp_addr + bp_size) <= memaddr)
       /* The breakpoint is entirely before the chunk of memory we
          are reading.  */
       continue;
@@ -966,7 +966,7 @@ deprecated_read_memory_nobpt(CORE_ADDR memaddr, gdb_byte *myaddr,
       if (bp_addr < memaddr)
 	{
 	  /* Only copy the second part of the breakpoint: */
-	  bp_size -= (memaddr - bp_addr);
+	  bp_size -= (size_t)(memaddr - bp_addr);
 	  bptoffset = (memaddr - bp_addr);
 	  bp_addr = memaddr;
 	}
@@ -974,7 +974,7 @@ deprecated_read_memory_nobpt(CORE_ADDR memaddr, gdb_byte *myaddr,
       if ((bp_addr + bp_size) > (memaddr + len))
 	{
 	  /* Only copy the first part of the breakpoint: */
-	  bp_size -= ((bp_addr + bp_size) - (memaddr + len));
+	  bp_size -= (size_t)((bp_addr + bp_size) - (memaddr + len));
 	}
 
       memcpy((myaddr + bp_addr - memaddr),

@@ -5782,7 +5782,7 @@ remote_rcmd(const char *command, struct ui_file *outbuf)
 	}
       for (p = buf; (p[0] != '\0') && (p[1] != '\0'); p += 2)
 	{
-	  char c = ((fromhex(p[0]) << 4) + fromhex(p[1]));
+	  char c = (char)((fromhex(p[0]) << 4) + fromhex(p[1]));
 	  fputc_unfiltered(c, outbuf);
 	}
       break;

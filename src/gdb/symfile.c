@@ -799,7 +799,7 @@ syms_from_objfile(struct objfile *objfile, struct section_addr_info *addrs,
 	     use offsets not addrs since it is not taking advantage of the
 	     only point of the addrs - than names...  But I do NOT want to
 	     muck with that right now, so I shall assume a rigid offset.  */
-	  if (addrs->addrs_are_offsets == 1 && addrs->num_sections > 0)
+	  if ((addrs->addrs_are_offsets == 1) && (addrs->num_sections > 0))
 	      objfile->ei.entry_point += addrs->other[0].addr;
 	}
     }
@@ -1049,19 +1049,29 @@ syms_from_objfile(struct objfile *objfile, struct section_addr_info *addrs,
 	}
     }
 #endif /* not DEPRECATED_IBM6000_TARGET */
+  
+  gdb_assert(objfile != NULL);
 
   /* APPLE LOCAL If our load level is higher than container, call
      symfile read fn.  */
   if ((objfile->symflags & ~OBJF_SYM_CONTAINER) & OBJF_SYM_LEVELS_MASK)
-    (*objfile->sf->sym_read)(objfile, mainline);
+    {
+#if (defined(DEBUG) || defined(_DEBUG) || defined(GDB_DEBUG) || \
+     defined(MACOSX_DYLD) || defined(__APPLEHELP__))
+      printf_filtered(_("%s: Condition for reading: %d; mainline: %d.\n"),
+		      __FILE__, ((objfile->symflags & ~OBJF_SYM_CONTAINER)
+				 & OBJF_SYM_LEVELS_MASK), mainline);
+#endif /* (DEBUG || _DEBUG || GDB_DEBUG || MACOSX_DYLD || __APPLEHELP__) */
+      (*objfile->sf->sym_read)(objfile, mainline);
+    }
 
   /* Do NOT allow char * to have a typename (else would get caddr_t).
      Ditto void *.  FIXME: Check whether this is now done by all the
      symbol readers themselves (many of them now do), and if so remove
      it from here.  */
 
-  TYPE_NAME(lookup_pointer_type (builtin_type_char)) = 0;
-  TYPE_NAME(lookup_pointer_type (builtin_type_void)) = 0;
+  TYPE_NAME(lookup_pointer_type(builtin_type_char)) = 0;
+  TYPE_NAME(lookup_pointer_type(builtin_type_void)) = 0;
 
   /* Mark the objfile has having had initial symbol read attempted.  Note
      that this does not mean we found any symbols... */
@@ -1079,7 +1089,6 @@ syms_from_objfile(struct objfile *objfile, struct section_addr_info *addrs,
 void
 new_symfile_objfile (struct objfile *objfile, int mainline, int verbo)
 {
-
   /* If this is the main symbol file we have to clean up all users of the
      old main symbol file. Otherwise it is sufficient to fixup all the
      breakpoints that may have been redefined by this symbol file.  */
@@ -2473,18 +2482,18 @@ load_progress(ULONGEST bytes, void *untyped_arg)
 	 might add a verify_memory() method to the target vector and
 	 then use that.  remote.c could implement that method using
 	 the ``qCRC'' packet.  */
-      gdb_byte *check = (gdb_byte *)xmalloc(bytes);
+      gdb_byte *check = (gdb_byte *)xmalloc((size_t)bytes);
       struct cleanup *verify_cleanups = make_cleanup(xfree, check);
 
-      if (target_read_memory(args->lma, check, bytes) != 0)
+      if (target_read_memory(args->lma, check, (int)bytes) != 0)
 	error(_("Download verify read failed at 0x%s"),
 	      paddr(args->lma));
-      if (memcmp(args->buffer, check, bytes) != 0)
+      if (memcmp(args->buffer, check, (size_t)bytes) != 0)
 	error(_("Download verify compare failed at 0x%s"),
 	      paddr(args->lma));
       do_cleanups(verify_cleanups);
     }
-  args->data_count += bytes;
+  args->data_count += (unsigned long)bytes;
   args->lma += bytes;
   args->buffer += bytes;
   args->write_count += 1;
@@ -2492,13 +2501,15 @@ load_progress(ULONGEST bytes, void *untyped_arg)
   if (quit_flag
       || ((deprecated_ui_load_progress_hook != NULL)
 	  && deprecated_ui_load_progress_hook(args->section_name,
-					      args->section_sent)))
-    error (_("Canceled the download"));
+					    (unsigned long)args->section_sent)))
+    error(_("Canceled the download"));
 
   if (deprecated_show_load_progress != NULL)
-    deprecated_show_load_progress(args->section_name, args->section_sent,
-				  args->section_size, args->data_count,
-				  args->total_size);
+    deprecated_show_load_progress(args->section_name,
+				  (unsigned long)args->section_sent,
+				  (unsigned long)args->section_size,
+				  args->data_count,
+				  (unsigned long)args->total_size);
 }
 
 /* Callback service function for generic_load (bfd_map_over_sections): */
@@ -2518,7 +2529,7 @@ load_section_callback(bfd *abfd, asection *asec, void *data)
   if (size == 0UL)
     return;
 
-  buffer = (gdb_byte *)xmalloc(size);
+  buffer = (gdb_byte *)xmalloc((size_t)size);
   old_chain = make_cleanup(xfree, buffer);
 
   args->section_name = sect_name;
@@ -4382,10 +4393,9 @@ clear_symtab_users_once (void)
 }
 #endif /* 0 */
 
-/* Delete the specified psymtab, and any others that reference it.  */
-
-static void
-cashier_psymtab (struct partial_symtab *pst)
+/* Delete the specified psymtab, and any others that reference it: */
+static void ATTRIBUTE_USED
+cashier_psymtab(struct partial_symtab *pst)
 {
   struct partial_symtab *ps, *pprev = NULL;
   int i;
@@ -4908,17 +4918,16 @@ section_is_mapped (asection *section)
    If PC falls into the lma range of SECTION, return true, else false.  */
 
 CORE_ADDR
-pc_in_unmapped_range (CORE_ADDR pc, asection *section)
+pc_in_unmapped_range(CORE_ADDR pc, asection *section)
 {
   /* FIXME: need bfd *, so we can use bfd_section_lma methods. */
-
-  int size;
+  bfd_size_type size;
 
   if (overlay_debugging)
-    if (section && section_is_overlay (section))
+    if (section && section_is_overlay(section))
       {
-	size = bfd_get_section_size (section);
-	if (section->lma <= pc && pc < section->lma + size)
+	size = bfd_get_section_size(section);
+	if ((section->lma <= pc) && (pc < (section->lma + size)))
 	  return 1;
       }
   return 0;
@@ -4928,17 +4937,16 @@ pc_in_unmapped_range (CORE_ADDR pc, asection *section)
    If PC falls into the vma range of SECTION, return true, else false.  */
 
 CORE_ADDR
-pc_in_mapped_range (CORE_ADDR pc, asection *section)
+pc_in_mapped_range(CORE_ADDR pc, asection *section)
 {
   /* FIXME: need bfd *, so we can use bfd_section_vma methods. */
-
-  int size;
+  bfd_size_type size;
 
   if (overlay_debugging)
-    if (section && section_is_overlay (section))
+    if (section && section_is_overlay(section))
       {
-	size = bfd_get_section_size (section);
-	if (section->vma <= pc && pc < section->vma + size)
+	size = bfd_get_section_size(section);
+	if ((section->vma <= pc) && (pc < (section->vma + size)))
 	  return 1;
       }
   return 0;
@@ -5116,7 +5124,7 @@ list_overlays_command(const char *args, int from_tty)
       {
 	const char *name;
 	bfd_vma lma, vma;
-	int size;
+	bfd_size_type size;
 
 	vma = bfd_section_vma (objfile->obfd, osect->the_bfd_section);
 	lma = bfd_section_lma (objfile->obfd, osect->the_bfd_section);
@@ -5377,10 +5385,12 @@ read_target_long_array(CORE_ADDR memaddr, unsigned int *myaddr, int len)
   buf = (char *)alloca(buflen);
 
   read_memory(memaddr, (gdb_byte *)buf, buflen);
-  for (i = 0; i < len; i++)
-    myaddr[i] = extract_unsigned_integer(((const gdb_byte *)
-					  ((TARGET_LONG_BYTES * i) + buf)),
-					 TARGET_LONG_BYTES);
+  for (i = 0; i < len; i++) {
+    myaddr[i] =
+      (unsigned int)extract_unsigned_integer(((const gdb_byte *)
+					      ((TARGET_LONG_BYTES * i) + buf)),
+					     TARGET_LONG_BYTES);
+  }
 }
 
 /* Find and grab a copy of the target _ovly_table
@@ -5395,8 +5405,8 @@ simple_read_overlay_table(void)
   if (! novlys_msym)
     {
       error(_("Error reading inferior's overlay table: "
-            "could NOT find `_novlys' variable\n"
-            "in inferior. Use `overlay manual' mode."));
+	      "could NOT find `_novlys' variable\n"
+	      "in inferior. Use `overlay manual' mode."));
       return 0;
     }
 
@@ -5404,17 +5414,18 @@ simple_read_overlay_table(void)
   if (! ovly_table_msym)
     {
       error(_("Error reading inferior's overlay table: could NOT find "
-            "`_ovly_table' array\n"
-            "in inferior. Use `overlay manual' mode."));
+	      "`_ovly_table' array\n"
+	      "in inferior. Use `overlay manual' mode."));
       return 0;
     }
 
-  cache_novlys = read_memory_integer(SYMBOL_VALUE_ADDRESS(novlys_msym), 4);
-  cache_ovly_table
-    = (unsigned int (*)[4])(void *)xmalloc(cache_novlys * sizeof(*cache_ovly_table));
+  cache_novlys =
+    (unsigned int)read_memory_integer(SYMBOL_VALUE_ADDRESS(novlys_msym), 4);
+  cache_ovly_table =
+    (unsigned int (*)[4])(void *)xmalloc(cache_novlys * sizeof(*cache_ovly_table));
   cache_ovly_table_base = SYMBOL_VALUE_ADDRESS(ovly_table_msym);
   read_target_long_array(cache_ovly_table_base,
-                         (unsigned int *) cache_ovly_table,
+                         (unsigned int *)cache_ovly_table,
                          cache_novlys * 4);
 
   return 1;			/* SUCCESS */
@@ -5469,7 +5480,7 @@ simple_overlay_update_1(struct obj_section *osect)
   size_t size;
   asection *bsect = osect->the_bfd_section;
 
-  size = bfd_get_section_size(osect->the_bfd_section);
+  size = (size_t)bfd_get_section_size(osect->the_bfd_section);
   for (i = 0U; i < cache_novlys; i++)
     if ((cache_ovly_table[i][VMA] == bfd_section_vma(obfd, bsect))
 	&& (cache_ovly_table[i][LMA] == bfd_section_lma(obfd, bsect))
@@ -5533,7 +5544,7 @@ simple_overlay_update(struct obj_section *osect)
         size_t size;
         asection *bsect = osect->the_bfd_section;
 
-        size = bfd_get_section_size(bsect);
+        size = (size_t)bfd_get_section_size(bsect);
         for (i = 0U; i < cache_novlys; i++)
           {
             if ((cache_ovly_table[i][VMA] == bfd_section_vma(obfd, bsect))

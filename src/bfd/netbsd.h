@@ -45,7 +45,8 @@
 	 | (((flags) & 0x3f) << 24))
 #define N_SET_MACHTYPE(exec, machtype) \
 	((exec).a_info = \
-         ((exec).a_info & 0xfb00ffff) | ((((int) (machtype)) & 0x3ff) << 16))
+         (long)((unsigned long)(exec).a_info & 0xfb00ffff) \
+		| ((((int)(machtype)) & 0x3ff) << 16))
 #define N_SET_FLAGS(exec, flags) \
 	((exec).a_info = \
 	 ((exec).a_info & 0x03ffffff) | ((flags & 0x03f) << 26))
@@ -108,9 +109,10 @@ MY(write_object_contents)(bfd *abfd)
 #ifndef TARGET_IS_BIG_ENDIAN_P
   /* XXX are there not any macros to change byteorder of a word independent of
      the host's or target's endianesses?  */
-  execp->a_info
-    = (execp->a_info & 0xff) << 24 | (execp->a_info & 0xff00) << 8
-      | (execp->a_info & 0xff0000) >> 8 | (execp->a_info & 0xff000000) >> 24;
+  execp->a_info = (long)((((unsigned long)execp->a_info & 0xff) << 24)
+			 | (((unsigned long)execp->a_info & 0xff00) << 8)
+			 | (((unsigned long)execp->a_info & 0xff0000) >> 8)
+			 | (((unsigned long)execp->a_info & 0xff000000) >> 24));
 #endif /* TARGET_IS_BIG_ENDIAN_P */
 
   WRITE_HEADERS(abfd, execp);

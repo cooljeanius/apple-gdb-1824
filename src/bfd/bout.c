@@ -85,16 +85,16 @@ bout_swap_exec_header_in (bfd *abfd,
 			  struct internal_exec *execp)
 {
   /* Now fill in fields in the execp, from the bytes in the raw data.  */
-  execp->a_info      = H_GET_32 (abfd, bytes->e_info);
-  execp->a_text      = GET_WORD (abfd, bytes->e_text);
-  execp->a_data      = GET_WORD (abfd, bytes->e_data);
-  execp->a_bss       = GET_WORD (abfd, bytes->e_bss);
-  execp->a_syms      = GET_WORD (abfd, bytes->e_syms);
-  execp->a_entry     = GET_WORD (abfd, bytes->e_entry);
-  execp->a_trsize    = GET_WORD (abfd, bytes->e_trsize);
-  execp->a_drsize    = GET_WORD (abfd, bytes->e_drsize);
-  execp->a_tload     = GET_WORD (abfd, bytes->e_tload);
-  execp->a_dload     = GET_WORD (abfd, bytes->e_dload);
+  execp->a_info      = (long)H_GET_32(abfd, bytes->e_info);
+  execp->a_text      = GET_WORD(abfd, bytes->e_text);
+  execp->a_data      = GET_WORD(abfd, bytes->e_data);
+  execp->a_bss       = GET_WORD(abfd, bytes->e_bss);
+  execp->a_syms      = GET_WORD(abfd, bytes->e_syms);
+  execp->a_entry     = GET_WORD(abfd, bytes->e_entry);
+  execp->a_trsize    = GET_WORD(abfd, bytes->e_trsize);
+  execp->a_drsize    = GET_WORD(abfd, bytes->e_drsize);
+  execp->a_tload     = GET_WORD(abfd, bytes->e_tload);
+  execp->a_dload     = GET_WORD(abfd, bytes->e_dload);
   execp->a_talign    = bytes->e_talign[0];
   execp->a_dalign    = bytes->e_dalign[0];
   execp->a_balign    = bytes->e_balign[0];
@@ -160,7 +160,8 @@ b_out_callback (bfd *abfd)
   /* And reload the sizes, since the aout module zaps them.  */
   obj_textsec (abfd)->size = execp->a_text;
 
-  bss_start = execp->a_dload + execp->a_data; /* BSS = end of data section.  */
+  /* BSS = end of data section: */
+  bss_start = (unsigned long)(execp->a_dload + execp->a_data);
   obj_bsssec (abfd)->vma = align_power (bss_start, execp->a_balign);
 
   obj_bsssec (abfd)->lma = obj_bsssec (abfd)->vma;
@@ -189,18 +190,18 @@ b_out_object_p (bfd *abfd)
   struct external_exec exec_bytes;
   bfd_size_type amt = EXEC_BYTES_SIZE;
 
-  if (bfd_bread ((void *) &exec_bytes, amt, abfd) != amt)
+  if (bfd_bread((void *)&exec_bytes, amt, abfd) != amt)
     {
-      if (bfd_get_error () != bfd_error_system_call)
-	bfd_set_error (bfd_error_wrong_format);
+      if (bfd_get_error() != bfd_error_system_call)
+	bfd_set_error(bfd_error_wrong_format);
       return 0;
     }
 
-  anexec.a_info = H_GET_32 (abfd, exec_bytes.e_info);
+  anexec.a_info = (long)H_GET_32(abfd, exec_bytes.e_info);
 
-  if (N_BADMAG (anexec))
+  if (N_BADMAG(anexec))
     {
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return 0;
     }
 
@@ -356,7 +357,7 @@ b_out_squirt_out_relocs (bfd *abfd, asection *section)
 	    {
 	      /* Fill in symbol.  */
 	      r_extern = 1;
-	      r_idx = (*g->sym_ptr_ptr)->udata.i;
+	      r_idx = (int)(*g->sym_ptr_ptr)->udata.i;
 	    }
 	}
       else
@@ -548,14 +549,11 @@ get_value (arelent *reloc,
 /* Magic to turn callx into calljx.  */
 
 static bfd_reloc_status_type
-calljx_callback (bfd *abfd,
-		 struct bfd_link_info *link_info,
-		 arelent *reloc_entry,
-		 void * src,
-		 void * dst,
-		 asection *input_section)
+calljx_callback(bfd *abfd, struct bfd_link_info *link_info,
+		arelent *reloc_entry, void *src, void *dst,
+		asection *input_section)
 {
-  int word = bfd_get_32 (abfd, src);
+  int word = (int)bfd_get_32(abfd, src);
   asymbol *symbol_in = *(reloc_entry->sym_ptr_ptr);
   aout_symbol_type *symbol = aout_symbol (symbol_in);
   bfd_vma value;
@@ -564,8 +562,8 @@ calljx_callback (bfd *abfd,
 
   if (IS_CALLNAME (symbol->other))
     {
-      aout_symbol_type *balsym = symbol+1;
-      int inst = bfd_get_32 (abfd, (bfd_byte *) src-4);
+      aout_symbol_type *balsym = (symbol + 1);
+      int inst = (int)bfd_get_32(abfd, ((bfd_byte *)src - 4));
 
       /* The next symbol should be an N_BALNAME.  */
       BFD_ASSERT (IS_BALNAME (balsym->other));
@@ -577,7 +575,7 @@ calljx_callback (bfd *abfd,
 	       + output_addr (symbol->symbol.section));
     }
 
-  word += value + reloc_entry->addend;
+  word += (int)(value + reloc_entry->addend);
 
   bfd_put_32 (abfd, (bfd_vma) word, dst);
   return bfd_reloc_ok;
@@ -586,16 +584,12 @@ calljx_callback (bfd *abfd,
 /* Magic to turn call into callj.  */
 
 static bfd_reloc_status_type
-callj_callback (bfd *abfd,
-		struct bfd_link_info *link_info,
-		arelent *reloc_entry,
-		void * data,
-		unsigned int srcidx,
-		unsigned int dstidx,
-		asection *input_section,
-		bfd_boolean shrinking)
+callj_callback(bfd *abfd, struct bfd_link_info *link_info,
+	       arelent *reloc_entry, void *data, unsigned int srcidx,
+	       unsigned int dstidx, asection *input_section,
+	       bfd_boolean shrinking)
 {
-  int word = bfd_get_32 (abfd, (bfd_byte *) data + srcidx);
+  int word = (int)bfd_get_32(abfd, ((bfd_byte *)data + srcidx));
   asymbol *symbol_in = *(reloc_entry->sym_ptr_ptr);
   aout_symbol_type *symbol = aout_symbol (symbol_in);
   bfd_vma value;
@@ -700,7 +694,7 @@ b_out_slurp_reloc_table(bfd *abfd, sec_ptr asect, asymbol **symbols)
 
   if (bfd_seek(abfd, asect->rel_filepos, SEEK_SET) != 0)
     return FALSE;
-  count = (reloc_size / sizeof(struct relocation_info));
+  count = (unsigned int)(reloc_size / sizeof(struct relocation_info));
 
   relocs = (struct relocation_info *)bfd_malloc(reloc_size);
   if (!relocs && reloc_size != 0)
@@ -1100,9 +1094,9 @@ aligncode(bfd *abfd, asection *input_section, arelent *r,
   new_end = ((dot - shrink + size) & ~size);
 
   /* This is the new end: */
-  gap = old_end - ((dot + size) & ~size);
+  gap = (old_end - ((dot + size) & ~size));
 
-  shrink_delta = ((old_end - new_end) - shrink);
+  shrink_delta = (unsigned int)((old_end - new_end) - shrink);
 
   if (shrink_delta)
     {
@@ -1255,11 +1249,11 @@ b_out_bfd_get_relocated_section_contents(bfd *output_bfd,
 		 relocation, so we use the original address to work out the
 		 run of non-relocated data.  */
 	      BFD_ASSERT (reloc->address >= src_address);
-	      run = reloc->address - src_address;
+	      run = (unsigned int)(reloc->address - src_address);
 	      parent++;
 	    }
 	  else
-	    run = link_order->size - dst_address;
+	    run = (unsigned int)(link_order->size - dst_address);
 
 	  /* Copy the bytes.  */
 	  for (idx = 0; idx < run; idx++)
@@ -1296,7 +1290,7 @@ b_out_bfd_get_relocated_section_contents(bfd *output_bfd,
 		  BFD_ASSERT (reloc->addend >= src_address);
 		  BFD_ASSERT ((bfd_vma) reloc->addend
 			      <= input_section->size);
-		  src_address = reloc->addend;
+		  src_address = (unsigned int)reloc->addend;
 		  dst_address = ((dst_address + reloc->howto->size)
 				 & ~reloc->howto->size);
 		  break;
@@ -1311,8 +1305,8 @@ b_out_bfd_get_relocated_section_contents(bfd *output_bfd,
 		  break;
 		case PCREL24:
 		  {
-		    long int word = bfd_get_32 (input_bfd,
-						data + src_address);
+		    long int word = (long int)bfd_get_32(input_bfd,
+							 (data + src_address));
 		    bfd_vma value;
 
 		    value = get_value (reloc, link_info, input_section);
@@ -1331,8 +1325,8 @@ b_out_bfd_get_relocated_section_contents(bfd *output_bfd,
 		  break;
 		case PCREL13:
 		  {
-		    long int word = bfd_get_32 (input_bfd,
-						data + src_address);
+		    long int word = (long int)bfd_get_32(input_bfd,
+							 (data + src_address));
 		    bfd_vma value;
 
 		    value = get_value (reloc, link_info, input_section);

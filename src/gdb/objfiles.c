@@ -308,7 +308,7 @@ allocate_objfile_internal(struct objfile *objfile, bfd *abfd, int flags,
 			  int symflags, CORE_ADDR mapaddr,
                           const char *prefix)
 {
-  objfile->symflags = symflags;
+  objfile->symflags = (unsigned short)symflags;
   objfile->flags |= flags;
 
   /* Update the per-objfile information that comes from the bfd, ensuring

@@ -265,7 +265,7 @@ print_subexp_standard (struct expression *exp, int *pos,
 	      else
 		{
 		  tempstr[tem++] =
-		    longest_to_int(exp->elts[pc + 2].longconst);
+		    (char)longest_to_int(exp->elts[pc + 2].longconst);
 		  pc += 4;
 		}
 	    }

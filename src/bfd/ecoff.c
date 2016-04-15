@@ -120,7 +120,7 @@ _bfd_ecoff_mkobject_hook (bfd *abfd, void * filehdr, void * aouthdr)
       int i;
 
       ecoff->text_start = internal_a->text_start;
-      ecoff->text_end = internal_a->text_start + internal_a->tsize;
+      ecoff->text_end = (internal_a->text_start + internal_a->tsize);
       ecoff->gp = internal_a->gp_value;
       ecoff->gprmask = internal_a->gprmask;
       for (i = 0; i < 4; i++)
@@ -1233,9 +1233,9 @@ ecoff_type_to_string (bfd *abfd, FDR *fdr, unsigned int indx)
     {
       int bitsize;
 
-      bitsize = AUX_GET_WIDTH (bigendian, &aux_ptr[indx++]);
-      sprintf (p1, " : %d", bitsize);
-      p1 += strlen (buffer1);
+      bitsize = (int)AUX_GET_WIDTH(bigendian, &aux_ptr[indx++]);
+      sprintf(p1, " : %d", bitsize);
+      p1 += strlen(buffer1);
     }
 
   /* Deal with any qualifiers.  */
@@ -1412,10 +1412,10 @@ _bfd_ecoff_print_symbol(bfd *abfd, void *filep, asymbol *symbol,
 	    (*debug_swap->swap_sym_in) (abfd, ecoffsymbol (symbol)->native,
 					&ecoff_ext.asym);
 	    type = 'l';
-	    pos = ((((char *) ecoffsymbol (symbol)->native
-		     - (char *) ecoff_data (abfd)->debug_info.external_sym)
-		    / debug_swap->external_sym_size)
-		   + ecoff_data (abfd)->debug_info.symbolic_header.iextMax);
+	    pos = (int)((((char *)ecoffsymbol(symbol)->native
+			  - (char *)ecoff_data(abfd)->debug_info.external_sym)
+			 / debug_swap->external_sym_size)
+			+ ecoff_data(abfd)->debug_info.symbolic_header.iextMax);
 	    jmptbl = ' ';
 	    cobol_main = ' ';
 	    weakext = ' ';
@@ -1425,9 +1425,9 @@ _bfd_ecoff_print_symbol(bfd *abfd, void *filep, asymbol *symbol,
 	    (*debug_swap->swap_ext_in) (abfd, ecoffsymbol (symbol)->native,
 					&ecoff_ext);
 	    type = 'e';
-	    pos = (((char *) ecoffsymbol (symbol)->native
-		    - (char *) ecoff_data (abfd)->debug_info.external_ext)
-		   / debug_swap->external_ext_size);
+	    pos = (int)(((char *)ecoffsymbol(symbol)->native
+			 - (char *)ecoff_data(abfd)->debug_info.external_ext)
+			/ debug_swap->external_ext_size);
 	    jmptbl = ecoff_ext.jmptbl ? 'j' : ' ';
 	    cobol_main = ecoff_ext.cobol_main ? 'c' : ' ';
 	    weakext = ecoff_ext.weakext ? 'w' : ' ';
@@ -1880,10 +1880,10 @@ _bfd_ecoff_sizeof_headers (bfd *abfd, bfd_boolean reloc ATTRIBUTE_UNUSED)
        current = current->next)
     ++c;
 
-  ret = (bfd_coff_filhsz (abfd)
-	 + bfd_coff_aoutsz (abfd)
-	 + c * bfd_coff_scnhsz (abfd));
-  return BFD_ALIGN (ret, 16);
+  ret = (bfd_coff_filhsz(abfd)
+	 + bfd_coff_aoutsz(abfd)
+	 + (c * bfd_coff_scnhsz(abfd)));
+  return (int)BFD_ALIGN(ret, 16);
 }
 
 /* Get the contents of a section.  */
@@ -2940,8 +2940,8 @@ _bfd_ecoff_slurp_armap (bfd *abfd)
 	unsigned int name_offset, file_offset;
 	unsigned int hash, rehash = 0U, srch;
 
-	name_offset = H_GET_32(abfd, raw_ptr);
-	file_offset = H_GET_32(abfd, (raw_ptr + 4));
+	name_offset = (unsigned int)H_GET_32(abfd, raw_ptr);
+	file_offset = (unsigned int)H_GET_32(abfd, (raw_ptr + 4));
 	if (file_offset == 0)
 	  continue;
 	hash = ecoff_armap_hash(stringbase + name_offset, &rehash, count,

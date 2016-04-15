@@ -677,17 +677,20 @@ iter_name_next_hashed (const char *name, struct dict_iterator *iterator)
   return next;
 }
 
-/* Insert SYM into DICT.  */
-
+/* Insert SYM into DICT: */
 static void
-insert_symbol_hashed (struct dictionary *dict,
-		      struct symbol *sym)
+insert_symbol_hashed(struct dictionary *dict, struct symbol *sym)
 {
   unsigned int hash_index;
-  struct symbol **buckets = DICT_HASHED_BUCKETS (dict);
+  struct symbol **buckets = DICT_HASHED_BUCKETS(dict);
+  int i = DICT_HASHED_NBUCKETS(dict);
 
-  hash_index = (msymbol_hash_iw (SYMBOL_SEARCH_NAME (sym))
-		% DICT_HASHED_NBUCKETS (dict));
+  /* Avoid division by zero: */
+  if (i == 0) {
+    i++;
+  }
+
+  hash_index = (msymbol_hash_iw(SYMBOL_SEARCH_NAME(sym)) % i);
   sym->hash_next = buckets[hash_index];
   buckets[hash_index] = sym;
 }

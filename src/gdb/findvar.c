@@ -227,9 +227,9 @@ store_signed_integer_with_byte_order(gdb_byte *addr, int len, LONGEST val, int b
     byte_order = TARGET_BYTE_ORDER;
   if (byte_order == BFD_ENDIAN_BIG)
     {
-      for (p = endaddr - 1; p >= startaddr; --p)
+      for (p = (endaddr - 1); p >= startaddr; --p)
 	{
-	  *p = val & 0xff;
+	  *p = (gdb_byte)(val & 0xff);
 	  val >>= 8;
 	}
     }
@@ -237,7 +237,7 @@ store_signed_integer_with_byte_order(gdb_byte *addr, int len, LONGEST val, int b
     {
       for (p = startaddr; p < endaddr; ++p)
 	{
-	  *p = (val & 0xff);
+	  *p = (gdb_byte)(val & 0xff);
 	  val >>= 8;
 	}
     }
@@ -331,15 +331,15 @@ value_of_register (int regnum, struct frame_info *frame)
   if (register_cached (regnum) < 0)
     return NULL;		/* register value not available */
 
-  reg_val = allocate_value (register_type (current_gdbarch, regnum));
+  reg_val = allocate_value(register_type(current_gdbarch, regnum));
 
-  memcpy (value_contents_raw (reg_val), raw_buffer,
-	  register_size (current_gdbarch, regnum));
-  VALUE_LVAL (reg_val) = lval;
-  VALUE_ADDRESS (reg_val) = addr;
-  VALUE_REGNUM (reg_val) = regnum;
-  set_value_optimized_out (reg_val, optim);
-  VALUE_FRAME_ID (reg_val) = get_frame_id (frame);
+  memcpy(value_contents_raw(reg_val), raw_buffer,
+	 register_size(current_gdbarch, regnum));
+  VALUE_LVAL(reg_val) = lval;
+  VALUE_ADDRESS(reg_val) = addr;
+  VALUE_REGNUM(reg_val) = (short)regnum;
+  set_value_optimized_out(reg_val, optim);
+  VALUE_FRAME_ID(reg_val) = get_frame_id(frame);
   return reg_val;
 }
 
@@ -703,11 +703,11 @@ value_from_register (struct type *type, int regnum, struct frame_info *frame)
          it takes to make it here.)
 
          We'll just attribute the value to the original register.  */
-      VALUE_LVAL (v) = lval_register;
-      VALUE_ADDRESS (v) = regnum;
-      VALUE_REGNUM (v) = regnum;
+      VALUE_LVAL(v) = lval_register;
+      VALUE_ADDRESS(v) = regnum;
+      VALUE_REGNUM(v) = (short)regnum;
     }
-  else if (CONVERT_REGISTER_P (regnum, type))
+  else if (CONVERT_REGISTER_P(regnum, type))
     {
       /* The ISA/ABI need to something weird when obtaining the
          specified value from this register.  It might need to
@@ -716,10 +716,10 @@ value_from_register (struct type *type, int regnum, struct frame_info *frame)
          the corresponding [integer] type (see Alpha).  The assumption
          is that REGISTER_TO_VALUE populates the entire value
          including the location.  */
-      REGISTER_TO_VALUE (frame, regnum, type, value_contents_raw (v));
-      VALUE_LVAL (v) = lval_register;
-      VALUE_FRAME_ID (v) = get_frame_id (frame);
-      VALUE_REGNUM (v) = regnum;
+      REGISTER_TO_VALUE(frame, regnum, type, value_contents_raw(v));
+      VALUE_LVAL(v) = lval_register;
+      VALUE_FRAME_ID(v) = get_frame_id(frame);
+      VALUE_REGNUM(v) = (short)regnum;
     }
   else
     {
@@ -778,7 +778,7 @@ value_from_register (struct type *type, int regnum, struct frame_info *frame)
 	{
 	  VALUE_LVAL(v) = lval_register;
 	  VALUE_FRAME_ID(v) = get_frame_id(frame);
-	  VALUE_REGNUM(v) = regnum;
+	  VALUE_REGNUM(v) = (short)regnum;
 	}
 
       set_value_optimized_out(v, (enum opt_state)optimized);

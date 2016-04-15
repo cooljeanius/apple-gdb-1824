@@ -138,18 +138,18 @@ ax_simple (struct agent_expr *x, enum agent_op op)
 /* Append a sign-extension or zero-extension instruction to EXPR, to
    extend an N-bit value.  */
 static void
-generic_ext (struct agent_expr *x, enum agent_op op, int n)
+generic_ext(struct agent_expr *x, enum agent_op op, int n)
 {
-  /* N must fit in a byte.  */
-  if (n < 0 || n > 255)
-    error (_("GDB bug: ax-general.c (generic_ext): bit count out of range"));
-  /* That had better be enough range.  */
-  if (sizeof (LONGEST) * 8 > 255)
-    error (_("GDB bug: ax-general.c (generic_ext): opcode has inadequate range"));
+  /* N must fit in a byte: */
+  if ((n < 0) || (n > 255))
+    error(_("GDB bug: ax-general.c (generic_ext): bit count out of range"));
+  /* That had better be enough range: */
+  if ((sizeof(LONGEST) * 8UL) > 255UL)
+    error(_("GDB bug: ax-general.c (generic_ext): opcode has inadequate range"));
 
-  grow_expr (x, 2);
+  grow_expr(x, 2);
   x->buf[x->len++] = op;
-  x->buf[x->len++] = n;
+  x->buf[x->len++] = (char)n;
 }
 
 
@@ -171,15 +171,15 @@ ax_zero_ext (struct agent_expr *x, int n)
 
 /* Append a trace_quick instruction to EXPR, to record N bytes.  */
 void
-ax_trace_quick (struct agent_expr *x, int n)
+ax_trace_quick(struct agent_expr *x, int n)
 {
-  /* N must fit in a byte.  */
-  if (n < 0 || n > 255)
-    error (_("GDB bug: ax-general.c (ax_trace_quick): size out of range for trace_quick"));
+  /* N must fit in a byte: */
+  if ((n < 0) || (n > 255))
+    error(_("GDB bug: ax-general.c (ax_trace_quick): size out of range for trace_quick"));
 
-  grow_expr (x, 2);
+  grow_expr(x, 2);
   x->buf[x->len++] = aop_trace_quick;
-  x->buf[x->len++] = n;
+  x->buf[x->len++] = (char)n;
 }
 
 

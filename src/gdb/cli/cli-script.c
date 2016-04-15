@@ -738,8 +738,8 @@ insert_args (char *line)
       if (p[4] == 'c')          /* $argc */
         {
           if (user_args->count > 9)     /* $argc expands to 1 or 2 characters, '0'..'10' */
-            *(new_line++) = '0' + (user_args->count / 10);
-          *(new_line++) = '0' + (user_args->count % 10);
+            *(new_line++) = (char)('0' + (user_args->count / 10));
+          *(new_line++) = (char)('0' + (user_args->count % 10));
         }
       else
         {
@@ -1294,7 +1294,7 @@ define_command(const char *comname, int from_tty)
      should behave in the same manner. */
   for (tem = (char *)comname; *tem; tem++)
     if (isupper(*tem))
-      *tem = tolower(*tem);
+      *tem = (char)tolower(*tem);
 
   snprintf(tmpbuf, sizeof(tmpbuf), "Type commands for definition of \"%s\".",
 	   comname);

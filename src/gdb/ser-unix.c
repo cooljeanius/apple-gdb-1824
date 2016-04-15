@@ -803,8 +803,8 @@ hardwire_setbaudrate(struct serial *scb, int rate)
 #endif /* HAVE_TERMIO */
 
 #ifdef HAVE_SGTTY
-  state.sgttyb.sg_ispeed = baud_code;
-  state.sgttyb.sg_ospeed = baud_code;
+  state.sgttyb.sg_ispeed = (char)baud_code;
+  state.sgttyb.sg_ospeed = (char)baud_code;
 #endif /* HAVE_SGTTY */
 
   return set_tty_state(scb, &state);

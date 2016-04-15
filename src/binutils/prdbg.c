@@ -2069,13 +2069,12 @@ tg_struct_field (void *p, const char *name, bfd_vma bitpos ATTRIBUTE_UNUSED,
   return TRUE;
 }
 
-/* Finish a struct type.  */
-
+/* Finish a struct type: */
 static bfd_boolean
-tg_end_struct_type (void *p ATTRIBUTE_UNUSED)
+tg_end_struct_type(void *p)
 {
-  struct pr_handle *info = (struct pr_handle *) p;
-  assert (info->stack != NULL);
+  struct pr_handle *info = (struct pr_handle *)p;
+  assert(info->stack != NULL);
 
   return TRUE;
 }
@@ -2459,15 +2458,15 @@ tg_typdef (void *p, const char *name)
    stack, so all we have to do here is print it out.  */
 
 static bfd_boolean
-tg_tag (void *p ATTRIBUTE_UNUSED, const char *name ATTRIBUTE_UNUSED)
+tg_tag(void *p, const char *name ATTRIBUTE_UNUSED)
 {
-  struct pr_handle *info = (struct pr_handle *) p;
+  struct pr_handle *info = (struct pr_handle *)p;
   char *t;
 
-  t = pop_type (info);
+  t = pop_type(info);
   if (t == NULL)
     return FALSE;
-  free (t);
+  free(t);
 
   return TRUE;
 }

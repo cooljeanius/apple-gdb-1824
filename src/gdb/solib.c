@@ -584,7 +584,7 @@ update_solib_list (int from_tty, struct target_ops *target)
       /* Fill in the rest of each of the `struct so_list' nodes.  */
       for (i = inferior; i; i = i->next)
 	{
-	  i->from_tty = from_tty;
+	  i->from_tty = (char)from_tty;
 
 	  /* Fill in the rest of the `struct so_list' node.  */
 	  errors_ret = catch_errors(solib_map_sections, i,

@@ -631,14 +631,13 @@ format_from_filename (const char *filename, int input)
   return RES_FORMAT_UNKNOWN;
 }
 
-/* Print a usage message and exit.  */
-
-static void
-usage (FILE *stream, int status)
+/* Print a usage message and exit: */
+static void ATTRIBUTE_NORETURN
+usage(FILE *stream, int status)
 {
-  fprintf (stream, _("Usage: %s [option(s)] [input-file] [output-file]\n"),
-	   program_name);
-  fprintf (stream, _(" The options are:\n\
+  fprintf(stream, _("Usage: %s [option(s)] [input-file] [output-file]\n"),
+	  program_name);
+  fprintf(stream, _(" The options are:\n\
   -i --input=<file>            Name input file\n\
   -o --output=<file>           Name output file\n\
   -J --input-format=<format>   Specify input format\n\
@@ -654,24 +653,24 @@ usage (FILE *stream, int status)
                                the preprocessor output\n\
      --no-use-temp-file        Use popen (default)\n"));
 #ifdef YYDEBUG
-  fprintf (stream, _("\
+  fprintf(stream, _("\
      --yydebug                 Turn on parser debugging\n"));
-#endif
-  fprintf (stream, _("\
+#endif /* YYDEBUG */
+  fprintf(stream, _("\
   -r                           Ignored for compatibility with rc\n\
   -h --help                    Print this help message\n\
   -V --version                 Print version information\n"));
-  fprintf (stream, _("\
+  fprintf(stream, _("\
 FORMAT is one of rc, res, or coff, and is deduced from the file name\n\
 extension if not specified.  A single file name is an input file.\n\
 No input-file is stdin, default rc.  No output-file is stdout, default rc.\n"));
 
-  list_supported_targets (program_name, stream);
+  list_supported_targets(program_name, stream);
 
   if (status == 0)
-    fprintf (stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
+    fprintf(stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
 
-  exit (status);
+  exit(status);
 }
 
 /* Quote characters that will confuse the shell when we run the preprocessor.  */

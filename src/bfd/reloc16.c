@@ -289,12 +289,12 @@ bfd_coff_reloc16_get_relocated_section_contents(bfd *in_abfd,
 	      /* Note that the relaxing did NOT tie up the addresses in the
 		 relocation, so we use the original address to work out the
 		 run of non-relocated data.  */
-	      run = (reloc->address - src_address);
+	      run = (unsigned int)(reloc->address - src_address);
 	      parent++;
 	    }
 	  else
 	    {
-	      run = (link_order->size - dst_address);
+	      run = (unsigned int)(link_order->size - dst_address);
 	    }
 
 	  /* Copy the bytes: */

@@ -65,13 +65,14 @@ _bfd_ns32k_get_displacement(bfd_byte *buffer, int size)
       break;
 
     default:
-      abort ();
+      abort();
       return 0;
     }
 
-  return value;
+  return (bfd_vma)value;
 }
 
+/* */
 void
 _bfd_ns32k_put_displacement(bfd_vma value, bfd_byte *buffer, int size)
 {
@@ -79,22 +80,22 @@ _bfd_ns32k_put_displacement(bfd_vma value, bfd_byte *buffer, int size)
     {
     case 1:
       value &= 0x7f;
-      *buffer++ = value;
+      *buffer++ = (bfd_byte)value;
       break;
 
     case 2:
       value &= 0x3fff;
       value |= 0x8000;
-      *buffer++ = (value >> 8);
-      *buffer++ = value;
+      *buffer++ = (bfd_byte)(value >> 8);
+      *buffer++ = (bfd_byte)value;
       break;
 
     case 4:
       value |= (bfd_vma)0xc0000000;
-      *buffer++ = (value >> 24);
-      *buffer++ = (value >> 16);
-      *buffer++ = (value >> 8);
-      *buffer++ = value;
+      *buffer++ = (bfd_byte)(value >> 24);
+      *buffer++ = (bfd_byte)(value >> 16);
+      *buffer++ = (bfd_byte)(value >> 8);
+      *buffer++ = (bfd_byte)value;
       break;
 
     default:
@@ -398,9 +399,9 @@ do_ns32k_reloc(bfd *abfd, arelent *reloc_entry, struct bfd_symbol *symbol,
 	       overflow if howto->bitsize is the number of bits in
 	       bfd_vma.  */
 	    bfd_vma reloc_unsigned_max =
-	    (((1 << (howto->bitsize - 1)) - 1) << 1) | 1;
+	      (bfd_vma)((((1UL << (howto->bitsize - 1UL)) - 1UL) << 1UL) | 1UL);
 
-	    if ((bfd_vma) check > reloc_unsigned_max)
+	    if ((bfd_vma)check > reloc_unsigned_max)
 	      flag = bfd_reloc_overflow;
 	  }
 	  break;
@@ -409,11 +410,12 @@ do_ns32k_reloc(bfd *abfd, arelent *reloc_entry, struct bfd_symbol *symbol,
 	    /* Assumes two's complement.  This expression avoids
 	       overflow if howto->bitsize is the number of bits in
 	       bfd_vma.  */
-	    bfd_vma reloc_bits = (((1 << (howto->bitsize - 1)) - 1) << 1) | 1;
+	    bfd_vma reloc_bits =
+	      (bfd_vma)((((1UL << (howto->bitsize - 1UL)) - 1UL) << 1UL) | 1UL);
 
-	    if (((bfd_vma) check & ~reloc_bits) != 0
-		&& (((bfd_vma) check & ~reloc_bits)
-		    != (-(bfd_vma) 1 & ~reloc_bits)))
+	    if ((((bfd_vma)check & ~reloc_bits) != 0)
+		&& (((bfd_vma)check & ~reloc_bits)
+		    != (-(bfd_vma)1L & ~reloc_bits)))
 	      {
 		/* The above right shift is incorrect for a signed
 		   value.  See if turning on the upper bits fixes the
@@ -574,7 +576,7 @@ _bfd_do_ns32k_reloc_contents(reloc_howto_type *howto,
                              bfd_vma (*get_data)PARAMS((bfd_byte *, int)),
                              void (*put_data)PARAMS((bfd_vma, bfd_byte *, int)))
 {
-  int size;
+  size_t size;
   bfd_vma x;
   bfd_boolean overflow;
 
@@ -596,7 +598,7 @@ _bfd_do_ns32k_reloc_contents(reloc_howto_type *howto,
 #ifdef BFD64
     case 8:
 #endif /* BFD64 */
-      x = get_data(location, size);
+      x = get_data(location, (int)size);
       break;
     }
 
@@ -625,11 +627,14 @@ _bfd_do_ns32k_reloc_contents(reloc_howto_type *howto,
 	  /* If this is a signed value, the rightshift just dropped
 	     leading 1 bits (assuming twos complement).  */
 	  if ((bfd_signed_vma) relocation >= 0)
-	    signed_check = check;
+	    signed_check = (bfd_signed_vma)check;
 	  else
-	    signed_check = (check
-			    | ((bfd_vma) - 1
-			       & ~((bfd_vma) - 1 >> howto->rightshift)));
+	    {
+	      signed_check =
+		(bfd_signed_vma)(check
+				 | ((bfd_vma)-1L
+				    & ~((bfd_vma)-1L >> howto->rightshift)));
+	    }
 	}
 
       /* Get the value from the object file.  */
@@ -643,7 +648,7 @@ _bfd_do_ns32k_reloc_contents(reloc_howto_type *howto,
 	 can not get the upper bit, but that does not matter since
 	 signed_add needs no adjustment to become negative in that
 	 case.  */
-      signed_add = add;
+      signed_add = (bfd_signed_vma)add;
       if ((add & (((~howto->src_mask) >> 1) & howto->src_mask)) != 0)
 	signed_add -= (((~howto->src_mask) >> 1) & howto->src_mask) << 1;
 
@@ -688,7 +693,7 @@ _bfd_do_ns32k_reloc_contents(reloc_howto_type *howto,
 	       overflow if howto->bitsize is the number of bits in
 	       bfd_vma.  */
 	    bfd_vma reloc_unsigned_max =
-	    (((1 << (howto->bitsize - 1)) - 1) << 1) | 1;
+	      (bfd_vma)((((1UL << (howto->bitsize - 1UL)) - 1UL) << 1UL) | 1UL);
 
 	    if (check > reloc_unsigned_max)
 	      overflow = TRUE;
@@ -699,11 +704,12 @@ _bfd_do_ns32k_reloc_contents(reloc_howto_type *howto,
 	    /* Assumes two's complement.  This expression avoids
 	       overflow if howto->bitsize is the number of bits in
 	       bfd_vma.  */
-	    bfd_vma reloc_bits = (((1 << (howto->bitsize - 1)) - 1) << 1) | 1;
+	    bfd_vma reloc_bits =
+	      (bfd_vma)((((1UL << (howto->bitsize - 1UL)) - 1UL) << 1UL) | 1UL);
 
-	    if ((check & ~reloc_bits) != 0
-		&& (((bfd_vma) signed_check & ~reloc_bits)
-		    != (-(bfd_vma) 1 & ~reloc_bits)))
+	    if (((check & ~reloc_bits) != 0)
+		&& (((bfd_vma)signed_check & ~reloc_bits)
+		    != (-(bfd_vma)1L & ~reloc_bits)))
 	      overflow = TRUE;
 	  }
 	  break;
@@ -725,14 +731,14 @@ _bfd_do_ns32k_reloc_contents(reloc_howto_type *howto,
     {
     default:
     case 0:
-      abort ();
+      abort();
     case 1:
     case 2:
     case 4:
 #ifdef BFD64
     case 8:
-#endif
-      put_data (x, location, size);
+#endif /* BFD64 */
+      put_data(x, location, (int)size);
       break;
     }
 

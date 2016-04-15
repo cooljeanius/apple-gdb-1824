@@ -57,7 +57,7 @@ int _bfd_vms_slurp_hdr(bfd *abfd, int objtype)
       subtype = vms_rec[1];
       break;
     case EOBJ_S_C_EMH:
-      subtype = bfd_getl16 (vms_rec + 4) + EVAX_OFFSET;
+      subtype = (int)(bfd_getl16(vms_rec + 4) + EVAX_OFFSET);
       break;
     default:
       subtype = -1;
@@ -65,44 +65,44 @@ int _bfd_vms_slurp_hdr(bfd *abfd, int objtype)
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(3, "subtype %d\n", subtype);
-#endif
+#endif /* VMS_DEBUG */
 
   switch (subtype)
     {
     case MHD_S_C_MHD:
       /* Module header.  */
-      PRIV (hdr_data).hdr_b_strlvl = vms_rec[2];
-      PRIV (hdr_data).hdr_l_recsiz = bfd_getl16 (vms_rec + 3);
-      PRIV (hdr_data).hdr_t_name = _bfd_vms_save_counted_string (vms_rec + 5);
+      PRIV(hdr_data).hdr_b_strlvl = vms_rec[2];
+      PRIV(hdr_data).hdr_l_recsiz = (long)bfd_getl16(vms_rec + 3);
+      PRIV(hdr_data).hdr_t_name = _bfd_vms_save_counted_string(vms_rec + 5);
       ptr = vms_rec + 5 + vms_rec[5] + 1;
-      PRIV (hdr_data).hdr_t_version = _bfd_vms_save_counted_string (ptr);
+      PRIV(hdr_data).hdr_t_version = _bfd_vms_save_counted_string(ptr);
       ptr += *ptr + 1;
-      PRIV (hdr_data).hdr_t_date = _bfd_vms_save_sized_string (ptr, 17);
+      PRIV(hdr_data).hdr_t_date = _bfd_vms_save_sized_string(ptr, 17);
       break;
 
     case MHD_S_C_LNM:
-      PRIV (hdr_data).hdr_c_lnm = _bfd_vms_save_sized_string (vms_rec, PRIV (rec_length - 2));
+      PRIV(hdr_data).hdr_c_lnm = _bfd_vms_save_sized_string(vms_rec, PRIV(rec_length - 2));
       break;
 
     case MHD_S_C_SRC:
-      PRIV (hdr_data).hdr_c_src = _bfd_vms_save_sized_string (vms_rec, PRIV (rec_length - 2));
+      PRIV(hdr_data).hdr_c_src = _bfd_vms_save_sized_string(vms_rec, PRIV(rec_length - 2));
       break;
 
     case MHD_S_C_TTL:
-      PRIV (hdr_data).hdr_c_ttl = _bfd_vms_save_sized_string (vms_rec, PRIV (rec_length - 2));
+      PRIV(hdr_data).hdr_c_ttl = _bfd_vms_save_sized_string(vms_rec, PRIV(rec_length - 2));
       break;
 
     case EMH_S_C_MHD + EVAX_OFFSET:
       /* Module header.  */
-      PRIV (hdr_data).hdr_b_strlvl = vms_rec[6];
-      PRIV (hdr_data).hdr_l_arch1  = bfd_getl32 (vms_rec + 8);
-      PRIV (hdr_data).hdr_l_arch2  = bfd_getl32 (vms_rec + 12);
-      PRIV (hdr_data).hdr_l_recsiz = bfd_getl32 (vms_rec + 16);
-      PRIV (hdr_data).hdr_t_name   = _bfd_vms_save_counted_string (vms_rec + 20);
-      ptr = vms_rec + 20 + vms_rec[20] + 1;
-      PRIV (hdr_data).hdr_t_version =_bfd_vms_save_counted_string (ptr);
-      ptr += *ptr + 1;
-      PRIV (hdr_data).hdr_t_date = _bfd_vms_save_sized_string (ptr, 17);
+      PRIV(hdr_data).hdr_b_strlvl = vms_rec[6];
+      PRIV(hdr_data).hdr_l_arch1 = (long)bfd_getl32(vms_rec + 8);
+      PRIV(hdr_data).hdr_l_arch2 = (long)bfd_getl32(vms_rec + 12);
+      PRIV(hdr_data).hdr_l_recsiz = (long)bfd_getl32(vms_rec + 16);
+      PRIV(hdr_data).hdr_t_name = _bfd_vms_save_counted_string(vms_rec + 20);
+      ptr = (vms_rec + 20 + vms_rec[20] + 1);
+      PRIV(hdr_data).hdr_t_version =_bfd_vms_save_counted_string(ptr);
+      ptr += (*ptr + 1);
+      PRIV(hdr_data).hdr_t_date = _bfd_vms_save_sized_string(ptr, 17);
       break;
 
     case EMH_S_C_LNM + EVAX_OFFSET:
@@ -227,7 +227,7 @@ _bfd_vms_write_hdr (bfd *abfd, int objtype)
       fptr = fout;
       while (*fptr != 0)
 	{
-	  *fptr = TOUPPER(*fptr);
+	  *fptr = (char)TOUPPER(*fptr);
 	  fptr++;
 	  if ((*fptr == ';')
 	     || ((fptr - fout) > 31))
@@ -289,7 +289,7 @@ _bfd_vms_write_hdr (bfd *abfd, int objtype)
   /* CPR.  */
   _bfd_vms_output_begin (abfd, EOBJ_S_C_EMH, EMH_S_C_CPR);
   _bfd_vms_output_dump (abfd,
-			 (unsigned char *)"GNU BFD ported by Klaus Kämpf 1994-1996",
+			 (unsigned char *)"GNU BFD ported by Klaus Kâ€°mpf 1994-1996",
 			 39);
   _bfd_vms_output_flush (abfd);
 
@@ -313,27 +313,28 @@ _bfd_vms_slurp_eom (bfd *abfd, int objtype)
   if ((objtype == OBJ_S_C_EOM)
      || (objtype == OBJ_S_C_EOMW))
     {
+      ; /* ??? */
     }
   else
     {
-      PRIV (eom_data).eom_l_total_lps = bfd_getl32 (vms_rec + 4);
-      PRIV (eom_data).eom_b_comcod = *(vms_rec + 8);
+      PRIV(eom_data).eom_l_total_lps = (long)bfd_getl32(vms_rec + 4);
+      PRIV(eom_data).eom_b_comcod = *(vms_rec + 8);
 
-      if (PRIV (eom_data).eom_b_comcod > 1)
+      if (PRIV(eom_data).eom_b_comcod > 1)
 	{
-	  (*_bfd_error_handler) (_("Object module NOT error-free !\n"));
-	  bfd_set_error (bfd_error_bad_value);
+	  (*_bfd_error_handler)(_("Object module NOT error-free !\n"));
+	  bfd_set_error(bfd_error_bad_value);
 	  return -1;
 	}
-      PRIV (eom_data).eom_has_transfer = FALSE;
-      if (PRIV (rec_size) > 10)
+      PRIV(eom_data).eom_has_transfer = FALSE;
+      if (PRIV(rec_size) > 10)
 	{
-	   PRIV (eom_data).eom_has_transfer = TRUE;
-	   PRIV (eom_data).eom_b_tfrflg = *(vms_rec + 9);
-	   PRIV (eom_data).eom_l_psindx = bfd_getl32 (vms_rec + 12);
-	   PRIV (eom_data).eom_l_tfradr = bfd_getl32 (vms_rec + 16);
+	   PRIV(eom_data).eom_has_transfer = TRUE;
+	   PRIV(eom_data).eom_b_tfrflg = *(vms_rec + 9);
+	   PRIV(eom_data).eom_l_psindx = (long)bfd_getl32(vms_rec + 12);
+	   PRIV(eom_data).eom_l_tfradr = (long)bfd_getl32(vms_rec + 16);
 
-	   abfd->start_address = PRIV (eom_data).eom_l_tfradr;
+	   abfd->start_address = (bfd_vma)PRIV(eom_data).eom_l_tfradr;
 	}
     }
   return 0;

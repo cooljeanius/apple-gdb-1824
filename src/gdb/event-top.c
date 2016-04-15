@@ -923,7 +923,7 @@ gdb_readline2 (gdb_client_data client_data)
 	  break;
 	}
 
-      result[input_index++] = c;
+      result[input_index++] = (char)c;
       while (input_index >= result_size)
 	{
 	  result_size *= 2;

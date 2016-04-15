@@ -541,9 +541,9 @@ tic30_aout_object_p(bfd *abfd)
     }
 
 #ifdef SWAP_MAGIC
-  exec.a_info = SWAP_MAGIC (exec_bytes.e_info);
+  exec.a_info = SWAP_MAGIC(exec_bytes.e_info);
 #else
-  exec.a_info = H_GET_32 (abfd, exec_bytes.e_info);
+  exec.a_info = (long)H_GET_32(abfd, exec_bytes.e_info);
 #endif /* SWAP_MAGIC */
 
   if (N_BADMAG (exec))
@@ -684,7 +684,7 @@ MY_bfd_final_link(bfd *abfd, struct bfd_link_info *info)
 {
   struct internal_exec *execp = exec_hdr(abfd);
   file_ptr pos;
-  bfd_vma vma = 0;
+  bfd_vma vma = 0UL;
   int pad;
 
   /* Set the executable header size to 0, as we do NOT want one for an
@@ -722,7 +722,7 @@ MY_bfd_final_link(bfd *abfd, struct bfd_link_info *info)
 
   /* Since BSS follows data immediately, see if it needs alignment: */
   vma += obj_datasec(abfd)->size;
-  pad = (align_power(vma, obj_bsssec (abfd)->alignment_power) - vma);
+  pad = (int)(align_power(vma, obj_bsssec (abfd)->alignment_power) - vma);
   obj_datasec(abfd)->size += pad;
   pos += obj_datasec(abfd)->size;
   execp->a_data = obj_datasec(abfd)->size;

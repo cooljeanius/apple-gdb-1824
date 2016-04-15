@@ -1156,11 +1156,12 @@ mi_cmd_data_write_register_values(char *command, char **argv, int argc)
 
   if (argc == 0)
     {
-      mi_error_message = xstrprintf("mi_cmd_data_write_register_values: Usage: -data-write-register-values <format> [<regnum1> <value1>...<regnumN> <valueN>]");
+      mi_error_message =
+	xstrprintf("mi_cmd_data_write_register_values: Usage: -data-write-register-values <format> [<regnum1> <value1>...<regnumN> <valueN>]");
       return MI_CMD_ERROR;
     }
 
-  format = (int)argv[0][0];
+  format = (char)argv[0][0];
 
   if (format == 0) {
     ; /* do nothing; just silence '-Wunused-but-set-variable' */
@@ -2875,9 +2876,9 @@ print_diff(struct mi_timestamp *start, struct mi_timestamp *end)
 {
   fprintf_unfiltered(raw_stdout,
      ",time={wallclock=\"%0.5f\",user=\"%0.5f\",system=\"%0.5f\",start=\"%d.%06d\",end=\"%d.%06d\"}",
-     (double)(wallclock_diff(start, end) / 1000000.0f),
-     (double)(user_diff(start, end) / 1000000.0f),
-     (double)(system_diff(start, end) / 1000000.0f),
+     (double)((float)wallclock_diff(start, end) / 1000000.0f),
+     (double)((float)user_diff(start, end) / 1000000.0f),
+     (double)((float)system_diff(start, end) / 1000000.0f),
      (int)start->wallclock.tv_sec, (int)start->wallclock.tv_usec,
      (int)end->wallclock.tv_sec, (int)end->wallclock.tv_usec);
 

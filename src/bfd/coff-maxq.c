@@ -58,13 +58,14 @@
 static long
 get_symbol_value (asymbol *symbol)
 {
-  long relocation = 0;
+  long relocation = 0L;
 
   if (bfd_is_com_section (symbol->section))
-    relocation = 0;
+    relocation = 0L;
   else
-    relocation = symbol->value +
-      symbol->section->output_section->vma + symbol->section->output_offset;
+    relocation = (long)(symbol->value
+			+ symbol->section->output_section->vma
+			+ symbol->section->output_offset);
 
   return relocation;
 }
@@ -84,10 +85,10 @@ coff_maxq20_reloc (bfd *      abfd,
 {
   reloc_howto_type *howto = (reloc_howto_type *)NULL;
   unsigned char *addr = (unsigned char *)NULL;
-  unsigned long x = 0;
-  long call_addr = 0;
+  unsigned long x = 0UL;
+  long call_addr = 0L;
   short addend = 0;
-  long diff = 0;
+  long diff = 0L;
 
   /* If this is an undefined symbol, return error.  */
   if (symbol_in->section == &bfd_und_section
@@ -114,22 +115,23 @@ coff_maxq20_reloc (bfd *      abfd,
 	  /* Handle any addend.  */
 	  addend = reloc_entry->addend;
 
-	  if (addend > call_addr || addend > 0)
-	    call_addr = symbol_in->section->output_section->vma + addend;
-	  else if (addend < call_addr && addend > 0)
-	    call_addr = call_addr + addend;
+	  if ((addend > call_addr) || (addend > 0))
+	    call_addr = (long)(symbol_in->section->output_section->vma
+			       + addend);
+	  else if ((addend < call_addr) && (addend > 0))
+	    call_addr = (call_addr + addend);
 	  else if (addend < 0)
-	    call_addr = call_addr + addend;
+	    call_addr = (call_addr + addend);
 
-	  diff = ((call_addr << 1) - (reloc_entry->address << 1));
+	  diff = (long)((call_addr << 1) - (reloc_entry->address << 1));
 
 	  if (!IS_SJUMP_RANGE (diff))
 	    {
-	      bfd_perror (_("Can't Make it a Short Jump"));
+	      bfd_perror(_("Cannot Make it a Short Jump"));
 	      return bfd_reloc_outofrange;
 	    }
 
-	  x = bfd_get_16 (abfd, addr);
+	  x = (unsigned long)bfd_get_16(abfd, addr);
 
 	  x = x & LOW_WORD_MASK;
 	  x = x | (diff << 8);
@@ -206,7 +208,7 @@ coff_maxq20_reloc (bfd *      abfd,
 		}
 	    }
 
-	  x = bfd_get_32 (abfd, addr);
+	  x = (unsigned long)bfd_get_32(abfd, addr);
 
 	  x = (x & 0xFF00FF00);
 	  x = (x | ((call_addr & HIGH_WORD_MASK) >> 8));
@@ -247,7 +249,7 @@ coff_maxq20_reloc (bfd *      abfd,
 	  x = x & 0x00;
 	  x = x | (call_addr + addend);
 
-	  bfd_put_8 (abfd, (bfd_vma) x, addr);
+	  bfd_put_8(abfd, (bfd_vma)x, addr);
 	  return bfd_reloc_ok;
 
 	case BFD_RELOC_16:
@@ -282,7 +284,7 @@ coff_maxq20_reloc (bfd *      abfd,
 	    {
 	      unsigned short val = (call_addr + addend);
 
-	      x = bfd_get_16 (abfd, addr);
+	      x = (unsigned long)bfd_get_16(abfd, addr);
 
 	      /* LE */
 	      x = (x & 0x0000);	/* Flush garbage value.  */
@@ -322,7 +324,7 @@ coff_maxq20_reloc (bfd *      abfd,
 	      return bfd_reloc_outofrange;
 	    }
 
-	  x = bfd_get_32 (abfd, addr);
+	  x = (unsigned long)bfd_get_32(abfd, addr);
 	  x = (x & 0x0000);	/* Flush garbage value.  */
 	  x = call_addr + addend;
 	  if ((symbol_in->section->flags & SEC_CODE) == SEC_CODE)

@@ -728,7 +728,7 @@ gdb_readline (char *prompt_arg)
 	  break;
 	}
 
-      result[input_index++] = c;
+      result[input_index++] = (char)c;
       while (input_index >= result_size)
 	{
 	  result_size *= 2;
@@ -804,7 +804,7 @@ gdb_readline_wrapper(char *prompt)
 
 
 #ifdef STOP_SIGNAL
-static void
+static void ATTRIBUTE_USED
 stop_sig(int signo)
 {
 #if (STOP_SIGNAL == SIGTSTP)
@@ -833,7 +833,7 @@ stop_sig(int signo)
 #endif /* STOP_SIGNAL */
 
 /* Initialize signal handlers. */
-static void ATTR_NORETURN
+static void ATTR_NORETURN ATTRIBUTE_USED
 float_handler(int signo)
 {
   /* This message is based on ANSI C, section 4.7.  Note that integer
@@ -842,8 +842,8 @@ float_handler(int signo)
   error(_("Erroneous arithmetic operation."));
 }
 
-static void
-do_nothing (int signo)
+static void ATTRIBUTE_USED
+do_nothing(int signo)
 {
   /* Under System V the default disposition of a signal is reinstated after
      the signal is caught and delivered to an application process.  On such

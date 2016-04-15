@@ -124,12 +124,11 @@ bin_to_res (struct res_id type, const unsigned char *data,
     }
 }
 
-/* Give an error if the binary data is too small.  */
-
-static void
-toosmall (const char *msg)
+/* Give an error if the binary data is too small: */
+static void ATTRIBUTE_NORETURN
+toosmall(const char *msg)
 {
-  fatal (_("%s: not enough binary data"), msg);
+  fatal(_("%s: not enough binary data"), msg);
 }
 
 /* Swap in a NULL terminated unicode string.  */

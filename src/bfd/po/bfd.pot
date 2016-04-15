@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-07 20:34-0400\n"
+"POT-Creation-Date: 2016-04-08 19:38-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -430,7 +430,7 @@ msgstr ""
 msgid "%s: warning: illegal symbol index %ld in relocs"
 msgstr ""
 
-#: coff-w65.c:357
+#: coff-w65.c:362
 #, c-format
 msgid "ignoring reloc %s\n"
 msgstr ""

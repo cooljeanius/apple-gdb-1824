@@ -1161,7 +1161,7 @@ default_xfer_partial (struct target_ops *ops, enum target_object object,
 	{
 	  void *buffer = xmalloc((size_t)len);
 	  struct cleanup *cleanup = make_cleanup(xfree, buffer);
-	  memcpy(buffer, writebuf, len);
+	  memcpy(buffer, writebuf, (size_t)len);
 	  xfered = ops->deprecated_xfer_memory(offset, (gdb_byte *)buffer,
                                                (int)len, 1/*write*/, NULL,
                                                ops);
@@ -1190,14 +1190,14 @@ default_xfer_partial (struct target_ops *ops, enum target_object object,
    it does not need to handle memory specially; it just passes all
    requests down the stack.  */
 
-static LONGEST
-current_xfer_partial (struct target_ops *ops, enum target_object object,
-		      const char *annex, gdb_byte *readbuf,
-		      const gdb_byte *writebuf, ULONGEST offset, LONGEST len)
+static ATTRIBUTE_USED LONGEST
+current_xfer_partial(struct target_ops *ops, enum target_object object,
+		     const char *annex, gdb_byte *readbuf,
+		     const gdb_byte *writebuf, ULONGEST offset, LONGEST len)
 {
   if (ops->beneath != NULL)
-    return ops->beneath->to_xfer_partial (ops->beneath, object, annex,
-					  readbuf, writebuf, offset, len);
+    return ops->beneath->to_xfer_partial(ops->beneath, object, annex,
+					 readbuf, writebuf, offset, len);
   else
     return -1;
 }

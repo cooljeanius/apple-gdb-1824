@@ -381,7 +381,7 @@ remote_fileio_to_be (LONGEST num, char *buf, int bytes)
   int i;
 
   for (i = 0; i < bytes; ++i)
-    buf[i] = (num >> (8 * (bytes - i - 1))) & 0xff;
+    buf[i] = (char)((num >> (8 * (bytes - i - 1))) & 0xff);
 }
 
 static void

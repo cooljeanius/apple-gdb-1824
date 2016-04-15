@@ -621,7 +621,8 @@ create_file_handler (int fd, int mask, handler_func * proc, gdb_client_data clie
 	    gdb_notifier.poll_fds =
 	      (struct pollfd *)xmalloc(sizeof(struct pollfd));
 	  (gdb_notifier.poll_fds + gdb_notifier.num_fds - 1)->fd = fd;
-	  (gdb_notifier.poll_fds + gdb_notifier.num_fds - 1)->events = mask;
+	  (gdb_notifier.poll_fds + gdb_notifier.num_fds - 1)->events =
+	    (short)mask;
 	  (gdb_notifier.poll_fds + gdb_notifier.num_fds - 1)->revents = 0;
 #else
 	  internal_error(__FILE__, __LINE__,

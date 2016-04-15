@@ -507,11 +507,13 @@ mips_reflo_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 	     need to know anything about the REFLO itself, except
 	     where to find the low 16 bits of the addend needed by the
 	     REFHI.  */
-	  insn = bfd_get_32 (abfd, l->addr);
-	  vallo = (bfd_get_32 (abfd, (bfd_byte *) data + reloc_entry->address)
-		   & 0xffff);
-	  val = ((insn & 0xffff) << 16) + vallo;
-	  val += l->addend;
+	  insn = (unsigned long)bfd_get_32(abfd, l->addr);
+	  vallo =
+	    (unsigned long)(bfd_get_32(abfd,
+				       ((bfd_byte *)data
+					+ reloc_entry->address)) & 0xffff);
+	  val = (((insn & 0xffff) << 16) + vallo);
+	  val += (unsigned long)l->addend;
 
 	  /* The low order 16 bits are always treated as a signed
 	     value.  Therefore, a negative value in the low order bits
@@ -643,10 +645,11 @@ mips_gprel_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
   if (reloc_entry->address > bfd_get_section_limit (abfd, input_section))
     return bfd_reloc_outofrange;
 
-  insn = bfd_get_32 (abfd, (bfd_byte *) data + reloc_entry->address);
+  insn = (unsigned long)bfd_get_32(abfd,
+				   ((bfd_byte *)data + reloc_entry->address));
 
   /* Set val to the offset into the section or symbol.  */
-  val = ((insn & 0xffff) + reloc_entry->addend) & 0xffff;
+  val = (unsigned long)(((insn & 0xffff) + reloc_entry->addend) & 0xffff);
   if (val & 0x8000)
     val -= 0x10000;
 
@@ -655,7 +658,7 @@ mips_gprel_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
      an external symbol.  */
   if (! relocatable
       || (symbol->flags & BSF_SECTION_SYM) != 0)
-    val += relocation - gp;
+    val += (unsigned long)(relocation - gp);
 
   insn = (insn &~ (unsigned) 0xffff) | (val & 0xffff);
   bfd_put_32 (abfd, (bfd_vma) insn, (bfd_byte *) data + reloc_entry->address);
@@ -729,17 +732,18 @@ mips_relocate_hi(struct internal_reloc *refhi,
   if (refhi == NULL)
     return;
 
-  insn = bfd_get_32(input_bfd,
-		    contents + refhi->r_vaddr - input_section->vma);
+  insn = (unsigned long)bfd_get_32(input_bfd,
+				   (contents + refhi->r_vaddr
+				    - input_section->vma));
   if (reflo == NULL)
     vallo = 0;
   else
-    vallo = (bfd_get_32(input_bfd,
-                        contents + reflo->r_vaddr - input_section->vma)
-	     & 0xffff);
+    vallo = (unsigned long)(bfd_get_32(input_bfd,
+				       (contents + reflo->r_vaddr
+					- input_section->vma)) & 0xffff);
 
   val = (((insn & 0xffff) << 16) + vallo);
-  val += relocation;
+  val += (unsigned long)relocation;
 
   /* The low order 16 bits are always treated as a signed value.
      Therefore, a negative value in the low order bits requires an

@@ -1342,12 +1342,12 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		      || (h->class == C_LABEL))
 		    {
 		      /* Thumb code calling an ARM function: */
-		      asection *                         s = 0;
-		      bfd_vma                            my_offset;
-		      unsigned long int                  tmp;
-		      long int                           ret_offset;
-		      struct coff_link_hash_entry *      myh;
-		      struct coff_arm_link_hash_table *  globals;
+		      asection *s = (asection *)0;
+		      bfd_vma my_offset;
+		      unsigned long int tmp;
+		      long int ret_offset;
+		      struct coff_link_hash_entry *myh;
+		      struct coff_arm_link_hash_table *globals;
 
 		      myh = find_thumb_glue(info, name, input_bfd);
 		      if (myh == NULL)
@@ -1422,18 +1422,18 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
 			      ret_offset =
 		/* Address of destination of the stub.  */
-				((bfd_signed_vma)h_val)
-				- ((bfd_signed_vma)
+				(long int)(((bfd_signed_vma)h_val)
+					   - ((bfd_signed_vma)
 		/* Offset from the start of the current section to the start of the stubs.  */
-				   (s->output_offset
+					      (s->output_offset
 		/* Offset of the start of this stub from the start of the stubs.  */
-				    + my_offset
+					       + my_offset
 		/* Address of the start of the current section.  */
-				    + s->output_section->vma)
+					       + s->output_section->vma)
 		/* The branch instruction is 4 bytes into the stub.  */
-				   + 4
+					      + 4L
 		/* ARM branches work from the pc of the instruction + 8.  */
-				   + 8);
+					      + 8L));
 
 			      bfd_put_32(output_bfd,
 					 ((bfd_vma)t2a3_b_insn
@@ -1449,13 +1449,14 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		      /* Now go back and fix up the original BL insn to point
 			 to here.  */
 		      ret_offset =
-			(s->output_offset + my_offset
-                         - (input_section->output_offset
-                            + rel->r_vaddr) - 4);
+			(long int)(s->output_offset + my_offset
+				   - (input_section->output_offset
+				      + rel->r_vaddr) - 4);
 
-		      tmp = bfd_get_32(input_bfd,
-                                       (contents + rel->r_vaddr
-                                        - input_section->vma));
+		      tmp = ((unsigned long int)
+			     bfd_get_32(input_bfd,
+					(contents + rel->r_vaddr
+					 - input_section->vma)));
 
 		      bfd_put_32(output_bfd,
 				 ((bfd_vma)

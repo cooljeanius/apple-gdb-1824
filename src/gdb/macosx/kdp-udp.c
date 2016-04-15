@@ -52,6 +52,7 @@
 # define assert CHECK_FATAL
 #endif /* !assert */
 
+/* */
 void
 kdp_log_packetbuf(kdp_log_function *f, kdp_log_level l, const char *prefix,
                   const char *buf, size_t len)
@@ -202,6 +203,7 @@ kdp_receive_fd(kdp_connection *c, kdp_pkt_t * packet, int fd, int timeout)
   return RR_SUCCESS;
 }
 
+/* */
 kdp_return_t
 kdp_receive(kdp_connection *c, kdp_pkt_t *packet, int to)
 {
@@ -269,6 +271,7 @@ kdp_receive(kdp_connection *c, kdp_pkt_t *packet, int to)
     }
 }
 
+/* */
 void
 kdp_set_timeouts(kdp_connection *c, int timeout, int retries)
 {
@@ -276,6 +279,7 @@ kdp_set_timeouts(kdp_connection *c, int timeout, int retries)
   c->retries = retries;
 }
 
+/* */
 static kdp_return_t
 kdp_bind_socket(kdp_connection *c,
                 unsigned short port, unsigned short *pret, int *fd)
@@ -327,6 +331,7 @@ kdp_bind_socket(kdp_connection *c,
   return RR_SUCCESS;
 }
 
+/* */
 static kdp_return_t
 kdp_bind_remote(struct kdp_connection *c, const char *target, int port)
 {
@@ -365,8 +370,8 @@ kdp_bind_remote(struct kdp_connection *c, const char *target, int port)
     }
   if (host != NULL)
     {
-      c->target_sin.sin_family = host->h_addrtype;
-      c->target_sin.sin_port = htons(port);
+      c->target_sin.sin_family = (sa_family_t)host->h_addrtype;
+      c->target_sin.sin_port = htons((uint16_t)port);
       memcpy(&c->target_sin.sin_addr, host->h_addr, host->h_length);
 
       c->port = port;
@@ -376,7 +381,7 @@ kdp_bind_remote(struct kdp_connection *c, const char *target, int port)
   if (ret == 1)
     {
       c->target_sin.sin_family = AF_INET;
-      c->target_sin.sin_port = htons(port);
+      c->target_sin.sin_port = htons((uint16_t)port);
       memcpy(&c->target_sin.sin_addr, &addr, sizeof(struct in_addr));
       c->port = port;
       c->bound = 1;
@@ -388,6 +393,7 @@ kdp_bind_remote(struct kdp_connection *c, const char *target, int port)
   return RR_LOOKUP;
 }
 
+/* */
 void
 kdp_reset(kdp_connection *c)
 {
@@ -418,18 +424,21 @@ kdp_reset(kdp_connection *c)
   c->timed_out = 0;
 }
 
+/* */
 void
 kdp_set_big_endian(kdp_connection *c)
 {
   c->bigendian = 1;
 }
 
+/* */
 void
 kdp_set_little_endian(kdp_connection *c)
 {
   c->bigendian = 0;
 }
 
+/* */
 kdp_return_t
 kdp_create(kdp_connection *c,
            void (*logger)(kdp_log_level l, const char *s, ...),
@@ -485,6 +494,7 @@ kdp_create(kdp_connection *c,
   return RR_SUCCESS;
 }
 
+/* */
 kdp_return_t
 kdp_destroy(kdp_connection *c)
 {
@@ -514,6 +524,7 @@ kdp_destroy(kdp_connection *c)
   return RR_SUCCESS;
 }
 
+/* */
 int
 kdp_is_bound(kdp_connection *c)
 {
@@ -524,6 +535,7 @@ kdp_is_bound(kdp_connection *c)
   return c->bound;
 }
 
+/* */
 int
 kdp_is_connected(kdp_connection *c)
 {
@@ -534,6 +546,7 @@ kdp_is_connected(kdp_connection *c)
   return c->connected;
 }
 
+/* */
 kdp_return_t
 kdp_transmit_debug(kdp_connection *c, kdp_pkt_t * packet)
 {
@@ -541,6 +554,7 @@ kdp_transmit_debug(kdp_connection *c, kdp_pkt_t * packet)
   return kdp_transmit_fd(c, packet, c->reqfd);
 }
 
+/* */
 kdp_return_t
 kdp_transmit_exception(kdp_connection *c, kdp_pkt_t * packet)
 {
@@ -548,6 +562,7 @@ kdp_transmit_exception(kdp_connection *c, kdp_pkt_t * packet)
   return kdp_transmit_fd(c, packet, c->excfd);
 }
 
+/* */
 kdp_return_t
 kdp_receive_debug(kdp_connection *c, kdp_pkt_t * packet, int timeout)
 {
@@ -555,6 +570,7 @@ kdp_receive_debug(kdp_connection *c, kdp_pkt_t * packet, int timeout)
   return kdp_receive_fd(c, packet, c->reqfd, timeout);
 }
 
+/* */
 kdp_return_t
 kdp_receive_exception(kdp_connection *c, kdp_pkt_t * packet, int timeout)
 {

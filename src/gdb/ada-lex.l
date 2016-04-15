@@ -352,6 +352,12 @@ xor		{ return XOR; }
 #ifndef _STRING_H_
 # include <string.h>
 #endif /* !_STRING_H_ */
+      
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && defined(__clang__)
+# if (__GNUC__ >= 4)
+#  pragma GCC diagnostic ignored "-Wmissing-noreturn"
+# endif /* gcc 4+ */
+#endif /* __GNUC__ && __GNUC_MINOR__ && __clang__ */
 
 /* Initialize the lexer for processing new expression */
 void
@@ -950,7 +956,8 @@ yywrap(void)
 typedef void (*dummy_function)(void);
 dummy_function ada_flex_use[] =
 {
-  (dummy_function)yyunput
+  (dummy_function)yyunput,
+  (dummy_function)yyinput
 };
 
 /* End of ada-lex.l */

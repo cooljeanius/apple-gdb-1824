@@ -282,7 +282,7 @@ MY(callback)(bfd *abfd)
       obj_str_filepos(abfd) = (obj_sym_filepos(abfd) + execp->a_syms);
 
       abfd->flags |= (HAS_LINENO | HAS_DEBUG | HAS_SYMS | HAS_LOCALS);
-      bfd_get_symcount(abfd) = (execp->a_syms / 12);
+      bfd_get_symcount(abfd) = (unsigned int)(execp->a_syms / 12);
       obj_symbol_entry_size(abfd) = 12;
       obj_reloc_entry_size(abfd) = RELOC_STD_SIZE;
     }
@@ -469,7 +469,7 @@ NAME (aout,swap_exec_header_in)(bfd *abfd, struct external_exec *raw_bytes,
      are memcmp'd, and thus the contents do matter. */
   memset(execp, 0, sizeof(struct internal_exec));
   /* Now fill in fields in the execp, from the bytes in the raw data.  */
-  execp->a_info = H_GET_32(abfd, bytes->e_info);
+  execp->a_info = (long)H_GET_32(abfd, bytes->e_info);
   execp->a_text = GET_WORD(abfd, bytes->e_text);
   execp->a_data = GET_WORD(abfd, bytes->e_data);
   execp->a_bss = GET_WORD(abfd, bytes->e_bss);
@@ -497,7 +497,7 @@ NAME (aout,swap_exec_header_in)(bfd *abfd, struct external_exec *raw_bytes,
       if (H_GET_32 (abfd, bytes->e_supsize) != 0)
 	break;
 
-      syms = H_GET_32 (abfd, bytes->e_drelocs);
+      syms = (long)H_GET_32 (abfd, bytes->e_drelocs);
       if (syms == 0)
 	break;
 
@@ -656,7 +656,7 @@ MY (swap_std_reloc_in)(bfd *abfd, struct hp300hpux_reloc *bytes,
   struct aoutdata *su = &(abfd->tdata.aout_data->a);
 
   cache_ptr->address = H_GET_32(abfd, bytes->r_address);
-  r_index = H_GET_16(abfd, bytes->r_index);
+  r_index = (int)H_GET_16(abfd, bytes->r_index);
 
   switch (bytes->r_type[0])
     {
@@ -784,13 +784,13 @@ doit:
 
   for (; counter < count; counter++, rptr++, cache_ptr++)
     {
-      MY (swap_std_reloc_in) (abfd, rptr, cache_ptr, symbols,
-			      (bfd_size_type) bfd_get_symcount (abfd));
+      MY(swap_std_reloc_in)(abfd, rptr, cache_ptr, symbols,
+			    (bfd_size_type)bfd_get_symcount(abfd));
     }
 
-  bfd_release (abfd, relocs);
+  bfd_release(abfd, relocs);
   asect->relocation = reloc_cache;
-  asect->reloc_count = count;
+  asect->reloc_count = (unsigned int)count;
   return TRUE;
 }
 

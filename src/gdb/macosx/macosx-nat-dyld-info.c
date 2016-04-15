@@ -146,7 +146,7 @@ dyld_objfile_entry_in_shared_cache(struct dyld_objfile_entry *e)
 	 field and if it is set to zero (which gets done by
 	 DYLD_OBJFILE_ENTRY_CLEAR) then we haven't read it yet.  */
       if (e->mem_header.magic == 0)
-       target_read_mach_header (e->dyld_addr, &e->mem_header);
+       target_read_mach_header(e->dyld_addr, &e->mem_header);
 
       /* The high bit of the flags member from the in memory version of the
          mach_header declares if this mach image is in the shared cache.  */

@@ -1760,6 +1760,15 @@ AC_CHECK_SIZEOF([long])dnl
 AC_CHECK_ALIGNOF([long])dnl
 AC_CHECK_TYPES([caddr_t])dnl
 AC_CHECK_TYPES([thread_t])dnl
+AC_CHECK_TYPES([sa_family_t],[],[],[
+#ifdef HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest for sa_family_t wants <sys/socket.h> included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_SOCKET_H */
+])dnl
 AC_CHECK_TYPES([regex_t],[],[],[
 #ifdef HAVE_REGEX_H
 # include <regex.h>
@@ -3039,6 +3048,9 @@ esac
 
 # clang-specific warnings:
 if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
+  build_warnings="${build_warnings} -Wgcc-compat -Wasm -Wdangling-else \
+-Wunneeded-internal-declaration -Wstring-plus-int -Wstring-conversion \
+-Wbool-conversion -Wconstant-logical-operand"
   ## mig typechecks cause paramaters that would otherwise be unused to be
   ## used, triggering this:
   if test "x${MIG_CHECKING}" = "x"; then
@@ -3091,7 +3103,7 @@ fi
 #  * -Wcast-align (same as with -Wcast-qual, and also makes clang noisy)
 #  * -Wconversion (would require a lot of casting)
 #  * -Wsign-conversion (likewise)
-#  * -Wtraditional-conversion (likewise)
+#  * -Wtraditional-conversion (likewise) (C-only, not C++)
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
 #  * -Wundef (only if we can figure out how to fix the issue with caddr_t)
 #  * -Wunused-macros (if we also add back -Wundef as per above)

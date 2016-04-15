@@ -405,7 +405,7 @@ mach_xfer_memory_block(CORE_ADDR memaddr, gdb_byte *myaddr,
 /* The old Tiger code used to call mach_vm_region to get the region
    info, but this would return a very large region of memory and we
    would be modifying permissions on this large chunk.  */
-static kern_return_t
+static ATTRIBUTE_USED kern_return_t
 macosx_vm_region(task_t task, mach_vm_address_t addr,
 		 mach_vm_address_t *r_start, mach_vm_size_t *r_size,
 		 vm_prot_t *prot, vm_prot_t *max_prot)
@@ -579,7 +579,8 @@ macosx_vm_protect_range(task_t task, mach_vm_address_t region_start,
   return kret;
 }
 
-static kern_return_t
+/* */
+static ATTRIBUTE_USED kern_return_t
 macosx_vm_protect_region(task_t task, mach_vm_address_t region_start,
 			 mach_vm_size_t region_size,
                          mach_vm_address_t addr, mach_vm_size_t size,
@@ -607,8 +608,8 @@ macosx_vm_protect_region(task_t task, mach_vm_address_t region_start,
   return kret;
 }
 
-
-static kern_return_t
+/* */
+static ATTRIBUTE_USED kern_return_t
 macosx_get_region_info_both(task_t task, mach_vm_address_t addr,
                             mach_vm_address_t *r_start,
                             mach_vm_size_t *r_size,
@@ -791,8 +792,8 @@ mach_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr,
 
       if ((cur_memaddr % pagesize) != 0)
         {
-          int max_len = (pagesize - (cur_memaddr % pagesize));
-          int op_len = cur_len;
+          size_t max_len = (size_t)(pagesize - (cur_memaddr % pagesize));
+          size_t op_len = cur_len;
           if (op_len > max_len)
             {
               op_len = max_len;
@@ -887,7 +888,7 @@ mach_xfer_partial(struct target_ops *ops, enum target_object object,
     {
     case TARGET_OBJECT_MEMORY:
       {
-	ssize_t nbytes = len;
+	ssize_t nbytes = (ssize_t)len;
 
 	if (readbuf)
 	  nbytes = mach_xfer_memory(offset, readbuf, nbytes, 0, NULL, ops);
@@ -1658,17 +1659,18 @@ build_path_to_element(struct type *type, CORE_ADDR offset, char **symbol_name)
 					     symbol_name);
 	    }
 	}
-      return offset;
+      return (int)offset;
     }
   else if (TYPE_CODE(type) == TYPE_CODE_ARRAY)
     {
-      /* FIXME - Did NOT do arrays yet: */
-      return offset;
+      /* FIXME: Did NOT do arrays yet: */
+      return (int)offset;
     }
   else
-    return offset;
+    return (int)offset;
 }
 
+/* */
 char *
 get_symbol_at_address_on_stack(CORE_ADDR stack_address, int *frame_level)
 {
@@ -1853,7 +1855,7 @@ gc_print_references(volatile CORE_ADDR list_addr, int wordsize)
 	  ui_out_text(uiout, auto_kind_spacer[kind]);
 	}
       else
-	ui_out_field_int(uiout, "kind", kind);
+	ui_out_field_int(uiout, "kind", (int)kind);
 
       ui_out_text(uiout, "  rc: ");
       /* Cheesy spacing, if we ever get retain counts over 9999 we will NOT
@@ -1863,7 +1865,7 @@ gc_print_references(volatile CORE_ADDR list_addr, int wordsize)
       else if (retain_cnt < 100)
 	ui_out_text(uiout, " ");
 
-      ui_out_field_int(uiout, "retain-count", retain_cnt);
+      ui_out_field_int(uiout, "retain-count", (int)retain_cnt);
 
       if (kind == AUTO_BLOCK_STACK)
 	{
@@ -2147,10 +2149,10 @@ gc_root_tracing_command(const char *arg, int from_tty)
 	   paddr_nz (list_addr));
 
   cleanup_chain = make_cleanup_ui_out_tuple_begin_end (uiout, "roots");
-  ui_out_text (uiout, "Number of roots: ");
-  ui_out_field_int (uiout, "num_roots", num_roots);
+  ui_out_text(uiout, "Number of roots: ");
+  ui_out_field_int(uiout, "num_roots", (int)num_roots);
 
-  ui_out_text (uiout, "\n");
+  ui_out_text(uiout, "\n");
 
 
   /* Now print out all the roots, and recursively their references.  */

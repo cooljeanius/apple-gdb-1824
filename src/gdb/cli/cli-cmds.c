@@ -695,7 +695,8 @@ edit_command(const char *arg, int from_tty)
   for (log10 = 32, m = 0x80000000; !(sal.line & m) && (log10 > 0);
        log10--, m = (m >> 1))
     ; /* (do nothing) */
-  log10 = (1 + (int)((log10 + (0 == ((m - 1) & sal.line))) / 3.32192809f));
+  log10 = (1 + (int)((float)(log10 + (0 == ((m - 1) & sal.line)))
+		     / 3.32192809f));
 
   /* If we do NOT already know the full absolute file name of the source
    * file, then find it now: */
@@ -787,10 +788,8 @@ list_command(const char *arg, int from_tty)
 	return;			/*  C++  */
       if (sals.nelts > 1)
 	{
-	/* APPLE LOCAL: ambiguous_line_spec returns
-	   1 if the line spec really was ambiguous -
-	   rather than just being many matches of the
-	   same line.  */
+	/* APPLE LOCAL: ambiguous_line_spec returns 1 if the line spec really
+	 * was ambiguous, rather than just being many matches of 1 same line: */
         if (ambiguous_line_spec(&sals) == 1)
 	  {
 	    xfree(sals.sals);

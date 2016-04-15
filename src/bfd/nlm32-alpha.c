@@ -406,8 +406,8 @@ nlm_alpha_read_reloc (bfd *abfd,
     return FALSE;
 
   /* Swap in the reloc information.  */
-  r_vaddr = H_GET_64 (abfd, ext.r_vaddr);
-  r_symndx = H_GET_32 (abfd, ext.r_symndx);
+  r_vaddr = H_GET_64(abfd, ext.r_vaddr);
+  r_symndx = (long)H_GET_32(abfd, ext.r_symndx);
 
   BFD_ASSERT (bfd_little_endian (abfd));
 
@@ -681,12 +681,12 @@ nlm_alpha_write_import (bfd * abfd, asection * sec, arelent * rel)
 	{
 	case ALPHA_R_LITUSE:
 	case ALPHA_R_GPDISP:
-	  r_symndx = rel->addend;
+	  r_symndx = (long)rel->addend;
 	  break;
 
 	case ALPHA_R_OP_STORE:
-	  r_size = rel->addend & 0xff;
-	  r_offset = (rel->addend >> 8) & 0xff;
+	  r_size = (int)(rel->addend & 0xff);
+	  r_offset = (int)((rel->addend >> 8) & 0xff);
 	  break;
 
 	case ALPHA_R_OP_PUSH:
@@ -714,7 +714,7 @@ nlm_alpha_write_import (bfd * abfd, asection * sec, arelent * rel)
 	}
       else
 	{
-	  r_symndx = rel->addend - 1;
+	  r_symndx = (long)(rel->addend - 1L);
 	  r_size = ALPHA_R_NW_RELOC_LITA;
 	}
       r_extern = 0;

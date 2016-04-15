@@ -412,10 +412,10 @@ swapcore_sun3(bfd *abfd, char *ext, struct internal_sunos_core *intcore)
   memcpy(intcore->c_cmdname, extcore->c_cmdname, sizeof(intcore->c_cmdname));
   intcore->fp_stuff_pos = (long)(((struct external_sun3_core *)0)->fp_stuff);
   /* FP stuff takes up whole rest of struct, except c_ucode: */
-  intcore->fp_stuff_size = (int)(intcore->c_len - sizeof(extcore->c_ucode)
+  intcore->fp_stuff_size = (int)((size_t)intcore->c_len - sizeof(extcore->c_ucode)
     - (file_ptr)(intptr_t)(((struct external_sun3_core *)0L)->fp_stuff));
   /* Ucode is the last thing in the struct -- just before the end: */
-  intcore->c_ucode = (int)H_GET_32(abfd, (intcore->c_len
+  intcore->c_ucode = (int)H_GET_32(abfd, ((size_t)intcore->c_len
                                           - sizeof(extcore->c_ucode)
                                           + (unsigned char *)extcore));
   intcore->c_stacktop = 0x0E000000; /* By experimentation.  */
@@ -446,11 +446,11 @@ swapcore_sparc(bfd *abfd, char *ext, struct internal_sunos_core *intcore)
   memcpy(intcore->c_cmdname, extcore->c_cmdname, sizeof(intcore->c_cmdname));
   intcore->fp_stuff_pos = (long)(((struct external_sparc_core *)0L)->fp_stuff);
   /* FP stuff takes up whole rest of struct, except c_ucode: */
-  intcore->fp_stuff_size = (int)(intcore->c_len - sizeof(extcore->c_ucode)
+  intcore->fp_stuff_size = (int)((size_t)intcore->c_len - sizeof(extcore->c_ucode)
     - (file_ptr)(intptr_t)(((struct external_sparc_core *)0L)->fp_stuff));
   /* Ucode is the last thing in the struct -- just before the end.  */
   intcore->c_ucode = (int)H_GET_32(abfd,
-                                   (intcore->c_len
+                                   ((size_t)intcore->c_len
                                     - sizeof(extcore->c_ucode)
                                     + (unsigned char *)extcore));
 
@@ -510,11 +510,11 @@ swapcore_solaris_bcp(bfd *abfd, char *ext, struct internal_sunos_core *intcore)
   intcore->fp_stuff_pos =
     (long)(((struct external_solaris_bcp_core *)0L)->fp_stuff);
   /* FP stuff takes up whole rest of struct, except c_ucode: */
-  intcore->fp_stuff_size = (int)(intcore->c_len - sizeof(extcore->c_ucode)
+  intcore->fp_stuff_size = (int)((size_t)intcore->c_len - sizeof(extcore->c_ucode)
     - (file_ptr)(intptr_t)(((struct external_solaris_bcp_core *)0L)->fp_stuff));
   /* Ucode is the last thing in the struct -- just before the end */
   intcore->c_ucode = (int)H_GET_32(abfd,
-                                   (intcore->c_len
+                                   ((size_t)intcore->c_len
                                     - sizeof(extcore->c_ucode)
                                     + (unsigned char *)extcore));
 
@@ -650,32 +650,32 @@ sunos4_core_file_p(bfd *abfd)
   if (core_reg2sec (abfd) == NULL)
     goto loser;
 
-  core_stacksec (abfd)->flags = SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS;
-  core_datasec (abfd)->flags = SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS;
-  core_regsec (abfd)->flags = SEC_HAS_CONTENTS;
-  core_reg2sec (abfd)->flags = SEC_HAS_CONTENTS;
+  core_stacksec(abfd)->flags = (SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS);
+  core_datasec(abfd)->flags = (SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS);
+  core_regsec(abfd)->flags = SEC_HAS_CONTENTS;
+  core_reg2sec(abfd)->flags = SEC_HAS_CONTENTS;
 
-  core_stacksec (abfd)->size = core->c_ssize;
-  core_datasec (abfd)->size = core->c_dsize;
-  core_regsec (abfd)->size = core->c_regs_size;
-  core_reg2sec (abfd)->size = core->fp_stuff_size;
+  core_stacksec(abfd)->size = (bfd_size_type)core->c_ssize;
+  core_datasec(abfd)->size = (bfd_size_type)core->c_dsize;
+  core_regsec(abfd)->size = (bfd_size_type)core->c_regs_size;
+  core_reg2sec(abfd)->size = (bfd_size_type)core->fp_stuff_size;
 
-  core_stacksec (abfd)->vma = (core->c_stacktop - core->c_ssize);
-  core_datasec (abfd)->vma = core->c_data_addr;
-  core_regsec (abfd)->vma = 0;
-  core_reg2sec (abfd)->vma = 0;
+  core_stacksec(abfd)->vma = (core->c_stacktop - (bfd_vma)core->c_ssize);
+  core_datasec(abfd)->vma = core->c_data_addr;
+  core_regsec(abfd)->vma = 0;
+  core_reg2sec(abfd)->vma = 0;
 
-  core_stacksec (abfd)->filepos = core->c_len + core->c_dsize;
-  core_datasec (abfd)->filepos = core->c_len;
-  /* We'll access the regs afresh in the core file, like any section:  */
-  core_regsec (abfd)->filepos = (file_ptr) core->c_regs_pos;
-  core_reg2sec (abfd)->filepos = (file_ptr) core->fp_stuff_pos;
+  core_stacksec(abfd)->filepos = (core->c_len + core->c_dsize);
+  core_datasec(abfd)->filepos = core->c_len;
+  /* We shall access the regs afresh in the core file, like any section:  */
+  core_regsec(abfd)->filepos = (file_ptr)core->c_regs_pos;
+  core_reg2sec(abfd)->filepos = (file_ptr)core->fp_stuff_pos;
 
-  /* Align to word at least.  */
-  core_stacksec (abfd)->alignment_power = 2;
-  core_datasec (abfd)->alignment_power = 2;
-  core_regsec (abfd)->alignment_power = 2;
-  core_reg2sec (abfd)->alignment_power = 2;
+  /* Align to word at least: */
+  core_stacksec(abfd)->alignment_power = 2;
+  core_datasec(abfd)->alignment_power = 2;
+  core_regsec(abfd)->alignment_power = 2;
+  core_reg2sec(abfd)->alignment_power = 2;
 
   return abfd->xvec;
 }

@@ -46261,6 +46261,9 @@ esac
 
 # clang-specific warnings:
 if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
+  build_warnings="${build_warnings} -Wgcc-compat -Wasm -Wdangling-else \
+-Wunneeded-internal-declaration -Wstring-plus-int -Wstring-conversion \
+-Wbool-conversion -Wconstant-logical-operand"
   ## mig typechecks cause paramaters that would otherwise be unused to be
   ## used, triggering this:
   if test "x${MIG_CHECKING}" = "x"; then

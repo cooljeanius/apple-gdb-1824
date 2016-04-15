@@ -102,12 +102,14 @@ extern void macho_build_psymtabs(struct objfile *objfile, int mainline,
 
 extern void _initialize_machoread(void);
 
+/* */
 static void
 macho_new_init(struct objfile *objfile ATTRIBUTE_UNUSED)
 {
   return;
 }
 
+/* */
 static void
 macho_symfile_init(struct objfile *objfile)
 {
@@ -160,11 +162,12 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
   asection *stabstrsect;
   asection *local_stabsect, *nonlocal_stabsect;
   int bfd_in_memory;
+  struct cleanup *mycleanup;
 
-#if 0
   init_minimal_symbol_collection();
-  make_cleanup(discard_minimal_symbols, 0);
-#endif /* 0 */
+  mycleanup = make_cleanup_discard_minimal_symbols();
+  
+  gdb_assert(mycleanup != NULL);
 
   stabsect = bfd_get_section_by_name(sym_bfd, stab_name);
   stabstrsect = bfd_get_section_by_name(sym_bfd, stabstr_name);
@@ -538,9 +541,9 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
   free_header_files();
   init_header_files();
 
-#if 0
+#if 0 || 1
   install_minimal_symbols(objfile);
-#endif /* 0 */
+#endif /* 0 || 1 */
 
   processing_acc_compilation = 1;
   dbx_symfile_read(objfile, mainline);
@@ -569,12 +572,20 @@ macho_symfile_read(struct objfile *objfile, int mainline)
      try to examine the text or data and does not handle it gracefully when
      they are not present.  */
   if (bfd_mach_o_stub_library(abfd))
-    return;
+    {
+      printf_filtered(_("%s: objfile is a stub library; skipping.\n"),
+		      __FILE__);
+      return;
+    }
 
   /* Also, if the binary is encrypted, then it will only confuse us. We will
      skip reading this in, and gdb will read it from memory later on.  */
   if (bfd_mach_o_encrypted_binary(abfd))
-    return;
+    {
+      printf_filtered(_("%s: binary is encrypted; skipping reading now to avoid confusion.\n"),
+		      __FILE__);
+      return;
+    }
 
   init_minimal_symbol_collection();
   minsym_cleanup = make_cleanup_discard_minimal_symbols();
@@ -584,6 +595,8 @@ macho_symfile_read(struct objfile *objfile, int mainline)
      functions do not all also re-initialize the psymbol table. */
   if (mainline)
     {
+      printf_filtered(_("%s: setting table to empty; mainline: %d.\n"),
+		      __FILE__, mainline);
       init_psymbol_list(objfile, 0);
       mainline = 0;
     }
@@ -591,7 +604,7 @@ macho_symfile_read(struct objfile *objfile, int mainline)
   if (info_verbose && macosx_bfd_is_in_memory(abfd) && target_is_remote()
       && !target_is_kdp_remote())
     {
-      warning("Copying %s from device memory...", abfd->filename);
+      warning(_("Copying %s from device memory..."), abfd->filename);
     }
   macho_build_psymtabs(objfile, mainline,
                        "LC_SYMTAB.stabs", "LC_SYMTAB.stabstr",
@@ -618,10 +631,10 @@ macho_symfile_read(struct objfile *objfile, int mainline)
       ret = bfd_mach_o_lookup_command(abfd, BFD_MACH_O_LC_SYMTAB, &gsymtab);
       if (ret != 1)
         {
-#if (defined(DEBUG) || defined(_DEBUG)) && defined(LC_SYMTAB)
+#if (defined(DEBUG) || defined(_DEBUG) || defined(GDB_DEBUG)) && defined(LC_SYMTAB)
           warning("Error %d fetching LC_SYMTAB load command from object file \"%s\"",
                   ret, abfd->filename);
-#endif /* (DEBUG || _DEBUG) && LC_SYMTAB */
+#endif /* (DEBUG || _DEBUG || GDB_DEBUG) && LC_SYMTAB */
           install_minimal_symbols(objfile);
           return;
         }
@@ -631,10 +644,10 @@ macho_symfile_read(struct objfile *objfile, int mainline)
                                   &gdysymtab);
       if (ret != 1)
         {
-#if (defined(DEBUG) || defined(_DEBUG)) && defined(LC_DYSYMTAB)
+#if (defined(DEBUG) || defined(_DEBUG) || defined(GDB_DEBUG)) && defined(LC_DYSYMTAB)
           warning("Error %d fetching LC_DYSYMTAB load command from object file \"%s\"",
                   ret, abfd->filename);
-#endif /* (DEBUG || _DEBUG) && LC_DYSYMTAB */
+#endif /* (DEBUG || _DEBUG || GDB_DEBUG) && LC_DYSYMTAB */
           install_minimal_symbols(objfile);
           return;
         }
@@ -662,6 +675,11 @@ macho_symfile_read(struct objfile *objfile, int mainline)
             }
         }
 
+      CHECK_FATAL(abfd != NULL);
+      CHECK_FATAL(dysymtab != NULL);
+      CHECK_FATAL(symtab != NULL);
+      CHECK_FATAL(objfile != NULL);
+
       if (!macho_read_indirect_symbols(abfd, dysymtab, symtab, objfile))
         {
           install_minimal_symbols(objfile);
@@ -675,7 +693,7 @@ macho_symfile_read(struct objfile *objfile, int mainline)
 
 /* Record minsyms for the dyld stub trampolines, and prefix them with
  * "dyld_stub_": */
-int
+ATTRIBUTE_W_U_R int
 macho_read_indirect_symbols(bfd *abfd,
                             struct bfd_mach_o_dysymtab_command *dysymtab,
                             struct bfd_mach_o_symtab_command *symtab,
@@ -698,10 +716,10 @@ macho_read_indirect_symbols(bfd *abfd,
       ret = bfd_mach_o_lookup_section(abfd, bfdsec, &lcommand, &section);
       if (ret != 1)
         {
-#if (defined(DEBUG) || defined(_DEBUG)) && defined(bfd_section_name)
+#if (defined(DEBUG) || defined(_DEBUG) || defined(GDB_DEBUG)) && defined(bfd_section_name)
           warning("Error fetching section %s from object file \"%s\"; %d such sections found.",
                   bfd_section_name(abfd, bfdsec), abfd->filename, ret);
-#endif /* (DEBUG || _DEBUG) && bfd_section_name */
+#endif /* (DEBUG || _DEBUG || GDB_DEBUG) && bfd_section_name */
           continue;
         }
       if (section == NULL)
@@ -769,10 +787,10 @@ macho_read_indirect_symbols(bfd *abfd,
                                                  &sym, (unsigned long)cursym);
           if (ret != 0)
             {
-#if (defined(DEBUG) || defined(_DEBUG))
+#if (defined(DEBUG) || defined(_DEBUG) || defined(GDB_DEBUG))
 	      warning(_("Issue reading dysymtab symbol; cursym: %lu, ret: %d."),
 		      (unsigned long)cursym, ret);
-#endif /* DEBUG || _DEBUG */
+#endif /* DEBUG || _DEBUG || GDB_DEBUG */
               return 0;
             }
 
@@ -785,9 +803,9 @@ macho_read_indirect_symbols(bfd *abfd,
 
           CHECK_FATAL((strlen(sname) + sizeof("dyld_stub_") + 1UL) < 4096UL);
           printed = snprintf(nname, sizeof(nname), "dyld_stub_%s", sname);
-#if (defined(DEBUG) || defined(_DEBUG))
-	  printf_filtered(_("\nRecording minsym %s...\n"), nname);
-#endif /* DEBUG || _DEBUG */
+#if (defined(DEBUG) || defined(_DEBUG) || defined(GDB_DEBUG))
+	  printf_filtered(_("\n%s: Recording minsym %s...\n"), __FILE__, nname);
+#endif /* DEBUG || _DEBUG || GDB_DEBUG */
 	  CHECK_FATAL(printed < 4096);
 
           stubaddr += objfile_section_offset(objfile, osect_idx);
@@ -869,11 +887,11 @@ macho_symfile_offsets(struct objfile *objfile,
     {
       const char *bfd_sect_name = osect->the_bfd_section->name;
 
-      if (strcmp (bfd_sect_name, TEXT_SEGMENT_NAME) == 0)
+      if (strcmp(bfd_sect_name, TEXT_SEGMENT_NAME) == 0)
 	objfile->sect_index_text = i;
-      else if (strcmp (bfd_sect_name, DATA_SECTION_NAME) == 0)
+      else if (strcmp(bfd_sect_name, DATA_SECTION_NAME) == 0)
 	objfile->sect_index_data = i;
-      else if (strcmp (bfd_sect_name, BSS_SECTION_NAME) == 0)
+      else if (strcmp(bfd_sect_name, BSS_SECTION_NAME) == 0)
 	objfile->sect_index_bss = i;
       i++;
     }
@@ -885,8 +903,8 @@ macho_symfile_offsets(struct objfile *objfile,
    set addresses. This may be different if the binary was rebased
    after the dsym file was made.  */
 
-static CORE_ADDR
-macho_calculate_dsym_offset (bfd *exe_bfd, bfd *sym_bfd)
+static ATTRIBUTE_W_U_R CORE_ADDR
+macho_calculate_dsym_offset(bfd *exe_bfd, bfd *sym_bfd)
 {
   asection *sym_text_sect;
   asection *exe_text_sect;
@@ -894,26 +912,25 @@ macho_calculate_dsym_offset (bfd *exe_bfd, bfd *sym_bfd)
   CORE_ADDR sym_text_addr;
 
   /* Extract the sym file BFD section for the __TEXT segment.  */
-  sym_text_sect = bfd_get_section_by_name (sym_bfd,
-                                           TEXT_SEGMENT_NAME);
+  sym_text_sect = bfd_get_section_by_name(sym_bfd, TEXT_SEGMENT_NAME);
   if (!sym_text_sect)
     return 0;
 
   /* Extract the exe file BFD section for the __TEXT segment.  */
-  exe_text_sect = bfd_get_section_by_name (exe_bfd,
-                                           TEXT_SEGMENT_NAME);
+  exe_text_sect = bfd_get_section_by_name(exe_bfd, TEXT_SEGMENT_NAME);
 
-  /* FIXME: Maybe we should warn about this?  */
+  /* FIXME: Is this warning correct? */
   if (!exe_text_sect)
-    return 0;
+    {
+      warning(_("Failed to extract exe file BFD section for the __TEXT segment.\n"));
+      return 0;
+    }
 
-  /* Get the virtual address for each segment.  */
-  exe_text_addr = bfd_get_section_vma (exe_bfd,
-                                       exe_text_sect);
-  sym_text_addr = bfd_get_section_vma (sym_bfd,
-                                       sym_text_sect);
-  /* Return the difference.  */
-  return exe_text_addr - sym_text_addr;
+  /* Get the virtual address for each segment: */
+  exe_text_addr = bfd_get_section_vma(exe_bfd, exe_text_sect);
+  sym_text_addr = bfd_get_section_vma(sym_bfd, sym_text_sect);
+  /* Return the difference: */
+  return (exe_text_addr - sym_text_addr);
 }
 
 /* This function takes either the addrs or the offsets array that the
@@ -951,15 +968,15 @@ macho_calculate_offsets_for_dsym(struct objfile *main_objfile,
 	  struct bfd_section *exe_sect = NULL;
 	  bfd *exe_bfd = main_objfile->obfd;
 
-	  *sym_offsets = (struct section_offsets *)
-	    xmalloc(SIZEOF_N_SECTION_OFFSETS(in_num_offsets));
+	  *sym_offsets = ((struct section_offsets *)
+			  xmalloc(SIZEOF_N_SECTION_OFFSETS(in_num_offsets)));
 	  memset(*sym_offsets, 0,
 		 SIZEOF_N_SECTION_OFFSETS(in_num_offsets));
 
 	  exe_sect = exe_bfd->sections;
 	  sym_sect = sym_bfd->sections;
 	  for (i = 0;
-	       exe_sect != NULL && i < in_num_offsets;
+	       (exe_sect != NULL) && (i < in_num_offsets);
 	       exe_sect = exe_sect->next, i++)
 	    {
               struct bfd_section *sect;
@@ -967,7 +984,7 @@ macho_calculate_offsets_for_dsym(struct objfile *main_objfile,
 		sym_sect = sym_sect->next;
 
 	      sect = NULL;
-	      if (sym_sect && strcmp (exe_sect->name, sym_sect->name) == 0)
+	      if (sym_sect && (strcmp(exe_sect->name, sym_sect->name) == 0))
 		sect = sym_sect;
 	      else
 		{
@@ -975,29 +992,28 @@ macho_calculate_offsets_for_dsym(struct objfile *main_objfile,
 		     section with the same name.  */
 		  for (sect = sym_bfd->sections; sect != NULL; sect = sect->next)
 		    {
-		      if (strcmp (exe_sect->name, sect->name) == 0)
+		      if (strcmp(exe_sect->name, sect->name) == 0)
 			break;
 		    }
 		}
 
-	      (*sym_offsets)->offsets[i] = ANOFFSET (in_offsets, i);
+	      (*sym_offsets)->offsets[i] = ANOFFSET(in_offsets, i);
 	      if (sect)
-		(*sym_offsets)->offsets[i] += exe_sect->vma - sect->vma;
+		(*sym_offsets)->offsets[i] += (exe_sect->vma - sect->vma);
 	    }
 	  *sym_num_offsets = in_num_offsets;
 	  return;
 	}
     }
 
-
   dsym_offset = macho_calculate_dsym_offset(main_objfile->obfd,
                                             sym_bfd);
   if (in_offsets)
     {
-      *sym_offsets = (struct section_offsets *)
-	xmalloc (SIZEOF_N_SECTION_OFFSETS (in_num_offsets));
+      *sym_offsets = ((struct section_offsets *)
+		      xmalloc(SIZEOF_N_SECTION_OFFSETS(in_num_offsets)));
       for (i = 0; i < in_num_offsets; i++)
-	(*sym_offsets)->offsets[i] = ANOFFSET (in_offsets, i) + dsym_offset;
+	(*sym_offsets)->offsets[i] = (ANOFFSET(in_offsets, i) + dsym_offset);
 
       *sym_num_offsets = in_num_offsets;
     }
@@ -1007,23 +1023,24 @@ macho_calculate_offsets_for_dsym(struct objfile *main_objfile,
        * the addr down if the user just supplied a single address.  But they
        * did NOT really intend for us JUST to offset the TEXT_SEGMENT, then
        * meant this is a constant slide.  So do that:  */
-      if (addrs->num_sections == 1
-	  && strcmp (addrs->other[0].name, TEXT_SEGMENT_NAME) == 0)
+      if ((addrs->num_sections == 1)
+	  && (strcmp(addrs->other[0].name, TEXT_SEGMENT_NAME) == 0))
 	{
 	  CORE_ADDR adjustment = dsym_offset;
 	  if (!addrs->addrs_are_offsets)
 	    {
-	      asection *text_segment = bfd_get_section_by_name (sym_bfd, TEXT_SEGMENT_NAME);
+	      asection *text_segment =
+		bfd_get_section_by_name(sym_bfd, TEXT_SEGMENT_NAME);
 	      if (text_segment != NULL)
-		adjustment -= bfd_get_section_vma (sym_bfd, text_segment);
+		adjustment -= bfd_get_section_vma(sym_bfd, text_segment);
 	    }
-	  *sym_num_offsets = bfd_count_sections (sym_bfd);
-	  *sym_offsets = (struct section_offsets *)
-	    xmalloc (SIZEOF_N_SECTION_OFFSETS (*sym_num_offsets));
+	  *sym_num_offsets = bfd_count_sections(sym_bfd);
+	  *sym_offsets = ((struct section_offsets *)
+			  xmalloc(SIZEOF_N_SECTION_OFFSETS(*sym_num_offsets)));
 	  for (i = 0; i < *sym_num_offsets; i++)
 	    {
-	      (*sym_offsets)->offsets[i] = dsym_offset + addrs->other[0].addr
-		+ adjustment;
+	      (*sym_offsets)->offsets[i] = (dsym_offset + addrs->other[0].addr
+					    + adjustment);
 	    }
 	}
       else
@@ -1044,8 +1061,9 @@ macho_calculate_offsets_for_dsym(struct objfile *main_objfile,
 	     that from the section addr.
 	     I am not going to fix this right now. */
 
-	  *sym_offsets = (struct section_offsets *)
-            xmalloc(SIZEOF_N_SECTION_OFFSETS(addrs->num_sections));
+	  *sym_offsets = 
+	    ((struct section_offsets *)
+	     xmalloc(SIZEOF_N_SECTION_OFFSETS(addrs->num_sections)));
 	  for (i = 0; i < (int)addrs->num_sections; i++)
 	    {
 	      (*sym_offsets)->offsets[i] = dsym_offset;
@@ -1072,8 +1090,8 @@ macho_calculate_offsets_for_dsym(struct objfile *main_objfile,
     }
   else if (dsym_offset != 0)
     {
-      *sym_offsets = (struct section_offsets *)
-	xmalloc (SIZEOF_N_SECTION_OFFSETS (in_num_offsets));
+      *sym_offsets = ((struct section_offsets *)
+		      xmalloc(SIZEOF_N_SECTION_OFFSETS(in_num_offsets)));
       for (i = 0; i < in_num_offsets; i++)
 	(*sym_offsets)->offsets[i] = dsym_offset;
 
@@ -1097,6 +1115,7 @@ static struct sym_fns macho_sym_fns = {
   NULL                   /* next: pointer to next struct sym_fns */
 };
 
+/* Usual gdb initialization hook: */
 void
 _initialize_machoread(void)
 {
@@ -1107,23 +1126,20 @@ _initialize_machoread(void)
 			  &mmap_strtabflag, _("\
 Set if GDB should use mmap() to read STABS info."), _("\
 Show if GDB should use mmap() to read STABS info."), NULL,
-			  NULL, NULL,
-			  &setlist, &showlist);
+			  NULL, NULL, &setlist, &showlist);
 #endif /* HAVE_MMAP */
 
   add_setshow_boolean_cmd("use-eh-frame-info", class_obscure,
 			  &use_eh_frames_info, _("\
 Set if GDB should use the EH frame/DWARF CFI information to backtrace."), _("\
 Show if GDB should use the EH frame/DWARF CFI information to backtrace."), NULL,
-			  NULL, NULL,
-			  &setlist, &showlist);
+			  NULL, NULL, &setlist, &showlist);
 
   add_setshow_boolean_cmd("mach-o-process-exports", class_obscure,
 			  &mach_o_process_exports_flag, _("\
 Set if GDB should process indirect function stub symbols from object files."), _("\
 Show if GDB should process indirect function stub symbols from object files."), NULL,
-			  NULL, NULL,
-			  &setlist, &showlist);
+			  NULL, NULL, &setlist, &showlist);
 }
 
 /* EOF */

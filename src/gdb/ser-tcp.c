@@ -1,4 +1,4 @@
-/* Serial interface for raw TCP connections on Un*x like systems.
+/* ser-tcp.c: Serial interface for raw TCP connections on Un*x like systems.
 
    Copyright 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2001, 2005
    Free Software Foundation, Inc.
@@ -79,7 +79,7 @@ net_open (struct serial *scb, const char *name)
   u_long ioarg;
 #else
   int ioarg;
-#endif
+#endif /* USE_WIN32API */
 
   use_udp = 0;
   if (strncmp (name, "udp:", 4) == 0)
@@ -93,7 +93,7 @@ net_open (struct serial *scb, const char *name)
   port_str = strchr (name, ':');
 
   if (!port_str)
-    error (_("net_open: No colon in host name!"));	   /* Shouldn't ever happen */
+    error(_("net_open: No colon in host name!")); /* Should NOT ever happen */
 
   tmp = min (port_str - name, (int) sizeof hostname - 1);
   strncpy (hostname, name, tmp);	/* Don't want colon */
@@ -121,9 +121,9 @@ net_open (struct serial *scb, const char *name)
     return -1;
 
   sockaddr.sin_family = PF_INET;
-  sockaddr.sin_port = htons (port);
-  memcpy (&sockaddr.sin_addr.s_addr, hostent->h_addr,
-	  sizeof (struct in_addr));
+  sockaddr.sin_port = htons((uint16_t)port);
+  memcpy(&sockaddr.sin_addr.s_addr, hostent->h_addr,
+	 sizeof(struct in_addr));
 
   /* set socket nonblocking */
   ioarg = 1;
@@ -139,13 +139,13 @@ net_open (struct serial *scb, const char *name)
       && WSAGetLastError() != WSAEWOULDBLOCK
 #else
       && errno != EINPROGRESS
-#endif
-      )
+#endif /* USE_WIN32API */
+      && scb != (struct serial *)NULL)
     {
 #ifdef USE_WIN32API
       errno = WSAGetLastError();
-#endif
-      net_close (scb);
+#endif /* USE_WIN32API */
+      net_close(scb);
       return -1;
     }
 
@@ -157,8 +157,7 @@ net_open (struct serial *scb, const char *name)
       int polls = 0;
       FD_ZERO (&rset);
 
-      do
-	{
+      do {
 	  /* While we wait for the connect to complete,
 	     poll the UI so it can update or the user can
 	     interrupt.  */
@@ -179,8 +178,8 @@ net_open (struct serial *scb, const char *name)
 
 	  n = select (scb->fd + 1, &rset, &wset, NULL, &t);
 	  polls++;
-	}
-      while (n == 0 && polls <= TIMEOUT * POLL_INTERVAL);
+      } while (n == 0 && polls <= TIMEOUT * POLL_INTERVAL);
+
       if (n < 0 || polls > TIMEOUT * POLL_INTERVAL)
 	{
 	  if (polls > TIMEOUT * POLL_INTERVAL)
@@ -225,11 +224,12 @@ net_open (struct serial *scb, const char *name)
   /* If we don't do this, then GDB simply exits
      when the remote side dies.  */
   signal (SIGPIPE, SIG_IGN);
-#endif
+#endif /* SIGPIPE */
 
   return 0;
 }
 
+/* */
 static void
 net_close (struct serial *scb)
 {
@@ -240,18 +240,21 @@ net_close (struct serial *scb)
   scb->fd = -1;
 }
 
+/* */
 static int
 net_read_prim (struct serial *scb, size_t count)
 {
   return recv (scb->fd, scb->buf, count, 0);
 }
 
+/* */
 static int
 net_write_prim (struct serial *scb, const void *buf, size_t count)
 {
   return send (scb->fd, buf, count, 0);
 }
 
+/* */
 void
 _initialize_ser_tcp (void)
 {
@@ -261,7 +264,7 @@ _initialize_ser_tcp (void)
   if (WSAStartup (MAKEWORD (1, 0), &wsa_data) != 0)
     /* WinSock is unavailable.  */
     return;
-#endif
+#endif /* USE_WIN32API */
   ops = XMALLOC (struct serial_ops);
   memset (ops, 0, sizeof (struct serial_ops));
   ops->name = "tcp";

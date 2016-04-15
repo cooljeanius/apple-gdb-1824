@@ -165,7 +165,7 @@ dump_insns(struct ui_out *uiout, struct disassemble_info * di,
 	   * disassembly, so we can compute the length of the instruction the
 	   * macro returns the number of bytes disassembled: */
 	  pc += TARGET_PRINT_INSN(pc, di);
-	  i = (pc - old_pc);
+	  i = (int)(pc - old_pc);
 	  /* read the bytes from the initial address to the final address: */
 	  for (; old_pc < pc; old_pc++)
 	    {
@@ -557,7 +557,9 @@ find_pc_offset(CORE_ADDR start, CORE_ADDR *result, int offset,
   /* If we have a positive offset, start seeking forward until we are
      either done, or reach the end of the function. */
 
-  cur = start;
+  if (cur != start) {
+    cur = start;
+  }
   while (offset > 0)
     {
       cur += TARGET_PRINT_INSN(cur, &di);
@@ -717,7 +719,7 @@ gdb_print_insn(CORE_ADDR memaddr, struct ui_file *stream)
 	(*di2->memory_error_func)(status, old_pc, di2);
       ui_out_message(uiout, 0, " %02x", (unsigned int)data);
     }
-  i = memaddr;
+  i = (int)memaddr;
   for (; i < 10; i++) ui_out_text(uiout, "   ");
   ui_out_text(uiout, " ");
   ui_out_field_stream(uiout, "inst", stb);
@@ -725,7 +727,7 @@ gdb_print_insn(CORE_ADDR memaddr, struct ui_file *stream)
   do_cleanups(ui_out_chain);
   do_cleanups(cleanups);
   
-  return memaddr;
+  return (int)memaddr;
 #if defined(DO_THINGS_THE_OLD_WAY) && defined(TARGET_PRINT_INSN)
   return TARGET_PRINT_INSN(memaddr, &di);
 #endif /* DO_THINGS_THE_OLD_WAY && TARGET_PRINT_INSN */

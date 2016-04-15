@@ -1094,14 +1094,13 @@ main (int argc, char **argv)
 }
 
 
-/* Show a usage message and exit.  */
-
-static void
-show_usage (FILE *file, int status)
+/* Show a usage message and exit: */
+static void ATTRIBUTE_NORETURN
+show_usage(FILE *file, int status)
 {
-  fprintf (file, _("Usage: %s [option(s)] [in-file [out-file]]\n"), program_name);
-  fprintf (file, _(" Convert an object file into a NetWare Loadable Module\n"));
-  fprintf (file, _(" The options are:\n\
+  fprintf(file, _("Usage: %s [option(s)] [in-file [out-file]]\n"), program_name);
+  fprintf(file, _(" Convert an object file into a NetWare Loadable Module\n"));
+  fprintf(file, _(" The options are:\n\
   -I --input-target=<bfdname>   Set the input binary file format\n\
   -O --output-target=<bfdname>  Set the output binary file format\n\
   -T --header-file=<file>       Read <file> for NLM header information\n\
@@ -1111,8 +1110,8 @@ show_usage (FILE *file, int status)
   -v --version                  Display the program's version\n\
 "));
   if (status == 0)
-    fprintf (file, _("Report bugs to %s\n"), REPORT_BUGS_TO);
-  exit (status);
+    fprintf(file, _("Report bugs to %s\n"), REPORT_BUGS_TO);
+  exit(status);
 }
 
 /* Select the output format based on the input architecture, machine,

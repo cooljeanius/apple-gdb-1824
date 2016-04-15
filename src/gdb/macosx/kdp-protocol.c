@@ -43,11 +43,11 @@ read16u(const unsigned char *s, int bigendian)
 {
   if (bigendian)
     {
-      return (s[1] << 8) + s[0];
+      return (uint16_t)((s[1] << 8) + s[0]);
     }
   else
     {
-      return (s[0] << 8) + s[1];
+      return (uint16_t)((s[0] << 8) + s[1]);
     }
 }
 
@@ -856,8 +856,8 @@ kdp_marshal (kdp_connection *c,
       s[0] = ((p->hdr.request & 0x7f) << 1) | (p->hdr.is_reply & 0x1);
     }
   s[1] = p->hdr.seq;
-  write16u (s + 2, len, c->bigendian);
-  write32u (s + 4, p->hdr.key, c->bigendian);
+  write16u((s + 2), len, c->bigendian);
+  write32u((s + 4), p->hdr.key, c->bigendian);
 
   *plen = len;
 

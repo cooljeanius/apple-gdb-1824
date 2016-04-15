@@ -193,7 +193,9 @@ MY(put_reloc)(bfd *abfd, int r_extern, int r_index, bfd_vma value,
 #define MY_put_reloc(BFD, EXT, IDX, VAL, HOWTO, RELOC) \
   MY (put_reloc) (BFD, EXT, IDX, VAL, HOWTO, RELOC)
 
-#define STAT_FOR_EXEC
+#ifndef STAT_FOR_EXEC
+# define STAT_FOR_EXEC
+#endif /* !STAT_FOR_EXEC */
 
 #define MY_final_link_relocate _bfd_ns32k_final_link_relocate
 #define MY_relocate_contents _bfd_ns32k_relocate_contents
@@ -282,7 +284,9 @@ MY_swap_std_reloc_out(bfd *abfd, arelent *g,
   unsigned int r_addend;
   asection *output_section = sym->section->output_section;
 
-  r_addend = (g->addend + (*(g->sym_ptr_ptr))->section->output_section->vma);
+  r_addend =
+    (unsigned int)(g->addend
+		   + (*(g->sym_ptr_ptr))->section->output_section->vma);
 
   /* Name was clobbered by aout_write_syms to be symbol index.  */
 
@@ -309,7 +313,7 @@ MY_swap_std_reloc_out(bfd *abfd, arelent *g,
 	  r_extern = 1;
 #undef KEEPIT
 #define KEEPIT udata.i
-	  r_index = (*(g->sym_ptr_ptr))->KEEPIT;
+	  r_index = (int)(*(g->sym_ptr_ptr))->KEEPIT;
 #undef KEEPIT
 	}
     }

@@ -1344,13 +1344,15 @@ print_symbol_filename_posix (bfd *archive_bfd, bfd *abfd)
     }
 }
 
-/* Print a symbol value.  */
-
+/* Print a symbol value: */
 static void
-print_value(bfd *abfd ATTRIBUTE_UNUSED, bfd_vma val)
+print_value(bfd *abfd, bfd_vma val)
 {
 #if ! defined(BFD64) || BFD_HOST_64BIT_LONG
   printf(value_format, val);
+  if (abfd == (bfd *)NULL) {
+    ; /* ??? */
+  }
 #else
   /* We have a 64 bit value to print, but the host is only 32 bit.  */
   if (print_radix == 16)
@@ -1371,7 +1373,7 @@ print_value(bfd *abfd ATTRIBUTE_UNUSED, bfd_vma val)
 	*--s = '0';
       printf("%s", s);
     }
-#endif
+#endif /* !BFD64 || BFD_HOST_64BIT_LONG */
 }
 
 /* FIXME: */

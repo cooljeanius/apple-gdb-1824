@@ -47,9 +47,9 @@ setproctitle(const char *name ATTRIBUTE_UNUSED, ...)
      necessarily the name visible in ps. */
   prctl(PR_SET_NAME, name);
 #else
-# if defined(__GNUC__)
-  asm("");
-# endif /* __GNUC__ */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+  __asm__("");
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
   return;
 #endif /* PR_SET_NAME */
 }

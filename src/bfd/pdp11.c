@@ -403,7 +403,7 @@ NAME(aout, swap_exec_header_in)(bfd *abfd,
      are memcmp'd, and thus the contents do matter.  */
   memset((void *)execp, 0, sizeof(struct internal_exec));
   /* Now fill in fields in the execp, from the bytes in the raw data: */
-  execp->a_info = GET_MAGIC(abfd, bytes->e_info);
+  execp->a_info = (long)GET_MAGIC(abfd, bytes->e_info);
   execp->a_text = GET_WORD(abfd, bytes->e_text);
   execp->a_data = GET_WORD(abfd, bytes->e_data);
   execp->a_bss = GET_WORD(abfd, bytes->e_bss);
@@ -873,7 +873,7 @@ adjust_o_magic (bfd *abfd, struct internal_exec *execp)
       /* The VMA of the .bss section is set by the VMA of the
          .data section plus the size of the .data section.  We may
          need to add padding bytes to make this true.  */
-      pad = obj_bsssec (abfd)->vma - vma;
+      pad = (int)(obj_bsssec(abfd)->vma - vma);
       if (pad > 0)
 	{
 	  obj_datasec (abfd)->size += pad;
@@ -1006,7 +1006,7 @@ static void
 adjust_n_magic (bfd *abfd, struct internal_exec *execp)
 {
   file_ptr pos = adata(abfd).exec_bytes_size;
-  bfd_vma vma = 0;
+  bfd_vma vma = 0UL;
   int pad;
 
   /* Text.  */
@@ -1026,7 +1026,7 @@ adjust_n_magic (bfd *abfd, struct internal_exec *execp)
 
   /* Since BSS follows data immediately, see if it needs alignment.  */
   vma += obj_datasec(abfd)->size;
-  pad = align_power (vma, obj_bsssec(abfd)->alignment_power) - vma;
+  pad = (int)(align_power(vma, obj_bsssec(abfd)->alignment_power) - vma);
   obj_datasec(abfd)->size += pad;
   pos += obj_datasec(abfd)->size;
 
@@ -1750,7 +1750,7 @@ pdp11_aout_swap_reloc_out (bfd *abfd, arelent *g, bfd_byte *natptr)
   if (r_type == RABS)
     r_index = 0;
   else
-    r_index = (*(g->sym_ptr_ptr))->KEEPIT;
+    r_index = (int)(*(g->sym_ptr_ptr))->KEEPIT;
 
   reloc_entry = (r_index << 4 | r_type | r_pcrel);
 
@@ -1817,7 +1817,7 @@ pdp11_aout_swap_reloc_in (bfd *          abfd,
   int r_extern;
   int r_pcrel;
 
-  reloc_entry = GET_WORD (abfd, (void *) bytes);
+  reloc_entry = (int)GET_WORD(abfd, (void *)bytes);
 
   r_pcrel = reloc_entry & RELFLG;
 
@@ -1901,7 +1901,7 @@ NAME (aout, slurp_reloc_table) (bfd *abfd, sec_ptr asect, asymbol **symbols)
       {
 	int x;
 
-	x = GET_WORD (abfd, (char *) relocs + each_size * counter);
+	x = (int)GET_WORD(abfd, (char *)relocs + each_size * counter);
 	if (x != 0)
 	  real_count++;
       }
@@ -2176,7 +2176,7 @@ NAME (aout, read_minisymbols) (bfd *abfd,
   obj_aout_external_syms (abfd) = NULL;
 
   *sizep = EXTERNAL_NLIST_SIZE;
-  return obj_aout_external_sym_count (abfd);
+  return (long)obj_aout_external_sym_count(abfd);
 }
 
 /* Convert a minisymbol to a BFD asymbol.  A minisymbol is just an
@@ -3280,7 +3280,7 @@ pdp11_aout_link_input_section (struct aout_final_link_info *finfo,
       bfd_reloc_status_type r;
       int reloc_entry;
 
-      reloc_entry = GET_WORD (input_bfd, (void *) rel);
+      reloc_entry = (int)GET_WORD(input_bfd, (void *)rel);
       if (reloc_entry == 0)
 	continue;
 
@@ -3351,8 +3351,8 @@ pdp11_aout_link_input_section (struct aout_final_link_info *finfo,
 			    {
 			      h->indx = -2;
 			      h->written = FALSE;
-			      if (! aout_link_write_other_symbol (h,
-								  (void *) finfo))
+			      if (!aout_link_write_other_symbol(h,
+								(void *)finfo))
 				return FALSE;
 			    }
 			  r_index = h->indx;
@@ -3375,7 +3375,7 @@ pdp11_aout_link_input_section (struct aout_final_link_info *finfo,
 		}
 
 	      /* Write out the new r_index value.  */
-	      reloc_entry = GET_WORD (input_bfd, rel);
+	      reloc_entry = (int)GET_WORD(input_bfd, rel);
 	      reloc_entry &= RIDXMASK;
 	      reloc_entry |= r_index << 4;
 	      PUT_WORD(input_bfd, (bfd_vma)reloc_entry, rel);
@@ -3732,21 +3732,21 @@ NAME (aout, final_link) (bfd *abfd,
 
       if (bfd_get_flavour (sub) == bfd_target_aout_flavour)
 	{
-	  sz = obj_textsec (sub)->size;
+	  sz = (size_t)obj_textsec(sub)->size;
 	  if (sz > max_contents_size)
 	    max_contents_size = sz;
-	  sz = obj_datasec (sub)->size;
+	  sz = (size_t)obj_datasec(sub)->size;
 	  if (sz > max_contents_size)
 	    max_contents_size = sz;
 
-	  sz = exec_hdr (sub)->a_trsize;
+	  sz = (size_t)exec_hdr(sub)->a_trsize;
 	  if (sz > max_relocs_size)
 	    max_relocs_size = sz;
-	  sz = exec_hdr (sub)->a_drsize;
+	  sz = (size_t)exec_hdr(sub)->a_drsize;
 	  if (sz > max_relocs_size)
 	    max_relocs_size = sz;
 
-	  sz = obj_aout_external_sym_count (sub);
+	  sz = (size_t)obj_aout_external_sym_count(sub);
 	  if (sz > max_sym_count)
 	    max_sym_count = sz;
 	}
@@ -3951,13 +3951,13 @@ NAME (aout, final_link) (bfd *abfd,
     }
 
   /* Update the header information.  */
-  abfd->symcount = obj_aout_external_sym_count (abfd);
+  abfd->symcount = obj_aout_external_sym_count(abfd);
   exec_hdr (abfd)->a_syms = abfd->symcount * EXTERNAL_NLIST_SIZE;
   obj_str_filepos (abfd) = obj_sym_filepos (abfd) + exec_hdr (abfd)->a_syms;
-  obj_textsec (abfd)->reloc_count =
-    exec_hdr (abfd)->a_trsize / obj_reloc_entry_size (abfd);
-  obj_datasec (abfd)->reloc_count =
-    exec_hdr (abfd)->a_drsize / obj_reloc_entry_size (abfd);
+  obj_textsec(abfd)->reloc_count =
+    (exec_hdr(abfd)->a_trsize / obj_reloc_entry_size(abfd));
+  obj_datasec(abfd)->reloc_count =
+    (exec_hdr(abfd)->a_drsize / obj_reloc_entry_size(abfd));
 
   /* Write out the string table, unless there are no symbols.  */
   if (abfd->symcount > 0)
@@ -4302,7 +4302,7 @@ aout_link_write_symbols (struct aout_final_link_info *finfo, bfd *input_bfd)
 	  if (h != NULL)
 	    {
 	      h->written = TRUE;
-	      h->indx = obj_aout_external_sym_count (output_bfd);
+	      h->indx = (int)obj_aout_external_sym_count(output_bfd);
 	    }
 	  else if ((type & N_TYPE) != N_SETT
 		   && (type & N_TYPE) != N_SETD
@@ -4458,7 +4458,7 @@ aout_link_write_symbols (struct aout_final_link_info *finfo, bfd *input_bfd)
 	return FALSE;
       PUT_WORD(output_bfd, strtab_index, outsym->e_strx);
       PUT_WORD(output_bfd, val, outsym->e_value);
-      *symbol_map = obj_aout_external_sym_count(output_bfd);
+      *symbol_map = (int)obj_aout_external_sym_count(output_bfd);
       ++obj_aout_external_sym_count(output_bfd);
       ++outsym;
     }
@@ -4470,7 +4470,7 @@ aout_link_write_symbols (struct aout_final_link_info *finfo, bfd *input_bfd)
 
       if (bfd_seek(output_bfd, finfo->symoff, SEEK_SET) != 0)
 	return FALSE;
-      size = outsym - finfo->output_syms;
+      size = (bfd_size_type)(outsym - finfo->output_syms);
       size *= EXTERNAL_NLIST_SIZE;
       if (bfd_bwrite((void *)finfo->output_syms, size, output_bfd) != size)
 	return FALSE;
@@ -4506,7 +4506,7 @@ bfd_getp_signed_32(const void *p)
   v |= ((unsigned long)addr[0] << 16);
   v |= ((unsigned long)addr[3] << 8);
   v |= (unsigned long)addr[2];
-  return COERCE32(v);
+  return (bfd_signed_vma)COERCE32(v);
 }
 
 static void

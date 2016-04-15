@@ -285,6 +285,7 @@ cisco_core_file_validate(bfd *abfd, int crash_info_loc)
   return NULL;
 }
 
+/* */
 static const bfd_target *
 cisco_core_file_p(bfd *abfd)
 {
@@ -300,18 +301,21 @@ cisco_core_file_p(bfd *abfd)
   return (target);
 }
 
+/* */
 char *
 cisco_core_file_failing_command(bfd *abfd ATTRIBUTE_UNUSED)
 {
   return NULL;
 }
 
+/* */
 int
-cisco_core_file_failing_signal(bfd *abfd ATTRIBUTE_UNUSED)
+cisco_core_file_failing_signal(bfd *abfd)
 {
   return abfd->tdata.cisco_core_data->sig;
 }
 
+/* */
 bfd_boolean
 cisco_core_file_matches_executable_p(bfd *core_bfd ATTRIBUTE_UNUSED,
                                      bfd *exec_bfd ATTRIBUTE_UNUSED)

@@ -670,7 +670,7 @@ read_dispatch_offsets(void)
    addr).
    Returns 0 to indicate failure.  */
 
-static CORE_ADDR
+static ATTRIBUTE_USED CORE_ADDR
 get_dispatch_queue_addr(CORE_ADDR dispatch_qaddr)
 {
   ULONGEST queue = 0UL;
@@ -727,7 +727,7 @@ get_dispatch_queue_name(CORE_ADDR dispatch_qaddr)
    from thread_info (..., THREAD_IDENTIFIER_INFO, ...).
    Returns 1 if it was able to retrieve the flags field.  */
 
-static int
+static ATTRIBUTE_USED int
 get_dispatch_queue_flags(CORE_ADDR dispatch_qaddr, uint32_t *flags)
 {
   int wordsize = (TARGET_PTR_BIT / 8);

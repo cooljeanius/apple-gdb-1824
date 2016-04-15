@@ -197,7 +197,8 @@ mc_create_path_text_file(const char *path, const char *ext)
   return ret;
 }
 
-static void
+/* */
+static void ATTRIBUTE_NORETURN
 usage(FILE *stream, int status)
 {
   fprintf(stream, _("Usage: %s [option(s)] [input-file]\n"),

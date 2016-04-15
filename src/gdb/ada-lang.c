@@ -823,7 +823,7 @@ ada_fold_name(const char *name)
     {
       size_t i;
       for (i = 0UL; i <= len; i += 1UL)
-        fold_buffer[i] = tolower(name[i]);
+        fold_buffer[i] = (char)tolower(name[i]);
     }
 
   return fold_buffer;
@@ -2202,19 +2202,20 @@ ada_array_element_type(struct type *type, int nindices)
       int k;
       struct type *p_array_type;
 
-      p_array_type = desc_data_type (type);
+      p_array_type = desc_data_type(type);
+      gdb_assert(p_array_type != NULL);
 
-      k = ada_array_arity (type);
+      k = ada_array_arity(type);
       if (k == 0)
         return NULL;
 
       /* Initially p_array_type = elt_type(*)[]...(k times)...[].  */
-      if (nindices >= 0 && k > nindices)
+      if ((nindices >= 0) && (k > nindices))
         k = nindices;
-      p_array_type = TYPE_TARGET_TYPE (p_array_type);
-      while (k > 0 && p_array_type != NULL)
+      p_array_type = TYPE_TARGET_TYPE(p_array_type);
+      while ((k > 0) && (p_array_type != NULL))
         {
-          p_array_type = ada_check_typedef (TYPE_TARGET_TYPE (p_array_type));
+          p_array_type = ada_check_typedef(TYPE_TARGET_TYPE(p_array_type));
           k -= 1;
         }
       return p_array_type;
@@ -2634,7 +2635,11 @@ resolve_subexp (struct expression **expp, int *pos, int deprocedure_p,
     }
 
   argvec_size = (sizeof(struct value *) * (nargs + 1));
+#if defined(HAVE_ALLOCA) && !defined(__clang_analyzer__)
   argvec = (struct value **)alloca(argvec_size);
+#else
+  argvec = (struct value **)xmalloc(argvec_size);
+#endif /* HAVE_ALLOCA && !__clang_analyzer__ */
   for (i = 0; i < nargs; i += 1)
     argvec[i] = resolve_subexp(expp, pos, 1, NULL);
   argvec[i] = NULL;
@@ -2823,6 +2828,11 @@ resolve_subexp (struct expression **expp, int *pos, int deprocedure_p,
     }
 
   *pos = pc;
+#if defined(HAVE_ALLOCA) && !defined(__clang_analyzer__)
+  (void)argvec; /* Do nothing */
+#else
+  xfree(argvec);
+#endif /* HAVE_ALLOCA && !__clang_analyzer__ */
   return evaluate_subexp_type(exp, pos);
 }
 
@@ -3782,6 +3792,8 @@ lesseq_defined_than (struct symbol *sym0, struct symbol *sym1)
         const char *name0 = SYMBOL_LINKAGE_NAME(sym0);
         const char *name1 = SYMBOL_LINKAGE_NAME(sym1);
         size_t len0 = strlen(name0);
+	gdb_assert(type0 != (struct type *)NULL);
+	gdb_assert(type1 != (struct type *)NULL);
         return
           ((TYPE_CODE(type0) == TYPE_CODE(type1))
            && (equiv_types(type0, type1)
@@ -5342,11 +5354,12 @@ ada_scan_number (const char str[], int k, LONGEST * R, int *new_k)
    in the range encoded by field FIELD_NUM of TYPE; otherwise 0.  */
 
 int
-ada_in_variant (LONGEST val, struct type *type, int field_num)
+ada_in_variant(LONGEST val, struct type *type, int field_num)
 {
-  const char *name = TYPE_FIELD_NAME (type, field_num);
+  const char *name = TYPE_FIELD_NAME(type, field_num);
   int p;
 
+  gdb_assert(name != NULL);
   p = 0;
   while (1)
     {
@@ -5875,32 +5888,37 @@ ada_coerce_ref (struct value *val0)
    ALIGNMENT (a power of 2).  */
 
 static unsigned int
-align_value (unsigned int off, unsigned int alignment)
+align_value(unsigned int off, unsigned int alignment)
 {
-  return (off + alignment - 1) & ~(alignment - 1);
+  return ((off + alignment - 1) & ~(alignment - 1));
 }
 
-/* Return the bit alignment required for field #F of template type TYPE.  */
-
+/* Return the bit alignment required for field #F of template type TYPE: */
 static unsigned int
-field_alignment (struct type *type, int f)
+field_alignment(struct type *type, int f)
 {
-  const char *name = TYPE_FIELD_NAME (type, f);
-  int len = (name == NULL) ? 0 : strlen (name);
+  const char *name = TYPE_FIELD_NAME(type, f);
+  size_t len = ((name == NULL) ? 0UL : strlen(name));
   int align_offset;
 
-  if (!isdigit (name[len - 1]))
+  if (name == NULL)
+    {
+      warning(_("No name for field; requires no alignment(?)\n"));
+      return 0;
+    }
+
+  if (!isdigit(name[len - 1]))
     return 1;
 
-  if (isdigit (name[len - 2]))
-    align_offset = len - 2;
+  if (isdigit(name[len - 2]))
+    align_offset = (len - 2);
   else
-    align_offset = len - 1;
+    align_offset = (len - 1);
 
-  if (align_offset < 7 || strncmp ("___XV", name + align_offset - 6, 5) != 0)
+  if ((align_offset < 7) || (strncmp("___XV", name + align_offset - 6, 5) != 0))
     return TARGET_CHAR_BIT;
 
-  return atoi (name + align_offset) * TARGET_CHAR_BIT;
+  return (atoi(name + align_offset) * TARGET_CHAR_BIT);
 }
 
 /* Find a symbol named NAME.  Ignores ambiguity.  */
@@ -6379,7 +6397,7 @@ to_record_with_fixed_variant_part(struct type *type, const gdb_byte *valaddr,
   rtype = alloc_type(TYPE_OBJFILE(type));
   TYPE_CODE(rtype) = TYPE_CODE_STRUCT;
   INIT_CPLUS_SPECIFIC(rtype);
-  TYPE_NFIELDS(rtype) = nfields;
+  TYPE_NFIELDS(rtype) = (short)nfields;
   TYPE_FIELDS(rtype) =
     (struct field *)TYPE_ALLOC(rtype, nfields * sizeof(struct field));
   memcpy(TYPE_FIELDS(rtype), TYPE_FIELDS(type),
@@ -7015,6 +7033,7 @@ ada_enum_name(const char *name)
       if (tmp != NULL)
         {
           GROW_VECT(result, result_len, (tmp - name + 1UL), char);
+	  gdb_assert(result != NULL);
           strncpy(result, name, (tmp - name));
           result[tmp - name] = '\0';
           return result;
@@ -8930,11 +8949,12 @@ emit_char(int c, struct ui_file *stream, int quoter)
   ada_emit_char(c, stream, quoter, 1);
 }
 
+/* */
 static int
-parse (void)
+parse(void)
 {
   warnings_issued = 0;
-  return ada_parse ();
+  return ada_parse();
 }
 
 static const struct exp_descriptor ada_exp_descriptor = {
@@ -8980,6 +9000,7 @@ const struct language_defn ada_language_defn = {
   LANG_MAGIC
 };
 
+/* Usual gdb initialization hook: */
 void
 _initialize_ada_language(void)
 {
@@ -8989,7 +9010,10 @@ _initialize_ada_language(void)
 
   obstack_init(&symbol_list_obstack);
 
-  decoded_names_store = htab_create_alloc
-    (256, htab_hash_string, (int (*)(const void *, const void *)) streq,
-     NULL, xcalloc, xfree);
+  decoded_names_store =
+    htab_create_alloc(256, htab_hash_string,
+		      (int (*)(const void *, const void *))streq, NULL,
+		      xcalloc, xfree);
 }
+
+/* EOF */

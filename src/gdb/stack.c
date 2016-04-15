@@ -1515,7 +1515,7 @@ backtrace_command(const char *arg, int from_tty)
 	  unsigned int j;
 
 	  for (j = 0U; (j < strlen(argv[i])); j++)
-	    argv[i][j] = tolower(argv[i][j]);
+	    argv[i][j] = (char)tolower(argv[i][j]);
 
 	  if ((argIndicatingFullTrace < 0) && subset_compare(argv[i], "full"))
 	    argIndicatingFullTrace = argc;

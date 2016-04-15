@@ -40,8 +40,7 @@
 
 static void undef_cmd_error(const char *, const char *);
 
-static struct cmd_list_element *find_cmd(char *command,
-					 int len,
+static struct cmd_list_element *find_cmd(char *command, int len,
 					 struct cmd_list_element *clist,
 					 int ignore_help_classes,
 					 int *nfound);
@@ -220,6 +219,7 @@ deprecate_cmd (struct cmd_list_element *cmd, char *replacement)
   return cmd;
 }
 
+/* */
 struct cmd_list_element *
 add_alias_cmd(const char *name, const char *oldname,
 	      enum command_class cmd_class, int abbrev_flag,
@@ -246,7 +246,7 @@ add_alias_cmd(const char *name, const char *oldname,
   c->prefixlist = old->prefixlist;
   c->prefixname = old->prefixname;
   c->allow_unknown = old->allow_unknown;
-  c->abbrev_flag = abbrev_flag;
+  c->abbrev_flag = (char)abbrev_flag;
   c->cmd_pointer = old;
   return c;
 }
@@ -265,7 +265,7 @@ add_prefix_cmd(const char *name, enum command_class cclass,
   struct cmd_list_element *c = add_cmd(name, cclass, fun, doc, list);
   c->prefixlist = prefixlist;
   c->prefixname = prefixname;
-  c->allow_unknown = allow_unknown;
+  c->allow_unknown = (char)allow_unknown;
   return c;
 }
 
@@ -280,7 +280,7 @@ add_abbrev_prefix_cmd(const char *name, enum command_class the_class,
   struct cmd_list_element *c = add_cmd(name, the_class, fun, doc, list);
   c->prefixlist = prefixlist;
   c->prefixname = prefixname;
-  c->allow_unknown = allow_unknown;
+  c->allow_unknown = (char)allow_unknown;
   c->abbrev_flag = 1;
   return c;
 }
@@ -825,6 +825,7 @@ Type \"help%s\" followed by a class name for a list of commands in ",
 		 stream);
 }
 
+/* */
 static void
 help_all(struct ui_file *stream)
 {
@@ -837,7 +838,6 @@ help_all(struct ui_file *stream)
       /* If this is a prefix command, then print its subcommands: */
       if (c->prefixlist)
         help_cmd_list(*c->prefixlist, all_commands, c->prefixname, 0, stream);
-
       /* If this is a class name, print all of the commands in the class */
       else if (c->func == NULL)
         help_cmd_list(cmdlist, c->cmdclass, "", 0, stream);
@@ -848,29 +848,29 @@ help_all(struct ui_file *stream)
 void
 print_doc_line(struct ui_file *stream, const char *str)
 {
-  static char *line_buffer = 0;
-  static int line_size;
+  static char *line_buffer = (char *)0;
+  static size_t line_size;
   char *p;
 
   if (!line_buffer)
     {
-      line_size = 80;
+      line_size = 80UL;
       line_buffer = (char *)xmalloc(line_size);
     }
 
   p = (char *)str;
   while (*p && (*p != '\n') && (*p != '.') && (*p != ','))
     p++;
-  if ((p - str) > (line_size - 1))
+  if ((p - str) > (ptrdiff_t)(line_size - 1UL))
     {
-      line_size = (p - str + 1);
+      line_size = ((p - str) + 1L);
       xfree(line_buffer);
       line_buffer = (char *)xmalloc(line_size);
     }
-  strncpy(line_buffer, str, p - str);
+  strncpy(line_buffer, str, (p - str));
   line_buffer[p - str] = '\0';
   if (islower(line_buffer[0]))
-    line_buffer[0] = toupper(line_buffer[0]);
+    line_buffer[0] = (char)toupper(line_buffer[0]);
   /* APPLE LOCAL ? */
   fputs_unfiltered(line_buffer, stream);
 }
@@ -1028,20 +1028,20 @@ lookup_cmd_1(const char **text, struct cmd_list_element *clist,
   found = find_cmd (command, len, clist, ignore_help_classes, &nfound);
 
   /*
-     ** We didn't find the command in the entered case, so lower case it
-     ** and search again.
+  ** We failed to find the command in the entered case, so lowercase it
+  ** and search again.
    */
   if (!found || nfound == 0)
     {
       for (tmp = 0; tmp < len; tmp++)
 	{
 	  char x = command[tmp];
-	  command[tmp] = isupper (x) ? tolower (x) : x;
+	  command[tmp] = (isupper(x) ? (char)tolower(x) : x);
 	}
-      found = find_cmd (command, len, clist, ignore_help_classes, &nfound);
+      found = find_cmd(command, len, clist, ignore_help_classes, &nfound);
     }
 
-  /* If nothing matches, we have a simple failure.  */
+  /* If nothing matches, then we have a simple failure: */
   if (nfound == 0)
     return 0;
 
@@ -1296,16 +1296,16 @@ deprecated_cmd_warning(const char **text)
   if (alias && !(cmd->flags & CMD_DEPRECATED))
     {
       if (alias->replacement)
-      printf_filtered ("Use '%s'.\n\n", alias->replacement);
+	printf_filtered ("Use '%s'.\n\n", alias->replacement);
       else
-      printf_filtered ("No alternative known.\n\n");
+	printf_filtered ("No alternative known.\n\n");
      }
   else
     {
       if (cmd->replacement)
-      printf_filtered ("Use '%s'.\n\n", cmd->replacement);
+	printf_filtered ("Use '%s'.\n\n", cmd->replacement);
       else
-      printf_filtered ("No alternative known.\n\n");
+	printf_filtered ("No alternative known.\n\n");
     }
 
   /* We've warned you, now we'll keep quiet */
@@ -1372,14 +1372,14 @@ lookup_cmd_composition(const char *text, struct cmd_list_element **alias,
 
       /* If nothing but whitespace, return.  */
       if (p == text)
-      return 0;
+	return 0;
 
-      len = p - text;
+      len = (p - text);
 
       /* text and p now bracket the first command word to lookup (and
        it's length is len).  We copy this into a local temporary */
 
-      command = (char *) alloca (len + 1);
+      command = (char *)alloca(len + 1UL);
       for (tmp = 0; tmp < len; tmp++)
       {
         char x = text[tmp];
@@ -1400,18 +1400,18 @@ lookup_cmd_composition(const char *text, struct cmd_list_element **alias,
         for (tmp = 0; tmp < len; tmp++)
           {
             char x = command[tmp];
-            command[tmp] = isupper (x) ? tolower (x) : x;
+            command[tmp] = (isupper(x) ? (char)tolower(x) : x);
           }
-        *cmd = find_cmd (command, len, cur_list, 1, &nfound);
+        *cmd = find_cmd(command, len, cur_list, 1, &nfound);
       }
 
-      if (*cmd == (struct cmd_list_element *) -1)
+      if (*cmd == (struct cmd_list_element *)-1)
       {
         return 0;              /* ambiguous */
       }
 
       if (*cmd == NULL)
-      return 0;                /* nothing found */
+	return 0;                /* nothing found */
       else
       {
         if ((*cmd)->cmd_pointer)
@@ -1425,9 +1425,9 @@ lookup_cmd_composition(const char *text, struct cmd_list_element **alias,
         *prefix_cmd = prev_cmd;
       }
       if ((*cmd)->prefixlist)
-      cur_list = *(*cmd)->prefixlist;
+	cur_list = *(*cmd)->prefixlist;
       else
-      return 1;
+	return 1;
 
       text = p;
     }

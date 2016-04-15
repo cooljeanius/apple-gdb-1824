@@ -798,7 +798,7 @@ pascal_object_print_value_fields (struct type *type, const gdb_byte *valaddr,
 	     chunk of the obstack and use that until this particular
 	     invocation returns.  */
 	  tmp_obstack = dont_print_statmem_obstack;
-	  obstack_finish (&dont_print_statmem_obstack);
+	  obstack_finish(&dont_print_statmem_obstack);
 	}
 
       for (i = n_baseclasses; i < len; i++)
@@ -951,8 +951,8 @@ pascal_object_print_value (struct type *type, const gdb_byte *valaddr,
          chunk of the obstack and use that until this particular
          invocation returns.  */
       tmp_obstack = dont_print_vb_obstack;
-      /* Bump up the high-water mark.  Now alpha is omega.  */
-      obstack_finish (&dont_print_vb_obstack);
+      /* Bump up the high-water mark.  Now alpha is omega: */
+      obstack_finish(&dont_print_vb_obstack);
     }
 
   for (i = 0; i < n_baseclasses; i++)

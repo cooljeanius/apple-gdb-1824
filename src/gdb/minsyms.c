@@ -873,10 +873,10 @@ prim_record_minimal_symbol_and_info(const char *name, CORE_ADDR address,
       bunches_seen++;
       /* Does newbunch ever get freed? */
     }
-#if defined(DEBUG) || defined(_DEBUG) || defined(__APPLEHELP__)
-  printf_filtered("using mysm number %d in bunch %d...\n", msym_bunch_index,
-		  bunches_seen);
-#endif /* DEBUG || _DEBUG || __APPLEHELP__ */
+#if defined(DEBUG) || defined(_DEBUG) || defined(__APPLEHELP__) || defined(BUNCH_SIZE)
+  printf_filtered("using msym number %d out of %d in bunch %d...\n",
+		  msym_bunch_index, (BUNCH_SIZE - 1), bunches_seen);
+#endif /* DEBUG || _DEBUG || __APPLEHELP__ || BUNCH_SIZE */
   gdb_assert(msym_bunch_index < BUNCH_SIZE);
   msymbol = &msym_bunch->contents[msym_bunch_index]; /* This seems suspicious */
   gdb_assert(msymbol != NULL);
@@ -958,22 +958,22 @@ compare_minimal_symbols (const void *fn1p, const void *fn2p)
    it.  Is it worth the extra trouble though? */
 
 static void
-do_discard_minimal_symbols_cleanup (void *arg)
+do_discard_minimal_symbols_cleanup(void *arg)
 {
   struct msym_bunch *next;
 
   while (msym_bunch != NULL)
     {
       next = msym_bunch->next;
-      xfree (msym_bunch);
+      xfree(msym_bunch);
       msym_bunch = next;
     }
 }
 
 struct cleanup *
-make_cleanup_discard_minimal_symbols (void)
+make_cleanup_discard_minimal_symbols(void)
 {
-  return make_cleanup (do_discard_minimal_symbols_cleanup, 0);
+  return make_cleanup(do_discard_minimal_symbols_cleanup, 0);
 }
 
 

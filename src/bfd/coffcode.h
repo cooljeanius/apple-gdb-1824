@@ -327,7 +327,7 @@ static bfd_boolean coff_set_flags(bfd *, unsigned int *, unsigned short *);
 static bfd_boolean coff_set_arch_mach
   (bfd *, enum bfd_architecture, unsigned long);
 static bfd_boolean coff_compute_section_file_positions(bfd *);
-static bfd_boolean coff_write_object_contents(bfd *) ATTRIBUTE_UNUSED;
+static bfd_boolean coff_write_object_contents(bfd *) ATTRIBUTE_USED;
 static bfd_boolean coff_set_section_contents
   (bfd *, asection *, const void *, file_ptr, bfd_size_type);
 static void * buy_and_read(bfd *, file_ptr, bfd_size_type);
@@ -1437,7 +1437,7 @@ Special entry points for gdb to swap in coff symbol table parts:
 
 /* See whether the magic number matches: */
 static bfd_boolean
-coff_bad_format_hook(bfd *abfd ATTRIBUTE_UNUSED, void *filehdr)
+coff_bad_format_hook(bfd *abfd, void *filehdr)
 {
   struct internal_filehdr *internal_f = (struct internal_filehdr *)filehdr;
 
@@ -1457,6 +1457,10 @@ coff_bad_format_hook(bfd *abfd ATTRIBUTE_UNUSED, void *filehdr)
   if ((internal_f->f_opthdr != 0)
       && (bfd_coff_aoutsz(abfd) != internal_f->f_opthdr)) {
     return FALSE;
+  }
+#else
+  if (abfd == (bfd *)NULL) {
+    ; /* ??? */
   }
 #endif /* M88 || I960 */
 
@@ -2511,7 +2515,7 @@ static bfd_boolean coff_write_relocs(bfd *abfd, int first_undef)
 	     part does NOT have a symbol; it has an offset. So rebuilt
 	     that here.  */
           if (q->howto->type == R_IHCONST) {
-            n.r_symndx = q->addend;
+            n.r_symndx = (long)q->addend;
           } else
 #endif /* R_IHCONST */
 	    if (q->sym_ptr_ptr)
@@ -2565,8 +2569,7 @@ static bfd_boolean coff_write_relocs(bfd *abfd, int first_undef)
 /* Set flags and magic number of a coff file from architecture and machine
  * type.  Result is TRUE if we can represent the arch&type, FALSE if not: */
 static bfd_boolean
-coff_set_flags(bfd *abfd, unsigned int *magicp,
-               unsigned short *flagsp ATTRIBUTE_UNUSED)
+coff_set_flags(bfd *abfd, unsigned int *magicp, unsigned short *flagsp)
 {
   switch (bfd_get_arch(abfd))
     {
@@ -2856,6 +2859,7 @@ coff_set_flags(bfd *abfd, unsigned int *magicp,
 
     default:			/* Unknown architecture.  */
       *magicp = 0x0;
+      *flagsp = 0x0;
       /* Fall through to "return FALSE" below, to avoid
        * "statement never reached" errors on the one below: */
       break;
@@ -2864,6 +2868,7 @@ coff_set_flags(bfd *abfd, unsigned int *magicp,
   return FALSE;
 }
 
+/* */
 static ATTRIBUTE_USED bfd_boolean
 coff_set_arch_mach(bfd *abfd, enum bfd_architecture arch,
                    unsigned long machine)
@@ -5245,7 +5250,7 @@ coff_final_link_postscript(bfd *abfd ATTRIBUTE_UNUSED,
 # define coff_SWAP_scnhdr_in coff_swap_scnhdr_in
 #endif /* !coff_SWAP_scnhdr_in */
 
-static const bfd_coff_backend_data bfd_coff_std_swap_table ATTRIBUTE_UNUSED =
+static const bfd_coff_backend_data bfd_coff_std_swap_table ATTRIBUTE_USED =
 {
   coff_SWAP_aux_in, coff_SWAP_sym_in, coff_SWAP_lineno_in,
   coff_SWAP_aux_out, coff_SWAP_sym_out,

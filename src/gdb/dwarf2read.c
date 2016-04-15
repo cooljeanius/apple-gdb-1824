@@ -11723,35 +11723,35 @@ dump_die(struct die_info *die)
 {
   unsigned int i;
 
-  fprintf_unfiltered (gdb_stderr, "Die: %s (abbrev = %d, offset = %d)\n",
-	   dwarf_tag_name (die->tag), die->abbrev, die->offset);
-  fprintf_unfiltered (gdb_stderr, "\thas children: %s\n",
-	   dwarf_bool_name (die->child != NULL));
+  fprintf_unfiltered(gdb_stderr, "Die: %s (abbrev = %d, offset = %d)\n",
+		     dwarf_tag_name(die->tag), die->abbrev, die->offset);
+  fprintf_unfiltered(gdb_stderr, "\thas children: %s\n",
+		     dwarf_bool_name(die->child != NULL));
 
-  fprintf_unfiltered (gdb_stderr, "\tattributes:\n");
+  fprintf_unfiltered(gdb_stderr, "\tattributes:\n");
   for (i = 0; i < die->num_attrs; ++i)
     {
-      fprintf_unfiltered (gdb_stderr, "\t\t%s (%s) ",
-	       dwarf_attr_name (die->attrs[i].name),
-	       dwarf_form_name (die->attrs[i].form));
+      fprintf_unfiltered(gdb_stderr, "\t\t%s (%s) ",
+			 dwarf_attr_name(die->attrs[i].name),
+			 dwarf_form_name(die->attrs[i].form));
       switch (die->attrs[i].form)
 	{
 	case DW_FORM_ref_addr:
 	case DW_FORM_addr:
-	  fprintf_unfiltered (gdb_stderr, "address: ");
-	  deprecated_print_address_numeric (DW_ADDR (&die->attrs[i]), 1, gdb_stderr);
+	  fprintf_unfiltered(gdb_stderr, "address: ");
+	  deprecated_print_address_numeric(DW_ADDR(&die->attrs[i]), 1, gdb_stderr);
 	  break;
 	case DW_FORM_block2:
 	case DW_FORM_block4:
 	case DW_FORM_block:
 	case DW_FORM_block1:
-	  fprintf_unfiltered (gdb_stderr, "block: size %d", DW_BLOCK (&die->attrs[i])->size);
+	  fprintf_unfiltered(gdb_stderr, "block: size %d", DW_BLOCK(&die->attrs[i])->size);
 	  break;
 	case DW_FORM_ref1:
 	case DW_FORM_ref2:
 	case DW_FORM_ref4:
-	  fprintf_unfiltered (gdb_stderr, "constant ref: %ld (adjusted)",
-			      (long) (DW_ADDR (&die->attrs[i])));
+	  fprintf_unfiltered(gdb_stderr, "constant ref: %ld (adjusted)",
+			     (long)(DW_ADDR(&die->attrs[i])));
 	  break;
 	case DW_FORM_APPLE_db_str:
 	case DW_FORM_data1:
@@ -11760,38 +11760,38 @@ dump_die(struct die_info *die)
 	case DW_FORM_data8:
 	case DW_FORM_udata:
 	case DW_FORM_sdata:
-	  fprintf_unfiltered (gdb_stderr, "constant: %ld", DW_UNSND (&die->attrs[i]));
+	  fprintf_unfiltered(gdb_stderr, "constant: %ld", DW_UNSND(&die->attrs[i]));
 	  break;
 	case DW_FORM_string:
 	case DW_FORM_strp:
-	  fprintf_unfiltered (gdb_stderr, "string: \"%s\"",
-		   DW_STRING (&die->attrs[i])
-		   ? DW_STRING (&die->attrs[i]) : "");
+	  fprintf_unfiltered(gdb_stderr, "string: \"%s\"",
+			     (DW_STRING(&die->attrs[i])
+			      ? DW_STRING(&die->attrs[i]) : ""));
 	  break;
 	case DW_FORM_flag:
-	  if (DW_UNSND (&die->attrs[i]))
-	    fprintf_unfiltered (gdb_stderr, "flag: TRUE");
+	  if (DW_UNSND(&die->attrs[i]))
+	    fprintf_unfiltered(gdb_stderr, "flag: TRUE");
 	  else
-	    fprintf_unfiltered (gdb_stderr, "flag: FALSE");
+	    fprintf_unfiltered(gdb_stderr, "flag: FALSE");
 	  break;
 	case DW_FORM_indirect:
 	  /* the reader will have reduced the indirect form to
 	     the "base form" so this form should not occur */
-	  fprintf_unfiltered (gdb_stderr, "unexpected attribute form: DW_FORM_indirect");
+	  fprintf_unfiltered(gdb_stderr, "unexpected attribute form: DW_FORM_indirect");
 	  break;
 	case DW_FORM_flag_present:
-	  fprintf_unfiltered (gdb_stderr, "flag: TRUE");
+	  fprintf_unfiltered(gdb_stderr, "flag: TRUE");
 	  break;
 	default:
 	  fprintf_unfiltered(gdb_stderr, "unsupported attribute form: %d.",
                              die->attrs[i].form);
 	}
-      fprintf_unfiltered (gdb_stderr, "\n");
+      fprintf_unfiltered(gdb_stderr, "\n");
     }
 }
 
-static void
-dump_die_list (struct die_info *die)
+static void ATTRIBUTE_USED
+dump_die_list(struct die_info *die)
 {
   while (die)
     {
@@ -14944,7 +14944,7 @@ decrement_use_count(struct database_info *repository, struct objfile *ofile)
 
 /* Functions for debugging red-black trees.  */
 
-static int
+static int ATTRIBUTE_USED
 num_nodes_in_tree(struct rb_tree_node *tree)
 {
   int total;
@@ -15053,7 +15053,7 @@ rb_print_node(struct rb_tree_node *tree)
     }
 }
 
-static void
+static void ATTRIBUTE_USED
 rb_print_tree(struct rb_tree_node *tree, int indent_level)
 {
   char *spaces;

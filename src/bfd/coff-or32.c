@@ -65,9 +65,9 @@ get_symbol_value(asymbol *symbol)
   if (bfd_is_com_section (symbol->section))
     relocation = 0L;
   else
-    relocation = (symbol->value +
-                  symbol->section->output_section->vma +
-                  symbol->section->output_offset);
+    relocation = (long)(symbol->value
+			+ symbol->section->output_section->vma
+			+ symbol->section->output_offset);
 
   return relocation;
 }
@@ -89,7 +89,7 @@ or32_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
   unsigned short r_type;
   long signed_value;
 
-  unsigned long addr = reloc_entry->address;
+  unsigned long addr = (unsigned long)reloc_entry->address;
   bfd_byte *hit_data = (addr + (bfd_byte *)(data));
 
 #if 0
@@ -131,7 +131,7 @@ or32_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
   switch (r_type)
     {
     case R_IREL:
-      insn = bfd_get_32(abfd, hit_data);
+      insn = (unsigned long)bfd_get_32(abfd, hit_data);
 
       /* Take the value in the field and sign extend it.  */
       signed_value = EXTRACT_JUMPTARG (insn);
@@ -142,12 +142,12 @@ or32_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
       if (signed_value == - (long) reloc_entry->address)
         signed_value = 0;
 
-      signed_value += sym_value + reloc_entry->addend;
-      /* Relative jmp/call, so subtract from the value the
-	 address of the place we're coming from.  */
-      signed_value -= (reloc_entry->address
-		       + input_section->output_section->vma
-		       + input_section->output_offset);
+      signed_value += (long)(sym_value + reloc_entry->addend);
+      /* Relative jmp/call, so subtract from the value the address of the place
+       * from which we are/were coming: */
+      signed_value -= (long)(reloc_entry->address
+			     + input_section->output_section->vma
+			     + input_section->output_offset);
       if (signed_value > 0x7ffffff || signed_value < -0x8000000)
 	return bfd_reloc_overflow;
 
@@ -157,26 +157,26 @@ or32_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
       break;
 
     case R_ILOHALF:
-      insn = bfd_get_32(abfd, hit_data);
+      insn = (unsigned long)bfd_get_32(abfd, hit_data);
       unsigned_value = EXTRACT_HWORD(insn);
-      unsigned_value += (sym_value + reloc_entry->addend);
+      unsigned_value += (unsigned long)(sym_value + reloc_entry->addend);
       insn = INSERT_HWORD(insn, unsigned_value);
       bfd_put_32(abfd, (bfd_vma)insn, hit_data);
       break;
 
     case R_IHIHALF:
-      insn = bfd_get_32(abfd, hit_data);
+      insn = (unsigned long)bfd_get_32(abfd, hit_data);
 
       /* consth, part 1
          Just get the symbol value that is referenced.  */
       part1_consth_active = TRUE;
-      part1_consth_value = sym_value + reloc_entry->addend;
+      part1_consth_value = (unsigned long)(sym_value + reloc_entry->addend);
 
       /* Don't modify insn until R_IHCONST.  */
       break;
 
     case R_IHCONST:
-      insn = bfd_get_32 (abfd, hit_data);
+      insn = (unsigned long)bfd_get_32(abfd, hit_data);
 
       /* consth, part 2
          Now relocate the reference.  */
@@ -188,7 +188,7 @@ or32_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
 
       /* sym_ptr_ptr = r_symndx, in coff_slurp_reloc_table() */
       unsigned_value = 0;   /*EXTRACT_HWORD(insn) << 16;*/
-      unsigned_value += reloc_entry->addend; /* r_symndx */
+      unsigned_value += (unsigned long)reloc_entry->addend; /* r_symndx */
       unsigned_value += part1_consth_value;
       unsigned_value = (unsigned_value >> 16);
       insn = INSERT_HWORD(insn, unsigned_value);
@@ -198,23 +198,23 @@ or32_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
 
     case R_BYTE:
       insn = bfd_get_8(abfd, hit_data);
-      unsigned_value = (insn + sym_value + reloc_entry->addend);
+      unsigned_value = (unsigned long)(insn + sym_value + reloc_entry->addend);
       if (unsigned_value & 0xffffff00)
         return bfd_reloc_overflow;
       bfd_put_8(abfd, unsigned_value, hit_data);
       break;
 
     case R_HWORD:
-      insn = bfd_get_16(abfd, hit_data);
-      unsigned_value = (insn + sym_value + reloc_entry->addend);
+      insn = (unsigned long)bfd_get_16(abfd, hit_data);
+      unsigned_value = (unsigned long)(insn + sym_value + reloc_entry->addend);
       if (unsigned_value & 0xffff0000)
         return bfd_reloc_overflow;
       bfd_put_16(abfd, (bfd_vma)insn, hit_data);
       break;
 
     case R_WORD:
-      insn = bfd_get_32(abfd, hit_data);
-      insn += (sym_value + reloc_entry->addend);
+      insn = (unsigned long)bfd_get_32(abfd, hit_data);
+      insn += (unsigned long)(sym_value + reloc_entry->addend);
       bfd_put_32(abfd, (bfd_vma)insn, hit_data);
       break;
 

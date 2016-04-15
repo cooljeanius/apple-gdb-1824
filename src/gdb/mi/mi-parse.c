@@ -98,7 +98,7 @@ mi_parse_argv(char *args, struct mi_parse *parse)
 		if (*chp == '\\')
 		  {
 		    chp++;
-		    arg[len] = parse_escape((const char **)&chp);
+		    arg[len] = (char)parse_escape((const char **)&chp);
 		  }
 		else
 		  arg[len] = *chp++;

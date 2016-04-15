@@ -249,7 +249,7 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
 
         TYPE_LENGTH_ASSIGN(type) = (TARGET_INT_BIT / HOST_CHAR_BIT);
         TYPE_CODE(type) = TYPE_CODE_ENUM;
-        TYPE_NFIELDS(type) = nelem;
+        TYPE_NFIELDS(type) = (short)nelem;
         TYPE_FIELDS(type) =
           (struct field *)TYPE_ALLOC(type, sizeof(struct field) * nelem);
         memset(TYPE_FIELDS(type), 0, sizeof(struct field) * nelem);
@@ -337,7 +337,7 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
 
         TYPE_FIELDS(type) =
           (struct field *)TYPE_ALLOC(type, nrec * sizeof(struct field));
-        TYPE_NFIELDS(type) = nrec;
+        TYPE_NFIELDS(type) = (short)nrec;
         TYPE_LENGTH_ASSIGN(type) = 0;
 
         for (i = 0; i < nrec; i++)
@@ -1032,7 +1032,7 @@ sym_read_functions(struct objfile *objfile, struct type **typevec,
           dict_add_symbol(BLOCK_DICT(fblock), localvec[i]);
         }
 
-      TYPE_NFIELDS(ftype) = nargs;
+      TYPE_NFIELDS(ftype) = (short)nargs;
       TYPE_FIELDS(ftype) = argvec;
 
       SYMBOL_TYPE(fsymbol) = ftype;

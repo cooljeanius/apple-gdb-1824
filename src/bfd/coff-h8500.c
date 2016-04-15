@@ -213,18 +213,20 @@ extra_case(bfd *in_abfd, struct bfd_link_info *link_info,
 
     case R_H8500_IMM24:
       {
-	int v = bfd_coff_reloc16_get_value (reloc, link_info, input_section);
-	int o = bfd_get_32 (in_abfd, data+ *dst_ptr -1);
-	v = (v & 0x00ffffff) | (o & 0xff00000);
-	bfd_put_32 (in_abfd, (bfd_vma) v, data  + *dst_ptr -1);
+	int v = (int)bfd_coff_reloc16_get_value(reloc, link_info,
+						input_section);
+	int o = (int)bfd_get_32(in_abfd, (data + *dst_ptr - 1));
+	v = ((v & 0x00ffffff) | (o & 0xff00000));
+	bfd_put_32(in_abfd, (bfd_vma)v, (data + *dst_ptr - 1));
 	(*dst_ptr) += 3;
 	(*src_ptr) += 3;;
       }
       break;
     case R_H8500_IMM32:
       {
-	int v = bfd_coff_reloc16_get_value (reloc, link_info, input_section);
-	bfd_put_32 (in_abfd, (bfd_vma) v, data  + *dst_ptr);
+	int v = (int)bfd_coff_reloc16_get_value(reloc, link_info,
+						input_section);
+	bfd_put_32(in_abfd, (bfd_vma)v, (data + *dst_ptr));
 	(*dst_ptr) += 4;
 	(*src_ptr) += 4;;
       }
@@ -234,13 +236,14 @@ extra_case(bfd *in_abfd, struct bfd_link_info *link_info,
       {
 	bfd_vma dst = bfd_coff_reloc16_get_value (reloc, link_info,
 						  input_section);
-	bfd_vma dot = link_order->offset
-	  + *dst_ptr
-	    + link_order->u.indirect.section->output_section->vma;
-	int gap = dst - dot - 1; /* -1 since were in the odd byte of the
-				    word and the pc's been incremented.  */
+	bfd_vma dot = (link_order->offset
+		       + *dst_ptr
+		       + link_order->u.indirect.section->output_section->vma);
+	/* -1L since we are in the odd byte of the word, and the pc has been
+	 * incremented: */
+	ptrdiff_t gap = ((ptrdiff_t)(dst - dot) - 1L);
 
-	if (gap > 128 || gap < -128)
+	if ((gap > 128) || (gap < -128))
 	  {
 	    if (! ((*link_info->callbacks->reloc_overflow)
 		   (link_info, NULL,
@@ -258,13 +261,14 @@ extra_case(bfd *in_abfd, struct bfd_link_info *link_info,
       {
 	bfd_vma dst = bfd_coff_reloc16_get_value (reloc, link_info,
 						  input_section);
-	bfd_vma dot = link_order->offset
-	  + *dst_ptr
-	    + link_order->u.indirect.section->output_section->vma;
-	int gap = dst - dot - 1; /* -1 since were in the odd byte of the
-				    word and the pc's been incremented.  */
+	bfd_vma dot = (link_order->offset
+		       + *dst_ptr
+		       + link_order->u.indirect.section->output_section->vma);
+	/* -1L since we are in the odd byte of the word, and the pc has been
+	 * incremented: */
+	ptrdiff_t gap = ((ptrdiff_t)(dst - dot) - 1L);
 
-	if (gap > 32767 || gap < -32768)
+	if ((gap > 32767L) || (gap < -32768L))
 	  {
 	    if (! ((*link_info->callbacks->reloc_overflow)
 		   (link_info, NULL,

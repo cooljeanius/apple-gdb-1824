@@ -1766,9 +1766,9 @@ forward_search_command(const char *regex, int from_tty)
     {
       static char *buf = NULL;
       char *p;
-      int cursize, newsize;
+      size_t cursize, newsize;
 
-      cursize = 256;
+      cursize = 256UL;
       buf = (char *)xmalloc(cursize);
       p = buf;
 
@@ -1776,10 +1776,10 @@ forward_search_command(const char *regex, int from_tty)
       if (c == EOF)
 	break;
       do {
-        *p++ = c;
-        if ((p - buf) == cursize)
+        *p++ = (char)c;
+        if ((p - buf) == (ptrdiff_t)cursize)
           {
-            newsize = (cursize + cursize / 2);
+            newsize = (cursize + cursize / 2UL);
             buf = (char *)xrealloc(buf, newsize);
             p = (buf + cursize);
             cursize = newsize;
@@ -1865,7 +1865,7 @@ reverse_search_command(const char *regex, int from_tty)
       if (c == EOF)
 	break;
       do {
-	*p++ = c;
+	*p++ = (char)c;
       } while ((c != '\n') && ((c = getc(stream)) >= 0));
 
       /* Remove the \r, if any, at the end of the line, otherwise

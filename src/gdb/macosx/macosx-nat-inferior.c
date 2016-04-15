@@ -3249,7 +3249,7 @@ fork_memcache_put(struct checkpoint *cp)
 /* Find an app bundle Info.plist XML file and use libxml2 to parse it. */
 /* The string returned (NULL if unsuccessful) has been malloc()'ed by
  * libxml2, so free() it; do NOT xfree() or xmfree() it.  */
-static const char *
+static ATTRIBUTE_USED const char *
 get_bundle_executable_from_plist(const char *pathname)
 {
 #if !defined(LIBXML2_IS_USABLE) || !LIBXML2_IS_USABLE

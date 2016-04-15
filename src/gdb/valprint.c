@@ -686,7 +686,7 @@ print_octal_chars (struct ui_file *stream, const gdb_byte *valaddr,
 	    case 1:
 	      /* Carry in two bits, carry out one bit.
 	       */
-	      octa1 = (carry << 1) | ((HIGH_ONE & *p) >> 7);
+	      octa1 = (unsigned char)((carry << 1) | ((HIGH_ONE & *p) >> 7));
 	      octa2 = (MID_ONE & *p) >> 4;
 	      octa3 = (LOW_ONE & *p) >> 1;
 	      carry = (CARRY_ONE & *p);
@@ -698,7 +698,7 @@ print_octal_chars (struct ui_file *stream, const gdb_byte *valaddr,
 	    case 2:
 	      /* Carry in one bit, no carry out.
 	       */
-	      octa1 = (carry << 2) | ((HIGH_TWO & *p) >> 6);
+	      octa1 = (unsigned char)((carry << 2) | ((HIGH_TWO & *p) >> 6));
 	      octa2 = (MID_TWO & *p) >> 3;
 	      octa3 = (LOW_TWO & *p);
 	      carry = 0;
@@ -734,7 +734,7 @@ print_octal_chars (struct ui_file *stream, const gdb_byte *valaddr,
 
 	    case 1:
 	      /* Carry in, carry out */
-	      octa1 = (carry << 1) | ((HIGH_ONE & *p) >> 7);
+	      octa1 = (unsigned char)((carry << 1) | ((HIGH_ONE & *p) >> 7));
 	      octa2 = (MID_ONE & *p) >> 4;
 	      octa3 = (LOW_ONE & *p) >> 1;
 	      carry = (CARRY_ONE & *p);
@@ -745,7 +745,7 @@ print_octal_chars (struct ui_file *stream, const gdb_byte *valaddr,
 
 	    case 2:
 	      /* Carry in, no carry out */
-	      octa1 = (carry << 2) | ((HIGH_TWO & *p) >> 6);
+	      octa1 = (unsigned char)((carry << 2) | ((HIGH_TWO & *p) >> 6));
 	      octa2 = (MID_TWO & *p) >> 3;
 	      octa3 = (LOW_TWO & *p);
 	      carry = 0;
@@ -830,7 +830,7 @@ print_decimal_chars (struct ui_file *stream, const gdb_byte *valaddr,
        */
       for (j = 0; j < decimal_digits; j++)
 	{
-	  digits[j] = SHIFT (digits[j]);
+	  digits[j] = (unsigned char)SHIFT(digits[j]);
 	}
 
       /* Take the next nibble off the input and add it to what

@@ -240,7 +240,7 @@ bcache_data(const void *addr, int length, struct bcache *bcache)
       = (struct bstring *)obstack_alloc(&bcache->cache,
                                         BSTRING_SIZE(length));
     memcpy(&newbstr->d.data, addr, length);
-    newbstr->length = length;
+    newbstr->length = (unsigned short)length;
     newbstr->next = bcache->bucket[hash_index];
     newbstr->half_hash = half_hash;
     bcache->bucket[hash_index] = newbstr;

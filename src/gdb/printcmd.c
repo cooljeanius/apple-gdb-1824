@@ -246,13 +246,13 @@ decode_format(const char **string_ptr, int oformat, int osize)
       if (val.size == '?')
 	{
 	  /* Neither has been specified.  */
-	  val.format = oformat;
-	  val.size = osize;
+	  val.format = (char)oformat;
+	  val.size = (char)osize;
 	}
       else
 	/* If a size is specified, any format makes a reasonable
 	   default except 'i'.  */
-	val.format = oformat == 'i' ? 'x' : oformat;
+	val.format = (char)((oformat == 'i') ? 'x' : oformat);
     }
   else if (val.size == '?')
     switch (val.format)
@@ -261,28 +261,29 @@ decode_format(const char **string_ptr, int oformat, int osize)
       case 's':
 	/* Pick the appropriate size for an address.  */
 	if (TARGET_PTR_BIT == 64)
-	  val.size = osize ? 'g' : osize;
+	  val.size = (char)(osize ? 'g' : osize);
 	else if (TARGET_PTR_BIT == 32)
-	  val.size = osize ? 'w' : osize;
+	  val.size = (char)(osize ? 'w' : osize);
 	else if (TARGET_PTR_BIT == 16)
-	  val.size = osize ? 'h' : osize;
+	  val.size = (char)(osize ? 'h' : osize);
 	else
 	  /* Bad value for TARGET_PTR_BIT */
-	  internal_error (__FILE__, __LINE__, _("failed internal consistency check"));
+	  internal_error(__FILE__, __LINE__,
+			 _("failed internal consistency check"));
 	break;
       case 'f':
       case 'A':
 	/* Floating point has to be word or giantword.  */
-	if (osize == 'w' || osize == 'g')
-	  val.size = osize;
+	if ((osize == 'w') || (osize == 'g'))
+	  val.size = (char)osize;
 	else
 	  /* Default it to giantword if the last used size is not
 	     appropriate.  */
-	  val.size = osize ? 'g' : osize;
+	  val.size = (char)(osize ? 'g' : osize);
 	break;
       case 'c':
 	/* Characters default to one byte.  */
-	val.size = osize ? 'b' : osize;
+	val.size = (char)(osize ? 'b' : osize);
 	break;
       case 'i':
 	/* Instructions default to one byte, and we don't remember any old
@@ -291,7 +292,7 @@ decode_format(const char **string_ptr, int oformat, int osize)
 	break;
       default:
 	/* The default is the size most recently specified.  */
-	val.size = osize;
+	val.size = (char)osize;
       }
 
   return val;
@@ -343,7 +344,7 @@ print_formatted (struct value *val, int format, int size,
       /* APPLE LOCAL: set a global to allow print_insn() functions to do
          something different if a different size is specified. The default
          value is 'b' when no size is specified with the instruction format.  */
-      g_examine_i_size = size;
+      g_examine_i_size = (char)size;
 
       /* We often wrap here if there are long symbolic names.  */
       wrap_here ("    ");
@@ -2034,7 +2035,7 @@ printf_command(const char *arg, int from_tty)
 	  break;
 
 	default:
-	  *f++ = c;
+	  *f++ = (char)c;
 	}
     }
 

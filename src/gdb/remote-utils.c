@@ -323,7 +323,7 @@ sr_timed_read(char *buf, int n)
   i = 0;
   while (i < n)
     {
-      c = sr_readchar();
+      c = (char)sr_readchar();
 
       if (c == 0)
 	return i;
@@ -362,13 +362,13 @@ sr_get_hex_digit (int ignore_space)
 /* Get a byte from the remote and put it in *BYT.  Accept any number
    leading spaces.  */
 void
-sr_get_hex_byte (char *byt)
+sr_get_hex_byte(char *byt)
 {
   int val;
 
-  val = sr_get_hex_digit (1) << 4;
-  val |= sr_get_hex_digit (0);
-  *byt = val;
+  val = (sr_get_hex_digit(1) << 4);
+  val |= sr_get_hex_digit(0);
+  *byt = (char)val;
 }
 
 /* Read a 32-bit hex word from the remote, preceded by a space  */
@@ -568,7 +568,7 @@ gr_multi_scan(char *list[], int passthrough)
 		return (i);
 
 	      if (!ch_handled)
-		*swallowed_p++ = ch;
+		*swallowed_p++ = (char)ch;
 
 	      ch_handled = 1;
 	    }

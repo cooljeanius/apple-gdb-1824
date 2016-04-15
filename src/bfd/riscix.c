@@ -229,7 +229,7 @@ riscix_fix_pcrel_26(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 {
   bfd_vma relocation;
   bfd_size_type addr = reloc_entry->address;
-  long target = bfd_get_32(abfd, ((bfd_byte *)data + addr));
+  long target = (long)bfd_get_32(abfd, ((bfd_byte *)data + addr));
   bfd_reloc_status_type flag = bfd_reloc_ok;
 
   /* If this is an undefined symbol, return error: */
@@ -265,7 +265,7 @@ riscix_fix_pcrel_26(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
     flag = bfd_reloc_overflow;
 
   target &= ~0x00ffffff;
-  target |= ((relocation >> 2) & 0x00ffffff);
+  target |= (long)((relocation >> 2) & 0x00ffffff);
   bfd_put_32(abfd, (bfd_vma)target, ((bfd_byte *)data + addr));
 
   /* Now the ARM magic: Change the reloc type so that it is marked as done.
@@ -364,7 +364,7 @@ riscix_swap_std_reloc_out(bfd *abfd, arelent *g,
 	{
 	  /* Fill in symbol: */
 	  r_extern = 1;
-	  r_index = (*g->sym_ptr_ptr)->udata.i;
+	  r_index = (int)(*g->sym_ptr_ptr)->udata.i;
 	}
     }
   else
@@ -557,7 +557,8 @@ riscix_some_aout_object_p(bfd *abfd, struct internal_exec *execp,
   bfd_get_start_address(abfd) = execp->a_entry;
 
   obj_aout_symbols(abfd) = NULL;
-  bfd_get_symcount(abfd) = (execp->a_syms / sizeof(struct external_nlist));
+  bfd_get_symcount(abfd) =
+    (unsigned int)(execp->a_syms / sizeof(struct external_nlist));
 
   /* The default relocation entry size is that of traditional V7 Unix: */
   obj_reloc_entry_size(abfd) = RELOC_STD_SIZE;
@@ -641,7 +642,7 @@ MY(object_p)(bfd *abfd)
       return NULL;
     }
 
-  exec.a_info = H_GET_32(abfd, exec_bytes.e_info);
+  exec.a_info = (long)H_GET_32(abfd, exec_bytes.e_info);
 
   if (N_BADMAG(exec))
     return NULL;

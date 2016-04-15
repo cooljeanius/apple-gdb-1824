@@ -166,12 +166,11 @@ read_coff_rsrc (const char *filename, const char *target)
   return read_coff_res_dir (data, &finfo, (const struct res_id *) NULL, 0);
 }
 
-/* Give an error if we are out of bounds.  */
-
-static void
-overrun (const struct coff_file_info *finfo, const char *msg)
+/* Give an error if we are out of bounds: */
+static void ATTRIBUTE_NORETURN
+overrun(const struct coff_file_info *finfo, const char *msg)
 {
-  fatal (_("%s: %s: address out of bounds"), finfo->filename, msg);
+  fatal(_("%s: %s: address out of bounds"), finfo->filename, msg);
 }
 
 /* Read a resource directory.  */

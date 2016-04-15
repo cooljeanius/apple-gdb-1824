@@ -153,7 +153,7 @@ appendc (struct macro_buffer *b, int c)
   if (new_len > b->size)
     resize_buffer (b, new_len);
 
-  b->text[b->len] = c;
+  b->text[b->len] = (char)c;
   b->len = new_len;
 }
 

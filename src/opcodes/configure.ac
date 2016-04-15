@@ -684,6 +684,10 @@ if test "x${cgen_maint}" = "xyes" && test "x${using_cgen}" = "xno"; then
   dnl# only do warnings if we can regenerate cgen-erated sources, but are
   dnl# not actually going to do so:
   AM_BINUTILS_WARNINGS
+else
+  dnl# FIXME: come up with some sort of scheme to use a smaller set of
+  dnl# warnings that will be silent about anything cgen-erated...
+  test -d ../cgen
 fi
 dnl# (I uncommented it to add it back in anyways, but conditionally)
 

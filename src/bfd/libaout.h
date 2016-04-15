@@ -326,7 +326,7 @@ enum machine_type
   M_CRIS = 255		  /* Axis CRIS binary.  */
 };
 
-#define N_DYNAMIC(exec) ((exec).a_info & 0x80000000)
+#define N_DYNAMIC(exec) ((unsigned long)(exec).a_info & 0x80000000)
 
 #ifndef N_MAGIC
 # define N_MAGIC(exec) ((exec).a_info & 0xffff)
@@ -349,8 +349,9 @@ enum machine_type
 
 #ifndef N_SET_DYNAMIC
 # define N_SET_DYNAMIC(exec, dynamic) \
-((exec).a_info = (dynamic) ? (long) ((exec).a_info | 0x80000000) : \
-((exec).a_info & 0x7fffffff))
+((exec).a_info = ((dynamic) \
+		  ? (long)((unsigned long)(exec).a_info | 0x80000000) \
+		  : ((exec).a_info & 0x7fffffff)))
 #endif
 
 #ifndef N_SET_MAGIC
@@ -362,13 +363,14 @@ enum machine_type
 #ifndef N_SET_MACHTYPE
 # define N_SET_MACHTYPE(exec, machtype) \
 ((exec).a_info = \
- ((exec).a_info&0xff00ffff) | ((((int)(machtype))&0xff) << 16))
+ (long)((unsigned long)(exec).a_info & 0xff00ffff) \
+	| ((((int)(machtype)) & 0xff) << 16))
 #endif
 
 #ifndef N_SET_FLAGS
 # define N_SET_FLAGS(exec, flags) \
 ((exec).a_info = \
- ((exec).a_info&0x00ffffff) | (((flags) & 0xff) << 24))
+ ((exec).a_info & 0x00ffffff) | (((flags) & 0xff) << 24))
 #endif
 
 typedef struct aout_symbol

@@ -142,10 +142,11 @@ inferior_event_handler (enum inferior_event_type event_type,
     }
 }
 
-static int 
-fetch_inferior_event_wrapper (gdb_client_data client_data)
+/* */
+static ATTRIBUTE_USED int 
+fetch_inferior_event_wrapper(gdb_client_data client_data)
 {
-  fetch_inferior_event (client_data);
+  fetch_inferior_event(client_data);
   return 1;
 }
 
