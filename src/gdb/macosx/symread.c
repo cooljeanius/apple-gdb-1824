@@ -1277,7 +1277,7 @@ sym_symfile_read(struct objfile *objfile, int mainline)
                 {
                   sym_complaint();
                 }
-              else if (0)
+              else if ((linetable != NULL) && (curitem != 0))
                 {
                   linetable->item[curitem].line = -1;
                   linetable->item[curitem].pc =
@@ -1286,7 +1286,12 @@ sym_symfile_read(struct objfile *objfile, int mainline)
                   curitem++;
                   linetable->nitems = curitem;
                 }
+	      
+	      if ((linetable == NULL) && (temp != NULL)) {
+		linetable = temp;
+	      }
 
+	      CHECK_FATAL(linetable != NULL);
               temp =
 		((struct linetable *)
 		 xmalloc(sizeof(struct linetable)
@@ -1375,7 +1380,7 @@ sym_symfile_read(struct objfile *objfile, int mainline)
                 }
               else
                 {
-                  if (curitem == 0)
+                  if ((curitem == 0) && (linetable != NULL))
                     {
                       linetable->item[curitem].line = curpos;
                       linetable->item[curitem].pc = mtentry.mte_res_offset;
@@ -1383,12 +1388,16 @@ sym_symfile_read(struct objfile *objfile, int mainline)
                       curitem++;
                       linetable->nitems = curitem;
                     }
+		  else if ((curitem == 0) && (linetable == NULL))
+		    {
+		      curitem++;
+		    }
 		  
 		  if (curitem >= linetable_maxentries)
 		    {
 		      sym_complaint();
 		    }
-		  else
+		  else if (linetable != NULL)
 		    {
 		      linetable->item[curitem].line = curpos;
 		      linetable->item[curitem].pc =
@@ -1396,6 +1405,10 @@ sym_symfile_read(struct objfile *objfile, int mainline)
 		      linetable->item[curitem].pc += text_section_offset;
 		      curitem++;
 		      linetable->nitems = curitem;
+		    }
+		  else
+		    {
+		      curitem++;
 		    }
                 }
             }

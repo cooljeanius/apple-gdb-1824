@@ -387,7 +387,7 @@ canonicalizeNumeral (char *s1, const char *s2)
     {
       if (*s2 != '_')
 	{
-	  *s1 = tolower(*s2);
+	  *s1 = (char)tolower(*s2);
 	  s1 += 1;
 	}
     }
@@ -432,7 +432,7 @@ strtoulst(const char *num, const char **trailer, int base)
       errno = EINVAL;
       return 0;
     }
-  lim = (base - 1 + '0');
+  lim = (unsigned char)(base - 1 + '0');
 
   if (lim > 0) {
     ; /* ??? */
@@ -576,7 +576,7 @@ processId(const char *name0, int len)
     {
       if (isalnum(name0[i0]))
 	{
-	  name[i] = tolower(name0[i0]);
+	  name[i] = (char)tolower(name0[i0]);
 	  i += 1; i0 += 1;
 	}
       else switch (name0[i0])
@@ -956,8 +956,10 @@ yywrap(void)
 typedef void (*dummy_function)(void);
 dummy_function ada_flex_use[] =
 {
-  (dummy_function)yyunput,
-  (dummy_function)yyinput
+  (dummy_function)yyunput
+#if defined(__clang__) && !defined(__clang_analyzer__)
+  , (dummy_function)yyinput
+#endif /* __clang__ && !__clang_analyzer__ */
 };
 
 /* End of ada-lex.l */

@@ -1769,6 +1769,10 @@ upgrade_type(int fd, struct type **tpp, int tq, union aux_ext *ax, int bigend,
       upper = AUX_GET_DNHIGH (bigend, ax);
       ax++;
       rf = AUX_GET_WIDTH (bigend, ax);	/* bit size of array element */
+	
+      if (rf == 0) {
+	; /* ??? */
+      }
 
       range = create_range_type ((struct type *) NULL, indx,
 				 lower, upper);

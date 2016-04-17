@@ -1561,17 +1561,20 @@ yylex (void)
       lexptr++;
       c = *lexptr++;
       if (c == '\\')
-	c = parse_escape (&lexptr);
+	c = parse_escape(&lexptr);
       else if (c == '\'')
 	{
-	  yyerror ("empty character constant");
+	  yyerror("empty character constant");
 	  return ERROR;
 	}
 
+      if (c == '\0') {
+	; /* ??? */
+      }
       c = *lexptr++;
       if (c != '\'')
 	{
-	  yyerror ("invalid character constant");
+	  yyerror("invalid character constant");
 	  return ERROR;
 	}
 
@@ -1685,17 +1688,17 @@ yylex (void)
 	      continue;
 	    /* We will take any letters or digits.  parse_number will
 	       complain if past the radix, or if L or U are not final.  */
-	    else if (! ISALNUM (*p))
+	    else if (!ISALNUM(*p))
 	      break;
 	  }
-	toktype = parse_number (tokstart, p - tokstart, got_dot|got_e);
+	toktype = parse_number(tokstart, (p - tokstart), (got_dot | got_e));
         if (toktype == ERROR)
 	  {
-	    char *err_copy = (char *) alloca (p - tokstart + 1);
+	    char *err_copy = (char *)alloca((size_t)(p - tokstart) + 1UL);
 
-	    memcpy (err_copy, tokstart, p - tokstart);
+	    memcpy(err_copy, tokstart, (size_t)(p - tokstart));
 	    err_copy[p - tokstart] = 0;
-	    yyerror ("invalid number");
+	    yyerror("invalid number");
 	    return ERROR;
 	  }
 	lexptr = p;
@@ -1950,7 +1953,7 @@ allocate_info(int comps)
    cplus_demangle_print does not, specifically the global destructor
    and constructor labels.  */
 
-ATTRIBUTE_NOINLINE char *
+ATTRIBUTE_NOINLINE ATTRIBUTE_NOCLONE char *
 cp_comp_to_string(struct demangle_component *result, int estimated_len)
 {
   char *str;
@@ -1989,7 +1992,7 @@ cp_comp_to_string(struct demangle_component *result, int estimated_len)
    tree.  On error, NULL is returned, and an error message will be
    set in *ERRMSG (which does not need to be freed).  */
 
-ATTRIBUTE_NOINLINE struct demangle_component *
+ATTRIBUTE_NOINLINE ATTRIBUTE_NOCLONE struct demangle_component *
 cp_demangled_name_to_comp(const char *demangled_name, void **memory,
 			  const char **errmsg)
 {
@@ -2003,7 +2006,7 @@ cp_demangled_name_to_comp(const char *demangled_name, void **memory,
   error_lexptr = NULL;
   global_errmsg = NULL;
 
-  demangle_info = allocate_info(len);
+  demangle_info = allocate_info((int)len);
 
   if (yyparse())
     {

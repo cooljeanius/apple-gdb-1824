@@ -542,6 +542,10 @@ gr_multi_scan(char *list[], int passthrough)
   /* if we have no strings, then something is wrong. */
   if (string_count == 0)
     return (-1);
+  
+  if ((max_length == 0) || ((max_length << 1) == 0)) {
+    max_length++;
+  }
 
   /* otherwise, we will need a holding area big enough to hold almost two
      copies of our largest string.  */

@@ -162,9 +162,15 @@ mach_xfer_memory_remainder(CORE_ADDR memaddr, gdb_byte *myaddr,
   vm_offset_t mempointer;       /* local copy of inferior's memory */
   mach_msg_type_number_t memcopied;     /* for vm_read to use */
 
-  CORE_ADDR pageaddr = (memaddr - (memaddr % pagesize));
+  CORE_ADDR pageaddr;
 
   kern_return_t kret;
+  
+  if (pagesize == 0) {
+    pagesize++;
+  }
+  
+  pageaddr = (memaddr - (memaddr % pagesize));
 
   CHECK_FATAL(((memaddr + len - 1) - ((memaddr + len - 1) % pagesize))
               == pageaddr);
@@ -275,6 +281,10 @@ mach_xfer_memory_block(CORE_ADDR memaddr, gdb_byte *myaddr,
   mach_msg_type_number_t memcopied;     /* for vm_read to use */
 
   kern_return_t kret;
+  
+  if (pagesize == 0) {
+    pagesize++;
+  }
 
   CHECK_FATAL((memaddr % pagesize) == 0);
   CHECK_FATAL((len % pagesize) == 0);
@@ -745,8 +755,9 @@ mach_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr,
 	      /* We do NOT need to modify our protections.  */
 	      kret = KERN_SUCCESS;
 	      mutils_debug("We already have write access to the region "
-			   "containing: 0x%s, skipping permission modification.\n",
-			   paddr_nz(cur_memaddr));
+			   "containing: 0x%s, skipping permission modification "
+                           "(kret = %d).\n",
+			   paddr_nz(cur_memaddr), kret);
 	    }
 	  else
 	    {
@@ -1260,7 +1271,10 @@ do_over_unique_frames(stack_logging_record_t record, void *data)
 #endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
   unsigned int num_frames;
   struct cleanup *cleanup;
-  struct symtab_and_line sal;
+  struct symtab_and_line sal = {
+    (struct symtab *)NULL, (asection *)NULL, 0, 0UL, 0UL,
+    NORMAL_LT_ENTRY, (struct symtab_and_line *)NULL
+  };
   volatile unsigned int i;
   CORE_ADDR thread;
   volatile int final_return = 0;
@@ -1651,6 +1665,9 @@ build_path_to_element(struct type *type, CORE_ADDR offset, char **symbol_name)
 		  strcpy((*symbol_name + orig_len + 1),
                          TYPE_FIELD_NAME(type, i));
 		}
+              if (orig_len > 0) {
+                ; /* ??? */
+              }
 	      if ((CORE_ADDR)(TYPE_FIELD_BITPOS(type, i) / 8) == offset)
 		return 0;
 	      else
@@ -1754,6 +1771,7 @@ get_symbol_at_address_on_stack(CORE_ADDR stack_address, int *frame_level)
 		    {
 		      CORE_ADDR offset = (stack_address - val_address);
 		      this_symbol = sym;
+                      CHECK_FATAL(this_symbol != NULL);
 		      symbol_name = xstrdup(SYMBOL_PRINT_NAME(sym));
 		      build_path_to_element(val_type, offset, &symbol_name);
 		      goto found_symbol;
@@ -2263,12 +2281,17 @@ gc_reference_tracing_command(const char *arg, int from_tty)
     error ("Could not read the reference list at address: %s.",
 	   paddr_nz (list_addr));
 
-  list_addr = gc_print_references (list_addr, wordsize);
+  list_addr = gc_print_references(list_addr, wordsize);
+  
+  if (list_addr == INVALID_ADDRESS) {
+    ; /* ??? */
+  }
 
   if (num_refs > 0)
-    gc_free_data (ref_list_val);
+    gc_free_data(ref_list_val);
 }
 
+/* Usual gdb initialization hook: */
 void
 _initialize_macosx_mutils(void)
 {

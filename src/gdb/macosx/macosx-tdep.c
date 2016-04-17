@@ -223,13 +223,13 @@ macosx_symbol_type_base(unsigned char macho_type)
 
   if (mtype & BFD_MACH_O_N_PEXT)
     {
-      mtype &= ~BFD_MACH_O_N_PEXT;
+      mtype &= (unsigned char)(~BFD_MACH_O_N_PEXT);
       ntype |= N_EXT;
     }
 
   if (mtype & BFD_MACH_O_N_EXT)
     {
-      mtype &= ~BFD_MACH_O_N_EXT;
+      mtype &= (unsigned char)(~BFD_MACH_O_N_EXT);
       ntype |= N_EXT;
     }
 
@@ -264,7 +264,7 @@ macosx_symbol_type_base(unsigned char macho_type)
 #endif /* 0 */
       return macho_type;
     }
-  mtype &= ~BFD_MACH_O_N_TYPE;
+  mtype &= (unsigned char)(~BFD_MACH_O_N_TYPE);
 
   CHECK_FATAL (mtype == 0);
 
@@ -278,7 +278,7 @@ macosx_symbol_types_init(void)
   unsigned int i;
   for (i = 0U; i < 256U; i++)
     {
-      macosx_symbol_types[i] = macosx_symbol_type_base (i);
+      macosx_symbol_types[i] = macosx_symbol_type_base((unsigned char)i);
     }
 }
 
@@ -365,7 +365,7 @@ macosx_internalize_symbol(struct internal_nlist *in, int *sect_p,
   if (bfd_header_big_endian(abfd))
     {
       in->n_strx = BFD_GETB32(ext->e_strx);
-      in->n_desc = BFD_GETB16(ext->e_desc);
+      in->n_desc = (unsigned short)BFD_GETB16(ext->e_desc);
       if (symwide)
         in->n_value = BFD_GETB64(ext->e_value);
       else
@@ -374,7 +374,7 @@ macosx_internalize_symbol(struct internal_nlist *in, int *sect_p,
   else if (bfd_header_little_endian(abfd))
     {
       in->n_strx = BFD_GETL32(ext->e_strx);
-      in->n_desc = BFD_GETL16(ext->e_desc);
+      in->n_desc = (unsigned short)BFD_GETL16(ext->e_desc);
       if (symwide)
         in->n_value = BFD_GETL64(ext->e_value);
       else
@@ -1560,7 +1560,11 @@ get_dbg_shell_command(void)
 
   if (!CFStringGetCString((CFStringRef)shell_cmd, shell_cmd_cstr,
                           sizeof(shell_cmd_cstr), kCFStringEncodingUTF8))
-    return NULL;
+    {
+      if (shell_cmd)
+        CFRelease(shell_cmd);
+      return NULL;
+    }
   CFRelease(shell_cmd);
 
   if (file_exists_p(shell_cmd_cstr))
@@ -2671,7 +2675,7 @@ actually_do_stack_frame_prologue(unsigned int count_limit,
     ui_out_begin(uiout, ui_out_type_list, "frames");
 
   more_frames = 1;
-  pc = 0;
+  pc = 0UL;
 
   fi = get_current_frame();
   if (fi == NULL)
@@ -3082,6 +3086,10 @@ get_information_about_macho(const char *filename, CORE_ADDR mh_addr, bfd *abfd,
       filename = NULL;
       file_exists = 0;
     }
+  
+  if (file_exists == 0) {
+    ; /* ??? */
+  }
 
   if (abfd == NULL)
     {

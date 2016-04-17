@@ -1160,8 +1160,8 @@ lookup_cmd(const char **line, struct cmd_list_element *list, const char *cmdtype
 	      while (isalnum(*p) || *p == '-')
 		p++;
 
-	      q = (char *)alloca(p - *line + 1);
-	      strncpy(q, *line, (p - *line));
+	      q = (char *)alloca((p - *line) + 1UL);
+	      strncpy(q, *line, ((p - *line) - 1UL));
 	      q[p - *line] = '\0';
 	      undef_cmd_error(cmdtype, q);
 	    }

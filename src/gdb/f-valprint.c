@@ -24,6 +24,7 @@
    Boston, MA 02111-1307, USA.  */
 
 #include "defs.h"
+#include "gdb_assert.h"
 #include "gdb_string.h"
 #include "symtab.h"
 #include "gdbtypes.h"
@@ -509,28 +510,27 @@ f_val_print (struct type *type, const gdb_byte *valaddr, int embedded_offset,
     case TYPE_CODE_BOOL:
       format = format ? format : output_format;
       if (format)
-	print_scalar_formatted (valaddr, type, format, 0, stream);
+	print_scalar_formatted(valaddr, type, format, 0, stream);
       else
 	{
 	  val = 0;
-	  switch (TYPE_LENGTH (type))
+	  switch (TYPE_LENGTH(type))
 	    {
 	    case 1:
-	      val = unpack_long (builtin_type_f_logical_s1, valaddr);
+	      val = unpack_long(builtin_type_f_logical_s1, valaddr);
 	      break;
 
 	    case 2:
-	      val = unpack_long (builtin_type_f_logical_s2, valaddr);
+	      val = unpack_long(builtin_type_f_logical_s2, valaddr);
 	      break;
 
 	    case 4:
-	      val = unpack_long (builtin_type_f_logical, valaddr);
+	      val = unpack_long(builtin_type_f_logical, valaddr);
 	      break;
 
 	    default:
-	      error (_("Logicals of length %d bytes not supported"),
-		     TYPE_LENGTH (type));
-
+	      error(_("Logicals of length %d bytes not supported"),
+		    TYPE_LENGTH(type));
 	    }
 
 	  if (val == 0)
@@ -598,6 +598,7 @@ list_all_visible_commons(const char *funname)
 
   while (tmp != NULL)
     {
+      gdb_assert(funname != NULL);
       if (strcmp(tmp->owning_function, funname) == 0)
 	printf_filtered("%s\n", tmp->name);
 

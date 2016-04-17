@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-14 14:32-0400\n"
+"POT-Creation-Date: 2016-04-15 16:55-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -209,317 +209,321 @@ msgstr ""
 msgid "too many subscripts (%d expected)"
 msgstr ""
 
-#: ada-lang.c:2415
+#: ada-lang.c:2416
 msgid "Could not find operator name for opcode"
 msgstr ""
 
-#: ada-lang.c:2583
+#: ada-lang.c:2584
 msgid "Unexpected operator during name resolution"
 msgstr ""
 
-#: ada-lang.c:2632
+#: ada-lang.c:2633
 msgid "Unexpected Ada operator during name resolution"
 msgstr ""
 
-#: ada-lang.c:2703
+#: ada-lang.c:2708
 #, possible-c-format
 msgid "No definition found for %s"
 msgstr ""
 
-#: ada-lang.c:2715 ada-lang.c:2767
+#: ada-lang.c:2720 ada-lang.c:2772
 #, possible-c-format
 msgid "Could not find a match for %s"
 msgstr ""
 
-#: ada-lang.c:2720 ada-lang.c:3012
+#: ada-lang.c:2725 ada-lang.c:3022
 #, possible-c-format
 msgid "Multiple matches for %s\n"
 msgstr ""
 
-#: ada-lang.c:3096
+#: ada-lang.c:3106
 msgid "Request to select 0 symbols!"
 msgstr ""
 
-#: ada-lang.c:3100
+#: ada-lang.c:3110
 msgid "[0] cancel\n"
 msgstr ""
 
-#: ada-lang.c:3102
+#: ada-lang.c:3112
 msgid "[1] all\n"
 msgstr ""
 
-#: ada-lang.c:3116
+#: ada-lang.c:3126
 #, possible-c-format
 msgid "[%d] %s at <no source file available>:%d\n"
 msgstr ""
 
-#: ada-lang.c:3121 ada-lang.c:3135
+#: ada-lang.c:3131 ada-lang.c:3145
 #, possible-c-format
 msgid "[%d] %s at %s:%d\n"
 msgstr ""
 
-#: ada-lang.c:3145
+#: ada-lang.c:3155
 #, possible-c-format
 msgid "'(%s) (enumeral)\n"
 msgstr ""
 
-#: ada-lang.c:3150
+#: ada-lang.c:3160
 #, possible-c-format
 msgid "[%d] %s in %s (enumeral)\n"
 msgstr ""
 
-#: ada-lang.c:3151
+#: ada-lang.c:3161
 #, possible-c-format
 msgid "[%d] %s at %s:?\n"
 msgstr ""
 
-#: ada-lang.c:3157
+#: ada-lang.c:3167
 #, possible-c-format
 msgid "[%d] %s (enumeral)\n"
 msgstr ""
 
-#: ada-lang.c:3158
+#: ada-lang.c:3168
 #, possible-c-format
 msgid "[%d] %s at ?\n"
 msgstr ""
 
-#: ada-lang.c:3208 ada-lang.c:3222 linespec.c:907
+#: ada-lang.c:3218 ada-lang.c:3232 linespec.c:907
 msgid "one or more choice numbers"
 msgstr ""
 
-#: ada-lang.c:3229
+#: ada-lang.c:3239
 msgid "Argument must be choice number"
 msgstr ""
 
-#: ada-lang.c:3233
+#: ada-lang.c:3243
 msgid "cancelled"
 msgstr ""
 
-#: ada-lang.c:3259
+#: ada-lang.c:3269
 #, possible-c-format
 msgid "Select no more than %d of the above"
 msgstr ""
 
-#: ada-lang.c:3503 ada-lang.c:3508
+#: ada-lang.c:3513 ada-lang.c:3518
 msgid "Improperly encoded renaming."
 msgstr ""
 
-#: ada-lang.c:3605
+#: ada-lang.c:3615
 msgid "formal_type is NULL."
 msgstr ""
 
-#: ada-lang.c:5561 ada-lang.c:5579
+#: ada-lang.c:5574 ada-lang.c:5592
 #, possible-c-format
 msgid "Bad value type in a %s."
 msgstr ""
 
-#: ada-lang.c:5597 valops.c:1834
+#: ada-lang.c:5610 valops.c:1834
 #, possible-c-format
 msgid "Attempt to extract a component of a value that is not a %s."
 msgstr ""
 
-#: ada-lang.c:5635 valops.c:1865
+#: ada-lang.c:5648 valops.c:1865
 #, possible-c-format
 msgid "There is no member named %s."
 msgstr ""
 
-#: ada-lang.c:5688
+#: ada-lang.c:5701
 msgid "Type (null) is not a structure or union type"
 msgstr ""
 
 #. XXX: type_sprint
-#: ada-lang.c:5692 ada-lang.c:5758 ada-lang.c:5765
+#: ada-lang.c:5705 ada-lang.c:5771 ada-lang.c:5778
 msgid "Type "
 msgstr ""
 
-#: ada-lang.c:5694
+#: ada-lang.c:5707
 msgid " is not a structure or union type"
 msgstr ""
 
-#: ada-lang.c:5760
+#: ada-lang.c:5773
 msgid " has no component named <null>"
 msgstr ""
 
-#: ada-lang.c:5767
+#: ada-lang.c:5780
 #, possible-c-format
 msgid " has no component named %s"
 msgstr ""
 
-#: ada-lang.c:6272
+#: ada-lang.c:5906
+msgid "No name for field; requires no alignment(?)\n"
+msgstr ""
+
+#: ada-lang.c:6290
 #, possible-c-format
 msgid "Invalid type size for `%s' detected: %d."
 msgstr ""
 
-#: ada-lang.c:6275
+#: ada-lang.c:6293
 #, possible-c-format
 msgid "Invalid type size for <unnamed> detected: %d."
 msgstr ""
 
-#: ada-lang.c:6286
+#: ada-lang.c:6304
 msgid "record type with dynamic size is larger than varsize-limit"
 msgstr ""
 
-#: ada-lang.c:6568
+#: ada-lang.c:6586
 msgid "array type with dynamic size is larger than varsize-limit"
 msgstr ""
 
-#: ada-lang.c:6794
+#: ada-lang.c:6812
 msgid "'POS only defined on discrete types"
 msgstr ""
 
-#: ada-lang.c:6806
+#: ada-lang.c:6824
 msgid "enumeration value is invalid: can't find 'POS"
 msgstr ""
 
-#: ada-lang.c:6824
+#: ada-lang.c:6842
 msgid "'VAL only defined on discrete types"
 msgstr ""
 
-#: ada-lang.c:6826
+#: ada-lang.c:6844
 msgid "'VAL requires integral argument"
 msgstr ""
 
-#: ada-lang.c:6832
+#: ada-lang.c:6850
 msgid "argument to 'VAL out of range"
 msgstr ""
 
-#: ada-lang.c:7134
+#: ada-lang.c:7153
 msgid "Incompatible types in assignment"
 msgstr ""
 
-#: ada-lang.c:7168
+#: ada-lang.c:7187
 #, possible-c-format
 msgid "second operand of %s must not be zero."
 msgstr ""
 
-#: ada-lang.c:7207
+#: ada-lang.c:7226
 msgid "Attempt to compare array with non-array"
 msgstr ""
 
-#: ada-lang.c:7299
+#: ada-lang.c:7318
 msgid "Fixed-point values must be assigned to fixed-point variables"
 msgstr ""
 
-#: ada-lang.c:7312
+#: ada-lang.c:7331
 msgid "Operands of fixed-point addition must have the same type"
 msgstr ""
 
-#: ada-lang.c:7323
+#: ada-lang.c:7342
 msgid "Operands of fixed-point subtraction must have the same type"
 msgstr ""
 
 #. Only encountered when an unresolved symbol occurs in a
 #. * context other than a function call, in which case, it is
 #. * illegal.
-#: ada-lang.c:7393 ada-lang.c:7422
+#: ada-lang.c:7412 ada-lang.c:7441
 #, possible-c-format
 msgid "Unexpected unresolved symbol, %s, during evaluation"
 msgstr ""
 
-#: ada-lang.c:7457
+#: ada-lang.c:7476
 #, possible-c-format
 msgid "cannot subscript or call something of type `%s'"
 msgstr ""
 
-#: ada-lang.c:7476
+#: ada-lang.c:7495
 msgid "cannot subscript or call a record"
 msgstr ""
 
-#: ada-lang.c:7478
+#: ada-lang.c:7497
 #, possible-c-format
 msgid "wrong number of subscripts; expecting %d"
 msgstr ""
 
-#: ada-lang.c:7491 ada-lang.c:7504
+#: ada-lang.c:7510 ada-lang.c:7523
 msgid "element type of array unknown"
 msgstr ""
 
-#: ada-lang.c:7513
+#: ada-lang.c:7532
 msgid ""
 "Attempt to index or call something other than an                       array "
 "or function"
 msgstr ""
 
-#: ada-lang.c:7542
+#: ada-lang.c:7561
 msgid "cannot slice a packed array"
 msgstr ""
 
-#: ada-lang.c:7570 valops.c:3044
+#: ada-lang.c:7589 valops.c:3044
 msgid "cannot take slice of non-array"
 msgstr ""
 
-#: ada-lang.c:7609
+#: ada-lang.c:7628
 msgid "invalid dimension number to 'range"
 msgstr ""
 
-#: ada-lang.c:7661
+#: ada-lang.c:7680
 msgid "Attempt to dereference null array pointer."
 msgstr ""
 
-#: ada-lang.c:7680 eval.c:2136 eval.c:2444 valops.c:1092
+#: ada-lang.c:7699 eval.c:2136 eval.c:2444 valops.c:1092
 msgid "Attempt to take contents of a non-pointer value."
 msgstr ""
 
-#: ada-lang.c:7738 eval.c:2270
+#: ada-lang.c:7757 eval.c:2270
 msgid "Attempt to use a type name as an expression"
 msgstr ""
 
-#: ada-lang.c:7785
+#: ada-lang.c:7804
 #, possible-c-format
 msgid "Invalid operand to '%s"
 msgstr ""
 
-#: ada-lang.c:7801 ada-lang.c:7858
+#: ada-lang.c:7820 ada-lang.c:7877
 #, possible-c-format
 msgid "invalid dimension number to '%s"
 msgstr ""
 
-#: ada-lang.c:7808 ada-lang.c:7863
+#: ada-lang.c:7827 ada-lang.c:7882
 msgid "attempt to take bound of something that is not an array"
 msgstr ""
 
 #. Should never happen.
-#: ada-lang.c:7815 ada-lang.c:7839 ada-lang.c:7870
+#: ada-lang.c:7834 ada-lang.c:7858 ada-lang.c:7889
 msgid "unexpected attribute encountered"
 msgstr ""
 
-#: ada-lang.c:7845
+#: ada-lang.c:7864
 msgid "the 'length attribute applies only to array types"
 msgstr ""
 
-#: ada-lang.c:7849
+#: ada-lang.c:7868
 msgid "unimplemented type attribute"
 msgstr ""
 
-#: ada-lang.c:7912
+#: ada-lang.c:7931
 msgid "'modulus must be applied to modular type"
 msgstr ""
 
-#: ada-lang.c:7979
+#: ada-lang.c:7998
 msgid ""
 "Membership test incompletely implemented;                               "
 "always returns true"
 msgstr ""
 
-#: ada-lang.c:8145
+#: ada-lang.c:8164
 msgid "invalid VAX floating-point type"
 msgstr ""
 
-#: ada-lang.c:8307
+#: ada-lang.c:8326
 msgid "Unknown lower bound, using 1."
 msgstr ""
 
-#: ada-lang.c:8325
+#: ada-lang.c:8344
 #, possible-c-format
 msgid "Unknown upper bound, using %ld."
 msgstr ""
 
 #. XXX: gdb_sprint_host_address, type_sprint
-#: ada-lang.c:8543
+#: ada-lang.c:8562
 msgid "Type @"
 msgstr ""
 
-#: ada-lang.c:8759
+#: ada-lang.c:8778
 #, possible-c-format
 msgid "internal error: no Ada fundamental type %d"
 msgstr ""
@@ -2959,11 +2963,11 @@ msgstr ""
 msgid "attempted to enable apparently deleted breakpoint #%d?"
 msgstr ""
 
-#: breakpoint.c:10751 symtab.c:5913
+#: breakpoint.c:10751 symtab.c:5914
 msgid "Empty line specification."
 msgstr ""
 
-#: breakpoint.c:10765 symtab.c:5926
+#: breakpoint.c:10765 symtab.c:5927
 #, possible-c-format
 msgid "Junk at end of line specification: %s"
 msgstr ""
@@ -3730,145 +3734,151 @@ msgid "\"info\" must be followed by the name of an info command.\n"
 msgstr ""
 
 #. APPLE LOCAL end do NOT query if we are an MI command
-#: cli/cli-cmds.c:316 cli/cli-script.c:1287 infcmd.c:1932 infcmd.c:1945
+#: cli/cli-cmds.c:320 cli/cli-script.c:1290 infcmd.c:1932 infcmd.c:1945
 #: inflow.c:603 symfile.c:1531 symfile.c:1953 symfile.c:2901
 msgid "Not confirmed."
 msgstr ""
 
-#: cli/cli-cmds.c:329
+#: cli/cli-cmds.c:333
 #, possible-c-format
 msgid "The \"pwd\" command does not take an argument: %s"
 msgstr ""
 
-#: cli/cli-cmds.c:333
+#: cli/cli-cmds.c:337
 #, possible-c-format
 msgid ""
 "Working directory %s\n"
 " (canonically %s).\n"
 msgstr ""
 
-#: cli/cli-cmds.c:336
+#: cli/cli-cmds.c:340
 #, possible-c-format
 msgid "Working directory %s.\n"
 msgstr ""
 
-#: cli/cli-cmds.c:353
+#: cli/cli-cmds.c:357
 msgid "new working directory"
 msgstr ""
 
-#: cli/cli-cmds.c:461
+#: cli/cli-cmds.c:465
 msgid "source command requires pathname of file to source."
 msgstr ""
 
-#: cli/cli-cmds.c:600
+#. Should be either EINVAL or EPERM:
+#: cli/cli-cmds.c:593
+#, possible-c-format
+msgid "Call to setgid() failed with errno %d: %s.\n"
+msgstr ""
+
+#: cli/cli-cmds.c:612
 msgid "Fork failed"
 msgstr ""
 
-#: cli/cli-cmds.c:630
+#: cli/cli-cmds.c:642
 msgid "No default source file yet."
 msgstr ""
 
-#: cli/cli-cmds.c:656 cli/cli-cmds.c:846
+#: cli/cli-cmds.c:668 cli/cli-cmds.c:862
 msgid "Junk at end of line specification."
 msgstr ""
 
 #. FIXME-32x64--assumes sal.pc fits in long.
 #. APPLE LOCAL: Fixed by using paddr_nz.
-#: cli/cli-cmds.c:667 cli/cli-cmds.c:863
+#: cli/cli-cmds.c:679 cli/cli-cmds.c:879
 #, possible-c-format
 msgid "No source file for address 0x%s."
 msgstr ""
 
-#: cli/cli-cmds.c:688 cli/cli-cmds.c:885
+#: cli/cli-cmds.c:700 cli/cli-cmds.c:901
 #, possible-c-format
 msgid "No line number known for %s."
 msgstr ""
 
 #. APPLE LOCAL end
-#: cli/cli-cmds.c:776 linespec.c:2334 linespec.c:2968 linespec.c:3042
-#: source.c:176 symtab.c:4367
+#: cli/cli-cmds.c:792 linespec.c:2334 linespec.c:2968 linespec.c:3042
+#: source.c:176 symtab.c:4368
 msgid "No symbol table is loaded.  Use the \"file\" command."
 msgstr ""
 
-#: cli/cli-cmds.c:850
+#: cli/cli-cmds.c:866
 msgid "Specified start and end are in different files."
 msgstr ""
 
-#: cli/cli-cmds.c:852
+#: cli/cli-cmds.c:868
 msgid "Two empty args do not say what lines to list."
 msgstr ""
 
-#: cli/cli-cmds.c:892 cli/cli-cmds.c:900
+#: cli/cli-cmds.c:908 cli/cli-cmds.c:916
 msgid "No default source file yet.  Do \"help list\"."
 msgstr ""
 
-#: cli/cli-cmds.c:939 python/py-symbol.c:379 stack.c:1833
+#: cli/cli-cmds.c:955 python/py-symbol.c:379 stack.c:1833
 msgid "No frame selected."
 msgstr ""
 
-#: cli/cli-cmds.c:943 tui/tui-stack.c:368
+#: cli/cli-cmds.c:959 tui/tui-stack.c:368
 msgid "No function contains program counter for selected frame."
 msgstr ""
 
-#: cli/cli-cmds.c:958
+#: cli/cli-cmds.c:974
 msgid "No function contains specified address."
 msgstr ""
 
-#: cli/cli-cmds.c:1040
+#: cli/cli-cmds.c:1056
 msgid "Not a user command."
 msgstr ""
 
-#: cli/cli-cmds.c:1061
+#: cli/cli-cmds.c:1077
 msgid "REGEXP string is empty"
 msgstr ""
 
-#: cli/cli-cmds.c:1071
+#: cli/cli-cmds.c:1087
 #, possible-c-format
 msgid "Error in regular expression:%s"
 msgstr ""
 
-#: cli/cli-cmds.c:1134
+#: cli/cli-cmds.c:1150
 msgid "\"set debug\" must be followed by the name of a print subcommand.\n"
 msgstr ""
 
-#: cli/cli-cmds.c:1180
+#: cli/cli-cmds.c:1196
 #, possible-c-format
 msgid "Verbose printing of informational messages is %s.\n"
 msgstr ""
 
-#: cli/cli-cmds.c:1183
+#: cli/cli-cmds.c:1199
 #, possible-c-format
 msgid "Verbosity is %s.\n"
 msgstr ""
 
-#: cli/cli-cmds.c:1190
+#: cli/cli-cmds.c:1206
 #, possible-c-format
 msgid "History expansion on command input is %s.\n"
 msgstr ""
 
-#: cli/cli-cmds.c:1198
+#: cli/cli-cmds.c:1214
 #, possible-c-format
 msgid "Baud rate for remote serial I/O is %s.\n"
 msgstr ""
 
-#: cli/cli-cmds.c:1206
+#: cli/cli-cmds.c:1222
 #, possible-c-format
 msgid "Debugging of remote protocol is %s.\n"
 msgstr ""
 
-#: cli/cli-cmds.c:1214
+#: cli/cli-cmds.c:1230
 #, possible-c-format
 msgid "Timeout limit to wait for target to respond is %s.\n"
 msgstr ""
 
-#: cli/cli-cmds.c:1223
+#: cli/cli-cmds.c:1239
 #, possible-c-format
 msgid "The max call depth for user-defined commands is %s.\n"
 msgstr ""
 
 #. Define the classes of commands.
 #. They will appear in the help list in the reverse of this order.
-#: cli/cli-cmds.c:1238
+#: cli/cli-cmds.c:1254
 msgid ""
 "Maintenance commands.\n"
 "Some gdb commands are provided just for use by gdb maintainers.\n"
@@ -3876,42 +3886,42 @@ msgid ""
 "well documented as user commands."
 msgstr ""
 
-#: cli/cli-cmds.c:1244
+#: cli/cli-cmds.c:1260
 msgid "Obscure features."
 msgstr ""
 
-#: cli/cli-cmds.c:1245
+#: cli/cli-cmds.c:1261
 msgid "Aliases of other commands."
 msgstr ""
 
-#: cli/cli-cmds.c:1246
+#: cli/cli-cmds.c:1262
 msgid ""
 "User-defined commands.\n"
 "The commands in this class are those defined by the user.\n"
 "Use the \"define\" command to define a command."
 msgstr ""
 
-#: cli/cli-cmds.c:1250
+#: cli/cli-cmds.c:1266
 msgid "Support facilities."
 msgstr ""
 
-#: cli/cli-cmds.c:1252
+#: cli/cli-cmds.c:1268
 msgid "Status inquiries."
 msgstr ""
 
-#: cli/cli-cmds.c:1253
+#: cli/cli-cmds.c:1269
 msgid "Specifying and examining files."
 msgstr ""
 
-#: cli/cli-cmds.c:1256
+#: cli/cli-cmds.c:1272
 msgid "Making program stop at certain points."
 msgstr ""
 
-#: cli/cli-cmds.c:1257
+#: cli/cli-cmds.c:1273
 msgid "Examining data."
 msgstr ""
 
-#: cli/cli-cmds.c:1258
+#: cli/cli-cmds.c:1274
 msgid ""
 "Examining the stack.\n"
 "The stack is made up of stack frames.  Gdb assigns numbers to stack frames\n"
@@ -3923,23 +3933,23 @@ msgid ""
 "The commands below can be used to select other frames by number or address."
 msgstr ""
 
-#: cli/cli-cmds.c:1267
+#: cli/cli-cmds.c:1283
 msgid "Running the program."
 msgstr ""
 
 #. Define general commands.
-#: cli/cli-cmds.c:1271
+#: cli/cli-cmds.c:1287
 msgid "Print working directory.  This is used for your program as well."
 msgstr ""
 
-#: cli/cli-cmds.c:1273
+#: cli/cli-cmds.c:1289
 msgid ""
 "Set working directory to DIR for debugger and program being debugged.\n"
 "The change does not take effect for the program being debugged\n"
 "until the next time it is started."
 msgstr ""
 
-#: cli/cli-cmds.c:1279
+#: cli/cli-cmds.c:1295
 msgid ""
 "Print a constant string.  Give string as argument.\n"
 "C escape sequences may be used in the argument.\n"
@@ -3950,14 +3960,14 @@ msgid ""
 "to be printed or after trailing whitespace."
 msgstr ""
 
-#: cli/cli-cmds.c:1287
+#: cli/cli-cmds.c:1303
 msgid ""
 "Document a user-defined command.\n"
 "Give command name as argument.  Give documentation on following lines.\n"
 "End with a line of just \"end\"."
 msgstr ""
 
-#: cli/cli-cmds.c:1291
+#: cli/cli-cmds.c:1307
 msgid ""
 "Define a new command name.  Command name is argument.\n"
 "Definition appears on following lines, one command per line.\n"
@@ -3966,7 +3976,7 @@ msgid ""
 "Commands defined in this way may have up to ten arguments."
 msgstr ""
 
-#: cli/cli-cmds.c:1298
+#: cli/cli-cmds.c:1314
 #, possible-c-format
 msgid ""
 "Read commands from a file named FILE.\n"
@@ -3974,71 +3984,71 @@ msgid ""
 "when gdb is started."
 msgstr ""
 
-#: cli/cli-cmds.c:1306
+#: cli/cli-cmds.c:1322
 msgid "Exit gdb."
 msgstr ""
 
-#: cli/cli-cmds.c:1308
+#: cli/cli-cmds.c:1324
 msgid "Print list of commands."
 msgstr ""
 
-#: cli/cli-cmds.c:1313
+#: cli/cli-cmds.c:1329
 msgid "Set verbosity."
 msgstr ""
 
-#: cli/cli-cmds.c:1314
+#: cli/cli-cmds.c:1330
 msgid "Show verbosity."
 msgstr ""
 
-#: cli/cli-cmds.c:1321
+#: cli/cli-cmds.c:1337
 msgid "Generic command for setting command history parameters."
 msgstr ""
 
-#: cli/cli-cmds.c:1324
+#: cli/cli-cmds.c:1340
 msgid "Generic command for showing command history parameters."
 msgstr ""
 
-#: cli/cli-cmds.c:1327
+#: cli/cli-cmds.c:1343
 msgid "Set history expansion on command input."
 msgstr ""
 
-#: cli/cli-cmds.c:1328
+#: cli/cli-cmds.c:1344
 msgid "Show history expansion on command input."
 msgstr ""
 
-#: cli/cli-cmds.c:1329
+#: cli/cli-cmds.c:1345
 msgid "Without an argument, history expansion is enabled."
 msgstr ""
 
-#: cli/cli-cmds.c:1335
+#: cli/cli-cmds.c:1351
 msgid "Generic command for showing things about the program being debugged."
 msgstr ""
 
-#: cli/cli-cmds.c:1341
+#: cli/cli-cmds.c:1357
 msgid "List the completions for the rest of the line as a command."
 msgstr ""
 
-#: cli/cli-cmds.c:1344
+#: cli/cli-cmds.c:1360
 msgid "Generic command for showing things about the debugger."
 msgstr ""
 
 #. Another way to get at the same thing.
-#: cli/cli-cmds.c:1347
+#: cli/cli-cmds.c:1363
 msgid "Show all GDB settings."
 msgstr ""
 
-#: cli/cli-cmds.c:1349
+#: cli/cli-cmds.c:1365
 msgid ""
 "Show the history of commands you typed.\n"
 "You can supply a command number to start with, or a `+' to start after\n"
 "the previous command number shown."
 msgstr ""
 
-#: cli/cli-cmds.c:1356
+#: cli/cli-cmds.c:1372
 msgid "Show what version of GDB this is."
 msgstr ""
 
-#: cli/cli-cmds.c:1358
+#: cli/cli-cmds.c:1374
 msgid ""
 "Execute nested commands WHILE the conditional expression is non zero.\n"
 "The conditional expression must follow the word `while' and must in turn be\n"
@@ -4046,7 +4056,7 @@ msgid ""
 "and should be terminated by the word `end'."
 msgstr ""
 
-#: cli/cli-cmds.c:1364
+#: cli/cli-cmds.c:1380
 msgid ""
 "Execute nested commands once IF the conditional expression is non zero.\n"
 "The conditional expression must follow the word `if' and must in turn be\n"
@@ -4057,63 +4067,63 @@ msgstr ""
 
 #. If target is open when baud changes, it doesn't take effect until the
 #. next open (I think, not sure).
-#: cli/cli-cmds.c:1373
+#: cli/cli-cmds.c:1389
 msgid "Set baud rate for remote serial I/O."
 msgstr ""
 
-#: cli/cli-cmds.c:1374
+#: cli/cli-cmds.c:1390
 msgid "Show baud rate for remote serial I/O."
 msgstr ""
 
-#: cli/cli-cmds.c:1375
+#: cli/cli-cmds.c:1391
 msgid ""
 "This value is used to set the speed of the serial port when debugging\n"
 "using remote targets."
 msgstr ""
 
-#: cli/cli-cmds.c:1382
+#: cli/cli-cmds.c:1398
 msgid "Set debugging of remote protocol."
 msgstr ""
 
-#: cli/cli-cmds.c:1383
+#: cli/cli-cmds.c:1399
 msgid "Show debugging of remote protocol."
 msgstr ""
 
-#: cli/cli-cmds.c:1384
+#: cli/cli-cmds.c:1400
 msgid ""
 "When enabled, each packet sent or received with the remote target\n"
 "is displayed."
 msgstr ""
 
-#: cli/cli-cmds.c:1391
+#: cli/cli-cmds.c:1407
 msgid "Set timeout limit to wait for target to respond."
 msgstr ""
 
-#: cli/cli-cmds.c:1392
+#: cli/cli-cmds.c:1408
 msgid "Show timeout limit to wait for target to respond."
 msgstr ""
 
-#: cli/cli-cmds.c:1393
+#: cli/cli-cmds.c:1409
 msgid ""
 "This value is used to set the time limit for gdb to wait for a response\n"
 "from the target."
 msgstr ""
 
-#: cli/cli-cmds.c:1401
+#: cli/cli-cmds.c:1417
 msgid "Generic command for setting gdb debugging flags"
 msgstr ""
 
-#: cli/cli-cmds.c:1405
+#: cli/cli-cmds.c:1421
 msgid "Generic command for showing gdb debugging flags"
 msgstr ""
 
-#: cli/cli-cmds.c:1408
+#: cli/cli-cmds.c:1424
 msgid ""
 "Execute the rest of the line as a shell command.\n"
 "With no arguments, run an inferior shell."
 msgstr ""
 
-#: cli/cli-cmds.c:1413
+#: cli/cli-cmds.c:1429
 msgid ""
 "Edit specified file or function.\n"
 "With no argument, edits file containing most recent line listed.\n"
@@ -4125,7 +4135,7 @@ msgid ""
 "Uses EDITOR environment variable contents as editor (or ex as default)."
 msgstr ""
 
-#: cli/cli-cmds.c:1425
+#: cli/cli-cmds.c:1441
 msgid ""
 "List specified function or line.\n"
 "With no argument, lists ten more lines after or around previous listing.\n"
@@ -4142,7 +4152,7 @@ msgid ""
 "arg."
 msgstr ""
 
-#: cli/cli-cmds.c:1447
+#: cli/cli-cmds.c:1463
 msgid ""
 "Disassemble a specified section of memory.\n"
 "Default is the function surrounding the pc of the selected frame.\n"
@@ -4150,26 +4160,26 @@ msgid ""
 "Two arguments are taken as a range of memory to dump."
 msgstr ""
 
-#: cli/cli-cmds.c:1465
+#: cli/cli-cmds.c:1481
 msgid "Run the ``make'' program using the rest of the line as arguments."
 msgstr ""
 
-#: cli/cli-cmds.c:1468
+#: cli/cli-cmds.c:1484
 msgid ""
 "Show definitions of user defined commands.\n"
 "Argument is the name of the user defined command.\n"
 "With no argument, show definitions of all user defined commands."
 msgstr ""
 
-#: cli/cli-cmds.c:1473
+#: cli/cli-cmds.c:1489
 msgid "Search for commands matching a REGEXP"
 msgstr ""
 
-#: cli/cli-cmds.c:1476
+#: cli/cli-cmds.c:1492
 msgid "Set the max call depth for user-defined commands."
 msgstr ""
 
-#: cli/cli-cmds.c:1477
+#: cli/cli-cmds.c:1493
 msgid "Show the max call depth for user-defined commands."
 msgstr ""
 
@@ -4561,86 +4571,86 @@ msgstr ""
 msgid "If set, commands are also logged in the log file."
 msgstr ""
 
-#: cli/cli-script.c:95
+#: cli/cli-script.c:96
 msgid "if/while commands require arguments."
 msgstr ""
 
-#: cli/cli-script.c:127
+#: cli/cli-script.c:128
 msgid "Error reading in control structure."
 msgstr ""
 
-#: cli/cli-script.c:301
+#: cli/cli-script.c:303
 msgid "Max user call depth exceeded -- command aborted."
 msgstr ""
 
-#: cli/cli-script.c:325
+#: cli/cli-script.c:328
 msgid "Error in control structure."
 msgstr ""
 
-#: cli/cli-script.c:522
+#: cli/cli-script.c:525
 msgid "Invalid control type in command structure."
 msgstr ""
 
-#: cli/cli-script.c:574
+#: cli/cli-script.c:577
 msgid "arg_cleanup called with no user args.\n"
 msgstr ""
 
-#: cli/cli-script.c:610
+#: cli/cli-script.c:613
 #, possible-c-format
 msgid "user defined function may only have %d arguments."
 msgstr ""
 
-#: cli/cli-script.c:709
+#: cli/cli-script.c:712
 #, possible-c-format
 msgid "Missing argument %u in user function.\n"
 msgstr ""
 
-#: cli/cli-script.c:800
+#: cli/cli-script.c:803
 msgid "Control nesting too deep!"
 msgstr ""
 
-#: cli/cli-script.c:930
+#: cli/cli-script.c:933
 msgid "Recursed on a simple control type."
 msgstr ""
 
-#: cli/cli-script.c:933
+#: cli/cli-script.c:936
 msgid "Allocated body is smaller than this command type needs."
 msgstr ""
 
-#: cli/cli-script.c:1200
+#: cli/cli-script.c:1203
 msgid "name of command to define"
 msgstr ""
 
-#: cli/cli-script.c:1206
+#: cli/cli-script.c:1209
 #, possible-c-format
 msgid "Junk in argument list: \"%s\""
 msgstr ""
 
-#: cli/cli-script.c:1253
+#: cli/cli-script.c:1256
 #, possible-c-format
 msgid "Redefine command \"%s\"? "
 msgstr ""
 
-#: cli/cli-script.c:1255
+#: cli/cli-script.c:1258
 #, possible-c-format
 msgid "Really redefine built-in command \"%s\"? "
 msgstr ""
 
-#: cli/cli-script.c:1257
+#: cli/cli-script.c:1260
 #, possible-c-format
 msgid "Command \"%s\" not redefined."
 msgstr ""
 
-#: cli/cli-script.c:1284
+#: cli/cli-script.c:1287
 #, possible-c-format
 msgid "Your new `%s' command does not hook any existing command."
 msgstr ""
 
 #. Should never come here as hookc would be 0.
-#: cli/cli-script.c:1327 common/common-exceptions.c:148
+#: cli/cli-script.c:1330 common/common-exceptions.c:148
 #: common/common-exceptions.c:165 common/common-exceptions.c:192
 #: complaints.c:297 exceptions.c:155 exceptions.c:172 exceptions.c:203
-#: exceptions.c:262 hppa-tdep.c:2801 hppa-tdep.c:2814 infcall.c:704
+#: exceptions.c:262 hppa-tdep.c:2801 hppa-tdep.c:2814 infcall.c:707
 #: infcmd.c:2195 infrun.c:1579 language.c:912 language.c:938 mi/mi-out.c:401
 #: mi/mi-out.c:422 mips-tdep.c:273 mips-tdep.c:334 mips-tdep.c:697
 #: mips-tdep.c:1194 mips-tdep.c:3371 mips-tdep.c:4248 mn10300-tdep.c:89
@@ -4648,23 +4658,23 @@ msgstr ""
 msgid "bad switch"
 msgstr ""
 
-#: cli/cli-script.c:1346
+#: cli/cli-script.c:1349
 #, possible-c-format
 msgid "Command \"%s\" is built-in."
 msgstr ""
 
-#: cli/cli-script.c:1422
+#: cli/cli-script.c:1425
 msgid "called with NULL file pointer!"
 msgstr ""
 
-#: cli/cli-script.c:1465
+#: cli/cli-script.c:1468
 #, possible-c-format
 msgid ""
 "%s:%d: Error in sourced command file:\n"
 "%s"
 msgstr ""
 
-#: cli/cli-script.c:1468
+#: cli/cli-script.c:1471
 msgid "bad reason"
 msgstr ""
 
@@ -5628,31 +5638,36 @@ msgstr ""
 msgid "invalid pointer to member function"
 msgstr ""
 
-#: cp-valprint.c:573
+#. FIXME: see comments above
+#: cp-valprint.c:497
+msgid "FIXME: unimplemented"
+msgstr ""
+
+#: cp-valprint.c:571
 msgid "Virtual base class offset not found from vtable while printing"
 msgstr ""
 
-#: cp-valprint.c:836
+#: cp-valprint.c:835
 msgid "Set printing of C++ static members."
 msgstr ""
 
-#: cp-valprint.c:837
+#: cp-valprint.c:836
 msgid "Show printing of C++ static members."
 msgstr ""
 
-#: cp-valprint.c:845
+#: cp-valprint.c:844
 msgid "Set printing of C++ virtual function tables."
 msgstr ""
 
-#: cp-valprint.c:846
+#: cp-valprint.c:845
 msgid "Show printing of C++ virtual function tables."
 msgstr ""
 
-#: cp-valprint.c:852
+#: cp-valprint.c:851
 msgid "Set printing of object's derived type based on vtable info."
 msgstr ""
 
-#: cp-valprint.c:853
+#: cp-valprint.c:852
 msgid "Show printing of object's derived type based on vtable info."
 msgstr ""
 
@@ -10905,24 +10920,32 @@ msgstr ""
 msgid "Unable to even find function \"%s\" at 0x%s."
 msgstr ""
 
-#: infcall.c:708
+#: infcall.c:667
+msgid "Invalid dummy_addr.\n"
+msgstr ""
+
+#: infcall.c:711
 msgid "too few arguments in function call"
 msgstr ""
 
-#: infcall.c:772
+#: infcall.c:775
 #, possible-c-format
 msgid ""
 "You cannot use function <%s> as argument. \n"
 "You must use a pointer to function type variable. Command ignored."
 msgstr ""
 
-#: infcall.c:879
+#: infcall.c:882
 msgid "This target does not support function calls"
+msgstr ""
+
+#: infcall.c:1022
+msgid "User called function timer expired.  Aborting call."
 msgstr ""
 
 #. FIXME: Insert a bunch of wrap_here; name can be very
 #. long if it is a C++ name with arguments and stuff.
-#: infcall.c:1081
+#: infcall.c:1084
 #, possible-c-format
 msgid ""
 "%s\n"
@@ -10933,7 +10956,7 @@ msgstr ""
 
 #. FIXME: Insert a bunch of wrap_here; name can be very
 #. long if it's a C++ name with arguments and stuff.
-#: infcall.c:1101
+#: infcall.c:1104
 #, possible-c-format
 msgid ""
 "%s\n"
@@ -10950,7 +10973,7 @@ msgstr ""
 #. someday this will be implemented (it would not be easy).
 #. FIXME: Insert a bunch of wrap_here; name can be very long if it's
 #. a C++ name with arguments and stuff.
-#: infcall.c:1128
+#: infcall.c:1131
 #, possible-c-format
 msgid ""
 "The program being debugged stopped while in a function called from GDB.\n"
@@ -10960,19 +10983,19 @@ msgid ""
 msgstr ""
 
 #. The above code errors out, so ...
-#: infcall.c:1136
+#: infcall.c:1139
 msgid "... should not be here"
 msgstr ""
 
-#: infcall.c:1212
+#: infcall.c:1215
 msgid "Set coercion of floats to doubles when calling functions."
 msgstr ""
 
-#: infcall.c:1213
+#: infcall.c:1216
 msgid "Show coercion of floats to doubles when calling functions"
 msgstr ""
 
-#: infcall.c:1214
+#: infcall.c:1217
 msgid ""
 "Variables of type float should generally be converted to doubles before\n"
 "calling an unprototyped function, and left alone when calling a prototyped\n"
@@ -10983,15 +11006,15 @@ msgid ""
 "The default is to perform the conversion.\n"
 msgstr ""
 
-#: infcall.c:1226
+#: infcall.c:1229
 msgid "Set unwinding of stack if a signal is received while in a call dummy."
 msgstr ""
 
-#: infcall.c:1227
+#: infcall.c:1230
 msgid "Show unwinding of stack if a signal is received while in a call dummy."
 msgstr ""
 
-#: infcall.c:1228
+#: infcall.c:1231
 msgid ""
 "The unwindonsignal lets the user determine what gdb should do if a signal\n"
 "is received while in a function called from gdb (call dummy).  If set, gdb\n"
@@ -11000,19 +11023,19 @@ msgid ""
 "The default is to stop in the frame where the signal was received."
 msgstr ""
 
-#: infcall.c:1237
+#: infcall.c:1240
 msgid ""
 "Set whether hitting an ObjC exception throw interrupts a function called by "
 "hand from the debugger."
 msgstr ""
 
-#: infcall.c:1238
+#: infcall.c:1241
 msgid ""
 "Show whether hitting an ObjC exception throw interrupts a function called by "
 "hand from the debugger."
 msgstr ""
 
-#: infcall.c:1239
+#: infcall.c:1242
 msgid ""
 "The objc-exceptions-interrupt-hand-call-fns setting lets the user prevent "
 "gdb from\n"
@@ -11025,15 +11048,15 @@ msgid ""
 "in the debugger, so for the most part you will want to leave this on."
 msgstr ""
 
-#: infcall.c:1249
+#: infcall.c:1252
 msgid "Set disabling of gdb from running calls in the debugee's context"
 msgstr ""
 
-#: infcall.c:1250
+#: infcall.c:1253
 msgid "Show disabling of gdb from running calls in the debugee's context"
 msgstr ""
 
-#: infcall.c:1251
+#: infcall.c:1254
 msgid ""
 "The disable-inferior-function-calls setting lets the user prevent gdb from\n"
 "executing functions in the debugee program's context.  Many gdb commands\n"
@@ -12974,6 +12997,10 @@ msgstr ""
 msgid "lm32_store_return_value: type length too large."
 msgstr ""
 
+#: m2-exp.y:915
+msgid "Unterminated string or character constant."
+msgstr ""
+
 #: m2-lang.c:211
 #, possible-c-format
 msgid "internal error: no Modula fundamental type %d"
@@ -14211,7 +14238,7 @@ msgstr ""
 msgid "Core file:\n"
 msgstr ""
 
-#: maint.c:447 regcache.c:1404
+#: maint.c:447 regcache.c:1406
 msgid "maintenance print architecture"
 msgstr ""
 
@@ -14884,137 +14911,137 @@ msgstr ""
 msgid "mi_cmd_target_file_delete: Usage: REMOTE_FILE"
 msgstr ""
 
-#: mi/mi-cmd-var.c:87
+#: mi/mi-cmd-var.c:88
 msgid "mi_cmd_var_create: Usage: NAME FRAME EXPRESSION."
 msgstr ""
 
-#: mi/mi-cmd-var.c:106
+#: mi/mi-cmd-var.c:108
 msgid "mi_cmd_var_create: name of object must begin with a letter"
 msgstr ""
 
-#: mi/mi-cmd-var.c:492
+#: mi/mi-cmd-var.c:494
 msgid "mi_cmd_var_delete: Usage: [-c] EXPRESSION."
 msgstr ""
 
-#: mi/mi-cmd-var.c:504
+#: mi/mi-cmd-var.c:506
 msgid ""
 "mi_cmd_var_delete: Missing required argument after '-c': variable object name"
 msgstr ""
 
-#: mi/mi-cmd-var.c:506
+#: mi/mi-cmd-var.c:508
 msgid "mi_cmd_var_delete: Illegal variable object name"
 msgstr ""
 
-#: mi/mi-cmd-var.c:515
+#: mi/mi-cmd-var.c:517
 msgid "mi_cmd_var_delete: Invalid option."
 msgstr ""
 
-#: mi/mi-cmd-var.c:528
+#: mi/mi-cmd-var.c:530
 msgid "mi_cmd_var_delete: Variable object not found."
 msgstr ""
 
-#: mi/mi-cmd-var.c:547
+#: mi/mi-cmd-var.c:549
 msgid "mi_cmd_var_set_format: Usage: NAME FORMAT."
 msgstr ""
 
-#: mi/mi-cmd-var.c:553
+#: mi/mi-cmd-var.c:555
 msgid "mi_cmd_var_set_format: Variable object not found"
 msgstr ""
 
-#: mi/mi-cmd-var.c:557
+#: mi/mi-cmd-var.c:559
 msgid ""
 "mi_cmd_var_set_format: Must specify the format as: \"natural\", \"binary\", "
 "\"decimal\", \"hexadecimal\", \"unsigned\", or \"octal\""
 msgstr ""
 
-#: mi/mi-cmd-var.c:578
+#: mi/mi-cmd-var.c:580
 msgid ""
 "mi_cmd_var_set_format: Unknown display format: must be: \"natural\", \"binary"
 "\", \"decimal\", \"hexadecimal\",  \"unsigned\", or \"octal\""
 msgstr ""
 
-#: mi/mi-cmd-var.c:595
+#: mi/mi-cmd-var.c:597
 msgid "mi_cmd_var_show_format: Usage: NAME."
 msgstr ""
 
-#: mi/mi-cmd-var.c:600
+#: mi/mi-cmd-var.c:602
 msgid "mi_cmd_var_show_format: Variable object not found"
 msgstr ""
 
-#: mi/mi-cmd-var.c:615
+#: mi/mi-cmd-var.c:617
 msgid "mi_cmd_var_info_num_children: Usage: NAME."
 msgstr ""
 
-#: mi/mi-cmd-var.c:620
+#: mi/mi-cmd-var.c:622
 msgid "mi_cmd_var_info_num_children: Variable object not found"
 msgstr ""
 
-#: mi/mi-cmd-var.c:641
+#: mi/mi-cmd-var.c:643
 #, possible-c-format
 msgid ""
 "Unknown value for PRINT_VALUES\n"
 "Must be: 0 or \"%s\", 1 or \"%s\", 2 or \"%s\""
 msgstr ""
 
-#: mi/mi-cmd-var.c:761 varobj.c:1201
+#: mi/mi-cmd-var.c:765 varobj.c:1202
 msgid "Variable object not found"
 msgstr ""
 
-#: mi/mi-cmd-var.c:928
+#: mi/mi-cmd-var.c:932
 msgid "mi_cmd_var_info_type: Usage: NAME."
 msgstr ""
 
-#: mi/mi-cmd-var.c:933
+#: mi/mi-cmd-var.c:937
 msgid "mi_cmd_var_info_type: Variable object not found"
 msgstr ""
 
-#: mi/mi-cmd-var.c:959
+#: mi/mi-cmd-var.c:963
 msgid "mi_cmd_var_info_expression: Usage: NAME."
 msgstr ""
 
-#: mi/mi-cmd-var.c:964
+#: mi/mi-cmd-var.c:968
 msgid "mi_cmd_var_info_expression: Variable object not found"
 msgstr ""
 
-#: mi/mi-cmd-var.c:982
+#: mi/mi-cmd-var.c:986
 msgid "mi_cmd_var_show_attributes: Usage: NAME."
 msgstr ""
 
-#: mi/mi-cmd-var.c:987
+#: mi/mi-cmd-var.c:991
 msgid "mi_cmd_var_show_attributes: Variable object not found"
 msgstr ""
 
-#: mi/mi-cmd-var.c:1039
+#: mi/mi-cmd-var.c:1043
 msgid "mi_cmd_var_evaluate_expression: Variable object not found"
 msgstr ""
 
-#: mi/mi-cmd-var.c:1057
+#: mi/mi-cmd-var.c:1061
 msgid "mi_cmd_var_assign: Usage: NAME EXPRESSION."
 msgstr ""
 
-#: mi/mi-cmd-var.c:1062
+#: mi/mi-cmd-var.c:1066
 msgid "mi_cmd_var_assign: Variable object not found"
 msgstr ""
 
-#: mi/mi-cmd-var.c:1066
+#: mi/mi-cmd-var.c:1070
 msgid "mi_cmd_var_assign: Variable object is not editable"
 msgstr ""
 
-#: mi/mi-cmd-var.c:1071
+#: mi/mi-cmd-var.c:1075
 msgid "mi_cmd_var_assign: Could not assign expression to varible object"
 msgstr ""
 
-#: mi/mi-cmd-var.c:1107
+#: mi/mi-cmd-var.c:1111
 msgid "mi_cmd_var_update: Usage: [PRINT_VALUES] NAME [NAME...]."
 msgstr ""
 
-#: mi/mi-cmd-var.c:1298
+#: mi/mi-cmd-var.c:1302
 msgid ""
 "Set whether to show \"public\", \"protected\" and \"private\" nodes in "
 "variable objects."
 msgstr ""
 
-#: mi/mi-cmd-var.c:1299
+#: mi/mi-cmd-var.c:1303
 msgid ""
 "Show whether to show \"public\", \"protected\" and \"private\" nodes in "
 "variable objects."
@@ -15055,11 +15082,15 @@ msgstr ""
 msgid "%s: Unknown option ``%s''"
 msgstr ""
 
-#: mi/mi-main.c:2599
+#: mi/mi-main.c:804
+msgid "mi_cmd_file_fix_file: bad arguments(?)\n"
+msgstr ""
+
+#: mi/mi-main.c:2604
 msgid "Set whether timing information is displayed for mi commands."
 msgstr ""
 
-#: mi/mi-main.c:2600
+#: mi/mi-main.c:2605
 msgid "Show whether timing information is displayed for mi commands."
 msgstr ""
 
@@ -15614,7 +15645,7 @@ msgstr ""
 msgid "internal: compare_selectors(2)"
 msgstr ""
 
-#: objc-lang.c:1531 objc-lang.c:1670 symtab.c:4579
+#: objc-lang.c:1531 objc-lang.c:1670 symtab.c:4580
 #, possible-c-format
 msgid "Invalid regexp (%s): %s"
 msgstr ""
@@ -17864,49 +17895,49 @@ msgstr ""
 msgid "Show the current number of instructions in the record/replay buffer."
 msgstr ""
 
-#: regcache.c:1086
+#: regcache.c:1088
 msgid "read_pc_pid: Unable to find PC"
 msgstr ""
 
-#: regcache.c:1105
+#: regcache.c:1107
 msgid "generic_target_write_pc"
 msgstr ""
 
-#: regcache.c:1140
+#: regcache.c:1142
 msgid "read_sp: Unable to find SP"
 msgstr ""
 
-#: regcache.c:1150
+#: regcache.c:1152
 msgid "Register cache flushed.\n"
 msgstr ""
 
-#: regcache.c:1193
+#: regcache.c:1195
 msgid "Bad switch"
 msgstr ""
 
-#: regcache.c:1450
+#: regcache.c:1452
 msgid "Force gdb to flush its register cache (maintainer command)"
 msgstr ""
 
-#: regcache.c:1456
+#: regcache.c:1458
 msgid ""
 "Print the internal register configuration.\n"
 "Takes an optional file parameter."
 msgstr ""
 
-#: regcache.c:1460
+#: regcache.c:1462
 msgid ""
 "Print the internal register configuration including raw values.\n"
 "Takes an optional file parameter."
 msgstr ""
 
-#: regcache.c:1464
+#: regcache.c:1466
 msgid ""
 "Print the internal register configuration including cooked values.\n"
 "Takes an optional file parameter."
 msgstr ""
 
-#: regcache.c:1468
+#: regcache.c:1470
 msgid ""
 "Print the internal register configuration including each register's group.\n"
 "Takes an optional file parameter."
@@ -21578,31 +21609,31 @@ msgstr ""
 msgid "`operator %s' not supported"
 msgstr ""
 
-#: symtab.c:4535
+#: symtab.c:4536
 msgid "must search on specific domain"
 msgstr ""
 
-#: symtab.c:6004 symtab.c:6007 symtab.c:6035
+#: symtab.c:6005 symtab.c:6008 symtab.c:6036
 msgid "All global and static variable names, or those matching REGEXP."
 msgstr ""
 
-#: symtab.c:6011
+#: symtab.c:6012
 msgid "All function names, or those matching REGEXP."
 msgstr ""
 
-#: symtab.c:6023
+#: symtab.c:6024
 msgid "All type names, or those matching REGEXP."
 msgstr ""
 
-#: symtab.c:6026
+#: symtab.c:6027
 msgid "Source files in the program."
 msgstr ""
 
-#: symtab.c:6029
+#: symtab.c:6030
 msgid "Set a breakpoint for all functions matching REGEXP."
 msgstr ""
 
-#: symtab.c:6034
+#: symtab.c:6035
 msgid "Source files in the program"
 msgstr ""
 
@@ -23109,6 +23140,12 @@ msgstr ""
 msgid "invalid decimal"
 msgstr ""
 
+#. errno should be one of EFAULT, EINVAL, or EPERM:
+#: utils.c:4028
+#, possible-c-format
+msgid "Call to setrlimit() failed with errno %d: %s.\n"
+msgstr ""
+
 #. If inferior_ptid can be converted to a composite lwp/process id, do so,
 #. evaluate base_ops function CALL, and then convert inferior_ptid back to a
 #. composite thread/process id.
@@ -23884,54 +23921,67 @@ msgstr ""
 msgid "Varobj debugging is %s.\n"
 msgstr ""
 
-#: varobj.c:1260
+#: varobj.c:1261
 #, possible-c-format
 msgid "varobj_delete: assertion failed - mycount(=%d) <> 0"
 msgstr ""
 
-#: varobj.c:1928
+#: varobj.c:1931
 msgid "Duplicate variable object name"
 msgstr ""
 
-#: varobj.c:2705
+#: varobj.c:2712
 msgid "NULL dynamic_expr for root_type of varobj"
 msgstr ""
 
-#: varobj.c:3511
+#: varobj.c:3521
 msgid "not implemented: member type in varobj_value_struct_elt_by_index"
 msgstr ""
 
-#: varobj.c:3515
+#: varobj.c:3525
 msgid ""
 "Attempt to extract a component of a value that is not a struct or union."
 msgstr ""
 
+#: varobj.c:3672
+msgid "c_value_of_child: called with NULL child"
+msgstr ""
+
+#: varobj.c:3754
+#, possible-c-format
+msgid "%s: NULL type.\n"
+msgstr ""
+
+#: varobj.c:3776
+msgid "c_type_of_child: called with a NULL child."
+msgstr ""
+
 #. This should not happen, as only the above types have children:
-#: varobj.c:3811
+#: varobj.c:3831
 msgid "Child of parent whose type does not allow children"
 msgstr ""
 
-#: varobj.c:4683
+#: varobj.c:4712
 msgid "Set varobj to construct children using the most specific class type."
 msgstr ""
 
-#: varobj.c:4684
+#: varobj.c:4713
 msgid "abc"
 msgstr ""
 
-#: varobj.c:4690 varobj.c:4691
+#: varobj.c:4719 varobj.c:4720
 msgid "Set to run all threads when evaluating varobjs."
 msgstr ""
 
-#: varobj.c:4698
+#: varobj.c:4727
 msgid "Set varobj debugging."
 msgstr ""
 
-#: varobj.c:4699
+#: varobj.c:4728
 msgid "Show varobj debugging."
 msgstr ""
 
-#: varobj.c:4700
+#: varobj.c:4729
 msgid "When non-zero, varobj debugging is enabled."
 msgstr ""
 
@@ -24219,15 +24269,15 @@ msgid "x86 backtracer debugging is %s.\n"
 msgstr ""
 
 #. Debug this file's internals:
-#: x86-shared-tdep.c:1439
+#: x86-shared-tdep.c:1441
 msgid "Set x86 backtrace debugging."
 msgstr ""
 
-#: x86-shared-tdep.c:1440
+#: x86-shared-tdep.c:1442
 msgid "Show x86 backtrace debugging."
 msgstr ""
 
-#: x86-shared-tdep.c:1441
+#: x86-shared-tdep.c:1443
 msgid "When non-zero, x86 backtrace specific debugging is enabled."
 msgstr ""
 

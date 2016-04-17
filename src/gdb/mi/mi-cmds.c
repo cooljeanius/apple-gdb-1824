@@ -291,12 +291,12 @@ build_table(struct mi_cmd *commands)
       if (0)
 	{
 	  fprintf_unfiltered(gdb_stdlog, "%-30s %2d\n",
-			     command->name, stats.rehash - nr_rehash);
+			     command->name, (stats.rehash - nr_rehash));
 	}
       nr_entries++;
       nr_rehash = stats.rehash;
     }
-  if (0)
+  if ((nr_rehash > 0) && (nr_entries > 0))
     {
       fprintf_filtered(gdb_stdlog, "Average %3.1f\n",
                        ((double)nr_rehash / (double)nr_entries));

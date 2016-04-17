@@ -517,6 +517,12 @@ deprecated_read_register_bytes (int in_start, gdb_byte *in_buf, int in_len)
   int in_end = in_start + in_len;
   int regnum;
   gdb_byte reg_buf[MAX_REGISTER_SIZE];
+  int reg_index = 0;
+  
+  while (reg_index < MAX_REGISTER_SIZE) {
+    reg_buf[reg_index] = 0;
+    reg_index++;
+  }
 
   /* See if we are trying to read bytes from out-of-date registers.  If so,
      update just those registers.  */

@@ -267,17 +267,21 @@ cli_interpreter_complete(void *data, const char *word,
              feature that readline gives us for free, so we
              need a facility to limit the number of matches
              returned.  */
-          if (limit != -1 && items_printed >= limit)
+          if ((limit != -1) && (items_printed >= limit))
             {
               int i;
-              for (i = item; i < size && completions[i]; i++)
+              for (i = item; (i < size) && completions[i]; i++)
                 {
-                  xfree (completions[i]);
+                  xfree(completions[i]);
                   completions[i] = NULL;
                 }
               size = item;
-              if (ui_out_is_mi_like_p (uiout))
-                ui_out_field_string (uiout, "limited", "true");
+              if (ui_out_is_mi_like_p(uiout)) {
+                ui_out_field_string(uiout, "limited", "true");
+	      }
+	      if (size == 0) {
+		; /* ??? */
+	      }
               break;
             }
         }
@@ -563,10 +567,12 @@ shell_escape(const char *arg, int from_tty)
 #else /* Can fork: */
   int rc, status, pid;
 
+  /* FIXME: clang static analyzer complains about vfork(): */
   if ((pid = vfork()) == 0)
     {
       char *p;
       const char *user_shell;
+      int setgid_ret;
 
       if ((user_shell = (const char *)getenv("SHELL")) == NULL)
 	user_shell = "/bin/sh";
@@ -580,7 +586,13 @@ shell_escape(const char *arg, int from_tty)
       /* APPLE LOCAL: gdb is setgid to give it extra special debuggizer
          powers; we need to drop those privileges before executing the
          inferior process.  */
-      setgid(getgid());
+      setgid_ret = setgid(getgid());
+      
+      if (setgid_ret == -1) {
+	/* Should be either EINVAL or EPERM: */
+	warning(_("Call to setgid() failed with errno %d: %s.\n"), errno,
+		safe_strerror(errno));
+      }
 
       if (!arg)
 	execl(user_shell, p, (char *)0);
@@ -697,6 +709,10 @@ edit_command(const char *arg, int from_tty)
     ; /* (do nothing) */
   log10 = (1 + (int)((float)(log10 + (0 == ((m - 1) & sal.line)))
 		     / 3.32192809f));
+  
+  if (log10 == 0) {
+    ; /* ??? */
+  }
 
   /* If we do NOT already know the full absolute file name of the source
    * file, then find it now: */

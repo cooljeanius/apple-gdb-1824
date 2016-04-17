@@ -120,6 +120,7 @@
 #include "complaints.h"
 
 #include <fcntl.h>
+#include "gdb_assert.h"
 #include "gdb_string.h"
 
 /* Some macros to provide DIE info for complaints. */
@@ -1450,9 +1451,8 @@ read_tag_pointer_type (struct dieinfo *dip)
    type, but it behaves like one, with other DIE's using an
    AT_user_def_type attribute to reference it.
  */
-
 static void
-read_tag_string_type (struct dieinfo *dip)
+read_tag_string_type(struct dieinfo *dip)
 {
   struct type *utype;
   struct type *indextype;
@@ -1491,8 +1491,9 @@ read_tag_string_type (struct dieinfo *dip)
 	}
     }
 
-  /* Create the string type using the blank type we either found or created. */
-  utype = create_string_type (utype, rangetype);
+  /* Create the string type using the blank type we either found or created: */
+  utype = create_string_type(utype, rangetype);
+  gdb_assert(utype != NULL);
 }
 
 /*
@@ -2085,6 +2086,15 @@ decode_line_numbers (char *linetable)
     }
 }
 
+/* Used in the function afterwards: */
+#ifndef AUTO_AS_IN_THE_C_MEANING_OF_IT
+# ifndef __cplusplus
+#  define AUTO_AS_IN_THE_C_MEANING_OF_IT auto
+# else
+#  define AUTO_AS_IN_THE_C_MEANING_OF_IT /* (nothing) */
+# endif /* !__cplusplus */
+#endif /* !AUTO_AS_IN_THE_C_MEANING_OF_IT */
+
 /*
    LOCAL FUNCTION
 
@@ -2118,13 +2128,12 @@ decode_line_numbers (char *linetable)
    Note that stack[0] is unused except as a default error return.
    Note that stack overflow is not yet handled.
  */
-
 static int
-locval (struct dieinfo *dip)
+locval(struct dieinfo *dip)
 {
   unsigned short nbytes;
   unsigned short locsize;
-  /*auto*/ long stack[64];
+  AUTO_AS_IN_THE_C_MEANING_OF_IT long stack[64];
   int stacki;
   char *loc;
   char *end;
@@ -2132,21 +2141,28 @@ locval (struct dieinfo *dip)
   int loc_value_size;
 
   loc = dip->at_location;
-  nbytes = attribute_size (AT_location);
-  locsize = target_to_host (loc, nbytes, GET_UNSIGNED, current_objfile);
+  nbytes = (unsigned short)attribute_size(AT_location);
+  locsize = (unsigned short)target_to_host(loc, nbytes, GET_UNSIGNED,
+					   current_objfile);
   loc += nbytes;
-  end = loc + locsize;
+  end = (loc + locsize);
   stacki = 0;
-  stack[stacki] = 0;
+  while (stacki < 64) {
+    stack[stacki] = 0;
+    stacki++;
+  }
+  if (stacki != 0) {
+    stacki = 0;
+  }
   dip->isreg = 0;
   dip->offreg = 0;
   dip->optimized_out = 1;
-  loc_value_size = TARGET_FT_LONG_SIZE (current_objfile);
+  loc_value_size = TARGET_FT_LONG_SIZE(current_objfile);
   while (loc < end)
     {
       dip->optimized_out = 0;
-      loc_atom_code = target_to_host (loc, SIZEOF_LOC_ATOM_CODE, GET_UNSIGNED,
-				      current_objfile);
+      loc_atom_code = (int)target_to_host(loc, SIZEOF_LOC_ATOM_CODE,
+					  GET_UNSIGNED, current_objfile);
       loc += SIZEOF_LOC_ATOM_CODE;
       switch (loc_atom_code)
 	{
@@ -2187,14 +2203,14 @@ locval (struct dieinfo *dip)
 	  break;
 	case OP_DEREF2:
 	  /* pop, deref and push 2 bytes (as a long) */
-	  complaint (&symfile_complaints,
-		     _("DIE @ 0x%x \"%s\", OP_DEREF2 address 0x%lx not handled"),
-		     DIE_ID, DIE_NAME, stack[stacki]);
+	  complaint(&symfile_complaints,
+		    _("DIE @ 0x%x \"%s\", OP_DEREF2 address 0x%lx not handled"),
+		    DIE_ID, DIE_NAME, stack[stacki]);
 	  break;
 	case OP_DEREF4:	/* pop, deref and push 4 bytes (as a long) */
-	  complaint (&symfile_complaints,
-		     _("DIE @ 0x%x \"%s\", OP_DEREF4 address 0x%lx not handled"),
-		     DIE_ID, DIE_NAME, stack[stacki]);
+	  complaint(&symfile_complaints,
+		    _("DIE @ 0x%x \"%s\", OP_DEREF4 address 0x%lx not handled"),
+		    DIE_ID, DIE_NAME, stack[stacki]);
 	  break;
 	case OP_ADD:		/* pop top 2 items, add, push result */
 	  stack[stacki - 1] += stack[stacki];
@@ -2821,7 +2837,6 @@ scan_compilation_units (char *thisdie, char *enddie, file_ptr dbfoff,
    to make a symbol table entry for it, and if so, create a new entry
    and return a pointer to it.
  */
-
 static struct symbol *
 new_symbol (struct dieinfo *dip, struct objfile *objfile)
 {
@@ -3419,7 +3434,6 @@ create_name(const char *name, struct obstack *obstackp)
    too small or too large, we force it's length to zero which should
    cause the caller to take appropriate action.
  */
-
 static void
 basicdieinfo (struct dieinfo *dip, char *diep, struct objfile *objfile)
 {

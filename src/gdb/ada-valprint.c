@@ -81,30 +81,34 @@ adjust_type_signedness (struct type *type)
    if something printed, otherwise 0.  */
 
 static int
-print_optional_low_bound (struct ui_file *stream, struct type *type)
+print_optional_low_bound(struct ui_file *stream, struct type *type)
 {
   struct type *index_type;
   long low_bound;
 
-  index_type = TYPE_INDEX_TYPE (type);
-  low_bound = 0;
+  index_type = TYPE_INDEX_TYPE(type);
+  low_bound = 0L;
 
   if (index_type == NULL)
     return 0;
-  if (TYPE_CODE (index_type) == TYPE_CODE_RANGE)
+  if (TYPE_CODE(index_type) == TYPE_CODE_RANGE)
     {
-      low_bound = TYPE_LOW_BOUND (index_type);
-      if (low_bound > TYPE_HIGH_BOUND (index_type))
+      low_bound = TYPE_LOW_BOUND(index_type);
+      if (low_bound > TYPE_HIGH_BOUND(index_type))
 	return 0;
-      index_type = TYPE_TARGET_TYPE (index_type);
+      index_type = TYPE_TARGET_TYPE(index_type);
     }
   else
     return 0;
+  
+  if (low_bound > 0L) {
+    ; /* ??? */
+  }
 
-  switch (TYPE_CODE (index_type))
+  switch (TYPE_CODE(index_type))
     {
     case TYPE_CODE_ENUM:
-      if (low_bound == TYPE_FIELD_BITPOS (index_type, 0))
+      if (low_bound == TYPE_FIELD_BITPOS(index_type, 0))
 	return 0;
       break;
     case TYPE_CODE_UNDEF:
@@ -116,8 +120,8 @@ print_optional_low_bound (struct ui_file *stream, struct type *type)
       break;
     }
 
-  ada_print_scalar (index_type, (LONGEST) low_bound, stream);
-  fprintf_filtered (stream, " => ");
+  ada_print_scalar(index_type, (LONGEST)low_bound, stream);
+  fprintf_filtered(stream, " => ");
   return 1;
 }
 
@@ -358,7 +362,7 @@ void
 ada_print_scalar (struct type *type, LONGEST val, struct ui_file *stream)
 {
   unsigned int i;
-  unsigned len;
+  unsigned int len;
 
   type = ada_check_typedef (type);
 

@@ -2039,18 +2039,18 @@ init_type (enum type_code code, int length, int flags, const char *name,
 {
   struct type *type;
 
-  type = alloc_type (objfile);
-  TYPE_CODE (type) = code;
-  TYPE_LENGTH_ASSIGN (type) = length;
-  TYPE_FLAGS (type) |= flags;
+  type = alloc_type(objfile);
+  TYPE_CODE(type) = code;
+  TYPE_LENGTH_ASSIGN(type) = length;
+  TYPE_FLAGS(type) |= flags; /*GCC PR 39170*/
   if ((name != NULL) && (objfile != NULL))
     {
-      TYPE_NAME (type) =
-	obsavestring (name, strlen (name), &objfile->objfile_obstack);
+      TYPE_NAME(type) =
+	obsavestring(name, strlen(name), &objfile->objfile_obstack);
     }
   else
     {
-      TYPE_NAME (type) = name;
+      TYPE_NAME(type) = name;
     }
 
   /* C++ fancies.  */
@@ -2098,12 +2098,12 @@ append_composite_type_field(struct type *t, const char *name,
 			    struct type *field)
 {
   struct field *f;
-  TYPE_NFIELDS(t) = (TYPE_NFIELDS(t) + 1);
+  TYPE_NFIELDS(t) = (short)(TYPE_NFIELDS(t) + 1);
   TYPE_FIELDS(t) = ((struct field *)
                     xrealloc(TYPE_FIELDS(t),
                              (sizeof(struct field) * TYPE_NFIELDS(t))));
   f = &(TYPE_FIELDS(t)[TYPE_NFIELDS(t) - 1]);
-  memset(f, 0, sizeof f[0]);
+  memset(f, 0, sizeof(f[0]));
   FIELD_TYPE(f[0]) = field;
   FIELD_NAME(f[0]) = name;
   if (TYPE_CODE(t) == TYPE_CODE_UNION)
@@ -2261,27 +2261,31 @@ has_vtable (struct type *dclass)
      has virtual functions or virtual bases.  */
 
   int i;
+  
+  gdb_assert(dclass != NULL);
 
-  if (TYPE_CODE (dclass) != TYPE_CODE_CLASS)
+  if (TYPE_CODE(dclass) != TYPE_CODE_CLASS)
     return 0;
 
   /* First check for the presence of virtual bases */
-  if (TYPE_FIELD_VIRTUAL_BITS (dclass))
-    for (i = 0; i < TYPE_N_BASECLASSES (dclass); i++)
-      if (B_TST (TYPE_FIELD_VIRTUAL_BITS (dclass), i))
+  if (TYPE_FIELD_VIRTUAL_BITS(dclass))
+    for (i = 0; i < TYPE_N_BASECLASSES(dclass); i++)
+      if (B_TST(TYPE_FIELD_VIRTUAL_BITS(dclass), i))
 	return 1;
 
   /* Next check for virtual functions */
-  if (TYPE_FN_FIELDLISTS (dclass))
-    for (i = 0; i < TYPE_NFN_FIELDS (dclass); i++)
-      if (TYPE_FN_FIELD_VIRTUAL_P (TYPE_FN_FIELDLIST1 (dclass, i), 0))
+  if (TYPE_FN_FIELDLISTS(dclass))
+    for (i = 0; i < TYPE_NFN_FIELDS(dclass); i++)
+      if ((TYPE_FN_FIELDLIST1(dclass, i) != NULL)
+	  && TYPE_FN_FIELD_VIRTUAL_P(TYPE_FN_FIELDLIST1(dclass, i), 0))
 	return 1;
 
   /* Recurse on non-virtual bases to see if any of them needs a vtable */
-  if (TYPE_FIELD_VIRTUAL_BITS (dclass))
-    for (i = 0; i < TYPE_N_BASECLASSES (dclass); i++)
-      if ((!B_TST (TYPE_FIELD_VIRTUAL_BITS (dclass), i)) &&
-	  (has_vtable (TYPE_FIELD_TYPE (dclass, i))))
+  if (TYPE_FIELD_VIRTUAL_BITS(dclass))
+    for (i = 0; i < TYPE_N_BASECLASSES(dclass); i++)
+      if ((TYPE_FIELD_VIRTUAL_BITS(dclass) != NULL)
+	  && (!B_TST(TYPE_FIELD_VIRTUAL_BITS(dclass), i))
+	  && (has_vtable(TYPE_FIELD_TYPE(dclass, i))))
 	return 1;
 
   /* Well, maybe we don't need a virtual table */

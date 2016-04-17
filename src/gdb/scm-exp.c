@@ -231,7 +231,9 @@ scm_read_token(int c, int weird)
 
 	default:
 	default_case:
-	  ;
+	  if (c == '\0') {
+	    ; /* ??? */
+	  }
 	}
     }
 }

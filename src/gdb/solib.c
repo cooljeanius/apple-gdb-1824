@@ -262,16 +262,16 @@ solib_map_sections (void *arg)
 {
   struct so_list *so = (struct so_list *) arg;	/* catch_errors bogon */
   char *filename;
-  char *scratch_pathname;
+  char *scratch_pathname = (char *)"/tmp";
   int scratch_chan;
   struct section_table *p;
   struct cleanup *old_chain;
   bfd *abfd;
 
-  filename = tilde_expand (so->so_name);
+  filename = tilde_expand(so->so_name);
 
-  old_chain = make_cleanup (xfree, filename);
-  scratch_chan = solib_open (filename, &scratch_pathname);
+  old_chain = make_cleanup(xfree, filename);
+  scratch_chan = solib_open(filename, &scratch_pathname);
 
   if (scratch_chan < 0)
     {

@@ -7551,8 +7551,10 @@ watch_command_1(const char *arg, int accessflag, int by_location, int from_tty)
       const char *tmp_str;
 
       exp_start = arg;
+      gdb_assert(exp_start != NULL);
       exp = parse_exp_1(&arg, 0, 0);
       exp_end = arg;
+      gdb_assert(exp_end != NULL);
 
       orig_val = evaluate_expression(exp);
       if (value_lazy(orig_val))
@@ -8221,6 +8223,7 @@ catch_load_command_1(const char *arg, int tempflag, int from_tty)
       }
       ep_skip_leading_whitespace(&arg);
       cond_string = ep_parse_optional_if_clause(&arg);
+      gdb_assert(cond_string != NULL);
     }
 
   if ((*arg != '\0') && !isspace(*arg))
@@ -8267,6 +8270,7 @@ catch_unload_command_1(const char *arg, int tempflag, int from_tty)
       }
       ep_skip_leading_whitespace(&arg);
       cond_string = ep_parse_optional_if_clause(&arg);
+      gdb_assert(cond_string != NULL);
     }
 
   if ((*arg != '\0') && !isspace(*arg))

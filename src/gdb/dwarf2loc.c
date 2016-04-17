@@ -983,6 +983,9 @@ print_single_dwarf_location(struct ui_file *stream, gdb_byte **loc_ptr,
 	  break;
 	case DW_OP_dup:
 	  result = dwarf_expr_fetch(ctx, 0);
+	  if (result == INVALID_ADDRESS) {
+	    ; /* ??? */
+	  }
 	  break;
 
 	case DW_OP_drop:
@@ -992,10 +995,16 @@ print_single_dwarf_location(struct ui_file *stream, gdb_byte **loc_ptr,
 	case DW_OP_pick:
 	  offset = *op_ptr++;
 	  result = dwarf_expr_fetch(ctx, (int)offset);
+	  if (result == INVALID_ADDRESS) {
+	    ; /* ??? */
+	  }
 	  break;
 
 	case DW_OP_over:
 	  result = dwarf_expr_fetch(ctx, 1);
+	  if (result == INVALID_ADDRESS) {
+	    ; /* ??? */
+	  }
 	  break;
 
 	case DW_OP_rot:
@@ -1066,6 +1075,9 @@ print_single_dwarf_location(struct ui_file *stream, gdb_byte **loc_ptr,
 	    default:
 	      break;
 	    }
+	  if (result == INVALID_ADDRESS) {
+	    ; /* ??? */
+	  }
 	  break;
 
 	case DW_OP_and:
@@ -1160,6 +1172,9 @@ print_single_dwarf_location(struct ui_file *stream, gdb_byte **loc_ptr,
                                _("Cannot be reached."));
 	      }
 	    result = value_as_long(value_binop(val1, val2, binop));
+	    if (result == INVALID_ADDRESS) {
+	      ; /* ??? */
+	    }
 	  }
 	  break;
 

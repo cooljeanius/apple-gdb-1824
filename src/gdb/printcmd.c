@@ -1995,6 +1995,7 @@ printf_command(const char *arg, int from_tty)
       switch (c)
 	{
 	case '\0':
+	  *f++ = '\0';
 	  error(_("Bad format string, non-terminated '\"'."));
 
 	case '\\':
@@ -2028,6 +2029,7 @@ printf_command(const char *arg, int from_tty)
 	      *f++ = '"';
 	      break;
 	    default:
+	      *f++ = '\0';
 	      /* ??? TODO: handle other escape sequences */
 	      error(_("Unrecognized escape character \\%c in format string."),
 		    c);
@@ -2067,7 +2069,7 @@ printf_command(const char *arg, int from_tty)
       {
 	no_arg, int_arg, string_arg, double_arg, long_long_arg, pointer_arg
       };
-    enum argclass *argclass;
+    enum argclass *argclass = NULL;
     enum argclass this_argclass;
     char *last_arg;
     int nargs_wanted;

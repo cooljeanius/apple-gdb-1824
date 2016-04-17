@@ -2491,8 +2491,10 @@ print_inlined_frame (struct frame_info *fi, int print_level,
 
   if (stack_ptr->records[i].s)
     funlang = stack_ptr->records[i].s->language;
-  else
+  else if (sal.symtab != NULL)
     funlang = sal.symtab->language;
+  else
+    funlang = language_unknown;
 
   annotate_frame_function_name ();
   fprintf_symbol_filtered (stb->stream, funname, funlang, DMGL_ANSI);

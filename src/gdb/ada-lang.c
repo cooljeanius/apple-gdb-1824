@@ -770,34 +770,37 @@ ada_encode(const char *decoded)
   k = 0;
   for (p = decoded; *p != '\0'; p += 1)
     {
-      if (!ADA_RETAIN_DOTS && *p == '.')
+      if (!ADA_RETAIN_DOTS && (*p == '.') && (encoding_buffer != NULL))
         {
           encoding_buffer[k] = encoding_buffer[k + 1] = '_';
           k += 2;
         }
-      else if (*p == '"')
+      else if ((*p == '"') && (encoding_buffer != NULL))
         {
           const struct ada_opname_map *mapping;
 
           for (mapping = ada_opname_table;
-               mapping->encoded != NULL
-               && strncmp (mapping->decoded, p,
-                           strlen (mapping->decoded)) != 0; mapping += 1)
+               (mapping->encoded != NULL)
+	       && (strncmp(mapping->decoded, p,
+			   strlen(mapping->decoded)) != 0); mapping += 1)
             ;
           if (mapping->encoded == NULL)
-            error (_("invalid Ada operator name: %s"), p);
-          strcpy (encoding_buffer + k, mapping->encoded);
-          k += strlen (mapping->encoded);
+            error(_("invalid Ada operator name: %s"), p);
+          strcpy((encoding_buffer + k), mapping->encoded);
+          k += strlen(mapping->encoded);
           break;
         }
-      else
+      else if (encoding_buffer != NULL)
         {
           encoding_buffer[k] = *p;
           k += 1;
         }
+      else
+	k += 0;
     }
 
-  encoding_buffer[k] = '\0';
+  if (encoding_buffer != NULL)
+    encoding_buffer[k] = '\0';
   return encoding_buffer;
 }
 
@@ -814,12 +817,12 @@ ada_fold_name(const char *name)
   size_t len = strlen(name);
   GROW_VECT(fold_buffer, fold_buffer_size, (len + 1UL), char);
 
-  if (name[0] == '\'')
+  if ((fold_buffer != NULL) && (name != NULL) && (name[0] == '\''))
     {
       strncpy(fold_buffer, (name + 1), (len - 2));
       fold_buffer[len - 2] = '\000';
     }
-  else
+  else if (fold_buffer != NULL)
     {
       size_t i;
       for (i = 0UL; i <= len; i += 1UL)
@@ -927,9 +930,9 @@ ada_decode(const char *encoded)
               size_t op_len = strlen(ada_opname_table[k].encoded);
               if ((strncmp((ada_opname_table[k].encoded + 1),
                            (encoded + i + 1), (op_len - 1)) == 0)
-                  && !isalnum(encoded[i + op_len]))
+                  && !isalnum(encoded[i + op_len]) && (decoded != NULL))
                 {
-                  strcpy(decoded + j, ada_opname_table[k].decoded);
+                  strcpy((decoded + j), ada_opname_table[k].decoded);
                   at_start_name = 0;
                   i += op_len;
                   j += strlen(ada_opname_table[k].decoded);
@@ -952,27 +955,34 @@ ada_decode(const char *encoded)
             goto Suppress;
         }
       else if (!ADA_RETAIN_DOTS
-               && (i < (len0 - 2)) && (encoded[i] == '_') && (encoded[i + 1] == '_'))
+               && (i < (len0 - 2)) && (encoded[i] == '_')
+	       && (encoded[i + 1] == '_') && (decoded != NULL))
         {
           decoded[j] = '.';
           at_start_name = 1;
           i += 2;
           j += 1;
         }
-      else
+      else if (decoded != NULL)
         {
           decoded[j] = encoded[i];
           i += 1;
           j += 1;
         }
+      else
+	{
+	  i += 0;
+	  j += 0;
+	}
     }
-  decoded[j] = '\000';
+  if (decoded != NULL)
+    decoded[j] = '\000';
 
-  for (i = 0; decoded[i] != '\0'; i += 1)
+  for (i = 0; (decoded != NULL) && (decoded[i] != '\0'); i += 1)
     if (isupper(decoded[i]) || (decoded[i] == ' '))
       goto Suppress;
 
-  if (strcmp(decoded, encoded) == 0)
+  if ((decoded != NULL) && (strcmp(decoded, encoded) == 0))
     return encoded;
   else
     return decoded;
@@ -1186,28 +1196,35 @@ is_thick_pntr (struct type *type)
    pointer to one, the type of its bounds data; otherwise, NULL.  */
 
 static struct type *
-desc_bounds_type (struct type *type)
+desc_bounds_type(struct type *type)
 {
   struct type *r;
 
-  type = desc_base_type (type);
+  type = desc_base_type(type);
 
   if (type == NULL)
     return NULL;
-  else if (is_thin_pntr (type))
+  else if (is_thin_pntr(type))
     {
-      type = thin_descriptor_type (type);
+      type = thin_descriptor_type(type);
       if (type == NULL)
         return NULL;
-      r = lookup_struct_elt_type (type, "BOUNDS", 1);
+      r = lookup_struct_elt_type(type, "BOUNDS", 1);
       if (r != NULL)
-        return ada_check_typedef (r);
+        return ada_check_typedef(r);
     }
-  else if (TYPE_CODE (type) == TYPE_CODE_STRUCT)
+  else if (TYPE_CODE(type) == TYPE_CODE_STRUCT)
     {
-      r = lookup_struct_elt_type (type, "P_BOUNDS", 1);
+      r = lookup_struct_elt_type(type, "P_BOUNDS", 1);
       if (r != NULL)
-        return ada_check_typedef (TYPE_TARGET_TYPE (ada_check_typedef (r)));
+	{
+	  struct type *my_checked_type = ada_check_typedef(r);
+	  struct type *the_target_type;
+	  gdb_assert(my_checked_type != NULL);
+	  the_target_type = TYPE_TARGET_TYPE(my_checked_type);
+	  gdb_assert(the_target_type != NULL);
+	  return ada_check_typedef(the_target_type);
+	}
     }
   return NULL;
 }
@@ -1252,16 +1269,20 @@ desc_bounds(struct value *arr)
    position of the field containing the address of the bounds data.  */
 
 static int
-fat_pntr_bounds_bitpos (struct type *type)
+fat_pntr_bounds_bitpos(struct type *type)
 {
-  return TYPE_FIELD_BITPOS (desc_base_type (type), 1);
+  struct type *my_base_type;
+  gdb_assert(type != NULL);
+  my_base_type = desc_base_type(type);
+  gdb_assert(my_base_type != NULL);
+  return TYPE_FIELD_BITPOS(my_base_type, 1);
 }
 
 /* If TYPE is the type of an array-descriptor (fat pointer), the bit
    size of the field containing the address of the bounds data.  */
 
 static int
-fat_pntr_bounds_bitsize (struct type *type)
+fat_pntr_bounds_bitsize(struct type *type)
 {
   type = desc_base_type (type);
 
@@ -1279,11 +1300,19 @@ fat_pntr_bounds_bitsize (struct type *type)
 static struct type *
 desc_data_type(struct type *type)
 {
+  struct type *thin_desc_type;
   type = desc_base_type(type);
+  gdb_assert(type != NULL);
+  thin_desc_type = thin_descriptor_type(type);
 
   /* NOTE: The following is bogus; see comment in desc_bounds: */
-  if (is_thin_pntr(type) && (thin_descriptor_type(type) != NULL))
-    return lookup_pointer_type(desc_base_type(TYPE_FIELD_TYPE(thin_descriptor_type(type), 1)));
+  if (is_thin_pntr(type) && (thin_desc_type != NULL)
+      && (TYPE_MAIN_TYPE(thin_desc_type) != NULL))
+    {
+      struct type *field_type = TYPE_FIELD_TYPE(thin_desc_type, 1);
+      gdb_assert(field_type != NULL);
+      return lookup_pointer_type(desc_base_type(field_type));
+    }
   else if (is_thick_pntr(type))
     return lookup_struct_elt_type(type, "P_ARRAY", 1);
   else
@@ -1373,12 +1402,12 @@ desc_bound_bitsize(struct type *type, int i, int which)
    Ith bound (numbering from 1).  Otherwise, NULL.  */
 
 static struct type *
-desc_index_type (struct type *type, int i)
+desc_index_type(struct type *type, int i)
 {
-  type = desc_base_type (type);
+  type = desc_base_type(type);
 
-  if (TYPE_CODE (type) == TYPE_CODE_STRUCT)
-    return lookup_struct_elt_type (type, bound_name[2 * i - 2], 1);
+  if ((type != NULL) && (TYPE_CODE(type) == TYPE_CODE_STRUCT))
+    return lookup_struct_elt_type(type, bound_name[(2 * i) - 2], 1);
   else
     return NULL;
 }
@@ -1467,48 +1496,56 @@ ada_is_bogus_array_descriptor (struct type *type)
    returns NULL.  The result is simply the type of ARR if ARR is not
    a descriptor.  */
 struct type *
-ada_type_of_array (struct value *arr, int bounds)
+ada_type_of_array(struct value *arr, int bounds)
 {
-  if (ada_is_packed_array_type (value_type (arr)))
-    return decode_packed_array_type (value_type (arr));
+  struct type *type_of_arr_val = value_type(arr);
+  gdb_assert(type_of_arr_val != NULL);
+  if (ada_is_packed_array_type(type_of_arr_val))
+    return decode_packed_array_type(type_of_arr_val);
 
-  if (!ada_is_array_descriptor_type (value_type (arr)))
-    return value_type (arr);
+  if (!ada_is_array_descriptor_type(type_of_arr_val))
+    return type_of_arr_val;
 
   if (!bounds)
-    return
-      ada_check_typedef (TYPE_TARGET_TYPE (desc_data_type (value_type (arr))));
+    {
+      struct type *the_data_type = desc_data_type(type_of_arr_val);
+      struct type *field_type;
+      gdb_assert(the_data_type != NULL);
+      field_type = TYPE_TARGET_TYPE(the_data_type);
+      gdb_assert(field_type != NULL);
+      return ada_check_typedef(field_type);
+    }
   else
     {
       struct type *elt_type;
       int arity;
       struct value *descriptor;
-      struct objfile *objf = TYPE_OBJFILE (value_type (arr));
+      struct objfile *objf = TYPE_OBJFILE(type_of_arr_val);
 
-      elt_type = ada_array_element_type (value_type (arr), -1);
-      arity = ada_array_arity (value_type (arr));
+      elt_type = ada_array_element_type(type_of_arr_val, -1);
+      arity = ada_array_arity(type_of_arr_val);
 
       if (elt_type == NULL || arity == 0)
-        return ada_check_typedef (value_type (arr));
+        return ada_check_typedef(type_of_arr_val);
 
-      descriptor = desc_bounds (arr);
-      if (value_as_long (descriptor) == 0)
+      descriptor = desc_bounds(arr);
+      if (value_as_long(descriptor) == 0)
         return NULL;
       while (arity > 0)
         {
-          struct type *range_type = alloc_type (objf);
-          struct type *array_type = alloc_type (objf);
-          struct value *low = desc_one_bound (descriptor, arity, 0);
-          struct value *high = desc_one_bound (descriptor, arity, 1);
+          struct type *range_type = alloc_type(objf);
+          struct type *array_type = alloc_type(objf);
+          struct value *low = desc_one_bound(descriptor, arity, 0);
+          struct value *high = desc_one_bound(descriptor, arity, 1);
           arity -= 1;
 
-          create_range_type (range_type, value_type (low),
-                             (int) value_as_long (low),
-                             (int) value_as_long (high));
-          elt_type = create_array_type (array_type, elt_type, range_type);
+          create_range_type(range_type, value_type(low),
+                            (int)value_as_long(low),
+                            (int)value_as_long(high));
+          elt_type = create_array_type(array_type, elt_type, range_type);
         }
 
-      return lookup_pointer_type (elt_type);
+      return lookup_pointer_type(elt_type);
     }
 }
 
@@ -1593,36 +1630,36 @@ ada_is_packed_array_type (struct type *type)
    in bits.  */
 
 static struct type *
-packed_array_type (struct type *type, long *elt_bits)
+packed_array_type(struct type *type, long *elt_bits)
 {
   struct type *new_elt_type;
   struct type *new_type;
   LONGEST low_bound, high_bound;
 
-  type = ada_check_typedef (type);
-  if (TYPE_CODE (type) != TYPE_CODE_ARRAY)
+  type = ada_check_typedef(type);
+  if (TYPE_CODE(type) != TYPE_CODE_ARRAY)
     return type;
 
-  new_type = alloc_type (TYPE_OBJFILE (type));
-  new_elt_type = packed_array_type (ada_check_typedef (TYPE_TARGET_TYPE (type)),
-                                    elt_bits);
-  create_array_type (new_type, new_elt_type, TYPE_FIELD_TYPE (type, 0));
-  TYPE_FIELD_BITSIZE (new_type, 0) = *elt_bits;
-  TYPE_NAME (new_type) = ada_type_name (type);
+  new_type = alloc_type(TYPE_OBJFILE(type));
+  new_elt_type = packed_array_type(ada_check_typedef(TYPE_TARGET_TYPE(type)),
+                                   elt_bits);
+  create_array_type(new_type, new_elt_type, TYPE_FIELD_TYPE(type, 0));
+  TYPE_FIELD_BITSIZE(new_type, 0) = *elt_bits; /*GCC PR 39170*/
+  TYPE_NAME(new_type) = ada_type_name(type);
 
-  if (get_discrete_bounds (TYPE_FIELD_TYPE (type, 0),
-                           &low_bound, &high_bound) < 0)
+  if (get_discrete_bounds(TYPE_FIELD_TYPE(type, 0),
+                          &low_bound, &high_bound) < 0)
     low_bound = high_bound = 0;
   if (high_bound < low_bound)
-    *elt_bits = TYPE_LENGTH_ASSIGN (new_type) = 0;
+    *elt_bits = TYPE_LENGTH_ASSIGN(new_type) = 0;
   else
     {
-      *elt_bits *= (high_bound - low_bound + 1);
-      TYPE_LENGTH_ASSIGN (new_type) =
-        (*elt_bits + HOST_CHAR_BIT - 1) / HOST_CHAR_BIT;
+      *elt_bits *= (long)(high_bound - low_bound + 1L);
+      TYPE_LENGTH_ASSIGN(new_type) =
+        ((*elt_bits + HOST_CHAR_BIT - 1) / HOST_CHAR_BIT);
     }
 
-  TYPE_FLAGS (new_type) |= TYPE_FLAG_FIXED_INSTANCE;
+  TYPE_FLAGS(new_type) |= TYPE_FLAG_FIXED_INSTANCE;
   return new_type;
 }
 
@@ -1724,7 +1761,7 @@ decode_packed_array (struct value *arr)
    given in IND.   ARR must be a simple array.  */
 
 static struct value *
-value_subscript_packed (struct value *arr, int arity, struct value **ind)
+value_subscript_packed(struct value *arr, int arity, struct value **ind)
 {
   int i;
   int bits, elt_off, bit_off;
@@ -1733,50 +1770,53 @@ value_subscript_packed (struct value *arr, int arity, struct value **ind)
   struct value *v;
 
   bits = 0;
-  elt_total_bit_offset = 0;
-  elt_type = ada_check_typedef (value_type (arr));
+  elt_total_bit_offset = 0L;
+  elt_type = ada_check_typedef(value_type(arr));
   for (i = 0; i < arity; i += 1)
     {
-      if (TYPE_CODE (elt_type) != TYPE_CODE_ARRAY
-          || TYPE_FIELD_BITSIZE (elt_type, 0) == 0)
-        error
-          (_("attempt to do packed indexing of something other than a packed array"));
-      else
+      if ((elt_type != NULL)
+	  && ((TYPE_CODE(elt_type) != TYPE_CODE_ARRAY)
+	      || (TYPE_FIELD_BITSIZE(elt_type, 0) == 0)))
+        error(_("attempt to do packed indexing of something other than a packed array"));
+      else if (elt_type != NULL)
         {
-          struct type *range_type = TYPE_INDEX_TYPE (elt_type);
+          struct type *range_type = TYPE_INDEX_TYPE(elt_type);
           LONGEST lowerbound, upperbound;
           LONGEST idx;
 
-          if (get_discrete_bounds (range_type, &lowerbound, &upperbound) < 0)
+          if (get_discrete_bounds(range_type, &lowerbound, &upperbound) < 0)
             {
-              lim_warning (_("don't know bounds of array"));
+              lim_warning(_("do NOT know bounds of array"));
               lowerbound = upperbound = 0;
             }
 
-          idx = value_as_long (value_pos_atr (ind[i]));
-          if (idx < lowerbound || idx > upperbound)
-            lim_warning (_("packed array index %ld out of bounds"), (long) idx);
-          bits = TYPE_FIELD_BITSIZE (elt_type, 0);
-          elt_total_bit_offset += (idx - lowerbound) * bits;
-          elt_type = ada_check_typedef (TYPE_TARGET_TYPE (elt_type));
+          idx = value_as_long(value_pos_atr(ind[i]));
+          if ((idx < lowerbound) || (idx > upperbound))
+            lim_warning(_("packed array index %ld out of bounds"), (long)idx);
+          bits = TYPE_FIELD_BITSIZE(elt_type, 0);
+          elt_total_bit_offset += (long)((idx - lowerbound) * bits);
+          elt_type = ada_check_typedef(TYPE_TARGET_TYPE(elt_type));
         }
+      else
+	{
+	  lim_warning(_("NULL elt_type"));
+	}
     }
-  elt_off = elt_total_bit_offset / HOST_CHAR_BIT;
-  bit_off = elt_total_bit_offset % HOST_CHAR_BIT;
+  elt_off = (elt_total_bit_offset / HOST_CHAR_BIT);
+  bit_off = (elt_total_bit_offset % HOST_CHAR_BIT);
 
-  v = ada_value_primitive_packed_val (arr, NULL, elt_off, bit_off,
-                                      bits, elt_type);
-  if (VALUE_LVAL (arr) == lval_internalvar)
-    VALUE_LVAL (v) = lval_internalvar_component;
+  v = ada_value_primitive_packed_val(arr, NULL, elt_off, bit_off,
+                                     bits, elt_type);
+  if (VALUE_LVAL(arr) == lval_internalvar)
+    VALUE_LVAL(v) = lval_internalvar_component;
   else
-    VALUE_LVAL (v) = VALUE_LVAL (arr);
+    VALUE_LVAL(v) = VALUE_LVAL(arr);
   return v;
 }
 
-/* Non-zero iff TYPE includes negative integer values.  */
-
+/* Non-zero iff TYPE includes negative integer values: */
 static int
-has_negatives (struct type *type)
+has_negatives(struct type *type)
 {
   switch (TYPE_CODE (type))
     {
@@ -1952,36 +1992,37 @@ ada_value_primitive_packed_val(struct value *obj, const gdb_byte *valaddr,
    TARGET, starting at bit offset TARG_OFFSET.  SOURCE and TARGET must
    not overlap.  */
 static void
-move_bits (gdb_byte *target, int targ_offset, const gdb_byte *source,
-	   int src_offset, int n)
+move_bits(gdb_byte *target, int targ_offset, const gdb_byte *source,
+	  int src_offset, int n)
 {
   unsigned int accum, mask;
   int accum_bits, chunk_size;
 
-  target += targ_offset / HOST_CHAR_BIT;
+  target += (targ_offset / HOST_CHAR_BIT);
   targ_offset %= HOST_CHAR_BIT;
-  source += src_offset / HOST_CHAR_BIT;
+  source += (src_offset / HOST_CHAR_BIT);
   src_offset %= HOST_CHAR_BIT;
   if (BITS_BIG_ENDIAN)
     {
-      accum = (unsigned char) *source;
+      accum = (unsigned char)*source;
       source += 1;
-      accum_bits = HOST_CHAR_BIT - src_offset;
+      accum_bits = (HOST_CHAR_BIT - src_offset);
 
       while (n > 0)
         {
           int unused_right;
-          accum = (accum << HOST_CHAR_BIT) + (unsigned char) *source;
+          accum = ((accum << HOST_CHAR_BIT) + (unsigned char)*source);
           accum_bits += HOST_CHAR_BIT;
           source += 1;
-          chunk_size = HOST_CHAR_BIT - targ_offset;
+          chunk_size = (HOST_CHAR_BIT - targ_offset);
           if (chunk_size > n)
             chunk_size = n;
-          unused_right = HOST_CHAR_BIT - (chunk_size + targ_offset);
-          mask = ((1 << chunk_size) - 1) << unused_right;
+          unused_right = (HOST_CHAR_BIT - (chunk_size + targ_offset));
+          mask = (((1U << chunk_size) - 1U) << unused_right);
           *target =
-            (*target & ~mask)
-            | ((accum >> (accum_bits - chunk_size - unused_right)) & mask);
+            (gdb_byte)((*target & ~mask)
+		       | ((accum >> (accum_bits - chunk_size - unused_right))
+			  & mask));
           n -= chunk_size;
           accum_bits -= chunk_size;
           target += 1;
@@ -1990,20 +2031,21 @@ move_bits (gdb_byte *target, int targ_offset, const gdb_byte *source,
     }
   else
     {
-      accum = (unsigned char) *source >> src_offset;
+      accum = ((unsigned char)*source >> src_offset);
       source += 1;
-      accum_bits = HOST_CHAR_BIT - src_offset;
+      accum_bits = (HOST_CHAR_BIT - src_offset);
 
       while (n > 0)
         {
-          accum = accum + ((unsigned char) *source << accum_bits);
+          accum = (accum + ((unsigned char)*source << accum_bits));
           accum_bits += HOST_CHAR_BIT;
           source += 1;
-          chunk_size = HOST_CHAR_BIT - targ_offset;
+          chunk_size = (HOST_CHAR_BIT - targ_offset);
           if (chunk_size > n)
             chunk_size = n;
-          mask = ((1 << chunk_size) - 1) << targ_offset;
-          *target = (*target & ~mask) | ((accum << targ_offset) & mask);
+          mask = (((1U << chunk_size) - 1U) << targ_offset);
+          *target = (gdb_byte)((*target & ~mask)
+			       | ((accum << targ_offset) & mask));
           n -= chunk_size;
           accum_bits -= chunk_size;
           accum >>= chunk_size;
@@ -2175,12 +2217,16 @@ ada_array_arity(struct type *type)
   gdb_assert(type != NULL);
   if (TYPE_CODE(type) == TYPE_CODE_STRUCT)
     return desc_arity(desc_bounds_type(type));
+  else if (TYPE_MAIN_TYPE(type) != NULL)
+    {
+      while ((type != NULL) && (TYPE_CODE(type) == TYPE_CODE_ARRAY))
+	{
+	  arity += 1;
+	  type = ada_check_typedef(TYPE_TARGET_TYPE(type));
+	}
+    }
   else
-    while (TYPE_CODE(type) == TYPE_CODE_ARRAY)
-      {
-        arity += 1;
-        type = ada_check_typedef(TYPE_TARGET_TYPE(type));
-      }
+    arity += 0;
 
   return arity;
 }
@@ -2302,32 +2348,35 @@ ada_array_bound_from_type(struct type *arr_type, int n, int which,
 
       while (n > 1)
         {
-          type = TYPE_TARGET_TYPE (type);
+          type = TYPE_TARGET_TYPE(type);
           n -= 1;
         }
 
-      range_type = TYPE_INDEX_TYPE (type);
-      index_type = TYPE_TARGET_TYPE (range_type);
-      if (TYPE_CODE (index_type) == TYPE_CODE_UNDEF)
+      range_type = TYPE_INDEX_TYPE(type);
+      gdb_assert(range_type != NULL);
+      index_type = TYPE_TARGET_TYPE(range_type);
+      gdb_assert(index_type != NULL);
+      if (TYPE_CODE(index_type) == TYPE_CODE_UNDEF)
         index_type = builtin_type_long;
       if (typep != NULL)
         *typep = index_type;
       return
-        (LONGEST) (which == 0
-                   ? TYPE_LOW_BOUND (range_type)
-                   : TYPE_HIGH_BOUND (range_type));
+        (LONGEST)((which == 0)
+                  ? TYPE_LOW_BOUND(range_type)
+                  : TYPE_HIGH_BOUND(range_type));
     }
   else
     {
       struct type *index_type =
-        to_fixed_range_type (TYPE_FIELD_NAME (index_type_desc, n - 1),
-                             NULL, TYPE_OBJFILE (arr_type));
+        to_fixed_range_type(TYPE_FIELD_NAME(index_type_desc, (n - 1)),
+                            NULL, TYPE_OBJFILE(arr_type));
+      gdb_assert(index_type != NULL);
       if (typep != NULL)
-        *typep = TYPE_TARGET_TYPE (index_type);
+        *typep = TYPE_TARGET_TYPE(index_type);
       return
-        (LONGEST) (which == 0
-                   ? TYPE_LOW_BOUND (index_type)
-                   : TYPE_HIGH_BOUND (index_type));
+        (LONGEST)((which == 0)
+                  ? TYPE_LOW_BOUND(index_type)
+                  : TYPE_HIGH_BOUND(index_type));
     }
 }
 
@@ -2560,7 +2609,8 @@ resolve_subexp (struct expression **expp, int *pos, int deprocedure_p,
             break;
 
           case STRUCTOP_STRUCT:
-            *pos += 4 + BYTES_TO_EXP_ELEM(exp->elts[pc + 1].longconst + 1);
+            *pos +=
+	      (int)(4 + BYTES_TO_EXP_ELEM(exp->elts[pc + 1].longconst + 1));
             nargs = 1;
             break;
 
@@ -3532,21 +3582,24 @@ ada_simple_renamed_entity(struct symbol *sym)
    returning an lvalue whose VALUE_ADDRESS points to the copy.  */
 
 static struct value *
-ensure_lval (struct value *val, CORE_ADDR *sp)
+ensure_lval(struct value *val, CORE_ADDR *sp)
 {
-  if (! VALUE_LVAL (val))
+  if (!VALUE_LVAL(val))
     {
-      int len = TYPE_LENGTH (ada_check_typedef (value_type (val)));
+      struct type *the_checked_type = ada_check_typedef(value_type(val));
+      int len;
+      gdb_assert(the_checked_type != NULL);
+      len = TYPE_LENGTH(the_checked_type);
 
       /* The following is taken from the structure-return code in
 	 call_function_by_hand. FIXME: Therefore, some refactoring seems
 	 indicated. */
-      if (INNER_THAN (1, 2))
+      if (INNER_THAN(1, 2))
 	{
 	  /* Stack grows downward.  Align SP and VALUE_ADDRESS (val) after
 	     reserving sufficient space. */
 	  *sp -= len;
-	  if (gdbarch_frame_align_p (current_gdbarch))
+	  if (gdbarch_frame_align_p(current_gdbarch))
 	    *sp = gdbarch_frame_align (current_gdbarch, *sp);
 	  VALUE_ADDRESS (val) = *sp;
 	}
@@ -3596,10 +3649,11 @@ convert_actual(struct value *actual, struct type *formal_type0,
         return desc_data(actual);
       else if (TYPE_CODE(actual_type) != TYPE_CODE_PTR)
         {
-          if (VALUE_LVAL(actual) != lval_memory)
+          if ((VALUE_LVAL(actual) != lval_memory) && (actual_type != NULL))
             {
               struct value *val;
               actual_type = ada_check_typedef(value_type(actual));
+	      gdb_assert(actual_type != NULL);
               val = allocate_value(actual_type);
               memcpy((char *)value_contents_raw(val),
                      (char *)value_contents(actual),
@@ -5120,32 +5174,31 @@ struct tag_args
    ada_tag_name_1.  */
 
 static int
-ada_tag_name_1 (void *args0)
+ada_tag_name_1(void *args0)
 {
-  struct tag_args *args = (struct tag_args *) args0;
+  struct tag_args *args = (struct tag_args *)args0;
   static char name[1024];
   char *p;
   struct value *val;
   args->name = NULL;
-  val = ada_value_struct_elt (args->tag, "tsd", NULL);
+  val = ada_value_struct_elt(args->tag, "tsd", NULL);
   if (val == NULL)
     return 0;
-  val = ada_value_struct_elt (val, "expanded_name", NULL);
+  val = ada_value_struct_elt(val, "expanded_name", NULL);
   if (val == NULL)
     return 0;
-  read_memory_string (value_as_address (val), name, sizeof (name) - 1);
+  read_memory_string(value_as_address(val), name, (sizeof(name) - 1UL));
   for (p = name; *p != '\0'; p += 1)
-    if (isalpha (*p))
-      *p = tolower (*p);
+    if (isalpha(*p))
+      *p = (char)tolower(*p);
   args->name = name;
   return 0;
 }
 
 /* The type name of the dynamic type denoted by the 'tag value TAG, as
  * a C string.  */
-
 const char *
-ada_tag_name (struct value *tag)
+ada_tag_name(struct value *tag)
 {
   struct tag_args args;
   int err_ret = 0;
@@ -5467,18 +5520,18 @@ find_struct_field(const char *name, struct type *type, int offset,
                                  bit_size_p))
             return 1;
         }
-      else if (ada_is_variant_part (type, i))
+      else if (ada_is_variant_part(type, i))
         {
           int j;
-          struct type *field_type = ada_check_typedef (TYPE_FIELD_TYPE (type, i));
-
-          for (j = TYPE_NFIELDS (field_type) - 1; j >= 0; j -= 1)
+          struct type *field_type = ada_check_typedef(TYPE_FIELD_TYPE(type, i));
+	  gdb_assert(field_type != NULL);
+          for (j = (TYPE_NFIELDS(field_type) - 1); j >= 0; j -= 1)
             {
-              if (find_struct_field (name, TYPE_FIELD_TYPE (field_type, j),
-                                     fld_offset
-                                     + TYPE_FIELD_BITPOS (field_type, j) / 8,
-                                     field_type_p, byte_offset_p,
-                                     bit_offset_p, bit_size_p))
+              if (find_struct_field(name, TYPE_FIELD_TYPE(field_type, j),
+                                    (fld_offset
+				     + (TYPE_FIELD_BITPOS(field_type, j) / 8)),
+                                    field_type_p, byte_offset_p,
+                                    bit_offset_p, bit_size_p))
                 return 1;
             }
         }
@@ -5522,11 +5575,12 @@ ada_search_struct_field(const char *name, struct value *arg, int offset,
         {
           int j;
           struct type *field_type = ada_check_typedef(TYPE_FIELD_TYPE(type, i));
-          int var_offset = offset + TYPE_FIELD_BITPOS (type, i) / 8;
+          int var_offset = (offset + (TYPE_FIELD_BITPOS(type, i) / 8));
 
-          for (j = TYPE_NFIELDS (field_type) - 1; j >= 0; j -= 1)
+	  gdb_assert(field_type != NULL);
+          for (j = (TYPE_NFIELDS(field_type) - 1); j >= 0; j -= 1)
             {
-              struct value *v = ada_search_struct_field /* Force line break.  */
+              struct value *v = ada_search_struct_field /* Force line break */
                 (name, arg,
                  var_offset + TYPE_FIELD_BITPOS (field_type, j) / 8,
                  TYPE_FIELD_TYPE (field_type, j));
@@ -6054,10 +6108,10 @@ ada_find_parallel_type(struct type *the_type, const char *suffix)
 
   len = strlen(atypename);
 
-  GROW_VECT(name, name_len, len + strlen(suffix) + 1UL, char);
-
+  GROW_VECT(name, name_len, (len + strlen(suffix) + 1UL), char);
+  gdb_assert(name != NULL);
   strcpy(name, atypename);
-  strcpy(name + len, suffix);
+  strcpy((name + len), suffix);
 
   return ada_find_any_type(name);
 }
@@ -6148,12 +6202,12 @@ empty_record(struct objfile *objfile)
    byte-aligned.  */
 
 struct type *
-ada_template_to_fixed_record_type_1 (struct type *type,
-				     const gdb_byte *valaddr,
-                                     CORE_ADDR address, struct value *dval0,
-                                     int keep_dynamic_fields)
+ada_template_to_fixed_record_type_1(struct type *type,
+				    const gdb_byte *valaddr,
+                                    CORE_ADDR address, struct value *dval0,
+                                    int keep_dynamic_fields)
 {
-  struct value *mark = value_mark ();
+  struct value *mark = value_mark();
   struct value *dval;
   struct type *rtype;
   int nfields, bit_len;
@@ -6166,26 +6220,26 @@ ada_template_to_fixed_record_type_1 (struct type *type,
      to be processed: unless keep_dynamic_fields, this includes only
      fields whose position and length are static will be processed.  */
   if (keep_dynamic_fields)
-    nfields = TYPE_NFIELDS (type);
+    nfields = TYPE_NFIELDS(type);
   else
     {
       nfields = 0;
-      while (nfields < TYPE_NFIELDS (type)
-             && !ada_is_variant_part (type, nfields)
-             && !is_dynamic_field (type, nfields))
+      while ((nfields < TYPE_NFIELDS(type))
+             && !ada_is_variant_part(type, nfields)
+             && !is_dynamic_field(type, nfields))
         nfields++;
     }
 
-  rtype = alloc_type (TYPE_OBJFILE (type));
-  TYPE_CODE (rtype) = TYPE_CODE_STRUCT;
-  INIT_CPLUS_SPECIFIC (rtype);
-  TYPE_NFIELDS (rtype) = nfields;
-  TYPE_FIELDS (rtype) = (struct field *)
-    TYPE_ALLOC (rtype, nfields * sizeof (struct field));
-  memset (TYPE_FIELDS (rtype), 0, sizeof (struct field) * nfields);
-  TYPE_NAME (rtype) = ada_type_name (type);
-  TYPE_TAG_NAME (rtype) = NULL;
-  TYPE_FLAGS (rtype) |= TYPE_FLAG_FIXED_INSTANCE;
+  rtype = alloc_type(TYPE_OBJFILE(type));
+  TYPE_CODE(rtype) = TYPE_CODE_STRUCT;
+  INIT_CPLUS_SPECIFIC(rtype);
+  TYPE_NFIELDS(rtype) = (short)nfields;
+  TYPE_FIELDS(rtype) = ((struct field *)
+			TYPE_ALLOC(rtype, (nfields * sizeof(struct field))));
+  memset(TYPE_FIELDS(rtype), 0, (sizeof(struct field) * nfields));
+  TYPE_NAME(rtype) = ada_type_name(type);
+  TYPE_TAG_NAME(rtype) = NULL;
+  TYPE_FLAGS(rtype) |= TYPE_FLAG_FIXED_INSTANCE;
 
   off = 0;
   bit_len = 0;
@@ -6193,49 +6247,50 @@ ada_template_to_fixed_record_type_1 (struct type *type,
 
   for (f = 0; f < nfields; f += 1)
     {
-      off = align_value (off, field_alignment (type, f))
-	+ TYPE_FIELD_BITPOS (type, f);
-      TYPE_FIELD_BITPOS_ASSIGN (rtype, f) = off;
-      TYPE_FIELD_BITSIZE (rtype, f) = 0;
+      off = (align_value(off, field_alignment(type, f))
+	     + TYPE_FIELD_BITPOS(type, f));
+      TYPE_FIELD_BITPOS_ASSIGN(rtype, f) = off;
+      TYPE_FIELD_BITSIZE(rtype, f) = 0;
 
-      if (ada_is_variant_part (type, f))
+      if (ada_is_variant_part(type, f))
         {
           variant_field = f;
           fld_bit_len = bit_incr = 0;
         }
-      else if (is_dynamic_field (type, f))
+      else if (is_dynamic_field(type, f))
         {
           if (dval0 == NULL)
-            dval = value_from_contents_and_address (rtype, valaddr, address);
+            dval = value_from_contents_and_address(rtype, valaddr, address);
           else
             dval = dval0;
 
-          TYPE_FIELD_TYPE (rtype, f) =
-            ada_to_fixed_type
-            (ada_get_base_type
-             (TYPE_TARGET_TYPE (TYPE_FIELD_TYPE (type, f))),
-             cond_offset_host (valaddr, off / TARGET_CHAR_BIT),
-             cond_offset_target (address, off / TARGET_CHAR_BIT), dval);
-          TYPE_FIELD_NAME (rtype, f) = TYPE_FIELD_NAME (type, f);
+          TYPE_FIELD_TYPE(rtype, f) =
+            ada_to_fixed_type(ada_get_base_type(TYPE_TARGET_TYPE(TYPE_FIELD_TYPE(type, f))),
+			      cond_offset_host(valaddr,
+					       (off / TARGET_CHAR_BIT)),
+			      cond_offset_target(address,
+						 (off / TARGET_CHAR_BIT)),
+			      dval);
+          TYPE_FIELD_NAME(rtype, f) = TYPE_FIELD_NAME(type, f);
           bit_incr = fld_bit_len =
-            TYPE_LENGTH (TYPE_FIELD_TYPE (rtype, f)) * TARGET_CHAR_BIT;
+            (TYPE_LENGTH(TYPE_FIELD_TYPE(rtype, f)) * TARGET_CHAR_BIT);
         }
       else
         {
-          TYPE_FIELD_TYPE (rtype, f) = TYPE_FIELD_TYPE (type, f);
-          TYPE_FIELD_NAME (rtype, f) = TYPE_FIELD_NAME (type, f);
-          if (TYPE_FIELD_BITSIZE (type, f) > 0)
+          TYPE_FIELD_TYPE(rtype, f) = TYPE_FIELD_TYPE(type, f);
+          TYPE_FIELD_NAME(rtype, f) = TYPE_FIELD_NAME(type, f);
+          if (TYPE_FIELD_BITSIZE(type, f) > 0)
             bit_incr = fld_bit_len =
-              TYPE_FIELD_BITSIZE (rtype, f) = TYPE_FIELD_BITSIZE (type, f);
+              TYPE_FIELD_BITSIZE(rtype, f) = TYPE_FIELD_BITSIZE(type, f);
           else
             bit_incr = fld_bit_len =
-              TYPE_LENGTH (TYPE_FIELD_TYPE (type, f)) * TARGET_CHAR_BIT;
+              (TYPE_LENGTH(TYPE_FIELD_TYPE(type, f)) * TARGET_CHAR_BIT);
         }
-      if (off + fld_bit_len > bit_len)
-        bit_len = off + fld_bit_len;
+      if ((off + fld_bit_len) > bit_len)
+        bit_len = (off + fld_bit_len);
       off += bit_incr;
-      TYPE_LENGTH_ASSIGN (rtype) =
-        align_value (bit_len, TARGET_CHAR_BIT) / TARGET_CHAR_BIT;
+      TYPE_LENGTH_ASSIGN(rtype) =
+        (align_value(bit_len, TARGET_CHAR_BIT) / TARGET_CHAR_BIT);
     }
 
   /* We handle the variant part, if any, at the end because of certain
@@ -6246,23 +6301,26 @@ ada_template_to_fixed_record_type_1 (struct type *type,
     {
       struct type *branch_type;
 
-      off = TYPE_FIELD_BITPOS (rtype, variant_field);
+      off = TYPE_FIELD_BITPOS(rtype, variant_field);
 
       if (dval0 == NULL)
-        dval = value_from_contents_and_address (rtype, valaddr, address);
+        dval = value_from_contents_and_address(rtype, valaddr, address);
       else
         dval = dval0;
 
       branch_type =
-        to_fixed_variant_branch_type
-        (TYPE_FIELD_TYPE (type, variant_field),
-         cond_offset_host (valaddr, off / TARGET_CHAR_BIT),
-         cond_offset_target (address, off / TARGET_CHAR_BIT), dval);
+        to_fixed_variant_branch_type(TYPE_FIELD_TYPE(type, variant_field),
+				     cond_offset_host(valaddr,
+						      (off / TARGET_CHAR_BIT)),
+				     cond_offset_target(address,
+							((off + 0)
+							 / TARGET_CHAR_BIT)),
+				     dval);
       if (branch_type == NULL)
         {
           for (f = (variant_field + 1); f < TYPE_NFIELDS(rtype); f += 1)
             TYPE_FIELDS(rtype)[f - 1] = TYPE_FIELDS(rtype)[f];
-          TYPE_NFIELDS(rtype) -= 1;
+          TYPE_NFIELDS(rtype) = (short)(TYPE_NFIELDS(rtype) - (short)1);
         }
       else
         {
@@ -6326,44 +6384,45 @@ template_to_fixed_record_type (struct type *type, const gdb_byte *valaddr,
    template type.  */
 
 static struct type *
-template_to_static_fixed_type (struct type *type0)
+template_to_static_fixed_type(struct type *type0)
 {
   struct type *type;
   int nfields;
   int f;
 
-  if (TYPE_TARGET_TYPE (type0) != NULL)
-    return TYPE_TARGET_TYPE (type0);
+  if (TYPE_TARGET_TYPE(type0) != NULL)
+    return TYPE_TARGET_TYPE(type0);
 
-  nfields = TYPE_NFIELDS (type0);
+  nfields = TYPE_NFIELDS(type0);
   type = type0;
 
   for (f = 0; f < nfields; f += 1)
     {
-      struct type *field_type = ada_check_typedef (TYPE_FIELD_TYPE (type0, f));
+      struct type *field_type = ada_check_typedef(TYPE_FIELD_TYPE(type0, f));
       struct type *new_type;
 
-      if (is_dynamic_field (type0, f))
-        new_type = to_static_fixed_type (TYPE_TARGET_TYPE (field_type));
+      if (is_dynamic_field(type0, f))
+        new_type = to_static_fixed_type(TYPE_TARGET_TYPE(field_type));
       else
-        new_type = to_static_fixed_type (field_type);
-      if (type == type0 && new_type != field_type)
+        new_type = to_static_fixed_type(field_type);
+      if ((type == type0) && (new_type != field_type))
         {
-          TYPE_TARGET_TYPE (type0) = type = alloc_type (TYPE_OBJFILE (type0));
-          TYPE_CODE (type) = TYPE_CODE (type0);
-          INIT_CPLUS_SPECIFIC (type);
-          TYPE_NFIELDS (type) = nfields;
-          TYPE_FIELDS (type) = (struct field *)
-            TYPE_ALLOC (type, nfields * sizeof (struct field));
-          memcpy (TYPE_FIELDS (type), TYPE_FIELDS (type0),
-                  sizeof (struct field) * nfields);
-          TYPE_NAME (type) = ada_type_name (type0);
-          TYPE_TAG_NAME (type) = NULL;
-          TYPE_FLAGS (type) |= TYPE_FLAG_FIXED_INSTANCE;
-          TYPE_LENGTH_ASSIGN (type) = 0;
+          TYPE_TARGET_TYPE(type0) = type = alloc_type(TYPE_OBJFILE(type0));
+          TYPE_CODE(type) = TYPE_CODE(type0);
+          INIT_CPLUS_SPECIFIC(type);
+          TYPE_NFIELDS(type) = (short)nfields;
+          TYPE_FIELDS(type) = ((struct field *)
+			       TYPE_ALLOC(type,
+					  (nfields * sizeof(struct field))));
+          memcpy(TYPE_FIELDS(type), TYPE_FIELDS(type0),
+                 (sizeof(struct field) * nfields));
+          TYPE_NAME(type) = ada_type_name(type0);
+          TYPE_TAG_NAME(type) = NULL;
+          TYPE_FLAGS(type) |= TYPE_FLAG_FIXED_INSTANCE;
+          TYPE_LENGTH_ASSIGN(type) = 0;
         }
-      TYPE_FIELD_TYPE (type, f) = new_type;
-      TYPE_FIELD_NAME (type, f) = TYPE_FIELD_NAME (type0, f);
+      TYPE_FIELD_TYPE(type, f) = new_type;
+      TYPE_FIELD_NAME(type, f) = TYPE_FIELD_NAME(type0, f);
     }
   return type;
 }
@@ -6422,7 +6481,7 @@ to_record_with_fixed_variant_part(struct type *type, const gdb_byte *valaddr,
       int f;
       for (f = (variant_field + 1); f < nfields; f += 1)
         TYPE_FIELDS(rtype)[f - 1] = TYPE_FIELDS(rtype)[f];
-      TYPE_NFIELDS(rtype) -= 1;
+      TYPE_NFIELDS(rtype) = (short)(TYPE_NFIELDS(rtype) - (short)1);
     }
   else
     {
@@ -6598,11 +6657,12 @@ to_fixed_array_type(struct type *type0, struct value *dval,
    ADDRESS or in VALADDR contains these discriminants.  */
 
 struct type *
-ada_to_fixed_type (struct type *type, const gdb_byte *valaddr,
-                   CORE_ADDR address, struct value *dval)
+ada_to_fixed_type(struct type *type, const gdb_byte *valaddr,
+                  CORE_ADDR address, struct value *dval)
 {
-  type = ada_check_typedef (type);
-  switch (TYPE_CODE (type))
+  type = ada_check_typedef(type);
+  gdb_assert(type != NULL);
+  switch (TYPE_CODE(type))
     {
     default:
       return type;
@@ -8197,8 +8257,9 @@ scan_discrim_bound(char *str, int k, struct value *dval, LONGEST *px,
     {
       GROW_VECT(bound_buffer, bound_buffer_len,
                 (size_t)(pend - (str + k) + 1UL), char);
+      gdb_assert(bound_buffer != NULL);
       bound = bound_buffer;
-      strncpy(bound_buffer, str + k, pend - (str + k));
+      strncpy(bound_buffer, (str + k), (pend - (str + k)));
       bound[pend - (str + k)] = '\0';
       k = pend - str;
     }
@@ -8298,6 +8359,7 @@ to_fixed_range_type(const char *name, struct value *dval,
       int n;
 
       GROW_VECT(name_buf, name_len, (prefix_len + 5), char);
+      gdb_assert(name_buf != NULL);
       strncpy(name_buf, name, prefix_len);
       name_buf[prefix_len] = '\0';
 

@@ -615,6 +615,7 @@ varobj_evaluate_type(struct expression *exp, struct value **value)
 static int
 is_root_p(struct varobj *var)
 {
+  gdb_assert(var != NULL);
   return (var->root->rootvar == var);
 }
 /* APPLE LOCAL end is_root_p */
@@ -1375,8 +1376,10 @@ varobj_get_type_internal(struct varobj *var, int check_typedef_p)
   if (CPLUS_FAKE_CHILD(var))
     return NULL;
 
-  if (var->type == NULL)
+  if ((var != NULL) && (var->type == NULL))
     return savestring("<error getting type>", strlen("<error getting type>"));
+  else if (var == NULL)
+    return savestring("<error getting var>", strlen("<error getting var>"));
 
   /* To print the type, we simply create a zero ``struct value *'' and
      cast it to our type. We then typeprint this variable. */
@@ -2163,7 +2166,7 @@ save_child_in_parent (struct varobj *parent, struct varobj *child)
 /* FIXME: This should be a generic remove from list */
 /* Remove the CHILD from the PARENT's list of children. */
 static void
-remove_child_from_parent (struct varobj *parent, struct varobj *child)
+remove_child_from_parent(struct varobj *parent, struct varobj *child)
 {
   struct varobj_child *vc, *prev;
 
@@ -2177,11 +2180,12 @@ remove_child_from_parent (struct varobj *parent, struct varobj *child)
       vc = vc->next;
     }
 
+  gdb_assert(vc != NULL);
+
   if (prev == NULL)
     parent->children = vc->next;
   else
     prev->next = vc->next;
-
 }
 
 
@@ -2342,10 +2346,12 @@ get_type(struct varobj *var)
 {
   struct type *type;
 
-  if (varobj_use_dynamic_type && (var->dynamic_type != NULL))
+  if (varobj_use_dynamic_type && (var != NULL) && (var->dynamic_type != NULL))
     type = var->dynamic_type;
-  else
+  else if (var != NULL)
     type = var->type;
+  else
+    type = NULL;
 
   if (type != NULL)
     type = check_typedef(type);
@@ -2681,6 +2687,7 @@ path_expr_of_root(struct varobj *var)
       int root_is_ptr;
 
       root_type = get_type_deref(var, &root_is_ptr);
+      gdb_assert(root_type != NULL);
       if (root_is_ptr)
 	{
 	  const char *format = "(('%s' *) (%s))";
@@ -2718,14 +2725,13 @@ static char *
 path_expr_of_variable(struct varobj *var)
 {
   /* APPLE LOCAL begin cast varobj root to dynamic type, if appropriate: */
-  if ((var->path_expr != NULL)
-      && (! is_root_p(var)))
+  if ((var != NULL) && (var->path_expr != NULL) && (!is_root_p(var)))
     return var->path_expr;
   /* APPLE LOCAL is_root_p */
   else if (is_root_p(var))
     return path_expr_of_root(var);
   /* APPLE LOCAL end cast varobj root to dynamic type, if appropriate: */
-  else if (var->elide_in_expr)
+  else if ((var != NULL) && var->elide_in_expr)
     {
       if (CPLUS_FAKE_CHILD(var->parent))
 	/* FIXME: Note we won't get here for now, since I don't set
@@ -2736,8 +2742,10 @@ path_expr_of_variable(struct varobj *var)
 	var->path_expr = xstrdup(path_expr_of_variable(var->parent));
       return var->path_expr;
     }
-  else
+  else if (var != NULL)
     return path_expr_of_child(var->parent, var->index);
+  else
+    return NULL;
 }
 /* APPLE LOCAL end */
 
@@ -3130,26 +3138,27 @@ c_number_of_children (struct varobj *var)
   struct type *target;
   int children;
 
-  type = get_type (var);
+  type = get_type(var);
   if (type == NULL)
     return -1;
 
-  target = get_target_type (type);
+  target = get_target_type(type);
+  gdb_assert(target != (struct type *)NULL);
   children = 0;
 
-  switch (TYPE_CODE (type))
+  switch (TYPE_CODE(type))
     {
     case TYPE_CODE_ARRAY:
-      if (TYPE_LENGTH (type) > 0 && TYPE_LENGTH (target) > 0
-	  && TYPE_ARRAY_UPPER_BOUND_TYPE (type) != BOUND_CANNOT_BE_DETERMINED)
-	children = TYPE_LENGTH (type) / TYPE_LENGTH (target);
+      if ((TYPE_LENGTH(type) > 0) && (TYPE_LENGTH(target) > 0)
+	  && (TYPE_ARRAY_UPPER_BOUND_TYPE(type) != BOUND_CANNOT_BE_DETERMINED))
+	children = (TYPE_LENGTH(type) / TYPE_LENGTH(target));
       else
 	children = -1;
       break;
 
     case TYPE_CODE_STRUCT:
     case TYPE_CODE_UNION:
-      children = TYPE_NFIELDS (type);
+      children = TYPE_NFIELDS(type);
       break;
 
     case TYPE_CODE_PTR:
@@ -3163,11 +3172,11 @@ c_number_of_children (struct varobj *var)
          properly identify it: char* has TYPE_CODE == TYPE_CODE_INT and
          TYPE_NAME == "char" */
 
-      switch (TYPE_CODE (target))
+      switch (TYPE_CODE(target))
 	{
 	case TYPE_CODE_STRUCT:
 	case TYPE_CODE_UNION:
-	  children = TYPE_NFIELDS (target);
+	  children = TYPE_NFIELDS(target);
 	  break;
 
 	case TYPE_CODE_FUNC:
@@ -3202,6 +3211,7 @@ c_make_name_of_child(struct varobj *parent, int index)
   
   gdb_assert(type != NULL);
   gdb_assert(TYPE_MAIN_TYPE(type) != NULL);
+  gdb_assert(target != (struct type *)NULL);
 
   switch (TYPE_CODE(type))
     {
@@ -3483,7 +3493,7 @@ varobj_value_struct_elt_by_index(struct varobj *parent, volatile int iindex,
 				 struct value **ret_val)
 {
   struct type *t;
-  struct value *volatile value;
+  struct value *volatile value = NULL;
   struct value *volatile parent_value;
   int type_index;
   volatile struct gdb_exception e;
@@ -3549,7 +3559,7 @@ varobj_value_struct_elt_by_index(struct varobj *parent, volatile int iindex,
 static int
 varobj_get_type_index_from_fake_child(struct varobj *parent, int index)
 {
-  struct type* type;
+  struct type *type;
   int type_index = -1;
 
   if (!CPLUS_FAKE_CHILD(parent))
@@ -3603,13 +3613,15 @@ varobj_get_type_index_from_fake_child(struct varobj *parent, int index)
     {
       while (index >= 0)
 	{
-	  if (TYPE_VPTR_BASETYPE (type) == type
-	      && type_index == TYPE_VPTR_FIELDNO (type))
+	  if ((TYPE_VPTR_BASETYPE(type) == type)
+	      && (type_index == TYPE_VPTR_FIELDNO(type)))
 	    ; /* ignore vptr */
-	  else if (TYPE_FIELD_STATIC (type, type_index))
+	  else if (TYPE_FIELD_STATIC(type, type_index))
 	    ; /* APPLE LOCAL: ignore static fields.  */
-	  else if (!TYPE_FIELD_PRIVATE (type, type_index) &&
-		   !TYPE_FIELD_PROTECTED (type, type_index))
+	  else if ((type != NULL) && (TYPE_CPLUS_SPECIFIC_NONULL(type) != NULL)
+		   && (TYPE_CPLUS_SPECIFIC_NONULL(type)->private_field_bits != NULL)
+		   && (!TYPE_FIELD_PRIVATE(type, type_index)
+		       && !TYPE_FIELD_PROTECTED(type, type_index)))
 	    --index;
 	  ++type_index;
 	}
@@ -3618,8 +3630,9 @@ varobj_get_type_index_from_fake_child(struct varobj *parent, int index)
   return type_index;
 }
 
+/* */
 static struct value *
-c_value_of_child (struct varobj *parent, int index, int *lookup_dynamic_type)
+c_value_of_child(struct varobj *parent, int index, int *lookup_dynamic_type)
 {
   struct value *value;
   struct value *temp;
@@ -3649,14 +3662,14 @@ c_value_of_child (struct varobj *parent, int index, int *lookup_dynamic_type)
 	}
     }
 
-
   type = get_type(parent);
   target = get_target_type(type);
+  gdb_assert(target != NULL);
 
   child = child_exists(parent, index);
 
   if (child == NULL)
-    error("c_value_of_child: called with NULL child");
+    error(_("c_value_of_child: called with NULL child"));
 
   name = name_of_variable(child);
 
@@ -3664,23 +3677,24 @@ c_value_of_child (struct varobj *parent, int index, int *lookup_dynamic_type)
     ; /* ??? */
   }
 
+  gdb_assert(parent != NULL);
   temp = parent->value;
   value = NULL;
 
-  if (temp != NULL)
+  if ((temp != NULL) && (type != NULL))
     {
-      switch (TYPE_CODE (type))
+      switch (TYPE_CODE(type))
 	{
 	case TYPE_CODE_ARRAY:
 #if 0
 	  /* This breaks if the array lives in a (vector) register. */
-	  value = value_slice (temp, index, 1);
-	  temp = value_coerce_array (value);
-	  gdb_value_ind (temp, &value);
+	  value = value_slice(temp, index, 1);
+	  temp = value_coerce_array(value);
+	  gdb_value_ind(temp, &value);
 #else
-	  indval = value_from_longest (builtin_type_int, (LONGEST) index);
-	  gdb_value_subscript (temp, indval, &value);
-#endif
+	  indval = value_from_longest(builtin_type_int, (LONGEST)index);
+	  gdb_value_subscript(temp, indval, &value);
+#endif /* 0 */
 	  break;
 
 	case TYPE_CODE_STRUCT:
@@ -3694,7 +3708,7 @@ c_value_of_child (struct varobj *parent, int index, int *lookup_dynamic_type)
 
 	case TYPE_CODE_PTR:
 	case TYPE_CODE_REF:
-	  switch (TYPE_CODE (target))
+	  switch (TYPE_CODE(target))
 	    {
 	    case TYPE_CODE_STRUCT:
 	    case TYPE_CODE_UNION:
@@ -3735,13 +3749,18 @@ c_value_of_child (struct varobj *parent, int index, int *lookup_dynamic_type)
 	  break;
 	}
     }
+  else if (type == NULL)
+    {
+      warning(_("%s: NULL type.\n"), __FILE__);
+    }
 
   if (value != NULL)
-    release_value (value);
+    release_value(value);
 
   return value;
 }
 
+/* */
 static struct type *
 c_type_of_child(struct varobj *parent, int index)
 {
@@ -3754,7 +3773,7 @@ c_type_of_child(struct varobj *parent, int index)
 
   child = child_exists(parent, index);
   if (child == NULL)
-    error("c_type_of_child: called with a NULL child.");
+    error(_("c_type_of_child: called with a NULL child."));
 
   name = name_of_variable(child);
 
@@ -3762,6 +3781,7 @@ c_type_of_child(struct varobj *parent, int index)
     ; /* ??? */
   }
 
+  gdb_assert(parent_type != (struct type *)NULL);
   switch (TYPE_CODE(parent_type))
     {
     case TYPE_CODE_ARRAY:
@@ -4074,18 +4094,21 @@ cplus_real_type_index_for_fake_child_index(struct type *type,
 	  }
 	break;
       case v_private:
-        for (i = TYPE_N_BASECLASSES (type); i < TYPE_NFIELDS (type); i++)
+        for (i = TYPE_N_BASECLASSES(type); i < TYPE_NFIELDS(type); i++)
           {
             /* If we have a virtual table pointer, omit it. */
-            if (TYPE_VPTR_BASETYPE (type) == type
-	        && TYPE_VPTR_FIELDNO (type) == i)
+            if ((TYPE_VPTR_BASETYPE(type) == type)
+	        && (TYPE_VPTR_FIELDNO(type) == i))
 	      continue;
 	    /* APPLE LOCAL: Don't include static members in the
 	       object printing.  */
-	    if (TYPE_FIELD_STATIC (type, i))
+	    if (TYPE_FIELD_STATIC(type, i))
 	      continue;
 
-            if (TYPE_FIELD_PRIVATE (type, i))
+	    gdb_assert(type != NULL);
+	    gdb_assert(TYPE_CPLUS_SPECIFIC_NONULL(type) != NULL);
+	    gdb_assert(TYPE_CPLUS_SPECIFIC_NONULL(type)->private_field_bits != NULL);
+            if (TYPE_FIELD_PRIVATE(type, i))
               {
                 if (num_found == num)
                   {
@@ -4529,13 +4552,14 @@ cplus_type_of_child (struct varobj *parent, int index)
   struct type *type, *t;
   int is_ptr;
 
-  if (CPLUS_FAKE_CHILD (parent))
-    t = get_type_deref (parent->parent, &is_ptr);
+  if (CPLUS_FAKE_CHILD(parent))
+    t = get_type_deref(parent->parent, &is_ptr);
   else
-    t = get_type_deref (parent, &is_ptr);
+    t = get_type_deref(parent, &is_ptr);
 
-  type = NULL;
-  switch (TYPE_CODE (t))
+  type = (struct type *)NULL;
+  gdb_assert(t != (struct type *)NULL);
+  switch (TYPE_CODE(t))
     {
     case TYPE_CODE_STRUCT:
     case TYPE_CODE_UNION:
@@ -4581,25 +4605,30 @@ cplus_type_of_child (struct varobj *parent, int index)
   return type;
 }
 
+/* */
 static int
-cplus_variable_editable (struct varobj *var)
+cplus_variable_editable(struct varobj *var)
 {
-  if (CPLUS_FAKE_CHILD (var))
+  if (CPLUS_FAKE_CHILD(var))
     return 0;
 
-  return c_variable_editable (var);
+  gdb_assert(var != (struct varobj *)NULL);
+  
+  return c_variable_editable(var);
 }
 
+/* */
 static char *
-cplus_value_of_variable (struct varobj *var)
+cplus_value_of_variable(struct varobj *var)
 {
-
   /* If we have one of our special types, don't print out
      any value. */
-  if (CPLUS_FAKE_CHILD (var))
-    return xstrdup ("");
+  if (CPLUS_FAKE_CHILD(var))
+    return xstrdup("");
 
-  return c_value_of_variable (var);
+  gdb_assert(var != (struct varobj *)NULL);
+
+  return c_value_of_variable(var);
 }
 
 /* Java */

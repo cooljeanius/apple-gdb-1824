@@ -351,6 +351,7 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
 
   if (pid == 0)
     {
+      int setgid_ret;
       if (debug_fork)
 	sleep(debug_fork);
 
@@ -392,7 +393,13 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
       /* APPLE LOCAL: gdb is setgid to give it extra special debuggizer
          powers; we need to drop those privileges before executing the
          inferior process.  */
-      setgid(getgid());
+      setgid_ret = setgid(getgid());
+      
+      if (setgid_ret == -1) {
+	/* Should be either EINVAL or EPERM: */
+	warning(_("Call to setgid() failed with errno %d: %s.\n"), errno,
+		safe_strerror(errno));
+      }
 
       /* If we decided above to start up with a shell, we exec the
         shell, "-c" says to interpret the next arg as a shell command

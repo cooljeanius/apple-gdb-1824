@@ -309,7 +309,7 @@ allocate_objfile_internal(struct objfile *objfile, bfd *abfd, int flags,
                           const char *prefix)
 {
   objfile->symflags = (unsigned short)symflags;
-  objfile->flags |= flags;
+  objfile->flags |= (unsigned short)flags;
 
   /* Update the per-objfile information that comes from the bfd, ensuring
      that any data that is reference is saved in the per-objfile data
@@ -2364,24 +2364,28 @@ objfile_section_offset(struct objfile *objfile, int sect_idx)
 CORE_ADDR ATTRIBUTE_NONNULL(1)
 objfile_text_section_offset(struct objfile *objfile)
 {
+  gdb_assert(executable_objfile(objfile) != NULL);
   return objfile_section_offset(objfile, SECT_OFF_TEXT(objfile));
 }
 
 CORE_ADDR ATTRIBUTE_NONNULL(1)
 objfile_data_section_offset(struct objfile *objfile)
 {
+  gdb_assert(executable_objfile(objfile) != NULL);
   return objfile_section_offset(objfile, SECT_OFF_DATA(objfile));
 }
 
 CORE_ADDR ATTRIBUTE_NONNULL(1)
 objfile_rodata_section_offset(struct objfile *objfile)
 {
+  gdb_assert(executable_objfile(objfile) != NULL);
   return objfile_section_offset(objfile, SECT_OFF_RODATA(objfile));
 }
 
 CORE_ADDR ATTRIBUTE_NONNULL(1)
 objfile_bss_section_offset(struct objfile *objfile)
 {
+  gdb_assert(executable_objfile(objfile) != NULL);
   return objfile_section_offset(objfile, SECT_OFF_BSS(objfile));
 }
 

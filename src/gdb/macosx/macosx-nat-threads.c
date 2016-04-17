@@ -46,11 +46,16 @@ gdb_pthread_kill(pthread_t pthread)
   int ret;
 
   ret = pthread_cancel(pthread);
+  if (ret != 0)
+    {
+      warning(_("Unable to cancel thread: %s (%d)"),
+	      safe_strerror(errno), errno);
+    }
 
   ret = pthread_join(pthread, NULL);
   if (ret != 0)
     {
-      warning("Unable to join to canceled thread: %s (%d)",
+      warning(_("Unable to join to canceled thread: %s (%d)"),
               safe_strerror(errno), errno);
     }
 }

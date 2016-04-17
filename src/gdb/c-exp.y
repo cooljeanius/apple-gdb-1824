@@ -551,19 +551,20 @@ exp	:	exp ASSIGN_MODIFY exp
 	;
 
 exp	:	INT
-			{ write_exp_elt_opcode (OP_LONG);
-			  write_exp_elt_type ($1.type);
-			  write_exp_elt_longcst ((LONGEST)($1.val));
-			  write_exp_elt_opcode (OP_LONG); }
+			{ write_exp_elt_opcode(OP_LONG);
+			  write_exp_elt_type($1.type);
+			  write_exp_elt_longcst((LONGEST)($1.val));
+			  write_exp_elt_opcode(OP_LONG); }
 	;
 
 exp	:	NAME_OR_INT
 			{ YYSTYPE val;
-			  parse_number ($1.stoken.ptr, $1.stoken.length, 0, &val);
-			  write_exp_elt_opcode (OP_LONG);
-			  write_exp_elt_type (val.typed_val_int.type);
-			  write_exp_elt_longcst ((LONGEST)val.typed_val_int.val);
-			  write_exp_elt_opcode (OP_LONG);
+			  parse_number($1.stoken.ptr, (int)$1.stoken.length, 0,
+				       &val);
+			  write_exp_elt_opcode(OP_LONG);
+			  write_exp_elt_type(val.typed_val_int.type);
+			  write_exp_elt_longcst((LONGEST)val.typed_val_int.val);
+			  write_exp_elt_opcode(OP_LONG);
 			}
 	;
 
@@ -1441,7 +1442,7 @@ yylex(void)
   const char *tokptr;
   int tempbufindex;
   static char *tempbuf;
-  static int tempbufsize;
+  static size_t tempbufsize;
   struct symbol *sym_class = (struct symbol *)NULL;
   char *token_string = NULL;
   int class_prefix = 0;
@@ -1515,7 +1516,7 @@ yylex(void)
 	error("Empty character constant.");
       else if (! host_char_to_target(c, &c))
         {
-          int toklen = ((lexptr - tokstart) + 1UL);
+          size_t toklen = ((size_t)(lexptr - tokstart) + 1UL);
           char *tok = (char *)alloca(toklen + 1UL);
           memcpy (tok, tokstart, toklen);
           tok[toklen] = '\0';
@@ -1628,15 +1629,15 @@ yylex(void)
 				  && (*p < 'A' || *p > 'Z')))
 	      break;
 	  }
-	toktype = parse_number (tokstart, p - tokstart, got_dot|got_e|got_p,
-                                &yylval);
+	toktype = parse_number(tokstart, (p - tokstart),
+			       (got_dot | got_e | got_p), &yylval);
         if (toktype == ERROR)
 	  {
-	    char *err_copy = (char *) alloca (p - tokstart + 1);
+	    char *err_copy = (char *)alloca((size_t)(p - tokstart) + 1UL);
 
-	    memcpy (err_copy, tokstart, p - tokstart);
+	    memcpy(err_copy, tokstart, (size_t)(p - tokstart));
 	    err_copy[p - tokstart] = 0;
-	    error ("Invalid number \"%s\".", err_copy);
+	    error("Invalid number \"%s\".", err_copy);
 	  }
 	lexptr = p;
 	return toktype;
@@ -1691,9 +1692,9 @@ yylex(void)
 	  do {
 	    /* Grow the static temp buffer if necessary, including allocating
 	       the first one on demand. */
-	    if (tempbufindex + 1 >= tempbufsize)
+	    if ((tempbufindex + 1) >= (int)tempbufsize)
 	      {
-		tempbuf = (char *) realloc (tempbuf, tempbufsize += 64);
+		tempbuf = (char *)realloc(tempbuf, (tempbufsize += 64UL));
 	      }
 	    tempbuf[tempbufindex++] = *tokptr++;
 	  } while ((*tokptr != ')') && (*tokptr != '\0'));
@@ -1732,9 +1733,9 @@ yylex(void)
 
 	/* Grow the static temp buffer if necessary, including allocating
 	   the first one on demand. */
-	if (tempbufindex + 1 >= tempbufsize)
+	if ((tempbufindex + 1) >= (int)tempbufsize)
 	  {
-	    tempbuf = (char *)realloc(tempbuf, tempbufsize += 64);
+	    tempbuf = (char *)realloc(tempbuf, (tempbufsize += 64UL));
 	  }
 	switch (*tokptr)
 	  {
@@ -1755,9 +1756,9 @@ yylex(void)
 	    c = *tokptr++;
             if (! host_char_to_target(c, &c))
               {
-                int len = (tokptr - char_start_pos);
-                char *copy = (char *)alloca(len + 1UL);
-                memcpy(copy, char_start_pos, len);
+                ptrdiff_t len = (tokptr - char_start_pos);
+                char *copy = (char *)alloca((size_t)len + 1UL);
+                memcpy(copy, char_start_pos, (size_t)len);
                 copy[len] = '\0';
 
                 error("There is no character corresponding to `%s' "

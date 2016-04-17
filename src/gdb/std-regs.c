@@ -1,4 +1,4 @@
-/* Builtin frame register, for GDB, the GNU debugger.
+/* std-regs.c: Builtin frame register, for GDB, the GNU debugger.
 
    Copyright 2002, 2005 Free Software Foundation, Inc.
 
@@ -26,6 +26,7 @@
 #include "frame.h"
 #include "gdbtypes.h"
 #include "value.h"
+#include "gdb_assert.h"
 #include "gdb_string.h"
 
 /* Types that describe the various builtin registers.  */
@@ -45,7 +46,7 @@ build_builtin_type_frame_reg (void)
       {
 	void *base;
       };
-#endif
+#endif /* 0 */
       builtin_type_frame_reg = init_composite_type ("frame", TYPE_CODE_STRUCT);
       append_composite_type_field (builtin_type_frame_reg, "base",
 				   builtin_type_void_data_ptr);
@@ -53,20 +54,21 @@ build_builtin_type_frame_reg (void)
 }
 
 static struct value *
-value_of_builtin_frame_reg (struct frame_info *frame)
+value_of_builtin_frame_reg(struct frame_info *frame)
 {
   struct value *val;
   gdb_byte *buf;
-  build_builtin_type_frame_reg ();
-  val = allocate_value (builtin_type_frame_reg);
-  VALUE_LVAL (val) = not_lval;
-  buf = value_contents_raw (val);
-  memset (buf, 0, TYPE_LENGTH (value_type (val)));
+  build_builtin_type_frame_reg();
+  val = allocate_value(builtin_type_frame_reg);
+  VALUE_LVAL(val) = not_lval;
+  buf = value_contents_raw(val);
+  memset(buf, 0, TYPE_LENGTH(value_type(val)));
   /* frame.base.  */
   if (frame != NULL)
-    ADDRESS_TO_POINTER (builtin_type_void_data_ptr, buf,
-			get_frame_base (frame));
-  buf += TYPE_LENGTH (builtin_type_void_data_ptr);
+    ADDRESS_TO_POINTER(builtin_type_void_data_ptr, buf,
+		       get_frame_base(frame));
+  buf += TYPE_LENGTH(builtin_type_void_data_ptr);
+  gdb_assert(buf != NULL);
   /* frame.XXX.  */
   return val;
 }

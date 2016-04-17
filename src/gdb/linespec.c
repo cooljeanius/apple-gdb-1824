@@ -543,13 +543,13 @@ add_matching_methods (int method_counter, struct type *t,
       else
 	{
 	  /* This error message gets printed, but the method
-	     still seems to be found
+	     still seems to be found: */
+#if 0
 	     fputs_filtered("(Cannot find method ", gdb_stdout);
-	     fprintf_symbol_filtered (gdb_stdout, phys_name,
-	     language_cplus,
-	     DMGL_PARAMS | DMGL_ANSI);
+	     fprintf_symbol_filtered(gdb_stdout, phys_name, language_cplus,
+				     (DMGL_PARAMS | DMGL_ANSI));
 	     fputs_filtered(" - possibly inlined.)\n", gdb_stdout);
-	  */
+#endif /* 0 */
 	}
     }
 
@@ -1744,12 +1744,13 @@ decode_objc(const char **argptr, int funfirstline, struct symtab *file_symtab,
   values.nelts = 0;
 
   if (file_symtab != NULL)
-    block = BLOCKVECTOR_BLOCK (BLOCKVECTOR (file_symtab), STATIC_BLOCK);
+    block = BLOCKVECTOR_BLOCK(BLOCKVECTOR(file_symtab), STATIC_BLOCK);
   else
     block = get_selected_block(0);
 
   copy = find_imps(file_symtab, block, *argptr, NULL,
                    (unsigned int *)&i1, (unsigned int *)&i2);
+  gdb_assert(copy != NULL);
 
   if (i1 > 0)
     {
@@ -1776,35 +1777,39 @@ decode_objc(const char **argptr, int funfirstline, struct symtab *file_symtab,
       else
 	{
 	  /* APPLE LOCAL: Don't throw away section info if we have it.  */
-	  if (SYMBOL_BFD_SECTION (sym_arr[0]) != 0)
-	    sym = find_pc_sect_function (SYMBOL_VALUE_ADDRESS (sym_arr[0]),
-					 SYMBOL_BFD_SECTION (sym_arr[0]));
+	  if (SYMBOL_BFD_SECTION(sym_arr[0]) != 0)
+	    sym = find_pc_sect_function(SYMBOL_VALUE_ADDRESS(sym_arr[0]),
+					SYMBOL_BFD_SECTION(sym_arr[0]));
 	  else
-	    sym = find_pc_function (SYMBOL_VALUE_ADDRESS (sym_arr[0]));
+	    sym = find_pc_function(SYMBOL_VALUE_ADDRESS(sym_arr[0]));
 
-	  if ((sym != NULL) && strcmp (SYMBOL_LINKAGE_NAME (sym_arr[0]), SYMBOL_LINKAGE_NAME (sym)) != 0)
+	  if ((sym != NULL)
+	      && (strcmp(SYMBOL_LINKAGE_NAME(sym_arr[0]),
+			 SYMBOL_LINKAGE_NAME(sym)) != 0))
 	    {
-	      warning (_("debugging symbol \"%s\" does not match selector; ignoring"), SYMBOL_LINKAGE_NAME (sym));
+	      warning(_("debugging symbol \"%s\" does not match selector; ignoring"),
+		      SYMBOL_LINKAGE_NAME(sym));
 	      sym = NULL;
 	    }
 	}
 
-      values.sals = (struct symtab_and_line *) xmalloc (sizeof (struct symtab_and_line));
+      values.sals = (struct symtab_and_line *)xmalloc(sizeof(struct symtab_and_line));
       values.nelts = 1;
 
-      if (sym && SYMBOL_CLASS (sym) == LOC_BLOCK)
+      if (sym && (SYMBOL_CLASS(sym) == LOC_BLOCK))
 	{
 	  /* Canonicalize this, so it remains resolved for dylib loads.  */
-	  values.sals[0] = find_function_start_sal (sym, funfirstline);
-	  build_canonical_line_spec (values.sals, SYMBOL_NATURAL_NAME (sym), canonical);
+	  values.sals[0] = find_function_start_sal(sym, funfirstline);
+	  build_canonical_line_spec(values.sals, SYMBOL_NATURAL_NAME(sym), canonical);
 	}
       else
 	{
+	  gdb_assert(sym_arr[0] != NULL);
 	  /* The only match was a non-debuggable symbol.  */
 	  values.sals[0].symtab = 0;
 	  values.sals[0].line = 0;
 	  values.sals[0].end = 0;
-	  values.sals[0].pc = SYMBOL_VALUE_ADDRESS (sym_arr[0]);
+	  values.sals[0].pc = SYMBOL_VALUE_ADDRESS(sym_arr[0]);
           values.sals[0].entry_type = NORMAL_LT_ENTRY;
           values.sals[0].next = NULL;
           if (funfirstline)
@@ -2673,7 +2678,10 @@ decode_all_digits_exhaustive(const char **argptr, int funfirstline,
 	      }
 	    if (func_sym)
 	      {
-		struct symtab_and_line sal;
+		struct symtab_and_line sal = {
+		  (struct symtab *)NULL, (asection *)NULL, 0, 0UL, 0UL,
+		  NORMAL_LT_ENTRY, (struct symtab_and_line *)NULL
+		};
 		struct gdb_exception e;
 		/* APPLE LOCAL: If we cannot parse the prologue for some reason,
 		 * then make sure the breakpoint gets marked as "future": */
@@ -2694,8 +2702,7 @@ decode_all_digits_exhaustive(const char **argptr, int funfirstline,
 		 * different.  This will happen for inlined functions, and then
 		 * you do NOT want to move the pc.  */
 	      
-		if (val->symtab == sal.symtab
-		    && val->line <= sal.line)
+		if ((val->symtab == sal.symtab) && (val->line <= sal.line))
 		  val->pc = sal.pc;
 	      }
 	  }
@@ -3161,9 +3168,10 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
 
 	  while (cur && !found)
 	    {
-	      struct block *b = SYMBOL_BLOCK_VALUE (outer_current->symbol);
+	      struct block *b = SYMBOL_BLOCK_VALUE(outer_current->symbol);
 
-	      if (b && (b->startaddr == SYMBOL_VALUE_ADDRESS (cur->msymbol)))
+	      if (b && (cur->msymbol != NULL)
+		  && (b->startaddr == SYMBOL_VALUE_ADDRESS(cur->msymbol)))
 		{
 		  found = 1;
 		  if (!prev)
@@ -3438,7 +3446,8 @@ minsyms_found (int funfirstline, int equivalencies,
   equiv_msymbols = NULL;
   if (equivalencies)
     {
-      equiv_msymbols = find_equivalent_msymbol (sym_list->msymbol);
+      gdb_assert(sym_list != NULL);
+      equiv_msymbols = find_equivalent_msymbol(sym_list->msymbol);
 
       if (equiv_msymbols != NULL)
 	{

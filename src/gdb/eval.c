@@ -22,6 +22,7 @@
    Boston, MA 02111-1307, USA.  */
 
 #include "defs.h"
+#include "gdb_assert.h"
 #include "gdb_string.h"
 #include "symtab.h"
 #include "gdbtypes.h"
@@ -264,8 +265,7 @@ evaluate_struct_tuple(struct value *struct_val, struct expression *exp,
       while (get_label(exp, pos) != NULL)
 	nlabels++;
 
-      do
-	{
+      do {
 	  char *label = get_label(exp, &pc);
 	  if (label)
 	    {
@@ -373,8 +373,7 @@ evaluate_struct_tuple(struct value *struct_val, struct expression *exp,
 	  else
 	    memcpy (addr, value_contents (val),
 		    TYPE_LENGTH (value_type (val)));
-	}
-      while (--nlabels > 0);
+      } while (--nlabels > 0);
     }
   return struct_val;
 }
@@ -659,6 +658,9 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
                 ; /* dummy */
               }
 	    }
+	  if (tem > nargs) {
+	    ; /* ??? */
+	  }
 	  return array;
 	}
 
@@ -739,12 +741,13 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 	      range_high -= low_bound;
 	      for (ij = 0; range_low <= range_high; range_low++)
 		{
-		  int bit_index = ((unsigned)range_low % TARGET_CHAR_BIT);
+		  int bit_index = ((unsigned int)range_low % TARGET_CHAR_BIT);
 		  if (BITS_BIG_ENDIAN) {
 		    bit_index = (TARGET_CHAR_BIT - 1 - bit_index);
                   }
-		  valaddr[(unsigned)range_low / TARGET_CHAR_BIT]
-		    |= (1 << bit_index);
+		  valaddr[(unsigned int)range_low / TARGET_CHAR_BIT] =
+		    (gdb_byte)(valaddr[(size_t)range_low / TARGET_CHAR_BIT]
+			       | (gdb_byte)(1U << bit_index));
                   if (ij == 0) {
                     ij++;
                   }
@@ -1116,7 +1119,7 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 
 	  fnptr = value_as_long(arg1);
 
-	  if (METHOD_PTR_IS_VIRTUAL(fnptr))
+	  if ((fnptr > 0) && METHOD_PTR_IS_VIRTUAL(fnptr))
 	    {
 	      int fnoffset = METHOD_PTR_TO_VOFFSET(fnptr);
 	      struct type *basetype;
@@ -1725,6 +1728,7 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 
     case BINOP_RANGE:
       arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+      gdb_assert(arg1 != NULL);
       arg2 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)
 	goto nosideret;

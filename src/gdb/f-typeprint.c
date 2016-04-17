@@ -24,6 +24,7 @@
    Boston, MA 02111-1307, USA.  */
 
 #include "defs.h"
+#include "gdb_assert.h"
 #include "gdb_obstack.h"
 #include "bfd.h"
 #include "symtab.h"
@@ -60,31 +61,31 @@ f_print_type(struct type *type, const char *varstring, struct ui_file *stream,
 	     int show, int level)
 {
   enum type_code code;
-  int demangled_args;
+  int demangled_args = 0;
 
-  f_type_print_base (type, stream, show, level);
-  code = TYPE_CODE (type);
-  if ((varstring != NULL && *varstring != '\0')
+  f_type_print_base(type, stream, show, level);
+  code = TYPE_CODE(type);
+  if (((varstring != NULL) && (*varstring != '\0'))
       ||
   /* Need a space if going to print stars or brackets;
      but not if we will print just a type name.  */
-      ((show > 0 || TYPE_NAME (type) == 0)
-       &&
-       (code == TYPE_CODE_PTR || code == TYPE_CODE_FUNC
-	|| code == TYPE_CODE_METHOD
-	|| code == TYPE_CODE_ARRAY
-	|| code == TYPE_CODE_MEMBER
-	|| code == TYPE_CODE_REF)))
-    fputs_filtered (" ", stream);
-  f_type_print_varspec_prefix (type, stream, show, 0);
+      (((show > 0) || (TYPE_NAME(type) == 0))
+       && ((code == TYPE_CODE_PTR) || (code == TYPE_CODE_FUNC)
+	   || (code == TYPE_CODE_METHOD)
+	   || (code == TYPE_CODE_ARRAY)
+	   || (code == TYPE_CODE_MEMBER)
+	   || (code == TYPE_CODE_REF))))
+    fputs_filtered(" ", stream);
+  f_type_print_varspec_prefix(type, stream, show, 0);
 
-  fputs_filtered (varstring, stream);
+  gdb_assert(varstring != NULL);
+  fputs_filtered(varstring, stream);
 
   /* For demangled function names, we have the arglist as part of the name,
      so don't print an additional pair of ()'s */
 
-  demangled_args = varstring[strlen (varstring) - 1] == ')';
-  f_type_print_varspec_suffix (type, stream, show, 0, demangled_args);
+  demangled_args = (varstring[strlen(varstring) - 1] == ')');
+  f_type_print_varspec_suffix(type, stream, show, 0, demangled_args);
 }
 
 /* Print any asterisks or open-parentheses needed before the

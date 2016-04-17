@@ -307,12 +307,12 @@ i386_length_and_rw_bits (int len, enum target_hw_bp_type type)
       case hw_access:
 	rw = DR_RW_READ;
 	break;
-#if 0
+#if defined(DR_RW_IORW) && defined(NOW_SUPPORTED)
 	/* Not yet supported.  */
       case hw_io_access:
 	rw = DR_RW_IORW;
 	break;
-#endif
+#endif /* DR_RW_IORW && NOW_SUPPORTED */
       default:
 	internal_error (__FILE__, __LINE__, _("\
 Invalid hardware breakpoint type %d in i386_length_and_rw_bits.\n"),
@@ -690,5 +690,26 @@ If enabled, the debug registers values are shown when GDB inserts\n\
 or removes a hardware breakpoint or watchpoint, and when the inferior\n\
 triggers a breakpoint or watchpoint."),
 			  &maintenancelist);
-#endif
+#endif /* I386_USE_GENERIC_WATCHPOINTS */
 }
+
+#ifdef DR_STATUS
+# undef DR_STATUS
+#endif /* DR_STATUS */
+#ifdef DR_CONTROL
+# undef DR_CONTROL
+#endif /* DR_CONTROL */
+#ifdef DR_RW_IORW
+# undef DR_RW_IORW
+#endif /* DR_RW_IORW */
+#ifdef DR_GLOBAL_ENABLE_SHIFT
+# undef DR_GLOBAL_ENABLE_SHIFT
+#endif /* DR_GLOBAL_ENABLE_SHIFT */
+#ifdef DR_GLOBAL_SLOWDOWN
+# undef DR_GLOBAL_SLOWDOWN
+#endif /* DR_GLOBAL_SLOWDOWN */
+#ifdef I386_DR_GLOBAL_ENABLE
+# undef I386_DR_GLOBAL_ENABLE
+#endif /* I386_DR_GLOBAL_ENABLE */
+
+/* EOF */

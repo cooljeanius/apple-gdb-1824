@@ -136,10 +136,10 @@ info_mach_task_command(const char *args, int from_tty)
   PRINT_FIELD(&task_info_data.basic, resident_size);
 #if defined(PRINT_FIELD) && defined(TASK_EVENTS_INFO) && \
     defined(TASK_EVENTS_INFO_COUNT) && defined(MACH_CHECK_ERROR)
-# if defined(DEBUG) || defined(_DEBUG)
+# if (defined(DEBUG) || defined(_DEBUG)) && !defined(__clang_analyzer__)
   PRINT_FIELD(&task_info_data.basic, user_time);
   PRINT_FIELD(&task_info_data.basic, system_time);
-# endif /* DEBUG || _DEBUG */
+# endif /* (DEBUG || _DEBUG) && !__clang_analyzer__ */
   printf_unfiltered("\nTASK_EVENTS_INFO:\n");
   info_count = TASK_EVENTS_INFO_COUNT;
   result = task_info(task,
@@ -148,10 +148,10 @@ info_mach_task_command(const char *args, int from_tty)
   MACH_CHECK_ERROR(result);
 
   PRINT_FIELD(&task_info_data.events, faults);
-# if defined(DEBUG) || defined(_DEBUG)
+# if (defined(DEBUG) || defined(_DEBUG)) && !defined(__clang_analyzer__)
   PRINT_FIELD(&task_info_data.events, zero_fills);
   PRINT_FIELD(&task_info_data.events, reactivations);
-# endif /* DEBUG || _DEBUG */
+# endif /* (DEBUG || _DEBUG) && !__clang_analyzer__ */
   PRINT_FIELD(&task_info_data.events, pageins);
   PRINT_FIELD(&task_info_data.events, cow_faults);
   PRINT_FIELD(&task_info_data.events, messages_sent);
@@ -165,10 +165,10 @@ info_mach_task_command(const char *args, int from_tty)
                      &info_count);
   MACH_CHECK_ERROR(result);
 
-#if defined(PRINT_FIELD) && (defined(DEBUG) || defined(_DEBUG))
+#if defined(PRINT_FIELD) && (defined(DEBUG) || defined(_DEBUG)) && !defined(__clang_analyzer__)
   PRINT_FIELD(&task_info_data.thread_times, user_time);
   PRINT_FIELD(&task_info_data.thread_times, system_time);
-#endif /* PRINT_FIELD && (DEBUG || _DEBUG) */
+#endif /* PRINT_FIELD && (DEBUG || _DEBUG) && !__clang_analyzer__ */
 }
 
 /* */
@@ -268,10 +268,10 @@ info_mach_thread_command(const char *args, int from_tty)
                        &info_count);
   MACH_CHECK_ERROR(result);
 
-#if defined(PRINT_FIELD) && (defined(DEBUG) || defined(_DEBUG))
+#if defined(PRINT_FIELD) && (defined(DEBUG) || defined(_DEBUG)) && !defined(__clang_analyzer__)
   PRINT_FIELD(&thread_info_data.basic, user_time);
   PRINT_FIELD(&thread_info_data.basic, system_time);
-#endif /* PRINT_FIELD && (DEBUG || _DEBUG) */
+#endif /* PRINT_FIELD && (DEBUG || _DEBUG) && !__clang_analyzer__ */
   PRINT_FIELD(&thread_info_data.basic, cpu_usage);
   PRINT_FIELD(&thread_info_data.basic, run_state);
   PRINT_FIELD(&thread_info_data.basic, flags);

@@ -551,11 +551,15 @@ i387_swap_fxsave (struct regcache *regcache, const uint8_t *fxsave)
 
   for (i = 0; i < tdep->num_xmm_regs; i++)
     {
-      unsigned char *buf = (unsigned char *) FXSAVE_ADDR (fxsave, I387_XMM0_REGNUM + i);
+      unsigned char *buf =
+	(unsigned char *)FXSAVE_ADDR(fxsave, (I387_XMM0_REGNUM + i));
       for (j = 0; j < 8; j++) {
-       unsigned char c = buf[15 - j];
-       buf[15 - j] = buf[j];
-       buf[j] = c;
+	unsigned char c = buf[15 - j];
+	buf[15 - j] = buf[j];
+	buf[j] = c;
+      }
+      if (I387_NUM_XMM_REGS == 0) {
+	; /* ??? */
       }
     }
 

@@ -29,6 +29,7 @@
 #include "varobj.h"
 #include "value.h"
 #include <ctype.h>
+#include "gdb_assert.h"
 #include "gdb_string.h"
 #include "frame.h"
 #include "block.h"
@@ -91,8 +92,9 @@ mi_cmd_var_create(char *command, char **argv, int argc)
   /* Add cleanup for name. Must be free_current_contents as
      name can be reallocated */
   old_cleanups = make_cleanup(free_current_contents, &name);
+  gdb_assert(old_cleanups != (struct cleanup *)NULL);
 
-  frame = xstrdup (argv[1]);
+  frame = xstrdup(argv[1]);
   old_cleanups = make_cleanup(xfree, frame);
 
   expr = xstrdup(argv[2]);
@@ -647,10 +649,10 @@ Must be: 0 or \"%s\", 1 or \"%s\", 2 or \"%s\""),
    a value of type TYPE.  */
 
 static int
-mi_print_value_p (struct type *type, enum print_values print_values)
+mi_print_value_p(struct type *type, enum print_values print_values)
 {
   if (type != NULL)
-    type = check_typedef (type);
+    type = check_typedef(type);
 
   if (print_values == PRINT_NO_VALUES)
     return 0;
@@ -658,12 +660,14 @@ mi_print_value_p (struct type *type, enum print_values print_values)
   if (print_values == PRINT_ALL_VALUES)
     return 1;
 
+  gdb_assert(type != NULL);
+
   /* For PRINT_SIMPLE_VALUES, only print the value if it has a type
      and that type is not a compound type.  */
 
-  return (TYPE_CODE (type) != TYPE_CODE_ARRAY
-	  && TYPE_CODE (type) != TYPE_CODE_STRUCT
-	  && TYPE_CODE (type) != TYPE_CODE_UNION);
+  return ((TYPE_CODE(type) != TYPE_CODE_ARRAY)
+	  && (TYPE_CODE(type) != TYPE_CODE_STRUCT)
+	  && (TYPE_CODE(type) != TYPE_CODE_UNION));
 }
 
 enum mi_cmd_result

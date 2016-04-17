@@ -799,6 +799,10 @@ mi_cmd_file_fix_file (char *command, char **argv, int argc)
      }
    argv += optind;
    argc -= optind;
+  
+   if ((argc < 0) || (argv == NULL)) {
+     warning(_("mi_cmd_file_fix_file: bad arguments(?)\n"));
+   }
 
    if (source_filename == NULL || bundle_filename == NULL)
      error ("mi_cmd_file_fix_file: Usage -f source-filename -b bundle-filename "
@@ -983,14 +987,14 @@ register_changed_p (int regnum)
   if (! frame_register_read (get_selected_frame (NULL), regnum, raw_buffer))
     return -1;
 
-  if (memcmp (&old_regs[DEPRECATED_REGISTER_BYTE (regnum)], raw_buffer,
-	      register_size (current_gdbarch, regnum)) == 0)
+  if (memcmp(&old_regs[DEPRECATED_REGISTER_BYTE(regnum)], raw_buffer,
+	     register_size(current_gdbarch, regnum)) == 0)
     return 0;
 
   /* Found a changed register. Return 1. */
 
-  memcpy (&old_regs[DEPRECATED_REGISTER_BYTE (regnum)], raw_buffer,
-	  register_size (current_gdbarch, regnum));
+  memcpy(&old_regs[DEPRECATED_REGISTER_BYTE(regnum)], raw_buffer,
+	 register_size(current_gdbarch, regnum));
 
   return 1;
 }
@@ -1619,7 +1623,7 @@ mi_cmd_data_read_memory (char *command, char **argv, int argc)
 
   /* create a buffer and read it in: */
   total_bytes = (word_size * nr_rows * nr_cols);
-  mbuf = (char *)xcalloc(total_bytes, 1);
+  mbuf = (char *)xcalloc((size_t)total_bytes, 1);
   make_cleanup(xfree, mbuf);
 
   nr_bytes = (int)target_read(&current_target, TARGET_OBJECT_MEMORY, NULL,
@@ -1787,7 +1791,7 @@ mi_cmd_data_write_memory(char *command, char **argv, int argc)
   /* Get the value as a number: */
   value = parse_and_eval_address(argv[3]);
   /* Get the value into an array: */
-  buffer = xmalloc(word_size);
+  buffer = xmalloc((size_t)word_size);
   old_chain = make_cleanup(xfree, buffer);
   store_signed_integer((gdb_byte *)buffer, word_size, value);
   /* Write it down to memory: */
@@ -2480,11 +2484,12 @@ mi_exec_error_cleanup (void *in_arg)
   uiout = saved_ui_out;
 }
 
+/* */
 void
-mi_exec_async_cli_cmd_continuation (struct continuation_arg *in_arg)
+mi_exec_async_cli_cmd_continuation(struct continuation_arg *in_arg)
 {
   struct mi_continuation_arg *arg =
-    (struct mi_continuation_arg *) in_arg;
+    (struct mi_continuation_arg *)in_arg;
 
   if (!target_executing)
     {
@@ -2497,26 +2502,26 @@ mi_exec_async_cli_cmd_continuation (struct continuation_arg *in_arg)
 	 since we are passing the arg to the next continuation
 	 if the target restarts, and we don't want to do these
 	 cleanups again. */
-      if (arg->cleanups)
+      if ((arg != NULL) && arg->cleanups)
 	{
-	  do_exec_cleanups (arg->cleanups);
+	  do_exec_cleanups(arg->cleanups);
 	  arg->cleanups = NULL;
 	}
 
-      if (arg->exec_error_cleanups != (struct cleanup *) -1)
+      if ((arg != NULL) && (arg->exec_error_cleanups != (struct cleanup *)-1))
 	{
-	  discard_exec_error_cleanups (arg->exec_error_cleanups);
-	  arg->exec_error_cleanups = (struct cleanup *) -1;
+	  discard_exec_error_cleanups(arg->exec_error_cleanups);
+	  arg->exec_error_cleanups = (struct cleanup *)-1;
 	}
 
-      fputs_unfiltered ("*stopped", raw_stdout);
+      fputs_unfiltered("*stopped", raw_stdout);
       if (do_timings && arg && arg->timestamp)
         {
-          end_remote_counts (arg->timestamp);
-	  print_diff_now (arg->timestamp);
+          end_remote_counts(arg->timestamp);
+	  print_diff_now(arg->timestamp);
         }
-      mi_out_put (uiout, raw_stdout);
-      fputs_unfiltered ("\n", raw_stdout);
+      mi_out_put(uiout, raw_stdout);
+      fputs_unfiltered("\n", raw_stdout);
 
       /* Now run the actions for this breakpoint.  This may start
 	 the target going again, but we shouldn't have to do
@@ -2583,7 +2588,7 @@ mi_setup_architecture_data(void)
 {
   old_regs = (char *)xmalloc((NUM_REGS + NUM_PSEUDO_REGS) * MAX_REGISTER_SIZE + 1UL);
   memset(old_regs, 0,
-         ((NUM_REGS + NUM_PSEUDO_REGS) * MAX_REGISTER_SIZE + 1));
+         (size_t)((NUM_REGS + NUM_PSEUDO_REGS) * MAX_REGISTER_SIZE + 1UL));
 }
 
 void

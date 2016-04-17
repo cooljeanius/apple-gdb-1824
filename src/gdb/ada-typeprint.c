@@ -19,6 +19,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include "defs.h"
+#include "gdb_assert.h"
 #include "gdb_obstack.h"
 #include "bfd.h"		/* Binary File Description */
 #include "symtab.h"
@@ -242,6 +243,7 @@ print_dynamic_range_bound(struct type *type, const char *name, int name_len,
 
   GROW_VECT(name_buf, name_buf_len, (name_len + strlen(suffix) + 1UL),
             char);
+  gdb_assert(name_buf != NULL);
   strncpy(name_buf, name, name_len);
   strcpy((name_buf + name_len), suffix);
 

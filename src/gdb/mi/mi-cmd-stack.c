@@ -420,7 +420,7 @@ mi_print_frame_more_info (struct ui_out *uiout,
 
   /* If we have already got the objfile, don't look it up again, but make sure
      we use the real objfile, not the debug objfile.  */
-  if (sal->symtab != NULL)
+  if ((sal != NULL) && (sal->symtab != NULL))
     {
       ofile = sal->symtab->objfile;
       if (ofile && ofile->separate_debug_objfile_backlink)
@@ -428,7 +428,7 @@ mi_print_frame_more_info (struct ui_out *uiout,
     }
   else
     {
-      struct obj_section *osect = find_pc_sect_section (get_frame_pc (fi), NULL);
+      struct obj_section *osect = find_pc_sect_section(get_frame_pc(fi), NULL);
       if (osect != NULL)
         ofile = osect->objfile;
     }

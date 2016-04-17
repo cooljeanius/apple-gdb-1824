@@ -455,9 +455,11 @@ execute_command(const char *p, int from_tty)
   stepping_into_inlined_subroutine = 0;
   /* APPLE LOCAL end subroutine inlining  */
 
+#if defined(HAVE_ALLOCA) && !defined(__clang_analyzer__)
   /* Force cleanup of any alloca areas if using C alloca instead of
      a builtin alloca.  */
   alloca(0UL);
+#endif /* HAVE_ALLOCA && !__clang_analyzer__ */
 
   /* This can happen when command_line_input hits end of file.  */
   if (p == NULL)

@@ -28,6 +28,7 @@
 #endif /* S_SPLINT_S */
 #include "dcache.h"
 #include "gdbcmd.h"
+#include "gdb_assert.h"
 #include "gdb_string.h"
 #ifdef HAVE_STRINGS_H
 # include <strings.h>
@@ -268,7 +269,7 @@ dcache_hit (DCACHE *dcache, CORE_ADDR addr)
    be written is. */
 
 static int
-dcache_write_line (DCACHE *dcache, struct dcache_block *db)
+dcache_write_line(DCACHE *dcache, struct dcache_block *db)
 {
   CORE_ADDR memaddr;
   gdb_byte *myaddr;
@@ -277,10 +278,11 @@ dcache_write_line (DCACHE *dcache, struct dcache_block *db)
   long reg_len;
   struct mem_region *region;
 
-  if (!db->anydirty)
+  if ((db != NULL) && !db->anydirty)
     return 1;
 
   len = g_line_size;
+  gdb_assert(db != NULL);
   memaddr = db->addr;
   myaddr = db->data;
 

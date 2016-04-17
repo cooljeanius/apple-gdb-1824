@@ -116,13 +116,15 @@ extern void cp_check_possible_namespace_symbols (const char *name,
 
 struct type *cp_lookup_transparent_type (const char *name);
 
-/* Functions from cp-names.y.  */
+/* Functions from cp-name-parser.y.  */
 
 extern struct demangle_component *cp_demangled_name_to_comp
-  (const char *demangled_name, void **memory_p, const char **errmsg);
+  (const char *demangled_name, void **memory_p, const char **errmsg)
+  ATTRIBUTE_NOINLINE ATTRIBUTE_NOCLONE;
 
-extern char *cp_comp_to_string (struct demangle_component *result,
-				int estimated_len);
+extern char *cp_comp_to_string(struct demangle_component *result,
+			       int estimated_len)
+  ATTRIBUTE_NOINLINE ATTRIBUTE_NOCLONE;
 
 /* The list of "maint cplus" commands: */
 extern struct cmd_list_element *maint_cplus_cmd_list;

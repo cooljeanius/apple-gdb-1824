@@ -2096,14 +2096,15 @@ again:
 	}
       else
 	{
-	  struct type *domain = read_type (pp, objfile);
-	  struct type *return_type;
-	  struct field *args;
-	  int nargs, varargs;
+	  struct type *domain = read_type(pp, objfile);
+	  struct type *return_type = (struct type *)NULL;
+	  struct field *args = (struct field *)NULL;
+	  int nargs = 0;
+	  int varargs = 0;
 
 	  if (**pp != ',')
-	    /* Invalid member type data format.  */
-	    return error_type (pp, objfile);
+	    /* Invalid member type data format: */
+	    return error_type(pp, objfile);
 	  else
 	    ++(*pp);
 
@@ -2328,6 +2329,7 @@ rs6000_builtin_type (int typenum, struct objfile *objfile)
       rettype = init_type (TYPE_CODE_INT, 4, TYPE_FLAG_UNSIGNED,
 			   /* APPLE LOCAL objfile for types */
 			   "unsigned", objfile);
+      break;
     case 10:
       rettype = init_type (TYPE_CODE_INT, 4, TYPE_FLAG_UNSIGNED,
 			   /* APPLE LOCAL objfile for types */

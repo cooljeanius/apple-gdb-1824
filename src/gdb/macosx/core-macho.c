@@ -609,10 +609,11 @@ core_cache_section_registers(asection *sec, int flavour,
 
   size = bfd_section_size(core_bfd, sec);
   regs = (unsigned char *)xmalloc((size_t)size);
-  if (regs == NULL)
+  if ((regs == NULL) || ((regs + 8) == NULL))
     {
       fprintf_filtered(gdb_stderr,
                        "Unable to allocate space to read registers\n");
+      return;
     }
   if (bfd_get_section_contents(core_bfd, sec, regs, (file_ptr)0L, size) != 1)
     {

@@ -672,6 +672,7 @@ dyld_entry_string(struct dyld_objfile_entry *e, int print_basenames)
   return xstrdup(ret);
 }
 
+/* */
 void
 dyld_entry_info (struct dyld_objfile_entry *e, int print_basenames,
                  char **name,
@@ -871,6 +872,7 @@ dyld_entry_info (struct dyld_objfile_entry *e, int print_basenames,
       if (tmp != NULL)
         {
           namelen = (strlen(tmp) + 1UL);
+	  CHECK_FATAL(name != NULL);
           *name = (char *)xmalloc(namelen);
           memcpy(*name, tmp, namelen);
         }

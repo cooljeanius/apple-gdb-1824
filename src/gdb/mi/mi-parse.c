@@ -37,7 +37,7 @@ mi_parse_argv(char *args, struct mi_parse *parse)
 {
   char *chp = args;
   int argc = 0;
-  char **argv = (char **)xmalloc((argc + 1) * sizeof(char *));
+  char **argv = (char **)xmalloc(((size_t)argc + 1UL) * sizeof(char *));
   argv[argc] = NULL;
   while (1)
     {
@@ -89,7 +89,7 @@ mi_parse_argv(char *args, struct mi_parse *parse)
 		return;
 	      }
 	    /* create the buffer: */
-	    arg = (char *)xmalloc((len + 1) * sizeof(char));
+	    arg = (char *)xmalloc(((size_t)len + 1UL) * sizeof(char));
 	    /* And copy the characters in: */
 	    chp = start;
 	    len = 0;
@@ -112,21 +112,21 @@ mi_parse_argv(char *args, struct mi_parse *parse)
 	  {
 	    /* An unquoted string.  Accumulate all non blank
 	       characters into a buffer. */
-	    int len;
+	    ptrdiff_t len;
 	    char *start = chp;
 	    while ((*chp != '\0') && !isspace(*chp))
 	      {
 		chp++;
 	      }
 	    len = (chp - start);
-	    arg = (char *)xmalloc((len + 1) * sizeof(char));
-	    strncpy (arg, start, len);
+	    arg = (char *)xmalloc(((size_t)len + 1UL) * sizeof(char));
+	    strncpy(arg, start, (size_t)len);
 	    arg[len] = '\0';
 	    break;
 	  }
 	}
       /* Append arg to argv: */
-      argv = (char **)xrealloc(argv, (argc + 2) * sizeof(char *));
+      argv = (char **)xrealloc(argv, (((size_t)argc + 2UL) * sizeof(char *)));
       argv[argc++] = arg;
       argv[argc] = NULL;
     }
@@ -166,8 +166,8 @@ mi_parse(char *cmd)
   /* Find/skip any token and then extract it: */
   for (chp = cmd; (*chp >= '0') && (*chp <= '9'); chp++)
     ;
-  parse->token = (char *)xmalloc((chp - cmd + 1) * sizeof(char *));
-  memcpy(parse->token, cmd, (chp - cmd));
+  parse->token = (char *)xmalloc(((size_t)(chp - cmd) + 1UL) * sizeof(char *));
+  memcpy(parse->token, cmd, (size_t)(chp - cmd));
   parse->token[chp - cmd] = '\0';
 
   /* This was NOT a real MI command.  Return it as a CLI_COMMAND: */
@@ -185,8 +185,9 @@ mi_parse(char *cmd)
     char *tmp = (chp + 1);	/* discard ``-'' */
     for (; *chp && !isspace(*chp); chp++)
       ;
-    parse->command = (char *)xmalloc((chp - tmp + 1) * sizeof(char *));
-    memcpy(parse->command, tmp, chp - tmp);
+    parse->command = (char *)xmalloc(((size_t)(chp - tmp) + 1UL)
+				     * sizeof(char *));
+    memcpy(parse->command, tmp, (size_t)(chp - tmp));
     parse->command[chp - tmp] = '\0';
   }
 

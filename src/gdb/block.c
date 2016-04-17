@@ -23,6 +23,7 @@
 #include "block.h"
 #include "symtab.h"
 #include "symfile.h"
+#include "gdb_assert.h"
 #include "gdb_obstack.h"
 #include "cp-support.h"
 /* APPLE LOCAL cache lookup values for improved performance  */
@@ -255,6 +256,7 @@ blockvector_for_pc_sect (CORE_ADDR pc, struct bfd_section *section,
   bl = BLOCKVECTOR(symtab);
   static_block = BLOCKVECTOR_BLOCK(bl, STATIC_BLOCK);
   b = BLOCKVECTOR_BLOCK(bl, 0);
+  gdb_assert(b != NULL);
 
   /* Then search that symtab for the smallest block that wins.  */
   /* Use binary search to find the last block that starts before PC.  */

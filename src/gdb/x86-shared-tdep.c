@@ -50,14 +50,14 @@ show_debug_x86bt(struct ui_file *file, int from_tty,
 static int
 x86_mov_esp_ebp_pattern_p(CORE_ADDR memaddr)
 {
-  gdb_byte op = read_memory_unsigned_integer(memaddr, 1);
+  gdb_byte op = (gdb_byte)read_memory_unsigned_integer(memaddr, 1);
 
   /* Look for & consume the x86-64 REX.W prefix byte 0x48
      with no register bit additions */
   if (op == 0x48)
     {
       memaddr++;
-      op = read_memory_unsigned_integer(memaddr, 1);
+      op = (gdb_byte)read_memory_unsigned_integer(memaddr, 1);
     }
 
   /* Two ways to write push %esp, %ebp: [0x8b 0xec] and [0x89 0xe5] */
@@ -77,7 +77,7 @@ x86_mov_esp_ebp_pattern_p(CORE_ADDR memaddr)
 static int
 x86_push_ebp_pattern_p(CORE_ADDR memaddr)
 {
-  gdb_byte op = read_memory_unsigned_integer(memaddr, 1);
+  gdb_byte op = (gdb_byte)read_memory_unsigned_integer(memaddr, 1);
   if (op == 0x55)
     return 1;
   if (op == 0x6a)
@@ -91,7 +91,7 @@ x86_push_ebp_pattern_p(CORE_ADDR memaddr)
 static int
 x86_ret_pattern_p(CORE_ADDR memaddr)
 {
-  gdb_byte op = read_memory_unsigned_integer(memaddr, 1);
+  gdb_byte op = (gdb_byte)read_memory_unsigned_integer(memaddr, 1);
 
   /* C2 and CA are 'RET imm16' instructions: */
   if ((op == 0xc3) || (op == 0xcb) || (op == 0xc2) || (op == 0xca))
@@ -127,7 +127,7 @@ x86_picbase_setup_pattern_p(CORE_ADDR memaddr, int *regnum)
       || (read_memory_unsigned_integer((memaddr + 1), 4) != 0))
     return 0;
 
-  op = read_memory_unsigned_integer((memaddr + 5), 1);
+  op = (gdb_byte)read_memory_unsigned_integer((memaddr + 5), 1);
   if ((op & 0xf8) != 0x58)
     return 0;
 
@@ -217,23 +217,23 @@ x86_64_machine_regno_to_gdb_regno(int r)
    If REGNUM is non-NULL, it is filled with the register # that was pushed.  */
 
 static int
-x86_push_reg_p (CORE_ADDR memaddr, int *regnum)
+x86_push_reg_p(CORE_ADDR memaddr, int *regnum)
 {
   gdb_byte op;
   int prefix_bit = 0;
-  op = read_memory_unsigned_integer (memaddr, 1);
+  op = (gdb_byte)read_memory_unsigned_integer(memaddr, 1);
 
   /* If this is a REX.W prefix opcode with the B bit set to 1, we'll need
      to add a high bit to the register number in the next byte.  */
   if (op == 0x41)
     {
-      prefix_bit = 1 << 3;
-      op = read_memory_unsigned_integer (memaddr + 1, 1);
+      prefix_bit = (1 << 3);
+      op = (gdb_byte)read_memory_unsigned_integer((memaddr + 1), 1);
     }
 
-  if (op >= 0x50 && op <= 0x57)
+  if ((op >= 0x50) && (op <= 0x57))
     {
-      int r = (op - 0x50) | prefix_bit;
+      int r = ((op - 0x50) | prefix_bit);
       if (regnum != NULL)
         *regnum = r;
       return 1;
@@ -241,17 +241,16 @@ x86_push_reg_p (CORE_ADDR memaddr, int *regnum)
   return 0;
 }
 
-/* Return 1 if this is a POP insn.  */
-
+/* Return 1 if this is a POP insn: */
 static int
-x86_pop_p (CORE_ADDR memaddr)
+x86_pop_p(CORE_ADDR memaddr)
 {
-  gdb_byte op = read_memory_unsigned_integer (memaddr, 1);
+  gdb_byte op = (gdb_byte)read_memory_unsigned_integer(memaddr, 1);
 
   /* A REX.W prefix opcode indicating that the register being popped is
      in the second half of the reg set.  */
   if (op == 0x41)
-    op = read_memory_unsigned_integer (memaddr + 1, 1);
+    op = (gdb_byte)read_memory_unsigned_integer((memaddr + 1), 1);
 
   /* 58+ rd      POP r32 */
   if ((op & 0xf8) == 0x58)
@@ -272,22 +271,22 @@ x86_pop_p (CORE_ADDR memaddr)
    EBX was saved at EBP -12.  */
 
 static int
-x86_mov_reg_to_local_stack_frame_p (CORE_ADDR memaddr, int *regnum, int *offset)
+x86_mov_reg_to_local_stack_frame_p(CORE_ADDR memaddr, int *regnum, int *offset)
 {
   gdb_byte op;
   int source_reg_mod = 0;
   int target_reg_mod = 0;
-  op = read_memory_unsigned_integer (memaddr, 1);
+  op = (gdb_byte)read_memory_unsigned_integer(memaddr, 1);
 
-  if (REX_W_PREFIX_P (op))
+  if (REX_W_PREFIX_P(op))
     {
-      source_reg_mod = REX_W_R (op) << 3;
-      target_reg_mod = REX_W_B (op) << 3;
+      source_reg_mod = (REX_W_R(op) << 3);
+      target_reg_mod = (REX_W_B(op) << 3);
       /* The target register should be ebp/rbp which doesn't require an
          extra bit to specify.  */
       if (target_reg_mod == 1)
         return 0;
-      op = read_memory_unsigned_integer (++memaddr, 1);
+      op = (gdb_byte)read_memory_unsigned_integer(++memaddr, 1);
     }
 
   /* Detect a 'mov %ebx,-0xc(%ebp)' type instruction.
@@ -298,7 +297,7 @@ x86_mov_reg_to_local_stack_frame_p (CORE_ADDR memaddr, int *regnum, int *offset)
       int saved_reg;
       int off;
 
-      op = read_memory_unsigned_integer(memaddr + 1, 1);
+      op = (gdb_byte)read_memory_unsigned_integer((memaddr + 1), 1);
       /* Mask off the 3-5 bits which indicate the destination register
          if this is a ModR/M byte.  */
       op_sans_dest_reg = (op & (~0x38));
@@ -344,7 +343,7 @@ x86_mov_func_arg_to_reg_p(CORE_ADDR memaddr, int *regnum, int *offset)
   gdb_byte op;
   int source_reg_mod = 0;
   int target_reg_mod = 0;
-  op = read_memory_unsigned_integer(memaddr, 1);
+  op = (gdb_byte)read_memory_unsigned_integer(memaddr, 1);
 
   if (REX_W_PREFIX_P(op))
     {
@@ -354,7 +353,7 @@ x86_mov_func_arg_to_reg_p(CORE_ADDR memaddr, int *regnum, int *offset)
          extra bit to specify.  */
       if (target_reg_mod == 1)
         return 0;
-      op = read_memory_unsigned_integer(++memaddr, 1);
+      op = (gdb_byte)read_memory_unsigned_integer(++memaddr, 1);
     }
 
   if (op == 0x8b)
@@ -362,7 +361,7 @@ x86_mov_func_arg_to_reg_p(CORE_ADDR memaddr, int *regnum, int *offset)
       int op_sans_dest_reg;
       int saved_reg;
       int off;
-      op = read_memory_unsigned_integer(memaddr + 1, 1);
+      op = (gdb_byte)read_memory_unsigned_integer((memaddr + 1), 1);
       /* Mask off the 3-5 bits which indicate the destination register
          if this is a ModR/M byte.  */
       op_sans_dest_reg = (op & (~0x38));
@@ -445,22 +444,22 @@ x86_unopt_arg_copy_to_local_stack_p (CORE_ADDR memaddr)
    used to iterate over it.  */
 
 static int32_t
-x86_sub_esp_pattern_p (CORE_ADDR memaddr)
+x86_sub_esp_pattern_p(CORE_ADDR memaddr)
 {
   gdb_byte op, next_op;
 
-  op = read_memory_unsigned_integer (memaddr, 1);
+  op = (gdb_byte)read_memory_unsigned_integer(memaddr, 1);
   /* Consume x86_64 REX_W prefix with no register bit additions. */
   if (op == 0x48)
     {
-      op = read_memory_unsigned_integer (++memaddr, 1);
+      op = (gdb_byte)read_memory_unsigned_integer(++memaddr, 1);
     }
-  next_op = read_memory_unsigned_integer (memaddr + 1, 1);
+  next_op = (gdb_byte)read_memory_unsigned_integer((memaddr + 1), 1);
 
   /* sub with 8-bit immediate operand.  */
   if (op == 0x83 && next_op == 0xec)
     {
-      return (int8_t) read_memory_integer (memaddr + 2, 1);
+      return (int8_t)read_memory_integer((memaddr + 2), 1);
     }
 
   /* sub with 32-bit immediate operand.  */
@@ -480,13 +479,13 @@ x86_sub_esp_pattern_p (CORE_ADDR memaddr)
    instructions.  */
 
 static int
-x86_jump_insn_p (CORE_ADDR memaddr)
+x86_jump_insn_p(CORE_ADDR memaddr)
 {
   gdb_byte op;
-  op = read_memory_unsigned_integer (memaddr, 1);
+  op = (gdb_byte)read_memory_unsigned_integer(memaddr, 1);
 
   /* Jcc */
-  if (op >= 0x70 && op <= 0x7f)
+  if ((op >= 0x70) && (op <= 0x7f))
     return 1;
   if (op == 0xe3)
     return 1;
@@ -498,8 +497,8 @@ x86_jump_insn_p (CORE_ADDR memaddr)
   /* Jcc */
   if (op == 0x0f)
     {
-      op = read_memory_unsigned_integer (memaddr + 1, 1);
-      if (op >= 0x80 && op <= 0x8f)
+      op = (gdb_byte)read_memory_unsigned_integer((memaddr + 1), 1);
+      if ((op >= 0x80) && (op <= 0x8f))
         return 1;
     }
 
@@ -543,7 +542,7 @@ x86_blocks_context_var_copy_pattern_p(CORE_ADDR memaddr, int wordsize)
 
   /* Now look for a 'mov 0x30(%rax),%rax' type instruction: */
   off = 0;
-  op = read_memory_unsigned_integer(memaddr, 1);
+  op = (gdb_byte)read_memory_unsigned_integer(memaddr, 1);
 
   if (REX_W_PREFIX_P(op))
     {
@@ -552,13 +551,13 @@ x86_blocks_context_var_copy_pattern_p(CORE_ADDR memaddr, int wordsize)
       if (source_reg_mod != target_reg_mod)
         return 0;
       off++;
-      op = read_memory_unsigned_integer(memaddr + off, 1);
+      op = (gdb_byte)read_memory_unsigned_integer((memaddr + off), 1);
     }
   if (op != 0x8b)
     return 0;
 
   off++;
-  op = read_memory_unsigned_integer(memaddr + off, 1);
+  op = (gdb_byte)read_memory_unsigned_integer((memaddr + off), 1);
   /* See if this ModR/M has a Mod of 01 -- (reg)+disp8  */
   if ((op & ~0x3f) != 0x40)
     return 0;
@@ -1112,6 +1111,9 @@ x86_frame_cache(struct frame_info *next_frame, void **this_cache,
       return cache;
     }
 
+  if (prologue_parsed_to == INVALID_ADDRESS) {
+    ; /* ??? */
+  }
   prologue_parsed_to = x86_quickie_analyze_prologue(cache->func_start_addr,
                                                     current_pc, cache,
                                                     potentially_frameless);
@@ -1414,7 +1416,7 @@ x86_cxx_virtual_override_thunk_trampline (CORE_ADDR pc)
         return 0;
 
       /* E9 is JMP with a 4-byte relative displacement: */
-      op = read_memory_unsigned_integer(pc, 1);
+      op = (gdb_byte)read_memory_unsigned_integer(pc, 1);
       if (op == 0xe9)
         {
           int64_t off = read_memory_integer(pc + 1, 4);

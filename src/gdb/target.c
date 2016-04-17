@@ -664,8 +664,8 @@ update_current_target(void)
      since there is no way to say a target layer doesn't provide the
      value.  So we will pull them off the top target...
      FIXME: So far I have only done it for async_mask_value (the only
-     one I care about at present.  Go back & check all the others as well.  */
-
+     one I care about at present).  Go back & check all the others as well: */
+  gdb_assert(target_stack != NULL);
   current_target.to_async_mask_value = target_stack->to_async_mask_value;
 
   /* APPLE LOCAL:  Call setup_target_debug() here.  FSF does it over
@@ -800,7 +800,8 @@ pop_target (void)
 int
 target_read_string(CORE_ADDR memaddr, char **string, int len, int *errnop)
 {
-  int tlen, origlen, offset, i;
+  size_t tlen;
+  int origlen, offset, i;
   gdb_byte buf[4];
   int errcode = 0;
   char *buffer;
@@ -821,7 +822,7 @@ target_read_string(CORE_ADDR memaddr, char **string, int len, int *errnop)
 
   while (len > 0)
     {
-      tlen = MIN((size_t)len, (4UL - (memaddr & 3UL)));
+      tlen = (size_t)MIN((size_t)len, (4UL - (memaddr & 3UL)));
       offset = (memaddr & 3U);
 
       errcode = target_read_memory((memaddr & ~3), buf, sizeof(buf));
@@ -837,7 +838,7 @@ target_read_string(CORE_ADDR memaddr, char **string, int len, int *errnop)
 	    goto done;
 	}
 
-      if ((bufptr - buffer + tlen) > buffer_allocated)
+      if (((bufptr - buffer) + (ptrdiff_t)tlen) > buffer_allocated)
 	{
 	  unsigned int bytes;
 	  bytes = (bufptr - buffer);
@@ -846,7 +847,7 @@ target_read_string(CORE_ADDR memaddr, char **string, int len, int *errnop)
 	  bufptr = (buffer + bytes);
 	}
 
-      for (i = 0; i < tlen; i++)
+      for (i = 0; i < (int)tlen; i++)
 	{
 	  *bufptr++ = buf[i + offset];
 	  if (buf[i + offset] == '\000')

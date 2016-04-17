@@ -1175,9 +1175,12 @@ find_field(struct type *type, char *name)
       if (this_name && strcmp(name, this_name) == 0)
 	return i;
 
-      if (this_name[0] == '\0')
+      if ((this_name != NULL) && (this_name[0] == '\0'))
 	internal_error(__FILE__, __LINE__,
 		       _("find_field: anonymous unions not supported"));
+      else if (this_name == NULL)
+	internal_error(__FILE__, __LINE__,
+		       _("find_field: NULL union names not supported"));
     }
 
   error(_("Failed to find member named `%s' in struct/union `%s'"),

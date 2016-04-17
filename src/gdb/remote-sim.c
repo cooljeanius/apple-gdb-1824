@@ -46,61 +46,65 @@
 
 /* Prototypes */
 
-extern void _initialize_remote_sim (void);
+extern void _initialize_remote_sim(void);
 
-static void dump_mem (char *buf, int len);
+static void dump_mem(char *buf, int len);
 
-static void init_callbacks (void);
+static void init_callbacks(void);
 
-static void end_callbacks (void);
+static void end_callbacks(void);
 
-static int gdb_os_write_stdout (host_callback *, const char *, int);
+static int gdb_os_write_stdout(host_callback *, const char *, int);
 
-static void gdb_os_flush_stdout (host_callback *);
+static void gdb_os_flush_stdout(host_callback *);
 
-static int gdb_os_write_stderr (host_callback *, const char *, int);
+static int gdb_os_write_stderr(host_callback *, const char *, int);
 
-static void gdb_os_flush_stderr (host_callback *);
+static void gdb_os_flush_stderr(host_callback *);
 
-static int gdb_os_poll_quit (host_callback *);
+static int gdb_os_poll_quit(host_callback *);
 
-/* printf_filtered is depreciated */
-static void gdb_os_printf_filtered (host_callback *, const char *, ...);
+/* printf_filtered is deprecated: */
+static void gdb_os_printf_filtered(host_callback *, const char *, ...)
+  ATTRIBUTE_DEPRECATED ATTR_FORMAT(gnu_printf, 2, 3);
 
-static void gdb_os_vprintf_filtered (host_callback *, const char *, va_list);
+static void gdb_os_vprintf_filtered(host_callback *, const char *, va_list)
+  ATTR_FORMAT(gnu_printf, 2, 0);
 
-static void gdb_os_evprintf_filtered (host_callback *, const char *, va_list);
+static void gdb_os_evprintf_filtered(host_callback *, const char *, va_list)
+  ATTR_FORMAT(gnu_printf, 2, 0);
 
-static void gdb_os_error (host_callback *, const char *, ...);
+static void gdb_os_error(host_callback *, const char *, ...)
+  ATTR_FORMAT(gnu_printf, 2, 3);
 
-static void gdbsim_fetch_register (int regno);
+static void gdbsim_fetch_register(int regno);
 
-static void gdbsim_store_register (int regno);
+static void gdbsim_store_register(int regno);
 
-static void gdbsim_kill (void);
+static void gdbsim_kill(void);
 
-static void gdbsim_load (char *prog, int fromtty);
+static void gdbsim_load(const char *prog, int fromtty);
 
-static void gdbsim_open (char *args, int from_tty);
+static void gdbsim_open(const char *args, int from_tty);
 
-static void gdbsim_close (int quitting);
+static void gdbsim_close(int quitting);
 
-static void gdbsim_detach (char *args, int from_tty);
+static void gdbsim_detach(const char *args, int from_tty);
 
-static void gdbsim_resume (ptid_t ptid, int step, enum target_signal siggnal);
+static void gdbsim_resume(ptid_t ptid, int step, enum target_signal siggnal);
 
-static ptid_t gdbsim_wait (ptid_t ptid, struct target_waitstatus *status,
-                           gdb_client_data client_data);
+static ptid_t gdbsim_wait(ptid_t ptid, struct target_waitstatus *status,
+                          gdb_client_data client_data);
 
-static void gdbsim_prepare_to_store (void);
+static void gdbsim_prepare_to_store(void);
 
-static void gdbsim_files_info (struct target_ops *target);
+static void gdbsim_files_info(struct target_ops *target);
 
-static void gdbsim_mourn_inferior (void);
+static void gdbsim_mourn_inferior(void);
 
-static void gdbsim_stop (void);
+static void gdbsim_stop(void);
 
-void simulator_command (char *args, int from_tty);
+void simulator_command(const char *args, int from_tty);
 
 /* Naming convention:
 
@@ -181,15 +185,16 @@ end_callbacks (void)
     }
 }
 
-/* GDB version of os_write_stdout callback.  */
-
+/* GDB version of os_write_stdout callback: */
 static int
-gdb_os_write_stdout (host_callback *p, const char *buf, int len)
+gdb_os_write_stdout(host_callback *p, const char *buf, int len)
 {
+#ifdef ALLOW_UNUSED_VARIABLES
   int i;
   char b[2];
+#endif /* ALLOW_UNUSED_VARIABLES */
 
-  ui_file_write (gdb_stdtarg, buf, len);
+  ui_file_write(gdb_stdtarg, buf, len);
   return len;
 }
 
@@ -298,7 +303,9 @@ gdbsim_fetch_register (int regno)
 	/* For moment treat a `does not exist' register the same way
            as an ``unavailable'' register.  */
 	char buf[MAX_REGISTER_SIZE];
+#ifdef ALLOW_UNUSED_VARIABLES
 	int nr_bytes;
+#endif /* ALLOW_UNUSED_VARIABLES */
 	memset (buf, 0, MAX_REGISTER_SIZE);
 	regcache_raw_supply (current_regcache, regno, buf);
 	set_register_cached (regno, -1);
@@ -394,18 +401,18 @@ gdbsim_kill (void)
    GDB's symbol tables to match.  */
 
 static void
-gdbsim_load (char *prog, int fromtty)
+gdbsim_load(const char *prog, int fromtty)
 {
-  if (sr_get_debug ())
-    printf_filtered ("gdbsim_load: prog \"%s\"\n", prog);
+  if (sr_get_debug())
+    printf_filtered("gdbsim_load: prog \"%s\"\n", prog);
 
   inferior_ptid = null_ptid;
 
   /* FIXME: We will print two messages on error.
      Need error to either not print anything if passed NULL or need
      another routine that doesn't take any arguments.  */
-  if (sim_load (gdbsim_desc, prog, NULL, fromtty) == SIM_RC_FAIL)
-    error (_("unable to load program"));
+  if (sim_load(gdbsim_desc, (char *)prog, NULL, fromtty) == SIM_RC_FAIL)
+    error(_("unable to load program"));
 
   /* FIXME: If a load command should reset the targets registers then
      a call to sim_create_inferior() should go here. */
@@ -472,7 +479,7 @@ gdbsim_create_inferior (char *exec_file, char *args, char **env, int from_tty)
 /* Called when selecting the simulator. EG: (gdb) target sim name.  */
 
 static void
-gdbsim_open (char *args, int from_tty)
+gdbsim_open(const char *args, int from_tty)
 {
   int len;
   char *arg_buf;
@@ -576,7 +583,7 @@ gdbsim_close (int quitting)
    Use this when you want to detach and do something else with your gdb.  */
 
 static void
-gdbsim_detach (char *args, int from_tty)
+gdbsim_detach(const char *args, int from_tty)
 {
   if (sr_get_debug ())
     printf_filtered ("gdbsim_detach: args \"%s\"\n", args);
@@ -662,28 +669,28 @@ gdbsim_wait(ptid_t ptid, struct target_waitstatus *status,
 #if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
 # pragma unused (client_data)
 #endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
-  static RETSIGTYPE (*prev_sigint)();
+  static RETSIGTYPE (*prev_sigint)(int);
   int sigrc = 0;
   enum sim_stop reason = sim_running;
 
   if (sr_get_debug())
     printf_filtered("gdbsim_wait\n");
 
-#if defined (HAVE_SIGACTION) && defined (SA_RESTART)
+#if defined(HAVE_SIGACTION) && defined(SA_RESTART)
   {
     struct sigaction sa, osa;
     sa.sa_handler = gdbsim_cntrl_c;
-    sigemptyset (&sa.sa_mask);
+    sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
-    sigaction (SIGINT, &sa, &osa);
+    sigaction(SIGINT, &sa, &osa);
     prev_sigint = osa.sa_handler;
   }
 #else
-  prev_sigint = signal (SIGINT, gdbsim_cntrl_c);
-#endif
-  sim_resume (gdbsim_desc, resume_step,
-	      target_signal_to_host (resume_siggnal));
-  signal (SIGINT, prev_sigint);
+  prev_sigint = signal(SIGINT, gdbsim_cntrl_c);
+#endif /* HAVE_SIGACTION && SA_RESTART */
+  sim_resume(gdbsim_desc, resume_step,
+	     target_signal_to_host(resume_siggnal));
+  signal(SIGINT, prev_sigint);
   resume_step = 0;
 
   sim_stop_reason (gdbsim_desc, &reason, &sigrc);
@@ -744,9 +751,9 @@ gdbsim_prepare_to_store (void)
    Returns the number of bytes transferred. */
 
 static int
-gdbsim_xfer_inferior_memory (CORE_ADDR memaddr, gdb_byte *myaddr, int len,
-			     int write, struct mem_attrib *attrib,
-			     struct target_ops *target)
+gdbsim_xfer_inferior_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len,
+			    int write, struct mem_attrib *attrib,
+			    struct target_ops *target)
 {
   if (!program_loaded)
     error(_("No program loaded."));
@@ -756,8 +763,8 @@ gdbsim_xfer_inferior_memory (CORE_ADDR memaddr, gdb_byte *myaddr, int len,
       /* FIXME: Send to something other than STDOUT? */
       printf_filtered("gdbsim_xfer_inferior_memory: myaddr 0x");
       gdb_print_host_address(myaddr, gdb_stdout);
-      printf_filtered (", memaddr 0x%s, len %d, write %d\n",
-		       paddr_nz(memaddr), len, write);
+      printf_filtered(", memaddr 0x%s, len %d, write %d\n",
+		      paddr_nz(memaddr), len, write);
       if (sr_get_debug() && write)
 	dump_mem((char *)myaddr, len);
     }
@@ -775,10 +782,11 @@ gdbsim_xfer_inferior_memory (CORE_ADDR memaddr, gdb_byte *myaddr, int len,
   return len;
 }
 
+/* */
 static void
-gdbsim_files_info (struct target_ops *target)
+gdbsim_files_info(struct target_ops *target)
 {
-  char *file = "nothing";
+  const char *file = "nothing";
 
   if (exec_bfd)
     file = bfd_get_filename (exec_bfd);
@@ -822,11 +830,10 @@ gdbsim_remove_breakpoint (CORE_ADDR addr, bfd_byte *contents_cache)
    simulator must do any command interpretation work.  */
 
 void
-simulator_command (char *args, int from_tty)
+simulator_command(const char *args, int from_tty)
 {
   if (gdbsim_desc == NULL)
     {
-
       /* PREVIOUSLY: The user may give a command before the simulator
          is opened. [...] (??? assuming of course one wishes to
          continue to allow commands to be sent to unopened simulators,
@@ -837,14 +844,14 @@ simulator_command (char *args, int from_tty)
          commands, is restricted to the period when the channel to the
          simulator is open. */
 
-      error (_("Not connected to the simulator target"));
+      error(_("Not connected to the simulator target"));
     }
 
-  sim_do_command (gdbsim_desc, args);
+  sim_do_command(gdbsim_desc, (char *)args);
 
   /* Invalidate the register cache, in case the simulator command does
      something funny. */
-  registers_changed ();
+  registers_changed();
 }
 
 /* Define the target subroutine names */

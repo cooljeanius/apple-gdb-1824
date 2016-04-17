@@ -896,7 +896,7 @@ yylex(void)
 
     case '\'' :
     case '"':
-      quote = c;
+      quote = (char)c;
       for (namelen = 1; ((c = tokstart[namelen]) != quote) && (c != '\0'); namelen++)
 	if (c == '\\')
 	  {
@@ -907,9 +907,12 @@ yylex(void)
 		if ((c >= '0') && (c <= '9'))
 		  c = tokstart[++namelen];
 	      }
+	    if (c == 0) {
+	      ; /* ??? */
+	    }
 	  }
-      if(c != quote)
-	 error("Unterminated string or character constant.");
+      if (c != quote)
+	 error(_("Unterminated string or character constant."));
       yylval.sval.ptr = (tokstart + 1);
       yylval.sval.length = (namelen - 1);
       lexptr += namelen + 1;

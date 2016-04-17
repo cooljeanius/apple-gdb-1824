@@ -502,6 +502,9 @@ i386_macosx_dr_set(int regnum, uint64_t value)
     }
   ret = vm_deallocate(mach_task_self(), (vm_address_t)thread_list,
                       (nthreads * sizeof(int)));
+  if (ret == KERN_FAILURE) {
+    printf_unfiltered("Failure via vm_deallocate\n");
+  }
 }
 
 

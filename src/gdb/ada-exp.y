@@ -978,4 +978,8 @@ _initialize_ada_exp(void)
 struct stoken(*dummy_string_to_ada_operator)(struct stoken)
      = string_to_operator;
 
+#ifdef qsort
+# undef qsort
+#endif /* qsort */
+
 /* End of ada-exp.y */

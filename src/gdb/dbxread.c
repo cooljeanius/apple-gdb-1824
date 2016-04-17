@@ -1470,7 +1470,7 @@ find_stab_function_addr(const char *namestring, const char *filename,
     p = (char *)namestring;
   n = (p - namestring);
   p = (char *)alloca(n + 2UL);
-  strncpy(p, namestring, n);
+  strncpy(p, namestring, (n - 1UL));
   p[n] = 0;
 
   msym = lookup_minimal_symbol(p, filename, objfile);
@@ -2817,10 +2817,11 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
 #ifdef SOFUN_ADDRESS_MAYBE_MISSING
 	    /* Do not fix textlow==0 for .o or NLM files, as 0 is a legit
 	       value for the bottom of the text seg in those cases. */
-	    if (nlist.n_value == objfile_text_section_offset (objfile))
+	    if ((nlist.n_value == objfile_text_section_offset(objfile))
+		&& (pst != NULL))
 	      {
 		CORE_ADDR minsym_valu =
-		  find_stab_function_addr (namestring, pst->filename, objfile);
+		  find_stab_function_addr(namestring, pst->filename, objfile);
 		/* find_stab_function_addr will return 0 if the minimal
 		   symbol wasn't found.  (Unfortunately, this might also
 		   be a valid address.)  Anyway, if it *does* return 0,
@@ -3094,6 +3095,10 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
       in_dwarf_debug_map = 0;
       missing_oso_file = 0;
     }
+  
+  if (in_dwarf_debug_map == missing_oso_file) {
+    ; /* ??? */
+  }
 
   clear_containing_archive_cache();
   do_cleanups(back_to);
@@ -3703,7 +3708,7 @@ oso_scan_partial_symtab(struct partial_symtab *pst)
 
 	    prev_so_symnum = symnum;
 
-	    if (*namestring == '\0')
+	    if ((*namestring == '\0') && (current_pst != NULL))
 	      {
 		/* This is the end of one symtab.
                    Consolidate the dependencies.  */
@@ -3713,11 +3718,14 @@ oso_scan_partial_symtab(struct partial_symtab *pst)
 		current_pst->number_of_dependencies = dependencies_used;
 		if (dependencies_used)
 		  {
-		    current_pst->dependencies = (struct partial_symtab **)
-		      obstack_alloc (&objfile->objfile_obstack,
-                          dependencies_used * sizeof (struct partial_symtab *));
-		    memcpy (current_pst->dependencies, dependency_list,
-                          dependencies_used * sizeof (struct partial_symtab *));
+		    current_pst->dependencies =
+		      ((struct partial_symtab **)
+		       obstack_alloc(&objfile->objfile_obstack,
+				     (dependencies_used
+				      * sizeof(struct partial_symtab *))));
+		    memcpy(current_pst->dependencies, dependency_list,
+			   (dependencies_used
+			    * sizeof(struct partial_symtab *)));
 		  }
 		else
 		  current_pst->dependencies = 0;
@@ -3727,8 +3735,8 @@ oso_scan_partial_symtab(struct partial_symtab *pst)
 		continue;
 	      }
 
-	    p = strrchr (namestring, '/');
-	    if (p && *(p + 1) == '\000')
+	    p = strrchr(namestring, '/');
+	    if (p && (*(p + 1) == '\000'))
 	      continue;		/* Simply ignore directory name SOs */
 
 	    /* Look up the partial_symtab corresponding to this SO.
@@ -5102,7 +5110,6 @@ process_one_symbol(int type, int desc, CORE_ADDR valu, const char *name,
     {
     case N_FUN:
     case N_FNAME:
-
       if (*name == '\000')
 	{
 	  CORE_ADDR valu_abs;
@@ -5130,7 +5137,6 @@ process_one_symbol(int type, int desc, CORE_ADDR valu, const char *name,
 	  else
 	    saw_fun_start = 0;
 	  /* APPLE LOCAL END */
-
 
 	  /* The following check is added before recording line 0 at
 	     end of function so as to handle hand-generated stabs
@@ -5206,8 +5212,8 @@ process_one_symbol(int type, int desc, CORE_ADDR valu, const char *name,
 	   N_SO, the linker did not relocate them (sigh).  */
 	valu += last_source_start_addr;
 #endif /* BLOCK_ADDRESS_ABSOLUTE */
-
       newstack = push_context(desc, valu);
+      gdb_assert(newstack != NULL);
       break;
 
     case N_RBRAC:
@@ -5692,7 +5698,7 @@ no enclosing block"));
 
      Generally this is used so that an alias can refer to its main
      symbol.  */
-  if (name[0] == '#')
+  if ((name != NULL) && (name[0] == '#'))
     {
       /* Initialize symbol reference names and determine if this is a
          definition.  If a symbol reference is being defined, go ahead
@@ -5711,6 +5717,7 @@ no enclosing block"));
 	if (!ref_search(refnum))
 	  ref_add(refnum, 0, name, valu);
       name = s;
+      gdb_assert(name != NULL);
     }
 
   previous_stab_code = type;

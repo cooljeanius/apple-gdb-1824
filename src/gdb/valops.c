@@ -2301,11 +2301,10 @@ find_oload_champ_namespace_loop (struct type **arg_types, int nargs,
     {
       searched_deeper = 1;
 
-      if (find_oload_champ_namespace_loop (arg_types, nargs,
-					   func_name, qualified_name,
-					   next_namespace_len,
-					   oload_syms, oload_champ_bv,
-					   oload_champ))
+      if (find_oload_champ_namespace_loop(arg_types, nargs, func_name,
+					  qualified_name, next_namespace_len,
+					  oload_syms, oload_champ_bv,
+					  oload_champ))
 	{
 	  return 1;
 	}
@@ -2320,9 +2319,10 @@ find_oload_champ_namespace_loop (struct type **arg_types, int nargs,
      function symbol to start off with.)  */
 
   old_cleanups = make_cleanup(xfree, *oload_syms);
+  gdb_assert(old_cleanups != NULL);
   old_cleanups = make_cleanup(xfree, *oload_champ_bv);
   new_namespace = (char *)alloca(namespace_len + 1UL);
-  strncpy(new_namespace, qualified_name, namespace_len);
+  strncpy(new_namespace, qualified_name, (namespace_len - 1UL));
   new_namespace[namespace_len] = '\0';
   new_oload_syms = make_symbol_overload_list(func_name,
 					     new_namespace);
@@ -3068,10 +3068,11 @@ value_slice (struct value *array, int lowbound, int length)
 	    error (_("internal error accessing bitstring"));
 	  else if (element > 0)
 	    {
-	      int j = i % TARGET_CHAR_BIT;
+	      int j = (i % TARGET_CHAR_BIT);
 	      if (BITS_BIG_ENDIAN)
-		j = TARGET_CHAR_BIT - 1 - j;
-	      value_contents_raw (slice)[i / TARGET_CHAR_BIT] |= (1 << j);
+		j = (TARGET_CHAR_BIT - 1 - j);
+	      value_contents_raw(slice)[i / TARGET_CHAR_BIT] |=
+		(gdb_byte)(1U << j);
 	    }
 	}
       /* We should set the address, bitssize, and bitspos, so the clice

@@ -630,6 +630,9 @@ macosx_exception_thread(void *arg)
 #else
 	  kret = KERN_FAILURE;
 #endif /* mach_exc_server */
+	  if (kret == KERN_FAILURE) {
+	    warning(_("problem setting up mach exception server"));
+	  }
 	  static_message = NULL;
 
 	  excthread_debug_re(2, "received exception %d:", next_msg_ctr);

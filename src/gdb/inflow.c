@@ -237,6 +237,11 @@ terminal_inferior (void)
          places we use F_SETFL, so I am inclined to think perhaps there
          is some reason, however perverse.  Perhaps not though...  */
       result = fcntl(0, F_SETFL, tflags_inferior);
+      if (result == -1) {
+	/* There are a lot of values errno could have here: */
+	warning(_("inflow: fcntl() failed with errno %d: %s.\n"), errno,
+		safe_strerror(errno));
+      }
       result = fcntl(0, F_SETFL, tflags_inferior);
       OOPSY ("fcntl F_SETFL");
 #endif /* F_GETFL */
@@ -390,15 +395,19 @@ terminal_ours_1(int output_only)
 	{
 #ifdef HAVE_TERMIOS
 	  result = tcsetpgrp(0, our_process_group);
-# if 0
+# if defined(errno) && defined(EINVAL) && defined(EBADF) && defined(ENOTTY) && \
+     defined(EPERM) && !defined(ultrix)
 	  /* This fails on Ultrix with EINVAL if you run the testsuite
 	     in the background with nohup, and then log out.  GDB never
 	     used to check for an error here, so perhaps there are other
 	     such situations as well.  */
-	  if (result == -1)
-	    fprintf_unfiltered (gdb_stderr, "[tcsetpgrp failed in terminal_ours: %s]\n",
-				safe_strerror (errno));
-# endif /* 0 */
+	  if ((result == -1)
+	      && ((errno == EINVAL) || (errno == EBADF) || (errno == ENOTTY)
+		  || (errno == EPERM)))
+	    fprintf_unfiltered(gdb_stderr,
+			       "[tcsetpgrp failed in terminal_ours with errno %d: %s]\n",
+			       errno, safe_strerror(errno));
+# endif /* errno && EINVAL && EBADF && ENOTTY && EPERM && !ultrix */
 #endif /* termios */
 
 #ifdef HAVE_SGTTY
@@ -426,6 +435,11 @@ terminal_ours_1(int output_only)
          places we use F_SETFL, so I am inclined to think perhaps there
          is some reason, however perverse.  Perhaps not though...  */
       result = fcntl(0, F_SETFL, tflags_ours);
+      if (result == -1) {
+	/* There are a lot of values errno could have here: */
+	warning(_("inflow: fcntl() failed with errno %d: %s.\n"), errno,
+		safe_strerror(errno));
+      }
       result = fcntl(0, F_SETFL, tflags_ours);
 #endif /* F_GETFL */
 

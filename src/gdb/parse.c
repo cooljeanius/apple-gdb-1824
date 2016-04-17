@@ -993,28 +993,30 @@ operator_length_standard (struct expression *expr, int endpos,
    In the process, convert it from suffix to prefix form.  */
 
 static void
-prefixify_subexp (struct expression *inexpr,
-		  struct expression *outexpr, int inend, int outbeg)
+prefixify_subexp(struct expression *inexpr, struct expression *outexpr,
+		 int inend, int outbeg)
 {
   int oplen;
   int args;
   int i;
-  int *arglens;
+  int *arglens = NULL;
 
-  operator_length (inexpr, inend, &oplen, &args);
+  operator_length(inexpr, inend, &oplen, &args);
 
   /* Copy the final operator itself, from the end of the input
      to the beginning of the output.  */
   inend -= oplen;
-  memcpy (&outexpr->elts[outbeg], &inexpr->elts[inend],
-	  EXP_ELEM_TO_BYTES (oplen));
+  memcpy(&outexpr->elts[outbeg], &inexpr->elts[inend],
+	 EXP_ELEM_TO_BYTES(oplen));
   outbeg += oplen;
 
   /* Find the lengths of the arg subexpressions.  */
-  arglens = (int *) alloca (args * sizeof (int));
-  for (i = args - 1; i >= 0; i--)
+  arglens = (int *)alloca(args * sizeof(int));
+  arglens[0] = 0;
+  arglens[args] = 0;
+  for (i = (args - 1); i >= 0; i--)
     {
-      oplen = length_of_subexp (inexpr, inend);
+      oplen = length_of_subexp(inexpr, inend);
       arglens[i] = oplen;
       inend -= oplen;
     }
@@ -1029,7 +1031,7 @@ prefixify_subexp (struct expression *inexpr,
     {
       oplen = arglens[i];
       inend += oplen;
-      prefixify_subexp (inexpr, outexpr, inend, outbeg);
+      prefixify_subexp(inexpr, outexpr, inend, outbeg);
       outbeg += oplen;
     }
 }

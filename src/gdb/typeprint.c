@@ -159,7 +159,7 @@ get_single_quote_typename(void)
 char *
 type_sprint_quoted(struct type *type, const char *varstring, int show)
 {
-  char *volatile ret_val;
+  char *volatile ret_val = NULL;
   struct gdb_exception e;
   int old_value = set_single_quote_typename(1);
   TRY_CATCH(e, RETURN_MASK_ERROR)

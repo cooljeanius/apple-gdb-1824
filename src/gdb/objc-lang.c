@@ -2252,7 +2252,7 @@ objc_check_safe_to_run_all_threads(void)
 int
 objc_setup_safe_print(struct cleanup **cleanup)
 {
-  volatile enum objc_debugger_mode_result retval;
+  volatile enum objc_debugger_mode_result retval = objc_debugger_mode_unknown;
   struct cleanup *ret_cleanup = make_cleanup(null_cleanup, NULL);
   struct cleanup *lock_cleanup;
   int safe_p = 0;
@@ -3475,8 +3475,14 @@ find_implementation_from_class(CORE_ADDR objc_class, CORE_ADDR sel)
     volatile CORE_ADDR class_addr;
     struct objc_class class_str;
     char class_name[2048];
-    char *ptr;
+    char *ptr = NULL;
     struct gdb_exception e;
+    int class_name_index = 0;
+
+    while (class_name_index < 2048) {
+      class_name[class_name_index] = '\0';
+      class_name_index++;
+    }
 
     TRY_CATCH(e, RETURN_MASK_ALL)
       {
@@ -3745,7 +3751,6 @@ find_implementation(CORE_ADDR object, CORE_ADDR sel, int stret)
       do_cleanups (cleanup);
 
       /* APPLE LOCAL use '[object class]' rather than isa  */
-
 
       if (debug_objc)
         fprintf_unfiltered (gdb_stdlog,

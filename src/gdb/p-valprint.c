@@ -106,6 +106,9 @@ pascal_val_print(struct type *type, const gdb_byte *valaddr,
 
 	      LA_PRINT_STRING (stream, valaddr + embedded_offset, len, 1, 0);
 	      i = len;
+	      if (i > 0) {
+		; /* ??? */
+	      }
 	    }
 	  else
 	    {

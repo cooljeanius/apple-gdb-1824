@@ -30,6 +30,7 @@
 #include "symtab.h"
 #include "symfile.h"
 #include "objfiles.h"
+#include "gdb_assert.h"
 #include "gdb_string.h"
 #include "value.h"
 #include "c-lang.h"
@@ -379,14 +380,14 @@ java_link_class_type(struct type *type, struct value *clas)
                                                "interface_len", NULL,
                                                "structure"));
 #endif /* 1 */
-  TYPE_N_BASECLASSES(type) = (tsuper == NULL ? 0 : 1) + ninterfaces;
+  TYPE_N_BASECLASSES(type) = (short)(((tsuper == NULL) ? 0 : 1) + ninterfaces);
   temp = clas;
   nfields = (long)value_as_long(value_struct_elt(&temp, NULL,
                                                  "field_count", NULL,
                                                  "structure"));
   nfields += TYPE_N_BASECLASSES(type);
   nfields++;			/* Add one for dummy "class" field. */
-  TYPE_NFIELDS(type) = nfields;
+  TYPE_NFIELDS(type) = (short)nfields;
   TYPE_FIELDS(type) = ((struct field *)
                        TYPE_ALLOC(type, (sizeof(struct field) * nfields)));
 
@@ -415,6 +416,7 @@ java_link_class_type(struct type *type, struct value *clas)
 	SET_TYPE_FIELD_PRIVATE(type, 0);
     }
 
+  gdb_assert(name != NULL);
   i = strlen(name);
   if ((i > 2) && (name[i - 1] == ']') && (tsuper != NULL))
     {
@@ -502,7 +504,7 @@ java_link_class_type(struct type *type, struct value *clas)
   nmethods = (long)value_as_long(value_struct_elt(&temp, NULL,
                                                   "method_count", NULL,
                                                   "structure"));
-  TYPE_NFN_FIELDS_TOTAL(type) = nmethods;
+  TYPE_NFN_FIELDS_TOTAL(type) = (short)nmethods;
   j = (nmethods * sizeof(struct fn_field));
   fn_fields = ((struct fn_field *)
                obstack_alloc(&dynamics_objfile->objfile_obstack, j));
@@ -557,6 +559,7 @@ java_link_class_type(struct type *type, struct value *clas)
 	      if (mname != unqualified_name)
 		obstack_free (&objfile->objfile_obstack, mname);
 	      mname = fn_fieldlists[j].name;
+	      gdb_assert(mname != NULL);
 	      fn_fieldlists[j].length++;
 	      k = i - k;	/* Index of new slot. */
 	      /* Shift intervening fn_fields (between k and i) down. */

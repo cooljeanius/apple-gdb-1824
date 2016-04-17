@@ -28,6 +28,7 @@
 #include <ctype.h>
 
 #include "ui-out.h"
+#include "gdb_assert.h"
 #include "gdb_string.h"
 #include "exceptions.h"
 #include "top.h"
@@ -291,6 +292,7 @@ execute_user_command(struct cmd_list_element *c, const char *args)
   static int user_call_depth = 0;
 
   old_chain = setup_user_args(args);
+  gdb_assert(old_chain != (struct cleanup *)NULL);
 
   cmdlines = c->user_commands;
   if (cmdlines == 0)
@@ -301,6 +303,7 @@ execute_user_command(struct cmd_list_element *c, const char *args)
     error(_("Max user call depth exceeded -- command aborted."));
 
   old_chain = make_cleanup(do_restore_user_call_depth, &user_call_depth);
+  gdb_assert(old_chain != (struct cleanup *)NULL);
 
   /* Set the instream to 0, indicating execution of a
      user-defined function.  */

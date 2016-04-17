@@ -28,6 +28,7 @@
 #include "expression.h"
 #include "target.h"
 #include "language.h"
+#include "gdb_assert.h"
 #include "gdb_string.h"
 #include "doublest.h"
 #include <math.h>
@@ -205,12 +206,16 @@ value_subscript(struct value *array, struct value *idx)
   	  /* Emit warning unless we have an array of unknown size.
   	     An array of unknown size has lowerbound 0 and upperbound -1.  */
  	  if ((upperbound != -1) || (lowerbound != 0))
-	    warning("array or string index out of range");
+	    warning(_("array or string index out of range"));
 	  /* fall doing C stuff */
 	  c_style = 1;
 	}
 
        array = value_coerce_array(array);
+      
+       if (c_style == 1) {
+	 ; /* ??? */
+       }
 
        /* APPLE LOCAL: Support reverse-indexing of arrays using the
 	  'stride' attribute off of the range type of the array. */
@@ -252,7 +257,7 @@ value_subscript(struct value *array, struct value *idx)
       index -= lowerbound;
       offset = (index / TARGET_CHAR_BIT);
       byte = *((char *)value_contents(array) + offset);
-      bit_index = (index % TARGET_CHAR_BIT);
+      bit_index = (int)(index % TARGET_CHAR_BIT);
       byte >>= (BITS_BIG_ENDIAN ? (TARGET_CHAR_BIT - 1 - bit_index) : bit_index);
       v = value_from_longest(LA_BOOL_TYPE, byte & 1);
       set_value_bitpos(v, bit_index);
@@ -682,11 +687,12 @@ value_concat (struct value *arg1, struct value *arg2)
      to the second of the two concatenated values or the value to be
      repeated. */
 
-  if (TYPE_CODE (type2) == TYPE_CODE_INT)
+  if (TYPE_CODE(type2) == TYPE_CODE_INT)
     {
       struct type *tmp = type1;
       type1 = tmp;
       tmp = type2;
+      gdb_assert(tmp != (struct type *)NULL);
       inval1 = arg2;
       inval2 = arg1;
     }

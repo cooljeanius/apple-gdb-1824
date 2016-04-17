@@ -4312,6 +4312,7 @@ filename_seen(const char *file, int add, int *first)
 	  tab = (const char **)xrealloc((char *)tab,
 					(tab_alloc_size * sizeof(*tab)) + 1UL);
 	}
+      gdb_assert(tab != NULL);
       tab[tab_cur_size++] = file;
     }
 

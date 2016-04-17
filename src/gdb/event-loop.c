@@ -155,7 +155,9 @@ event_queue;
 /* Do NOT use poll() until we have had time to vet all the poll() code
    paths and ensured no new bugs or performance problems are
    introduced by using it instead of select().  */
-# undef USE_POLL
+# ifdef USE_POLL
+#  undef USE_POLL
+# endif /* USE_POLL */
 # define USE_POLL 0
 #endif /* __APPLE__ */
 /* APPLE LOCAL end poll disable */

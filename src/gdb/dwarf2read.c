@@ -356,7 +356,9 @@ asection *dwarf_eh_frame_section;
    is using it intentionally -- it just gets pulled in when
    someone uses "-g3" on their compile line thinking it will
    provide a better debug experience.  */
-#undef MACINFO_SECTION
+#ifdef MACINFO_SECTION
+# undef MACINFO_SECTION
+#endif /* MACINFO_SECTION */
 #define MACINFO_SECTION "debug_macinfo_do_not_use"
 
 /* local data types */
@@ -4508,6 +4510,7 @@ find_debug_info_for_pst(struct partial_symtab *pst, int match_amount)
       abbrev = peek_die_abbrev(info_ptr, (int *)&bytes_read, &cu);
       info_ptr = read_partial_die(&comp_unit_die, abbrev, bytes_read,
 				  dsym_abfd, info_ptr, &cu);
+      gdb_assert(info_ptr != NULL);
       if (comp_unit_die.name != NULL)
         {
           if ((match_amount == -1)
@@ -6918,39 +6921,39 @@ read_set_type (struct die_info *die, struct dwarf2_cu *cu)
 
 /* First cut: install each common block member as a global variable: */
 static void
-read_common_block (struct die_info *die, struct dwarf2_cu *cu)
+read_common_block(struct die_info *die, struct dwarf2_cu *cu)
 {
   struct die_info *child_die;
   struct attribute *attr;
   struct symbol *sym;
-  CORE_ADDR base = (CORE_ADDR) 0;
+  CORE_ADDR base = (CORE_ADDR)0UL;
 
   /* APPLE LOCAL: Keep track of the current common block name so we can
      offset symbols within that block that we find while processing this
      DIE or its children.  */
   struct attribute *nattr;
-  nattr = dwarf2_attr (die, DW_AT_MIPS_linkage_name, cu);
+  nattr = dwarf2_attr(die, DW_AT_MIPS_linkage_name, cu);
   if (!nattr)
-    nattr = dwarf2_attr (die, DW_AT_name, cu);
+    nattr = dwarf2_attr(die, DW_AT_name, cu);
   if (nattr)
-    decode_locdesc_common = DW_STRING (nattr);
+    decode_locdesc_common = DW_STRING(nattr);
 
-  attr = dwarf2_attr (die, DW_AT_location, cu);
+  attr = dwarf2_attr(die, DW_AT_location, cu);
   if (attr)
     {
       /* Support the .debug_loc offsets */
-      if (attr_form_is_block (attr))
+      if (attr_form_is_block(attr))
         {
-          base = decode_locdesc (DW_BLOCK (attr), cu);
+          base = decode_locdesc(DW_BLOCK(attr), cu);
         }
       else if (attr->form == DW_FORM_data4 || attr->form == DW_FORM_data8)
         {
-	  dwarf2_complex_location_expr_complaint ();
+	  dwarf2_complex_location_expr_complaint();
         }
       else
         {
-	  dwarf2_invalid_attrib_class_complaint ("DW_AT_location",
-						 "common block member");
+	  dwarf2_invalid_attrib_class_complaint("DW_AT_location",
+						"common block member");
         }
     }
   if (die->child != NULL)
@@ -6958,15 +6961,15 @@ read_common_block (struct die_info *die, struct dwarf2_cu *cu)
       child_die = die->child;
       while (child_die && child_die->tag)
 	{
-	  sym = new_symbol (child_die, NULL, cu);
-	  attr = dwarf2_attr (child_die, DW_AT_data_member_location, cu);
-	  if (attr)
+	  sym = new_symbol(child_die, NULL, cu);
+	  attr = dwarf2_attr(child_die, DW_AT_data_member_location, cu);
+	  if (attr && (sym != NULL))
 	    {
-	      SYMBOL_VALUE_ADDRESS (sym) =
-		base + decode_locdesc (DW_BLOCK (attr), cu);
-	      add_symbol_to_list (sym, &global_symbols);
+	      SYMBOL_VALUE_ADDRESS(sym) =
+		(base + decode_locdesc(DW_BLOCK(attr), cu));
+	      add_symbol_to_list(sym, &global_symbols);
 	    }
-	  child_die = sibling_die (child_die);
+	  child_die = sibling_die(child_die);
 	}
     }
   /* APPLE LOCAL:  Finished processing addresses that may be relative to
@@ -6993,8 +6996,8 @@ read_namespace(struct die_info *die, struct dwarf2_cu *cu)
     }
   else
     {
-      char *temp_name = typename_concat (NULL, previous_prefix, name, cu);
-      make_cleanup (xfree, temp_name);
+      char *temp_name = typename_concat(NULL, previous_prefix, name, cu);
+      make_cleanup(xfree, temp_name);
       processing_current_prefix = temp_name;
     }
 
@@ -7002,39 +7005,38 @@ read_namespace(struct die_info *die, struct dwarf2_cu *cu)
      before.  Also, add a using directive if it's an anonymous
      namespace.  */
 
-  if (dwarf2_extension (die, cu) == NULL)
+  if (dwarf2_extension(die, cu) == NULL)
     {
       struct type *type;
 
       /* FIXME: carlton/2003-06-27: Once GDB is more const-correct,
 	 this cast will hopefully become unnecessary.  */
-      type = init_type (TYPE_CODE_NAMESPACE, 0, 0,
-			(char *) processing_current_prefix,
-			objfile);
-      TYPE_TAG_NAME (type) = TYPE_NAME (type);
+      type = init_type(TYPE_CODE_NAMESPACE, 0, 0,
+		       (char *)processing_current_prefix, objfile);
+      TYPE_TAG_NAME(type) = TYPE_NAME(type);
 
-      new_symbol (die, type, cu);
-      set_die_type (die, type, cu);
+      new_symbol(die, type, cu);
+      set_die_type(die, type, cu);
 
       if (is_anonymous)
-	cp_add_using_directive (processing_current_prefix,
-				strlen (previous_prefix),
-				strlen (processing_current_prefix));
+	cp_add_using_directive(processing_current_prefix,
+			       strlen(previous_prefix),
+			       strlen(processing_current_prefix));
     }
 
-  if (die->child != NULL)
+  if ((die != NULL) && (die->child != NULL))
     {
       struct die_info *child_die = die->child;
 
       while (child_die && child_die->tag)
 	{
-	  process_die (child_die, cu);
-	  child_die = sibling_die (child_die);
+	  process_die(child_die, cu);
+	  child_die = sibling_die(child_die);
 	}
     }
 
   processing_current_prefix = previous_prefix;
-  do_cleanups (back_to);
+  do_cleanups(back_to);
 }
 
 /* Return the name of the namespace represented by DIE.  Set
@@ -7730,21 +7732,20 @@ char *
 dwarf2_read_section(struct objfile *objfile, bfd *abfd, asection *sectp)
 {
   char *buf, *retbuf;
-  bfd_size_type size = bfd_get_section_size (sectp);
+  bfd_size_type size = ((sectp != NULL) ? bfd_get_section_size(sectp) : 0UL);
 
-  if (size == 0)
+  if (size == 0UL)
     return NULL;
 
-  buf = (char *) obstack_alloc (&objfile->objfile_obstack, size);
-  retbuf
-    = (char *) symfile_relocate_debug_section (abfd, sectp, (bfd_byte *) buf);
+  buf = (char *)obstack_alloc(&objfile->objfile_obstack, size);
+  retbuf = (char *)symfile_relocate_debug_section(abfd, sectp, (bfd_byte *)buf);
   if (retbuf != NULL)
     return retbuf;
 
-  if (bfd_seek (abfd, sectp->filepos, SEEK_SET) != 0
-      || bfd_bread (buf, size, abfd) != size)
-    error (_("Dwarf Error: Can't read DWARF data from '%s'"),
-	   bfd_get_filename (abfd));
+  if ((bfd_seek(abfd, sectp->filepos, SEEK_SET) != 0)
+      || (bfd_bread(buf, size, abfd) != size))
+    error(_("Dwarf Error: Failed to read DWARF data from '%s'"),
+	  bfd_get_filename(abfd));
 
   return buf;
 }
@@ -8165,30 +8166,42 @@ read_partial_die(struct partial_die_info *part_die,
 	  if (part_die->name == NULL)
 	    {
 	      if (attr.form == DW_FORM_APPLE_db_str)
-		part_die->name = DW_STRING (get_repository_name (&attr, cu));
+		{
+		  struct attribute *myattr = get_repository_name(&attr, cu);
+		  gdb_assert(myattr != NULL);
+		  part_die->name = DW_STRING(myattr);
+		}
 	      else
-		part_die->name = DW_STRING (&attr);
+		part_die->name = DW_STRING(&attr);
 	    }
 	  break;
 	case DW_AT_APPLE_repository_file:
-	  part_die->repo_name = DW_STRING (&attr);
+	  part_die->repo_name = DW_STRING(&attr);
 	  part_die->has_repository = 1;
 	  break;
 	case DW_AT_comp_dir:
 	  if (part_die->dirname == NULL)
 	    {
 	      if (attr.form == DW_FORM_APPLE_db_str)
-		part_die->dirname = DW_STRING (get_repository_name (&attr, cu));
+		{
+		  struct attribute *myattr = get_repository_name(&attr, cu);
+		  gdb_assert(myattr != NULL);
+		  part_die->dirname = DW_STRING(myattr);
+		}
 	      else
-		part_die->dirname = DW_STRING (&attr);
+		part_die->dirname = DW_STRING(&attr);
 	    }
 	  break;
 	case DW_AT_MIPS_linkage_name:
 	    {
 	      if (attr.form == DW_FORM_APPLE_db_str)
-		part_die->name = DW_STRING (get_repository_name (&attr, cu));
+		{
+		  struct attribute *myattr = get_repository_name(&attr, cu);
+		  gdb_assert(myattr != NULL);
+		  part_die->name = DW_STRING(myattr);
+		}
 	      else
-		part_die->name = DW_STRING (&attr);
+		part_die->name = DW_STRING(&attr);
 	      /* APPLE LOCAL begin psym equivalences  */
 	      /* Check the linkage name to see if it is a psym equivalence
 		 name.  If so, fill in the equiv_name field for the part die,
@@ -8692,55 +8705,63 @@ read_attribute(struct attribute *attr, struct attr_abbrev *abbrev,
   return read_attribute_value(attr, abbrev->form, abfd, info_ptr, cu);
 }
 
-/* Various functions to read dwarf information from a buffer. */
-
+/* Various functions to read dwarf information from a buffer: */
+/* */
 static unsigned int
 read_1_byte(bfd *abfd, char *buf)
 {
+  gdb_assert(buf != NULL);
   return bfd_get_8(abfd, (bfd_byte *)buf);
 }
 
+/* */
 static int
 read_1_signed_byte(bfd *abfd, char *buf)
 {
   return bfd_get_signed_8(abfd, (bfd_byte *)buf);
 }
 
+/* */
 static unsigned int
 read_2_bytes(bfd *abfd, char *buf)
 {
   return bfd_get_16(abfd, (bfd_byte *)buf);
 }
 
+/* */
 static int
 read_2_signed_bytes(bfd *abfd, char *buf)
 {
   return bfd_get_signed_16(abfd, (bfd_byte *)buf);
 }
 
+/* */
 static unsigned int
 read_4_bytes(bfd *abfd, char *buf)
 {
   return bfd_get_32(abfd, (bfd_byte *)buf);
 }
 
+/* */
 static int
 read_4_signed_bytes(bfd *abfd, char *buf)
 {
   return bfd_get_signed_32(abfd, (bfd_byte *)buf);
 }
 
+/* */
 static unsigned long
 read_8_bytes(bfd *abfd, char *buf)
 {
   return bfd_get_64(abfd, (bfd_byte *)buf);
 }
 
+/* */
 static CORE_ADDR
 read_address(bfd *abfd, char *buf, struct dwarf2_cu *cu, int *bytes_read)
 {
   struct comp_unit_head *cu_header = &cu->header;
-  CORE_ADDR retval = 0;
+  CORE_ADDR retval = 0UL;
 
   if (cu_header->signed_addr_p)
     {
@@ -8815,7 +8836,6 @@ read_address(bfd *abfd, char *buf, struct dwarf2_cu *cu, int *bytes_read)
 
      - Kevin, July 16, 2002
    ] */
-
 static LONGEST
 read_initial_length(bfd *abfd, char *buf, struct comp_unit_head *cu_header,
                     int *bytes_read)
@@ -8865,6 +8885,7 @@ read_offset(bfd *abfd, char *buf, const struct comp_unit_head *cu_header,
 {
   LONGEST retval = 0L;
 
+  gdb_assert(cu_header != NULL);
   switch (cu_header->offset_size)
     {
     case 4:
@@ -9435,11 +9456,10 @@ check_inlined_function_calls(struct subfile *subfile, int file_index,
 	 inlined subroutine, in which case we will need to find (or
 	 create) the correct subfile records for either or both of those
 	 files.  */
-
-      if (rb_node
-	  && rb_node->secondary_key == file_index)
+      if (rb_node && (rb_node->secondary_key == file_index))
 	{
 	  tmp_subfile = subfile;
+	  gdb_assert(tmp_subfile != NULL);
 	  call_site_subfile = subfile;
 	  current = (struct dwarf_inlined_call_record *)rb_node->data;
 	}
@@ -9447,7 +9467,6 @@ check_inlined_function_calls(struct subfile *subfile, int file_index,
 	{
 	  /* Look for an inlining instance with the same address but a
 	     differnt file_index than was passed in.  */
-
 	  if (!rb_node)
 	    rb_node =
               rb_tree_find_and_remove_node(&(objfile->inlined_call_sites),
@@ -10417,47 +10436,50 @@ new_symbol(struct die_info *die, struct type *type, struct dwarf2_cu *cu)
   struct attribute *attr2 = NULL;
   CORE_ADDR baseaddr;
 
-  baseaddr = objfile_text_section_offset (objfile);
+  baseaddr = objfile_text_section_offset(objfile);
 
-  if (die->tag != DW_TAG_namespace)
-    name = dwarf2_linkage_name (die, cu);
+  if ((die != NULL) && (die->tag != DW_TAG_namespace))
+    name = dwarf2_linkage_name(die, cu);
+  else if (type != NULL)
+    name = TYPE_NAME(type);
   else
-    name = TYPE_NAME (type);
+    name = NULL;
 
   if (name)
     {
-      sym = (struct symbol *) obstack_alloc (&objfile->objfile_obstack,
-					     sizeof (struct symbol));
-      OBJSTAT (objfile, n_syms++);
-      memset (sym, 0, sizeof (struct symbol));
+      sym = (struct symbol *)obstack_alloc(&objfile->objfile_obstack,
+					   sizeof(struct symbol));
+      OBJSTAT(objfile, n_syms++);
+      memset(sym, 0, sizeof(struct symbol));
 
       /* Cache this symbol's name and the name's demangled form (if any).  */
-      SYMBOL_LANGUAGE (sym) = cu->language;
-      SYMBOL_SET_NAMES (sym, name, strlen (name), objfile);
+      SYMBOL_LANGUAGE(sym) = cu->language;
+      SYMBOL_SET_NAMES(sym, name, strlen(name), objfile);
 
       /* Default assumptions.
          Use the passed type or decode it from the die.  */
-      SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
-      SYMBOL_CLASS (sym) = LOC_STATIC;
+      SYMBOL_DOMAIN(sym) = VAR_DOMAIN;
+      SYMBOL_CLASS(sym) = LOC_STATIC;
       if (type != NULL)
-	SYMBOL_TYPE (sym) = type;
+	SYMBOL_TYPE(sym) = type;
       else
-	SYMBOL_TYPE (sym) = die_type (die, cu);
-      attr = dwarf2_attr (die, DW_AT_decl_line, cu);
+	SYMBOL_TYPE(sym) = die_type(die, cu);
+      attr = dwarf2_attr(die, DW_AT_decl_line, cu);
       if (attr)
 	{
-	  SYMBOL_LINE (sym) = DW_UNSND (attr);
+	  SYMBOL_LINE(sym) = DW_UNSND(attr);
 	}
+      gdb_assert(die != NULL);
       switch (die->tag)
 	{
 	case DW_TAG_label:
-	  attr = dwarf2_attr (die, DW_AT_low_pc, cu);
+	  attr = dwarf2_attr(die, DW_AT_low_pc, cu);
 	  if (attr)
 	    {
               /* APPLE LOCAL: debug map */
               CORE_ADDR addr;
-              if (translate_debug_map_address (cu->addr_map, DW_ADDR (attr), &addr, 0))
-	        SYMBOL_VALUE_ADDRESS (sym) = addr + baseaddr;
+              if (translate_debug_map_address(cu->addr_map, DW_ADDR(attr), &addr, 0))
+	        SYMBOL_VALUE_ADDRESS(sym) = (addr + baseaddr);
               else
                 return NULL; /* NB: Leaking a struct symbol, sigh. */
 	    }
@@ -10622,7 +10644,6 @@ new_symbol(struct die_info *die, struct type *type, struct dwarf2_cu *cu)
 	       the check for all static symbols in lookup_symbol_aux
 	       saves you.  See the OtherFileClass tests in
 	       gdb.c++/namespace.exp.  */
-
 	    struct pending **list_to_add;
 
             /* APPLE LOCAL: Put type symbols in the global namespace for all
@@ -10911,23 +10932,26 @@ die_containing_type (struct die_info *die, struct dwarf2_cu *cu)
 static struct type *
 tag_type_to_type (struct die_info *die, struct dwarf2_cu *cu)
 {
-  if (die->type)
+  if ((die != NULL) && die->type)
     {
       return die->type;
     }
-  else
+  else if (die != NULL)
     {
-      read_type_die (die, cu);
+      read_type_die(die, cu);
       if (!die->type)
 	{
-	  dump_die (die);
-	  error (_("Dwarf Error: Cannot find type of die [in module %s]"),
-			  cu->objfile->name);
+	  dump_die(die);
+	  error(_("Dwarf Error: Cannot find type of die [in module %s]"),
+		cu->objfile->name);
 	}
       return die->type;
     }
+  else
+    return NULL;
 }
 
+/* */
 static void
 read_type_die (struct die_info *die, struct dwarf2_cu *cu)
 {
@@ -11970,6 +11994,13 @@ decode_locdesc(struct dwarf_block *blk, struct dwarf2_cu *cu)
   i = 0;
   stacki = 0;
   stack[stacki] = 0;
+  while (stacki < LOCDESC_STACKSIZE) {
+    stack[stacki] = 0;
+    stacki++;
+  }
+  if (stacki != 0) {
+    stacki = 0;
+  }
   isreg = 0;
 
   /* APPLE LOCAL: Add stack array bounds check.  */
@@ -12621,19 +12652,20 @@ dwarf_decode_macros(struct line_header *lh, unsigned int offset,
 /* Check if the attribute's form is a DW_FORM_block*
    if so return true else false. */
 static int
-attr_form_is_block (struct attribute *attr)
+attr_form_is_block(struct attribute *attr)
 {
-  return (attr == NULL ? 0 :
-      attr->form == DW_FORM_block1
-      || attr->form == DW_FORM_block2
-      || attr->form == DW_FORM_block4
-      || attr->form == DW_FORM_block);
+  return ((attr == NULL) ? 0 : ((attr->form == DW_FORM_block1)
+				|| (attr->form == DW_FORM_block2)
+				|| (attr->form == DW_FORM_block4)
+				|| (attr->form == DW_FORM_block)));
 }
 
+/* */
 static void
 dwarf2_symbol_mark_computed(struct attribute *attr, struct symbol *sym,
 			    struct dwarf2_cu *cu)
 {
+  gdb_assert(attr != NULL);
   if (attr->form == DW_FORM_data4 || attr->form == DW_FORM_data8)
     {
       struct dwarf2_address_translation *baton;
@@ -12928,12 +12960,12 @@ offset_and_type_eq(const void *item_lhs, const void *item_rhs)
 
 /* Set the type associated with DIE to TYPE.  Save it in CU's hash
    table if necessary.  */
-
 static void
 set_die_type(struct die_info *die, struct type *type, struct dwarf2_cu *cu)
 {
   struct dwarf2_offset_and_type **slot, ofs;
 
+  gdb_assert(die != NULL);
   die->type = type;
 
   if (cu->per_cu == NULL)
@@ -13409,7 +13441,7 @@ rb_delete_fixup (struct rb_tree_node **root, struct rb_tree_node *x)
 	     as BLACK).  In this case, color w red, and push the blackness
 	     up the tree one node, making what used to be x's parent be
 	     the new x (and return to top of loop).  */
-
+	  gdb_assert(w != NULL);
 	  if ((!w->left || w->left->color == BLACK)   /* Case 2  */
 	      && (!w->right || w->right->color == BLACK))
 	    {
@@ -13457,7 +13489,7 @@ rb_delete_fixup (struct rb_tree_node **root, struct rb_tree_node *x)
 	     as BLACK).  In this case, color w red, and push the blackness
 	     up the tree one node, making what used to be x's parent be
 	     the new x (and return to top of loop).  */
-
+	  gdb_assert(w != NULL);
 	  if ((!w->right || w->right->color == BLACK)
 	      && (!w->left || w->left->color == BLACK))
 	    {
@@ -13873,17 +13905,16 @@ plain_tree_insert (struct rb_tree_node **root, struct rb_tree_node *new_node)
    the color of a node's children are supposed to be different from the
    color of the node.
 */
-
 void
-rb_tree_insert (struct rb_tree_node **root, struct rb_tree_node *tree,
-		struct rb_tree_node *new_node)
+rb_tree_insert(struct rb_tree_node **root, struct rb_tree_node *tree,
+	       struct rb_tree_node *new_node)
 {
   struct rb_tree_node *y;
 
-  plain_tree_insert (root, new_node);
+  plain_tree_insert(root, new_node);
   new_node->color = RED;
-  while (new_node != *root
-	 && new_node->parent->color == RED)
+  while ((new_node != *root) && (new_node->parent != NULL)
+	 && (new_node->parent->color == RED))
     {
       if (new_node->parent == new_node->parent->parent->left)
 	{
@@ -14097,6 +14128,7 @@ open_dwarf_repository(char *dirname, char *filename, struct objfile *objfile,
   if (!repositories)
     initialize_repositories();
 
+  gdb_assert(dirname != NULL);
   fullname_len = (strlen(dirname) +  strlen(filename) + 2UL);
   fullname = (char *)xmalloc(fullname_len);
   snprintf(fullname, fullname_len, "%s/%s", dirname, filename);
@@ -14447,12 +14479,14 @@ fill_in_die_info(struct die_info *new_die, int die_len, uint8_t *die_bytes,
 	    {
 	      new_die->child = db_lookup_type(child_id, db, abbrev_table);
 	      last_child = new_die->child;
+	      gdb_assert(last_child != NULL);
 	      last_child->parent = new_die;
 	    }
 	  else
 	    {
 	      last_child->sibling = db_lookup_type(child_id, db, abbrev_table);
 	      last_child = last_child->sibling;
+	      gdb_assert(last_child != NULL);
 	      last_child->parent = new_die;
 	    }
 	}

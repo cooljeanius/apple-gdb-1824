@@ -3080,8 +3080,8 @@ decimal2str(const char *sign, ULONGEST addr, int width)
 
   size_t i = 0UL;
   do {
-    temp[i] = (addr % (1000 * 1000 * 1000));
-    addr /= (1000 * 1000 * 1000);
+    temp[i] = (unsigned long)(addr % (1000UL * 1000UL * 1000UL));
+    addr /= (1000UL * 1000UL * 1000UL);
     i++;
     width -= 9;
   } while ((addr != 0) && (i < (sizeof(temp) / sizeof(temp[0]))));
@@ -3913,7 +3913,10 @@ get_binary_file_uuids(const char *filename)
   }
 
   if ((abfd == NULL) || (e.reason == RETURN_ERROR))
-    return NULL;
+    {
+      xfree(uuids);
+      return NULL;
+    }
 
   if (bfd_check_format(abfd, bfd_archive)
       && (strcmp(bfd_get_target(abfd), "mach-o-fat") == 0))
@@ -3931,6 +3934,7 @@ get_binary_file_uuids(const char *filename)
           }
 
           if (!bfd_mach_o_get_uuid(nbfd, uuid, sizeof(uuid))) {
+	    xfree(uuids);
             return NULL;
           }
 
@@ -3953,6 +3957,7 @@ get_binary_file_uuids(const char *filename)
   else
     {
       if (!bfd_mach_o_get_uuid(abfd, uuid, sizeof(uuid))) {
+	xfree(uuids);
         return NULL;
       }
 
@@ -4018,6 +4023,11 @@ unlimit_file_rlimit(void)
        * reasonably big: */
       limit.rlim_cur = 10000;
       ret = setrlimit(RLIMIT_NOFILE, &limit);
+      if (ret == -1) {
+	/* errno should be one of EFAULT, EINVAL, or EPERM: */
+	warning(_("Call to setrlimit() failed with errno %d: %s.\n"), errno,
+		safe_strerror(errno));
+      }
     }
   /* rlim_max is set to RLIM_INFINITY on X, at least on Leopard  and
    * SnowLeopard.  So it is better to see what we really got and use

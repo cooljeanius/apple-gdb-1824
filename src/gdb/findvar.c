@@ -637,7 +637,8 @@ addresses have not been bound by the dynamic loader. Try again when executable i
 	return 0;
       /* APPLE LOCAL end radar 6529939  */
 
-      return SYMBOL_OPS (var)->read_variable (var, frame);
+      gdb_assert(SYMBOL_OPS(var) != NULL);
+      return SYMBOL_OPS(var)->read_variable(var, frame);
 
     case LOC_UNRESOLVED:
       {

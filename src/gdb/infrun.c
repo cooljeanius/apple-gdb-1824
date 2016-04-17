@@ -2591,6 +2591,8 @@ process_event_stop_test:
 		    new_bp = solib_step_bp;
 		  else
 		    new_bp = solib_finish_bp;
+		  
+		  gdb_assert(new_bp != NULL);
 
 		  init_sal(&fsr_sal);
 

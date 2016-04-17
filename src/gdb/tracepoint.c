@@ -29,6 +29,7 @@
 #include "value.h"
 #include "target.h"
 #include "language.h"
+#include "gdb_assert.h"
 #include "gdb_string.h"
 #include "inferior.h"
 #include "tracepoint.h"
@@ -1157,14 +1158,13 @@ memrange_sortmerge(struct collection_list *memranges)
 
 /* Add a register to a collection list.  */
 static void
-add_register (struct collection_list *collection, unsigned int regno)
+add_register(struct collection_list *collection, unsigned int regno)
 {
   if (info_verbose)
-    printf_filtered ("collect register %d\n", regno);
-  if (regno > (8 * sizeof (collection->regs_mask)))
-    error (_("Internal: register number %d too large for tracepoint"),
-	   regno);
-  collection->regs_mask[regno / 8] |= 1 << (regno % 8);
+    printf_filtered("collect register %d\n", regno);
+  if (regno > (8U * sizeof(collection->regs_mask)))
+    error(_("Internal: register number %d too large for tracepoint"), regno);
+  collection->regs_mask[regno / 8] |= (unsigned char)(1U << (regno % 8U));
 }
 
 /* Add a memrange to a collection list */
@@ -1476,6 +1476,9 @@ stringify_collection_list(struct collection_list *list, char *string)
       end = temp_buf;
     }
   (*str_list)[ndx] = NULL;
+  if (count >= 0) {
+    gdb_assert(end != NULL);
+  }
 
   if (ndx == 0)
     return NULL;

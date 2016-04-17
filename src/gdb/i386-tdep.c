@@ -145,9 +145,9 @@ i386_mxcsr_regnum_p (struct gdbarch *gdbarch, int regnum)
 #undef I387_NUM_XMM_REGS
 }
 
-#define I387_ST0_REGNUM (gdbarch_tdep (current_gdbarch)->st0_regnum)
-#define I387_MM0_REGNUM (gdbarch_tdep (current_gdbarch)->mm0_regnum)
-#define I387_NUM_XMM_REGS (gdbarch_tdep (current_gdbarch)->num_xmm_regs)
+#define I387_ST0_REGNUM (gdbarch_tdep(current_gdbarch)->st0_regnum)
+#define I387_MM0_REGNUM (gdbarch_tdep(current_gdbarch)->mm0_regnum)
+#define I387_NUM_XMM_REGS (gdbarch_tdep(current_gdbarch)->num_xmm_regs)
 
 /* FP register?  */
 
