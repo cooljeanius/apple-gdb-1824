@@ -20,6 +20,10 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+/* There is a field named "gets" with no relation to the poisoned function: */
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* !NO_POISON */
 #include "defs.h"
 #include "gdb_string.h"
 #include <fcntl.h>
@@ -44,43 +48,43 @@
 #include "rdi-share/adp.h"
 #include "rdi-share/hsys.h"
 
-extern int isascii (int);
+extern int isascii(int);
 
 /* Prototypes for local functions */
 
-static void arm_rdi_files_info (struct target_ops *ignore);
+static void arm_rdi_files_info(struct target_ops *ignore);
 
-static int arm_rdi_xfer_memory (CORE_ADDR memaddr, char *myaddr,
-				int len, int should_write,
-				struct mem_attrib *attrib,
-				struct target_ops *target);
+static int arm_rdi_xfer_memory(CORE_ADDR memaddr, const char *myaddr,
+			       int len, int should_write,
+			       struct mem_attrib *attrib,
+			       struct target_ops *target);
 
-static void arm_rdi_prepare_to_store (void);
+static void arm_rdi_prepare_to_store(void);
 
-static void arm_rdi_fetch_registers (int regno);
+static void arm_rdi_fetch_registers(int regno);
 
-static void arm_rdi_resume (ptid_t pid, int step,
-                            enum target_signal siggnal);
+static void arm_rdi_resume(ptid_t pid, int step,
+                           enum target_signal siggnal);
 
-static void arm_rdi_open (char *name, int from_tty);
+static void arm_rdi_open(const char *name, int from_tty);
 
-static void arm_rdi_close (int quitting);
+static void arm_rdi_close(int quitting);
 
-static void arm_rdi_store_registers (int regno);
+static void arm_rdi_store_registers(int regno);
 
-static ptid_t arm_rdi_wait (ptid_t ptid, struct target_waitstatus *status);
+static ptid_t arm_rdi_wait(ptid_t ptid, struct target_waitstatus *status);
 
-static void arm_rdi_kill (void);
+static void arm_rdi_kill(void);
 
-static void arm_rdi_detach (char *args, int from_tty);
+static void arm_rdi_detach(const char *args, int from_tty);
 
-static int arm_rdi_insert_breakpoint (CORE_ADDR, bfd_byte *);
+static int arm_rdi_insert_breakpoint(CORE_ADDR, bfd_byte *);
 
-static int arm_rdi_remove_breakpoint (CORE_ADDR, bfd_byte *);
+static int arm_rdi_remove_breakpoint(CORE_ADDR, bfd_byte *);
 
-static char *rdi_error_message (int err);
+static const char *rdi_error_message(int err);
 
-static enum target_signal rdi_error_signal (int err);
+static enum target_signal rdi_error_signal(int err);
 
 /* Global variables.  */
 
@@ -106,8 +110,7 @@ static int log_enable = 0;
 /* Name of the log file. Default is "rdi.log". */
 static char *log_filename;
 
-/* A little list of breakpoints that have been set.  */
-
+/* A little list of breakpoints that have been set: */
 static struct local_bp_list_entry
   {
     CORE_ADDR addr;
@@ -118,38 +121,41 @@ static struct local_bp_list_entry
 
 /* Helper callbacks for the "host interface" structure.  RDI functions call
    these to forward output from the target system and so forth.  */
-
+/* Dummy: */
 static void
-voiddummy (void *dummy)
+voiddummy(void *dummy)
 {
-  fprintf_unfiltered (gdb_stdout, "void dummy\n");
+  fprintf_unfiltered(gdb_stdout, "void dummy\n");
 }
 
-static void
-myprint (void *arg, const char *format, va_list ap)
+/* */
+static void ATTR_FORMAT(gnu_printf, 2, 0)
+myprint(void *arg, const char *format, va_list ap)
 {
-  vfprintf_unfiltered (gdb_stdout, format, ap);
+  vfprintf_unfiltered(gdb_stdout, format, ap);
 }
 
+/* */
 static void
-mywritec (void *arg, int c)
+mywritec(void *arg, int c)
 {
-  if (isascii (c))
-    fputc_unfiltered (c, gdb_stdout);
+  if (isascii(c))
+    fputc_unfiltered(c, gdb_stdout);
 }
 
+/* */
 static int
-mywrite (void *arg, char const *buffer, int len)
+mywrite(void *arg, char const *buffer, int len)
 {
   int i;
   char *e;
 
-  e = (char *) buffer;
+  e = (char *)buffer;
   for (i = 0; i < len; i++)
     {
-      if (isascii ((int) *e))
+      if (isascii((int)*e))
 	{
-	  fputc_unfiltered ((int) *e, gdb_stdout);
+	  fputc_unfiltered((int)*e, gdb_stdout);
 	  e++;
 	}
     }
@@ -158,8 +164,9 @@ mywrite (void *arg, char const *buffer, int len)
 }
 
 static void
-mypause (void *arg)
+mypause(void *arg ATTRIBUTE_UNUSED)
 {
+  return;
 }
 
 /* These last two are tricky as we have to handle the special case of
@@ -184,9 +191,12 @@ static int closed_already = 1;
    for communication.  */
 
 static void
-arm_rdi_open (char *name, int from_tty)
+arm_rdi_open(const char *name, int from_tty)
 {
-  int rslt, i;
+  int rslt;
+#ifdef ALLOW_UNUSED_VARIABLES
+  int i;
+#endif /* ALLOW_UNUSED_VARIABLES */
   unsigned long arg1, arg2;
   char *openArgs = NULL;
   char *devName = NULL;
@@ -326,9 +336,8 @@ device is attached to the remote system (e.g. /dev/ttya)."));
    On VxWorks and various standalone systems, we ignore exec_file.  */
 /* This is called not only when we first attach, but also when the
    user types "run" after having attached.  */
-
 static void
-arm_rdi_create_inferior (char *exec_file, char *args, char **env, int from_tty)
+arm_rdi_create_inferior(char *exec_file, char *args, char **env, int from_tty)
 {
   int len, rslt;
   unsigned long arg1, arg2;
@@ -336,57 +345,59 @@ arm_rdi_create_inferior (char *exec_file, char *args, char **env, int from_tty)
   CORE_ADDR entry_point;
 
   if (exec_file == 0 || exec_bfd == 0)
-    error (_("No executable file specified."));
+    error(_("No executable file specified."));
 
-  entry_point = (CORE_ADDR) bfd_get_start_address (exec_bfd);
+  entry_point = (CORE_ADDR)bfd_get_start_address(exec_bfd);
 
-  arm_rdi_kill ();
-  remove_breakpoints ();
-  init_wait_for_inferior ();
+  arm_rdi_kill();
+  remove_breakpoints();
+  init_wait_for_inferior();
 
-  len = strlen (exec_file) + 1 + strlen (args) + 1 + /*slop */ 10;
-  arg_buf = (char *) alloca (len);
+  len = (strlen(exec_file) + 1UL + strlen(args) + 1UL + /*slop */ 10UL);
+  arg_buf = (char *)alloca(len);
   arg_buf[0] = '\0';
-  strcat (arg_buf, exec_file);
-  strcat (arg_buf, " ");
-  strcat (arg_buf, args);
+  strcat(arg_buf, exec_file);
+  strcat(arg_buf, " ");
+  strcat(arg_buf, args);
 
-  inferior_ptid = pid_to_ptid (42);
-  insert_breakpoints ();	/* Needed to get correct instruction in cache */
+  inferior_ptid = pid_to_ptid(42);
+  insert_breakpoints();	/* Needed to get correct instruction in cache */
 
   if (env != NULL)
     {
       while (*env)
 	{
-	  if (strncmp (*env, "MEMSIZE=", sizeof ("MEMSIZE=") - 1) == 0)
+	  if (strncmp(*env, "MEMSIZE=", (sizeof("MEMSIZE=") - 1UL)) == 0)
 	    {
 	      unsigned long top_of_memory;
 	      char *end_of_num;
 
 	      /* Set up memory limit */
-	      top_of_memory = strtoul (*env + sizeof ("MEMSIZE=") - 1,
-				       &end_of_num, 0);
-	      printf_filtered ("Setting top-of-memory to 0x%lx\n",
-			       top_of_memory);
+	      top_of_memory = strtoul((*env + sizeof("MEMSIZE=") - 1UL),
+				      &end_of_num, 0);
+	      printf_filtered("Setting top-of-memory to 0x%lx\n",
+			      top_of_memory);
 
-	      rslt = angel_RDI_info (RDIInfo_SetTopMem, &top_of_memory, &arg2);
+	      rslt = angel_RDI_info(RDIInfo_SetTopMem, &top_of_memory, &arg2);
 	      if (rslt != RDIError_NoError)
 		{
-		  printf_filtered ("RDI_info: %s\n", rdi_error_message (rslt));
+		  printf_filtered("RDI_info: %s\n", rdi_error_message(rslt));
 		}
 	    }
 	  env++;
 	}
     }
 
-  arg1 = (unsigned long) arg_buf;
-  rslt = angel_RDI_info (RDISet_Cmdline, /* &arg1 */ (unsigned long *) arg_buf, &arg2);
+  arg1 = (unsigned long)arg_buf;
+  rslt = angel_RDI_info(RDISet_Cmdline, /* &arg1 */ (unsigned long *)arg_buf,
+			&arg2);
+  (void)arg1;
   if (rslt != RDIError_NoError)
     {
-      printf_filtered ("RDI_info: %s\n", rdi_error_message (rslt));
+      printf_filtered("RDI_info: %s\n", rdi_error_message(rslt));
     }
 
-  proceed (entry_point, TARGET_SIGNAL_DEFAULT, 0);
+  proceed(entry_point, TARGET_SIGNAL_DEFAULT, 0);
 }
 
 /* This takes a program previously attached to and detaches it.  After
@@ -395,9 +406,9 @@ arm_rdi_create_inferior (char *exec_file, char *args, char **env, int from_tty)
    die when it hits one.  */
 
 static void
-arm_rdi_detach (char *args, int from_tty)
+arm_rdi_detach(const char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
-  pop_target ();
+  pop_target();
 }
 
 /* Clean up connection to a remote debugger.  */
@@ -438,21 +449,21 @@ arm_rdi_resume (ptid_t ptid, int step, enum target_signal siggnal)
   else
     {
       char handle[4];
-      CORE_ADDR pc = 0;
+      CORE_ADDR pc = 0UL;
 
       if (step)
 	{
-	  pc = read_register (ARM_PC_REGNUM);
-	  pc = arm_get_next_pc (pc);
-	  arm_rdi_insert_breakpoint (pc, handle);
+	  pc = read_register(ARM_PC_REGNUM);
+	  pc = arm_get_next_pc(pc);
+	  arm_rdi_insert_breakpoint(pc, (bfd_byte *)handle);
 	}
 
-      execute_status = rslt = angel_RDI_execute (&point);
-      if (rslt != RDIError_NoError && rslt != RDIError_BreakpointReached)
-	printf_filtered ("RDI_execute: %s\n", rdi_error_message (rslt));
+      execute_status = rslt = angel_RDI_execute(&point);
+      if ((rslt != RDIError_NoError) && (rslt != RDIError_BreakpointReached))
+	printf_filtered("RDI_execute: %s\n", rdi_error_message(rslt));
 
       if (step)
-	arm_rdi_remove_breakpoint (pc, handle);
+	arm_rdi_remove_breakpoint(pc, (bfd_byte *)handle);
     }
 }
 
@@ -472,10 +483,9 @@ arm_rdi_wait (ptid_t ptid, struct target_waitstatus *status)
   return inferior_ptid;
 }
 
-/* Read the remote registers into the block REGS.  */
-
+/* Read the remote registers into the block REGS: */
 static void
-arm_rdi_fetch_registers (int regno)
+arm_rdi_fetch_registers(int regno)
 {
   int rslt, rdi_regmask;
   unsigned long rawreg, rawregs[32];
@@ -483,20 +493,20 @@ arm_rdi_fetch_registers (int regno)
 
   if (regno == -1)
     {
-      rslt = angel_RDI_CPUread (255, 0x27fff, rawregs);
+      rslt = angel_RDI_CPUread(255, 0x27fff, rawregs);
       if (rslt != RDIError_NoError)
 	{
-	  printf_filtered ("RDI_CPUread: %s\n", rdi_error_message (rslt));
+	  printf_filtered("RDI_CPUread: %s\n", rdi_error_message(rslt));
 	}
 
       for (regno = 0; regno < 15; regno++)
 	{
-	  store_unsigned_integer (cookedreg, 4, rawregs[regno]);
-	  regcache_raw_supply (current_regcache, regno, (char *) cookedreg);
+	  store_unsigned_integer((gdb_byte *)cookedreg, 4, rawregs[regno]);
+	  regcache_raw_supply(current_regcache, regno, (char *)cookedreg);
 	}
-      store_unsigned_integer (cookedreg, 4, rawregs[15]);
-      regcache_raw_supply (current_regcache, ARM_PS_REGNUM, (char *) cookedreg);
-      arm_rdi_fetch_registers (ARM_PC_REGNUM);
+      store_unsigned_integer((gdb_byte *)cookedreg, 4, rawregs[15]);
+      regcache_raw_supply(current_regcache, ARM_PS_REGNUM, (char *)cookedreg);
+      arm_rdi_fetch_registers(ARM_PC_REGNUM);
     }
   else
     {
@@ -504,29 +514,29 @@ arm_rdi_fetch_registers (int regno)
 	rdi_regmask = RDIReg_PC;
       else if (regno == ARM_PS_REGNUM)
 	rdi_regmask = RDIReg_CPSR;
-      else if (regno < 0 || regno > 15)
+      else if ((regno < 0) || (regno > 15))
 	{
 	  rawreg = 0;
-	  regcache_raw_supply (current_regcache, regno, (char *) &rawreg);
+	  regcache_raw_supply(current_regcache, regno, (char *)&rawreg);
 	  return;
 	}
       else
-	rdi_regmask = 1 << regno;
+	rdi_regmask = (1 << regno);
 
-      rslt = angel_RDI_CPUread (255, rdi_regmask, &rawreg);
+      rslt = angel_RDI_CPUread(255, rdi_regmask, &rawreg);
       if (rslt != RDIError_NoError)
 	{
-	  printf_filtered ("RDI_CPUread: %s\n", rdi_error_message (rslt));
+	  printf_filtered("RDI_CPUread: %s\n", rdi_error_message(rslt));
 	}
-      store_unsigned_integer (cookedreg, 4, rawreg);
-      regcache_raw_supply (current_regcache, regno, (char *) cookedreg);
+      store_unsigned_integer((gdb_byte *)cookedreg, 4, rawreg);
+      regcache_raw_supply(current_regcache, regno, (char *)cookedreg);
     }
 }
 
 static void
-arm_rdi_prepare_to_store (void)
+arm_rdi_prepare_to_store(void)
 {
-  /* Nothing to do.  */
+  return; /* Nothing to do.  */
 }
 
 /* Store register REGNO, or all registers if REGNO == -1, from the contents
@@ -543,22 +553,22 @@ arm_rdi_store_registers (int regno)
   if (regno == -1)
     {
       for (regno = 0; regno < NUM_REGS; regno++)
-	arm_rdi_store_registers (regno);
+	arm_rdi_store_registers(regno);
     }
   else
     {
-      deprecated_read_register_gen (regno, (char *) rawreg);
+      deprecated_read_register_gen(regno, (gdb_byte *)rawreg);
       /* RDI manipulates data in host byte order, so convert now. */
-      store_unsigned_integer (rawerreg, 4, rawreg[0]);
+      store_unsigned_integer((gdb_byte *)rawerreg, 4, rawreg[0]);
 
       if (regno == ARM_PC_REGNUM)
 	rdi_regmask = RDIReg_PC;
       else if (regno == ARM_PS_REGNUM)
 	rdi_regmask = RDIReg_CPSR;
-      else if (regno < 0 || regno > 15)
+      else if ((regno < 0) || (regno > 15))
 	return;
       else
-	rdi_regmask = 1 << regno;
+	rdi_regmask = (1 << regno);
 
       rslt = angel_RDI_CPUwrite (255, rdi_regmask, rawerreg);
       if (rslt != RDIError_NoError)
@@ -574,38 +584,42 @@ arm_rdi_store_registers (int regno)
    read; 0 for error.  TARGET is unused.  */
 
 static int
-arm_rdi_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len,
-		     int should_write, struct mem_attrib *attrib,
-		     struct target_ops *target)
+arm_rdi_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len,
+		    int should_write, struct mem_attrib *attrib,
+		    struct target_ops *target)
 {
-  int rslt, i;
+  int rslt;
+#ifdef ALLOW_UNUSED_VARIABLES
+  int i;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
   if (should_write)
     {
-      rslt = angel_RDI_write (myaddr, memaddr, &len);
+      rslt = angel_RDI_write(myaddr, memaddr, (unsigned int *)&len);
       if (rslt != RDIError_NoError)
 	{
-	  printf_filtered ("RDI_write: %s\n", rdi_error_message (rslt));
+	  printf_filtered("RDI_write: %s\n", rdi_error_message(rslt));
 	}
     }
   else
     {
-      rslt = angel_RDI_read (memaddr, myaddr, &len);
+      rslt = angel_RDI_read(memaddr, (void *)myaddr, (unsigned int *)&len);
       if (rslt != RDIError_NoError)
 	{
-	  printf_filtered ("RDI_read: %s\n", rdi_error_message (rslt));
+	  printf_filtered("RDI_read: %s\n", rdi_error_message(rslt));
 	  len = 0;
 	}
     }
   return len;
 }
 
-/* Display random info collected from the target.  */
-
+/* Display random info collected from the target: */
 static void
-arm_rdi_files_info (struct target_ops *ignore)
+arm_rdi_files_info(struct target_ops *ignore)
 {
-  char *file = "nothing";
+#ifdef ALLOW_UNUSED_VARIABLES
+  const char *file = "nothing";
+#endif /* ALLOW_UNUSED_VARIABLES */
   int rslt;
   unsigned long arg1, arg2;
 
@@ -691,11 +705,14 @@ arm_rdi_insert_breakpoint (CORE_ADDR addr, bfd_byte *contents_cache)
   return rslt;
 }
 
+/* */
 static int
-arm_rdi_remove_breakpoint (CORE_ADDR addr, bfd_byte *contents_cache)
+arm_rdi_remove_breakpoint(CORE_ADDR addr, bfd_byte *contents_cache)
 {
   int rslt;
+#ifdef ALLOW_UNUSED_VARIABLES
   PointHandle point;
+#endif /* ALLOW_UNUSED_VARIABLES */
   struct local_bp_list_entry **entryp, *dead;
 
   for (entryp = &local_bp_list; *entryp != NULL; entryp = &(*entryp)->next)
@@ -717,9 +734,9 @@ arm_rdi_remove_breakpoint (CORE_ADDR addr, bfd_byte *contents_cache)
   return 0;
 }
 
-
-static char *
-rdi_error_message (int err)
+/* */
+static const char *
+rdi_error_message(int err)
 {
   switch (err)
     {
@@ -806,15 +823,14 @@ rdi_error_message (int err)
     }
 }
 
-/* Convert the ARM error messages to signals that GDB knows about.  */
-
+/* Convert the ARM error messages to signals that GDB knows about: */
 static enum target_signal
-rdi_error_signal (int err)
+rdi_error_signal(int err)
 {
   switch (err)
     {
     case RDIError_NoError:
-      return 0;
+      return (enum target_signal)0;
     case RDIError_Reset:
       return TARGET_SIGNAL_TERM;	/* ??? */
     case RDIError_UndefinedInstruction:
@@ -912,8 +928,9 @@ Specify the serial device it is connected to (e.g. /dev/ttya).";
   arm_rdi_ops.to_magic = OPS_MAGIC;
 }
 
+/* */
 static void 
-rdilogfile_command (char *arg, int from_tty)
+rdilogfile_command(const char *arg, int from_tty)
 {
   if (!arg || strlen (arg) == 0)
     {
@@ -929,8 +946,9 @@ rdilogfile_command (char *arg, int from_tty)
   Adp_SetLogfile (log_filename);
 }
 
+/* */
 static void 
-rdilogenable_command (char *args, int from_tty)
+rdilogenable_command(const char *args, int from_tty)
 {
   if (!args || strlen (args) == 0)
     {
@@ -1009,10 +1027,11 @@ as the Angel Monitor."),
 			   &setlist, &showlist);
 }
 
-/* A little dummy to make linking with the library succeed. */
-
-void
-Fail (const char *ignored, ...)
+/* A little dummy to make linking with the library succeed: */
+void ATTRIBUTE_CONST
+Fail(const char *ignored ATTRIBUTE_UNUSED, ...)
 {
-  
+  return;
 }
+
+/* */

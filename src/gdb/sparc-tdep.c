@@ -1,4 +1,4 @@
-/* Target-dependent code for SPARC.
+/* sparc-tdep.c: Target-dependent code for SPARC.
 
    Copyright 2003, 2004, 2005 Free Software Foundation, Inc.
 
@@ -98,12 +98,12 @@ sparc_fetch_instruction (CORE_ADDR pc)
   int i;
 
   /* If we can't read the instruction at PC, return zero.  */
-  if (target_read_memory (pc, buf, sizeof (buf)))
+  if (target_read_memory(pc, buf, sizeof(buf)))
     return 0;
 
   insn = 0;
-  for (i = 0; i < sizeof (buf); i++)
-    insn = (insn << 8) | buf[i];
+  for (i = 0; i < (int)sizeof(buf); i++)
+    insn = ((insn << 8) | buf[i]);
   return insn;
 }
 
@@ -183,14 +183,13 @@ sparc_address_from_register (int regnum)
 /* The functions on this page are intended to be used to classify
    function arguments.  */
 
-/* Check whether TYPE is "Integral or Pointer".  */
-
+/* Check whether TYPE is "Integral or Pointer": */
 static int
-sparc_integral_or_pointer_p (const struct type *type)
+sparc_integral_or_pointer_p(const struct type *type)
 {
-  int len = TYPE_LENGTH (type);
+  int len = TYPE_LENGTH((struct type *)type);
 
-  switch (TYPE_CODE (type))
+  switch (TYPE_CODE(type))
     {
     case TYPE_CODE_INT:
     case TYPE_CODE_BOOL:
@@ -212,17 +211,16 @@ sparc_integral_or_pointer_p (const struct type *type)
   return 0;
 }
 
-/* Check whether TYPE is "Floating".  */
-
+/* Check whether TYPE is "Floating": */
 static int
-sparc_floating_p (const struct type *type)
+sparc_floating_p(const struct type *type)
 {
-  switch (TYPE_CODE (type))
+  switch (TYPE_CODE(type))
     {
     case TYPE_CODE_FLT:
       {
-	int len = TYPE_LENGTH (type);
-	return (len == 4 || len == 8 || len == 16);
+	int len = TYPE_LENGTH((struct type *)type);
+	return ((len == 4) || (len == 8) || (len == 16));
       }
     default:
       break;
@@ -231,12 +229,11 @@ sparc_floating_p (const struct type *type)
   return 0;
 }
 
-/* Check whether TYPE is "Structure or Union".  */
-
+/* Check whether TYPE is "Structure or Union": */
 static int
-sparc_structure_or_union_p (const struct type *type)
+sparc_structure_or_union_p(const struct type *type)
 {
-  switch (TYPE_CODE (type))
+  switch (TYPE_CODE(type))
     {
     case TYPE_CODE_STRUCT:
     case TYPE_CODE_UNION:
@@ -280,15 +277,14 @@ static const char *sparc32_pseudo_register_names[] =
 /* Total number of pseudo registers.  */
 #define SPARC32_NUM_PSEUDO_REGS ARRAY_SIZE (sparc32_pseudo_register_names)
 
-/* Return the name of register REGNUM.  */
-
+/* Return the name of register REGNUM: */
 static const char *
-sparc32_register_name (int regnum)
+sparc32_register_name(int regnum)
 {
-  if (regnum >= 0 && regnum < SPARC32_NUM_REGS)
+  if ((regnum >= 0) && (regnum < (int)SPARC32_NUM_REGS))
     return sparc32_register_names[regnum];
 
-  if (regnum < SPARC32_NUM_REGS + SPARC32_NUM_PSEUDO_REGS)
+  if (regnum < (int)(SPARC32_NUM_REGS + SPARC32_NUM_PSEUDO_REGS))
     return sparc32_pseudo_register_names[regnum - SPARC32_NUM_REGS];
 
   return NULL;
@@ -500,15 +496,16 @@ sparc_breakpoint_from_pc (CORE_ADDR *pc, int *len)
 }
 
 
-/* Allocate and initialize a frame cache.  */
-
+/* Allocate and initialize a frame cache: */
 static struct sparc_frame_cache *
-sparc_alloc_frame_cache (void)
+sparc_alloc_frame_cache(void)
 {
   struct sparc_frame_cache *cache;
+#ifdef ALLOW_UNUSED_VARIABLES
   int i;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
-  cache = FRAME_OBSTACK_ZALLOC (struct sparc_frame_cache);
+  cache = FRAME_OBSTACK_ZALLOC(struct sparc_frame_cache);
 
   /* Base address.  */
   cache->base = 0;
@@ -550,21 +547,21 @@ sparc_analyze_prologue (CORE_ADDR pc, CORE_ADDR current_pc,
   insn = sparc_fetch_instruction (pc);
 
   /* Recognize a SETHI insn and record its destination.  */
-  if (X_OP (insn) == 0 && X_OP2 (insn) == 0x04)
+  if ((X_OP(insn) == 0) && (X_OP2(insn) == 0x04))
     {
-      dest = X_RD (insn);
+      dest = X_RD(insn);
       offset += 4;
 
-      insn = sparc_fetch_instruction (pc + 4);
+      insn = sparc_fetch_instruction(pc + 4);
     }
 
   /* Allow for an arithmetic operation on DEST or %g1.  */
-  if (X_OP (insn) == 2 && X_I (insn)
-      && (X_RD (insn) == 1 || X_RD (insn) == dest))
+  if ((X_OP(insn) == 2) && X_I(insn)
+      && ((X_RD(insn) == 1) || ((int)X_RD(insn) == dest)))
     {
       offset += 4;
 
-      insn = sparc_fetch_instruction (pc + 8);
+      insn = sparc_fetch_instruction(pc + 8);
     }
 
   /* Check for the SAVE instruction that sets up the frame.  */
@@ -637,20 +634,19 @@ sparc32_skip_prologue (CORE_ADDR start_pc)
   return start_pc;
 }
 
-/* Normal frames.  */
-
+/* Normal frames: */
 struct sparc_frame_cache *
-sparc_frame_cache (struct frame_info *next_frame, void **this_cache)
+sparc_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct sparc_frame_cache *cache;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct sparc_frame_cache *)*this_cache;
 
-  cache = sparc_alloc_frame_cache ();
+  cache = sparc_alloc_frame_cache();
   *this_cache = cache;
 
-  cache->pc = frame_func_unwind (next_frame);
+  cache->pc = frame_func_unwind(next_frame);
   if (cache->pc != 0)
     {
       CORE_ADDR addr_in_block = frame_unwind_address_in_block (next_frame);
@@ -679,14 +675,15 @@ sparc_frame_cache (struct frame_info *next_frame, void **this_cache)
   return cache;
 }
 
+/* */
 struct sparc_frame_cache *
-sparc32_frame_cache (struct frame_info *next_frame, void **this_cache)
+sparc32_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct sparc_frame_cache *cache;
   struct symbol *sym;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct sparc_frame_cache *)*this_cache;
 
   cache = sparc_frame_cache (next_frame, this_cache);
 
@@ -1127,10 +1124,9 @@ sparc_write_pc (CORE_ADDR pc, ptid_t ptid)
   write_register_pid (tdep->npc_regnum, pc + 4, ptid);
 }
 
-/* Unglobalize NAME.  */
-
+/* Unglobalize NAME: */
 char *
-sparc_stabs_unglobalize_name (char *name)
+sparc_stabs_unglobalize_name(char *name)
 {
   /* The Sun compilers (Sun ONE Studio, Forte Developer, Sun WorkShop,
      SunPRO) convert file static variables into global values, a
@@ -1163,8 +1159,8 @@ sparc_stabs_unglobalize_name (char *name)
    by SECT_NAME and SECT_SIZE.  */
 
 const struct regset *
-sparc_regset_from_core_section (struct gdbarch *gdbarch,
-				const char *sect_name, size_t sect_size)
+sparc_regset_from_core_section(struct gdbarch *gdbarch,
+			       const char *sect_name, size_t sect_size)
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
@@ -1391,14 +1387,13 @@ sparc_collect_rwindow (const struct regcache *regcache,
     }
 }
 
-/* Helper functions for dealing with register sets.  */
-
+/* Helper functions for dealing with register sets: */
 void
-sparc32_supply_gregset (const struct sparc_gregset *gregset,
-			struct regcache *regcache,
-			int regnum, const void *gregs)
+sparc32_supply_gregset(const struct sparc_gregset *gregset,
+		       struct regcache *regcache,
+		       int regnum, const void *gregs)
 {
-  const gdb_byte *regs = gregs;
+  const gdb_byte *regs = (const gdb_byte *)gregs;
   int i;
 
   if (regnum == SPARC32_PSR_REGNUM || regnum == -1)
@@ -1457,12 +1452,13 @@ sparc32_supply_gregset (const struct sparc_gregset *gregset,
     }
 }
 
+/* */
 void
-sparc32_collect_gregset (const struct sparc_gregset *gregset,
-			 const struct regcache *regcache,
-			 int regnum, void *gregs)
+sparc32_collect_gregset(const struct sparc_gregset *gregset,
+			const struct regcache *regcache,
+			int regnum, void *gregs)
 {
-  gdb_byte *regs = gregs;
+  gdb_byte *regs = (gdb_byte *)gregs;
   int i;
 
   if (regnum == SPARC32_PSR_REGNUM || regnum == -1)
@@ -1512,11 +1508,12 @@ sparc32_collect_gregset (const struct sparc_gregset *gregset,
     }
 }
 
+/* */
 void
-sparc32_supply_fpregset (struct regcache *regcache,
-			 int regnum, const void *fpregs)
+sparc32_supply_fpregset(struct regcache *regcache,
+			int regnum, const void *fpregs)
 {
-  const gdb_byte *regs = fpregs;
+  const gdb_byte *regs = (const gdb_byte *)fpregs;
   int i;
 
   for (i = 0; i < 32; i++)
@@ -1529,11 +1526,12 @@ sparc32_supply_fpregset (struct regcache *regcache,
     regcache_raw_supply (regcache, SPARC32_FSR_REGNUM, regs + (32 * 4) + 4);
 }
 
+/* */
 void
-sparc32_collect_fpregset (const struct regcache *regcache,
-			  int regnum, void *fpregs)
+sparc32_collect_fpregset(const struct regcache *regcache,
+			 int regnum, void *fpregs)
 {
-  gdb_byte *regs = fpregs;
+  gdb_byte *regs = (gdb_byte *)fpregs;
   int i;
 
   for (i = 0; i < 32; i++)

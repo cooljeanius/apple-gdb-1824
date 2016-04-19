@@ -28,6 +28,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <ctype.h>
+#include "gdb_assert.h"
 #include "gdb_string.h"
 
 #include <sys/param.h>
@@ -834,10 +835,13 @@ enter_line_range (struct subfile *subfile, unsigned beginoffset, unsigned endoff
 #define	RECORD_MINIMAL_SYMBOL(NAME, ADDR, TYPE, SECTION, OBJFILE) \
 {						\
   char *namestr;				\
+  struct minimal_symbol *myminsym = (struct minimal_symbol *)NULL; \
   namestr = (NAME); \
   if (namestr[0] == '.') ++namestr; \
-  prim_record_minimal_symbol_and_info (namestr, (ADDR), (TYPE), \
-				       (char *)NULL, (SECTION), (asection *)NULL, (OBJFILE)); \
+  myminsym = prim_record_minimal_symbol_and_info(namestr, (ADDR), (TYPE), \
+						 (char *)NULL, (SECTION), \
+						 (asection *)NULL, (OBJFILE)); \
+  gdb_assert(myminsym != NULL);	\
   misc_func_recorded = 1;					\
 }
 
@@ -2305,11 +2309,19 @@ scan_xcoff_symtab(struct objfile *objfile)
 		    /* Data variables are recorded in the minimal symbol
 		       table, except for section symbols.  */
 		    if (*namestring != '.')
-		      prim_record_minimal_symbol_and_info
-			(namestring, symbol.n_value,
-			 sclass == C_HIDEXT ? mst_file_data : mst_data,
-			 NULL, secnum_to_section (symbol.n_scnum, objfile),
-			 NULL, objfile);
+		      {
+			struct minimal_symbol *myminsym =
+			  prim_record_minimal_symbol_and_info(namestring,
+							      symbol.n_value,
+							      ((sclass == C_HIDEXT)
+							       ? mst_file_data
+							       : mst_data),
+							      NULL,
+							      secnum_to_section(symbol.n_scnum,
+										objfile),
+							      NULL, objfile);
+			gdb_assert(myminsym != NULL);
+		      }
 		    break;
 
 		  case XMC_TC0:
@@ -2371,7 +2383,6 @@ scan_xcoff_symtab(struct objfile *objfile)
 		    break;
 
 		  default:
-
 		    /* xlc puts each variable in a separate csect,
 		       so we get an XTY_SD for each variable.  But
 		       gcc puts several variables in a csect, so
@@ -2380,11 +2391,19 @@ scan_xcoff_symtab(struct objfile *objfile)
 		       typically be XMC_RW; I suspect XMC_RO and
 		       XMC_BS might be possible too.  */
 		    if (*namestring != '.')
-		      prim_record_minimal_symbol_and_info
-			(namestring, symbol.n_value,
-			 sclass == C_HIDEXT ? mst_file_data : mst_data,
-			 NULL, secnum_to_section (symbol.n_scnum, objfile),
-			 NULL, objfile);
+		      {
+			struct minimal_symbol *myminsym =
+			  prim_record_minimal_symbol_and_info(namestring,
+							      symbol.n_value,
+							      ((sclass == C_HIDEXT)
+							       ? mst_file_data
+							       : mst_data),
+							      NULL,
+							      secnum_to_section(symbol.n_scnum,
+										objfile),
+							      NULL, objfile);
+			gdb_assert(myminsym != NULL);
+		      }
 		    break;
 		  }
 		break;
@@ -2397,11 +2416,19 @@ scan_xcoff_symtab(struct objfile *objfile)
 		    /* Common variables are recorded in the minimal symbol
 		       table, except for section symbols.  */
 		    if (*namestring != '.')
-		      prim_record_minimal_symbol_and_info
-			(namestring, symbol.n_value,
-			 sclass == C_HIDEXT ? mst_file_bss : mst_bss,
-			 NULL, secnum_to_section (symbol.n_scnum, objfile),
-			 NULL, objfile);
+		      {
+			struct minimal_symbol *myminsym =
+			  prim_record_minimal_symbol_and_info(namestring,
+							      symbol.n_value,
+							      ((sclass == C_HIDEXT)
+							       ? mst_file_bss
+							       : mst_bss),
+							      NULL,
+							      secnum_to_section(symbol.n_scnum,
+										objfile),
+							      NULL, objfile);
+			gdb_assert(myminsym != NULL);
+		      }
 		    break;
 		  }
 		break;

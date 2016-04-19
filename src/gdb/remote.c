@@ -61,7 +61,7 @@
 #include "remote-fileio.h"
 
 #include "objc-lang.h"
-#include "macosx-tdep.h"
+#include "macosx/macosx-tdep.h"
 #ifdef MACOSX_DYLD
 # include "macosx-nat-dyld.h"
 # include "macosx-nat-dyld-process.h"
@@ -2835,8 +2835,13 @@ remote_open_1(const char *name, int from_tty, struct target_ops *target,
   /* Only do this for "target remote" -- e.g. "target remote-macosx" should
    * not search through memory for a kernel.  */
 
-  if (target->to_shortname && (strcmp(target->to_shortname, "remote") == 0))
+  if (target->to_shortname && (strcmp(target->to_shortname, "remote") == 0)) {
+#ifdef TM_NEXTSTEP
     exhaustive_search_for_kernel_in_mem(symfile_objfile, NULL, NULL);
+#else
+    warning(_("Skipping exhaustive search for kernel in this configuration."));
+#endif /* TM_NEXTSTEP */
+  }
 }
 
 /* This takes a program previously attached to and detaches it.  After
@@ -3468,6 +3473,7 @@ Packet: '%s'\n"),
                       {
                         ULONGEST mach_exc_data = 0UL;
                         p = unpack_varlen_hex(++p1, &mach_exc_data);
+#ifdef EXC_BAD_ACCESS
                         if (mach_exc_type == EXC_BAD_ACCESS)
                           {
                             if (mach_exc_data_index == 0)
@@ -3475,6 +3481,7 @@ Packet: '%s'\n"),
                             else if (mach_exc_data_index == 1)
                               status->address = mach_exc_data;
                           }
+#endif /* EXC_BAD_ACCESS */
                         mach_exc_data_index++;
                       }
                     /* APPLE LOCAL END: mach exception info.  */
@@ -6876,12 +6883,14 @@ _initialize_remote (void)
   init_extended_async_remote_ops ();
   add_target (&extended_async_remote_ops);
 
-  init_remote_macosx_ops ();
-  add_target (&remote_macosx_ops);
+#ifdef MACOSX_DYLD
+  init_remote_macosx_ops();
+  add_target(&remote_macosx_ops);
+#endif /* MACOSX_DYLD */
 
   /* Hook into new objfile notification.  */
   remote_new_objfile_chain = deprecated_target_new_objfile_hook;
-  deprecated_target_new_objfile_hook  = remote_new_objfile;
+  deprecated_target_new_objfile_hook = remote_new_objfile;
 
 #if 0
   init_remote_threadtests ();
@@ -7106,6 +7115,7 @@ without any possibility of corruption."),
 			 show_remote_debugflags_command,
 			 &remote_set_cmdlist, &remote_show_cmdlist);
 
+#ifdef MACOSX_DYLD
   /* APPLE LOCAL: Location of executable on remote system: */
   add_setshow_string_noescape_cmd("executable-directory", class_obscure,
 				  &remote_macosx_exec_dir,
@@ -7116,6 +7126,7 @@ with the same name as the exec-file, but in the location given by this variable.
 				  NULL, NULL,
 				  &remote_set_cmdlist,
                                   &remote_show_cmdlist);
+#endif /* MACOSX_DYLD */
 
   /* APPLE LOCAL */
   add_cmd("dump-packets", class_maintenance, dump_packets_command,

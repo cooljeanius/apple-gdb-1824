@@ -2220,6 +2220,9 @@ decode_fix_and_continue_trampoline(CORE_ADDR pc)
   pc += 5;  /* the relative offset is computed from next instruction */
   return (pc + relative_offset);
 #else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+  __asm__("");
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
   return 0;
 #endif /* TARGET_I386 */
 }
@@ -2308,6 +2311,9 @@ update_picbase_register (struct symbol *new_fun)
       write_register(pic_base_reg, pic_base_value);
     }
 #else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+  __asm__("");
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
   return;
 #endif /* TARGET_I386 */
 }

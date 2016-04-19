@@ -3998,14 +3998,25 @@ arm_macosx_fast_show_stack(unsigned int count_limit,
 	  CORE_ADDR next_pc_addr = 0;
 	  if ((sigtramp_start <= pc) && (pc < sigtramp_end))
 	    {
-	      CORE_ADDR mcontext_addr;
-	      CORE_ADDR gpr_addr;
+	      CORE_ADDR mcontext_addr = 0UL;
+	      CORE_ADDR gpr_addr = 0UL;
+#ifdef GP_REG_SIZE
 	      /* We are in signal trampoline: */
 	      mcontext_addr = read_memory_unsigned_integer((fp + 104),
 	                                                   GP_REG_SIZE);
+# ifdef EXC_STATE_SIZE
 	      gpr_addr = (mcontext_addr + EXC_STATE_SIZE);
+# else
+	      gpr_addr = (mcontext_addr + 0UL);
+# endif /* EXC_STATE_SIZE */
 	      next_fp_addr = (gpr_addr + (ARM_FP_REGNUM * GP_REG_SIZE));
 	      next_pc_addr = (gpr_addr + (ARM_PC_REGNUM * GP_REG_SIZE));
+#else
+	      if (gpr_addr == mcontext_addr) {
+		(void)mcontext_addr;
+		(void)gpr_addr;
+	      }
+#endif /* GP_REG_SIZE */
 	    }
 	  else
 	    {
@@ -4016,6 +4027,7 @@ arm_macosx_fast_show_stack(unsigned int count_limit,
 
 	  if ((next_fp_addr != 0) && (next_pc_addr != 0))
 	    {
+#ifdef GP_REG_SIZE
 	      /* Read the next FP by dereferencing the current FP: */
 	      if (safe_read_memory_unsigned_integer(next_fp_addr, GP_REG_SIZE,
 						    &next_fp))
@@ -4049,6 +4061,9 @@ arm_macosx_fast_show_stack(unsigned int count_limit,
 		{
 		  done = 1; /* Could NOT read the previous FP.  */
 		}
+#else
+	      done = 1;
+#endif /* GP_REG_SIZE */
 	    }
 	  else
 	    {
@@ -5398,7 +5413,7 @@ arm_in_call_stub(CORE_ADDR pc, char *name)
 
   /* Find the starting address of the function containing the PC.  If
      the caller did NOT give us a name, look it up at the same time.  */
-  if (0 == find_pc_partial_function(pc, name ? NULL : &name,
+  if (0 == find_pc_partial_function(pc, ((const char **)name ? NULL : &name),
 				    &start_addr, NULL))
     return 0;
 
@@ -5417,7 +5432,8 @@ arm_skip_stub(CORE_ADDR pc)
   CORE_ADDR start_addr;
 
   /* Find the starting address and name of the function containing the PC.  */
-  if (find_pc_partial_function(pc, &name, &start_addr, NULL) == 0)
+  if (find_pc_partial_function(pc, (const char **)&name, &start_addr,
+			       NULL) == 0)
     return 0;
 
   /* Call thunks always start with "_call_via_": */

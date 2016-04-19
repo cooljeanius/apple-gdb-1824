@@ -1,4 +1,4 @@
-/* Print NS 32000 instructions for GDB, the GNU debugger.
+/* ns32k-tdep.c: Print NS 32000 instructions for GDB, the GNU debugger.
    Copyright 1986, 1988, 1991, 1992, 1994, 1995, 1998, 1999, 2000, 2001
    Free Software Foundation, Inc.
 
@@ -23,19 +23,24 @@
 #include "frame.h"
 #include "gdbcore.h"
 
-static int sign_extend (int value, int bits);
+extern CORE_ADDR umax_skip_prologue(CORE_ADDR pc);
+extern int umax_frame_num_args(struct frame_info *fi);
+static int sign_extend(int value, int bits);
+extern void flip_bytes(void *p, int count);
+extern int ns32k_localcount(CORE_ADDR enter_pc);
+extern CORE_ADDR ns32k_get_enter_addr(CORE_ADDR pc);
 
+extern void _initialize_ns32k_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_ns32k_tdep (void)
+_initialize_ns32k_tdep(void)
 {
   tm_print_insn = print_insn_ns32k;
 }
 
 /* Advance PC across any function entry prologue instructions
    to reach some "real" code.  */
-
 CORE_ADDR
-umax_skip_prologue (CORE_ADDR pc)
+umax_skip_prologue(CORE_ADDR pc)
 {
   register unsigned char op = read_memory_integer (pc, 1);
   if (op == 0x82)
@@ -59,9 +64,8 @@ umax_skip_prologue (CORE_ADDR pc)
    Encore's C compiler often reuses same area on stack for args,
    so this will often not work properly.  If the arg names
    are known, it's likely most of them will be printed. */
-
 int
-umax_frame_num_args (struct frame_info *fi)
+umax_frame_num_args(struct frame_info *fi)
 {
   int numargs;
   CORE_ADDR pc;
@@ -71,17 +75,17 @@ umax_frame_num_args (struct frame_info *fi)
   int width;
 
   numargs = -1;
-  enter_addr = ns32k_get_enter_addr ((fi)->pc);
+  enter_addr = ns32k_get_enter_addr((fi)->pc);
   if (enter_addr > 0)
     {
       pc = ((enter_addr == 1)
-	    ? SAVED_PC_AFTER_CALL (fi)
-	    : FRAME_SAVED_PC (fi));
-      insn = read_memory_integer (pc, 2);
-      addr_mode = (insn >> 11) & 0x1f;
-      insn = insn & 0x7ff;
-      if ((insn & 0x7fc) == 0x57c
-	  && addr_mode == 0x14)	/* immediate */
+	    ? SAVED_PC_AFTER_CALL(fi)
+	    : FRAME_SAVED_PC(fi));
+      insn = read_memory_integer(pc, 2);
+      addr_mode = ((insn >> 11) & 0x1f);
+      insn = (insn & 0x7ff);
+      if (((insn & 0x7fc) == 0x57c)
+	  && (addr_mode == 0x14))	/* immediate */
 	{
 	  if (insn == 0x57c)	/* adjspb */
 	    width = 1;
@@ -90,27 +94,29 @@ umax_frame_num_args (struct frame_info *fi)
 	  else if (insn == 0x57f)	/* adjspd */
 	    width = 4;
 	  else
-	    internal_error (__FILE__, __LINE__, "bad else");
-	  numargs = read_memory_integer (pc + 2, width);
+	    internal_error(__FILE__, __LINE__, "bad else");
+	  numargs = read_memory_integer((pc + 2), width);
 	  if (width > 1)
-	    flip_bytes (&numargs, width);
-	  numargs = -sign_extend (numargs, width * 8) / 4;
+	    flip_bytes(&numargs, width);
+	  numargs = (-sign_extend(numargs, (width * 8)) / 4);
 	}
     }
   return numargs;
 }
 
+/* */
 static int
-sign_extend (int value, int bits)
+sign_extend(int value, int bits)
 {
-  value = value & ((1 << bits) - 1);
-  return (value & (1 << (bits - 1))
-	  ? value | (~((1 << bits) - 1))
+  value = (value & ((1 << bits) - 1));
+  return ((value & (1 << (bits - 1)))
+	  ? (value | (~((1 << bits) - 1)))
 	  : value);
 }
 
+/* */
 void
-flip_bytes (void *p, int count)
+flip_bytes(void *p, int count)
 {
   char tmp;
   char *ptr = 0;
@@ -128,14 +134,13 @@ flip_bytes (void *p, int count)
 /* Return the number of locals in the current frame given a pc
    pointing to the enter instruction.  This is used in the macro
    FRAME_FIND_SAVED_REGS.  */
-
 int
-ns32k_localcount (CORE_ADDR enter_pc)
+ns32k_localcount(CORE_ADDR enter_pc)
 {
   unsigned char localtype;
   int localcount;
 
-  localtype = read_memory_integer (enter_pc + 2, 1);
+  localtype = read_memory_integer(enter_pc + 2, 1);
   if ((localtype & 0x80) == 0)
     localcount = localtype;
   else if ((localtype & 0xc0) == 0x80)
@@ -166,9 +171,8 @@ ns32k_about_to_return (CORE_ADDR pc)
  * Returns positive address if pc is between enter/exit,
  * 1 if pc before enter or after exit, 0 otherwise.
  */
-
 CORE_ADDR
-ns32k_get_enter_addr (CORE_ADDR pc)
+ns32k_get_enter_addr(CORE_ADDR pc)
 {
   CORE_ADDR enter_addr;
   unsigned char op;

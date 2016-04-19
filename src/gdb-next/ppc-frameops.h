@@ -12,9 +12,9 @@ struct frame_saved_regs;
 struct value;
 struct type;
 
-void ppc_push_dummy_frame PARAMS (());
+void ppc_push_dummy_frame PARAMS((void));
 
-void ppc_pop_frame PARAMS (());
+void ppc_pop_frame PARAMS((void));
 
 void ppc_fix_call_dummy PARAMS
   ((char *dummy, CORE_ADDR pc, CORE_ADDR addr, int nargs, struct value **args, struct type *type, int gcc_p));

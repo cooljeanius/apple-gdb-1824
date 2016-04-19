@@ -172,25 +172,30 @@ void
 tui_update_source_windows_with_line (struct symtab *s, int line)
 {
   CORE_ADDR pc;
+  int i_pc = 0;
   union tui_line_or_address l;
 
-  switch (tui_current_layout ())
+  switch (tui_current_layout())
     {
     case DISASSEM_COMMAND:
     case DISASSEM_DATA_COMMAND:
-      find_line_pc (s, line, &pc);
-      tui_update_source_windows_with_addr (pc);
+      i_pc = find_line_pc(s, line, &pc);
+      tui_update_source_windows_with_addr(pc);
       break;
     default:
       l.line_no = line;
-      tui_show_symtab_source (s, l, FALSE);
-      if (tui_current_layout () == SRC_DISASSEM_COMMAND)
+      tui_show_symtab_source(s, l, FALSE);
+      if (tui_current_layout() == SRC_DISASSEM_COMMAND)
 	{
-	  find_line_pc (s, line, &pc);
-	  tui_show_disassem (pc);
+	  i_pc = find_line_pc(s, line, &pc);
+	  tui_show_disassem(pc);
 	}
       break;
     }
+  
+  if (i_pc > 0) {
+    ; /* ??? */
+  }
 
   return;
 }

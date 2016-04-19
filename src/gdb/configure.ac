@@ -3059,6 +3059,9 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
   fi
   ## the clang version of this warning is un-pluralized, unlike in GCC:
   build_warnings="${build_warnings} -Wno-unused-local-typedef"
+else
+  ## really only noisy with clang:
+  build_warnings="${build_warnings} -Wcast-align"
 fi
 
 # GCC supports -Wuninitialized only with -O or -On, n != 0.
@@ -3070,7 +3073,10 @@ opt_warnings="-Wuninitialized -Winit-self -Wmissing-noreturn \
 -Wvolatile-register-var -Wdisabled-optimization -Winline \
 -Waggressive-loop-optimizations -Wvector-operation-performance \
 -Wmaybe-uninitialized -Wstrict-overflow=1 -fno-strict-aliasing \
--Wnull-dereference -Wframe-address -Wsuggest-attribute=const"
+-Wnull-dereference -Wframe-address"
+if test "x${ax_cv_c_compiler_vendor}" != "xclang"; then
+  opt_warnings="${opt_warnings} -Wsuggest-attribute=const"
+fi
 # -Warray-bounds is only for -O2 and up, or when -ftree-vrp is active, so
 # use a separate variable for it:
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -3100,7 +3106,6 @@ fi
 #  * -trigraphs (only assuming we leave -Wtrigraphs in, see below)
 #  * -Wshadow (noisy, but usually easy enough to fix if you use an IDE)
 #  * -Wcast-qual (casting can silence other warnings, so this can conflict)
-#  * -Wcast-align (same as with -Wcast-qual, and also makes clang noisy)
 #  * -Wconversion (would require a lot of casting)
 #  * -Wsign-conversion (likewise)
 #  * -Wtraditional-conversion (likewise) (C-only, not C++)
@@ -3143,6 +3148,7 @@ fi
 #  * -Wdouble-promotion (could be moved to the same place as -Wlong-long if
 #    we get rid of -Wunsuffixed-float-constants some time...)
 #  * -Wformat-nonliteral (as to the conditions in which we enable it)
+#  * -Wcast-align (as to whether to un-disable for clang as well)
 # NOT actually up for debate:
 #  * -Werror (never actually add this, even though upstream GDB does...)
 #  * -pedantic-errors (likewise, never add this)
@@ -3640,6 +3646,7 @@ frags=""
 if test "${target}" = "${host}"; then
   host_makefile_frag=${srcdir}/config/${gdb_host_cpu}/${gdb_host}.mh
   if test ! -f ${host_makefile_frag}; then
+    AC_MSG_WARN([failed to find ${host_makefile_frag}])
     AC_MSG_ERROR([*** Gdb does not support native target ${host}])
   fi
   frags="${frags} ${host_makefile_frag}"
@@ -3649,6 +3656,7 @@ fi
 
 target_makefile_frag=${srcdir}/config/${gdb_target_cpu}/${gdb_target}.mt
 if test ! -f ${target_makefile_frag}; then
+  AC_MSG_WARN([failed to find ${target_makefile_frag}])
   AC_MSG_ERROR([*** Gdb does not support target ${target}])
 fi
 frags="${frags} ${target_makefile_frag}"

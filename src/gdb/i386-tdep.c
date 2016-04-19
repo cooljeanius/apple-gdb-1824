@@ -60,8 +60,10 @@
 
 #include "x86-shared-tdep.h"
 
+#ifdef MACOSX_DYLD
 /* APPLE LOCAL get the prototype for macosx_skip_trampoline_code */
-#include "macosx-tdep.h"
+# include "macosx-tdep.h"
+#endif /* MACOSX_DYLD */
 
 #if !(defined(__i386) || defined(__i386__) || defined(_I386))
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__) && defined(__APPLE__)

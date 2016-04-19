@@ -1358,15 +1358,17 @@ make_visible_with_new_height (struct tui_win_info * win_info)
       else if (deprecated_selected_frame != (struct frame_info *) NULL)
 	{
 	  union tui_line_or_address line;
-	  struct symtab_and_line cursal = get_current_source_symtab_and_line ();
+	  struct symtab_and_line cursal = get_current_source_symtab_and_line();
 
-
-	  s = find_pc_symtab (get_frame_pc (deprecated_selected_frame));
+	  s = find_pc_symtab(get_frame_pc(deprecated_selected_frame));
 	  if (win_info->generic.type == SRC_WIN)
 	    line.line_no = cursal.line;
 	  else
 	    {
-	      find_line_pc (s, cursal.line, &line.addr);
+	      int i_pc = find_line_pc(s, cursal.line, &line.addr);
+	      if (i_pc > 0) {
+		; /* ??? */
+	      }
 	    }
 	  tui_update_source_window (win_info, s, line, TRUE);
 	}

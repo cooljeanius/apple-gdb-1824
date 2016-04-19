@@ -41190,6 +41190,24 @@ _ACEOF
 
 
 fi
+ac_fn_c_check_type "$LINENO" "sa_family_t" "ac_cv_type_sa_family_t" "
+#ifdef HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"This conftest for sa_family_t wants <sys/socket.h> included.\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_SOCKET_H */
+
+"
+if test "x$ac_cv_type_sa_family_t" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_SA_FAMILY_T 1
+_ACEOF
+
+
+fi
 ac_fn_c_check_type "$LINENO" "regex_t" "ac_cv_type_regex_t" "
 #ifdef HAVE_REGEX_H
 # include <regex.h>
@@ -46272,6 +46290,9 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
   fi
   ## the clang version of this warning is un-pluralized, unlike in GCC:
   build_warnings="${build_warnings} -Wno-unused-local-typedef"
+else
+  ## really only noisy with clang:
+  build_warnings="${build_warnings} -Wcast-align"
 fi
 
 # GCC supports -Wuninitialized only with -O or -On, n != 0.
@@ -46283,7 +46304,10 @@ opt_warnings="-Wuninitialized -Winit-self -Wmissing-noreturn \
 -Wvolatile-register-var -Wdisabled-optimization -Winline \
 -Waggressive-loop-optimizations -Wvector-operation-performance \
 -Wmaybe-uninitialized -Wstrict-overflow=1 -fno-strict-aliasing \
--Wnull-dereference -Wframe-address -Wsuggest-attribute=const"
+-Wnull-dereference -Wframe-address"
+if test "x${ax_cv_c_compiler_vendor}" != "xclang"; then
+  opt_warnings="${opt_warnings} -Wsuggest-attribute=const"
+fi
 # -Warray-bounds is only for -O2 and up, or when -ftree-vrp is active, so
 # use a separate variable for it:
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -46313,10 +46337,9 @@ fi
 #  * -trigraphs (only assuming we leave -Wtrigraphs in, see below)
 #  * -Wshadow (noisy, but usually easy enough to fix if you use an IDE)
 #  * -Wcast-qual (casting can silence other warnings, so this can conflict)
-#  * -Wcast-align (same as with -Wcast-qual, and also makes clang noisy)
 #  * -Wconversion (would require a lot of casting)
 #  * -Wsign-conversion (likewise)
-#  * -Wtraditional-conversion (likewise)
+#  * -Wtraditional-conversion (likewise) (C-only, not C++)
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
 #  * -Wundef (only if we can figure out how to fix the issue with caddr_t)
 #  * -Wunused-macros (if we also add back -Wundef as per above)
@@ -46356,6 +46379,7 @@ fi
 #  * -Wdouble-promotion (could be moved to the same place as -Wlong-long if
 #    we get rid of -Wunsuffixed-float-constants some time...)
 #  * -Wformat-nonliteral (as to the conditions in which we enable it)
+#  * -Wcast-align (as to whether to un-disable for clang as well)
 # NOT actually up for debate:
 #  * -Werror (never actually add this, even though upstream GDB does...)
 #  * -pedantic-errors (likewise, never add this)
@@ -49177,6 +49201,8 @@ frags=""
 if test "${target}" = "${host}"; then
   host_makefile_frag=${srcdir}/config/${gdb_host_cpu}/${gdb_host}.mh
   if test ! -f ${host_makefile_frag}; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: failed to find ${host_makefile_frag}" >&5
+$as_echo "$as_me: WARNING: failed to find ${host_makefile_frag}" >&2;}
     as_fn_error $? "*** Gdb does not support native target ${host}" "$LINENO" 5
   fi
   frags="${frags} ${host_makefile_frag}"
@@ -49186,6 +49212,8 @@ fi
 
 target_makefile_frag=${srcdir}/config/${gdb_target_cpu}/${gdb_target}.mt
 if test ! -f ${target_makefile_frag}; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: failed to find ${target_makefile_frag}" >&5
+$as_echo "$as_me: WARNING: failed to find ${target_makefile_frag}" >&2;}
   as_fn_error $? "*** Gdb does not support target ${target}" "$LINENO" 5
 fi
 frags="${frags} ${target_makefile_frag}"

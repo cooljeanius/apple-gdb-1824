@@ -1,4 +1,4 @@
-/* Handle COFF SVR3 shared libraries for GDB, the GNU Debugger.
+/* coff-solib.c: Handle COFF SVR3 shared libraries for GDB, the GNU Debugger.
    Copyright 1993, 1994, 1998, 1999, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -27,6 +27,10 @@
 #include "symtab.h"
 #include "symfile.h"
 #include "objfiles.h"
+#include "gdb_assert.h"
+
+extern void coff_solib_add(char *, int, struct target_ops *, int);
+extern void coff_solib_create_inferior_hook(void);
 
 /*
    GLOBAL FUNCTION
@@ -48,7 +52,6 @@
 
    FIXME: fill this in...
  */
-
 void
 coff_solib_add(char *arg_string, int from_tty, struct target_ops *target,
                int readsyms)
@@ -98,6 +101,7 @@ coff_solib_add(char *arg_string, int from_tty, struct target_ops *target,
 				    NULL,	/* no offsets */
 				    0,		/* not mainline */
 				    OBJF_SHARED);	/* flags */
+	  gdb_assert(objfile != NULL);
 
 	  libsize -= (len * 4);
 	  lib += (len * 4);
@@ -127,7 +131,6 @@ coff_solib_add(char *arg_string, int from_tty, struct target_ops *target,
    function gets called via expansion of the macro
    SOLIB_CREATE_INFERIOR_HOOK.
  */
-
 void
 coff_solib_create_inferior_hook(void)
 {

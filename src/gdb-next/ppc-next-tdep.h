@@ -2,6 +2,9 @@
  * ppc-next-tdep.h
  */
 
+#ifndef __PPC_NEXT_TDEP_H__
+#define __PPC_NEXT_TDEP_H__ 1
+
 #include "tm-ppc.h"
 
 #define IS_GP_REGNUM(regno) ((regno >= FIRST_GP_REGNUM) && (regno <= LAST_GP_REGNUM))
@@ -14,14 +17,21 @@
 
 #include "ppc-thread-status.h"
 
-void ppc_next_fetch_sp_registers PARAMS ((unsigned char *rdata, gdb_ppc_thread_state_t *gp_regs));
-void ppc_next_store_sp_registers PARAMS ((unsigned char *rdata, gdb_ppc_thread_state_t *gp_regs));
-void ppc_next_fetch_gp_registers PARAMS ((unsigned char *rdata, gdb_ppc_thread_state_t *gp_regs));
-void ppc_next_store_gp_registers PARAMS ((unsigned char *rdata, gdb_ppc_thread_state_t *gp_regs));
-void ppc_next_fetch_fp_registers PARAMS ((unsigned char *rdata, gdb_ppc_thread_fpstate_t *fp_regs));
-void ppc_next_store_fp_registers PARAMS ((unsigned char *rdata, gdb_ppc_thread_fpstate_t *fp_regs));
-CORE_ADDR ppc_next_skip_trampoline_code PARAMS ((CORE_ADDR pc));
-int ppc_next_in_solib_return_trampoline PARAMS ((CORE_ADDR pc, char *name));
-int ppc_next_in_solib_call_trampoline PARAMS ((CORE_ADDR pc, char *name));
+extern void ppc_next_fetch_sp_registers PARAMS((unsigned char *, gdb_ppc_thread_state_t *));
+extern void ppc_next_store_sp_registers PARAMS((unsigned char *, gdb_ppc_thread_state_t *));
+extern void ppc_next_fetch_gp_registers PARAMS((unsigned char *, gdb_ppc_thread_state_t *));
+extern void ppc_next_store_gp_registers PARAMS((unsigned char *, gdb_ppc_thread_state_t *));
+extern void ppc_next_fetch_fp_registers PARAMS((unsigned char *, gdb_ppc_thread_fpstate_t *));
+extern void ppc_next_store_fp_registers PARAMS((unsigned char *, gdb_ppc_thread_fpstate_t *));
+extern void ppc_next_fetch_vp_registers PARAMS((unsigned char *, gdb_ppc_thread_vpstate_t *));
+extern void ppc_next_store_vp_registers PARAMS((unsigned char *, gdb_ppc_thread_vpstate_t *));
+extern CORE_ADDR ppc_next_skip_trampoline_code PARAMS((CORE_ADDR));
+extern int ppc_next_in_solib_return_trampoline PARAMS((CORE_ADDR, char *));
+extern int ppc_next_in_solib_call_trampoline PARAMS((CORE_ADDR, char *));
+
+extern CORE_ADDR ppc_next_dynamic_trampoline_nextpc PARAMS((CORE_ADDR));
+extern int ppc_next_in_solib_dynsym_resolve_code PARAMS((CORE_ADDR));
+
+#endif /* !__PPC_NEXT_TDEP_H__ */
 
 /* EOF */

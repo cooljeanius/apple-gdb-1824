@@ -30,6 +30,10 @@ Boston, MA 02111-1307, USA.  */
 #include "value.h"
 #include "gdb_string.h"
 
+#ifdef HAVE_STDBOOL_H
+# include <stdbool.h>
+#endif /* HAVE_STDBOOL_H */
+
 static void grow_expr(struct agent_expr *x, int n);
 
 static void append_const(struct agent_expr *x, LONGEST val, int n);

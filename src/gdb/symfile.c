@@ -2084,6 +2084,7 @@ find_separate_debug_file (struct objfile *objfile)
   unsigned long crc32;
   int i;
 
+  /* FIXME: BFD internal function; not exported: */
   basename = get_debug_link_info(objfile, &crc32);
 
   if (basename == NULL)
@@ -2114,6 +2115,7 @@ find_separate_debug_file (struct objfile *objfile)
   strcpy(debugfile, dir);
   strcat(debugfile, basename);
 
+  /* FIXME: BFD internal function; not exported: */
   if (separate_debug_file_exists(debugfile, crc32))
     {
       xfree(basename);
@@ -2122,33 +2124,35 @@ find_separate_debug_file (struct objfile *objfile)
     }
 
   /* Then try in the subdirectory named DEBUG_SUBDIRECTORY.  */
-  strcpy (debugfile, dir);
-  strcat (debugfile, DEBUG_SUBDIRECTORY);
-  strcat (debugfile, "/");
-  strcat (debugfile, basename);
+  strcpy(debugfile, dir);
+  strcat(debugfile, DEBUG_SUBDIRECTORY);
+  strcat(debugfile, "/");
+  strcat(debugfile, basename);
 
-  if (separate_debug_file_exists (debugfile, crc32))
+  /* FIXME: BFD internal function; not exported: */
+  if (separate_debug_file_exists(debugfile, crc32))
     {
-      xfree (basename);
-      xfree (dir);
-      return xstrdup (debugfile);
+      xfree(basename);
+      xfree(dir);
+      return xstrdup(debugfile);
     }
 
   /* Then try in the global debugfile directory.  */
-  strcpy (debugfile, debug_file_directory);
-  strcat (debugfile, "/");
-  strcat (debugfile, dir);
-  strcat (debugfile, basename);
+  strcpy(debugfile, debug_file_directory);
+  strcat(debugfile, "/");
+  strcat(debugfile, dir);
+  strcat(debugfile, basename);
 
-  if (separate_debug_file_exists (debugfile, crc32))
+  /* FIXME: BFD internal function; not exported: */
+  if (separate_debug_file_exists(debugfile, crc32))
     {
-      xfree (basename);
-      xfree (dir);
-      return xstrdup (debugfile);
+      xfree(basename);
+      xfree(dir);
+      return xstrdup(debugfile);
     }
 
-  xfree (basename);
-  xfree (dir);
+  xfree(basename);
+  xfree(dir);
   return NULL;
 }
 #endif /* TM_NEXTSTEP */
@@ -3102,20 +3106,24 @@ get_kext_bundle_ident_and_binary_path(const char *filename,
   const char *bundle_executable_name_from_plist;
   char *t;
 
+#ifdef TM_NEXTSTEP
   *kext_bundle_filename = macosx_kext_info(filename,
-                                          &bundle_executable_name_from_plist,
-                                          bundle_identifier_name_from_plist);
+					   &bundle_executable_name_from_plist,
+					   bundle_identifier_name_from_plist);
+#else
+  *kext_bundle_filename = NULL;
+#endif /* TM_NEXTSTEP */
 
   if (*kext_bundle_filename == NULL)
-    error("Unable to find kext bundle at \"%s\"", filename);
+    error(_("Unable to find kext bundle at \"%s\""), filename);
   if (bundle_executable_name_from_plist == NULL)
-    error("Unable to find CFBundleExecutable in Info.plist");
+    error(_("Unable to find CFBundleExecutable in Info.plist"));
   if (*bundle_identifier_name_from_plist == NULL)
-    error("Unable to find CFBundleIdentifier in Info.plist");
+    error(_("Unable to find CFBundleIdentifier in Info.plist"));
 
   t = dirname((char *)*kext_bundle_filename);
   if (t == NULL)
-    error("dirname on the kext bundle filename failed");
+    error(_("dirname on the kext bundle filename failed"));
 
   *kext_bundle_executable_filename = (char *)xmalloc(strlen(*kext_bundle_filename)
                                                      + strlen("/Contents/MacOS/")
@@ -3146,6 +3154,7 @@ get_kext_bundle_ident_and_binary_path(const char *filename,
     }
 }
 
+/* */
 static void
 find_kext_files_by_bundle(const char *filename,
                           char **kextload_symbol_filename,
@@ -3167,7 +3176,7 @@ find_kext_files_by_bundle(const char *filename,
 
   t = dirname((char *)kext_bundle_filename);
   if (t == NULL)
-    error("dirname on the kext bundle filename failed");
+    error(_("dirname on the kext bundle filename failed"));
 
   /* A string of "." means that KEXT_BUNDLE_FILENAME has no dirname
      component. */
@@ -3251,7 +3260,7 @@ find_kext_loadaddrs_from_kernel(const char *filename,
    * binary: */
   kext_uuids = get_binary_file_uuids(*kext_bundle_executable_filename);
   if (kext_uuids == NULL) {
-    error("Unable to find Mach-O LC_UUID load command in file '%s'",
+    error(_("Unable to find Mach-O LC_UUID load command in file '%s'"),
           *kext_bundle_executable_filename);
   }
   clean = make_cleanup((make_cleanup_ftype *)free_uuids_array, kext_uuids);
@@ -3259,18 +3268,23 @@ find_kext_loadaddrs_from_kernel(const char *filename,
   i = 0;
   while (kext_uuids[i] != NULL)
     {
-      if (find_objfile_by_uuid (kext_uuids[i])) {
-        error("%s has already been added.", filename);
+      if (find_objfile_by_uuid(kext_uuids[i])) {
+        error(_("%s has already been added."), filename);
       }
       i++;
     }
 
-  sect_addrs
-    = macosx_get_kext_sect_addrs_from_kernel(*kext_bundle_executable_filename,
-                                             kext_uuids,
-                                             bundle_identifier_name_from_plist);
+#ifdef TM_NEXTSTEP
+  sect_addrs =
+    macosx_get_kext_sect_addrs_from_kernel(*kext_bundle_executable_filename,
+					   kext_uuids,
+					   bundle_identifier_name_from_plist);
+#else
+  sect_addrs = NULL;
+#endif /* TM_NEXTSTEP */
+
   if (sect_addrs == NULL) {
-    error("Unable to find the kext '%s' loaded in this kernel.", filename);
+    error(_("Unable to find the kext '%s' loaded in this kernel."), filename);
   }
 
   do_cleanups(clean);
@@ -3278,9 +3292,10 @@ find_kext_loadaddrs_from_kernel(const char *filename,
   return sect_addrs;
 }
 
+/* */
 static void
-find_kext_files_by_symfile (const char *filename,
-                            char **kext_bundle_executable_filename)
+find_kext_files_by_symfile(const char *filename,
+                           char **kext_bundle_executable_filename)
 {
   bfd *abfd;
 
@@ -3298,9 +3313,13 @@ find_kext_files_by_symfile (const char *filename,
 
   abfd = symfile_bfd_open(filename, 0, GDB_OSABI_UNKNOWN);
   if (abfd == NULL)
-    error("Cannot open kext sym file");
+    error(_("Cannot open kext sym file"));
 
+#ifdef TM_NEXTSTEP
   *kext_bundle_executable_filename = macosx_locate_kext_executable_by_symfile(abfd);
+#else
+  *kext_bundle_executable_filename = NULL;
+#endif /* TM_NEXTSTEP */
   if (*kext_bundle_executable_filename == NULL)
     {
       uint8_t uuid[16];
@@ -3340,11 +3359,11 @@ add_dsym_command(const char *args, int from_tty)
   volatile int i;
 
   if ((args == NULL) || (*args == '\0'))
-    error("Wrong number of args, should be \"add-dsym <DSYM PATH>\".");
+    error(_("Wrong number of args, should be \"add-dsym <DSYM PATH>\"."));
 
   arg_array = buildargv(args);
   if (arg_array == NULL)
-    error("Unable to build argument vector for add-dsym command.");
+    error(_("Unable to build argument vector for add-dsym command."));
 
   argv_cleanup = make_cleanup_freeargv(arg_array);
 
@@ -3355,16 +3374,21 @@ add_dsym_command(const char *args, int from_tty)
       full_name_cleanup = make_cleanup(xfree, full_name);
       if (stat(full_name, &stat_buf) == -1)
 	{
-	  error("Error \"%s\" accessing dSYM file \"%s\".",
+	  error(_("Error \"%s\" accessing dSYM file \"%s\"."),
                 safe_strerror(errno), full_name);
 	}
 
+#ifdef TM_NEXTSTEP
       objfile = macosx_find_objfile_matching_dsym_in_bundle(full_name,
                                                             &dsym_path);
+#else
+      dsym_path = NULL;
+      objfile = NULL;
+#endif /* TM_NEXTSTEP */
 
       if (!objfile)
 	{
-	  warning("Could not find binary to match \"%s\".", full_name);
+	  warning(_("Could not find binary to match \"%s\"."), full_name);
 	  continue;
 	}
 
@@ -3372,7 +3396,7 @@ add_dsym_command(const char *args, int from_tty)
 
       if (objfile->separate_debug_objfile != NULL)
 	{
-	  warning("Trying to add dSYM file to \"%s\" which already has one.",
+	  warning(_("Trying to add dSYM file to \"%s\" which already has one."),
                   objfile->name);
 	  goto do_cleanups;
 	}
@@ -3406,7 +3430,7 @@ add_dsym_command(const char *args, int from_tty)
       already_found_debug_file = NULL;
       if (e.reason != (enum return_reason)NO_ERROR)
 	{
-	  warning("Could not add dSYM \"%s\" to library \"%s\".",
+	  warning(_("Could not add dSYM \"%s\" to library \"%s\"."),
                   dsym_path, objfile->name);
 	  goto do_cleanups;
 	}
@@ -3424,6 +3448,7 @@ add_dsym_command(const char *args, int from_tty)
   do_cleanups(argv_cleanup);
 }
 
+/* */
 static void ATTR_NORETURN
 add_shared_symbol_files_command(const char *args, int from_tty)
 {

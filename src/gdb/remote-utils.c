@@ -111,7 +111,8 @@ void
 sr_scan_args(const char *proto, char *args)
 {
   int n;
-  char *p, *q;
+  char *p;
+  char *q;
 
   /* if no args, then nothing to do: */
   if (args == NULL || *args == '\0')
@@ -165,17 +166,18 @@ gr_generic_checkin(void)
   gr_expect_prompt();
 }
 
+/* */
 void
-gr_open (char *args, int from_tty, struct gr_settings *gr)
+gr_open(const char *args, int from_tty, struct gr_settings *gr)
 {
-  target_preopen (from_tty);
-  sr_scan_args (gr->ops->to_shortname, args);
-  unpush_target (gr->ops);
+  target_preopen(from_tty);
+  sr_scan_args(gr->ops->to_shortname, (char *)args);
+  unpush_target(gr->ops);
 
   gr_settings = gr;
 
-  if (sr_get_desc () != NULL)
-    gr_close (0);
+  if (sr_get_desc() != NULL)
+    gr_close(0);
 
   /* If no args are specified, then we use the device specified by a
      previous command or "set remotedevice".  But if there is no
@@ -267,9 +269,9 @@ sr_pollchar (void)
 /* Keep discarding input from the remote system, until STRING is found.
    Let the user break out immediately.  */
 void
-sr_expect (char *string)
+sr_expect(const char *string)
 {
-  char *p = string;
+  const char *p = string;
 
   immediate_quit++;
   while (1)
@@ -515,7 +517,7 @@ gr_create_inferior(char *execfile, char *args, char **env)
    pass non-matching data on.  */
 
 int
-gr_multi_scan(char *list[], int passthrough)
+gr_multi_scan(const char *list[], int passthrough)
 {
   char *swallowed;
   char *swallowed_p;
@@ -524,7 +526,7 @@ gr_multi_scan(char *list[], int passthrough)
   int i;
   int string_count;
   size_t max_length;
-  char **plist;
+  const char **plist;
 
   /* Look through the strings.  Count them.  Find the largest one so we can
      allocate a holding area.  */
@@ -552,7 +554,7 @@ gr_multi_scan(char *list[], int passthrough)
   swallowed_p = swallowed = (char *)alloca(max_length << 1);
 
   /* and a list of pointers to current scan points. */
-  plist = (char **)alloca(string_count * sizeof(*plist));
+  plist = (const char **)alloca(string_count * sizeof(*plist));
 
   /* and initialize */
   for (i = 0; i < string_count; ++i)

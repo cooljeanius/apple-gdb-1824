@@ -3014,6 +3014,129 @@
 		61D08A9D1CB7171B00998571 /* cpu-z80.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "cpu-z80.c"; path = "/var/root/apple-gdb-1824/src/bfd/cpu-z80.c"; sourceTree = "<absolute>"; };
 		61D22058192D60D100FA979E /* libbfd-shared.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libbfd-shared.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		61D8186E192FE3AB00E440C0 /* chew */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = chew; sourceTree = BUILT_PRODUCTS_DIR; };
+		61F32D341CC364EB00C05007 /* aux.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = aux.mt; path = "/var/root/apple-gdb-1824/src/gdb/config/m68k/aux.mt"; sourceTree = "<absolute>"; };
+		61F32D4E1CC3730F00C05007 /* attic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = attic.c; path = "/var/root/apple-gdb-1824/src/gdb-next/attic.c"; sourceTree = "<absolute>"; };
+		61F32D501CC3730F00C05007 /* CodeFragmentContainerPriv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CodeFragmentContainerPriv.h; path = "/var/root/apple-gdb-1824/src/gdb-next/CodeFragmentContainerPriv.h"; sourceTree = "<absolute>"; };
+		61F32D511CC3730F00C05007 /* CodeFragmentInfoPriv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CodeFragmentInfoPriv.h; path = "/var/root/apple-gdb-1824/src/gdb-next/CodeFragmentInfoPriv.h"; sourceTree = "<absolute>"; };
+		61F32D521CC3730F00C05007 /* core-macho.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "core-macho.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/core-macho.c"; sourceTree = "<absolute>"; };
+		61F32D541CC3730F00C05007 /* debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = debug.h; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/debug.h"; sourceTree = "<absolute>"; };
+		61F32D551CC3730F00C05007 /* DebuggerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DebuggerController.m; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/DebuggerController.m"; sourceTree = "<absolute>"; };
+		61F32D561CC3730F00C05007 /* DebuggerController_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DebuggerController_Private.h; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/DebuggerController_Private.h"; sourceTree = "<absolute>"; };
+		61F32D571CC3730F00C05007 /* DebuggerController_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DebuggerController_Protocol.h; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/DebuggerController_Protocol.h"; sourceTree = "<absolute>"; };
+		61F32D581CC3730F00C05007 /* DebuggerControllerInternal_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DebuggerControllerInternal_Protocol.h; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/DebuggerControllerInternal_Protocol.h"; sourceTree = "<absolute>"; };
+		61F32D591CC3730F00C05007 /* DisplayHooks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DisplayHooks.h; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/DisplayHooks.h"; sourceTree = "<absolute>"; };
+		61F32D5A1CC3730F00C05007 /* DisplayHooks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DisplayHooks.m; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/DisplayHooks.m"; sourceTree = "<absolute>"; };
+		61F32D5B1CC3730F00C05007 /* DisplayMisc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DisplayMisc.h; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/DisplayMisc.h"; sourceTree = "<absolute>"; };
+		61F32D5C1CC3730F00C05007 /* DisplaySetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DisplaySetup.h; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/DisplaySetup.h"; sourceTree = "<absolute>"; };
+		61F32D5D1CC3730F00C05007 /* DisplaySetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DisplaySetup.m; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/DisplaySetup.m"; sourceTree = "<absolute>"; };
+		61F32D5E1CC3730F00C05007 /* DisplayTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DisplayTypes.h; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/DisplayTypes.h"; sourceTree = "<absolute>"; };
+		61F32D5F1CC3730F00C05007 /* GdbManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GdbManager.h; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/GdbManager.h"; sourceTree = "<absolute>"; };
+		61F32D601CC3730F00C05007 /* GdbManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GdbManager.m; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/GdbManager.m"; sourceTree = "<absolute>"; };
+		61F32D611CC3730F00C05007 /* GuiDisplayProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GuiDisplayProvider.h; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/GuiDisplayProvider.h"; sourceTree = "<absolute>"; };
+		61F32D621CC3730F00C05007 /* GuiDisplayProvider_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GuiDisplayProvider_Protocol.h; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/GuiDisplayProvider_Protocol.h"; sourceTree = "<absolute>"; };
+		61F32D631CC3730F00C05007 /* GuiGdbCmd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GuiGdbCmd.h; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/GuiGdbCmd.h"; sourceTree = "<absolute>"; };
+		61F32D641CC3730F00C05007 /* GuiGdbManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GuiGdbManager.h; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/GuiGdbManager.h"; sourceTree = "<absolute>"; };
+		61F32D651CC3730F00C05007 /* GuiGdbManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GuiGdbManager.m; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/GuiGdbManager.m"; sourceTree = "<absolute>"; };
+		61F32D661CC3730F00C05007 /* GuiGdbManagerExecLock_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GuiGdbManagerExecLock_Protocol.h; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/GuiGdbManagerExecLock_Protocol.h"; sourceTree = "<absolute>"; };
+		61F32D671CC3730F00C05007 /* GuiGdbManagerInternal_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GuiGdbManagerInternal_Protocol.h; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/GuiGdbManagerInternal_Protocol.h"; sourceTree = "<absolute>"; };
+		61F32D681CC3730F00C05007 /* ViewDisplayProvider_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ViewDisplayProvider_Protocol.h; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/ViewDisplayProvider_Protocol.h"; sourceTree = "<absolute>"; };
+		61F32D691CC3730F00C05007 /* ViewGdbManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ViewGdbManager.h; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/ViewGdbManager.h"; sourceTree = "<absolute>"; };
+		61F32D6A1CC3730F00C05007 /* ViewGdbManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ViewGdbManager.m; path = "/var/root/apple-gdb-1824/src/gdb-next/display-support/ViewGdbManager.m"; sourceTree = "<absolute>"; };
+		61F32D6B1CC3730F00C05007 /* embedded-symbol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "embedded-symbol.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/embedded-symbol.c"; sourceTree = "<absolute>"; };
+		61F32D6C1CC3730F00C05007 /* embedded-symbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "embedded-symbol.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/embedded-symbol.h"; sourceTree = "<absolute>"; };
+		61F32D6D1CC3730F00C05007 /* i386-next-nat-exec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "i386-next-nat-exec.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/i386-next-nat-exec.c"; sourceTree = "<absolute>"; };
+		61F32D6E1CC3730F00C05007 /* i386-next-nat-float.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "i386-next-nat-float.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/i386-next-nat-float.c"; sourceTree = "<absolute>"; };
+		61F32D6F1CC3730F00C05007 /* i386-next-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "i386-next-tdep.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/i386-next-tdep.c"; sourceTree = "<absolute>"; };
+		61F32D701CC3730F00C05007 /* i386-next-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "i386-next-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/i386-next-tdep.h"; sourceTree = "<absolute>"; };
+		61F32D711CC3730F00C05007 /* i386-next-threads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "i386-next-threads.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/i386-next-threads.h"; sourceTree = "<absolute>"; };
+		61F32D721CC3730F00C05007 /* i386-thread-status.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "i386-thread-status.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/i386-thread-status.h"; sourceTree = "<absolute>"; };
+		61F32D731CC3730F00C05007 /* kdp-protocol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "kdp-protocol.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/kdp-protocol.c"; sourceTree = "<absolute>"; };
+		61F32D741CC3730F00C05007 /* kdp-protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "kdp-protocol.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/kdp-protocol.h"; sourceTree = "<absolute>"; };
+		61F32D751CC3730F00C05007 /* kdp-transactions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "kdp-transactions.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/kdp-transactions.c"; sourceTree = "<absolute>"; };
+		61F32D761CC3730F00C05007 /* kdp-transactions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "kdp-transactions.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/kdp-transactions.h"; sourceTree = "<absolute>"; };
+		61F32D771CC3730F00C05007 /* kdp-udp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "kdp-udp.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/kdp-udp.c"; sourceTree = "<absolute>"; };
+		61F32D781CC3730F00C05007 /* kdp-udp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "kdp-udp.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/kdp-udp.h"; sourceTree = "<absolute>"; };
+		61F32D791CC3730F00C05007 /* machoread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = machoread.c; path = "/var/root/apple-gdb-1824/src/gdb-next/machoread.c"; sourceTree = "<absolute>"; };
+		61F32D7A1CC3730F00C05007 /* macosx-metrowerks.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "macosx-metrowerks.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/macosx-metrowerks.c"; sourceTree = "<absolute>"; };
+		61F32D7B1CC3730F00C05007 /* macosx-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "macosx-nat.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/macosx-nat.c"; sourceTree = "<absolute>"; };
+		61F32D7C1CC3730F00C05007 /* macosx.defs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.mig; name = macosx.defs; path = "/var/root/apple-gdb-1824/src/gdb-next/macosx.defs"; sourceTree = "<absolute>"; };
+		61F32D7D1CC3730F00C05007 /* nextstep-core.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-core.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-core.c"; sourceTree = "<absolute>"; };
+		61F32D7E1CC3730F00C05007 /* nextstep-nat-cfm-io.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-cfm-io.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-cfm-io.c"; sourceTree = "<absolute>"; };
+		61F32D7F1CC3730F00C05007 /* nextstep-nat-cfm-io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-cfm-io.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-cfm-io.h"; sourceTree = "<absolute>"; };
+		61F32D801CC3730F00C05007 /* nextstep-nat-cfm-process.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-cfm-process.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-cfm-process.c"; sourceTree = "<absolute>"; };
+		61F32D811CC3730F00C05007 /* nextstep-nat-cfm-process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-cfm-process.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-cfm-process.h"; sourceTree = "<absolute>"; };
+		61F32D821CC3730F00C05007 /* nextstep-nat-cfm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-cfm.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-cfm.c"; sourceTree = "<absolute>"; };
+		61F32D831CC3730F00C05007 /* nextstep-nat-cfm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-cfm.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-cfm.h"; sourceTree = "<absolute>"; };
+		61F32D841CC3730F00C05007 /* nextstep-nat-cfmthread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-cfmthread.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-cfmthread.c"; sourceTree = "<absolute>"; };
+		61F32D851CC3730F00C05007 /* nextstep-nat-cfmthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-cfmthread.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-cfmthread.h"; sourceTree = "<absolute>"; };
+		61F32D861CC3730F00C05007 /* nextstep-nat-cmds-load.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-cmds-load.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-cmds-load.c"; sourceTree = "<absolute>"; };
+		61F32D871CC3730F00C05007 /* nextstep-nat-cmds-pb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-cmds-pb.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-cmds-pb.c"; sourceTree = "<absolute>"; };
+		61F32D881CC3730F00C05007 /* nextstep-nat-cmds-pbx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-cmds-pbx.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-cmds-pbx.c"; sourceTree = "<absolute>"; };
+		61F32D891CC3730F00C05007 /* nextstep-nat-display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-display.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-display.h"; sourceTree = "<absolute>"; };
+		61F32D8A1CC3730F00C05007 /* nextstep-nat-display.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "nextstep-nat-display.m"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-display.m"; sourceTree = "<absolute>"; };
+		61F32D8B1CC3730F00C05007 /* nextstep-nat-dyld-info.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-dyld-info.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-dyld-info.c"; sourceTree = "<absolute>"; };
+		61F32D8C1CC3730F00C05007 /* nextstep-nat-dyld-info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-dyld-info.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-dyld-info.h"; sourceTree = "<absolute>"; };
+		61F32D8D1CC3730F00C05007 /* nextstep-nat-dyld-io.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-dyld-io.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-dyld-io.c"; sourceTree = "<absolute>"; };
+		61F32D8E1CC3730F00C05007 /* nextstep-nat-dyld-io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-dyld-io.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-dyld-io.h"; sourceTree = "<absolute>"; };
+		61F32D8F1CC3730F00C05007 /* nextstep-nat-dyld-path.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-dyld-path.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-dyld-path.c"; sourceTree = "<absolute>"; };
+		61F32D901CC3730F00C05007 /* nextstep-nat-dyld-path.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-dyld-path.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-dyld-path.h"; sourceTree = "<absolute>"; };
+		61F32D911CC3730F00C05007 /* nextstep-nat-dyld-process.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-dyld-process.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-dyld-process.c"; sourceTree = "<absolute>"; };
+		61F32D921CC3730F00C05007 /* nextstep-nat-dyld-process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-dyld-process.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-dyld-process.h"; sourceTree = "<absolute>"; };
+		61F32D931CC3730F00C05007 /* nextstep-nat-dyld-section.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-dyld-section.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-dyld-section.c"; sourceTree = "<absolute>"; };
+		61F32D941CC3730F00C05007 /* nextstep-nat-dyld.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-dyld.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-dyld.c"; sourceTree = "<absolute>"; };
+		61F32D951CC3730F00C05007 /* nextstep-nat-dyld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-dyld.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-dyld.h"; sourceTree = "<absolute>"; };
+		61F32D961CC3730F00C05007 /* nextstep-nat-excthread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-excthread.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-excthread.c"; sourceTree = "<absolute>"; };
+		61F32D971CC3730F00C05007 /* nextstep-nat-excthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-excthread.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-excthread.h"; sourceTree = "<absolute>"; };
+		61F32D981CC3730F00C05007 /* nextstep-nat-inferior-debug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-inferior-debug.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-inferior-debug.c"; sourceTree = "<absolute>"; };
+		61F32D991CC3730F00C05007 /* nextstep-nat-inferior-debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-inferior-debug.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-inferior-debug.h"; sourceTree = "<absolute>"; };
+		61F32D9A1CC3730F00C05007 /* nextstep-nat-inferior-stubs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-inferior-stubs.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-inferior-stubs.c"; sourceTree = "<absolute>"; };
+		61F32D9B1CC3730F00C05007 /* nextstep-nat-inferior-util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-inferior-util.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-inferior-util.c"; sourceTree = "<absolute>"; };
+		61F32D9C1CC3730F00C05007 /* nextstep-nat-inferior-util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-inferior-util.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-inferior-util.h"; sourceTree = "<absolute>"; };
+		61F32D9D1CC3730F00C05007 /* nextstep-nat-inferior.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-inferior.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-inferior.c"; sourceTree = "<absolute>"; };
+		61F32D9E1CC3730F00C05007 /* nextstep-nat-inferior.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-inferior.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-inferior.h"; sourceTree = "<absolute>"; };
+		61F32D9F1CC3730F00C05007 /* nextstep-nat-info.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-info.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-info.c"; sourceTree = "<absolute>"; };
+		61F32DA01CC3730F00C05007 /* nextstep-nat-infthread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-infthread.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-infthread.c"; sourceTree = "<absolute>"; };
+		61F32DA11CC3730F00C05007 /* nextstep-nat-infthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-infthread.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-infthread.h"; sourceTree = "<absolute>"; };
+		61F32DA21CC3730F00C05007 /* nextstep-nat-mutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-mutils.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-mutils.c"; sourceTree = "<absolute>"; };
+		61F32DA31CC3730F00C05007 /* nextstep-nat-mutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-mutils.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-mutils.h"; sourceTree = "<absolute>"; };
+		61F32DA41CC3730F00C05007 /* nextstep-nat-pb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-pb.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-pb.c"; sourceTree = "<absolute>"; };
+		61F32DA51CC3730F00C05007 /* nextstep-nat-sigthread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-sigthread.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-sigthread.c"; sourceTree = "<absolute>"; };
+		61F32DA61CC3730F00C05007 /* nextstep-nat-sigthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-sigthread.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-sigthread.h"; sourceTree = "<absolute>"; };
+		61F32DA71CC3730F00C05007 /* nextstep-nat-threads.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-threads.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-threads.c"; sourceTree = "<absolute>"; };
+		61F32DA81CC3730F00C05007 /* nextstep-nat-threads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-threads.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-threads.h"; sourceTree = "<absolute>"; };
+		61F32DA91CC3730F00C05007 /* nextstep-nat-utils-pb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-utils-pb.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-utils-pb.c"; sourceTree = "<absolute>"; };
+		61F32DAA1CC3730F00C05007 /* nextstep-nat-utils-pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-utils-pb.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-utils-pb.h"; sourceTree = "<absolute>"; };
+		61F32DAB1CC3730F00C05007 /* nextstep-nat-watchpoint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-nat-watchpoint.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-nat-watchpoint.c"; sourceTree = "<absolute>"; };
+		61F32DAC1CC3730F00C05007 /* nextstep-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-tdep.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-tdep.c"; sourceTree = "<absolute>"; };
+		61F32DAD1CC3730F00C05007 /* nextstep-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-tdep.h"; sourceTree = "<absolute>"; };
+		61F32DAE1CC3730F00C05007 /* nextstep-xdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nextstep-xdep.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-xdep.c"; sourceTree = "<absolute>"; };
+		61F32DAF1CC3730F00C05007 /* nextstep-xdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-xdep.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/nextstep-xdep.h"; sourceTree = "<absolute>"; };
+		61F32DB01CC3730F00C05007 /* pefread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pefread.c; path = "/var/root/apple-gdb-1824/src/gdb-next/pefread.c"; sourceTree = "<absolute>"; };
+		61F32DB11CC3730F00C05007 /* ppc-frameinfo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "ppc-frameinfo.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/ppc-frameinfo.c"; sourceTree = "<absolute>"; };
+		61F32DB21CC3730F00C05007 /* ppc-frameinfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ppc-frameinfo.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/ppc-frameinfo.h"; sourceTree = "<absolute>"; };
+		61F32DB31CC3730F00C05007 /* ppc-frameops.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "ppc-frameops.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/ppc-frameops.c"; sourceTree = "<absolute>"; };
+		61F32DB41CC3730F00C05007 /* ppc-frameops.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ppc-frameops.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/ppc-frameops.h"; sourceTree = "<absolute>"; };
+		61F32DB51CC3730F00C05007 /* ppc-next-nat-exec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "ppc-next-nat-exec.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/ppc-next-nat-exec.c"; sourceTree = "<absolute>"; };
+		61F32DB61CC3730F00C05007 /* ppc-next-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "ppc-next-tdep.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/ppc-next-tdep.c"; sourceTree = "<absolute>"; };
+		61F32DB71CC3730F00C05007 /* ppc-next-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ppc-next-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/ppc-next-tdep.h"; sourceTree = "<absolute>"; };
+		61F32DB81CC3730F00C05007 /* ppc-next-threads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ppc-next-threads.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/ppc-next-threads.h"; sourceTree = "<absolute>"; };
+		61F32DB91CC3730F00C05007 /* ppc-reg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ppc-reg.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/ppc-reg.h"; sourceTree = "<absolute>"; };
+		61F32DBA1CC3730F00C05007 /* ppc-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "ppc-tdep.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/ppc-tdep.c"; sourceTree = "<absolute>"; };
+		61F32DBB1CC3730F00C05007 /* ppc-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ppc-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/ppc-tdep.h"; sourceTree = "<absolute>"; };
+		61F32DBC1CC3730F00C05007 /* ppc-thread-status.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ppc-thread-status.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/ppc-thread-status.h"; sourceTree = "<absolute>"; };
+		61F32DBD1CC3730F00C05007 /* ppclinux-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "ppclinux-nat.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/ppclinux-nat.c"; sourceTree = "<absolute>"; };
+		61F32DBE1CC3730F00C05007 /* ppclinux-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "ppclinux-tdep.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/ppclinux-tdep.c"; sourceTree = "<absolute>"; };
+		61F32DC01CC3730F00C05007 /* remote-kdp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "remote-kdp.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/remote-kdp.c"; sourceTree = "<absolute>"; };
+		61F32DC11CC3730F00C05007 /* rhapsody-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "rhapsody-nat.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/rhapsody-nat.c"; sourceTree = "<absolute>"; };
+		61F32DC21CC3730F00C05007 /* symread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = symread.c; path = "/var/root/apple-gdb-1824/src/gdb-next/symread.c"; sourceTree = "<absolute>"; };
+		61F32DC31CC3730F00C05007 /* tm-ppc-dummy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "tm-ppc-dummy.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/tm-ppc-dummy.h"; sourceTree = "<absolute>"; };
+		61F32DC41CC3730F00C05007 /* tm-ppc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "tm-ppc.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/tm-ppc.h"; sourceTree = "<absolute>"; };
+		61F32DC51CC3730F00C05007 /* traceback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = traceback.h; path = "/var/root/apple-gdb-1824/src/gdb-next/traceback.h"; sourceTree = "<absolute>"; };
+		61F32DC61CC3730F00C05007 /* winpdo-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "winpdo-nat.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/winpdo-nat.c"; sourceTree = "<absolute>"; };
+		61F32DC71CC3730F00C05007 /* winpdo-sup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "winpdo-sup.c"; path = "/var/root/apple-gdb-1824/src/gdb-next/winpdo-sup.c"; sourceTree = "<absolute>"; };
+		61F32DC81CC3730F00C05007 /* winpdo-sup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "winpdo-sup.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/winpdo-sup.h"; sourceTree = "<absolute>"; };
+		61F32EF91CC5486C00C05007 /* h8500-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "h8500-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb/h8500-tdep.h"; sourceTree = "<absolute>"; };
+		61F32F7D1CC5C91E00C05007 /* z8k-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "z8k-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb/z8k-tdep.h"; sourceTree = "<absolute>"; };
 		A50DD7D41B30D2AC00F50318 /* AppleMakefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = AppleMakefile; sourceTree = "<group>"; };
 		A50DD7DF1B30D2AC00F50318 /* Dbg.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; path = Dbg.c; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; };
 		A50DD7E01B30D2AC00F50318 /* Dbg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dbg.h; sourceTree = "<group>"; };
@@ -6003,6 +6126,7 @@
 				A53AC1811A3F7EFE002F20B2 /* electric-fence */,
 				A50DD7D01B30D2AC00F50318 /* expect */,
 				2609D2AC0E82C409008125DE /* gdb */,
+				61F32D4C1CC3730F00C05007 /* gdb-next */,
 				2609DCE80E82C410008125DE /* include */,
 				2609DDCD0E82C410008125DE /* intl */,
 				A53AC5BE1A4724BC002F20B2 /* libbacktrace */,
@@ -6890,6 +7014,7 @@
 				2609D6280E82C40B008125DE /* gregset.h */,
 				2609D6290E82C40B008125DE /* h8300-tdep.c */,
 				A50DDC4D1B332CC300F50318 /* h8500-tdep.c */,
+				61F32EF91CC5486C00C05007 /* h8500-tdep.h */,
 				A50DDC4E1B332CD500F50318 /* hp-psymtab-read.c */,
 				A50DDC4F1B332CD500F50318 /* hp-symtab-read.c */,
 				A50DDC501B332CD500F50318 /* hp300ux-nat.c */,
@@ -7482,6 +7607,7 @@
 				A5A673D71A589EC500EDD221 /* xtensa-tdep.h */,
 				A5A673D81A589EC500EDD221 /* xtensa-xtregs.c */,
 				A5A673D21A589EBC00EDD221 /* z8k-tdep.c */,
+				61F32F7D1CC5C91E00C05007 /* z8k-tdep.h */,
 			);
 			path = gdb;
 			sourceTree = "<group>";
@@ -7904,6 +8030,7 @@
 				A5965A961988950400404B03 /* apollo68b.mh */,
 				A5965A971988950400404B03 /* apollo68b.mt */,
 				A5965A981988950400404B03 /* apollo68v.mh */,
+				61F32D341CC364EB00C05007 /* aux.mt */,
 				2609D3B00E82C40A008125DE /* cisco.mt */,
 				A5965A991988950C00404B03 /* delta68.mh */,
 				A5965A9A1988950C00404B03 /* delta68.mt */,
@@ -9917,6 +10044,143 @@
 			);
 			name = Products;
 			sourceTree = "<group>";
+		};
+		61F32D4C1CC3730F00C05007 /* gdb-next */ = {
+			isa = PBXGroup;
+			children = (
+				61F32D4E1CC3730F00C05007 /* attic.c */,
+				61F32D501CC3730F00C05007 /* CodeFragmentContainerPriv.h */,
+				61F32D511CC3730F00C05007 /* CodeFragmentInfoPriv.h */,
+				61F32D521CC3730F00C05007 /* core-macho.c */,
+				61F32D531CC3730F00C05007 /* display-support */,
+				61F32D6B1CC3730F00C05007 /* embedded-symbol.c */,
+				61F32D6C1CC3730F00C05007 /* embedded-symbol.h */,
+				61F32D6D1CC3730F00C05007 /* i386-next-nat-exec.c */,
+				61F32D6E1CC3730F00C05007 /* i386-next-nat-float.c */,
+				61F32D6F1CC3730F00C05007 /* i386-next-tdep.c */,
+				61F32D701CC3730F00C05007 /* i386-next-tdep.h */,
+				61F32D711CC3730F00C05007 /* i386-next-threads.h */,
+				61F32D721CC3730F00C05007 /* i386-thread-status.h */,
+				61F32D731CC3730F00C05007 /* kdp-protocol.c */,
+				61F32D741CC3730F00C05007 /* kdp-protocol.h */,
+				61F32D751CC3730F00C05007 /* kdp-transactions.c */,
+				61F32D761CC3730F00C05007 /* kdp-transactions.h */,
+				61F32D771CC3730F00C05007 /* kdp-udp.c */,
+				61F32D781CC3730F00C05007 /* kdp-udp.h */,
+				61F32D791CC3730F00C05007 /* machoread.c */,
+				61F32D7A1CC3730F00C05007 /* macosx-metrowerks.c */,
+				61F32D7B1CC3730F00C05007 /* macosx-nat.c */,
+				61F32D7C1CC3730F00C05007 /* macosx.defs */,
+				61F32D7D1CC3730F00C05007 /* nextstep-core.c */,
+				61F32D7E1CC3730F00C05007 /* nextstep-nat-cfm-io.c */,
+				61F32D7F1CC3730F00C05007 /* nextstep-nat-cfm-io.h */,
+				61F32D801CC3730F00C05007 /* nextstep-nat-cfm-process.c */,
+				61F32D811CC3730F00C05007 /* nextstep-nat-cfm-process.h */,
+				61F32D821CC3730F00C05007 /* nextstep-nat-cfm.c */,
+				61F32D831CC3730F00C05007 /* nextstep-nat-cfm.h */,
+				61F32D841CC3730F00C05007 /* nextstep-nat-cfmthread.c */,
+				61F32D851CC3730F00C05007 /* nextstep-nat-cfmthread.h */,
+				61F32D861CC3730F00C05007 /* nextstep-nat-cmds-load.c */,
+				61F32D871CC3730F00C05007 /* nextstep-nat-cmds-pb.c */,
+				61F32D881CC3730F00C05007 /* nextstep-nat-cmds-pbx.c */,
+				61F32D891CC3730F00C05007 /* nextstep-nat-display.h */,
+				61F32D8A1CC3730F00C05007 /* nextstep-nat-display.m */,
+				61F32D8B1CC3730F00C05007 /* nextstep-nat-dyld-info.c */,
+				61F32D8C1CC3730F00C05007 /* nextstep-nat-dyld-info.h */,
+				61F32D8D1CC3730F00C05007 /* nextstep-nat-dyld-io.c */,
+				61F32D8E1CC3730F00C05007 /* nextstep-nat-dyld-io.h */,
+				61F32D8F1CC3730F00C05007 /* nextstep-nat-dyld-path.c */,
+				61F32D901CC3730F00C05007 /* nextstep-nat-dyld-path.h */,
+				61F32D911CC3730F00C05007 /* nextstep-nat-dyld-process.c */,
+				61F32D921CC3730F00C05007 /* nextstep-nat-dyld-process.h */,
+				61F32D931CC3730F00C05007 /* nextstep-nat-dyld-section.c */,
+				61F32D941CC3730F00C05007 /* nextstep-nat-dyld.c */,
+				61F32D951CC3730F00C05007 /* nextstep-nat-dyld.h */,
+				61F32D961CC3730F00C05007 /* nextstep-nat-excthread.c */,
+				61F32D971CC3730F00C05007 /* nextstep-nat-excthread.h */,
+				61F32D981CC3730F00C05007 /* nextstep-nat-inferior-debug.c */,
+				61F32D991CC3730F00C05007 /* nextstep-nat-inferior-debug.h */,
+				61F32D9A1CC3730F00C05007 /* nextstep-nat-inferior-stubs.c */,
+				61F32D9B1CC3730F00C05007 /* nextstep-nat-inferior-util.c */,
+				61F32D9C1CC3730F00C05007 /* nextstep-nat-inferior-util.h */,
+				61F32D9D1CC3730F00C05007 /* nextstep-nat-inferior.c */,
+				61F32D9E1CC3730F00C05007 /* nextstep-nat-inferior.h */,
+				61F32D9F1CC3730F00C05007 /* nextstep-nat-info.c */,
+				61F32DA01CC3730F00C05007 /* nextstep-nat-infthread.c */,
+				61F32DA11CC3730F00C05007 /* nextstep-nat-infthread.h */,
+				61F32DA21CC3730F00C05007 /* nextstep-nat-mutils.c */,
+				61F32DA31CC3730F00C05007 /* nextstep-nat-mutils.h */,
+				61F32DA41CC3730F00C05007 /* nextstep-nat-pb.c */,
+				61F32DA51CC3730F00C05007 /* nextstep-nat-sigthread.c */,
+				61F32DA61CC3730F00C05007 /* nextstep-nat-sigthread.h */,
+				61F32DA71CC3730F00C05007 /* nextstep-nat-threads.c */,
+				61F32DA81CC3730F00C05007 /* nextstep-nat-threads.h */,
+				61F32DA91CC3730F00C05007 /* nextstep-nat-utils-pb.c */,
+				61F32DAA1CC3730F00C05007 /* nextstep-nat-utils-pb.h */,
+				61F32DAB1CC3730F00C05007 /* nextstep-nat-watchpoint.c */,
+				61F32DAC1CC3730F00C05007 /* nextstep-tdep.c */,
+				61F32DAD1CC3730F00C05007 /* nextstep-tdep.h */,
+				61F32DAE1CC3730F00C05007 /* nextstep-xdep.c */,
+				61F32DAF1CC3730F00C05007 /* nextstep-xdep.h */,
+				61F32DB01CC3730F00C05007 /* pefread.c */,
+				61F32DB11CC3730F00C05007 /* ppc-frameinfo.c */,
+				61F32DB21CC3730F00C05007 /* ppc-frameinfo.h */,
+				61F32DB31CC3730F00C05007 /* ppc-frameops.c */,
+				61F32DB41CC3730F00C05007 /* ppc-frameops.h */,
+				61F32DB51CC3730F00C05007 /* ppc-next-nat-exec.c */,
+				61F32DB61CC3730F00C05007 /* ppc-next-tdep.c */,
+				61F32DB71CC3730F00C05007 /* ppc-next-tdep.h */,
+				61F32DB81CC3730F00C05007 /* ppc-next-threads.h */,
+				61F32DB91CC3730F00C05007 /* ppc-reg.h */,
+				61F32DBA1CC3730F00C05007 /* ppc-tdep.c */,
+				61F32DBB1CC3730F00C05007 /* ppc-tdep.h */,
+				61F32DBC1CC3730F00C05007 /* ppc-thread-status.h */,
+				61F32DBD1CC3730F00C05007 /* ppclinux-nat.c */,
+				61F32DBE1CC3730F00C05007 /* ppclinux-tdep.c */,
+				61F32DC01CC3730F00C05007 /* remote-kdp.c */,
+				61F32DC11CC3730F00C05007 /* rhapsody-nat.c */,
+				61F32DC21CC3730F00C05007 /* symread.c */,
+				61F32DC31CC3730F00C05007 /* tm-ppc-dummy.h */,
+				61F32DC41CC3730F00C05007 /* tm-ppc.h */,
+				61F32DC51CC3730F00C05007 /* traceback.h */,
+				61F32DC61CC3730F00C05007 /* winpdo-nat.c */,
+				61F32DC71CC3730F00C05007 /* winpdo-sup.c */,
+				61F32DC81CC3730F00C05007 /* winpdo-sup.h */,
+			);
+			name = "gdb-next";
+			path = "/var/root/apple-gdb-1824/src/gdb-next";
+			sourceTree = "<absolute>";
+		};
+		61F32D531CC3730F00C05007 /* display-support */ = {
+			isa = PBXGroup;
+			children = (
+				61F32D541CC3730F00C05007 /* debug.h */,
+				61F32D551CC3730F00C05007 /* DebuggerController.m */,
+				61F32D561CC3730F00C05007 /* DebuggerController_Private.h */,
+				61F32D571CC3730F00C05007 /* DebuggerController_Protocol.h */,
+				61F32D581CC3730F00C05007 /* DebuggerControllerInternal_Protocol.h */,
+				61F32D591CC3730F00C05007 /* DisplayHooks.h */,
+				61F32D5A1CC3730F00C05007 /* DisplayHooks.m */,
+				61F32D5B1CC3730F00C05007 /* DisplayMisc.h */,
+				61F32D5C1CC3730F00C05007 /* DisplaySetup.h */,
+				61F32D5D1CC3730F00C05007 /* DisplaySetup.m */,
+				61F32D5E1CC3730F00C05007 /* DisplayTypes.h */,
+				61F32D5F1CC3730F00C05007 /* GdbManager.h */,
+				61F32D601CC3730F00C05007 /* GdbManager.m */,
+				61F32D611CC3730F00C05007 /* GuiDisplayProvider.h */,
+				61F32D621CC3730F00C05007 /* GuiDisplayProvider_Protocol.h */,
+				61F32D631CC3730F00C05007 /* GuiGdbCmd.h */,
+				61F32D641CC3730F00C05007 /* GuiGdbManager.h */,
+				61F32D651CC3730F00C05007 /* GuiGdbManager.m */,
+				61F32D661CC3730F00C05007 /* GuiGdbManagerExecLock_Protocol.h */,
+				61F32D671CC3730F00C05007 /* GuiGdbManagerInternal_Protocol.h */,
+				61F32D681CC3730F00C05007 /* ViewDisplayProvider_Protocol.h */,
+				61F32D691CC3730F00C05007 /* ViewGdbManager.h */,
+				61F32D6A1CC3730F00C05007 /* ViewGdbManager.m */,
+			);
+			name = "display-support";
+			path = "/var/root/apple-gdb-1824/src/gdb-next/display-support";
+			sourceTree = "<absolute>";
 		};
 		A50DD7D01B30D2AC00F50318 /* expect */ = {
 			isa = PBXGroup;

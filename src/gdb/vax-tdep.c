@@ -1,4 +1,4 @@
-/* Target-dependent code for the VAX.
+/* vax-tdep.c: Target-dependent code for the VAX.
 
    Copyright 1986, 1989, 1991, 1992, 1995, 1996, 1998, 1999, 2000,
    2002, 2003, 2004, 2005 Free Software Foundation, Inc.
@@ -38,19 +38,18 @@
 
 #include "vax-tdep.h"
 
-/* Return the name of register REGNUM.  */
-
+/* Return the name of register REGNUM: */
 static const char *
-vax_register_name (int regnum)
+vax_register_name(int regnum)
 {
-  static char *register_names[] =
+  static const char *register_names[] =
   {
     "r0", "r1", "r2",  "r3",  "r4", "r5", "r6", "r7",
     "r8", "r9", "r10", "r11", "ap", "fp", "sp", "pc",
     "ps",
   };
 
-  if (regnum >= 0 && regnum < ARRAY_SIZE (register_names))
+  if ((regnum >= 0) && (regnum < (int)ARRAY_SIZE(register_names)))
     return register_names[regnum];
 
   return NULL;
@@ -70,18 +69,17 @@ vax_register_type (struct gdbarch *gdbarch, int regnum)
 /* Supply register REGNUM from the buffer specified by GREGS and LEN
    in the general-purpose register set REGSET to register cache
    REGCACHE.  If REGNUM is -1, do this for all registers in REGSET.  */
-
 static void
-vax_supply_gregset (const struct regset *regset, struct regcache *regcache,
-		    int regnum, const void *gregs, size_t len)
+vax_supply_gregset(const struct regset *regset, struct regcache *regcache,
+		   int regnum, const void *gregs, size_t len)
 {
-  const gdb_byte *regs = gregs;
+  const gdb_byte *regs = (const gdb_byte *)gregs;
   int i;
 
   for (i = 0; i < VAX_NUM_REGS; i++)
     {
       if (regnum == i || regnum == -1)
-	regcache_raw_supply (regcache, i, regs + i * 4);
+	regcache_raw_supply(regcache, i, (regs + (i * 4)));
     }
 }
 
@@ -311,8 +309,9 @@ struct vax_frame_cache
   struct trad_frame_saved_reg *saved_regs;
 };
 
+/* */
 struct vax_frame_cache *
-vax_frame_cache (struct frame_info *next_frame, void **this_cache)
+vax_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct vax_frame_cache *cache;
   CORE_ADDR addr;
@@ -320,7 +319,7 @@ vax_frame_cache (struct frame_info *next_frame, void **this_cache)
   int regnum;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct vax_frame_cache *)*this_cache;
 
   /* Allocate a new cache.  */
   cache = FRAME_OBSTACK_ZALLOC (struct vax_frame_cache);
@@ -516,19 +515,21 @@ vax_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 
   frame_base_set_default (gdbarch, &vax_frame_base);
 
-  /* Hook in ABI-specific overrides, if they have been registered.  */
-  gdbarch_init_osabi (info, gdbarch);
+  /* Hook in ABI-specific overrides, if they have been registered: */
+  gdbarch_init_osabi(info, gdbarch);
 
-  frame_unwind_append_sniffer (gdbarch, vax_frame_sniffer);
+  frame_unwind_append_sniffer(gdbarch, vax_frame_sniffer);
 
   return (gdbarch);
 }
 
-/* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_vax_tdep (void);
+/* Provide a prototype to silence -Wmissing-prototypes: */
+void _initialize_vax_tdep(void);
 
 void
-_initialize_vax_tdep (void)
+_initialize_vax_tdep(void)
 {
-  gdbarch_register (bfd_arch_vax, vax_gdbarch_init, NULL);
+  gdbarch_register(bfd_arch_vax, vax_gdbarch_init, NULL);
 }
+
+/* EOF */

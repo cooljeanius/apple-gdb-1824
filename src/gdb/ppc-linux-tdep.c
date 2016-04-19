@@ -1,4 +1,4 @@
-/* Target-dependent code for GDB, the GNU debugger.
+/* ppc-linux-tdep.c: Target-dependent code for GDB, the GNU debugger.
 
    Copyright 1986, 1987, 1989, 1991, 1992, 1993, 1994, 1995, 1996,
    1997, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
@@ -816,14 +816,14 @@ right_supply_register (struct regcache *regcache, int wordsize, int regnum,
    while others are right aligned.  */
 
 void
-ppc_linux_supply_gregset (struct regcache *regcache,
-			  int regnum, const void *gregs, size_t size,
-			  int wordsize)
+ppc_linux_supply_gregset(struct regcache *regcache,
+			 int regnum, const void *gregs, size_t size,
+			 int wordsize)
 {
   int regi;
-  struct gdbarch *regcache_arch = get_regcache_arch (regcache); 
-  struct gdbarch_tdep *regcache_tdep = gdbarch_tdep (regcache_arch);
-  const bfd_byte *buf = gregs;
+  struct gdbarch *regcache_arch = get_regcache_arch(regcache); 
+  struct gdbarch_tdep *regcache_tdep = gdbarch_tdep(regcache_arch);
+  const bfd_byte *buf = (const bfd_byte *)gregs;
 
   for (regi = 0; regi < ppc_num_gprs; regi++)
     right_supply_register (regcache, wordsize,

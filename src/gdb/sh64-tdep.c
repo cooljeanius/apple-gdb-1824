@@ -1,4 +1,4 @@
-/* Target-dependent code for Renesas Super-H, for GDB.
+/* sh64-tdep.c: Target-dependent code for Renesas Super-H, for GDB.
 
    Copyright 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
    2002, 2003, 2004, 2005 Free Software Foundation, Inc.
@@ -128,7 +128,7 @@ enum
 static const char *
 sh64_register_name (int reg_nr)
 {
-  static char *register_names[] =
+  static const char *register_names[] =
   {
     /* SH MEDIA MODE (ISA 32) */
     /* general registers (64-bit) 0-63 */

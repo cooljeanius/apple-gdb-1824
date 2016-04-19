@@ -1,5 +1,5 @@
 /*
- * ppc-tdep.c
+ * gdb-next/ppc-tdep.c
  */
 
 #include "ppc-reg.h"
@@ -31,7 +31,7 @@
 #include "ppc-frameops.h"
 
 #undef XMALLOC
-#define XMALLOC(TYPE) ((TYPE*) xmalloc (sizeof (TYPE)))
+#define XMALLOC(TYPE) ((TYPE *)xmalloc(sizeof(TYPE)))
 
 #ifndef CPU_TYPE_POWERPC
 # define CPU_TYPE_POWERPC (18)
@@ -43,7 +43,7 @@ struct gdbarch_tdep
 
 /* external functions and globals */
 
-extern int print_insn_big_powerpc PARAMS ((bfd_vma, struct disassemble_info *));
+extern int print_insn_big_powerpc PARAMS((bfd_vma, struct disassemble_info *));
 extern struct obstack frame_cache_obstack;
 extern int stop_stack_dummy;
 
@@ -51,13 +51,15 @@ extern int stop_stack_dummy;
 
 static int ppc_debugflag = 0;
 
-void ppc_debug (const char *fmt, ...)
+extern void ppc_debug(const char *, ...) ATTR_FORMAT(gnu_printf, 1, 2);
+
+void ppc_debug(const char *fmt, ...)
 {
   va_list ap;
   if (ppc_debugflag) {
-    va_start (ap, fmt);
-    vfprintf (stderr, fmt, ap);
-    va_end (ap);
+    va_start(ap, fmt);
+    vfprintf(stderr, fmt, ap);
+    va_end(ap);
   }
 }
 
@@ -68,9 +70,7 @@ void ppc_debug (const char *fmt, ...)
 /* function implementations */
 
 void
-ppc_init_extra_frame_info (fromleaf, frame)
-     int fromleaf;
-     struct frame_info *frame;
+ppc_init_extra_frame_info(int fromleaf, struct frame_info *frame)
 {
   CHECK_FATAL (frame != NULL);
 
@@ -84,8 +84,7 @@ ppc_init_extra_frame_info (fromleaf, frame)
 }
 
 void
-ppc_print_extra_frame_info (frame)
-     struct frame_info *frame;
+ppc_print_extra_frame_info(struct frame_info *frame)
 {
   if (frame->signal_handler_caller) {
     printf_filtered (" This function was called from a signal handler.\n");
@@ -157,9 +156,7 @@ ppc_init_frame_pc_first (int fromleaf, struct frame_info *frame)
 }
 
 void
-ppc_init_frame_pc (fromleaf, frame)
-     int fromleaf;
-     struct frame_info *frame;
+ppc_init_frame_pc(int fromleaf, struct frame_info *frame)
 {
   CHECK_FATAL (frame != NULL);
 }
@@ -204,8 +201,7 @@ ppc_get_unsaved_pc (struct frame_info *frame, ppc_function_properties *props)
 }
 
 CORE_ADDR
-ppc_frame_find_pc (frame)
-     struct frame_info *frame;
+ppc_frame_find_pc(struct frame_info *frame)
 {
   CORE_ADDR prev;
 
@@ -265,11 +261,11 @@ ppc_frame_find_pc (frame)
 	      (lprops.lr_saved >= frame->pc))
 	    {
       	      /* Either we are NOT saving the link register, or our scan
-		       * shows that the link register WILL be saved, but has not
-		       * been yet. So figure out where it actually is. To do this,
-		       * we need to see if the lr is ever stomped, and if so, if we
-			   * are within that part of the prologue.
-	           */
+      	       * shows that the link register WILL be saved, but has not
+      	       * been yet. So figure out where it actually is. To do this,
+      	       * we need to see if the lr is ever stomped, and if so, if we
+      	       * are within that part of the prologue.
+      	       */
 	      return ppc_get_unsaved_pc (frame, &lprops);
 	    }
 	  else
@@ -327,25 +323,24 @@ ppc_frame_find_pc (frame)
   return 0;
 }
 
+/* */
 CORE_ADDR
-ppc_frame_saved_pc (frame)
-     struct frame_info *frame;
+ppc_frame_saved_pc(struct frame_info *frame)
 {
   return (ppc_frame_find_pc (frame));
 }
 
-
+/* */
 CORE_ADDR
-ppc_frame_saved_pc_after_call (frame)
-     struct frame_info *frame;
+ppc_frame_saved_pc_after_call(struct frame_info *frame)
 {
   CHECK_FATAL (frame != NULL);
   return read_register (LR_REGNUM);
 }
 
+/* */
 CORE_ADDR
-ppc_frame_chain (frame)
-     struct frame_info *frame;
+ppc_frame_chain(struct frame_info *frame)
 {
   CORE_ADDR psp = read_memory_unsigned_integer (frame->frame, 4);
 
@@ -367,9 +362,7 @@ ppc_frame_chain (frame)
 }
 
 int
-ppc_frame_chain_valid (chain, frame)
-     CORE_ADDR chain;
-     struct frame_info *frame;
+ppc_frame_chain_valid(CORE_ADDR chain, struct frame_info *frame)
 {
   unsigned long retval;
 
@@ -407,9 +400,9 @@ ppc_frame_chain_valid (chain, frame)
   return 1;
 }
 
+/* */
 int
-ppc_is_dummy_frame (frame)
-     struct frame_info *frame;
+ppc_is_dummy_frame(struct frame_info *frame)
 {
   /* using get_prev_frame or ppc_frame_chain
      would cause infinite recursion in some cases */
@@ -431,8 +424,7 @@ ppc_is_dummy_frame (frame)
    the frame pointer register. */
 
 CORE_ADDR
-ppc_frame_cache_initial_stack_address (frame)
-     struct frame_info *frame;
+ppc_frame_cache_initial_stack_address(struct frame_info *frame)
 {
   CHECK_FATAL (frame != NULL);
   CHECK_FATAL (frame->extra_info != NULL);
@@ -443,9 +435,9 @@ ppc_frame_cache_initial_stack_address (frame)
   return frame->extra_info->initial_sp;
 }
 
+/* */
 CORE_ADDR
-ppc_frame_initial_stack_address (frame)
-     struct frame_info *frame;
+ppc_frame_initial_stack_address(struct frame_info *frame)
 {
   CORE_ADDR tmpaddr;
   struct frame_info *callee;
@@ -513,8 +505,7 @@ ppc_frame_initial_stack_address (frame)
 }
 
 int
-ppc_is_magic_function_pointer (addr)
-     CORE_ADDR addr;
+ppc_is_magic_function_pointer(CORE_ADDR addr)
 {
   return 0;
 }
@@ -534,38 +525,32 @@ ppc_is_magic_function_pointer (addr)
  * get the function address from a function pointer.  */
 
 CORE_ADDR
-ppc_convert_from_func_ptr_addr (addr)
-     CORE_ADDR addr;
+ppc_convert_from_func_ptr_addr(CORE_ADDR addr)
 {
   return (ppc_is_magic_function_pointer (addr) ? read_memory_unsigned_integer (addr, 4) : (addr));
 }
 
 CORE_ADDR
-ppc_find_toc_address (pc)
-     CORE_ADDR pc;
+ppc_find_toc_address(CORE_ADDR pc)
 {
   return 0;
 }
 
-int ppc_use_struct_convention (gccp, valtype)
-     int gccp;
-     struct type *valtype;
+int ppc_use_struct_convention(int gccp, struct type *valtype)
 {
   return 1;
 }
 
 CORE_ADDR
-ppc_extract_struct_value_address (regbuf)
-  char regbuf[REGISTER_BYTES];
+ppc_extract_struct_value_address(char regbuf[REGISTER_BYTES])
 {
   return extract_unsigned_integer (&regbuf[REGISTER_BYTE (GP0_REGNUM + 3)], 4);
 }
 
+/* */
 void
-ppc_extract_return_value (valtype, regbuf, valbuf)
-     struct type *valtype;
-     char regbuf[REGISTER_BYTES];
-     char *valbuf;
+ppc_extract_return_value(struct type *valtype, char regbuf[REGISTER_BYTES],
+			 char *valbuf)
 {
   int offset = 0;
 
@@ -605,8 +590,7 @@ ppc_extract_return_value (valtype, regbuf, valbuf)
 }
 
 CORE_ADDR
-ppc_skip_prologue (pc)
-     CORE_ADDR pc;
+ppc_skip_prologue(CORE_ADDR pc)
 {
   ppc_function_boundaries_request request;
   ppc_function_boundaries bounds;
@@ -626,8 +610,7 @@ ppc_skip_prologue (pc)
    stack or not.  */
 
 int
-ppc_frameless_function_invocation (frame)
-     struct frame_info *frame;
+ppc_frameless_function_invocation(struct frame_info *frame)
 {
   /* if not a leaf, it is not frameless (unless it was interrupted by a
    * signal or a call_dummy) */
@@ -646,11 +629,10 @@ ppc_frameless_function_invocation (frame)
     return 0;
   }
 
-
   return frame->extra_info->props->frameless;
 }
 
-char *gdb_register_names[] =
+const char *gdb_register_names[] =
 {
   "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
   "r8", "r9", "r10","r11","r12","r13","r14","r15",
@@ -1161,8 +1143,11 @@ ppc_fast_show_stack_helper (int show_frames, int get_names, int *count)
   return valid;
 }
 
+extern void _initialize_ppc_tdep(void); /* -Wmissing-prototypes */
+
+/* Usual gdb initialization hook: */
 void
-_initialize_ppc_tdep ()
+_initialize_ppc_tdep(void)
 {
   struct cmd_list_element *cmd = NULL;
 

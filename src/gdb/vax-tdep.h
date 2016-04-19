@@ -1,4 +1,4 @@
-/* Target-dependent code for the VAX.
+/* vax-tdep.h: Target-dependent code for the VAX.
 
    Copyright 2002, 2003, 2004 Free Software Foundation, Inc.
 
@@ -38,4 +38,8 @@ enum vax_regnum
 /* Number of machine registers.  */
 #define VAX_NUM_REGS 17
 
+extern struct vax_frame_cache *vax_frame_cache(struct frame_info *, void **);
+
 #endif /* vax-tdep.h */
+
+/* EOF */

@@ -1788,6 +1788,7 @@ find_objfile_by_uuid(uuid_t uuid)
   ALL_OBJFILES_SAFE(o, temp)
     {
        uuid_t bfd_uuid;
+#if defined(TM_NEXTSTEP)
        if (bfd_mach_o_get_uuid(o->obfd, bfd_uuid, sizeof(uuid_t))
            && memcmp(bfd_uuid, uuid, sizeof(uuid_t)) == 0)
          {
@@ -1796,6 +1797,10 @@ find_objfile_by_uuid(uuid_t uuid)
            else
              return o;
          }
+#else
+      (void)uuid;
+      (void)bfd_uuid;
+#endif /* TM_NEXTSTEP */
     }
   return NULL;
 }
@@ -2338,8 +2343,9 @@ objfile_section_offset(struct objfile *objfile, int sect_idx)
     }
 
   /* APPLE LOCAL shared cache begin.  */
-  if (exec_objfile != objfile &&
-      bfd_mach_o_in_shared_cached_memory (exec_objfile->obfd))
+#if defined(TM_NEXTSTEP)
+  if ((exec_objfile != objfile) &&
+      bfd_mach_o_in_shared_cached_memory(exec_objfile->obfd))
     {
       /* If we are reading from a memory based mach executable image that
 	 has a dSYM file, all executable image sections have zero offsets.
@@ -2352,6 +2358,7 @@ objfile_section_offset(struct objfile *objfile, int sect_idx)
       gdb_assert(sect_idx < objfile->num_sections);
       return objfile->section_offsets->offsets[sect_idx];
     }
+#endif /* TM_NEXTSTEP */
   /* APPLE LOCAL shared cache end.  */
   return exec_objfile->section_offsets->offsets[sect_idx];
 }

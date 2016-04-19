@@ -48,6 +48,10 @@
 # include "arm-tdep.h"
 #elif defined(TARGET_AARCH64)
 # include "aarch64-tdep.h"
+#elif defined(TARGET_M68K)
+# include "m68k-tdep.h"
+#elif defined(TARGET_SPARC)
+# include "sparc-tdep.h"
 #else
 # ifndef S_SPLINT_S
 #  error "Unrecognized target architecture."
@@ -887,12 +891,16 @@ macho_symfile_offsets(struct objfile *objfile,
     {
       const char *bfd_sect_name = osect->the_bfd_section->name;
 
+#if defined(TEXT_SEGMENT_NAME) && defined(DATA_SECTION_NAME) && defined(BSS_SECTION_NAME)
       if (strcmp(bfd_sect_name, TEXT_SEGMENT_NAME) == 0)
 	objfile->sect_index_text = i;
       else if (strcmp(bfd_sect_name, DATA_SECTION_NAME) == 0)
 	objfile->sect_index_data = i;
       else if (strcmp(bfd_sect_name, BSS_SECTION_NAME) == 0)
 	objfile->sect_index_bss = i;
+#else
+      gdb_assert(bfd_sect_name != NULL);
+#endif /* TEXT_SEGMENT_NAME && DATA_SECTION_NAME && BSS_SECTION_NAME */
       i++;
     }
 }
@@ -906,18 +914,22 @@ macho_symfile_offsets(struct objfile *objfile,
 static ATTRIBUTE_W_U_R CORE_ADDR
 macho_calculate_dsym_offset(bfd *exe_bfd, bfd *sym_bfd)
 {
-  asection *sym_text_sect;
-  asection *exe_text_sect;
+  asection *sym_text_sect = (asection *)NULL;
+  asection *exe_text_sect = (asection *)NULL;
   CORE_ADDR exe_text_addr;
   CORE_ADDR sym_text_addr;
 
-  /* Extract the sym file BFD section for the __TEXT segment.  */
+#ifdef TEXT_SEGMENT_NAME
+  /* Extract the sym file BFD section for the __TEXT segment: */
   sym_text_sect = bfd_get_section_by_name(sym_bfd, TEXT_SEGMENT_NAME);
+#endif /* TEXT_SEGMENT_NAME */
   if (!sym_text_sect)
     return 0;
 
-  /* Extract the exe file BFD section for the __TEXT segment.  */
+#ifdef TEXT_SEGMENT_NAME
+  /* Extract the exe file BFD section for the __TEXT segment: */
   exe_text_sect = bfd_get_section_by_name(exe_bfd, TEXT_SEGMENT_NAME);
+#endif /* TEXT_SEGMENT_NAME */
 
   /* FIXME: Is this warning correct? */
   if (!exe_text_sect)
@@ -1019,6 +1031,7 @@ macho_calculate_offsets_for_dsym(struct objfile *main_objfile,
     }
   else if (addrs)
     {
+#ifdef TEXT_SEGMENT_NAME
       /* This is kind of gross, but this is how add-symbol-file passes
        * the addr down if the user just supplied a single address.  But they
        * did NOT really intend for us JUST to offset the TEXT_SEGMENT, then
@@ -1087,6 +1100,7 @@ macho_calculate_offsets_for_dsym(struct objfile *main_objfile,
 	    }
 	  *sym_num_offsets = addrs->num_sections;
 	}
+#endif /* TEXT_SEGMENT_NAME */
     }
   else if (dsym_offset != 0)
     {

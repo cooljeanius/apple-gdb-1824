@@ -34,6 +34,7 @@
 #include "dis-asm.h"
 #include "symfile.h"
 #include "objfiles.h"
+#include "gdb_assert.h"
 #include "gdb_string.h"
 #include "linespec.h"
 #include "regcache.h"
@@ -73,23 +74,27 @@ alpha_register_name (int regno)
 
   if (regno < 0)
     return NULL;
-  if (regno >= (sizeof(register_names) / sizeof(*register_names)))
+  if ((size_t)regno >= (sizeof(register_names) / sizeof(*register_names)))
     return NULL;
   return register_names[regno];
 }
 
+/* */
 static int
-alpha_cannot_fetch_register (int regno)
+alpha_cannot_fetch_register(int regno)
 {
-  return (regno == ALPHA_ZERO_REGNUM
-          || strlen (alpha_register_name (regno)) == 0);
+  const char *a_regname = alpha_register_name(regno);
+  gdb_assert(a_regname != NULL);
+  return ((regno == ALPHA_ZERO_REGNUM) || (strlen(a_regname) == 0));
 }
 
+/* */
 static int
-alpha_cannot_store_register (int regno)
+alpha_cannot_store_register(int regno)
 {
-  return (regno == ALPHA_ZERO_REGNUM
-          || strlen (alpha_register_name (regno)) == 0);
+  const char *a_regname = alpha_register_name(regno);
+  gdb_assert(a_regname != NULL);
+  return ((regno == ALPHA_ZERO_REGNUM) || (strlen(a_regname) == 0));
 }
 
 static struct type *
@@ -160,16 +165,16 @@ alpha_register_byte (int regno)
    floating point and 32-bit integers.  */
 
 static void
-alpha_lds (void *out, const void *in)
+alpha_lds(void *out, const void *in)
 {
-  ULONGEST mem     = extract_unsigned_integer (in, 4);
-  ULONGEST frac    = (mem >>  0) & 0x7fffff;
-  ULONGEST sign    = (mem >> 31) & 1;
-  ULONGEST exp_msb = (mem >> 30) & 1;
-  ULONGEST exp_low = (mem >> 23) & 0x7f;
+  ULONGEST mem = extract_unsigned_integer((const gdb_byte *)in, 4);
+  ULONGEST frac = ((mem >> 0) & 0x7fffff);
+  ULONGEST sign = ((mem >> 31) & 1);
+  ULONGEST exp_msb = ((mem >> 30) & 1);
+  ULONGEST exp_low = ((mem >> 23) & 0x7f);
   ULONGEST exp, reg;
 
-  exp = (exp_msb << 10) | exp_low;
+  exp = ((exp_msb << 10) | exp_low);
   if (exp_msb)
     {
       if (exp_low == 0x7f)
@@ -181,21 +186,21 @@ alpha_lds (void *out, const void *in)
 	exp |= 0x380;
     }
 
-  reg = (sign << 63) | (exp << 52) | (frac << 29);
-  store_unsigned_integer (out, 8, reg);
+  reg = ((sign << 63) | (exp << 52) | (frac << 29));
+  store_unsigned_integer((gdb_byte *)out, 8, reg);
 }
 
 /* Similarly, this represents exactly the conversion performed by
    the STS instruction.  */
 
 static void
-alpha_sts (void *out, const void *in)
+alpha_sts(void *out, const void *in)
 {
   ULONGEST reg, mem;
 
-  reg = extract_unsigned_integer (in, 8);
-  mem = ((reg >> 32) & 0xc0000000) | ((reg >> 29) & 0x3fffffff);
-  store_unsigned_integer (out, 4, mem);
+  reg = extract_unsigned_integer((const gdb_byte *)in, 8);
+  mem = (((reg >> 32) & 0xc0000000) | ((reg >> 29) & 0x3fffffff));
+  store_unsigned_integer((gdb_byte *)out, 4, mem);
 }
 
 /* The alpha needs a conversion between register and memory format if the
@@ -210,19 +215,20 @@ alpha_convert_register_p (int regno, struct type *type)
   return (regno >= ALPHA_FP0_REGNUM && regno < ALPHA_FP0_REGNUM + 31);
 }
 
+/* */
 static void
-alpha_register_to_value (struct frame_info *frame, int regnum,
-			 struct type *valtype, gdb_byte *out)
+alpha_register_to_value(struct frame_info *frame, int regnum,
+			struct type *valtype, gdb_byte *out)
 {
   char in[MAX_REGISTER_SIZE];
-  frame_register_read (frame, regnum, in);
-  switch (TYPE_LENGTH (valtype))
+  frame_register_read(frame, regnum, (gdb_byte *)in);
+  switch (TYPE_LENGTH(valtype))
     {
     case 4:
-      alpha_sts (out, in);
+      alpha_sts(out, in);
       break;
     case 8:
-      memcpy (out, in, 8);
+      memcpy(out, in, 8);
       break;
     default:
       error (_("Cannot retrieve value from floating point register"));
@@ -245,7 +251,7 @@ alpha_value_to_register (struct frame_info *frame, int regnum,
     default:
       error (_("Cannot store value in floating point register"));
     }
-  put_frame_register (frame, regnum, out);
+  put_frame_register(frame, regnum, (const gdb_byte *)out);
 }
 
 
@@ -268,26 +274,26 @@ alpha_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 		       int struct_return, CORE_ADDR struct_addr)
 {
   int i;
-  int accumulate_size = struct_return ? 8 : 0;
+  size_t accumulate_size = (struct_return ? 8UL : 0UL);
   struct alpha_arg
     {
       char *contents;
       int len;
       int offset;
     };
-  struct alpha_arg *alpha_args
-    = (struct alpha_arg *) alloca (nargs * sizeof (struct alpha_arg));
+  struct alpha_arg *alpha_args =
+    (struct alpha_arg *)alloca(nargs * sizeof(struct alpha_arg));
   struct alpha_arg *m_arg;
   char arg_reg_buffer[ALPHA_REGISTER_SIZE * ALPHA_NUM_ARG_REGS];
   int required_arg_regs;
-  CORE_ADDR func_addr = find_function_addr (function, NULL);
+  CORE_ADDR func_addr = find_function_addr(function, NULL);
 
   /* The ABI places the address of the called function in T12.  */
-  regcache_cooked_write_signed (regcache, ALPHA_T12_REGNUM, func_addr);
+  regcache_cooked_write_signed(regcache, ALPHA_T12_REGNUM, func_addr);
 
   /* Set the return address register to point to the entry point
      of the program, where a breakpoint lies in wait.  */
-  regcache_cooked_write_signed (regcache, ALPHA_RA_REGNUM, bp_addr);
+  regcache_cooked_write_signed(regcache, ALPHA_RA_REGNUM, bp_addr);
 
   /* Lay out the arguments in memory.  */
   for (i = 0, m_arg = alpha_args; i < nargs; i++, m_arg++)
@@ -366,10 +372,10 @@ alpha_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	default:
 	  break;
 	}
-      m_arg->len = TYPE_LENGTH (arg_type);
+      m_arg->len = TYPE_LENGTH(arg_type);
       m_arg->offset = accumulate_size;
-      accumulate_size = (accumulate_size + m_arg->len + 7) & ~7;
-      m_arg->contents = value_contents_writeable (arg);
+      accumulate_size = ((accumulate_size + m_arg->len + 7) & ~7);
+      m_arg->contents = (char *)value_contents_writeable(arg);
     }
 
   /* Determine required argument register loads, loading an argument register
@@ -396,17 +402,17 @@ alpha_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
       int len = m_arg->len;
 
       /* Copy the bytes destined for registers into arg_reg_buffer.  */
-      if (offset < sizeof(arg_reg_buffer))
+      if ((size_t)offset < sizeof(arg_reg_buffer))
 	{
-	  if (offset + len <= sizeof(arg_reg_buffer))
+	  if ((size_t)(offset + len) <= sizeof(arg_reg_buffer))
 	    {
-	      memcpy (arg_reg_buffer + offset, contents, len);
+	      memcpy((arg_reg_buffer + offset), contents, len);
 	      continue;
 	    }
 	  else
 	    {
-	      size_t tlen = sizeof(arg_reg_buffer) - offset;
-	      memcpy (arg_reg_buffer + offset, contents, tlen);
+	      size_t tlen = (sizeof(arg_reg_buffer) - offset);
+	      memcpy((arg_reg_buffer + offset), contents, tlen);
 	      offset += tlen;
 	      contents += tlen;
 	      len -= tlen;
@@ -414,22 +420,26 @@ alpha_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	}
 
       /* Everything else goes to the stack.  */
-      write_memory (sp + offset - sizeof(arg_reg_buffer), contents, len);
+      write_memory((sp + offset - sizeof(arg_reg_buffer)),
+		   (const gdb_byte *)contents, len);
     }
   if (struct_return)
-    store_unsigned_integer (arg_reg_buffer, ALPHA_REGISTER_SIZE, struct_addr);
+    store_unsigned_integer((gdb_byte *)arg_reg_buffer, ALPHA_REGISTER_SIZE,
+			   struct_addr);
 
   /* Load the argument registers.  */
   for (i = 0; i < required_arg_regs; i++)
     {
-      regcache_cooked_write (regcache, ALPHA_A0_REGNUM + i,
-			     arg_reg_buffer + i*ALPHA_REGISTER_SIZE);
-      regcache_cooked_write (regcache, ALPHA_FPA0_REGNUM + i,
-			     arg_reg_buffer + i*ALPHA_REGISTER_SIZE);
+      regcache_cooked_write(regcache, (ALPHA_A0_REGNUM + i),
+			    (const gdb_byte *)(arg_reg_buffer
+					       + (i * ALPHA_REGISTER_SIZE)));
+      regcache_cooked_write(regcache, (ALPHA_FPA0_REGNUM + i),
+			    (const gdb_byte *)(arg_reg_buffer
+					       + (i * ALPHA_REGISTER_SIZE)));
     }
 
   /* Finally, update the stack pointer.  */
-  regcache_cooked_write_signed (regcache, ALPHA_SP_REGNUM, sp);
+  regcache_cooked_write_signed(regcache, ALPHA_SP_REGNUM, sp);
 
   return sp;
 }
@@ -438,34 +448,35 @@ alpha_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
    and copy it into VALBUF.  */
 
 static void
-alpha_extract_return_value (struct type *valtype, struct regcache *regcache,
-			    gdb_byte *valbuf)
+alpha_extract_return_value(struct type *valtype, struct regcache *regcache,
+			   gdb_byte *valbuf)
 {
-  int length = TYPE_LENGTH (valtype);
+  int length = TYPE_LENGTH(valtype);
   char raw_buffer[ALPHA_REGISTER_SIZE];
   ULONGEST l;
 
-  switch (TYPE_CODE (valtype))
+  switch (TYPE_CODE(valtype))
     {
     case TYPE_CODE_FLT:
       switch (length)
 	{
 	case 4:
-	  regcache_cooked_read (regcache, ALPHA_FP0_REGNUM, raw_buffer);
-	  alpha_sts (valbuf, raw_buffer);
+	  regcache_cooked_read(regcache, ALPHA_FP0_REGNUM,
+			       (gdb_byte *)raw_buffer);
+	  alpha_sts(valbuf, raw_buffer);
 	  break;
 
 	case 8:
-	  regcache_cooked_read (regcache, ALPHA_FP0_REGNUM, valbuf);
+	  regcache_cooked_read(regcache, ALPHA_FP0_REGNUM, valbuf);
 	  break;
 
 	case 16:
-	  regcache_cooked_read_unsigned (regcache, ALPHA_V0_REGNUM, &l);
-	  read_memory (l, valbuf, 16);
+	  regcache_cooked_read_unsigned(regcache, ALPHA_V0_REGNUM, &l);
+	  read_memory(l, valbuf, 16);
 	  break;
 
 	default:
-	  internal_error (__FILE__, __LINE__, _("unknown floating point width"));
+	  internal_error(__FILE__, __LINE__, _("unknown floating point width"));
 	}
       break;
 
@@ -474,22 +485,22 @@ alpha_extract_return_value (struct type *valtype, struct regcache *regcache,
 	{
 	case 8:
 	  /* ??? This isn't correct wrt the ABI, but it's what GCC does.  */
-	  regcache_cooked_read (regcache, ALPHA_FP0_REGNUM, valbuf);
+	  regcache_cooked_read(regcache, ALPHA_FP0_REGNUM, valbuf);
 	  break;
 
 	case 16:
-	  regcache_cooked_read (regcache, ALPHA_FP0_REGNUM, valbuf);
-	  regcache_cooked_read (regcache, ALPHA_FP0_REGNUM+1,
-				(char *)valbuf + 8);
+	  regcache_cooked_read(regcache, ALPHA_FP0_REGNUM, valbuf);
+	  regcache_cooked_read(regcache, (ALPHA_FP0_REGNUM + 1),
+			       (valbuf + 8U));
 	  break;
 
 	case 32:
-	  regcache_cooked_read_signed (regcache, ALPHA_V0_REGNUM, &l);
-	  read_memory (l, valbuf, 32);
+	  regcache_cooked_read_signed(regcache, ALPHA_V0_REGNUM, (LONGEST *)&l);
+	  read_memory(l, valbuf, 32);
 	  break;
 
 	default:
-	  internal_error (__FILE__, __LINE__, _("unknown floating point width"));
+	  internal_error(__FILE__, __LINE__, _("unknown floating point width"));
 	}
       break;
 
@@ -523,18 +534,19 @@ alpha_store_return_value (struct type *valtype, struct regcache *regcache,
   char raw_buffer[ALPHA_REGISTER_SIZE];
   ULONGEST l;
 
-  switch (TYPE_CODE (valtype))
+  switch (TYPE_CODE(valtype))
     {
     case TYPE_CODE_FLT:
       switch (length)
 	{
 	case 4:
-	  alpha_lds (raw_buffer, valbuf);
-	  regcache_cooked_write (regcache, ALPHA_FP0_REGNUM, raw_buffer);
+	  alpha_lds(raw_buffer, valbuf);
+	  regcache_cooked_write(regcache, ALPHA_FP0_REGNUM,
+				(const gdb_byte *)raw_buffer);
 	  break;
 
 	case 8:
-	  regcache_cooked_write (regcache, ALPHA_FP0_REGNUM, valbuf);
+	  regcache_cooked_write(regcache, ALPHA_FP0_REGNUM, valbuf);
 	  break;
 
 	case 16:
@@ -553,13 +565,13 @@ alpha_store_return_value (struct type *valtype, struct regcache *regcache,
 	{
 	case 8:
 	  /* ??? This isn't correct wrt the ABI, but it's what GCC does.  */
-	  regcache_cooked_write (regcache, ALPHA_FP0_REGNUM, valbuf);
+	  regcache_cooked_write(regcache, ALPHA_FP0_REGNUM, valbuf);
 	  break;
 
 	case 16:
-	  regcache_cooked_write (regcache, ALPHA_FP0_REGNUM, valbuf);
-	  regcache_cooked_write (regcache, ALPHA_FP0_REGNUM+1,
-				 (const char *)valbuf + 8);
+	  regcache_cooked_write(regcache, ALPHA_FP0_REGNUM, valbuf);
+	  regcache_cooked_write(regcache, (ALPHA_FP0_REGNUM + 1),
+				(valbuf + 8U));
 	  break;
 
 	case 32:
@@ -621,15 +633,15 @@ alpha_after_prologue (CORE_ADDR pc)
 /* Read an instruction from memory at PC, looking through breakpoints.  */
 
 unsigned int
-alpha_read_insn (CORE_ADDR pc)
+alpha_read_insn(CORE_ADDR pc)
 {
   char buf[4];
   int status;
 
-  status = deprecated_read_memory_nobpt (pc, buf, 4);
+  status = deprecated_read_memory_nobpt(pc, (gdb_byte *)buf, 4);
   if (status)
-    memory_error (status, pc);
-  return extract_unsigned_integer (buf, 4);
+    memory_error(status, pc);
+  return extract_unsigned_integer((const gdb_byte *)buf, 4);
 }
 
 /* To skip prologues, I use this predicate.  Returns either PC itself
@@ -654,16 +666,16 @@ alpha_skip_prologue (CORE_ADDR pc)
      Reading target memory is slow over serial lines, so we perform
      this check only if the target has shared libraries (which all
      Alpha targets do).  */
-  if (target_read_memory (pc, buf, 4))
+  if (target_read_memory(pc, (gdb_byte *)buf, 4))
     return pc;
 
   /* See if we can determine the end of the prologue via the symbol table.
      If so, then return either PC, or the PC after the prologue, whichever
      is greater.  */
 
-  post_prologue_pc = alpha_after_prologue (pc);
+  post_prologue_pc = alpha_after_prologue(pc);
   if (post_prologue_pc != 0)
-    return max (pc, post_prologue_pc);
+    return max(pc, post_prologue_pc);
 
   /* Can't determine prologue from the symbol table, need to examine
      instructions.  */
@@ -712,13 +724,14 @@ alpha_get_longjmp_target (CORE_ADDR *pc)
   CORE_ADDR jb_addr;
   char raw_buffer[ALPHA_REGISTER_SIZE];
 
-  jb_addr = read_register (ALPHA_A0_REGNUM);
+  jb_addr = read_register(ALPHA_A0_REGNUM);
 
-  if (target_read_memory (jb_addr + (tdep->jb_pc * tdep->jb_elt_size),
-			  raw_buffer, tdep->jb_elt_size))
+  if (target_read_memory((jb_addr + (tdep->jb_pc * tdep->jb_elt_size)),
+			 (gdb_byte *)raw_buffer, tdep->jb_elt_size))
     return 0;
 
-  *pc = extract_unsigned_integer (raw_buffer, tdep->jb_elt_size);
+  *pc = extract_unsigned_integer((const gdb_byte *)raw_buffer,
+				 tdep->jb_elt_size);
   return 1;
 }
 
@@ -734,21 +747,22 @@ struct alpha_sigtramp_unwind_cache
   CORE_ADDR sigcontext_addr;
 };
 
+/* */
 static struct alpha_sigtramp_unwind_cache *
-alpha_sigtramp_frame_unwind_cache (struct frame_info *next_frame,
-				   void **this_prologue_cache)
+alpha_sigtramp_frame_unwind_cache(struct frame_info *next_frame,
+				  void **this_prologue_cache)
 {
   struct alpha_sigtramp_unwind_cache *info;
   struct gdbarch_tdep *tdep;
 
   if (*this_prologue_cache)
-    return *this_prologue_cache;
+    return (struct alpha_sigtramp_unwind_cache *)*this_prologue_cache;
 
-  info = FRAME_OBSTACK_ZALLOC (struct alpha_sigtramp_unwind_cache);
+  info = FRAME_OBSTACK_ZALLOC(struct alpha_sigtramp_unwind_cache);
   *this_prologue_cache = info;
 
-  tdep = gdbarch_tdep (current_gdbarch);
-  info->sigcontext_addr = tdep->sigcontext_addr (next_frame);
+  tdep = gdbarch_tdep(current_gdbarch);
+  info->sigcontext_addr = tdep->sigcontext_addr(next_frame);
 
   return info;
 }
@@ -860,9 +874,9 @@ static const struct frame_unwind alpha_sigtramp_frame_unwind = {
 };
 
 static const struct frame_unwind *
-alpha_sigtramp_frame_sniffer (struct frame_info *next_frame)
+alpha_sigtramp_frame_sniffer(struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
   char *name;
 
   /* NOTE: cagney/2004-04-30: Do not copy/clone this code.  Instead
@@ -871,14 +885,14 @@ alpha_sigtramp_frame_sniffer (struct frame_info *next_frame)
 
   /* We shouldn't even bother to try if the OSABI didn't register a
      sigcontext_addr handler or pc_in_sigtramp hander.  */
-  if (gdbarch_tdep (current_gdbarch)->sigcontext_addr == NULL)
+  if (gdbarch_tdep(current_gdbarch)->sigcontext_addr == NULL)
     return NULL;
-  if (gdbarch_tdep (current_gdbarch)->pc_in_sigtramp == NULL)
+  if (gdbarch_tdep(current_gdbarch)->pc_in_sigtramp == NULL)
     return NULL;
 
   /* Otherwise we should be in a signal frame.  */
-  find_pc_partial_function (pc, &name, NULL, NULL);
-  if (gdbarch_tdep (current_gdbarch)->pc_in_sigtramp (pc, name))
+  find_pc_partial_function(pc, (const char **)&name, NULL, NULL);
+  if (gdbarch_tdep(current_gdbarch)->pc_in_sigtramp(pc, name))
     return &alpha_sigtramp_frame_unwind;
 
   return NULL;
@@ -981,9 +995,9 @@ Otherwise, you told GDB there was a function where there isn't one, or\n\
 }
 
 static struct alpha_heuristic_unwind_cache *
-alpha_heuristic_frame_unwind_cache (struct frame_info *next_frame,
-				    void **this_prologue_cache,
-				    CORE_ADDR start_pc)
+alpha_heuristic_frame_unwind_cache(struct frame_info *next_frame,
+				   void **this_prologue_cache,
+				   CORE_ADDR start_pc)
 {
   struct alpha_heuristic_unwind_cache *info;
   ULONGEST val;
@@ -991,15 +1005,15 @@ alpha_heuristic_frame_unwind_cache (struct frame_info *next_frame,
   int frame_reg, frame_size, return_reg, reg;
 
   if (*this_prologue_cache)
-    return *this_prologue_cache;
+    return (struct alpha_heuristic_unwind_cache *)*this_prologue_cache;
 
-  info = FRAME_OBSTACK_ZALLOC (struct alpha_heuristic_unwind_cache);
+  info = FRAME_OBSTACK_ZALLOC(struct alpha_heuristic_unwind_cache);
   *this_prologue_cache = info;
-  info->saved_regs = frame_obstack_zalloc (SIZEOF_FRAME_SAVED_REGS);
+  info->saved_regs = (CORE_ADDR *)frame_obstack_zalloc(SIZEOF_FRAME_SAVED_REGS);
 
-  limit_pc = frame_pc_unwind (next_frame);
+  limit_pc = frame_pc_unwind(next_frame);
   if (start_pc == 0)
-    start_pc = alpha_heuristic_proc_start (limit_pc);
+    start_pc = alpha_heuristic_proc_start(limit_pc);
   info->start_pc = start_pc;
 
   frame_reg = ALPHA_SP_REGNUM;
@@ -1243,9 +1257,11 @@ static const struct frame_base alpha_heuristic_frame_base = {
    callable as an sfunc.  Used by the "set heuristic-fence-post" command.  */
 
 static void
-reinit_frame_cache_sfunc (char *args, int from_tty, struct cmd_list_element *c)
+reinit_frame_cache_sfunc(const char *args ATTRIBUTE_UNUSED,
+			 int from_tty ATTRIBUTE_UNUSED,
+			 struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
-  reinit_frame_cache ();
+  reinit_frame_cache();
 }
 
 
@@ -1345,10 +1361,10 @@ alpha_fill_fp_regs (int regno, void *f0_f30, void *fpcr)
    zero for FP control instructions.  */
    
 static int
-fp_register_zero_p (LONGEST reg)
+fp_register_zero_p(LONGEST reg)
 {
   /* Check that all bits except the sign bit are zero.  */
-  const LONGEST zero_mask = ((LONGEST) 1 << 63) ^ -1;
+  const LONGEST zero_mask = (LONGEST)(((ULONGEST)1UL << 63) ^ -1UL);
 
   return ((reg & zero_mask) == 0);
 }
@@ -1357,9 +1373,9 @@ fp_register_zero_p (LONGEST reg)
    value held in REG.  */
 
 static int
-fp_register_sign_bit (LONGEST reg)
+fp_register_sign_bit(LONGEST reg)
 {
-  const LONGEST sign_mask = (LONGEST) 1 << 63;
+  const LONGEST sign_mask = (LONGEST)((ULONGEST)1UL << 63);
 
   return ((reg & sign_mask) != 0);
 }
@@ -1422,8 +1438,8 @@ alpha_next_pc (CORE_ADDR pc)
             regno += FP0_REGNUM;
 	}
       
-      regcache_cooked_read (current_regcache, regno, reg);
-      rav = extract_signed_integer (reg, 8);
+      regcache_cooked_read(current_regcache, regno, (gdb_byte *)reg);
+      rav = extract_signed_integer((const gdb_byte *)reg, 8);
 
       switch (op)
 	{
@@ -1495,7 +1511,7 @@ alpha_next_pc (CORE_ADDR pc)
 }
 
 void
-alpha_software_single_step (enum target_signal sig, int insert_breakpoints_p)
+alpha_software_single_step(enum target_signal sig, int insert_breakpoints_p)
 {
   static CORE_ADDR next_pc;
   typedef char binsn_quantum[BREAKPOINT_MAX];
@@ -1504,15 +1520,15 @@ alpha_software_single_step (enum target_signal sig, int insert_breakpoints_p)
 
   if (insert_breakpoints_p)
     {
-      pc = read_pc ();
-      next_pc = alpha_next_pc (pc);
+      pc = read_pc();
+      next_pc = alpha_next_pc(pc);
 
-      target_insert_breakpoint (next_pc, break_mem);
+      target_insert_breakpoint(next_pc, (gdb_byte *)break_mem);
     }
   else
     {
-      target_remove_breakpoint (next_pc, break_mem);
-      write_pc (next_pc);
+      target_remove_breakpoint(next_pc, (gdb_byte *)break_mem);
+      write_pc(next_pc);
     }
 }
 
@@ -1525,7 +1541,7 @@ alpha_software_single_step (enum target_signal sig, int insert_breakpoints_p)
    a binary file.  */
 
 static struct gdbarch *
-alpha_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
+alpha_gdbarch_init(struct gdbarch_info info, struct gdbarch_list *arches)
 {
   struct gdbarch_tdep *tdep;
   struct gdbarch *gdbarch;
@@ -1534,17 +1550,17 @@ alpha_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   if (info.abfd != NULL && info.osabi == GDB_OSABI_UNKNOWN)
     {
       /* If it's an ECOFF file, assume it's OSF/1.  */
-      if (bfd_get_flavour (info.abfd) == bfd_target_ecoff_flavour)
+      if (bfd_get_flavour(info.abfd) == bfd_target_ecoff_flavour)
 	info.osabi = GDB_OSABI_OSF1;
     }
 
   /* Find a candidate among extant architectures.  */
-  arches = gdbarch_list_lookup_by_info (arches, &info);
+  arches = gdbarch_list_lookup_by_info(arches, &info);
   if (arches != NULL)
     return arches->gdbarch;
 
-  tdep = xmalloc (sizeof (struct gdbarch_tdep));
-  gdbarch = gdbarch_alloc (&info, tdep);
+  tdep = (struct gdbarch_tdep *)xmalloc(sizeof(struct gdbarch_tdep));
+  gdbarch = gdbarch_alloc(&info, tdep);
 
   /* Lowest text address.  This is used by heuristic_proc_start()
      to decide when to stop looking.  */
@@ -1642,11 +1658,13 @@ alpha_dwarf2_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 extern initialize_file_ftype _initialize_alpha_tdep; /* -Wmissing-prototypes */
 
 void
-_initialize_alpha_tdep (void)
+_initialize_alpha_tdep(void)
 {
+#ifdef ALLOW_UNUSED_VARIABLES
   struct cmd_list_element *c;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
-  gdbarch_register (bfd_arch_alpha, alpha_gdbarch_init, NULL);
+  gdbarch_register(bfd_arch_alpha, alpha_gdbarch_init, NULL);
 
   /* Let the user set the fence post for heuristic_proc_start.  */
 
@@ -1655,14 +1673,16 @@ _initialize_alpha_tdep (void)
      because the user can always use "999999" or some such for unlimited.  */
   /* We need to throw away the frame cache when we set this, since it
      might change our ability to get backtraces.  */
-  add_setshow_zinteger_cmd ("heuristic-fence-post", class_support,
-			    &heuristic_fence_post, _("\
+  add_setshow_zinteger_cmd("heuristic-fence-post", class_support,
+			   (int *)&heuristic_fence_post, _("\
 Set the distance searched for the start of a function."), _("\
 Show the distance searched for the start of a function."), _("\
 If you are debugging a stripped executable, GDB needs to search through the\n\
 program for the start of a function.  This command sets the distance of the\n\
 search.  The only need to set it is when debugging a stripped executable."),
-			    reinit_frame_cache_sfunc,
-			    NULL, /* FIXME: i18n: The distance searched for the start of a function is \"%d\".  */
-			    &setlist, &showlist);
+			   reinit_frame_cache_sfunc,
+			   NULL, /* FIXME: i18n: The distance searched for the start of a function is \"%d\".  */
+			   &setlist, &showlist);
 }
+
+/* EOF */

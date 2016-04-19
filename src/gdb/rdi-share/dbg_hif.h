@@ -40,7 +40,24 @@
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* STDC_HEADERS || HAVE_STDARG_H */
 
-typedef void Hif_DbgPrint(void *arg, const char *format, va_list ap);
+/* copied from gdb "defs.h" just in case: */
+#ifndef ATTR_FORMAT
+# if defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 4))
+#  define ATTR_FORMAT(type, x, y) __attribute__((format(type, x, y)))
+# else
+#  define ATTR_FORMAT(type, x, y)	/* nothing */
+# endif /* __GNUC__ version check */
+#endif /* !ATTR_FORMAT */
+
+/* FIXME: dirty hack: */
+#ifndef gnu_printf
+# if defined(__clang__) || (defined(__APPLE_CC__) && (__APPLE_CC__ > 1))
+#  define gnu_printf printf
+# endif /* __clang__ || (__APPLE_CC__ > 1) */
+#endif /* !gnu_printf */
+
+typedef void Hif_DbgPrint(void *arg, const char *format, va_list ap)
+  ATTR_FORMAT(gnu_printf, 2, 0);
 typedef void Hif_DbgPause(void *arg);
 
 typedef void Hif_WriteC(void *arg, int c);

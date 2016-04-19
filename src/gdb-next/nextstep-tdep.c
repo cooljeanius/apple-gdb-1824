@@ -52,8 +52,9 @@ struct complaint unsupported_indirect_symtype_complaint =
 
 unsigned char next_symbol_types[256];
 
-static unsigned char next_symbol_type_base (macho_type)
-  unsigned char macho_type;
+/* */
+static unsigned char
+next_symbol_type_base(unsigned char macho_type)
 {
   unsigned char mtype = macho_type;
   unsigned char ntype = 0;
@@ -90,11 +91,16 @@ static unsigned char next_symbol_type_base (macho_type)
     break;
 
   case BFD_MACH_O_N_INDR:
-    /* complain (&unsupported_indirect_symtype_complaint, local_hex_string (macho_type)); */
+#if 0
+    complain(&unsupported_indirect_symtype_complaint,
+	     local_hex_string(macho_type));
+#endif /* 0 */
     return macho_type;
 
   default:
-    /* complain (&unknown_macho_symtype_complaint, local_hex_string (macho_type)); */
+#if 0
+    complain(&unknown_macho_symtype_complaint, local_hex_string(macho_type));
+#endif /* 0 */
     return macho_type;
   }
   mtype &= ~BFD_MACH_O_N_TYPE;
@@ -104,17 +110,18 @@ static unsigned char next_symbol_type_base (macho_type)
   return ntype;
 }
 
-static void next_symbol_types_init ()
+/* */
+static void
+next_symbol_types_init(void)
 {
   unsigned int i;
   for (i = 0; i < 256; i++) {
-    next_symbol_types[i] = next_symbol_type_base (i);
+    next_symbol_types[i] = next_symbol_type_base(i);
   }
 }
 
-static unsigned char next_symbol_type (macho_type, macho_other)
-     unsigned char macho_type;
-     unsigned char macho_other;
+static unsigned char
+next_symbol_type(unsigned char macho_type, unsigned char macho_other)
 {
   unsigned char ntype = next_symbol_types[macho_type];
 
@@ -123,7 +130,9 @@ static unsigned char next_symbol_type (macho_type, macho_other)
     if (macho_other == 1) {
       ntype |= N_TEXT;
     } else {
-      /* complain (&unknown_macho_section_complaint, local_hex_string (macho_other)); */
+#if 0
+      complain(&unknown_macho_section_complaint, local_hex_string(macho_other));
+#endif /* 0 */
       ntype |= N_DATA;
     }
   }
@@ -131,10 +140,10 @@ static unsigned char next_symbol_type (macho_type, macho_other)
   return ntype;
 }
 
-void next_internalize_symbol (in, ext, abfd)
-     struct internal_nlist *in;
-     struct external_nlist *ext;
-     bfd *abfd;
+/* */
+void
+next_internalize_symbol(struct internal_nlist *in, struct external_nlist *ext,
+			bfd *abfd)
 {
   if (bfd_header_big_endian (abfd)) {
     in->n_strx = BFD_GETB32 (ext->e_strx);
@@ -152,7 +161,9 @@ void next_internalize_symbol (in, ext, abfd)
   in->n_other = 0;
 }
 
-CORE_ADDR dyld_symbol_stub_function_address (CORE_ADDR pc, const char **name)
+/* */
+CORE_ADDR
+dyld_symbol_stub_function_address(CORE_ADDR pc, const char **name)
 {
   struct symbol *sym = NULL;
   struct minimal_symbol *msym = NULL;
@@ -182,7 +193,9 @@ CORE_ADDR dyld_symbol_stub_function_address (CORE_ADDR pc, const char **name)
   return 0;
 }
 
-const char *dyld_symbol_stub_function_name (CORE_ADDR pc)
+/* */
+const char *
+dyld_symbol_stub_function_name(CORE_ADDR pc)
 {
   struct minimal_symbol *msymbol = NULL;
   const char *DYLD_PREFIX = "dyld_stub_";
@@ -201,7 +214,9 @@ const char *dyld_symbol_stub_function_name (CORE_ADDR pc)
   return SYMBOL_NAME (msymbol) + strlen (DYLD_PREFIX);
 }
 
-static void info_trampoline_command (char *exp, int from_tty)
+/* */
+static void
+info_trampoline_command(const char *exp, int from_tty)
 {
   struct expression *expr;
   struct value *val;
@@ -226,20 +241,25 @@ static void info_trampoline_command (char *exp, int from_tty)
 # error unknown architecture
 #endif /* TARGET_foo */
 
-  find_objc_msgcall (trampoline, &objc);
+  find_objc_msgcall(trampoline, &objc);
 
-  fprintf_filtered
-    (gdb_stderr, "Function at 0x%lx becomes 0x%lx becomes 0x%lx\n",
-     (unsigned long) address, (unsigned long) trampoline, (unsigned long) objc);
+  fprintf_filtered(gdb_stderr,
+		   "Function at 0x%lx becomes 0x%lx becomes 0x%lx\n",
+		   (unsigned long)address, (unsigned long)trampoline,
+		   (unsigned long)objc);
 }
 
-void
-_initialize_nextstep_tdep ()
-{
-  next_symbol_types_init ();
 
-  add_info ("trampoline", info_trampoline_command,
-	    "Resolve function for DYLD trampoline stub and/or Objective-C call");
+extern void _initialize_nextstep_tdep(void); /* -Wmissing-prototypes */
+
+/* Usual GDB initialization hook: */
+void
+_initialize_nextstep_tdep(void)
+{
+  next_symbol_types_init();
+
+  add_info("trampoline", info_trampoline_command,
+	   "Resolve function for DYLD trampoline stub and/or Objective-C call");
 }
 
 /* EOF */

@@ -40,15 +40,15 @@
 /* APPLE LOCAL - subroutine inlining  */
 #include "inlining.h"
 
-#if (defined(__i386__) && !defined(THROW_CATCH_FIND_TYPEINFO)) || \
-    defined(TARGET_I386)
+#if (defined(__i386__) && !defined(THROW_CATCH_FIND_TYPEINFO) && \
+     defined(MACOSX_DYLD)) || defined(TARGET_I386)
 # include "tm-i386-macosx.h"
 # if !defined(TM_I386NEXT_H) && !defined(HAVE_I387_REGS)
 #  include "config/i386/tm-i386-macosx.h"
 # endif /* !TM_I386NEXT_H && !HAVE_I387_REGS */
 #else
 # define MI_CMD_STACK_C_NOT_ON_i386 1
-#endif /* (__i386__ && !THROW_CATCH_FIND_TYPEINFO) || TARGET_I386 */
+#endif /* (__i386__ && !THROW_CATCH_FIND_TYPEINFO && MACOSX_DYLD) || TARGET_I386 */
 
 /* FIXME: There is no general mi header to put these kinds of utility
  * functions: */

@@ -1143,14 +1143,14 @@ dbx_next_symbol_text(struct objfile *objfile)
   struct internal_nlist nlist2;
   int sect_p = 0;
 
-  PEEK_SYMBOL (nlist1, sect_p, processing_objfile->obfd);
+  PEEK_SYMBOL(nlist1, sect_p, processing_objfile->obfd);
 
   if (nlist1.n_type & N_STAB)
     {
       /* The next symbol is a stab; return it as we normally would. */
       symbuf_idx++;
       symnum++;
-      OBJSTAT (objfile, n_stabs++);
+      OBJSTAT(objfile, n_stabs++);
       return (nlist1.n_strx + stringtab_global + file_string_table_offset);
     }
 
@@ -1158,7 +1158,7 @@ dbx_next_symbol_text(struct objfile *objfile)
      find the continuation of the name. */
 
   symbuf_idx++;
-  PEEK_SYMBOL (nlist2, sect_p, processing_objfile->obfd);
+  PEEK_SYMBOL(nlist2, sect_p, processing_objfile->obfd);
   symbuf_idx--;
 
   if (nlist2.n_type & N_STAB)
@@ -1167,19 +1167,20 @@ dbx_next_symbol_text(struct objfile *objfile)
 	 non-stab into its place; then return the stab, effectively
 	 swapping the two entries. */
 
-      memcpy (symbuf + ((symbuf_idx + 0) * symbol_size),
-	      symbuf + ((symbuf_idx + 1) * symbol_size), symbol_size);
+      memcpy((symbuf + ((symbuf_idx + 0) * symbol_size)),
+	     (symbuf + ((symbuf_idx + 1) * symbol_size)), symbol_size);
 
       /* Now increment the various pointers as we normally would. */
       symbuf_idx++;
       symnum++;
-      OBJSTAT (objfile, n_stabs++);
+      OBJSTAT(objfile, n_stabs++);
       return (nlist2.n_strx + stringtab_global + file_string_table_offset);
     }
 
-  /* We only look ahead one non-stab symbol. */
+  (void)sect_p;
 
-  complaint (&symfile_complaints, "unable to find symbol continuation");
+  /* We only look ahead one non-stab symbol: */
+  complaint(&symfile_complaints, "unable to find symbol continuation");
   return (nlist1.n_strx + stringtab_global + file_string_table_offset);
 }
 
@@ -1809,14 +1810,14 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
 
       /* APPLE LOCAL: Skip all debug map nlist entries when we have a
 	 dSYM file.  */
-      if (have_dsym_file && in_dwarf_debug_map && nlist.n_type != N_SO)
+      if (have_dsym_file && in_dwarf_debug_map && (nlist.n_type != N_SO))
          continue;
 
       /* If we are missing this .o file, we have to process all the regular
 	 linker symbols - to build up the minsyms, and scan for the closing
 	 N_SO, but we don't want to ingest any of the stabs.  */
 
-      if (missing_oso_file && (nlist.n_type & N_STAB) && nlist.n_type != N_SO)
+      if (missing_oso_file && (nlist.n_type & N_STAB) && (nlist.n_type != N_SO))
 	continue;
 
       if (nlist.n_type == N_SLINE)
@@ -1825,7 +1826,7 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
 	  continue;
 	}
 
-      OBJSTAT (objfile, n_stabs++);
+      OBJSTAT(objfile, n_stabs++);
 
       /* APPLE LOCAL: If we aren't reading in stabs right now, and
 	 this is a stab, just skip it.  */
@@ -1844,13 +1845,11 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
             symbol lists.  This last is a large section of code, so
             I have embedded it in the following macro(?).
       */
-
       switch (nlist.n_type)
 	{
 	  /*
 	   * Standard, external, non-debugger, symbols
 	   */
-
 	  case N_TEXT | N_EXT:
 	  case N_NBTEXT | N_EXT:
 	  nlist.n_value += objfile_text_section_offset (objfile);
@@ -1881,6 +1880,10 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
                                                    nlist.n_type,
                                                    nlist.n_other))
               continue;
+#else
+	    if (sect_p) {
+	      ; /* ??? */
+	    }
 #endif /* TM_NEXTSTEP */
             /* APPLE LOCAL symbol prefixes */
           namestring = set_namestring(objfile, nlist, prefix);
@@ -3663,12 +3666,12 @@ oso_scan_partial_symtab(struct partial_symtab *pst)
   oso_bfd = open_bfd_from_oso(pst, &cached);
   if (oso_bfd == NULL)
     {
-      warning("Couldn't open bfd for .o file: %s.", PSYMTAB_OSO_NAME(pst));
+      warning(_("Failed to open bfd for .o file: %s."), PSYMTAB_OSO_NAME(pst));
       return;
     }
 
   if (!bfd_check_format(oso_bfd, bfd_object))
-    warning("Not in bfd_object form");
+    warning(_("Not in bfd_object form"));
 
   leading_char = bfd_get_symbol_leading_char(oso_bfd);
 
@@ -3825,6 +3828,8 @@ oso_scan_partial_symtab(struct partial_symtab *pst)
     clear_containing_archive_cache();
   else
     close_bfd_or_archive(oso_bfd);
+  
+  (void)sect_p;
 }
 
 /* APPLE LOCAL: Called from dwarf2read.c, this function reads all the
@@ -3935,6 +3940,7 @@ read_oso_nlists(bfd *oso_bfd, struct partial_symtab *pst,
            break;
         }
 
+#ifdef TM_NEXTSTEP
       /* APPLE LOCAL: The new ld outputs symbols for all the
          stubs in the SYMBOL_STUBS sections for its convenience.
          These are not the symbols we use to do the mapping
@@ -3944,6 +3950,11 @@ read_oso_nlists(bfd *oso_bfd, struct partial_symtab *pst,
                                                        nlist.n_type,
                                                        nlist.n_other))
         continue;
+#else
+      if (sect_p) {
+	; /* ??? */
+      }
+#endif /* TM_NEXTSTEP */
 
       if (record_standard)
         {
@@ -4531,6 +4542,8 @@ read_ofile_symtab (struct partial_symtab *pst)
   pst->symtab = end_symtab(text_offset + text_size, objfile, SECT_OFF_TEXT(objfile));
 
   end_stabs();
+  
+  (void)sect_p;
 }
 
 /* APPLE LOCAL: The following section is to support reading debug
@@ -5022,6 +5035,8 @@ read_ofile_symtab_from_oso(struct partial_symtab *pst, struct bfd *oso_bfd)
     xfree(cur_fun_name);
 
   do_cleanups(oso_data_cleanup);
+  
+  (void)sect_p;
 }
 
 

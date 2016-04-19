@@ -1,4 +1,4 @@
-/* Motorola m68k target-dependent support for GNU/Linux.
+/* m68k-linux-tdep.c: Motorola m68k target-dependent support for GNU/Linux.
 
    Copyright 1996, 1998, 2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
@@ -26,6 +26,7 @@
 #include "floatformat.h"
 #include "frame.h"
 #include "target.h"
+#include "gdb_assert.h"
 #include "gdb_string.h"
 #include "gdbtypes.h"
 #include "osabi.h"
@@ -62,32 +63,34 @@
    non-RT and RT signal trampolines.  */
 
 static int
-m68k_linux_pc_in_sigtramp (CORE_ADDR pc, char *name)
+m68k_linux_pc_in_sigtramp(CORE_ADDR pc, const char *name)
 {
+#ifdef ALLOW_UNUSED_VARIABLES
   CORE_ADDR sp;
+#endif /* ALLOW_UNUSED_VARIABLES */
   char buf[12];
   unsigned long insn0, insn1, insn2;
 
-  if (deprecated_read_memory_nobpt (pc - 4, buf, sizeof (buf)))
+  if (deprecated_read_memory_nobpt((pc - 4), (gdb_byte *)buf, sizeof(buf)))
     return 0;
-  insn1 = extract_unsigned_integer (buf + 4, 4);
-  insn2 = extract_unsigned_integer (buf + 8, 4);
-  if (IS_SIGTRAMP (insn1, insn2))
+  insn1 = extract_unsigned_integer((const gdb_byte *)(buf + 4U), 4);
+  insn2 = extract_unsigned_integer((const gdb_byte *)(buf + 8U), 4);
+  if (IS_SIGTRAMP(insn1, insn2))
     return 1;
-  if (IS_RT_SIGTRAMP (insn1, insn2))
+  if (IS_RT_SIGTRAMP(insn1, insn2))
     return 2;
 
-  insn0 = extract_unsigned_integer (buf, 4);
-  if (IS_SIGTRAMP (insn0, insn1))
+  insn0 = extract_unsigned_integer((const gdb_byte *)buf, 4);
+  if (IS_SIGTRAMP(insn0, insn1))
     return 1;
   if (IS_RT_SIGTRAMP (insn0, insn1))
     return 2;
 
-  insn0 = ((insn0 << 16) & 0xffffffff) | (insn1 >> 16);
-  insn1 = ((insn1 << 16) & 0xffffffff) | (insn2 >> 16);
-  if (IS_SIGTRAMP (insn0, insn1))
+  insn0 = (((insn0 << 16) & 0xffffffff) | (insn1 >> 16));
+  insn1 = (((insn1 << 16) & 0xffffffff) | (insn2 >> 16));
+  if (IS_SIGTRAMP(insn0, insn1))
     return 1;
-  if (IS_RT_SIGTRAMP (insn0, insn1))
+  if (IS_RT_SIGTRAMP(insn0, insn1))
     return 2;
 
   return 0;
@@ -173,60 +176,62 @@ struct m68k_linux_sigtramp_info
   int *sc_reg_offset;
 };
 
+/* */
 static struct m68k_linux_sigtramp_info
-m68k_linux_get_sigtramp_info (struct frame_info *next_frame)
+m68k_linux_get_sigtramp_info(struct frame_info *next_frame)
 {
   CORE_ADDR sp;
   char buf[4];
   struct m68k_linux_sigtramp_info info;
 
-  frame_unwind_register (next_frame, M68K_SP_REGNUM, buf);
-  sp = extract_unsigned_integer (buf, 4);
+  frame_unwind_register(next_frame, M68K_SP_REGNUM, (gdb_byte *)buf);
+  sp = extract_unsigned_integer((const gdb_byte *)buf, 4);
 
-  /* Get sigcontext address, it is the third parameter on the stack.  */
-  info.sigcontext_addr = read_memory_unsigned_integer (sp + 8, 4);
+  /* Get sigcontext address, it is the third parameter on the stack: */
+  info.sigcontext_addr = read_memory_unsigned_integer((sp + 8), 4);
 
-  if (m68k_linux_pc_in_sigtramp (frame_pc_unwind (next_frame), 0) == 2)
+  if (m68k_linux_pc_in_sigtramp(frame_pc_unwind(next_frame), 0) == 2)
     info.sc_reg_offset = m68k_linux_ucontext_reg_offset;
   else
     info.sc_reg_offset = m68k_linux_sigcontext_reg_offset;
   return info;
 }
 
-/* Signal trampolines.  */
-
+/* Signal trampolines: */
 static struct trad_frame_cache *
-m68k_linux_sigtramp_frame_cache (struct frame_info *next_frame,
-				 void **this_cache)
+m68k_linux_sigtramp_frame_cache(struct frame_info *next_frame,
+				void **this_cache)
 {
   struct frame_id this_id;
   struct trad_frame_cache *cache;
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
   struct m68k_linux_sigtramp_info info;
   char buf[4];
   int i;
 
-  if (*this_cache)
-    return *this_cache;
+  gdb_assert(tdep != NULL);
 
-  cache = trad_frame_cache_zalloc (next_frame);
+  if (*this_cache)
+    return (struct trad_frame_cache *)*this_cache;
+
+  cache = trad_frame_cache_zalloc(next_frame);
 
   /* FIXME: cagney/2004-05-01: This is is long standing broken code.
      The frame ID's code address should be the start-address of the
      signal trampoline and not the current PC within that
      trampoline.  */
-  frame_unwind_register (next_frame, M68K_SP_REGNUM, buf);
+  frame_unwind_register(next_frame, M68K_SP_REGNUM, (gdb_byte *)buf);
   /* See the end of m68k_push_dummy_call.  */
-  this_id = frame_id_build (extract_unsigned_integer (buf, 4) - 4 + 8,
-			    frame_pc_unwind (next_frame));
-  trad_frame_set_id (cache, this_id);
+  this_id = frame_id_build((extract_unsigned_integer((const gdb_byte *)buf, 4)
+			    - 4 + 8), frame_pc_unwind(next_frame));
+  trad_frame_set_id(cache, this_id);
 
-  info = m68k_linux_get_sigtramp_info (next_frame);
+  info = m68k_linux_get_sigtramp_info(next_frame);
 
   for (i = 0; i < M68K_NUM_REGS; i++)
     if (info.sc_reg_offset[i] != -1)
-      trad_frame_set_reg_addr (cache, i,
-			       info.sigcontext_addr + info.sc_reg_offset[i]);
+      trad_frame_set_reg_addr(cache, i,
+			      (info.sigcontext_addr + info.sc_reg_offset[i]));
 
   *this_cache = cache;
   return cache;
@@ -243,19 +248,18 @@ m68k_linux_sigtramp_frame_this_id (struct frame_info *next_frame,
 }
 
 static void
-m68k_linux_sigtramp_frame_prev_register (struct frame_info *next_frame,
-					 void **this_cache,
-					 /* APPLE LOCAL variable opt states.  */
-					 int regnum, enum opt_state *optimizedp,
-					 enum lval_type *lvalp,
-					 CORE_ADDR *addrp,
-					 int *realnump, void *valuep)
+m68k_linux_sigtramp_frame_prev_register(struct frame_info *next_frame,
+					void **this_cache,
+					/* APPLE LOCAL variable opt states.  */
+					int regnum, enum opt_state *optimizedp,
+					enum lval_type *lvalp, CORE_ADDR *addrp,
+					int *realnump, void *valuep)
 {
-  /* Make sure we've initialized the cache.  */
+  /* Make sure we have initialized the cache: */
   struct trad_frame_cache *cache =
-    m68k_linux_sigtramp_frame_cache (next_frame, this_cache);
-  trad_frame_get_register (cache, next_frame, regnum, optimizedp, lvalp,
-			   addrp, realnump, valuep);
+    m68k_linux_sigtramp_frame_cache(next_frame, this_cache);
+  trad_frame_get_register(cache, next_frame, regnum, optimizedp, lvalp,
+			  addrp, realnump, (gdb_byte *)valuep);
 }
 
 static const struct frame_unwind m68k_linux_sigtramp_frame_unwind =
@@ -265,23 +269,25 @@ static const struct frame_unwind m68k_linux_sigtramp_frame_unwind =
   m68k_linux_sigtramp_frame_prev_register
 };
 
+/* */
 static const struct frame_unwind *
-m68k_linux_sigtramp_frame_sniffer (struct frame_info *next_frame)
+m68k_linux_sigtramp_frame_sniffer(struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
+  const char *name;
 
-  find_pc_partial_function (pc, &name, NULL, NULL);
-  if (m68k_linux_pc_in_sigtramp (pc, name))
+  find_pc_partial_function(pc, &name, NULL, NULL);
+  if (m68k_linux_pc_in_sigtramp(pc, name))
     return &m68k_linux_sigtramp_frame_unwind;
 
   return NULL;
 }
 
+/* */
 static void
-m68k_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
+m68k_linux_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
 
   tdep->jb_pc = M68K_LINUX_JB_PC;
   tdep->jb_elt_size = M68K_LINUX_JB_ELEMENT_SIZE;
@@ -291,11 +297,11 @@ m68k_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
      floating values in %fp0, just like SVR4, but uses %a1 to pass the
      address to store a structure value.  It also returns small
      structures in registers instead of memory.  */
-  m68k_svr4_init_abi (info, gdbarch);
+  m68k_svr4_init_abi(info, gdbarch);
   tdep->struct_value_regnum = M68K_A1_REGNUM;
   tdep->struct_return = reg_struct_return;
 
-  frame_unwind_append_sniffer (gdbarch, m68k_linux_sigtramp_frame_sniffer);
+  frame_unwind_append_sniffer(gdbarch, m68k_linux_sigtramp_frame_sniffer);
 
   /* Shared library handling.  */
 
@@ -303,19 +309,25 @@ m68k_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   set_solib_svr4_fetch_link_map_offsets (gdbarch,
 					 svr4_ilp32_fetch_link_map_offsets);
 
-  /* GNU/Linux uses the dynamic linker included in the GNU C Library.  */
-  set_gdbarch_skip_solib_resolver (gdbarch, glibc_skip_solib_resolver);
+#ifdef __GLIBC__
+  /* GNU/Linux uses the dynamic linker included in the GNU C Library: */
+  set_gdbarch_skip_solib_resolver(gdbarch, glibc_skip_solib_resolver);
+#endif /* __GLIBC__ */
 
-  set_gdbarch_skip_trampoline_code (gdbarch, find_solib_trampoline_target);
+  set_gdbarch_skip_trampoline_code(gdbarch, find_solib_trampoline_target);
 
-  /* Enable TLS support.  */
-  set_gdbarch_fetch_tls_load_module_address (gdbarch,
-                                             svr4_fetch_objfile_link_map);
+  /* Enable TLS support: */
+  set_gdbarch_fetch_tls_load_module_address(gdbarch,
+                                            svr4_fetch_objfile_link_map);
 }
 
+/* Usual gdb initialization hook: */
+extern void _initialize_m68k_linux_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_m68k_linux_tdep (void)
+_initialize_m68k_linux_tdep(void)
 {
-  gdbarch_register_osabi (bfd_arch_m68k, 0, GDB_OSABI_LINUX,
-			  m68k_linux_init_abi);
+  gdbarch_register_osabi(bfd_arch_m68k, 0, GDB_OSABI_LINUX,
+			 m68k_linux_init_abi);
 }
+
+/* EOF */

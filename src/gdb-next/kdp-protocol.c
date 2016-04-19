@@ -14,7 +14,8 @@
 #include "defs.h"
 #define assert CHECK_FATAL
 
-static inline unsigned short read16u (const unsigned char *s, int bigendian)
+static inline ATTRIBUTE_GNU_INLINE
+unsigned short read16u (const unsigned char *s, int bigendian)
 {
   if (bigendian) {
     return (s[1] << 8) + s[0];
@@ -23,7 +24,8 @@ static inline unsigned short read16u (const unsigned char *s, int bigendian)
   }
 }
 
-static inline unsigned long read32u (const unsigned char *s, int bigendian)
+static inline ATTRIBUTE_GNU_INLINE
+unsigned long read32u (const unsigned char *s, int bigendian)
 {
   if (bigendian) {
     return (s[3] << 24) + (s[2] << 16) + (s[1] << 8) + s[0];
@@ -32,7 +34,8 @@ static inline unsigned long read32u (const unsigned char *s, int bigendian)
   }
 }
 
-static inline void write16u (unsigned char *s, unsigned short i, int bigendian)
+static inline ATTRIBUTE_GNU_INLINE
+void write16u (unsigned char *s, unsigned short i, int bigendian)
 {
   if (bigendian) {
     s[1] = (i >> 8) & 0xff;
@@ -43,7 +46,8 @@ static inline void write16u (unsigned char *s, unsigned short i, int bigendian)
   }
 }
 
-static inline void write32u (unsigned char *s, unsigned long i, int bigendian)
+static inline ATTRIBUTE_GNU_INLINE
+void write32u (unsigned char *s, unsigned long i, int bigendian)
 {
   if (bigendian) {
     s[3] = (i >> 24) & 0xff;

@@ -1,7 +1,8 @@
 # Target: Intel 386 running Rhapsody
 
 MT_CFLAGS = \
-	-DTARGET_I386
+	-DTARGET_I386 \
+	-I../gdb-next
 
 TDEPFILES = \
 	core-macho.o \

@@ -398,7 +398,7 @@ e7000pc_write(struct serial *scb, const char *str, int len)
 }
 
 static void
-e7000pc_close(struct serial *scb)
+e7000pc_close(struct serial *scb ATTRIBUTE_UNUSED)
 {
   return;
 }
@@ -433,6 +433,10 @@ _initialize_ser_e7000pc(void)
 {
 #if defined __GO32__ || defined _WIN32
   serial_add_interface(&e7000pc_ops);
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+  __asm__("");
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* __GO32__ || _WIN32 */
 }
 

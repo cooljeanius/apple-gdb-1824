@@ -1,4 +1,4 @@
-/* Target-dependent code for HP-UX on PA-RISC.
+/* hppa-hpux-tdep.c: Target-dependent code for HP-UX on PA-RISC.
 
    Copyright 2002, 2003, 2004 Free Software Foundation, Inc.
 
@@ -39,8 +39,20 @@
 
 #include "gdb_string.h"
 
-#include <dl.h>
-#include <machine/save_state.h>
+#ifdef HAVE_DL_H
+# include <dl.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "hppa-hpux-tdep.c expects <dl.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_DL_H */
+#ifdef HAVE_MACHINE_SAVE_STATE_H
+# include <machine/save_state.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "hppa-hpux-tdep.c expects <machine/save_state.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_MACHINE_SAVE_STATE_H */
 
 #ifndef offsetof
 #define offsetof(TYPE, MEMBER) ((unsigned long) &((TYPE *)0)->MEMBER)

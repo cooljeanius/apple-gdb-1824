@@ -272,6 +272,7 @@ m68000-*-sunos4*)	gdb_target=sun2os4 ;;
 # "fido" is actually a variant on m68*:
 fido-*-elf*)		gdb_target=monitor ;;
 m68*-apollo*-bsd*)	gdb_target=apollo68b ;;
+m68*-apple-aux*)	gdb_target=aux ;;
 m68*-bull-sysv*)	gdb_target=dpx2 ;;
 m68*-hp-bsd*)		gdb_target=hp300bsd ;;
 m68*-hp-hpux*)		gdb_target=hp300hpux ;;
@@ -421,6 +422,7 @@ powerpc64-*-linux*)	gdb_target=linux
 			build_gdbserver=yes
 			configdirs="${configdirs} gdbserver"
 			;;
+powerpc-*-rhapsody*)	gdb_target=rhapsody ;;
 powerpc-*-vxworks*)	gdb_target=vxworks ;;
 powerpc*-*-*)		if test -f ../sim/ppc/Makefile; then
 			  gdb_target=ppc-sim

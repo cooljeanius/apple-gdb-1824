@@ -306,6 +306,15 @@ So instead we use the macro below and test it against specific values.  */
 #  endif /* MSVC */
 # endif /* gcc 4.5+ */
 #endif /* ATTRIBUTE_DEPRECATED_FOR */
+  
+
+#ifndef ATTRIBUTE_GNU_INLINE
+# if defined(__GNUC__) && defined(__GNUC_VERSION__)
+#  define ATTRIBUTE_GNU_INLINE __attribute__((__gnu_inline__))
+# else
+#  define ATTRIBUTE_GNU_INLINE /* (nothing) */
+# endif /* __GNUC__ && __GNUC_VERSION__ */
+#endif /* !ATTRIBUTE_GNU_INLINE */
 
 /* Similarly to ARG_UNUSED below.  Prior to GCC 3.4, the C++ frontend
    could NOT parse attributes placed after the identifier name, and now

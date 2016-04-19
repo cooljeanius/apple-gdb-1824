@@ -74,10 +74,10 @@ extern struct _sr_settings sr_settings;
 
 struct gr_settings
   {
-    char *prompt;
+    const char *prompt;
     struct target_ops *ops;
-    int (*clear_all_breakpoints) (void);
-    void (*checkin) (void);
+    int (*clear_all_breakpoints)(void);
+    void (*checkin)(void);
   };
 
 extern struct gr_settings *gr_settings;
@@ -110,28 +110,28 @@ extern struct gr_settings *gr_settings;
 
 #define gr_expect_prompt()	sr_expect(gr_get_prompt())
 
-int gr_multi_scan (char *list[], int passthrough);
-int sr_get_hex_digit (int ignore_space);
-int sr_pollchar (void);
-int sr_readchar (void);
-int sr_timed_read (char *buf, int n);
-long sr_get_hex_word (void);
-void gr_close (int quitting);
-void gr_create_inferior (char *execfile, char *args, char **env);
-void gr_detach (char *args, int from_tty);
-void gr_files_info (struct target_ops *ops);
-void gr_generic_checkin (void);
-void gr_kill (void);
-void gr_mourn (void);
-void gr_prepare_to_store (void);
+int gr_multi_scan(const char *list[], int passthrough);
+int sr_get_hex_digit(int ignore_space);
+int sr_pollchar(void);
+int sr_readchar(void);
+int sr_timed_read(char *buf, int n);
+long sr_get_hex_word(void);
+void gr_close(int quitting);
+void gr_create_inferior(char *execfile, char *args, char **env);
+void gr_detach(char *args, int from_tty);
+void gr_files_info(struct target_ops *ops);
+void gr_generic_checkin(void);
+void gr_kill(void);
+void gr_mourn(void);
+void gr_prepare_to_store(void);
 
-void sr_expect(char *string);
+void sr_expect(const char *string);
 void sr_get_hex_byte(char *byt);
 void sr_scan_args(const char *proto, char *args);
 void sr_write(const char *a, int l);
 void sr_write_cr(const char *s);
 
-void gr_open(char *args, int from_tty, struct gr_settings *gr_settings);
+void gr_open(const char *args, int from_tty, struct gr_settings *gr_settings);
 void gr_load_image(char *, int from_tty);
 
 #endif /* REMOTE_UTILS_H */

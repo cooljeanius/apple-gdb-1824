@@ -1,4 +1,4 @@
-/* Target-dependent code for the Motorola 68000 series.
+/* m68k-tdep.c: Target-dependent code for the Motorola 68000 series.
 
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1999, 2000,
    2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
@@ -112,9 +112,9 @@ m68k_register_type (struct gdbarch *gdbarch, int regnum)
    Returns the name of the standard m68k register regnum. */
 
 static const char *
-m68k_register_name (int regnum)
+m68k_register_name(int regnum)
 {
-  static char *register_names[] = {
+  static const char *register_names[] = {
     "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7",
     "a0", "a1", "a2", "a3", "a4", "a5", "fp", "sp",
     "ps", "pc",
@@ -122,10 +122,10 @@ m68k_register_name (int regnum)
     "fpcontrol", "fpstatus", "fpiaddr", "fpcode", "fpflags"
   };
 
-  if (regnum < 0 ||
-      regnum >= sizeof (register_names) / sizeof (register_names[0]))
-    internal_error (__FILE__, __LINE__,
-		    _("m68k_register_name: illegal register number %d"), regnum);
+  if ((regnum < 0) ||
+      ((size_t)regnum >= (sizeof(register_names) / sizeof(register_names[0]))))
+    internal_error(__FILE__, __LINE__,
+		   _("m68k_register_name: illegal register number %d"), regnum);
   else
     return register_names[regnum];
 }
@@ -722,14 +722,16 @@ m68k_analyze_prologue (CORE_ADDR pc, CORE_ADDR current_pc,
 /* Return PC of first real instruction.  */
 
 static CORE_ADDR
-m68k_skip_prologue (CORE_ADDR start_pc)
+m68k_skip_prologue(CORE_ADDR start_pc)
 {
   struct m68k_frame_cache cache;
   CORE_ADDR pc;
+#ifdef ALLOW_UNUSED_VARIABLES
   int op;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
   cache.locals = -1;
-  pc = m68k_analyze_prologue (start_pc, (CORE_ADDR) -1, &cache);
+  pc = m68k_analyze_prologue(start_pc, (CORE_ADDR)(-1L), &cache);
   if (cache.locals < 0)
     return start_pc;
   return pc;
@@ -754,9 +756,9 @@ m68k_frame_cache (struct frame_info *next_frame, void **this_cache)
   int i;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct m68k_frame_cache *)*this_cache;
 
-  cache = m68k_alloc_frame_cache ();
+  cache = m68k_alloc_frame_cache();
   *this_cache = cache;
 
   /* In principle, for normal frames, %fp holds the frame pointer,
@@ -796,22 +798,23 @@ m68k_frame_cache (struct frame_info *next_frame, void **this_cache)
 
   /* Now that we have the base address for the stack frame we can
      calculate the value of %sp in the calling frame.  */
-  cache->saved_sp = cache->base + 8;
+  cache->saved_sp = (cache->base + 8);
 
   /* Adjust all the saved registers such that they contain addresses
      instead of offsets.  */
   for (i = 0; i < M68K_NUM_REGS; i++)
-    if (cache->saved_regs[i] != -1)
+    if (cache->saved_regs[i] != (CORE_ADDR)(-1L))
       cache->saved_regs[i] += cache->base;
 
   return cache;
 }
 
+/* */
 static void
-m68k_frame_this_id (struct frame_info *next_frame, void **this_cache,
-		    struct frame_id *this_id)
+m68k_frame_this_id(struct frame_info *next_frame, void **this_cache,
+		   struct frame_id *this_id)
 {
-  struct m68k_frame_cache *cache = m68k_frame_cache (next_frame, this_cache);
+  struct m68k_frame_cache *cache = m68k_frame_cache(next_frame, this_cache);
 
   /* This marks the outermost frame.  */
   if (cache->base == 0)
@@ -841,13 +844,14 @@ m68k_frame_prev_register (struct frame_info *next_frame, void **this_cache,
       *realnump = -1;
       if (valuep)
 	{
-	  /* Store the value.  */
-	  store_unsigned_integer (valuep, 4, cache->saved_sp);
+	  /* Store the value: */
+	  store_unsigned_integer(valuep, 4, cache->saved_sp);
 	}
       return;
     }
 
-  if (regnum < M68K_NUM_REGS && cache->saved_regs[regnum] != -1)
+  if ((regnum < M68K_NUM_REGS)
+      && (cache->saved_regs[regnum] != (CORE_ADDR)(-1L)))
     {
       /* APPLE LOCAL variable opt states.  */
       *optimizedp = opt_okay;
@@ -1054,11 +1058,11 @@ fill_fpregset (fpregset_t *fpregsetp, int regno)
    This routine returns true on success. */
 
 static int
-m68k_get_longjmp_target (CORE_ADDR *pc)
+m68k_get_longjmp_target(CORE_ADDR *pc)
 {
   gdb_byte *buf;
   CORE_ADDR sp, jb_addr;
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
 
   if (tdep->jb_pc < 0)
     {
@@ -1067,8 +1071,8 @@ m68k_get_longjmp_target (CORE_ADDR *pc)
       return 0;
     }
 
-  buf = alloca (TARGET_PTR_BIT / TARGET_CHAR_BIT);
-  sp = read_register (SP_REGNUM);
+  buf = (gdb_byte *)alloca(TARGET_PTR_BIT / TARGET_CHAR_BIT);
+  sp = read_register(SP_REGNUM);
 
   if (target_read_memory (sp + SP_ARG0,	/* Offset of first arg on stack */
 			  buf, TARGET_PTR_BIT / TARGET_CHAR_BIT))
@@ -1111,18 +1115,18 @@ m68k_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   struct gdbarch *gdbarch;
 
   /* find a candidate among the list of pre-declared architectures. */
-  arches = gdbarch_list_lookup_by_info (arches, &info);
+  arches = gdbarch_list_lookup_by_info(arches, &info);
   if (arches != NULL)
     return (arches->gdbarch);
 
-  tdep = xmalloc (sizeof (struct gdbarch_tdep));
-  gdbarch = gdbarch_alloc (&info, tdep);
+  tdep = (struct gdbarch_tdep *)xmalloc(sizeof(struct gdbarch_tdep));
+  gdbarch = gdbarch_alloc(&info, tdep);
 
-  set_gdbarch_long_double_format (gdbarch, &floatformat_m68881_ext);
-  set_gdbarch_long_double_bit (gdbarch, 96);
+  set_gdbarch_long_double_format(gdbarch, &floatformat_m68881_ext);
+  set_gdbarch_long_double_bit(gdbarch, 96);
 
-  set_gdbarch_skip_prologue (gdbarch, m68k_skip_prologue);
-  set_gdbarch_breakpoint_from_pc (gdbarch, m68k_local_breakpoint_from_pc);
+  set_gdbarch_skip_prologue(gdbarch, m68k_skip_prologue);
+  set_gdbarch_breakpoint_from_pc(gdbarch, m68k_local_breakpoint_from_pc);
 
   /* Stack grows down. */
   set_gdbarch_inner_than (gdbarch, core_addr_lessthan);

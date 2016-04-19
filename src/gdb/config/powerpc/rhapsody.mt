@@ -2,7 +2,8 @@
 # Target: PowerPC running NeXTStep/Rhapsody
 
 MT_CFLAGS = \
-	-DTARGET_POWERPC
+	-DTARGET_POWERPC \
+	-I../gdb-next
 
 TDEPFILES = \
 	core-macho.o \

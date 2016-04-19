@@ -2495,9 +2495,8 @@ fputc_filtered(int c, struct ui_file *stream)
 
 /* puts_debug is like fputs_unfiltered, except it prints special
    characters in printable fashion.  */
-
 void
-puts_debug(char *prefix, char *string, char *suffix)
+puts_debug(const char *prefix, char *string, const char *suffix)
 {
   int ch;
 

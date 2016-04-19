@@ -109,21 +109,20 @@ static int need_artificial_trap = 0;
 /*
  * Download a file specified in 'args', to the bug.
  */
-
 static void
-bug_load (char *args, int fromtty)
+bug_load(const char *args, int fromtty)
 {
   bfd *abfd;
   asection *s;
   char buffer[1024];
 
-  sr_check_open ();
+  sr_check_open();
 
   inferior_ptid = null_ptid;
-  abfd = bfd_openr (args, 0);
+  abfd = bfd_openr(args, 0);
   if (!abfd)
     {
-      printf_filtered ("Unable to open file %s\n", args);
+      printf_filtered("Unable to open file %s\n", args);
       return;
     }
 
@@ -168,9 +167,9 @@ bug_load (char *args, int fromtty)
   gr_expect_prompt();
 }
 
-#if 0
+#if defined(HAVE_ISSPACE) && defined(HAVE_MEMCPY)
 static char *
-get_word (char **p)
+get_word(char **p)
 {
   char *s = *p;
   char *word;
@@ -196,7 +195,7 @@ get_word (char **p)
   *p = s;
   return copy;
 }
-#endif /* 0 */
+#endif /* HAVE_ISSPACE && HAVE_MEMCPY */
 
 static struct gr_settings bug_settings =
 {
@@ -206,24 +205,24 @@ static struct gr_settings bug_settings =
   gr_generic_checkin,		/* checkin */
 };
 
-static char *cpu_check_strings[] =
+static const char *cpu_check_strings[] =
 {
   "=",
   "Invalid Register",
 };
 
 static void
-bug_open (char *args, int from_tty)
+bug_open(const char *args, int from_tty)
 {
   if (args == NULL)
     args = "";
 
-  gr_open (args, from_tty, &bug_settings);
+  gr_open(args, from_tty, &bug_settings);
   /* decide *now* whether we are on an 88100 or an 88110 */
-  sr_write_cr ("rs cr06");
-  sr_expect ("rs cr06");
+  sr_write_cr("rs cr06");
+  sr_expect("rs cr06");
 
-  switch (gr_multi_scan (cpu_check_strings, 0))
+  switch (gr_multi_scan(cpu_check_strings, 0))
     {
     case 0:			/* this is an m88100 */
       target_is_m88110 = 0;
@@ -232,14 +231,13 @@ bug_open (char *args, int from_tty)
       target_is_m88110 = 1;
       break;
     default:
-      internal_error (__FILE__, __LINE__, "failed internal consistency check");
+      internal_error(__FILE__, __LINE__, "failed internal consistency check");
     }
 }
 
-/* Tell the remote machine to resume.  */
-
-void
-bug_resume (ptid_t ptid, int step, enum target_signal sig)
+/* Tell the remote machine to resume: */
+static void
+bug_resume(ptid_t ptid, int step, enum target_signal sig)
 {
   if (step)
     {
@@ -259,7 +257,7 @@ bug_resume (ptid_t ptid, int step, enum target_signal sig)
 /* Wait until the remote machine stops, then return,
    storing status in STATUS just as `wait' would.  */
 
-static char *wait_strings[] =
+static const char *wait_strings[] =
 {
   "At Breakpoint",
   "Exception: Data Access Fault (Local Bus Timeout)",
@@ -268,10 +266,10 @@ static char *wait_strings[] =
   NULL,
 };
 
-ptid_t
-bug_wait (ptid_t ptid, struct target_waitstatus *status)
+static ptid_t
+bug_wait(ptid_t ptid, struct target_waitstatus *status)
 {
-  int old_timeout = sr_get_timeout ();
+  int old_timeout = sr_get_timeout();
   int old_immediate_quit = immediate_quit;
 
   status->kind = TARGET_WAITKIND_EXITED;
@@ -339,7 +337,7 @@ bug_wait (ptid_t ptid, struct target_waitstatus *status)
    in the form input and output by bug.
 
    Returns a pointer to a static buffer containing the answer.  */
-static char *
+static const char *
 get_reg_name(int regno)
 {
   static const char *rn[] =
@@ -368,29 +366,30 @@ get_reg_name(int regno)
   return rn[regno];
 }
 
-#if 0				/* not currently used */
+/* not currently used: */
+#if defined(CURRENTLY_USED) || (defined(HAVE_FFLUSH) && defined(HAVE_PRINTF))
 /* Read from remote while the input matches STRING.  Return zero on
    success, -1 on failure.  */
 
 static int
-bug_scan (char *s)
+bug_scan(char *s)
 {
   int c;
 
   while (*s)
     {
-      c = sr_readchar ();
+      c = sr_readchar();
       if (c != *s++)
 	{
-	  fflush (stdout);
-	  printf ("\nNext character is '%c' - %d and s is \"%s\".\n", c, c, --s);
+	  fflush(stdout);
+	  printf("\nNext character is '%c' - %d and s is \"%s\".\n", c, c, --s);
 	  return (-1);
 	}
     }
 
   return (0);
 }
-#endif /* never */
+#endif /* CURRENTLY_USED || (HAVE_FFLUSH && HAVE_PRINTF) */
 
 static int
 bug_srec_write_cr (char *s)
@@ -409,19 +408,25 @@ bug_srec_write_cr (char *s)
       }
   else
     {
-      sr_write_cr (s);
-/*       return(bug_scan (s) || bug_scan ("\n")); */
+      sr_write_cr(s);
+#if 0
+      return (bug_scan(s) || bug_scan("\n"));
+#endif /* 0 */
     }
 
   return (0);
 }
 
-/* Store register REGNO, or all if REGNO == -1. */
+#ifndef MAX_REGISTER_RAW_SIZE
+/* arbitrarily made-up default: */
+# define MAX_REGISTER_RAW_SIZE 12
+#endif /* !MAX_REGISTER_RAW_SIZE */
 
+/* Store register REGNO, or all if REGNO == -1: */
 static void
-bug_fetch_register (int regno)
+bug_fetch_register(int regno)
 {
-  sr_check_open ();
+  sr_check_open();
 
   if (regno == -1)
     {
@@ -434,19 +439,19 @@ bug_fetch_register (int regno)
     {
       /* m88110 has no sfip. */
       long l = 0;
-      supply_register (regno, (char *) &l);
+      supply_register(regno, (char *)&l);
     }
   else if (regno < XFP_REGNUM)
     {
       char buffer[MAX_REGISTER_RAW_SIZE];
 
-      sr_write ("rs ", 3);
-      sr_write_cr (get_reg_name (regno));
-      sr_expect ("=");
-      store_unsigned_integer (buffer, REGISTER_RAW_SIZE (regno),
-			      sr_get_hex_word ());
-      gr_expect_prompt ();
-      supply_register (regno, buffer);
+      sr_write("rs ", 3);
+      sr_write_cr(get_reg_name(regno));
+      sr_expect("=");
+      store_unsigned_integer((gdb_byte *)buffer, REGISTER_RAW_SIZE(regno),
+			     sr_get_hex_word());
+      gr_expect_prompt();
+      supply_register(regno, buffer);
     }
   else
     {
@@ -500,20 +505,20 @@ static void
 bug_store_register (int regno)
 {
   char buffer[1024];
-  sr_check_open ();
+  sr_check_open();
 
   if (regno == -1)
     {
       int i;
 
       for (i = 0; i < NUM_REGS; ++i)
-	bug_store_register (i);
+	bug_store_register(i);
     }
   else
     {
-      char *regname;
+      const char *regname;
 
-      regname = get_reg_name (regno);
+      regname = get_reg_name(regno);
 
       if (target_is_m88110 && regno == SFIP_REGNUM)
 	return;
@@ -836,11 +841,10 @@ static int num_brkpts = 0;
    pattern buffer where the instruction that the breakpoint overwrites
    is saved.  It is unused here since the bug is responsible for
    saving/restoring the original instruction. */
-
 static int
-bug_insert_breakpoint (CORE_ADDR addr, char *save)
+bug_insert_breakpoint(CORE_ADDR addr, const char *save)
 {
-  sr_check_open ();
+  sr_check_open();
 
   if (num_brkpts < MAX_BREAKS)
     {
@@ -848,14 +852,14 @@ bug_insert_breakpoint (CORE_ADDR addr, char *save)
 
       num_brkpts++;
       snprintf(buffer, sizeof(buffer), "br %lx", (long)addr);
-      sr_write_cr (buffer);
-      gr_expect_prompt ();
+      sr_write_cr(buffer);
+      gr_expect_prompt();
       return (0);
     }
   else
     {
-      fprintf_filtered (gdb_stderr,
-		      "Too many break points, break point not installed\n");
+      fprintf_filtered(gdb_stderr,
+		       "Too many break points, break point not installed\n");
       return (1);
     }
 
@@ -864,9 +868,8 @@ bug_insert_breakpoint (CORE_ADDR addr, char *save)
 /* Remove a breakpoint at ADDR.  SAVE is normally the previously
    saved pattern, but is unused here since the bug is responsible
    for saving/restoring instructions. */
-
 static int
-bug_remove_breakpoint(CORE_ADDR addr, char *save)
+bug_remove_breakpoint(CORE_ADDR addr, const char *save)
 {
   if (num_brkpts > 0)
     {
@@ -973,65 +976,45 @@ _initialize_remote_bug(void)
   init_bug_ops();
   add_target(&bug_ops);
 
-  add_show_from_set
-    (add_set_cmd ("srec-bytes", class_support, var_uinteger,
-		  (char *) &srec_bytes,
-		  "\
+  add_show_from_set(add_set_cmd("srec-bytes", class_support, var_uinteger,
+				(char *)&srec_bytes, _("\
 Set the number of bytes represented in each S-record.\n\
-This affects the communication protocol with the remote target.",
-		  &setlist),
-     &showlist);
+This affects the communication protocol with the remote target."),
+				&setlist), &showlist);
 
-  add_show_from_set
-    (add_set_cmd ("srec-max-retries", class_support, var_uinteger,
-		  (char *) &srec_max_retries,
-		  "\
+  add_show_from_set(add_set_cmd("srec-max-retries", class_support, var_uinteger,
+				(char *)&srec_max_retries, _("\
 Set the number of retries for shipping S-records.\n\
-This affects the communication protocol with the remote target.",
-		  &setlist),
-     &showlist);
+This affects the communication protocol with the remote target."),
+				&setlist), &showlist);
 
-#if 0
+#if 0 || 1
   /* This needs to set SREC_SIZE, not srec_frame which gets changed at the
      end of a download.  But do we need the option at all?  */
-  add_show_from_set
-    (add_set_cmd ("srec-frame", class_support, var_uinteger,
-		  (char *) &srec_frame,
-		  "\
+  add_show_from_set(add_set_cmd("srec-frame", class_support, var_uinteger,
+				(char *)&srec_frame, _("\
 Set the number of bytes in an S-record frame.\n\
-This affects the communication protocol with the remote target.",
-		  &setlist),
-     &showlist);
-#endif /* 0 */
+This affects the communication protocol with the remote target."),
+				&setlist), &showlist);
+#endif /* 0 || 1 */
 
-  add_show_from_set
-    (add_set_cmd ("srec-noise", class_support, var_zinteger,
-		  (char *) &srec_noise,
-		  "\
+  add_show_from_set(add_set_cmd("srec-noise", class_support, var_zinteger,
+				(char *)&srec_noise, _("\
 Set number of S-record to send before deliberately flubbing a checksum.\n\
 Zero means flub none at all.  This affects the communication protocol\n\
-with the remote target.",
-		  &setlist),
-     &showlist);
+with the remote target."), &setlist), &showlist);
 
-  add_show_from_set
-    (add_set_cmd ("srec-sleep", class_support, var_zinteger,
-		  (char *) &srec_sleep,
-		  "\
+  add_show_from_set(add_set_cmd("srec-sleep", class_support, var_zinteger,
+				(char *)&srec_sleep, _("\
 Set number of seconds to sleep after an S-record for a possible error message to arrive.\n\
-This affects the communication protocol with the remote target.",
-		  &setlist),
-     &showlist);
+This affects the communication protocol with the remote target."),
+				&setlist), &showlist);
 
-  add_show_from_set
-    (add_set_cmd ("srec-echo-pace", class_support, var_boolean,
-		  (char *) &srec_echo_pace,
-		  "\
+  add_show_from_set(add_set_cmd("srec-echo-pace", class_support, var_boolean,
+				(char *)&srec_echo_pace, _("\
 Set echo-verification.\n\
 When on, use verification by echo when downloading S-records.  This is\n\
-much slower, but generally more reliable.",
-		  &setlist),
-     &showlist);
+much slower, but generally more reliable."), &setlist), &showlist);
 }
 
 /* EOF */

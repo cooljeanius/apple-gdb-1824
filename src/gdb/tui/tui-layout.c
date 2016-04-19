@@ -513,19 +513,25 @@ tui_set_layout_for_display_command (const char *layout_name)
 static CORE_ADDR
 extract_display_start_addr (void)
 {
-  enum tui_layout_type cur_layout = tui_current_layout ();
+  enum tui_layout_type cur_layout = tui_current_layout();
   CORE_ADDR addr;
   CORE_ADDR pc;
-  struct symtab_and_line cursal = get_current_source_symtab_and_line ();
+  struct symtab_and_line cursal = get_current_source_symtab_and_line();
 
   switch (cur_layout)
     {
     case SRC_COMMAND:
     case SRC_DATA_COMMAND:
-      find_line_pc (cursal.symtab,
-		    TUI_SRC_WIN->detail.source_info.start_line_or_addr.line_no,
-		    &pc);
-      addr = pc;
+      {
+	int i_pc =
+	  find_line_pc(cursal.symtab,
+		       TUI_SRC_WIN->detail.source_info.start_line_or_addr.line_no,
+		       &pc);
+	addr = pc;
+	if (i_pc > 0) {
+	  ; /* ??? */
+	}
+      }
       break;
     case DISASSEM_COMMAND:
     case SRC_DISASSEM_COMMAND:

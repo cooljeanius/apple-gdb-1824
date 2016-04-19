@@ -710,7 +710,7 @@ extern void puts_unfiltered(const char *);
 
 extern void puts_filtered_tabular(char *string, int width, int right);
 
-extern void puts_debug(char *prefix, char *string, char *suffix);
+extern void puts_debug(const char *prefix, char *string, const char *suffix);
 
 extern void vprintf_filtered(const char *, va_list)
   ATTR_FORMAT(printf, 1, 0);
@@ -1111,6 +1111,14 @@ enum gdb_osabi
   GDB_OSABI_QNXNTO,
 
   GDB_OSABI_CYGWIN,
+  
+  GDB_OSABI_AIX,
+  GDB_OSABI_DICOS,
+  GDB_OSABI_SYMBIAN,
+  GDB_OSABI_OPENVMS,
+  GDB_OSABI_LYNXOS178,
+  GDB_OSABI_NEWLIB,
+  GDB_OSABI_SDE,
 
   GDB_OSABI_INVALID		/* keep this last */
 };

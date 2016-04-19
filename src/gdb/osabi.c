@@ -84,6 +84,14 @@ static const char * const gdb_osabi_names[] =
 
   "Cygwin",
 
+  "AIX",
+  "DICOS",
+  "Symbian"
+  "OpenVMS",
+  "LynxOS178",
+  "Newlib",
+  "SDE",
+
   "<invalid>"
 };
 

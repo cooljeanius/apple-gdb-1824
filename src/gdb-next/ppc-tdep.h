@@ -7,6 +7,9 @@
 
 #include "defs.h"
 
+#ifdef INVALID_ADDRESS
+# undef INVALID_ADDRESS
+#endif /* INVALID_ADDRESS */
 /* Used in frameinfo, and passed to ppc_parse_instructions it means
  * keep looking as long as necessary... */
 #define INVALID_ADDRESS 0xffffffff

@@ -92,6 +92,7 @@ int ppc_frame_cache_boundaries PARAMS ((struct frame_info *frame, ppc_function_b
 int ppc_frame_cache_properties PARAMS ((struct frame_info *frame, ppc_function_properties *props));
 
 int safe_read_memory_unsigned_integer (CORE_ADDR addr, int len, unsigned long *val);
+extern int wrap_read_memory_unsigned_integer(void *in_args);
 #endif /* __PPC_FRAME_H__ */
 
 /* EOF */
