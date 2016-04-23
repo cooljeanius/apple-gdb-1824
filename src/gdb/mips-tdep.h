@@ -25,6 +25,7 @@
 #include "ansidecl.h"
 
 struct gdbarch;
+struct mips_frame_cache;
 
 /* All the possible MIPS ABIs. */
 enum mips_abi
@@ -39,15 +40,15 @@ enum mips_abi
     MIPS_ABI_LAST
   };
 
-/* Return the MIPS ABI associated with GDBARCH.  */
-enum mips_abi mips_abi (struct gdbarch *gdbarch);
+/* Return the MIPS ABI associated with GDBARCH: */
+enum mips_abi mips_abi(struct gdbarch *gdbarch);
 
 /* For wince :-(.  */
-extern CORE_ADDR mips_next_pc (CORE_ADDR pc);
+extern CORE_ADDR mips_next_pc(CORE_ADDR pc);
 
 /* Return the MIPS ISA's register size.  Just a short cut to the BFD
    architecture's word size.  */
-extern int mips_isa_regsize (struct gdbarch *gdbarch);
+extern int mips_isa_regsize(struct gdbarch *gdbarch);
 
 /* Return the current index for various MIPS registers.  */
 struct mips_regnum
@@ -61,7 +62,7 @@ struct mips_regnum
   int hi;		/* Multiply/divide temp.  */
   int lo;		/* ...  */
 };
-extern const struct mips_regnum *mips_regnum (struct gdbarch *gdbarch);
+extern const struct mips_regnum *mips_regnum(struct gdbarch *gdbarch);
 
 /* Register numbers of various important registers.  Note that some of
    these values are "real" register numbers, and correspond to the
@@ -105,14 +106,22 @@ enum
   MIPS_NUMREGS = 32
 };
 
-/* Single step based on where the current instruction will take us.  */
-extern void mips_software_single_step (enum target_signal, int);
+/* Single step based on where the current instruction will take us: */
+extern void mips_software_single_step(enum target_signal, int);
 
 /* Tell if the program counter value in MEMADDR is in a MIPS16
    function.  */
-extern int mips_pc_is_mips16 (bfd_vma memaddr);
+extern int mips_pc_is_mips16(bfd_vma memaddr);
 
 /* Return the currently configured (or set) saved register size. */
-extern unsigned int mips_abi_regsize (struct gdbarch *gdbarch);
+extern unsigned int mips_abi_regsize(struct gdbarch *gdbarch);
+
+extern void reset_saved_regs(struct mips_frame_cache *this_cache);
+
+/* */
+extern int mips_single_step_through_delay(struct gdbarch *gdbarch,
+					  struct frame_info *frame);
 
 #endif /* MIPS_TDEP_H */
+
+/* EOF */

@@ -2663,18 +2663,21 @@ slide_objfile (struct objfile *objfile, CORE_ADDR slide,
           struct section_offsets *dsym_offsets;
           int num_dsym_offsets;
 
+#if defined(TM_NEXTSTEP) || defined(HAVE_MACH_O_IN_BFD)
           /* The offsets we apply are supposed to be the TOTAL offset,
              so we have to add the dsym offset to the one passed in
              for the objfile.  */
-          macho_calculate_offsets_for_dsym (objfile,
-                                            objfile->separate_debug_objfile->obfd,
-                                            NULL,
-                                            new_offsets,
-                                            objfile->num_sections,
-                                            &dsym_offsets,
-                                            &num_dsym_offsets);
-          make_cleanup (xfree, dsym_offsets);
-          objfile_relocate (objfile->separate_debug_objfile, dsym_offsets);
+          macho_calculate_offsets_for_dsym(objfile,
+                                           objfile->separate_debug_objfile->obfd,
+                                           NULL, new_offsets,
+					   objfile->num_sections, &dsym_offsets,
+                                           &num_dsym_offsets);
+#else
+	  (void)num_dsym_offsets;
+	  dsym_offsets = (struct section_offsets *)NULL;
+#endif /* TM_NEXTSTEP || HAVE_MACH_O_IN_BFD */
+          make_cleanup(xfree, dsym_offsets);
+          objfile_relocate(objfile->separate_debug_objfile, dsym_offsets);
         }
 
 

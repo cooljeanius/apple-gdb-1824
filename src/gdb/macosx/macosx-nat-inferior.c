@@ -2438,7 +2438,7 @@ macosx_ptrace_him(int pid)
 #if defined(TARGET_ARM)
 
 /* On the phone task_for_pid() rights are marshalled done by the kernel: */
-int
+int ATTRIBUTE_CONST
 macosx_get_task_for_pid_rights(void)
 {
   return 1;

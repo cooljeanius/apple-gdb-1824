@@ -16,7 +16,7 @@ Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
 License along with libiberty; see the file COPYING.LIB.  If
-not, write to the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+not, write to the Free Software Foundation, Inc., 51 Franklin St., 5th Floor,
 Boston, MA 02110-1301, USA.  */
 
 /* This is a compatible replacement of the standard C library's <ctype.h>

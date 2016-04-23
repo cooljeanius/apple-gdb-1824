@@ -1,4 +1,4 @@
-/* BSD user-level threads support.
+/* bsd-uthread.h: BSD user-level threads support.
 
    Copyright 2005 Free Software Foundation, Inc.
 
@@ -22,19 +22,29 @@
 #ifndef BSD_UTHREAD_H
 #define BSD_UTHREAD_H 1
 
+struct so_list; /* Forward declaration. */
+
 /* Set the function that supplies registers for an inactive thread for
    architecture GDBARCH to SUPPLY_UTHREAD.  */
 
-extern void bsd_uthread_set_supply_uthread (struct gdbarch *gdbarch,
-				    void (*supply_uthread) (struct regcache *,
-							    int, CORE_ADDR));
+extern void bsd_uthread_set_supply_uthread(struct gdbarch *gdbarch,
+				    void (*supply_uthread)(struct regcache *,
+							   int, CORE_ADDR));
 
 
 /* Set the function that collects registers for an inactive thread for
    architecture GDBARCH to SUPPLY_UTHREAD.  */
 
-extern void bsd_uthread_set_collect_uthread (struct gdbarch *gdbarch,
-			     void (*collect_uthread) (const struct regcache *,
-						      int, CORE_ADDR));
+extern void bsd_uthread_set_collect_uthread(struct gdbarch *gdbarch,
+			     void (*collect_uthread)(const struct regcache *,
+						     int, CORE_ADDR));
+
+/* */
+extern void bsd_uthread_inferior_created(struct target_ops *ops, int from_tty);
+extern void bsd_uthread_solib_loaded(struct so_list *so);
+extern void bsd_uthread_solib_unloaded(struct so_list *so);
+extern struct target_ops *bsd_uthread_target(void);
 
 #endif /* bsd-uthread.h */
+
+/* EOF */

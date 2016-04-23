@@ -34,7 +34,13 @@ extern void _initialize_ns32k_tdep(void); /* -Wmissing-prototypes */
 void
 _initialize_ns32k_tdep(void)
 {
+#if 0
   tm_print_insn = print_insn_ns32k;
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+  __asm__("");
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* 0 */
 }
 
 /* Advance PC across any function entry prologue instructions
@@ -78,9 +84,13 @@ umax_frame_num_args(struct frame_info *fi)
   enter_addr = ns32k_get_enter_addr((fi)->pc);
   if (enter_addr > 0)
     {
+#if defined(SAVED_PC_AFTER_CALL) && defined(FRAME_SAVED_PC)
       pc = ((enter_addr == 1)
 	    ? SAVED_PC_AFTER_CALL(fi)
 	    : FRAME_SAVED_PC(fi));
+#else
+      pc = 0UL;
+#endif /* SAVED_PC_AFTER_CALL && FRAME_SAVED_PC */
       insn = read_memory_integer(pc, 2);
       addr_mode = ((insn >> 11) & 0x1f);
       insn = (insn & 0x7ff);

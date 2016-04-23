@@ -1506,15 +1506,16 @@ AC_CHECK_HEADERS([Availability.h AvailabilityMacros.h \
                   CoreFoundation/CFPropertyList.h \
                   CoreFoundation/CFURLAccess.h Security/Security.h \
                   assert.h architecture/byte_order.h bits/endian.h \
-                  crt_externs.h libgen.h libgettext.h \
+                  crt_externs.h dl.h libgen.h libgettext.h \
                   linux/byteorder/big_endian.h \
                   linux/byteorder/little_endian.h mach.h mach_error.h \
                   mach/kern_return.h mach/mach_error.h mach/mach_init.h \
                   mach/mach_port.h mach/message.h mach/port.h \
                   mach/thread_info.h mach/thread_status.h mach/vm_types.h \
-                  mach-o/loader.h mach-o/nlist.h memory.h pc.h pthread.h \
-                  rpc/rpc.h servers/netname.h servers/netname_defs.h \
-                  setjmp.h sys/uio.h sys/utsname.h uuid/uuid.h])dnl
+                  mach-o/loader.h mach-o/nlist.h machine/save_state.h \
+                  memory.h pc.h pthread.h rpc/rpc.h servers/netname.h \
+                  servers/netname_defs.h setjmp.h sys/uio.h \
+                  sys/utsname.h uuid/uuid.h])dnl
   ## needs other headers first on some systems:
 AC_CHECK_HEADERS([mach/kmod.h],[],[],[[
 #ifdef HAVE_MACH_VM_TYPES_H
@@ -1827,6 +1828,15 @@ AC_CHECK_TYPES([mach_vm_address_t],[],[],[
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_MACH_VM_H */
 ])dnl
+AC_CHECK_TYPES([vm_address_t],[],[],[
+#ifdef HAVE_MACH_MACH_VM_H
+# include <mach/mach_vm.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest for vm_address_t wants <mach/mach_vm.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_MACH_MACH_VM_H */
+])dnl
 AC_CHECK_TYPES([mach_msg_header_t],[
   # Found the type, so check a member:
   AC_CHECK_MEMBER([mach_msg_header_t.msgh_seqno],[
@@ -1865,6 +1875,15 @@ if test "x${ac_cv_type_mach_port_t}" = "xyes"; then
   AC_CHECK_FUNCS([mach_port_get_receive_status])dnl
   ## (for macosx-nat-inferior-debug.c)
 fi
+AC_CHECK_TYPES([save_state_t],[],[],[
+#ifdef HAVE_MACHINE_SAVE_STATE_H
+# include <machine/save_state.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest for save_state_t wants <machine/save_state.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_MACHINE_SAVE_STATE_H */
+])dnl
 dnl# The "x86_debug_state32_t" type is checked for in an APPLE_LOCAL
 dnl# section below.
 dnl# "long long" support is also checked farther below.
@@ -1971,7 +1990,12 @@ AC_FUNC_STRFTIME
 AC_FUNC_STRNLEN
 AC_FUNC_STRTOD
 AC_FUNC_VPRINTF
-AC_FUNC_WAIT3
+m4_ifdef([AC_FUNC_WAIT3],[
+  if test "x${GO_SLOWLY}" = "xyes"; then
+    test -n "${GO_SLOWLY}"
+    AC_FUNC_WAIT3
+  fi
+])dnl
 dnl# (why is 'realpath' up here, instead of in its alphabetical location?)
 AC_CHECK_FUNCS([canonicalize_file_name realpath])dnl
 AC_CHECK_FUNCS([getrusage])dnl
@@ -3200,10 +3224,13 @@ WERROR_CFLAGS=""
 if test "x${build_warnings}" != "x" -a "x${GCC}" = "xyes"
 then
     AC_MSG_CHECKING([compiler warning flags])
+    AC_MSG_RESULT([(will report results at end)])
     # Separate out the -Werror flag as some files just cannot be
     # compiled with it enabled.
     # Do need to use it for these conftests though.
     for w in ${build_warnings}; do
+        AC_MSG_CHECKING([compiler support for ${w}])
+        AC_MSG_RESULT([ ])
 	case ${w} in
           -Wold-style-definition|-Wstrict-prototypes|-Wsuggest-attribute=const)
 	    saved_CFLAGS="${CFLAGS}"
@@ -3375,7 +3402,13 @@ m4_ifdef([GDB_AC_CHECK_BFD],[
   GDB_AC_CHECK_BFD([for Mach-O support in BFD],[gdb_cv_var_macho],
                    [bfd_mach_o_lookup_command(NULL, 0, NULL)],[mach-o.h])
   if test "x${gdb_cv_var_macho}" = "xyes"; then
-    CONFIG_OBS="${CONFIG_OBS} machoread.o"
+    if test -e ./machoread.c; then
+      CONFIG_OBS="${CONFIG_OBS} machoread.o"
+      AC_DEFINE([HAVE_MACH_O_IN_BFD],[1],
+                [Define if mach-o support should be included.])
+    else
+      AC_MSG_NOTICE([want to build machoread.o, but no machoread.c in current directory])
+    fi
   fi
 
   # Add SOM support to GDB, but only if BFD includes it:

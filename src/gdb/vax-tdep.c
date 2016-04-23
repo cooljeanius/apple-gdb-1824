@@ -88,7 +88,9 @@ vax_supply_gregset(const struct regset *regset, struct regcache *regcache,
 static struct regset vax_gregset =
 {
   NULL,
-  vax_supply_gregset
+  vax_supply_gregset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
 };
 
 /* Return the appropriate register set for the core section identified
@@ -402,7 +404,10 @@ static const struct frame_unwind vax_frame_unwind =
 {
   NORMAL_FRAME,
   vax_frame_this_id,
-  vax_frame_prev_register
+  vax_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *

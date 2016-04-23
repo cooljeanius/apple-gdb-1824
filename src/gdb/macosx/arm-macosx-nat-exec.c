@@ -382,7 +382,8 @@ void store_inferior_registers(int regno)
   }
 }
 
-void
+/* */
+void ATTRIBUTE_CONST
 macosx_complete_child_target(struct target_ops *target ATTRIBUTE_UNUSED)
 {
   return; /* FIXME: actually do something here */

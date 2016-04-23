@@ -24,16 +24,23 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#include <string.h>
+#include "defs.h"
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# include "gdb_string.h"
+#endif /* HAVE_STRING_H */
 #include <mach-o/dyld.h>
 #include <sys/types.h>
-#include <sys/stat.h>
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#else
+# include "gdb_stat.h"
+#endif /* HAVE_SYS_STAT_H */
 #include <sys/param.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <dlfcn.h>
-
-#include "defs.h"
 #include "value.h"
 #include "gdbtypes.h"
 #include "objfiles.h"
@@ -86,8 +93,8 @@ struct active_threads
  * fix request: */
 struct active_func
 {
-  struct active_func * next;
-  struct symbol * sym;
+  struct active_func *next;
+  struct symbol *sym;
 
   /* The following are right out of the struct frame_info: */
   int level, line;
@@ -117,9 +124,9 @@ struct fixeddatum
    fact, I don't think it's of any use to me at all.  */
 struct obsoletedsym
 {
-  struct minimal_symbol * oldmsym, *newmsym;
-  struct symbol * oldsym, *newsym;
-  struct obsoletedsym * next;
+  struct minimal_symbol *oldmsym, *newmsym;
+  struct symbol *oldsym, *newsym;
+  struct obsoletedsym *next;
 };
 
 /* Data structure to keep track of files being fixed.  This primarily

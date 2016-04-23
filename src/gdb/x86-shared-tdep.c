@@ -3,8 +3,12 @@
    targets.  These two architectures are similar enough that we can share
    the same algorithms between them easily.  */
 
-#include <ctype.h>
 #include "defs.h"
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#else
+# include "safe-ctype.h"
+#endif /* HAVE_CTYPE_H */
 #include "gdb_assert.h"
 #include "dis-asm.h"
 #include "gdbcore.h"

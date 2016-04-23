@@ -61,6 +61,10 @@ a29k-*-none*)		gdb_target=a29k ;;
 a29k-*-udi*)		gdb_target=a29k-udi ;;
 a29k-*-vxworks*)        gdb_target=vx29k ;;
 
+aarch64-*-linux*)	gdb_target=linux ;;
+aarch64-*-darwin*)	gdb_target=macosx ;;
+aarch64-*-*)		gdb_target=embed ;;
+
 alpha*-*-osf*)		gdb_target=alpha-osf1 ;;
 alpha*-*-linux*)	gdb_target=alpha-linux ;;
 alpha*-*-freebsd* | alpha*-*-kfreebsd*-gnu)
@@ -107,6 +111,8 @@ avr-*-*)		gdb_target=avr
 			# Actually never mind:
 			gdb_sim=../sim/avr/libsim.a
 			;;
+
+c30-*-*)		gdb_target=c30 ;;
 
 cris*-*-*)		gdb_target=cris ;;
 
@@ -314,6 +320,7 @@ m68*-*-sysv4*)		gdb_target=m68kv4 ;;
 m68*-*-uclinux*)	gdb_target=monitor ;;
 m68*-*-vxworks*)	gdb_target=vxworks68 ;;
 
+m88*-*-cxux*)		gdb_target=cxux ;;
 m88*-motorola-sysv4*)	gdb_target=delta88v4 ;;
 m88*-motorola-*)	gdb_target=delta88 ;;
 m88*-*-openbsd*)	gdb_target=obsd ;;
@@ -513,6 +520,16 @@ spu*-*-*)		gdb_target=spu
 			configdirs="${configdirs} gdbserver"
 			;;
 
+tic30-*-*)		gdb_target=tic30 ;;
+
+tic4x-*-*)		gdb_target=tic4x ;;
+
+tic54x-*-* | c54x-*-*)	gdb_target=tic54x ;;
+
+tic80-*-*)		gdb_target=tic80
+			gdb_sim=../sim/tic80/libsim.a
+			;;
+
 xstormy16-*-*)          gdb_target=xstormy16
 			# No simulator libs are needed: target uses SID.
 			;;
@@ -536,6 +553,8 @@ v850*-*-*)		gdb_target=v850
 			  *) ;;
 			esac
 			;;
+
+w65-*-*)		gdb_target=w65 ;;
 
 x86_64-*-dicos*)	gdb_target=x86-64dicos ;;
 x86_64-*-linux*)	gdb_target=linux64

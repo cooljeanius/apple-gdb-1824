@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* ppc-macosx-regs.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -449,9 +449,8 @@ ppc_macosx_store_vp_registers_raw (gdb_ppc_thread_vpstate_t *vp_regs)
 
 /* Convert a dbx stab register number (from `r' declaration) to a gdb
    REGNUM. */
-
-int
-ppc_macosx_stab_reg_to_regnum (int num)
+int ATTRIBUTE_CONST
+ppc_macosx_stab_reg_to_regnum(int num)
 {
   int regnum;
 
@@ -462,9 +461,9 @@ ppc_macosx_stab_reg_to_regnum (int num)
       regnum = num;
     }
   /* These are the AltiVec registers */
-  else if (num >= 77 && num < 109)
+  else if ((num >= 77) && (num < 109))
     {
-      regnum = PPC_MACOSX_FIRST_VP_REGNUM + num - 77;
+      regnum = (PPC_MACOSX_FIRST_VP_REGNUM + num - 77);
     }
   /* These are some of the SP registers */
   else

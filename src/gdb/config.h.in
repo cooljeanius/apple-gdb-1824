@@ -453,6 +453,9 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
+/* Define to 1 if you have the <dl.h> header file. */
+#undef HAVE_DL_H
+
 /* Define to 1 if you don't have `vprintf' but do have `_doprnt.' */
 #undef HAVE_DOPRNT
 
@@ -696,6 +699,9 @@
 /* Define to 1 if you have the <machine/reg.h> header file. */
 #undef HAVE_MACHINE_REG_H
 
+/* Define to 1 if you have the <machine/save_state.h> header file. */
+#undef HAVE_MACHINE_SAVE_STATE_H
+
 /* Define to 1 if you have the <mach_error.h> header file. */
 #undef HAVE_MACH_ERROR_H
 
@@ -731,6 +737,9 @@
 
 /* Define to 1 if the system has the type `mach_msg_header_t'. */
 #undef HAVE_MACH_MSG_HEADER_T
+
+/* Define if mach-o support should be included. */
+#undef HAVE_MACH_O_IN_BFD
 
 /* Define to 1 if you have the <mach-o/loader.h> header file. */
 #undef HAVE_MACH_O_LOADER_H
@@ -1060,6 +1069,9 @@
 
 /* Define to 1 if you have the <rpc/rpc.h> header file. */
 #undef HAVE_RPC_RPC_H
+
+/* Define to 1 if the system has the type `save_state_t'. */
+#undef HAVE_SAVE_STATE_T
 
 /* Define to 1 if the system has the type `sa_family_t'. */
 #undef HAVE_SA_FAMILY_T
@@ -1504,6 +1516,9 @@
 
 /* Define to 1 if you have the <vfork.h> header file. */
 #undef HAVE_VFORK_H
+
+/* Define to 1 if the system has the type `vm_address_t'. */
+#undef HAVE_VM_ADDRESS_T
 
 /* Define to 1 if you have the `vprintf' function. */
 #undef HAVE_VPRINTF

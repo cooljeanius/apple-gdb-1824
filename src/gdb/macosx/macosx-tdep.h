@@ -55,6 +55,15 @@
 # endif /* __GNUC__ && !__STRICT_ANSI__ && c99 */
 #endif /* HAVE_INTTYPES_H */
 
+#ifdef HAVE_MACH_MACH_VM_H
+# include <mach/mach_vm.h>
+#else
+# if defined(__APPLE__) && defined(__MACH__) && defined(__GNUC__) && \
+     !defined(__STRICT_ANSI__) && !defined(__REM_MULTI_CONFIG_H__)
+#  warning "macosx-tdep.h might need <mach/mach_vm.h> for vm_address_t"
+# endif /* Apple && mach && gcc && !STRICT_ANSI && !__REM_MULTI_CONFIG_H__ */
+#endif /* HAVE_MACH_MACH_VM_H */
+
 #ifdef HAVE_MACH_KMOD_H
 # include <mach/kmod.h>
 #else

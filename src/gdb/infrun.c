@@ -212,8 +212,8 @@ show_debug_infrun(struct ui_file *file, int from_tty,
    undefined results are guaranteed.  */
 
 #ifndef SOLIB_IN_DYNAMIC_LINKER
-#define SOLIB_IN_DYNAMIC_LINKER(pid,pc) 0
-#endif
+# define SOLIB_IN_DYNAMIC_LINKER(pid,pc) 0
+#endif /* !SOLIB_IN_DYNAMIC_LINKER */
 
 /* We can't step off a permanent breakpoint in the ordinary way, because we
    can't remove it.  Instead, we have to advance the PC to the next
@@ -237,18 +237,18 @@ a command like `return' or `jump' to continue execution."));
    flow is completely sorted out.  */
 
 #ifndef HAVE_STEPPABLE_WATCHPOINT
-#define HAVE_STEPPABLE_WATCHPOINT 0
+# define HAVE_STEPPABLE_WATCHPOINT 0
 #else
-#undef  HAVE_STEPPABLE_WATCHPOINT
-#define HAVE_STEPPABLE_WATCHPOINT 1
-#endif
+# undef  HAVE_STEPPABLE_WATCHPOINT
+# define HAVE_STEPPABLE_WATCHPOINT 1
+#endif /* !HAVE_STEPPABLE_WATCHPOINT */
 
 #ifndef CANNOT_STEP_HW_WATCHPOINTS
-#define CANNOT_STEP_HW_WATCHPOINTS 0
+# define CANNOT_STEP_HW_WATCHPOINTS 0
 #else
-#undef  CANNOT_STEP_HW_WATCHPOINTS
-#define CANNOT_STEP_HW_WATCHPOINTS 1
-#endif
+# undef  CANNOT_STEP_HW_WATCHPOINTS
+# define CANNOT_STEP_HW_WATCHPOINTS 1
+#endif /* !CANNOT_STEP_HW_WATCHPOINTS */
 
 /* Tables of how to react to signals; the user sets them.  */
 
@@ -312,7 +312,7 @@ static struct breakpoint *solib_finish_bp;
    This is used to compensate for a bug in HP-UX.  */
 
 static int trap_expected_after_continue;
-#endif
+#endif /* HP_OS_BUG */
 
 static void
 show_stop_on_solib_events (struct ui_file *file, int from_tty,
@@ -510,18 +510,18 @@ follow_exec (int pid, char *execd_pathname)
      a shlib event when the child reaches "_start", at which point
      the dld will have had a chance to initialize the child. */
 #if defined(SOLIB_RESTART)
-  SOLIB_RESTART ();
+  SOLIB_RESTART();
 #endif
 #ifdef SOLIB_CREATE_INFERIOR_HOOK
-  SOLIB_CREATE_INFERIOR_HOOK (PIDGET (inferior_ptid));
+  SOLIB_CREATE_INFERIOR_HOOK(PIDGET(inferior_ptid));
 #else
-  solib_create_inferior_hook ();
-#endif
+  solib_create_inferior_hook();
+#endif /* SOLIB_CREATE_INFERIOR_HOOK */
 
   /* Reinsert all breakpoints.  (Those which were symbolic have
      been reset to the proper address in the new a.out, thanks
      to symbol_file_command...) */
-  insert_breakpoints ();
+  insert_breakpoints();
 
   /* The next resume of this inferior should bring it to the shlib
      startup breakpoints.  (If the user had also set bp's on
@@ -943,7 +943,7 @@ proceed (CORE_ADDR addr, enum target_signal siggnal, int step)
 {
   int oneproc = 0;
 
-#if 0
+#ifdef APPLE_CHECKPOINTS
   /* APPLE LOCAL begin checkpoints */
   /* Warn the user about attempts to continue forward from any
      rolled-back state.  */
@@ -962,7 +962,7 @@ proceed (CORE_ADDR addr, enum target_signal siggnal, int step)
       }
   }
   /* APPLE LOCAL end checkpoints */
-#endif
+#endif /* APPLE_CHECKPOINTS */
 
   if (!proceed_from_hand_call)
     {
@@ -2783,13 +2783,13 @@ process_event_stop_test:
      loader dynamic symbol resolution code, we keep on single stepping
      until we exit the run time loader code and reach the callee's
      address.  */
-  if (step_over_calls == STEP_OVER_UNDEBUGGABLE
+  if ((step_over_calls == STEP_OVER_UNDEBUGGABLE)
 #ifdef IN_SOLIB_DYNSYM_RESOLVE_CODE
       && IN_SOLIB_DYNSYM_RESOLVE_CODE(stop_pc)
 #else
       && in_solib_dynsym_resolve_code(stop_pc)
 #endif /* IN_SOLIB_DYNSYM_RESOLVE_CODE */
-      )
+      && (0 || 1))
     {
       CORE_ADDR pc_after_resolver =
 	gdbarch_skip_solib_resolver(current_gdbarch, stop_pc);
@@ -3004,13 +3004,13 @@ process_event_stop_test:
       if (real_stop_pc != 0)
 	ecs->stop_func_start = real_stop_pc;
 
-      if (
+      if ((0 || 1)
 #ifdef IN_SOLIB_DYNSYM_RESOLVE_CODE
-	  IN_SOLIB_DYNSYM_RESOLVE_CODE(ecs->stop_func_start)
+	  && IN_SOLIB_DYNSYM_RESOLVE_CODE(ecs->stop_func_start)
 #else
-	  in_solib_dynsym_resolve_code(ecs->stop_func_start)
+	  && in_solib_dynsym_resolve_code(ecs->stop_func_start)
 #endif /* IN_SOLIB_DYNSYM_RESOLVE_CODE */
-          )
+          && (1 || 0))
 	{
 	  struct symtab_and_line sr_sal;
 	  init_sal(&sr_sal);

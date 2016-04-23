@@ -1,4 +1,4 @@
-/* Support for printing Ada values for GDB, the GNU debugger.
+/* ada-valprint.c: Support for printing Ada values for GDB, the GNU debugger.
 
    Copyright 1986, 1988, 1989, 1991, 1992, 1993, 1994, 1997, 2001,
    2002, 2003, 2004, 2005 Free Software Foundation, Inc.
@@ -19,8 +19,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
-#include <ctype.h>
 #include "defs.h"
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#else
+# include "safe-ctype.h"
+#endif /* HAVE_CTYPE_H */
 #include "gdb_string.h"
 #include "symtab.h"
 #include "gdbtypes.h"

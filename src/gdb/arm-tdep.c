@@ -20,9 +20,12 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#include <ctype.h>		/* XXX for isupper () */
-
 #include "defs.h"
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>		/* XXX for isupper() */
+#else
+# include "safe-ctype.h"
+#endif /* HAVE_CTYPE_H */
 #include "frame.h"
 #include "inferior.h"
 #include "gdbcmd.h"
@@ -932,17 +935,16 @@ arm_skip_prologue (CORE_ADDR pc)
 {
   unsigned long inst;
   CORE_ADDR skip_pc;
-  CORE_ADDR func_addr, func_end = 0;
-  char *func_name;
+  CORE_ADDR func_addr, func_end = 0UL;
+  const char *func_name;
   struct symtab_and_line sal;
 
-  /* If we are in a dummy frame, do NOT even try to skip the prologue.  */
-  if (deprecated_pc_in_call_dummy (pc))
+  /* If we are in a dummy frame, do NOT even try to skip the prologue: */
+  if (deprecated_pc_in_call_dummy(pc))
     return pc;
 
-  /* See what the symbol table says.  */
-
-  if (find_pc_partial_function (pc, &func_name, &func_addr, &func_end))
+  /* See what the symbol table says: */
+  if (find_pc_partial_function(pc, &func_name, &func_addr, &func_end))
     {
       struct symbol *sym;
 
@@ -2746,7 +2748,7 @@ arm_macosx_sigtramp_unwind_sniffer(struct frame_info *next_frame)
       CORE_ADDR addr = SYMBOL_VALUE_ADDRESS (msymbol);
       if (msymbol != g_sigtramp_msymbol || addr != g_sigtramp_start)
         {
-          char *name = NULL;
+          const char *name = NULL;
           CORE_ADDR start = 0;
           CORE_ADDR end = 0;
           if (find_pc_partial_function(addr, &name, &start, &end))
@@ -2780,7 +2782,8 @@ arm_make_sigtramp_cache(struct frame_info *next_frame)
   arm_prologue_cache_t *cache;
   int reg;
 
-  cache = frame_obstack_zalloc(sizeof(arm_prologue_cache_t));
+  cache =
+    (arm_prologue_cache_t *)frame_obstack_zalloc(sizeof(arm_prologue_cache_t));
 
   cache->prev_sp = frame_unwind_register_unsigned(next_frame, ARM_SP_REGNUM);
 
@@ -2808,7 +2811,7 @@ arm_sigtramp_this_id(struct frame_info *next_frame, void **this_cache,
 
   if (*this_cache == NULL)
     *this_cache = arm_make_sigtramp_cache(next_frame);
-  cache = *this_cache;
+  cache = (arm_prologue_cache_t *)*this_cache;
 
   /* FIXME drow/2003-07-07: This is NOT right if we single-step within
      the sigtramp frame; the PC should be the beginning of the trampoline.  */
@@ -2826,16 +2829,20 @@ arm_sigtramp_prev_register(struct frame_info *next_frame,
 
   if (*this_cache == NULL)
     *this_cache = arm_make_sigtramp_cache(next_frame);
-  cache = *this_cache;
+  cache = (arm_prologue_cache_t *)*this_cache;
 
   trad_frame_get_prev_register(next_frame, cache->saved_regs, prev_regnum,
-                               optimized, lvalp, addrp, realnump, valuep);
+                               (enum opt_state *)optimized, lvalp, addrp,
+			       realnump, valuep);
 }
 
 struct frame_unwind arm_sigtramp_unwind = {
   SIGTRAMP_FRAME,
   arm_sigtramp_this_id,
-  arm_sigtramp_prev_register
+  arm_sigtramp_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *
@@ -3547,7 +3554,7 @@ thumb_scan_prolog_insn_blx (const uint32_t insn,
       msymbol = lookup_minimal_symbol_by_pc(blx_pc);
       if (msymbol)
 	{
-	  char *name = SYMBOL_NATURAL_NAME(msymbol);
+	  const char *name = SYMBOL_NATURAL_NAME(msymbol);
 	  if (name && strcmp(name, "__save_vfp_d8_d15_regs") == 0)
 	    {
 	      /* Register d8 is equivalent to s15 and s16, so below we save
@@ -3866,20 +3873,20 @@ thumb2_scan_prolog_insn_vpush (const uint32_t insn,
 	  regno += ARM_VFP_REGNUM_S0;
 	}
       else
-	    {
+	{
 	  /* The FPSCR register is currently between D15 and D16, so
 	     watch for this gap and adjust accordingly. */
 	  if (regno < 16)
 	    regno += ARM_VFP_REGNUM_S0;
 	  else
 	    regno += (ARM_VFPV3_REGNUM_D16 - 16);
-	    }
+	}
       state->sp_offset -= reg_size;
       if (cache)
 	cache->saved_regs[regno].addr = state->sp_offset;
-	}
-  return prolog_yes;
     }
+  return prolog_yes;
+}
 
 
 static int
@@ -3926,6 +3933,7 @@ data_proc_immediate(const uint32_t insn)
 
 /* APPLE LOCAL END: Centralize the prologue scan and skip code. */
 
+#if defined(__APPLE__) && (defined(MACOSX_DYLD) || defined(TM_NEXTSTEP))
 /* APPLE LOCAL BEGIN: fast stacks. */
 
 /*
@@ -4101,6 +4109,7 @@ arm_macosx_fast_show_stack(unsigned int count_limit,
   *count = i;
   return success;
 }
+#endif /* __APPLE__ && (MACOSX_DYLD || TM_NEXTSTEP) */
 
 static uint32_t
 shifted_reg_val(uint32_t insn, int carry, uint32_t pc_val,
@@ -5413,7 +5422,7 @@ arm_in_call_stub(CORE_ADDR pc, char *name)
 
   /* Find the starting address of the function containing the PC.  If
      the caller did NOT give us a name, look it up at the same time.  */
-  if (0 == find_pc_partial_function(pc, ((const char **)name ? NULL : &name),
+  if (0 == find_pc_partial_function(pc, (const char **)(name ? NULL : &name),
 				    &start_addr, NULL))
     return 0;
 

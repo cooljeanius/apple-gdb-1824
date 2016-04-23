@@ -1,4 +1,4 @@
-/* BSD user-level threads support.
+/* bsd-uthread.c: BSD user-level threads support.
 
    Copyright 2005 Free Software Foundation, Inc.
 
@@ -54,51 +54,52 @@ struct bsd_uthread_ops
   void (*collect_uthread)(const struct regcache *, int, CORE_ADDR);
 };
 
+/* */
 static void *
-bsd_uthread_init (struct obstack *obstack)
+bsd_uthread_init(struct obstack *obstack)
 {
   struct bsd_uthread_ops *ops;
 
-  ops = OBSTACK_ZALLOC (obstack, struct bsd_uthread_ops);
+  ops = ((struct bsd_uthread_ops *)
+	 OBSTACK_ZALLOC(obstack, struct bsd_uthread_ops));
   return ops;
 }
 
 /* Set the function that supplies registers from an inactive thread
    for architecture GDBARCH to SUPPLY_UTHREAD.  */
-
 void
-bsd_uthread_set_supply_uthread (struct gdbarch *gdbarch,
-				void (*supply_uthread) (struct regcache *,
-							int, CORE_ADDR))
+bsd_uthread_set_supply_uthread(struct gdbarch *gdbarch,
+			       void (*supply_uthread)(struct regcache *,
+						      int, CORE_ADDR))
 {
-  struct bsd_uthread_ops *ops = gdbarch_data (gdbarch, bsd_uthread_data);
+  struct bsd_uthread_ops *ops =
+    (struct bsd_uthread_ops *)gdbarch_data(gdbarch, bsd_uthread_data);
   ops->supply_uthread = supply_uthread;
 }
 
 /* Set the function that collects registers for an inactive thread for
    architecture GDBARCH to SUPPLY_UTHREAD.  */
-
 void
-bsd_uthread_set_collect_uthread (struct gdbarch *gdbarch,
-			 void (*collect_uthread) (const struct regcache *,
-						  int, CORE_ADDR))
+bsd_uthread_set_collect_uthread(struct gdbarch *gdbarch,
+				void (*collect_uthread)(const struct regcache *,
+							int, CORE_ADDR))
 {
-  struct bsd_uthread_ops *ops = gdbarch_data (gdbarch, bsd_uthread_data);
+  struct bsd_uthread_ops *ops =
+    (struct bsd_uthread_ops *)gdbarch_data(gdbarch, bsd_uthread_data);
   ops->collect_uthread = collect_uthread;
 }
 
 /* Magic number to help recognize a valid thread structure.  */
 #define BSD_UTHREAD_PTHREAD_MAGIC	0xd09ba115
 
-/* Check whether the thread structure at ADDR is valid.  */
-
+/* Check whether the thread structure at ADDR is valid: */
 static void
-bsd_uthread_check_magic (CORE_ADDR addr)
+bsd_uthread_check_magic(CORE_ADDR addr)
 {
-  ULONGEST magic = read_memory_unsigned_integer (addr, 4);
+  ULONGEST magic = read_memory_unsigned_integer(addr, 4);
 
   if (magic != BSD_UTHREAD_PTHREAD_MAGIC)
-    error (_("Bad magic"));
+    error(_("Bad magic"));
 }
 
 /* Thread states.  */
@@ -150,12 +151,12 @@ bsd_uthread_lookup_offset (const char *name, struct objfile *objfile)
 /* If OBJFILE contains the symbols corresponding to one of the
    supported user-level threads libraries, activate the thread stratum
    implemented by this module.  */
-
 static int
-bsd_uthread_activate (struct objfile *objfile)
+bsd_uthread_activate(struct objfile *objfile)
 {
   struct gdbarch *gdbarch = current_gdbarch;
-  struct bsd_uthread_ops *ops = gdbarch_data (gdbarch, bsd_uthread_data);
+  struct bsd_uthread_ops *ops =
+    (struct bsd_uthread_ops *)gdbarch_data(gdbarch, bsd_uthread_data);
 
   /* Skip if the thread stratum has already been activated.  */
   if (bsd_uthread_active)
@@ -214,10 +215,11 @@ bsd_uthread_deactivate (void)
   bsd_uthread_solib_name = NULL;
 }
 
+/* */
 void
-bsd_uthread_inferior_created (struct target_ops *ops, int from_tty)
+bsd_uthread_inferior_created(struct target_ops *ops, int from_tty)
 {
-  bsd_uthread_activate (NULL);
+  bsd_uthread_activate(NULL);
 }
 
 /* Likely candidates for the threads library.  */
@@ -228,53 +230,58 @@ static const char *bsd_uthread_solib_names[] =
   NULL
 };
 
+/* */
 void
-bsd_uthread_solib_loaded (struct so_list *so)
+bsd_uthread_solib_loaded(struct so_list *so)
 {
   const char **names = bsd_uthread_solib_names;
 
   for (names = bsd_uthread_solib_names; *names; names++)
     {
-      if (strncmp (so->so_original_name, *names, strlen (*names)) == 0)
+      if (strncmp(so->so_original_name, *names, strlen(*names)) == 0)
 	{
-	  solib_read_symbols (so, so->from_tty);
+	  solib_read_symbols(so, so->from_tty);
 
-	  if (bsd_uthread_activate (so->objfile))
+	  if (bsd_uthread_activate(so->objfile))
 	    {
-	      bsd_uthread_solib_name == so->so_original_name;
+	      bsd_uthread_solib_name = so->so_original_name;
 	      return;
 	    }
 	}
     }
 }
 
+/* */
 void
-bsd_uthread_solib_unloaded (struct so_list *so)
+bsd_uthread_solib_unloaded(struct so_list *so)
 {
   if (!bsd_uthread_solib_name)
     return;
 
-  if (strcmp (so->so_original_name, bsd_uthread_solib_name) == 0)
-    bsd_uthread_deactivate ();
+  if (strcmp(so->so_original_name, bsd_uthread_solib_name) == 0)
+    bsd_uthread_deactivate();
 }
 
+/* */
 static void
-bsd_uthread_mourn_inferior (void)
+bsd_uthread_mourn_inferior(void)
 {
-  find_target_beneath (bsd_uthread_ops_hack)->to_mourn_inferior ();
-  bsd_uthread_deactivate ();
+  find_target_beneath(bsd_uthread_ops_hack)->to_mourn_inferior();
+  bsd_uthread_deactivate();
 }
 
+/* */
 static void
-bsd_uthread_fetch_registers (int regnum)
+bsd_uthread_fetch_registers(int regnum)
 {
   struct gdbarch *gdbarch = current_gdbarch;
-  struct bsd_uthread_ops *ops = gdbarch_data (gdbarch, bsd_uthread_data);
-  CORE_ADDR addr = ptid_get_tid (inferior_ptid);
+  struct bsd_uthread_ops *ops =
+    (struct bsd_uthread_ops *)gdbarch_data(gdbarch, bsd_uthread_data);
+  CORE_ADDR addr = ptid_get_tid(inferior_ptid);
   CORE_ADDR active_addr;
 
   /* Always fetch the appropriate registers from the layer beneath.  */
-  find_target_beneath (bsd_uthread_ops_hack)->to_fetch_registers (regnum);
+  find_target_beneath(bsd_uthread_ops_hack)->to_fetch_registers(regnum);
 
   /* FIXME: That might have gotten us more than we asked for.  Make
      sure we overwrite all relevant registers with values from the
@@ -291,17 +298,19 @@ bsd_uthread_fetch_registers (int regnum)
     }
 }
 
+/* */
 static void
-bsd_uthread_store_registers (int regnum)
+bsd_uthread_store_registers(int regnum)
 {
   struct gdbarch *gdbarch = current_gdbarch;
-  struct bsd_uthread_ops *ops = gdbarch_data (gdbarch, bsd_uthread_data);
-  CORE_ADDR addr = ptid_get_tid (inferior_ptid);
+  struct bsd_uthread_ops *ops =
+    (struct bsd_uthread_ops *)gdbarch_data(gdbarch, bsd_uthread_data);
+  CORE_ADDR addr = ptid_get_tid(inferior_ptid);
   CORE_ADDR active_addr;
 
-  active_addr = read_memory_typed_address (bsd_uthread_thread_run_addr,
-					   builtin_type_void_data_ptr);
-  if (addr != 0 && addr != active_addr)
+  active_addr = read_memory_typed_address(bsd_uthread_thread_run_addr,
+					  builtin_type_void_data_ptr);
+  if ((addr != 0) && (addr != active_addr))
     {
       bsd_uthread_check_magic (addr);
       ops->collect_uthread (current_regcache, regnum,
@@ -329,18 +338,19 @@ bsd_uthread_xfer_partial (struct target_ops *ops, enum target_object object,
 					writebuf, offset, len);
 }
 
+/* */
 static ptid_t
-bsd_uthread_wait (ptid_t ptid, struct target_waitstatus *status)
+bsd_uthread_wait(ptid_t ptid, struct target_waitstatus *status)
 {
   CORE_ADDR addr;
 
-  /* Pass the request to the layer beneath.  */
-  ptid = find_target_beneath (bsd_uthread_ops_hack)->to_wait (ptid, status);
+  /* Pass the request to the layer beneath: */
+  ptid = find_target_beneath(bsd_uthread_ops_hack)->to_wait(ptid, status);
 
   /* Fetch the corresponding thread ID, and augment the returned
      process ID with it.  */
-  addr = read_memory_typed_address (bsd_uthread_thread_run_addr,
-				    builtin_type_void_data_ptr);
+  addr = read_memory_typed_address(bsd_uthread_thread_run_addr,
+				   builtin_type_void_data_ptr);
   if (addr != 0)
     {
       gdb_byte buf[4];
@@ -418,7 +428,7 @@ bsd_uthread_find_new_threads (void)
 }
 
 /* Possible states a thread can be in.  */
-static char *bsd_uthread_state[] =
+static const char *bsd_uthread_state[] =
 {
   "RUNNING",
   "SIGTHREAD",
@@ -444,44 +454,45 @@ static char *bsd_uthread_state[] =
 
 /* Return a string describing th state of the thread specified by
    INFO.  */
-
-static char *
-bsd_uthread_extra_thread_info (struct thread_info *info)
+static const char *
+bsd_uthread_extra_thread_info(struct thread_info *info)
 {
-  CORE_ADDR addr = ptid_get_tid (info->ptid);
+  CORE_ADDR addr = ptid_get_tid(info->ptid);
 
   if (addr != 0)
     {
       int offset = bsd_uthread_thread_state_offset;
       ULONGEST state;
 
-      state = read_memory_unsigned_integer (addr + offset, 4);
-      if (state < ARRAY_SIZE (bsd_uthread_state))
+      state = read_memory_unsigned_integer((addr + offset), 4);
+      if (state < ARRAY_SIZE(bsd_uthread_state))
 	return bsd_uthread_state[state];
     }
 
   return NULL;
 }
 
+/* */
 static char *
-bsd_uthread_pid_to_str (ptid_t ptid)
+bsd_uthread_pid_to_str(ptid_t ptid)
 {
-  if (ptid_get_tid (ptid) != 0)
+  if (ptid_get_tid(ptid) != 0)
     {
       static char buf[64];
 
-      xsnprintf (buf, sizeof buf, "process %d, thread 0x%lx",
-		 ptid_get_pid (ptid), ptid_get_tid (ptid));
+      xsnprintf(buf, sizeof(buf), "process %d, thread 0x%lx",
+		ptid_get_pid(ptid), ptid_get_tid(ptid));
       return buf;
     }
 
-  return normal_pid_to_str (ptid);
+  return normal_pid_to_str(ptid);
 }
 
+/* */
 struct target_ops *
-bsd_uthread_target (void)
+bsd_uthread_target(void)
 {
-  struct target_ops *t = XZALLOC (struct target_ops);
+  struct target_ops *t = XZALLOC(struct target_ops);
 
   t->to_shortname = "bsd-uthreads";
   t->to_longname = "BSD user-level threads";
@@ -503,14 +514,18 @@ bsd_uthread_target (void)
   return t;
 }
 
+/* Usual gdb initialization hook: */
+extern void _initialize_bsd_uthread(void); /* -Wmissing-prototypes */
 void
-_initialize_bsd_uthread (void)
+_initialize_bsd_uthread(void)
 {
-  add_target (bsd_uthread_target ());
+  add_target(bsd_uthread_target());
 
-  bsd_uthread_data = gdbarch_data_register_pre_init (bsd_uthread_init);
+  bsd_uthread_data = gdbarch_data_register_pre_init(bsd_uthread_init);
 
-  observer_attach_inferior_created (bsd_uthread_inferior_created);
-  observer_attach_solib_loaded (bsd_uthread_solib_loaded);
-  observer_attach_solib_unloaded (bsd_uthread_solib_unloaded);
+  observer_attach_inferior_created(bsd_uthread_inferior_created);
+  observer_attach_solib_loaded(bsd_uthread_solib_loaded);
+  observer_attach_solib_unloaded(bsd_uthread_solib_unloaded);
 }
+
+/* EOF */

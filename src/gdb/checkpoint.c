@@ -20,10 +20,13 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#include <string.h>
-#include <signal.h>
-
 #include "defs.h"
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# include "gdb_string.h"
+#endif /* HAVE_STRING_H */
+#include <signal.h>
 #include "symtab.h"
 #include "target.h"
 #include "frame.h"

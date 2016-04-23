@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-19 17:47-0400\n"
+"POT-Creation-Date: 2016-04-23 12:47-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -756,20 +756,20 @@ msgstr ""
 msgid " <incomplete type> end record"
 msgstr ""
 
-#: ada-valprint.c:205 ada-valprint.c:492 c-lang.c:167
+#: ada-valprint.c:209 ada-valprint.c:496 c-lang.c:167
 #, possible-c-format
 msgid " <repeats %u times>"
 msgstr ""
 
-#: ada-valprint.c:421
+#: ada-valprint.c:425
 msgid "internal error: unhandled type in ada_print_scalar"
 msgstr ""
 
-#: ada-valprint.c:425 typeprint.c:388
+#: ada-valprint.c:429 typeprint.c:388
 msgid "Invalid type code in symbol table."
 msgstr ""
 
-#: ada-valprint.c:1071
+#: ada-valprint.c:1075
 msgid "<optimized out or zero length>"
 msgstr ""
 
@@ -967,15 +967,15 @@ msgid ""
 "(more likely) you have encountered a bug in GDB.\n"
 msgstr ""
 
-#: alpha-tdep.c:1677 mips-tdep.c:5282
+#: alpha-tdep.c:1677 mips-tdep.c:5339
 msgid "Set the distance searched for the start of a function."
 msgstr ""
 
-#: alpha-tdep.c:1678 mips-tdep.c:5283
+#: alpha-tdep.c:1678 mips-tdep.c:5340
 msgid "Show the distance searched for the start of a function."
 msgstr ""
 
-#: alpha-tdep.c:1679 mips-tdep.c:5284
+#: alpha-tdep.c:1679 mips-tdep.c:5341
 msgid ""
 "If you are debugging a stripped executable, GDB needs to search through the\n"
 "program for the start of a function.  This command sets the distance of the\n"
@@ -1173,42 +1173,42 @@ msgstr ""
 msgid "Unable to determine GNU/Linux version."
 msgstr ""
 
-#: arm-tdep.c:69
+#: arm-tdep.c:72
 #, possible-c-format
 msgid "ARM debugging is %s.\n"
 msgstr ""
 
-#: arm-tdep.c:3134
+#: arm-tdep.c:3141
 #, c-format
 msgid "Hardware FPU type %d\n"
 msgstr ""
 
-#: arm-tdep.c:3136
+#: arm-tdep.c:3143
 #, c-format
 msgid "Software FPU type %d\n"
 msgstr ""
 
 #. i18n: [floating point unit] mask
-#: arm-tdep.c:3138
+#: arm-tdep.c:3145
 msgid "mask: "
 msgstr ""
 
 #. i18n: [floating point unit] flags
-#: arm-tdep.c:3141
+#: arm-tdep.c:3148
 msgid "flags: "
 msgstr ""
 
-#: arm-tdep.c:3192
+#: arm-tdep.c:3199
 #, possible-c-format
 msgid "Bad REGNUM %d"
 msgstr ""
 
-#: arm-tdep.c:3492
+#: arm-tdep.c:3499
 #, possible-c-format
 msgid "arm_scan_prolog_insn_fstmdb unhandled float op: 0x%x"
 msgstr ""
 
-#: arm-tdep.c:3512
+#: arm-tdep.c:3519
 #, possible-c-format
 msgid "arm_scan_prolog_insn_fstmdb got invalid register range: s%d-s%d"
 msgstr ""
@@ -1220,127 +1220,127 @@ msgstr ""
 #. thumb_scan_prolog_insn_ldr_rd_pc_relative ()). We may need to
 #. add support for more ways to load a register in the future. Post
 #. a warning so we know that we need to take care of such issues.
-#: arm-tdep.c:3716
+#: arm-tdep.c:3723
 #, possible-c-format
 msgid ""
 "thumb_scan_prolog_insn_add_sp_rm: add sp, r%u encountered with unknown "
 "contents for r%u"
 msgstr ""
 
-#: arm-tdep.c:4198 arm-tdep.c:4339 arm-tdep.c:4348 arm-tdep.c:4374
-#: arm-tdep.c:4409 arm-tdep.c:4599 arm-tdep.c:4610 arm-tdep.c:4643
-#: arm-tdep.c:4719 arm-tdep.c:4762 arm-tdep.c:4798 arm-tdep.c:4809
+#: arm-tdep.c:4207 arm-tdep.c:4348 arm-tdep.c:4357 arm-tdep.c:4383
+#: arm-tdep.c:4418 arm-tdep.c:4608 arm-tdep.c:4619 arm-tdep.c:4652
+#: arm-tdep.c:4728 arm-tdep.c:4771 arm-tdep.c:4807 arm-tdep.c:4818
 msgid "Infinite loop detected"
 msgstr ""
 
 #. multiply
-#: arm-tdep.c:4632 arm-tdep.c:4737
+#: arm-tdep.c:4641 arm-tdep.c:4746
 msgid "Invalid update to pc in instruction"
 msgstr ""
 
-#: arm-tdep.c:4820
+#: arm-tdep.c:4829
 msgid "Bad bit-field extraction\n"
 msgstr ""
 
-#: arm-tdep.c:5092
+#: arm-tdep.c:5101
 msgid "arm_extract_return_value: Floating point model not supported"
 msgstr ""
 
-#: arm-tdep.c:5296
+#: arm-tdep.c:5305
 msgid "arm_store_return_value: Floating point model not supported"
 msgstr ""
 
-#: arm-tdep.c:5463
+#: arm-tdep.c:5472
 msgid "\"set arm\" must be followed by an apporpriate subcommand.\n"
 msgstr ""
 
-#: arm-tdep.c:5508
+#: arm-tdep.c:5517
 #, possible-c-format
 msgid "Invalid fp model accepted: %s."
 msgstr ""
 
-#: arm-tdep.c:5523
+#: arm-tdep.c:5532
 #, possible-c-format
 msgid "The current ARM floating point model is \"auto\" (currently \"%s\").\n"
 msgstr ""
 
-#: arm-tdep.c:5527
+#: arm-tdep.c:5536
 #, possible-c-format
 msgid "The current ARM floating point model is \"%s\".\n"
 msgstr ""
 
-#: arm-tdep.c:5547
+#: arm-tdep.c:5556
 #, possible-c-format
 msgid "Invalid ABI accepted: %s."
 msgstr ""
 
-#: arm-tdep.c:5562
+#: arm-tdep.c:5571
 #, possible-c-format
 msgid "The current ARM ABI is \"auto\" (currently \"%s\").\n"
 msgstr ""
 
-#: arm-tdep.c:5566
+#: arm-tdep.c:5575
 #, possible-c-format
 msgid "The current ARM ABI is \"%s\".\n"
 msgstr ""
 
-#: arm-tdep.c:5852
+#: arm-tdep.c:5861
 #, possible-c-format
 msgid "unknown ARM EABI version 0x%x"
 msgstr ""
 
-#: arm-tdep.c:5952 arm-tdep.c:6088 armnbsd-tdep.c:67
+#: arm-tdep.c:5961 arm-tdep.c:6097 armnbsd-tdep.c:67
 msgid "arm_gdbarch_init: bad byte order for float format"
 msgstr ""
 
-#: arm-tdep.c:6102
+#: arm-tdep.c:6111
 #, possible-c-format
 msgid "arm_dump_tdep: Lowest pc = 0x%s"
 msgstr ""
 
-#: arm-tdep.c:6146 arm-tdep.c:6150
+#: arm-tdep.c:6155 arm-tdep.c:6159
 msgid "Various ARM-specific commands."
 msgstr ""
 
-#: arm-tdep.c:6183
+#: arm-tdep.c:6192
 msgid "The valid values are:\n"
 msgstr ""
 
-#: arm-tdep.c:6185
+#: arm-tdep.c:6194
 msgid "The default is \"std\"."
 msgstr ""
 
-#: arm-tdep.c:6191
+#: arm-tdep.c:6200
 msgid "Set the disassembly style."
 msgstr ""
 
-#: arm-tdep.c:6192
+#: arm-tdep.c:6201
 msgid "Show the disassembly style."
 msgstr ""
 
-#: arm-tdep.c:6198
+#: arm-tdep.c:6207
 msgid "Set ARM and Thumb opcode byte display in disassembly."
 msgstr ""
 
-#: arm-tdep.c:6199
+#: arm-tdep.c:6208
 msgid "Show ARM and Thumb opcode byte display in disassembly."
 msgstr ""
 
-#: arm-tdep.c:6200
+#: arm-tdep.c:6209
 msgid ""
 "When on, the hex representation of the opcode bytes will be displayed along\n"
 "with any disassembly."
 msgstr ""
 
-#: arm-tdep.c:6207
+#: arm-tdep.c:6216
 msgid "Set the ARM stepping mode."
 msgstr ""
 
-#: arm-tdep.c:6208
+#: arm-tdep.c:6217
 msgid "Show the ARM stepping mode."
 msgstr ""
 
-#: arm-tdep.c:6209
+#: arm-tdep.c:6218
 msgid ""
 "Valid values are 'auto', 'software' or 'hardware'.\n"
 "auto: lets each OS ABI automatically determine which single stepping mode to "
@@ -1351,27 +1351,27 @@ msgid ""
 "'target remote' variants)."
 msgstr ""
 
-#: arm-tdep.c:6220
+#: arm-tdep.c:6229
 msgid "Set usage of ARM 32-bit mode."
 msgstr ""
 
-#: arm-tdep.c:6221
+#: arm-tdep.c:6230
 msgid "Show usage of ARM 32-bit mode."
 msgstr ""
 
-#: arm-tdep.c:6222
+#: arm-tdep.c:6231
 msgid "When off, a 26-bit PC will be used."
 msgstr ""
 
-#: arm-tdep.c:6229
+#: arm-tdep.c:6238
 msgid "Set the floating point type."
 msgstr ""
 
-#: arm-tdep.c:6230
+#: arm-tdep.c:6239
 msgid "Show the floating point type."
 msgstr ""
 
-#: arm-tdep.c:6231
+#: arm-tdep.c:6240
 msgid ""
 "auto - Determine the FP typefrom the OS-ABI.\n"
 "softfpa - Software FP, mixed-endian doubles on little-endian ARMs.\n"
@@ -1381,23 +1381,23 @@ msgid ""
 "none - No floating point hardware or software emulation."
 msgstr ""
 
-#: arm-tdep.c:6242
+#: arm-tdep.c:6251
 msgid "Set the ABI."
 msgstr ""
 
-#: arm-tdep.c:6243
+#: arm-tdep.c:6252
 msgid "Show the ABI."
 msgstr ""
 
-#: arm-tdep.c:6249
+#: arm-tdep.c:6258
 msgid "Set ARM debugging."
 msgstr ""
 
-#: arm-tdep.c:6250
+#: arm-tdep.c:6259
 msgid "Show ARM debugging."
 msgstr ""
 
-#: arm-tdep.c:6251
+#: arm-tdep.c:6260
 msgid "When non-zero, arm-specific debugging is enabled."
 msgstr ""
 
@@ -3374,7 +3374,7 @@ msgstr ""
 msgid "Set current context from pcb address"
 msgstr ""
 
-#: bsd-uthread.c:101
+#: bsd-uthread.c:102
 msgid "Bad magic"
 msgstr ""
 
@@ -3671,60 +3671,60 @@ msgid ""
 "charset'<TAB>"
 msgstr ""
 
-#: checkpoint.c:780
+#: checkpoint.c:783
 msgid "one or more checkpoint numbers"
 msgstr ""
 
-#: checkpoint.c:790
+#: checkpoint.c:793
 #, possible-c-format
 msgid "bad checkpoint number at or near '%s'"
 msgstr ""
 
-#: checkpoint.c:801 linux-fork.c:533
+#: checkpoint.c:804 linux-fork.c:533
 #, possible-c-format
 msgid "No checkpoint number %d.\n"
 msgstr ""
 
-#: checkpoint.c:817
+#: checkpoint.c:820
 msgid "Delete all checkpoints? "
 msgstr ""
 
-#: checkpoint.c:970
+#: checkpoint.c:973
 msgid ""
 "Delete specified checkpoints.\n"
 "Arguments are checkpoint numbers, separated by spaces.\n"
 "No argument means delete all checkpoints."
 msgstr ""
 
-#: checkpoint.c:978
+#: checkpoint.c:981
 msgid "Set automatic creation of checkpoints."
 msgstr ""
 
-#: checkpoint.c:979
+#: checkpoint.c:982
 msgid "Show automatic creation of checkpoints."
 msgstr ""
 
-#: checkpoint.c:983
+#: checkpoint.c:986
 msgid "Set the maximum number of checkpoints allowed (-1 == unlimited)."
 msgstr ""
 
-#: checkpoint.c:984
+#: checkpoint.c:987
 msgid "Show the maximum number of checkpoints allowed (-1 == unlimited)."
 msgstr ""
 
-#: checkpoint.c:989
+#: checkpoint.c:992
 msgid "Set checkpointing of subsystems."
 msgstr ""
 
-#: checkpoint.c:990
+#: checkpoint.c:993
 msgid "Show checkpointing of subsystems."
 msgstr ""
 
-#: checkpoint.c:994
+#: checkpoint.c:997
 msgid "Set forking to create checkpoints."
 msgstr ""
 
-#: checkpoint.c:995
+#: checkpoint.c:998
 msgid "Show forking to create checkpoints."
 msgstr ""
 
@@ -3820,7 +3820,7 @@ msgstr ""
 msgid "No default source file yet.  Do \"help list\"."
 msgstr ""
 
-#: cli/cli-cmds.c:955 python/py-symbol.c:379 stack.c:1833
+#: cli/cli-cmds.c:955 python/py-symbol.c:379 stack.c:1837
 msgid "No frame selected."
 msgstr ""
 
@@ -4660,8 +4660,8 @@ msgstr ""
 #: complaints.c:297 exceptions.c:155 exceptions.c:172 exceptions.c:203
 #: exceptions.c:262 hppa-tdep.c:2801 hppa-tdep.c:2814 infcall.c:707
 #: infcmd.c:2195 infrun.c:1579 language.c:912 language.c:938 mi/mi-out.c:401
-#: mi/mi-out.c:422 mips-tdep.c:273 mips-tdep.c:334 mips-tdep.c:697
-#: mips-tdep.c:1194 mips-tdep.c:3371 mips-tdep.c:4248 mn10300-tdep.c:89
+#: mi/mi-out.c:422 mips-tdep.c:273 mips-tdep.c:334 mips-tdep.c:698
+#: mips-tdep.c:1195 mips-tdep.c:3411 mips-tdep.c:4299 mn10300-tdep.c:89
 #: reggroups.c:217 remote.c:4263 remote.c:4333 utils.c:950 utils.c:969
 msgid "bad switch"
 msgstr ""
@@ -5464,31 +5464,31 @@ msgstr ""
 msgid "\"%s\": no core file handler recognizes format, using default"
 msgstr ""
 
-#: corelow.c:220 exec.c:184 exec.c:203 gdb_bfd.c:249 objfiles.c:1000
+#: corelow.c:219 exec.c:184 exec.c:203 gdb_bfd.c:249 objfiles.c:1000
 #: solib.c:367 symfile.c:3583
 #, possible-c-format
 msgid "cannot close \"%s\": %s"
 msgstr ""
 
-#: corelow.c:299
+#: corelow.c:296
 msgid "No core file specified.  (Use `detach' to stop debugging a core file.)"
 msgstr ""
 
-#: corelow.c:301
+#: corelow.c:298
 msgid "No core file specified."
 msgstr ""
 
-#: corelow.c:337
+#: corelow.c:334
 #, possible-c-format
 msgid "\"%s\" is not a core dump: %s"
 msgstr ""
 
-#: corelow.c:364 record-full.c:861
+#: corelow.c:361
 #, possible-c-format
-msgid "\"%s\": Can't find sections: %s"
+msgid "\"%s\": Cannot find sections: %s"
 msgstr ""
 
-#: corelow.c:383
+#: corelow.c:380
 #, possible-c-format
 msgid "Core was generated by `%s'.\n"
 msgstr ""
@@ -5497,40 +5497,40 @@ msgstr ""
 #. into gdb's internal signal value.  Unfortunately gdb's internal
 #. value is called ``target_signal'' and this function got the
 #. name ..._from_host().
-#: corelow.c:391
+#: corelow.c:388
 #, possible-c-format
 msgid "Program terminated with signal %d, %s.\n"
 msgstr ""
 
-#: corelow.c:428 guile/scm-utils.c:515 macosx/core-macho.c:487
+#: corelow.c:430 guile/scm-utils.c:515 macosx/core-macho.c:487
 msgid "Too many arguments"
 msgstr ""
 
-#: corelow.c:432
+#: corelow.c:434
 msgid "No core file now.\n"
 msgstr ""
 
-#: corelow.c:472
+#: corelow.c:471
 #, possible-c-format
-msgid "Couldn't find %s registers in core file."
+msgid "Failed to find %s registers in core file."
 msgstr ""
 
-#: corelow.c:481
+#: corelow.c:480
 #, possible-c-format
-msgid "Couldn't read %s registers from `%s' section in core file."
+msgid "Failed to read %s registers from `%s' section in core file."
 msgstr ""
 
-#: corelow.c:494
+#: corelow.c:493
 #, possible-c-format
-msgid "Couldn't recognize %s registers in core file."
+msgid "Failed to recognize %s registers in core file."
 msgstr ""
 
-#: corelow.c:582
-msgid "Couldn't read NT_AUXV note in core file."
+#: corelow.c:585
+msgid "Failed to read NT_AUXV note in core file."
 msgstr ""
 
-#: corelow.c:614
-msgid "Couldn't read StackGhost cookie in core file."
+#: corelow.c:619
+msgid "Failed to read StackGhost cookie in core file."
 msgstr ""
 
 #: cp-abi.c:60
@@ -8375,19 +8375,19 @@ msgstr ""
 msgid "Cannot take address of \"%s\" which isn't an lvalue."
 msgstr ""
 
-#: fix-and-continue.c:398
+#: fix-and-continue.c:405
 msgid "Source or bundle filename not provided."
 msgstr ""
 
-#: fix-and-continue.c:2148
+#: fix-and-continue.c:2155
 msgid "Cannot redirect function with non-contiguous address ranges."
 msgstr ""
 
-#: fix-and-continue.c:2567
+#: fix-and-continue.c:2574
 msgid "Set if GDB prints debug information while Fix and Continuing."
 msgstr ""
 
-#: fix-and-continue.c:2568
+#: fix-and-continue.c:2575
 msgid "Show if GDB prints debug information while Fix and Continuing."
 msgstr ""
 
@@ -8463,7 +8463,7 @@ msgstr ""
 msgid "No registers."
 msgstr ""
 
-#: frame.c:894 stack.c:1364 stack.c:1381 thread.c:806
+#: frame.c:894 stack.c:1368 stack.c:1385 thread.c:806
 msgid "No stack."
 msgstr ""
 
@@ -10144,6 +10144,16 @@ msgstr ""
 
 #: guile/scm-value.c:1087
 msgid "invalid error kind"
+msgstr ""
+
+#: h8300-tdep.c:803 h8300-tdep.c:838
+msgid "I don't know how this 8 byte value is returned."
+msgstr ""
+
+#. long long, double and long double are all defined
+#. as 4 byte types so far so this shouldn't happen.
+#: h8300-tdep.c:900
+msgid "I don't know how to return an 8 byte value."
 msgstr ""
 
 #: h8500-tdep.c:554
@@ -11946,11 +11956,11 @@ msgid ""
 "function is skipped and the step command stops at a different source line."
 msgstr ""
 
-#: inlining.c:911
+#: inlining.c:915
 msgid "Illegal position in inlined call stack."
 msgstr ""
 
-#: inlining.c:2130
+#: inlining.c:2134
 msgid "Inlined stack position is inconsistent."
 msgstr ""
 
@@ -13113,7 +13123,7 @@ msgstr ""
 msgid "m68k_register_name: illegal register number %d"
 msgstr ""
 
-#: m68k-tdep.c:1070
+#: m68k-tdep.c:1074
 msgid "m68k_get_longjmp_target: not implemented"
 msgstr ""
 
@@ -13204,114 +13214,114 @@ msgstr ""
 msgid "Show if printing Mach-O symbols processing."
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:830
+#: macosx/arm-macosx-tdep.c:831
 #, c-format
 msgid "VFP fpscr = 0x%8.8x\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:831
+#: macosx/arm-macosx-tdep.c:832
 #, c-format
 msgid "     N = %u  Set if comparison produces a less than result\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:833
+#: macosx/arm-macosx-tdep.c:834
 #, c-format
 msgid "     Z = %u  Set if comparison produces an equal result\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:835
+#: macosx/arm-macosx-tdep.c:836
 #, c-format
 msgid ""
 "     C = %u  Set if comparison produces an equal, greater than, or unordered "
 "result\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:838
+#: macosx/arm-macosx-tdep.c:839
 #, c-format
 msgid "     V = %u  Set if comparison produces an unordered result\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:841
+#: macosx/arm-macosx-tdep.c:842
 #, c-format
 msgid "    DN = %u  default NaN mode %s\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:843
+#: macosx/arm-macosx-tdep.c:844
 #, c-format
 msgid "    Fz = %u  flush-to-zero mode %s\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:845
+#: macosx/arm-macosx-tdep.c:846
 #, c-format
 msgid " Rmode = %u  %s\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:846
+#: macosx/arm-macosx-tdep.c:847
 #, c-format
 msgid "Stride = %u\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:847
+#: macosx/arm-macosx-tdep.c:848
 #, c-format
 msgid "   LEN = %u\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:848
+#: macosx/arm-macosx-tdep.c:849
 #, c-format
 msgid "   IDE = %u  Input Subnormal exception\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:849
+#: macosx/arm-macosx-tdep.c:850
 #, c-format
 msgid "   IXE = %u  Inexact exception\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:850
+#: macosx/arm-macosx-tdep.c:851
 #, c-format
 msgid "   UFE = %u  Underflow exception\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:851
+#: macosx/arm-macosx-tdep.c:852
 #, c-format
 msgid "   OFE = %u  Overflow exception\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:852
+#: macosx/arm-macosx-tdep.c:853
 #, c-format
 msgid "   DZE = %u  Division by Zero exception\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:853
+#: macosx/arm-macosx-tdep.c:854
 #, c-format
 msgid "   IOE = %u  Invalid Operation exception\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:854
+#: macosx/arm-macosx-tdep.c:855
 #, c-format
 msgid "   IDC = %u  Input Subnormal cumulative\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:855
+#: macosx/arm-macosx-tdep.c:856
 #, c-format
 msgid "   IXC = %u  Inexact cumulative\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:856
+#: macosx/arm-macosx-tdep.c:857
 #, c-format
 msgid "   UFC = %u  Underflow cumulative\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:857
+#: macosx/arm-macosx-tdep.c:858
 #, c-format
 msgid "   OFC = %u  Overflow cumulative\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:858
+#: macosx/arm-macosx-tdep.c:859
 #, c-format
 msgid "   DZC = %u  Division by Zero cumulative\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:859
+#: macosx/arm-macosx-tdep.c:860
 #, c-format
 msgid "   IOC = %u  Invalid Operation cumulative\n"
 msgstr ""
@@ -15209,79 +15219,84 @@ msgstr ""
 msgid "can't handle ABI"
 msgstr ""
 
-#: mips-tdep.c:525
+#: mips-tdep.c:526
 #, possible-c-format
 msgid "mips_register_name: bad register number %d"
 msgstr ""
 
-#: mips-tdep.c:587 mips-tdep.c:609
+#: mips-tdep.c:588 mips-tdep.c:610
 msgid "bad register size"
 msgstr ""
 
-#: mips-tdep.c:639
+#: mips-tdep.c:640
 msgid "32-bit compatibility mode not supported"
 msgstr ""
 
-#: mips-tdep.c:758
+#: mips-tdep.c:759
 msgid "mips_mask_address_p: bad switch"
 msgstr ""
 
-#: mips-tdep.c:784
+#: mips-tdep.c:785
 msgid "show_mask_address: bad switch"
 msgstr ""
 
-#: mips-tdep.c:2264
+#: mips-tdep.c:2281
 #, possible-c-format
 msgid "GDB can't find the start of the function at 0x%s."
 msgstr ""
 
-#: mips-tdep.c:3841 mips-tdep.c:3876 mips-tdep.c:4074 sh-tdep.c:2038
+#: mips-tdep.c:3887 mips-tdep.c:4125
+#, possible-c-format
+msgid "cannot read register %d (%s)"
+msgstr ""
+
+#: mips-tdep.c:3922 sh-tdep.c:2038
 #, possible-c-format
 msgid "can't read register %d (%s)"
 msgstr ""
 
-#: mips-tdep.c:3882
+#: mips-tdep.c:3928
 msgid "mips_read_fp_register_double: bad access to odd-numbered FP register"
 msgstr ""
 
-#: mips-tdep.c:4110 sh-tdep.c:2115
+#: mips-tdep.c:4161 sh-tdep.c:2115
 msgid "Not a valid register for the current processor type"
 msgstr ""
 
-#: mips-tdep.c:4279 mips-tdep.c:4293 mips-tdep.c:4307
+#: mips-tdep.c:4328 mips-tdep.c:4343 mips-tdep.c:4358
 msgid "set mipsfpu failed"
 msgstr ""
 
-#: mips-tdep.c:4651
+#: mips-tdep.c:4704
 #, possible-c-format
 msgid "unsupported ABI %s."
 msgstr ""
 
-#: mips-tdep.c:4663
+#: mips-tdep.c:4716
 msgid "unknown ABI string"
 msgstr ""
 
-#: mips-tdep.c:4963
+#: mips-tdep.c:5016
 msgid "unknown ABI in switch"
 msgstr ""
 
-#: mips-tdep.c:5190
+#: mips-tdep.c:5247
 msgid "mips_abi_strings out of sync"
 msgstr ""
 
-#: mips-tdep.c:5198 mips-tdep.c:5202
+#: mips-tdep.c:5255 mips-tdep.c:5259
 msgid "Various MIPS specific commands."
 msgstr ""
 
-#: mips-tdep.c:5207
+#: mips-tdep.c:5264
 msgid "Set size of general purpose registers saved on the stack."
 msgstr ""
 
-#: mips-tdep.c:5208
+#: mips-tdep.c:5265
 msgid "Show size of general purpose registers saved on the stack."
 msgstr ""
 
-#: mips-tdep.c:5209
+#: mips-tdep.c:5266
 msgid ""
 "This option can be set to one of:\n"
 "  32    - Force GDB to treat saved GP registers as 32-bit\n"
@@ -15291,15 +15306,15 @@ msgid ""
 "          executable (default)."
 msgstr ""
 
-#: mips-tdep.c:5222
+#: mips-tdep.c:5279
 msgid "Set the amount of stack space reserved for each argument."
 msgstr ""
 
-#: mips-tdep.c:5223
+#: mips-tdep.c:5280
 msgid "Show the amount of stack space reserved for each argument."
 msgstr ""
 
-#: mips-tdep.c:5224
+#: mips-tdep.c:5281
 msgid ""
 "This option can be set to one of:\n"
 "  32    - Force GDB to allocate 32-bit chunks per argument\n"
@@ -15308,15 +15323,15 @@ msgid ""
 "          target and executable (default)"
 msgstr ""
 
-#: mips-tdep.c:5236
+#: mips-tdep.c:5293
 msgid "Set the MIPS ABI used by this program."
 msgstr ""
 
-#: mips-tdep.c:5237
+#: mips-tdep.c:5294
 msgid "Show the MIPS ABI used by this program."
 msgstr ""
 
-#: mips-tdep.c:5238
+#: mips-tdep.c:5295
 msgid ""
 "This option can be set to one of:\n"
 "  auto  - the default ABI associated with the current binary\n"
@@ -15328,70 +15343,70 @@ msgid ""
 "  eabi64"
 msgstr ""
 
-#: mips-tdep.c:5255
+#: mips-tdep.c:5312
 msgid "Set use of MIPS floating-point coprocessor."
 msgstr ""
 
-#: mips-tdep.c:5258
+#: mips-tdep.c:5315
 msgid "Select single-precision MIPS floating-point coprocessor."
 msgstr ""
 
-#: mips-tdep.c:5261
+#: mips-tdep.c:5318
 msgid "Select double-precision MIPS floating-point coprocessor."
 msgstr ""
 
-#: mips-tdep.c:5267
+#: mips-tdep.c:5324
 msgid "Select no MIPS floating-point coprocessor."
 msgstr ""
 
-#: mips-tdep.c:5272
+#: mips-tdep.c:5329
 msgid "Select MIPS floating-point coprocessor automatically."
 msgstr ""
 
-#: mips-tdep.c:5275
+#: mips-tdep.c:5332
 msgid "Show current use of MIPS floating-point coprocessor target."
 msgstr ""
 
-#: mips-tdep.c:5295
+#: mips-tdep.c:5352
 msgid "Set zeroing of upper 32 bits of 64-bit addresses."
 msgstr ""
 
-#: mips-tdep.c:5296
+#: mips-tdep.c:5353
 msgid "Show zeroing of upper 32 bits of 64-bit addresses."
 msgstr ""
 
-#: mips-tdep.c:5297
+#: mips-tdep.c:5354
 msgid ""
 "Use \"on\" to enable the masking, \"off\" to disable it and \"auto\" to \n"
 "allow GDB to determine the correct value."
 msgstr ""
 
-#: mips-tdep.c:5306
+#: mips-tdep.c:5363
 msgid ""
 "Set compatibility with 64-bit MIPS target that transfers 32-bit quantities."
 msgstr ""
 
-#: mips-tdep.c:5308
+#: mips-tdep.c:5365
 msgid ""
 "Show compatibility with 64-bit MIPS target that transfers 32-bit quantities."
 msgstr ""
 
-#: mips-tdep.c:5310
+#: mips-tdep.c:5367
 msgid ""
 "Use \"on\" to enable backward compatibility with older MIPS 64 GDB+target\n"
 "that would transfer 32 bits for some registers (e.g. SR, FSR) and\n"
 "64 bits for others.  Use \"off\" to disable compatibility mode"
 msgstr ""
 
-#: mips-tdep.c:5320
+#: mips-tdep.c:5377
 msgid "Set mips debugging."
 msgstr ""
 
-#: mips-tdep.c:5321
+#: mips-tdep.c:5378
 msgid "Show mips debugging."
 msgstr ""
 
-#: mips-tdep.c:5322
+#: mips-tdep.c:5379
 msgid "When non-zero, mips specific debugging is enabled."
 msgstr ""
 
@@ -15509,7 +15524,7 @@ msgstr ""
 msgid "No clr_break defined for this monitor"
 msgstr ""
 
-#: monitor.c:2249
+#: monitor.c:2249 remote-os9k.c:1022
 msgid "monitor target not open."
 msgstr ""
 
@@ -15775,13 +15790,13 @@ msgstr ""
 msgid "Section index is out of range for objfile"
 msgstr ""
 
-#: objfiles.c:2698
+#: objfiles.c:2701
 msgid ""
 "Set if GDB should raise the symbol loading level on all frames found in "
 "backtraces."
 msgstr ""
 
-#: objfiles.c:2699
+#: objfiles.c:2702
 msgid ""
 "Show if GDB should raise the symbol loading level on all frames found in "
 "backtraces."
@@ -15845,7 +15860,7 @@ msgstr ""
 msgid "Failed to connect to OCD."
 msgstr ""
 
-#: ocd.c:333 remote-utils.c:437 remote.c:2859
+#: ocd.c:333 remote-es.c:487 remote-es.c:1953 remote-utils.c:437 remote.c:2859
 msgid "Argument given to \"detach\" when remotely debugging."
 msgstr ""
 
@@ -16111,32 +16126,32 @@ msgstr ""
 msgid "Show printing of pascal static members."
 msgstr ""
 
-#: parse.c:97
+#: parse.c:100
 #, possible-c-format
 msgid "Expression debugging is %s.\n"
 msgstr ""
 
-#: parse.c:866
+#: parse.c:869
 msgid "?error in operator_length_standard"
 msgstr ""
 
-#: parse.c:1079
+#: parse.c:1082
 msgid "expression to compute"
 msgstr ""
 
-#: parse.c:1153 parse.c:1167
+#: parse.c:1156 parse.c:1170
 msgid "Junk after end of expression."
 msgstr ""
 
-#: parse.c:1439
+#: parse.c:1442
 msgid "Set expression debugging."
 msgstr ""
 
-#: parse.c:1440
+#: parse.c:1443
 msgid "Show expression debugging."
 msgstr ""
 
-#: parse.c:1441
+#: parse.c:1444
 msgid ""
 "When non-zero, the internal representation of expressions will be printed."
 msgstr ""
@@ -17568,6 +17583,11 @@ msgstr ""
 msgid "Process record: error writing memory at addr = %s len = %d."
 msgstr ""
 
+#: record-full.c:861
+#, possible-c-format
+msgid "\"%s\": Can't find sections: %s"
+msgstr ""
+
 #: record-full.c:879 record.c:485
 msgid "Process record: the program is not being run."
 msgstr ""
@@ -18136,12 +18156,29 @@ msgstr ""
 msgid "Show use of hardware breakpoints for all breakpoints."
 msgstr ""
 
-#: remote-es.c:306 remote-nindy.c:181 remote-rdp.c:1129
+#: remote-es.c:308 remote-nindy.c:181 remote-rdp.c:1113
 msgid "serial port device name"
 msgstr ""
 
-#: remote-es.c:1894
+#: remote-es.c:621 remote-es.c:665
+#, possible-c-format
+msgid "Emulator reply is too short: %s"
+msgstr ""
+
+#: remote-es.c:1268
+msgid "Downloading format not defined\n"
+msgstr ""
+
+#: remote-es.c:1640
+msgid "input buffer overrun\n"
+msgstr ""
+
+#: remote-es.c:1884
 msgid "a trap vector"
+msgstr ""
+
+#: remote-es.c:1944 wince.c:1571
+msgid "Use the \"run\" command to start a child process."
 msgstr ""
 
 #: remote-fileio.c:1409
@@ -18335,7 +18372,7 @@ msgstr ""
 msgid "RDI_open failed."
 msgstr ""
 
-#: remote-rdi.c:348 remote-rdp.c:1368 remote-sim.c:439
+#: remote-rdi.c:348 remote-rdp.c:1351 remote-sim.c:439
 msgid "No executable file specified."
 msgstr ""
 
@@ -18387,12 +18424,12 @@ msgid ""
 "as the Angel Monitor."
 msgstr ""
 
-#: remote-rdp.c:196
+#: remote-rdp.c:194
 msgid "Timeout reading from remote_system"
 msgstr ""
 
 #: remote-rdp.c:390
-msgid "Couldn't reset the board, try pressing the reset button"
+msgid "Failed to reset the board, try pressing the reset button"
 msgstr ""
 
 #: remote-rdp.c:457
@@ -18403,7 +18440,7 @@ msgstr ""
 msgid "Corrupt reply from target"
 msgstr ""
 
-#: remote-rdp.c:991
+#: remote-rdp.c:985
 msgid "Unimplemented SWI argument"
 msgstr ""
 
@@ -19235,7 +19272,7 @@ msgstr ""
 msgid "rs6000_gdbarch_init: received unexpected BFD 'arch' value"
 msgstr ""
 
-#: rs6000-tdep.c:3414
+#: rs6000-tdep.c:3415
 msgid "Various POWERPC info specific commands."
 msgstr ""
 
@@ -19867,7 +19904,7 @@ msgid "Could not find main executable in map file"
 msgstr ""
 
 #: solib-aix5.c:801 solib-dsbt.c:1005 solib-frv.c:951 solib-irix.c:423
-#: solib-sunos.c:751 solib-svr4.c:1202
+#: solib-sunos.c:766 solib-svr4.c:1202
 msgid "shared library handler failed to enable breakpoint"
 msgstr ""
 
@@ -20054,11 +20091,11 @@ msgstr ""
 msgid "Unable to fetch shared library obj_info or obj_list info."
 msgstr ""
 
-#: solib-irix.c:449 solib-sunos.c:788
+#: solib-irix.c:449 solib-sunos.c:801
 msgid "shared library handler failed to disable breakpoint"
 msgstr ""
 
-#: solib-irix.c:542 solib-som.c:610 solib-sunos.c:441 solib-svr4.c:713
+#: solib-irix.c:542 solib-som.c:610 solib-svr4.c:713
 #, possible-c-format
 msgid "Can't read pathname for load map: %s."
 msgstr ""
@@ -20179,13 +20216,13 @@ msgstr ""
 msgid "Cannot read SPE executable at %s"
 msgstr ""
 
-#: solib-sunos.c:540
-msgid "stopped at unknown breakpoint while handling shared libraries"
-msgstr ""
-
-#: solib-svr4.c:637
+#: solib-sunos.c:455 solib-svr4.c:637
 #, possible-c-format
 msgid "Cannot read pathname for load map: %s."
+msgstr ""
+
+#: solib-sunos.c:555
+msgid "stopped at unknown breakpoint while handling shared libraries"
 msgstr ""
 
 #: solib-svr4.c:1195
@@ -20824,32 +20861,32 @@ msgstr ""
 msgid "%s: common block `%s' from global_sym_chain unresolved"
 msgstr ""
 
-#: stack.c:977 stack.c:1047
+#: stack.c:981 stack.c:1051
 msgid "Too many args in frame specification"
 msgstr ""
 
-#: stack.c:1134
+#: stack.c:1138
 #, possible-c-format
 msgid "Stack level %d, frame at "
 msgstr ""
 
-#: stack.c:1139
+#: stack.c:1143
 msgid "Stack frame at "
 msgstr ""
 
-#: stack.c:1470
+#: stack.c:1474
 msgid "(More stack frames follow...)\n"
 msgstr ""
 
-#: stack.c:1750
+#: stack.c:1754
 msgid "blockvector blotch"
 msgstr ""
 
-#: stack.c:1752
+#: stack.c:1756
 msgid "blockvector botch"
 msgstr ""
 
-#: stack.c:2062
+#: stack.c:2066
 msgid "Initial frame selected; you cannot go up."
 msgstr ""
 
@@ -20857,36 +20894,36 @@ msgstr ""
 #. means to really go down (and let me know if that is
 #. impossible), but "down 9999" can be used to mean go all the way
 #. down without getting an error.
-#: stack.c:2104
+#: stack.c:2108
 msgid "Bottom (i.e., innermost) frame selected; you cannot go down."
 msgstr ""
 
-#: stack.c:2230
+#: stack.c:2234
 #, possible-c-format
 msgid "%sMake selected stack frame return now? "
 msgstr ""
 
-#: stack.c:2233
+#: stack.c:2237
 #, possible-c-format
 msgid "%sMake %s return now? "
 msgstr ""
 
-#: stack.c:2236
+#: stack.c:2240
 msgid "Not confirmed"
 msgstr ""
 
 #. Caught in the safety net, oops!  We've gone way past the
 #. selected frame.
-#: stack.c:2252
+#: stack.c:2256
 msgid "Problem while popping stack frames (corrupt stack?)"
 msgstr ""
 
-#: stack.c:2351
+#: stack.c:2355
 #, possible-c-format
 msgid "'%s' not within current stack frame.\n"
 msgstr ""
 
-#: stack.c:2407
+#: stack.c:2411
 msgid ""
 "Make selected stack frame return to its caller.\n"
 "Control remains in the debugger, but when you continue\n"
@@ -20894,31 +20931,31 @@ msgid ""
 "If an argument is given, it is an expression for the value to return."
 msgstr ""
 
-#: stack.c:2413
+#: stack.c:2417
 msgid ""
 "Select and print stack frame that called this one.\n"
 "An argument says how many frames up to go."
 msgstr ""
 
-#: stack.c:2416
+#: stack.c:2420
 msgid ""
 "Same as the `up' command, but does not print anything.\n"
 "This is useful in command scripts."
 msgstr ""
 
-#: stack.c:2420
+#: stack.c:2424
 msgid ""
 "Select and print stack frame called by this one.\n"
 "An argument says how many frames down to go."
 msgstr ""
 
-#: stack.c:2425
+#: stack.c:2429
 msgid ""
 "Same as the `down' command, but does not print anything.\n"
 "This is useful in command scripts."
 msgstr ""
 
-#: stack.c:2429
+#: stack.c:2433
 msgid ""
 "Select and print a stack frame.\n"
 "With no argument, print the selected stack frame.  (See also \"info frame"
@@ -20929,25 +20966,25 @@ msgid ""
 "a command file or a user-defined command."
 msgstr ""
 
-#: stack.c:2442
+#: stack.c:2446
 msgid "Print the current stack frame.\n"
 msgstr ""
 
-#: stack.c:2445
+#: stack.c:2449
 msgid ""
 "Select a stack frame without printing anything.\n"
 "An argument specifies the frame to select.\n"
 "It can be a stack frame number or the address of the frame.\n"
 msgstr ""
 
-#: stack.c:2450
+#: stack.c:2454
 msgid ""
 "Print backtrace of all stack frames, or innermost COUNT frames.\n"
 "With a negative argument, print outermost -COUNT frames.\n"
 "Use of the 'full' qualifier also prints the values of the local variables.\n"
 msgstr ""
 
-#: stack.c:2458
+#: stack.c:2462
 msgid ""
 "Print backtrace of all stack frames, or innermost COUNT frames \n"
 "and the values of the local variables.\n"
@@ -20955,41 +20992,41 @@ msgid ""
 "Usage: T <count>\n"
 msgstr ""
 
-#: stack.c:2467
+#: stack.c:2471
 msgid "Backtrace of the stack, or innermost COUNT frames."
 msgstr ""
 
-#: stack.c:2470
+#: stack.c:2474
 msgid "All about selected stack frame, or frame at ADDR."
 msgstr ""
 
-#: stack.c:2473
+#: stack.c:2477
 msgid "Local variables of current stack frame."
 msgstr ""
 
-#: stack.c:2475
+#: stack.c:2479
 msgid "Argument variables of current stack frame."
 msgstr ""
 
-#: stack.c:2478
+#: stack.c:2482
 msgid "Argument and local variables of current stack frame."
 msgstr ""
 
-#: stack.c:2481
+#: stack.c:2485
 msgid ""
 "Select the stack frame that contains <func>.\n"
 "Usage: func <name>\n"
 msgstr ""
 
-#: stack.c:2486
+#: stack.c:2490
 msgid "Exceptions that can be caught in the current stack frame."
 msgstr ""
 
-#: stack.c:2489
+#: stack.c:2493
 msgid "Specify maximum number of frames for \"backtrace\" to print by default."
 msgstr ""
 
-#: stack.c:2492
+#: stack.c:2496
 msgid "The maximum number of frames for \"backtrace\" to print by default."
 msgstr ""
 
@@ -24268,10 +24305,6 @@ msgstr ""
 msgid "obsolete '%s' found. Rename to '%s'."
 msgstr ""
 
-#: wince.c:1571
-msgid "Use the \"run\" command to start a child process."
-msgstr ""
-
 #: wince.c:1618
 #, possible-c-format
 msgid "no filename found to upload - %s."
@@ -24424,21 +24457,21 @@ msgstr ""
 msgid "Show whether to show variables that mirror the x86 debug registers."
 msgstr ""
 
-#: x86-shared-tdep.c:35
+#: x86-shared-tdep.c:39
 #, possible-c-format
 msgid "x86 backtracer debugging is %s.\n"
 msgstr ""
 
 #. Debug this file's internals:
-#: x86-shared-tdep.c:1441
+#: x86-shared-tdep.c:1445
 msgid "Set x86 backtrace debugging."
 msgstr ""
 
-#: x86-shared-tdep.c:1442
+#: x86-shared-tdep.c:1446
 msgid "Show x86 backtrace debugging."
 msgstr ""
 
-#: x86-shared-tdep.c:1443
+#: x86-shared-tdep.c:1447
 msgid "When non-zero, x86 backtrace specific debugging is enabled."
 msgstr ""
 

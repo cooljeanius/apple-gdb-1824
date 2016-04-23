@@ -1,4 +1,4 @@
-/* Target-dependent code for Motorola 68000 BSD's.
+/* m68kbsd-tdep.c: Target-dependent code for Motorola 68000 BSD's.
 
    Copyright 2004, 2005 Free Software Foundation, Inc.
 
@@ -42,13 +42,13 @@
 /* Sizeof `struct fpreg' in <machine/reg.h.  */
 #define M68KBSD_SIZEOF_FPREGS	(((8 * 3) + 3) * 4)
 
-int
-m68kbsd_fpreg_offset (int regnum)
+int ATTRIBUTE_CONST
+m68kbsd_fpreg_offset(int regnum)
 {
   if (regnum >= M68K_FPC_REGNUM)
-    return 8 * 12 + (regnum - M68K_FPC_REGNUM) * 4;
+    return ((8 * 12) + ((regnum - M68K_FPC_REGNUM) * 4));
 
-  return (regnum - M68K_FP0_REGNUM) * 12;
+  return ((regnum - M68K_FP0_REGNUM) * 12);
 }
 
 /* Supply register REGNUM from the buffer specified by FPREGS and LEN
@@ -56,11 +56,10 @@ m68kbsd_fpreg_offset (int regnum)
    REGCACHE.  If REGNUM is -1, do this for all registers in REGSET.  */
 
 static void
-m68kbsd_supply_fpregset (const struct regset *regset,
-			 struct regcache *regcache,
-			 int regnum, const void *fpregs, size_t len)
+m68kbsd_supply_fpregset(const struct regset *regset, struct regcache *regcache,
+			int regnum, const void *fpregs, size_t len)
 {
-  const gdb_byte *regs = fpregs;
+  const gdb_byte *regs = (const gdb_byte *)fpregs;
   int i;
 
   gdb_assert (len >= M68KBSD_SIZEOF_FPREGS);
@@ -77,11 +76,10 @@ m68kbsd_supply_fpregset (const struct regset *regset,
    REGCACHE.  If REGNUM is -1, do this for all registers in REGSET.  */
 
 static void
-m68kbsd_supply_gregset (const struct regset *regset,
-			struct regcache *regcache,
-			int regnum, const void *gregs, size_t len)
+m68kbsd_supply_gregset(const struct regset *regset, struct regcache *regcache,
+		       int regnum, const void *gregs, size_t len)
 {
-  const gdb_byte *regs = gregs;
+  const gdb_byte *regs = (const gdb_byte *)gregs;
   int i;
 
   gdb_assert (len >= M68KBSD_SIZEOF_GREGS);
@@ -105,13 +103,17 @@ m68kbsd_supply_gregset (const struct regset *regset,
 static struct regset m68kbsd_gregset =
 {
   NULL,
-  m68kbsd_supply_gregset
+  m68kbsd_supply_gregset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
 };
 
 static struct regset m68kbsd_fpregset =
 {
   NULL,
-  m68kbsd_supply_fpregset
+  m68kbsd_supply_fpregset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
 };
 
 /* Return the appropriate register set for the core section identified
@@ -268,3 +270,5 @@ _initialize_m68kbsd_tdep (void)
   gdbarch_register_osabi (bfd_arch_m68k, 0, GDB_OSABI_NETBSD_ELF,
 			  m68kbsd_elf_init_abi);
 }
+
+/* EOF */

@@ -32,9 +32,12 @@
    during the process of parsing; the lower levels of the tree always
    come first in the result.  */
 
-#include <ctype.h>
-
 #include "defs.h"
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#else
+# include "safe-ctype.h"
+#endif /* HAVE_CTYPE_H */
 #include "gdb_string.h"
 #include "symtab.h"
 #include "gdbtypes.h"

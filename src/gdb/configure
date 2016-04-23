@@ -38655,15 +38655,16 @@ for ac_header in Availability.h AvailabilityMacros.h \
                   CoreFoundation/CFPropertyList.h \
                   CoreFoundation/CFURLAccess.h Security/Security.h \
                   assert.h architecture/byte_order.h bits/endian.h \
-                  crt_externs.h libgen.h libgettext.h \
+                  crt_externs.h dl.h libgen.h libgettext.h \
                   linux/byteorder/big_endian.h \
                   linux/byteorder/little_endian.h mach.h mach_error.h \
                   mach/kern_return.h mach/mach_error.h mach/mach_init.h \
                   mach/mach_port.h mach/message.h mach/port.h \
                   mach/thread_info.h mach/thread_status.h mach/vm_types.h \
-                  mach-o/loader.h mach-o/nlist.h memory.h pc.h pthread.h \
-                  rpc/rpc.h servers/netname.h servers/netname_defs.h \
-                  setjmp.h sys/uio.h sys/utsname.h uuid/uuid.h
+                  mach-o/loader.h mach-o/nlist.h machine/save_state.h \
+                  memory.h pc.h pthread.h rpc/rpc.h servers/netname.h \
+                  servers/netname_defs.h setjmp.h sys/uio.h \
+                  sys/utsname.h uuid/uuid.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -41328,6 +41329,24 @@ _ACEOF
 
 
 fi
+ac_fn_c_check_type "$LINENO" "vm_address_t" "ac_cv_type_vm_address_t" "
+#ifdef HAVE_MACH_MACH_VM_H
+# include <mach/mach_vm.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"This conftest for vm_address_t wants <mach/mach_vm.h>\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_MACH_MACH_VM_H */
+
+"
+if test "x$ac_cv_type_vm_address_t" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_VM_ADDRESS_T 1
+_ACEOF
+
+
+fi
 ac_fn_c_check_type "$LINENO" "mach_msg_header_t" "ac_cv_type_mach_msg_header_t" "
 #ifdef HAVE_MACH_MESSAGE_H
 # include <mach/message.h>
@@ -41396,6 +41415,24 @@ _ACEOF
 fi
 done
   ## (for macosx-nat-inferior-debug.c)
+fi
+ac_fn_c_check_type "$LINENO" "save_state_t" "ac_cv_type_save_state_t" "
+#ifdef HAVE_MACHINE_SAVE_STATE_H
+# include <machine/save_state.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"This conftest for save_state_t wants <machine/save_state.h>\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_MACHINE_SAVE_STATE_H */
+
+"
+if test "x$ac_cv_type_save_state_t" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_SAVE_STATE_T 1
+_ACEOF
+
+
 fi
 
 ac_fn_c_check_type "$LINENO" "CFStringRef" "ac_cv_type_CFStringRef" "
@@ -43411,6 +43448,9 @@ done
 
 
 
+  if test "x${GO_SLOWLY}" = "xyes"; then
+    test -n "${GO_SLOWLY}"
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for wait3 that fills in rusage" >&5
 $as_echo_n "checking for wait3 that fills in rusage... " >&6; }
 if ${ac_cv_func_wait3_rusage+:} false; then :
@@ -43475,6 +43515,7 @@ $as_echo "#define HAVE_WAIT3 1" >>confdefs.h
 
 fi
 
+  fi
 for ac_func in canonicalize_file_name realpath
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
@@ -46437,10 +46478,16 @@ if test "x${build_warnings}" != "x" -a "x${GCC}" = "xyes"
 then
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking compiler warning flags" >&5
 $as_echo_n "checking compiler warning flags... " >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: (will report results at end)" >&5
+$as_echo "(will report results at end)" >&6; }
     # Separate out the -Werror flag as some files just cannot be
     # compiled with it enabled.
     # Do need to use it for these conftests though.
     for w in ${build_warnings}; do
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking compiler support for ${w}" >&5
+$as_echo_n "checking compiler support for ${w}... " >&6; }
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 	case ${w} in
           -Wold-style-definition|-Wstrict-prototypes|-Wsuggest-attribute=const)
 	    saved_CFLAGS="${CFLAGS}"
@@ -46831,7 +46878,15 @@ $as_echo "$gdb_cv_var_macho" >&6; }
   LIBS="${OLD_LIBS}"
 
   if test "x${gdb_cv_var_macho}" = "xyes"; then
-    CONFIG_OBS="${CONFIG_OBS} machoread.o"
+    if test -e ./machoread.c; then
+      CONFIG_OBS="${CONFIG_OBS} machoread.o"
+
+$as_echo "#define HAVE_MACH_O_IN_BFD 1" >>confdefs.h
+
+    else
+      { $as_echo "$as_me:${as_lineno-$LINENO}: want to build machoread.o, but no machoread.c in current directory" >&5
+$as_echo "$as_me: want to build machoread.o, but no machoread.c in current directory" >&6;}
+    fi
   fi
 
   # Add SOM support to GDB, but only if BFD includes it:

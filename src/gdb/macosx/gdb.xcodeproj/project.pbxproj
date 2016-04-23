@@ -3137,6 +3137,7 @@
 		61F32DC81CC3730F00C05007 /* winpdo-sup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "winpdo-sup.h"; path = "/var/root/apple-gdb-1824/src/gdb-next/winpdo-sup.h"; sourceTree = "<absolute>"; };
 		61F32EF91CC5486C00C05007 /* h8500-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "h8500-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb/h8500-tdep.h"; sourceTree = "<absolute>"; };
 		61F32F7D1CC5C91E00C05007 /* z8k-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "z8k-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb/z8k-tdep.h"; sourceTree = "<absolute>"; };
+		61F330811CC7524300C05007 /* h8300-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "h8300-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb/h8300-tdep.h"; sourceTree = "<absolute>"; };
 		A50DD7D41B30D2AC00F50318 /* AppleMakefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = AppleMakefile; sourceTree = "<group>"; };
 		A50DD7DF1B30D2AC00F50318 /* Dbg.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; path = Dbg.c; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; };
 		A50DD7E01B30D2AC00F50318 /* Dbg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dbg.h; sourceTree = "<group>"; };
@@ -7013,6 +7014,7 @@
 				2609D6270E82C40B008125DE /* go32-nat.c */,
 				2609D6280E82C40B008125DE /* gregset.h */,
 				2609D6290E82C40B008125DE /* h8300-tdep.c */,
+				61F330811CC7524300C05007 /* h8300-tdep.h */,
 				A50DDC4D1B332CC300F50318 /* h8500-tdep.c */,
 				61F32EF91CC5486C00C05007 /* h8500-tdep.h */,
 				A50DDC4E1B332CD500F50318 /* hp-psymtab-read.c */,

@@ -1,4 +1,4 @@
-/* Target-dependent code for FreeBSD/i386.
+/* i386fbsd-tdep.c: Target-dependent code for FreeBSD/i386.
 
    Copyright 2003, 2004, 2005 Free Software Foundation, Inc.
 
@@ -50,7 +50,7 @@ CORE_ADDR i386fbsd_sigtramp_start_addr = 0xbfbfdf20;
 CORE_ADDR i386fbsd_sigtramp_end_addr = 0xbfbfdff0;
 
 /* From <machine/signal.h>.  */
-static int i386fbsd_sc_reg_offset[] =
+/*static*/ int i386fbsd_sc_reg_offset[] =
 {
   8 + 14 * 4,			/* %eax */
   8 + 13 * 4,			/* %ecx */
@@ -84,42 +84,46 @@ static int i386fbsd_jmp_buf_reg_offset[] =
   0 * 4				/* %eip */
 };
 
+/* */
 static void
-i386fbsd_supply_uthread (struct regcache *regcache,
+i386fbsd_supply_uthread(struct regcache *regcache,
+			int regnum, CORE_ADDR addr)
+{
+  char buf[4];
+  int i;
+
+  gdb_assert(regnum >= -1);
+
+  for (i = 0; i < (int)ARRAY_SIZE(i386fbsd_jmp_buf_reg_offset); i++)
+    {
+      if ((i386fbsd_jmp_buf_reg_offset[i] != -1)
+	  && ((regnum == -1) || (regnum == i)))
+	{
+	  read_memory((addr + i386fbsd_jmp_buf_reg_offset[i]),
+		      (gdb_byte *)buf, 4);
+	  regcache_raw_supply(regcache, i, buf);
+	}
+    }
+}
+
+/* */
+static void
+i386fbsd_collect_uthread(const struct regcache *regcache,
 			 int regnum, CORE_ADDR addr)
 {
   char buf[4];
   int i;
 
-  gdb_assert (regnum >= -1);
+  gdb_assert(regnum >= -1);
 
-  for (i = 0; i < ARRAY_SIZE (i386fbsd_jmp_buf_reg_offset); i++)
+  for (i = 0; i < (int)ARRAY_SIZE(i386fbsd_jmp_buf_reg_offset); i++)
     {
-      if (i386fbsd_jmp_buf_reg_offset[i] != -1
-	  && (regnum == -1 || regnum == i))
+      if ((i386fbsd_jmp_buf_reg_offset[i] != -1)
+	  && ((regnum == -1) || (regnum == i)))
 	{
-	  read_memory (addr + i386fbsd_jmp_buf_reg_offset[i], buf, 4);
-	  regcache_raw_supply (regcache, i, buf);
-	}
-    }
-}
-
-static void
-i386fbsd_collect_uthread (const struct regcache *regcache,
-			  int regnum, CORE_ADDR addr)
-{
-  char buf[4];
-  int i;
-
-  gdb_assert (regnum >= -1);
-
-  for (i = 0; i < ARRAY_SIZE (i386fbsd_jmp_buf_reg_offset); i++)
-    {
-      if (i386fbsd_jmp_buf_reg_offset[i] != -1
-	  && (regnum == -1 || regnum == i))
-	{
-	  regcache_raw_collect (regcache, i, buf);
-	  write_memory (addr + i386fbsd_jmp_buf_reg_offset[i], buf, 4);
+	  regcache_raw_collect(regcache, i, buf);
+	  write_memory((addr + i386fbsd_jmp_buf_reg_offset[i]),
+		       (const gdb_byte *)buf, 4);
 	}
     }
 }

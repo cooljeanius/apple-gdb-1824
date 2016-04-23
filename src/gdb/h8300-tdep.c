@@ -37,6 +37,8 @@
 #include "frame-base.h"
 #include "frame-unwind.h"
 
+#include "h8300-tdep.h"
+
 enum gdb_regnum
 {
   E_R0_REGNUM, E_ER0_REGNUM = E_R0_REGNUM, E_ARG0_REGNUM = E_R0_REGNUM,
@@ -200,7 +202,7 @@ h8300_is_argument_spill (CORE_ADDR pc)
 	  LONGEST disp = read_memory_integer (pc + 4, 4);
 
 	  /* ... and d:24 is negative.  */
-	  if (disp < 0 && disp > 0xffffff)
+	  if ((disp < 0) && (disp > 0xffffff))
 	    return 8;
 	}
     }
@@ -218,7 +220,7 @@ h8300_is_argument_spill (CORE_ADDR pc)
 	  LONGEST disp = read_memory_integer (pc + 4, 4);
 
 	  /* ... and d:24 is negative.  */
-	  if (disp < 0 && disp > 0xffffff)
+	  if ((disp < 0) && (disp > 0xffffff))
 	    return 8;
 	}
     }
@@ -235,14 +237,17 @@ h8300_is_argument_spill (CORE_ADDR pc)
 	}
       else if (IS_MOVL_EXT (w2))
 	{
-	  int w3 = read_memory_integer (pc + 4, 2);
+	  int w3 = read_memory_integer((pc + 4), 2);
+	  if (w3 < 0) {
+	    ; /* ??? */
+	  }
 
-	  if (IS_MOVL_Rn24_SP (read_memory_integer (pc + 4, 2)))
+	  if (IS_MOVL_Rn24_SP(read_memory_integer((pc + 4), 2)))
 	    {
-	      LONGEST disp = read_memory_integer (pc + 6, 4);
+	      LONGEST disp = read_memory_integer((pc + 6), 4);
 
 	      /* ... and d:24 is negative.  */
-	      if (disp < 0 && disp > 0xffffff)
+	      if ((disp < 0) && (disp > 0xffffff))
 		return 10;
 	    }
 	}
@@ -285,10 +290,9 @@ h8300_is_argument_spill (CORE_ADDR pc)
    stm.l reglist,@-sp
 
    */
-
 static CORE_ADDR
-h8300_analyze_prologue (CORE_ADDR pc, CORE_ADDR current_pc,
-			struct h8300_frame_cache *cache)
+h8300_analyze_prologue(CORE_ADDR pc, CORE_ADDR current_pc,
+		       struct h8300_frame_cache *cache)
 {
   unsigned int op;
   int regno, i, spill_size;
@@ -298,22 +302,22 @@ h8300_analyze_prologue (CORE_ADDR pc, CORE_ADDR current_pc,
   if (pc >= current_pc)
     return current_pc;
 
-  op = read_memory_unsigned_integer (pc, 4);
+  op = read_memory_unsigned_integer(pc, 4);
 
-  if (IS_PUSHFP_MOVESPFP (op))
+  if (IS_PUSHFP_MOVESPFP(op))
     {
       cache->saved_regs[E_FP_REGNUM] = 0;
       cache->uses_fp = 1;
       pc += 4;
     }
-  else if (IS_PUSH_FP (op))
+  else if (IS_PUSH_FP(op))
     {
       cache->saved_regs[E_FP_REGNUM] = 0;
       pc += 4;
       if (pc >= current_pc)
         return current_pc;
-      op = read_memory_unsigned_integer (pc, 2);
-      if (IS_MOV_SP_FP (op))
+      op = read_memory_unsigned_integer(pc, 2);
+      if (IS_MOV_SP_FP(op))
 	{
 	  cache->uses_fp = 1;
 	  pc += 2;
@@ -322,43 +326,43 @@ h8300_analyze_prologue (CORE_ADDR pc, CORE_ADDR current_pc,
 
   while (pc < current_pc)
     {
-      op = read_memory_unsigned_integer (pc, 2);
-      if (IS_SUB2_SP (op))
+      op = read_memory_unsigned_integer(pc, 2);
+      if (IS_SUB2_SP(op))
 	{
 	  cache->sp_offset += 2;
 	  pc += 2;
 	}
-      else if (IS_SUB4_SP (op))
+      else if (IS_SUB4_SP(op))
 	{
 	  cache->sp_offset += 4;
 	  pc += 2;
 	}
-      else if (IS_ADD_IMM_SP (op))
+      else if (IS_ADD_IMM_SP(op))
 	{
-	  cache->sp_offset += -read_memory_integer (pc + 2, 2);
+	  cache->sp_offset += -read_memory_integer((pc + 2), 2);
 	  pc += 4;
 	}
-      else if (IS_SUB_IMM_SP (op))
+      else if (IS_SUB_IMM_SP(op))
 	{
-	  cache->sp_offset += read_memory_integer (pc + 2, 2);
+	  cache->sp_offset += read_memory_integer((pc + 2), 2);
 	  pc += 4;
 	}
-      else if (IS_SUBL4_SP (op))
+      else if (IS_SUBL4_SP(op))
 	{
 	  cache->sp_offset += 4;
 	  pc += 2;
 	}
-      else if (IS_MOV_IMM_Rn (op))
+      else if (IS_MOV_IMM_Rn(op))
         {
-	  int offset = read_memory_integer (pc + 2, 2);
-	  regno = op & 0x000f;
-	  op = read_memory_unsigned_integer (pc + 4, 2);
-	  if (IS_ADD_RnSP (op) && (op & 0x00f0) == regno)
+	  int offset = read_memory_integer((pc + 2), 2);
+	  regno = (op & 0x000f);
+	  op = read_memory_unsigned_integer((pc + 4), 2);
+	  if (IS_ADD_RnSP(op) && ((op & 0x00f0) == (unsigned int)regno))
 	    {
 	      cache->sp_offset -= offset;
 	      pc += 6;
 	    }
-	  else if (IS_SUB_RnSP (op) && (op & 0x00f0) == regno)
+	  else if (IS_SUB_RnSP(op) && ((op & 0x00f0) == (unsigned int)regno))
 	    {
 	      cache->sp_offset += offset;
 	      pc += 6;
@@ -366,19 +370,19 @@ h8300_analyze_prologue (CORE_ADDR pc, CORE_ADDR current_pc,
 	  else
 	    break;
 	}
-      else if (IS_PUSH (op))
+      else if (IS_PUSH(op))
 	{
-	  regno = op & 0x000f;
+	  regno = (op & 0x000f);
 	  cache->sp_offset += 2;
 	  cache->saved_regs[regno] = cache->sp_offset;
 	  pc += 2;
 	}
       else if (op == 0x0100)
 	{
-	  op = read_memory_unsigned_integer (pc + 2, 2);
-	  if (IS_PUSH (op))
+	  op = read_memory_unsigned_integer((pc + 2), 2);
+	  if (IS_PUSH(op))
 	    {
-	      regno = op & 0x000f;
+	      regno = (op & 0x000f);
 	      cache->sp_offset += 4;
 	      cache->saved_regs[regno] = cache->sp_offset;
 	      pc += 4;
@@ -389,13 +393,13 @@ h8300_analyze_prologue (CORE_ADDR pc, CORE_ADDR current_pc,
       else if ((op & 0xffcf) == 0x0100)
 	{
 	  int op1;
-	  op1 = read_memory_unsigned_integer (pc + 2, 2);
-	  if (IS_PUSH (op1))
+	  op1 = read_memory_unsigned_integer((pc + 2), 2);
+	  if (IS_PUSH(op1))
 	    {
 	      /* Since the prefix is 0x01x0, this is not a simple pushm but a
 	         stm.l reglist,@-sp */
-	      i = ((op & 0x0030) >> 4) + 1;
-	      regno = op1 & 0x000f;
+	      i = (((op & 0x0030) >> 4) + 1);
+	      regno = (op1 & 0x000f);
 	      for (; i > 0; regno++, --i)
 		{
 		  cache->sp_offset += 4;
@@ -413,26 +417,29 @@ h8300_analyze_prologue (CORE_ADDR pc, CORE_ADDR current_pc,
   /* Check for spilling an argument register to the stack frame.
      This could also be an initializing store from non-prologue code,
      but I don't think there's any harm in skipping that.  */
-  while ((spill_size = h8300_is_argument_spill (pc)) > 0
-         && pc + spill_size <= current_pc)
+  while (((spill_size = h8300_is_argument_spill(pc)) > 0)
+         && ((pc + spill_size) <= current_pc))
     pc += spill_size;
 
   return pc;
 }
 
+/* */
 static struct h8300_frame_cache *
-h8300_frame_cache (struct frame_info *next_frame, void **this_cache)
+h8300_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct h8300_frame_cache *cache;
+#ifdef ALLOW_UNUSED_VARIABLES
   char buf[4];
+#endif /* ALLOW_UNUSED_VARIABLES */
   int i;
   CORE_ADDR current_pc;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct h8300_frame_cache *)*this_cache;
 
-  cache = FRAME_OBSTACK_ZALLOC (struct h8300_frame_cache);
-  h8300_init_frame_cache (cache);
+  cache = FRAME_OBSTACK_ZALLOC(struct h8300_frame_cache);
+  h8300_init_frame_cache(cache);
   *this_cache = cache;
 
   /* In principle, for normal frames, %fp holds the frame pointer,
@@ -462,29 +469,30 @@ h8300_frame_cache (struct frame_info *next_frame, void **this_cache)
          frame by looking at the stack pointer.  For truly "frameless"
          functions this might work too.  */
 
-      cache->base = frame_unwind_register_unsigned (next_frame, E_SP_REGNUM)
-		    + cache->sp_offset;
-      cache->saved_sp = cache->base + BINWORD;
+      cache->base = (frame_unwind_register_unsigned(next_frame, E_SP_REGNUM)
+		     + cache->sp_offset);
+      cache->saved_sp = (cache->base + BINWORD);
       cache->saved_regs[E_PC_REGNUM] = 0;
     }
   else
     {
-      cache->saved_sp = cache->base + 2 * BINWORD;
+      cache->saved_sp = (cache->base + (2 * BINWORD));
       cache->saved_regs[E_PC_REGNUM] = -BINWORD;
     }
 
   /* Adjust all the saved registers such that they contain addresses
      instead of offsets.  */
   for (i = 0; i < NUM_REGS; i++)
-    if (cache->saved_regs[i] != -1)
-      cache->saved_regs[i] = cache->base - cache->saved_regs[i];
+    if (cache->saved_regs[i] != (CORE_ADDR)(-1L))
+      cache->saved_regs[i] = (cache->base - cache->saved_regs[i]);
 
   return cache;
 }
 
+/* */
 static void
-h8300_frame_this_id (struct frame_info *next_frame, void **this_cache,
-		     struct frame_id *this_id)
+h8300_frame_this_id(struct frame_info *next_frame, void **this_cache,
+		    struct frame_id *this_id)
 {
   struct h8300_frame_cache *cache =
     h8300_frame_cache (next_frame, this_cache);
@@ -496,19 +504,20 @@ h8300_frame_this_id (struct frame_info *next_frame, void **this_cache,
   *this_id = frame_id_build (cache->saved_sp, cache->pc);
 }
 
+/* */
 static void
-h8300_frame_prev_register (struct frame_info *next_frame, void **this_cache,
-			   /* APPLE LOCAL variable opt states.  */
-			   int regnum, enum opt_state *optimizedp,
-			   enum lval_type *lvalp, CORE_ADDR *addrp,
-			   int *realnump, void *valuep)
+h8300_frame_prev_register(struct frame_info *next_frame, void **this_cache,
+			  /* APPLE LOCAL variable opt states.  */
+			  int regnum, enum opt_state *optimizedp,
+			  enum lval_type *lvalp, CORE_ADDR *addrp,
+			  int *realnump, void *valuep)
 {
   struct h8300_frame_cache *cache =
-    h8300_frame_cache (next_frame, this_cache);
+    h8300_frame_cache(next_frame, this_cache);
 
-  gdb_assert (regnum >= 0);
+  gdb_assert(regnum >= 0);
 
-  if (regnum == E_SP_REGNUM && cache->saved_sp)
+  if ((regnum == E_SP_REGNUM) && cache->saved_sp)
     {
       /* APPLE LOCAL variable opt states.  */
       *optimizedp = opt_okay;
@@ -516,11 +525,11 @@ h8300_frame_prev_register (struct frame_info *next_frame, void **this_cache,
       *addrp = 0;
       *realnump = -1;
       if (valuep)
-	store_unsigned_integer (valuep, BINWORD, cache->saved_sp);
+	store_unsigned_integer((gdb_byte *)valuep, BINWORD, cache->saved_sp);
       return;
     }
 
-  if (regnum < NUM_REGS && cache->saved_regs[regnum] != -1)
+  if ((regnum < NUM_REGS) && (cache->saved_regs[regnum] != (CORE_ADDR)(-1L)))
     {
       /* APPLE LOCAL variable opt states.  */
       *optimizedp = opt_okay;
@@ -528,22 +537,27 @@ h8300_frame_prev_register (struct frame_info *next_frame, void **this_cache,
       *addrp = cache->saved_regs[regnum];
       *realnump = -1;
       if (valuep)
-	read_memory (*addrp, valuep, register_size (current_gdbarch, regnum));
+	read_memory(*addrp, (gdb_byte *)valuep,
+		    register_size(current_gdbarch, regnum));
       return;
     }
 
-  frame_register_unwind (next_frame, regnum,
-			 optimizedp, lvalp, addrp, realnump, valuep);
+  frame_register_unwind(next_frame, regnum, optimizedp, lvalp, addrp, realnump,
+			(gdb_byte *)valuep);
 }
 
 static const struct frame_unwind h8300_frame_unwind = {
   NORMAL_FRAME,
   h8300_frame_this_id,
-  h8300_frame_prev_register
+  h8300_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
+/* */
 static const struct frame_unwind *
-h8300_frame_sniffer (struct frame_info *next_frame)
+h8300_frame_sniffer(struct frame_info *next_frame)
 {
   return &h8300_frame_unwind;
 }
@@ -682,33 +696,34 @@ h8300_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 
   for (argument = 0; argument < nargs; argument++)
     {
-      struct type *type = value_type (args[argument]);
-      int len = TYPE_LENGTH (type);
-      char *contents = (char *) value_contents (args[argument]);
+      struct type *type = value_type(args[argument]);
+      int len = TYPE_LENGTH(type);
+      char *contents = (char *)value_contents(args[argument]);
 
       /* Pad the argument appropriately.  */
-      int padded_len = align_up (len, wordsize);
-      char *padded = alloca (padded_len);
+      int padded_len = align_up(len, wordsize);
+      char *padded = (char *)alloca(padded_len);
 
-      memset (padded, 0, padded_len);
-      memcpy (len < wordsize ? padded + padded_len - len : padded,
-	      contents, len);
+      memset(padded, 0, padded_len);
+      memcpy(((len < wordsize) ? (padded + padded_len - len) : padded),
+	     contents, len);
 
       /* Could the argument fit in the remaining registers?  */
-      if (padded_len <= (E_ARGLAST_REGNUM - reg + 1) * wordsize)
+      if (padded_len <= ((E_ARGLAST_REGNUM - reg + 1) * wordsize))
 	{
 	  /* Are we going to pass it on the stack anyway, for no good
 	     reason?  */
-	  if (len > wordsize && len % wordsize)
+	  if ((len > wordsize) && (len % wordsize))
 	    {
 	      /* I feel so unclean.  */
-	      write_memory (sp + stack_offset, padded, padded_len);
+	      write_memory((sp + stack_offset), (const gdb_byte *)padded,
+			   padded_len);
 	      stack_offset += padded_len;
 
 	      /* That's right --- even though we passed the argument
 	         on the stack, we consume the registers anyway!  Love
 	         me, love my dog.  */
-	      reg += padded_len / wordsize;
+	      reg += (padded_len / wordsize);
 	    }
 	  else
 	    {
@@ -720,21 +735,24 @@ h8300_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 
 	      for (offset = 0; offset < padded_len; offset += wordsize)
 		{
-		  ULONGEST word = extract_unsigned_integer (padded + offset,
-							    wordsize);
-		  regcache_cooked_write_unsigned (regcache, reg++, word);
+		  ULONGEST word =
+		    extract_unsigned_integer((const gdb_byte *)(padded
+								+ offset),
+					     wordsize);
+		  regcache_cooked_write_unsigned(regcache, reg++, word);
 		}
 	    }
 	}
       else
 	{
 	  /* It doesn't fit in registers!  Onto the stack it goes.  */
-	  write_memory (sp + stack_offset, padded, padded_len);
+	  write_memory((sp + stack_offset), (const gdb_byte *)padded,
+		       padded_len);
 	  stack_offset += padded_len;
 
 	  /* Once one argument has spilled onto the stack, all
 	     subsequent arguments go on the stack.  */
-	  reg = E_ARGLAST_REGNUM + 1;
+	  reg = (E_ARGLAST_REGNUM + 1);
 	}
     }
 
@@ -753,138 +771,143 @@ h8300_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 /* Function: extract_return_value
    Figure out where in REGBUF the called function has left its return value.
    Copy that into VALBUF.  Be sure to account for CPU type.   */
-
 static void
-h8300_extract_return_value (struct type *type, struct regcache *regcache,
-			    void *valbuf)
+h8300_extract_return_value(struct type *type, struct regcache *regcache,
+			   void *valbuf)
 {
-  int len = TYPE_LENGTH (type);
+  int len = TYPE_LENGTH(type);
   ULONGEST c, addr;
 
   switch (len)
     {
     case 1:
     case 2:
-      regcache_cooked_read_unsigned (regcache, E_RET0_REGNUM, &c);
-      store_unsigned_integer (valbuf, len, c);
+      regcache_cooked_read_unsigned(regcache, E_RET0_REGNUM, &c);
+      store_unsigned_integer((gdb_byte *)valbuf, len, c);
       break;
     case 4:			/* Needs two registers on plain H8/300 */
-      regcache_cooked_read_unsigned (regcache, E_RET0_REGNUM, &c);
-      store_unsigned_integer (valbuf, 2, c);
-      regcache_cooked_read_unsigned (regcache, E_RET1_REGNUM, &c);
-      store_unsigned_integer ((void *) ((char *) valbuf + 2), 2, c);
+      regcache_cooked_read_unsigned(regcache, E_RET0_REGNUM, &c);
+      store_unsigned_integer((gdb_byte *)valbuf, 2, c);
+      regcache_cooked_read_unsigned(regcache, E_RET1_REGNUM, &c);
+      store_unsigned_integer((gdb_byte *)((char *)valbuf + 2), 2, c);
       break;
     case 8:			/* long long is now 8 bytes.  */
-      if (TYPE_CODE (type) == TYPE_CODE_INT)
+      if (TYPE_CODE(type) == TYPE_CODE_INT)
 	{
-	  regcache_cooked_read_unsigned (regcache, E_RET0_REGNUM, &addr);
-	  c = read_memory_unsigned_integer ((CORE_ADDR) addr, len);
-	  store_unsigned_integer (valbuf, len, c);
+	  regcache_cooked_read_unsigned(regcache, E_RET0_REGNUM, &addr);
+	  c = read_memory_unsigned_integer((CORE_ADDR)addr, len);
+	  store_unsigned_integer((gdb_byte *)valbuf, len, c);
 	}
       else
 	{
-	  error ("I don't know how this 8 byte value is returned.");
+	  error(_("I don't know how this 8 byte value is returned."));
 	}
       break;
     }
 }
 
+/* */
 static void
-h8300h_extract_return_value (struct type *type, struct regcache *regcache,
-			     void *valbuf)
+h8300h_extract_return_value(struct type *type, struct regcache *regcache,
+			    void *valbuf)
 {
-  int len = TYPE_LENGTH (type);
-  ULONGEST c, addr;
+  int len = TYPE_LENGTH(type);
+  ULONGEST c;
+#ifdef ALLOW_UNUSED_VARIABLES
+  ULONGEST addr;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
   switch (len)
     {
     case 1:
     case 2:
     case 4:
-      regcache_cooked_read_unsigned (regcache, E_RET0_REGNUM, &c);
-      store_unsigned_integer (valbuf, len, c);
+      regcache_cooked_read_unsigned(regcache, E_RET0_REGNUM, &c);
+      store_unsigned_integer((gdb_byte *)valbuf, len, c);
       break;
     case 8:			/* long long is now 8 bytes.  */
-      if (TYPE_CODE (type) == TYPE_CODE_INT)
+      if (TYPE_CODE(type) == TYPE_CODE_INT)
 	{
-	  regcache_cooked_read_unsigned (regcache, E_RET0_REGNUM, &c);
-	  store_unsigned_integer (valbuf, 4, c);
-	  regcache_cooked_read_unsigned (regcache, E_RET1_REGNUM, &c);
-	  store_unsigned_integer ((void *) ((char *) valbuf + 4), 4, c);
+	  regcache_cooked_read_unsigned(regcache, E_RET0_REGNUM, &c);
+	  store_unsigned_integer((gdb_byte *)valbuf, 4, c);
+	  regcache_cooked_read_unsigned(regcache, E_RET1_REGNUM, &c);
+	  store_unsigned_integer((gdb_byte *)((char *)valbuf + 4), 4, c);
 	}
       else
 	{
-	  error ("I don't know how this 8 byte value is returned.");
+	  error(_("I don't know how this 8 byte value is returned."));
 	}
       break;
     }
 }
 
+/* */
 int
-h8300_use_struct_convention (struct type *value_type)
+h8300_use_struct_convention(struct type *value_type)
 {
   /* Types of 1, 2 or 4 bytes are returned in R0/R1, everything else on the
      stack. */
 
-  if (TYPE_CODE (value_type) == TYPE_CODE_STRUCT
-      || TYPE_CODE (value_type) == TYPE_CODE_UNION)
+  if ((TYPE_CODE(value_type) == TYPE_CODE_STRUCT)
+      || (TYPE_CODE(value_type) == TYPE_CODE_UNION))
     return 1;
-  return !(TYPE_LENGTH (value_type) == 1
-	   || TYPE_LENGTH (value_type) == 2
-	   || TYPE_LENGTH (value_type) == 4);
+  return !((TYPE_LENGTH(value_type) == 1)
+	   || (TYPE_LENGTH(value_type) == 2)
+	   || (TYPE_LENGTH(value_type) == 4));
 }
 
+/* */
 int
-h8300h_use_struct_convention (struct type *value_type)
+h8300h_use_struct_convention(struct type *value_type)
 {
   /* Types of 1, 2 or 4 bytes are returned in R0, INT types of 8 bytes are
      returned in R0/R1, everything else on the stack. */
-  if (TYPE_CODE (value_type) == TYPE_CODE_STRUCT
-      || TYPE_CODE (value_type) == TYPE_CODE_UNION)
+  if ((TYPE_CODE(value_type) == TYPE_CODE_STRUCT)
+      || (TYPE_CODE(value_type) == TYPE_CODE_UNION))
     return 1;
-  return !(TYPE_LENGTH (value_type) == 1
-	   || TYPE_LENGTH (value_type) == 2
-	   || TYPE_LENGTH (value_type) == 4
-	   || (TYPE_LENGTH (value_type) == 8
-	       && TYPE_CODE (value_type) == TYPE_CODE_INT));
+  return !((TYPE_LENGTH(value_type) == 1)
+	   || (TYPE_LENGTH(value_type) == 2)
+	   || (TYPE_LENGTH(value_type) == 4)
+	   || ((TYPE_LENGTH(value_type) == 8)
+	       && (TYPE_CODE(value_type) == TYPE_CODE_INT)));
 }
 
 /* Function: store_return_value
    Place the appropriate value in the appropriate registers.
    Primarily used by the RETURN command.  */
-
 static void
-h8300_store_return_value (struct type *type, struct regcache *regcache,
-			  const void *valbuf)
+h8300_store_return_value(struct type *type, struct regcache *regcache,
+			 const void *valbuf)
 {
-  int len = TYPE_LENGTH (type);
+  int len = TYPE_LENGTH(type);
   ULONGEST val;
 
   switch (len)
     {
     case 1:
     case 2:			/* short... */
-      val = extract_unsigned_integer (valbuf, len);
-      regcache_cooked_write_unsigned (regcache, E_RET0_REGNUM, val);
+      val = extract_unsigned_integer((const gdb_byte *)valbuf, len);
+      regcache_cooked_write_unsigned(regcache, E_RET0_REGNUM, val);
       break;
     case 4:			/* long, float */
-      val = extract_unsigned_integer (valbuf, len);
-      regcache_cooked_write_unsigned (regcache, E_RET0_REGNUM,
-				      (val >> 16) & 0xffff);
-      regcache_cooked_write_unsigned (regcache, E_RET1_REGNUM, val & 0xffff);
+      val = extract_unsigned_integer((const gdb_byte *)valbuf, len);
+      regcache_cooked_write_unsigned(regcache, E_RET0_REGNUM,
+				     ((val >> 16) & 0xffff));
+      regcache_cooked_write_unsigned(regcache, E_RET1_REGNUM, (val & 0xffff));
       break;
-    case 8:			/* long long, double and long double are all defined
-				   as 4 byte types so far so this shouldn't happen.  */
-      error ("I don't know how to return an 8 byte value.");
+    case 8:		/* long long, double and long double are all defined
+			   as 4 byte types so far so this shouldn't happen.  */
+      error(_("I don't know how to return an 8 byte value."));
       break;
     }
 }
 
+/* */
 static void
-h8300h_store_return_value (struct type *type, struct regcache *regcache,
-			   const void *valbuf)
+h8300h_store_return_value(struct type *type, struct regcache *regcache,
+			  const void *valbuf)
 {
-  int len = TYPE_LENGTH (type);
+  int len = TYPE_LENGTH(type);
   ULONGEST val;
 
   switch (len)
@@ -892,39 +915,41 @@ h8300h_store_return_value (struct type *type, struct regcache *regcache,
     case 1:
     case 2:
     case 4:			/* long, float */
-      val = extract_unsigned_integer (valbuf, len);
-      regcache_cooked_write_unsigned (regcache, E_RET0_REGNUM, val);
+      val = extract_unsigned_integer((const gdb_byte *)valbuf, len);
+      regcache_cooked_write_unsigned(regcache, E_RET0_REGNUM, val);
       break;
     case 8:
-      val = extract_unsigned_integer (valbuf, len);
-      regcache_cooked_write_unsigned (regcache, E_RET0_REGNUM,
-				      (val >> 32) & 0xffffffff);
-      regcache_cooked_write_unsigned (regcache, E_RET1_REGNUM,
-				      val & 0xffffffff);
+      val = extract_unsigned_integer((const gdb_byte *)valbuf, len);
+      regcache_cooked_write_unsigned(regcache, E_RET0_REGNUM,
+				     ((val >> 32) & 0xffffffff));
+      regcache_cooked_write_unsigned(regcache, E_RET1_REGNUM,
+				     (val & 0xffffffff));
       break;
     }
 }
 
+/* */
 static enum return_value_convention
-h8300_return_value (struct gdbarch *gdbarch, struct type *type,
-		    struct regcache *regcache,
-		    void *readbuf, const void *writebuf)
+h8300_return_value(struct gdbarch *gdbarch, struct type *type,
+		   struct regcache *regcache,
+		   gdb_byte *readbuf, const gdb_byte *writebuf)
 {
-  if (h8300_use_struct_convention (type))
+  if (h8300_use_struct_convention(type))
     return RETURN_VALUE_STRUCT_CONVENTION;
   if (writebuf)
-    h8300_store_return_value (type, regcache, writebuf);
+    h8300_store_return_value(type, regcache, writebuf);
   else if (readbuf)
-    h8300_extract_return_value (type, regcache, readbuf);
+    h8300_extract_return_value(type, regcache, readbuf);
   return RETURN_VALUE_REGISTER_CONVENTION;
 }
 
+/* */
 static enum return_value_convention
-h8300h_return_value (struct gdbarch *gdbarch, struct type *type,
-		     struct regcache *regcache,
-		     void *readbuf, const void *writebuf)
+h8300h_return_value(struct gdbarch *gdbarch, struct type *type,
+		    struct regcache *regcache,
+		    gdb_byte *readbuf, const gdb_byte *writebuf)
 {
-  if (h8300h_use_struct_convention (type))
+  if (h8300h_use_struct_convention(type))
     {
       if (readbuf)
 	{
@@ -943,75 +968,80 @@ h8300h_return_value (struct gdbarch *gdbarch, struct type *type,
   return RETURN_VALUE_REGISTER_CONVENTION;
 }
 
+#ifdef ALLOW_UNUSED_VARIABLES
 static struct cmd_list_element *setmachinelist;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
 static const char *
-h8300_register_name (int regno)
+h8300_register_name(int regno)
 {
   /* The register names change depending on which h8300 processor
      type is selected. */
-  static char *register_names[] = {
+  static const char *register_names[] = {
     "r0", "r1", "r2", "r3", "r4", "r5", "r6",
     "sp", "", "pc", "cycles", "tick", "inst",
     "ccr",			/* pseudo register */
   };
-  if (regno < 0
-      || regno >= (sizeof (register_names) / sizeof (*register_names)))
-    internal_error (__FILE__, __LINE__,
-		    "h8300_register_name: illegal register number %d", regno);
+  if ((regno < 0)
+      || ((size_t)regno >= (sizeof(register_names) / sizeof(*register_names))))
+    internal_error(__FILE__, __LINE__,
+		   "h8300_register_name: illegal register number %d", regno);
   else
     return register_names[regno];
 }
 
+/* */
 static const char *
-h8300s_register_name (int regno)
+h8300s_register_name(int regno)
 {
-  static char *register_names[] = {
+  static const char *register_names[] = {
     "er0", "er1", "er2", "er3", "er4", "er5", "er6",
     "sp", "", "pc", "cycles", "", "tick", "inst",
     "mach", "macl",
     "ccr", "exr"		/* pseudo registers */
   };
-  if (regno < 0
-      || regno >= (sizeof (register_names) / sizeof (*register_names)))
-    internal_error (__FILE__, __LINE__,
-		    "h8300s_register_name: illegal register number %d",
-		    regno);
+  if ((regno < 0)
+      || ((size_t)regno >= (sizeof(register_names) / sizeof(*register_names))))
+    internal_error(__FILE__, __LINE__,
+		   "h8300s_register_name: illegal register number %d",
+		   regno);
   else
     return register_names[regno];
 }
 
+/* */
 static const char *
-h8300sx_register_name (int regno)
+h8300sx_register_name(int regno)
 {
-  static char *register_names[] = {
+  static const char *register_names[] = {
     "er0", "er1", "er2", "er3", "er4", "er5", "er6",
     "sp", "", "pc", "cycles", "", "tick", "inst",
     "mach", "macl", "sbr", "vbr",
     "ccr", "exr"		/* pseudo registers */
   };
-  if (regno < 0
-      || regno >= (sizeof (register_names) / sizeof (*register_names)))
-    internal_error (__FILE__, __LINE__,
-		    "h8300sx_register_name: illegal register number %d",
-		    regno);
+  if ((regno < 0)
+      || ((size_t)regno >= (sizeof(register_names) / sizeof(*register_names))))
+    internal_error(__FILE__, __LINE__,
+		   "h8300sx_register_name: illegal register number %d",
+		   regno);
   else
     return register_names[regno];
 }
 
+/* */
 static void
-h8300_print_register (struct gdbarch *gdbarch, struct ui_file *file,
-		      struct frame_info *frame, int regno)
+h8300_print_register(struct gdbarch *gdbarch, struct ui_file *file,
+		     struct frame_info *frame, int regno)
 {
   LONGEST rval;
-  const char *name = gdbarch_register_name (gdbarch, regno);
+  const char *name = gdbarch_register_name(gdbarch, regno);
 
   if (!name || !*name)
     return;
 
-  rval = get_frame_register_signed (frame, regno);
+  rval = get_frame_register_signed(frame, regno);
 
-  fprintf_filtered (file, "%-14s ", name);
+  fprintf_filtered(file, "%-14s ", name);
   if ((regno == E_PSEUDO_CCR_REGNUM) || \
       (regno == E_PSEUDO_EXR_REGNUM && is_h8300smode (current_gdbarch)))
     {
@@ -1146,41 +1176,45 @@ h8300_register_type (struct gdbarch *gdbarch, int regno)
     }
 }
 
+/* */
 static void
-h8300_pseudo_register_read (struct gdbarch *gdbarch,
-			    struct regcache *regcache, int regno, void *buf)
+h8300_pseudo_register_read(struct gdbarch *gdbarch,
+			   struct regcache *regcache, int regno, gdb_byte *buf)
 {
   if (regno == E_PSEUDO_CCR_REGNUM)
-    regcache_raw_read (regcache, E_CCR_REGNUM, buf);
+    regcache_raw_read(regcache, E_CCR_REGNUM, buf);
   else if (regno == E_PSEUDO_EXR_REGNUM)
-    regcache_raw_read (regcache, E_EXR_REGNUM, buf);
+    regcache_raw_read(regcache, E_EXR_REGNUM, buf);
   else
-    regcache_raw_read (regcache, regno, buf);
+    regcache_raw_read(regcache, regno, buf);
 }
 
+/* */
 static void
-h8300_pseudo_register_write (struct gdbarch *gdbarch,
-			     struct regcache *regcache, int regno,
-			     const void *buf)
+h8300_pseudo_register_write(struct gdbarch *gdbarch,
+			    struct regcache *regcache, int regno,
+			    const gdb_byte *buf)
 {
   if (regno == E_PSEUDO_CCR_REGNUM)
-    regcache_raw_write (regcache, E_CCR_REGNUM, buf);
+    regcache_raw_write(regcache, E_CCR_REGNUM, buf);
   else if (regno == E_PSEUDO_EXR_REGNUM)
-    regcache_raw_write (regcache, E_EXR_REGNUM, buf);
+    regcache_raw_write(regcache, E_EXR_REGNUM, buf);
   else
-    regcache_raw_write (regcache, regno, buf);
+    regcache_raw_write(regcache, regno, buf);
 }
 
+/* */
 static int
-h8300_dbg_reg_to_regnum (int regno)
+h8300_dbg_reg_to_regnum(int regno)
 {
   if (regno == E_CCR_REGNUM)
     return E_PSEUDO_CCR_REGNUM;
   return regno;
 }
 
+/* */
 static int
-h8300s_dbg_reg_to_regnum (int regno)
+h8300s_dbg_reg_to_regnum(int regno)
 {
   if (regno == E_CCR_REGNUM)
     return E_PSEUDO_CCR_REGNUM;
@@ -1189,28 +1223,36 @@ h8300s_dbg_reg_to_regnum (int regno)
   return regno;
 }
 
-const static unsigned char *
-h8300_breakpoint_from_pc (CORE_ADDR *pcptr, int *lenptr)
+/* */
+static const unsigned char *
+h8300_breakpoint_from_pc(CORE_ADDR *pcptr, int *lenptr)
 {
-  /*static unsigned char breakpoint[] = { 0x7A, 0xFF }; *//* ??? */
-  static unsigned char breakpoint[] = { 0x01, 0x80 };	/* Sleep */
+#if 0
+  static unsigned char breakpoint[] = { 0x7A, 0xFF }; /* ??? */
+#else /* 1: */
+  static unsigned char breakpoint[] = { 0x01, 0x80 }; /* Sleep */
+#endif /* 0 */
 
-  *lenptr = sizeof (breakpoint);
+  *lenptr = sizeof(breakpoint);
   return breakpoint;
 }
 
+/* */
 static void
-h8300_print_float_info (struct gdbarch *gdbarch, struct ui_file *file,
-			struct frame_info *frame, const char *args)
+h8300_print_float_info(struct gdbarch *gdbarch, struct ui_file *file,
+		       struct frame_info *frame, const char *args)
 {
-  fprintf_filtered (file, "\
+  fprintf_filtered(file, "\
 No floating-point info available for this processor.\n");
 }
 
+/* */
 static struct gdbarch *
-h8300_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
+h8300_gdbarch_init(struct gdbarch_info info, struct gdbarch_list *arches)
 {
+#ifdef ALLOW_UNUSED_VARIABLES
   struct gdbarch_tdep *tdep = NULL;
+#endif /* ALLOW_UNUSED_VARIABLES */
   struct gdbarch *gdbarch;
 
   arches = gdbarch_list_lookup_by_info (arches, &info);
@@ -1218,8 +1260,8 @@ h8300_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
     return arches->gdbarch;
 
 #if 0
-  tdep = (struct gdbarch_tdep *) xmalloc (sizeof (struct gdbarch_tdep));
-#endif
+  tdep = (struct gdbarch_tdep *)xmalloc(sizeof(struct gdbarch_tdep));
+#endif /* 0 */
 
   if (info.bfd_arch_info->arch != bfd_arch_h8300)
     return NULL;

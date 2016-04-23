@@ -748,7 +748,8 @@ core_cache_section_registers(asection *sec, int flavour,
 	  cached_regs_raw->arm_vfpv1_regs = (gdb_arm_thread_vfpv1_state_t *)regs;
           regs = NULL;
 	}
-      else if ((size / 4) == GDB_ARM_THREAD_FPSTATE_VFPV3_COUNT)
+      else if ((GDB_ARM_THREAD_FPSTATE_VFPV1_COUNT != GDB_ARM_THREAD_FPSTATE_VFPV3_COUNT)
+	       && (size / 4) == GDB_ARM_THREAD_FPSTATE_VFPV3_COUNT)
 	{
 	  cached_regs_raw->arm_vfpv3_regs = (gdb_arm_thread_vfpv3_state_t *)regs;
 	  regs = NULL;

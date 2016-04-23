@@ -1,4 +1,4 @@
-/* Handle SunOS shared libraries for GDB, the GNU Debugger.
+/* solib-sunos.c: Handle SunOS shared libraries for GDB, the GNU Debugger.
 
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999,
    2000, 2001, 2004 Free Software Foundation, Inc.
@@ -29,7 +29,13 @@
 #include <fcntl.h>
 
 /* SunOS shared libs need the nlist structure.  */
-#include <a.out.h>
+#ifdef HAVE_A_OUT_H
+# include <a.out.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "solib-sunos.c expects <a.out.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_A_OUT_H */
 #include <link.h>
 
 #include "symtab.h"
@@ -38,6 +44,7 @@
 #include "objfiles.h"
 #include "gdbcore.h"
 #include "inferior.h"
+#include "solib.h"
 #include "solist.h"
 #include "bcache.h"
 #include "regcache.h"
@@ -51,40 +58,40 @@
 
 /* FIXME: Temporary until the equivalent defines have been removed
    from all nm-*bsd*.h files.  */
-#ifndef link_dynamic
+# ifndef link_dynamic
 
 /* Map `struct link_map' and its members.  */
-#define link_map	so_map
-#define lm_addr		som_addr
-#define lm_name		som_path
-#define lm_next		som_next
+#  define link_map      	so_map
+#  define lm_addr		som_addr
+#  define lm_name		som_path
+#  define lm_next		som_next
 
 /* Map `struct link_dynamic_2' and its members.  */
-#define link_dynamic_2	section_dispatch_table
-#define ld_loaded	sdt_loaded
+#  define link_dynamic_2	section_dispatch_table
+#  define ld_loaded     	sdt_loaded
 
 /* Map `struct rtc_symb' and its members.  */
-#define rtc_symb	rt_symbol
-#define rtc_sp		rt_sp
-#define rtc_next	rt_next
+#  define rtc_symb      	rt_symbol
+#  define rtc_sp		rt_sp
+#  define rtc_next      	rt_next
 
 /* Map `struct ld_debug' and its members.  */
-#define ld_debug	so_debug
-#define ldd_in_debugger	dd_in_debugger
-#define ldd_bp_addr	dd_bpt_addr
-#define ldd_bp_inst	dd_bpt_shadow
-#define ldd_cp		dd_cc
+#  define ld_debug      	so_debug
+#  define ldd_in_debugger	dd_in_debugger
+#  define ldd_bp_addr   	dd_bpt_addr
+#  define ldd_bp_inst   	dd_bpt_shadow
+#  define ldd_cp		dd_cc
 
 /* Map `struct link_dynamic' and its members.  */
-#define link_dynamic	_dynamic
-#define ld_version	d_version
-#define ldd		d_debug
-#define ld_un		d_un
-#define ld_2		d_sdt
+#  define link_dynamic  	_dynamic
+#  define ld_version    	d_version
+#  define ldd	        	d_debug
+#  define ld_un	        	d_un
+#  define ld_2	        	d_sdt
 
-#endif
+# endif /* !link_dynamic */
 
-#endif
+#endif /* HAVE_STRUCT_SO_MAP_WITH_SOM_MEMBERS */
 
 /* Link map info to include in an allocated so_list entry */
 
@@ -99,14 +106,14 @@ struct lm_info
 
 /* Symbols which are used to locate the base of the link map structures. */
 
-static char *debug_base_symbols[] =
+static const char *debug_base_symbols[] =
 {
   "_DYNAMIC",
   "_DYNAMIC__MGC",
   NULL
 };
 
-static char *main_name_list[] =
+static const char *main_name_list[] =
 {
   "main_$main",
   NULL
@@ -132,68 +139,73 @@ static CORE_ADDR debug_addr;
 static CORE_ADDR flag_addr;
 
 #ifndef offsetof
-#define offsetof(TYPE, MEMBER) ((unsigned long) &((TYPE *)0)->MEMBER)
-#endif
-#define fieldsize(TYPE, MEMBER) (sizeof (((TYPE *)0)->MEMBER))
+# define offsetof(TYPE, MEMBER) ((unsigned long)&((TYPE *)0)->MEMBER)
+#endif /* !offsetof */
+#define fieldsize(TYPE, MEMBER) (sizeof(((TYPE *)0)->MEMBER))
 
 /* link map access functions */
-
+/* Link Map Address: */
 static CORE_ADDR
-LM_ADDR (struct so_list *so)
+LM_ADDR(struct so_list *so)
 {
-  int lm_addr_offset = offsetof (struct link_map, lm_addr);
-  int lm_addr_size = fieldsize (struct link_map, lm_addr);
+  int lm_addr_offset = offsetof(struct link_map, lm_addr);
+  int lm_addr_size = fieldsize(struct link_map, lm_addr);
 
-  return (CORE_ADDR) extract_signed_integer (so->lm_info->lm + lm_addr_offset, 
-					     lm_addr_size);
+  return ((CORE_ADDR)
+	  extract_signed_integer((const gdb_byte *)(so->lm_info->lm
+						    + lm_addr_offset), 
+				 lm_addr_size));
 }
 
+/* Link Map Next: */
 static CORE_ADDR
-LM_NEXT (struct so_list *so)
+LM_NEXT(struct so_list *so)
 {
-  int lm_next_offset = offsetof (struct link_map, lm_next);
-  int lm_next_size = fieldsize (struct link_map, lm_next);
+  int lm_next_offset = offsetof(struct link_map, lm_next);
+  int lm_next_size = fieldsize(struct link_map, lm_next);
 
-  /* Assume that the address is unsigned.  */
-  return extract_unsigned_integer (so->lm_info->lm + lm_next_offset,
-				   lm_next_size);
+  /* Assume that the address is unsigned: */
+  return extract_unsigned_integer((const gdb_byte *)(so->lm_info->lm
+						     + lm_next_offset),
+				  lm_next_size);
 }
 
+/* Link Map Name: */
 static CORE_ADDR
-LM_NAME (struct so_list *so)
+LM_NAME(struct so_list *so)
 {
-  int lm_name_offset = offsetof (struct link_map, lm_name);
-  int lm_name_size = fieldsize (struct link_map, lm_name);
+  int lm_name_offset = offsetof(struct link_map, lm_name);
+  int lm_name_size = fieldsize(struct link_map, lm_name);
 
-  /* Assume that the address is unsigned.  */
-  return extract_unsigned_integer (so->lm_info->lm + lm_name_offset,
-				   lm_name_size);
+  /* Assume that the address is unsigned: */
+  return extract_unsigned_integer((const gdb_byte *)(so->lm_info->lm
+						     + lm_name_offset),
+				  lm_name_size);
 }
 
 static CORE_ADDR debug_base;	/* Base of dynamic linker structures */
 
 /* Local function prototypes */
 
-static int match_main (char *);
+static int match_main(char *);
 
-/* Allocate the runtime common object file.  */
-
+/* Allocate the runtime common object file: */
 static void
-allocate_rt_common_objfile (void)
+allocate_rt_common_objfile(void)
 {
   struct objfile *objfile;
   struct objfile *last_one;
+  void *bpool = NULL;
 
-  objfile = (struct objfile *) xmalloc (sizeof (struct objfile));
-  memset (objfile, 0, sizeof (struct objfile));
+  objfile = (struct objfile *)xmalloc(sizeof(struct objfile));
+  memset(objfile, 0, sizeof(struct objfile));
   objfile->md = NULL;
-  objfile->psymbol_cache = bcache_xmalloc ();
-  objfile->macro_cache = bcache_xmalloc ();
-  obstack_init (&objfile->objfile_obstack);
-  objfile->name = xstrdup ("rt_common");
+  objfile->psymbol_cache = bcache_xmalloc(bpool);
+  objfile->macro_cache = bcache_xmalloc(bpool);
+  obstack_init(&objfile->objfile_obstack);
+  objfile->name = xstrdup("rt_common");
 
-  /* Add this file onto the tail of the linked list of other such files. */
-
+  /* Add this file onto the tail of the linked list of other such files: */
   objfile->next = NULL;
   if (object_files == NULL)
     object_files = objfile;
@@ -208,78 +220,79 @@ allocate_rt_common_objfile (void)
   rt_common_objfile = objfile;
 }
 
+#ifndef N_COMM
+# define N_COMM 0x12
+#endif /* !N_COMM */
+
 /* Read all dynamically loaded common symbol definitions from the inferior
    and put them into the minimal symbol table for the runtime common
    objfile.  */
-
 static void
-solib_add_common_symbols (CORE_ADDR rtc_symp)
+solib_add_common_symbols(CORE_ADDR rtc_symp)
 {
   struct rtc_symb inferior_rtc_symb;
   struct nlist inferior_rtc_nlist;
   int len;
   char *name;
 
-  /* Remove any runtime common symbols from previous runs.  */
-
-  if (rt_common_objfile != NULL && rt_common_objfile->minimal_symbol_count)
+  /* Remove any runtime common symbols from previous runs: */
+  if ((rt_common_objfile != NULL) && rt_common_objfile->minimal_symbol_count)
     {
-      obstack_free (&rt_common_objfile->objfile_obstack, 0);
-      obstack_init (&rt_common_objfile->objfile_obstack);
+      obstack_free(&rt_common_objfile->objfile_obstack, 0);
+      obstack_init(&rt_common_objfile->objfile_obstack);
       rt_common_objfile->minimal_symbol_count = 0;
       rt_common_objfile->msymbols = NULL;
-      terminate_minimal_symbol_table (rt_common_objfile);
+      terminate_minimal_symbol_table(rt_common_objfile);
     }
 
-  init_minimal_symbol_collection ();
-  make_cleanup_discard_minimal_symbols ();
+  init_minimal_symbol_collection();
+  make_cleanup_discard_minimal_symbols();
 
   while (rtc_symp)
     {
-      read_memory (rtc_symp,
-		   (char *) &inferior_rtc_symb,
-		   sizeof (inferior_rtc_symb));
-      read_memory (SOLIB_EXTRACT_ADDRESS (inferior_rtc_symb.rtc_sp),
-		   (char *) &inferior_rtc_nlist,
-		   sizeof (inferior_rtc_nlist));
+      read_memory(rtc_symp,
+		  (char *)&inferior_rtc_symb,
+		  sizeof(inferior_rtc_symb));
+      read_memory(SOLIB_EXTRACT_ADDRESS(inferior_rtc_symb.rtc_sp),
+		  (char *)&inferior_rtc_nlist,
+		  sizeof(inferior_rtc_nlist));
       if (inferior_rtc_nlist.n_type == N_COMM)
 	{
 	  /* FIXME: The length of the symbol name is not available, but in the
 	     current implementation the common symbol is allocated immediately
 	     behind the name of the symbol. */
-	  len = inferior_rtc_nlist.n_value - inferior_rtc_nlist.n_un.n_strx;
+	  len = (inferior_rtc_nlist.n_value - inferior_rtc_nlist.n_un.n_strx);
 
-	  name = xmalloc (len);
-	  read_memory (SOLIB_EXTRACT_ADDRESS (inferior_rtc_nlist.n_un.n_name),
-		       name, len);
+	  name = (char *)xmalloc(len);
+	  read_memory(SOLIB_EXTRACT_ADDRESS(inferior_rtc_nlist.n_un.n_name),
+		      (gdb_byte *)name, len);
 
 	  /* Allocate the runtime common objfile if necessary. */
 	  if (rt_common_objfile == NULL)
-	    allocate_rt_common_objfile ();
+	    allocate_rt_common_objfile();
 
-	  prim_record_minimal_symbol (name, inferior_rtc_nlist.n_value,
-				      mst_bss, rt_common_objfile);
-	  xfree (name);
+	  prim_record_minimal_symbol(name, inferior_rtc_nlist.n_value,
+				     mst_bss, rt_common_objfile);
+	  xfree(name);
 	}
-      rtc_symp = SOLIB_EXTRACT_ADDRESS (inferior_rtc_symb.rtc_next);
+      rtc_symp = SOLIB_EXTRACT_ADDRESS(inferior_rtc_symb.rtc_next);
     }
 
   /* Install any minimal symbols that have been collected as the current
      minimal symbols for the runtime common objfile.  */
 
-  install_minimal_symbols (rt_common_objfile);
+  install_minimal_symbols(rt_common_objfile);
 }
 
 
 /*
-
    LOCAL FUNCTION
 
    locate_base -- locate the base address of dynamic linker structs
 
    SYNOPSIS
 
-   CORE_ADDR locate_base (void)
+   CORE_ADDR locate_base(void)
 
    DESCRIPTION
 
@@ -305,15 +318,13 @@ solib_add_common_symbols (CORE_ADDR rtc_symp)
    Because of this complexity, we cache the value we find and return that
    value on subsequent invocations.  Note there is no copy in the
    executable symbol tables.
-
  */
-
 static CORE_ADDR
-locate_base (void)
+locate_base(void)
 {
   struct minimal_symbol *msymbol;
-  CORE_ADDR address = 0;
-  char **symbolp;
+  CORE_ADDR address = 0UL;
+  const char **symbolp;
 
   /* For SunOS, we want to limit the search for the debug base symbol to the
      executable being debugged, since there is a duplicate named symbol in the
@@ -321,10 +332,10 @@ locate_base (void)
 
   for (symbolp = debug_base_symbols; *symbolp != NULL; symbolp++)
     {
-      msymbol = lookup_minimal_symbol (*symbolp, NULL, symfile_objfile);
-      if ((msymbol != NULL) && (SYMBOL_VALUE_ADDRESS (msymbol) != 0))
+      msymbol = lookup_minimal_symbol(*symbolp, NULL, symfile_objfile);
+      if ((msymbol != NULL) && (SYMBOL_VALUE_ADDRESS(msymbol) != 0))
 	{
-	  address = SYMBOL_VALUE_ADDRESS (msymbol);
+	  address = SYMBOL_VALUE_ADDRESS(msymbol);
 	  return (address);
 	}
     }
@@ -332,14 +343,13 @@ locate_base (void)
 }
 
 /*
-
    LOCAL FUNCTION
 
    first_link_map_member -- locate first member in dynamic linker's map
 
    SYNOPSIS
 
-   static CORE_ADDR first_link_map_member (void)
+   static CORE_ADDR first_link_map_member(void)
 
    DESCRIPTION
 
@@ -347,26 +357,30 @@ locate_base (void)
    return its address in the inferior.  This function doesn't copy the
    link map entry itself into our address space; current_sos actually
    does the reading.  */
-
 static CORE_ADDR
-first_link_map_member (void)
+first_link_map_member(void)
 {
-  CORE_ADDR lm = 0;
+  CORE_ADDR lm = 0UL;
 
-  read_memory (debug_base, (char *) &dynamic_copy, sizeof (dynamic_copy));
+  read_memory(debug_base, (gdb_byte *)&dynamic_copy, sizeof(dynamic_copy));
   if (dynamic_copy.ld_version >= 2)
     {
       /* It is a version that we can deal with, so read in the secondary
          structure and find the address of the link map list from it. */
-      read_memory (SOLIB_EXTRACT_ADDRESS (dynamic_copy.ld_un.ld_2),
-		   (char *) &ld_2_copy, sizeof (struct link_dynamic_2));
-      lm = SOLIB_EXTRACT_ADDRESS (ld_2_copy.ld_loaded);
+      read_memory(SOLIB_EXTRACT_ADDRESS(dynamic_copy.ld_un.ld_2),
+		  (gdb_byte *)&ld_2_copy, sizeof(struct link_dynamic_2));
+#if defined(SOLIB_EXTRACT_ADDRESS) && defined(HAVE_STRUCT_LINK_DYNAMIC_2)
+      lm = SOLIB_EXTRACT_ADDRESS(ld_2_copy.ld_loaded);
+#else
+      lm = INVALID_ADDRESS;
+#endif /* SOLIB_EXTRACT_ADDRESS && HAVE_STRUCT_LINK_DYNAMIC_2 */
     }
   return (lm);
 }
 
+/* */
 static int
-open_symbol_file_object (void *from_ttyp)
+open_symbol_file_object(void *from_ttyp)
 {
   return 1;
 }
@@ -378,7 +392,7 @@ open_symbol_file_object (void *from_ttyp)
 
    SYNOPSIS
 
-   struct so_list *current_sos ()
+   struct so_list *current_sos(void)
 
    DESCRIPTION
 
@@ -390,9 +404,8 @@ open_symbol_file_object (void *from_ttyp)
    inferior --- we don't examine any of the shared library files
    themselves.  The declaration of `struct so_list' says which fields
    we provide values for.  */
-
 static struct so_list *
-sunos_current_sos (void)
+sunos_current_sos(void)
 {
   CORE_ADDR lm;
   struct so_list *head = 0;
@@ -414,53 +427,54 @@ sunos_current_sos (void)
 
   /* Walk the inferior's link map list, and build our list of
      `struct so_list' nodes.  */
-  lm = first_link_map_member ();  
+  lm = first_link_map_member();  
   while (lm)
     {
-      struct so_list *new
-	= (struct so_list *) xmalloc (sizeof (struct so_list));
-      struct cleanup *old_chain = make_cleanup (xfree, new);
+      struct so_list *newlist =
+	(struct so_list *)xmalloc(sizeof(struct so_list));
+      struct cleanup *old_chain = make_cleanup(xfree, newlist);
 
-      memset (new, 0, sizeof (*new));
+      memset(newlist, 0, sizeof(*newlist));
 
-      new->lm_info = xmalloc (sizeof (struct lm_info));
-      make_cleanup (xfree, new->lm_info);
+      newlist->lm_info = (struct lm_info *)xmalloc(sizeof(struct lm_info));
+      make_cleanup(xfree, newlist->lm_info);
 
-      new->lm_info->lm = xmalloc (sizeof (struct link_map));
-      make_cleanup (xfree, new->lm_info->lm);
-      memset (new->lm_info->lm, 0, sizeof (struct link_map));
+      newlist->lm_info->lm = xmalloc(sizeof(struct link_map));
+      make_cleanup(xfree, newlist->lm_info->lm);
+      memset(newlist->lm_info->lm, 0, sizeof(struct link_map));
 
-      read_memory (lm, new->lm_info->lm, sizeof (struct link_map));
+      read_memory(lm, (gdb_byte *)newlist->lm_info->lm,
+		  sizeof(struct link_map));
 
-      lm = LM_NEXT (new);
+      lm = LM_NEXT(newlist);
 
-      /* Extract this shared object's name.  */
-      target_read_string (LM_NAME (new), &buffer,
-			  SO_NAME_MAX_PATH_SIZE - 1, &errcode);
+      /* Extract this shared object's name: */
+      target_read_string(LM_NAME(newlist), &buffer,
+			 (SO_NAME_MAX_PATH_SIZE - 1), &errcode);
       if (errcode != 0)
-	warning (_("Can't read pathname for load map: %s."),
-		 safe_strerror (errcode));
+	warning(_("Cannot read pathname for load map: %s."),
+		safe_strerror(errcode));
       else
 	{
-	  strncpy (new->so_name, buffer, SO_NAME_MAX_PATH_SIZE - 1);
-	  new->so_name[SO_NAME_MAX_PATH_SIZE - 1] = '\0';
-	  xfree (buffer);
-	  strcpy (new->so_original_name, new->so_name);
+	  strncpy(newlist->so_name, buffer, (SO_NAME_MAX_PATH_SIZE - 1));
+	  newlist->so_name[SO_NAME_MAX_PATH_SIZE - 1] = '\0';
+	  xfree(buffer);
+	  strcpy(newlist->so_original_name, newlist->so_name);
 	}
 
       /* If this entry has no name, or its name matches the name
 	 for the main executable, don't include it in the list.  */
-      if (! new->so_name[0]
-	  || match_main (new->so_name))
-	free_so (new);
+      if (! newlist->so_name[0]
+	  || match_main(newlist->so_name))
+	free_so(newlist);
       else
 	{
-	  new->next = 0;
-	  *link_ptr = new;
-	  link_ptr = &new->next;
+	  newlist->next = 0;
+	  *link_ptr = newlist;
+	  link_ptr = &newlist->next;
 	}
 
-      discard_cleanups (old_chain);
+      discard_cleanups(old_chain);
     }
 
   return head;
@@ -470,47 +484,43 @@ sunos_current_sos (void)
 /* On some systems, the only way to recognize the link map entry for
    the main executable file is by looking at its name.  Return
    non-zero iff SONAME matches one of the known main executable names.  */
-
 static int
-match_main (char *soname)
+match_main(char *soname)
 {
-  char **mainp;
+  const char **mainp;
 
   for (mainp = main_name_list; *mainp != NULL; mainp++)
     {
-      if (strcmp (soname, *mainp) == 0)
+      if (strcmp(soname, *mainp) == 0)
 	return (1);
     }
 
   return (0);
 }
 
-
+/* */
 static int
-sunos_in_dynsym_resolve_code (CORE_ADDR pc)
+sunos_in_dynsym_resolve_code(CORE_ADDR pc)
 {
   return 0;
 }
 
 /*
-
    LOCAL FUNCTION
 
    disable_break -- remove the "mapping changed" breakpoint
 
    SYNOPSIS
 
-   static int disable_break ()
+   static int disable_break(void)
 
    DESCRIPTION
 
    Removes the breakpoint that gets hit when the dynamic linker
    completes a mapping change.
-
  */
-
 static int
-disable_break (void)
+disable_break(void)
 {
   CORE_ADDR breakpoint_addr;	/* Address where end bkpt is set */
 
@@ -521,15 +531,20 @@ disable_break (void)
      breakpoint address.  Remove the breakpoint by writing the original
      contents back. */
 
-  read_memory (debug_addr, (char *) &debug_copy, sizeof (debug_copy));
+  read_memory(debug_addr, (gdb_byte *)&debug_copy, sizeof(debug_copy));
 
-  /* Set `in_debugger' to zero now. */
+  /* Set `in_debugger' to zero now: */
+  write_memory(flag_addr, (gdb_byte *)&in_debugger, sizeof(in_debugger));
 
-  write_memory (flag_addr, (char *) &in_debugger, sizeof (in_debugger));
-
-  breakpoint_addr = SOLIB_EXTRACT_ADDRESS (debug_copy.ldd_bp_addr);
-  write_memory (breakpoint_addr, (char *) &debug_copy.ldd_bp_inst,
-		sizeof (debug_copy.ldd_bp_inst));
+#if defined(SOLIB_EXTRACT_ADDRESS) && defined(HAVE_STRUCT_LD_DEBUG)
+  breakpoint_addr = SOLIB_EXTRACT_ADDRESS(debug_copy.ldd_bp_addr);
+#else
+  breakpoint_addr = INVALID_ADDRESS;
+#endif /* SOLIB_EXTRACT_ADDRESS && HAVE_STRUCT_LD_DEBUG */
+#if defined(HAVE_STRUCT_LD_DEBUG)
+  write_memory(breakpoint_addr, (char *)&debug_copy.ldd_bp_inst,
+	       sizeof(debug_copy.ldd_bp_inst));
+#endif /* HAVE_STRUCT_LD_DEBUG */
 
   /* For the SVR4 version, we always know the breakpoint address.  For the
      SunOS version we don't know it until the above code is executed.
@@ -537,7 +552,7 @@ disable_break (void)
 
   if (stop_pc != breakpoint_addr)
     {
-      warning (_("stopped at unknown breakpoint while handling shared libraries"));
+      warning(_("stopped at unknown breakpoint while handling shared libraries"));
     }
 
   return 1;
@@ -545,14 +560,13 @@ disable_break (void)
 
 
 /*
-
    LOCAL FUNCTION
 
    enable_break -- arrange for dynamic linker to hit breakpoint
 
    SYNOPSIS
 
-   int enable_break (void)
+   int enable_break(void)
 
    DESCRIPTION
 
@@ -586,51 +600,49 @@ disable_break (void)
    depending upon whether or not the library is being mapped or unmapped,
    and then set to RT_CONSISTENT after the library is mapped/unmapped.
  */
-
 static int
-enable_break (void)
+enable_break(void)
 {
   int success = 0;
   int j;
   int in_debugger;
 
-  /* Get link_dynamic structure */
-
-  j = target_read_memory (debug_base, (char *) &dynamic_copy,
-			  sizeof (dynamic_copy));
+  /* Get link_dynamic structure: */
+  j = target_read_memory(debug_base, (gdb_byte *)&dynamic_copy,
+			 sizeof(dynamic_copy));
   if (j)
     {
       /* unreadable */
       return (0);
     }
 
-  /* Calc address of debugger interface structure */
+#if defined(SOLIB_EXTRACT_ADDRESS) && defined(HAVE_STRUCT_LINK_DYNAMIC)
+  /* Calc address of debugger interface structure: */
+  debug_addr = SOLIB_EXTRACT_ADDRESS(dynamic_copy.ldd);
+#else
+  debug_addr = INVALID_ADDRESS;
+#endif /* SOLIB_EXTRACT_ADDRESS && HAVE_STRUCT_LINK_DYNAMIC */
 
-  debug_addr = SOLIB_EXTRACT_ADDRESS (dynamic_copy.ldd);
+  /* Calc address of `in_debugger' member of debugger interface structure: */
+  flag_addr = (debug_addr + (CORE_ADDR)((char *)&debug_copy.ldd_in_debugger
+					- (char *)&debug_copy));
 
-  /* Calc address of `in_debugger' member of debugger interface structure */
-
-  flag_addr = debug_addr + (CORE_ADDR) ((char *) &debug_copy.ldd_in_debugger -
-					(char *) &debug_copy);
-
-  /* Write a value of 1 to this member.  */
-
+  /* Write a value of 1 to this member: */
   in_debugger = 1;
-  write_memory (flag_addr, (char *) &in_debugger, sizeof (in_debugger));
+  write_memory(flag_addr, (gdb_byte *)&in_debugger, sizeof(in_debugger));
   success = 1;
 
   return (success);
 }
 
 /*
-
    LOCAL FUNCTION
 
    special_symbol_handling -- additional shared library symbol handling
 
    SYNOPSIS
 
-   void special_symbol_handling ()
+   void special_symbol_handling(void)
 
    DESCRIPTION
 
@@ -642,11 +654,9 @@ enable_break (void)
    linkers structures to find symbol definitions for "common" symbols
    and adding them to the minimal symbol table for the runtime common
    objfile.
-
  */
-
 static void
-sunos_special_symbol_handling (void)
+sunos_special_symbol_handling(void)
 {
   int j;
 
@@ -654,46 +664,52 @@ sunos_special_symbol_handling (void)
     {
       /* Get link_dynamic structure */
 
-      j = target_read_memory (debug_base, (char *) &dynamic_copy,
-			      sizeof (dynamic_copy));
+      j = target_read_memory(debug_base, (gdb_byte *)&dynamic_copy,
+			     sizeof(dynamic_copy));
       if (j)
 	{
 	  /* unreadable */
 	  return;
 	}
 
+#if defined(SOLIB_EXTRACT_ADDRESS) && defined(HAVE_STRUCT_LINK_DYNAMIC)
       /* Calc address of debugger interface structure */
-      /* FIXME, this needs work for cross-debugging of core files
+      /* FIXME: this needs work for cross-debugging of core files
          (byteorder, size, alignment, etc).  */
-
-      debug_addr = SOLIB_EXTRACT_ADDRESS (dynamic_copy.ldd);
+      debug_addr = SOLIB_EXTRACT_ADDRESS(dynamic_copy.ldd);
+#else
+      debug_addr = INVALID_ADDRESS;
+#endif /* SOLIB_EXTRACT_ADDRESS && HAVE_STRUCT_LINK_DYNAMIC */
     }
 
+#if defined(HAVE_STRUCT_LD_DEBUG)
   /* Read the debugger structure from the inferior, just to make sure
      we have a current copy. */
-
-  j = target_read_memory (debug_addr, (char *) &debug_copy,
-			  sizeof (debug_copy));
+  j = target_read_memory(debug_addr, (gdb_byte *)&debug_copy,
+			 sizeof(debug_copy));
+#else
+  j = target_read_memory(debug_addr, (gdb_byte *)&debug_copy, 0UL);
+#endif /* HAVE_STRUCT_LD_DEBUG */
   if (j)
     return;			/* unreadable */
 
-  /* Get common symbol definitions for the loaded object. */
-
+#if defined(SOLIB_EXTRACT_ADDRESS) && defined(HAVE_STRUCT_LD_DEBUG)
+  /* Get common symbol definitions for the loaded object: */
   if (debug_copy.ldd_cp)
     {
-      solib_add_common_symbols (SOLIB_EXTRACT_ADDRESS (debug_copy.ldd_cp));
+      solib_add_common_symbols(SOLIB_EXTRACT_ADDRESS(debug_copy.ldd_cp));
     }
+#endif /* SOLIB_EXTRACT_ADDRESS && HAVE_STRUCT_LD_DEBUG */
 }
 
 /*
-
    GLOBAL FUNCTION
 
    sunos_solib_create_inferior_hook -- shared library startup support
 
    SYNOPSIS
 
-   void sunos_solib_create_inferior_hook ()
+   void sunos_solib_create_inferior_hook(void)
 
    DESCRIPTION
 
@@ -736,13 +752,12 @@ sunos_special_symbol_handling (void)
 
    Also, what if child has exit()ed?  Must exit loop somehow.
  */
-
 static void
-sunos_solib_create_inferior_hook (void)
+sunos_solib_create_inferior_hook(void)
 {
-  if ((debug_base = locate_base ()) == 0)
+  if ((debug_base = locate_base()) == 0)
     {
-      /* Can't find the symbol or the executable is statically linked. */
+      /* Cannot find the symbol or the executable is statically linked. */
       return;
     }
 
@@ -764,12 +779,10 @@ sunos_solib_create_inferior_hook (void)
   clear_proceed_status ();
   stop_soon = STOP_QUIETLY;
   stop_signal = TARGET_SIGNAL_0;
-  do
-    {
-      target_resume (pid_to_ptid (-1), 0, stop_signal);
-      wait_for_inferior ();
-    }
-  while (stop_signal != TARGET_SIGNAL_TRAP);
+  do {
+    target_resume(pid_to_ptid(-1), 0, stop_signal);
+    wait_for_inferior();
+  } while (stop_signal != TARGET_SIGNAL_TRAP);
   stop_soon = NO_STOP_QUIETLY;
 
   /* We are now either at the "mapping complete" breakpoint (or somewhere
@@ -788,34 +801,39 @@ sunos_solib_create_inferior_hook (void)
       warning (_("shared library handler failed to disable breakpoint"));
     }
 
-  solib_add ((char *) 0, 0, (struct target_ops *) 0, auto_solib_add);
+  solib_add((char *) 0, 0, (struct target_ops *) 0, auto_solib_add);
 }
 
+/* */
 static void
-sunos_clear_solib (void)
+sunos_clear_solib(void)
 {
   debug_base = 0;
 }
 
+/* */
 static void
-sunos_free_so (struct so_list *so)
+sunos_free_so(struct so_list *so)
 {
-  xfree (so->lm_info->lm);
-  xfree (so->lm_info);
+  xfree(so->lm_info->lm);
+  xfree(so->lm_info);
 }
 
+/* */
 static void
-sunos_relocate_section_addresses (struct so_list *so,
+sunos_relocate_section_addresses(struct so_list *so,
                                  struct section_table *sec)
 {
-  sec->addr += LM_ADDR (so);
-  sec->endaddr += LM_ADDR (so);
+  sec->addr += LM_ADDR(so);
+  sec->endaddr += LM_ADDR(so);
 }
 
 static struct target_so_ops sunos_so_ops;
 
+/* Usual gdb initialization hook: */
+extern void _initialize_sunos_solib(void); /* -Wmissing-prototypes */
 void
-_initialize_sunos_solib (void)
+_initialize_sunos_solib(void)
 {
   sunos_so_ops.relocate_section_addresses = sunos_relocate_section_addresses;
   sunos_so_ops.free_so = sunos_free_so;
@@ -829,3 +847,5 @@ _initialize_sunos_solib (void)
   /* FIXME: Don't do this here.  *_gdbarch_init() should set so_ops. */
   current_target_so_ops = &sunos_so_ops;
 }
+
+/* EOF */

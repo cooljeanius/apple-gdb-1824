@@ -1,4 +1,4 @@
-/* Memory-access and commands for remote es1800 processes, for GDB.
+/* remote-es.c: Memory-access and commands for remote es1800 processes, for GDB.
 
    Copyright 1988, 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000,
    2001, 2002 Free Software Foundation, Inc.
@@ -114,103 +114,105 @@
 #include "regcache.h"
 #include "value.h"
 
+#include "readline/tilde.h"
+
 /* Prototypes for local functions */
 
-static void es1800_child_detach (char *, int);
+static void es1800_child_detach(const char *, int);
 
-static void es1800_child_open (char *, int);
+static void es1800_child_open(const char *, int);
 
-static void es1800_transparent (char *, int);
+static void es1800_transparent(char *, int);
 
-static void es1800_create_inferior (char *, char *, char **);
+static void es1800_create_inferior(char *, char *, char **);
 
-static void es1800_load (char *, int);
+static void es1800_load(const char *, int);
 
-static void es1800_kill (void);
+static void es1800_kill(void);
 
-static int verify_break (int);
+static int verify_break(int);
 
-static int es1800_remove_breakpoint (CORE_ADDR, char *);
+static int es1800_remove_breakpoint(CORE_ADDR, const char *);
 
-static int es1800_insert_breakpoint (CORE_ADDR, char *);
+static int es1800_insert_breakpoint(CORE_ADDR, const char *);
 
-static void es1800_files_info (struct target_ops *);
+static void es1800_files_info(struct target_ops *);
 
 static int
-es1800_xfer_inferior_memory (CORE_ADDR, char *, int, int,
-			     struct mem_attrib *, struct target_ops *);
+es1800_xfer_inferior_memory(CORE_ADDR, const char *, int, int,
+			    struct mem_attrib *, struct target_ops *);
 
-static void es1800_prepare_to_store (void);
+static void es1800_prepare_to_store(void);
 
-static ptid_t es1800_wait (ptid_t, struct target_waitstatus *);
+static ptid_t es1800_wait(ptid_t, struct target_waitstatus *);
 
-static void es1800_resume (ptid_t, int, enum target_signal);
+static void es1800_resume(ptid_t, int, enum target_signal);
 
-static void es1800_detach (char *, int);
+static void es1800_detach(const char *, int);
 
-static void es1800_attach (char *, int);
+static void es1800_attach(const char *, int);
 
-static int damn_b (char *);
+static int damn_b(char *);
 
-static void es1800_open (char *, int);
+static void es1800_open(const char *, int);
 
-static void es1800_timer (void);
+static void es1800_timer(void);
 
-static void es1800_reset (char *);
+static void es1800_reset(char *);
 
-static void es1800_request_quit (void);
+static void es1800_request_quit(int);
 
-static int readchar (void);
+static int readchar(void);
 
-static void expect (char *, int);
+static void expect(const char *, int);
 
-static void expect_prompt (void);
+static void expect_prompt(void);
 
-static void download (FILE *, int, int);
+static void download(FILE *, int, int);
 
 #if 0
-static void bfd_copy (bfd *, bfd *);
-#endif
+static void bfd_copy(bfd *, bfd *);
+#endif /* 0 */
 
-static void get_break_addr (int, CORE_ADDR *);
+static void get_break_addr(int, CORE_ADDR *);
 
-static int fromhex (int);
+static int fromhex(int);
 
-static int tohex (int);
+static int tohex(int);
 
-static void es1800_close (int);
+static void es1800_close(int);
 
-static void es1800_fetch_registers (void);
+static void es1800_fetch_registers(void);
 
-static void es1800_fetch_register (int);
+static void es1800_fetch_register(int);
 
-static void es1800_store_register (int);
+static void es1800_store_register(int);
 
-static void es1800_read_bytes (CORE_ADDR, char *, int);
+static void es1800_read_bytes(CORE_ADDR, char *, int);
 
-static void es1800_write_bytes (CORE_ADDR, char *, int);
+static void es1800_write_bytes(CORE_ADDR, const char *, int);
 
-static void send_with_reply (char *, char *, int);
+static void send_with_reply(const char *, char *, int);
 
-static void send_command (char *);
+static void send_command(const char *);
 
-static void send (char *);
+static void send(const char *);
 
-static void getmessage (char *, int);
+static void getmessage(char *, int);
 
-static void es1800_mourn_inferior (void);
+static void es1800_mourn_inferior(void);
 
-static void es1800_create_break_insn (char *, int);
+static void es1800_create_break_insn(char *, int);
 
-static void es1800_init_break (char *, int);
+static void es1800_init_break(const char *, int);
 
 /* Local variables */
 
 /* FIXME: Convert this to use "set remotedebug" instead.  */
 #define LOG_FILE "es1800.log"
-#if defined (LOG_FILE)
+#if defined(LOG_FILE)
 static FILE *log_file;
-#endif
+#endif /* LOG_FILE */
 
 extern struct target_ops es1800_ops;	/* Forward decl */
 extern struct target_ops es1800_child_ops;	/* Forward decl */
@@ -241,23 +243,23 @@ static struct serial *es1800_desc = NULL;
 /* Maximum number of bytes to read/write at once.  The value here
    is chosen to fill up a packet.  */
 
-#define MAXBUFBYTES ((PBUFSIZ-150)*16/75 )
+#define MAXBUFBYTES ((PBUFSIZ - 150) * 16 / 75)
 
 static int es1800_break_vec = 0;
 static char es1800_break_insn[2];
 static long es1800_break_address;
-static void (*old_sigint) ();	/* Old signal-handler for sigint */
+static void (*old_sigint)(int);	/* Old signal-handler for sigint */
 static jmp_buf interrupt;
 
 /* Local signalhandler to allow breaking tranfers or program run.
    Rely on global variables: old_sigint(), interrupt */
 
 static void
-es1800_request_quit (void)
+es1800_request_quit(int unused ATTRIBUTE_UNUSED)
 {
   /* restore original signalhandler */
-  signal (SIGINT, old_sigint);
-  longjmp (interrupt, 1);
+  signal(SIGINT, old_sigint);
+  longjmp(interrupt, 1);
 }
 
 
@@ -293,7 +295,7 @@ es1800_reset (char *quit)
    from_tty - says whether to be verbose or not */
 
 static void
-es1800_open (char *name, int from_tty)
+es1800_open(const char *name, int from_tty)
 {
   char buf[PBUFSIZ];
   char *p;
@@ -368,10 +370,11 @@ es1800_open (char *name, int from_tty)
 #endif /* LOG_FILE */
 
   /* Hello?  Are you there?, also check mode  */
-
-  /*  send_with_reply( "DB 0 TO 1", buf, sizeof(buf)); */
-  /*  for (p = buf, i = 0; *p++ =='0';)  *//* count the number of zeros */
-  /*      i++; */
+#if 0
+  send_with_reply("DB 0 TO 1", buf, sizeof(buf));
+  for (p = buf, i = 0; *p++ =='0';) /* count the number of zeros */
+    i++;
+#endif /* 0 */
 
   send ("\032");
   getmessage (buf, sizeof (buf));	/* send reset character */
@@ -416,8 +419,7 @@ es1800_open (char *name, int from_tty)
       es1800_init_break ((es1800_break_vec ? es1800_break_vec :
 			  ES1800_BREAK_VEC), memaddress);
     }
-#endif
-
+#endif /* 0 */
 }
 
 /*  Close out all files and local state before this target loses control.
@@ -441,8 +443,7 @@ es1800_close (int quitting)
     }
   savename = NULL;
 
-#if defined (LOG_FILE)
-
+#if defined(LOG_FILE)
   if (log_file != NULL)
     {
       if (ferror (log_file))
@@ -455,20 +456,17 @@ es1800_close (int quitting)
 	}
       log_file = NULL;
     }
-
 #endif /* LOG_FILE */
-
 }
 
 /*  Attaches to a process on the target side
    proc_id  - the id of the process to be attached.
    from_tty - says whether to be verbose or not */
-
 static void
-es1800_attach (char *args, int from_tty)
+es1800_attach(const char *args, int from_tty)
 {
-  error ("Cannot attach to pid %s, this feature is not implemented yet.",
-	 args);
+  error("Cannot attach to pid %s, this feature is not implemented yet.",
+	args);
 }
 
 
@@ -481,18 +479,17 @@ es1800_attach (char *args, int from_tty)
 
    args     - arguments given to the 'detach' command
    from_tty - says whether to be verbose or not */
-
 static void
-es1800_detach (char *args, int from_tty)
+es1800_detach(const char *args, int from_tty)
 {
   if (args)
     {
-      error ("Argument given to \"detach\" when remotely debugging.");
+      error(_("Argument given to \"detach\" when remotely debugging."));
     }
-  pop_target ();
+  pop_target();
   if (from_tty)
     {
-      printf ("Ending es1800 remote debugging.\n");
+      printf("Ending es1800 remote debugging.\n");
     }
 }
 
@@ -526,7 +523,7 @@ es1800_resume (ptid_t ptid, int step, enum target_signal siggnal)
    status -  */
 
 static ptid_t
-es1800_wait (ptid_t ptid, struct target_waitstatus *status)
+es1800_wait(ptid_t ptid, struct target_waitstatus *status)
 {
   unsigned char buf[PBUFSIZ];
   int old_timeout = timeout;
@@ -535,36 +532,36 @@ es1800_wait (ptid_t ptid, struct target_waitstatus *status)
   status->value.integer = 0;
 
   timeout = 0;			/* Don't time out -- user program is running. */
-  if (!setjmp (interrupt))
+  if (!setjmp(interrupt))
     {
-      old_sigint = signal (SIGINT, es1800_request_quit);
+      old_sigint = signal(SIGINT, es1800_request_quit);
       while (1)
 	{
-	  getmessage (buf, sizeof (buf));
-	  if (strncmp (buf, "\r\n* BREAK *", 11) == 0)
+	  getmessage((char *)buf, sizeof(buf));
+	  if (strncmp((const char *)buf, "\r\n* BREAK *", 11UL) == 0)
 	    {
 	      status->kind = TARGET_WAITKIND_STOPPED;
 	      status->value.sig = TARGET_SIGNAL_TRAP;
-	      send_command ("STP");	/* Restore stack and PC and such */
+	      send_command("STP");	/* Restore stack and PC and such */
 	      if (m68020)
 		{
-		  send_command ("STP");
+		  send_command("STP");
 		}
 	      break;
 	    }
-	  if (strncmp (buf, "STP\r\n ", 6) == 0)
+	  if (strncmp((const char *)buf, "STP\r\n ", 6UL) == 0)
 	    {
 	      status->kind = TARGET_WAITKIND_STOPPED;
 	      status->value.sig = TARGET_SIGNAL_TRAP;
 	      break;
 	    }
-	  if (buf[strlen (buf) - 2] == 'R')
+	  if (buf[strlen((const char *)buf) - 2UL] == 'R')
 	    {
-	      printf ("Unexpected emulator reply: \n%s\n", buf);
+	      printf("Unexpected emulator reply: \n%s\n", buf);
 	    }
 	  else
 	    {
-	      printf ("Unexpected stop: \n%s\n", buf);
+	      printf("Unexpected stop: \n%s\n", buf);
 	      status->kind = TARGET_WAITKIND_STOPPED;
 	      status->value.sig = TARGET_SIGNAL_QUIT;
 	      break;
@@ -619,16 +616,17 @@ es1800_fetch_register (int regno)
       p = buf;
       for (k = 0; k < 4; k++)
 	{
-	  if ((p[k * 2 + 1] == 0) || (p[k * 2 + 2] == 0))
+	  if ((p[(k * 2) + 1] == 0) || (p[(k * 2) + 2] == 0))
 	    {
-	      error ("Emulator reply is too short: %s", buf);
+	      error(_("Emulator reply is too short: %s"), buf);
 	    }
-	  registers[r++] = (fromhex (p[k * 2 + 1]) * 16) + fromhex (p[k * 2 + 2]);
+	  registers[r++] = ((fromhex(p[(k * 2) + 1]) * 16)
+			    + fromhex(p[(k * 2) + 2]));
 	}
     }
   else
     {
-      es1800_fetch_registers ();
+      es1800_fetch_registers();
     }
 }
 
@@ -658,15 +656,15 @@ es1800_fetch_registers (void)
   while (*p++ != '\n')
     {;
     }
-  for (i = 4; i < 70; i += (i == 39 ? 3 : 1))
+  for (i = 4; i < 70; i += ((i == 39) ? 3 : 1))
     {
       for (k = 0; k < 4; k++)
 	{
-	  if (p[i + 0] == 0 || p[i + 1] == 0)
+	  if ((p[i + 0] == 0) || (p[i + 1] == 0))
 	    {
-	      error ("Emulator reply is too short: %s", buf);
+	      error(_("Emulator reply is too short: %s"), buf);
 	    }
-	  registers[r++] = (fromhex (p[i + 0]) * 16) + fromhex (p[i + 1]);
+	  registers[r++] = ((fromhex(p[i + 0]) * 16) + fromhex(p[i + 1]));
 	  i += 2;
 	}
     }
@@ -827,7 +825,7 @@ es1800_store_register (int regno)
   int k;
   unsigned char *r;
 
-  r = (unsigned char *) registers;
+  r = (unsigned char *)registers;
 
   if (regno == -1)		/* write all registers */
     {
@@ -838,31 +836,31 @@ es1800_store_register (int regno)
     /* write one register */
     {
       j = regno;
-      k = regno + 1;
-      r += regno * 4;
+      k = (regno + 1);
+      r += (regno * 4);
     }
 
   if ((regno == -1) || (regno == 15))
     {
       /* fetch current status */
-      send_with_reply ("SR", SR_buf, sizeof (SR_buf));
+      send_with_reply("SR", SR_buf, sizeof(SR_buf));
       p = SR_buf;
       p += 5;
       if (m68020)
 	{
 	  if (*p == '3')	/* use masterstackpointer MSP */
 	    {
-	      strcpy (stack_pointer, "MSP");
+	      strcpy(stack_pointer, "MSP");
 	    }
 	  else
 	    {
 	      if (*p == '2')	/* use interruptstackpointer ISP  */
 		{
-		  strcpy (stack_pointer, "ISP");
+		  strcpy(stack_pointer, "ISP");
 		}
 	      else
 		{
-		  strcpy (stack_pointer, "USP");	/* use userstackpointer USP  */
+		  strcpy(stack_pointer, "USP");	/* use userstackpointer USP  */
 		}
 	    }
 	}
@@ -871,14 +869,14 @@ es1800_store_register (int regno)
 	{
 	  if (*p == '2')	/* use supervisorstackpointer SSP  */
 	    {
-	      strcpy (stack_pointer, "SSP");
+	      strcpy(stack_pointer, "SSP");
 	    }
 	  else
 	    {
-	      strcpy (stack_pointer, "USP");	/* use userstackpointer USP  */
+	      strcpy(stack_pointer, "USP");	/* use userstackpointer USP  */
 	    }
 	}
-      strcpy (regtab[15], stack_pointer);
+      strcpy(regtab[15], stack_pointer);
     }
 
   for (i = j; i < k; i++)
@@ -888,17 +886,17 @@ es1800_store_register (int regno)
       buf[2] = regtab[i][2];
       buf[3] = '=';
       buf[4] = '$';
-      buf[5] = tohex ((*r >> 4) & 0x0f);
-      buf[6] = tohex (*r++ & 0x0f);
-      buf[7] = tohex ((*r >> 4) & 0x0f);
-      buf[8] = tohex (*r++ & 0x0f);
-      buf[9] = tohex ((*r >> 4) & 0x0f);
-      buf[10] = tohex (*r++ & 0x0f);
-      buf[11] = tohex ((*r >> 4) & 0x0f);
-      buf[12] = tohex (*r++ & 0x0f);
+      buf[5] = tohex((*r >> 4) & 0x0f);
+      buf[6] = tohex(*r++ & 0x0f);
+      buf[7] = tohex((*r >> 4) & 0x0f);
+      buf[8] = tohex(*r++ & 0x0f);
+      buf[9] = tohex((*r >> 4) & 0x0f);
+      buf[10] = tohex(*r++ & 0x0f);
+      buf[11] = tohex((*r >> 4) & 0x0f);
+      buf[12] = tohex(*r++ & 0x0f);
       buf[13] = 0;
 
-      send_with_reply (buf, buf, sizeof (buf));		/* FIXME, reply not used? */
+      send_with_reply(buf, buf, sizeof(buf));	/* FIXME: reply not used? */
     }
 }
 
@@ -962,23 +960,23 @@ tohex (int nib)
    tops    - unused */
 
 static int
-es1800_xfer_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len,
-			     int write, struct mem_attrib *attrib,
-			     struct target_ops *target)
+es1800_xfer_inferior_memory(CORE_ADDR memaddr, const char *myaddr, int len,
+			    int write, struct mem_attrib *attrib,
+			    struct target_ops *target)
 {
   int origlen = len;
   int xfersize;
 
   while (len > 0)
     {
-      xfersize = len > MAXBUFBYTES ? MAXBUFBYTES : len;
+      xfersize = ((len > MAXBUFBYTES) ? MAXBUFBYTES : len);
       if (write)
 	{
-	  es1800_write_bytes (memaddr, myaddr, xfersize);
+	  es1800_write_bytes(memaddr, myaddr, xfersize);
 	}
       else
 	{
-	  es1800_read_bytes (memaddr, myaddr, xfersize);
+	  es1800_read_bytes(memaddr, (char *)myaddr, xfersize);
 	}
       memaddr += xfersize;
       myaddr += xfersize;
@@ -999,17 +997,18 @@ es1800_xfer_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len,
    len     - number of bytes   */
 
 static void
-es1800_write_bytes (CORE_ADDR memaddr, char *myaddr, int len)
+es1800_write_bytes(CORE_ADDR memaddr, const char *myaddr, int len)
 {
   char buf[PBUFSIZ];
   int i;
-  char *p;
+  const char *p;
 
   p = myaddr;
   for (i = 0; i < len; i++)
     {
-      sprintf (buf, "@.B$%x=$%x", memaddr + i, (*p++) & 0xff);
-      send_with_reply (buf, buf, sizeof (buf));		/* FIXME send_command? */
+      snprintf(buf, sizeof(buf), "@.B$%x=$%x", (unsigned int)(memaddr + i),
+	       ((*p++) & 0xff));
+      send_with_reply(buf, buf, sizeof(buf));	/* FIXME: send_command? */
     }
 }
 
@@ -1022,34 +1021,35 @@ es1800_write_bytes (CORE_ADDR memaddr, char *myaddr, int len)
    len     - number of bytes   */
 
 static void
-es1800_read_bytes (CORE_ADDR memaddr, char *myaddr, int len)
+es1800_read_bytes(CORE_ADDR memaddr, char *myaddr, int len)
 {
   static int DB_tab[16] =
-  {8, 11, 14, 17, 20, 23, 26, 29, 34, 37, 40, 43, 46, 49, 52, 55};
+  { 8, 11, 14, 17, 20, 23, 26, 29, 34, 37, 40, 43, 46, 49, 52, 55 };
   char buf[PBUFSIZ];
   int i;
   int low_addr;
   char *p;
   char *b;
 
-  if (len > PBUFSIZ / 2 - 1)
+  if (len > ((PBUFSIZ / 2) - 1))
     {
-      internal_error (__FILE__, __LINE__, "failed internal consistency check");
+      internal_error(__FILE__, __LINE__, "failed internal consistency check");
     }
 
-  if (len == 1)			/* The emulator does not like expressions like:  */
+  if (len == 1)		/* The emulator does not like expressions like:  */
     {
-      len = 2;			/* DB.B $20018 TO $20018                       */
+      len = 2;		/* DB.B $20018 TO $20018                       */
     }
 
   /* Reply describes registers byte by byte, each byte encoded as two hex
      characters.  */
 
-  sprintf (buf, "DB.B $%x TO $%x", memaddr, memaddr + len - 1);
-  send_with_reply (buf, buf, sizeof (buf));
+  snprintf(buf, sizeof(buf), "DB.B $%x TO $%x", (unsigned int)memaddr,
+	   (unsigned int)(memaddr + len - 1));
+  send_with_reply(buf, buf, sizeof(buf));
   b = buf;
-  low_addr = memaddr & 0x0f;
-  for (i = low_addr; i < low_addr + len; i++)
+  low_addr = (memaddr & 0x0f);
+  for (i = low_addr; i < (low_addr + len); i++)
     {
       if ((!(i % 16)) && i)
 	{			/* if (i = 16,32,48)  */
@@ -1058,22 +1058,21 @@ es1800_read_bytes (CORE_ADDR memaddr, char *myaddr, int len)
 	    }
 	  b = p;
 	}
-      p = b + DB_tab[i % 16] + (m68020 ? 2 : 0);
-      if (p[0] == 32 || p[1] == 32)
+      p = (b + DB_tab[i % 16] + (m68020 ? 2 : 0));
+      if ((p[0] == 32) || (p[1] == 32))
 	{
-	  error ("Emulator reply is too short: %s", buf);
+	  error("Emulator reply is too short: %s", buf);
 	}
-      myaddr[i - low_addr] = fromhex (p[0]) * 16 + fromhex (p[1]);
+      myaddr[i - low_addr] = ((fromhex(p[0]) * 16) + fromhex(p[1]));
     }
 }
 
-/* Display information about the current target.  TOPS is unused.  */
-
+/* Display information about the current target.  TOPS is unused: */
 static void
-es1800_files_info (struct target_ops *tops)
+es1800_files_info(struct target_ops *tops)
 {
-  printf ("ES1800 Attached to %s at %d baud in %s mode\n", savename, 19200,
-	  MODE);
+  printf("ES1800 Attached to %s at %d baud in %s mode\n", savename, 19200,
+	 MODE);
 }
 
 
@@ -1089,16 +1088,17 @@ es1800_files_info (struct target_ops *tops)
    the target_arch transfer vector, if we ever have one...  */
 
 static int
-es1800_insert_breakpoint (CORE_ADDR addr, char *contents_cache)
+es1800_insert_breakpoint(CORE_ADDR addr, const char *contents_cache)
 {
   int val;
 
-  val = target_read_memory (addr, contents_cache, sizeof (es1800_break_insn));
+  val = target_read_memory(addr, (gdb_byte *)contents_cache,
+			   sizeof(es1800_break_insn));
 
   if (val == 0)
     {
-      val = target_write_memory (addr, es1800_break_insn,
-				 sizeof (es1800_break_insn));
+      val = target_write_memory(addr, (const gdb_byte *)es1800_break_insn,
+				sizeof(es1800_break_insn));
     }
 
   return (val);
@@ -1113,18 +1113,16 @@ es1800_insert_breakpoint (CORE_ADDR addr, char *contents_cache)
    BREAKPOINT bytes.    */
 
 static int
-es1800_remove_breakpoint (CORE_ADDR addr, char *contents_cache)
+es1800_remove_breakpoint(CORE_ADDR addr, const char *contents_cache)
 {
-
-  return (target_write_memory (addr, contents_cache,
-			       sizeof (es1800_break_insn)));
+  return (target_write_memory(addr, (gdb_byte *)contents_cache,
+			      sizeof(es1800_break_insn)));
 }
 
-/* create_break_insn ()
+/* create_break_insn()
    Primitive datastructures containing the es1800 breakpoint instruction  */
-
 static void
-es1800_create_break_insn (char *ins, int vec)
+es1800_create_break_insn(char *ins, int vec)
 {
   if (vec == 15)
     {
@@ -1134,29 +1132,28 @@ es1800_create_break_insn (char *ins, int vec)
 }
 
 
-/* verify_break ()
+/* verify_break()
    Seach for breakpoint routine in emulator memory.
    returns non-zero on failure
    vec - trap vector used for breakpoints  */
-
 static int
-verify_break (int vec)
+verify_break(int vec)
 {
   CORE_ADDR memaddress;
   char buf[8];
-  char *instr = "NqNqNqNs";	/* breakpoint routine */
+  const char *instr = "NqNqNqNs";	/* breakpoint routine */
   int status;
 
-  get_break_addr (vec, &memaddress);
+  get_break_addr(vec, &memaddress);
 
   if (memaddress)
     {
-      status = target_read_memory (memaddress, buf, 8);
+      status = target_read_memory(memaddress, (gdb_byte *)buf, 8);
       if (status != 0)
 	{
-	  memory_error (status, memaddress);
+	  memory_error(status, memaddress);
 	}
-      return (strcmp (instr, buf));
+      return (strcmp(instr, buf));
     }
   return (-1);
 }
@@ -1166,11 +1163,10 @@ verify_break (int vec)
    find address of breakpoint routine
    vec - trap vector used for breakpoints
    addrp - store the address here       */
-
 static void
-get_break_addr (int vec, CORE_ADDR *addrp)
+get_break_addr(int vec, CORE_ADDR *addrp)
 {
-  CORE_ADDR memaddress = 0;
+  CORE_ADDR memaddress = 0UL;
   int status;
   int k;
   char buf[PBUFSIZ];
@@ -1187,17 +1183,18 @@ get_break_addr (int vec, CORE_ADDR *addrp)
 	    {
 	      error ("Emulator reply is too short: %s", buf);
 	    }
-	  base_addr[k] = (fromhex (p[k * 2 + 1]) * 16) + fromhex (p[k * 2 + 2]);
+	  base_addr[k] = ((fromhex(p[(k * 2) + 1]) * 16)
+			  + fromhex(p[(k * 2) + 2]));
 	}
       /* base addr of exception vector table */
-      memaddress = *((CORE_ADDR *) base_addr);
+      memaddress = *((CORE_ADDR *)base_addr);
     }
 
-  memaddress += (vec + 32) * 4;	/* address of trap vector */
-  status = target_read_memory (memaddress, (char *) addrp, 4);
+  memaddress += ((vec + 32) * 4);	/* address of trap vector */
+  status = target_read_memory(memaddress, (gdb_byte *)addrp, 4);
   if (status != 0)
     {
-      memory_error (status, memaddress);
+      memory_error(status, memaddress);
     }
 }
 
@@ -1221,12 +1218,10 @@ es1800_kill (void)
    Also loads the trap routine, and sets the ES1800 breakpoint on it
    filename - the a.out to be loaded
    from_tty - says whether to be verbose or not
-   FIXME Uses emulator overlay memory for trap routine  */
-
+   FIXME: Uses emulator overlay memory for trap routine  */
 static void
-es1800_load (char *filename, int from_tty)
+es1800_load(const char *filename, int from_tty)
 {
-
   FILE *instream;
   char loadname[15];
   char buf[160];
@@ -1235,61 +1230,61 @@ es1800_load (char *filename, int from_tty)
 
   if (es1800_desc == NULL)
     {
-      printf ("No emulator attached, type emulator-command first\n");
+      printf("No emulator attached, type emulator-command first\n");
       return;
     }
 
-  filename = tilde_expand (filename);
-  make_cleanup (xfree, filename);
+  filename = tilde_expand(filename);
+  make_cleanup(xfree, (void *)filename);
 
   switch (es1800_load_format)
     {
     case 2:			/* Extended Tekhex  */
       if (from_tty)
 	{
-	  printf ("Converting \"%s\" to Extended Tekhex Format\n", filename);
+	  printf("Converting \"%s\" to Extended Tekhex Format\n", filename);
 	}
-      sprintf (buf, "tekhex %s", filename);
-      system (buf);
-      sprintf (loadname, "out.hex");
+      snprintf(buf, sizeof(buf), "tekhex %s", filename);
+      system(buf);
+      snprintf(loadname, sizeof(loadname), "out.hex");
       break;
 
     case 5:			/* Motorola S-rec  */
       if (from_tty)
 	{
-	  printf ("Converting \"%s\" to Motorola S-record format\n",
-		  filename);
+	  printf("Converting \"%s\" to Motorola S-record format\n",
+		 filename);
 	}
       /* in the future the source code in copy (part of binutils-1.93) will
          be included in this file */
-      sprintf (buf,
+      snprintf(buf, sizeof(buf),
 	       "copy -s \"a.out-sunos-big\" -d \"srec\" %s /tmp/out.hex",
 	       filename);
-      system (buf);
-      sprintf (loadname, "/tmp/out.hex");
+      system(buf);
+      snprintf(loadname, sizeof(loadname), "/tmp/out.hex");
       break;
 
     default:
-      error ("Downloading format not defined\n");
+      error(_("Downloading format not defined\n"));
     }
 
-  breakpoint_init_inferior ();
+  breakpoint_init_inferior(inf_starting);
   inferior_ptid = null_ptid;
   if (from_tty)
     {
-      printf ("Downloading \"%s\" to the ES 1800\n", filename);
+      printf("Downloading \"%s\" to the ES 1800\n", filename);
     }
-  if ((instream = fopen (loadname, "r")) == NULL)
+  if ((instream = fopen(loadname, "r")) == NULL)
     {
-      perror_with_name ("fopen:");
+      perror_with_name("fopen:");
     }
 
-  old_chain = make_cleanup (fclose, instream);
+  old_chain = make_cleanup((void (*)(void *))fclose, instream);
   immediate_quit++;
 
-  es1800_reset (0);
+  es1800_reset(0);
 
-  download (instream, from_tty, es1800_load_format);
+  download(instream, from_tty, es1800_load_format);
 
   /* if breakpoint routine is not present anymore we have to check
      whether to download a new breakpoint routine or not */
@@ -1298,37 +1293,35 @@ es1800_load (char *filename, int from_tty)
       && query ("No breakpoint routine in ES 1800 emulator!\nDownload a breakpoint routine to the emulator? "))
     {
       char buf[128];
-      printf ("Using break vector 0x%x\n", es1800_break_vec);
-      sprintf (buf, "0x%x ", es1800_break_vec);
-      printf ("Give the start address of the breakpoint routine: ");
-      fgets (buf + strlen (buf), sizeof (buf) - strlen (buf), stdin);
-      es1800_init_break (buf, 0);
+      printf("Using break vector 0x%x\n", es1800_break_vec);
+      snprintf(buf, sizeof(buf), "0x%x ", es1800_break_vec);
+      printf("Give the start address of the breakpoint routine: ");
+      fgets((buf + strlen(buf)), (sizeof(buf) - strlen(buf)), stdin);
+      es1800_init_break(buf, 0);
     }
 
-  do_cleanups (old_chain);
-  expect_prompt ();
-  readchar ();			/* FIXME I am getting a ^G = 7 after the prompt  */
-  printf ("\n");
+  do_cleanups(old_chain);
+  expect_prompt();
+  readchar();		/* FIXME: I am getting a ^G = 7 after the prompt  */
+  printf("\n");
 
-  if (fclose (instream) == EOF)
+  if (fclose(instream) == EOF)
     {
       ;
     }
 
   if (es1800_load_format != 2)
     {
-      sprintf (buf, "/usr/bin/rm %s", loadname);
-      system (buf);
+      snprintf(buf, sizeof(buf), "/usr/bin/rm %s", loadname);
+      system(buf);
     }
 
-  symbol_file_add_main (filename, from_tty);	/* reading symbol table */
+  symbol_file_add_main(filename, from_tty);	/* reading symbol table */
   immediate_quit--;
 }
 
 #if 0
-
-#define NUMCPYBYTES 20
-
+# define NUMCPYBYTES 20
 static void
 bfd_copy (bfd *from_bfd, bfd *to_bfd)
 {
@@ -1372,7 +1365,6 @@ bfd_copy (bfd *from_bfd, bfd *to_bfd)
 				(bfd_size_type) (p->_cooked_size - i));
     }
 }
-
 #endif /* 0 */
 
 /* Start an process on the es1800 and set inferior_ptid to the new
@@ -1474,20 +1466,20 @@ es1800_mourn_inferior (void)
    read until string is found (== 0)   */
 
 static void
-expect (char *string, int nowait)
+expect(const char *string, int nowait)
 {
   char c;
-  char *p = string;
+  const char *p = string;
 
   immediate_quit++;
   while (1)
     {
-      c = readchar ();
-      if (isalpha (c))
+      c = readchar();
+      if (isalpha(c))
 	{
-	  c = toupper (c);
+	  c = toupper(c);
 	}
-      if (c == toupper (*p))
+      if (c == toupper(*p))
 	{
 	  p++;
 	  if (*p == '\0')
@@ -1533,7 +1525,7 @@ readchar (void)
   printf ("readchar, give one character\n");
   read (0, buf, 1);
 
-# if defined (LOG_FILE)
+# if defined(LOG_FILE)
   putc (buf[0] & 0x7f, log_file);
 # endif /* LOG_FILE */
 
@@ -1559,14 +1551,13 @@ readchar (void)
   else if (ch == SERIAL_ERROR)
     perror_with_name ("remote read");
 
-#if defined (LOG_FILE)
+# if defined(LOG_FILE)
   putc (ch & 0x7f, log_file);
   fflush (log_file);
-#endif
+# endif /* LOG_FILE */
 
   return (ch);
 }
-
 #endif /* DEBUG_STDIN */
 
 
@@ -1577,17 +1568,17 @@ readchar (void)
    len    - size of buf  */
 
 static void
-send_with_reply (char *string, char *buf, int len)
+send_with_reply(const char *string, char *buf, int len)
 {
-  send (string);
-  serial_write (es1800_desc, "\r", 1);
+  send(string);
+  serial_write(es1800_desc, "\r", 1);
 
 #ifndef DEBUG_STDIN
-  expect (string, 1);
-  expect ("\r\n", 0);
-#endif
+  expect(string, 1);
+  expect("\r\n", 0);
+#endif /* !DEBUG_STDIN */
 
-  getmessage (buf, len);
+  getmessage(buf, len);
 }
 
 
@@ -1596,23 +1587,22 @@ send_with_reply (char *string, char *buf, int len)
    string - the es1800 command  */
 
 static void
-send_command (char *string)
+send_command(const char *string)
 {
-  send (string);
-  serial_write (es1800_desc, "\r", 1);
+  send(string);
+  serial_write(es1800_desc, "\r", 1);
 
 #ifndef DEBUG_STDIN
-  expect (string, 0);
-  expect_prompt ();
-#endif
-
+  expect(string, 0);
+  expect_prompt();
+#endif /* !DEBUG_STDIN */
 }
 
 /* Send a string
    string - the es1800 command  */
 
 static void
-send (char *string)
+send(const char *string)
 {
   if (kiodebug)
     {
@@ -1622,53 +1612,52 @@ send (char *string)
 }
 
 
+extern int kiodebug; /* Out here for -Wnested-externs */
+
 /* Read a message from the emulator and store it in BUF.
    buf    - containing the emulator reply on return
    len    - size of buf  */
-
 static void
-getmessage (char *buf, int len)
+getmessage(char *buf, int len)
 {
   char *bp;
   int c;
   int prompt_found = 0;
-  extern kiodebug;
 
-#if defined (LOG_FILE)
+#if defined(LOG_FILE)
   /* This is a convenient place to do this.  The idea is to do it often
      enough that we never lose much data if we terminate abnormally.  */
-  fflush (log_file);
-#endif
+  fflush(log_file);
+#endif /* LOG_FILE */
 
   bp = buf;
-  c = readchar ();
-  do
-    {
+  c = readchar();
+  do {
       if (c)
 	{
 	  if (len-- < 2)	/* char and terminaling NULL */
 	    {
-	      error ("input buffer overrun\n");
+	      error(_("input buffer overrun\n"));
 	    }
 	  *bp++ = c;
 	}
-      c = readchar ();
+      c = readchar();
       if ((c == '>') && (*(bp - 1) == ' '))
 	{
 	  prompt_found = 1;
 	}
-    }
-  while (!prompt_found);
+  } while (!prompt_found);
   *bp = 0;
 
   if (kiodebug)
     {
-      fprintf (stderr, "message received :%s\n", buf);
+      fprintf(stderr, "message received :%s\n", buf);
     }
 }
 
+/* */
 static void
-download (FILE *instream, int from_tty, int format)
+download(FILE *instream, int from_tty, int format)
 {
   char c;
   char buf[160];
@@ -1714,9 +1703,9 @@ download (FILE *instream, int from_tty, int format)
 
 /* Additional commands */
 
-#if defined (TIOCGETP) && defined (FNDELAY) && defined (EWOULDBLOCK)
-#define PROVIDE_TRANSPARENT
-#endif
+#if defined(TIOCGETP) && defined(FNDELAY) && defined(EWOULDBLOCK)
+# define PROVIDE_TRANSPARENT
+#endif /* TIOCGETP && FNDELAY && EWOULDBLOCK */
 
 #ifdef PROVIDE_TRANSPARENT
 /* Talk directly to the emulator
@@ -1879,8 +1868,9 @@ es1800_transparent (char *args, int from_tty)
 }
 #endif /* PROVIDE_TRANSPARENT */
 
+/* */
 static void
-es1800_init_break(char *args, int from_tty)
+es1800_init_break(const char *args, int from_tty)
 {
   CORE_ADDR memaddress = 0;
   char buf[PBUFSIZ];
@@ -1924,19 +1914,20 @@ es1800_init_break(char *args, int from_tty)
 
   memaddress += (es1800_break_vec + 32) * 4;	/* address of trap vector */
 
-  sprintf (buf, "@.L%lx=$%lx", memaddress, es1800_break_address);
-  send_command (buf);		/* set the address of the break routine in the */
+  snprintf(buf, sizeof(buf), "@.L%lx=$%lx", (unsigned long)memaddress,
+	   es1800_break_address);
+  send_command(buf);		/* set the address of the break routine in the */
   /* trap vector */
 
-  sprintf (buf, "@.L%lx=$4E714E71", es1800_break_address);	/* NOP; NOP */
-  send_command (buf);
-  sprintf (buf, "@.L%lx=$4E714E73", es1800_break_address + 4);	/* NOP; RTE */
-  send_command (buf);
+  snprintf(buf, sizeof(buf), "@.L%lx=$4E714E71", es1800_break_address);	/* NOP; NOP */
+  send_command(buf);
+  snprintf(buf, sizeof(buf), "@.L%lx=$4E714E73", (es1800_break_address + 4)); /* NOP; RTE */
+  send_command(buf);
 
-  sprintf (buf, "AC2=$%lx", es1800_break_address + 4);
+  snprintf(buf, sizeof(buf), "AC2=$%lx", (es1800_break_address + 4));
   /* breakpoint at es1800-break_address */
-  send_command (buf);
-  send_command ("WHEN AC2 THEN BRK");	/* ie in exception routine */
+  send_command(buf);
+  send_command("WHEN AC2 THEN BRK");	/* ie in exception routine */
 
   if (from_tty)
     {
@@ -1945,18 +1936,21 @@ es1800_init_break(char *args, int from_tty)
     }
 }
 
+/* */
 static void
-es1800_child_open (char *arg, int from_tty)
+es1800_child_open(const char *arg ATTRIBUTE_UNUSED,
+		  int from_tty ATTRIBUTE_UNUSED)
 {
-  error ("Use the \"run\" command to start a child process.");
+  error(_("Use the \"run\" command to start a child process."));
 }
 
+/* */
 static void
-es1800_child_detach (char *args, int from_tty)
+es1800_child_detach(const char *args, int from_tty)
 {
   if (args)
     {
-      error ("Argument given to \"detach\" when remotely debugging.");
+      error(_("Argument given to \"detach\" when remotely debugging."));
     }
 
   pop_target ();
@@ -2111,19 +2105,21 @@ Specify the serial device it is connected to (e.g. /dev/ttya).";
   es1800_child_ops.to_magic = OPS_MAGIC;
 }
 
+/* Usual gdb initialization hook: */
+extern void _initialize_es1800(void); /* -Wmissing-prototypes */
 void
-_initialize_es1800 (void)
+_initialize_es1800(void)
 {
-  init_es1800_ops ();
-  init_es1800_child_ops ();
-  add_target (&es1800_ops);
-  add_target (&es1800_child_ops);
+  init_es1800_ops();
+  init_es1800_child_ops();
+  add_target(&es1800_ops);
+  add_target(&es1800_child_ops);
 #ifdef PROVIDE_TRANSPARENT
-  add_com ("transparent", class_support, es1800_transparent,
-	   "Start transparent communication with the ES 1800 emulator.");
+  add_com("transparent", class_support, es1800_transparent,
+	  "Start transparent communication with the ES 1800 emulator.");
 #endif /* PROVIDE_TRANSPARENT */
-  add_com ("init_break", class_support, es1800_init_break,
-	 "Download break routine and initialize break facility on ES 1800");
+  add_com("init_break", class_support, es1800_init_break,
+	  "Download break routine and initialize break facility on ES 1800");
 }
 
 /* EOF */

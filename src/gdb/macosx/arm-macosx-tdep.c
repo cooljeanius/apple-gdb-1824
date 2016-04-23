@@ -688,24 +688,25 @@ arm_mach_o_osabi_sniffer_use_dyld_hint(bfd *abfd)
   return GDB_OSABI_UNKNOWN;
 }
 
+/* */
 int
 arm_macosx_in_switch_glue(CORE_ADDR pc)
 {
   int retval;
-  char *name;
+  const char *name;
 
   retval = find_pc_partial_function(pc, &name,  NULL, NULL);
   if (retval)
     {
       if (strstr(name, "__switch") == name)
 	{
-	  char *end = (name + strlen("__switch"));
+	  const char *end = (name + strlen("__switch"));
 	  size_t len = strlen(end);
-	  if ((len == 1 && *end == '8')
-	      || (len == 2
-		  && ((*end == 'u' && *(end + 1) == '8')
-		      || (*end == '1' && *(end + 1) == '6')
-		      || (*end == '3' && *(end + 1) == '2'))))
+	  if (((len == 1UL) && (*end == '8'))
+	      || ((len == 2UL)
+		  && (((*end == 'u') && (*(end + 1) == '8'))
+		      || ((*end == '1') && (*(end + 1) == '6'))
+		      || ((*end == '3') && (*(end + 1) == '2')))))
 	    {
 	      return 1;
 	    }
@@ -728,11 +729,11 @@ arm_macosx_in_switch_glue(CORE_ADDR pc)
            * contains ".island" or "$island".
            */
 
-          const char *island = strstr (name, "island");
-          if (island && island > name)
+          const char *island = strstr(name, "island");
+          if (island && (island > name))
             {
               /* NAME contains "island", see if the previous character is '$' or '.' */
-              if (island[-1] == '$' || island[-1] == '.')
+              if ((island[-1] == '$') || (island[-1] == '.'))
                 return 1;
             }
         }
@@ -1010,15 +1011,15 @@ arm_macosx_dbx_make_msymbol_special(int16_t desc, struct minimal_symbol *msym)
 
 /* Convert a dbx stab register number (from `r' declaration) to a gdb
    REGNUM. */
-int
+int ATTRIBUTE_CONST
 arm_macosx_stab_reg_to_regnum(int num)
 {
   int regnum;
 
-  /* Check for the VFP floating point registers numbers.  */
-  if (num >= ARM_MACOSX_FIRST_VFP_STABS_REGNUM
-      && num <= ARM_MACOSX_LAST_VFP_STABS_REGNUM)
-    regnum = ARM_VFP_REGNUM_S0 + num - ARM_MACOSX_FIRST_VFP_STABS_REGNUM;
+  /* Check for the VFP floating point registers numbers: */
+  if ((num >= ARM_MACOSX_FIRST_VFP_STABS_REGNUM)
+      && (num <= ARM_MACOSX_LAST_VFP_STABS_REGNUM))
+    regnum = (ARM_VFP_REGNUM_S0 + num - ARM_MACOSX_FIRST_VFP_STABS_REGNUM);
   else
     regnum = num; /* Most registers do not need any modification.  */
 

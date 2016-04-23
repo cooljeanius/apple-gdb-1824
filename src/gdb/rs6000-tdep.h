@@ -1,4 +1,4 @@
-/* Copyright (C) 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
+/* rs6000-tdep.h: Copyright (C) 2006-2009 Free Software Foundation, Inc.
 
    Free Software Foundation, Inc.
 
@@ -42,6 +42,8 @@ extern void rs6000_register_to_value(struct frame_info *, int,
 extern void rs6000_value_to_register(struct frame_info *, int,
                                      struct type *, const gdb_byte *);
 extern void rs6000_create_inferior(int);
+
+extern int rs6000_tdep_c_inited;
 
 #endif /* !RS6000_TDEP_H */
 

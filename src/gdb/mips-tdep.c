@@ -311,12 +311,12 @@ msymbol_is_special (struct minimal_symbol *msym)
    things accordingly.  */
 
 static void
-mips_xfer_register (struct regcache *regcache, int reg_num, int length,
-		    enum bfd_endian endian, gdb_byte *in,
-		    const gdb_byte *out, int buf_offset)
+mips_xfer_register(struct regcache *regcache, int reg_num, int length,
+		   enum bfd_endian endian, gdb_byte *in,
+		   const gdb_byte *out, int buf_offset)
 {
   int reg_offset = 0;
-  gdb_assert (reg_num >= NUM_REGS);
+  gdb_assert(reg_num >= NUM_REGS);
   /* Need to transfer the left or right part of the register, based on
      the targets byte order.  */
   switch (endian)
@@ -406,14 +406,15 @@ mips_stack_argsize (struct gdbarch *gdbarch)
 
 #define VM_MIN_ADDRESS (CORE_ADDR)0x400000
 
-static CORE_ADDR heuristic_proc_start (CORE_ADDR);
+static CORE_ADDR heuristic_proc_start(CORE_ADDR);
 
-static CORE_ADDR read_next_frame_reg (struct frame_info *, int);
+static CORE_ADDR read_next_frame_reg(struct frame_info *, int);
 
-static void reinit_frame_cache_sfunc (char *, int, struct cmd_list_element *);
+static void reinit_frame_cache_sfunc(const char *, int,
+				     struct cmd_list_element *);
 
-static struct type *mips_float_register_type (void);
-static struct type *mips_double_register_type (void);
+static struct type *mips_float_register_type(void);
+static struct type *mips_double_register_type(void);
 
 /* The list of available "set mips " and "show mips " commands */
 
@@ -625,8 +626,8 @@ static unsigned int heuristic_fence_post = 0;
 static int mips64_transfers_32bit_regs_p = 0;
 
 static void
-set_mips64_transfers_32bit_regs (char *args, int from_tty,
-				 struct cmd_list_element *c)
+set_mips64_transfers_32bit_regs(const char *args, int from_tty,
+				struct cmd_list_element *c)
 {
   struct gdbarch_info info;
   gdbarch_info_init (&info);
@@ -1611,38 +1612,39 @@ mips16_scan_prologue (CORE_ADDR start_pc, CORE_ADDR limit_pc,
 /* Heuristic unwinder for 16-bit MIPS instruction set (aka MIPS16).
    Procedures that use the 32-bit instruction set are handled by the
    mips_insn32 unwinder.  */
-
 static struct mips_frame_cache *
-mips_insn16_frame_cache (struct frame_info *next_frame, void **this_cache)
+mips_insn16_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct mips_frame_cache *cache;
 
   if ((*this_cache) != NULL)
-    return (*this_cache);
-  cache = FRAME_OBSTACK_ZALLOC (struct mips_frame_cache);
+    return (struct mips_frame_cache *)(*this_cache);
+  cache = FRAME_OBSTACK_ZALLOC(struct mips_frame_cache);
   (*this_cache) = cache;
-  cache->saved_regs = trad_frame_alloc_saved_regs (next_frame);
+  cache->saved_regs = trad_frame_alloc_saved_regs(next_frame);
 
   /* Analyze the function prologue.  */
   {
-    const CORE_ADDR pc = frame_pc_unwind (next_frame);
+    const CORE_ADDR pc = frame_pc_unwind(next_frame);
     CORE_ADDR start_addr;
 
-    find_pc_partial_function (pc, NULL, &start_addr, NULL);
+    find_pc_partial_function(pc, NULL, &start_addr, NULL);
     if (start_addr == 0)
-      start_addr = heuristic_proc_start (pc);
+      start_addr = heuristic_proc_start(pc);
     /* We can't analyze the prologue if we couldn't find the begining
        of the function.  */
     if (start_addr == 0)
       return cache;
 
-    mips16_scan_prologue (start_addr, pc, next_frame, *this_cache);
+    mips16_scan_prologue(start_addr, pc, next_frame,
+			 (struct mips_frame_cache *)*this_cache);
   }
 
   /* SP_REGNUM, contains the value and not the address.  */
-  trad_frame_set_value (cache->saved_regs, NUM_REGS + MIPS_SP_REGNUM, cache->base);
+  trad_frame_set_value(cache->saved_regs, (NUM_REGS + MIPS_SP_REGNUM),
+		       cache->base);
 
-  return (*this_cache);
+  return (struct mips_frame_cache *)(*this_cache);
 }
 
 static void
@@ -1672,14 +1674,18 @@ static const struct frame_unwind mips_insn16_frame_unwind =
 {
   NORMAL_FRAME,
   mips_insn16_frame_this_id,
-  mips_insn16_frame_prev_register
+  mips_insn16_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
+/* */
 static const struct frame_unwind *
-mips_insn16_frame_sniffer (struct frame_info *next_frame)
+mips_insn16_frame_sniffer(struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
-  if (mips_pc_is_mips16 (pc))
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
+  if (mips_pc_is_mips16(pc))
     return &mips_insn16_frame_unwind;
   return NULL;
 }
@@ -1701,10 +1707,11 @@ static const struct frame_base mips_insn16_frame_base =
   mips_insn16_frame_base_address
 };
 
+/* */
 static const struct frame_base *
-mips_insn16_frame_base_sniffer (struct frame_info *next_frame)
+mips_insn16_frame_base_sniffer(struct frame_info *next_frame)
 {
-  if (mips_insn16_frame_sniffer (next_frame) != NULL)
+  if (mips_insn16_frame_sniffer(next_frame) != NULL)
     return &mips_insn16_frame_base;
   else
     return NULL;
@@ -1712,11 +1719,10 @@ mips_insn16_frame_base_sniffer (struct frame_info *next_frame)
 
 /* Mark all the registers as unset in the saved_regs array
    of THIS_CACHE.  Do nothing if THIS_CACHE is null.  */
-
 void
-reset_saved_regs (struct mips_frame_cache *this_cache)
+reset_saved_regs(struct mips_frame_cache *this_cache)
 {
-  if (this_cache == NULL || this_cache->saved_regs == NULL)
+  if ((this_cache == NULL) || (this_cache->saved_regs == NULL))
     return;
 
   {
@@ -1933,46 +1939,49 @@ restart:
    unwinder.  */
 
 static struct mips_frame_cache *
-mips_insn32_frame_cache (struct frame_info *next_frame, void **this_cache)
+mips_insn32_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct mips_frame_cache *cache;
 
   if ((*this_cache) != NULL)
-    return (*this_cache);
+    return (struct mips_frame_cache *)(*this_cache);
 
-  cache = FRAME_OBSTACK_ZALLOC (struct mips_frame_cache);
+  cache = FRAME_OBSTACK_ZALLOC(struct mips_frame_cache);
   (*this_cache) = cache;
-  cache->saved_regs = trad_frame_alloc_saved_regs (next_frame);
+  cache->saved_regs = trad_frame_alloc_saved_regs(next_frame);
 
   /* Analyze the function prologue.  */
   {
-    const CORE_ADDR pc = frame_pc_unwind (next_frame);
+    const CORE_ADDR pc = frame_pc_unwind(next_frame);
     CORE_ADDR start_addr;
 
-    find_pc_partial_function (pc, NULL, &start_addr, NULL);
+    find_pc_partial_function(pc, NULL, &start_addr, NULL);
     if (start_addr == 0)
-      start_addr = heuristic_proc_start (pc);
+      start_addr = heuristic_proc_start(pc);
     /* We can't analyze the prologue if we couldn't find the begining
        of the function.  */
     if (start_addr == 0)
       return cache;
 
-    mips32_scan_prologue (start_addr, pc, next_frame, *this_cache);
+    mips32_scan_prologue(start_addr, pc, next_frame,
+			 (struct mips_frame_cache *)*this_cache);
   }
 
-  /* SP_REGNUM, contains the value and not the address.  */
-  trad_frame_set_value (cache->saved_regs, NUM_REGS + MIPS_SP_REGNUM, cache->base);
+  /* SP_REGNUM, contains the value and not the address: */
+  trad_frame_set_value(cache->saved_regs, (NUM_REGS + MIPS_SP_REGNUM),
+		       cache->base);
 
-  return (*this_cache);
+  return (struct mips_frame_cache *)(*this_cache);
 }
 
+/* */
 static void
-mips_insn32_frame_this_id (struct frame_info *next_frame, void **this_cache,
-			   struct frame_id *this_id)
+mips_insn32_frame_this_id(struct frame_info *next_frame, void **this_cache,
+			  struct frame_id *this_id)
 {
-  struct mips_frame_cache *info = mips_insn32_frame_cache (next_frame,
-							   this_cache);
-  (*this_id) = frame_id_build (info->base, frame_func_unwind (next_frame));
+  struct mips_frame_cache *info = mips_insn32_frame_cache(next_frame,
+							  this_cache);
+  (*this_id) = frame_id_build(info->base, frame_func_unwind(next_frame));
 }
 
 static void
@@ -1993,14 +2002,18 @@ static const struct frame_unwind mips_insn32_frame_unwind =
 {
   NORMAL_FRAME,
   mips_insn32_frame_this_id,
-  mips_insn32_frame_prev_register
+  mips_insn32_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
+/* */
 static const struct frame_unwind *
-mips_insn32_frame_sniffer (struct frame_info *next_frame)
+mips_insn32_frame_sniffer(struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
-  if (! mips_pc_is_mips16 (pc))
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
+  if (! mips_pc_is_mips16(pc))
     return &mips_insn32_frame_unwind;
   return NULL;
 }
@@ -2031,8 +2044,9 @@ mips_insn32_frame_base_sniffer (struct frame_info *next_frame)
     return NULL;
 }
 
+/* */
 static struct trad_frame_cache *
-mips_stub_frame_cache (struct frame_info *next_frame, void **this_cache)
+mips_stub_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   CORE_ADDR pc;
   CORE_ADDR start_addr;
@@ -2040,8 +2054,8 @@ mips_stub_frame_cache (struct frame_info *next_frame, void **this_cache)
   struct trad_frame_cache *this_trad_cache;
 
   if ((*this_cache) != NULL)
-    return (*this_cache);
-  this_trad_cache = trad_frame_cache_zalloc (next_frame);
+    return (struct trad_frame_cache *)(*this_cache);
+  this_trad_cache = trad_frame_cache_zalloc(next_frame);
   (*this_cache) = this_trad_cache;
 
   /* The return address is in the link register.  */
@@ -2088,16 +2102,20 @@ static const struct frame_unwind mips_stub_frame_unwind =
 {
   NORMAL_FRAME,
   mips_stub_frame_this_id,
-  mips_stub_frame_prev_register
+  mips_stub_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
+/* */
 static const struct frame_unwind *
-mips_stub_frame_sniffer (struct frame_info *next_frame)
+mips_stub_frame_sniffer(struct frame_info *next_frame)
 {
   struct obj_section *s;
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
 
-  if (in_plt_section (pc, NULL))
+  if (in_plt_section(pc, NULL))
     return &mips_stub_frame_unwind;
 
   /* Binutils for MIPS puts lazy resolution stubs into .MIPS.stubs.  */
@@ -2189,7 +2207,7 @@ mips_addr_bits_remove (CORE_ADDR addr)
    set up a simulated single-step, we undo our damage.  */
 
 void
-mips_software_single_step (enum target_signal sig, int insert_breakpoints_p)
+mips_software_single_step(enum target_signal sig, int insert_breakpoints_p)
 {
   static CORE_ADDR next_pc;
   typedef char binsn_quantum[BREAKPOINT_MAX];
@@ -2198,22 +2216,21 @@ mips_software_single_step (enum target_signal sig, int insert_breakpoints_p)
 
   if (insert_breakpoints_p)
     {
-      pc = read_register (mips_regnum (current_gdbarch)->pc);
-      next_pc = mips_next_pc (pc);
+      pc = read_register(mips_regnum(current_gdbarch)->pc);
+      next_pc = mips_next_pc(pc);
 
-      target_insert_breakpoint (next_pc, break_mem);
+      target_insert_breakpoint(next_pc, (gdb_byte *)break_mem);
     }
   else
-    target_remove_breakpoint (next_pc, break_mem);
+    target_remove_breakpoint(next_pc, (gdb_byte *)break_mem);
 }
 
 /* Test whether the PC points to the return instruction at the
    end of a function. */
-
 static int
-mips_about_to_return (CORE_ADDR pc)
+mips_about_to_return(CORE_ADDR pc)
 {
-  if (mips_pc_is_mips16 (pc))
+  if (mips_pc_is_mips16(pc))
     /* This mips16 case isn't necessarily reliable.  Sometimes the compiler
        generates a "jr $ra"; other times it generates code to load
        the return address from the stack to an accessible register (such
@@ -2377,32 +2394,36 @@ mips_type_needs_double_align (struct type *type)
 /* Adjust the address downward (direction of stack growth) so that it
    is correctly aligned for a new stack frame.  */
 static CORE_ADDR
-mips_frame_align (struct gdbarch *gdbarch, CORE_ADDR addr)
+mips_frame_align(struct gdbarch *gdbarch, CORE_ADDR addr)
 {
-  return align_down (addr, 16);
+  return align_down(addr, 16);
 }
 
+/* */
 static CORE_ADDR
-mips_eabi_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
-			   struct regcache *regcache, CORE_ADDR bp_addr,
-			   int nargs, struct value **args, CORE_ADDR sp,
-			   int struct_return, CORE_ADDR struct_addr)
+mips_eabi_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
+			  struct regcache *regcache, CORE_ADDR bp_addr,
+			  int nargs, struct value **args, CORE_ADDR sp,
+			  int struct_return, CORE_ADDR struct_addr)
 {
   int argreg;
   int float_argreg;
   int argnum;
   int len = 0;
   int stack_offset = 0;
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  CORE_ADDR func_addr = find_function_addr (function, NULL);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  CORE_ADDR func_addr = find_function_addr(function, NULL);
+  
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
 
-  /* For shared libraries, "t9" needs to point at the function
-     address.  */
-  regcache_cooked_write_signed (regcache, MIPS_T9_REGNUM, func_addr);
+  /* For shared libraries, "t9" needs to point at the function address: */
+  regcache_cooked_write_signed(regcache, MIPS_T9_REGNUM, func_addr);
 
   /* Set the return address register to point to the entry point of
      the program, where a breakpoint lies in wait.  */
-  regcache_cooked_write_signed (regcache, MIPS_RA_REGNUM, bp_addr);
+  regcache_cooked_write_signed(regcache, MIPS_RA_REGNUM, bp_addr);
 
   /* First ensure that the stack and structure return address (if any)
      are properly aligned.  The stack has to be at least 64-bit
@@ -2410,34 +2431,34 @@ mips_eabi_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
      aligned.  For n32 and n64, stack frames need to be 128-bit
      aligned, so we round to this widest known alignment.  */
 
-  sp = align_down (sp, 16);
-  struct_addr = align_down (struct_addr, 16);
+  sp = align_down(sp, 16);
+  struct_addr = align_down(struct_addr, 16);
 
   /* Now make space on the stack for the args.  We allocate more
      than necessary for EABI, because the first few arguments are
      passed in registers, but that's OK.  */
   for (argnum = 0; argnum < nargs; argnum++)
-    len += align_up (TYPE_LENGTH (value_type (args[argnum])),
-		     mips_stack_argsize (gdbarch));
-  sp -= align_up (len, 16);
+    len += align_up(TYPE_LENGTH(value_type(args[argnum])),
+		    mips_stack_argsize(gdbarch));
+  sp -= align_up(len, 16);
 
   if (mips_debug)
-    fprintf_unfiltered (gdb_stdlog,
-			"mips_eabi_push_dummy_call: sp=0x%s allocated %ld\n",
-			paddr_nz (sp), (long) align_up (len, 16));
+    fprintf_unfiltered(gdb_stdlog,
+		       "mips_eabi_push_dummy_call: sp=0x%s allocated %ld\n",
+		       paddr_nz(sp), (long)align_up(len, 16));
 
-  /* Initialize the integer and float register pointers.  */
+  /* Initialize the integer and float register pointers: */
   argreg = MIPS_A0_REGNUM;
-  float_argreg = mips_fpa0_regnum (current_gdbarch);
+  float_argreg = mips_fpa0_regnum(current_gdbarch);
 
-  /* The struct_return pointer occupies the first parameter-passing reg.  */
+  /* The struct_return pointer occupies the first parameter-passing reg: */
   if (struct_return)
     {
       if (mips_debug)
-	fprintf_unfiltered (gdb_stdlog,
-			    "mips_eabi_push_dummy_call: struct_return reg=%d 0x%s\n",
-			    argreg, paddr_nz (struct_addr));
-      write_register (argreg++, struct_addr);
+	fprintf_unfiltered(gdb_stdlog,
+			   "mips_eabi_push_dummy_call: struct_return reg=%d 0x%s\n",
+			   argreg, paddr_nz(struct_addr));
+      write_register(argreg++, struct_addr);
     }
 
   /* Now load as many as possible of the first arguments into
@@ -2448,38 +2469,38 @@ mips_eabi_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
       const gdb_byte *val;
       gdb_byte valbuf[MAX_REGISTER_SIZE];
       struct value *arg = args[argnum];
-      struct type *arg_type = check_typedef (value_type (arg));
-      int len = TYPE_LENGTH (arg_type);
-      enum type_code typecode = TYPE_CODE (arg_type);
+      struct type *arg_type = check_typedef(value_type(arg));
+      int len = TYPE_LENGTH(arg_type);
+      enum type_code typecode = TYPE_CODE(arg_type);
 
       if (mips_debug)
-	fprintf_unfiltered (gdb_stdlog,
-			    "mips_eabi_push_dummy_call: %d len=%d type=%d",
-			    argnum + 1, len, (int) typecode);
+	fprintf_unfiltered(gdb_stdlog,
+			   "mips_eabi_push_dummy_call: %d len=%d type=%d",
+			   (argnum + 1), len, (int)typecode);
 
       /* The EABI passes structures that do not fit in a register by
          reference.  */
-      if (len > mips_abi_regsize (gdbarch)
-	  && (typecode == TYPE_CODE_STRUCT || typecode == TYPE_CODE_UNION))
+      if ((len > (int)mips_abi_regsize(gdbarch))
+	  && ((typecode == TYPE_CODE_STRUCT) || (typecode == TYPE_CODE_UNION)))
 	{
-	  store_unsigned_integer (valbuf, mips_abi_regsize (gdbarch),
-				  VALUE_ADDRESS (arg));
+	  store_unsigned_integer(valbuf, mips_abi_regsize(gdbarch),
+				 VALUE_ADDRESS(arg));
 	  typecode = TYPE_CODE_PTR;
-	  len = mips_abi_regsize (gdbarch);
+	  len = mips_abi_regsize(gdbarch);
 	  val = valbuf;
 	  if (mips_debug)
-	    fprintf_unfiltered (gdb_stdlog, " push");
+	    fprintf_unfiltered(gdb_stdlog, " push");
 	}
       else
-	val = value_contents (arg);
+	val = value_contents(arg);
 
       /* 32-bit ABIs always start floating point arguments in an
          even-numbered floating point register.  Round the FP register
          up before the check to see if there are any FP registers
          left.  Non MIPS_EABI targets also pass the FP in the integer
          registers so also round up normal registers.  */
-      if (mips_abi_regsize (gdbarch) < 8
-	  && fp_register_arg_p (typecode, arg_type))
+      if ((mips_abi_regsize(gdbarch) < 8)
+	  && fp_register_arg_p(typecode, arg_type))
 	{
 	  if ((float_argreg & 1))
 	    float_argreg++;
@@ -2497,27 +2518,27 @@ mips_eabi_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
       /* MIPS_EABI squeezes a struct that contains a single floating
          point value into an FP register instead of pushing it onto the
          stack.  */
-      if (fp_register_arg_p (typecode, arg_type)
+      if (fp_register_arg_p(typecode, arg_type)
 	  && float_argreg <= MIPS_LAST_FP_ARG_REGNUM)
 	{
-	  if (mips_abi_regsize (gdbarch) < 8 && len == 8)
+	  if ((mips_abi_regsize(gdbarch) < 8) && (len == 8))
 	    {
-	      int low_offset = TARGET_BYTE_ORDER == BFD_ENDIAN_BIG ? 4 : 0;
+	      int low_offset = ((TARGET_BYTE_ORDER == BFD_ENDIAN_BIG) ? 4 : 0);
 	      unsigned long regval;
 
-	      /* Write the low word of the double to the even register(s).  */
-	      regval = extract_unsigned_integer (val + low_offset, 4);
+	      /* Write the low word of the double to the even register(s): */
+	      regval = extract_unsigned_integer((val + low_offset), 4);
 	      if (mips_debug)
-		fprintf_unfiltered (gdb_stdlog, " - fpreg=%d val=%s",
-				    float_argreg, phex (regval, 4));
-	      write_register (float_argreg++, regval);
+		fprintf_unfiltered(gdb_stdlog, " - fpreg=%d val=%s",
+				   float_argreg, phex(regval, 4));
+	      write_register(float_argreg++, regval);
 
-	      /* Write the high word of the double to the odd register(s).  */
-	      regval = extract_unsigned_integer (val + 4 - low_offset, 4);
+	      /* Write the high word of the double to the odd register(s): */
+	      regval = extract_unsigned_integer((val + 4 - low_offset), 4);
 	      if (mips_debug)
-		fprintf_unfiltered (gdb_stdlog, " - fpreg=%d val=%s",
-				    float_argreg, phex (regval, 4));
-	      write_register (float_argreg++, regval);
+		fprintf_unfiltered(gdb_stdlog, " - fpreg=%d val=%s",
+				   float_argreg, phex(regval, 4));
+	      write_register(float_argreg++, regval);
 	    }
 	  else
 	    {
@@ -2525,11 +2546,11 @@ mips_eabi_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	         in a single register.  */
 	      /* On 32 bit ABI's the float_argreg is further adjusted
 	         above to ensure that it is even register aligned.  */
-	      LONGEST regval = extract_unsigned_integer (val, len);
+	      LONGEST regval = extract_unsigned_integer(val, len);
 	      if (mips_debug)
-		fprintf_unfiltered (gdb_stdlog, " - fpreg=%d val=%s",
-				    float_argreg, phex (regval, len));
-	      write_register (float_argreg++, regval);
+		fprintf_unfiltered(gdb_stdlog, " - fpreg=%d val=%s",
+				   float_argreg, phex(regval, len));
+	      write_register(float_argreg++, regval);
 	    }
 	}
       else
@@ -2542,26 +2563,26 @@ mips_eabi_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	     them in registers where gcc sometimes puts them on the
 	     stack.  For maximum compatibility, we will put them in
 	     both places.  */
-	  int odd_sized_struct = ((len > mips_abi_regsize (gdbarch))
-				  && (len % mips_abi_regsize (gdbarch) != 0));
+	  int odd_sized_struct = ((len > (int)mips_abi_regsize(gdbarch))
+				  && ((len % mips_abi_regsize(gdbarch)) != 0));
 
 	  /* Note: Floating-point values that didn't fit into an FP
 	     register are only written to memory.  */
 	  while (len > 0)
 	    {
-	      /* Remember if the argument was written to the stack.  */
+	      /* Remember if the argument was written to the stack: */
 	      int stack_used_p = 0;
-	      int partial_len = (len < mips_abi_regsize (gdbarch)
-				 ? len : mips_abi_regsize (gdbarch));
+	      int partial_len = ((len < (int)mips_abi_regsize(gdbarch))
+				 ? len : (int)mips_abi_regsize(gdbarch));
 
 	      if (mips_debug)
-		fprintf_unfiltered (gdb_stdlog, " -- partial=%d",
-				    partial_len);
+		fprintf_unfiltered(gdb_stdlog, " -- partial=%d",
+				   partial_len);
 
-	      /* Write this portion of the argument to the stack.  */
-	      if (argreg > MIPS_LAST_ARG_REGNUM
+	      /* Write this portion of the argument to the stack: */
+	      if ((argreg > MIPS_LAST_ARG_REGNUM)
 		  || odd_sized_struct
-		  || fp_register_arg_p (typecode, arg_type))
+		  || fp_register_arg_p(typecode, arg_type))
 		{
 		  /* Should shorter than int integer values be
 		     promoted to int before being stored? */
@@ -2570,40 +2591,40 @@ mips_eabi_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 		  stack_used_p = 1;
 		  if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
 		    {
-		      if (mips_stack_argsize (gdbarch) == 8
-			  && (typecode == TYPE_CODE_INT
-			      || typecode == TYPE_CODE_PTR
-			      || typecode == TYPE_CODE_FLT) && len <= 4)
-			longword_offset = mips_stack_argsize (gdbarch) - len;
-		      else if ((typecode == TYPE_CODE_STRUCT
-				|| typecode == TYPE_CODE_UNION)
-			       && (TYPE_LENGTH (arg_type)
-				   < mips_stack_argsize (gdbarch)))
-			longword_offset = mips_stack_argsize (gdbarch) - len;
+		      if ((mips_stack_argsize(gdbarch) == 8)
+			  && ((typecode == TYPE_CODE_INT)
+			      || (typecode == TYPE_CODE_PTR)
+			      || (typecode == TYPE_CODE_FLT)) && (len <= 4))
+			longword_offset = (mips_stack_argsize(gdbarch) - len);
+		      else if (((typecode == TYPE_CODE_STRUCT)
+				|| (typecode == TYPE_CODE_UNION))
+			       && (TYPE_LENGTH(arg_type)
+				   < (long)mips_stack_argsize(gdbarch)))
+			longword_offset = (mips_stack_argsize(gdbarch) - len);
 		    }
 
 		  if (mips_debug)
 		    {
-		      fprintf_unfiltered (gdb_stdlog, " - stack_offset=0x%s",
-					  paddr_nz (stack_offset));
-		      fprintf_unfiltered (gdb_stdlog, " longword_offset=0x%s",
-					  paddr_nz (longword_offset));
+		      fprintf_unfiltered(gdb_stdlog, " - stack_offset=0x%s",
+					 paddr_nz(stack_offset));
+		      fprintf_unfiltered(gdb_stdlog, " longword_offset=0x%s",
+					 paddr_nz(longword_offset));
 		    }
 
-		  addr = sp + stack_offset + longword_offset;
+		  addr = (sp + stack_offset + longword_offset);
 
 		  if (mips_debug)
 		    {
 		      int i;
-		      fprintf_unfiltered (gdb_stdlog, " @0x%s ",
-					  paddr_nz (addr));
+		      fprintf_unfiltered(gdb_stdlog, " @0x%s ",
+					 paddr_nz(addr));
 		      for (i = 0; i < partial_len; i++)
 			{
-			  fprintf_unfiltered (gdb_stdlog, "%02x",
-					      val[i] & 0xff);
+			  fprintf_unfiltered(gdb_stdlog, "%02x",
+					     (val[i] & 0xff));
 			}
 		    }
-		  write_memory (addr, val, partial_len);
+		  write_memory(addr, val, partial_len);
 		}
 
 	      /* Note!!! This is NOT an else clause.  Odd sized
@@ -2611,18 +2632,18 @@ mips_eabi_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	         arguments will not.  */
 	      /* Write this portion of the argument to a general
 	         purpose register.  */
-	      if (argreg <= MIPS_LAST_ARG_REGNUM
-		  && !fp_register_arg_p (typecode, arg_type))
+	      if ((argreg <= MIPS_LAST_ARG_REGNUM)
+		  && !fp_register_arg_p(typecode, arg_type))
 		{
 		  LONGEST regval =
-		    extract_unsigned_integer (val, partial_len);
+		    extract_unsigned_integer(val, partial_len);
 
 		  if (mips_debug)
-		    fprintf_filtered (gdb_stdlog, " - reg=%d val=%s",
-				      argreg,
-				      phex (regval,
-					    mips_abi_regsize (gdbarch)));
-		  write_register (argreg, regval);
+		    fprintf_filtered(gdb_stdlog, " - reg=%d val=%s",
+				     argreg,
+				     phex(regval,
+					  mips_abi_regsize(gdbarch)));
+		  write_register(argreg, regval);
 		  argreg++;
 		}
 
@@ -2636,58 +2657,59 @@ mips_eabi_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	         only needs to be adjusted when it has been used.  */
 
 	      if (stack_used_p)
-		stack_offset += align_up (partial_len,
-					  mips_stack_argsize (gdbarch));
+		stack_offset += align_up(partial_len,
+					 mips_stack_argsize(gdbarch));
 	    }
 	}
       if (mips_debug)
-	fprintf_unfiltered (gdb_stdlog, "\n");
+	fprintf_unfiltered(gdb_stdlog, "\n");
     }
 
-  regcache_cooked_write_signed (regcache, MIPS_SP_REGNUM, sp);
+  regcache_cooked_write_signed(regcache, MIPS_SP_REGNUM, sp);
 
-  /* Return adjusted stack pointer.  */
+  /* Return adjusted stack pointer: */
   return sp;
 }
 
-/* Determin the return value convention being used.  */
-
+/* Determin the return value convention being used: */
 static enum return_value_convention
-mips_eabi_return_value (struct gdbarch *gdbarch,
-			struct type *type, struct regcache *regcache,
-			gdb_byte *readbuf, const gdb_byte *writebuf)
+mips_eabi_return_value(struct gdbarch *gdbarch, struct type *type,
+		       struct regcache *regcache, gdb_byte *readbuf,
+		       const gdb_byte *writebuf)
 {
-  if (TYPE_LENGTH (type) > 2 * mips_abi_regsize (gdbarch))
+  if (TYPE_LENGTH(type) > (long)(2UL * mips_abi_regsize(gdbarch)))
     return RETURN_VALUE_STRUCT_CONVENTION;
   if (readbuf)
-    memset (readbuf, 0, TYPE_LENGTH (type));
+    memset(readbuf, 0, TYPE_LENGTH(type));
   return RETURN_VALUE_REGISTER_CONVENTION;
 }
 
 
-/* N32/N64 ABI stuff.  */
-
+/* N32/N64 ABI stuff: */
 static CORE_ADDR
-mips_n32n64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
-			     struct regcache *regcache, CORE_ADDR bp_addr,
-			     int nargs, struct value **args, CORE_ADDR sp,
-			     int struct_return, CORE_ADDR struct_addr)
+mips_n32n64_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
+			    struct regcache *regcache, CORE_ADDR bp_addr,
+			    int nargs, struct value **args, CORE_ADDR sp,
+			    int struct_return, CORE_ADDR struct_addr)
 {
   int argreg;
   int float_argreg;
   int argnum;
   int len = 0;
   int stack_offset = 0;
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  CORE_ADDR func_addr = find_function_addr (function, NULL);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  CORE_ADDR func_addr = find_function_addr(function, NULL);
+  
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
 
-  /* For shared libraries, "t9" needs to point at the function
-     address.  */
-  regcache_cooked_write_signed (regcache, MIPS_T9_REGNUM, func_addr);
+  /* For shared libraries, "t9" needs to point at the function address: */
+  regcache_cooked_write_signed(regcache, MIPS_T9_REGNUM, func_addr);
 
   /* Set the return address register to point to the entry point of
      the program, where a breakpoint lies in wait.  */
-  regcache_cooked_write_signed (regcache, MIPS_RA_REGNUM, bp_addr);
+  regcache_cooked_write_signed(regcache, MIPS_RA_REGNUM, bp_addr);
 
   /* First ensure that the stack and structure return address (if any)
      are properly aligned.  The stack has to be at least 64-bit
@@ -2695,32 +2717,32 @@ mips_n32n64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
      aligned.  For n32 and n64, stack frames need to be 128-bit
      aligned, so we round to this widest known alignment.  */
 
-  sp = align_down (sp, 16);
-  struct_addr = align_down (struct_addr, 16);
+  sp = align_down(sp, 16);
+  struct_addr = align_down(struct_addr, 16);
 
-  /* Now make space on the stack for the args.  */
+  /* Now make space on the stack for the args: */
   for (argnum = 0; argnum < nargs; argnum++)
-    len += align_up (TYPE_LENGTH (value_type (args[argnum])),
-		     mips_stack_argsize (gdbarch));
-  sp -= align_up (len, 16);
+    len += align_up(TYPE_LENGTH(value_type(args[argnum])),
+		    mips_stack_argsize(gdbarch));
+  sp -= align_up(len, 16);
 
   if (mips_debug)
-    fprintf_unfiltered (gdb_stdlog,
-			"mips_n32n64_push_dummy_call: sp=0x%s allocated %ld\n",
-			paddr_nz (sp), (long) align_up (len, 16));
+    fprintf_unfiltered(gdb_stdlog,
+		       "mips_n32n64_push_dummy_call: sp=0x%s allocated %ld\n",
+		       paddr_nz(sp), (long)align_up(len, 16));
 
-  /* Initialize the integer and float register pointers.  */
+  /* Initialize the integer and float register pointers: */
   argreg = MIPS_A0_REGNUM;
-  float_argreg = mips_fpa0_regnum (current_gdbarch);
+  float_argreg = mips_fpa0_regnum(current_gdbarch);
 
-  /* The struct_return pointer occupies the first parameter-passing reg.  */
+  /* The struct_return pointer occupies the first parameter-passing reg: */
   if (struct_return)
     {
       if (mips_debug)
-	fprintf_unfiltered (gdb_stdlog,
-			    "mips_n32n64_push_dummy_call: struct_return reg=%d 0x%s\n",
-			    argreg, paddr_nz (struct_addr));
-      write_register (argreg++, struct_addr);
+	fprintf_unfiltered(gdb_stdlog,
+			   "mips_n32n64_push_dummy_call: struct_return reg=%d 0x%s\n",
+			   argreg, paddr_nz(struct_addr));
+      write_register(argreg++, struct_addr);
     }
 
   /* Now load as many as possible of the first arguments into
@@ -2730,34 +2752,34 @@ mips_n32n64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
     {
       const gdb_byte *val;
       struct value *arg = args[argnum];
-      struct type *arg_type = check_typedef (value_type (arg));
-      int len = TYPE_LENGTH (arg_type);
-      enum type_code typecode = TYPE_CODE (arg_type);
+      struct type *arg_type = check_typedef(value_type(arg));
+      int len = TYPE_LENGTH(arg_type);
+      enum type_code typecode = TYPE_CODE(arg_type);
 
       if (mips_debug)
-	fprintf_unfiltered (gdb_stdlog,
-			    "mips_n32n64_push_dummy_call: %d len=%d type=%d",
-			    argnum + 1, len, (int) typecode);
+	fprintf_unfiltered(gdb_stdlog,
+			   "mips_n32n64_push_dummy_call: %d len=%d type=%d",
+			   (argnum + 1), len, (int)typecode);
 
-      val = value_contents (arg);
+      val = value_contents(arg);
 
-      if (fp_register_arg_p (typecode, arg_type)
-	  && float_argreg <= MIPS_LAST_FP_ARG_REGNUM)
+      if (fp_register_arg_p(typecode, arg_type)
+	  && (float_argreg <= MIPS_LAST_FP_ARG_REGNUM))
 	{
 	  /* This is a floating point value that fits entirely
 	     in a single register.  */
 	  /* On 32 bit ABI's the float_argreg is further adjusted
 	     above to ensure that it is even register aligned.  */
-	  LONGEST regval = extract_unsigned_integer (val, len);
+	  LONGEST regval = extract_unsigned_integer(val, len);
 	  if (mips_debug)
-	    fprintf_unfiltered (gdb_stdlog, " - fpreg=%d val=%s",
-				float_argreg, phex (regval, len));
-	  write_register (float_argreg++, regval);
+	    fprintf_unfiltered(gdb_stdlog, " - fpreg=%d val=%s",
+			       float_argreg, phex(regval, len));
+	  write_register(float_argreg++, regval);
 
 	  if (mips_debug)
-	    fprintf_unfiltered (gdb_stdlog, " - reg=%d val=%s",
-				argreg, phex (regval, len));
-	  write_register (argreg, regval);
+	    fprintf_unfiltered(gdb_stdlog, " - reg=%d val=%s",
+			       argreg, phex(regval, len));
+	  write_register(argreg, regval);
 	  argreg += 1;
 	}
       else
@@ -2770,25 +2792,25 @@ mips_n32n64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	     them in registers where gcc sometimes puts them on the
 	     stack.  For maximum compatibility, we will put them in
 	     both places.  */
-	  int odd_sized_struct = ((len > mips_abi_regsize (gdbarch))
-				  && (len % mips_abi_regsize (gdbarch) != 0));
+	  int odd_sized_struct = ((len > (int)mips_abi_regsize(gdbarch))
+				  && ((len % mips_abi_regsize(gdbarch)) != 0));
 	  /* Note: Floating-point values that didn't fit into an FP
 	     register are only written to memory.  */
 	  while (len > 0)
 	    {
 	      /* Rememer if the argument was written to the stack.  */
 	      int stack_used_p = 0;
-	      int partial_len = (len < mips_abi_regsize (gdbarch)
-				 ? len : mips_abi_regsize (gdbarch));
+	      int partial_len = ((len < (int)mips_abi_regsize(gdbarch))
+				 ? len : (int)mips_abi_regsize(gdbarch));
 
 	      if (mips_debug)
-		fprintf_unfiltered (gdb_stdlog, " -- partial=%d",
-				    partial_len);
+		fprintf_unfiltered(gdb_stdlog, " -- partial=%d",
+				   partial_len);
 
-	      /* Write this portion of the argument to the stack.  */
-	      if (argreg > MIPS_LAST_ARG_REGNUM
+	      /* Write this portion of the argument to the stack: */
+	      if ((argreg > MIPS_LAST_ARG_REGNUM)
 		  || odd_sized_struct
-		  || fp_register_arg_p (typecode, arg_type))
+		  || fp_register_arg_p(typecode, arg_type))
 		{
 		  /* Should shorter than int integer values be
 		     promoted to int before being stored? */
@@ -2797,35 +2819,36 @@ mips_n32n64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 		  stack_used_p = 1;
 		  if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
 		    {
-		      if (mips_stack_argsize (gdbarch) == 8
-			  && (typecode == TYPE_CODE_INT
-			      || typecode == TYPE_CODE_PTR
-			      || typecode == TYPE_CODE_FLT) && len <= 4)
-			longword_offset = mips_stack_argsize (gdbarch) - len;
+		      if ((mips_stack_argsize(gdbarch) == 8)
+			  && ((typecode == TYPE_CODE_INT)
+			      || (typecode == TYPE_CODE_PTR)
+			      || (typecode == TYPE_CODE_FLT))
+			  && (len <= 4))
+			longword_offset = (mips_stack_argsize(gdbarch) - len);
 		    }
 
 		  if (mips_debug)
 		    {
-		      fprintf_unfiltered (gdb_stdlog, " - stack_offset=0x%s",
-					  paddr_nz (stack_offset));
-		      fprintf_unfiltered (gdb_stdlog, " longword_offset=0x%s",
-					  paddr_nz (longword_offset));
+		      fprintf_unfiltered(gdb_stdlog, " - stack_offset=0x%s",
+					 paddr_nz(stack_offset));
+		      fprintf_unfiltered(gdb_stdlog, " longword_offset=0x%s",
+					 paddr_nz(longword_offset));
 		    }
 
-		  addr = sp + stack_offset + longword_offset;
+		  addr = (sp + stack_offset + longword_offset);
 
 		  if (mips_debug)
 		    {
 		      int i;
-		      fprintf_unfiltered (gdb_stdlog, " @0x%s ",
-					  paddr_nz (addr));
+		      fprintf_unfiltered(gdb_stdlog, " @0x%s ",
+					 paddr_nz(addr));
 		      for (i = 0; i < partial_len; i++)
 			{
-			  fprintf_unfiltered (gdb_stdlog, "%02x",
-					      val[i] & 0xff);
+			  fprintf_unfiltered(gdb_stdlog, "%02x",
+					     (val[i] & 0xff));
 			}
 		    }
-		  write_memory (addr, val, partial_len);
+		  write_memory(addr, val, partial_len);
 		}
 
 	      /* Note!!! This is NOT an else clause.  Odd sized
@@ -2833,11 +2856,11 @@ mips_n32n64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	         arguments will not.  */
 	      /* Write this portion of the argument to a general
 	         purpose register.  */
-	      if (argreg <= MIPS_LAST_ARG_REGNUM
-		  && !fp_register_arg_p (typecode, arg_type))
+	      if ((argreg <= MIPS_LAST_ARG_REGNUM)
+		  && !fp_register_arg_p(typecode, arg_type))
 		{
 		  LONGEST regval =
-		    extract_unsigned_integer (val, partial_len);
+		    extract_unsigned_integer(val, partial_len);
 
 		  /* A non-floating-point argument being passed in a
 		     general register.  If a struct or union, and if
@@ -2862,19 +2885,19 @@ mips_n32n64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 		     identified as such and GDB gets tweaked
 		     accordingly.  */
 
-		  if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG
-		      && partial_len < mips_abi_regsize (gdbarch)
-		      && (typecode == TYPE_CODE_STRUCT ||
-			  typecode == TYPE_CODE_UNION))
-		    regval <<= ((mips_abi_regsize (gdbarch) - partial_len) *
-				TARGET_CHAR_BIT);
+		  if ((TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
+		      && (partial_len < (int)mips_abi_regsize(gdbarch))
+		      && ((typecode == TYPE_CODE_STRUCT)
+			  || (typecode == TYPE_CODE_UNION)))
+		    regval <<= ((mips_abi_regsize(gdbarch) - partial_len)
+				* TARGET_CHAR_BIT);
 
 		  if (mips_debug)
-		    fprintf_filtered (gdb_stdlog, " - reg=%d val=%s",
-				      argreg,
-				      phex (regval,
-					    mips_abi_regsize (gdbarch)));
-		  write_register (argreg, regval);
+		    fprintf_filtered(gdb_stdlog, " - reg=%d val=%s",
+				     argreg,
+				     phex(regval,
+					  mips_abi_regsize(gdbarch)));
+		  write_register(argreg, regval);
 		  argreg++;
 		}
 
@@ -2888,78 +2911,80 @@ mips_n32n64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	         adjusted when it has been used.  */
 
 	      if (stack_used_p)
-		stack_offset += align_up (partial_len,
-					  mips_stack_argsize (gdbarch));
+		stack_offset += align_up(partial_len,
+					 mips_stack_argsize(gdbarch));
 	    }
 	}
       if (mips_debug)
-	fprintf_unfiltered (gdb_stdlog, "\n");
+	fprintf_unfiltered(gdb_stdlog, "\n");
     }
 
-  regcache_cooked_write_signed (regcache, MIPS_SP_REGNUM, sp);
+  regcache_cooked_write_signed(regcache, MIPS_SP_REGNUM, sp);
 
-  /* Return adjusted stack pointer.  */
+  /* Return adjusted stack pointer: */
   return sp;
 }
 
+/* */
 static enum return_value_convention
-mips_n32n64_return_value (struct gdbarch *gdbarch,
-			  struct type *type, struct regcache *regcache,
-			  gdb_byte *readbuf, const gdb_byte *writebuf)
+mips_n32n64_return_value(struct gdbarch *gdbarch,
+			 struct type *type, struct regcache *regcache,
+			 gdb_byte *readbuf, const gdb_byte *writebuf)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
-  if (TYPE_CODE (type) == TYPE_CODE_STRUCT
-      || TYPE_CODE (type) == TYPE_CODE_UNION
-      || TYPE_CODE (type) == TYPE_CODE_ARRAY
-      || TYPE_LENGTH (type) > 2 * mips_abi_regsize (gdbarch))
+  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  if ((TYPE_CODE(type) == TYPE_CODE_STRUCT)
+      || (TYPE_CODE(type) == TYPE_CODE_UNION)
+      || (TYPE_CODE(type) == TYPE_CODE_ARRAY)
+      || (TYPE_LENGTH(type) > (long)(2UL * mips_abi_regsize(gdbarch))))
     return RETURN_VALUE_STRUCT_CONVENTION;
-  else if (TYPE_CODE (type) == TYPE_CODE_FLT
-	   && tdep->mips_fpu_type != MIPS_FPU_NONE)
+  else if ((TYPE_CODE(type) == TYPE_CODE_FLT)
+	   && (tdep->mips_fpu_type != MIPS_FPU_NONE))
     {
       /* A floating-point value belongs in the least significant part
          of FP0.  */
       if (mips_debug)
-	fprintf_unfiltered (gdb_stderr, "Return float in $fp0\n");
-      mips_xfer_register (regcache,
-			  NUM_REGS + mips_regnum (current_gdbarch)->fp0,
-			  TYPE_LENGTH (type),
-			  TARGET_BYTE_ORDER, readbuf, writebuf, 0);
+	fprintf_unfiltered(gdb_stderr, "Return float in $fp0\n");
+      mips_xfer_register(regcache,
+			 (NUM_REGS + mips_regnum(current_gdbarch)->fp0),
+			 TYPE_LENGTH(type), (enum bfd_endian)TARGET_BYTE_ORDER,
+			 readbuf, writebuf, 0);
       return RETURN_VALUE_REGISTER_CONVENTION;
     }
-  else if (TYPE_CODE (type) == TYPE_CODE_STRUCT
-	   && TYPE_NFIELDS (type) <= 2
-	   && TYPE_NFIELDS (type) >= 1
-	   && ((TYPE_NFIELDS (type) == 1
-		&& (TYPE_CODE (TYPE_FIELD_TYPE (type, 0))
+  else if ((TYPE_CODE(type) == TYPE_CODE_STRUCT)
+	   && (TYPE_NFIELDS(type) <= 2)
+	   && (TYPE_NFIELDS(type) >= 1)
+	   && (((TYPE_NFIELDS(type) == 1)
+		&& (TYPE_CODE(TYPE_FIELD_TYPE(type, 0))
 		    == TYPE_CODE_FLT))
-	       || (TYPE_NFIELDS (type) == 2
-		   && (TYPE_CODE (TYPE_FIELD_TYPE (type, 0))
+	       || ((TYPE_NFIELDS(type) == 2)
+		   && (TYPE_CODE(TYPE_FIELD_TYPE(type, 0))
 		       == TYPE_CODE_FLT)
-		   && (TYPE_CODE (TYPE_FIELD_TYPE (type, 1))
+		   && (TYPE_CODE(TYPE_FIELD_TYPE(type, 1))
 		       == TYPE_CODE_FLT)))
-	   && tdep->mips_fpu_type != MIPS_FPU_NONE)
+	   && (tdep->mips_fpu_type != MIPS_FPU_NONE))
     {
       /* A struct that contains one or two floats.  Each value is part
          in the least significant part of their floating point
          register..  */
       int regnum;
       int field;
-      for (field = 0, regnum = mips_regnum (current_gdbarch)->fp0;
-	   field < TYPE_NFIELDS (type); field++, regnum += 2)
+      for (field = 0, regnum = mips_regnum(current_gdbarch)->fp0;
+	   field < TYPE_NFIELDS(type); field++, regnum += 2)
 	{
-	  int offset = (FIELD_BITPOS (TYPE_FIELDS (type)[field])
+	  int offset = (FIELD_BITPOS(TYPE_FIELDS(type)[field])
 			/ TARGET_CHAR_BIT);
 	  if (mips_debug)
-	    fprintf_unfiltered (gdb_stderr, "Return float struct+%d\n",
-				offset);
-	  mips_xfer_register (regcache, NUM_REGS + regnum,
-			      TYPE_LENGTH (TYPE_FIELD_TYPE (type, field)),
-			      TARGET_BYTE_ORDER, readbuf, writebuf, offset);
+	    fprintf_unfiltered(gdb_stderr, "Return float struct+%d\n",
+			       offset);
+	  mips_xfer_register(regcache, (NUM_REGS + regnum),
+			     TYPE_LENGTH(TYPE_FIELD_TYPE(type, field)),
+			     (enum bfd_endian)TARGET_BYTE_ORDER, readbuf,
+			     writebuf, offset);
 	}
       return RETURN_VALUE_REGISTER_CONVENTION;
     }
-  else if (TYPE_CODE (type) == TYPE_CODE_STRUCT
-	   || TYPE_CODE (type) == TYPE_CODE_UNION)
+  else if ((TYPE_CODE(type) == TYPE_CODE_STRUCT)
+	   || (TYPE_CODE(type) == TYPE_CODE_UNION))
     {
       /* A structure or union.  Extract the left justified value,
          regardless of the byte order.  I.e. DO NOT USE
@@ -2988,45 +3013,48 @@ mips_n32n64_return_value (struct gdbarch *gdbarch,
       int offset;
       int regnum;
       for (offset = 0, regnum = MIPS_V0_REGNUM;
-	   offset < TYPE_LENGTH (type);
-	   offset += register_size (current_gdbarch, regnum), regnum++)
+	   offset < TYPE_LENGTH(type);
+	   offset += register_size(current_gdbarch, regnum), regnum++)
 	{
-	  int xfer = register_size (current_gdbarch, regnum);
-	  if (offset + xfer > TYPE_LENGTH (type))
-	    xfer = TYPE_LENGTH (type) - offset;
+	  int xfer = register_size(current_gdbarch, regnum);
+	  if ((offset + xfer) > TYPE_LENGTH(type))
+	    xfer = (TYPE_LENGTH(type) - offset);
 	  if (mips_debug)
-	    fprintf_unfiltered (gdb_stderr, "Return scalar+%d:%d in $%d\n",
-				offset, xfer, regnum);
-	  mips_xfer_register (regcache, NUM_REGS + regnum, xfer,
-			      TARGET_BYTE_ORDER, readbuf, writebuf, offset);
+	    fprintf_unfiltered(gdb_stderr, "Return scalar+%d:%d in $%d\n",
+			       offset, xfer, regnum);
+	  mips_xfer_register(regcache, (NUM_REGS + regnum), xfer,
+			     (enum bfd_endian)TARGET_BYTE_ORDER, readbuf,
+			     writebuf, offset);
 	}
       return RETURN_VALUE_REGISTER_CONVENTION;
     }
 }
 
-/* O32 ABI stuff.  */
-
+/* O32 ABI stuff: */
 static CORE_ADDR
-mips_o32_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
-			  struct regcache *regcache, CORE_ADDR bp_addr,
-			  int nargs, struct value **args, CORE_ADDR sp,
-			  int struct_return, CORE_ADDR struct_addr)
+mips_o32_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
+			 struct regcache *regcache, CORE_ADDR bp_addr,
+			 int nargs, struct value **args, CORE_ADDR sp,
+			 int struct_return, CORE_ADDR struct_addr)
 {
   int argreg;
   int float_argreg;
   int argnum;
   int len = 0;
   int stack_offset = 0;
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  CORE_ADDR func_addr = find_function_addr (function, NULL);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  CORE_ADDR func_addr = find_function_addr(function, NULL);
+  
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
 
-  /* For shared libraries, "t9" needs to point at the function
-     address.  */
-  regcache_cooked_write_signed (regcache, MIPS_T9_REGNUM, func_addr);
+  /* For shared libraries, "t9" needs to point at the function address: */
+  regcache_cooked_write_signed(regcache, MIPS_T9_REGNUM, func_addr);
 
   /* Set the return address register to point to the entry point of
      the program, where a breakpoint lies in wait.  */
-  regcache_cooked_write_signed (regcache, MIPS_RA_REGNUM, bp_addr);
+  regcache_cooked_write_signed(regcache, MIPS_RA_REGNUM, bp_addr);
 
   /* First ensure that the stack and structure return address (if any)
      are properly aligned.  The stack has to be at least 64-bit
@@ -3034,33 +3062,33 @@ mips_o32_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
      aligned.  For n32 and n64, stack frames need to be 128-bit
      aligned, so we round to this widest known alignment.  */
 
-  sp = align_down (sp, 16);
-  struct_addr = align_down (struct_addr, 16);
+  sp = align_down(sp, 16);
+  struct_addr = align_down(struct_addr, 16);
 
-  /* Now make space on the stack for the args.  */
+  /* Now make space on the stack for the args: */
   for (argnum = 0; argnum < nargs; argnum++)
-    len += align_up (TYPE_LENGTH (value_type (args[argnum])),
-		     mips_stack_argsize (gdbarch));
-  sp -= align_up (len, 16);
+    len += align_up(TYPE_LENGTH(value_type(args[argnum])),
+		    mips_stack_argsize(gdbarch));
+  sp -= align_up(len, 16);
 
   if (mips_debug)
-    fprintf_unfiltered (gdb_stdlog,
-			"mips_o32_push_dummy_call: sp=0x%s allocated %ld\n",
-			paddr_nz (sp), (long) align_up (len, 16));
+    fprintf_unfiltered(gdb_stdlog,
+		       "mips_o32_push_dummy_call: sp=0x%s allocated %ld\n",
+		       paddr_nz(sp), (long)align_up(len, 16));
 
-  /* Initialize the integer and float register pointers.  */
+  /* Initialize the integer and float register pointers: */
   argreg = MIPS_A0_REGNUM;
-  float_argreg = mips_fpa0_regnum (current_gdbarch);
+  float_argreg = mips_fpa0_regnum(current_gdbarch);
 
-  /* The struct_return pointer occupies the first parameter-passing reg.  */
+  /* The struct_return pointer occupies the first parameter-passing reg: */
   if (struct_return)
     {
       if (mips_debug)
-	fprintf_unfiltered (gdb_stdlog,
-			    "mips_o32_push_dummy_call: struct_return reg=%d 0x%s\n",
-			    argreg, paddr_nz (struct_addr));
-      write_register (argreg++, struct_addr);
-      stack_offset += mips_stack_argsize (gdbarch);
+	fprintf_unfiltered(gdb_stdlog,
+			   "mips_o32_push_dummy_call: struct_return reg=%d 0x%s\n",
+			   argreg, paddr_nz(struct_addr));
+      write_register(argreg++, struct_addr);
+      stack_offset += mips_stack_argsize(gdbarch);
     }
 
   /* Now load as many as possible of the first arguments into
@@ -3070,24 +3098,24 @@ mips_o32_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
     {
       const gdb_byte *val;
       struct value *arg = args[argnum];
-      struct type *arg_type = check_typedef (value_type (arg));
-      int len = TYPE_LENGTH (arg_type);
-      enum type_code typecode = TYPE_CODE (arg_type);
+      struct type *arg_type = check_typedef(value_type(arg));
+      int len = TYPE_LENGTH(arg_type);
+      enum type_code typecode = TYPE_CODE(arg_type);
 
       if (mips_debug)
-	fprintf_unfiltered (gdb_stdlog,
-			    "mips_o32_push_dummy_call: %d len=%d type=%d",
-			    argnum + 1, len, (int) typecode);
+	fprintf_unfiltered(gdb_stdlog,
+			   "mips_o32_push_dummy_call: %d len=%d type=%d",
+			   (argnum + 1), len, (int)typecode);
 
-      val = value_contents (arg);
+      val = value_contents(arg);
 
       /* 32-bit ABIs always start floating point arguments in an
          even-numbered floating point register.  Round the FP register
          up before the check to see if there are any FP registers
          left.  O32/O64 targets also pass the FP in the integer
          registers so also round up normal registers.  */
-      if (mips_abi_regsize (gdbarch) < 8
-	  && fp_register_arg_p (typecode, arg_type))
+      if ((mips_abi_regsize(gdbarch) < 8)
+	  && fp_register_arg_p(typecode, arg_type))
 	{
 	  if ((float_argreg & 1))
 	    float_argreg++;
@@ -3103,36 +3131,36 @@ mips_o32_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
          arguments in general registers can't hurt non-MIPS16 functions
          because those registers are normally skipped.  */
 
-      if (fp_register_arg_p (typecode, arg_type)
-	  && float_argreg <= MIPS_LAST_FP_ARG_REGNUM)
+      if (fp_register_arg_p(typecode, arg_type)
+	  && (float_argreg <= MIPS_LAST_FP_ARG_REGNUM))
 	{
-	  if (mips_abi_regsize (gdbarch) < 8 && len == 8)
+	  if ((mips_abi_regsize(gdbarch) < 8) && (len == 8))
 	    {
-	      int low_offset = TARGET_BYTE_ORDER == BFD_ENDIAN_BIG ? 4 : 0;
+	      int low_offset = ((TARGET_BYTE_ORDER == BFD_ENDIAN_BIG) ? 4 : 0);
 	      unsigned long regval;
 
 	      /* Write the low word of the double to the even register(s).  */
-	      regval = extract_unsigned_integer (val + low_offset, 4);
+	      regval = extract_unsigned_integer((val + low_offset), 4);
 	      if (mips_debug)
-		fprintf_unfiltered (gdb_stdlog, " - fpreg=%d val=%s",
-				    float_argreg, phex (regval, 4));
-	      write_register (float_argreg++, regval);
+		fprintf_unfiltered(gdb_stdlog, " - fpreg=%d val=%s",
+				   float_argreg, phex(regval, 4));
+	      write_register(float_argreg++, regval);
 	      if (mips_debug)
-		fprintf_unfiltered (gdb_stdlog, " - reg=%d val=%s",
-				    argreg, phex (regval, 4));
-	      write_register (argreg++, regval);
+		fprintf_unfiltered(gdb_stdlog, " - reg=%d val=%s",
+				   argreg, phex(regval, 4));
+	      write_register(argreg++, regval);
 
 	      /* Write the high word of the double to the odd register(s).  */
-	      regval = extract_unsigned_integer (val + 4 - low_offset, 4);
+	      regval = extract_unsigned_integer((val + 4 - low_offset), 4);
 	      if (mips_debug)
-		fprintf_unfiltered (gdb_stdlog, " - fpreg=%d val=%s",
-				    float_argreg, phex (regval, 4));
-	      write_register (float_argreg++, regval);
+		fprintf_unfiltered(gdb_stdlog, " - fpreg=%d val=%s",
+				   float_argreg, phex(regval, 4));
+	      write_register(float_argreg++, regval);
 
 	      if (mips_debug)
-		fprintf_unfiltered (gdb_stdlog, " - reg=%d val=%s",
-				    argreg, phex (regval, 4));
-	      write_register (argreg++, regval);
+		fprintf_unfiltered(gdb_stdlog, " - reg=%d val=%s",
+				   argreg, phex(regval, 4));
+	      write_register(argreg++, regval);
 	    }
 	  else
 	    {
@@ -3140,23 +3168,23 @@ mips_o32_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	         in a single register.  */
 	      /* On 32 bit ABI's the float_argreg is further adjusted
 	         above to ensure that it is even register aligned.  */
-	      LONGEST regval = extract_unsigned_integer (val, len);
+	      LONGEST regval = extract_unsigned_integer(val, len);
 	      if (mips_debug)
-		fprintf_unfiltered (gdb_stdlog, " - fpreg=%d val=%s",
-				    float_argreg, phex (regval, len));
-	      write_register (float_argreg++, regval);
+		fprintf_unfiltered(gdb_stdlog, " - fpreg=%d val=%s",
+				   float_argreg, phex(regval, len));
+	      write_register(float_argreg++, regval);
 	      /* CAGNEY: 32 bit MIPS ABI's always reserve two FP
 	         registers for each argument.  The below is (my
 	         guess) to ensure that the corresponding integer
 	         register has reserved the same space.  */
 	      if (mips_debug)
-		fprintf_unfiltered (gdb_stdlog, " - reg=%d val=%s",
-				    argreg, phex (regval, len));
-	      write_register (argreg, regval);
-	      argreg += (mips_abi_regsize (gdbarch) == 8) ? 1 : 2;
+		fprintf_unfiltered(gdb_stdlog, " - reg=%d val=%s",
+				   argreg, phex(regval, len));
+	      write_register(argreg, regval);
+	      argreg += ((mips_abi_regsize(gdbarch) == 8) ? 1 : 2);
 	    }
-	  /* Reserve space for the FP register.  */
-	  stack_offset += align_up (len, mips_stack_argsize (gdbarch));
+	  /* Reserve space for the FP register: */
+	  stack_offset += align_up(len, mips_stack_argsize(gdbarch));
 	}
       else
 	{
@@ -3168,12 +3196,12 @@ mips_o32_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	     them in registers where gcc sometimes puts them on the
 	     stack.  For maximum compatibility, we will put them in
 	     both places.  */
-	  int odd_sized_struct = ((len > mips_abi_regsize (gdbarch))
-				  && (len % mips_abi_regsize (gdbarch) != 0));
+	  int odd_sized_struct = ((len > (int)mips_abi_regsize(gdbarch))
+				  && (len % mips_abi_regsize(gdbarch) != 0));
 	  /* Structures should be aligned to eight bytes (even arg registers)
 	     on MIPS_ABI_O32, if their first member has double precision.  */
-	  if (mips_abi_regsize (gdbarch) < 8
-	      && mips_type_needs_double_align (arg_type))
+	  if ((mips_abi_regsize(gdbarch) < 8)
+	      && mips_type_needs_double_align(arg_type))
 	    {
 	      if ((argreg & 1))
 		argreg++;
@@ -3184,17 +3212,17 @@ mips_o32_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	    {
 	      /* Remember if the argument was written to the stack.  */
 	      int stack_used_p = 0;
-	      int partial_len = (len < mips_abi_regsize (gdbarch)
-				 ? len : mips_abi_regsize (gdbarch));
+	      int partial_len = ((len < (int)mips_abi_regsize(gdbarch))
+				 ? len : (int)mips_abi_regsize(gdbarch));
 
 	      if (mips_debug)
-		fprintf_unfiltered (gdb_stdlog, " -- partial=%d",
-				    partial_len);
+		fprintf_unfiltered(gdb_stdlog, " -- partial=%d",
+				   partial_len);
 
-	      /* Write this portion of the argument to the stack.  */
-	      if (argreg > MIPS_LAST_ARG_REGNUM
+	      /* Write this portion of the argument to the stack: */
+	      if ((argreg > MIPS_LAST_ARG_REGNUM)
 		  || odd_sized_struct
-		  || fp_register_arg_p (typecode, arg_type))
+		  || fp_register_arg_p(typecode, arg_type))
 		{
 		  /* Should shorter than int integer values be
 		     promoted to int before being stored? */
@@ -3203,35 +3231,36 @@ mips_o32_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 		  stack_used_p = 1;
 		  if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
 		    {
-		      if (mips_stack_argsize (gdbarch) == 8
-			  && (typecode == TYPE_CODE_INT
-			      || typecode == TYPE_CODE_PTR
-			      || typecode == TYPE_CODE_FLT) && len <= 4)
-			longword_offset = mips_stack_argsize (gdbarch) - len;
+		      if ((mips_stack_argsize(gdbarch) == 8)
+			  && ((typecode == TYPE_CODE_INT)
+			      || (typecode == TYPE_CODE_PTR)
+			      || (typecode == TYPE_CODE_FLT))
+			  && (len <= 4))
+			longword_offset = (mips_stack_argsize(gdbarch) - len);
 		    }
 
 		  if (mips_debug)
 		    {
-		      fprintf_unfiltered (gdb_stdlog, " - stack_offset=0x%s",
-					  paddr_nz (stack_offset));
-		      fprintf_unfiltered (gdb_stdlog, " longword_offset=0x%s",
-					  paddr_nz (longword_offset));
+		      fprintf_unfiltered(gdb_stdlog, " - stack_offset=0x%s",
+					 paddr_nz(stack_offset));
+		      fprintf_unfiltered(gdb_stdlog, " longword_offset=0x%s",
+					 paddr_nz(longword_offset));
 		    }
 
-		  addr = sp + stack_offset + longword_offset;
+		  addr = (sp + stack_offset + longword_offset);
 
 		  if (mips_debug)
 		    {
 		      int i;
-		      fprintf_unfiltered (gdb_stdlog, " @0x%s ",
-					  paddr_nz (addr));
+		      fprintf_unfiltered(gdb_stdlog, " @0x%s ",
+					 paddr_nz(addr));
 		      for (i = 0; i < partial_len; i++)
 			{
-			  fprintf_unfiltered (gdb_stdlog, "%02x",
-					      val[i] & 0xff);
+			  fprintf_unfiltered(gdb_stdlog, "%02x",
+					     (val[i] & 0xff));
 			}
 		    }
-		  write_memory (addr, val, partial_len);
+		  write_memory(addr, val, partial_len);
 		}
 
 	      /* Note!!! This is NOT an else clause.  Odd sized
@@ -3239,10 +3268,10 @@ mips_o32_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	         arguments will not.  */
 	      /* Write this portion of the argument to a general
 	         purpose register.  */
-	      if (argreg <= MIPS_LAST_ARG_REGNUM
-		  && !fp_register_arg_p (typecode, arg_type))
+	      if ((argreg <= MIPS_LAST_ARG_REGNUM)
+		  && !fp_register_arg_p(typecode, arg_type))
 		{
-		  LONGEST regval = extract_signed_integer (val, partial_len);
+		  LONGEST regval = extract_signed_integer(val, partial_len);
 		  /* Value may need to be sign extended, because
 		     mips_isa_regsize() != mips_abi_regsize().  */
 
@@ -3271,25 +3300,25 @@ mips_o32_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 		     identified as such and GDB gets tweaked
 		     accordingly.  */
 
-		  if (mips_abi_regsize (gdbarch) < 8
-		      && TARGET_BYTE_ORDER == BFD_ENDIAN_BIG
-		      && partial_len < mips_abi_regsize (gdbarch)
-		      && (typecode == TYPE_CODE_STRUCT ||
-			  typecode == TYPE_CODE_UNION))
-		    regval <<= ((mips_abi_regsize (gdbarch) - partial_len) *
-				TARGET_CHAR_BIT);
+		  if ((mips_abi_regsize(gdbarch) < 8)
+		      && (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
+		      && (partial_len < (int)mips_abi_regsize(gdbarch))
+		      && ((typecode == TYPE_CODE_STRUCT)
+			  || (typecode == TYPE_CODE_UNION)))
+		    regval <<= ((mips_abi_regsize(gdbarch) - partial_len)
+				* TARGET_CHAR_BIT);
 
 		  if (mips_debug)
-		    fprintf_filtered (gdb_stdlog, " - reg=%d val=%s",
-				      argreg,
-				      phex (regval,
-					    mips_abi_regsize (gdbarch)));
-		  write_register (argreg, regval);
+		    fprintf_filtered(gdb_stdlog, " - reg=%d val=%s",
+				     argreg,
+				     phex(regval,
+					  mips_abi_regsize(gdbarch)));
+		  write_register(argreg, regval);
 		  argreg++;
 
 		  /* Prevent subsequent floating point arguments from
 		     being passed in floating point registers.  */
-		  float_argreg = MIPS_LAST_FP_ARG_REGNUM + 1;
+		  float_argreg = (MIPS_LAST_FP_ARG_REGNUM + 1);
 		}
 
 	      len -= partial_len;
@@ -3303,46 +3332,53 @@ mips_o32_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	         refered to as their "home".  Consequently, space is
 	         always allocated.  */
 
-	      stack_offset += align_up (partial_len,
-					mips_stack_argsize (gdbarch));
+	      stack_offset += align_up(partial_len,
+				       mips_stack_argsize(gdbarch));
+	      
+	      if (stack_used_p) {
+		; /* ??? */
+	      }
 	    }
 	}
       if (mips_debug)
-	fprintf_unfiltered (gdb_stdlog, "\n");
+	fprintf_unfiltered(gdb_stdlog, "\n");
     }
 
-  regcache_cooked_write_signed (regcache, MIPS_SP_REGNUM, sp);
+  regcache_cooked_write_signed(regcache, MIPS_SP_REGNUM, sp);
 
-  /* Return adjusted stack pointer.  */
+  /* Return adjusted stack pointer: */
   return sp;
 }
 
+/* */
 static enum return_value_convention
-mips_o32_return_value (struct gdbarch *gdbarch, struct type *type,
-		       struct regcache *regcache,
-		       gdb_byte *readbuf, const gdb_byte *writebuf)
+mips_o32_return_value(struct gdbarch *gdbarch, struct type *type,
+		      struct regcache *regcache, gdb_byte *readbuf,
+		      const gdb_byte *writebuf)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
 
-  if (TYPE_CODE (type) == TYPE_CODE_STRUCT
-      || TYPE_CODE (type) == TYPE_CODE_UNION
-      || TYPE_CODE (type) == TYPE_CODE_ARRAY)
+  if ((TYPE_CODE(type) == TYPE_CODE_STRUCT)
+      || (TYPE_CODE(type) == TYPE_CODE_UNION)
+      || (TYPE_CODE(type) == TYPE_CODE_ARRAY))
     return RETURN_VALUE_STRUCT_CONVENTION;
-  else if (TYPE_CODE (type) == TYPE_CODE_FLT
-	   && TYPE_LENGTH (type) == 4 && tdep->mips_fpu_type != MIPS_FPU_NONE)
+  else if ((TYPE_CODE(type) == TYPE_CODE_FLT)
+	   && (TYPE_LENGTH(type) == 4)
+	   && (tdep->mips_fpu_type != MIPS_FPU_NONE))
     {
       /* A single-precision floating-point value.  It fits in the
          least significant part of FP0.  */
       if (mips_debug)
-	fprintf_unfiltered (gdb_stderr, "Return float in $fp0\n");
-      mips_xfer_register (regcache,
-			  NUM_REGS + mips_regnum (current_gdbarch)->fp0,
-			  TYPE_LENGTH (type),
-			  TARGET_BYTE_ORDER, readbuf, writebuf, 0);
+	fprintf_unfiltered(gdb_stderr, "Return float in $fp0\n");
+      mips_xfer_register(regcache,
+			 (NUM_REGS + mips_regnum(current_gdbarch)->fp0),
+			 TYPE_LENGTH(type), (enum bfd_endian)TARGET_BYTE_ORDER,
+			 readbuf, writebuf, 0);
       return RETURN_VALUE_REGISTER_CONVENTION;
     }
-  else if (TYPE_CODE (type) == TYPE_CODE_FLT
-	   && TYPE_LENGTH (type) == 8 && tdep->mips_fpu_type != MIPS_FPU_NONE)
+  else if ((TYPE_CODE(type) == TYPE_CODE_FLT)
+	   && (TYPE_LENGTH(type) == 8)
+	   && (tdep->mips_fpu_type != MIPS_FPU_NONE))
     {
       /* A double-precision floating-point value.  The most
          significant part goes in FP1, and the least significant in
@@ -3352,23 +3388,27 @@ mips_o32_return_value (struct gdbarch *gdbarch, struct type *type,
       switch (TARGET_BYTE_ORDER)
 	{
 	case BFD_ENDIAN_LITTLE:
-	  mips_xfer_register (regcache,
-			      NUM_REGS + mips_regnum (current_gdbarch)->fp0 +
-			      0, 4, TARGET_BYTE_ORDER, readbuf, writebuf, 0);
-	  mips_xfer_register (regcache,
-			      NUM_REGS + mips_regnum (current_gdbarch)->fp0 +
-			      1, 4, TARGET_BYTE_ORDER, readbuf, writebuf, 4);
+	  mips_xfer_register(regcache,
+			     (NUM_REGS + mips_regnum(current_gdbarch)->fp0
+			      + 0), 4, (enum bfd_endian)TARGET_BYTE_ORDER,
+			     readbuf, writebuf, 0);
+	  mips_xfer_register(regcache,
+			     (NUM_REGS + mips_regnum(current_gdbarch)->fp0
+			      + 1), 4, (enum bfd_endian)TARGET_BYTE_ORDER,
+			     readbuf, writebuf, 4);
 	  break;
 	case BFD_ENDIAN_BIG:
-	  mips_xfer_register (regcache,
-			      NUM_REGS + mips_regnum (current_gdbarch)->fp0 +
-			      1, 4, TARGET_BYTE_ORDER, readbuf, writebuf, 0);
-	  mips_xfer_register (regcache,
-			      NUM_REGS + mips_regnum (current_gdbarch)->fp0 +
-			      0, 4, TARGET_BYTE_ORDER, readbuf, writebuf, 4);
+	  mips_xfer_register(regcache,
+			     (NUM_REGS + mips_regnum(current_gdbarch)->fp0
+			      + 1), 4, (enum bfd_endian)TARGET_BYTE_ORDER,
+			     readbuf, writebuf, 0);
+	  mips_xfer_register(regcache,
+			     (NUM_REGS + mips_regnum(current_gdbarch)->fp0
+			      + 0), 4, (enum bfd_endian)TARGET_BYTE_ORDER,
+			     readbuf, writebuf, 4);
 	  break;
 	default:
-	  internal_error (__FILE__, __LINE__, _("bad switch"));
+	  internal_error(__FILE__, __LINE__, _("bad switch"));
 	}
       return RETURN_VALUE_REGISTER_CONVENTION;
     }
@@ -3406,7 +3446,7 @@ mips_o32_return_value (struct gdbarch *gdbarch, struct type *type,
 	}
       return RETURN_VALUE_REGISTER_CONVENTION;
     }
-#endif
+#endif /* 0 */
 #if 0
   else if (TYPE_CODE (type) == TYPE_CODE_STRUCT
 	   || TYPE_CODE (type) == TYPE_CODE_UNION)
@@ -3431,7 +3471,7 @@ mips_o32_return_value (struct gdbarch *gdbarch, struct type *type,
 	}
       return RETURN_VALUE_REGISTER_CONVENTION;
     }
-#endif
+#endif /* 0 */
   else
     {
       /* A scalar extract each part but least-significant-byte
@@ -3440,39 +3480,41 @@ mips_o32_return_value (struct gdbarch *gdbarch, struct type *type,
       int offset;
       int regnum;
       for (offset = 0, regnum = MIPS_V0_REGNUM;
-	   offset < TYPE_LENGTH (type);
-	   offset += mips_stack_argsize (gdbarch), regnum++)
+	   offset < TYPE_LENGTH(type);
+	   offset += mips_stack_argsize(gdbarch), regnum++)
 	{
-	  int xfer = mips_stack_argsize (gdbarch);
-	  if (offset + xfer > TYPE_LENGTH (type))
-	    xfer = TYPE_LENGTH (type) - offset;
+	  int xfer = mips_stack_argsize(gdbarch);
+	  if ((offset + xfer) > TYPE_LENGTH(type))
+	    xfer = (TYPE_LENGTH(type) - offset);
 	  if (mips_debug)
-	    fprintf_unfiltered (gdb_stderr, "Return scalar+%d:%d in $%d\n",
-				offset, xfer, regnum);
-	  mips_xfer_register (regcache, NUM_REGS + regnum, xfer,
-			      TARGET_BYTE_ORDER, readbuf, writebuf, offset);
+	    fprintf_unfiltered(gdb_stderr, "Return scalar+%d:%d in $%d\n",
+			       offset, xfer, regnum);
+	  mips_xfer_register(regcache, (NUM_REGS + regnum), xfer,
+			     (enum bfd_endian)TARGET_BYTE_ORDER, readbuf,
+			     writebuf, offset);
 	}
       return RETURN_VALUE_REGISTER_CONVENTION;
     }
 }
 
-/* O64 ABI.  This is a hacked up kind of 64-bit version of the o32
-   ABI.  */
-
+/* O64 ABI.  This is a hacked up kind of 64-bit version of the o32 ABI: */
 static CORE_ADDR
-mips_o64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
-			  struct regcache *regcache, CORE_ADDR bp_addr,
-			  int nargs,
-			  struct value **args, CORE_ADDR sp,
-			  int struct_return, CORE_ADDR struct_addr)
+mips_o64_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
+			 struct regcache *regcache, CORE_ADDR bp_addr,
+			 int nargs, struct value **args, CORE_ADDR sp,
+			 int struct_return, CORE_ADDR struct_addr)
 {
   int argreg;
   int float_argreg;
   int argnum;
   int len = 0;
   int stack_offset = 0;
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  CORE_ADDR func_addr = find_function_addr (function, NULL);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  CORE_ADDR func_addr = find_function_addr(function, NULL);
+  
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
 
   /* For shared libraries, "t9" needs to point at the function
      address.  */
@@ -3622,12 +3664,12 @@ mips_o64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	     them in registers where gcc sometimes puts them on the
 	     stack.  For maximum compatibility, we will put them in
 	     both places.  */
-	  int odd_sized_struct = ((len > mips_abi_regsize (gdbarch))
-				  && (len % mips_abi_regsize (gdbarch) != 0));
+	  int odd_sized_struct = ((len > (int)mips_abi_regsize(gdbarch))
+				  && (len % mips_abi_regsize(gdbarch) != 0));
 	  /* Structures should be aligned to eight bytes (even arg registers)
 	     on MIPS_ABI_O32, if their first member has double precision.  */
-	  if (mips_abi_regsize (gdbarch) < 8
-	      && mips_type_needs_double_align (arg_type))
+	  if ((mips_abi_regsize(gdbarch) < 8)
+	      && mips_type_needs_double_align(arg_type))
 	    {
 	      if ((argreg & 1))
 		argreg++;
@@ -3636,19 +3678,19 @@ mips_o64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	     register are only written to memory.  */
 	  while (len > 0)
 	    {
-	      /* Remember if the argument was written to the stack.  */
+	      /* Remember if the argument was written to the stack: */
 	      int stack_used_p = 0;
-	      int partial_len = (len < mips_abi_regsize (gdbarch)
-				 ? len : mips_abi_regsize (gdbarch));
+	      int partial_len = ((len < (int)mips_abi_regsize(gdbarch))
+				 ? len : (int)mips_abi_regsize(gdbarch));
 
 	      if (mips_debug)
-		fprintf_unfiltered (gdb_stdlog, " -- partial=%d",
-				    partial_len);
+		fprintf_unfiltered(gdb_stdlog, " -- partial=%d",
+				   partial_len);
 
 	      /* Write this portion of the argument to the stack.  */
-	      if (argreg > MIPS_LAST_ARG_REGNUM
+	      if ((argreg > MIPS_LAST_ARG_REGNUM)
 		  || odd_sized_struct
-		  || fp_register_arg_p (typecode, arg_type))
+		  || fp_register_arg_p(typecode, arg_type))
 		{
 		  /* Should shorter than int integer values be
 		     promoted to int before being stored? */
@@ -3657,35 +3699,35 @@ mips_o64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 		  stack_used_p = 1;
 		  if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
 		    {
-		      if (mips_stack_argsize (gdbarch) == 8
-			  && (typecode == TYPE_CODE_INT
-			      || typecode == TYPE_CODE_PTR
-			      || typecode == TYPE_CODE_FLT) && len <= 4)
-			longword_offset = mips_stack_argsize (gdbarch) - len;
+		      if ((mips_stack_argsize(gdbarch) == 8)
+			  && ((typecode == TYPE_CODE_INT)
+			      || (typecode == TYPE_CODE_PTR)
+			      || (typecode == TYPE_CODE_FLT)) && (len <= 4))
+			longword_offset = (mips_stack_argsize(gdbarch) - len);
 		    }
 
 		  if (mips_debug)
 		    {
-		      fprintf_unfiltered (gdb_stdlog, " - stack_offset=0x%s",
-					  paddr_nz (stack_offset));
-		      fprintf_unfiltered (gdb_stdlog, " longword_offset=0x%s",
-					  paddr_nz (longword_offset));
+		      fprintf_unfiltered(gdb_stdlog, " - stack_offset=0x%s",
+					 paddr_nz(stack_offset));
+		      fprintf_unfiltered(gdb_stdlog, " longword_offset=0x%s",
+					 paddr_nz(longword_offset));
 		    }
 
-		  addr = sp + stack_offset + longword_offset;
+		  addr = (sp + stack_offset + longword_offset);
 
 		  if (mips_debug)
 		    {
 		      int i;
-		      fprintf_unfiltered (gdb_stdlog, " @0x%s ",
-					  paddr_nz (addr));
+		      fprintf_unfiltered(gdb_stdlog, " @0x%s ",
+					 paddr_nz(addr));
 		      for (i = 0; i < partial_len; i++)
 			{
-			  fprintf_unfiltered (gdb_stdlog, "%02x",
-					      val[i] & 0xff);
+			  fprintf_unfiltered(gdb_stdlog, "%02x",
+					     (val[i] & 0xff));
 			}
 		    }
-		  write_memory (addr, val, partial_len);
+		  write_memory(addr, val, partial_len);
 		}
 
 	      /* Note!!! This is NOT an else clause.  Odd sized
@@ -3693,10 +3735,10 @@ mips_o64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	         arguments will not.  */
 	      /* Write this portion of the argument to a general
 	         purpose register.  */
-	      if (argreg <= MIPS_LAST_ARG_REGNUM
-		  && !fp_register_arg_p (typecode, arg_type))
+	      if ((argreg <= MIPS_LAST_ARG_REGNUM)
+		  && !fp_register_arg_p(typecode, arg_type))
 		{
-		  LONGEST regval = extract_signed_integer (val, partial_len);
+		  LONGEST regval = extract_signed_integer(val, partial_len);
 		  /* Value may need to be sign extended, because
 		     mips_isa_regsize() != mips_abi_regsize().  */
 
@@ -3725,25 +3767,25 @@ mips_o64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 		     identified as such and GDB gets tweaked
 		     accordingly.  */
 
-		  if (mips_abi_regsize (gdbarch) < 8
-		      && TARGET_BYTE_ORDER == BFD_ENDIAN_BIG
-		      && partial_len < mips_abi_regsize (gdbarch)
-		      && (typecode == TYPE_CODE_STRUCT ||
-			  typecode == TYPE_CODE_UNION))
-		    regval <<= ((mips_abi_regsize (gdbarch) - partial_len) *
-				TARGET_CHAR_BIT);
+		  if ((mips_abi_regsize(gdbarch) < 8)
+		      && (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
+		      && (partial_len < (int)mips_abi_regsize(gdbarch))
+		      && ((typecode == TYPE_CODE_STRUCT)
+			  || (typecode == TYPE_CODE_UNION)))
+		    regval <<= ((mips_abi_regsize(gdbarch) - partial_len)
+				* TARGET_CHAR_BIT);
 
 		  if (mips_debug)
-		    fprintf_filtered (gdb_stdlog, " - reg=%d val=%s",
-				      argreg,
-				      phex (regval,
-					    mips_abi_regsize (gdbarch)));
-		  write_register (argreg, regval);
+		    fprintf_filtered(gdb_stdlog, " - reg=%d val=%s",
+				     argreg,
+				     phex(regval,
+					  mips_abi_regsize(gdbarch)));
+		  write_register(argreg, regval);
 		  argreg++;
 
 		  /* Prevent subsequent floating point arguments from
 		     being passed in floating point registers.  */
-		  float_argreg = MIPS_LAST_FP_ARG_REGNUM + 1;
+		  float_argreg = (MIPS_LAST_FP_ARG_REGNUM + 1);
 		}
 
 	      len -= partial_len;
@@ -3757,24 +3799,29 @@ mips_o64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	         refered to as their "home".  Consequently, space is
 	         always allocated.  */
 
-	      stack_offset += align_up (partial_len,
-					mips_stack_argsize (gdbarch));
+	      stack_offset += align_up(partial_len,
+				       mips_stack_argsize(gdbarch));
+	      
+	      if (stack_used_p) {
+		; /* ??? */
+	      }
 	    }
 	}
       if (mips_debug)
-	fprintf_unfiltered (gdb_stdlog, "\n");
+	fprintf_unfiltered(gdb_stdlog, "\n");
     }
 
-  regcache_cooked_write_signed (regcache, MIPS_SP_REGNUM, sp);
+  regcache_cooked_write_signed(regcache, MIPS_SP_REGNUM, sp);
 
-  /* Return adjusted stack pointer.  */
+  /* Return adjusted stack pointer: */
   return sp;
 }
 
+/* */
 static enum return_value_convention
-mips_o64_return_value (struct gdbarch *gdbarch,
-		       struct type *type, struct regcache *regcache,
-		       gdb_byte *readbuf, const gdb_byte *writebuf)
+mips_o64_return_value(struct gdbarch *gdbarch, struct type *type,
+		      struct regcache *regcache, gdb_byte *readbuf,
+		      const gdb_byte *writebuf)
 {
   return RETURN_VALUE_STRUCT_CONVENTION;
 }
@@ -3829,16 +3876,15 @@ mips_double_register_type (void)
 
 /* Copy a 32-bit single-precision value from the current frame
    into rare_buffer.  */
-
 static void
-mips_read_fp_register_single (struct frame_info *frame, int regno,
-			      gdb_byte *rare_buffer)
+mips_read_fp_register_single(struct frame_info *frame, int regno,
+			     gdb_byte *rare_buffer)
 {
-  int raw_size = register_size (current_gdbarch, regno);
-  gdb_byte *raw_buffer = alloca (raw_size);
+  int raw_size = register_size(current_gdbarch, regno);
+  gdb_byte *raw_buffer = (gdb_byte *)alloca(raw_size);
 
-  if (!frame_register_read (frame, regno, raw_buffer))
-    error (_("can't read register %d (%s)"), regno, REGISTER_NAME (regno));
+  if (!frame_register_read(frame, regno, raw_buffer))
+    error(_("cannot read register %d (%s)"), regno, REGISTER_NAME(regno));
   if (raw_size == 8)
     {
       /* We have a 64-bit value for this register.  Find the low-order
@@ -3897,74 +3943,79 @@ mips_read_fp_register_double (struct frame_info *frame, int regno,
     }
 }
 
+/* */
 static void
-mips_print_fp_register (struct ui_file *file, struct frame_info *frame,
-			int regnum)
+mips_print_fp_register(struct ui_file *file, struct frame_info *frame,
+		       int regnum)
 {				/* do values for FP (float) regs */
   gdb_byte *raw_buffer;
   double doub, flt1;	/* doubles extracted from raw hex data */
   int inv1, inv2;
 
-  raw_buffer = alloca (2 * register_size (current_gdbarch,
-					  mips_regnum (current_gdbarch)->fp0));
+  raw_buffer = ((gdb_byte *)
+		alloca(2UL * register_size(current_gdbarch,
+					   mips_regnum(current_gdbarch)->fp0)));
 
-  fprintf_filtered (file, "%s:", REGISTER_NAME (regnum));
-  fprintf_filtered (file, "%*s", 4 - (int) strlen (REGISTER_NAME (regnum)),
-		    "");
+  fprintf_filtered(file, "%s:", REGISTER_NAME(regnum));
+  fprintf_filtered(file, "%*s", (4 - (int)strlen(REGISTER_NAME(regnum))),
+		   "");
 
-  if (register_size (current_gdbarch, regnum) == 4 || mips2_fp_compat ())
+  if ((register_size(current_gdbarch, regnum) == 4) || mips2_fp_compat())
     {
       /* 4-byte registers: Print hex and floating.  Also print even
          numbered registers as doubles.  */
-      mips_read_fp_register_single (frame, regnum, raw_buffer);
-      flt1 = unpack_double (mips_float_register_type (), raw_buffer, &inv1);
+      mips_read_fp_register_single(frame, regnum, raw_buffer);
+      flt1 = (double)unpack_double(mips_float_register_type(), raw_buffer,
+				   &inv1);
 
-      print_scalar_formatted (raw_buffer, builtin_type_uint32, 'x', 'w',
-			      file);
+      print_scalar_formatted(raw_buffer, builtin_type_uint32, 'x', 'w',
+			     file);
 
-      fprintf_filtered (file, " flt: ");
+      fprintf_filtered(file, " flt: ");
       if (inv1)
-	fprintf_filtered (file, " <invalid float> ");
+	fprintf_filtered(file, " <invalid float> ");
       else
-	fprintf_filtered (file, "%-17.9g", flt1);
+	fprintf_filtered(file, "%-17.9g", flt1);
 
-      if (regnum % 2 == 0)
+      if ((regnum % 2) == 0)
 	{
-	  mips_read_fp_register_double (frame, regnum, raw_buffer);
-	  doub = unpack_double (mips_double_register_type (), raw_buffer,
-				&inv2);
+	  mips_read_fp_register_double(frame, regnum, raw_buffer);
+	  doub = (double)unpack_double(mips_double_register_type(), raw_buffer,
+				       &inv2);
 
-	  fprintf_filtered (file, " dbl: ");
+	  fprintf_filtered(file, " dbl: ");
 	  if (inv2)
-	    fprintf_filtered (file, "<invalid double>");
+	    fprintf_filtered(file, "<invalid double>");
 	  else
-	    fprintf_filtered (file, "%-24.17g", doub);
+	    fprintf_filtered(file, "%-24.17g", doub);
 	}
     }
   else
     {
       /* Eight byte registers: print each one as hex, float and double.  */
-      mips_read_fp_register_single (frame, regnum, raw_buffer);
-      flt1 = unpack_double (mips_float_register_type (), raw_buffer, &inv1);
+      mips_read_fp_register_single(frame, regnum, raw_buffer);
+      flt1 = (double)unpack_double(mips_float_register_type(), raw_buffer,
+				   &inv1);
 
-      mips_read_fp_register_double (frame, regnum, raw_buffer);
-      doub = unpack_double (mips_double_register_type (), raw_buffer, &inv2);
+      mips_read_fp_register_double(frame, regnum, raw_buffer);
+      doub = (double)unpack_double(mips_double_register_type(), raw_buffer,
+				   &inv2);
 
 
-      print_scalar_formatted (raw_buffer, builtin_type_uint64, 'x', 'g',
-			      file);
+      print_scalar_formatted(raw_buffer, builtin_type_uint64, 'x', 'g',
+			     file);
 
-      fprintf_filtered (file, " flt: ");
+      fprintf_filtered(file, " flt: ");
       if (inv1)
-	fprintf_filtered (file, "<invalid float>");
+	fprintf_filtered(file, "<invalid float>");
       else
-	fprintf_filtered (file, "%-17.9g", flt1);
+	fprintf_filtered(file, "%-17.9g", flt1);
 
-      fprintf_filtered (file, " dbl: ");
+      fprintf_filtered(file, " dbl: ");
       if (inv2)
-	fprintf_filtered (file, "<invalid double>");
+	fprintf_filtered(file, "<invalid double>");
       else
-	fprintf_filtered (file, "%-24.17g", doub);
+	fprintf_filtered(file, "%-24.17g", doub);
     }
 }
 
@@ -4070,13 +4121,13 @@ print_gp_register_row (struct ui_file *file, struct frame_info *frame,
 	  TYPE_CODE_FLT)
 	break;			/* end row: reached FP register */
       /* OK: get the data in raw format.  */
-      if (!frame_register_read (frame, regnum, raw_buffer))
-	error (_("can't read register %d (%s)"), regnum, REGISTER_NAME (regnum));
+      if (!frame_register_read(frame, regnum, raw_buffer))
+	error(_("cannot read register %d (%s)"), regnum, REGISTER_NAME(regnum));
       /* pad small registers */
       for (byte = 0;
-	   byte < (mips_abi_regsize (current_gdbarch)
-		   - register_size (current_gdbarch, regnum)); byte++)
-	printf_filtered ("  ");
+	   byte < (int)(mips_abi_regsize(current_gdbarch)
+			- register_size(current_gdbarch, regnum)); byte++)
+	printf_filtered("  ");
       /* Now print the register value in hex, endian order. */
       if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
 	for (byte =
@@ -4148,15 +4199,16 @@ is_delayed (unsigned long insn)
 				       | INSN_COND_BRANCH_LIKELY)));
 }
 
+/* */
 int
-mips_single_step_through_delay (struct gdbarch *gdbarch,
-				struct frame_info *frame)
+mips_single_step_through_delay(struct gdbarch *gdbarch,
+			       struct frame_info *frame)
 {
-  CORE_ADDR pc = get_frame_pc (frame);
+  CORE_ADDR pc = get_frame_pc(frame);
   gdb_byte buf[MIPS_INSN32_SIZE];
 
-  /* There is no branch delay slot on MIPS16.  */
-  if (mips_pc_is_mips16 (pc))
+  /* There is no branch delay slot on MIPS16: */
+  if (mips_pc_is_mips16(pc))
     return 0;
 
   if (!breakpoint_here_p (pc + 4))
@@ -4212,27 +4264,26 @@ mips_skip_prologue (CORE_ADDR pc)
 
 /* Root of all "set mips "/"show mips " commands. This will eventually be
    used for all MIPS-specific commands.  */
-
+/* show */
 static void
-show_mips_command (char *args, int from_tty)
+show_mips_command(const char *args, int from_tty)
 {
-  help_list (showmipscmdlist, "show mips ", all_commands, gdb_stdout);
+  help_list(showmipscmdlist, "show mips ", all_commands, gdb_stdout);
 }
 
+/* set */
 static void
-set_mips_command (char *args, int from_tty)
+set_mips_command(const char *args, int from_tty)
 {
-  printf_unfiltered
-    ("\"set mips\" must be followed by an appropriate subcommand.\n");
-  help_list (setmipscmdlist, "set mips ", all_commands, gdb_stdout);
+  printf_unfiltered("\"set mips\" must be followed by an appropriate subcommand.\n");
+  help_list(setmipscmdlist, "set mips ", all_commands, gdb_stdout);
 }
 
 /* Commands to show/set the MIPS FPU type.  */
-
 static void
-show_mipsfpu_command (char *args, int from_tty)
+show_mipsfpu_command(const char *args, int from_tty)
 {
-  char *fpu;
+  const char *fpu;
   switch (MIPS_FPU_TYPE)
     {
     case MIPS_FPU_SINGLE:
@@ -4245,31 +4296,29 @@ show_mipsfpu_command (char *args, int from_tty)
       fpu = "absent (none)";
       break;
     default:
-      internal_error (__FILE__, __LINE__, _("bad switch"));
+      internal_error(__FILE__, __LINE__, _("bad switch"));
     }
   if (mips_fpu_type_auto)
-    printf_unfiltered
-      ("The MIPS floating-point coprocessor is set automatically (currently %s)\n",
-       fpu);
+    printf_unfiltered("The MIPS floating-point coprocessor is set automatically"
+		      " (currently %s)\n", fpu);
   else
-    printf_unfiltered
-      ("The MIPS floating-point coprocessor is assumed to be %s\n", fpu);
+    printf_unfiltered("Assuming MIPS floating-point coprocessor is %s\n", fpu);
 }
 
-
+/* */
 static void
-set_mipsfpu_command (char *args, int from_tty)
+set_mipsfpu_command(const char *args, int from_tty)
 {
-  printf_unfiltered
-    ("\"set mipsfpu\" must be followed by \"double\", \"single\",\"none\" or \"auto\".\n");
-  show_mipsfpu_command (args, from_tty);
+  printf_unfiltered("\"set mipsfpu\" must be followed by \"double\", \"single\",\"none\" or \"auto\".\n");
+  show_mipsfpu_command(args, from_tty);
 }
 
+/* */
 static void
-set_mipsfpu_single_command (char *args, int from_tty)
+set_mipsfpu_single_command(const char *args, int from_tty)
 {
   struct gdbarch_info info;
-  gdbarch_info_init (&info);
+  gdbarch_info_init(&info);
   mips_fpu_type = MIPS_FPU_SINGLE;
   mips_fpu_type_auto = 0;
   /* FIXME: cagney/2003-11-15: Should be setting a field in "info"
@@ -4279,8 +4328,9 @@ set_mipsfpu_single_command (char *args, int from_tty)
     internal_error (__FILE__, __LINE__, _("set mipsfpu failed"));
 }
 
+/* */
 static void
-set_mipsfpu_double_command (char *args, int from_tty)
+set_mipsfpu_double_command(const char *args, int from_tty)
 {
   struct gdbarch_info info;
   gdbarch_info_init (&info);
@@ -4293,8 +4343,9 @@ set_mipsfpu_double_command (char *args, int from_tty)
     internal_error (__FILE__, __LINE__, _("set mipsfpu failed"));
 }
 
+/* */
 static void
-set_mipsfpu_none_command (char *args, int from_tty)
+set_mipsfpu_none_command(const char *args, int from_tty)
 {
   struct gdbarch_info info;
   gdbarch_info_init (&info);
@@ -4307,8 +4358,10 @@ set_mipsfpu_none_command (char *args, int from_tty)
     internal_error (__FILE__, __LINE__, _("set mipsfpu failed"));
 }
 
+/* */
 static void
-set_mipsfpu_auto_command (char *args, int from_tty)
+set_mipsfpu_auto_command(const char *args ATTRIBUTE_UNUSED,
+			 int from_tty ATTRIBUTE_UNUSED)
 {
   mips_fpu_type_auto = 1;
 }
@@ -4333,38 +4386,39 @@ deprecated_mips_set_processor_regs_hack (void)
 
 /* Just like reinit_frame_cache, but with the right arguments to be
    callable as an sfunc.  */
-
 static void
-reinit_frame_cache_sfunc (char *args, int from_tty,
-			  struct cmd_list_element *c)
+reinit_frame_cache_sfunc(const char *args ATTRIBUTE_UNUSED,
+			 int from_tty ATTRIBUTE_UNUSED,
+			 struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {
-  reinit_frame_cache ();
+  reinit_frame_cache();
 }
 
+/* */
 static int
-gdb_print_insn_mips (bfd_vma memaddr, struct disassemble_info *info)
+gdb_print_insn_mips(bfd_vma memaddr, struct disassemble_info *info)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
 
   /* FIXME: cagney/2003-06-26: Is this even necessary?  The
      disassembler needs to be able to locally determine the ISA, and
      not rely on GDB.  Otherwize the stand-alone 'objdump -d' will not
      work.  */
-  if (mips_pc_is_mips16 (memaddr))
+  if (mips_pc_is_mips16(memaddr))
     info->mach = bfd_mach_mips16;
 
   /* Round down the instruction address to the appropriate boundary.  */
-  memaddr &= (info->mach == bfd_mach_mips16 ? ~1 : ~3);
+  memaddr &= ((info->mach == bfd_mach_mips16) ? ~1 : ~3);
 
   /* Set the disassembler options.  */
-  if (tdep->mips_abi == MIPS_ABI_N32 || tdep->mips_abi == MIPS_ABI_N64)
+  if ((tdep->mips_abi == MIPS_ABI_N32) || (tdep->mips_abi == MIPS_ABI_N64))
     {
       /* Set up the disassembler info, so that we get the right
          register names from libopcodes.  */
       if (tdep->mips_abi == MIPS_ABI_N32)
-	info->disassembler_options = "gpr-names=n32";
+	info->disassembler_options = (char *)"gpr-names=n32";
       else
-	info->disassembler_options = "gpr-names=64";
+	info->disassembler_options = (char *)"gpr-names=64";
       info->flavour = bfd_target_elf_flavour;
     }
   else
@@ -4373,13 +4427,13 @@ gdb_print_insn_mips (bfd_vma memaddr, struct disassemble_info *info)
        the bfd elf headers, such that, if the user overrides the ABI
        of a program linked as NewABI, the disassembly will follow the
        register naming conventions specified by the user.  */
-    info->disassembler_options = "gpr-names=32";
+    info->disassembler_options = (char *)"gpr-names=32";
 
   /* Call the appropriate disassembler based on the target endian-ness.  */
   if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
-    return print_insn_big_mips (memaddr, info);
+    return print_insn_big_mips(memaddr, info);
   else
-    return print_insn_little_mips (memaddr, info);
+    return print_insn_little_mips(memaddr, info);
 }
 
 /* This function implements the BREAKPOINT_FROM_PC macro.  It uses the program
@@ -4466,15 +4520,14 @@ mips_breakpoint_from_pc (CORE_ADDR *pcptr, int *lenptr)
 
    See the source code for the stubs in gcc/config/mips/mips16.S for
    gory details.  */
-
 static CORE_ADDR
-mips_skip_trampoline_code (CORE_ADDR pc)
+mips_skip_trampoline_code(CORE_ADDR pc)
 {
-  char *name;
+  const char *name;
   CORE_ADDR start_addr;
 
-  /* Find the starting address and name of the function containing the PC.  */
-  if (find_pc_partial_function (pc, &name, &start_addr, NULL) == 0)
+  /* Find the starting address and name of the function containing the PC: */
+  if (find_pc_partial_function(pc, &name, &start_addr, NULL) == 0)
     return 0;
 
   /* If the PC is in __mips16_ret_{d,s}f, this is a return stub and the
@@ -4611,23 +4664,23 @@ mips_register_sim_regno (int regnum)
 /* Convert an integer into an address.  By first converting the value
    into a pointer and then extracting it signed, the address is
    guarenteed to be correctly sign extended.  */
-
 static CORE_ADDR
-mips_integer_to_address (struct gdbarch *gdbarch,
-			 struct type *type, const gdb_byte *buf)
+mips_integer_to_address(struct gdbarch *gdbarch,
+			struct type *type, const gdb_byte *buf)
 {
-  gdb_byte *tmp = alloca (TYPE_LENGTH (builtin_type_void_data_ptr));
-  LONGEST val = unpack_long (type, buf);
-  store_signed_integer (tmp, TYPE_LENGTH (builtin_type_void_data_ptr), val);
-  return extract_signed_integer (tmp,
-				 TYPE_LENGTH (builtin_type_void_data_ptr));
+  gdb_byte *tmp = (gdb_byte *)alloca(TYPE_LENGTH(builtin_type_void_data_ptr));
+  LONGEST val = unpack_long(type, buf);
+  store_signed_integer(tmp, TYPE_LENGTH(builtin_type_void_data_ptr), val);
+  return extract_signed_integer(tmp,
+				TYPE_LENGTH(builtin_type_void_data_ptr));
 }
 
+/* */
 static void
-mips_find_abi_section (bfd *abfd, asection *sect, void *obj)
+mips_find_abi_section(bfd *abfd, asection *sect, void *obj)
 {
-  enum mips_abi *abip = (enum mips_abi *) obj;
-  const char *name = bfd_get_section_name (abfd, sect);
+  enum mips_abi *abip = (enum mips_abi *)obj;
+  const char *name = bfd_get_section_name(abfd, sect);
 
   if (*abip != MIPS_ABI_UNKNOWN)
     return;
@@ -5059,8 +5112,10 @@ mips_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   return gdbarch;
 }
 
+/* */
 static void
-mips_abi_update (char *ignore_args, int from_tty, struct cmd_list_element *c)
+mips_abi_update(const char *ignore_args, int from_tty,
+		struct cmd_list_element *c)
 {
   struct gdbarch_info info;
 
@@ -5176,13 +5231,15 @@ mips_dump_tdep (struct gdbarch *current_gdbarch, struct ui_file *file)
 		      mips_stack_argsize (current_gdbarch));
 }
 
-extern initialize_file_ftype _initialize_mips_tdep;	/* -Wmissing-prototypes */
+extern initialize_file_ftype _initialize_mips_tdep; /* -Wmissing-prototypes */
 
 void
-_initialize_mips_tdep (void)
+_initialize_mips_tdep(void)
 {
   static struct cmd_list_element *mipsfpulist = NULL;
+#ifdef ALLOW_UNUSED_VARIABLES
   struct cmd_list_element *c;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
   mips_abi_string = mips_abi_strings[MIPS_ABI_UNKNOWN];
   if (MIPS_ABI_LAST + 1
@@ -5278,16 +5335,16 @@ This option can be set to one of:\n\
   /* We really would like to have both "0" and "unlimited" work, but
      command.c doesn't deal with that.  So make it a var_zinteger
      because the user can always use "999999" or some such for unlimited.  */
-  add_setshow_zinteger_cmd ("heuristic-fence-post", class_support,
-			    &heuristic_fence_post, _("\
+  add_setshow_zinteger_cmd("heuristic-fence-post", class_support,
+			   (int *)&heuristic_fence_post, _("\
 Set the distance searched for the start of a function."), _("\
 Show the distance searched for the start of a function."), _("\
 If you are debugging a stripped executable, GDB needs to search through the\n\
 program for the start of a function.  This command sets the distance of the\n\
 search.  The only need to set it is when debugging a stripped executable."),
-			    reinit_frame_cache_sfunc,
-			    NULL, /* FIXME: i18n: The distance searched for the start of a function is %s.  */
-			    &setlist, &showlist);
+			   reinit_frame_cache_sfunc,
+			   NULL, /* FIXME: i18n: The distance searched for the start of a function is %s.  */
+			   &setlist, &showlist);
 
   /* Allow the user to control whether the upper bits of 64-bit
      addresses should be zeroed.  */

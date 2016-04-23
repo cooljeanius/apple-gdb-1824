@@ -873,18 +873,22 @@ m68k_frame_prev_register (struct frame_info *next_frame, void **this_cache,
   *addrp = 0;
   *realnump = regnum;
   if (valuep)
-    frame_unwind_register (next_frame, (*realnump), valuep);
+    frame_unwind_register(next_frame, (*realnump), valuep);
 }
 
 static const struct frame_unwind m68k_frame_unwind =
 {
   NORMAL_FRAME,
   m68k_frame_this_id,
-  m68k_frame_prev_register
+  m68k_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
+/* */
 static const struct frame_unwind *
-m68k_frame_sniffer (struct frame_info *next_frame)
+m68k_frame_sniffer(struct frame_info *next_frame)
 {
   return &m68k_frame_unwind;
 }
