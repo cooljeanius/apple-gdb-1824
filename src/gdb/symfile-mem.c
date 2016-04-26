@@ -112,23 +112,23 @@ symbol_file_add_from_memory (struct bfd *templ, CORE_ADDR addr, char *name,
   objf = symbol_file_add_from_bfd (nbfd, from_tty,
                                    sai, 0, OBJF_SHARED);
 
-  /* This might change our ideas about frames already looked at.  */
-  reinit_frame_cache ();
+  /* This might change our ideas about frames already looked at: */
+  reinit_frame_cache();
 
   return objf;
 }
 
-
+/* */
 static void
-add_symbol_file_from_memory_command (char *args, int from_tty)
+add_symbol_file_from_memory_command(const char *args, int from_tty)
 {
   CORE_ADDR addr;
   struct bfd *templ;
 
   if (args == NULL)
-    error (_("add-symbol-file-from-memory requires an expression argument"));
+    error(_("add-symbol-file-from-memory requires an expression argument"));
 
-  addr = parse_and_eval_address (args);
+  addr = parse_and_eval_address(args);
 
   /* We need some representative bfd to know the target we are looking at.  */
   if (symfile_objfile != NULL)
@@ -156,12 +156,13 @@ struct symbol_file_add_from_memory_args
    catch_exceptions.  */
 
 static int
-symbol_file_add_from_memory_wrapper (struct ui_out *uiout, void *data)
+symbol_file_add_from_memory_wrapper(struct ui_out *uiout, void *data)
 {
-  struct symbol_file_add_from_memory_args *args = data;
+  struct symbol_file_add_from_memory_args *args =
+    (struct symbol_file_add_from_memory_args *)data;
 
-  symbol_file_add_from_memory (args->bfd, args->sysinfo_ehdr, args->name,
-			       args->from_tty);
+  symbol_file_add_from_memory(args->bfd, args->sysinfo_ehdr, args->name,
+			      args->from_tty);
   return 0;
 }
 
@@ -169,15 +170,16 @@ symbol_file_add_from_memory_wrapper (struct ui_out *uiout, void *data)
    is called via the inferior_created observer.  */
 
 static void
-add_vsyscall_page (struct target_ops *target, int from_tty)
+add_vsyscall_page(struct target_ops *target, int from_tty)
 {
   CORE_ADDR sysinfo_ehdr;
 
-  if (target_auxv_search (target, AT_SYSINFO_EHDR, &sysinfo_ehdr) > 0
-      && sysinfo_ehdr != (CORE_ADDR) 0)
+  if ((target_auxv_search(target, AT_SYSINFO_EHDR, &sysinfo_ehdr) > 0)
+      && (sysinfo_ehdr != (CORE_ADDR)0UL))
     {
       struct bfd *bfd;
       struct symbol_file_add_from_memory_args args;
+      int exc_ret = 0;
 
       if (core_bfd != NULL)
 	bfd = core_bfd;
@@ -191,27 +193,30 @@ add_vsyscall_page (struct target_ops *target, int from_tty)
 	  ``bfd_runtime'' (a BFD created using the loaded image) file
 	  format should fix this.  */
 	{
-	  warning (_("\
+	  warning(_("\
 Could not load vsyscall page because no executable was specified\n\
 try using the \"file\" command first."));
 	  return;
 	}
       args.bfd = bfd;
       args.sysinfo_ehdr = sysinfo_ehdr;
-      xasprintf (&args.name, "system-supplied DSO at 0x%s",
-		 paddr_nz (sysinfo_ehdr));
+      xasprintf(&args.name, "system-supplied DSO at 0x%s",
+		paddr_nz(sysinfo_ehdr));
       /* Pass zero for FROM_TTY, because the action of loading the
 	 vsyscall DSO was not triggered by the user, even if the user
 	 typed "run" at the TTY.  */
       args.from_tty = 0;
-      catch_exceptions (uiout, symbol_file_add_from_memory_wrapper,
-			&args, RETURN_MASK_ALL);
+      exc_ret = catch_exceptions(uiout, symbol_file_add_from_memory_wrapper,
+				 &args, RETURN_MASK_ALL);
+      if (exc_ret == 0) {
+	; /* ??? */
+      }
     }
 }
 
-
+extern void _initialize_symfile_mem(void); /* -Wmissing-prototypes */
 void
-_initialize_symfile_mem (void)
+_initialize_symfile_mem(void)
 {
   add_cmd ("add-symbol-file-from-memory", class_files,
            add_symbol_file_from_memory_command, _("\

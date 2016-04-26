@@ -1,4 +1,4 @@
-/* Target-dependent code for HP PA-RISC BSD's.
+/* hppabsd-tdep.h: Target-dependent code for HP PA-RISC BSD's.
 
    Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
@@ -20,6 +20,9 @@
 #ifndef HPPABSD_TDEP_H
 #define HPPABSD_TDEP_H
 
-extern void hppabsd_init_abi (struct gdbarch_info, struct gdbarch *);
+extern void hppabsd_init_abi(struct gdbarch_info, struct gdbarch *);
+extern CORE_ADDR hppabsd_find_global_pointer(struct value *);
 
 #endif /* hppabsd-tdep.h */
+
+/* EOF */

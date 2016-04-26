@@ -1,4 +1,4 @@
-/* Target-dependent code for HP PA-RISC BSD's.
+/* hppabsd-tdep.c: Target-dependent code for HP PA-RISC BSD's.
 
    Copyright 2004, 2005 Free Software Foundation, Inc.
 
@@ -35,6 +35,7 @@
 #include "elf/common.h"
 
 #include "hppa-tdep.h"
+#include "hppabsd-tdep.h"
 #include "solib-svr4.h"
 
 /* Core file support.  */
@@ -47,10 +48,10 @@
    REGCACHE.  If REGNUM is -1, do this for all registers in REGSET.  */
 
 static void
-hppabsd_supply_gregset (const struct regset *regset, struct regcache *regcache,
-		     int regnum, const void *gregs, size_t len)
+hppabsd_supply_gregset(const struct regset *regset, struct regcache *regcache,
+		       int regnum, const void *gregs, size_t len)
 {
-  const gdb_byte *regs = gregs;
+  const gdb_byte *regs = (const gdb_byte *)gregs;
   size_t offset;
   int i;
 
@@ -75,7 +76,9 @@ hppabsd_supply_gregset (const struct regset *regset, struct regcache *regcache,
 static struct regset hppabsd_gregset =
 {
   NULL,
-  hppabsd_supply_gregset
+  hppabsd_supply_gregset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
 };
 
 /* Return the appropriate register set for the core section identified
@@ -91,11 +94,11 @@ hppabsd_regset_from_core_section (struct gdbarch *gdbarch,
   return NULL;
 }
 
-
+/* */
 CORE_ADDR
-hppabsd_find_global_pointer (struct value *function)
+hppabsd_find_global_pointer(struct value *function)
 {
-  CORE_ADDR faddr = value_as_address (function);
+  CORE_ADDR faddr = value_as_address(function);
   struct obj_section *faddr_sec;
   gdb_byte buf[4];
 
@@ -162,9 +165,9 @@ hppabsd_find_global_pointer (struct value *function)
   return 0;
 }
 
-
-static void
-hppabsd_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
+/* */
+void
+hppabsd_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
@@ -211,3 +214,5 @@ _initialize_hppabsd_tdep (void)
   gdbarch_register_osabi (bfd_arch_hppa, 0, GDB_OSABI_OPENBSD_ELF,
 			  hppabsd_init_abi);
 }
+
+/* EOF */

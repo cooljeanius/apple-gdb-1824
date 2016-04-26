@@ -1,4 +1,4 @@
-/* Target-dependent code for the Fujitsu FR30.
+/* fr30-tdep.c: Target-dependent code for the Fujitsu FR30.
    Copyright 1999, 2000, 2001 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -30,17 +30,21 @@
 #include "symfile.h"
 #include "regcache.h"
 
+#include "dis-asm.h"
+
+#include "fr30-tdep.h"
+
 /* An expression that tells us whether the function invocation represented
    by FI does not have a frame on the stack associated with it.  */
 int
-fr30_frameless_function_invocation (struct frame_info *fi)
+fr30_frameless_function_invocation(struct frame_info *fi)
 {
   int frameless;
   CORE_ADDR func_start, after_prologue;
-  func_start = (get_pc_function_start ((fi)->pc) +
-		FUNCTION_START_OFFSET);
+  func_start = (get_pc_function_start((fi)->pc)
+		+ FUNCTION_START_OFFSET);
   after_prologue = func_start;
-  after_prologue = SKIP_PROLOGUE (after_prologue);
+  after_prologue = SKIP_PROLOGUE(after_prologue);
   frameless = (after_prologue == func_start);
   return frameless;
 }
@@ -48,30 +52,29 @@ fr30_frameless_function_invocation (struct frame_info *fi)
 /* Function: pop_frame
    This routine gets called when either the user uses the `return'
    command, or the call dummy breakpoint gets hit.  */
-
 void
-fr30_pop_frame (void)
+fr30_pop_frame(void)
 {
-  struct frame_info *frame = get_current_frame ();
+  struct frame_info *frame = get_current_frame();
   int regnum;
-  CORE_ADDR sp = read_register (SP_REGNUM);
+  CORE_ADDR sp = read_register(SP_REGNUM);
 
-  if (PC_IN_CALL_DUMMY (frame->pc, frame->frame, frame->frame))
-    generic_pop_dummy_frame ();
+  if (PC_IN_CALL_DUMMY(frame->pc, frame->frame, frame->frame))
+    generic_pop_dummy_frame();
   else
     {
-      write_register (PC_REGNUM, FRAME_SAVED_PC (frame));
+      write_register(PC_REGNUM, FRAME_SAVED_PC(frame));
 
       for (regnum = 0; regnum < NUM_REGS; regnum++)
 	if (frame->fsr.regs[regnum] != 0)
 	  {
-	    write_register (regnum,
-		      read_memory_unsigned_integer (frame->fsr.regs[regnum],
-					       REGISTER_RAW_SIZE (regnum)));
+	    write_register(regnum,
+			   read_memory_unsigned_integer(frame->fsr.regs[regnum],
+							REGISTER_RAW_SIZE(regnum)));
 	  }
-      write_register (SP_REGNUM, sp + frame->framesize);
+      write_register(SP_REGNUM, (sp + frame->framesize));
     }
-  flush_cached_frames ();
+  flush_cached_frames();
 }
 
 
@@ -79,8 +82,7 @@ fr30_pop_frame (void)
    Put a value where a caller expects to see it.  Used by the 'return'
    command.  */
 void
-fr30_store_return_value (struct type *type,
-			 char *valbuf)
+fr30_store_return_value(struct type *type, char *valbuf)
 {
   /* Here's how the FR30 returns values (gleaned from gcc/config/
      fr30/fr30.h):
@@ -238,12 +240,11 @@ fr30_push_arguments (int nargs, struct value **args, CORE_ADDR sp,
   return sp;
 }
 
-void _initialize_fr30_tdep (void);
+void _initialize_fr30_tdep(void);
 
 void
-_initialize_fr30_tdep (void)
+_initialize_fr30_tdep(void)
 {
-  extern int print_insn_fr30 (bfd_vma, disassemble_info *);
   tm_print_insn = print_insn_fr30;
 }
 
@@ -381,8 +382,11 @@ fr30_scan_prologue (struct frame_info *fi)
 	}
       else if ((insn & 0xfff0) == 0x1700)	/* st rx,@-r15 */
 	{
-	  int reg = insn & 0xf;
+	  int reg = (insn & 0xf);
 
+	  if (reg > 0) {
+	    ; /* ??? */
+	  }
 	  sp_offset -= 4;
 	  fi->fsr.regs[reg] = sp_offset;
 	}
@@ -446,32 +450,31 @@ fr30_scan_prologue (struct frame_info *fi)
    Note that when we are called for the last frame (currently active frame),
    that fi->pc and fi->frame will already be setup.  However, fi->frame will
    be valid only if this routine uses FP.  For previous frames, fi-frame will
-   always be correct (since that is derived from fr30_frame_chain ()).
+   always be correct (since that is derived from fr30_frame_chain()).
 
    We can be called with the PC in the call dummy under two circumstances.
    First, during normal backtracing, second, while figuring out the frame
    pointer just prior to calling the target function (see run_stack_dummy).  */
-
 void
-fr30_init_extra_frame_info (struct frame_info *fi)
+fr30_init_extra_frame_info(struct frame_info *fi)
 {
   int reg;
 
   if (fi->next)
-    fi->pc = FRAME_SAVED_PC (fi->next);
+    fi->pc = FRAME_SAVED_PC(fi->next);
 
-  memset (fi->fsr.regs, '\000', sizeof fi->fsr.regs);
+  memset(fi->fsr.regs, '\000', sizeof(fi->fsr.regs));
 
-  if (PC_IN_CALL_DUMMY (fi->pc, fi->frame, fi->frame))
+  if (PC_IN_CALL_DUMMY(fi->pc, fi->frame, fi->frame))
     {
       /* We need to setup fi->frame here because run_stack_dummy gets it wrong
          by assuming it's always FP.  */
-      fi->frame = generic_read_register_dummy (fi->pc, fi->frame, SP_REGNUM);
+      fi->frame = generic_read_register_dummy(fi->pc, fi->frame, SP_REGNUM);
       fi->framesize = 0;
       fi->frameoffset = 0;
       return;
     }
-  fr30_scan_prologue (fi);
+  fr30_scan_prologue(fi);
 
   if (!fi->next)		/* this is the innermost frame? */
     fi->frame = read_register (fi->framereg);
@@ -498,18 +501,17 @@ fr30_init_extra_frame_info (struct frame_info *fi)
    the stack somewhere.  This would provide a graceful failure mode
    when trying to get the value of caller-saves registers for an inner
    frame.  */
-
 CORE_ADDR
-fr30_find_callers_reg (struct frame_info *fi, int regnum)
+fr30_find_callers_reg(struct frame_info *fi, int regnum)
 {
   for (; fi; fi = fi->next)
-    if (PC_IN_CALL_DUMMY (fi->pc, fi->frame, fi->frame))
-      return generic_read_register_dummy (fi->pc, fi->frame, regnum);
+    if (PC_IN_CALL_DUMMY(fi->pc, fi->frame, fi->frame))
+      return generic_read_register_dummy(fi->pc, fi->frame, regnum);
     else if (fi->fsr.regs[regnum] != 0)
-      return read_memory_unsigned_integer (fi->fsr.regs[regnum],
-					   REGISTER_RAW_SIZE (regnum));
+      return read_memory_unsigned_integer(fi->fsr.regs[regnum],
+					  REGISTER_RAW_SIZE(regnum));
 
-  return read_register (regnum);
+  return read_register(regnum);
 }
 
 
@@ -519,47 +521,45 @@ fr30_find_callers_reg (struct frame_info *fi, int regnum)
    shortly by fr30_init_extra_frame_info.  For the dummy frame, we
    just return the stack pointer that was in use at the time the
    function call was made.  */
-
-
 CORE_ADDR
-fr30_frame_chain (struct frame_info *fi)
+fr30_frame_chain(struct frame_info *fi)
 {
   CORE_ADDR fn_start, callers_pc, fp;
   struct frame_info caller_fi;
   int framereg;
 
   /* is this a dummy frame? */
-  if (PC_IN_CALL_DUMMY (fi->pc, fi->frame, fi->frame))
+  if (PC_IN_CALL_DUMMY(fi->pc, fi->frame, fi->frame))
     return fi->frame;		/* dummy frame same as caller's frame */
 
   /* is caller-of-this a dummy frame? */
-  callers_pc = FRAME_SAVED_PC (fi);	/* find out who called us: */
-  fp = fr30_find_callers_reg (fi, FP_REGNUM);
-  if (PC_IN_CALL_DUMMY (callers_pc, fp, fp))
+  callers_pc = FRAME_SAVED_PC(fi);	/* find out who called us: */
+  fp = fr30_find_callers_reg(fi, FP_REGNUM);
+  if (PC_IN_CALL_DUMMY(callers_pc, fp, fp))
     return fp;			/* dummy frame's frame may bear no relation to ours */
 
-  if (find_pc_partial_function (fi->pc, 0, &fn_start, 0))
-    if (fn_start == entry_point_address ())
+  if (find_pc_partial_function(fi->pc, 0, &fn_start, 0))
+    if (fn_start == entry_point_address())
       return 0;			/* in _start fn, don't chain further */
 
   framereg = fi->framereg;
 
   /* If the caller is the startup code, we're at the end of the chain.  */
-  if (find_pc_partial_function (callers_pc, 0, &fn_start, 0))
-    if (fn_start == entry_point_address ())
+  if (find_pc_partial_function(callers_pc, 0, &fn_start, 0))
+    if (fn_start == entry_point_address())
       return 0;
 
-  memset (&caller_fi, 0, sizeof (caller_fi));
+  memset(&caller_fi, 0, sizeof(caller_fi));
   caller_fi.pc = callers_pc;
-  fr30_scan_prologue (&caller_fi);
+  fr30_scan_prologue(&caller_fi);
   framereg = caller_fi.framereg;
 
   /* If the caller used a frame register, return its value.
      Otherwise, return the caller's stack pointer.  */
   if (framereg == FP_REGNUM)
-    return fr30_find_callers_reg (fi, framereg);
+    return fr30_find_callers_reg(fi, framereg);
   else
-    return fi->frame + fi->framesize;
+    return (fi->frame + fi->framesize);
 }
 
 /* Function: frame_saved_pc
@@ -570,12 +570,12 @@ fr30_frame_chain (struct frame_info *fi)
    will be found.  */
 
 CORE_ADDR
-fr30_frame_saved_pc (struct frame_info *fi)
+fr30_frame_saved_pc(struct frame_info *fi)
 {
-  if (PC_IN_CALL_DUMMY (fi->pc, fi->frame, fi->frame))
-    return generic_read_register_dummy (fi->pc, fi->frame, PC_REGNUM);
+  if (PC_IN_CALL_DUMMY(fi->pc, fi->frame, fi->frame))
+    return generic_read_register_dummy(fi->pc, fi->frame, PC_REGNUM);
   else
-    return fr30_find_callers_reg (fi, RP_REGNUM);
+    return fr30_find_callers_reg(fi, RP_REGNUM);
 }
 
 /* Function: fix_call_dummy
@@ -584,19 +584,18 @@ fr30_frame_saved_pc (struct frame_info *fi)
    jarl <offset24>, r31
    trap
  */
-
 int
-fr30_fix_call_dummy (char *dummy, CORE_ADDR sp, CORE_ADDR fun, int nargs,
-		     struct value **args, struct type *type, int gcc_p)
+fr30_fix_call_dummy(char *dummy, CORE_ADDR sp, CORE_ADDR fun, int nargs,
+		    struct value **args, struct type *type, int gcc_p)
 {
   long offset24;
 
-  offset24 = (long) fun - (long) entry_point_address ();
+  offset24 = ((long)fun - (long)entry_point_address());
   offset24 &= 0x3fffff;
   offset24 |= 0xff800000;	/* jarl <offset24>, r31 */
 
-  store_unsigned_integer ((unsigned int *) &dummy[2], 2, offset24 & 0xffff);
-  store_unsigned_integer ((unsigned int *) &dummy[0], 2, offset24 >> 16);
+  store_unsigned_integer((gdb_byte *)&dummy[2], 2, (offset24 & 0xffff));
+  store_unsigned_integer((gdb_byte *)&dummy[0], 2, (offset24 >> 16));
   return 0;
 }
 

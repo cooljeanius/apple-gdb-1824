@@ -175,7 +175,7 @@ extern struct cmd_list_element *lookup_cmd_1(const char **,
 					     int);
 
 extern struct cmd_list_element *
-  deprecate_cmd(struct cmd_list_element *, char *);
+  deprecate_cmd(struct cmd_list_element *, const char *);
 
 /* FIXME: should this get ATTRIBUTE_DEPRECATED? Or is the "deprecated" in
  * its name just part of what it does? */

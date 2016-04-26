@@ -25,6 +25,13 @@
 
 #include "elf-bfd.h"
 
+/* FIXME: in the version of "gdbtypes.h" that we have here, this define is not
+ * an lvalue: */
+#ifdef TYPE_TARGET_STUB
+# undef TYPE_TARGET_STUB
+# define TYPE_TARGET_STUB(type) (type)
+#endif /* TYPE_TARGET_STUB */
+
 /* This function is suitable for architectures that don't
    extend/override the standard siginfo structure.  */
 
@@ -144,24 +151,29 @@ linux_get_siginfo_type (struct gdbarch *gdbarch)
    is currently unsupported.  */
 
 static void
-check_is_pie_binary (void)
+check_is_pie_binary(void)
 {
+#ifdef ALLOW_UNUSED_VARIABLES
   Elf_Internal_Ehdr *elf_hdr;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
   if (!exec_bfd)
     return;
-  else if (bfd_get_flavour (exec_bfd) != bfd_target_elf_flavour)
+  else if (bfd_get_flavour(exec_bfd) != bfd_target_elf_flavour)
     return;
 
-  if (elf_tdata (exec_bfd)->elf_header->e_type == ET_DYN)
-    warning (_("\
+  if (elf_tdata(exec_bfd)->elf_header->e_type == ET_DYN)
+    warning(_("\
 The current binary is a PIE (Position Independent Executable), which\n\
 GDB does NOT currently support.  Most debugger features will fail if used\n\
 in this session.\n"));
 }
 
+extern void _initialize_linux_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_linux_tdep (void)
+_initialize_linux_tdep(void)
 {
-  observer_attach_executable_changed (check_is_pie_binary);
+  observer_attach_executable_changed(check_is_pie_binary);
 }
+
+/* EOF */

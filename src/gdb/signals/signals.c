@@ -505,11 +505,11 @@ target_signal_from_host(int hostsig)
       else
 	error("GDB bug: signals/signals.c (target_signal_from_host): unrecognized real-time signal");
     }
-#else
-# if defined(__GNUC__) && defined(ATTRIBUTE_CONST)
-  asm("");
-# endif /* __GNUC__ && ATTRIBUTE_CONST */
 #endif /* REALTIME_LO */
+  
+#if defined(__GNUC__) && (defined(ATTRIBUTE_CONST) || !defined(__STRICT_ANSI__))
+  __asm__("");
+#endif /* __GNUC__ && (ATTRIBUTE_CONST || !__STRICT_ANSI__) */
 
   return TARGET_SIGNAL_UNKNOWN;
 }

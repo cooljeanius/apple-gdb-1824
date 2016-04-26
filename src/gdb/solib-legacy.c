@@ -145,9 +145,15 @@ legacy_svr4_fetch_link_map_offsets (void)
 extern initialize_file_ftype _initialize_svr4_lm; /* -Wmissing-prototypes */
 
 void
-_initialize_svr4_lm (void)
+_initialize_svr4_lm(void)
 {
 #ifdef HAVE_LINK_H
   legacy_svr4_fetch_link_map_offsets_hook = legacy_svr4_fetch_link_map_offsets;
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+  __asm__("");
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LINK_H */
 }
+
+/* EOF */

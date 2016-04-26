@@ -36,7 +36,7 @@
    be considered too special-purpose for general consumption.  */
 
 static struct minimal_symbol *
-find_minsym_and_objfile (char *name, struct objfile **objfile_p)
+find_minsym_and_objfile(const char *name, struct objfile **objfile_p)
 {
   struct objfile *objfile;
 

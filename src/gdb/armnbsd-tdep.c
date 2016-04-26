@@ -1,4 +1,4 @@
-/* Target-specific functions for ARM running under NetBSD.
+/* armnbsd-tdep.c: Target-specific functions for ARM running under NetBSD.
 
    Copyright 2002, 2003, 2004 Free Software Foundation, Inc.
 
@@ -106,14 +106,17 @@ arm_netbsd_aout_osabi_sniffer (bfd *abfd)
   return GDB_OSABI_UNKNOWN;
 }
 
+extern void _initialize_arm_netbsd_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_arm_netbsd_tdep (void)
+_initialize_arm_netbsd_tdep(void)
 {
-  gdbarch_register_osabi_sniffer (bfd_arch_arm, bfd_target_aout_flavour,
-				  arm_netbsd_aout_osabi_sniffer);
+  gdbarch_register_osabi_sniffer(bfd_arch_arm, bfd_target_aout_flavour,
+				 arm_netbsd_aout_osabi_sniffer);
 
-  gdbarch_register_osabi (bfd_arch_arm, 0, GDB_OSABI_NETBSD_AOUT,
-                          arm_netbsd_aout_init_abi);
-  gdbarch_register_osabi (bfd_arch_arm, 0, GDB_OSABI_NETBSD_ELF,
-                          arm_netbsd_elf_init_abi);
+  gdbarch_register_osabi(bfd_arch_arm, 0, GDB_OSABI_NETBSD_AOUT,
+                         arm_netbsd_aout_init_abi);
+  gdbarch_register_osabi(bfd_arch_arm, 0, GDB_OSABI_NETBSD_ELF,
+                         arm_netbsd_elf_init_abi);
 }
+
+/* EOF */

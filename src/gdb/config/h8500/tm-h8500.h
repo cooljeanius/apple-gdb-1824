@@ -20,9 +20,12 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifndef TM_H8500_H
+#define TM_H8500_H 1
+
 #include "regcache.h"
 
-/* Contributed by Steve Chamberlain sac@cygnus.com */
+/* Contributed by Steve Chamberlain <sac@cygnus.com> */
 
 #define GDB_TARGET_IS_H8500
 
@@ -287,5 +290,7 @@ extern void h8500_write_pc (CORE_ADDR, ptid_t);
 #define TARGET_WRITE_PC(x,pid) h8500_write_pc(x,pid)
 
 #define TARGET_READ_FP() h8500_read_fp()
+
+#endif /* !TM_H8500_H */
 
 /* EOF */

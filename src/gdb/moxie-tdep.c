@@ -1,4 +1,4 @@
-/* Target-dependent code for Moxie.
+/* moxie-tdep.c: Target-dependent code for Moxie.
 
    Copyright (C) 2009 Free Software Foundation, Inc.
 
@@ -59,40 +59,36 @@ struct moxie_frame_cache
   CORE_ADDR saved_sp;
 };
 
-/* Implement the "frame_align" gdbarch method.  */
-
+/* Implement the "frame_align" gdbarch method: */
 static CORE_ADDR
-moxie_frame_align (struct gdbarch *gdbarch, CORE_ADDR sp)
+moxie_frame_align(struct gdbarch *gdbarch, CORE_ADDR sp)
 {
-  /* Align to the size of an instruction (so that they can safely be
+  /* Align to the size of an instruction, so that they can safely be
      pushed onto the stack.  */
-  return sp & ~1;
+  return (sp & ~1);
 }
 
-/* Implement the "breakpoint_from_pc" gdbarch method.  */
-
-const static unsigned char *
-moxie_breakpoint_from_pc (struct gdbarch *gdbarch,
-			  CORE_ADDR *pcptr, int *lenptr)
+/* Implement the "breakpoint_from_pc" gdbarch method: */
+static const unsigned char *
+moxie_breakpoint_from_pc(struct gdbarch *gdbarch, CORE_ADDR *pcptr,
+			 int *lenptr)
 {
   static unsigned char breakpoint[] = { 0x35, 0x00 };
 
-  *lenptr = sizeof (breakpoint);
+  *lenptr = sizeof(breakpoint);
   return breakpoint;
 }
 
-/* Moxie register names.  */
-
-char *moxie_register_names[] = {
+/* Moxie register names: */
+const char *moxie_register_names[] = {
   "$fp",  "$sp",  "$r0",  "$r1",  "$r2",
   "$r3",  "$r4",  "$r5", "$r6", "$r7",
   "$r8", "$r9", "$r10", "$r11", "$r12",
   "$r13", "$pc", "$cc" };
 
-/* Implement the "register_name" gdbarch method.  */
-
+/* Implement the "register_name" gdbarch method: */
 static const char *
-moxie_register_name (struct gdbarch *gdbarch, int reg_nr)
+moxie_register_name(struct gdbarch *gdbarch, int reg_nr)
 {
   if (reg_nr < 0)
     return NULL;
@@ -101,39 +97,39 @@ moxie_register_name (struct gdbarch *gdbarch, int reg_nr)
   return moxie_register_names[reg_nr];
 }
 
-/* Implement the "register_type" gdbarch method.  */
-
+/* Implement the "register_type" gdbarch method: */
 static struct type *
-moxie_register_type (struct gdbarch *gdbarch, int reg_nr)
+moxie_register_type(struct gdbarch *gdbarch, int reg_nr)
 {
   if (reg_nr == MOXIE_PC_REGNUM)
-    return  builtin_type (gdbarch)->builtin_func_ptr;
-  else if (reg_nr == MOXIE_SP_REGNUM || reg_nr == MOXIE_FP_REGNUM)
-    return builtin_type (gdbarch)->builtin_data_ptr;
+    return  builtin_type(gdbarch)->builtin_func_ptr;
+  else if ((reg_nr == MOXIE_SP_REGNUM) || (reg_nr == MOXIE_FP_REGNUM))
+    return builtin_type(gdbarch)->builtin_data_ptr;
   else
-    return builtin_type (gdbarch)->builtin_int32;
+    return builtin_type(gdbarch)->builtin_int32;
 }
 
 /* Write into appropriate registers a function return value
    of type TYPE, given in virtual format.  */
 
 static void
-moxie_store_return_value (struct type *type, struct regcache *regcache,
+moxie_store_return_value(struct type *type, struct regcache *regcache,
 			 const void *valbuf)
 {
-  struct gdbarch *gdbarch = get_regcache_arch (regcache);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  struct gdbarch *gdbarch = get_regcache_arch(regcache);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   CORE_ADDR regval;
-  int len = TYPE_LENGTH (type);
+  int len = TYPE_LENGTH(type);
 
   /* Things always get returned in RET1_REGNUM, RET2_REGNUM.  */
-  regval = extract_unsigned_integer (valbuf, len > 4 ? 4 : len, byte_order);
-  regcache_cooked_write_unsigned (regcache, RET1_REGNUM, regval);
+  regval = extract_unsigned_integer((const gdb_byte *)valbuf,
+				    ((len > 4) ? 4 : len), byte_order);
+  regcache_cooked_write_unsigned(regcache, RET1_REGNUM, regval);
   if (len > 4)
     {
-      regval = extract_unsigned_integer ((gdb_byte *) valbuf + 4,
-					 len - 4, byte_order);
-      regcache_cooked_write_unsigned (regcache, RET1_REGNUM + 1, regval);
+      regval = extract_unsigned_integer(((gdb_byte *)valbuf + 4U),
+					(len - 4), byte_order);
+      regcache_cooked_write_unsigned(regcache, (RET1_REGNUM + 1), regval);
     }
 }
 
@@ -144,11 +140,11 @@ moxie_store_return_value (struct type *type, struct regcache *regcache,
    Returns the address of the first instruction after the prologue.  */
 
 static CORE_ADDR
-moxie_analyze_prologue (CORE_ADDR start_addr, CORE_ADDR end_addr,
-			struct moxie_frame_cache *cache,
-			struct gdbarch *gdbarch)
+moxie_analyze_prologue(CORE_ADDR start_addr, CORE_ADDR end_addr,
+		       struct moxie_frame_cache *cache,
+		       struct gdbarch *gdbarch)
 {
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   CORE_ADDR next_addr;
   ULONGEST inst, inst2;
   LONGEST offset;
@@ -213,20 +209,19 @@ moxie_analyze_prologue (CORE_ADDR start_addr, CORE_ADDR end_addr,
 /* Find the end of function prologue.  */
 
 static CORE_ADDR
-moxie_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
+moxie_skip_prologue(struct gdbarch *gdbarch, CORE_ADDR pc)
 {
   CORE_ADDR func_addr = 0, func_end = 0;
-  char *func_name;
+  const char *func_name;
 
   /* See if we can determine the end of the prologue via the symbol table.
      If so, then return either PC, or the PC after the prologue, whichever
      is greater.  */
-  if (find_pc_partial_function (pc, &func_name, &func_addr, &func_end))
+  if (find_pc_partial_function(pc, &func_name, &func_addr, &func_end))
     {
-      CORE_ADDR post_prologue_pc
-	= skip_prologue_using_sal (gdbarch, func_addr);
+      CORE_ADDR post_prologue_pc = skip_prologue_using_sal(gdbarch, func_addr);
       if (post_prologue_pc != 0)
-	return max (pc, post_prologue_pc);
+	return max(pc, post_prologue_pc);
       else
 	{
 	  /* Can't determine prologue from the symbol table, need to examine
@@ -236,18 +231,18 @@ moxie_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
 	  struct moxie_frame_cache cache;
 	  CORE_ADDR plg_end;
 	  
-	  memset (&cache, 0, sizeof cache);
+	  memset(&cache, 0, sizeof(cache));
 	  
-	  plg_end = moxie_analyze_prologue (func_addr, 
-					    func_end, &cache, gdbarch);
+	  plg_end = moxie_analyze_prologue(func_addr, func_end, &cache,
+					   gdbarch);
 	  /* Found a function.  */
-	  sym = lookup_symbol (func_name, NULL, VAR_DOMAIN, NULL);
+	  sym = lookup_symbol(func_name, NULL, VAR_DOMAIN, NULL);
 	  /* Don't use line number debug info for assembly source
 	     files. */
-	  if (sym && SYMBOL_LANGUAGE (sym) != language_asm)
+	  if (sym && (SYMBOL_LANGUAGE(sym) != language_asm))
 	    {
-	      sal = find_pc_line (func_addr, 0);
-	      if (sal.end && sal.end < func_end)
+	      sal = find_pc_line(func_addr, 0);
+	      if (sal.end && (sal.end < func_end))
 		{
 		  /* Found a line number, use it as end of
 		     prologue.  */
@@ -261,7 +256,7 @@ moxie_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
     }
 
   /* No function symbol -- just return the PC.  */
-  return (CORE_ADDR) pc;
+  return (CORE_ADDR)pc;
 }
 
 struct moxie_unwind_cache
@@ -282,10 +277,9 @@ struct moxie_unwind_cache
   struct trad_frame_saved_reg *saved_regs;
 };
 
-/* Implement the "read_pc" gdbarch method.  */
-
+/* Implement the "read_pc" gdbarch method: */
 static CORE_ADDR
-moxie_read_pc (struct regcache *regcache)
+moxie_read_pc(struct regcache *regcache)
 {
   ULONGEST pc;
 
@@ -313,19 +307,20 @@ moxie_unwind_sp (struct gdbarch *gdbarch, struct frame_info *next_frame)
    extract and copy its value into `valbuf'.  */
 
 static void
-moxie_extract_return_value (struct type *type, struct regcache *regcache,
+moxie_extract_return_value(struct type *type, struct regcache *regcache,
 			   void *dst)
 {
-  struct gdbarch *gdbarch = get_regcache_arch (regcache);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
-  bfd_byte *valbuf = dst;
-  int len = TYPE_LENGTH (type);
+  struct gdbarch *gdbarch = get_regcache_arch(regcache);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
+  bfd_byte *valbuf = (bfd_byte *)dst;
+  int len = TYPE_LENGTH(type);
   ULONGEST tmp;
 
   /* By using store_unsigned_integer we avoid having to do
      anything special for small big-endian values.  */
-  regcache_cooked_read_unsigned (regcache, RET1_REGNUM, &tmp);
-  store_unsigned_integer (valbuf, (len > 4 ? len - 4 : len), byte_order, tmp);
+  regcache_cooked_read_unsigned(regcache, RET1_REGNUM, &tmp);
+  store_unsigned_integer(valbuf, ((len > 4) ? (len - 4) : len), byte_order,
+			 tmp);
 
   /* Ignore return values more than 8 bytes in size because the moxie
      returns anything more than 8 bytes in the stack.  */
@@ -375,38 +370,37 @@ moxie_alloc_frame_cache (void)
   return cache;
 }
 
-/* Populate a moxie_frame_cache object for this_frame.  */
-
+/* Populate a moxie_frame_cache object for this_frame: */
 static struct moxie_frame_cache *
-moxie_frame_cache (struct frame_info *this_frame, void **this_cache)
+moxie_frame_cache(struct frame_info *this_frame, void **this_cache)
 {
   struct moxie_frame_cache *cache;
   CORE_ADDR current_pc;
   int i;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct moxie_frame_cache *)*this_cache;
 
-  cache = moxie_alloc_frame_cache ();
+  cache = moxie_alloc_frame_cache();
   *this_cache = cache;
 
-  cache->base = get_frame_register_unsigned (this_frame, MOXIE_FP_REGNUM);
+  cache->base = get_frame_register_unsigned(this_frame, MOXIE_FP_REGNUM);
   if (cache->base == 0)
     return cache;
 
-  cache->pc = get_frame_func (this_frame);
-  current_pc = get_frame_pc (this_frame);
+  cache->pc = get_frame_func(this_frame);
+  current_pc = get_frame_pc(this_frame);
   if (cache->pc)
     {
-      struct gdbarch *gdbarch = get_frame_arch (this_frame);
-      moxie_analyze_prologue (cache->pc, current_pc, cache, gdbarch);
+      struct gdbarch *gdbarch = get_frame_arch(this_frame);
+      moxie_analyze_prologue(cache->pc, current_pc, cache, gdbarch);
     }
 
-  cache->saved_sp = cache->base - cache->framesize;
+  cache->saved_sp = (cache->base - cache->framesize);
 
   for (i = 0; i < MOXIE_NUM_REGS; ++i)
     if (cache->saved_regs[i] != REG_UNAVAIL)
-      cache->saved_regs[i] = cache->base - cache->saved_regs[i];
+      cache->saved_regs[i] = (cache->base - cache->saved_regs[i]);
 
   return cache;
 }
@@ -494,19 +488,19 @@ moxie_dummy_id (struct gdbarch *gdbarch, struct frame_info *this_frame)
 /* Read an unsigned integer from the inferior, and adjust
    endianess.  */
 static ULONGEST
-moxie_process_readu (CORE_ADDR addr, char *buf, 
-		     int length, enum bfd_endian byte_order)
+moxie_process_readu(CORE_ADDR addr, char *buf, 
+		    int length, enum bfd_endian byte_order)
 {
-  if (target_read_memory (addr, buf, length))
+  if (target_read_memory(addr, (gdb_byte *)buf, length))
     {
       if (record_debug)
-	printf_unfiltered (_("Process record: error reading memory at "
-			     "addr 0x%s len = %d.\n"),
-			   paddress (target_gdbarch, addr), length);
+	printf_unfiltered(_("Process record: error reading memory at "
+			    "addr 0x%s len = %d.\n"),
+			  paddress(target_gdbarch, addr), length);
       return -1;
     }
 
-  return extract_unsigned_integer (buf, length, byte_order);
+  return extract_unsigned_integer(buf, length, byte_order);
 }
 
 /* Parse the current instruction and record the values of the registers and
@@ -995,10 +989,11 @@ moxie_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   return gdbarch;
 }
 
-/* Register this machine's init routine.  */
-
+/* Register this machine's init routine: */
 void
-_initialize_moxie_tdep (void)
+_initialize_moxie_tdep(void)
 {
-  register_gdbarch_init (bfd_arch_moxie, moxie_gdbarch_init);
+  register_gdbarch_init(bfd_arch_moxie, moxie_gdbarch_init);
 }
+
+/* EOF */

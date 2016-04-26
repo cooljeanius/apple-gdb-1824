@@ -1,4 +1,4 @@
-/* Target-dependent code for Moxie
+/* moxie-tdep.h: Target-dependent code for Moxie
  
    Copyright (C) 2009 Free Software Foundation, Inc.
 
@@ -22,7 +22,8 @@
 
 struct gdbarch_tdep
 {
-  /* gdbarch target dependent data here. Currently unused for MOXIE. */
+  /* gdbarch target dependent data here. Currently unused for MOXIE: */
+  void *unused;
 };
 
 enum moxie_regnum
@@ -41,3 +42,5 @@ enum moxie_regnum
 #define MOXIE_NUM_REGS 18
 
 #endif /* moxie-tdep.h */
+
+/* EOF */

@@ -38,6 +38,14 @@ if test "x${CC}" = "x"; then
   AC_PROG_CC
 else
   test ! -z "${CC}"
+  if test "x${ac_cv_c_compiler_gnu}" = "x"; then
+    test -z "${ac_cv_c_compiler_gnu}"
+    if test "x${GCC}" = "xyes" || test "x${CC}" = "xgcc"; then
+      export ac_cv_c_compiler_gnu=yes
+    else
+      export ac_cv_c_compiler_gnu=no
+    fi
+  fi
   AC_PROG_GCC_TRADITIONAL
 fi
 AC_PROG_CPP

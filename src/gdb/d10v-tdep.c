@@ -134,9 +134,9 @@ enum ts2_regnums
   };
 
 static const char *
-d10v_ts2_register_name (int reg_nr)
+d10v_ts2_register_name(int reg_nr)
 {
-  static char *register_names[] =
+  static const char *register_names[] =
   {
     "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
     "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15",
@@ -146,7 +146,7 @@ d10v_ts2_register_name (int reg_nr)
   };
   if (reg_nr < 0)
     return NULL;
-  if (reg_nr >= (sizeof (register_names) / sizeof (*register_names)))
+  if ((size_t)reg_nr >= (sizeof(register_names) / sizeof(*register_names)))
     return NULL;
   return register_names[reg_nr];
 }
@@ -160,9 +160,9 @@ enum ts3_regnums
   };
 
 static const char *
-d10v_ts3_register_name (int reg_nr)
+d10v_ts3_register_name(int reg_nr)
 {
-  static char *register_names[] =
+  static const char *register_names[] =
   {
     "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
     "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15",
@@ -175,7 +175,7 @@ d10v_ts3_register_name (int reg_nr)
   };
   if (reg_nr < 0)
     return NULL;
-  if (reg_nr >= (sizeof (register_names) / sizeof (*register_names)))
+  if ((size_t)reg_nr >= (sizeof(register_names) / sizeof(*register_names)))
     return NULL;
   return register_names[reg_nr];
 }
@@ -196,7 +196,7 @@ d10v_ts3_register_name (int reg_nr)
    one of the segments.  */
 
 static unsigned long
-d10v_ts2_dmap_register (void *regcache, int reg_nr)
+d10v_ts2_dmap_register(void *regcache, int reg_nr)
 {
   switch (reg_nr)
     {
@@ -206,7 +206,8 @@ d10v_ts2_dmap_register (void *regcache, int reg_nr)
     case 2:
       {
 	ULONGEST reg;
-	regcache_cooked_read_unsigned (regcache, TS2_DMAP_REGNUM, &reg);
+	regcache_cooked_read_unsigned((struct regcache *)regcache,
+				      TS2_DMAP_REGNUM, &reg);
 	return reg;
       }
     default:
@@ -215,26 +216,29 @@ d10v_ts2_dmap_register (void *regcache, int reg_nr)
 }
 
 static unsigned long
-d10v_ts3_dmap_register (void *regcache, int reg_nr)
+d10v_ts3_dmap_register(void *regcache, int reg_nr)
 {
   ULONGEST reg;
-  regcache_cooked_read_unsigned (regcache, TS3_DMAP0_REGNUM + reg_nr, &reg);
+  regcache_cooked_read_unsigned((struct regcache *)regcache,
+				(TS3_DMAP0_REGNUM + reg_nr), &reg);
   return reg;
 }
 
 static unsigned long
-d10v_ts2_imap_register (void *regcache, int reg_nr)
+d10v_ts2_imap_register(void *regcache, int reg_nr)
 {
   ULONGEST reg;
-  regcache_cooked_read_unsigned (regcache, TS2_IMAP0_REGNUM + reg_nr, &reg);
+  regcache_cooked_read_unsigned((struct regcache *)regcache,
+				(TS2_IMAP0_REGNUM + reg_nr), &reg);
   return reg;
 }
 
 static unsigned long
-d10v_ts3_imap_register (void *regcache, int reg_nr)
+d10v_ts3_imap_register(void *regcache, int reg_nr)
 {
   ULONGEST reg;
-  regcache_cooked_read_unsigned (regcache, TS3_IMAP0_REGNUM + reg_nr, &reg);
+  regcache_cooked_read_unsigned((struct regcache *)regcache,
+				(TS3_IMAP0_REGNUM + reg_nr), &reg);
   return reg;
 }
 
@@ -243,35 +247,35 @@ d10v_ts3_imap_register (void *regcache, int reg_nr)
    register numbering.  */
 
 static int
-d10v_ts2_register_sim_regno (int nr)
+d10v_ts2_register_sim_regno(int nr)
 {
-  /* Only makes sense to supply raw registers.  */
-  gdb_assert (nr >= 0 && nr < NUM_REGS);
-  if (nr >= TS2_IMAP0_REGNUM
-      && nr < TS2_IMAP0_REGNUM + NR_IMAP_REGS)
-    return nr - TS2_IMAP0_REGNUM + SIM_D10V_IMAP0_REGNUM;
+  /* Only makes sense to supply raw registers: */
+  gdb_assert((nr >= 0) && (nr < NUM_REGS));
+  if ((nr >= TS2_IMAP0_REGNUM)
+      && (nr < (TS2_IMAP0_REGNUM + NR_IMAP_REGS)))
+    return (nr - TS2_IMAP0_REGNUM + SIM_D10V_IMAP0_REGNUM);
   if (nr == TS2_DMAP_REGNUM)
-    return nr - TS2_DMAP_REGNUM + SIM_D10V_TS2_DMAP_REGNUM;
-  if (nr >= TS2_A0_REGNUM
-      && nr < TS2_A0_REGNUM + NR_A_REGS)
-    return nr - TS2_A0_REGNUM + SIM_D10V_A0_REGNUM;
+    return (nr - TS2_DMAP_REGNUM + SIM_D10V_TS2_DMAP_REGNUM);
+  if ((nr >= TS2_A0_REGNUM)
+      && (nr < (TS2_A0_REGNUM + NR_A_REGS)))
+    return (nr - TS2_A0_REGNUM + SIM_D10V_A0_REGNUM);
   return nr;
 }
 
 static int
-d10v_ts3_register_sim_regno (int nr)
+d10v_ts3_register_sim_regno(int nr)
 {
-  /* Only makes sense to supply raw registers.  */
-  gdb_assert (nr >= 0 && nr < NUM_REGS);
-  if (nr >= TS3_IMAP0_REGNUM
-      && nr < TS3_IMAP0_REGNUM + NR_IMAP_REGS)
-    return nr - TS3_IMAP0_REGNUM + SIM_D10V_IMAP0_REGNUM;
-  if (nr >= TS3_DMAP0_REGNUM
-      && nr < TS3_DMAP0_REGNUM + TS3_NR_DMAP_REGS)
-    return nr - TS3_DMAP0_REGNUM + SIM_D10V_DMAP0_REGNUM;
-  if (nr >= TS3_A0_REGNUM
-      && nr < TS3_A0_REGNUM + NR_A_REGS)
-    return nr - TS3_A0_REGNUM + SIM_D10V_A0_REGNUM;
+  /* Only makes sense to supply raw registers: */
+  gdb_assert((nr >= 0) && (nr < NUM_REGS));
+  if ((nr >= TS3_IMAP0_REGNUM)
+      && (nr < (TS3_IMAP0_REGNUM + NR_IMAP_REGS)))
+    return (nr - TS3_IMAP0_REGNUM + SIM_D10V_IMAP0_REGNUM);
+  if ((nr >= TS3_DMAP0_REGNUM)
+      && (nr < (TS3_DMAP0_REGNUM + TS3_NR_DMAP_REGS)))
+    return (nr - TS3_DMAP0_REGNUM + SIM_D10V_DMAP0_REGNUM);
+  if ((nr >= TS3_A0_REGNUM)
+      && (nr < (TS3_A0_REGNUM + NR_A_REGS)))
+    return (nr - TS3_A0_REGNUM + SIM_D10V_A0_REGNUM);
   return nr;
 }
 
@@ -325,35 +329,37 @@ d10v_convert_daddr_to_raw (CORE_ADDR x)
   return ((x) & 0xffff);
 }
 
+/* */
 static void
-d10v_address_to_pointer (struct type *type, void *buf, CORE_ADDR addr)
+d10v_address_to_pointer(struct type *type, gdb_byte *buf, CORE_ADDR addr)
 {
   /* Is it a code address?  */
-  if (TYPE_CODE (TYPE_TARGET_TYPE (type)) == TYPE_CODE_FUNC
-      || TYPE_CODE (TYPE_TARGET_TYPE (type)) == TYPE_CODE_METHOD)
+  if ((TYPE_CODE(TYPE_TARGET_TYPE(type)) == TYPE_CODE_FUNC)
+      || (TYPE_CODE(TYPE_TARGET_TYPE(type)) == TYPE_CODE_METHOD))
     {
-      store_unsigned_integer (buf, TYPE_LENGTH (type),
-                              d10v_convert_iaddr_to_raw (addr));
+      store_unsigned_integer(buf, TYPE_LENGTH(type),
+			     d10v_convert_iaddr_to_raw(addr));
     }
   else
     {
-      /* Strip off any upper segment bits.  */
-      store_unsigned_integer (buf, TYPE_LENGTH (type),
-                              d10v_convert_daddr_to_raw (addr));
+      /* Strip off any upper segment bits: */
+      store_unsigned_integer(buf, TYPE_LENGTH(type),
+                             d10v_convert_daddr_to_raw(addr));
     }
 }
 
+/* */
 static CORE_ADDR
-d10v_pointer_to_address (struct type *type, const void *buf)
+d10v_pointer_to_address(struct type *type, const gdb_byte *buf)
 {
-  CORE_ADDR addr = extract_unsigned_integer (buf, TYPE_LENGTH (type));
+  CORE_ADDR addr = extract_unsigned_integer(buf, TYPE_LENGTH(type));
   /* Is it a code address?  */
-  if (TYPE_CODE (TYPE_TARGET_TYPE (type)) == TYPE_CODE_FUNC
-      || TYPE_CODE (TYPE_TARGET_TYPE (type)) == TYPE_CODE_METHOD
-      || TYPE_CODE_SPACE (TYPE_TARGET_TYPE (type)))
-    return d10v_make_iaddr (addr);
+  if ((TYPE_CODE(TYPE_TARGET_TYPE(type)) == TYPE_CODE_FUNC)
+      || (TYPE_CODE(TYPE_TARGET_TYPE(type)) == TYPE_CODE_METHOD)
+      || TYPE_CODE_SPACE(TYPE_TARGET_TYPE(type)))
+    return d10v_make_iaddr(addr);
   else
-    return d10v_make_daddr (addr);
+    return d10v_make_daddr(addr);
 }
 
 /* Don't do anything if we have an integer, this way users can type 'x
@@ -361,19 +367,19 @@ d10v_pointer_to_address (struct type *type, const void *buf)
    to the correct space are taken care of in the pointer_to_address
    function.  If we don't do this, 'x $fp' wouldn't work.  */
 static CORE_ADDR
-d10v_integer_to_address (struct type *type, void *buf)
+d10v_integer_to_address(struct gdbarch *ignoreme ATTRIBUTE_UNUSED,
+			struct type *type, const gdb_byte *buf)
 {
   LONGEST val;
-  val = unpack_long (type, buf);
+  val = unpack_long(type, buf);
   return val;
 }
 
-/* Handle the d10v's return_value convention.  */
-
+/* Handle the d10v's return_value convention: */
 static enum return_value_convention
-d10v_return_value (struct gdbarch *gdbarch, struct type *valtype,
-		   struct regcache *regcache, void *readbuf,
-		   const void *writebuf)
+d10v_return_value(struct gdbarch *gdbarch, struct type *valtype,
+		  struct regcache *regcache, gdb_byte *readbuf,
+		  const gdb_byte *writebuf)
 {
   if (TYPE_LENGTH (valtype) > 8)
     /* Anything larger than 8 bytes (4 registers) goes on the stack.  */
@@ -486,8 +492,9 @@ check_prologue (unsigned short op)
   return 0;
 }
 
+/* */
 static CORE_ADDR
-d10v_skip_prologue (CORE_ADDR pc)
+d10v_skip_prologue(CORE_ADDR pc)
 {
   unsigned long op;
   unsigned short op1, op2;
@@ -496,19 +503,19 @@ d10v_skip_prologue (CORE_ADDR pc)
 
   /* If we have line debugging information, then the end of the prologue
      should be the first assembly instruction of the first source line.  */
-  if (find_pc_partial_function (pc, NULL, &func_addr, &func_end))
+  if (find_pc_partial_function(pc, NULL, &func_addr, &func_end))
     {
-      sal = find_pc_line (func_addr, 0);
-      if (sal.end && sal.end < func_end)
+      sal = find_pc_line(func_addr, 0);
+      if (sal.end && (sal.end < func_end))
 	return sal.end;
     }
 
-  if (target_read_memory (pc, (char *) &op, 4))
+  if (target_read_memory(pc, (gdb_byte *)&op, 4))
     return pc;			/* Can't access it -- assume no prologue.  */
 
   while (1)
     {
-      op = (unsigned long) read_memory_integer (pc, 4);
+      op = (unsigned long)read_memory_integer(pc, 4);
       if ((op & 0xC0000000) == 0xC0000000)
 	{
 	  /* long instruction */
@@ -650,10 +657,10 @@ prologue_find_regs (struct d10v_unwind_cache *info, unsigned short op,
    for it IS the sp for the next frame.  */
 
 static struct d10v_unwind_cache *
-d10v_frame_unwind_cache (struct frame_info *next_frame,
-			 void **this_prologue_cache)
+d10v_frame_unwind_cache(struct frame_info *next_frame,
+			void **this_prologue_cache)
 {
-  struct gdbarch *gdbarch = get_frame_arch (next_frame);
+  struct gdbarch *gdbarch = get_frame_arch(next_frame);
   CORE_ADDR pc;
   ULONGEST prev_sp;
   ULONGEST this_base;
@@ -661,11 +668,15 @@ d10v_frame_unwind_cache (struct frame_info *next_frame,
   unsigned short op1, op2;
   int i;
   struct d10v_unwind_cache *info;
+  
+  if (gdbarch == NULL) {
+    ; /* ??? */
+  }
 
   if ((*this_prologue_cache))
-    return (*this_prologue_cache);
+    return (struct d10v_unwind_cache *)(*this_prologue_cache);
 
-  info = FRAME_OBSTACK_ZALLOC (struct d10v_unwind_cache);
+  info = FRAME_OBSTACK_ZALLOC(struct d10v_unwind_cache);
   (*this_prologue_cache) = info;
   info->saved_regs = trad_frame_alloc_saved_regs (next_frame);
 
@@ -841,28 +852,30 @@ d10v_print_registers_info (struct gdbarch *gdbarch, struct ui_file *file,
   {
     char num[MAX_REGISTER_SIZE];
     int a;
-    fprintf_filtered (file, "A0-A%d", NR_A_REGS - 1);
-    for (a = a0_regnum (gdbarch); a < a0_regnum (gdbarch) + NR_A_REGS; a++)
+    fprintf_filtered(file, "A0-A%d", (NR_A_REGS - 1));
+    for (a = a0_regnum(gdbarch); a < (a0_regnum(gdbarch) + NR_A_REGS); a++)
       {
 	int i;
-	fprintf_filtered (file, "  ");
-	get_frame_register (frame, a, num);
-	for (i = 0; i < register_size (gdbarch, a); i++)
+	fprintf_filtered(file, "  ");
+	get_frame_register(frame, a, (gdb_byte *)num);
+	for (i = 0; i < register_size(gdbarch, a); i++)
 	  {
-	    fprintf_filtered (file, "%02x", (num[i] & 0xff));
+	    fprintf_filtered(file, "%02x", (num[i] & 0xff));
 	  }
       }
   }
-  fprintf_filtered (file, "\n");
+  fprintf_filtered(file, "\n");
 }
 
+/* */
 static void
-show_regs (char *args, int from_tty)
+show_regs(const char *args, int from_tty)
 {
-  d10v_print_registers_info (current_gdbarch, gdb_stdout,
-			     get_current_frame (), -1, 1);
+  d10v_print_registers_info(current_gdbarch, gdb_stdout,
+			    get_current_frame(), -1, 1);
 }
 
+/* */
 static CORE_ADDR
 d10v_read_pc (ptid_t ptid)
 {
@@ -907,28 +920,29 @@ struct stack_item
   void *data;
 };
 
-static struct stack_item *push_stack_item (struct stack_item *prev,
-					   void *contents, int len);
+static struct stack_item *push_stack_item(struct stack_item *, void *, int);
+
 static struct stack_item *
-push_stack_item (struct stack_item *prev, void *contents, int len)
+push_stack_item(struct stack_item *prev, void *contents, int len)
 {
   struct stack_item *si;
-  si = xmalloc (sizeof (struct stack_item));
-  si->data = xmalloc (len);
+  si = (struct stack_item *)xmalloc(sizeof(struct stack_item));
+  si->data = xmalloc(len);
   si->len = len;
   si->prev = prev;
-  memcpy (si->data, contents, len);
+  memcpy(si->data, contents, len);
   return si;
 }
 
-static struct stack_item *pop_stack_item (struct stack_item *si);
+static struct stack_item *pop_stack_item(struct stack_item *);
+
 static struct stack_item *
-pop_stack_item (struct stack_item *si)
+pop_stack_item(struct stack_item *si)
 {
   struct stack_item *dead = si;
   si = si->prev;
-  xfree (dead->data);
-  xfree (dead);
+  xfree(dead->data);
+  xfree(dead);
   return si;
 }
 
@@ -981,19 +995,21 @@ d10v_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
   for (i = 0; i < nargs; i++)
     {
       struct value *arg = args[i];
-      struct type *type = check_typedef (VALUE_TYPE (arg));
-      char *contents = VALUE_CONTENTS (arg);
-      int len = TYPE_LENGTH (type);
-      int aligned_regnum = (regnum + 1) & ~1;
+      struct type *type = check_typedef(VALUE_TYPE(arg));
+      char *contents = VALUE_CONTENTS(arg);
+      int len = TYPE_LENGTH(type);
+      int aligned_regnum = ((regnum + 1) & ~1);
 
-      /* printf ("push: type=%d len=%d\n", TYPE_CODE (type), len); */
-      if (len <= 2 && regnum <= ARGN_REGNUM)
+#if defined(TYPE_CODE) && (defined(DEBUG) || defined(GDB_DEBUG))
+      printf("push: type=%d len=%d\n", TYPE_CODE(type), len);
+#endif /* TYPE_CODE && (DEBUG || GDB_DEBUG) */
+      if ((len <= 2) && (regnum <= ARGN_REGNUM))
 	/* fits in a single register, do not align */
 	{
-	  val = extract_unsigned_integer (contents, len);
-	  regcache_cooked_write_unsigned (regcache, regnum++, val);
+	  val = extract_unsigned_integer((const gdb_byte *)contents, len);
+	  regcache_cooked_write_unsigned(regcache, regnum++, val);
 	}
-      else if (len <= (ARGN_REGNUM - aligned_regnum + 1) * 2)
+      else if (len <= ((ARGN_REGNUM - aligned_regnum + 1) * 2))
 	/* value fits in remaining registers, store keeping left
 	   aligned */
 	{
@@ -1001,33 +1017,33 @@ d10v_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	  regnum = aligned_regnum;
 	  for (b = 0; b < (len & ~1); b += 2)
 	    {
-	      val = extract_unsigned_integer (&contents[b], 2);
-	      regcache_cooked_write_unsigned (regcache, regnum++, val);
+	      val = extract_unsigned_integer((const gdb_byte *)&contents[b], 2);
+	      regcache_cooked_write_unsigned(regcache, regnum++, val);
 	    }
 	  if (b < len)
 	    {
-	      val = extract_unsigned_integer (&contents[b], 1);
-	      regcache_cooked_write_unsigned (regcache, regnum++, (val << 8));
+	      val = extract_unsigned_integer((const gdb_byte *)&contents[b], 1);
+	      regcache_cooked_write_unsigned(regcache, regnum++, (val << 8));
 	    }
 	}
       else
 	{
 	  /* arg will go onto stack */
-	  regnum = ARGN_REGNUM + 1;
-	  si = push_stack_item (si, contents, len);
+	  regnum = (ARGN_REGNUM + 1);
+	  si = push_stack_item(si, contents, len);
 	}
     }
 
   while (si)
     {
-      sp = (sp - si->len) & ~1;
-      write_memory (sp, si->data, si->len);
-      si = pop_stack_item (si);
+      sp = ((sp - si->len) & ~1);
+      write_memory(sp, (const gdb_byte *)si->data, si->len);
+      si = pop_stack_item(si);
     }
 
-  /* Finally, update the SP register.  */
-  regcache_cooked_write_unsigned (regcache, D10V_SP_REGNUM,
-				  d10v_convert_daddr_to_raw (sp));
+  /* Finally, update the SP register: */
+  regcache_cooked_write_unsigned(regcache, D10V_SP_REGNUM,
+				 d10v_convert_daddr_to_raw(sp));
 
   return sp;
 }
@@ -1039,16 +1055,17 @@ d10v_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
    VM system works, we just call that to do the translation.  */
 
 static void
-remote_d10v_translate_xfer_address (struct gdbarch *gdbarch,
-				    struct regcache *regcache,
-				    CORE_ADDR memaddr, int nr_bytes,
-				    CORE_ADDR *targ_addr, int *targ_len)
+remote_d10v_translate_xfer_address(struct gdbarch *gdbarch,
+				   struct regcache *regcache,
+				   CORE_ADDR memaddr, int nr_bytes,
+				   CORE_ADDR *targ_addr, int *targ_len)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
   long out_addr;
   long out_len;
-  out_len = sim_d10v_translate_addr (memaddr, nr_bytes, &out_addr, regcache,
-				     tdep->dmap_register, tdep->imap_register);
+  out_len = sim_d10v_translate_addr(memaddr, nr_bytes,
+				    (unsigned long *)&out_addr, regcache,
+				    tdep->dmap_register, tdep->imap_register);
   *targ_addr = out_addr;
   *targ_len = out_len;
 }
@@ -1080,22 +1097,20 @@ remote_d10v_translate_xfer_address (struct gdbarch *gdbarch,
 
 #define TRACE_BUFFER_BASE (0xf40000)
 
-static void trace_command (char *, int);
+static void trace_command(const char *, int);
 
-static void untrace_command (char *, int);
+static void untrace_command(const char *, int);
 
-static void trace_info (char *, int);
+static void trace_info(const char *, int);
 
-static void tdisassemble_command (char *, int);
+static void tdisassemble_command(const char *, int);
 
-static void display_trace (int, int);
+static void display_trace(int, int);
 
-/* True when instruction traces are being collected.  */
-
+/* True when instruction traces are being collected: */
 static int tracing;
 
-/* Remembered PC.  */
-
+/* Remembered PC: */
 static CORE_ADDR last_pc;
 
 /* True when trace output should be displayed whenever program stops.  */
@@ -1114,31 +1129,34 @@ struct trace_buffer
   }
 trace_data;
 
+/* */
 static void
-trace_command (char *args, int from_tty)
+trace_command(const char *args, int from_tty)
 {
   /* Clear the host-side trace buffer, allocating space if needed.  */
   trace_data.size = 0;
   if (trace_data.counts == NULL)
-    trace_data.counts = XCALLOC (65536, short);
+    trace_data.counts = XCALLOC(65536, short);
   if (trace_data.addrs == NULL)
-    trace_data.addrs = XCALLOC (65536, CORE_ADDR);
+    trace_data.addrs = XCALLOC(65536, CORE_ADDR);
 
   tracing = 1;
 
-  printf_filtered ("Tracing is now on.\n");
+  printf_filtered(_("Tracing is now on.\n"));
 }
 
+/* */
 static void
-untrace_command (char *args, int from_tty)
+untrace_command(const char *args, int from_tty)
 {
   tracing = 0;
 
-  printf_filtered ("Tracing is now off.\n");
+  printf_filtered(_("Tracing is now off.\n"));
 }
 
+/* */
 static void
-trace_info (char *args, int from_tty)
+trace_info(const char *args, int from_tty)
 {
   int i;
 
@@ -1172,21 +1190,21 @@ d10v_eva_prepare_to_trace (void)
 
 /* Collect trace data from the target board and format it into a form
    more useful for display.  */
-
 static void
-d10v_eva_get_trace_data (void)
+d10v_eva_get_trace_data(void)
 {
   int count, i, j, oldsize;
-  int trace_addr, trace_seg, trace_cnt, next_cnt;
+  CORE_ADDR trace_addr;
+  int next_cnt;
   unsigned int last_trace, trace_word, next_word;
   unsigned int *tmpspace;
 
   if (!tracing)
     return;
 
-  tmpspace = xmalloc (65536 * sizeof (unsigned int));
+  tmpspace = (unsigned int *)xmalloc(65536UL * sizeof(unsigned int));
 
-  last_trace = read_memory_unsigned_integer (DBBC_ADDR, 2) << 2;
+  last_trace = (read_memory_unsigned_integer(DBBC_ADDR, 2) << 2);
 
   /* Collect buffer contents from the target, stopping when we reach
      the word recorded when execution resumed.  */
@@ -1233,10 +1251,10 @@ d10v_eva_get_trace_data (void)
     display_trace (oldsize, trace_data.size);
 }
 
+/* */
 static void
-tdisassemble_command (char *arg, int from_tty)
+tdisassemble_command(const char *arg, int from_tty)
 {
-  int i, count;
   CORE_ADDR low, high;
 
   if (!arg)
@@ -1246,44 +1264,45 @@ tdisassemble_command (char *arg, int from_tty)
     }
   else
     {
-      char *space_index = strchr (arg, ' ');
+      char *space_index = strchr(arg, ' ');
       if (space_index == NULL)
 	{
-	  low = parse_and_eval_address (arg);
-	  high = low + 5;
+	  low = parse_and_eval_address(arg);
+	  high = (low + 5);
 	}
       else
 	{
 	  /* Two arguments.  */
 	  *space_index = '\0';
-	  low = parse_and_eval_address (arg);
-	  high = parse_and_eval_address (space_index + 1);
+	  low = parse_and_eval_address(arg);
+	  high = parse_and_eval_address(space_index + 1);
 	  if (high < low)
 	    high = low;
 	}
     }
 
-  printf_filtered ("Dump of trace from %s to %s:\n",
-		   paddr_u (low), paddr_u (high));
+  printf_filtered("Dump of trace from %s to %s:\n",
+		  paddr_u(low), paddr_u(high));
 
-  display_trace (low, high);
+  display_trace(low, high);
 
-  printf_filtered ("End of trace dump.\n");
-  gdb_flush (gdb_stdout);
+  printf_filtered("End of trace dump.\n");
+  gdb_flush(gdb_stdout);
 }
 
+/* */
 static void
-display_trace (int low, int high)
+display_trace(int low, int high)
 {
   int i, count, trace_show_source, first, suppress;
   CORE_ADDR next_address;
 
   trace_show_source = default_trace_show_source;
-  if (!have_full_symbols () && !have_partial_symbols ())
+  if (!have_full_symbols() && !have_partial_symbols())
     {
       trace_show_source = 0;
-      printf_filtered ("No symbol table is loaded.  Use the \"file\" command.\n");
-      printf_filtered ("Trace will not display any source.\n");
+      printf_filtered(_("No symbol table is loaded.  Use the \"file\" command.\n"));
+      printf_filtered(_("Trace will not display any source.\n"));
     }
 
   first = 1;
@@ -1366,33 +1385,39 @@ d10v_frame_this_id (struct frame_info *next_frame,
   (*this_id) = id;
 }
 
+/* */
 static void
-d10v_frame_prev_register (struct frame_info *next_frame,
-			  void **this_prologue_cache,
-			  int regnum, int *optimizedp,
-			  enum lval_type *lvalp, CORE_ADDR *addrp,
-			  int *realnump, void *bufferp)
+d10v_frame_prev_register(struct frame_info *next_frame,
+			 void **this_prologue_cache, int regnum,
+			 int *optimizedp, enum lval_type *lvalp,
+			 CORE_ADDR *addrp, int *realnump, void *bufferp)
 {
-  struct d10v_unwind_cache *info
-    = d10v_frame_unwind_cache (next_frame, this_prologue_cache);
-  trad_frame_get_prev_register (next_frame, info->saved_regs, regnum,
-				optimizedp, lvalp, addrp, realnump, bufferp);
+  struct d10v_unwind_cache *info =
+    d10v_frame_unwind_cache(next_frame, this_prologue_cache);
+  trad_frame_get_prev_register(next_frame, info->saved_regs, regnum,
+			       (enum opt_state *)optimizedp, lvalp, addrp,
+			       realnump, (gdb_byte *)bufferp);
 }
 
 static const struct frame_unwind d10v_frame_unwind = {
   NORMAL_FRAME,
   d10v_frame_this_id,
-  d10v_frame_prev_register
+  d10v_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
+/* */
 static const struct frame_unwind *
-d10v_frame_sniffer (struct frame_info *next_frame)
+d10v_frame_sniffer(struct frame_info *next_frame)
 {
   return &d10v_frame_unwind;
 }
 
+/* */
 static CORE_ADDR
-d10v_frame_base_address (struct frame_info *next_frame, void **this_cache)
+d10v_frame_base_address(struct frame_info *next_frame, void **this_cache)
 {
   struct d10v_unwind_cache *info
     = d10v_frame_unwind_cache (next_frame, this_cache);

@@ -1,4 +1,4 @@
-/* Common target-dependent code for NetBSD systems.
+/* nbsd-tdep.c: Common target-dependent code for NetBSD systems.
    Copyright 2002 Free Software Foundation, Inc.
    Contributed by Wasabi Systems, Inc.
   
@@ -23,6 +23,8 @@
 #include "gdb_string.h"
 #include "solib-svr4.h"
 
+#include "nbsd-tdep.h"
+
 /* Fetch (and possibly build) an appropriate link_map_offsets
    structure for NetBSD targets using the struct offsets defined
    in <link.h> (but without actual reference to that file).
@@ -31,9 +33,9 @@
    GDB that was not built on the same platform (for cross debugging).
 
    We provide versions for ILP32 and LP64 NetBSD targets here.  */
-  
+/* ILP32 version: */
 struct link_map_offsets *
-nbsd_ilp32_solib_svr4_fetch_link_map_offsets (void)
+nbsd_ilp32_solib_svr4_fetch_link_map_offsets(void)
 {
   static struct link_map_offsets lmo;
   static struct link_map_offsets *lmp = NULL;
@@ -45,28 +47,29 @@ nbsd_ilp32_solib_svr4_fetch_link_map_offsets (void)
       lmo.r_debug_size = 16;
 
       lmo.r_map_offset = 4;
-      lmo.r_map_size   = 4;
+      lmo.r_map_size = 4;
 
       lmo.link_map_size = 20;
 
       lmo.l_addr_offset = 0;
-      lmo.l_addr_size   = 4;
+      lmo.l_addr_size = 4;
 
       lmo.l_name_offset = 4;
-      lmo.l_name_size   = 4;
+      lmo.l_name_size = 4;
 
       lmo.l_next_offset = 12;
-      lmo.l_next_size   = 4;
+      lmo.l_next_size = 4;
 
       lmo.l_prev_offset = 16;
-      lmo.l_prev_size   = 4;
+      lmo.l_prev_size = 4;
     }
 
   return lmp;
 }
 
+/* LP64 version: */
 struct link_map_offsets *
-nbsd_lp64_solib_svr4_fetch_link_map_offsets (void)
+nbsd_lp64_solib_svr4_fetch_link_map_offsets(void)
 {
   static struct link_map_offsets lmo;
   static struct link_map_offsets *lmp = NULL;
@@ -78,32 +81,35 @@ nbsd_lp64_solib_svr4_fetch_link_map_offsets (void)
       lmo.r_debug_size = 32;
 
       lmo.r_map_offset = 8;
-      lmo.r_map_size   = 8;
+      lmo.r_map_size = 8;
 
       lmo.link_map_size = 40;
 
       lmo.l_addr_offset = 0;
-      lmo.l_addr_size   = 8;
+      lmo.l_addr_size = 8;
 
       lmo.l_name_offset = 8;
-      lmo.l_name_size   = 8;
+      lmo.l_name_size = 8;
 
       lmo.l_next_offset = 24;
-      lmo.l_next_size   = 8;
+      lmo.l_next_size = 8;
 
       lmo.l_prev_offset = 32;
-      lmo.l_prev_size   = 8;
+      lmo.l_prev_size = 8;
     }
 
   return lmp;
 }
 
+/* */
 int
-nbsd_pc_in_sigtramp (CORE_ADDR pc, char *func_name)
+nbsd_pc_in_sigtramp(CORE_ADDR pc, char *func_name)
 {
   /* Check for libc-provided signal trampoline.  All such trampolines
      have function names which begin with "__sigtramp".  */
 
-  return (func_name != NULL
-	  && strncmp (func_name, "__sigtramp", 10) == 0);
+  return ((func_name != NULL)
+	  && (strncmp(func_name, "__sigtramp", 10) == 0));
 }
+
+/* EOF */

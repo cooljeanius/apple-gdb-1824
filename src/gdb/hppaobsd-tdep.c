@@ -1,4 +1,4 @@
-/* Target-dependent code for OpenBSD/hppa
+/* hppaobsd-tdep.c: Target-dependent code for OpenBSD/hppa
 
    Copyright (C) 2004-2013 Free Software Foundation, Inc.
 
@@ -42,12 +42,11 @@
    REGCACHE.  If REGNUM is -1, do this for all registers in REGSET.  */
 
 static void
-hppaobsd_supply_gregset (const struct regset *regset,
-			 struct regcache *regcache,
-			 int regnum, const void *gregs, size_t len)
+hppaobsd_supply_gregset(const struct regset *regset, struct regcache *regcache,
+			int regnum, const void *gregs, size_t len)
 {
   gdb_byte zero[4] = { 0 };
-  const gdb_byte *regs = gregs;
+  const gdb_byte *regs = (const gdb_byte *)gregs;
   size_t offset;
   int i;
 
@@ -116,16 +115,21 @@ hppaobsd_supply_fpregset (const struct regset *regset,
 			  struct regcache *regcache,
 			  int regnum, const void *fpregs, size_t len)
 {
-  struct gdbarch *gdbarch = get_regcache_arch (regcache);
-  const gdb_byte *regs = fpregs;
+  struct gdbarch *gdbarch = get_regcache_arch(regcache);
+  const gdb_byte *regs = (const gdb_byte *)fpregs;
   int i;
 
-  gdb_assert (len >= HPPAOBSD_SIZEOF_FPREGS);
+  gdb_assert(len >= HPPAOBSD_SIZEOF_FPREGS);
+  gdb_assert(gdbarch != NULL);
 
+  /* This define is just a guess: */
+#ifndef HPPA_FP31R_REGNUM
+# define HPPA_FP31R_REGNUM (HPPA_FP0_REGNUM + 31)
+#endif /* !HPPA_FP31R_REGNUM */
   for (i = HPPA_FP0_REGNUM; i <= HPPA_FP31R_REGNUM; i++)
     {
-      if (regnum == i || regnum == -1)
-	regcache_raw_supply (regcache, i, regs + (i - HPPA_FP0_REGNUM) * 4);
+      if ((regnum == i) || (regnum == -1))
+	regcache_raw_supply(regcache, i, (regs + ((i - HPPA_FP0_REGNUM) * 4)));
     }
 }
 
@@ -134,13 +138,17 @@ hppaobsd_supply_fpregset (const struct regset *regset,
 static struct regset hppaobsd_gregset =
 {
   NULL,
-  hppaobsd_supply_gregset
+  hppaobsd_supply_gregset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
 };
 
 static struct regset hppaobsd_fpregset =
 {
   NULL,
-  hppaobsd_supply_fpregset
+  hppaobsd_supply_fpregset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
 };
 
 /* Return the appropriate register set for the core section identified
@@ -177,9 +185,9 @@ hppaobsd_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 #define GDB_OSABI_NETBSD_CORE GDB_OSABI_OPENBSD_ELF
 
 static enum gdb_osabi
-hppaobsd_core_osabi_sniffer (bfd *abfd)
+hppaobsd_core_osabi_sniffer(bfd *abfd)
 {
-  if (strcmp (bfd_get_target (abfd), "netbsd-core") == 0)
+  if (strcmp(bfd_get_target(abfd), "netbsd-core") == 0)
     return GDB_OSABI_NETBSD_CORE;
 
   return GDB_OSABI_UNKNOWN;
@@ -187,15 +195,17 @@ hppaobsd_core_osabi_sniffer (bfd *abfd)
 
 
 /* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_hppabsd_tdep (void);
+void _initialize_hppabsd_tdep(void);
 
 void
-_initialize_hppabsd_tdep (void)
+_initialize_hppabsd_tdep(void)
 {
   /* BFD doesn't set a flavour for NetBSD style a.out core files.  */
-  gdbarch_register_osabi_sniffer (bfd_arch_hppa, bfd_target_unknown_flavour,
-				  hppaobsd_core_osabi_sniffer);
+  gdbarch_register_osabi_sniffer(bfd_arch_hppa, bfd_target_unknown_flavour,
+				 hppaobsd_core_osabi_sniffer);
 
-  gdbarch_register_osabi (bfd_arch_hppa, 0, GDB_OSABI_OPENBSD_ELF,
-			  hppaobsd_init_abi);
+  gdbarch_register_osabi(bfd_arch_hppa, 0, GDB_OSABI_OPENBSD_ELF,
+			 hppaobsd_init_abi);
 }
+
+/* EOF */

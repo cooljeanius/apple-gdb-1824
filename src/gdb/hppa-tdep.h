@@ -1,4 +1,4 @@
-/* Target-dependent code for the HP PA-RISC architecture.
+/* hppa-tdep.h: Target-dependent code for the HP PA-RISC architecture.
 
    Copyright 2003, 2004, 2005 Free Software Foundation, Inc.
 
@@ -21,6 +21,8 @@
 
 #ifndef HPPA_TDEP_H
 #define HPPA_TDEP_H
+
+#include "value.h" /* for 'enum opt_state' */
 
 struct trad_frame_saved_reg;
 struct objfile;
