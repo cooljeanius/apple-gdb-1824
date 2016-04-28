@@ -1281,7 +1281,7 @@ bfd_calc_gnu_debuglink_crc32(unsigned long crc,
 
 
 /*
-INTERNAL_FUNCTION
+FUNCTION
 	get_debug_link_info
 
 SYNOPSIS
@@ -1293,7 +1293,7 @@ DESCRIPTION
 	otherwise return filename and update @var{crc32_out}.
 */
 
-static char *
+char *
 get_debug_link_info(bfd *abfd, unsigned long *crc32_out)
 {
   asection *sect;
@@ -1329,19 +1329,19 @@ get_debug_link_info(bfd *abfd, unsigned long *crc32_out)
 }
 
 /*
-INTERNAL_FUNCTION
+FUNCTION
 	separate_debug_file_exists
 
 SYNOPSIS
 	bfd_boolean separate_debug_file_exists
-	  (char *name, unsigned long crc32);
+	  (const char *name, const unsigned long crc32);
 
 DESCRIPTION
 	Checks to see if @var{name} is a file and if its contents
 	match @var{crc32}.
 */
 
-static bfd_boolean
+bfd_boolean
 separate_debug_file_exists(const char *name, const unsigned long crc)
 {
   static unsigned char buffer[8 * 1024];

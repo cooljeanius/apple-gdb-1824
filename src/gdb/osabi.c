@@ -48,51 +48,54 @@ static const char *set_osabi_string;
 
 /* This table matches the indices assigned to enum gdb_osabi.  Keep
    them in sync.  */
-static const char * const gdb_osabi_names[] =
+static const char * const gdb_osabi_names[GDB_OSABI_INVALID + 2] =
 {
-  "none",
+  "none", /* GDB_OSABI_UNKNOWN (0) */
 
-  "SVR4",
-  "GNU/Hurd",
-  "Solaris",
-  "OSF/1",
-  "GNU/Linux",
-  "FreeBSD a.out",
-  "FreeBSD ELF",
-  "NetBSD a.out",
-  "NetBSD ELF",
-  "OpenBSD ELF",
-  "Windows CE",
-  "DJGPP",
-  "NetWare",
-  "Irix",
-  "LynxOS",
-  "Interix",
-  "HP/UX ELF",
-  "HP/UX SOM",
+  "SVR4", /* GDB_OSABI_SVR4 (1) */
+  "GNU/Hurd", /* GDB_OSABI_HURD (2) */
+  "Solaris", /* GDB_OSABI_SOLARIS (3) */
+  "OSF/1", /* GDB_OSABI_OSF1 (4) */
+  "GNU/Linux", /* GDB_OSABI_LINUX (5) */
+  "FreeBSD a.out", /* GDB_OSABI_FREEBSD_AOUT (6) */
+  "FreeBSD ELF", /* GDB_OSABI_FREEBSD_ELF (7) */
+  "NetBSD a.out", /* GDB_OSABI_NETBSD_AOUT (8) */
+  "NetBSD ELF", /* GDB_OSABI_NETBSD_ELF (9) */
+  "OpenBSD ELF", /* GDB_OSABI_OPENBSD_ELF (10) */
+  "Windows CE", /* GDB_OSABI_WINCE (11) */
+  "DJGPP", /* GDB_OSABI_GO32 (12) */
+  "NetWare", /* GDB_OSABI_NETWARE (13) */
+  "Irix", /* GDB_OSABI_IRIX (14) */
+  "LynxOS", /* GDB_OSABI_LYNXOS (15) */
+  "Interix", /* GDB_OSABI_INTERIX (16) */
+  "HP/UX ELF", /* GDB_OSABI_HPUX_ELF (17) */
+  "HP/UX SOM", /* GDB_OSABI_HPUX_SOM (18) */
   /* APPLE LOCAL begin Darwin */
-  "Darwin",
-  "Darwin64",
-  "DarwinV6",
-  "DarwinV7",
-  "DarwinV7F",
-  "DarwinV7S",
-  "DarwinV7K",
+  "Darwin", /* GDB_OSABI_DARWIN (19) */
+  "Darwin64", /* GDB_OSABI_DARWIN64 (20) */
+  "DarwinV6", /* GDB_OSABI_DARWINV6 (21) */
+  "DarwinV7", /* GDB_OSABI_DARWINV7 (22) */
+  "DarwinV7F", /* GDB_OSABI_DARWINV7F (23) */
+  "DarwinV7S", /* GDB_OSABI_DARWINV7S (24) */
+  "DarwinV7K", /* GDB_OSABI_DARWINV7K (25) */
   /* APPLE LOCAL end Darwin */
 
-  "QNX Neutrino",
+  "QNX Neutrino", /* GDB_OSABI_QNXNTO (26) */
 
-  "Cygwin",
+  "Cygwin", /* GDB_OSABI_CYGWIN (27) */
 
-  "AIX",
-  "DICOS",
-  "Symbian"
-  "OpenVMS",
-  "LynxOS178",
-  "Newlib",
-  "SDE",
+  "AIX", /* GDB_OSABI_AIX (28) */
+  "DICOS", /* GDB_OSABI_DICOS (29) */
+  "Symbian", /* GDB_OSABI_SYMBIAN (30) */
+#ifdef ENUMS_CAN_BE_LONG
+  "OpenVMS", /* GDB_OSABI_OPENVMS */
+  "LynxOS178", /* GDB_OSABI_LYNXOS178 */
+  "Newlib", /* GDB_OSABI_NEWLIB */
+  "SDE", /* GDB_OSABI_SDE */
+#endif /* ENUMS_CAN_BE_LONG */
 
-  "<invalid>"
+  "<invalid>", /* GDB_OSABI_INVALID */
+  ""
 };
 
 /* */
@@ -693,9 +696,24 @@ extern initialize_file_ftype _initialize_gdb_osabi; /* -Wmissing-prototypes */
 void
 _initialize_gdb_osabi(void)
 {
-  if (strcmp(gdb_osabi_names[GDB_OSABI_INVALID], "<invalid>") != 0)
-    internal_error(__FILE__, __LINE__,
-       _("_initialize_gdb_osabi: gdb_osabi_names[] is inconsistent"));
+#ifdef __GNUC__
+  __asm__("");
+#endif /* __GNUC__ */
+#if defined(DEBUG) || defined(GDB_DEBUG)
+  printf("Hello from _initialize_gdb_osabi.\n");
+#endif /* DEBUG || GDB_DEBUG */
+  if (gdb_osabi_names != NULL)
+    {
+#if defined(DEBUG) || defined(GDB_DEBUG)
+      int i;
+      for (i = 0; i <= GDB_OSABI_INVALID; i++) {
+	printf("osabi name number %d is %s.\n", i, gdb_osabi_names[i]);
+      }
+#endif /* DEBUG || GDB_DEBUG */
+      if (strncmp(gdb_osabi_names[GDB_OSABI_INVALID], "<invalid>", 16UL) != 0)
+	internal_error(__FILE__, __LINE__,
+		       _("_initialize_gdb_osabi: gdb_osabi_names[] is inconsistent"));
+    }
 
   /* Register a generic sniffer for ELF-flavoured files: */
   gdbarch_register_osabi_sniffer(bfd_arch_unknown,

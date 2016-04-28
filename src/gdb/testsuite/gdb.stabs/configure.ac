@@ -36,10 +36,10 @@ if test "x${CC_C_O}" = "x"; then
   test -z "${CC_C_O}"
   AM_PROG_CC_C_O
 fi
-if test "x${CC}" = "x" || test "x${CC}" != "x${MY_CC}"; then
+AS_IF([test "x${CC}" = "x" || test "x${CC}" != "x${MY_CC}"],[
   test -z "${CC}"
   AC_PROG_CC
-else
+],[
   test ! -z "${CC}"
   if test "x${ac_cv_c_compiler_gnu}" = "x"; then
     test -z "${ac_cv_c_compiler_gnu}"
@@ -50,7 +50,7 @@ else
     fi
   fi
   AC_PROG_GCC_TRADITIONAL
-fi
+])
 AC_PROG_CPP
 AC_PROG_SED
 

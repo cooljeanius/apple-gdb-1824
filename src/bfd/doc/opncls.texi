@@ -321,7 +321,7 @@ otherwise return filename and update @var{crc32_out}.
 @strong{Synopsis}
 @example
 bfd_boolean separate_debug_file_exists
-   (char *name, unsigned long crc32);
+   (const char *name, const unsigned long crc32);
 @end example
 @strong{Description}@*
 Checks to see if @var{name} is a file and if its contents

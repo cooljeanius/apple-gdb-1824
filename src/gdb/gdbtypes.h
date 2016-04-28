@@ -853,8 +853,8 @@ struct gdbtypes_bitfield_info
 
 /* APPLE LOCAL: I need these two objc fixup functions for TYPE_LENGTH
    and TYPE_FIELD_BITPOS.  */
-int objc_fixup_ivar_offset (struct type *type, int ivar);
-int objc_fixup_class_length (struct type *type);
+int objc_fixup_ivar_offset(const struct type *type, int ivar);
+int objc_fixup_class_length(const struct type *type);
 /* END APPLE LOCAL */
 
 

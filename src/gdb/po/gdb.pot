@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-23 12:47-0400\n"
+"POT-Creation-Date: 2016-04-26 02:49-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1040,7 +1040,7 @@ msgstr ""
 msgid "Couldn't write debug register"
 msgstr ""
 
-#: amd64-tdep.c:221 cris-tdep.c:1848 hppa-linux-tdep.c:50 msp430-tdep.c:588
+#: amd64-tdep.c:221 cris-tdep.c:1854 hppa-linux-tdep.c:50 msp430-tdep.c:588
 #: s390-linux-tdep.c:203 s390-tdep.c:204
 #, possible-c-format
 msgid "Unmapped DWARF Register #%d encountered."
@@ -1918,35 +1918,35 @@ msgid ""
 "This is information provided by the operating system at program startup."
 msgstr ""
 
-#: avr-tdep.c:592
+#: avr-tdep.c:601
 #, possible-c-format
 msgid "Num pushes too large: %d\n"
 msgstr ""
 
-#: avr-tdep.c:671
+#: avr-tdep.c:680
 msgid "Hit end of prologue while scanning pushes\n"
 msgstr ""
 
-#: avr-tdep.c:1341
+#: avr-tdep.c:1360
 msgid "ERR: info io_registers NOT supported by current target\n"
 msgstr ""
 
-#: avr-tdep.c:1356
+#: avr-tdep.c:1375
 msgid "info io_registers NOT supported by target\n"
 msgstr ""
 
-#: avr-tdep.c:1363
+#: avr-tdep.c:1382
 msgid "Error fetching number of io registers\n"
 msgstr ""
 
-#: avr-tdep.c:1369
+#: avr-tdep.c:1388
 #, possible-c-format
 msgid ""
 "Target has %u io registers:\n"
 "\n"
 msgstr ""
 
-#: avr-tdep.c:1416
+#: avr-tdep.c:1435
 msgid "query remote avr target for io space register values"
 msgstr ""
 
@@ -5679,97 +5679,97 @@ msgstr ""
 msgid "Show printing of object's derived type based on vtable info."
 msgstr ""
 
-#: cris-tdep.c:305 i386-linux-tdep.c:312
+#: cris-tdep.c:307 i386-linux-tdep.c:312
 msgid "Couldn't recognize signal trampoline."
 msgstr ""
 
 #. FIXME
-#: cris-tdep.c:977
+#: cris-tdep.c:976
 msgid "We don't do this"
 msgstr ""
 
 #. Invalid (unimplemented) register.  Should not happen as there are
 #. no unimplemented CRISv32 registers.
-#: cris-tdep.c:1696
+#: cris-tdep.c:1701
 #, possible-c-format
 msgid "crisv32_register_type: unknown regno %d"
 msgstr ""
 
-#: cris-tdep.c:1728
+#: cris-tdep.c:1733
 msgid "cris_store_return_value: type length too large."
 msgstr ""
 
-#: cris-tdep.c:1896
+#: cris-tdep.c:1902
 msgid "cris_extract_return_value: type length too large"
 msgstr ""
 
 #. Could not find a target.  Things are likely to go downhill
 #. from here.
-#: cris-tdep.c:2144
+#: cris-tdep.c:2152
 msgid "CRIS software single step could not find a step target."
 msgstr ""
 
-#: cris-tdep.c:3921 irix5-nat.c:275 mips-linux-tdep.c:600
+#: cris-tdep.c:3925 irix5-nat.c:275 mips-linux-tdep.c:600
 msgid "wrong size gregset struct in core file"
 msgstr ""
 
-#: cris-tdep.c:4005
+#: cris-tdep.c:4004
 msgid "Set the current CRIS version."
 msgstr ""
 
-#: cris-tdep.c:4006
+#: cris-tdep.c:4005
 msgid "Show the current CRIS version."
 msgstr ""
 
-#: cris-tdep.c:4007
+#: cris-tdep.c:4006
 msgid ""
 "Set to 10 for CRISv10 or 32 for CRISv32 if autodetection fails.\n"
 "Defaults to 10. "
 msgstr ""
 
-#: cris-tdep.c:4016
+#: cris-tdep.c:4015
 msgid "Set the current CRIS mode."
 msgstr ""
 
-#: cris-tdep.c:4017
+#: cris-tdep.c:4016
 msgid "Show the current CRIS mode."
 msgstr ""
 
-#: cris-tdep.c:4018
+#: cris-tdep.c:4017
 msgid ""
 "Set to CRIS_MODE_GURU when debugging in guru mode.\n"
 "Makes GDB use the NRP register instead of the ERP register in certain cases."
 msgstr ""
 
-#: cris-tdep.c:4027
+#: cris-tdep.c:4026
 msgid "Set the usage of Dwarf-2 CFI for CRIS."
 msgstr ""
 
-#: cris-tdep.c:4028
+#: cris-tdep.c:4027
 msgid "Show the usage of Dwarf-2 CFI for CRIS."
 msgstr ""
 
-#: cris-tdep.c:4029
+#: cris-tdep.c:4028
 msgid "Set this to \"off\" if using gcc-cris < R59."
 msgstr ""
 
-#: cris-tdep.c:4066 cris-tdep.c:4092
+#: cris-tdep.c:4065 cris-tdep.c:4093
 msgid "cris_gdbarch_update: failed to update architecture."
 msgstr ""
 
-#: cris-tdep.c:4150
+#: cris-tdep.c:4151
 msgid "cris_gdbarch_init: big endian byte order in info"
 msgstr ""
 
-#: cris-tdep.c:4154
+#: cris-tdep.c:4155
 msgid "cris_gdbarch_init: unknown byte order in info"
 msgstr ""
 
-#: cris-tdep.c:4187
+#: cris-tdep.c:4188
 msgid "cris_gdbarch_init: unsupported CRIS version"
 msgstr ""
 
-#: cris-tdep.c:4229
+#: cris-tdep.c:4230
 msgid "cris_gdbarch_init: unknown CRIS version"
 msgstr ""
 
@@ -5848,6 +5848,22 @@ msgstr ""
 #: ctf.c:1795
 #, possible-c-format
 msgid "Unhandled trace block type (%s) while building trace frame info."
+msgstr ""
+
+#: d10v-tdep.c:1145
+msgid "Tracing is now on.\n"
+msgstr ""
+
+#: d10v-tdep.c:1154
+msgid "Tracing is now off.\n"
+msgstr ""
+
+#: d10v-tdep.c:1304
+msgid "No symbol table is loaded.  Use the \"file\" command.\n"
+msgstr ""
+
+#: d10v-tdep.c:1305
+msgid "Trace will not display any source.\n"
 msgstr ""
 
 #: darwin-nat-info.c:60
@@ -8582,17 +8598,17 @@ msgstr ""
 msgid "not a signal trampoline"
 msgstr ""
 
-#: frv-tdep.c:424
+#: frv-tdep.c:427
 #, possible-c-format
 msgid "Bad register number %d"
 msgstr ""
 
-#: frv-tdep.c:1053
+#: frv-tdep.c:1064
 #, possible-c-format
 msgid "Illegal return value length: %d"
 msgstr ""
 
-#: frv-tdep.c:1268
+#: frv-tdep.c:1283
 #, possible-c-format
 msgid "Don't know how to return a %d-byte value."
 msgstr ""
@@ -12900,7 +12916,7 @@ msgstr ""
 msgid "Process record and replay target doesn't support syscall number %d\n"
 msgstr ""
 
-#: linux-tdep.c:157
+#: linux-tdep.c:166
 msgid ""
 "The current binary is a PIE (Position Independent Executable), which\n"
 "GDB does NOT currently support.  Most debugger features will fail if used\n"
@@ -15559,7 +15575,7 @@ msgid ""
 "is displayed."
 msgstr ""
 
-#: moxie-tdep.c:503
+#: moxie-tdep.c:497
 #, possible-c-format
 msgid "Process record: error reading memory at addr 0x%s len = %d.\n"
 msgstr ""
@@ -21229,13 +21245,13 @@ msgstr ""
 msgid "Must use symbol-file or exec-file before add-symbol-file-from-memory."
 msgstr ""
 
-#: symfile-mem.c:194
+#: symfile-mem.c:196
 msgid ""
 "Could not load vsyscall page because no executable was specified\n"
 "try using the \"file\" command first."
 msgstr ""
 
-#: symfile-mem.c:217
+#: symfile-mem.c:222
 msgid ""
 "Load the symbols out of memory from a dynamically loaded object file.\n"
 "Give an expression for the address of the file's shared object file header."

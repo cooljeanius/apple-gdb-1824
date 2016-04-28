@@ -1288,8 +1288,12 @@ send_disable_aslr(void)
   if (rs->remote_packet_size < 4)
     return 0;
 
+#ifdef TM_NEXTSTEP
   snprintf(buf, sizeof(buf), "QSetDisableASLR:%i",
            (disable_aslr_flag ? 1 : 0));
+#else
+  snprintf(buf, sizeof(buf), "QSetDisableASLR:%i", 0);
+#endif /* TM_NEXTSTEP */
   putpkt(buf);
   getpkt(buf, (sizeof(buf) - 1), 0);
   if ((buf[0] != 'O') || (buf[1] != 'K'))
@@ -4697,8 +4701,7 @@ putpkt_binary(const char *buf, int cnt)
    SERIAL status indications).  */
 
 static long
-read_frame (char *buf,
-	    long sizeof_buf)
+read_frame(char *buf, long sizeof_buf)
 {
   unsigned char csum;
   long bc;
@@ -4709,7 +4712,9 @@ read_frame (char *buf,
 
   while (1)
     {
-      /* ASSERT (bc < sizeof_buf - 1) - space for trailing NULL.  */
+#ifdef ASSERT
+      ASSERT(bc < (sizeof_buf - 1)) /* - space for trailing NULL.  */
+#endif /* ASSERT */
       c = readchar (remote_timeout);
       switch (c)
 	{
@@ -4845,9 +4850,7 @@ getpkt(char *buf, long sizeof_buf, int forever)
    allowed to time out gracefully and return an indication of this to
    the caller.  */
 static int
-getpkt_sane (char *buf,
-	long sizeof_buf,
-	int forever)
+getpkt_sane(char *buf, long sizeof_buf, int forever)
 {
   int c;
   int tries;
@@ -4878,8 +4881,7 @@ getpkt_sane (char *buf,
          brisk pace.  They should show up within remote_timeout
          intervals.  */
 
-      do
-	{
+      do {
 	  c = readchar (timeout);
 
 	  if (c == SERIAL_TIMEOUT)
@@ -4895,8 +4897,7 @@ getpkt_sane (char *buf,
 		fputs_filtered ("Timed out.\n", gdb_stdlog);
 	      goto retry;
 	    }
-	}
-      while (c != '$');
+      } while (c != '$');
 
       /* We've found the start of a packet, now collect the data.  */
 

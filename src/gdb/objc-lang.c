@@ -4508,7 +4508,7 @@ static int first_bitfield_offset = 0;
 /* APPLE LOCAL end 6478246 fix offsets for bitfields in objc classes.  */
 
 int
-objc_fixup_ivar_offset(struct type *type, int ivar)
+objc_fixup_ivar_offset(const struct type *type, int ivar)
 {
   const char *class_name;
   const char *field_name;
@@ -4674,7 +4674,7 @@ objc_fixup_ivar_offset(struct type *type, int ivar)
     class_len = -class_len;
 
   if ((ivar_offset + (ULONGEST)ivar_len) > (ULONGEST)class_len)
-    TYPE_LENGTH_ASSIGN(type) = (ivar_offset + ivar_len);
+    TYPE_LENGTH_ASSIGN((struct type *)type) = (ivar_offset + ivar_len);
 
   /* The ObjC runtime stores the offset in bytes, but we want it in
      bits for the bitpos.  */
@@ -4713,12 +4713,10 @@ objc_fixup_ivar_offset(struct type *type, int ivar)
    class length, then we just reverse the sign.  */
 
 int
-objc_fixup_class_length(struct type *type)
+objc_fixup_class_length(const struct type *type)
 {
-  /* objc_fixup_ivar_offset takes care of readjusting
-     the type length, so we just need to run through
-     the ivars of this class.  */
-
+  /* objc_fixup_ivar_offset takes care of readjusting the type length, so we
+   * just need to run through the ivars of this class.  */
   int i;
 
   /* APPLE LOCAL begin 6478246 fix offsets for bitfields in objc classes.  */
@@ -4729,13 +4727,12 @@ objc_fixup_class_length(struct type *type)
   first_bitfield_offset = 0;
   /* APPLE LOCAL end 6478246 fix offsets for bitfields in objc classes.  */
 
-  for (i = 0; i < TYPE_NFIELDS (type); i++)
-    objc_fixup_ivar_offset (type, i);
+  for (i = 0; i < TYPE_NFIELDS(type); i++)
+    objc_fixup_ivar_offset(type, i);
 
   if (TYPE_LENGTH_ASSIGN(type) < 0)
-    TYPE_LENGTH_ASSIGN(type) = (0 - TYPE_LENGTH_ASSIGN(type));
+    TYPE_LENGTH_ASSIGN((struct type *)type) = (0 - TYPE_LENGTH_ASSIGN(type));
   return TYPE_LENGTH_ASSIGN(type);
-
 }
 
 

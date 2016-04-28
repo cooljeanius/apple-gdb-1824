@@ -2074,9 +2074,8 @@ find_separate_debug_file (struct objfile *objfile)
 
 /* APPLE LOCAL: This function is #if'ed out entirely so we can replace
    it with our own version above.  */
-
 static char *
-find_separate_debug_file (struct objfile *objfile)
+find_separate_debug_file(struct objfile *objfile)
 {
   char *basename;
   char *dir;
@@ -2084,8 +2083,7 @@ find_separate_debug_file (struct objfile *objfile)
   unsigned long crc32;
   int i;
 
-  /* FIXME: BFD internal function; not exported: */
-  basename = get_debug_link_info(objfile, &crc32);
+  basename = get_debug_link_info((bfd *)objfile, &crc32);
 
   if (basename == NULL)
     return NULL;
@@ -2096,7 +2094,7 @@ find_separate_debug_file (struct objfile *objfile)
      followed by a slash.  Objfile names should always be absolute and
      tilde-expanded, so there should always be a slash in there
      somewhere.  */
-  for (i = (strlen(dir) - 1); i >= 0; i--)
+  for (i = (int)(strlen(dir) - 1UL); i >= 0; i--)
     {
       if (IS_DIR_SEPARATOR(dir[i]))
 	break;
@@ -2115,7 +2113,6 @@ find_separate_debug_file (struct objfile *objfile)
   strcpy(debugfile, dir);
   strcat(debugfile, basename);
 
-  /* FIXME: BFD internal function; not exported: */
   if (separate_debug_file_exists(debugfile, crc32))
     {
       xfree(basename);
@@ -2129,7 +2126,6 @@ find_separate_debug_file (struct objfile *objfile)
   strcat(debugfile, "/");
   strcat(debugfile, basename);
 
-  /* FIXME: BFD internal function; not exported: */
   if (separate_debug_file_exists(debugfile, crc32))
     {
       xfree(basename);
@@ -2143,7 +2139,6 @@ find_separate_debug_file (struct objfile *objfile)
   strcat(debugfile, dir);
   strcat(debugfile, basename);
 
-  /* FIXME: BFD internal function; not exported: */
   if (separate_debug_file_exists(debugfile, crc32))
     {
       xfree(basename);
@@ -3103,7 +3098,7 @@ get_kext_bundle_ident_and_binary_path(const char *filename,
                                       char **kext_bundle_executable_filename,
                                       const char **bundle_identifier_name_from_plist)
 {
-  const char *bundle_executable_name_from_plist;
+  const char *bundle_executable_name_from_plist = NULL;
   char *t;
 
 #ifdef TM_NEXTSTEP
@@ -3425,7 +3420,9 @@ add_dsym_command(const char *args, int from_tty)
 	     back to NONE so the set_load_state code will actually
 	     change the objfile state.  */
 	  objfile->symflags = OBJF_SYM_NONE;
+#ifdef MACOSX_DYLD
 	  dyld_objfile_set_load_state(objfile, OBJF_SYM_ALL);
+#endif /* MACOSX_DYLD */
 	}
       already_found_debug_file = NULL;
       if (e.reason != (enum return_reason)NO_ERROR)

@@ -218,35 +218,38 @@ struct hppa_objfile_private
 
 extern const struct objfile_data *hppa_objfile_priv_data;
 
-int hppa_get_field (unsigned word, int from, int to);
-int hppa_extract_5_load (unsigned int);
-unsigned hppa_extract_5R_store (unsigned int);
-unsigned hppa_extract_5r_store (unsigned int);
-int hppa_extract_17 (unsigned int);
-int hppa_extract_21 (unsigned);
-int hppa_extract_14 (unsigned);
-int hppa_low_sign_extend (unsigned int, unsigned int);
-int hppa_sign_extend (unsigned int, unsigned int);
-CORE_ADDR hppa_symbol_address(const char *sym);
+extern int hppa_get_field(unsigned word, int from, int to);
+extern int hppa_extract_5_load(unsigned int);
+extern unsigned int hppa_extract_5R_store(unsigned int);
+extern unsigned int hppa_extract_5r_store(unsigned int);
+extern int hppa_extract_17(unsigned int);
+extern int hppa_extract_21(unsigned int);
+extern int hppa_extract_14(unsigned int);
+extern int hppa_low_sign_extend(unsigned int, unsigned int);
+extern int hppa_sign_extend(unsigned int, unsigned int);
+extern int hppa_low_hppa_sign_extend(unsigned int, unsigned int);
+extern CORE_ADDR hppa_symbol_address(const char *sym);
 
 extern void
-  hppa_frame_prev_register_helper (struct frame_info *next_frame,
-				   struct trad_frame_saved_reg *saved_regs,
-				   /* APPLE LOCAL variable opt states.  */
-				   int regnum, enum opt_state *optimizedp,
-				   enum lval_type *lvalp, CORE_ADDR *addrp,
-				   int *realnump, gdb_byte *valuep);
+  hppa_frame_prev_register_helper(struct frame_info *next_frame,
+				  struct trad_frame_saved_reg *saved_regs,
+				  /* APPLE LOCAL variable opt states.  */
+				  int regnum, enum opt_state *optimizedp,
+				  enum lval_type *lvalp, CORE_ADDR *addrp,
+				  int *realnump, gdb_byte *valuep);
 
-extern CORE_ADDR hppa_read_pc (ptid_t ptid);
-extern void hppa_write_pc (CORE_ADDR pc, ptid_t ptid);
-extern CORE_ADDR hppa_unwind_pc (struct gdbarch *gdbarch,
-				 struct frame_info *next_frame);
+extern CORE_ADDR hppa_read_pc(ptid_t ptid);
+extern void hppa_write_pc(CORE_ADDR pc, ptid_t ptid);
+extern CORE_ADDR hppa_unwind_pc(struct gdbarch *gdbarch,
+				struct frame_info *next_frame);
 
 extern struct minimal_symbol *
-  hppa_lookup_stub_minimal_symbol (const char *name,
-                                   enum unwind_stub_types stub_type);
+  hppa_lookup_stub_minimal_symbol(const char *name,
+                                  enum unwind_stub_types stub_type);
 
 extern struct hppa_objfile_private *
-hppa_init_objfile_priv_data (struct objfile *objfile);
+hppa_init_objfile_priv_data(struct objfile *objfile);
 
 #endif  /* HPPA_TDEP_H */
+
+/* EOF */

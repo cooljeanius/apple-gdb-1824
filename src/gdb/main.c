@@ -751,7 +751,7 @@ extern int gdbtk_test(char *);
   if (initial_arch != NULL)
     {
       const char *arch_string = NULL;
-      const char *osabi_string;
+      const char *osabi_string = NULL;
 # if defined(TARGET_POWERPC)
       if (strcmp(initial_arch, "ppc") == 0)
 	{

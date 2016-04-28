@@ -30,9 +30,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # include "defs.h"
 #endif /* HAVE_CONFIG_H */
 
-#if !defined(PARAM_H)
+#if !defined(PARAM_H) && defined(GDB_TM_FILE)
 # include "tm.h"
-#endif /* !PARAM_H */
+#endif /* !PARAM_H && GDB_TM_FILE */
 
 #include "param-no-tm_old.h" /* renamed from "param-no-tm.h" */
 
