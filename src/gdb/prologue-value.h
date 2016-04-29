@@ -1,4 +1,4 @@
-/* Interface to prologue value handling for GDB.
+/* prologue-value.h: Interface to prologue value handling for GDB.
    Copyright 2003, 2004, 2005, 2007, 2008, 2009 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -116,29 +116,28 @@
    A 'struct prologue_value' is a conservative approximation of the
    real value the register or stack slot will have.  */
 
+enum pvks_enumerated {
+  
+  /* We do NOT know anything about the value.  This is also used for values we
+   * could have kept track of, when doing so would have been too complex and we
+   * do NOT want to bother.  The bottom of our lattice: */
+  pvk_unknown,
+  
+  /* A known constant.  K is its value: */
+  pvk_constant,
+  
+  /* The value that register REG originally had *UPON ENTRY TO THE  FUNCTION*,
+   * plus K.  If K is zero, this means, obviously, just the value REG had upon
+   * entry to the function.  REG is a GDB register number.  Before we start
+   * interpreting, we initialize every register R to { pvk_register, R, 0 }: */
+  pvk_register
+};
+
 struct prologue_value {
 
   /* What sort of value is this?  This determines the interpretation
      of subsequent fields.  */
-  enum {
-
-    /* We don't know anything about the value.  This is also used for
-       values we could have kept track of, when doing so would have
-       been too complex and we don't want to bother.  The bottom of
-       our lattice.  */
-    pvk_unknown,
-
-    /* A known constant.  K is its value.  */
-    pvk_constant,
-
-    /* The value that register REG originally had *UPON ENTRY TO THE
-       FUNCTION*, plus K.  If K is zero, this means, obviously, just
-       the value REG had upon entry to the function.  REG is a GDB
-       register number.  Before we start interpreting, we initialize
-       every register R to { pvk_register, R, 0 }.  */
-    pvk_register,
-
-  } kind;
+  enum pvks_enumerated kind;
 
   /* The meanings of the following fields depend on 'kind'; see the
      comments for the specific 'kind' values.  */
@@ -296,5 +295,6 @@ void pv_area_scan (struct pv_area *area,
                                  pv_t value),
                    void *closure);
 
-
 #endif /* PROLOGUE_VALUE_H */
+
+/* EOF */

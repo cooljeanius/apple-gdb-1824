@@ -1,4 +1,4 @@
-/* Definitions for targets which report shared library events.
+/* solib-target.c: Definitions for targets which report shared library events.
 
    Copyright (C) 2007-2013 Free Software Foundation, Inc.
 
@@ -17,6 +17,10 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
+/* Something weird in "vec.h" needs to be called 'free', so: */
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* !NO_POISON */
 #include "defs.h"
 #include "objfiles.h"
 #include "solist.h"
@@ -26,7 +30,14 @@
 #include "vec.h"
 #include "solib-target.h"
 
+#include "gdb_bfd.h"
 #include "gdb_string.h"
+
+#if 0
+# include "progspace.h" /* needs "gdb_vecs.h" */
+#else
+struct target_section; /* forward declaration */
+#endif /* 0 */
 
 /* Private data for each loaded library.  */
 struct lm_info
@@ -339,9 +350,10 @@ solib_target_relocate_section_addresses (struct so_list *so,
      it any earlier, since we need to open the file first.  */
   if (so->lm_info->offsets == NULL)
     {
-      int num_sections = gdb_bfd_count_sections (so->abfd);
+      int num_sections = gdb_bfd_count_sections(so->abfd);
 
-      so->lm_info->offsets = xzalloc (SIZEOF_N_SECTION_OFFSETS (num_sections));
+      so->lm_info->offsets = ((struct section_offsets *)
+			      xzalloc(SIZEOF_N_SECTION_OFFSETS(num_sections)));
 
       if (so->lm_info->section_bases)
 	{
@@ -472,12 +484,12 @@ solib_target_open_symbol_file_object (void *from_ttyp)
 }
 
 static int
-solib_target_in_dynsym_resolve_code (CORE_ADDR pc)
+solib_target_in_dynsym_resolve_code(CORE_ADDR pc)
 {
   /* We don't have a range of addresses for the dynamic linker; there
      may not be one in the program's address space.  So only report
      PLT entries (which may be import stubs).  */
-  return in_plt_section (pc);
+  return in_plt_section(pc);
 }
 
 struct target_so_ops solib_target_so_ops;
@@ -486,7 +498,7 @@ struct target_so_ops solib_target_so_ops;
 extern initialize_file_ftype _initialize_solib_target;
 
 void
-_initialize_solib_target (void)
+_initialize_solib_target(void)
 {
   solib_target_so_ops.relocate_section_addresses
     = solib_target_relocate_section_addresses;
@@ -508,3 +520,5 @@ _initialize_solib_target (void)
   if (current_target_so_ops == 0)
     current_target_so_ops = &solib_target_so_ops;
 }
+
+/* EOF */

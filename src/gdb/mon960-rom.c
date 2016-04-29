@@ -1,4 +1,4 @@
-/* Remote target glue for the Intel 960 MON960 ROM monitor.
+/* mon960-rom.c: Remote target glue for the Intel 960 MON960 ROM monitor.
    Copyright 1995, 1996, 1997, 1998, 1999, 2000
    Free Software Foundation, Inc.
 
@@ -116,7 +116,7 @@ mon960_load (struct serial *desc, char *file, int hashmark)
 /* g0-g14, fp, pfp, sp, rip,r3-15, pc, ac, tc, fp0-3 */
 /* NOTE: "ip" is documented as "ir" in the Mon960 UG. */
 /* NOTE: "ir" can't be accessed... but there's an ip and rip. */
-static char *full_regnames[NUM_REGS] =
+static const char *full_regnames[NUM_REGS] =
 {
   /*  0 */ "pfp", "sp", "rip", "r3", "r4", "r5", "r6", "r7",
   /*  8 */ "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15",

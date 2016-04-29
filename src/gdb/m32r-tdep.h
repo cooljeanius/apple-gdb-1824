@@ -1,4 +1,4 @@
-/* Target-dependent code for Renesas M32R, for GDB.
+/* m32r-tdep.h: Target-dependent code for Renesas M32R, for GDB.
  
    Copyright 2004 Free Software Foundation, Inc.
 
@@ -25,6 +25,7 @@
 struct gdbarch_tdep
 {
   /* gdbarch target dependent data here. Currently unused for M32R. */
+  void *unused_data;
 };
 
 /* m32r register names. */
@@ -49,4 +50,14 @@ enum m32r_regnum
 
 #define M32R_NUM_REGS 25
 
+/* Prototypes */
+extern CORE_ADDR m32r_skip_prologue(CORE_ADDR);
+extern enum return_value_convention m32r_return_value(struct gdbarch *,
+						      struct type *,
+						      struct regcache *,
+						      gdb_byte *,
+						      const gdb_byte *);
+
 #endif /* m32r-tdep.h */
+
+/* EOF */

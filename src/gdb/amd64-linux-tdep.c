@@ -1,4 +1,4 @@
-/* Target-dependent code for GNU/Linux x86-64.
+/* amd64-linux-tdep.c: Target-dependent code for GNU/Linux x86-64.
 
    Copyright 2001, 2003, 2004, 2005 Free Software Foundation, Inc.
    Contributed by Jiri Smid, SuSE Labs.
@@ -121,12 +121,12 @@ amd64_linux_sigtramp_start (struct frame_info *next_frame)
    GNU/Linux sigtramp routine.  */
 
 static int
-amd64_linux_sigtramp_p (struct frame_info *next_frame)
+amd64_linux_sigtramp_p(struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
+  const char *name;
 
-  find_pc_partial_function (pc, &name, NULL, NULL);
+  find_pc_partial_function(pc, &name, NULL, NULL);
 
   /* If we have NAME, we can optimize the search.  The trampoline is
      named __restore_rt.  However, it isn't dynamically exported from

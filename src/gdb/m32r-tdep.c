@@ -1,4 +1,4 @@
-/* Target-dependent code for Renesas M32R, for GDB.
+/* m32r-tdep.c: Target-dependent code for Renesas M32R, for GDB.
 
    Copyright 1996, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free
    Software Foundation, Inc.
@@ -46,14 +46,14 @@
 
 /* Local functions */
 
-extern void _initialize_m32r_tdep (void);
+extern void _initialize_m32r_tdep(void);
 
 static CORE_ADDR
-m32r_frame_align (struct gdbarch *gdbarch, CORE_ADDR sp)
+m32r_frame_align(struct gdbarch *gdbarch, CORE_ADDR sp)
 {
-  /* Align to the size of an instruction (so that they can safely be
-     pushed onto the stack.  */
-  return sp & ~3;
+  /* Align to the size of an instruction (so that they can safely be pushed
+   * onto the stack): */
+  return (sp & ~3);
 }
 
 
@@ -128,8 +128,8 @@ m32r_memory_insert_breakpoint (CORE_ADDR addr, bfd_byte *contents_cache)
 	}
     }
 
-  /* Write the breakpoint.  */
-  val = target_write_memory (addr & 0xfffffffc, buf, 4);
+  /* Write the breakpoint: */
+  val = target_write_memory((addr & 0xfffffffc), (const gdb_byte *)buf, 4);
   return val;
 }
 
@@ -157,12 +157,12 @@ m32r_memory_remove_breakpoint (CORE_ADDR addr, bfd_byte *contents_cache)
     }
 
   /* Write contents.  */
-  val = target_write_memory (addr & 0xfffffffc, buf, 4);
+  val = target_write_memory((addr & 0xfffffffc), (const gdb_byte *)buf, 4);
   return val;
 }
 
 static const unsigned char *
-m32r_breakpoint_from_pc (CORE_ADDR *pcptr, int *lenptr)
+m32r_breakpoint_from_pc(CORE_ADDR *pcptr, int *lenptr)
 {
   static char be_bp_entry[] = { 0x10, 0xf1, 0x70, 0x00 };	/* dpt -> nop */
   static char le_bp_entry[] = { 0x00, 0x70, 0xf1, 0x10 };	/* dpt -> nop */
@@ -173,12 +173,12 @@ m32r_breakpoint_from_pc (CORE_ADDR *pcptr, int *lenptr)
     {
       if ((*pcptr & 3) == 0)
 	{
-	  bp = be_bp_entry;
+	  bp = (unsigned char *)be_bp_entry;
 	  *lenptr = 4;
 	}
       else
 	{
-	  bp = be_bp_entry;
+	  bp = (unsigned char *)be_bp_entry;
 	  *lenptr = 2;
 	}
     }
@@ -186,12 +186,12 @@ m32r_breakpoint_from_pc (CORE_ADDR *pcptr, int *lenptr)
     {
       if ((*pcptr & 3) == 0)
 	{
-	  bp = le_bp_entry;
+	  bp = (unsigned char *)le_bp_entry;
 	  *lenptr = 4;
 	}
       else
 	{
-	  bp = le_bp_entry + 2;
+	  bp = ((unsigned char *)le_bp_entry + 2U);
 	  *lenptr = 2;
 	}
     }
@@ -200,15 +200,16 @@ m32r_breakpoint_from_pc (CORE_ADDR *pcptr, int *lenptr)
 }
 
 
-char *m32r_register_names[] = {
+const char *m32r_register_names[] = {
   "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
   "r8", "r9", "r10", "r11", "r12", "fp", "lr", "sp",
   "psw", "cbr", "spi", "spu", "bpc", "pc", "accl", "acch",
   "evb"
 };
 
+/* */
 static const char *
-m32r_register_name (int reg_nr)
+m32r_register_name(int reg_nr)
 {
   if (reg_nr < 0)
     return NULL;
@@ -239,19 +240,21 @@ m32r_register_type (struct gdbarch *gdbarch, int reg_nr)
    Things always get returned in RET1_REGNUM, RET2_REGNUM. */
 
 static void
-m32r_store_return_value (struct type *type, struct regcache *regcache,
-			 const void *valbuf)
+m32r_store_return_value(struct type *type, struct regcache *regcache,
+			const void *valbuf)
 {
   CORE_ADDR regval;
-  int len = TYPE_LENGTH (type);
+  int len = TYPE_LENGTH(type);
 
-  regval = extract_unsigned_integer (valbuf, len > 4 ? 4 : len);
-  regcache_cooked_write_unsigned (regcache, RET1_REGNUM, regval);
+  regval = extract_unsigned_integer((const gdb_byte *)valbuf,
+				    ((len > 4) ? 4 : len));
+  regcache_cooked_write_unsigned(regcache, RET1_REGNUM, regval);
 
   if (len > 4)
     {
-      regval = extract_unsigned_integer ((char *) valbuf + 4, len - 4);
-      regcache_cooked_write_unsigned (regcache, RET1_REGNUM + 1, regval);
+      regval = extract_unsigned_integer(((const gdb_byte *)valbuf + 4U),
+					(len - 4));
+      regcache_cooked_write_unsigned(regcache, (RET1_REGNUM + 1), regval);
     }
 }
 
@@ -339,6 +342,9 @@ decode_prologue (CORE_ADDR start_pc, CORE_ADDR scan_limit,
 	  int regno;
 	  framesize += 4;
 	  regno = ((insn >> 8) & 0xf);
+	  if (regno < 0) {
+	    ; /* ??? */
+	  }
 	  after_prologue = 0;
 	  continue;
 	}
@@ -444,7 +450,7 @@ decode_prologue (CORE_ADDR start_pc, CORE_ADDR scan_limit,
 #define DEFAULT_SEARCH_LIMIT 128
 
 CORE_ADDR
-m32r_skip_prologue (CORE_ADDR pc)
+m32r_skip_prologue(CORE_ADDR pc)
 {
   CORE_ADDR func_addr, func_end;
   struct symtab_and_line sal;
@@ -507,19 +513,19 @@ struct m32r_unwind_cache
    for it IS the sp for the next frame. */
 
 static struct m32r_unwind_cache *
-m32r_frame_unwind_cache (struct frame_info *next_frame,
-			 void **this_prologue_cache)
+m32r_frame_unwind_cache(struct frame_info *next_frame,
+			void **this_prologue_cache)
 {
   CORE_ADDR pc, scan_limit;
   ULONGEST prev_sp;
   ULONGEST this_base;
-  unsigned long op, op2;
+  unsigned long op;
   int i;
   struct m32r_unwind_cache *info;
 
 
   if ((*this_prologue_cache))
-    return (*this_prologue_cache);
+    return (struct m32r_unwind_cache *)(*this_prologue_cache);
 
   info = FRAME_OBSTACK_ZALLOC (struct m32r_unwind_cache);
   (*this_prologue_cache) = info;
@@ -682,7 +688,9 @@ m32r_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
   char *val;
   char valbuf[MAX_REGISTER_SIZE];
   int len;
+#ifdef ALLOW_UNUSED_VARIABLES
   int odd_sized_struct;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
   /* first force sp to a 4-byte alignment */
   sp = sp & ~3;
@@ -707,17 +715,18 @@ m32r_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 
   for (argnum = 0, stack_offset = 0; argnum < nargs; argnum++)
     {
-      type = value_type (args[argnum]);
-      typecode = TYPE_CODE (type);
-      len = TYPE_LENGTH (type);
+      type = value_type(args[argnum]);
+      typecode = TYPE_CODE(type);
+      len = TYPE_LENGTH(type);
 
-      memset (valbuf, 0, sizeof (valbuf));
+      memset(valbuf, 0, sizeof(valbuf));
 
       /* Passes structures that do not fit in 2 registers by reference.  */
-      if (len > 8
-	  && (typecode == TYPE_CODE_STRUCT || typecode == TYPE_CODE_UNION))
+      if ((len > 8)
+	  && ((typecode == TYPE_CODE_STRUCT) || (typecode == TYPE_CODE_UNION)))
 	{
-	  store_unsigned_integer (valbuf, 4, VALUE_ADDRESS (args[argnum]));
+	  store_unsigned_integer((gdb_byte *)valbuf, 4,
+				 VALUE_ADDRESS(args[argnum]));
 	  typecode = TYPE_CODE_PTR;
 	  len = 4;
 	  val = valbuf;
@@ -737,16 +746,16 @@ m32r_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	  if (argreg > ARGN_REGNUM)
 	    {
 	      /* must go on the stack */
-	      write_memory (sp + stack_offset, val, 4);
+	      write_memory((sp + stack_offset), (const gdb_byte *)val, 4);
 	      stack_offset += 4;
 	    }
 	  else if (argreg <= ARGN_REGNUM)
 	    {
 	      /* there's room in a register */
 	      regval =
-		extract_unsigned_integer (val,
-					  register_size (gdbarch, argreg));
-	      regcache_cooked_write_unsigned (regcache, argreg++, regval);
+		extract_unsigned_integer((const gdb_byte *)val,
+					 register_size(gdbarch, argreg));
+	      regcache_cooked_write_unsigned(regcache, argreg++, regval);
 	    }
 
 	  /* Store the value 4 bytes at a time.  This means that things
@@ -768,17 +777,17 @@ m32r_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
    extract and copy its value into `valbuf'.  */
 
 static void
-m32r_extract_return_value (struct type *type, struct regcache *regcache,
-			   void *dst)
+m32r_extract_return_value(struct type *type, struct regcache *regcache,
+			  void *dst)
 {
-  bfd_byte *valbuf = dst;
-  int len = TYPE_LENGTH (type);
+  bfd_byte *valbuf = (bfd_byte *)dst;
+  int len = TYPE_LENGTH(type);
   ULONGEST tmp;
 
   /* By using store_unsigned_integer we avoid having to do
      anything special for small big-endian values.  */
-  regcache_cooked_read_unsigned (regcache, RET1_REGNUM, &tmp);
-  store_unsigned_integer (valbuf, (len > 4 ? len - 4 : len), tmp);
+  regcache_cooked_read_unsigned(regcache, RET1_REGNUM, &tmp);
+  store_unsigned_integer(valbuf, ((len > 4) ? (len - 4) : len), tmp);
 
   /* Ignore return values more than 8 bytes in size because the m32r
      returns anything more than 8 bytes in the stack. */
@@ -789,10 +798,11 @@ m32r_extract_return_value (struct type *type, struct regcache *regcache,
     }
 }
 
+/* */
 enum return_value_convention
-m32r_return_value (struct gdbarch *gdbarch, struct type *valtype,
-		   struct regcache *regcache, void *readbuf,
-		   const void *writebuf)
+m32r_return_value(struct gdbarch *gdbarch, struct type *valtype,
+		  struct regcache *regcache, gdb_byte *readbuf,
+		  const gdb_byte *writebuf)
 {
   if (TYPE_LENGTH (valtype) > 8)
     return RETURN_VALUE_STRUCT_CONVENTION;
@@ -847,33 +857,40 @@ m32r_frame_this_id (struct frame_info *next_frame,
   (*this_id) = id;
 }
 
+/* */
 static void
-m32r_frame_prev_register (struct frame_info *next_frame,
-			  void **this_prologue_cache,
-			  int regnum, enum opt_state *optimizedp,
-			  enum lval_type *lvalp, CORE_ADDR *addrp,
-			  int *realnump, void *bufferp)
+m32r_frame_prev_register(struct frame_info *next_frame,
+			 void **this_prologue_cache,
+			 int regnum, enum opt_state *optimizedp,
+			 enum lval_type *lvalp, CORE_ADDR *addrp,
+			 int *realnump, void *bufferp)
 {
-  struct m32r_unwind_cache *info
-    = m32r_frame_unwind_cache (next_frame, this_prologue_cache);
-  trad_frame_get_prev_register (next_frame, info->saved_regs, regnum,
-				optimizedp, lvalp, addrp, realnump, bufferp);
+  struct m32r_unwind_cache *info =
+    m32r_frame_unwind_cache(next_frame, this_prologue_cache);
+  trad_frame_get_prev_register(next_frame, info->saved_regs, regnum,
+			       optimizedp, lvalp, addrp, realnump,
+			       (gdb_byte *)bufferp);
 }
 
 static const struct frame_unwind m32r_frame_unwind = {
   NORMAL_FRAME,
   m32r_frame_this_id,
-  m32r_frame_prev_register
+  m32r_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
+/* */
 static const struct frame_unwind *
-m32r_frame_sniffer (struct frame_info *next_frame)
+m32r_frame_sniffer(struct frame_info *next_frame)
 {
   return &m32r_frame_unwind;
 }
 
+/* */
 static CORE_ADDR
-m32r_frame_base_address (struct frame_info *next_frame, void **this_cache)
+m32r_frame_base_address(struct frame_info *next_frame, void **this_cache)
 {
   struct m32r_unwind_cache *info
     = m32r_frame_unwind_cache (next_frame, this_cache);
@@ -960,8 +977,11 @@ m32r_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   return gdbarch;
 }
 
+/* */
 void
-_initialize_m32r_tdep (void)
+_initialize_m32r_tdep(void)
 {
-  register_gdbarch_init (bfd_arch_m32r, m32r_gdbarch_init);
+  register_gdbarch_init(bfd_arch_m32r, m32r_gdbarch_init);
 }
+
+/* EOF */

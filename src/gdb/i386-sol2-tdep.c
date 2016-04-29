@@ -1,4 +1,4 @@
-/* Target-dependent code for Solaris x86.
+/* i386-sol2-tdep.c: Target-dependent code for Solaris x86.
 
    Copyright 2002, 2003, 2004 Free Software Foundation, Inc.
 
@@ -53,14 +53,14 @@ static int i386_sol2_gregset_reg_offset[] =
    Solaris sigtramp routine.  */
 
 static int
-i386_sol2_sigtramp_p (struct frame_info *next_frame)
+i386_sol2_sigtramp_p(struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
+  const char *name;
 
-  find_pc_partial_function (pc, &name, NULL, NULL);
-  return (name && (strcmp ("sigacthandler", name) == 0
-		   || strcmp (name, "ucbsigvechandler") == 0));
+  find_pc_partial_function(pc, &name, NULL, NULL);
+  return (name && ((strcmp("sigacthandler", name) == 0)
+		   || (strcmp(name, "ucbsigvechandler") == 0)));
 }
 
 /* Solaris doesn't have a `struct sigcontext', but it does have a
@@ -118,15 +118,17 @@ i386_sol2_osabi_sniffer (bfd *abfd)
 }
 
 /* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_i386_sol2_tdep (void);
+void _initialize_i386_sol2_tdep(void);
 
 void
-_initialize_i386_sol2_tdep (void)
+_initialize_i386_sol2_tdep(void)
 {
   /* Register an ELF OS ABI sniffer for Solaris 2 binaries.  */
-  gdbarch_register_osabi_sniffer (bfd_arch_i386, bfd_target_elf_flavour,
-				  i386_sol2_osabi_sniffer);
+  gdbarch_register_osabi_sniffer(bfd_arch_i386, bfd_target_elf_flavour,
+				 i386_sol2_osabi_sniffer);
 
-  gdbarch_register_osabi (bfd_arch_i386, 0, GDB_OSABI_SOLARIS,
-			  i386_sol2_init_abi);
+  gdbarch_register_osabi(bfd_arch_i386, 0, GDB_OSABI_SOLARIS,
+			 i386_sol2_init_abi);
 }
+
+/* EOF */

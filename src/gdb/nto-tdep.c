@@ -21,6 +21,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#include "defs.h"
 #include "gdb_stat.h"
 #include "gdb_string.h"
 #include "nto-tdep.h"
@@ -33,6 +34,11 @@
 #include "elf-bfd.h"
 #include "solib-svr4.h"
 #include "gdbcore.h"
+#include "objfiles.h" /* for in_plt_section() */
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h> /* for open() */
+#endif /* HAVE_FCNTL_H */
 
 #ifdef __CYGWIN__
 # include <sys/cygwin.h>
@@ -48,10 +54,12 @@ static char default_nto_target[] = "";
 
 struct nto_target_ops current_nto_target;
 
+extern Elf_Internal_Phdr *find_load_phdr(bfd *abfd);
+
 static char *
-nto_target (void)
+nto_target(void)
 {
-  char *p = getenv ("QNX_TARGET");
+  char *p = getenv("QNX_TARGET");
 
 #ifdef __CYGWIN__
   static char buf[PATH_MAX];
@@ -96,22 +104,25 @@ nto_map_arch_to_cputype (const char *arch)
   return CPUTYPE_UNKNOWN;
 }
 
+/* */
 int
-nto_find_and_open_solib (char *solib, unsigned o_flags, char **temp_pathname)
+nto_find_and_open_solib(char *solib, unsigned o_flags, char **temp_pathname)
 {
-  char *buf, *arch_path, *nto_root, *endian, *base;
+  char *buf, *arch_path, *nto_root, *base;
+  const char *endian;
   const char *arch;
   int ret;
+  size_t arch_path_size, buf_size;
 #define PATH_FMT "%s/lib:%s/usr/lib:%s/usr/photon/lib:%s/usr/photon/dll:%s/lib/dll"
 
-  nto_root = nto_target ();
-  if (strcmp (TARGET_ARCHITECTURE->arch_name, "i386") == 0)
+  nto_root = nto_target();
+  if (strcmp(TARGET_ARCHITECTURE->arch_name, "i386") == 0)
     {
       arch = "x86";
       endian = "";
     }
-  else if (strcmp (TARGET_ARCHITECTURE->arch_name, "rs6000") == 0
-	   || strcmp (TARGET_ARCHITECTURE->arch_name, "powerpc") == 0)
+  else if ((strcmp(TARGET_ARCHITECTURE->arch_name, "rs6000") == 0)
+	   || (strcmp(TARGET_ARCHITECTURE->arch_name, "powerpc") == 0))
     {
       arch = "ppc";
       endian = "be";
@@ -119,36 +130,37 @@ nto_find_and_open_solib (char *solib, unsigned o_flags, char **temp_pathname)
   else
     {
       arch = TARGET_ARCHITECTURE->arch_name;
-      endian = TARGET_BYTE_ORDER == BFD_ENDIAN_BIG ? "be" : "le";
+      endian = ((TARGET_BYTE_ORDER == BFD_ENDIAN_BIG) ? "be" : "le");
     }
 
   /* In case nto_root is short, add strlen(solib)
      so we can reuse arch_path below.  */
-  arch_path =
-    alloca (strlen (nto_root) + strlen (arch) + strlen (endian) + 2 +
-	    strlen (solib));
-  sprintf (arch_path, "%s/%s%s", nto_root, arch, endian);
+  arch_path_size = (strlen(nto_root) + strlen(arch) + strlen(endian) + 2UL
+		    + strlen(solib));
+  arch_path = (char *)alloca(arch_path_size);
+  snprintf(arch_path, arch_path_size, "%s/%s%s", nto_root, arch, endian);
 
-  buf = alloca (strlen (PATH_FMT) + strlen (arch_path) * 5 + 1);
-  sprintf (buf, PATH_FMT, arch_path, arch_path, arch_path, arch_path,
+  buf_size = (strlen(PATH_FMT) + (strlen(arch_path) * 5UL) + 1UL);
+  buf = (char *)alloca(buf_size);
+  snprintf(buf, buf_size, PATH_FMT, arch_path, arch_path, arch_path, arch_path,
 	   arch_path);
 
-  /* Don't assume basename() isn't destructive.  */
-  base = strrchr (solib, '/');
+  /* Do NOT assume basename() is NOT destructive: */
+  base = strrchr(solib, '/');
   if (!base)
     base = solib;
   else
     base++;			/* Skip over '/'.  */
 
-  ret = openp (buf, 1, base, o_flags, 0, temp_pathname);
-  if (ret < 0 && base != solib)
+  ret = openp(buf, 1, base, o_flags, 0, temp_pathname);
+  if ((ret < 0) && (base != solib))
     {
-      sprintf (arch_path, "/%s", solib);
-      ret = open (arch_path, o_flags, 0);
+      snprintf(arch_path, arch_path_size, "/%s", solib);
+      ret = open(arch_path, o_flags, 0);
       if (temp_pathname)
 	{
 	  if (ret >= 0)
-	    *temp_pathname = gdb_realpath (arch_path);
+	    *temp_pathname = gdb_realpath(arch_path);
 	  else
 	    **temp_pathname = '\0';
 	}
@@ -156,21 +168,23 @@ nto_find_and_open_solib (char *solib, unsigned o_flags, char **temp_pathname)
   return ret;
 }
 
+/* */
 void
-nto_init_solib_absolute_prefix (void)
+nto_init_solib_absolute_prefix(void)
 {
   char buf[PATH_MAX * 2], arch_path[PATH_MAX];
-  char *nto_root, *endian;
+  char *nto_root;
+  const char *endian;
   const char *arch;
 
-  nto_root = nto_target ();
-  if (strcmp (TARGET_ARCHITECTURE->arch_name, "i386") == 0)
+  nto_root = nto_target();
+  if (strcmp(TARGET_ARCHITECTURE->arch_name, "i386") == 0)
     {
       arch = "x86";
       endian = "";
     }
-  else if (strcmp (TARGET_ARCHITECTURE->arch_name, "rs6000") == 0
-	   || strcmp (TARGET_ARCHITECTURE->arch_name, "powerpc") == 0)
+  else if ((strcmp(TARGET_ARCHITECTURE->arch_name, "rs6000") == 0)
+	   || (strcmp(TARGET_ARCHITECTURE->arch_name, "powerpc") == 0))
     {
       arch = "ppc";
       endian = "be";
@@ -178,20 +192,22 @@ nto_init_solib_absolute_prefix (void)
   else
     {
       arch = TARGET_ARCHITECTURE->arch_name;
-      endian = TARGET_BYTE_ORDER == BFD_ENDIAN_BIG ? "be" : "le";
+      endian = ((TARGET_BYTE_ORDER == BFD_ENDIAN_BIG) ? "be" : "le");
     }
 
-  sprintf (arch_path, "%s/%s%s", nto_root, arch, endian);
+  snprintf(arch_path, sizeof(arch_path), "%s/%s%s", nto_root, arch, endian);
 
-  sprintf (buf, "set solib-absolute-prefix %s", arch_path);
-  execute_command (buf, 0);
+  snprintf(buf, sizeof(buf), "set solib-absolute-prefix %s", arch_path);
+  execute_command(buf, 0);
 }
 
+/* */
 char **
-nto_parse_redirection (char *pargv[], char **pin, char **pout, char **perr)
+nto_parse_redirection(char *pargv[], char **pin, char **pout, char **perr)
 {
   char **argv;
-  char *in, *out, *err, *p;
+  const char *in, *out, *err;
+  char *p;
   int argc, i, n;
 
   for (n = 0; pargv[n]; n++);
@@ -201,7 +217,7 @@ nto_parse_redirection (char *pargv[], char **pin, char **pout, char **perr)
   out = "";
   err = "";
 
-  argv = xcalloc (n + 1, sizeof argv[0]);
+  argv = (char **)xcalloc((n + 1), sizeof(argv[0]));
   argc = n;
   for (i = 0, n = 0; n < argc; n++)
     {
@@ -234,9 +250,9 @@ nto_parse_redirection (char *pargv[], char **pin, char **pout, char **perr)
       else
 	argv[i++] = pargv[n];
     }
-  *pin = in;
-  *pout = out;
-  *perr = err;
+  *pin = (char *)in;
+  *pout = (char *)out;
+  *perr = (char *)err;
   return argv;
 }
 
@@ -252,29 +268,32 @@ struct lm_info
   char *lm;
 };
 
+/* */
 static CORE_ADDR
-LM_ADDR (struct so_list *so)
+LM_ADDR(struct so_list *so)
 {
-  struct link_map_offsets *lmo = nto_fetch_link_map_offsets ();
+  struct link_map_offsets *lmo = nto_fetch_link_map_offsets();
 
-  return (CORE_ADDR) extract_signed_integer (so->lm_info->lm +
-					     lmo->l_addr_offset,
-					     lmo->l_addr_size);
+  return (CORE_ADDR)extract_signed_integer(((const gdb_byte *)so->lm_info->lm
+					    + lmo->l_addr_offset),
+					   lmo->l_addr_size);
 }
 
+/* */
 static CORE_ADDR
-nto_truncate_ptr (CORE_ADDR addr)
+nto_truncate_ptr(CORE_ADDR addr)
 {
-  if (TARGET_PTR_BIT == sizeof (CORE_ADDR) * 8)
+  if (TARGET_PTR_BIT == (sizeof(CORE_ADDR) * 8UL))
     /* We don't need to truncate anything, and the bit twiddling below
        will fail due to overflow problems.  */
     return addr;
   else
-    return addr & (((CORE_ADDR) 1 << TARGET_PTR_BIT) - 1);
+    return (addr & (((CORE_ADDR)1UL << TARGET_PTR_BIT) - 1UL));
 }
 
+/* */
 Elf_Internal_Phdr *
-find_load_phdr (bfd *abfd)
+find_load_phdr(bfd *abfd)
 {
   Elf_Internal_Phdr *phdr;
   unsigned int i;
@@ -297,27 +316,28 @@ nto_relocate_section_addresses (struct so_list *so, struct section_table *sec)
   /* Neutrino treats the l_addr base address field in link.h as different than
      the base address in the System V ABI and so the offset needs to be
      calculated and applied to relocations.  */
-  Elf_Internal_Phdr *phdr = find_load_phdr (sec->bfd);
-  unsigned vaddr = phdr ? phdr->p_vaddr : 0;
+  Elf_Internal_Phdr *phdr = find_load_phdr(sec->abfd);
+  unsigned int vaddr = (phdr ? phdr->p_vaddr : 0);
 
-  sec->addr = nto_truncate_ptr (sec->addr + LM_ADDR (so) - vaddr);
-  sec->endaddr = nto_truncate_ptr (sec->endaddr + LM_ADDR (so) - vaddr);
+  sec->addr = nto_truncate_ptr(sec->addr + LM_ADDR(so) - vaddr);
+  sec->endaddr = nto_truncate_ptr(sec->endaddr + LM_ADDR(so) - vaddr);
 }
 
 /* This is cheating a bit because our linker code is in libc.so.  If we
    ever implement lazy linking, this may need to be re-examined.  */
 int
-nto_in_dynsym_resolve_code (CORE_ADDR pc)
+nto_in_dynsym_resolve_code(CORE_ADDR pc)
 {
-  if (in_plt_section (pc, NULL))
+  if (in_plt_section(pc, NULL))
     return 1;
   return 0;
 }
 
+/* */
 void
-nto_generic_supply_gpregset (const struct regset *regset,
-			     struct regcache *regcache, int regnum,
-			     const void *gregs, size_t len)
+nto_generic_supply_gpregset(const struct regset *regset,
+			    struct regcache *regcache, int regnum,
+			    const void *gregs, size_t len)
 {
 }
 
@@ -360,29 +380,32 @@ nto_initialize_signals (void)
 
   /* By default we don't want to stop on these two, but we do want to pass.  */
 #if defined(SIGSELECT)
-  signal_stop_update (SIGSELECT, 0);
-  signal_print_update (SIGSELECT, 0);
-  signal_pass_update (SIGSELECT, 1);
-#endif
+  signal_stop_update(SIGSELECT, 0);
+  signal_print_update(SIGSELECT, 0);
+  signal_pass_update(SIGSELECT, 1);
+#endif /* SIGSELECT */
 
 #if defined(SIGPHOTON)
-  signal_stop_update (SIGPHOTON, 0);
-  signal_print_update (SIGPHOTON, 0);
-  signal_pass_update (SIGPHOTON, 1);
-#endif
+  signal_stop_update(SIGPHOTON, 0);
+  signal_print_update(SIGPHOTON, 0);
+  signal_pass_update(SIGPHOTON, 1);
+#endif /* SIGPHOTON */
 }
 
+extern void _initialize_nto_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_nto_tdep (void)
+_initialize_nto_tdep(void)
 {
-  add_setshow_zinteger_cmd ("nto-debug", class_maintenance,
-			    &nto_internal_debugging, _("\
+  add_setshow_zinteger_cmd("nto-debug", class_maintenance,
+			   &nto_internal_debugging, _("\
 Set QNX NTO internal debugging."), _("\
 Show QNX NTO internal debugging."), _("\
 When non-zero, nto specific debug info is\n\
 displayed. Different information is displayed\n\
 for different positive values."),
-			    NULL,
-			    NULL, /* FIXME: i18n: QNX NTO internal debugging is %s.  */
-			    &setdebuglist, &showdebuglist);
+			   NULL,
+			   NULL, /* FIXME: i18n: QNX NTO internal debugging is %s.  */
+			   &setdebuglist, &showdebuglist);
 }
+
+/* EOF */

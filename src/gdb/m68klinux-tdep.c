@@ -266,7 +266,10 @@ static const struct frame_unwind m68k_linux_sigtramp_frame_unwind =
 {
   SIGTRAMP_FRAME,
   m68k_linux_sigtramp_frame_this_id,
-  m68k_linux_sigtramp_frame_prev_register
+  m68k_linux_sigtramp_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 /* */

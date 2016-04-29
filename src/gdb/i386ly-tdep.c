@@ -1,4 +1,4 @@
-/* Target-dependent code for Intel 386 running LynxOS.
+/* i386ly-tdep.c: Target-dependent code for Intel 386 running LynxOS.
    Copyright 1993, 1996, 2000, 2001 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -24,6 +24,8 @@
 #include "gdbcore.h"
 #include "regcache.h"
 
+extern CORE_ADDR i386lynx_saved_pc_after_call(struct frame_info *);
+
 /* Return the PC of the caller from the call frame.  Assumes the subr prologue
    has already been executed, and the frame pointer setup.  If this is the
    outermost frame, we check to see if we are in a system call by examining the
@@ -31,17 +33,17 @@
    system calls use a different calling sequence.  */
 
 CORE_ADDR
-i386lynx_saved_pc_after_call (struct frame_info *frame)
+i386lynx_saved_pc_after_call(struct frame_info *frame)
 {
   char opcode[7];
   static const unsigned char call_inst[] =
-  {0x9a, 0, 0, 0, 0, 8, 0};	/* lcall 0x8,0x0 */
+  { 0x9a, 0, 0, 0, 0, 8, 0 };	/* lcall 0x8,0x0 */
 
-  read_memory (frame->pc - 7, opcode, 7);
-  if (memcmp (opcode, call_inst, 7) == 0)
-    return read_memory_unsigned_integer (read_register (SP_REGNUM) + 4, 4);
+  read_memory((frame->pc - 7), (gdb_byte *)opcode, 7);
+  if (memcmp(opcode, call_inst, 7) == 0)
+    return read_memory_unsigned_integer((read_register(SP_REGNUM) + 4), 4);
 
-  return read_memory_unsigned_integer (read_register (SP_REGNUM), 4);
+  return read_memory_unsigned_integer(read_register(SP_REGNUM), 4);
 }
 
 /* EOF */

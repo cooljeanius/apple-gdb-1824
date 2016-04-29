@@ -3887,7 +3887,7 @@ bpstat_get_triggered_catchpoints(bpstat ep_list, bpstat *cp_list)
   struct bpstats root_bs[1];
   bpstat bs = root_bs;
   struct breakpoint *ep;
-  char *dll_pathname;
+  const char *dll_pathname;
 
   bpstat_clear(cp_list);
   root_bs->next = NULL;

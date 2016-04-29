@@ -1,4 +1,4 @@
-/* Remote debugging interface for M32R/SDI.
+/* remote-m32r-sdi.c: Remote debugging interface for M32R/SDI.
 
    Copyright 2003, 2004 Free Software Foundation, Inc.
 
@@ -37,8 +37,10 @@
 #include <signal.h>
 #include <time.h>
 
-
+#include "m32r-tdep.h"
 #include "serial.h"
+
+#include "remote-m32r-sdi.h"
 
 /* Descriptor for I/O to remote machine.  */
 
@@ -171,17 +173,19 @@ get_ack (void)
 
 /* Send data to the target and check an ack packet */
 static int
-send_data (void *buf, int len)
+send_data(void *buf, int len)
 {
+#ifdef ALLOW_UNUSED_VARIABLES
   int ret;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
   if (!sdi_desc)
     return -1;
 
-  if (serial_write (sdi_desc, buf, len) != 0)
+  if (serial_write(sdi_desc, (const char *)buf, len) != 0)
     return -1;
 
-  if (get_ack () == -1)
+  if (get_ack() == -1)
     return -1;
 
   return len;
@@ -345,14 +349,17 @@ m32r_create_inferior (char *execfile, char *args, char **env, int from_tty)
    NAME is the filename used for communication.  */
 
 static void
-m32r_open (char *args, int from_tty)
+m32r_open(const char *args, int from_tty)
 {
+#ifdef ALLOW_UNUSED_VARIABLES
   struct hostent *host_ent;
   struct sockaddr_in server_addr;
-  char *port_str, hostname[256];
   int port;
-  int i, n;
+  int n;
   int yes = 1;
+#endif /* ALLOW_UNUSED_VARIABLES */
+  char *port_str, hostname[256];
+  int i;
 
   if (remote_debug)
     fprintf_unfiltered (gdb_stdlog, "m32r_open(%d)\n", from_tty);
@@ -362,12 +369,12 @@ m32r_open (char *args, int from_tty)
   push_target (&m32r_ops);
 
   if (args == NULL)
-    sprintf (hostname, "localhost:%d", SDIPORT);
+    snprintf(hostname, sizeof(hostname), "localhost:%d", SDIPORT);
   else
     {
       port_str = strchr (args, ':');
       if (port_str == NULL)
-	sprintf (hostname, "%s:%d", args, SDIPORT);
+	snprintf(hostname, sizeof(hostname), "%s:%d", args, SDIPORT);
       else
 	strcpy (hostname, args);
     }
@@ -432,10 +439,9 @@ m32r_close (int quitting)
   return;
 }
 
-/* Tell the remote machine to resume.  */
-
+/* Tell the remote machine to resume: */
 static void
-m32r_resume (ptid_t ptid, int step, enum target_signal sig)
+m32r_resume(ptid_t ptid, int step, enum target_signal sig)
 {
   unsigned long pc_addr, bp_addr, ab_addr;
   int ib_breakpoints;
@@ -680,36 +686,39 @@ gdb_cntrl_c (int signo)
   interrupted = 1;
 }
 
+/* */
 static ptid_t
-m32r_wait (ptid_t ptid, struct target_waitstatus *status)
+m32r_wait(ptid_t ptid, struct target_waitstatus *status)
 {
-  static RETSIGTYPE (*prev_sigint) ();
+  static RETSIGTYPE (*prev_sigint)(int);
   unsigned long bp_addr, pc_addr;
   int ib_breakpoints;
   long i;
   unsigned char buf[13];
+#ifdef ALLOW_UNUSED_VARIABLES
   unsigned long val;
+#endif /* ALLOW_UNUSED_VARIABLES */
   int ret, c;
 
   if (remote_debug)
     fprintf_unfiltered (gdb_stdlog, "m32r_wait()\n");
 
   status->kind = TARGET_WAITKIND_EXITED;
-  status->value.sig = 0;
+  status->value.sig = TARGET_SIGNAL_0;
 
   interrupted = 0;
-  prev_sigint = signal (SIGINT, gdb_cntrl_c);
+  prev_sigint = signal(SIGINT, gdb_cntrl_c);
 
   /* Wait for ready */
   buf[0] = SDI_WAIT_FOR_READY;
-  if (serial_write (sdi_desc, buf, 1) != 0)
-    error (_("Remote connection closed"));
+  if (serial_write(sdi_desc, (const char *)buf, 1) != 0)
+    error(_("Remote connection closed"));
 
   while (1)
     {
-      c = serial_readchar (sdi_desc, SDI_TIMEOUT);
+      c = serial_readchar(sdi_desc, SDI_TIMEOUT);
       if (c < 0)
-	error (_("Remote connection closed"));
+	error(_("Remote connection closed"));
 
       if (c == '-')		/* error */
 	{
@@ -828,11 +837,11 @@ m32r_wait (ptid_t ptid, struct target_waitstatus *status)
       if (ab_address[i] != 0x00000000)
 	{
 	  buf[0] = SDI_READ_MEMORY;
-	  store_long_parameter (buf + 1, 0xffff8100 + 4 * i);
-	  store_long_parameter (buf + 5, 4);
-	  serial_write (sdi_desc, buf, 9);
-	  c = serial_readchar (sdi_desc, SDI_TIMEOUT);
-	  if (c != '-' && recv_data (buf, 4) != -1)
+	  store_long_parameter((buf + 1), (0xffff8100 + (4 * i)));
+	  store_long_parameter((buf + 5), 4);
+	  serial_write(sdi_desc, (const char *)buf, 9);
+	  c = serial_readchar(sdi_desc, SDI_TIMEOUT);
+	  if ((c != '-') && (recv_data(buf, 4) != -1))
 	    {
 	      if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
 		{
@@ -861,18 +870,18 @@ m32r_wait (ptid_t ptid, struct target_waitstatus *status)
    Use this when you want to detach and do something else
    with your gdb.  */
 static void
-m32r_detach (char *args, int from_tty)
+m32r_detach(const char *args, int from_tty)
 {
   if (remote_debug)
-    fprintf_unfiltered (gdb_stdlog, "m32r_detach(%d)\n", from_tty);
+    fprintf_unfiltered(gdb_stdlog, "m32r_detach(%d)\n", from_tty);
 
-  m32r_resume (inferior_ptid, 0, 0);
+  m32r_resume(inferior_ptid, 0, TARGET_SIGNAL_0);
 
   /* calls m32r_close to do the real work */
-  pop_target ();
+  pop_target();
   if (from_tty)
-    fprintf_unfiltered (gdb_stdlog, "Ending remote %s debugging\n",
-			target_shortname);
+    fprintf_unfiltered(gdb_stdlog, "Ending remote %s debugging\n",
+		       target_shortname);
 }
 
 /* Return the id of register number REGNO. */
@@ -935,20 +944,20 @@ m32r_fetch_register (int regno)
 	}
 
       if (remote_debug)
-	fprintf_unfiltered (gdb_stdlog, "m32r_fetch_register(%d,0x%08lx)\n",
-			    regno, val);
+	fprintf_unfiltered(gdb_stdlog, "m32r_fetch_register(%d,0x%08lx)\n",
+			   regno, val);
 
       /* We got the number the register holds, but gdb expects to see a
          value in the target byte ordering.  */
-      store_unsigned_integer (buffer, 4, val);
-      regcache_raw_supply (current_regcache, regno, buffer);
+      store_unsigned_integer((gdb_byte *)buffer, 4, val);
+      regcache_raw_supply(current_regcache, regno, buffer);
     }
   return;
 }
 
 /* Store the remote registers from the contents of the block REGS.  */
 
-static void m32r_store_register (int);
+static void m32r_store_register(int);
 
 static void
 m32r_store_registers (void)
@@ -1020,7 +1029,7 @@ m32r_prepare_to_store (void)
 static void
 m32r_files_info (struct target_ops *target)
 {
-  char *file = "nothing";
+  const char *file = "nothing";
 
   if (exec_bfd)
     {
@@ -1032,9 +1041,8 @@ m32r_files_info (struct target_ops *target)
 
 /* Read/Write memory.  */
 static int
-m32r_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len,
-		  int write,
-		  struct mem_attrib *attrib, struct target_ops *target)
+m32r_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
+		 struct mem_attrib *attrib, struct target_ops *target)
 {
   unsigned long taddr;
   unsigned char buf[0x2000];
@@ -1051,56 +1059,56 @@ m32r_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len,
   if (remote_debug)
     {
       if (write)
-	fprintf_unfiltered (gdb_stdlog, "m32r_xfer_memory(%08lx,%d,write)\n",
-			    memaddr, len);
+	fprintf_unfiltered(gdb_stdlog, "m32r_xfer_memory(%08lx,%d,write)\n",
+			   (unsigned long)memaddr, len);
       else
-	fprintf_unfiltered (gdb_stdlog, "m32r_xfer_memory(%08lx,%d,read)\n",
-			    memaddr, len);
+	fprintf_unfiltered(gdb_stdlog, "m32r_xfer_memory(%08lx,%d,read)\n",
+			   (unsigned long)memaddr, len);
     }
 
   if (write)
     {
       buf[0] = SDI_WRITE_MEMORY;
-      store_long_parameter (buf + 1, taddr);
-      store_long_parameter (buf + 5, len);
+      store_long_parameter((buf + 1), taddr);
+      store_long_parameter((buf + 5), len);
       if (len < 0x1000)
 	{
-	  memcpy (buf + 9, myaddr, len);
-	  ret = send_data (buf, len + 9) - 9;
+	  memcpy((buf + 9), myaddr, len);
+	  ret = (send_data(buf, (len + 9)) - 9);
 	}
       else
 	{
-	  if (serial_write (sdi_desc, buf, 9) != 0)
+	  if (serial_write(sdi_desc, (const char *)buf, 9) != 0)
 	    {
 	      if (remote_debug)
-		fprintf_unfiltered (gdb_stdlog,
-				    "m32r_xfer_memory() failed\n");
+		fprintf_unfiltered(gdb_stdlog,
+				   "m32r_xfer_memory() failed\n");
 	      return 0;
 	    }
-	  ret = send_data (myaddr, len);
+	  ret = send_data((void *)myaddr, len);
 	}
     }
   else
     {
       buf[0] = SDI_READ_MEMORY;
-      store_long_parameter (buf + 1, taddr);
-      store_long_parameter (buf + 5, len);
-      if (serial_write (sdi_desc, buf, 9) != 0)
+      store_long_parameter((buf + 1), taddr);
+      store_long_parameter((buf + 5), len);
+      if (serial_write(sdi_desc, (const char *)buf, 9) != 0)
 	{
 	  if (remote_debug)
-	    fprintf_unfiltered (gdb_stdlog, "m32r_xfer_memory() failed\n");
+	    fprintf_unfiltered(gdb_stdlog, "m32r_xfer_memory() failed\n");
 	  return 0;
 	}
 
-      c = serial_readchar (sdi_desc, SDI_TIMEOUT);
-      if (c < 0 || c == '-')
+      c = serial_readchar(sdi_desc, SDI_TIMEOUT);
+      if ((c < 0) || (c == '-'))
 	{
 	  if (remote_debug)
-	    fprintf_unfiltered (gdb_stdlog, "m32r_xfer_memory() failed\n");
+	    fprintf_unfiltered(gdb_stdlog, "m32r_xfer_memory() failed\n");
 	  return 0;
 	}
 
-      ret = recv_data (myaddr, len);
+      ret = recv_data((void *)myaddr, len);
     }
 
   if (ret <= 0)
@@ -1140,16 +1148,17 @@ m32r_mourn_inferior (void)
   generic_mourn_inferior ();
 }
 
+/* */
 static int
-m32r_insert_breakpoint (CORE_ADDR addr, bfd_byte *shadow)
+m32r_insert_breakpoint(CORE_ADDR addr, bfd_byte *shadow)
 {
   int ib_breakpoints;
   unsigned char buf[13];
   int i, c;
 
   if (remote_debug)
-    fprintf_unfiltered (gdb_stdlog, "m32r_insert_breakpoint(%08lx,\"%s\")\n",
-			addr, shadow);
+    fprintf_unfiltered(gdb_stdlog, "m32r_insert_breakpoint(%08lx,\"%s\")\n",
+		       (unsigned long)addr, shadow);
 
   if (use_ib_breakpoints)
     ib_breakpoints = max_ib_breakpoints;
@@ -1165,31 +1174,32 @@ m32r_insert_breakpoint (CORE_ADDR addr, bfd_byte *shadow)
 	    {
 	      buf[0] = SDI_READ_MEMORY;
 	      if (mmu_on)
-		store_long_parameter (buf + 1, addr & 0xfffffffc);
+		store_long_parameter ((buf + 1), (addr & 0xfffffffc));
 	      else
-		store_long_parameter (buf + 1, addr & 0x7ffffffc);
-	      store_long_parameter (buf + 5, 4);
-	      serial_write (sdi_desc, buf, 9);
-	      c = serial_readchar (sdi_desc, SDI_TIMEOUT);
+		store_long_parameter((buf + 1), (addr & 0x7ffffffc));
+	      store_long_parameter((buf + 5), 4);
+	      serial_write(sdi_desc, (const char *)buf, 9);
+	      c = serial_readchar(sdi_desc, SDI_TIMEOUT);
 	      if (c != '-')
-		recv_data (bp_data[i], 4);
+		recv_data(bp_data[i], 4);
 	    }
 	  return 0;
 	}
     }
 
-  error (_("Too many breakpoints"));
+  error(_("Too many breakpoints"));
   return 1;
 }
 
+/* */
 static int
-m32r_remove_breakpoint (CORE_ADDR addr, bfd_byte *shadow)
+m32r_remove_breakpoint(CORE_ADDR addr, bfd_byte *shadow)
 {
   int i;
 
   if (remote_debug)
-    fprintf_unfiltered (gdb_stdlog, "m32r_remove_breakpoint(%08lx,\"%s\")\n",
-			addr, shadow);
+    fprintf_unfiltered(gdb_stdlog, "m32r_remove_breakpoint(%08lx,\"%s\")\n",
+		       (unsigned long)addr, shadow);
 
   for (i = 0; i < MAX_BREAKPOINTS; i++)
     {
@@ -1204,19 +1214,19 @@ m32r_remove_breakpoint (CORE_ADDR addr, bfd_byte *shadow)
 }
 
 static void
-m32r_load (char *args, int from_tty)
+m32r_load(const char *args, int from_tty)
 {
   struct cleanup *old_chain;
   asection *section;
   bfd *pbfd;
   bfd_vma entry;
-  char *filename;
+  const char *filename;
   int quiet;
   int nostart;
   struct timeval start_time, end_time;
   unsigned long data_count;	/* Number of bytes transferred to memory */
   int ret;
-  static RETSIGTYPE (*prev_sigint) ();
+  static RETSIGTYPE (*prev_sigint)(int);
 
   /* for direct tcp connections, we can do a fast binary download */
   quiet = 0;
@@ -1225,61 +1235,66 @@ m32r_load (char *args, int from_tty)
 
   while (*args != '\000')
     {
-      char *arg;
+      const char *arg;
 
-      while (isspace (*args))
+      while (isspace(*args))
 	args++;
 
       arg = args;
 
-      while ((*args != '\000') && !isspace (*args))
+      while ((*args != '\000') && !isspace(*args))
 	args++;
 
       if (*args != '\000')
-	*args++ = '\000';
+	*(char *)args++ = '\000';
 
       if (*arg != '-')
 	filename = arg;
-      else if (strncmp (arg, "-quiet", strlen (arg)) == 0)
+      else if (strncmp(arg, "-quiet", strlen(arg)) == 0)
 	quiet = 1;
-      else if (strncmp (arg, "-nostart", strlen (arg)) == 0)
+      else if (strncmp(arg, "-nostart", strlen(arg)) == 0)
 	nostart = 1;
       else
-	error (_("Unknown option `%s'"), arg);
+	error(_("Unknown option `%s'"), arg);
     }
 
   if (!filename)
-    filename = get_exec_file (1);
+    filename = get_exec_file(1);
 
-  pbfd = bfd_openr (filename, gnutarget);
+  pbfd = bfd_openr(filename, gnutarget);
   if (pbfd == NULL)
     {
-      perror_with_name (filename);
+      perror_with_name(filename);
       return;
     }
-  old_chain = make_cleanup_bfd_close (pbfd);
+  old_chain = make_cleanup_bfd_close(pbfd);
 
-  if (!bfd_check_format (pbfd, bfd_object))
-    error (_("\"%s\" is not an object file: %s"), filename,
-	   bfd_errmsg (bfd_get_error ()));
+  if (!bfd_check_format(pbfd, bfd_object))
+    error(_("\"%s\" is not an object file: %s"), filename,
+	  bfd_errmsg(bfd_get_error()));
 
-  gettimeofday (&start_time, NULL);
+  ret = gettimeofday(&start_time, NULL);
+  if (ret == -1) {
+    /* errno should be either EFAULT or EPERM: */
+    warning(_("Call to gettimeofday() failed with errno %d (%s).\n"),
+	    errno, safe_strerror(errno));
+  }
   data_count = 0;
 
   interrupted = 0;
-  prev_sigint = signal (SIGINT, gdb_cntrl_c);
+  prev_sigint = signal(SIGINT, gdb_cntrl_c);
 
   for (section = pbfd->sections; section; section = section->next)
     {
-      if (bfd_get_section_flags (pbfd, section) & SEC_LOAD)
+      if (bfd_get_section_flags(pbfd, section) & SEC_LOAD)
 	{
 	  bfd_vma section_address;
 	  bfd_size_type section_size;
 	  file_ptr fptr;
 	  int n;
 
-	  section_address = bfd_section_lma (pbfd, section);
-	  section_size = bfd_get_section_size (section);
+	  section_address = bfd_section_lma(pbfd, section);
+	  section_size = bfd_get_section_size(section);
 
 	  if (!mmu_on)
 	    {
@@ -1288,9 +1303,9 @@ m32r_load (char *args, int from_tty)
 	    }
 
 	  if (!quiet)
-	    printf_filtered ("[Loading section %s at 0x%lx (%d bytes)]\n",
-			     bfd_get_section_name (pbfd, section),
-			     section_address, (int) section_size);
+	    printf_filtered("[Loading section %s at 0x%lx (%d bytes)]\n",
+			    bfd_get_section_name(pbfd, section),
+			    (unsigned long)section_address, (int)section_size);
 
 	  fptr = 0;
 
@@ -1302,26 +1317,26 @@ m32r_load (char *args, int from_tty)
 	      char unsigned buf[0x1000 + 9];
 	      int count;
 
-	      count = min (section_size, 0x1000);
+	      count = min(section_size, 0x1000);
 
 	      buf[0] = SDI_WRITE_MEMORY;
-	      store_long_parameter (buf + 1, section_address);
-	      store_long_parameter (buf + 5, count);
+	      store_long_parameter((buf + 1), section_address);
+	      store_long_parameter((buf + 5), count);
 
-	      bfd_get_section_contents (pbfd, section, buf + 9, fptr, count);
-	      if (send_data (buf, count + 9) <= 0)
-		error (_("Error while downloading %s section."),
-		       bfd_get_section_name (pbfd, section));
+	      bfd_get_section_contents(pbfd, section, (buf + 9), fptr, count);
+	      if (send_data(buf, (count + 9)) <= 0)
+		error(_("Error while downloading %s section."),
+		      bfd_get_section_name(pbfd, section));
 
 	      if (!quiet)
 		{
-		  printf_unfiltered (".");
+		  printf_unfiltered(".");
 		  if (n++ > 60)
 		    {
-		      printf_unfiltered ("\n");
+		      printf_unfiltered("\n");
 		      n = 0;
 		    }
-		  gdb_flush (gdb_stdout);
+		  gdb_flush(gdb_stdout);
 		}
 
 	      section_address += count;
@@ -1334,8 +1349,8 @@ m32r_load (char *args, int from_tty)
 
 	  if (!quiet && !interrupted)
 	    {
-	      printf_unfiltered ("done.\n");
-	      gdb_flush (gdb_stdout);
+	      printf_unfiltered("done.\n");
+	      gdb_flush(gdb_stdout);
 	    }
 	}
 
@@ -1347,13 +1362,19 @@ m32r_load (char *args, int from_tty)
     }
 
   interrupted = 0;
-  signal (SIGINT, prev_sigint);
+  prev_sigint = signal(SIGINT, prev_sigint);
 
-  gettimeofday (&end_time, NULL);
+  ret = gettimeofday(&end_time, NULL);
+  
+  if (ret == -1) {
+    /* errno should be either EFAULT or EPERM: */
+    warning(_("Call to gettimeofday() failed with errno %d (%s).\n"),
+	    errno, safe_strerror(errno));
+  }
 
   /* Make the PC point at the start address */
   if (exec_bfd)
-    write_pc (bfd_get_start_address (exec_bfd));
+    write_pc(bfd_get_start_address(exec_bfd));
 
   inferior_ptid = null_ptid;	/* No process now */
 
@@ -1363,20 +1384,21 @@ m32r_load (char *args, int from_tty)
      might be to call normal_stop, except that the stack may not be valid,
      and things would get horribly confused... */
 
-  clear_symtab_users ();
+  clear_symtab_users();
 
   if (!nostart)
     {
-      entry = bfd_get_start_address (pbfd);
+      entry = bfd_get_start_address(pbfd);
 
       if (!quiet)
-	printf_unfiltered ("[Starting %s at 0x%lx]\n", filename, entry);
+	printf_unfiltered("[Starting %s at 0x%lx]\n", filename,
+			  (unsigned long)entry);
     }
 
-  print_transfer_performance (gdb_stdout, data_count, 0, &start_time,
-			      &end_time);
+  print_transfer_performance(gdb_stdout, data_count, 0, &start_time,
+			     &end_time);
 
-  do_cleanups (old_chain);
+  do_cleanups(old_chain);
 }
 
 static void
@@ -1396,23 +1418,22 @@ m32r_stop (void)
    implements the TARGET_CAN_USE_HARDWARE_WATCHPOINT macro.  */
 
 int
-m32r_can_use_hw_watchpoint (int type, int cnt, int othertype)
+m32r_can_use_hw_watchpoint(int type, int cnt, int othertype)
 {
-  return sdi_desc != NULL && cnt < max_access_breaks;
+  return ((sdi_desc != NULL) && (cnt < max_access_breaks));
 }
 
 /* Set a data watchpoint.  ADDR and LEN should be obvious.  TYPE is 0
    for a write watchpoint, 1 for a read watchpoint, or 2 for a read/write
    watchpoint. */
-
 int
-m32r_insert_watchpoint (CORE_ADDR addr, int len, int type)
+m32r_insert_watchpoint(CORE_ADDR addr, int len, int type)
 {
   int i;
 
   if (remote_debug)
-    fprintf_unfiltered (gdb_stdlog, "m32r_insert_watchpoint(%08lx,%d,%d)\n",
-			addr, len, type);
+    fprintf_unfiltered(gdb_stdlog, "m32r_insert_watchpoint(%08lx,%d,%d)\n",
+		       (unsigned long)addr, len, type);
 
   for (i = 0; i < MAX_ACCESS_BREAKS; i++)
     {
@@ -1429,14 +1450,15 @@ m32r_insert_watchpoint (CORE_ADDR addr, int len, int type)
   return 1;
 }
 
+/* */
 int
-m32r_remove_watchpoint (CORE_ADDR addr, int len, int type)
+m32r_remove_watchpoint(CORE_ADDR addr, int len, int type)
 {
   int i;
 
   if (remote_debug)
-    fprintf_unfiltered (gdb_stdlog, "m32r_remove_watchpoint(%08lx,%d,%d)\n",
-			addr, len, type);
+    fprintf_unfiltered(gdb_stdlog, "m32r_remove_watchpoint(%08lx,%d,%d)\n",
+		       (unsigned long)addr, len, type);
 
   for (i = 0; i < MAX_ACCESS_BREAKS; i++)
     {
@@ -1450,8 +1472,9 @@ m32r_remove_watchpoint (CORE_ADDR addr, int len, int type)
   return 0;
 }
 
+/* */
 int
-m32r_stopped_data_address (struct target_ops *target, CORE_ADDR *addr_p)
+m32r_stopped_data_address(struct target_ops *target, CORE_ADDR *addr_p)
 {
   int rc = 0;
   if (hit_watchpoint_addr != 0x00000000)
@@ -1462,16 +1485,17 @@ m32r_stopped_data_address (struct target_ops *target, CORE_ADDR *addr_p)
   return rc;
 }
 
+/* */
 int
-m32r_stopped_by_watchpoint (void)
+m32r_stopped_by_watchpoint(void)
 {
   CORE_ADDR addr;
-  return m32r_stopped_data_address (&current_target, &addr);
+  return m32r_stopped_data_address(&current_target, &addr);
 }
 
-
+/* */
 static void
-sdireset_command (char *args, int from_tty)
+sdireset_command(const char *args, int from_tty)
 {
   if (remote_debug)
     fprintf_unfiltered (gdb_stdlog, "m32r_sdireset()\n");
@@ -1481,9 +1505,9 @@ sdireset_command (char *args, int from_tty)
   inferior_ptid = null_ptid;
 }
 
-
+/* */
 static void
-sdistatus_command (char *args, int from_tty)
+sdistatus_command(const char *args, int from_tty)
 {
   unsigned char buf[4096];
   int i, c;
@@ -1508,9 +1532,9 @@ sdistatus_command (char *args, int from_tty)
   printf_filtered ("%s", buf);
 }
 
-
+/* */
 static void
-debug_chaos_command (char *args, int from_tty)
+debug_chaos_command(const char *args, int from_tty)
 {
   unsigned char buf[3];
 
@@ -1522,7 +1546,7 @@ debug_chaos_command (char *args, int from_tty)
 
 
 static void
-use_debug_dma_command (char *args, int from_tty)
+use_debug_dma_command(const char *args, int from_tty)
 {
   unsigned char buf[3];
 
@@ -1533,7 +1557,7 @@ use_debug_dma_command (char *args, int from_tty)
 }
 
 static void
-use_mon_code_command (char *args, int from_tty)
+use_mon_code_command(const char *args, int from_tty)
 {
   unsigned char buf[3];
 
@@ -1545,13 +1569,13 @@ use_mon_code_command (char *args, int from_tty)
 
 
 static void
-use_ib_breakpoints_command (char *args, int from_tty)
+use_ib_breakpoints_command(const char *args, int from_tty)
 {
   use_ib_breakpoints = 1;
 }
 
 static void
-use_dbt_breakpoints_command (char *args, int from_tty)
+use_dbt_breakpoints_command(const char *args, int from_tty)
 {
   use_ib_breakpoints = 0;
 }
@@ -1602,38 +1626,40 @@ init_m32r_ops (void)
 extern initialize_file_ftype _initialize_remote_m32r;
 
 void
-_initialize_remote_m32r (void)
+_initialize_remote_m32r(void)
 {
   int i;
 
-  init_m32r_ops ();
+  init_m32r_ops();
 
-  /* Initialize breakpoints. */
+  /* Initialize breakpoints: */
   for (i = 0; i < MAX_BREAKPOINTS; i++)
     bp_address[i] = 0xffffffff;
 
-  /* Initialize access breaks. */
+  /* Initialize access breaks: */
   for (i = 0; i < MAX_ACCESS_BREAKS; i++)
     ab_address[i] = 0x00000000;
 
-  add_target (&m32r_ops);
+  add_target(&m32r_ops);
 
-  add_com ("sdireset", class_obscure, sdireset_command,
-	   _("Reset SDI connection."));
+  add_com("sdireset", class_obscure, sdireset_command,
+	  _("Reset SDI connection."));
 
-  add_com ("sdistatus", class_obscure, sdistatus_command,
-	   _("Show status of SDI connection."));
+  add_com("sdistatus", class_obscure, sdistatus_command,
+	  _("Show status of SDI connection."));
 
-  add_com ("debug_chaos", class_obscure, debug_chaos_command,
-	   _("Debug M32R/Chaos."));
+  add_com("debug_chaos", class_obscure, debug_chaos_command,
+	  _("Debug M32R/Chaos."));
 
-  add_com ("use_debug_dma", class_obscure, use_debug_dma_command,
-	   _("Use debug DMA mem access."));
-  add_com ("use_mon_code", class_obscure, use_mon_code_command,
-	   _("Use mon code mem access."));
+  add_com("use_debug_dma", class_obscure, use_debug_dma_command,
+	  _("Use debug DMA mem access."));
+  add_com("use_mon_code", class_obscure, use_mon_code_command,
+	  _("Use mon code mem access."));
 
-  add_com ("use_ib_break", class_obscure, use_ib_breakpoints_command,
-	   _("Set breakpoints by IB break."));
-  add_com ("use_dbt_break", class_obscure, use_dbt_breakpoints_command,
-	   _("Set breakpoints by dbt."));
+  add_com("use_ib_break", class_obscure, use_ib_breakpoints_command,
+	  _("Set breakpoints by IB break."));
+  add_com("use_dbt_break", class_obscure, use_dbt_breakpoints_command,
+	  _("Set breakpoints by dbt."));
 }
+
+/* EOF */

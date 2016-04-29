@@ -1,8 +1,8 @@
 /* nm-i386-macosx.h
  * Macro definitions for GDB on an Intel i386 running Mac OSX
- * (previosly SVR4).
+ * (previously said SVR4).
  * Copyright (C) 1991, 1994 Free Software Foundation, Inc.
- * Written by Fred Fish at Cygnus Support (fnf@cygnus.com). */
+ * Written by Fred Fish at Cygnus Support <fnf@cygnus.com>. */
 /*
 This file is part of GDB.
 
@@ -52,21 +52,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #undef target_insert_hw_breakpoint
 #undef target_remove_hw_breakpoint
 
-extern void i386_macosx_dr_set_control (unsigned long control);
+extern void i386_macosx_dr_set_control(unsigned long control);
 #define I386_DR_LOW_SET_CONTROL(control) \
-  i386_macosx_dr_set_control (control)
+  i386_macosx_dr_set_control(control)
 
-extern void i386_macosx_dr_set_addr (int regnum, CORE_ADDR addr);
+extern void i386_macosx_dr_set_addr(int regnum, CORE_ADDR addr);
 #define I386_DR_LOW_SET_ADDR(regnum, addr) \
-  i386_macosx_dr_set_addr (regnum, addr)
+  i386_macosx_dr_set_addr(regnum, addr)
 
-extern void i386_macosx_dr_reset_addr (int regnum);
+extern void i386_macosx_dr_reset_addr(int regnum);
 #define I386_DR_LOW_RESET_ADDR(regnum) \
-  i386_macosx_dr_reset_addr (regnum)
+  i386_macosx_dr_reset_addr(regnum)
 
-extern unsigned long i386_macosx_dr_get_status (void);
+extern unsigned long i386_macosx_dr_get_status(void);
 #define I386_DR_LOW_GET_STATUS() \
-  i386_macosx_dr_get_status ()
+  i386_macosx_dr_get_status()
 
 /* Define this so we can skip the page-protection style watchpoints
  * set up over in nm-macosx.h: */

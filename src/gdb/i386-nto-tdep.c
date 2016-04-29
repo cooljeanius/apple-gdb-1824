@@ -1,4 +1,4 @@
-/* Target-dependent code for QNX Neutrino x86.
+/* i386-nto-tdep.c: Target-dependent code for QNX Neutrino x86.
 
    Copyright 2003, 2004 Free Software Foundation, Inc.
 
@@ -289,12 +289,15 @@ i386nto_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   nto_set_target (&i386_nto_target);
 }
 
+extern void _initialize_i386nto_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_i386nto_tdep (void)
+_initialize_i386nto_tdep(void)
 {
-  init_i386nto_ops ();
-  gdbarch_register_osabi (bfd_arch_i386, 0, GDB_OSABI_QNXNTO,
-			  i386nto_init_abi);
-  gdbarch_register_osabi_sniffer (bfd_arch_i386, bfd_target_elf_flavour,
-				  nto_elf_osabi_sniffer);
+  init_i386nto_ops();
+  gdbarch_register_osabi(bfd_arch_i386, 0, GDB_OSABI_QNXNTO,
+			 i386nto_init_abi);
+  gdbarch_register_osabi_sniffer(bfd_arch_i386, bfd_target_elf_flavour,
+				 nto_elf_osabi_sniffer);
 }
+
+/* EOF */

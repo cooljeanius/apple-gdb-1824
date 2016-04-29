@@ -3011,6 +3011,7 @@
 		619D58871C6A5E4C00F07C54 /* string.in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = string.in.h; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/string.in.h"; sourceTree = "<absolute>"; };
 		619D58891C6A5E4C00F07C54 /* update-gnulib.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "update-gnulib.sh"; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/update-gnulib.sh"; sourceTree = "<absolute>"; };
 		619D588A1C6A5E4C00F07C54 /* wchar.in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wchar.in.h; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/wchar.in.h"; sourceTree = "<absolute>"; };
+		61AA20741CD3F3F00045E89A /* m68hc11-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "m68hc11-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb/m68hc11-tdep.h"; sourceTree = "<absolute>"; };
 		61D08A9D1CB7171B00998571 /* cpu-z80.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "cpu-z80.c"; path = "/var/root/apple-gdb-1824/src/bfd/cpu-z80.c"; sourceTree = "<absolute>"; };
 		61D22058192D60D100FA979E /* libbfd-shared.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libbfd-shared.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		61D8186E192FE3AB00E440C0 /* chew */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = chew; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3140,6 +3141,7 @@
 		61F330811CC7524300C05007 /* h8300-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "h8300-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb/h8300-tdep.h"; sourceTree = "<absolute>"; };
 		61F331671CCDDE9D00C05007 /* cris-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "cris-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb/cris-tdep.h"; sourceTree = "<absolute>"; };
 		61F331CB1CCF226400C05007 /* fr30-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "fr30-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb/fr30-tdep.h"; sourceTree = "<absolute>"; };
+		61F333921CD3B44100C05007 /* remote-m32r-sdi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "remote-m32r-sdi.h"; path = "/var/root/apple-gdb-1824/src/gdb/remote-m32r-sdi.h"; sourceTree = "<absolute>"; };
 		A50DD7D41B30D2AC00F50318 /* AppleMakefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = AppleMakefile; sourceTree = "<group>"; };
 		A50DD7DF1B30D2AC00F50318 /* Dbg.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; path = Dbg.c; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; };
 		A50DD7E01B30D2AC00F50318 /* Dbg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dbg.h; sourceTree = "<group>"; };
@@ -5295,79 +5297,79 @@
 		A5965A3B1988931E00404B03 /* xm-nbsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-nbsd.h"; sourceTree = "<group>"; };
 		A5965A3C1988933E00404B03 /* tm-cris.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-cris.h"; sourceTree = "<group>"; };
 		A5965A3D1988935F00404B03 /* tm-h8300.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-h8300.h"; sourceTree = "<group>"; };
-		A5965A3E1988938D00404B03 /* cygwin64.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = cygwin64.mh; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/cygwin64.mh"; sourceTree = "<absolute>"; };
+		A5965A3E1988938D00404B03 /* cygwin64.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = cygwin64.mh; sourceTree = "<group>"; };
 		A5965A3F1988938D00404B03 /* darwin.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = darwin.mh; sourceTree = "<group>"; };
 		A5965A401988938D00404B03 /* darwin.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; indentWidth = 8; path = darwin.mt; sourceTree = "<group>"; tabWidth = 8; usesTabs = 1; };
-		A5965A411988938D00404B03 /* embed.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = embed.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/embed.mt"; sourceTree = "<absolute>"; };
-		A5965A421988939F00404B03 /* gdbserve.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = gdbserve.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/gdbserve.mt"; sourceTree = "<absolute>"; };
-		A5965A43198893A600404B03 /* go32.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = go32.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/go32.mt"; sourceTree = "<absolute>"; };
-		A5965A44198893B700404B03 /* i386aix.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = i386aix.mh; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/i386aix.mh"; sourceTree = "<absolute>"; };
-		A5965A45198893B700404B03 /* i386aix.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = i386aix.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/i386aix.mt"; sourceTree = "<absolute>"; };
-		A5965A46198893B700404B03 /* i386aout.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = i386aout.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/i386aout.mt"; sourceTree = "<absolute>"; };
+		A5965A411988938D00404B03 /* embed.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = embed.mt; sourceTree = "<group>"; };
+		A5965A421988939F00404B03 /* gdbserve.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = gdbserve.mt; sourceTree = "<group>"; };
+		A5965A43198893A600404B03 /* go32.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = go32.mt; sourceTree = "<group>"; };
+		A5965A44198893B700404B03 /* i386aix.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = i386aix.mh; sourceTree = "<group>"; };
+		A5965A45198893B700404B03 /* i386aix.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = i386aix.mt; sourceTree = "<group>"; };
+		A5965A46198893B700404B03 /* i386aout.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = i386aout.mt; sourceTree = "<group>"; };
 		A5965A47198893B700404B03 /* i386bsd.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; indentWidth = 8; path = i386bsd.mh; sourceTree = "<group>"; tabWidth = 8; usesTabs = 1; };
 		A5965A48198893B700404B03 /* i386bsd.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = i386bsd.mt; sourceTree = "<group>"; };
-		A5965A49198893B700404B03 /* i386dgux.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = i386dgux.mh; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/i386dgux.mh"; sourceTree = "<absolute>"; };
-		A5965A4A198893B700404B03 /* i386dicos.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; indentWidth = 8; name = i386dicos.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/i386dicos.mt"; sourceTree = "<absolute>"; tabWidth = 8; usesTabs = 1; };
-		A5965A4B198893D700404B03 /* i386lynx.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = i386lynx.mh; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/i386lynx.mh"; sourceTree = "<absolute>"; };
-		A5965A4C198893D700404B03 /* i386lynx.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = i386lynx.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/i386lynx.mt"; sourceTree = "<absolute>"; };
+		A5965A49198893B700404B03 /* i386dgux.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = i386dgux.mh; sourceTree = "<group>"; };
+		A5965A4A198893B700404B03 /* i386dicos.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; indentWidth = 8; path = i386dicos.mt; sourceTree = "<group>"; tabWidth = 8; usesTabs = 1; };
+		A5965A4B198893D700404B03 /* i386lynx.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = i386lynx.mh; sourceTree = "<group>"; };
+		A5965A4C198893D700404B03 /* i386lynx.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = i386lynx.mt; sourceTree = "<group>"; };
 		A5965A4D198893D700404B03 /* i386m3.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = i386m3.mh; sourceTree = "<group>"; };
 		A5965A4E198893D700404B03 /* i386m3.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = i386m3.mt; sourceTree = "<group>"; };
 		A5965A4F198893D700404B03 /* i386mach.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = i386mach.mh; sourceTree = "<group>"; };
 		A5965A50198893D700404B03 /* i386mk.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = i386mk.mh; sourceTree = "<group>"; };
 		A5965A51198893D700404B03 /* i386mk.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; indentWidth = 8; path = i386mk.mt; sourceTree = "<group>"; tabWidth = 8; usesTabs = 1; };
-		A5965A52198893D700404B03 /* i386nw.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = i386nw.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/i386nw.mt"; sourceTree = "<absolute>"; };
-		A5965A53198893D700404B03 /* i386os9k.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = i386os9k.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/i386os9k.mt"; sourceTree = "<absolute>"; };
-		A5965A54198893E400404B03 /* i386sco5.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = i386sco5.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/i386sco5.mt"; sourceTree = "<absolute>"; };
-		A5965A55198893F300404B03 /* i386v.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = i386v.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/i386v.mt"; sourceTree = "<absolute>"; };
-		A5965A56198893FA00404B03 /* i386v4.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = i386v4.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/i386v4.mt"; sourceTree = "<absolute>"; };
-		A5965A571988940300404B03 /* i386v32.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; indentWidth = 8; name = i386v32.mh; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/i386v32.mh"; sourceTree = "<absolute>"; tabWidth = 8; usesTabs = 1; };
-		A5965A581988940900404B03 /* i386v42mp.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = i386v42mp.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/i386v42mp.mt"; sourceTree = "<absolute>"; };
-		A5965A591988942100404B03 /* mingw.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = mingw.mh; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/mingw.mh"; sourceTree = "<absolute>"; };
-		A5965A5A1988942100404B03 /* mingw.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; indentWidth = 8; name = mingw.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/mingw.mt"; sourceTree = "<absolute>"; tabWidth = 8; usesTabs = 1; };
-		A5965A5B1988942100404B03 /* mingw64.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = mingw64.mh; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/mingw64.mh"; sourceTree = "<absolute>"; };
-		A5965A5C1988942100404B03 /* mingw64.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; indentWidth = 8; name = mingw64.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/mingw64.mt"; sourceTree = "<absolute>"; tabWidth = 8; usesTabs = 1; };
-		A5965A5D1988942900404B03 /* nbsd.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = nbsd.mh; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/nbsd.mh"; sourceTree = "<absolute>"; };
-		A5965A5E1988943200404B03 /* nbsdelf.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = nbsdelf.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/nbsdelf.mt"; sourceTree = "<absolute>"; };
+		A5965A52198893D700404B03 /* i386nw.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = i386nw.mt; sourceTree = "<group>"; };
+		A5965A53198893D700404B03 /* i386os9k.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = i386os9k.mt; sourceTree = "<group>"; };
+		A5965A54198893E400404B03 /* i386sco5.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = i386sco5.mt; sourceTree = "<group>"; };
+		A5965A55198893F300404B03 /* i386v.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = i386v.mt; sourceTree = "<group>"; };
+		A5965A56198893FA00404B03 /* i386v4.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = i386v4.mt; sourceTree = "<group>"; };
+		A5965A571988940300404B03 /* i386v32.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; indentWidth = 8; path = i386v32.mh; sourceTree = "<group>"; tabWidth = 8; usesTabs = 1; };
+		A5965A581988940900404B03 /* i386v42mp.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = i386v42mp.mt; sourceTree = "<group>"; };
+		A5965A591988942100404B03 /* mingw.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = mingw.mh; sourceTree = "<group>"; };
+		A5965A5A1988942100404B03 /* mingw.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; indentWidth = 8; path = mingw.mt; sourceTree = "<group>"; tabWidth = 8; usesTabs = 1; };
+		A5965A5B1988942100404B03 /* mingw64.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = mingw64.mh; sourceTree = "<group>"; };
+		A5965A5C1988942100404B03 /* mingw64.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; indentWidth = 8; path = mingw64.mt; sourceTree = "<group>"; tabWidth = 8; usesTabs = 1; };
+		A5965A5D1988942900404B03 /* nbsd.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = nbsd.mh; sourceTree = "<group>"; };
+		A5965A5E1988943200404B03 /* nbsdelf.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = nbsdelf.mt; sourceTree = "<group>"; };
 		A5965A5F1988944000404B03 /* nextstep.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = nextstep.mh; sourceTree = "<group>"; };
 		A5965A601988944000404B03 /* nextstep.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = nextstep.mt; sourceTree = "<group>"; };
 		A5965A611988946200404B03 /* pdo.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = pdo.mh; sourceTree = "<group>"; };
 		A5965A621988946200404B03 /* pdo.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = pdo.mt; sourceTree = "<group>"; };
-		A5965A631988946200404B03 /* ptx.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = ptx.mh; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/ptx.mh"; sourceTree = "<absolute>"; };
-		A5965A641988946200404B03 /* ptx.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = ptx.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/ptx.mt"; sourceTree = "<absolute>"; };
-		A5965A651988946200404B03 /* ptx4.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = ptx4.mh; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/ptx4.mh"; sourceTree = "<absolute>"; };
-		A5965A661988946200404B03 /* ptx4.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = ptx4.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/ptx4.mt"; sourceTree = "<absolute>"; };
+		A5965A631988946200404B03 /* ptx.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = ptx.mh; sourceTree = "<group>"; };
+		A5965A641988946200404B03 /* ptx.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = ptx.mt; sourceTree = "<group>"; };
+		A5965A651988946200404B03 /* ptx4.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = ptx4.mh; sourceTree = "<group>"; };
+		A5965A661988946200404B03 /* ptx4.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = ptx4.mt; sourceTree = "<group>"; };
 		A5965A671988946200404B03 /* rhapsody.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = rhapsody.mh; sourceTree = "<group>"; };
 		A5965A681988946200404B03 /* rhapsody.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = rhapsody.mt; sourceTree = "<group>"; };
-		A5965A691988947C00404B03 /* sun386.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = sun386.mh; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/sun386.mh"; sourceTree = "<absolute>"; };
-		A5965A6A1988947C00404B03 /* sun386.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = sun386.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/sun386.mt"; sourceTree = "<absolute>"; };
-		A5965A6B1988947C00404B03 /* symmetry.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = symmetry.mh; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/symmetry.mh"; sourceTree = "<absolute>"; };
-		A5965A6C1988947C00404B03 /* symmetry.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = symmetry.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/symmetry.mt"; sourceTree = "<absolute>"; };
-		A5965A6D1988948F00404B03 /* vxworks.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = vxworks.mt; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/vxworks.mt"; sourceTree = "<absolute>"; };
-		A5965A6E1988948F00404B03 /* x86-64dicos.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; indentWidth = 8; name = "x86-64dicos.mt"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/x86-64dicos.mt"; sourceTree = "<absolute>"; tabWidth = 8; usesTabs = 1; };
-		A5965A6F1988948F00404B03 /* x86-64linux.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = "x86-64linux.mh"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/x86-64linux.mh"; sourceTree = "<absolute>"; };
-		A5965A701988948F00404B03 /* x86-64linux.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = "x86-64linux.mt"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/x86-64linux.mt"; sourceTree = "<absolute>"; };
-		A5965A711988948F00404B03 /* xm-cygwin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xm-cygwin.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/xm-cygwin.h"; sourceTree = "<absolute>"; };
-		A5965A721988948F00404B03 /* xm-fbsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xm-fbsd.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/xm-fbsd.h"; sourceTree = "<absolute>"; };
-		A5965A731988948F00404B03 /* xm-go32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xm-go32.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/xm-go32.h"; sourceTree = "<absolute>"; };
+		A5965A691988947C00404B03 /* sun386.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = sun386.mh; sourceTree = "<group>"; };
+		A5965A6A1988947C00404B03 /* sun386.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = sun386.mt; sourceTree = "<group>"; };
+		A5965A6B1988947C00404B03 /* symmetry.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = symmetry.mh; sourceTree = "<group>"; };
+		A5965A6C1988947C00404B03 /* symmetry.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = symmetry.mt; sourceTree = "<group>"; };
+		A5965A6D1988948F00404B03 /* vxworks.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = vxworks.mt; sourceTree = "<group>"; };
+		A5965A6E1988948F00404B03 /* x86-64dicos.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; indentWidth = 8; path = "x86-64dicos.mt"; sourceTree = "<group>"; tabWidth = 8; usesTabs = 1; };
+		A5965A6F1988948F00404B03 /* x86-64linux.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = "x86-64linux.mh"; sourceTree = "<group>"; };
+		A5965A701988948F00404B03 /* x86-64linux.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = "x86-64linux.mt"; sourceTree = "<group>"; };
+		A5965A711988948F00404B03 /* xm-cygwin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-cygwin.h"; sourceTree = "<group>"; };
+		A5965A721988948F00404B03 /* xm-fbsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-fbsd.h"; sourceTree = "<group>"; };
+		A5965A731988948F00404B03 /* xm-go32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-go32.h"; sourceTree = "<group>"; };
 		A5965A741988949C00404B03 /* xm-i386-next.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-i386-next.h"; sourceTree = "<group>"; };
 		A5965A751988949C00404B03 /* xm-i386.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-i386.h"; sourceTree = "<group>"; };
-		A5965A761988949C00404B03 /* xm-i386aix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xm-i386aix.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/xm-i386aix.h"; sourceTree = "<absolute>"; };
-		A5965A771988949C00404B03 /* xm-i386bsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xm-i386bsd.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/xm-i386bsd.h"; sourceTree = "<absolute>"; };
-		A5965A781988949C00404B03 /* xm-i386gnu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xm-i386gnu.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/xm-i386gnu.h"; sourceTree = "<absolute>"; };
-		A5965A791988949C00404B03 /* xm-i386lynx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xm-i386lynx.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/xm-i386lynx.h"; sourceTree = "<absolute>"; };
+		A5965A761988949C00404B03 /* xm-i386aix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-i386aix.h"; sourceTree = "<group>"; };
+		A5965A771988949C00404B03 /* xm-i386bsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-i386bsd.h"; sourceTree = "<group>"; };
+		A5965A781988949C00404B03 /* xm-i386gnu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-i386gnu.h"; sourceTree = "<group>"; };
+		A5965A791988949C00404B03 /* xm-i386lynx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-i386lynx.h"; sourceTree = "<group>"; };
 		A5965A7A1988949C00404B03 /* xm-i386m3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-i386m3.h"; sourceTree = "<group>"; };
 		A5965A7B1988949C00404B03 /* xm-i386mach.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-i386mach.h"; sourceTree = "<group>"; };
 		A5965A7C1988949C00404B03 /* xm-i386mk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-i386mk.h"; sourceTree = "<group>"; };
-		A5965A7D1988949C00404B03 /* xm-i386sco.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xm-i386sco.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/xm-i386sco.h"; sourceTree = "<absolute>"; };
-		A5965A7E1988949C00404B03 /* xm-i386v.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xm-i386v.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/xm-i386v.h"; sourceTree = "<absolute>"; };
-		A5965A7F1988949C00404B03 /* xm-i386v4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xm-i386v4.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/xm-i386v4.h"; sourceTree = "<absolute>"; };
-		A5965A801988949C00404B03 /* xm-i386v32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xm-i386v32.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/xm-i386v32.h"; sourceTree = "<absolute>"; };
-		A5965A811988949C00404B03 /* xm-linux.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xm-linux.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/xm-linux.h"; sourceTree = "<absolute>"; };
-		A5965A821988949C00404B03 /* xm-nbsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xm-nbsd.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/xm-nbsd.h"; sourceTree = "<absolute>"; };
-		A5965A831988949C00404B03 /* xm-ptx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xm-ptx.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/xm-ptx.h"; sourceTree = "<absolute>"; };
-		A5965A841988949C00404B03 /* xm-ptx4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xm-ptx4.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/xm-ptx4.h"; sourceTree = "<absolute>"; };
-		A5965A851988949C00404B03 /* xm-sun386.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xm-sun386.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/xm-sun386.h"; sourceTree = "<absolute>"; };
-		A5965A861988949C00404B03 /* xm-symmetry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xm-symmetry.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/i386/xm-symmetry.h"; sourceTree = "<absolute>"; };
+		A5965A7D1988949C00404B03 /* xm-i386sco.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-i386sco.h"; sourceTree = "<group>"; };
+		A5965A7E1988949C00404B03 /* xm-i386v.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-i386v.h"; sourceTree = "<group>"; };
+		A5965A7F1988949C00404B03 /* xm-i386v4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-i386v4.h"; sourceTree = "<group>"; };
+		A5965A801988949C00404B03 /* xm-i386v32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-i386v32.h"; sourceTree = "<group>"; };
+		A5965A811988949C00404B03 /* xm-linux.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-linux.h"; sourceTree = "<group>"; };
+		A5965A821988949C00404B03 /* xm-nbsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-nbsd.h"; sourceTree = "<group>"; };
+		A5965A831988949C00404B03 /* xm-ptx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-ptx.h"; sourceTree = "<group>"; };
+		A5965A841988949C00404B03 /* xm-ptx4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-ptx4.h"; sourceTree = "<group>"; };
+		A5965A851988949C00404B03 /* xm-sun386.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-sun386.h"; sourceTree = "<group>"; };
+		A5965A861988949C00404B03 /* xm-symmetry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-symmetry.h"; sourceTree = "<group>"; };
 		A5965A871988949C00404B03 /* xm-windows.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-windows.h"; sourceTree = "<group>"; };
 		A5965A881988949C00404B03 /* xm-winpdo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-winpdo.h"; sourceTree = "<group>"; };
 		A5965A89198894BE00404B03 /* aix.mh */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = aix.mh; sourceTree = "<group>"; };
@@ -7171,6 +7173,7 @@
 				2609D6880E82C40B008125DE /* m32r-tdep.c */,
 				2609D6890E82C40B008125DE /* m32r-tdep.h */,
 				2609D68A0E82C40B008125DE /* m68hc11-tdep.c */,
+				61AA20741CD3F3F00045E89A /* m68hc11-tdep.h */,
 				2609D68B0E82C40B008125DE /* m68k-stub.c */,
 				2609D68C0E82C40B008125DE /* m68k-tdep.c */,
 				2609D68D0E82C40B008125DE /* m68k-tdep.h */,
@@ -7354,6 +7357,7 @@
 				2609D7D10E82C40C008125DE /* remote-fileio.h */,
 				2609D7D20E82C40C008125DE /* remote-hms.c */,
 				2609D7D30E82C40C008125DE /* remote-m32r-sdi.c */,
+				61F333921CD3B44100C05007 /* remote-m32r-sdi.h */,
 				2609D7D40E82C40C008125DE /* remote-mips.c */,
 				A5AFD17F1A58AFDA006C21FE /* remote-mm.c */,
 				A5AFD1801A58AFDA006C21FE /* remote-nindy.c */,

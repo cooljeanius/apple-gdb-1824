@@ -178,4 +178,6 @@ void nto_dummy_supply_regset (char *regs);
 
 int nto_in_dynsym_resolve_code (CORE_ADDR pc);
 
-#endif
+#endif /* !_NTO_TDEP_H */
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* Target-dependent code for NetBSD/i386.
+/* i386nbsd-tdep.c: Target-dependent code for NetBSD/i386.
 
    Copyright 1988, 1989, 1991, 1992, 1994, 1996, 2000, 2001, 2002,
    2003, 2004
@@ -137,7 +137,9 @@ i386nbsd_sigtramp_offset (struct frame_info *next_frame)
   CORE_ADDR pc = frame_pc_unwind (next_frame);
   unsigned char ret[sizeof(sigtramp_retcode)], insn;
   LONGEST off;
+#ifdef ALLOW_UNUSED_VARIABLES
   int i;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
   if (!safe_frame_unwind_memory (next_frame, pc, &insn, 1))
     return -1;
@@ -187,14 +189,14 @@ i386nbsd_sigtramp_offset (struct frame_info *next_frame)
    NetBSD sigtramp routine.  */
 
 static int
-i386nbsd_sigtramp_p (struct frame_info *next_frame)
+i386nbsd_sigtramp_p(struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
+  const char *name;
 
-  find_pc_partial_function (pc, &name, NULL, NULL);
-  return (nbsd_pc_in_sigtramp (pc, name)
-	  || i386nbsd_sigtramp_offset (next_frame) >= 0);
+  find_pc_partial_function(pc, &name, NULL, NULL);
+  return (nbsd_pc_in_sigtramp(pc, name)
+	  || (i386nbsd_sigtramp_offset(next_frame) >= 0));
 }
 
 /* From <machine/signal.h>.  */
@@ -253,8 +255,8 @@ i386nbsdaout_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   i386nbsd_init_abi (info, gdbarch);
 
   /* NetBSD a.out has a single register set.  */
-  set_gdbarch_regset_from_core_section
-    (gdbarch, i386nbsd_aout_regset_from_core_section);
+  set_gdbarch_regset_from_core_section(gdbarch,
+				       i386nbsd_aout_regset_from_core_section);
 }
 
 /* NetBSD ELF.  */
@@ -271,18 +273,21 @@ i386nbsdelf_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   i386_elf_init_abi (info, gdbarch);
 
   /* NetBSD ELF uses SVR4-style shared libraries.  */
-  set_solib_svr4_fetch_link_map_offsets
-    (gdbarch, svr4_ilp32_fetch_link_map_offsets);
+  set_solib_svr4_fetch_link_map_offsets(gdbarch,
+					svr4_ilp32_fetch_link_map_offsets);
 
   /* NetBSD ELF uses -fpcc-struct-return by default.  */
   tdep->struct_return = pcc_struct_return;
 }
 
+extern void _initialize_i386nbsd_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_i386nbsd_tdep (void)
+_initialize_i386nbsd_tdep(void)
 {
-  gdbarch_register_osabi (bfd_arch_i386, 0, GDB_OSABI_NETBSD_AOUT,
-			  i386nbsdaout_init_abi);
-  gdbarch_register_osabi (bfd_arch_i386, 0, GDB_OSABI_NETBSD_ELF,
-			  i386nbsdelf_init_abi);
+  gdbarch_register_osabi(bfd_arch_i386, 0, GDB_OSABI_NETBSD_AOUT,
+			 i386nbsdaout_init_abi);
+  gdbarch_register_osabi(bfd_arch_i386, 0, GDB_OSABI_NETBSD_ELF,
+			 i386nbsdelf_init_abi);
 }
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* Target-dependent code for AMD64 Solaris.
+/* amd64-sol2-tdep.c: Target-dependent code for AMD64 Solaris.
 
    Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
    Contributed by Joseph Myers, CodeSourcery, LLC.
@@ -68,14 +68,14 @@ static int amd64_sol2_gregset_reg_offset[] = {
    Solaris sigtramp routine.  */
 
 static int
-amd64_sol2_sigtramp_p (struct frame_info *next_frame)
+amd64_sol2_sigtramp_p(struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
+  const char *name;
 
-  find_pc_partial_function (pc, &name, NULL, NULL);
-  return (name && (strcmp ("sigacthandler", name) == 0
-		   || strcmp (name, "ucbsigvechandler") == 0));
+  find_pc_partial_function(pc, &name, NULL, NULL);
+  return (name && ((strcmp("sigacthandler", name) == 0)
+		   || (strcmp(name, "ucbsigvechandler") == 0)));
 }
 
 /* Solaris doesn't have a 'struct sigcontext', but it does have a
@@ -109,8 +109,8 @@ amd64_sol2_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   tdep->sc_num_regs = tdep->gregset_num_regs;
 
   /* Solaris uses SVR4-style shared libraries.  */
-  set_solib_svr4_fetch_link_map_offsets
-    (gdbarch, svr4_lp64_fetch_link_map_offsets);
+  set_solib_svr4_fetch_link_map_offsets(gdbarch,
+					svr4_lp64_fetch_link_map_offsets);
 }
 
 
@@ -118,8 +118,10 @@ amd64_sol2_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 extern void _initialize_amd64_sol2_tdep (void);
 
 void
-_initialize_amd64_sol2_tdep (void)
+_initialize_amd64_sol2_tdep(void)
 {
-  gdbarch_register_osabi (bfd_arch_i386, bfd_mach_x86_64,
-			  GDB_OSABI_SOLARIS, amd64_sol2_init_abi);
+  gdbarch_register_osabi(bfd_arch_i386, bfd_mach_x86_64,
+			 GDB_OSABI_SOLARIS, amd64_sol2_init_abi);
 }
+
+/* EOF */

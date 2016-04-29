@@ -23,7 +23,7 @@
 #include "gdb_string.h"
 #include "solib-svr4.h"
 
-#include "nbsd-tdep.h"
+#include "nbsd-tdep.h" /* for prototypes */
 
 /* Fetch (and possibly build) an appropriate link_map_offsets
    structure for NetBSD targets using the struct offsets defined
@@ -103,7 +103,7 @@ nbsd_lp64_solib_svr4_fetch_link_map_offsets(void)
 
 /* */
 int
-nbsd_pc_in_sigtramp(CORE_ADDR pc, char *func_name)
+nbsd_pc_in_sigtramp(CORE_ADDR pc, const char *func_name)
 {
   /* Check for libc-provided signal trampoline.  All such trampolines
      have function names which begin with "__sigtramp".  */

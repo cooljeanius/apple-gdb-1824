@@ -88,10 +88,10 @@ insn_addr_from_ptr (CORE_ADDR ptr)	/* target_pointer to CORE_ADDR.  */
    Convert a target pointer to an address in host (CORE_ADDR) format. */
 
 static CORE_ADDR
-iq2000_pointer_to_address (struct type * type, const void * buf)
+iq2000_pointer_to_address(struct type *type, const gdb_byte *buf)
 {
-  enum type_code target = TYPE_CODE (TYPE_TARGET_TYPE (type));
-  CORE_ADDR addr = extract_unsigned_integer (buf, TYPE_LENGTH (type));
+  enum type_code target = TYPE_CODE(TYPE_TARGET_TYPE(type));
+  CORE_ADDR addr = extract_unsigned_integer(buf, TYPE_LENGTH(type));
 
   if (target == TYPE_CODE_FUNC
       || target == TYPE_CODE_METHOD
@@ -105,13 +105,13 @@ iq2000_pointer_to_address (struct type * type, const void * buf)
    Convert a host-format address (CORE_ADDR) into a target pointer.  */
 
 static void
-iq2000_address_to_pointer (struct type *type, void *buf, CORE_ADDR addr)
+iq2000_address_to_pointer(struct type *type, gdb_byte *buf, CORE_ADDR addr)
 {
-  enum type_code target = TYPE_CODE (TYPE_TARGET_TYPE (type));
+  enum type_code target = TYPE_CODE(TYPE_TARGET_TYPE(type));
 
-  if (target == TYPE_CODE_FUNC || target == TYPE_CODE_METHOD)
-    addr = insn_ptr_from_addr (addr);
-  store_unsigned_integer (buf, TYPE_LENGTH (type), addr);
+  if ((target == TYPE_CODE_FUNC) || (target == TYPE_CODE_METHOD))
+    addr = insn_ptr_from_addr(addr);
+  store_unsigned_integer(buf, TYPE_LENGTH(type), addr);
 }
 
 /* Real register methods: */
@@ -194,12 +194,13 @@ find_last_line_symbol (CORE_ADDR start, CORE_ADDR end, int notcurrent)
    Returns the address of the first instruction after the prologue.  */
 
 static CORE_ADDR
-iq2000_scan_prologue (CORE_ADDR scan_start,
-		      CORE_ADDR scan_end,
-		      struct frame_info *fi,
-		      struct iq2000_frame_cache *cache)
+iq2000_scan_prologue(CORE_ADDR scan_start, CORE_ADDR scan_end,
+		     struct frame_info *fi, struct iq2000_frame_cache *cache)
 {
-  struct symtab_and_line sal;
+  struct symtab_and_line sal = {
+    (struct symtab *)NULL, (asection *)NULL, 0, 0UL, 0UL, NORMAL_LT_ENTRY,
+    (struct symtab_and_line *)NULL
+  };
   CORE_ADDR pc;
   CORE_ADDR loop_end;
   int found_store_lr = 0;
@@ -208,16 +209,16 @@ iq2000_scan_prologue (CORE_ADDR scan_start,
   int tgtreg;
   signed short offset;
 
-  if (scan_end == (CORE_ADDR) 0)
+  if (scan_end == (CORE_ADDR)0UL)
     {
-      loop_end = scan_start + 100;
+      loop_end = (scan_start + 100);
       sal.end = sal.pc = 0;
     }
   else
     {
       loop_end = scan_end;
       if (fi)
-	sal = find_last_line_symbol (scan_start, scan_end, 0);
+	sal = find_last_line_symbol(scan_start, scan_end, 0);
     }
 
   /* Saved registers:
@@ -226,14 +227,14 @@ iq2000_scan_prologue (CORE_ADDR scan_start,
      offset can be zero, we must first initialize all the 
      saved regs to minus one (so we can later distinguish 
      between one that's not saved, and one that's saved at zero). */
-  for (srcreg = 0; srcreg < E_NUM_REGS; srcreg ++)
+  for (srcreg = 0; srcreg < E_NUM_REGS; srcreg++)
     cache->saved_regs[srcreg] = -1;
   cache->using_fp = 0;
   cache->framesize = 0;
 
   for (pc = scan_start; pc < loop_end; pc += 4)
     {
-      LONGEST insn = read_memory_unsigned_integer (pc, 4);
+      LONGEST insn = read_memory_unsigned_integer(pc, 4);
       /* Skip any instructions writing to (sp) or decrementing the
          SP. */
       if ((insn & 0xffe00000) == 0xac200000)
@@ -241,8 +242,8 @@ iq2000_scan_prologue (CORE_ADDR scan_start,
 	  /* sw using SP/%1 as base.  */
 	  /* LEGACY -- from assembly-only port.  */
 	  tgtreg = ((insn >> 16) & 0x1f);
-	  if (tgtreg >= 0 && tgtreg < E_NUM_REGS)
-	    cache->saved_regs[tgtreg] = -((signed short) (insn & 0xffff));
+	  if ((tgtreg >= 0) && (tgtreg < E_NUM_REGS))
+	    cache->saved_regs[tgtreg] = -((signed short)(insn & 0xffff));
 
 	  if (tgtreg == E_LR_REGNUM)
 	    found_store_lr = 1;
@@ -254,7 +255,7 @@ iq2000_scan_prologue (CORE_ADDR scan_start,
 	  /* addi %1, %1, -N == addi %sp, %sp, -N */
 	  /* LEGACY -- from assembly-only port */
 	  found_decr_sp = 1;
-	  cache->framesize = -((signed short) (insn & 0xffff));
+	  cache->framesize = -((signed short)(insn & 0xffff));
 	  continue;
 	}
 
@@ -305,6 +306,10 @@ iq2000_scan_prologue (CORE_ADDR scan_start,
       else /* bail */
 	break;
     }
+  
+  if (found_store_lr == found_decr_sp) {
+    ; /* ??? */
+  }
 
   return pc;
 }
@@ -357,23 +362,26 @@ iq2000_skip_prologue (CORE_ADDR pc)
   return (CORE_ADDR) pc;
 }
 
+/* */
 static struct iq2000_frame_cache *
-iq2000_frame_cache (struct frame_info *next_frame, void **this_cache)
+iq2000_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct iq2000_frame_cache *cache;
   CORE_ADDR current_pc;
   int i;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct iq2000_frame_cache *)*this_cache;
 
-  cache = FRAME_OBSTACK_ZALLOC (struct iq2000_frame_cache);
-  iq2000_init_frame_cache (cache);
+  cache = FRAME_OBSTACK_ZALLOC(struct iq2000_frame_cache);
+  iq2000_init_frame_cache(cache);
   *this_cache = cache;
 
-  cache->base = frame_unwind_register_unsigned (next_frame, E_FP_REGNUM);
-  //if (cache->base == 0)
-    //return cache;
+  cache->base = frame_unwind_register_unsigned(next_frame, E_FP_REGNUM);
+#if 0
+  if (cache->base == 0)
+    return cache;
+#endif /* 0 */
 
   current_pc = frame_pc_unwind (next_frame);
   find_pc_partial_function (current_pc, NULL, &cache->pc, NULL);
@@ -391,15 +399,16 @@ iq2000_frame_cache (struct frame_info *next_frame, void **this_cache)
   return cache;
 }
 
+/* */
 static void
-iq2000_frame_prev_register (struct frame_info *next_frame, void **this_cache,
-			    /* APPLE LOCAL variable opt states.  */
-			    int regnum, enum opt_state *optimizedp,
-			    enum lval_type *lvalp, CORE_ADDR *addrp,
-			    int *realnump, void *valuep)
+iq2000_frame_prev_register(struct frame_info *next_frame, void **this_cache,
+			   /* APPLE LOCAL variable opt states.  */
+			   int regnum, enum opt_state *optimizedp,
+			   enum lval_type *lvalp, CORE_ADDR *addrp,
+			   int *realnump, void *valuep)
 {
-  struct iq2000_frame_cache *cache = iq2000_frame_cache (next_frame, this_cache);
-  if (regnum == E_SP_REGNUM && cache->saved_sp)
+  struct iq2000_frame_cache *cache = iq2000_frame_cache(next_frame, this_cache);
+  if ((regnum == E_SP_REGNUM) && cache->saved_sp)
     {
       /* APPLE LOCAL variable opt states.  */
       *optimizedp = opt_okay;
@@ -407,14 +416,14 @@ iq2000_frame_prev_register (struct frame_info *next_frame, void **this_cache,
       *addrp = 0;
       *realnump = -1;
       if (valuep)
-        store_unsigned_integer (valuep, 4, cache->saved_sp);
+        store_unsigned_integer((gdb_byte *)valuep, 4, cache->saved_sp);
       return;
     }
 
   if (regnum == E_PC_REGNUM)
     regnum = E_LR_REGNUM;
 
-  if (regnum < E_NUM_REGS && cache->saved_regs[regnum] != -1)
+  if ((regnum < E_NUM_REGS) && (cache->saved_regs[regnum] != -1))
     {
       /* APPLE LOCAL variable opt states.  */
       *optimizedp = opt_okay;
@@ -422,7 +431,8 @@ iq2000_frame_prev_register (struct frame_info *next_frame, void **this_cache,
       *addrp = cache->saved_regs[regnum];
       *realnump = -1;
       if (valuep)
-        read_memory (*addrp, valuep, register_size (current_gdbarch, regnum));
+        read_memory(*addrp, (gdb_byte *)valuep,
+		    register_size(current_gdbarch, regnum));
       return;
     }
 
@@ -432,14 +442,15 @@ iq2000_frame_prev_register (struct frame_info *next_frame, void **this_cache,
   *addrp = 0; 
   *realnump = regnum;
   if (valuep)
-    frame_unwind_register (next_frame, (*realnump), valuep);
+    frame_unwind_register(next_frame, (*realnump), (gdb_byte *)valuep);
 }
 
+/* */
 static void
-iq2000_frame_this_id (struct frame_info *next_frame, void **this_cache,
-		      struct frame_id *this_id)
+iq2000_frame_this_id(struct frame_info *next_frame, void **this_cache,
+		     struct frame_id *this_id)
 {
-  struct iq2000_frame_cache *cache = iq2000_frame_cache (next_frame, this_cache);
+  struct iq2000_frame_cache *cache = iq2000_frame_cache(next_frame, this_cache);
 
   /* This marks the outermost frame.  */
   if (cache->base == 0) 
@@ -451,11 +462,15 @@ iq2000_frame_this_id (struct frame_info *next_frame, void **this_cache,
 static const struct frame_unwind iq2000_frame_unwind = {
   NORMAL_FRAME,
   iq2000_frame_this_id,
-  iq2000_frame_prev_register
+  iq2000_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
+/* */
 static const struct frame_unwind *
-iq2000_frame_sniffer (struct frame_info *next_frame)
+iq2000_frame_sniffer(struct frame_info *next_frame)
 {
   return &iq2000_frame_unwind;
 }
@@ -514,24 +529,23 @@ iq2000_breakpoint_from_pc (CORE_ADDR *pcptr, int *lenptr)
 /* Function: store_return_value
    Copy the function return value from VALBUF into the 
    proper location for a function return.  */
-
 static void
-iq2000_store_return_value (struct type *type, struct regcache *regcache,
-			   const void *valbuf)
+iq2000_store_return_value(struct type *type, struct regcache *regcache,
+			  const void *valbuf)
 {
-  int len = TYPE_LENGTH (type);
+  int len = TYPE_LENGTH(type);
   int regno = E_FN_RETURN_REGNUM;
 
   while (len > 0)
     {
       char buf[4];
-      int size = len % 4 ?: 4;
+      int size = ((len % 4) ?: 4);
 
-      memset (buf, 0, 4);
-      memcpy (buf + 4 - size, valbuf, size);
-      regcache_raw_write (regcache, regno++, buf);
+      memset(buf, 0, 4);
+      memcpy((buf + 4 - size), valbuf, size);
+      regcache_raw_write(regcache, regno++, (const gdb_byte *)buf);
       len -= size;
-      valbuf = ((char *) valbuf) + size;
+      valbuf = (((char *)valbuf) + size);
     }
 }
 
@@ -574,29 +588,31 @@ iq2000_extract_return_value (struct type *type, struct regcache *regcache,
       while (len > 0)
 	{
 	  ULONGEST tmp;
-	  int size = len % 4 ?: 4;
+	  int size = ((len % 4) ?: 4);
 
 	  /* By using store_unsigned_integer we avoid having to
 	     do anything special for small big-endian values.  */
-	  regcache_cooked_read_unsigned (regcache, regno++, &tmp);
-	  store_unsigned_integer (valbuf, size, tmp);
+	  regcache_cooked_read_unsigned(regcache, regno++, &tmp);
+	  store_unsigned_integer((gdb_byte *)valbuf, size, tmp);
 	  len -= size;
-	  valbuf = ((char *) valbuf) + size;
+	  valbuf = (((char *)valbuf) + size);
 	}
     }
   else
     {
       /* Return values > 8 bytes are returned in memory,
 	 pointed to by FN_RETURN_REGNUM.  */
-      regcache_cooked_read (regcache, E_FN_RETURN_REGNUM, & return_buffer);
-      read_memory (return_buffer, valbuf, TYPE_LENGTH (type));
+      regcache_cooked_read(regcache, E_FN_RETURN_REGNUM,
+			   (gdb_byte *)&return_buffer);
+      read_memory(return_buffer, (gdb_byte *)valbuf, TYPE_LENGTH(type));
     }
 }
 
+/* */
 static enum return_value_convention
-iq2000_return_value (struct gdbarch *gdbarch, struct type *type,
-		     struct regcache *regcache,
-		     void *readbuf, const void *writebuf)
+iq2000_return_value(struct gdbarch *gdbarch, struct type *type,
+		    struct regcache *regcache, gdb_byte *readbuf,
+		    const gdb_byte *writebuf)
 {
   if (iq2000_use_struct_convention (type))
     return RETURN_VALUE_STRUCT_CONVENTION;
@@ -869,9 +885,11 @@ iq2000_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 /* Function: _initialize_iq2000_tdep
    Initializer function for the iq2000 module.
    Called by gdb at start-up. */
-
+extern void _initialize_iq2000_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_iq2000_tdep (void)
+_initialize_iq2000_tdep(void)
 {
-  register_gdbarch_init (bfd_arch_iq2000, iq2000_gdbarch_init);
+  register_gdbarch_init(bfd_arch_iq2000, iq2000_gdbarch_init);
 }
+
+/* EOF */

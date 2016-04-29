@@ -2977,7 +2977,8 @@ mn10300-tdep.o: mn10300-tdep.c $(defs_h) $(arch_utils_h) $(dis_asm_h) \
 monitor.o: monitor.c $(defs_h) $(gdbcore_h) $(target_h) $(exceptions_h) \
   $(gdb_string_h) $(command_h) $(serial_h) $(monitor_h) $(gdbcmd_h) \
   $(inferior_h) $(gdb_regex_h) $(srec_h) $(regcache_h) $(regex_quote_h)
-nbsd-tdep.o: nbsd-tdep.c $(defs_h) $(gdb_string_h) $(solib_svr4_h)
+nbsd-tdep.o: nbsd-tdep.c $(defs_h) $(gdb_string_h) $(solib_svr4_h) \
+  $(nbsd_tdep_h)
 nlmread.o: nlmread.c $(defs_h) $(bfd_h) $(symtab_h) $(symfile_h) \
   $(objfiles_h) $(buildsym_h) $(stabsread_h) $(block_h)
 nto-procfs.o: nto-procfs.c $(defs_h) $(gdb_dirent_h) $(exceptions_h) \

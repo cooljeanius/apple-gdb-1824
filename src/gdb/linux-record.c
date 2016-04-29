@@ -1,4 +1,4 @@
-/* Process record and replay target code for GNU/Linux.
+/* linux-record.c: Process record and replay target code for GNU/Linux.
 
    Copyright (C) 2008, 2009 Free Software Foundation, Inc.
 
@@ -91,13 +91,13 @@ record_linux_sockaddr (struct regcache *regcache,
 {
   gdb_byte *a;
   int addrlen;
-  struct gdbarch *gdbarch = get_regcache_arch (regcache);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  struct gdbarch *gdbarch = get_regcache_arch(regcache);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
 
   if (!addr)
     return 0;
 
-  a = alloca (tdep->size_int);
+  a = (gdb_byte *)alloca(tdep->size_int);
 
   if (record_arch_list_add_mem ((CORE_ADDR) len, tdep->size_int))
     return -1;
@@ -128,19 +128,19 @@ record_linux_msghdr (struct regcache *regcache,
                      struct linux_record_tdep *tdep, ULONGEST addr)
 {
   gdb_byte *a;
-  struct gdbarch *gdbarch = get_regcache_arch (regcache);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  struct gdbarch *gdbarch = get_regcache_arch(regcache);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   CORE_ADDR tmpaddr;
   int tmpint;
 
   if (!addr)
     return 0;
 
-  if (record_arch_list_add_mem ((CORE_ADDR) addr, tdep->size_msghdr))
+  if (record_arch_list_add_mem((CORE_ADDR)addr, tdep->size_msghdr))
     return -1;
 
-  a = alloca (tdep->size_msghdr);
-  if (target_read_memory ((CORE_ADDR) addr, a, tdep->size_msghdr))
+  a = (gdb_byte *)alloca(tdep->size_msghdr);
+  if (target_read_memory((CORE_ADDR)addr, a, tdep->size_msghdr))
     {
       if (record_debug)
         fprintf_unfiltered (gdb_stdlog,
@@ -170,7 +170,7 @@ record_linux_msghdr (struct regcache *regcache,
       ULONGEST i;
       ULONGEST len = extract_unsigned_integer (a, tdep->size_size_t,
                                                byte_order);
-      gdb_byte *iov = alloca (tdep->size_iovec);
+      gdb_byte *iov = (gdb_byte *)alloca(tdep->size_iovec);
 
       for (i = 0; i < len; i++)
         {
@@ -186,13 +186,13 @@ record_linux_msghdr (struct regcache *regcache,
                                     tdep->size_iovec);
                 return -1;
             }
-          tmpaddr = (CORE_ADDR) extract_unsigned_integer (iov,
-                                                          tdep->size_pointer,
-                                                          byte_order);
-          tmpint = (int) extract_unsigned_integer (iov + tdep->size_pointer,
-                                                   tdep->size_size_t,
-                                                   byte_order);
-          if (record_arch_list_add_mem (tmpaddr, tmpint));
+          tmpaddr = (CORE_ADDR)extract_unsigned_integer(iov,
+                                                        tdep->size_pointer,
+                                                        byte_order);
+          tmpint = (int)extract_unsigned_integer((iov + tdep->size_pointer),
+                                                 tdep->size_size_t,
+                                                 byte_order);
+          if (record_arch_list_add_mem(tmpaddr, tmpint))
             return -1;
           addr += tdep->size_iovec;
         }
@@ -200,10 +200,10 @@ record_linux_msghdr (struct regcache *regcache,
   a += tdep->size_size_t;
 
   /* msg_control msg_controllen */
-  addr = extract_unsigned_integer (a, tdep->size_pointer, byte_order);
+  addr = extract_unsigned_integer(a, tdep->size_pointer, byte_order);
   a += tdep->size_pointer;
-  tmpint = (int) extract_unsigned_integer (a, tdep->size_size_t, byte_order);
-  if (record_arch_list_add_mem ((CORE_ADDR) addr, tmpint));
+  tmpint = (int)extract_unsigned_integer(a, tdep->size_size_t, byte_order);
+  if (record_arch_list_add_mem((CORE_ADDR)addr, tmpint))
     return -1;
 
   return 0;
@@ -226,8 +226,8 @@ record_linux_system_call (enum gdb_syscall syscall,
 			  struct regcache *regcache,
                           struct linux_record_tdep *tdep)
 {
-  struct gdbarch *gdbarch = get_regcache_arch (regcache);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  struct gdbarch *gdbarch = get_regcache_arch(regcache);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   ULONGEST tmpulongest;
   CORE_ADDR tmpaddr;
   int tmpint;
@@ -787,7 +787,7 @@ record_linux_system_call (enum gdb_syscall syscall,
       if (tmpulongest)
         {
           ULONGEST optvalp;
-          gdb_byte *optlenp = alloca (tdep->size_int);
+          gdb_byte *optlenp = (gdb_byte *)alloca(tdep->size_int);
           if (target_read_memory ((CORE_ADDR) tmpulongest, optlenp,
                                   tdep->size_int))
             {
@@ -828,7 +828,7 @@ record_linux_system_call (enum gdb_syscall syscall,
                                         &tmpulongest);
             if (tmpulongest)
               {
-                gdb_byte *a = alloca (tdep->size_ulong * 2);
+                gdb_byte *a = (gdb_byte *)alloca(tdep->size_ulong * 2UL);
                 int addrlen;
                 gdb_byte *addrlenp;
                 ULONGEST len;
@@ -858,7 +858,7 @@ record_linux_system_call (enum gdb_syscall syscall,
 
         case RECORD_SYS_SOCKETPAIR:
           {
-            gdb_byte *a = alloca (tdep->size_ulong);
+            gdb_byte *a = (gdb_byte *)alloca(tdep->size_ulong);
             regcache_raw_read_unsigned (regcache, tdep->arg2,
                                         &tmpulongest);
             if (tmpulongest)
@@ -891,7 +891,7 @@ record_linux_system_call (enum gdb_syscall syscall,
                                       &tmpulongest);
           if (tmpulongest)
             {
-              gdb_byte *a = alloca (tdep->size_ulong * 2);
+              gdb_byte *a = (gdb_byte *)alloca(tdep->size_ulong * 2UL);
               int addrlen;
               gdb_byte *addrlenp;
               ULONGEST len;
@@ -920,7 +920,7 @@ record_linux_system_call (enum gdb_syscall syscall,
                                       &tmpulongest);
           if (tmpulongest)
             {
-              gdb_byte *a = alloca (tdep->size_ulong * 2);
+              gdb_byte *a = (gdb_byte *)alloca(tdep->size_ulong * 2UL);
 
               tmpulongest += tdep->size_ulong;
               if (target_read_memory ((CORE_ADDR) tmpulongest, a,
@@ -952,8 +952,8 @@ record_linux_system_call (enum gdb_syscall syscall,
           break;
         case RECORD_SYS_GETSOCKOPT:
           {
-            gdb_byte *a = alloca (tdep->size_ulong * 2);
-            gdb_byte *av = alloca (tdep->size_int);
+            gdb_byte *a = (gdb_byte *)alloca(tdep->size_ulong * 2UL);
+            gdb_byte *av = (gdb_byte *)alloca(tdep->size_int);
 
             regcache_raw_read_unsigned (regcache, tdep->arg2,
                                         &tmpulongest);
@@ -1013,7 +1013,7 @@ record_linux_system_call (enum gdb_syscall syscall,
           break;
         case RECORD_SYS_RECVMSG:
           {
-            gdb_byte *a = alloca (tdep->size_ulong);
+            gdb_byte *a = (gdb_byte *)alloca(tdep->size_ulong);
 
             regcache_raw_read_unsigned (regcache, tdep->arg2,
                                         &tmpulongest);
@@ -1362,7 +1362,7 @@ record_linux_system_call (enum gdb_syscall syscall,
         regcache_raw_read_unsigned (regcache, tdep->arg2, &vec);
         if (vec)
           {
-            gdb_byte *iov = alloca (tdep->size_iovec);
+            gdb_byte *iov = (gdb_byte *)alloca(tdep->size_iovec);
 
             regcache_raw_read_unsigned (regcache, tdep->arg3, &vlen);
             for (tmpulongest = 0; tmpulongest < vlen; tmpulongest++)
@@ -1840,7 +1840,7 @@ record_linux_system_call (enum gdb_syscall syscall,
           gdb_byte *iocbp;
 
           regcache_raw_read_unsigned (regcache, tdep->arg2, &nr);
-          iocbp = alloca (nr * tdep->size_pointer);
+          iocbp = (gdb_byte *)alloca(nr * tdep->size_pointer);
           if (target_read_memory ((CORE_ADDR) tmpulongest, iocbp,
                                   nr * tdep->size_pointer))
             {
@@ -2214,3 +2214,5 @@ record_linux_system_call (enum gdb_syscall syscall,
 
   return 0;
 }
+
+/* EOF */

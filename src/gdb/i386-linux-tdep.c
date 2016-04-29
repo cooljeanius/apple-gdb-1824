@@ -1,4 +1,4 @@
-/* Target-dependent code for GNU/Linux i386.
+/* i386-linux-tdep.c: Target-dependent code for GNU/Linux i386.
 
    Copyright 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -225,12 +225,12 @@ i386_linux_rt_sigtramp_start (struct frame_info *next_frame)
    GNU/Linux sigtramp routine.  */
 
 static int
-i386_linux_sigtramp_p (struct frame_info *next_frame)
+i386_linux_sigtramp_p(struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
+  const char *name;
 
-  find_pc_partial_function (pc, &name, NULL, NULL);
+  find_pc_partial_function(pc, &name, NULL, NULL);
 
   /* If we have NAME, we can optimize the search.  The trampolines are
      named __restore and __restore_rt.  However, they aren't dynamically
@@ -249,13 +249,13 @@ i386_linux_sigtramp_p (struct frame_info *next_frame)
    which may have DWARF-2 CFI.  */
 
 static int
-i386_linux_dwarf_signal_frame_p (struct gdbarch *gdbarch,
-				 struct frame_info *next_frame)
+i386_linux_dwarf_signal_frame_p(struct gdbarch *gdbarch,
+				struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
+  const char *name;
 
-  find_pc_partial_function (pc, &name, NULL, NULL);
+  find_pc_partial_function(pc, &name, NULL, NULL);
 
   /* If a vsyscall DSO is in use, the signal trampolines may have these
      names.  */

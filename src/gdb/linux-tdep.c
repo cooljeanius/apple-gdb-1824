@@ -1,4 +1,4 @@
-/* Target-dependent code for GNU/Linux, architecture independent.
+/* linux-tdep.c: Target-dependent code for GNU/Linux, architecture independent.
 
    Copyright (C) 2009 Free Software Foundation, Inc.
 
@@ -151,7 +151,7 @@ linux_get_siginfo_type (struct gdbarch *gdbarch)
    is currently unsupported.  */
 
 static void
-check_is_pie_binary(void)
+check_is_pie_binary(void *unused_data ATTRIBUTE_UNUSED)
 {
 #ifdef ALLOW_UNUSED_VARIABLES
   Elf_Internal_Ehdr *elf_hdr;
