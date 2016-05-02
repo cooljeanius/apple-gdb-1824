@@ -1,4 +1,4 @@
-/* Target-dependent code for OpenBSD/powerpc.
+/* ppcobsd-tdep.c: Target-dependent code for OpenBSD/powerpc.
 
    Copyright 2004, 2005 Free Software Foundation, Inc.
 
@@ -92,20 +92,20 @@ ppcobsd_collect_gregset (const struct regset *regset,
   ppc_collect_fpregset (regset, regcache, regnum, gregs, len);
 }
 
-/* OpenBSD/powerpc register set.  */
-
+/* OpenBSD/powerpc register set: */
 struct regset ppcobsd_gregset =
 {
   &ppcobsd_reg_offsets,
-  ppcobsd_supply_gregset
+  ppcobsd_supply_gregset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
 };
 
 /* Return the appropriate register set for the core section identified
    by SECT_NAME and SECT_SIZE.  */
-
 static const struct regset *
-ppcobsd_regset_from_core_section (struct gdbarch *gdbarch,
-				  const char *sect_name, size_t sect_size)
+ppcobsd_regset_from_core_section(struct gdbarch *gdbarch, const char *sect_name,
+				 size_t sect_size)
 {
   if (strcmp (sect_name, ".reg") == 0 && sect_size >= 412)
     return &ppcobsd_gregset;
@@ -241,3 +241,5 @@ _initialize_ppcobsd_tdep (void)
       ppcobsd_reg_offsets.vrsave_offset = 520;
     }
 }
+
+/* EOF */

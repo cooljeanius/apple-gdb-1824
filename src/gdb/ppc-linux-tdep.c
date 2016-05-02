@@ -39,6 +39,12 @@
 #include "frame-unwind.h"
 #include "tramp-frame.h"
 
+#if defined(PPC_NUM_REGS) && !defined(PPC_LINUX_TDEP_H)
+# include "ppc-linux-tdep.h"
+#else
+extern int ppc_linux_in_sigtramp(CORE_ADDR, char *);
+#endif /* PPC_NUM_REGS && !PPC_LINUX_TDEP_H */
+
 /* The following instructions are used in the signal trampoline code
    on GNU/Linux PPC. The kernel used to use magic syscalls 0x6666 and
    0x7777 but now uses the sigreturn syscalls.  We check for both.  */
@@ -150,9 +156,8 @@ static int ppc_linux_at_sigtramp_return_path (CORE_ADDR pc);
    puts us on the second instruction.  (I added the test for the first
    instruction long after the fact, just in case the observed behavior
    is ever fixed.)  */
-
 int
-ppc_linux_in_sigtramp (CORE_ADDR pc, char *func_name)
+ppc_linux_in_sigtramp(CORE_ADDR pc, char *func_name)
 {
   CORE_ADDR lr;
   CORE_ADDR sp;
@@ -160,11 +165,11 @@ ppc_linux_in_sigtramp (CORE_ADDR pc, char *func_name)
   gdb_byte buf[4];
   CORE_ADDR handler;
 
-  lr = read_register (gdbarch_tdep (current_gdbarch)->ppc_lr_regnum);
-  if (!ppc_linux_at_sigtramp_return_path (lr))
+  lr = read_register(gdbarch_tdep(current_gdbarch)->ppc_lr_regnum);
+  if (!ppc_linux_at_sigtramp_return_path(lr))
     return 0;
 
-  sp = read_register (SP_REGNUM);
+  sp = read_register(SP_REGNUM);
 
   if (target_read_memory (sp, buf, sizeof (buf)) != 0)
     return 0;
@@ -656,29 +661,29 @@ ppc64_desc_entry_point (CORE_ADDR desc)
 static struct insn_pattern ppc64_standard_linkage[] =
   {
     /* addis r12, r2, <any> */
-    { insn_d (-1, -1, -1, 0), insn_d (15, 12, 2, 0), 0 },
+    { insn_d(-1U, -1, -1, 0), insn_d(15, 12, 2, 0), 0 },
 
     /* std r2, 40(r1) */
-    { -1, insn_ds (62, 2, 1, 40, 0), 0 },
+    { -1, insn_ds(62U, 2, 1, 40, 0), 0 },
 
     /* ld r11, <any>(r12) */
-    { insn_ds (-1, -1, -1, 0, -1), insn_ds (58, 11, 12, 0, 0), 0 },
+    { insn_ds(-1U, -1, -1, 0, -1), insn_ds(58U, 11, 12, 0, 0), 0 },
 
     /* addis r12, r12, 1 <optional> */
-    { insn_d (-1, -1, -1, -1), insn_d (15, 12, 2, 1), 1 },
+    { insn_d(-1U, -1, -1, -1), insn_d(15, 12, 2, 1), 1 },
 
     /* ld r2, <any>(r12) */
-    { insn_ds (-1, -1, -1, 0, -1), insn_ds (58, 2, 12, 0, 0), 0 },
+    { insn_ds(-1U, -1, -1, 0, -1), insn_ds(58U, 2, 12, 0, 0), 0 },
 
     /* addis r12, r12, 1 <optional> */
-    { insn_d (-1, -1, -1, -1), insn_d (15, 12, 2, 1), 1 },
+    { insn_d(-1U, -1, -1, -1), insn_d(15, 12, 2, 1), 1 },
 
     /* mtctr r11 */
-    { insn_xfx (-1, -1, -1, -1), insn_xfx (31, 11, 9, 467),
+    { insn_xfx(-1U, -1, -1, -1), insn_xfx(31, 11, 9, 467),
       0 },
 
     /* ld r11, <any>(r12) */
-    { insn_ds (-1, -1, -1, 0, -1), insn_ds (58, 11, 12, 0, 0), 0 },
+    { insn_ds(-1U, -1, -1, 0, -1), insn_ds(58U, 11, 12, 0, 0), 0 },
       
     /* bctr */
     { -1, 0x4e800420, 0 },
@@ -856,32 +861,40 @@ ppc32_linux_supply_gregset (const struct regset *regset,
 }
 
 static struct regset ppc32_linux_gregset = {
-  NULL, ppc32_linux_supply_gregset
+  NULL,
+  ppc32_linux_supply_gregset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
 };
 
+/* */
 static void
-ppc64_linux_supply_gregset (const struct regset *regset,
-			    struct regcache * regcache,
-			    int regnum, const void *gregs, size_t size)
+ppc64_linux_supply_gregset(const struct regset *regset,
+			   struct regcache *regcache, int regnum,
+			   const void *gregs, size_t size)
 {
-  ppc_linux_supply_gregset (regcache, regnum, gregs, size, 8);
+  ppc_linux_supply_gregset(regcache, regnum, gregs, size, 8);
 }
 
 static struct regset ppc64_linux_gregset = {
-  NULL, ppc64_linux_supply_gregset
+  NULL,
+  ppc64_linux_supply_gregset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
 };
 
+/* */
 void
-ppc_linux_supply_fpregset (const struct regset *regset,
-			   struct regcache * regcache,
-			   int regnum, const void *fpset, size_t size)
+ppc_linux_supply_fpregset(const struct regset *regset,
+			  struct regcache *regcache, int regnum,
+			  const void *fpset, size_t size)
 {
   int regi;
-  struct gdbarch *regcache_arch = get_regcache_arch (regcache); 
-  struct gdbarch_tdep *regcache_tdep = gdbarch_tdep (regcache_arch);
-  const bfd_byte *buf = fpset;
+  struct gdbarch *regcache_arch = get_regcache_arch(regcache); 
+  struct gdbarch_tdep *regcache_tdep = gdbarch_tdep(regcache_arch);
+  const bfd_byte *buf = (const bfd_byte *)fpset;
 
-  if (! ppc_floating_point_unit_p (regcache_arch))
+  if (!ppc_floating_point_unit_p(regcache_arch))
     return;
 
   for (regi = 0; regi < ppc_num_fprs; regi++)
@@ -891,18 +904,24 @@ ppc_linux_supply_fpregset (const struct regset *regset,
 
   /* The FPSCR is stored in the low order word of the last
      doubleword in the fpregset.  */
-  regcache_raw_supply (regcache, regcache_tdep->ppc_fpscr_regnum,
-                       buf + 8 * 32 + 4);
+  regcache_raw_supply(regcache, regcache_tdep->ppc_fpscr_regnum,
+                      (buf + (8 * 32) + 4));
 }
 
-static struct regset ppc_linux_fpregset = { NULL, ppc_linux_supply_fpregset };
+static struct regset ppc_linux_fpregset = {
+  NULL,
+  ppc_linux_supply_fpregset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
+};
 
+/* */
 static const struct regset *
-ppc_linux_regset_from_core_section (struct gdbarch *core_arch,
-				    const char *sect_name, size_t sect_size)
+ppc_linux_regset_from_core_section(struct gdbarch *core_arch,
+				   const char *sect_name, size_t sect_size)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (core_arch);
-  if (strcmp (sect_name, ".reg") == 0)
+  struct gdbarch_tdep *tdep = gdbarch_tdep(core_arch);
+  if (strcmp(sect_name, ".reg") == 0)
     {
       if (tdep->wordsize == 4)
 	return &ppc32_linux_gregset;
@@ -1022,7 +1041,7 @@ static struct tramp_frame ppc32_linux_sigaction_tramp_frame = {
   { 
     { 0x380000ac, -1 }, /* li r0, 172 */
     { 0x44000002, -1 }, /* sc */
-    { TRAMP_SENTINEL_INSN },
+    { TRAMP_SENTINEL_INSN, -1 },
   },
   ppc32_linux_sigaction_cache_init
 };
@@ -1033,7 +1052,7 @@ static struct tramp_frame ppc64_linux_sigaction_tramp_frame = {
     { 0x38210080, -1 }, /* addi r1,r1,128 */
     { 0x380000ac, -1 }, /* li r0, 172 */
     { 0x44000002, -1 }, /* sc */
-    { TRAMP_SENTINEL_INSN },
+    { TRAMP_SENTINEL_INSN, -1 },
   },
   ppc64_linux_sigaction_cache_init
 };
@@ -1043,7 +1062,7 @@ static struct tramp_frame ppc32_linux_sighandler_tramp_frame = {
   { 
     { 0x38000077, -1 }, /* li r0,119 */
     { 0x44000002, -1 }, /* sc */
-    { TRAMP_SENTINEL_INSN },
+    { TRAMP_SENTINEL_INSN, -1 },
   },
   ppc32_linux_sighandler_cache_init
 };
@@ -1054,7 +1073,7 @@ static struct tramp_frame ppc64_linux_sighandler_tramp_frame = {
     { 0x38210080, -1 }, /* addi r1,r1,128 */
     { 0x38000077, -1 }, /* li r0,119 */
     { 0x44000002, -1 }, /* sc */
-    { TRAMP_SENTINEL_INSN },
+    { TRAMP_SENTINEL_INSN, -1 },
   },
   ppc64_linux_sighandler_cache_init
 };
@@ -1123,15 +1142,18 @@ ppc_linux_init_abi (struct gdbarch_info info,
                                              svr4_fetch_objfile_link_map);
 }
 
+extern void _initialize_ppc_linux_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_ppc_linux_tdep (void)
+_initialize_ppc_linux_tdep(void)
 {
   /* Register for all sub-familes of the POWER/PowerPC: 32-bit and
      64-bit PowerPC, and the older rs6k.  */
-  gdbarch_register_osabi (bfd_arch_powerpc, bfd_mach_ppc, GDB_OSABI_LINUX,
+  gdbarch_register_osabi(bfd_arch_powerpc, bfd_mach_ppc, GDB_OSABI_LINUX,
                          ppc_linux_init_abi);
-  gdbarch_register_osabi (bfd_arch_powerpc, bfd_mach_ppc64, GDB_OSABI_LINUX,
+  gdbarch_register_osabi(bfd_arch_powerpc, bfd_mach_ppc64, GDB_OSABI_LINUX,
                          ppc_linux_init_abi);
-  gdbarch_register_osabi (bfd_arch_rs6000, bfd_mach_rs6k, GDB_OSABI_LINUX,
+  gdbarch_register_osabi(bfd_arch_rs6000, bfd_mach_rs6k, GDB_OSABI_LINUX,
                          ppc_linux_init_abi);
 }
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* Target-dependent code for PowerPC systems running NetBSD.
+/* ppcnbsd-tdep.c: Target-dependent code for PowerPC systems running NetBSD.
 
    Copyright 2002, 2003, 2004 Free Software Foundation, Inc.
 
@@ -245,9 +245,9 @@ static struct core_fns ppcnbsd_elfcore_fns =
    the moment use the broken convention.  Ulgh!.  */
 
 static enum return_value_convention
-ppcnbsd_return_value (struct gdbarch *gdbarch, struct type *valtype,
-		      struct regcache *regcache, void *readbuf,
-		      const void *writebuf)
+ppcnbsd_return_value(struct gdbarch *gdbarch, struct type *valtype,
+		     struct regcache *regcache, gdb_byte *readbuf,
+		     const gdb_byte *writebuf)
 {
   if ((TYPE_CODE (valtype) == TYPE_CODE_STRUCT
        || TYPE_CODE (valtype) == TYPE_CODE_UNION)
@@ -329,12 +329,15 @@ ppcnbsd_init_abi (struct gdbarch_info info,
   tramp_frame_prepend_unwinder (gdbarch, &ppcnbsd_sigtramp);
 }
 
+extern void _initialize_ppcnbsd_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_ppcnbsd_tdep (void)
+_initialize_ppcnbsd_tdep(void)
 {
-  gdbarch_register_osabi (bfd_arch_powerpc, 0, GDB_OSABI_NETBSD_ELF,
-			  ppcnbsd_init_abi);
+  gdbarch_register_osabi(bfd_arch_powerpc, 0, GDB_OSABI_NETBSD_ELF,
+			 ppcnbsd_init_abi);
 
-  deprecated_add_core_fns (&ppcnbsd_core_fns);
-  deprecated_add_core_fns (&ppcnbsd_elfcore_fns);
+  deprecated_add_core_fns(&ppcnbsd_core_fns);
+  deprecated_add_core_fns(&ppcnbsd_elfcore_fns);
 }
+
+/* EOF */
