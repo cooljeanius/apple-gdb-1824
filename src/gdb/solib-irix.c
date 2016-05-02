@@ -1,4 +1,4 @@
-/* Shared library support for IRIX.
+/* solib-irix.c: Shared library support for IRIX.
    Copyright 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001, 2002, 2004
    Free Software Foundation, Inc.
 
@@ -34,7 +34,10 @@
 #include "target.h"
 #include "inferior.h"
 
+#include "solib.h" /* for solib_add() */
 #include "solist.h"
+
+#include "solib-irix.h"
 
 /* Link map info to include in an allocate so_list entry.  Unlike some
    of the other solib backends, this (Irix) backend chooses to decode
@@ -43,7 +46,6 @@
    because there are three different link map formats to worry about.
    We use a single routine (fetch_lm_info) to read (and decode) the target
    specific link map data.  */
-
 struct lm_info
 {
   CORE_ADDR addr;		/* address of obj_info or obj_list
@@ -59,7 +61,6 @@ struct lm_info
    structure of the obj_list or obj_info structs.  Therefore, we use a
    platform neutral representation which has been derived from the IRIX
    header files.  */
-
 typedef struct
 {
   char b[4];
@@ -113,8 +114,7 @@ struct irix_elf64_obj_info
   gdb_int32_bytes padding;
 };
 
-/* Union of all of the above (plus a split out magic field).  */
-
+/* Union of all of the above (plus a split out magic field): */
 union irix_obj_info
 {
   gdb_int32_bytes magic;
@@ -126,19 +126,17 @@ union irix_obj_info
 /* MIPS sign extends its 32 bit addresses.  We could conceivably use
    extract_typed_address here, but to do so, we'd have to construct an
    appropriate type.  Calling extract_signed_integer seems simpler.  */
-
 static CORE_ADDR
-extract_mips_address (void *addr, int len)
+extract_mips_address(void *addr, int len)
 {
-  return extract_signed_integer (addr, len);
+  return extract_signed_integer((const gdb_byte *)addr, len);
 }
 
 /* Fetch and return the link map data associated with ADDR.  Note that
    this routine automatically determines which (of three) link map
    formats is in use by the target.  */
-
 struct lm_info
-fetch_lm_info (CORE_ADDR addr)
+fetch_lm_info(CORE_ADDR addr)
 {
   struct lm_info li;
   union irix_obj_info buf;
@@ -150,75 +148,78 @@ fetch_lm_info (CORE_ADDR addr)
      with one of the other cases.  (We don't want to incur a memory error
      if we were to read a larger region that generates an error due to
      being at the end of a page or the like.)  */
-  read_memory (addr, (char *) &buf, sizeof (buf.ol32));
+  read_memory(addr, (gdb_byte *)&buf, sizeof(buf.ol32));
 
-  if (extract_unsigned_integer (&buf.magic, sizeof (buf.magic)) != 0xffffffff)
+  if (extract_unsigned_integer((const gdb_byte *)&buf.magic,
+			       sizeof(buf.magic)) != 0xffffffff)
     {
       /* Use buf.ol32... */
       char obj_buf[432];
-      CORE_ADDR obj_addr = extract_mips_address (&buf.ol32.data,
-						 sizeof (buf.ol32.data));
-      li.next = extract_mips_address (&buf.ol32.next, sizeof (buf.ol32.next));
+      CORE_ADDR obj_addr = extract_mips_address(&buf.ol32.data,
+						sizeof(buf.ol32.data));
+      li.next = extract_mips_address(&buf.ol32.next, sizeof(buf.ol32.next));
 
-      read_memory (obj_addr, obj_buf, sizeof (obj_buf));
+      read_memory(obj_addr, (gdb_byte *)obj_buf, sizeof(obj_buf));
 
-      li.pathname_addr = extract_mips_address (&obj_buf[236], 4);
+      li.pathname_addr = extract_mips_address(&obj_buf[236], 4);
       li.pathname_len = 0;	/* unknown */
-      li.reloc_offset = extract_mips_address (&obj_buf[196], 4)
-	- extract_mips_address (&obj_buf[248], 4);
+      li.reloc_offset = (extract_mips_address(&obj_buf[196], 4)
+			 - extract_mips_address(&obj_buf[248], 4));
 
     }
-  else if (extract_unsigned_integer (&buf.oi32.oi_size,
-				     sizeof (buf.oi32.oi_size))
-	   == sizeof (buf.oi32))
+  else if (extract_unsigned_integer((const gdb_byte *)&buf.oi32.oi_size,
+				    sizeof(buf.oi32.oi_size))
+	   == sizeof(buf.oi32))
     {
       /* Use buf.oi32...  */
 
-      /* Read rest of buffer.  */
-      read_memory (addr + sizeof (buf.ol32),
-		   ((char *) &buf) + sizeof (buf.ol32),
-		   sizeof (buf.oi32) - sizeof (buf.ol32));
+      /* Read rest of buffer: */
+      read_memory((addr + sizeof(buf.ol32)),
+		  (gdb_byte *)(((char *)&buf) + sizeof(buf.ol32)),
+		  (sizeof(buf.oi32) - sizeof(buf.ol32)));
 
       /* Fill in fields using buffer contents.  */
-      li.next = extract_mips_address (&buf.oi32.oi_next,
-				      sizeof (buf.oi32.oi_next));
-      li.reloc_offset = extract_mips_address (&buf.oi32.oi_ehdr,
-					      sizeof (buf.oi32.oi_ehdr))
-	- extract_mips_address (&buf.oi32.oi_orig_ehdr,
-				sizeof (buf.oi32.oi_orig_ehdr));
-      li.pathname_addr = extract_mips_address (&buf.oi32.oi_pathname,
-					       sizeof (buf.oi32.oi_pathname));
-      li.pathname_len = extract_unsigned_integer (&buf.oi32.oi_pathname_len,
-						  sizeof (buf.oi32.
-							  oi_pathname_len));
+      li.next = extract_mips_address(&buf.oi32.oi_next,
+				     sizeof(buf.oi32.oi_next));
+      li.reloc_offset =
+	(extract_mips_address(&buf.oi32.oi_ehdr,
+			      sizeof(buf.oi32.oi_ehdr))
+	 - extract_mips_address(&buf.oi32.oi_orig_ehdr,
+				sizeof(buf.oi32.oi_orig_ehdr)));
+      li.pathname_addr = extract_mips_address(&buf.oi32.oi_pathname,
+					      sizeof(buf.oi32.oi_pathname));
+      li.pathname_len = 
+	extract_unsigned_integer((const gdb_byte *)&buf.oi32.oi_pathname_len,
+				 sizeof(buf.oi32.oi_pathname_len));
     }
-  else if (extract_unsigned_integer (&buf.oi64.oi_size,
-				     sizeof (buf.oi64.oi_size))
-	   == sizeof (buf.oi64))
+  else if (extract_unsigned_integer((const gdb_byte *)&buf.oi64.oi_size,
+				    sizeof(buf.oi64.oi_size))
+	   == sizeof(buf.oi64))
     {
       /* Use buf.oi64...  */
 
       /* Read rest of buffer.  */
-      read_memory (addr + sizeof (buf.ol32),
-		   ((char *) &buf) + sizeof (buf.ol32),
-		   sizeof (buf.oi64) - sizeof (buf.ol32));
+      read_memory((addr + sizeof(buf.ol32)),
+		  (gdb_byte *)(((char *)&buf) + sizeof(buf.ol32)),
+		  (sizeof(buf.oi64) - sizeof(buf.ol32)));
 
       /* Fill in fields using buffer contents.  */
-      li.next = extract_mips_address (&buf.oi64.oi_next,
-				      sizeof (buf.oi64.oi_next));
-      li.reloc_offset = extract_mips_address (&buf.oi64.oi_ehdr,
-					      sizeof (buf.oi64.oi_ehdr))
-	- extract_mips_address (&buf.oi64.oi_orig_ehdr,
-				sizeof (buf.oi64.oi_orig_ehdr));
-      li.pathname_addr = extract_mips_address (&buf.oi64.oi_pathname,
-					       sizeof (buf.oi64.oi_pathname));
-      li.pathname_len = extract_unsigned_integer (&buf.oi64.oi_pathname_len,
-						  sizeof (buf.oi64.
-							  oi_pathname_len));
+      li.next = extract_mips_address(&buf.oi64.oi_next,
+				     sizeof(buf.oi64.oi_next));
+      li.reloc_offset =
+	(extract_mips_address(&buf.oi64.oi_ehdr,
+			      sizeof(buf.oi64.oi_ehdr))
+	 - extract_mips_address(&buf.oi64.oi_orig_ehdr,
+				sizeof(buf.oi64.oi_orig_ehdr)));
+      li.pathname_addr = extract_mips_address(&buf.oi64.oi_pathname,
+					      sizeof(buf.oi64.oi_pathname));
+      li.pathname_len =
+	extract_unsigned_integer((const gdb_byte *)&buf.oi64.oi_pathname_len,
+				 sizeof(buf.oi64.oi_pathname_len));
     }
   else
     {
-      error (_("Unable to fetch shared library obj_info or obj_list info."));
+      error(_("Unable to fetch shared library obj_info or obj_list info."));
     }
 
   return li;
@@ -233,14 +234,13 @@ static CORE_ADDR debug_base;	/* Base of dynamic linker structures */
 static CORE_ADDR breakpoint_addr;	/* Address where end bkpt is set */
 
 /*
-
    LOCAL FUNCTION
 
    locate_base -- locate the base address of dynamic linker structs
 
    SYNOPSIS
 
-   CORE_ADDR locate_base (void)
+   CORE_ADDR locate_base(void)
 
    DESCRIPTION
 
@@ -276,9 +276,7 @@ static CORE_ADDR breakpoint_addr;	/* Address where end bkpt is set */
    tion of the interpreter (C shared library), the first instruction of
    the executable itself, or somewhere else entirely (if we attached
    to the process for example).
-
  */
-
 static CORE_ADDR
 locate_base (void)
 {
@@ -294,32 +292,29 @@ locate_base (void)
 }
 
 /*
-
    LOCAL FUNCTION
 
    disable_break -- remove the "mapping changed" breakpoint
 
    SYNOPSIS
 
-   static int disable_break ()
+   static int disable_break(void)
 
    DESCRIPTION
 
    Removes the breakpoint that gets hit when the dynamic linker
    completes a mapping change.
-
  */
-
 static int
-disable_break (void)
+disable_break(void)
 {
   int status = 1;
-
 
   /* Note that breakpoint address and original contents are in our address
      space, so we just need to write the original contents back. */
 
-  if (memory_remove_breakpoint (breakpoint_addr, shadow_contents) != 0)
+  if (memory_remove_breakpoint(breakpoint_addr,
+			       (gdb_byte *)shadow_contents) != 0)
     {
       status = 0;
     }
@@ -334,29 +329,27 @@ disable_break (void)
 }
 
 /*
-
    LOCAL FUNCTION
 
    enable_break -- arrange for dynamic linker to hit breakpoint
 
    SYNOPSIS
 
-   int enable_break (void)
+   int enable_break(void)
 
    DESCRIPTION
 
    This functions inserts a breakpoint at the entry point of the
    main executable, where all shared libraries are mapped in.
  */
-
 static int
-enable_break (void)
+enable_break(void)
 {
-  if (symfile_objfile != NULL
-      && target_insert_breakpoint (entry_point_address (),
-				   shadow_contents) == 0)
+  if ((symfile_objfile != NULL)
+      && (target_insert_breakpoint(entry_point_address(),
+				   (gdb_byte *)shadow_contents) == 0))
     {
-      breakpoint_addr = entry_point_address ();
+      breakpoint_addr = entry_point_address();
       return 1;
     }
 
@@ -364,14 +357,13 @@ enable_break (void)
 }
 
 /*
-
    LOCAL FUNCTION
 
    irix_solib_create_inferior_hook -- shared library startup support
 
    SYNOPSIS
 
-   void solib_create_inferior_hook ()
+   void solib_create_inferior_hook(void)
 
    DESCRIPTION
 
@@ -414,7 +406,6 @@ enable_break (void)
 
    Also, what if child has exit()ed?  Must exit loop somehow.
  */
-
 static void
 irix_solib_create_inferior_hook (void)
 {
@@ -432,12 +423,10 @@ irix_solib_create_inferior_hook (void)
   clear_proceed_status ();
   stop_soon = STOP_QUIETLY;
   stop_signal = TARGET_SIGNAL_0;
-  do
-    {
+  do {
       target_resume (pid_to_ptid (-1), 0, stop_signal);
       wait_for_inferior ();
-    }
-  while (stop_signal != TARGET_SIGNAL_TRAP);
+  } while (stop_signal != TARGET_SIGNAL_TRAP);
 
   /* We are now either at the "mapping complete" breakpoint (or somewhere
      else, a condition we aren't prepared to deal with anyway), so adjust
@@ -455,9 +444,9 @@ irix_solib_create_inferior_hook (void)
      and will put out an annoying warning.
      Delaying the resetting of stop_soon until after symbol loading
      suppresses the warning.  */
-  solib_add ((char *) 0, 0, (struct target_ops *) 0, auto_solib_add);
+  solib_add((const char *)0, 0, (struct target_ops *)0, auto_solib_add);
   stop_soon = NO_STOP_QUIETLY;
-  re_enable_breakpoints_in_shlibs ();
+  re_enable_breakpoints_in_shlibs(0);
 }
 
 /* LOCAL FUNCTION
@@ -466,7 +455,7 @@ irix_solib_create_inferior_hook (void)
 
    SYNOPSIS
 
-   struct so_list *current_sos ()
+   struct so_list *current_sos()
 
    DESCRIPTION
 
@@ -493,67 +482,67 @@ irix_current_sos (void)
      structure.  */
   if (!debug_base)
     {
-      debug_base = locate_base ();
+      debug_base = locate_base();
 
-      /* If we can't find the dynamic linker's base structure, this
+      /* If we cannot find the base structure of the dynamic linker, then this
          must not be a dynamically linked executable.  Hmm.  */
       if (!debug_base)
 	return 0;
     }
 
-  read_memory (debug_base, addr_buf, TARGET_ADDR_BIT / TARGET_CHAR_BIT);
-  lma = extract_mips_address (addr_buf, TARGET_ADDR_BIT / TARGET_CHAR_BIT);
+  read_memory(debug_base, (gdb_byte *)addr_buf,
+	      (TARGET_ADDR_BIT / TARGET_CHAR_BIT));
+  lma = extract_mips_address(addr_buf, (TARGET_ADDR_BIT / TARGET_CHAR_BIT));
 
   while (lma)
     {
-      lm = fetch_lm_info (lma);
+      lm = fetch_lm_info(lma);
       if (!is_first)
 	{
 	  int errcode;
 	  char *name_buf;
 	  int name_size;
-	  struct so_list *new
-	    = (struct so_list *) xmalloc (sizeof (struct so_list));
-	  struct cleanup *old_chain = make_cleanup (xfree, new);
+	  struct so_list *newlist =
+	    (struct so_list *)xmalloc (sizeof(struct so_list));
+	  struct cleanup *old_chain = make_cleanup(xfree, newlist);
 
-	  memset (new, 0, sizeof (*new));
+	  memset(newlist, 0, sizeof(*newlist));
 
-	  new->lm_info = xmalloc (sizeof (struct lm_info));
-	  make_cleanup (xfree, new->lm_info);
+	  newlist->lm_info = (struct lm_info *)xmalloc(sizeof(struct lm_info));
+	  make_cleanup(xfree, newlist->lm_info);
 
-	  *new->lm_info = lm;
+	  *newlist->lm_info = lm;
 
-	  /* Extract this shared object's name.  */
+	  /* Extract yhe name of this shared object: */
 	  name_size = lm.pathname_len;
 	  if (name_size == 0)
-	    name_size = SO_NAME_MAX_PATH_SIZE - 1;
+	    name_size = (SO_NAME_MAX_PATH_SIZE - 1);
 
 	  if (name_size >= SO_NAME_MAX_PATH_SIZE)
 	    {
-	      name_size = SO_NAME_MAX_PATH_SIZE - 1;
-	      warning
-		("current_sos: truncating name of %d characters to only %d characters",
-		 lm.pathname_len, name_size);
+	      name_size = (SO_NAME_MAX_PATH_SIZE - 1);
+	      warning("current_sos: truncating name of %d characters to only %d characters",
+		      lm.pathname_len, name_size);
 	    }
 
-	  target_read_string (lm.pathname_addr, &name_buf,
-			      name_size, &errcode);
+	  target_read_string(lm.pathname_addr, &name_buf,
+			     name_size, &errcode);
 	  if (errcode != 0)
-	    warning (_("Can't read pathname for load map: %s."),
-		       safe_strerror (errcode));
+	    warning(_("Cannot read pathname for load map: %s."),
+		    safe_strerror(errcode));
 	  else
 	    {
-	      strncpy (new->so_name, name_buf, name_size);
-	      new->so_name[name_size] = '\0';
-	      xfree (name_buf);
-	      strcpy (new->so_original_name, new->so_name);
+	      strncpy(newlist->so_name, name_buf, name_size);
+	      newlist->so_name[name_size] = '\0';
+	      xfree(name_buf);
+	      strcpy(newlist->so_original_name, newlist->so_name);
 	    }
 
-	  new->next = 0;
-	  *link_ptr = new;
-	  link_ptr = &new->next;
+	  newlist->next = 0;
+	  *link_ptr = newlist;
+	  link_ptr = &newlist->next;
 
-	  discard_cleanups (old_chain);
+	  discard_cleanups(old_chain);
 	}
       is_first = 0;
       lma = lm.next;
@@ -563,14 +552,13 @@ irix_current_sos (void)
 }
 
 /*
-
   LOCAL FUNCTION
 
   irix_open_symbol_file_object
 
   SYNOPSIS
 
-  void irix_open_symbol_file_object (void *from_tty)
+  void irix_open_symbol_file_object(void *from_tty)
 
   DESCRIPTION
 
@@ -583,32 +571,32 @@ irix_current_sos (void)
   be printed.  This parameter is a pointer rather than an int because
   open_symbol_file_object() is called via catch_errors() and
   catch_errors() requires a pointer argument. */
-
 static int
-irix_open_symbol_file_object (void *from_ttyp)
+irix_open_symbol_file_object(void *from_ttyp)
 {
   CORE_ADDR lma;
   char addr_buf[8];
   struct lm_info lm;
   struct cleanup *cleanups;
   int errcode;
-  int from_tty = *(int *) from_ttyp;
+  int from_tty = *(int *)from_ttyp;
   char *filename;
 
   if (symfile_objfile)
-    if (!query ("Attempt to reload symbols from process? "))
+    if (!query("Attempt to reload symbols from process? "))
       return 0;
 
-  if ((debug_base = locate_base ()) == 0)
+  if ((debug_base = locate_base()) == 0)
     return 0;			/* failed somehow...  */
 
   /* First link map member should be the executable.  */
-  read_memory (debug_base, addr_buf, TARGET_ADDR_BIT / TARGET_CHAR_BIT);
-  lma = extract_mips_address (addr_buf, TARGET_ADDR_BIT / TARGET_CHAR_BIT);
+  read_memory(debug_base, (gdb_byte *)addr_buf,
+	      (TARGET_ADDR_BIT / TARGET_CHAR_BIT));
+  lma = extract_mips_address(addr_buf, (TARGET_ADDR_BIT / TARGET_CHAR_BIT));
   if (lma == 0)
     return 0;			/* failed somehow...  */
 
-  lm = fetch_lm_info (lma);
+  lm = fetch_lm_info(lma);
 
   if (lm.pathname_addr == 0)
     return 0;			/* No filename.  */
@@ -635,14 +623,13 @@ irix_open_symbol_file_object (void *from_ttyp)
 
 
 /*
-
    LOCAL FUNCTION
 
    irix_special_symbol_handling -- additional shared library symbol handling
 
    SYNOPSIS
 
-   void irix_special_symbol_handling ()
+   void irix_special_symbol_handling(void)
 
    DESCRIPTION
 
@@ -656,12 +643,11 @@ irix_open_symbol_file_object (void *from_ttyp)
    objfile.
 
    However, for IRIX, there's nothing to do.
-
  */
-
 static void
-irix_special_symbol_handling (void)
+irix_special_symbol_handling(void)
 {
+  return;
 }
 
 /* Using the solist entry SO, relocate the addresses in SEC.  */
@@ -682,10 +668,9 @@ irix_free_so (struct so_list *so)
   xfree (so->lm_info);
 }
 
-/* Clear backend specific state.  */
-
+/* Clear backend specific state: */
 static void
-irix_clear_solib (void)
+irix_clear_solib(void)
 {
   debug_base = 0;
 }
@@ -693,15 +678,15 @@ irix_clear_solib (void)
 /* Return 1 if PC lies in the dynamic symbol resolution code of the
    run time loader.  */
 static int
-irix_in_dynsym_resolve_code (CORE_ADDR pc)
+irix_in_dynsym_resolve_code(CORE_ADDR pc ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
-static struct target_so_ops irix_so_ops;
-
+/* Usual gdb initialization hook: */
+extern void _initialize_irix_solib(void); /* -Wmissing-prototypes */
 void
-_initialize_irix_solib (void)
+_initialize_irix_solib(void)
 {
   irix_so_ops.relocate_section_addresses = irix_relocate_section_addresses;
   irix_so_ops.free_so = irix_free_so;
@@ -712,6 +697,8 @@ _initialize_irix_solib (void)
   irix_so_ops.open_symbol_file_object = irix_open_symbol_file_object;
   irix_so_ops.in_dynsym_resolve_code = irix_in_dynsym_resolve_code;
 
-  /* FIXME: Don't do this here.  *_gdbarch_init() should set so_ops. */
+  /* FIXME: Do NOT do this here.  *_gdbarch_init() should set so_ops. */
   current_target_so_ops = &irix_so_ops;
 }
+
+/* EOF */

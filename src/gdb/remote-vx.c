@@ -22,6 +22,9 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* NO_POISON */
 #include "defs.h"
 #include "frame.h"
 #include "inferior.h"
@@ -60,18 +63,56 @@
 
 #include <symtab.h>
 
+#include "readline/tilde.h" /* for tilde_expand() */
+#include "exceptions.h" /* for catch_errors() */
+
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h> /* for inet_addr() */
+#endif /* HAVE_ARPA_INET_H */
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h> /* for close() */
+#else
+# if !defined(HAVE_DECL_CLOSE) || !HAVE_DECL_CLOSE
+extern int close(int);
+# endif /* !HAVE_DECL_CLOSE */
+#endif /* HAVE_UNISTD_H */
+
 /* Maximum number of bytes to transfer in a single
    PTRACE_{READ,WRITE}DATA request.  */
 #define VX_MEMXFER_MAX 4096
 
-extern void vx_read_register ();
-extern void vx_write_register ();
-extern void symbol_file_command ();
+/* Other missing defs and decls */
+#ifndef REGISTER_BYTES
+/* guessing based on various headers */
+# ifdef NUM_REGS
+#  define REGISTER_BYTES (NUM_REGS * 4)
+# else
+#  define REGISTER_BYTES 4
+# endif /* NUM_REGS */
+#endif /* !REGISTER_BYTES */
+
+#ifndef read_register_bytes
+# ifdef REGCACHE_H
+#  define read_register_bytes(r, m, l) deprecated_read_register_bytes(r, m, l)
+# endif /* REGCACHE_H */
+#endif /* !read_register_bytes */
+
+#ifndef SIZEOF_SECTION_OFFSETS
+/* FIXME: arbitrarily made-up default: */
+# define SIZEOF_SECTION_OFFSETS 1
+#endif /* !SIZEOF_SECTION_OFFSETS */
+
+extern void vx_read_register(int);
+extern void vx_write_register(int);
+extern void symbol_file_command(const char *, int);
 extern int stop_soon_quietly;	/* for wait_for_inferior */
 
-static int net_step ();
-static int net_ptrace_clnt_call ();	/* Forward decl */
-static enum clnt_stat net_clnt_call ();		/* Forward decl */
+static int net_step(void);
+static int net_ptrace_clnt_call(enum ptracereq, Rptrace *,
+				Ptrace_return *);	/* Forward decl */
+static enum clnt_stat net_clnt_call(enum ptracereq, xdrproc_t, char *,
+				    xdrproc_t, char *);	 /* Forward decl */
 
 /* Target ops structure for accessing memory and such over the net */
 
@@ -99,14 +140,21 @@ static const char rpcerr[] = "network target debugging:  rpc error";
 CLIENT *pClient;		/* client used in net debugging */
 static int ptraceSock = RPC_ANYSOCK;
 
-enum clnt_stat net_clnt_call ();
-static void parse_args ();
+/* net_clnt_call() already declared above */
+static void parse_args(register char *, arg_array *);
 
 static struct timeval rpcTimeout =
 {10, 0};
 
-static char *skip_white_space ();
-static char *find_white_space ();
+static char *skip_white_space(register char *);
+static char *find_white_space(register char *);
+
+/* Generic register read/write routines: */
+extern void net_read_registers(char *, int, u_long);
+extern void net_write_registers(char *, int, u_long);
+
+/* FIXME: where does this come from? */
+extern const char *local_hex_string(int);
 
 /* Tell the VxWorks target system to download a file.
    The load addresses of the text, data, and bss segments are
@@ -114,17 +162,17 @@ static char *find_white_space ();
    Returns 0 for success, -1 for failure.  */
 
 static int
-net_load (char *filename, CORE_ADDR *pTextAddr, CORE_ADDR *pDataAddr,
-	  CORE_ADDR *pBssAddr)
+net_load(const char *filename, CORE_ADDR *pTextAddr, CORE_ADDR *pDataAddr,
+	 CORE_ADDR *pBssAddr)
 {
   enum clnt_stat status;
   struct ldfile ldstruct;
   struct timeval load_timeout;
 
-  memset ((char *) &ldstruct, '\0', sizeof (ldstruct));
+  memset((char *)&ldstruct, '\0', sizeof(ldstruct));
 
-  /* We invoke clnt_call () here directly, instead of through
-     net_clnt_call (), because we need to set a large timeout value.
+  /* We invoke clnt_call() here directly, instead of through
+     net_clnt_call(), because we need to set a large timeout value.
      The load on the target side can take quite a while, easily
      more than 10 seconds.  The user can kill this call by typing
      CTRL-C if there really is a problem with the load.
@@ -135,8 +183,8 @@ net_load (char *filename, CORE_ADDR *pTextAddr, CORE_ADDR *pDataAddr,
   load_timeout.tv_sec = 99999999;	/* A large number, effectively inf. */
   load_timeout.tv_usec = 0;
 
-  status = clnt_call (pClient, VX_LOAD, xdr_wrapstring, &filename, xdr_ldfile,
-		      &ldstruct, load_timeout);
+  status = clnt_call(pClient, VX_LOAD, (xdrproc_t)xdr_wrapstring, &filename,
+		     (xdrproc_t)xdr_ldfile, &ldstruct, load_timeout);
 
   if (status == RPC_SUCCESS)
     {
@@ -158,17 +206,18 @@ net_break (int addr, u_long procnum)
 {
   enum clnt_stat status;
   int break_status;
-  Rptrace ptrace_in;		/* XXX This is stupid.  It doesn't need to be a ptrace
-				   structure.  How about something smaller? */
+  Rptrace ptrace_in;	/* XXX This is stupid.  It doesn't need to be a ptrace
+			   structure.  How about something smaller? */
 
-  memset ((char *) &ptrace_in, '\0', sizeof (ptrace_in));
+  memset((char *)&ptrace_in, '\0', sizeof(ptrace_in));
   break_status = 0;
 
   ptrace_in.addr = addr;
-  ptrace_in.pid = PIDGET (inferior_ptid);
+  ptrace_in.pid = PIDGET(inferior_ptid);
 
-  status = net_clnt_call (procnum, xdr_rptrace, &ptrace_in, xdr_int,
-			  &break_status);
+  status = net_clnt_call((enum ptracereq)procnum, (xdrproc_t)xdr_rptrace,
+			 (char *)&ptrace_in, (xdrproc_t)xdr_int,
+			 (char *)&break_status);
 
   if (status != RPC_SUCCESS)
     return errno;
@@ -178,20 +227,18 @@ net_break (int addr, u_long procnum)
   return break_status;		/* probably (FIXME) zero */
 }
 
-/* returns 0 if successful, errno otherwise */
-
+/* returns 0 if successful, errno otherwise: */
 static int
-vx_insert_breakpoint (int addr)
+vx_insert_breakpoint(int addr)
 {
-  return net_break (addr, VX_BREAK_ADD);
+  return net_break(addr, VX_BREAK_ADD);
 }
 
-/* returns 0 if successful, errno otherwise */
-
+/* returns 0 if successful, errno otherwise: */
 static int
-vx_remove_breakpoint (int addr)
+vx_remove_breakpoint(int addr)
 {
-  return net_break (addr, VX_BREAK_DELETE);
+  return net_break(addr, VX_BREAK_DELETE);
 }
 
 /* Start an inferior process and sets inferior_ptid to its pid.
@@ -200,29 +247,29 @@ vx_remove_breakpoint (int addr)
    ENV is the environment vector to pass.
    Returns process id.  Errors reported with error().
    On VxWorks, we ignore exec_file.  */
-
 static void
-vx_create_inferior (char *exec_file, char *args, char **env)
+vx_create_inferior(char *exec_file, char *args, char **env)
 {
   enum clnt_stat status;
   arg_array passArgs;
   TASK_START taskStart;
 
-  memset ((char *) &passArgs, '\0', sizeof (passArgs));
-  memset ((char *) &taskStart, '\0', sizeof (taskStart));
+  memset((char *)&passArgs, '\0', sizeof(passArgs));
+  memset((char *)&taskStart, '\0', sizeof(taskStart));
 
   /* parse arguments, put them in passArgs */
 
   parse_args (args, &passArgs);
 
   if (passArgs.arg_array_len == 0)
-    error ("You must specify a function name to run, and arguments if any");
+    error(_("You must specify a function name to run, and arguments if any"));
 
-  status = net_clnt_call (PROCESS_START, xdr_arg_array, &passArgs,
-			  xdr_TASK_START, &taskStart);
+  status = net_clnt_call((enum ptracereq)PROCESS_START,
+			 (xdrproc_t)xdr_arg_array, (char *)&passArgs,
+			 (xdrproc_t)xdr_TASK_START, (char *)&taskStart);
 
   if ((status != RPC_SUCCESS) || (taskStart.status == -1))
-    error ("Can't create process on remote target machine");
+    error(_("Cannot create process on remote target machine"));
 
   /* Save the name of the running function */
   vx_running = savestring (passArgs.arg_array_val[0],
@@ -333,16 +380,17 @@ find_white_space (register char *p)
    Returns -1 if remote wait failed, task status otherwise.  */
 
 static int
-net_wait (RDB_EVENT *pEvent)
+net_wait(RDB_EVENT *pEvent)
 {
   int pid;
   enum clnt_stat status;
 
-  memset ((char *) pEvent, '\0', sizeof (RDB_EVENT));
+  memset((char *)pEvent, '\0', sizeof(RDB_EVENT));
 
-  pid = PIDGET (inferior_ptid);
-  status = net_clnt_call (PROCESS_WAIT, xdr_int, &pid, xdr_RDB_EVENT,
-			  pEvent);
+  pid = PIDGET(inferior_ptid);
+  status = net_clnt_call((enum ptracereq)PROCESS_WAIT, (xdrproc_t)xdr_int,
+			 (char *)&pid, (xdrproc_t)xdr_RDB_EVENT,
+			 (char *)pEvent);
 
   /* return (status == RPC_SUCCESS)? pEvent->status: -1; */
   if (status == RPC_SUCCESS)
@@ -355,9 +403,8 @@ net_wait (RDB_EVENT *pEvent)
 
 /* Suspend the remote task.
    Returns -1 if suspend fails on target system, 0 otherwise.  */
-
 static int
-net_quit (void)
+net_quit(void)
 {
   int pid;
   int quit_status;
@@ -365,21 +412,20 @@ net_quit (void)
 
   quit_status = 0;
 
-  /* don't let rdbTask suspend itself by passing a pid of 0 */
-
-  if ((pid = PIDGET (inferior_ptid)) == 0)
+  /* Do NOT let rdbTask suspend itself by passing a pid of 0: */
+  if ((pid = PIDGET(inferior_ptid)) == 0)
     return -1;
 
-  status = net_clnt_call (VX_TASK_SUSPEND, xdr_int, &pid, xdr_int,
-			  &quit_status);
+  status = net_clnt_call((enum ptracereq)VX_TASK_SUSPEND, (xdrproc_t)xdr_int,
+			 (char *)&pid, (xdrproc_t)xdr_int,
+			 (char *)&quit_status);
 
-  return (status == RPC_SUCCESS) ? quit_status : -1;
+  return ((status == RPC_SUCCESS) ? quit_status : -1);
 }
 
-/* Read a register or registers from the remote system.  */
-
+/* Read a register or registers from the remote system: */
 void
-net_read_registers (char *reg_buf, int len, u_long procnum)
+net_read_registers(char *reg_buf, int len, u_long procnum)
 {
   int status;
   Rptrace ptrace_in;
@@ -387,8 +433,8 @@ net_read_registers (char *reg_buf, int len, u_long procnum)
   C_bytes out_data;
   char message[100];
 
-  memset ((char *) &ptrace_in, '\0', sizeof (ptrace_in));
-  memset ((char *) &ptrace_out, '\0', sizeof (ptrace_out));
+  memset((char *)&ptrace_in, '\0', sizeof(ptrace_in));
+  memset((char *)&ptrace_out, '\0', sizeof(ptrace_out));
 
   /* Initialize RPC input argument structure.  */
 
@@ -399,20 +445,20 @@ net_read_registers (char *reg_buf, int len, u_long procnum)
 
   out_data.bytes = reg_buf;
   out_data.len = len;
-  ptrace_out.info.more_data = (caddr_t) & out_data;
+  ptrace_out.info.more_data = (caddr_t)&out_data;
 
-  /* Call RPC; take an error exit if appropriate.  */
-
-  status = net_ptrace_clnt_call (procnum, &ptrace_in, &ptrace_out);
+  /* Call RPC; take an error exit if appropriate: */
+  status = net_ptrace_clnt_call((enum ptracereq)procnum, &ptrace_in,
+				&ptrace_out);
   if (status)
-    error (rpcerr);
+    error(rpcerr);
   if (ptrace_out.status == -1)
     {
       errno = ptrace_out.errno_num;
-      sprintf (message, "reading %s registers", (procnum == PTRACE_GETREGS)
-	       ? "general-purpose"
-	       : "floating-point");
-      perror_with_name (message);
+      snprintf(message, sizeof(message), "reading %s registers",
+	       ((procnum == PTRACE_GETREGS) ? "general-purpose"
+		: "floating-point"));
+      perror_with_name(message);
     }
 }
 
@@ -421,10 +467,9 @@ net_read_registers (char *reg_buf, int len, u_long procnum)
    bytes, and PROCNUM is the RPC procedure number (PTRACE_SETREGS or
    PTRACE_SETFPREGS).  An error exit is taken if the RPC call fails or
    if an error status is returned by the remote debug server.  This is
-   a utility routine used by vx_write_register ().  */
-
+   a utility routine used by vx_write_register().  */
 void
-net_write_registers (char *reg_buf, int len, u_long procnum)
+net_write_registers(char *reg_buf, int len, u_long procnum)
 {
   int status;
   Rptrace ptrace_in;
@@ -432,30 +477,29 @@ net_write_registers (char *reg_buf, int len, u_long procnum)
   C_bytes in_data;
   char message[100];
 
-  memset ((char *) &ptrace_in, '\0', sizeof (ptrace_in));
-  memset ((char *) &ptrace_out, '\0', sizeof (ptrace_out));
+  memset((char *)&ptrace_in, '\0', sizeof(ptrace_in));
+  memset((char *)&ptrace_out, '\0', sizeof(ptrace_out));
 
-  /* Initialize RPC input argument structure.  */
-
+  /* Initialize RPC input argument structure: */
   in_data.bytes = reg_buf;
   in_data.len = len;
 
-  ptrace_in.pid = PIDGET (inferior_ptid);
+  ptrace_in.pid = PIDGET(inferior_ptid);
   ptrace_in.info.ttype = DATA;
-  ptrace_in.info.more_data = (caddr_t) & in_data;
+  ptrace_in.info.more_data = (caddr_t)&in_data;
 
   /* Call RPC; take an error exit if appropriate.  */
-
-  status = net_ptrace_clnt_call (procnum, &ptrace_in, &ptrace_out);
+  status = net_ptrace_clnt_call((enum ptracereq)procnum, &ptrace_in,
+				&ptrace_out);
   if (status)
-    error (rpcerr);
+    error(rpcerr);
   if (ptrace_out.status == -1)
     {
       errno = ptrace_out.errno_num;
-      sprintf (message, "writing %s registers", (procnum == PTRACE_SETREGS)
-	       ? "general-purpose"
-	       : "floating-point");
-      perror_with_name (message);
+      snprintf(message, sizeof(message), "writing %s registers",
+	       ((procnum == PTRACE_SETREGS) ? "general-purpose"
+		: "floating-point"));
+      perror_with_name(message);
     }
 }
 
@@ -548,32 +592,34 @@ vx_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
 	}
     }
 
-  /* Return the number of bytes transferred.  */
-
+  /* Return the number of bytes transferred: */
   return (len - nleft);
 }
 
+/* */
 static void
-vx_files_info (void)
+vx_files_info(void)
 {
-  printf_unfiltered ("\tAttached to host `%s'", vx_host);
-  printf_unfiltered (", which has %sfloating point", target_has_fp ? "" : "no ");
-  printf_unfiltered (".\n");
+  printf_unfiltered("\tAttached to host `%s'", vx_host);
+  printf_unfiltered(", which has %sfloating point", target_has_fp ? "" : "no ");
+  printf_unfiltered(".\n");
 }
 
+/* */
 static void
-vx_run_files_info (void)
+vx_run_files_info(void)
 {
-  printf_unfiltered ("\tRunning %s VxWorks process %s",
-		     vx_running ? "child" : "attached",
-		     local_hex_string (PIDGET (inferior_ptid)));
+  printf_unfiltered("\tRunning %s VxWorks process %s",
+		    (vx_running ? "child" : "attached"),
+		    local_hex_string(PIDGET(inferior_ptid)));
   if (vx_running)
-    printf_unfiltered (", function `%s'", vx_running);
-  printf_unfiltered (".\n");
+    printf_unfiltered(", function `%s'", vx_running);
+  printf_unfiltered(".\n");
 }
 
+/* */
 static void
-vx_resume (ptid_t ptid, int step, enum target_signal siggnal)
+vx_resume(ptid_t ptid, int step, enum target_signal siggnal)
 {
   int status;
   Rptrace ptrace_in;
@@ -618,15 +664,16 @@ vx_resume (ptid_t ptid, int step, enum target_signal siggnal)
     }
 }
 
+/* */
 static void
-vx_mourn_inferior (void)
+vx_mourn_inferior(void)
 {
-  pop_target ();		/* Pop back to no-child state */
-  generic_mourn_inferior ();
+  pop_target();		/* Pop back to no-child state */
+  generic_mourn_inferior();
 }
 
 
-static void vx_add_symbols (char *, int, CORE_ADDR, CORE_ADDR, CORE_ADDR);
+static void vx_add_symbols(const char *, int, CORE_ADDR, CORE_ADDR, CORE_ADDR);
 
 struct find_sect_args
   {
@@ -650,17 +697,18 @@ find_sect (bfd *abfd, asection *sect, PTR obj)
 	{
 	  /* Exclude .ctor and .dtor sections which have SEC_CODE set but not
 	     SEC_DATA.  */
-	  if (bfd_get_section_flags (abfd, sect) & SEC_DATA)
-	    args->data_start = bfd_get_section_vma (abfd, sect);
+	  if (bfd_get_section_flags(abfd, sect) & SEC_DATA)
+	    args->data_start = bfd_get_section_vma(abfd, sect);
 	}
       else
-	args->bss_start = bfd_get_section_vma (abfd, sect);
+	args->bss_start = bfd_get_section_vma(abfd, sect);
     }
 }
 
+/* */
 static void
-vx_add_symbols (char *name, int from_tty, CORE_ADDR text_addr,
-		CORE_ADDR data_addr, CORE_ADDR bss_addr)
+vx_add_symbols(const char *name, int from_tty, CORE_ADDR text_addr,
+	       CORE_ADDR data_addr, CORE_ADDR bss_addr)
 {
   struct section_offsets *offs;
   struct objfile *objfile;
@@ -690,22 +738,21 @@ vx_add_symbols (char *name, int from_tty, CORE_ADDR text_addr,
   objfile_relocate (objfile, offs);
 }
 
-/* This function allows the addition of incrementally linked object files.  */
-
+/* This function allows the addition of incrementally linked object files: */
 static void
-vx_load_command (char *arg_string, int from_tty)
+vx_load_command(const char *arg_string, int from_tty)
 {
   CORE_ADDR text_addr;
   CORE_ADDR data_addr;
   CORE_ADDR bss_addr;
 
   if (arg_string == 0)
-    error ("The load command takes a file name");
+    error(_("The load command takes a file name"));
 
-  arg_string = tilde_expand (arg_string);
-  make_cleanup (xfree, arg_string);
+  arg_string = tilde_expand(arg_string);
+  make_cleanup(xfree, (void *)arg_string);
 
-  dont_repeat ();
+  dont_repeat();
 
   /* Refuse to load the module if a debugged task is running.  Doing so
      can have a number of unpleasant consequences to the running task.  */
@@ -756,26 +803,27 @@ net_step (void)
       source_step.endAddr = 0;
     }
 
-  status = net_clnt_call (VX_SOURCE_STEP, xdr_SOURCE_STEP, &source_step,
-			  xdr_int, &step_status);
+  status = net_clnt_call((enum ptracereq)VX_SOURCE_STEP,
+			 (xdrproc_t)xdr_SOURCE_STEP, (char *)&source_step,
+			 (xdrproc_t)xdr_int, (char *)&step_status);
 
   if (status == RPC_SUCCESS)
     return step_status;
   else
-    error (rpcerr);
+    error(rpcerr);
 }
 
 /* Emulate ptrace using RPC calls to the VxWorks target system.
    Returns nonzero (-1) if RPC status to VxWorks is bad, 0 otherwise.  */
 
 static int
-net_ptrace_clnt_call (enum ptracereq request, Rptrace *pPtraceIn,
-		      Ptrace_return *pPtraceOut)
+net_ptrace_clnt_call(enum ptracereq request, Rptrace *pPtraceIn,
+		     Ptrace_return *pPtraceOut)
 {
   enum clnt_stat status;
 
-  status = net_clnt_call (request, xdr_rptrace, pPtraceIn, xdr_ptrace_return,
-			  pPtraceOut);
+  status = net_clnt_call(request, (xdrproc_t)xdr_rptrace, (char *)pPtraceIn,
+			 (xdrproc_t)xdr_ptrace_return, (char *)pPtraceOut);
 
   if (status != RPC_SUCCESS)
     return -1;
@@ -790,13 +838,14 @@ net_ptrace_clnt_call (enum ptracereq request, Rptrace *pPtraceIn,
    Returns -1 if rpc failed, 0 otherwise.  */
 
 static int
-net_get_boot_file (char **pBootFile)
+net_get_boot_file(char **pBootFile)
 {
   enum clnt_stat status;
 
-  status = net_clnt_call (VX_BOOT_FILE_INQ, xdr_void, (char *) 0,
-			  xdr_wrapstring, pBootFile);
-  return (status == RPC_SUCCESS) ? 0 : -1;
+  status = net_clnt_call((enum ptracereq)VX_BOOT_FILE_INQ, 
+			 (xdrproc_t)xdr_void, (char *)0,
+			 (xdrproc_t)xdr_wrapstring, (char *)pBootFile);
+  return ((status == RPC_SUCCESS) ? 0 : -1);
 }
 
 /* Fetch a list of loaded object modules from the VxWorks target
@@ -806,38 +855,48 @@ net_get_boot_file (char **pBootFile)
    VxWorks doesn't check it.  */
 
 static int
-net_get_symbols (ldtabl *pLoadTable)
+net_get_symbols(ldtabl *pLoadTable)
 {
   enum clnt_stat status;
 
-  memset ((char *) pLoadTable, '\0', sizeof (struct ldtabl));
+  memset((char *)pLoadTable, '\0', sizeof(struct ldtabl));
 
-  status = net_clnt_call (VX_STATE_INQ, xdr_void, 0, xdr_ldtabl, pLoadTable);
-  return (status == RPC_SUCCESS) ? 0 : -1;
+  status = net_clnt_call((enum ptracereq)VX_STATE_INQ, (xdrproc_t)xdr_void,
+			 (char *)0, (xdrproc_t)xdr_ldtabl, (char *)pLoadTable);
+  return ((status == RPC_SUCCESS) ? 0 : -1);
 }
 
 /* Look up a symbol in the VxWorks target's symbol table.
    Returns status of symbol read on target side (0=success, -1=fail)
    Returns -1 and complain()s if rpc fails.  */
-
+#if 0
 struct complaint cant_contact_target =
 {"Lost contact with VxWorks target", 0, 0};
+#else
+struct complaints *cant_contact_target_complaint;
+#endif /* 0 */
 
 static int
-vx_lookup_symbol (char *name,	/* symbol name */
-		  CORE_ADDR *pAddr)
+vx_lookup_symbol(const char *name, /* symbol name */
+		 CORE_ADDR *pAddr)
 {
   enum clnt_stat status;
   SYMBOL_ADDR symbolAddr;
 
   *pAddr = 0;
-  memset ((char *) &symbolAddr, '\0', sizeof (symbolAddr));
+  memset((char *)&symbolAddr, '\0', sizeof(symbolAddr));
 
-  status = net_clnt_call (VX_SYMBOL_INQ, xdr_wrapstring, &name,
-			  xdr_SYMBOL_ADDR, &symbolAddr);
+  status = net_clnt_call((enum ptracereq)VX_SYMBOL_INQ,
+			 (xdrproc_t)xdr_wrapstring, (char *)&name,
+			 (xdrproc_t)xdr_SYMBOL_ADDR, (char *)&symbolAddr);
   if (status != RPC_SUCCESS)
     {
-      complain (&cant_contact_target);
+#if 0
+      complain(&cant_contact_target);
+#else
+      complaint(&cant_contact_target_complaint,
+		"Lost contact with VxWorks target");
+#endif /* 0 */
       return -1;
     }
 
@@ -850,23 +909,23 @@ vx_lookup_symbol (char *name,	/* symbol name */
    Calls error() if rpc fails.  */
 
 static int
-net_check_for_fp (void)
+net_check_for_fp(void)
 {
   enum clnt_stat status;
-  bool_t fp = 0;		/* true if fp processor is present on target board */
+  bool_t fp = 0;	/* true if fp processor is present on target board */
 
-  status = net_clnt_call (VX_FP_INQUIRE, xdr_void, 0, xdr_bool, &fp);
+  status = net_clnt_call((enum ptracereq)VX_FP_INQUIRE, (xdrproc_t)xdr_void,
+			 (char *)0, (xdrproc_t)xdr_bool, (char *)&fp);
   if (status != RPC_SUCCESS)
-    error (rpcerr);
+    error(rpcerr);
 
-  return (int) fp;
+  return (int)fp;
 }
 
 /* Establish an RPC connection with the VxWorks target system.
-   Calls error () if unable to establish connection.  */
-
+   Calls error() if unable to establish connection.  */
 static void
-net_connect (char *host)
+net_connect(const char *host)
 {
   struct sockaddr_in destAddr;
   struct hostent *destHost;
@@ -875,19 +934,19 @@ net_connect (char *host)
   /* Get the internet address for the given host.  Allow a numeric
      IP address or a hostname.  */
 
-  addr = inet_addr (host);
-  if (addr == -1)
+  addr = inet_addr(host);
+  if (addr == (unsigned long)(-1L))
     {
-      destHost = (struct hostent *) gethostbyname (host);
+      destHost = (struct hostent *)gethostbyname(host);
       if (destHost == NULL)
 	/* FIXME: Probably should include hostname here in quotes.
 	   For example if the user types "target vxworks vx960 " it should
 	   say "Invalid host `vx960 '." not just "Invalid hostname".  */
-	error ("Invalid hostname.  Couldn't find remote host address.");
-      addr = *(unsigned long *) destHost->h_addr;
+	error(_("Invalid hostname.  Failed to find remote host address."));
+      addr = *(unsigned long *)destHost->h_addr;
     }
 
-  memset (&destAddr, '\0', sizeof (destAddr));
+  memset(&destAddr, '\0', sizeof(destAddr));
 
   destAddr.sin_addr.s_addr = addr;
   destAddr.sin_family = AF_INET;
@@ -898,25 +957,24 @@ net_connect (char *host)
      calls to the remote ptrace server.  */
 
   ptraceSock = RPC_ANYSOCK;
-  pClient = clnttcp_create (&destAddr, RDBPROG, RDBVERS, &ptraceSock, 0, 0);
-  /* FIXME, here is where we deal with different version numbers of the
+  pClient = clnttcp_create(&destAddr, RDBPROG, RDBVERS, &ptraceSock, 0, 0);
+  /* FIXME: here is where we deal with different version numbers of the
      proto */
 
   if (pClient == NULL)
     {
-      clnt_pcreateerror ("\tnet_connect");
-      error ("Couldn't connect to remote target.");
+      clnt_pcreateerror((char *)"\tnet_connect");
+      error(_("Failed to connect to remote target."));
     }
 }
 
 /* Sleep for the specified number of milliseconds
  * (assumed to be less than 1000).
- * If select () is interrupted, returns immediately;
- * takes an error exit if select () fails for some other reason.
+ * If select() is interrupted, returns immediately;
+ * takes an error exit if select() fails for some other reason.
  */
-
 static void
-sleep_ms (long ms)
+sleep_ms(long ms)
 {
   struct timeval select_timeout;
   int status;
@@ -1057,22 +1115,23 @@ add_symbol_stub (char *arg)
   printf_unfiltered ("ok\n");
   return 1;
 }
+
+/* These are out here for -Wnested-externs: */
+extern char *source_path;
+extern CLIENT *pClient;
+
 /* Target command for VxWorks target systems.
 
    Used in vxgdb.  Takes the name of a remote target machine
    running vxWorks and connects to it to initialize remote network
    debugging.  */
-
 static void
-vx_open (char *args, int from_tty)
+vx_open(const char *args, int from_tty)
 {
-  extern int close ();
   char *bootFile;
-  extern char *source_path;
   struct ldtabl loadTable;
   struct ldfile *pLoadFile;
   int i;
-  extern CLIENT *pClient;
   int symbols_added = 0;
 
   if (!args)
@@ -1085,8 +1144,8 @@ vx_open (char *args, int from_tty)
   gdb_flush(gdb_stdout);
 
   /* Allow the user to kill the connect attempt by typing ^C.
-     Wait until the call to target_has_fp () completes before
-     disallowing an immediate quit, since even if net_connect ()
+     Wait until the call to target_has_fp() completes before
+     disallowing an immediate quit, since even if net_connect()
      is successful, the remote debug server might be hung.  */
 
   immediate_quit++;
@@ -1114,28 +1173,26 @@ vx_open (char *args, int from_tty)
 	  printf_filtered ("\t%s: ", bootFile);
 	  /* This assumes that the kernel is never relocated.  Hope that is an
 	     accurate assumption.  */
-	  if (catch_errors
-	      (symbol_stub,
-	       bootFile,
-	       "Error while reading symbols from boot file:\n",
-	       RETURN_MASK_ALL))
-	    puts_filtered ("ok\n");
+	  if (catch_errors((int (*)(void *))symbol_stub, bootFile,
+			   "Error while reading symbols from boot file:\n",
+			   RETURN_MASK_ALL))
+	    puts_filtered("ok\n");
 	}
       else if (from_tty)
-	printf_unfiltered ("VxWorks kernel symbols not loaded.\n");
+	printf_unfiltered("VxWorks kernel symbols not loaded.\n");
     }
   else
-    error ("Can't retrieve boot file name from target machine.");
+    error(_("Cannot retrieve boot file name from target machine."));
 
-  clnt_freeres (pClient, xdr_wrapstring, &bootFile);
+  clnt_freeres(pClient, (xdrproc_t)xdr_wrapstring, &bootFile);
 
-  if (net_get_symbols (&loadTable) != 0)
-    error ("Can't read loaded modules from target machine");
+  if (net_get_symbols(&loadTable) != 0)
+    error(_("Cannot read loaded modules from target machine"));
 
-  i = 0 - 1;
-  while (++i < loadTable.tbl_size)
+  i = (0 - 1);
+  while (++i < (int)loadTable.tbl_size)
     {
-      QUIT;			/* FIXME, avoids clnt_freeres below:  mem leak */
+      QUIT;		/* FIXME: avoids clnt_freeres below: mem leak */
       pLoadFile = &loadTable.tbl_ent[i];
 #ifdef WRS_ORIG
       {
@@ -1156,29 +1213,28 @@ vx_open (char *args, int from_tty)
          not the source path, since source might be in different directories
          than objects.  */
 
-      if (catch_errors (add_symbol_stub, (char *) pLoadFile, (char *) 0,
-			RETURN_MASK_ALL))
+      if (catch_errors((int (*)(void *))add_symbol_stub, (char *)pLoadFile,
+		       (char *)0, RETURN_MASK_ALL))
 	symbols_added = 1;
 #endif /* WRS_ORIG */
     }
-  printf_filtered ("Done.\n");
+  printf_filtered("Done.\n");
 
-  clnt_freeres (pClient, xdr_ldtabl, &loadTable);
+  clnt_freeres(pClient, (xdrproc_t)xdr_ldtabl, &loadTable);
 
   /* Getting new symbols may change our opinion about what is
      frameless.  */
   if (symbols_added)
-    reinit_frame_cache ();
+    reinit_frame_cache();
 }
 
 /* Takes a task started up outside of gdb and ``attaches'' to it.
    This stops it cold in its tracks and allows us to start tracing it.  */
-
 static void
-vx_attach(char *args, int from_tty)
+vx_attach(const char *args, int from_tty)
 {
   unsigned long pid;
-  char *cptr = 0;
+  char *cptr = (char *)0;
   Rptrace ptrace_in;
   Ptrace_return ptrace_out;
   int status;
@@ -1225,9 +1281,8 @@ vx_attach(char *args, int from_tty)
    to work, it may be necessary for the process to have been
    previously attached.  It *might* work if the program was
    started via the normal ptrace (PTRACE_TRACEME).  */
-
 static void
-vx_detach (char *args, int from_tty)
+vx_detach(const char *args, int from_tty)
 {
   Rptrace ptrace_in;
   Ptrace_return ptrace_out;
@@ -1235,31 +1290,34 @@ vx_detach (char *args, int from_tty)
   int status;
 
   if (args)
-    error ("Argument given to VxWorks \"detach\".");
+    error(_("Argument given to VxWorks \"detach\"."));
 
   if (from_tty)
-    printf_unfiltered ("Detaching pid %s.\n",
-		       local_hex_string (
-		         (unsigned long) PIDGET (inferior_ptid)));
+    printf_unfiltered("Detaching pid %s.\n",
+		      local_hex_string((unsigned long)PIDGET(inferior_ptid)));
 
-  if (args)			/* FIXME, should be possible to leave suspended */
-    signal = atoi (args);
+  if (args)		/* FIXME: it should be possible to leave suspended */
+    signal = atoi(args);
 
-  memset ((char *) &ptrace_in, '\0', sizeof (ptrace_in));
-  memset ((char *) &ptrace_out, '\0', sizeof (ptrace_out));
-  ptrace_in.pid = PIDGET (inferior_ptid);
+  memset((char *)&ptrace_in, '\0', sizeof(ptrace_in));
+  memset((char *)&ptrace_out, '\0', sizeof(ptrace_out));
+  ptrace_in.pid = PIDGET(inferior_ptid);
 
-  status = net_ptrace_clnt_call (PTRACE_DETACH, &ptrace_in, &ptrace_out);
+  status = net_ptrace_clnt_call(PTRACE_DETACH, &ptrace_in, &ptrace_out);
   if (status == -1)
-    error (rpcerr);
+    error(rpcerr);
   if (ptrace_out.status == -1)
     {
       errno = ptrace_out.errno_num;
-      perror_with_name ("Detaching VxWorks process");
+      perror_with_name("Detaching VxWorks process");
     }
 
   inferior_ptid = null_ptid;
-  pop_target ();		/* go back to non-executing VxWorks connection */
+  pop_target();		/* go back to non-executing VxWorks connection */
+  
+  if (signal < 0) {
+    ; /* ??? */
+  }
 }
 
 /* vx_kill -- takes a running task and wipes it out.  */
@@ -1337,13 +1395,14 @@ vx_close (int quitting)
 /* A vxprocess target should be started via "run" not "target".  */
 /*ARGSUSED */
 static void
-vx_proc_open (char *name, int from_tty)
+vx_proc_open(const char *name ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
-  error ("Use the \"run\" command to start a VxWorks process.");
+  error(_("Use the \"run\" command to start a VxWorks process."));
 }
 
+/* */
 static void
-init_vx_ops (void)
+init_vx_ops(void)
 {
   vx_ops.to_shortname = "vxworks";
   vx_ops.to_longname = "VxWorks target memory via RPC over TCP/IP";
@@ -1392,21 +1451,21 @@ init_vx_run_ops (void)
   vx_run_ops.to_has_execution = 1;
   vx_run_ops.to_magic = OPS_MAGIC;
 }
-
-void
-_initialize_vx (void)
-{
-  init_vx_ops ();
-  add_target (&vx_ops);
-  init_vx_run_ops ();
-  add_target (&vx_run_ops);
 
-  add_show_from_set
-    (add_set_cmd ("vxworks-timeout", class_support, var_uinteger,
-		  (char *) &rpcTimeout.tv_sec,
-		  "Set seconds to wait for rpc calls to return.\n\
+extern void _initialize_vx(void); /* -Wmissing-prototypes */
+void
+_initialize_vx(void)
+{
+  init_vx_ops();
+  add_target(&vx_ops);
+  init_vx_run_ops();
+  add_target(&vx_run_ops);
+
+  add_show_from_set(add_set_cmd("vxworks-timeout", class_support, var_uinteger,
+				(char *)&rpcTimeout.tv_sec,
+				"Set seconds to wait for rpc calls to return.\n\
 Set the number of seconds to wait for rpc calls to return.", &setlist),
-     &showlist);
+		    &showlist);
 }
 
 /* EOF */

@@ -54,41 +54,41 @@ extern void report_transfer_performance (unsigned long, time_t, time_t);
 
 struct bit_field
   {
-    char *prefix;		/* string appearing before the value */
-    char *suffix;		/* string appearing after the value */
-    char *user_name;		/* name used by human when entering field value */
-    int length;			/* number of bits in the field */
-    int start;			/* starting (least significant) bit number of field */
+    const char *prefix;	 /* string appearing before the value */
+    const char *suffix;	 /* string appearing after the value */
+    const char *user_name; /* name used by human when entering field value */
+    int length;		 /* number of bits in the field */
+    int start;		/* starting (least significant) bit number of field */
   };
 
 /* Local functions for register manipulation.  */
 
-static void r3900_supply_register (char *regname, int regnamelen,
-				   char *val, int vallen);
-static void fetch_bad_vaddr (void);
-static unsigned long fetch_fields (struct bit_field *bf);
-static void fetch_bitmapped_register (int regno, struct bit_field *bf);
-static void r3900_fetch_registers (int regno);
-static void store_bitmapped_register (int regno, struct bit_field *bf);
-static void r3900_store_registers (int regno);
+static void r3900_supply_register(char *regname, int regnamelen,
+				  char *val, int vallen);
+static void fetch_bad_vaddr(void);
+static unsigned long fetch_fields(struct bit_field *bf);
+static void fetch_bitmapped_register(int regno, struct bit_field *bf);
+static void r3900_fetch_registers(int regno);
+static void store_bitmapped_register(int regno, struct bit_field *bf);
+static void r3900_store_registers(int regno);
 
 /* Local functions for fast binary loading.  */
 
-static void write_long (char *buf, long n);
-static void write_long_le (char *buf, long n);
-static int debug_readchar (int hex);
-static void debug_write (unsigned char *buf, int buflen);
-static void ignore_packet (void);
-static void send_packet (char type, unsigned char *buf, int buflen, int seq);
-static void process_read_request (unsigned char *buf, int buflen);
-static void count_section (bfd * abfd, asection * s,
-			   unsigned int *section_count);
-static void load_section (bfd * abfd, asection * s, unsigned int *data_count);
-static void r3900_load (char *filename, int from_tty);
+static void write_long(unsigned char *buf, long n);
+static void write_long_le(unsigned char *buf, long n);
+static int debug_readchar(int hex);
+static void debug_write(unsigned char *buf, int buflen);
+static void ignore_packet(void);
+static void send_packet(char type, const char *buf, int buflen, int seq);
+static void process_read_request(unsigned char *buf, int buflen);
+static void count_section(bfd *abfd, asection *s,
+			  unsigned int *section_count);
+static void load_section(bfd *abfd, asection *s, unsigned int *data_count);
+static void r3900_load(const char *filename, int from_tty);
 
 /* Miscellaneous local functions.  */
 
-static void r3900_open (char *args, int from_tty);
+static void r3900_open(const char *args, int from_tty);
 
 
 /* Pointers to static functions in monitor.c for fetching and storing
@@ -97,13 +97,13 @@ static void r3900_open (char *args, int from_tty);
    format, and those that can't be modified at all.  In those cases
    we have to use our own functions to fetch and store their values.  */
 
-static void (*orig_monitor_fetch_registers) (int regno);
-static void (*orig_monitor_store_registers) (int regno);
+static void (*orig_monitor_fetch_registers)(int regno);
+static void (*orig_monitor_store_registers)(int regno);
 
 /* Pointer to static function in monitor. for loading programs.
    We use this function for loading S-records via the serial link.  */
 
-static void (*orig_monitor_load) (char *file, int from_tty);
+static void (*orig_monitor_load)(const char *file, int from_tty);
 
 /* This flag is set if a fast ethernet download should be used.  */
 
@@ -114,7 +114,7 @@ static int ethernet = 0;
    different names than GDB does, and don't support all the registers
    either.  */
 
-static char *r3900_regnames[] =
+static const char *r3900_regnames[] =
 {
   "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
   "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15",
@@ -134,7 +134,7 @@ static char *r3900_regnames[] =
 
 static struct reg_entry
   {
-    char *name;
+    const char *name;
     int regno;
   }
 reg_table[] =
@@ -320,11 +320,11 @@ static struct bit_field status_fields[] =
   {"IalC=", " ", "ialc", 0, 9},
   {"DalC=", ">] ", "dalc", 0, 8},
 
-  {NULL, NULL, 0, 0}		/* end of table marker */
+  {NULL, NULL, NULL, 0, 0}		/* end of table marker */
 };
 
 
-#if 0				/* FIXME: Enable when we add support for modifying cache register.  */
+#if 0	/* FIXME: Enable when we add support for modifying cache register.  */
 static struct bit_field cache_fields[] =
 {
   /* Status register portion (dummy for parsing only) */
@@ -352,7 +352,7 @@ static struct bit_field cache_fields[] =
 
   {NULL, NULL, NULL, 0, 0}	/* end of table marker */
 };
-#endif
+#endif /* 0 */
 
 
 static struct bit_field cause_fields[] =
@@ -451,17 +451,19 @@ fetch_fields (struct bit_field *bf)
   return val;
 }
 
-
+/* */
 static void
-fetch_bitmapped_register (int regno, struct bit_field *bf)
+fetch_bitmapped_register(int regno, struct bit_field *bf)
 {
   unsigned long val;
   unsigned char regbuf[MAX_REGISTER_SIZE];
-  char *regname = NULL;
+  const char *regname = NULL;
 
-  if (regno >= sizeof (r3900_regnames) / sizeof (r3900_regnames[0]))
-    internal_error (__FILE__, __LINE__,
-                    _("fetch_bitmapped_register: regno out of bounds"));
+  if ((regno < 0)
+      || ((size_t)regno >= (sizeof(r3900_regnames)
+			    / sizeof(r3900_regnames[0]))))
+    internal_error(__FILE__, __LINE__,
+                   _("fetch_bitmapped_register: regno out of bounds"));
   else
     regname = r3900_regnames[regno];
 
@@ -498,17 +500,18 @@ r3900_fetch_registers (int regno)
 }
 
 
-/* Write the new value of the bitmapped register to the monitor.  */
-
+/* Write the new value of the bitmapped register to the monitor: */
 static void
-store_bitmapped_register (int regno, struct bit_field *bf)
+store_bitmapped_register(int regno, struct bit_field *bf)
 {
   unsigned long oldval, newval;
-  char *regname = NULL;
+  const char *regname = NULL;
 
-  if (regno >= sizeof (r3900_regnames) / sizeof (r3900_regnames[0]))
-    internal_error (__FILE__, __LINE__,
-                    _("fetch_bitmapped_register: regno out of bounds"));
+  if ((regno < 0)
+      || ((size_t)regno >= (sizeof(r3900_regnames)
+			    / sizeof(r3900_regnames[0]))))
+    internal_error(__FILE__, __LINE__,
+		   _("fetch_bitmapped_register: regno out of bounds"));
   else
     regname = r3900_regnames[regno];
 
@@ -550,52 +553,49 @@ r3900_store_registers (int regno)
 }
 
 
-/* Write a 4-byte integer to the buffer in big-endian order.  */
-
+/* Write a 4-byte integer to the buffer in big-endian order: */
 static void
-write_long (char *buf, long n)
+write_long(unsigned char *buf, long n)
 {
-  buf[0] = (n >> 24) & 0xff;
-  buf[1] = (n >> 16) & 0xff;
-  buf[2] = (n >> 8) & 0xff;
-  buf[3] = n & 0xff;
+  buf[0] = ((n >> 24) & 0xff);
+  buf[1] = ((n >> 16) & 0xff);
+  buf[2] = ((n >> 8) & 0xff);
+  buf[3] = (n & 0xff);
 }
 
 
-/* Write a 4-byte integer to the buffer in little-endian order.  */
-
+/* Write a 4-byte integer to the buffer in little-endian order: */
 static void
-write_long_le (char *buf, long n)
+write_long_le(unsigned char *buf, long n)
 {
-  buf[0] = n & 0xff;
-  buf[1] = (n >> 8) & 0xff;
-  buf[2] = (n >> 16) & 0xff;
-  buf[3] = (n >> 24) & 0xff;
+  buf[0] = (n & 0xff);
+  buf[1] = ((n >> 8) & 0xff);
+  buf[2] = ((n >> 16) & 0xff);
+  buf[3] = ((n >> 24) & 0xff);
 }
 
 
 /* Read a character from the monitor.  If remote debugging is on,
    print the received character.  If HEX is non-zero, print the
    character in hexadecimal; otherwise, print it in ASCII.  */
-
 static int
-debug_readchar (int hex)
+debug_readchar(int hex)
 {
   char buf[10];
-  int c = monitor_readchar ();
+  int c = monitor_readchar();
 
   if (remote_debug > 0)
     {
       if (hex)
-	sprintf (buf, "[%02x]", c & 0xff);
+	snprintf(buf, sizeof(buf), "[%02x]", (c & 0xff));
       else if (c == '\0')
-	strcpy (buf, "\\0");
+	strcpy(buf, "\\0");
       else
 	{
 	  buf[0] = c;
 	  buf[1] = '\0';
 	}
-      puts_debug ("Read -->", buf, "<--");
+      puts_debug("Read -->", buf, "<--");
     }
   return c;
 }
@@ -603,20 +603,19 @@ debug_readchar (int hex)
 
 /* Send a buffer of characters to the monitor.  If remote debugging is on,
    print the sent buffer in hex.  */
-
 static void
-debug_write (unsigned char *buf, int buflen)
+debug_write(unsigned char *buf, int buflen)
 {
   char s[10];
 
-  monitor_write (buf, buflen);
+  monitor_write((char *)buf, buflen);
 
   if (remote_debug > 0)
     {
       while (buflen-- > 0)
 	{
-	  sprintf (s, "[%02x]", *buf & 0xff);
-	  puts_debug ("Sent -->", s, "<--");
+	  snprintf(s, sizeof(buf), "[%02x]", (*buf & 0xff));
+	  puts_debug("Sent -->", s, "<--");
 	  buf++;
 	}
     }
@@ -677,7 +676,7 @@ ignore_packet (void)
  */
 
 static void
-send_packet (char type, unsigned char *buf, int buflen, int seq)
+send_packet(char type, const char *buf, int buflen, int seq)
 {
   unsigned char hdr[4];
   int len = buflen;
@@ -695,13 +694,13 @@ send_packet (char type, unsigned char *buf, int buflen, int seq)
   hdr[0] = PESC;
   hdr[1] = type;
   hdr[2] = len & 0xff;
-  hdr[3] = (len >> 8) & 0xff;
-  debug_write (hdr, sizeof (hdr));
+  hdr[3] = ((len >> 8) & 0xff);
+  debug_write(hdr, sizeof(hdr));
 
   if (len)
     {
-      /* Write the packet data.  */
-      debug_write (buf, buflen);
+      /* Write the packet data: */
+      debug_write((unsigned char *)buf, buflen);
 
       /* Write the sequence number if this is a 'p' packet.  */
       if (type == 'p')
@@ -762,33 +761,32 @@ process_read_request (unsigned char *buf, int buflen)
 
   for (i = chunk = 0, seq = 0; i < buflen; i += chunk, seq++)
     {
-      /* Don't send more than MAXPSIZE bytes at a time.  */
-      chunk = buflen - i;
+      /* Do NOT send more than MAXPSIZE bytes at a time: */
+      chunk = (buflen - i);
       if (chunk > MAXPSIZE)
 	chunk = MAXPSIZE;
 
-      /* Write a packet containing the number of bytes we are sending.  */
-      write_long_le (len, chunk);
-      send_packet ('p', len, sizeof (len), seq);
+      /* Write a packet containing the number of bytes we are sending: */
+      write_long_le(len, chunk);
+      send_packet('p', (const char *)len, sizeof(len), seq);
 
-      /* Write the data in raw form following the packet.  */
-      debug_write (&buf[i], chunk);
+      /* Write the data in raw form following the packet: */
+      debug_write(&buf[i], chunk);
 
-      /* Discard the ACK packet.  */
-      ignore_packet ();
+      /* Discard the ACK packet: */
+      ignore_packet();
     }
 
-  /* Send an "end of data" packet.  */
-  send_packet ('e', "", 0, 0);
+  /* Send an "end of data" packet: */
+  send_packet('e', "", 0, 0);
 }
 
 
-/* Count loadable sections (helper function for r3900_load).  */
-
+/* Count loadable sections (helper function for r3900_load): */
 static void
-count_section (bfd *abfd, asection *s, unsigned int *section_count)
+count_section(bfd *abfd, asection *s, unsigned int *section_count)
 {
-  if (s->flags & SEC_LOAD && bfd_section_size (abfd, s) != 0)
+  if ((s->flags & SEC_LOAD) && (bfd_section_size(abfd, s) != 0))
     (*section_count)++;
 }
 
@@ -864,10 +862,10 @@ load_section (bfd *abfd, asection *s, unsigned int *data_count)
  */
 
 static void
-r3900_load (char *filename, int from_tty)
+r3900_load(const char *filename, int from_tty)
 {
   bfd *abfd;
-  unsigned int data_count = 0;
+  unsigned int data_count = 0U;
   time_t start_time, end_time;	/* for timing of download */
   int section_count = 0;
   unsigned char buffer[8];
@@ -892,15 +890,15 @@ r3900_load (char *filename, int from_tty)
   /* Output the "vconsi" command to get the monitor in the communication
      state where it will accept a load command.  This will cause
      the monitor to emit a packet before each prompt, so ignore the packet.  */
-  monitor_printf ("vconsi\r");
-  ignore_packet ();
-  monitor_expect_prompt (NULL, 0);
+  monitor_printf("vconsi\r");
+  ignore_packet();
+  monitor_expect_prompt(NULL, 0);
 
   /* Output the "Rm" (load) command and respond to the subsequent "open"
      packet by sending an ACK packet.  */
-  monitor_printf ("Rm\r");
-  ignore_packet ();
-  send_packet ('a', "", 0, 0);
+  monitor_printf("Rm\r");
+  ignore_packet();
+  send_packet('a', "", 0, 0);
 
   /* Output the fast load header (number of sections and starting address).  */
   bfd_map_over_sections ((bfd *) abfd, (section_map_func) count_section,
@@ -957,16 +955,16 @@ r3900_load (char *filename, int from_tty)
    * The "bx" command clears all breakpoints.
  */
 
-static char *r3900_inits[] =
+static const char *r3900_inits[] =
 {"\r", "vconsx\r", "Xtr\r", "Xxr\r", "bx\r", NULL};
-static char *dummy_inits[] =
+static const char *dummy_inits[] =
 {NULL};
 
 static struct target_ops r3900_ops;
 static struct monitor_ops r3900_cmds;
 
 static void
-r3900_open (char *args, int from_tty)
+r3900_open(const char *args, int from_tty)
 {
   char buf[64];
   int i;
@@ -996,14 +994,13 @@ r3900_open (char *args, int from_tty)
   monitor_expect_prompt (NULL, 0);
 }
 
+extern void _initialize_r3900_rom(void); /* -Wmissing-prototypes */
 void
-_initialize_r3900_rom (void)
+_initialize_r3900_rom(void)
 {
-  r3900_cmds.flags = MO_NO_ECHO_ON_OPEN |
-    MO_ADDR_BITS_REMOVE |
-    MO_CLR_BREAK_USES_ADDR |
-    MO_GETMEM_READ_SINGLE |
-    MO_PRINT_PROGRAM_OUTPUT;
+  r3900_cmds.flags = (MO_NO_ECHO_ON_OPEN | MO_ADDR_BITS_REMOVE
+		      | MO_CLR_BREAK_USES_ADDR | MO_GETMEM_READ_SINGLE
+		      | MO_PRINT_PROGRAM_OUTPUT);
 
   r3900_cmds.init = dummy_inits;
   r3900_cmds.cont = "g\r";
@@ -1065,5 +1062,7 @@ Specify the serial device it is connected to (e.g. /dev/ttya).";
   orig_monitor_load = r3900_ops.to_load;
   r3900_ops.to_load = r3900_load;
 
-  add_target (&r3900_ops);
+  add_target(&r3900_ops);
 }
+
+/* EOF */

@@ -382,6 +382,10 @@ mips*-*-*)		gdb_target=embed
 			;;
 
 mn10200-*-*)		gdb_target=mn10200 ;;
+
+mn10300-*-linux*)	gdb_target=linux
+			gdb_sim=../sim/mn10300/libsim.a
+			;;
 mn10300-*-*)		gdb_target=mn10300
 			gdb_sim=../sim/mn10300/libsim.a
 			;;

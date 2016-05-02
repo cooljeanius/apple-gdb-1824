@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-26 02:49-0400\n"
+"POT-Creation-Date: 2016-05-02 15:45-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1077,7 +1077,7 @@ msgstr ""
 
 #. Should this be an internal error?  I guess so, it is reflecting
 #. an architectural limitation in the current design.
-#: arch-utils.c:308 m32c-tdep.c:2526 m32c-tdep.c:2546
+#: arch-utils.c:308 m32c-tdep.c:2532 m32c-tdep.c:2552
 msgid "No virtual frame pointer available"
 msgstr ""
 
@@ -3457,7 +3457,7 @@ msgstr ""
 #: exec.c:607 inflow.c:721 inflow.c:728 language.c:586 language.c:1016
 #: mdebugread.c:3591 monitor.c:378 monitor.c:406 monitor.c:1333 printcmd.c:272
 #: printcmd.c:521 psymtab.c:698 psymtab.c:716 remote-e7000.c:899
-#: remote-e7000.c:2165 remote-mips.c:2557 remote-rdp.c:498 remote-rdp.c:504
+#: remote-e7000.c:2165 remote-mips.c:2565 remote-rdp.c:498 remote-rdp.c:504
 #: remote-sds.c:731 symtab.c:2559 symtab.c:2575 target.c:702 target.c:788
 #: utils.c:2246 utils.c:3107 utils.c:3149 utils.c:3333 valprint.c:382
 msgid "failed internal consistency check"
@@ -3743,7 +3743,7 @@ msgstr ""
 
 #. APPLE LOCAL end do NOT query if we are an MI command
 #: cli/cli-cmds.c:320 cli/cli-script.c:1290 infcmd.c:1932 infcmd.c:1945
-#: inflow.c:617 symfile.c:1531 symfile.c:1953 symfile.c:2905
+#: inflow.c:617 symfile.c:1531 symfile.c:1953 symfile.c:2900
 msgid "Not confirmed."
 msgstr ""
 
@@ -4658,11 +4658,11 @@ msgstr ""
 #: cli/cli-script.c:1330 common/common-exceptions.c:148
 #: common/common-exceptions.c:165 common/common-exceptions.c:192
 #: complaints.c:297 exceptions.c:155 exceptions.c:172 exceptions.c:203
-#: exceptions.c:262 hppa-tdep.c:2801 hppa-tdep.c:2814 infcall.c:707
+#: exceptions.c:262 hppa-tdep.c:2825 hppa-tdep.c:2838 infcall.c:707
 #: infcmd.c:2195 infrun.c:1579 language.c:912 language.c:938 mi/mi-out.c:401
 #: mi/mi-out.c:422 mips-tdep.c:273 mips-tdep.c:334 mips-tdep.c:698
 #: mips-tdep.c:1195 mips-tdep.c:3411 mips-tdep.c:4299 mn10300-tdep.c:89
-#: reggroups.c:217 remote.c:4263 remote.c:4333 utils.c:950 utils.c:969
+#: reggroups.c:217 remote.c:4267 remote.c:4337 utils.c:950 utils.c:969
 msgid "bad switch"
 msgstr ""
 
@@ -5074,7 +5074,7 @@ msgstr ""
 msgid "hex_string_custom: insufficient space to store result"
 msgstr ""
 
-#: common/rsp-low.c:42 remote.c:2904
+#: common/rsp-low.c:42 remote.c:2908
 #, possible-c-format
 msgid "Reply contains invalid hex digit %d"
 msgstr ""
@@ -5465,7 +5465,7 @@ msgid "\"%s\": no core file handler recognizes format, using default"
 msgstr ""
 
 #: corelow.c:219 exec.c:184 exec.c:203 gdb_bfd.c:249 objfiles.c:1000
-#: solib.c:367 symfile.c:3583
+#: solib.c:367 symfile.c:3580
 #, possible-c-format
 msgid "cannot close \"%s\": %s"
 msgstr ""
@@ -5709,7 +5709,7 @@ msgstr ""
 msgid "CRIS software single step could not find a step target."
 msgstr ""
 
-#: cris-tdep.c:3925 irix5-nat.c:275 mips-linux-tdep.c:600
+#: cris-tdep.c:3925 irix5-nat.c:275 mips-linux-tdep.c:621
 msgid "wrong size gregset struct in core file"
 msgstr ""
 
@@ -6545,7 +6545,7 @@ msgstr ""
 #: darwin-nat.c:1520 gnu-nat.c:2116 inf-ptrace.c:194 inf-ttrace.c:706
 #: inftarg.c:194 linux-thread.c:1091 m3-nat.c:4057 mac-nat.c:146
 #: macosx/macosx-nat-inferior.c:1841 nto-procfs.c:521 procfs.c:3515
-#: remote-vx.c:1187 win32-nat.c:1590 windows-nat.c:1674
+#: remote-vx.c:1243 win32-nat.c:1590 windows-nat.c:1674
 msgid "process-id to attach"
 msgstr ""
 
@@ -7013,7 +7013,7 @@ msgstr ""
 msgid "File is not an object file\n"
 msgstr ""
 
-#: dsrec.c:130 dsrec.c:144 symfile.c:2509
+#: dsrec.c:130 dsrec.c:144 symfile.c:2504
 msgid "Canceled the download"
 msgstr ""
 
@@ -7030,21 +7030,21 @@ msgstr ""
 msgid "Print the contents of the internal dummy-frame stack."
 msgstr ""
 
-#: dve3900-rom.c:464 dve3900-rom.c:511
+#: dve3900-rom.c:466 dve3900-rom.c:514
 msgid "fetch_bitmapped_register: regno out of bounds"
 msgstr ""
 
-#: dve3900-rom.c:655
+#: dve3900-rom.c:654
 #, possible-c-format
 msgid "Packet header byte not found; %02x seen instead."
 msgstr ""
 
-#: dve3900-rom.c:888 m32r-rom.c:130
+#: dve3900-rom.c:886 m32r-rom.c:130
 #, possible-c-format
 msgid "Unable to open file %s."
 msgstr ""
 
-#: dve3900-rom.c:890 m32r-rom.c:132
+#: dve3900-rom.c:888 m32r-rom.c:132
 msgid "File is not an object file."
 msgstr ""
 
@@ -10363,39 +10363,39 @@ msgstr ""
 msgid "Cannot resolve plt stub at 0x%s."
 msgstr ""
 
-#: hppa-tdep.c:494
+#: hppa-tdep.c:489
 msgid "Internal error reading unwind information."
 msgstr ""
 
-#: hppa-tdep.c:1830
+#: hppa-tdep.c:1838
 #, possible-c-format
 msgid "Cannot read instruction at 0x%s."
 msgstr ""
 
-#: hppa-tdep.c:2323
+#: hppa-tdep.c:2342
 msgid "Requesting registers from null frame."
 msgstr ""
 
-#: hppa-tdep.c:2749
+#: hppa-tdep.c:2773
 #, possible-c-format
 msgid "Unsupported address size: %d"
 msgstr ""
 
-#: hppa-tdep.c:2855
+#: hppa-tdep.c:2882
 msgid "Print unwind table entry at given address."
 msgstr ""
 
 #. Debug this files internals.
-#: hppa-tdep.c:2859
+#: hppa-tdep.c:2886
 msgid ""
 "Set whether hppa target specific debugging information should be displayed."
 msgstr ""
 
-#: hppa-tdep.c:2861
+#: hppa-tdep.c:2888
 msgid "Show whether hppa target specific debugging information is displayed."
 msgstr ""
 
-#: hppa-tdep.c:2862
+#: hppa-tdep.c:2889
 msgid ""
 "This flag controls whether hppa target specific debugging information is\n"
 "displayed.  This information is particularly useful for debugging frame\n"
@@ -10879,7 +10879,7 @@ msgstr ""
 msgid "Can't insert breakpoint for slot numbers greater than 2."
 msgstr ""
 
-#: ia64-tdep.c:3056
+#: ia64-tdep.c:3060
 msgid ""
 "ia64_extract_struct_value_address called and cannot get struct value address"
 msgstr ""
@@ -13047,7 +13047,7 @@ msgstr ""
 msgid "TLS not supported on this target"
 msgstr ""
 
-#: lm32-tdep.c:367
+#: lm32-tdep.c:368
 msgid "lm32_store_return_value: type length too large."
 msgstr ""
 
@@ -13120,17 +13120,17 @@ msgstr ""
 msgid "test upload command."
 msgstr ""
 
-#: m68hc11-tdep.c:265
+#: m68hc11-tdep.c:267
 msgid ""
 "No frame soft register found in the symbol table.\n"
 "Stack backtrace will not work."
 msgstr ""
 
-#: m68hc11-tdep.c:1284
+#: m68hc11-tdep.c:1300
 msgid "return of value > 4 is not supported."
 msgstr ""
 
-#: m68hc11-tdep.c:1322 sh-tdep.c:1219
+#: m68hc11-tdep.c:1338 sh-tdep.c:1219
 msgid "bad size for return value"
 msgstr ""
 
@@ -15217,22 +15217,22 @@ msgstr ""
 msgid "Skipping putting symbol %s in with minimal symbols"
 msgstr ""
 
-#: mips-linux-tdep.c:256 mips-linux-tdep.c:547
+#: mips-linux-tdep.c:273 mips-linux-tdep.c:568
 #, possible-c-format
 msgid "Bogon register number %d."
 msgstr ""
 
-#: mips-linux-tdep.c:278 mips-linux-tdep.c:569
+#: mips-linux-tdep.c:295 mips-linux-tdep.c:590
 #, possible-c-format
 msgid "Unknowable register number %d."
 msgstr ""
 
-#: mips-linux-tdep.c:618
+#: mips-linux-tdep.c:640
 msgid "wrong size fpregset struct in core file"
 msgstr ""
 
-#: mips-linux-tdep.c:1208
-msgid "can't handle ABI"
+#: mips-linux-tdep.c:1241
+msgid "cannot handle ABI"
 msgstr ""
 
 #: mips-tdep.c:526
@@ -15441,7 +15441,7 @@ msgstr ""
 msgid "Cannot extract return value %d bytes long."
 msgstr ""
 
-#: mn10300-tdep.c:972
+#: mn10300-tdep.c:982
 msgid "mn10300_gdbarch_init: Unknown mn10300 variant"
 msgstr ""
 
@@ -15461,7 +15461,7 @@ msgid "Invalid hex digit %d"
 msgstr ""
 
 #. Polls shouldn't generate timeout errors
-#: monitor.c:458 monitor.c:533 remote-e7000.c:215 remote-st.c:108
+#: monitor.c:458 monitor.c:533 remote-e7000.c:215 remote-st.c:117
 #: remote-utils.c:242
 msgid "Timeout reading from remote system."
 msgstr ""
@@ -15483,7 +15483,7 @@ msgstr ""
 msgid "Magic number of monitor_ops struct wrong."
 msgstr ""
 
-#: monitor.c:773
+#: monitor.c:773 remote-array.c:569
 #, possible-c-format
 msgid ""
 "Use `target %s DEVICE-NAME' to use a serial port, or \n"
@@ -15544,7 +15544,7 @@ msgstr ""
 msgid "monitor target not open."
 msgstr ""
 
-#: monitor.c:2280
+#: monitor.c:2280 remote-array.c:1469
 #, possible-c-format
 msgid "Reply contains invalid hex digit 0x%x"
 msgstr ""
@@ -15690,15 +15690,15 @@ msgstr ""
 msgid "memory information"
 msgstr ""
 
-#: nto-tdep.c:379
+#: nto-tdep.c:400
 msgid "Set QNX NTO internal debugging."
 msgstr ""
 
-#: nto-tdep.c:380
+#: nto-tdep.c:401
 msgid "Show QNX NTO internal debugging."
 msgstr ""
 
-#: nto-tdep.c:381
+#: nto-tdep.c:402
 msgid ""
 "When non-zero, nto specific debug info is\n"
 "displayed. Different information is displayed\n"
@@ -15876,7 +15876,8 @@ msgstr ""
 msgid "Failed to connect to OCD."
 msgstr ""
 
-#: ocd.c:333 remote-es.c:487 remote-es.c:1953 remote-utils.c:437 remote.c:2859
+#: ocd.c:333 remote-es.c:487 remote-es.c:1953 remote-mips.c:1678
+#: remote-utils.c:437 remote.c:2863
 msgid "Argument given to \"detach\" when remotely debugging."
 msgstr ""
 
@@ -15897,12 +15898,12 @@ msgstr ""
 msgid "Register block size bad:  %d"
 msgstr ""
 
-#: ocd.c:760 remote-m32r-sdi.c:706 remote-m32r-sdi.c:712 remote-m32r-sdi.c:728
-#: remote.c:4485
+#: ocd.c:760 remote-m32r-sdi.c:715 remote-m32r-sdi.c:721 remote-m32r-sdi.c:737
+#: remote.c:4489
 msgid "Remote connection closed"
 msgstr ""
 
-#: ocd.c:762 remote.c:4488
+#: ocd.c:762 remote.c:4492
 msgid "Remote communication error"
 msgstr ""
 
@@ -16006,72 +16007,72 @@ msgstr ""
 msgid "Cannot perform conditional operation on vectors with different sizes"
 msgstr ""
 
-#: osabi.c:135
+#: osabi.c:138
 #, possible-c-format
 msgid ""
 "gdbarch_register_osabi: An attempt to register a handler for OS ABI \"%s\" "
 "for architecture %s was made.  The handler will not be registered"
 msgstr ""
 
-#: osabi.c:153
+#: osabi.c:156
 #, possible-c-format
 msgid ""
 "gdbarch_register_osabi: A handler for OS ABI \"%s\" has already been "
 "registered for architecture %s"
 msgstr ""
 
-#: osabi.c:261
+#: osabi.c:264
 #, possible-c-format
 msgid ""
 "gdbarch_lookup_osabi: invalid OS ABI (%d) from sniffer for architecture %s "
 "flavour %d"
 msgstr ""
 
-#: osabi.c:280
+#: osabi.c:283
 #, possible-c-format
 msgid ""
 "gdbarch_lookup_osabi: multiple %sspecific OS ABI match for architecture %s "
 "flavour %d: first match \"%s\", second match \"%s\""
 msgstr ""
 
-#: osabi.c:486
+#: osabi.c:489
 #, possible-c-format
 msgid "generic_elf_osabi_sniff_abi_tag_sections: unknown OS number %d"
 msgstr ""
 
-#: osabi.c:650
+#: osabi.c:653
 #, possible-c-format
 msgid "Invalid OS ABI \"%s\" passed to command handler."
 msgstr ""
 
-#: osabi.c:658
+#: osabi.c:661
 msgid "Updating OS ABI failed."
-msgstr ""
-
-#: osabi.c:680
-#, possible-c-format
-msgid "The current OS ABI is \"auto\" (currently \"%s\").\n"
 msgstr ""
 
 #: osabi.c:683
 #, possible-c-format
+msgid "The current OS ABI is \"auto\" (currently \"%s\").\n"
+msgstr ""
+
+#: osabi.c:686
+#, possible-c-format
 msgid "The current OS ABI is \"%s\".\n"
 msgstr ""
 
-#: osabi.c:687
+#: osabi.c:690
 #, possible-c-format
 msgid "The default OS ABI is \"%s\".\n"
 msgstr ""
 
-#: osabi.c:698
+#: osabi.c:715
 msgid "_initialize_gdb_osabi: gdb_osabi_names[] is inconsistent"
 msgstr ""
 
-#: osabi.c:707
+#: osabi.c:725
 msgid "Set OS ABI of target."
 msgstr ""
 
-#: osabi.c:708
+#: osabi.c:726
 msgid "Show OS ABI of target."
 msgstr ""
 
@@ -18035,39 +18036,78 @@ msgid ""
 "Takes an optional file parameter."
 msgstr ""
 
-#: remote-bug.c:980
+#: remote-array.c:234
+msgid "Bad argument passed to debuglogs(), needs valid debug level"
+msgstr ""
+
+#: remote-array.c:624 remote-array.c:817 remote-array.c:874 remote-array.c:950
+#: remote-array.c:1010
+msgid "Failed to transmit packet\n"
+msgstr ""
+
+#: remote-array.c:819 remote-array.c:876 remote-array.c:952
+#: remote-array.c:1014
+msgid "Failed to receive packet\n"
+msgstr ""
+
+#: remote-array.c:1018
+msgid "Got no data in the GDB packet\n"
+msgstr ""
+
+#: remote-array.c:1185
+msgid "make_gdb_packet(): too much data\n"
+msgstr ""
+
+#. bonk
+#: remote-bug.c:836
+msgid "reading s-records."
+msgstr ""
+
+#: remote-bug.c:841
+msgid "srec out of memory range."
+msgstr ""
+
+#: remote-bug.c:844
+msgid "srec out of sequence."
+msgstr ""
+
+#: remote-bug.c:854
+msgid "bad s-rec checksum"
+msgstr ""
+
+#: remote-bug.c:1009
 msgid ""
 "Set the number of bytes represented in each S-record.\n"
 "This affects the communication protocol with the remote target."
 msgstr ""
 
-#: remote-bug.c:986
+#: remote-bug.c:1015
 msgid ""
 "Set the number of retries for shipping S-records.\n"
 "This affects the communication protocol with the remote target."
 msgstr ""
 
-#: remote-bug.c:995
+#: remote-bug.c:1024
 msgid ""
 "Set the number of bytes in an S-record frame.\n"
 "This affects the communication protocol with the remote target."
 msgstr ""
 
-#: remote-bug.c:1002
+#: remote-bug.c:1031
 msgid ""
 "Set number of S-record to send before deliberately flubbing a checksum.\n"
 "Zero means flub none at all.  This affects the communication protocol\n"
 "with the remote target."
 msgstr ""
 
-#: remote-bug.c:1008
+#: remote-bug.c:1037
 msgid ""
 "Set number of seconds to sleep after an S-record for a possible error "
 "message to arrive.\n"
 "This affects the communication protocol with the remote target."
 msgstr ""
 
-#: remote-bug.c:1014
+#: remote-bug.c:1043
 msgid ""
 "Set echo-verification.\n"
 "When on, use verification by echo when downloading S-records.  This is\n"
@@ -18086,7 +18126,7 @@ msgstr ""
 msgid "Cannot pass arguments to remote E7000DEBUG process"
 msgstr ""
 
-#: remote-e7000.c:385 remote-m32r-sdi.c:318 remote-st.c:241 remote-utils.c:497
+#: remote-e7000.c:385 remote-m32r-sdi.c:322 remote-st.c:250 remote-utils.c:497
 msgid "No executable file specified"
 msgstr ""
 
@@ -18124,12 +18164,12 @@ msgstr ""
 msgid "Memory read error"
 msgstr ""
 
-#: remote-e7000.c:1581 symfile.c:2196 tracefile.c:328
+#: remote-e7000.c:1581 symfile.c:2191 tracefile.c:328
 #, possible-c-format
 msgid "unknown option `%s'"
 msgstr ""
 
-#: remote-e7000.c:1596 remote-m32r-sdi.c:1263 symfile.c:2613
+#: remote-e7000.c:1596 remote-m32r-sdi.c:1273 symfile.c:2608
 #, possible-c-format
 msgid "\"%s\" is not an object file: %s"
 msgstr ""
@@ -18214,104 +18254,131 @@ msgstr ""
 msgid "Show if the host system(3) call is allowed for the target."
 msgstr ""
 
-#: remote-m32r-sdi.c:315
+#: remote-m32r-sdi.c:319
 msgid "Cannot pass arguments to remote STDEBUG process"
 msgstr ""
 
-#: remote-m32r-sdi.c:377
+#: remote-m32r-sdi.c:384
 msgid "Connection refused."
 msgstr ""
 
-#: remote-m32r-sdi.c:380 remote-m32r-sdi.c:383
+#: remote-m32r-sdi.c:387 remote-m32r-sdi.c:390
 msgid "Cannot connect to SDI target."
 msgstr ""
 
-#: remote-m32r-sdi.c:1181
+#: remote-m32r-sdi.c:1190
 msgid "Too many breakpoints"
 msgstr ""
 
-#: remote-m32r-sdi.c:1248
+#: remote-m32r-sdi.c:1258
 #, possible-c-format
 msgid "Unknown option `%s'"
 msgstr ""
 
-#: remote-m32r-sdi.c:1313
+#. errno should be either EFAULT or EPERM:
+#: remote-m32r-sdi.c:1279 remote-m32r-sdi.c:1371
+#, possible-c-format
+msgid "Call to gettimeofday() failed with errno %d (%s).\n"
+msgstr ""
+
+#: remote-m32r-sdi.c:1328
 #, possible-c-format
 msgid "Error while downloading %s section."
 msgstr ""
 
-#: remote-m32r-sdi.c:1428
+#: remote-m32r-sdi.c:1449
 msgid "Too many watchpoints"
 msgstr ""
 
-#: remote-m32r-sdi.c:1622
+#: remote-m32r-sdi.c:1646
 msgid "Reset SDI connection."
 msgstr ""
 
-#: remote-m32r-sdi.c:1625
+#: remote-m32r-sdi.c:1649
 msgid "Show status of SDI connection."
 msgstr ""
 
-#: remote-m32r-sdi.c:1628
+#: remote-m32r-sdi.c:1652
 msgid "Debug M32R/Chaos."
 msgstr ""
 
-#: remote-m32r-sdi.c:1631
+#: remote-m32r-sdi.c:1655
 msgid "Use debug DMA mem access."
 msgstr ""
 
-#: remote-m32r-sdi.c:1633
+#: remote-m32r-sdi.c:1657
 msgid "Use mon code mem access."
 msgstr ""
 
-#: remote-m32r-sdi.c:1636
+#: remote-m32r-sdi.c:1660
 msgid "Set breakpoints by IB break."
 msgstr ""
 
-#: remote-m32r-sdi.c:1638
+#: remote-m32r-sdi.c:1662
 msgid "Set breakpoints by dbt."
 msgstr ""
 
-#: remote-mips.c:1218
+#: remote-mips.c:1221
 msgid "mips_request: Trying to send command before reply"
 msgstr ""
 
-#: remote-mips.c:1229
+#: remote-mips.c:1233
 msgid "mips_request: Trying to get reply before command"
 msgstr ""
 
-#: remote-mips.c:3387
+#: remote-mips.c:1488
+msgid ""
+"To open a MIPS remote debugging connection, you need to specify what serial\n"
+"device is attached to the target board (e.g., /dev/ttya).\n"
+"If you want to use TFTP to download to the board, specify the name of a\n"
+"temporary file to be used by GDB for downloads as the second argument.\n"
+"This filename must be in the form host:filename, where host is the name\n"
+"of the host running the TFTP server, and the file must be readable by the\n"
+"world.  If the local name of the temporary file differs from the name as\n"
+"seen from the board via TFTP, specify that name as the third parameter.\n"
+msgstr ""
+
+#: remote-mips.c:2453
+#, possible-c-format
+msgid "common_breakpoint: Attempt to clear bogus breakpoint at %s\n"
+msgstr ""
+
+#: remote-mips.c:3296
+msgid "missing deprecated_register_valid.\n"
+msgstr ""
+
+#: remote-mips.c:3406
 msgid "Set timeout in seconds for remote MIPS serial I/O."
 msgstr ""
 
-#: remote-mips.c:3388
+#: remote-mips.c:3407
 msgid "Show timeout in seconds for remote MIPS serial I/O."
 msgstr ""
 
-#: remote-mips.c:3395
+#: remote-mips.c:3414
 msgid "Set retransmit timeout in seconds for remote MIPS serial I/O."
 msgstr ""
 
-#: remote-mips.c:3396
+#: remote-mips.c:3415
 msgid "Show retransmit timeout in seconds for remote MIPS serial I/O."
 msgstr ""
 
-#: remote-mips.c:3397
+#: remote-mips.c:3416
 msgid ""
 "This is the number of seconds to wait for an acknowledgement to a packet\n"
 "before resending the packet."
 msgstr ""
 
-#: remote-mips.c:3405
+#: remote-mips.c:3424
 msgid "Set the maximum number of characters to ignore when scanning for a SYN."
 msgstr ""
 
-#: remote-mips.c:3406
+#: remote-mips.c:3425
 msgid ""
 "Show the maximum number of characters to ignore when scanning for a SYN."
 msgstr ""
 
-#: remote-mips.c:3407
+#: remote-mips.c:3426
 msgid ""
 "This is the maximum number of characters GDB will ignore when trying to\n"
 "synchronize with the remote system.  A value of -1 means that there is no\n"
@@ -18319,44 +18386,44 @@ msgid ""
 "ignored.)"
 msgstr ""
 
-#: remote-mips.c:3417
+#: remote-mips.c:3436
 msgid "Set the prompt that GDB expects from the monitor."
 msgstr ""
 
-#: remote-mips.c:3418
+#: remote-mips.c:3437
 msgid "Show the prompt that GDB expects from the monitor."
 msgstr ""
 
-#: remote-mips.c:3425
+#: remote-mips.c:3444
 msgid "Set printing of monitor warnings."
 msgstr ""
 
-#: remote-mips.c:3426
+#: remote-mips.c:3445
 msgid "Show printing of monitor warnings."
 msgstr ""
 
-#: remote-mips.c:3427
+#: remote-mips.c:3446
 msgid ""
 "When enabled, monitor warnings about hardware breakpoints will be displayed."
 msgstr ""
 
-#: remote-mips.c:3434
+#: remote-mips.c:3453
 msgid "Send a packet to PMON (must be in debug mode)."
 msgstr ""
 
-#: remote-mips.c:3436
+#: remote-mips.c:3455
 msgid ""
 "Set zeroing of upper 32 bits of 64-bit addresses when talking to PMON "
 "targets."
 msgstr ""
 
-#: remote-mips.c:3437
+#: remote-mips.c:3456
 msgid ""
 "Show zeroing of upper 32 bits of 64-bit addresses when talking to PMON "
 "targets."
 msgstr ""
 
-#: remote-mips.c:3438
+#: remote-mips.c:3457
 msgid "Use \"on\" to enable the masking and \"off\" to disable it."
 msgstr ""
 
@@ -18508,37 +18575,37 @@ msgstr ""
 msgid "Send a command to the simulator."
 msgstr ""
 
-#: remote-st.c:111
+#: remote-st.c:120
 msgid "remote-st2000"
 msgstr ""
 
-#: remote-st.c:193 remote-utils.c:359
+#: remote-st.c:202 remote-utils.c:359
 msgid "Invalid hex digit from remote system."
 msgstr ""
 
-#: remote-st.c:238
+#: remote-st.c:247
 msgid "Can't pass arguments to remote STDEBUG process"
 msgstr ""
 
-#: remote-st.c:282
+#: remote-st.c:291
 msgid ""
 "Bad arguments.  Usage: target st2000 <device> <speed>\n"
 "or target st2000 <host> <port>\n"
 msgstr ""
 
-#: remote-st.c:654 remote-st.c:689
+#: remote-st.c:667 remote-st.c:703
 msgid "st2000 target not open."
 msgstr ""
 
-#: remote-st.c:657
+#: remote-st.c:670
 msgid "Missing command."
 msgstr ""
 
-#: remote-st.c:800
+#: remote-st.c:812
 msgid "Send a command to the STDBUG monitor."
 msgstr ""
 
-#: remote-st.c:801
+#: remote-st.c:813
 msgid ""
 "Connect the terminal directly up to the STDBUG command monitor.\n"
 "Use <CR>~. or <CR>~^D to break out."
@@ -18585,11 +18652,50 @@ msgstr ""
 msgid "Remote device not open"
 msgstr ""
 
-#: remote-vx.c:1079
+#: remote-vx.c:265
+msgid "You must specify a function name to run, and arguments if any"
+msgstr ""
+
+#: remote-vx.c:272
+msgid "Cannot create process on remote target machine"
+msgstr ""
+
+#: remote-vx.c:750
+msgid "The load command takes a file name"
+msgstr ""
+
+#. FIXME: Probably should include hostname here in quotes.
+#. For example if the user types "target vxworks vx960 " it should
+#. say "Invalid host `vx960 '." not just "Invalid hostname".
+#: remote-vx.c:945
+msgid "Invalid hostname.  Failed to find remote host address."
+msgstr ""
+
+#: remote-vx.c:967
+msgid "Failed to connect to remote target."
+msgstr ""
+
+#: remote-vx.c:1138
 msgid "target machine name"
 msgstr ""
 
-#: remote.c:600 remote.c:5550 remote.c:5807
+#: remote-vx.c:1185
+msgid "Cannot retrieve boot file name from target machine."
+msgstr ""
+
+#: remote-vx.c:1190
+msgid "Cannot read loaded modules from target machine"
+msgstr ""
+
+#: remote-vx.c:1293
+msgid "Argument given to VxWorks \"detach\"."
+msgstr ""
+
+#: remote-vx.c:1400
+msgid "Use the \"run\" command to start a VxWorks process."
+msgstr ""
+
+#: remote.c:600 remote.c:5551 remote.c:5808
 msgid "command can only be used with remote target"
 msgstr ""
 
@@ -18672,28 +18778,28 @@ msgstr ""
 msgid "Enabled packet %s (%s) not recognized by stub"
 msgstr ""
 
-#: remote.c:1982
+#: remote.c:1986
 msgid "Incomplete response to threadinfo request."
 msgstr ""
 
 #. This is an answer to a different request.
-#: remote.c:1985
+#: remote.c:1989
 msgid "ERROR RMT Thread info mismatch."
 msgstr ""
 
-#: remote.c:1999
+#: remote.c:2003
 msgid "ERROR RMT: threadinfo tag mismatch."
 msgstr ""
 
-#: remote.c:2007
+#: remote.c:2011
 msgid "ERROR RMT: length of threadid is not 16."
 msgstr ""
 
-#: remote.c:2022
+#: remote.c:2026
 msgid "ERROR RMT: 'exists' length too long."
 msgstr ""
 
-#: remote.c:2046
+#: remote.c:2050
 msgid "ERROR RMT: unknown thread info tag."
 msgstr ""
 
@@ -18705,150 +18811,150 @@ msgstr ""
 #. *  * exit
 #. *  * wait for packet, then exit
 #.
-#: remote.c:2147
+#: remote.c:2151
 msgid "HMM: threadlist did not echo arg thread, dropping it."
 msgstr ""
 
-#: remote.c:2154
+#: remote.c:2158
 msgid "RMT ERROR : failed to get remote thread list."
 msgstr ""
 
-#: remote.c:2162
+#: remote.c:2166
 msgid "RMT ERROR: threadlist response longer than requested."
 msgstr ""
 
-#: remote.c:2199
+#: remote.c:2203
 msgid "Remote fetch threadlist -infinite loop-."
 msgstr ""
 
 #. paranoia
-#: remote.c:2283
+#: remote.c:2287
 msgid "Command can only be used when connected to the remote target."
 msgstr ""
 
-#: remote.c:2341
+#: remote.c:2345
 msgid "remote_threads_extra_info"
 msgstr ""
 
 #. Error of some sort:
-#: remote.c:2435 remote.c:3399 remote.c:3622 remote.c:4506
+#: remote.c:2439 remote.c:3403 remote.c:3626 remote.c:4510
 #, possible-c-format
 msgid "Remote failure reply: %s"
 msgstr ""
 
-#: remote.c:2476
+#: remote.c:2480
 #, possible-c-format
 msgid "Malformed response to offset query, %s"
 msgstr ""
 
-#: remote.c:2665
+#: remote.c:2669
 msgid ""
 "The remote protocol may be unreliable over UDP.\n"
 "Some events may be lost, rendering further debugging impossible."
 msgstr ""
 
-#: remote.c:2681
+#: remote.c:2685
 msgid ""
 "To open a remote debug connection, you need to specify what\n"
 "serial device is attached to the remote system\n"
 "(e.g. /dev/ttyS0, /dev/ttya, COM1, etc.)."
 msgstr ""
 
-#: remote.c:2842
+#: remote.c:2846
 msgid "Skipping exhaustive search for kernel in this configuration."
 msgstr ""
 
-#: remote.c:2879
+#: remote.c:2883
 msgid "Argument given to \"disconnect\" when remotely debugging."
 msgstr ""
 
-#: remote.c:3446 remote.c:3665
+#: remote.c:3450 remote.c:3669
 #, possible-c-format
 msgid ""
 "Malformed packet(a) (missing colon): %s\n"
 "Packet: '%s'\n"
 msgstr ""
 
-#: remote.c:3502 remote.c:3696
+#: remote.c:3506 remote.c:3700
 #, possible-c-format
 msgid ""
 "Malformed packet(b) (missing colon): %s\n"
 "Packet: '%s'\n"
 msgstr ""
 
-#: remote.c:3507
+#: remote.c:3511
 #, possible-c-format
 msgid ""
 "Remote sent bad register number %s: %s\n"
 "Packet: '%s'\n"
 msgstr ""
 
-#: remote.c:3517 remote.c:3711 remote.c:3934
+#: remote.c:3521 remote.c:3715 remote.c:3938
 #, possible-c-format
 msgid "Remote reply is too short: %s"
 msgstr ""
 
-#: remote.c:3523 remote.c:3716
+#: remote.c:3527 remote.c:3720
 #, possible-c-format
 msgid ""
 "Remote register badly formatted: %s\n"
 "here: %s"
 msgstr ""
 
-#: remote.c:3573 remote.c:3769
+#: remote.c:3577 remote.c:3773
 #, possible-c-format
 msgid "Invalid remote reply: %s"
 msgstr ""
 
-#: remote.c:3701
+#: remote.c:3705
 #, possible-c-format
 msgid ""
 "Remote sent bad register number %ld: %s\n"
 "Packet: '%s'\n"
 msgstr ""
 
-#: remote.c:3821
+#: remote.c:3825
 msgid "fetch_register_using_p: early buf termination"
 msgstr ""
 
-#: remote.c:3850
+#: remote.c:3854
 msgid ""
 "Attempt to fetch a non G-packet register when this remote.c does not support "
 "the p-packet."
 msgstr ""
 
-#: remote.c:3861
+#: remote.c:3865
 msgid "Protocol error: p packet not recognized by stub"
 msgstr ""
 
-#: remote.c:3918
+#: remote.c:3922
 #, possible-c-format
 msgid "Remote reply is of odd length: %s"
 msgstr ""
 
-#: remote.c:4040
+#: remote.c:4044
 msgid "Protocol error: P packet not recognized by stub"
 msgstr ""
 
-#: remote.c:4261 remote.c:4331
+#: remote.c:4265 remote.c:4335
 msgid "remote_write_bytes: bad internal state"
 msgstr ""
 
-#: remote.c:4267
+#: remote.c:4271
 msgid "minumum packet size too small to write data"
 msgstr ""
 
-#: remote.c:4585
+#: remote.c:4589
 msgid "putpkt: write failed"
 msgstr ""
 
-#: remote.c:4795
+#: remote.c:4800
 #, possible-c-format
 msgid "Repeat count %d too large for buffer: "
 msgstr ""
 
 #. APPLE LOCAL: More explicit error message.
-#: remote.c:4892
+#: remote.c:4894
 msgid ""
 "Watchdog has expired.  Remote device was disconnected?  Debugging session "
 "terminated."
@@ -18856,161 +18962,161 @@ msgstr ""
 
 #. We have tried hard enough, and just can't receive the packet.
 #. Give up.
-#: remote.c:4948
+#: remote.c:4949
 msgid "Ignoring packet error, continuing...\n"
 msgstr ""
 
-#: remote.c:5259
+#: remote.c:5260
 #, possible-c-format
 msgid "hw_bp_to_z: bad watchpoint type %d"
 msgstr ""
 
-#: remote.c:5273
+#: remote.c:5274
 #, possible-c-format
 msgid "Cannot set hardware watchpoints without the '%s' (%s) packet."
 msgstr ""
 
-#: remote.c:5295
+#: remote.c:5296
 msgid "remote_insert_watchpoint: reached end of function"
 msgstr ""
 
-#: remote.c:5309
+#: remote.c:5310
 #, possible-c-format
 msgid "Cannot clear hardware watchpoints without the '%s' (%s) packet."
 msgstr ""
 
-#: remote.c:5330
+#: remote.c:5331
 msgid "remote_remove_watchpoint: reached end of function"
 msgstr ""
 
-#: remote.c:5400
+#: remote.c:5401
 #, possible-c-format
 msgid "Cannot set hardware breakpoint without the '%s' (%s) packet."
 msgstr ""
 
-#: remote.c:5424
+#: remote.c:5425
 msgid "remote_insert_hw_breakpoint: reached end of function"
 msgstr ""
 
-#: remote.c:5442
+#: remote.c:5443
 #, possible-c-format
 msgid "Cannot clear hardware breakpoint without the '%s' (%s) packet."
 msgstr ""
 
-#: remote.c:5466
+#: remote.c:5467
 msgid "remote_remove_hw_breakpoint: reached end of function"
 msgstr ""
 
-#: remote.c:5482
+#: remote.c:5483
 msgid "Switching to remote protocol\n"
 msgstr ""
 
-#: remote.c:5547
+#: remote.c:5548
 msgid "command cannot be used without an exec file"
 msgstr ""
 
-#: remote.c:5581
+#: remote.c:5582
 #, possible-c-format
 msgid "target memory fault, section %s, range 0x%s -- 0x%s"
 msgstr ""
 
-#: remote.c:5584
+#: remote.c:5585
 msgid "remote target does not support this operation"
 msgstr ""
 
-#: remote.c:5602
+#: remote.c:5603
 msgid ""
 "One or more sections of the remote executable does not match\n"
 "the loaded file\n"
 msgstr ""
 
-#: remote.c:5605
+#: remote.c:5606
 #, possible-c-format
 msgid "No loaded section named '%s'.\n"
 msgstr ""
 
-#: remote.c:5709
+#: remote.c:5710
 msgid "remote query is only available after target open"
 msgstr ""
 
-#: remote.c:5751
+#: remote.c:5752
 msgid "remote rcmd is only available after target open"
 msgstr ""
 
 #. misc
-#: remote.c:5762
+#: remote.c:5763
 #, possible-c-format
 msgid "\"monitor\" command ``%s'' is too long."
 msgstr ""
 
-#: remote.c:5768
+#: remote.c:5769
 msgid "Communication problem with target."
 msgstr ""
 
-#: remote.c:5777 tracepoint.c:207 tracepoint.c:1758
+#: remote.c:5778 tracepoint.c:207 tracepoint.c:1758
 msgid "Target does not support this command."
 msgstr ""
 
-#: remote.c:5788
+#: remote.c:5789
 msgid "Protocol error with Rcmd"
 msgstr ""
 
-#: remote.c:5810
+#: remote.c:5811
 msgid "remote-packet command requires packet text as argument"
 msgstr ""
 
-#: remote.c:5857
+#: remote.c:5858
 msgid "Remote threadset test\n"
 msgstr ""
 
-#: remote.c:5964
+#: remote.c:5965
 msgid "Fetch and print the remote list of thread identifiers, one pkt only"
 msgstr ""
 
-#: remote.c:5967
+#: remote.c:5968
 msgid "Fetch and display info about one thread"
 msgstr ""
 
-#: remote.c:5969
+#: remote.c:5970
 msgid "Test setting to a different thread"
 msgstr ""
 
-#: remote.c:5971
+#: remote.c:5972
 msgid "Iterate through updating all remote thread info"
 msgstr ""
 
-#: remote.c:5973
+#: remote.c:5974
 msgid " Remote thread alive test "
 msgstr ""
 
-#: remote.c:6024
+#: remote.c:6025
 msgid "Remote target doesn't support qGetTLSAddr packet"
 msgstr ""
 
-#: remote.c:6027
+#: remote.c:6028
 msgid "Remote target failed to process qGetTLSAddr request"
 msgstr ""
 
-#: remote.c:6031
+#: remote.c:6032
 msgid "TLS not supported or disabled on this target"
 msgstr ""
 
-#: remote.c:6144
+#: remote.c:6145
 msgid "Calling remote_async when async is masked"
 msgstr ""
 
-#: remote.c:6622
+#: remote.c:6623
 msgid ""
 "an executable must be specified before attaching to a remote-macosx target"
 msgstr ""
 
-#: remote.c:6850
+#: remote.c:6851
 msgid "Switching to remote-macosx protocol\n"
 msgstr ""
 
 #. set/show remote ...
 #. allow-unknown
-#: remote.c:6901 remote.c:6907
+#: remote.c:6902 remote.c:6908
 msgid ""
 "Remote protocol specific variables\n"
 "Configure various remote-protocol specific variables such as\n"
@@ -19018,13 +19124,13 @@ msgid ""
 msgstr ""
 
 #. allow-unknown
-#: remote.c:6914
+#: remote.c:6915
 msgid ""
 "Compare section data on target to the exec file.\n"
 "Argument is a single section name (default: all loaded sections)."
 msgstr ""
 
-#: remote.c:6919
+#: remote.c:6920
 msgid ""
 "Send an arbitrary packet to a remote target.\n"
 "   maintenance packet TEXT\n"
@@ -19034,28 +19140,28 @@ msgid ""
 "terminating `#' character and checksum."
 msgstr ""
 
-#: remote.c:6928
+#: remote.c:6929
 msgid "Set whether to send break if interrupted."
 msgstr ""
 
-#: remote.c:6929
+#: remote.c:6930
 msgid "Show whether to send break if interrupted."
 msgstr ""
 
-#: remote.c:6930
+#: remote.c:6931
 msgid "If set, a break, instead of a cntrl-c, is sent to the remote target."
 msgstr ""
 
 #. Install commands for configuring memory read/write packets.
-#: remote.c:6937
+#: remote.c:6938
 msgid "Set the maximum number of bytes per memory write packet (deprecated)."
 msgstr ""
 
-#: remote.c:6940
+#: remote.c:6941
 msgid "Show the maximum number of bytes per memory write packet (deprecated)."
 msgstr ""
 
-#: remote.c:6944
+#: remote.c:6945
 msgid ""
 "Set the maximum remote packet size in bytes (must be set prior to target\n"
 "remote connection).\n"
@@ -19065,11 +19171,11 @@ msgid ""
 "value."
 msgstr ""
 
-#: remote.c:6950
+#: remote.c:6951
 msgid "Show the maximum remote packet size in bytes."
 msgstr ""
 
-#: remote.c:6954
+#: remote.c:6955
 msgid ""
 "Set the maximum number of bytes per memory-write packet.\n"
 "Specify the number of bytes in a packet or 0 (zero) for the\n"
@@ -19078,7 +19184,7 @@ msgid ""
 "further restriction and ``limit'' to enable that restriction."
 msgstr ""
 
-#: remote.c:6962
+#: remote.c:6963
 msgid ""
 "Set the maximum number of bytes per memory-read packet.\n"
 "Specify the number of bytes in a packet or 0 (zero) for the\n"
@@ -19087,65 +19193,65 @@ msgid ""
 "further restriction and ``limit'' to enable that restriction."
 msgstr ""
 
-#: remote.c:6971
+#: remote.c:6972
 msgid "Show the maximum number of bytes per memory-write packet."
 msgstr ""
 
-#: remote.c:6975
+#: remote.c:6976
 msgid "Show the maximum number of bytes per memory-read packet."
 msgstr ""
 
-#: remote.c:6979
+#: remote.c:6980
 msgid "Set the maximum number of target hardware watchpoints."
 msgstr ""
 
-#: remote.c:6980
+#: remote.c:6981
 msgid "Show the maximum number of target hardware watchpoints."
 msgstr ""
 
-#: remote.c:6981 remote.c:6988
+#: remote.c:6982 remote.c:6989
 msgid "Specify a negative limit for unlimited."
 msgstr ""
 
-#: remote.c:6986
+#: remote.c:6987
 msgid "Set the maximum number of target hardware breakpoints."
 msgstr ""
 
-#: remote.c:6987
+#: remote.c:6988
 msgid "Show the maximum number of target hardware breakpoints."
 msgstr ""
 
-#: remote.c:6994
+#: remote.c:6995
 msgid "Set the maximum size of the address (in bits) in a memory packet."
 msgstr ""
 
-#: remote.c:6995
+#: remote.c:6996
 msgid "Show the maximum size of the address (in bits) in a memory packet."
 msgstr ""
 
-#: remote.c:7086
+#: remote.c:7087
 msgid "Set use of remote protocol `Z' packets"
 msgstr ""
 
-#: remote.c:7087
+#: remote.c:7088
 msgid "Show use of remote protocol `Z' packets "
 msgstr ""
 
-#: remote.c:7088
+#: remote.c:7089
 msgid ""
 "When set, GDB will attempt to use the remote breakpoint and watchpoint\n"
 "packets."
 msgstr ""
 
-#: remote.c:7100
+#: remote.c:7101
 msgid "Set use of remote protocol without ACK packets, if available"
 msgstr ""
 
-#: remote.c:7101
+#: remote.c:7102
 msgid "Show use of remote protocol without ACK packets"
 msgstr ""
 
-#: remote.c:7102
+#: remote.c:7103
 msgid ""
 "When set, GDB will attempt to communicate with the remote stub without "
 "ACKing packets.\n"
@@ -19826,12 +19932,12 @@ msgstr ""
 msgid "Show info on Solaris user threads."
 msgstr ""
 
-#: solib-aix.c:137 solib-target.c:67
+#: solib-aix.c:137 solib-target.c:78
 msgid ""
 "Can not parse XML library list; XML support was disabled at compile time"
 msgstr ""
 
-#: solib-aix.c:200 solib-target.c:155
+#: solib-aix.c:200 solib-target.c:166
 #, possible-c-format
 msgid "Library list has unsupported version \"%s\""
 msgstr ""
@@ -19919,7 +20025,7 @@ msgstr ""
 msgid "Could not find main executable in map file"
 msgstr ""
 
-#: solib-aix5.c:801 solib-dsbt.c:1005 solib-frv.c:951 solib-irix.c:423
+#: solib-aix5.c:801 solib-dsbt.c:1005 solib-frv.c:951 solib-irix.c:414
 #: solib-sunos.c:766 solib-svr4.c:1202
 msgid "shared library handler failed to enable breakpoint"
 msgstr ""
@@ -20103,20 +20209,20 @@ msgid ""
 "chatr +dbg enable a.out"
 msgstr ""
 
-#: solib-irix.c:221
+#: solib-irix.c:222
 msgid "Unable to fetch shared library obj_info or obj_list info."
 msgstr ""
 
-#: solib-irix.c:449 solib-sunos.c:801
+#: solib-irix.c:438 solib-sunos.c:801
 msgid "shared library handler failed to disable breakpoint"
 msgstr ""
 
-#: solib-irix.c:542 solib-som.c:610 solib-svr4.c:713
+#: solib-irix.c:531 solib-sunos.c:455 solib-svr4.c:637
 #, possible-c-format
-msgid "Can't read pathname for load map: %s."
+msgid "Cannot read pathname for load map: %s."
 msgstr ""
 
-#: solib-irix.c:622 solib-som.c:723 solib-svr4.c:548
+#: solib-irix.c:610 solib-som.c:723 solib-svr4.c:548
 #, possible-c-format
 msgid "failed to read exec filename from attached file: %s"
 msgstr ""
@@ -20223,6 +20329,11 @@ msgid ""
 "Debugging dynamic executables loaded via the hpux8 dld.sl is not supported."
 msgstr ""
 
+#: solib-som.c:610 solib-svr4.c:713
+#, possible-c-format
+msgid "Can't read pathname for load map: %s."
+msgstr ""
+
 #: solib-som.c:851
 msgid "Unable to find $PRIVATE$ in shared library!"
 msgstr ""
@@ -20230,11 +20341,6 @@ msgstr ""
 #: solib-spu.c:368
 #, possible-c-format
 msgid "Cannot read SPE executable at %s"
-msgstr ""
-
-#: solib-sunos.c:455 solib-svr4.c:637
-#, possible-c-format
-msgid "Cannot read pathname for load map: %s."
 msgstr ""
 
 #: solib-sunos.c:555
@@ -20245,30 +20351,30 @@ msgstr ""
 msgid "no shared library support for this OS / ABI"
 msgstr ""
 
-#: solib-target.c:92 solib-target.c:109
+#: solib-target.c:103 solib-target.c:120
 msgid "Library list with both segments and sections"
 msgstr ""
 
-#: solib-target.c:140
+#: solib-target.c:151
 msgid "No segment or section bases defined"
 msgstr ""
 
-#: solib-target.c:232
+#: solib-target.c:243
 msgid "target library list"
 msgstr ""
 
-#: solib-target.c:361
+#: solib-target.c:373
 #, possible-c-format
 msgid ""
 "Could not relocate shared library \"%s\": wrong number of ALLOC sections"
 msgstr ""
 
-#: solib-target.c:410
+#: solib-target.c:422
 #, possible-c-format
 msgid "Could not relocate shared library \"%s\": no segments"
 msgstr ""
 
-#: solib-target.c:426
+#: solib-target.c:438
 #, possible-c-format
 msgid "Could not relocate shared library \"%s\": bad offsets"
 msgstr ""
@@ -21309,250 +21415,250 @@ msgid ""
 "The directory where separate debug symbols are searched for is \"%s\".\n"
 msgstr ""
 
-#: symfile.c:2208
+#: symfile.c:2203
 msgid "no symbol file name was specified"
 msgstr ""
 
-#: symfile.c:2321
+#: symfile.c:2316
 #, possible-c-format
 msgid "\"%s\": cannot open to read symbols: %s."
 msgstr ""
 
-#: symfile.c:2358
+#: symfile.c:2353
 #, possible-c-format
 msgid "\"%s\": cannot read symbols: %s."
 msgstr ""
 
-#: symfile.c:2413
+#: symfile.c:2408
 #, possible-c-format
 msgid "I am sorry, Dave, I cannot do that. Symbol format `%s' unknown."
 msgstr ""
 
-#: symfile.c:2444
+#: symfile.c:2439
 #, possible-c-format
 msgid "The write size used when downloading a program is %s.\n"
 msgstr ""
 
-#: symfile.c:2493
+#: symfile.c:2488
 #, possible-c-format
 msgid "Download verify read failed at 0x%s"
 msgstr ""
 
-#: symfile.c:2496
+#: symfile.c:2491
 #, possible-c-format
 msgid "Download verify compare failed at 0x%s"
 msgstr ""
 
-#: symfile.c:2557
+#: symfile.c:2552
 #, possible-c-format
 msgid "Memory access error while loading section %s."
 msgstr ""
 
-#: symfile.c:2592
+#: symfile.c:2587
 #, possible-c-format
 msgid "Invalid download offset:%s."
 msgstr ""
 
-#: symfile.c:3118
+#: symfile.c:3113
 #, possible-c-format
 msgid "Unable to find kext bundle at \"%s\""
 msgstr ""
 
-#: symfile.c:3120
+#: symfile.c:3115
 msgid "Unable to find CFBundleExecutable in Info.plist"
 msgstr ""
 
-#: symfile.c:3122
+#: symfile.c:3117
 msgid "Unable to find CFBundleIdentifier in Info.plist"
 msgstr ""
 
-#: symfile.c:3126 symfile.c:3179
+#: symfile.c:3121 symfile.c:3174
 msgid "dirname on the kext bundle filename failed"
 msgstr ""
 
-#: symfile.c:3263
+#: symfile.c:3258
 #, possible-c-format
 msgid "Unable to find Mach-O LC_UUID load command in file '%s'"
 msgstr ""
 
-#: symfile.c:3272
+#: symfile.c:3267
 #, possible-c-format
 msgid "%s has already been added."
 msgstr ""
 
-#: symfile.c:3287
+#: symfile.c:3282
 #, possible-c-format
 msgid "Unable to find the kext '%s' loaded in this kernel."
 msgstr ""
 
-#: symfile.c:3316
+#: symfile.c:3311
 msgid "Cannot open kext sym file"
 msgstr ""
 
-#: symfile.c:3362
+#: symfile.c:3357
 msgid "Wrong number of args, should be \"add-dsym <DSYM PATH>\"."
 msgstr ""
 
-#: symfile.c:3366
+#: symfile.c:3361
 msgid "Unable to build argument vector for add-dsym command."
 msgstr ""
 
-#: symfile.c:3377
+#: symfile.c:3372
 #, possible-c-format
 msgid "Error \"%s\" accessing dSYM file \"%s\"."
 msgstr ""
 
-#: symfile.c:3391
+#: symfile.c:3386
 #, possible-c-format
 msgid "Could not find binary to match \"%s\"."
 msgstr ""
 
-#: symfile.c:3399
+#: symfile.c:3394
 #, possible-c-format
 msgid "Trying to add dSYM file to \"%s\" which already has one."
 msgstr ""
 
-#: symfile.c:3433
+#: symfile.c:3430
 #, possible-c-format
 msgid "Could not add dSYM \"%s\" to library \"%s\"."
 msgstr ""
 
-#: symfile.c:3459
+#: symfile.c:3456
 msgid "This command is not available in this configuration of GDB."
 msgstr ""
 
-#: symfile.c:3507
+#: symfile.c:3504
 #, possible-c-format
 msgid "`%s' has changed; re-reading symbols.\n"
 msgstr ""
 
-#: symfile.c:3571
+#: symfile.c:3568
 #, possible-c-format
 msgid "Cannot close BFD for %s: %s"
 msgstr ""
 
-#: symfile.c:3596 symfile.c:3611
+#: symfile.c:3593 symfile.c:3608
 #, possible-c-format
 msgid "Cannot open %s to read symbols."
 msgstr ""
 
-#: symfile.c:3626
+#: symfile.c:3623
 #, possible-c-format
 msgid "Cannot read symbols from %s: %s."
 msgstr ""
 
-#: symfile.c:3697
+#: symfile.c:3694
 #, possible-c-format
 msgid "Cannot find the file sections in `%s': %s"
 msgstr ""
 
-#: symfile.c:4091
+#: symfile.c:4088
 #, possible-c-format
 msgid "Mapping between filename extension and source language is \"%s\".\n"
 msgstr ""
 
-#: symfile.c:4106
+#: symfile.c:4103
 #, possible-c-format
 msgid "'%s': Filename extension must begin with '.'"
 msgstr ""
 
-#: symfile.c:4113 symfile.c:4124
+#: symfile.c:4110 symfile.c:4121
 #, possible-c-format
 msgid "'%s': two arguments required -- filename extension and language"
 msgstr ""
 
-#: symfile.c:4161
+#: symfile.c:4158
 msgid "Filename extensions and the languages they represent:"
 msgstr ""
 
-#: symfile.c:4555
+#: symfile.c:4552
 #, possible-c-format
 msgid "Replacing old symbols for `%s'"
 msgstr ""
 
-#: symfile.c:4562
+#: symfile.c:4559
 #, possible-c-format
 msgid "Empty symbol table found for `%s'"
 msgstr ""
 
-#: symfile.c:5172
+#: symfile.c:5169
 msgid "No sections are mapped.\n"
 msgstr ""
 
-#: symfile.c:5186 symfile.c:5236
+#: symfile.c:5183 symfile.c:5233
 msgid ""
 "Overlay debugging not enabled.  Use either the 'overlay auto' or\n"
 "the 'overlay manual' command."
 msgstr ""
 
-#: symfile.c:5191 symfile.c:5241
+#: symfile.c:5188 symfile.c:5238
 msgid "Argument required: name of an overlay section"
 msgstr ""
 
-#: symfile.c:5215
+#: symfile.c:5212
 #, possible-c-format
 msgid "Note: section %s unmapped by overlap\n"
 msgstr ""
 
-#: symfile.c:5222 symfile.c:5252
+#: symfile.c:5219 symfile.c:5249
 #, possible-c-format
 msgid "No overlay section called %s"
 msgstr ""
 
-#: symfile.c:5248
+#: symfile.c:5245
 #, possible-c-format
 msgid "Section %s is not mapped"
 msgstr ""
 
-#: symfile.c:5265
+#: symfile.c:5262
 msgid "Automatic overlay debugging enabled."
 msgstr ""
 
-#: symfile.c:5278
+#: symfile.c:5275
 msgid "Overlay debugging enabled."
 msgstr ""
 
-#: symfile.c:5291
+#: symfile.c:5288
 msgid "Overlay debugging disabled."
 msgstr ""
 
-#: symfile.c:5301
+#: symfile.c:5298
 msgid "This target does not know how to read its overlay state."
 msgstr ""
 
-#: symfile.c:5432
+#: symfile.c:5429
 msgid ""
 "Error reading inferior's overlay table: could NOT find `_novlys' variable\n"
 "in inferior. Use `overlay manual' mode."
 msgstr ""
 
-#: symfile.c:5441
+#: symfile.c:5438
 msgid ""
 "Error reading inferior's overlay table: could NOT find `_ovly_table' array\n"
 "in inferior. Use `overlay manual' mode."
 msgstr ""
 
-#: symfile.c:5953
+#: symfile.c:5950
 msgid "Set if GDB should use mmap() to read from external symbol files."
 msgstr ""
 
-#: symfile.c:5954
+#: symfile.c:5951
 msgid "Show if GDB should use mmap() to read from external symbol files."
 msgstr ""
 
-#: symfile.c:5966 symfile.c:6014 symfile.c:6021
+#: symfile.c:5963 symfile.c:6011 symfile.c:6018
 msgid "possible issue adding command"
 msgstr ""
 
 #. APPLE LOCAL end
-#: symfile.c:5976
+#: symfile.c:5973
 msgid ""
 "Load symbol table from executable file FILE.\n"
 "The `file' command can also load symbol tables, as well as setting the file\n"
 "to execute."
 msgstr ""
 
-#: symfile.c:5982
+#: symfile.c:5979
 msgid ""
 "Usage: add-symbol-file FILE ADDR [-s <SECT> <SECT_ADDR> -s <SECT> "
 "<SECT_ADDR> ...]\n"
@@ -21563,7 +21669,7 @@ msgid ""
 "with the text.  SECT is a section name to be loaded at SECT_ADDR."
 msgstr ""
 
-#: symfile.c:5992
+#: symfile.c:5989
 msgid ""
 "Usage: add-kext KEXTBUNDLE\n"
 "Load the symbols from KEXTBUNDLE, where KEXTBUNDLE is the bundle directory\n"
@@ -21573,88 +21679,88 @@ msgid ""
 "well.\n"
 msgstr ""
 
-#: symfile.c:6001
+#: symfile.c:5998
 msgid ""
 "Usage: add-dsym DSYM_FILE\n"
 "Load the symbols from DSYM_FILE, adding them to a library with\n"
 "the matching UUID."
 msgstr ""
 
-#: symfile.c:6009
+#: symfile.c:6006
 msgid "Load the symbols from shared objects in the dynamic linker's link map."
 msgstr ""
 
-#: symfile.c:6024
+#: symfile.c:6021
 msgid ""
 "Dynamically load FILE into the running program, and record its symbols\n"
 "for access from GDB."
 msgstr ""
 
-#: symfile.c:6033
+#: symfile.c:6030
 msgid "Set dynamic symbol table reloading multiple times in one run."
 msgstr ""
 
-#: symfile.c:6034
+#: symfile.c:6031
 msgid "Show dynamic symbol table reloading multiple times in one run."
 msgstr ""
 
-#: symfile.c:6041
+#: symfile.c:6038
 msgid "Commands for debugging overlays."
 msgstr ""
 
-#: symfile.c:6048
+#: symfile.c:6045
 msgid "Assert that an overlay section is mapped."
 msgstr ""
 
-#: symfile.c:6051
+#: symfile.c:6048
 msgid "Assert that an overlay section is unmapped."
 msgstr ""
 
-#: symfile.c:6054
+#: symfile.c:6051
 msgid "List mappings of overlay sections."
 msgstr ""
 
-#: symfile.c:6057
+#: symfile.c:6054
 msgid "Enable overlay debugging."
 msgstr ""
 
-#: symfile.c:6059
+#: symfile.c:6056
 msgid "Disable overlay debugging."
 msgstr ""
 
-#: symfile.c:6061
+#: symfile.c:6058
 msgid "Enable automatic overlay debugging."
 msgstr ""
 
-#: symfile.c:6063
+#: symfile.c:6060
 msgid "Read the overlay mapping state from the target."
 msgstr ""
 
-#: symfile.c:6068
+#: symfile.c:6065
 msgid "Set mapping between filename extension and source language."
 msgstr ""
 
-#: symfile.c:6069
+#: symfile.c:6066
 msgid "Show mapping between filename extension and source language."
 msgstr ""
 
-#: symfile.c:6070
+#: symfile.c:6067
 msgid "Usage: set extension-language .foo bar"
 msgstr ""
 
-#: symfile.c:6077
+#: symfile.c:6074
 msgid "All filename extensions associated with a source language."
 msgstr ""
 
-#: symfile.c:6080
+#: symfile.c:6077
 msgid "Set the write size used when downloading a program."
 msgstr ""
 
-#: symfile.c:6081
+#: symfile.c:6078
 msgid "Show the write size used when downloading a program."
 msgstr ""
 
-#: symfile.c:6082
+#: symfile.c:6079
 msgid ""
 "Only used when downloading a program onto a remote\n"
 "target. Specify zero, or a negative value, to disable\n"
@@ -21663,15 +21769,15 @@ msgid ""
 "cache."
 msgstr ""
 
-#: symfile.c:6094
+#: symfile.c:6091
 msgid "Set the directory where kextutil-generated sym files are searched for."
 msgstr ""
 
-#: symfile.c:6095
+#: symfile.c:6092
 msgid "Show the directory where kextutil-generated sym files are searched for."
 msgstr ""
 
-#: symfile.c:6096
+#: symfile.c:6093
 msgid ""
 "The kextutil-generated sym file is first searched for in the same\n"
 "directory as the kext bundle, then in the directory specified by \n"
@@ -21680,15 +21786,15 @@ msgid ""
 "bundle and dSYM in another location."
 msgstr ""
 
-#: symfile.c:6107
+#: symfile.c:6104
 msgid "Set the directory where separate debug symbols are searched for."
 msgstr ""
 
-#: symfile.c:6108
+#: symfile.c:6105
 msgid "Show the directory where separate debug symbols are searched for."
 msgstr ""
 
-#: symfile.c:6109
+#: symfile.c:6106
 msgid ""
 "Separate debug symbols are first searched for in the same\n"
 "directory as the binary, then in the `"

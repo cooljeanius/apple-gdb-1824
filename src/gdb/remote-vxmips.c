@@ -1,4 +1,4 @@
-/* MIPS-dependent portions of the RPC protocol
+/* remote-vxmips.c: MIPS-dependent portions of the RPC protocol
    used with a VxWorks target
 
    Contributed by Wind River Systems.
@@ -20,6 +20,9 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* NO_POISON */
 #include <stdio.h>
 #include "defs.h"
 
@@ -48,25 +51,56 @@
 #include "vx-share/xdr_rdb.h"
 #include "vx-share/dbgRpcLib.h"
 
+#include "mips-tdep.h"
+
 /* get rid of value.h if possible */
 #include <value.h>
 #include <symtab.h>
 
-/* Flag set if target has fpu */
+#ifndef REGISTER_RAW_SIZE
+# ifdef DEPRECATED_REGISTER_RAW_SIZE
+#  define REGISTER_RAW_SIZE(foo) DEPRECATED_REGISTER_RAW_SIZE(foo)
+# endif /* DEPRECATED_REGISTER_RAW_SIZE */
+#endif /* !REGISTER_RAW_SIZE */
 
+#ifndef REGISTER_BYTE
+# ifdef DEPRECATED_REGISTER_BYTE
+#  define REGISTER_BYTE(foo) DEPRECATED_REGISTER_BYTE(foo)
+# endif /* DEPRECATED_REGISTER_BYTE */
+#endif /* !REGISTER_BYTE */
+
+#ifndef registers_fetched
+# ifdef REGCACHE_H
+#  define registers_fetched deprecated_registers_fetched
+# endif /* REGCACHE_H */
+#endif /* !registers_fetched */
+
+#ifndef LO_REGNUM
+# define LO_REGNUM MIPS_EMBED_LO_REGNUM
+#endif /* !LO_REGNUM */
+#ifndef HI_REGNUM
+# define HI_REGNUM MIPS_EMBED_HI_REGNUM
+#endif /* !HI_REGNUM */
+#ifndef FCRCS_REGNUM
+# define FCRCS_REGNUM MIPS_UNUSED_REGNUM /* FIXME */
+#endif /* !FCRCS_REGNUM */
+
+/* Flag set if target has fpu: */
 extern int target_has_fp;
 
-/* Generic register read/write routines in remote-vx.c.  */
+/* Generic register read/write routines in remote-vx.c: */
+extern void net_read_registers(char *, int, u_long);
+extern void net_write_registers(char *, int, u_long);
 
-extern void net_read_registers ();
-extern void net_write_registers ();
+/* Prototypes for functions in this file: */
+extern void vx_read_register(int);
+extern int vx_write_register(int);
 
 /* Read a register or registers from the VxWorks target.
    REGNO is the register to read, or -1 for all; currently,
-   it is ignored.  FIXME look at regno to improve efficiency.  */
-
+   it is ignored.  FIXME: look at regno to improve efficiency.  */
 void
-vx_read_register (int regno)
+vx_read_register(int regno)
 {
   char mips_greg_packet[MIPS_GREG_PLEN];
   char mips_fpreg_packet[MIPS_FPREG_PLEN];
@@ -101,20 +135,18 @@ vx_read_register (int regno)
 
      structure is 0x124 (292) bytes in length */
 
-  /* Copy the general registers.  */
+  /* Copy the general registers: */
+  bcopy(&mips_greg_packet[MIPS_R_GP0], &registers[0], (32 * MIPS_GREG_SIZE));
 
-  bcopy (&mips_greg_packet[MIPS_R_GP0], &registers[0], 32 * MIPS_GREG_SIZE);
-
-  /* Copy SR, LO, HI, and PC.  */
-
-  bcopy (&mips_greg_packet[MIPS_R_SR],
-	 &registers[REGISTER_BYTE (PS_REGNUM)], MIPS_GREG_SIZE);
-  bcopy (&mips_greg_packet[MIPS_R_LO],
-	 &registers[REGISTER_BYTE (LO_REGNUM)], MIPS_GREG_SIZE);
-  bcopy (&mips_greg_packet[MIPS_R_HI],
-	 &registers[REGISTER_BYTE (HI_REGNUM)], MIPS_GREG_SIZE);
-  bcopy (&mips_greg_packet[MIPS_R_PC],
-	 &registers[REGISTER_BYTE (PC_REGNUM)], MIPS_GREG_SIZE);
+  /* Copy SR, LO, HI, and PC: */
+  bcopy(&mips_greg_packet[MIPS_R_SR],
+	&registers[REGISTER_BYTE(PS_REGNUM)], MIPS_GREG_SIZE);
+  bcopy(&mips_greg_packet[MIPS_R_LO],
+	&registers[REGISTER_BYTE(LO_REGNUM)], MIPS_GREG_SIZE);
+  bcopy(&mips_greg_packet[MIPS_R_HI],
+	&registers[REGISTER_BYTE(HI_REGNUM)], MIPS_GREG_SIZE);
+  bcopy(&mips_greg_packet[MIPS_R_PC],
+	&registers[REGISTER_BYTE(PC_REGNUM)], MIPS_GREG_SIZE);
 
   /* If the target has floating point registers, fetch them.
      Otherwise, zero the floating point register values in
@@ -123,79 +155,73 @@ vx_read_register (int regno)
 
   if (target_has_fp)
     {
-      net_read_registers (mips_fpreg_packet, MIPS_FPREG_PLEN,
-			  PTRACE_GETFPREGS);
+      net_read_registers(mips_fpreg_packet, MIPS_FPREG_PLEN,
+			 PTRACE_GETFPREGS);
 
-      /* Copy the floating point registers.  */
+      /* Copy the floating point registers: */
+      bcopy(&mips_fpreg_packet[MIPS_R_FP0],
+	    &registers[REGISTER_BYTE(FP0_REGNUM)],
+	    (REGISTER_RAW_SIZE(FP0_REGNUM) * 32));
 
-      bcopy (&mips_fpreg_packet[MIPS_R_FP0],
-	     &registers[REGISTER_BYTE (FP0_REGNUM)],
-	     REGISTER_RAW_SIZE (FP0_REGNUM) * 32);
-
-      /* Copy the floating point control/status register (fpcsr).  */
-
-      bcopy (&mips_fpreg_packet[MIPS_R_FPCSR],
-	     &registers[REGISTER_BYTE (FCRCS_REGNUM)],
-	     REGISTER_RAW_SIZE (FCRCS_REGNUM));
+      /* Copy the floating point control/status register (fpcsr): */
+      bcopy(&mips_fpreg_packet[MIPS_R_FPCSR],
+	    &registers[REGISTER_BYTE(FCRCS_REGNUM)],
+	    REGISTER_RAW_SIZE(FCRCS_REGNUM));
     }
   else
     {
-      bzero ((char *) &registers[REGISTER_BYTE (FP0_REGNUM)],
-	     REGISTER_RAW_SIZE (FP0_REGNUM) * 32);
-      bzero ((char *) &registers[REGISTER_BYTE (FCRCS_REGNUM)],
-	     REGISTER_RAW_SIZE (FCRCS_REGNUM));
+      bzero((char *)&registers[REGISTER_BYTE(FP0_REGNUM)],
+	    (REGISTER_RAW_SIZE(FP0_REGNUM) * 32));
+      bzero((char *)&registers[REGISTER_BYTE (FCRCS_REGNUM)],
+	    REGISTER_RAW_SIZE(FCRCS_REGNUM));
     }
 
-  /* Mark the register cache valid.  */
-
-  registers_fetched ();
+  /* Mark the register cache valid: */
+  registers_fetched();
 }
 
 /* Store a register or registers into the VxWorks target.
    REGNO is the register to store, or -1 for all; currently,
-   it is ignored. FIXME look at regno to improve efficiency.  */
-
-vx_write_register (int regno)
+   it is ignored. FIXME: look at regno to improve efficiency.  */
+int
+vx_write_register(int regno)
 {
   char mips_greg_packet[MIPS_GREG_PLEN];
   char mips_fpreg_packet[MIPS_FPREG_PLEN];
 
-  /* Store general registers.  */
+  /* Store general registers: */
+  bcopy(&registers[0], &mips_greg_packet[MIPS_R_GP0], (32 * MIPS_GREG_SIZE));
 
-  bcopy (&registers[0], &mips_greg_packet[MIPS_R_GP0], 32 * MIPS_GREG_SIZE);
+  /* Copy SR, LO, HI, and PC: */
+  bcopy(&registers[REGISTER_BYTE(PS_REGNUM)],
+	&mips_greg_packet[MIPS_R_SR], MIPS_GREG_SIZE);
+  bcopy(&registers[REGISTER_BYTE(LO_REGNUM)],
+	&mips_greg_packet[MIPS_R_LO], MIPS_GREG_SIZE);
+  bcopy(&registers[REGISTER_BYTE(HI_REGNUM)],
+	&mips_greg_packet[MIPS_R_HI], MIPS_GREG_SIZE);
+  bcopy(&registers[REGISTER_BYTE(PC_REGNUM)],
+	&mips_greg_packet[MIPS_R_PC], MIPS_GREG_SIZE);
 
-  /* Copy SR, LO, HI, and PC.  */
+  net_write_registers(mips_greg_packet, MIPS_GREG_PLEN, PTRACE_SETREGS);
 
-  bcopy (&registers[REGISTER_BYTE (PS_REGNUM)],
-	 &mips_greg_packet[MIPS_R_SR], MIPS_GREG_SIZE);
-  bcopy (&registers[REGISTER_BYTE (LO_REGNUM)],
-	 &mips_greg_packet[MIPS_R_LO], MIPS_GREG_SIZE);
-  bcopy (&registers[REGISTER_BYTE (HI_REGNUM)],
-	 &mips_greg_packet[MIPS_R_HI], MIPS_GREG_SIZE);
-  bcopy (&registers[REGISTER_BYTE (PC_REGNUM)],
-	 &mips_greg_packet[MIPS_R_PC], MIPS_GREG_SIZE);
-
-  net_write_registers (mips_greg_packet, MIPS_GREG_PLEN, PTRACE_SETREGS);
-
-  /* Store floating point registers if the target has them.  */
-
+  /* Store floating point registers if the target has them: */
   if (target_has_fp)
     {
-      /* Copy the floating point data registers.  */
+      /* Copy the floating point data registers: */
+      bcopy(&registers[REGISTER_BYTE(FP0_REGNUM)],
+	    &mips_fpreg_packet[MIPS_R_FP0],
+	    (REGISTER_RAW_SIZE(FP0_REGNUM) * 32));
 
-      bcopy (&registers[REGISTER_BYTE (FP0_REGNUM)],
-	     &mips_fpreg_packet[MIPS_R_FP0],
-	     REGISTER_RAW_SIZE (FP0_REGNUM) * 32);
+      /* Copy the floating point control/status register (fpcsr): */
+      bcopy(&registers[REGISTER_BYTE(FCRCS_REGNUM)],
+	    &mips_fpreg_packet[MIPS_R_FPCSR],
+	    REGISTER_RAW_SIZE(FCRCS_REGNUM));
 
-      /* Copy the floating point control/status register (fpcsr).  */
-
-      bcopy (&registers[REGISTER_BYTE (FCRCS_REGNUM)],
-	     &mips_fpreg_packet[MIPS_R_FPCSR],
-	     REGISTER_RAW_SIZE (FCRCS_REGNUM));
-
-      net_write_registers (mips_fpreg_packet, MIPS_FPREG_PLEN,
-			   PTRACE_SETFPREGS);
+      net_write_registers(mips_fpreg_packet, MIPS_FPREG_PLEN,
+			  PTRACE_SETFPREGS);
     }
+  
+  return 0;
 }
 
 /* EOF */

@@ -25,7 +25,7 @@ enum arg_type {
         T_DOUBLE = 5
 };
 typedef enum arg_type arg_type;
-bool_t xdr_arg_type();
+bool_t xdr_arg_type(XDR *xdrs, arg_type *objp);
 
 
 struct arg_value {
@@ -39,7 +39,7 @@ struct arg_value {
         } arg_value_u;
 };
 typedef struct arg_value arg_value;
-bool_t xdr_arg_value();
+bool_t xdr_arg_value(XDR *xdrs, arg_value *objp);
 
 struct func_call {
         int func_addr;
@@ -49,18 +49,18 @@ struct func_call {
         } args;
 };
 typedef struct func_call func_call;
-bool_t xdr_func_call();
+bool_t xdr_func_call(XDR *xdrs, func_call *objp);
 
 
 typedef char *arg_one;
-bool_t xdr_arg_one();
+bool_t xdr_arg_one(XDR *xdrs, arg_one *objp);
 
 
 typedef struct {
         u_int arg_array_len;
         arg_one *arg_array_val;
 } arg_array;
-bool_t xdr_arg_array();
+bool_t xdr_arg_array(XDR *xdrs, arg_array *objp);
 
 
 /*
@@ -125,13 +125,15 @@ typedef struct SOURCE_STEP SOURCE_STEP;
 #define MAX_ARG_LEN   100
 
 
-bool_t xdr_arg_info();
-bool_t xdr_EVENT_TYPE();
-bool_t xdr_RDB_EVENT();
-bool_t xdr_TASK_START();
-bool_t xdr_SYMBOL_ADDR();
-bool_t xdr_SOURCE_STEP();
+bool_t xdr_arg_info(void);
+bool_t xdr_EVENT_TYPE(XDR *xdrs, EVENT_TYPE *objp);
+bool_t xdr_RDB_EVENT(XDR *xdrs, RDB_EVENT *objp);
+bool_t xdr_TASK_START(XDR *xdrs, TASK_START *objp);
+bool_t xdr_SYMBOL_ADDR(XDR *xdrs, SYMBOL_ADDR *objp);
+bool_t xdr_SOURCE_STEP(XDR *xdrs, SOURCE_STEP *objp);
 
-#define RDBPROG (u_long) 0x44444444
-#define RDBVERS (u_long) 3
-#endif	INCxdrrdbh
+#define RDBPROG (u_long)0x44444444
+#define RDBVERS (u_long)3UL
+#endif	/* INCxdrrdbh */
+
+/* EOF */

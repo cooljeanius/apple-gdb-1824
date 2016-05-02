@@ -43,8 +43,8 @@ typedef	int		VOID;
 typedef	int		STATUS;	
 typedef int 		ARGINT;
 
-typedef int 		(*FUNCPTR) ();	    /* ptr to function returning int */
-typedef VOID 		(*VOIDFUNCPTR) ();  /* ptr to function returning VOID */
+typedef int 		(*FUNCPTR)(void);	    /* ptr to function returning int */
+typedef VOID 		(*VOIDFUNCPTR)(void);  /* ptr to function returning VOID */
 
 
 /* historical definitions - now obsolete */

@@ -134,119 +134,122 @@ mn10300_use_struct_convention (int gcc_p, struct type *type)
 
 /* MVS note this is deprecated.  */
 static void
-mn10300_store_return_value (struct type *type,
-			    struct regcache *regcache, const void *valbuf)
+mn10300_store_return_value(struct type *type, struct regcache *regcache,
+			   const gdb_byte *valbuf)
 {
-  struct gdbarch *gdbarch = get_regcache_arch (regcache);
-  int len = TYPE_LENGTH (type);
+  struct gdbarch *gdbarch = get_regcache_arch(regcache);
+  int len = TYPE_LENGTH(type);
   int reg, regsz;
   
-  if (TYPE_CODE (type) == TYPE_CODE_PTR)
+  if (TYPE_CODE(type) == TYPE_CODE_PTR)
     reg = 4;
   else
     reg = 0;
 
-  regsz = register_size (gdbarch, reg);
+  regsz = register_size(gdbarch, reg);
 
   if (len <= regsz)
-    regcache_raw_write_part (regcache, reg, 0, len, valbuf);
-  else if (len <= 2 * regsz)
+    regcache_raw_write_part(regcache, reg, 0, len, valbuf);
+  else if (len <= (2 * regsz))
     {
-      regcache_raw_write (regcache, reg, valbuf);
-      gdb_assert (regsz == register_size (gdbarch, reg + 1));
-      regcache_raw_write_part (regcache, reg+1, 0,
-			       len - regsz, (char *) valbuf + regsz);
+      regcache_raw_write(regcache, reg, valbuf);
+      gdb_assert(regsz == register_size(gdbarch, (reg + 1)));
+      regcache_raw_write_part(regcache, (reg + 1), 0,
+			      (len - regsz), (valbuf + regsz));
     }
   else
-    internal_error (__FILE__, __LINE__,
-		    _("Cannot store return value %d bytes long."), len);
+    internal_error(__FILE__, __LINE__,
+		   _("Cannot store return value %d bytes long."), len);
 }
 
 /* MVS note deprecated.  */
 static void
-mn10300_extract_return_value (struct type *type,
-			      struct regcache *regcache, void *valbuf)
+mn10300_extract_return_value(struct type *type, struct regcache *regcache,
+			     gdb_byte *valbuf)
 {
-  struct gdbarch *gdbarch = get_regcache_arch (regcache);
+  struct gdbarch *gdbarch = get_regcache_arch(regcache);
   char buf[MAX_REGISTER_SIZE];
-  int len = TYPE_LENGTH (type);
+  int len = TYPE_LENGTH(type);
   int reg, regsz;
 
-  if (TYPE_CODE (type) == TYPE_CODE_PTR)
+  if (TYPE_CODE(type) == TYPE_CODE_PTR)
     reg = 4;
   else
     reg = 0;
 
-  regsz = register_size (gdbarch, reg);
+  regsz = register_size(gdbarch, reg);
   if (len <= regsz)
     {
-      regcache_raw_read (regcache, reg, buf);
-      memcpy (valbuf, buf, len);
+      regcache_raw_read(regcache, reg, (gdb_byte *)buf);
+      memcpy(valbuf, buf, len);
     }
-  else if (len <= 2 * regsz)
+  else if (len <= (2 * regsz))
     {
-      regcache_raw_read (regcache, reg, buf);
-      memcpy (valbuf, buf, regsz);
-      gdb_assert (regsz == register_size (gdbarch, reg + 1));
-      regcache_raw_read (regcache, reg + 1, buf);
-      memcpy ((char *) valbuf + regsz, buf, len - regsz);
+      regcache_raw_read(regcache, reg, (gdb_byte *)buf);
+      memcpy(valbuf, buf, regsz);
+      gdb_assert(regsz == register_size(gdbarch, (reg + 1)));
+      regcache_raw_read(regcache, (reg + 1), (gdb_byte *)buf);
+      memcpy(((char *)valbuf + regsz), buf, (len - regsz));
     }
   else
-    internal_error (__FILE__, __LINE__,
-		    _("Cannot extract return value %d bytes long."), len);
+    internal_error(__FILE__, __LINE__,
+		   _("Cannot extract return value %d bytes long."), len);
 }
 
-static char *
-register_name (int reg, char **regs, long sizeof_regs)
+/* */
+static const char *
+register_name(int reg, const char **regs, long sizeof_regs)
 {
-  if (reg < 0 || reg >= sizeof_regs / sizeof (regs[0]))
+  if ((reg < 0) || ((size_t)reg >= (sizeof_regs / sizeof(regs[0]))))
     return NULL;
   else
     return regs[reg];
 }
 
+/* */
 static const char *
-mn10300_generic_register_name (int reg)
+mn10300_generic_register_name(int reg)
 {
-  static char *regs[] =
+  static const char *regs[] =
   { "d0", "d1", "d2", "d3", "a0", "a1", "a2", "a3",
     "sp", "pc", "mdr", "psw", "lir", "lar", "", "",
     "", "", "", "", "", "", "", "",
     "", "", "", "", "", "", "", "fp"
   };
-  return register_name (reg, regs, sizeof regs);
+  return register_name(reg, regs, sizeof(regs));
 }
 
-
+/* */
 static const char *
-am33_register_name (int reg)
+am33_register_name(int reg)
 {
-  static char *regs[] =
+  static const char *regs[] =
   { "d0", "d1", "d2", "d3", "a0", "a1", "a2", "a3",
     "sp", "pc", "mdr", "psw", "lir", "lar", "",
     "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
     "ssp", "msp", "usp", "mcrh", "mcrl", "mcvf", "", "", ""
   };
-  return register_name (reg, regs, sizeof regs);
+  return register_name(reg, regs, sizeof(regs));
 }
 
-
+/* */
 static struct type *
-mn10300_register_type (struct gdbarch *gdbarch, int reg)
+mn10300_register_type(struct gdbarch *gdbarch, int reg)
 {
   return builtin_type_int;
 }
 
+/* */
 static CORE_ADDR
-mn10300_read_pc (ptid_t ptid)
+mn10300_read_pc(ptid_t ptid)
 {
-  return read_register_pid (E_PC_REGNUM, ptid);
+  return read_register_pid(E_PC_REGNUM, ptid);
 }
 
 static void
-mn10300_write_pc (CORE_ADDR val, ptid_t ptid)
+mn10300_write_pc(CORE_ADDR val, ptid_t ptid)
 {
-  return write_register_pid (E_PC_REGNUM, val, ptid);
+  return write_register_pid(E_PC_REGNUM, val, ptid);
 }
 
 /* The breakpoint instruction must be the same size as the smallest
@@ -256,12 +259,12 @@ mn10300_write_pc (CORE_ADDR val, ptid_t ptid)
    so we need a single byte breakpoint.  Matsushita hasn't defined
    one, so we defined it ourselves.  */
 
-const static unsigned char *
-mn10300_breakpoint_from_pc (CORE_ADDR *bp_addr, int *bp_size)
+static const unsigned char *
+mn10300_breakpoint_from_pc(CORE_ADDR *bp_addr, int *bp_size)
 {
   static char breakpoint[] = {0xff};
   *bp_size = 1;
-  return breakpoint;
+  return (const unsigned char *)breakpoint;
 }
 
 /* 
@@ -517,7 +520,7 @@ mn10300_analyze_prologue (struct frame_info *fi,
   int imm_size;
   unsigned char buf[4];
   int status, movm_args = 0;
-  char *name;
+  const char *name;
 
   /* Use the PC in the frame if it's provided to look up the
      start of this function.
@@ -534,7 +537,7 @@ mn10300_analyze_prologue (struct frame_info *fi,
     }
 
   /* Find the start of this function.  */
-  status = find_pc_partial_function (pc, &name, &func_addr, &func_end);
+  status = find_pc_partial_function(pc, &name, &func_addr, &func_end);
 
   /* Do nothing if we couldn't find the start of this function 
 
@@ -713,26 +716,26 @@ mn10300_skip_prologue (CORE_ADDR pc)
 /* Simple frame_unwind_cache.  
    This finds the "extra info" for the frame.  */
 struct trad_frame_cache *
-mn10300_frame_unwind_cache (struct frame_info *next_frame,
-			    void **this_prologue_cache)
+mn10300_frame_unwind_cache(struct frame_info *next_frame,
+			   void **this_prologue_cache)
 {
   struct trad_frame_cache *cache;
   CORE_ADDR pc, start, end;
 
   if (*this_prologue_cache)
-    return (*this_prologue_cache);
+    return (struct trad_frame_cache *)(*this_prologue_cache);
 
-  cache = trad_frame_cache_zalloc (next_frame);
-  pc = gdbarch_unwind_pc (current_gdbarch, next_frame);
-  mn10300_analyze_prologue (next_frame, (void **) &cache, pc);
-  if (find_pc_partial_function (pc, NULL, &start, &end))
-    trad_frame_set_id (cache, 
-		       frame_id_build (trad_frame_get_this_base (cache), 
-				       start));
+  cache = trad_frame_cache_zalloc(next_frame);
+  pc = gdbarch_unwind_pc(current_gdbarch, next_frame);
+  mn10300_analyze_prologue(next_frame, (void **)&cache, pc);
+  if (find_pc_partial_function(pc, NULL, &start, &end))
+    trad_frame_set_id(cache, 
+		      frame_id_build(trad_frame_get_this_base(cache), 
+				     start));
   else
-    trad_frame_set_id (cache, 
-		       frame_id_build (trad_frame_get_this_base (cache), 
-				       frame_func_unwind (next_frame)));
+    trad_frame_set_id(cache, 
+		      frame_id_build(trad_frame_get_this_base(cache), 
+				     frame_func_unwind(next_frame)));
 
   (*this_prologue_cache) = cache;
   return cache;
@@ -760,42 +763,48 @@ mn10300_frame_this_id (struct frame_info *next_frame,
 }
 
 static void
-mn10300_frame_prev_register (struct frame_info *next_frame,
-			     void **this_prologue_cache,
-			     /* APPLE LOCAL variable opt states.  */
-			     int regnum, enum opt_state *optimizedp,
-			     enum lval_type *lvalp, CORE_ADDR *addrp,
-			     int *realnump, void *bufferp)
+mn10300_frame_prev_register(struct frame_info *next_frame,
+			    void **this_prologue_cache,
+			    /* APPLE LOCAL variable opt states.  */
+			    int regnum, enum opt_state *optimizedp,
+			    enum lval_type *lvalp, CORE_ADDR *addrp,
+			    int *realnump, void *bufferp)
 {
   struct trad_frame_cache *cache =
-    mn10300_frame_unwind_cache (next_frame, this_prologue_cache);
+    mn10300_frame_unwind_cache(next_frame, this_prologue_cache);
 
-  trad_frame_get_register (cache, next_frame, regnum, optimizedp, 
-			   lvalp, addrp, realnump, bufferp);
-  /* Or...
-  trad_frame_get_prev_register (next_frame, cache->prev_regs, regnum, 
-			   optimizedp, lvalp, addrp, realnump, bufferp);
-  */
+#if 1
+  trad_frame_get_register(cache, next_frame, regnum, optimizedp, 
+			  lvalp, addrp, realnump, (gdb_byte *)bufferp);
+#else
+  trad_frame_get_prev_register(next_frame, cache->prev_regs, regnum, 
+			       optimizedp, lvalp, addrp, realnump, bufferp);
+#endif /* 1 */
 }
 
 static const struct frame_unwind mn10300_frame_unwind = {
   NORMAL_FRAME,
   mn10300_frame_this_id, 
-  mn10300_frame_prev_register
+  mn10300_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
+/* */
 static CORE_ADDR
-mn10300_frame_base_address (struct frame_info *next_frame,
-			    void **this_prologue_cache)
+mn10300_frame_base_address(struct frame_info *next_frame,
+			   void **this_prologue_cache)
 {
   struct trad_frame_cache *cache = 
-    mn10300_frame_unwind_cache (next_frame, this_prologue_cache);
+    mn10300_frame_unwind_cache(next_frame, this_prologue_cache);
 
-  return trad_frame_get_this_base (cache);
+  return trad_frame_get_this_base(cache);
 }
 
+/* */
 static const struct frame_unwind *
-mn10300_frame_sniffer (struct frame_info *next_frame)
+mn10300_frame_sniffer(struct frame_info *next_frame)
 {
   return &mn10300_frame_unwind;
 }
@@ -894,26 +903,27 @@ mn10300_push_dummy_call (struct gdbarch *gdbarch,
   /* Push all arguments onto the stack. */
   for (argnum = 0; argnum < nargs; argnum++)
     {
-      /* FIXME what about structs?  Unions?  */
-      if (TYPE_CODE (value_type (*args)) == TYPE_CODE_STRUCT
-	  && TYPE_LENGTH (value_type (*args)) > 8)
+      /* FIXME: what about structs?  Unions?  */
+      if ((TYPE_CODE(value_type(*args)) == TYPE_CODE_STRUCT)
+	  && (TYPE_LENGTH(value_type(*args)) > 8))
 	{
 	  /* Change to pointer-to-type.  */
 	  arg_len = push_size;
-	  store_unsigned_integer (valbuf, push_size, 
-				  VALUE_ADDRESS (*args));
+	  store_unsigned_integer((gdb_byte *)valbuf, push_size, 
+				 VALUE_ADDRESS(*args));
 	  val = &valbuf[0];
 	}
       else
 	{
-	  arg_len = TYPE_LENGTH (value_type (*args));
-	  val = (char *) value_contents (*args);
+	  arg_len = TYPE_LENGTH(value_type(*args));
+	  val = (char *)value_contents(*args);
 	}
 
-      while (regs_used < 2 && arg_len > 0)
+      while ((regs_used < 2) && (arg_len > 0))
 	{
-	  write_register (regs_used, 
-			  extract_unsigned_integer (val, push_size));
+	  write_register(regs_used, 
+			 extract_unsigned_integer((const gdb_byte *)val,
+						  push_size));
 	  val += push_size;
 	  arg_len -= push_size;
 	  regs_used++;
@@ -921,7 +931,7 @@ mn10300_push_dummy_call (struct gdbarch *gdbarch,
 
       while (arg_len > 0)
 	{
-	  write_memory (sp + stack_offset, val, push_size);
+	  write_memory((sp + stack_offset), (const gdb_byte *)val, push_size);
 	  arg_len -= push_size;
 	  val += push_size;
 	  stack_offset += push_size;
@@ -941,35 +951,35 @@ mn10300_push_dummy_call (struct gdbarch *gdbarch,
   return sp;
 }
 
-
+/* */
 static struct gdbarch *
-mn10300_gdbarch_init (struct gdbarch_info info,
-		      struct gdbarch_list *arches)
+mn10300_gdbarch_init(struct gdbarch_info info,
+		     struct gdbarch_list *arches)
 {
   struct gdbarch *gdbarch;
   struct gdbarch_tdep *tdep;
 
-  arches = gdbarch_list_lookup_by_info (arches, &info);
+  arches = gdbarch_list_lookup_by_info(arches, &info);
   if (arches != NULL)
     return arches->gdbarch;
 
-  tdep = xmalloc (sizeof (struct gdbarch_tdep));
-  gdbarch = gdbarch_alloc (&info, tdep);
+  tdep = (struct gdbarch_tdep *)xmalloc(sizeof(struct gdbarch_tdep));
+  gdbarch = gdbarch_alloc(&info, tdep);
 
   switch (info.bfd_arch_info->mach)
     {
     case 0:
     case bfd_mach_mn10300:
-      set_gdbarch_register_name (gdbarch, mn10300_generic_register_name);
+      set_gdbarch_register_name(gdbarch, mn10300_generic_register_name);
       tdep->am33_mode = 0;
       break;
     case bfd_mach_am33:
-      set_gdbarch_register_name (gdbarch, am33_register_name);
+      set_gdbarch_register_name(gdbarch, am33_register_name);
       tdep->am33_mode = 1;
       break;
     default:
-      internal_error (__FILE__, __LINE__,
-		      _("mn10300_gdbarch_init: Unknown mn10300 variant"));
+      internal_error(__FILE__, __LINE__,
+		     _("mn10300_gdbarch_init: Unknown mn10300 variant"));
       break;
     }
 
@@ -1007,19 +1017,20 @@ mn10300_gdbarch_init (struct gdbarch_info info,
   return gdbarch;
 }
  
-/* Dump out the mn10300 specific architecture information. */
-
+/* Dump out the mn10300 specific architecture information: */
 static void
-mn10300_dump_tdep (struct gdbarch *current_gdbarch, struct ui_file *file)
+mn10300_dump_tdep(struct gdbarch *current_gdbarch, struct ui_file *file)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
-  fprintf_unfiltered (file, "mn10300_dump_tdep: am33_mode = %d\n",
-		      tdep->am33_mode);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  fprintf_unfiltered(file, "mn10300_dump_tdep: am33_mode = %d\n",
+		     tdep->am33_mode);
 }
 
+extern void _initialize_mn10300_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_mn10300_tdep (void)
+_initialize_mn10300_tdep(void)
 {
-  gdbarch_register (bfd_arch_mn10300, mn10300_gdbarch_init, mn10300_dump_tdep);
+  gdbarch_register(bfd_arch_mn10300, mn10300_gdbarch_init, mn10300_dump_tdep);
 }
 
+/* EOF */

@@ -1,4 +1,4 @@
-/* Remote debugging interface for Array Tech RAID controller..
+/* remote-array.c: Remote debugging interface for Array Tech RAID controller.
 
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
    1999, 2000, 2001, 2002 Free Software Foundation, Inc.
@@ -41,41 +41,43 @@
 #include "version.h"
 #include "regcache.h"
 
+#include "mips-tdep.h"
+
 extern int baud_rate;
 
 #define ARRAY_PROMPT ">> "
 
-static void debuglogs (int, char *, ...);
-static void array_open ();
-static void array_close ();
-static void array_detach ();
-static void array_attach ();
-static void array_resume (ptid_t ptid, int step, enum target_signal sig);
-static void array_fetch_register ();
-static void array_store_register ();
-static void array_fetch_registers ();
-static void array_store_registers ();
-static void array_prepare_to_store ();
-static void array_files_info ();
-static void array_kill ();
-static void array_create_inferior ();
-static void array_mourn_inferior ();
-static void make_gdb_packet ();
-static int array_xfer_memory ();
-static ptid_t array_wait (ptid_t ptid,
-                                 struct target_waitstatus *status);
-static int array_insert_breakpoint ();
-static int array_remove_breakpoint ();
-static int tohex ();
-static int to_hex ();
-static int from_hex ();
-static int array_send_packet ();
-static int array_get_packet ();
-static unsigned long ascii2hexword ();
-static void hexword2ascii ();
+static void debuglogs(int, const char *, ...);
+static void array_open(const char *, char *, int);
+static void array_close(int);
+static void array_detach(int);
+static void array_attach(char *, int);
+static void array_resume(ptid_t ptid, int step, enum target_signal sig);
+static void array_fetch_register(int);
+static void array_store_register(int);
+static void array_fetch_registers(int);
+static void array_store_registers(int);
+static void array_prepare_to_store(void);
+static void array_files_info(struct target_ops *);
+static void array_kill(const char *, int);
+static void array_create_inferior(char *, char *, char **);
+static void array_mourn_inferior(void);
+static void make_gdb_packet(char *, const char *);
+static int array_xfer_memory(CORE_ADDR, const char *, int, int,
+			     struct mem_attrib *, struct target_ops *);
+static ptid_t array_wait(ptid_t, struct target_waitstatus *);
+static int array_insert_breakpoint(CORE_ADDR, const char *);
+static int array_remove_breakpoint(CORE_ADDR, const char *);
+static int tohex(int);
+static int to_hex(int);
+static int from_hex(int);
+static int array_send_packet(char *);
+static int array_get_packet(char *);
+static unsigned long ascii2hexword(unsigned char *);
+static void hexword2ascii(unsigned char *, unsigned long);
 
 #define LOG_FILE "monitor.log"
-#if defined (LOG_FILE)
+#if defined(LOG_FILE)
 FILE *log_file;
 #endif /* LOG_FILE */
 
@@ -99,13 +101,12 @@ struct serial *array_desc = NULL;
  * different strings than GDB does, and doesn't support all the
  * registers either. So, typing "info reg sp" becomes a "r30".
  */
-extern char *tmp_mips_processor_type;
-extern int mips_set_processor_type ();
+extern const char *tmp_mips_processor_type;
 
 static struct target_ops array_ops;
 
 static void
-init_array_ops (void)
+init_array_ops(void)
 {
   array_ops.to_shortname = "array";
   array_ops.to_longname =
@@ -177,23 +178,25 @@ Specify the serial device it is connected to (e.g. /dev/ttya).";
 /*
  * printf_monitor -- send data to monitor.  Works just like printf.
  */
-static void
-printf_monitor (char *pattern,...)
+static void ATTR_FORMAT(gnu_printf, 1, 2)
+printf_monitor(const char *pattern, ...)
 {
   va_list args;
   char buf[PBUFSIZ];
+#ifdef ALLOW_UNUSED_VARIABLES
   int i;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
-  va_start (args, pattern);
+  va_start(args, pattern);
 
-  vsprintf (buf, pattern, args);
+  vsnprintf(buf, sizeof(buf), pattern, args);
 
-  debuglogs (1, "printf_monitor(), Sending: \"%s\".", buf);
+  debuglogs(1, "printf_monitor(), Sending: \"%s\".", buf);
 
-  if (strlen (buf) > PBUFSIZ)
-    error ("printf_monitor(): string too long");
-  if (serial_write (array_desc, buf, strlen (buf)))
-    fprintf (stderr, "serial_write failed: %s\n", safe_strerror (errno));
+  if (strlen(buf) > PBUFSIZ)
+    error("printf_monitor(): string too long");
+  if (serial_write(array_desc, buf, strlen(buf)))
+    fprintf(stderr, "serial_write failed: %s\n", safe_strerror(errno));
 }
 /*
  * write_monitor -- send raw data to monitor.
@@ -215,8 +218,8 @@ write_monitor (char data[], int len)
  *      the sr_get_debug() value, the second arg is a printf buffer and args
  *      to be formatted and printed. A CR is added after each string is printed.
  */
-static void
-debuglogs (int level, char *pattern,...)
+static void ATTR_FORMAT(gnu_printf, 2, 3)
+debuglogs(int level, const char *pattern, ...)
 {
   va_list args;
   char *p;
@@ -224,15 +227,16 @@ debuglogs (int level, char *pattern,...)
   char newbuf[PBUFSIZ];
   int i;
 
-  va_start (args, pattern);
+  va_start(args, pattern);
 
   if ((level < 0) || (level > 100))
     {
-      error ("Bad argument passed to debuglogs(), needs debug level");
+      error(_("Bad argument passed to debuglogs(), needs valid debug level"));
       return;
     }
 
-  vsprintf (buf, pattern, args);	/* format the string */
+  /* format the string: */
+  vsnprintf((char *restrict)buf, sizeof(buf), pattern, args);
 
   /* convert some characters so it'll look right in the log */
   p = newbuf;
@@ -336,19 +340,18 @@ readchar (int timeout)
  *      it out. Let the user break out immediately.
  */
 static void
-expect (char *string, int discard)
+expect(const char *string, int discard)
 {
-  char *p = string;
+  const char *p = string;
   int c;
 
-
-  debuglogs (1, "Expecting \"%s\".", string);
+  debuglogs(1, "Expecting \"%s\".", string);
 
   immediate_quit++;
   while (1)
     {
-      c = readchar (timeout);
-      if (!isascii (c))
+      c = readchar(timeout);
+      if (!isascii(c))
 	continue;
       if (c == *p++)
 	{
@@ -385,16 +388,16 @@ expect (char *string, int discard)
    necessary to prevent getting into states from which we can't
    recover.  */
 static void
-expect_prompt (int discard)
+expect_prompt(int discard)
 {
-  expect (ARRAY_PROMPT, discard);
+  expect(ARRAY_PROMPT, discard);
 }
 
 /*
  * junk -- ignore junk characters. Returns a 1 if junk, 0 otherwise
  */
 static int
-junk (char ch)
+junk(char ch)
 {
   switch (ch)
     {
@@ -404,12 +407,12 @@ junk (char ch)
     case '\t':
     case '\r':
     case '\n':
-      if (sr_get_debug () > 5)
-	debuglogs (5, "Ignoring \'%c\'.", ch);
+      if (sr_get_debug() > 5)
+	debuglogs(5, "Ignoring \'%c\'.", ch);
       return 1;
     default:
-      if (sr_get_debug () > 5)
-	debuglogs (5, "Accepting \'%c\'.", ch);
+      if (sr_get_debug() > 5)
+	debuglogs(5, "Accepting \'%c\'.", ch);
       return 0;
     }
 }
@@ -484,17 +487,20 @@ get_hex_byte (char *byt)
  *      and put them in registers starting at REGNO.
  */
 static int
-get_hex_word (void)
+get_hex_word(void)
 {
-  long val, newval;
+  long val;
+#ifdef ALLOW_UNUSED_VARIABLES
+  long newval;
+#endif /* ALLOW_UNUSED_VARIABLES */
   int i;
 
   val = 0;
 
   for (i = 0; i < 8; i++)
-    val = (val << 4) + get_hex_digit (i == 0);
+    val = ((val << 4) + get_hex_digit(i == 0));
 
-  debuglogs (4, "get_hex_word() got a 0x%x.", val);
+  debuglogs(4, "get_hex_word() got a 0x%x.", (unsigned int)val);
 
   return val;
 }
@@ -502,7 +508,7 @@ get_hex_word (void)
 /* This is called not only when we first attach, but also when the
    user types "run" after having attached.  */
 static void
-array_create_inferior (char *execfile, char *args, char **env)
+array_create_inferior(char *execfile, char *args, char **env)
 {
   int entry_pt;
 
@@ -535,55 +541,70 @@ array_create_inferior (char *execfile, char *args, char **env)
   proceed ((CORE_ADDR) entry_pt, TARGET_SIGNAL_DEFAULT, 0);
 }
 
+
+#if (defined(TEST_SET) || defined(DEBUG) || defined(_DEBUG) || \
+     defined(GDB_DEBUG) || defined(TEST)) && defined(PBUFSIZ)
+# ifndef TEST_ARRAY
+#  define TEST_ARRAY 1
+# endif /* !TEST_ARRAY */
+#endif /* (TEST_SET || DEBUG || _DEBUG || GDB_DEBUG || TEST) && PBUFSIZ */
+
 /*
  * array_open -- open a connection to a remote debugger.
  *      NAME is the filename used for communication.
  */
 static int baudrate = 9600;
 static char dev_name[100];
+extern void mips_set_processor_type_command(const char *, int);
 
 static void
-array_open (char *args, char *name, int from_tty)
+array_open(const char *args, char *name, int from_tty)
 {
+  /* keep this condition the same as where it is used: */
+#if defined(TEST_ARRAY)
   char packet[PBUFSIZ];
+#endif /* TEST_ARRAY */
 
   if (args == NULL)
-    error ("Use `target %s DEVICE-NAME' to use a serial port, or \n\
-`target %s HOST-NAME:PORT-NUMBER' to use a network connection.", name, name);
+    error(_("Use `target %s DEVICE-NAME' to use a serial port, or \n\
+`target %s HOST-NAME:PORT-NUMBER' to use a network connection."), name, name);
 
-/*  if (is_open) */
-  array_close (0);
+#if 0
+  if (is_open)
+#endif /* 0 */
+  array_close(0);
 
-  target_preopen (from_tty);
-  unpush_target (&array_ops);
+  target_preopen(from_tty);
+  unpush_target(&array_ops);
 
   tmp_mips_processor_type = "lsi33k";	/* change the default from r3051 */
-  mips_set_processor_type_command ("lsi33k", 0);
+  mips_set_processor_type_command("lsi33k", 0);
 
-  strcpy (dev_name, args);
-  array_desc = serial_open (dev_name);
+  strcpy(dev_name, args);
+  array_desc = serial_open(dev_name);
 
   if (array_desc == NULL)
-    perror_with_name (dev_name);
+    perror_with_name(dev_name);
 
   if (baud_rate != -1)
     {
-      if (serial_setbaudrate (array_desc, baud_rate))
+      if (serial_setbaudrate(array_desc, baud_rate))
 	{
-	  serial_close (array_desc);
-	  perror_with_name (name);
+	  serial_close(array_desc);
+	  perror_with_name(name);
 	}
     }
 
-  serial_raw (array_desc);
+  serial_raw(array_desc);
 
-#if defined (LOG_FILE)
-  log_file = fopen (LOG_FILE, "w");
+#if defined(LOG_FILE)
+  log_file = fopen(LOG_FILE, "w");
   if (log_file == NULL)
-    perror_with_name (LOG_FILE);
-  fprintf (log_file, "GDB %s (%s", version, host_name);
-  fprintf (log_file, " --target %s)\n", array_ops.to_shortname);
-  fprintf (log_file, "Remote target %s connected to %s\n\n", array_ops.to_shortname, dev_name);
+    perror_with_name(LOG_FILE);
+  fprintf(log_file, "GDB %s (%s", version, host_name);
+  fprintf(log_file, " --target %s)\n", array_ops.to_shortname);
+  fprintf(log_file, "Remote target %s connected to %s\n\n",
+	  array_ops.to_shortname, dev_name);
 #endif /* LOG_FILE */
 
   /* see if the target is alive. For a ROM monitor, we can just try to force the
@@ -591,22 +612,23 @@ array_open (char *args, char *name, int from_tty)
      being debugged is sitting at a breakpoint and waiting for GDB to initialize
      the connection. We force it to give us an empty packet to see if it's alive.
    */
-  debuglogs (3, "Trying to ACK the target's debug stub");
+  debuglogs(3, "Trying to ACK the target's debug stub");
   /* unless your are on the new hardware, the old board won't initialize
      because the '@' doesn't flush output like it does on the new ROMS.
    */
-  printf_monitor ("@");		/* ask for the last signal */
-  expect_prompt (1);		/* See if we get a expect_prompt */
+  printf_monitor("@");		/* ask for the last signal */
+  expect_prompt(1);		/* See if we get a expect_prompt */
 #ifdef TEST_ARRAY		/* skip packet for testing */
-  make_gdb_packet (packet, "?");	/* ask for a bogus packet */
-  if (array_send_packet (packet) == 0)
-    error ("Couldn't transmit packet\n");
-  printf_monitor ("@\n");	/* force it to flush stdout */
-  expect_prompt (1);		/* See if we get a expect_prompt */
-#endif
-  push_target (&array_ops);
+  make_gdb_packet(packet, "?");	/* ask for a bogus packet */
+  if (array_send_packet(packet) == 0)
+    error(_("Failed to transmit packet\n"));
+  printf_monitor("@\n");	/* force it to flush stdout */
+  expect_prompt(1);		/* See if we get a expect_prompt */
+#endif /* TEST_ARRAY */
+  push_target(&array_ops);
   if (from_tty)
-    printf ("Remote target %s connected to %s\n", array_ops.to_shortname, dev_name);
+    printf("Remote target %s connected to %s\n", array_ops.to_shortname,
+	   dev_name);
 }
 
 /*
@@ -615,22 +637,22 @@ array_open (char *args, char *name, int from_tty)
  */
 
 static void
-array_close (int quitting)
+array_close(int quitting)
 {
-  serial_close (array_desc);
+  serial_close(array_desc);
   array_desc = NULL;
 
-  debuglogs (1, "array_close (quitting=%d)", quitting);
+  debuglogs(1, "array_close (quitting=%d)", quitting);
 
-#if defined (LOG_FILE)
+#if defined(LOG_FILE)
   if (log_file)
     {
-      if (ferror (log_file))
-	printf_filtered ("Error writing log file.\n");
-      if (fclose (log_file) != 0)
-	printf_filtered ("Error closing log file.\n");
+      if (ferror(log_file))
+	printf_filtered("Error writing log file.\n");
+      if (fclose(log_file) != 0)
+	printf_filtered("Error closing log file.\n");
     }
-#endif
+#endif /* LOG_FILE */
 }
 
 /*
@@ -639,30 +661,30 @@ array_close (int quitting)
  *      else with your gdb.
  */
 static void
-array_detach (int from_tty)
+array_detach(int from_tty)
 {
 
-  debuglogs (1, "array_detach ()");
+  debuglogs(1, "array_detach()");
 
-  pop_target ();		/* calls array_close to do the real work */
+  pop_target();		/* calls array_close to do the real work */
   if (from_tty)
-    printf ("Ending remote %s debugging\n", target_shortname);
+    printf("Ending remote %s debugging\n", target_shortname);
 }
 
 /*
  * array_attach -- attach GDB to the target.
  */
 static void
-array_attach (char *args, int from_tty)
+array_attach(char *args, int from_tty)
 {
   if (from_tty)
-    printf ("Starting remote %s debugging\n", target_shortname);
+    printf("Starting remote %s debugging\n", target_shortname);
 
-  debuglogs (1, "array_attach (args=%s)", args);
+  debuglogs(1, "array_attach (args=%s)", args);
 
-  printf_monitor ("go %x\n");
+  printf_monitor("go %x\n", 1U);
   /* swallow the echo.  */
-  expect ("go %x\n", 1);
+  expect("go %x\n", 1);
 }
 
 /*
@@ -690,38 +712,41 @@ array_resume (ptid_t ptid, int step, enum target_signal sig)
  *          storing status in status just as `wait' would.
  */
 static ptid_t
-array_wait (ptid_t ptid, struct target_waitstatus *status)
+array_wait(ptid_t ptid, struct target_waitstatus *status)
 {
   int old_timeout = timeout;
-  int result, i;
+#ifdef ALLOW_UNUSED_VARIABLES
+  int result;
+#endif /* ALLOW_UNUSED_VARIABLES */
+  int i;
   char c;
   struct serial *tty_desc;
   serial_ttystate ttystate;
 
-  debuglogs (1, "array_wait (), printing extraneous text.");
+  debuglogs(1, "array_wait(), printing extraneous text.");
 
   status->kind = TARGET_WAITKIND_EXITED;
   status->value.integer = 0;
 
-  timeout = 0;			/* Do NOT time out -- user program is running. */
+  timeout = 0;		/* Do NOT time out -- user program is running. */
 
 #if !defined(__GO32__) && !defined(__MSDOS__) && !defined(_WIN32)
-  tty_desc = serial_fdopen (0);
-  ttystate = serial_get_tty_state (tty_desc);
-  serial_raw (tty_desc);
+  tty_desc = serial_fdopen(0);
+  ttystate = serial_get_tty_state(tty_desc);
+  serial_raw(tty_desc);
 
   i = 0;
   /* poll on the serial port and the keyboard. */
   while (1)
     {
-      c = readchar (timeout);
+      c = readchar(timeout);
       if (c > 0)
 	{
 	  if (c == *(ARRAY_PROMPT + i))
 	    {
-	      if (++i >= strlen (ARRAY_PROMPT))
+	      if (++i >= (int)strlen(ARRAY_PROMPT))
 		{		/* matched the prompt */
-		  debuglogs (4, "array_wait(), got the expect_prompt.");
+		  debuglogs(4, "array_wait(), got the expect_prompt.");
 		  break;
 		}
 	    }
@@ -729,26 +754,26 @@ array_wait (ptid_t ptid, struct target_waitstatus *status)
 	    {			/* not the prompt */
 	      i = 0;
 	    }
-	  fputc_unfiltered (c, gdb_stdout);
-	  gdb_flush (gdb_stdout);
+	  fputc_unfiltered(c, gdb_stdout);
+	  gdb_flush(gdb_stdout);
 	}
-      c = serial_readchar (tty_desc, timeout);
+      c = serial_readchar(tty_desc, timeout);
       if (c > 0)
 	{
-	  serial_write (array_desc, &c, 1);
-	  /* do this so it looks like there's keyboard echo */
+	  serial_write(array_desc, &c, 1);
+	  /* do this so it looks like there is keyboard echo */
 	  if (c == 3)		/* exit on Control-C */
 	    break;
 # if 0
-	  fputc_unfiltered (c, gdb_stdout);
-	  gdb_flush (gdb_stdout);
+	  fputc_unfiltered(c, gdb_stdout);
+	  gdb_flush(gdb_stdout);
 # endif /* 0 */
 	}
     }
-  serial_set_tty_state (tty_desc, ttystate);
+  serial_set_tty_state(tty_desc, ttystate);
 #else
-  expect_prompt (1);
-  debuglogs (4, "array_wait(), got the expect_prompt.");
+  expect_prompt(1);
+  debuglogs(4, "array_wait(), got the expect_prompt.");
 #endif /* !__GO32__ && !__MSDOS__ && !_WIN32 */
 
   status->kind = TARGET_WAITKIND_STOPPED;
@@ -759,36 +784,49 @@ array_wait (ptid_t ptid, struct target_waitstatus *status)
   return inferior_ptid;
 }
 
+#ifndef MAX_REGISTER_RAW_SIZE
+/* arbitrarily made-up default: */
+# define MAX_REGISTER_RAW_SIZE 4
+#endif /* !MAX_REGISTER_RAW_SIZE */
+#ifndef REGISTER_RAW_SIZE
+# ifdef DEPRECATED_REGISTER_RAW_SIZE
+#  define REGISTER_RAW_SIZE(foo) DEPRECATED_REGISTER_RAW_SIZE(foo)
+# endif /* DEPRECATED_REGISTER_RAW_SIZE */
+#endif /* !REGISTER_RAW_SIZE */
+extern void supply_register(int, char *);
+
 /*
  * array_fetch_registers -- read the remote registers into the
  *      block regs.
  */
 static void
-array_fetch_registers (int ignored)
+array_fetch_registers(int ignored)
 {
-  char *reg = alloca (MAX_REGISTER_RAW_SIZE);
+  char *reg = (char *)alloca(MAX_REGISTER_RAW_SIZE);
   int regno;
+#ifdef ALLOW_UNUSED_VARIABLES
   char *p;
-  char *packet = alloca (PBUFSIZ);
+#endif /* ALLOW_UNUSED_VARIABLES */
+  char *packet = (char *)alloca(PBUFSIZ);
 
-  debuglogs (1, "array_fetch_registers (ignored=%d)\n", ignored);
+  debuglogs(1, "array_fetch_registers (ignored=%d)\n", ignored);
 
-  memset (packet, 0, PBUFSIZ);
-  make_gdb_packet (packet, "g");
-  if (array_send_packet (packet) == 0)
-    error ("Couldn't transmit packet\n");
+  memset(packet, 0, PBUFSIZ);
+  make_gdb_packet(packet, "g");
+  if (array_send_packet(packet) == 0)
+    error(_("Failed to transmit packet\n"));
   if (array_get_packet (packet) == 0)
-    error ("Couldn't receive packet\n");
+    error(_("Failed to receive packet\n"));
   /* FIXME: read bytes from packet */
-  debuglogs (4, "array_fetch_registers: Got a \"%s\" back\n", packet);
-  for (regno = 0; regno <= PC_REGNUM + 4; regno++)
+  debuglogs(4, "array_fetch_registers: Got a \"%s\" back\n", packet);
+  for (regno = 0; regno <= (PC_REGNUM + 4); regno++)
     {
       /* supply register stores in target byte order, so swap here */
       /* FIXME: convert from ASCII hex to raw bytes */
-      LONGEST i = ascii2hexword (packet + (regno * 8));
-      debuglogs (5, "Adding register %d = %x\n", regno, i);
-      store_unsigned_integer (&reg, REGISTER_RAW_SIZE (regno), i);
-      supply_register (regno, (char *) &reg);
+      LONGEST i = ascii2hexword((unsigned char *)(packet + (regno * 8)));
+      debuglogs(5, "Adding register %d = %x\n", regno, (unsigned int)i);
+      store_unsigned_integer((gdb_byte *)&reg, REGISTER_RAW_SIZE(regno), i);
+      supply_register(regno, (char *)&reg);
     }
 }
 
@@ -797,16 +835,16 @@ array_fetch_registers (int ignored)
  * protocol based on GDB's remote protocol.
  */
 static void
-array_fetch_register (int ignored)
+array_fetch_register(int ignored ATTRIBUTE_UNUSED)
 {
-  array_fetch_registers (0 /* ignored */);
+  array_fetch_registers(0 /* ignored */);
 }
 
 /*
  * Get all the registers from the targets. They come back in a large array.
  */
 static void
-array_store_registers (int ignored)
+array_store_registers(int ignored)
 {
   int regno;
   unsigned long i;
@@ -814,10 +852,10 @@ array_store_registers (int ignored)
   char buf[PBUFSIZ];
   char num[9];
 
-  debuglogs (1, "array_store_registers()");
+  debuglogs(1, "array_store_registers()");
 
-  memset (packet, 0, PBUFSIZ);
-  memset (buf, 0, PBUFSIZ);
+  memset(packet, 0, PBUFSIZ);
+  memset(buf, 0, PBUFSIZ);
   buf[0] = 'G';
 
   /* Unimplemented registers read as all bits zero.  */
@@ -826,18 +864,18 @@ array_store_registers (int ignored)
     {				/* FIXME */
       /* supply register stores in target byte order, so swap here */
       /* FIXME: convert from ASCII hex to raw bytes */
-      i = (unsigned long) read_register (regno);
-      hexword2ascii (num, i);
-      strcpy (buf + (regno * 8) + 1, num);
+      i = (unsigned long)read_register(regno);
+      hexword2ascii((unsigned char *)num, i);
+      strcpy((buf + (regno * 8) + 1), num);
     }
   *(buf + (regno * 8) + 2) = 0;
-  make_gdb_packet (packet, buf);
-  if (array_send_packet (packet) == 0)
-    error ("Couldn't transmit packet\n");
-  if (array_get_packet (packet) == 0)
-    error ("Couldn't receive packet\n");
+  make_gdb_packet(packet, buf);
+  if (array_send_packet(packet) == 0)
+    error(_("Failed to transmit packet\n"));
+  if (array_get_packet(packet) == 0)
+    error(_("Failed to receive packet\n"));
 
-  registers_changed ();
+  registers_changed();
 }
 
 /*
@@ -845,7 +883,7 @@ array_store_registers (int ignored)
  * protocol based on GDB's remote protocol.
  */
 static void
-array_store_register (int ignored)
+array_store_register(int ignored)
 {
   array_store_registers (0 /* ignored */);
 }
@@ -857,16 +895,16 @@ array_store_register (int ignored)
    debugged.  */
 
 static void
-array_prepare_to_store (void)
+array_prepare_to_store(void)
 {
-  /* Do nothing, since we can store individual regs */
+  return; /* Do nothing, since we can store individual regs */
 }
 
 static void
-array_files_info (void)
+array_files_info(struct target_ops *unused_targops ATTRIBUTE_UNUSED)
 {
-  printf ("\tAttached to %s at %d baud.\n",
-	  dev_name, baudrate);
+  printf("\tAttached to %s at %d baud.\n",
+	 dev_name, baudrate);
 }
 
 /*
@@ -874,25 +912,28 @@ array_files_info (void)
  *      memory at MYADDR to inferior's memory at MEMADDR.  Returns length moved.
  */
 static int
-array_write_inferior_memory (CORE_ADDR memaddr, unsigned char *myaddr, int len)
+array_write_inferior_memory(CORE_ADDR memaddr, unsigned char *myaddr, int len)
 {
+#ifdef ALLOW_UNUSED_VARIABLES
   unsigned long i;
+#endif /* ALLOW_UNUSED_VARIABLES */
   int j;
   char packet[PBUFSIZ];
   char buf[PBUFSIZ];
   char num[9];
   char *p;
 
-  debuglogs (1, "array_write_inferior_memory (memaddr=0x%x, myaddr=0x%x, len=%d)", memaddr, myaddr, len);
-  memset (buf, '\0', PBUFSIZ);	/* this also sets the string terminator */
+  debuglogs(1, "array_write_inferior_memory(memaddr=0x%x, myaddr=0x%x, len=%d)",
+	    (unsigned int)memaddr, (unsigned int)myaddr, len);
+  memset(buf, '\0', PBUFSIZ);	/* this also sets the string terminator */
   p = buf;
 
   *p++ = 'M';			/* The command to write memory */
-  hexword2ascii (num, memaddr);	/* convert the address */
-  strcpy (p, num);		/* copy the address */
+  hexword2ascii((unsigned char *)num, memaddr);	/* convert the address */
+  strcpy(p, num);		/* copy the address */
   p += 8;
   *p++ = ',';			/* add comma delimeter */
-  hexword2ascii (num, len);	/* Get the length as a 4 digit number */
+  hexword2ascii((unsigned char *)num, len); /* Get length as a 4 digit number */
   *p++ = num[4];
   *p++ = num[5];
   *p++ = num[6];
@@ -900,15 +941,15 @@ array_write_inferior_memory (CORE_ADDR memaddr, unsigned char *myaddr, int len)
   *p++ = ':';			/* add the colon delimeter */
   for (j = 0; j < len; j++)
     {				/* copy the data in after converting it */
-      *p++ = tohex ((myaddr[j] >> 4) & 0xf);
-      *p++ = tohex (myaddr[j] & 0xf);
+      *p++ = tohex((myaddr[j] >> 4) & 0xf);
+      *p++ = tohex(myaddr[j] & 0xf);
     }
 
-  make_gdb_packet (packet, buf);
-  if (array_send_packet (packet) == 0)
-    error ("Couldn't transmit packet\n");
-  if (array_get_packet (packet) == 0)
-    error ("Couldn't receive packet\n");
+  make_gdb_packet(packet, buf);
+  if (array_send_packet(packet) == 0)
+    error(_("Failed to transmit packet\n"));
+  if (array_get_packet(packet) == 0)
+    error(_("Failed to receive packet\n"));
 
   return len;
 }
@@ -919,7 +960,7 @@ array_write_inferior_memory (CORE_ADDR memaddr, unsigned char *myaddr, int len)
  *      length moved.
  */
 static int
-array_read_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
+array_read_inferior_memory(CORE_ADDR memaddr, char *myaddr, int len)
 {
   int j;
   char buf[20];
@@ -928,7 +969,8 @@ array_read_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
   unsigned long startaddr;	/* Starting address of this pass.  */
   int len_this_pass;		/* Number of bytes to read in this pass.  */
 
-  debuglogs (1, "array_read_inferior_memory (memaddr=0x%x, myaddr=0x%x, len=%d)", memaddr, myaddr, len);
+  debuglogs(1, "array_read_inferior_memory (memaddr=0x%x, myaddr=0x%x, len=%d)",
+	    (unsigned int)memaddr, (unsigned int)myaddr, len);
 
   /* Note that this code works correctly if startaddr is just less
      than UINT_MAX (well, really CORE_ADDR_MAX if there was such a
@@ -951,7 +993,7 @@ array_read_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
       len_this_pass = 16;
       if ((startaddr % 16) != 0)
 	{
-	  len_this_pass -= startaddr % 16;
+	  len_this_pass -= (startaddr % 16);
 	}
       /* Only transfer bytes we need */
       if (len_this_pass > (len - count))
@@ -959,29 +1001,31 @@ array_read_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
 	  len_this_pass = (len - count);
 	}
       /* Fetch the bytes */
-      debuglogs (3, "read %d bytes from inferior address %x", len_this_pass,
-		 startaddr);
-      sprintf (buf, "m%08lx,%04x", startaddr, len_this_pass);
-      make_gdb_packet (packet, buf);
-      if (array_send_packet (packet) == 0)
+      debuglogs(3, "read %d bytes from inferior address %x", len_this_pass,
+		(unsigned int)startaddr);
+      snprintf(buf, sizeof(buf), "m%08lx,%04x", startaddr, len_this_pass);
+      make_gdb_packet(packet, buf);
+      if (array_send_packet(packet) == 0)
 	{
-	  error ("Couldn't transmit packet\n");
+	  error(_("Failed to transmit packet\n"));
 	}
-      if (array_get_packet (packet) == 0)
+      if (array_get_packet(packet) == 0)
 	{
-	  error ("Couldn't receive packet\n");
+	  error(_("Failed to receive packet\n"));
 	}
       if (*packet == 0)
 	{
-	  error ("Got no data in the GDB packet\n");
+	  error(_("Got no data in the GDB packet\n"));
 	}
       /* Pick packet apart and xfer bytes to myaddr */
-      debuglogs (4, "array_read_inferior_memory: Got a \"%s\" back\n", packet);
+      debuglogs(4, "array_read_inferior_memory: Got a \"%s\" back\n", packet);
       for (j = 0; j < len_this_pass; j++)
 	{
 	  /* extract the byte values */
-	  myaddr[count++] = from_hex (*(packet + (j * 2))) * 16 + from_hex (*(packet + (j * 2) + 1));
-	  debuglogs (5, "myaddr[%d] set to %x\n", count - 1, myaddr[count - 1]);
+	  myaddr[count++] = ((from_hex(*(packet + (j * 2))) * 16)
+			     + from_hex(*(packet + (j * 2) + 1)));
+	  debuglogs(5, "myaddr[%d] set to %x\n", (count - 1),
+		    myaddr[count - 1]);
 	}
     }
   return (count);
@@ -994,17 +1038,17 @@ array_read_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
    Returns the number of bytes transferred. */
 
 static int
-array_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
-		   struct mem_attrib *attrib, struct target_ops *target)
+array_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
+		  struct mem_attrib *attrib, struct target_ops *target)
 {
   if (write)
-    return array_write_inferior_memory (memaddr, myaddr, len);
+    return array_write_inferior_memory(memaddr, (unsigned char *)myaddr, len);
   else
-    return array_read_inferior_memory (memaddr, myaddr, len);
+    return array_read_inferior_memory(memaddr, (char *)myaddr, len);
 }
 
 static void
-array_kill (char *args, int from_tty)
+array_kill(const char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
   return;			/* ignore attempts to kill target system */
 }
@@ -1015,10 +1059,10 @@ array_kill (char *args, int from_tty)
    instructions.  */
 
 static void
-array_mourn_inferior (void)
+array_mourn_inferior(void)
 {
-  remove_breakpoints ();
-  generic_mourn_inferior ();	/* Do all the proper things now */
+  remove_breakpoints();
+  generic_mourn_inferior();	/* Do all the proper things now */
 }
 
 #define MAX_ARRAY_BREAKPOINTS 16
@@ -1030,30 +1074,30 @@ static CORE_ADDR breakaddr[MAX_ARRAY_BREAKPOINTS] =
  * array_insert_breakpoint -- add a breakpoint
  */
 static int
-array_insert_breakpoint (CORE_ADDR addr, char *shadow)
+array_insert_breakpoint(CORE_ADDR addr, const char *shadow)
 {
   int i;
   int bp_size = 0;
   CORE_ADDR bp_addr = addr;
 
-  debuglogs (1, "array_insert_breakpoint() addr = 0x%x", addr);
-  BREAKPOINT_FROM_PC (&bp_addr, &bp_size);
+  debuglogs(1, "array_insert_breakpoint() addr = 0x%x", (unsigned int)addr);
+  BREAKPOINT_FROM_PC(&bp_addr, &bp_size);
 
   for (i = 0; i <= MAX_ARRAY_BREAKPOINTS; i++)
     {
       if (breakaddr[i] == 0)
 	{
 	  breakaddr[i] = addr;
-	  if (sr_get_debug () > 4)
-	    printf ("Breakpoint at %s\n", paddr_nz (addr));
-	  array_read_inferior_memory (bp_addr, shadow, bp_size);
-	  printf_monitor ("b 0x%x\n", addr);
-	  expect_prompt (1);
+	  if (sr_get_debug() > 4)
+	    printf("Breakpoint at %s\n", paddr_nz(addr));
+	  array_read_inferior_memory(bp_addr, (char *)shadow, bp_size);
+	  printf_monitor("b 0x%x\n", (unsigned int)addr);
+	  expect_prompt(1);
 	  return 0;
 	}
     }
 
-  fprintf (stderr, "Too many breakpoints (> 16) for monitor\n");
+  fprintf(stderr, "Too many breakpoints (> 16) for monitor\n");
   return 1;
 }
 
@@ -1061,11 +1105,11 @@ array_insert_breakpoint (CORE_ADDR addr, char *shadow)
  * _remove_breakpoint -- Tell the monitor to remove a breakpoint
  */
 static int
-array_remove_breakpoint (CORE_ADDR addr, char *shadow)
+array_remove_breakpoint(CORE_ADDR addr, const char *shadow)
 {
   int i;
 
-  debuglogs (1, "array_remove_breakpoint() addr = 0x%x", addr);
+  debuglogs(1, "array_remove_breakpoint() addr = 0x%x", (unsigned int)addr);
 
   for (i = 0; i < MAX_ARRAY_BREAKPOINTS; i++)
     {
@@ -1097,7 +1141,7 @@ array_stop (void)
  *      expect_prompt is seen. FIXME
  */
 static void
-monitor_command (char *args, int fromtty)
+monitor_command(const char *args, int fromtty)
 {
   debuglogs (1, "monitor_command (args=%s)", args);
 
@@ -1128,17 +1172,17 @@ monitor_command (char *args, int fromtty)
  *
  */
 static void
-make_gdb_packet (char *buf, char *data)
+make_gdb_packet(char *buf, const char *data)
 {
   int i;
   unsigned char csum = 0;
   int cnt;
   char *p;
 
-  debuglogs (3, "make_gdb_packet(%s)\n", data);
-  cnt = strlen (data);
+  debuglogs(3, "make_gdb_packet(%s)\n", data);
+  cnt = strlen(data);
   if (cnt > PBUFSIZ)
-    error ("make_gdb_packet(): to much data\n");
+    error(_("make_gdb_packet(): too much data\n"));
 
   /* start with the packet header */
   p = buf;
@@ -1174,7 +1218,7 @@ array_send_packet (char *packet)
 
   retries = 0;
 
-#if 0
+#if defined(HAVE_STRLEN) && defined(HAVE_ISXDIGIT) && defined(HAVE_ISALPHA)
   /* scan the packet to make sure it only contains valid characters.
      this may sound silly, but sometimes a garbled packet will hang
      the target board. We scan the whole thing, then print the error
@@ -1198,7 +1242,7 @@ array_send_packet (char *packet)
 	  debuglogs (4, "array_send_packet(): Found a non-ascii digit \'%c\' in the packet.\n", packet[i]);
 	}
     }
-#endif /* 0 */
+#endif /* HAVE_STRLEN && HAVE_ISXDIGIT && HAVE_ISALPHA */
 
   if (retries > 0)
     error ("Cannot send packet, found %d non-ascii characters", retries);
@@ -1359,7 +1403,7 @@ array_get_packet (char *packet)
  * ascii2hexword -- convert an ascii number represented by 8 digits to a hex value.
  */
 static unsigned long
-ascii2hexword (unsigned char *mem)
+ascii2hexword(unsigned char *mem)
 {
   unsigned long val;
   int i;
@@ -1369,16 +1413,17 @@ ascii2hexword (unsigned char *mem)
   for (i = 0; i < 8; i++)
     {
       val <<= 4;
-      if (mem[i] >= 'A' && mem[i] <= 'F')
-	val = val + mem[i] - 'A' + 10;
-      if (mem[i] >= 'a' && mem[i] <= 'f')
-	val = val + mem[i] - 'a' + 10;
-      if (mem[i] >= '0' && mem[i] <= '9')
-	val = val + mem[i] - '0';
+      if ((mem[i] >= 'A') && (mem[i] <= 'F'))
+	val = (val + mem[i] - 'A' + 10);
+      if ((mem[i] >= 'a') && (mem[i] <= 'f'))
+	val = (val + mem[i] - 'a' + 10);
+      if ((mem[i] >= '0') && (mem[i] <= '9'))
+	val = (val + mem[i] - '0');
       buf[i] = mem[i];
     }
   buf[8] = '\0';
-  debuglogs (4, "ascii2hexword() got a 0x%x from %s(%x).\n", val, buf, mem);
+  debuglogs(4, "ascii2hexword() got a 0x%x from %s(%x).\n", (unsigned int)val,
+	    buf, (unsigned int)mem);
   return val;
 }
 
@@ -1387,73 +1432,76 @@ ascii2hexword (unsigned char *mem)
  *      digits.
  */
 static void
-hexword2ascii (unsigned char *mem, unsigned long num)
+hexword2ascii(unsigned char *mem, unsigned long num)
 {
   int i;
+#ifdef ALLOW_UNUSED_VARIABLES
   unsigned char ch;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
-  debuglogs (4, "hexword2ascii() converting %x ", num);
+  debuglogs(4, "hexword2ascii() converting %x ", (unsigned int)num);
   for (i = 7; i >= 0; i--)
     {
-      mem[i] = tohex ((num >> 4) & 0xf);
-      mem[i] = tohex (num & 0xf);
-      num = num >> 4;
+      mem[i] = tohex((num >> 4) & 0xf);
+      mem[i] = tohex(num & 0xf);
+      num = (num >> 4);
     }
   mem[8] = '\0';
-  debuglogs (4, "\tto a %s", mem);
+  debuglogs(4, "\tto a %s", mem);
 }
 
 /* Convert hex digit A to a number.  */
 static int
-from_hex (int a)
+from_hex(int a)
 {
   if (a == 0)
     return 0;
 
-  debuglogs (4, "from_hex got a 0x%x(%c)\n", a, a);
-  if (a >= '0' && a <= '9')
-    return a - '0';
-  if (a >= 'a' && a <= 'f')
-    return a - 'a' + 10;
-  if (a >= 'A' && a <= 'F')
-    return a - 'A' + 10;
+  debuglogs(4, "from_hex got a 0x%x(%c)\n", a, a);
+  if ((a >= '0') && (a <= '9'))
+    return (a - '0');
+  if ((a >= 'a') && (a <= 'f'))
+    return (a - 'a' + 10);
+  if ((a >= 'A') && (a <= 'F'))
+    return (a - 'A' + 10);
   else
     {
-      error ("Reply contains invalid hex digit 0x%x", a);
+      error(_("Reply contains invalid hex digit 0x%x"), a);
     }
 }
 
-/* Convert number NIB to a hex digit.  */
+/* Convert number NIB to a hex digit: */
 static int
-tohex (int nib)
+tohex(int nib)
 {
   if (nib < 10)
-    return '0' + nib;
+    return ('0' + nib);
   else
-    return 'a' + nib - 10;
+    return ('a' + nib - 10);
 }
 
 /*
  * _initialize_remote_monitors -- setup a few addtitional commands that
  *              are usually only used by monitors.
  */
+extern void _initialize_remote_monitor(void); /* -Wmissing-prototypes */
 void
-_initialize_remote_monitors (void)
+_initialize_remote_monitor(void)
 {
   /* generic monitor command */
-  add_com ("monitor", class_obscure, monitor_command,
-	   "Send a command to the debug monitor.");
-
+  add_com("monitor", class_obscure, monitor_command,
+	  "Send a command to the debug monitor.");
 }
 
 /*
  * _initialize_array -- do any special init stuff for the target.
  */
+extern void _initialize_array(void); /* -Wmissing-prototypes */
 void
-_initialize_array (void)
+_initialize_array(void)
 {
-  init_array_ops ();
-  add_target (&array_ops);
+  init_array_ops();
+  add_target(&array_ops);
 }
 
 /* EOF */

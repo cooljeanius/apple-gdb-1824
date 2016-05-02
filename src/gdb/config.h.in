@@ -327,6 +327,10 @@
    don't. */
 #undef HAVE_DECL_BASENAME
 
+/* Define to 1 if you have the declaration of `close', and to 0 if you don't.
+   */
+#undef HAVE_DECL_CLOSE
+
 /* Define to 1 if you have the declaration of `ffs', and to 0 if you don't. */
 #undef HAVE_DECL_FFS
 
@@ -551,6 +555,9 @@
 
 /* Define to 1 if you have the `iconvlist' function. */
 #undef HAVE_ICONVLIST
+
+/* Define to 1 if you have the `inet_addr' function. */
+#undef HAVE_INET_ADDR
 
 /* Define to 1 if you have the `inet_ntoa' function. */
 #undef HAVE_INET_NTOA

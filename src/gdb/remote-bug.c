@@ -39,6 +39,8 @@
 #include "serial.h"
 #include "remote-utils.h"
 
+#include "m88k-tdep.h"
+
 /* External data declarations */
 extern int stop_soon_quietly;	/* for wait_for_inferior */
 
@@ -53,6 +55,10 @@ static int bug_read_memory(CORE_ADDR memaddr,
 
 static int bug_write_memory(CORE_ADDR memaddr,
 			    unsigned char *myaddr, int len);
+
+extern int bug_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len,
+			   int write, struct mem_attrib *attrib,
+			   struct target_ops *target);
 
 extern void _initialize_remote_bug(void);
 
@@ -106,6 +112,10 @@ static int srec_noise = 0;
 
 static int need_artificial_trap = 0;
 
+#ifndef _raw_size
+# define _raw_size rawsize
+#endif /* !_raw_size */
+
 /*
  * Download a file specified in 'args', to the bug.
  */
@@ -126,14 +136,14 @@ bug_load(const char *args, int fromtty)
       return;
     }
 
-  if (bfd_check_format (abfd, bfd_object) == 0)
+  if (bfd_check_format(abfd, bfd_object) == 0)
     {
-      printf_filtered ("File is not an object file\n");
+      printf_filtered("File is not an object file\n");
       return;
     }
 
   s = abfd->sections;
-  while (s != (asection *) NULL)
+  while (s != (asection *)NULL)
     {
       srec_frame = SREC_SIZE;
       if (s->flags & SEC_LOAD)
@@ -142,12 +152,13 @@ bug_load(const char *args, int fromtty)
 
 	  char *buffer = (char *)xmalloc(srec_frame);
 
-	  printf_filtered("%s\t: 0x%4lx .. 0x%4lx  ", s->name, s->vma,
-			  (s->vma + s->_raw_size));
+	  printf_filtered("%s\t: 0x%4lx .. 0x%4lx  ", s->name,
+			  (unsigned long)s->vma,
+			  (unsigned long)(s->vma + s->_raw_size));
 	  gdb_flush(gdb_stdout);
-	  for (i = 0; i < s->_raw_size; i += srec_frame)
+	  for (i = 0; i < (int)s->_raw_size; i += srec_frame)
 	    {
-	      if (srec_frame > (s->_raw_size - i))
+	      if (srec_frame > (int)(s->_raw_size - i))
 		srec_frame = (s->_raw_size - i);
 
 	      bfd_get_section_contents(abfd, s, buffer, i, srec_frame);
@@ -166,6 +177,10 @@ bug_load(const char *args, int fromtty)
   sr_write_cr(buffer);
   gr_expect_prompt();
 }
+
+#ifdef _raw_size
+# undef _raw_size
+#endif /* _raw_size */
 
 #if defined(HAVE_ISSPACE) && defined(HAVE_MEMCPY)
 static char *
@@ -392,19 +407,19 @@ bug_scan(char *s)
 #endif /* CURRENTLY_USED || (HAVE_FFLUSH && HAVE_PRINTF) */
 
 static int
-bug_srec_write_cr (char *s)
+bug_srec_write_cr(const char *s)
 {
-  char *p = s;
+  const char *p = s;
 
   if (srec_echo_pace)
     for (p = s; *p; ++p)
       {
-	if (sr_get_debug () > 0)
-	  printf ("%c", *p);
+	if (sr_get_debug() > 0)
+	  printf("%c", *p);
 
-	do
-	  serial_write (sr_get_desc (), p, 1);
-	while (sr_pollchar () != *p);
+	do {
+	  serial_write(sr_get_desc(), p, 1);
+	} while (sr_pollchar() != *p);
       }
   else
     {
@@ -421,6 +436,14 @@ bug_srec_write_cr (char *s)
 /* arbitrarily made-up default: */
 # define MAX_REGISTER_RAW_SIZE 12
 #endif /* !MAX_REGISTER_RAW_SIZE */
+#ifndef REGISTER_RAW_SIZE
+# ifdef DEPRECATED_REGISTER_RAW_SIZE
+#  define REGISTER_RAW_SIZE(foo) DEPRECATED_REGISTER_RAW_SIZE(foo)
+# endif /* DEPRECATED_REGISTER_RAW_SIZE */
+#endif /* !REGISTER_RAW_SIZE */
+#ifndef SFIP_REGNUM
+# define SFIP_REGNUM M88K_SFIP_REGNUM
+#endif /* !SFIP_REGNUM */
 
 /* Store register REGNO, or all if REGNO == -1: */
 static void
@@ -499,6 +522,12 @@ bug_fetch_register(int regno)
   return;
 }
 
+#ifndef REGISTER_BYTE
+# ifdef DEPRECATED_REGISTER_BYTE
+#  define REGISTER_BYTE(foo) DEPRECATED_REGISTER_BYTE(foo)
+# endif /* DEPRECATED_REGISTER_BYTE */
+#endif /* REGISTER_BYTE */
+
 /* Store register REGNO, or all if REGNO == -1. */
 
 static void
@@ -560,10 +589,9 @@ bug_store_register (int regno)
    otherwise transfer them from the target.  TARGET is unused.
 
    Returns the number of bytes transferred. */
-
 int
-bug_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
-		 struct mem_attrib *attrib, struct target_ops *target)
+bug_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
+		struct mem_attrib *attrib, struct target_ops *target)
 {
   int res;
 
@@ -571,17 +599,18 @@ bug_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
     return 0;
 
   if (write)
-    res = bug_write_memory (memaddr, myaddr, len);
+    res = bug_write_memory(memaddr, (unsigned char *)myaddr, len);
   else
-    res = bug_read_memory (memaddr, myaddr, len);
+    res = bug_read_memory(memaddr, (unsigned char *)myaddr, len);
 
   return res;
 }
 
+/* */
 static void
-start_load (void)
+start_load(void)
 {
-  char *command;
+  const char *command;
 
   command = (srec_echo_pace ? "lo 0 ;x" : "lo 0");
 
@@ -605,7 +634,7 @@ start_load (void)
    data records each containing srec_bytes, and an S7 termination
    record.  */
 
-static char *srecord_strings[] =
+static const char *srecord_strings[] =
 {
   "S-RECORD",
   "-Bug>",
@@ -780,57 +809,57 @@ bug_read_memory (CORE_ADDR memaddr, unsigned char *myaddr, int len)
 	  goto done;
 
 	case '3':
-	  sr_get_hex_byte (&c);
-	  inaddr = (inaddr << 8) + c;
+	  sr_get_hex_byte((char *)&c);
+	  inaddr = ((inaddr << 8) + c);
 	  checksum += c;
 	  --size;
 	  /* intentional fall through */
 	case '2':
-	  sr_get_hex_byte (&c);
-	  inaddr = (inaddr << 8) + c;
+	  sr_get_hex_byte((char *)&c);
+	  inaddr = ((inaddr << 8) + c);
 	  checksum += c;
 	  --size;
 	  /* intentional fall through */
 	case '1':
-	  sr_get_hex_byte (&c);
-	  inaddr = (inaddr << 8) + c;
+	  sr_get_hex_byte((char *)&c);
+	  inaddr = ((inaddr << 8) + c);
 	  checksum += c;
 	  --size;
-	  sr_get_hex_byte (&c);
-	  inaddr = (inaddr << 8) + c;
+	  sr_get_hex_byte((char *)&c);
+	  inaddr = ((inaddr << 8) + c);
 	  checksum += c;
 	  --size;
 	  break;
 
 	default:
 	  /* bonk */
-	  error ("reading s-records.");
+	  error(_("reading s-records."));
 	}
 
-      if (inaddr < memaddr
-	  || (memaddr + len) < (inaddr + size))
-	error ("srec out of memory range.");
+      if ((inaddr < memaddr)
+	  || ((memaddr + len) < (inaddr + size)))
+	error(_("srec out of memory range."));
 
-      if (p != buffer + inaddr - memaddr)
-	error ("srec out of sequence.");
+      if (p != (buffer + inaddr - memaddr))
+	error(_("srec out of sequence."));
 
       for (; size; --size, ++p)
 	{
-	  sr_get_hex_byte (p);
+	  sr_get_hex_byte(p);
 	  checksum += *p;
 	}
 
-      sr_get_hex_byte (&c);
+      sr_get_hex_byte((char *)&c);
       if (c != (~checksum & 0xff))
-	error ("bad s-rec checksum");
+	error(_("bad s-rec checksum"));
     }
 
 done:
-  gr_expect_prompt ();
-  if (p != buffer + len)
+  gr_expect_prompt();
+  if (p != (buffer + len))
     return (1);
 
-  memcpy (myaddr, buffer, len);
+  memcpy(myaddr, buffer, len);
   return (0);
 }
 
@@ -902,11 +931,11 @@ bug_clear_breakpoints (void)
 struct target_ops bug_ops;
 
 static void
-init_bug_ops (void)
+init_bug_ops(void)
 {
   bug_ops.to_shortname = "bug";
-  "Remote BUG monitor",
-    bug_ops.to_longname = "Use the mvme187 board running the BUG monitor connected by a serial line.";
+  /* "Remote BUG monitor" */
+  bug_ops.to_longname = "Use the mvme187 board running the BUG monitor connected by a serial line.";
   bug_ops.to_doc = " ";
   bug_ops.to_open = bug_open;
   bug_ops.to_close = gr_close;

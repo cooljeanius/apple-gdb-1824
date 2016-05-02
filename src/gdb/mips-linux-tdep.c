@@ -1,4 +1,4 @@
-/* Target-dependent code for GNU/Linux on MIPS processors.
+/* mips-linux-tdep.c: Target-dependent code for GNU/Linux on MIPS processors.
 
    Copyright 2001, 2002, 2004, 2005 Free Software Foundation, Inc.
 
@@ -32,6 +32,14 @@
 #include "trad-frame.h"
 #include "tramp-frame.h"
 
+#if 0
+# include "mips-linux-tdep.h" /* conflicting prototypes */
+#else
+# ifndef DECLARE_MIPS_LINUX_PROTOTYPES_LOCALLY
+#  define DECLARE_MIPS_LINUX_PROTOTYPES_LOCALLY 1
+# endif /* !DECLARE_MIPS_LINUX_PROTOTYPES_LOCALLY */
+#endif /* 0 */
+
 /* Copied from <asm/elf.h>.  */
 #define ELF_NGREG       45
 #define ELF_NFPREG      33
@@ -39,8 +47,18 @@
 typedef unsigned char elf_greg_t[4];
 typedef elf_greg_t elf_gregset_t[ELF_NGREG];
 
+#ifdef DECLARE_MIPS_LINUX_PROTOTYPES_LOCALLY
+extern void supply_gregset(elf_gregset_t *);
+extern void fill_gregset(elf_gregset_t *, int);
+#endif /* DECLARE_MIPS_LINUX_PROTOTYPES_LOCALLY */
+
 typedef unsigned char elf_fpreg_t[8];
 typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
+
+#ifdef DECLARE_MIPS_LINUX_PROTOTYPES_LOCALLY
+extern void supply_fpregset(elf_fpregset_t *);
+extern void fill_fpregset(elf_fpregset_t *, int);
+#endif /* DECLARE_MIPS_LINUX_PROTOTYPES_LOCALLY */
 
 /* 0 - 31 are integer registers, 32 - 63 are fp registers.  */
 #define FPR_BASE        32
@@ -78,14 +96,15 @@ mips_linux_get_longjmp_target (CORE_ADDR *pc)
   CORE_ADDR jb_addr;
   char buf[TARGET_PTR_BIT / TARGET_CHAR_BIT];
 
-  jb_addr = read_register (MIPS_A0_REGNUM);
+  jb_addr = read_register(MIPS_A0_REGNUM);
 
-  if (target_read_memory (jb_addr
-			  + MIPS_LINUX_JB_PC * MIPS_LINUX_JB_ELEMENT_SIZE,
-			  buf, TARGET_PTR_BIT / TARGET_CHAR_BIT))
+  if (target_read_memory((jb_addr
+			  + (MIPS_LINUX_JB_PC * MIPS_LINUX_JB_ELEMENT_SIZE)),
+			 (gdb_byte *)buf, (TARGET_PTR_BIT / TARGET_CHAR_BIT)))
     return 0;
 
-  *pc = extract_unsigned_integer (buf, TARGET_PTR_BIT / TARGET_CHAR_BIT);
+  *pc = extract_unsigned_integer((const gdb_byte *)buf,
+				 (TARGET_PTR_BIT / TARGET_CHAR_BIT));
 
   return 1;
 }
@@ -93,20 +112,18 @@ mips_linux_get_longjmp_target (CORE_ADDR *pc)
 /* Transform the bits comprising a 32-bit register to the right size
    for regcache_raw_supply().  This is needed when mips_isa_regsize()
    is 8.  */
-
 static void
-supply_32bit_reg (int regnum, const void *addr)
+supply_32bit_reg(int regnum, const void *addr)
 {
   char buf[MAX_REGISTER_SIZE];
-  store_signed_integer (buf, register_size (current_gdbarch, regnum),
-                        extract_signed_integer (addr, 4));
-  regcache_raw_supply (current_regcache, regnum, buf);
+  store_signed_integer((gdb_byte *)buf, register_size(current_gdbarch, regnum),
+                       extract_signed_integer((const gdb_byte *)addr, 4));
+  regcache_raw_supply(current_regcache, regnum, buf);
 }
 
-/* Unpack an elf_gregset_t into GDB's register cache.  */
-
+/* Unpack an elf_gregset_t into GDB's register cache: */
 void 
-supply_gregset (elf_gregset_t *gregsetp)
+supply_gregset(elf_gregset_t *gregsetp)
 {
   int regi;
   elf_greg_t *regp = *gregsetp;
@@ -138,10 +155,9 @@ supply_gregset (elf_gregset_t *gregsetp)
     regcache_raw_supply (current_regcache, regi, zerobuf);
 }
 
-/* Pack our registers (or one register) into an elf_gregset_t.  */
-
+/* Pack our registers (or one register) into an elf_gregset_t: */
 void
-fill_gregset (elf_gregset_t *gregsetp, int regno)
+fill_gregset(elf_gregset_t *gregsetp, int regno)
 {
   int regaddr, regi;
   elf_greg_t *regp = *gregsetp;
@@ -191,56 +207,57 @@ fill_gregset (elf_gregset_t *gregsetp, int regno)
     }
 }
 
-/* Likewise, unpack an elf_fpregset_t.  */
-
+/* Likewise, unpack an elf_fpregset_t: */
 void
-supply_fpregset (elf_fpregset_t *fpregsetp)
+supply_fpregset(elf_fpregset_t *fpregsetp)
 {
   int regi;
   char zerobuf[MAX_REGISTER_SIZE];
 
-  memset (zerobuf, 0, MAX_REGISTER_SIZE);
+  memset(zerobuf, 0, MAX_REGISTER_SIZE);
 
   for (regi = 0; regi < 32; regi++)
-    regcache_raw_supply (current_regcache, FP0_REGNUM + regi,
-			 (char *)(*fpregsetp + regi));
+    regcache_raw_supply(current_regcache, (FP0_REGNUM + regi),
+			(char *)(*fpregsetp + regi));
 
-  regcache_raw_supply (current_regcache,
-		       mips_regnum (current_gdbarch)->fp_control_status,
-		       (char *)(*fpregsetp + 32));
+  regcache_raw_supply(current_regcache,
+		      mips_regnum(current_gdbarch)->fp_control_status,
+		      (char *)(*fpregsetp + 32));
 
-  /* FIXME: how can we supply FCRIR?  The ABI doesn't tell us.  */
-  regcache_raw_supply (current_regcache,
-		       mips_regnum (current_gdbarch)->fp_implementation_revision,
-		       zerobuf);
+  /* FIXME: how can we supply FCRIR?  The ABI failes to tell us.  */
+  regcache_raw_supply(current_regcache,
+		      mips_regnum(current_gdbarch)->fp_implementation_revision,
+		      zerobuf);
 }
 
 /* Likewise, pack one or all floating point registers into an
    elf_fpregset_t.  */
-
 void
-fill_fpregset (elf_fpregset_t *fpregsetp, int regno)
+fill_fpregset(elf_fpregset_t *fpregsetp, int regno)
 {
-  char *from, *to;
+#ifdef ALLOW_UNUSED_VARIABLES
+  char *from;
+#endif /* ALLOW_UNUSED_VARIABLES */
+  char *to;
 
-  if ((regno >= FP0_REGNUM) && (regno < FP0_REGNUM + 32))
+  if ((regno >= FP0_REGNUM) && (regno < (FP0_REGNUM + 32)))
     {
-      to = (char *) (*fpregsetp + regno - FP0_REGNUM);
-      regcache_raw_collect (current_regcache, regno, to);
+      to = (char *)(*fpregsetp + regno - FP0_REGNUM);
+      regcache_raw_collect(current_regcache, regno, to);
     }
-  else if (regno == mips_regnum (current_gdbarch)->fp_control_status)
+  else if (regno == mips_regnum(current_gdbarch)->fp_control_status)
     {
-      to = (char *) (*fpregsetp + 32);
-      regcache_raw_collect (current_regcache, regno, to);
+      to = (char *)(*fpregsetp + 32);
+      regcache_raw_collect(current_regcache, regno, to);
     }
   else if (regno == -1)
     {
       int regi;
 
       for (regi = 0; regi < 32; regi++)
-	fill_fpregset (fpregsetp, FP0_REGNUM + regi);
-      fill_fpregset (fpregsetp,
-		     mips_regnum (current_gdbarch)->fp_control_status);
+	fill_fpregset(fpregsetp, (FP0_REGNUM + regi));
+      fill_fpregset(fpregsetp,
+		    mips_regnum(current_gdbarch)->fp_control_status);
     }
 }
 
@@ -367,27 +384,27 @@ typedef mips64_elf_fpreg_t mips64_elf_fpregset_t[MIPS64_ELF_NFPREG];
 #define MIPS64_LINUX_JB_PC 0
 
 static int
-mips64_linux_get_longjmp_target (CORE_ADDR *pc)
+mips64_linux_get_longjmp_target(CORE_ADDR *pc)
 {
   CORE_ADDR jb_addr;
-  void *buf = alloca (TARGET_PTR_BIT / TARGET_CHAR_BIT);
-  int element_size = TARGET_PTR_BIT == 32 ? 4 : 8;
+  void *buf = alloca(TARGET_PTR_BIT / TARGET_CHAR_BIT);
+  int element_size = ((TARGET_PTR_BIT == 32) ? 4 : 8);
 
-  jb_addr = read_register (MIPS_A0_REGNUM);
+  jb_addr = read_register(MIPS_A0_REGNUM);
 
-  if (target_read_memory (jb_addr + MIPS64_LINUX_JB_PC * element_size,
-			  buf, TARGET_PTR_BIT / TARGET_CHAR_BIT))
+  if (target_read_memory((jb_addr + (MIPS64_LINUX_JB_PC * element_size)),
+			 (gdb_byte *)buf, (TARGET_PTR_BIT / TARGET_CHAR_BIT)))
     return 0;
 
-  *pc = extract_unsigned_integer (buf, TARGET_PTR_BIT / TARGET_CHAR_BIT);
+  *pc = extract_unsigned_integer((const gdb_byte *)buf,
+				 (TARGET_PTR_BIT / TARGET_CHAR_BIT));
 
   return 1;
 }
 
-/* Unpack an elf_gregset_t into GDB's register cache.  */
-
+/* Unpack an elf_gregset_t into GDB's register cache: */
 static void 
-mips64_supply_gregset (mips64_elf_gregset_t *gregsetp)
+mips64_supply_gregset(mips64_elf_gregset_t *gregsetp)
 {
   int regi;
   mips64_elf_greg_t *regp = *gregsetp;
@@ -426,14 +443,16 @@ mips64_supply_gregset (mips64_elf_gregset_t *gregsetp)
     regcache_raw_supply (current_regcache, regi, zerobuf);
 }
 
-/* Pack our registers (or one register) into an elf_gregset_t.  */
-
+/* Pack our registers (or one register) into an elf_gregset_t: */
 static void
-mips64_fill_gregset (mips64_elf_gregset_t *gregsetp, int regno)
+mips64_fill_gregset(mips64_elf_gregset_t *gregsetp, int regno)
 {
   int regaddr, regi;
   mips64_elf_greg_t *regp = *gregsetp;
-  void *src, *dst;
+#ifdef ALLOW_UNUSED_VARIABLES
+  void *src;
+#endif /* ALLOW_UNUSED_VARIABLES */
+  void *dst;
 
   if (regno == -1)
     {
@@ -507,30 +526,32 @@ mips64_supply_fpregset (mips64_elf_fpregset_t *fpregsetp)
 
 /* Likewise, pack one or all floating point registers into an
    elf_fpregset_t.  */
-
 static void
-mips64_fill_fpregset (mips64_elf_fpregset_t *fpregsetp, int regno)
+mips64_fill_fpregset(mips64_elf_fpregset_t *fpregsetp, int regno)
 {
-  char *from, *to;
+#ifdef ALLOW_UNUSED_VARIABLES
+  char *from;
+#endif /* ALLOW_UNUSED_VARIABLES */
+  char *to;
 
-  if ((regno >= FP0_REGNUM) && (regno < FP0_REGNUM + 32))
+  if ((regno >= FP0_REGNUM) && (regno < (FP0_REGNUM + 32)))
     {
-      to = (char *) (*fpregsetp + regno - FP0_REGNUM);
-      regcache_raw_collect (current_regcache, regno, to);
+      to = (char *)(*fpregsetp + regno - FP0_REGNUM);
+      regcache_raw_collect(current_regcache, regno, to);
     }
-  else if (regno == mips_regnum (current_gdbarch)->fp_control_status)
+  else if (regno == mips_regnum(current_gdbarch)->fp_control_status)
     {
-      to = (char *) (*fpregsetp + 32);
-      regcache_raw_collect (current_regcache, regno, to);
+      to = (char *)(*fpregsetp + 32);
+      regcache_raw_collect(current_regcache, regno, to);
     }
   else if (regno == -1)
     {
       int regi;
 
       for (regi = 0; regi < 32; regi++)
-	mips64_fill_fpregset (fpregsetp, FP0_REGNUM + regi);
+	mips64_fill_fpregset(fpregsetp, (FP0_REGNUM + regi));
       mips64_fill_fpregset(fpregsetp,
-			   mips_regnum (current_gdbarch)->fp_control_status);
+			   mips_regnum(current_gdbarch)->fp_control_status);
     }
 }
 
@@ -575,8 +596,8 @@ mips64_linux_register_addr (int regno, CORE_ADDR blockend)
     regsets, until multi-arch core support is ready.  */
 
 static void
-fetch_core_registers (char *core_reg_sect, unsigned core_reg_size,
-		      int which, CORE_ADDR reg_addr)
+fetch_core_registers(char *core_reg_sect, unsigned int core_reg_size,
+		     int which, CORE_ADDR reg_addr)
 {
   elf_gregset_t gregset;
   elf_fpregset_t fpregset;
@@ -585,37 +606,38 @@ fetch_core_registers (char *core_reg_sect, unsigned core_reg_size,
 
   if (which == 0)
     {
-      if (core_reg_size == sizeof (gregset))
+      if (core_reg_size == sizeof(gregset))
 	{
-	  memcpy ((char *) &gregset, core_reg_sect, sizeof (gregset));
-	  supply_gregset (&gregset);
+	  memcpy((char *)&gregset, core_reg_sect, sizeof(gregset));
+	  supply_gregset(&gregset);
 	}
-      else if (core_reg_size == sizeof (gregset64))
+      else if (core_reg_size == sizeof(gregset64))
 	{
-	  memcpy ((char *) &gregset64, core_reg_sect, sizeof (gregset64));
-	  mips64_supply_gregset (&gregset64);
+	  memcpy((char *)&gregset64, core_reg_sect, sizeof(gregset64));
+	  mips64_supply_gregset(&gregset64);
 	}
       else
 	{
-	  warning (_("wrong size gregset struct in core file"));
+	  warning(_("wrong size gregset struct in core file"));
 	}
     }
   else if (which == 2)
     {
-      if (core_reg_size == sizeof (fpregset))
+      if (core_reg_size == sizeof(fpregset))
 	{
-	  memcpy ((char *) &fpregset, core_reg_sect, sizeof (fpregset));
-	  supply_fpregset (&fpregset);
+	  memcpy((char *)&fpregset, core_reg_sect, sizeof(fpregset));
+	  supply_fpregset(&fpregset);
 	}
-      else if (core_reg_size == sizeof (fpregset64))
+      else if ((sizeof(fpregset64) != sizeof(fpregset))
+	       && (core_reg_size == sizeof(fpregset64)))
 	{
-	  memcpy ((char *) &fpregset64, core_reg_sect,
-		  sizeof (fpregset64));
-	  mips64_supply_fpregset (&fpregset64);
+	  memcpy((char *)&fpregset64, core_reg_sect,
+		 sizeof(fpregset64));
+	  mips64_supply_fpregset(&fpregset64);
 	}
       else
 	{
-	  warning (_("wrong size fpregset struct in core file"));
+	  warning(_("wrong size fpregset struct in core file"));
 	}
     }
 }
@@ -679,14 +701,15 @@ mips64_linux_svr4_fetch_link_map_offsets (void)
 static struct gdbarch_data *register_addr_data;
 
 CORE_ADDR
-register_addr (int regno, CORE_ADDR blockend)
+register_addr(int regno, CORE_ADDR blockend)
 {
-  CORE_ADDR (*register_addr_ptr) (int, CORE_ADDR) =
-    gdbarch_data (current_gdbarch, register_addr_data);
+  CORE_ADDR (*register_addr_ptr)(int, CORE_ADDR) =
+    (CORE_ADDR (*)(int,  CORE_ADDR))gdbarch_data(current_gdbarch,
+						 register_addr_data);
 
-  gdb_assert (register_addr_ptr != 0);
+  gdb_assert(register_addr_ptr != 0);
 
-  return register_addr_ptr (regno, blockend);
+  return register_addr_ptr(regno, blockend);
 }
 
 static void
@@ -877,7 +900,7 @@ static const struct tramp_frame mips_linux_o32_rt_sigframe = {
 
 static const struct tramp_frame mips_linux_n32_rt_sigframe = {
   SIGTRAMP_FRAME,
-  4,
+  4UL,
   {
     { MIPS_INST_LI_V0_N32_RT_SIGRETURN, -1 },
     { MIPS_INST_SYSCALL, -1 },
@@ -888,10 +911,12 @@ static const struct tramp_frame mips_linux_n32_rt_sigframe = {
 
 static const struct tramp_frame mips_linux_n64_rt_sigframe = {
   SIGTRAMP_FRAME,
-  4,
-  { MIPS_INST_LI_V0_N64_RT_SIGRETURN,
-    MIPS_INST_SYSCALL,
-    TRAMP_SENTINEL_INSN },
+  4UL,
+  {
+    { MIPS_INST_LI_V0_N64_RT_SIGRETURN, -1 },
+    { MIPS_INST_SYSCALL, -1 },
+    { TRAMP_SENTINEL_INSN, -1 }
+  },
   mips_linux_n32n64_sigframe_init
 };
 
@@ -968,14 +993,17 @@ static const struct tramp_frame mips_linux_n64_rt_sigframe = {
 #define SIGCONTEXT_REG_SIZE 8
 
 static void
-mips_linux_o32_sigframe_init (const struct tramp_frame *self,
-			      struct frame_info *next_frame,
-			      struct trad_frame_cache *this_cache,
-			      CORE_ADDR func)
+mips_linux_o32_sigframe_init(const struct tramp_frame *self,
+			     struct frame_info *next_frame,
+			     struct trad_frame_cache *this_cache,
+			     CORE_ADDR func)
 {
-  int ireg, reg_position;
-  CORE_ADDR sigcontext_base = func - SIGFRAME_CODE_OFFSET;
-  const struct mips_regnum *regs = mips_regnum (current_gdbarch);
+  int ireg;
+#ifdef ALLOW_UNUSED_VARIABLES
+  int reg_position;
+#endif /* ALLOW_UNUSED_VARIABLES */
+  CORE_ADDR sigcontext_base = (func - SIGFRAME_CODE_OFFSET);
+  const struct mips_regnum *regs = mips_regnum(current_gdbarch);
   CORE_ADDR regs_base;
 
   if (self == &mips_linux_o32_sigframe)
@@ -989,14 +1017,14 @@ mips_linux_o32_sigframe_init (const struct tramp_frame *self,
      bytes but we only want four.  Use regs_base to access any
      64-bit fields.  */
   if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
-    regs_base = sigcontext_base + 4;
+    regs_base = (sigcontext_base + 4);
   else
     regs_base = sigcontext_base;
 
-#if 0
-  trad_frame_set_reg_addr (this_cache, ORIG_ZERO_REGNUM + NUM_REGS,
-			   regs_base + SIGCONTEXT_REGS);
-#endif
+#if defined(ORIG_ZERO_REGNUM) && defined(NUM_REGS) && defined(SIGCONTEXT_REGS)
+  trad_frame_set_reg_addr(this_cache, (ORIG_ZERO_REGNUM + NUM_REGS),
+			  (regs_base + SIGCONTEXT_REGS));
+#endif /* ORIG_ZERO_REGNUM && NUM_REGS && SIGCONTEXT_REGS */
 
   for (ireg = 1; ireg < 32; ireg++)
     trad_frame_set_reg_addr (this_cache,
@@ -1122,19 +1150,22 @@ mips_linux_n32n64_sigframe_init (const struct tramp_frame *self,
 				 struct trad_frame_cache *this_cache,
 				 CORE_ADDR func)
 {
-  int ireg, reg_position;
-  CORE_ADDR sigcontext_base = func - SIGFRAME_CODE_OFFSET;
-  const struct mips_regnum *regs = mips_regnum (current_gdbarch);
+  int ireg;
+#ifdef ALLOW_UNUSED_VARIABLES
+  int reg_position;
+#endif /* ALLOW_UNUSED_VARIABLES */
+  CORE_ADDR sigcontext_base = (func - SIGFRAME_CODE_OFFSET);
+  const struct mips_regnum *regs = mips_regnum(current_gdbarch);
 
   if (self == &mips_linux_n32_rt_sigframe)
     sigcontext_base += N32_SIGFRAME_SIGCONTEXT_OFFSET;
   else
     sigcontext_base += N64_SIGFRAME_SIGCONTEXT_OFFSET;
 
-#if 0
-  trad_frame_set_reg_addr (this_cache, ORIG_ZERO_REGNUM + NUM_REGS,
-			   sigcontext_base + N64_SIGCONTEXT_REGS);
-#endif
+#if defined(ORIG_ZERO_REGNUM) && defined(NUM_REGS) && defined(N64_SIGCONTEXT_REGS)
+  trad_frame_set_reg_addr(this_cache, (ORIG_ZERO_REGNUM + NUM_REGS),
+			  (sigcontext_base + N64_SIGCONTEXT_REGS));
+#endif /* ORIG_ZERO_REGNUM && NUM_REGS && N64_SIGCONTEXT_REGS */
 
   for (ireg = 1; ireg < 32; ireg++)
     trad_frame_set_reg_addr (this_cache,
@@ -1168,72 +1199,76 @@ mips_linux_n32n64_sigframe_init (const struct tramp_frame *self,
 				     func));
 }
 
-/* Initialize one of the GNU/Linux OS ABIs.  */
-
+/* Initialize one of the GNU/Linux OS ABIs: */
 static void
-mips_linux_init_abi (struct gdbarch_info info,
-		     struct gdbarch *gdbarch)
+mips_linux_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  enum mips_abi abi = mips_abi (gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  enum mips_abi abi = mips_abi(gdbarch);
+  
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
 
   switch (abi)
     {
       case MIPS_ABI_O32:
-	set_gdbarch_get_longjmp_target (gdbarch,
-	                                mips_linux_get_longjmp_target);
-	set_solib_svr4_fetch_link_map_offsets
-	  (gdbarch, mips_linux_svr4_fetch_link_map_offsets);
-	set_mips_linux_register_addr (gdbarch, mips_linux_register_addr);
-	tramp_frame_prepend_unwinder (gdbarch, &mips_linux_o32_sigframe);
-	tramp_frame_prepend_unwinder (gdbarch, &mips_linux_o32_rt_sigframe);
+	set_gdbarch_get_longjmp_target(gdbarch,
+	                               mips_linux_get_longjmp_target);
+	set_solib_svr4_fetch_link_map_offsets(gdbarch,
+					      mips_linux_svr4_fetch_link_map_offsets);
+	set_mips_linux_register_addr(gdbarch, mips_linux_register_addr);
+	tramp_frame_prepend_unwinder(gdbarch, &mips_linux_o32_sigframe);
+	tramp_frame_prepend_unwinder(gdbarch, &mips_linux_o32_rt_sigframe);
 	break;
       case MIPS_ABI_N32:
-	set_gdbarch_get_longjmp_target (gdbarch,
-	                                mips_linux_get_longjmp_target);
-	set_solib_svr4_fetch_link_map_offsets
-	  (gdbarch, mips_linux_svr4_fetch_link_map_offsets);
-	set_mips_linux_register_addr (gdbarch, mips64_linux_register_addr);
-	tramp_frame_prepend_unwinder (gdbarch, &mips_linux_n32_rt_sigframe);
+	set_gdbarch_get_longjmp_target(gdbarch,
+	                               mips_linux_get_longjmp_target);
+	set_solib_svr4_fetch_link_map_offsets(gdbarch,
+					      mips_linux_svr4_fetch_link_map_offsets);
+	set_mips_linux_register_addr(gdbarch, mips64_linux_register_addr);
+	tramp_frame_prepend_unwinder(gdbarch, &mips_linux_n32_rt_sigframe);
 	break;
       case MIPS_ABI_N64:
-	set_gdbarch_get_longjmp_target (gdbarch,
-	                                mips64_linux_get_longjmp_target);
-	set_solib_svr4_fetch_link_map_offsets
-	  (gdbarch, mips64_linux_svr4_fetch_link_map_offsets);
-	set_mips_linux_register_addr (gdbarch, mips64_linux_register_addr);
-	tramp_frame_prepend_unwinder (gdbarch, &mips_linux_n64_rt_sigframe);
+	set_gdbarch_get_longjmp_target(gdbarch,
+	                               mips64_linux_get_longjmp_target);
+	set_solib_svr4_fetch_link_map_offsets(gdbarch,
+					      mips64_linux_svr4_fetch_link_map_offsets);
+	set_mips_linux_register_addr(gdbarch, mips64_linux_register_addr);
+	tramp_frame_prepend_unwinder(gdbarch, &mips_linux_n64_rt_sigframe);
 	break;
       default:
-	internal_error (__FILE__, __LINE__, _("can't handle ABI"));
+	internal_error(__FILE__, __LINE__, _("cannot handle ABI"));
 	break;
     }
 
-  set_gdbarch_skip_solib_resolver (gdbarch, mips_linux_skip_resolver);
+  set_gdbarch_skip_solib_resolver(gdbarch, mips_linux_skip_resolver);
 
-  set_gdbarch_software_single_step (gdbarch, mips_software_single_step);
+  set_gdbarch_software_single_step(gdbarch, mips_software_single_step);
 
   /* Enable TLS support.  */
-  set_gdbarch_fetch_tls_load_module_address (gdbarch,
-                                             svr4_fetch_objfile_link_map);
+  set_gdbarch_fetch_tls_load_module_address(gdbarch,
+                                            svr4_fetch_objfile_link_map);
 }
 
+extern void _initialize_mips_linux_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_mips_linux_tdep (void)
+_initialize_mips_linux_tdep(void)
 {
   const struct bfd_arch_info *arch_info;
 
   register_addr_data =
-    gdbarch_data_register_post_init (init_register_addr_data);
+    gdbarch_data_register_post_init(init_register_addr_data);
 
-  for (arch_info = bfd_lookup_arch (bfd_arch_mips, 0);
+  for (arch_info = bfd_lookup_arch(bfd_arch_mips, 0);
        arch_info != NULL;
        arch_info = arch_info->next)
     {
-      gdbarch_register_osabi (bfd_arch_mips, arch_info->mach,
-			      GDB_OSABI_LINUX,
-			      mips_linux_init_abi);
+      gdbarch_register_osabi(bfd_arch_mips, arch_info->mach, GDB_OSABI_LINUX,
+			     mips_linux_init_abi);
     }
 
-  deprecated_add_core_fns (&regset_core_fns);
+  deprecated_add_core_fns(&regset_core_fns);
 }
+
+/* EOF */

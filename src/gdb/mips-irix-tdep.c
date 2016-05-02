@@ -26,17 +26,17 @@
 #include "elf-bfd.h"
 
 static void
-mips_irix_elf_osabi_sniff_abi_tag_sections (bfd *abfd, asection *sect,
-                                            void *obj)
+mips_irix_elf_osabi_sniff_abi_tag_sections(bfd *abfd, asection *sect,
+                                           void *obj)
 {
-  enum gdb_osabi *os_ident_ptr = obj;
+  enum gdb_osabi *os_ident_ptr = (enum gdb_osabi *)obj;
   const char *name;
   unsigned int sectsize;
 
-  name = bfd_get_section_name (abfd, sect);
-  sectsize = bfd_section_size (abfd, sect);
+  name = bfd_get_section_name(abfd, sect);
+  sectsize = bfd_section_size(abfd, sect);
 
-  if (strncmp (name, ".MIPS.", 6) == 0 && sectsize > 0)
+  if ((strncmp(name, ".MIPS.", 6) == 0) && (sectsize > 0))
     {
       /* The presence of a section named with a ".MIPS." prefix is
          indicative of an IRIX binary.  */
@@ -45,20 +45,19 @@ mips_irix_elf_osabi_sniff_abi_tag_sections (bfd *abfd, asection *sect,
 }
 
 static enum gdb_osabi
-mips_irix_elf_osabi_sniffer (bfd *abfd)
+mips_irix_elf_osabi_sniffer(bfd *abfd)
 {
   unsigned int elfosabi;
   enum gdb_osabi osabi = GDB_OSABI_UNKNOWN;
 
   /* If the generic sniffer gets a hit, return and let other sniffers
      get a crack at it.  */
-  bfd_map_over_sections (abfd,
-			 generic_elf_osabi_sniff_abi_tag_sections,
-			 &osabi);
+  bfd_map_over_sections(abfd, generic_elf_osabi_sniff_abi_tag_sections,
+			&osabi);
   if (osabi != GDB_OSABI_UNKNOWN)
     return GDB_OSABI_UNKNOWN;
 
-  elfosabi = elf_elfheader (abfd)->e_ident[EI_OSABI];
+  elfosabi = elf_elfheader(abfd)->e_ident[EI_OSABI];
 
   if (elfosabi == ELFOSABI_NONE)
     {
@@ -69,27 +68,31 @@ mips_irix_elf_osabi_sniffer (bfd *abfd)
 	 
 	 For IRIX, we simply look for sections named with .MIPS. as
 	 prefixes.  */
-      bfd_map_over_sections (abfd,
-			     mips_irix_elf_osabi_sniff_abi_tag_sections, 
-			     &osabi);
+      bfd_map_over_sections(abfd, mips_irix_elf_osabi_sniff_abi_tag_sections, 
+			    &osabi);
     }
   return osabi;
 }
 
+/* */
 static void
-mips_irix_init_abi (struct gdbarch_info info,
-                    struct gdbarch *gdbarch)
+mips_irix_init_abi(struct gdbarch_info info ATTRIBUTE_UNUSED,
+                   struct gdbarch *gdbarch ATTRIBUTE_UNUSED)
 {
+  return;
 }
 
+extern void _initialize_mips_irix_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_mips_irix_tdep (void)
+_initialize_mips_irix_tdep(void)
 {
-  /* Register an ELF OS ABI sniffer for IRIX binaries.  */
-  gdbarch_register_osabi_sniffer (bfd_arch_mips,
-				  bfd_target_elf_flavour,
-				  mips_irix_elf_osabi_sniffer);
+  /* Register an ELF OS ABI sniffer for IRIX binaries: */
+  gdbarch_register_osabi_sniffer(bfd_arch_mips,
+				 bfd_target_elf_flavour,
+				 mips_irix_elf_osabi_sniffer);
 
-  gdbarch_register_osabi (bfd_arch_mips, 0, GDB_OSABI_IRIX,
-			  mips_irix_init_abi);
+  gdbarch_register_osabi(bfd_arch_mips, 0, GDB_OSABI_IRIX,
+			 mips_irix_init_abi);
 }
+
+/* EOF */

@@ -40046,6 +40046,26 @@ _ACEOF
   fi
 
 
+if test "x${ac_cv_have_decl_close}" = "x"; then
+  test -z "${ac_cv_have_decl_close}"
+  ac_fn_c_check_decl "$LINENO" "close" "ac_cv_have_decl_close" "
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
+
+"
+if test "x$ac_cv_have_decl_close" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_CLOSE $ac_have_decl
+_ACEOF
+  ## OK
+fi
+
 if test "x${ac_cv_have_decl_sys_siglist}" = "x" && test "x" = "Y0"; then
   test -z "${ac_cv_have_decl_sys_siglist}"
   ac_fn_c_check_decl "$LINENO" "sys_siglist" "ac_cv_have_decl_sys_siglist" "$ac_includes_default"
@@ -40384,24 +40404,6 @@ if test "x$ac_cv_member_struct_stat_st_rdev" = xyes; then :
 
 cat >>confdefs.h <<_ACEOF
 #define HAVE_STRUCT_STAT_ST_RDEV 1
-_ACEOF
-
-
-fi
-ac_fn_c_check_member "$LINENO" "struct reg" "r_fs" "ac_cv_member_struct_reg_r_fs" "$ac_includes_default"
-if test "x$ac_cv_member_struct_reg_r_fs" = xyes; then :
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_STRUCT_REG_R_FS 1
-_ACEOF
-
-
-fi
-ac_fn_c_check_member "$LINENO" "struct reg" "r_gs" "ac_cv_member_struct_reg_r_gs" "$ac_includes_default"
-if test "x$ac_cv_member_struct_reg_r_gs" = xyes; then :
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_STRUCT_REG_R_GS 1
 _ACEOF
 
 
@@ -43803,14 +43805,14 @@ unset ac_cv_func_strchr
 for ac_func in atof alarm assert atexit bcopy bsearch bzero dup2 exit \
                 fflush fgets fprintf fwrite getcwd gethostbyaddr \
                 gethostbyname gethostname getpass gets gettimeofday \
-                inet_ntoa isascii ishexnumber isnumber mach_error_string \
-                memchr memcmp memcpy memmove mempcpy memset mkdir \
-                netname_look_up nl_langinfo pathconf pclose popen pow \
-                qsort qsort_r readdir re_comp regcomp select setitimer \
-                socket strcasecmp strcat strchr strcpy strcspn strdup \
-                strerror strlcat strlcpy strlen strncasecmp strncat \
-                strncmp strncpy strndup strpbrk strrchr strspn strstr \
-                strtok strtok_r strtol strtoul timeradd timerclear \
+                inet_addr inet_ntoa isascii ishexnumber isnumber \
+                mach_error_string memchr memcmp memcpy memmove mempcpy \
+                memset mkdir netname_look_up nl_langinfo pathconf pclose \
+                popen pow qsort qsort_r readdir re_comp regcomp select \
+                setitimer socket strcasecmp strcat strchr strcpy strcspn \
+                strdup strerror strlcat strlcpy strlen strncasecmp \
+                strncat strncmp strncpy strndup strpbrk strrchr strspn \
+                strstr strtok strtok_r strtol strtoul timeradd timerclear \
                 timersub uname vasprintf wcwidth
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`

@@ -18,6 +18,9 @@ for object files that are downloaded to VxWorks.  They are used by
 remote debuggers that use RPC (such as dbxWorks and vxGdb).
 */
 
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* NO_POISON */
 #include "defs.h"
 #include "vxWorks.h"
 #include "rpc/rpc.h"
@@ -25,7 +28,7 @@ remote debuggers that use RPC (such as dbxWorks and vxGdb).
 
 /* forward declarations */
 
-bool_t xdr_String();   	/* xdr routine for argument list */
+extern bool_t xdr_String(XDR *xdrs, char **strp); /* xdr routine for arglist */
 
 
 /*******************************************************************************
@@ -37,37 +40,32 @@ bool_t xdr_String();   	/* xdr routine for argument list */
 * reasonable encode of null pointer.
 */
 
-bool_t xdr_String (xdrs, strp)
-    XDR	*xdrs;
-    char **strp;
-
-    {
+bool_t xdr_String(XDR *xdrs, char **strp)
+{
     if ((*strp == NULL) & (xdrs->x_op == XDR_ENCODE)) 
-	return(FALSE);
+		return (FALSE);
     else 
-	return(xdr_string(xdrs, strp, MAXSTRLEN));
-    }
+		return (xdr_string(xdrs, strp, MAXSTRLEN));
+}
 /*******************************************************************************
 *
 * xdr_ldfile - xdr routine for a single element in the load table 
 */
 
-bool_t xdr_ldfile (xdrs, objp)
-    XDR *xdrs;
-    ldfile *objp;
-
-    {
+bool_t xdr_ldfile(XDR *xdrs, ldfile *objp)
+{
     if (! xdr_String(xdrs, &objp->name)) 
-	return(FALSE);
+		return (FALSE);
     if (! xdr_int(xdrs, &objp->txt_addr)) 
-	return(FALSE);
+		return (FALSE);
     if (! xdr_int(xdrs, &objp->data_addr)) 
-	return(FALSE);
+		return (FALSE);
     if (! xdr_int(xdrs, &objp->bss_addr)) 
-	return(FALSE);
+		return (FALSE);
 
-    return(TRUE);
-    }
+    return (TRUE);
+}
+
 /*******************************************************************************
 *
 * xdr_ldtabl -
@@ -75,11 +73,10 @@ bool_t xdr_ldfile (xdrs, objp)
 * xdr routine for a list of files and load addresses loaded into VxWorks.
 */
 
-bool_t xdr_ldtabl (xdrs,objp)
-    XDR *xdrs;
-    ldtabl *objp;
+bool_t xdr_ldtabl(XDR *xdrs, ldtabl *objp)
+{
+    return (xdr_array(xdrs, (char **)&objp->tbl_ent, (UINT *)&objp->tbl_size, 
+					  MAXTBLSZ, sizeof(ldfile), (xdrproc_t)xdr_ldfile));
+}
 
-    {
-    return (xdr_array (xdrs, (char **) &objp->tbl_ent, (UINT *) &objp->tbl_size, 
-	    MAXTBLSZ, sizeof(ldfile), xdr_ldfile));
-    }
+/* EOF */

@@ -1,4 +1,4 @@
-/* Target-dependent code for the Motorola 88000 series.
+/* m88k-tdep.h: Target-dependent code for the Motorola 88000 series.
 
    Copyright 2004 Free Software Foundation, Inc.
 
@@ -43,7 +43,12 @@ enum m88k_regnum
 
 };
 
-/* Instruction size.  */
+/* Instruction size: */
 #define M88K_INSN_SIZE 4
 
+/* Prototypes */
+extern struct m88k_frame_cache *m88k_frame_cache(struct frame_info *, void **);
+
 #endif /* m88k-tdep.h */
+
+/* EOF */

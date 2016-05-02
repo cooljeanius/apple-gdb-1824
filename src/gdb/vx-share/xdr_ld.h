@@ -39,7 +39,9 @@ struct ldtabl {
 typedef struct ldtabl ldtabl;
 
 
-bool_t xdr_ldfile();
-bool_t xdr_ldtabl();
+bool_t xdr_ldfile(XDR *xdrs, ldfile *objp);
+bool_t xdr_ldtabl(XDR *xdrs, ldtabl *objp);
 
-#endif	INCxdrldh
+#endif /* INCxdrldh */
+
+/* EOF */

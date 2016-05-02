@@ -1,4 +1,4 @@
-/* Definitions for complaint handling during symbol reading in GDB.
+/* complaints.h Definitions for complaint handling during symbol reading in GDB
 
    Copyright 1990, 1991, 1992, 1995, 1998, 2000, 2002 Free Software
    Foundation, Inc.
@@ -21,22 +21,22 @@
    Boston, MA 02111-1307, USA.  */
 
 
-#if !defined (COMPLAINTS_H)
+#if !defined(COMPLAINTS_H)
 #define COMPLAINTS_H
 
-/* Opaque object used to track the number of complaints of a
-   particular category.  */
+/* Opaque object used to track the number of complaints of a particular
+ * category: */
 struct complaints;
 
-/* Predefined categories.  */
+/* Predefined categories: */
 extern struct complaints *symfile_complaints;
 
-/* Register a complaint.  */
-extern void complaint (struct complaints **complaints, const char *fmt,
-		       ...) ATTR_FORMAT (printf, 2, 3);
-extern void internal_complaint (struct complaints **complaints,
-				const char *file, int line, const char *fmt,
-				...) ATTR_FORMAT (printf, 4, 5);
+/* Register a complaint: */
+extern void complaint(struct complaints **complaints, const char *fmt,
+		      ...) ATTR_FORMAT(printf, 2, 3);
+extern void internal_complaint(struct complaints **complaints,
+			       const char *file, int line, const char *fmt,
+			       ...) ATTR_FORMAT(printf, 4, 5);
 
 /* Clear out / initialize all complaint counters that have ever been
    incremented.  If LESS_VERBOSE is 1, be less verbose about
@@ -45,9 +45,9 @@ extern void internal_complaint (struct complaints **complaints,
    complaints (rather than being interleaved with other messages).  If
    noisy is 1, we are in a noisy command, and our caller will print
    enough context for the user to figure it out.  */
+extern void clear_complaints(struct complaints **complaints,
+			     int less_verbose, int noisy);
 
-extern void clear_complaints (struct complaints **complaints,
-			      int less_verbose, int noisy);
+#endif /* !defined(COMPLAINTS_H) */
 
-
-#endif /* !defined (COMPLAINTS_H) */
+/* EOF */

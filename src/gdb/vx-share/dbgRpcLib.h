@@ -29,4 +29,4 @@ modification history
 #define VX_BOOT_FILE_INQ	70
 #define	VX_SOURCE_STEP		71
 
-#endif INCdbxRpcLibh
+#endif /* INCdbxRpcLibh */

@@ -535,10 +535,12 @@ m88k_analyze_prologue (CORE_ADDR pc, CORE_ADDR limit,
   if (cache == NULL)
     {
       size_t sizeof_saved_regs =
-	(M88K_R31_REGNUM + 1) * sizeof (struct trad_frame_saved_reg);
+	((M88K_R31_REGNUM + 1UL) * sizeof(struct trad_frame_saved_reg));
 
-      cache = alloca (sizeof (struct m88k_frame_cache));
-      cache->saved_regs = alloca (sizeof_saved_regs);
+      cache =
+	(struct m88k_frame_cache *)alloca(sizeof(struct m88k_frame_cache));
+      cache->saved_regs =
+	(struct trad_frame_saved_reg *)alloca(sizeof_saved_regs);
 
       /* We only initialize the members we care about.  */
       cache->saved_regs[M88K_R1_REGNUM].addr = -1;
@@ -646,8 +648,9 @@ m88k_skip_prologue (CORE_ADDR pc)
   return m88k_analyze_prologue (pc, pc + m88k_max_prologue_size, NULL);
 }
 
+/* */
 struct m88k_frame_cache *
-m88k_frame_cache (struct frame_info *next_frame, void **this_cache)
+m88k_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct m88k_frame_cache *cache;
   CORE_ADDR frame_sp;
@@ -759,12 +762,18 @@ static const struct frame_unwind m88k_frame_unwind =
 {
   NORMAL_FRAME,
   m88k_frame_this_id,
-  m88k_frame_prev_register
+  m88k_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *
-m88k_frame_sniffer (struct frame_info *next_frame)
+m88k_frame_sniffer(struct frame_info *next_frame)
 {
+  if (next_frame == NULL) {
+    ; /* ??? */
+  }
   return &m88k_frame_unwind;
 }
 
@@ -815,7 +824,9 @@ m88k_supply_gregset (const struct regset *regset,
 static struct regset m88k_gregset =
 {
   NULL,
-  m88k_supply_gregset
+  m88k_supply_gregset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
 };
 
 /* Return the appropriate register set for the core section identified
@@ -887,11 +898,13 @@ m88k_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 }
 
 
-/* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_m88k_tdep (void);
+/* Provide a prototype to silence -Wmissing-prototypes: */
+extern void _initialize_m88k_tdep(void);
 
 void
-_initialize_m88k_tdep (void)
+_initialize_m88k_tdep(void)
 {
-  gdbarch_register (bfd_arch_m88k, m88k_gdbarch_init, NULL);
+  gdbarch_register(bfd_arch_m88k, m88k_gdbarch_init, NULL);
 }
+
+/* EOF */

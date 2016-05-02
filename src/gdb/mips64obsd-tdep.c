@@ -1,4 +1,4 @@
-/* Target-dependent code for OpenBSD/mips64.
+/* mips64obsd-tdep.c: Target-dependent code for OpenBSD/mips64.
 
    Copyright 2004 Free Software Foundation, Inc.
 
@@ -41,17 +41,17 @@
    REGCACHE.  If REGNUM is -1, do this for all registers in REGSET.  */
 
 static void
-mips64obsd_supply_gregset (const struct regset *regset,
-			   struct regcache *regcache, int regnum,
-			   const void *gregs, size_t len)
+mips64obsd_supply_gregset(const struct regset *regset,
+			  struct regcache *regcache, int regnum,
+			  const void *gregs, size_t len)
 {
-  const char *regs = gregs;
+  const char *regs = (const char *)gregs;
   int i;
 
   for (i = 0; i < MIPS64OBSD_NUM_REGS; i++)
     {
-      if (regnum == i || regnum == -1)
-	regcache_raw_supply (regcache, i, regs + i * 8);
+      if ((regnum == i) || (regnum == -1))
+	regcache_raw_supply(regcache, i, (regs + (i * 8)));
     }
 }
 
@@ -60,7 +60,9 @@ mips64obsd_supply_gregset (const struct regset *regset,
 static struct regset mips64obsd_gregset =
 {
   NULL,
-  mips64obsd_supply_gregset
+  mips64obsd_supply_gregset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
 };
 
 /* Return the appropriate register set for the core section identified
@@ -128,30 +130,32 @@ static const struct tramp_frame mips64obsd_sigframe =
   mips64obsd_sigframe_init
 };
 
-
+/* */
 static void
-mips64obsd_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
+mips64obsd_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
   /* OpenBSD/mips64 only supports the n64 ABI, but the braindamaged
      way GDB works, forces us to pretend we can handle them all.  */
 
-  set_gdbarch_regset_from_core_section
-    (gdbarch, mips64obsd_regset_from_core_section);
+  set_gdbarch_regset_from_core_section(gdbarch,
+				       mips64obsd_regset_from_core_section);
 
-  tramp_frame_prepend_unwinder (gdbarch, &mips64obsd_sigframe);
+  tramp_frame_prepend_unwinder(gdbarch, &mips64obsd_sigframe);
 
-  /* OpenBSD/mips64 has SVR4-style shared libraries.  */
-  set_solib_svr4_fetch_link_map_offsets
-    (gdbarch, svr4_lp64_fetch_link_map_offsets);
+  /* OpenBSD/mips64 has SVR4-style shared libraries: */
+  set_solib_svr4_fetch_link_map_offsets(gdbarch,
+					svr4_lp64_fetch_link_map_offsets);
 }
 
 
 /* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_mips64obsd_tdep (void);
+void _initialize_mips64obsd_tdep(void);
 
 void
-_initialize_mips64obsd_tdep (void)
+_initialize_mips64obsd_tdep(void)
 {
-  gdbarch_register_osabi (bfd_arch_mips, 0, GDB_OSABI_OPENBSD_ELF,
-			  mips64obsd_init_abi);
+  gdbarch_register_osabi(bfd_arch_mips, 0, GDB_OSABI_OPENBSD_ELF,
+			 mips64obsd_init_abi);
 }
+
+/* EOF */

@@ -91,7 +91,7 @@ static int readchar(int timeout);
 static void monitor_fetch_register(int regno);
 static void monitor_store_register(int regno);
 
-static void monitor_printable_string(char *newstr, char *oldstr, int len);
+static void monitor_printable_string(char *newstr, const char *oldstr, int len);
 static void monitor_error(const char *function, const char *message,
 			  CORE_ADDR memaddr, int len, char *string,
 			  int final_char);
@@ -201,7 +201,7 @@ monitor_debug(const char *fmt, ...)
    string.  Otherwize strlen(oldstr) is used. */
 
 static void
-monitor_printable_string(char *newstr, char *oldstr, int len)
+monitor_printable_string(char *newstr, const char *oldstr, int len)
 {
   int ch;
   int i;
@@ -363,7 +363,7 @@ monitor_vsprintf(char *sndbuf, const char *pattern, va_list args)
    Works just like printf.  */
 
 void
-monitor_printf_noecho(char *pattern, ...)
+monitor_printf_noecho(const char *pattern, ...)
 {
   va_list args;
   char sndbuf[2000];
@@ -543,17 +543,17 @@ readchar (int timeout)
    will be at the end of BUF.  */
 
 int
-monitor_expect (char *string, char *buf, int buflen)
+monitor_expect(const char *string, char *buf, int buflen)
 {
-  char *p = string;
+  const char *p = string;
   int obuflen = buflen;
   int c;
 
   if (monitor_debug_p)
     {
-      char *safe_string = (char *) alloca ((strlen (string) * 4) + 1);
-      monitor_printable_string (safe_string, string, 0);
-      fprintf_unfiltered (gdb_stdlog, "MON Expecting '%s'\n", safe_string);
+      char *safe_string = (char *)alloca((strlen(string) * 4UL) + 1UL);
+      monitor_printable_string(safe_string, string, 0);
+      fprintf_unfiltered(gdb_stdlog, "MON Expecting '%s'\n", safe_string);
     }
 
   immediate_quit++;
@@ -732,7 +732,7 @@ get_hex_word(void)
 #endif /* !RE_SYNTAX_EMACS */
 
 static void
-compile_pattern(char *pattern, struct re_pattern_buffer *compiled_pattern,
+compile_pattern(const char *pattern, struct re_pattern_buffer *compiled_pattern,
                 char *fastmap)
 {
   int tmp;
@@ -743,8 +743,8 @@ compile_pattern(char *pattern, struct re_pattern_buffer *compiled_pattern,
 #endif /* HAVE_INTERNAL_REGEX_STUFF */
 
   tmp = re_set_syntax(RE_SYNTAX_EMACS);
-  val = re_compile_pattern(pattern, strlen(pattern),
-			   compiled_pattern);
+  val = (const char *)re_compile_pattern(pattern, strlen(pattern),
+					 compiled_pattern);
   re_set_syntax(tmp);
 
   if (val)
@@ -758,10 +758,10 @@ compile_pattern(char *pattern, struct re_pattern_buffer *compiled_pattern,
 /* Open a connection to a remote debugger. NAME is the filename used
    for communication.  */
 void
-monitor_open(char *args, struct monitor_ops *mon_ops, int from_tty)
+monitor_open(const char *args, struct monitor_ops *mon_ops, int from_tty)
 {
   const char *name;
-  char **p;
+  const char **p;
 
   if (mon_ops->magic != MONITOR_OPS_MAGIC)
     error(_("Magic number of monitor_ops struct wrong."));
@@ -1447,7 +1447,7 @@ static int
 monitor_write_memory(CORE_ADDR memaddr, const char *myaddr, int len)
 {
   unsigned int val, hostval;
-  char *cmd;
+  const char *cmd;
   int i;
 
   monitor_debug ("MON write %d %s\n", len, paddr (memaddr));
@@ -1711,7 +1711,7 @@ monitor_read_memory_single(CORE_ADDR memaddr, const char *myaddr, int len)
   unsigned int val;
   char membuf[(sizeof(int) * 2UL) + 1UL];
   char *p;
-  char *cmd;
+  const char *cmd;
 
   monitor_debug("MON read single\n");
 #ifdef CAN_ACTUALLY_USE_LONG_LONGS
@@ -2241,7 +2241,7 @@ monitor_stop(void)
 static void
 monitor_rcmd(const char *command, struct ui_file *outbuf)
 {
-  char *p;
+  const char *p;
   int resp_len;
   char buf[1000];
 

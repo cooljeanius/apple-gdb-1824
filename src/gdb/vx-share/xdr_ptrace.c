@@ -14,6 +14,9 @@ modification history
 01a,05jun90,llk  extracted from xdr_ptrace.h, version 01c.
 */
 
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* NO_POISON */
 #include "defs.h"
 #include "vxWorks.h"
 #include <rpc/rpc.h>
@@ -28,12 +31,10 @@ modification history
 * xdr routine for counted bytes  
 *
 */
-bool_t xdr_c_bytes(xdrs,objp)
-    XDR *xdrs;
-    C_bytes *objp;
-    {
-    return(xdr_bytes(xdrs, &objp->bytes, (u_int *) &objp->len, MAX_LEN));
-    } /* xdr_c_bytes */
+bool_t xdr_c_bytes(XDR *xdrs, C_bytes *objp)
+{
+    return (xdr_bytes(xdrs, &objp->bytes, (u_int *)&objp->len, MAX_LEN));
+} /* xdr_c_bytes */
 
 /********************************************************************
 *
@@ -42,13 +43,11 @@ bool_t xdr_c_bytes(xdrs,objp)
 * xdr routine for counted bytes branch of ptrace_info
 *
 */
-
-LOCAL bool_t xdr_c_bytes_ptr(xdrs,objp)
-    XDR *xdrs;
-    C_bytes **objp;
-    {
-    return(xdr_pointer(xdrs, (char **) objp, sizeof(C_bytes), xdr_c_bytes));
-    } /* xdr_c_bytes_ptr */
+LOCAL bool_t xdr_c_bytes_ptr(XDR *xdrs, C_bytes **objp)
+{
+    return (xdr_pointer(xdrs, (char **)objp, sizeof(C_bytes),
+						(xdrproc_t)xdr_c_bytes));
+} /* xdr_c_bytes_ptr */
 
 /********************************************************************
 *
@@ -57,20 +56,17 @@ LOCAL bool_t xdr_c_bytes_ptr(xdrs,objp)
 * xdr routine for discriminated union ptrace_info
 *
 */
-
-bool_t xdr_ptrace_info(xdrs,objp)
-    XDR *xdrs;
-    Ptrace_info *objp;
-    {
+bool_t xdr_ptrace_info(XDR *xdrs, Ptrace_info *objp)
+{
     static struct xdr_discrim choices[] = 
 	{
-	    { (int) DATA, xdr_c_bytes_ptr },
+	    { (int)DATA, xdr_c_bytes_ptr },
 	    { __dontcare__, NULL }
 	};
 
-    return(xdr_union(xdrs, (enum_t *) &objp->ttype, 
-	(char *) &objp->more_data, choices, xdr_void));
-    } /* xdr_ptrace_info */
+    return (xdr_union(xdrs, (enum_t *)&objp->ttype, (char *)&objp->more_data,
+					  choices, (xdrproc_t)xdr_void));
+} /* xdr_ptrace_info */
 
 /********************************************************************
 *
@@ -79,22 +75,19 @@ bool_t xdr_ptrace_info(xdrs,objp)
 * xdr routine for remote ptrace data into server
 *
 */
+bool_t xdr_rptrace(XDR *xdrs, Rptrace *objp)
+{
+    if (!xdr_int(xdrs, &objp->pid)) 
+		return (FALSE);
+    if (!xdr_int(xdrs, &objp->data)) 
+		return (FALSE);
+    if (!xdr_int(xdrs, &objp->addr)) 
+		return (FALSE);
+    if (!xdr_ptrace_info(xdrs, &objp->info)) 
+		return (FALSE);
 
-bool_t xdr_rptrace(xdrs,objp)
-    XDR *xdrs;
-    Rptrace *objp;
-    {
-    if (! xdr_int(xdrs, &objp->pid)) 
-	return(FALSE);
-    if (! xdr_int(xdrs, &objp->data)) 
-	return(FALSE);
-    if (! xdr_int(xdrs, &objp->addr)) 
-	return(FALSE);
-    if (! xdr_ptrace_info(xdrs, &objp->info)) 
-	return(FALSE);
-
-    return(TRUE);
-    } /* xdr_rptrace */
+    return (TRUE);
+} /* xdr_rptrace */
 
 /********************************************************************
 *
@@ -103,17 +96,16 @@ bool_t xdr_rptrace(xdrs,objp)
 * xdr routine for remote ptrace data returned by server
 *
 */
+bool_t xdr_ptrace_return(XDR *xdrs, Ptrace_return *objp)
+{
+    if (!xdr_int(xdrs, &objp->status)) 
+		return (FALSE);
+    if (!xdr_int(xdrs, &objp->errno_num)) 
+		return (FALSE);
+    if (!xdr_ptrace_info(xdrs, &objp->info)) 
+		return (FALSE);
 
-bool_t xdr_ptrace_return(xdrs, objp)
-    XDR *xdrs;
-    Ptrace_return *objp;
-    {
-    if (! xdr_int(xdrs, &objp->status)) 
-	return(FALSE);
-    if (! xdr_int(xdrs, &objp->errno_num)) 
-	return(FALSE);
-    if (! xdr_ptrace_info(xdrs, &objp->info)) 
-	return(FALSE);
+    return (TRUE);
+} /* xdr_ptrace_return */	
 
-    return(TRUE);
-    } /* xdr_ptrace_return */	
+/* EOF */

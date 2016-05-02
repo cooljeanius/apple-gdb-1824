@@ -13,6 +13,8 @@ modification history
 01a,05jun90,llk  extracted from xdr_ptrace.h.
 */
 
+#ifndef VXSHARE_XDR_PTRACE_H
+#define VXSHARE_XDR_PTRACE_H 1
 
 /*
  *  Counted byte structure used by READ/WRITE TEXT/DATA
@@ -66,7 +68,11 @@ struct ptrace_return {
 };
 typedef struct ptrace_return Ptrace_return;
 
-bool_t xdr_c_bytes();
-bool_t xdr_ptrace_info();
-bool_t xdr_rptrace();
-bool_t xdr_ptrace_return();
+bool_t xdr_c_bytes(XDR *xdrs, C_bytes *objp);
+bool_t xdr_ptrace_info(XDR *xdrs, Ptrace_info *objp);
+bool_t xdr_rptrace(XDR *xdrs, Rptrace *objp);
+bool_t xdr_ptrace_return(XDR *xdrs, Ptrace_return *objp);
+
+#endif /* !VXSHARE_XDR_PTRACE_H */
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* Target-dependent code for NetBSD/mips.
+/* mipsnbsd-tdep.c: Target-dependent code for NetBSD/mips.
 
    Copyright 2002, 2003, 2004 Free Software Foundation, Inc.
    Contributed by Wasabi Systems, Inc.
@@ -53,52 +53,48 @@
 /* Supply register REGNUM from the buffer specified by FPREGS and LEN
    in the floating-point register set REGSET to register cache
    REGCACHE.  If REGNUM is -1, do this for all registers in REGSET.  */
-
 static void
-mipsnbsd_supply_fpregset (const struct regset *regset,
-			  struct regcache *regcache,
-			  int regnum, const void *fpregs, size_t len)
+mipsnbsd_supply_fpregset(const struct regset *regset, struct regcache *regcache,
+			 int regnum, const void *fpregs, size_t len)
 {
-  size_t regsize = mips_isa_regsize (get_regcache_arch (regcache));
-  const char *regs = fpregs;
+  size_t regsize = mips_isa_regsize(get_regcache_arch(regcache));
+  const char *regs = (const char *)fpregs;
   int i;
 
-  gdb_assert (len >= MIPSNBSD_NUM_FPREGS * regsize);
+  gdb_assert(len >= (MIPSNBSD_NUM_FPREGS * regsize));
 
   for (i = MIPS_FP0_REGNUM; i <= MIPS_FSR_REGNUM; i++)
     {
-      if (regnum == i || regnum == -1)
-	regcache_raw_supply (regcache, i,
-			     regs + (i - MIPS_FP0_REGNUM) * regsize);
+      if ((regnum == i) || (regnum == -1))
+	regcache_raw_supply(regcache, i,
+			    (regs + ((i - MIPS_FP0_REGNUM) * regsize)));
     }
 }
 
 /* Supply register REGNUM from the buffer specified by GREGS and LEN
    in the general-purpose register set REGSET to register cache
    REGCACHE.  If REGNUM is -1, do this for all registers in REGSET.  */
-
 static void
-mipsnbsd_supply_gregset (const struct regset *regset,
-			 struct regcache *regcache, int regnum,
-			 const void *gregs, size_t len)
+mipsnbsd_supply_gregset(const struct regset *regset, struct regcache *regcache,
+			int regnum, const void *gregs, size_t len)
 {
-  size_t regsize = mips_isa_regsize (get_regcache_arch (regcache));
-  const char *regs = gregs;
+  size_t regsize = mips_isa_regsize(get_regcache_arch(regcache));
+  const char *regs = (const char *)gregs;
   int i;
 
-  gdb_assert (len >= MIPSNBSD_NUM_GREGS * regsize);
+  gdb_assert(len >= (MIPSNBSD_NUM_GREGS * regsize));
 
   for (i = 0; i <= MIPS_PC_REGNUM; i++)
     {
-      if (regnum == i || regnum == -1)
-	regcache_raw_supply (regcache, i, regs + i * regsize);
+      if ((regnum == i) || (regnum == -1))
+	regcache_raw_supply(regcache, i, (regs + (i * regsize)));
     }
 
-  if (len >= (MIPSNBSD_NUM_GREGS + MIPSNBSD_NUM_FPREGS) * regsize)
+  if (len >= ((MIPSNBSD_NUM_GREGS + MIPSNBSD_NUM_FPREGS) * regsize))
     {
-      regs += MIPSNBSD_NUM_GREGS * regsize;
-      len -= MIPSNBSD_NUM_GREGS * regsize;
-      mipsnbsd_supply_fpregset (regset, regcache, regnum, regs, len);
+      regs += (MIPSNBSD_NUM_GREGS * regsize);
+      len -= (MIPSNBSD_NUM_GREGS * regsize);
+      mipsnbsd_supply_fpregset(regset, regcache, regnum, regs, len);
     }
 }
 
@@ -107,13 +103,17 @@ mipsnbsd_supply_gregset (const struct regset *regset,
 static struct regset mipsnbsd_gregset =
 {
   NULL,
-  mipsnbsd_supply_gregset
+  mipsnbsd_supply_gregset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
 };
 
 static struct regset mipsnbsd_fpregset =
 {
   NULL,
-  mipsnbsd_supply_fpregset
+  mipsnbsd_supply_fpregset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
 };
 
 /* Return the appropriate register set for the core section identified
@@ -234,17 +234,19 @@ static const unsigned char sigtramp_retcode_mipseb[RETCODE_SIZE] =
   0x00, 0x00, 0x00, 0x0c,	/* syscall */
 };
 
+/* */
 static LONGEST
-mipsnbsd_sigtramp_offset (struct frame_info *next_frame)
+mipsnbsd_sigtramp_offset(struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
-  const char *retcode = TARGET_BYTE_ORDER == BFD_ENDIAN_BIG
-  	? sigtramp_retcode_mipseb : sigtramp_retcode_mipsel;
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
+  const char *retcode = (const char *)((TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
+				       ? sigtramp_retcode_mipseb
+				       : sigtramp_retcode_mipsel);
   unsigned char ret[RETCODE_SIZE], w[4];
   LONGEST off;
   int i;
 
-  if (!safe_frame_unwind_memory (next_frame, pc, w, sizeof (w)))
+  if (!safe_frame_unwind_memory(next_frame, pc, w, sizeof(w)))
     return -1;
 
   for (i = 0; i < RETCODE_NWORDS; i++)
@@ -285,21 +287,23 @@ mipsnbsd_get_longjmp_target (CORE_ADDR *pc)
   CORE_ADDR jb_addr;
   char *buf;
 
-  buf = alloca (NBSD_MIPS_JB_ELEMENT_SIZE);
+  buf = (char *)alloca(NBSD_MIPS_JB_ELEMENT_SIZE);
 
-  jb_addr = read_register (MIPS_A0_REGNUM);
+  jb_addr = read_register(MIPS_A0_REGNUM);
 
-  if (target_read_memory (jb_addr + NBSD_MIPS_JB_OFFSET, buf,
-  			  NBSD_MIPS_JB_ELEMENT_SIZE))
+  if (target_read_memory((jb_addr + NBSD_MIPS_JB_OFFSET), (gdb_byte *)buf,
+  			 NBSD_MIPS_JB_ELEMENT_SIZE))
     return 0;
 
-  *pc = extract_unsigned_integer (buf, NBSD_MIPS_JB_ELEMENT_SIZE);
+  *pc = extract_unsigned_integer((const gdb_byte *)buf,
+				 NBSD_MIPS_JB_ELEMENT_SIZE);
 
   return 1;
 }
 
+/* */
 static int
-mipsnbsd_cannot_fetch_register (int regno)
+mipsnbsd_cannot_fetch_register(int regno)
 {
   return (regno == MIPS_ZERO_REGNUM
 	  || regno == mips_regnum (current_gdbarch)->fp_implementation_revision);
@@ -399,19 +403,23 @@ mipsnbsd_init_abi (struct gdbarch_info info,
 	       mipsnbsd_lp64_fetch_link_map_offsets));
 }
 
-
+/* */
 static enum gdb_osabi
-mipsnbsd_core_osabi_sniffer (bfd *abfd)
+mipsnbsd_core_osabi_sniffer(bfd *abfd)
 {
-  if (strcmp (bfd_get_target (abfd), "netbsd-core") == 0)
+  if (strcmp(bfd_get_target(abfd), "netbsd-core") == 0)
     return GDB_OSABI_NETBSD_ELF;
 
   return GDB_OSABI_UNKNOWN;
 }
 
+/* */
+extern void _initialize_mipsnbsd_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_mipsnbsd_tdep (void)
+_initialize_mipsnbsd_tdep(void)
 {
-  gdbarch_register_osabi (bfd_arch_mips, 0, GDB_OSABI_NETBSD_ELF,
-			  mipsnbsd_init_abi);
+  gdbarch_register_osabi(bfd_arch_mips, 0, GDB_OSABI_NETBSD_ELF,
+			 mipsnbsd_init_abi);
 }
+
+/* EOF */

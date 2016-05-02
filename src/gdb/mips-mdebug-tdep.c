@@ -101,35 +101,39 @@ non_heuristic_proc_desc (CORE_ADDR pc, CORE_ADDR *addrptr)
          the information normally found in ECOFF PDRs.  */
 
       the_bfd = sec->objfile->obfd;
-      if (priv == NULL
-	  && (the_bfd->format == bfd_object
-	      && bfd_get_flavour (the_bfd) == bfd_target_elf_flavour
-	      && elf_elfheader (the_bfd)->e_ident[EI_CLASS] == ELFCLASS64))
+      if ((priv == NULL)
+	  && ((the_bfd->format == bfd_object)
+	      && (bfd_get_flavour(the_bfd) == bfd_target_elf_flavour)
+	      && (elf_elfheader(the_bfd)->e_ident[EI_CLASS] == ELFCLASS64)))
 	{
 	  /* Right now GAS only outputs the address as a four-byte sequence.
 	     This means that we should not bother with this method on 64-bit
 	     targets (until that is fixed).  */
 
-	  priv = obstack_alloc (&sec->objfile->objfile_obstack,
-				sizeof (struct mips_objfile_private));
+	  priv = ((struct mips_objfile_private *)
+		  obstack_alloc(&sec->objfile->objfile_obstack,
+				sizeof(struct mips_objfile_private)));
 	  priv->size = 0;
-	  set_objfile_data (sec->objfile, mips_pdr_data, priv);
+	  set_objfile_data(sec->objfile, mips_pdr_data, priv);
 	}
       else if (priv == NULL)
 	{
 	  asection *bfdsec;
 
-	  priv = obstack_alloc (&sec->objfile->objfile_obstack,
-				sizeof (struct mips_objfile_private));
+	  priv = 
+	    ((struct mips_objfile_private *)
+	     obstack_alloc(&sec->objfile->objfile_obstack,
+			   sizeof(struct mips_objfile_private)));
 
-	  bfdsec = bfd_get_section_by_name (sec->objfile->obfd, ".pdr");
+	  bfdsec = bfd_get_section_by_name(sec->objfile->obfd, ".pdr");
 	  if (bfdsec != NULL)
 	    {
-	      priv->size = bfd_section_size (sec->objfile->obfd, bfdsec);
-	      priv->contents = obstack_alloc (&sec->objfile->objfile_obstack,
-					      priv->size);
-	      bfd_get_section_contents (sec->objfile->obfd, bfdsec,
-					priv->contents, 0, priv->size);
+	      priv->size = bfd_section_size(sec->objfile->obfd, bfdsec);
+	      priv->contents =
+		(char *)obstack_alloc(&sec->objfile->objfile_obstack,
+				      priv->size);
+	      bfd_get_section_contents(sec->objfile->obfd, bfdsec,
+				       priv->contents, 0, priv->size);
 
 	      /* In general, the .pdr section is sorted.  However, in the
 	         presence of multiple code sections (and other corner cases)
@@ -266,49 +270,56 @@ struct mips_frame_cache
   struct trad_frame_saved_reg *saved_regs;
 };
 
+/* */
 static struct mips_frame_cache *
-mips_mdebug_frame_cache (struct frame_info *next_frame, void **this_cache)
+mips_mdebug_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   CORE_ADDR startaddr = 0;
   struct mdebug_extra_func_info *proc_desc;
   struct mips_frame_cache *cache;
-  struct gdbarch *gdbarch = get_frame_arch (next_frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch *gdbarch = get_frame_arch(next_frame);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
   /* r0 bit means kernel trap */
   int kernel_trap;
   /* What registers have been saved?  Bitmasks.  */
   unsigned long gen_mask, float_mask;
+  
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
 
   if ((*this_cache) != NULL)
-    return (*this_cache);
-  cache = FRAME_OBSTACK_ZALLOC (struct mips_frame_cache);
+    return (struct mips_frame_cache *)(*this_cache);
+  cache = FRAME_OBSTACK_ZALLOC(struct mips_frame_cache);
   (*this_cache) = cache;
-  cache->saved_regs = trad_frame_alloc_saved_regs (next_frame);
+  cache->saved_regs = trad_frame_alloc_saved_regs(next_frame);
 
   /* Get the mdebug proc descriptor.  */
-  proc_desc = non_heuristic_proc_desc (frame_pc_unwind (next_frame),
-				       &startaddr);
+  proc_desc = non_heuristic_proc_desc(frame_pc_unwind(next_frame),
+				      &startaddr);
   /* Must be true.  This is only called when the sniffer detected a
      proc descriptor.  */
-  gdb_assert (proc_desc != NULL);
+  gdb_assert(proc_desc != NULL);
 
   /* Extract the frame's base.  */
-  cache->base = (frame_unwind_register_signed (next_frame, NUM_REGS + PROC_FRAME_REG (proc_desc))
-		 + PROC_FRAME_OFFSET (proc_desc));
+  cache->base = (frame_unwind_register_signed(next_frame, NUM_REGS + PROC_FRAME_REG(proc_desc))
+		 + PROC_FRAME_OFFSET(proc_desc));
 
-  kernel_trap = PROC_REG_MASK (proc_desc) & 1;
-  gen_mask = kernel_trap ? 0xFFFFFFFF : PROC_REG_MASK (proc_desc);
-  float_mask = kernel_trap ? 0xFFFFFFFF : PROC_FREG_MASK (proc_desc);
+  kernel_trap = (PROC_REG_MASK(proc_desc) & 1);
+  gen_mask = (kernel_trap ? 0xFFFFFFFF
+	      : (unsigned long)PROC_REG_MASK(proc_desc));
+  float_mask = (kernel_trap ? 0xFFFFFFFF
+		: (unsigned long)PROC_FREG_MASK(proc_desc));
   
   /* Must be true.  The in_prologue case is left for the heuristic
      unwinder.  This is always used on kernel traps.  */
-  gdb_assert (!in_prologue (frame_pc_unwind (next_frame), PROC_LOW_ADDR (proc_desc))
-	      || kernel_trap);
+  gdb_assert(!in_prologue(frame_pc_unwind(next_frame), PROC_LOW_ADDR(proc_desc))
+	     || kernel_trap);
 
   /* Fill in the offsets for the registers which gen_mask says were
      saved.  */
   {
-    CORE_ADDR reg_position = (cache->base + PROC_REG_OFFSET (proc_desc));
+    CORE_ADDR reg_position = (cache->base + PROC_REG_OFFSET(proc_desc));
     int ireg;
 
     for (ireg = MIPS_NUMREGS - 1; gen_mask; --ireg, gen_mask <<= 1)
@@ -368,44 +379,50 @@ mips_mdebug_frame_cache (struct frame_info *next_frame, void **this_cache)
 	  reg_position -= mips_abi_regsize (gdbarch);
 	}
 
-    cache->saved_regs[NUM_REGS + mips_regnum (current_gdbarch)->pc]
-      = cache->saved_regs[NUM_REGS + MIPS_RA_REGNUM];
+    cache->saved_regs[NUM_REGS + mips_regnum(current_gdbarch)->pc] =
+      cache->saved_regs[NUM_REGS + MIPS_RA_REGNUM];
   }
 
   /* SP_REGNUM, contains the value and not the address.  */
-  trad_frame_set_value (cache->saved_regs, NUM_REGS + MIPS_SP_REGNUM, cache->base);
+  trad_frame_set_value(cache->saved_regs, (NUM_REGS + MIPS_SP_REGNUM),
+		       cache->base);
 
-  return (*this_cache);
+  return (struct mips_frame_cache *)(*this_cache);
+}
+
+/* */
+static void
+mips_mdebug_frame_this_id(struct frame_info *next_frame, void **this_cache,
+			  struct frame_id *this_id)
+{
+  struct mips_frame_cache *info = mips_mdebug_frame_cache(next_frame,
+							  this_cache);
+  (*this_id) = frame_id_build(info->base, frame_func_unwind(next_frame));
 }
 
 static void
-mips_mdebug_frame_this_id (struct frame_info *next_frame, void **this_cache,
-			   struct frame_id *this_id)
+mips_mdebug_frame_prev_register(struct frame_info *next_frame,
+				void **this_cache,
+				/* APPLE LOCAL variable opt states.  */
+				int regnum, enum opt_state *optimizedp,
+				enum lval_type *lvalp, CORE_ADDR *addrp,
+				int *realnump, void *valuep)
 {
-  struct mips_frame_cache *info = mips_mdebug_frame_cache (next_frame,
-							   this_cache);
-  (*this_id) = frame_id_build (info->base, frame_func_unwind (next_frame));
-}
-
-static void
-mips_mdebug_frame_prev_register (struct frame_info *next_frame,
-				 void **this_cache,
-				 /* APPLE LOCAL variable opt states.  */
-				 int regnum, enum opt_state *optimizedp,
-				 enum lval_type *lvalp, CORE_ADDR *addrp,
-				 int *realnump, void *valuep)
-{
-  struct mips_frame_cache *info = mips_mdebug_frame_cache (next_frame,
-							   this_cache);
-  trad_frame_get_prev_register (next_frame, info->saved_regs, regnum,
-				optimizedp, lvalp, addrp, realnump, valuep);
+  struct mips_frame_cache *info = mips_mdebug_frame_cache(next_frame,
+							  this_cache);
+  trad_frame_get_prev_register(next_frame, info->saved_regs, regnum,
+			       optimizedp, lvalp, addrp, realnump,
+			       (gdb_byte *)valuep);
 }
 
 static const struct frame_unwind mips_mdebug_frame_unwind =
 {
   NORMAL_FRAME,
   mips_mdebug_frame_this_id,
-  mips_mdebug_frame_prev_register
+  mips_mdebug_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *

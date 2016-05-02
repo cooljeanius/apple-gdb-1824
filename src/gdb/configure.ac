@@ -1573,6 +1573,16 @@ m4_ifdef([libiberty_INIT],[
   AC_MSG_NOTICE([skipping extra checks for libiberty things])dnl
 ])dnl
 
+if test "x${ac_cv_have_decl_close}" = "x"; then
+  test -z "${ac_cv_have_decl_close}"
+  AC_CHECK_DECLS([close],[],[],[
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
+  ])dnl
+  ## OK
+fi
+
 dnl# just skip the first one; getting different results from the two
 dnl# conftests can lead to warnings:
 if test "x${ac_cv_have_decl_sys_siglist}" = "x" && test "x" = "Y0"; then
@@ -1680,8 +1690,7 @@ AC_MSG_RESULT([ ])dnl
 AC_STRUCT_ST_BLOCKS
 AC_CHECK_MEMBERS([struct stat.st_blksize])dnl
 AC_CHECK_MEMBERS([struct stat.st_rdev])dnl
-AC_CHECK_MEMBERS([struct reg.r_fs])dnl
-AC_CHECK_MEMBERS([struct reg.r_gs])dnl
+dnl# checks for struct reg members are done later in a separate macro
 AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
 
 # ------------------ #
@@ -2037,14 +2046,14 @@ unset ac_cv_func_strchr
 AC_CHECK_FUNCS([atof alarm assert atexit bcopy bsearch bzero dup2 exit \
                 fflush fgets fprintf fwrite getcwd gethostbyaddr \
                 gethostbyname gethostname getpass gets gettimeofday \
-                inet_ntoa isascii ishexnumber isnumber mach_error_string \
-                memchr memcmp memcpy memmove mempcpy memset mkdir \
-                netname_look_up nl_langinfo pathconf pclose popen pow \
-                qsort qsort_r readdir re_comp regcomp select setitimer \
-                socket strcasecmp strcat strchr strcpy strcspn strdup \
-                strerror strlcat strlcpy strlen strncasecmp strncat \
-                strncmp strncpy strndup strpbrk strrchr strspn strstr \
-                strtok strtok_r strtol strtoul timeradd timerclear \
+                inet_addr inet_ntoa isascii ishexnumber isnumber \
+                mach_error_string memchr memcmp memcpy memmove mempcpy \
+                memset mkdir netname_look_up nl_langinfo pathconf pclose \
+                popen pow qsort qsort_r readdir re_comp regcomp select \
+                setitimer socket strcasecmp strcat strchr strcpy strcspn \
+                strdup strerror strlcat strlcpy strlen strncasecmp \
+                strncat strncmp strncpy strndup strpbrk strrchr strspn \
+                strstr strtok strtok_r strtol strtoul timeradd timerclear \
                 timersub uname vasprintf wcwidth])dnl
 
 dnl# Use as a replacement for just-plain sprintf:

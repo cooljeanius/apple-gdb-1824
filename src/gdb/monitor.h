@@ -61,36 +61,36 @@ struct serial;
 
 struct memrw_cmd
   {
-    char *cmdb;			/* Command to send for byte read/write */
-    char *cmdw;			/* Command for word (16 bit) read/write */
-    char *cmdl;			/* Command for long (32 bit) read/write */
-    char *cmdll;		/* Command for long long (64 bit) read/write */
-    char *resp_delim;		/* String just prior to the desired value */
-    char *term;			/* Terminating string to search for */
-    char *term_cmd;		/* String to get out of sub-mode (if necessary) */
+    const char *cmdb;		/* Command to send for byte read/write */
+    const char *cmdw;		/* Command for word (16 bit) read/write */
+    const char *cmdl;		/* Command for long (32 bit) read/write */
+    const char *cmdll;		/* Command for long long (64 bit) read/write */
+    const char *resp_delim;	/* String just prior to the desired value */
+    const char *term;		/* Terminating string to search for */
+    const char *term_cmd;  /* String to get out of sub-mode (if necessary) */
   };
 
 struct regrw_cmd
   {
-    char *cmd;			/* Command to send for reg read/write */
-    char *resp_delim;		/* String (actually a regexp if getmem) just
+    const char *cmd;		/* Command to send for reg read/write */
+    const char *resp_delim;	/* String (actually a regexp if getmem) just
 				   prior to the desired value */
-    char *term;			/* Terminating string to search for */
-    char *term_cmd;		/* String to get out of sub-mode (if necessary) */
+    const char *term;		/* Terminating string to search for */
+    const char *term_cmd;    /* String to get out of sub-mode (if necessary) */
   };
 
 struct monitor_ops
   {
     int flags;			/* See below */
-    char **init;		/* List of init commands.  NULL terminated. */
-    char *cont;			/* continue command */
-    char *step;			/* single step */
-    char *stop;			/* Interrupt program string */
-    char *set_break;		/* set a breakpoint. If NULL, monitor implementation
+    const char **init;		/* List of init commands.  NULL terminated. */
+    const char *cont;			/* continue command */
+    const char *step;			/* single step */
+    const char *stop;			/* Interrupt program string */
+    const char *set_break;	/* set a breakpoint. If NULL, monitor implementation
 				   sets its own to_insert_breakpoint method. */
-    char *clr_break;		/* clear a breakpoint */
-    char *clr_all_break;	/* Clear all breakpoints */
-    char *fill;			/* Memory fill cmd (addr len val) */
+    const char *clr_break;		/* clear a breakpoint */
+    const char *clr_all_break;	/* Clear all breakpoints */
+    const char *fill;			/* Memory fill cmd (addr len val) */
     struct memrw_cmd setmem;	/* set memory to a value */
     struct memrw_cmd getmem;	/* display memory */
     struct regrw_cmd setreg;	/* set a register */
@@ -100,8 +100,8 @@ struct monitor_ops
        pairs.  This should be called for each pair
        of registers that we can parse to supply
        GDB with the value of a register.  */
-    char *dump_registers;	/* Command to dump all regs at once */
-    char *register_pattern;	/* Pattern that picks out register from reg dump */
+    const char *dump_registers;	/* Command to dump all regs at once */
+    const char *register_pattern; /* Pattern that picks out register from reg dump */
     void (*supply_register)(char *name, int namelen, char *val, int vallen);
     void (*load_routine)(struct serial *desc, const char *file,
 			 int hashmark);	/* Download routine */
@@ -111,14 +111,14 @@ struct monitor_ops
 		       int bufmax,
 		       int *response_length,
 		       struct target_waitstatus * status);
-    char *load;			/* load command */
-    char *loadresp;		/* Response to load command */
-    char *prompt;		/* monitor command prompt */
-    char *line_term;		/* end-of-command delimitor */
-    char *cmd_end;		/* optional command terminator */
+    const char *load;			/* load command */
+    const char *loadresp;		/* Response to load command */
+    const char *prompt;		/* monitor command prompt */
+    const char *line_term;		/* end-of-command delimitor */
+    const char *cmd_end;		/* optional command terminator */
     struct target_ops *target;	/* target operations */
     int stopbits;		/* number of stop bits */
-    char **regnames /* array of register names in ascii; deprecated: */
+    const char **regnames /* array of register names in ascii; deprecated: */
       ATTRIBUTE_DEPRECATED_FOR(regname); /* use regname instead */
     const char *(*regname)(int index);
                                 /* function for dynamic regname array */
@@ -242,17 +242,18 @@ struct monitor_ops
 
 #define SREC_SIZE 160
 
-extern void monitor_open(char *args, struct monitor_ops *ops, int from_tty);
+extern void monitor_open(const char *args, struct monitor_ops *ops,
+			 int from_tty);
 extern void monitor_close(int quitting);
 extern char *monitor_supply_register(int regno, char *valstr);
-extern int monitor_expect(char *prompt, char *buf, int buflen);
+extern int monitor_expect(const char *prompt, char *buf, int buflen);
 extern int monitor_expect_prompt(char *buf, int buflen);
 /* Note: The variable argument functions monitor_printf and
    monitor_printf_noecho vararg do not take take standard format style
    arguments.  Instead they take custom formats interpretered directly
    by monitor_vsprintf.  */
 extern void monitor_printf(const char *, ...);
-extern void monitor_printf_noecho(char *, ...);
+extern void monitor_printf_noecho(const char *, ...);
 extern void monitor_write(char *buf, int buflen);
 extern int monitor_readchar(void);
 extern char *monitor_get_dev_name(void);
