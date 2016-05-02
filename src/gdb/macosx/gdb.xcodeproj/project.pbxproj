@@ -3014,6 +3014,81 @@
 		61AA20741CD3F3F00045E89A /* m68hc11-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "m68hc11-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb/m68hc11-tdep.h"; sourceTree = "<absolute>"; };
 		61AA20BF1CD647B50045E89A /* tm-mach3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-mach3.h"; sourceTree = "<group>"; };
 		61AA20C01CD6CC6B0045E89A /* remote-mips.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "remote-mips.h"; path = "/var/root/apple-gdb-1824/src/gdb/remote-mips.h"; sourceTree = "<absolute>"; };
+		61AA22501CD81C2A0045E89A /* alloca_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = alloca_old.c; sourceTree = "<group>"; };
+		61AA22511CD81C2A0045E89A /* altos-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "altos-xdep_old.c"; sourceTree = "<group>"; };
+		61AA22521CD81C2A0045E89A /* am29k-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "am29k-opcode_old.h"; sourceTree = "<group>"; };
+		61AA22531CD81C2A0045E89A /* am29k-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "am29k-pinsn_old.c"; sourceTree = "<group>"; };
+		61AA22541CD81C2A0045E89A /* am29k-tdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "am29k-tdep_old.c"; sourceTree = "<group>"; };
+		61AA22551CD81C2A0045E89A /* ansidecl_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ansidecl_old.h; sourceTree = "<group>"; };
+		61AA22561CD81C2A0045E89A /* arm-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "arm-opcode_old.h"; sourceTree = "<group>"; };
+		61AA22571CD81C2A0045E89A /* arm-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "arm-pinsn_old.c"; sourceTree = "<group>"; };
+		61AA22581CD81C2A0045E89A /* arm-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "arm-xdep_old.c"; sourceTree = "<group>"; };
+		61AA22591CD81C2A0045E89A /* command_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = command_old.c; sourceTree = "<group>"; };
+		61AA225A1CD81C2A0045E89A /* convex-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "convex-pinsn_old.c"; sourceTree = "<group>"; };
+		61AA225B1CD81C2A0045E89A /* convex-tdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "convex-tdep_old.c"; sourceTree = "<group>"; };
+		61AA225C1CD81C2A0045E89A /* convex-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "convex-xdep_old.c"; sourceTree = "<group>"; };
+		61AA225D1CD81C2A0045E89A /* convx-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "convx-opcode_old.h"; sourceTree = "<group>"; };
+		61AA225E1CD81C2A0045E89A /* core_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = core_old.c; sourceTree = "<group>"; };
+		61AA225F1CD81C2A0045E89A /* coredep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = coredep_old.c; sourceTree = "<group>"; };
+		61AA22601CD81C2A0045E89A /* cplus-dem_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cplus-dem_old.c"; sourceTree = "<group>"; };
+		61AA22631CD81C2A0045E89A /* expread_old.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = expread_old.y; sourceTree = "<group>"; };
+		61AA22641CD81C2A0045E89A /* getpagesize_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = getpagesize_old.h; sourceTree = "<group>"; };
+		61AA22651CD81C2A0045E89A /* gmalloc_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gmalloc_old.c; sourceTree = "<group>"; };
+		61AA22661CD81C2A0045E89A /* gmalloc_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gmalloc_old.h; sourceTree = "<group>"; };
+		61AA22671CD81C2A0045E89A /* gould-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "gould-pinsn_old.c"; sourceTree = "<group>"; };
+		61AA22681CD81C2A0045E89A /* gould-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "gould-xdep_old.c"; sourceTree = "<group>"; };
+		61AA22691CD81C2A0045E89A /* hp300ux-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "hp300ux-xdep_old.c"; sourceTree = "<group>"; };
+		61AA226A1CD81C2A0045E89A /* i386-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "i386-pinsn_old.c"; sourceTree = "<group>"; };
+		61AA226B1CD81C2A0045E89A /* i386-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "i386-xdep_old.c"; sourceTree = "<group>"; };
+		61AA226C1CD81C2A0045E89A /* i960-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "i960-pinsn_old.c"; sourceTree = "<group>"; };
+		61AA226D1CD81C2A0045E89A /* i960-tdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "i960-tdep_old.c"; sourceTree = "<group>"; };
+		61AA226E1CD81C2A0045E89A /* ieee-float_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "ieee-float_old.c"; sourceTree = "<group>"; };
+		61AA226F1CD81C2A0045E89A /* ieee-float_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ieee-float_old.h"; sourceTree = "<group>"; };
+		61AA22701CD81C2A0045E89A /* kdb-start_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "kdb-start_old.c"; sourceTree = "<group>"; };
+		61AA22711CD81C2A0045E89A /* m68k-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "m68k-opcode_old.h"; sourceTree = "<group>"; };
+		61AA22721CD81C2A0045E89A /* m68k-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "m68k-pinsn_old.c"; sourceTree = "<group>"; };
+		61AA22731CD81C2A0045E89A /* m88k-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "m88k-opcode_old.h"; sourceTree = "<group>"; };
+		61AA22741CD81C2A0045E89A /* m88k-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "m88k-pinsn_old.c"; sourceTree = "<group>"; };
+		61AA22751CD81C2A0045E89A /* m88k-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "m88k-xdep_old.c"; sourceTree = "<group>"; };
+		61AA22761CD81C2A0045E89A /* mcheck_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mcheck_old.c; sourceTree = "<group>"; };
+		61AA22771CD81C2A0045E89A /* mips-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "mips-opcode_old.h"; sourceTree = "<group>"; };
+		61AA22781CD81C2A0045E89A /* mips-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mips-pinsn_old.c"; sourceTree = "<group>"; };
+		61AA22791CD81C2A0045E89A /* mips-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mips-xdep_old.c"; sourceTree = "<group>"; };
+		61AA227A1CD81C2A0045E89A /* mtrace_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mtrace_old.c; sourceTree = "<group>"; };
+		61AA227B1CD81C2A0045E89A /* news-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "news-xdep_old.c"; sourceTree = "<group>"; };
+		61AA227C1CD81C2A0045E89A /* nindy-tdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "nindy-tdep_old.c"; sourceTree = "<group>"; };
+		61AA227D1CD81C2A0045E89A /* np1-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "np1-opcode_old.h"; sourceTree = "<group>"; };
+		61AA227E1CD81C2A0045E89A /* ns32k-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ns32k-opcode_old.h"; sourceTree = "<group>"; };
+		61AA227F1CD81C2A0045E89A /* ns32k-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "ns32k-pinsn_old.c"; sourceTree = "<group>"; };
+		61AA22801CD81C2A0045E89A /* param-no-tm_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "param-no-tm_old.h"; sourceTree = "<group>"; };
+		61AA22811CD81C2A0045E89A /* param_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = param_old.h; sourceTree = "<group>"; };
+		61AA22821CD81C2A0045E89A /* pn-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "pn-opcode_old.h"; sourceTree = "<group>"; };
+		61AA22841CD81C2A0045E89A /* putenv_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = putenv_old.c; sourceTree = "<group>"; };
+		61AA22851CD81C2A0045E89A /* pyr-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "pyr-opcode_old.h"; sourceTree = "<group>"; };
+		61AA22861CD81C2A0045E89A /* pyr-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "pyr-pinsn_old.c"; sourceTree = "<group>"; };
+		61AA22871CD81C2A0045E89A /* pyr-tdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "pyr-tdep_old.c"; sourceTree = "<group>"; };
+		61AA22881CD81C2A0045E89A /* pyr-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "pyr-xdep_old.c"; sourceTree = "<group>"; };
+		61AA228A1CD81C2A0045E89A /* regex_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = regex_old.c; sourceTree = "<group>"; };
+		61AA228B1CD81C2A0045E89A /* regex_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = regex_old.h; sourceTree = "<group>"; };
+		61AA228C1CD81C2A0045E89A /* signals_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = signals_old.h; sourceTree = "<group>"; };
+		61AA228D1CD81C2A0045E89A /* signame_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = signame_old.c; sourceTree = "<group>"; };
+		61AA228E1CD81C2A0045E89A /* signame_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = signame_old.h; sourceTree = "<group>"; };
+		61AA228F1CD81C2A0045E89A /* sparc-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "sparc-opcode_old.h"; sourceTree = "<group>"; };
+		61AA22901CD81C2A0045E89A /* sparc-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "sparc-pinsn_old.c"; sourceTree = "<group>"; };
+		61AA22911CD81C2A0045E89A /* sparc-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "sparc-xdep_old.c"; sourceTree = "<group>"; };
+		61AA22921CD81C2A0045E89A /* standalone_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = standalone_old.c; sourceTree = "<group>"; };
+		61AA22931CD81C2A0045E89A /* stuff_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stuff_old.c; sourceTree = "<group>"; };
+		61AA22941CD81C2A0045E89A /* sun3-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "sun3-xdep_old.c"; sourceTree = "<group>"; };
+		61AA22951CD81C2A0045E89A /* sun386-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "sun386-xdep_old.c"; sourceTree = "<group>"; };
+		61AA22961CD81C2A0045E89A /* symm-tdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "symm-tdep_old.c"; sourceTree = "<group>"; };
+		61AA22971CD81C2A0045E89A /* symm-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "symm-xdep_old.c"; sourceTree = "<group>"; };
+		61AA22991CD81C2A0045E89A /* tahoe-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tahoe-opcode_old.h"; sourceTree = "<group>"; };
+		61AA229A1CD81C2A0045E89A /* tahoe-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "tahoe-pinsn_old.c"; sourceTree = "<group>"; };
+		61AA229B1CD81C2A0045E89A /* tdesc_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tdesc_old.c; sourceTree = "<group>"; };
+		61AA229C1CD81C2A0045E89A /* tdesc_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tdesc_old.h; sourceTree = "<group>"; };
+		61AA229E1CD81C2A0045E89A /* umax-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "umax-xdep_old.c"; sourceTree = "<group>"; };
+		61AA229F1CD81C2A0045E89A /* vax-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "vax-opcode_old.h"; sourceTree = "<group>"; };
+		61AA22A01CD81C2A0045E89A /* vax-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "vax-pinsn_old.c"; sourceTree = "<group>"; };
 		61D08A9D1CB7171B00998571 /* cpu-z80.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "cpu-z80.c"; path = "/var/root/apple-gdb-1824/src/bfd/cpu-z80.c"; sourceTree = "<absolute>"; };
 		61D22058192D60D100FA979E /* libbfd-shared.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libbfd-shared.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		61D8186E192FE3AB00E440C0 /* chew */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = chew; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -5607,10 +5682,6 @@
 		A5A673BA1A589DC800EDD221 /* agent.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = agent.c; sourceTree = "<group>"; };
 		A5A673BC1A589DD500EDD221 /* alpha-linux-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "alpha-linux-nat.c"; sourceTree = "<group>"; };
 		A5A673BD1A589DFE00EDD221 /* alphaobsd-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "alphaobsd-tdep.c"; sourceTree = "<group>"; };
-		A5A673BE1A589DFE00EDD221 /* altos-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "altos-xdep_old.c"; sourceTree = "<group>"; };
-		A5A673BF1A589DFE00EDD221 /* am29k-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "am29k-opcode_old.h"; sourceTree = "<group>"; };
-		A5A673C01A589DFE00EDD221 /* am29k-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "am29k-pinsn_old.c"; sourceTree = "<group>"; };
-		A5A673C11A589DFE00EDD221 /* am29k-tdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "am29k-tdep_old.c"; sourceTree = "<group>"; };
 		A5A673C21A589DFE00EDD221 /* amd64-darwin-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "amd64-darwin-tdep.c"; sourceTree = "<group>"; };
 		A5A673C31A589DFE00EDD221 /* amd64-darwin-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "amd64-darwin-tdep.h"; sourceTree = "<group>"; };
 		A5A673C41A589DFE00EDD221 /* amd64-dicos-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "amd64-dicos-tdep.c"; sourceTree = "<group>"; };
@@ -5622,7 +5693,6 @@
 		A5A673CA1A589E6F00EDD221 /* arm-linux-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "arm-linux-tdep.h"; sourceTree = "<group>"; };
 		A5A673CB1A589E7700EDD221 /* arm-symbian-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "arm-symbian-tdep.c"; sourceTree = "<group>"; };
 		A5A673CC1A589E9600EDD221 /* arm-wince-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "arm-wince-tdep.c"; sourceTree = "<group>"; };
-		A5A673CD1A589E9600EDD221 /* arm-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "arm-xdep_old.c"; sourceTree = "<group>"; };
 		A5A673CE1A589E9600EDD221 /* armbsd-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "armbsd-tdep.c"; sourceTree = "<group>"; };
 		A5A673CF1A589E9F00EDD221 /* armobsd-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "armobsd-tdep.c"; sourceTree = "<group>"; };
 		A5A673D01A589E9F00EDD221 /* auto-load.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "auto-load.c"; sourceTree = "<group>"; };
@@ -6684,6 +6754,7 @@
 			children = (
 				A548D4981836C60900FD4E8A /* XcodePlugins */,
 				A51599F319870F240079DD4F /* 29k-share */,
+				61AA224F1CD81C2A0045E89A /* attic */,
 				2609D30D0E82C40A008125DE /* cli */,
 				A5159A0119870F560079DD4F /* common */,
 				2609D3280E82C40A008125DE /* config */,
@@ -6745,10 +6816,6 @@
 				2609D2C10E82C409008125DE /* alphafbsd-tdep.c */,
 				2609D2C20E82C409008125DE /* alphanbsd-tdep.c */,
 				A5A673BD1A589DFE00EDD221 /* alphaobsd-tdep.c */,
-				A5A673BE1A589DFE00EDD221 /* altos-xdep_old.c */,
-				A5A673BF1A589DFE00EDD221 /* am29k-opcode_old.h */,
-				A5A673C01A589DFE00EDD221 /* am29k-pinsn_old.c */,
-				A5A673C11A589DFE00EDD221 /* am29k-tdep_old.c */,
 				A5A673C21A589DFE00EDD221 /* amd64-darwin-tdep.c */,
 				A5A673C31A589DFE00EDD221 /* amd64-darwin-tdep.h */,
 				A5A673C41A589DFE00EDD221 /* amd64-dicos-tdep.c */,
@@ -6782,7 +6849,6 @@
 				2609D2D70E82C409008125DE /* arm-tdep.c */,
 				2609D2D80E82C40A008125DE /* arm-tdep.h */,
 				A5A673CC1A589E9600EDD221 /* arm-wince-tdep.c */,
-				A5A673CD1A589E9600EDD221 /* arm-xdep_old.c */,
 				A5A673CE1A589E9600EDD221 /* armbsd-tdep.c */,
 				2609D2D90E82C40A008125DE /* armnbsd-nat.c */,
 				2609D2DA0E82C40A008125DE /* armnbsd-tdep.c */,
@@ -10041,6 +10107,88 @@
 			name = uniwidth;
 			path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/uniwidth";
 			sourceTree = "<absolute>";
+		};
+		61AA224F1CD81C2A0045E89A /* attic */ = {
+			isa = PBXGroup;
+			children = (
+				61AA22501CD81C2A0045E89A /* alloca_old.c */,
+				61AA22511CD81C2A0045E89A /* altos-xdep_old.c */,
+				61AA22521CD81C2A0045E89A /* am29k-opcode_old.h */,
+				61AA22531CD81C2A0045E89A /* am29k-pinsn_old.c */,
+				61AA22541CD81C2A0045E89A /* am29k-tdep_old.c */,
+				61AA22551CD81C2A0045E89A /* ansidecl_old.h */,
+				61AA22561CD81C2A0045E89A /* arm-opcode_old.h */,
+				61AA22571CD81C2A0045E89A /* arm-pinsn_old.c */,
+				61AA22581CD81C2A0045E89A /* arm-xdep_old.c */,
+				61AA22591CD81C2A0045E89A /* command_old.c */,
+				61AA225A1CD81C2A0045E89A /* convex-pinsn_old.c */,
+				61AA225B1CD81C2A0045E89A /* convex-tdep_old.c */,
+				61AA225C1CD81C2A0045E89A /* convex-xdep_old.c */,
+				61AA225D1CD81C2A0045E89A /* convx-opcode_old.h */,
+				61AA225E1CD81C2A0045E89A /* core_old.c */,
+				61AA225F1CD81C2A0045E89A /* coredep_old.c */,
+				61AA22601CD81C2A0045E89A /* cplus-dem_old.c */,
+				61AA22631CD81C2A0045E89A /* expread_old.y */,
+				61AA22641CD81C2A0045E89A /* getpagesize_old.h */,
+				61AA22651CD81C2A0045E89A /* gmalloc_old.c */,
+				61AA22661CD81C2A0045E89A /* gmalloc_old.h */,
+				61AA22671CD81C2A0045E89A /* gould-pinsn_old.c */,
+				61AA22681CD81C2A0045E89A /* gould-xdep_old.c */,
+				61AA22691CD81C2A0045E89A /* hp300ux-xdep_old.c */,
+				61AA226A1CD81C2A0045E89A /* i386-pinsn_old.c */,
+				61AA226B1CD81C2A0045E89A /* i386-xdep_old.c */,
+				61AA226C1CD81C2A0045E89A /* i960-pinsn_old.c */,
+				61AA226D1CD81C2A0045E89A /* i960-tdep_old.c */,
+				61AA226E1CD81C2A0045E89A /* ieee-float_old.c */,
+				61AA226F1CD81C2A0045E89A /* ieee-float_old.h */,
+				61AA22701CD81C2A0045E89A /* kdb-start_old.c */,
+				61AA22711CD81C2A0045E89A /* m68k-opcode_old.h */,
+				61AA22721CD81C2A0045E89A /* m68k-pinsn_old.c */,
+				61AA22731CD81C2A0045E89A /* m88k-opcode_old.h */,
+				61AA22741CD81C2A0045E89A /* m88k-pinsn_old.c */,
+				61AA22751CD81C2A0045E89A /* m88k-xdep_old.c */,
+				61AA22761CD81C2A0045E89A /* mcheck_old.c */,
+				61AA22771CD81C2A0045E89A /* mips-opcode_old.h */,
+				61AA22781CD81C2A0045E89A /* mips-pinsn_old.c */,
+				61AA22791CD81C2A0045E89A /* mips-xdep_old.c */,
+				61AA227A1CD81C2A0045E89A /* mtrace_old.c */,
+				61AA227B1CD81C2A0045E89A /* news-xdep_old.c */,
+				61AA227C1CD81C2A0045E89A /* nindy-tdep_old.c */,
+				61AA227D1CD81C2A0045E89A /* np1-opcode_old.h */,
+				61AA227E1CD81C2A0045E89A /* ns32k-opcode_old.h */,
+				61AA227F1CD81C2A0045E89A /* ns32k-pinsn_old.c */,
+				61AA22801CD81C2A0045E89A /* param-no-tm_old.h */,
+				61AA22811CD81C2A0045E89A /* param_old.h */,
+				61AA22821CD81C2A0045E89A /* pn-opcode_old.h */,
+				61AA22841CD81C2A0045E89A /* putenv_old.c */,
+				61AA22851CD81C2A0045E89A /* pyr-opcode_old.h */,
+				61AA22861CD81C2A0045E89A /* pyr-pinsn_old.c */,
+				61AA22871CD81C2A0045E89A /* pyr-tdep_old.c */,
+				61AA22881CD81C2A0045E89A /* pyr-xdep_old.c */,
+				61AA228A1CD81C2A0045E89A /* regex_old.c */,
+				61AA228B1CD81C2A0045E89A /* regex_old.h */,
+				61AA228C1CD81C2A0045E89A /* signals_old.h */,
+				61AA228D1CD81C2A0045E89A /* signame_old.c */,
+				61AA228E1CD81C2A0045E89A /* signame_old.h */,
+				61AA228F1CD81C2A0045E89A /* sparc-opcode_old.h */,
+				61AA22901CD81C2A0045E89A /* sparc-pinsn_old.c */,
+				61AA22911CD81C2A0045E89A /* sparc-xdep_old.c */,
+				61AA22921CD81C2A0045E89A /* standalone_old.c */,
+				61AA22931CD81C2A0045E89A /* stuff_old.c */,
+				61AA22941CD81C2A0045E89A /* sun3-xdep_old.c */,
+				61AA22951CD81C2A0045E89A /* sun386-xdep_old.c */,
+				61AA22961CD81C2A0045E89A /* symm-tdep_old.c */,
+				61AA22971CD81C2A0045E89A /* symm-xdep_old.c */,
+				61AA22991CD81C2A0045E89A /* tahoe-opcode_old.h */,
+				61AA229A1CD81C2A0045E89A /* tahoe-pinsn_old.c */,
+				61AA229B1CD81C2A0045E89A /* tdesc_old.c */,
+				61AA229C1CD81C2A0045E89A /* tdesc_old.h */,
+				61AA229E1CD81C2A0045E89A /* umax-xdep_old.c */,
+				61AA229F1CD81C2A0045E89A /* vax-opcode_old.h */,
+				61AA22A01CD81C2A0045E89A /* vax-pinsn_old.c */,
+			);
+			path = attic;
+			sourceTree = "<group>";
 		};
 		61D22059192D60D100FA979E /* Products */ = {
 			isa = PBXGroup;

@@ -151,7 +151,7 @@ CXXLD = $(CXX)
 
 # Directory containing source files.
 srcdir = @srcdir@
-VPATH = @srcdir@:@srcdir@/macosx
+VPATH = @srcdir@:@srcdir@/macosx:@srcdir@/attic
 top_srcdir = @top_srcdir@
 
 ## automake-style verbosity control:
@@ -574,7 +574,7 @@ C_TARGARCHFLAGS = -arch $(TARGET_ARCHITECTURE)
 CFLAGS = @CFLAGS@
 
 # Set by configure
-INTERNAL_CPPFLAGS = @CPPFLAGS@
+INTERNAL_CPPFLAGS = @CPPFLAGS@ -Iattic
 
 # Need to pass this to testsuite for "make check". Probably should be
 # consistent with top-level Makefile.in and gdb/testsuite/Makefile.in
