@@ -24,13 +24,14 @@
 
 /* Work in progress */
 
+#include "defs.h"
+
 #include <ctype.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/resource.h>
 #include <signal.h>            /* for kill() */
 
-#include "defs.h"
 #include "target.h"
 #include "inferior.h"
 #include "gdb_string.h"

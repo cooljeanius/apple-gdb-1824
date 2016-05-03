@@ -62,6 +62,7 @@
  * help us at all: */
 #if !defined(_REGEX_H_) && !defined(REG_EXTENDED)
 # include "gnulib_regex.h"
+/* or "gnulib/import/regex.h" */
 #endif /* !_REGEX_H_ && !REG_EXTENDED */
 #if 0
 # include "regex_internal.h"
@@ -671,7 +672,8 @@ monitor_expect_regexp(struct re_pattern_buffer *pat, const char *buf,
 
       *(char *)p++ = readchar(timeout);
 
-      retval = re_search(pat, mybuf, (p - mybuf), 0, (p - mybuf), NULL);
+      retval = re_search_oneshot((regex_t *)pat, mybuf, (p - mybuf), 0,
+				 (p - mybuf), NULL);
       if (retval >= 0)
 	return 1;
     }
@@ -731,6 +733,12 @@ get_hex_word(void)
 # define RE_SYNTAX_EMACS 0
 #endif /* !RE_SYNTAX_EMACS */
 
+#ifndef HAVE_INTERNAL_REGEX_STUFF
+extern const char *re_compile_pattern(const char *, size_t,
+				      struct re_pattern_buffer *);
+extern int re_compile_fastmap(struct re_pattern_buffer *);
+#endif /* !HAVE_INTERNAL_REGEX_STUFF */
+
 static void
 compile_pattern(const char *pattern, struct re_pattern_buffer *compiled_pattern,
                 char *fastmap)
@@ -743,8 +751,7 @@ compile_pattern(const char *pattern, struct re_pattern_buffer *compiled_pattern,
 #endif /* HAVE_INTERNAL_REGEX_STUFF */
 
   tmp = re_set_syntax(RE_SYNTAX_EMACS);
-  val = (const char *)re_compile_pattern(pattern, strlen(pattern),
-					 compiled_pattern);
+  val = re_compile_pattern(pattern, strlen(pattern), compiled_pattern);
   re_set_syntax(tmp);
 
   if (val)

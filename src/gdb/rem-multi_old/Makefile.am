@@ -28,7 +28,7 @@ upupsrcdir = ${upsrcdir}/..
 AM_CPPFLAGS = -I. -I.. -I${upsrcdir} -I${upupsrcdir} -I${upsrcdir}/common \
 -I${upsrcdir}/config -I${upsrcdir}/macosx -I${upsrcdir}/signals \
 -I${upupsrcdir}/config -I${upupsrcdir}/include -I${upupsrcdir}/bfd \
--I${upupsrcdir}/intl
+-I${upupsrcdir}/intl -I${upsrcdir}/attic
 DEFS = @DEFS@ @EXTRA_DEFS@
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_CFLAGS = $(C_ARCHFLAGS) -ggdb -fno-strict-aliasing -std=gnu99 -Wall \

@@ -119,6 +119,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module gitlog-to-changelog:
   # Code from module gnu-make:
   # Code from module gpl-2.0:
+  # Code from module hard-locale:
   # Code from module hash:
   # Code from module havelib:
   # Code from module host-cpu-c-abi:
@@ -193,6 +194,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module same-inode:
   # Code from module save-cwd:
   # Code from module secure_getenv:
+  # Code from module sig2str:
   # Code from module sigaction:
   # Code from module signal:
   # Code from module signal-h:
@@ -458,6 +460,7 @@ AC_DEFUN([gl_INIT],
   fi
   gl_SYS_TIME_MODULE_INDICATOR([gettimeofday])
   gl_GNU_MAKE
+  gl_HARD_LOCALE
   gl_HOST_CPU_C_ABI
   gl_HOST_OS
   gl_I_RING
@@ -694,6 +697,11 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_SECURE_GETENV
   fi
   gl_STDLIB_MODULE_INDICATOR([secure_getenv])
+  gl_FUNC_SIG2STR
+  if test $ac_cv_func_sig2str = no; then
+    AC_LIBOBJ([sig2str])
+    gl_PREREQ_SIG2STR
+  fi
   gl_SIGACTION
   if test $HAVE_SIGACTION = 0; then
     AC_LIBOBJ([sigaction])
@@ -1102,6 +1110,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/getpagesize.c
   lib/gettext.h
   lib/gettimeofday.c
+  lib/hard-locale.c
+  lib/hard-locale.h
   lib/hash.c
   lib/hash.h
   lib/i-ring.c
@@ -1191,6 +1201,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/secure_getenv.c
   lib/sig-handler.c
   lib/sig-handler.h
+  lib/sig2str.c
+  lib/sig2str.h
   lib/sigaction.c
   lib/signal.in.h
   lib/sigpipe-die.c
@@ -1328,6 +1340,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/glibc21.m4
   m4/gnu-make.m4
   m4/gnulib-common.m4
+  m4/hard-locale.m4
   m4/host-cpu-c-abi.m4
   m4/host-os.m4
   m4/i-ring.m4
@@ -1415,6 +1428,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/rmdir.m4
   m4/save-cwd.m4
   m4/secure_getenv.m4
+  m4/sig2str.m4
   m4/sigaction.m4
   m4/signal_h.m4
   m4/signalblocking.m4

@@ -52,7 +52,7 @@ IMPORTED_GNULIB_MODULES="\
     pathmax pclose popen putenv \
     readdir readlink realloc-gnu realloc-posix regex regex-quote \
     regexprops-generic rmdir \
-    sigaction signal signal-h sigpipe sigpipe-die sigprocmask \
+    sig2str sigaction signal signal-h sigpipe sigpipe-die sigprocmask \
     snippet/_Noreturn snippet/arg-nonnull snippet/c++defs snippet/link-warning \
     snippet/warn-on-use \
     ssize_t stat stat-macros stat-size stat-time stdbool stddef stdint stdlib \
@@ -78,7 +78,7 @@ IMPORTED_GNULIB_MODULES="\
 # below, though, so they may still get dragged in as dependencies)
 
 # The gnulib commit ID to use for the update.
-GNULIB_COMMIT_SHA1="54615b95ff238e235e806855efc46a9abad09f2e"
+GNULIB_COMMIT_SHA1="c382e8d72a5e1b36a51d751b1aa6e6b0201d6189"
 # (feel free to update if you know that your version works and is newer)
 
 # The expected version number for the various auto tools we will

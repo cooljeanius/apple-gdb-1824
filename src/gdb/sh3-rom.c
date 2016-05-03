@@ -1,4 +1,4 @@
-/* Remote target glue for the Renesas SH-3 ROM monitor.
+/* sh3-rom.c: Remote target glue for the Renesas SH-3 ROM monitor.
    Copyright 1995, 1996, 1997, 1998, 1999, 2000, 2001
    Free Software Foundation, Inc.
 
@@ -34,10 +34,11 @@
 static struct serial *parallel;
 static int parallel_in_use;
 
-static void sh3_open (char *args, int from_tty);
+static void sh3_open(const char *args, int from_tty);
 
+/* */
 static void
-sh3_supply_register (char *regname, int regnamelen, char *val, int vallen)
+sh3_supply_register(char *regname, int regnamelen, char *val, int vallen)
 {
   int numregs;
   int regno;
@@ -122,27 +123,28 @@ sh3_supply_register (char *regname, int regnamelen, char *val, int vallen)
       val = monitor_supply_register (regno++, val);
 }
 
+/* */
 static void
-sh3_load (struct serial *desc, char *file, int hashmark)
+sh3_load(struct serial *desc, const char *file, int hashmark)
 {
   if (parallel_in_use)
     {
-      monitor_printf ("pl;s\r");
-      load_srec (parallel, file, 0, 80, SREC_ALL, hashmark, NULL);
-      monitor_expect_prompt (NULL, 0);
+      monitor_printf("pl;s\r");
+      load_srec(parallel, file, 0, 80, SREC_ALL, hashmark, NULL);
+      monitor_expect_prompt(NULL, 0);
     }
   else
     {
-      monitor_printf ("il;s:x\r");
-      monitor_expect ("\005", NULL, 0);		/* Look for ENQ */
-      serial_write (desc, "\006", 1);	/* Send ACK */
-      monitor_expect ("LO x\r", NULL, 0);	/* Look for filename */
+      monitor_printf("il;s:x\r");
+      monitor_expect("\005", NULL, 0);		/* Look for ENQ */
+      serial_write(desc, "\006", 1);	/* Send ACK */
+      monitor_expect("LO x\r", NULL, 0);	/* Look for filename */
 
-      load_srec (desc, file, 0, 80, SREC_ALL, hashmark, NULL);
+      load_srec(desc, file, 0, 80, SREC_ALL, hashmark, NULL);
 
-      monitor_expect ("\005", NULL, 0);		/* Look for ENQ */
-      serial_write (desc, "\006", 1);	/* Send ACK */
-      monitor_expect_prompt (NULL, 0);
+      monitor_expect("\005", NULL, 0);		/* Look for ENQ */
+      serial_write(desc, "\006", 1);	/* Send ACK */
+      monitor_expect_prompt(NULL, 0);
     }
 }
 
@@ -151,7 +153,7 @@ sh3_load (struct serial *desc, char *file, int hashmark)
    than does GDB, and don't necessarily support all the registers
    either. So, typing "info reg sp" becomes a "r30".  */
 
-static char *sh3_regnames[] =
+static const char *sh3_regnames[] =
 {
   "R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7",
   "R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15",
@@ -166,7 +168,7 @@ static char *sh3_regnames[] =
   "R4_BANK1", "R5_BANK1", "R6_BANK1", "R7_BANK1"
 };
 
-static char *sh3e_regnames[] =
+static const char *sh3e_regnames[] =
 {
   "R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7",
   "R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15",
@@ -187,7 +189,7 @@ static char *sh3e_regnames[] =
 
 static struct target_ops sh3_ops, sh3e_ops;
 
-static char *sh3_inits[] =
+static const char *sh3_inits[] =
 {"\003", NULL};			/* Exits sub-command mode & download cmds */
 
 static struct monitor_ops sh3_cmds;
@@ -247,20 +249,20 @@ init_sh3_cmds (void)
 static struct monitor_ops sh3e_cmds;
 
 static void
-sh3_open (char *args, int from_tty)
+sh3_open(const char *args, int from_tty)
 {
-  char *serial_port_name = args;
-  char *parallel_port_name = 0;
+  const char *serial_port_name = args;
+  const char *parallel_port_name = (const char *)0;
 
   if (args)
     {
-      char *cursor = serial_port_name = xstrdup (args);
+      const char *cursor = serial_port_name = xstrdup(args);
 
       while (*cursor && *cursor != ' ')
 	cursor++;
 
       if (*cursor)
-	*cursor++ = 0;
+	*(char *)cursor++ = 0;
 
       while (*cursor == ' ')
 	cursor++;
@@ -292,22 +294,22 @@ sh3_open (char *args, int from_tty)
   }
 }
 
-
+/* */
 static void
-sh3e_open (char *args, int from_tty)
+sh3e_open(const char *args, int from_tty)
 {
-  char *serial_port_name = args;
-  char *parallel_port_name = 0;
+  const char *serial_port_name = args;
+  const char *parallel_port_name = (const char *)0;
 
   if (args)
     {
-      char *cursor = serial_port_name = xstrdup (args);
+      const char *cursor = serial_port_name = xstrdup(args);
 
       while (*cursor && *cursor != ' ')
 	cursor++;
 
       if (*cursor)
-	*cursor++ = 0;
+	*(char *)cursor++ = 0;
 
       while (*cursor == ' ')
 	cursor++;

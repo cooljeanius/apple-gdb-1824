@@ -5020,20 +5020,23 @@ remote_async_kill (void)
   target_mourn_inferior();
 }
 
+/* */
 static void
-remote_mourn (void)
+remote_mourn(void)
 {
-  remote_mourn_1 (&remote_ops);
+  remote_mourn_1(&remote_ops);
 }
 
+/* */
 static void
-remote_async_mourn (void)
+remote_async_mourn(void)
 {
-  remote_mourn_1 (&remote_async_ops);
+  remote_mourn_1(&remote_async_ops);
 }
 
+/* */
 static void
-extended_remote_mourn (void)
+extended_remote_mourn(void)
 {
   /* We do _not_ want to mourn the target like this; this will
      remove the extended remote target  from the target stack,
@@ -5195,10 +5198,10 @@ remote_insert_breakpoint(CORE_ADDR addr, bfd_byte *contents_cache)
   if (val == 0)
     {
       if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
-	val = target_write_memory(addr, (char *)big_break_insn,
+	val = target_write_memory(addr, (const gdb_byte *)big_break_insn,
 				  sizeof(big_break_insn));
       else
-	val = target_write_memory(addr, (char *)little_break_insn,
+	val = target_write_memory(addr, (const gdb_byte *)little_break_insn,
 				  sizeof(little_break_insn));
     }
 

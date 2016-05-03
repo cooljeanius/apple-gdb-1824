@@ -41,9 +41,10 @@
    * ask remote to change his baud rate.
  */
 
+#include "defs.h"
+
 #include <ctype.h>
 
-#include "defs.h"
 #include "gdb_string.h"
 #include "gdbcmd.h"
 #include "target.h"

@@ -1513,7 +1513,7 @@ AC_CHECK_HEADERS([Availability.h AvailabilityMacros.h \
                   mach/mach_port.h mach/message.h mach/port.h \
                   mach/thread_info.h mach/thread_status.h mach/vm_types.h \
                   mach-o/loader.h mach-o/nlist.h machine/save_state.h \
-                  math.h memory.h pc.h pthread.h rpc/rpc.h \
+                  math.h memory.h pc.h pthread.h rpc/clnt.h rpc/rpc.h \
                   servers/netname.h servers/netname_defs.h setjmp.h \
                   sys/uio.h sys/utsname.h uuid/uuid.h])dnl
   ## needs other headers first on some systems:
@@ -2043,18 +2043,18 @@ unset ac_cv_func_getcwd
 unset ac_cv_func_gethostbyname
 unset ac_cv_func_strcasecmp
 unset ac_cv_func_strchr
-AC_CHECK_FUNCS([atof alarm assert atexit bcopy bsearch bzero dup2 exit \
-                fflush fgets fprintf fwrite getcwd gethostbyaddr \
-                gethostbyname gethostname getpass gets gettimeofday \
-                inet_addr inet_ntoa isascii ishexnumber isnumber \
-                mach_error_string memchr memcmp memcpy memmove mempcpy \
-                memset mkdir netname_look_up nl_langinfo pathconf pclose \
-                popen pow qsort qsort_r readdir re_comp regcomp select \
-                setitimer socket strcasecmp strcat strchr strcpy strcspn \
-                strdup strerror strlcat strlcpy strlen strncasecmp \
-                strncat strncmp strncpy strndup strpbrk strrchr strspn \
-                strstr strtok strtok_r strtol strtoul timeradd timerclear \
-                timersub uname vasprintf wcwidth])dnl
+AC_CHECK_FUNCS([atof alarm assert atexit bcopy bsearch bzero \
+                clnt_pcreateerror dup2 exit fflush fgets fprintf fwrite \
+                getcwd gethostbyaddr gethostbyname gethostname getpass \
+                gets gettimeofday inet_addr inet_ntoa isascii ishexnumber \
+                isnumber mach_error_string memchr memcmp memcpy memmove \
+                mempcpy memset mkdir netname_look_up nl_langinfo pathconf \
+                pclose popen pow qsort qsort_r readdir re_comp regcomp \
+                select setitimer socket strcasecmp strcat strchr strcpy \
+                strcspn strdup strerror strlcat strlcpy strlen \
+                strncasecmp strncat strncmp strncpy strndup strpbrk \
+                strrchr strspn strstr strtok strtok_r strtol strtoul \
+                timeradd timerclear timersub uname vasprintf wcwidth])dnl
 
 dnl# Use as a replacement for just-plain sprintf:
 if test "x${ac_cv_func_snprintf}" = "x"; then

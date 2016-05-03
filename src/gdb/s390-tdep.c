@@ -49,13 +49,13 @@
 
 #include "s390-tdep.h"
 
-
-/* The tdep structure.  */
-
+/* Un-nested from the struct that follows it for -Wc++-compat: */
+enum s390_abi_versions_e { ABI_LINUX_S390, ABI_LINUX_ZSERIES };
+/* The tdep structure: */
 struct gdbarch_tdep
 {
   /* ABI version.  */
-  enum { ABI_LINUX_S390, ABI_LINUX_ZSERIES } abi;
+  enum s390_abi_versions_e abi;
 
   /* Core file register sets.  */
   const struct regset *gregset;
@@ -70,7 +70,7 @@ struct gdbarch_tdep
 
 struct s390_register_info
 {
-  char *name;
+  const char *name;
   struct type **type;
 };
 
@@ -339,13 +339,16 @@ s390_value_to_register (struct frame_info *frame, int regnum,
   put_frame_register (frame, regnum, out);
 }
 
-/* Register groups.  */
-
+/* Register groups: */
 static int
-s390_register_reggroup_p (struct gdbarch *gdbarch, int regnum,
-			  struct reggroup *group)
+s390_register_reggroup_p(struct gdbarch *gdbarch, int regnum,
+			 struct reggroup *group)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
 
   /* Registers displayed via 'info regs'.  */
   if (group == general_reggroup)
@@ -432,10 +435,10 @@ int s390_regmap_fpregset[S390_NUM_REGS] =
 /* Supply register REGNUM from the register set REGSET to register cache
    REGCACHE.  If REGNUM is -1, do this for all registers in REGSET.  */
 static void
-s390_supply_regset (const struct regset *regset, struct regcache *regcache,
-		    int regnum, const void *regs, size_t len)
+s390_supply_regset(const struct regset *regset, struct regcache *regcache,
+		   int regnum, const void *regs, size_t len)
 {
-  const int *offset = regset->descr;
+  const int *offset = (const int *)regset->descr;
   int i;
 
   for (i = 0; i < S390_NUM_REGS; i++)
@@ -557,30 +560,29 @@ s390_regset_from_core_section (struct gdbarch *gdbarch,
 
    A 'struct prologue_value' is a conservative approximation of the
    real value the register or stack slot will have.  */
-
-struct prologue_value {
-
+/* First, though, an enum to be used in said struct: */
+enum s390_value_sorts_e
+{
+  /* We do NOT know anything about the value.  This is also used for values we
+   * could have kept track of, when doing so would have been too complex and we
+   * do NOT want to bother.  The bottom of our lattice: */
+  pv_unknown,
+  
+  /* A known constant.  K is its value: */
+  pv_constant,
+  
+  /* The value that register REG originally had *UPON ENTRY TO THE FUNCTION*,
+   * plus K.  If K is zero, this means, obviously, just the value REG had upon
+   * entry to the function.  REG is a GDB register number.  Before we start
+   * interpreting, we initialize every register R to { pv_register, R, 0 }: */
+  pv_register
+};
+/* Okay, now the actual struct: */
+struct prologue_value
+{
   /* What sort of value is this?  This determines the interpretation
      of subsequent fields.  */
-  enum {
-
-    /* We don't know anything about the value.  This is also used for
-       values we could have kept track of, when doing so would have
-       been too complex and we don't want to bother.  The bottom of
-       our lattice.  */
-    pv_unknown,
-
-    /* A known constant.  K is its value.  */
-    pv_constant,
-
-    /* The value that register REG originally had *UPON ENTRY TO THE
-       FUNCTION*, plus K.  If K is zero, this means, obviously, just
-       the value REG had upon entry to the function.  REG is a GDB
-       register number.  Before we start interpreting, we initialize
-       every register R to { pv_register, R, 0 }.  */
-    pv_register,
-
-  } kind;
+  enum s390_value_sorts_e kind;
 
   /* The meanings of the following fields depend on 'kind'; see the
      comments for the specific 'kind' values.  */
@@ -720,45 +722,35 @@ pv_subtract (struct prologue_value *diff,
 }
 
 
-/* Set AND to the logical and of A and B.  */
+/* Set AND to the logical and of A and B: */
 static void
-pv_logical_and (struct prologue_value *and,
-                struct prologue_value *a,
-                struct prologue_value *b)
+pv_logical_and(struct prologue_value *logical_and,
+               struct prologue_value *a, struct prologue_value *b)
 {
-  pv_constant_last (&a, &b);
+  pv_constant_last(&a, &b);
 
-  /* We can 'and' two constants.  */
-  if (a->kind == pv_constant
-      && b->kind == pv_constant)
+  /* We can 'and' two constants: */
+  if ((a->kind == pv_constant) && (b->kind == pv_constant))
     {
-      and->kind = pv_constant;
-      and->k = a->k & b->k;
+      logical_and->kind = pv_constant;
+      logical_and->k = (a->k & b->k);
     }
-
-  /* We can 'and' anything with the constant zero.  */
-  else if (b->kind == pv_constant
-           && b->k == 0)
+  /* We can 'and' anything with the constant zero: */
+  else if ((b->kind == pv_constant) && (b->k == 0))
     {
-      and->kind = pv_constant;
-      and->k = 0;
+      logical_and->kind = pv_constant;
+      logical_and->k = 0;
     }
-
-  /* We can 'and' anything with ~0.  */
-  else if (b->kind == pv_constant
-           && b->k == ~ (CORE_ADDR) 0)
-    *and = *a;
-
-  /* We can 'and' a register with itself.  */
-  else if (a->kind == pv_register
-           && b->kind == pv_register
-           && a->reg == b->reg
-           && a->k == b->k)
-    *and = *a;
-
-  /* Otherwise, we don't know.  */
+  /* We can 'and' anything with ~0: */
+  else if ((b->kind == pv_constant) && (b->k == ~(CORE_ADDR)0UL))
+    *logical_and = *a;
+  /* We can 'and' a register with itself: */
+  else if ((a->kind == pv_register) && (b->kind == pv_register)
+           && (a->reg == b->reg) && (a->k == b->k))
+    *logical_and = *a;
+  /* Otherwise, we do NOT know: */
   else
-    pv_set_to_unknown (and);
+    pv_set_to_unknown(logical_and);
 }
 
 
@@ -2239,13 +2231,13 @@ s390_unwind_sp (struct gdbarch *gdbarch, struct frame_info *next_frame)
 }
 
 
-/* DWARF-2 frame support.  */
-
+/* DWARF-2 frame support: */
 static void
-s390_dwarf2_frame_init_reg (struct gdbarch *gdbarch, int regnum,
-                            struct dwarf2_frame_state_reg *reg)
+s390_dwarf2_frame_init_reg(struct gdbarch *gdbarch, int regnum,
+			   struct dwarf2_frame_state_reg *reg,
+			   struct frame_info *unused_fi ATTRIBUTE_UNUSED)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
 
   switch (tdep->abi)
     {
@@ -2497,26 +2489,25 @@ alignment_of (struct type *type)
    Our caller has taken care of any type promotions needed to satisfy
    prototypes or the old K&R argument-passing rules.  */
 static CORE_ADDR
-s390_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
-		      struct regcache *regcache, CORE_ADDR bp_addr,
-		      int nargs, struct value **args, CORE_ADDR sp,
-		      int struct_return, CORE_ADDR struct_addr)
+s390_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
+		     struct regcache *regcache, CORE_ADDR bp_addr,
+		     int nargs, struct value **args, CORE_ADDR sp,
+		     int struct_return, CORE_ADDR struct_addr)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  int word_size = gdbarch_ptr_bit (gdbarch) / 8;
-  ULONGEST orig_sp;
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  int word_size = (gdbarch_ptr_bit(gdbarch) / 8);
   int i;
 
   /* If the i'th argument is passed as a reference to a copy, then
      copy_addr[i] is the address of the copy we made.  */
-  CORE_ADDR *copy_addr = alloca (nargs * sizeof (CORE_ADDR));
+  CORE_ADDR *copy_addr = (CORE_ADDR *)alloca(nargs * sizeof(CORE_ADDR));
 
   /* Build the reference-to-copy area.  */
   for (i = 0; i < nargs; i++)
     {
       struct value *arg = args[i];
-      struct type *type = value_type (arg);
-      unsigned length = TYPE_LENGTH (type);
+      struct type *type = value_type(arg);
+      unsigned length = TYPE_LENGTH(type);
 
       if (s390_function_arg_pass_by_reference (type))
         {
@@ -2732,11 +2723,15 @@ s390_return_value (struct gdbarch *gdbarch, struct type *type,
 	      regcache_cooked_write (regcache, S390_R3_REGNUM, in + word_size);
 	    }
 	  else
-	    internal_error (__FILE__, __LINE__, _("invalid return type"));
+	    internal_error(__FILE__, __LINE__, _("invalid return type"));
 	  break;
 
 	case RETURN_VALUE_STRUCT_CONVENTION:
-	  error (_("Cannot set function return value."));
+	  error(_("Cannot set function return value."));
+	  break;
+	    
+	default:
+	  internal_error(__FILE__, __LINE__, _("unhandled case"));
 	  break;
 	}
     }
@@ -2764,11 +2759,15 @@ s390_return_value (struct gdbarch *gdbarch, struct type *type,
 	      regcache_cooked_read (regcache, S390_R3_REGNUM, out + word_size);
 	    }
 	  else
-	    internal_error (__FILE__, __LINE__, _("invalid return type"));
+	    internal_error(__FILE__, __LINE__, _("invalid return type"));
 	  break;
 
 	case RETURN_VALUE_STRUCT_CONVENTION:
-	  error (_("Function return value unknown."));
+	  error(_("Function return value unknown."));
+	  break;
+	    
+	default:
+	  internal_error(__FILE__, __LINE__, _("unhandled case"));
 	  break;
 	}
     }
@@ -3016,14 +3015,13 @@ s390_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   return gdbarch;
 }
 
-
-
+/* */
 extern initialize_file_ftype _initialize_s390_tdep; /* -Wmissing-prototypes */
-
 void
-_initialize_s390_tdep (void)
+_initialize_s390_tdep(void)
 {
-
   /* Hook us into the gdbarch mechanism.  */
-  register_gdbarch_init (bfd_arch_s390, s390_gdbarch_init);
+  register_gdbarch_init(bfd_arch_s390, s390_gdbarch_init);
 }
+
+/* EOF */

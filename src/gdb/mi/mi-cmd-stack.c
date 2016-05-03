@@ -19,8 +19,8 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#include <ctype.h>
 #include "defs.h"
+#include <ctype.h>
 #include "target.h"
 #include "frame.h"
 #include "value.h"

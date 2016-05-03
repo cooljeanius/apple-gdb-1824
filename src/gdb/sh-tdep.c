@@ -985,11 +985,14 @@ sh_next_flt_argreg (int len)
    The same is valid if these types are used as function return types.  The
    above structs are returned in fr0 resp. fr0,fr1 instead of in r0, r0,r1
    or even using struct convention as it is for other structs.  */
-
 static int
-sh_treat_as_flt_p (struct type *type)
+sh_treat_as_flt_p(struct type *type)
 {
-  int len = TYPE_LENGTH (type);
+  int len = TYPE_LENGTH(type);
+  
+  if (len < 0) {
+    ; /* ??? */
+  }
 
   /* Ordinary float types are obviously treated as float.  */
   if (TYPE_CODE (type) == TYPE_CODE_FLT)
@@ -1199,14 +1202,13 @@ sh_extract_return_value_nofpu (struct type *type, struct regcache *regcache,
 			       void *valbuf)
 {
   int len = TYPE_LENGTH (type);
-  int return_register = R0_REGNUM;
-  int offset;
+  const int return_register = R0_REGNUM;
 
   if (len <= 4)
     {
       ULONGEST c;
 
-      regcache_cooked_read_unsigned (regcache, R0_REGNUM, &c);
+      regcache_cooked_read_unsigned (regcache, return_register, &c);
       store_unsigned_integer (valbuf, len, c);
     }
   else if (len == 8)
@@ -1282,10 +1284,11 @@ sh_store_return_value_fpu (struct type *type, struct regcache *regcache,
     sh_store_return_value_nofpu (type, regcache, valbuf);
 }
 
+/* */
 static enum return_value_convention
-sh_return_value_nofpu (struct gdbarch *gdbarch, struct type *type,
-		       struct regcache *regcache,
-		       void *readbuf, const void *writebuf)
+sh_return_value_nofpu(struct gdbarch *gdbarch, struct type *type,
+		      struct regcache *regcache, gdb_byte *readbuf,
+		      const gdb_byte *writebuf)
 {
   if (sh_use_struct_convention (0, type))
     return RETURN_VALUE_STRUCT_CONVENTION;
@@ -1296,10 +1299,11 @@ sh_return_value_nofpu (struct gdbarch *gdbarch, struct type *type,
   return RETURN_VALUE_REGISTER_CONVENTION;
 }
 
+/* */
 static enum return_value_convention
-sh_return_value_fpu (struct gdbarch *gdbarch, struct type *type,
-		     struct regcache *regcache,
-		     void *readbuf, const void *writebuf)
+sh_return_value_fpu(struct gdbarch *gdbarch, struct type *type,
+		    struct regcache *regcache, gdb_byte *readbuf,
+		    const gdb_byte *writebuf)
 {
   if (sh_use_struct_convention (0, type))
     return RETURN_VALUE_STRUCT_CONVENTION;
@@ -1752,13 +1756,16 @@ sh_dsp_show_regs (void)
 		   (long) read_register (RE_REGNUM));
 }
 
+/* */
 static void
-sh_show_regs_command (char *args, int from_tty)
+sh_show_regs_command(const char *args ATTRIBUTE_UNUSED,
+		     int from_tty ATTRIBUTE_UNUSED)
 {
   if (sh_show_regs)
-    (*sh_show_regs) ();
+    (*sh_show_regs)();
 }
 
+/* */
 static struct type *
 sh_sh2a_register_type (struct gdbarch *gdbarch, int reg_nr)
 {
@@ -1888,9 +1895,10 @@ dr_reg_base_num (int dr_regnum)
   return fp_regnum;
 }
 
+/* */
 static void
-sh_pseudo_register_read (struct gdbarch *gdbarch, struct regcache *regcache,
-			 int reg_nr, void *buffer)
+sh_pseudo_register_read(struct gdbarch *gdbarch, struct regcache *regcache,
+			int reg_nr, gdb_byte *buffer)
 {
   int base_regnum, portion;
   char temp_buffer[MAX_REGISTER_SIZE];
@@ -1927,9 +1935,10 @@ sh_pseudo_register_read (struct gdbarch *gdbarch, struct regcache *regcache,
     }
 }
 
+/* */
 static void
-sh_pseudo_register_write (struct gdbarch *gdbarch, struct regcache *regcache,
-			  int reg_nr, const void *buffer)
+sh_pseudo_register_write(struct gdbarch *gdbarch, struct regcache *regcache,
+			 int reg_nr, const gdb_byte *buffer)
 {
   int base_regnum, portion;
   char temp_buffer[MAX_REGISTER_SIZE];
@@ -2030,61 +2039,68 @@ sh_do_fp_register (struct gdbarch *gdbarch, struct ui_file *file, int regnum)
   int inv;
   int j;
 
-  /* Allocate space for the float. */
-  raw_buffer = (char *) alloca (register_size (gdbarch, FP0_REGNUM));
+  /* Allocate space for the float: */
+  raw_buffer = (char *)alloca(register_size(gdbarch, FP0_REGNUM));
 
-  /* Get the data in raw format.  */
-  if (!frame_register_read (get_selected_frame (NULL), regnum, raw_buffer))
-    error (_("can't read register %d (%s)"), regnum, REGISTER_NAME (regnum));
+  /* Get the data in raw format: */
+  if (!frame_register_read(get_selected_frame(NULL), regnum,
+			   (gdb_byte *)raw_buffer))
+    error(_("cannot read register %d (%s)"), regnum, REGISTER_NAME(regnum));
 
-  /* Get the register as a number */
-  flt = unpack_double (builtin_type_float, raw_buffer, &inv);
+  /* Get the register as a number: */
+  flt = (double)unpack_double(builtin_type_float, (const gdb_byte *)raw_buffer,
+			      &inv);
 
-  /* Print the name and some spaces. */
-  fputs_filtered (REGISTER_NAME (regnum), file);
-  print_spaces_filtered (15 - strlen (REGISTER_NAME (regnum)), file);
+  /* Print the name and some spaces: */
+  fputs_filtered(REGISTER_NAME(regnum), file);
+  print_spaces_filtered((15UL - strlen(REGISTER_NAME(regnum))), file);
 
   /* Print the value. */
   if (inv)
-    fprintf_filtered (file, "<invalid float>");
+    fprintf_filtered(file, "<invalid float>");
   else
-    fprintf_filtered (file, "%-10.9g", flt);
+    fprintf_filtered(file, "%-10.9g", flt);
 
   /* Print the fp register as hex. */
-  fprintf_filtered (file, "\t(raw 0x");
-  for (j = 0; j < register_size (gdbarch, regnum); j++)
+  fprintf_filtered(file, "\t(raw 0x");
+  for (j = 0; j < register_size(gdbarch, regnum); j++)
     {
-      int idx = (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG
+      int idx = ((TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
 		 ? j
-		 : register_size (gdbarch, regnum) - 1 - j);
-      fprintf_filtered (file, "%02x", (unsigned char) raw_buffer[idx]);
+		 : (register_size(gdbarch, regnum) - 1 - j));
+      fprintf_filtered(file, "%02x", (unsigned char)raw_buffer[idx]);
     }
-  fprintf_filtered (file, ")");
-  fprintf_filtered (file, "\n");
+  fprintf_filtered(file, ")");
+  fprintf_filtered(file, "\n");
 }
 
+/* */
 static void
-sh_do_register (struct gdbarch *gdbarch, struct ui_file *file, int regnum)
+sh_do_register(struct gdbarch *gdbarch, struct ui_file *file, int regnum)
 {
   char raw_buffer[MAX_REGISTER_SIZE];
 
-  fputs_filtered (REGISTER_NAME (regnum), file);
-  print_spaces_filtered (15 - strlen (REGISTER_NAME (regnum)), file);
+  fputs_filtered(REGISTER_NAME(regnum), file);
+  print_spaces_filtered((15UL - strlen(REGISTER_NAME(regnum))), file);
 
-  /* Get the data in raw format.  */
-  if (!frame_register_read (get_selected_frame (NULL), regnum, raw_buffer))
-    fprintf_filtered (file, "*value not available*\n");
+  /* Get the data in raw format: */
+  if (!frame_register_read(get_selected_frame(NULL), regnum,
+			   (gdb_byte *)raw_buffer))
+    fprintf_filtered(file, "*value not available*\n");
 
-  val_print (gdbarch_register_type (gdbarch, regnum), raw_buffer, 0, 0,
-	     file, 'x', 1, 0, Val_pretty_default);
-  fprintf_filtered (file, "\t");
-  val_print (gdbarch_register_type (gdbarch, regnum), raw_buffer, 0, 0,
-	     file, 0, 1, 0, Val_pretty_default);
-  fprintf_filtered (file, "\n");
+  val_print(gdbarch_register_type(gdbarch, regnum),
+	    (const gdb_byte *)raw_buffer, 0, 0, file, 'x', 1, 0,
+	    Val_pretty_default);
+  fprintf_filtered(file, "\t");
+  val_print(gdbarch_register_type(gdbarch, regnum),
+	    (const gdb_byte *)raw_buffer, 0, 0, file, 0, 1, 0,
+	    Val_pretty_default);
+  fprintf_filtered(file, "\n");
 }
 
+/* */
 static void
-sh_print_register (struct gdbarch *gdbarch, struct ui_file *file, int regnum)
+sh_print_register(struct gdbarch *gdbarch, struct ui_file *file, int regnum)
 {
   if (regnum < 0 || regnum >= NUM_REGS + NUM_PSEUDO_REGS)
     internal_error (__FILE__, __LINE__,
@@ -2226,17 +2242,18 @@ sh_alloc_frame_cache (void)
   return cache;
 }
 
+/* */
 static struct sh_frame_cache *
-sh_frame_cache (struct frame_info *next_frame, void **this_cache)
+sh_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct sh_frame_cache *cache;
   CORE_ADDR current_pc;
   int i;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct sh_frame_cache *)*this_cache;
 
-  cache = sh_alloc_frame_cache ();
+  cache = sh_alloc_frame_cache();
   *this_cache = cache;
 
   /* In principle, for normal frames, fp holds the frame pointer,
@@ -2299,7 +2316,7 @@ sh_frame_prev_register (struct frame_info *next_frame, void **this_cache,
       if (valuep)
 	{
 	  /* Store the value.  */
-	  store_unsigned_integer (valuep, 4, cache->saved_sp);
+	  store_unsigned_integer((gdb_byte *)valuep, 4, cache->saved_sp);
 	}
       return;
     }
@@ -2320,8 +2337,8 @@ sh_frame_prev_register (struct frame_info *next_frame, void **this_cache,
       if (valuep)
 	{
 	  /* Read the value in from memory.  */
-	  read_memory (*addrp, valuep,
-		       register_size (current_gdbarch, regnum));
+	  read_memory(*addrp, (gdb_byte *)valuep,
+		      register_size(current_gdbarch, regnum));
 	}
       return;
     }
@@ -2332,7 +2349,7 @@ sh_frame_prev_register (struct frame_info *next_frame, void **this_cache,
   *addrp = 0;
   *realnump = regnum;
   if (valuep)
-    frame_unwind_register (next_frame, (*realnump), valuep);
+    frame_unwind_register(next_frame, (*realnump), (gdb_byte *)valuep);
 }
 
 static void
@@ -2341,21 +2358,25 @@ sh_frame_this_id (struct frame_info *next_frame, void **this_cache,
 {
   struct sh_frame_cache *cache = sh_frame_cache (next_frame, this_cache);
 
-  /* This marks the outermost frame.  */
+  /* This marks the outermost frame: */
   if (cache->base == 0)
     return;
 
-  *this_id = frame_id_build (cache->saved_sp, cache->pc);
+  *this_id = frame_id_build(cache->saved_sp, cache->pc);
 }
 
 static const struct frame_unwind sh_frame_unwind = {
   NORMAL_FRAME,
   sh_frame_this_id,
-  sh_frame_prev_register
+  sh_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
+/* */
 static const struct frame_unwind *
-sh_frame_sniffer (struct frame_info *next_frame)
+sh_frame_sniffer(struct frame_info *next_frame)
 {
   return &sh_frame_unwind;
 }
@@ -2686,14 +2707,14 @@ sh_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   return gdbarch;
 }
 
-extern initialize_file_ftype _initialize_sh_tdep;	/* -Wmissing-prototypes */
-
+/* */
+extern initialize_file_ftype _initialize_sh_tdep; /* -Wmissing-prototypes */
 void
-_initialize_sh_tdep (void)
+_initialize_sh_tdep(void)
 {
-  struct cmd_list_element *c;
+  gdbarch_register(bfd_arch_sh, sh_gdbarch_init, NULL);
 
-  gdbarch_register (bfd_arch_sh, sh_gdbarch_init, NULL);
-
-  add_com ("regs", class_vars, sh_show_regs_command, _("Print all registers"));
+  add_com("regs", class_vars, sh_show_regs_command, _("Print all registers"));
 }
+
+/* EOF */

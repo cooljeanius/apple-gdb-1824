@@ -269,6 +269,9 @@
 /* Define to 1 if the system has the type `CFStringRef'. */
 #undef HAVE_CFSTRINGREF
 
+/* Define to 1 if you have the `clnt_pcreateerror' function. */
+#undef HAVE_CLNT_PCREATEERROR
+
 /* Define to 1 if you have the `codeset' function. */
 #undef HAVE_CODESET
 
@@ -1076,6 +1079,9 @@
 
 /* Define to 1 if you have the `re_comp' function. */
 #undef HAVE_RE_COMP
+
+/* Define to 1 if you have the <rpc/clnt.h> header file. */
+#undef HAVE_RPC_CLNT_H
 
 /* Define to 1 if you have the <rpc/rpc.h> header file. */
 #undef HAVE_RPC_RPC_H

@@ -21,12 +21,13 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#include "defs.h"
+
 #include <ctype.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/resource.h>
 
-#include "defs.h"
 #include "mi-cmds.h"
 #include "mi-parse.h"
 

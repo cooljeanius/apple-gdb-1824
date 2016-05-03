@@ -3819,7 +3819,6 @@
 		A5159BBC198716DD0079DD4F /* python.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = python.h; sourceTree = "<group>"; };
 		A5159BE7198717700079DD4F /* regdat.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = regdat.sh; sourceTree = "<group>"; };
 		A5159C19198717B00079DD4F /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
-		A5159C38198717B00079DD4F /* param_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = param_old.h; sourceTree = "<group>"; };
 		A5159C39198717B00079DD4F /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		A5159C3A198717B00079DD4F /* remote_gutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = remote_gutils.c; sourceTree = "<group>"; };
 		A5159C3B198717B00079DD4F /* remote_inflow.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = remote_inflow.c; sourceTree = "<group>"; };
@@ -11095,7 +11094,6 @@
 			isa = PBXGroup;
 			children = (
 				A5159C19198717B00079DD4F /* ChangeLog */,
-				A5159C38198717B00079DD4F /* param_old.h */,
 				A5159C39198717B00079DD4F /* README */,
 				A5159C3A198717B00079DD4F /* remote_gutils.c */,
 				A5159C3B198717B00079DD4F /* remote_inflow.c */,

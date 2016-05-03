@@ -409,6 +409,10 @@ if test "x${ac_cv_func_strpbrk}" = "x"; then
   test -z "${ac_cv_func_strpbrk}"
   AC_CHECK_FUNCS([strpbrk])
 fi
+if test "x${ac_cv_func_strtol}" = "x"; then
+  test -z "${ac_cv_func_strtol}"
+  AC_CHECK_FUNCS([strtol])
+fi
 if test "x${ac_cv_func_wcwidth}" = "x"; then
   test -z "${ac_cv_func_wcwidth}"
   AC_CHECK_FUNCS([wcwidth])

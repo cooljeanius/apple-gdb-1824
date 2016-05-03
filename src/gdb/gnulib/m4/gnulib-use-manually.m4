@@ -406,6 +406,13 @@ if test "x${ac_use_included_regex}" = "xyes"; then
   AC_LIBOBJ([regex])dnl
   gl_PREREQ_REGEX
 fi
+dnl# from gnulib module sig2str:
+AC_REQUIRE([gl_FUNC_SIG2STR])dnl
+  ## set up libobj if needed:
+if test "x${ac_cv_func_sig2str}" = "xno"; then
+  AC_LIBOBJ([sig2str])dnl
+  gl_PREREQ_SIG2STR
+fi
 dnl# from gnulib module sigaction:
 AC_REQUIRE([gl_SIGACTION])dnl
   ## set up libobj if needed:

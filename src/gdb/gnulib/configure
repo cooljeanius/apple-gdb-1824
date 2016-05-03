@@ -6282,6 +6282,7 @@ $as_echo "$as_me: autobuild timestamp... $date" >&6;}
   # Code from module gitlog-to-changelog:
   # Code from module gnu-make:
   # Code from module gpl-2.0:
+  # Code from module hard-locale:
   # Code from module hash:
   # Code from module havelib:
   # Code from module host-cpu-c-abi:
@@ -6356,6 +6357,7 @@ $as_echo "$as_me: autobuild timestamp... $date" >&6;}
   # Code from module same-inode:
   # Code from module save-cwd:
   # Code from module secure_getenv:
+  # Code from module sig2str:
   # Code from module sigaction:
   # Code from module signal:
   # Code from module signal-h:
@@ -10070,6 +10072,8 @@ else
 
 
 #define _GL_JUST_INCLUDE_SYSTEM_STDINT_H 1 /* work if build isn't clean */
+#define __STDC_CONSTANT_MACROS 1
+#define __STDC_LIMIT_MACROS 1
 #include <stdint.h>
 /* Dragonfly defines WCHAR_MIN, WCHAR_MAX only in <wchar.h>.  */
 #if !(defined WCHAR_MIN && defined WCHAR_MAX)
@@ -10238,6 +10242,8 @@ else
 
 
 #define _GL_JUST_INCLUDE_SYSTEM_STDINT_H 1 /* work if build isn't clean */
+#define __STDC_CONSTANT_MACROS 1
+#define __STDC_LIMIT_MACROS 1
 #include <stdint.h>
 
 
@@ -10324,6 +10330,58 @@ fi
 $as_echo "$gl_cv_header_working_stdint_h" >&6; }
   fi
   if test "$gl_cv_header_working_stdint_h" = yes; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether stdint.h predates C++11" >&5
+$as_echo_n "checking whether stdint.h predates C++11... " >&6; }
+if ${gl_cv_header_stdint_predates_cxx11_h+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  gl_cv_header_stdint_predates_cxx11_h=yes
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+#define _GL_JUST_INCLUDE_SYSTEM_STDINT_H 1 /* work if build isn't clean */
+#include <stdint.h>
+
+
+  /* BSD/OS 4.0.1 has a bug: <stddef.h>, <stdio.h> and <time.h> must be
+     included before <wchar.h>.  */
+  #include <stddef.h>
+  #include <signal.h>
+  #if HAVE_WCHAR_H
+  # include <stdio.h>
+  # include <time.h>
+  # include <wchar.h>
+  #endif
+
+
+intmax_t im = INTMAX_MAX;
+int32_t i32 = INT32_C (0x7fffffff);
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_header_stdint_predates_cxx11_h=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_header_stdint_predates_cxx11_h" >&5
+$as_echo "$gl_cv_header_stdint_predates_cxx11_h" >&6; }
+
+    if test "$gl_cv_header_stdint_predates_cxx11_h" = yes; then
+
+$as_echo "#define __STDC_CONSTANT_MACROS 1" >>confdefs.h
+
+
+$as_echo "#define __STDC_LIMIT_MACROS 1" >>confdefs.h
+
+    fi
     STDINT_H=
   else
             for ac_header in sys/inttypes.h sys/bitypes.h
@@ -19702,6 +19760,9 @@ fi
 
 
 
+  :
+
+
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking host CPU and C ABI" >&5
 $as_echo_n "checking host CPU and C ABI... " >&6; }
@@ -22419,6 +22480,60 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_mbrtowc_empty_input" >&5
 $as_echo "$gl_cv_func_mbrtowc_empty_input" >&6; }
 
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the C locale is free of encoding errors" >&5
+$as_echo_n "checking whether the C locale is free of encoding errors... " >&6; }
+if ${gl_cv_C_locale_sans_EILSEQ+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+               gl_cv_C_locale_sans_EILSEQ="guessing no"
+
+     if test "$cross_compiling" = yes; then :
+  :
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <limits.h>
+            #include <locale.h>
+            #include <wchar.h>
+
+int
+main ()
+{
+
+            int i;
+            char *locale = setlocale (LC_ALL, "C");
+            if (! locale)
+              return 1;
+            for (i = CHAR_MIN; i <= CHAR_MAX; i++)
+              {
+                char c = i;
+                wchar_t wc;
+                mbstate_t mbs = { 0, };
+                size_t ss = mbrtowc (&wc, &c, 1, &mbs);
+                if (1 < ss)
+                  return 1;
+              }
+            return 0;
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gl_cv_C_locale_sans_EILSEQ=yes
+else
+  gl_cv_C_locale_sans_EILSEQ=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_C_locale_sans_EILSEQ" >&5
+$as_echo "$gl_cv_C_locale_sans_EILSEQ" >&6; }
+
       case "$gl_cv_func_mbrtowc_null_arg1" in
         *yes) ;;
         *)
@@ -22455,6 +22570,14 @@ $as_echo "#define MBRTOWC_NUL_RETVAL_BUG 1" >>confdefs.h
         *yes) ;;
         *)
 $as_echo "#define MBRTOWC_EMPTY_INPUT_BUG 1" >>confdefs.h
+
+           REPLACE_MBRTOWC=1
+           ;;
+      esac
+      case $gl_cv_C_locale_sans_EILSEQ in
+        *yes) ;;
+        *)
+$as_echo "#define C_LOCALE_MAYBE_EILSEQ 1" >>confdefs.h
 
            REPLACE_MBRTOWC=1
            ;;
@@ -25554,6 +25677,34 @@ $as_echo "#define GNULIB_TEST_SECURE_GETENV 1" >>confdefs.h
 
 
 
+
+  for ac_func in sig2str
+do :
+  ac_fn_c_check_func "$LINENO" "sig2str" "ac_cv_func_sig2str"
+if test "x$ac_cv_func_sig2str" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_SIG2STR 1
+_ACEOF
+
+fi
+done
+
+
+  if test $ac_cv_func_sig2str = no; then
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS sig2str.$ac_objext"
+
+
+  :
+
+  fi
 
 
 
@@ -31765,6 +31916,17 @@ _ACEOF
 
 fi
   ## set up libobj if needed:
+if test "x${ac_cv_func_sig2str}" = "xno"; then
+  case " $LIBOBJS " in
+  *" sig2str.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS sig2str.$ac_objext"
+ ;;
+esac
+
+  :
+
+fi
+  ## set up libobj if needed:
 if test ${HAVE_SIGACTION} = 0; then
   case " $LIBOBJS " in
   *" sigaction.$ac_objext "* ) ;;
@@ -36472,6 +36634,20 @@ do :
 if test "x$ac_cv_func_strpbrk" = xyes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_STRPBRK 1
+_ACEOF
+
+fi
+done
+
+fi
+if test "x${ac_cv_func_strtol}" = "x"; then
+  test -z "${ac_cv_func_strtol}"
+  for ac_func in strtol
+do :
+  ac_fn_c_check_func "$LINENO" "strtol" "ac_cv_func_strtol"
+if test "x$ac_cv_func_strtol" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_STRTOL 1
 _ACEOF
 
 fi
