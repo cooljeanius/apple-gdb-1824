@@ -1,4 +1,4 @@
-/* Target-dependent code for FreeBSD/sparc64.
+/* sparc64fbsd-tdep.c: Target-dependent code for FreeBSD/sparc64.
 
    Copyright 2003, 2004, 2005 Free Software Foundation, Inc.
 
@@ -83,17 +83,16 @@ sparc64fbsd_collect_fpregset (const struct regset *regset,
 }
 
 
-/* Signal trampolines.  */
-
+/* Signal trampolines: */
 static int
-sparc64fbsd_pc_in_sigtramp (CORE_ADDR pc, char *name)
+sparc64fbsd_pc_in_sigtramp(CORE_ADDR pc, const char *name)
 {
-  return (name && strcmp (name, "__sigtramp") == 0);
+  return (name && (strcmp(name, "__sigtramp") == 0));
 }
 
 static struct sparc_frame_cache *
-sparc64fbsd_sigtramp_frame_cache (struct frame_info *next_frame,
-				   void **this_cache)
+sparc64fbsd_sigtramp_frame_cache(struct frame_info *next_frame,
+				 void **this_cache)
 {
   struct sparc_frame_cache *cache;
   CORE_ADDR addr, mcontext_addr, sp;
@@ -101,7 +100,7 @@ sparc64fbsd_sigtramp_frame_cache (struct frame_info *next_frame,
   int regnum;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct sparc_frame_cache *)*this_cache;
 
   cache = sparc_frame_cache (next_frame, this_cache);
   gdb_assert (cache == *this_cache);
@@ -195,17 +194,20 @@ static const struct frame_unwind sparc64fbsd_sigtramp_frame_unwind =
 {
   SIGTRAMP_FRAME,
   sparc64fbsd_sigtramp_frame_this_id,
-  sparc64fbsd_sigtramp_frame_prev_register
+  sparc64fbsd_sigtramp_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *
-sparc64fbsd_sigtramp_frame_sniffer (struct frame_info *next_frame)
+sparc64fbsd_sigtramp_frame_sniffer(struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
+  const char *name;
 
-  find_pc_partial_function (pc, &name, NULL, NULL);
-  if (sparc64fbsd_pc_in_sigtramp (pc, name))
+  find_pc_partial_function(pc, &name, NULL, NULL);
+  if (sparc64fbsd_pc_in_sigtramp(pc, name))
     return &sparc64fbsd_sigtramp_frame_unwind;
 
   return NULL;
@@ -229,18 +231,19 @@ sparc64fbsd_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 
   sparc64_init_abi (info, gdbarch);
 
-  /* FreeBSD/sparc64 has SVR4-style shared libraries.  */
-  set_gdbarch_skip_trampoline_code (gdbarch, find_solib_trampoline_target);
-  set_solib_svr4_fetch_link_map_offsets
-    (gdbarch, svr4_lp64_fetch_link_map_offsets);
+  /* FreeBSD/sparc64 has SVR4-style shared libraries: */
+  set_gdbarch_skip_trampoline_code(gdbarch, find_solib_trampoline_target);
+  set_solib_svr4_fetch_link_map_offsets(gdbarch,
+					svr4_lp64_fetch_link_map_offsets);
 }
 
 /* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_sparc64fbsd_tdep (void);
-
+void _initialize_sparc64fbsd_tdep(void);
 void
-_initialize_sparc64fbsd_tdep (void)
+_initialize_sparc64fbsd_tdep(void)
 {
-  gdbarch_register_osabi (bfd_arch_sparc, bfd_mach_sparc_v9,
-			  GDB_OSABI_FREEBSD_ELF, sparc64fbsd_init_abi);
+  gdbarch_register_osabi(bfd_arch_sparc, bfd_mach_sparc_v9,
+			 GDB_OSABI_FREEBSD_ELF, sparc64fbsd_init_abi);
 }
+
+/* EOF */

@@ -857,7 +857,12 @@ dnl# even though gdb is written only in C, it has tests written
 dnl# for debugging the following languages, so check them, too:
 LT_LANG([C++])dnl
 LT_LANG([Go])dnl
-LT_LANG([Java])dnl
+  ## gcj is slow:
+if test "x${GO_SLOWLY}" = "xyes"; then
+  test -n "${GO_SLOWLY}"
+  LT_LANG([Java])dnl
+  ## OK
+fi
 LT_LANG([Fortran 77])dnl
 LT_LANG([Fortran])dnl
 LT_LANG([Windows Resource])dnl
@@ -1513,7 +1518,7 @@ AC_CHECK_HEADERS([Availability.h AvailabilityMacros.h \
                   mach/mach_port.h mach/message.h mach/port.h \
                   mach/thread_info.h mach/thread_status.h mach/vm_types.h \
                   mach-o/loader.h mach-o/nlist.h machine/save_state.h \
-                  math.h memory.h pc.h pthread.h rpc/clnt.h rpc/rpc.h \
+                  math.h memory.h pc.h pthread.h rpc/rpc.h \
                   servers/netname.h servers/netname_defs.h setjmp.h \
                   sys/uio.h sys/utsname.h uuid/uuid.h])dnl
   ## needs other headers first on some systems:
@@ -1522,6 +1527,12 @@ AC_CHECK_HEADERS([mach/kmod.h],[],[],[[
 # include <mach/vm_types.h>
 #endif /* HAVE_MACH_VM_TYPES_H */
 ]])dnl
+  ## likewise:
+AC_CHECK_HEADERS([rpc/clnt.h],[],[],[
+#ifdef HAVE_RPC_RPC_H
+# include <rpc/rpc.h>
+#endif /* HAVE_RPC_RPC_H */
+])dnl
   ## be careful in case we find the in-tree one:
 AC_CHECK_HEADERS([gettext.h],[],[],[
 #ifndef HAVE_CONFDEFS_H
@@ -3235,13 +3246,12 @@ WERROR_CFLAGS=""
 if test "x${build_warnings}" != "x" -a "x${GCC}" = "xyes"
 then
     AC_MSG_CHECKING([compiler warning flags])
-    AC_MSG_RESULT([(will report results at end)])
+    AC_MSG_RESULT([(will report full results at end)])
     # Separate out the -Werror flag as some files just cannot be
     # compiled with it enabled.
     # Do need to use it for these conftests though.
     for w in ${build_warnings}; do
-        AC_MSG_CHECKING([compiler support for ${w}])
-        AC_MSG_RESULT([ ])
+        AC_MSG_CHECKING([if compiler supports ${w}])
 	case ${w} in
           -Wold-style-definition|-Wstrict-prototypes|-Wsuggest-attribute=const)
 	    saved_CFLAGS="${CFLAGS}"
@@ -3249,8 +3259,10 @@ then
             dnl# Use "_SOURCE" instead of "_PROGRAM" here to keep us from
             dnl# having a bad "main()" function:
 	    AC_COMPILE_IFELSE([AC_LANG_SOURCE([[]])],
-                              [WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
-                              [BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
+                              [AC_MSG_RESULT([yes])
+                               WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
+                              [AC_MSG_RESULT([no])
+                               BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
 	    CFLAGS="${saved_CFLAGS}"
             ;;
           -Wformat-nonliteral|-Wformat-signedness|-Wformat-y2k)
@@ -3260,8 +3272,10 @@ then
 	    saved_CXXFLAGS="${CXXFLAGS}"
 	    CXXFLAGS="${CXXFLAGS} ${w} -Werror -Wformat"
 	    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
-                              [WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
-                              [BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
+                              [AC_MSG_RESULT([yes])
+                               WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
+                              [AC_MSG_RESULT([no])
+                               BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
 	    CFLAGS="${saved_CFLAGS}"
 	    CXXFLAGS="${saved_CXXFLAGS}"
             ;;
@@ -3271,8 +3285,10 @@ then
 	    saved_CXXFLAGS="${CXXFLAGS}"
 	    CXXFLAGS="${CXXFLAGS} ${w} -Werror"
 	    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
-                              [WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
-                              [BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
+                              [AC_MSG_RESULT([yes])
+                               WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
+                              [AC_MSG_RESULT([no])
+                               BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
 	    CFLAGS="${saved_CFLAGS}"
 	    CXXFLAGS="${saved_CXXFLAGS}"
             ;;

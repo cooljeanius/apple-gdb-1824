@@ -354,6 +354,16 @@ extern int cmd_func_p(struct cmd_list_element *cmd);
 extern void cmd_func(struct cmd_list_element *cmd, const char *args,
 		     int from_tty);
 
+/* Old deprecated things: */
+extern struct cmd_list_element *add_show_from_set(struct cmd_list_element *,
+						  struct cmd_list_element **)
+  ATTRIBUTE_DEPRECATED;
+
+extern struct cmd_list_element *add_set_cmd(const char *, enum command_class,
+					    var_types, char *, const char *,
+					    struct cmd_list_element **)
+  ATTRIBUTE_DEPRECATED;
+
 #endif /* !defined(COMMAND_H) */
 
 /* EOF */

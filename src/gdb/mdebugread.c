@@ -400,7 +400,7 @@ mdebug_build_psymtabs (struct objfile *objfile,
 
   parse_partial_symbols(objfile);
 
-#if 0
+#if defined(compare_glevel) && defined(GLEVEL_2)
   /* Check to make sure file was compiled with -g.  If not, warn the
      user of this limitation.  */
   if (compare_glevel (max_glevel, GLEVEL_2) < 0)
@@ -411,7 +411,7 @@ mdebug_build_psymtabs (struct objfile *objfile,
       printf_unfiltered (_("You should compile with -g2 or -g3 for best debugging support.\n"));
       gdb_flush (gdb_stdout);
     }
-#endif /* 0 */
+#endif /* compare_glevel && GLEVEL_2 */
 }
 
 /* Local utilities */
@@ -922,11 +922,11 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
 	      case stEnum:
 	      case stStruct:
 		{
-#if 0
+#if defined(scVariant)
 		  /* This is a no-op; is it trying to tell us something
 		     we should be checking?  */
-		  if (tsym.sc == scVariant);	/*UNIMPLEMENTED */
-#endif /* 0 */
+		  if (tsym.sc == scVariant) { ;	/*UNIMPLEMENTED */ };
+#endif /* scVariant */
 		  if (tsym.index != 0)
 		    {
 		      /* This is something like a struct within a
@@ -2660,12 +2660,12 @@ parse_partial_symbols (struct objfile *objfile)
 	  for (cur_sdx = 2; cur_sdx < fh->csym; cur_sdx++)
 	    {
 	      int type_code;
-	      char *namestring;
+	      const char *namestring;
 
-	      (*swap_sym_in) (cur_bfd,
-			      (((char *) debug_info->external_sym)
-			    + (fh->isymBase + cur_sdx) * external_sym_size),
-			      &sh);
+	      (*swap_sym_in)(cur_bfd,
+			     (((char *)debug_info->external_sym)
+			      + ((fh->isymBase + cur_sdx) * external_sym_size)),
+			     &sh);
 	      type_code = ECOFF_UNMARK_STAB (sh.index);
 	      if (!ECOFF_IS_STAB (&sh))
 		{
@@ -2918,9 +2918,9 @@ parse_partial_symbols (struct objfile *objfile)
 		      prev_so_symnum = symnum;
 
 		      /* End the current partial symtab and start a new one */
-#if 0
+#if defined(SET_NAMESTRING) && defined(VT) && defined(VT_SIZE)
 		      SET_NAMESTRING();
-#endif /* 0 */
+#endif /* SET_NAMESTRING && VT && VT_SIZE */
 		      namestring = stabstring;
 
 		      /* Null name means end of .o file.  Don't start a new one. */

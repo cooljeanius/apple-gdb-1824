@@ -1,4 +1,4 @@
-/* Target-dependent code for OpenBSD/sparc.
+/* sparcobsd-tdep.c: Target-dependent code for OpenBSD/sparc.
 
    Copyright 2004 Free Software Foundation, Inc.
 
@@ -45,7 +45,7 @@
 static const int sparc32obsd_page_size = 4096;
 
 static int
-sparc32obsd_pc_in_sigtramp (CORE_ADDR pc, char *name)
+sparc32obsd_pc_in_sigtramp(CORE_ADDR pc, const char *name)
 {
   CORE_ADDR start_pc = (pc & ~(sparc32obsd_page_size - 1));
   unsigned long insn;
@@ -66,14 +66,15 @@ sparc32obsd_pc_in_sigtramp (CORE_ADDR pc, char *name)
   return 1;
 }
 
+/* */
 static struct sparc_frame_cache *
-sparc32obsd_frame_cache (struct frame_info *next_frame, void **this_cache)
+sparc32obsd_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct sparc_frame_cache *cache;
   CORE_ADDR addr;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct sparc_frame_cache *)*this_cache;
 
   cache = sparc_frame_cache (next_frame, this_cache);
   gdb_assert (cache == *this_cache);
@@ -126,41 +127,50 @@ static const struct frame_unwind sparc32obsd_frame_unwind =
 {
   SIGTRAMP_FRAME,
   sparc32obsd_frame_this_id,
-  sparc32obsd_frame_prev_register
+  sparc32obsd_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *
-sparc32obsd_sigtramp_frame_sniffer (struct frame_info *next_frame)
+sparc32obsd_sigtramp_frame_sniffer(struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
+  const char *name;
 
-  find_pc_partial_function (pc, &name, NULL, NULL);
-  if (sparc32obsd_pc_in_sigtramp (pc, name))
+  find_pc_partial_function(pc, &name, NULL, NULL);
+  if (sparc32obsd_pc_in_sigtramp(pc, name))
     return &sparc32obsd_frame_unwind;
 
   return NULL;
 }
 
-
+/* */
 static void
-sparc32obsd_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
+sparc32obsd_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
 
-  /* OpenBSD/sparc is very similar to NetBSD/sparc ELF.  */
-  sparc32nbsd_elf_init_abi (info, gdbarch);
+  /* OpenBSD/sparc is very similar to NetBSD/sparc ELF: */
+  sparc32nbsd_elf_init_abi(info, gdbarch);
 
-  frame_unwind_append_sniffer (gdbarch, sparc32obsd_sigtramp_frame_sniffer);
+  frame_unwind_append_sniffer(gdbarch, sparc32obsd_sigtramp_frame_sniffer);
 }
 
 
 /* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_sparc32obsd_tdep (void);
+void _initialize_sparc32obsd_tdep(void);
 
 void
-_initialize_sparc32obsd_tdep (void)
+_initialize_sparc32obsd_tdep(void)
 {
-  gdbarch_register_osabi (bfd_arch_sparc, 0, GDB_OSABI_OPENBSD_ELF,
-			  sparc32obsd_init_abi);
+  gdbarch_register_osabi(bfd_arch_sparc, 0, GDB_OSABI_OPENBSD_ELF,
+			 sparc32obsd_init_abi);
 }
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* Target-dependent code for Solaris SPARC.
+/* sparc-sol2-tdep.c: Target-dependent code for Solaris SPARC.
 
    Copyright 2003, 2004 Free Software Foundation, Inc.
 
@@ -47,6 +47,7 @@ const struct sparc_gregset sparc32_sol2_gregset =
   37 * 4,			/* %tbr */
   1 * 4,			/* %g1 */
   16 * 4,			/* %l0 */
+  0 * 4				/* ??? */
 };
 
 
@@ -67,7 +68,7 @@ const struct sparc_gregset sparc32_sol2_gregset =
    ignore this.  */
 
 int
-sparc_sol2_pc_in_sigtramp (CORE_ADDR pc, char *name)
+sparc_sol2_pc_in_sigtramp(CORE_ADDR pc, const char *name)
 {
   return (name && (strcmp (name, "sigacthandler") == 0
 		   || strcmp (name, "ucbsigvechandler") == 0
@@ -83,7 +84,7 @@ sparc32_sol2_sigtramp_frame_cache (struct frame_info *next_frame,
   int regnum;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct sparc_frame_cache *)*this_cache;
 
   cache = sparc_frame_cache (next_frame, this_cache);
   gdb_assert (cache == *this_cache);
@@ -155,14 +156,17 @@ static const struct frame_unwind sparc32_sol2_sigtramp_frame_unwind =
 {
   SIGTRAMP_FRAME,
   sparc32_sol2_sigtramp_frame_this_id,
-  sparc32_sol2_sigtramp_frame_prev_register
+  sparc32_sol2_sigtramp_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *
 sparc32_sol2_sigtramp_frame_sniffer (struct frame_info *next_frame)
 {
   CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  const char *name;
 
   find_pc_partial_function (pc, &name, NULL, NULL);
   if (sparc_sol2_pc_in_sigtramp (pc, name))

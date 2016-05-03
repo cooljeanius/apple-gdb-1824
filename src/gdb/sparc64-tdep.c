@@ -1,4 +1,4 @@
-/* Target-dependent code for UltraSPARC.
+/* sparc64-tdep.c: Target-dependent code for UltraSPARC.
 
    Copyright 2003, 2004, 2005 Free Software Foundation, Inc.
 
@@ -125,7 +125,7 @@ sparc64_structure_or_union_p (const struct type *type)
 
 struct sparc64_register_info
 {
-  char *name;
+  const char *name;
   struct type **type;
 };
 
@@ -302,13 +302,13 @@ static struct sparc64_register_info sparc64_pseudo_register_info[] =
 /* Return the name of register REGNUM.  */
 
 static const char *
-sparc64_register_name (int regnum)
+sparc64_register_name(int regnum)
 {
-  if (regnum >= 0 && regnum < SPARC64_NUM_REGS)
+  if ((regnum >= 0) && ((size_t)regnum < SPARC64_NUM_REGS))
     return sparc64_register_info[regnum].name;
 
-  if (regnum >= SPARC64_NUM_REGS
-      && regnum < SPARC64_NUM_REGS + SPARC64_NUM_PSEUDO_REGS)
+  if ((regnum >= (int)SPARC64_NUM_REGS)
+      && (regnum < (int)(SPARC64_NUM_REGS + SPARC64_NUM_PSEUDO_REGS)))
     return sparc64_pseudo_register_info[regnum - SPARC64_NUM_REGS].name;
 
   return NULL;
@@ -318,13 +318,13 @@ sparc64_register_name (int regnum)
    register REGNUM. */
 
 static struct type *
-sparc64_register_type (struct gdbarch *gdbarch, int regnum)
+sparc64_register_type(struct gdbarch *gdbarch, int regnum)
 {
-  if (regnum >= SPARC64_NUM_REGS
-      && regnum < SPARC64_NUM_REGS + SPARC64_NUM_PSEUDO_REGS)
+  if ((regnum >= (int)SPARC64_NUM_REGS)
+      && (regnum < (int)(SPARC64_NUM_REGS + SPARC64_NUM_PSEUDO_REGS)))
     return *sparc64_pseudo_register_info[regnum - SPARC64_NUM_REGS].type;
 
-  gdb_assert (regnum >= 0 && regnum < SPARC64_NUM_REGS);
+  gdb_assert((regnum >= 0) && ((size_t)regnum < SPARC64_NUM_REGS));
   return *sparc64_register_info[regnum].type;
 }
 
@@ -333,7 +333,7 @@ sparc64_pseudo_register_read (struct gdbarch *gdbarch,
 			      struct regcache *regcache,
 			      int regnum, gdb_byte *buf)
 {
-  gdb_assert (regnum >= SPARC64_NUM_REGS);
+  gdb_assert(regnum >= (int)SPARC64_NUM_REGS);
 
   if (regnum >= SPARC64_D0_REGNUM && regnum <= SPARC64_D30_REGNUM)
     {
@@ -392,7 +392,7 @@ sparc64_pseudo_register_write (struct gdbarch *gdbarch,
 			       struct regcache *regcache,
 			       int regnum, const gdb_byte *buf)
 {
-  gdb_assert (regnum >= SPARC64_NUM_REGS);
+  gdb_assert(regnum >= (int)SPARC64_NUM_REGS);
 
   if (regnum >= SPARC64_D0_REGNUM && regnum <= SPARC64_D30_REGNUM)
     {
@@ -585,11 +585,15 @@ static const struct frame_unwind sparc64_frame_unwind =
 {
   NORMAL_FRAME,
   sparc64_frame_this_id,
-  sparc64_frame_prev_register
+  sparc64_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
+/* */
 static const struct frame_unwind *
-sparc64_frame_sniffer (struct frame_info *next_frame)
+sparc64_frame_sniffer(struct frame_info *next_frame)
 {
   return &sparc64_frame_unwind;
 }
@@ -888,14 +892,14 @@ sparc64_store_arguments (struct regcache *regcache, int nargs,
       int regnum = -1;
       gdb_byte buf[16];
 
-      if (sparc64_structure_or_union_p (type))
+      if (sparc64_structure_or_union_p(type))
 	{
-	  /* Structure or Union arguments.  */
-	  gdb_assert (len <= 16);
-	  memset (buf, 0, sizeof (buf));
-	  valbuf = memcpy (buf, valbuf, len);
+	  /* Structure or Union arguments: */
+	  gdb_assert(len <= 16);
+	  memset(buf, 0, sizeof(buf));
+	  valbuf = (const gdb_byte *)memcpy(buf, valbuf, len);
 
-	  if (element % 2 && sparc64_16_byte_align_p (type))
+	  if ((element % 2) && sparc64_16_byte_align_p(type))
 	    element++;
 
 	  if (element < 6)
@@ -1108,10 +1112,11 @@ sparc64_return_value (struct gdbarch *gdbarch, struct type *type,
   return RETURN_VALUE_REGISTER_CONVENTION;
 }
 
-
+/* */
 static void
-sparc64_dwarf2_frame_init_reg (struct gdbarch *gdbarch, int regnum,
-			       struct dwarf2_frame_state_reg *reg)
+sparc64_dwarf2_frame_init_reg(struct gdbarch *gdbarch, int regnum,
+			      struct dwarf2_frame_state_reg *reg,
+			      struct frame_info *unused_fi ATTRIBUTE_UNUSED)
 {
   switch (regnum)
     {
@@ -1198,7 +1203,7 @@ sparc64_supply_gregset (const struct sparc_gregset *gregset,
 			int regnum, const void *gregs)
 {
   int sparc32 = (gdbarch_ptr_bit (current_gdbarch) == 32);
-  const gdb_byte *regs = gregs;
+  const gdb_byte *regs = (const gdb_byte *)gregs;
   int i;
 
   if (sparc32)
@@ -1312,7 +1317,7 @@ sparc64_collect_gregset (const struct sparc_gregset *gregset,
 			 int regnum, void *gregs)
 {
   int sparc32 = (gdbarch_ptr_bit (current_gdbarch) == 32);
-  gdb_byte *regs = gregs;
+  gdb_byte *regs = (gdb_byte *)gregs;
   int i;
 
   if (sparc32)
@@ -1419,7 +1424,7 @@ sparc64_supply_fpregset (struct regcache *regcache,
 			 int regnum, const void *fpregs)
 {
   int sparc32 = (gdbarch_ptr_bit (current_gdbarch) == 32);
-  const gdb_byte *regs = fpregs;
+  const gdb_byte *regs = (const gdb_byte *)fpregs;
   int i;
 
   for (i = 0; i < 32; i++)
@@ -1454,7 +1459,7 @@ sparc64_collect_fpregset (const struct regcache *regcache,
 			  int regnum, void *fpregs)
 {
   int sparc32 = (gdbarch_ptr_bit (current_gdbarch) == 32);
-  gdb_byte *regs = fpregs;
+  gdb_byte *regs = (gdb_byte *)fpregs;
   int i;
 
   for (i = 0; i < 32; i++)
@@ -1483,3 +1488,5 @@ sparc64_collect_fpregset (const struct regcache *regcache,
 			      regs + (32 * 4) + (16 * 8));
     }
 }
+
+/* EOF */

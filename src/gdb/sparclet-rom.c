@@ -1,4 +1,4 @@
-/* Remote target glue for the SPARC Sparclet ROM monitor.
+/* sparclet-rom.c: Remote target glue for the SPARC Sparclet ROM monitor.
    Copyright 1995, 1996, 1997, 1998, 1999, 2000, 2001
    Free Software Foundation, Inc.
 
@@ -31,11 +31,19 @@
 #include "regcache.h"
 #include <time.h>
 
-extern void report_transfer_performance (unsigned long, time_t, time_t);
+#include "exceptions.h" /* for RETURN_QUIT */
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#else
+# include "safe-ctype.h"
+#endif /* HAVE_CTYPE_H */
+
+extern void report_transfer_performance(unsigned long, time_t, time_t);
 
 static struct target_ops sparclet_ops;
 
-static void sparclet_open (char *args, int from_tty);
+static void sparclet_open(const char *args, int from_tty);
 
 /* This array of registers need to match the indexes used by GDB.
    This exists because the various ROM monitors use different strings
@@ -63,7 +71,7 @@ static void sparclet_open (char *args, int from_tty);
 
 /* is wim part of psr?? */
 /* monitor wants lower case */
-static char *sparclet_regnames[] = {
+static const char *sparclet_regnames[] = {
   "g0", "g1", "g2", "g3", "g4", "g5", "g6", "g7",
   "o0", "o1", "o2", "o3", "o4", "o5", "o6", "o7",
   "l0", "l1", "l2", "l3", "l4", "l5", "l6", "l7",
@@ -97,51 +105,58 @@ static char *sparclet_regnames[] = {
    expects to be able to call it.  If we don't supply something, it will
    call a null pointer and core-dump.  Since this function does not
    actually do anything, GDB will request the registers individually.  */
-
 static void
-sparclet_supply_register (char *regname, int regnamelen, char *val, int vallen)
+sparclet_supply_register(char *regname ATTRIBUTE_UNUSED,
+			 int regnamelen ATTRIBUTE_UNUSED,
+			 char *val ATTRIBUTE_UNUSED,
+			 int vallen ATTRIBUTE_UNUSED)
 {
   return;
 }
 
+#ifndef return_to_top_level
+# define return_to_top_level(foo) return
+#endif /* !return_to_top_level */
+
+/* */
 static void
-sparclet_load (struct serial *desc, char *file, int hashmark)
+sparclet_load(struct serial *desc, const char *file, int hashmark)
 {
   bfd *abfd;
   asection *s;
   int i;
   CORE_ADDR load_offset;
   time_t start_time, end_time;
-  unsigned long data_count = 0;
+  unsigned long data_count = 0UL;
 
   /* enable user to specify address for downloading as 2nd arg to load */
 
-  i = sscanf (file, "%*s 0x%lx", &load_offset);
+  i = sscanf(file, "%*s 0x%lx", (unsigned long *)&load_offset);
   if (i >= 1)
     {
       char *p;
 
-      for (p = file; *p != '\000' && !isspace (*p); p++);
+      for (p = (char *)file; (*p != '\000') && !isspace(*p); p++);
 
       *p = '\000';
     }
   else
     load_offset = 0;
 
-  abfd = bfd_openr (file, 0);
+  abfd = bfd_openr(file, 0);
   if (!abfd)
     {
-      printf_filtered ("Unable to open file %s\n", file);
+      printf_filtered("Unable to open file %s\n", file);
       return;
     }
 
-  if (bfd_check_format (abfd, bfd_object) == 0)
+  if (bfd_check_format(abfd, bfd_object) == 0)
     {
-      printf_filtered ("File is not an object file\n");
+      printf_filtered("File is not an object file\n");
       return;
     }
 
-  start_time = time (NULL);
+  start_time = time(NULL);
 
   for (s = abfd->sections; s; s = s->next)
     if (s->flags & SEC_LOAD)
@@ -149,62 +164,62 @@ sparclet_load (struct serial *desc, char *file, int hashmark)
 	bfd_size_type section_size;
 	bfd_vma vma;
 
-	vma = bfd_get_section_vma (abfd, s) + load_offset;
-	section_size = bfd_section_size (abfd, s);
+	vma = (bfd_get_section_vma(abfd, s) + load_offset);
+	section_size = bfd_section_size(abfd, s);
 
 	data_count += section_size;
 
-	printf_filtered ("%s\t: 0x%4x .. 0x%4x  ",
-			 bfd_get_section_name (abfd, s), vma,
-			 vma + section_size);
-	gdb_flush (gdb_stdout);
+	printf_filtered("%s\t: 0x%4x .. 0x%4x  ",
+			bfd_get_section_name(abfd, s), (unsigned int)vma,
+			(unsigned int)(vma + section_size));
+	gdb_flush(gdb_stdout);
 
-	monitor_printf ("load c r %x %x\r", vma, section_size);
+	monitor_printf("load c r %x %x\r", vma, section_size);
 
-	monitor_expect ("load: loading ", NULL, 0);
-	monitor_expect ("\r", NULL, 0);
+	monitor_expect("load: loading ", NULL, 0);
+	monitor_expect("\r", NULL, 0);
 
-	for (i = 0; i < section_size; i += 2048)
+	for (i = 0; i < (int)section_size; i += 2048)
 	  {
 	    int numbytes;
 	    char buf[2048];
 
-	    numbytes = min (sizeof buf, section_size - i);
+	    numbytes = min(sizeof(buf), (section_size - i));
 
-	    bfd_get_section_contents (abfd, s, buf, i, numbytes);
+	    bfd_get_section_contents(abfd, s, buf, i, numbytes);
 
-	    serial_write (desc, buf, numbytes);
+	    serial_write(desc, buf, numbytes);
 
 	    if (hashmark)
 	      {
-		putchar_unfiltered ('#');
-		gdb_flush (gdb_stdout);
+		putchar_unfiltered('#');
+		gdb_flush(gdb_stdout);
 	      }
 	  }			/* Per-packet (or S-record) loop */
 
-	monitor_expect_prompt (NULL, 0);
+	monitor_expect_prompt(NULL, 0);
 
-	putchar_unfiltered ('\n');
+	putchar_unfiltered('\n');
       }				/* Loadable sections */
 
-  monitor_printf ("reg pc %x\r", bfd_get_start_address (abfd));
-  monitor_expect_prompt (NULL, 0);
-  monitor_printf ("reg npc %x\r", bfd_get_start_address (abfd) + 4);
-  monitor_expect_prompt (NULL, 0);
+  monitor_printf("reg pc %x\r", bfd_get_start_address(abfd));
+  monitor_expect_prompt(NULL, 0);
+  monitor_printf("reg npc %x\r", (bfd_get_start_address(abfd) + 4));
+  monitor_expect_prompt(NULL, 0);
 
-  monitor_printf ("run\r");
+  monitor_printf("run\r");
 
-  end_time = time (NULL);
+  end_time = time(NULL);
 
   if (hashmark)
-    putchar_unfiltered ('\n');
+    putchar_unfiltered('\n');
 
-  report_transfer_performance (data_count, start_time, end_time);
+  report_transfer_performance(data_count, start_time, end_time);
 
-  pop_target ();
-  push_remote_target (monitor_get_dev_name (), 1);
+  pop_target();
+  push_remote_target(monitor_get_dev_name(), 1);
 
-  return_to_top_level (RETURN_QUIT);
+  return_to_top_level(RETURN_QUIT);
 }
 
 /* Define the monitor command strings. Since these are passed directly
@@ -213,7 +228,7 @@ sparclet_load (struct serial *desc, char *file, int hashmark)
 
 /* need to pause the monitor for timing reasons, so slow it down */
 
-static char *sparclet_inits[] =
+static const char *sparclet_inits[] =
 {"\n\r\r\n", NULL};
 
 static struct monitor_ops sparclet_cmds;
@@ -233,7 +248,7 @@ init_sparclet_cmds (void)
   sparclet_cmds.stop = "\r";	/* break interrupts the program */
   sparclet_cmds.set_break = "+bp %x\r";		/* set a breakpoint */
   sparclet_cmds.clr_break = "-bp %x\r";		/* can't use "br" because only 2 hw bps are supported */
-  sparclet_cmds.clr_all_break = "-bp %x\r";	/* clear a breakpoint */
+  sparclet_cmds.clr_all_break = "-bp %x\r",	/* clear a breakpoint */
   "-bp\r";			/* clear all breakpoints */
   sparclet_cmds.fill = "fill %x -n %x -v %x -b\r";	/* fill (start length val) */
   /* can't use "fi" because it takes words, not bytes */
@@ -280,14 +295,16 @@ init_sparclet_cmds (void)
   sparclet_cmds.magic = MONITOR_OPS_MAGIC;	/* magic */
 };
 
+/* */
 static void
-sparclet_open (char *args, int from_tty)
+sparclet_open(const char *args, int from_tty)
 {
-  monitor_open (args, &sparclet_cmds, from_tty);
+  monitor_open(args, &sparclet_cmds, from_tty);
 }
 
+extern void _initialize_sparclet(void); /* -Wmissing-prototypes */
 void
-_initialize_sparclet (void)
+_initialize_sparclet(void)
 {
   int i;
   init_sparclet_cmds ();

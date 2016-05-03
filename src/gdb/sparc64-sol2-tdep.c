@@ -1,4 +1,4 @@
-/* Target-dependent code for Solaris UltraSPARC.
+/* sparc64-sol2-tdep.c: Target-dependent code for Solaris UltraSPARC.
 
    Copyright 2003, 2004 Free Software Foundation, Inc.
 
@@ -57,7 +57,7 @@ sparc64_sol2_sigtramp_frame_cache (struct frame_info *next_frame,
   int regnum;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct sparc_frame_cache *)*this_cache;
 
   cache = sparc_frame_cache (next_frame, this_cache);
   gdb_assert (cache == *this_cache);
@@ -133,14 +133,17 @@ static const struct frame_unwind sparc64_sol2_sigtramp_frame_unwind =
 {
   SIGTRAMP_FRAME,
   sparc64_sol2_sigtramp_frame_this_id,
-  sparc64_sol2_sigtramp_frame_prev_register
+  sparc64_sol2_sigtramp_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *
 sparc64_sol2_sigtramp_frame_sniffer (struct frame_info *next_frame)
 {
   CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  const char *name;
 
   find_pc_partial_function (pc, &name, NULL, NULL);
   if (sparc_sol2_pc_in_sigtramp (pc, name))
@@ -174,11 +177,13 @@ sparc64_sol2_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 
 
 /* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_sparc64_sol2_tdep (void);
+void _initialize_sparc64_sol2_tdep(void);
 
 void
-_initialize_sparc64_sol2_tdep (void)
+_initialize_sparc64_sol2_tdep(void)
 {
-  gdbarch_register_osabi (bfd_arch_sparc, bfd_mach_sparc_v9,
-			  GDB_OSABI_SOLARIS, sparc64_sol2_init_abi);
+  gdbarch_register_osabi(bfd_arch_sparc, bfd_mach_sparc_v9,
+			 GDB_OSABI_SOLARIS, sparc64_sol2_init_abi);
 }
+
+/* EOF */

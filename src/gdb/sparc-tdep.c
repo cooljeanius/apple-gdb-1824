@@ -1129,8 +1129,8 @@ sparc_write_pc (CORE_ADDR pc, ptid_t ptid)
 }
 
 /* Unglobalize NAME: */
-char *
-sparc_stabs_unglobalize_name(char *name)
+const char *
+sparc_stabs_unglobalize_name(const char *name)
 {
   /* The Sun compilers (Sun ONE Studio, Forte Developer, Sun WorkShop,
      SunPRO) convert file static variables into global values, a

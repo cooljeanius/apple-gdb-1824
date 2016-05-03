@@ -1,4 +1,4 @@
-/* Target-dependent code for NetBSD/sparc.
+/* sparcnbsd-tdep.c: Target-dependent code for NetBSD/sparc.
 
    Copyright 2002, 2003, 2004 Free Software Foundation, Inc.
    Contributed by Wasabi Systems, Inc.
@@ -47,7 +47,8 @@ const struct sparc_gregset sparc32nbsd_gregset =
   -1,				/* %wim */
   -1,				/* %tbr */
   5 * 4,			/* %g1 */
-  -1				/* %l0 */
+  -1,				/* %l0 */
+  0 				/* ??? */
 };
 
 static void
@@ -84,12 +85,12 @@ static const CORE_ADDR sparc32nbsd_sigtramp_start = 0xeffffef0;
 static const CORE_ADDR sparc32nbsd_sigtramp_end = 0xeffffff0;
 
 static int
-sparc32nbsd_pc_in_sigtramp (CORE_ADDR pc, char *name)
+sparc32nbsd_pc_in_sigtramp(CORE_ADDR pc, const char *name)
 {
-  if (pc >= sparc32nbsd_sigtramp_start && pc < sparc32nbsd_sigtramp_end)
+  if ((pc >= sparc32nbsd_sigtramp_start) && (pc < sparc32nbsd_sigtramp_end))
     return 1;
 
-  return nbsd_pc_in_sigtramp (pc, name);
+  return nbsd_pc_in_sigtramp(pc, name);
 }
 
 struct trad_frame_saved_reg *
@@ -184,7 +185,7 @@ sparc32nbsd_sigcontext_frame_cache (struct frame_info *next_frame,
   CORE_ADDR addr;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct sparc_frame_cache *)*this_cache;
 
   cache = sparc_frame_cache (next_frame, this_cache);
   gdb_assert (cache == *this_cache);
@@ -239,14 +240,17 @@ static const struct frame_unwind sparc32nbsd_sigcontext_frame_unwind =
 {
   SIGTRAMP_FRAME,
   sparc32nbsd_sigcontext_frame_this_id,
-  sparc32nbsd_sigcontext_frame_prev_register
+  sparc32nbsd_sigcontext_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *
 sparc32nbsd_sigtramp_frame_sniffer (struct frame_info *next_frame)
 {
   CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  const char *name;
 
   find_pc_partial_function (pc, &name, NULL, NULL);
   if (sparc32nbsd_pc_in_sigtramp (pc, name))
@@ -325,20 +329,22 @@ sparcnbsd_core_osabi_sniffer (bfd *abfd)
 
 
 /* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_sparcnbsd_tdep (void);
-
+void _initialize_sparcnbsd_tdep(void);
+/* ...and make sure the spelling matches: */
 void
-_initialize_sparnbsd_tdep (void)
+_initialize_sparcnbsd_tdep(void)
 {
-  gdbarch_register_osabi_sniffer (bfd_arch_sparc, bfd_target_aout_flavour,
-				  sparcnbsd_aout_osabi_sniffer);
+  gdbarch_register_osabi_sniffer(bfd_arch_sparc, bfd_target_aout_flavour,
+				 sparcnbsd_aout_osabi_sniffer);
 
-  /* BFD doesn't set a flavour for NetBSD style a.out core files.  */
-  gdbarch_register_osabi_sniffer (bfd_arch_sparc, bfd_target_unknown_flavour,
-                                  sparcnbsd_core_osabi_sniffer);
+  /* BFD fails to set a flavour for NetBSD style a.out core files: */
+  gdbarch_register_osabi_sniffer(bfd_arch_sparc, bfd_target_unknown_flavour,
+                                 sparcnbsd_core_osabi_sniffer);
 
-  gdbarch_register_osabi (bfd_arch_sparc, 0, GDB_OSABI_NETBSD_AOUT,
-			  sparc32nbsd_aout_init_abi);
-  gdbarch_register_osabi (bfd_arch_sparc, 0, GDB_OSABI_NETBSD_ELF,
-			  sparc32nbsd_elf_init_abi);
+  gdbarch_register_osabi(bfd_arch_sparc, 0, GDB_OSABI_NETBSD_AOUT,
+			 sparc32nbsd_aout_init_abi);
+  gdbarch_register_osabi(bfd_arch_sparc, 0, GDB_OSABI_NETBSD_ELF,
+			 sparc32nbsd_elf_init_abi);
 }
+
+/* EOF */

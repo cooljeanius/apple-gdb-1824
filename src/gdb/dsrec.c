@@ -107,7 +107,7 @@ load_srec (struct serial *desc, const char *file, bfd_vma load_offset,
 
 	data_count += size;
 
-	for (i = 0; i < size; i += numbytes)
+	for (i = 0; i < (int)size; i += numbytes)
 	  {
 	    reclen = maxrecsize;
 	    numbytes = make_srec (srec, (CORE_ADDR) (addr + i), abfd, s,
@@ -228,8 +228,8 @@ make_srec (char *srec, CORE_ADDR targ_addr, bfd *abfd, asection *sect,
   static const char term_code_table[] = "987";
   static const char header_code_table[] = "000";
   const char *code_table;
-  int addr_size;
-  int payload_size;
+  size_t addr_size;
+  size_t payload_size;
   char *binbuf;
   char *p;
 
@@ -262,19 +262,19 @@ make_srec (char *srec, CORE_ADDR targ_addr, bfd *abfd, asection *sect,
 
   if (sect && abfd)
     {
-      payload_size = (*maxrecsize - (1 + 1 + 2 + addr_size * 2 + 2)) / 2;
-      payload_size = min (payload_size, bfd_get_section_size (sect) - sectoff);
+      payload_size = ((*maxrecsize - (1 + 1 + 2 + (addr_size * 2) + 2)) / 2);
+      payload_size = min(payload_size, (bfd_get_section_size(sect) - sectoff));
 
-      bfd_get_section_contents (abfd, sect, binbuf, sectoff, payload_size);
+      bfd_get_section_contents(abfd, sect, binbuf, sectoff, payload_size);
     }
   else
     payload_size = 0;		/* Term or header packets have no payload */
 
-  /* Output the header.  */
-  snprintf (srec, (*maxrecsize) + 1, "S%c%02X%0*X",
-	    code_table[addr_size - 2],
-	    addr_size + payload_size + 1,
-	    addr_size * 2, (int) targ_addr);
+  /* Output the header: */
+  snprintf(srec, ((*maxrecsize) + 1UL), "S%c%02X%0*X",
+	   code_table[addr_size - 2],
+	   (unsigned int)(addr_size + payload_size + 1UL),
+	   (int)(addr_size * 2UL), (int)targ_addr);
 
   /* Note that the checksum is calculated on the raw data, not the
      hexified data.  It includes the length, address and the data
@@ -290,11 +290,11 @@ make_srec (char *srec, CORE_ADDR targ_addr, bfd *abfd, asection *sect,
 
   /* NOTE: cagney/2003-08-10: The equation is old.  Check that the
      recent snprintf changes match that equation.  */
-  gdb_assert (strlen (srec) == 1 + 1 + 2 + addr_size * 2);
-  p = srec + 1 + 1 + 2 + addr_size * 2;
+  gdb_assert(strlen(srec) == (1UL + 1UL + 2UL + (addr_size * 2UL)));
+  p = (srec + 1UL + 1UL + 2UL + (addr_size * 2UL));
 
   /* Build the Srecord.  */
-  for (tmp = 0; tmp < payload_size; tmp++)
+  for (tmp = 0; tmp < (int)payload_size; tmp++)
     {
       unsigned char k;
 

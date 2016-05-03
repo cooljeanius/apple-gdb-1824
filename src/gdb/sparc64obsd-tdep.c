@@ -1,4 +1,4 @@
-/* Target-dependent code for OpenBSD/sparc64.
+/* sparc64obsd-tdep.c: Target-dependent code for OpenBSD/sparc64.
 
    Copyright 2004, 2005 Free Software Foundation, Inc.
 
@@ -55,14 +55,14 @@ const struct sparc_gregset sparc64obsd_core_gregset =
 };
 
 static void
-sparc64obsd_supply_gregset (const struct regset *regset,
-			    struct regcache *regcache,
-			    int regnum, const void *gregs, size_t len)
+sparc64obsd_supply_gregset(const struct regset *regset,
+			   struct regcache *regcache, int regnum,
+			   const void *gregs, size_t len)
 {
-  const char *regs = gregs;
+  const char *regs = (const char *)gregs;
 
-  sparc64_supply_gregset (&sparc64obsd_core_gregset, regcache, regnum, regs);
-  sparc64_supply_fpregset (regcache, regnum, regs + 288);
+  sparc64_supply_gregset(&sparc64obsd_core_gregset, regcache, regnum, regs);
+  sparc64_supply_fpregset(regcache, regnum, (regs + 288));
 }
 
 
@@ -91,7 +91,7 @@ static const int sparc64obsd_sigreturn_offset[] = {
 };
 
 static int
-sparc64obsd_pc_in_sigtramp (CORE_ADDR pc, char *name)
+sparc64obsd_pc_in_sigtramp(CORE_ADDR pc, const char *name)
 {
   CORE_ADDR start_pc = (pc & ~(sparc64obsd_page_size - 1));
   unsigned long insn;
@@ -125,7 +125,7 @@ sparc64obsd_frame_cache (struct frame_info *next_frame, void **this_cache)
   CORE_ADDR addr;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct sparc_frame_cache *)*this_cache;
 
   cache = sparc_frame_cache (next_frame, this_cache);
   gdb_assert (cache == *this_cache);
@@ -183,14 +183,17 @@ static const struct frame_unwind sparc64obsd_frame_unwind =
 {
   SIGTRAMP_FRAME,
   sparc64obsd_frame_this_id,
-  sparc64obsd_frame_prev_register
+  sparc64obsd_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *
 sparc64obsd_sigtramp_frame_sniffer (struct frame_info *next_frame)
 {
   CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  const char *name;
 
   find_pc_partial_function (pc, &name, NULL, NULL);
   if (sparc64obsd_pc_in_sigtramp (pc, name))
@@ -213,18 +216,20 @@ sparc64obsd_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   sparc64_init_abi (info, gdbarch);
 
   /* OpenBSD/sparc64 has SVR4-style shared libraries.  */
-  set_gdbarch_skip_trampoline_code (gdbarch, find_solib_trampoline_target);
-  set_solib_svr4_fetch_link_map_offsets
-    (gdbarch, svr4_lp64_fetch_link_map_offsets);
+  set_gdbarch_skip_trampoline_code(gdbarch, find_solib_trampoline_target);
+  set_solib_svr4_fetch_link_map_offsets(gdbarch,
+					svr4_lp64_fetch_link_map_offsets);
 }
 
 
 /* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_sparc64obsd_tdep (void);
+void _initialize_sparc64obsd_tdep(void);
 
 void
-_initialize_sparc64obsd_tdep (void)
+_initialize_sparc64obsd_tdep(void)
 {
-  gdbarch_register_osabi (bfd_arch_sparc, bfd_mach_sparc_v9,
-			  GDB_OSABI_OPENBSD_ELF, sparc64obsd_init_abi);
+  gdbarch_register_osabi(bfd_arch_sparc, bfd_mach_sparc_v9,
+			 GDB_OSABI_OPENBSD_ELF, sparc64obsd_init_abi);
 }
+
+/* EOF */

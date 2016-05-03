@@ -188,10 +188,10 @@ extern void sparc32_collect_fpregset (const struct regcache *regcache,
 /* Register offsets for Solaris 2.  */
 extern const struct sparc_gregset sparc32_sol2_gregset;
 
-extern int sparc_sol2_pc_in_sigtramp (CORE_ADDR pc, char *name);
+extern int sparc_sol2_pc_in_sigtramp(CORE_ADDR pc, const char *name);
 
-extern void sparc32_sol2_init_abi (struct gdbarch_info info,
-				   struct gdbarch *gdbarch);
+extern void sparc32_sol2_init_abi(struct gdbarch_info info,
+				  struct gdbarch *gdbarch);
 
 /* Functions and variables exported from sparcnbsd-tdep.c.  */
 
@@ -204,7 +204,7 @@ extern void sparc32nbsd_elf_init_abi(struct gdbarch_info info,
 extern struct trad_frame_saved_reg *
   sparc32nbsd_sigcontext_saved_regs(struct frame_info *next_frame);
 
-extern char *sparc_stabs_unglobalize_name(char *name);
+extern const char *sparc_stabs_unglobalize_name(const char *name);
 extern const struct regset *sparc_regset_from_core_section(struct gdbarch *,
 							   const char *,
 							   size_t);

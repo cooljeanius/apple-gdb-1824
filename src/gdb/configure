@@ -23793,7 +23793,10 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 GCC=$lt_save_GCC
 CC=$lt_save_CC
 CFLAGS=$lt_save_CFLAGS
-if test -n "$ac_tool_prefix"; then
+  ## gcj is slow:
+if test "x${GO_SLOWLY}" = "xyes"; then
+  test -n "${GO_SLOWLY}"
+  if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}gcj", so it can be a program name with args.
 set dummy ${ac_tool_prefix}gcj; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -26019,6 +26022,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 GCC=$lt_save_GCC
 CC=$lt_save_CC
 CFLAGS=$lt_save_CFLAGS
+  ## OK
+fi
 ac_ext=f
 ac_compile='$F77 -c $FFLAGS conftest.$ac_ext >&5'
 ac_link='$F77 -o conftest$ac_exeext $FFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -38662,7 +38667,7 @@ for ac_header in Availability.h AvailabilityMacros.h \
                   mach/mach_port.h mach/message.h mach/port.h \
                   mach/thread_info.h mach/thread_status.h mach/vm_types.h \
                   mach-o/loader.h mach-o/nlist.h machine/save_state.h \
-                  math.h memory.h pc.h pthread.h rpc/clnt.h rpc/rpc.h \
+                  math.h memory.h pc.h pthread.h rpc/rpc.h \
                   servers/netname.h servers/netname_defs.h setjmp.h \
                   sys/uio.h sys/utsname.h uuid/uuid.h
 do :
@@ -38688,6 +38693,23 @@ do :
 if test "x$ac_cv_header_mach_kmod_h" = xyes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_MACH_KMOD_H 1
+_ACEOF
+
+fi
+
+done
+  ## likewise:
+for ac_header in rpc/clnt.h
+do :
+  ac_fn_c_check_header_compile "$LINENO" "rpc/clnt.h" "ac_cv_header_rpc_clnt_h" "
+#ifdef HAVE_RPC_RPC_H
+# include <rpc/rpc.h>
+#endif /* HAVE_RPC_RPC_H */
+
+"
+if test "x$ac_cv_header_rpc_clnt_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_RPC_CLNT_H 1
 _ACEOF
 
 fi
@@ -46498,16 +46520,14 @@ if test "x${build_warnings}" != "x" -a "x${GCC}" = "xyes"
 then
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking compiler warning flags" >&5
 $as_echo_n "checking compiler warning flags... " >&6; }
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: (will report results at end)" >&5
-$as_echo "(will report results at end)" >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: (will report full results at end)" >&5
+$as_echo "(will report full results at end)" >&6; }
     # Separate out the -Werror flag as some files just cannot be
     # compiled with it enabled.
     # Do need to use it for these conftests though.
     for w in ${build_warnings}; do
-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking compiler support for ${w}" >&5
-$as_echo_n "checking compiler support for ${w}... " >&6; }
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
-$as_echo " " >&6; }
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking if compiler supports ${w}" >&5
+$as_echo_n "checking if compiler supports ${w}... " >&6; }
 	case ${w} in
           -Wold-style-definition|-Wstrict-prototypes|-Wsuggest-attribute=const)
 	    saved_CFLAGS="${CFLAGS}"
@@ -46517,9 +46537,13 @@ $as_echo " " >&6; }
 
 _ACEOF
 if ac_fn_cxx_try_compile "$LINENO"; then :
-  WARN_CFLAGS="${WARN_CFLAGS} ${w}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+                               WARN_CFLAGS="${WARN_CFLAGS} ${w}"
 else
-  BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+                               BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 	    CFLAGS="${saved_CFLAGS}"
@@ -46542,9 +46566,13 @@ main ()
 }
 _ACEOF
 if ac_fn_cxx_try_compile "$LINENO"; then :
-  WARN_CFLAGS="${WARN_CFLAGS} ${w}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+                               WARN_CFLAGS="${WARN_CFLAGS} ${w}"
 else
-  BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+                               BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 	    CFLAGS="${saved_CFLAGS}"
@@ -46567,9 +46595,13 @@ main ()
 }
 _ACEOF
 if ac_fn_cxx_try_compile "$LINENO"; then :
-  WARN_CFLAGS="${WARN_CFLAGS} ${w}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+                               WARN_CFLAGS="${WARN_CFLAGS} ${w}"
 else
-  BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+                               BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 	    CFLAGS="${saved_CFLAGS}"
