@@ -577,7 +577,7 @@ c_language_arch_info(struct gdbarch *gdbarch,
   lai->primitive_type_vector[c_primitive_type_long_double] = builtin->builtin_long_double;
   lai->primitive_type_vector[c_primitive_type_complex] = builtin->builtin_complex;
   lai->primitive_type_vector[c_primitive_type_double_complex] = builtin->builtin_double_complex;
-};
+}/*;*/
 
 const struct language_defn c_language_defn =
 {

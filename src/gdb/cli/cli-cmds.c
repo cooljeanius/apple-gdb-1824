@@ -157,8 +157,7 @@ struct cmd_list_element *showchecklist;
 
 /* Utility used everywhere when at least one argument is needed and
    none is supplied. */
-
-void
+NORETURN void ATTR_NORETURN
 error_no_arg(const char *why)
 {
   error(_("Argument required (%s)."), why);

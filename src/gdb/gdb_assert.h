@@ -35,13 +35,13 @@
    This is broken in G++ before version 2.6.
    C9x has a similar variable called __func__, but prefer the GCC one since
    it demangles C++ function names.  */
-#if (GCC_VERSION >= 2004)
-#define ASSERT_FUNCTION		__PRETTY_FUNCTION__
+#if (GCC_VERSION >= 2004) && !defined(__STRICT_ANSI__)
+# define ASSERT_FUNCTION	__PRETTY_FUNCTION__
 #else
-#if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
-#define ASSERT_FUNCTION		__func__
-#endif
-#endif
+# if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#  define ASSERT_FUNCTION	__func__
+# endif /* c99 */
+#endif /* gcc 2.4 */
 
 /* This prints an "Assertion failed" message, aksing the user if they
    want to continue, dump core, or just exit.  */

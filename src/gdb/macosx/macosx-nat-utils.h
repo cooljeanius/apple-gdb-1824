@@ -8,7 +8,7 @@
 #include <mach/mach.h>
 
 #if (defined __GNUC__)
-# define __MACH_CHECK_FUNCTION __PRETTY_FUNCTION__
+# define __MACH_CHECK_FUNCTION __extension__ __PRETTY_FUNCTION__
 #else
 # define __MACH_CHECK_FUNCTION ((__const char *)0)
 #endif /* __GNUC__ */

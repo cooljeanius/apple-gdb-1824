@@ -26,35 +26,38 @@
 #include "dicos-tdep.h"
 
 void
-dicos_init_abi (struct gdbarch *gdbarch)
+dicos_init_abi(struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
 
-  set_solib_ops (gdbarch, &solib_target_so_ops);
+  set_solib_ops(gdbarch, &solib_target_so_ops);
 
   /* Every process, although has its own address space, sees the same
      list of shared libraries.  There's no "main executable" in DICOS,
      so this accounts for all code.  */
-  set_gdbarch_has_global_solist (gdbarch, 1);
+  set_gdbarch_has_global_solist(gdbarch, 1);
 
   /* The DICOS breakpoint API takes care of magically making
      breakpoints visible to all inferiors.  */
-  set_gdbarch_has_global_breakpoints (gdbarch, 1);
+  set_gdbarch_has_global_breakpoints(gdbarch, 1);
 
   /* There's no (standard definition of) entry point or a guaranteed
      text location with a symbol where to place the call dummy, so we
      put it on the stack.  */
-  set_gdbarch_call_dummy_location (gdbarch, ON_STACK);
+  set_gdbarch_call_dummy_location(gdbarch, ON_STACK);
 
   /* DICOS rewinds the PC itself.  */
-  set_gdbarch_decr_pc_after_break (gdbarch, 0);
+  set_gdbarch_decr_pc_after_break(gdbarch, 0);
 }
 
 /* Return true if ABFD is a dicos load module.  HEADER_SIZE is the
    expected size of the "header" section in bytes.  */
-
 int
-dicos_load_module_p (bfd *abfd, int header_size)
+dicos_load_module_p(bfd *abfd, int header_size)
 {
   long storage_needed;
   int ret = 0;
@@ -68,11 +71,11 @@ dicos_load_module_p (bfd *abfd, int header_size)
      always a "Dicos_loadModuleInfo" symbol defined.  Look for the
      section first, as that should be cheaper.  */
 
-  section = bfd_get_section_by_name (abfd, "header");
+  section = bfd_get_section_by_name(abfd, "header");
   if (!section)
     return 0;
 
-  if (bfd_section_size (abfd, section) != header_size)
+  if (bfd_section_size(abfd, section) != (bfd_size_type)header_size)
     return 0;
 
   /* Dicos LMs always have a "Dicos_loadModuleInfo" symbol
@@ -81,8 +84,8 @@ dicos_load_module_p (bfd *abfd, int header_size)
   storage_needed = bfd_get_symtab_upper_bound (abfd);
   if (storage_needed < 0)
     {
-      warning (_("Can't read elf symbols from %s: %s"), bfd_get_filename (abfd),
-	       bfd_errmsg (bfd_get_error ()));
+      warning(_("Cannot read elf symbols from %s: %s"), bfd_get_filename(abfd),
+	      bfd_errmsg(bfd_get_error()));
       return 0;
     }
 
@@ -90,21 +93,20 @@ dicos_load_module_p (bfd *abfd, int header_size)
     {
       long i, symcount;
 
-      symbol_table = xmalloc (storage_needed);
-      symcount = bfd_canonicalize_symtab (abfd, symbol_table);
+      symbol_table = (asymbol **)xmalloc(storage_needed);
+      symcount = bfd_canonicalize_symtab(abfd, symbol_table);
 
       if (symcount < 0)
-	warning (_("Can't read elf symbols from %s: %s"),
-		 bfd_get_filename (abfd),
-		 bfd_errmsg (bfd_get_error ()));
+	warning(_("Cannot read elf symbols from %s: %s"),
+		bfd_get_filename(abfd), bfd_errmsg(bfd_get_error()));
       else
 	{
 	  for (i = 0; i < symcount; i++)
 	    {
 	      asymbol *sym = symbol_table[i];
-	      if (sym->name != NULL
-		  && symname[0] == sym->name[0]
-		  && strcmp (symname + 1, sym->name + 1) == 0)
+	      if ((sym->name != NULL)
+		  && (symname[0] == sym->name[0])
+		  && (strcmp((symname + 1), (sym->name + 1)) == 0))
 		{
 		  ret = 1;
 		  break;
@@ -113,6 +115,8 @@ dicos_load_module_p (bfd *abfd, int header_size)
 	}
     }
 
-  xfree (symbol_table);
+  xfree(symbol_table);
   return ret;
 }
+
+/* EOF */

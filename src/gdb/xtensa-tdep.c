@@ -161,11 +161,10 @@ windowing_enabled (CORE_ADDR ps)
    precedes the current address, so we simply analyze the call instruction.
    If we are in a dummy frame, we simply return 4 as we used a 'pseudo-call4'
    method to call the inferior function.  */
-
 static int
-extract_call_winsize (struct gdbarch *gdbarch, CORE_ADDR pc)
+extract_call_winsize(struct gdbarch *gdbarch, CORE_ADDR pc)
 {
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   int winsize = 4;
   int insn;
   gdb_byte buf[4];
@@ -173,8 +172,8 @@ extract_call_winsize (struct gdbarch *gdbarch, CORE_ADDR pc)
   DEBUGTRACE ("extract_call_winsize (pc = 0x%08x)\n", (int) pc);
 
   /* Read the previous instruction (should be a call[x]{4|8|12}.  */
-  read_memory (pc-3, buf, 3);
-  insn = extract_unsigned_integer (buf, 3, byte_order);
+  read_memory((pc - 3), buf, 3);
+  insn = extract_unsigned_integer(buf, 3, byte_order);
 
   /* Decode call instruction:
      Little Endian
@@ -275,15 +274,16 @@ xtensa_register_type (struct gdbarch *gdbarch, int regnum)
 
 	      if (tp == NULL)
 		{
-		  char *name = xmalloc (16);
-		  tp = xmalloc (sizeof (struct ctype_cache));
+		  char *name = (char *)xmalloc(16UL);
+		  tp = ((struct ctype_cache *)
+			xmalloc(sizeof(struct ctype_cache)));
 		  tp->next = tdep->type_entries;
 		  tdep->type_entries = tp;
 		  tp->size = size;
 
-		  sprintf (name, "int%d", size * 8);
-		  tp->virtual_type
-		    = arch_integer_type (gdbarch, size * 8, 1, xstrdup (name));
+		  snprintf(name, 16UL, "int%d", (size * 8));
+		  tp->virtual_type =
+		    arch_integer_type(gdbarch, (size * 8), 1, xstrdup(name));
 		}
 
 	      reg->ctype = tp->virtual_type;
@@ -495,15 +495,12 @@ xtensa_register_read_masked (struct regcache *regcache,
 }
 
 
-/* Read pseudo registers.  */
-
+/* Read pseudo registers: */
 static void
-xtensa_pseudo_register_read (struct gdbarch *gdbarch,
-			     struct regcache *regcache,
-			     int regnum,
-			     gdb_byte *buffer)
+xtensa_pseudo_register_read(struct gdbarch *gdbarch, struct regcache *regcache,
+			    int regnum, gdb_byte *buffer)
 {
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
 
   DEBUGTRACE ("xtensa_pseudo_register_read (... regnum = %d (%s) ...)\n",
 	      regnum, xtensa_register_name (gdbarch, regnum));
@@ -593,15 +590,13 @@ xtensa_pseudo_register_read (struct gdbarch *gdbarch,
 }
 
 
-/* Write pseudo registers.  */
-
+/* Write pseudo registers: */
 static void
-xtensa_pseudo_register_write (struct gdbarch *gdbarch,
-			      struct regcache *regcache,
-			      int regnum,
-			      const gdb_byte *buffer)
+xtensa_pseudo_register_write(struct gdbarch *gdbarch,
+			     struct regcache *regcache, int regnum,
+			     const gdb_byte *buffer)
 {
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
 
   DEBUGTRACE ("xtensa_pseudo_register_write (... regnum = %d (%s) ...)\n",
 	      regnum, xtensa_register_name (gdbarch, regnum));
@@ -616,7 +611,6 @@ xtensa_pseudo_register_write (struct gdbarch *gdbarch,
       && (regnum <= gdbarch_tdep (gdbarch)->a0_base + 15))
     {
       gdb_byte *buf = (gdb_byte *) alloca (MAX_REGISTER_SIZE);
-      unsigned int wb;
 
       regcache_raw_read (regcache,
 			 gdbarch_tdep (gdbarch)->wb_regnum, buf);
@@ -799,16 +793,12 @@ xtensa_register_reggroup_p (struct gdbarch *gdbarch,
 /* Supply register REGNUM from the buffer specified by GREGS and LEN
    in the general-purpose register set REGSET to register cache
    REGCACHE.  If REGNUM is -1 do this for all registers in REGSET.  */
-
 static void
-xtensa_supply_gregset (const struct regset *regset,
-		       struct regcache *rc,
-		       int regnum,
-		       const void *gregs,
-		       size_t len)
+xtensa_supply_gregset(const struct regset *regset, struct regcache *rc,
+		      int regnum, const void *gregs, size_t len)
 {
-  const xtensa_elf_gregset_t *regs = gregs;
-  struct gdbarch *gdbarch = get_regcache_arch (rc);
+  const xtensa_elf_gregset_t *regs = (const xtensa_elf_gregset_t *)gregs;
+  struct gdbarch *gdbarch = get_regcache_arch(rc);
   int i;
 
   DEBUGTRACE ("xtensa_supply_gregset (..., regnum==%d, ...) \n", regnum);
@@ -856,7 +846,8 @@ static struct regset
 xtensa_gregset =
 {
   NULL,
-  xtensa_supply_gregset
+  xtensa_supply_gregset,
+  (collect_regset_ftype *)NULL
 };
 
 
@@ -2463,7 +2454,7 @@ xtensa_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR start_pc)
 
 #if DONT_SKIP_PROLOGUE
   return start_pc;
-#endif
+#endif /* DONT_SKIP_PROLOGUE */
 
  /* Try to find first body line from debug info.  */
 
@@ -2591,7 +2582,7 @@ xtensa_derive_tdep (struct gdbarch_tdep *tdep)
 	tdep->interrupt2_regnum = n;
       else if (rmap->target_number == XTENSA_DBREGN_SREG(224))
 	tdep->cpenable_regnum = n;
-#endif
+#endif /* 0 */
 
       if (rmap->byte_size > max_size)
 	max_size = rmap->byte_size;
@@ -2625,7 +2616,6 @@ xtensa_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 {
   struct gdbarch_tdep *tdep;
   struct gdbarch *gdbarch;
-  struct xtensa_abi_handler *abi_handler;
 
   DEBUGTRACE ("gdbarch_init()\n");
 
@@ -2718,21 +2708,18 @@ xtensa_dump_tdep (struct gdbarch *gdbarch, struct ui_file *file)
 extern initialize_file_ftype _initialize_xtensa_tdep;
 
 void
-_initialize_xtensa_tdep (void)
+_initialize_xtensa_tdep(void)
 {
-  struct cmd_list_element *c;
+  gdbarch_register(bfd_arch_xtensa, xtensa_gdbarch_init, xtensa_dump_tdep);
+  xtensa_init_reggroups();
 
-  gdbarch_register (bfd_arch_xtensa, xtensa_gdbarch_init, xtensa_dump_tdep);
-  xtensa_init_reggroups ();
-
-  add_setshow_zinteger_cmd ("xtensa",
-			    class_maintenance,
-			    &xtensa_debug_level, _("\
+  add_setshow_zinteger_cmd("xtensa", class_maintenance,
+			   &xtensa_debug_level, _("\
 Set Xtensa debugging."), _("\
 Show Xtensa debugging."), _("\
 When non-zero, Xtensa-specific debugging is enabled. \
 Can be 1, 2, 3, or 4 indicating the level of debugging."),
-			    NULL,
-			    NULL,
-			    &setdebuglist, &showdebuglist);
+			   NULL, NULL, &setdebuglist, &showdebuglist);
 }
+
+/* EOF */

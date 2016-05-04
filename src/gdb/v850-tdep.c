@@ -1,4 +1,4 @@
-/* Target-dependent code for the NEC V850 for GDB, the GNU debugger.
+/* v850-tdep.c: Target-dependent code for the NEC V850 for GDB, the GNU debugger
 
    Copyright 1996, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free
    Software Foundation, Inc.
@@ -453,22 +453,20 @@ v850_is_save_register (int reg)
    actual value of the frame pointer yet.  In some circumstances, the
    frame pointer can't be determined till after we have scanned the
    prologue.  */
-
 static CORE_ADDR
-v850_analyze_prologue (CORE_ADDR func_addr, CORE_ADDR pc,
-		       struct v850_frame_cache *pi)
+v850_analyze_prologue(CORE_ADDR func_addr, CORE_ADDR pc,
+		      struct v850_frame_cache *pi)
 {
   CORE_ADDR prologue_end, current_pc;
   struct pifsr pifsrs[E_NUM_REGS + 1];
   struct pifsr *pifsr, *pifsr_tmp;
-  int fp_used;
   int ep_used;
   int reg;
   CORE_ADDR save_pc, save_end;
   int regsave_func_p;
   int r12_tmp;
 
-  memset (&pifsrs, 0, sizeof pifsrs);
+  memset(&pifsrs, 0, sizeof(pifsrs));
   pifsr = &pifsrs[0];
 
   prologue_end = pc;
@@ -806,22 +804,23 @@ v850_return_value (struct gdbarch *gdbarch, struct type *type,
   return RETURN_VALUE_REGISTER_CONVENTION;
 }
 
-const static unsigned char *
-v850_breakpoint_from_pc (CORE_ADDR *pcptr, int *lenptr)
+/* */
+static const unsigned char *
+v850_breakpoint_from_pc(CORE_ADDR *pcptr, int *lenptr)
 {
   static unsigned char breakpoint[] = { 0x85, 0x05 };
-  *lenptr = sizeof (breakpoint);
+  *lenptr = sizeof(breakpoint);
   return breakpoint;
 }
 
+/* */
 static struct v850_frame_cache *
-v850_alloc_frame_cache (struct frame_info *next_frame)
+v850_alloc_frame_cache(struct frame_info *next_frame)
 {
   struct v850_frame_cache *cache;
-  int i;
 
-  cache = FRAME_OBSTACK_ZALLOC (struct v850_frame_cache);
-  cache->saved_regs = trad_frame_alloc_saved_regs (next_frame);
+  cache = FRAME_OBSTACK_ZALLOC(struct v850_frame_cache);
+  cache->saved_regs = trad_frame_alloc_saved_regs(next_frame);
 
   /* Base address.  */
   cache->base = 0;
@@ -835,16 +834,16 @@ v850_alloc_frame_cache (struct frame_info *next_frame)
 }
 
 static struct v850_frame_cache *
-v850_frame_cache (struct frame_info *next_frame, void **this_cache)
+v850_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct v850_frame_cache *cache;
   CORE_ADDR current_pc;
   int i;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct v850_frame_cache *)*this_cache;
 
-  cache = v850_alloc_frame_cache (next_frame);
+  cache = v850_alloc_frame_cache(next_frame);
   *this_cache = cache;
 
   /* In principle, for normal frames, fp holds the frame pointer,
@@ -894,27 +893,29 @@ v850_frame_cache (struct frame_info *next_frame, void **this_cache)
   return cache;
 }
 
-
+/* */
 static void
-v850_frame_prev_register (struct frame_info *next_frame, void **this_cache,
-			  /* APPLE LOCAL variable opt states.  */
-			  int regnum, enum opt_state *optimizedp,
-			  enum lval_type *lvalp, CORE_ADDR *addrp,
-			  int *realnump, void *valuep)
+v850_frame_prev_register(struct frame_info *next_frame, void **this_cache,
+			 /* APPLE LOCAL variable opt states.  */
+			 int regnum, enum opt_state *optimizedp,
+			 enum lval_type *lvalp, CORE_ADDR *addrp,
+			 int *realnump, void *valuep)
 {
-  struct v850_frame_cache *cache = v850_frame_cache (next_frame, this_cache);
+  struct v850_frame_cache *cache = v850_frame_cache(next_frame, this_cache);
 
-  gdb_assert (regnum >= 0);
+  gdb_assert(regnum >= 0);
 
-  trad_frame_get_prev_register (next_frame, cache->saved_regs, regnum,
-				optimizedp, lvalp, addrp, realnump, valuep);
+  trad_frame_get_prev_register(next_frame, cache->saved_regs, regnum,
+			       optimizedp, lvalp, addrp, realnump,
+			       (gdb_byte *)valuep);
 }
 
+/* */
 static void
-v850_frame_this_id (struct frame_info *next_frame, void **this_cache,
-		    struct frame_id *this_id)
+v850_frame_this_id(struct frame_info *next_frame, void **this_cache,
+		   struct frame_id *this_id)
 {
-  struct v850_frame_cache *cache = v850_frame_cache (next_frame, this_cache);
+  struct v850_frame_cache *cache = v850_frame_cache(next_frame, this_cache);
 
   /* This marks the outermost frame.  */
   if (cache->base == 0)
@@ -926,11 +927,15 @@ v850_frame_this_id (struct frame_info *next_frame, void **this_cache,
 static const struct frame_unwind v850_frame_unwind = {
   NORMAL_FRAME,
   v850_frame_this_id,
-  v850_frame_prev_register
+  v850_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
-    
+
+/* */
 static const struct frame_unwind *
-v850_frame_sniffer (struct frame_info *next_frame)
+v850_frame_sniffer(struct frame_info *next_frame)
 {     
   return &v850_frame_unwind;
 }
@@ -1027,19 +1032,20 @@ v850_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_unwind_dummy_id (gdbarch, v850_unwind_dummy_id);
   frame_base_set_default (gdbarch, &v850_frame_base);
 
-  /* Hook in ABI-specific overrides, if they have been registered.  */
-  gdbarch_init_osabi (info, gdbarch);
+  /* Hook in ABI-specific overrides, if they have been registered: */
+  gdbarch_init_osabi(info, gdbarch);
 
-  frame_unwind_append_sniffer (gdbarch, dwarf2_frame_sniffer);
-  frame_unwind_append_sniffer (gdbarch, v850_frame_sniffer);
+  frame_unwind_append_sniffer(gdbarch, dwarf2_frame_sniffer);
+  frame_unwind_append_sniffer(gdbarch, v850_frame_sniffer);
 
   return gdbarch;
 }
 
 extern initialize_file_ftype _initialize_v850_tdep; /* -Wmissing-prototypes */
-
 void
-_initialize_v850_tdep (void)
+_initialize_v850_tdep(void)
 {
-  register_gdbarch_init (bfd_arch_v850, v850_gdbarch_init);
+  register_gdbarch_init(bfd_arch_v850, v850_gdbarch_init);
 }
+
+/* EOF */

@@ -54,12 +54,16 @@ strings.h
 strings.h-t
 sys/select.h
 sys/select.h-t
+sys/socket.h
+sys/socket.h-t
 sys/stat.h
 sys/stat.h-t
 sys/time.h
 sys/time.h-t
 sys/types.h
 sys/types.h-t
+sys/uio.h
+sys/uio.h-t
 sys/wait.h
 sys/wait.h-t
 time.h

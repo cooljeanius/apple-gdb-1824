@@ -201,6 +201,9 @@
 /* Define to 1 when the gnulib module closedir should be tested. */
 #undef GNULIB_TEST_CLOSEDIR
 
+/* Define to 1 when the gnulib module connect should be tested. */
+#undef GNULIB_TEST_CONNECT
+
 /* Define to 1 when the gnulib module dirfd should be tested. */
 #undef GNULIB_TEST_DIRFD
 
@@ -321,6 +324,9 @@
 /* Define to 1 when the gnulib module realloc-posix should be tested. */
 #undef GNULIB_TEST_REALLOC_POSIX
 
+/* Define to 1 when the gnulib module recv should be tested. */
+#undef GNULIB_TEST_RECV
+
 /* Define to 1 when the gnulib module rewinddir should be tested. */
 #undef GNULIB_TEST_REWINDDIR
 
@@ -329,6 +335,9 @@
 
 /* Define to 1 when the gnulib module secure_getenv should be tested. */
 #undef GNULIB_TEST_SECURE_GETENV
+
+/* Define to 1 when the gnulib module send should be tested. */
+#undef GNULIB_TEST_SEND
 
 /* Define to 1 when the gnulib module sigaction should be tested. */
 #undef GNULIB_TEST_SIGACTION
@@ -787,6 +796,12 @@
 /* Define to 1 if you have the `raise' function. */
 #undef HAVE_RAISE
 
+/* Define to 1 if accept is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_ACCEPT
+
+/* Define to 1 if accept4 is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_ACCEPT4
+
 /* Define to 1 if acosf is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_ACOSF
 
@@ -810,6 +825,9 @@
 
 /* Define to 1 if atoll is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_ATOLL
+
+/* Define to 1 if bind is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_BIND
 
 /* Define to 1 if btowc is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_BTOWC
@@ -841,6 +859,9 @@
 
 /* Define to 1 if closedir is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_CLOSEDIR
+
+/* Define to 1 if connect is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_CONNECT
 
 /* Define to 1 if copysign is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_COPYSIGN
@@ -1034,8 +1055,17 @@
 /* Define to 1 if getpagesize is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_GETPAGESIZE
 
+/* Define to 1 if getpeername is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_GETPEERNAME
+
 /* Define to 1 if gets is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_GETS
+
+/* Define to 1 if getsockname is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_GETSOCKNAME
+
+/* Define to 1 if getsockopt is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_GETSOCKOPT
 
 /* Define to 1 if getsubopt is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_GETSUBOPT
@@ -1102,6 +1132,9 @@
 
 /* Define to 1 if linkat is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_LINKAT
+
+/* Define to 1 if listen is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_LISTEN
 
 /* Define to 1 if log is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_LOG
@@ -1283,6 +1316,12 @@
 /* Define to 1 if realpath is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_REALPATH
 
+/* Define to 1 if recv is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_RECV
+
+/* Define to 1 if recvfrom is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_RECVFROM
+
 /* Define to 1 if remainder is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_REMAINDER
 
@@ -1331,6 +1370,12 @@
 /* Define to 1 if select is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_SELECT
 
+/* Define to 1 if send is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_SEND
+
+/* Define to 1 if sendto is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_SENDTO
+
 /* Define to 1 if setenv is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_SETENV
 
@@ -1340,6 +1385,9 @@
 /* Define to 1 if setlocale is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_SETLOCALE
 
+/* Define to 1 if setsockopt is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_SETSOCKOPT
+
 /* Define to 1 if setstate is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_SETSTATE
 
@@ -1348,6 +1396,9 @@
 
 /* Define to 1 if setusershell is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_SETUSERSHELL
+
+/* Define to 1 if shutdown is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_SHUTDOWN
 
 /* Define to 1 if sigaction is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_SIGACTION
@@ -1387,6 +1438,9 @@
 
 /* Define to 1 if snprintf is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_SNPRINTF
+
+/* Define to 1 if socket is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_SOCKET
 
 /* Define to 1 if sqrtf is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_SQRTF
@@ -1666,6 +1720,9 @@
 /* Define to 1 if 'long double' and 'double' have the same representation. */
 #undef HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
 
+/* Define to 1 if the system has the type `sa_family_t'. */
+#undef HAVE_SA_FAMILY_T
+
 /* Define to 1 if you have the `secure_getenv' function. */
 #undef HAVE_SECURE_GETENV
 
@@ -1677,6 +1734,9 @@
 
 /* Define to 1 if you have the <shlib-compat.h> header file. */
 #undef HAVE_SHLIB_COMPAT_H
+
+/* Define to 1 if you have the `shutdown' function. */
+#undef HAVE_SHUTDOWN
 
 /* Define to 1 if you have the `sig2str' function. */
 #undef HAVE_SIG2STR
@@ -1794,6 +1854,12 @@
 /* Define to 1 if `sa_sigaction' is a member of `struct sigaction'. */
 #undef HAVE_STRUCT_SIGACTION_SA_SIGACTION
 
+/* Define to 1 if the system has the type `struct sockaddr_storage'. */
+#undef HAVE_STRUCT_SOCKADDR_STORAGE
+
+/* Define to 1 if `ss_family' is a member of `struct sockaddr_storage'. */
+#undef HAVE_STRUCT_SOCKADDR_STORAGE_SS_FAMILY
+
 /* Define to 1 if `f_type' is a member of `struct statfs'. */
 #undef HAVE_STRUCT_STATFS_F_TYPE
 
@@ -1871,6 +1937,9 @@
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <sys/uio.h> header file. */
+#undef HAVE_SYS_UIO_H
 
 /* Define to 1 if you have the <sys/vfs.h> header file. */
 #undef HAVE_SYS_VFS_H
@@ -1958,6 +2027,9 @@
 
 /* Define to 1 if O_NOFOLLOW works. */
 #undef HAVE_WORKING_O_NOFOLLOW
+
+/* Define to 1 if you have the <ws2tcpip.h> header file. */
+#undef HAVE_WS2TCPIP_H
 
 /* Define to 1 if you have the <xlocale.h> header file. */
 #undef HAVE_XLOCALE_H
@@ -2172,6 +2244,9 @@
    'wchar_t'. */
 #undef WCHAR_T_SUFFIX
 
+/* Define if WSAStartup is needed. */
+#undef WINDOWS_SOCKETS
+
 /* Define if sys/ptem.h is required for struct winsize. */
 #undef WINSIZE_IN_PTEM
 
@@ -2238,6 +2313,10 @@
 /* Define to 2 if the system does not provide POSIX.1 features except with
    this defined. */
 #undef _POSIX_1_SOURCE
+
+/* Define to 1 in order to get the POSIX compatible declarations of socket
+   functions. */
+#undef _POSIX_PII_SOCKET
 
 /* Define to 1 if you need to in order for 'stat' and other things to work. */
 #undef _POSIX_SOURCE
@@ -2479,6 +2558,9 @@
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
+
+/* type to use in place of socklen_t if not defined */
+#undef socklen_t
 
 /* Define to `int' if <sys/types.h> does not define. */
 #undef ssize_t

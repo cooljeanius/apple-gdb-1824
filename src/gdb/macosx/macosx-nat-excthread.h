@@ -72,14 +72,14 @@ struct macosx_exception_thread_message
 typedef struct macosx_exception_thread_message
   macosx_exception_thread_message;
 
-void macosx_exception_thread_init (macosx_exception_thread_status *s);
+void macosx_exception_thread_init(macosx_exception_thread_status *s);
 
-void macosx_exception_thread_create (macosx_exception_thread_status *s,
-                                     task_t task);
-void macosx_exception_thread_destroy (macosx_exception_thread_status *s);
+void macosx_exception_thread_create(macosx_exception_thread_status *s,
+				    task_t task);
+void macosx_exception_thread_destroy(macosx_exception_thread_status *s);
 
-void macosx_exception_get_write_lock (macosx_exception_thread_status *s);
-void macosx_exception_release_write_lock (macosx_exception_thread_status *s);
+void macosx_exception_get_write_lock(macosx_exception_thread_status *s);
+void macosx_exception_release_write_lock(macosx_exception_thread_status *s);
 
 #endif /* __GDB_MACOSX_NAT_EXCTHREAD_H__ */
 

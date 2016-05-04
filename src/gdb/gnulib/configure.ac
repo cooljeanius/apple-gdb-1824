@@ -192,6 +192,10 @@ if test "x${ac_cv_header_sys_param_h}" = "x"; then
   test -z "${ac_cv_header_sys_param_h}"
   AC_CHECK_HEADERS([sys/param.h])
 fi
+if test "x${ac_cv_header_sys_socket_h}" = "x"; then
+  test -z "${ac_cv_header_sys_socket_h}"
+  AC_CHECK_HEADERS([sys/socket.h])
+fi
 if test "x${ac_cv_header_sys_time_h}" = "x"; then
   test -z "${ac_cv_header_sys_time_h}"
   AC_CHECK_HEADERS([sys/time.h])

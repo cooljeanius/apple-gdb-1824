@@ -22,36 +22,43 @@
 #include "gdb_string.h"
 #include "dicos-tdep.h"
 
+/* */
 static void
-i386_dicos_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
+i386_dicos_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
 
-  dicos_init_abi (gdbarch);
+  dicos_init_abi(gdbarch);
 }
 
+/* */
 static enum gdb_osabi
-i386_dicos_osabi_sniffer (bfd *abfd)
+i386_dicos_osabi_sniffer(bfd *abfd)
 {
-  char *target_name = bfd_get_target (abfd);
+  const char *target_name = bfd_get_target(abfd);
 
   /* On x86-DICOS, the Load Module's "header" section is 36 bytes.  */
-  if (strcmp (target_name, "elf32-i386") == 0
-      && dicos_load_module_p (abfd, 36))
+  if ((strcmp(target_name, "elf32-i386") == 0)
+      && dicos_load_module_p(abfd, 36))
     return GDB_OSABI_DICOS;
 
   return GDB_OSABI_UNKNOWN;
 }
 
 /* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_i386_dicos_tdep (void);
-
+extern void _initialize_i386_dicos_tdep(void);
 void
-_initialize_i386_dicos_tdep (void)
+_initialize_i386_dicos_tdep(void)
 {
-  gdbarch_register_osabi_sniffer (bfd_arch_i386, bfd_target_elf_flavour,
-                                  i386_dicos_osabi_sniffer);
+  gdbarch_register_osabi_sniffer(bfd_arch_i386, bfd_target_elf_flavour,
+                                 i386_dicos_osabi_sniffer);
 
-  gdbarch_register_osabi (bfd_arch_i386, 0, GDB_OSABI_DICOS,
-                          i386_dicos_init_abi);
+  gdbarch_register_osabi(bfd_arch_i386, 0, GDB_OSABI_DICOS,
+                         i386_dicos_init_abi);
 }
+
+/* EOF */

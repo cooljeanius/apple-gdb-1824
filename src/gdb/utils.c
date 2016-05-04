@@ -28,6 +28,7 @@
 #endif /* !NO_POISON */
 
 #include "defs.h"
+#include "ansidecl.h"
 #include "gdb_assert.h"
 #include <ctype.h>
 #include "gdb_string.h"
@@ -1110,7 +1111,7 @@ print_sys_errmsg(const char *string, int errcode)
 }
 
 /* Control C eventually causes this to be called, at a convenient time: */
-void ATTR_NORETURN
+NORETURN void ATTR_NORETURN
 quit(void)
 {
 #ifdef __MSDOS__

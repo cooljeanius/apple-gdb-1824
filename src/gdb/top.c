@@ -22,6 +22,7 @@
    Boston, MA 02111-1307, USA.  */
 
 #include "defs.h"
+#include "ansidecl.h"
 #include "gdbcmd.h"
 #include "call-cmds.h" /* Still needed for initialize_all_files().  */
 #include "cli/cli-cmds.h"

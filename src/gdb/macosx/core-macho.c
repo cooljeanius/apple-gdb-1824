@@ -1095,7 +1095,7 @@ init_macho_core_ops(void)
   macho_core_ops.to_has_execution = 0;
   macho_core_ops.to_thread_alive = core_thread_alive;
   macho_core_ops.to_magic = OPS_MAGIC;
-};
+}
 
 /* remember, function name must start in column 0 for init.c to work: */
 void

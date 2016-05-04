@@ -1675,7 +1675,7 @@ extern ULONGEST align_down(ULONGEST v, int n) ATTRIBUTE_W_U_R;
 extern void breakup_args(char *scratch, int *argc, char **argv);
 
 /* APPLE LOCAL begin CHECK macro: */
-#define __CHECK_FUNCTION __PRETTY_FUNCTION__
+#define __CHECK_FUNCTION __extension__ __PRETTY_FUNCTION__
 
 #ifdef __cplusplus
 # define CHECK(expression) \

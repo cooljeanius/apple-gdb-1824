@@ -63,6 +63,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "objfiles.h" /* For have_full_symbols and have_partial_symbols */
 #include "frame.h"
 #include "block.h"
+  
+#ifndef ADA_EXP_Y
+# define ADA_EXP_Y 1
+#endif /* !ADA_EXP_Y */
 
 /* Remap normal yacc parser interface names (yyparse, yylex, yyerror, etc),
    as well as gratuitiously global symbol names, so we can have multiple
@@ -106,6 +110,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #define yytoks	ada_toks		/* With YYDEBUG defined */
 #define yyname	ada_name		/* With YYDEBUG defined */
 #define yyrule	ada_rule		/* With YYDEBUG defined */
+  
+#ifndef yyinput
+# define yyinput input
+#endif /* !yyinput */
 
 #ifndef YYDEBUG
 # define YYDEBUG 1		/* Default to yydebug support */

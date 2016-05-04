@@ -1,4 +1,4 @@
-/* Target-dependent code for FreeBSD/amd64.
+/* amd64fbsd-tdep.c: Target-dependent code for FreeBSD/amd64.
 
    Copyright 2003, 2004, 2005 Free Software Foundation, Inc.
 
@@ -32,6 +32,9 @@
 #include "amd64-tdep.h"
 #include "bsd-uthread.h"
 #include "solib-svr4.h"
+
+/* */
+extern void amd64fbsd_init_abi(struct gdbarch_info, struct gdbarch *);
 
 /* Support for signal handlers.  */
 
@@ -142,82 +145,86 @@ static int amd64fbsd_jmp_buf_reg_offset[] =
   0 * 8				/* %rip */
 };
 
+/* */
 static void
-amd64fbsd_supply_uthread (struct regcache *regcache,
+amd64fbsd_supply_uthread(struct regcache *regcache,
+			 int regnum, CORE_ADDR addr)
+{
+  gdb_byte buf[8];
+  size_t i;
+
+  gdb_assert(regnum >= -1);
+
+  for (i = 0; i < ARRAY_SIZE(amd64fbsd_jmp_buf_reg_offset); i++)
+    {
+      if ((amd64fbsd_jmp_buf_reg_offset[i] != -1)
+	  && ((regnum == -1) || (regnum == (int)i)))
+	{
+	  read_memory((addr + amd64fbsd_jmp_buf_reg_offset[i]), buf, 8);
+	  regcache_raw_supply(regcache, i, buf);
+	}
+    }
+}
+
+/* */
+static void
+amd64fbsd_collect_uthread(const struct regcache *regcache,
 			  int regnum, CORE_ADDR addr)
 {
   gdb_byte buf[8];
-  int i;
+  size_t i;
 
-  gdb_assert (regnum >= -1);
+  gdb_assert(regnum >= -1);
 
-  for (i = 0; i < ARRAY_SIZE (amd64fbsd_jmp_buf_reg_offset); i++)
+  for (i = 0; i < ARRAY_SIZE(amd64fbsd_jmp_buf_reg_offset); i++)
     {
-      if (amd64fbsd_jmp_buf_reg_offset[i] != -1
-	  && (regnum == -1 || regnum == i))
+      if ((amd64fbsd_jmp_buf_reg_offset[i] != -1)
+	  && ((regnum == -1) || (regnum == (int)i)))
 	{
-	  read_memory (addr + amd64fbsd_jmp_buf_reg_offset[i], buf, 8);
-	  regcache_raw_supply (regcache, i, buf);
+	  regcache_raw_collect(regcache, i, buf);
+	  write_memory((addr + amd64fbsd_jmp_buf_reg_offset[i]), buf, 8);
 	}
     }
 }
 
-static void
-amd64fbsd_collect_uthread (const struct regcache *regcache,
-			   int regnum, CORE_ADDR addr)
-{
-  gdb_byte buf[8];
-  int i;
-
-  gdb_assert (regnum >= -1);
-
-  for (i = 0; i < ARRAY_SIZE (amd64fbsd_jmp_buf_reg_offset); i++)
-    {
-      if (amd64fbsd_jmp_buf_reg_offset[i] != -1
-	  && (regnum == -1 || regnum == i))
-	{
-	  regcache_raw_collect (regcache, i, buf);
-	  write_memory (addr + amd64fbsd_jmp_buf_reg_offset[i], buf, 8);
-	}
-    }
-}
-
+/* */
 void
-amd64fbsd_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
+amd64fbsd_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
 
   /* Obviously FreeBSD is BSD-based.  */
-  i386bsd_init_abi (info, gdbarch);
+  i386bsd_init_abi(info, gdbarch);
 
   tdep->gregset_reg_offset = amd64fbsd_r_reg_offset;
-  tdep->gregset_num_regs = ARRAY_SIZE (amd64fbsd_r_reg_offset);
-  tdep->sizeof_gregset = 22 * 8;
+  tdep->gregset_num_regs = ARRAY_SIZE(amd64fbsd_r_reg_offset);
+  tdep->sizeof_gregset = (22 * 8);
 
-  amd64_init_abi (info, gdbarch);
+  amd64_init_abi(info, gdbarch);
 
   tdep->sigtramp_start = amd64fbsd_sigtramp_start_addr;
   tdep->sigtramp_end = amd64fbsd_sigtramp_end_addr;
   tdep->sigcontext_addr = amd64fbsd_sigcontext_addr;
   tdep->sc_reg_offset = amd64fbsd_sc_reg_offset;
-  tdep->sc_num_regs = ARRAY_SIZE (amd64fbsd_sc_reg_offset);
+  tdep->sc_num_regs = ARRAY_SIZE(amd64fbsd_sc_reg_offset);
 
-  /* FreeBSD provides a user-level threads implementation.  */
-  bsd_uthread_set_supply_uthread (gdbarch, amd64fbsd_supply_uthread);
-  bsd_uthread_set_collect_uthread (gdbarch, amd64fbsd_collect_uthread);
+  /* FreeBSD provides a user-level threads implementation: */
+  bsd_uthread_set_supply_uthread(gdbarch, amd64fbsd_supply_uthread);
+  bsd_uthread_set_collect_uthread(gdbarch, amd64fbsd_collect_uthread);
 
-  /* FreeBSD uses SVR4-style shared libraries.  */
-  set_solib_svr4_fetch_link_map_offsets
-    (gdbarch, svr4_lp64_fetch_link_map_offsets);
+  /* FreeBSD uses SVR4-style shared libraries: */
+  set_solib_svr4_fetch_link_map_offsets(gdbarch,
+					svr4_lp64_fetch_link_map_offsets);
 }
 
 
 /* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_amd64fbsd_tdep (void);
-
+void _initialize_amd64fbsd_tdep(void);
 void
-_initialize_amd64fbsd_tdep (void)
+_initialize_amd64fbsd_tdep(void)
 {
-  gdbarch_register_osabi (bfd_arch_i386, bfd_mach_x86_64,
-			  GDB_OSABI_FREEBSD_ELF, amd64fbsd_init_abi);
+  gdbarch_register_osabi(bfd_arch_i386, bfd_mach_x86_64,
+			 GDB_OSABI_FREEBSD_ELF, amd64fbsd_init_abi);
 }
+
+/* EOF */

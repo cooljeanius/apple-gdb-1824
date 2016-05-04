@@ -46,6 +46,14 @@ if test "x${gl_cv_have_arbitrary_file_name_length_limit}" = "xyes"; then
 fi
 dnl# from gnulib module configmake:
 AC_REQUIRE([gl_CONFIGMAKE_PREP])dnl
+dnl# from gnulib module connect:
+AC_REQUIRE([gl_HEADER_SYS_SOCKET])dnl
+  ## set up libobj if needed:
+if test "x${ac_cv_header_winsock2_h}" = "xyes"; then
+  AC_LIBOBJ([connect])dnl
+  ## end libobj
+fi
+gl_SYS_SOCKET_MODULE_INDICATOR([connect])dnl
 dnl# from gnulib module closedir:
 AC_REQUIRE([gl_FUNC_CLOSEDIR])dnl
   ## set up libobj if needed:
@@ -399,6 +407,13 @@ dnl# from gnulib module realloc-posix:
 AC_REQUIRE([gl_FUNC_REALLOC_POSIX])dnl
 dnl# (libobj is already set above)
 gl_STDLIB_MODULE_INDICATOR([realloc-posix])dnl
+dnl# from gnulib module recv:
+dnl# (already required header check above)
+if test "x${ac_cv_header_winsock2_h}" = "xyes"; then
+  AC_LIBOBJ([recv])dnl
+  ## end libobj
+fi
+gl_SYS_SOCKET_MODULE_INDICATOR([recv])dnl
 dnl# from gnulib module regex:
 AC_REQUIRE([gl_REGEX])dnl
   ## set up libobj if needed:
@@ -406,6 +421,13 @@ if test "x${ac_use_included_regex}" = "xyes"; then
   AC_LIBOBJ([regex])dnl
   gl_PREREQ_REGEX
 fi
+dnl# from gnulib module send:
+dnl# (already required header check above)
+if test "x${ac_cv_header_winsock2_h}" = "xyes"; then
+  AC_LIBOBJ([send])dnl
+  ## end libobj
+fi
+gl_SYS_SOCKET_MODULE_INDICATOR([send])dnl
 dnl# from gnulib module sig2str:
 AC_REQUIRE([gl_FUNC_SIG2STR])dnl
   ## set up libobj if needed:

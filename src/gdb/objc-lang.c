@@ -3306,7 +3306,7 @@ read_objc_super(CORE_ADDR addr, struct objc_super *super)
   super->receiver = read_memory_unsigned_integer(addr, addrsize);
   super->objc_class = read_memory_unsigned_integer((addr + addrsize),
                                                    addrsize);
-};
+}
 
 /* Read a 'struct objc_class' in the inferior's objc runtime: */
 static void

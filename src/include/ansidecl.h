@@ -345,7 +345,11 @@ So instead we use the macro below and test it against specific values.  */
 #endif /* !__cplusplus || GNUC >= 3.4 */
   
 #ifndef ATTRIBUTE_NOCLONE
-# define ATTRIBUTE_NOCLONE __attribute__((__noclone__))
+# if (GCC_VERSION >= 4005)
+#  define ATTRIBUTE_NOCLONE __attribute__((__noclone__))
+# else
+#  define ATTRIBUTE_NOCLONE /* (nothing) */
+# endif /* gcc 4.5+ */
 #endif /* !ATTRIBUTE_NOCLONE */
   
 #ifndef ATTRIBUTE_NOINLINE

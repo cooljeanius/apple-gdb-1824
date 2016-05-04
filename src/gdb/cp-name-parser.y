@@ -29,6 +29,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
    too messy, particularly when such includes can be inserted at random
    times by the parser generator.  */
 
+/* FIXME: this file needs to be re-yacced each time we switch between building
+ * gdb as a C program and building gdb as a C++ program */
+
 %{
 
 #include <stdio.h>
@@ -160,53 +163,58 @@ static void yyerror(const char *);
 
 /* Helper functions.  These wrap the demangler tree interface, handle
    allocation from our global store, and return the allocated component.  */
-
+/* */
 static struct demangle_component *
-fill_comp (enum demangle_component_type d_type, struct demangle_component *lhs,
-	   struct demangle_component *rhs)
+fill_comp(enum demangle_component_type d_type, struct demangle_component *lhs,
+	  struct demangle_component *rhs)
 {
-  struct demangle_component *ret = d_grab ();
-  cplus_demangle_fill_component (ret, d_type, lhs, rhs);
+  struct demangle_component *ret = d_grab();
+  cplus_demangle_fill_component(ret, d_type, lhs, rhs);
   return ret;
 }
 
+/* */
 static struct demangle_component *
-make_empty (enum demangle_component_type d_type)
+make_empty(enum demangle_component_type d_type)
 {
-  struct demangle_component *ret = d_grab ();
+  struct demangle_component *ret = d_grab();
   ret->type = d_type;
   return ret;
 }
 
+/* */
 static struct demangle_component *
-make_operator (const char *name, int args)
+make_operator(const char *name, int args)
 {
-  struct demangle_component *ret = d_grab ();
-  cplus_demangle_fill_operator (ret, name, args);
+  struct demangle_component *ret = d_grab();
+  cplus_demangle_fill_operator(ret, name, args);
   return ret;
 }
 
+/* */
 static struct demangle_component *
-make_dtor (enum gnu_v3_dtor_kinds kind, struct demangle_component *name)
+make_dtor(enum gnu_v3_dtor_kinds kind, struct demangle_component *name)
 {
-  struct demangle_component *ret = d_grab ();
-  cplus_demangle_fill_dtor (ret, kind, name);
+  struct demangle_component *ret = d_grab();
+  cplus_demangle_fill_dtor(ret, kind, name);
   return ret;
 }
 
+/* */
 static struct demangle_component *
-make_builtin_type (const char *name)
+make_builtin_type(const char *name)
 {
-  struct demangle_component *ret = d_grab ();
-  cplus_demangle_fill_builtin_type (ret, name);
+  struct demangle_component *ret = d_grab();
+  cplus_demangle_fill_builtin_type(ret, name);
   return ret;
 }
 
+/* */
 static struct demangle_component *
-make_name (const char *name, int len)
+make_name(const char *name, int len)
 {
-  struct demangle_component *ret = d_grab ();
-  cplus_demangle_fill_name (ret, name, len);
+  struct demangle_component *ret = d_grab();
+  cplus_demangle_fill_name(ret, name, len);
   return ret;
 }
 
@@ -1304,13 +1312,12 @@ symbol_end (const char *lexptr)
 /* Take care of parsing a number (anything that starts with a digit).
    The number starts at P and contains LEN characters.  Store the result in
    YYLVAL.  */
-
 static int
-parse_number (const char *p, int len, int parsed_float)
+parse_number(const char *p, int len, int parsed_float)
 {
   int unsigned_p = 0;
 
-  /* Number of "L" suffixes encountered.  */
+  /* Number of "L" suffixes encountered: */
   int long_p = 0;
 
   struct demangle_component *signed_type;
@@ -1773,7 +1780,7 @@ yylex (void)
       return c;
 
     case '"':
-      /* These can't occur in C++ names.  */
+      /* These cannot occur in C++ names.  */
       yyerror ("unexpected string literal");
       return ERROR;
     }
@@ -1785,11 +1792,11 @@ yylex (void)
       return ERROR;
     }
 
-  /* It's a name.  See how long it is.  */
+  /* It is a name.  See how long it is.  */
   namelen = 0;
-  do
+  do {
     c = tokstart[++namelen];
-  while (ISALNUM (c) || c == '_' || c == '$');
+  } while (ISALNUM(c) || (c == '_') || (c == '$'));
 
   lexptr += namelen;
 
@@ -1905,8 +1912,8 @@ yylex (void)
 	return TRUEKEYWORD;
       break;
     case 3:
-      HANDLE_SPECIAL ("VTT for ", DEMANGLE_COMPONENT_VTT);
-      HANDLE_SPECIAL ("non-virtual thunk to ", DEMANGLE_COMPONENT_THUNK);
+      HANDLE_SPECIAL("VTT for ", DEMANGLE_COMPONENT_VTT);
+      HANDLE_SPECIAL("non-virtual thunk to ", DEMANGLE_COMPONENT_THUNK);
       if (strncmp(tokstart, "new", 3) == 0)
 	return NEW;
       if (strncmp(tokstart, "int", 3) == 0)

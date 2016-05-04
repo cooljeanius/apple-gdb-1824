@@ -34,6 +34,8 @@
 
 #include "fr30-tdep.h"
 
+#include "objfiles.h"
+
 /* An expression that tells us whether the function invocation represented
    by FI does not have a frame on the stack associated with it.  */
 int

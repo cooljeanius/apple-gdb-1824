@@ -1,4 +1,4 @@
-/* Target-dependent code for OpenBSD/amd64.
+/* amd64obsd-tdep.c: Target-dependent code for OpenBSD/amd64.
 
    Copyright 2003, 2004, 2005 Free Software Foundation, Inc.
 
@@ -81,9 +81,9 @@ static const int amd64obsd_page_size = 4096;
    OpenBSD sigtramp routine.  */
 
 static int
-amd64obsd_sigtramp_p (struct frame_info *next_frame)
+amd64obsd_sigtramp_p(struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
   CORE_ADDR start_pc = (pc & ~(amd64obsd_page_size - 1));
   const gdb_byte sigreturn[] =
   {
@@ -91,13 +91,13 @@ amd64obsd_sigtramp_p (struct frame_info *next_frame)
     0x67, 0x00, 0x00, 0x00,	/* movq $SYS_sigreturn, %rax */
     0xcd, 0x80			/* int $0x80 */
   };
-  size_t buflen = (sizeof sigreturn) + 1;
+  size_t buflen = ((sizeof(sigreturn)) + 1UL);
   gdb_byte *buf;
-  char *name;
+  const char *name;
 
   /* If the function has a valid symbol name, it isn't a
      trampoline.  */
-  find_pc_partial_function (pc, &name, NULL, NULL);
+  find_pc_partial_function(pc, &name, NULL, NULL);
   if (name != NULL)
     return 0;
 
@@ -107,7 +107,7 @@ amd64obsd_sigtramp_p (struct frame_info *next_frame)
     return 0;
 
   /* If we can't read the instructions at START_PC, return zero.  */
-  buf = alloca ((sizeof sigreturn) + 1);
+  buf = (gdb_byte *)alloca((sizeof(sigreturn)) + 1UL);
   if (!safe_frame_unwind_memory (next_frame, start_pc + 6, buf, buflen))
     return 0;
 
@@ -240,18 +240,19 @@ amd64obsd_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 
 
 /* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_amd64obsd_tdep (void);
-
+extern void _initialize_amd64obsd_tdep(void);
 void
-_initialize_amd64obsd_tdep (void)
+_initialize_amd64obsd_tdep(void)
 {
   /* The OpenBSD/amd64 native dependent code makes this assumption.  */
-  gdb_assert (ARRAY_SIZE (amd64obsd_r_reg_offset) == AMD64_NUM_GREGS);
+  gdb_assert(ARRAY_SIZE(amd64obsd_r_reg_offset) == AMD64_NUM_GREGS);
 
-  gdbarch_register_osabi (bfd_arch_i386, bfd_mach_x86_64,
-			  GDB_OSABI_OPENBSD_ELF, amd64obsd_init_abi);
+  gdbarch_register_osabi(bfd_arch_i386, bfd_mach_x86_64,
+			 GDB_OSABI_OPENBSD_ELF, amd64obsd_init_abi);
 
   /* OpenBSD uses traditional (a.out) NetBSD-style core dumps.  */
-  gdbarch_register_osabi (bfd_arch_i386, bfd_mach_x86_64,
-			  GDB_OSABI_NETBSD_AOUT, amd64obsd_init_abi);
+  gdbarch_register_osabi(bfd_arch_i386, bfd_mach_x86_64,
+			 GDB_OSABI_NETBSD_AOUT, amd64obsd_init_abi);
 }
+
+/* EOF */

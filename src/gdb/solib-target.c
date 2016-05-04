@@ -320,15 +320,15 @@ solib_target_special_symbol_handling (void)
 }
 
 static void
-solib_target_solib_create_inferior_hook (int from_tty)
+solib_target_solib_create_inferior_hook(int from_tty ATTRIBUTE_UNUSED)
 {
-  /* Nothing needed.  */
+  return; /* Nothing needed.  */
 }
 
 static void
-solib_target_clear_solib (void)
+solib_target_clear_solib(void)
 {
-  /* Nothing needed.  */
+  return; /* Nothing needed.  */
 }
 
 static void
@@ -463,7 +463,7 @@ Could not relocate shared library \"%s\": bad offsets"), so->so_name);
 			       + orig_delta);
 	      gdb_assert (so->addr_low <= so->addr_high);
 
-	      free_symfile_segment_data (data);
+	      free_symfile_segment_data(data);
 	    }
 	}
     }

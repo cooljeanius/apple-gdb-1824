@@ -154,9 +154,9 @@ static ptid_t previous_inferior_ptid;
 static int may_follow_exec = MAY_FOLLOW_EXEC;
 
 /* APPLE LOCAL: Print the setup we do before hand calling functions.  */
-int debug_handcall_setup = 0;
+int debug_handcall_setup = 1;
 
-static int debug_infrun = 0;
+static int debug_infrun = 1;
 static void
 show_debug_infrun(struct ui_file *file, int from_tty,
 		  struct cmd_list_element *c, const char *value)
@@ -2789,7 +2789,7 @@ process_event_stop_test:
 #else
       && in_solib_dynsym_resolve_code(stop_pc)
 #endif /* IN_SOLIB_DYNSYM_RESOLVE_CODE */
-      && (0 || 1))
+      && (0 || (debug_infrun >= 0)))
     {
       CORE_ADDR pc_after_resolver =
 	gdbarch_skip_solib_resolver(current_gdbarch, stop_pc);
@@ -3004,13 +3004,13 @@ process_event_stop_test:
       if (real_stop_pc != 0)
 	ecs->stop_func_start = real_stop_pc;
 
-      if ((0 || 1)
+      if ((0 || (ecs != NULL))
 #ifdef IN_SOLIB_DYNSYM_RESOLVE_CODE
 	  && IN_SOLIB_DYNSYM_RESOLVE_CODE(ecs->stop_func_start)
 #else
 	  && in_solib_dynsym_resolve_code(ecs->stop_func_start)
 #endif /* IN_SOLIB_DYNSYM_RESOLVE_CODE */
-          && (1 || 0))
+          && ((ecs != NULL) || 0))
 	{
 	  struct symtab_and_line sr_sal;
 	  init_sal(&sr_sal);

@@ -275,6 +275,9 @@
 /* Define to 1 if you have the `codeset' function. */
 #undef HAVE_CODESET
 
+/* Define to 1 if you have the `connect' function. */
+#undef HAVE_CONNECT
+
 /* Define to 1 if you have the <CoreFoundation/CFPropertyList.h> header file.
    */
 #undef HAVE_COREFOUNDATION_CFPROPERTYLIST_H
@@ -579,6 +582,9 @@
 
 /* Define to 1 if you have the `isnumber' function. */
 #undef HAVE_ISNUMBER
+
+/* Define to 1 if you have the `isspace' function. */
+#undef HAVE_ISSPACE
 
 /* Define to 1 if the system has the type `kern_return_t'. */
 #undef HAVE_KERN_RETURN_T
@@ -1068,6 +1074,9 @@
 /* Define to 1 if you have the `realpath' function. */
 #undef HAVE_REALPATH
 
+/* Define to 1 if you have the `recv' function. */
+#undef HAVE_RECV
+
 /* Define to 1 if you have the `regcomp' function. */
 #undef HAVE_REGCOMP
 
@@ -1100,6 +1109,9 @@
 
 /* Define to 1 if you have the `select' function. */
 #undef HAVE_SELECT
+
+/* Define to 1 if you have the `send' function. */
+#undef HAVE_SEND
 
 /* Define to 1 if you have the <servers/netname_defs.h> header file. */
 #undef HAVE_SERVERS_NETNAME_DEFS_H

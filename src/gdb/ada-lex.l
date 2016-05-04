@@ -157,7 +157,7 @@ static int find_dot_all(const char *);
 <INITIAL>"'[\""{HEXDIG}{2}"\"]'"   {
                    int v;
                    yylval.typed_val.type = type_char();
-		   sscanf(yytext + 3, "%2x", &v);
+		   sscanf(yytext + 3, "%2x", (unsigned int *)&v);
 		   yylval.typed_val.val = v;
 		   return CHARLIT;
 		}
@@ -183,7 +183,7 @@ static int find_dot_all(const char *);
 		   int n;
 		   resize_tempbuf(yyleng - 5 + tempbuf_len + 1);
 		   strncpy(tempbuf + tempbuf_len, yytext, yyleng - 6);
-		   sscanf(yytext + yyleng - 4, "%2x", &n);
+		   sscanf(yytext + yyleng - 4, "%2x", (unsigned int *)&n);
 		   tempbuf[yyleng - 6 + tempbuf_len] = (char)n;
 		   tempbuf_len += (yyleng - 5);
 		}
@@ -957,9 +957,9 @@ typedef void (*dummy_function)(void);
 dummy_function ada_flex_use[] =
 {
   (dummy_function)yyunput
-#if defined(__clang__) && !defined(__clang_analyzer__)
+#if defined(__clang__) && !defined(__clang_analyzer__) && defined(yyinput)
   , (dummy_function)yyinput
-#endif /* __clang__ && !__clang_analyzer__ */
+#endif /* __clang__ && !__clang_analyzer__ && yyinput */
 };
 
 /* End of ada-lex.l */

@@ -23,60 +23,66 @@
 #include "amd64-tdep.h"
 #include "dicos-tdep.h"
 
+/* */
 static CORE_ADDR
-amd64_dicos_push_dummy_code (struct gdbarch *gdbarch,
-			     CORE_ADDR sp, CORE_ADDR funaddr,
-			     struct value **args, int nargs,
-			     struct type *value_type,
-			     CORE_ADDR *real_pc, CORE_ADDR *bp_addr,
-			     struct regcache *regcache)
+amd64_dicos_push_dummy_code(struct gdbarch *gdbarch, CORE_ADDR sp,
+			    CORE_ADDR funaddr, struct value **args, int nargs,
+			    struct type *value_type, CORE_ADDR *real_pc,
+			    CORE_ADDR *bp_addr, struct regcache *regcache)
 {
   int bplen;
   CORE_ADDR bppc = sp;
 
-  gdbarch_breakpoint_from_pc (gdbarch, &bppc, &bplen);
-  *bp_addr = sp - bplen;
+  gdbarch_breakpoint_from_pc(gdbarch, &bppc, &bplen);
+  *bp_addr = (sp - bplen);
   *real_pc = funaddr;
 
   return *bp_addr;
 }
 
+/* */
 static void
-amd64_dicos_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
+amd64_dicos_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
 
-  amd64_init_abi (info, gdbarch);
+  amd64_init_abi(info, gdbarch);
 
-  dicos_init_abi (gdbarch);
+  dicos_init_abi(gdbarch);
 
-  set_gdbarch_push_dummy_code (gdbarch, amd64_dicos_push_dummy_code);
+  set_gdbarch_push_dummy_code(gdbarch, amd64_dicos_push_dummy_code);
 }
 
+/* */
 static enum gdb_osabi
-amd64_dicos_osabi_sniffer (bfd *abfd)
+amd64_dicos_osabi_sniffer(bfd *abfd)
 {
-  char *target_name = bfd_get_target (abfd);
+  const char *target_name = bfd_get_target(abfd);
 
   /* On amd64-DICOS, the Load Module's "header" section is 72
      bytes.  */
-  if (strcmp (target_name, "elf64-x86-64") == 0
-      && dicos_load_module_p (abfd, 72))
+  if ((strcmp(target_name, "elf64-x86-64") == 0)
+      && dicos_load_module_p(abfd, 72))
     return GDB_OSABI_DICOS;
 
   return GDB_OSABI_UNKNOWN;
 }
 
 /* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_amd64_dicos_tdep (void);
-
+extern void _initialize_amd64_dicos_tdep(void);
 void
-_initialize_amd64_dicos_tdep (void)
+_initialize_amd64_dicos_tdep(void)
 {
-  gdbarch_register_osabi_sniffer (bfd_arch_i386, bfd_target_elf_flavour,
-				  amd64_dicos_osabi_sniffer);
+  gdbarch_register_osabi_sniffer(bfd_arch_i386, bfd_target_elf_flavour,
+				 amd64_dicos_osabi_sniffer);
 
-  gdbarch_register_osabi (bfd_arch_i386, bfd_mach_x86_64,
-			  GDB_OSABI_DICOS,
-			  amd64_dicos_init_abi);
+  gdbarch_register_osabi(bfd_arch_i386, bfd_mach_x86_64,
+			 GDB_OSABI_DICOS,
+			 amd64_dicos_init_abi);
 }
+
+/* EOF */

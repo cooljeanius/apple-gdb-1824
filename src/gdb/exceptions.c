@@ -238,17 +238,20 @@ throw_exception(struct gdb_exception exception)
      to that call via setjmp's return value.  Note that REASON can't
      be zero, by definition in defs.h. */
   exceptions_state_mc(CATCH_THROWING);
-  *current_catcher->exception = exception; /* Re: warning: I hate C++ */
+  *(struct gdb_exception *)current_catcher->exception = exception;
   EXCEPTIONS_SIGLONGJMP(current_catcher->buf, exception.reason);
+#if defined(__clang__) && defined(__cplusplus)
+  abort();
+#endif /* __clang__ && __cplusplus */
 }
 
 static char *last_message;
 
 NORETURN void
-deprecated_throw_reason (enum return_reason reason)
+deprecated_throw_reason(enum return_reason reason)
 {
   struct gdb_exception exception;
-  memset (&exception, 0, sizeof exception);
+  memset(&exception, 0, sizeof(exception));
 
   exception.reason = reason;
   switch (reason)
@@ -259,10 +262,10 @@ deprecated_throw_reason (enum return_reason reason)
       exception.error = GENERIC_ERROR;
       break;
     default:
-      internal_error (__FILE__, __LINE__, _("bad switch"));
+      internal_error(__FILE__, __LINE__, _("bad switch"));
     }
 
-  throw_exception (exception);
+  throw_exception(exception);
 }
 
 static void

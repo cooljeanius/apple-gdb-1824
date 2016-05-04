@@ -33,7 +33,7 @@ IMPORTED_GNULIB_MODULES="\
     absolute-header alignof alloca alloca-opt ansi-c++-opt assert assert-h \
     assure autobuild \
     bcopy bison-i18n btowc \
-    c-ctype c-strcase c-strcasestr chdir-long configmake closedir \
+    c-ctype c-strcase c-strcasestr chdir-long configmake connect closedir \
     dirent dirent-safer dirfd dosname double-slash-root dup2 \
     environ errno error exitfail extensions extern-inline \
     fcntl fcntl-h fcntl-safer fileblocks flexmember float fnmatch fnmatch-gnu \
@@ -50,9 +50,9 @@ IMPORTED_GNULIB_MODULES="\
     nextafter no-c++ nocrash \
     obstack openmp \
     pathmax pclose popen putenv \
-    readdir readlink realloc-gnu realloc-posix regex regex-quote \
+    readdir readlink realloc-gnu realloc-posix recv regex regex-quote \
     regexprops-generic rmdir \
-    sig2str sigaction signal signal-h sigpipe sigpipe-die sigprocmask \
+    send sig2str sigaction signal signal-h sigpipe sigpipe-die sigprocmask \
     snippet/_Noreturn snippet/arg-nonnull snippet/c++defs snippet/link-warning \
     snippet/warn-on-use \
     ssize_t stat stat-macros stat-size stat-time stdbool stddef stdint stdlib \

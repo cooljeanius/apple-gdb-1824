@@ -2058,19 +2058,25 @@ AC_CHECK_FUNCS([atof alarm assert atexit bcopy bsearch bzero \
                 clnt_pcreateerror dup2 exit fflush fgets fprintf fwrite \
                 getcwd gethostbyaddr gethostbyname gethostname getpass \
                 gets gettimeofday inet_addr inet_ntoa isascii ishexnumber \
-                isnumber mach_error_string memchr memcmp memcpy memmove \
-                mempcpy memset mkdir netname_look_up nl_langinfo pathconf \
-                pclose popen pow qsort qsort_r readdir re_comp regcomp \
-                select setitimer socket strcasecmp strcat strchr strcpy \
-                strcspn strdup strerror strlcat strlcpy strlen \
-                strncasecmp strncat strncmp strncpy strndup strpbrk \
-                strrchr strspn strstr strtok strtok_r strtol strtoul \
-                timeradd timerclear timersub uname vasprintf wcwidth])dnl
+                isnumber isspace mach_error_string memchr memcmp memcpy \
+                memmove mempcpy memset mkdir netname_look_up nl_langinfo \
+                pathconf pclose popen pow qsort qsort_r readdir recv \
+                re_comp regcomp select send setitimer socket strcasecmp \
+                strcat strchr strcpy strcspn strdup strerror strlcat \
+                strlcpy strlen strncasecmp strncat strncmp strncpy \
+                strndup strpbrk strrchr strspn strstr strtok strtok_r \
+                strtol strtoul timeradd timerclear timersub uname \
+                vasprintf wcwidth])dnl
 
 dnl# Use as a replacement for just-plain sprintf:
 if test "x${ac_cv_func_snprintf}" = "x"; then
   test -z "${ac_cv_func_snprintf}"
   AC_CHECK_FUNCS([snprintf])
+fi
+dnl# might be checked elsewhere?
+if test "x${ac_cv_func_connect}" = "x"; then
+  test -z "${ac_cv_func_connect}"
+  AC_CHECK_FUNCS([connect])
 fi
 
 dnl# CoreFoundation:

@@ -16,7 +16,7 @@ AC_PROG_MAKE_SET
 
 # Checks for header files.
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([OS.h fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h malloc.h netdb.h nl_types.h stddef.h stdint.h stdlib.h string.h sys/param.h sys/time.h sys/timeb.h sys/vfs.h unistd.h wchar.h wctype.h])
+AC_CHECK_HEADERS([OS.h fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h malloc.h netdb.h nl_types.h stddef.h stdint.h stdlib.h string.h sys/param.h sys/socket.h sys/time.h sys/timeb.h sys/vfs.h unistd.h wchar.h wctype.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL

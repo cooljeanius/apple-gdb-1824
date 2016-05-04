@@ -68,6 +68,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module close:
   # Code from module closedir:
   # Code from module configmake:
+  # Code from module connect:
   # Code from module cycle-check:
   # Code from module d-ino:
   # Code from module d-type:
@@ -186,6 +187,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module readlink:
   # Code from module realloc-gnu:
   # Code from module realloc-posix:
+  # Code from module recv:
   # Code from module regex:
   # Code from module regex-quote:
   # Code from module regexprops-generic:
@@ -194,6 +196,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module same-inode:
   # Code from module save-cwd:
   # Code from module secure_getenv:
+  # Code from module send:
   # Code from module sig2str:
   # Code from module sigaction:
   # Code from module signal:
@@ -207,6 +210,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module snippet/c++defs:
   # Code from module snippet/link-warning:
   # Code from module snippet/warn-on-use:
+  # Code from module socketlib:
+  # Code from module socklen:
   # Code from module ssize_t:
   # Code from module stat:
   # Code from module stat-macros:
@@ -235,9 +240,11 @@ AC_DEFUN([gl_EARLY],
   # Code from module strstr-simple:
   # Code from module strtok_r:
   # Code from module sys_select:
+  # Code from module sys_socket:
   # Code from module sys_stat:
   # Code from module sys_time:
   # Code from module sys_types:
+  # Code from module sys_uio:
   # Code from module sys_wait:
   # Code from module tempname:
   # Code from module time:
@@ -321,6 +328,11 @@ AC_DEFUN([gl_INIT],
   fi
   gl_DIRENT_MODULE_INDICATOR([closedir])
   gl_CONFIGMAKE_PREP
+  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+  if test "$ac_cv_header_winsock2_h" = yes; then
+    AC_LIBOBJ([connect])
+  fi
+  gl_SYS_SOCKET_MODULE_INDICATOR([connect])
   gl_CYCLE_CHECK
   gl_CHECK_TYPE_STRUCT_DIRENT_D_INO
   gl_CHECK_TYPE_STRUCT_DIRENT_D_TYPE
@@ -675,6 +687,11 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([realloc])
   fi
   gl_STDLIB_MODULE_INDICATOR([realloc-posix])
+  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+  if test "$ac_cv_header_winsock2_h" = yes; then
+    AC_LIBOBJ([recv])
+  fi
+  gl_SYS_SOCKET_MODULE_INDICATOR([recv])
   gl_REGEX
   if test $ac_use_included_regex = yes; then
     AC_LIBOBJ([regex])
@@ -697,6 +714,11 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_SECURE_GETENV
   fi
   gl_STDLIB_MODULE_INDICATOR([secure_getenv])
+  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+  if test "$ac_cv_header_winsock2_h" = yes; then
+    AC_LIBOBJ([send])
+  fi
+  gl_SYS_SOCKET_MODULE_INDICATOR([send])
   gl_FUNC_SIG2STR
   if test $ac_cv_func_sig2str = no; then
     AC_LIBOBJ([sig2str])
@@ -734,6 +756,8 @@ AC_DEFUN([gl_INIT],
   fi
   gl_UNISTD_MODULE_INDICATOR([sleep])
   AC_REQUIRE([gl_FEATURES_H])
+  AC_REQUIRE([gl_SOCKETLIB])
+  gl_TYPE_SOCKLEN_T
   gt_TYPE_SSIZE_T
   gl_FUNC_STAT
   if test $REPLACE_STAT = 1; then
@@ -822,11 +846,15 @@ AC_DEFUN([gl_INIT],
   gl_STRING_MODULE_INDICATOR([strtok_r])
   gl_HEADER_SYS_SELECT
   AC_PROG_MKDIR_P
+  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+  AC_PROG_MKDIR_P
   gl_HEADER_SYS_STAT_H
   AC_PROG_MKDIR_P
   gl_HEADER_SYS_TIME_H
   AC_PROG_MKDIR_P
   gl_SYS_TYPES_H
+  AC_PROG_MKDIR_P
+  gl_HEADER_SYS_UIO
   AC_PROG_MKDIR_P
   gl_SYS_WAIT_H
   AC_PROG_MKDIR_P
@@ -1057,6 +1085,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/close.c
   lib/closedir.c
   lib/config.charset
+  lib/connect.c
   lib/creat-safer.c
   lib/cycle-check.c
   lib/cycle-check.h
@@ -1183,6 +1212,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/readdir.c
   lib/readlink.c
   lib/realloc.c
+  lib/recv.c
   lib/ref-add.sin
   lib/ref-del.sin
   lib/regcomp.c
@@ -1199,6 +1229,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/save-cwd.c
   lib/save-cwd.h
   lib/secure_getenv.c
+  lib/send.c
   lib/sig-handler.c
   lib/sig-handler.h
   lib/sig2str.c
@@ -1240,9 +1271,12 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/strstr.c
   lib/strtok_r.c
   lib/sys_select.in.h
+  lib/sys_socket.c
+  lib/sys_socket.in.h
   lib/sys_stat.in.h
   lib/sys_time.in.h
   lib/sys_types.in.h
+  lib/sys_uio.in.h
   lib/sys_wait.in.h
   lib/tempname.c
   lib/tempname.h
@@ -1258,6 +1292,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/unlink.c
   lib/usleep.c
   lib/verify.h
+  lib/w32sock.h
   lib/wchar.in.h
   lib/wcrtomb.c
   lib/wcsncasecmp-impl.h
@@ -1435,6 +1470,9 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/sigpipe.m4
   m4/size_max.m4
   m4/sleep.m4
+  m4/socketlib.m4
+  m4/socklen.m4
+  m4/sockpfaf.m4
   m4/ssize_t.m4
   m4/stat-size.m4
   m4/stat-time.m4
@@ -1462,6 +1500,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/sys_stat_h.m4
   m4/sys_time_h.m4
   m4/sys_types_h.m4
+  m4/sys_uio_h.m4
   m4/sys_wait_h.m4
   m4/tempname.m4
   m4/threadlib.m4
