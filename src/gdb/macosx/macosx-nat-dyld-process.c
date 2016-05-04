@@ -162,6 +162,7 @@ extern void _initialize_macosx_nat_dyld_process(void);
 static int
 dyld_print_status(void)
 {
+  NSTRACE(dyld_print_status);
   /* do not print status dots when executing MI: */
   return !ui_out_is_mi_like_p(uiout);
 }
@@ -172,6 +173,8 @@ dyld_add_inserted_libraries(struct dyld_objfile_info *info,
                             const struct dyld_path_info *d)
 {
   const char *s1, *s2;
+
+  NSTRACE(dyld_add_inserted_libraries);
 
   CHECK_FATAL(info != NULL);
   CHECK_FATAL(d != NULL);
@@ -221,12 +224,13 @@ dyld_add_inserted_libraries(struct dyld_objfile_info *info,
 
 /* Look through the main executable for directly linked
    dylibs/framework load commands; create dyld_objfile_entries for those.  */
-
 void
 dyld_add_image_libraries(struct dyld_objfile_info *info, bfd *abfd)
 {
   struct mach_o_data_struct *mdata = NULL;
   unsigned int i;
+  
+  NSTRACE(dyld_add_image_libraries);
 
   CHECK_FATAL(info != NULL);
 
@@ -421,11 +425,13 @@ dyld_add_image_libraries(struct dyld_objfile_info *info, bfd *abfd)
     }
 }
 
+/* */
 void
 dyld_resolve_filename_image(const struct macosx_dyld_thread_status *s,
                             struct dyld_objfile_entry *e)
 {
   struct mach_header header;
+  NSTRACE(dyld_resolve_filename_image);
   CHECK_FATAL(e->allocated);
   if (e->image_name_valid)
     {
@@ -471,13 +477,14 @@ dyld_resolve_filename_image(const struct macosx_dyld_thread_status *s,
 /* Assuming a Mach header starts at ADDR, and has NCMDS, look for the
    dylib name, and return a malloc'ed string containing the name.
    CPUTYPE is the cpu_type_t of the binary image.  */
-
 char *
 dyld_find_dylib_name(CORE_ADDR addr, int cputype, int ncmds)
 {
   CORE_ADDR curpos;
   int i;
   char *image_name = NULL;
+  
+  NSTRACE(dyld_find_dylib_name);
 
   if ((cputype == CPU_TYPE_X86_64) || (cputype == CPU_TYPE_POWERPC64))
     curpos = (addr + sizeof(struct mach_header_64));
@@ -486,28 +493,29 @@ dyld_find_dylib_name(CORE_ADDR addr, int cputype, int ncmds)
 
   for (i = 0; i < ncmds; i++)
     {
-
       struct load_command cmd;
       struct dylib_command dcmd;
       struct dylinker_command dlcmd;
       char name[256];
 
-      target_read_memory (curpos, (gdb_byte *) &cmd,
-                          sizeof (struct load_command));
+      target_read_memory(curpos, (gdb_byte *)&cmd,
+                         sizeof(struct load_command));
       if (cmd.cmd == LC_ID_DYLIB)
         {
-          target_read_memory (curpos, (gdb_byte *) &dcmd,
-                              sizeof (struct dylib_command));
-          target_read_memory (curpos + dcmd.dylib.name.offset, (gdb_byte *) name, 256);
-          image_name = savestring (name, strlen (name));
+          target_read_memory(curpos, (gdb_byte *)&dcmd,
+			     sizeof(struct dylib_command));
+          target_read_memory((curpos + dcmd.dylib.name.offset),
+			     (gdb_byte *)name, 256);
+          image_name = savestring(name, strlen(name));
           break;
         }
       else if (cmd.cmd == LC_ID_DYLINKER)
         {
-          target_read_memory (curpos, (gdb_byte *) &dlcmd,
-                              sizeof (struct dylinker_command));
-          target_read_memory (curpos + dlcmd.name.offset, (gdb_byte *) name, 256);
-          image_name = savestring (name, strlen (name));
+          target_read_memory(curpos, (gdb_byte *)&dlcmd,
+                             sizeof(struct dylinker_command));
+          target_read_memory((curpos + dlcmd.name.offset), (gdb_byte *)name,
+			     256);
+          image_name = savestring(name, strlen(name));
           break;
         }
 
@@ -523,6 +531,8 @@ dyld_resolve_filenames(const struct macosx_dyld_thread_status *s,
 {
   int i;
   struct dyld_objfile_entry *e;
+  
+  NSTRACE(dyld_resolve_filenames);
 
   CHECK_FATAL(s != NULL);
   CHECK_FATAL(newinfo != NULL);
@@ -539,15 +549,16 @@ dyld_resolve_filenames(const struct macosx_dyld_thread_status *s,
 static CORE_ADDR
 library_offset(struct dyld_objfile_entry *e)
 {
-  int wordsize = gdbarch_tdep (current_gdbarch)->wordsize;
-  CHECK_FATAL (e != NULL);
+  int wordsize = gdbarch_tdep(current_gdbarch)->wordsize;
+  NSTRACE(library_offset);
+  CHECK_FATAL(e != NULL);
   if (e->image_addr_valid && e->dyld_valid)
     {
       if (wordsize == 4)
-        CHECK_FATAL (e->dyld_addr ==
-                   ((e->image_addr + e->dyld_slide) & 0xffffffff));
+        CHECK_FATAL(e->dyld_addr ==
+		    ((e->image_addr + e->dyld_slide) & 0xffffffff));
       else
-        CHECK_FATAL (e->dyld_addr == e->image_addr + e->dyld_slide);
+        CHECK_FATAL(e->dyld_addr == (e->image_addr + e->dyld_slide));
     }
 
   if (e->dyld_valid)
@@ -557,9 +568,9 @@ library_offset(struct dyld_objfile_entry *e)
   else if (e->image_addr_valid)
     if (e->pre_run_slide_addr_valid)
       if (wordsize == 4)
-        return (e->image_addr + e->pre_run_slide_addr) & 0xffffffff;
+        return ((e->image_addr + e->pre_run_slide_addr) & 0xffffffff);
       else
-        return e->image_addr + e->pre_run_slide_addr;
+        return (e->image_addr + e->pre_run_slide_addr);
     else
       return e->image_addr;
   else
@@ -567,18 +578,19 @@ library_offset(struct dyld_objfile_entry *e)
 }
 
 /* */
-int
-dyld_parse_load_level (const char *s)
+int ATTRIBUTE_HOT
+dyld_parse_load_level(const char *s)
 {
-  if (strcmp (s, "all") == 0)
+  NSTRACE(dyld_parse_load_level);
+  if (strcmp(s, "all") == 0)
     {
       return OBJF_SYM_ALL;
     }
-  else if (strcmp (s, "container") == 0)
+  else if (strcmp(s, "container") == 0)
     {
       return OBJF_SYM_CONTAINER;
     }
-  else if (strcmp (s, "extern") == 0)
+  else if (strcmp(s, "extern") == 0)
     {
       return OBJF_SYM_EXTERN;
     }
@@ -594,7 +606,7 @@ dyld_parse_load_level (const char *s)
 }
 
 /* */
-int
+int ATTRIBUTE_HOT
 dyld_resolve_load_flag(const struct dyld_path_info *d,
                        struct dyld_objfile_entry *e, const char *rules)
 {
@@ -605,6 +617,8 @@ dyld_resolve_load_flag(const struct dyld_path_info *d,
   char **trule = NULL;
   int nrules = 0;
   int crule = 0;
+
+  NSTRACE(dyld_resolve_load_flag);
 
   name = dyld_entry_string(e, 1);
 
@@ -742,15 +756,17 @@ dyld_minimal_load_flag(const struct dyld_path_info *d,
                        struct dyld_objfile_entry *e)
 {
   int ret = dyld_resolve_load_flag(d, e, dyld_minimal_load_rules);
+  NSTRACE(dyld_minimal_load_flag);
   return ((ret >= 0) ? ret : OBJF_SYM_NONE);
 }
 
 /* */
-int
+int ATTRIBUTE_HOT
 dyld_default_load_flag(const struct dyld_path_info *d,
                        struct dyld_objfile_entry *e)
 {
   int ret = dyld_resolve_load_flag(d, e, dyld_load_rules);
+  NSTRACE(dyld_default_load_flag);
   if (ret >= 0)
     return ret;
 
@@ -778,7 +794,6 @@ dyld_default_load_flag(const struct dyld_path_info *d,
    Does not modify MAP.
    Returns the memory footprint representation of this ABFD which must be
    xfreed by the caller.  */
-
 static struct bfd_memory_footprint *
 scan_bfd_for_memory_groups(struct bfd *abfd, struct pre_run_memory_map *map)
 {
@@ -787,6 +802,7 @@ scan_bfd_for_memory_groups(struct bfd *abfd, struct pre_run_memory_map *map)
   CORE_ADDR current_bucket_start_addr = (CORE_ADDR)(-1L);
   CORE_ADDR current_bucket_end_addr = (CORE_ADDR)(-1L);
   struct bfd_memory_footprint *fp;
+  NSTRACE(scan_bfd_for_memory_groups);
   fp = ((struct bfd_memory_footprint *)
         xmalloc(sizeof(struct bfd_memory_footprint)));
   fp->groups = ((struct bfd_memory_footprint_group *)
@@ -950,6 +966,7 @@ create_pre_run_memory_map(struct bfd *abfd)
   struct bfd_memory_footprint *fp;
   int i;
   struct pre_run_memory_map *map;
+  NSTRACE(create_pre_run_memory_map);
   map = ((struct pre_run_memory_map *)
          xmalloc(sizeof(struct pre_run_memory_map)));
   if (gdbarch_tdep(current_gdbarch)->wordsize == 4)
@@ -985,13 +1002,14 @@ create_pre_run_memory_map(struct bfd *abfd)
    find for a match.
    Returns the bucket index that can contain the requested group or returns
    -1 if no matching spot could be found.  */
-
 static int
 find_next_hole(struct pre_run_memory_map *map, int starting_bucket,
                int buckets)
 {
   int i;
   i = starting_bucket;
+
+  NSTRACE(find_next_hole);
 
   while (i < map->number_of_buckets)
     {
@@ -1033,12 +1051,13 @@ find_next_hole(struct pre_run_memory_map *map, int starting_bucket,
 /* Determine if the address map at STARTING_BUCKET has BUCKETS unused
    buckets in a row.  Returns 1 if there are BUCKETS unused buckets
    in a row; 0 if not.  */
-
 static int
 hole_at_p(struct pre_run_memory_map *map, int starting_bucket,
           int buckets)
 {
   int i = starting_bucket;
+
+  NSTRACE(hole_at_p);
 
   if (starting_bucket >= map->number_of_buckets)
     return 0;
@@ -1061,10 +1080,11 @@ hole_at_p(struct pre_run_memory_map *map, int starting_bucket,
    MAP as used.  */
 
 static void
-mark_buckets_as_used (struct pre_run_memory_map *map, int startingbucket,
-                      struct bfd_memory_footprint *fp)
+mark_buckets_as_used(struct pre_run_memory_map *map, int startingbucket,
+                     struct bfd_memory_footprint *fp)
 {
   int memgrp, k;
+  NSTRACE(mark_buckets_as_used);
   for (memgrp = 0; memgrp < fp->num; memgrp++)
     {
       struct bfd_memory_footprint_group *group = &fp->groups[memgrp];
