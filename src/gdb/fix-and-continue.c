@@ -1067,7 +1067,7 @@ redirect_statics(struct file_static_fixups *indirect_entries,
                  int indirect_entry_count)
 {
   int i;
-  gdb_byte buf[TARGET_ADDRESS_BYTES];
+  gdb_byte *buf = (gdb_byte *)alloca(TARGET_ADDRESS_BYTES);
 
   for (i = 0; i < indirect_entry_count; i++)
     {

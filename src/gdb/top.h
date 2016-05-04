@@ -91,6 +91,8 @@ extern void set_verbose(const char *, int, struct cmd_list_element *);
 
 extern void do_restore_instream_cleanup(void *stream);
 
+extern void dummy_func_to_use_unused_top_c_funcs(void) ATTR_NORETURN;
+
 #endif /* !TOP_H */
 
 /* EOF */

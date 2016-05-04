@@ -1539,8 +1539,9 @@ malloc_history_info_command(const char *arg, int from_tty)
 
       if (!already_looked)
         logging_file_path_fn = 
-          (set_logging_file_path_ptr)dlsym(RTLD_DEFAULT,
-                                           stack_logging_set_file_function);
+          __extension__ ((set_logging_file_path_ptr)
+                         dlsym(RTLD_DEFAULT,
+                               stack_logging_set_file_function));
       already_looked = 1;
 
       if (logging_file_path_fn != NULL)

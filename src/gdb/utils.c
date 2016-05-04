@@ -1899,9 +1899,13 @@ parse_escape(const char **string_ptr)
 	}
       default:
 	if (!host_char_to_target(c, &target_char))
-	  error("The escape sequence `\%c' is equivalent to plain `%c', which"
-		" has no equivalent\n" "in the `%s' character set.", c, c,
-		target_charset());
+	  {
+	    /* Keep the comma and space inside the quotes: */
+	    error(_("The escape sequence `\%c' is equivalent to plain `%c', "
+		    "which has no equivalent\n" "in the `%s' character set."),
+		c, c, target_charset());
+	    /* FIXME: pedantic format warning */
+	  }
 	return target_char;
       }
 }

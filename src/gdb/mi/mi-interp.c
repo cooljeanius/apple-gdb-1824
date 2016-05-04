@@ -611,19 +611,20 @@ mi_command_loop(int mi_version)
 
   print_frame_more_info_hook = mi_print_frame_more_info;
 
-  /* Set the uiout to the interpreter's uiout.  */
-  uiout = interp_ui_out (NULL);
+  /* Set the uiout to the interpreter's uiout: */
+  uiout = interp_ui_out(NULL);
 
   /* Turn off 8 bit strings in quoted output.  Any character with the
      high bit set is printed using C's octal format. */
   sevenbit_strings = 1;
-  /* Tell the world that we're alive */
-  fputs_unfiltered ("(gdb) \n", raw_stdout);
-  gdb_flush (raw_stdout);
-  start_event_loop ();
+  /* Tell the world that we are alive: */
+  fputs_unfiltered("(gdb) \n", raw_stdout);
+  gdb_flush(raw_stdout);
+  start_event_loop();
 }
 
-static char * ATTRIBUTE_UNUSED
+/* "USED" means "not UNUSED", at least in terms of silencing warnings: */
+static char * ATTRIBUTE_USED
 mi_input(char *buf)
 {
   return gdb_readline(NULL);
@@ -698,8 +699,8 @@ mi_load_progress(const char *section_name, unsigned long sent_so_far,
     }
 }
 
+/* */
 extern initialize_file_ftype _initialize_mi_interp; /* -Wmissing-prototypes */
-
 void
 _initialize_mi_interp(void)
 {

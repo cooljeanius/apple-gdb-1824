@@ -525,25 +525,25 @@ print_floating_in_hex (const gdb_byte *valaddr, struct type *type,
      instead uses the type's length to determine the precision of the
      floating-point value being printed.  */
 
-  if (len < sizeof (double))
-      fprintf_filtered (stream, "%.6a", (double) doub);
-  else if (len == sizeof (double))
-      fprintf_filtered (stream, "%.13a", (double) doub);
+  if (len < sizeof(double))
+      fprintf_filtered(stream, "%.6a", (double)doub);
+  else if (len == sizeof(double))
+      fprintf_filtered(stream, "%.13a", (double)doub);
   else
 #ifdef PRINTF_HAS_LONG_DOUBLE
-    fprintf_filtered (stream, "%.35La", doub);
+    fprintf_filtered(stream, "%.35La", doub);
 #else
     /* This at least wins with values that are representable as
        doubles.  */
-    fprintf_filtered (stream, "%.17a", (double) doub);
-#endif
+    fprintf_filtered(stream, "%.17a", (double)doub);
+#endif /* PRINTF_HAS_LONG_DOUBLE */
 }
 
+/* */
 void
-print_binary_chars (struct ui_file *stream, const gdb_byte *valaddr,
-		    unsigned len)
+print_binary_chars(struct ui_file *stream, const gdb_byte *valaddr,
+		   unsigned int len)
 {
-
 #define BITS_IN_BYTES 8
 
   const gdb_byte *p;
@@ -1575,3 +1575,5 @@ Use 'show input-radix' or 'show output-radix' to independently show each."),
   addressprint = 1;
   print_max = PRINT_MAX_DEFAULT;
 }
+
+/* EOF */

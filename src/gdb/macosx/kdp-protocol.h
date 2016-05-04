@@ -3,6 +3,7 @@
 #ifndef __GDB_KDP_PROTOCOL_H__
 #define __GDB_KDP_PROTOCOL_H__
 
+#include "defs.h"
 #include "ansidecl.h"
 
 #define KDP_MAX_PACKET_SIZE 1200        /* max packet size */
@@ -52,8 +53,7 @@ typedef enum kdp_req_t
   KDP_BREAKPOINT64_SET, KDP_BREAKPOINT64_REMOVE,
 
   /* kernel version string, like "xnu-1234.5~6". Version 11 protocol */
-  KDP_KERNELVERSION,
-
+  KDP_KERNELVERSION
 } kdp_req_t;
 
 /* Common KDP packet header */
@@ -73,7 +73,7 @@ typedef enum
   KDP_PROTERR_SUCCESS = 0,
   KDP_PROTERR_ALREADY_CONNECTED,
   KDP_PROTERR_BAD_NBYTES,
-  KDP_PROTERR_BADFLAVOR,        /* bad flavor in w/r regs */
+  KDP_PROTERR_BADFLAVOR        /* bad flavor in w/r regs */
 } kdp_error_t;
 
 /* KDP requests and reply packet formats */
@@ -85,7 +85,7 @@ typedef struct
   kdp_hdr_t hdr;
   unsigned short req_reply_port;        /* udp port which to send replies */
   unsigned short exc_note_port; /* udp port which to send exc notes */
-  char greeting[0];             /* "greetings", null-terminated */
+  char greeting[FLEXIBLE_ARRAY_MEMBER]; /* "greetings", null-terminated */
 } kdp_connect_req_t;
 
 typedef struct
@@ -149,10 +149,10 @@ typedef struct
 typedef struct
 {
   kdp_hdr_t hdr;
-  unsigned version;
-  unsigned feature;
-  unsigned pad0;
-  unsigned pad1;
+  unsigned int version;
+  unsigned int feature;
+  unsigned int pad0;
+  unsigned int pad1;
 } kdp_version_reply_t;
 
 /* KDP_REGIONS */
@@ -165,7 +165,7 @@ typedef struct
 typedef struct
 {
   kdp_hdr_t hdr;
-  unsigned nregions;
+  unsigned int nregions;
   struct
   {
     /* FIXME: Should this be uint64_t all the time?  Or uint64_t for K64
@@ -173,7 +173,7 @@ typedef struct
     uint32_t address;
     size_t nbytes;
     unsigned int protection;
-  } regions[0];
+  } regions[FLEXIBLE_ARRAY_MEMBER];
 } kdp_regions_reply_t;
 
 /* KDP_MAXBYTES */
@@ -203,7 +203,7 @@ typedef struct
   kdp_hdr_t hdr;
   kdp_error_t error;
   unsigned int nbytes;
-  unsigned char data[0];
+  unsigned char data[FLEXIBLE_ARRAY_MEMBER];
 } kdp_readmem_reply_t;
 
 /* KDP_READMEM64 */
@@ -220,7 +220,7 @@ typedef struct
   kdp_hdr_t hdr;
   kdp_error_t error;
   unsigned int nbytes;
-  unsigned char data[0];
+  unsigned char data[FLEXIBLE_ARRAY_MEMBER];
 } kdp_readmem64_reply_t;
 
 /* KDP_WRITEMEM */
@@ -230,7 +230,7 @@ typedef struct
   kdp_hdr_t hdr;
   unsigned int address;
   unsigned int nbytes;
-  unsigned char data[0];
+  unsigned char data[FLEXIBLE_ARRAY_MEMBER];
 } kdp_writemem_req_t;
 
 typedef struct
@@ -246,7 +246,7 @@ typedef struct
   kdp_hdr_t hdr;
   uint64_t address;
   unsigned int nbytes;
-  unsigned char data[0];
+  unsigned char data[FLEXIBLE_ARRAY_MEMBER];
 } kdp_writemem64_req_t;
 
 typedef struct
@@ -269,7 +269,7 @@ typedef struct
   kdp_hdr_t hdr;
   kdp_error_t error;
   size_t nbytes;
-  unsigned char data[0];
+  unsigned char data[FLEXIBLE_ARRAY_MEMBER];
 } kdp_readregs_reply_t;
 
 /* KDP_WRITEREGS */
@@ -280,7 +280,7 @@ typedef struct
   unsigned int cpu;
   unsigned int flavor;
   size_t nbytes;
-  unsigned char data[0];
+  unsigned char data[FLEXIBLE_ARRAY_MEMBER];
 } kdp_writeregs_req_t;
 
 typedef struct
@@ -294,7 +294,7 @@ typedef struct
 typedef struct
 {
   kdp_hdr_t hdr;
-  char file_args[0];
+  char file_args[FLEXIBLE_ARRAY_MEMBER];
 } kdp_load_req_t;
 
 typedef struct
@@ -313,7 +313,7 @@ typedef struct
 typedef struct
 {
   kdp_hdr_t hdr;
-  char path[0];
+  char path[FLEXIBLE_ARRAY_MEMBER];
 } kdp_imagepath_reply_t;
 
 /* KDP_SUSPEND */
@@ -382,7 +382,7 @@ typedef struct
 typedef struct
 {
   kdp_hdr_t hdr;
-  char version[0];
+  char version[FLEXIBLE_ARRAY_MEMBER];
 } kdp_kernelversion_reply_t;
 
 /* Exception notifications */
@@ -404,7 +404,7 @@ typedef struct kdp_exception_t
 {
   kdp_hdr_t hdr;
   size_t n_exc_info;
-  kdp_exc_info_t exc_info[0];
+  kdp_exc_info_t exc_info[FLEXIBLE_ARRAY_MEMBER];
 } kdp_exception_t;
 
 typedef struct kdp_exception_ack_t
@@ -420,7 +420,7 @@ typedef enum kdp_termination_code_t
   KDP_EXIT,                     /* child exited */
   KDP_POWEROFF,                 /* child power-off */
   KDP_REBOOT,                   /* child reboot */
-  KDP_COMMAND_MODE,             /* child exit to mon command_mode */
+  KDP_COMMAND_MODE              /* child exit to mon command_mode */
 } kdp_termination_code_t;
 
 typedef struct kdp_termination_t
@@ -511,7 +511,7 @@ typedef enum
   RR_CONNECT,                   /* connection failure */
   RR_INVALID_ADDRESS,           /* bad memory address */
   RR_EXCEPTION,                 /* exception is new */
-  RR_RECV_INTR,
+  RR_RECV_INTR
 } kdp_return_t;
 
 typedef void (kdp_log_function)(kdp_log_level l, const char *s, ...)

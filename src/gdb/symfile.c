@@ -23,6 +23,7 @@
    Boston, MA 02111-1307, USA.  */
 
 #include "defs.h"
+#include "ansidecl.h"
 #include "bfdlink.h"
 #include "symtab.h"
 #include "gdbtypes.h"
@@ -3463,10 +3464,9 @@ add_shared_symbol_files_command(const char *args, int from_tty)
    the objfile list with ALL_OBJFILES_SAFE -- it is NOT safe to remove the next
    objfile with ALL_OBJFILES_SAFE so we need to update it by hand if we remove
    a dSYM associated with an objfile.   */
-
 int
-reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
-			    enum gdb_osabi osabi, struct objfile **next)
+reread_symbols_for_objfile(struct objfile *objfile, long new_modtime,
+			   enum gdb_osabi osabi, struct objfile **next)
 {
   struct cleanup *old_cleanups;
   struct section_offsets *offsets;
@@ -3482,7 +3482,7 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
   if (objfile->separate_debug_objfile_backlink)
     return 0;
 
-  if (new_modtime == 0 && objfile->obfd != NULL)
+  if ((new_modtime == 0) && (objfile->obfd != NULL))
     {
       struct stat buf;
       if (stat(objfile->obfd->filename, &buf) != 0)
@@ -3514,9 +3514,9 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
   /* If we get an error, blow away this objfile (not sure if
      that is the correct response for things like shared
      libraries).  */
-  old_cleanups = make_cleanup_free_objfile (objfile);
+  old_cleanups = make_cleanup_free_objfile(objfile);
   /* We need to do this whenever any symbols go away.  */
-  make_cleanup (clear_symtab_users_cleanup, 0 /*ignore*/);
+  make_cleanup(clear_symtab_users_cleanup, 0 /*ignore*/);
 
   /* If this objfile has a separate debug objfile, clear it
      out here.  */
@@ -3524,10 +3524,10 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
     {
       /* ALL_OBJFILES_SAFE is NOT actually safe if you delete
        * the NEXT objfile...  */
-      if (next != NULL && objfile->separate_debug_objfile == *next)
-	*next = objfile_get_next (*next);
+      if ((next != NULL) && (objfile->separate_debug_objfile == *next))
+	*next = objfile_get_next(*next);
 
-      free_objfile (objfile->separate_debug_objfile);
+      free_objfile(objfile->separate_debug_objfile);
       objfile->separate_debug_objfile = NULL;
     }
 
@@ -3536,27 +3536,27 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
      can clear the set state on any breakpoints in this
      objfile. */
 
-  tell_breakpoints_objfile_changed (objfile);
-  tell_objc_msgsend_cacher_objfile_changed (objfile);
+  tell_breakpoints_objfile_changed(objfile);
+  tell_objc_msgsend_cacher_objfile_changed(objfile);
 
   /* APPLE LOCAL cache lookup values for improved performance  */
-  symtab_clear_cached_lookup_values ();
+  symtab_clear_cached_lookup_values();
   /* APPLE LOCAL: Remove its obj_sections from the
      ordered_section list.  */
-  objfile_delete_from_ordered_sections (objfile);
+  objfile_delete_from_ordered_sections(objfile);
 
-  obfd_filename = xstrdup (bfd_get_filename (objfile->obfd));
-  make_cleanup (xfree, obfd_filename);
+  obfd_filename = xstrdup(bfd_get_filename(objfile->obfd));
+  make_cleanup(xfree, obfd_filename);
 
   /* APPLE LOCAL: Remember to remove its sections from the
      target "to_sections".  Normally this is done in
      free_objfile, but here we are remaking the objfile
      "in place" so we have to do it by hand.  */
-  remove_target_sections (objfile->obfd);
+  remove_target_sections(objfile->obfd);
 
   if (exec_bfd &&
-      (exec_bfd == objfile->obfd ||
-       strcmp (exec_bfd->filename, objfile->obfd->filename) == 0))
+      ((exec_bfd == objfile->obfd) ||
+       (strcmp(exec_bfd->filename, objfile->obfd->filename) == 0)))
     {
       update_exec_bfd = 1;
     }
@@ -3564,9 +3564,9 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
   /* Clean up any state BFD has sitting around. We do NOT need
      to close the descriptor but BFD lacks a way of closing the
      BFD without closing the descriptor.  */
-  if (!bfd_close (objfile->obfd))
-    error (_("Cannot close BFD for %s: %s"), objfile->name,
-	   bfd_errmsg (bfd_get_error ()));
+  if (!bfd_close(objfile->obfd))
+    error(_("Cannot close BFD for %s: %s"), objfile->name,
+	  bfd_errmsg(bfd_get_error()));
 
   /* Do NOT leave a dangling pointer to the now-closed bfd struct or
      leave the exec_bfd pointing to the old file */
@@ -3588,14 +3588,14 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
          separately. */
       /* NB: bfd_openr does not retain its own copy of the filename so
          we need to strdup it here.  */
-      exec_bfd = bfd_openr (xstrdup (obfd_filename), gnutarget);
+      exec_bfd = bfd_openr(xstrdup(obfd_filename), gnutarget);
       if (exec_bfd == NULL)
-        error (_("Cannot open %s to read symbols."), objfile->name);
+        error(_("Cannot open %s to read symbols."), objfile->name);
 
-      if (bfd_check_format (exec_bfd, bfd_archive))
+      if (bfd_check_format(exec_bfd, bfd_archive))
         {
           bfd *tmp_bfd;
-          tmp_bfd = open_bfd_matching_arch (exec_bfd, bfd_object, osabi);
+          tmp_bfd = open_bfd_matching_arch(exec_bfd, bfd_object, osabi);
           if (tmp_bfd != NULL)
 	    exec_bfd = tmp_bfd;
         }
@@ -3603,33 +3603,33 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
 
   /* NB: bfd_openr does not retain its own copy of the filename so
      we need to strdup it here.  */
-  objfile->obfd = bfd_openr (xstrdup (obfd_filename), gnutarget);
+  objfile->obfd = bfd_openr(xstrdup(obfd_filename), gnutarget);
   if (objfile->obfd == NULL)
-    error (_("Cannot open %s to read symbols."), objfile->name);
+    error(_("Cannot open %s to read symbols."), objfile->name);
 
   /* APPLE LOCAL: If the file is an archive file (i.e. fat
      binary), look for sub-files that match the current
      osabi. */
 
-  if (bfd_check_format (objfile->obfd, bfd_archive))
+  if (bfd_check_format(objfile->obfd, bfd_archive))
     {
       bfd *tmp_bfd;
-      tmp_bfd = open_bfd_matching_arch (objfile->obfd, bfd_object, osabi);
+      tmp_bfd = open_bfd_matching_arch(objfile->obfd, bfd_object, osabi);
       if (tmp_bfd != NULL)
 	objfile->obfd = tmp_bfd;
     }
 
-  if (!bfd_check_format (objfile->obfd, bfd_object))
-    error (_("Cannot read symbols from %s: %s."), objfile->name,
-	   bfd_errmsg (bfd_get_error ()));
+  if (!bfd_check_format(objfile->obfd, bfd_object))
+    error(_("Cannot read symbols from %s: %s."), objfile->name,
+	  bfd_errmsg(bfd_get_error()));
 
   /* Save the offsets, we will nuke them with the rest of the
      objfile_obstack.  */
   num_offsets = objfile->num_sections;
   offsets = ((struct section_offsets *)
-	     alloca (SIZEOF_N_SECTION_OFFSETS (num_offsets)));
-  memcpy (offsets, objfile->section_offsets,
-	  SIZEOF_N_SECTION_OFFSETS (num_offsets));
+	     alloca(SIZEOF_N_SECTION_OFFSETS(num_offsets)));
+  memcpy(offsets, objfile->section_offsets,
+	 SIZEOF_N_SECTION_OFFSETS(num_offsets));
 
   /* Nuke all the state that we will re-read.  Much of the following
      code which sets things to NULL really is necessary to tell
@@ -3638,28 +3638,26 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
   /* FIXME: Do we have to free a whole linked list, or is this
      enough?  */
   if (objfile->global_psymbols.list)
-    xfree (objfile->global_psymbols.list);
-  memset (&objfile->global_psymbols, 0,
-	  sizeof (objfile->global_psymbols));
+    xfree(objfile->global_psymbols.list);
+  memset(&objfile->global_psymbols, 0, sizeof(objfile->global_psymbols));
   if (objfile->static_psymbols.list)
-    xfree (objfile->static_psymbols.list);
-  memset (&objfile->static_psymbols, 0,
-	  sizeof (objfile->static_psymbols));
+    xfree(objfile->static_psymbols.list);
+  memset(&objfile->static_psymbols, 0, sizeof(objfile->static_psymbols));
 
   /* Free the obstacks for non-reusable objfiles */
-  bcache_xfree (objfile->psymbol_cache);
-  objfile->psymbol_cache = bcache_xmalloc (NULL);
-  bcache_xfree (objfile->macro_cache);
-  objfile->macro_cache = bcache_xmalloc (NULL);
+  bcache_xfree(objfile->psymbol_cache);
+  objfile->psymbol_cache = bcache_xmalloc(NULL);
+  bcache_xfree(objfile->macro_cache);
+  objfile->macro_cache = bcache_xmalloc(NULL);
   /* APPLE LOCAL: Also delete the table of equivalent symbols.  */
-  equivalence_table_delete (objfile);
+  equivalence_table_delete(objfile);
   /* END APPLE LOCAL */
   if (objfile->demangled_names_hash != NULL)
     {
-      htab_delete (objfile->demangled_names_hash);
+      htab_delete(objfile->demangled_names_hash);
       objfile->demangled_names_hash = NULL;
     }
-  obstack_free (&objfile->objfile_obstack, 0);
+  obstack_free(&objfile->objfile_obstack, 0);
   objfile->sections = NULL;
   objfile->symtabs = NULL;
   objfile->psymtabs = NULL;
@@ -3668,39 +3666,39 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
   objfile->msymbols = NULL;
   objfile->deprecated_sym_private = NULL;
   objfile->minimal_symbol_count = 0;
-  memset (&objfile->msymbol_hash, 0,
-	  sizeof (objfile->msymbol_hash));
-  memset (&objfile->msymbol_demangled_hash, 0,
-	  sizeof (objfile->msymbol_demangled_hash));
+  memset(&objfile->msymbol_hash, 0, sizeof(objfile->msymbol_hash));
+  memset(&objfile->msymbol_demangled_hash, 0,
+	 sizeof(objfile->msymbol_demangled_hash));
   objfile->minimal_symbols_demangled = 0;
   objfile->fundamental_types = NULL;
-  clear_objfile_data (objfile);
+  clear_objfile_data(objfile);
   if (objfile->sf != NULL)
     {
-      (*objfile->sf->sym_finish) (objfile);
+      (*objfile->sf->sym_finish)(objfile);
     }
 
-  /* We never make this a mapped file.  */
+  /* We never make this a mapped file: */
   objfile->md = NULL;
-  objfile->psymbol_cache = bcache_xmalloc (NULL);
-  objfile->macro_cache = bcache_xmalloc (NULL);
+  objfile->psymbol_cache = bcache_xmalloc(NULL);
+  objfile->macro_cache = bcache_xmalloc(NULL);
   /* obstack_init also initializes the obstack so it is
      empty.  We could use obstack_specify_allocation but
      gdb_obstack.h specifies the alloc/dealloc
      functions.  */
-  obstack_init (&objfile->objfile_obstack);
-  if (build_objfile_section_table (objfile))
+  obstack_init(&objfile->objfile_obstack);
+  if (build_objfile_section_table(objfile))
     {
-      error (_("Cannot find the file sections in `%s': %s"),
-	     objfile->name, bfd_errmsg (bfd_get_error ()));
+      error(_("Cannot find the file sections in `%s': %s"),
+	    objfile->name, bfd_errmsg(bfd_get_error()));
     }
-  terminate_minimal_symbol_table (objfile);
+  terminate_minimal_symbol_table(objfile);
 
   /* We use the same section offsets as from last time. I am not
      sure whether that is always correct for shared libraries.  */
-  objfile->section_offsets = (struct section_offsets *)
-    obstack_alloc (&objfile->objfile_obstack,
-		   SIZEOF_N_SECTION_OFFSETS (num_offsets));
+  objfile->section_offsets =
+    ((struct section_offsets *)
+     obstack_alloc(&objfile->objfile_obstack,
+		   SIZEOF_N_SECTION_OFFSETS(num_offsets)));
 
   /* APPLE LOCAL: instead of just stuffing the section offsets
      back into the objfile structure, set the new objfile offsets to
@@ -3714,12 +3712,12 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
      objfile is correctly slid (it has its own copy of this information,
      and does NOT look at anything in the objfile to figure this out.
      So IT will NOT apply the slide again and we have to do it here.  */
-  memset (objfile->section_offsets, 0, SIZEOF_N_SECTION_OFFSETS (num_offsets));
+  memset(objfile->section_offsets, 0, SIZEOF_N_SECTION_OFFSETS(num_offsets));
 
   objfile->num_sections = num_offsets;
-  init_entry_point_info (objfile);
+  init_entry_point_info(objfile);
 
-  objfile_relocate (objfile, offsets);
+  objfile_relocate(objfile, offsets);
 
   /* What the hell is sym_new_init for, anyway?  The concept of
      distinguishing between the main file and additional files
@@ -3745,17 +3743,15 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
   /* APPLE LOCAL don't complain about lack of symbols */
   objfile->flags |= OBJF_SYMS;
 
-  /* We are done reading the symbol file; finish off complaints.  */
-  clear_complaints (&symfile_complaints, 0, 1);
+  /* We are done reading the symbol file; finish off complaints: */
+  clear_complaints(&symfile_complaints, 0, 1);
 
-  /* Getting new symbols may change our opinion about what is
-     frameless.  */
+  /* Getting new symbols may change our opinion about what is frameless: */
+  reinit_frame_cache();
 
-  reinit_frame_cache ();
-
-  /* Discard cleanups as symbol reading was successful.  */
-  discard_cleanups (old_cleanups);
-  xfree (obfd_filename);
+  /* Discard cleanups as symbol reading was successful: */
+  discard_cleanups(old_cleanups);
+  xfree(obfd_filename);
 
   /* If the mtime has changed between the time we set new_modtime
      and now, we *want* this to be out of date, so do NOT call stat
@@ -3764,13 +3760,13 @@ reread_symbols_for_objfile (struct objfile *objfile, long new_modtime,
 
   /* Finally, remember to call breakpoint_re_set with this
      objfile, so it will get on the change list.  */
-  breakpoint_re_set (objfile);
+  breakpoint_re_set(objfile);
   /* Also re-initialize the objc trampoline data in case it has the
      objc library that has either just been read in or has changed.  */
-  if (objfile == find_libobjc_objfile ())
+  if (objfile == find_libobjc_objfile())
     {
-      objc_init_trampoline_observer ();
-      objc_init_runtime_version ();
+      objc_init_trampoline_observer();
+      objc_init_runtime_version();
     }
 
   return 1;
@@ -4424,7 +4420,7 @@ cashier_psymtab(struct partial_symtab *pst)
 
   /* Find its previous psymtab in the chain */
   /* APPLE LOCAL ALL_OBJFILE_PSYMTABS */
-  ALL_OBJFILE_PSYMTABS (pst->objfile, ps)
+  ALL_OBJFILE_PSYMTABS(pst->objfile, ps)
     {
       if (ps == pst)
 	break;
@@ -4439,7 +4435,7 @@ cashier_psymtab(struct partial_symtab *pst)
       else
 	pprev->next = ps->next;
 
-      /* FIXME, we cannot conveniently deallocate the entries in the
+      /* FIXME: we cannot conveniently deallocate the entries in the
          partial_symbol lists (global_psymbols/static_psymbols) that
          this psymtab points to. These just take up space until all
          the psymtabs are reclaimed. Ditto the dependencies list and
@@ -4454,8 +4450,8 @@ cashier_psymtab(struct partial_symtab *pst)
 	    {
 	      if (ps->dependencies[i] == pst)
 		{
-		  cashier_psymtab (ps);
-		  goto again;	/* Must restart, chain has been munged. */
+		  cashier_psymtab(ps); /* Recursion! */
+		  goto again; /* Must restart, chain has been munged. */
 		}
 	    }
 	}
@@ -4512,9 +4508,9 @@ free_named_symtabs(char *name)
 again2:
   for (ps = partial_symtab_list; ps; ps = ps->next)
     {
-      if (strcmp (name, ps->filename) == 0)
+      if (strcmp(name, ps->filename) == 0)
 	{
-	  cashier_psymtab (ps);	/* Blow it away... and its little dog, too.  */
+	  cashier_psymtab(ps);	/* Blow it away... and its little dog, too.  */
 	  goto again2;		/* Must restart, chain has been munged */
 	}
     }
@@ -4522,7 +4518,7 @@ again2:
   /* Look for a symtab with the specified name:  */
   for (s = symtab_list; s; s = s->next)
     {
-      if (strcmp (name, s->filename) == 0)
+      if (strcmp(name, s->filename) == 0)
 	break;
       prev = s;
     }
@@ -4544,22 +4540,22 @@ again2:
          contain the pathname of the object file.  (This problem
          has been fixed in GDB 3.9x).  */
 
-      bv = BLOCKVECTOR (s);
-      if (BLOCKVECTOR_NBLOCKS (bv) > 2
-	  || BLOCK_NSYMS (BLOCKVECTOR_BLOCK (bv, GLOBAL_BLOCK))
-	  || BLOCK_NSYMS (BLOCKVECTOR_BLOCK (bv, STATIC_BLOCK)))
+      bv = BLOCKVECTOR(s);
+      if ((BLOCKVECTOR_NBLOCKS(bv) > 2)
+	  || BLOCK_NSYMS(BLOCKVECTOR_BLOCK(bv, GLOBAL_BLOCK))
+	  || BLOCK_NSYMS(BLOCKVECTOR_BLOCK(bv, STATIC_BLOCK)))
 	{
-	  complaint (&symfile_complaints, _("Replacing old symbols for `%s'"),
-		     name);
+	  complaint(&symfile_complaints, _("Replacing old symbols for `%s'"),
+		    name);
 	  clear_symtab_users_queued++;
-	  make_cleanup (clear_symtab_users_once, 0);
+	  make_cleanup(clear_symtab_users_once, 0);
 	  blewit = 1;
 	}
       else
-	complaint (&symfile_complaints, _("Empty symbol table found for `%s'"),
-		   name);
+	complaint(&symfile_complaints, _("Empty symbol table found for `%s'"),
+		  name);
 
-      free_symtab (s);
+      free_symtab(s);
     }
   else
     {
@@ -4572,12 +4568,14 @@ again2:
       ;
     }
 
-  /* FIXME, what about the minimal symbol table? */
+  /* FIXME: what about the minimal symbol table? */
   return blewit;
 #else
-# if defined(__GNUC__)
-  asm("");
-# endif /* __GNUC__ */
+  struct partial_symtab *ps = (struct partial_symtab *)NULL;
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+  __asm__("");
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+  cashier_psymtab(ps);
   return (0);
 #endif /* SERIOUS_RETHINKING_HAS_BEEN_DONE || (BLOCK_NSYMS and the rest) */
 }
@@ -5398,7 +5396,7 @@ read_target_long_array(CORE_ADDR memaddr, unsigned int *myaddr, int len)
   char *buf;
   int i;
   
-  size_t buflen = (len * TARGET_LONG_BYTES);
+  const size_t buflen = (len * TARGET_LONG_BYTES);
   
   if (buflen > min(8192000UL, UINT_MAX))
     warning("array is very large; reading may be unsafe");

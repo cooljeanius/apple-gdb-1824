@@ -120,7 +120,7 @@ enum varobj_join_type
     VAROBJ_AS_STRUCT, /* For children of structs, joined with a ".".  */
     VAROBJ_AS_PTR_TO_SCALAR,  /* This is a simple dereference.  */
     VAROBJ_AS_PTR_TO_STRUCT, /* This will be "->".  */
-    VAROBJ_AS_ARRAY,  /* This is an array reference "[n]".  */
+    VAROBJ_AS_ARRAY  /* This is an array reference "[n]".  */
   };
 
 /* Every variable in the system has a structure of this type defined

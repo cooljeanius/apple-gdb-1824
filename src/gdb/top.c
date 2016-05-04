@@ -845,6 +845,7 @@ float_handler(int signo)
   error(_("Erroneous arithmetic operation."));
 }
 
+/* */
 static void ATTRIBUTE_USED
 do_nothing(int signo)
 {
@@ -854,7 +855,19 @@ do_nothing(int signo)
      to continue handling the signal in one's program.  On BSD systems this
      is not needed but it is harmless, and it simplifies the code to just do
      it unconditionally. */
-  signal (signo, do_nothing);
+  signal(signo, do_nothing);
+}
+
+/* */
+void ATTR_NORETURN
+dummy_func_to_use_unused_top_c_funcs(void)
+{
+  const int local_signo = 0;
+#ifdef STOP_SIGNAL
+  stop_sig(local_signo);
+#endif /* STOP_SIGNAL */
+  do_nothing(local_signo);
+  float_handler(local_signo);
 }
 
 /* The current saved history number from operate-and-get-next.

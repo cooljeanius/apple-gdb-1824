@@ -552,7 +552,7 @@ enum {
   LOADER_SUBSYSTEM_INDEX = 1,
   OBJC_SUBSYSTEM_INDEX = 2,
   SPINLOCK_SUBSYSTEM_INDEX = 3,
-  LAST_SUBSYSTEM_INDEX = 4,
+  LAST_SUBSYSTEM_INDEX = 4
 };
 
 static const char *macosx_unsafe_regexes[] = {

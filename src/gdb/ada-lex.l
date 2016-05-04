@@ -957,9 +957,9 @@ typedef void (*dummy_function)(void);
 dummy_function ada_flex_use[] =
 {
   (dummy_function)yyunput
-#if defined(__clang__) && !defined(__clang_analyzer__) && defined(yyinput)
+#if defined(yyinput)
   , (dummy_function)yyinput
-#endif /* __clang__ && !__clang_analyzer__ && yyinput */
+#endif /* yyinput */
 };
 
 /* End of ada-lex.l */

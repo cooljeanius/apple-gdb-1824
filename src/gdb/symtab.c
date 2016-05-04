@@ -900,9 +900,8 @@ symbol_find_demangled_name(struct general_symbol_info *gsymbol,
 #define JAVA_PREFIX_LEN 8
 
 void
-symbol_set_names(struct general_symbol_info *gsymbol,
-		 const char *linkage_name, int len,
-                 struct objfile *objfile)
+symbol_set_names(struct general_symbol_info *gsymbol, const char *linkage_name,
+		 int len, struct objfile *objfile)
 {
   char **slot;
   /* A 0-terminated copy of the linkage name: */
@@ -1652,9 +1651,9 @@ lookup_symbol_all(const char *name, const struct block *block,
    code).  */
 
 struct symbol *
-lookup_symbol (const char *name, const struct block *block,
-	       const domain_enum domain, int *is_a_field_of_this,
-	       struct symtab **symtab)
+lookup_symbol(const char *name, const struct block *block,
+	      const domain_enum domain, int *is_a_field_of_this,
+	      struct symtab **symtab)
 {
   char *demangled_name = NULL;
   const char *modified_name = NULL;
@@ -4569,7 +4568,7 @@ search_symbols(const char *regexp, domain_enum kind, int nfiles, char *files[],
 	  /* If wrong number of spaces, fix it. */
 	  if (fix >= 0)
 	    {
-	      size_t tmplen = (8UL + fix + strlen(opname) + 1UL);
+	      const size_t tmplen = (8UL + fix + strlen(opname) + 1UL);
 	      char *tmp = (char *)alloca(tmplen);
 	      snprintf(tmp, tmplen, "operator%.*s%s", fix, " ", opname);
 	      regexp = tmp;

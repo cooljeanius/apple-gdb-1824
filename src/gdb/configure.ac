@@ -3008,7 +3008,7 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wno-unused -Wunused-value -Wunused-label -Wunused-result \
 -Wunused-variable -Wunused-but-set-variable -Wunused-function \
 -Wempty-body -Wmissing-declarations -Wignored-qualifiers \
--Wmissing-format-attribute -Wno-format-security -Waddress -Wattributes \
+-Wmissing-format-attribute -Waddress -Wattributes \
 -Wswitch -Wclobbered -Wcoverage-mismatch -Wdiv-by-zero \
 -Wdouble-promotion -Wfree-nonheap-object -Wsign-compare -Wtype-limits \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
@@ -3038,7 +3038,7 @@ else
 -Wpointer-sign -Wmissing-prototypes -Wdeclaration-after-statement \
 -Wc++-compat -Woverride-init -Woverride-init-side-effects \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
--Wstrict-prototypes -Wnested-externs"
+-Wstrict-prototypes -Wnested-externs -Wc99-c11-compat"
   build_warnings="${build_warnings} ${c_warnings}"
 fi
 
@@ -3069,8 +3069,8 @@ case "${host}" in
     # -Wnonportable-cfstrings is actually a flag for newer versions of the
     # FSF gcc, but it only makes sense on Apple platforms.
     build_warnings="${build_warnings} -Wmost -Wextra-tokens -Wnewline-eof \
--Wendif-labels -Wformat -Wformat-y2k -Wnonnull -Wnonportable-cfstrings \
--Wno-unused-const-variable -Wno-unused-function ${stdflag}"
+-Wendif-labels -Wformat -Wformat-y2k -Wformat-security -Wnonnull \
+-Wnonportable-cfstrings -Wno-unused-const-variable ${stdflag}"
     case "${host}" in
       *64*-apple-darwin9* | *64*-apple-darwin1[[0123456789]].*.*)
         build_warnings="${build_warnings} -Wshorten-64-to-32"
@@ -3125,7 +3125,7 @@ opt_warnings="-Wuninitialized -Winit-self -Wmissing-noreturn \
 -Wvolatile-register-var -Wdisabled-optimization -Winline \
 -Waggressive-loop-optimizations -Wvector-operation-performance \
 -Wmaybe-uninitialized -Wstrict-overflow=1 -fno-strict-aliasing \
--Wnull-dereference -Wframe-address"
+-Wnull-dereference -Wframe-address -Wframe-larger-than=262144"
 if test "x${ax_cv_c_compiler_vendor}" != "xclang"; then
   opt_warnings="${opt_warnings} -Wsuggest-attribute=const"
 fi
@@ -3148,6 +3148,12 @@ if test x${CFLAGS+set} = xset; then
     ;;
     *"-O"* )
       build_warnings="${build_warnings} ${opt_warnings}"
+    ;;
+    *"-Os"* )
+      build_warnings="${build_warnings} -Wlarger-than=262144"
+    ;;
+    *"-fstack-protector"* )
+      build_warnings="${build_warnings} -Wstack-protector"
     ;;
   esac
 else

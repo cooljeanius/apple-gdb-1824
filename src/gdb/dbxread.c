@@ -464,7 +464,7 @@ add_new_header_file(const char *name, int instance)
 }
 
 #if defined(ALLOW_UNUSED_FUNCTIONS) || !defined(S_SPLINT_S)
-static struct type **
+static ATTRIBUTE_USED struct type **
 explicit_lookup_type(int real_filenum, int index)
 {
   struct header_file *f = &HEADER_FILES(current_objfile)[real_filenum];

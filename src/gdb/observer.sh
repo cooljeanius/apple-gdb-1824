@@ -131,7 +131,8 @@ struct ${event}_args { `echo "${formal}" | sed -e 's/,/;/g'`; };
 static void
 observer_${event}_notification_stub(const void *data, const void *args_data)
 {
-  observer_${event}_ftype *notify = (observer_${event}_ftype *)data;
+  observer_${event}_ftype *notify =
+    __extension__ (observer_${event}_ftype *)data;
   const struct ${event}_args *args = (const struct ${event}_args *)args_data;
   notify(`echo ${actual} | sed -e 's/\([a-z0-9_][a-z0-9_]*\)/args->\1/g'`);
 }
@@ -140,8 +141,8 @@ struct observer *
 observer_attach_${event}(observer_${event}_ftype *f)
 {
   return generic_observer_attach(&${event}_subject,
-                                 &observer_${event}_notification_stub,
-                                 (void *)f);
+				 &observer_${event}_notification_stub,
+                                 __extension__ (void *)f);
 }
 
 void

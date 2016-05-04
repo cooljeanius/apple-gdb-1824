@@ -1,1 +1,1 @@
-../signame_old.c
+../attic/signame_old.c

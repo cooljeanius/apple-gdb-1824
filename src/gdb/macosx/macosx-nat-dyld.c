@@ -2564,7 +2564,7 @@ dyld_read_raw_infos(CORE_ADDR addr, struct dyld_raw_infos *info)
   int i = 4;         /* ints */
   uint8_t version_buf[4];
   int version;
-  int image_infos_size;
+  size_t image_infos_size;
   gdb_byte *buf;
   CORE_ADDR adjustment;
 

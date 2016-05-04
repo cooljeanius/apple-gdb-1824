@@ -1677,7 +1677,7 @@ extern void breakup_args(char *scratch, int *argc, char **argv);
 /* APPLE LOCAL begin CHECK macro: */
 #define __CHECK_FUNCTION __extension__ __PRETTY_FUNCTION__
 
-#ifdef __cplusplus
+#if defined(__cplusplus) || defined(__STRICT_ANSI__)
 # define CHECK(expression) \
    ((void)((expression) ? (void)0 : gdb_check(#expression, __FILE__, __LINE__, __CHECK_FUNCTION)))
 
@@ -1689,7 +1689,7 @@ extern void breakup_args(char *scratch, int *argc, char **argv);
 
 # define CHECK_FATAL(expression) \
    ((void)((expression) ? 0 : gdb_check_fatal(#expression, __FILE__, __LINE__, __CHECK_FUNCTION)))
-#endif /* __cplusplus */
+#endif /* __cplusplus || __STRICT_ANSI__ */
 
 extern void ATTR_NORETURN gdb_check(const char *str, const char *file,
 				    unsigned int line, const char *func);

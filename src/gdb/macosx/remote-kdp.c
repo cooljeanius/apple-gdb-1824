@@ -1319,7 +1319,7 @@ kdp_fetch_registers_i386(int regno)
 
   if ((regno == -1) || IS_FP_REGNUM(regno))
     {
-      gdb_i386_thread_fpstate_t fp_regs = { };
+      gdb_i386_thread_fpstate_t fp_regs = { 0U, 0U, { 0U }, 0U };
 
       /* FIXME: For now we hang the kdp stub asking for FP registers,
          so till the kernel can handle the request, do NOT send it.  */
@@ -1395,7 +1395,7 @@ kdp_fetch_registers_x86_64(int regno)
   if ((regno == -1) || IS_FP_REGNUM (regno))
     {
       kdp_return_t kdpret;
-      gdb_x86_float_state64_t fp_regs = { };
+      __extension__ gdb_x86_float_state64_t fp_regs = { };
 
       /* FIXME: For now we hang the kdp stub asking for FP registers,
          so till the kernel can handle the request, do NOT send it.  */
@@ -2068,7 +2068,7 @@ static void
 async_remote_interrupt(gdb_client_data arg)
 {
   if (remote_debug)
-    fprintf_unfiltered(gdb_stdlog, "%s called\n", __FUNCTION__);
+    fprintf_unfiltered(gdb_stdlog, "%s called\n", __extension__ __FUNCTION__);
 
   if (current_target.to_stop == target_ignore)
     {

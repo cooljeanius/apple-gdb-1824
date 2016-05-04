@@ -1418,7 +1418,7 @@ parse_number(const char *p, int len, int parsed_float)
 }
 
 static char backslashable[] = "abefnrtv";
-static char represented[] = "\a\b\e\f\n\r\t\v";
+static char represented[] = __extension__ "\a\b\e\f\n\r\t\v";
 
 /* Translate the backslash the way we would in the host character set.  */
 static int

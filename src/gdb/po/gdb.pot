@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-02 15:45-0400\n"
+"POT-Creation-Date: 2016-05-04 14:06-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2282,8 +2282,8 @@ msgid ""
 "function"
 msgstr ""
 
-#: bfin-tdep.c:699 bfin-tdep.c:719 xtensa-tdep.c:295 xtensa-tdep.c:592
-#: xtensa-tdep.c:691
+#: bfin-tdep.c:699 bfin-tdep.c:719 xtensa-tdep.c:295 xtensa-tdep.c:589
+#: xtensa-tdep.c:685
 #, possible-c-format
 msgid "invalid register number %d"
 msgstr ""
@@ -3455,11 +3455,11 @@ msgstr ""
 #: buildsym.c:822 buildsym.c:835 common/print-utils.c:86
 #: common/print-utils.c:129 common/print-utils.c:297 dbxread.c:5519 exec.c:519
 #: exec.c:607 inflow.c:721 inflow.c:728 language.c:586 language.c:1016
-#: mdebugread.c:3591 monitor.c:378 monitor.c:406 monitor.c:1333 printcmd.c:272
+#: mdebugread.c:3591 monitor.c:379 monitor.c:407 monitor.c:1340 printcmd.c:272
 #: printcmd.c:521 psymtab.c:698 psymtab.c:716 remote-e7000.c:899
 #: remote-e7000.c:2165 remote-mips.c:2565 remote-rdp.c:498 remote-rdp.c:504
 #: remote-sds.c:731 symtab.c:2559 symtab.c:2575 target.c:702 target.c:788
-#: utils.c:2246 utils.c:3107 utils.c:3149 utils.c:3333 valprint.c:382
+#: utils.c:2251 utils.c:3112 utils.c:3154 utils.c:3338 valprint.c:382
 msgid "failed internal consistency check"
 msgstr ""
 
@@ -3732,161 +3732,161 @@ msgstr ""
 msgid "restore_my_cleanups has found a stale cleanup"
 msgstr ""
 
-#: cli/cli-cmds.c:164
+#: cli/cli-cmds.c:163
 #, possible-c-format
 msgid "Argument required (%s)."
 msgstr ""
 
-#: cli/cli-cmds.c:172
+#: cli/cli-cmds.c:171
 msgid "\"info\" must be followed by the name of an info command.\n"
 msgstr ""
 
 #. APPLE LOCAL end do NOT query if we are an MI command
-#: cli/cli-cmds.c:320 cli/cli-script.c:1290 infcmd.c:1932 infcmd.c:1945
+#: cli/cli-cmds.c:319 cli/cli-script.c:1290 infcmd.c:1932 infcmd.c:1945
 #: inflow.c:617 symfile.c:1531 symfile.c:1953 symfile.c:2900
 msgid "Not confirmed."
 msgstr ""
 
-#: cli/cli-cmds.c:333
+#: cli/cli-cmds.c:332
 #, possible-c-format
 msgid "The \"pwd\" command does not take an argument: %s"
 msgstr ""
 
-#: cli/cli-cmds.c:337
+#: cli/cli-cmds.c:336
 #, possible-c-format
 msgid ""
 "Working directory %s\n"
 " (canonically %s).\n"
 msgstr ""
 
-#: cli/cli-cmds.c:340
+#: cli/cli-cmds.c:339
 #, possible-c-format
 msgid "Working directory %s.\n"
 msgstr ""
 
-#: cli/cli-cmds.c:357
+#: cli/cli-cmds.c:356
 msgid "new working directory"
 msgstr ""
 
-#: cli/cli-cmds.c:465
+#: cli/cli-cmds.c:464
 msgid "source command requires pathname of file to source."
 msgstr ""
 
 #. Should be either EINVAL or EPERM:
-#: cli/cli-cmds.c:593 fork-child.c:400
+#: cli/cli-cmds.c:592 fork-child.c:400
 #, possible-c-format
 msgid "Call to setgid() failed with errno %d: %s.\n"
 msgstr ""
 
-#: cli/cli-cmds.c:612
+#: cli/cli-cmds.c:611
 msgid "Fork failed"
 msgstr ""
 
-#: cli/cli-cmds.c:642
+#: cli/cli-cmds.c:641
 msgid "No default source file yet."
 msgstr ""
 
-#: cli/cli-cmds.c:668 cli/cli-cmds.c:862
+#: cli/cli-cmds.c:667 cli/cli-cmds.c:861
 msgid "Junk at end of line specification."
 msgstr ""
 
 #. FIXME-32x64--assumes sal.pc fits in long.
 #. APPLE LOCAL: Fixed by using paddr_nz.
-#: cli/cli-cmds.c:679 cli/cli-cmds.c:879
+#: cli/cli-cmds.c:678 cli/cli-cmds.c:878
 #, possible-c-format
 msgid "No source file for address 0x%s."
 msgstr ""
 
-#: cli/cli-cmds.c:700 cli/cli-cmds.c:901
+#: cli/cli-cmds.c:699 cli/cli-cmds.c:900
 #, possible-c-format
 msgid "No line number known for %s."
 msgstr ""
 
 #. APPLE LOCAL end
-#: cli/cli-cmds.c:792 linespec.c:2339 linespec.c:2975 linespec.c:3049
+#: cli/cli-cmds.c:791 linespec.c:2339 linespec.c:2975 linespec.c:3049
 #: source.c:176 symtab.c:4368
 msgid "No symbol table is loaded.  Use the \"file\" command."
 msgstr ""
 
-#: cli/cli-cmds.c:866
+#: cli/cli-cmds.c:865
 msgid "Specified start and end are in different files."
 msgstr ""
 
-#: cli/cli-cmds.c:868
+#: cli/cli-cmds.c:867
 msgid "Two empty args do not say what lines to list."
 msgstr ""
 
-#: cli/cli-cmds.c:908 cli/cli-cmds.c:916
+#: cli/cli-cmds.c:907 cli/cli-cmds.c:915
 msgid "No default source file yet.  Do \"help list\"."
 msgstr ""
 
-#: cli/cli-cmds.c:955 python/py-symbol.c:379 stack.c:1837
+#: cli/cli-cmds.c:954 python/py-symbol.c:379 stack.c:1837
 msgid "No frame selected."
 msgstr ""
 
-#: cli/cli-cmds.c:959 tui/tui-stack.c:368
+#: cli/cli-cmds.c:958 tui/tui-stack.c:368
 msgid "No function contains program counter for selected frame."
 msgstr ""
 
-#: cli/cli-cmds.c:974
+#: cli/cli-cmds.c:973
 msgid "No function contains specified address."
 msgstr ""
 
-#: cli/cli-cmds.c:1056
+#: cli/cli-cmds.c:1055
 msgid "Not a user command."
 msgstr ""
 
-#: cli/cli-cmds.c:1077
+#: cli/cli-cmds.c:1076
 msgid "REGEXP string is empty"
 msgstr ""
 
-#: cli/cli-cmds.c:1087
+#: cli/cli-cmds.c:1086
 #, possible-c-format
 msgid "Error in regular expression:%s"
 msgstr ""
 
-#: cli/cli-cmds.c:1150
+#: cli/cli-cmds.c:1149
 msgid "\"set debug\" must be followed by the name of a print subcommand.\n"
 msgstr ""
 
-#: cli/cli-cmds.c:1196
+#: cli/cli-cmds.c:1195
 #, possible-c-format
 msgid "Verbose printing of informational messages is %s.\n"
 msgstr ""
 
-#: cli/cli-cmds.c:1199
+#: cli/cli-cmds.c:1198
 #, possible-c-format
 msgid "Verbosity is %s.\n"
 msgstr ""
 
-#: cli/cli-cmds.c:1206
+#: cli/cli-cmds.c:1205
 #, possible-c-format
 msgid "History expansion on command input is %s.\n"
 msgstr ""
 
-#: cli/cli-cmds.c:1214
+#: cli/cli-cmds.c:1213
 #, possible-c-format
 msgid "Baud rate for remote serial I/O is %s.\n"
 msgstr ""
 
-#: cli/cli-cmds.c:1222
+#: cli/cli-cmds.c:1221
 #, possible-c-format
 msgid "Debugging of remote protocol is %s.\n"
 msgstr ""
 
-#: cli/cli-cmds.c:1230
+#: cli/cli-cmds.c:1229
 #, possible-c-format
 msgid "Timeout limit to wait for target to respond is %s.\n"
 msgstr ""
 
-#: cli/cli-cmds.c:1239
+#: cli/cli-cmds.c:1238
 #, possible-c-format
 msgid "The max call depth for user-defined commands is %s.\n"
 msgstr ""
 
 #. Define the classes of commands.
 #. They will appear in the help list in the reverse of this order.
-#: cli/cli-cmds.c:1254
+#: cli/cli-cmds.c:1253
 msgid ""
 "Maintenance commands.\n"
 "Some gdb commands are provided just for use by gdb maintainers.\n"
@@ -3894,42 +3894,42 @@ msgid ""
 "well documented as user commands."
 msgstr ""
 
-#: cli/cli-cmds.c:1260
+#: cli/cli-cmds.c:1259
 msgid "Obscure features."
 msgstr ""
 
-#: cli/cli-cmds.c:1261
+#: cli/cli-cmds.c:1260
 msgid "Aliases of other commands."
 msgstr ""
 
-#: cli/cli-cmds.c:1262
+#: cli/cli-cmds.c:1261
 msgid ""
 "User-defined commands.\n"
 "The commands in this class are those defined by the user.\n"
 "Use the \"define\" command to define a command."
 msgstr ""
 
-#: cli/cli-cmds.c:1266
+#: cli/cli-cmds.c:1265
 msgid "Support facilities."
 msgstr ""
 
-#: cli/cli-cmds.c:1268
+#: cli/cli-cmds.c:1267
 msgid "Status inquiries."
 msgstr ""
 
-#: cli/cli-cmds.c:1269
+#: cli/cli-cmds.c:1268
 msgid "Specifying and examining files."
 msgstr ""
 
-#: cli/cli-cmds.c:1272
+#: cli/cli-cmds.c:1271
 msgid "Making program stop at certain points."
 msgstr ""
 
-#: cli/cli-cmds.c:1273
+#: cli/cli-cmds.c:1272
 msgid "Examining data."
 msgstr ""
 
-#: cli/cli-cmds.c:1274
+#: cli/cli-cmds.c:1273
 msgid ""
 "Examining the stack.\n"
 "The stack is made up of stack frames.  Gdb assigns numbers to stack frames\n"
@@ -3941,23 +3941,23 @@ msgid ""
 "The commands below can be used to select other frames by number or address."
 msgstr ""
 
-#: cli/cli-cmds.c:1283
+#: cli/cli-cmds.c:1282
 msgid "Running the program."
 msgstr ""
 
 #. Define general commands.
-#: cli/cli-cmds.c:1287
+#: cli/cli-cmds.c:1286
 msgid "Print working directory.  This is used for your program as well."
 msgstr ""
 
-#: cli/cli-cmds.c:1289
+#: cli/cli-cmds.c:1288
 msgid ""
 "Set working directory to DIR for debugger and program being debugged.\n"
 "The change does not take effect for the program being debugged\n"
 "until the next time it is started."
 msgstr ""
 
-#: cli/cli-cmds.c:1295
+#: cli/cli-cmds.c:1294
 msgid ""
 "Print a constant string.  Give string as argument.\n"
 "C escape sequences may be used in the argument.\n"
@@ -3968,14 +3968,14 @@ msgid ""
 "to be printed or after trailing whitespace."
 msgstr ""
 
-#: cli/cli-cmds.c:1303
+#: cli/cli-cmds.c:1302
 msgid ""
 "Document a user-defined command.\n"
 "Give command name as argument.  Give documentation on following lines.\n"
 "End with a line of just \"end\"."
 msgstr ""
 
-#: cli/cli-cmds.c:1307
+#: cli/cli-cmds.c:1306
 msgid ""
 "Define a new command name.  Command name is argument.\n"
 "Definition appears on following lines, one command per line.\n"
@@ -3984,7 +3984,7 @@ msgid ""
 "Commands defined in this way may have up to ten arguments."
 msgstr ""
 
-#: cli/cli-cmds.c:1314
+#: cli/cli-cmds.c:1313
 #, possible-c-format
 msgid ""
 "Read commands from a file named FILE.\n"
@@ -3992,71 +3992,71 @@ msgid ""
 "when gdb is started."
 msgstr ""
 
-#: cli/cli-cmds.c:1322
+#: cli/cli-cmds.c:1321
 msgid "Exit gdb."
 msgstr ""
 
-#: cli/cli-cmds.c:1324
+#: cli/cli-cmds.c:1323
 msgid "Print list of commands."
 msgstr ""
 
-#: cli/cli-cmds.c:1329
+#: cli/cli-cmds.c:1328
 msgid "Set verbosity."
 msgstr ""
 
-#: cli/cli-cmds.c:1330
+#: cli/cli-cmds.c:1329
 msgid "Show verbosity."
 msgstr ""
 
-#: cli/cli-cmds.c:1337
+#: cli/cli-cmds.c:1336
 msgid "Generic command for setting command history parameters."
 msgstr ""
 
-#: cli/cli-cmds.c:1340
+#: cli/cli-cmds.c:1339
 msgid "Generic command for showing command history parameters."
 msgstr ""
 
-#: cli/cli-cmds.c:1343
+#: cli/cli-cmds.c:1342
 msgid "Set history expansion on command input."
 msgstr ""
 
-#: cli/cli-cmds.c:1344
+#: cli/cli-cmds.c:1343
 msgid "Show history expansion on command input."
 msgstr ""
 
-#: cli/cli-cmds.c:1345
+#: cli/cli-cmds.c:1344
 msgid "Without an argument, history expansion is enabled."
 msgstr ""
 
-#: cli/cli-cmds.c:1351
+#: cli/cli-cmds.c:1350
 msgid "Generic command for showing things about the program being debugged."
 msgstr ""
 
-#: cli/cli-cmds.c:1357
+#: cli/cli-cmds.c:1356
 msgid "List the completions for the rest of the line as a command."
 msgstr ""
 
-#: cli/cli-cmds.c:1360
+#: cli/cli-cmds.c:1359
 msgid "Generic command for showing things about the debugger."
 msgstr ""
 
 #. Another way to get at the same thing.
-#: cli/cli-cmds.c:1363
+#: cli/cli-cmds.c:1362
 msgid "Show all GDB settings."
 msgstr ""
 
-#: cli/cli-cmds.c:1365
+#: cli/cli-cmds.c:1364
 msgid ""
 "Show the history of commands you typed.\n"
 "You can supply a command number to start with, or a `+' to start after\n"
 "the previous command number shown."
 msgstr ""
 
-#: cli/cli-cmds.c:1372
+#: cli/cli-cmds.c:1371
 msgid "Show what version of GDB this is."
 msgstr ""
 
-#: cli/cli-cmds.c:1374
+#: cli/cli-cmds.c:1373
 msgid ""
 "Execute nested commands WHILE the conditional expression is non zero.\n"
 "The conditional expression must follow the word `while' and must in turn be\n"
@@ -4064,7 +4064,7 @@ msgid ""
 "and should be terminated by the word `end'."
 msgstr ""
 
-#: cli/cli-cmds.c:1380
+#: cli/cli-cmds.c:1379
 msgid ""
 "Execute nested commands once IF the conditional expression is non zero.\n"
 "The conditional expression must follow the word `if' and must in turn be\n"
@@ -4075,63 +4075,63 @@ msgstr ""
 
 #. If target is open when baud changes, it doesn't take effect until the
 #. next open (I think, not sure).
-#: cli/cli-cmds.c:1389
+#: cli/cli-cmds.c:1388
 msgid "Set baud rate for remote serial I/O."
 msgstr ""
 
-#: cli/cli-cmds.c:1390
+#: cli/cli-cmds.c:1389
 msgid "Show baud rate for remote serial I/O."
 msgstr ""
 
-#: cli/cli-cmds.c:1391
+#: cli/cli-cmds.c:1390
 msgid ""
 "This value is used to set the speed of the serial port when debugging\n"
 "using remote targets."
 msgstr ""
 
-#: cli/cli-cmds.c:1398
+#: cli/cli-cmds.c:1397
 msgid "Set debugging of remote protocol."
 msgstr ""
 
-#: cli/cli-cmds.c:1399
+#: cli/cli-cmds.c:1398
 msgid "Show debugging of remote protocol."
 msgstr ""
 
-#: cli/cli-cmds.c:1400
+#: cli/cli-cmds.c:1399
 msgid ""
 "When enabled, each packet sent or received with the remote target\n"
 "is displayed."
 msgstr ""
 
-#: cli/cli-cmds.c:1407
+#: cli/cli-cmds.c:1406
 msgid "Set timeout limit to wait for target to respond."
 msgstr ""
 
-#: cli/cli-cmds.c:1408
+#: cli/cli-cmds.c:1407
 msgid "Show timeout limit to wait for target to respond."
 msgstr ""
 
-#: cli/cli-cmds.c:1409
+#: cli/cli-cmds.c:1408
 msgid ""
 "This value is used to set the time limit for gdb to wait for a response\n"
 "from the target."
 msgstr ""
 
-#: cli/cli-cmds.c:1417
+#: cli/cli-cmds.c:1416
 msgid "Generic command for setting gdb debugging flags"
 msgstr ""
 
-#: cli/cli-cmds.c:1421
+#: cli/cli-cmds.c:1420
 msgid "Generic command for showing gdb debugging flags"
 msgstr ""
 
-#: cli/cli-cmds.c:1424
+#: cli/cli-cmds.c:1423
 msgid ""
 "Execute the rest of the line as a shell command.\n"
 "With no arguments, run an inferior shell."
 msgstr ""
 
-#: cli/cli-cmds.c:1429
+#: cli/cli-cmds.c:1428
 msgid ""
 "Edit specified file or function.\n"
 "With no argument, edits file containing most recent line listed.\n"
@@ -4143,7 +4143,7 @@ msgid ""
 "Uses EDITOR environment variable contents as editor (or ex as default)."
 msgstr ""
 
-#: cli/cli-cmds.c:1441
+#: cli/cli-cmds.c:1440
 msgid ""
 "List specified function or line.\n"
 "With no argument, lists ten more lines after or around previous listing.\n"
@@ -4160,7 +4160,7 @@ msgid ""
 "arg."
 msgstr ""
 
-#: cli/cli-cmds.c:1463
+#: cli/cli-cmds.c:1462
 msgid ""
 "Disassemble a specified section of memory.\n"
 "Default is the function surrounding the pc of the selected frame.\n"
@@ -4168,26 +4168,26 @@ msgid ""
 "Two arguments are taken as a range of memory to dump."
 msgstr ""
 
-#: cli/cli-cmds.c:1481
+#: cli/cli-cmds.c:1480
 msgid "Run the ``make'' program using the rest of the line as arguments."
 msgstr ""
 
-#: cli/cli-cmds.c:1484
+#: cli/cli-cmds.c:1483
 msgid ""
 "Show definitions of user defined commands.\n"
 "Argument is the name of the user defined command.\n"
 "With no argument, show definitions of all user defined commands."
 msgstr ""
 
-#: cli/cli-cmds.c:1489
+#: cli/cli-cmds.c:1488
 msgid "Search for commands matching a REGEXP"
 msgstr ""
 
-#: cli/cli-cmds.c:1492
+#: cli/cli-cmds.c:1491
 msgid "Set the max call depth for user-defined commands."
 msgstr ""
 
-#: cli/cli-cmds.c:1493
+#: cli/cli-cmds.c:1492
 msgid "Show the max call depth for user-defined commands."
 msgstr ""
 
@@ -4658,11 +4658,11 @@ msgstr ""
 #: cli/cli-script.c:1330 common/common-exceptions.c:148
 #: common/common-exceptions.c:165 common/common-exceptions.c:192
 #: complaints.c:297 exceptions.c:155 exceptions.c:172 exceptions.c:203
-#: exceptions.c:262 hppa-tdep.c:2825 hppa-tdep.c:2838 infcall.c:707
+#: exceptions.c:265 hppa-tdep.c:2825 hppa-tdep.c:2838 infcall.c:707
 #: infcmd.c:2195 infrun.c:1579 language.c:912 language.c:938 mi/mi-out.c:401
 #: mi/mi-out.c:422 mips-tdep.c:273 mips-tdep.c:334 mips-tdep.c:698
 #: mips-tdep.c:1195 mips-tdep.c:3411 mips-tdep.c:4299 mn10300-tdep.c:89
-#: reggroups.c:217 remote.c:4267 remote.c:4337 utils.c:950 utils.c:969
+#: reggroups.c:217 remote.c:4267 remote.c:4337 utils.c:951 utils.c:970
 msgid "bad switch"
 msgstr ""
 
@@ -5070,7 +5070,7 @@ msgstr ""
 msgid "Unrecognized watch register style"
 msgstr ""
 
-#: common/print-utils.c:250 utils.c:3284
+#: common/print-utils.c:250 utils.c:3289
 msgid "hex_string_custom: insufficient space to store result"
 msgstr ""
 
@@ -6975,9 +6975,9 @@ msgstr ""
 msgid "Comparison with an invalid number (NaN)."
 msgstr ""
 
-#: dicos-tdep.c:84 dicos-tdep.c:97
+#: dicos-tdep.c:87 dicos-tdep.c:100
 #, possible-c-format
-msgid "Can't read elf symbols from %s: %s"
+msgid "Cannot read elf symbols from %s: %s"
 msgstr ""
 
 #: dictionary.c:571
@@ -8036,23 +8036,23 @@ msgstr ""
 msgid "error detected on stdin\n"
 msgstr ""
 
-#: event-top.c:601 event-top.c:639 top.c:614
+#: event-top.c:601 event-top.c:639 top.c:615
 #, possible-c-format
 msgid "Command execution time: %ld.%06ld\n"
 msgstr ""
 
-#: event-top.c:612 event-top.c:649 top.c:625
+#: event-top.c:612 event-top.c:649 top.c:626
 #, possible-c-format
 msgid "Space used: %ld (%c%ld for this command)\n"
 msgstr ""
 
 #. This message is based on ANSI C, section 4.7. Note that integer
 #. divide by zero causes this, so "float" is a misnomer.
-#: event-top.c:1158 top.c:844
+#: event-top.c:1158 top.c:845
 msgid "Erroneous arithmetic operation."
 msgstr ""
 
-#: exceptions.c:338
+#: exceptions.c:341
 msgid "Bad switch."
 msgstr ""
 
@@ -9435,7 +9435,7 @@ msgstr ""
 msgid "Unmatched ) or \\)"
 msgstr ""
 
-#: gnulib/import/regcomp.c:711
+#: gnulib/import/regcomp.c:687
 msgid "No previous regular expression"
 msgstr ""
 
@@ -13130,7 +13130,7 @@ msgstr ""
 msgid "return of value > 4 is not supported."
 msgstr ""
 
-#: m68hc11-tdep.c:1338 sh-tdep.c:1219
+#: m68hc11-tdep.c:1338 sh-tdep.c:1221
 msgid "bad size for return value"
 msgstr ""
 
@@ -13795,11 +13795,11 @@ msgstr ""
 msgid "gdb was not built with support for printing thread details"
 msgstr ""
 
-#: macosx/macosx-nat-mutils.c:2301
+#: macosx/macosx-nat-mutils.c:2302
 msgid "Set if printing inferior memory debugging statements."
 msgstr ""
 
-#: macosx/macosx-nat-mutils.c:2302
+#: macosx/macosx-nat-mutils.c:2303
 msgid "Show if printing inferior memory debugging statements."
 msgstr ""
 
@@ -14753,7 +14753,7 @@ msgid "Error reading ECOFF debugging information: %s"
 msgstr ""
 
 #: mem-break.c:68 mem-break.c:102 microblaze-linux-tdep.c:53
-#: ppc-linux-tdep.c:470
+#: ppc-linux-tdep.c:475
 msgid "Software breakpoints not implemented for this target."
 msgstr ""
 
@@ -15150,15 +15150,15 @@ msgstr ""
 msgid "%s: Unknown option ``%s''"
 msgstr ""
 
-#: mi/mi-main.c:804
+#: mi/mi-main.c:805
 msgid "mi_cmd_file_fix_file: bad arguments(?)\n"
 msgstr ""
 
-#: mi/mi-main.c:2604
+#: mi/mi-main.c:2605
 msgid "Set whether timing information is displayed for mi commands."
 msgstr ""
 
-#: mi/mi-main.c:2605
+#: mi/mi-main.c:2606
 msgid "Show whether timing information is displayed for mi commands."
 msgstr ""
 
@@ -15261,12 +15261,12 @@ msgstr ""
 msgid "GDB can't find the start of the function at 0x%s."
 msgstr ""
 
-#: mips-tdep.c:3887 mips-tdep.c:4125
+#: mips-tdep.c:3887 mips-tdep.c:4125 sh-tdep.c:2048
 #, possible-c-format
 msgid "cannot read register %d (%s)"
 msgstr ""
 
-#: mips-tdep.c:3922 sh-tdep.c:2038
+#: mips-tdep.c:3922
 #, possible-c-format
 msgid "can't read register %d (%s)"
 msgstr ""
@@ -15275,7 +15275,7 @@ msgstr ""
 msgid "mips_read_fp_register_double: bad access to odd-numbered FP register"
 msgstr ""
 
-#: mips-tdep.c:4161 sh-tdep.c:2115
+#: mips-tdep.c:4161 sh-tdep.c:2131
 msgid "Not a valid register for the current processor type"
 msgstr ""
 
@@ -15445,131 +15445,131 @@ msgstr ""
 msgid "mn10300_gdbarch_init: Unknown mn10300 variant"
 msgstr ""
 
-#: monitor.c:276
+#: monitor.c:277
 #, possible-c-format
 msgid "%s (0x%s): %s: %s%c"
 msgstr ""
 
-#: monitor.c:279
+#: monitor.c:280
 #, possible-c-format
 msgid "%s (0x%s): %s: %s"
 msgstr ""
 
-#: monitor.c:294 rom68k-rom.c:57
+#: monitor.c:295 rom68k-rom.c:57
 #, possible-c-format
 msgid "Invalid hex digit %d"
 msgstr ""
 
 #. Polls shouldn't generate timeout errors
-#: monitor.c:458 monitor.c:533 remote-e7000.c:215 remote-st.c:117
-#: remote-utils.c:242
+#: monitor.c:459 monitor.c:534 remote-e7000.c:215 remote-st.c:117
+#: remote-utils.c:243
 msgid "Timeout reading from remote system."
 msgstr ""
 
-#: monitor.c:460 monitor.c:535
+#: monitor.c:461 monitor.c:536
 msgid "remote-monitor"
 msgstr ""
 
-#: monitor.c:529
+#: monitor.c:530
 msgid "GDB serial timeout has expired.  Target detached."
 msgstr ""
 
-#: monitor.c:751
+#: monitor.c:758
 #, possible-c-format
 msgid "compile_pattern: Cannot compile pattern string `%s': %s!"
 msgstr ""
 
-#: monitor.c:767
+#: monitor.c:774
 msgid "Magic number of monitor_ops struct wrong."
 msgstr ""
 
-#: monitor.c:773 remote-array.c:569
+#: monitor.c:780 remote-array.c:569
 #, possible-c-format
 msgid ""
 "Use `target %s DEVICE-NAME' to use a serial port, or \n"
 "`target %s HOST-NAME:PORT-NUMBER' to use a network connection."
 msgstr ""
 
-#: monitor.c:873
+#: monitor.c:880
 #, possible-c-format
 msgid "Remote target %s connected to %s\n"
 msgstr ""
 
-#: monitor.c:913
+#: monitor.c:920
 #, possible-c-format
 msgid "Ending remote %s debugging\n"
 msgstr ""
 
-#: monitor.c:951
+#: monitor.c:958
 #, possible-c-format
 msgid "monitor_supply_register (%d):  bad value from monitor: %s."
 msgstr ""
 
-#: monitor.c:1024
+#: monitor.c:1031
 msgid "Unable to parse.\n"
 msgstr ""
 
-#: monitor.c:1253
+#: monitor.c:1260
 #, possible-c-format
 msgid "Bad value returned from monitor while fetching register %x."
 msgstr ""
 
-#: monitor.c:1442
+#: monitor.c:1449
 #, possible-c-format
 msgid "\tAttached to %s at %d baud.\n"
 msgstr ""
 
-#: monitor.c:1979
+#: monitor.c:1986
 msgid "Failed to read via monitor"
 msgstr ""
 
-#: monitor.c:2059
+#: monitor.c:2066
 msgid "Args are not supported by the monitor."
 msgstr ""
 
-#: monitor.c:2088
+#: monitor.c:2095
 msgid "No set_break defined for this monitor"
 msgstr ""
 
-#: monitor.c:2109
+#: monitor.c:2116
 #, possible-c-format
 msgid "Too many breakpoints (> %d) for monitor."
 msgstr ""
 
-#: monitor.c:2121
+#: monitor.c:2128
 msgid "No clr_break defined for this monitor"
 msgstr ""
 
-#: monitor.c:2249 remote-os9k.c:1022
+#: monitor.c:2256 remote-os9k.c:1022
 msgid "monitor target not open."
 msgstr ""
 
-#: monitor.c:2280 remote-array.c:1469
+#: monitor.c:2287 remote-array.c:1469
 #, possible-c-format
 msgid "Reply contains invalid hex digit 0x%x"
 msgstr ""
 
-#: monitor.c:2339
+#: monitor.c:2346
 msgid "Set display of activity while downloading a file."
 msgstr ""
 
-#: monitor.c:2340
+#: monitor.c:2347
 msgid "Show display of activity while downloading a file."
 msgstr ""
 
-#: monitor.c:2341
+#: monitor.c:2348
 msgid "When enabled, a hashmark '#' is displayed."
 msgstr ""
 
-#: monitor.c:2347
+#: monitor.c:2354
 msgid "Set debugging of remote monitor communication."
 msgstr ""
 
-#: monitor.c:2348
+#: monitor.c:2355
 msgid "Show debugging of remote monitor communication."
 msgstr ""
 
-#: monitor.c:2349
+#: monitor.c:2356
 msgid ""
 "When enabled, communication between GDB and the remote monitor\n"
 "is displayed."
@@ -15877,7 +15877,7 @@ msgid "Failed to connect to OCD."
 msgstr ""
 
 #: ocd.c:333 remote-es.c:487 remote-es.c:1953 remote-mips.c:1678
-#: remote-utils.c:437 remote.c:2863
+#: remote-utils.c:438 remote.c:2863
 msgid "Argument given to \"detach\" when remotely debugging."
 msgstr ""
 
@@ -16909,7 +16909,7 @@ msgstr ""
 msgid "  Number of psym tables (not yet expanded): %d\n"
 msgstr ""
 
-#: psymtab.c:1859 symmisc.c:859
+#: psymtab.c:1859 symmisc.c:860
 msgid "print-psymbols takes an output file name and optional symbol file name"
 msgstr ""
 
@@ -18126,7 +18126,7 @@ msgstr ""
 msgid "Cannot pass arguments to remote E7000DEBUG process"
 msgstr ""
 
-#: remote-e7000.c:385 remote-m32r-sdi.c:322 remote-st.c:250 remote-utils.c:497
+#: remote-e7000.c:385 remote-m32r-sdi.c:322 remote-st.c:250 remote-utils.c:498
 msgid "No executable file specified"
 msgstr ""
 
@@ -18164,7 +18164,7 @@ msgstr ""
 msgid "Memory read error"
 msgstr ""
 
-#: remote-e7000.c:1581 symfile.c:2191 tracefile.c:328
+#: remote-e7000.c:1581 sparcl-tdep.c:585 symfile.c:2191 tracefile.c:328
 #, possible-c-format
 msgid "unknown option `%s'"
 msgstr ""
@@ -18579,7 +18579,7 @@ msgstr ""
 msgid "remote-st2000"
 msgstr ""
 
-#: remote-st.c:202 remote-utils.c:359
+#: remote-st.c:202 remote-utils.c:360
 msgid "Invalid hex digit from remote system."
 msgstr ""
 
@@ -18615,36 +18615,36 @@ msgstr ""
 msgid "program to attach"
 msgstr ""
 
-#: remote-utils.c:90
+#: remote-utils.c:91
 #, possible-c-format
 msgid ""
 "Usage: target %s [DEVICE [SPEED [DEBUG]]]\n"
 "where DEVICE is the name of a device or HOST:PORT"
 msgstr ""
 
-#: remote-utils.c:300
+#: remote-utils.c:301
 msgid "sr_write: Error writing to remote"
 msgstr ""
 
-#: remote-utils.c:494
+#: remote-utils.c:495
 msgid "Cannot pass arguments to remote process."
 msgstr ""
 
 #. FIXME-now: if target is open...
-#: remote-utils.c:623
+#: remote-utils.c:624
 msgid "Set device for remote serial I/O."
 msgstr ""
 
-#: remote-utils.c:624
+#: remote-utils.c:625
 msgid "Show device for remote serial I/O."
 msgstr ""
 
-#: remote-utils.c:625
+#: remote-utils.c:626
 msgid ""
 "This device is used as the serial port when debugging using remote targets."
 msgstr ""
 
-#: remote-utils.c:632
+#: remote-utils.c:633
 msgid "Send a command to the remote monitor."
 msgstr ""
 
@@ -18695,7 +18695,7 @@ msgstr ""
 msgid "Use the \"run\" command to start a VxWorks process."
 msgstr ""
 
-#: remote.c:600 remote.c:5551 remote.c:5808
+#: remote.c:600 remote.c:5554 remote.c:5811
 msgid "command can only be used with remote target"
 msgstr ""
 
@@ -18966,157 +18966,157 @@ msgstr ""
 msgid "Ignoring packet error, continuing...\n"
 msgstr ""
 
-#: remote.c:5260
+#: remote.c:5263
 #, possible-c-format
 msgid "hw_bp_to_z: bad watchpoint type %d"
 msgstr ""
 
-#: remote.c:5274
+#: remote.c:5277
 #, possible-c-format
 msgid "Cannot set hardware watchpoints without the '%s' (%s) packet."
 msgstr ""
 
-#: remote.c:5296
+#: remote.c:5299
 msgid "remote_insert_watchpoint: reached end of function"
 msgstr ""
 
-#: remote.c:5310
+#: remote.c:5313
 #, possible-c-format
 msgid "Cannot clear hardware watchpoints without the '%s' (%s) packet."
 msgstr ""
 
-#: remote.c:5331
+#: remote.c:5334
 msgid "remote_remove_watchpoint: reached end of function"
 msgstr ""
 
-#: remote.c:5401
+#: remote.c:5404
 #, possible-c-format
 msgid "Cannot set hardware breakpoint without the '%s' (%s) packet."
 msgstr ""
 
-#: remote.c:5425
+#: remote.c:5428
 msgid "remote_insert_hw_breakpoint: reached end of function"
 msgstr ""
 
-#: remote.c:5443
+#: remote.c:5446
 #, possible-c-format
 msgid "Cannot clear hardware breakpoint without the '%s' (%s) packet."
 msgstr ""
 
-#: remote.c:5467
+#: remote.c:5470
 msgid "remote_remove_hw_breakpoint: reached end of function"
 msgstr ""
 
-#: remote.c:5483
+#: remote.c:5486
 msgid "Switching to remote protocol\n"
 msgstr ""
 
-#: remote.c:5548
+#: remote.c:5551
 msgid "command cannot be used without an exec file"
 msgstr ""
 
-#: remote.c:5582
+#: remote.c:5585
 #, possible-c-format
 msgid "target memory fault, section %s, range 0x%s -- 0x%s"
 msgstr ""
 
-#: remote.c:5585
+#: remote.c:5588
 msgid "remote target does not support this operation"
 msgstr ""
 
-#: remote.c:5603
+#: remote.c:5606
 msgid ""
 "One or more sections of the remote executable does not match\n"
 "the loaded file\n"
 msgstr ""
 
-#: remote.c:5606
+#: remote.c:5609
 #, possible-c-format
 msgid "No loaded section named '%s'.\n"
 msgstr ""
 
-#: remote.c:5710
+#: remote.c:5713
 msgid "remote query is only available after target open"
 msgstr ""
 
-#: remote.c:5752
+#: remote.c:5755
 msgid "remote rcmd is only available after target open"
 msgstr ""
 
 #. misc
-#: remote.c:5763
+#: remote.c:5766
 #, possible-c-format
 msgid "\"monitor\" command ``%s'' is too long."
 msgstr ""
 
-#: remote.c:5769
+#: remote.c:5772
 msgid "Communication problem with target."
 msgstr ""
 
-#: remote.c:5778 tracepoint.c:207 tracepoint.c:1758
+#: remote.c:5781 tracepoint.c:207 tracepoint.c:1758
 msgid "Target does not support this command."
 msgstr ""
 
-#: remote.c:5789
+#: remote.c:5792
 msgid "Protocol error with Rcmd"
 msgstr ""
 
-#: remote.c:5811
+#: remote.c:5814
 msgid "remote-packet command requires packet text as argument"
 msgstr ""
 
-#: remote.c:5858
+#: remote.c:5861
 msgid "Remote threadset test\n"
 msgstr ""
 
-#: remote.c:5965
+#: remote.c:5968
 msgid "Fetch and print the remote list of thread identifiers, one pkt only"
 msgstr ""
 
-#: remote.c:5968
+#: remote.c:5971
 msgid "Fetch and display info about one thread"
 msgstr ""
 
-#: remote.c:5970
+#: remote.c:5973
 msgid "Test setting to a different thread"
 msgstr ""
 
-#: remote.c:5972
+#: remote.c:5975
 msgid "Iterate through updating all remote thread info"
 msgstr ""
 
-#: remote.c:5974
+#: remote.c:5977
 msgid " Remote thread alive test "
 msgstr ""
 
-#: remote.c:6025
+#: remote.c:6028
 msgid "Remote target doesn't support qGetTLSAddr packet"
 msgstr ""
 
-#: remote.c:6028
+#: remote.c:6031
 msgid "Remote target failed to process qGetTLSAddr request"
 msgstr ""
 
-#: remote.c:6032
+#: remote.c:6035
 msgid "TLS not supported or disabled on this target"
 msgstr ""
 
-#: remote.c:6145
+#: remote.c:6148
 msgid "Calling remote_async when async is masked"
 msgstr ""
 
-#: remote.c:6623
+#: remote.c:6626
 msgid ""
 "an executable must be specified before attaching to a remote-macosx target"
 msgstr ""
 
-#: remote.c:6851
+#: remote.c:6854
 msgid "Switching to remote-macosx protocol\n"
 msgstr ""
 
 #. set/show remote ...
 #. allow-unknown
-#: remote.c:6902 remote.c:6908
+#: remote.c:6905 remote.c:6911
 msgid ""
 "Remote protocol specific variables\n"
 "Configure various remote-protocol specific variables such as\n"
@@ -19124,13 +19124,13 @@ msgid ""
 msgstr ""
 
 #. allow-unknown
-#: remote.c:6915
+#: remote.c:6918
 msgid ""
 "Compare section data on target to the exec file.\n"
 "Argument is a single section name (default: all loaded sections)."
 msgstr ""
 
-#: remote.c:6920
+#: remote.c:6923
 msgid ""
 "Send an arbitrary packet to a remote target.\n"
 "   maintenance packet TEXT\n"
@@ -19140,28 +19140,28 @@ msgid ""
 "terminating `#' character and checksum."
 msgstr ""
 
-#: remote.c:6929
+#: remote.c:6932
 msgid "Set whether to send break if interrupted."
 msgstr ""
 
-#: remote.c:6930
+#: remote.c:6933
 msgid "Show whether to send break if interrupted."
 msgstr ""
 
-#: remote.c:6931
+#: remote.c:6934
 msgid "If set, a break, instead of a cntrl-c, is sent to the remote target."
 msgstr ""
 
 #. Install commands for configuring memory read/write packets.
-#: remote.c:6938
+#: remote.c:6941
 msgid "Set the maximum number of bytes per memory write packet (deprecated)."
 msgstr ""
 
-#: remote.c:6941
+#: remote.c:6944
 msgid "Show the maximum number of bytes per memory write packet (deprecated)."
 msgstr ""
 
-#: remote.c:6945
+#: remote.c:6948
 msgid ""
 "Set the maximum remote packet size in bytes (must be set prior to target\n"
 "remote connection).\n"
@@ -19171,11 +19171,11 @@ msgid ""
 "value."
 msgstr ""
 
-#: remote.c:6951
+#: remote.c:6954
 msgid "Show the maximum remote packet size in bytes."
 msgstr ""
 
-#: remote.c:6955
+#: remote.c:6958
 msgid ""
 "Set the maximum number of bytes per memory-write packet.\n"
 "Specify the number of bytes in a packet or 0 (zero) for the\n"
@@ -19184,7 +19184,7 @@ msgid ""
 "further restriction and ``limit'' to enable that restriction."
 msgstr ""
 
-#: remote.c:6963
+#: remote.c:6966
 msgid ""
 "Set the maximum number of bytes per memory-read packet.\n"
 "Specify the number of bytes in a packet or 0 (zero) for the\n"
@@ -19193,65 +19193,65 @@ msgid ""
 "further restriction and ``limit'' to enable that restriction."
 msgstr ""
 
-#: remote.c:6972
+#: remote.c:6975
 msgid "Show the maximum number of bytes per memory-write packet."
 msgstr ""
 
-#: remote.c:6976
+#: remote.c:6979
 msgid "Show the maximum number of bytes per memory-read packet."
 msgstr ""
 
-#: remote.c:6980
+#: remote.c:6983
 msgid "Set the maximum number of target hardware watchpoints."
 msgstr ""
 
-#: remote.c:6981
+#: remote.c:6984
 msgid "Show the maximum number of target hardware watchpoints."
 msgstr ""
 
-#: remote.c:6982 remote.c:6989
+#: remote.c:6985 remote.c:6992
 msgid "Specify a negative limit for unlimited."
 msgstr ""
 
-#: remote.c:6987
+#: remote.c:6990
 msgid "Set the maximum number of target hardware breakpoints."
 msgstr ""
 
-#: remote.c:6988
+#: remote.c:6991
 msgid "Show the maximum number of target hardware breakpoints."
 msgstr ""
 
-#: remote.c:6995
+#: remote.c:6998
 msgid "Set the maximum size of the address (in bits) in a memory packet."
 msgstr ""
 
-#: remote.c:6996
+#: remote.c:6999
 msgid "Show the maximum size of the address (in bits) in a memory packet."
 msgstr ""
 
-#: remote.c:7087
+#: remote.c:7090
 msgid "Set use of remote protocol `Z' packets"
 msgstr ""
 
-#: remote.c:7088
+#: remote.c:7091
 msgid "Show use of remote protocol `Z' packets "
 msgstr ""
 
-#: remote.c:7089
+#: remote.c:7092
 msgid ""
 "When set, GDB will attempt to use the remote breakpoint and watchpoint\n"
 "packets."
 msgstr ""
 
-#: remote.c:7101
+#: remote.c:7104
 msgid "Set use of remote protocol without ACK packets, if available"
 msgstr ""
 
-#: remote.c:7102
+#: remote.c:7105
 msgid "Show use of remote protocol without ACK packets"
 msgstr ""
 
-#: remote.c:7103
+#: remote.c:7106
 msgid ""
 "When set, GDB will attempt to communicate with the remote stub without "
 "ACKing packets.\n"
@@ -19428,21 +19428,25 @@ msgstr ""
 msgid "Stack overflow"
 msgstr ""
 
-#: s390-linux-tdep.c:2795 s390-tdep.c:2634
+#: s390-linux-tdep.c:2795 s390-tdep.c:2625
 msgid "unknown argument type"
 msgstr ""
 
-#: s390-linux-tdep.c:2904 s390-linux-tdep.c:2937 s390-tdep.c:2735
-#: s390-tdep.c:2767
+#: s390-linux-tdep.c:2904 s390-linux-tdep.c:2937 s390-tdep.c:2726
+#: s390-tdep.c:2762
 msgid "invalid return type"
 msgstr ""
 
-#: s390-linux-tdep.c:2908 s390-tdep.c:2739
+#: s390-linux-tdep.c:2908 s390-tdep.c:2730
 msgid "Cannot set function return value."
 msgstr ""
 
-#: s390-linux-tdep.c:2941 s390-tdep.c:2771
+#: s390-linux-tdep.c:2941 s390-tdep.c:2766
 msgid "Function return value unknown."
+msgstr ""
+
+#: s390-tdep.c:2734 s390-tdep.c:2770
+msgid "unhandled case"
 msgstr ""
 
 #: scm-lang.c:120
@@ -19637,29 +19641,29 @@ msgstr ""
 msgid "When non-zero, serial port debugging is enabled."
 msgstr ""
 
-#: sh-tdep.c:1868
+#: sh-tdep.c:1875
 msgid "sh_register_convert_to_raw called with non DR register number"
 msgstr ""
 
-#: sh-tdep.c:2016 sh64-tdep.c:2013
+#: sh-tdep.c:2025 sh64-tdep.c:2013
 #, possible-c-format
 msgid "Invalid pseudo register number %d\n"
 msgstr ""
 
-#: sh-tdep.c:2091 sh64-tdep.c:2101
+#: sh-tdep.c:2107 sh64-tdep.c:2101
 #, possible-c-format
 msgid "Invalid register number %d\n"
 msgstr ""
 
-#: sh-tdep.c:2698
+#: sh-tdep.c:2717
 msgid "Print all registers"
 msgstr ""
 
-#: sh3-rom.c:279 sh3-rom.c:333
+#: sh3-rom.c:281 sh3-rom.c:335
 msgid "Unable to open parallel port."
 msgstr ""
 
-#: sh3-rom.c:291 sh3-rom.c:344
+#: sh3-rom.c:293 sh3-rom.c:346
 msgid "Target is not an SH3"
 msgstr ""
 
@@ -20676,6 +20680,71 @@ msgstr ""
 
 #: sparc-nat.c:291
 msgid "Couldn't get StackGhost cookie"
+msgstr ""
+
+#: sparcl-tdep.c:306
+msgid "SPARClite remote connection closed"
+msgstr ""
+
+#: sparcl-tdep.c:310
+msgid "SPARClite remote timeout"
+msgstr ""
+
+#: sparcl-tdep.c:407
+#, possible-c-format
+msgid "Short count in send: tried %d, sent %d\n"
+msgstr ""
+
+#: sparcl-tdep.c:419
+msgid ""
+"You need to specify what device or hostname is associated with the SparcLite "
+"board."
+msgstr ""
+
+#: sparcl-tdep.c:448
+msgid "Must specify either `serial' or `udp'."
+msgstr ""
+
+#: sparcl-tdep.c:457
+msgid ""
+"Usage: target sparclite serial /dev/ttyb\n"
+"or: target sparclite udp host"
+msgstr ""
+
+#: sparcl-tdep.c:470
+#, possible-c-format
+msgid "Unknown response (0x%x) from SparcLite.  Try resetting the board."
+msgstr ""
+
+#: sparcl-tdep.c:476
+msgid "Sparclite appears to be ill."
+msgstr ""
+
+#: sparcl-tdep.c:490
+#, possible-c-format
+msgid "No such host %s."
+msgstr ""
+
+#: sparcl-tdep.c:509
+msgid "SPARClite is failing to respond."
+msgstr ""
+
+#: sparcl-tdep.c:512
+msgid "SPARClite appears to be ill."
+msgstr ""
+
+#: sparcl-tdep.c:706
+#, possible-c-format
+msgid "Cannot start SparcLite.  Error code %d\n"
+msgstr ""
+
+#: sparcl-tdep.c:730
+#, possible-c-format
+msgid "Bad response from load command (0x%x)"
+msgstr ""
+
+#: sparcl-tdep.c:839
+msgid "Got back bad response for load data."
 msgstr ""
 
 #: spu-tdep.c:1944 spu-tdep.c:2001 spu-tdep.c:2122 spu-tdep.c:2363
@@ -21875,11 +21944,11 @@ msgstr ""
 msgid "internal error:  minimal symbol count %d != %d"
 msgstr ""
 
-#: symmisc.c:593
+#: symmisc.c:594
 msgid "Arguments missing: an output file name and an optional symbol file name"
 msgstr ""
 
-#: symmisc.c:1010
+#: symmisc.c:1011
 msgid "print-msymbols takes an output file name and optional symbol file name"
 msgstr ""
 
@@ -22287,71 +22356,71 @@ msgstr ""
 msgid "unexpected length %d of arg %d"
 msgstr ""
 
-#: top.c:112
+#: top.c:113
 #, possible-c-format
 msgid "Whether to confirm potentially dangerous operations is %s.\n"
 msgstr ""
 
-#: top.c:487
+#: top.c:488
 msgid "Cannot execute this command while the target is running."
 msgstr ""
 
-#: top.c:523
+#: top.c:524
 msgid "That is not a command, just a help topic."
 msgstr ""
 
-#: top.c:761
+#: top.c:762
 #, possible-c-format
 msgid "Saving of the history record on exit is %s.\n"
 msgstr ""
 
-#: top.c:770
+#: top.c:771
 #, possible-c-format
 msgid "The size of the command history is %s.\n"
 msgstr ""
 
-#: top.c:779
+#: top.c:780
 #, possible-c-format
 msgid "The filename in which to record the command history is \"%s\".\n"
 msgstr ""
 
-#: top.c:1418
+#: top.c:1419
 msgid "History size must be non-negative"
 msgstr ""
 
-#: top.c:1426
+#: top.c:1427
 msgid "\"set history\" must be followed by the name of a history subcommand.\n"
 msgstr ""
 
-#: top.c:1511
+#: top.c:1512
 #, possible-c-format
 msgid "Gdb's prompt is \"%s\".\n"
 msgstr ""
 
-#: top.c:1519
+#: top.c:1520
 #, possible-c-format
 msgid "Editing of command lines as they are typed is %s.\n"
 msgstr ""
 
-#: top.c:1529
+#: top.c:1530
 #, possible-c-format
 msgid "Annotation_level is %s.\n"
 msgstr ""
 
-#: top.c:1537
+#: top.c:1538
 #, possible-c-format
 msgid "Notification of completion for asynchronous execution commands is %s.\n"
 msgstr ""
 
-#: top.c:1581
+#: top.c:1582
 msgid "Set gdb's prompt"
 msgstr ""
 
-#: top.c:1582
+#: top.c:1583
 msgid "Show gdb's prompt"
 msgstr ""
 
-#: top.c:1588
+#: top.c:1589
 msgid ""
 "Don't repeat this command.\n"
 "Primarily used inside of user-defined commands that should not be repeated "
@@ -22359,90 +22428,90 @@ msgid ""
 "hitting return."
 msgstr ""
 
-#: top.c:1594
+#: top.c:1595
 msgid "Set editing of command lines as they are typed."
 msgstr ""
 
-#: top.c:1595
+#: top.c:1596
 msgid "Show editing of command lines as they are typed."
 msgstr ""
 
-#: top.c:1596
+#: top.c:1597
 msgid ""
 "Use \"on\" to enable the editing, and \"off\" to disable it.\n"
 "Without an argument, command line editing is enabled.  To edit, use\n"
 "EMACS-like or VI-like commands like control-P or ESC."
 msgstr ""
 
-#: top.c:1609
+#: top.c:1610
 msgid "Set saving of the history record on exit."
 msgstr ""
 
-#: top.c:1610
+#: top.c:1611
 msgid "Show saving of the history record on exit."
 msgstr ""
 
-#: top.c:1611
+#: top.c:1612
 msgid ""
 "Use \"on\" to enable the saving, and \"off\" to disable it.\n"
 "Without an argument, saving is enabled."
 msgstr ""
 
-#: top.c:1618
+#: top.c:1619
 msgid "Set the size of the command history,"
 msgstr ""
 
-#: top.c:1619
+#: top.c:1620
 msgid "Show the size of the command history,"
 msgstr ""
 
-#: top.c:1620
+#: top.c:1621
 msgid "ie. the number of previous commands to keep a record of."
 msgstr ""
 
-#: top.c:1626
+#: top.c:1627
 msgid "Set the filename in which to record the command history"
 msgstr ""
 
-#: top.c:1627
+#: top.c:1628
 msgid "Show the filename in which to record the command history"
 msgstr ""
 
-#: top.c:1628
+#: top.c:1629
 msgid "(the list of previous commands of which a record is kept)."
 msgstr ""
 
-#: top.c:1634
+#: top.c:1635
 msgid "Set whether to confirm potentially dangerous operations."
 msgstr ""
 
-#: top.c:1635
+#: top.c:1636
 msgid "Show whether to confirm potentially dangerous operations."
 msgstr ""
 
-#: top.c:1641
+#: top.c:1642
 msgid "Set annotation_level."
 msgstr ""
 
-#: top.c:1642
+#: top.c:1643
 msgid "Show annotation_level."
 msgstr ""
 
-#: top.c:1643
+#: top.c:1644
 msgid ""
 "0 == normal;     1 == fullname (for use when running under emacs)\n"
 "2 == output annotated suitably for use by programs that control GDB."
 msgstr ""
 
-#: top.c:1651
+#: top.c:1652
 msgid "Set notification of completion for asynchronous execution commands."
 msgstr ""
 
-#: top.c:1652
+#: top.c:1653
 msgid "Show notification of completion for asynchronous execution commands."
 msgstr ""
 
-#: top.c:1653
+#: top.c:1654
 msgid "Use \"on\" to enable the notification, and \"off\" to disable it."
 msgstr ""
 
@@ -22899,11 +22968,11 @@ msgstr ""
 msgid "tui_file_flush: bad magic number"
 msgstr ""
 
-#: tui/tui-hooks.c:91 utils.c:1596
+#: tui/tui-hooks.c:91 utils.c:1597
 msgid "(y or n) "
 msgstr ""
 
-#: tui/tui-hooks.c:122 utils.c:1630
+#: tui/tui-hooks.c:122 utils.c:1631
 msgid "Please answer y or n.\n"
 msgstr ""
 
@@ -23301,34 +23370,34 @@ msgstr ""
 msgid "ui-out internal error in handling headers."
 msgstr ""
 
-#: utils.c:204
+#: utils.c:205
 #, possible-c-format
 msgid "Demangling of encoded C++/ObjC names when displaying symbols is %s.\n"
 msgstr ""
 
-#: utils.c:219
+#: utils.c:220
 #, possible-c-format
 msgid "Demangling of C++/ObjC names in disassembly listings is %s.\n"
 msgstr ""
 
-#: utils.c:234
+#: utils.c:235
 #, possible-c-format
 msgid "Printing of 8-bit characters in strings as \\nnn is %s.\n"
 msgstr ""
 
-#: utils.c:255
+#: utils.c:256
 #, possible-c-format
 msgid "State of pagination is %s.\n"
 msgstr ""
 
-#: utils.c:620
+#: utils.c:621
 msgid "free_current_contents: NULL pointer"
 msgstr ""
 
 #. Default (yes/batch case) is to quit GDB.  When in batch mode
 #. this lessens the likelhood of GDB going into an infinate
 #. loop.
-#: utils.c:941
+#: utils.c:942
 #, possible-c-format
 msgid ""
 "%s\n"
@@ -23338,126 +23407,135 @@ msgstr ""
 #. Default (yes/batch case) is to dump core.  This leaves a GDB
 #. `dropping' so that it is easier to see that something went
 #. wrong in GDB.
-#: utils.c:959
+#: utils.c:960
 #, possible-c-format
 msgid ""
 "%s\n"
 "Create a core file of GDB? "
 msgstr ""
 
-#: utils.c:1230
+#: utils.c:1231
 #, possible-c-format
 msgid "virtual memory exhausted: cannot allocate %ld bytes."
 msgstr ""
 
-#: utils.c:1235
+#: utils.c:1236
 msgid "virtual memory exhausted."
 msgstr ""
 
-#: utils.c:1486
+#: utils.c:1487
 #, possible-c-format
 msgid "vasprintf call failed (errno %d)"
 msgstr ""
 
-#: utils.c:1703
+#: utils.c:1704
 #, possible-c-format
 msgid "(%s or %s) "
 msgstr ""
 
 #. Invalid entries are not defaulted and require another selection.
-#: utils.c:1745
+#: utils.c:1746
 #, possible-c-format
 msgid "Please answer %s or %s.\n"
 msgstr ""
 
-#: utils.c:1800
+#: utils.c:1801
 #, possible-c-format
 msgid "There is no control character `\\%s' in the `%s' character set."
 msgstr ""
 
-#: utils.c:1848
+#: utils.c:1849
 #, possible-c-format
 msgid ""
 "There is no character corresponding to `Delete' in the target character set `"
 "%s'."
 msgstr ""
 
-#: utils.c:1996
+#. Keep the comma and space inside the quotes:
+#: utils.c:1904
+#, possible-c-format
+msgid ""
+"The escape sequence `\\%c' is equivalent to plain `%c', which has no "
+"equivalent\n"
+"in the `%s' character set."
+msgstr ""
+
+#: utils.c:2001
 #, possible-c-format
 msgid "Number of lines gdb thinks are in a page is %s.\n"
 msgstr ""
 
-#: utils.c:2008
+#: utils.c:2013
 #, possible-c-format
 msgid "Number of characters gdb thinks are in a line is %s.\n"
 msgstr ""
 
-#: utils.c:2949
+#: utils.c:2954
 msgid "Set number of characters gdb thinks are in a line."
 msgstr ""
 
-#: utils.c:2950
+#: utils.c:2955
 msgid "Show number of characters gdb thinks are in a line."
 msgstr ""
 
-#: utils.c:2956
+#: utils.c:2961
 msgid "Set number of lines gdb thinks are in a page."
 msgstr ""
 
-#: utils.c:2957
+#: utils.c:2962
 msgid "Show number of lines gdb thinks are in a page."
 msgstr ""
 
-#: utils.c:2970
+#: utils.c:2975
 msgid "Set demangling of encoded C++/ObjC names when displaying symbols."
 msgstr ""
 
-#: utils.c:2971
+#: utils.c:2976
 msgid "Show demangling of encoded C++/ObjC names when displaying symbols."
 msgstr ""
 
-#: utils.c:2978
+#: utils.c:2983
 msgid "Set state of pagination."
 msgstr ""
 
-#: utils.c:2979
+#: utils.c:2984
 msgid "Show state of pagination."
 msgstr ""
 
-#: utils.c:2988
+#: utils.c:2993
 msgid "Enable pagination"
 msgstr ""
 
-#: utils.c:2990
+#: utils.c:2995
 msgid "Disable pagination"
 msgstr ""
 
-#: utils.c:2994
+#: utils.c:2999
 msgid "Set printing of 8-bit characters in strings as \\nnn."
 msgstr ""
 
-#: utils.c:2995
+#: utils.c:3000
 msgid "Show printing of 8-bit characters in strings as \\nnn."
 msgstr ""
 
-#: utils.c:3001
+#: utils.c:3006
 msgid "Set demangling of C++/ObjC names in disassembly listings."
 msgstr ""
 
-#: utils.c:3002
+#: utils.c:3007
 msgid "Show demangling of C++/ObjC names in disassembly listings."
 msgstr ""
 
-#: utils.c:3373
+#: utils.c:3378
 msgid "invalid hex"
 msgstr ""
 
-#: utils.c:3385
+#: utils.c:3390
 msgid "invalid decimal"
 msgstr ""
 
 #. errno should be one of EFAULT, EINVAL, or EPERM:
-#: utils.c:4027
+#: utils.c:4032
 #, possible-c-format
 msgid "Call to setrlimit() failed with errno %d: %s.\n"
 msgstr ""
@@ -24907,7 +24985,7 @@ msgstr ""
 msgid "Couldn't write extended registers"
 msgstr ""
 
-#: xtensa-tdep.c:212
+#: xtensa-tdep.c:211
 #, possible-c-format
 msgid "invalid register %d"
 msgstr ""
@@ -24921,95 +24999,95 @@ msgstr ""
 msgid "size of all masks is larger than the register"
 msgstr ""
 
-#: xtensa-tdep.c:556
+#: xtensa-tdep.c:553
 #, possible-c-format
 msgid "cannot read register %s"
 msgstr ""
 
-#: xtensa-tdep.c:568 xtensa-tdep.c:575
+#: xtensa-tdep.c:565 xtensa-tdep.c:572
 msgid "cannot read register"
 msgstr ""
 
-#: xtensa-tdep.c:654
+#: xtensa-tdep.c:648
 #, possible-c-format
 msgid "cannot write register %s"
 msgstr ""
 
-#: xtensa-tdep.c:666 xtensa-tdep.c:674
+#: xtensa-tdep.c:660 xtensa-tdep.c:668
 msgid "cannot write register"
 msgstr ""
 
-#: xtensa-tdep.c:1473
+#: xtensa-tdep.c:1464
 #, possible-c-format
 msgid "cannot extract return value of %d bytes long"
 msgstr ""
 
-#: xtensa-tdep.c:1527
+#: xtensa-tdep.c:1518
 #, possible-c-format
 msgid "unimplemented for this length: %d"
 msgstr ""
 
-#: xtensa-tdep.c:2510
+#: xtensa-tdep.c:2501
 #, possible-c-format
 msgid ""
 "\n"
 "\tnum_aregs: Number of AR registers (%d) is not a power of two!"
 msgstr ""
 
-#: xtensa-tdep.c:2517
+#: xtensa-tdep.c:2508
 msgid ""
 "\n"
 "\tpc_regnum: No PC register"
 msgstr ""
 
-#: xtensa-tdep.c:2519
+#: xtensa-tdep.c:2510
 msgid ""
 "\n"
 "\tps_regnum: No PS register"
 msgstr ""
 
-#: xtensa-tdep.c:2524
+#: xtensa-tdep.c:2515
 msgid ""
 "\n"
 "\twb_regnum: No WB register"
 msgstr ""
 
-#: xtensa-tdep.c:2526
+#: xtensa-tdep.c:2517
 msgid ""
 "\n"
 "\tws_regnum: No WS register"
 msgstr ""
 
-#: xtensa-tdep.c:2528
+#: xtensa-tdep.c:2519
 msgid ""
 "\n"
 "\tar_base: No AR registers"
 msgstr ""
 
-#: xtensa-tdep.c:2532
+#: xtensa-tdep.c:2523
 msgid ""
 "\n"
 "\ta0_base: No Ax registers"
 msgstr ""
 
-#: xtensa-tdep.c:2538
+#: xtensa-tdep.c:2529
 #, possible-c-format
 msgid "the following are invalid: %s"
 msgstr ""
 
-#: xtensa-tdep.c:2714
+#: xtensa-tdep.c:2704
 msgid "xtensa_dump_tdep(): not implemented"
 msgstr ""
 
-#: xtensa-tdep.c:2730
+#: xtensa-tdep.c:2717
 msgid "Set Xtensa debugging."
 msgstr ""
 
-#: xtensa-tdep.c:2731
+#: xtensa-tdep.c:2718
 msgid "Show Xtensa debugging."
 msgstr ""
 
-#: xtensa-tdep.c:2732
+#: xtensa-tdep.c:2719
 msgid ""
 "When non-zero, Xtensa-specific debugging is enabled. Can be 1, 2, 3, or 4 "
 "indicating the level of debugging."

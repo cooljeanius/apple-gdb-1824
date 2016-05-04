@@ -1965,7 +1965,7 @@ dwarf2_scan_pubtype_for_psymbols(struct partial_symtab *pst,
 #if 0 || 1
 /* Build the partial symbol table from the information in the
  * .debug_pubnames and .debug_aranges sections.  */
-static void
+static void ATTRIBUTE_USED
 dwarf2_build_psymtabs_easy(struct objfile *objfile, int mainline)
 {
   bfd *abfd = objfile->obfd;
@@ -11697,8 +11697,8 @@ dwarf_type_encoding_name(unsigned int enc)
 
 /* Convert a DWARF call frame info operation to its string name: */
 #if 0 || 1
-static const char *
-dwarf_cfi_name(unsigned cfi_opc)
+static ATTRIBUTE_USED const char *
+dwarf_cfi_name(unsigned int cfi_opc)
 {
   switch (cfi_opc)
     {

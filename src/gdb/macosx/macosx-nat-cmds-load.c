@@ -123,7 +123,7 @@ load_plugin(const char *arg, int from_tty)
         error("Unable to dlopen plugin \"%s\", reason: %s",
               path, dlerror());
       }
-    fptr = (void (*)(void))dlsym(ret, init_func_name);
+    fptr = __extension__ (void (*)(void))dlsym(ret, init_func_name);
     if (fptr == NULL)
       {
         dlclose(ret);

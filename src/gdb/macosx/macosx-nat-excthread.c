@@ -456,6 +456,8 @@ macosx_exception_thread_create(macosx_exception_thread_status *s,
 void
 macosx_exception_thread_destroy(macosx_exception_thread_status *s)
 {
+  unsigned char dummybuf[8] = { 0 };
+  (void)dummybuf;
   if (s->exception_thread != THREAD_NULL)
     {
       /* Let us destroy the exception port here, so that we

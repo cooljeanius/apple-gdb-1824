@@ -184,7 +184,7 @@ enum macosx_source_type
   NEXT_SOURCE_SIGNAL = 0x2,
   NEXT_SOURCE_CFM = 0x4,
   NEXT_SOURCE_ERROR = 0x8,
-  NEXT_SOURCE_ALL = 0xf,
+  NEXT_SOURCE_ALL = 0xf
 };
 
 struct macosx_pending_event
