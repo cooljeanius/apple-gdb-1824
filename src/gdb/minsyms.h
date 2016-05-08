@@ -119,11 +119,12 @@ void prim_record_minimal_symbol (const char *, CORE_ADDR,
    - passes COPY_NAME = 0.  */
 
 struct minimal_symbol *prim_record_minimal_symbol_and_info
-    (const char *,
-     CORE_ADDR,
-     enum minimal_symbol_type,
-     int section,
-     struct objfile *);
+    (const char *name,
+     const CORE_ADDR address,
+     const enum minimal_symbol_type ms_type,
+     const int section,
+     const asection *bfd_section,
+     struct objfile *objfile);
 
 /* Install the minimal symbols that have been collected into the given
    objfile.  After this is called, the cleanup returned by

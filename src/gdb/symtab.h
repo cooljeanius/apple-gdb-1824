@@ -1373,16 +1373,17 @@ extern void prim_record_minimal_symbol(const char *, CORE_ADDR,
 				       struct objfile *);
 
 extern struct minimal_symbol *prim_record_minimal_symbol_and_info
-  (const char *, CORE_ADDR, enum minimal_symbol_type, char *info, int section,
-   asection *bfd_section, struct objfile *) ATTRIBUTE_W_U_R;
+  (const char *, CORE_ADDR, const enum minimal_symbol_type, const char *info,
+   const int section, const asection *bfd_section, struct objfile *)
+  ATTRIBUTE_W_U_R;
 
-extern unsigned int msymbol_hash_iw (const char *);
+extern unsigned int msymbol_hash_iw(const char *);
 
-extern unsigned int msymbol_hash (const char *);
+extern unsigned int msymbol_hash(const char *);
 
 extern void
-add_minsym_to_hash_table (struct minimal_symbol *sym,
-			  struct minimal_symbol **table);
+add_minsym_to_hash_table(struct minimal_symbol *sym,
+			 struct minimal_symbol **table);
 
 /* APPLE LOCAL: Add prototype; called over in dwarf2read.c  */
 extern struct minimal_symbol *lookup_minimal_symbol_by_pc_section_from_objfile

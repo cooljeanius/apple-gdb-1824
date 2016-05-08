@@ -1186,10 +1186,11 @@ init_cmd_lists(void)
   showchecklist = NULL;
 }
 
+/* */
 static void
-show_info_verbose (struct ui_file *file, int from_tty,
-		   struct cmd_list_element *c,
-		   const char *value)
+show_info_verbose(struct ui_file *file, int from_tty,
+		  struct cmd_list_element *c,
+		  const char *value)
 {
   if (info_verbose)
     fprintf_filtered (file, _("\

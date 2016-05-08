@@ -370,9 +370,9 @@ do_restore_uiout_cleanup(void *arg)
 }
 
 static void
-do_restore_output (void *data)
+do_restore_output(void *data)
 {
-  ui_file_rewind (gdb_null);
+  ui_file_rewind(gdb_null);
   uiout = (struct ui_out *)data;
 }
 
@@ -2516,18 +2516,18 @@ puts_debug(const char *prefix, const char *string, const char *suffix)
 
   /* If the prefix is changing, print the previous suffix, a new line,
      and the new prefix.  */
-  if ((return_p || (strcmp (prev_prefix, prefix) != 0)) && !new_line)
+  if ((return_p || (strcmp(prev_prefix, prefix) != 0)) && !new_line)
     {
-      fputs_unfiltered (prev_suffix, gdb_stdlog);
-      fputs_unfiltered ("\n", gdb_stdlog);
-      fputs_unfiltered (prefix, gdb_stdlog);
+      fputs_unfiltered(prev_suffix, gdb_stdlog);
+      fputs_unfiltered("\n", gdb_stdlog);
+      fputs_unfiltered(prefix, gdb_stdlog);
     }
 
   /* Print prefix if we printed a newline during the previous call.  */
   if (new_line)
     {
       new_line = 0;
-      fputs_unfiltered (prefix, gdb_stdlog);
+      fputs_unfiltered(prefix, gdb_stdlog);
     }
 
   prev_prefix = prefix;
@@ -2539,45 +2539,44 @@ puts_debug(const char *prefix, const char *string, const char *suffix)
       switch (ch)
 	{
 	default:
-	  if (isprint (ch))
-	    fputc_unfiltered (ch, gdb_stdlog);
-
+	  if (isprint(ch))
+	    fputc_unfiltered(ch, gdb_stdlog);
 	  else
-	    fprintf_unfiltered (gdb_stdlog, "\\x%02x", ch & 0xff);
+	    fprintf_unfiltered(gdb_stdlog, "\\x%02x", (ch & 0xff));
 	  break;
 
 	case '\\':
-	  fputs_unfiltered ("\\\\", gdb_stdlog);
+	  fputs_unfiltered("\\\\", gdb_stdlog);
 	  break;
 	case '\b':
-	  fputs_unfiltered ("\\b", gdb_stdlog);
+	  fputs_unfiltered("\\b", gdb_stdlog);
 	  break;
 	case '\f':
-	  fputs_unfiltered ("\\f", gdb_stdlog);
+	  fputs_unfiltered("\\f", gdb_stdlog);
 	  break;
 	case '\n':
 	  new_line = 1;
-	  fputs_unfiltered ("\\n", gdb_stdlog);
+	  fputs_unfiltered("\\n", gdb_stdlog);
 	  break;
 	case '\r':
-	  fputs_unfiltered ("\\r", gdb_stdlog);
+	  fputs_unfiltered("\\r", gdb_stdlog);
 	  break;
 	case '\t':
-	  fputs_unfiltered ("\\t", gdb_stdlog);
+	  fputs_unfiltered("\\t", gdb_stdlog);
 	  break;
 	case '\v':
-	  fputs_unfiltered ("\\v", gdb_stdlog);
+	  fputs_unfiltered("\\v", gdb_stdlog);
 	  break;
 	}
 
-      return_p = ch == '\r';
+      return_p = (ch == '\r');
     }
 
   /* Print suffix if we printed a newline.  */
   if (new_line)
     {
-      fputs_unfiltered (suffix, gdb_stdlog);
-      fputs_unfiltered ("\n", gdb_stdlog);
+      fputs_unfiltered(suffix, gdb_stdlog);
+      fputs_unfiltered("\n", gdb_stdlog);
     }
 }
 
@@ -2595,132 +2594,133 @@ puts_debug(const char *prefix, const char *string, const char *suffix)
    Note also that a longjmp to top level may occur in this routine
    (since prompt_for_continue may do so) so this routine should not be
    called when cleanups are not in place.  */
-
-static void
-vfprintf_maybe_filtered (struct ui_file *stream, const char *format,
-			 va_list args, int filter)
+static void ATTR_FORMAT(gnu_printf, 2, 0)
+vfprintf_maybe_filtered(struct ui_file *stream, const char *format,
+			va_list args, int filter)
 {
   char *linebuffer;
   struct cleanup *old_cleanups;
 
-  linebuffer = xstrvprintf (format, args);
-  old_cleanups = make_cleanup (xfree, linebuffer);
-  fputs_maybe_filtered (linebuffer, stream, filter);
-  do_cleanups (old_cleanups);
+  linebuffer = xstrvprintf(format, args);
+  old_cleanups = make_cleanup(xfree, linebuffer);
+  fputs_maybe_filtered(linebuffer, stream, filter);
+  do_cleanups(old_cleanups);
 }
 
-
-void
-vfprintf_filtered (struct ui_file *stream, const char *format, va_list args)
+/* */
+void ATTR_FORMAT(gnu_printf, 2, 0)
+vfprintf_filtered(struct ui_file *stream, const char *format, va_list args)
 {
-  vfprintf_maybe_filtered (stream, format, args, 1);
+  vfprintf_maybe_filtered(stream, format, args, 1);
 }
 
-void
-vfprintf_unfiltered (struct ui_file *stream, const char *format, va_list args)
+/* */
+void ATTR_FORMAT(printf, 2, 0)
+vfprintf_unfiltered(struct ui_file *stream, const char *format, va_list args)
 {
   char *linebuffer;
   struct cleanup *old_cleanups;
 
-  linebuffer = xstrvprintf (format, args);
-  old_cleanups = make_cleanup (xfree, linebuffer);
-  fputs_unfiltered (linebuffer, stream);
-  do_cleanups (old_cleanups);
+  linebuffer = xstrvprintf(format, args);
+  old_cleanups = make_cleanup(xfree, linebuffer);
+  fputs_unfiltered(linebuffer, stream);
+  do_cleanups(old_cleanups);
 }
 
-void
-vprintf_filtered (const char *format, va_list args)
+/* */
+void ATTR_FORMAT(printf, 1, 0)
+vprintf_filtered(const char *format, va_list args)
 {
-  vfprintf_maybe_filtered (gdb_stdout, format, args, 1);
+  vfprintf_maybe_filtered(gdb_stdout, format, args, 1);
 }
 
-void
-vprintf_unfiltered (const char *format, va_list args)
+/* */
+void ATTR_FORMAT(printf, 1, 0)
+vprintf_unfiltered(const char *format, va_list args)
 {
-  vfprintf_unfiltered (gdb_stdout, format, args);
+  vfprintf_unfiltered(gdb_stdout, format, args);
 }
 
-void
-fprintf_filtered (struct ui_file *stream, const char *format, ...)
-{
-  va_list args;
-  va_start (args, format);
-  vfprintf_filtered (stream, format, args);
-  va_end (args);
-}
-
-void
-fprintf_unfiltered (struct ui_file *stream, const char *format, ...)
+/* */
+void ATTR_FORMAT(printf, 2, 3)
+fprintf_filtered(struct ui_file *stream, const char *format, ...)
 {
   va_list args;
-  va_start (args, format);
-  vfprintf_unfiltered (stream, format, args);
-  va_end (args);
+  va_start(args, format);
+  vfprintf_filtered(stream, format, args);
+  va_end(args);
+}
+
+/* */
+void ATTR_FORMAT(printf, 2, 3)
+fprintf_unfiltered(struct ui_file *stream, const char *format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  vfprintf_unfiltered(stream, format, args);
+  va_end(args);
 }
 
 /* Like fprintf_filtered, but prints its result indented.
    Called as fprintfi_filtered (spaces, stream, format, ...);  */
-
-void
-fprintfi_filtered (int spaces, struct ui_file *stream, const char *format,
-		   ...)
+void ATTR_FORMAT(printf, 3, 4)
+fprintfi_filtered(int spaces, struct ui_file *stream, const char *format, ...)
 {
   va_list args;
-  va_start (args, format);
-  print_spaces_filtered (spaces, stream);
+  va_start(args, format);
+  print_spaces_filtered(spaces, stream);
 
-  vfprintf_filtered (stream, format, args);
-  va_end (args);
+  vfprintf_filtered(stream, format, args);
+  va_end(args);
 }
 
-
-void
-printf_filtered (const char *format, ...)
+/* */
+void ATTR_FORMAT(printf, 1, 2)
+printf_filtered(const char *format, ...)
 {
   va_list args;
-  va_start (args, format);
-  vfprintf_filtered (gdb_stdout, format, args);
-  va_end (args);
+  va_start(args, format);
+  vfprintf_filtered(gdb_stdout, format, args);
+  va_end(args);
 }
 
-
-void
-printf_unfiltered (const char *format, ...)
+/* */
+void ATTR_FORMAT(printf, 1, 2)
+printf_unfiltered(const char *format, ...)
 {
   va_list args;
-  va_start (args, format);
-  vfprintf_unfiltered (gdb_stdout, format, args);
-  va_end (args);
+  va_start(args, format);
+  vfprintf_unfiltered(gdb_stdout, format, args);
+  va_end(args);
 }
 
-/* Like printf_filtered, but prints it's result indented.
+/* Like printf_filtered, but prints its result indented.
    Called as printfi_filtered (spaces, format, ...);  */
-
-void
-printfi_filtered (int spaces, const char *format, ...)
+void ATTR_FORMAT(printf, 2, 3)
+printfi_filtered(int spaces, const char *format, ...)
 {
   va_list args;
-  va_start (args, format);
-  print_spaces_filtered (spaces, gdb_stdout);
-  vfprintf_filtered (gdb_stdout, format, args);
-  va_end (args);
+  va_start(args, format);
+  print_spaces_filtered(spaces, gdb_stdout);
+  vfprintf_filtered(gdb_stdout, format, args);
+  va_end(args);
 }
 
 /* Easy -- but watch out!
 
    This routine is *not* a replacement for puts()!  puts() appends a newline.
    This one doesn't, and had better not!  */
-
 void
-puts_filtered (const char *string)
+puts_filtered(const char *string)
 {
-  fputs_filtered (string, gdb_stdout);
+  fputs_filtered(string, gdb_stdout);
 }
 
+/* */
 void
-puts_unfiltered (const char *string)
+puts_unfiltered(const char *string)
 {
-  fputs_unfiltered (string, gdb_stdout);
+  fputs_unfiltered(string, gdb_stdout);
 }
 
 /* Return a pointer to N spaces and a null.  The pointer is good
@@ -3036,24 +3036,28 @@ get_cell(void)
   return buf[cell];
 }
 
+/* */
 int
 strlen_paddr(void)
 {
   return (TARGET_ADDR_BIT / 8 * 2);
 }
 
+/* */
 char *
 paddr(CORE_ADDR addr)
 {
   return phex(addr, (TARGET_ADDR_BIT / 8));
 }
 
+/* */
 char *
 paddr_nz(CORE_ADDR addr)
 {
   return phex_nz(addr, (TARGET_ADDR_BIT / 8));
 }
 
+/* */
 const char *
 paddress(CORE_ADDR addr)
 {
@@ -3157,12 +3161,14 @@ octal2str(ULONGEST addr, int width)
   return str;
 }
 
+/* */
 char *
 paddr_u(CORE_ADDR addr)
 {
   return decimal2str("", addr, 0);
 }
 
+/* */
 char *
 paddr_d(LONGEST addr)
 {
@@ -3172,9 +3178,9 @@ paddr_d(LONGEST addr)
     return decimal2str("", (ULONGEST)addr, 0);
 }
 
-/* Eliminate warning from compiler on 32-bit systems.  */
+/* Eliminate warning from compiler on 32-bit systems: */
 static int thirty_two = 32;
-
+/* */
 char *
 phex(ULONGEST l, int sizeof_l)
 {
@@ -3204,6 +3210,7 @@ phex(ULONGEST l, int sizeof_l)
   return str;
 }
 
+/* */
 char *
 phex_nz(ULONGEST l, int sizeof_l)
 {
@@ -3248,6 +3255,7 @@ gdb_check(const char *str, const char *file, unsigned int line,
         line, file, func, str);
 }
 
+/* fatal variant: */
 void ATTR_NORETURN
 gdb_check_fatal(const char *str, const char *file, unsigned int line,
                 const char *func)
@@ -3349,6 +3357,7 @@ core_addr_to_string(const CORE_ADDR addr)
   return str;
 }
 
+/* */
 const char *
 core_addr_to_string_nz(const CORE_ADDR addr)
 {
@@ -3987,6 +3996,7 @@ free_uuids_array(uint8_t **uuids)
   xfree(uuids);
 }
 
+/* */
 char *
 puuid(uint8_t *uuid)
 {
@@ -4069,6 +4079,7 @@ re_set_syntax(int newflags)
   return oldflags;
 }
 
+/* */
 const char *
 re_comp(const char *str)
 {
@@ -4097,6 +4108,7 @@ re_comp(const char *str)
   return NULL;
 }
 
+/* */
 int
 re_exec(const char *str)
 {

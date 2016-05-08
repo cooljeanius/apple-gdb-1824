@@ -10755,8 +10755,8 @@ new_symbol(struct die_info *die, struct type *type, struct dwarf2_cu *cu)
 
 /* Copy constant value from an attribute to a symbol: */
 static void
-dwarf2_const_value (struct attribute *attr, struct symbol *sym,
-		    struct dwarf2_cu *cu)
+dwarf2_const_value(struct attribute *attr, struct symbol *sym,
+		   struct dwarf2_cu *cu)
 {
   struct objfile *objfile = cu->objfile;
   struct comp_unit_head *cu_header = &cu->header;
@@ -10765,22 +10765,22 @@ dwarf2_const_value (struct attribute *attr, struct symbol *sym,
   switch (attr->form)
     {
     case DW_FORM_addr:
-      if (TYPE_LENGTH (SYMBOL_TYPE (sym)) != cu_header->addr_size)
-	dwarf2_const_value_length_mismatch_complaint (DEPRECATED_SYMBOL_NAME (sym),
-						      cu_header->addr_size,
-						      TYPE_LENGTH (SYMBOL_TYPE
-								   (sym)));
-      SYMBOL_VALUE_BYTES (sym) = (char *)
-	obstack_alloc (&objfile->objfile_obstack, cu_header->addr_size);
+      if (TYPE_LENGTH(SYMBOL_TYPE(sym)) != cu_header->addr_size)
+	dwarf2_const_value_length_mismatch_complaint(DEPRECATED_SYMBOL_NAME(sym),
+						     cu_header->addr_size,
+						     TYPE_LENGTH(SYMBOL_TYPE(sym)));
+      SYMBOL_VALUE_BYTES(sym) = ((char *)
+				 obstack_alloc(&objfile->objfile_obstack,
+					       cu_header->addr_size));
       /* NOTE: cagney/2003-05-09: In-lined store_address call with
          it's body - store_unsigned_integer.  */
       /* APPLE LOCAL Add cast to avoid type mismatch in arg1 warning.  */
       /* APPLE LOCAL: debug map */
       {
         CORE_ADDR addr;
-        if (translate_debug_map_address (cu->addr_map, DW_ADDR (attr), &addr, 0))
-          store_unsigned_integer ((gdb_byte *) SYMBOL_VALUE_BYTES (sym),
-			          cu_header->addr_size, addr);
+        if (translate_debug_map_address(cu->addr_map, DW_ADDR(attr), &addr, 0))
+          store_unsigned_integer((gdb_byte *)SYMBOL_VALUE_BYTES(sym),
+				 cu_header->addr_size, addr);
         else
           {
             SYMBOL_VALUE(sym) = 0;
@@ -10799,10 +10799,11 @@ dwarf2_const_value (struct attribute *attr, struct symbol *sym,
 	dwarf2_const_value_length_mismatch_complaint(DEPRECATED_SYMBOL_NAME(sym),
 						     blk->size,
 						     TYPE_LENGTH(SYMBOL_TYPE(sym)));
-      SYMBOL_VALUE_BYTES (sym) = (char *)
-	obstack_alloc (&objfile->objfile_obstack, blk->size);
-      memcpy (SYMBOL_VALUE_BYTES (sym), blk->data, blk->size);
-      SYMBOL_CLASS (sym) = LOC_CONST_BYTES;
+      SYMBOL_VALUE_BYTES(sym) = ((char *)
+				 obstack_alloc(&objfile->objfile_obstack,
+					       blk->size));
+      memcpy(SYMBOL_VALUE_BYTES(sym), blk->data, blk->size);
+      SYMBOL_CLASS(sym) = LOC_CONST_BYTES;
       break;
 
       /* The DW_AT_const_value attributes are supposed to carry the
@@ -10811,35 +10812,48 @@ dwarf2_const_value (struct attribute *attr, struct symbol *sym,
 	 converted to host endianness, so we just need to sign- or
 	 zero-extend it as appropriate.  */
     case DW_FORM_data1:
-      dwarf2_const_value_data (attr, sym, 8);
+      dwarf2_const_value_data(attr, sym, 8);
       break;
     case DW_FORM_data2:
-      dwarf2_const_value_data (attr, sym, 16);
+      dwarf2_const_value_data(attr, sym, 16);
       break;
     case DW_FORM_data4:
-      dwarf2_const_value_data (attr, sym, 32);
+      dwarf2_const_value_data(attr, sym, 32);
       break;
     case DW_FORM_data8:
-      dwarf2_const_value_data (attr, sym, 64);
+      dwarf2_const_value_data(attr, sym, 64);
       break;
 
     case DW_FORM_sdata:
-      SYMBOL_VALUE (sym) = DW_SND (attr);
-      SYMBOL_CLASS (sym) = LOC_CONST;
+      SYMBOL_VALUE(sym) = DW_SND(attr);
+      SYMBOL_CLASS(sym) = LOC_CONST;
       break;
-
     case DW_FORM_APPLE_db_str:
     case DW_FORM_udata:
-      SYMBOL_VALUE (sym) = DW_UNSND (attr);
-      SYMBOL_CLASS (sym) = LOC_CONST;
+      SYMBOL_VALUE(sym) = DW_UNSND(attr);
+      SYMBOL_CLASS(sym) = LOC_CONST;
       break;
 
+    case DW_FORM_string:
+    case DW_FORM_flag:
+    case DW_FORM_strp:
+    case DW_FORM_ref_addr:
+    case DW_FORM_ref1:
+    case DW_FORM_ref2:
+    case DW_FORM_ref4:
+    case DW_FORM_ref8:
+    case DW_FORM_ref_udata:
+    case DW_FORM_indirect:
+    case DW_FORM_sec_offset:
+    case DW_FORM_exprloc:
+    case DW_FORM_flag_present:
+    case DW_FORM_ref_sig8:
     default:
-      complaint (&symfile_complaints,
-		 _("unsupported const value attribute form: '%s'"),
-		 dwarf_form_name (attr->form));
-      SYMBOL_VALUE (sym) = 0;
-      SYMBOL_CLASS (sym) = LOC_CONST;
+      complaint(&symfile_complaints,
+		_("unsupported DWARF2 const value attribute form: '%s'"),
+		dwarf_form_name(attr->form));
+      SYMBOL_VALUE(sym) = 0;
+      SYMBOL_CLASS(sym) = LOC_CONST;
       break;
     }
 }
@@ -12506,9 +12520,12 @@ dwarf_decode_macros(struct line_header *lh, unsigned int offset,
 
   if (dwarf2_per_objfile->macinfo_buffer == NULL)
     {
-#if defined(DEBUG) || defined(_DEBUG) || defined(GTHREE_FLAG_SUPPORTED)
-      complaint(&symfile_complaints, _("missing .debug_macinfo section"));
-#endif /* DEBUG || _DEBUG || GTHREE_FLAG_SUPPORTED */
+#if (defined(DEBUG) || defined(_DEBUG) || defined(GTHREE_FLAG_SUPPORTED)) && \
+    defined(MACINFO_SECTION)
+      complaint(&symfile_complaints,
+		_("missing .debug_macinfo section (a.k.a. \"%s\")"),
+		MACINFO_SECTION);
+#endif /* (DEBUG || _DEBUG || GTHREE_FLAG_SUPPORTED) && MACINFO_SECTION */
       return;
     }
 

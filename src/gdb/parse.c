@@ -176,11 +176,12 @@ free_funcalls(void *ignore)
 
 /* Add one element to the end of the expression.  */
 
-/* To avoid a bug in the Sun 4 compiler, we pass things that can fit into
-   a register through here */
-
+/* To avoid a bug in the Sun 4 compiler, we used to pass things that can fit
+ * into a register through here. */
+/* However, since g++'s -Wextra complains, I have removed the "register"
+ * qualifier from the argument. (Sun 4 is probably no longer relevant anyway) */
 void
-write_exp_elt(register union exp_element expelt)
+write_exp_elt(union exp_element expelt)
 {
   if (expout_ptr >= expout_size)
     {

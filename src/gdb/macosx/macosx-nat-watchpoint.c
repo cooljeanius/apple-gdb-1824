@@ -454,7 +454,11 @@ get_dictionary_entry_of_page(int pid, CORE_ADDR page_start)
 
       /* Add the new entry to the dictionary: */
       page->previous = previous_page;
-      previous_page->next = page;
+      if (previous_page != NULL) {
+	previous_page->next = page;
+      } else if (previous_page == NULL) {
+	warning(_("previous_page somehow became NULL."));
+      }
 
       memory_page_dictionary.page_count++;
     }
@@ -462,6 +466,7 @@ get_dictionary_entry_of_page(int pid, CORE_ADDR page_start)
   return page;
 }
 
+/* */
 static void
 remove_dictionary_entry_of_page(int pid, memory_page_t * page)
 {
@@ -482,12 +487,14 @@ remove_dictionary_entry_of_page(int pid, memory_page_t * page)
   xfree(page);
 }
 
+/* */
 int
 macosx_insert_watchpoint(CORE_ADDR addr, size_t len, int type)
 {
   return hppa_insert_hw_watchpoint(PIDGET(inferior_ptid), addr, len, type);
 }
 
+/* */
 int
 macosx_remove_watchpoint(CORE_ADDR addr, size_t len, int type)
 {
@@ -495,6 +502,7 @@ macosx_remove_watchpoint(CORE_ADDR addr, size_t len, int type)
                                    (enum bptype)type);
 }
 
+/* */
 int
 macosx_stopped_by_watchpoint(struct target_waitstatus *w, int stop_signal,
                              int stepped_after_stopped_by_watchpoint)
@@ -505,6 +513,7 @@ macosx_stopped_by_watchpoint(struct target_waitstatus *w, int stop_signal,
           && bpstat_have_active_hw_watchpoints());
 }
 
+/* */
 void
 _initialize_macosx_nat_watchpoint(void)
 {

@@ -1449,7 +1449,7 @@ show_history(const char *args, int from_tty)
   cmd_show_list(showhistlist, from_tty, "");
 }
 
-int info_verbose = 0;		/* Default verbose msgs off */
+int info_verbose = 1;		/* Default verbose msgs on */
 
 /* Called by do_setshow_command.  An elaborate joke.  */
 void

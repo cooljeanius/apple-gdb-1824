@@ -821,10 +821,10 @@ prim_record_minimal_symbol(const char *name, CORE_ADDR address,
    newly created.  */
 
 struct minimal_symbol *
-prim_record_minimal_symbol_and_info(const char *name, CORE_ADDR address,
-				    enum minimal_symbol_type ms_type,
-				    char *info, int section,
-				    asection *bfd_section,
+prim_record_minimal_symbol_and_info(const char *name, const CORE_ADDR address,
+				    const enum minimal_symbol_type ms_type,
+				    const char *info, const int section,
+				    const asection *bfd_section,
 				    struct objfile *objfile)
 {
   struct msym_bunch *newbunch;
@@ -890,11 +890,11 @@ prim_record_minimal_symbol_and_info(const char *name, CORE_ADDR address,
 
   SYMBOL_VALUE_ADDRESS(msymbol) = address;
   SYMBOL_SECTION(msymbol) = (short)section;
-  SYMBOL_BFD_SECTION(msymbol) = bfd_section;
+  SYMBOL_BFD_SECTION(msymbol) = (asection *)bfd_section;
 
   MSYMBOL_TYPE(msymbol) = ms_type;
   /* FIXME:  This info, if it remains, needs its own field.  */
-  MSYMBOL_INFO(msymbol) = info; /* FIXME! */
+  MSYMBOL_INFO(msymbol) = (char *)info; /* FIXME! */
   MSYMBOL_SIZE(msymbol) = 0;
   /* APPLE LOCAL: fix-and-continue */
   MSYMBOL_OBSOLETED(msymbol) = 0;

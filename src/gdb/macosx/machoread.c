@@ -108,8 +108,11 @@ extern void _initialize_machoread(void);
 
 /* */
 static void
-macho_new_init(struct objfile *objfile ATTRIBUTE_UNUSED)
+macho_new_init(struct objfile *objfile)
 {
+  if (objfile == NULL) {
+    warning(_("NULL objfile passed to macho_new_init()."));
+  }
   return;
 }
 
@@ -160,7 +163,7 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
 {
   int val;
   bfd *sym_bfd = objfile->obfd;
-  char *name = bfd_get_filename (sym_bfd);
+  char *name = bfd_get_filename(sym_bfd);
   asection *stabsect;
   struct obj_section *os;
   asection *stabstrsect;
@@ -684,6 +687,14 @@ macho_symfile_read(struct objfile *objfile, int mainline)
       CHECK_FATAL(symtab != NULL);
       CHECK_FATAL(objfile != NULL);
 
+#if (defined(DEBUG) || defined(_DEBUG) || defined(GDB_DEBUG))
+      printf_filtered(_("%s: about to try to read indirect symbols next, "
+			"with abfd %p, dysymtab %p, symtab %p, "
+			"and objfile %p.\n"),
+		      __FILE__, (void *)abfd, (void *)dysymtab, (void *)symtab,
+		      (void *)objfile);
+#endif /* (DEBUG || _DEBUG || GDB_DEBUG) */
+
       if (!macho_read_indirect_symbols(abfd, dysymtab, symtab, objfile))
         {
           install_minimal_symbols(objfile);
@@ -808,7 +819,11 @@ macho_read_indirect_symbols(bfd *abfd,
           CHECK_FATAL((strlen(sname) + sizeof("dyld_stub_") + 1UL) < 4096UL);
           printed = snprintf(nname, sizeof(nname), "dyld_stub_%s", sname);
 #if (defined(DEBUG) || defined(_DEBUG) || defined(GDB_DEBUG))
-	  printf_filtered(_("\n%s: Recording minsym %s...\n"), __FILE__, nname);
+	  printf_filtered(_("\n%s: Recording minsym %s \n"
+			    "\twith address 0x%s, osect_idx %d,"
+			    " bfdsec %p, and objfile %p...\n"),
+			  __FILE__, nname, paddr(stubaddr), osect_idx,
+			  (void *)bfdsec, (void *)objfile);
 #endif /* DEBUG || _DEBUG || GDB_DEBUG */
 	  CHECK_FATAL(printed < 4096);
 
@@ -827,8 +842,11 @@ macho_read_indirect_symbols(bfd *abfd,
 
 /* FIXME: add comment: */
 static void
-macho_symfile_finish(struct objfile *objfile ATTRIBUTE_UNUSED)
+macho_symfile_finish(struct objfile *objfile)
 {
+  if (objfile == NULL) {
+    warning(_("NULL objfile passed to macho_symfile_finish()."));
+  }
   return;
 }
 
@@ -887,7 +905,7 @@ macho_symfile_offsets(struct objfile *objfile,
   objfile->sect_index_bss = 0;
   objfile->sect_index_rodata = 0;
 
-  ALL_OBJFILE_OSECTIONS (objfile, osect)
+  ALL_OBJFILE_OSECTIONS(objfile, osect)
     {
       const char *bfd_sect_name = osect->the_bfd_section->name;
 
@@ -910,7 +928,6 @@ macho_symfile_offsets(struct objfile *objfile,
    the binary it was made from, if both were loaded at their
    set addresses. This may be different if the binary was rebased
    after the dsym file was made.  */
-
 static ATTRIBUTE_W_U_R CORE_ADDR
 macho_calculate_dsym_offset(bfd *exe_bfd, bfd *sym_bfd)
 {
@@ -950,7 +967,6 @@ macho_calculate_dsym_offset(bfd *exe_bfd, bfd *sym_bfd)
    a section_offsets array for the separate debug objfile. In the case
    of macho it is just a copy of the objfile's section array, plus the
    potential offset between the dSYM and the objfile's load addresses.  */
-
 void
 macho_calculate_offsets_for_dsym(struct objfile *main_objfile,
 				 bfd *sym_bfd,
@@ -1118,6 +1134,7 @@ macho_calculate_offsets_for_dsym(struct objfile *main_objfile,
     }
 }
 
+/* */
 static struct sym_fns macho_sym_fns = {
   bfd_target_mach_o_flavour,
 

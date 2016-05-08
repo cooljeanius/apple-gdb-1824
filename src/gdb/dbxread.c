@@ -627,7 +627,11 @@ record_minimal_symbol(const char *name, CORE_ADDR address, int type,
 
   /* APPLE LOCAL: Record the msymbol & make it special if it is: */
 #if (defined(DEBUG) || defined(_DEBUG) || defined(MACOSX_DYLD))
-  printf_filtered(_("\n%s: Recording minsym %s...\n"), __FILE__, name);
+  printf_filtered(_("\n%s: Recording minsym %s \n"
+		    "\twith address 0x%s, section number %d,"
+		    " bfd_section %p, and objfile %p...\n"),
+		  __FILE__, name, paddr(address), section, (void *)bfd_section,
+		  (void *)objfile);
 #endif /* DEBUG || _DEBUG || MACOSX_DYLD */
   msym =
     prim_record_minimal_symbol_and_info(name, address, ms_type, NULL,

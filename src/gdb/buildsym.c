@@ -498,7 +498,7 @@ finish_block(struct symbol *symbol, struct pending **listhead,
 			      paddr_nz(BLOCK_END(block)));
                   else
 		    complaint(&symfile_complaints,
-			      _("inner block (0x%s-0x%s) not inside outer block (0x%s-0x%s)"),
+			      _("inner block (0x%s-0x%s) not inside outer block (0x%s-0x%s) like it should be."),
 			      paddr_nz(BLOCK_START(pblock->block)),
 			      paddr_nz(BLOCK_END(pblock->block)),
 			      paddr_nz(BLOCK_START(block)),
@@ -523,7 +523,7 @@ finish_block(struct symbol *symbol, struct pending **listhead,
 		}
 	      /* APPLE LOCAL end address ranges  */
 	    }
-#endif
+#endif /* 1 */
 	  BLOCK_SUPERBLOCK (pblock->block) = block;
 	}
       opblock = pblock;
@@ -624,7 +624,7 @@ make_blockvector (struct objfile *objfile)
       next1 = next->next;
       xfree (next);
     }
-#endif
+#endif /* 0 */
   pending_blocks = NULL;
 
   /* APPLE LOCAL begin sort objfile blocks */
@@ -660,7 +660,7 @@ make_blockvector (struct objfile *objfile)
 	  /* APPLE LOCAL end address ranges  */
 	}
     }
-#endif
+#endif /* 1 */
 
   return (blockvector);
 }
@@ -1063,8 +1063,8 @@ end_symtab (CORE_ADDR end_addr, struct objfile *objfile, int section)
     }
 
 #ifndef PROCESS_LINENUMBER_HOOK
-#define PROCESS_LINENUMBER_HOOK()
-#endif
+# define PROCESS_LINENUMBER_HOOK()
+#endif /* !PROCESS_LINENUMBER_HOOK */
   PROCESS_LINENUMBER_HOOK ();	/* Needed for xcoff. */
 
   /* Now create the symtab objects proper, one for each subfile.  */
@@ -1090,7 +1090,7 @@ end_symtab (CORE_ADDR end_addr, struct objfile *objfile, int section)
 	      /* First, shrink the linetable to make more memory.  */
 	      subfile->line_vector = (struct linetable *)
 		xrealloc ((char *) subfile->line_vector, linetablesize);
-#endif
+#endif /* 0 */
 
 	      /* Like the pending blocks, the line table may be
 	         scrambled in reordered executables.  Sort it if

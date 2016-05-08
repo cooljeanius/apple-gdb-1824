@@ -75,7 +75,7 @@ static struct symtab *psymtab_to_symtab (struct objfile *objfile,
    function always returns its argument, as a convenience.  */
 
 struct objfile *
-require_partial_symbols (struct objfile *objfile, int verbose)
+require_partial_symbols(struct objfile *objfile, int verbose)
 {
   if ((objfile->flags & OBJF_PSYMTABS_READ) == 0)
     {
@@ -85,21 +85,21 @@ require_partial_symbols (struct objfile *objfile, int verbose)
 	{
 	  if (verbose)
 	    {
-	      printf_unfiltered (_("Reading symbols from %s..."),
-				 objfile_name (objfile));
-	      gdb_flush (gdb_stdout);
+	      printf_unfiltered(_("Reading (partial) symbols from %s..."),
+				objfile_name(objfile));
+	      gdb_flush(gdb_stdout);
 	    }
-	  (*objfile->sf->sym_read_psymbols) (objfile);
+	  (*objfile->sf->sym_read_psymbols)(objfile);
 	  if (verbose)
 	    {
-	      if (!objfile_has_symbols (objfile))
+	      if (!objfile_has_symbols(objfile))
 		{
-		  wrap_here ("");
-		  printf_unfiltered (_("(no debugging symbols found)..."));
-		  wrap_here ("");
+		  wrap_here("");
+		  printf_unfiltered(_("(no debugging symbols found)..."));
+		  wrap_here("");
 		}
 
-	      printf_unfiltered (_("done.\n"));
+	      printf_unfiltered(_("done.\n"));
 	    }
 	}
     }

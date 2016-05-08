@@ -1051,7 +1051,7 @@ create_new_frame(CORE_ADDR addr, CORE_ADDR pc)
 struct frame_info *
 get_next_frame(struct frame_info *this_frame)
 {
-  if (this_frame->level > 0)
+  if ((this_frame != NULL) && (this_frame->level > 0))
     return this_frame->next;
   else
     return NULL;

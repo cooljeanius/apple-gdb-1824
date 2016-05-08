@@ -1895,9 +1895,10 @@ macosx_init_dyld_from_core(void)
   macosx_solib_add (NULL, 0, NULL, 0);
 }
 
+/* */
 void
-macosx_init_dyld (struct macosx_dyld_thread_status *s,
-                  struct objfile *o, bfd *abfd)
+macosx_init_dyld(struct macosx_dyld_thread_status *s,
+		 struct objfile *o, bfd *abfd)
 {
   struct dyld_objfile_entry *e;
   int i;
@@ -1916,30 +1917,34 @@ macosx_init_dyld (struct macosx_dyld_thread_status *s,
 
   dyld_objfile_info_init(&previous_info);
 
-  if (pre_slide_libraries_flag && s->pre_run_memory_map == NULL && abfd != NULL)
-    s->pre_run_memory_map = create_pre_run_memory_map(abfd);
+  if (pre_slide_libraries_flag && (s->pre_run_memory_map == NULL)
+      && (abfd != NULL))
+    {
+      printf_filtered("\n");
+      s->pre_run_memory_map = create_pre_run_memory_map(abfd);
+    }
 
   dyld_objfile_info_copy(&previous_info, &s->current_info);
   dyld_objfile_info_free(&s->current_info);
 
   if (o != NULL)
     {
-      char *objfile_name = NULL;
+      const char *objfile_name = NULL;
       struct dyld_objfile_entry *e;
 
-      /* Canonicalize the name */
-      if (bfd_get_filename (o->obfd) != NULL)
+      /* Canonicalize the name: */
+      if (bfd_get_filename(o->obfd) != NULL)
         {
           char buf[PATH_MAX];
-          if (realpath (bfd_get_filename (o->obfd), buf) != NULL)
+          if (realpath(bfd_get_filename(o->obfd), buf) != NULL)
             {
-              objfile_name = xstrdup (buf);
+              objfile_name = xstrdup(buf);
             }
           else
-            objfile_name = bfd_get_filename (o->obfd);
+            objfile_name = bfd_get_filename(o->obfd);
         }
 
-      e = dyld_objfile_entry_alloc (&s->current_info);
+      e = dyld_objfile_entry_alloc(&s->current_info);
       e->text_name_valid = 1;
       e->reason = dyld_reason_executable;
       e->objfile = o;
@@ -1954,21 +1959,21 @@ macosx_init_dyld (struct macosx_dyld_thread_status *s,
 
   if (dyld_preload_libraries_flag)
     {
-      dyld_add_inserted_libraries (&s->current_info, &s->path_info);
+      dyld_add_inserted_libraries(&s->current_info, &s->path_info);
       if (abfd != NULL)
         {
-          dyld_add_image_libraries (&s->current_info, abfd);
+          dyld_add_image_libraries(&s->current_info, abfd);
         }
     }
 
-  dyld_merge_shlibs (s, &s->path_info, &previous_info, &s->current_info);
-  dyld_update_shlibs (&s->path_info, &s->current_info);
+  dyld_merge_shlibs(s, &s->path_info, &previous_info, &s->current_info);
+  dyld_update_shlibs(&s->path_info, &s->current_info);
 
-  dyld_objfile_info_free (&previous_info);
+  dyld_objfile_info_free(&previous_info);
 
   s->state = dyld_initialized;
   if (maint_use_timers)
-    do_cleanups (timer_cleanup);
+    do_cleanups(timer_cleanup);
 }
 
 

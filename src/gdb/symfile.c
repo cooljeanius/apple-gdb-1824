@@ -1550,8 +1550,8 @@ symbol_file_add_with_addrs_or_offsets_using_objfile(struct objfile *in_objfile,
 
   if (addrs)
     {
-      orig_addrs = copy_section_addr_info (addrs);
-      make_cleanup_free_section_addr_info (orig_addrs);
+      orig_addrs = copy_section_addr_info(addrs);
+      make_cleanup_free_section_addr_info(orig_addrs);
     }
 
   /* We either created a new mapped symbol table, mapped an existing
@@ -1563,7 +1563,7 @@ symbol_file_add_with_addrs_or_offsets_using_objfile(struct objfile *in_objfile,
 	deprecated_pre_add_symbol_hook(name);
       else
 	{
-	  printf_unfiltered(_("Reading symbols from %s..."), name);
+	  printf_unfiltered(_("Reading symbols from %s...\n"), name);
 	  wrap_here("");
 	  gdb_flush(gdb_stdout);
 	}
@@ -3860,9 +3860,11 @@ reread_symbols(void)
 
 /* APPLE LOCAL begin reread symbols */
 static void
-reread_symbols_command(const char *args ATTRIBUTE_UNUSED,
-		       int from_tty ATTRIBUTE_UNUSED)
+reread_symbols_command(const char *args, int from_tty)
 {
+  if ((args == NULL) && from_tty) {
+    warning(_("NULL args passed to reread_symbols_command()."));
+  }
   reread_symbols();
 }
 /* APPLE LOCAL end reread symbols */
@@ -4572,9 +4574,7 @@ again2:
   return blewit;
 #else
   struct partial_symtab *ps = (struct partial_symtab *)NULL;
-# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-  __asm__("");
-# endif /* __GNUC__ && !__STRICT_ANSI__ */
+  warning(_("free_named_symtabs() needs work."));
   cashier_psymtab(ps);
   return (0);
 #endif /* SERIOUS_RETHINKING_HAS_BEEN_DONE || (BLOCK_NSYMS and the rest) */
