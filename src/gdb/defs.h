@@ -720,7 +720,7 @@ extern void vfprintf_filtered(struct ui_file *, const char *, va_list)
   ATTR_FORMAT(gnu_printf, 2, 0);
 
 extern void fprintf_filtered(struct ui_file *, const char *, ...)
-  ATTR_FORMAT(printf, 2, 3);
+  ATTR_FORMAT(gnu_printf, 2, 3);
 
 extern void fprintfi_filtered(int, struct ui_file *, const char *, ...)
   ATTR_FORMAT(printf, 3, 4);

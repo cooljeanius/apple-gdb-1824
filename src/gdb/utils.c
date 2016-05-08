@@ -2642,7 +2642,7 @@ vprintf_unfiltered(const char *format, va_list args)
 }
 
 /* */
-void ATTR_FORMAT(printf, 2, 3)
+void ATTR_FORMAT(gnu_printf, 2, 3)
 fprintf_filtered(struct ui_file *stream, const char *format, ...)
 {
   va_list args;

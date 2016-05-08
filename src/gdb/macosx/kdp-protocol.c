@@ -51,92 +51,101 @@ read16u(const unsigned char *s, int bigendian)
     }
 }
 
+/* */
 static uint32_t
-read32u (const unsigned char *s, int bigendian)
+read32u(const unsigned char *s, int bigendian)
 {
   if (bigendian)
     {
-      return (s[3] << 24) + (s[2] << 16) + (s[1] << 8) + s[0];
+      return ((s[3] << 24) + (s[2] << 16) + (s[1] << 8) + s[0]);
     }
   else
     {
-      return (s[0] << 24) + (s[1] << 16) + (s[2] << 8) + s[3];
+      return ((s[0] << 24) + (s[1] << 16) + (s[2] << 8) + s[3]);
     }
 }
 
+/* */
 static uint64_t
-read64u (const unsigned char *s, int bigendian)
+read64u(const unsigned char *s, int bigendian)
 {
 #define U(a) ((uint64_t)(a))
   if (bigendian)
     {
-      return (U(s[7]) << 56) + (U(s[6]) << 48) + (U(s[5]) << 40) + (U(s[4]) << 32) + (U(s[3]) << 24) + (U(s[2]) << 16) + (U(s[1]) << 8) + U(s[0]);
+      return ((U(s[7]) << 56) + (U(s[6]) << 48) + (U(s[5]) << 40)
+	      + (U(s[4]) << 32) + (U(s[3]) << 24) + (U(s[2]) << 16)
+	      + (U(s[1]) << 8) + U(s[0]));
     }
   else
     {
-      return (U(s[0]) << 56) + (U(s[1]) << 48) + (U(s[2]) << 40) + (U(s[3]) << 32) + (U(s[4]) << 24) + (U(s[5]) << 16) + (U(s[6]) << 8) + U(s[7]);
+      return ((U(s[0]) << 56) + (U(s[1]) << 48) + (U(s[2]) << 40)
+	      + (U(s[3]) << 32) + (U(s[4]) << 24) + (U(s[5]) << 16)
+	      + (U(s[6]) << 8) + U(s[7]));
     }
 #undef U
 }
 
-static inline void
-write16u (unsigned char *s, uint16_t i, int bigendian)
+/* */
+static inline ATTRIBUTE_GNU_INLINE void
+write16u(unsigned char *s, uint16_t i, int bigendian)
 {
   if (bigendian)
     {
-      s[1] = (i >> 8) & 0xff;
-      s[0] = (i >> 0) & 0xff;
+      s[1] = ((i >> 8) & 0xff);
+      s[0] = ((i >> 0) & 0xff);
     }
   else
     {
-      s[0] = (i >> 8) & 0xff;
-      s[1] = (i >> 0) & 0xff;
+      s[0] = ((i >> 8) & 0xff);
+      s[1] = ((i >> 0) & 0xff);
     }
 }
 
-static inline void
-write32u (unsigned char *s, uint32_t i, int bigendian)
+/* */
+static inline ATTRIBUTE_GNU_INLINE void
+write32u(unsigned char *s, uint32_t i, int bigendian)
 {
   if (bigendian)
     {
-      s[3] = (i >> 24) & 0xff;
-      s[2] = (i >> 16) & 0xff;
-      s[1] = (i >> 8) & 0xff;
-      s[0] = (i >> 0) & 0xff;
+      s[3] = ((i >> 24) & 0xff);
+      s[2] = ((i >> 16) & 0xff);
+      s[1] = ((i >> 8) & 0xff);
+      s[0] = ((i >> 0) & 0xff);
     }
   else
     {
-      s[0] = (i >> 24) & 0xff;
-      s[1] = (i >> 16) & 0xff;
-      s[2] = (i >> 8) & 0xff;
-      s[3] = (i >> 0) & 0xff;
+      s[0] = ((i >> 24) & 0xff);
+      s[1] = ((i >> 16) & 0xff);
+      s[2] = ((i >> 8) & 0xff);
+      s[3] = ((i >> 0) & 0xff);
     }
 }
 
-static inline void
-write64u (unsigned char *s, uint64_t i, int bigendian)
+/* */
+static inline ATTRIBUTE_GNU_INLINE void
+write64u(unsigned char *s, uint64_t i, int bigendian)
 {
   if (bigendian)
     {
-      s[7] = (i >> 56) & 0xff;
-      s[6] = (i >> 48) & 0xff;
-      s[5] = (i >> 40) & 0xff;
-      s[4] = (i >> 32) & 0xff;
-      s[3] = (i >> 24) & 0xff;
-      s[2] = (i >> 16) & 0xff;
-      s[1] = (i >> 8) & 0xff;
-      s[0] = (i >> 0) & 0xff;
+      (s[7] = (i >> 56) & 0xff);
+      (s[6] = (i >> 48) & 0xff);
+      (s[5] = (i >> 40) & 0xff);
+      (s[4] = (i >> 32) & 0xff);
+      (s[3] = (i >> 24) & 0xff);
+      (s[2] = (i >> 16) & 0xff);
+      (s[1] = (i >> 8) & 0xff);
+      (s[0] = (i >> 0) & 0xff);
     }
   else
     {
-      s[0] = (i >> 56) & 0xff;
-      s[1] = (i >> 48) & 0xff;
-      s[2] = (i >> 40) & 0xff;
-      s[3] = (i >> 32) & 0xff;
-      s[4] = (i >> 24) & 0xff;
-      s[5] = (i >> 16) & 0xff;
-      s[6] = (i >> 8) & 0xff;
-      s[7] = (i >> 0) & 0xff;
+      (s[0] = (i >> 56) & 0xff);
+      (s[1] = (i >> 48) & 0xff);
+      (s[2] = (i >> 40) & 0xff);
+      (s[3] = (i >> 32) & 0xff);
+      (s[4] = (i >> 24) & 0xff);
+      (s[5] = (i >> 16) & 0xff);
+      (s[6] = (i >> 8) & 0xff);
+      (s[7] = (i >> 0) & 0xff);
     }
 }
 
@@ -546,41 +555,41 @@ kdp_log_packet(kdp_log_function *f, kdp_log_level l, const kdp_pkt_t *p)
         }
     }
 
-  f (l, "}\n");
+  f(l, "}\n");
 }
 
+/* */
 kdp_return_t
-kdp_marshal (kdp_connection *c,
-             kdp_pkt_t * p, unsigned char *s, size_t maxlen, size_t * plen)
+kdp_marshal(kdp_connection *c, kdp_pkt_t *p, unsigned char *s, size_t maxlen,
+	    size_t *plen)
 {
 #define CHECK_LEN_MAX(len, maxlen) \
   if (len > maxlen) { \
-    c->logger (KDP_LOG_ERROR, \
-               "kdp_marshal: length required for packet (%lu) is greater than length provided (%lu)\n", \
-               (unsigned long) len, (unsigned long) maxlen); \
+    c->logger(KDP_LOG_ERROR, \
+              "kdp_marshal: length required for packet (%lu) is greater than length provided (%lu)\n", \
+              (unsigned long)len, (unsigned long)maxlen); \
     return RR_RESOURCE; \
   }
 
-  size_t len = 0;
+  size_t len = 0UL;
   *plen = 0;
 
-  CHECK_FATAL (c->logger != NULL);
+  CHECK_FATAL(c->logger != NULL);
 
   if (maxlen < 32)
     {
-      c->logger (KDP_LOG_ERROR,
-                 "kdp_marshal: maximum length must be at least 32\n");
+      c->logger(KDP_LOG_ERROR,
+                "kdp_marshal: maximum length must be at least 32\n");
       return RR_RESOURCE;
     }
 
   if (p->hdr.is_reply)
     {
-
       switch (p->hdr.request)
         {
         case KDP_CONNECT:
           len = 12;
-          write32u (s + 8, p->connect_reply.error, c->bigendian);
+          write32u((s + 8), p->connect_reply.error, c->bigendian);
           break;
         case KDP_DISCONNECT:
         case KDP_REATTACH:
@@ -588,47 +597,47 @@ kdp_marshal (kdp_connection *c,
           break;
         case KDP_HOSTINFO:
           len = 20;
-          write32u (s + 8, p->hostinfo_reply.cpu_mask, c->bigendian);
-          write32u (s + 12, p->hostinfo_reply.cpu_type, c->bigendian);
-          write32u (s + 16, p->hostinfo_reply.cpu_subtype, c->bigendian);
+          write32u((s + 8), p->hostinfo_reply.cpu_mask, c->bigendian);
+          write32u((s + 12), p->hostinfo_reply.cpu_type, c->bigendian);
+          write32u((s + 16), p->hostinfo_reply.cpu_subtype, c->bigendian);
           break;
         case KDP_VERSION:
           len = 24;
-          write32u (s + 8, p->version_reply.version, c->bigendian);
-          write32u (s + 12, p->version_reply.feature, c->bigendian);
+          write32u((s + 8), p->version_reply.version, c->bigendian);
+          write32u((s + 12), p->version_reply.feature, c->bigendian);
           break;
         case KDP_KERNELVERSION:
-          len = 8 + strlen (p->kernelversion_reply.version) + 1;
-          CHECK_LEN_MAX (len, maxlen);
-          memcpy (s + 8, p->kernelversion_reply.version, len - 8);
+          len = (8UL + strlen(p->kernelversion_reply.version) + 1UL);
+          CHECK_LEN_MAX(len, maxlen);
+          memcpy((s + 8), p->kernelversion_reply.version, (len - 8UL));
           break;
         case KDP_REGIONS:
           {
-            const unsigned int REGION_SIZE = 12;
-            unsigned int i = 0;
-            len = 12 + (p->regions_reply.nregions * REGION_SIZE);
-            CHECK_LEN_MAX (len, maxlen);
+            const unsigned int REGION_SIZE = 12U;
+            unsigned int i = 0U;
+            len = (12UL + (p->regions_reply.nregions * REGION_SIZE));
+            CHECK_LEN_MAX(len, maxlen);
             for (i = 0; i < p->regions_reply.nregions; i++)
               {
-                unsigned int offset = 12 + (i * REGION_SIZE);
-                write32u (s + offset, p->regions_reply.regions[i].address,
-                          c->bigendian);
-                write32u (s + offset + 4, p->regions_reply.regions[i].nbytes,
-                          c->bigendian);
-                write32u (s + offset + 8,
-                          p->regions_reply.regions[i].protection,
-                          c->bigendian);
+                unsigned int offset = (12U + (i * REGION_SIZE));
+                write32u((s + offset), p->regions_reply.regions[i].address,
+                         c->bigendian);
+                write32u((s + offset + 4), p->regions_reply.regions[i].nbytes,
+                         c->bigendian);
+                write32u((s + offset + 8),
+                         p->regions_reply.regions[i].protection,
+                         c->bigendian);
               }
             break;
           }
         case KDP_MAXBYTES:
-          len = 12;
-          write32u (s + 8, p->maxbytes_reply.max_bytes, c->bigendian);
+          len = 12UL;
+          write32u((s + 8), p->maxbytes_reply.max_bytes, c->bigendian);
           break;
         case KDP_READMEM:
-          len = 12 + p->readmem_reply.nbytes;
-          CHECK_LEN_MAX (len, maxlen);
-          memcpy (s + 12, p->readmem_reply.data, len - 12);
+          len = (12UL + p->readmem_reply.nbytes);
+          CHECK_LEN_MAX(len, maxlen);
+          memcpy((s + 12), p->readmem_reply.data, (len - 12UL));
           break;
         case KDP_READMEM64:
           len = 12 + p->readmem64_reply.nbytes;
@@ -698,11 +707,9 @@ kdp_marshal (kdp_connection *c,
                      p->hdr.request);
           return RR_IP_ERROR;
         }
-
     }
   else
     {
-
       switch (p->hdr.request)
         {
         case KDP_CONNECT:
@@ -767,7 +774,7 @@ kdp_marshal (kdp_connection *c,
           break;
         case KDP_WRITEREGS:
           {
-            const unsigned int KDP_REGISTER_SIZE = 4;
+            const unsigned int KDP_REGISTER_SIZE = 4U;
             unsigned int i;
             unsigned int reglen = p->writeregs_req.nbytes;
             if ((reglen % KDP_REGISTER_SIZE) != 0)
@@ -826,18 +833,18 @@ kdp_marshal (kdp_connection *c,
           }
         case KDP_TERMINATION:
           len = 16;
-          write32u (s + 8, p->termination.term_code, c->bigendian);
-          write32u (s + 12, p->termination.exit_code, c->bigendian);
+          write32u((s + 8), p->termination.term_code, c->bigendian);
+          write32u((s + 12), p->termination.exit_code, c->bigendian);
           break;
         default:
-          c->logger (KDP_LOG_ERROR,
-                     "kdp_marshal: unknown packet type for request 0x%x\n",
-                     p->hdr.request);
+          c->logger(KDP_LOG_ERROR,
+                    "kdp_marshal: unknown packet type for request 0x%x\n",
+                    p->hdr.request);
           return RR_IP_ERROR;
         }
     }
 
-  CHECK_LEN_MAX (len, maxlen);
+  CHECK_LEN_MAX(len, maxlen);
 
   if (len < 8)
     {
@@ -849,11 +856,11 @@ kdp_marshal (kdp_connection *c,
 
   if (c->bigendian)
     {
-      s[0] = (p->hdr.request & 0x7f) | (p->hdr.is_reply << 7);
+      s[0] = ((p->hdr.request & 0x7f) | (p->hdr.is_reply << 7));
     }
   else
     {
-      s[0] = ((p->hdr.request & 0x7f) << 1) | (p->hdr.is_reply & 0x1);
+      s[0] = (((p->hdr.request & 0x7f) << 1) | (p->hdr.is_reply & 0x1));
     }
   s[1] = p->hdr.seq;
   write16u((s + 2), len, c->bigendian);
@@ -864,6 +871,7 @@ kdp_marshal (kdp_connection *c,
   return RR_SUCCESS;
 }
 
+/* */
 kdp_return_t
 kdp_unmarshal(kdp_connection *c,
               kdp_pkt_t *p, const unsigned char *s, size_t rlen)
