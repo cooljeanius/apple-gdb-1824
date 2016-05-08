@@ -227,7 +227,7 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
       if (os->the_bfd_section && os->the_bfd_section->name
           && (strcmp(os->the_bfd_section->name, "LC_SEGMENT.__DATA") == 0))
         {
-          DBX_DATA_SECTION (objfile) = os;
+          DBX_DATA_SECTION(objfile) = os;
           break;
         }
 
@@ -258,16 +258,16 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
       asection *text_sect = bfd_get_section_by_name(sym_bfd, text_name);
       if (text_sect)
         {
-          DBX_TEXT_SECTION (objfile) = (struct obj_section *)
-                             obstack_alloc (&objfile->objfile_obstack,
-                                     sizeof (struct obj_section));
-          DBX_TEXT_SECTION (objfile)->addr =
-                                  bfd_section_vma (sym_bfd, text_sect);
-          DBX_TEXT_SECTION (objfile)->endaddr =
-                                  bfd_section_vma (sym_bfd, text_sect) +
-                                  bfd_section_size (sym_bfd, text_sect);
-          DBX_TEXT_SECTION (objfile)->objfile = objfile;
-          DBX_TEXT_SECTION (objfile)->the_bfd_section = text_sect;
+          DBX_TEXT_SECTION(objfile) = (struct obj_section *)
+                            obstack_alloc(&objfile->objfile_obstack,
+					  sizeof(struct obj_section));
+          DBX_TEXT_SECTION(objfile)->addr =
+                                 bfd_section_vma(sym_bfd, text_sect);
+          DBX_TEXT_SECTION(objfile)->endaddr =
+                                 (bfd_section_vma(sym_bfd, text_sect)
+				  + bfd_section_size(sym_bfd, text_sect));
+          DBX_TEXT_SECTION(objfile)->objfile = objfile;
+          DBX_TEXT_SECTION(objfile)->the_bfd_section = text_sect;
         }
       else
 	{
@@ -276,34 +276,33 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
 	     DBX_TEXT_SECTION()->the_bfd_section without checking that
 	     DBX_TEXT_SECTION exists. It is easier to just fake up one
 	     here.  */
-
-          DBX_TEXT_SECTION (objfile) = (struct obj_section *)
-                             obstack_alloc (&objfile->objfile_obstack,
-                                     sizeof (struct obj_section));
-          DBX_TEXT_SECTION (objfile)->addr = INVALID_ADDRESS;
-          DBX_TEXT_SECTION (objfile)->endaddr = INVALID_ADDRESS;
-          DBX_TEXT_SECTION (objfile)->objfile = objfile;
-          DBX_TEXT_SECTION (objfile)->the_bfd_section = NULL;
+          DBX_TEXT_SECTION(objfile) = (struct obj_section *)
+                            obstack_alloc(&objfile->objfile_obstack,
+                                    sizeof(struct obj_section));
+          DBX_TEXT_SECTION(objfile)->addr = INVALID_ADDRESS;
+          DBX_TEXT_SECTION(objfile)->endaddr = INVALID_ADDRESS;
+          DBX_TEXT_SECTION(objfile)->objfile = objfile;
+          DBX_TEXT_SECTION(objfile)->the_bfd_section = NULL;
 	}
     }
 
   /* Zero length sections will have a BFD asection but not a struct
      obj_section.  */
-  if (!DBX_DATA_SECTION (objfile))
+  if (!DBX_DATA_SECTION(objfile))
     {
-      asection *data_sect = bfd_get_section_by_name (sym_bfd, data_name);
+      asection *data_sect = bfd_get_section_by_name(sym_bfd, data_name);
       if (data_sect)
         {
-          DBX_DATA_SECTION (objfile) = (struct obj_section *)
-                             obstack_alloc (&objfile->objfile_obstack,
-                                     sizeof (struct obj_section));
-          DBX_DATA_SECTION (objfile)->addr =
-                                  bfd_section_vma (sym_bfd, data_sect);
-          DBX_DATA_SECTION (objfile)->endaddr =
-                                  bfd_section_vma (sym_bfd, data_sect) +
-                                  bfd_section_size (sym_bfd, data_sect);
-          DBX_DATA_SECTION (objfile)->objfile = objfile;
-          DBX_DATA_SECTION (objfile)->the_bfd_section = data_sect;
+          DBX_DATA_SECTION(objfile) = (struct obj_section *)
+                            obstack_alloc(&objfile->objfile_obstack,
+                                    sizeof(struct obj_section));
+          DBX_DATA_SECTION(objfile)->addr =
+                                 bfd_section_vma(sym_bfd, data_sect);
+          DBX_DATA_SECTION(objfile)->endaddr =
+                                 (bfd_section_vma(sym_bfd, data_sect)
+				  + bfd_section_size(sym_bfd, data_sect));
+          DBX_DATA_SECTION(objfile)->objfile = objfile;
+          DBX_DATA_SECTION(objfile)->the_bfd_section = data_sect;
         }
       else
 	{
@@ -312,35 +311,34 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
 	     DBX_DATA_SECTION()->the_bfd_section without checking that
 	     DBX_DATA_SECTION exists. It is easier to just fake up one
 	     here.  */
-
-          DBX_DATA_SECTION (objfile) = (struct obj_section *)
-                             obstack_alloc (&objfile->objfile_obstack,
-                                     sizeof (struct obj_section));
-          DBX_DATA_SECTION (objfile)->addr = INVALID_ADDRESS;
-          DBX_DATA_SECTION (objfile)->endaddr = INVALID_ADDRESS;
-          DBX_DATA_SECTION (objfile)->objfile = objfile;
-          DBX_DATA_SECTION (objfile)->the_bfd_section = NULL;
+          DBX_DATA_SECTION(objfile) = (struct obj_section *)
+                            obstack_alloc(&objfile->objfile_obstack,
+                                    sizeof(struct obj_section));
+          DBX_DATA_SECTION(objfile)->addr = INVALID_ADDRESS;
+          DBX_DATA_SECTION(objfile)->endaddr = INVALID_ADDRESS;
+          DBX_DATA_SECTION(objfile)->objfile = objfile;
+          DBX_DATA_SECTION(objfile)->the_bfd_section = NULL;
 	}
     }
 
   /* Zero length sections will have a BFD asection but not a struct
      obj_section.  */
-  if (!DBX_COALESCED_TEXT_SECTION (objfile))
+  if (!DBX_COALESCED_TEXT_SECTION(objfile))
     {
-      asection *textcoal_sect = bfd_get_section_by_name (sym_bfd,
-                                                         coalesced_text_name);
+      asection *textcoal_sect = bfd_get_section_by_name(sym_bfd,
+                                                        coalesced_text_name);
       if (textcoal_sect)
         {
-          DBX_COALESCED_TEXT_SECTION (objfile) = (struct obj_section *)
-                             obstack_alloc (&objfile->objfile_obstack,
-                                     sizeof (struct obj_section));
-          DBX_COALESCED_TEXT_SECTION (objfile)->addr =
-                                  bfd_section_vma (sym_bfd, textcoal_sect);
-          DBX_COALESCED_TEXT_SECTION (objfile)->endaddr =
-                                  bfd_section_vma (sym_bfd, textcoal_sect) +
-                                  bfd_section_size (sym_bfd, textcoal_sect);
-          DBX_COALESCED_TEXT_SECTION (objfile)->objfile = objfile;
-          DBX_COALESCED_TEXT_SECTION (objfile)->the_bfd_section = textcoal_sect;
+          DBX_COALESCED_TEXT_SECTION(objfile) = (struct obj_section *)
+                             obstack_alloc(&objfile->objfile_obstack,
+                                     sizeof(struct obj_section));
+          DBX_COALESCED_TEXT_SECTION(objfile)->addr =
+                                  bfd_section_vma(sym_bfd, textcoal_sect);
+          DBX_COALESCED_TEXT_SECTION(objfile)->endaddr =
+                                  (bfd_section_vma(sym_bfd, textcoal_sect)
+				   + bfd_section_size(sym_bfd, textcoal_sect));
+          DBX_COALESCED_TEXT_SECTION(objfile)->objfile = objfile;
+          DBX_COALESCED_TEXT_SECTION(objfile)->the_bfd_section = textcoal_sect;
         }
       else
 	{
@@ -350,14 +348,13 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
 	     DBX_COALESCED_TEXT_SECTION()->the_bfd_section without
 	     checking that DBX_COALESCED_TEXT_SECTION exists. It is
 	     easier to just fake up one here.  */
-
-          DBX_COALESCED_TEXT_SECTION (objfile) = (struct obj_section *)
-                             obstack_alloc (&objfile->objfile_obstack,
-                                     sizeof (struct obj_section));
-          DBX_COALESCED_TEXT_SECTION (objfile)->addr = INVALID_ADDRESS;
-          DBX_COALESCED_TEXT_SECTION (objfile)->endaddr = INVALID_ADDRESS;
-          DBX_COALESCED_TEXT_SECTION (objfile)->objfile = objfile;
-          DBX_COALESCED_TEXT_SECTION (objfile)->the_bfd_section = NULL;
+          DBX_COALESCED_TEXT_SECTION(objfile) = (struct obj_section *)
+                             obstack_alloc(&objfile->objfile_obstack,
+                                     sizeof(struct obj_section));
+          DBX_COALESCED_TEXT_SECTION(objfile)->addr = INVALID_ADDRESS;
+          DBX_COALESCED_TEXT_SECTION(objfile)->endaddr = INVALID_ADDRESS;
+          DBX_COALESCED_TEXT_SECTION(objfile)->objfile = objfile;
+          DBX_COALESCED_TEXT_SECTION(objfile)->the_bfd_section = NULL;
 	}
     }
 
@@ -515,7 +512,7 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
      from the LC_DYSYMTAB load command if it was provided. */
   local_stabsect = bfd_get_section_by_name(sym_bfd, local_stab_name);
   nonlocal_stabsect = bfd_get_section_by_name(sym_bfd, nonlocal_stab_name);
-  if (local_stabsect == NULL || nonlocal_stabsect == NULL)
+  if ((local_stabsect == NULL) || (nonlocal_stabsect == NULL))
     local_stabsect = nonlocal_stabsect = NULL;
 
   /* APPLE LOCAL: Initialize the local/non-local stab nlist record pointers
@@ -688,11 +685,11 @@ macho_symfile_read(struct objfile *objfile, int mainline)
       CHECK_FATAL(objfile != NULL);
 
 #if (defined(DEBUG) || defined(_DEBUG) || defined(GDB_DEBUG))
-      printf_filtered(_("%s: about to try to read indirect symbols next, "
-			"with abfd %p, dysymtab %p, symtab %p, "
-			"and objfile %p.\n"),
-		      __FILE__, (void *)abfd, (void *)dysymtab, (void *)symtab,
-		      (void *)objfile);
+      printf_filtered(_("%s: will to try to read indirect symbols from %s next,"
+			" with abfd %p, dysymtab %p, symtab %p,"
+			" and objfile %p.\n"),
+		      __FILE__, abfd->filename, (void *)abfd, (void *)dysymtab,
+		      (void *)symtab, (void *)objfile);
 #endif /* (DEBUG || _DEBUG || GDB_DEBUG) */
 
       if (!macho_read_indirect_symbols(abfd, dysymtab, symtab, objfile))
@@ -818,11 +815,15 @@ macho_read_indirect_symbols(bfd *abfd,
 
           CHECK_FATAL((strlen(sname) + sizeof("dyld_stub_") + 1UL) < 4096UL);
           printed = snprintf(nname, sizeof(nname), "dyld_stub_%s", sname);
+	  CHECK_FATAL((size_t)printed == strlen(nname));
 #if (defined(DEBUG) || defined(_DEBUG) || defined(GDB_DEBUG))
-	  printf_filtered(_("\n%s: Recording minsym %s \n"
+	  if (i == 0) {
+	    printf_filtered(_("\n"));
+	  }
+	  printf_filtered(_("%s: In loop iteration %d, recording minsym %s \n"
 			    "\twith address 0x%s, osect_idx %d,"
 			    " bfdsec %p, and objfile %p...\n"),
-			  __FILE__, nname, paddr(stubaddr), osect_idx,
+			  __FILE__, i, nname, paddr(stubaddr), osect_idx,
 			  (void *)bfdsec, (void *)objfile);
 #endif /* DEBUG || _DEBUG || GDB_DEBUG */
 	  CHECK_FATAL(printed < 4096);
@@ -876,7 +877,7 @@ macho_symfile_offsets(struct objfile *objfile,
 
   if (addrs->other[0].addr != 0)
     {
-      num_sections = objfile->sections_end - objfile->sections;
+      num_sections = (objfile->sections_end - objfile->sections);
       for (i = 0U; i < num_sections; i++)
         {
           objfile->sections[i].addr += addrs->other[0].addr;

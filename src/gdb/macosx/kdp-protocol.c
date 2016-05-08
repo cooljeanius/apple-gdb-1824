@@ -101,8 +101,8 @@ write16u(unsigned char *s, uint16_t i, int bigendian)
     }
 }
 
-/* */
-static inline ATTRIBUTE_GNU_INLINE void
+/* Remove inline because of -Winline + -Os: */
+static void
 write32u(unsigned char *s, uint32_t i, int bigendian)
 {
   if (bigendian)
@@ -121,8 +121,8 @@ write32u(unsigned char *s, uint32_t i, int bigendian)
     }
 }
 
-/* */
-static inline ATTRIBUTE_GNU_INLINE void
+/* Remove inline because of -Winline + -Os: */
+static void
 write64u(unsigned char *s, uint64_t i, int bigendian)
 {
   if (bigendian)
@@ -735,42 +735,42 @@ kdp_marshal(kdp_connection *c, kdp_pkt_t *p, unsigned char *s, size_t maxlen,
           break;
         case KDP_READMEM:
           len = 16;
-          write32u (s + 8, p->readmem_req.address, c->bigendian);
-          write32u (s + 12, p->readmem_req.nbytes, c->bigendian);
+          write32u((s + 8), p->readmem_req.address, c->bigendian);
+          write32u((s + 12), p->readmem_req.nbytes, c->bigendian);
           break;
         case KDP_READMEM64:
           len = 20;
-          write64u (s + 8, p->readmem64_req.address, c->bigendian);
-          write32u (s + 16, p->readmem64_req.nbytes, c->bigendian);
+          write64u((s + 8), p->readmem64_req.address, c->bigendian);
+          write32u((s + 16), p->readmem64_req.nbytes, c->bigendian);
           break;
         case KDP_WRITEMEM:
-          len = 16 + p->writemem_req.nbytes;
-          CHECK_LEN_MAX (len, maxlen);
-          write32u (s + 8, p->writemem_req.address, c->bigendian);
-          write32u (s + 12, p->writemem_req.nbytes, c->bigendian);
-          memcpy (s + 16, p->writemem_req.data, p->writemem_req.nbytes);
+          len = (16UL + p->writemem_req.nbytes);
+          CHECK_LEN_MAX(len, maxlen);
+          write32u((s + 8), p->writemem_req.address, c->bigendian);
+          write32u((s + 12), p->writemem_req.nbytes, c->bigendian);
+          memcpy((s + 16), p->writemem_req.data, p->writemem_req.nbytes);
           break;
         case KDP_WRITEMEM64:
-          len = 20 + p->writemem64_req.nbytes;
-          CHECK_LEN_MAX (len, maxlen);
-          write64u (s + 8, p->writemem64_req.address, c->bigendian);
-          write32u (s + 16, p->writemem64_req.nbytes, c->bigendian);
-          memcpy (s + 20, p->writemem64_req.data, p->writemem64_req.nbytes);
+          len = (20UL + p->writemem64_req.nbytes);
+          CHECK_LEN_MAX(len, maxlen);
+          write64u((s + 8), p->writemem64_req.address, c->bigendian);
+          write32u((s + 16), p->writemem64_req.nbytes, c->bigendian);
+          memcpy((s + 20), p->writemem64_req.data, p->writemem64_req.nbytes);
           break;
         case KDP_BREAKPOINT_SET:
         case KDP_BREAKPOINT_REMOVE:
-          len = 12;
-          write32u (s + 8, p->breakpoint_req.address, c->bigendian);
+          len = 12UL;
+          write32u((s + 8), p->breakpoint_req.address, c->bigendian);
           break;
         case KDP_BREAKPOINT64_SET:
         case KDP_BREAKPOINT64_REMOVE:
-          len = 16;
-          write64u (s + 8, p->breakpoint64_req.address, c->bigendian);
+          len = 16UL;
+          write64u((s + 8), p->breakpoint64_req.address, c->bigendian);
           break;
         case KDP_READREGS:
-          len = 16;
-          write32u (s + 8, p->readregs_req.cpu, c->bigendian);
-          write32u (s + 12, p->readregs_req.flavor, c->bigendian);
+          len = 16UL;
+          write32u((s + 8), p->readregs_req.cpu, c->bigendian);
+          write32u((s + 12), p->readregs_req.flavor, c->bigendian);
           break;
         case KDP_WRITEREGS:
           {

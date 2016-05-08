@@ -829,6 +829,7 @@ prim_record_minimal_symbol_and_info(const char *name, const CORE_ADDR address,
 {
   struct msym_bunch *newbunch;
   struct minimal_symbol *msymbol;
+  struct minimal_symbol msymbol_scalar;
 
   /* APPLE LOCAL: Re-factor the mst_file_text check up one level.
      Do NOT modify the symbol name when checking it against
@@ -865,7 +866,11 @@ prim_record_minimal_symbol_and_info(const char *name, const CORE_ADDR address,
 
   if (msym_bunch_index == BUNCH_SIZE)
     {
-      newbunch = (struct msym_bunch *)xmalloc((sizeof(struct msym_bunch) * BUNCH_SIZE) + 2UL);
+      const size_t newbunch_amt = ((sizeof(struct msym_bunch) * BUNCH_SIZE)
+				   + 2UL);
+      printf_filtered("%s: Allocating this much memory for newbunch: %lu.\n",
+		      __FILE__, newbunch_amt);
+      newbunch = (struct msym_bunch *)xmalloc(newbunch_amt);
       /* maybe need to do something else with newbunch here? */
       msym_bunch_index = 0;
       newbunch->next = msym_bunch;
@@ -874,16 +879,21 @@ prim_record_minimal_symbol_and_info(const char *name, const CORE_ADDR address,
       /* Does newbunch ever get freed? */
     }
 #if defined(DEBUG) || defined(_DEBUG) || defined(__APPLEHELP__) || defined(BUNCH_SIZE)
-  printf_filtered("using msym number %d out of %d in bunch %d...\n",
-		  msym_bunch_index, (BUNCH_SIZE - 1), bunches_seen);
+  printf_filtered("%s: Using msymbol number %d out of %d in bunch %d...\n",
+		  __FILE__, msym_bunch_index, (BUNCH_SIZE - 1), bunches_seen);
 #endif /* DEBUG || _DEBUG || __APPLEHELP__ || BUNCH_SIZE */
   gdb_assert(msym_bunch_index < BUNCH_SIZE);
   msymbol = &msym_bunch->contents[msym_bunch_index]; /* This seems suspicious */
   gdb_assert(msymbol != NULL);
+#if defined(DEBUG) || defined(_DEBUG) || defined(GDBDEBUG) || defined(__APPLE__)
+  printf_filtered("\tmsymbol is at %p.\n", (void *)msymbol);
+#endif /* DEBUG || _DEBUG || GDBDEBUG || __APPLE__ */
 /* APPLE LOCAL: Initialize the msymbol->filename to NULL: */
 #if defined(SOFUN_ADDRESS_MAYBE_MISSING) && !defined(TM_NEXTSTEP)
   msymbol->filename = NULL;
 #endif /* SOFUN_ADDRESS_MAYBE_MISSING && !TM_NEXTSTEP */
+  msymbol_scalar = *msymbol;
+  (void)msymbol_scalar;
   SYMBOL_INIT_LANGUAGE_SPECIFIC(msymbol, language_unknown);
   SYMBOL_LANGUAGE(msymbol) = language_auto;
   SYMBOL_SET_NAMES(msymbol, (char *)name, (int)strlen(name), objfile);
@@ -1259,22 +1269,21 @@ lookup_solib_trampoline_symbol_by_pc (CORE_ADDR pc)
    same name is defined in more than one shared library, but this
    is considered bad programming style. We could return 0 if we find
    a duplicate function in case this matters someday.  */
-
 CORE_ADDR
-find_solib_trampoline_target (CORE_ADDR pc)
+find_solib_trampoline_target(CORE_ADDR pc)
 {
   struct objfile *objfile;
   struct minimal_symbol *msymbol;
-  struct minimal_symbol *tsymbol = lookup_solib_trampoline_symbol_by_pc (pc);
+  struct minimal_symbol *tsymbol = lookup_solib_trampoline_symbol_by_pc(pc);
 
   if (tsymbol != NULL)
     {
-      ALL_MSYMBOLS (objfile, msymbol)
+      ALL_MSYMBOLS(objfile, msymbol)
       {
-	if (MSYMBOL_TYPE (msymbol) == mst_text
-	    && strcmp (SYMBOL_LINKAGE_NAME (msymbol),
-		       SYMBOL_LINKAGE_NAME (tsymbol)) == 0)
-	  return SYMBOL_VALUE_ADDRESS (msymbol);
+	if ((MSYMBOL_TYPE(msymbol) == mst_text)
+	    && (strcmp(SYMBOL_LINKAGE_NAME(msymbol),
+		       SYMBOL_LINKAGE_NAME(tsymbol)) == 0))
+	  return SYMBOL_VALUE_ADDRESS(msymbol);
       }
     }
   return 0;

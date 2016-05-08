@@ -103,9 +103,7 @@ static int end_fun_absolute_p = 0;
 
 struct symloc
   {
-    /* Offset within the file symbol table of first local symbol for this
-       file.  */
-
+    /* Offset within the file symbol table of 1st local symbol for this file: */
     int ldsymoff;
 
     /* Length (in bytes) of the section of the symbol table devoted to
@@ -116,8 +114,7 @@ struct symloc
 
     int ldsymlen;
 
-    /* The size of each symbol in the symbol file (in external form).  */
-
+    /* The size of each symbol in the symbol file (in external form): */
     int symbol_size;
 
     /* Further information needed to locate the symbols if they are in
@@ -205,13 +202,14 @@ stabsect_read_strtab_from_oso (struct bfd *oso_bfd, int *symcount,
 			       bfd_byte **stab_data_handle, char **strtab_data_handle);
 
 /* Complaints about the symbols we have encountered.  */
-
+/* Unknown: */
 static void
 unknown_symtype_complaint(const char *arg1)
 {
   complaint(&symfile_complaints, _("unknown symbol type %s"), arg1);
 }
 
+/* Mismatch: */
 static void
 lbrac_mismatch_complaint(int arg1)
 {
@@ -219,6 +217,7 @@ lbrac_mismatch_complaint(int arg1)
 	    _("N_LBRAC/N_RBRAC symbol mismatch at symtab pos %d"), arg1);
 }
 
+/* Repeated header: */
 static void
 repeated_header_complaint(const char *arg1, int arg2)
 {
@@ -481,7 +480,9 @@ explicit_lookup_type(int real_filenum, int index)
   return &f->vector[index];
 }
 #endif /* ALLOW_UNUSED_FUNCTIONS || !S_SPLINT_S */
-
+
+static unsigned long dbx_minsyms_recorded = 0UL;
+
 /* APPLE LOCAL: Pass in the desc along with the the type so we can
    see if this is a "special" symbol. */
 static void
@@ -627,16 +628,20 @@ record_minimal_symbol(const char *name, CORE_ADDR address, int type,
 
   /* APPLE LOCAL: Record the msymbol & make it special if it is: */
 #if (defined(DEBUG) || defined(_DEBUG) || defined(MACOSX_DYLD))
-  printf_filtered(_("\n%s: Recording minsym %s \n"
+  if (dbx_minsyms_recorded == 0UL) {
+    printf_filtered(_("\n"));
+  }
+  printf_filtered(_("%s: Recording minsym number %lu: %s \n"
 		    "\twith address 0x%s, section number %d,"
 		    " bfd_section %p, and objfile %p...\n"),
-		  __FILE__, name, paddr(address), section, (void *)bfd_section,
-		  (void *)objfile);
+		  __FILE__, dbx_minsyms_recorded, name, paddr(address), section,
+		  (void *)bfd_section, (void *)objfile);
 #endif /* DEBUG || _DEBUG || MACOSX_DYLD */
   msym =
     prim_record_minimal_symbol_and_info(name, address, ms_type, NULL,
                                         section, bfd_section, objfile);
   DBX_MAKE_MSYMBOL_SPECIAL(desc, msym);
+  dbx_minsyms_recorded++;
 }
 
 /* Scan and build partial symbols for a symbol file.
