@@ -627,7 +627,7 @@ extern void bpstat_clear_actions (bpstat);
    function returns another bpstat which contains only the catchpoints
    on that first list, if any.
  */
-extern void bpstat_get_triggered_catchpoints (bpstat, bpstat *);
+extern bpstat *bpstat_get_triggered_catchpoints(bpstat, bpstat *);
 
 /* Implementation:  */
 

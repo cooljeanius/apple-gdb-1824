@@ -917,7 +917,6 @@ decode_die_type (struct dieinfo *dip)
    define the members, compute and return the user defined type for the
    structure or union.
  */
-
 static struct type *
 struct_type(struct dieinfo *dip, char *thisdie, char *enddie,
 	    struct objfile *objfile)
@@ -932,7 +931,7 @@ struct_type(struct dieinfo *dip, char *thisdie, char *enddie,
   struct nextfield *newf;
   int nfields = 0;
   int n;
-  struct dieinfo mbr;
+  struct dieinfo *mbr = (struct dieinfo *)xmalloc(sizeof(struct dieinfo));
   char *nextdie;
   int anonymous_size;
 
@@ -981,28 +980,28 @@ struct_type(struct dieinfo *dip, char *thisdie, char *enddie,
   thisdie += dip->die_length;
   while (thisdie < enddie)
     {
-      basicdieinfo (&mbr, thisdie, objfile);
-      completedieinfo (&mbr, objfile);
-      if (mbr.die_length <= SIZEOF_DIE_LENGTH)
+      basicdieinfo(mbr, thisdie, objfile);
+      completedieinfo(mbr, objfile);
+      if (mbr->die_length <= SIZEOF_DIE_LENGTH)
 	{
 	  break;
 	}
-      else if (mbr.at_sibling != 0)
+      else if (mbr->at_sibling != 0)
 	{
-	  nextdie = dbbase + mbr.at_sibling - dbroff;
+	  nextdie = (dbbase + mbr->at_sibling - dbroff);
 	}
       else
 	{
-	  nextdie = thisdie + mbr.die_length;
+	  nextdie = (thisdie + mbr->die_length);
 	}
-      switch (mbr.die_tag)
+      switch (mbr->die_tag)
 	{
 	case TAG_member:
 	  /* Static fields can be either TAG_global_variable (GCC) or else
 	     TAG_member with no location (Diab).  We could treat the latter like
 	     the former... but since we don't support the former, just avoid
 	     crashing on the latter for now.  */
-	  if (mbr.at_location == NULL)
+	  if (mbr->at_location == NULL)
 	    break;
 
 	  /* Get space to record the next field's data: */
@@ -1011,13 +1010,13 @@ struct_type(struct dieinfo *dip, char *thisdie, char *enddie,
 	  list = newf;
 	  /* Save the data: */
 	  list->field.name =
-	    obsavestring(mbr.at_name, strlen(mbr.at_name),
+	    obsavestring(mbr->at_name, strlen(mbr->at_name),
 			 &objfile->objfile_obstack);
-	  FIELD_TYPE(list->field) = decode_die_type(&mbr);
-	  FIELD_BITPOS(list->field) = (8 * locval(&mbr));
+	  FIELD_TYPE(list->field) = decode_die_type(mbr);
+	  FIELD_BITPOS(list->field) = (8 * locval(mbr));
 	  FIELD_STATIC_KIND(list->field) = 0;
 	  /* Handle bit fields: */
-	  FIELD_BITSIZE(list->field) = mbr.at_bit_size;
+	  FIELD_BITSIZE(list->field) = mbr->at_bit_size;
 	  if (BITS_BIG_ENDIAN)
 	    {
 	      /* For big endian bits, the at_bit_offset gives the
@@ -1025,7 +1024,7 @@ struct_type(struct dieinfo *dip, char *thisdie, char *enddie,
 	         anonymous object to the MSB of the field.  We don't
 	         have to do anything special since we don't need to
 	         know the size of the anonymous object. */
-	      FIELD_BITPOS (list->field) += mbr.at_bit_offset;
+	      FIELD_BITPOS(list->field) += mbr->at_bit_offset;
 	    }
 	  else
 	    {
@@ -1037,14 +1036,14 @@ struct_type(struct dieinfo *dip, char *thisdie, char *enddie,
 	         object, and then subtract off the number of bits of
 	         the field itself.  The result is the bit offset of
 	         the LSB of the field. */
-	      if (mbr.at_bit_size > 0)
+	      if (mbr->at_bit_size > 0)
 		{
-		  if (mbr.has_at_byte_size)
+		  if (mbr->has_at_byte_size)
 		    {
 		      /* The size of the anonymous object containing
 		         the bit field is explicit, so use the
 		         indicated size (in bytes). */
-		      anonymous_size = mbr.at_byte_size;
+		      anonymous_size = mbr->at_byte_size;
 		    }
 		  else
 		    {
@@ -1055,8 +1054,9 @@ struct_type(struct dieinfo *dip, char *thisdie, char *enddie,
 		         a debug information size optimization. */
 		      anonymous_size = TYPE_LENGTH (list->field.type);
 		    }
-		  FIELD_BITPOS (list->field) +=
-		    anonymous_size * 8 - mbr.at_bit_offset - mbr.at_bit_size;
+		  FIELD_BITPOS(list->field) +=
+		    ((anonymous_size * 8) - mbr->at_bit_offset
+		     - mbr->at_bit_size);
 		}
 	    }
 	  nfields++;
@@ -1087,6 +1087,7 @@ struct_type(struct dieinfo *dip, char *thisdie, char *enddie,
 	  TYPE_FIELD (type, --n) = list->field;
 	}
     }
+  xfree(mbr);
   return (type);
 }
 
@@ -1905,86 +1906,87 @@ read_file_scope(struct dieinfo *dip, char *thisdie, char *enddie,
    Process all DIE's in a specified range.  May be (and almost
    certainly will be) called recursively.
  */
-
 static void
-process_dies (char *thisdie, char *enddie, struct objfile *objfile)
+process_dies(char *thisdie, char *enddie, struct objfile *objfile)
 {
   char *nextdie;
-  struct dieinfo di;
+  struct dieinfo *di = (struct dieinfo *)xmalloc(sizeof(struct dieinfo));
 
   while (thisdie < enddie)
     {
-      basicdieinfo (&di, thisdie, objfile);
-      if (di.die_length < SIZEOF_DIE_LENGTH)
+      basicdieinfo(di, thisdie, objfile);
+      if (di->die_length < SIZEOF_DIE_LENGTH)
 	{
 	  break;
 	}
-      else if (di.die_tag == TAG_padding)
+      else if (di->die_tag == TAG_padding)
 	{
-	  nextdie = thisdie + di.die_length;
+	  nextdie = (thisdie + di->die_length);
 	}
       else
 	{
-	  completedieinfo (&di, objfile);
-	  if (di.at_sibling != 0)
+	  completedieinfo(di, objfile);
+	  if (di->at_sibling != 0)
 	    {
-	      nextdie = dbbase + di.at_sibling - dbroff;
+	      nextdie = (dbbase + di->at_sibling - dbroff);
 	    }
 	  else
 	    {
-	      nextdie = thisdie + di.die_length;
+	      nextdie = (thisdie + di->die_length);
 	    }
 	  /* I think that these are always text, not data, addresses.  */
-	  di.at_low_pc = SMASH_TEXT_ADDRESS (di.at_low_pc);
-	  di.at_high_pc = SMASH_TEXT_ADDRESS (di.at_high_pc);
-	  switch (di.die_tag)
+	  di->at_low_pc = SMASH_TEXT_ADDRESS(di->at_low_pc);
+	  di->at_high_pc = SMASH_TEXT_ADDRESS(di->at_high_pc);
+	  switch (di->die_tag)
 	    {
 	    case TAG_compile_unit:
 	      /* Skip Tag_compile_unit if we are already inside a compilation
 	         unit, we are unable to handle nested compilation units
 	         properly (FIXME).  */
 	      if (current_subfile == NULL)
-		read_file_scope (&di, thisdie, nextdie, objfile);
+		read_file_scope(di, thisdie, nextdie, objfile);
 	      else
-		nextdie = thisdie + di.die_length;
+		nextdie = (thisdie + di->die_length);
 	      break;
 	    case TAG_global_subroutine:
 	    case TAG_subroutine:
-	      if (di.has_at_low_pc)
+	      if (di->has_at_low_pc)
 		{
-		  read_func_scope (&di, thisdie, nextdie, objfile);
+		  read_func_scope(di, thisdie, nextdie, objfile);
 		}
 	      break;
 	    case TAG_lexical_block:
-	      read_lexical_block_scope (&di, thisdie, nextdie, objfile);
+	      read_lexical_block_scope(di, thisdie, nextdie, objfile);
 	      break;
 	    case TAG_class_type:
 	    case TAG_structure_type:
 	    case TAG_union_type:
-	      read_structure_scope (&di, thisdie, nextdie, objfile);
+	      read_structure_scope(di, thisdie, nextdie, objfile);
 	      break;
 	    case TAG_enumeration_type:
-	      read_enumeration (&di, thisdie, nextdie, objfile);
+	      read_enumeration(di, thisdie, nextdie, objfile);
 	      break;
 	    case TAG_subroutine_type:
-	      read_subroutine_type (&di, thisdie, nextdie);
+	      read_subroutine_type(di, thisdie, nextdie);
 	      break;
 	    case TAG_array_type:
-	      dwarf_read_array_type (&di);
+	      dwarf_read_array_type(di);
 	      break;
 	    case TAG_pointer_type:
-	      read_tag_pointer_type (&di);
+	      read_tag_pointer_type(di);
 	      break;
 	    case TAG_string_type:
-	      read_tag_string_type (&di);
+	      read_tag_string_type(di);
 	      break;
 	    default:
-	      new_symbol (&di, objfile);
+	      new_symbol(di, objfile);
 	      break;
 	    }
 	}
       thisdie = nextdie;
     }
+
+  xfree(di);
 }
 
 /*
@@ -2749,13 +2751,12 @@ scan_partial_symbols (char *thisdie, char *enddie, struct objfile *objfile)
 
    Returns no value.
  */
-
 static void
-scan_compilation_units (char *thisdie, char *enddie, file_ptr dbfoff,
-			file_ptr lnoffset, struct objfile *objfile)
+scan_compilation_units(char *thisdie, char *enddie, file_ptr dbfoff,
+		       file_ptr lnoffset, struct objfile *objfile)
 {
   char *nextdie;
-  struct dieinfo di;
+  struct dieinfo *di = (struct dieinfo *)xmalloc(sizeof(struct dieinfo));
   struct partial_symtab *pst;
   int culength;
   int curoff;
@@ -2763,64 +2764,70 @@ scan_compilation_units (char *thisdie, char *enddie, file_ptr dbfoff,
 
   while (thisdie < enddie)
     {
-      basicdieinfo (&di, thisdie, objfile);
-      if (di.die_length < SIZEOF_DIE_LENGTH)
+      basicdieinfo(di, thisdie, objfile);
+      if (di->die_length < SIZEOF_DIE_LENGTH)
 	{
 	  break;
 	}
-      else if (di.die_tag != TAG_compile_unit)
+      else if (di->die_tag != TAG_compile_unit)
 	{
-	  nextdie = thisdie + di.die_length;
+	  nextdie = (thisdie + di->die_length);
 	}
       else
 	{
-	  completedieinfo (&di, objfile);
-	  set_cu_language (&di);
-	  if (di.at_sibling != 0)
+	  completedieinfo(di, objfile);
+	  set_cu_language(di);
+	  if (di->at_sibling != 0)
 	    {
-	      nextdie = dbbase + di.at_sibling - dbroff;
+	      nextdie = (dbbase + di->at_sibling - dbroff);
 	    }
 	  else
 	    {
-	      nextdie = thisdie + di.die_length;
+	      nextdie = (thisdie + di->die_length);
 	    }
-	  curoff = thisdie - dbbase;
-	  culength = nextdie - thisdie;
-	  curlnoffset = di.has_at_stmt_list ? lnoffset + di.at_stmt_list : 0;
+	  curoff = (thisdie - dbbase);
+	  culength = (nextdie - thisdie);
+	  curlnoffset = (di->has_at_stmt_list
+			 ? (lnoffset + di->at_stmt_list) : 0);
 
 	  /* First allocate a new partial symbol table structure */
 
-	  pst = start_psymtab_common (objfile, base_section_offsets,
-				      di.at_name, di.at_low_pc,
-				      objfile->global_psymbols.next,
-				      objfile->static_psymbols.next);
+	  pst = start_psymtab_common(objfile, base_section_offsets,
+				     di->at_name, di->at_low_pc,
+				     objfile->global_psymbols.next,
+				     objfile->static_psymbols.next);
 
-	  pst->texthigh = di.at_high_pc;
-	  pst->read_symtab_private = (char *)
-	    obstack_alloc (&objfile->objfile_obstack,
-			   sizeof (struct dwfinfo));
-	  DBFOFF (pst) = dbfoff;
-	  DBROFF (pst) = curoff;
-	  DBLENGTH (pst) = culength;
-	  LNFOFF (pst) = curlnoffset;
+	  pst->texthigh = di->at_high_pc;
+	  pst->read_symtab_private = 
+	    ((char *)
+	     obstack_alloc(&objfile->objfile_obstack,
+			   sizeof(struct dwfinfo)));
+	  DBFOFF(pst) = dbfoff;
+	  DBROFF(pst) = curoff;
+	  DBLENGTH(pst) = culength;
+	  LNFOFF(pst) = curlnoffset;
 	  pst->read_symtab = dwarf_psymtab_to_symtab;
 
 	  /* Now look for partial symbols */
 
-	  scan_partial_symbols (thisdie + di.die_length, nextdie, objfile);
+	  scan_partial_symbols((thisdie + di->die_length), nextdie, objfile);
 
-	  pst->n_global_syms = objfile->global_psymbols.next -
-	    (objfile->global_psymbols.list + pst->globals_offset);
-	  pst->n_static_syms = objfile->static_psymbols.next -
-	    (objfile->static_psymbols.list + pst->statics_offset);
-	  sort_pst_symbols (pst);
+	  pst->n_global_syms = (objfile->global_psymbols.next
+				- (objfile->global_psymbols.list
+				   + pst->globals_offset));
+	  pst->n_static_syms = (objfile->static_psymbols.next
+				- (objfile->static_psymbols.list
+				   + pst->statics_offset));
+	  sort_pst_symbols(pst);
 	  /* If there is already a psymtab or symtab for a file of this name,
 	     remove it. (If there is a symtab, more drastic things also
 	     happen.)  This happens in VxWorks.  */
-	  free_named_symtabs (pst->filename);
+	  free_named_symtabs(pst->filename);
 	}
       thisdie = nextdie;
     }
+
+  xfree(di);
 }
 
 /*
@@ -3418,7 +3425,7 @@ create_name(const char *name, struct obstack *obstackp)
 
    We also take care of some other basic things at this point, such
    as ensuring that the instance of the die info structure starts
-   out completely zero'd and that curdie is initialized for use
+   out completely zeroed and that curdie is initialized for use
    in error reporting if we have a problem with the current die.
 
    NOTES
@@ -3436,14 +3443,14 @@ create_name(const char *name, struct obstack *obstackp)
    We do some basic sanity checking here, such as verifying that the
    length of the die would not cause it to overrun the recorded end of
    the buffer holding the DIE info.  If we find a DIE that is either
-   too small or too large, we force it's length to zero which should
+   too small or too large, we force its length to zero which should
    cause the caller to take appropriate action.
  */
 static void
-basicdieinfo (struct dieinfo *dip, char *diep, struct objfile *objfile)
+basicdieinfo(struct dieinfo *dip, char *diep, struct objfile *objfile)
 {
   curdie = dip;
-  memset (dip, 0, sizeof (struct dieinfo));
+  memset(dip, 0, sizeof(struct dieinfo));
   dip->die = diep;
   dip->die_ref = dbroff + (diep - dbbase);
   dip->die_length = target_to_host (diep, SIZEOF_DIE_LENGTH, GET_UNSIGNED,

@@ -2674,12 +2674,12 @@ read_member_functions(struct field_info *fip, const char **pp,
 		   the sign bit out, and usable as a valid index into
 		   the array.  Remove the sign bit here.  */
 		new_sublist->fn_field.voffset =
-		  (0x7fffffff & read_huge_number (pp, ';', &nbits, 0)) + 2;
+		  ((0x7fffffff & read_huge_number(pp, ';', &nbits, 0)) + 2);
 		if (nbits != 0)
 		  return 0;
 
-		STABS_CONTINUE (pp, objfile);
-		if (**pp == ';' || **pp == '\0')
+		STABS_CONTINUE(pp, objfile);
+		if ((*pp != NULL) && ((**pp == ';') || (**pp == '\0')))
 		  {
 		    /* Must be g++ version 1.  */
 		    new_sublist->fn_field.fcontext = 0;
@@ -3461,12 +3461,12 @@ read_tilde_fields(struct field_info *fip, const char **pp, struct type *type,
   STABS_CONTINUE(pp, objfile);
 
   /* If we are positioned at a ';', then skip it. */
-  if (**pp == ';')
+  if ((*pp != NULL) && (**pp == ';'))
     {
       (*pp)++;
     }
 
-  if (**pp == '~')
+  if ((*pp != NULL) && (**pp == '~'))
     {
       (*pp)++;
 

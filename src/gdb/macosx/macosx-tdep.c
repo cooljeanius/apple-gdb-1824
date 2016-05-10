@@ -3867,7 +3867,8 @@ try_to_find_and_load_kernel_via_uuid(CORE_ADDR in_memory_addr,
           if (o == NULL)
             {
               CFRelease(uuid_string);
-              CFRelease(uuidref);
+	      if (uuidref)
+		CFRelease(uuidref);
               return 0;
             }
 
@@ -3890,7 +3891,8 @@ try_to_find_and_load_kernel_via_uuid(CORE_ADDR in_memory_addr,
         }
       CFRelease(uuid_string);
     }
-  CFRelease(uuidref);
+  if (uuidref)
+    CFRelease(uuidref);
 
   printf_filtered("Kernel is located in memory at 0x%s with uuid of %s\n",
                   paddr_nz(in_memory_addr), puuid(in_memory_uuid));

@@ -1967,6 +1967,7 @@ printf_command(const char *arg, int from_tty)
   int nargs = 0;
   int allocated_args = 20;
   struct cleanup *old_cleanups;
+  size_t f_and_string_len;
 
   val_args = (struct value **)xmalloc(allocated_args
                                       * sizeof(struct value *));
@@ -1986,8 +1987,9 @@ printf_command(const char *arg, int from_tty)
 
   /* Parse the format-control string and copy it into the string STRING,
      processing some kinds of escape sequence.  */
-
-  f = string = (char *)alloca(strlen(s) + 1UL);
+  f_and_string_len = (strlen(s) + 1UL);
+  f = string = (char *)alloca(f_and_string_len);
+  memset(f, 0, f_and_string_len);
 
   while (*s != '"')
     {
@@ -2075,8 +2077,10 @@ printf_command(const char *arg, int from_tty)
     int nargs_wanted;
     int lcount;
     int i;
+    const size_t argclasslen = (strlen(s) * sizeof(*argclass));
 
-    argclass = (enum argclass *)alloca(strlen(s) * sizeof(*argclass));
+    argclass = (enum argclass *)alloca(argclasslen);
+    memset(argclass, 0, argclasslen);
     nargs_wanted = 0;
     f = string;
     last_arg = string;

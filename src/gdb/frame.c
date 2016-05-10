@@ -1439,11 +1439,13 @@ get_prev_frame (struct frame_info *this_frame)
   return get_prev_frame_1 (this_frame);
 }
 
+/* */
 CORE_ADDR
-get_frame_pc (struct frame_info *frame)
+get_frame_pc(struct frame_info *frame)
 {
-  gdb_assert (frame->next != NULL);
-  return frame_pc_unwind (frame->next);
+  gdb_assert(frame != NULL);
+  gdb_assert(frame->next != NULL);
+  return frame_pc_unwind(frame->next);
 }
 
 /* Return an address of that falls within the frame's code block.  */

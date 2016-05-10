@@ -1004,6 +1004,7 @@ prefixify_subexp(struct expression *inexpr, struct expression *outexpr,
   int args;
   int i;
   int *arglens = NULL;
+  size_t len_of_arglens;
 
   operator_length(inexpr, inend, &oplen, &args);
 
@@ -1014,10 +1015,11 @@ prefixify_subexp(struct expression *inexpr, struct expression *outexpr,
 	 EXP_ELEM_TO_BYTES(oplen));
   outbeg += oplen;
 
-  /* Find the lengths of the arg subexpressions.  */
-  arglens = (int *)alloca(args * sizeof(int));
-  arglens[0] = 0;
-  arglens[args] = 0;
+  /* Find the lengths of the arg subexpressions: */
+  len_of_arglens = (args * sizeof(int));
+  arglens = (int *)alloca(len_of_arglens);
+  memset(arglens, 0, len_of_arglens);
+
   for (i = (args - 1); i >= 0; i--)
     {
       oplen = length_of_subexp(inexpr, inend);

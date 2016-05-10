@@ -3879,9 +3879,9 @@ bpstat_have_active_hw_watchpoints (void)
 
 
 /* Given a bpstat that records zero or more triggered eventpoints, this
-   function returns(?) another bpstat which contains only the catchpoints
+   function returns another bpstat which contains only the catchpoints
    on that first list, if any. */
-void
+bpstat *
 bpstat_get_triggered_catchpoints(bpstat ep_list, bpstat *cp_list)
 {
   struct bpstats root_bs[1];
@@ -3935,8 +3935,7 @@ bpstat_get_triggered_catchpoints(bpstat ep_list, bpstat *cp_list)
     }
 
   *cp_list = bs;
-  /* FIXME: comment makes it seem like we should return a value? */
-  return;
+  return cp_list;
 }
 
 /* Print B to gdb_stdout: */

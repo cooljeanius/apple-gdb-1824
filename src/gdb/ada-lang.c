@@ -1015,27 +1015,30 @@ static struct htab *decoded_names_store;
    const, but nevertheless modified to a semantically equivalent form
    when a decoded name is cached in it.
 */
-
 char *
-ada_decode_symbol (const struct general_symbol_info *gsymbol)
+ada_decode_symbol(const struct general_symbol_info *gsymbol)
 {
   char **resultp =
-    (char **) &gsymbol->language_specific.cplus_specific.demangled_name;
+    (char **)&gsymbol->language_specific.cplus_specific.demangled_name;
   if (*resultp == NULL)
     {
-      const char *decoded = ada_decode (gsymbol->name);
+      const char *decoded = ada_decode(gsymbol->name);
       if (gsymbol->bfd_section != NULL)
         {
           bfd *obfd = gsymbol->bfd_section->owner;
           if (obfd != NULL)
             {
               struct objfile *objf;
-              ALL_OBJFILES (objf)
+              ALL_OBJFILES(objf)
               {
                 if (obfd == objf->obfd)
                   {
-                    *resultp = obsavestring (decoded, strlen (decoded),
-                                             &objf->objfile_obstack);
+		    if (decoded != NULL) {
+		      *resultp = obsavestring(decoded, strlen(decoded),
+					      &objf->objfile_obstack);
+		    } else {
+		      *resultp = NULL;
+		    }
                     break;
                   }
               }
@@ -1901,6 +1904,7 @@ ada_value_primitive_packed_val(struct value *obj, const gdb_byte *valaddr,
 
   srcBitsLeft = bit_size;
   nsrc = len;
+  gdb_assert(type != NULL);
   ntarg = TYPE_LENGTH(type);
   sign = 0;
   if (bit_size == 0)
@@ -4427,11 +4431,10 @@ remove_out_of_scope_renamings(struct ada_symbol_info *syms,
    search extends to global and file-scope (static) symbol tables.
    Names prefixed with "standard__" are handled specially: "standard__"
    is first stripped off, and only static and global symbols are searched.  */
-
 int
-ada_lookup_symbol_list (const char *name0, const struct block *block0,
-                        domain_enum anamespace,
-                        struct ada_symbol_info **results)
+ada_lookup_symbol_list(const char *name0, const struct block *block0,
+                       domain_enum anamespace,
+                       struct ada_symbol_info **results)
 {
   struct symbol *sym;
   struct symtab *s;
@@ -4446,23 +4449,24 @@ ada_lookup_symbol_list (const char *name0, const struct block *block0,
   int block_depth;
   int ndefns;
 
-  obstack_free (&symbol_list_obstack, NULL);
-  obstack_init (&symbol_list_obstack);
+  obstack_free(&symbol_list_obstack, NULL);
+  obstack_init(&symbol_list_obstack);
 
   cacheIfUnique = 0;
 
   /* Search specified block and its superiors.  */
 
-  wild_match = (strstr (name0, "__") == NULL);
+  wild_match = (strstr(name0, "__") == NULL);
   name = name0;
-  block = (struct block *) block0;      /* FIXME: No cast ought to be
+  block = (struct block *)block0;       /* FIXME: No cast ought to be
                                            needed, but adding const will
                                            have a cascade effect.  */
-  if (strncmp (name0, "standard__", sizeof ("standard__") - 1) == 0)
+  if ((name0 != NULL)
+      && (strncmp(name0, "standard__", (sizeof("standard__") - 1UL)) == 0))
     {
       wild_match = 0;
       block = NULL;
-      name = name0 + sizeof ("standard__") - 1;
+      name = (name0 + sizeof("standard__") - 1);
     }
 
   block_depth = 0;
@@ -5453,15 +5457,15 @@ ada_in_variant(LONGEST val, struct type *type, int field_num)
    ARG_TYPE, extract and return the value of one of its (non-static)
    fields.  FIELDNO says which field.   Differs from value_primitive_field
    only in that it can handle packed values of arbitrary type.  */
-
 static struct value *
-ada_value_primitive_field (struct value *arg1, int offset, int fieldno,
-                           struct type *arg_type)
+ada_value_primitive_field(struct value *arg1, int offset, int fieldno,
+                          struct type *arg_type)
 {
   struct type *type;
 
-  arg_type = ada_check_typedef (arg_type);
-  type = TYPE_FIELD_TYPE (arg_type, fieldno);
+  arg_type = ada_check_typedef(arg_type);
+  gdb_assert(arg_type != NULL);
+  type = TYPE_FIELD_TYPE(arg_type, fieldno);
 
   /* Handle packed fields.  */
 
@@ -6272,6 +6276,8 @@ ada_template_to_fixed_record_type_1(struct type *type,
 						 (off / TARGET_CHAR_BIT)),
 			      dval);
           TYPE_FIELD_NAME(rtype, f) = TYPE_FIELD_NAME(type, f);
+	  gdb_assert(rtype != NULL);
+	  gdb_assert(TYPE_FIELD_TYPE(rtype, f) != NULL);
           bit_incr = fld_bit_len =
             (TYPE_LENGTH(TYPE_FIELD_TYPE(rtype, f)) * TARGET_CHAR_BIT);
         }

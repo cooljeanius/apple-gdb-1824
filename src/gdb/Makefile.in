@@ -1933,13 +1933,25 @@ lint: $(LINTFILES)
 	$(LINT) $(INCLUDE_CFLAGS) $(LINTFLAGS) $(LINTFILES) \
 	   `echo $(DEPFILES) | uniq | $(SED) 's/\.o /\.c /g'`
 
-SPLINTFLAGS = $(LINTFLAGS) -posix-lib +gnuextensions -weak \
-  -unrecogcomments +matchanyintegral -redef -fixedformalarray \
-  +ignoresigns -sysunrecog -type -retvalother -Imacosx $(MMALLOC_CFLAGS)
+SPLINTFLAGS = $(LINTFLAGS) -posix-lib -weak -unrecogcomments \
+  +matchanyintegral -redef -fixedformalarray +ignoresigns -sysunrecog \
+  -type -retvalother -Imacosx $(MMALLOC_CFLAGS)
 configured_lint: $(LINTFILES)
-	$(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) \
+	for f in \
 	   `echo $(LINTFILES) | uniq | $(SED) 's/\.y /\.c /g'` \
-	   `echo $(DEPFILES) | uniq | $(SED) 's/\.o /\.c /g'`
+	   `echo "$(DEPFILES) init.c" | uniq | $(SED) 's/\.o /\.c /g'`; do \
+	  echo ""; \
+	  echo "attempting to splint $${f}"; \
+	  if test -e $${f}; then \
+	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) $${f}; \
+	  elif test -e ${srcdir}/mi/$${f}; then \
+	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) ${srcdir}/mi/$${f}; \
+	  elif test -e ${srcdir}/cli/$${f}; then \
+	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) ${srcdir}/cli/$${f}; \
+	  elif test -e ${srcdir}/macosx/$${f}; then \
+	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) ${srcdir}/macosx/$${f}; \
+	  fi; \
+	done
 
 # clang analysis output:
 .SUFFIXES: .c .plist
@@ -1948,8 +1960,9 @@ configured_lint: $(LINTFILES)
 	$(RUN_CLANG_ANALYZER) -Wall -Wextra -o $(analysisdir)/$@ $<
 
 # To actually run clang:
-lint-local: $(LINTFILES)
-	$(MAKE) `echo $(LINTFILES) | uniq | $(SED) 's/\.c /\.plist /g'`
+lint-local: $(LINTFILES) $(DEPFILES)
+	$(MAKE) `echo "$(LINTFILES) init.c" | uniq | $(SED) 's/\.c /\.plist /g' | $(SED) 's/\.y /\.plist /g'`
+	$(MAKE) `echo "$(DEPFILES) init.o" | uniq | $(SED) 's/\.o /\.plist /g'`
 .PHONY: lint-local
 
 #FIXME: cxref has trouble with frameworks...

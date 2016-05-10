@@ -4420,6 +4420,7 @@ cashier_psymtab(struct partial_symtab *pst)
   struct partial_symtab *ps, *pprev = NULL;
   int i;
 
+  gdb_assert(pst != NULL);
   /* Find its previous psymtab in the chain */
   /* APPLE LOCAL ALL_OBJFILE_PSYMTABS */
   ALL_OBJFILE_PSYMTABS(pst->objfile, ps)
