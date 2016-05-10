@@ -277,7 +277,9 @@ i386_adjust_ehframe_regnum (struct gdbarch *gdbarch, int r, int ehframe_p)
 
 #undef I387_ST0_REGNUM
 #undef I387_MM0_REGNUM
-#undef I387_NUM_XMM_REGS
+#ifdef I387_NUM_XMM_REGS
+# undef I387_NUM_XMM_REGS
+#endif /* I387_NUM_XMM_REGS */
 
 
 /* This is the variable that is set with "set disassembly-flavor", and
@@ -376,7 +378,7 @@ i386_find_picbase_setup(CORE_ADDR pc, CORE_ADDR *picbase_addr,
   if (rel32 == 0x0)
     {
       /* Check for `pop r' (opcode 0x58 + rd). */
-      op = read_memory_unsigned_integer(offset_from, 1);
+      op = (unsigned char)read_memory_unsigned_integer(offset_from, 1);
       if ((op & 0xf8) != 0x58)
         return 0;
 
@@ -1812,5 +1814,9 @@ is \"default\"."),
   /* Initialize the i386 specific register groups: */
   i386_init_reggroups();
 }
+
+#ifdef I387_NUM_XMM_REGS
+# undef I387_NUM_XMM_REGS
+#endif /* I387_NUM_XMM_REGS */
 
 /* EOF */

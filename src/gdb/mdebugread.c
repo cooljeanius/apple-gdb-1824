@@ -593,7 +593,7 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
          corresponding start symbol value.
          The value of a stBlock symbol is the displacement from the
          procedure address.  */
-      if (sh->st != stEnd && sh->st != stBlock)
+      if ((sh->st != stEnd) && (sh->st != stBlock))
 	sh->value += ANOFFSET(section_offsets, SECT_OFF_TEXT(objfile));
       break;
     case scData:
@@ -606,6 +606,9 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
     case scBss:
     case scSBss:
       sh->value += ANOFFSET(section_offsets, SECT_OFF_BSS(objfile));
+      break;
+    default:
+      sh->value += 0;
       break;
     }
 
@@ -1017,17 +1020,16 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
 	   (.Fxx or .xxfake or empty) for unnamed struct/union/enums.
 	   Alpha cc puts out an sh->iss of zero for those.  */
 	if (sh->iss == 0 || name[0] == '.' || name[0] == '\0')
-	  TYPE_TAG_NAME (t) = NULL;
+	  TYPE_TAG_NAME(t) = NULL;
 	else
-	  TYPE_TAG_NAME (t) = obconcat (&current_objfile->objfile_obstack,
-					"", "", name);
+	  TYPE_TAG_NAME(t) = obconcat(&current_objfile->objfile_obstack,
+				      "", "", name);
 
-	TYPE_CODE (t) = type_code;
-	TYPE_LENGTH_ASSIGN (t) = sh->value;
-	TYPE_NFIELDS (t) = nfields;
-	TYPE_FIELDS (t) = f = ((struct field *)
-			       TYPE_ALLOC (t,
-					   nfields * sizeof (struct field)));
+	TYPE_CODE(t) = type_code;
+	TYPE_LENGTH_ASSIGN(t) = sh->value;
+	TYPE_NFIELDS(t) = (short)nfields;
+	TYPE_FIELDS(t) = f = ((struct field *)
+			      TYPE_ALLOC(t, (nfields * sizeof(struct field))));
 
 	if (type_code == TYPE_CODE_ENUM)
 	  {
@@ -1196,9 +1198,10 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
 	      if (nparams > 0)
 		{
 		  struct dict_iterator iter;
-		  TYPE_NFIELDS (ftype) = nparams;
-		  TYPE_FIELDS (ftype) = (struct field *)
-		    TYPE_ALLOC (ftype, nparams * sizeof (struct field));
+		  TYPE_NFIELDS(ftype) = (short)nparams;
+		  TYPE_FIELDS(ftype) =
+		    ((struct field *)
+		     TYPE_ALLOC(ftype, (nparams * sizeof(struct field))));
 
 		  iparams = 0;
 		  ALL_BLOCK_SYMBOLS (b, iter, sym)
@@ -3383,6 +3386,9 @@ parse_partial_symbols (struct objfile *objfile)
 		  sh.value += ANOFFSET(objfile->section_offsets,
                                        SECT_OFF_BSS(objfile));
 		  break;
+		default:
+		  sh.value += 0;
+		  break;
 		}
 
 	      switch (sh.st)
@@ -3615,6 +3621,9 @@ parse_partial_symbols (struct objfile *objfile)
 		case scSBss:
 		  svalue += ANOFFSET(objfile->section_offsets,
                                      SECT_OFF_BSS(objfile));
+		  break;
+		default:
+		  svalue += 0;
 		  break;
 		}
 

@@ -1576,4 +1576,8 @@ Use 'show input-radix' or 'show output-radix' to independently show each."),
   print_max = PRINT_MAX_DEFAULT;
 }
 
+#ifdef TWO_TO_FOURTH
+# undef TWO_TO_FOURTH
+#endif /* TWO_TO_FOURTH */
+
 /* EOF */

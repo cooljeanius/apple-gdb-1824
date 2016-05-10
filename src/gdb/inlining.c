@@ -30,6 +30,9 @@
 #else
 # include "safe-ctype.h"
 #endif /* HAVE_CTYPE_H */
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
 #include "symtab.h"
 #include "frame.h"
 #include "breakpoint.h"
@@ -565,17 +568,17 @@ current_tmp_frame_stack_position (void)
    INLINE_END_PC. */
 
 static int
-tmp_frame_in_inlined_function_call_p (CORE_ADDR cur_pc,
-				      CORE_ADDR *inline_end_pc)
+tmp_frame_in_inlined_function_call_p(CORE_ADDR cur_pc,
+				     CORE_ADDR *inline_end_pc)
 {
   int ret_val = 0;
   int i;
   int low = 0;
   int high = 0;
 
-  *inline_end_pc = (CORE_ADDR) 0;
+  *inline_end_pc = (CORE_ADDR)0UL;
 
-  for (i = 1; i <= temp_frame_stack.nelts; i++)
+  for (i = 1; (i <= temp_frame_stack.nelts) && (i < INT_MAX); i++)
     if ((temp_frame_stack.records[i].ranges
 	 && tmp_frame_record_ranges_contains_pc (i, cur_pc))
 	|| (!temp_frame_stack.records[i].ranges
@@ -1550,7 +1553,7 @@ inlined_function_update_call_stack(CORE_ADDR pc)
   /* Since the stop_pc has changed, the frame stack has been blown away,
      including any inlined frame records; update the records to show this.  */
 
-  for (i = 1; i <= global_inlined_call_stack.nelts; i++)
+  for (i = 1; (i <= global_inlined_call_stack.nelts) && (i < INT_MAX); i++)
     global_inlined_call_stack.records[i].stack_frame_created = 0;
 
   /* Now, start at the top of our inlined call stack (the innermost
@@ -2020,14 +2023,14 @@ current_inlined_subroutine_call_site_line (void)
    position.  */
 
 int
-at_inlined_call_site_p (char **file_name, int *line_num, int *column)
+at_inlined_call_site_p(char **file_name, int *line_num, int *column)
 {
   int ret_val = 0;
   int i;
   int low = 0;
   int high = 0;
 
-  for (i = 1; i <= global_inlined_call_stack.nelts; i++)
+  for (i = 1; (i <= global_inlined_call_stack.nelts) && (i < INT_MAX); i++)
     if (global_inlined_call_stack.records[i].start_pc == stop_pc
 	&& !global_inlined_call_stack.records[i].stepped_into)
       {
@@ -2071,16 +2074,16 @@ at_inlined_call_site_p (char **file_name, int *line_num, int *column)
    global_inlined_call_stack.  */
 
 int
-in_inlined_function_call_p (CORE_ADDR *inline_end_pc)
+in_inlined_function_call_p(CORE_ADDR *inline_end_pc)
 {
   int ret_val = 0;
   int i;
   int low = 0;
   int high = 0;
 
-  *inline_end_pc = (CORE_ADDR) 0;
+  *inline_end_pc = (CORE_ADDR)0UL;
 
-  for (i = 1; i <= global_inlined_call_stack.nelts; i++)
+  for (i = 1; (i <= global_inlined_call_stack.nelts) && (i < INT_MAX); i++)
     if (global_inlined_call_stack.records[i].stepped_into)
       if ((global_inlined_call_stack.records[i].ranges
 	   && record_ranges_contains_pc (i, stop_pc))
@@ -2575,12 +2578,12 @@ print_inlined_frame (struct frame_info *fi, int print_level,
    global_inlined_call_stack as not having frames created for them.  */
 
 void
-flush_inlined_subroutine_frames (void)
+flush_inlined_subroutine_frames(void)
 {
-  int cur_pos = current_inlined_subroutine_stack_position ();
+  int cur_pos = current_inlined_subroutine_stack_position();
   int i;
 
-  for (i = 1; i <= cur_pos; i++)
+  for (i = 1; (i <= cur_pos) && (i < INT_MAX); i++)
     {
       global_inlined_call_stack.records[i].stack_frame_created = 0;
       global_inlined_call_stack.records[i].stack_frame_printed = 0;
@@ -2607,12 +2610,12 @@ flush_inlined_subroutine_frames (void)
    for the next time we want to print the frames.  */
 
 void
-clear_inlined_subroutine_print_frames (void)
+clear_inlined_subroutine_print_frames(void)
 {
-  int cur_pos = current_inlined_subroutine_stack_position ();
+  int cur_pos = current_inlined_subroutine_stack_position();
   int i;
 
-  for (i = 1; i <= cur_pos; i++)
+  for (i = 1; (i <= cur_pos) && (i < INT_MAX); i++)
     global_inlined_call_stack.records[i].stack_frame_printed = 0;
 }
 
@@ -3498,11 +3501,11 @@ restore_thread_inlined_call_stack (ptid_t ptid)
    for creating & printing frames are reset after doing backtraces.  */
 
 void
-inlined_function_reset_frame_stack (void)
+inlined_function_reset_frame_stack(void)
 {
   int i;
 
-  flush_inlined_subroutine_frames ();
+  flush_inlined_subroutine_frames();
 
   if (temp_frame_stack.last_pc == global_inlined_call_stack.last_pc
       && temp_frame_stack.last_inlined_pc ==
@@ -3510,7 +3513,7 @@ inlined_function_reset_frame_stack (void)
       && temp_frame_stack.nelts == global_inlined_call_stack.nelts
       && temp_frame_stack.current_pos == global_inlined_call_stack.current_pos)
     {
-      for (i = 1; i <= temp_frame_stack.nelts; i++)
+      for (i = 1; (i <= temp_frame_stack.nelts) && (i < INT_MAX); i++)
 	global_inlined_call_stack.records[i].stack_frame_created =
 	  temp_frame_stack.records[i].stack_frame_created;
     }

@@ -326,10 +326,10 @@ generic_readchar (struct serial *scb, int timeout,
     }
   else
     {
-      ch = do_readchar (scb, timeout);
+      ch = do_readchar(scb, timeout);
       if (ch < 0)
 	{
-	  switch ((enum serial_rc) ch)
+	  switch ((enum serial_rc)ch)
 	    {
 	    case SERIAL_EOF:
 	    case SERIAL_ERROR:
@@ -339,10 +339,12 @@ generic_readchar (struct serial *scb, int timeout,
 	    case SERIAL_TIMEOUT:
 	      scb->bufcnt = 0;
 	      break;
+	    default:
+	      break;
 	    }
 	}
     }
-  reschedule (scb);
+  reschedule(scb);
   return ch;
 }
 

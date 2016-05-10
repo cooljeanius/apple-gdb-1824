@@ -35,6 +35,9 @@
 #ifdef HAVE_CTYPE_H
 # include <ctype.h>
 #endif /* HAVE_CTYPE_H */
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
 
 void
 print_expression(struct expression *exp, struct ui_file *stream)
@@ -961,8 +964,8 @@ dump_subexp_body_standard (struct expression *exp,
 	fprintf_filtered (stream, "Number of args: %d", nargs);
 	elt += 2;
 
-	for (i = 1; i <= nargs + 1; i++)
-	  elt = dump_subexp (exp, stream, elt);
+	for (i = 1; (i <= (nargs + 1)) && (i < INT_MAX); i++)
+	  elt = dump_subexp(exp, stream, elt);
       }
       break;
     case OP_ARRAY:
@@ -976,8 +979,8 @@ dump_subexp_body_standard (struct expression *exp,
 	fprintf_filtered (stream, "Bounds [%d:%d]", lower, upper);
 	elt += 3;
 
-	for (i = 1; i <= upper - lower + 1; i++)
-	  elt = dump_subexp (exp, stream, elt);
+	for (i = 1; (i <= (upper - lower + 1)) && (i < INT_MAX); i++)
+	  elt = dump_subexp(exp, stream, elt);
       }
       break;
     case UNOP_MEMVAL:

@@ -971,6 +971,10 @@ static void
 do_discard_minimal_symbols_cleanup(void *arg)
 {
   struct msym_bunch *next;
+  
+  if (arg == NULL) {
+    ; /* ??? */
+  }
 
   while (msym_bunch != NULL)
     {
@@ -980,6 +984,7 @@ do_discard_minimal_symbols_cleanup(void *arg)
     }
 }
 
+/* */
 struct cleanup *
 make_cleanup_discard_minimal_symbols(void)
 {
@@ -1024,27 +1029,30 @@ make_cleanup_discard_minimal_symbols(void)
    that have one entry with type "mst_unknown" and the other with a
    known type.  So if the one we are leaving alone has type mst_unknown,
    overwrite its type with the type from the one we are compacting out.  */
-
 static int
-compact_minimal_symbols (struct minimal_symbol *msymbol, int mcount,
-			 struct objfile *objfile)
+compact_minimal_symbols(struct minimal_symbol *msymbol, int mcount,
+			struct objfile *objfile)
 {
   struct minimal_symbol *copyfrom;
   struct minimal_symbol *copyto;
+  
+  if (objfile == NULL) {
+    ; /* ??? */
+  }
 
   if (mcount > 0)
     {
       copyfrom = copyto = msymbol;
-      while (copyfrom < msymbol + mcount - 1)
+      while (copyfrom < (msymbol + mcount - 1))
 	{
-	  if (SYMBOL_VALUE_ADDRESS (copyfrom)
-	      == SYMBOL_VALUE_ADDRESS ((copyfrom + 1))
-	      && strcmp (SYMBOL_LINKAGE_NAME (copyfrom),
-			 SYMBOL_LINKAGE_NAME ((copyfrom + 1))) == 0)
+	  if ((SYMBOL_VALUE_ADDRESS(copyfrom)
+	       == SYMBOL_VALUE_ADDRESS((copyfrom + 1)))
+	      && (strcmp(SYMBOL_LINKAGE_NAME (copyfrom),
+			 SYMBOL_LINKAGE_NAME ((copyfrom + 1))) == 0))
 	    {
-	      if (MSYMBOL_TYPE ((copyfrom + 1)) == mst_unknown)
+	      if (MSYMBOL_TYPE((copyfrom + 1)) == mst_unknown)
 		{
-		  MSYMBOL_TYPE ((copyfrom + 1)) = MSYMBOL_TYPE (copyfrom);
+		  MSYMBOL_TYPE((copyfrom + 1)) = MSYMBOL_TYPE(copyfrom);
 		}
 	      copyfrom++;
 	    }

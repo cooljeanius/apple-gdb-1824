@@ -854,6 +854,8 @@ update_packet_config(struct packet_config *config)
     case AUTO_BOOLEAN_AUTO:
       config->support = PACKET_SUPPORT_UNKNOWN;
       break;
+    default:
+      break;
     }
 }
 
@@ -873,6 +875,8 @@ show_packet_config_cmd(struct packet_config *config)
     case PACKET_SUPPORT_UNKNOWN:
       support = "unknown";
       break;
+    default:
+      break;
     }
   switch (config->detect)
     {
@@ -884,6 +888,8 @@ show_packet_config_cmd(struct packet_config *config)
     case AUTO_BOOLEAN_FALSE:
       printf_filtered(_("Support for remote protocol `%s' (%s) packet is currently %s.\n"),
 		      config->name, config->title, support);
+      break;
+    default:
       break;
     }
 }
@@ -940,9 +946,9 @@ packet_ok (const char *buf, struct packet_config *config)
 	{
 	case PACKET_SUPPORT_UNKNOWN:
 	  if (remote_debug)
-	    fprintf_unfiltered (gdb_stdlog,
-				    "Packet %s (%s) is supported\n",
-				    config->name, config->title);
+	    fprintf_unfiltered(gdb_stdlog,
+			       "Packet %s (%s) is supported\n",
+			       config->name, config->title);
 	  config->support = PACKET_ENABLE;
 	  break;
 	case PACKET_DISABLE:
@@ -950,6 +956,8 @@ packet_ok (const char *buf, struct packet_config *config)
 			  _("packet_ok: attempt to use a disabled packet"));
 	  break;
 	case PACKET_ENABLE:
+	  break;
+	default:
 	  break;
 	}
       if (buf[0] == 'O' && buf[1] == 'K' && buf[2] == '\0')
@@ -987,6 +995,8 @@ packet_ok (const char *buf, struct packet_config *config)
 	  config->support = PACKET_DISABLE;
 	  break;
 	case PACKET_DISABLE:
+	  break;
+	default:
 	  break;
 	}
       return PACKET_UNKNOWN;
@@ -1841,21 +1851,21 @@ pack_threadid (char *pkt, threadref *id)
   return pkt;
 }
 
-
+/* */
 static char *
-unpack_threadid (char *inbuf, threadref *id)
+unpack_threadid(char *inbuf, threadref *id)
 {
   char *altref;
-  char *limit = inbuf + BUF_THREAD_ID_SIZE;
+  char *limit = (inbuf + BUF_THREAD_ID_SIZE);
   int x, y;
 
-  altref = (char *) id;
+  altref = (char *)id;
 
   while (inbuf < limit)
     {
-      x = stubhex (*inbuf++);
-      y = stubhex (*inbuf++);
-      *altref++ = (x << 4) | y;
+      x = stubhex(*inbuf++);
+      y = stubhex(*inbuf++);
+      *altref++ = (char)((x << 4) | y);
     }
   return inbuf;
 }
@@ -2923,16 +2933,15 @@ hex2bin(const char *hex, char *bin, int count)
 	     Return the count that has been converted so far.  */
 	  return i;
 	}
-      *bin++ = fromhex (hex[0]) * 16 + fromhex (hex[1]);
+      *bin++ = (char)((fromhex(hex[0]) * 16) + fromhex(hex[1]));
       hex += 2;
     }
   return i;
 }
 
-/* Convert number NIB to a hex digit.  */
-
+/* Convert number NIB to a hex digit: */
 static int
-tohex (int nib)
+tohex(int nib)
 {
   if (nib < 10)
     return '0' + nib;
@@ -2940,18 +2949,19 @@ tohex (int nib)
     return 'a' + nib - 10;
 }
 
+/* */
 static int
-bin2hex (const char *bin, char *hex, int count)
+bin2hex(const char *bin, char *hex, int count)
 {
   int i;
   /* May use a length, or a nul-terminated string as input.  */
   if (count == 0)
-    count = strlen (bin);
+    count = strlen(bin);
 
   for (i = 0; i < count; i++)
     {
-      *hex++ = tohex ((*bin >> 4) & 0xf);
-      *hex++ = tohex (*bin++ & 0xf);
+      *hex++ = (char)tohex((*bin >> 4) & 0xf);
+      *hex++ = (char)tohex(*bin++ & 0xf);
     }
   *hex = 0;
   return i;
@@ -3113,15 +3123,15 @@ remote_resume(ptid_t ptid, int step, enum target_signal siggnal)
 
   /* All other supported resume packets do use Hc, so call set_thread.  */
   if (pid == -1)
-    set_thread (0, 0);		/* Run any thread.  */
+    set_thread(0, 0);		/* Run any thread.  */
   else
-    set_thread (pid, 0);	/* Run this thread.  */
+    set_thread(pid, 0); 	/* Run this thread.  */
 
   if (siggnal != TARGET_SIGNAL_0)
     {
       buf[0] = (step ? 'S' : 'C');
-      buf[1] = tohex(((int)siggnal >> 4) & 0xf);
-      buf[2] = tohex(((int)siggnal) & 0xf);
+      buf[1] = (char)tohex(((int)siggnal >> 4) & 0xf);
+      buf[2] = (char)tohex(((int)siggnal) & 0xf);
       buf[3] = '\0';
     }
   else
@@ -3357,7 +3367,7 @@ remote_console_output(char *msg)
   for (p = msg; p[0] && p[1]; p += 2)
     {
       char tb[2];
-      char c = (fromhex(p[0]) * 16 + fromhex(p[1]));
+      char c = (char)((fromhex(p[0]) * 16) + fromhex(p[1]));
       tb[0] = c;
       tb[1] = 0;
       fputs_unfiltered(tb, gdb_stdtarg);
@@ -3453,7 +3463,7 @@ Packet: '%s'\n"),
 		    if (strncmp(p, "thread", p1 - p) == 0)
 		      {
 			p_temp = unpack_varlen_hex(++p1, &thread_num);
-			record_currthread(thread_num);
+			record_currthread((int)thread_num);
 			p = p_temp;
 		      }
 		    else if ((strncmp(p, "watch", p1 - p) == 0)
@@ -3481,7 +3491,7 @@ Packet: '%s'\n"),
                         if (mach_exc_type == EXC_BAD_ACCESS)
                           {
                             if (mach_exc_data_index == 0)
-                              status->code = mach_exc_data;
+                              status->code = (int)mach_exc_data;
                             else if (mach_exc_data_index == 1)
                               status->address = mach_exc_data;
                           }
@@ -3531,13 +3541,13 @@ Packet: '%s'\n"),
 	  /* fall through */
 	case 'S':		/* Old style status, just signal only.  */
 	  status->kind = TARGET_WAITKIND_STOPPED;
-	  status->value.sig = (enum target_signal)
-	    (((fromhex (buf[1])) << 4) + (fromhex (buf[2])));
+	  status->value.sig = ((enum target_signal)
+			       (((fromhex(buf[1])) << 4) + (fromhex(buf[2]))));
 
 	  if (buf[3] == 'p')
 	    {
-	      thread_num = strtol ((const char *) &buf[4], NULL, 16);
-	      record_currthread (thread_num);
+	      thread_num = strtol((const char *)&buf[4], NULL, 16);
+	      record_currthread((int)thread_num);
 	    }
 	  goto got_status;
 	case 'W':		/* Target exited.  */
@@ -3581,7 +3591,7 @@ Packet: '%s'\n"),
 got_status:
   if (thread_num != (ULONGEST)-1L)
     {
-      return ptid_build(thread_num, 0, thread_num);
+      return ptid_build((int)thread_num, 0, (long)thread_num);
     }
   return inferior_ptid;
 }
@@ -3672,7 +3682,7 @@ Packet: '%s'\n"),
 		    if (strncmp(p, "thread", p1 - p) == 0)
 		      {
 			p_temp = unpack_varlen_hex(++p1, &thread_num);
-			record_currthread(thread_num);
+			record_currthread((int)thread_num);
 			p = p_temp;
 		      }
 		    else if ((strncmp(p, "watch", p1 - p) == 0)
@@ -3730,7 +3740,7 @@ Packet: '%s'\n"),
 	  if (buf[3] == 'p')
 	    {
 	      thread_num = strtol((const char *)&buf[4], NULL, 16);
-	      record_currthread(thread_num);
+	      record_currthread((int)thread_num);
 	    }
 	  goto got_status;
 	case 'W':		/* Target exited: */
@@ -3777,7 +3787,7 @@ Packet: '%s'\n"),
 got_status:
   if (thread_num != (ULONGEST)-1L)
     {
-      return ptid_build(thread_num, 0, thread_num);
+      return ptid_build((int)thread_num, 0, (long)thread_num);
     }
   return inferior_ptid;
 }
@@ -3826,7 +3836,7 @@ fetch_register_using_p(int regnum)
           return 0;
         }
 
-      regp[i++] = (fromhex(p[0]) * 16 + fromhex(p[1]));
+      regp[i++] = (char)((fromhex(p[0]) * 16) + fromhex(p[1]));
       p += 2;
     }
   regcache_raw_supply(current_regcache, regnum, regp);
@@ -3927,7 +3937,7 @@ remote_fetch_registers(int regnum)
       if ((p[0] == 'x') && (p[1] == 'x'))
 	regs[i] = 0;		/* 'x' */
       else
-	regs[i] = ((fromhex(p[0]) * 16) + fromhex(p[1]));
+	regs[i] = (char)((fromhex(p[0]) * 16) + fromhex(p[1]));
       p += 2;
     }
 
@@ -3990,6 +4000,8 @@ remote_prepare_to_store (void)
 	  regcache_raw_read (current_regcache, rs->regs[i].regnum, buf);
       break;
     case PACKET_ENABLE:
+      break;
+    default:
       break;
     }
 }
@@ -4057,6 +4069,8 @@ remote_store_registers (int regnum)
 	      remote_protocol_P.support = PACKET_DISABLE;
 	      break;
 	    }
+	default:
+	  break;
 	}
     }
 
@@ -4198,6 +4212,8 @@ check_binary_download(CORE_ADDR addr)
 	  }
 	break;
       }
+    default:
+      break;
     }
 }
 
@@ -4466,32 +4482,32 @@ remote_files_info (struct target_ops *ignore)
 /* Stuff for dealing with the packets which are part of this protocol.
    See comment at top of file for details.  */
 
-/* Read a single character from the remote end, masking it down to 7
-   bits.  */
-
+/* Read a single character from the remote end, masking it down to 7 bits: */
 static int
-readchar (int timeout)
+readchar(int timeout)
 {
   int ch;
 
   /* APPLE LOCAL */
-  start_remote_timer ();
-  ch = serial_readchar (remote_desc, timeout);
-  end_remote_timer ();
+  start_remote_timer();
+  ch = serial_readchar(remote_desc, timeout);
+  end_remote_timer();
 
   if (ch >= 0)
     return (ch & 0x7f);
 
-  switch ((enum serial_rc) ch)
+  switch ((enum serial_rc)ch)
     {
     case SERIAL_EOF:
-      target_mourn_inferior ();
-      error (_("Remote connection closed"));
+      target_mourn_inferior();
+      error(_("Remote connection closed"));
       /* no return */
     case SERIAL_ERROR:
-      perror_with_name (_("Remote communication error"));
+      perror_with_name(_("Remote communication error"));
       /* no return */
     case SERIAL_TIMEOUT:
+      break;
+    default:
       break;
     }
   return ch;
@@ -4562,8 +4578,8 @@ putpkt_binary(const char *buf, int cnt)
       *p++ = buf[i];
     }
   *p++ = '#';
-  *p++ = tohex((csum >> 4) & 0xf);
-  *p++ = tohex(csum & 0xf);
+  *p++ = (char)tohex((csum >> 4) & 0xf);
+  *p++ = (char)tohex(csum & 0xf);
 
   /* Send it over and over until we get a positive ack: */
   while (1)
@@ -4760,7 +4776,8 @@ read_frame(char *buf, long sizeof_buf)
             if (no_ack_mode)
               return bc;
 
-	    pktcsum = (fromhex (check_0) << 4) | fromhex (check_1);
+	    pktcsum = (unsigned char)((fromhex(check_0) << 4)
+				      | fromhex(check_1));
 	    if (csum == pktcsum)
               return bc;
 
@@ -4804,9 +4821,9 @@ read_frame(char *buf, long sizeof_buf)
 	    return -1;
 	  }
 	default:
-	  if (bc < sizeof_buf - 1)
+	  if (bc < (sizeof_buf - 1))
 	    {
-	      buf[bc++] = c;
+	      buf[bc++] = (char)c;
 	      csum += c;
 	      continue;
 	    }
@@ -5189,6 +5206,8 @@ remote_insert_breakpoint(CORE_ADDR addr, bfd_byte *contents_cache)
 	  return 0;
 	case PACKET_UNKNOWN:
 	  break;
+	default:
+	  break;
 	}
     }
 
@@ -5294,6 +5313,8 @@ remote_insert_watchpoint(CORE_ADDR addr, int len, int type)
       return -1;
     case PACKET_OK:
       return 0;
+    default:
+      break;
     }
   internal_error(__FILE__, __LINE__,
 		 _("remote_insert_watchpoint: reached end of function"));
@@ -5329,6 +5350,8 @@ remote_remove_watchpoint(CORE_ADDR addr, int len, int type)
       return -1;
     case PACKET_OK:
       return 0;
+    default:
+      break;
     }
   internal_error(__FILE__, __LINE__,
 		 _("remote_remove_watchpoint: reached end of function"));
@@ -5423,6 +5446,8 @@ remote_insert_hw_breakpoint(CORE_ADDR addr, gdb_byte *shadow)
       return -1;
     case PACKET_OK:
       return 0;
+    default:
+      break;
     }
   internal_error (__FILE__, __LINE__,
 		  _("remote_insert_hw_breakpoint: reached end of function"));
@@ -5465,6 +5490,8 @@ remote_remove_hw_breakpoint(CORE_ADDR addr, gdb_byte *shadow)
       return -1;
     case PACKET_OK:
       return 0;
+    default:
+      break;
     }
   internal_error (__FILE__, __LINE__,
 		  _("remote_remove_hw_breakpoint: reached end of function"));
@@ -5575,10 +5602,10 @@ compare_sections_command(const char *args, int from_tty)
 
       /* Be clever; compute the host_crc before waiting for target
 	 reply.  */
-      sectdata = (char *)xmalloc(size);
+      sectdata = (char *)xmalloc((size_t)size);
       old_chain = make_cleanup(xfree, sectdata);
       bfd_get_section_contents(exec_bfd, s, sectdata, 0, size);
-      host_crc = crc32((unsigned char *)sectdata, size, 0xffffffff);
+      host_crc = crc32((unsigned char *)sectdata, (int)size, 0xffffffff);
 
       getpkt(buf, (rs->remote_packet_size), 0);
       if (buf[0] == 'E')
@@ -5632,9 +5659,9 @@ remote_xfer_partial(struct target_ops *ops, enum target_object object,
       errno = 0;
 
       if (writebuf != NULL)
-	xfered = remote_write_bytes(offset, writebuf, len);
+	xfered = remote_write_bytes(offset, writebuf, (int)len);
       else
-	xfered = remote_read_bytes(offset, (char *)readbuf, len);
+	xfered = remote_read_bytes(offset, (char *)readbuf, (int)len);
 
       if (xfered > 0)
 	return xfered;
@@ -5681,7 +5708,7 @@ remote_xfer_partial(struct target_ops *ops, enum target_object object,
 	      if ((buf2[0] == 'O') && (buf2[1] == 'K') && (buf2[2] == '\0'))
 		break;		/* Got EOF indicator.  */
 	      /* Got some data: */
-	      i = hex2bin(buf2, (char *)readbuf, len);
+	      i = hex2bin(buf2, (char *)readbuf, (int)len);
 	      if (i > 0)
 		{
 		  readbuf = (gdb_byte *)(void *)((char *)readbuf + i);
@@ -5738,7 +5765,7 @@ remote_xfer_partial(struct target_ops *ops, enum target_object object,
   if (i < 0)
     return i;
 
-  getpkt((char *)readbuf, len, 0);
+  getpkt((char *)readbuf, (long)len, 0);
 
   return strlen((char *)readbuf);
 }

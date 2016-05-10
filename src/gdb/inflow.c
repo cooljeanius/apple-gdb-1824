@@ -489,6 +489,9 @@ child_terminal_info(const char *args, int from_tty)
       case O_RDWR:
 	printf_filtered("O_RDWR");
 	break;
+      default:
+	printf_filtered(" ");
+	break;
       }
     flags &= ~(O_ACCMODE);
 

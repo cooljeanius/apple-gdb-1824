@@ -177,6 +177,7 @@ mi_interpreter_resume(void *data)
   return 1;
 }
 
+/* */
 static int
 mi_interpreter_suspend(void *data)
 {
@@ -184,10 +185,12 @@ mi_interpreter_suspend(void *data)
   return 1;
 }
 
+/* */
 static struct gdb_exception
 mi_interpreter_exec(void *data, const char *command)
 {
-  char *tmp = (char *)alloca(strlen(command) + 1UL);
+  const size_t tmplen = (strlen(command) + 1UL);
+  char *tmp = (char *)alloca(tmplen);
   strcpy(tmp, command);
   mi_execute_command_wrapper(tmp);
   return exception_none;

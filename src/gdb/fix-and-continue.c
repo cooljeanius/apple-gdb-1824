@@ -30,7 +30,13 @@
 #else
 # include "gdb_string.h"
 #endif /* HAVE_STRING_H */
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
 #include <mach-o/dyld.h>
+#ifdef HAVE_MATH_H
+# include <math.h>
+#endif /* HAVE_MATH_H */
 #include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
@@ -67,7 +73,7 @@
 #include "exceptions.h"
 #include "filenames.h"
 
-#if defined (TARGET_I386)
+#if defined(TARGET_I386)
 # include "i386-tdep.h"
 #endif /* TARGET_I386 */
 
@@ -809,12 +815,17 @@ load_fixed_objfile(const char *name)
 #if defined(HAVE_STRNLEN)
   librarylen = strnlen(name, (size_t)PATH_MAX);
 #else
-  librarylen = min(strlen(name), (size_t)PATH_MAX);
+  librarylen = (int)min(strlen(name), (size_t)PATH_MAX);
 #endif /* HAVE_STRNLEN */
   libraryvec =
     (struct value **)alloca(sizeof(struct value *) * (librarylen + 2UL));
-  for (i = 0; i < (librarylen + 1); i++)
-    libraryvec[i] = value_from_longest(builtin_type_char, name[i]);
+  for (i = 0; (i < (librarylen + 1)) && (i < INT_MAX) && (i > INT_MIN); i++)
+    {
+      libraryvec[i] = value_from_longest(builtin_type_char, name[i]);
+      if (i >= (int)INFINITY) {
+	break;
+      }
+    }
 
   args = (struct value **)alloca(sizeof(struct value *) * 3UL);
   args[0] = value_array(0, librarylen, libraryvec);

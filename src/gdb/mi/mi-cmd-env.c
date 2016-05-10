@@ -145,11 +145,13 @@ mi_cmd_env_path (char *command, char **argv, int argc)
                            &optind, &optarg);
       if (opt < 0)
         break;
-      switch ((enum opt) opt)
+      switch ((enum opt)opt)
         {
         case RESET_OPT:
           reset = 1;
           break;
+	default:
+	  break;
         }
     }
   argv += optind;
@@ -217,11 +219,13 @@ mi_cmd_env_dir (char *command, char **argv, int argc)
                            &optind, &optarg);
       if (opt < 0)
         break;
-      switch ((enum opt) opt)
+      switch ((enum opt)opt)
         {
         case RESET_OPT:
           reset = 1;
           break;
+	default:
+	  break;
         }
     }
   argv += optind;

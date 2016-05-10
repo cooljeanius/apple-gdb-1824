@@ -947,7 +947,7 @@ coff_symtab_read(long symtab_offset, unsigned int nsyms,
 		struct symbol *sym;
 		sym = process_coff_symbol(cs, &main_aux, objfile);
 		SYMBOL_VALUE(sym) = (int)tmpaddr;
-		SYMBOL_SECTION(sym) = sec;
+		SYMBOL_SECTION(sym) = (short)sec;
 	      }
 	  }
 	  break;
@@ -1191,6 +1191,8 @@ read_one_sym(struct coff_symbol *cs, struct internal_syment *sym,
 	  if (cs->c_secnum != 0)
 	    cs->c_value += cs_section_address(cs, symfile_bfd);
 	  break;
+	default:
+	  break;
 	}
     }
 }
@@ -1239,6 +1241,7 @@ init_stringtab(bfd *abfd, long offset)
   return 0;
 }
 
+/* */
 static void
 free_stringtab(void)
 {
@@ -1247,14 +1250,16 @@ free_stringtab(void)
   stringtab = NULL;
 }
 
+/* */
 static void
-free_stringtab_cleanup (void *ignore)
+free_stringtab_cleanup(void *ignore ATTRIBUTE_UNUSED)
 {
-  free_stringtab ();
+  free_stringtab();
 }
 
+/* */
 static char *
-getsymname (struct internal_syment *symbol_entry)
+getsymname(struct internal_syment *symbol_entry)
 {
   static char buffer[SYMNMLEN + 1];
   char *result;
@@ -1514,9 +1519,9 @@ process_coff_symbol (struct coff_symbol *cs,
   SYMBOL_SET_NAMES (sym, name, strlen (name), objfile);
 
   /* default assumptions */
-  SYMBOL_VALUE (sym) = cs->c_value;
-  SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
-  SYMBOL_SECTION (sym) = cs_to_section (cs, objfile);
+  SYMBOL_VALUE(sym) = cs->c_value;
+  SYMBOL_DOMAIN(sym) = VAR_DOMAIN;
+  SYMBOL_SECTION(sym) = (short)cs_to_section(cs, objfile);
 
   if (ISFCN (cs->c_type))
     {
@@ -1574,7 +1579,7 @@ process_coff_symbol (struct coff_symbol *cs,
 
 #ifdef C_GLBLREG		/* AMD coff */
 	case C_GLBLREG:
-#endif
+#endif /* C_GLBLREG */
 	case C_REG:
 	  SYMBOL_CLASS (sym) = LOC_REGISTER;
 	  SYMBOL_VALUE (sym) = SDB_REG_TO_REGNUM (cs->c_value);
@@ -1588,7 +1593,7 @@ process_coff_symbol (struct coff_symbol *cs,
 	case C_ARG:
 	  SYMBOL_CLASS (sym) = LOC_ARG;
 	  add_symbol_to_list (sym, &local_symbols);
-#if !defined (BELIEVE_PCC_PROMOTION)
+#if !defined(BELIEVE_PCC_PROMOTION) || !BELIEVE_PCC_PROMOTION
 	  if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
 	    {
 	      /* If PCC says a parameter is a short or a char,
@@ -1606,14 +1611,14 @@ process_coff_symbol (struct coff_symbol *cs,
 		    - TYPE_LENGTH (SYMBOL_TYPE (sym));
 		}
 	    }
-#endif
+#endif /* !BELIEVE_PCC_PROMOTION */
 	  break;
 
 	case C_REGPARM:
 	  SYMBOL_CLASS (sym) = LOC_REGPARM;
 	  SYMBOL_VALUE (sym) = SDB_REG_TO_REGNUM (cs->c_value);
 	  add_symbol_to_list (sym, &local_symbols);
-#if !defined (BELIEVE_PCC_PROMOTION)
+#if !defined(BELIEVE_PCC_PROMOTION) || !BELIEVE_PCC_PROMOTION
 	  /* FIXME:  This should retain the current type, since it's just
 	     a register value.  gnu@adobe, 26Feb93 */
 	  {
@@ -1632,7 +1637,7 @@ process_coff_symbol (struct coff_symbol *cs,
 		   : temptype);
 	      }
 	  }
-#endif
+#endif /* !BELIEVE_PCC_PROMOTION */
 	  break;
 
 	case C_TPDEF:
@@ -1807,11 +1812,10 @@ decode_function_type (struct coff_symbol *cs, unsigned int c_type,
   return decode_type (cs, DECREF (c_type), aux);
 }
 
-/* basic C types */
-
+/* Function to decode basic C types: */
 static struct type *
-decode_base_type (struct coff_symbol *cs, unsigned int c_type,
-		  union internal_auxent *aux)
+decode_base_type(struct coff_symbol *cs, unsigned int c_type,
+		 union internal_auxent *aux)
 {
   struct type *type;
 
@@ -1819,60 +1823,60 @@ decode_base_type (struct coff_symbol *cs, unsigned int c_type,
     {
     case T_NULL:
       /* shows up with "void (*foo)();" structure members */
-      return lookup_fundamental_type (current_objfile, FT_VOID);
+      return lookup_fundamental_type(current_objfile, FT_VOID);
 
 #ifdef T_VOID
     case T_VOID:
-      /* Intel 960 COFF has this symbol and meaning.  */
-      return lookup_fundamental_type (current_objfile, FT_VOID);
-#endif
+      /* Intel 960 COFF has this symbol and meaning: */
+      return lookup_fundamental_type(current_objfile, FT_VOID);
+#endif /* T_VOID */
 
     case T_CHAR:
-      return lookup_fundamental_type (current_objfile, FT_CHAR);
+      return lookup_fundamental_type(current_objfile, FT_CHAR);
 
     case T_SHORT:
-      return lookup_fundamental_type (current_objfile, FT_SHORT);
+      return lookup_fundamental_type(current_objfile, FT_SHORT);
 
     case T_INT:
-      return lookup_fundamental_type (current_objfile, FT_INTEGER);
+      return lookup_fundamental_type(current_objfile, FT_INTEGER);
 
     case T_LONG:
-      if (cs->c_sclass == C_FIELD
-	  && aux->x_sym.x_misc.x_lnsz.x_size > TARGET_LONG_BIT)
-	return lookup_fundamental_type (current_objfile, FT_LONG_LONG);
+      if ((cs->c_sclass == C_FIELD)
+	  && (aux->x_sym.x_misc.x_lnsz.x_size > TARGET_LONG_BIT))
+	return lookup_fundamental_type(current_objfile, FT_LONG_LONG);
       else
-	return lookup_fundamental_type (current_objfile, FT_LONG);
+	return lookup_fundamental_type(current_objfile, FT_LONG);
 
     case T_FLOAT:
-      return lookup_fundamental_type (current_objfile, FT_FLOAT);
+      return lookup_fundamental_type(current_objfile, FT_FLOAT);
 
     case T_DOUBLE:
-      return lookup_fundamental_type (current_objfile, FT_DBL_PREC_FLOAT);
+      return lookup_fundamental_type(current_objfile, FT_DBL_PREC_FLOAT);
 
     case T_LNGDBL:
-      return lookup_fundamental_type (current_objfile, FT_EXT_PREC_FLOAT);
+      return lookup_fundamental_type(current_objfile, FT_EXT_PREC_FLOAT);
 
     case T_STRUCT:
       if (cs->c_naux != 1)
 	{
 	  /* anonymous structure type */
-	  type = coff_alloc_type (cs->c_symnum);
-	  TYPE_CODE (type) = TYPE_CODE_STRUCT;
-	  TYPE_NAME (type) = NULL;
+	  type = coff_alloc_type(cs->c_symnum);
+	  TYPE_CODE(type) = TYPE_CODE_STRUCT;
+	  TYPE_NAME(type) = NULL;
 	  /* This used to set the tag to "<opaque>".  But I think setting it
 	     to NULL is right, and the printing code can print it as
 	     "struct {...}".  */
-	  TYPE_TAG_NAME (type) = NULL;
-	  INIT_CPLUS_SPECIFIC (type);
-	  TYPE_LENGTH_ASSIGN (type) = 0;
-	  TYPE_FIELDS (type) = 0;
-	  TYPE_NFIELDS (type) = 0;
+	  TYPE_TAG_NAME(type) = NULL;
+	  INIT_CPLUS_SPECIFIC(type);
+	  TYPE_LENGTH_ASSIGN(type) = 0;
+	  TYPE_FIELDS(type) = 0;
+	  TYPE_NFIELDS(type) = 0;
 	}
       else
 	{
-	  type = coff_read_struct_type (cs->c_symnum,
-					aux->x_sym.x_misc.x_lnsz.x_size,
-				      aux->x_sym.x_fcnary.x_fcn.x_endndx.l);
+	  type = coff_read_struct_type(cs->c_symnum,
+				       aux->x_sym.x_misc.x_lnsz.x_size,
+				       aux->x_sym.x_fcnary.x_fcn.x_endndx.l);
 	}
       return type;
 
@@ -1880,71 +1884,77 @@ decode_base_type (struct coff_symbol *cs, unsigned int c_type,
       if (cs->c_naux != 1)
 	{
 	  /* anonymous union type */
-	  type = coff_alloc_type (cs->c_symnum);
-	  TYPE_NAME (type) = NULL;
+	  type = coff_alloc_type(cs->c_symnum);
+	  TYPE_NAME(type) = NULL;
 	  /* This used to set the tag to "<opaque>".  But I think setting it
 	     to NULL is right, and the printing code can print it as
 	     "union {...}".  */
-	  TYPE_TAG_NAME (type) = NULL;
-	  INIT_CPLUS_SPECIFIC (type);
-	  TYPE_LENGTH_ASSIGN (type) = 0;
-	  TYPE_FIELDS (type) = 0;
-	  TYPE_NFIELDS (type) = 0;
+	  TYPE_TAG_NAME(type) = NULL;
+	  INIT_CPLUS_SPECIFIC(type);
+	  TYPE_LENGTH_ASSIGN(type) = 0;
+	  TYPE_FIELDS(type) = 0;
+	  TYPE_NFIELDS(type) = 0;
 	}
       else
 	{
-	  type = coff_read_struct_type (cs->c_symnum,
-					aux->x_sym.x_misc.x_lnsz.x_size,
-				      aux->x_sym.x_fcnary.x_fcn.x_endndx.l);
+	  type = coff_read_struct_type(cs->c_symnum,
+				       aux->x_sym.x_misc.x_lnsz.x_size,
+				       aux->x_sym.x_fcnary.x_fcn.x_endndx.l);
 	}
-      TYPE_CODE (type) = TYPE_CODE_UNION;
+      TYPE_CODE(type) = TYPE_CODE_UNION;
       return type;
 
     case T_ENUM:
       if (cs->c_naux != 1)
 	{
 	  /* anonymous enum type */
-	  type = coff_alloc_type (cs->c_symnum);
-	  TYPE_CODE (type) = TYPE_CODE_ENUM;
-	  TYPE_NAME (type) = NULL;
+	  type = coff_alloc_type(cs->c_symnum);
+	  TYPE_CODE(type) = TYPE_CODE_ENUM;
+	  TYPE_NAME(type) = NULL;
 	  /* This used to set the tag to "<opaque>".  But I think setting it
 	     to NULL is right, and the printing code can print it as
 	     "enum {...}".  */
-	  TYPE_TAG_NAME (type) = NULL;
-	  TYPE_LENGTH_ASSIGN (type) = 0;
-	  TYPE_FIELDS (type) = 0;
-	  TYPE_NFIELDS (type) = 0;
+	  TYPE_TAG_NAME(type) = NULL;
+	  TYPE_LENGTH_ASSIGN(type) = 0;
+	  TYPE_FIELDS(type) = 0;
+	  TYPE_NFIELDS(type) = 0;
 	}
       else
 	{
-	  type = coff_read_enum_type (cs->c_symnum,
-				      aux->x_sym.x_misc.x_lnsz.x_size,
-				      aux->x_sym.x_fcnary.x_fcn.x_endndx.l);
+	  type = coff_read_enum_type(cs->c_symnum,
+				     aux->x_sym.x_misc.x_lnsz.x_size,
+				     aux->x_sym.x_fcnary.x_fcn.x_endndx.l);
 	}
       return type;
 
     case T_MOE:
-      /* shouldn't show up here */
+      /* We should never show up here: */
+      complaint(&symfile_complaints,
+		_("Should never reach case T_MOE (%d)."), T_MOE);
       break;
 
     case T_UCHAR:
-      return lookup_fundamental_type (current_objfile, FT_UNSIGNED_CHAR);
+      return lookup_fundamental_type(current_objfile, FT_UNSIGNED_CHAR);
 
     case T_USHORT:
-      return lookup_fundamental_type (current_objfile, FT_UNSIGNED_SHORT);
+      return lookup_fundamental_type(current_objfile, FT_UNSIGNED_SHORT);
 
     case T_UINT:
-      return lookup_fundamental_type (current_objfile, FT_UNSIGNED_INTEGER);
+      return lookup_fundamental_type(current_objfile, FT_UNSIGNED_INTEGER);
 
     case T_ULONG:
-      if (cs->c_sclass == C_FIELD
-	  && aux->x_sym.x_misc.x_lnsz.x_size > TARGET_LONG_BIT)
-	return lookup_fundamental_type (current_objfile, FT_UNSIGNED_LONG_LONG);
+      if ((cs->c_sclass == C_FIELD)
+	  && (aux->x_sym.x_misc.x_lnsz.x_size > TARGET_LONG_BIT))
+	return lookup_fundamental_type(current_objfile, FT_UNSIGNED_LONG_LONG);
       else
-	return lookup_fundamental_type (current_objfile, FT_UNSIGNED_LONG);
+	return lookup_fundamental_type(current_objfile, FT_UNSIGNED_LONG);
+
+    default:
+      break;
     }
-  complaint (&symfile_complaints, _("Unexpected type for symbol %s"), cs->c_name);
-  return lookup_fundamental_type (current_objfile, FT_VOID);
+  complaint(&symfile_complaints, _("Unexpected type for symbol %s"),
+	    cs->c_name);
+  return lookup_fundamental_type(current_objfile, FT_VOID);
 }
 
 /* This page contains subroutines of read_type.  */
@@ -2025,10 +2035,13 @@ coff_read_struct_type(int index, int length, int lastsym)
 	case C_EOS:
 	  done = 1;
 	  break;
+
+	default:
+	  break;
 	}
     }
   /* Now create the vector of fields, and record how big it is: */
-  TYPE_NFIELDS(the_type) = nfields;
+  TYPE_NFIELDS(the_type) = (short)nfields;
   TYPE_FIELDS(the_type) = ((struct field *)
                            TYPE_ALLOC(the_type,
                                       (sizeof(struct field) * nfields)));
@@ -2073,25 +2086,25 @@ coff_read_enum_type(int index, int length, int lastsym)
   while (!done && ((int)symnum < lastsym)
          && ((int)symnum < nlist_nsyms_global))
     {
-      read_one_sym (ms, &sub_sym, &sub_aux);
+      read_one_sym(ms, &sub_sym, &sub_aux);
       name = ms->c_name;
-      name = EXTERNAL_NAME (name, current_objfile->obfd);
+      name = EXTERNAL_NAME(name, current_objfile->obfd);
 
       switch (ms->c_sclass)
 	{
 	case C_MOE:
-	  sym = (struct symbol *) obstack_alloc
-	    (&current_objfile->objfile_obstack,
-	     sizeof (struct symbol));
-	  memset (sym, 0, sizeof (struct symbol));
+	  sym = ((struct symbol *)
+		 obstack_alloc(&current_objfile->objfile_obstack,
+			       sizeof(struct symbol)));
+	  memset(sym, 0, sizeof(struct symbol));
 
-	  DEPRECATED_SYMBOL_NAME (sym) =
-	    obsavestring (name, strlen (name),
-			  &current_objfile->objfile_obstack);
-	  SYMBOL_CLASS (sym) = LOC_CONST;
-	  SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
-	  SYMBOL_VALUE (sym) = ms->c_value;
-	  add_symbol_to_list (sym, symlist);
+	  DEPRECATED_SYMBOL_NAME(sym) =
+	    obsavestring(name, strlen(name),
+			 &current_objfile->objfile_obstack);
+	  SYMBOL_CLASS(sym) = LOC_CONST;
+	  SYMBOL_DOMAIN(sym) = VAR_DOMAIN;
+	  SYMBOL_VALUE(sym) = ms->c_value;
+	  add_symbol_to_list(sym, symlist);
 	  nsyms++;
 	  break;
 
@@ -2101,19 +2114,24 @@ coff_read_enum_type(int index, int length, int lastsym)
 	     on .eos.  */
 	  done = 1;
 	  break;
+
+	default:
+	  break;
 	}
     }
 
-  /* Now fill in the fields of the type-structure.  */
-
+  /* Now fill in the fields of the type-structure: */
   if (length > 0)
-    TYPE_LENGTH_ASSIGN (type) = length;
+    TYPE_LENGTH_ASSIGN(type) = length;
   else
-    TYPE_LENGTH_ASSIGN (type) = TARGET_INT_BIT / TARGET_CHAR_BIT;	/* Assume ints */
-  TYPE_CODE (type) = TYPE_CODE_ENUM;
-  TYPE_NFIELDS (type) = nsyms;
-  TYPE_FIELDS (type) = (struct field *)
-    TYPE_ALLOC (type, sizeof (struct field) * nsyms);
+    {
+      /* Assume ints: */
+      TYPE_LENGTH_ASSIGN(type) = (TARGET_INT_BIT / TARGET_CHAR_BIT);
+    }
+  TYPE_CODE(type) = TYPE_CODE_ENUM;
+  TYPE_NFIELDS(type) = (short)nsyms;
+  TYPE_FIELDS(type) = ((struct field *)
+		       TYPE_ALLOC(type, (sizeof(struct field) * nsyms)));
 
   /* Find the symbols for the values and put them into the type.
      The symbols can be found in the symlist that we put them on
@@ -2150,21 +2168,23 @@ coff_read_enum_type(int index, int length, int lastsym)
   return type;
 }
 
-/* Register our ability to parse symbols for coff BFD files. */
-
+/* Register our ability to parse symbols for coff BFD files: */
 static struct sym_fns coff_sym_fns =
 {
   bfd_target_coff_flavour,
-  coff_new_init,		/* sym_new_init: init anything gbl to entire symtab */
-  coff_symfile_init,		/* sym_init: read initial info, setup for sym_read() */
-  coff_symfile_read,		/* sym_read: read a symbol file into symtab */
-  coff_symfile_finish,		/* sym_finish: finished with file, cleanup */
-  default_symfile_offsets,	/* sym_offsets:  xlate external to internal form */
-  NULL				/* next: pointer to next struct sym_fns */
+  coff_new_init,	/* sym_new_init: init anything gbl to entire symtab */
+  coff_symfile_init,	/* sym_init: read initial info, setup for sym_read() */
+  coff_symfile_read,	/* sym_read: read a symbol file into symtab */
+  coff_symfile_finish,	/* sym_finish: finished with file, cleanup */
+  default_symfile_offsets,  /* sym_offsets:  xlate external to internal form */
+  NULL			/* next: pointer to next struct sym_fns */
 };
 
+/* Usual gdb initialization hook: */
 void
-_initialize_coffread (void)
+_initialize_coffread(void)
 {
-  add_symtab_fns (&coff_sym_fns);
+  add_symtab_fns(&coff_sym_fns);
 }
+
+/* EOF */

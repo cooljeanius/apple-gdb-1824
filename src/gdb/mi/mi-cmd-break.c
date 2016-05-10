@@ -137,10 +137,11 @@ mi_cmd_break_insert (char *command, char **argv, int argc)
 
   while (1)
     {
-      int opt = mi_getopt ("mi_cmd_break_insert", argc, argv, opts, &optind, &optarg);
+      int opt = mi_getopt("mi_cmd_break_insert", argc, argv, opts, &optind,
+			  &optarg);
       if (opt < 0)
 	break;
-      switch ((enum opt) opt)
+      switch ((enum opt)opt)
 	{
 	case TEMP_OPT:
 	  temp_p = 1;
@@ -155,18 +156,18 @@ mi_cmd_break_insert (char *command, char **argv, int argc)
 	case REGEXP_OPT:
 	  type = REGEXP_BP;
 	  break;
-#endif
+#endif /* 0 */
 	case CONDITION_OPT:
 	  condition = optarg;
 	  break;
 	case IGNORE_COUNT_OPT:
-	  ignore_count = atol (optarg);
+	  ignore_count = atol(optarg);
           /* APPLE LOCAL: Same behavior as set_ignore_count().  */
           if (ignore_count < 0)
             ignore_count = 0;
 	  break;
 	case THREAD_OPT:
-	  thread = atol (optarg);
+	  thread = atol(optarg);
 	  break;
         case SHLIB_OPT:
           requested_shlib = optarg;
@@ -215,7 +216,10 @@ mi_cmd_break_insert (char *command, char **argv, int argc)
 
 	    break;
 	  }
-	}
+
+	default:
+	  break;
+	} /* end switch */
     }
 
   if (optind >= argc)
@@ -324,10 +328,11 @@ mi_cmd_break_watch (char *command, char **argv, int argc)
   char *optarg;
   while (1)
     {
-      int opt = mi_getopt ("mi_cmd_break_watch", argc, argv, opts, &optind, &optarg);
+      int opt = mi_getopt("mi_cmd_break_watch", argc, argv, opts, &optind,
+			  &optarg);
       if (opt < 0)
 	break;
-      switch ((enum opt) opt)
+      switch ((enum opt)opt)
 	{
 	case READ_OPT:
 	  type = READ_WP;
@@ -337,6 +342,8 @@ mi_cmd_break_watch (char *command, char **argv, int argc)
 	  break;
 	case LOCATION_OPT:
 	  watch_location = 1;
+	  break;
+	default:
 	  break;
 	}
     }

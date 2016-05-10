@@ -245,6 +245,8 @@ fprint_target_auxv(struct ui_file *file, struct target_ops *ops)
 	      _("Canonicalized file name given to execve"), str);
 	  TAG(AT_SUN_MMU, _("String for name of MMU module"), str);
 	  TAG(AT_SUN_LDDATA, _("Dynamic linker's data segment address"), hex);
+	  default:
+	    break;
 	}
 
       fprintf_filtered(file, "%-4s %-20s %-30s ",
@@ -262,6 +264,9 @@ fprint_target_auxv(struct ui_file *file, struct target_ops *ops)
 	    fprintf_filtered(file, "0x%s", paddr_nz(val));
 	  val_print_string(val, -1, 1, file);
 	  fprintf_filtered(file, "\n");
+	  break;
+	default:
+	  fprintf_filtered(file, " ");
 	  break;
 	}
       ++ents;

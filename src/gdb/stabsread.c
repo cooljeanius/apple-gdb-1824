@@ -195,9 +195,9 @@ static const char vb_name[] = "_vb$";
    address of the corresponding int, which is not the same on a
    big-endian machine.  */
 
-#if !defined (BELIEVE_PCC_PROMOTION)
-#define BELIEVE_PCC_PROMOTION 0
-#endif
+#if !defined(BELIEVE_PCC_PROMOTION)
+# define BELIEVE_PCC_PROMOTION 0
+#endif /* !BELIEVE_PCC_PROMOTION */
 
 static void
 invalid_cpp_abbrev_complaint (const char *arg1)
@@ -823,6 +823,8 @@ define_symbol(CORE_ADDR valu, const char *string, const char *prefix,
     case N_BSS:
       SYMBOL_SECTION(sym) = SECT_OFF_BSS(objfile);
       break;
+    default:
+      break;
     }
 
   if (processing_gcc_compilation)
@@ -1352,13 +1354,14 @@ define_symbol(CORE_ADDR valu, const char *string, const char *prefix,
 
       if (TYPE_NAME(SYMBOL_TYPE(sym)) == NULL)
 	{
-	  if ((TYPE_CODE(SYMBOL_TYPE(sym)) == TYPE_CODE_PTR
+	  if (((TYPE_CODE(SYMBOL_TYPE(sym)) == TYPE_CODE_PTR)
 #ifdef HAVE_FVTABLE_THUNKS_FLAG
 	       && strcmp(DEPRECATED_SYMBOL_NAME(sym), vtbl_ptr_name)
 #else
 	       && 0
 #endif /* HAVE_FVTABLE_THUNKS_FLAG */
-	      ) || TYPE_CODE(SYMBOL_TYPE(sym)) == TYPE_CODE_FUNC)
+	       && (sym != NULL))
+	      || (TYPE_CODE(SYMBOL_TYPE(sym)) == TYPE_CODE_FUNC))
 	    {
 	      /* If we are giving a name to a type such as "pointer to
 	         foo" or "function returning foo", we better not set
@@ -2177,6 +2180,8 @@ again:
           case 'u':
             type_code = TYPE_CODE_UNION;
             break;
+	  default:
+	    break;
           }
         type = read_struct_type (pp, type, type_code, objfile);
         break;
@@ -2276,12 +2281,12 @@ rs6000_builtin_type (int typenum, struct objfile *objfile)
     return negative_types[-typenum];
 
 #if TARGET_CHAR_BIT != 8
-#error This code wrong for TARGET_CHAR_BIT not 8
+# error "This code wrong for TARGET_CHAR_BIT not 8"
   /* These definitions all assume that TARGET_CHAR_BIT is 8.  I think
      that if that ever becomes not true, the correct fix will be to
      make the size in the struct type to be in bits, not in units of
      TARGET_CHAR_BIT.  */
-#endif
+#endif /* TARGET_CHAR_BIT != 8 */
 
   switch (-typenum)
     {
@@ -2450,9 +2455,13 @@ rs6000_builtin_type (int typenum, struct objfile *objfile)
       /* APPLE LOCAL objfile for types */
       rettype = init_type (TYPE_CODE_INT, 8, 0, "integer*8", objfile);
       break;
+    default:
+      break;
     }
   /* APPLE LOCAL huh? */
-  /* negative_types[-typenum] = rettype; */
+#ifndef __APPLE__
+  negative_types[-typenum] = rettype;
+#endif /* !__APPLE__ */
   return rettype;
 }
 
@@ -2615,6 +2624,8 @@ read_member_functions(struct field_info *fip, const char **pp,
 	    case VISIBILITY_PROTECTED:
 	      new_sublist->fn_field.is_protected = 1;
 	      break;
+	    default:
+	      break;
 	    }
 
 	  STABS_CONTINUE (pp, objfile);
@@ -2758,8 +2769,7 @@ read_member_functions(struct field_info *fip, const char **pp,
 	}
       else
 	{
-
-#if 0
+#if !defined(__APPLE__) || (defined(__GNUC__) && (__GNUC__ != 3))
 	  /* APPLE LOCAL begin delete bad method name code */
 	  /* This code is of marginal value for gcc 3, and has horrible
 	     performance.  Until it is made to perform better, we should just
@@ -2893,15 +2903,20 @@ read_member_functions(struct field_info *fip, const char **pp,
 	    }
 	  else if (is_v3)
 	    {
+#if defined(update_method_name_from_physname)
 	      /* v3 mangling prevents the use of abbreviated physnames,
 		 so we can do this here.  There are stubbed methods in v3
 		 only:
 		 - in -gstabs instead of -gstabs+
 		 - or for static methods, which are output as a function type
 		   instead of a method type.  */
-
-	      update_method_name_from_physname (&new_fnlist->fn_fieldlist.name,
-						sublist->fn_field.physname);
+	      update_method_name_from_physname(&new_fnlist->fn_fieldlist.name,
+					       sublist->fn_field.physname);
+#else
+	      if ((new_fnlist == NULL) || (sublist == NULL)) {
+		; /* ??? */
+	      }
+#endif /* update_method_name_from_physname */
 	    }
 	  else if (has_destructor && new_fnlist->fn_fieldlist.name[0] != '~')
 	    {
@@ -2923,8 +2938,7 @@ read_member_functions(struct field_info *fip, const char **pp,
 		  = obsavestring (dem_opname, strlen (dem_opname),
 				  &objfile->objfile_obstack);
 	    }
-
-#endif
+#endif /* !__APPLE__ || (__GNUC__ != 3) */
 
 	  new_fnlist->fn_fieldlist.fn_fields = (struct fn_field *)
 	    obstack_alloc (&objfile->objfile_obstack,
@@ -3910,17 +3924,17 @@ read_enum_type(const char **pp, struct type *type,
      that in something like "enum {FOO, LAST_THING=FOO}" we print
      FOO, not LAST_THING.  */
 
-  for (syms = *symlist, n = nsyms - 1; syms; syms = syms->next)
+  for (syms = *symlist, n = (nsyms - 1); syms; syms = syms->next)
     {
-      int last = syms == osyms ? o_nsyms : 0;
+      int last = ((syms == osyms) ? o_nsyms : 0);
       int j = syms->nsyms;
-      for (; --j >= last; --n)
+      for (; (--j >= last) && (j > INT_MIN); --n)
 	{
 	  struct symbol *xsym = syms->symbol[j];
-	  SYMBOL_TYPE (xsym) = type;
-	  TYPE_FIELD_NAME (type, n) = DEPRECATED_SYMBOL_NAME (xsym);
-	  TYPE_FIELD_BITPOS_ASSIGN (type, n) = SYMBOL_VALUE (xsym);
-	  TYPE_FIELD_BITSIZE (type, n) = 0;
+	  SYMBOL_TYPE(xsym) = type;
+	  TYPE_FIELD_NAME(type, n) = DEPRECATED_SYMBOL_NAME(xsym);
+	  TYPE_FIELD_BITPOS_ASSIGN(type, n) = SYMBOL_VALUE(xsym);
+	  TYPE_FIELD_BITSIZE(type, n) = 0;
 	}
       if (syms == osyms)
 	break;

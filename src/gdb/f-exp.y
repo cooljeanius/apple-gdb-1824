@@ -970,7 +970,7 @@ yylex(void)
       goto retry;
 
     case '\'':
-      token = match_string_literal ();
+      token = match_string_literal();
       if (token != 0)
 	return (token);
       break;
@@ -1084,7 +1084,8 @@ yylex(void)
     symbol:
       lexptr++;
       return c;
-    }
+    default:;
+    } /* end switch */
 
   if (!(c == '_' || c == '$'
 	|| (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')))

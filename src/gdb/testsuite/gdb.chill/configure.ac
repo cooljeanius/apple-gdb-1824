@@ -28,7 +28,7 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
 fi
 
 # Programs.
-AS_IF([test "x${CC}" = "x"],[
+AS_IF([test "x${CC}" = "x" || test "x${CC}" != "x${MY_CC}"],[
   test -z "${CC}"
   AC_PROG_CC
 ],[

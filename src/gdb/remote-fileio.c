@@ -229,8 +229,9 @@ remote_fileio_mode_to_target (mode_t mode)
   return tmode;
 }
 
+/* */
 static int
-remote_fileio_errno_to_target (int error)
+remote_fileio_errno_to_target(int error)
 {
   switch (error)
     {
@@ -276,6 +277,8 @@ remote_fileio_errno_to_target (int error)
         return FILEIO_ENOSYS;
       case ENAMETOOLONG:
         return FILEIO_ENAMETOOLONG;
+      default:
+	break;
     }
   return FILEIO_EUNKNOWN;
 }

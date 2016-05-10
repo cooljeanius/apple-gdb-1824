@@ -780,22 +780,24 @@ mi_cmd_file_fix_file (char *command, char **argv, int argc)
                            &optind, &optarg);
       if (opt < 0)
         break;
-      switch ((enum fff_opt) opt)
+      switch ((enum fff_opt)opt)
         {
         case BUNDLE_OPT:
-          bundle_filename = xstrdup (optarg);
-          make_cleanup (xfree, bundle_filename);
+          bundle_filename = xstrdup(optarg);
+          make_cleanup(xfree, bundle_filename);
           break;
         case SOURCE_OPT:
-          source_filename = xstrdup (optarg);
-          make_cleanup (xfree, source_filename);
+          source_filename = xstrdup(optarg);
+          make_cleanup(xfree, source_filename);
           break;
         case OBJECT_OPT:
           break;
         case SOLIB_OPT:
-          solib_filename = xstrdup (optarg);
-          make_cleanup (xfree, solib_filename);
+          solib_filename = xstrdup(optarg);
+          make_cleanup(xfree, solib_filename);
           break;
+	default:
+	  break;
         }
      }
    argv += optind;
@@ -1520,11 +1522,10 @@ mi_cmd_target_unload_solib (char *command, char **argv, int argc)
 
    Returns:
    The number of bytes read is SIZE*ROW*COL. */
-
 enum mi_cmd_result
-mi_cmd_data_read_memory (char *command, char **argv, int argc)
+mi_cmd_data_read_memory(char *command, char **argv, int argc)
 {
-  struct cleanup *cleanups = make_cleanup (null_cleanup, NULL);
+  struct cleanup *cleanups = make_cleanup(null_cleanup, NULL);
   CORE_ADDR addr;
   long total_bytes;
   long nr_cols;
@@ -1536,7 +1537,7 @@ mi_cmd_data_read_memory (char *command, char **argv, int argc)
   char aschar;
   char *mbuf;
   int nr_bytes;
-  long offset = 0;
+  long offset = 0L;
   int optind = 0;
   char *optarg;
   enum opt
@@ -1545,36 +1546,38 @@ mi_cmd_data_read_memory (char *command, char **argv, int argc)
     };
   static struct mi_opt opts[] =
   {
-    {"o", OFFSET_OPT, 1},
-    {0, 0, 0},
+    { "o", OFFSET_OPT, 1 },
+    { 0, 0, 0 },
   };
 
   while (1)
     {
-      int opt = mi_getopt ("mi_cmd_data_read_memory", argc, argv, opts,
-			   &optind, &optarg);
+      int opt = mi_getopt("mi_cmd_data_read_memory", argc, argv, opts,
+			  &optind, &optarg);
       if (opt < 0)
 	break;
-      switch ((enum opt) opt)
+      switch ((enum opt)opt)
 	{
 	case OFFSET_OPT:
-	  offset = atol (optarg);
+	  offset = atol(optarg);
+	  break;
+	default:
 	  break;
 	}
     }
   argv += optind;
   argc -= optind;
 
-  if (argc < 5 || argc > 6)
+  if ((argc < 5) || (argc > 6))
     {
-      mi_error_message = xstrprintf ("mi_cmd_data_read_memory: Usage: ADDR WORD-FORMAT WORD-SIZE NR-ROWS NR-COLS [ASCHAR].");
+      mi_error_message = xstrprintf("mi_cmd_data_read_memory: Usage: ADDR WORD-FORMAT WORD-SIZE NR-ROWS NR-COLS [ASCHAR].");
       return MI_CMD_ERROR;
     }
 
   /* Extract all the arguments. */
 
   /* Start address of the memory dump. */
-  addr = parse_and_eval_address (argv[0]) + offset;
+  addr = (parse_and_eval_address(argv[0]) + offset);
   /* The format character to use when displaying a memory word. See
      the ``x'' command. */
   word_format = argv[1][0];
@@ -1901,7 +1904,6 @@ captured_mi_execute_command (struct ui_out *uiout, void *data)
 
   switch (context->op)
     {
-
     case MI_COMMAND:
       /* A MI command was read from the input stream */
       if (mi_debug_p)
@@ -2064,7 +2066,9 @@ captured_mi_execute_command (struct ui_out *uiout, void *data)
 	  }
 	break;
       }
-    }
+    default:
+      break;
+    } /* end switch */
 
   return;
 }

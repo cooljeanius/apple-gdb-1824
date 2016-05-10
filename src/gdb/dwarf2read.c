@@ -350,12 +350,13 @@ asection *dwarf_eh_frame_section;
 #define RANGES_SECTION   "LC_SEGMENT.__DWARF.__debug_ranges"
 #define EH_FRAME_SECTION "LC_SEGMENT.__TEXT.__eh_frame"
 
-/* APPLE LOCAL: We do NOT handle the macro information from
-   gcc correctly, e.g. v. <rdar://problem/7237783>, so until
-   that works we should ignore the macinfo section.  No one
-   is using it intentionally -- it just gets pulled in when
-   someone uses "-g3" on their compile line thinking it will
-   provide a better debug experience.  */
+/* APPLE LOCAL: We do NOT handle the macro information from gcc correctly,
+ * e.g. v. <rdar://problem/7237783>, so until that works we should ignore the
+ * macinfo section.  Apple thinks that no one is using it intentionally, and
+ * that it just gets pulled in when someone uses "-g3" on their compile line
+ * thinking it will provide a better debug experience.  However, the emacs
+ * sources recommend "-g3" for debugging specifically because their codebase is
+ * macro-heavy.  FIXME.  */
 #ifdef MACINFO_SECTION
 # undef MACINFO_SECTION
 #endif /* MACINFO_SECTION */
@@ -5637,16 +5638,17 @@ dwarf2_get_pc_bounds (struct die_info *die, CORE_ADDR *lowpc,
 	  int max_elts;
 	  int cur_elt = 0;
 
-	  tmp_ranges = (struct address_range_list *)
-	                       xmalloc (sizeof (struct address_range_list));
+	  tmp_ranges = ((struct address_range_list *)
+			xmalloc(sizeof(struct address_range_list)));
 
 	  max_elts = 10;
 	  tmp_ranges->nelts = 0;
-	  tmp_ranges->ranges = (struct address_range *)
-	                  xmalloc (max_elts * sizeof (struct address_range));
+	  tmp_ranges->ranges =
+	    ((struct address_range *)
+	     xmalloc(max_elts * sizeof(struct address_range)));
 
-	  memset (tmp_ranges->ranges, 0,
-		  max_elts * sizeof (struct address_range));
+	  memset(tmp_ranges->ranges, 0,
+		 (max_elts * sizeof(struct address_range)));
 	  /* APPLE LOCAL end address ranges  */
 
 	  found_base = cu_header->base_known;
@@ -5654,9 +5656,9 @@ dwarf2_get_pc_bounds (struct die_info *die, CORE_ADDR *lowpc,
 
 	  if (offset >= dwarf2_per_objfile->ranges_size)
 	    {
-	      complaint (&symfile_complaints,
-	                 _("Offset %d out of bounds for DW_AT_ranges attribute"),
-			 offset);
+	      complaint(&symfile_complaints,
+	                _("Offset %d out of bounds for DW_AT_ranges attribute"),
+			offset);
 	      return 0;
 	    }
 	  buffer = dwarf2_per_objfile->ranges_buffer + offset;
@@ -5673,7 +5675,7 @@ dwarf2_get_pc_bounds (struct die_info *die, CORE_ADDR *lowpc,
 	      found_base = 1;
 	    }
 
-          low = ~((CORE_ADDR) 0);  /* Maximum possible unsigned CORE_ADDR val */
+          low = ~((CORE_ADDR)0UL); /* Maximum possible unsigned CORE_ADDR val */
           high = 0;
 
 	  while (1)
@@ -5683,10 +5685,11 @@ dwarf2_get_pc_bounds (struct die_info *die, CORE_ADDR *lowpc,
 	      /* APPLE LOCAL begin address ranges  */
 	      if (cur_elt >= max_elts)
 		{
-		  max_elts = 2 * max_elts;
-		  tmp_ranges->ranges = (struct address_range *) xrealloc
-		    (tmp_ranges->ranges,
-		     max_elts * sizeof (struct address_range));
+		  max_elts = (2 * max_elts);
+		  tmp_ranges->ranges =
+		    ((struct address_range *)
+		     xrealloc(tmp_ranges->ranges,
+			      (max_elts * sizeof(struct address_range))));
 		}
 	      /* APPLE LOCAL end address ranges  */
 
@@ -5715,10 +5718,9 @@ dwarf2_get_pc_bounds (struct die_info *die, CORE_ADDR *lowpc,
 
 	      if (!found_base)
 		{
-		  /* We have no valid base address for the ranges
-		     data.  */
-		  complaint (&symfile_complaints,
-			     _("Invalid .debug_ranges data (no base address)"));
+		  /* We have no valid base address for the ranges data: */
+		  complaint(&symfile_complaints,
+			    _("Invalid .debug_ranges data (no base address)"));
 		  return 0;
 		}
 
@@ -5731,11 +5733,11 @@ dwarf2_get_pc_bounds (struct die_info *die, CORE_ADDR *lowpc,
 						   &range_end, 1))
 		return 0;
 
-              low = min (low, range_beginning);
-              high = max (high, range_end);
+              low = min(low, range_beginning);
+              high = max(high, range_end);
 
 	      tmp_ranges->ranges[cur_elt].startaddr = range_beginning;
-	      tmp_ranges->ranges[cur_elt].endaddr   = range_end;
+	      tmp_ranges->ranges[cur_elt].endaddr = range_end;
 	      cur_elt++;
 	      tmp_ranges->nelts = cur_elt;
 	    }
@@ -5771,13 +5773,12 @@ dwarf2_get_pc_bounds (struct die_info *die, CORE_ADDR *lowpc,
 }
 
 /* Get the low and high pc's represented by the scope DIE, and store
-   them in *LOWPC and *HIGHPC.  If the correct values can't be
-   determined, set *LOWPC to -1 and *HIGHPC to 0.  */
-
+   them in *LOWPC and *HIGHPC.  If the correct values cannot be
+   determined, then set *LOWPC to -1 and *HIGHPC to 0.  */
 static void
-get_scope_pc_bounds (struct die_info *die,
-		     CORE_ADDR *lowpc, CORE_ADDR *highpc,
-		     struct dwarf2_cu *cu)
+get_scope_pc_bounds(struct die_info *die,
+		    CORE_ADDR *lowpc, CORE_ADDR *highpc,
+		    struct dwarf2_cu *cu)
 {
   CORE_ADDR best_low = (CORE_ADDR) -1;
   CORE_ADDR best_high = (CORE_ADDR) 0;
@@ -6077,8 +6078,8 @@ dwarf2_attach_fields_to_type (struct field_info *fip, struct type *type,
 	default:
 	  /* Unknown accessibility.  Complain and treat it as public.  */
 	  {
-	    complaint (&symfile_complaints, _("unsupported accessibility %d"),
-		       fip->fields->accessibility);
+	    complaint(&symfile_complaints, _("unsupported accessibility %d"),
+		      fip->fields->accessibility);
 	  }
 	  break;
 	}
@@ -6088,7 +6089,9 @@ dwarf2_attach_fields_to_type (struct field_info *fip, struct type *type,
 	    {
 	    case DW_VIRTUALITY_virtual:
 	    case DW_VIRTUALITY_pure_virtual:
-	      SET_TYPE_FIELD_VIRTUAL (type, nfields);
+	      SET_TYPE_FIELD_VIRTUAL(type, nfields);
+	      break;
+	    default:
 	      break;
 	    }
 	}
@@ -6195,17 +6198,19 @@ dwarf2_add_member_fn (struct field_info *fip, struct die_info *die,
   /* dwarf2 doesn't have stubbed physical names, so the setting of is_const
      and is_volatile is irrelevant, as it is needed by gdb_mangle_name only.  */
 
-  /* Get accessibility.  */
-  attr = dwarf2_attr (die, DW_AT_accessibility, cu);
+  /* Get accessibility: */
+  attr = dwarf2_attr(die, DW_AT_accessibility, cu);
   if (attr)
     {
-      switch (DW_UNSND (attr))
+      switch (DW_UNSND(attr))
 	{
 	case DW_ACCESS_private:
 	  fnp->is_private = 1;
 	  break;
 	case DW_ACCESS_protected:
 	  fnp->is_protected = 1;
+	  break;
+	default:
 	  break;
 	}
     }
@@ -7069,7 +7074,6 @@ namespace_name (struct die_info *die, int *is_anonymous, struct dwarf2_cu *cu)
 
 /* Extract all information from a DW_TAG_pointer_type DIE and add to
    the user defined type vector.  */
-
 static void
 read_tag_pointer_type (struct die_info *die, struct dwarf2_cu *cu)
 {
@@ -7079,10 +7083,9 @@ read_tag_pointer_type (struct die_info *die, struct dwarf2_cu *cu)
   struct attribute *attr_address_class;
   int byte_size, addr_class;
 
-  if (die->type)
-    {
-      return;
-    }
+  if (die->type) {
+    return;
+  }
 
   /* APPLE LOCAL: gcc 4.0 - 4.2 (at least) produce an odd die for the
      "id" and "Class" typedefs for objc.  e.g. objc.h actually has a
@@ -7187,10 +7190,9 @@ read_tag_ptr_to_member_type (struct die_info *die, struct dwarf2_cu *cu)
   struct type *to_type;
   struct type *domain;
 
-  if (die->type)
-    {
-      return;
-    }
+  if (die->type) {
+    return;
+  }
 
   type = alloc_type (objfile);
   to_type = die_type (die, cu);
@@ -7210,22 +7212,18 @@ read_tag_reference_type (struct die_info *die, struct dwarf2_cu *cu)
   struct type *type;
   struct attribute *attr;
 
-  if (die->type)
-    {
-      return;
-    }
+  if (die->type) {
+    return;
+  }
 
-  type = lookup_reference_type (die_type (die, cu));
-  attr = dwarf2_attr (die, DW_AT_byte_size, cu);
-  if (attr)
-    {
-      TYPE_LENGTH_ASSIGN (type) = DW_UNSND (attr);
-    }
-  else
-    {
-      TYPE_LENGTH_ASSIGN (type) = cu_header->addr_size;
-    }
-  set_die_type (die, type, cu);
+  type = lookup_reference_type(die_type(die, cu));
+  attr = dwarf2_attr(die, DW_AT_byte_size, cu);
+  if (attr) {
+    TYPE_LENGTH_ASSIGN(type) = DW_UNSND(attr);
+  } else {
+    TYPE_LENGTH_ASSIGN(type) = cu_header->addr_size;
+  }
+  set_die_type(die, type, cu);
 }
 
 static void
@@ -7235,10 +7233,9 @@ read_tag_unspecified_type (struct die_info *die, struct dwarf2_cu *cu)
   struct type *type;
   struct attribute *attr;
 
-  if (die->type)
-    {
-      return;
-    }
+  if (die->type) {
+    return;
+  }
 
   type = alloc_type (objfile);
   TYPE_LENGTH_ASSIGN (type) = 0;
@@ -7254,10 +7251,9 @@ read_tag_const_type (struct die_info *die, struct dwarf2_cu *cu)
 {
   struct type *base_type;
 
-  if (die->type)
-    {
-      return;
-    }
+  if (die->type) {
+    return;
+  }
 
   base_type = die_type (die, cu);
   set_die_type(die, make_cvr_type(1, TYPE_VOLATILE(base_type),
@@ -7269,10 +7265,9 @@ read_tag_volatile_type (struct die_info *die, struct dwarf2_cu *cu)
 {
   struct type *base_type;
 
-  if (die->type)
-    {
-      return;
-    }
+  if (die->type) {
+    return;
+  }
 
   base_type = die_type (die, cu);
   set_die_type(die, make_cvr_type(TYPE_CONST(base_type), 1,
@@ -7284,10 +7279,9 @@ read_tag_restrict_type (struct die_info *die, struct dwarf2_cu *cu)
 {
   struct type *base_type;
 
-  if (die->type)
-    {
-      return;
-    }
+  if (die->type) {
+    return;
+  }
 
   base_type = die_type (die, cu);
   set_die_type(die, make_cvr_type(TYPE_CONST(base_type),
@@ -7628,9 +7622,9 @@ read_subrange_type (struct die_info *die, struct dwarf2_cu *cu)
 
 /* Read a whole compilation unit into a linked list of dies: */
 static struct die_info *
-read_comp_unit (char *info_ptr, bfd *abfd, struct dwarf2_cu *cu)
+read_comp_unit(char *info_ptr, bfd *abfd, struct dwarf2_cu *cu)
 {
-  return read_die_and_children (info_ptr, abfd, cu, &info_ptr, NULL);
+  return read_die_and_children(info_ptr, abfd, cu, &info_ptr, NULL);
 }
 
 /* Read a single die and all its descendents.  Set the die's sibling
@@ -7638,7 +7632,6 @@ read_comp_unit (char *info_ptr, bfd *abfd, struct dwarf2_cu *cu)
    of the descendents' fields correctly.  Set *NEW_INFO_PTR to the
    location of the info_ptr after reading all of those dies.  PARENT
    is the parent of the die in question.  */
-
 static struct die_info *
 read_die_and_children(char *info_ptr, bfd *abfd, struct dwarf2_cu *cu,
 		      char **new_info_ptr, struct die_info *parent)
@@ -7647,19 +7640,16 @@ read_die_and_children(char *info_ptr, bfd *abfd, struct dwarf2_cu *cu,
   char *cur_ptr;
   int has_children;
 
-  cur_ptr = read_full_die (&die, abfd, info_ptr, cu, &has_children);
-  store_in_ref_table (die->offset, die, cu);
+  cur_ptr = read_full_die(&die, abfd, info_ptr, cu, &has_children);
+  store_in_ref_table(die->offset, die, cu);
 
-  if (has_children)
-    {
-      die->child = read_die_and_siblings (cur_ptr, abfd, cu,
-					  new_info_ptr, die);
-    }
-  else
-    {
-      die->child = NULL;
-      *new_info_ptr = cur_ptr;
-    }
+  if (has_children) {
+    die->child = read_die_and_siblings(cur_ptr, abfd, cu,
+				       new_info_ptr, die);
+  } else {
+    die->child = NULL;
+    *new_info_ptr = cur_ptr;
+  }
 
   die->sibling = NULL;
   die->parent = parent;
@@ -7682,27 +7672,21 @@ read_die_and_siblings(char *info_ptr, bfd *abfd, struct dwarf2_cu *cu,
 
   while (1)
     {
-      struct die_info *die
-	= read_die_and_children (cur_ptr, abfd, cu, &cur_ptr, parent);
+      struct die_info *die =
+	read_die_and_children(cur_ptr, abfd, cu, &cur_ptr, parent);
 
-      if (!first_die)
-	{
-	  first_die = die;
-	}
-      else
-	{
-	  last_sibling->sibling = die;
-	}
+      if (!first_die) {
+	first_die = die;
+      } else {
+	last_sibling->sibling = die;
+      }
 
-      if (die->tag == 0)
-	{
-	  *new_info_ptr = cur_ptr;
-	  return first_die;
-	}
-      else
-	{
-	  last_sibling = die;
-	}
+      if (die->tag == 0) {
+	*new_info_ptr = cur_ptr;
+	return first_die;
+      } else {
+	last_sibling = die;
+      }
     }
 }
 
@@ -12662,6 +12646,9 @@ dwarf_decode_macros(struct line_header *lh, unsigned int offset,
             /* We do NOT recognize any vendor extensions.  */
           }
           break;
+
+	default:
+	  break;
         }
     }
 }
@@ -13118,9 +13105,8 @@ hashtab_obstack_allocate (void *data, size_t size, size_t count)
 /* Trivial deallocation function for the libiberty splay tree and hash
    table - don't deallocate anything.  Rely on later deletion of the
    obstack.  */
-
 static void
-dummy_obstack_deallocate (void *object, void *data)
+dummy_obstack_deallocate(void *object, void *data)
 {
   return;
 }
@@ -13165,8 +13151,8 @@ show_dwarf2_cmd(const char *args, int from_tty)
   cmd_show_list(show_dwarf2_cmdlist, from_tty, "");
 }
 
+/* */
 extern void _initialize_dwarf2_read(void);
-
 void
 _initialize_dwarf2_read(void)
 {
@@ -13189,8 +13175,7 @@ Show DWARF 2 variables such as the cache size"),
 Set DWARF debug map debugging."), _("\
 Show DWARF debug map debugging."), _("\
 When non-zero, debug map specific debugging is enabled."),
-                           NULL,
-                           show_debug_debugmap,
+                           NULL, show_debug_debugmap,
                            &setdebuglist, &showdebuglist);
 
   add_setshow_zinteger_cmd("max-cache-age", class_obscure,
@@ -13200,8 +13185,7 @@ Show the upper bound on the age of cached dwarf2 compilation units."), _("\
 A higher limit means that cached compilation units will be stored\n\
 in memory longer, and more total memory will be used.  Zero disables\n\
 caching, which can slow down startup."),
-			   NULL,
-			   show_dwarf2_max_cache_age,
+			   NULL, show_dwarf2_max_cache_age,
 			   &set_dwarf2_cmdlist,
 			   &show_dwarf2_cmdlist);
 
@@ -13564,7 +13548,6 @@ rb_delete_fixup (struct rb_tree_node **root, struct rb_tree_node *x)
 
    Finally, we may need to re-color or re-balance a portion of the tree.
  */
-
 static struct rb_tree_node *
 rb_tree_remove_node (struct rb_tree_node **root, struct rb_tree_node *node)
 {
@@ -15003,7 +14986,7 @@ num_nodes_in_tree(struct rb_tree_node *tree)
   if (tree == NULL)
     total = 0;
   else
-    total = num_nodes_in_tree(tree->left) +  num_nodes_in_tree(tree->right) + 1;
+    total = num_nodes_in_tree(tree->left) + num_nodes_in_tree(tree->right) + 1;
 
   return total;
 }

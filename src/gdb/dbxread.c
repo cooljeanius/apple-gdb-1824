@@ -1861,19 +1861,19 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
 	   */
 	  case N_TEXT | N_EXT:
 	  case N_NBTEXT | N_EXT:
-	  nlist.n_value += objfile_text_section_offset (objfile);
+	  nlist.n_value += objfile_text_section_offset(objfile);
 	  goto record_it;
 
 	  case N_DATA | N_EXT:
 	  case N_NBDATA | N_EXT:
-	  nlist.n_value += objfile_data_section_offset (objfile);
+	  nlist.n_value += objfile_data_section_offset(objfile);
 	  goto record_it;
 
 	  case N_BSS:
 	  case N_BSS | N_EXT:
 	  case N_NBBSS | N_EXT:
-	  case N_SETV | N_EXT:		/* FIXME, is this in BSS? */
-	  nlist.n_value += objfile_bss_section_offset (objfile);
+	  case N_SETV | N_EXT:		/* FIXME: is this in BSS? */
+	  nlist.n_value += objfile_bss_section_offset(objfile);
 	  goto record_it;
 
 	  case N_ABS | N_EXT:
@@ -1907,65 +1907,67 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
 	    namestring++;
 	  /* APPLE LOCAL: pass the n_desc in case we need it.  */
 	  record_minimal_symbol(namestring, nlist.n_value,
-				nlist.n_type, nlist.n_desc, objfile); /* Always */
+				nlist.n_type, nlist.n_desc, objfile); /*Always*/
 	  continue;
+
+	  default:;
 	}
 
       switch (nlist.n_type)
 	{
-	  /* Standard, local, non-debugger, symbols */
-
+	  /* Standard, local, non-debugger, symbols: */
 	  case N_NBTEXT:
 
 	  /* We need to be able to deal with both N_FN or N_TEXT,
 	     because we have no way of knowing whether the sys-supplied ld
 	     or GNU ld was used to make the executable.  Sequents throw
 	     in another wrinkle -- they renumbered N_FN.  */
-
 	  case N_FN:
 	  case N_FN_SEQ:
 	  case N_TEXT:
-	  nlist.n_value += objfile_text_section_offset (objfile);
-	  /* APPLE LOCAL symbol prefixes */
-	  namestring = set_namestring (objfile, nlist, prefix);
-
-	  /* APPLE LOCAL begin load level */
-	  /* Here is where we implement the load level policy in
-	     symbol reading.  Note we also read in all things that
-	     look like ObjC methods, since they are ALWAYS local,
-	     though we want to treat then as external.  */
-	  if ((! (objfile->symflags & (OBJF_SYM_LOCAL | OBJF_SYM_DEBUG)))
-	      && ((namestring[0] != '+') && (namestring[0] != '-')))
-	    continue;
-	  /* APPLE LOCAL end load level */
-	  if ((namestring[0] == '-' && namestring[1] == 'l')
-	      || (namestring[(nsl = strlen (namestring)) - 1] == 'o'
-		  && namestring[nsl - 2] == '.'))
-	  {
-	    if (past_first_source_file && pst
-		/* The gould NP1 uses low values for .o and -l symbols
-		   which are not the address.  */
-		&& nlist.n_value >= pst->textlow)
+	    nlist.n_value += objfile_text_section_offset (objfile);
+	    /* APPLE LOCAL symbol prefixes */
+	    namestring = set_namestring (objfile, nlist, prefix);
+	    
+	    /* APPLE LOCAL begin load level */
+	    /* Here is where we implement the load level policy in
+	       symbol reading.  Note we also read in all things that
+	       look like ObjC methods, since they are ALWAYS local,
+	       though we want to treat then as external.  */
+	    if ((!(objfile->symflags & (OBJF_SYM_LOCAL | OBJF_SYM_DEBUG)))
+		&& ((namestring[0] != '+') && (namestring[0] != '-')))
+	      continue;
+	    /* APPLE LOCAL end load level */
+	    if (((namestring[0] == '-') && (namestring[1] == 'l'))
+		|| ((namestring[(nsl = strlen(namestring)) - 1UL] == 'o')
+		    && (namestring[nsl - 2] == '.')))
+	    {
+	      if (past_first_source_file && pst
+		  /* The gould NP1 uses low values for .o and -l symbols
+		     which are not the address.  */
+		  && (nlist.n_value >= pst->textlow))
 	      {
-		end_psymtab (pst, psymtab_include_list, includes_used,
-			     symnum * symbol_size,
-			     nlist.n_value > pst->texthigh
-			     ? nlist.n_value : pst->texthigh,
-			     dependency_list, dependencies_used, textlow_not_set);
-		pst = (struct partial_symtab *) 0;
+		end_psymtab(pst, psymtab_include_list, includes_used,
+			    (symnum * symbol_size),
+			    ((nlist.n_value > pst->texthigh)
+			     ? nlist.n_value : pst->texthigh),
+			    dependency_list, dependencies_used,
+			    textlow_not_set);
+		pst = (struct partial_symtab *)0;
 		includes_used = 0;
 		dependencies_used = 0;
                 in_dwarf_debug_map = 0;
 		missing_oso_file = 0;
 	      }
+	      else
+		past_first_source_file = 1;
+	      last_o_file_start = nlist.n_value;
+	    }
 	    else
-	      past_first_source_file = 1;
-	    last_o_file_start = nlist.n_value;
-	  }
-	  else
-	  goto record_it;
-	  continue;
-	}
+	      goto record_it;
+	    continue;
+	  default:;
+	} /* end switch */
 
       if (in_dwarf_debug_map && pst)
         {
@@ -2470,7 +2472,7 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
 			namestring, symnum);
 	      continue;
 	    }
-	    add_bincl_to_list(pst, namestring, nlist.n_value);
+	    add_bincl_to_list(pst, namestring, (int)nlist.n_value);
 
 	    /* Mark down an include file in the current psymtab: */
 	    goto record_include_file;
@@ -2699,7 +2701,7 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
 		add_psymbol_to_list(namestring, (p - namestring),
 				    STRUCT_DOMAIN, LOC_TYPEDEF,
 				    &objfile->static_psymbols,
-				    nlist.n_value, 0L,
+				    (long)nlist.n_value, 0L,
 				    psymtab_language, objfile);
 		if (p[2] == 't')
 		  {
@@ -2707,7 +2709,7 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
 		    add_psymbol_to_list(namestring, (p - namestring),
 					VAR_DOMAIN, LOC_TYPEDEF,
 					&objfile->static_psymbols,
-					nlist.n_value, 0L,
+					(long)nlist.n_value, 0L,
 					psymtab_language, objfile);
 		    p += 1;
 		  }
@@ -2719,7 +2721,7 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
 		add_psymbol_to_list(namestring, (p - namestring),
 				    VAR_DOMAIN, LOC_TYPEDEF,
 				    &objfile->static_psymbols,
-				    nlist.n_value, 0L,
+				    (long)nlist.n_value, 0L,
 				    psymtab_language, objfile);
 	      }
 	  check_enum:
@@ -2797,7 +2799,7 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
 	    /* Constant, e.g. from "const" in Pascal.  */
 	    add_psymbol_to_list(namestring, (p - namestring),
 				VAR_DOMAIN, LOC_CONST,
-				&objfile->static_psymbols, nlist.n_value,
+				&objfile->static_psymbols, (long)nlist.n_value,
 				0L, psymtab_language, objfile);
 	    continue;
 
@@ -3914,39 +3916,36 @@ read_oso_nlists(bfd *oso_bfd, struct partial_symtab *pst,
 
       switch (nlist.n_type)
         {
-           /*
-            * Standard, external, non-debugger, symbols
-            */
-           case N_TEXT:
-           case N_TEXT | N_EXT:
-           case N_NBTEXT | N_EXT:
+	  /* Standard, external, non-debugger, symbols: */
+	  case N_TEXT:
+	  case N_TEXT | N_EXT:
+	  case N_NBTEXT | N_EXT:
 
-           case N_DATA:
-           case N_DATA | N_EXT:
-           case N_NBDATA | N_EXT:
+	  case N_DATA:
+	  case N_DATA | N_EXT:
+	  case N_NBDATA | N_EXT:
 
-           case N_BSS:
-           case N_BSS | N_EXT:
-           case N_NBBSS | N_EXT:
-           case N_SETV | N_EXT:
+	  case N_BSS:
+	  case N_BSS | N_EXT:
+	  case N_NBBSS | N_EXT:
+	  case N_SETV | N_EXT:
 
-           case N_ABS | N_EXT:
+	  case N_ABS | N_EXT:
 
-           /* Standard, local, non-debugger, symbols */
+	  /* Standard, local, non-debugger, symbols: */
+	  case N_NBTEXT:
+	  case N_FN:
+	  case N_FN_SEQ:
+            record_standard = 1;
+            break;
 
-           case N_NBTEXT:
-           case N_FN:
-           case N_FN_SEQ:
-
-           record_standard = 1;
-           break;
-
-           /* Common symbols (uninitialzed globals, statics) */
-
-           case N_UNDF | N_EXT:
-
-           record_common = 1;
-           break;
+	  /* Common symbols (uninitialzed globals, statics): */
+	  case N_UNDF | N_EXT:
+            record_common = 1;
+            break;
+	    
+	  default:
+	    break;
         }
 
 #ifdef TM_NEXTSTEP

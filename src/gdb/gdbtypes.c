@@ -40,6 +40,10 @@
 #include "gdb_assert.h"
 #include "exceptions.h"
 
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
+
 /* These variables point to the objects
    representing the predefined C data types.  */
 
@@ -2653,11 +2657,11 @@ rank_function(struct type **parms, int nparms, struct type **args, int nargs)
   LENGTH_MATCH (bv) = (nargs != nparms) ? LENGTH_MISMATCH_BADNESS : 0;
 
   /* Now rank all the parameters of the candidate function */
-  for (i = 1; i <= min_len; i++)
-    bv->rank[i] = rank_one_type (parms[i-1], args[i-1]);
+  for (i = 1; (i <= min_len) && (i < INT_MAX); i++)
+    bv->rank[i] = rank_one_type(parms[i - 1], args[i - 1]);
 
   /* If more arguments than parameters, add dummy entries */
-  for (i = min_len + 1; i <= nargs; i++)
+  for (i = (min_len + 1); (i <= nargs) && (i < INT_MAX); i++)
     bv->rank[i] = TOO_FEW_PARAMS_BADNESS;
 
   return bv;

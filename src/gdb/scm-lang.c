@@ -43,24 +43,27 @@ static int in_eval_c(void);
 
 struct type *builtin_type_scm;
 
+/* */
 void
 scm_printchar(int c, struct ui_file *stream)
 {
   fprintf_filtered(stream, "#\\%c", c);
 }
 
+/* */
 static void
-scm_printstr (struct ui_file *stream, const gdb_byte *string,
-	      unsigned int length, int width, int force_ellipses)
+scm_printstr(struct ui_file *stream, const gdb_byte *string,
+	     unsigned int length, int width, int force_ellipses)
 {
-  fprintf_filtered (stream, "\"%s\"", string);
+  fprintf_filtered(stream, "\"%s\"", string);
 }
 
+/* */
 int
-is_scmvalue_type (struct type *type)
+is_scmvalue_type(struct type *type)
 {
-  if (TYPE_CODE (type) == TYPE_CODE_INT
-      && TYPE_NAME (type) && strcmp (TYPE_NAME (type), "SCM") == 0)
+  if ((TYPE_CODE(type) == TYPE_CODE_INT)
+      && TYPE_NAME(type) && (strcmp(TYPE_NAME(type), "SCM") == 0))
     {
       return 1;
     }
@@ -69,26 +72,24 @@ is_scmvalue_type (struct type *type)
 
 /* Get the INDEX'th SCM value, assuming SVALUE is the address
    of the 0'th one.  */
-
 LONGEST
-scm_get_field (LONGEST svalue, int index)
+scm_get_field(LONGEST svalue, int index)
 {
   gdb_byte buffer[20];
-  read_memory (SCM2PTR (svalue) + index * TYPE_LENGTH (builtin_type_scm),
-	       buffer, TYPE_LENGTH (builtin_type_scm));
-  return extract_signed_integer (buffer, TYPE_LENGTH (builtin_type_scm));
+  read_memory((SCM2PTR(svalue) + (index * TYPE_LENGTH(builtin_type_scm))),
+	      buffer, TYPE_LENGTH(builtin_type_scm));
+  return extract_signed_integer(buffer, TYPE_LENGTH(builtin_type_scm));
 }
 
 /* Unpack a value of type TYPE in buffer VALADDR as an integer
    (if CONTEXT == TYPE_CODE_IN), a pointer (CONTEXT == TYPE_CODE_PTR),
    or Boolean (CONTEXT == TYPE_CODE_BOOL).  */
-
 LONGEST
-scm_unpack (struct type *type, const gdb_byte *valaddr, enum type_code context)
+scm_unpack(struct type *type, const gdb_byte *valaddr, enum type_code context)
 {
-  if (is_scmvalue_type (type))
+  if (is_scmvalue_type(type))
     {
-      LONGEST svalue = extract_signed_integer (valaddr, TYPE_LENGTH (type));
+      LONGEST svalue = extract_signed_integer(valaddr, TYPE_LENGTH(type));
       if (context == TYPE_CODE_BOOL)
 	{
 	  if (svalue == SCM_BOOL_F)
@@ -96,48 +97,49 @@ scm_unpack (struct type *type, const gdb_byte *valaddr, enum type_code context)
 	  else
 	    return 1;
 	}
-      switch (7 & (int) svalue)
+      switch (7 & (int)svalue)
 	{
 	case 2:
 	case 6:		/* fixnum */
-	  return svalue >> 2;
+	  return (svalue >> 2);
 	case 4:		/* other immediate value */
-	  if (SCM_ICHRP (svalue))	/* character */
-	    return SCM_ICHR (svalue);
-	  else if (SCM_IFLAGP (svalue))
+	  if (SCM_ICHRP(svalue))	/* character */
+	    return SCM_ICHR(svalue);
+	  else if (SCM_IFLAGP(svalue))
 	    {
-	      switch ((int) svalue)
+	      switch ((int)svalue)
 		{
 #ifndef SICP
 		case SCM_EOL:
-#endif
+#endif /* !SICP */
 		case SCM_BOOL_F:
 		  return 0;
 		case SCM_BOOL_T:
 		  return 1;
+		default:
+		  break;
 		}
 	    }
-	  error (_("Value can't be converted to integer."));
+	  error(_("Value cannot be converted to integer."));
 	default:
 	  return svalue;
 	}
     }
   else
-    return unpack_long (type, valaddr);
+    return unpack_long(type, valaddr);
 }
 
-/* True if we're correctly in Guile's eval.c (the evaluator and apply). */
-
+/* True if we are correctly in Guile's eval.c (the evaluator and apply): */
 static int
-in_eval_c (void)
+in_eval_c(void)
 {
-  struct symtab_and_line cursal = get_current_source_symtab_and_line ();
+  struct symtab_and_line cursal = get_current_source_symtab_and_line();
 
   if (cursal.symtab && cursal.symtab->filename)
     {
       char *filename = cursal.symtab->filename;
-      int len = strlen (filename);
-      if (len >= 6 && strcmp (filename + len - 6, "eval.c") == 0)
+      size_t len = strlen(filename);
+      if ((len >= 6UL) && (strcmp((filename + len - 6UL), "eval.c") == 0))
 	return 1;
     }
   return 0;
@@ -146,44 +148,41 @@ in_eval_c (void)
 /* Lookup a value for the variable named STR.
    First lookup in Scheme context (using the scm_lookup_cstr inferior
    function), then try lookup_symbol for compiled variables. */
-
 static struct value *
-scm_lookup_name (char *str)
+scm_lookup_name(char *str)
 {
   struct value *args[3];
-  int len = strlen (str);
+  size_t len = strlen(str);
   struct value *func;
   struct value *val;
   struct symbol *sym;
-  args[0] = value_allocate_space_in_inferior (len);
-  args[1] = value_from_longest (builtin_type_int, len);
-  write_memory (value_as_long (args[0]), (gdb_byte *) str, len);
+  args[0] = value_allocate_space_in_inferior(len);
+  args[1] = value_from_longest(builtin_type_int, len);
+  write_memory(value_as_long(args[0]), (gdb_byte *)str, len);
 
-  if (in_eval_c ()
-      && (sym = lookup_symbol ("env",
-			       expression_context_block,
-			       VAR_DOMAIN, (int *) NULL,
-			       (struct symtab **) NULL)) != NULL)
-    args[2] = value_of_variable (sym, expression_context_block);
+  if (in_eval_c()
+      && (sym = lookup_symbol("env", expression_context_block, VAR_DOMAIN,
+			      (int *)NULL, (struct symtab **)NULL)) != NULL)
+    args[2] = value_of_variable(sym, expression_context_block);
   else
-    /* FIXME in this case, we should try lookup_symbol first */
-    args[2] = value_from_longest (builtin_type_scm, SCM_EOL);
+    /* FIXME: in this case, we should try lookup_symbol 1st: */
+    args[2] = value_from_longest(builtin_type_scm, SCM_EOL);
 
   /* APPLE LOCAL inferior function type */
-  func = find_function_in_inferior ("scm_lookup_cstr", builtin_type_voidptrfuncptr);
-  val = call_function_by_hand (func, 3, args);
-  if (!value_logical_not (val))
-    return value_ind (val);
+  func = find_function_in_inferior("scm_lookup_cstr",
+				   builtin_type_voidptrfuncptr);
+  val = call_function_by_hand(func, 3, args);
+  if (!value_logical_not(val))
+    return value_ind(val);
 
-  sym = lookup_symbol (str,
-		       expression_context_block,
-		       VAR_DOMAIN, (int *) NULL,
-		       (struct symtab **) NULL);
+  sym = lookup_symbol(str, expression_context_block, VAR_DOMAIN, (int *)NULL,
+		      (struct symtab **)NULL);
   if (sym)
-    return value_of_variable (sym, NULL);
-  error (_("No symbol \"%s\" in current context."), str);
+    return value_of_variable(sym, NULL);
+  error(_("No symbol \"%s\" in current context."), str);
 }
 
+/* */
 struct value *
 scm_evaluate_string(char *str, int len)
 {
@@ -191,7 +190,7 @@ scm_evaluate_string(char *str, int len)
   struct value *addr = value_allocate_space_in_inferior(len + 1);
   LONGEST iaddr = value_as_long(addr);
   write_memory(iaddr, (gdb_byte *)str, len);
-  /* FIXME - should find and pass env */
+  /* FIXME: we should find and pass the env */
   write_memory((iaddr + len), (gdb_byte *)"", 1);
   /* APPLE LOCAL inferior function type */
   func = find_function_in_inferior("scm_evstr", builtin_type_voidptrfuncptr);
@@ -201,7 +200,7 @@ scm_evaluate_string(char *str, int len)
 /* ... */
 static struct value *
 evaluate_subexp_scm(struct type *expect_type, struct expression *exp,
-					int *pos, enum noside noside)
+		    int *pos, enum noside noside)
 {
   enum exp_opcode op = exp->elts[*pos].opcode;
   int len, pc;
@@ -210,25 +209,25 @@ evaluate_subexp_scm(struct type *expect_type, struct expression *exp,
     {
     case OP_NAME:
       pc = (*pos)++;
-      len = longest_to_int (exp->elts[pc + 1].longconst);
-      (*pos) += 3 + BYTES_TO_EXP_ELEM (len + 1);
+      len = longest_to_int(exp->elts[pc + 1].longconst);
+      (*pos) += (3 + BYTES_TO_EXP_ELEM(len + 1));
       if (noside == EVAL_SKIP)
 	goto nosideret;
       str = &exp->elts[pc + 2].string;
-      return scm_lookup_name (str);
+      return scm_lookup_name(str);
     case OP_EXPRSTRING:
       pc = (*pos)++;
-      len = longest_to_int (exp->elts[pc + 1].longconst);
-      (*pos) += 3 + BYTES_TO_EXP_ELEM (len + 1);
+      len = longest_to_int(exp->elts[pc + 1].longconst);
+      (*pos) += (3 + BYTES_TO_EXP_ELEM(len + 1));
       if (noside == EVAL_SKIP)
 	goto nosideret;
       str = &exp->elts[pc + 2].string;
-      return scm_evaluate_string (str, len);
+      return scm_evaluate_string(str, len);
     default:;
     }
-  return evaluate_subexp_standard (expect_type, exp, pos, noside);
+  return evaluate_subexp_standard(expect_type, exp, pos, noside);
 nosideret:
-  return value_from_longest (builtin_type_long, (LONGEST) 1);
+  return value_from_longest(builtin_type_long, (LONGEST)1L);
 }
 
 const struct exp_descriptor exp_descriptor_scm =

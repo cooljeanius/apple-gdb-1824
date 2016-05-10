@@ -575,32 +575,35 @@ tracepoint_operation (struct tracepoint *t, int from_tty,
     {
     case enable_op:
       t->enabled_p = 1;
-      tracepoint_modify_event (t->number);
+      tracepoint_modify_event(t->number);
       break;
     case disable_op:
       t->enabled_p = 0;
-      tracepoint_modify_event (t->number);
+      tracepoint_modify_event(t->number);
       break;
     case delete_op:
       if (tracepoint_chain == t)
 	tracepoint_chain = t->next;
 
-      ALL_TRACEPOINTS (t2)
+      ALL_TRACEPOINTS(t2)
 	if (t2->next == t)
 	{
-	  tracepoint_delete_event (t2->number);
+	  tracepoint_delete_event(t2->number);
 	  t2->next = t->next;
 	  break;
 	}
 
       if (t->addr_string)
-	xfree (t->addr_string);
+	xfree(t->addr_string);
       if (t->source_file)
-	xfree (t->source_file);
+	xfree(t->source_file);
       if (t->actions)
-	free_actions (t);
+	free_actions(t);
 
-      xfree (t);
+      xfree(t);
+      break;
+	
+    default:
       break;
     }
 }

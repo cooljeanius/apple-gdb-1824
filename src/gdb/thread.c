@@ -39,6 +39,9 @@
 #include "wrapper.h"
 
 #include <ctype.h>
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
 #include <sys/types.h>
 #include <signal.h>
 #include "ui-out.h"
@@ -760,7 +763,7 @@ thread_apply_command(const char *tidlist, int from_tty)
       else
 	end = start;
 
-      for (; start <= end; start++)
+      for (; (start <= end) && (start < INT_MAX); start++)
 	{
 	  tp = find_thread_id (start);
 

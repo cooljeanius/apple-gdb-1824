@@ -540,6 +540,9 @@ extern int gdbtk_test(char *);
 			_("Use `%s --help' for a complete list of options.\n"),
                                argv[0]);
 	    exit(1);
+
+	  default:
+	    break;
 	  }
       }
 
@@ -586,6 +589,8 @@ extern int gdbtk_test(char *);
 	      fprintf_unfiltered(gdb_stderr,
 				 _("Excess command line arguments ignored. (%s%s)\n"),
 				 argv[optind], (optind == argc - 1) ? "" : " ...");
+	      break;
+	    default:
 	      break;
 	    }
       }

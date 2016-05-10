@@ -133,35 +133,37 @@ mi_cmd_disassemble (char *command, char **argv, int argc)
 			   &optind, &optarg);
       if (opt < 0)
 	break;
-      switch ((enum opt) opt)
+      switch ((enum opt)opt)
 	{
 	case FILE_OPT:
-	  file_string = xstrdup (optarg);
+	  file_string = xstrdup(optarg);
 	  file_seen = 1;
 	  break;
 	case LINE_OPT:
-	  line_num = atoi (optarg);
+	  line_num = atoi(optarg);
 	  line_seen = 1;
 	  break;
 	case NUM_OPT:
-	  how_many = atoi (optarg);
+	  how_many = atoi(optarg);
 	  num_seen = 1;
 	  break;
 	case START_OPT:
-	  start = parse_and_eval_address (optarg);
+	  start = parse_and_eval_address(optarg);
 	  start_seen = 1;
 	  break;
 	case END_OPT:
-	  high = parse_and_eval_address (optarg);
+	  high = parse_and_eval_address(optarg);
 	  end_seen = 1;
 	  break;
 	case PREV_OPT:
-	  prev = atoi (optarg);
+	  prev = atoi(optarg);
 	  prev_seen = 1;
 	  break;
 	case PEEKLIMIT_OPT:
-	  peeklimit = atoi (optarg);
+	  peeklimit = atoi(optarg);
 	  peeklimit_seen = 1;
+	  break;
+	default:
 	  break;
 	}
     }

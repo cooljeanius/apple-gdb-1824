@@ -464,7 +464,7 @@ build_section_addr_info_from_section_table(const struct section_table *start,
 
   sap = alloc_section_addr_info(end - start);
 
-  for (stp = start, oidx = 0; stp != end; stp++)
+  for (stp = start, oidx = 0; (stp != end) && (stp != NULL); stp++)
     {
       /* FIXME: avoid possible overflow in loop counter */
       if ((bfd_get_section_flags(stp->bfd,

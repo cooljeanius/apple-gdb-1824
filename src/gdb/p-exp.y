@@ -48,6 +48,9 @@ Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA */
 #include "defs.h"
 #include "gdb_string.h"
 #include <ctype.h>
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
 #include "expression.h"
 #include "value.h"
 #include "parser-defs.h"
@@ -821,7 +824,7 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 	return ERROR;
       /* See if it has `f' or `l' suffix (float or long double).  */
 
-      c = tolower(p[len - 1]);
+      c = (char)tolower(p[len - 1]);
 
       if (c == 'f')
 	putithere->typed_val_float.type = builtin_type_float;
@@ -1052,7 +1055,7 @@ static char *uptok(char *tokstart, int namelen)
 {
   int i;
   char *uptokstart = (char *)malloc(namelen + 1UL);
-  for (i = 0; i <= namelen; i++)
+  for (i = 0; (i <= namelen) && (i < INT_MAX); i++)
     {
       if ((tokstart[i] >= 'a') && (tokstart[i] <= 'z'))
         uptokstart[i] = (tokstart[i] - ('a' - 'A'));
@@ -1298,7 +1301,7 @@ yylex(void)
 	      {
 		continue;
 	      }
-	    tempbuf[tempbufindex++] = c;
+	    tempbuf[tempbufindex++] = (char)c;
 	    break;
 	  default:
 	    tempbuf[tempbufindex++] = *tokptr++;
@@ -1314,7 +1317,9 @@ yylex(void)
       yylval.sval.length = tempbufindex;
       lexptr = (char *)tokptr;
       return (STRING);
-    }
+
+    default:;
+    } /* end switch */
 
   if (!((c == '_') || (c == '$')
 	|| ((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z'))))
@@ -1446,7 +1451,7 @@ yylex(void)
     /* second chance uppercased (as Free Pascal does): */
     if (!sym && !is_a_field_of_this && !is_a_field)
       {
-       for (i = 0U; i <= namelen; i++)
+       for (i = 0U; (i <= namelen) && (i < UINT_MAX); i++)
          {
            if ((tmp[i] >= 'a') && (tmp[i] <= 'z'))
              tmp[i] -= ('a' - 'A');
@@ -1460,7 +1465,7 @@ yylex(void)
                              VAR_DOMAIN, &is_a_field_of_this,
                              (struct symtab **)NULL);
        if (sym || is_a_field_of_this || is_a_field)
-         for (i = 0U; i <= namelen; i++)
+         for (i = 0U; (i <= namelen) && (i < UINT_MAX); i++)
            {
              if ((tokstart[i] >= 'a') && (tokstart[i] <= 'z'))
                tokstart[i] -= ('a' - 'A');
@@ -1469,7 +1474,7 @@ yylex(void)
     /* Third chance Capitalized (as GPC does): */
     if (!sym && !is_a_field_of_this && !is_a_field)
       {
-       for (i = 0U; i <= namelen; i++)
+       for (i = 0U; (i <= namelen) && (i < UINT_MAX); i++)
          {
            if (i == 0U)
              {
@@ -1491,7 +1496,7 @@ yylex(void)
                              VAR_DOMAIN, &is_a_field_of_this,
                              (struct symtab **)NULL);
        if (sym || is_a_field_of_this || is_a_field)
-          for (i = 0U; i <= namelen; i++)
+          for (i = 0U; (i <= namelen) && (i < UINT_MAX); i++)
             {
               if (i == 0U)
                 {

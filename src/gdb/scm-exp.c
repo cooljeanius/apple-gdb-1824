@@ -46,7 +46,7 @@ static LONGEST
 scm_istr2int(char *str, int len, int radix)
 {
   int i = 0;
-  LONGEST inum = 0;
+  LONGEST inum = 0L;
   int c;
   int sign = 0;
 
@@ -59,6 +59,8 @@ scm_istr2int(char *str, int len, int radix)
       sign = str[0];
       if (++i == len)
 	return SCM_BOOL_F;	/* bad if lone `+' or `-' */
+    default:
+      break;
     }
   do {
     switch (c = str[i++])
@@ -167,14 +169,15 @@ scm_istring2number(char *str, int len, int radix)
       return scm_istr2int(&str[i], (len - i), radix);
     case 0:
       return scm_istr2int(&str[i], (len - i), radix);
-#if 0
-      if NFALSEP
-	(res) return res;
+#ifdef NFALSEP
+      if NFALSEP(res) return res;
 # ifdef FLOATS
     case 2:
       return scm_istr2flo(&str[i], (len - i), radix);
 # endif /* FLOATS */
-#endif /* 0 */
+#endif /* NFALSEP */
+    default:
+      break;
     }
   return SCM_BOOL_F;
 }
@@ -416,6 +419,8 @@ tryagain:
 	      case 't':
 	      case 'a':
 	      case 'v':
+		break;
+	      default:
 		break;
 	      }
 	}

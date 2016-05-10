@@ -45,6 +45,13 @@ POSEXP  (e"+"?{NUM10})
 
 /* `comment in old quoting style to fix syntax highlighting' // */
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wswitch-default"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 #define NUMERAL_WIDTH 256
 #define LONGEST_SIGN ((ULONGEST)1 << (sizeof(LONGEST) * HOST_CHAR_BIT - 1))
 
@@ -961,5 +968,12 @@ dummy_function ada_flex_use[] =
   , (dummy_function)yyinput
 #endif /* yyinput */
 };
+
+/* Keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* End of ada-lex.l */

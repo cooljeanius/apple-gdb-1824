@@ -309,28 +309,28 @@ static int trace_kludge;
    the value.  Useful on the left side of a comma, and at the end of
    an expression being used for tracing.  */
 static void
-gen_traced_pop (struct agent_expr *ax, struct axs_value *value)
+gen_traced_pop(struct agent_expr *ax, struct axs_value *value)
 {
   if (trace_kludge)
     switch (value->kind)
       {
       case axs_rvalue:
-	/* We don't trace rvalues, just the lvalues necessary to
+	/* We do NOT trace rvalues, just the lvalues necessary to
 	   produce them.  So just dispose of this value.  */
-	ax_simple (ax, aop_pop);
+	ax_simple(ax, aop_pop);
 	break;
 
       case axs_lvalue_memory:
 	{
-	  int length = TYPE_LENGTH (value->type);
+	  int length = TYPE_LENGTH(value->type);
 
 	  /* There's no point in trying to use a trace_quick bytecode
 	     here, since "trace_quick SIZE pop" is three bytes, whereas
 	     "const8 SIZE trace" is also three bytes, does the same
 	     thing, and the simplest code which generates that will also
 	     work correctly for objects with large sizes.  */
-	  ax_const_l (ax, length);
-	  ax_simple (ax, aop_trace);
+	  ax_const_l(ax, length);
+	  ax_simple(ax, aop_trace);
 	}
 	break;
 
@@ -338,13 +338,16 @@ gen_traced_pop (struct agent_expr *ax, struct axs_value *value)
 	/* We need to mention the register somewhere in the bytecode,
 	   so ax_reqs will pick it up and add it to the mask of
 	   registers used.  */
-	ax_reg (ax, value->u.reg);
-	ax_simple (ax, aop_pop);
+	ax_reg(ax, value->u.reg);
+	ax_simple(ax, aop_pop);
+	break;
+	  
+      default:
 	break;
       }
   else
-    /* If we're not tracing, just pop the value.  */
-    ax_simple (ax, aop_pop);
+    /* If we are not tracing, then just pop the value: */
+    ax_simple(ax, aop_pop);
 }
 
 
@@ -669,12 +672,12 @@ require_rvalue (struct agent_expr *ax, struct axs_value *value)
   switch (value->kind)
     {
     case axs_rvalue:
-      /* It's already an rvalue.  */
+      /* It is already an rvalue, so just break: */
       break;
 
     case axs_lvalue_memory:
       /* The top of stack is the address of the object.  Dereference.  */
-      gen_fetch (ax, value->type);
+      gen_fetch(ax, value->type);
       break;
 
     case axs_lvalue_register:
@@ -683,8 +686,11 @@ require_rvalue (struct agent_expr *ax, struct axs_value *value)
 
          When we add floating-point support, this is going to have to
          change.  What about SPARC register pairs, for example?  */
-      ax_reg (ax, value->u.reg);
-      gen_extend (ax, value->type);
+      ax_reg(ax, value->u.reg);
+      gen_extend(ax, value->type);
+      break;
+	
+    default:
       break;
     }
 
@@ -1138,14 +1144,17 @@ gen_address_of (struct agent_expr *ax, struct axs_value *value)
     switch (value->kind)
       {
       case axs_rvalue:
-	error (_("Operand of `&' is an rvalue, which has no address."));
+	error(_("Operand of `&' is an rvalue, which has no address."));
 
       case axs_lvalue_register:
-	error (_("Operand of `&' is in a register, and has no address."));
+	error(_("Operand of `&' is in a register, and has no address."));
 
       case axs_lvalue_memory:
 	value->kind = axs_rvalue;
-	value->type = lookup_pointer_type (value->type);
+	value->type = lookup_pointer_type(value->type);
+	break;
+	  
+      default:
 	break;
       }
 }

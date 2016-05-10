@@ -1115,14 +1115,14 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 	{
 	  /* See if it has `f' or `l' suffix (float or long double).  */
 
-	  c = tolower (p[len - 1]);
+	  c = (char)tolower(p[len - 1]);
 	  /* There's no way to tell, using sscanf, whether we actually
 	     did ingest all the input.  But this check will catch things
 	     like: 123fghi.jklmn, though of course it will be fooled by
 	     123fghi.jklmf.  I'm not really all that worried about this,
 	     however.  */
 
-	  if (c != p[len-1])
+	  if (c != p[len - 1])
 	    return ERROR;
 
 	  if (c == 'f')
@@ -1626,7 +1626,7 @@ yylex(void)
 	      {
 		continue;
 	      }
-	    tempbuf[tempbufindex++] = c;
+	    tempbuf[tempbufindex++] = (char)c;
 	    break;
 	  default:
 	    tempbuf[tempbufindex++] = *tokptr++;
@@ -1642,7 +1642,9 @@ yylex(void)
       yylval.sval.length = tempbufindex;
       lexptr = (char *)tokptr;
       return (tokchr == '@' ? NSSTRING : STRING);
-    }
+
+    default:;
+    } /* end switch */
 
   if (!(tokchr == '_' || tokchr == '$' ||
        (tokchr >= 'a' && tokchr <= 'z') || (tokchr >= 'A' && tokchr <= 'Z')))

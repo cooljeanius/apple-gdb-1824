@@ -2487,6 +2487,8 @@ decode_all_digits_exhaustive(const char **argptr, int funfirstline,
       break;
     case none:
       break;		/* No need to adjust lineno.  */
+    default:
+      break;
     }
 
   *parsed_lineno = lineno;
@@ -2777,6 +2779,8 @@ decode_all_digits(const char **argptr, int funfirstline,
       break;
     case none:
       break;		/* No need to adjust val.line.  */
+    default:
+      break;
     }
 
   while (*q == ' ' || *q == '\t')

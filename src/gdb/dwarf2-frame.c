@@ -1734,7 +1734,7 @@ decode_frame_entry_1(struct comp_unit *unit, gdb_byte *start, int eh_frame_p)
       cie_version = read_1_byte(unit->abfd, buf);
       if ((cie_version != 1) && (cie_version != 3))
 	return NULL;
-      cie->version = cie_version;
+      cie->version = (unsigned char)cie_version;
       buf += 1;
 
       /* Interpret the interesting bits of the augmentation: */
@@ -1902,7 +1902,7 @@ decode_frame_entry_1(struct comp_unit *unit, gdb_byte *start, int eh_frame_p)
       fde->instructions = buf;
       fde->end = end;
 
-      fde->eh_frame_p = eh_frame_p;
+      fde->eh_frame_p = (unsigned char)eh_frame_p;
 
       add_fde (unit, fde);
     }

@@ -442,6 +442,8 @@ cp_print_value_fields (struct type *type, struct type *real_type,
 
 #if 0
       fputs_filtered("__vfp = ", stream);
+#else
+      (void)hpacc_vtbl_ptr_type_name;
 #endif /* 0 */
 
       fputs_filtered(", Virtual table at ", stream);
@@ -827,7 +829,7 @@ cp_print_hpacc_virtual_table_entries(struct type *type, int *vfuncs,
 }
 
 
-
+/* */
 void
 _initialize_cp_valprint (void)
 {

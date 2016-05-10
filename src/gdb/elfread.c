@@ -1,4 +1,4 @@
-/* Read ELF (Executable and Linking Format) object files for GDB.
+/* elfread.c: Read ELF (Executable and Linking Format) object files for GDB.
 
    Copyright 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
@@ -291,7 +291,8 @@ elf_symtab_read(struct objfile *objfile, int dynamic)
 		     right for Irix 5, which has absolute addresses
 		     with special section indices for dynamic symbols. */
 		  unsigned short shndx =
-		  ((elf_symbol_type *)sym)->internal_elf_sym.st_shndx;
+		    ((unsigned short)
+		     ((elf_symbol_type *)sym)->internal_elf_sym.st_shndx);
 
 		  switch (shndx)
 		    {

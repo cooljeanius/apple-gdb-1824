@@ -1,4 +1,4 @@
-/* Target-struct-independent code to start (run) and stop an inferior
+/* infrun.c: Target-struct-independent code to start (run) and stop an inferior
    process.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
@@ -656,6 +656,8 @@ set_scheduler_locking_mode (enum scheduler_locking_mode new_mode)
 	case scheduler_locking_step:
 	  old_str = "STEP";
 	  break;
+	default:
+	  break;
 	}
 
       switch (new_mode)
@@ -669,12 +671,15 @@ set_scheduler_locking_mode (enum scheduler_locking_mode new_mode)
 	case scheduler_locking_step:
 	  new_str = "STEP";
 	  break;
+	default:
+	  break;
 	}
 
-      printf_unfiltered ("Setting scheduler lock from %s to %s.\n", old_str, new_str);
+      printf_unfiltered("Setting scheduler lock from %s to %s.\n",
+			old_str, new_str);
     }
 
-  set_schedlock_helper ();
+  set_schedlock_helper();
 
   return old_mode;
 }
@@ -1601,7 +1606,7 @@ handle_inferior_event(struct execution_control_state *ecs)
     {
     case TARGET_WAITKIND_LOADED:
       if (debug_infrun)
-        fprintf_unfiltered (gdb_stdlog, "infrun: TARGET_WAITKIND_LOADED\n");
+        fprintf_unfiltered(gdb_stdlog, "infrun: TARGET_WAITKIND_LOADED\n");
       /* Ignore gracefully during startup of the inferior, as it
          might be the shell which has just loaded some objects,
          otherwise add the symbols for the newly loaded objects.  */
@@ -1832,7 +1837,9 @@ handle_inferior_event(struct execution_control_state *ecs)
         fprintf_unfiltered(gdb_stdlog, "infrun: TARGET_WAITKIND_IGNORE\n");
       prepare_to_wait(ecs);
       return;
-    }
+
+    default:;
+    } /* end switch */
 
   /* We may want to consider not doing a resume here in order to give
      the user a chance to play with the new thread.  It might be good
@@ -2665,7 +2672,9 @@ process_event_stop_test:
 
       case BPSTAT_WHAT_KEEP_CHECKING:
 	break;
-      }
+	  
+      default:;
+      } /* end switch */
   }
 
   /* We come here if we hit a breakpoint but should not
@@ -5062,3 +5071,9 @@ function is skipped and the step command stops at a different source line."),
   inferior_ptid = null_ptid;
   target_last_wait_ptid = minus_one_ptid;
 }
+
+#ifdef TARGET_DISABLE_HW_WATCHPOINTS
+# undef TARGET_DISABLE_HW_WATCHPOINTS
+#endif /* TARGET_DISABLE_HW_WATCHPOINTS */
+
+/* EOF */

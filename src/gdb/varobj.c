@@ -3264,64 +3264,72 @@ c_make_name_of_child(struct varobj *parent, int index)
 
 /* */
 static char *
-c_path_expr_of_child (struct varobj *parent, int index)
+c_path_expr_of_child(struct varobj *parent, int index)
 {
   char *path_expr = NULL;
-  struct varobj *child = child_exists (parent, index);
+  struct varobj *child = child_exists(parent, index);
   char *parent_expr;
   char *name;
-  int parent_len, child_len, len;
+  size_t parent_len, child_len, len;
 
   if (child == NULL)
-    error ("c_path_expr_of_child: "
-	   "Tried to get path expression for a null child.");
+    error(_("c_path_expr_of_child: "
+	    "Tried to get path expression for a null child."));
 
-  parent_expr = path_expr_of_variable (parent);
-  name = name_of_variable (child);
+  parent_expr = path_expr_of_variable(parent);
+  name = name_of_variable(child);
 
   /* If the child has a NULL or empty name it must be an anonomyous
      structure or union.  In that case, return the parent's name.  */
-  if (name == NULL || strlen (name) == 0)
+  if ((name == NULL) || (strlen(name) == 0UL))
     return parent_expr;
 
-  parent_len = strlen (parent_expr);
-  child_len = strlen (name);
-  len = parent_len + child_len + 2 + 1; /* 2 for (), and 1 for null */
+  parent_len = strlen(parent_expr);
+  child_len = strlen(name);
+  len = (parent_len + child_len + 2UL + 1UL); /* 2 for (), and 1 for null */
 
   switch (parent->join_in_expr)
     {
     case VAROBJ_AS_ARRAY:
       {
 	/* We never get here unless parent->num_children is greater than 0... */
-
-	len += 2;
+	gdb_assert(parent->num_children > 0);
+	len += 2UL;
 	path_expr = (char *)xmalloc(len);
 	snprintf(path_expr, len, "(%s)[%s]", parent_expr, name);
       }
       break;
 
     case VAROBJ_AS_STRUCT:
-      len += 1;
+      len += 1UL;
       path_expr = (char *)xmalloc(len);
       snprintf(path_expr, len, "(%s).%s", parent_expr, name);
       break;
 
     case VAROBJ_AS_PTR_TO_STRUCT:
-      len += 2;
+      len += 2UL;
       path_expr = (char *)xmalloc(len);
       snprintf(path_expr, len, "(%s)->%s", parent_expr, name);
       break;
     case VAROBJ_AS_PTR_TO_SCALAR:
-      len += (parent_len + 2 + 1 + 1);
+      len += (parent_len + 2UL + 1UL + 1UL);
       path_expr = (char *)xmalloc(len);
       snprintf(path_expr, len, "*(%s)", parent_expr);
       break;
 
     case VAROBJ_AS_DUNNO:
       /* This should not happen */
-      len = 5;
+      len = 5UL;
       path_expr = (char *)xmalloc(len);
       snprintf(path_expr, len, "????");
+      break;
+	
+    default:
+      /* This should not happen, either */
+      len = 6UL;
+      path_expr = (char *)xmalloc(len);
+      snprintf(path_expr, len, "?????");
+      break;
     }
 
   child->path_expr = path_expr;
@@ -4045,19 +4053,19 @@ cplus_real_type_index_for_fake_child_index(struct type *type,
   switch (prot)
     {
       case v_public:
-        for (i = TYPE_N_BASECLASSES (type); i < TYPE_NFIELDS (type); i++)
+        for (i = TYPE_N_BASECLASSES(type); i < TYPE_NFIELDS(type); i++)
           {
-            /* If we have a virtual table pointer, omit it. */
-            if (TYPE_VPTR_BASETYPE (type) == type
-	        && TYPE_VPTR_FIELDNO (type) == i)
+            /* If we have a virtual table pointer, then omit it: */
+            if ((TYPE_VPTR_BASETYPE(type) == type)
+	        && (TYPE_VPTR_FIELDNO(type) == i))
 	      continue;
-	    /* APPLE LOCAL: Don't include static members in the
+	    /* APPLE LOCAL: Do NOT include static members in the
 	       object printing.  */
-	    if (TYPE_FIELD_STATIC (type, i))
+	    if (TYPE_FIELD_STATIC(type, i))
 	      continue;
 
-            if (!TYPE_FIELD_PROTECTED (type, i)
-                 && !TYPE_FIELD_PRIVATE (type, i))
+            if (!TYPE_FIELD_PROTECTED(type, i)
+                 && !TYPE_FIELD_PRIVATE(type, i))
               {
                 if (num_found == num)
                   {
@@ -4070,18 +4078,18 @@ cplus_real_type_index_for_fake_child_index(struct type *type,
 	  }
 	break;
       case v_protected:
-        for (i = TYPE_N_BASECLASSES (type); i < TYPE_NFIELDS (type); i++)
+        for (i = TYPE_N_BASECLASSES(type); i < TYPE_NFIELDS(type); i++)
           {
-            /* If we have a virtual table pointer, omit it. */
-            if (TYPE_VPTR_BASETYPE (type) == type
-	        && TYPE_VPTR_FIELDNO (type) == i)
+            /* If we have a virtual table pointer, then omit it: */
+            if ((TYPE_VPTR_BASETYPE(type) == type)
+	        && (TYPE_VPTR_FIELDNO(type) == i))
 	      continue;
-	    /* APPLE LOCAL: Don't include static members in the
+	    /* APPLE LOCAL: Do NOT include static members in the
 	       object printing.  */
-	    if (TYPE_FIELD_STATIC (type, i))
+	    if (TYPE_FIELD_STATIC(type, i))
 	      continue;
 
-            if (TYPE_FIELD_PROTECTED (type, i))
+            if (TYPE_FIELD_PROTECTED(type, i))
               {
                 if (num_found == num)
                   {
@@ -4096,11 +4104,11 @@ cplus_real_type_index_for_fake_child_index(struct type *type,
       case v_private:
         for (i = TYPE_N_BASECLASSES(type); i < TYPE_NFIELDS(type); i++)
           {
-            /* If we have a virtual table pointer, omit it. */
+            /* If we have a virtual table pointer, then omit it: */
             if ((TYPE_VPTR_BASETYPE(type) == type)
 	        && (TYPE_VPTR_FIELDNO(type) == i))
 	      continue;
-	    /* APPLE LOCAL: Don't include static members in the
+	    /* APPLE LOCAL: Do NOT include static members in the
 	       object printing.  */
 	    if (TYPE_FIELD_STATIC(type, i))
 	      continue;
@@ -4120,7 +4128,9 @@ cplus_real_type_index_for_fake_child_index(struct type *type,
               }
 	  }
 	break;
-    }
+      default:
+	break;
+    } /* end switch */
 
   if (!foundit)
     return -1;

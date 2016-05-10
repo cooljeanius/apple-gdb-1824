@@ -287,51 +287,56 @@ mem_info_command(const char *args, int from_tty)
 	case MEM_NONE:
 	  printf_filtered("none ");
 	  break;
+	default:
+	  printf_filtered(" ");
+	  break;
 	}
 
       switch (attrib->width)
 	{
 	case MEM_WIDTH_8:
-	  printf_filtered ("8 ");
+	  printf_filtered("8 ");
 	  break;
 	case MEM_WIDTH_16:
-	  printf_filtered ("16 ");
+	  printf_filtered("16 ");
 	  break;
 	case MEM_WIDTH_32:
-	  printf_filtered ("32 ");
+	  printf_filtered("32 ");
 	  break;
 	case MEM_WIDTH_64:
-	  printf_filtered ("64 ");
+	  printf_filtered("64 ");
 	  break;
 	case MEM_WIDTH_UNSPECIFIED:
+	  break;
+	default:
 	  break;
 	}
 
 #if 0
       if (attrib->hwbreak)
-	printf_filtered ("hwbreak");
+	printf_filtered("hwbreak");
       else
-	printf_filtered ("swbreak");
+	printf_filtered("swbreak");
 #endif /* 0 */
 
       if (attrib->cache == 1)
-	printf_filtered ("cache ");
+	printf_filtered("cache ");
       /* APPLE LOCAL: We use -1 to suspend caching of cached regions.  */
       else if (attrib->cache == -1)
-	printf_filtered ("cache temporarily suspended");
+	printf_filtered("cache temporarily suspended");
       else
-	printf_filtered ("nocache ");
+	printf_filtered("nocache ");
 
 #if 0
       if (attrib->verify)
-	printf_filtered ("verify ");
+	printf_filtered("verify ");
       else
-	printf_filtered ("noverify ");
+	printf_filtered("noverify ");
 #endif /* 0 */
 
-      printf_filtered ("\n");
+      printf_filtered("\n");
 
-      gdb_flush (gdb_stdout);
+      gdb_flush(gdb_stdout);
     }
 }
 

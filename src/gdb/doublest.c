@@ -34,6 +34,9 @@
 #include "gdb_string.h"
 #include "gdbtypes.h"
 #include <math.h>		/* ldexp */
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
 
 /* The odds that CHAR_BIT will be anything but 8 are low enough that I am
  * not going to bother with trying to muck around with whether it is
@@ -94,9 +97,9 @@ get_field(const bfd_byte *data, enum floatformat_byteorders order,
   llen = (size_t)len;
 
   /* Move towards the most significant part of the field: */
-  while (cur_bitshift < llen)
+  while ((cur_bitshift < llen) && (cur_bitshift < UINT_MAX))
     {
-      result |= ((unsigned long)*(data + cur_byte) << cur_bitshift);
+      result |= ((unsigned long)(*(data + cur_byte) << cur_bitshift));
       cur_bitshift += FLOATFORMAT_CHAR_BIT;
       switch (order)
 	{
@@ -281,7 +284,7 @@ put_field (unsigned char *data, enum floatformat_byteorders order,
   llen = (size_t)len;
 
   /* Move towards the most significant part of the field: */
-  while (cur_bitshift < llen)
+  while ((cur_bitshift < llen) && (cur_bitshift < UINT_MAX))
     {
       if ((llen - cur_bitshift) < FLOATFORMAT_CHAR_BIT)
 	{
@@ -597,7 +600,8 @@ floatformat_mantissa (const struct floatformat *fmt,
   mant_off += mant_bits;
   mant_bits_left -= mant_bits;
 
-  while (mant_bits_left > 0)
+  while ((mant_bits_left > 0) && (mant_bits_left > INT_MIN)
+	 && (mant_bits_left < INT_MAX))
     {
       mant = get_field(uval, order, fmt->totalsize, mant_off, 32);
 
@@ -974,5 +978,9 @@ _initialize_doublest(void)
   floatformat_ieee_quad[BFD_ENDIAN_LITTLE] = &floatformat_ia64_quad_little;
   floatformat_ieee_quad[BFD_ENDIAN_BIG] = &floatformat_ia64_quad_big;
 }
+
+#ifdef NAN
+# undef NAN
+#endif /* NAN */
 
 /* EOF */

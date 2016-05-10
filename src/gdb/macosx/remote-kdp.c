@@ -916,7 +916,7 @@ kdp_detach_command(const char *args, int from_tty)
   c2.request->disconnect_req.hdr.request = KDP_DISCONNECT;
   c2.request->hdr.key = 0;
   c2.request->hdr.is_reply = 0;
-  c2.request->hdr.seq = seqno;
+  c2.request->hdr.seq = (unsigned char)seqno;
 
   kdp_set_big_endian(&c2);
   kdpret = kdp_transmit_debug(&c2, c2.request);

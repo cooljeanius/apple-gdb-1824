@@ -1152,6 +1152,10 @@ sym_symfile_read(struct objfile *objfile, int mainline)
 
   unsigned long i;
   CORE_ADDR text_section_offset = 0UL;
+  
+  if (mainline == 0) {
+    ; /* ??? */
+  }
 
   CHECK_FATAL(objfile != NULL);
   abfd = objfile->obfd;
@@ -1527,6 +1531,10 @@ sym_dump_command(const char *args, int from_tty)
 
   FILE *f = (FILE *)NULL;
   bfd *abfd = (bfd *)NULL;
+  
+  if (from_tty == 0) {
+    ; /* ??? */
+  }
 
   dont_repeat();
 

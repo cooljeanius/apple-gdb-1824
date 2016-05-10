@@ -445,6 +445,8 @@ kdp_log_packet(kdp_log_function *f, kdp_log_level l, const kdp_pkt_t *p)
                /* Dunno what the right behavior is, but we should at least
                   catch this value and ignore it.  */
           break;
+	default:
+	  break;
         }
     }
   else
@@ -856,14 +858,15 @@ kdp_marshal(kdp_connection *c, kdp_pkt_t *p, unsigned char *s, size_t maxlen,
 
   if (c->bigendian)
     {
-      s[0] = ((p->hdr.request & 0x7f) | (p->hdr.is_reply << 7));
+      s[0] = (unsigned char)((p->hdr.request & 0x7f) | (p->hdr.is_reply << 7));
     }
   else
     {
-      s[0] = (((p->hdr.request & 0x7f) << 1) | (p->hdr.is_reply & 0x1));
+      s[0] = (unsigned char)(((p->hdr.request & 0x7f) << 1)
+			     | (p->hdr.is_reply & 0x1));
     }
   s[1] = p->hdr.seq;
-  write16u((s + 2), len, c->bigendian);
+  write16u((s + 2), (uint16_t)len, c->bigendian);
   write32u((s + 4), p->hdr.key, c->bigendian);
 
   *plen = len;

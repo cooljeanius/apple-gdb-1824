@@ -924,7 +924,9 @@ yylex(void)
         }
       else
 	 return STRING;
-    }
+	
+    default:;
+    } /* end switch */
 
   /* Is it a number?  */
   /* Note:  We have already dealt with the case of the token '.'.

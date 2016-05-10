@@ -440,19 +440,19 @@ print_array_type (struct type *type, struct ui_file *stream, int show,
    STREAM, assuming the VAL_TYPE is the type of the values.  */
 
 static void
-print_choices (struct type *type, int field_num, struct ui_file *stream,
-	       struct type *val_type)
+print_choices(struct type *type, int field_num, struct ui_file *stream,
+	      struct type *val_type)
 {
   int have_output;
   int p;
-  const char *name = TYPE_FIELD_NAME (type, field_num);
+  const char *name = TYPE_FIELD_NAME(type, field_num);
 
   have_output = 0;
 
   /* Skip over leading 'V': NOTE soon to be obsolete.  */
   if (name[0] == 'V')
     {
-      if (!ada_scan_number (name, 1, NULL, &p))
+      if (!ada_scan_number(name, 1, NULL, &p))
 	goto Huh;
     }
   else
@@ -468,7 +468,7 @@ print_choices (struct type *type, int field_num, struct ui_file *stream,
 	case 'R':
 	case 'O':
 	  if (have_output)
-	    fprintf_filtered (stream, " | ");
+	    fprintf_filtered(stream, " | ");
 	  have_output = 1;
 	  break;
 	}
@@ -478,31 +478,34 @@ print_choices (struct type *type, int field_num, struct ui_file *stream,
 	case 'S':
 	  {
 	    LONGEST W;
-	    if (!ada_scan_number (name, p + 1, &W, &p))
+	    if (!ada_scan_number(name, (p + 1), &W, &p))
 	      goto Huh;
-	    ada_print_scalar (val_type, W, stream);
+	    ada_print_scalar(val_type, W, stream);
 	    break;
 	  }
 	case 'R':
 	  {
 	    LONGEST L, U;
-	    if (!ada_scan_number (name, p + 1, &L, &p)
-		|| name[p] != 'T' || !ada_scan_number (name, p + 1, &U, &p))
+	    if (!ada_scan_number(name, (p + 1), &L, &p)
+		|| (name[p] != 'T') || !ada_scan_number(name, (p + 1), &U, &p))
 	      goto Huh;
-	    ada_print_scalar (val_type, L, stream);
-	    fprintf_filtered (stream, " .. ");
-	    ada_print_scalar (val_type, U, stream);
+	    ada_print_scalar(val_type, L, stream);
+	    fprintf_filtered(stream, " .. ");
+	    ada_print_scalar(val_type, U, stream);
 	    break;
 	  }
 	case 'O':
-	  fprintf_filtered (stream, "others");
+	  fprintf_filtered(stream, "others");
 	  p += 1;
 	  break;
-	}
+
+	default:
+	  break;
+	} /* end switch */
     }
 
 Huh:
-  fprintf_filtered (stream, "??");
+  fprintf_filtered(stream, "??");
 
 }
 

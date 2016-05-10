@@ -40,6 +40,9 @@ Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA */
 #include "defs.h"
 #include "gdb_string.h"
 #include <ctype.h>
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
 #include "expression.h"
 #include "value.h"
 #include "parser-defs.h"
@@ -733,7 +736,7 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 	return ERROR;
       /* See if it has `f' or `d' suffix (float or double).  */
 
-      c = tolower (p[len - 1]);
+      c = (char)tolower(p[len - 1]);
 
       if (c == 'f' || c == 'F')
 	putithere->typed_val_float.type = builtin_type_float;
@@ -1081,7 +1084,7 @@ yylex(void)
 	      {
 		continue;
 	      }
-	    tempbuf[tempbufindex++] = c;
+	    tempbuf[tempbufindex++] = (char)c;
 	    break;
 	  default:
 	    tempbuf[tempbufindex++] = *tokptr++;
@@ -1097,7 +1100,9 @@ yylex(void)
       yylval.sval.length = tempbufindex;
       lexptr = (char *)tokptr;
       return (STRING_LITERAL);
-    }
+
+    default:;
+    } /* end switch */
 
   if (!(c == '_' || c == '$'
 	|| (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')))
@@ -1457,7 +1462,7 @@ insert_exp(int pos, struct expression *newexpr)
   {
     int i;
 
-    for (i = (expout_ptr - 1); i >= pos; i--)
+    for (i = (expout_ptr - 1); (i >= pos) && (i > INT_MIN); i--)
       expout->elts[i + newlen] = expout->elts[i];
   }
 

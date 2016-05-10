@@ -2216,6 +2216,8 @@ locval(struct dieinfo *dip)
 	  stack[stacki - 1] += stack[stacki];
 	  stacki--;
 	  break;
+	default:
+	  break;
 	}
       /* Enforce maximum stack depth of 63 to avoid ++stacki writing
          outside of the given size. Also enforce minimum > 0.
@@ -2503,9 +2505,8 @@ add_enum_psymbol (struct dieinfo *dip, struct objfile *objfile)
 
    The caller must ensure that the DIE has a valid name attribute.
  */
-
 static void
-add_partial_symbol (struct dieinfo *dip, struct objfile *objfile)
+add_partial_symbol(struct dieinfo *dip, struct objfile *objfile)
 {
   switch (dip->die_tag)
     {
@@ -2559,11 +2560,13 @@ add_partial_symbol (struct dieinfo *dip, struct objfile *objfile)
 			       0, 0, cu_language, objfile);
 	}
       break;
+    default:
+      break;
     }
 }
+
 /* *INDENT-OFF* */
 /*
-
 LOCAL FUNCTION
 
 	scan_partial_symbols -- scan DIE's within a single compilation unit
@@ -2626,9 +2629,6 @@ NOTES
 	to an external.
  */
 /* *INDENT-ON* */
-
-
-
 static void
 scan_partial_symbols (char *thisdie, char *enddie, struct objfile *objfile)
 {
@@ -2701,7 +2701,9 @@ scan_partial_symbols (char *thisdie, char *enddie, struct objfile *objfile)
 		}
 	      add_enum_psymbol (&di, objfile);
 	      break;
-	    }
+	    default:
+	      break;
+	    } /* end switch */
 	}
       thisdie = nextdie;
     }
@@ -3343,6 +3345,9 @@ decode_fund_type (unsigned int fundtype)
 
     case FT_ext_prec_complex:
       typep = dwarf_fundamental_type (current_objfile, FT_EXT_PREC_COMPLEX);
+      break;
+	
+    default:
       break;
     }
 

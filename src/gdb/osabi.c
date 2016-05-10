@@ -581,6 +581,9 @@ generic_elf_osabi_sniffer (bfd *abfd)
 			    generic_elf_osabi_sniff_abi_tag_sections,
 			    &osabi);
       break;
+
+    default:
+      break;
     }
 
   if (osabi == GDB_OSABI_UNKNOWN)

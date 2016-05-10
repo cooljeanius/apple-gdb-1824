@@ -414,6 +414,8 @@ i386_macosx_dr_set(int regnum, uint64_t value)
             case 7:
               dr_regs.uds.ds64.__dr7 = value;
               break;
+	    default:
+	      break;
             }
 
           ret = thread_set_state(current_thread, x86_DEBUG_STATE,
@@ -469,6 +471,8 @@ i386_macosx_dr_set(int regnum, uint64_t value)
             case 7:
               dr_regs.uds.ds32.__dr7 = val_32;
               break;
+	    default:
+	      break;
             }
 
           ret = thread_set_state(current_thread, x86_DEBUG_STATE,

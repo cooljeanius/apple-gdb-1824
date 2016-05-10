@@ -163,33 +163,39 @@ print_i387_control_word (unsigned int control, struct ui_file *file)
   switch ((control >> 8) & 3)
     {
     case 0:
-      fputs_filtered ("Single Precision (24-bits)\n", file);
+      fputs_filtered("Single Precision (24-bits)\n", file);
       break;
     case 1:
-      fputs_filtered ("Reserved\n", file);
+      fputs_filtered("Reserved\n", file);
       break;
     case 2:
-      fputs_filtered ("Double Precision (53-bits)\n", file);
+      fputs_filtered("Double Precision (53-bits)\n", file);
       break;
     case 3:
-      fputs_filtered ("Extended Precision (64-bits)\n", file);
+      fputs_filtered("Extended Precision (64-bits)\n", file);
+      break;
+    default:
+      fputs_filtered(" ", file);
       break;
     }
 
-  fputs_filtered ("                       RC: ", file);
+  fputs_filtered("                       RC: ", file);
   switch ((control >> 10) & 3)
     {
     case 0:
-      fputs_filtered ("Round to nearest\n", file);
+      fputs_filtered("Round to nearest\n", file);
       break;
     case 1:
-      fputs_filtered ("Round down\n", file);
+      fputs_filtered("Round down\n", file);
       break;
     case 2:
-      fputs_filtered ("Round up\n", file);
+      fputs_filtered("Round up\n", file);
       break;
     case 3:
-      fputs_filtered ("Round toward zero\n", file);
+      fputs_filtered("Round toward zero\n", file);
+      break;
+    default:
+      fputs_filtered(" ", file);
       break;
     }
 }
@@ -253,6 +259,9 @@ i387_print_float_info(struct gdbarch *gdbarch, struct ui_file *file,
 	  break;
 	case 3:
 	  fputs_filtered("Empty   ", file);
+	  break;
+	default:
+	  fputs_filtered(" ", file);
 	  break;
 	}
 
@@ -703,7 +712,7 @@ i387_collect_fxsave(const struct regcache *regcache, int regnum, void *fxsave)
 		unsigned short ftag;
 		int fpreg;
 
-		ftag = (buf[1] << 8) | buf[0];
+		ftag = (unsigned short)((buf[1] << 8) | buf[0]);
 		buf[0] = 0;
 		buf[1] = 0;
 

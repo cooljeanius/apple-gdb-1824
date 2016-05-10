@@ -223,7 +223,7 @@ kdp_transaction(kdp_connection *c,
   CHECK_FATAL(response != NULL);
   CHECK_FATAL(name != NULL);
 
-  request->hdr.seq = c->seqno;
+  request->hdr.seq = (unsigned char)c->seqno;
   request->hdr.key = c->session_key;
   request->hdr.is_reply = 0;
 

@@ -1783,7 +1783,9 @@ yylex (void)
       /* These cannot occur in C++ names.  */
       yyerror ("unexpected string literal");
       return ERROR;
-    }
+
+    default:;
+    } /* end switch */
 
   if (!(c == '_' || c == '$' || ISALPHA (c)))
     {

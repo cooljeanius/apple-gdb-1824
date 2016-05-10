@@ -365,7 +365,7 @@ dwarf2_evaluate_loc_desc(struct symbol *var, struct frame_info *frame,
 	      bfd_byte regval[MAX_REGISTER_SIZE];
 	      int gdb_regnum = DWARF2_REG_TO_REGNUM((int)p->value);
 	      get_frame_register(frame, gdb_regnum, regval);
-	      memcpy((contents + offset), regval, p->size);
+	      memcpy((contents + offset), regval, (size_t)p->size);
 	    }
 	  else /* In memory?  */
 	    {
@@ -558,7 +558,8 @@ locexpr_read_variable(struct symbol *symbol, struct frame_info *frame)
     (struct dwarf2_address_translation *)SYMBOL_LOCATION_BATON(symbol);
   struct value *val;
   val = dwarf2_evaluate_loc_desc(symbol, frame, dlbaton->data,
-                                 dlbaton->size, dlbaton->objfile);
+                                 (unsigned short)dlbaton->size,
+				 dlbaton->objfile);
 
   return val;
 }
@@ -569,7 +570,8 @@ locexpr_read_needs_frame(struct symbol *symbol)
 {
   struct dwarf2_address_translation *dlbaton =
     (struct dwarf2_address_translation *)SYMBOL_LOCATION_BATON(symbol);
-  return dwarf2_loc_desc_needs_frame(dlbaton->data, dlbaton->size);
+  return dwarf2_loc_desc_needs_frame(dlbaton->data,
+				     (unsigned short)dlbaton->size);
 }
 
 /* Print a natural-language description of SYMBOL to STREAM: */
@@ -700,7 +702,7 @@ loclist_read_variable(struct symbol *symbol, struct frame_info *frame)
       set_value_optimized_out(val, opt_evicted);
     }
   else
-    val = dwarf2_evaluate_loc_desc(symbol, frame, data, size,
+    val = dwarf2_evaluate_loc_desc(symbol, frame, data, (unsigned short)size,
 				   dlbaton->objfile);
 
   return val;

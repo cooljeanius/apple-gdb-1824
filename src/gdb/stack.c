@@ -27,6 +27,9 @@
 #else
 # include "safe-ctype.h"
 #endif /* HAVE_CTYPE_H */
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
 #include "gdb_string.h"
 #include "value.h"
 #include "symtab.h"
@@ -1540,7 +1543,7 @@ backtrace_command(const char *arg, int from_tty)
 	      else
 		{
 		  memset((void *)argPtr, 0, (totArgLen + 1));
-		  for (i = 0; (i < (argc + 1)); i++)
+		  for (i = 0; (i < (argc + 1)) && (i < INT_MAX); i++)
 		    {
 		      if (i != argIndicatingFullTrace)
 			{

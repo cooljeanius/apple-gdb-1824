@@ -33,9 +33,10 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADER([config.h])
 AM_MAINTAINER_MODE
 
-export APPLE_MAINT=""
+## Oops I had this backwards at first:
+export APPLE_MAINT='#'
 if test "x${APPLE_INTERNAL_DIR}" = "x/AppleInternal"; then
-  test -d "${APPLE_INTERNAL_DIR}" && export APPLE_MAINT='#'
+  test -d "${APPLE_INTERNAL_DIR}" && export APPLE_MAINT=""
 fi
 AC_SUBST([APPLE_MAINT])dnl
 
@@ -3005,12 +3006,13 @@ AC_SUBST([TARGET_SYSTEM_ROOT_DEFINE])dnl
 # gdb/doc/gdbint.texinfo.
 build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wparentheses -Wpointer-arith -Wchar-subscripts \
--Wno-unused -Wunused-value -Wunused-label -Wunused-result \
--Wunused-variable -Wunused-but-set-variable -Wunused-function \
--Wempty-body -Wmissing-declarations -Wignored-qualifiers \
--Wmissing-format-attribute -Waddress -Wattributes \
--Wswitch -Wclobbered -Wcoverage-mismatch -Wdiv-by-zero \
--Wdouble-promotion -Wfree-nonheap-object -Wsign-compare -Wtype-limits \
+-Wunused-value -Wunused-label -Wunused-result -Wunused-local-typedefs  \
+-Wunused-variable -Wunused-but-set-variable -Wunused-but-set-parameter \
+-Wunused-function -Wempty-body -Wmissing-declarations \
+-Wignored-qualifiers -Wmissing-format-attribute -Waddress -Wattributes \
+-Wignored-attributes -Wswitch -Wswitch-default -Wclobbered \
+-Wcoverage-mismatch -Wdiv-by-zero -Wdouble-promotion \
+-Wfree-nonheap-object -Wsign-compare -Wtype-limits \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
 -Wmissing-include-dirs -Woverflow -Woverlength-strings -Wpragmas \
 -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
@@ -3020,7 +3022,8 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wsizeof-array-argument -Wswitch-bool -Wshift-count-negative \
 -Wshift-count-overflow -Wshift-negative-value -Wshift-overflow=2 \
 -Wmisleading-indentation -Wlto-type-mismatch -Wtautological-compare \
--Wduplicated-cond -Wwrite-strings -Wenum-compare -Wnonnull-compare"
+-Wduplicated-cond -Wwrite-strings -Wenum-compare -Wnonnull-compare \
+-Wdangling-else -Wduplicate-decl-specifier -Wmemset-elt-size"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -3031,7 +3034,8 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Winherited-variadic-ctor -Winvalid-offsetof -Wliteral-suffix -Wnoexcept \
 -Wnon-template-friend -Wnon-virtual-dtor -Wreorder -Wstrict-null-sentinel \
 -Wmultiple-inheritance -Wvirtual-inheritance -Wpmf-conversions \
--Wtemplates -Wvirtual-move-assign -Wconversion-null -Weffc++"
+-Wtemplates -Wvirtual-move-assign -Wconversion-null -Weffc++ \
+-Wsized-deallocation -Wplacement-new=2"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
@@ -3048,7 +3052,7 @@ if test "x${gdb_cv_c_long_long}" != "xyes"; then
   build_warnings="${build_warnings} -Wlong-long"
 fi
 # similarly with VLAs:
-if test "x${ac_cv_c_vararrays}" != "xyes"; then
+if test "x${ac_cv_c_vararrays}" != "xyes" || test "x${enable_build_with_cxx}" = "xyes"; then
   build_warnings="${build_warnings} -Wvla"
 fi
 
@@ -3100,9 +3104,10 @@ esac
 
 # clang-specific warnings:
 if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
-  build_warnings="${build_warnings} -Wgcc-compat -Wasm -Wdangling-else \
--Wunneeded-internal-declaration -Wstring-plus-int -Wstring-conversion \
--Wbool-conversion -Wconstant-logical-operand"
+  build_warnings="${build_warnings} -Wgcc-compat -Wasm \
+-Wmissing-variable-declarations -Wunneeded-internal-declaration \
+-Wstring-plus-int -Wstring-conversion -Wbool-conversion \
+-Wconstant-logical-operand -Wunreachable-code-break"
   ## mig typechecks cause paramaters that would otherwise be unused to be
   ## used, triggering this:
   if test "x${MIG_CHECKING}" = "x"; then
@@ -3170,7 +3175,6 @@ fi
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
 #  * -Wundef (only if we can figure out how to fix the issue with caddr_t)
 #  * -Wunused-macros (if we also add back -Wundef as per above)
-#  * -Wunused-local-typedefs (`mig` generates code that triggers this)
 #  * -Wunsafe-loop-optimizations (lex/yacc generate code that triggers it)
 #  * -Waggregate-return (too noisy and hard to avoid)
 #  * -Wformat-signedness (too noisy)
@@ -3198,6 +3202,7 @@ fi
 #  * -Wnested-externs (if it gets redundant with -Wimplicit again)
 #  * -Wtype-limits (often triggered on purpose, so okay to just ignore it)
 #  * -Wwrite-strings (in case all the const-ifying gets to be too much)
+#  * -Wunused-local-typedefs (`mig` used to generate code triggering this)
 # Up for debate in some other way:
 #  * -Wstrict-overflow (i.e., could change the value assigned to it. We use
 #    "1" now because that is the default for "-Wall", but "2" is the
@@ -3213,7 +3218,6 @@ fi
 #  * -Wunused-parameter (despite the existence of clang's
 #    -Wused-but-marked-unused flag, upstream still insists on leaving this
 #    one out, presumably because gcc does not support the other one yet...)
-#  * -Wunused-but-set-parameter (likewise)
 #  * -Wall (contains -Wunused-parameter)
 AC_ARG_ENABLE([build-warnings],
 [AS_HELP_STRING([--enable-build-warnings],
@@ -3277,7 +3281,7 @@ then
                                BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
 	    CFLAGS="${saved_CFLAGS}"
             ;;
-          -Wformat-nonliteral|-Wformat-signedness|-Wformat-y2k)
+          -Wformat-nonliteral|-Wformat-signedness|-Wformat-y2k|-Wformat-security)
             ## (These would be ignored without also using -Wformat)
 	    saved_CFLAGS="${CFLAGS}"
 	    CFLAGS="${CFLAGS} ${w} -Werror -Wformat"

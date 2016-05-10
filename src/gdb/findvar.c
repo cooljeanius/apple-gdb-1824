@@ -376,12 +376,14 @@ address_to_signed_pointer (struct type *type, gdb_byte *buf, CORE_ADDR addr)
    up caring what frame it is being evaluated relative to?  SYM must
    be non-NULL.  */
 int
-symbol_read_needs_frame (struct symbol *sym)
+symbol_read_needs_frame(struct symbol *sym)
 {
-  switch (SYMBOL_CLASS (sym))
+  switch (SYMBOL_CLASS(sym))
     {
       /* All cases listed explicitly so that gcc -Wall will detect it if
          we failed to consider one.  */
+      /* But I added a default for -Wswitch-default; you can use -Wswitch-enum
+       * if you still want gcc to notice if we fail to consider a case.  */
     case LOC_COMPUTED:
     case LOC_COMPUTED_ARG:
       /* FIXME: cagney/2004-01-26: It should be possible to
@@ -389,7 +391,7 @@ symbol_read_needs_frame (struct symbol *sym)
 	 Unfortunately DWARF 2 stores the frame-base (instead of the
 	 function) location in a function's symbol.  Oops!  For the
 	 moment enable this when/where applicable.  */
-      return SYMBOL_OPS (sym)->read_needs_frame (sym);
+      return SYMBOL_OPS(sym)->read_needs_frame(sym);
 
     case LOC_REGISTER:
     case LOC_ARG:
@@ -419,6 +421,8 @@ symbol_read_needs_frame (struct symbol *sym)
     case LOC_UNRESOLVED:
     case LOC_OPTIMIZED_OUT:
       return 0;
+    default:
+      break;
     }
   return 1;
 }

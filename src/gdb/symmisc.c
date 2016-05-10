@@ -152,6 +152,9 @@ free_symtab (struct symtab *s)
       if (LINETABLE (s))
 	xfree (LINETABLE (s));
       break;
+
+    default:
+      break;
     }
 
   /* If there is a single block of memory to free, free it.  */

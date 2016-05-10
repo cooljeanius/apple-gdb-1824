@@ -1447,6 +1447,8 @@ FETCH_ARGUMENT(int i)
           case 2:
             reg = AMD64_RDX_REGNUM;
             break;
+	  default:
+	    break;
         }
       return read_register(reg);
     }
@@ -3687,13 +3689,14 @@ dyld_cache_symfile_command(const char *args ATTRIBUTE_UNUSED,
   error(_("Cached symfiles are not supported on this configuration of GDB."));
 }
 
-
+/* */
 void
 update_section_tables(void)
 {
   update_section_tables_dyld(&macosx_dyld_status.current_info);
 }
 
+/* */
 void
 update_section_tables_dyld(struct dyld_objfile_info *s)
 {
@@ -3985,6 +3988,7 @@ set_shlib_path_substitutions_cmd(const char *args, int from_tty,
     }
 }
 
+/* */
 static void
 show_shlib_path_substitutions_cmd(struct ui_file *file, int from_tty,
                                   struct cmd_list_element *c,

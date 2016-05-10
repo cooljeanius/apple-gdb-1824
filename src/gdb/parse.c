@@ -1234,7 +1234,7 @@ pop_type_int (void)
 /* Pop the type stack and return the type which corresponds to FOLLOW_TYPE
    as modified by all the stuff on the stack.  */
 struct type *
-follow_types (struct type *follow_type)
+follow_types(struct type *follow_type)
 {
   int done = 0;
   int make_const = 0;
@@ -1244,23 +1244,23 @@ follow_types (struct type *follow_type)
   struct type *range_type;
 
   while (!done)
-    switch (pop_type ())
+    switch (pop_type())
       {
       case tp_end:
 	done = 1;
 	if (make_const)
-	  follow_type = make_cvr_type (make_const,
-				      TYPE_VOLATILE (follow_type),
-				      TYPE_RESTRICT (follow_type),
+	  follow_type = make_cvr_type(make_const,
+				      TYPE_VOLATILE(follow_type),
+				      TYPE_RESTRICT(follow_type),
 				      follow_type, 0);
 	if (make_volatile)
-	  follow_type = make_cvr_type (TYPE_CONST (follow_type),
+	  follow_type = make_cvr_type(TYPE_CONST(follow_type),
 				      make_volatile,
-				      TYPE_RESTRICT (follow_type),
+				      TYPE_RESTRICT(follow_type),
 				      follow_type, 0);
 	if (make_addr_space)
-	  follow_type = make_type_with_address_space (follow_type,
-						      make_addr_space);
+	  follow_type = make_type_with_address_space(follow_type,
+						     make_addr_space);
 	make_const = make_volatile = 0;
 	make_addr_space = 0;
 	break;
@@ -1271,63 +1271,65 @@ follow_types (struct type *follow_type)
 	make_volatile = 1;
 	break;
       case tp_space_identifier:
-	make_addr_space = pop_type_int ();
+	make_addr_space = pop_type_int();
 	break;
       case tp_pointer:
-	follow_type = lookup_pointer_type (follow_type);
+	follow_type = lookup_pointer_type(follow_type);
 	if (make_const)
-	  follow_type = make_cvr_type (make_const,
-				      TYPE_VOLATILE (follow_type),
-				      TYPE_RESTRICT (follow_type),
+	  follow_type = make_cvr_type(make_const,
+				      TYPE_VOLATILE(follow_type),
+				      TYPE_RESTRICT(follow_type),
 				      follow_type, 0);
 	if (make_volatile)
-	  follow_type = make_cvr_type (TYPE_CONST (follow_type),
+	  follow_type = make_cvr_type(TYPE_CONST(follow_type),
 				      make_volatile,
-				      TYPE_RESTRICT (follow_type),
+				      TYPE_RESTRICT(follow_type),
 				      follow_type, 0);
 	if (make_addr_space)
-	  follow_type = make_type_with_address_space (follow_type,
-						      make_addr_space);
+	  follow_type = make_type_with_address_space(follow_type,
+						     make_addr_space);
 	make_const = make_volatile = 0;
 	make_addr_space = 0;
 	break;
       case tp_reference:
-	follow_type = lookup_reference_type (follow_type);
+	follow_type = lookup_reference_type(follow_type);
 	if (make_const)
-	  follow_type = make_cvr_type (make_const,
-				      TYPE_VOLATILE (follow_type),
-				      TYPE_RESTRICT (follow_type),
+	  follow_type = make_cvr_type(make_const,
+				      TYPE_VOLATILE(follow_type),
+				      TYPE_RESTRICT(follow_type),
 				      follow_type, 0);
 	if (make_volatile)
-	  follow_type = make_cvr_type (TYPE_CONST (follow_type),
+	  follow_type = make_cvr_type(TYPE_CONST(follow_type),
 				      make_volatile,
-				      TYPE_RESTRICT (follow_type),
+				      TYPE_RESTRICT(follow_type),
 				      follow_type, 0);
 	if (make_addr_space)
-	  follow_type = make_type_with_address_space (follow_type,
-						      make_addr_space);
+	  follow_type = make_type_with_address_space(follow_type,
+						     make_addr_space);
 	make_const = make_volatile = 0;
 	make_addr_space = 0;
 	break;
       case tp_array:
-	array_size = pop_type_int ();
+	array_size = pop_type_int();
 	/* FIXME-type-allocation: need a way to free this type when we are
 	   done with it.  */
 	range_type =
-	  create_range_type ((struct type *) NULL,
-			     builtin_type_int, 0,
-			     array_size >= 0 ? array_size - 1 : 0);
+	  create_range_type((struct type *)NULL,
+			    builtin_type_int, 0,
+			    ((array_size >= 0) ? (array_size - 1) : 0));
 	follow_type =
-	  create_array_type ((struct type *) NULL,
-			     follow_type, range_type);
+	  create_array_type((struct type *)NULL,
+			    follow_type, range_type);
 	if (array_size < 0)
-	  TYPE_ARRAY_UPPER_BOUND_TYPE (follow_type)
+	  TYPE_ARRAY_UPPER_BOUND_TYPE(follow_type)
 	    = BOUND_CANNOT_BE_DETERMINED;
 	break;
       case tp_function:
 	/* FIXME-type-allocation: need a way to free this type when we are
 	   done with it.  */
-	follow_type = lookup_function_type (follow_type);
+	follow_type = lookup_function_type(follow_type);
+	break;
+      default:
 	break;
       }
   return follow_type;

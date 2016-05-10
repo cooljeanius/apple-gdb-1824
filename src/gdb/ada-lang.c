@@ -825,7 +825,7 @@ ada_fold_name(const char *name)
   else if (fold_buffer != NULL)
     {
       size_t i;
-      for (i = 0UL; i <= len; i += 1UL)
+      for (i = 0UL; (i <= len) && (i < SIZE_T_MAX); i += 1UL)
         fold_buffer[i] = (char)tolower(name[i]);
     }
 
@@ -7502,7 +7502,7 @@ ada_evaluate_subexp(struct type *expect_type, struct expression *exp,
                   SYMBOL_PRINT_NAME(exp->elts[pc + 5].symbol));
           else
             {
-              for (tem = 0; tem <= nargs; tem += 1)
+              for (tem = 0; (tem <= nargs) && (tem < INT_MAX); tem += 1)
                 argvec[tem] = evaluate_subexp(NULL_TYPE, exp, pos, noside);
               argvec[tem] = 0;
 

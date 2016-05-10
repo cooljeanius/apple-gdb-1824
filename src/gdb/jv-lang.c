@@ -641,8 +641,9 @@ is_object_type(struct type *type)
   return 0;
 }
 
+/* */
 struct type *
-java_primitive_type (int signature)
+java_primitive_type(int signature)
 {
   switch (signature)
     {
@@ -664,8 +665,10 @@ java_primitive_type (int signature)
       return java_double_type;
     case 'V':
       return java_void_type;
+    default:
+      break;
     }
-  error (_("unknown signature '%c' for primitive type"), (char) signature);
+  error(_("unknown signature '%c' for primitive type"), (char)signature);
 }
 
 /* If name[0 .. namelen-1] is the name of a primitive Java type,
@@ -677,37 +680,39 @@ java_primitive_type_from_name(const char *name, int namelen)
   switch (name[0])
     {
     case 'b':
-      if (namelen == 4 && memcmp (name, "byte", 4) == 0)
+      if ((namelen == 4) && (memcmp(name, "byte", 4) == 0))
 	return java_byte_type;
-      if (namelen == 7 && memcmp (name, "boolean", 7) == 0)
+      if ((namelen == 7) && (memcmp(name, "boolean", 7) == 0))
 	return java_boolean_type;
       break;
     case 'c':
-      if (namelen == 4 && memcmp (name, "char", 4) == 0)
+      if ((namelen == 4) && (memcmp(name, "char", 4) == 0))
 	return java_char_type;
     case 'd':
-      if (namelen == 6 && memcmp (name, "double", 6) == 0)
+      if ((namelen == 6) && (memcmp(name, "double", 6) == 0))
 	return java_double_type;
       break;
     case 'f':
-      if (namelen == 5 && memcmp (name, "float", 5) == 0)
+      if ((namelen == 5) && (memcmp(name, "float", 5) == 0))
 	return java_float_type;
       break;
     case 'i':
-      if (namelen == 3 && memcmp (name, "int", 3) == 0)
+      if ((namelen == 3) && (memcmp(name, "int", 3) == 0))
 	return java_int_type;
       break;
     case 'l':
-      if (namelen == 4 && memcmp (name, "long", 4) == 0)
+      if ((namelen == 4) && (memcmp(name, "long", 4) == 0))
 	return java_long_type;
       break;
     case 's':
-      if (namelen == 5 && memcmp (name, "short", 5) == 0)
+      if ((namelen == 5) && (memcmp(name, "short", 5) == 0))
 	return java_short_type;
       break;
     case 'v':
-      if (namelen == 4 && memcmp (name, "void", 4) == 0)
+      if ((namelen == 4) && (memcmp(name, "void", 4) == 0))
 	return java_void_type;
+      break;
+    default:
       break;
     }
   return NULL;
@@ -988,6 +993,8 @@ java_create_fundamental_type(struct objfile *objfile, int jtypeid)
     case FT_LONG:
     case FT_SIGNED_LONG:
       return java_long_type;
+    default:
+      break;
     }
   return c_create_fundamental_type(objfile, jtypeid);
 }

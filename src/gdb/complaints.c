@@ -228,6 +228,8 @@ vcomplaint(struct complaints **c, const char *file, int line, const char *fmt,
     case SHORT_FIRST_MESSAGE:
       complaints->series = SUBSEQUENT_MESSAGE;
       break;
+    default:
+      break;
     }
 
   /* If GDB dumps core, we'd like to see the complaints first.

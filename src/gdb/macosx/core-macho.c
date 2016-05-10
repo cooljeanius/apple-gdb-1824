@@ -733,7 +733,10 @@ core_cache_section_registers(asection *sec, int flavour,
     case BFD_MACH_O_i386_EXCEPTION_STATE:
     case BFD_MACH_O_x86_EXCEPTION_STATE64:
       break;
-    }
+	
+    default:
+      break;
+    } /* end switch */
 #elif defined(TARGET_ARM)
   switch (flavour)
     {
