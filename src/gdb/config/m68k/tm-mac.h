@@ -21,6 +21,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#ifndef BELIEVE_PCC_PROMOTION
+# define BELIEVE_PCC_PROMOTION 1
+#else
+# ifndef HAVE_BELIEVE_PCC_PROMOTION
+#  define HAVE_BELIEVE_PCC_PROMOTION 1
+# endif /* !HAVE_BELIEVE_PCC_PROMOTION */
+#endif /* !BELIEVE_PCC_PROMOTION */
+
 #include "m68k/tm-m68k.h"
 
 /* EOF */

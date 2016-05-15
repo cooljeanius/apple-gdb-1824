@@ -65,7 +65,7 @@ struct coff_symfile_info
 
 /* Translate an external name string into a user-visible name.  */
 #define	EXTERNAL_NAME(string, abfd) \
-	(string[0] == bfd_get_symbol_leading_char(abfd)? string+1: string)
+  ((string[0] == bfd_get_symbol_leading_char(abfd)) ? ((string) + 1) : (string))
 
 /* To be an sdb debug type, type must have at least a basic or primary
    derived type.  Using this rather than checking against T_NULL is
@@ -98,10 +98,10 @@ static char *temp_aux;
    internally to the BTYPE, ISPTR, ISFCN, ISARY, ISTAG, and DECREF
    macros from include/coff/internal.h .  */
 
-static unsigned local_n_btmask;
-static unsigned local_n_btshft;
-static unsigned local_n_tmask;
-static unsigned local_n_tshift;
+static unsigned int local_n_btmask;
+static unsigned int local_n_btshft;
+static unsigned int local_n_tmask;
+static unsigned int local_n_tshift;
 
 #define	N_BTMASK	local_n_btmask
 #define	N_BTSHFT	local_n_btshft
@@ -113,9 +113,9 @@ static unsigned local_n_tshift;
    translate the data in them, into `internal_xxx' structs in the right
    byte order, alignment, etc.)  */
 
-static unsigned local_linesz;
-static unsigned local_symesz;
-static unsigned local_auxesz;
+static unsigned int local_linesz;
+static unsigned int local_symesz;
+static unsigned int local_auxesz;
 
 /* This is set if this is a PE format file.  */
 
@@ -131,8 +131,8 @@ static struct symbol *opaque_type_chain[HASHSIZE];
 struct coff_symbol
   {
     char *c_name;
-    int c_symnum;		/* symbol number of this entry */
-    int c_naux;			/* 0 if syment only, 1 if syment + auxent, etc */
+    int c_symnum;	    /* symbol number of this entry */
+    int c_naux;		    /* 0 if syment only, 1 if syment + auxent, etc */
     long c_value;
     int c_sclass;
     int c_secnum;
@@ -1593,7 +1593,7 @@ process_coff_symbol (struct coff_symbol *cs,
 	case C_ARG:
 	  SYMBOL_CLASS (sym) = LOC_ARG;
 	  add_symbol_to_list (sym, &local_symbols);
-#if !defined(BELIEVE_PCC_PROMOTION) || !BELIEVE_PCC_PROMOTION
+#if !defined(BELIEVE_PCC_PROMOTION) || (defined(BELIEVE_PCC_PROMOTION) && !BELIEVE_PCC_PROMOTION)
 	  if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
 	    {
 	      /* If PCC says a parameter is a short or a char,
@@ -1618,7 +1618,7 @@ process_coff_symbol (struct coff_symbol *cs,
 	  SYMBOL_CLASS (sym) = LOC_REGPARM;
 	  SYMBOL_VALUE (sym) = SDB_REG_TO_REGNUM (cs->c_value);
 	  add_symbol_to_list (sym, &local_symbols);
-#if !defined(BELIEVE_PCC_PROMOTION) || !BELIEVE_PCC_PROMOTION
+#if !defined(BELIEVE_PCC_PROMOTION) || (defined(BELIEVE_PCC_PROMOTION) && !BELIEVE_PCC_PROMOTION)
 	  /* FIXME:  This should retain the current type, since it's just
 	     a register value.  gnu@adobe, 26Feb93 */
 	  {

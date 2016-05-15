@@ -125,6 +125,7 @@ maintainer-clean-local: distclean-local
 distclean-local: clean-local
 	rm -f Makefile Makefile_orig zlib.pc configure.log autoscan.log
 	rm -rf autom4te.cache || rmdir autom4te.cache
+	rm -rf ztest*.dSYM || rmdir ztest*.dSYM
 	-if test -e zlib.xcodeproj; then (rm -rf build || rmdir build); fi
 	-if test -e contrib/perl/Compress-Raw-Zlib-2.063/Makefile; then (cd contrib/perl/Compress-Raw-Zlib-2.063 && make distclean); fi
 	-@rm -f .DS_Store contrib/.DS_Store

@@ -20575,6 +20575,8 @@ ac_config_files="$ac_config_files Makefile Makefile_orig"
 
 ac_config_commands="$ac_config_commands original"
 
+ac_config_commands="$ac_config_commands cleanup"
+
 
 
 subdirs="$subdirs contrib/minizip"
@@ -21733,6 +21735,7 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "Makefile_orig") CONFIG_FILES="$CONFIG_FILES Makefile_orig" ;;
     "original") CONFIG_COMMANDS="$CONFIG_COMMANDS original" ;;
+    "cleanup") CONFIG_COMMANDS="$CONFIG_COMMANDS cleanup" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -23147,6 +23150,9 @@ _LT_EOF
 if test ! -e Makefile.am || test -e Makefile_orig.in; then
   (test -x configure.sh && sh configure.sh) || echo "No original script"
 fi
+ ;;
+    "cleanup":C)
+rm -rf ztest*.dSYM || rmdir ztest*.dSYM || echo "No ztest junk to clean"
  ;;
 
   esac

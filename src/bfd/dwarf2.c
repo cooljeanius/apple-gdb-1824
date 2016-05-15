@@ -994,7 +994,7 @@ decode_line_info(struct comp_unit *unit, struct dwarf2_debug *stash)
   offset_size = 4;
   if (lh.total_length == 0xffffffff)
     {
-      lh.total_length = read_8_bytes(abfd, line_ptr);
+      lh.total_length = (bfd_vma)read_8_bytes(abfd, line_ptr);
       line_ptr += 8;
       offset_size = 8;
     }
@@ -1011,7 +1011,7 @@ decode_line_info(struct comp_unit *unit, struct dwarf2_debug *stash)
   if (offset_size == 4)
     lh.prologue_length = read_4_bytes(abfd, line_ptr);
   else
-    lh.prologue_length = read_8_bytes(abfd, line_ptr);
+    lh.prologue_length = (bfd_vma)read_8_bytes(abfd, line_ptr);
   line_ptr += offset_size;
   lh.minimum_instruction_length = (unsigned char)read_1_byte(abfd,
                                                              line_ptr);
@@ -1159,7 +1159,7 @@ decode_line_info(struct comp_unit *unit, struct dwarf2_debug *stash)
 		  arange_add(unit->abfd, &unit->arange, low_pc, high_pc);
 		  break;
 		case DW_LNE_set_address:
-		  address = read_address(unit, line_ptr);
+		  address = (bfd_vma)read_address(unit, line_ptr);
 		  line_ptr += unit->addr_size;
 		  break;
 		case DW_LNE_define_file:
@@ -1625,9 +1625,9 @@ read_rangelist(struct comp_unit *unit, struct arange *arange, bfd_uint64_t offse
 	}
       else
 	{
-	  low_pc = read_8_bytes(unit->abfd, ranges_ptr);
+	  low_pc = (bfd_vma)read_8_bytes(unit->abfd, ranges_ptr);
 	  ranges_ptr += 8;
-	  high_pc = read_8_bytes(unit->abfd, ranges_ptr);
+	  high_pc = (bfd_vma)read_8_bytes(unit->abfd, ranges_ptr);
 	  ranges_ptr += 8;
 	}
       if (low_pc == 0 && high_pc == 0)
@@ -1739,11 +1739,11 @@ scan_unit_for_symbols(struct comp_unit *unit)
 		  break;
 
 		case DW_AT_low_pc:
-		  low_pc = attr.u.val;
+		  low_pc = (bfd_vma)attr.u.val;
 		  break;
 
 		case DW_AT_high_pc:
-		  high_pc = attr.u.val;
+		  high_pc = (bfd_vma)attr.u.val;
 		  break;
 
 		case DW_AT_ranges:
@@ -1802,10 +1802,11 @@ scan_unit_for_symbols(struct comp_unit *unit)
 			  /* ??? For TLS variables, gcc can emit
 			     DW_OP_addr <addr> DW_OP_GNU_push_tls_address
 			     which we don't handle here yet.  */
-			  if (attr.u.blk->size == unit->addr_size + 1U)
-			    var->addr = bfd_get (unit->addr_size * 8,
-						 unit->abfd,
-						 attr.u.blk->data + 1);
+			  if (attr.u.blk->size == (unit->addr_size + 1U))
+			    var->addr =
+			      (bfd_vma)bfd_get((unit->addr_size * 8),
+					       unit->abfd,
+					       (attr.u.blk->data + 1));
 			}
 		      break;
 
@@ -1949,7 +1950,7 @@ parse_comp_unit(bfd *abfd, struct dwarf2_debug *stash, bfd_vma unit_length,
 	  break;
 
 	case DW_AT_low_pc:
-	  low_pc = attr.u.val;
+	  low_pc = (bfd_vma)attr.u.val;
 	  /* If the compilation unit DIE has a DW_AT_low_pc attribute,
 	     this is the base address to use when reading location
 	     lists or range lists. */
@@ -1957,7 +1958,7 @@ parse_comp_unit(bfd *abfd, struct dwarf2_debug *stash, bfd_vma unit_length,
 	  break;
 
 	case DW_AT_high_pc:
-	  high_pc = attr.u.val;
+	  high_pc = (bfd_vma)attr.u.val;
 	  break;
 
 	case DW_AT_ranges:
@@ -2296,7 +2297,7 @@ _bfd_dwarf2_find_nearest_line(bfd *abfd, asection *section,
       if (length == 0xffffffff)
 	{
 	  offset_size = 8;
-	  length = read_8_bytes (abfd, stash->info_ptr + 4);
+	  length = (bfd_vma)read_8_bytes(abfd, (stash->info_ptr + 4));
 	  stash->info_ptr += 12;
 	}
       /* A zero length is the IRIX way of indicating 64-bit offsets,
@@ -2313,7 +2314,7 @@ _bfd_dwarf2_find_nearest_line(bfd *abfd, asection *section,
 	 platforms.  */
       else if (addr_size == 8)
 	{
-	  length = read_8_bytes (abfd, stash->info_ptr);
+	  length = (bfd_vma)read_8_bytes(abfd, stash->info_ptr);
 	  stash->info_ptr += 8;
 	}
       else
@@ -2501,13 +2502,13 @@ _bfd_dwarf2_find_line(bfd *abfd, asymbol **symbols, asymbol *symbol,
       unsigned int offset_size = addr_size;
       bfd_byte *info_ptr_unit = stash->info_ptr;
 
-      length = read_4_bytes (abfd, stash->info_ptr);
+      length = read_4_bytes(abfd, stash->info_ptr);
       /* A 0xffffff length is the DWARF3 way of indicating we use
 	 64-bit offsets, instead of 32-bit offsets.  */
       if (length == 0xffffffff)
 	{
 	  offset_size = 8;
-	  length = read_8_bytes (abfd, stash->info_ptr + 4);
+	  length = (bfd_vma)read_8_bytes(abfd, (stash->info_ptr + 4));
 	  stash->info_ptr += 12;
 	}
       /* A zero length is the IRIX way of indicating 64-bit offsets,
@@ -2524,7 +2525,7 @@ _bfd_dwarf2_find_line(bfd *abfd, asymbol **symbols, asymbol *symbol,
 	 platforms.  */
       else if (addr_size == 8)
 	{
-	  length = read_8_bytes (abfd, stash->info_ptr);
+	  length = (bfd_vma)read_8_bytes(abfd, stash->info_ptr);
 	  stash->info_ptr += 8;
 	}
       else
@@ -2636,3 +2637,5 @@ _bfd_dwarf2_cleanup_debug_info(bfd *abfd)
   free (stash->dwarf_line_buffer);
   free (stash->dwarf_ranges_buffer);
 }
+
+/* EOF */

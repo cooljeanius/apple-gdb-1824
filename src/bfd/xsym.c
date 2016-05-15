@@ -22,6 +22,7 @@
 #include "bfd.h"
 #include "sysdep.h"
 #include "libbfd.h"
+#include "libiberty.h"
 
 #define bfd_sym_close_and_cleanup                   _bfd_generic_close_and_cleanup
 #define bfd_sym_bfd_free_cached_info                _bfd_generic_bfd_free_cached_info
@@ -2112,19 +2113,22 @@ bfd_sym_print_type_information_table_entry(bfd *abfd, FILE *f,
 
   fprintf(f, "\n            ");
 
-  buf = (unsigned char *)alloca((const size_t)entry->physical_size);
+  buf = (unsigned char *)xmalloc((const size_t)entry->physical_size);
   if (buf == NULL) {
       fprintf(f, "[ERROR]\n");
+      xfree(buf);
       return;
   }
   if (bfd_seek(abfd, (file_ptr)entry->offset, SEEK_SET) < 0) {
       fprintf(f, "[ERROR]\n");
+      xfree(buf);
       return;
   }
   if (bfd_bread(buf, (bfd_size_type)entry->physical_size, abfd)
       != entry->physical_size)
     {
       fprintf(f, "[ERROR]\n");
+      xfree(buf);
       return;
     }
 
@@ -2147,6 +2151,7 @@ bfd_sym_print_type_information_table_entry(bfd *abfd, FILE *f,
       fprintf(f, "\n            [parser used %lu bytes instead of %lu]",
 	      offset, entry->physical_size);
   }
+  xfree(buf);
 }
 
 void

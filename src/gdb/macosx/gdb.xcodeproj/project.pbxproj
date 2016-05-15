@@ -175,7 +175,7 @@
 		61D220DC192D616D00FA979E /* aoutf1.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CE630E82C407008125DE /* aoutf1.h */; };
 		61D220DD192D616D00FA979E /* aoutx.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CE640E82C407008125DE /* aoutx.h */; };
 		61D220DE192D617D00FA979E /* dwarf1.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEF70E82C407008125DE /* dwarf1.c */; };
-		61D220DF192D617D00FA979E /* dwarf2.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEF80E82C407008125DE /* dwarf2.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
+		61D220DF192D617D00FA979E /* dwarf2.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEF80E82C407008125DE /* dwarf2.c */; settings = {COMPILER_FLAGS = "-Wconversion -Wshorten-64-to-32"; }; };
 		61D220E0192D617D00FA979E /* ecoff.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEF90E82C407008125DE /* ecoff.c */; settings = {COMPILER_FLAGS = "-DCHECK_ARMAP_HASH -Wconversion -Wshorten-64-to-32"; }; };
 		61D220E1192D617D00FA979E /* ecofflink.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEFA0E82C407008125DE /* ecofflink.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing -DTEST -Wconversion -Wshorten-64-to-32"; }; };
 		61D220E2192D617D00FA979E /* ecoffswap.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CEFB0E82C407008125DE /* ecoffswap.h */; };
@@ -15452,6 +15452,8 @@
 				PRODUCT_NAME = readline;
 				RUN_CLANG_STATIC_ANALYZER = NO;
 				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				"SDKROOT[arch=i386]" = macosx10.5;
+				"SDKROOT[arch=x86_64]" = macosx10.5;
 				STRIP_STYLE = "non-global";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -15466,15 +15468,11 @@
 					"-Wstrict-prototypes",
 					"-Wold-style-definition",
 					"-Wfloat-equal",
-					"-Wc++-compat",
 					"-Waggregate-return",
-					"-Wvolatile-register-var",
 					"-Winline",
 					"-Winvalid-pch",
 					"-Wnested-externs",
 					"-Wmissing-declarations",
-					"-Wmissing-include-dirs",
-					"-Woverlength-strings",
 					"-Wwrite-strings",
 					"-Wswitch-default",
 				);

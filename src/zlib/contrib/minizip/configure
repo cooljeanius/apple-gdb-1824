@@ -17515,6 +17515,8 @@ ac_config_files="$ac_config_files Makefile minizip.pc"
 
 ac_config_commands="$ac_config_commands top_original"
 
+ac_config_commands="$ac_config_commands top_cleanup"
+
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -18732,6 +18734,7 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "minizip.pc") CONFIG_FILES="$CONFIG_FILES minizip.pc" ;;
     "top_original") CONFIG_COMMANDS="$CONFIG_COMMANDS top_original" ;;
+    "top_cleanup") CONFIG_COMMANDS="$CONFIG_COMMANDS top_cleanup" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -20290,6 +20293,9 @@ _LT_EOF
 if test ! -e ../../Makefile.am || test -e ../../Makefile_orig.in; then
   (test -x ../../configure.sh && pushd ../.. && sh ./configure.sh && popd)
 fi
+ ;;
+    "top_cleanup":C)
+rm -rf ../../ztest*.dSYM || rmdir ../../ztest*.dSYM || echo "OK"
  ;;
 
   esac

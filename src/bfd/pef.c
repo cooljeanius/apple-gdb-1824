@@ -266,7 +266,7 @@ bfd_pef_print_symbol(bfd *abfd, void *afile, asymbol *symbol,
 	  size_t len = (size_t)symbol->udata.i;
 	  int ret;
 
-          buf = (unsigned char *)alloca((const size_t)symbol->udata.i);
+          buf = (unsigned char *)xmalloc((const size_t)symbol->udata.i);
 
 	  bfd_get_section_contents(abfd, symbol->section, buf,
                                    (file_ptr)offset, (bfd_size_type)len);
@@ -276,6 +276,7 @@ bfd_pef_print_symbol(bfd *abfd, void *afile, asymbol *symbol,
           if (ret < 0) {
             fprintf(file, " [ERROR]");
           }
+	  xfree(buf);
 	}
     }
 }

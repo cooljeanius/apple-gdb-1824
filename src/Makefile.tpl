@@ -92,6 +92,7 @@ SED = @SED@
 MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
 MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
+ERROR_ON_WARNING = @ERROR_ON_WARNING@
 
 # --------------------------------
 # automake-style verbosity control

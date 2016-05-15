@@ -85,4 +85,7 @@ if test ! -e ../../Makefile.am || test -e ../../Makefile_orig.in; then
   (test -x ../../configure.sh && pushd ../.. && sh ./configure.sh && popd)
 fi
 ],[])
+AC_CONFIG_COMMANDS([top_cleanup],[
+rm -rf ../../ztest*.dSYM || rmdir ../../ztest*.dSYM || echo "OK"
+],[])
 AC_OUTPUT

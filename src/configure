@@ -633,6 +633,7 @@ UNDO_LINK_TO_DIR
 CREATE_LINK_TO_DIR
 stage1_checking
 stage1_cflags
+ERROR_ON_WARNING
 MAINT
 MAINTAINER_MODE_FALSE
 MAINTAINER_MODE_TRUE
@@ -7056,6 +7057,9 @@ if test "${enable_arch_for_exec+set}" = set; then :
       esac
 fi
 
+    ;;
+  m68k-apple-aux*)
+    host_configargs=" ${host_configargs} --enable-obsolete"
     ;;
 # END APPLE LOCAL
 # Travis triplet (technically a quadruplet but whatever):
@@ -20478,8 +20482,10 @@ else
 fi
 
 case ${enable_werror} in
-  yes) stage2_werror_flag="--enable-werror-always" ;;
-  *) stage2_werror_flag="" ;;
+  yes) stage2_werror_flag="--enable-werror-always"
+       host_configargs=" ${host_configargs} --enable-werror" ;;
+  *) stage2_werror_flag=""
+     host_configargs=" ${host_configargs} --disable-werror" ;;
 esac
 
 # Enable --enable-host-shared:

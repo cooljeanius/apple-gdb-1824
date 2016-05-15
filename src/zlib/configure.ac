@@ -303,5 +303,8 @@ if test ! -e Makefile.am || test -e Makefile_orig.in; then
   (test -x configure.sh && sh configure.sh) || echo "No original script"
 fi
 ],[])
+AC_CONFIG_COMMANDS([cleanup],[
+rm -rf ztest*.dSYM || rmdir ztest*.dSYM || echo "No ztest junk to clean"
+],[])
 AC_CONFIG_SUBDIRS([contrib/minizip])
 AC_OUTPUT

@@ -976,6 +976,9 @@ case "${target}" in
           AC_MSG_ERROR([bad value '${enableval}' for --enable-arch-for-exec]) ;;
       esac],[])
     ;;
+  m68k-apple-aux*)
+    host_configargs=" ${host_configargs} --enable-obsolete"
+    ;;
 # END APPLE LOCAL
 # Travis triplet (technically a quadruplet but whatever):
   x86_64-unknown-linux-gnu*)
@@ -3903,6 +3906,7 @@ else
 fi
 MAINT="${MAINTAINER_MODE_TRUE}"
 AC_SUBST([MAINT])dnl
+AC_SUBST([ERROR_ON_WARNING])dnl
 
 # --------------------- #
 # GCC bootstrap support #
@@ -3975,8 +3979,10 @@ AC_ARG_ENABLE([werror],
                 [enable -Werror in bootstrap stage2 and later])],
 [],[enable_werror=yes])
 case ${enable_werror} in
-  yes) stage2_werror_flag="--enable-werror-always" ;;
-  *) stage2_werror_flag="" ;;
+  yes) stage2_werror_flag="--enable-werror-always" 
+       host_configargs=" ${host_configargs} --enable-werror" ;;
+  *) stage2_werror_flag=""
+     host_configargs=" ${host_configargs} --disable-werror" ;;
 esac
 AC_SUBST([stage2_werror_flag])dnl
 
