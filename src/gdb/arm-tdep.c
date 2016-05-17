@@ -594,6 +594,9 @@ thumb_expand_imm_c(uint32_t insn)
 	case 3:
 	    imm32 = abcdefgh  << 24 | abcdefgh << 16 | abcdefgh << 8 | abcdefgh;
 	    break;
+	    
+	default:
+	    break;
 	}
     }
   else
@@ -1213,13 +1216,13 @@ arm_dwarf2_reg_to_regnum (int num)
 }
 
 /* APPLE LOCAL START: new prologue skip code.  */
-static CORE_ADDR
-arm_macosx_skip_prologue (CORE_ADDR pc)
+static ATTRIBUTE_USED CORE_ADDR
+arm_macosx_skip_prologue(CORE_ADDR pc)
 {
   struct address_context pc_addr_ctx;
-  init_address_context (&pc_addr_ctx);
+  init_address_context(&pc_addr_ctx);
   pc_addr_ctx.address = pc;
-  return arm_macosx_skip_prologue_addr_ctx (&pc_addr_ctx);
+  return arm_macosx_skip_prologue_addr_ctx(&pc_addr_ctx);
 }
 
 /* APPLE LOCAL END: new prologue skip code.  */
@@ -2021,8 +2024,10 @@ arm_macosx_locate_prologue_start(const CORE_ADDR addr)
   return prologue_start;
 }
 
-static void
-arm_macosx_scan_prologue(struct frame_info *next_frame, arm_prologue_cache_t *cache)
+/* */
+static ATTRIBUTE_USED void
+arm_macosx_scan_prologue(struct frame_info *next_frame,
+			 arm_prologue_cache_t *cache)
 {
   arm_prologue_state_t state;
   size_t i;
@@ -2875,7 +2880,7 @@ arm_unwind_dummy_id(struct gdbarch *gdbarch ATTRIBUTE_UNUSED,
    if it is safe to do so (if we are not the bottom most frame). If the
    PC cannot be safely extracted from the frame, return DEFAULT_PC.  */
 
-static CORE_ADDR
+static ATTRIBUTE_USED CORE_ADDR
 arm_unwind_pc_using_fp(struct frame_info *this_frame, CORE_ADDR default_pc)
 {
   CORE_ADDR pc = default_pc;
@@ -3267,6 +3272,8 @@ condition_true (uint32_t cond, uint32_t status_reg)
     case INST_LE:
       return !(((status_reg & FLAG_Z) == 0) &&
               (((status_reg & FLAG_N) == 0) == ((status_reg & FLAG_V) == 0)));
+    default:
+      break;
     }
   return 1;
 }
@@ -3306,10 +3313,12 @@ arm_scan_prolog_insn_data_proc_imm(const uint32_t insn,
 	  switch (data_processing_op)
 	    {
 	      case ARM_DATA_PROC_OP_ADD:  /* add fp, sp #n  */
-		state->fp_offset = imm + state->sp_offset;
+		state->fp_offset = (imm + state->sp_offset);
 		if (cache)
-		cache->framereg = ARM_FP_REGNUM;
+		  cache->framereg = ARM_FP_REGNUM;
 		handled = 1;
+		break;
+	      default:
 		break;
 	    }
 	}
@@ -3318,10 +3327,12 @@ arm_scan_prolog_insn_data_proc_imm(const uint32_t insn,
 	  switch (data_processing_op)
 	    {
 	      case ARM_DATA_PROC_OP_SUB:  /* sub fp, ip #n  */
-		state->fp_offset = -imm + state->ip_offset;
+		state->fp_offset = (-imm + state->ip_offset);
 		if (cache)
-		cache->framereg = ARM_FP_REGNUM;
+		  cache->framereg = ARM_FP_REGNUM;
 		handled = 1;
+		break;
+	      default:
 		break;
 	    }
 	}
@@ -3342,6 +3353,9 @@ arm_scan_prolog_insn_data_proc_imm(const uint32_t insn,
 		state->ip_offset = imm;
 		handled = 1;
 		break;
+
+	      default:
+		break;
 	    }
 	}
     }
@@ -3355,6 +3369,9 @@ arm_scan_prolog_insn_data_proc_imm(const uint32_t insn,
 	      case ARM_DATA_PROC_OP_SUB:  /* sub sp, sp #n */
 		state->sp_offset -= imm;
 		handled = 1;
+		break;
+
+	      default:
 		break;
 	    }
 	}
@@ -4156,6 +4173,9 @@ shifted_reg_val(uint32_t insn, int carry, uint32_t pc_val,
       else
 	res = ((res >> shift) | (res << (32 - shift)));
       break;
+
+    default:
+      break;
     }
 
   return (res & 0xffffffff);
@@ -4330,6 +4350,9 @@ thumb_get_next_pc(CORE_ADDR pc)
 		  else
 		    nextpc = (pc_val + offset) & 0xfffffffe;
 		}
+		break;
+		
+	      default:
 		break;
 	    }
 	}
@@ -4567,8 +4590,8 @@ arm_get_next_pc (CORE_ADDR pc)
 
   if (condition == INST_NV)
     {
-      /* Unconditional instructions.  */
-      switch (bits (this_instr, 24, 27))
+      /* Unconditional instructions: */
+      switch (bits(this_instr, 24, 27))
 	{
 	case 0x0:
 	case 0x1: /* CPS, SETEND.  */
@@ -4618,6 +4641,9 @@ arm_get_next_pc (CORE_ADDR pc)
 	  if (nextpc == pc)
 	    error (_("Infinite loop detected"));
 	  break;
+
+	default:
+	  break;
 	}
     }
   else if (condition_true (condition, status))
@@ -4664,18 +4690,18 @@ arm_get_next_pc (CORE_ADDR pc)
 	    else		/* operand 2 is a shifted register */
 	      operand2 = shifted_reg_val (this_instr, c, pc_val, status);
 
-	    switch (bits (this_instr, 21, 24))
+	    switch (bits(this_instr, 21, 24))
 	      {
 	      case ARM_DATA_PROC_OP_AND:	/*and */
-		result = operand1 & operand2;
+		result = (operand1 & operand2);
 		break;
 
 	      case ARM_DATA_PROC_OP_EOR:	/*eor */
-		result = operand1 ^ operand2;
+		result = (operand1 ^ operand2);
 		break;
 
 	      case ARM_DATA_PROC_OP_SUB:	/*sub */
-		result = operand1 - operand2;
+		result = (operand1 - operand2);
 		break;
 
 	      case ARM_DATA_PROC_OP_RSB:	/*rsb */
@@ -4683,19 +4709,19 @@ arm_get_next_pc (CORE_ADDR pc)
 		break;
 
 	      case ARM_DATA_PROC_OP_ADD:	/*add */
-		result = operand1 + operand2;
+		result = (operand1 + operand2);
 		break;
 
 	      case ARM_DATA_PROC_OP_ADC:	/*adc */
-		result = operand1 + operand2 + c;
+		result = (operand1 + operand2 + c);
 		break;
 
 	      case ARM_DATA_PROC_OP_SBC:	/*sbc */
-		result = operand1 - operand2 + c;
+		result = (operand1 - operand2 + c);
 		break;
 
 	      case ARM_DATA_PROC_OP_RSC:	/*rsc */
-		result = operand2 - operand1 + c;
+		result = (operand2 - operand1 + c);
 		break;
 
 	      case ARM_DATA_PROC_OP_TST:
@@ -4720,6 +4746,9 @@ arm_get_next_pc (CORE_ADDR pc)
 
 	      case ARM_DATA_PROC_OP_MVN:	/*mvn */
 		result = ~operand2;
+		break;
+
+	      default:
 		break;
 	      }
 	    nextpc = (CORE_ADDR) ADDR_BITS_REMOVE (result);

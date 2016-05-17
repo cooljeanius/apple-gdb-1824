@@ -856,8 +856,8 @@ decode_line_2(struct symbol *sym_arr[], int nelts, int nsyms,
   /* handle minimal_symbols */
   for (i = nsyms; i < nelts; i++)
     {
-#if defined(DEBUG) && defined(assert)
-      assert(sym_arr[i] != NULL);
+#if defined(DEBUG) && defined(gdb_assert)
+      gdb_assert(sym_arr[i] != NULL);
 #endif /* DEBUG && assert */
       QUIT;
       values.sals[i].symtab = 0;

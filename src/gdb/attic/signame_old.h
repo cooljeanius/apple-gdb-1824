@@ -16,8 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
+#if !defined(HAVE_DECL_SYS_SIGLIST) || !HAVE_DECL_SYS_SIGLIST
 /* Names for signals from 0 to NSIG-1.  */
 extern char *sys_siglist[];
+#endif /* !HAVE_DECL_SYS_SIGLIST */
 
 #ifdef __STDC__
 /* Return the abbreviation (e.g. ABRT, FPE, etc.) for signal NUMBER.

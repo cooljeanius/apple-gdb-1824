@@ -236,8 +236,8 @@
 #ifndef __GNUC__
 # ifdef _AIX
  #pragma alloca
-#endif
-#endif
+# endif /* _AIX */
+#endif /* !__GNUC__ */
 
 #define show_allnames 0
 
@@ -274,41 +274,41 @@ static char *deduce_name (const char *);
 #ifdef DLLTOOL_MCORE_ELF
 static void mcore_elf_cache_filename (char *);
 static void mcore_elf_gen_out_file (void);
-#endif
+#endif /* DLLTOOL_MCORE_ELF */
 
 #ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
+# include <sys/wait.h>
 #else /* ! HAVE_SYS_WAIT_H */
-#if ! defined (_WIN32) || defined (__CYGWIN32__)
-#ifndef WIFEXITED
-#define WIFEXITED(w)	(((w) & 0377) == 0)
-#endif
-#ifndef WIFSIGNALED
-#define WIFSIGNALED(w)	(((w) & 0377) != 0177 && ((w) & ~0377) == 0)
-#endif
-#ifndef WTERMSIG
-#define WTERMSIG(w)	((w) & 0177)
-#endif
-#ifndef WEXITSTATUS
-#define WEXITSTATUS(w)	(((w) >> 8) & 0377)
-#endif
-#else /* defined (_WIN32) && ! defined (__CYGWIN32__) */
-#ifndef WIFEXITED
-#define WIFEXITED(w)	(((w) & 0xff) == 0)
-#endif
-#ifndef WIFSIGNALED
-#define WIFSIGNALED(w)	(((w) & 0xff) != 0 && ((w) & 0xff) != 0x7f)
-#endif
-#ifndef WTERMSIG
-#define WTERMSIG(w)	((w) & 0x7f)
-#endif
-#ifndef WEXITSTATUS
-#define WEXITSTATUS(w)	(((w) & 0xff00) >> 8)
-#endif
-#endif /* defined (_WIN32) && ! defined (__CYGWIN32__) */
-#endif /* ! HAVE_SYS_WAIT_H */
+# if !defined(_WIN32) || defined(__CYGWIN32__)
+#  ifndef WIFEXITED
+#   define WIFEXITED(w)	(((w) & 0377) == 0)
+#  endif /* !WIFEXITED */
+#  ifndef WIFSIGNALED
+#   define WIFSIGNALED(w) (((w) & 0377) != 0177 && ((w) & ~0377) == 0)
+#  endif /* !WIFSIGNALED */
+#  ifndef WTERMSIG
+#   define WTERMSIG(w)	((w) & 0177)
+#  endif /* !WTERMSIG */
+#  ifndef WEXITSTATUS
+#   define WEXITSTATUS(w) (((w) >> 8) & 0377)
+#  endif /* !WEXITSTATUS */
+# else /* defined(_WIN32) && !defined(__CYGWIN32__) */
+#  ifndef WIFEXITED
+#   define WIFEXITED(w)	(((w) & 0xff) == 0)
+#  endif /* !WIFEXITED */
+#  ifndef WIFSIGNALED
+#   define WIFSIGNALED(w) (((w) & 0xff) != 0 && ((w) & 0xff) != 0x7f)
+#  endif /* !WIFSIGNALED */
+#  ifndef WTERMSIG
+#   define WTERMSIG(w)	((w) & 0x7f)
+#  endif /* !WTERMSIG */
+#  ifndef WEXITSTATUS
+#   define WEXITSTATUS(w) (((w) & 0xff00) >> 8)
+#  endif /* !WEXITSTATUS */
+# endif /* defined (_WIN32) && ! defined (__CYGWIN32__) */
+#endif /* !HAVE_SYS_WAIT_H */
 
-/* ifunc and ihead data structures: ttk@cygnus.com 1997
+/* ifunc and ihead data structures: <ttk@cygnus.com> 1997
 
    When IMPORT declarations are encountered in a .def file the
    function import information is stored in a structure referenced by
@@ -355,7 +355,7 @@ static char *exp_name;
 static char *imp_name;
 static char *head_label;
 static char *imp_name_lab;
-static char *dll_name;
+static char *g_dll_name;
 
 static int add_indirect = 0;
 static int add_underscore = 0;
@@ -378,9 +378,9 @@ static bfd_boolean create_compat_implib;
 
 static char *def_file;
 
-extern char * program_name;
+extern char *program_name;
 
-static int machine;
+static int g_machine;
 static int killat;
 static int add_stdcall_alias;
 static const char *ext_prefix_alias;
@@ -527,7 +527,7 @@ static const unsigned char ppc_jtab[] =
 /* The glue instruction, picks up the toc from the stw in
    the above code: "lwz r2,4(r1)".  */
 static bfd_vma ppc_glue_insn = 0x80410004;
-#endif
+#endif /* DLLTOOL_PPC */
 
 struct mac
   {
@@ -773,10 +773,11 @@ inform VPARAMS ((const char * message, ...))
   VA_CLOSE (args);
 }
 
+/* */
 static const char *
-rvaafter (int machine)
+rvaafter(int a_machine)
 {
-  switch (machine)
+  switch (a_machine)
     {
     case MARM:
     case M386:
@@ -791,16 +792,17 @@ rvaafter (int machine)
       break;
     default:
       /* xgettext:c-format */
-      fatal (_("Internal error: Unknown machine type: %d"), machine);
+      fatal(_("Internal error: Unknown machine type: %d"), a_machine);
       break;
     }
   return "";
 }
 
+/* */
 static const char *
-rvabefore (int machine)
+rvabefore(int b_machine)
 {
-  switch (machine)
+  switch (b_machine)
     {
     case MARM:
     case M386:
@@ -815,16 +817,17 @@ rvabefore (int machine)
       return ".rva\t";
     default:
       /* xgettext:c-format */
-      fatal (_("Internal error: Unknown machine type: %d"), machine);
+      fatal(_("Internal error: Unknown machine type: %d"), b_machine);
       break;
     }
   return "";
 }
 
+/* */
 static const char *
-asm_prefix (int machine, const char *name)
+asm_prefix(int the_machine, const char *name)
 {
-  switch (machine)
+  switch (the_machine)
     {
     case MARM:
     case MPPC:
@@ -838,38 +841,38 @@ asm_prefix (int machine, const char *name)
       break;
     case M386:
       /* Symbol names starting with ? do not have a leading underscore. */
-      if (name && *name == '?')
+      if (name && (*name == '?'))
         break;
       else
         return "_";
     default:
       /* xgettext:c-format */
-      fatal (_("Internal error: Unknown machine type: %d"), machine);
+      fatal(_("Internal error: Unknown machine type: %d"), the_machine);
       break;
     }
   return "";
 }
 
-#define ASM_BYTE		mtable[machine].how_byte
-#define ASM_SHORT		mtable[machine].how_short
-#define ASM_LONG		mtable[machine].how_long
-#define ASM_TEXT		mtable[machine].how_asciz
-#define ASM_C			mtable[machine].how_comment
-#define ASM_JUMP		mtable[machine].how_jump
-#define ASM_GLOBAL		mtable[machine].how_global
-#define ASM_SPACE		mtable[machine].how_space
-#define ASM_ALIGN_SHORT		mtable[machine].how_align_short
-#define ASM_RVA_BEFORE		rvabefore (machine)
-#define ASM_RVA_AFTER		rvaafter (machine)
-#define ASM_PREFIX(NAME)	asm_prefix (machine, (NAME))
-#define ASM_ALIGN_LONG  	mtable[machine].how_align_long
+#define ASM_BYTE		mtable[g_machine].how_byte
+#define ASM_SHORT		mtable[g_machine].how_short
+#define ASM_LONG		mtable[g_machine].how_long
+#define ASM_TEXT		mtable[g_machine].how_asciz
+#define ASM_C			mtable[g_machine].how_comment
+#define ASM_JUMP		mtable[g_machine].how_jump
+#define ASM_GLOBAL		mtable[g_machine].how_global
+#define ASM_SPACE		mtable[g_machine].how_space
+#define ASM_ALIGN_SHORT		mtable[g_machine].how_align_short
+#define ASM_RVA_BEFORE		rvabefore(g_machine)
+#define ASM_RVA_AFTER		rvaafter(g_machine)
+#define ASM_PREFIX(NAME)	asm_prefix(g_machine, (NAME))
+#define ASM_ALIGN_LONG  	mtable[g_machine].how_align_long
 #define HOW_BFD_READ_TARGET	0  /* Always default.  */
-#define HOW_BFD_WRITE_TARGET	mtable[machine].how_bfd_target
-#define HOW_BFD_ARCH		mtable[machine].how_bfd_arch
-#define HOW_JTAB		mtable[machine].how_jtab
-#define HOW_JTAB_SIZE		mtable[machine].how_jtab_size
-#define HOW_JTAB_ROFF		mtable[machine].how_jtab_roff
-#define ASM_SWITCHES		mtable[machine].how_default_as_switches
+#define HOW_BFD_WRITE_TARGET	mtable[g_machine].how_bfd_target
+#define HOW_BFD_ARCH		mtable[g_machine].how_bfd_arch
+#define HOW_JTAB		mtable[g_machine].how_jtab
+#define HOW_JTAB_SIZE		mtable[g_machine].how_jtab_size
+#define HOW_JTAB_ROFF		mtable[g_machine].how_jtab_roff
+#define ASM_SWITCHES		mtable[g_machine].how_default_as_switches
 
 static char **oav;
 
@@ -943,99 +946,106 @@ def_exports (const char *name, const char *internal_name, int ordinal,
     p->forward = 0; /* no forward */
 }
 
+/* */
 static void
-set_dll_name_from_def (const char * name)
+set_dll_name_from_def(const char *name)
 {
-  const char* image_basename = lbasename (name);
+  const char *image_basename = lbasename(name);
   if (image_basename != name)
-    non_fatal (_("%s: Path components stripped from image name, '%s'."),
-	      def_file, name);
-  dll_name = xstrdup (image_basename);
+    non_fatal(_("%s: Path components stripped from image name, '%s'."),
+	     def_file, name);
+  g_dll_name = xstrdup(image_basename);
 }
 
+/* */
 void
-def_name (const char *name, int base)
+def_name(const char *name, int base)
 {
   /* xgettext:c-format */
-  inform (_("NAME: %s base: %x"), name, base);
+  inform(_("NAME: %s base: %x"), name, base);
 
   if (d_is_dll)
-    non_fatal (_("Can't have LIBRARY and NAME"));
+    non_fatal(_("Cannot have LIBRARY and NAME"));
 
   /* If --dllname not provided, use the one in the DEF file.
      FIXME: Is this appropriate for executables?  */
-  if (! dll_name)
-    set_dll_name_from_def (name);
+  if (!g_dll_name)
+    set_dll_name_from_def(name);
   d_is_exe = 1;
 }
 
+/* */
 void
-def_library (const char *name, int base)
+def_library(const char *name, int base)
 {
   /* xgettext:c-format */
-  inform (_("LIBRARY: %s base: %x"), name, base);
+  inform(_("LIBRARY: %s base: %x"), name, base);
 
   if (d_is_exe)
-    non_fatal (_("Can't have LIBRARY and NAME"));
+    non_fatal(_("Cannot have LIBRARY and NAME"));
 
-  /* If --dllname not provided, use the one in the DEF file.  */
-  if (! dll_name)
-    set_dll_name_from_def (name);
+  /* If --dllname not provided, then use the one in the DEF file: */
+  if (!g_dll_name)
+    set_dll_name_from_def(name);
   d_is_dll = 1;
 }
 
+/* */
 void
-def_description (const char *desc)
+def_description(const char *desc)
 {
-  dlist_type *d = (dlist_type *) xmalloc (sizeof (dlist_type));
-  d->text = xstrdup (desc);
+  dlist_type *d = (dlist_type *)xmalloc(sizeof(dlist_type));
+  d->text = xstrdup(desc);
   d->next = d_list;
   d_list = d;
 }
 
+/* */
 static void
-new_directive (char *dir)
+new_directive(char *dir)
 {
-  dlist_type *d = (dlist_type *) xmalloc (sizeof (dlist_type));
-  d->text = xstrdup (dir);
+  dlist_type *d = (dlist_type *)xmalloc(sizeof(dlist_type));
+  d->text = xstrdup(dir);
   d->next = a_list;
   a_list = d;
 }
 
+/* */
 void
-def_heapsize (int reserve, int commit)
+def_heapsize(int reserve, int commit)
 {
   char b[200];
   if (commit > 0)
-    sprintf (b, "-heap 0x%x,0x%x ", reserve, commit);
+    snprintf(b, sizeof(b), "-heap 0x%x,0x%x ", reserve, commit);
   else
-    sprintf (b, "-heap 0x%x ", reserve);
-  new_directive (xstrdup (b));
+    snprintf(b, sizeof(b), "-heap 0x%x ", reserve);
+  new_directive(xstrdup(b));
 }
 
+/* */
 void
-def_stacksize (int reserve, int commit)
+def_stacksize(int reserve, int commit)
 {
   char b[200];
   if (commit > 0)
-    sprintf (b, "-stack 0x%x,0x%x ", reserve, commit);
+    snprintf(b, sizeof(b), "-stack 0x%x,0x%x ", reserve, commit);
   else
-    sprintf (b, "-stack 0x%x ", reserve);
-  new_directive (xstrdup (b));
+    snprintf(b, sizeof(b), "-stack 0x%x ", reserve);
+  new_directive(xstrdup(b));
 }
 
 /* append_import simply adds the given import definition to the global
    import_list.  It is used by def_import.  */
-
 static void
-append_import (const char *symbol_name, const char *dll_name, int func_ordinal)
+append_import(const char *symbol_name, const char *dll_namestr,
+	      int func_ordinal)
 {
   iheadtype **pq;
   iheadtype *q;
 
   for (pq = &import_list; *pq != NULL; pq = &(*pq)->next)
     {
-      if (strcmp ((*pq)->dllname, dll_name) == 0)
+      if (strcmp((*pq)->dllname, dll_namestr) == 0)
 	{
 	  q = *pq;
 	  q->functail->next = (struct ifunct *)xmalloc(sizeof(ifunctype));
@@ -1049,7 +1059,7 @@ append_import (const char *symbol_name, const char *dll_name, int func_ordinal)
     }
 
   q = (iheadtype *)xmalloc(sizeof(iheadtype));
-  q->dllname = xstrdup(dll_name);
+  q->dllname = xstrdup(dll_namestr);
   q->nfuncs = 1;
   q->funchead = (struct ifunct *)xmalloc(sizeof(ifunctype));
   q->functail = q->funchead;
@@ -1119,14 +1129,16 @@ def_import(const char *app_name, const char *module, const char *dllext,
   append_import (application_name, module, ord_val);
 }
 
+/* */
 void
-def_version (int major, int minor)
+def_version(int major, int minor)
 {
-  printf ("VERSION %d.%d\n", major, minor);
+  printf("VERSION %d.%d\n", major, minor);
 }
 
+/* */
 void
-def_section (const char *name, int attr)
+def_section(const char *name, int attr)
 {
   char buf[200];
   char atts[5];
@@ -1141,15 +1153,15 @@ def_section (const char *name, int attr)
   if (attr & 8)
     *d++ = 'S';
   *d++ = 0;
-  sprintf (buf, "-attr %s %s", name, atts);
-  new_directive (xstrdup (buf));
+  snprintf(buf, sizeof(buf), "-attr %s %s", name, atts);
+  new_directive(xstrdup(buf));
 }
 
+/* */
 void
-def_code (int attr)
+def_code(int attr)
 {
-
-  def_section ("CODE", attr);
+  def_section("CODE", attr);
 }
 
 void
@@ -1548,7 +1560,7 @@ scan_obj_file (const char *filename)
 #ifdef DLLTOOL_MCORE_ELF
       if (mcore_elf_out_file)
 	inform (_("Cannot produce mcore-elf dll from archive file: %s"), filename);
-#endif
+#endif /* DLLTOOL_MCORE_ELF */
     }
   else if (bfd_check_format (f, bfd_object))
     {
@@ -1557,7 +1569,7 @@ scan_obj_file (const char *filename)
 #ifdef DLLTOOL_MCORE_ELF
       if (mcore_elf_out_file)
 	mcore_elf_cache_filename ((char *) filename);
-#endif
+#endif /* DLLTOOL_MCORE_ELF */
     }
 
   bfd_close (f);
@@ -1794,8 +1806,9 @@ assemble_file(const char *source, const char *dest)
   run(as_name, cmd);
 }
 
+/* */
 static void
-gen_exp_file (void)
+gen_exp_file(void)
 {
   FILE *f;
   int i;
@@ -1803,48 +1816,53 @@ gen_exp_file (void)
   dlist_type *dl;
 
   /* xgettext:c-format */
-  inform (_("Generating export file: %s"), exp_name);
+  inform(_("Generating export file: %s"), exp_name);
 
-  f = fopen (TMP_ASM, FOPEN_WT);
+  f = fopen(TMP_ASM, FOPEN_WT);
   if (!f)
     /* xgettext:c-format */
-    fatal (_("Unable to open temporary assembler file: %s"), TMP_ASM);
+    fatal(_("Unable to open temporary assembler file: %s"), TMP_ASM);
 
   /* xgettext:c-format */
-  inform (_("Opened temporary file: %s"), TMP_ASM);
+  inform(_("Opened temporary file: %s"), TMP_ASM);
 
-  dump_def_info (f);
+  dump_def_info(f);
 
   if (d_exports)
     {
-      fprintf (f, "\t.section	.edata\n\n");
-      fprintf (f, "\t%s	0	%s Allways 0\n", ASM_LONG, ASM_C);
-      fprintf (f, "\t%s	0x%lx	%s Time and date\n", ASM_LONG, (long) time(0),
-	       ASM_C);
-      fprintf (f, "\t%s	0	%s Major and Minor version\n", ASM_LONG, ASM_C);
-      fprintf (f, "\t%sname%s	%s Ptr to name of dll\n", ASM_RVA_BEFORE, ASM_RVA_AFTER, ASM_C);
-      fprintf (f, "\t%s	%d	%s Starting ordinal of exports\n", ASM_LONG, d_low_ord, ASM_C);
+      fprintf(f, "\t.section	.edata\n\n");
+      fprintf(f, "\t%s	0	%s Allways 0\n", ASM_LONG, ASM_C);
+      fprintf(f, "\t%s	0x%lx	%s Time and date\n", ASM_LONG, (long)time(0),
+	      ASM_C);
+      fprintf(f, "\t%s	0	%s Major and Minor version\n", ASM_LONG, ASM_C);
+      fprintf(f, "\t%sname%s	%s Ptr to name of dll\n", ASM_RVA_BEFORE,
+	      ASM_RVA_AFTER, ASM_C);
+      fprintf(f, "\t%s	%d	%s Starting ordinal of exports\n", ASM_LONG,
+	      d_low_ord, ASM_C);
 
 
-      fprintf (f, "\t%s	%d	%s Number of functions\n", ASM_LONG, d_high_ord - d_low_ord + 1, ASM_C);
+      fprintf(f, "\t%s	%d	%s Number of functions\n", ASM_LONG,
+	      (d_high_ord - d_low_ord + 1), ASM_C);
       fprintf(f,"\t%s named funcs %d, low ord %d, high ord %d\n",
-	      ASM_C,
-	      d_named_nfuncs, d_low_ord, d_high_ord);
-      fprintf (f, "\t%s	%d	%s Number of names\n", ASM_LONG,
-	       show_allnames ? d_high_ord - d_low_ord + 1 : d_named_nfuncs, ASM_C);
-      fprintf (f, "\t%safuncs%s  %s Address of functions\n", ASM_RVA_BEFORE, ASM_RVA_AFTER, ASM_C);
+	      ASM_C, d_named_nfuncs, d_low_ord, d_high_ord);
+      fprintf(f, "\t%s	%d	%s Number of names\n", ASM_LONG,
+	      (show_allnames ? (d_high_ord - d_low_ord + 1) : d_named_nfuncs),
+	      ASM_C);
+      fprintf(f, "\t%safuncs%s  %s Address of functions\n", ASM_RVA_BEFORE,
+	      ASM_RVA_AFTER, ASM_C);
 
-      fprintf (f, "\t%sanames%s	%s Address of Name Pointer Table\n",
-	       ASM_RVA_BEFORE, ASM_RVA_AFTER, ASM_C);
+      fprintf(f, "\t%sanames%s	%s Address of Name Pointer Table\n",
+	      ASM_RVA_BEFORE, ASM_RVA_AFTER, ASM_C);
 
-      fprintf (f, "\t%sanords%s	%s Address of ordinals\n", ASM_RVA_BEFORE, ASM_RVA_AFTER, ASM_C);
+      fprintf(f, "\t%sanords%s	%s Address of ordinals\n", ASM_RVA_BEFORE,
+	      ASM_RVA_AFTER, ASM_C);
 
-      fprintf (f, "name:	%s	\"%s\"\n", ASM_TEXT, dll_name);
+      fprintf(f, "name:	%s	\"%s\"\n", ASM_TEXT, g_dll_name);
 
 
       fprintf(f,"%s Export address Table\n", ASM_C);
       fprintf(f,"\t%s\n", ASM_ALIGN_LONG);
-      fprintf (f, "afuncs:\n");
+      fprintf(f, "afuncs:\n");
       i = d_low_ord;
 
       for (exp = d_exports; exp; exp = exp->next)
@@ -2212,28 +2230,29 @@ make_imp_label (const char *prefix, const char *name)
 static bfd *
 make_one_lib_file (export_type *exp, int i)
 {
-  bfd *      abfd;
-  asymbol *  exp_label;
-  asymbol *  iname = 0;
-  asymbol *  iname2;
-  asymbol *  iname_lab;
-  asymbol ** iname_lab_pp;
-  asymbol ** iname_pp;
+  bfd *abfd;
+  asymbol *exp_label;
+  asymbol *iname = (asymbol *)0;
+  asymbol *iname2;
+  asymbol *iname_lab;
+  asymbol **iname_lab_pp;
+  asymbol **iname_pp;
 #ifdef DLLTOOL_PPC
-  asymbol ** fn_pp;
-  asymbol ** toc_pp;
-#define EXTRA	 2
-#endif
+  asymbol **fn_pp;
+  asymbol **toc_pp;
+# define EXTRA 2
+#endif /* DLLTOOL_PPC */
 #ifndef EXTRA
-#define EXTRA    0
-#endif
+# define EXTRA 0
+#endif /* !EXTRA */
   asymbol *ptrs[NSECS + 4 + EXTRA + 1];
   flagword applicable;
-  char *outname = (char *)xmalloc(strlen(TMP_STUB) + 10UL);
+  const size_t outnamelen = (strlen(TMP_STUB) + 10UL);
+  char *outname = (char *)xmalloc(outnamelen);
   int oidx = 0;
 
 
-  sprintf (outname, "%s%05d.o", TMP_STUB, i);
+  snprintf(outname, outnamelen, "%s%05d.o", TMP_STUB, i);
 
   abfd = bfd_openw (outname, HOW_BFD_WRITE_TARGET);
 
@@ -2250,7 +2269,7 @@ make_one_lib_file (export_type *exp, int i)
 #ifdef DLLTOOL_ARM
   if (machine == MARM_INTERWORK || machine == MTHUMB)
     bfd_set_private_flags (abfd, F_INTERWORK);
-#endif
+#endif /* DLLTOOL_ARM */
 
   applicable = bfd_applicable_section_flags (abfd);
 
@@ -2296,7 +2315,7 @@ make_one_lib_file (export_type *exp, int i)
       if (machine == MPPC)
 	exp_label->section = secdata[RDATA].sec;
       else
-#endif
+#endif /* DLLTOOL_PPC */
 	exp_label->section = secdata[TEXT].sec;
 
       exp_label->flags = BSF_GLOBAL;
@@ -2305,7 +2324,7 @@ make_one_lib_file (export_type *exp, int i)
 #ifdef DLLTOOL_ARM
       if (machine == MTHUMB)
 	bfd_coff_set_symbol_class (abfd, exp_label, C_THUMBEXTFUNC);
-#endif
+#endif /* DLLTOOL_ARM */
       ptrs[oidx++] = exp_label;
     }
 
@@ -2370,7 +2389,7 @@ make_one_lib_file (export_type *exp, int i)
     toc_pp = ptrs + oidx;
     ptrs[oidx++] = toc_symbol;
   }
-#endif
+#endif /* DLLTOOL_PPC */
 
   ptrs[oidx] = 0;
 
@@ -2400,7 +2419,7 @@ make_one_lib_file (export_type *exp, int i)
 	      rel->address = HOW_JTAB_ROFF;
 	      rel->addend = 0;
 
-	      if (machine == MPPC)
+	      if (g_machine == MPPC)
 		{
 		  rel->howto = bfd_reloc_type_lookup (abfd,
 						      BFD_RELOC_16_GOTOFF);
@@ -2720,25 +2739,25 @@ make_tail (void)
   fprintf (f, "\t%s\t0\n", ASM_LONG);
   fprintf (f, "\t%s\t0\n", ASM_LONG);
   fprintf (f, "\t%s\t0\n", ASM_LONG);
-#endif
+#endif /* DLLTOOL_PPC */
 
 #ifdef DLLTOOL_PPC
   /* Other PowerPC NT compilers use idata$6 for the dllname, so I
      do too. Original, huh?  */
-  fprintf (f, "\t.section	.idata$6\n");
+  fprintf(f, "\t.section	.idata$6\n");
 #else
-  fprintf (f, "\t.section	.idata$7\n");
-#endif
+  fprintf(f, "\t.section	.idata$7\n");
+#endif /* DLLTOOL_PPC */
 
-  fprintf (f, "\t%s\t__%s_iname\n", ASM_GLOBAL, imp_name_lab);
-  fprintf (f, "__%s_iname:\t%s\t\"%s\"\n",
-	   imp_name_lab, ASM_TEXT, dll_name);
+  fprintf(f, "\t%s\t__%s_iname\n", ASM_GLOBAL, imp_name_lab);
+  fprintf(f, "__%s_iname:\t%s\t\"%s\"\n",
+	  imp_name_lab, ASM_TEXT, g_dll_name);
 
-  fclose (f);
+  fclose(f);
 
-  assemble_file (TMP_TAIL_S, TMP_TAIL_O);
+  assemble_file(TMP_TAIL_S, TMP_TAIL_O);
 
-  return bfd_openr (TMP_TAIL_O, HOW_BFD_READ_TARGET);
+  return bfd_openr(TMP_TAIL_O, HOW_BFD_READ_TARGET);
 }
 
 /* FIXME: -Wstack-usage */
@@ -3163,10 +3182,10 @@ static const struct option long_options[] =
   {NULL,0,NULL,0}
 };
 
-int main (int, char **);
-
+int main(int, char **);
+/* */
 int
-main (int ac, char **av)
+main(int ac, char **av)
 {
   int c;
   int i;
@@ -3174,22 +3193,22 @@ main (int ac, char **av)
   program_name = av[0];
   oav = av;
 
-#if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES)
-  setlocale (LC_MESSAGES, "");
-#endif
-#if defined (HAVE_SETLOCALE)
-  setlocale (LC_CTYPE, "");
-#endif
-  bindtextdomain (PACKAGE, LOCALEDIR);
-  textdomain (PACKAGE);
+#if defined(HAVE_SETLOCALE) && defined(HAVE_LC_MESSAGES)
+  setlocale(LC_MESSAGES, "");
+#endif /* HAVE_SETLOCALE && HAVE_LC_MESSAGES */
+#if defined(HAVE_SETLOCALE)
+  setlocale(LC_CTYPE, "");
+#endif /* HAVE_SETLOCALE */
+  bindtextdomain(PACKAGE, LOCALEDIR);
+  textdomain(PACKAGE);
 
-  while ((c = getopt_long (ac, av,
+  while ((c = getopt_long(ac, av,
 #ifdef DLLTOOL_MCORE_ELF
-			   "m:e:l:aD:d:z:b:xp:cCuUkAS:f:nvVHhM:L:F:",
+			  "m:e:l:aD:d:z:b:xp:cCuUkAS:f:nvVHhM:L:F:",
 #else
-			   "m:e:l:aD:d:z:b:xp:cCuUkAS:f:nvVHh",
-#endif
-			   long_options, 0))
+			  "m:e:l:aD:d:z:b:xp:cCuUkAS:f:nvVHh",
+#endif /* DLLTOOL_MCORE_ELF */
+			  long_options, 0))
 	 != EOF)
     {
       switch (c)
@@ -3229,13 +3248,13 @@ main (int ac, char **av)
 	  add_indirect = 1;
 	  break;
 	case 'z':
-	  output_def = fopen (optarg, FOPEN_WT);
+	  output_def = fopen(optarg, FOPEN_WT);
 	  break;
 	case 'D':
-	  dll_name = (char*) lbasename (optarg);
-	  if (dll_name != optarg)
-	    non_fatal (_("Path components stripped from dllname, '%s'."),
-	      		 optarg);
+	  g_dll_name = (char *)lbasename(optarg);
+	  if (g_dll_name != optarg)
+	    non_fatal(_("Path components stripped from dllname, '%s'."),
+		      optarg);
 	  break;
 	case 'l':
 	  imp_name = optarg;
@@ -3292,7 +3311,7 @@ main (int ac, char **av)
 	case 'F':
 	  mcore_elf_linker_flags = optarg;
 	  break;
-#endif
+#endif /* DLLTOOL_MCORE_ELF */
 	case 'C':
 	  create_compat_implib = 1;
 	  break;
@@ -3313,18 +3332,18 @@ main (int ac, char **av)
     /* xgettext:c-format */
     fatal (_("Machine '%s' not supported"), mname);
 
-  machine = i;
+  g_machine = i;
 
-  if (!dll_name && exp_name)
+  if (!g_dll_name && exp_name)
     {
       /* If we are inferring dll_name from exp_name,
          strip off any path components, without emitting
          a warning.  */
-      const char* exp_basename = lbasename(exp_name);
-      const int len = strlen(exp_basename) + 5;
-      dll_name = (char *)xmalloc(len);
-      strcpy(dll_name, exp_basename);
-      strcat(dll_name, ".dll");
+      const char *exp_basename = lbasename(exp_name);
+      const size_t len = (strlen(exp_basename) + 5UL);
+      g_dll_name = (char *)xmalloc(len);
+      strcpy(g_dll_name, exp_basename);
+      strcat(g_dll_name, ".dll");
     }
 
   if (as_name == NULL)
@@ -3376,7 +3395,7 @@ main (int ac, char **av)
 #ifdef DLLTOOL_MCORE_ELF
   if (mcore_elf_out_file)
     mcore_elf_gen_out_file ();
-#endif
+#endif /* DLLTOOL_MCORE_ELF */
 
   return 0;
 }
@@ -3467,7 +3486,7 @@ deduce_name (const char *prog_name)
       if (
 #if defined(__DJGPP__) || defined (__CYGWIN__) || defined(__WIN32__)
 	  *cp == ':' || *cp == '\\' ||
-#endif
+#endif /* __DJGPP__ || __CYGWIN__ || __WIN32__ */
 	  *cp == '/')
 	{
 	  slash = cp;

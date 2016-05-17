@@ -1059,6 +1059,7 @@ RANLIB
 LD_ARCHFLAGS
 acl_cv_wl
 MACH_EXC_SERVER_PREFACE
+want64
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
@@ -1182,6 +1183,7 @@ enable_option_checking
 enable_maintainer_mode
 enable_dependency_tracking
 enable_silent_rules
+enable_64_bit_bfd
 enable_arch_for_exec
 enable_nls
 with_included_gettext
@@ -1910,6 +1912,8 @@ Optional Features:
                           speeds up one-time build
   --enable-silent-rules   less verbose build output (undo: "make V=1")
   --disable-silent-rules  verbose build output (undo: "make V=0")
+  --enable-64-bit-bfd     64-bit bfd support (on hosts with narrower word
+                          sizes)
   --disable-arch-for-exec disable use of arch for exec
   --disable-nls           do not use Native Language Support
   --enable-build-with-cxx build with C++ compiler instead of C compiler
@@ -7113,6 +7117,21 @@ CONFIG_ALL=""
 CONFIG_CLEAN=""
 CONFIG_INSTALL=""
 CONFIG_UNINSTALL=""
+
+# Check whether --enable-64-bit-bfd was given.
+if test "${enable_64_bit_bfd+set}" = set; then :
+  enableval=$enable_64_bit_bfd; case "${enableval}" in
+  yes)  want64=true  ;;
+  no)   want64=false ;;
+  *)    as_fn_error $? "bad value ${enableval} for 64-bit-bfd option" "$LINENO" 5 ;;
+esac
+else
+  want64=false
+fi
+
+if test "x${want64}" = "xtrue"; then
+  enable_64_bit_bfd=yes
+fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: doing some preliminary APPLE_LOCAL checks" >&5
 $as_echo "$as_me: doing some preliminary APPLE_LOCAL checks" >&6;}
@@ -46290,7 +46309,7 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wignored-qualifiers -Wmissing-format-attribute -Waddress -Wattributes \
 -Wignored-attributes -Wswitch -Wswitch-default -Wclobbered \
 -Wcoverage-mismatch -Wdiv-by-zero -Wdouble-promotion \
--Wfree-nonheap-object -Wsign-compare -Wtype-limits \
+-Wfree-nonheap-object -Wsign-compare \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
 -Wmissing-include-dirs -Woverflow -Woverlength-strings -Wpragmas \
 -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
@@ -46378,6 +46397,10 @@ ${acl_cv_wl}--warn-multiple-gp ${acl_cv_wl}--warn-section-align"
     build_warnings="${build_warnings} -Wformat -Wformat-nonliteral"
   ;;
 esac
+
+if test "x${enable_64_bit_bfd}" = "xyes"; then
+  build_warnings="${build_warnings} -Wtype-limits"
+fi
 
 # clang-specific warnings:
 if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
@@ -46477,7 +46500,6 @@ fi
 #  * -Wformat (we used to explicitly disable this; but it was required for
 #    others such as -Wformat-nonliteral, so I added it back)
 #  * -Wnested-externs (if it gets redundant with -Wimplicit again)
-#  * -Wtype-limits (often triggered on purpose, so okay to just ignore it)
 #  * -Wwrite-strings (in case all the const-ifying gets to be too much)
 #  * -Wunused-local-typedefs (`mig` used to generate code triggering this)
 # Up for debate in some other way:
@@ -46489,6 +46511,7 @@ fi
 #    we get rid of -Wunsuffixed-float-constants some time...)
 #  * -Wformat-nonliteral (as to the conditions in which we enable it)
 #  * -Wcast-align (as to whether to un-disable for clang as well)
+#  * -Wtype-limits (as to whether to also use it for 32-bit BFD)
 # NOT actually up for debate:
 #  * -Werror (never actually add this, even though upstream GDB does...)
 #  * -pedantic-errors (likewise, never add this)

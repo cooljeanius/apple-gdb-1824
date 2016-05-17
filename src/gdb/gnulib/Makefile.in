@@ -692,6 +692,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 unused_subdirs = @unused_subdirs@
+want64 = @want64@
 xm_h = @xm_h@
 zlibdir = @zlibdir@
 zlibinc = @zlibinc@

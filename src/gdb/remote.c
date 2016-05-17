@@ -204,7 +204,10 @@ static void update_packet_config(struct packet_config *config);
 
 void _initialize_remote(void);
 
+/* same condition as where it is defined: */
+#ifdef MACOSX_DYLD
 static int remote_macosx_query_qenvironment_hex_packet_supported(void);
+#endif /* MACOSX_DYLD */
 
 /* APPLE LOCAL */
 static void start_remote_timer(void);
@@ -1288,8 +1291,8 @@ send_remote_max_payload_size(void)
   return 1;
 }
 
-
-static int
+/* */
+static ATTRIBUTE_USED int
 send_disable_aslr(void)
 {
   char buf[32];
@@ -1769,15 +1772,15 @@ pack_hex_byte (char *pkt, int byte)
    of a string to be output without having to NULL terminate the substrings
    within a larger C string, or it can allow a NULL character to be encoded
    into PKT.  */
-static char *
-pack_string_as_ascii_hex (char *pkt, const char *str, const char *end)
+static ATTRIBUTE_USED char *
+pack_string_as_ascii_hex(char *pkt, const char *str, const char *end)
 {
   const char *s;
   if (end == NULL)
-    end = str + strlen (str);
+    end = (str + strlen(str));
 
   for (s = str; s < end; s++)
-    pkt = pack_hex_byte (pkt, *s);
+    pkt = pack_hex_byte(pkt, *s);
   return pkt;
 }
 

@@ -798,14 +798,15 @@ init_timer(const char *name)
   if (n_timers == max_timers)
     {
       max_timers += 64;
-      timer_list = (struct gdb_timer *)
-	xrealloc (timer_list, max_timers * sizeof (struct gdb_timer *));
+      timer_list = ((struct gdb_timer *)
+		    xrealloc(timer_list,
+			     (max_timers * sizeof(struct gdb_timer *))));
     }
   this_timer = n_timers;
   n_timers++;
 
-  bzero (&timer_list[this_timer], sizeof (struct gdb_timer));
-  timer_list[this_timer].name = xstrdup (name);
+  memset(&timer_list[this_timer], 0, sizeof(struct gdb_timer));
+  timer_list[this_timer].name = xstrdup(name);
 
   return this_timer;
 }

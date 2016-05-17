@@ -1083,7 +1083,7 @@ vx_wait (ptid_t ptid_to_wait_for, struct target_waitstatus *status)
 
     case EVENT_SIGNAL:
 #ifdef I80960
-      status->value.sig = i960_fault_to_signal (rdbEvent.sigType);
+      status->value.sig = i960_fault_to_signal(rdbEvent.sigType);
 #else
       /* Back in the old days, before enum target_signal, this code used
          to add NSIG to the signal number and claim that PRINT_RANDOM_SIGNAL
@@ -1091,7 +1091,10 @@ vx_wait (ptid_t ptid_to_wait_for, struct target_waitstatus *status)
          defined except on the i960, so I don't really know what we are
          supposed to do on other architectures.  */
       status->value.sig = TARGET_SIGNAL_UNKNOWN;
-#endif
+#endif /* I80960 */
+      break;
+
+    default:
       break;
     }				/* switch */
   return pid_to_ptid (pid);

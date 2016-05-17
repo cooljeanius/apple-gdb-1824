@@ -100,6 +100,7 @@ am__aclocal_m4_deps = $(top_srcdir)/../config/depstand.m4 \
 	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
 	$(top_srcdir)/acinclude.m4 \
 	$(top_srcdir)/../config/no-executables.m4 \
+	$(top_srcdir)/../config/warnings.m4 \
 	$(top_srcdir)/../libtool.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -332,6 +333,9 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 VERSION = @VERSION@
+WARN_CFLAGS = @WARN_CFLAGS@
+WARN_PEDANTIC = @WARN_PEDANTIC@
+WERROR = @WERROR@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -401,7 +405,7 @@ AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 ACLOCAL_AMFLAGS = -I m4 -I.. -I../config --install
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 CXX_ARCHFLAGS = $(C_ARCHFLAGS)
-AM_CFLAGS = $(C_ARCHFLAGS)
+AM_CFLAGS = $(C_ARCHFLAGS) $(WARN_CFLAGS) $(WARN_PEDANTIC)
 AM_CXXFLAGS = $(CXX_ARCHFLAGS)
 C_BUILDARCHFLAGS = -arch $(BUILD_ARCHITECTURE)
 C_TARGARCHFLAGS = -arch $(TARGET_ARCHITECTURE)

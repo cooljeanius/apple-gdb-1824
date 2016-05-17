@@ -43,7 +43,7 @@ RANLIB = @RANLIB@
 AR = ar
 AR_FLAGS = cq
 
-AM_CFLAGS = -ggdb -Wall -Wno-unused -Wno-format
+AM_CFLAGS = -ggdb -Wall -Wextra -Wno-unused -Wno-format -Wimplicit
 
 LD = ld
 # Darwin linker (ld64) fails to recognize this flag, so conditionalize:
@@ -90,6 +90,8 @@ LIBDFE = ../udi/libdfe.a
 
 LIBIBERTY = ../../../libiberty/libiberty.a
 
+LIBTIP = ../udi/libtip.a
+
 INCLUDE = -I$(srcdir)/../udi -I$(srcdir)/../include -I$(srcdir)/..
 
 .c.o:
@@ -100,8 +102,8 @@ all:	mondfe
 just_objs: $(OBJS)
 .PHONY: just_objs
 
-mondfe: $(LIBUDIDFE) $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBDFE) $(LIBIBERTY)
+mondfe: $(LIBDFE) $(LIBTIP) $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBDFE) $(LIBIBERTY) $(LIBTIP)
 
 install_mondfe: all
 	@true

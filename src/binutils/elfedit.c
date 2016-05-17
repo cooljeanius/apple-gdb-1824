@@ -155,7 +155,7 @@ update_elf_header(const char *file_name, FILE *file)
 
   if (status != 1)
     error(_("%s: Failed to update ELF header: %s\n"),
-          file_name, strerror(errno));
+          file_name, xstrerror(errno));
 
   return status;
 }
@@ -449,7 +449,7 @@ check_file(const char *file_name, struct stat *statbuf_p)
 	error(_("'%s': No such file\n"), file_name);
       else
 	error(_("Could not locate '%s'.  System error message: %s\n"),
-              file_name, strerror(errno));
+              file_name, xstrerror(errno));
       return 1;
     }
 
@@ -643,7 +643,7 @@ static ATTRIBUTE_NORETURN void usage(FILE *stream, int exit_status)
   if (REPORT_BUGS_TO[0] && (exit_status == 0)) {
       fprintf(stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
   }
-  exit(exit_status);
+  xexit(exit_status);
 }
 
 int main(int argc, char ** argv)

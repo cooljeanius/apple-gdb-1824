@@ -2251,7 +2251,8 @@ macosx_kill_inferior_safe(void)
     }
 }
 
-static void
+/* */
+static ATTRIBUTE_USED void
 macosx_ptrace_me(void)
 {
   sem_t *sem;
@@ -2332,7 +2333,8 @@ post_to_semaphore(void *input)
   sem_close(sem);
 }
 
-static void
+/* */
+static ATTRIBUTE_USED void
 macosx_ptrace_him(int pid)
 {
   task_t itask;

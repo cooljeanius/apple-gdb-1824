@@ -1,4 +1,4 @@
-/* i80960-dependent portions of the RPC protocol
+/* remote-vx960.c: i80960-dependent portions of the RPC protocol
    used with a VxWorks target
 
    Contributed by Wind River Systems.
@@ -20,6 +20,9 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* NO_POISON */
 #include <stdio.h>
 #include "defs.h"
 
@@ -57,6 +60,14 @@
 #include <value.h>
 #include <symtab.h>
 
+#if !defined(REGISTER_BYTE)
+# if defined(DEPRECATED_REGISTER_BYTE)
+#  define REGISTER_BYTE(reg_nr) DEPRECATED_REGISTER_BYTE(reg_nr)
+# else
+#  define REGISTER_BYTE(reg_nr) (gdbarch_deprecated_register_byte(current_gdbarch, reg_nr))
+# endif /* DEPRECATED_REGISTER_BYTE */
+#endif /* !REGISTER_BYTE */
+
 /* Flag set if target has fpu */
 
 extern int target_has_fp;
@@ -66,36 +77,38 @@ extern int target_has_fp;
 extern struct ext_format ext_format_i960;
 
 /* Generic register read/write routines in remote-vx.c.  */
+extern void net_read_registers(char *, int, u_long);
+extern void net_write_registers(char *, int, u_long);
 
-extern void net_read_registers ();
-extern void net_write_registers ();
+/* Other prototypes: */
+extern void vx_read_register(int);
+extern void vx_write_register(int);
 
 /* Read a register or registers from the VxWorks target.
    REGNO is the register to read, or -1 for all; currently,
-   it is ignored. FIXME look at regno to improve efficiency.  */
-
+   it is ignored. FIXME: look at regno to improve efficiency.  */
 void
-vx_read_register (int regno)
+vx_read_register(int regno)
 {
   char i960_greg_packet[I960_GREG_PLEN];
   char i960_fpreg_packet[I960_FPREG_PLEN];
 
   /* Get general-purpose registers.  When copying values into
-     registers [], do NOT assume that a location in registers []
+     registers[], do NOT assume that a location in registers[]
      is properly aligned for the target data type.  */
 
-  net_read_registers (i960_greg_packet, I960_GREG_PLEN, PTRACE_GETREGS);
+  net_read_registers(i960_greg_packet, I960_GREG_PLEN, PTRACE_GETREGS);
 
-  bcopy (&i960_greg_packet[I960_R_R0],
-	 &registers[REGISTER_BYTE (R0_REGNUM)], 16 * I960_GREG_SIZE);
-  bcopy (&i960_greg_packet[I960_R_G0],
-	 &registers[REGISTER_BYTE (G0_REGNUM)], 16 * I960_GREG_SIZE);
-  bcopy (&i960_greg_packet[I960_R_PCW],
-	 &registers[REGISTER_BYTE (PCW_REGNUM)], sizeof (int));
-  bcopy (&i960_greg_packet[I960_R_ACW],
-	 &registers[REGISTER_BYTE (ACW_REGNUM)], sizeof (int));
-  bcopy (&i960_greg_packet[I960_R_TCW],
-	 &registers[REGISTER_BYTE (TCW_REGNUM)], sizeof (int));
+  bcopy(&i960_greg_packet[I960_R_R0],
+	&registers[REGISTER_BYTE(R0_REGNUM)], (16 * I960_GREG_SIZE));
+  bcopy(&i960_greg_packet[I960_R_G0],
+	&registers[REGISTER_BYTE(G0_REGNUM)], (16 * I960_GREG_SIZE));
+  bcopy(&i960_greg_packet[I960_R_PCW],
+	&registers[REGISTER_BYTE(PCW_REGNUM)], sizeof(int));
+  bcopy(&i960_greg_packet[I960_R_ACW],
+	&registers[REGISTER_BYTE(ACW_REGNUM)], sizeof(int));
+  bcopy(&i960_greg_packet[I960_R_TCW],
+	&registers[REGISTER_BYTE(TCW_REGNUM)], sizeof(int));
 
   /* If the target has floating point registers, fetch them.
      Otherwise, zero the floating point register values in
@@ -104,58 +117,56 @@ vx_read_register (int regno)
 
   if (target_has_fp)
     {
-      net_read_registers (i960_fpreg_packet, I960_FPREG_PLEN,
-			  PTRACE_GETFPREGS);
-      bcopy (&i960_fpreg_packet[I960_R_FP0],
-	     &registers[REGISTER_BYTE (FP0_REGNUM)],
-	     REGISTER_RAW_SIZE (FP0_REGNUM) * 4);
+      net_read_registers(i960_fpreg_packet, I960_FPREG_PLEN,
+			 PTRACE_GETFPREGS);
+      bcopy(&i960_fpreg_packet[I960_R_FP0],
+	    &registers[REGISTER_BYTE(FP0_REGNUM)],
+	    (REGISTER_RAW_SIZE(FP0_REGNUM) * 4));
     }
   else
-    bzero (&registers[REGISTER_BYTE (FP0_REGNUM)],
-	   REGISTER_RAW_SIZE (FP0_REGNUM) * 4);
+    bzero(&registers[REGISTER_BYTE(FP0_REGNUM)],
+	  (REGISTER_RAW_SIZE(FP0_REGNUM) * 4));
 
-  /* Mark the register cache valid.  */
-
-  registers_fetched ();
+  /* Mark the register cache valid: */
+  registers_fetched();
 }
 
 /* Store a register or registers into the VxWorks target.
    REGNO is the register to store, or -1 for all; currently,
-   it is ignored. FIXME look at regno to improve efficiency.  */
-
+   it is ignored. FIXME: look at regno to improve efficiency.  */
 void
-vx_write_register (int regno)
+vx_write_register(int regno)
 {
   char i960_greg_packet[I960_GREG_PLEN];
   char i960_fpreg_packet[I960_FPREG_PLEN];
 
   /* Store floating-point registers. When copying values from
-     registers [], do NOT assume that a location in registers []
+     registers[], do NOT assume that a location in registers[]
      is properly aligned for the target data type.  */
 
-  bcopy (&registers[REGISTER_BYTE (R0_REGNUM)],
-	 &i960_greg_packet[I960_R_R0], 16 * I960_GREG_SIZE);
-  bcopy (&registers[REGISTER_BYTE (G0_REGNUM)],
-	 &i960_greg_packet[I960_R_G0], 16 * I960_GREG_SIZE);
-  bcopy (&registers[REGISTER_BYTE (PCW_REGNUM)],
-	 &i960_greg_packet[I960_R_PCW], sizeof (int));
-  bcopy (&registers[REGISTER_BYTE (ACW_REGNUM)],
-	 &i960_greg_packet[I960_R_ACW], sizeof (int));
-  bcopy (&registers[REGISTER_BYTE (TCW_REGNUM)],
-	 &i960_greg_packet[I960_R_TCW], sizeof (int));
+  bcopy(&registers[REGISTER_BYTE(R0_REGNUM)],
+	&i960_greg_packet[I960_R_R0], (16 * I960_GREG_SIZE));
+  bcopy(&registers[REGISTER_BYTE(G0_REGNUM)],
+	&i960_greg_packet[I960_R_G0], (16 * I960_GREG_SIZE));
+  bcopy(&registers[REGISTER_BYTE(PCW_REGNUM)],
+	&i960_greg_packet[I960_R_PCW], sizeof(int));
+  bcopy(&registers[REGISTER_BYTE(ACW_REGNUM)],
+	&i960_greg_packet[I960_R_ACW], sizeof(int));
+  bcopy(&registers[REGISTER_BYTE(TCW_REGNUM)],
+	&i960_greg_packet[I960_R_TCW], sizeof(int));
 
-  net_write_registers (i960_greg_packet, I960_GREG_PLEN, PTRACE_SETREGS);
+  net_write_registers(i960_greg_packet, I960_GREG_PLEN, PTRACE_SETREGS);
 
   /* Store floating point registers if the target has them.  */
 
   if (target_has_fp)
     {
-      bcopy (&registers[REGISTER_BYTE (FP0_REGNUM)],
-	     &i960_fpreg_packet[I960_R_FP0],
-	     REGISTER_RAW_SIZE (FP0_REGNUM) * 4);
+      bcopy(&registers[REGISTER_BYTE(FP0_REGNUM)],
+	    &i960_fpreg_packet[I960_R_FP0],
+	    (REGISTER_RAW_SIZE(FP0_REGNUM) * 4));
 
-      net_write_registers (i960_fpreg_packet, I960_FPREG_PLEN,
-			   PTRACE_SETFPREGS);
+      net_write_registers(i960_fpreg_packet, I960_FPREG_PLEN,
+			  PTRACE_SETFPREGS);
     }
 }
 

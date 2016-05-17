@@ -10,7 +10,7 @@ ACLOCAL_AMFLAGS = -I m4 -I.. -I../config --install
 ## configure should subst HOST_ARCHITECTURE for us:
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 CXX_ARCHFLAGS = $(C_ARCHFLAGS)
-AM_CFLAGS = $(C_ARCHFLAGS)
+AM_CFLAGS = $(C_ARCHFLAGS) $(WARN_CFLAGS) $(WARN_PEDANTIC)
 AM_CXXFLAGS = $(CXX_ARCHFLAGS)
 
 ## likewise with the other archflags:

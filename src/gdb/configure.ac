@@ -143,6 +143,21 @@ CONFIG_CLEAN=""
 CONFIG_INSTALL=""
 CONFIG_UNINSTALL=""
 
+dnl# Handle 64-bit BFD:
+AC_ARG_ENABLE([64-bit-bfd],
+[AS_HELP_STRING([--enable-64-bit-bfd],
+                [64-bit bfd support (on hosts with narrower word sizes)])],
+[case "${enableval}" in
+  yes)  want64=true  ;;
+  no)   want64=false ;;
+  *)    AC_MSG_ERROR([bad value ${enableval} for 64-bit-bfd option]) ;;
+esac],[want64=false])dnl
+AC_SUBST([want64])dnl
+
+if test "x${want64}" = "xtrue"; then
+  enable_64_bit_bfd=yes
+fi
+
 AC_MSG_NOTICE([doing some preliminary APPLE_LOCAL checks])
 dnl# APPLE LOCAL begin mmap() always works right on Darwin. Take our word
 dnl# for it.
@@ -3012,7 +3027,7 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wignored-qualifiers -Wmissing-format-attribute -Waddress -Wattributes \
 -Wignored-attributes -Wswitch -Wswitch-default -Wclobbered \
 -Wcoverage-mismatch -Wdiv-by-zero -Wdouble-promotion \
--Wfree-nonheap-object -Wsign-compare -Wtype-limits \
+-Wfree-nonheap-object -Wsign-compare \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
 -Wmissing-include-dirs -Woverflow -Woverlength-strings -Wpragmas \
 -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
@@ -3101,6 +3116,10 @@ ${acl_cv_wl}--warn-multiple-gp ${acl_cv_wl}--warn-section-align"
     build_warnings="${build_warnings} -Wformat -Wformat-nonliteral"
   ;;
 esac
+
+if test "x${enable_64_bit_bfd}" = "xyes"; then
+  build_warnings="${build_warnings} -Wtype-limits"
+fi
 
 # clang-specific warnings:
 if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
@@ -3200,7 +3219,6 @@ fi
 #  * -Wformat (we used to explicitly disable this; but it was required for
 #    others such as -Wformat-nonliteral, so I added it back)
 #  * -Wnested-externs (if it gets redundant with -Wimplicit again)
-#  * -Wtype-limits (often triggered on purpose, so okay to just ignore it)
 #  * -Wwrite-strings (in case all the const-ifying gets to be too much)
 #  * -Wunused-local-typedefs (`mig` used to generate code triggering this)
 # Up for debate in some other way:
@@ -3212,6 +3230,7 @@ fi
 #    we get rid of -Wunsuffixed-float-constants some time...)
 #  * -Wformat-nonliteral (as to the conditions in which we enable it)
 #  * -Wcast-align (as to whether to un-disable for clang as well)
+#  * -Wtype-limits (as to whether to also use it for 32-bit BFD)
 # NOT actually up for debate:
 #  * -Werror (never actually add this, even though upstream GDB does...)
 #  * -pedantic-errors (likewise, never add this)

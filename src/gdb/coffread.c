@@ -1593,51 +1593,54 @@ process_coff_symbol (struct coff_symbol *cs,
 	case C_ARG:
 	  SYMBOL_CLASS (sym) = LOC_ARG;
 	  add_symbol_to_list (sym, &local_symbols);
-#if !defined(BELIEVE_PCC_PROMOTION) || (defined(BELIEVE_PCC_PROMOTION) && !BELIEVE_PCC_PROMOTION)
-	  if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
+#if defined(BELIEVE_PCC_PROMOTION)
+	  if (!BELIEVE_PCC_PROMOTION)
+#endif /* BELIEVE_PCC_PROMOTION */
 	    {
-	      /* If PCC says a parameter is a short or a char,
-	         aligned on an int boundary, realign it to the
-	         "little end" of the int.  */
-	      struct type *temptype;
-	      temptype = lookup_fundamental_type (current_objfile,
-						  FT_INTEGER);
-	      if (TYPE_LENGTH (SYMBOL_TYPE (sym)) < TYPE_LENGTH (temptype)
-		  && TYPE_CODE (SYMBOL_TYPE (sym)) == TYPE_CODE_INT
-		  && 0 == SYMBOL_VALUE (sym) % TYPE_LENGTH (temptype))
+	      if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
 		{
-		  SYMBOL_VALUE (sym) +=
-		    TYPE_LENGTH (temptype)
-		    - TYPE_LENGTH (SYMBOL_TYPE (sym));
+		  /* If PCC says a parameter is a short or a char, aligned on an
+		   * int boundary, realign it to the "little end" of the int: */
+		  struct type *temptype;
+		  temptype = lookup_fundamental_type(current_objfile,
+						     FT_INTEGER);
+		  if (TYPE_LENGTH(SYMBOL_TYPE(sym)) < TYPE_LENGTH(temptype)
+		      && (TYPE_CODE(SYMBOL_TYPE(sym)) == TYPE_CODE_INT)
+		      && (0 == (SYMBOL_VALUE(sym) % TYPE_LENGTH(temptype))))
+		    {
+		      SYMBOL_VALUE(sym) +=
+			(TYPE_LENGTH(temptype)
+			 - TYPE_LENGTH(SYMBOL_TYPE(sym)));
+		    }
 		}
 	    }
-#endif /* !BELIEVE_PCC_PROMOTION */
 	  break;
 
 	case C_REGPARM:
-	  SYMBOL_CLASS (sym) = LOC_REGPARM;
-	  SYMBOL_VALUE (sym) = SDB_REG_TO_REGNUM (cs->c_value);
-	  add_symbol_to_list (sym, &local_symbols);
-#if !defined(BELIEVE_PCC_PROMOTION) || (defined(BELIEVE_PCC_PROMOTION) && !BELIEVE_PCC_PROMOTION)
-	  /* FIXME:  This should retain the current type, since it's just
+	  SYMBOL_CLASS(sym) = LOC_REGPARM;
+	  SYMBOL_VALUE(sym) = SDB_REG_TO_REGNUM(cs->c_value);
+	  add_symbol_to_list(sym, &local_symbols);
+	  /* FIXME:  This should retain the current type, since it is just
 	     a register value.  gnu@adobe, 26Feb93 */
-	  {
-	    /* If PCC says a parameter is a short or a char,
-	       it is really an int.  */
-	    struct type *temptype;
-	    temptype =
-	      lookup_fundamental_type (current_objfile, FT_INTEGER);
-	    if (TYPE_LENGTH (SYMBOL_TYPE (sym)) < TYPE_LENGTH (temptype)
-		&& TYPE_CODE (SYMBOL_TYPE (sym)) == TYPE_CODE_INT)
-	      {
-		SYMBOL_TYPE (sym) =
-		  (TYPE_UNSIGNED (SYMBOL_TYPE (sym))
-		   ? lookup_fundamental_type (current_objfile,
-					      FT_UNSIGNED_INTEGER)
-		   : temptype);
-	      }
-	  }
-#endif /* !BELIEVE_PCC_PROMOTION */
+#if defined(BELIEVE_PCC_PROMOTION)
+	  if (!BELIEVE_PCC_PROMOTION)
+#endif /* BELIEVE_PCC_PROMOTION */
+	    {
+	      /* If PCC says a parameter is a short or a char, then it is
+	       * really an int: */
+	      struct type *temptype;
+	      temptype =
+		lookup_fundamental_type(current_objfile, FT_INTEGER);
+	      if ((TYPE_LENGTH(SYMBOL_TYPE(sym)) < TYPE_LENGTH(temptype))
+		  && (TYPE_CODE(SYMBOL_TYPE(sym)) == TYPE_CODE_INT))
+		{
+		  SYMBOL_TYPE(sym) =
+		    (TYPE_UNSIGNED(SYMBOL_TYPE(sym))
+		     ? lookup_fundamental_type(current_objfile,
+					       FT_UNSIGNED_INTEGER)
+		     : temptype);
+		}
+	    }
 	  break;
 
 	case C_TPDEF:

@@ -1120,6 +1120,7 @@ check_bfd_for_matching_uuid(bfd *exe_bfd, bfd *dbg_bfd)
   unsigned char exe_uuid[16];
   unsigned char dbg_uuid[16];
 
+#if defined(TM_NEXTSTEP) || defined(HAVE_MACH_O_IN_BFD)
   /* Make sure the UUID of the object file and the separate debug file match
      and that they exist properly. If they do match correctly, then return
      without removing the new debug file, else remove the separate debug
@@ -1128,6 +1129,10 @@ check_bfd_for_matching_uuid(bfd *exe_bfd, bfd *dbg_bfd)
       && bfd_mach_o_get_uuid(dbg_bfd, dbg_uuid, sizeof(dbg_uuid))
       && (memcmp(exe_uuid, dbg_uuid, sizeof(exe_uuid)) == 0))
     return 1; /* The UUIDs match, nothing needs to be done.  */
+#else
+  (void)exe_uuid;
+  (void)dbg_uuid;
+#endif /* TM_NEXTSTEP || HAVE_MACH_O_IN_BFD */
 
   warning(_("UUID mismatch detected between:\n\t%s\n\t%s..."),
 	  exe_bfd->filename, dbg_bfd->filename);
@@ -2078,15 +2083,15 @@ find_separate_debug_file (struct objfile *objfile)
 static char *
 find_separate_debug_file(struct objfile *objfile)
 {
-  char *basename;
+  char *basename_str;
   char *dir;
   char *debugfile;
   unsigned long crc32;
   int i;
 
-  basename = get_debug_link_info((bfd *)objfile, &crc32);
+  basename_str = get_debug_link_info((bfd *)objfile, &crc32);
 
-  if (basename == NULL)
+  if (basename_str == NULL)
     return NULL;
 
   dir = xstrdup(objfile->name);
@@ -2107,16 +2112,16 @@ find_separate_debug_file(struct objfile *objfile)
 			     + strlen(dir)
 			     + strlen(DEBUG_SUBDIRECTORY)
 			     + strlen("/")
-			     + strlen(basename)
+			     + strlen(basename_str)
 			     + 1UL);
 
   /* First try in the same directory as the original file.  */
   strcpy(debugfile, dir);
-  strcat(debugfile, basename);
+  strcat(debugfile, basename_str);
 
   if (separate_debug_file_exists(debugfile, crc32))
     {
-      xfree(basename);
+      xfree(basename_str);
       xfree(dir);
       return xstrdup(debugfile);
     }
@@ -2125,11 +2130,11 @@ find_separate_debug_file(struct objfile *objfile)
   strcpy(debugfile, dir);
   strcat(debugfile, DEBUG_SUBDIRECTORY);
   strcat(debugfile, "/");
-  strcat(debugfile, basename);
+  strcat(debugfile, basename_str);
 
   if (separate_debug_file_exists(debugfile, crc32))
     {
-      xfree(basename);
+      xfree(basename_str);
       xfree(dir);
       return xstrdup(debugfile);
     }
@@ -2138,16 +2143,16 @@ find_separate_debug_file(struct objfile *objfile)
   strcpy(debugfile, debug_file_directory);
   strcat(debugfile, "/");
   strcat(debugfile, dir);
-  strcat(debugfile, basename);
+  strcat(debugfile, basename_str);
 
   if (separate_debug_file_exists(debugfile, crc32))
     {
-      xfree(basename);
+      xfree(basename_str);
       xfree(dir);
       return xstrdup(debugfile);
     }
 
-  xfree(basename);
+  xfree(basename_str);
   xfree(dir);
   return NULL;
 }
@@ -3327,12 +3332,17 @@ find_kext_files_by_symfile(const char *filename,
         bname = filename;
       }
 
+#if defined(TM_NEXTSTEP) || defined(HAVE_MACH_O_IN_BFD)
       if (bfd_mach_o_get_uuid(abfd, uuid, sizeof(uuid))) {
         warning("Cannot find .kext bundle for %s (%s)", bname,
                 puuid(uuid));
       } else {
         warning("Cannot find .kext bundle for %s", filename);
       }
+#else
+      warning("This gdb is not configured to find .kext bundles properly.");
+      (void)uuid;
+#endif /* TM_NEXTSTEP || HAVE_MACH_O_IN_BFD */
     }
 
   bfd_close(abfd);

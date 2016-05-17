@@ -180,7 +180,7 @@ hppa64_hpux_in_solib_call_trampoline (CORE_ADDR pc, char *name)
   struct minimal_symbol *minsym;
   asection *sec;
   CORE_ADDR addr;
-  int insn, i;
+  int insn;
 
   minsym = lookup_minimal_symbol_by_pc (pc);
   if (! minsym)
@@ -232,13 +232,13 @@ hppa64_hpux_in_solib_call_trampoline (CORE_ADDR pc, char *name)
    just shared library trampolines (import, export).  */
 
 static int
-hppa_hpux_in_solib_return_trampoline (CORE_ADDR pc, char *name)
+hppa_hpux_in_solib_return_trampoline(CORE_ADDR pc, const char *name)
 {
   struct unwind_table_entry *u;
 
   /* Get the unwind descriptor corresponding to PC, return zero
      if no unwind was found.  */
-  u = find_unwind_entry (pc);
+  u = find_unwind_entry(pc);
   if (!u)
     return 0;
 
@@ -570,17 +570,17 @@ hppa_skip_permanent_breakpoint (void)
    exception event has occurred. */
 
 /* The name of the hook to be set to point to the callback function.  */
-static char HP_ACC_EH_notify_hook[] = "__eh_notify_hook";
+static const char HP_ACC_EH_notify_hook[] = "__eh_notify_hook";
 /* The name of the function to be used to set the hook value.  */
-static char HP_ACC_EH_set_hook_value[] = "__eh_set_hook_value";
+static ATTRIBUTE_USED const char HP_ACC_EH_set_hook_value[] = "__eh_set_hook_value";
 /* The name of the callback function in end.o */
-static char HP_ACC_EH_notify_callback[] = "__d_eh_notify_callback";
+static const char HP_ACC_EH_notify_callback[] = "__d_eh_notify_callback";
 /* Name of function in end.o on which a break is set (called by above).  */
-static char HP_ACC_EH_break[] = "__d_eh_break";
+static const char HP_ACC_EH_break[] = "__d_eh_break";
 /* Name of flag (in end.o) that enables catching throws.  */
-static char HP_ACC_EH_catch_throw[] = "__d_eh_catch_throw";
+static const char HP_ACC_EH_catch_throw[] = "__d_eh_catch_throw";
 /* Name of flag (in end.o) that enables catching catching.  */
-static char HP_ACC_EH_catch_catch[] = "__d_eh_catch_catch";
+static const char HP_ACC_EH_catch_catch[] = "__d_eh_catch_catch";
 /* The enum used by aCC.  */
 typedef enum
   {
@@ -639,6 +639,10 @@ setup_d_pid_in_inferior (void)
   return 0;
 }
 
+#ifndef TYPE_PROCEDURE
+# define TYPE_PROCEDURE 0
+#endif /* !TYPE_PROCEDURE */
+
 /* elz: Used to lookup a symbol in the shared libraries.
    This function calls shl_findsym, indirectly through a
    call to __d_shl_get. __d_shl_get is in end.c, which is always
@@ -673,8 +677,8 @@ find_stub_with_shl_get (struct minimal_symbol *function, CORE_ADDR handle)
   CORE_ADDR stub_addr;
 
 
-  args = alloca (sizeof (struct value *) * 8);		/* 6 for the arguments and one null one??? */
-  funcval = find_function_in_inferior ("__d_shl_get");
+  args = (struct value **)alloca(sizeof(struct value *) * 8UL); /* 6 for the arguments and one null one??? */
+  funcval = find_function_in_inferior("__d_shl_get", NULL);
   get_sym = lookup_symbol ("__d_shl_get", NULL, VAR_DOMAIN, NULL, NULL);
   buff_minsym = lookup_minimal_symbol ("__buffer", NULL, NULL);
   msymbol = lookup_minimal_symbol ("__shldp", NULL, NULL);
@@ -704,12 +708,12 @@ find_stub_with_shl_get (struct minimal_symbol *function, CORE_ADDR handle)
 
   /* now prepare the arguments for the call */
 
-  args[0] = value_from_longest (TYPE_FIELD_TYPE (ftype, 0), 12);
-  args[1] = value_from_pointer (TYPE_FIELD_TYPE (ftype, 1), SYMBOL_VALUE_ADDRESS (msymbol));
-  args[2] = value_from_pointer (TYPE_FIELD_TYPE (ftype, 2), endo_buff_addr);
-  args[3] = value_from_longest (TYPE_FIELD_TYPE (ftype, 3), TYPE_PROCEDURE);
-  args[4] = value_from_pointer (TYPE_FIELD_TYPE (ftype, 4), value_return_addr);
-  args[5] = value_from_pointer (TYPE_FIELD_TYPE (ftype, 5), errno_return_addr);
+  args[0] = value_from_longest(TYPE_FIELD_TYPE(ftype, 0), 12);
+  args[1] = value_from_pointer(TYPE_FIELD_TYPE(ftype, 1), SYMBOL_VALUE_ADDRESS(msymbol));
+  args[2] = value_from_pointer(TYPE_FIELD_TYPE(ftype, 2), endo_buff_addr);
+  args[3] = value_from_longest(TYPE_FIELD_TYPE(ftype, 3), TYPE_PROCEDURE);
+  args[4] = value_from_pointer(TYPE_FIELD_TYPE(ftype, 4), value_return_addr);
+  args[5] = value_from_pointer(TYPE_FIELD_TYPE(ftype, 5), errno_return_addr);
 
   /* now call the function */
 
@@ -728,10 +732,10 @@ find_stub_with_shl_get (struct minimal_symbol *function, CORE_ADDR handle)
 
 /* Cover routine for find_stub_with_shl_get to pass to catch_errors */
 static int
-cover_find_stub_with_shl_get (void *args_untyped)
+cover_find_stub_with_shl_get(void *args_untyped)
 {
-  args_for_find_stub *args = args_untyped;
-  args->return_val = find_stub_with_shl_get (args->msym, args->solib_handle);
+  args_for_find_stub *args = (args_for_find_stub *)args_untyped;
+  args->return_val = find_stub_with_shl_get(args->msym, args->solib_handle);
   return 0;
 }
 
@@ -855,15 +859,19 @@ GDB will be unable to intercept exception events."),
          does the equivalent of shl_findsym()) to find the plabel.  */
 
       args_for_find_stub args;
-      static char message[] = "Error while finding exception callback hook:\n";
+      static const char message[] = "Error while finding exception callback hook:\n";
+      int errors_ret = 0;
 
-      args.solib_handle = gdbarch_tdep (current_gdbarch)->solib_get_solib_by_pc (eh_notify_callback_addr);
+      args.solib_handle = gdbarch_tdep(current_gdbarch)->solib_get_solib_by_pc(eh_notify_callback_addr);
       args.msym = msym;
       args.return_val = 0;
 
       recurse++;
-      catch_errors (cover_find_stub_with_shl_get, &args, message,
-		    RETURN_MASK_ALL);
+      errors_ret = catch_errors(cover_find_stub_with_shl_get, &args, message,
+				RETURN_MASK_ALL);
+      if (errors_ret > 0) {
+	; /* ??? */
+      }
       eh_notify_callback_addr = args.return_val;
       recurse--;
 
@@ -881,7 +889,7 @@ GDB will not be able to intercept exception events."));
     }
   else
     deprecated_exception_catchpoints_are_fragile = 0;
-#endif
+#endif /* !GDB_TARGET_IS_HPPA_20W */
 
   /* Now, look for the breakpointable routine in end.o */
   /* This should also be available in the SOM symbol dict. if end.o linked in */
@@ -1056,8 +1064,10 @@ Interception of exception events may not work."));
 /* Record some information about the current exception event */
 static struct exception_event_record current_ex_event;
 /* Convenience struct */
-static struct symtab_and_line null_symtab_and_line =
-{NULL, 0, 0, 0};
+static ATTRIBUTE_USED const struct symtab_and_line null_symtab_and_line =
+{
+  NULL, 0, 0, 0
+};
 
 /* Report current exception event.  Returns a pointer to a record
    that describes the kind of the event, where it was thrown from,
@@ -1193,14 +1203,22 @@ hppa_hpux_sigtramp_frame_unwind_cache (struct frame_info *next_frame,
   if (!(flag & 0x40))
     {
       /* Narrow registers. */
-      off = scptr + offsetof (save_state_t, ss_narrow);
+#ifdef HAVE_SAVE_STATE_T
+      off = (scptr + offsetof(save_state_t, ss_narrow));
+#else
+      off = (scptr + 0);
+#endif /* HAVE_SAVE_STATE_T */
       incr = 4;
       szoff = 0;
     }
   else
     {
       /* Wide registers. */
-      off = scptr + offsetof (save_state_t, ss_wide) + 8;
+#ifdef HAVE_SAVE_STATE_T
+      off = (scptr + offsetof(save_state_t, ss_wide) + 8);
+#else
+      off = (scptr + 8);
+#endif /* HAVE_SAVE_STATE_T */
       incr = 8;
       szoff = (tdep->bytes_per_address == 4 ? 4 : 0);
     }
@@ -2020,29 +2038,30 @@ hppa_hpux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 
   tdep->unwind_adjust_stub = hppa_hpux_unwind_adjust_stub;
 
-  set_gdbarch_in_solib_return_trampoline
-    (gdbarch, hppa_hpux_in_solib_return_trampoline);
-  set_gdbarch_skip_trampoline_code (gdbarch, hppa_hpux_skip_trampoline_code);
+  set_gdbarch_in_solib_return_trampoline(gdbarch,
+					 hppa_hpux_in_solib_return_trampoline);
+  set_gdbarch_skip_trampoline_code(gdbarch, hppa_hpux_skip_trampoline_code);
 
-  set_gdbarch_push_dummy_code (gdbarch, hppa_hpux_push_dummy_code);
-  set_gdbarch_call_dummy_location (gdbarch, ON_STACK);
+  set_gdbarch_push_dummy_code(gdbarch, hppa_hpux_push_dummy_code);
+  set_gdbarch_call_dummy_location(gdbarch, ON_STACK);
 
-  set_gdbarch_read_pc (gdbarch, hppa_hpux_read_pc);
-  set_gdbarch_write_pc (gdbarch, hppa_hpux_write_pc);
-  set_gdbarch_unwind_pc (gdbarch, hppa_hpux_unwind_pc);
+  set_gdbarch_read_pc(gdbarch, hppa_hpux_read_pc);
+  set_gdbarch_write_pc(gdbarch, hppa_hpux_write_pc);
+  set_gdbarch_unwind_pc(gdbarch, hppa_hpux_unwind_pc);
 
-  set_gdbarch_regset_from_core_section
-    (gdbarch, hppa_hpux_regset_from_core_section);
+  set_gdbarch_regset_from_core_section(gdbarch,
+				       hppa_hpux_regset_from_core_section);
 
-  frame_unwind_append_sniffer (gdbarch, hppa_hpux_sigtramp_unwind_sniffer);
+  frame_unwind_append_sniffer(gdbarch, hppa_hpux_sigtramp_unwind_sniffer);
 
-  observer_attach_inferior_created (hppa_hpux_inferior_created);
+  observer_attach_inferior_created(hppa_hpux_inferior_created);
 }
 
+/* */
 static void
-hppa_hpux_som_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
+hppa_hpux_som_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
 
   tdep->is_elf = 0;
 
@@ -2074,16 +2093,18 @@ hppa_hpux_core_osabi_sniffer (bfd *abfd)
 }
 
 void
-_initialize_hppa_hpux_tdep (void)
+_initialize_hppa_hpux_tdep(void)
 {
   /* BFD doesn't set a flavour for HP-UX style core files.  It doesn't
      set the architecture either.  */
-  gdbarch_register_osabi_sniffer (bfd_arch_unknown,
-				  bfd_target_unknown_flavour,
-				  hppa_hpux_core_osabi_sniffer);
+  gdbarch_register_osabi_sniffer(bfd_arch_unknown,
+				 bfd_target_unknown_flavour,
+				 hppa_hpux_core_osabi_sniffer);
 
-  gdbarch_register_osabi (bfd_arch_hppa, 0, GDB_OSABI_HPUX_SOM,
-                          hppa_hpux_som_init_abi);
-  gdbarch_register_osabi (bfd_arch_hppa, bfd_mach_hppa20w, GDB_OSABI_HPUX_ELF,
-                          hppa_hpux_elf_init_abi);
+  gdbarch_register_osabi(bfd_arch_hppa, 0, GDB_OSABI_HPUX_SOM,
+                         hppa_hpux_som_init_abi);
+  gdbarch_register_osabi(bfd_arch_hppa, bfd_mach_hppa20w, GDB_OSABI_HPUX_ELF,
+                         hppa_hpux_elf_init_abi);
 }
+
+/* EOF */

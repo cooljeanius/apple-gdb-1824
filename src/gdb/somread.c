@@ -1,4 +1,4 @@
-/* Read HP PA/Risc object files for GDB.
+/* somread.c: Read HP PA/Risc object files for GDB.
    Copyright 1991, 1992, 1994, 1995, 1996, 1998, 1999, 2000, 2001, 2002,
    2004 Free Software Foundation, Inc.
    Written by Fred Fish at Cygnus Support.
@@ -22,7 +22,13 @@
 
 #include "defs.h"
 #include "bfd.h"
-#include <syms.h>
+#ifdef HAVE_SYMS_H
+# include <syms.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "somread.c expects <syms.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYMS_H */
 #include "symtab.h"
 #include "symfile.h"
 #include "objfiles.h"
@@ -51,7 +57,6 @@ extern void hpread_symfile_init (struct objfile *);
 extern void do_pxdb (bfd *);
 
 /*
-
    LOCAL FUNCTION
 
    som_symtab_read -- read the symbol table of a SOM file
@@ -68,39 +73,38 @@ extern void do_pxdb (bfd *);
    or not (may be shared library for example), add all the global
    function and data symbols to the minimal symbol table.
  */
-
 static void
-som_symtab_read (bfd *abfd, struct objfile *objfile,
-		 struct section_offsets *section_offsets)
+som_symtab_read(bfd *abfd, struct objfile *objfile,
+		struct section_offsets *section_offsets)
 {
   unsigned int number_of_symbols;
   int val, dynamic;
   char *stringtab;
-  asection *shlib_info;
+  asection *shlib_info = (asection *)NULL;
   struct symbol_dictionary_record *buf, *bufp, *endbufp;
   char *symname;
-  CONST int symsize = sizeof (struct symbol_dictionary_record);
+  CONST size_t symsize = sizeof(struct symbol_dictionary_record);
   CORE_ADDR text_offset, data_offset;
 
 
-  text_offset = ANOFFSET (section_offsets, 0);
-  data_offset = ANOFFSET (section_offsets, 1);
+  text_offset = ANOFFSET(section_offsets, 0);
+  data_offset = ANOFFSET(section_offsets, 1);
 
-  number_of_symbols = bfd_get_symcount (abfd);
-
-  /* FIXME (alloca): could be quite large. */
-  buf = alloca (symsize * number_of_symbols);
-  bfd_seek (abfd, obj_som_sym_filepos (abfd), SEEK_SET);
-  val = bfd_bread (buf, symsize * number_of_symbols, abfd);
-  if (val != symsize * number_of_symbols)
-    error (_("Couldn't read symbol dictionary!"));
+  number_of_symbols = bfd_get_symcount(abfd);
 
   /* FIXME (alloca): could be quite large. */
-  stringtab = alloca (obj_som_stringtab_size (abfd));
-  bfd_seek (abfd, obj_som_str_filepos (abfd), SEEK_SET);
-  val = bfd_bread (stringtab, obj_som_stringtab_size (abfd), abfd);
-  if (val != obj_som_stringtab_size (abfd))
-    error (_("Can't read in HP string table."));
+  buf = (struct symbol_dictionary_record *)alloca(symsize * number_of_symbols);
+  bfd_seek(abfd, obj_som_sym_filepos(abfd), SEEK_SET);
+  val = bfd_bread(buf, (symsize * number_of_symbols), abfd);
+  if (val != (symsize * number_of_symbols))
+    error(_("Failed to read symbol dictionary!"));
+
+  /* FIXME (alloca): could be quite large. */
+  stringtab = (char *)alloca(obj_som_stringtab_size(abfd));
+  bfd_seek(abfd, obj_som_str_filepos(abfd), SEEK_SET);
+  val = bfd_bread(stringtab, obj_som_stringtab_size(abfd), abfd);
+  if (val != obj_som_stringtab_size(abfd))
+    error(_("Cannot read in HP string table."));
 
   /* We need to determine if objfile is a dynamic executable (so we
      can do the right thing for ST_ENTRY vs ST_CODE symbols).
@@ -172,10 +176,10 @@ som_symtab_read (bfd *abfd, struct objfile *objfile,
 	    }
 	  break;
 
-#if 0
-	  /* SS_GLOBAL and SS_LOCAL are two names for the same thing (!).  */
+#if defined(SS_GLOBAL) && defined(SS_LOCAL) && (SS_GLOBAL != SS_LOCAL)
+	/* SS_GLOBAL and SS_LOCAL are two names for the same thing (!).  */
 	case SS_GLOBAL:
-#endif
+#endif /* SS_GLOBAL != SS_LOCAL */
 	case SS_LOCAL:
 	  switch (bufp->symbol_type)
 	    {
@@ -315,27 +319,27 @@ som_symtab_read (bfd *abfd, struct objfile *objfile,
    capability even for files compiled without -g.  */
 
 static void
-som_symfile_read (struct objfile *objfile, int mainline)
+som_symfile_read(struct objfile *objfile, int mainline)
 {
   bfd *abfd = objfile->obfd;
   struct cleanup *back_to;
 
-  do_pxdb (symfile_bfd_open (objfile->name));
+  do_pxdb(symfile_bfd_open(objfile->name, mainline, GDB_OSABI_HPUX_SOM));
 
-  init_minimal_symbol_collection ();
-  back_to = make_cleanup_discard_minimal_symbols ();
+  init_minimal_symbol_collection();
+  back_to = make_cleanup_discard_minimal_symbols();
 
   /* Read in the import list and the export list.  Currently
      the export list isn't used; the import list is used in
      hp-symtab-read.c to handle static vars declared in other
      shared libraries. */
-  init_import_symbols (objfile);
+  init_import_symbols(objfile);
 #if 0				/* Export symbols not used today 1997-08-05 */
   init_export_symbols (objfile);
 #else
   objfile->export_list = NULL;
   objfile->export_list_size = 0;
-#endif
+#endif /* 0 */
 
   /* Process the normal SOM symbol table first. 
      This reads in the DNTT and string table, but doesn't
@@ -579,7 +583,7 @@ init_import_symbols (struct objfile *objfile)
    with as "loc_indirect" vars.)
    Return value = number of import symbols read in. */
 int
-init_export_symbols (struct objfile *objfile)
+init_export_symbols(struct objfile *objfile)
 {
   unsigned int export_list;
   unsigned int export_list_size;
@@ -710,16 +714,19 @@ init_export_symbols (struct objfile *objfile)
 static struct sym_fns som_sym_fns =
 {
   bfd_target_som_flavour,
-  som_new_init,			/* sym_new_init: init anything gbl to entire symtab */
-  som_symfile_init,		/* sym_init: read initial info, setup for sym_read() */
-  som_symfile_read,		/* sym_read: read a symbol file into symtab */
-  som_symfile_finish,		/* sym_finish: finished with file, cleanup */
-  som_symfile_offsets,		/* sym_offsets:  Translate ext. to int. relocation */
-  NULL				/* next: pointer to next struct sym_fns */
+  som_new_init,		/* sym_new_init: init anything gbl to entire symtab */
+  som_symfile_init,	/* sym_init: read initial info, setup for sym_read() */
+  som_symfile_read,	/* sym_read: read a symbol file into symtab */
+  som_symfile_finish,	/* sym_finish: finished with file, cleanup */
+  som_symfile_offsets,	/* sym_offsets:  Translate ext. to int. relocation */
+  NULL			/* next: pointer to next struct sym_fns */
 };
 
+extern void _initialize_somread(void); /* -Wmissing-prototypes */
 void
-_initialize_somread (void)
+_initialize_somread(void)
 {
-  add_symtab_fns (&som_sym_fns);
+  add_symtab_fns(&som_sym_fns);
 }
+
+/* EOF */

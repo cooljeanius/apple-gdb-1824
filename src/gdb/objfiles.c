@@ -537,10 +537,10 @@ objfile_delete_from_ordered_sections (struct objfile *objfile)
 
       src = &(ordered_sections[delete_list[i] + 1]);
       dest = &(ordered_sections[delete_list[i] - i]);
-      len = (delete_list[i+1] - delete_list[i] - 1)
-	* sizeof (struct ordered_obj_section);
+      len = ((delete_list[i + 1] - delete_list[i] - 1)
+	     * sizeof(struct ordered_obj_section));
 
-      bcopy (src, dest, len);
+      bcopy(src, dest, len);
     }
 
 
@@ -683,15 +683,15 @@ objfile_add_to_ordered_sections (struct objfile *objfile)
       dest = &(ordered_sections[insert_list[i].index + num_left]);
 
       if (i == 0)
-	len = num_ordered_sections - insert_list[i].index;
+	len = (num_ordered_sections - insert_list[i].index);
       else
-	len = insert_list[i - 1].index - insert_list[i].index;
-      len *= sizeof (struct ordered_obj_section);
-      bcopy (src, dest, len);
+	len = (insert_list[i - 1].index - insert_list[i].index);
+      len *= sizeof(struct ordered_obj_section);
+      bcopy(src, dest, len);
 
       /* Now put the new element in place */
       s = insert_list[i].section;
-      pos = insert_list[i].index + num_left - 1;
+      pos = (insert_list[i].index + num_left - 1);
       ordered_sections[pos].addr = s->addr;
       ordered_sections[pos].endaddr = s->endaddr;
       ordered_sections[pos].obj_section = s;

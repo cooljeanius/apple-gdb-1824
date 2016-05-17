@@ -96,7 +96,7 @@ static target_type which_target = UNKNOWN_TARGET;
 static int dontdeltemps = 0;
 static int dry_run = 0;
 
-static char *prog_name;
+static char *g_prog_name;
 
 static int verbose = 0;
 
@@ -132,13 +132,13 @@ static void cleanup_and_exit (int);
    (hopefully) soon be retired in favor of `ld --shared.  */
 
 static void
-display (const char * message, va_list args)
+display(const char *message, va_list args)
 {
-  if (prog_name != NULL)
-    fprintf (stderr, "%s: ", prog_name);
+  if (g_prog_name != NULL)
+    fprintf(stderr, "%s: ", g_prog_name);
 
-  vfprintf (stderr, message, args);
-  fputc ('\n', stderr);
+  vfprintf(stderr, message, args);
+  fputc('\n', stderr);
 }
 
 
@@ -173,19 +173,19 @@ warn VPARAMS ((const char *format, ...))
    appropriate.  */
 
 static char *
-look_for_prog (const char *prog_name, const char *prefix, int end_prefix)
+look_for_prog(const char *the_prog_name, const char *prefix, int end_prefix)
 {
   struct stat s;
   char *cmd;
 
-  cmd = (char *)xmalloc(strlen(prefix) + strlen(prog_name)
+  cmd = (char *)xmalloc(strlen(prefix) + strlen(the_prog_name)
 #ifdef HAVE_EXECUTABLE_SUFFIX
                         + strlen(EXECUTABLE_SUFFIX)
 #endif /* HAVE_EXECUTABLE_SUFFIX */
                         + 10);
   strcpy(cmd, prefix);
 
-  sprintf(cmd + end_prefix, "%s", prog_name);
+  sprintf(cmd + end_prefix, "%s", the_prog_name);
 
   if (strchr(cmd, '/') != NULL)
     {
@@ -238,7 +238,7 @@ look_for_prog (const char *prog_name, const char *prefix, int end_prefix)
    Returns a dynamically allocated string.  */
 
 static char *
-deduce_name (const char * name)
+deduce_name(const char *name)
 {
   char *cmd;
   const char *dash;
@@ -247,15 +247,15 @@ deduce_name (const char * name)
 
   dash = NULL;
   slash = NULL;
-  for (cp = prog_name; *cp != '\0'; ++cp)
+  for (cp = g_prog_name; *cp != '\0'; ++cp)
     {
       if (*cp == '-')
 	dash = cp;
 
       if (
-#if defined(__DJGPP__) || defined (__CYGWIN__) || defined(__WIN32__)
+#if defined(__DJGPP__) || defined(__CYGWIN__) || defined(__WIN32__)
 	  *cp == ':' || *cp == '\\' ||
-#endif
+#endif /* __DJGPP__ || __CYGWIN__ || __WIN32__ */
 	  *cp == '/')
 	{
 	  slash = cp;
@@ -268,22 +268,23 @@ deduce_name (const char * name)
   if (dash != NULL)
     /* First, try looking for a prefixed NAME in the
        PROG_NAME directory, with the same prefix as PROG_NAME.  */
-    cmd = look_for_prog (name, prog_name, dash - prog_name + 1);
+    cmd = look_for_prog(name, g_prog_name, (dash - g_prog_name + 1));
 
   if (slash != NULL && cmd == NULL)
     /* Next, try looking for a NAME in the same directory as
        that of this program.  */
-    cmd = look_for_prog (name, prog_name, slash - prog_name + 1);
+    cmd = look_for_prog(name, g_prog_name, (slash - g_prog_name + 1));
 
   if (cmd == NULL)
-    /* Just return NAME as is.  */
-    cmd = xstrdup (name);
+    /* Just return NAME as is: */
+    cmd = xstrdup(name);
 
   return cmd;
 }
 
+/* */
 static void
-delete_temp_files (void)
+delete_temp_files(void)
 {
   if (delete_base_file && base_file_name)
     {
@@ -388,36 +389,36 @@ run(const char *what, char *args)
   if (dry_run)
     return 0;
 
-  pid = pexecute (argv[0], (char * const *) argv, prog_name, temp_base,
-		  &errmsg_fmt, &errmsg_arg, PEXECUTE_ONE | PEXECUTE_SEARCH);
+  pid = pexecute(argv[0], (char *const *)argv, g_prog_name, temp_base,
+		 &errmsg_fmt, &errmsg_arg, (PEXECUTE_ONE | PEXECUTE_SEARCH));
 
   if (pid == -1)
     {
       int errno_val = errno;
 
-      fprintf (stderr, "%s: ", prog_name);
-      fprintf (stderr, errmsg_fmt, errmsg_arg);
-      fprintf (stderr, ": %s\n", strerror (errno_val));
+      fprintf(stderr, "%s: ", g_prog_name);
+      fprintf(stderr, errmsg_fmt, errmsg_arg);
+      fprintf(stderr, ": %s\n", strerror(errno_val));
       return 1;
     }
 
   retcode = 0;
-  pid = pwait (pid, &wait_status, 0);
+  pid = pwait(pid, &wait_status, 0);
   if (pid == -1)
     {
-      warn ("wait: %s", strerror (errno));
+      warn("wait: %s", strerror(errno));
       retcode = 1;
     }
-  else if (WIFSIGNALED (wait_status))
+  else if (WIFSIGNALED(wait_status))
     {
-      warn (_("subprocess got fatal signal %d"), WTERMSIG (wait_status));
+      warn(_("subprocess got fatal signal %d"), WTERMSIG(wait_status));
       retcode = 1;
     }
-  else if (WIFEXITED (wait_status))
+  else if (WIFEXITED(wait_status))
     {
-      if (WEXITSTATUS (wait_status) != 0)
+      if (WEXITSTATUS(wait_status) != 0)
 	{
-	  warn (_("%s exited with status %d"), what, WEXITSTATUS (wait_status));
+	  warn(_("%s exited with status %d"), what, WEXITSTATUS(wait_status));
 	  retcode = 1;
 	}
     }
@@ -469,46 +470,46 @@ strhash (const char *str)
 /**********************************************************************/
 
 static void
-usage (FILE *file, int status)
+usage(FILE *file, int status)
 {
-  fprintf (file, _("Usage %s <option(s)> <object-file(s)>\n"), prog_name);
-  fprintf (file, _("  Generic options:\n"));
-  fprintf (file, _("   --quiet, -q            Work quietly\n"));
-  fprintf (file, _("   --verbose, -v          Verbose\n"));
-  fprintf (file, _("   --version              Print dllwrap version\n"));
-  fprintf (file, _("   --implib <outname>     Synonym for --output-lib\n"));
-  fprintf (file, _("  Options for %s:\n"), prog_name);
-  fprintf (file, _("   --driver-name <driver> Defaults to \"gcc\"\n"));
-  fprintf (file, _("   --driver-flags <flags> Override default ld flags\n"));
-  fprintf (file, _("   --dlltool-name <dlltool> Defaults to \"dlltool\"\n"));
-  fprintf (file, _("   --entry <entry>        Specify alternate DLL entry point\n"));
-  fprintf (file, _("   --image-base <base>    Specify image base address\n"));
-  fprintf (file, _("   --target <machine>     i386-cygwin32 or i386-mingw32\n"));
-  fprintf (file, _("   --dry-run              Show what needs to be run\n"));
-  fprintf (file, _("   --mno-cygwin           Create Mingw DLL\n"));
-  fprintf (file, _("  Options passed to DLLTOOL:\n"));
-  fprintf (file, _("   --machine <machine>\n"));
-  fprintf (file, _("   --output-exp <outname> Generate export file.\n"));
-  fprintf (file, _("   --output-lib <outname> Generate input library.\n"));
-  fprintf (file, _("   --add-indirect         Add dll indirects to export file.\n"));
-  fprintf (file, _("   --dllname <name>       Name of input dll to put into output lib.\n"));
-  fprintf (file, _("   --def <deffile>        Name input .def file\n"));
-  fprintf (file, _("   --output-def <deffile> Name output .def file\n"));
-  fprintf (file, _("   --export-all-symbols     Export all symbols to .def\n"));
-  fprintf (file, _("   --no-export-all-symbols  Only export .drectve symbols\n"));
-  fprintf (file, _("   --exclude-symbols <list> Exclude <list> from .def\n"));
-  fprintf (file, _("   --no-default-excludes    Zap default exclude symbols\n"));
-  fprintf (file, _("   --base-file <basefile> Read linker generated base file\n"));
-  fprintf (file, _("   --no-idata4           Don't generate idata$4 section\n"));
-  fprintf (file, _("   --no-idata5           Don't generate idata$5 section\n"));
-  fprintf (file, _("   -U                     Add underscores to .lib\n"));
-  fprintf (file, _("   -k                     Kill @<n> from exported names\n"));
-  fprintf (file, _("   --add-stdcall-alias    Add aliases without @<n>\n"));
-  fprintf (file, _("   --as <name>            Use <name> for assembler\n"));
-  fprintf (file, _("   --nodelete             Keep temp files.\n"));
-  fprintf (file, _("  Rest are passed unmodified to the language driver\n"));
-  fprintf (file, "\n\n");
-  exit (status);
+  fprintf(file, _("Usage %s <option(s)> <object-file(s)>\n"), g_prog_name);
+  fprintf(file, _("  Generic options:\n"));
+  fprintf(file, _("   --quiet, -q            Work quietly\n"));
+  fprintf(file, _("   --verbose, -v          Verbose\n"));
+  fprintf(file, _("   --version              Print dllwrap version\n"));
+  fprintf(file, _("   --implib <outname>     Synonym for --output-lib\n"));
+  fprintf(file, _("  Options for %s:\n"), g_prog_name);
+  fprintf(file, _("   --driver-name <driver> Defaults to \"gcc\"\n"));
+  fprintf(file, _("   --driver-flags <flags> Override default ld flags\n"));
+  fprintf(file, _("   --dlltool-name <dlltool> Defaults to \"dlltool\"\n"));
+  fprintf(file, _("   --entry <entry>        Specify alternate DLL entry point\n"));
+  fprintf(file, _("   --image-base <base>    Specify image base address\n"));
+  fprintf(file, _("   --target <machine>     i386-cygwin32 or i386-mingw32\n"));
+  fprintf(file, _("   --dry-run              Show what needs to be run\n"));
+  fprintf(file, _("   --mno-cygwin           Create Mingw DLL\n"));
+  fprintf(file, _("  Options passed to DLLTOOL:\n"));
+  fprintf(file, _("   --machine <machine>\n"));
+  fprintf(file, _("   --output-exp <outname> Generate export file.\n"));
+  fprintf(file, _("   --output-lib <outname> Generate input library.\n"));
+  fprintf(file, _("   --add-indirect         Add dll indirects to export file.\n"));
+  fprintf(file, _("   --dllname <name>       Name of input dll to put into output lib.\n"));
+  fprintf(file, _("   --def <deffile>        Name input .def file\n"));
+  fprintf(file, _("   --output-def <deffile> Name output .def file\n"));
+  fprintf(file, _("   --export-all-symbols     Export all symbols to .def\n"));
+  fprintf(file, _("   --no-export-all-symbols  Only export .drectve symbols\n"));
+  fprintf(file, _("   --exclude-symbols <list> Exclude <list> from .def\n"));
+  fprintf(file, _("   --no-default-excludes    Zap default exclude symbols\n"));
+  fprintf(file, _("   --base-file <basefile> Read linker generated base file\n"));
+  fprintf(file, _("   --no-idata4           Don't generate idata$4 section\n"));
+  fprintf(file, _("   --no-idata5           Don't generate idata$5 section\n"));
+  fprintf(file, _("   -U                     Add underscores to .lib\n"));
+  fprintf(file, _("   -k                     Kill @<n> from exported names\n"));
+  fprintf(file, _("   --add-stdcall-alias    Add aliases without @<n>\n"));
+  fprintf(file, _("   --as <name>            Use <name> for assembler\n"));
+  fprintf(file, _("   --nodelete             Keep temp files.\n"));
+  fprintf(file, _("  Rest are passed unmodified to the language driver\n"));
+  fprintf(file, "\n\n");
+  exit(status);
 }
 
 #define OPTION_START		149
@@ -616,14 +617,14 @@ main (int argc, char **argv)
 
   char *image_base_str = 0;
 
-  prog_name = argv[0];
+  g_prog_name = argv[0];
 
-#if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES)
-  setlocale (LC_MESSAGES, "");
-#endif
-#if defined (HAVE_SETLOCALE)
-  setlocale (LC_CTYPE, "");
-#endif
+#if defined(HAVE_SETLOCALE) && defined(HAVE_LC_MESSAGES)
+  setlocale(LC_MESSAGES, "");
+#endif /* HAVE_SETLOCALE && HAVE_LC_MESSAGES */
+#if defined(HAVE_SETLOCALE)
+  setlocale(LC_CTYPE, "");
+#endif /* HAVE_SETLOCALE */
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
@@ -680,7 +681,7 @@ main (int argc, char **argv)
 	  verbose = 1;
 	  break;
 	case OPTION_VERSION:
-	  print_version (prog_name);
+	  print_version(g_prog_name);
 	  break;
 	case 'e':
 	  entry_point = optarg;

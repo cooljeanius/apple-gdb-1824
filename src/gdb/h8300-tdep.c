@@ -803,6 +803,8 @@ h8300_extract_return_value(struct type *type, struct regcache *regcache,
 	  error(_("I don't know how this 8 byte value is returned."));
 	}
       break;
+    default:
+      break;
     }
 }
 
@@ -837,6 +839,8 @@ h8300h_extract_return_value(struct type *type, struct regcache *regcache,
 	{
 	  error(_("I don't know how this 8 byte value is returned."));
 	}
+      break;
+    default:
       break;
     }
 }
@@ -899,6 +903,8 @@ h8300_store_return_value(struct type *type, struct regcache *regcache,
 			   as 4 byte types so far so this shouldn't happen.  */
       error(_("I don't know how to return an 8 byte value."));
       break;
+    default:
+      break;
     }
 }
 
@@ -924,6 +930,8 @@ h8300h_store_return_value(struct type *type, struct regcache *regcache,
 				     ((val >> 32) & 0xffffffff));
       regcache_cooked_write_unsigned(regcache, E_RET1_REGNUM,
 				     (val & 0xffffffff));
+      break;
+    default:
       break;
     }
 }
@@ -1348,6 +1356,8 @@ h8300_gdbarch_init(struct gdbarch_info info, struct gdbarch_list *arches)
 	}
       set_gdbarch_return_value (gdbarch, h8300h_return_value);
       set_gdbarch_print_insn (gdbarch, print_insn_h8300s);
+      break;
+    default:
       break;
     }
 

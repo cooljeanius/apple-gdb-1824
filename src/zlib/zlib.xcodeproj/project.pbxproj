@@ -289,7 +289,6 @@
 			isa = PBXProject;
 			buildConfigurationList = 1DEB914E08733D8E0010E9CD /* Build configuration list for PBXProject "zlib" */;
 			compatibilityVersion = "Xcode 3.1";
-			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				en,
@@ -435,7 +434,6 @@
 				GENERATE_PKGINFO_FILE = YES;
 				LD_GENERATE_MAP_FILE = YES;
 				MACH_O_TYPE = mh_dylib;
-				OTHER_CFLAGS = "-fstrict-overflow";
 				OTHER_LDFLAGS = (
 					"-headerpad_max_install_names",
 					"-read_only_relocs",
@@ -448,10 +446,10 @@
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
 				SDKROOT = macosx10.5;
-				"SDKROOT[arch=i386]" = macosx10.6;
+				"SDKROOT[arch=i386]" = macosx10.5;
 				"SDKROOT[arch=ppc64]" = macosx10.5;
 				"SDKROOT[arch=ppc]" = macosx10.5;
-				"SDKROOT[arch=x86_64]" = macosx10.6;
+				"SDKROOT[arch=x86_64]" = macosx10.5;
 				STRIP_STYLE = "non-global";
 				USE_HEADERMAP = NO;
 				VALIDATE_PRODUCT = YES;
@@ -460,14 +458,12 @@
 					"-Wall",
 					"-Wimplicit",
 					"-Wformat=2",
-					"-Wstrict-overflow=5",
 					"-Wundef",
 					"-Wunused-macros",
 					"-Wextra-tokens",
 					"-Waggregate-return",
 					"-Wbad-function-cast",
 					"-Wcast-align",
-					"-Wc++-compat",
 					"-Wmissing-declarations",
 					"-Wdeclaration-after-statement",
 					"-Wdisabled-optimization",
@@ -480,8 +476,6 @@
 					"-Wpacked",
 					"-Wpointer-arith",
 					"-Wswitch-default",
-					"-Wvolatile-register-var",
-					"-Woverlength-strings",
 					"-Wwrite-strings",
 				);
 				ZERO_LINK = NO;

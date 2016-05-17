@@ -2273,7 +2273,7 @@ monitor_rcmd(const char *command, struct ui_file *outbuf)
 }
 
 /* Convert hex digit A to a number: */
-#if 0 || 1
+#ifdef ALLOW_UNUSED_FUNCTIONS
 static int
 from_hex(int a)
 {
@@ -2286,7 +2286,7 @@ from_hex(int a)
 
   error(_("Reply contains invalid hex digit 0x%x"), a);
 }
-#endif /* 0 || 1 */
+#endif /* ALLOW_UNUSED_FUNCTIONS */
 
 char *
 monitor_get_dev_name(void)

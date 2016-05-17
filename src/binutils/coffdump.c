@@ -111,7 +111,7 @@ dump_coff_lines(struct coff_line *p)
   for (i = 0; i < p->nlines; i++)
     {
 #if defined(__BFD_H_SEEN__) && defined(__STDC_VERSION__) && !defined(__STRICT_ANSI__)
-      printf("(%d 0x%llx)", p->lines[i], p->addresses[i]);
+      printf("(%d 0x%"BFD_VMA_FMT"x)", p->lines[i], p->addresses[i]);
 #else
       printf("(%d 0x%x)", p->lines[i], p->addresses[i]);
 #endif /* __BFD_H_SEEN__ && __STDC_VERSION__ && !__STRICT_ANSI__ */
@@ -129,8 +129,9 @@ dump_coff_lines(struct coff_line *p)
   tab(-1);
 }
 
+/* */
 static void
-dump_coff_type (struct coff_type *p)
+dump_coff_type(struct coff_type *p)
 {
   tab(1);
   printf("size %d ", p->size);
@@ -244,6 +245,8 @@ dump_coff_type (struct coff_type *p)
           printf("UNKNOWN");
 	  abort();
 	}
+    default:
+      break;
     }
   nl();
   tab(-1);
@@ -478,7 +481,7 @@ dump_coff_section(struct coff_section *ptr)
       /* this ifdef should be similar to the one in "coffgrok.h": */
 #if (defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)) && \
     defined(__STDC_VERSION__) && !defined(__STRICT_ANSI__)
-      printf("(%llx %s %llx)", ptr->relocs[i].offset,
+      printf("(%llx %s %"BFD_VMA_FMT"x)", ptr->relocs[i].offset,
              ptr->relocs[i].symbol->name, ptr->relocs[i].addend);
 #else
       printf("(%x %s %x)", ptr->relocs[i].offset,

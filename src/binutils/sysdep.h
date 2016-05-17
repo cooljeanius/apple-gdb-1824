@@ -226,6 +226,25 @@ extern int vsnprintf(char *, size_t, const char *, va_list);
 # endif /* !PATH_MAX */
 #endif /* !PATH_MAX */
 
+/* poison some unwanted functions: */
+#if (defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ >= 3)) && \
+    !defined(NO_POISON) && !defined(FLEX_SCANNER)
+/* libiberty provides replacements: */
+# pragma GCC poison strdup strndup memdup strerror vsprintf atexit exit
+# if defined(HAVE_STRLCPY) && defined(PREFER_BSDISMS)
+#  pragma GCC poison strcpy
+# endif /* HAVE_STRLCPY && PREFER_BSDISMS */
+# if defined(HAVE_STRLCAT) && defined(PREFER_BSDISMS)
+#  pragma GCC poison strcat
+# endif /* HAVE_STRLCAT && PREFER_BSDISMS */
+# if defined(HAVE_FGETS)
+#  pragma GCC poison gets
+# endif /* HAVE_FGETS */
+# if defined(HAVE_STRTOK_R) && defined(_REENTRANT)
+#  pragma GCC poison strtok
+# endif /* HAVE_STRTOK_R && _REENTRANT */
+#endif /* gcc3+ && !NO_POISON && !FLEX_SCANNER */
+
 #endif /* _BIN_SYSDEP_H */
 
 /* EOF */

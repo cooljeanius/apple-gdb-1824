@@ -71,6 +71,8 @@ xdr_arg_value(XDR *xdrs, arg_value *objp)
                 break;
         case T_UNKNOWN:
                 break;
+        default:
+                break;
         }
         return (TRUE);
 }

@@ -581,7 +581,7 @@ setup_archive(struct archive_info *arch, const char *file_name,
 {
   size_t got;
 
-  arch->file_name = strdup(file_name);
+  arch->file_name = xstrdup(file_name);
   arch->file = file;
   arch->index_num = 0;
   arch->index_array = NULL;

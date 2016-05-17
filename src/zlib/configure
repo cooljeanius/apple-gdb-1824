@@ -638,6 +638,9 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 subdirs
+WERROR
+WARN_PEDANTIC
+WARN_CFLAGS
 PICFLAG
 TARGET_LIBRARY_FALSE
 TARGET_LIBRARY_TRUE
@@ -811,6 +814,7 @@ with_gnu_ld
 with_sysroot
 enable_libtool_lock
 enable_host_shared
+enable_werror_always
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1468,6 +1472,7 @@ Optional Features:
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-host-shared    build host code as shared libraries
+  --enable-werror-always  enable -Werror despite compiler version
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -20569,6 +20574,138 @@ esac
 else
   PICFLAG=""
 fi
+
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+WARN_CFLAGS=""
+if test "x${GCC}" = "xyes" && test "x${WERROR_CFLAGS}" = "x"; then
+  WERROR_CFLAGS="-Werror"
+fi
+save_CFLAGS="${CFLAGS}"
+for real_option in -Wall -Wextra -Wwrite-strings -Wpointer-arith \
+-Wfloat-conversion -Wstrict-prototypes -Wmissing-prototypes -Wimplicit \
+-Wnested-externs -Wmissing-parameter-type -Wabi -Wswitch -Wparentheses; do
+  # Do the check with the no- prefix removed since gcc silently accepts
+  # any -Wno-* option on purpose:
+  case ${real_option} in
+    -Wno-*) option=-W`expr x${real_option} : 'x-Wno-\(.*\)'` ;;
+    *) option="${real_option}" ;;
+  esac
+  as_acx_Woption=`$as_echo "acx_cv_prog_cc_warning_$option" | $as_tr_sh`
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ${CC} supports ${option}" >&5
+$as_echo_n "checking whether ${CC} supports ${option}... " >&6; }
+if eval \${$as_acx_Woption+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  CFLAGS="${option} ${WERROR_CFLAGS}"
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$as_acx_Woption=yes"
+else
+  eval "$as_acx_Woption=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+fi
+eval ac_res=\$$as_acx_Woption
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+  if test `eval 'as_val=${'$as_acx_Woption'};$as_echo "$as_val"'` = yes; then :
+  WARN_CFLAGS="$WARN_CFLAGS${WARN_CFLAGS:+ }$real_option"
+fi
+  done
+CFLAGS="${save_CFLAGS}"
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+WARN_PEDANTIC=""
+# Do the check with the no- prefix removed from the warning options
+# since gcc silently accepts any -Wno-* option on purpose:
+if test "x${GCC}" = "xyes"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ${CC} supports -pedantic -Wlong-long" >&5
+$as_echo_n "checking whether ${CC} supports -pedantic -Wlong-long... " >&6; }
+if ${acx_cv_prog_cc_pedantic__Wlong_long+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  save_CFLAGS="${CFLAGS}"
+CFLAGS="-pedantic -Wlong-long"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  acx_cv_prog_cc_pedantic__Wlong_long=yes
+else
+  acx_cv_prog_cc_pedantic__Wlong_long=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+CFLAGS="${save_CFLAGS}"
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $acx_cv_prog_cc_pedantic__Wlong_long" >&5
+$as_echo "$acx_cv_prog_cc_pedantic__Wlong_long" >&6; }
+if test $acx_cv_prog_cc_pedantic__Wlong_long = yes; then :
+  WARN_PEDANTIC="$WARN_PEDANTIC${WARN_PEDANTIC:+ }-pedantic -Wno-long-long"
+fi
+
+fi
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+# Only enable with --enable-werror-always until existing warnings are
+# corrected.
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+WERROR=""
+# Check whether --enable-werror-always was given.
+if test "${enable_werror_always+set}" = set; then :
+  enableval=$enable_werror_always;
+else
+  enable_werror_always=no
+fi
+
+if test "x${enable_werror_always}" = "xyes"; then :
+  WERROR=-Werror
+fi
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 # Final output.
 ac_config_files="$ac_config_files Makefile Makefile_orig"

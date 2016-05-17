@@ -581,6 +581,8 @@ h8500_set_trapped_internalvar(struct internalvar *var, struct value *newval,
     case '7':
       page_regnum = "tp";
       break;
+    default:
+      break;
     }
 
   snprintf(expression, sizeof(expression), "$%s=%d", page_regnum,

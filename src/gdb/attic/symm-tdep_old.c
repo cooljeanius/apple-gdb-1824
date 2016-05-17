@@ -22,7 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include <stdio.h>
 #include "defs.h"
-#include "param.h"
+#include "param_old.h"
 #include "frame.h"
 #include "inferior.h"
 #include "symtab.h"
@@ -36,15 +36,59 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "gdbcore.h"
 #include <fcntl.h>
 
-static long i386_get_frame_setup ();
-static i386_follow_jump ();
+#include "readline/tilde.h" /* for tilde_expand() */
+#include "bfd/libaout.h"
+#include "aout/dynix3.h"
+#ifndef PORTAR
+# define PORTAR 1
+#endif /* !PORTAR */
+#include "aout/host.h"
+#ifndef TARGET_PAGE_SIZE
+# define TARGET_PAGE_SIZE 4096
+#endif /* !TARGET_PAGE_SIZE */
+#ifndef TEXT_START_ADDR
+# define TEXT_START_ADDR 0
+#endif /* !TEXT_START_ADDR */
+#include "aout/aout64.h"
 
+/* Forward declarations: */
+struct frame_saved_regs;
+extern int misc_function_count;
+
+/* Prototypes: */
+static long i386_get_frame_setup(int);
+static int i386_follow_jump(void);
+extern int exec_file_command(char *, int);
+extern int symm_round(register int, register int);
+extern int i386_frame_find_saved_regs(struct frame_info *,
+				      struct frame_saved_regs *);
+extern int i386_skip_prologue(int);
+extern int symmetry_extract_return_value(struct type *, char *, char *);
+
+/* From elsewhere: */
+extern int i387_to_double(char *, char *);
+
+/* A few more things: */
 #include <sgtty.h>
 #define TERMINAL struct sgttyb
+#if !defined(REGISTER_BYTE)
+# if defined(DEPRECATED_REGISTER_BYTE)
+#  define REGISTER_BYTE(reg_nr) DEPRECATED_REGISTER_BYTE(reg_nr)
+# else
+#  define REGISTER_BYTE(reg_nr) (gdbarch_deprecated_register_byte(current_gdbarch, reg_nr))
+# endif /* DEPRECATED_REGISTER_BYTE */
+#endif /* !REGISTER_BYTE */
+#ifndef CALL_DUMMY_LENGTH
+# define CALL_DUMMY_LENGTH 0
+#endif /* !CALL_DUMMY_LENGTH */
+#ifndef FP_REGNUM
+# define FP_REGNUM 1
+#endif /* !FP_REGNUM */
 
-exec_file_command (filename, from_tty)
-     char *filename;
-     int from_tty;
+/* Actual functions now: */
+/* */
+int
+exec_file_command(char *filename, int from_tty)
 {
   int val;
 
@@ -52,7 +96,7 @@ exec_file_command (filename, from_tty)
      Mark text segment as empty.  */
 
   if (execfile)
-    free (execfile);
+    xfree(execfile);
   execfile = 0;
   data_start = 0;
   data_end -= exec_data_start;
@@ -61,20 +105,19 @@ exec_file_command (filename, from_tty)
   exec_data_start = 0;
   exec_data_end = 0;
   if (execchan >= 0)
-    close (execchan);
+    close(execchan);
   execchan = -1;
 
-  /* Now open and digest the file the user requested, if any.  */
-
+  /* Now open and digest the file the user requested, if any: */
   if (filename)
     {
-      filename = tilde_expand (filename);
-      make_cleanup (free, filename);
+      filename = tilde_expand(filename);
+      make_cleanup(xfree, filename);
 
-      execchan = openp (getenv ("PATH"), 1, filename, O_RDONLY, 0,
-			&execfile);
+      execchan = openp(getenv("PATH"), 1, filename, O_RDONLY, 0,
+		       &execfile);
       if (execchan < 0)
-	perror_with_name (filename);
+	perror_with_name(filename);
 
 #ifdef COFF_FORMAT
       {
@@ -112,44 +155,43 @@ exec_file_command (filename, from_tty)
       {
 	struct stat st_exec;
 
-	val = myread (execchan, &exec_aouthdr, sizeof (AOUTHDR));
+	val = myread(execchan, &exec_aouthdr, sizeof(AOUTHDR));
 
 	if (val < 0)
-	  perror_with_name (filename);
+	  perror_with_name(filename);
 
 	text_start = N_ADDRADJ(exec_aouthdr);
-        exec_data_start = round(exec_aouthdr.a_text, NBPG*CLSIZE);
-	text_offset = N_TXTOFF (exec_aouthdr);
-	exec_data_offset = N_TXTOFF (exec_aouthdr) + exec_aouthdr.a_text;
+        exec_data_start = symm_round(exec_aouthdr.a_text, (NBPG * CLSIZE));
+	text_offset = N_TXTOFF(exec_aouthdr);
+	exec_data_offset = (N_TXTOFF(exec_aouthdr) + exec_aouthdr.a_text);
 	text_end = exec_aouthdr.a_text;
-        exec_data_end = exec_data_start + exec_aouthdr.a_data;
+        exec_data_end = (exec_data_start + exec_aouthdr.a_data);
 	data_start = exec_data_start;
-	data_end = data_start + exec_aouthdr.a_data;
+	data_end = (data_start + exec_aouthdr.a_data);
 	exec_data_offset = N_TXTOFF(exec_aouthdr);
-	fstat (execchan, &st_exec);
+	fstat(execchan, &st_exec);
 	exec_mtime = st_exec.st_mtime;
       }
 #endif /* not COFF_FORMAT */
 
-      validate_files ();
+      validate_files();
     }
   else if (from_tty)
-    printf ("No exec file now.\n");
+    printf("No exec file now.\n");
 
   /* Tell display code (if any) about the changed file name.  */
   if (exec_file_display_hook)
-    (*exec_file_display_hook) (filename);
+    (*exec_file_display_hook)(filename);
+
+  return 0;
 }
 
 /* rounds 'one' up to divide evenly by 'two' */
-
 int
-round(one,two)
-register int one, two;
-
+symm_round(register int one, register int two)
 {
     register int temp;
-    temp = (one/two)*two;
+    temp = ((one / two) * two);
     if (one != temp) {
 	temp += two;
     }
@@ -159,27 +201,27 @@ register int one, two;
 
 static CORE_ADDR codestream_next_addr;
 static CORE_ADDR codestream_addr;
-static unsigned char codestream_buf[sizeof (int)];
+static unsigned char codestream_buf[sizeof(int)];
 static int codestream_off;
 static int codestream_cnt;
 
 #define codestream_tell() (codestream_addr + codestream_off)
-#define codestream_peek() (codestream_cnt == 0 ? \
-			   codestream_fill(1): codestream_buf[codestream_off])
-#define codestream_get() (codestream_cnt-- == 0 ? \
-			 codestream_fill(0) : codestream_buf[codestream_off++])
+#define codestream_peek() ((codestream_cnt == 0) ? \
+			   codestream_fill(1) : codestream_buf[codestream_off])
+#define codestream_get() ((codestream_cnt-- == 0) ? \
+			  codestream_fill(0) : codestream_buf[codestream_off++])
 
-
+/* */
 static unsigned char
-codestream_fill (peek_flag)
+codestream_fill(int peek_flag)
 {
   codestream_addr = codestream_next_addr;
-  codestream_next_addr += sizeof (int);
+  codestream_next_addr += sizeof(int);
   codestream_off = 0;
-  codestream_cnt = sizeof (int);
-  read_memory (codestream_addr,
-	       (unsigned char *)codestream_buf,
-	       sizeof (int));
+  codestream_cnt = sizeof(int);
+  read_memory(codestream_addr,
+	      (unsigned char *)codestream_buf,
+	      sizeof(int));
 
   if (peek_flag)
     return (codestream_peek());
@@ -187,25 +229,26 @@ codestream_fill (peek_flag)
     return (codestream_get());
 }
 
+/* */
 static void
-codestream_seek (place)
+codestream_seek(int place)
 {
-  codestream_next_addr = place & -sizeof (int);
+  codestream_next_addr = (place & -sizeof(int));
   codestream_cnt = 0;
-  codestream_fill (1);
-  while (codestream_tell() != place)
-    codestream_get ();
+  codestream_fill(1);
+  while ((int)codestream_tell() != place)
+    codestream_get();
 }
 
+/* */
 static void
-codestream_read (buf, count)
-     unsigned char *buf;
+codestream_read(unsigned char *buf, int count)
 {
   unsigned char *p;
   int i;
   p = buf;
   for (i = 0; i < count; i++)
-    *p++ = codestream_get ();
+    *p++ = codestream_get();
 }
 
 /*
@@ -221,66 +264,69 @@ codestream_read (buf, count)
 ((n)==0?0 :(n)==1?2 :(n)==2?1 :(n)==3?5 :(n)==4?14 :(n)==5?15 :(n))
 
 /* from i386-dep.c */
-i386_frame_find_saved_regs (fip, fsrp)
-     struct frame_info *fip;
-     struct frame_saved_regs *fsrp;
+int
+i386_frame_find_saved_regs(struct frame_info *fip,
+			   struct frame_saved_regs *fsrp)
 {
   unsigned long locals;
-  unsigned char *p;
+  unsigned char *p = (unsigned char *)xmalloc(8UL);
   unsigned char op;
   CORE_ADDR dummy_bottom;
   CORE_ADDR adr;
   int i;
 
-  bzero (fsrp, sizeof *fsrp);
+  bzero(fsrp, sizeof(*fsrp));
 
   /* if frame is the end of a dummy, compute where the
    * beginning would be
    */
-  dummy_bottom = fip->frame - 4 - NUM_REGS*4 - CALL_DUMMY_LENGTH;
+  dummy_bottom = (fip->frame - 4 - (NUM_REGS * 4) - CALL_DUMMY_LENGTH);
 
   /* check if the PC is in the stack, in a dummy frame */
-  if (dummy_bottom <= fip->pc && fip->pc <= fip->frame)
+  if ((dummy_bottom <= fip->pc) && (fip->pc <= fip->frame))
     {
-      /* all regs were saved by push_call_dummy () */
-      adr = fip->frame - 4;
+      /* all regs were saved by push_call_dummy() */
+      adr = (fip->frame - 4);
       for (i = 0; i < NUM_REGS; i++)
 	{
 	  fsrp->regs[i] = adr;
 	  adr -= 4;
 	}
-      return;
+      return 0;
     }
 
-  locals = i386_get_frame_setup (get_pc_function_start (fip->pc));
+  locals = i386_get_frame_setup(get_pc_function_start(fip->pc));
 
-  if (locals >= 0)
+  if (locals > 0UL)
     {
-      adr = fip->frame - 4 - locals;
+      adr = (fip->frame - 4 - locals);
       for (i = 0; i < 8; i++)
 	{
-	  op = codestream_get ();
-	  if (op < 0x50 || op > 0x57)
+	  op = codestream_get();
+	  if ((op < 0x50) || (op > 0x57))
 	    break;
 	  fsrp->regs[I386_REGNO_TO_SYMMETRY(op - 0x50)] = adr;
 	  adr -= 4;
 	}
     }
 
-  fsrp->regs[PC_REGNUM] = fip->frame + 4;
+  fsrp->regs[PC_REGNUM] = (fip->frame + 4);
   fsrp->regs[FP_REGNUM] = fip->frame;
+  xfree(p);
+  return 0;
 }
 
+/* */
 static long
-i386_get_frame_setup (pc)
+i386_get_frame_setup(int pc)
 {
   unsigned char op;
 
-  codestream_seek (pc);
+  codestream_seek(pc);
 
-  i386_follow_jump ();
+  i386_follow_jump();
 
-  op = codestream_get ();
+  op = codestream_get();
 
   if (op == 0x58) /* popl %eax */
     {
@@ -300,24 +346,24 @@ i386_get_frame_setup (pc)
        */
       int pos;
       unsigned char buf[4];
-      static unsigned char proto1[3] = { 0x87,0x04,0x24 };
-      static unsigned char proto2[4] = { 0x87,0x44,0x24,0x00 };
-      pos = codestream_tell ();
-      codestream_read (buf, 4);
-      if (bcmp (buf, proto1, 3) == 0)
+      static unsigned char proto1[3] = { 0x87, 0x04, 0x24 };
+      static unsigned char proto2[4] = { 0x87, 0x44, 0x24, 0x00 };
+      pos = codestream_tell();
+      codestream_read(buf, 4);
+      if (bcmp(buf, proto1, 3) == 0)
 	pos += 3;
-      else if (bcmp (buf, proto2, 4) == 0)
+      else if (bcmp(buf, proto2, 4) == 0)
 	pos += 4;
 
-      codestream_seek (pos);
-      op = codestream_get (); /* update next opcode */
+      codestream_seek(pos);
+      op = codestream_get(); /* update next opcode */
     }
 
   if (op == 0x55) 			/* pushl %esp */
     {
-      if (codestream_get () != 0x8b)	/* movl %esp, %ebp (2bytes) */
+      if (codestream_get() != 0x8b)	/* movl %esp, %ebp (2bytes) */
 	return (-1);
-      if (codestream_get () != 0xec)
+      if (codestream_get() != 0xec)
 	return (-1);
       /*
        * check for stack adjustment
@@ -328,11 +374,11 @@ i386_get_frame_setup (pc)
        * from a 32 bit reg, so we don't have to worry
        * about a data16 prefix
        */
-      op = codestream_peek ();
+      op = codestream_peek();
       if (op == 0x83)  /* subl with 8 bit immed */
 	{
-	  codestream_get ();
-	  if (codestream_get () != 0xec)
+	  codestream_get();
+	  if (codestream_get() != 0xec)
 	    return (-1);
 	  /* subl with signed byte immediate
 	   * (though it wouldn't make sense to be negative)
@@ -342,10 +388,10 @@ i386_get_frame_setup (pc)
       else if (op == 0x81)  /* subl with 32 bit immed */
 	{
 	  int locals;
-	  if (codestream_get () != 0xec)
+	  if (codestream_get() != 0xec)
 	    return (-1);
 	  /* subl with 32 bit immediate */
-	  codestream_read ((unsigned char *)&locals, 4);
+	  codestream_read((unsigned char *)&locals, 4);
 	  return (locals);
 	}
       else
@@ -357,16 +403,16 @@ i386_get_frame_setup (pc)
     {
       /* enter instruction: arg is 16 unsigned immed */
       unsigned short slocals;
-      codestream_read ((unsigned char *)&slocals, 2);
-      codestream_get (); /* flush final byte of enter instruction */
+      codestream_read((unsigned char *)&slocals, 2);
+      codestream_get(); /* flush final byte of enter instruction */
       return (slocals);
     }
   return (-1);
 }
 
 /* next instruction is a jump, move to target */
-static
-i386_follow_jump ()
+static int
+i386_follow_jump(void)
 {
   int long_delta;
   short short_delta;
@@ -374,48 +420,51 @@ i386_follow_jump ()
   int data16;
   int pos;
 
-  pos = codestream_tell ();
+  pos = codestream_tell();
 
   data16 = 0;
-  if (codestream_peek () == 0x66)
+  if (codestream_peek() == 0x66)
     {
-      codestream_get ();
+      codestream_get();
       data16 = 1;
     }
 
-  switch (codestream_get ())
+  switch (codestream_get())
     {
     case 0xe9:
       /* relative jump: if data16 == 0, disp32, else disp16 */
       if (data16)
 	{
-	  codestream_read ((unsigned char *)&short_delta, 2);
-	  pos += short_delta + 3; /* include size of jmp inst */
+	  codestream_read((unsigned char *)&short_delta, 2);
+	  pos += (short_delta + 3); /* include size of jmp inst */
 	}
       else
 	{
-	  codestream_read ((unsigned char *)&long_delta, 4);
-	  pos += long_delta + 5;
+	  codestream_read((unsigned char *)&long_delta, 4);
+	  pos += (long_delta + 5);
 	}
       break;
     case 0xeb:
       /* relative jump, disp8 (ignore data16) */
-      codestream_read ((unsigned char *)&byte_delta, 1);
-      pos += byte_delta + 2;
+      codestream_read((unsigned char *)&byte_delta, 1);
+      pos += (byte_delta + 2);
+      break;
+    default:
       break;
     }
-  codestream_seek (pos + data16);
+  codestream_seek(pos + data16);
+  return 0;
 }
 
 /* return pc of first real instruction */
 /* from i386-dep.c */
-
-i386_skip_prologue (pc)
+int
+i386_skip_prologue(int pc)
 {
   unsigned char op;
   int i;
 
-  if (i386_get_frame_setup (pc) < 0)
+  if (i386_get_frame_setup(pc) < 0)
     return (pc);
 
   /* found valid frame setup - codestream now points to
@@ -425,25 +474,24 @@ i386_skip_prologue (pc)
   /* skip over register saves */
   for (i = 0; i < 8; i++)
     {
-      op = codestream_peek ();
+      op = codestream_peek();
       /* break if not pushl inst */
-      if (op < 0x50 || op > 0x57)
+      if ((op < 0x50) || (op > 0x57))
 	break;
-      codestream_get ();
+      codestream_get();
     }
 
-  i386_follow_jump ();
+  i386_follow_jump();
 
-  return (codestream_tell ());
+  return (codestream_tell());
 }
 
-symmetry_extract_return_value(type, regbuf, valbuf)
-     struct type *type;
-     char *regbuf;
-     char *valbuf;
+/* */
+int
+symmetry_extract_return_value(struct type *type, char *regbuf, char *valbuf)
 {
   union {
-    double	d;
+    double d;
     int	l[2];
   } xd;
   int i;
@@ -462,7 +510,7 @@ symmetry_extract_return_value(type, regbuf, valbuf)
       xd.l[0] = *((int *)&regbuf[REGISTER_BYTE(20)]);
       switch (TYPE_LENGTH(type)) {
       case 4:
-	f = (float) xd.d;
+	f = (float)xd.d;
 	bcopy(&f, valbuf, TYPE_LENGTH(type));
 	break;
       case 8:
@@ -474,11 +522,11 @@ symmetry_extract_return_value(type, regbuf, valbuf)
       }
     } else {
       /* 387 %st(0), gcc uses this */
-      i387_to_double(((int *)&regbuf[REGISTER_BYTE(3)]),
-		     &xd.d);
+      i387_to_double((char *)((int *)&regbuf[REGISTER_BYTE(3)]),
+		     (char *)&xd.d);
       switch (TYPE_LENGTH(type)) {
       case 4:			/* float */
-	f = (float) xd.d;
+	f = (float)xd.d;
 	bcopy(&f, valbuf, 4);
 	break;
       case 8:			/* double */
@@ -490,8 +538,10 @@ symmetry_extract_return_value(type, regbuf, valbuf)
       }
     }
   } else {
-    bcopy (regbuf, valbuf, TYPE_LENGTH (type));
+    bcopy(regbuf, valbuf, TYPE_LENGTH(type));
   }
+
+  return 0;
 }
 
 /* EOF */

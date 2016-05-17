@@ -226,7 +226,7 @@ readchar (int timeout)
   return normal (c);
 }
 
-#if 0 || 1
+#ifdef ALLOW_UNUSED_FUNCTIONS
 static char *
 tl(int x)
 {
@@ -247,7 +247,7 @@ tl(int x)
 
   return b[p];
 }
-#endif /* 0 || 1 */
+#endif /* ALLOW_UNUSED_FUNCTIONS */
 
 /* Scan input from the remote system, until STRING is found.  If
    DISCARD is non-zero, then discard non-matching input, else print it
@@ -927,6 +927,8 @@ e7000_fetch_registers(void)
 	case bfd_mach_sh3e:
 	case bfd_mach_sh4:
 	  wanted = want_sh3;
+	default:
+	  break;
 	}
     }
   if (TARGET_ARCHITECTURE->arch == bfd_arch_h8300)
@@ -941,6 +943,8 @@ e7000_fetch_registers(void)
 	case bfd_mach_h8300sxn:
 	  wanted = want_h8300s;
 	  realregs = 11;
+	default:
+	  break;
 	}
     }
 
@@ -1407,7 +1411,7 @@ e7000_read_inferior_memory_large (CORE_ADDR memaddr, unsigned char *myaddr,
   return len;
 }
 
-#if 0 || 1
+#ifdef ALLOW_UNUSED_FUNCTIONS
 static int
 fast_but_for_the_pause_e7000_read_inferior_memory(CORE_ADDR memaddr,
 						  char *myaddr, int len)
@@ -1493,7 +1497,7 @@ fast_but_for_the_pause_e7000_read_inferior_memory(CORE_ADDR memaddr,
 
   return len;
 }
-#endif /* 0 || 1 */
+#endif /* ALLOW_UNUSED_FUNCTIONS */
 
 /* Transfer LEN bytes between GDB address MYADDR and target address
    MEMADDR.  If WRITE is non-zero, transfer them to the target,
@@ -2093,6 +2097,8 @@ e7000_wait(ptid_t ptid, struct target_waitstatus *status)
 	case bfd_mach_sh3e:
 	case bfd_mach_sh4:
 	  wanted_nopc = want_nopc_sh3;
+	default:
+	  break;
 	}
     }
   if (TARGET_ARCHITECTURE->arch == bfd_arch_h8300)
@@ -2107,6 +2113,8 @@ e7000_wait(ptid_t ptid, struct target_waitstatus *status)
 	case bfd_mach_h8300sxn:
 	  wanted_nopc = want_nopc_h8300s;
 	  realregs = 11;
+	default:
+	  break;
 	}
     }
   fetch_regs_from_dump (gch, wanted_nopc);

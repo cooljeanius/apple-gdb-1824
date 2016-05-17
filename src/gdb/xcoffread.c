@@ -2430,6 +2430,8 @@ scan_xcoff_symtab(struct objfile *objfile)
 			gdb_assert(myminsym != NULL);
 		      }
 		    break;
+		  default:
+		    break;
 		  }
 		break;
 

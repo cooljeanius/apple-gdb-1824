@@ -3236,6 +3236,9 @@ rs6000_gdbarch_init(struct gdbarch_info info, struct gdbarch_list *arches)
         /* These processor's register sets don't have segment registers.  */
         tdep->ppc_sr0_regnum = -1;
         break;
+
+      default:
+	break;
       }
   else
     internal_error (__FILE__, __LINE__,

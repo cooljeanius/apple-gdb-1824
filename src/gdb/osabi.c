@@ -316,8 +316,8 @@ gdbarch_lookup_osabi_from_bfd (bfd *abfd)
 
 /* Return non-zero if architecture A can run code written for
    architecture B.  */
-static int
-can_run_code_for (const struct bfd_arch_info *a, const struct bfd_arch_info *b)
+static ATTRIBUTE_USED int
+can_run_code_for(const struct bfd_arch_info *a, const struct bfd_arch_info *b)
 {
   /* BFD's 'A->compatible (A, B)' functions return zero if A and B are
      incompatible.  But if they are compatible, it returns the 'more

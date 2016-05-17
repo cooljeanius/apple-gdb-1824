@@ -296,6 +296,15 @@ esac
 ],[PICFLAG=""])dnl
 AC_SUBST([PICFLAG])dnl
 
+ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings -Wpointer-arith \
+-Wfloat-conversion -Wstrict-prototypes -Wmissing-prototypes -Wimplicit \
+-Wnested-externs -Wmissing-parameter-type -Wabi -Wswitch -Wparentheses])
+ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-Wno-long-long])dnl
+
+# Only enable with --enable-werror-always until existing warnings are
+# corrected.
+ACX_PROG_CC_WARNINGS_ARE_ERRORS([manual])dnl
+
 # Final output.
 AC_CONFIG_FILES([Makefile Makefile_orig])
 AC_CONFIG_COMMANDS([original],[

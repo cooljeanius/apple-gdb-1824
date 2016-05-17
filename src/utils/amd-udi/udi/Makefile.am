@@ -43,7 +43,7 @@ RANLIB = @RANLIB@
 AR = ar
 AR_FLAGS = cq
 
-AM_CFLAGS = -ggdb -Wall -Wno-unused -Wno-format
+AM_CFLAGS = -ggdb -Wall -Wextra -Wno-unused -Wno-format -Wimplicit
 
 LD = ld
 # Darwin linker (ld64) fails to recognize this flag, so conditionalize:

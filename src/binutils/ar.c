@@ -1021,7 +1021,7 @@ open_inarch(const char *archive_filename, const char *file)
       if (bfd_get_error() == bfd_error_file_ambiguously_recognized)
 	{
 	  list_matching_formats(matching);
-	  free(matching);
+	  xfree(matching);
 	}
       xexit(1);
     }
@@ -1133,11 +1133,11 @@ print_contents(bfd *abfd)
        * Cast the return value to bfd_size_type to avoid comparison
        * between signed and unsigned values: */
       if ((bfd_size_type)fwrite(cbuf, 1, (size_t)nread, stdout) != nread) {
-	fatal("stdout: %s", strerror(errno));
+	fatal("stdout: %s", xstrerror(errno));
       }
       ncopied += tocopy;
     }
-  free(cbuf);
+  xfree(cbuf);
 }
 
 /* Extract a member of the archive into its own file.
@@ -1271,7 +1271,7 @@ extract_file(bfd *abfd)
            * Cast the return value to bfd_size_type to avoid comparison
            * between signed and unsigned values: */
           if ((bfd_size_type)fwrite(cbuf, 1, (size_t)nread, ostream) != nread) {
-            fatal("%s: %s", output_filename, strerror(errno));
+            fatal("%s: %s", output_filename, xstrerror(errno));
           }
           ncopied += tocopy;
         }
@@ -1294,7 +1294,7 @@ extract_file(bfd *abfd)
       set_times(bfd_get_filename(abfd), &buf);
     }
 
-  free(cbuf);
+  xfree(cbuf);
 }
 
 static void
@@ -1364,7 +1364,7 @@ write_archive(bfd *iarch)
   if (smart_rename(new_name, old_name, 0) != 0) {
     xexit(1);
   }
-  free(old_name);
+  xfree(old_name);
 }
 
 /* Return a pointer to the pointer to the entry which should be rplacd'd
@@ -1657,7 +1657,7 @@ ranlib_touch(const char *archname)
       if (bfd_get_error() == bfd_error_file_ambiguously_recognized)
 	{
 	  list_matching_formats(matching);
-	  free(matching);
+	  xfree(matching);
 	}
       xexit(1);
     }

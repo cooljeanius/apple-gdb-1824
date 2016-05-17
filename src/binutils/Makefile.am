@@ -455,25 +455,25 @@ sysinfo$(EXEEXT_FOR_BUILD): sysinfo.@OBJEXT@ syslex_wrap.@OBJEXT@ sysinfo.h
 	if test -e $(srcdir)/sysinfo.@OBJEXT@ -a ! -e sysinfo.@OBJEXT@; then \
 	  cp -v $(srcdir)/sysinfo.@OBJEXT@ sysinfo.@OBJEXT@; \
 	fi
-	$(AM_V_CCLD)$(CC_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(C_ARCHFLAGS) $(LDFLAGS_FOR_BUILD) -o $@ sysinfo.@OBJEXT@ syslex_wrap.@OBJEXT@
+	$(AM_V_CCLD)$(CC_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(C_ARCHFLAGS) $(DEFS) $(LDFLAGS_FOR_BUILD) -o $@ sysinfo.@OBJEXT@ syslex_wrap.@OBJEXT@
 
 syslex.@OBJEXT@: config.h syslex.c sysinfo.h
 	$(AM_V_CC)if [ -r syslex.c ]; then \
-	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS) $(CFLAGS) syslex.c -Wno-error; \
+	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS) $(CFLAGS) $(DEFS) syslex.c -Wno-error; \
 	else \
-	  $(CC_FOR_BUILD) -c -I. -I$(srcdir) $(AM_CFLAGS) $(CFLAGS) $(srcdir)/syslex.c -Wno-error; \
+	  $(CC_FOR_BUILD) -c -I. -I$(srcdir) $(AM_CFLAGS) $(CFLAGS) $(DEFS) $(srcdir)/syslex.c -Wno-error; \
 	fi
 
 syslex_wrap.@OBJEXT@: syslex_wrap.c syslex.c sysinfo.h config.h
-	$(AM_V_CC)$(CC_FOR_BUILD) -c -I. -I$(srcdir) $(AM_CFLAGS) \
+	$(AM_V_CC)$(CC_FOR_BUILD) -c -I. -I$(srcdir) $(AM_CFLAGS) $(DEFS) \
 	  $(CFLAGS_FOR_BUILD) $(NO_WERROR) $(srcdir)/syslex_wrap.c \
 	  -Wno-error
 
 sysinfo.@OBJEXT@: sysinfo.c @MAINT@ sysinfo.h
 	$(AM_V_CC)if [ -r sysinfo.c ]; then \
-	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS) $(CFLAGS_FOR_BUILD) $(NO_WERROR) sysinfo.c; \
+	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS) $(CFLAGS_FOR_BUILD) $(DEFS) $(NO_WERROR) sysinfo.c; \
 	else \
-	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS) $(CFLAGS_FOR_BUILD) $(NO_WERROR) $(srcdir)/sysinfo.c; \
+	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS) $(CFLAGS_FOR_BUILD) $(DEFS) $(NO_WERROR) $(srcdir)/sysinfo.c; \
 	fi
 
 bin2c$(EXEEXT_FOR_BUILD): bin2c.c $(INCDIR)/binary-io.h

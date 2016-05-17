@@ -3911,6 +3911,8 @@ get_binary_file_uuids(const char *filename)
   bfd *abfd;
   struct gdb_exception e;
 
+  memset(uuid, 0, sizeof(uuid));
+
   if ((filename == NULL) || !file_exists_p(filename)) {
     return NULL;
   }
@@ -3946,10 +3948,12 @@ get_binary_file_uuids(const char *filename)
             continue;
           }
 
+#if defined(TM_NEXTSTEP) || defined(HAVE_MACH_O_IN_BFD)
           if (!bfd_mach_o_get_uuid(nbfd, uuid, sizeof(uuid))) {
 	    xfree(uuids);
             return NULL;
           }
+#endif /* TM_NEXTSTEP || HAVE_MACH_O_IN_BFD */
 
           if (current_uuids_slot >= (int)uuids_size)
             {
@@ -3969,10 +3973,12 @@ get_binary_file_uuids(const char *filename)
     }
   else
     {
+#if defined(TM_NEXTSTEP) || defined(HAVE_MACH_O_IN_BFD)
       if (!bfd_mach_o_get_uuid(abfd, uuid, sizeof(uuid))) {
 	xfree(uuids);
         return NULL;
       }
+#endif /* TM_NEXTSTEP || HAVE_MACH_O_IN_BFD */
 
       uuids[0] = (uint8_t *)xmalloc(sizeof(uuid));
       memcpy(uuids[current_uuids_slot++], uuid, sizeof(uuid));

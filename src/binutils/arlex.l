@@ -26,6 +26,18 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 #ifndef DONTDECLARE_MALLOC
 # define DONTDECLARE_MALLOC 1
 #endif /* !DONTDECLARE_MALLOC */
+#ifndef YY_STACK_USED
+# define YY_STACK_USED 0
+#endif /* !YY_STACK_USED */
+#ifndef YY_ALWAYS_INTERACTIVE
+# define YY_ALWAYS_INTERACTIVE 0
+#endif /* !YY_ALWAYS_INTERACTIVE */
+#ifndef YY_NEVER_INTERACTIVE
+# define YY_NEVER_INTERACTIVE 0
+#endif /* !YY_NEVER_INTERACTIVE */
+#ifndef YY_MAIN
+# define YY_MAIN 0
+#endif /* !YY_MAIN */
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -34,6 +46,10 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 #include "ansidecl.h"
 #include "libiberty.h"
 #include "arparse.h"
+  
+#ifdef HAVE_UNISTD_H
+# include <unistd.h> /* for isatty() */
+#endif /* HAVE_UNISTD_H */
 
 #ifndef YY_NO_UNPUT
 # define YY_NO_UNPUT 1
@@ -41,6 +57,13 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 extern int yylex(void);
 extern int yyinunput(void);
+  
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2))
+#  pragma GCC diagnostic ignored "-Wswitch-default"
+#  pragma GCC diagnostic ignored "-Wold-style-definition"
+# endif /* gcc 4.2+ */
+#endif /* any gcc */
 
 /* making this explicitly "extern" to pacify clang just causes linkage
  * issues, so instead just ignore clang: */

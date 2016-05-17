@@ -387,6 +387,11 @@ So instead we use the macro below and test it against specific values.  */
 # endif /* GNUC >= 3.0 */
 #endif /* ATTRIBUTE_CONST */
 
+/* FIXME: add version check: */
+#ifndef ATTRIBUTE_FORMAT_ARG
+# define ATTRIBUTE_FORMAT_ARG(arg) __attribute__((__format_arg__(arg)))
+#endif /* !ATTRIBUTE_FORMAT_ARG */
+
 /* Use ATTRIBUTE_PRINTF when the format specifier must not be NULL.
    This was the case for the `printf' format attribute by itself
    before GCC 3.3, but as of 3.3 we need to add the `nonnull'

@@ -26,12 +26,48 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <stdio.h>
 #include <signal.h>
 #include "defs.h"
-#include "param.h"
+#include "param_old.h"
 #include "symtab.h"
 #include "value.h"
 #include "frame.h"
-#include "signame.h"
-#include "ieee-float.h"
+#include "signame_old.h"
+#include "ieee-float_old.h"
+
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#else
+# include "libiberty_deprecated.h"
+#endif /* HAVE_STRINGS_H */
+
+#include "obstack.h"
+
+/* Misc. defines: */
+#if !defined(REGISTER_BYTE)
+# if defined(DEPRECATED_REGISTER_BYTE)
+#  define REGISTER_BYTE(reg_nr) DEPRECATED_REGISTER_BYTE(reg_nr)
+# else
+#  define REGISTER_BYTE(reg_nr) (gdbarch_deprecated_register_byte(current_gdbarch, reg_nr))
+# endif /* DEPRECATED_REGISTER_BYTE */
+#endif /* !REGISTER_BYTE */
+#ifndef FRAME_ADDR
+# define FRAME_ADDR CORE_ADDR
+#endif /* !FRAME_ADDR */
+
+/* Forward declarations: */
+struct frame_saved_regs;
+extern struct obstack frame_cache_obstack;
+
+/* Prototypes from this file: */
+extern CORE_ADDR skip_prologue(CORE_ADDR);
+extern void frame_find_saved_regs(struct frame_info *,
+				  struct frame_saved_regs *);
+extern CORE_ADDR frame_args_address(struct frame_info *, int);
+extern CORE_ADDR frame_struct_result_address(struct frame_info *);
+extern CORE_ADDR leafproc_return(CORE_ADDR);
+extern void print_fault(int);
+
+/* Prototypes for functions from elsewhere: */
+extern CORE_ADDR read_pc(void);
 
 /* Structure of i960 extended floating point format.  */
 
@@ -44,33 +80,32 @@ const struct ext_format ext_format_i960 = {
    This routine must be called as part of gdb initialization.  */
 
 static void
-check_host()
+check_host(void)
 {
-	int i;
-
-	static struct typestruct {
-		int hostsize;		/* Size of type on host		*/
-		int i960size;		/* Size of type on i960		*/
-		char *typename;		/* Name of type, for error msg	*/
-	} types[] = {
-		{ sizeof(short),  2, "short" },
-		{ sizeof(int),    4, "int" },
-		{ sizeof(long),   4, "long" },
-		{ sizeof(float),  4, "float" },
-		{ sizeof(double), 8, "double" },
-		{ sizeof(char *), 4, "pointer" },
-	};
+  size_t i;
+  
+  static struct typestruct {
+    size_t hostsize;		/* Size of type on host		*/
+    size_t i960size;		/* Size of type on i960		*/
+    const char *the_typename;	/* Name of type, for error msg	*/
+  } types[] = {
+    { sizeof(short),  2UL, "short" },
+    { sizeof(int),    4UL, "int" },
+    { sizeof(long),   4UL, "long" },
+    { sizeof(float),  4UL, "float" },
+    { sizeof(double), 8UL, "double" },
+    { sizeof(char *), 4UL, "pointer" },
+  };
 #define TYPELEN	(sizeof(types) / sizeof(struct typestruct))
-
-	/* Make sure that host type sizes are same as i960
-	 */
-	for ( i = 0; i < TYPELEN; i++ ){
-		if ( types[i].hostsize != types[i].i960size ){
-			printf("sizeof(%s) != %d:  PROCEED AT YOUR OWN RISK!\n",
-					types[i].typename, types[i].i960size );
-		}
-
-	}
+  
+  /* Make sure that host type sizes are same as i960
+   */
+  for (i = 0UL; i < TYPELEN; i++) {
+    if (types[i].hostsize != types[i].i960size) {
+      printf("sizeof(%s) != %d:  PROCEED AT YOUR OWN RISK!\n",
+	     types[i].the_typename, (int)types[i].i960size);
+    }
+  }
 }
 
 /* Examine an i960 function prologue, recording the addresses at which
@@ -130,14 +165,11 @@ check_host()
    the second.  */
 
 #define NEXT_PROLOGUE_INSN(addr, lim, pword1, pword2) \
-  (((addr) < (lim)) ? next_insn (addr, pword1, pword2) : 0)
+  (((addr) < (lim)) ? next_insn(addr, pword1, pword2) : 0)
 
 static CORE_ADDR
-examine_prologue (ip, limit, frame_addr, fsr)
-     register CORE_ADDR ip;
-     register CORE_ADDR limit;
-     FRAME_ADDR frame_addr;
-     struct frame_saved_regs *fsr;
+examine_prologue(register CORE_ADDR ip, register CORE_ADDR limit,
+		 FRAME_ADDR frame_addr, struct frame_saved_regs *fsr)
 {
   register CORE_ADDR next_ip;
   register int src, dst;
@@ -288,7 +320,7 @@ examine_prologue (ip, limit, frame_addr, fsr)
       ip = next_ip;
 #if 0  /* We'll need this once there is a subsequent instruction examined. */
       next_ip = NEXT_PROLOGUE_INSN (ip, limit, &insn1, &insn2);
-#endif
+#endif /* 0 */
     }
 
   return (ip);
@@ -297,19 +329,17 @@ examine_prologue (ip, limit, frame_addr, fsr)
 /* Given an ip value corresponding to the start of a function,
    return the ip of the first instruction after the function 
    prologue.  */
-
 CORE_ADDR
-skip_prologue (ip)
-     CORE_ADDR (ip);
+skip_prologue(CORE_ADDR ip)
 {
   struct frame_saved_regs saved_regs_dummy;
   struct symtab_and_line sal;
   CORE_ADDR limit;
 
-  sal = find_pc_line (ip, 0);
-  limit = (sal.end) ? sal.end : 0xffffffff;
+  sal = find_pc_line(ip, 0);
+  limit = ((sal.end) ? sal.end : 0xffffffff);
 
-  return (examine_prologue (ip, limit, (FRAME_ADDR) 0, &saved_regs_dummy));
+  return (examine_prologue(ip, limit, (FRAME_ADDR)0, &saved_regs_dummy));
 }
 
 /* Put here the code to store, into a struct frame_saved_regs,
@@ -320,27 +350,23 @@ skip_prologue (ip)
 
    We cache the result of doing this in the frame_cache_obstack, since
    it is fairly expensive.  */
-
 void
-frame_find_saved_regs (fi, fsr)
-     struct frame_info *fi;
-     struct frame_saved_regs *fsr;
+frame_find_saved_regs(struct frame_info *fi, struct frame_saved_regs *fsr)
 {
   register CORE_ADDR next_addr;
   register CORE_ADDR *saved_regs;
   register int regnum;
   register struct frame_saved_regs *cache_fsr;
-  extern struct obstack frame_cache_obstack;
   CORE_ADDR ip;
   struct symtab_and_line sal;
   CORE_ADDR limit;
 
   if (!fi->fsr)
     {
-      cache_fsr = (struct frame_saved_regs *)
-		  obstack_alloc (&frame_cache_obstack,
-				 sizeof (struct frame_saved_regs));
-      bzero (cache_fsr, sizeof (struct frame_saved_regs));
+      cache_fsr = ((struct frame_saved_regs *)
+		   obstack_alloc(&frame_cache_obstack,
+				 sizeof(struct frame_saved_regs)));
+      memset(cache_fsr, 0, sizeof(struct frame_saved_regs));
       fi->fsr = cache_fsr;
 
       /* Find the start and end of the function prologue.  If the PC
@@ -380,8 +406,8 @@ frame_find_saved_regs (fi, fsr)
      through to FRAME_FIND_SAVED_REGS (), permitting more efficient
      computation of saved register addresses (e.g., on the i960,
      we don't have to examine the prologue to find local registers). 
-	-- markf@wrs.com 
-     FIXME, we don't need to refetch this, since the cache is cleared
+	-- <markf@wrs.com> 
+     FIXME: we don't need to refetch this, since the cache is cleared
      every time the child process is restarted.  If GDB itself
      modifies SP, it has to clear the cache by hand (does it?).  -gnu */
 
@@ -390,10 +416,8 @@ frame_find_saved_regs (fi, fsr)
 
 /* Return the address of the argument block for the frame
    described by FI.  Returns 0 if the address is unknown.  */
-
 CORE_ADDR
-frame_args_address (fi, must_be_correct)
-     struct frame_info *fi;
+frame_args_address(struct frame_info *fi, int must_be_correct)
 {
   register FRAME frame;
   struct frame_saved_regs fsr;
@@ -421,10 +445,8 @@ frame_args_address (fi, must_be_correct)
 
 /* Return the address of the return struct for the frame
    described by FI.  Returns 0 if the address is unknown.  */
-
 CORE_ADDR
-frame_struct_result_address (fi)
-     struct frame_info *fi;
+frame_struct_result_address(struct frame_info *fi)
 {
   register FRAME frame;
   struct frame_saved_regs fsr;
@@ -434,9 +456,9 @@ frame_struct_result_address (fi)
      frame by the function prologue code; return the saved value if so,
      zero otherwise.  If the frame is current, return the value of g14.
 
-     FIXME, shouldn't this use the saved value as long as we are past
+     FIXME: should this not use the saved value as long as we are past
      the function prologue, and only use the current value if we have
-     no saved value and are at TOS?   -- gnu@cygnus.com */
+     no saved value and are at TOS?   -- <gnu@cygnus.com> */
 
   frame = FRAME_INFO_ID (fi);
   if (get_next_frame (frame)) {
@@ -460,18 +482,16 @@ frame_struct_result_address (fi)
    true unless the return address points at a RET instruction in the current
    procedure, which indicates that we have a 'dual entry' routine that
    has been entered through the CALL entry point.  */
-
 CORE_ADDR
-leafproc_return (ip)
-     CORE_ADDR ip;	/* ip from currently executing function	*/
+leafproc_return(CORE_ADDR ip)
 {
+  /* ip is the ip from currently executing function */
   int i;
   register struct misc_function *mf;
   char *p;
   int dst;
   unsigned int insn1, insn2;
   CORE_ADDR return_addr;
-  char *index ();
 
   if ((i = find_pc_misc_function (ip)) >= 0)
     {
@@ -517,8 +537,7 @@ leafproc_return (ip)
    unless the function is a leaf procedure.  */
 
 CORE_ADDR
-saved_pc_after_call (frame)
-     FRAME frame;
+saved_pc_after_call(FRAME frame)
 {
   CORE_ADDR saved_pc;
   CORE_ADDR get_frame_pc ();
@@ -532,8 +551,8 @@ saved_pc_after_call (frame)
 
 /* Discard from the stack the innermost frame,
    restoring all saved registers.  */
-
-pop_frame ()
+void
+pop_frame(void)
 {
   register struct frame_info *current_fi, *prev_fi;
   register int i;
@@ -578,72 +597,70 @@ pop_frame ()
   /* Flush the frame cache, create a frame for the new innermost frame,
      and make it the current frame.  */
 
-  flush_cached_frames ();
-  set_current_frame (create_new_frame (read_register (FP_REGNUM), read_pc ()));
+  flush_cached_frames();
+  set_current_frame(create_new_frame(read_register(FP_REGNUM), read_pc()));
 }
 
 /* Print out text describing a "signal number" with which the i80960 halted.
   
    See the file "fault.c" in the nindy monitor source code for a list
    of stop codes.  */
-
 void
-print_fault( siggnal )
-    int siggnal;	/* Signal number, as returned by target_wait() */
+print_fault(int siggnal)
 {
-	static char unknown[] = "Unknown fault or trace";
-	static char *sigmsgs[] = {
-		/* FAULTS */
-		"parallel fault",	/* 0x00 */
-		unknown,		/* 0x01 */
-		"operation fault",	/* 0x02 */
-		"arithmetic fault",	/* 0x03 */
-		"floating point fault",	/* 0x04 */
-		"constraint fault",	/* 0x05 */
-		"virtual memory fault",	/* 0x06 */
-		"protection fault",	/* 0x07 */
-		"machine fault",	/* 0x08 */
-		"structural fault",	/* 0x09 */
-		"type fault",		/* 0x0a */
-		"reserved (0xb) fault",	/* 0x0b */
-		"process fault",	/* 0x0c */
-		"descriptor fault",	/* 0x0d */
-		"event fault",		/* 0x0e */
-		"reserved (0xf) fault",	/* 0x0f */
-
-		/* TRACES */
-		"single-step trace",	/* 0x10 */
-		"branch trace",		/* 0x11 */
-		"call trace",		/* 0x12 */
-		"return trace",		/* 0x13 */
-		"pre-return trace",	/* 0x14 */
-		"supervisor call trace",/* 0x15 */
-		"breakpoint trace",	/* 0x16 */
-	};
-#	define NUMMSGS ((int)( sizeof(sigmsgs) / sizeof(sigmsgs[0]) ))
-
-	if (siggnal < NSIG) {
-	      printf ("\nProgram received signal %d, %s\n",
-		      siggnal,
-		      sys_siglist[siggnal]);
-	} else {
-		/* The various target_wait()s bias the 80960 "signal number"
-		   by adding NSIG to it, so it won't get confused with any
-		   of the Unix signals elsewhere in GDB.  We need to
-		   "unbias" it before using it.  */
-		siggnal -= NSIG;
-
-		printf("Program stopped for reason #%d: %s.\n", siggnal,
-				(siggnal < NUMMSGS && siggnal >= 0)?
-				sigmsgs[siggnal] : unknown );
-	}
+  /* siggnal is the signal number, as returned by target_wait() */
+  static const char unknown[] = "Unknown fault or trace";
+  static const char *sigmsgs[] = {
+    /* FAULTS */
+    "parallel fault",	/* 0x00 */
+    unknown,		/* 0x01 */
+    "operation fault",	/* 0x02 */
+    "arithmetic fault",	/* 0x03 */
+    "floating point fault",	/* 0x04 */
+    "constraint fault",	/* 0x05 */
+    "virtual memory fault",	/* 0x06 */
+    "protection fault",	/* 0x07 */
+    "machine fault",	/* 0x08 */
+    "structural fault",	/* 0x09 */
+    "type fault",		/* 0x0a */
+    "reserved (0xb) fault",	/* 0x0b */
+    "process fault",	/* 0x0c */
+    "descriptor fault",	/* 0x0d */
+    "event fault",		/* 0x0e */
+    "reserved (0xf) fault",	/* 0x0f */
+    
+    /* TRACES */
+    "single-step trace",	/* 0x10 */
+    "branch trace",		/* 0x11 */
+    "call trace",		/* 0x12 */
+    "return trace",		/* 0x13 */
+    "pre-return trace",	/* 0x14 */
+    "supervisor call trace",/* 0x15 */
+    "breakpoint trace",	/* 0x16 */
+  };
+# define NUMMSGS ((int)(sizeof(sigmsgs) / sizeof(sigmsgs[0])))
+  
+  if (siggnal < NSIG) {
+    printf("\nProgram received signal %d, %s\n", siggnal,
+	   sys_siglist[siggnal]);
+  } else {
+    /* The various target_wait()s bias the 80960 "signal number" by adding NSIG
+     * to it, so it will NOT get confused with any of the Unix signals
+     * elsewhere in GDB.  We need to "unbias" it before using it: */
+    siggnal -= NSIG;
+    
+    printf("Program stopped for reason #%d: %s.\n", siggnal,
+	   (((siggnal < NUMMSGS) && (siggnal >= 0))
+	    ? sigmsgs[siggnal] : unknown));
+  }
 }
 
 /* Initialization stub */
-
-_initialize_i960_tdep ()
+extern void _initialize_i960_tdep(void);
+void
+_initialize_i960_tdep(void)
 {
-  check_host ();
+  check_host();
 }
 
 /* EOF */

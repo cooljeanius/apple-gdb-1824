@@ -646,6 +646,9 @@ core_cache_section_registers(asection *sec, int flavour,
       cached_regs_raw->ppc64_gp_regs = (gdb_ppc_thread_state_64_t *)regs;
       regs = NULL;
       break;
+	
+    default:
+      break;
     }
 #elif defined(TARGET_I386)
   switch (flavour)
@@ -757,6 +760,9 @@ core_cache_section_registers(asection *sec, int flavour,
 	  cached_regs_raw->arm_vfpv3_regs = (gdb_arm_thread_vfpv3_state_t *)regs;
 	  regs = NULL;
 	}
+      break;
+
+    default:
       break;
     }
 #else

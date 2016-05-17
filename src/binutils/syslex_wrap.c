@@ -21,6 +21,21 @@
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif /* HAVE_CONFIG_H */
+#if defined(HAVE_STRING_H) || (defined(STDC_HEADERS) && defined(__STDC__))
+# include <string.h>
+#else
+# ifdef HAVE_STRINGS_H
+#  include <strings.h>
+# else
+#  ifdef HAVE_MEMORY_H
+#   include <memory.h>
+#  else
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "syslex_wrap.c needs a string-related header"
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
+#  endif /* HAVE_MEMORY_H */
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H || (STDC_HEADERS && __STDC__) */
 /* in case these got re-defined on us: */
 #ifdef malloc
 # undef malloc

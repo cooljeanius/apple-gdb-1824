@@ -658,6 +658,27 @@
 			remoteGlobalIDString = EF02A49D094A5623002B0BF1;
 			remoteInfo = test;
 		};
+		618C84661CEA08C8004BBE5E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 618C845F1CEA08C8004BBE5E /* zlib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC0630554660B00DB518D /* libz.1.2.8.dylib */;
+			remoteInfo = libz;
+		};
+		618C847A1CEA0901004BBE5E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 618C846E1CEA0901004BBE5E /* Tcl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A50F55621808CA1C008BA312 /* Tcl.framework */;
+			remoteInfo = Tcl_Upgraded;
+		};
+		618C847C1CEA0901004BBE5E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 618C846E1CEA0901004BBE5E /* Tcl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00E2F84D016E92110ACA28DC /* Tcl.framework */;
+			remoteInfo = Tcl;
+		};
 		61D2220C192D6D7C00FA979E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -2762,6 +2783,8 @@
 		61265A121BA8A37B000CA982 /* scm-type.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "scm-type.c"; sourceTree = "<group>"; };
 		61265A131BA8A37B000CA982 /* scm-utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "scm-utils.c"; sourceTree = "<group>"; };
 		61265A141BA8A37B000CA982 /* scm-value.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "scm-value.c"; sourceTree = "<group>"; };
+		618C845F1CEA08C8004BBE5E /* zlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = zlib.xcodeproj; path = "/var/root/apple-gdb-1824/src/zlib/zlib.xcodeproj"; sourceTree = "<absolute>"; };
+		618C846E1CEA0901004BBE5E /* Tcl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Tcl.xcodeproj; path = "/var/root/apple-gdb-1824/src/tcl/macosx/Tcl.xcodeproj"; sourceTree = "<absolute>"; };
 		619631631C55A0B4001EA510 /* libmmalloc.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libmmalloc.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		619D55E21C6A56D900F07C54 /* copying.awk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = copying.awk; path = "/var/root/apple-gdb-1824/src/gdb/copying.awk"; sourceTree = "<absolute>"; };
 		619D56831C6A5E4A00F07C54 /* dummy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dummy.c; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/dummy.c"; sourceTree = "<absolute>"; };
@@ -6210,7 +6233,9 @@
 				A53AC0491A3A8CBE002F20B2 /* mmalloc */,
 				2609DE860E82C411008125DE /* opcodes */,
 				2609DF5B0E82C412008125DE /* readline */,
+				618C846C1CEA08D9004BBE5E /* tcl */,
 				A59249CD1AAFEF1A00050903 /* utils */,
+				618C83F11CEA0866004BBE5E /* zlib */,
 			);
 			indentWidth = 2;
 			name = src;
@@ -9805,6 +9830,40 @@
 				61265A141BA8A37B000CA982 /* scm-value.c */,
 			);
 			path = guile;
+			sourceTree = "<group>";
+		};
+		618C83F11CEA0866004BBE5E /* zlib */ = {
+			isa = PBXGroup;
+			children = (
+				618C845F1CEA08C8004BBE5E /* zlib.xcodeproj */,
+			);
+			name = zlib;
+			path = gdb;
+			sourceTree = "<group>";
+		};
+		618C84601CEA08C8004BBE5E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				618C84671CEA08C8004BBE5E /* libz.1.2.8.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		618C846C1CEA08D9004BBE5E /* tcl */ = {
+			isa = PBXGroup;
+			children = (
+				618C846E1CEA0901004BBE5E /* Tcl.xcodeproj */,
+			);
+			name = tcl;
+			sourceTree = "<group>";
+		};
+		618C846F1CEA0901004BBE5E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				618C847B1CEA0901004BBE5E /* Tcl.framework */,
+				618C847D1CEA0901004BBE5E /* Tcl.framework */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		619D566B1C6A5E4A00F07C54 /* gnulib */ = {
@@ -13874,8 +13933,16 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 618C846F1CEA0901004BBE5E /* Products */;
+					ProjectRef = 618C846E1CEA0901004BBE5E /* Tcl.xcodeproj */;
+				},
+				{
 					ProductGroup = 6125DA331BD56E11001CF3C9 /* Products */;
 					ProjectRef = 6125D9F71BD56BFF001CF3C9 /* unicode_formatter.xcodeproj */;
+				},
+				{
+					ProductGroup = 618C84601CEA08C8004BBE5E /* Products */;
+					ProjectRef = 618C845F1CEA08C8004BBE5E /* zlib.xcodeproj */;
 				},
 			);
 			projectRoot = ../../..;
@@ -13920,6 +13987,27 @@
 			fileType = "compiled.mach-o.executable";
 			path = unicode_formatter_test;
 			remoteRef = 6125DA3C1BD56E11001CF3C9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		618C84671CEA08C8004BBE5E /* libz.1.2.8.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libz.1.2.8.dylib;
+			remoteRef = 618C84661CEA08C8004BBE5E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		618C847B1CEA0901004BBE5E /* Tcl.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Tcl.framework;
+			remoteRef = 618C847A1CEA0901004BBE5E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		618C847D1CEA0901004BBE5E /* Tcl.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Tcl.framework;
+			remoteRef = 618C847C1CEA0901004BBE5E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

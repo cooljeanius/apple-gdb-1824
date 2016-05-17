@@ -870,9 +870,13 @@ alpha_sigtramp_frame_prev_register (struct frame_info *next_frame,
 static const struct frame_unwind alpha_sigtramp_frame_unwind = {
   SIGTRAMP_FRAME,
   alpha_sigtramp_frame_this_id,
-  alpha_sigtramp_frame_prev_register
+  alpha_sigtramp_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
+/* */
 static const struct frame_unwind *
 alpha_sigtramp_frame_sniffer(struct frame_info *next_frame)
 {
@@ -1227,11 +1231,15 @@ alpha_heuristic_frame_prev_register (struct frame_info *next_frame,
 static const struct frame_unwind alpha_heuristic_frame_unwind = {
   NORMAL_FRAME,
   alpha_heuristic_frame_this_id,
-  alpha_heuristic_frame_prev_register
+  alpha_heuristic_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
+/* */
 static const struct frame_unwind *
-alpha_heuristic_frame_sniffer (struct frame_info *next_frame)
+alpha_heuristic_frame_sniffer(struct frame_info *next_frame)
 {
   return &alpha_heuristic_frame_unwind;
 }
@@ -1436,6 +1444,7 @@ alpha_next_pc (CORE_ADDR pc)
           case 0x32:              /* FBLT */
           case 0x35:              /* FBNE */
             regno += FP0_REGNUM;
+	  default:;
 	}
       
       regcache_cooked_read(current_regcache, regno, (gdb_byte *)reg);
@@ -1502,6 +1511,9 @@ alpha_next_pc (CORE_ADDR pc)
           if (! fp_register_zero_p (rav))
             goto branch_taken;
           break;
+
+	default:
+	  break;
 	}
     }
 

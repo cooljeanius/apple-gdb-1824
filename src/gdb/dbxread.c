@@ -709,7 +709,11 @@ dbx_symfile_read(struct objfile *objfile, int mainline)
 #if (MAC_OS_X_VERSION_MIN_REQUIRED >= 1060)
   if (0)
 #else
+# if defined(TM_NEXTSTEP) || defined(HAVE_MACH_O_IN_BFD)
   if (bfd_mach_o_in_shared_cached_memory(objfile->obfd))
+# else
+  if (0)
+# endif /* TM_NEXTSTEP || HAVE_MACH_O_IN_BFD */
 #endif /* 10.6+ */
     {
       /* All shared libraries being read from memory that are in the new
@@ -4221,7 +4225,7 @@ stabsect_read_strtab_from_oso(struct bfd *oso_bfd, int *symcount,
   if (!stabsect || ! stabstrsect)
     {
       complaint(&symfile_complaints,
-                "Couldn't find namelist for %s.\n",
+                "Failed to find namelist for %s.\n",
                 (name ? name : "<Unknown>"));
 
       if (empty_stabs_data == NULL)
@@ -4244,8 +4248,11 @@ stabsect_read_strtab_from_oso(struct bfd *oso_bfd, int *symcount,
   oso_cleanup->stab_data_handle = stab_data_handle;
   oso_cleanup->strtab_data_handle = strtab_data_handle;
 
-  *symsize =
-    ((bfd_mach_o_version(oso_bfd) > 1) ? 16 : 12);
+#if defined(TM_NEXTSTEP) || defined(HAVE_MACH_O_IN_BFD)
+  *symsize = ((bfd_mach_o_version(oso_bfd) > 1) ? 16 : 12);
+#else
+  *symsize = 0;
+#endif /* TM_NEXTSTEP || HAVE_MACH_O_IN_BFD */
   stabs_size = (size_t)bfd_section_size(oso_bfd, stabsect);
   *symcount = (stabs_size / (*symsize));
   *strtab_size = (int)bfd_section_size(oso_bfd, stabstrsect);

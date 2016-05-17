@@ -21,13 +21,24 @@ Software Foundation, 51 Franklin St., 5th Floor, Boston, MA
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
-#ifdef HAVE_STRING_H
+#if defined(HAVE_STRING_H) || (defined(STDC_HEADERS) && defined(__STDC__))
 # include <string.h>
 #else
 # ifdef HAVE_STRINGS_H
 #  include <strings.h>
+# else
+#  ifdef HAVE_MEMORY_H
+#   include <memory.h>
+#  else
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "syslex.l needs a string-related header"
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
+#  endif /* HAVE_MEMORY_H */
 # endif /* HAVE_STRINGS_H */
-#endif /* HAVE_STRING_H */
+#endif /* HAVE_STRING_H || (STDC_HEADERS && __STDC__) */
+#ifdef HAVE_UNISTD_H
+# include <unistd.h> /* for isatty() */
+#endif /* HAVE_UNISTD_H */
 #include "sysinfo.h"
 
 /* in case these got re-defined on us: */
@@ -38,13 +49,35 @@ Software Foundation, 51 Franklin St., 5th Floor, Boston, MA
 # undef realloc
 #endif /* realloc */
 
-#define YY_NO_UNPUT
+#define YY_NO_UNPUT /* (nothing) */
+
+#ifndef YY_STACK_USED
+# define YY_STACK_USED 0
+#endif /* !YY_STACK_USED */
+#ifndef YY_ALWAYS_INTERACTIVE
+# define YY_ALWAYS_INTERACTIVE 0
+#endif /* !YY_ALWAYS_INTERACTIVE */
+#ifndef YY_NEVER_INTERACTIVE
+# define YY_NEVER_INTERACTIVE 0
+#endif /* !YY_NEVER_INTERACTIVE */
+#ifndef YY_MAIN
+# define YY_MAIN 0
+#endif /* !YY_MAIN */
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2))
+#  pragma GCC diagnostic ignored "-Wswitch-default"
+#  pragma GCC diagnostic ignored "-Wsign-compare"
+#  pragma GCC diagnostic ignored "-Wold-style-definition"
+# endif /* gcc 4.2+ */
+#endif /* any gcc */
 
 #ifndef yywrap
 static int yywrap(void) { return 1; }
 #endif /* !yywrap */
 
 extern int yylex(void);
+extern int yyinunput(void);
 %}
 %%
 "(" { return '(';}

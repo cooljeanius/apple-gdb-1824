@@ -1,6 +1,7 @@
 dnl# zlib/acinclude.m4                                     -*- Autoconf -*-
 
 sinclude(../config/no-executables.m4)
+sinclude(../config/warnings.m4)
 
 dnl# as in ../bfd, make sure the libtool.m4 included here is the same
 dnl# version as the one in the ./m4 directory; if they differ, it can lead

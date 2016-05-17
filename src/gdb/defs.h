@@ -478,6 +478,14 @@ struct cleanup
 # endif /* __GNUC__ version check */
 #endif /* !ATTR_FORMAT */
 
+#ifndef ATTR_FORMAT_ARG
+# if defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 4))
+#  define ATTR_FORMAT_ARG(arg) __attribute__((format_arg(arg)))
+# else
+#  define ATTR_FORMAT_ARG(arg)	/* nothing */
+# endif /* __GNUC__ version check */
+#endif /* !ATTR_FORMAT_ARG */
+
 /* FIXME: dirty hack: */
 #ifndef gnu_printf
 # if defined(__clang__) || (defined(__APPLE_CC__) && (__APPLE_CC__ > 1))
@@ -1729,6 +1737,9 @@ extern struct cleanup *start_timer(int *timer_var, const char *timer_name,
 # if defined(HAVE_STRTOK_R) && defined(_REENTRANT)
 #  pragma GCC poison strtok
 # endif /* HAVE_STRTOK_R && _REENTRANT */
+/* gdb_ari.sh says to avoid these: */
+# pragma GCC poison setlinebuf bcmp bzero strsave strnicmp
+/* also consider poisoning: assert abort basename bcopy */
 #endif /* gcc3+ && !NO_POISON && !FLEX_SCANNER */
 
 #endif /* #ifndef DEFS_H */

@@ -7089,6 +7089,8 @@ fi
     fi
     noconfigdirs="${noconfigdirs} target-libgloss"
     host_configargs=" ${host_configargs} --disable-werror "
+    enable_64_bit_bfd=yes
+    host_configargs=" ${host_configargs} --enable-64-bit-bfd "
     ;;
   *-*-freebsd[12] | *-*-freebsd[12].* | *-*-freebsd*aout*)
     noconfigdirs="${noconfigdirs} target-newlib target-libgloss ${libgcj}"
@@ -7151,6 +7153,9 @@ fi
     ;;
   m32c-*-*)
     noconfigdirs="${noconfigdirs} target-libstdc++-v3"
+    ;;
+  a29k-amd-udi | udi29k | a29k-*-vxworks | a29k-none-*)
+    host_configargs=" ${host_configargs} --enable-obsolete"
     ;;
   alpha*-dec-osf*)
     # ld works, but does not support shared libraries.
@@ -7269,6 +7274,8 @@ fi
   hppa1.1-*-osf* | hppa1.1-*-bsd* )
     ;;
   hppa*64*-*-linux* | parisc*64*-*-linux*)
+    enable_64_bit_bfd=yes
+    host_configargs=" ${host_configargs} --enable-64-bit-bfd "
     # In this case, it is because the hppa64-linux target is for
     # the kernel only at this point and has no libc, and thus no
     # headers, crt*.o, etc., all of which are needed by these.
@@ -7287,14 +7294,21 @@ fi
     # build on HP-UX 10.20.
     noconfigdirs="${noconfigdirs} ld shellutils ${libgcj}"
     ;;
+  i860-*-*)
+    noconfigdirs="${noconfigdirs} gdb"
+    ;;
   i960-*-*)
     noconfigdirs="${noconfigdirs} ${libgcj} gdb"
     ;;
   ia64*-*-elf*)
+    enable_64_bit_bfd=yes
+    host_configargs=" ${host_configargs} --enable-64-bit-bfd "
     # No gdb support yet.
     noconfigdirs="${noconfigdirs} readline mmalloc libgui itcl gdb"
     ;;
-  ia64*-**-hpux*)
+  ia64*-*-hpux*)
+    enable_64_bit_bfd=yes
+    host_configargs=" ${host_configargs} --enable-64-bit-bfd "
     # No gdb or ld support yet.
     noconfigdirs="${noconfigdirs} ${libgcj} readline mmalloc libgui itcl gdb ld"
     ;;
@@ -7458,6 +7472,8 @@ fi
     noconfigdirs="${noconfigdirs} gprof ${libgcj}" # same as generic mips
     ;;
   mips64*-*-linux*)
+    enable_64_bit_bfd=yes
+    host_configargs=" ${host_configargs} --enable-64-bit-bfd "
     noconfigdirs="${noconfigdirs} target-newlib ${libgcj}"
     ;;
   mips*-*-linux*)
@@ -7493,6 +7509,8 @@ fi
     noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   sparc64-*-elf*)
+    enable_64_bit_bfd=yes
+    host_configargs=" ${host_configargs} --enable-64-bit-bfd "
     noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   sparclite-*-*)
@@ -14366,6 +14384,12 @@ if test -n "${notsupp}" && test -z "${norecursion}"; then
   echo "*** This configuration is not supported in the following subdirectories:" 1>&2
   echo "    ${notsupp}" 1>&2
   echo "    (Any other directories should still work fine.)" 1>&2
+else
+  if test -z "${notsupp}" && test -z "${norecursion}"; then
+    echo "All subdirectories appear to be supported in this configuration."
+  elif test -n "${norecursion}"; then
+    echo "No recursion: ${norecursion}"
+  fi
 fi
 
 case "${host}" in
