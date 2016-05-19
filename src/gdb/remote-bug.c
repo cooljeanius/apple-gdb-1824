@@ -182,7 +182,7 @@ bug_load(const char *args, int fromtty)
 # undef _raw_size
 #endif /* _raw_size */
 
-#if defined(HAVE_ISSPACE) && defined(HAVE_MEMCPY)
+#if defined(HAVE_ISSPACE) && defined(HAVE_MEMCPY) && defined(ALLOW_UNUSED_FUNCTIONS)
 static char *
 get_word(char **p)
 {
@@ -191,26 +191,25 @@ get_word(char **p)
   char *copy;
   size_t len;
 
-  while (isspace (*s))
+  while (isspace(*s))
     s++;
 
   word = s;
 
   len = 0;
 
-  while (*s && !isspace (*s))
+  while (*s && !isspace(*s))
     {
       s++;
       len++;
-
     }
-  copy = xmalloc (len + 1);
-  memcpy (copy, word, len);
+  copy = (char *)xmalloc(len + 1UL);
+  memcpy(copy, word, len);
   copy[len] = 0;
   *p = s;
   return copy;
 }
-#endif /* HAVE_ISSPACE && HAVE_MEMCPY */
+#endif /* HAVE_ISSPACE && HAVE_MEMCPY && ALLOW_UNUSED_FUNCTIONS */
 
 static struct gr_settings bug_settings =
 {

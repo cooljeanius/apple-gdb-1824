@@ -190,7 +190,9 @@
 #include "getopt.h"
 #include "libiberty.h"
 
-char *program_name = "readelf";
+#include "sysdep.h"
+
+const char *program_name = "readelf";
 static long archive_file_offset;
 static unsigned long archive_file_size;
 static unsigned long dynamic_addr;
@@ -1717,8 +1719,8 @@ get_dynamic_type (unsigned long type)
     }
 }
 
-static char *
-get_file_type (unsigned e_type)
+static const  char *
+get_file_type(unsigned e_type)
 {
   static char buff[32];
 
@@ -1732,17 +1734,17 @@ get_file_type (unsigned e_type)
 
     default:
       if ((e_type >= ET_LOPROC) && (e_type <= ET_HIPROC))
-	snprintf (buff, sizeof (buff), _("Processor Specific: (%x)"), e_type);
+	snprintf(buff, sizeof(buff), _("Processor Specific: (%x)"), e_type);
       else if ((e_type >= ET_LOOS) && (e_type <= ET_HIOS))
-	snprintf (buff, sizeof (buff), _("OS Specific: (%x)"), e_type);
+	snprintf(buff, sizeof(buff), _("OS Specific: (%x)"), e_type);
       else
-	snprintf (buff, sizeof (buff), _("<unknown>: %x"), e_type);
+	snprintf(buff, sizeof(buff), _("<unknown>: %x"), e_type);
       return buff;
     }
 }
 
-static char *
-get_machine_name (unsigned e_machine)
+static const char *
+get_machine_name(unsigned e_machine)
 {
   static char buff[64]; /* XXX */
 
@@ -1845,13 +1847,13 @@ get_machine_name (unsigned e_machine)
     case EM_M32C:	        return "Renesas M32c";
     case EM_MS1:                return "Morpho Techologies MS1 processor";
     default:
-      snprintf (buff, sizeof (buff), _("<unknown>: %x"), e_machine);
+      snprintf(buff, sizeof(buff), _("<unknown>: %x"), e_machine);
       return buff;
     }
 }
 
 static void
-decode_ARM_machine_flags (unsigned e_flags, char buf[])
+decode_ARM_machine_flags(unsigned e_flags, char buf[])
 {
   unsigned eabi;
   int unknown = 0;
@@ -2715,7 +2717,7 @@ usage(void)
   -v --version           Display the version number of readelf\n"));
   fprintf(stdout, _("Report bugs to %s\n"), REPORT_BUGS_TO);
 
-  exit(0);
+  xexit(0);
 }
 
 /* Record the fact that the user wants the contents of section number
@@ -3876,7 +3878,7 @@ process_section_headers (FILE *file)
        i < elf_header.e_shnum;
        i++, section++)
     {
-      char *name = SECTION_NAME (section);
+      const char *name = SECTION_NAME(section);
 
       if (section->sh_type == SHT_DYNSYM)
 	{
@@ -4231,8 +4233,8 @@ process_section_groups (FILE *file)
     {
       if (section->sh_type == SHT_GROUP)
 	{
-	  char *name = SECTION_NAME (section);
-	  char *group_name;
+	  const char *name = SECTION_NAME(section);
+	  const char *group_name;
 	  unsigned char *start, *indices;
 	  unsigned int entry, j, size;
 	  Elf_Internal_Shdr *sec;
@@ -4853,7 +4855,7 @@ ia64_process_unwind (FILE *file)
 
   while (unwcount-- > 0)
     {
-      char *suffix;
+      const char *suffix;
       size_t len, len2;
 
       for (i = unwstart, sec = section_headers + unwstart;
@@ -6170,8 +6172,8 @@ process_dynamic_section (FILE *file)
   return 1;
 }
 
-static char *
-get_ver_flags (unsigned int flags)
+static const char *
+get_ver_flags(unsigned int flags)
 {
   static char buff[32];
 
@@ -6181,14 +6183,14 @@ get_ver_flags (unsigned int flags)
     return _("none");
 
   if (flags & VER_FLG_BASE)
-    strcat (buff, "BASE ");
+    strcat(buff, "BASE ");
 
   if (flags & VER_FLG_WEAK)
     {
       if (flags & VER_FLG_BASE)
-	strcat (buff, "| ");
+	strcat(buff, "| ");
 
-      strcat (buff, "WEAK ");
+      strcat(buff, "WEAK ");
     }
 
   if (flags & ~(VER_FLG_BASE | VER_FLG_WEAK))
@@ -7822,8 +7824,8 @@ process_abbrev_section (unsigned char *start, unsigned char *end)
   return NULL;
 }
 
-static char *
-get_TAG_name (unsigned long tag)
+static const char *
+get_TAG_name(unsigned long tag)
 {
   switch (tag)
     {
@@ -7896,14 +7898,14 @@ get_TAG_name (unsigned long tag)
       {
 	static char buffer[100];
 
-	snprintf (buffer, sizeof (buffer), _("Unknown TAG value: %lx"), tag);
+	snprintf(buffer, sizeof(buffer), _("Unknown TAG value: %lx"), tag);
 	return buffer;
       }
     }
 }
 
-static char *
-get_FORM_name (unsigned long form)
+static const char *
+get_FORM_name(unsigned long form)
 {
   switch (form)
     {
@@ -7932,16 +7934,16 @@ get_FORM_name (unsigned long form)
       {
 	static char buffer[100];
 
-	snprintf (buffer, sizeof (buffer), _("Unknown FORM value: %lx"), form);
+	snprintf(buffer, sizeof(buffer), _("Unknown FORM value: %lx"), form);
 	return buffer;
       }
     }
 }
 
 static unsigned char *
-display_block (unsigned char *data, unsigned long length)
+display_block(unsigned char *data, unsigned long length)
 {
-  printf (_(" %lu byte block: "), length);
+  printf(_(" %lu byte block: "), length);
 
   while (length --)
     printf ("%lx ", (unsigned long) byte_get (data++, 1));
@@ -8754,8 +8756,8 @@ read_and_display_attr_value(unsigned long attribute, unsigned long form,
   return data;
 }
 
-static char *
-get_AT_name (unsigned long attribute)
+static const char *
+get_AT_name(unsigned long attribute)
 {
   switch (attribute)
     {
@@ -8861,8 +8863,8 @@ get_AT_name (unsigned long attribute)
       {
 	static char buffer[100];
 
-	snprintf (buffer, sizeof (buffer), _("Unknown AT value: %lx"),
-		  attribute);
+	snprintf(buffer, sizeof(buffer), _("Unknown AT value: %lx"),
+		 attribute);
 	return buffer;
       }
     }
@@ -11100,7 +11102,7 @@ static struct {
 static int
 display_debug_section(Elf_Internal_Shdr *section, FILE *file)
 {
-  char *name = SECTION_NAME(section);
+  const char *name = SECTION_NAME(section);
   bfd_size_type length;
   int result = 1;
   int i;
@@ -12416,7 +12418,7 @@ static int process_file(char *file_name)
 	error(_("'%s': No such file\n"), file_name);
       else
 	error(_("Could not locate '%s'.  System error message: %s\n"),
-              file_name, strerror(errno));
+              file_name, xstrerror(errno));
       return 1;
     }
 

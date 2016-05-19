@@ -45,6 +45,8 @@
 
 #include "elf-bfd.h"
 
+#include "sh64-tdep.h"
+
 /* sh flags */
 #include "elf/sh.h"
 /* registers numbers shared with the simulator */
@@ -194,7 +196,7 @@ sh64_register_name (int reg_nr)
 
   if (reg_nr < 0)
     return NULL;
-  if (reg_nr >= (sizeof (register_names) / sizeof (*register_names)))
+  if ((size_t)reg_nr >= (sizeof(register_names) / sizeof(*register_names)))
     return NULL;
   return register_names[reg_nr];
 }
@@ -673,17 +675,17 @@ sh64_skip_prologue (CORE_ADDR pc)
 
 /* Should call_function allocate stack space for a struct return?  */
 static int
-sh64_use_struct_convention (struct type *type)
+sh64_use_struct_convention(struct type *type)
 {
-  return (TYPE_LENGTH (type) > 8);
+  return (TYPE_LENGTH(type) > 8);
 }
 
-/* Disassemble an instruction.  */
+/* Disassemble an instruction: */
 static int
-gdb_print_insn_sh64 (bfd_vma memaddr, disassemble_info *info)
+gdb_print_insn_sh64(bfd_vma memaddr, disassemble_info *info)
 {
   info->endian = TARGET_BYTE_ORDER;
-  return print_insn_sh (memaddr, info);
+  return print_insn_sh(memaddr, info);
 }
 
 /* For vectors of 4 floating point registers.  */
@@ -840,21 +842,21 @@ sign_extend (int value, int bits)
 	  : value);
 }
 
+/* */
 static void
-sh64_analyze_prologue (struct gdbarch *gdbarch,
-		       struct sh64_frame_cache *cache,
-		       CORE_ADDR func_pc,
-		       CORE_ADDR current_pc)
+sh64_analyze_prologue(struct gdbarch *gdbarch, struct sh64_frame_cache *cache,
+		      CORE_ADDR func_pc, CORE_ADDR current_pc)
 {
-  int reg_nr;
-  int pc;
-  int opc;
+  CORE_ADDR pc;
+  CORE_ADDR opc;
   int insn;
   int r0_val = 0;
   int insn_size;
-  int gdb_register_number;
-  int register_number;
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
 
   cache->sp_offset = 0;
 
@@ -1040,20 +1042,16 @@ sh64_frame_align (struct gdbarch *ignore, CORE_ADDR sp)
 
    Different rules apply for variable arguments functions, and for functions
    for which the prototype is not known.  */
-
 static CORE_ADDR
-sh64_push_dummy_call (struct gdbarch *gdbarch,
-		      struct value *function,
-		      struct regcache *regcache,
-		      CORE_ADDR bp_addr,
-		      int nargs, struct value **args,
-		      CORE_ADDR sp, int struct_return,
-		      CORE_ADDR struct_addr)
+sh64_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
+		     struct regcache *regcache, CORE_ADDR bp_addr, int nargs,
+		     struct value **args, CORE_ADDR sp, int struct_return,
+		     CORE_ADDR struct_addr)
 {
   int stack_offset, stack_alloc;
   int int_argreg;
-  int float_argreg;
-  int double_argreg;
+  int float_argreg = 0;
+  int double_argreg = 0;
   int float_arg_index = 0;
   int double_arg_index = 0;
   int argnum;
@@ -1061,15 +1059,14 @@ sh64_push_dummy_call (struct gdbarch *gdbarch,
   CORE_ADDR regval;
   char *val;
   char valbuf[8];
-  char valbuf_tmp[8];
   int len;
   int argreg_size;
   int fp_args[12];
 
-  memset (fp_args, 0, sizeof (fp_args));
+  memset(fp_args, 0, sizeof(fp_args));
 
   /* first force sp to a 8-byte alignment */
-  sp = sh64_frame_align (gdbarch, sp);
+  sp = sh64_frame_align(gdbarch, sp);
 
   /* The "struct return pointer" pseudo-argument has its own dedicated
      register */
@@ -1129,9 +1126,9 @@ sh64_push_dummy_call (struct gdbarch *gdbarch,
 		 AND in the registers!   */
 	      if (int_argreg <= ARGLAST_REGNUM)
 		{
-		  /* there's room in a register */
-		  regval = extract_unsigned_integer (val, argreg_size);
-		  regcache_cooked_write_unsigned (regcache, int_argreg, regval);
+		  /* there is/was room in a register: */
+		  regval = extract_unsigned_integer(val, argreg_size);
+		  regcache_cooked_write_unsigned(regcache, int_argreg, regval);
 		}
 	      /* Store the value 8 bytes at a time.  This means that
 		 things larger than 8 bytes may go partly in registers
@@ -1144,7 +1141,7 @@ sh64_push_dummy_call (struct gdbarch *gdbarch,
 	}
       else
 	{
-	  val = (char *) value_contents (args[argnum]);
+	  val = (char *)value_contents(args[argnum]);
 	  if (len == 4)
 	    {
 	      /* Where is it going to be stored? */
@@ -1157,52 +1154,59 @@ sh64_push_dummy_call (struct gdbarch *gdbarch,
 	      if (float_arg_index <= FLOAT_ARGLAST_REGNUM)
 		{
 		  /* Goes in FR0...FR11 */
-		  regcache_cooked_write (regcache,
-					 FP0_REGNUM + float_arg_index,
-					 val);
+		  regcache_cooked_write(regcache,
+					(FP0_REGNUM + float_arg_index),
+					val);
 		  fp_args[float_arg_index] = 1;
 		  /* Skip the corresponding general argument register.  */
 		  int_argreg ++;
 		}
 	      else
-		;
-		/* Store it as the integers, 8 bytes at the time, if
-		   necessary spilling on the stack.  */
-
-	    }
-	    else if (len == 8)
-	      {
-		/* Where is it going to be stored? */
-		while (fp_args[double_arg_index])
-		  double_arg_index += 2;
-		/* Now double_argreg points to the register
-		   where it should be stored.
-		   Are we still within the allowed register set? */
-		if (double_arg_index < FLOAT_ARGLAST_REGNUM)
-		  {
-		    /* Goes in DR0...DR10 */
-		    /* The numbering of the DRi registers is consecutive,
-		       i.e. includes odd numbers.  */
-		    int double_register_offset = double_arg_index / 2;
-		    int regnum = DR0_REGNUM + double_register_offset;
-		    regcache_cooked_write (regcache, regnum, val);
-		    fp_args[double_arg_index] = 1;
-		    fp_args[double_arg_index + 1] = 1;
-		    /* Skip the corresponding general argument register.  */
-		    int_argreg ++;
-		  }
-		else
+		{
 		  ;
 		  /* Store it as the integers, 8 bytes at the time, if
-                     necessary spilling on the stack.  */
-	      }
+		   * necessary spilling on the stack.  */
+		}
+	    }
+	  else if (len == 8)
+	    {
+	      /* Where is it going to be stored? */
+	      while (fp_args[double_arg_index])
+		double_arg_index += 2;
+	      /* Now double_argreg points to the register
+	       * where it should be stored.
+	       * Are we still within the allowed register set? */
+	      if (double_arg_index < FLOAT_ARGLAST_REGNUM)
+		{
+		  /* Goes in DR0...DR10 */
+		  /* The numbering of the DRi registers is consecutive,
+		   * i.e. includes odd numbers.  */
+		  int double_register_offset = (double_arg_index / 2);
+		  int regnum = (DR0_REGNUM + double_register_offset);
+		  regcache_cooked_write(regcache, regnum, val);
+		  fp_args[double_arg_index] = 1;
+		  fp_args[double_arg_index + 1] = 1;
+		  /* Skip the corresponding general argument register: */
+		  int_argreg++;
+		}
+	      else
+		{
+		  ;
+		  /* Store it as the integers, 8 bytes at the time, if
+		   * necessary spilling on the stack.  */
+		}
+	    }
 	}
     }
-  /* Store return address. */
-  regcache_cooked_write_unsigned (regcache, PR_REGNUM, bp_addr);
+  /* Store return address: */
+  regcache_cooked_write_unsigned(regcache, PR_REGNUM, bp_addr);
 
-  /* Update stack pointer.  */
-  regcache_cooked_write_unsigned (regcache, SP_REGNUM, sp);
+  /* Update stack pointer: */
+  regcache_cooked_write_unsigned(regcache, SP_REGNUM, sp);
+  
+  if (float_argreg == double_argreg) {
+    ; /* ??? */
+  }
 
   return sp;
 }
@@ -1222,7 +1226,7 @@ sh64_extract_return_value (struct type *type, struct regcache *regcache,
       if (len == 4)
 	{
 	  /* Return value stored in FP0_REGNUM */
-	  regcache_raw_read (regcache, FP0_REGNUM, valbuf);
+	  regcache_raw_read(regcache, FP0_REGNUM, (gdb_byte *)valbuf);
 	}
       else if (len == 8)
 	{
@@ -1230,7 +1234,7 @@ sh64_extract_return_value (struct type *type, struct regcache *regcache,
 	  DOUBLEST val;
 	  char buf[8];
 
-	  regcache_cooked_read (regcache, DR0_REGNUM, &buf);
+	  regcache_cooked_read(regcache, DR0_REGNUM, (gdb_byte *)&buf);
 
 	  if (TARGET_BYTE_ORDER == BFD_ENDIAN_LITTLE)
 	    floatformat_to_doublest (&floatformat_ieee_double_littlebyte_bigword,
@@ -1294,26 +1298,32 @@ sh64_store_return_value (struct type *type, struct regcache *regcache,
 
       if (len <= register_size (current_gdbarch, return_register))
 	{
-	  /* Pad with zeros.  */
-	  memset (buf, 0, register_size (current_gdbarch, return_register));
+	  /* Pad with zeroes: */
+	  memset(buf, 0, register_size(current_gdbarch, return_register));
 	  if (TARGET_BYTE_ORDER == BFD_ENDIAN_LITTLE)
-	    offset = 0; /*register_size (current_gdbarch,
-			  return_register) - len;*/
+	    {
+#if 1
+	      offset = 0;
+#else /* 0: */
+	      offset = (register_size(current_gdbarch, return_register) - len);
+#endif /* 1 */
+	    }
 	  else
-	    offset = register_size (current_gdbarch, return_register) - len;
+	    offset = (register_size(current_gdbarch, return_register) - len);
 
-	  memcpy (buf + offset, valbuf, len);
-	  regcache_raw_write (regcache, return_register, buf);
+	  memcpy((buf + offset), valbuf, len);
+	  regcache_raw_write(regcache, return_register, buf);
 	}
       else
-	regcache_raw_write (regcache, return_register, valbuf);
+	regcache_raw_write(regcache, return_register, (const gdb_byte *)valbuf);
     }
 }
 
+/* */
 static enum return_value_convention
-sh64_return_value (struct gdbarch *gdbarch, struct type *type,
-		   struct regcache *regcache,
-		   void *readbuf, const void *writebuf)
+sh64_return_value(struct gdbarch *gdbarch, struct type *type,
+		  struct regcache *regcache,
+		  gdb_byte *readbuf, const gdb_byte *writebuf)
 {
   if (sh64_use_struct_convention (type))
     return RETURN_VALUE_STRUCT_CONVENTION;
@@ -1406,13 +1416,13 @@ sh64_show_compact_regs (void)
 /* FIXME!!! This only shows the registers for shmedia, excluding the
    pseudo registers.  */
 void
-sh64_show_regs (void)
+sh64_show_regs(void)
 {
   if (deprecated_selected_frame
-      && pc_is_isa32 (get_frame_pc (deprecated_selected_frame)))
-    sh64_show_media_regs ();
+      && pc_is_isa32(get_frame_pc(deprecated_selected_frame)))
+    sh64_show_media_regs();
   else
-    sh64_show_compact_regs ();
+    sh64_show_compact_regs();
 }
 
 /* *INDENT-OFF* */
@@ -1573,9 +1583,10 @@ sh64_register_convert_to_raw (struct type *type, int regnum,
     error ("sh64_register_convert_to_raw called with non DR register number");
 }
 
+/* */
 static void
-sh64_pseudo_register_read (struct gdbarch *gdbarch, struct regcache *regcache,
-			   int reg_nr, void *buffer)
+sh64_pseudo_register_read(struct gdbarch *gdbarch, struct regcache *regcache,
+			  int reg_nr, gdb_byte *buffer)
 {
   int base_regnum;
   int portion;
@@ -1602,7 +1613,6 @@ sh64_pseudo_register_read (struct gdbarch *gdbarch, struct regcache *regcache,
 					temp_buffer, buffer);
 
     }
-
   else if (reg_nr >= FPP0_REGNUM
 	   && reg_nr <= FPP_LAST_REGNUM)
     {
@@ -1616,7 +1626,6 @@ sh64_pseudo_register_read (struct gdbarch *gdbarch, struct regcache *regcache,
 			   ((char *) buffer
 			    + register_size (gdbarch, base_regnum) * portion));
     }
-
   else if (reg_nr >= FV0_REGNUM
 	   && reg_nr <= FV_LAST_REGNUM)
     {
@@ -1630,7 +1639,6 @@ sh64_pseudo_register_read (struct gdbarch *gdbarch, struct regcache *regcache,
 			   ((char *) buffer
 			    + register_size (gdbarch, base_regnum) * portion));
     }
-
   /* sh compact pseudo registers. 1-to-1 with a shmedia register */
   else if (reg_nr >= R0_C_REGNUM
 	   && reg_nr <= T_C_REGNUM)
@@ -1643,7 +1651,6 @@ sh64_pseudo_register_read (struct gdbarch *gdbarch, struct regcache *regcache,
 	offset = 4;
       memcpy (buffer, temp_buffer + offset, 4); /* get LOWER 32 bits only????*/
     }
-
   else if (reg_nr >= FP0_C_REGNUM
 	   && reg_nr <= FP_LAST_C_REGNUM)
     {
@@ -1654,7 +1661,6 @@ sh64_pseudo_register_read (struct gdbarch *gdbarch, struct regcache *regcache,
 	 they have the same size and endianness.  */
       regcache_raw_read (regcache, base_regnum, buffer);
     }
-
   else if (reg_nr >= DR0_C_REGNUM
 	   && reg_nr <= DR_LAST_C_REGNUM)
     {
@@ -1673,7 +1679,6 @@ sh64_pseudo_register_read (struct gdbarch *gdbarch, struct regcache *regcache,
 							       reg_nr),
 					temp_buffer, buffer);
     }
-
   else if (reg_nr >= FV0_C_REGNUM
 	   && reg_nr <= FV_LAST_C_REGNUM)
     {
@@ -1687,7 +1692,6 @@ sh64_pseudo_register_read (struct gdbarch *gdbarch, struct regcache *regcache,
 			   ((char *) buffer
 			    + register_size (gdbarch, base_regnum) * portion));
     }
-
   else if (reg_nr == FPSCR_C_REGNUM)
     {
       int fpscr_base_regnum;
@@ -1729,9 +1733,8 @@ sh64_pseudo_register_read (struct gdbarch *gdbarch, struct regcache *regcache,
       fpscr_c_value = fpscr_c_part1_value | fpscr_c_part2_value;
       /* Store that in out buffer!!! */
       store_unsigned_integer (buffer, 4, fpscr_c_value);
-      /* FIXME There is surely an endianness gotcha here.  */
+      /* FIXME: There is surely an endianness gotcha here.  */
     }
-
   else if (reg_nr == FPUL_C_REGNUM)
     {
       base_regnum = sh64_compact_reg_base_num (reg_nr);
@@ -1742,63 +1745,59 @@ sh64_pseudo_register_read (struct gdbarch *gdbarch, struct regcache *regcache,
     }
 }
 
+/* */
 static void
-sh64_pseudo_register_write (struct gdbarch *gdbarch, struct regcache *regcache,
-			    int reg_nr, const void *buffer)
+sh64_pseudo_register_write(struct gdbarch *gdbarch, struct regcache *regcache,
+			   int reg_nr, const gdb_byte *buffer)
 {
   int base_regnum, portion;
   int offset;
   char temp_buffer[MAX_REGISTER_SIZE];
 
-  if (reg_nr >= DR0_REGNUM
-      && reg_nr <= DR_LAST_REGNUM)
+  if ((reg_nr >= DR0_REGNUM) && (reg_nr <= DR_LAST_REGNUM))
     {
-      base_regnum = sh64_dr_reg_base_num (reg_nr);
-      /* We must pay attention to the endianness.  */
-      sh64_register_convert_to_raw (gdbarch_register_type (gdbarch, reg_nr),
-				    reg_nr,
-				    buffer, temp_buffer);
+      base_regnum = sh64_dr_reg_base_num(reg_nr);
+      /* We must pay attention to the endianness: */
+      sh64_register_convert_to_raw(gdbarch_register_type(gdbarch, reg_nr),
+				   reg_nr, buffer, temp_buffer);
 
-      /* Write the real regs for which this one is an alias.  */
+      /* Write the real regs for which this one is an alias: */
       for (portion = 0; portion < 2; portion++)
-	regcache_raw_write (regcache, base_regnum + portion,
-			    (temp_buffer
-			     + register_size (gdbarch,
-					      base_regnum) * portion));
+	regcache_raw_write(regcache, (base_regnum + portion),
+			   (const gdb_byte *)(temp_buffer
+					      + (register_size(gdbarch,
+							       base_regnum)
+						 * portion)));
     }
-
-  else if (reg_nr >= FPP0_REGNUM
-	   && reg_nr <= FPP_LAST_REGNUM)
+  else if ((reg_nr >= FPP0_REGNUM) && (reg_nr <= FPP_LAST_REGNUM))
     {
-      base_regnum = sh64_fpp_reg_base_num (reg_nr);
+      base_regnum = sh64_fpp_reg_base_num(reg_nr);
 
-      /* Write the real regs for which this one is an alias.  */
+      /* Write the real regs for which this one is an alias: */
       for (portion = 0; portion < 2; portion++)
-	regcache_raw_write (regcache, base_regnum + portion,
-			    ((char *) buffer
-			     + register_size (gdbarch,
-					      base_regnum) * portion));
+	regcache_raw_write(regcache, (base_regnum + portion),
+			   (const gdb_byte *)((char *)buffer
+					      + (register_size(gdbarch,
+							       base_regnum)
+						 * portion)));
     }
-
-  else if (reg_nr >= FV0_REGNUM
-	   && reg_nr <= FV_LAST_REGNUM)
+  else if ((reg_nr >= FV0_REGNUM) && (reg_nr <= FV_LAST_REGNUM))
     {
-      base_regnum = sh64_fv_reg_base_num (reg_nr);
+      base_regnum = sh64_fv_reg_base_num(reg_nr);
 
       /* Write the real regs for which this one is an alias.  */
       for (portion = 0; portion < 4; portion++)
-	regcache_raw_write (regcache, base_regnum + portion,
-			    ((char *) buffer
-			     + register_size (gdbarch,
-					      base_regnum) * portion));
+	regcache_raw_write(regcache, (base_regnum + portion),
+			   (const gdb_byte *)((char *)buffer
+					      + (register_size(gdbarch,
+							       base_regnum)
+						 * portion)));
     }
-
   /* sh compact general pseudo registers. 1-to-1 with a shmedia
      register but only 4 bytes of it.  */
-  else if (reg_nr >= R0_C_REGNUM
-	   && reg_nr <= T_C_REGNUM)
+  else if ((reg_nr >= R0_C_REGNUM) && (reg_nr <= T_C_REGNUM))
     {
-      base_regnum = sh64_compact_reg_base_num (reg_nr);
+      base_regnum = sh64_compact_reg_base_num(reg_nr);
       /* reg_nr is 32 bit here, and base_regnum is 64 bits.  */
       if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
 	offset = 4;
@@ -1807,54 +1806,51 @@ sh64_pseudo_register_write (struct gdbarch *gdbarch, struct regcache *regcache,
       /* Let's read the value of the base register into a temporary
 	 buffer, so that overwriting the last four bytes with the new
 	 value of the pseudo will leave the upper 4 bytes unchanged.  */
-      regcache_raw_read (regcache, base_regnum, temp_buffer);
+      regcache_raw_read(regcache, base_regnum, (gdb_byte *)temp_buffer);
       /* Write as an 8 byte quantity */
-      memcpy (temp_buffer + offset, buffer, 4);
-      regcache_raw_write (regcache, base_regnum, temp_buffer);
+      memcpy((temp_buffer + offset), buffer, 4);
+      regcache_raw_write(regcache, base_regnum, (const gdb_byte *)temp_buffer);
     }
-
   /* sh floating point compact pseudo registers. 1-to-1 with a shmedia
      registers. Both are 4 bytes.  */
-  else if (reg_nr >= FP0_C_REGNUM
-	       && reg_nr <= FP_LAST_C_REGNUM)
+  else if ((reg_nr >= FP0_C_REGNUM)
+	   && (reg_nr <= FP_LAST_C_REGNUM))
     {
-      base_regnum = sh64_compact_reg_base_num (reg_nr);
-      regcache_raw_write (regcache, base_regnum, buffer);
+      base_regnum = sh64_compact_reg_base_num(reg_nr);
+      regcache_raw_write(regcache, base_regnum, buffer);
     }
-
-  else if (reg_nr >= DR0_C_REGNUM
-	   && reg_nr <= DR_LAST_C_REGNUM)
+  else if ((reg_nr >= DR0_C_REGNUM)
+	   && (reg_nr <= DR_LAST_C_REGNUM))
     {
-      base_regnum = sh64_compact_reg_base_num (reg_nr);
+      base_regnum = sh64_compact_reg_base_num(reg_nr);
       for (portion = 0; portion < 2; portion++)
 	{
-	  /* We must pay attention to the endianness.  */
-	  sh64_register_convert_to_raw (gdbarch_register_type (gdbarch,
-							       reg_nr),
-					reg_nr,
-					buffer, temp_buffer);
+	  /* We must pay attention to the endianness: */
+	  sh64_register_convert_to_raw(gdbarch_register_type(gdbarch,
+							     reg_nr),
+				       reg_nr, buffer, temp_buffer);
 
-	  regcache_raw_write (regcache, base_regnum + portion,
-			      (temp_buffer
-			       + register_size (gdbarch,
-						base_regnum) * portion));
+	  regcache_raw_write(regcache, (base_regnum + portion),
+			     (const gdb_byte *)(temp_buffer
+						+ (register_size(gdbarch,
+								base_regnum)
+						   * portion)));
 	}
     }
-
-  else if (reg_nr >= FV0_C_REGNUM
-	   && reg_nr <= FV_LAST_C_REGNUM)
+  else if ((reg_nr >= FV0_C_REGNUM)
+	   && (reg_nr <= FV_LAST_C_REGNUM))
     {
-      base_regnum = sh64_compact_reg_base_num (reg_nr);
+      base_regnum = sh64_compact_reg_base_num(reg_nr);
 
       for (portion = 0; portion < 4; portion++)
 	{
-	  regcache_raw_write (regcache, base_regnum + portion,
-			      ((char *) buffer
-			       + register_size (gdbarch,
-						base_regnum) * portion));
+	  regcache_raw_write(regcache, (base_regnum + portion),
+			     (const gdb_byte *)((char *)buffer
+						+ (register_size(gdbarch,
+								base_regnum)
+						   * portion)));
 	}
     }
-
   else if (reg_nr == FPSCR_C_REGNUM)
     {
       int fpscr_base_regnum;
@@ -1884,34 +1880,36 @@ sh64_pseudo_register_write (struct gdbarch *gdbarch, struct regcache *regcache,
        */
       /* *INDENT-ON* */
       /* Get value as an int.  */
-      fpscr_c_value = extract_unsigned_integer (buffer, 4);
+      fpscr_c_value = extract_unsigned_integer(buffer, 4);
 
       /* Build the new values.  */
       fpscr_mask = 0x0003fffd;
       sr_mask = 0x001c0000;
 
-      fpscr_value = fpscr_c_value & fpscr_mask;
-      sr_value = (fpscr_value & sr_mask) >> 6;
+      fpscr_value = (fpscr_c_value & fpscr_mask);
+      sr_value = ((fpscr_value & sr_mask) >> 6);
 
-      regcache_raw_read (regcache, fpscr_base_regnum, temp_buffer);
-      old_fpscr_value = extract_unsigned_integer (temp_buffer, 4);
+      regcache_raw_read(regcache, fpscr_base_regnum, (gdb_byte *)temp_buffer);
+      old_fpscr_value = extract_unsigned_integer((const gdb_byte *)temp_buffer,
+						 4);
       old_fpscr_value &= 0xfffc0002;
       fpscr_value |= old_fpscr_value;
-      store_unsigned_integer (temp_buffer, 4, fpscr_value);
-      regcache_raw_write (regcache, fpscr_base_regnum, temp_buffer);
+      store_unsigned_integer((gdb_byte *)temp_buffer, 4, fpscr_value);
+      regcache_raw_write(regcache, fpscr_base_regnum,
+			 (const gdb_byte *)temp_buffer);
 
-      regcache_raw_read (regcache, sr_base_regnum, temp_buffer);
-      old_sr_value = extract_unsigned_integer (temp_buffer, 4);
+      regcache_raw_read(regcache, sr_base_regnum, (gdb_byte *)temp_buffer);
+      old_sr_value = extract_unsigned_integer((const gdb_byte *)temp_buffer, 4);
       old_sr_value &= 0xffff8fff;
       sr_value |= old_sr_value;
-      store_unsigned_integer (temp_buffer, 4, sr_value);
-      regcache_raw_write (regcache, sr_base_regnum, temp_buffer);
+      store_unsigned_integer((gdb_byte *)temp_buffer, 4, sr_value);
+      regcache_raw_write(regcache, sr_base_regnum,
+			 (const gdb_byte *)temp_buffer);
     }
-
   else if (reg_nr == FPUL_C_REGNUM)
     {
-      base_regnum = sh64_compact_reg_base_num (reg_nr);
-      regcache_raw_write (regcache, base_regnum, buffer);
+      base_regnum = sh64_compact_reg_base_num(reg_nr);
+      regcache_raw_write(regcache, base_regnum, buffer);
     }
 }
 
@@ -1919,74 +1917,78 @@ sh64_pseudo_register_write (struct gdbarch *gdbarch, struct regcache *regcache,
    shmedia REGISTERS.  */
 /* Control registers, compact mode.  */
 static void
-sh64_do_cr_c_register_info (struct ui_file *file, struct frame_info *frame,
-			    int cr_c_regnum)
+sh64_do_cr_c_register_info(struct ui_file *file, struct frame_info *frame,
+			   int cr_c_regnum)
 {
   switch (cr_c_regnum)
     {
     case PC_C_REGNUM:
-      fprintf_filtered (file, "pc_c\t0x%08x\n",
-	  (int) get_frame_register_unsigned (frame, cr_c_regnum));
+      fprintf_filtered(file, "pc_c\t0x%08x\n",
+		       (int)get_frame_register_unsigned(frame, cr_c_regnum));
       break;
     case GBR_C_REGNUM:
-      fprintf_filtered (file, "gbr_c\t0x%08x\n",
-      	  (int) get_frame_register_unsigned (frame, cr_c_regnum));
+      fprintf_filtered(file, "gbr_c\t0x%08x\n",
+		       (int)get_frame_register_unsigned(frame, cr_c_regnum));
       break;
     case MACH_C_REGNUM:
-      fprintf_filtered (file, "mach_c\t0x%08x\n",
-      	  (int) get_frame_register_unsigned (frame, cr_c_regnum));
+      fprintf_filtered(file, "mach_c\t0x%08x\n",
+		       (int)get_frame_register_unsigned(frame, cr_c_regnum));
       break;
     case MACL_C_REGNUM:
-      fprintf_filtered (file, "macl_c\t0x%08x\n",
-      	  (int) get_frame_register_unsigned (frame, cr_c_regnum));
+      fprintf_filtered(file, "macl_c\t0x%08x\n",
+		       (int)get_frame_register_unsigned(frame, cr_c_regnum));
       break;
     case PR_C_REGNUM:
-      fprintf_filtered (file, "pr_c\t0x%08x\n",
-      	  (int) get_frame_register_unsigned (frame, cr_c_regnum));
+      fprintf_filtered(file, "pr_c\t0x%08x\n",
+		       (int)get_frame_register_unsigned(frame, cr_c_regnum));
       break;
     case T_C_REGNUM:
-      fprintf_filtered (file, "t_c\t0x%08x\n",
-      	  (int) get_frame_register_unsigned (frame, cr_c_regnum));
+      fprintf_filtered(file, "t_c\t0x%08x\n",
+		       (int)get_frame_register_unsigned(frame, cr_c_regnum));
       break;
     case FPSCR_C_REGNUM:
-      fprintf_filtered (file, "fpscr_c\t0x%08x\n",
-      	  (int) get_frame_register_unsigned (frame, cr_c_regnum));
+      fprintf_filtered(file, "fpscr_c\t0x%08x\n",
+		       (int)get_frame_register_unsigned(frame, cr_c_regnum));
       break;
     case FPUL_C_REGNUM:
-      fprintf_filtered (file, "fpul_c\t0x%08x\n",
-          (int) get_frame_register_unsigned (frame, cr_c_regnum));
+      fprintf_filtered(file, "fpul_c\t0x%08x\n",
+		       (int)get_frame_register_unsigned(frame, cr_c_regnum));
+      break;
+    default:
+      fprintf_filtered(file, "\n");
       break;
     }
 }
 
+/* */
 static void
-sh64_do_fp_register (struct gdbarch *gdbarch, struct ui_file *file,
-		     struct frame_info *frame, int regnum)
+sh64_do_fp_register(struct gdbarch *gdbarch, struct ui_file *file,
+		    struct frame_info *frame, int regnum)
 {				/* do values for FP (float) regs */
   unsigned char *raw_buffer;
   double flt;	/* double extracted from raw hex data */
   int inv;
   int j;
 
-  /* Allocate space for the float.  */
-  raw_buffer = (unsigned char *) alloca (register_size (gdbarch, FP0_REGNUM));
+  /* Allocate space for the float: */
+  raw_buffer = (unsigned char *)alloca(register_size(gdbarch, FP0_REGNUM));
 
-  /* Get the data in raw format.  */
-  if (!frame_register_read (frame, regnum, raw_buffer))
-    error ("can't read register %d (%s)", regnum, REGISTER_NAME (regnum));
+  /* Get the data in raw format: */
+  if (!frame_register_read(frame, regnum, raw_buffer))
+    error(_("cannot read register %d (%s)"), regnum, REGISTER_NAME(regnum));
 
   /* Get the register as a number */
-  flt = unpack_double (builtin_type_float, raw_buffer, &inv);
+  flt = (double)unpack_double(builtin_type_float, raw_buffer, &inv);
 
-  /* Print the name and some spaces.  */
-  fputs_filtered (REGISTER_NAME (regnum), file);
-  print_spaces_filtered (15 - strlen (REGISTER_NAME (regnum)), file);
+  /* Print the name and some spaces: */
+  fputs_filtered(REGISTER_NAME(regnum), file);
+  print_spaces_filtered(15 - strlen(REGISTER_NAME(regnum)), file);
 
   /* Print the value.  */
   if (inv)
-    fprintf_filtered (file, "<invalid float>");
+    fprintf_filtered(file, "<invalid float>");
   else
-    fprintf_filtered (file, "%-10.9g", flt);
+    fprintf_filtered(file, "%-10.9g", flt);
 
   /* Print the fp register as hex.  */
   fprintf_filtered (file, "\t(raw 0x");
@@ -2232,17 +2234,18 @@ sh64_alloc_frame_cache (void)
   return cache;
 }
 
+/* */
 static struct sh64_frame_cache *
-sh64_frame_cache (struct frame_info *next_frame, void **this_cache)
+sh64_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct sh64_frame_cache *cache;
   CORE_ADDR current_pc;
   int i;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct sh64_frame_cache *)*this_cache;
 
-  cache = sh64_alloc_frame_cache ();
+  cache = sh64_alloc_frame_cache();
   *this_cache = cache;
 
   current_pc = frame_pc_unwind (next_frame);
@@ -2275,29 +2278,30 @@ sh64_frame_cache (struct frame_info *next_frame, void **this_cache)
 
   /* Now that we have the base address for the stack frame we can
      calculate the value of sp in the calling frame.  */
-  cache->saved_sp = cache->base + cache->sp_offset;
+  cache->saved_sp = (cache->base + cache->sp_offset);
 
   /* Adjust all the saved registers such that they contain addresses
      instead of offsets.  */
   for (i = 0; i < SIM_SH64_NR_REGS; i++)
-    if (cache->saved_regs[i] != -1)
-      cache->saved_regs[i] = cache->saved_sp - cache->saved_regs[i];
+    if (cache->saved_regs[i] != (CORE_ADDR)(-1L))
+      cache->saved_regs[i] = (cache->saved_sp - cache->saved_regs[i]);
 
   return cache;
 }
 
+/* */
 static void
-sh64_frame_prev_register (struct frame_info *next_frame, void **this_cache,
-			  /* APPLE LOCAL variable opt states.  */
-			  int regnum, enum opt_state *optimizedp,
-			  enum lval_type *lvalp, CORE_ADDR *addrp,
-			  int *realnump, void *valuep)
+sh64_frame_prev_register(struct frame_info *next_frame, void **this_cache,
+			 /* APPLE LOCAL variable opt states.  */
+			 int regnum, enum opt_state *optimizedp,
+			 enum lval_type *lvalp, CORE_ADDR *addrp,
+			 int *realnump, void *valuep)
 {
-  struct sh64_frame_cache *cache = sh64_frame_cache (next_frame, this_cache);
+  struct sh64_frame_cache *cache = sh64_frame_cache(next_frame, this_cache);
 
-  gdb_assert (regnum >= 0);
+  gdb_assert(regnum >= 0);
 
-  if (regnum == SP_REGNUM && cache->saved_sp)
+  if ((regnum == SP_REGNUM) && cache->saved_sp)
     {
       /* APPLE LOCAL variable opt states.  */
       *optimizedp = opt_okay;
@@ -2306,10 +2310,10 @@ sh64_frame_prev_register (struct frame_info *next_frame, void **this_cache,
       *realnump = -1;
       if (valuep)
         {
-          /* Store the value.  */
-          store_unsigned_integer (valuep,
-	  			  register_size (current_gdbarch, SP_REGNUM),
-				  cache->saved_sp);
+          /* Store the value: */
+          store_unsigned_integer((gdb_byte *)valuep,
+	  			 register_size(current_gdbarch, SP_REGNUM),
+				 cache->saved_sp);
         }
       return;
     }
@@ -2320,9 +2324,10 @@ sh64_frame_prev_register (struct frame_info *next_frame, void **this_cache,
   if (regnum == PC_REGNUM)
     regnum = PR_REGNUM;
 
-  if (regnum < SIM_SH64_NR_REGS && cache->saved_regs[regnum] != -1)
+  if ((regnum < SIM_SH64_NR_REGS)
+      && (cache->saved_regs[regnum] != (CORE_ADDR)(-1L)))
     {
-      int reg_size = register_size (current_gdbarch, regnum);
+      int reg_size = register_size(current_gdbarch, regnum);
       int size;
 
       /* APPLE LOCAL variable opt states.  */
@@ -2330,18 +2335,19 @@ sh64_frame_prev_register (struct frame_info *next_frame, void **this_cache,
       *lvalp = lval_memory;
       *addrp = cache->saved_regs[regnum];
       *realnump = -1;
-      if (gdbarch_tdep (current_gdbarch)->sh_abi == SH_ABI_32
-          && (regnum == MEDIA_FP_REGNUM || regnum == PR_REGNUM))
+      if ((gdbarch_tdep(current_gdbarch)->sh_abi == SH_ABI_32)
+          && ((regnum == MEDIA_FP_REGNUM) || (regnum == PR_REGNUM)))
 	size = 4;
       else
         size = reg_size;
       if (valuep)
         {
-	  memset (valuep, 0, reg_size);
+	  memset(valuep, 0, reg_size);
 	  if (TARGET_BYTE_ORDER == BFD_ENDIAN_LITTLE)
-	    read_memory (*addrp, valuep, size);
+	    read_memory(*addrp, (gdb_byte *)valuep, size);
 	  else
-	    read_memory (*addrp, (char *) valuep + reg_size - size, size);
+	    read_memory(*addrp, (gdb_byte *)((char *)valuep + reg_size - size),
+			size);
         }
       return;
     }
@@ -2352,12 +2358,13 @@ sh64_frame_prev_register (struct frame_info *next_frame, void **this_cache,
   *addrp = 0;
   *realnump = regnum;
   if (valuep)
-    frame_unwind_register (next_frame, (*realnump), valuep);
+    frame_unwind_register(next_frame, (*realnump), (gdb_byte *)valuep);
 }
 
+/* */
 static void
-sh64_frame_this_id (struct frame_info *next_frame, void **this_cache,
-		    struct frame_id *this_id)
+sh64_frame_this_id(struct frame_info *next_frame, void **this_cache,
+		   struct frame_id *this_id)
 {
   struct sh64_frame_cache *cache = sh64_frame_cache (next_frame, this_cache);
 
@@ -2371,11 +2378,15 @@ sh64_frame_this_id (struct frame_info *next_frame, void **this_cache,
 static const struct frame_unwind sh64_frame_unwind = {
   NORMAL_FRAME,
   sh64_frame_this_id,
-  sh64_frame_prev_register
+  sh64_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
+/* */
 static const struct frame_unwind *
-sh64_frame_sniffer (struct frame_info *next_frame)
+sh64_frame_sniffer(struct frame_info *next_frame)
 {
   return &sh64_frame_unwind;
 }
@@ -2414,9 +2425,9 @@ static const struct frame_base sh64_frame_base = {
   sh64_frame_base_address
 };
 
-
+/* */
 struct gdbarch *
-sh64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
+sh64_gdbarch_init(struct gdbarch_info info, struct gdbarch_list *arches)
 {
   struct gdbarch *gdbarch;
   struct gdbarch_tdep *tdep;
@@ -2508,3 +2519,5 @@ sh64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 
   return gdbarch;
 }
+
+/* EOF */

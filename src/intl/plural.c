@@ -156,6 +156,13 @@ extern int yydebug;
      NUMBER = 262
    };
 #endif
+/* Tokens.  */
+#define EQUOP2 258
+#define CMPOP2 259
+#define ADDOP2 260
+#define MULOP2 261
+#define NUMBER 262
+
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -170,7 +177,7 @@ typedef union YYSTYPE
 
 
 /* Line 387 of yacc.c  */
-#line 174 "plural.c"
+#line 181 "plural.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -315,7 +322,7 @@ struct expression *new_exp_3(enum operator op, struct expression *bexp,
 
 
 /* Line 390 of yacc.c  */
-#line 319 "plural.c"
+#line 326 "plural.c"
 
 #ifdef short
 # undef short
@@ -1631,7 +1638,7 @@ yyreduce:
 
 
 /* Line 1787 of yacc.c  */
-#line 1635 "plural.c"
+#line 1642 "plural.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

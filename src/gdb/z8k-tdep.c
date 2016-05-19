@@ -49,7 +49,11 @@ static CORE_ADDR examine_frame(CORE_ADDR, CORE_ADDR *, CORE_ADDR);
 CORE_ADDR
 z8k_frame_saved_pc(struct frame_info *frame)
 {
+#ifdef BIG
   return read_memory_pointer(frame->frame + (BIG ? 4 : 2));
+#else
+  return read_memory_pointer(frame->frame + 0);
+#endif /* BIG */
 }
 
 #define IS_PUSHL(x) (BIG ? ((x & 0xfff0) == 0x91e0):((x & 0xfff0) == 0x91F0))
@@ -64,13 +68,13 @@ z8k_frame_saved_pc(struct frame_info *frame)
 /* work out how much local space is on the stack and
    return the pc pointing to the first push */
 
-static CORE_ADDR
-skip_adjust (CORE_ADDR pc, int *size)
+static ATTRIBUTE_USED CORE_ADDR
+skip_adjust(CORE_ADDR pc, int *size)
 {
   *size = 0;
 
-  if (IS_PUSH_FP (read_memory_short (pc))
-      && IS_MOV_SP_FP (read_memory_short (pc + 2)))
+  if (IS_PUSH_FP(read_memory_short(pc))
+      && IS_MOV_SP_FP(read_memory_short(pc + 2)))
     {
       /* This is a function with an explict frame pointer */
       pc += 4;
@@ -97,7 +101,7 @@ examine_frame(CORE_ADDR pc, CORE_ADDR *regs, CORE_ADDR sp)
   for (regno = 0; regno < NUM_REGS; regno++)
     regs[regno] = 0;
 
-  while (IS_PUSHW (w) || IS_PUSHL (w))
+  while (IS_PUSHW(w) || IS_PUSHL(w))
     {
       /* work out which register is being pushed to where */
       if (IS_PUSHL (w))
@@ -152,7 +156,11 @@ z8k_skip_prologue(CORE_ADDR start_pc)
 CORE_ADDR
 z8k_addr_bits_remove(CORE_ADDR addr)
 {
+#ifdef PTR_MASK
   return (addr & PTR_MASK);
+#else
+  return INVALID_ADDRESS;
+#endif /* PTR_MASK */
 }
 
 /* */
@@ -170,9 +178,9 @@ z8k_frame_chain(struct frame_info *thisframe)
     {
       ; /* This is the top of the stack, let us get the sp for real */
     }
-  if (!inside_entry_file (thisframe->pc))
+  if (!inside_entry_file(thisframe->pc))
     {
-      return read_memory_pointer (thisframe->frame);
+      return read_memory_pointer(thisframe->frame);
     }
   return 0;
 }
@@ -216,10 +224,12 @@ z8k_push_dummy_frame(void)
 int
 gdb_print_insn_z8k(bfd_vma memaddr, disassemble_info *info)
 {
-  if (BIG)
+  if (BIG) {
     return print_insn_z8001(memaddr, info);
-  else
+  } else {
     return print_insn_z8002(memaddr, info);
+  }
+  return 0;
 }
 
 /* Fetch the instruction at ADDR, returning 0 if ADDR is beyond LIM or
@@ -399,6 +409,7 @@ z8k_pop_frame(void)
 }
 
 struct cmd_list_element *setmemorylist;
+extern void _initialize_gdbtypes(void);
 
 /* */
 void

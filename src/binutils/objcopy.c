@@ -364,7 +364,7 @@ static struct option copy_options[] =
 };
 
 /* IMPORTS */
-extern char *program_name;
+extern const char *program_name;
 
 /* This flag distinguishes between strip and objcopy:
    1 means this is 'strip'; 0 means this is 'objcopy'.

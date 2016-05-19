@@ -201,15 +201,14 @@ printf_monitor(const char *pattern, ...)
 /*
  * write_monitor -- send raw data to monitor.
  */
-static void
-write_monitor (char data[], int len)
+static ATTRIBUTE_USED void
+write_monitor(char data[], int len)
 {
-  if (serial_write (array_desc, data, len))
-    fprintf (stderr, "serial_write failed: %s\n", safe_strerror (errno));
+  if (serial_write(array_desc, data, len))
+    fprintf(stderr, "serial_write failed: %s\n", safe_strerror(errno));
 
   *(data + len + 1) = '\0';
-  debuglogs (1, "write_monitor(), Sending: \"%s\".", data);
-
+  debuglogs(1, "write_monitor(), Sending: \"%s\".", data);
 }
 
 /*
@@ -467,26 +466,26 @@ get_hex_digit (int ignore)
 /* get_hex_byte -- Get a byte from monitor and put it in *BYT.
  *    Accept any number leading spaces.
  */
-static void
-get_hex_byte (char *byt)
+static ATTRIBUTE_USED void
+get_hex_byte(char *byt)
 {
   int val;
 
-  val = get_hex_digit (1) << 4;
-  debuglogs (4, "get_hex_byte() -- Read first nibble 0x%x", val);
+  val = (get_hex_digit(1) << 4);
+  debuglogs(4, "get_hex_byte() -- Read first nibble 0x%x", val);
 
-  val |= get_hex_digit (0);
-  debuglogs (4, "get_hex_byte() -- Read second nibble 0x%x", val);
+  val |= get_hex_digit(0);
+  debuglogs(4, "get_hex_byte() -- Read second nibble 0x%x", val);
   *byt = val;
 
-  debuglogs (4, "get_hex_byte() -- Read a 0x%x", val);
+  debuglogs(4, "get_hex_byte() -- Read a 0x%x", val);
 }
 
 /*
  * get_hex_word --  Get N 32-bit words from remote, each preceded by a space,
  *      and put them in registers starting at REGNO.
  */
-static int
+static ATTRIBUTE_USED int
 get_hex_word(void)
 {
   long val;
@@ -674,7 +673,7 @@ array_detach(int from_tty)
 /*
  * array_attach -- attach GDB to the target.
  */
-static void
+static ATTRIBUTE_USED void
 array_attach(char *args, int from_tty)
 {
   if (from_tty)
@@ -834,7 +833,7 @@ array_fetch_registers(int ignored)
  * This is unused by targets like this one that use a
  * protocol based on GDB's remote protocol.
  */
-static void
+static ATTRIBUTE_USED void
 array_fetch_register(int ignored ATTRIBUTE_UNUSED)
 {
   array_fetch_registers(0 /* ignored */);
@@ -882,10 +881,10 @@ array_store_registers(int ignored)
  * This is unused by targets like this one that use a
  * protocol based on GDB's remote protocol.
  */
-static void
-array_store_register(int ignored)
+static ATTRIBUTE_USED void
+array_store_register(int ignored ATTRIBUTE_UNUSED)
 {
-  array_store_registers (0 /* ignored */);
+  array_store_registers(0 /* ignored */);
 }
 
 /* Get ready to modify the registers array.  On machines which store
@@ -1117,22 +1116,23 @@ array_remove_breakpoint(CORE_ADDR addr, const char *shadow)
 	{
 	  breakaddr[i] = 0;
 	  /* some monitors remove breakpoints based on the address */
-	  printf_monitor ("bd %x\n", i);
-	  expect_prompt (1);
+	  printf_monitor("bd %x\n", i);
+	  expect_prompt(1);
 	  return 0;
 	}
     }
-  fprintf (stderr, "Can't find breakpoint associated with 0x%s\n",
-	   paddr_nz (addr));
+  fprintf(stderr, "Cannot find breakpoint associated with 0x%s\n",
+	  paddr_nz(addr));
   return 1;
 }
 
-static void
-array_stop (void)
+/* */
+static ATTRIBUTE_USED void
+array_stop(void)
 {
-  debuglogs (1, "array_stop()");
-  printf_monitor ("\003");
-  expect_prompt (1);
+  debuglogs(1, "array_stop()");
+  printf_monitor("\003");
+  expect_prompt(1);
 }
 
 /*
@@ -1478,6 +1478,14 @@ tohex(int nib)
     return ('0' + nib);
   else
     return ('a' + nib - 10);
+}
+
+/* Simple wrapper: */
+static ATTRIBUTE_USED int
+to_hex(int nib)
+{
+  /* Make sure this is spelled properly to avoid recursion: */
+  return tohex(nib);
 }
 
 /*

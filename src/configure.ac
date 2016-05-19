@@ -56,8 +56,10 @@ AC_ARG_ENABLE([multilib],
 [AS_HELP_STRING([--enable-multilib],
                 [build many library versions (default off)])],
 [case "${enableval}" in
-  yes) multilib=yes ;;
-  no)  multilib=no ;;
+  yes) multilib=yes
+       host_configargs=" ${host_configargs} --enable-multilib " ;;
+  no)  multilib=no
+       host_configargs=" ${host_configargs} --disable-multilib " ;;
   *)   AC_MSG_ERROR([bad value ${enableval} for multilib option]) ;;
  esac],
 	      [multilib=no])dnl
@@ -352,7 +354,7 @@ fi
 
 use_gnu_as=""
 # Make sure we do NOT let GNU as be added if we did NOT want it.
-if test x${with_gnu_as} = xno ; then
+if test "x${with_gnu_as}" = "xno"; then
   use_gnu_as=no
   noconfigdirs="${noconfigdirs} gas"
 fi
@@ -1316,6 +1318,7 @@ case "${target}" in
     noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   m68k-*-coff*)
+    host_configargs=" ${host_configargs} --enable-obsolete"
     noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   mcore-*-pe*)
@@ -1368,7 +1371,18 @@ case "${target}" in
     noconfigdirs="${noconfigdirs} gprof ${libgcj}"
     ;;
   m68k-apollo-*)
+    host_configargs=" ${host_configargs} --enable-obsolete"
     noconfigdirs="${noconfigdirs} ld binutils gprof target-libgloss ${libgcj}"
+    ;;
+  m68k-bull-sysv*)
+    host_configargs=" ${host_configargs} --enable-obsolete"
+    ;;
+  m68k-sun-sunos*)
+    noconfigdirs="${noconfigdirs} gdb"
+    ;;
+  maxq-*-coff*)
+    host_configargs=" ${host_configargs} --enable-obsolete"
+    noconfigdirs="${noconfigdirs} gdb"
     ;;
   mips*-*-irix5*)
     noconfigdirs="${noconfigdirs} gprof target-libgloss ${libgcj}"
@@ -1403,7 +1417,14 @@ case "${target}" in
   nds32*-*-*)
     noconfigdirs="${noconfigdirs} gdb"
     ;;
+  or32*-*-*)
+    host_configargs=" ${host_configargs} --enable-obsolete"
+    noconfigdirs="${noconfigdirs} gdb"
+    ;;
   or1k*-*-*)
+    noconfigdirs="${noconfigdirs} gdb"
+    ;;
+  pdp11-*-*)
     noconfigdirs="${noconfigdirs} gdb"
     ;;
   romp-*-*)
@@ -1433,6 +1454,9 @@ case "${target}" in
     ;;
   sparclite-*-*)
     noconfigdirs="${noconfigdirs} ${libgcj}"
+    ;;
+  sparc-*-lynxos*)
+    host_configargs=" ${host_configargs} --enable-obsolete"
     ;;
   sparc-*-sunos4*)
     noconfigdirs="${noconfigdirs} ${libgcj}"
@@ -1465,8 +1489,14 @@ case "${target}" in
   vax-*-*)
     noconfigdirs="${noconfigdirs} target-newlib target-libgloss ${libgcj}"
     ;;
+  we32k-*-*)
+    noconfigdirs="${noconfigdirs} gdb"
+    ;;
   xtensa-*-*)
     noconfigdirs="${noconfigdirs} ${libgcj}"
+    ;;
+  z80-*-*)
+    noconfigdirs="${noconfigdirs} gdb"
     ;;
   ip2k-*-*)
     noconfigdirs="${noconfigdirs} target-libiberty target-libstdc++-v3 ${libgcj}"
@@ -3919,12 +3949,15 @@ AC_ARG_ENABLE([maintainer-mode],
       [USE_MAINTAINER_MODE=${enableval}],
       [USE_MAINTAINER_MODE=no])
 AC_MSG_RESULT([${USE_MAINTAINER_MODE}])
-AC_SUBST([MAINTAINER_MODE_TRUE])
-AC_SUBST([MAINTAINER_MODE_FALSE])
+AC_SUBST([MAINTAINER_MODE_TRUE])dnl
+AC_SUBST([MAINTAINER_MODE_FALSE])dnl
+  ## Pass the result down to the Makefile, and child configure scripts:
 if test "x${USE_MAINTAINER_MODE}" = "xyes"; then
+  host_configargs=" ${host_configargs} --enable-maintainer-mode "
   MAINTAINER_MODE_TRUE=""
   MAINTAINER_MODE_FALSE='#'
 else
+  host_configargs=" ${host_configargs} --disable-maintainer-mode "
   MAINTAINER_MODE_TRUE='#'
   MAINTAINER_MODE_FALSE=""
 fi

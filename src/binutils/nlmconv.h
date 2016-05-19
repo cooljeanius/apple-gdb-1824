@@ -15,12 +15,15 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* Written by Ian Lance Taylor <ian@cygnus.com>.
 
    bfd.h, nlm/common.h and nlm/internal.h must be included before this
    file.  */
+
+#ifndef BINUTILS_NLMCONV_H
+#define BINUTILS_NLMCONV_H 1
 
 /* A linked list of strings.  */
 
@@ -52,7 +55,7 @@ extern struct string_list *export_symbols;
 /* List of files from INPUT.  */
 extern struct string_list *input_files;
 /* Map file name (MAP, FULLMAP).  */
-extern char *map_file;
+extern char *g_map_file;
 /* Whether a full map has been requested (FULLMAP).  */
 extern bfd_boolean full_map;
 /* File named by HELP.  */
@@ -78,7 +81,11 @@ extern char *rpc_file;
 extern int parse_errors;
 
 /* The parser.  */
-extern int yyparse (void);
+extern int yyparse(void);
 
 /* Tell the lexer what file to read.  */
-extern bfd_boolean nlmlex_file (const char *);
+extern bfd_boolean nlmlex_file(const char *);
+
+#endif /* !BINUTILS_NLMCONV_H */
+
+/* EOF */

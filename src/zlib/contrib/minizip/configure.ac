@@ -25,7 +25,8 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   AC_SUBST([TARGET_ARCHITECTURE])
 fi
 
-# libtool stuff:
+# Checks for programs and libtool stuff:
+AC_PROG_CPP
 AC_PROG_CXX
 AC_DEFUN([AC_REQUIRE_RANLIB],[
   AC_REQUIRE([AC_PROG_RANLIB])dnl

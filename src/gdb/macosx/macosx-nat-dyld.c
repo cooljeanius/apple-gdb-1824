@@ -481,7 +481,7 @@ target_read_minimal_segment_32(CORE_ADDR addr, struct segment_command *s)
   gdb_assert(addr != INVALID_ADDRESS);
   /* Read only up to the file offset as we only need the info up to the
    * vmaddr and vmsize: */
-  bzero(s, sizeof(*s));
+  memset(s, 0, sizeof(*s));
   error = target_read_memory(addr, (gdb_byte *)s,
                              offsetof(struct segment_command, fileoff));
 
@@ -503,7 +503,7 @@ target_read_minimal_segment_64(CORE_ADDR addr, struct segment_command_64 *s)
   gdb_assert(addr != INVALID_ADDRESS);
   /* Read only up to the file offset as we only need the info up to the
    * vmaddr and vmsize: */
-  bzero(s, sizeof(*s));
+  memset(s, 0, sizeof(*s));
   error = target_read_memory(addr, (gdb_byte *)s,
                              offsetof(struct segment_command_64, fileoff));
 

@@ -16,7 +16,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #ifndef _BUCOMM_H
 #define _BUCOMM_H
@@ -269,7 +269,7 @@ bfd_vma parse_vma(const char *, const char *);
 
 off_t get_file_size(const char *);
 
-extern char *program_name;
+extern const char *program_name;
 
 /* filemode.c */
 void mode_string(unsigned long, char *);

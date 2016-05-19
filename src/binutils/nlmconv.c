@@ -53,29 +53,29 @@
 #include "nlmconv.h"
 
 #ifdef NLMCONV_ALPHA
-#include "coff/sym.h"
-#include "coff/ecoff.h"
-#endif
+# include "coff/sym.h"
+# include "coff/ecoff.h"
+#endif /* NLMCONV_ALPHA */
 
 /* If strerror is just a macro, we want to use the one from libiberty
    since it will handle undefined values.  */
 #undef strerror
-extern char *strerror (int);
+extern char *strerror(int);
 
 #ifndef SEEK_SET
-#define SEEK_SET 0
-#endif
+# define SEEK_SET 0
+#endif /* !SEEK_SET */
 
 #ifndef R_OK
-#define R_OK 4
-#define W_OK 2
-#define X_OK 1
-#endif
+# define R_OK 4
+# define W_OK 2
+# define X_OK 1
+#endif /* !R_OK */
 
 /* Global variables.  */
 
-/* The name used to invoke the program.  */
-char *program_name;
+/* The name used to invoke the program: */
+const char *program_name;
 
 /* Local variables.  */
 
@@ -122,37 +122,39 @@ static struct option long_options[] =
 
 /* Local routines.  */
 
-int main (int, char **);
+int main(int, char **);
 
-static void show_usage (FILE *, int);
-static const char *select_output_format
-  (enum bfd_architecture, unsigned long, bfd_boolean);
-static void setup_sections (bfd *, asection *, void *);
-static void copy_sections (bfd *, asection *, void *);
-static void mangle_relocs
-  (bfd *, asection *, arelent ***, long *, char *, bfd_size_type);
-static void default_mangle_relocs
-  (bfd *, asection *, arelent ***, long *, char *, bfd_size_type);
-static char *link_inputs (struct string_list *, char *, char *);
+static void show_usage(FILE *, int);
+static const char *select_output_format(enum bfd_architecture, unsigned long,
+					bfd_boolean);
+static void setup_sections(bfd *, asection *, void *);
+static void copy_sections(bfd *, asection *, void *);
+static void mangle_relocs(bfd *, asection *, arelent ***, long *, char *,
+			  bfd_size_type);
+static void default_mangle_relocs(bfd *, asection *, arelent ***, long *,
+				  char *, bfd_size_type);
+static char *link_inputs(struct string_list *, char *, char *);
 
 #ifdef NLMCONV_I386
-static void i386_mangle_relocs (bfd *, asection *, arelent ***, long *, char *, bfd_size_type);
-#endif
+static void i386_mangle_relocs(bfd *, asection *, arelent ***, long *, char *,
+			       bfd_size_type);
+#endif /* NLMCONV_I386 */
 
 #ifdef NLMCONV_ALPHA
-static void alpha_mangle_relocs (bfd *, asection *, arelent ***, long *, char *, bfd_size_type);
-#endif
+static void alpha_mangle_relocs(bfd *, asection *, arelent ***, long *, char *,
+				bfd_size_type);
+#endif /* NLMCONV_ALPHA */
 
 #ifdef NLMCONV_POWERPC
-static void powerpc_build_stubs (bfd *, bfd *, asymbol ***, long *);
-static void powerpc_resolve_stubs (bfd *, bfd *);
-static void powerpc_mangle_relocs (bfd *, asection *, arelent ***, long *, char *, bfd_size_type);
-#endif
+static void powerpc_build_stubs(bfd *, bfd *, asymbol ***, long *);
+static void powerpc_resolve_stubs(bfd *, bfd *);
+static void powerpc_mangle_relocs(bfd *, asection *, arelent ***, long *,
+				  char *, bfd_size_type);
+#endif /* NLMCONV_POWERPC */
 
-/* The main routine.  */
-
+/* The main routine: */
 int
-main (int argc, char **argv)
+main(int argc, char **argv)
 {
   int opt;
   char *input_file = NULL;
@@ -289,7 +291,7 @@ main (int argc, char **argv)
   debug_info = FALSE;
   exit_procedure = "_Stop";
   export_symbols = NULL;
-  map_file = NULL;
+  g_map_file = NULL;
   full_map = FALSE;
   help_file = NULL;
   import_symbols = NULL;
@@ -305,27 +307,27 @@ main (int argc, char **argv)
   /* Parse the header file (if there is one).  */
   if (header_file != NULL)
     {
-      if (! nlmlex_file (header_file)
-	  || yyparse () != 0
-	  || parse_errors != 0)
-	exit (1);
+      if (!nlmlex_file(header_file)
+	  || (yyparse() != 0)
+	  || (parse_errors != 0))
+	exit(1);
     }
 
   if (input_files != NULL)
     {
       if (input_file != NULL)
 	{
-	  fatal (_("input file named both on command line and with INPUT"));
+	  fatal(_("input file named both on command line and with INPUT"));
 	}
       if (input_files->next == NULL)
 	input_file = input_files->string;
       else
-	input_file = link_inputs (input_files, ld_arg, map_file);
+	input_file = link_inputs(input_files, ld_arg, g_map_file);
     }
   else if (input_file == NULL)
     {
-      non_fatal (_("no input file"));
-      show_usage (stderr, 1);
+      non_fatal(_("no input file"));
+      show_usage(stderr, 1);
     }
 
   inbfd = bfd_openr (input_file, input_format);
@@ -2049,7 +2051,7 @@ powerpc_mangle_relocs (bfd *outbfd, asection *insec,
    file.  */
 
 static char *
-link_inputs(struct string_list *inputs, char *ld, char *map_file)
+link_inputs(struct string_list *inputs, char *ld, char *the_map_file)
 {
   size_t c;
   struct string_list *q;
@@ -2064,28 +2066,28 @@ link_inputs(struct string_list *inputs, char *ld, char *map_file)
   for (q = inputs; q != NULL; q = q->next)
     ++c;
 
-  argv = (char **) alloca ((c + 7) * sizeof (char *));
+  argv = (char **)alloca((c + 7) * sizeof(char *));
 
 #ifndef __MSDOS__
   if (ld == NULL)
     {
-      char *p;
+      const char *p;
 
       /* Find the linker to invoke based on how nlmconv was run.  */
-      p = program_name + strlen (program_name);
+      p = (program_name + strlen(program_name));
       while (p != program_name)
 	{
 	  if (p[-1] == '/')
 	    {
-	      ld = (char *) xmalloc (p - program_name + strlen (LD_NAME) + 1);
-	      memcpy (ld, program_name, p - program_name);
-	      strcpy (ld + (p - program_name), LD_NAME);
+	      ld = (char *)xmalloc(p - program_name + strlen(LD_NAME) + 1);
+	      memcpy(ld, program_name, (p - program_name));
+	      strcpy((ld + (p - program_name)), LD_NAME);
 	      break;
 	    }
 	  --p;
 	}
     }
-#endif
+#endif /* !__MSDOS__ */
 
   if (ld == NULL)
     ld = (char *) LD_NAME;
@@ -2098,12 +2100,12 @@ link_inputs(struct string_list *inputs, char *ld, char *map_file)
   argv[3] = unlink_on_exit;
   /* If we have been given the name of a mapfile and that
      name is not 'stderr' then pass it on to the linker.  */
-  if (map_file
-      && * map_file
-      && strcmp (map_file, "stderr") == 0)
+  if (the_map_file
+      && *the_map_file
+      && (strcmp(the_map_file, "stderr") == 0))
     {
-      argv[4] = (char *) "-Map";
-      argv[5] = map_file;
+      argv[4] = (char *)"-Map";
+      argv[5] = the_map_file;
       i = 6;
     }
   else

@@ -79,7 +79,7 @@ static struct res_directory *global_resources = NULL;
 static FILE *fres;
 static const char *filename;
 
-extern char *program_name;
+extern const char *program_name;
 
 /* Read resource file: */
 struct res_directory *

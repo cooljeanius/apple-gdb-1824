@@ -503,7 +503,7 @@ main(int argc, char **argv)
 
   if (is_ranlib < 0)
     {
-      char *temp;
+      const char *temp;
 
       /* TODO: move this to lbasename() from libiberty: */
       temp = strrchr(program_name, '/');

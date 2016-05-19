@@ -5710,7 +5710,7 @@ fi
 
 use_gnu_as=""
 # Make sure we do NOT let GNU as be added if we did NOT want it.
-if test x${with_gnu_as} = xno ; then
+if test "x${with_gnu_as}" = "xno"; then
   use_gnu_as=no
   noconfigdirs="${noconfigdirs} gas"
 fi
@@ -7398,6 +7398,7 @@ fi
     noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   m68k-*-coff*)
+    host_configargs=" ${host_configargs} --enable-obsolete"
     noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   mcore-*-pe*)
@@ -7450,7 +7451,18 @@ fi
     noconfigdirs="${noconfigdirs} gprof ${libgcj}"
     ;;
   m68k-apollo-*)
+    host_configargs=" ${host_configargs} --enable-obsolete"
     noconfigdirs="${noconfigdirs} ld binutils gprof target-libgloss ${libgcj}"
+    ;;
+  m68k-bull-sysv*)
+    host_configargs=" ${host_configargs} --enable-obsolete"
+    ;;
+  m68k-sun-sunos*)
+    noconfigdirs="${noconfigdirs} gdb"
+    ;;
+  maxq-*-coff*)
+    host_configargs=" ${host_configargs} --enable-obsolete"
+    noconfigdirs="${noconfigdirs} gdb"
     ;;
   mips*-*-irix5*)
     noconfigdirs="${noconfigdirs} gprof target-libgloss ${libgcj}"
@@ -7485,7 +7497,14 @@ fi
   nds32*-*-*)
     noconfigdirs="${noconfigdirs} gdb"
     ;;
+  or32*-*-*)
+    host_configargs=" ${host_configargs} --enable-obsolete"
+    noconfigdirs="${noconfigdirs} gdb"
+    ;;
   or1k*-*-*)
+    noconfigdirs="${noconfigdirs} gdb"
+    ;;
+  pdp11-*-*)
     noconfigdirs="${noconfigdirs} gdb"
     ;;
   romp-*-*)
@@ -7515,6 +7534,9 @@ fi
     ;;
   sparclite-*-*)
     noconfigdirs="${noconfigdirs} ${libgcj}"
+    ;;
+  sparc-*-lynxos*)
+    host_configargs=" ${host_configargs} --enable-obsolete"
     ;;
   sparc-*-sunos4*)
     noconfigdirs="${noconfigdirs} ${libgcj}"
@@ -7547,8 +7569,14 @@ fi
   vax-*-*)
     noconfigdirs="${noconfigdirs} target-newlib target-libgloss ${libgcj}"
     ;;
+  we32k-*-*)
+    noconfigdirs="${noconfigdirs} gdb"
+    ;;
   xtensa-*-*)
     noconfigdirs="${noconfigdirs} ${libgcj}"
+    ;;
+  z80-*-*)
+    noconfigdirs="${noconfigdirs} gdb"
     ;;
   ip2k-*-*)
     noconfigdirs="${noconfigdirs} target-libiberty target-libstdc++-v3 ${libgcj}"
@@ -20418,12 +20446,13 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${USE_MAINTAINER_MODE}" >&5
 $as_echo "${USE_MAINTAINER_MODE}" >&6; }
-
-
+  ## Pass the result down to the Makefile, and child configure scripts:
 if test "x${USE_MAINTAINER_MODE}" = "xyes"; then
+  host_configargs=" ${host_configargs} --enable-maintainer-mode "
   MAINTAINER_MODE_TRUE=""
   MAINTAINER_MODE_FALSE='#'
 else
+  host_configargs=" ${host_configargs} --disable-maintainer-mode "
   MAINTAINER_MODE_TRUE='#'
   MAINTAINER_MODE_FALSE=""
 fi

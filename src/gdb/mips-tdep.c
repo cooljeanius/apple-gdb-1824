@@ -4794,6 +4794,8 @@ mips_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 	  else
 	    found_abi = MIPS_ABI_N32;
 	  break;
+	default:
+	  break;
 	}
     }
 
@@ -5382,3 +5384,5 @@ When non-zero, mips specific debugging is enabled."),
 			    NULL, /* FIXME: i18n: Mips debugging is currently %s.  */
 			    &setdebuglist, &showdebuglist);
 }
+
+/* EOF */

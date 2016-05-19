@@ -1,4 +1,4 @@
-/* Target-dependent definitions for Renesas Super-H, for GDB.
+/* sh64-tdep.h: Target-dependent definitions for Renesas Super-H, for GDB.
    Copyright (C) 2012-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -19,6 +19,9 @@
 #ifndef SH64_TDEP_H
 #define SH64_TDEP_H
 
+extern void sh64_show_regs(void);
 extern gdbarch_init_ftype sh64_gdbarch_init;
 
 #endif /* SH64_TDEP_H */
+
+/* EOF */

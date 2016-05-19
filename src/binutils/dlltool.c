@@ -378,7 +378,7 @@ static bfd_boolean create_compat_implib;
 
 static char *def_file;
 
-extern char *program_name;
+extern const char *program_name;
 
 static int g_machine;
 static int killat;
@@ -3472,10 +3472,11 @@ look_for_prog (const char *prog_name, const char *prefix, int end_prefix)
    Returns a dynamically allocated string.  */
 
 static char *
-deduce_name (const char *prog_name)
+deduce_name(const char *prog_name)
 {
   char *cmd;
-  char *dash, *slash, *cp;
+  const char *dash, *slash;
+  const char *cp;
 
   dash = NULL;
   slash = NULL;

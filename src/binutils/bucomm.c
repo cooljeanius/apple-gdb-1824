@@ -68,17 +68,17 @@ static int display_target_tables (void);
 
 /* Error reporting.  */
 
-char *program_name;
+const char *program_name;
 
 void
-bfd_nonfatal (const char *string)
+bfd_nonfatal(const char *string)
 {
-  const char *errmsg = bfd_errmsg (bfd_get_error ());
+  const char *errmsg = bfd_errmsg(bfd_get_error());
 
   if (string)
-    fprintf (stderr, "%s: %s: %s\n", program_name, string, errmsg);
+    fprintf(stderr, "%s: %s: %s\n", program_name, string, errmsg);
   else
-    fprintf (stderr, "%s: %s\n", program_name, errmsg);
+    fprintf(stderr, "%s: %s\n", program_name, errmsg);
 }
 
 void

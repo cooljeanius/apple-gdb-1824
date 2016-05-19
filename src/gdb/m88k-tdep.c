@@ -615,6 +615,9 @@ m88k_analyze_prologue (CORE_ADDR pc, CORE_ADDR limit,
 
 	case M88K_PIA_NOTE_PROLOGUE_END:
 	  return min (pc, end);
+
+	default:
+	  break;
 	}
 
       pc += M88K_INSN_SIZE;

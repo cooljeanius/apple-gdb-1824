@@ -43,7 +43,7 @@
 #include "safe-ctype.h"
 #include "filenames.h"
 
-char *program_name = "elfedit";
+const char *program_name = "elfedit";
 static long archive_file_offset;
 static unsigned long archive_file_size;
 static Elf_Internal_Ehdr elf_header;

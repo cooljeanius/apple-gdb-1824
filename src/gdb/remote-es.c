@@ -92,7 +92,6 @@
    >
  */
 
-
 #include <stdio.h>
 #include <signal.h>
 #include <sys/ioctl.h>
@@ -122,7 +121,10 @@ static void es1800_child_detach(const char *, int);
 
 static void es1800_child_open(const char *, int);
 
-static void es1800_transparent(char *, int);
+/* Keep condition the same as where the function is defined and used: */
+#ifdef PROVIDE_TRANSPARENT
+static void es1800_transparent(const char *, int);
+#endif /* PROVIDE_TRANSPARENT */
 
 static void es1800_create_inferior(char *, char *, char **);
 
@@ -152,11 +154,7 @@ static void es1800_detach(const char *, int);
 
 static void es1800_attach(const char *, int);
 
-static int damn_b(char *);
-
 static void es1800_open(const char *, int);
-
-static void es1800_timer(void);
 
 static void es1800_reset(char *);
 
@@ -1709,11 +1707,11 @@ download(FILE *instream, int from_tty, int format)
 
 #ifdef PROVIDE_TRANSPARENT
 /* Talk directly to the emulator
-   FIXME, uses busy wait, and is SUNOS (or at least BSD) specific  */
+   FIXME: uses busy wait, and is SUNOS (or at least BSD) specific  */
 
 /*ARGSUSED */
 static void
-es1800_transparent (char *args, int from_tty)
+es1800_transparent(const char *args, int from_tty)
 {
   int console;
   struct sgttyb modebl;

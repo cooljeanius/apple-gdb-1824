@@ -1377,14 +1377,14 @@ mips_initialize (void)
       switch (j)
 	{
 	case 0:		/* First, try sending a CR */
-	  serial_flush_input (mips_desc);
-	  serial_write (mips_desc, "\r", 1);
+	  serial_flush_input(mips_desc);
+	  serial_write(mips_desc, "\r", 1);
 	  break;
 	case 1:		/* First, try sending a break */
-	  serial_send_break (mips_desc);
+	  serial_send_break(mips_desc);
 	  break;
 	case 2:		/* Then, try a ^C */
-	  serial_write (mips_desc, "\003", 1);
+	  serial_write(mips_desc, "\003", 1);
 	  break;
 	case 3:		/* Then, try escaping from download */
 	  {
@@ -1416,13 +1416,13 @@ mips_initialize (void)
 		   256/8 + 1 packets.
 		 */
 
-		mips_make_srec (srec, '7', 0, NULL, 0);
+		mips_make_srec(srec, '7', 0, NULL, 0);
 
 		for (i = 1; i <= 33; i++)
 		  {
-		    serial_write (mips_desc, srec, 8);
+		    serial_write(mips_desc, srec, 8);
 
-		    if (serial_readchar (mips_desc, 0) >= 0)
+		    if (serial_readchar(mips_desc, 0) >= 0)
 		      break;	/* Break immediatly if we get something from
 				   the board. */
 		  }
@@ -1430,10 +1430,12 @@ mips_initialize (void)
 	  }
 	  break;
 	case 4:
-	  mips_error ("Failed to initialize.");
-	}
+	  mips_error("Failed to initialize.");
+	default:
+	  break;
+	} /* end switch */
 
-      if (mips_expect (mips_monitor_prompt))
+      if (mips_expect(mips_monitor_prompt))
 	break;
     }
 
@@ -1622,6 +1624,8 @@ mips_open(const char *name, int from_tty)
       case bfd_mach_mips4650:
       case bfd_mach_mips5000:
 	monitor_prompt = "<RISQ> ";
+	break;
+      default:
 	break;
       }
     }
@@ -2850,15 +2854,15 @@ pmon_makeb64 (unsigned long v, char *p, int n, int *chksum)
 	  *chksum += ((v >> 12) & 0xFFF);
 	case 12:
 	  *chksum += ((v >> 0) & 0xFFF);
+	default:
+	  *chksum += 0;
 	}
     }
 
-  do
-    {
-      n -= 6;
-      *p++ = encoding[(v >> n) & 0x3F];
-    }
-  while (n > 0);
+  do {
+    n -= 6;
+    *p++ = encoding[(v >> n) & 0x3F];
+  } while (n > 0);
 
   return (count);
 }

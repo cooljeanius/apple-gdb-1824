@@ -34,11 +34,13 @@
 #include "getopt.h"
 #include "sysroff.h"
 
+#include "sysdep.h"
+
 static int dump = 1;
 static int segmented_p;
-static int code;
+static int g_code;
 static int addrsize = 4;
-static FILE *file;
+static FILE *g_file;
 
 static void dh(unsigned char *, int);
 static void itheader(char *, int);
@@ -120,9 +122,9 @@ fillup(unsigned char *ptr)
   int sum;
   int i;
 
-  size = (getc(file) - 2);
-  fread(ptr, 1, size, file);
-  sum = (code + size + 2);
+  size = (getc(g_file) - 2);
+  fread(ptr, 1, size, g_file);
+  sum = (g_code + size + 2);
 
   for (i = 0; i < size; i++)
     sum += ptr[i];
@@ -204,10 +206,11 @@ getBITS(unsigned char *ptr, int *idx, int size, int max)
   return (ptr[byte] >> (8 - bit - size)) & ((1 << size) - 1);
 }
 
+/* */
 static void
-itheader(char *name, int code)
+itheader(char *name, int the_code)
 {
-  printf("\n%s 0x%02x\n", name, code);
+  printf("\n%s 0x%02x\n", name, the_code);
 }
 
 static int indent;
@@ -264,22 +267,24 @@ sysroff_swap_tr_in(void)
   fillup(raw);
 }
 
+/* */
 static void
 sysroff_print_tr_out(void)
 {
   itheader("tr", IT_tr_CODE);
 }
 
+/* */
 static int
 getone(int type)
 {
-  int c = getc(file);
+  int c = getc(g_file);
 
-  code = c;
+  g_code = c;
 
   if ((c & 0x7f) != type)
     {
-      ungetc(c, file);
+      ungetc(c, g_file);
       return 0;
     }
 
@@ -601,53 +606,51 @@ derived_type (void)
 }
 
 static void
-module (void)
+module(void)
 {
   int c = 0;
   int l = 0;
 
-  tab (1, "MODULE***\n");
+  tab(1, "MODULE***\n");
 
-  do
-    {
-      c = getc (file);
-      ungetc (c, file);
+  do {
+    c = getc(g_file);
+    ungetc(c, g_file);
 
-      c &= 0x7f;
-    }
-  while (getone (c) && c != IT_tr_CODE);
+    c &= 0x7f;
+  } while (getone(c) && (c != IT_tr_CODE));
 
-  tab (-1, "");
+  tab(-1, "");
 
-  c = getc (file);
+  c = getc(g_file);
   while (c != EOF)
     {
-      printf ("%02x ", c);
+      printf("%02x ", c);
       l++;
       if (l == 32)
 	{
-	  printf ("\n");
+	  printf("\n");
 	  l = 0;
 	}
-      c = getc (file);
+      c = getc(g_file);
     }
 }
 
-char *program_name;
+const char *program_name;
 
 static void
-show_usage(FILE *file, int status)
+show_usage(FILE *the_file, int status)
 {
-  fprintf(file, _("Usage: %s [option(s)] in-file\n"), program_name);
-  fprintf(file,
+  fprintf(the_file, _("Usage: %s [option(s)] in-file\n"), program_name);
+  fprintf(the_file,
           _("Print a human readable interpretation of a SYSROFF object file\n"));
-  fprintf(file, _(" The options are:\n\
+  fprintf(the_file, _(" The options are:\n\
   -h --help        Display this information\n\
   -v --version     Print the program's version number\n"));
 
   if (status == 0)
-    fprintf(file, _("Report bugs to %s\n"), REPORT_BUGS_TO);
-  exit(status);
+    fprintf(the_file, _("Report bugs to %s\n"), REPORT_BUGS_TO);
+  xexit(status);
 }
 
 int
@@ -685,7 +688,7 @@ main(int ac, char **av)
 	case 'v':
 	case 'V':
 	  print_version("sysdump");
-	  exit (0);
+	  xexit(0);
 	  /*NOTREACHED*/
 	case 0:
 	  break;
@@ -702,9 +705,9 @@ main(int ac, char **av)
   if (!input_file)
     fatal(_("no input file specified"));
 
-  file = fopen(input_file, FOPEN_RB);
+  g_file = fopen(input_file, FOPEN_RB);
 
-  if (!file)
+  if (!g_file)
     fatal(_("cannot open input file %s"), input_file);
 
   module();

@@ -28,6 +28,7 @@
 #include "libiberty.h"
 #include "safe-ctype.h"
 #include "windres.h"
+#include "sysdep.h"
 
 #include <assert.h>
 #include <errno.h>
@@ -130,7 +131,7 @@ static char *cpp_temp_file;
 static enum {ISTREAM_PIPE, ISTREAM_FILE} istream_type;
 
 /* As we read the rc file, we attach information to this structure: */
-static struct res_directory *resources;
+static struct res_directory *g_resources;
 
 /* The number of cursor resources we have written out: */
 static int cursors;
@@ -220,12 +221,12 @@ run_cmd(char *cmd, const char *redir)
   redir_handle = open(redir, (O_WRONLY | O_TRUNC | O_CREAT), 0666);
   if (redir_handle == -1)
     fatal(_("cannot open temporary file `%s': %s"), redir,
-          strerror(errno));
+          xstrerror(errno));
 
   /* Duplicate the stdout file handle so it can be restored later: */
   stdout_save = dup(STDOUT_FILENO);
   if (stdout_save == -1)
-    fatal(_("cannot redirect stdout: `%s': %s"), redir, strerror(errno));
+    fatal(_("cannot redirect stdout: `%s': %s"), redir, xstrerror(errno));
 
   /* Redirect stdout to our output file: */
   dup2(redir_handle, STDOUT_FILENO);
@@ -242,7 +243,7 @@ run_cmd(char *cmd, const char *redir)
 
   if (pid == -1)
     {
-      fatal(_("%s %s: %s"), errmsg_fmt, errmsg_arg, strerror(errno));
+      fatal(_("%s %s: %s"), errmsg_fmt, errmsg_arg, xstrerror(errno));
       return 1;
     }
 
@@ -251,7 +252,7 @@ run_cmd(char *cmd, const char *redir)
 
   if (pid == -1)
     {
-      fatal(_("wait: %s"), strerror(errno));
+      fatal(_("wait: %s"), xstrerror(errno));
       retcode = 1;
     }
   else if (WIFSIGNALED(wait_status))
@@ -274,40 +275,43 @@ run_cmd(char *cmd, const char *redir)
   return retcode;
 }
 
+/* */
 static FILE *
-open_input_stream (char *cmd)
+open_input_stream(char *cmd)
 {
   int xatexit_ret = 0;
 
   if (istream_type == ISTREAM_FILE)
     {
       char *fileprefix;
+      size_t cpp_temp_file_len;
 
-      fileprefix = choose_temp_base ();
-      cpp_temp_file = (char *) xmalloc (strlen (fileprefix) + 5);
-      sprintf (cpp_temp_file, "%s.irc", fileprefix);
-      free (fileprefix);
+      fileprefix = choose_temp_base();
+      cpp_temp_file_len = (strlen(fileprefix) + 5UL);
+      cpp_temp_file = (char *)xmalloc(cpp_temp_file_len);
+      snprintf(cpp_temp_file, cpp_temp_file_len, "%s.irc", fileprefix);
+      xfree(fileprefix);
 
-      if (run_cmd (cmd, cpp_temp_file))
-	fatal (_("can't execute `%s': %s"), cmd, strerror (errno));
+      if (run_cmd(cmd, cpp_temp_file))
+	fatal(_("cannot execute `%s': %s"), cmd, xstrerror(errno));
 
-      cpp_pipe = fopen (cpp_temp_file, FOPEN_RT);;
+      cpp_pipe = fopen(cpp_temp_file, FOPEN_RT);;
       if (cpp_pipe == NULL)
-	fatal (_("can't open temporary file `%s': %s"),
-	       cpp_temp_file, strerror (errno));
+	fatal(_("cannot open temporary file `%s': %s"),
+	      cpp_temp_file, xstrerror(errno));
 
       if (verbose)
-	fprintf (stderr,
-	         _("Using temporary file `%s' to read preprocessor output\n"),
-		 cpp_temp_file);
+	fprintf(stderr,
+	        _("Using temporary file `%s' to read preprocessor output\n"),
+		cpp_temp_file);
     }
   else
     {
-      cpp_pipe = popen (cmd, FOPEN_RT);
+      cpp_pipe = popen(cmd, FOPEN_RT);
       if (cpp_pipe == NULL)
-	fatal (_("can't popen `%s': %s"), cmd, strerror (errno));
+	fatal(_("cannot popen `%s': %s"), cmd, xstrerror(errno));
       if (verbose)
-	fprintf (stderr, _("Using popen to read preprocessor output\n"));
+	fprintf(stderr, _("Using popen to read preprocessor output\n"));
     }
 
   xatexit_ret = xatexit(close_input_stream);
@@ -330,8 +334,8 @@ look_for_default (char *cmd, const char *prefix, int end_prefix,
 
   strcpy(cmd, prefix);
 
-  sprintf(cmd + end_prefix, "%s", DEFAULT_PREPROCESSOR);
-  space = strchr(cmd + end_prefix, ' ');
+  sprintf((cmd + end_prefix), "%s", DEFAULT_PREPROCESSOR);
+  space = strchr((cmd + end_prefix), ' ');
   if (space)
     *space = 0;
 
@@ -350,32 +354,31 @@ look_for_default (char *cmd, const char *prefix, int end_prefix,
       if (! found)
 	{
 	  if (verbose)
-	    fprintf (stderr, _("Tried `%s'\n"), cmd);
+	    fprintf(stderr, _("Tried `%s'\n"), cmd);
 	  return NULL;
 	}
     }
 
-  strcpy (cmd, prefix);
+  strcpy(cmd, prefix);
 
-  sprintf (cmd + end_prefix, "%s %s %s",
-	   DEFAULT_PREPROCESSOR, preprocargs, filename);
+  sprintf((cmd + end_prefix), "%s %s %s",
+	  DEFAULT_PREPROCESSOR, preprocargs, filename);
 
   if (verbose)
-    fprintf (stderr, _("Using `%s'\n"), cmd);
+    fprintf(stderr, _("Using `%s'\n"), cmd);
 
   cpp_pipe = open_input_stream (cmd);
   return cpp_pipe;
 }
 
-/* Read an rc file.  */
-
+/* Read an rc file: */
 struct res_directory *
-read_rc_file (const char *filename, const char *preprocessor,
-	      const char *preprocargs, int language, int use_temp_file)
+read_rc_file(const char *filename, const char *preprocessor,
+	     const char *preprocargs, int language, int use_temp_file)
 {
   char *cmd;
 
-  istream_type = (use_temp_file) ? ISTREAM_FILE : ISTREAM_PIPE;
+  istream_type = ((use_temp_file) ? ISTREAM_FILE : ISTREAM_PIPE);
 
   if (preprocargs == NULL)
     preprocargs = "";
@@ -384,15 +387,17 @@ read_rc_file (const char *filename, const char *preprocessor,
 
   if (preprocessor)
     {
-      cmd = (char *)xmalloc(strlen(preprocessor) + strlen(preprocargs)
-                            + strlen(filename) + 10);
-      sprintf(cmd, "%s %s %s", preprocessor, preprocargs, filename);
+      const size_t cmdlen = (strlen(preprocessor) + strlen(preprocargs)
+			     + strlen(filename) + 10UL);
+      cmd = (char *)xmalloc(cmdlen);
+      snprintf(cmd, cmdlen, "%s %s %s", preprocessor, preprocargs, filename);
 
       cpp_pipe = open_input_stream(cmd);
     }
   else
     {
-      char *dash, *slash, *cp;
+      const char *dash, *slash;
+      const char *cp;
 
       preprocessor = DEFAULT_PREPROCESSOR;
 
@@ -401,7 +406,7 @@ read_rc_file (const char *filename, const char *preprocessor,
 #ifdef HAVE_EXECUTABLE_SUFFIX
                             + strlen(EXECUTABLE_SUFFIX)
 #endif /* HAVE_EXECUTABLE_SUFFIX */
-                            + 10);
+                            + 10UL);
 
       dash = slash = 0;
       for (cp = program_name; *cp; cp++)
@@ -448,7 +453,7 @@ read_rc_file (const char *filename, const char *preprocessor,
 
     }
 
-  free(cmd);
+  xfree(cmd);
 
   rc_filename = xstrdup(filename);
   rc_lineno = 1;
@@ -463,10 +468,10 @@ read_rc_file (const char *filename, const char *preprocessor,
   if (fontdirs != NULL)
     define_fontdirs();
 
-  free(rc_filename);
+  xfree(rc_filename);
   rc_filename = NULL;
 
-  return resources;
+  return g_resources;
 }
 
 /* Close the input stream if it is open: */
@@ -484,7 +489,7 @@ close_input_stream(void)
 
 	  unlink(cpp_temp_file);
 	  errno = errno_save;
-	  free(cpp_temp_file);
+	  xfree(cpp_temp_file);
 	}
     }
   else
@@ -572,8 +577,8 @@ define_accelerator(struct res_id id, const struct res_res_info *resinfo,
 {
   struct res_resource *r;
 
-  r = define_standard_resource (&resources, RT_ACCELERATOR, id,
-				resinfo->language, 0);
+  r = define_standard_resource(&g_resources, RT_ACCELERATOR, id,
+			       resinfo->language, 0);
   r->type = RES_TYPE_ACCELERATOR;
   r->u.acc = data;
   r->res_info = *resinfo;
@@ -599,7 +604,7 @@ define_bitmap(struct res_id id, const struct res_res_info *resinfo,
 
   if (stat(real_filename, &s) < 0)
     fatal(_("stat failed on bitmap file `%s': %s"), real_filename,
-          strerror(errno));
+          xstrerror(errno));
 
   data = (unsigned char *)res_alloc(s.st_size - BITMAP_SKIP);
 
@@ -609,9 +614,9 @@ define_bitmap(struct res_id id, const struct res_res_info *resinfo,
   get_data(e, data, (s.st_size - BITMAP_SKIP), real_filename);
 
   fclose(e);
-  free(real_filename);
+  xfree(real_filename);
 
-  r = define_standard_resource(&resources, RT_BITMAP, id,
+  r = define_standard_resource(&g_resources, RT_BITMAP, id,
                                resinfo->language, 0);
 
   r->type = RES_TYPE_BITMAP;
@@ -625,10 +630,9 @@ define_bitmap(struct res_id id, const struct res_res_info *resinfo,
    resolutions.  They each get written out with a different ID.  The
    real cursor resource is then a group resource which can be used to
    select one of the actual cursors.  */
-
 void
-define_cursor (struct res_id id, const struct res_res_info *resinfo,
-	       const char *filename)
+define_cursor(struct res_id id, const struct res_res_info *resinfo,
+	      const char *filename)
 {
   FILE *e;
   char *real_filename;
@@ -638,40 +642,38 @@ define_cursor (struct res_id id, const struct res_res_info *resinfo,
   struct res_resource *r;
   struct group_cursor *first, **pp;
 
-  e = open_file_search (filename, FOPEN_RB, "cursor file", &real_filename);
+  e = open_file_search(filename, FOPEN_RB, "cursor file", &real_filename);
 
   /* A cursor file is basically an icon file.  The start of the file
      is a three word structure.  The first word is ignored.  The
      second word is the type of data.  The third word is the number of
      entries.  */
 
-  get_word (e, real_filename);
-  type = get_word (e, real_filename);
-  count = get_word (e, real_filename);
+  get_word(e, real_filename);
+  type = get_word(e, real_filename);
+  count = get_word(e, real_filename);
   if (type != 2)
-    fatal (_("cursor file `%s' does not contain cursor data"), real_filename);
+    fatal(_("cursor file `%s' does not contain cursor data"), real_filename);
 
-  /* Read in the icon directory entries.  */
-
-  icondirs = (struct icondir *) xmalloc (count * sizeof *icondirs);
+  /* Read in the icon directory entries: */
+  icondirs = (struct icondir *)xmalloc(count * sizeof(*icondirs));
 
   for (i = 0; i < count; i++)
     {
-      icondirs[i].width = getc (e);
-      icondirs[i].height = getc (e);
-      icondirs[i].colorcount = getc (e);
-      getc (e);
-      icondirs[i].u.cursor.xhotspot = get_word (e, real_filename);
-      icondirs[i].u.cursor.yhotspot = get_word (e, real_filename);
-      icondirs[i].bytes = get_long (e, real_filename);
-      icondirs[i].offset = get_long (e, real_filename);
+      icondirs[i].width = getc(e);
+      icondirs[i].height = getc(e);
+      icondirs[i].colorcount = getc(e);
+      getc(e);
+      icondirs[i].u.cursor.xhotspot = get_word(e, real_filename);
+      icondirs[i].u.cursor.yhotspot = get_word(e, real_filename);
+      icondirs[i].bytes = get_long(e, real_filename);
+      icondirs[i].offset = get_long(e, real_filename);
 
-      if (feof (e))
-	unexpected_eof (real_filename);
+      if (feof(e))
+	unexpected_eof(real_filename);
     }
 
-  /* Define each cursor as a unique resource.  */
-
+  /* Define each cursor as a unique resource: */
   first_cursor = cursors;
 
   for (i = 0; i < count; i++)
@@ -680,15 +682,15 @@ define_cursor (struct res_id id, const struct res_res_info *resinfo,
       struct res_id name;
       struct cursor *c;
 
-      if (fseek (e, icondirs[i].offset, SEEK_SET) != 0)
-	fatal (_("%s: fseek to %lu failed: %s"), real_filename,
-	       icondirs[i].offset, strerror (errno));
+      if (fseek(e, icondirs[i].offset, SEEK_SET) != 0)
+	fatal(_("%s: fseek to %lu failed: %s"), real_filename,
+	      icondirs[i].offset, xstrerror(errno));
 
-      data = (unsigned char *) res_alloc (icondirs[i].bytes);
+      data = (unsigned char *)res_alloc(icondirs[i].bytes);
 
-      get_data (e, data, icondirs[i].bytes, real_filename);
+      get_data(e, data, icondirs[i].bytes, real_filename);
 
-      c = (struct cursor *) res_alloc (sizeof *c);
+      c = (struct cursor *)res_alloc(sizeof(*c));
       c->xhotspot = icondirs[i].u.cursor.xhotspot;
       c->yhotspot = icondirs[i].u.cursor.yhotspot;
       c->length = icondirs[i].bytes;
@@ -699,63 +701,61 @@ define_cursor (struct res_id id, const struct res_res_info *resinfo,
       name.named = 0;
       name.u.id = cursors;
 
-      r = define_standard_resource (&resources, RT_CURSOR, name,
-				    resinfo->language, 0);
+      r = define_standard_resource(&g_resources, RT_CURSOR, name,
+				   resinfo->language, 0);
       r->type = RES_TYPE_CURSOR;
       r->u.cursor = c;
       r->res_info = *resinfo;
     }
 
-  fclose (e);
-  free (real_filename);
+  fclose(e);
+  xfree(real_filename);
 
-  /* Define a cursor group resource.  */
-
+  /* Define a cursor group resource: */
   first = NULL;
   pp = &first;
   for (i = 0; i < count; i++)
     {
       struct group_cursor *cg;
 
-      cg = (struct group_cursor *) res_alloc (sizeof *cg);
+      cg = (struct group_cursor *)res_alloc(sizeof(*cg));
       cg->next = NULL;
       cg->width = icondirs[i].width;
-      cg->height = 2 * icondirs[i].height;
+      cg->height = (2 * icondirs[i].height);
 
       /* FIXME: What should these be set to?  */
       cg->planes = 1;
       cg->bits = 1;
 
-      cg->bytes = icondirs[i].bytes + 4;
-      cg->index = first_cursor + i + 1;
+      cg->bytes = (icondirs[i].bytes + 4);
+      cg->index = (first_cursor + i + 1);
 
       *pp = cg;
       pp = &(*pp)->next;
     }
 
-  free (icondirs);
+  xfree(icondirs);
 
-  r = define_standard_resource (&resources, RT_GROUP_CURSOR, id,
-				resinfo->language, 0);
+  r = define_standard_resource(&g_resources, RT_GROUP_CURSOR, id,
+			       resinfo->language, 0);
   r->type = RES_TYPE_GROUP_CURSOR;
   r->u.group_cursor = first;
   r->res_info = *resinfo;
 }
 
-/* Define a dialog resource.  */
-
+/* Define a dialog resource: */
 void
-define_dialog (struct res_id id, const struct res_res_info *resinfo,
-	       const struct dialog *dialog)
+define_dialog(struct res_id id, const struct res_res_info *resinfo,
+	      const struct dialog *dialog)
 {
   struct dialog *copy;
   struct res_resource *r;
 
-  copy = (struct dialog *) res_alloc (sizeof *copy);
+  copy = (struct dialog *)res_alloc(sizeof(*copy));
   *copy = *dialog;
 
-  r = define_standard_resource (&resources, RT_DIALOG, id,
-				resinfo->language, 0);
+  r = define_standard_resource(&g_resources, RT_DIALOG, id,
+			       resinfo->language, 0);
   r->type = RES_TYPE_DIALOG;
   r->u.dialog = copy;
   r->res_info = *resinfo;
@@ -814,11 +814,10 @@ define_icon_control (struct res_id iid, unsigned long id, unsigned long x,
   return n;
 }
 
-/* Define a font resource.  */
-
+/* Define a font resource: */
 void
-define_font (struct res_id id, const struct res_res_info *resinfo,
-	     const char *filename)
+define_font(struct res_id id, const struct res_res_info *resinfo,
+	    const char *filename)
 {
   FILE *e;
   char *real_filename;
@@ -832,21 +831,21 @@ define_font (struct res_id id, const struct res_res_info *resinfo,
   const char *device, *face;
   struct fontdir **pp;
 
-  e = open_file_search (filename, FOPEN_RB, "font file", &real_filename);
+  e = open_file_search(filename, FOPEN_RB, "font file", &real_filename);
 
-  if (stat (real_filename, &s) < 0)
-    fatal (_("stat failed on font file `%s': %s"), real_filename,
-	   strerror (errno));
+  if (stat(real_filename, &s) < 0)
+    fatal(_("stat failed on font file `%s': %s"), real_filename,
+	  xstrerror(errno));
 
-  data = (unsigned char *) res_alloc (s.st_size);
+  data = (unsigned char *)res_alloc(s.st_size);
 
-  get_data (e, data, s.st_size, real_filename);
+  get_data(e, data, s.st_size, real_filename);
 
-  fclose (e);
-  free (real_filename);
+  fclose(e);
+  xfree(real_filename);
 
-  r = define_standard_resource (&resources, RT_FONT, id,
-				resinfo->language, 0);
+  r = define_standard_resource(&g_resources, RT_FONT, id,
+			       resinfo->language, 0);
 
   r->type = RES_TYPE_FONT;
   r->u.data.length = s.st_size;
@@ -903,7 +902,7 @@ define_font (struct res_id id, const struct res_res_info *resinfo,
    file has been parsed, if any font resources were seen.  */
 
 static void
-define_fontdirs (void)
+define_fontdirs(void)
 {
   struct res_resource *r;
   struct res_id id;
@@ -911,7 +910,7 @@ define_fontdirs (void)
   id.named = 0;
   id.u.id = 1;
 
-  r = define_standard_resource (&resources, RT_FONTDIR, id, 0x409, 0);
+  r = define_standard_resource(&g_resources, RT_FONTDIR, id, 0x409, 0);
 
   r->type = RES_TYPE_FONTDIR;
   r->u.fontdir = fontdirs;
@@ -923,10 +922,9 @@ define_fontdirs (void)
    resolutions.  They each get written out with a different ID.  The
    real icon resource is then a group resource which can be used to
    select one of the actual icon bitmaps.  */
-
 void
-define_icon (struct res_id id, const struct res_res_info *resinfo,
-	     const char *filename)
+define_icon(struct res_id id, const struct res_res_info *resinfo,
+	    const char *filename)
 {
   FILE *e;
   char *real_filename;
@@ -936,39 +934,37 @@ define_icon (struct res_id id, const struct res_res_info *resinfo,
   struct res_resource *r;
   struct group_icon *first, **pp;
 
-  e = open_file_search (filename, FOPEN_RB, "icon file", &real_filename);
+  e = open_file_search(filename, FOPEN_RB, "icon file", &real_filename);
 
   /* The start of an icon file is a three word structure.  The first
      word is ignored.  The second word is the type of data.  The third
      word is the number of entries.  */
 
-  get_word (e, real_filename);
-  type = get_word (e, real_filename);
-  count = get_word (e, real_filename);
+  get_word(e, real_filename);
+  type = get_word(e, real_filename);
+  count = get_word(e, real_filename);
   if (type != 1)
-    fatal (_("icon file `%s' does not contain icon data"), real_filename);
+    fatal(_("icon file `%s' does not contain icon data"), real_filename);
 
-  /* Read in the icon directory entries.  */
-
-  icondirs = (struct icondir *) xmalloc (count * sizeof *icondirs);
+  /* Read in the icon directory entries: */
+  icondirs = (struct icondir *)xmalloc(count * sizeof(*icondirs));
 
   for (i = 0; i < count; i++)
     {
-      icondirs[i].width = getc (e);
-      icondirs[i].height = getc (e);
-      icondirs[i].colorcount = getc (e);
-      getc (e);
-      icondirs[i].u.icon.planes = get_word (e, real_filename);
-      icondirs[i].u.icon.bits = get_word (e, real_filename);
-      icondirs[i].bytes = get_long (e, real_filename);
-      icondirs[i].offset = get_long (e, real_filename);
+      icondirs[i].width = getc(e);
+      icondirs[i].height = getc(e);
+      icondirs[i].colorcount = getc(e);
+      getc(e);
+      icondirs[i].u.icon.planes = get_word(e, real_filename);
+      icondirs[i].u.icon.bits = get_word(e, real_filename);
+      icondirs[i].bytes = get_long(e, real_filename);
+      icondirs[i].offset = get_long(e, real_filename);
 
-      if (feof (e))
-	unexpected_eof (real_filename);
+      if (feof(e))
+	unexpected_eof(real_filename);
     }
 
-  /* Define each icon as a unique resource.  */
-
+  /* Define each icon as a unique resource: */
   first_icon = icons;
 
   for (i = 0; i < count; i++)
@@ -976,32 +972,31 @@ define_icon (struct res_id id, const struct res_res_info *resinfo,
       unsigned char *data;
       struct res_id name;
 
-      if (fseek (e, icondirs[i].offset, SEEK_SET) != 0)
-	fatal (_("%s: fseek to %lu failed: %s"), real_filename,
-	       icondirs[i].offset, strerror (errno));
+      if (fseek(e, icondirs[i].offset, SEEK_SET) != 0)
+	fatal(_("%s: fseek to %lu failed: %s"), real_filename,
+	      icondirs[i].offset, xstrerror(errno));
 
-      data = (unsigned char *) res_alloc (icondirs[i].bytes);
+      data = (unsigned char *)res_alloc(icondirs[i].bytes);
 
-      get_data (e, data, icondirs[i].bytes, real_filename);
+      get_data(e, data, icondirs[i].bytes, real_filename);
 
       ++icons;
 
       name.named = 0;
       name.u.id = icons;
 
-      r = define_standard_resource (&resources, RT_ICON, name,
-				    resinfo->language, 0);
+      r = define_standard_resource(&g_resources, RT_ICON, name,
+				   resinfo->language, 0);
       r->type = RES_TYPE_ICON;
       r->u.data.length = icondirs[i].bytes;
       r->u.data.data = data;
       r->res_info = *resinfo;
     }
 
-  fclose (e);
-  free (real_filename);
+  fclose(e);
+  xfree(real_filename);
 
-  /* Define an icon group resource.  */
-
+  /* Define an icon group resource: */
   first = NULL;
   pp = &first;
   for (i = 0; i < count; i++)
@@ -1012,7 +1007,7 @@ define_icon (struct res_id id, const struct res_res_info *resinfo,
          are zero.  We instead set them from the color.  This is
          copied from rcl.  */
 
-      cg = (struct group_icon *) res_alloc (sizeof *cg);
+      cg = (struct group_icon *)res_alloc(sizeof(*cg));
       cg->next = NULL;
       cg->width = icondirs[i].width;
       cg->height = icondirs[i].height;
@@ -1034,35 +1029,34 @@ define_icon (struct res_id id, const struct res_res_info *resinfo,
 	}
 
       cg->bytes = icondirs[i].bytes;
-      cg->index = first_icon + i + 1;
+      cg->index = (first_icon + i + 1);
 
       *pp = cg;
       pp = &(*pp)->next;
     }
 
-  free (icondirs);
+  xfree(icondirs);
 
-  r = define_standard_resource (&resources, RT_GROUP_ICON, id,
-				resinfo->language, 0);
+  r = define_standard_resource(&g_resources, RT_GROUP_ICON, id,
+			       resinfo->language, 0);
   r->type = RES_TYPE_GROUP_ICON;
   r->u.group_icon = first;
   r->res_info = *resinfo;
 }
 
-/* Define a menu resource.  */
-
+/* Define a menu resource: */
 void
-define_menu (struct res_id id, const struct res_res_info *resinfo,
-	     struct menuitem *menuitems)
+define_menu(struct res_id id, const struct res_res_info *resinfo,
+	    struct menuitem *menuitems)
 {
   struct menu *m;
   struct res_resource *r;
 
-  m = (struct menu *) res_alloc (sizeof *m);
+  m = (struct menu *)res_alloc(sizeof(*m));
   m->items = menuitems;
   m->help = 0;
 
-  r = define_standard_resource (&resources, RT_MENU, id, resinfo->language, 0);
+  r = define_standard_resource(&g_resources, RT_MENU, id, resinfo->language, 0);
   r->type = RES_TYPE_MENU;
   r->u.menu = m;
   r->res_info = *resinfo;
@@ -1072,13 +1066,13 @@ define_menu (struct res_id id, const struct res_res_info *resinfo,
    allocates and fills in a structure.  */
 
 struct menuitem *
-define_menuitem (const char *text, int menuid, unsigned long type,
-		 unsigned long state, unsigned long help,
-		 struct menuitem *menuitems)
+define_menuitem(const char *text, int menuid, unsigned long type,
+		unsigned long state, unsigned long help,
+		struct menuitem *menuitems)
 {
   struct menuitem *mi;
 
-  mi = (struct menuitem *)res_alloc(sizeof *mi);
+  mi = (struct menuitem *)res_alloc(sizeof(*mi));
   mi->next = NULL;
   mi->type = type;
   mi->state = state;
@@ -1103,22 +1097,22 @@ define_messagetable(struct res_id id, const struct res_res_info *resinfo,
   unsigned char *data;
   struct res_resource *r;
 
-  e = open_file_search (filename, FOPEN_RB, "messagetable file",
-			&real_filename);
+  e = open_file_search(filename, FOPEN_RB, "messagetable file",
+		       &real_filename);
 
-  if (stat (real_filename, &s) < 0)
-    fatal (_("stat failed on bitmap file `%s': %s"), real_filename,
-	   strerror (errno));
+  if (stat(real_filename, &s) < 0)
+    fatal(_("stat failed on bitmap file `%s': %s"), real_filename,
+	  xstrerror(errno));
 
-  data = (unsigned char *) res_alloc (s.st_size);
+  data = (unsigned char *)res_alloc(s.st_size);
 
-  get_data (e, data, s.st_size, real_filename);
+  get_data(e, data, s.st_size, real_filename);
 
-  fclose (e);
-  free (real_filename);
+  fclose(e);
+  xfree(real_filename);
 
-  r = define_standard_resource (&resources, RT_MESSAGETABLE, id,
-				resinfo->language, 0);
+  r = define_standard_resource(&g_resources, RT_MESSAGETABLE, id,
+			       resinfo->language, 0);
 
   r->type = RES_TYPE_MESSAGETABLE;
   r->u.data.length = s.st_size;
@@ -1126,50 +1120,47 @@ define_messagetable(struct res_id id, const struct res_res_info *resinfo,
   r->res_info = *resinfo;
 }
 
-/* Define an rcdata resource.  */
-
+/* Define an rcdata resource: */
 void
-define_rcdata (struct res_id id, const struct res_res_info *resinfo,
-	       struct rcdata_item *data)
+define_rcdata(struct res_id id, const struct res_res_info *resinfo,
+	      struct rcdata_item *data)
 {
   struct res_resource *r;
 
-  r = define_standard_resource (&resources, RT_RCDATA, id,
-				resinfo->language, 0);
+  r = define_standard_resource(&g_resources, RT_RCDATA, id,
+			       resinfo->language, 0);
   r->type = RES_TYPE_RCDATA;
   r->u.rcdata = data;
   r->res_info = *resinfo;
 }
 
-/* Create an rcdata item holding a string.  */
-
+/* Create an rcdata item holding a string: */
 struct rcdata_item *
-define_rcdata_string (const char *string, unsigned long len)
+define_rcdata_string(const char *string, unsigned long len)
 {
   struct rcdata_item *ri;
   char *s;
 
-  ri = (struct rcdata_item *) res_alloc (sizeof *ri);
+  ri = (struct rcdata_item *)res_alloc(sizeof(*ri));
   ri->next = NULL;
   ri->type = RCDATA_STRING;
   ri->u.string.length = len;
-  s = (char *) res_alloc (len);
-  memcpy (s, string, len);
+  s = (char *)res_alloc(len);
+  memcpy(s, string, len);
   ri->u.string.s = s;
 
   return ri;
 }
 
-/* Create an rcdata item holding a number.  */
-
+/* Create an rcdata item holding a number: */
 struct rcdata_item *
-define_rcdata_number (unsigned long val, int dword)
+define_rcdata_number(unsigned long val, int dword)
 {
   struct rcdata_item *ri;
 
-  ri = (struct rcdata_item *) res_alloc (sizeof *ri);
+  ri = (struct rcdata_item *)res_alloc(sizeof(*ri));
   ri->next = NULL;
-  ri->type = dword ? RCDATA_DWORD : RCDATA_WORD;
+  ri->type = (dword ? RCDATA_DWORD : RCDATA_WORD);
   ri->u.word = val;
 
   return ri;
@@ -1187,7 +1178,7 @@ define_stringtable(const struct res_res_info *resinfo,
 
   id.named = 0;
   id.u.id = ((stringid >> 4) + 1);
-  r = define_standard_resource(&resources, RT_STRING, id,
+  r = define_standard_resource(&g_resources, RT_STRING, id,
                                resinfo->language, 1);
 
   if (r->type == RES_TYPE_UNINITIALIZED)
@@ -1225,15 +1216,16 @@ define_user_data(struct res_id id, struct res_id type,
   ids[2].named = 0;
   ids[2].u.id = resinfo->language;
 
-  r = define_resource(& resources, 3, ids, 0);
+  r = define_resource(&g_resources, 3, ids, 0);
   r->type = RES_TYPE_USERDATA;
   r->u.userdata = data;
   r->res_info = *resinfo;
 }
 
+/* */
 void
-define_rcdata_file (struct res_id id, const struct res_res_info *resinfo,
-		    const char *filename)
+define_rcdata_file(struct res_id id, const struct res_res_info *resinfo,
+		   const char *filename)
 {
   struct rcdata_item *ri;
   FILE *e;
@@ -1241,34 +1233,32 @@ define_rcdata_file (struct res_id id, const struct res_res_info *resinfo,
   struct stat s;
   unsigned char *data;
 
-  e = open_file_search (filename, FOPEN_RB, "file", &real_filename);
+  e = open_file_search(filename, FOPEN_RB, "file", &real_filename);
 
+  if (stat(real_filename, &s) < 0)
+    fatal(_("stat failed on file `%s': %s"), real_filename,
+	  xstrerror(errno));
 
-  if (stat (real_filename, &s) < 0)
-    fatal (_("stat failed on file `%s': %s"), real_filename,
-	   strerror (errno));
+  data = (unsigned char *)res_alloc(s.st_size);
 
-  data = (unsigned char *) res_alloc (s.st_size);
+  get_data(e, data, s.st_size, real_filename);
 
-  get_data (e, data, s.st_size, real_filename);
+  fclose(e);
+  xfree(real_filename);
 
-  fclose (e);
-  free (real_filename);
-
-  ri = (struct rcdata_item *) res_alloc (sizeof *ri);
+  ri = (struct rcdata_item *)res_alloc(sizeof(*ri));
   ri->next = NULL;
   ri->type = RCDATA_BUFFER;
   ri->u.buffer.length = s.st_size;
   ri->u.buffer.data = data;
 
-  define_rcdata (id, resinfo, ri);
+  define_rcdata(id, resinfo, ri);
 }
 
-/* Define a user data resource where the data is in a file.  */
-
+/* Define a user data resource where the data is in a file: */
 void
-define_user_file (struct res_id id, struct res_id type,
-		  const struct res_res_info *resinfo, const char *filename)
+define_user_file(struct res_id id, struct res_id type,
+		 const struct res_res_info *resinfo, const char *filename)
 {
   FILE *e;
   char *real_filename;
@@ -1277,28 +1267,28 @@ define_user_file (struct res_id id, struct res_id type,
   struct res_id ids[3];
   struct res_resource *r;
 
-  e = open_file_search (filename, FOPEN_RB, "file", &real_filename);
+  e = open_file_search(filename, FOPEN_RB, "file", &real_filename);
 
-  if (stat (real_filename, &s) < 0)
-    fatal (_("stat failed on file `%s': %s"), real_filename,
-	   strerror (errno));
+  if (stat(real_filename, &s) < 0)
+    fatal(_("stat failed on file `%s': %s"), real_filename,
+	  xstrerror(errno));
 
-  data = (unsigned char *) res_alloc (s.st_size);
+  data = (unsigned char *)res_alloc(s.st_size);
 
-  get_data (e, data, s.st_size, real_filename);
+  get_data(e, data, s.st_size, real_filename);
 
-  fclose (e);
-  free (real_filename);
+  fclose(e);
+  xfree(real_filename);
 
   ids[0] = type;
   ids[1] = id;
   ids[2].named = 0;
   ids[2].u.id = resinfo->language;
 
-  r = define_resource (&resources, 3, ids, 0);
+  r = define_resource(&g_resources, 3, ids, 0);
   r->type = RES_TYPE_USERDATA;
   r->u.userdata = ((struct rcdata_item *)
-		   res_alloc (sizeof (struct rcdata_item)));
+		   res_alloc(sizeof(struct rcdata_item)));
   r->u.userdata->next = NULL;
   r->u.userdata->type = RCDATA_BUFFER;
   r->u.userdata->u.buffer.length = s.st_size;
@@ -1306,19 +1296,18 @@ define_user_file (struct res_id id, struct res_id type,
   r->res_info = *resinfo;
 }
 
-/* Define a versioninfo resource.  */
-
+/* Define a versioninfo resource: */
 void
-define_versioninfo (struct res_id id, int language,
-		    struct fixed_versioninfo *fixedverinfo,
-		    struct ver_info *verinfo)
+define_versioninfo(struct res_id id, int language,
+		   struct fixed_versioninfo *fixedverinfo,
+		   struct ver_info *verinfo)
 {
   struct res_resource *r;
 
-  r = define_standard_resource (&resources, RT_VERSION, id, language, 0);
+  r = define_standard_resource(&g_resources, RT_VERSION, id, language, 0);
   r->type = RES_TYPE_VERSIONINFO;
   r->u.versioninfo = ((struct versioninfo *)
-		      res_alloc (sizeof (struct versioninfo)));
+		      res_alloc(sizeof(struct versioninfo)));
   r->u.versioninfo->fixed = fixedverinfo;
   r->u.versioninfo->var = verinfo;
   r->res_info.language = language;
@@ -1454,7 +1443,7 @@ indent (FILE *e, int c)
    comes, this code will have to be fixed up.  */
 
 void
-write_rc_file (const char *filename, const struct res_directory *resources)
+write_rc_file(const char *filename, const struct res_directory *the_resources)
 {
   FILE *e;
   int language;
@@ -1463,14 +1452,14 @@ write_rc_file (const char *filename, const struct res_directory *resources)
     e = stdout;
   else
     {
-      e = fopen (filename, FOPEN_WT);
+      e = fopen(filename, FOPEN_WT);
       if (e == NULL)
-	fatal (_("can't open `%s' for output: %s"), filename, strerror (errno));
+	fatal(_("cannot open `%s' for output: %s"), filename, xstrerror(errno));
     }
 
   language = -1;
-  write_rc_directory (e, resources, (const struct res_id *) NULL,
-		      (const struct res_id *) NULL, &language, 1);
+  write_rc_directory(e, the_resources, (const struct res_id *)NULL,
+		     (const struct res_id *)NULL, &language, 1);
 }
 
 /* Write out a directory.  E is the file to write to.  RD is the

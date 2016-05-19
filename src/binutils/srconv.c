@@ -36,13 +36,15 @@
 #include "coff/internal.h"
 #include "../bfd/libcoff.h"
 
+#include "sysdep.h"
+
 #if 0
 # define FOOP1 1
 #endif /* 0 */
 
 static int addrsize;
 static char *toolname;
-static char **rnames;
+static const char **rnames;
 
 static int get_member_id (int);
 static int get_ordinary_id (int);
@@ -95,7 +97,7 @@ static bfd *abfd;
 static int debug = 0;
 static int quick = 0;
 static int noprescan = 0;
-static struct coff_ofile *tree;
+static struct coff_ofile *g_tree;
 /* Obsolete?? */
 #ifdef OBSOLETE_YES
 static int absolute_p;
@@ -160,25 +162,25 @@ strip_suffix(char *name)
 
 /* IT LEN stuff CS */
 static void
-checksum (FILE *file, unsigned char *ptr, int size, int code)
+checksum(FILE *file, unsigned char *ptr, int size, int code)
 {
   int j;
   int last;
   int sum = 0;
-  int bytes = size / 8;
+  int bytes = (size / 8);
 
   last = !(code & 0xff00);
   if (size & 0x7)
-    abort ();
-  ptr[0] = code | (last ? 0x80 : 0);
-  ptr[1] = bytes + 1;
+    abort();
+  ptr[0] = (code | (last ? 0x80 : 0));
+  ptr[1] = (bytes + 1);
 
   for (j = 0; j < bytes; j++)
     sum += ptr[j];
 
   /* Glue on a checksum too: */
   ptr[bytes] = ~sum;
-  fwrite(ptr, bytes + 1, 1, file);
+  fwrite(ptr, (bytes + 1), 1, file);
 }
 
 #if !defined(code)
@@ -283,19 +285,19 @@ writeCHARS (char *string, unsigned char *ptr, int *idx, int size, FILE *file)
 #define SYSROFF_SWAP_OUT
 #include "sysroff.c"
 
-static char *rname_sh[] =
+static const char *rname_sh[] =
 {
   "R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15"
 };
 
-static char *rname_h8300[] =
+static const char *rname_h8300[] =
 {
   "ER0", "ER1", "ER2", "ER3", "ER4", "ER5", "ER6", "ER7", "PC", "CCR"
 };
 
 /* Avoid declaring this as a global until we absolutely need to: */
 #if !defined(file)
-static FILE *file;
+static FILE *g_file;
 #endif /* !file */
 
 static void
@@ -308,12 +310,13 @@ wr_tr(void)
       0x03,		/* RL */
       0xfd,		/* CS */
     };
-  fwrite(b, 1, sizeof(b), file);
+  fwrite(b, 1, sizeof(b), g_file);
 }
 
+/* */
 static void
-wr_un (struct coff_ofile *ptr, struct coff_sfile *sfile, int first,
-       int nsecs ATTRIBUTE_UNUSED)
+wr_un(struct coff_ofile *ptr, struct coff_sfile *sfile, int first,
+      int nsecs ATTRIBUTE_UNUSED)
 {
   struct IT_un un;
   struct coff_symbol *s;
@@ -350,9 +353,10 @@ wr_un (struct coff_ofile *ptr, struct coff_sfile *sfile, int first,
   un.linker = "L_GX00";
   un.lcd = DATE;
   un.name = sfile->name;
-  sysroff_swap_un_out(file, &un);
+  sysroff_swap_un_out(g_file, &un);
 }
 
+/* */
 static void
 wr_hd(struct coff_ofile *p)
 {
@@ -435,10 +439,10 @@ wr_hd(struct coff_ofile *p)
   hd.sys = "";
   hd.mn = strip_suffix(bfd_get_filename(abfd));
 
-  sysroff_swap_hd_out(file, &hd);
+  sysroff_swap_hd_out(g_file, &hd);
 }
 
-
+/* */
 static void
 wr_sh(struct coff_ofile *p ATTRIBUTE_UNUSED, struct coff_section *sec)
 {
@@ -448,12 +452,12 @@ wr_sh(struct coff_ofile *p ATTRIBUTE_UNUSED, struct coff_section *sec)
 #ifdef FOOP1
   sh.section = 0;
 #endif /* FOOP1 */
-  sysroff_swap_sh_out (file, &sh);
+  sysroff_swap_sh_out(g_file, &sh);
 }
 
-
+/* */
 static void
-wr_ob (struct coff_ofile *p ATTRIBUTE_UNUSED, struct coff_section *section)
+wr_ob(struct coff_ofile *p ATTRIBUTE_UNUSED, struct coff_section *section)
 {
   bfd_size_type i;
   int first = 1;
@@ -486,35 +490,36 @@ wr_ob (struct coff_ofile *p ATTRIBUTE_UNUSED, struct coff_section *section)
 
       ob.cpf = 0;		/* Never compress.  */
       ob.data.len = todo;
-      bfd_get_section_contents (abfd, section->bfd_section, stuff, i, todo);
+      bfd_get_section_contents(abfd, section->bfd_section, stuff, i, todo);
       ob.data.data = stuff;
-      sysroff_swap_ob_out (file, &ob /*, i + todo < section->size */ );
+      sysroff_swap_ob_out(g_file, &ob /*, i + todo < section->size */ );
       i += todo;
     }
 
-  /* Now fill the rest with blanks.  */
-  while (i < (bfd_size_type) section->size)
+  /* Now fill the rest with blanks: */
+  while (i < (bfd_size_type)section->size)
     {
       struct IT_ob ob;
       int todo = 200;		/* Copy in 200 byte lumps.  */
 
       ob.spare = 0;
-      if (i + todo > (bfd_size_type) section->size)
-	todo = section->size - i;
+      if ((i + todo) > (bfd_size_type)section->size)
+	todo = (section->size - i);
       ob.saf = 0;
 
       ob.cpf = 0;		/* Never compress.  */
       ob.data.len = todo;
-      memset (stuff, 0, todo);
+      memset(stuff, 0, todo);
       ob.data.data = stuff;
-      sysroff_swap_ob_out (file, &ob);
+      sysroff_swap_ob_out(g_file, &ob);
       i += todo;
     }
   /* Now fill the rest with blanks.  */
 }
 
+/* */
 static void
-wr_rl (struct coff_ofile *ptr ATTRIBUTE_UNUSED, struct coff_section *sec)
+wr_rl(struct coff_ofile *ptr ATTRIBUTE_UNUSED, struct coff_section *sec)
 {
   int nr = sec->nrelocs;
   int i;
@@ -565,14 +570,15 @@ wr_rl (struct coff_ofile *ptr ATTRIBUTE_UNUSED, struct coff_section *sec)
 
       rl.end = 0xff;
 
-      if (   rl.op == OP_SEC_REF
-	  || rl.op == OP_EXT_REF)
-	sysroff_swap_rl_out (file, &rl);
+      if ((rl.op == OP_SEC_REF)
+	  || (rl.op == OP_EXT_REF))
+	sysroff_swap_rl_out(g_file, &rl);
     }
 }
 
+/* */
 static void
-wr_object_body (struct coff_ofile *p)
+wr_object_body(struct coff_ofile *p)
 {
   int i;
 
@@ -618,24 +624,26 @@ wr_dps_start (struct coff_sfile *sfile,
 
   dps.nesting = nest;
   dps.neg = 0x1001;
-  sysroff_swap_dps_out (file, &dps);
+  sysroff_swap_dps_out(g_file, &dps);
 }
 
+/* */
 static void
-wr_dps_end (struct coff_section *section ATTRIBUTE_UNUSED,
-	    struct coff_scope *scope ATTRIBUTE_UNUSED, int type)
+wr_dps_end(struct coff_section *section ATTRIBUTE_UNUSED,
+	   struct coff_scope *scope ATTRIBUTE_UNUSED, int type)
 {
   struct IT_dps dps;
 
   dps.end = 1;
   dps.type = type;
-  sysroff_swap_dps_out (file, &dps);
+  sysroff_swap_dps_out(g_file, &dps);
 }
 
+/* */
 static int *
-nints (int x)
+nints(int x)
 {
-  return (int *) (xcalloc (sizeof (int), x));
+  return (int *)(xcalloc(sizeof(int), x));
 }
 
 static void
@@ -707,7 +715,7 @@ walk_tree_type_1 (struct coff_sfile *sfile, struct coff_symbol *symbol,
 
 	dbt.bitsize = type->size;
 	dbt.neg = 0x1001;
-	sysroff_swap_dbt_out (file, &dbt);
+	sysroff_swap_dbt_out(g_file, &dbt);
 	break;
       }
 
@@ -715,9 +723,9 @@ walk_tree_type_1 (struct coff_sfile *sfile, struct coff_symbol *symbol,
       {
 	struct IT_dpt dpt;
 
-	walk_tree_type_1 (sfile, symbol, type->u.pointer.points_to, nest + 1);
+	walk_tree_type_1(sfile, symbol, type->u.pointer.points_to, (nest + 1));
 	dpt.neg = 0x1001;
-	sysroff_swap_dpt_out (file, &dpt);
+	sysroff_swap_dpt_out(g_file, &dpt);
 	break;
       }
 
@@ -731,17 +739,18 @@ walk_tree_type_1 (struct coff_sfile *sfile, struct coff_symbol *symbol,
 	dfp.nparams = type->u.function.parameters->nvars;
 	dfp.neg = 0x1001;
 
-	walk_tree_type_1 (sfile, symbol, type->u.function.function_returns, nest + 1);
+	walk_tree_type_1(sfile, symbol, type->u.function.function_returns,
+			 (nest + 1));
 
-	sysroff_swap_dfp_out (file, &dfp);
+	sysroff_swap_dfp_out(g_file, &dfp);
 
 	for (param = type->u.function.parameters->vars_head;
 	     param;
 	     param = param->next)
-	  walk_tree_symbol (sfile, 0, param, nest);
+	  walk_tree_symbol(sfile, 0, param, nest);
 
 	dfp.end = 1;
-	sysroff_swap_dfp_out (file, &dfp);
+	sysroff_swap_dfp_out(g_file, &dfp);
 	break;
       }
 
@@ -756,21 +765,20 @@ walk_tree_type_1 (struct coff_sfile *sfile, struct coff_symbol *symbol,
 	dbt.bitsize = type->size;
 	dbt.sign = SIGN_UNSPEC;
 	dbt.fptype = FPTYPE_NOTSPEC;
-	dbt.sid = get_member_id (type->u.astructdef.idx);
+	dbt.sid = get_member_id(type->u.astructdef.idx);
 	dbt.neg = 0x1001;
-	sysroff_swap_dbt_out (file, &dbt);
+	sysroff_swap_dbt_out(g_file, &dbt);
 	dds.end = 0;
 	dds.neg = 0x1001;
-	sysroff_swap_dds_out (file, &dds);
+	sysroff_swap_dds_out(g_file, &dds);
 
 	for (member = type->u.astructdef.elements->vars_head;
 	     member;
 	     member = member->next)
-	  walk_tree_symbol (sfile, 0, member, nest + 1);
+	  walk_tree_symbol(sfile, 0, member, (nest + 1));
 
 	dds.end = 1;
-	sysroff_swap_dds_out (file, &dds);
-
+	sysroff_swap_dds_out(g_file, &dds);
       }
       break;
 
@@ -784,12 +792,12 @@ walk_tree_type_1 (struct coff_sfile *sfile, struct coff_symbol *symbol,
 	dbt.fptype = FPTYPE_NOTSPEC;
 
 	if (type->u.astructref.ref)
-	  dbt.sid = get_member_id (type->u.astructref.ref->number);
+	  dbt.sid = get_member_id(type->u.astructref.ref->number);
 	else
 	  dbt.sid = 0;
 
 	dbt.neg = 0x1001;
-	sysroff_swap_dbt_out (file, &dbt);
+	sysroff_swap_dbt_out(g_file, &dbt);
       }
       break;
 
@@ -800,17 +808,17 @@ walk_tree_type_1 (struct coff_sfile *sfile, struct coff_symbol *symbol,
 	int dims = 1;		/* Only output one dimension at a time. */
 
 	dar.dims = dims;
-	dar.variable = nints (dims);
-	dar.subtype = nints (dims);
-	dar.spare = nints (dims);
-	dar.max_variable = nints (dims);
-	dar.maxspare = nints (dims);
-	dar.max = nints (dims);
-	dar.min_variable = nints (dims);
-	dar.min = nints (dims);
-	dar.minspare = nints (dims);
+	dar.variable = nints(dims);
+	dar.subtype = nints(dims);
+	dar.spare = nints(dims);
+	dar.max_variable = nints(dims);
+	dar.maxspare = nints(dims);
+	dar.max = nints(dims);
+	dar.min_variable = nints(dims);
+	dar.min = nints(dims);
+	dar.minspare = nints(dims);
 	dar.neg = 0x1001;
-	dar.length = type->size / type->u.array.dim;
+	dar.length = (type->size / type->u.array.dim);
 
 	for (j = 0; j < dims; j++)
 	  {
@@ -822,8 +830,8 @@ walk_tree_type_1 (struct coff_sfile *sfile, struct coff_symbol *symbol,
 	    dar.min_variable[j] = 0;
 	    dar.min[j] = 1;	/* Why is this NOT 0 instead? */
 	  }
-	walk_tree_type_1 (sfile, symbol, type->u.array.array_of, nest + 1);
-	sysroff_swap_dar_out (file, &dar);
+	walk_tree_type_1(sfile, symbol, type->u.array.array_of, (nest + 1));
+	sysroff_swap_dar_out(g_file, &dar);
       }
       break;
 
@@ -837,22 +845,22 @@ walk_tree_type_1 (struct coff_sfile *sfile, struct coff_symbol *symbol,
 	dbt.bitsize = type->size;
 	dbt.sign = SIGN_UNSPEC;
 	dbt.fptype = FPTYPE_NOTSPEC;
-	dbt.sid = get_member_id (type->u.aenumdef.idx);
+	dbt.sid = get_member_id(type->u.aenumdef.idx);
 	dbt.neg = 0x1001;
-	sysroff_swap_dbt_out (file, &dbt);
+	sysroff_swap_dbt_out(g_file, &dbt);
 
 	den.end = 0;
 	den.neg = 0x1001;
 	den.spare = 0;
-	sysroff_swap_den_out (file, &den);
+	sysroff_swap_den_out(g_file, &den);
 
 	for (member = type->u.aenumdef.elements->vars_head;
 	     member;
 	     member = member->next)
-	  walk_tree_symbol (sfile, 0, member, nest + 1);
+	  walk_tree_symbol(sfile, 0, member, (nest + 1));
 
 	den.end = 1;
-	sysroff_swap_den_out (file, &den);
+	sysroff_swap_den_out(g_file, &den);
       }
       break;
 
@@ -864,9 +872,9 @@ walk_tree_type_1 (struct coff_sfile *sfile, struct coff_symbol *symbol,
 	dbt.bitsize = type->size;
 	dbt.sign = SIGN_UNSPEC;
 	dbt.fptype = FPTYPE_NOTSPEC;
-	dbt.sid = get_member_id (type->u.aenumref.ref->number);
+	dbt.sid = get_member_id(type->u.aenumref.ref->number);
 	dbt.neg = 0x1001;
-	sysroff_swap_dbt_out (file, &dbt);
+	sysroff_swap_dbt_out(g_file, &dbt);
       }
       break;
 
@@ -913,8 +921,8 @@ static void dump_tree_structure(struct coff_sfile *sfile,
 #endif /* ENABLE_OBSOLETE_AND_COMMENTED_OUT_PARTS */
 
 static void
-walk_tree_type (struct coff_sfile *sfile, struct coff_symbol *symbol,
-		struct coff_type *type, int nest)
+walk_tree_type(struct coff_sfile *sfile, struct coff_symbol *symbol,
+	       struct coff_type *type, int nest)
 {
   if (symbol->type->type == coff_function_type)
     {
@@ -923,28 +931,28 @@ walk_tree_type (struct coff_sfile *sfile, struct coff_symbol *symbol,
       dty.end = 0;
       dty.neg = 0x1001;
 
-      sysroff_swap_dty_out (file, &dty);
-      walk_tree_type_1 (sfile, symbol, type, nest);
+      sysroff_swap_dty_out(g_file, &dty);
+      walk_tree_type_1(sfile, symbol, type, nest);
       dty.end = 1;
-      sysroff_swap_dty_out (file, &dty);
+      sysroff_swap_dty_out(g_file, &dty);
 
-      wr_dps_start (sfile,
-		    symbol->where->section,
-		    symbol->type->u.function.code,
-		    BLOCK_TYPE_FUNCTION, nest);
-      wr_dps_start (sfile, symbol->where->section,
-		    symbol->type->u.function.code,
-		    BLOCK_TYPE_BLOCK, nest);
-      walk_tree_scope (symbol->where->section,
-		       sfile,
-		       symbol->type->u.function.code,
-		       nest + 1, BLOCK_TYPE_BLOCK);
+      wr_dps_start(sfile,
+		   symbol->where->section,
+		   symbol->type->u.function.code,
+		   BLOCK_TYPE_FUNCTION, nest);
+      wr_dps_start(sfile, symbol->where->section,
+		   symbol->type->u.function.code,
+		   BLOCK_TYPE_BLOCK, nest);
+      walk_tree_scope(symbol->where->section,
+		      sfile,
+		      symbol->type->u.function.code,
+		      (nest + 1), BLOCK_TYPE_BLOCK);
 
-      wr_dps_end (symbol->where->section,
-		  symbol->type->u.function.code,
-		  BLOCK_TYPE_BLOCK);
-      wr_dps_end (symbol->where->section,
-		  symbol->type->u.function.code, BLOCK_TYPE_FUNCTION);
+      wr_dps_end(symbol->where->section,
+		 symbol->type->u.function.code,
+		 BLOCK_TYPE_BLOCK);
+      wr_dps_end(symbol->where->section,
+		 symbol->type->u.function.code, BLOCK_TYPE_FUNCTION);
     }
   else
     {
@@ -952,19 +960,22 @@ walk_tree_type (struct coff_sfile *sfile, struct coff_symbol *symbol,
 
       dty.end = 0;
       dty.neg = 0x1001;
-      sysroff_swap_dty_out (file, &dty);
-      walk_tree_type_1 (sfile, symbol, type, nest);
+      sysroff_swap_dty_out(g_file, &dty);
+      walk_tree_type_1(sfile, symbol, type, nest);
       dty.end = 1;
-      sysroff_swap_dty_out (file, &dty);
+      sysroff_swap_dty_out(g_file, &dty);
     }
 }
 
+/* */
 static void
-walk_tree_symbol (struct coff_sfile *sfile, struct coff_section *section ATTRIBUTE_UNUSED, struct coff_symbol *symbol, int nest)
+walk_tree_symbol(struct coff_sfile *sfile,
+		 struct coff_section *section ATTRIBUTE_UNUSED,
+		 struct coff_symbol *symbol, int nest)
 {
   struct IT_dsy dsy;
 
-  memset (&dsy, 0, sizeof(dsy));
+  memset(&dsy, 0, sizeof(dsy));
   dsy.nesting = nest;
 
   switch (symbol->type->type)
@@ -1132,11 +1143,11 @@ walk_tree_symbol (struct coff_sfile *sfile, struct coff_section *section ATTRIBU
       break;
 
     default:
-      abort ();
+      abort();
     }
 
   if (symbol->where->where == coff_where_register)
-    dsy.reg = rnames[symbol->where->offset];
+    dsy.reg = (char *)rnames[symbol->where->offset];
 
   switch (symbol->visible->type)
     {
@@ -1161,20 +1172,22 @@ walk_tree_symbol (struct coff_sfile *sfile, struct coff_section *section ATTRIBU
       break;
 
     default:
-      abort ();
+      abort();
     }
 
   dsy.sfn = 0;
   dsy.sln = 2;
   dsy.neg = 0x1001;
 
-  sysroff_swap_dsy_out (file, &dsy);
+  sysroff_swap_dsy_out(g_file, &dsy);
 
-  walk_tree_type (sfile, symbol, symbol->type, nest);
+  walk_tree_type(sfile, symbol, symbol->type, nest);
 }
 
+/* */
 static void
-walk_tree_scope (struct coff_section *section, struct coff_sfile *sfile, struct coff_scope *scope, int nest, int type)
+walk_tree_scope(struct coff_section *section, struct coff_sfile *sfile,
+		struct coff_scope *scope, int nest, int type)
 {
   struct coff_symbol *vars;
   struct coff_scope *child;
@@ -1182,18 +1195,18 @@ walk_tree_scope (struct coff_section *section, struct coff_sfile *sfile, struct 
   if (scope->vars_head
       || (scope->list_head && scope->list_head->vars_head))
     {
-      wr_dps_start (sfile, section, scope, type, nest);
+      wr_dps_start(sfile, section, scope, type, nest);
 
       if (nest == 0)
-	wr_globals (tree, sfile, nest + 1);
+	wr_globals(g_tree, sfile, (nest + 1));
 
       for (vars = scope->vars_head; vars; vars = vars->next)
-	walk_tree_symbol (sfile, section, vars, nest);
+	walk_tree_symbol(sfile, section, vars, nest);
 
       for (child = scope->list_head; child; child = child->next)
-	walk_tree_scope (section, sfile, child, nest + 1, BLOCK_TYPE_BLOCK);
+	walk_tree_scope(section, sfile, child, (nest + 1), BLOCK_TYPE_BLOCK);
 
-      wr_dps_end (section, scope, type);
+      wr_dps_end(section, scope, type);
     }
 }
 
@@ -1267,39 +1280,39 @@ wr_du (struct coff_ofile *p, struct coff_sfile *sfile, int n)
 	    }
 	}
 
-      du.sections = dst + 1;
+      du.sections = (dst + 1);
     }
 
   du.tool = "c_gcc";
   du.date = DATE;
 
-  sysroff_swap_du_out (file, &du);
+  sysroff_swap_du_out(g_file, &du);
 }
 
+/* */
 static void
-wr_dus (struct coff_ofile *p ATTRIBUTE_UNUSED, struct coff_sfile *sfile)
+wr_dus(struct coff_ofile *p ATTRIBUTE_UNUSED, struct coff_sfile *sfile)
 {
   struct IT_dus dus;
 
   dus.efn = 0x1001;
   dus.ns = 1;			/* p->nsources; sac 14 jul 94 */
-  dus.drb = nints (dus.ns);
-  dus.fname = (char **) xcalloc (sizeof (char *), dus.ns);
-  dus.spare = nints (dus.ns);
+  dus.drb = nints(dus.ns);
+  dus.fname = (char **)xcalloc(sizeof(char *), dus.ns);
+  dus.spare = nints(dus.ns);
   dus.ndir = 0;
   /* Find the filenames.  */
   dus.drb[0] = 0;
   dus.fname[0] = sfile->name;
 
-  sysroff_swap_dus_out (file, &dus);
+  sysroff_swap_dus_out(g_file, &dus);
 
 }
 
 /* Find the offset of the .text section for this sfile in the
    .text section for the output file.  */
-
 static int
-find_base (struct coff_sfile *sfile, struct coff_section *section)
+find_base(struct coff_sfile *sfile, struct coff_section *section)
 {
   return sfile->section[section->number].low;
 }
@@ -1368,19 +1381,18 @@ wr_dln (struct coff_ofile *p ATTRIBUTE_UNUSED, struct coff_sfile *sfile,
 		  idx++;
 
 		}
-	      dln.to_address[idx - 1] = dln.from_address[idx - 1] + 2;
+	      dln.to_address[idx - 1] = (dln.from_address[idx - 1] + 2);
 	    }
 	}
     }
   if (lc)
-    sysroff_swap_dln_out (file, &dln);
+    sysroff_swap_dln_out(g_file, &dln);
 }
 
-/* Write the global symbols out to the debug info.  */
-
+/* Write the global symbols out to the debug info: */
 static void
-wr_globals (struct coff_ofile *p, struct coff_sfile *sfile,
-	    int n ATTRIBUTE_UNUSED)
+wr_globals(struct coff_ofile *p, struct coff_sfile *sfile,
+	   int n ATTRIBUTE_UNUSED)
 {
   struct coff_symbol *sy;
 
@@ -1461,15 +1473,14 @@ wr_cs (void)
     0x00,	/* dot */
     0xDE	/* CS */
   };
-  fwrite (b, 1, sizeof (b), file);
+  fwrite(b, 1, sizeof(b), g_file);
 }
 
 /* Write out the SC records for a unit.  Create an SC
    for all the sections which appear in the output file, even
    if there is NOT an equivalent one on the input.  */
-
 static int
-wr_sc (struct coff_ofile *ptr, struct coff_sfile *sfile)
+wr_sc(struct coff_ofile *ptr, struct coff_sfile *sfile)
 {
   int i;
   int scount = 0;
@@ -1575,17 +1586,16 @@ wr_sc (struct coff_ofile *ptr, struct coff_sfile *sfile)
 	  sc.contents = CONTENTS_CODE;
 	}
 
-      sysroff_swap_sc_out (file, &sc);
+      sysroff_swap_sc_out(g_file, &sc);
       scount++;
     }
   return scount;
 }
 
-/* Write out the ER records for a unit.  */
-
+/* Write out the ER records for a unit: */
 static void
-wr_er (struct coff_ofile *ptr, struct coff_sfile *sfile ATTRIBUTE_UNUSED,
-       int first)
+wr_er(struct coff_ofile *ptr, struct coff_sfile *sfile ATTRIBUTE_UNUSED,
+      int first)
 {
   int idx = 0;
   struct coff_symbol *sym;
@@ -1600,18 +1610,17 @@ wr_er (struct coff_ofile *ptr, struct coff_sfile *sfile ATTRIBUTE_UNUSED,
 	      er.spare = 0;
 	      er.type = ER_NOTSPEC;
 	      er.name = sym->name;
-	      sysroff_swap_er_out (file, &er);
+	      sysroff_swap_er_out(g_file, &er);
 	      sym->er_number = idx++;
 	    }
 	}
     }
 }
 
-/* Write out the ED records for a unit.  */
-
+/* Write out the ED records for a unit: */
 static void
-wr_ed (struct coff_ofile *ptr, struct coff_sfile *sfile ATTRIBUTE_UNUSED,
-       int first)
+wr_ed(struct coff_ofile *ptr, struct coff_sfile *sfile ATTRIBUTE_UNUSED,
+      int first)
 {
   struct coff_symbol *s;
 
@@ -1641,16 +1650,17 @@ wr_ed (struct coff_ofile *ptr, struct coff_sfile *sfile ATTRIBUTE_UNUSED,
 		  ed.type = ED_TYPE_DATA;
 		}
 
-	      ed.address = s->where->offset - s->where->section->address;
+	      ed.address = (s->where->offset - s->where->section->address);
 	      ed.name = s->name;
-	      sysroff_swap_ed_out (file, &ed);
+	      sysroff_swap_ed_out(g_file, &ed);
 	    }
 	}
     }
 }
 
+/* */
 static void
-wr_unit_info (struct coff_ofile *ptr)
+wr_unit_info(struct coff_ofile *ptr)
 {
   struct coff_sfile *sfile;
   int first = 1;
@@ -1663,73 +1673,80 @@ wr_unit_info (struct coff_ofile *ptr)
       long p2;
       int nsecs;
 
-      p1 = ftell (file);
-      wr_un (ptr, sfile, first, 0);
-      nsecs = wr_sc (ptr, sfile);
-      p2 = ftell (file);
-      fseek (file, p1, SEEK_SET);
-      wr_un (ptr, sfile, first, nsecs);
-      fseek (file, p2, SEEK_SET);
-      wr_er (ptr, sfile, first);
-      wr_ed (ptr, sfile, first);
+      p1 = ftell(g_file);
+      wr_un(ptr, sfile, first, 0);
+      nsecs = wr_sc(ptr, sfile);
+      p2 = ftell(g_file);
+      fseek(g_file, p1, SEEK_SET);
+      wr_un(ptr, sfile, first, nsecs);
+      fseek(g_file, p2, SEEK_SET);
+      wr_er(ptr, sfile, first);
+      wr_ed(ptr, sfile, first);
       first = 0;
     }
 }
 
+/* */
 static void
-wr_module (struct coff_ofile *p)
+wr_module(struct coff_ofile *p)
 {
-  wr_cs ();
-  wr_hd (p);
-  wr_unit_info (p);
-  wr_object_body (p);
-  wr_debug (p);
-  wr_tr ();
+  wr_cs();
+  wr_hd(p);
+  wr_unit_info(p);
+  wr_object_body(p);
+  wr_debug(p);
+  wr_tr();
 }
 
+/* */
 static int
-align (int x)
+align(int x)
 {
-  return (x + 3) & ~3;
+  return ((x + 3) & ~3);
 }
 
 /* Find all the common variables and turn them into ordinary defs.
  * I dunno why, but that is (was) what Hitachi does with them. */
 
 static void
-prescan (struct coff_ofile *tree)
+prescan(struct coff_ofile *the_tree)
 {
   struct coff_symbol *s;
   struct coff_section *common_section;
 
   /* Find the common section - always section 3.  */
-  common_section = tree->sections + 3;
+  common_section = (the_tree->sections + 3);
 
-  for (s = tree->symbol_list_head;
+  for (s = the_tree->symbol_list_head;
        s;
        s = s->next_in_ofile_list)
     {
       if (s->visible->type == coff_vis_common)
 	{
 	  struct coff_where *w = s->where;
-	  /*      s->visible->type = coff_vis_ext_def; leave it as common */
-	  common_section->size = align (common_section->size);
-	  w->offset = common_section->size + common_section->address;
+#if 0
+	  s->visible->type = coff_vis_ext_def; /* leave it as common */
+#endif /* 0 */
+	  common_section->size = align(common_section->size);
+	  w->offset = (common_section->size + common_section->address);
 	  w->section = common_section;
 	  common_section->size += s->type->size;
-	  common_section->size = align (common_section->size);
+	  common_section->size = align(common_section->size);
 	}
     }
 }
 
-char *program_name;
+/* */
+const char *program_name;
 
+/* */
 static void
-show_usage (FILE *file, int status)
+show_usage(FILE *the_file, int status)
 {
-  fprintf (file, _("Usage: %s [option(s)] in-file [out-file]\n"), program_name);
-  fprintf (file, _("Convert a COFF object file into a SYSROFF object file\n"));
-  fprintf (file, _(" The options are:\n\
+  fprintf(the_file, _("Usage: %s [option(s)] in-file [out-file]\n"),
+	  program_name);
+  fprintf(the_file, _("Convert a COFF object file into a SYSROFF object file\n"));
+  fprintf(the_file, _(" The options are:\n\
   -q --quick       (Obsolete - ignored)\n\
   -n --noprescan   Do not perform a scan to convert commons into defs\n\
   -d --debug       Display information about what is being done\n\
@@ -1737,12 +1754,13 @@ show_usage (FILE *file, int status)
   -v --version     Print the version number of the program\n"));
 
   if (status == 0)
-    fprintf (file, _("Report bugs to %s\n"), REPORT_BUGS_TO);
-  exit (status);
+    fprintf(the_file, _("Report bugs to %s\n"), REPORT_BUGS_TO);
+  xexit(status);
 }
 
+/* */
 int
-main (int ac, char **av)
+main(int ac, char **av)
 {
   int opt;
   static struct option long_options[] =
@@ -1787,12 +1805,12 @@ main (int ac, char **av)
 	  break;
 	case 'H':
 	case 'h':
-	  show_usage (stdout, 0);
+	  show_usage(stdout, 0);
 	  /*NOTREACHED */
 	case 'v':
 	case 'V':
-	  print_version ("srconv");
-	  exit (0);
+	  print_version("srconv");
+	  xexit(0);
 	  /*NOTREACHED */
 	case 0:
 	  break;
@@ -1856,32 +1874,32 @@ main (int ac, char **av)
   if (!abfd)
     bfd_fatal (input_file);
 
-  if (!bfd_check_format_matches (abfd, bfd_object, &matching))
+  if (!bfd_check_format_matches(abfd, bfd_object, &matching))
     {
-      bfd_nonfatal (input_file);
+      bfd_nonfatal(input_file);
 
-      if (bfd_get_error () == bfd_error_file_ambiguously_recognized)
+      if (bfd_get_error() == bfd_error_file_ambiguously_recognized)
 	{
-	  list_matching_formats (matching);
-	  free (matching);
+	  list_matching_formats(matching);
+	  free(matching);
 	}
-      exit (1);
+      xexit(1);
     }
 
-  file = fopen (output_file, FOPEN_WB);
+  g_file = fopen(output_file, FOPEN_WB);
 
-  if (!file)
-    fatal (_("unable to open output file %s"), output_file);
+  if (!g_file)
+    fatal(_("unable to open output file %s"), output_file);
 
   if (debug)
-    printf ("ids %d %d\n", base1, base2);
+    printf("ids %d %d\n", base1, base2);
 
-  tree = coff_grok (abfd);
+  g_tree = coff_grok(abfd);
 
   if (!noprescan)
-    prescan (tree);
+    prescan(g_tree);
 
-  wr_module (tree);
+  wr_module(g_tree);
   return 0;
 }
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-26 02:33-0400\n"
+"POT-Creation-Date: 2016-05-19 12:15-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -561,26 +561,26 @@ msgstr ""
 msgid "Dwarf Error: Cannot find .debug_ranges section."
 msgstr ""
 
-#: dwarf2.c:1575 dwarf2.c:1678 dwarf2.c:1918
+#: dwarf2.c:1575 dwarf2.c:1678 dwarf2.c:1919
 #, c-format
 msgid "Dwarf Error: Could not find abbrev number %u."
 msgstr ""
 
-#: dwarf2.c:1875
+#: dwarf2.c:1876
 #, c-format
 msgid ""
 "Dwarf Error: found dwarf version '%u', this reader only handles version 2 "
 "information."
 msgstr ""
 
-#: dwarf2.c:1883
+#: dwarf2.c:1884
 #, c-format
 msgid ""
 "Dwarf Error: found address size '%u', this reader can not handle sizes "
 "greater than '%u'."
 msgstr ""
 
-#: dwarf2.c:1908
+#: dwarf2.c:1909
 #, c-format
 msgid "Dwarf Error: Bad abbrev number: %u."
 msgstr ""

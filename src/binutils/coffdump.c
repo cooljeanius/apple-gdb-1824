@@ -509,7 +509,7 @@ coff_dump(struct coff_ofile *ptr)
   }
 }
 
-char * program_name;
+const char *program_name;
 
 static void
 show_usage(FILE *file, int status)
