@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA */
 
 #include "defs.h"
 #include "frame.h"
@@ -250,26 +250,24 @@ GDB_evaluate_expression (struct expression *exp, value_ptr *value)
 static int
 wrap_evaluate_expression (char *a)
 {
-  struct gdb_wrapper_arguments **args = (struct gdb_wrapper_arguments **) a;
+  struct gdb_wrapper_arguments **args = (struct gdb_wrapper_arguments **)a;
 
   (*args)->result =
-    (char *) evaluate_expression ((struct expression *) (*args)->args[0]);
+    (char *)evaluate_expression((struct expression *)(*args)->args[0]);
   return 1;
 }
 
+/* */
 gdb_result
-GDB_value_equal (val1, val2, result)
-     value_ptr val1;
-     value_ptr val2;
-     int *result;
+GDB_value_equal(value_ptr val1, value_ptr val2, int *result)
 {
   struct gdb_wrapper_arguments args;
   gdb_result r;
 
-  args.args[0] = (char *) val1;
-  args.args[1] = (char *) val2;
+  args.args[0] = (char *)val1;
+  args.args[1] = (char *)val2;
 
-  r = call_wrapped_function ((catch_errors_ftype *) wrap_value_equal, &args);
+  r = call_wrapped_function((catch_errors_ftype *)wrap_value_equal, &args);
   if (r != GDB_OK)
     return r;
 
@@ -314,24 +312,24 @@ wrap_parse_exp_1 (char *opaque_arg)
 {
   struct gdb_wrapper_arguments **args = (struct gdb_wrapper_arguments **) opaque_arg;
   struct block *block;
-  char **stringptr;
+  const char **stringptr;
   int comma;
 
-  stringptr = (char **) (*args)->args[0];
-  block = (struct block *) (*args)->args[1];
-  comma = (int) (*args)->args[2];
+  stringptr = (const char **)(*args)->args[0];
+  block = (struct block *)(*args)->args[1];
+  comma = (int)(*args)->args[2];
 
-  (*args)->result = (char *) parse_exp_1 (stringptr, block, comma);
+  (*args)->result = (char *)parse_exp_1(stringptr, block, comma);
   return 1;
 }
 
 gdb_result
-GDB_evaluate_type (struct expression *exp, value_ptr *result)
+GDB_evaluate_type(struct expression *exp, value_ptr *result)
 {
   struct gdb_wrapper_arguments args;
   gdb_result r;
 
-  args.args[0] = (char *) exp;
+  args.args[0] = (char *)exp;
 
   r = call_wrapped_function ((catch_errors_ftype *) wrap_evaluate_type, &args);
   if (r != GDB_OK)
@@ -401,17 +399,19 @@ wrap_block_innermost_frame (char *opaque_arg)
   struct gdb_wrapper_arguments **args = (struct gdb_wrapper_arguments **) opaque_arg;
   struct block *block;
 
-  block = (struct block *) (*args)->args[0];
-  (*args)->result = (char *) block_innermost_frame (block);
+  block = (struct block *)(*args)->args[0];
+  (*args)->result = (char *)block_innermost_frame(block);
   return 1;
 }
 
+/* */
 gdb_result
-GDB_reinit_frame_cache ()
+GDB_reinit_frame_cache(void)
 {
   gdb_result r;
 
-  r = call_wrapped_function ((catch_errors_ftype *) wrap_reinit_frame_cache, NULL);
+  r = call_wrapped_function((catch_errors_ftype *)wrap_reinit_frame_cache,
+			    NULL);
   if (r != GDB_OK)
     return r;
 
@@ -477,25 +477,24 @@ wrap_value_slice (char *opaque_arg)
   value_ptr val;
   int low, num;
 
-  val = (value_ptr) (*args)->args[0];
-  low = *(int *) (*args)->args[1];
-  num = *(int *) (*args)->args[2];
-  (*args)->result = (char *) value_slice (val, low, num);
+  val = (value_ptr)(*args)->args[0];
+  low = *(int *)(*args)->args[1];
+  num = *(int *)(*args)->args[2];
+  (*args)->result = (char *) value_slice(val, low, num);
   return 1;
 }
 
+/* */
 gdb_result
-GDB_value_coerce_array (val, rval)
-     value_ptr val;
-     value_ptr *rval;
+GDB_value_coerce_array(value_ptr val, value_ptr *rval)
 {
   struct gdb_wrapper_arguments args;
   gdb_result r;
 
-  args.args[0] = (char *) val;
+  args.args[0] = (char *)val;
 
-  r = call_wrapped_function ((catch_errors_ftype *) wrap_value_coerce_array,
-			     &args);
+  r = call_wrapped_function((catch_errors_ftype *)wrap_value_coerce_array,
+			    &args);
   if (r != GDB_OK)
     return r;
 
@@ -720,3 +719,4 @@ wrap_get_current_frame (char *opaque_arg)
   return 1;
 }
 
+/* EOF */

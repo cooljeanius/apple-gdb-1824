@@ -283,19 +283,20 @@ get_register (int regnum, void *arg)
   if (!target_has_registers)
     {
       if (result_ptr->flags & GDBTK_MAKES_LIST)
-	Tcl_ListObjAppendElement (NULL, result_ptr->obj_ptr, Tcl_NewStringObj ("", -1));
+	Tcl_ListObjAppendElement(NULL, result_ptr->obj_ptr,
+				 Tcl_NewStringObj("", -1));
       else
-	Tcl_SetStringObj (result_ptr->obj_ptr, "", -1);
+	Tcl_SetStringObj(result_ptr->obj_ptr, "", -1);
       return;
     }
 
-  frame_register (get_selected_frame (NULL), regnum, &optim, &lval,
-		  &addr, &realnum, buffer);
+  frame_register(get_selected_frame(NULL), regnum, (enum opt_state *)&optim,
+		 &lval, &addr, &realnum, buffer);
 
   if (optim)
     {
-      Tcl_ListObjAppendElement (NULL, result_ptr->obj_ptr,
-				Tcl_NewStringObj ("Optimized out", -1));
+      Tcl_ListObjAppendElement(NULL, result_ptr->obj_ptr,
+			       Tcl_NewStringObj("Optimized out", -1));
       return;
     }
 
@@ -308,48 +309,50 @@ get_register (int regnum, void *arg)
       int j;
       char *ptr, buf[1024];
 
-      strcpy (buf, "0x");
-      ptr = buf + 2;
-      for (j = 0; j < register_size (current_gdbarch, regnum); j++)
+      strcpy(buf, "0x");
+      ptr = (buf + 2);
+      for (j = 0; j < register_size(current_gdbarch, regnum); j++)
 	{
-	  int idx = TARGET_BYTE_ORDER == BFD_ENDIAN_BIG ? j
-	    : register_size (current_gdbarch, regnum) - 1 - j;
-	  sprintf (ptr, "%02x", (unsigned char) buffer[idx]);
+	  int idx = ((TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
+		     ? j : (register_size(current_gdbarch, regnum) - 1 - j));
+	  snprintf(ptr, (sizeof(buf) + 2UL), "%02x",
+		   (unsigned char)buffer[idx]);
 	  ptr += 2;
 	}
-      fputs_unfiltered (buf, stb);
+      fputs_unfiltered(buf, stb);
     }
   else
     {
-      if ((TYPE_CODE (reg_vtype) == TYPE_CODE_UNION)
-	  && (strcmp (FIELD_NAME (TYPE_FIELD (reg_vtype, 0)),
-		      REGISTER_NAME (regnum)) == 0))
+      if ((TYPE_CODE(reg_vtype) == TYPE_CODE_UNION)
+	  && (strcmp(FIELD_NAME(TYPE_FIELD(reg_vtype, 0)),
+		     REGISTER_NAME(regnum)) == 0))
 	{
-	  val_print (FIELD_TYPE (TYPE_FIELD (reg_vtype, 0)), buffer, 0, 0,
-		     stb, format, 1, 0, Val_pretty_default);
+	  val_print(FIELD_TYPE(TYPE_FIELD(reg_vtype, 0)), buffer, 0, 0,
+		    stb, format, 1, 0, Val_pretty_default);
 	}
       else
-	val_print (reg_vtype, buffer, 0, 0,
-		   stb, format, 1, 0, Val_pretty_default);
+	val_print(reg_vtype, buffer, 0, 0,
+		  stb, format, 1, 0, Val_pretty_default);
     }
 
-  res = ui_file_xstrdup (stb, &dummy);
+  res = ui_file_xstrdup(stb, &dummy);
 
   if (result_ptr->flags & GDBTK_MAKES_LIST)
-    Tcl_ListObjAppendElement (NULL, result_ptr->obj_ptr, Tcl_NewStringObj (res, -1));
+    Tcl_ListObjAppendElement(NULL, result_ptr->obj_ptr,
+			     Tcl_NewStringObj(res, -1));
   else
-    Tcl_SetStringObj (result_ptr->obj_ptr, res, -1);
+    Tcl_SetStringObj(result_ptr->obj_ptr, res, -1);
 
-  xfree (res);
-  do_cleanups (old_chain);
+  xfree(res);
+  do_cleanups(old_chain);
 }
 
 static void
-get_register_name (int regnum, void *argp)
+get_register_name(int regnum, void *argp)
 {
   /* Non-zero if the caller wants the register numbers, too.  */
-  int numbers = (int) argp;
-  Tcl_Obj *name = Tcl_NewStringObj (REGISTER_NAME (regnum), -1);
+  int numbers = (int)argp;
+  Tcl_Obj *name = Tcl_NewStringObj(REGISTER_NAME(regnum), -1);
   Tcl_Obj *elt;
 
   if (numbers)
@@ -424,13 +427,15 @@ map_arg_registers (Tcl_Interp *interp, int objc, Tcl_Obj **objv,
   return TCL_OK;
 }
 
+/* */
 static void
-register_changed_p (int regnum, void *argp)
+register_changed_p(int regnum, void *argp)
 {
   char raw_buffer[MAX_REGISTER_SIZE];
 
-  if (deprecated_selected_frame == NULL
-      || !frame_register_read (deprecated_selected_frame, regnum, raw_buffer))
+  if ((deprecated_selected_frame == NULL)
+      || !frame_register_read(deprecated_selected_frame, regnum,
+			      (gdb_byte *)raw_buffer))
     return;
 
   if (memcmp (&old_regs[regnum * MAX_REGISTER_SIZE], raw_buffer,
@@ -445,16 +450,19 @@ register_changed_p (int regnum, void *argp)
   Tcl_ListObjAppendElement (NULL, result_ptr->obj_ptr, Tcl_NewIntObj (regnum));
 }
 
+/* */
 static void
-setup_architecture_data ()
+setup_architecture_data(void)
 {
-  xfree (old_regs);
-  xfree (regformat);
-  xfree (regtype);
+  xfree(old_regs);
+  xfree(regformat);
+  xfree(regtype);
 
-  old_regs = xcalloc (1, (NUM_REGS + NUM_PSEUDO_REGS) * MAX_REGISTER_SIZE + 1);
-  regformat = (int *)xcalloc ((NUM_REGS + NUM_PSEUDO_REGS) , sizeof(int));
-  regtype = (struct type **)xcalloc ((NUM_REGS + NUM_PSEUDO_REGS), sizeof(struct type **));
+  old_regs =  (char *)xcalloc(1, (((NUM_REGS + NUM_PSEUDO_REGS)
+				   * MAX_REGISTER_SIZE) + 1));
+  regformat = (int *)xcalloc((NUM_REGS + NUM_PSEUDO_REGS), sizeof(int));
+  regtype = (struct type **)xcalloc((NUM_REGS + NUM_PSEUDO_REGS),
+				    sizeof(struct type **));
 }
 
 /* gdb_regformat sets the format for a register */
@@ -503,20 +511,20 @@ gdb_reggrouplist (ClientData clientData, Tcl_Interp *interp,
 		  int objc, Tcl_Obj **objv)
 {
   struct reggroup *group;
-  int i = 0;
 
   if (objc != 0)
     {
-      Tcl_WrongNumArgs (interp, 0, objv, "gdb_reginfo grouplist");
+      Tcl_WrongNumArgs(interp, 0, objv, "gdb_reginfo grouplist");
       return TCL_ERROR;
     }
 
-  for (group = reggroup_next (current_gdbarch, NULL);
+  for (group = reggroup_next(current_gdbarch, NULL);
        group != NULL;
-       group = reggroup_next (current_gdbarch, group))
+       group = reggroup_next(current_gdbarch, group))
     {
-      if (reggroup_type (group) == USER_REGGROUP)
-	Tcl_ListObjAppendElement (NULL, result_ptr->obj_ptr, Tcl_NewStringObj (reggroup_name (group), -1));
+      if (reggroup_type(group) == USER_REGGROUP)
+	Tcl_ListObjAppendElement(NULL, result_ptr->obj_ptr,
+				 Tcl_NewStringObj(reggroup_name(group), -1));
     }
   return TCL_OK;
 }

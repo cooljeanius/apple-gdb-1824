@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA */
 
 #include "defs.h"
 #include "value.h"
@@ -70,7 +70,7 @@ static void install_variable (Tcl_Interp *, char *);
 static void uninstall_variable (Tcl_Interp *, char *);
 
 /* String representations of gdb's format codes */
-static char *format_string[] =
+static const char *format_string[] =
   {"natural", "binary", "decimal", "hexadecimal", "octal"};
 
 
@@ -299,7 +299,7 @@ variable_create (Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
   char *obj_name;
   int index;
   CORE_ADDR frame = (CORE_ADDR) -1;
-  int how_specified = USE_SELECTED_FRAME;
+  enum varobj_type how_specified = USE_SELECTED_FRAME;
 
   /* REMINDER: This command may be invoked in the following ways:
      gdb_variable create [NAME] [-expr EXPR] [-frame FRAME]
@@ -321,7 +321,7 @@ variable_create (Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
   else
     {
       /* specified name for object */
-      obj_name = strdup (name);
+      obj_name = xstrdup(name);
       objv++;
       objc--;
     }
@@ -366,7 +366,8 @@ variable_create (Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
     }
 
   /* Create the variable */
-  var = varobj_create (obj_name, name, frame, how_specified);
+  var = varobj_create(obj_name, name, frame, (struct block *)NULL,
+		      how_specified);
 
   if (var != NULL)
     {
@@ -438,7 +439,7 @@ variable_children (Tcl_Interp *interp, struct varobj *var)
 /* NOTE:   Only root variables can be updated... */
 
 static Tcl_Obj *
-variable_update (Tcl_Interp *interp, struct varobj **var)
+variable_update(Tcl_Interp *interp, struct varobj **var)
 {
   Tcl_Obj *changed;
   struct varobj **changelist;
@@ -446,8 +447,8 @@ variable_update (Tcl_Interp *interp, struct varobj **var)
 
   /* varobj_update() can return -1 if the variable is no longer around,
      i.e. we stepped out of the frame in which a local existed. */
-  if (varobj_update (var, &changelist) == -1)
-    return Tcl_NewStringObj ("-1", -1);
+  if (varobj_update(var, (struct varobj_changelist **)&changelist) == -1)
+    return Tcl_NewStringObj("-1", -1);
 
   changed = Tcl_NewListObj (0, NULL);
   vc = changelist;
@@ -473,22 +474,22 @@ variable_format (Tcl_Interp *interp, int objc,
     {
       /* Set the format of VAR to given format */
       int len;
-      char *fmt = Tcl_GetStringFromObj (objv[2], &len);
-      if (strncmp (fmt, "natural", len) == 0)
-	varobj_set_display_format (var, FORMAT_NATURAL);
-      else if (strncmp (fmt, "binary", len) == 0)
-	varobj_set_display_format (var, FORMAT_BINARY);
-      else if (strncmp (fmt, "decimal", len) == 0)
-	varobj_set_display_format (var, FORMAT_DECIMAL);
-      else if (strncmp (fmt, "hexadecimal", len) == 0)
-	varobj_set_display_format (var, FORMAT_HEXADECIMAL);
-      else if (strncmp (fmt, "octal", len) == 0)
-	varobj_set_display_format (var, FORMAT_OCTAL);
+      char *fmt = Tcl_GetStringFromObj(objv[2], &len);
+      if (strncmp(fmt, "natural", len) == 0)
+	varobj_set_display_format(var, FORMAT_NATURAL);
+      else if (strncmp(fmt, "binary", len) == 0)
+	varobj_set_display_format(var, FORMAT_BINARY);
+      else if (strncmp(fmt, "decimal", len) == 0)
+	varobj_set_display_format(var, FORMAT_DECIMAL);
+      else if (strncmp(fmt, "hexadecimal", len) == 0)
+	varobj_set_display_format(var, FORMAT_HEXADECIMAL);
+      else if (strncmp(fmt, "octal", len) == 0)
+	varobj_set_display_format(var, FORMAT_OCTAL);
       else
 	{
-	  gdbtk_set_result (interp, "unknown display format \"",
-			    fmt, "\": must be: \"natural\", \"binary\""
-			    ", \"decimal\", \"hexadecimal\", or \"octal\"");
+	  gdbtk_set_result(interp, "unknown display format \"",
+			   fmt, "\": must be: \"natural\", \"binary\""
+			   ", \"decimal\", \"hexadecimal\", or \"octal\"");
 	  return TCL_ERROR;
 	}
     }

@@ -180,7 +180,7 @@ if test x"${ac_cv_c_tclh}" != x""; then
     AC_MSG_RESULT([found in ${ac_cv_c_tclh}])
     # this hack is because the TCLHDIR will not print if there is a "-I" in
     # it.
-    TCLHDIR="-I${ac_cv_c_tclh}"
+    TCLHDIR="-idirafter ${ac_cv_c_tclh}"
   fi
 fi
 
@@ -387,7 +387,7 @@ if test x"${ac_cv_c_tkh}" != x""; then
     AC_MSG_RESULT([found in ${ac_cv_c_tkh}])
     # this hack is because the TKHDIR will NOT print if there is a "-I" in
     # it.
-    TKHDIR="-I${ac_cv_c_tkh}"
+    TKHDIR="-idirafter ${ac_cv_c_tkh}"
   fi
 else
   TKHDIR="# no Tk directory found"
@@ -598,7 +598,7 @@ if test x"${ac_cv_c_itclh}" = x""; then
   AC_MSG_ERROR([Cannot find Itcl private headers])
 fi
 if test x"${ac_cv_c_itclh}" != x""; then
-     ITCLHDIR="-I${ac_cv_c_itclh}"
+     ITCLHDIR="-idirafter ${ac_cv_c_itclh}"
 fi
 AC_SUBST([ITCLHDIR])dnl
 ])dnl
@@ -708,7 +708,7 @@ if test x"${ac_cv_c_itkh}" = x""; then
   AC_MSG_ERROR([Cannot find Itk private headers])
 fi
 if test x"${ac_cv_c_itkh}" != x""; then
-     ITKHDIR="-I${ac_cv_c_itkh}"
+     ITKHDIR="-idirafter ${ac_cv_c_itkh}"
 fi
 AC_SUBST([ITKHDIR])dnl
 ])dnl
@@ -879,7 +879,7 @@ AC_DEFUN([CY_AC_TCL_PRIVATE_HEADERS],[
   if test x"${private_dir}" = x""; then
     AC_ERROR([could not find private Tcl headers])
   else
-    TCL_PRIVATE_INCLUDE="-I${private_dir}"
+    TCL_PRIVATE_INCLUDE="-idirafter ${private_dir}"
     AC_MSG_RESULT([${private_dir}])
   fi
 ])dnl
@@ -902,7 +902,7 @@ AC_DEFUN([CY_AC_TK_PRIVATE_HEADERS],[
   if test x"${private_dir}" = x""; then
     AC_ERROR([could not find Tk private headers])
   else
-    TK_PRIVATE_INCLUDE="-I${private_dir}"
+    TK_PRIVATE_INCLUDE="-idirafter ${private_dir}"
     AC_MSG_RESULT([${private_dir}])
   fi
 ])dnl

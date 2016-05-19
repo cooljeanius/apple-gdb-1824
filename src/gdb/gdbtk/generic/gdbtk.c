@@ -91,7 +91,7 @@ void gdbtk_interactive (void);
 
 static void cleanup_init (void *ignore);
 
-static void tk_command (char *, int);
+static void tk_command(const char *, int);
 
 static int target_should_use_timer (struct target_ops *t);
 
@@ -99,7 +99,7 @@ int target_is_native (struct target_ops *t);
 
 int gdbtk_test (char *);
 
-static void view_command (char *, int);
+static void view_command(const char *, int);
 
 /* Handle for TCL interpreter */
 Tcl_Interp *gdbtk_interp = NULL;
@@ -183,15 +183,14 @@ close_bfds ()
  * sends the output to the GDB TK debug window.
  * Not for normal use; just a convenient tool for debugging
  */
-
-void
-TclDebug (char level, const char *fmt,...)
+void ATTR_FORMAT(gnu_printf, 2, 3)
+TclDebug(char level, const char *fmt, ...)
 {
   va_list args;
   char *buf;
   const char *v[3];
   char *merge;
-  char *priority;
+  const char *priority;
 
   switch (level)
     {
@@ -208,21 +207,22 @@ TclDebug (char level, const char *fmt,...)
       priority = "I";
     }
 
-  va_start (args, fmt);
+  va_start(args, fmt);
 
-
-  xvasprintf (&buf, fmt, args);
-  va_end (args);
+  /* We have the prototype for the libiberty xvasprintf(), which is done
+   * differently: */
+  buf = xvasprintf(fmt, args);
+  va_end(args);
 
   v[0] = "dbug";
   v[1] = priority;
   v[2] = buf;
 
-  merge = Tcl_Merge (3, v);
-  if (Tcl_Eval (gdbtk_interp, merge) != TCL_OK)
-    Tcl_BackgroundError (gdbtk_interp);
-  Tcl_Free (merge);
-  free(buf);
+  merge = Tcl_Merge(3, v);
+  if (Tcl_Eval(gdbtk_interp, merge) != TCL_OK)
+    Tcl_BackgroundError(gdbtk_interp);
+  Tcl_Free(merge);
+  xfree(buf);
 }
 
 
@@ -234,27 +234,27 @@ TclDebug (char level, const char *fmt,...)
  * This cleanup function is added to the cleanup list that surrounds the Tk
  * main in gdbtk_init.  It deletes the Tcl interpreter.
  */
-
 static void
-cleanup_init (void *ignore)
+cleanup_init(void *ignore)
 {
   if (gdbtk_interp != NULL)
-    Tcl_DeleteInterp (gdbtk_interp);
+    Tcl_DeleteInterp(gdbtk_interp);
   gdbtk_interp = NULL;
 }
 
 /* Come here during long calculations to check for GUI events.  Usually invoked
    via the QUIT macro.  */
-
 void
-gdbtk_interactive ()
+gdbtk_interactive(void)
 {
-  /* Tk_DoOneEvent (TK_DONT_WAIT|TK_IDLE_EVENTS); */
+#if defined(TK_DONT_WAIT) && defined(TK_IDLE_EVENTS)
+  Tk_DoOneEvent(TK_DONT_WAIT | TK_IDLE_EVENTS);
+#endif /* TK_DONT_WAIT && TK_IDLE_EVENTS */
 }
 
 /* Start a timer which will keep the GUI alive while in target_wait. */
 void
-gdbtk_start_timer ()
+gdbtk_start_timer(void)
 {
   static int first = 1;
 
@@ -262,7 +262,7 @@ gdbtk_start_timer ()
     {
       /* first time called, set up all the structs */
       first = 0;
-      sigemptyset (&nullsigmask);
+      sigemptyset(&nullsigmask);
 
       act1.sa_handler = x_event_wrapper;
       act1.sa_mask = nullsigmask;
@@ -283,12 +283,12 @@ gdbtk_start_timer ()
       it_off.it_value.tv_usec = 0;
     }
 
-  if (target_should_use_timer (&current_target))
+  if (target_should_use_timer(&current_target))
     {
       if (!gdbtk_timer_going)
 	{
-	  sigaction (SIGALRM, &act1, NULL);
-	  setitimer (ITIMER_REAL, &it_on, NULL);
+	  sigaction(SIGALRM, &act1, NULL);
+	  setitimer(ITIMER_REAL, &it_on, NULL);
 	  gdbtk_timer_going = 1;
 	}
     }
@@ -297,13 +297,13 @@ gdbtk_start_timer ()
 
 /* Stop the timer if it is running. */
 void
-gdbtk_stop_timer ()
+gdbtk_stop_timer(void)
 {
   if (gdbtk_timer_going)
     {
       gdbtk_timer_going = 0;
-      setitimer (ITIMER_REAL, &it_off, NULL);
-      sigaction (SIGALRM, &act2, NULL);
+      setitimer(ITIMER_REAL, &it_off, NULL);
+      sigaction(SIGALRM, &act2, NULL);
     }
   return;
 }
@@ -320,7 +320,7 @@ target_should_use_timer (struct target_ops *t)
 int
 target_is_native (struct target_ops *t)
 {
-  char *name = t->to_shortname;
+  const char *name = t->to_shortname;
 
   if (strcmp (name, "exec") == 0 || strcmp (name, "hpux-threads") == 0
       || strcmp (name, "child") == 0 || strcmp (name, "procfs") == 0
@@ -441,15 +441,15 @@ gdbtk_init (void)
       Tcl_Obj *commandObj;
 
       /* Before we can run our script we must set TCL_LIBRARY. */
-      if (Tcl_GetVar2 (gdbtk_interp, "env", "TCL_LIBRARY", TCL_GLOBAL_ONLY) == NULL)
+      if (Tcl_GetVar2(gdbtk_interp, "env", "TCL_LIBRARY", TCL_GLOBAL_ONLY) == NULL)
 	{
 	  int i, count;
-	  char *src_dir = SRC_DIR;
+	  const char *src_dir = SRC_DIR;
 	  const char **src_path;
 	  const char **lib_path;
 	  Tcl_DString lib_dstring;
 
-	  Tcl_DStringInit (&lib_dstring);
+	  Tcl_DStringInit(&lib_dstring);
 
 #ifdef __CYGWIN__
 	  /* SRC_DIR from configure is a posix path. Tcl really needs a
@@ -489,7 +489,7 @@ gdbtk_init (void)
      for start up options and the like */
   xasprintf (&s, "%d", inhibit_gdbinit);
   Tcl_SetVar2 (gdbtk_interp, "GDBStartup", "inhibit_prefs", s, TCL_GLOBAL_ONLY);
-  free(s);
+  xfree(s);
 
   /* Note: Tcl_SetVar2() treats the value as read-only (making a
      copy).  Unfortunately it does not mark the parameter as
@@ -500,7 +500,7 @@ gdbtk_init (void)
   make_final_cleanup (gdbtk_cleanup, NULL);
 
   /* Initialize the Paths variable.  */
-  if (ide_initialize_paths (gdbtk_interp, "") != TCL_OK)
+  if (ide_initialize_paths(gdbtk_interp, (char *)"") != TCL_OK)
     error ("ide_initialize_paths failed: %s", gdbtk_interp->result);
 
   if (Tk_Init (gdbtk_interp) != TCL_OK)
@@ -653,16 +653,17 @@ gdbtk_find_main";
 
   if (gdbtk_source_filename != NULL)
     {
-      char *s = "after idle source ";
-      char *script = concat (s, gdbtk_source_filename, (char *) NULL);
-      Tcl_Eval (gdbtk_interp, script);
-      free (gdbtk_source_filename);
-      free (script);
+      const char *s = "after idle source ";
+      char *script = concat(s, gdbtk_source_filename, (char *)NULL);
+      Tcl_Eval(gdbtk_interp, script);
+      xfree(gdbtk_source_filename);
+      xfree(script);
     }
 }
 
+/* */
 static void
-gdbtk_init_1 (char *arg0)
+gdbtk_init_1(char *arg0)
 {
   argv0 = arg0;
   deprecated_init_ui_hook = NULL;
@@ -682,10 +683,9 @@ gdbtk_test (char *filename)
   return 1;
 }
 
-/* Come here during initialize_all_files () */
-
+/* Come here during initialize_all_files() */
 void
-_initialize_gdbtk ()
+_initialize_gdbtk(void)
 {
   /* Current_interpreter not set yet, so we must check
      if "interpreter_p" is set to "insight" to know if
@@ -717,11 +717,12 @@ _initialize_gdbtk ()
 	  break;
 	}
     }
-#endif
+#endif /* __CYGWIN__ */
 }
 
+/* */
 static void
-tk_command (char *cmd, int from_tty)
+tk_command(const char *cmd, int from_tty)
 {
   int retval;
   char *result;
@@ -736,7 +737,7 @@ tk_command (char *cmd, int from_tty)
 
   result = xstrdup (gdbtk_interp->result);
 
-  old_chain = make_cleanup (free, result);
+  old_chain = make_cleanup(xfree, result);
 
   if (retval != TCL_OK)
     error ("%s", result);
@@ -746,8 +747,9 @@ tk_command (char *cmd, int from_tty)
   do_cleanups (old_chain);
 }
 
+/* */
 static void
-view_command (char *args, int from_tty)
+view_command(const char *args, int from_tty)
 {
   char *script;
   struct cleanup *old_chain;
@@ -769,3 +771,5 @@ view_command (char *args, int from_tty)
   else
     error ("Argument required (location to view)");
 }
+
+/* EOF */

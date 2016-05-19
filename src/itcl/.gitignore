@@ -1,0 +1,4 @@
+itcl/itclConfig.sh
+pkgIndex.tcl
+itk/itkConfig.sh
+iwidgets/iwidgets.tcl

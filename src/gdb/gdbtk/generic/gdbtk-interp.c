@@ -34,8 +34,8 @@
 #include "tk.h"
 #include "gdbtk.h"
 
-static void gdbtk_command_loop (void);
-static void hack_disable_interpreter_exec (char *, int);
+static void gdbtk_command_loop(void);
+static void hack_disable_interpreter_exec(const char *, int);
 
 struct gdbtk_interp_data
 {
@@ -50,13 +50,13 @@ static struct gdbtk_interp_data *gdbtk_data;
 
 /* See note in gdbtk_interpreter_init */
 static void
-hack_disable_interpreter_exec (char *args, int from_tty)
+hack_disable_interpreter_exec(const char *args, int from_tty)
 {
-  error ("interpreter-exec not available when running Insight");
+  error(_("interpreter-exec not available when running Insight"));
 }
 
 static void *
-gdbtk_interpreter_init (void)
+gdbtk_interpreter_init(void)
 {
   /* Disable interpreter-exec. It causes us big trouble right now. */
   struct cmd_list_element *cmd = NULL;
@@ -121,15 +121,15 @@ gdbtk_interpreter_exec (void *data, const char *command_str)
   return exception_none;
 }
 
+/* This is here because of -Wnested-externs: */
+extern FILE *instream;
+
 /* This function is called instead of gdb's internal command loop.  This is the
    last chance to do anything before entering the main Tk event loop.
    At the end of the command, we enter the main loop. */
-
 static void
-gdbtk_command_loop (void)
+gdbtk_command_loop(void)
 {
-  extern FILE *instream;
-
   /* We no longer want to use stdin as the command input stream */
   instream = NULL;
 
@@ -155,27 +155,31 @@ gdbtk_command_loop (void)
   Tk_MainLoop ();
 }
 
+extern void _initialize_gdbtk_interp(void); /* -Wmissing-prototypes */
 void
-_initialize_gdbtk_interp (void)
+_initialize_gdbtk_interp(void)
 {
   static const struct interp_procs procs = {
     gdbtk_interpreter_init,             /* init_proc */
     gdbtk_interpreter_resume,           /* resume_proc */
     gdbtk_interpreter_suspend,	        /* suspend_proc */
     gdbtk_interpreter_exec,             /* exec_proc */
-    gdbtk_interpreter_display_prompt_p  /* prompt_proc_p */
+    gdbtk_interpreter_display_prompt_p, /* prompt_proc_p */
+    (interp_command_loop_ftype *)NULL,
+    (interp_complete_ftype *)NULL
   };
   struct interp *gdbtk_interp;
 
   gdbtk_data =
-    (struct gdbtk_interp_data *) xmalloc (sizeof (struct gdbtk_interp_data));
-  memset (gdbtk_data, 0, sizeof (struct gdbtk_interp_data));
-  gdbtk_data->_stdout = gdbtk_fileopen ();
-  gdbtk_data->_stderr = gdbtk_fileopen ();
-  gdbtk_data->_stdlog = gdbtk_fileopen ();
-  gdbtk_data->_stdtarg = gdbtk_fileopen ();
-  gdbtk_data->_stdtargin = gdbtk_fileopenin ();
-  gdbtk_interp = interp_new ("insight", gdbtk_data, cli_out_new (gdbtk_data->_stdout),
-			     &procs);
-  interp_add (gdbtk_interp);
+    (struct gdbtk_interp_data *)xmalloc(sizeof(struct gdbtk_interp_data));
+  memset(gdbtk_data, 0, sizeof(struct gdbtk_interp_data));
+  gdbtk_data->_stdout = gdbtk_fileopen();
+  gdbtk_data->_stderr = gdbtk_fileopen();
+  gdbtk_data->_stdlog = gdbtk_fileopen();
+  gdbtk_data->_stdtarg = gdbtk_fileopen();
+  gdbtk_data->_stdtargin = gdbtk_fileopenin();
+  gdbtk_interp = interp_new("insight", gdbtk_data,
+			    cli_out_new(gdbtk_data->_stdout), &procs);
+  printf("adding gdbtk interp\n");
+  interp_add(gdbtk_interp);
 }

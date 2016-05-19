@@ -117,6 +117,10 @@ captured_command_loop(void *data)
 #ifdef HAVE_SBRK
 extern char **environ;
 #endif /* HAVE_SBRK */
+/* Likewise: */
+#ifdef GDBTK
+extern int gdbtk_test(char *);
+#endif /* GDBTK */
 
 static ATTRIBUTE_W_U_R int
 captured_main(void *data)
@@ -465,7 +469,6 @@ captured_main(void *data)
 #ifdef GDBTK
 	  case 'z':
 	    {
-extern int gdbtk_test(char *);
 	      if (!gdbtk_test(optarg))
 		{
 		  fprintf_unfiltered(gdb_stderr, _("%s: unable to load tclcommand file \"%s\""),

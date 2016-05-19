@@ -134,7 +134,7 @@ extern gdbtk_result *result_ptr;
 /* If you want to restore an old value of result_ptr whenever cleanups
    are run, pass this function to make_cleanup, along with the value
    of result_ptr you'd like to reinstate.  */
-extern void gdbtk_restore_result_ptr (void *);
+extern void gdbtk_restore_result_ptr(void *);
 
 /* GDB context identifier */
 extern int gdb_context;
@@ -148,43 +148,44 @@ extern int gdbtk_force_detach;
  * These functions are used in all the modules of Gdbtk.
  * 
  */
-
-extern int Gdbtk_Init (Tcl_Interp * interp);
-extern void gdbtk_stop_timer (void);
-extern void gdbtk_start_timer (void);
-extern void gdbtk_ignorable_warning (const char *, const char *);
-extern void gdbtk_interactive (void);
-extern int x_event (int);
-extern int gdbtk_two_elem_cmd (char *, char *);
-extern int target_is_native (struct target_ops *t);
-extern void gdbtk_fputs (const char *, struct ui_file *);
-extern struct ui_file *gdbtk_fileopen (void);
-extern struct ui_file *gdbtk_fileopenin (void);
+extern int Gdbtk_Init(Tcl_Interp *interp);
+extern void gdbtk_stop_timer(void);
+extern void gdbtk_start_timer(void);
+extern void gdbtk_ignorable_warning(const char *, const char *);
+extern void gdbtk_interactive(void);
+extern int x_event(int);
+extern int gdbtk_two_elem_cmd(const char *, const char *);
+extern int target_is_native(struct target_ops *t);
+extern void gdbtk_fputs(const char *, struct ui_file *);
+extern struct ui_file *gdbtk_fileopen(void);
+extern struct ui_file *gdbtk_fileopenin(void);
 extern int gdbtk_disable_fputs;
 
 #ifdef _WIN32
-extern void close_bfds ();
+extern void close_bfds();
 #endif /* _WIN32 */
 
-extern void
-  TclDebug (char level, const char *fmt,...);
+extern void TclDebug(char level, const char *fmt, ...)
+  ATTR_FORMAT(gnu_printf, 2, 3);
 
 /* A convenience macro for getting the demangled source names,
    regardless of the user's mangling style. */
 #define GDBTK_SYMBOL_SOURCE_NAME(symbol) \
-      (SYMBOL_DEMANGLED_NAME (symbol) != NULL \
-       ? SYMBOL_DEMANGLED_NAME (symbol)       \
-       : DEPRECATED_SYMBOL_NAME (symbol))
+      ((SYMBOL_DEMANGLED_NAME(symbol) != NULL) \
+       ? SYMBOL_DEMANGLED_NAME(symbol)       \
+       : DEPRECATED_SYMBOL_NAME(symbol))
 
 
 /* gdbtk_add_hooks - add all the hooks to gdb.  This will get called
    by the startup code to fill in the hooks needed by core gdb. */
-extern void gdbtk_add_hooks (void);
+extern void gdbtk_add_hooks(void);
 
 /* Initialize Insight */
-extern void gdbtk_init (void);
+extern void gdbtk_init(void);
 
 /* Start Insight. Insight must have already been initialized with a call
    to gdbtk_init. */
-extern void gdbtk_source_start_file (void);
+extern void gdbtk_source_start_file(void);
 #endif /* !_GDBTK_H */
+
+/* EOF */

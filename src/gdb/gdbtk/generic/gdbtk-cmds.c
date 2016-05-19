@@ -108,7 +108,7 @@ struct disassembly_client_data
   Tcl_Obj *result_obj[3];
   const char *asm_argv[14];
   const char *source_argv[7];
-  char *map_arr;
+  const char *map_arr;
   Tcl_DString src_to_line_prefix;
   Tcl_DString pc_to_line_prefix;
   Tcl_DString line_to_pc_prefix;
@@ -120,13 +120,13 @@ struct disassembly_client_data
 /* NOTE: cagney/2003-09-08: This variable is unused.  */
 int disassemble_from_exec = -1;
 
-extern int gdb_variable_init (Tcl_Interp * interp);
+extern int gdb_variable_init(Tcl_Interp *interp);
 
 /*
  * Declarations for routines exported from this file
  */
 
-int Gdbtk_Init (Tcl_Interp * interp);
+int Gdbtk_Init(Tcl_Interp *interp);
 
 /*
  * Declarations for routines used only in this file.
@@ -186,22 +186,22 @@ static void gdbtk_load_source (ClientData clientData,
 			       int start_line, int end_line);
 static CORE_ADDR gdbtk_load_asm (ClientData clientData, CORE_ADDR pc,
 				 struct disassemble_info *di);
-static int gdb_disassemble_driver (CORE_ADDR low, CORE_ADDR high,
-				   int mixed_source_and_assembly,
-				   ClientData clientData,
-				   void (*print_source_fn) (ClientData, struct
-							    symtab *, int,
-							    int),
-				   CORE_ADDR (*print_asm_fn) (ClientData,
-							      CORE_ADDR,
-							      struct
-							      disassemble_info
-							      *));
-char *get_prompt (void);
-static int perror_with_name_wrapper (PTR args);
-static int wrapped_call (PTR opaque_args);
-static int hex2bin (const char *hex, char *bin, int count);
-static int fromhex (int a);
+static int gdb_disassemble_driver(CORE_ADDR low, CORE_ADDR high,
+				  int mixed_source_and_assembly,
+				  ClientData clientData,
+				  void (*print_source_fn)(ClientData, struct
+							  symtab *, int,
+							  int),
+				  CORE_ADDR (*print_asm_fn)(ClientData,
+							    CORE_ADDR,
+							    struct
+							    disassemble_info
+							    *));
+const char *get_prompt(void);
+static int perror_with_name_wrapper(PTR args);
+static int wrapped_call(PTR opaque_args);
+static int hex2bin(const char *hex, char *bin, int count);
+static int fromhex(int a);
 
 
 /* Gdbtk_Init
@@ -620,17 +620,17 @@ gdb_eval (ClientData clientData, Tcl_Interp *interp,
   val = evaluate_expression (expr);
 
   /* "Print" the result of the expression evaluation. */
-  stb = mem_fileopen ();
-  make_cleanup_ui_file_delete (stb);
-  val_print (value_type (val), value_contents (val),
-	     value_embedded_offset (val), VALUE_ADDRESS (val),
-	     stb, format, 0, 0, 0);
-  result = ui_file_xstrdup (stb, &dummy);
-  Tcl_SetObjResult (interp, Tcl_NewStringObj (result, -1));
-  xfree (result);
+  stb = mem_fileopen();
+  make_cleanup_ui_file_delete(stb);
+  val_print(value_type(val), value_contents(val),
+	    value_embedded_offset(val), VALUE_ADDRESS(val),
+	    stb, format, 0, 0, Val_no_prettyprint);
+  result = ui_file_xstrdup(stb, &dummy);
+  Tcl_SetObjResult(interp, Tcl_NewStringObj(result, -1));
+  xfree(result);
   result_ptr->flags |= GDBTK_IN_TCL_RESULT;
 
-  do_cleanups (old_chain);
+  do_cleanups(old_chain);
   return TCL_OK;
 }
 
@@ -929,23 +929,24 @@ gdb_get_line_command (ClientData clientData, Tcl_Interp *interp,
 		      int objc, Tcl_Obj *CONST objv[])
 {
   struct symtabs_and_lines sals;
-  char *args, **canonical;
+  const char *args;
+  char **canonical;
 
   if (objc != 2)
     {
-      Tcl_WrongNumArgs (interp, 1, objv, "linespec");
+      Tcl_WrongNumArgs(interp, 1, objv, "linespec");
       return TCL_ERROR;
     }
 
-  args = Tcl_GetStringFromObj (objv[1], NULL);
-  sals = decode_line_1 (&args, 1, NULL, 0, &canonical, NULL);
+  args = Tcl_GetStringFromObj(objv[1], NULL);
+  sals = decode_line_1(&args, 1, NULL, 0, &canonical, NULL, 0);
   if (sals.nelts == 1)
     {
-      Tcl_SetIntObj (result_ptr->obj_ptr, sals.sals[0].line);
+      Tcl_SetIntObj(result_ptr->obj_ptr, sals.sals[0].line);
       return TCL_OK;
     }
 
-  Tcl_SetStringObj (result_ptr->obj_ptr, "N/A", -1);
+  Tcl_SetStringObj(result_ptr->obj_ptr, "N/A", -1);
   return TCL_OK;
 
 }
@@ -965,24 +966,25 @@ gdb_get_file_command (ClientData clientData, Tcl_Interp *interp,
 		      int objc, Tcl_Obj *CONST objv[])
 {
   struct symtabs_and_lines sals;
-  char *args, **canonical;
+  const char *args;
+  char **canonical;
 
   if (objc != 2)
     {
-      Tcl_WrongNumArgs (interp, 1, objv, "linespec");
+      Tcl_WrongNumArgs(interp, 1, objv, "linespec");
       return TCL_ERROR;
     }
 
-  args = Tcl_GetStringFromObj (objv[1], NULL);
-  sals = decode_line_1 (&args, 1, NULL, 0, &canonical, NULL);
+  args = Tcl_GetStringFromObj(objv[1], NULL);
+  sals = decode_line_1(&args, 1, NULL, 0, &canonical, NULL, 0);
   if (sals.nelts == 1)
     {
-      Tcl_SetStringObj (result_ptr->obj_ptr,
-			sals.sals[0].symtab->filename, -1);
+      Tcl_SetStringObj(result_ptr->obj_ptr,
+		       sals.sals[0].symtab->filename, -1);
       return TCL_OK;
     }
 
-  Tcl_SetStringObj (result_ptr->obj_ptr, "N/A", -1);
+  Tcl_SetStringObj(result_ptr->obj_ptr, "N/A", -1);
   return TCL_OK;
 }
 
@@ -999,18 +1001,19 @@ static int
 gdb_get_function_command (ClientData clientData, Tcl_Interp *interp,
 			  int objc, Tcl_Obj *CONST objv[])
 {
-  char *function;
+  const char *function;
   struct symtabs_and_lines sals;
-  char *args, **canonical;
+  const char *args;
+  char **canonical;
 
   if (objc != 2)
     {
-      Tcl_WrongNumArgs (interp, 1, objv, "linespec");
+      Tcl_WrongNumArgs(interp, 1, objv, "linespec");
       return TCL_ERROR;
     }
 
-  args = Tcl_GetStringFromObj (objv[1], NULL);
-  sals = decode_line_1 (&args, 1, NULL, 0, &canonical, NULL);
+  args = Tcl_GetStringFromObj(objv[1], NULL);
+  sals = decode_line_1(&args, 1, NULL, 0, &canonical, NULL, 0);
   if (sals.nelts == 1)
     {
       resolve_sal_pc (&sals.sals[0]);
@@ -1187,14 +1190,15 @@ gdb_listfiles (ClientData clientData, Tcl_Interp *interp,
       lastfile = files[i];
     }
 
-  free (files);
+  xfree(files);
   return TCL_OK;
 }
 
+/* */
 static int
-comp_files (const void *file1, const void *file2)
+comp_files(const void *file1, const void *file2)
 {
-  return strcmp (*(char **) file1, *(char **) file2);
+  return strcmp(*(char **)file1, *(char **)file2);
 }
 
 
@@ -1223,7 +1227,7 @@ gdb_search (ClientData clientData, Tcl_Interp *interp,
   struct cleanup *old_chain = NULL;
   Tcl_Obj *CONST * switch_objv;
   int index, switch_objc, i, show_files = 0;
-  domain_enum space = 0;
+  domain_enum space = UNDEF_DOMAIN;
   char *regexp;
   int static_only, nfiles;
   Tcl_Obj **file_list;
@@ -1257,7 +1261,7 @@ gdb_search (ClientData clientData, Tcl_Interp *interp,
   /* Unfortunately, we cannot teach search_symbols to search on
      multiple regexps, so we have to do a two-tier search for
      any searches which choose to narrow the playing field. */
-  switch ((enum search_opts) index)
+  switch ((enum search_opts)index)
     {
     case SEARCH_FUNCTIONS:
       space = FUNCTIONS_DOMAIN;
@@ -1267,6 +1271,8 @@ gdb_search (ClientData clientData, Tcl_Interp *interp,
       break;
     case SEARCH_TYPES:
       space = TYPES_DOMAIN;
+      break;
+    default:
       break;
     }
 
@@ -1287,7 +1293,7 @@ gdb_search (ClientData clientData, Tcl_Interp *interp,
 	  return TCL_ERROR;
 	}
 
-      switch ((enum switches_opts) index)
+      switch ((enum switches_opts)index)
 	{
 	case SWITCH_FILENAME:
 	  {
@@ -1346,7 +1352,8 @@ gdb_search (ClientData clientData, Tcl_Interp *interp,
 	    }
 	  switch_objc--;
 	  switch_objv++;
-	}
+	default:;
+	} /* end switch */
       switch_objc--;
       switch_objv++;
     }
@@ -1415,13 +1422,9 @@ gdb_search (ClientData clientData, Tcl_Interp *interp,
 *    the symbol name, and the second is a boolean indicating
 *    whether the symbol is demangled (1 for yes).
 */
-
 static int
-gdb_listfuncs (clientData, interp, objc, objv)
-     ClientData clientData;
-     Tcl_Interp *interp;
-     int objc;
-     Tcl_Obj *CONST objv[];
+gdb_listfuncs(ClientData clientData, Tcl_Interp *interp, int objc,
+	      Tcl_Obj *CONST objv[])
 {
   struct symtab *symtab;
   struct blockvector *bv;
@@ -1463,8 +1466,7 @@ gdb_listfuncs (clientData, interp, objc, objv)
 	{
 	  if (SYMBOL_CLASS (sym) == LOC_BLOCK)
 	    {
-
-	      char *name = SYMBOL_DEMANGLED_NAME (sym);
+	      const char *name = SYMBOL_DEMANGLED_NAME(sym);
 
 	      if (name)
 		{
@@ -1619,7 +1621,6 @@ gdb_load_disassembly (ClientData clientData, Tcl_Interp *interp,
 			 prefix, prefix_len);
       Tcl_DStringAppend (&client_data.line_to_pc_prefix, ",line=",
 			 sizeof (",line=") - 1);
-
     }
   else
     {
@@ -1769,7 +1770,8 @@ gdbtk_load_source (ClientData clientData, struct symtab *symtab,
 
 	  client_data->widget_line_no++;
 
-	  sprintf (line_number + 1, "%d", start_line);
+	  snprintf((line_number + 1), (sizeof(line_number) + 1UL), "%d",
+		   start_line);
 
 	  if (found_carriage_return)
 	    {
@@ -1803,12 +1805,11 @@ gdbtk_load_source (ClientData clientData, struct symtab *symtab,
 	      Tcl_SetVar2 (client_data->interp, client_data->map_arr,
 			   Tcl_DStringValue (&client_data->src_to_line_prefix),
 			   buffer, 0);
-	      free(buffer);
+	      xfree(buffer);
 
-	      Tcl_DStringSetLength (&client_data->src_to_line_prefix, index_len);
+	      Tcl_DStringSetLength(&client_data->src_to_line_prefix, index_len);
 	    }
 	}
-
     }
   else if (!client_data->file_opened_p)
     {
@@ -2106,11 +2107,12 @@ compare_lines (const PTR mle1p, const PTR mle2p)
 */
 
 static int
-gdb_loc (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
+gdb_loc(ClientData clientData, Tcl_Interp *interp, int objc,
+	Tcl_Obj *CONST objv[])
 {
-  char *filename;
+  const char *filename;
   struct symtab_and_line sal;
-  char *fname;
+  const char *fname;
   CORE_ADDR pc;
 
   if (objc == 1)
@@ -2148,18 +2150,19 @@ gdb_loc (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST obj
       struct symtabs_and_lines sals;
       int nelts;
 
-      sals = decode_line_spec (Tcl_GetStringFromObj (objv[1], NULL), 1);
+      sals = decode_line_spec(Tcl_GetStringFromObj(objv[1], NULL), 1);
 
       nelts = sals.nelts;
       sal = sals.sals[0];
-      free (sals.sals);
+      xfree(sals.sals);
 
-      if (sals.nelts != 1)
+      /* Remembers, nelts is the same as sals.nelts here: */
+      if (nelts != 1)
 	{
-	  gdbtk_set_result (interp, "Ambiguous line spec", -1);
+	  gdbtk_set_result(interp, "Ambiguous line spec", -1);
 	  return TCL_ERROR;
 	}
-      resolve_sal_pc (&sal);
+      resolve_sal_pc(&sal);
       pc = sal.pc;
     }
   else
@@ -2344,10 +2347,9 @@ gdb_set_mem (ClientData clientData, Tcl_Interp *interp,
  * Return:
  * a list of three integers: {border_col_width data_col_width ascii_col_width}
  * which can be used to set the table's column widths. */
-
 static int
-gdb_update_mem (ClientData clientData, Tcl_Interp *interp,
-		int objc, Tcl_Obj *CONST objv[])
+gdb_update_mem(ClientData clientData, Tcl_Interp *interp,
+	       int objc, Tcl_Obj *CONST objv[])
 {
   long dummy;
   char index[20];
@@ -2356,15 +2358,17 @@ gdb_update_mem (ClientData clientData, Tcl_Interp *interp,
   int size, asize, i, j, bc;
   int max_ascii_len, max_val_len, max_label_len;
   char format, aschar;
-  char *data, *tmp;
+  char *data;
+  const char *tmp;
   char buff[128], *mbuf, *mptr, *cptr, *bptr;
   struct ui_file *stb;
   struct type *val_type;
   struct cleanup *old_chain;
 
-  if (objc < 7 || objc > 8)
+  if ((objc < 7) || (objc > 8))
     {
-      Tcl_WrongNumArgs (interp, 1, objv, "data addr format size bytes bytes_per_row ?ascii_char?");
+      Tcl_WrongNumArgs(interp, 1, objv,
+		       "data addr format size bytes bytes_per_row ?ascii_char?");
       return TCL_ERROR;
     }
 
@@ -2429,9 +2433,13 @@ gdb_update_mem (ClientData clientData, Tcl_Interp *interp,
   rnum = 0;
   while (rnum < nbytes)
     {
+#ifdef target_read_memory_partial
       int error;
-      int num = target_read_memory_partial (addr + rnum, mbuf + rnum,
-					    nbytes - rnum, &error);
+      int num = target_read_memory_partial((addr + rnum), (mbuf + rnum),
+					   (nbytes - rnum), &error);
+#else
+      int num = 0;
+#endif /* target_read_memory_partial */
       if (num <= 0)
 	break;
       rnum += num;
@@ -2469,8 +2477,8 @@ gdb_update_mem (ClientData clientData, Tcl_Interp *interp,
   bptr = &buff[0];		/* pointer for ascii dump */
 
   /* Open a memory ui_file that we can use to print memory values */
-  stb = mem_fileopen ();
-  old_chain = make_cleanup_ui_file_delete (stb);
+  stb = mem_fileopen();
+  old_chain = make_cleanup_ui_file_delete(stb);
 
   /* A little macro to do column indices. As a rule, given the current
      byte, i, of a total nbytes and the bytes per row, bpr, and the size of
@@ -2479,31 +2487,31 @@ gdb_update_mem (ClientData clientData, Tcl_Interp *interp,
      row = i/bpr
      col = (i%bpr)/size
   */
-#define INDEX(row,col) sprintf (index, "%d,%d",(row),(col))
+#define INDEX(row,col) snprintf(index, sizeof(index), "%d,%d", (row), (col))
 
   /* Fill in address labels */
   max_label_len = 0;
   for (i = 0; i < nbytes; i += bpr)
     {
       char s[130];
-      sprintf (s, "%s", core_addr_to_string (addr + i));
-      INDEX ((int) i/bpr, -1);
-      Tcl_SetVar2 (interp, "data", index, s, 0);
+      snprintf(s, sizeof(s), "%s", core_addr_to_string(addr + i));
+      INDEX((int)(i / bpr), -1);
+      Tcl_SetVar2(interp, "data", index, s, 0);
 
       /* The tcl code in MemWin::update_addr used to track the size
 	 of each cell. I don't see how these could change for any given
 	 update, so we don't loop over all cells. We just note the first
 	 size. */
       if (max_label_len == 0)
-	max_label_len = strlen (s);
+	max_label_len = strlen(s);
     }
 
   /* Fill in memory */
-  max_val_len   = 0;		/* Ditto the above comments about max_label_len */
+  max_val_len = 0;	/* Ditto the above comments about max_label_len */
   max_ascii_len = 0;
   for (i = 0; i < nbytes; i += size)
     {
-      INDEX ((int) i/bpr, (int) (i%bpr)/size);
+      INDEX((int)(i / bpr), (int)((i % bpr) / size));
 
       if (i >= rnum)
 	{
@@ -2609,46 +2617,49 @@ gdb_loadfile (ClientData clientData, Tcl_Interp *interp, int objc,
   const char *text_argv[9];
   Tcl_CmdInfo text_cmd;
 
-
   if (objc != 4)
     {
       Tcl_WrongNumArgs(interp, 1, objv, "widget filename linenumbers");
       return TCL_ERROR;
     }
 
-  widget = Tcl_GetStringFromObj (objv[1], NULL);
-  if ( Tk_NameToWindow (interp, widget, Tk_MainWindow (interp)) == NULL)
+  widget = Tcl_GetStringFromObj(objv[1], NULL);
+  if (Tk_NameToWindow(interp, widget, Tk_MainWindow(interp)) == NULL)
     {
       return TCL_ERROR;
     }
 
-  if (!Tcl_GetCommandInfo (interp, widget, &text_cmd))
+  if (!Tcl_GetCommandInfo(interp, widget, &text_cmd))
     {
-      gdbtk_set_result (interp, "Can't get widget command info");
+      gdbtk_set_result(interp, "Cannot get widget command info");
       return TCL_ERROR;
     }
 
-  file  = Tcl_GetStringFromObj (objv[2], NULL);
-  Tcl_GetBooleanFromObj (interp, objv[3], &linenumbers);
+  file = Tcl_GetStringFromObj(objv[2], NULL);
+  Tcl_GetBooleanFromObj(interp, objv[3], &linenumbers);
 
-  symtab = lookup_symtab (file);
+  symtab = lookup_symtab(file);
   if (!symtab)
     {
-      gdbtk_set_result (interp, "File not found in symtab");
+      gdbtk_set_result(interp, "File not found in symtab");
       return TCL_ERROR;
     }
 
-  file = symtab_to_filename ( symtab );
-  if ((fp = fopen ( file, "r" )) == NULL)
+  file = symtab_to_filename(symtab);
+  if ((fp = fopen(file, "r")) == NULL)
     {
-      gdbtk_set_result (interp, "Can't open file for reading");
+      gdbtk_set_result(interp, "Cannot open file for reading");
       return TCL_ERROR;
     }
 
-  if (stat (file, &st) < 0)
+  if (stat(file, &st) < 0)
     {
-      catch_errors (perror_with_name_wrapper, "gdbtk: get time stamp", "",
-                    RETURN_MASK_ALL);
+      int errors_ret =
+	catch_errors(perror_with_name_wrapper, (void *)"gdbtk: get time stamp",
+		     "", RETURN_MASK_ALL);
+      if (errors_ret == 0) {
+	; /* ??? */
+      }
       return TCL_ERROR;
     }
 
@@ -2657,7 +2668,7 @@ gdb_loadfile (ClientData clientData, Tcl_Interp *interp, int objc,
   else if (exec_bfd)
     mtime = bfd_get_mtime(exec_bfd);
 
-  if (mtime && mtime < st.st_mtime)
+  if (mtime && (mtime < st.st_mtime))
     {
       gdbtk_ignorable_warning("file_times",\
 			      "Source file is more recent than executable.\n");
@@ -2669,38 +2680,38 @@ gdb_loadfile (ClientData clientData, Tcl_Interp *interp, int objc,
   /* array and set the array entry for each linenumber */
 
   ltable_size = LTABLE_SIZE;
-  ltable = (char *)xmalloc (LTABLE_SIZE);
+  ltable = (char *)xmalloc(LTABLE_SIZE);
   if (ltable == NULL)
     {
-      fclose (fp);
-      gdbtk_set_result (interp, "Out of memory.");
+      fclose(fp);
+      gdbtk_set_result(interp, "Out of memory.");
       return TCL_ERROR;
     }
 
-  memset (ltable, 0, LTABLE_SIZE);
+  memset(ltable, 0, LTABLE_SIZE);
 
   if (symtab->linetable && symtab->linetable->nitems)
     {
       le = symtab->linetable->item;
-      for (ln = symtab->linetable->nitems ;ln > 0; ln--, le++)
+      for (ln = symtab->linetable->nitems; ln > 0; ln--, le++)
         {
-          lnum = le->line >> 3;
+          lnum = (le->line >> 3);
           if (lnum >= ltable_size)
             {
               char *new_ltable;
-              new_ltable = (char *)realloc (ltable, ltable_size*2);
-              memset (new_ltable + ltable_size, 0, ltable_size);
+              new_ltable = (char *)xrealloc(ltable, (ltable_size * 2UL));
+              memset((new_ltable + ltable_size), 0, ltable_size);
               ltable_size *= 2;
               if (new_ltable == NULL)
                 {
-                  free (ltable);
-                  fclose (fp);
-		  gdbtk_set_result (interp, "Out of memory.");
+                  xfree(ltable);
+                  fclose(fp);
+		  gdbtk_set_result(interp, "Out of memory.");
                   return TCL_ERROR;
                 }
               ltable = new_ltable;
             }
-          ltable[lnum] |= 1 << (le->line % 8);
+          ltable[lnum] |= (1 << (le->line % 8));
         }
     }
 
@@ -2722,17 +2733,16 @@ gdb_loadfile (ClientData clientData, Tcl_Interp *interp, int objc,
 
       text_argv[3] = line_num_buf;
 
-      while (fgets (line + 1, 9980, fp))
+      while (fgets((line + 1), 9980, fp))
         {
 	  /* Look for DOS style \r\n endings, and if found,
 	   * strip off the \r.  We assume (for the sake of
 	   * speed) that ALL lines in the file have DOS endings,
 	   * or none do.
 	   */
-
 	  if (found_carriage_return)
 	    {
-	      char *p = strrchr(line, '\0') - 2;
+	      char *p = (strrchr(line, '\0') - 2);
 	      if (*p == '\r')
 		{
 		  *p = '\n';
@@ -2742,7 +2752,7 @@ gdb_loadfile (ClientData clientData, Tcl_Interp *interp, int objc,
 		found_carriage_return = 0;
 	    }
 
-          sprintf (line_num_buf+2, "%d", ln);
+          snprintf((line_num_buf + 2), (sizeof(line_num_buf) + 2UL), "%d", ln);
           if (ltable[ln >> 3] & (1 << (ln % 8)))
             {
 	      line_num_buf[0] = '-';
@@ -2762,11 +2772,11 @@ gdb_loadfile (ClientData clientData, Tcl_Interp *interp, int objc,
     {
       int found_carriage_return = 1;
 
-      while (fgets (line + 1, 9980, fp))
+      while (fgets((line + 1), 9980, fp))
         {
 	  if (found_carriage_return)
 	    {
-	      char *p = strrchr(line, '\0') - 2;
+	      char *p = (strrchr(line, '\0') - 2);
 	      if (*p == '\r')
 		{
 		  *p = '\n';
@@ -2792,8 +2802,8 @@ gdb_loadfile (ClientData clientData, Tcl_Interp *interp, int objc,
 	}
     }
 
-  free (ltable);
-  fclose (fp);
+  xfree(ltable);
+  fclose(fp);
   return TCL_OK;
 }
 
@@ -2846,11 +2856,10 @@ gdb_path_conv (ClientData clientData, Tcl_Interp *interp,
 /*
  * This section has utility routines that are not Tcl commands.
  */
-
 static int
-perror_with_name_wrapper (PTR args)
+perror_with_name_wrapper(PTR args)
 {
-  perror_with_name (args);
+  perror_with_name((const char *)args);
   return 1;
 }
 
@@ -2859,24 +2868,24 @@ perror_with_name_wrapper (PTR args)
 
    If no symbol is found, it returns an empty string. In either
    case, memory is owned by gdb. Do not attempt to free it. */
-char *
-pc_function_name (CORE_ADDR pc)
+const char *
+pc_function_name(CORE_ADDR pc)
 {
   struct symbol *sym;
-  char *funcname = NULL;
+  const char *funcname = NULL;
 
   /* First lookup the address in the symbol table... */
-  sym = find_pc_function (pc);
+  sym = find_pc_function(pc);
   if (sym != NULL)
-    funcname = GDBTK_SYMBOL_SOURCE_NAME (sym);
+    funcname = GDBTK_SYMBOL_SOURCE_NAME(sym);
   else
     {
-      /* ... if that fails, look it up in the minimal symbols. */
+      /* ...if that fails, then look it up in the minimal symbols: */
       struct minimal_symbol *msym = NULL;
 
-      msym = lookup_minimal_symbol_by_pc (pc);
+      msym = lookup_minimal_symbol_by_pc(pc);
       if (msym != NULL)
-	funcname = GDBTK_SYMBOL_SOURCE_NAME (msym);
+	funcname = GDBTK_SYMBOL_SOURCE_NAME(msym);
     }
 
   if (funcname == NULL)
@@ -2885,16 +2894,17 @@ pc_function_name (CORE_ADDR pc)
   return funcname;
 }
 
-void
-gdbtk_set_result (Tcl_Interp *interp, const char *fmt,...)
+/* */
+void ATTR_FORMAT(gnu_printf, 2, 3)
+gdbtk_set_result(Tcl_Interp *interp, const char *fmt, ...)
 {
   va_list args;
   char *buf;
 
-  va_start (args, fmt);
-  xvasprintf (&buf, fmt, args);
-  va_end (args);
-  Tcl_SetObjResult (interp, Tcl_NewStringObj (buf, -1));
+  va_start(args, fmt);
+  buf = xvasprintf(fmt, args);
+  va_end(args);
+  Tcl_SetObjResult(interp, Tcl_NewStringObj(buf, -1));
   xfree(buf);
 }
 
@@ -3018,3 +3028,5 @@ symtab_to_filename (struct symtab *s)
       return s->fullname;
   return s->filename;
 }
+
+/* EOF */

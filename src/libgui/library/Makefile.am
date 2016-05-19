@@ -1,6 +1,8 @@
 ## Process this file with automake to produce Makefile.in.
 
-AUTOMAKE_OPTIONS = cygnus
+AUTOMAKE_OPTIONS = 1.11.6 gnits no-dist dejagnu
+## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
+AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 ## Convenience variables.
 TCL = advice.tcl balloon.tcl bbox.tcl bgerror.tcl bindings.tcl \
@@ -26,9 +28,9 @@ endif
 WISH = wish
 
 if CROSS_COMPILING
-ITCL_SH = itclsh3.0
+ITCL_SH_TO_USE = itclsh3.0
 else
-ITCL_SH = @ITCL_SH@
+ITCL_SH_TO_USE = @ITCL_SH@
 endif
 
 if MAINTAINER_MODE
@@ -37,13 +39,13 @@ tclIndex: $(TCL)
 	here=`pwd`; \
 	$(SET_LIB_PATH) \
 	cd $(srcdir) && \
-	  echo "auto_mkindex $(LIBGUI_LIBRARY_DIR) $(TCL)" | $(ITCL_SH)
+	  echo "auto_mkindex $(LIBGUI_LIBRARY_DIR) $(TCL)" | $(ITCL_SH_TO_USE)
 
 pkgIndex.tcl: @MAINT@ $(PACKAGES)
 	here=`pwd`;	 \
 	$(SET_LIB_PATH) \
 	cd $(srcdir) && \
-	echo "pkg_mkIndex . $(PACKAGES); exit" | $(ITCL_SH)
+	echo "pkg_mkIndex . $(PACKAGES); exit" | $(ITCL_SH_TO_USE)
 else
 tclIndex:
 

@@ -1,6 +1,8 @@
 ## Process this file with automake to produce Makefile.in.
 
-AUTOMAKE_OPTIONS = cygnus
+AUTOMAKE_OPTIONS = 1.11.6 gnits no-dist dejagnu
+## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
+AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 noinst_LIBRARIES = libgui.a
 
@@ -41,7 +43,7 @@ LIBGUI_CFLAGS=@LIBGUI_CFLAGS@
 
 ## Some of the files in this directory want to see Tk internals.
 ## Nasty.
-INCLUDES = $(LIBGUI_CFLAGS) $(TCLHDIR) \
+AM_CPPFLAGS = $(LIBGUI_CFLAGS) $(TCLHDIR) \
 $(TKHDIR) \
 $(TK_XINCLUDES) $(TCL_DEFS) $(TK_DEFS) \
 $(TKHDIR)/../unix $(TKHDIR)/../win \

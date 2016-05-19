@@ -1618,7 +1618,7 @@ init.c: $(INIT_FILES)
 	    fi; \
 	  fi; \
 	  if [ ! -z "$${filebase}" ]; then \
-	  for prefix in . tui mi cli macosx signals; do \
+	  for prefix in . tui mi cli macosx signals gdbtk/generic; do \
 	    if [ -f $(srcdir)/$${prefix}/$${filebase} ]; then \
 	      pathname="$(srcdir)/$${prefix}/$${filebase}"; \
 	    fi; \
@@ -3586,7 +3586,7 @@ insight$(EXEEXT): gdbtk-main.o libgdb.a $(ADD_DEPS) \
   $(CDEPS) $(TDEPLIBS)
 	$(AM_V_at)rm -f $(AM_V_v) insight$(EXEEXT)
 	$(AM_V_at)rm -f -r $(AM_V_v) insight$(EXEEXT).dSYM
-	$(AM_V_CCLD)$(CC_LD) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
+	$(AM_V_LINKER)$(LINK) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
 		$(ADD_INFO_PLIST) \
 		-o insight$(EXEEXT) gdbtk-main.o libgdb.a \
 		$(TDEPLIBS) $(TUI_LIBRARY) $(CLIBS) $(LOADLIBES)
@@ -3604,73 +3604,83 @@ gdbtk.o: $(gdbtk_c_srcdir)/gdbtk.c $(defs_h) $(inferior_h) $(symfile_h) \
   $(objfiles_h) $(gdbcore_h) $(tracepoint_h) $(demangle_h) $(version_h) \
   $(top_h) $(annotate_h) $(exceptions_h) $(gdbtk_h) $(gdb_string_h) \
   $(dis_asm_h) $(gdbcmd_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
 	  $(ITCL_CFLAGS) $(ITK_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) \
 	  $(X11_CFLAGS) $(GDBTK_CFLAGS) \
 	  $(gdbtk_c_srcdir)/gdbtk.c \
 	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\" \
 	  -DSRC_DIR=\"$(GDBTK_SRC_DIR)\"
+	$(POSTCOMPILE)
 gdbtk-bp.o: $(gdbtk_c_srcdir)/gdbtk-bp.c $(defs_h) $(symtab_h) \
   $(symfile_h) $(source_h) $(linespec_h) $(breakpoint_h) $(tracepoint_h) \
   $(gdb_string_h) $(gdbtk_h) $(gdbtk_cmds_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
 	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(gdbtk_c_srcdir)/gdbtk-bp.c \
 	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
+	$(POSTCOMPILE)
 gdbtk-cmds.o: $(gdbtk_c_srcdir)/gdbtk-cmds.c $(defs_h) $(inferior_h) \
   $(source_h) $(symfile_h) $(objfiles_h) $(gdbcore_h) $(demangle_h) \
   $(linespec_h) $(tui_file_h) $(top_h) $(annotate_h) $(block_h) \
   $(dictionary_h) $(filenames_h) $(disasm_h) $(value_h) $(exceptions_h) \
   $(gdbtk_h) $(gdbtk_wrapper_h) $(gdbtk_cmds_h) $(gdb_string_h) \
   $(dis_asm_h) $(gdbcmd_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
 	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(gdbtk_c_srcdir)/gdbtk-cmds.c \
 	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
+	$(POSTCOMPILE)
 gdbtk-hooks.o: $(gdbtk_c_srcdir)/gdbtk-hooks.c $(defs_h) $(inferior_h) \
   $(symfile_h) $(objfiles_h) $(gdbcore_h) $(tracepoint_h) $(demangle_h) \
   $(gdb_events_h) $(top_h) $(annotate_h) $(cli_decode_h) $(gdbtk_h) \
   $(gdb_string_h) $(dis_asm_h) $(gdbcmd_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
 	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(gdbtk_c_srcdir)/gdbtk-hooks.c \
 	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
+	$(POSTCOMPILE)
 gdbtk-interp.o: $(gdbtk_c_srcdir)/gdbtk-interp.c $(defs_h) \
   $(interps_h) $(ui_file_h) $(ui_out_h) $(cli_out_h) $(gdb_string_h) \
   $(cli_cmds_h) $(cli_decode_h) $(exceptions_h) $(gdbtk_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
 	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(gdbtk_c_srcdir)/gdbtk-interp.c
+	$(POSTCOMPILE)
 gdbtk-main.o: $(gdbtk_c_srcdir)/gdbtk-main.c $(defs_h) $(main_h) \
   $(gdb_string_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
 	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(gdbtk_c_srcdir)/gdbtk-main.c \
 	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
+	$(POSTCOMPILE)
 gdbtk-register.o: $(gdbtk_c_srcdir)/gdbtk-register.c $(defs_h) $(frame_h) \
   $(regcache_h) $(reggroups_h) $(value_h) $(target_h) $(gdb_string_h) \
   $(gdbtk_h) $(gdbtk_cmds_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
 	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(gdbtk_c_srcdir)/gdbtk-register.c \
 	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
+	$(POSTCOMPILE)
 gdbtk-stack.o: $(gdbtk_c_srcdir)/gdbtk-stack.c $(defs_h) $(target_h) \
   $(breakpoint_h) $(linespec_h) $(block_h) $(dictionary_h) \
   $(gdbtk_h) $(gdbtk_cmds_h) $(gdbtk_wrapper_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
 	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(gdbtk_c_srcdir)/gdbtk-stack.c \
 	  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\"
+	$(POSTCOMPILE)
 gdbtk-varobj.o: $(gdbtk_c_srcdir)/gdbtk-varobj.c $(defs_h) $(value_h) \
   $(gdb_string_h) $(varobj_h) $(gdbtk_h) $(gdbtk_cmds_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
 	  $(ITCL_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) $(X11_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(gdbtk_c_srcdir)/gdbtk-varobj.c
+	$(POSTCOMPILE)
 
 gdbtk-wrapper.o: $(gdbtk_c_srcdir)/gdbtk-wrapper.c $(defs_h) $(frame_h) \
   $(value_h) $(block_h) $(exceptions_h) $(gdbtk_wrapper_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) $(IDE_CFLAGS) \
 	  $(GDBTK_CFLAGS) $(gdbtk_c_srcdir)/gdbtk-wrapper.c
+	$(POSTCOMPILE)
 
 #
 # gdb/macosx/ dependencies

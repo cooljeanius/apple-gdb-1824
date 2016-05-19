@@ -226,12 +226,12 @@ gdb_get_blocks (ClientData clientData, Tcl_Interp *interp,
 		  xasprintf (&addr, "0x%s", paddr_nz (BLOCK_START (block)));
 		  Tcl_ListObjAppendElement (interp, elt,
 					    Tcl_NewStringObj (addr, -1));
-		  free(addr);
+		  xfree(addr);
 		  xasprintf (&addr, "0x%s", paddr_nz (BLOCK_END (block)));
 		  Tcl_ListObjAppendElement (interp, elt,
 					    Tcl_NewStringObj (addr, -1));
 		  Tcl_ListObjAppendElement (interp, result_ptr->obj_ptr, elt);
-		  free(addr);
+		  xfree(addr);
 		}
 	      else
 		{
@@ -244,13 +244,13 @@ gdb_get_blocks (ClientData clientData, Tcl_Interp *interp,
 				 paddr_nz (BLOCK_RANGE_START (block, i)));
 		      Tcl_ListObjAppendElement (interp, elt,
 						Tcl_NewStringObj (addr, -1));
-		      free(addr);
+		      xfree(addr);
 		      xasprintf (&addr, "0x%s",
 				 paddr_nz (BLOCK_RANGE_END (block, i)));
 		      Tcl_ListObjAppendElement (interp, elt,
 					    Tcl_NewStringObj (addr, -1));
 		      Tcl_ListObjAppendElement (interp, result_ptr->obj_ptr, elt);
-		      free(addr);
+		      xfree(addr);
 		    }
 		}
 	      /* APPLE LOCAL end address ranges  */
@@ -308,7 +308,8 @@ gdb_get_vars_command (ClientData clientData, Tcl_Interp *interp,
   struct symtabs_and_lines sals;
   struct symbol *sym;
   struct block *block;
-  char **canonical, *args;
+  char **canonical;
+  const char *args;
   struct dict_iterator iter;
   int i, arguments;
 
@@ -327,8 +328,8 @@ gdb_get_vars_command (ClientData clientData, Tcl_Interp *interp,
 
   if (objc == 2)
     {
-      args = Tcl_GetStringFromObj (objv[1], NULL);
-      sals = decode_line_1 (&args, 1, NULL, 0, &canonical, NULL);
+      args = Tcl_GetStringFromObj(objv[1], NULL);
+      sals = decode_line_1(&args, 1, NULL, 0, &canonical, NULL, 0);
       if (sals.nelts == 0)
 	{
 	  gdbtk_set_result (interp, "error decoding line");
@@ -437,8 +438,8 @@ gdb_selected_block (ClientData clientData, Tcl_Interp *interp,
   Tcl_ListObjAppendElement (interp, result_ptr->obj_ptr,
 			    Tcl_NewStringObj (end, -1));
 
-  free(start);
-  free(end);
+  xfree(start);
+  xfree(end);
   return TCL_OK;
 }
 
@@ -468,7 +469,7 @@ gdb_selected_frame (ClientData clientData, Tcl_Interp *interp,
 
   Tcl_SetStringObj (result_ptr->obj_ptr, frame, -1);
 
-  free(frame);
+  xfree(frame);
   return TCL_OK;
 }
 
@@ -556,11 +557,11 @@ gdb_stack (ClientData clientData, Tcl_Interp *interp,
  * This is stolen from print_frame_info in stack.c.
  */
 static void
-get_frame_name (Tcl_Interp *interp, Tcl_Obj *list, struct frame_info *fi)
+get_frame_name(Tcl_Interp *interp, Tcl_Obj *list, struct frame_info *fi)
 {
   struct symtab_and_line sal;
   struct symbol *func = NULL;
-  register char *funname = 0;
+  register const char *funname = (const char *)0;
   enum language funlang = language_unknown;
   Tcl_Obj *objv[1];
 
@@ -620,17 +621,19 @@ get_frame_name (Tcl_Interp *interp, Tcl_Obj *list, struct frame_info *fi)
     }
   else
     {
-#if 0
+#if defined(DMGL_ANSI) && defined(WE_HAVE_A_CONVENIENT_WAY_TO_DEAL_WITH_THIS)
       /* we have no convenient way to deal with this yet... */
-      if (fi->pc != sal.pc || !sal.symtab)
+      if ((fi->pc != sal.pc) || !sal.symtab)
 	{
-	  deprecated_print_address_numeric (fi->pc, 1, gdb_stdout);
-	  printf_filtered (" in ");
+	  deprecated_print_address_numeric(fi->pc, 1, gdb_stdout);
+	  printf_filtered(" in ");
 	}
-      printf_symbol_filtered (gdb_stdout, funname ? funname : "??", funlang,
-			      DMGL_ANSI);
-#endif
-      objv[0] = Tcl_NewStringObj (funname != NULL ? funname : "??", -1);
+      printf_symbol_filtered(gdb_stdout, (funname ? funname : "??"), funlang,
+			     DMGL_ANSI);
+#else
+      (void)funlang;
+#endif /* DMGL_ANSI && WE_HAVE_A_CONVENIENT_WAY_TO_DEAL_WITH_THIS */
+      objv[0] = Tcl_NewStringObj((funname != NULL) ? funname : "??", -1);
 #ifdef PC_LOAD_SEGMENT
       /* If we couldn't print out function name but if can figure out what
          load segment this pc value is from, at least print out some info
@@ -640,7 +643,7 @@ get_frame_name (Tcl_Interp *interp, Tcl_Obj *list, struct frame_info *fi)
 	  Tcl_AppendStringsToObj (objv[0], " from ", PC_LOAD_SEGMENT (fi->pc),
 				  (char *) NULL);
 	}
-#endif
+#endif /* PC_LOAD_SEGMENT */
 #ifdef PC_SOLIB
       if (!funname)
 	{
@@ -650,7 +653,7 @@ get_frame_name (Tcl_Interp *interp, Tcl_Obj *list, struct frame_info *fi)
 	      Tcl_AppendStringsToObj (objv[0], " from ", lib, (char *) NULL);
 	    }
 	}
-#endif
+#endif /* PC_SOLIB */
       Tcl_ListObjAppendElement (interp, list, objv[0]);
     }
 }

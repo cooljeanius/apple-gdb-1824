@@ -40,7 +40,7 @@ extern void report_error (void);
    of the breakpoint structure (respectively) into something gdbtk understands.
    They are also used in gdbtk-hooks.c */
 
-char *bptypes[] =
+const char *bptypes[] =
   {"none", "breakpoint", "hw breakpoint", "until",
    "finish", "watchpoint", "hw watchpoint",
    "read watchpoint", "acc watchpoint",
@@ -50,7 +50,7 @@ char *bptypes[] =
    "catch unload", "catch fork", "catch vfork",
    "catch exec", "catch catch", "catch throw"
   };
-char *bpdisp[] =
+const char *bpdisp[] =
   {"delete", "delstop", "disable", "donttouch"};
 
 /* Is this breakpoint interesting to a user interface? */
@@ -118,7 +118,7 @@ static int gdb_tracepoint_exists_command (ClientData, Tcl_Interp *,
 					  int, Tcl_Obj * CONST objv[]);
 static Tcl_Obj *get_breakpoint_commands (struct command_line *cmd);
 
-static int tracepoint_exists (char *args);
+static int tracepoint_exists(const char *args);
 
 /* Breakpoint/tracepoint events and related functions */
 
@@ -288,7 +288,7 @@ gdb_get_breakpoint_info (ClientData clientData, Tcl_Interp *interp, int objc,
   struct symtab_and_line sal;
   int bpnum;
   struct breakpoint *b;
-  char *funcname, *filename;
+  const char *funcname, *filename;
 
   Tcl_Obj *new_obj;
 
@@ -424,6 +424,12 @@ get_breakpoint_commands (struct command_line *cmd)
 	case invalid_control:
 	  /* Something invalid. Just skip it. */
 	  break;
+
+	case commands_control:
+	  break;
+
+	default:
+	  break;
 	}
 
       cmd = cmd->next;
@@ -538,7 +544,7 @@ gdb_set_bp (ClientData clientData, Tcl_Interp *interp,
   xasprintf (&buf, "%s:%d", lbasename (Tcl_GetStringFromObj (objv[1], NULL)),
 	     line);
   b->addr_string = xstrdup (buf);
-  free(buf);
+  xfree(buf);
 
   /* now send notification command back to GUI */
   breakpoint_create_event (b->number);
@@ -693,7 +699,7 @@ breakpoint_notify (int num, const char *action)
 
   if (Tcl_Eval (gdbtk_interp, buf) != TCL_OK)
     report_error ();
-  free(buf);
+  xfree(buf);
 }
 
 /*
@@ -717,8 +723,9 @@ gdb_actions_command (ClientData clientData, Tcl_Interp *interp,
   struct tracepoint *tp;
   Tcl_Obj **actions;
   int nactions, i, len;
-  char *number, *args, *action;
-  long step_count;
+  char *number;
+  const char *args;
+  char *action;
   struct action_line *next = NULL, *temp;
   enum actionline_type linetype;
 
@@ -729,7 +736,7 @@ gdb_actions_command (ClientData clientData, Tcl_Interp *interp,
     }
 
   args = number = Tcl_GetStringFromObj (objv[1], NULL);
-  tp = get_tracepoint_by_number (&args, 0, 0);
+  tp = get_tracepoint_by_number(&args, 0, 0);
   if (tp == NULL)
     {
       Tcl_AppendStringsToObj (result_ptr->obj_ptr, "Tracepoint \"",
@@ -741,23 +748,21 @@ gdb_actions_command (ClientData clientData, Tcl_Interp *interp,
   if (tp->actions != NULL)
     free_actions (tp);
 
-  step_count = 0;
-
   Tcl_ListObjGetElements (interp, objv[2], &nactions, &actions);
 
   /* Add the actions to the tracepoint */
   for (i = 0; i < nactions; i++)
     {
-      temp = xmalloc (sizeof (struct action_line));
+      temp = (struct action_line *)xmalloc(sizeof(struct action_line));
       temp->next = NULL;
-      action = Tcl_GetStringFromObj (actions[i], &len);
-      temp->action = savestring (action, len);
+      action = Tcl_GetStringFromObj(actions[i], &len);
+      temp->action = savestring(action, len);
 
-      linetype = validate_actionline (&(temp->action), tp);
+      linetype = validate_actionline(&(temp->action), tp);
 
       if (linetype == BADLINE)
 	{
-	  free (temp);
+	  xfree(temp);
 	  continue;
 	}
 
@@ -800,7 +805,7 @@ gdb_get_tracepoint_info (ClientData clientData, Tcl_Interp *interp,
   struct tracepoint *tp;
   struct action_line *al;
   Tcl_Obj *action_list;
-  char *filename, *funcname;
+  const char *filename, *funcname;
 
   if (objc != 2)
     {
@@ -898,7 +903,7 @@ gdb_trace_status (ClientData clientData,
 
 /* returns -1 if not found, tracepoint # if found */
 static int
-tracepoint_exists (char *args)
+tracepoint_exists(const char *args)
 {
   struct tracepoint *tp;
   char **canonical;
@@ -906,12 +911,12 @@ tracepoint_exists (char *args)
   char *file = NULL;
   int result = -1;
 
-  sals = decode_line_1 (&args, 1, NULL, 0, &canonical, NULL);
+  sals = decode_line_1(&args, 1, NULL, 0, &canonical, NULL, 0);
   if (sals.nelts == 1)
     {
-      resolve_sal_pc (&sals.sals[0]);
-      file = xmalloc (strlen (sals.sals[0].symtab->dirname)
-		      + strlen (sals.sals[0].symtab->filename) + 1);
+      resolve_sal_pc(&sals.sals[0]);
+      file = (char *)xmalloc(strlen(sals.sals[0].symtab->dirname)
+			     + strlen(sals.sals[0].symtab->filename) + 1UL);
       if (file != NULL)
 	{
 	  strcpy (file, sals.sals[0].symtab->dirname);
@@ -932,7 +937,7 @@ tracepoint_exists (char *args)
 	}
     }
   if (file != NULL)
-    free (file);
+    xfree(file);
   return result;
 }
 
@@ -991,5 +996,7 @@ tracepoint_notify (int num, const char *action)
 
   if (Tcl_Eval (gdbtk_interp, buf) != TCL_OK)
     report_error ();
-  free(buf);
+  xfree(buf);
 }
+
+/* EOF */

@@ -48170,7 +48170,7 @@ $as_echo "is installed" >&6; }
 $as_echo "found in ${ac_cv_c_tclh}" >&6; }
     # this hack is because the TCLHDIR will not print if there is a "-I" in
     # it.
-    TCLHDIR="-I${ac_cv_c_tclh}"
+    TCLHDIR="-idirafter ${ac_cv_c_tclh}"
   fi
 fi
 
@@ -48279,7 +48279,7 @@ $as_echo "is installed" >&6; }
 $as_echo "found in ${ac_cv_c_tkh}" >&6; }
     # this hack is because the TKHDIR will NOT print if there is a "-I" in
     # it.
-    TKHDIR="-I${ac_cv_c_tkh}"
+    TKHDIR="-idirafter ${ac_cv_c_tkh}"
   fi
 else
   TKHDIR="# no Tk directory found"
@@ -48305,7 +48305,7 @@ if test x"${ac_cv_c_itclh}" = x""; then
   as_fn_error $? "Cannot find Itcl private headers" "$LINENO" 5
 fi
 if test x"${ac_cv_c_itclh}" != x""; then
-     ITCLHDIR="-I${ac_cv_c_itclh}"
+     ITCLHDIR="-idirafter ${ac_cv_c_itclh}"
 fi
 
 
@@ -48324,7 +48324,7 @@ if test x"${ac_cv_c_itkh}" = x""; then
   as_fn_error $? "Cannot find Itk private headers" "$LINENO" 5
 fi
 if test x"${ac_cv_c_itkh}" != x""; then
-     ITKHDIR="-I${ac_cv_c_itkh}"
+     ITKHDIR="-idirafter ${ac_cv_c_itkh}"
 fi
 
 
