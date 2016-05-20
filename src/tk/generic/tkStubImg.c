@@ -46,7 +46,7 @@ Tk_InitImageArgs(interp, argc, argvPtr)
     int argc;
     char ***argvPtr;
 {
-    static useNewImage = -1;
+    static int useNewImage = -1;
     static char **argv = NULL;
 
     if (argv) {
@@ -67,7 +67,7 @@ Tk_InitImageArgs(interp, argc, argvPtr)
     }
     if (useNewImage && (argc > 0)) {
 	int i;
-	argv = (char **) tclStubsPtr->tcl_Alloc(argc * sizeof(char *));
+	argv = (char **)tclStubsPtr->tcl_Alloc((size_t)argc * sizeof(char *));
 	for (i = 0; i < argc; i++) {
 	    argv[i] = tclStubsPtr->tcl_GetString((Tcl_Obj *)(*argvPtr)[i]);
 	}

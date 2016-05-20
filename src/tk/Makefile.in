@@ -7,6 +7,7 @@ CONFIGDIR=@CONFIGDIR@
 VPATH = @srcdir@
 SHELL = @SHELL@
 srcdir = @srcdir@
+datarootdir = @datarootdir@
 
 @SET_MAKE@
 
@@ -20,9 +21,9 @@ mostlyclean-recursive clean-recursive distclean-recursive \
 maintainer-clean-recursive:
 	@cd $(CONFIGDIR) && $(MAKE) `echo $@ | sed 's/-recursive//'`
 
-# Don't depend on configure.in, because we can't ensure that the user
-# has autoconf.
-configure:
+# Do NOT depend on configure.ac, because we cannot ensure that the user
+# has autoconf, unless they are a maintainer.
+configure: @MAINT@ configure.ac
 	cd $(srcdir) ; autoconf
 
 mostlyclean: mostlyclean-recursive

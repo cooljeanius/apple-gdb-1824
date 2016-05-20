@@ -1,0 +1,68 @@
+Native Target Upgrade Log for Project “Wish”
+
+Wish
+
+Product Type: Application 
+Info.plist file: Info-Wish__Upgraded_.plist 
+Build settings conversion
+
+Renamed USE_GCC3_PFE_SUPPORT to GCC_USE_GCC3_PFE_SUPPORT
+Extracted value 'MAC_OSX_TK' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+Extracted value 'TCL_WIDE_INT_TYPE="long long"' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+Build settings conversion
+
+Renamed DEBUGGING_SYMBOLS to GCC_GENERATE_DEBUGGING_SYMBOLS
+Renamed USE_GCC3_PFE_SUPPORT to GCC_USE_GCC3_PFE_SUPPORT
+Extracted value 'MAC_OSX_TK' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+Extracted value 'TCL_WIDE_INT_TYPE="long long"' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+Build settings conversion
+
+Renamed USE_GCC3_PFE_SUPPORT to GCC_USE_GCC3_PFE_SUPPORT
+Extracted value 'MAC_OSX_TK' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+Extracted value 'TCL_WIDE_INT_TYPE="long long"' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+TkLibrary
+
+Product Type: Framework 
+Info.plist file: Info-TkLibrary__Upgraded_.plist 
+Build settings conversion
+
+Renamed PRECOMPILE_PREFIX_HEADER to GCC_PRECOMPILE_PREFIX_HEADER
+Renamed USE_GCC3_PFE_SUPPORT to GCC_USE_GCC3_PFE_SUPPORT
+Extracted value 'MAC_OSX_TK' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+Extracted value 'TCL_WIDE_INT_TYPE="long long"' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+Build settings conversion
+
+Renamed PRECOMPILE_PREFIX_HEADER to GCC_PRECOMPILE_PREFIX_HEADER
+Renamed DEBUGGING_SYMBOLS to GCC_GENERATE_DEBUGGING_SYMBOLS
+Renamed USE_GCC3_PFE_SUPPORT to GCC_USE_GCC3_PFE_SUPPORT
+Extracted value 'MAC_OSX_TK' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+Extracted value 'TCL_WIDE_INT_TYPE="long long"' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+Build settings conversion
+
+Renamed PRECOMPILE_PREFIX_HEADER to GCC_PRECOMPILE_PREFIX_HEADER
+Renamed USE_GCC3_PFE_SUPPORT to GCC_USE_GCC3_PFE_SUPPORT
+Extracted value 'MAC_OSX_TK' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+Extracted value 'TCL_WIDE_INT_TYPE="long long"' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+TkStubLibrary
+
+Product Type: Static Library 
+Build settings conversion
+
+Extracted value 'MAC_OSX_TK' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+Extracted value 'TCL_WIDE_INT_TYPE="long long"' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+Build settings conversion
+
+Renamed DEBUGGING_SYMBOLS to GCC_GENERATE_DEBUGGING_SYMBOLS
+Extracted value 'MAC_OSX_TK' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+Extracted value 'TCL_WIDE_INT_TYPE="long long"' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+Build settings conversion
+
+Extracted value 'MAC_OSX_TK' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+Extracted value 'TCL_WIDE_INT_TYPE="long long"' from OTHER_CFLAGS and appended it to GCC_PREPROCESSOR_DEFINITIONS
+Upgrade postprocessing
+
+Configuring dependencies of upgraded targets 
+Configuring inclusions of products of upgraded targets 
+Setting active target to “Wish (Upgraded)” 
+Setting active executable to “Wish (Upgraded)” 
+Upgrade process finished.

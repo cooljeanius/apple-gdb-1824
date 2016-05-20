@@ -7,6 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		618C8A241CEE881F004BBE5E /* regcustom.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24F6B016ECAA401DC9062 /* regcustom.h */; };
+		618C8A251CEE881F004BBE5E /* regerrs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24F6C016ECAA401DC9062 /* regerrs.h */; };
+		618C8A261CEE881F004BBE5E /* regguts.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24F6D016ECAA401DC9062 /* regguts.h */; };
+		618C8A271CEE881F004BBE5E /* tcl.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24F6E016ECAA401DC9062 /* tcl.h */; };
+		618C8A281CEE881F004BBE5E /* tclCompile.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24F6F016ECAA401DC9062 /* tclCompile.h */; };
+		618C8A291CEE881F004BBE5E /* tclDecls.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24F70016ECAA401DC9062 /* tclDecls.h */; };
+		618C8A2A1CEE881F004BBE5E /* tclInitScript.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24F71016ECAA401DC9062 /* tclInitScript.h */; };
+		618C8A2B1CEE881F004BBE5E /* tclInt.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24F72016ECAA401DC9062 /* tclInt.h */; };
+		618C8A2C1CEE881F004BBE5E /* tclIntDecls.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24F73016ECAA401DC9062 /* tclIntDecls.h */; };
+		618C8A2D1CEE881F004BBE5E /* tclIntPlatDecls.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24F74016ECAA401DC9062 /* tclIntPlatDecls.h */; };
+		618C8A2E1CEE881F004BBE5E /* tclIO.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24F75016ECAA401DC9062 /* tclIO.h */; };
+		618C8A2F1CEE881F004BBE5E /* tclMath.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24F76016ECAA401DC9062 /* tclMath.h */; };
+		618C8A301CEE881F004BBE5E /* tclPlatDecls.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24F77016ECAA401DC9062 /* tclPlatDecls.h */; };
+		618C8A311CEE881F004BBE5E /* tclRegexp.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24F78016ECAA401DC9062 /* tclRegexp.h */; };
+		618C8A321CEE881F004BBE5E /* regex.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24FD1016ECB1E01DC9062 /* regex.h */; };
+		618C8A331CEE881F004BBE5E /* tclPort.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24FD2016ECB1E01DC9062 /* tclPort.h */; };
+		618C8A341CEE882E004BBE5E /* tclUnixPort.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24FD6016ECC0F01DC9062 /* tclUnixPort.h */; };
+		618C8A351CEE882E004BBE5E /* tclUnixThrd.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24FD7016ECC0F01DC9062 /* tclUnixThrd.h */; };
 		7BC331AE1881E6E300EF9359 /* Tcl-Common.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331AD1881E6E300EF9359 /* Tcl-Common.xcconfig */; };
 		7BC331B01881E6E900EF9359 /* Tcl-Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331AF1881E6E900EF9359 /* Tcl-Debug.xcconfig */; };
 		7BC331B21881E6EF00EF9359 /* Tcl-Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331B11881E6EF00EF9359 /* Tcl-Release.xcconfig */; };
@@ -526,6 +544,24 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				618C8A241CEE881F004BBE5E /* regcustom.h in Headers */,
+				618C8A251CEE881F004BBE5E /* regerrs.h in Headers */,
+				618C8A261CEE881F004BBE5E /* regguts.h in Headers */,
+				618C8A271CEE881F004BBE5E /* tcl.h in Headers */,
+				618C8A281CEE881F004BBE5E /* tclCompile.h in Headers */,
+				618C8A291CEE881F004BBE5E /* tclDecls.h in Headers */,
+				618C8A2A1CEE881F004BBE5E /* tclInitScript.h in Headers */,
+				618C8A2B1CEE881F004BBE5E /* tclInt.h in Headers */,
+				618C8A2C1CEE881F004BBE5E /* tclIntDecls.h in Headers */,
+				618C8A2D1CEE881F004BBE5E /* tclIntPlatDecls.h in Headers */,
+				618C8A2E1CEE881F004BBE5E /* tclIO.h in Headers */,
+				618C8A2F1CEE881F004BBE5E /* tclMath.h in Headers */,
+				618C8A301CEE881F004BBE5E /* tclPlatDecls.h in Headers */,
+				618C8A311CEE881F004BBE5E /* tclRegexp.h in Headers */,
+				618C8A321CEE881F004BBE5E /* regex.h in Headers */,
+				618C8A331CEE881F004BBE5E /* tclPort.h in Headers */,
+				618C8A341CEE882E004BBE5E /* tclUnixPort.h in Headers */,
+				618C8A351CEE882E004BBE5E /* tclUnixThrd.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -626,7 +662,6 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			isa = PBXProject;
 			buildConfigurationList = A50F55481808CA12008BA312 /* Build configuration list for PBXProject "Tcl" */;
 			compatibilityVersion = "Xcode 2.4";
-			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				English,

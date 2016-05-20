@@ -116,7 +116,7 @@ Tcl_MacOSXOpenBundleResources(
 	     * for internationalization.
 	     */
 
-	    if (CFURLGetFileSystemRepresentation(libURL, true,
+	    if (CFURLGetFileSystemRepresentation(libURL, (Boolean)true,
 		    (UInt8 *)libraryPath, maxPathLen)) {
 	    }
 	    CFRelease(libURL);

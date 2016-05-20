@@ -2525,6 +2525,9 @@ EntrySetValue(entryPtr, value)
 	entryPtr->flags |= VALIDATE_VAR;
 	code = EntryValidateChange(entryPtr, (char *) NULL, value, -1,
 		VALIDATE_FORCED);
+	if (code == TCL_ERROR) {
+	    ; /* ??? */
+	}
 	entryPtr->flags &= ~VALIDATE_VAR;
 	/*
 	 * If VALIDATE_ABORT has been set, then this operation should be

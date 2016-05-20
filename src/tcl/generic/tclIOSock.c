@@ -54,7 +54,7 @@ TclSockGetPort(interp, string, proto, portPtr)
 	sp = getservbyname(native, proto);		/* INTL: Native. */
 	Tcl_DStringFree(&ds);
 	if (sp != NULL) {
-	    *portPtr = ntohs((unsigned short) sp->s_port);
+	    *portPtr = ntohs((unsigned short)sp->s_port);
 	    return TCL_OK;
 	}
     }

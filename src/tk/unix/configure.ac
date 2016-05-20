@@ -5,8 +5,9 @@ dnl	to configure the system for the local environment.
 #
 # RCS: @(#) $Id: configure.in,v 1.82 2002/09/27 18:09:53 dgp Exp $
 
-AC_INIT(../generic/tk.h)
-AC_PREREQ(2.13)
+AC_INIT([tcl-unix],[8.4.1], [BUG-REPORT-ADDRESS])
+AC_CONFIG_SRCDIR([../generic/tk.h])
+AC_PREREQ([2.13])
 
 TK_VERSION=8.4
 TK_MAJOR_VERSION=8
@@ -49,10 +50,16 @@ fi
 AC_PROG_CC
 
 #------------------------------------------------------------------------
+# Other programs
+#------------------------------------------------------------------------
+AC_PROG_AWK
+AC_PROG_INSTALL
+
+#------------------------------------------------------------------------
 # I'm not sure why these need to come before all of the other tests
 #------------------------------------------------------------------------
 
-AC_HAVE_HEADERS(unistd.h limits.h)
+AC_CHECK_HEADERS([unistd.h limits.h])
 
 #------------------------------------------------------------------------
 # Threads support
@@ -60,20 +67,18 @@ AC_HAVE_HEADERS(unistd.h limits.h)
 
 SC_ENABLE_THREADS
 
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------
 # If we're using GCC, see if the compiler understands -pipe.  If so, use it.
 # It makes compiling go faster.  (This is only a performance feature.)
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------
 
 if test -z "$no_pipe"; then
 if test -n "$GCC"; then
   AC_MSG_CHECKING([if the compiler understands -pipe])
   OLDCC="$CC"  
   CC="$CC -pipe"
-  AC_TRY_COMPILE(,,
-    AC_MSG_RESULT(yes),
-    CC="$OLDCC"
-    AC_MSG_RESULT(no))
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[AC_MSG_RESULT(yes)],[CC="$OLDCC"
+    AC_MSG_RESULT(no)])
 fi  
 fi
 
@@ -146,9 +151,9 @@ fi
 #--------------------------------------------------------------------
 
 AC_MSG_CHECKING(stdlib.h)
-AC_HEADER_EGREP(strtol, stdlib.h, tk_ok=yes, tk_ok=no)
-AC_HEADER_EGREP(strtoul, stdlib.h, , tk_ok=no)
-AC_HEADER_EGREP(strtod, stdlib.h, , tk_ok=no)
+AC_EGREP_HEADER([strtol],[stdlib.h],[tk_ok=yes],[tk_ok=no])
+AC_EGREP_HEADER([strtoul],[stdlib.h],[],[tk_ok=no])
+AC_EGREP_HEADER([strtod],[stdlib.h],[],[tk_ok=no])
 if test $tk_ok = no; then
     AC_DEFINE(NO_STDLIB_H)
 fi
@@ -165,10 +170,9 @@ AC_MSG_RESULT($tk_ok)
 #--------------------------------------------------------------------
 
 AC_MSG_CHECKING([fd_set and sys/select])
-AC_TRY_COMPILE([#include <sys/types.h>],
-	[fd_set readMask, writeMask;], tk_ok=yes, tk_ok=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>]], [[fd_set readMask, writeMask;]])],[tk_ok=yes],[tk_ok=no])
 if test $tk_ok = no; then
-    AC_HEADER_EGREP(fd_mask, sys/select.h, tk_ok=yes)
+    AC_EGREP_HEADER([fd_mask],[sys/select.h],[tk_ok=yes])
     if test $tk_ok = yes; then
 	AC_DEFINE(HAVE_SYS_SELECT_H)
     fi
@@ -188,9 +192,9 @@ AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_TYPE_UID_T
 
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------
 #       Find out about time handling differences.
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------
 
 AC_CHECK_HEADERS(sys/time.h)
 AC_HEADER_TIME
@@ -200,8 +204,7 @@ AC_HEADER_TIME
 #-------------------------------------------
 
 AC_MSG_CHECKING([pw_gecos in struct pwd])
-AC_TRY_COMPILE([#include <pwd.h>],
-      [struct passwd pwd; pwd.pw_gecos;], tk_ok=yes, tk_ok=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <pwd.h>]], [[struct passwd pwd; pwd.pw_gecos;]])],[tk_ok=yes],[tk_ok=no])
 AC_MSG_RESULT($tk_ok)
 if test $tk_ok = yes; then
     AC_DEFINE(HAVE_PW_GECOS)
@@ -299,15 +302,15 @@ if test -d /usr/include/mit ; then
     CFLAGS="$CFLAGS -I/usr/include/mit"
     tk_oldLibs=$LIBS
     LIBS="$LIBS -lX11-mit"
-    AC_TRY_LINK([
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 	#include <X11/Xlib.h>
-    ], [
+    ]], [[
 	XOpenDisplay(0);
-    ], [
+    ]])],[
 	AC_MSG_RESULT(yes)
 	XLIBSW="-lX11-mit"
 	XINCLUDES="-I/usr/include/mit"
-    ], AC_MSG_RESULT(no))
+    ],[AC_MSG_RESULT(no)])
     CFLAGS=$tk_oldCFlags
     LIBS=$tk_oldLibs
 fi
@@ -443,4 +446,6 @@ AC_SUBST(XLIBSW)
 AC_SUBST(TK_SHARED_BUILD)
 AC_SUBST(LOCALES)
 
-AC_OUTPUT(Makefile tkConfig.sh)
+# Output.
+AC_CONFIG_FILES([Makefile tkConfig.sh])
+AC_OUTPUT

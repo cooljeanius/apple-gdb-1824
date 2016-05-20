@@ -734,7 +734,7 @@ TclpSetVariables(interp)
             CFURLRef frameworksURL;
             Tcl_StatBuf statBuf;
             if((frameworksURL = CFBundleCopyPrivateFrameworksURL(bundleRef))) {
-                if(CFURLGetFileSystemRepresentation(frameworksURL, TRUE,
+                if(CFURLGetFileSystemRepresentation(frameworksURL, (Boolean)TRUE,
                             (UInt8 *)tclLibPath, MAXPATHLEN) &&
                         ! TclOSstat(tclLibPath, &statBuf) &&
                         S_ISDIR(statBuf.st_mode)) {
@@ -746,7 +746,7 @@ TclpSetVariables(interp)
                 CFRelease(frameworksURL);
             }
             if((frameworksURL = CFBundleCopySharedFrameworksURL(bundleRef))) {
-                if(CFURLGetFileSystemRepresentation(frameworksURL, TRUE,
+                if(CFURLGetFileSystemRepresentation(frameworksURL, (Boolean)TRUE,
                             (UInt8 *)tclLibPath, MAXPATHLEN) &&
                         ! TclOSstat(tclLibPath, &statBuf) &&
                         S_ISDIR(statBuf.st_mode)) {

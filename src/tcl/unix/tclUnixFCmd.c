@@ -388,14 +388,14 @@ DoCopyFile(src, dst)
 #endif
         case S_IFBLK:
         case S_IFCHR: {
-	    if (mknod(dst, srcStatBuf.st_mode,		/* INTL: Native. */
+	    if (mknod(dst, (mode_t)srcStatBuf.st_mode,		/* INTL: Native. */
 		    srcStatBuf.st_rdev) < 0) {
 		return TCL_ERROR;
 	    }
 	    return CopyFileAtts(src, dst, &srcStatBuf);
 	}
         case S_IFIFO: {
-	    if (mkfifo(dst, srcStatBuf.st_mode) < 0) {	/* INTL: Native. */
+	    if (mkfifo(dst, (mode_t)srcStatBuf.st_mode) < 0) {	/* INTL: Native. */
 		return TCL_ERROR;
 	    }
 	    return CopyFileAtts(src, dst, &srcStatBuf);
@@ -575,8 +575,8 @@ DoCreateDirectory(path)
 {
     mode_t mode;
 
-    mode = umask(0);
-    umask(mode);
+    mode = umask((mode_t)0);
+    umask((mode_t)mode);
 
     /*
      * umask return value is actually the inverse of the permissions.
@@ -584,7 +584,7 @@ DoCreateDirectory(path)
 
     mode = (mode_t)((0777 & ~mode) | S_IRUSR | S_IWUSR | S_IXUSR);
 
-    if (mkdir(path, mode) != 0) {			/* INTL: Native. */
+    if (mkdir(path, (mode_t)mode) != 0) {			/* INTL: Native. */
 	return TCL_ERROR;
     }
     return TCL_OK;
@@ -723,7 +723,7 @@ DoRemoveDirectory(pathPtr, recursive, errorPtr)
 	}
 
 	newPerm = oldPerm | (64+128+256);
-	chmod(path, (mode_t) newPerm);
+	chmod(path, (mode_t)newPerm);
     }
 
     if (rmdir(path) == 0) {				/* INTL: Native. */
@@ -752,7 +752,7 @@ DoRemoveDirectory(pathPtr, recursive, errorPtr)
 
     if ((result != TCL_OK) && (recursive != 0)) {
         /* Try to restore permissions */
-        chmod(path, oldPerm);
+        chmod(path, (mode_t)oldPerm);
     }
     return result;
 }
@@ -1058,9 +1058,9 @@ CopyFileAtts(src, dst, statBufPtr)
      * It would require another lstat(), or getuid().
      */
 
-    if (chmod(dst, newMode)) {				/* INTL: Native. */
+    if (chmod(dst, (mode_t)newMode)) {				/* INTL: Native. */
 	newMode &= (mode_t)~(S_ISUID | S_ISGID);
-	if (chmod(dst, newMode)) {			/* INTL: Native. */
+	if (chmod(dst, (mode_t)newMode)) {			/* INTL: Native. */
 	    return TCL_ERROR;
 	}
     }
@@ -1408,7 +1408,7 @@ SetPermissionsAttribute(interp, objIndex, fileName, attributePtr)
     }
 
     native = Tcl_FSGetNativePath(fileName);
-    result = chmod(native, newMode);		/* INTL: Native. */
+    result = chmod(native, (mode_t)newMode);		/* INTL: Native. */
     if (result != 0) {
 	Tcl_AppendStringsToObj(Tcl_GetObjResult(interp),
 		"could not set permissions for file \"",

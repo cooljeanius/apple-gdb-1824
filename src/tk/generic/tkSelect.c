@@ -201,8 +201,8 @@ Tk_CreateSelHandler(tkwin, selection, target, proc, clientData, format)
 		     * we should make a copy for this selPtr.
 		     */
 		    selPtr->clientData =
-			(ClientData) ckalloc(sizeof(clientData));
-		    memcpy(selPtr->clientData, clientData, sizeof(clientData));
+			(ClientData)ckalloc(sizeof(*clientData));
+		    memcpy(selPtr->clientData, clientData, sizeof(*clientData));
 		} else {
 		    selPtr->clientData = clientData;
 		}

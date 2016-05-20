@@ -2959,6 +2959,10 @@ ListboxSelect(listPtr, first, last, select)
     firstRedisplay = -1;
     increment = select ? 1 : -1;
 
+    if (increment < 0) {
+	; /* ??? */
+    }
+
     /*
      * For each index in the range, find it in our selection hash table.
      * If it's not there but should be, add it.  If it's there but shouldn't

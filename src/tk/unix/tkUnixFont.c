@@ -527,7 +527,7 @@ Ucs2beToUtfProc(clientData, src, srcLen, flags, statePtr, dst, dstLen,
 	 * wrong byte-order in comparison to "unicode", which is
 	 * in native host order.
 	 */
-	dst += Tcl_UniCharToUtf(htons(*wSrc), dst);
+	dst += Tcl_UniCharToUtf(htons((unsigned short)*wSrc), dst);
 	wSrc++;
     }
 
@@ -615,7 +615,7 @@ UtfToUcs2beProc(clientData, src, srcLen, flags, statePtr, dst, dstLen,
 	/*
 	 * Byte swap for little-endian machines.
 	 */
-	*wDst = htons(*wDst);
+	*wDst = htons((unsigned short)*wDst);
 	wDst++;
     }
     *srcReadPtr = src - srcStart;

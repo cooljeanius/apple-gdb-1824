@@ -778,9 +778,11 @@ AC_DEFUN(SC_CONFIG_CFLAGS, [
     ECHO_VERSION='`echo ${VERSION}`'
     TCL_LIB_VERSIONS_OK=ok
     CFLAGS_DEBUG=-g
-    CFLAGS_OPTIMIZE=
+    CFLAGS_OPTIMIZE=""
     if test "$GCC" = "yes" ; then
-	CFLAGS_WARNING="-Wall -Wconversion -Wno-implicit-int"
+        # FIXME: -Wconversion changed meanings between GCC versions:
+	CFLAGS_WARNING="-Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -Wconversion -Wno-implicit-int -fno-strict-aliasing"
+	# (replace -Wconversion with -Wtraditional-conversion if need be)
     else
 	CFLAGS_WARNING=""
     fi

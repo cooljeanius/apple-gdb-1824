@@ -275,7 +275,7 @@ TkSelPropProc(eventPtr)
 	 * chunks that haven't been transmitted yet.
 	 */						  
 
-	for (i = 0; i < incrPtr->numConversions; i++) {
+	for (i = 0; i < (int)incrPtr->numConversions; i++) {
 	    if ((eventPtr->xproperty.atom != incrPtr->multAtoms[2*i + 1])
 		    || (incrPtr->converts[i].offset == -1)) {
 		continue;
@@ -888,7 +888,7 @@ ConvertSelection(winPtr, eventPtr)
     incr.converts = (ConvertInfo *) ckalloc((unsigned)
 	    (incr.numConversions*sizeof(ConvertInfo)));
     incr.numIncrs = 0;
-    for (i = 0; i < incr.numConversions; i++) {
+    for (i = 0; i < (int)incr.numConversions; i++) {
 	Atom target, property, type;
 	long buffer[TK_SEL_WORDS_AT_ONCE];
 	register TkSelHandler *selPtr;

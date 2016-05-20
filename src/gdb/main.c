@@ -1067,6 +1067,7 @@ captured_main(void *data)
   /* No exit -- exit is through quit_command.  */
 }
 
+/* */
 int
 gdb_main(struct captured_main_args *args)
 {

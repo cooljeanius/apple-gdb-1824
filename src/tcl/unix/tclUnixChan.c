@@ -2292,7 +2292,7 @@ TcpGetOptionProc(instanceData, interp, optionName, dsPtr)
 	    } else {
 		Tcl_DStringAppendElement(dsPtr, inet_ntoa(peername.sin_addr));
 	    }
-	    TclFormatInt(buf, ntohs(peername.sin_port));
+	    TclFormatInt(buf, ntohs((unsigned short)peername.sin_port));
 	    Tcl_DStringAppendElement(dsPtr, buf);
 	    if (len == 0) {
 		Tcl_DStringEndSublist(dsPtr);
@@ -2338,7 +2338,7 @@ TcpGetOptionProc(instanceData, interp, optionName, dsPtr)
 	    } else {
 		Tcl_DStringAppendElement(dsPtr, inet_ntoa(sockname.sin_addr));
 	    }
-	    TclFormatInt(buf, ntohs(sockname.sin_port));
+	    TclFormatInt(buf, ntohs((unsigned short)sockname.sin_port));
 	    Tcl_DStringAppendElement(dsPtr, buf);
 	    if (len == 0) {
 		Tcl_DStringEndSublist(dsPtr);
@@ -2641,7 +2641,7 @@ CreateSocketAddress(sockaddrPtr, host, port)
 
     (void) memset((VOID *) sockaddrPtr, '\0', sizeof(struct sockaddr_in));
     sockaddrPtr->sin_family = AF_INET;
-    sockaddrPtr->sin_port = htons((unsigned short) (port & 0xFFFF));
+    sockaddrPtr->sin_port = htons((unsigned short)(port & 0xFFFF));
     if (host == NULL) {
 	addr.s_addr = INADDR_ANY;
     } else {
@@ -2907,7 +2907,7 @@ TcpAccept(data, mask)
     if (sockState->acceptProc != NULL) {
 	(*sockState->acceptProc)(sockState->acceptProcData,
 		newSockState->channel, inet_ntoa(addr.sin_addr),
-		ntohs(addr.sin_port));
+		ntohs((unsigned short)addr.sin_port));
     }
 }
 

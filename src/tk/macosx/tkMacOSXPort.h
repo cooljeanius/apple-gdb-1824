@@ -67,7 +67,7 @@
 #       include <time.h>
 #   endif
 #endif
-#ifdef HAVE_UNISTD_H
+#if defined(HAVE_UNISTD_H) || (defined(__DARWIN_UNIX03) && __DARWIN_UNIX03)
 #   include <unistd.h>
 #else
 #   include "../compat/unistd.h"
