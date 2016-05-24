@@ -24,12 +24,12 @@ if test "${prefix}" = "NONE"; then
     prefix=/usr/local
 fi
 if test "${exec_prefix}" = "NONE"; then
-    exec_prefix=$prefix
+    exec_prefix=${prefix}
 fi
 # libdir must be a fully qualified path and (not ${exec_prefix}/lib)
-eval libdir="$libdir"
+eval libdir="${libdir}"
 # Make sure srcdir is fully qualified!
-srcdir=`cd $srcdir ; pwd`
+srcdir=`cd ${srcdir}; pwd`
 TK_SRC_DIR=`cd $srcdir/..; pwd`
 
 #------------------------------------------------------------------------
@@ -73,12 +73,12 @@ SC_ENABLE_THREADS
 # It makes compiling go faster.  (This is only a performance feature.)
 #--------------------------------------------------------------------------
 
-if test -z "$no_pipe"; then
-if test -n "$GCC"; then
+if test -z "${no_pipe}"; then
+if test -n "${GCC}"; then
   AC_MSG_CHECKING([if the compiler understands -pipe])
-  OLDCC="$CC"  
-  CC="$CC -pipe"
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[AC_MSG_RESULT(yes)],[CC="$OLDCC"
+  OLDCC="${CC}"  
+  CC="${CC} -pipe"
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],[AC_MSG_RESULT(yes)],[CC="${OLDCC}"
     AC_MSG_RESULT(no)])
 fi  
 fi
@@ -117,7 +117,7 @@ TK_DBGX=${DBGX}
 # search path to reflect this.
 #------------------------------------------------------------------------
 
-if test "$TCL_EXEC_PREFIX" != "$exec_prefix"; then
+if test "${TCL_EXEC_PREFIX}" != "${exec_prefix}"; then
     LIB_RUNTIME_DIR="${LIB_RUNTIME_DIR}:${TCL_EXEC_PREFIX}/lib"
 fi
 
@@ -128,8 +128,8 @@ fi
 # right (and it must appear before "-lm").
 #--------------------------------------------------------------------
 
-AC_CHECK_FUNC(sin, MATH_LIBS="", MATH_LIBS="-lm")
-AC_CHECK_LIB(ieee, main, [MATH_LIBS="-lieee $MATH_LIBS"])
+AC_CHECK_FUNC([sin],[MATH_LIBS=""],[MATH_LIBS="-lm"])
+AC_CHECK_LIB([ieee],[main],[MATH_LIBS="-lieee ${MATH_LIBS}"])
 
 #--------------------------------------------------------------------
 # On AIX systems, libbsd.a has to be linked in to support
@@ -198,14 +198,13 @@ AC_TYPE_UID_T
 #--------------------------------------------------------------------
 # Check for various functions.
 #--------------------------------------------------------------------
-AC_FUNC_SELECT_ARGTYPES
 AC_CHECK_FUNCS([memset select strcasecmp strchr strrchr])dnl
 
 #--------------------------------------------------------------------------
 #       Find out about time handling differences.
 #--------------------------------------------------------------------------
 
-AC_CHECK_HEADERS(sys/time.h)
+AC_CHECK_HEADERS([sys/time.h])
 AC_HEADER_TIME
 
 #-------------------------------------------
@@ -332,8 +331,8 @@ fi
 #--------------------------------------------------------------------
 
 MATH_LIBS=""
-AC_CHECK_FUNC(sin, , MATH_LIBS="-lm")
-AC_CHECK_LIB(ieee, main, [MATH_LIBS="-lieee $MATH_LIBS"])
+AC_CHECK_FUNC([sin],[],[MATH_LIBS="-lm"])
+AC_CHECK_LIB([ieee],[main],[MATH_LIBS="-lieee ${MATH_LIBS}"])
 
 #--------------------------------------------------------------------
 #	Figure out whether "char" is unsigned.  If so, set a
@@ -422,38 +421,38 @@ TK_STUB_LIB_PATH="${libdir}/${TK_STUB_LIB_FILE}"
 
 eval "TK_LIB_FILE=${TK_LIB_FILE}"
 
-AC_SUBST(TK_VERSION)
-AC_SUBST(TK_MAJOR_VERSION)
-AC_SUBST(TK_MINOR_VERSION)
-AC_SUBST(TK_PATCH_LEVEL)
-AC_SUBST(TK_DBGX)
+AC_SUBST([TK_VERSION])dnl
+AC_SUBST([TK_MAJOR_VERSION])dnl
+AC_SUBST([TK_MINOR_VERSION])dnl
+AC_SUBST([TK_PATCH_LEVEL])dnl
+AC_SUBST([TK_DBGX])dnl
 
-AC_SUBST(TK_STUB_LIB_FILE)
-AC_SUBST(TK_STUB_LIB_FLAG)
-AC_SUBST(TK_BUILD_STUB_LIB_SPEC)
-AC_SUBST(TK_STUB_LIB_SPEC)
-AC_SUBST(TK_BUILD_STUB_LIB_PATH)
-AC_SUBST(TK_STUB_LIB_PATH)
-AC_SUBST(TK_STUB_FLAGS)
-AC_SUBST(TK_BUILD_EXP_FILE)
-AC_SUBST(TK_EXP_FILE)
+AC_SUBST([TK_STUB_LIB_FILE])dnl
+AC_SUBST([TK_STUB_LIB_FLAG])dnl
+AC_SUBST([TK_BUILD_STUB_LIB_SPEC])dnl
+AC_SUBST([TK_STUB_LIB_SPEC])dnl
+AC_SUBST([TK_BUILD_STUB_LIB_PATH])dnl
+AC_SUBST([TK_STUB_LIB_PATH])dnl
+AC_SUBST([TK_STUB_FLAGS])dnl
+AC_SUBST([TK_BUILD_EXP_FILE])dnl
+AC_SUBST([TK_EXP_FILE])dnl
 
-AC_SUBST(TCL_STUB_FLAGS)
-AC_SUBST(TK_BUILD_EXP_FILE)
-AC_SUBST(TK_EXP_FILE)
+AC_SUBST([TCL_STUB_FLAGS])dnl
+AC_SUBST([TK_BUILD_EXP_FILE])dnl
+AC_SUBST([TK_EXP_FILE])dnl
 
-AC_SUBST(LD_LIBRARY_PATH_VAR)
+AC_SUBST([LD_LIBRARY_PATH_VAR])dnl
 
-AC_SUBST(MATH_LIBS)
-AC_SUBST(TK_BUILD_LIB_SPEC)
-AC_SUBST(TK_LIB_FILE)
-AC_SUBST(TK_LIB_FLAG)
-AC_SUBST(TK_LIB_SPEC)
-AC_SUBST(TK_SRC_DIR)
-AC_SUBST(XINCLUDES)
-AC_SUBST(XLIBSW)
-AC_SUBST(TK_SHARED_BUILD)
-AC_SUBST(LOCALES)
+AC_SUBST([MATH_LIBS])dnl
+AC_SUBST([TK_BUILD_LIB_SPEC])dnl
+AC_SUBST([TK_LIB_FILE])dnl
+AC_SUBST([TK_LIB_FLAG])dnl
+AC_SUBST([TK_LIB_SPEC])dnl
+AC_SUBST([TK_SRC_DIR])dnl
+AC_SUBST([XINCLUDES])dnl
+AC_SUBST([XLIBSW])dnl
+AC_SUBST([TK_SHARED_BUILD])dnl
+AC_SUBST([LOCALES])dnl
 
 # Output.
 AC_CONFIG_FILES([Makefile tkConfig.sh])

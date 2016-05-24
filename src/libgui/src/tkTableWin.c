@@ -15,7 +15,7 @@
 #include "tkTable.h"
 
 static int	StickyParseProc _ANSI_ARGS_((ClientData clientData,
-			    Tcl_Interp *interp, Tk_Window tkwin, char *value,
+			    Tcl_Interp *interp, Tk_Window tkwin, CONST84 char *value,
 			    char *widgRec, int offset));
 static char *	StickyPrintProc _ANSI_ARGS_((ClientData clientData,
 			    Tk_Window tkwin, char *widgRec, int offset,
@@ -43,8 +43,8 @@ static Tk_GeomMgr tableGeomType = {
 };
 
 /* windows subcommands */
-static char *winCmdNames[] = {
-    "cget", "configure", "delete", "move", "names", (char *) NULL
+static const char *winCmdNames[] = {
+    "cget", "configure", "delete", "move", "names", (const char *)NULL
 };
 enum winCommand {
     WIN_CGET, WIN_CONFIGURE, WIN_DELETE, WIN_MOVE, WIN_NAMES
@@ -163,7 +163,7 @@ StickyParseProc(clientData, interp, tkwin, value, widgRec, offset)
     ClientData clientData;		/* Not used.*/
     Tcl_Interp *interp;			/* Used for reporting errors. */
     Tk_Window tkwin;			/* Window for text widget. */
-    char *value;			/* Value of option. */
+    CONST84 char *value;			/* Value of option. */
     char *widgRec;			/* Pointer to TkTextEmbWindow
 					 * structure. */
     int offset;				/* Offset into item (ignored). */
@@ -615,12 +615,12 @@ EmbWinConfigure(tablePtr, ewPtr, objc, objv)
     Tcl_Interp *interp = tablePtr->interp;
     Tk_Window oldWindow;
     int i, result;
-    char **argv;
+    const char **argv;
 
     oldWindow = ewPtr->tkwin;
 
     /* Stringify */
-    argv = (char **) ckalloc((objc + 1) * sizeof(char *));
+    argv = (const char **)ckalloc((objc + 1) * sizeof(char *));
     for (i = 0; i < objc; i++)
 	argv[i] = Tcl_GetString(objv[i]);
     argv[i] = NULL;

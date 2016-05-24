@@ -3038,7 +3038,8 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wshift-count-overflow -Wshift-negative-value -Wshift-overflow=2 \
 -Wmisleading-indentation -Wlto-type-mismatch -Wtautological-compare \
 -Wduplicated-cond -Wwrite-strings -Wenum-compare -Wnonnull-compare \
--Wdangling-else -Wduplicate-decl-specifier -Wmemset-elt-size"
+-Wdangling-else -Wduplicate-decl-specifier -Wmemset-elt-size \
+-Wswitch-unreachable -Whsa -Wscalar-storage-order"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then

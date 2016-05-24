@@ -65,15 +65,15 @@ static Tk_RestrictAction TableRestrictProc _ANSI_ARGS_((ClientData arg,
  * enumerated types used to dispatch the widget command.
  */
 
-static char *selCmdNames[] = {
-    "anchor", "clear", "includes", "present", "set", (char *)NULL
+static const char *selCmdNames[] = {
+    "anchor", "clear", "includes", "present", "set", (const char *)NULL
 };
 enum selCommand {
     CMD_SEL_ANCHOR, CMD_SEL_CLEAR, CMD_SEL_INCLUDES, CMD_SEL_PRESENT,
     CMD_SEL_SET
 };
 
-static char *commandNames[] = {
+static const char *commandNames[] = {
     "activate", "bbox", "border", "cget", "clear", "configure",
     "curselection", "curvalue", "delete", "get", "height",
     "hidden", "icursor", "index", "insert",
@@ -82,7 +82,7 @@ static char *commandNames[] = {
 #endif
     "reread", "scan", "see", "selection", "set",
     "spans", "tag", "validate", "version", "window", "width",
-    "xview", "yview", (char *)NULL
+    "xview", "yview", (const char *)NULL
 };
 enum command {
     CMD_ACTIVATE, CMD_BBOX, CMD_BORDER, CMD_CGET, CMD_CLEAR, CMD_CONFIGURE,
@@ -328,7 +328,7 @@ Tk_ConfigSpec tableSpecs[] = {
  * Keep this in sync with the above values.
  */
 
-static char *updateOpts[] = {
+static const char *updateOpts[] = {
     "-anchor",		"-background",	"-bg",		"-bd",	
     "-borderwidth",	"-cache",	"-command",	"-colorigin",
     "-cols",		"-colstretchmode",		"-coltagcommand",
@@ -342,7 +342,7 @@ static char *updateOpts[] = {
     "-rows",		"-rowstretchmode",		"-rowtagcommand",
     "-showprocs",	"-state",	"-titlecols",	"-titlerows",
     "-usecommand",	"-variable",	"-width",	"-wrap",	
-    "-xscrollcommand",	"-yscrollcommand", (char *) NULL
+    "-xscrollcommand",	"-yscrollcommand", (const char *)NULL
 };
 
 #ifdef WIN32
@@ -1024,7 +1024,8 @@ TableConfigure(interp, tablePtr, objc, objv, flags, forceUpdate)
     Tcl_HashSearch search;
     int oldUse, oldCaching, oldExport, oldTitleRows, oldTitleCols;
     int result = TCL_OK;
-    char *oldVar = NULL, **argv;
+    char *oldVar = NULL;
+	const char **argv;
     Tcl_DString error;
     Tk_FontMetrics fm;
 
@@ -1039,7 +1040,7 @@ TableConfigure(interp, tablePtr, objc, objv, flags, forceUpdate)
     }
 
     /* Do the configuration */
-    argv = StringifyObjects(objc, objv);
+    argv = (const char **)StringifyObjects(objc, objv);
     result = Tk_ConfigureWidget(interp, tablePtr->tkwin, tableSpecs,
 	    objc, argv, (char *) tablePtr, flags);
     ckfree((char *) argv);
@@ -1616,7 +1617,7 @@ TableDisplay(ClientData clientdata)
 	numBytes, new, boundW, boundH, maxW, maxH, cellType,
 	originX, originY, activeCell, shouldInvert, ipadx, ipady, padx, pady;
     GC tagGc = NULL, topGc, bottomGc;
-    char *string = NULL;
+    const char *string = NULL;
     char buf[INDEX_BUFSIZE];
     TableTag *tagPtr = NULL, *titlePtr, *selPtr, *activePtr, *flashPtr,
 	*rowPtr, *colPtr;
@@ -2562,7 +2563,7 @@ TableSetActiveIndex(register Table *tablePtr)
 void
 TableGetActiveBuf(register Table *tablePtr)
 {
-    char *data = "";
+    const char *data = "";
 
     if (tablePtr->flags & HAS_ACTIVE) {
 	data = TableGetCellValue(tablePtr,
@@ -2655,7 +2656,7 @@ TableVarProc(clientData, interp, name, index, flags)
 	    update = 0;
 	} else {
 	    /* modified TableGetActiveBuf */
-	    char *data = "";
+	    const char *data = "";
 
 	    row = tablePtr->activeRow;
 	    col = tablePtr->activeCol;
@@ -2682,7 +2683,8 @@ TableVarProc(clientData, interp, name, index, flags)
 	}
 	if (tablePtr->caching) {
 	    Tcl_HashEntry *entryPtr;
-	    char *val, *data = NULL;
+	    char *val;
+		const char *data = NULL;
 
 	    data = Tcl_GetVar2(interp, name, index, TCL_GLOBAL_ONLY);
 	    if (!data) data = "";
@@ -3371,13 +3373,15 @@ TableFetchSelection(clientData, offset, buffer, maxBytes)
 {
     register Table *tablePtr = (Table *) clientData;
     Tcl_Interp *interp = tablePtr->interp;
-    char *value, *data, *rowsep = tablePtr->rowSep, *colsep = tablePtr->colSep;
+    char *value;
+	const char *data;
+	char *rowsep = tablePtr->rowSep, *colsep = tablePtr->colSep;
     Tcl_DString selection;
     Tcl_HashEntry *entryPtr;
     Tcl_HashSearch search;
     int length, count, lastrow=0, needcs=0, r, c, listArgc, rslen=0, cslen=0;
     int numcols, numrows;
-    char **listArgv;
+    const char **listArgv;
 
     /* if we are not exporting the selection ||
      * we have no data source, return */
@@ -3671,10 +3675,10 @@ TableValidateChange(tablePtr, r, c, old, new, index)
 void
 ExpandPercents(tablePtr, before, r, c, old, new, index, dsPtr, cmdType)
      Table *tablePtr;		/* Table that needs validation. */
-     char *before;		/* Command containing percent
-				 * expressions to be replaced. */
+     const char *before;	/* Command containing percent
+							 * expressions to be replaced. */
      int r, c;			/* row,col index of cell */
-     char *old;                 /* current value of cell */
+     const char *old;                 /* current value of cell */
      char *new;                 /* potential new value of cell */
      int index;                 /* index of insert/delete */
      Tcl_DString *dsPtr;        /* Dynamic string in which to append
@@ -3687,7 +3691,8 @@ ExpandPercents(tablePtr, before, r, c, old, new, index, dsPtr, cmdType)
 #else
     char ch;
 #endif
-    char *string, buf[INDEX_BUFSIZE];
+    const char *string;
+	char buf[INDEX_BUFSIZE];
 
     /* This returns the static value of the string as set in the array */
     if (old == NULL && cmdType == CMD_VALIDATE) {
@@ -3710,7 +3715,7 @@ ExpandPercents(tablePtr, before, r, c, old, new, index, dsPtr, cmdType)
 #else
 	string = strchr(before, '%');
 #endif
-	if (string == (char *) NULL) {
+	if (string == (const char *)NULL) {
 	    Tcl_DStringAppend(dsPtr, before, -1);
 	    break;
 	} else if (string != before) {

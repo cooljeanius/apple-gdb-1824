@@ -39,10 +39,10 @@ WarpPointer (clientData, interp, objc, objv)
 {
     Tk_Window tkwin;
     int x, y;
-    char *str;
+    const char *str = "widgetId x y";
 
     if (objc != 4) {
-      Tcl_WrongNumArgs(interp, 1, objv, "widgetId x y");
+      Tcl_WrongNumArgs(interp, 1, objv, str);
       return TCL_ERROR;
     }
 

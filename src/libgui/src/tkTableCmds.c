@@ -306,8 +306,9 @@ Table_BboxCmd(ClientData clientData, register Tcl_Interp *interp,
     return TCL_OK;
 }
 
-static char *bdCmdNames[] = {
-    "mark", "dragto", (char *)NULL
+/* */
+static const char *bdCmdNames[] = {
+    "mark", "dragto", (const char *)NULL
 };
 enum bdCmd {
     BD_MARK, BD_DRAGTO
@@ -438,8 +439,8 @@ Table_BorderCmd(ClientData clientData, register Tcl_Interp *interp,
 }
 
 /* clear subcommands */
-static char *clearNames[] = {
-    "all", "cache", "sizes", "tags", (char *)NULL
+static const char *clearNames[] = {
+    "all", "cache", "sizes", "tags", (const char *)NULL
 };
 enum clearCommand {
     CLEAR_ALL, CLEAR_CACHE, CLEAR_SIZES, CLEAR_TAGS

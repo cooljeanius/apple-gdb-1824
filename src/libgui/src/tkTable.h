@@ -15,6 +15,7 @@
 #ifndef _TKTABLE_H_
 #define _TKTABLE_H_
 
+#include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 #include <tk.h>
@@ -194,7 +195,7 @@ typedef enum {
  * Accessor functions defined in tkTableUtil.c
  */
 typedef struct {
-  char *name;		/* name of the command/value */
+  const char *name;		/* name of the command/value */
   int value;		/* >0 because 0 represents an error or proc */
 } Cmd_Struct;
 
@@ -506,7 +507,7 @@ extern int	Table_TagCmd _ANSI_ARGS_((ClientData clientData,
 
 extern int	TableOptionBdSet _ANSI_ARGS_((ClientData clientData,
 			Tcl_Interp *interp, Tk_Window tkwin,
-			char *value, char *widgRec, int offset));
+			CONST84 char *value, char *widgRec, int offset));
 extern char *	TableOptionBdGet _ANSI_ARGS_((ClientData clientData,
 			Tk_Window tkwin, char *widgRec, int offset,
 			Tcl_FreeProc **freeProcPtr));
@@ -516,10 +517,10 @@ extern int	Cmd_OptionSet _ANSI_ARGS_((ClientData clientData,
 					   Tcl_Interp *interp,
 					   Tk_Window unused, char *value,
 					   char *widgRec, int offset));
-extern char *	Cmd_OptionGet _ANSI_ARGS_((ClientData clientData,
-					   Tk_Window unused, char *widgRec,
-					   int offset,
-					   Tcl_FreeProc **freeProcPtr));
+extern const char *Cmd_OptionGet _ANSI_ARGS_((ClientData clientData,
+					      Tk_Window unused, char *widgRec,
+					      int offset,
+					      Tcl_FreeProc **freeProcPtr));
 
 /*
  * HEADERS IN tkTableCell.c
@@ -536,14 +537,14 @@ extern void	TableWhatCell _ANSI_ARGS_((register Table *tablePtr,
 			int x, int y, int *row, int *col));
 extern int	TableAtBorder _ANSI_ARGS_((Table *tablePtr, int x, int y,
 			int *row, int *col));
-extern char *	TableGetCellValue _ANSI_ARGS_((Table *tablePtr, int r, int c));
+extern const char *TableGetCellValue _ANSI_ARGS_((Table *tablePtr, int r, int c));
 extern int	TableSetCellValue _ANSI_ARGS_((Table *tablePtr, int r, int c,
 			char *value));
 extern int    TableMoveCellValue _ANSI_ARGS_((Table *tablePtr,
 			int fromr, int fromc, char *frombuf,
 			int tor, int toc, char *tobuf, int outOfBounds));
 
-extern int	TableGetIcursor _ANSI_ARGS_((Table *tablePtr, char *arg,
+extern int	TableGetIcursor _ANSI_ARGS_((Table *tablePtr, const char *arg,
 			int *posn));
 #define TableGetIcursorObj(tablePtr, objPtr, posnPtr) \
 	TableGetIcursor(tablePtr, Tcl_GetString(objPtr), posnPtr)
@@ -592,8 +593,8 @@ EXTERN int Tktable_Init		_ANSI_ARGS_((Tcl_Interp *interp));
 EXTERN int Tktable_SafeInit	_ANSI_ARGS_((Tcl_Interp *interp));
 
 extern void	TableGetActiveBuf _ANSI_ARGS_((register Table *tablePtr));
-extern void	ExpandPercents _ANSI_ARGS_((Table *tablePtr, char *before,
-			int r, int c, char *oldVal, char *newVal, int idx,
+extern void	ExpandPercents _ANSI_ARGS_((Table *tablePtr, const char *before,
+			int r, int c, const char *oldVal, char *newVal, int idx,
 			Tcl_DString *dsPtr, int cmdType));
 extern void	TableInvalidate _ANSI_ARGS_((Table *tablePtr, int x, int y,
 			int width, int height, int force));

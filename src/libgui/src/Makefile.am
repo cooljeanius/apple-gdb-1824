@@ -25,7 +25,7 @@ include $(srcdir)/tkTable_version.in
 TBL_COMMAND     = table
 
 tkTable.tcl.h: $(srcdir)/tkTable.tcl
-	sed -e '/^$\#/d' -e '/^$$/d' -e 's/\"/\\"/g' -e 's/^/"/' -e 's/$$/\\n"/' <$(srcdir)/tkTable.tcl >tkTable.tcl.h || rm tkTable.tcl.h 
+	$(SED) -e '/^$\#/d' -e '/^$$/d' -e 's/\"/\\"/g' -e 's/^/"/' -e 's/$$/\\n"/' <$(srcdir)/tkTable.tcl >tkTable.tcl.h || rm tkTable.tcl.h 
 
 
 
@@ -59,6 +59,10 @@ libgui_a_SOURCES = guitcl.h subcommand.c subcommand.h \
 tclwinprint.c tclshellexe.c paths.c \
 tclwingrab.c tclwinpath.c tclmsgbox.c tclcursor.c \
 tkWinPrintText.c tkWinPrintCanvas.c tkWarpPointer.c $(TKTABLE_SOURCES)
+
+objfiles: $(libgui_a_OBJECTS)
+	@if [ -n "`ls *.o`" ]; then echo "Okay"; else echo "Oops"; fi
+.PHONY: objfiles
 
 ## Dependencies
 

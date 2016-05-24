@@ -33,8 +33,8 @@ subcommand_deleted (ClientData cd)
    subcommands.  The ClientData here must be a pointer to the command
    table.  */
 static int
-subcommand_implementation (ClientData cd, Tcl_Interp *interp,
-			   int argc, char *argv[])
+subcommand_implementation(ClientData cd, Tcl_Interp *interp,
+			  int argc, const char *argv[])
 {
   struct subcommand_clientdata *data = (struct subcommand_clientdata *) cd;
   const struct ide_subcommand_table *commands = data->commands;

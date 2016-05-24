@@ -446,11 +446,11 @@ TableAtBorder(Table * tablePtr, int x, int y, int *row, int *col)
  *
  *----------------------------------------------------------------------
  */
-char *
+const char *
 TableGetCellValue(Table *tablePtr, int r, int c)
 {
     register Tcl_Interp *interp = tablePtr->interp;
-    char *result = NULL;
+    const char *result = NULL;
     char buf[INDEX_BUFSIZE];
     Tcl_HashEntry *entryPtr = NULL;
     int new = 1;
@@ -463,7 +463,7 @@ TableGetCellValue(Table *tablePtr, int r, int c)
 	 */
 	entryPtr = Tcl_CreateHashEntry(tablePtr->cache, buf, &new);
 	if (!new) {
-	    result = (char *) Tcl_GetHashValue(entryPtr);
+	    result = (const char *)Tcl_GetHashValue(entryPtr);
 	    if (result == NULL) {
 		result = "";
 	    }
@@ -715,7 +715,7 @@ TableMoveCellValue(Table *tablePtr, int fromr, int fromc, char *frombuf,
      * We have to do it the old way
      */
     return TableSetCellValue(tablePtr, tor, toc,
-	    TableGetCellValue(tablePtr, fromr, fromc));
+	    (char *)TableGetCellValue(tablePtr, fromr, fromc));
 
 }
 
@@ -736,7 +736,7 @@ TableMoveCellValue(Table *tablePtr, int fromr, int fromc, char *frombuf,
  *----------------------------------------------------------------------
  */
 int
-TableGetIcursor(Table *tablePtr, char *arg, int *posn)
+TableGetIcursor(Table *tablePtr, const char *arg, int *posn)
 {
     int tmp, len;
 
@@ -892,7 +892,7 @@ Table_SetCmd(ClientData clientData, register Tcl_Interp *interp,
 {
     register Table *tablePtr = (Table *)clientData;
     int row, col, len, i, j, max;
-    char *str;
+    const char *str;
 
     /* sets any number of tags/indices to a given value */
     if (objc < 3) {

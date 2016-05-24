@@ -14,15 +14,15 @@
 #include "tkTable.h"
 
 static TableTag *TableTagGetEntry _ANSI_ARGS_((Table *tablePtr, char *name,
-	int objc, char **argv));
+	int objc, const char **argv));
 static unsigned int	TableTagGetPriority _ANSI_ARGS_((Table *tablePtr,
 	TableTag *tagPtr));
 static void	TableImageProc _ANSI_ARGS_((ClientData clientData, int x,
 	int y, int width, int height, int imageWidth, int imageHeight));
 
-static char *tagCmdNames[] = {
+static const char *tagCmdNames[] = {
     "celltag", "cget", "coltag", "configure", "delete", "exists",
-    "includes", "lower", "names", "raise", "rowtag", (char *) NULL
+    "includes", "lower", "names", "raise", "rowtag", (const char *)NULL
 };
 
 enum tagCmd {
@@ -436,7 +436,7 @@ TableGetTagBorders(TableTag *tagPtr,
  *----------------------------------------------------------------------
  */
 static TableTag *
-TableTagGetEntry(Table *tablePtr, char *name, int objc, char **argv)
+TableTagGetEntry(Table *tablePtr, char *name, int objc, const char **argv)
 {
     Tcl_HashEntry *entryPtr;
     TableTag *tagPtr = NULL;
@@ -516,12 +516,12 @@ TableTagGetPriority(Table *tablePtr, TableTag *tagPtr)
 void
 TableInitTags(Table *tablePtr)
 {
-    static char *activeArgs[]	= {"-bg", ACTIVE_BG, "-relief", "flat" };
-    static char *selArgs[]	= {"-bg", SELECT_BG, "-fg", SELECT_FG,
-				   "-relief", "sunken" };
-    static char *titleArgs[]	= {"-bg", DISABLED, "-fg", "white",
-				   "-relief", "flat", "-state", "disabled" };
-    static char *flashArgs[]	= {"-bg", "red" };
+    static const char *activeArgs[] = {"-bg", ACTIVE_BG, "-relief", "flat" };
+    static const char *selArgs[] = {"-bg", SELECT_BG, "-fg", SELECT_FG,
+				    "-relief", "sunken" };
+    static const char *titleArgs[]	= {"-bg", DISABLED, "-fg", "white",
+				    "-relief", "flat", "-state", "disabled" };
+    static const char *flashArgs[]	= {"-bg", "red" };
     /*
      * The order of creation is important to priority.
      */
@@ -568,7 +568,7 @@ FindRowColTag(Table *tablePtr, int cell, int mode)
 	    sprintf(buf, " %d", cell);
 	    Tcl_Preserve((ClientData) interp);
 	    if (Tcl_VarEval(interp, cmd, buf, (char *)NULL) == TCL_OK) {
-		char *name = Tcl_GetStringResult(interp);
+		const char *name = Tcl_GetStringResult(interp);
 		if (name && *name) {
 		    /*
 		     * If a result was returned, check to see if it is
@@ -976,10 +976,10 @@ Table_TagCmd(ClientData clientData, register Tcl_Interp *interp,
 			(char *) tagPtr, (objc == 5) ?
 			Tcl_GetString(objv[4]) : NULL, 0);
 	    } else {
-		char **argv;
+		const char **argv;
 
 		/* Stringify */
-		argv = (char **) ckalloc((objc + 1) * sizeof(char *));
+		argv = (const char **)ckalloc((objc + 1) * sizeof(const char *));
 		for (i = 0; i < objc; i++)
 		    argv[i] = Tcl_GetString(objv[i]);
 		argv[objc] = NULL;

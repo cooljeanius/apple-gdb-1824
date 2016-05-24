@@ -703,6 +703,45 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		612ECFC61CEE98E200C4DE04 /* tkUnixFont.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkUnixFont.c; path = ../unix/tkUnixFont.c; sourceTree = SOURCE_ROOT; };
 		612ECFC71CEE98EF00C4DE04 /* tkUnixSelect.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkUnixSelect.c; path = ../unix/tkUnixSelect.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		612ECFDC1CF498DF00C4DE04 /* tkUnixScrlbr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkUnixScrlbr.c; path = ../unix/tkUnixScrlbr.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
+		612ED0631CF5006A00C4DE04 /* tkTableTag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTableTag.c; path = ../../libgui/src/tkTableTag.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
+		612ED0641CF5006A00C4DE04 /* tkCanvEdge.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkCanvEdge.c; path = ../../libgui/src/tkCanvEdge.c; sourceTree = SOURCE_ROOT; };
+		612ED0651CF5006A00C4DE04 /* tclwinfont.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tclwinfont.c; path = ../../libgui/src/tclwinfont.c; sourceTree = SOURCE_ROOT; };
+		612ED0661CF5006A00C4DE04 /* tkWarpPointer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkWarpPointer.c; path = ../../libgui/src/tkWarpPointer.c; sourceTree = SOURCE_ROOT; };
+		612ED0671CF5006A00C4DE04 /* tclwinpath.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tclwinpath.c; path = ../../libgui/src/tclwinpath.c; sourceTree = SOURCE_ROOT; };
+		612ED0681CF5006A00C4DE04 /* tclhelp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tclhelp.c; path = ../../libgui/src/tclhelp.c; sourceTree = SOURCE_ROOT; };
+		612ED0691CF5006A00C4DE04 /* tkTableInitScript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tkTableInitScript.h; path = ../../libgui/src/tkTableInitScript.h; sourceTree = SOURCE_ROOT; };
+		612ED06A1CF5006A00C4DE04 /* subcommand.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = subcommand.c; path = ../../libgui/src/subcommand.c; sourceTree = SOURCE_ROOT; };
+		612ED06B1CF5006A00C4DE04 /* tkWinPrintCanvas.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkWinPrintCanvas.c; path = ../../libgui/src/tkWinPrintCanvas.c; sourceTree = SOURCE_ROOT; };
+		612ED06C1CF5006A00C4DE04 /* tkTableCmds.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTableCmds.c; path = ../../libgui/src/tkTableCmds.c; sourceTree = SOURCE_ROOT; };
+		612ED06D1CF5006A00C4DE04 /* tclgetdir.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tclgetdir.c; path = ../../libgui/src/tclgetdir.c; sourceTree = SOURCE_ROOT; };
+		612ED06F1CF5006A00C4DE04 /* tkTablePs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTablePs.c; path = ../../libgui/src/tkTablePs.c; sourceTree = SOURCE_ROOT; };
+		612ED0701CF5006A00C4DE04 /* tkTableEdit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTableEdit.c; path = ../../libgui/src/tkTableEdit.c; sourceTree = SOURCE_ROOT; };
+		612ED0711CF5006A00C4DE04 /* tkTabletcl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tkTabletcl.h; path = ../../libgui/src/tkTabletcl.h; sourceTree = SOURCE_ROOT; };
+		612ED0731CF5006A00C4DE04 /* tkTable.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTable.c; path = ../../libgui/src/tkTable.c; sourceTree = SOURCE_ROOT; };
+		612ED0741CF5006A00C4DE04 /* tkTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tkTable.h; path = ../../libgui/src/tkTable.h; sourceTree = SOURCE_ROOT; };
+		612ED0751CF5006A00C4DE04 /* tkTableCell.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTableCell.c; path = ../../libgui/src/tkTableCell.c; sourceTree = SOURCE_ROOT; };
+		612ED0761CF5006A00C4DE04 /* tkTableWin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTableWin.c; path = ../../libgui/src/tkTableWin.c; sourceTree = SOURCE_ROOT; };
+		612ED0771CF5006A00C4DE04 /* tkTableUtil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTableUtil.c; path = ../../libgui/src/tkTableUtil.c; sourceTree = SOURCE_ROOT; };
+		612ED07A1CF5006A00C4DE04 /* tkTableCmd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tkTableCmd.h; path = ../../libgui/src/tkTableCmd.h; sourceTree = SOURCE_ROOT; };
+		612ED07C1CF5006A00C4DE04 /* tkCanvLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tkCanvLayout.h; path = ../../libgui/src/tkCanvLayout.h; sourceTree = SOURCE_ROOT; };
+		612ED07D1CF5006A00C4DE04 /* tkCanvLayout.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkCanvLayout.c; path = ../../libgui/src/tkCanvLayout.c; sourceTree = SOURCE_ROOT; };
+		612ED07E1CF5006A00C4DE04 /* tkTableCmd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTableCmd.c; path = ../../libgui/src/tkTableCmd.c; sourceTree = SOURCE_ROOT; };
+		612ED07F1CF5006A00C4DE04 /* tkTableCellSort.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTableCellSort.c; path = ../../libgui/src/tkTableCellSort.c; sourceTree = SOURCE_ROOT; };
+		612ED0801CF5006A00C4DE04 /* tclmsgbox.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tclmsgbox.c; path = ../../libgui/src/tclmsgbox.c; sourceTree = SOURCE_ROOT; };
+		612ED0811CF5006A00C4DE04 /* tkGraphCanvas.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkGraphCanvas.c; path = ../../libgui/src/tkGraphCanvas.c; sourceTree = SOURCE_ROOT; };
+		612ED0821CF5006A00C4DE04 /* tclwingrab.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tclwingrab.c; path = ../../libgui/src/tclwingrab.c; sourceTree = SOURCE_ROOT; };
+		612ED0831CF5006A00C4DE04 /* tclwinprint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tclwinprint.c; path = ../../libgui/src/tclwinprint.c; sourceTree = SOURCE_ROOT; };
+		612ED0841CF5006A00C4DE04 /* tclmapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tclmapi.c; path = ../../libgui/src/tclmapi.c; sourceTree = SOURCE_ROOT; };
+		612ED0851CF5006A00C4DE04 /* tclsizebox.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tclsizebox.c; path = ../../libgui/src/tclsizebox.c; sourceTree = SOURCE_ROOT; };
+		612ED0861CF5006A00C4DE04 /* tkWinPrintText.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkWinPrintText.c; path = ../../libgui/src/tkWinPrintText.c; sourceTree = SOURCE_ROOT; };
+		612ED0871CF5006A00C4DE04 /* tclmain.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tclmain.c; path = ../../libgui/src/tclmain.c; sourceTree = SOURCE_ROOT; };
+		612ED0881CF5006A00C4DE04 /* xpmlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = xpmlib.c; path = ../../libgui/src/xpmlib.c; sourceTree = SOURCE_ROOT; };
+		612ED0891CF5006A00C4DE04 /* tclwinmode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tclwinmode.c; path = ../../libgui/src/tclwinmode.c; sourceTree = SOURCE_ROOT; };
+		612ED08A1CF5006A00C4DE04 /* guitcl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = guitcl.h; path = ../../libgui/src/guitcl.h; sourceTree = SOURCE_ROOT; };
+		612ED08B1CF5006A00C4DE04 /* tclcursor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tclcursor.c; path = ../../libgui/src/tclcursor.c; sourceTree = SOURCE_ROOT; };
+		612ED08C1CF5006A00C4DE04 /* subcommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = subcommand.h; path = ../../libgui/src/subcommand.h; sourceTree = SOURCE_ROOT; };
+		612ED08D1CF5006A00C4DE04 /* tclshellexe.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tclshellexe.c; path = ../../libgui/src/tclshellexe.c; sourceTree = SOURCE_ROOT; };
+		612ED08E1CF5006A00C4DE04 /* paths.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = paths.c; path = ../../libgui/src/paths.c; sourceTree = SOURCE_ROOT; };
 		618C88AF1CEE81F1004BBE5E /* Info-Wish__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Wish__Upgraded_.plist"; sourceTree = "<group>"; };
 		618C88B01CEE81F1004BBE5E /* Wish Shell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Wish Shell.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		618C89981CEE81F1004BBE5E /* Info-TkLibrary__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-TkLibrary__Upgraded_.plist"; sourceTree = "<group>"; };
@@ -1044,9 +1083,56 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		612ED05C1CF4FFB600C4DE04 /* libgui */ = {
+			isa = PBXGroup;
+			children = (
+				612ED08A1CF5006A00C4DE04 /* guitcl.h */,
+				612ED08E1CF5006A00C4DE04 /* paths.c */,
+				612ED06A1CF5006A00C4DE04 /* subcommand.c */,
+				612ED08C1CF5006A00C4DE04 /* subcommand.h */,
+				612ED08B1CF5006A00C4DE04 /* tclcursor.c */,
+				612ED06D1CF5006A00C4DE04 /* tclgetdir.c */,
+				612ED0681CF5006A00C4DE04 /* tclhelp.c */,
+				612ED0871CF5006A00C4DE04 /* tclmain.c */,
+				612ED0841CF5006A00C4DE04 /* tclmapi.c */,
+				612ED0801CF5006A00C4DE04 /* tclmsgbox.c */,
+				612ED08D1CF5006A00C4DE04 /* tclshellexe.c */,
+				612ED0851CF5006A00C4DE04 /* tclsizebox.c */,
+				612ED0651CF5006A00C4DE04 /* tclwinfont.c */,
+				612ED0821CF5006A00C4DE04 /* tclwingrab.c */,
+				612ED0891CF5006A00C4DE04 /* tclwinmode.c */,
+				612ED0671CF5006A00C4DE04 /* tclwinpath.c */,
+				612ED0831CF5006A00C4DE04 /* tclwinprint.c */,
+				612ED0641CF5006A00C4DE04 /* tkCanvEdge.c */,
+				612ED07D1CF5006A00C4DE04 /* tkCanvLayout.c */,
+				612ED07C1CF5006A00C4DE04 /* tkCanvLayout.h */,
+				612ED0811CF5006A00C4DE04 /* tkGraphCanvas.c */,
+				612ED0731CF5006A00C4DE04 /* tkTable.c */,
+				612ED0741CF5006A00C4DE04 /* tkTable.h */,
+				612ED0751CF5006A00C4DE04 /* tkTableCell.c */,
+				612ED07F1CF5006A00C4DE04 /* tkTableCellSort.c */,
+				612ED07E1CF5006A00C4DE04 /* tkTableCmd.c */,
+				612ED07A1CF5006A00C4DE04 /* tkTableCmd.h */,
+				612ED06C1CF5006A00C4DE04 /* tkTableCmds.c */,
+				612ED0701CF5006A00C4DE04 /* tkTableEdit.c */,
+				612ED0691CF5006A00C4DE04 /* tkTableInitScript.h */,
+				612ED06F1CF5006A00C4DE04 /* tkTablePs.c */,
+				612ED0631CF5006A00C4DE04 /* tkTableTag.c */,
+				612ED0711CF5006A00C4DE04 /* tkTabletcl.h */,
+				612ED0761CF5006A00C4DE04 /* tkTableWin.c */,
+				612ED0771CF5006A00C4DE04 /* tkTableUtil.c */,
+				612ED0661CF5006A00C4DE04 /* tkWarpPointer.c */,
+				612ED06B1CF5006A00C4DE04 /* tkWinPrintCanvas.c */,
+				612ED0861CF5006A00C4DE04 /* tkWinPrintText.c */,
+				612ED0881CF5006A00C4DE04 /* xpmlib.c */,
+			);
+			name = libgui;
+			sourceTree = "<group>";
+		};
 		F537552B016C352C01DC9062 = {
 			isa = PBXGroup;
 			children = (
+				612ED05C1CF4FFB600C4DE04 /* libgui */,
 				F5C88659017D625C01DC9062 /* Header Tools */,
 				F5DF07A7016CD03801DC9062 /* Scripts */,
 				F5375688016C3F1001DC9062 /* Bitmaps */,

@@ -290,6 +290,7 @@ TK_VERSION = @TK_VERSION@
 TK_XINCLUDES = @TK_XINCLUDES@
 TK_XLIBSW = @TK_XLIBSW@
 VERSION = @VERSION@
+XMKMF = @XMKMF@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -711,7 +712,7 @@ uninstall-am: uninstall-includeHEADERS
 #define TBL_VERSION "2.7"
 
 tkTable.tcl.h: $(srcdir)/tkTable.tcl
-	sed -e '/^$\#/d' -e '/^$$/d' -e 's/\"/\\"/g' -e 's/^/"/' -e 's/$$/\\n"/' <$(srcdir)/tkTable.tcl >tkTable.tcl.h || rm tkTable.tcl.h 
+	$(SED) -e '/^$\#/d' -e '/^$$/d' -e 's/\"/\\"/g' -e 's/^/"/' -e 's/$$/\\n"/' <$(srcdir)/tkTable.tcl >tkTable.tcl.h || rm tkTable.tcl.h 
 
 # Defining lib_LIBRARIES conditionally doesn't do the right thing.
 install-exec-local:
@@ -720,6 +721,10 @@ install-exec-local:
 @INSTALL_LIBGUI_TRUE@	$(INSTALL_DATA) libgui.a $(libdir)/libgui.a
 @INSTALL_LIBGUI_TRUE@	@$(POST_INSTALL)
 @INSTALL_LIBGUI_TRUE@	$(RANLIB) $(libdir)/libgui.a
+
+objfiles: $(libgui_a_OBJECTS)
+	@if [ -n "`ls *.o`" ]; then echo "Okay"; else echo "Oops"; fi
+.PHONY: objfiles
 
 paths.$(OBJEXT): paths.c guitcl.h
 subcommand.$(OBJEXT): subcommand.c subcommand.h

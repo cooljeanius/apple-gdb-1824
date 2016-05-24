@@ -25,6 +25,9 @@ AC_CHECK_PROG([ITCL_SH],[itcl_sh],[itcl_sh],
 	[\$\$here/\$(top_builddir)/../itcl/itcl/unix/itcl_sh\$(EXEEXT)])
 AC_PROG_SED
 
+# Checks for libraries.
+AC_PATH_X
+
 # Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
   AC_REQUIRE([AC_HEADER_STDC])dnl
@@ -32,7 +35,7 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
 AC_REQUIRE_HEADER_STDC
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([stdio.h getopt.h fcntl.h sys/file.h])
+AC_CHECK_HEADERS([ctype.h stdio.h getopt.h fcntl.h sys/file.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
