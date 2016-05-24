@@ -702,6 +702,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 /* Begin PBXFileReference section */
 		612ECFC61CEE98E200C4DE04 /* tkUnixFont.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkUnixFont.c; path = ../unix/tkUnixFont.c; sourceTree = SOURCE_ROOT; };
 		612ECFC71CEE98EF00C4DE04 /* tkUnixSelect.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkUnixSelect.c; path = ../unix/tkUnixSelect.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
+		612ECFDC1CF498DF00C4DE04 /* tkUnixScrlbr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkUnixScrlbr.c; path = ../unix/tkUnixScrlbr.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		618C88AF1CEE81F1004BBE5E /* Info-Wish__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Wish__Upgraded_.plist"; sourceTree = "<group>"; };
 		618C88B01CEE81F1004BBE5E /* Wish Shell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Wish Shell.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		618C89981CEE81F1004BBE5E /* Info-TkLibrary__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-TkLibrary__Upgraded_.plist"; sourceTree = "<group>"; };
@@ -843,7 +844,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		F53755BD016C389901DC9062 /* tkText.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkText.c; path = ../generic/tkText.c; sourceTree = SOURCE_ROOT; };
 		F53755BE016C389901DC9062 /* tkTextBTree.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkTextBTree.c; path = ../generic/tkTextBTree.c; sourceTree = SOURCE_ROOT; };
 		F53755BF016C389901DC9062 /* tkTextDisp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkTextDisp.c; path = ../generic/tkTextDisp.c; sourceTree = SOURCE_ROOT; };
-		F53755C0016C389901DC9062 /* tkTextImage.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkTextImage.c; path = ../generic/tkTextImage.c; sourceTree = SOURCE_ROOT; };
+		F53755C0016C389901DC9062 /* tkTextImage.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkTextImage.c; path = ../generic/tkTextImage.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		F53755C1016C389901DC9062 /* tkTextIndex.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkTextIndex.c; path = ../generic/tkTextIndex.c; sourceTree = SOURCE_ROOT; };
 		F53755C2016C389901DC9062 /* tkTextMark.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkTextMark.c; path = ../generic/tkTextMark.c; sourceTree = SOURCE_ROOT; };
 		F53755C3016C389901DC9062 /* tkTextTag.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkTextTag.c; path = ../generic/tkTextTag.c; sourceTree = SOURCE_ROOT; };
@@ -1276,6 +1277,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 				F53755CA016C389901DC9062 /* tkUnix3d.c */,
 				612ECFC61CEE98E200C4DE04 /* tkUnixFont.c */,
 				F53755CB016C389901DC9062 /* tkUnixScale.c */,
+				612ECFDC1CF498DF00C4DE04 /* tkUnixScrlbr.c */,
 				612ECFC71CEE98EF00C4DE04 /* tkUnixSelect.c */,
 			);
 			name = Unix;

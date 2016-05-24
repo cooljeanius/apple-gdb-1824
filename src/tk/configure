@@ -4206,7 +4206,7 @@ $as_echo "libraries $x_libraries, headers $x_includes" >&6; }
 fi
 
 for ac_header in fcntl.h limits.h stddef.h stdio.h sys/file.h \
-                  sys/ioctl.h
+                  sys/ioctl.h sys/time.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -5202,12 +5202,15 @@ fi
 
 fi
 
-for ac_func in bzero
+for ac_func in bzero dup2 endpwent floor ftruncate getcwd memmove \
+                memset pow select sqrt strcasecmp strchr strncasecmp \
+                strrchr strstr strtol strtoul
 do :
-  ac_fn_c_check_func "$LINENO" "bzero" "ac_cv_func_bzero"
-if test "x$ac_cv_func_bzero" = xyes; then :
+  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
+ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
+if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
   cat >>confdefs.h <<_ACEOF
-#define HAVE_BZERO 1
+#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
 _ACEOF
 
 fi

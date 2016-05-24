@@ -5,7 +5,7 @@ dnl	to configure the system for the local environment.
 #
 # RCS: @(#) $Id: configure.in,v 1.82 2002/09/27 18:09:53 dgp Exp $
 
-AC_INIT([tcl-unix],[8.4.1], [BUG-REPORT-ADDRESS])
+AC_INIT([tcl-unix],[8.4.1],[BUG-REPORT-ADDRESS])
 AC_CONFIG_SRCDIR([../generic/tk.h])
 AC_PREREQ([2.13])
 
@@ -59,7 +59,7 @@ AC_PROG_INSTALL
 # I'm not sure why these need to come before all of the other tests
 #------------------------------------------------------------------------
 
-AC_CHECK_HEADERS([unistd.h limits.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h netinet/in.h sys/file.h])
 
 #------------------------------------------------------------------------
 # Threads support
@@ -68,7 +68,8 @@ AC_CHECK_HEADERS([unistd.h limits.h])
 SC_ENABLE_THREADS
 
 #--------------------------------------------------------------------------
-# If we're using GCC, see if the compiler understands -pipe.  If so, use it.
+# If we are using GCC, then see if the compiler understands -pipe.
+# If so, then use it.
 # It makes compiling go faster.  (This is only a performance feature.)
 #--------------------------------------------------------------------------
 
@@ -159,6 +160,8 @@ if test $tk_ok = no; then
 fi
 AC_MSG_RESULT($tk_ok)
 
+AC_CHECK_FUNCS([strtol strtoul])
+
 #--------------------------------------------------------------------
 # Include sys/select.h if it exists and if it supplies things
 # that appear to be useful and aren't already in sys/types.h.
@@ -191,6 +194,12 @@ AC_TYPE_MODE_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_TYPE_UID_T
+
+#--------------------------------------------------------------------
+# Check for various functions.
+#--------------------------------------------------------------------
+AC_FUNC_SELECT_ARGTYPES
+AC_CHECK_FUNCS([memset select strcasecmp strchr strrchr])dnl
 
 #--------------------------------------------------------------------------
 #       Find out about time handling differences.

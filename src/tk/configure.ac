@@ -43,7 +43,7 @@ AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_HEADER_TIME
 AC_PATH_X
 AC_CHECK_HEADERS([fcntl.h limits.h stddef.h stdio.h sys/file.h \
-                  sys/ioctl.h])dnl
+                  sys/ioctl.h sys/time.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -61,7 +61,9 @@ AC_FUNC_MEMCMP
 AC_FUNC_REALLOC
 AC_FUNC_SELECT_ARGTYPES
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([bzero])dnl
+AC_CHECK_FUNCS([bzero dup2 endpwent floor ftruncate getcwd memmove \
+                memset pow select sqrt strcasecmp strchr strncasecmp \
+                strrchr strstr strtol strtoul])dnl
 
 # Output.
 AC_CONFIG_FILES([Makefile])

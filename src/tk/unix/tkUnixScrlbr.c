@@ -293,8 +293,8 @@ TkpComputeScrollbarGeometry(scrollPtr)
     if (fieldLength < 0) {
 	fieldLength = 0;
     }
-    scrollPtr->sliderFirst = fieldLength*scrollPtr->firstFraction;
-    scrollPtr->sliderLast = fieldLength*scrollPtr->lastFraction;
+    scrollPtr->sliderFirst = (fieldLength * (int)scrollPtr->firstFraction);
+    scrollPtr->sliderLast = (fieldLength * (int)scrollPtr->lastFraction);
 
     /*
      * Adjust the slider so that some piece of it is always
