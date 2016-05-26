@@ -43,7 +43,7 @@
 #include "libcoff.h"
 
 static bfd_reloc_status_type coff_i386_reloc
-  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 static reloc_howto_type *coff_i386_rtype_to_howto
   PARAMS((bfd *, asection *, struct internal_reloc *,
 	  struct coff_link_hash_entry *, struct internal_syment *,
@@ -67,7 +67,7 @@ static reloc_howto_type *coff_i386_reloc_type_lookup
 static bfd_reloc_status_type
 coff_i386_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, PTR data,
                 asection *input_section ATTRIBUTE_UNUSED, bfd *output_bfd,
-		char **error_message ATTRIBUTE_UNUSED)
+		const char **error_message ATTRIBUTE_UNUSED)
 {
   symvalue diff;
 
@@ -215,7 +215,7 @@ static reloc_howto_type howto_table[] =
 	0,			/* bitpos */
 	complain_overflow_bitfield, /* complain_on_overflow */
 	coff_i386_reloc,	/* special_function */
-	(char *)"dir32",	/* name */
+	"dir32",		/* name */
 	TRUE,			/* partial_inplace */
 	0xffffffff,		/* src_mask */
 	0xffffffff,		/* dst_mask */
@@ -229,7 +229,7 @@ static reloc_howto_type howto_table[] =
 	0,			/* bitpos */
 	complain_overflow_bitfield, /* complain_on_overflow */
 	coff_i386_reloc,	/* special_function */
-	(char *)"rva32",	/* name */
+	"rva32",		/* name */
 	TRUE,			/* partial_inplace */
 	0xffffffff,		/* src_mask */
 	0xffffffff,		/* dst_mask */
@@ -247,7 +247,7 @@ static reloc_howto_type howto_table[] =
 	0,			/* bitpos */
 	complain_overflow_bitfield, /* complain_on_overflow */
 	coff_i386_reloc,	/* special_function */
-	(char *)"secrel32",	/* name */
+	"secrel32",		/* name */
 	TRUE,			/* partial_inplace */
 	0xffffffff,		/* src_mask */
 	0xffffffff,		/* dst_mask */
@@ -267,7 +267,7 @@ static reloc_howto_type howto_table[] =
 	0,			/* bitpos */
 	complain_overflow_bitfield, /* complain_on_overflow */
 	coff_i386_reloc,	/* special_function */
-	(char *)"8",		/* name */
+	"8",			/* name */
 	TRUE,			/* partial_inplace */
 	0x000000ff,		/* src_mask */
 	0x000000ff,		/* dst_mask */
@@ -281,7 +281,7 @@ static reloc_howto_type howto_table[] =
 	0,			/* bitpos */
 	complain_overflow_bitfield, /* complain_on_overflow */
 	coff_i386_reloc,	/* special_function */
-	(char *)"16",		/* name */
+	"16",			/* name */
 	TRUE,			/* partial_inplace */
 	0x0000ffff,		/* src_mask */
 	0x0000ffff,		/* dst_mask */
@@ -295,7 +295,7 @@ static reloc_howto_type howto_table[] =
 	0,			/* bitpos */
 	complain_overflow_bitfield, /* complain_on_overflow */
 	coff_i386_reloc,	/* special_function */
-	(char *)"32",		/* name */
+	"32",			/* name */
 	TRUE,			/* partial_inplace */
 	0xffffffff,		/* src_mask */
 	0xffffffff,		/* dst_mask */
@@ -309,7 +309,7 @@ static reloc_howto_type howto_table[] =
 	0,			/* bitpos */
 	complain_overflow_signed, /* complain_on_overflow */
 	coff_i386_reloc,	/* special_function */
-	(char *)"DISP8",	/* name */
+	"DISP8",		/* name */
 	TRUE,			/* partial_inplace */
 	0x000000ff,		/* src_mask */
 	0x000000ff,		/* dst_mask */
@@ -323,7 +323,7 @@ static reloc_howto_type howto_table[] =
 	0,			/* bitpos */
 	complain_overflow_signed, /* complain_on_overflow */
 	coff_i386_reloc,	/* special_function */
-	(char *)"DISP16",	/* name */
+	"DISP16",		/* name */
 	TRUE,			/* partial_inplace */
 	0x0000ffff,		/* src_mask */
 	0x0000ffff,		/* dst_mask */
@@ -337,7 +337,7 @@ static reloc_howto_type howto_table[] =
 	0,			/* bitpos */
 	complain_overflow_signed, /* complain_on_overflow */
 	coff_i386_reloc,	/* special_function */
-	(char *)"DISP32",	/* name */
+	"DISP32",		/* name */
 	TRUE,			/* partial_inplace */
 	0xffffffff,		/* src_mask */
 	0xffffffff,		/* dst_mask */

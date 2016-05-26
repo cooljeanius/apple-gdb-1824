@@ -33,13 +33,9 @@
 #define USE_REL	1
 
 static bfd_reloc_status_type
-arc_elf_b22_pcrel (bfd * abfd,
-		   arelent * reloc_entry,
-		   asymbol * symbol,
-		   void * data,
-		   asection * input_section,
-		   bfd * output_bfd,
-		   char ** error_message)
+arc_elf_b22_pcrel(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+		  void *data, asection *input_section, bfd *output_bfd,
+		  const char **error_message)
 {
   /* If linking, back up the final symbol address by the address of the
      reloc.  This cannot be accomplished by setting the pcrel_offset

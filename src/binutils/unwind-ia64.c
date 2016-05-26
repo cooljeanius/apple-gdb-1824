@@ -191,7 +191,8 @@ typedef bfd_vma unw_word;
 
 #define UNW_DEC_PROLOGUE_GR(fmt, rlen, mask, grsave, arg)		\
   do {									\
-      char regname[16], maskstr[64], *sep;				\
+      char regname[16], maskstr[64];					\
+      const char *sep;							\
 									\
       unw_rlen = rlen;							\
       *(int *)arg = 0;							\

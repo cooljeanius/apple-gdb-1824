@@ -31,6 +31,8 @@
 #include "xtensa-isa.h"
 #include "xtensa-config.h"
 
+#include "libiberty.h"
+
 #define XTENSA_NO_NOP_REMOVAL 0
 
 /* Local helper functions.  */
@@ -38,7 +40,7 @@
 static bfd_boolean add_extra_plt_sections (bfd *, int);
 static char *vsprint_msg (const char *, const char *, int, ...) ATTRIBUTE_PRINTF(2,4);
 static bfd_reloc_status_type bfd_elf_xtensa_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_boolean do_fix_for_relocatable_link
   (Elf_Internal_Rela *, bfd *, asection *, bfd_byte *);
 static void do_fix_for_final_link
@@ -75,9 +77,9 @@ static bfd_size_type get_asm_simplify_size
 /* Functions for link-time code simplifications.  */
 
 static bfd_reloc_status_type elf_xtensa_do_asm_simplify
-  (bfd_byte *, bfd_vma, bfd_vma, char **);
+  (bfd_byte *, bfd_vma, bfd_vma, const char **);
 static bfd_reloc_status_type contract_asm_expansion
-  (bfd_byte *, bfd_vma, Elf_Internal_Rela *, char **);
+  (bfd_byte *, bfd_vma, Elf_Internal_Rela *, const char **);
 static xtensa_opcode swap_callx_for_call_opcode (xtensa_opcode);
 static xtensa_opcode get_expanded_call_opcode (bfd_byte *, int, bfd_boolean *);
 
@@ -1566,7 +1568,7 @@ static bfd_reloc_status_type
 elf_xtensa_do_reloc(reloc_howto_type *howto, bfd *abfd,
                     asection *input_section, bfd_vma relocation,
                     bfd_byte *contents, bfd_vma address,
-                    bfd_boolean is_weak_undef, char **error_message)
+                    bfd_boolean is_weak_undef, const char **error_message)
 {
   xtensa_format fmt;
   xtensa_opcode opcode0;
@@ -1831,13 +1833,9 @@ vsprint_msg(const char *origmsg, const char *fmt, int arglen, ...)
    stripped-down version of bfd_perform_relocation.  */
 
 static bfd_reloc_status_type
-bfd_elf_xtensa_reloc (bfd *abfd,
-		      arelent *reloc_entry,
-		      asymbol *symbol,
-		      void *data,
-		      asection *input_section,
-		      bfd *output_bfd,
-		      char **error_message)
+bfd_elf_xtensa_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+		     void *data, asection *input_section, bfd *output_bfd,
+		     const char **error_message)
 {
   bfd_vma relocation;
   bfd_reloc_status_type flag;
@@ -2004,7 +2002,7 @@ elf_xtensa_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
   bfd *dynobj;
   property_table_entry *lit_table = 0;
   int ltblsize = 0;
-  char *error_mensaje = NULL;
+  const char *error_mensaje = NULL;
   bfd_size_type input_size;
 
   if (!xtensa_default_isa)
@@ -2084,7 +2082,7 @@ elf_xtensa_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
 	  if (r_type == R_XTENSA_ASM_SIMPLIFY)
 	    {
-	      char *new_error_message = NULL;
+	      const char *new_error_message = NULL;
 	      /* Convert ASM_SIMPLIFY into the simpler relocation
 		 so that they never escape a relaxing link.  */
 	      r = contract_asm_expansion(contents, input_size, rel,
@@ -3858,10 +3856,8 @@ widen_instruction (bfd_byte *contents,
 /* Code for transforming CALLs at link-time.  */
 
 static bfd_reloc_status_type
-elf_xtensa_do_asm_simplify (bfd_byte *contents,
-			    bfd_vma address,
-			    bfd_vma content_length,
-			    char **error_message)
+elf_xtensa_do_asm_simplify(bfd_byte *contents, bfd_vma address,
+			   bfd_vma content_length, const char **error_message)
 {
   static xtensa_insnbuf insnbuf = NULL;
   static xtensa_insnbuf slotbuf = NULL;
@@ -3921,10 +3917,8 @@ elf_xtensa_do_asm_simplify (bfd_byte *contents,
 
 
 static bfd_reloc_status_type
-contract_asm_expansion (bfd_byte *contents,
-			bfd_vma content_length,
-			Elf_Internal_Rela *irel,
-			char **error_message)
+contract_asm_expansion(bfd_byte *contents, bfd_vma content_length,
+		       Elf_Internal_Rela *irel, const char **error_message)
 {
   bfd_reloc_status_type retval =
     elf_xtensa_do_asm_simplify (contents, irel->r_offset, content_length,
@@ -7801,7 +7795,7 @@ relax_section (bfd *abfd, asection *sec, struct bfd_link_info *link_info)
 				 || action->action == ta_remove_longcall))
 		    {
 		      bfd_reloc_status_type retval;
-		      char *error_message = NULL;
+		      const char *error_message = NULL;
 
 		      retval = contract_asm_expansion (contents, sec_size,
 						       irel, &error_message);
@@ -9340,7 +9334,7 @@ xtensa_get_property_section_name (asection *sec, const char *base_name)
     {
       char *prop_sec_name;
       const char *suffix;
-      char *linkonce_kind = 0;
+      const char *linkonce_kind = (const char *)0;
 
       if (strcmp (base_name, XTENSA_INSN_SEC_NAME) == 0)
 	linkonce_kind = "x.";
@@ -9366,7 +9360,7 @@ xtensa_get_property_section_name (asection *sec, const char *base_name)
       return prop_sec_name;
     }
 
-  return strdup (base_name);
+  return xstrdup(base_name);
 }
 
 

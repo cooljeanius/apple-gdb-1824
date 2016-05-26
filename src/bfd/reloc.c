@@ -323,10 +323,10 @@ CODE_FRAGMENT
 .     instructions).  *}
 .  bfd_reloc_status_type (*special_function)
 .    (bfd *, arelent *, struct bfd_symbol *, void *, asection *,
-.     bfd *, char **);
+.     bfd *, const char **);
 .
 .  {* The textual name of the relocation type.  *}
-.  char *name;
+.  const char *name;
 .
 .  {* Some formats record a relocation addend in the section contents
 .     rather than with the relocation.  For ELF formats this is the
@@ -557,7 +557,7 @@ SYNOPSIS
            void *data,
            asection *input_section,
            bfd *output_bfd,
-	   char **error_message);
+	   const char **error_message);
 
 DESCRIPTION
 	If @var{output_bfd} is supplied to this function, the
@@ -576,14 +576,10 @@ DESCRIPTION
 	this return @code{bfd_reloc_dangerous}.
 
 */
-
 bfd_reloc_status_type
-bfd_perform_relocation (bfd *abfd,
-			arelent *reloc_entry,
-			void *data,
-			asection *input_section,
-			bfd *output_bfd,
-			char **error_message)
+bfd_perform_relocation(bfd *abfd, arelent *reloc_entry, void *data,
+		       asection *input_section, bfd *output_bfd,
+		       const char **error_message)
 {
   bfd_vma relocation;
   bfd_reloc_status_type flag = bfd_reloc_ok;
@@ -958,7 +954,7 @@ SYNOPSIS
            arelent *reloc_entry,
            void *data, bfd_vma data_start,
            asection *input_section,
-	   char **error_message);
+	   const char **error_message);
 
 DESCRIPTION
 	This looks remarkably like <<bfd_perform_relocation>>, except it
@@ -969,11 +965,10 @@ DESCRIPTION
 	For now, this function should be considered reserved for the
 	assembler.
 */
-
 bfd_reloc_status_type
 bfd_install_relocation(bfd *abfd, arelent *reloc_entry, void *data_start,
                        bfd_vma data_start_offset, asection *input_section,
-                       char **error_message)
+                       const char **error_message)
 {
   bfd_vma relocation;
   bfd_reloc_status_type flag = bfd_reloc_ok;
@@ -6004,7 +5999,7 @@ bfd_generic_get_relocated_section_contents(bfd *abfd,
       arelent **parent;
       for (parent = reloc_vector; *parent != NULL; parent++)
 	{
-	  char *error_message = NULL;
+	  const char *error_message = NULL;
 	  bfd_reloc_status_type r =
 	    bfd_perform_relocation(input_bfd, *parent, data, input_section,
                                    (relocatable ? abfd : NULL),

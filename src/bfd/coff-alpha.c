@@ -129,13 +129,13 @@ static bfd *alpha_ecoff_get_elt_at_index
 
 /* How to process the various reloc types: */
 static bfd_reloc_status_type reloc_nil
-  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 
 static bfd_reloc_status_type
 reloc_nil(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc ATTRIBUTE_UNUSED,
           asymbol *sym ATTRIBUTE_UNUSED, PTR data ATTRIBUTE_UNUSED,
           asection *sec ATTRIBUTE_UNUSED, bfd *output_bfd ATTRIBUTE_UNUSED,
-          char **error_message ATTRIBUTE_UNUSED)
+          const char **error_message ATTRIBUTE_UNUSED)
 {
   return bfd_reloc_ok;
 }
@@ -528,7 +528,7 @@ alpha_ecoff_swap_reloc_in(bfd *abfd, PTR ext_ptr,
   const RELOC *ext = (RELOC *)ext_ptr;
 
   intern->r_vaddr = H_GET_64(abfd, ext->r_vaddr);
-  intern->r_symndx = H_GET_32(abfd, ext->r_symndx);
+  intern->r_symndx = (long)H_GET_32(abfd, ext->r_symndx);
 
   BFD_ASSERT (bfd_header_little_endian (abfd));
 
@@ -722,7 +722,7 @@ alpha_adjust_reloc_out(bfd *abfd ATTRIBUTE_UNUSED, const arelent *rel,
 
     case ALPHA_R_OP_STORE:
       intern->r_size = (rel->addend & 0xff);
-      intern->r_offset = ((rel->addend >> 8) & 0xff);
+      intern->r_offset = (unsigned long)((rel->addend >> 8) & 0xff);
       break;
 
     case ALPHA_R_OP_PUSH:
@@ -826,16 +826,16 @@ alpha_ecoff_get_relocated_section_contents(bfd *abfd,
 	      gp = (h->u.def.value
 		    + h->u.def.section->output_section->vma
 		    + h->u.def.section->output_offset);
-	      _bfd_set_gp_value (abfd, gp);
+	      _bfd_set_gp_value(abfd, gp);
 	    }
 	}
     }
 
-  for (; *reloc_vector != (arelent *) NULL; reloc_vector++)
+  for (; *reloc_vector != (arelent *)NULL; reloc_vector++)
     {
       arelent *rel;
       bfd_reloc_status_type r;
-      char *err;
+      const char *err;
 
       rel = *reloc_vector;
       r = bfd_reloc_ok;
@@ -971,8 +971,10 @@ alpha_ecoff_get_relocated_section_contents(bfd *abfd,
 	       extension, and write them out.  */
 	    if (addend & 0x8000)
 	      addend += 0x10000;
-	    insn1 = (insn1 & 0xffff0000) | ((addend >> 16) & 0xffff);
-	    insn2 = (insn2 & 0xffff0000) | (addend & 0xffff);
+	    insn1 = (unsigned long)((insn1 & 0xffff0000)
+				    | ((addend >> 16) & 0xffff));
+	    insn2 = (unsigned long)((insn2 & 0xffff0000)
+				    | (addend & 0xffff));
 
 	    bfd_put_32 (input_bfd, (bfd_vma) insn1, data + rel->address);
 	    bfd_put_32 (input_bfd, (bfd_vma) insn2,
@@ -1596,8 +1598,9 @@ alpha_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  {
 	    unsigned long insn;
 
-	    insn = bfd_get_32 (input_bfd,
-			       contents + r_vaddr - input_section->vma);
+	    insn = ((unsigned long)
+		    bfd_get_32(input_bfd,
+			       (contents + r_vaddr - input_section->vma)));
 	    BFD_ASSERT (((insn >> 26) & 0x3f) == 0x29
 			|| ((insn >> 26) & 0x3f) == 0x28);
 	  }
@@ -1621,14 +1624,16 @@ alpha_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  {
 	    unsigned long insn1, insn2;
 
-	    /* Get the two instructions.  */
-	    insn1 = bfd_get_32 (input_bfd,
-				contents + r_vaddr - input_section->vma);
-	    insn2 = bfd_get_32 (input_bfd,
-				(contents
-				 + r_vaddr
-				 - input_section->vma
-				 + r_symndx));
+	    /* Get the two instructions: */
+	    insn1 = (unsigned long)bfd_get_32(input_bfd,
+					      (contents
+					       + r_vaddr
+					       - input_section->vma));
+	    insn2 = (unsigned long)bfd_get_32(input_bfd,
+					      (contents
+					       + r_vaddr
+					       - input_section->vma
+					       + r_symndx));
 
 	    BFD_ASSERT (((insn1 >> 26) & 0x3f) == 0x09); /* ldah */
 	    BFD_ASSERT (((insn2 >> 26) & 0x3f) == 0x08); /* lda */
@@ -1660,8 +1665,10 @@ alpha_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	       extension, and write them out.  */
 	    if (addend & 0x8000)
 	      addend += 0x10000;
-	    insn1 = (insn1 & 0xffff0000) | ((addend >> 16) & 0xffff);
-	    insn2 = (insn2 & 0xffff0000) | (addend & 0xffff);
+	    insn1 = (unsigned long)((insn1 & 0xffff0000)
+				    | ((addend >> 16) & 0xffff));
+	    insn2 = (unsigned long)((insn2 & 0xffff0000)
+				    | (addend & 0xffff));
 
 	    bfd_put_32 (input_bfd, (bfd_vma) insn1,
 			contents + r_vaddr - input_section->vma);
@@ -2057,7 +2064,7 @@ alpha_ecoff_read_ar_hdr(bfd *abfd)
 	  || bfd_seek (abfd, (file_ptr) (- (FILHSZ + 8)), SEEK_CUR) != 0)
 	return NULL;
 
-      ret->parsed_size = H_GET_64 (abfd, ab);
+      ret->parsed_size = (unsigned int)H_GET_64(abfd, ab);
     }
 
   return (PTR) ret;

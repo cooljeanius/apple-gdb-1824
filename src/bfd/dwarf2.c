@@ -859,7 +859,7 @@ concat_filename(struct line_info_table *table, unsigned int file)
     {
       (*_bfd_error_handler)
 	(_("Dwarf Error: mangled line number section (bad file number)."));
-      return strdup("<unknown>");
+      return xstrdup("<unknown>");
     }
 
   filename = table->files[file - 1].name;
@@ -884,7 +884,7 @@ concat_filename(struct line_info_table *table, unsigned int file)
 	}
     }
 
-  return strdup (filename);
+  return xstrdup(filename);
 }
 
 static void

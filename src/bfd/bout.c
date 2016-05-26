@@ -610,12 +610,12 @@ callj_callback(bfd *abfd, struct bfd_link_info *link_info,
 
       /* We are calling a leaf, so replace the call instruction with a
 	 bal.  */
-      word = BAL | ((word
-		     + output_addr (balsym->symbol.section)
-		     + balsym->symbol.value + reloc_entry->addend
-		     - dstidx
-		     - output_addr (input_section))
-		    & BAL_MASK);
+      word = (int)(BAL | ((word
+			   + output_addr(balsym->symbol.section)
+			   + (balsym->symbol.value + reloc_entry->addend)
+			   - dstidx
+			   - output_addr(input_section))
+			  & BAL_MASK));
     }
   else if ((symbol->symbol.flags & BSF_SECTION_SYM) != 0)
     {
@@ -627,12 +627,12 @@ callj_callback(bfd *abfd, struct bfd_link_info *link_info,
       BFD_ASSERT (symbol->symbol.section == input_section);
     }
   else
-    word = CALL | (((word & BAL_MASK)
-		    + value
-		    + reloc_entry->addend
-		    - (shrinking ? dstidx : 0)
-		    - output_addr (input_section))
-		   & BAL_MASK);
+    word = (int)(CALL | (((word & BAL_MASK)
+			  + value
+			  + reloc_entry->addend
+			  - (shrinking ? dstidx : 0)
+			  - output_addr(input_section))
+			 & BAL_MASK));
 
   bfd_put_32 (abfd, (bfd_vma) word, (bfd_byte *) data + dstidx);
   return bfd_reloc_ok;
@@ -920,14 +920,14 @@ b_out_get_reloc_upper_bound(bfd *abfd, sec_ptr asect)
     return (sizeof(arelent *) * (asect->reloc_count + 1));
 
   if (asect == obj_datasec(abfd))
-    return (sizeof(arelent *) *
-	    ((exec_hdr(abfd)->a_drsize / sizeof(struct relocation_info))
-	     + 1));
+    return (long)(sizeof(arelent *) *
+		  ((exec_hdr(abfd)->a_drsize / sizeof(struct relocation_info))
+		   + 1L));
 
   if (asect == obj_textsec(abfd))
-    return (sizeof(arelent *) *
-	    ((exec_hdr(abfd)->a_trsize / sizeof(struct relocation_info))
-	     + 1));
+    return (long)(sizeof(arelent *) *
+		  ((exec_hdr(abfd)->a_trsize / sizeof(struct relocation_info))
+		   + 1L));
 
   if (asect == obj_bsssec(abfd))
     return 0;
@@ -1310,12 +1310,12 @@ b_out_bfd_get_relocated_section_contents(bfd *output_bfd,
 		    bfd_vma value;
 
 		    value = get_value (reloc, link_info, input_section);
-		    word = ((word & ~BAL_MASK)
-			    | (((word & BAL_MASK)
-				+ value
-				- output_addr (input_section)
-				+ reloc->addend)
-			       & BAL_MASK));
+		    word = (int)((word & ~BAL_MASK)
+				 | (((word & BAL_MASK)
+				     + value
+				     - output_addr(input_section)
+				     + reloc->addend)
+				    & BAL_MASK));
 
 		    bfd_put_32 (input_bfd, (bfd_vma) word, data + dst_address);
 		    dst_address += 4;
@@ -1330,12 +1330,12 @@ b_out_bfd_get_relocated_section_contents(bfd *output_bfd,
 		    bfd_vma value;
 
 		    value = get_value (reloc, link_info, input_section);
-		    word = ((word & ~PCREL13_MASK)
-			    | (((word & PCREL13_MASK)
-				+ value
-				+ reloc->addend
-				- output_addr (input_section))
-			       & PCREL13_MASK));
+		    word = (int)((word & ~PCREL13_MASK)
+				 | (((word & PCREL13_MASK)
+				     + value
+				     + reloc->addend
+				     - output_addr(input_section))
+				    & PCREL13_MASK));
 
 		    bfd_put_32 (input_bfd, (bfd_vma) word, data + dst_address);
 		    dst_address += 4;

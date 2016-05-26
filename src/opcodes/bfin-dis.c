@@ -1,4 +1,4 @@
-/* Disassemble ADI Blackfin Instructions.
+/* bfin-dis.c: Disassemble ADI Blackfin Instructions.
    Copyright 2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 
    This file is part of libopcodes.
@@ -4628,8 +4628,11 @@ _print_insn_bfin (bfd_vma pc, disassemble_info *outf)
   int status;
   int rv = 0;
 
-  status = (*outf->read_memory_func) (pc & ~0x1, buf, 2, outf);
-  status = (*outf->read_memory_func) ((pc + 2) & ~0x1, buf + 2, 2, outf);
+  status = (*outf->read_memory_func)(pc & ~0x1, buf, 2, outf);
+  if (status == 0) {
+    ; /* ??? */
+  }
+  status = (*outf->read_memory_func)((pc + 2) & ~0x1, buf + 2, 2, outf);
 
   iw0 = bfd_getl16 (buf);
   iw1 = bfd_getl16 (buf + 2);
@@ -4728,10 +4731,13 @@ print_insn_bfin (bfd_vma pc, disassemble_info *outf)
   int status;
   int count = 0;
 
-  status = (*outf->read_memory_func) (pc & ~0x01, buf, 2, outf);
-  iw0 = bfd_getl16 (buf);
+  status = (*outf->read_memory_func)(pc & ~0x01, buf, 2, outf);
+  if (status == 0) {
+    ; /* ??? */
+  }
+  iw0 = bfd_getl16(buf);
 
-  count += _print_insn_bfin (pc, outf);
+  count += _print_insn_bfin(pc, outf);
 
   /* Proper display of multiple issue instructions.  */
 

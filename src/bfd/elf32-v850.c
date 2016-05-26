@@ -742,13 +742,9 @@ v850_elf_perform_relocation (bfd *abfd,
 /* Insert the addend into the instruction.  */
 
 static bfd_reloc_status_type
-v850_elf_reloc (bfd *abfd ATTRIBUTE_UNUSED,
-		arelent *reloc,
-		asymbol *symbol,
-		void * data ATTRIBUTE_UNUSED,
-		asection *isection,
-		bfd *obfd,
-		char **err ATTRIBUTE_UNUSED)
+v850_elf_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc, asymbol *symbol,
+	       void *data ATTRIBUTE_UNUSED, asection *isection, bfd *obfd,
+	       const char **err ATTRIBUTE_UNUSED)
 {
   long relocation;
 
@@ -809,7 +805,7 @@ v850_elf_ignore_reloc (bfd *abfd ATTRIBUTE_UNUSED,
 		       void * data ATTRIBUTE_UNUSED,
 		       asection *input_section,
 		       bfd *output_bfd,
-		       char **error_message ATTRIBUTE_UNUSED)
+		       const char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd != NULL)
     reloc_entry->address += input_section->output_offset;

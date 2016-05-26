@@ -717,11 +717,11 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		612ED06F1CF5006A00C4DE04 /* tkTablePs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTablePs.c; path = ../../libgui/src/tkTablePs.c; sourceTree = SOURCE_ROOT; };
 		612ED0701CF5006A00C4DE04 /* tkTableEdit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTableEdit.c; path = ../../libgui/src/tkTableEdit.c; sourceTree = SOURCE_ROOT; };
 		612ED0711CF5006A00C4DE04 /* tkTabletcl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tkTabletcl.h; path = ../../libgui/src/tkTabletcl.h; sourceTree = SOURCE_ROOT; };
-		612ED0731CF5006A00C4DE04 /* tkTable.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTable.c; path = ../../libgui/src/tkTable.c; sourceTree = SOURCE_ROOT; };
-		612ED0741CF5006A00C4DE04 /* tkTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tkTable.h; path = ../../libgui/src/tkTable.h; sourceTree = SOURCE_ROOT; };
-		612ED0751CF5006A00C4DE04 /* tkTableCell.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTableCell.c; path = ../../libgui/src/tkTableCell.c; sourceTree = SOURCE_ROOT; };
+		612ED0731CF5006A00C4DE04 /* tkTable.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTable.c; path = ../../libgui/src/tkTable.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
+		612ED0741CF5006A00C4DE04 /* tkTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tkTable.h; path = ../../libgui/src/tkTable.h; sourceTree = SOURCE_ROOT; tabWidth = 8; };
+		612ED0751CF5006A00C4DE04 /* tkTableCell.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTableCell.c; path = ../../libgui/src/tkTableCell.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		612ED0761CF5006A00C4DE04 /* tkTableWin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTableWin.c; path = ../../libgui/src/tkTableWin.c; sourceTree = SOURCE_ROOT; };
-		612ED0771CF5006A00C4DE04 /* tkTableUtil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTableUtil.c; path = ../../libgui/src/tkTableUtil.c; sourceTree = SOURCE_ROOT; };
+		612ED0771CF5006A00C4DE04 /* tkTableUtil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkTableUtil.c; path = ../../libgui/src/tkTableUtil.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		612ED07A1CF5006A00C4DE04 /* tkTableCmd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tkTableCmd.h; path = ../../libgui/src/tkTableCmd.h; sourceTree = SOURCE_ROOT; };
 		612ED07C1CF5006A00C4DE04 /* tkCanvLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tkCanvLayout.h; path = ../../libgui/src/tkCanvLayout.h; sourceTree = SOURCE_ROOT; };
 		612ED07D1CF5006A00C4DE04 /* tkCanvLayout.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tkCanvLayout.c; path = ../../libgui/src/tkCanvLayout.c; sourceTree = SOURCE_ROOT; };
@@ -798,7 +798,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		F5375568016C376E01DC9062 /* tkMacOSXXStubs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tkMacOSXXStubs.c; sourceTree = "<group>"; };
 		F5375569016C37A601DC9062 /* default.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = default.h; path = ../generic/default.h; sourceTree = SOURCE_ROOT; };
 		F537556A016C37A601DC9062 /* ks_names.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ks_names.h; path = ../generic/ks_names.h; sourceTree = SOURCE_ROOT; };
-		F537556B016C37A601DC9062 /* tk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tk.h; path = ../generic/tk.h; sourceTree = SOURCE_ROOT; };
+		F537556B016C37A601DC9062 /* tk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tk.h; path = ../generic/tk.h; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		F537556C016C37A601DC9062 /* tk3d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tk3d.h; path = ../generic/tk3d.h; sourceTree = SOURCE_ROOT; };
 		F537556D016C37A601DC9062 /* tkButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tkButton.h; path = ../generic/tkButton.h; sourceTree = SOURCE_ROOT; };
 		F537556E016C37A601DC9062 /* tkCanvas.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tkCanvas.h; path = ../generic/tkCanvas.h; sourceTree = SOURCE_ROOT; };

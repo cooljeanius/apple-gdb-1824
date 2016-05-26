@@ -688,6 +688,15 @@ else
   dnl# FIXME: come up with some sort of scheme to use a smaller set of
   dnl# warnings that will be silent about anything cgen-erated...
   test -d ../cgen
+  m4_ifdef([gl_WARN_ADD],[
+    gl_WARN_ADD([-Wall])
+    gl_WARN_ADD([-fno-strict-aliasing])
+    gl_WARN_ADD([-Wno-unused-but-set-variable])
+    gl_WARN_ADD([-Wno-enum-compare])
+    gl_WARN_ADD([-Wextra])
+    gl_WARN_ADD([-Wno-missing-field-initializers])
+    gl_WARN_ADD([-Wno-shift-negative-value])
+  ])
 fi
 dnl# (I uncommented it to add it back in anyways, but conditionally)
 

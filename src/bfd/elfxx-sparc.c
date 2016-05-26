@@ -93,7 +93,7 @@ sparc_elf_notsup_reloc (bfd *abfd ATTRIBUTE_UNUSED,
 			PTR data ATTRIBUTE_UNUSED,
 			asection *input_section ATTRIBUTE_UNUSED,
 			bfd *output_bfd ATTRIBUTE_UNUSED,
-			char **error_message ATTRIBUTE_UNUSED)
+			const char **error_message ATTRIBUTE_UNUSED)
 {
   return bfd_reloc_notsupported;
 }
@@ -103,7 +103,7 @@ sparc_elf_notsup_reloc (bfd *abfd ATTRIBUTE_UNUSED,
 static bfd_reloc_status_type
 sparc_elf_wdisp16_reloc (bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 			 PTR data, asection *input_section, bfd *output_bfd,
-			 char **error_message ATTRIBUTE_UNUSED)
+			 const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
   bfd_vma insn;
@@ -130,7 +130,7 @@ sparc_elf_wdisp16_reloc (bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 static bfd_reloc_status_type
 sparc_elf_hix22_reloc (bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 		       PTR data, asection *input_section, bfd *output_bfd,
-		       char **error_message ATTRIBUTE_UNUSED)
+		       const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
   bfd_vma insn;
@@ -156,7 +156,7 @@ sparc_elf_hix22_reloc (bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 static bfd_reloc_status_type
 sparc_elf_lox10_reloc (bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 		       PTR data, asection *input_section, bfd *output_bfd,
-		       char **error_message ATTRIBUTE_UNUSED)
+		       const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
   bfd_vma insn;

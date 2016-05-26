@@ -77,6 +77,10 @@ bfd_h8_disassemble_init (void)
 
       pi->length = i / 2;
       pi->opcode = p;
+
+      if (n1 == n2) {
+	; /* ??? */
+      }
     }
 
   /* Add entry for the NULL vector terminator.  */

@@ -482,12 +482,12 @@ elf64_sparc_add_symbol_hook (bfd *abfd, struct bfd_link_info *info,
 		  return FALSE;
 		}
 
-	      p->name = (char *)bfd_hash_allocate(&info->hash->table,
-                                                  (unsigned int)(strlen(*namep) + 1U));
+	      p->name = (const char *)bfd_hash_allocate(&info->hash->table,
+							(unsigned int)(strlen(*namep) + 1U));
 	      if (!p->name)
 		return FALSE;
 
-	      strcpy(p->name, *namep);
+	      strcpy((char *)p->name, *namep);
 	    }
 	  else
 	    p->name = "";

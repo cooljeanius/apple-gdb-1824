@@ -52,7 +52,7 @@ coff_i860_reloc (bfd *abfd,
 		 void *data,
 		 asection *input_section ATTRIBUTE_UNUSED,
 		 bfd *output_bfd,
-		 char **error_message ATTRIBUTE_UNUSED)
+		 const char **error_message ATTRIBUTE_UNUSED)
 {
   symvalue diff;
 
@@ -83,8 +83,10 @@ coff_i860_reloc (bfd *abfd,
       diff = reloc_entry->addend;
     }
 
-#define DOIT(x) \
-  x = ((x & ~howto->dst_mask) | (((x & howto->src_mask) + diff) & howto->dst_mask))
+#define DOIT(x, t) \
+  x = (t)((x & (t)~howto->dst_mask) \
+	  | (((x & (t)howto->src_mask) + diff) \
+	     & howto->dst_mask))
 
     if (diff != 0)
       {
@@ -95,30 +97,30 @@ coff_i860_reloc (bfd *abfd,
 	  {
 	  case 0:
 	    {
-	      char x = bfd_get_8 (abfd, addr);
-	      DOIT (x);
-	      bfd_put_8 (abfd, x, addr);
+	      char x = bfd_get_8(abfd, addr);
+	      DOIT(x, char);
+	      bfd_put_8(abfd, x, addr);
 	    }
 	    break;
 
 	  case 1:
 	    {
-	      short x = bfd_get_16 (abfd, addr);
-	      DOIT (x);
-	      bfd_put_16 (abfd, (bfd_vma) x, addr);
+	      short x = bfd_get_16(abfd, addr);
+	      DOIT(x, short);
+	      bfd_put_16(abfd, (bfd_vma)x, addr);
 	    }
 	    break;
 
 	  case 2:
 	    {
 	      long x = (long)bfd_get_32(abfd, addr);
-	      DOIT(x);
+	      DOIT(x, long);
 	      bfd_put_32(abfd, (bfd_vma)x, addr);
 	    }
 	    break;
 
 	  default:
-	    abort ();
+	    abort();
 	  }
       }
 
@@ -136,7 +138,7 @@ coff_i860_reloc_nyi (bfd *abfd ATTRIBUTE_UNUSED,
 		     void *data ATTRIBUTE_UNUSED,
 		     asection *input_section ATTRIBUTE_UNUSED,
 		     bfd *output_bfd ATTRIBUTE_UNUSED,
-		     char **error_message ATTRIBUTE_UNUSED)
+		     const char **error_message ATTRIBUTE_UNUSED)
 {
   reloc_howto_type *howto = reloc_entry->howto;
   fprintf (stderr, _("Relocation `%s' not yet implemented\n"), howto->name);

@@ -64,7 +64,7 @@ compatible (const bfd_arch_info_type * a, const bfd_arch_info_type * b)
 static struct
 {
   unsigned int mach;
-  char *name;
+  const char *name;
 }
 processors[] =
 {

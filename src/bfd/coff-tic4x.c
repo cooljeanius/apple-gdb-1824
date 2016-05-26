@@ -35,7 +35,7 @@
 static bfd_boolean ticoff_bfd_is_local_label_name
     PARAMS((bfd *, const char *));
 static bfd_reloc_status_type tic4x_relocation
-    PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char ** ));
+    PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char ** ));
 static reloc_howto_type *tic4x_coff_reloc_type_lookup
     PARAMS((bfd *, bfd_reloc_code_real_type ));
 static void tic4x_lookup_howto
@@ -77,7 +77,7 @@ static bfd_reloc_status_type
 tic4x_relocation(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
                  asymbol *symbol ATTRIBUTE_UNUSED,
                  PTR data ATTRIBUTE_UNUSED, asection *input_section,
-                 bfd *output_bfd, char **error_message ATTRIBUTE_UNUSED)
+                 bfd *output_bfd, const char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd != (bfd *)NULL)
     {

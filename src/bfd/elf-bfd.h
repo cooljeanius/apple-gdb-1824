@@ -1582,7 +1582,7 @@ extern void _bfd_elf_swap_versym_out
 
 extern int _bfd_elf_section_from_bfd_section
   (bfd *, asection *);
-extern char *bfd_elf_string_from_elf_section
+extern const char *bfd_elf_string_from_elf_section
   (bfd *, unsigned, unsigned);
 extern char *bfd_elf_get_str_section
   (bfd *, unsigned);
@@ -1625,7 +1625,7 @@ extern unsigned long bfd_elf_hash
   (const char *);
 
 extern bfd_reloc_status_type bfd_elf_generic_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 extern bfd_boolean bfd_elf_allocate_object
   (bfd *, size_t, enum elf_target_id);
 extern bfd_boolean bfd_elf_mkobject
@@ -1826,7 +1826,7 @@ extern bfd_boolean _bfd_elf_create_got_section
   (bfd *, struct bfd_link_info *);
 
 extern bfd_boolean _bfd_elfcore_make_pseudosection
-  (bfd *, char *, size_t, ufile_ptr);
+  (bfd *, const char *, size_t, ufile_ptr);
 extern char *_bfd_elfcore_strndup
   (bfd *, char *, size_t);
 
@@ -1975,7 +1975,7 @@ extern void _bfd_dwarf2_cleanup_debug_info
 
 extern bfd_reloc_status_type _bfd_elf_rel_vtable_reloc_fn
   (bfd *, arelent *, struct bfd_symbol *, void *,
-   asection *, bfd *, char **);
+   asection *, bfd *, const char **);
 
 extern bfd_boolean bfd_elf_final_link
   (bfd *, struct bfd_link_info *);

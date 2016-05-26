@@ -2096,7 +2096,7 @@ bfd_boolean
 bfd_m68k_elf32_create_embedded_relocs(bfd *abfd,
                                       struct bfd_link_info *info,
                                       asection *datasec, asection *relsec,
-                                      char **errmsg)
+                                      const char **errmsg)
 {
   Elf_Internal_Shdr *symtab_hdr;
   Elf_Internal_Sym *isymbuf = NULL;

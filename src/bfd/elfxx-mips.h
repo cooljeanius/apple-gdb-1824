@@ -112,15 +112,15 @@ extern void _bfd_mips16_elf_reloc_shuffle
 extern bfd_reloc_status_type _bfd_mips_elf_gprel16_with_gp
   (bfd *, asymbol *, arelent *, asection *, bfd_boolean, void *, bfd_vma);
 extern bfd_reloc_status_type _bfd_mips_elf32_gprel16_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 extern bfd_reloc_status_type _bfd_mips_elf_hi16_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 extern bfd_reloc_status_type _bfd_mips_elf_got16_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 extern bfd_reloc_status_type _bfd_mips_elf_lo16_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 extern bfd_reloc_status_type _bfd_mips_elf_generic_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 extern unsigned long _bfd_elf_mips_mach
   (flagword);
 extern bfd_boolean _bfd_mips_relax_section

@@ -71,7 +71,7 @@ funcvec_hash_table_init
 			       const char *));
 
 static bfd_reloc_status_type special
-  (bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **);
 static int select_reloc
   (reloc_howto_type *);
 static void rtype2howto
@@ -236,7 +236,7 @@ special (bfd *abfd ATTRIBUTE_UNUSED,
 	 PTR data ATTRIBUTE_UNUSED,
 	 asection *input_section ATTRIBUTE_UNUSED,
 	 bfd *output_bfd,
-	 char **error_message ATTRIBUTE_UNUSED)
+	 const char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd == (bfd *) NULL)
     return bfd_reloc_continue;

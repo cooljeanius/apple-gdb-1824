@@ -345,7 +345,7 @@ typedef struct iheadt
 static iheadtype *import_list = NULL;
 
 static char *as_name = NULL;
-static char * as_flags = "";
+static const char *as_flags = "";
 
 static char *tmp_prefix;
 
@@ -718,16 +718,16 @@ static void inform (const char *, ...) ATTRIBUTE_PRINTF_1;
 static void set_dll_name_from_def (const char *);
 
 static char *
-prefix_encode (char *start, unsigned code)
+prefix_encode(const char *start, unsigned int code)
 {
-  static char alpha[27] = "abcdefghijklmnopqrstuvwxyz";
+  static const char alpha[27] = "abcdefghijklmnopqrstuvwxyz";
   static char buf[32];
   char *p;
-  strcpy (buf, start);
-  p = strchr (buf, '\0');
-  do
-    *p++ = alpha[code % sizeof (alpha)];
-  while ((code /= sizeof (alpha)) != 0);
+  strcpy(buf, start);
+  p = strchr(buf, '\0');
+  do {
+    *p++ = alpha[code % sizeof(alpha)];
+  } while ((code /= sizeof(alpha)) != 0);
   *p = '\0';
   return buf;
 }
@@ -1655,7 +1655,7 @@ gen_def_file (void)
 
   for (i = 0, exp = d_exports; exp; i++, exp = exp->next)
     {
-      char *quote = strchr (exp->name, '.') ? "\"" : "";
+      const char *quote = (strchr(exp->name, '.') ? "\"" : "");
       char *res = cplus_demangle (exp->internal_name, DMGL_ANSI | DMGL_PARAMS);
 
       if (res)
@@ -1677,19 +1677,13 @@ gen_def_file (void)
 	}
       else
 	{
-	  char * quote1 = strchr (exp->internal_name, '.') ? "\"" : "";
-	  /* char *alias =  */
-	  fprintf (output_def, "\t%s%s%s = %s%s%s @ %d%s%s%s\n",
-		   quote,
-		   exp->name,
-		   quote,
-		   quote1,
-		   exp->internal_name,
-		   quote1,
-		   exp->ordinal,
-		   exp->noname ? " NONAME" : "",
-		   exp->pvt ? "PRIVATE " : "",
-		   exp->data ? " DATA" : "");
+	  const char *quote1 = (strchr(exp->internal_name, '.') ? "\"" : "");
+	  fprintf(output_def, "\t%s%s%s = %s%s%s @ %d%s%s%s\n",
+		  quote, exp->name, quote, quote1, exp->internal_name,
+		  quote1, exp->ordinal,
+		  (exp->noname ? " NONAME" : ""),
+		  (exp->pvt ? "PRIVATE " : ""),
+		  (exp->data ? " DATA" : ""));
 	}
     }
 
@@ -3322,7 +3316,7 @@ main(int ac, char **av)
     }
 
   if (!tmp_prefix)
-    tmp_prefix = prefix_encode ("d", getpid ());
+    tmp_prefix = prefix_encode("d", getpid());
 
   for (i = 0; mtable[i].type; i++)
     if (strcmp (mtable[i].type, mname) == 0)

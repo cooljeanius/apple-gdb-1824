@@ -69,41 +69,41 @@ struct extended_symbol_info
   (sym->elfinfo ? sym->elfinfo->internal_elf_sym.st_size: sym->ssize)
 
 /* The output formatting functions.  */
-static void print_object_filename_bsd (char *);
-static void print_object_filename_sysv (char *);
-static void print_object_filename_posix (char *);
-static void print_archive_filename_bsd (char *);
-static void print_archive_filename_sysv (char *);
-static void print_archive_filename_posix (char *);
-static void print_archive_member_bsd (char *, const char *);
-static void print_archive_member_sysv (char *, const char *);
-static void print_archive_member_posix (char *, const char *);
-static void print_symbol_filename_bsd (bfd *, bfd *);
-static void print_symbol_filename_sysv (bfd *, bfd *);
-static void print_symbol_filename_posix (bfd *, bfd *);
-static void print_value (bfd *, bfd_vma);
-static void print_symbol_info_bsd (struct extended_symbol_info *, bfd *);
-static void print_symbol_info_sysv (struct extended_symbol_info *, bfd *);
-static void print_symbol_info_posix (struct extended_symbol_info *, bfd *);
+static void print_object_filename_bsd(const char *);
+static void print_object_filename_sysv(const char *);
+static void print_object_filename_posix(const char *);
+static void print_archive_filename_bsd(char *);
+static void print_archive_filename_sysv(char *);
+static void print_archive_filename_posix(char *);
+static void print_archive_member_bsd(char *, const char *);
+static void print_archive_member_sysv(char *, const char *);
+static void print_archive_member_posix(char *, const char *);
+static void print_symbol_filename_bsd(bfd *, bfd *);
+static void print_symbol_filename_sysv(bfd *, bfd *);
+static void print_symbol_filename_posix(bfd *, bfd *);
+static void print_value(bfd *, bfd_vma);
+static void print_symbol_info_bsd(struct extended_symbol_info *, bfd *);
+static void print_symbol_info_sysv(struct extended_symbol_info *, bfd *);
+static void print_symbol_info_posix(struct extended_symbol_info *, bfd *);
 
-/* Support for different output formats.  */
+/* Support for different output formats: */
 struct output_fns
   {
-    /* Print the name of an object file given on the command line.  */
-    void (*print_object_filename) (char *);
+    /* Print the name of an object file given on the command line: */
+    void (*print_object_filename)(const char *);
 
-    /* Print the name of an archive file given on the command line.  */
-    void (*print_archive_filename) (char *);
+    /* Print the name of an archive file given on the command line: */
+    void (*print_archive_filename)(char *);
 
-    /* Print the name of an archive member file.  */
-    void (*print_archive_member) (char *, const char *);
+    /* Print the name of an archive member file: */
+    void (*print_archive_member)(char *, const char *);
 
     /* Print the name of the file (and archive, if there is one)
        containing a symbol.  */
-    void (*print_symbol_filename) (bfd *, bfd *);
+    void (*print_symbol_filename)(bfd *, bfd *);
 
-    /* Print a line of information about a symbol.  */
-    void (*print_symbol_info) (struct extended_symbol_info *, bfd *);
+    /* Print a line of information about a symbol: */
+    void (*print_symbol_info)(struct extended_symbol_info *, bfd *);
   };
 
 static struct output_fns formats[] =
@@ -296,7 +296,7 @@ set_print_radix (char *radix)
 }
 
 static void
-set_output_format (char *f)
+set_output_format(const char *f)
 {
   int i;
 
@@ -1169,7 +1169,7 @@ display_archive (bfd *file)
 }
 
 static bfd_boolean
-display_file(char *filename)
+display_file(const char *filename)
 {
   bfd_boolean retval = TRUE;
   bfd *file;
@@ -1227,14 +1227,14 @@ display_file(char *filename)
 /* Print the name of an object file given on the command line.  */
 
 static void
-print_object_filename_bsd (char *filename)
+print_object_filename_bsd(const char *filename)
 {
   if (filename_per_file && !filename_per_symbol)
-    printf ("\n%s:\n", filename);
+    printf("\n%s:\n", filename);
 }
 
 static void
-print_object_filename_sysv(char *filename)
+print_object_filename_sysv(const char *filename)
 {
   if (undefined_only)
     printf(_("\n\nUndefined symbols from %s:\n\n"), filename);
@@ -1249,10 +1249,10 @@ Name                  Value           Class        Type         Size            
 }
 
 static void
-print_object_filename_posix (char *filename)
+print_object_filename_posix(const char *filename)
 {
   if (filename_per_file && !filename_per_symbol)
-    printf ("%s:\n", filename);
+    printf("%s:\n", filename);
 }
 
 /* Print the name of an archive file given on the command line.  */
@@ -1539,7 +1539,7 @@ main (int argc, char **argv)
 	  filename_per_symbol = 1;
 	  break;
 	case 'B':		/* For MIPS compatibility.  */
-	  set_output_format ("bsd");
+	  set_output_format("bsd");
 	  break;
 	case 'C':
 	  do_demangle = 1;
@@ -1581,7 +1581,7 @@ main (int argc, char **argv)
 	  no_sort = 1;
 	  break;
 	case 'P':
-	  set_output_format ("posix");
+	  set_output_format("posix");
 	  break;
 	case 'r':
 	  reverse_sort = 1;
@@ -1637,7 +1637,7 @@ main (int argc, char **argv)
 
   /* OK, all options now parsed.  If no filename specified, do a.out.  */
   if (optind == argc)
-    return !display_file ("a.out");
+    return !display_file("a.out");
 
   retval = 0;
 
@@ -1648,7 +1648,7 @@ main (int argc, char **argv)
   while (optind < argc)
     {
       PROGRESS (1);
-      if (!display_file (argv[optind++]))
+      if (!display_file(argv[optind++]))
 	retval++;
     }
 

@@ -34,7 +34,7 @@ xstormy16_elf_24_reloc (bfd *abfd,
 			void * data,
 			asection *input_section,
 			bfd *output_bfd,
-			char **error_message ATTRIBUTE_UNUSED)
+			const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation, x;
 

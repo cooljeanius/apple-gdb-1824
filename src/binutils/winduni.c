@@ -766,7 +766,7 @@ codepage_from_unicode(rc_uint_type *length, const unichar *unicode,
 #if defined(HAVE_ICONV) && !defined(_WIN32) && !defined(__CYGWIN__)
 static int
 iconv_onechar(iconv_t cd, ICONV_CONST char *s, char *d, int d_len,
-              const char **n_s, char **n_d)
+              const char **n_s, const char **n_d)
 {
   int i;
 
@@ -837,11 +837,11 @@ wind_MultiByteToWideChar(rc_uint_type cp, const char *mb,
     {
       int iret;
       const char *n_mb = "";
-      char *n_tmp = "";
+      const char *n_tmp = "";
 
       p_tmp = tmp;
-      iret = iconv_onechar(cd, (ICONV_CONST char *)mb, p_tmp, 32, & n_mb,
-                           & n_tmp);
+      iret = iconv_onechar(cd, (ICONV_CONST char *)mb, p_tmp, 32, &n_mb,
+                           &n_tmp);
       if (first)
         {
           first = 0;
@@ -912,11 +912,11 @@ wind_WideCharToMultiByte(rc_uint_type cp, const unichar *u, char *mb,
     {
       int iret;
       const char *n_u = "";
-      char *n_tmp = "";
+      const char *n_tmp = "";
 
       p_tmp = tmp;
-      iret = iconv_onechar(cd,(ICONV_CONST char *)u, p_tmp, 32, &n_u,
-                           & n_tmp);
+      iret = iconv_onechar(cd, (ICONV_CONST char *)u, p_tmp, 32, &n_u,
+                           &n_tmp);
       if (first)
         {
           first = 0;

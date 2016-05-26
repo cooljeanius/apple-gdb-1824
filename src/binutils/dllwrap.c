@@ -73,16 +73,16 @@
 #endif /* ! HAVE_SYS_WAIT_H */
 
 static char *driver_name = NULL;
-static char *cygwin_driver_flags =
+static const char *cygwin_driver_flags =
   "-Wl,--dll -nostartfiles";
-static char *mingw32_driver_flags = "-mdll";
-static char *generic_driver_flags = "-Wl,--dll";
+static const char *mingw32_driver_flags = "-mdll";
+static const char *generic_driver_flags = "-Wl,--dll";
 
-static char *entry_point;
+static const char *entry_point;
 
 static char *dlltool_name = NULL;
 
-static char *target = TARGET;
+static const char *target = TARGET;
 
 typedef enum {
   UNKNOWN_TARGET,
@@ -591,10 +591,10 @@ static const struct option long_options[] =
   {0, 0, 0, 0}
 };
 
-int main (int, char **);
+int main(int, char **);
 
 int
-main (int argc, char **argv)
+main(int argc, char **argv)
 {
   int c;
   int i;
@@ -607,7 +607,7 @@ main (int argc, char **argv)
   int *dlltool_arg_indices;
   int *driver_arg_indices;
 
-  char *driver_flags = 0;
+  const char *driver_flags = (const char *)0;
   char *output_lib_file_name = 0;
 
   dyn_string_t dlltool_cmdline;

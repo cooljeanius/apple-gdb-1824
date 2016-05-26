@@ -1412,13 +1412,13 @@ elf32_hppa_check_relocs (bfd *abfd,
 		 this reloc.  */
 	      if (sreloc == NULL)
 		{
-		  char *name;
+		  const char *name;
 		  bfd *dynobj;
 
-		  name = (bfd_elf_string_from_elf_section
-			  (abfd,
-			   elf_elfheader (abfd)->e_shstrndx,
-			   elf_section_data (sec)->rel_hdr.sh_name));
+		  name =
+		    (bfd_elf_string_from_elf_section(abfd,
+						elf_elfheader(abfd)->e_shstrndx,
+				       elf_section_data(sec)->rel_hdr.sh_name));
 		  if (name == NULL)
 		    {
 		      (*_bfd_error_handler)

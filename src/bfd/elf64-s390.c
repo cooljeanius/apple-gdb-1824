@@ -80,15 +80,15 @@ static bfd_boolean elf_s390_object_p
 static int elf_s390_tls_transition
   PARAMS ((struct bfd_link_info *, int, int));
 static bfd_reloc_status_type s390_tls_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 static bfd_vma dtpoff_base
-  PARAMS ((struct bfd_link_info *));
+  PARAMS((struct bfd_link_info *));
 static bfd_vma tpoff
-  PARAMS ((struct bfd_link_info *, bfd_vma));
+  PARAMS((struct bfd_link_info *, bfd_vma));
 static void invalid_tls_insn
-  PARAMS ((bfd *, asection *, Elf_Internal_Rela *));
+  PARAMS((bfd *, asection *, Elf_Internal_Rela *));
 static bfd_reloc_status_type s390_elf_ldisp_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 
 #include "elf/s390.h"
 
@@ -397,7 +397,7 @@ static bfd_reloc_status_type
 s390_tls_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
 	       asymbol *symbol ATTRIBUTE_UNUSED, PTR data ATTRIBUTE_UNUSED,
 	       asection *input_section, bfd *output_bfd,
-	       char **error_message ATTRIBUTE_UNUSED)
+	       const char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd)
     reloc_entry->address += input_section->output_offset;
@@ -408,7 +408,7 @@ s390_tls_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
 static bfd_reloc_status_type
 s390_elf_ldisp_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 		     PTR data, asection *input_section, bfd *output_bfd,
-		     char **error_message ATTRIBUTE_UNUSED)
+		     const char **error_message ATTRIBUTE_UNUSED)
 {
   reloc_howto_type *howto = reloc_entry->howto;
   bfd_vma relocation;

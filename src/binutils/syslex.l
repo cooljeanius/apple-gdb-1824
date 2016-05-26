@@ -111,9 +111,9 @@ extern int yyinunput(void);
 "bytes" { yylval.i= 8; return UNIT;}
 "byte" { yylval.i = 8; return UNIT;}
 
-"int" { yylval.s = "INT"; return TYPE;}
-"barray" { yylval.s = "BARRAY"; return TYPE;}
-"chars" { yylval.s = "CHARS"; return TYPE;}
+"int" { yylval.s = (char *)"INT"; return TYPE;}
+"barray" { yylval.s = (char *)"BARRAY"; return TYPE;}
+"chars" { yylval.s = (char *)"CHARS"; return TYPE;}
 "variable" { yylval.i = 0; return NUMBER;}
 "counted" { yylval.i = -4; return NUMBER;}
 "addrsize" { yylval.i = -2; return NUMBER; }

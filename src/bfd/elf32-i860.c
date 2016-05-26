@@ -34,7 +34,7 @@ i860_howto_pc26_reloc (bfd *abfd ATTRIBUTE_UNUSED,
                        void *data ATTRIBUTE_UNUSED,
                        asection *input_section,
                        bfd *output_bfd,
-                       char **error_message ATTRIBUTE_UNUSED)
+                       const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma insn;
   bfd_vma relocation;
@@ -97,7 +97,7 @@ i860_howto_pc16_reloc (bfd *abfd,
                        void *data,
                        asection *input_section,
                        bfd *output_bfd,
-                       char **error_message ATTRIBUTE_UNUSED)
+                       const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma insn;
   bfd_vma relocation;
@@ -161,7 +161,7 @@ i860_howto_highadj_reloc (bfd *abfd,
                           void *data,
                           asection *input_section,
                           bfd *output_bfd,
-                          char **error_message ATTRIBUTE_UNUSED)
+                          const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma insn;
   bfd_vma relocation;
@@ -214,7 +214,7 @@ i860_howto_splitn_reloc (bfd *abfd,
                          void *data,
                          asection *input_section,
                          bfd *output_bfd,
-                         char **error_message ATTRIBUTE_UNUSED)
+                         const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma insn;
   bfd_vma relocation;

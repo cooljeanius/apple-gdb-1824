@@ -1,7 +1,7 @@
 /* arc-dis.c: Instruction printing code for the ARC.
    Copyright 1994, 1995, 1997, 1998, 2000, 2001, 2002, 2005
    Free Software Foundation, Inc.
-   Contributed by Doug Evans (dje@cygnus.com).
+   Contributed by Doug Evans <dje@cygnus.com>.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -233,6 +233,7 @@ post_address (struct arcDisState * state, int addr)
   return "";
 }
 
+/* */
 static void
 arc_sprintf(struct arcDisState *state, char *buf, const char *format, ...)
 {
@@ -408,8 +409,11 @@ arc_sprintf(struct arcDisState *state, char *buf, const char *format, ...)
 
  DOCOMM: *bp = 0;
   va_end(ap);
+
+  (void)auxNum;
 }
 
+/* */
 static void
 write_comments_(struct arcDisState *state, int shimm, int is_limm,
 		long limm_value)

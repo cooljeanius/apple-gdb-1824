@@ -47,7 +47,7 @@ elf32_i960_relocate (bfd *abfd ATTRIBUTE_UNUSED,
 		     PTR data ATTRIBUTE_UNUSED,
 		     asection *input_section,
 		     bfd *output_bfd,
-		     char **error_message ATTRIBUTE_UNUSED)
+		     const char **error_message ATTRIBUTE_UNUSED)
 {
   /* HACK: I think this first condition is necessary when producing
      relocatable output.  After the end of HACK, the code is identical

@@ -31,9 +31,9 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 static bfd_boolean coff_i960_is_local_label_name
   PARAMS ((bfd *, const char *));
 static bfd_reloc_status_type optcall_callback
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 static bfd_reloc_status_type coff_i960_relocate
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 static reloc_howto_type *coff_i960_reloc_type_lookup
   PARAMS ((bfd *, bfd_reloc_code_real_type));
 static bfd_boolean coff_i960_start_final_link
@@ -101,7 +101,7 @@ coff_i960_is_local_label_name(bfd *abfd ATTRIBUTE_UNUSED, const char *name)
 static bfd_reloc_status_type
 optcall_callback(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
                  PTR data, asection *input_section,
-                 bfd *ignore_bfd ATTRIBUTE_UNUSED, char **error_message)
+                 bfd *ignore_bfd ATTRIBUTE_UNUSED, const char **error_message)
 {
   /* This item has already been relocated correctly, but we may be
    * able to patch in yet better code - done by digging out the
@@ -187,7 +187,7 @@ static bfd_reloc_status_type
 coff_i960_relocate(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
                    PTR data ATTRIBUTE_UNUSED,
                    asection *input_section ATTRIBUTE_UNUSED,
-		   bfd *output_bfd, char **error_message ATTRIBUTE_UNUSED)
+		   bfd *output_bfd, const char **error_message ATTRIBUTE_UNUSED)
 {
   asection *osec;
 

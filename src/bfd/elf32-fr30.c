@@ -26,9 +26,9 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 
 /* Forward declarations.  */
 static bfd_reloc_status_type fr30_elf_i20_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 static bfd_reloc_status_type fr30_elf_i32_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 static reloc_howto_type * fr30_reloc_type_lookup
   PARAMS ((bfd *abfd, bfd_reloc_code_real_type code));
 static void fr30_info_to_howto_rela
@@ -250,7 +250,7 @@ static reloc_howto_type fr30_elf_howto_table [] =
 static bfd_reloc_status_type
 fr30_elf_i20_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
                    PTR data, asection *input_section, bfd *output_bfd,
-                   char **error_message ATTRIBUTE_UNUSED)
+                   const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
   unsigned long x;
@@ -289,7 +289,7 @@ fr30_elf_i20_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 static bfd_reloc_status_type
 fr30_elf_i32_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
                    PTR data, asection *input_section, bfd *output_bfd,
-                   char **error_message ATTRIBUTE_UNUSED)
+                   const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
 

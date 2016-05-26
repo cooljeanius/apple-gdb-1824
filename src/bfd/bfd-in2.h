@@ -759,7 +759,7 @@ extern void _bfd_fix_excluded_sec_syms(bfd *, struct bfd_link_info *);
 
 extern bfd_boolean bfd_m68k_elf32_create_embedded_relocs
   (bfd *, struct bfd_link_info *, struct bfd_section *,
-   struct bfd_section *, char **);
+   struct bfd_section *, const char **);
 
 /* SunOS shared library support routines for the linker: */
 extern struct bfd_link_needed_list *bfd_sunos_get_needed_list
@@ -2369,10 +2369,10 @@ struct reloc_howto_struct
      instructions).  */
   bfd_reloc_status_type (*special_function)
     (bfd *, arelent *, struct bfd_symbol *, void *, asection *,
-     bfd *, char **);
+     bfd *, const char **);
 
   /* The textual name of the relocation type.  */
-  char *name;
+  const char *name;
 
   /* Some formats record a relocation addend in the section contents
      rather than with the relocation.  For ELF formats this is the
@@ -2461,14 +2461,14 @@ bfd_reloc_status_type bfd_perform_relocation
     void *data,
     asection *input_section,
     bfd *output_bfd,
-    char **error_message);
+    const char **error_message);
 
 bfd_reloc_status_type bfd_install_relocation
    (bfd *abfd,
     arelent *reloc_entry,
     void *data, bfd_vma data_start,
     asection *input_section,
-    char **error_message);
+    const char **error_message);
 
 enum bfd_reloc_code_real {
   _dummy_first_bfd_reloc_code_real,
@@ -5696,7 +5696,7 @@ typedef struct flag_info flag_info;
 typedef struct bfd_target
 {
   /* Identifies the kind of target, e.g., SunOS4, Ultrix, etc.  */
-  char *name;
+  const char *name;
 
  /* The "flavour" of a back end is a general indication about
     the contents of a file.  */

@@ -43,14 +43,14 @@ static int addrsize = 4;
 static FILE *g_file;
 
 static void dh(unsigned char *, int);
-static void itheader(char *, int);
+static void itheader(const char *, int);
 static void p(void);
 static void tabout(void);
 static void pbarray(barray *);
 static int getone(int);
 static int opt(int);
 static void must(int);
-static void tab(int, char *);
+static void tab(int, const char *);
 static void dump_symbol_info(void);
 static void derived_type(void);
 static void module(void);
@@ -66,7 +66,7 @@ getCHARS(unsigned char *ptr, int *idx, int size, int max)
   int b = size;
 
   if (b >= max)
-    return "*undefined*";
+    return (char *)"*undefined*";
 
   if (b == 0)
     {
@@ -208,7 +208,7 @@ getBITS(unsigned char *ptr, int *idx, int size, int max)
 
 /* */
 static void
-itheader(char *name, int the_code)
+itheader(const char *name, int the_code)
 {
   printf("\n%s 0x%02x\n", name, the_code);
 }
@@ -507,21 +507,24 @@ getone(int type)
   return 1;
 }
 
+/* */
 static int
-opt (int x)
+opt(int x)
 {
-  return getone (x);
+  return getone(x);
 }
 
+/* */
 static void
-must (int x)
+must(int x)
 {
-  if (!getone (x))
-    printf ("WANTED %x!!\n", x);
+  if (!getone(x))
+    printf("WANTED %x!!\n", x);
 }
 
+/* */
 static void
-tab (int i, char *s)
+tab(int i, const char *s)
 {
   indent += i;
 
@@ -533,6 +536,7 @@ tab (int i, char *s)
     }
 }
 
+/* */
 static void
 dump_symbol_info (void)
 {

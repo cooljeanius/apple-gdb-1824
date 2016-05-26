@@ -35,7 +35,7 @@ pj_elf_reloc (bfd *abfd,
 	      void * data,
 	      asection *input_section,
 	      bfd *output_bfd,
-	      char **error_message ATTRIBUTE_UNUSED)
+	      const char **error_message ATTRIBUTE_UNUSED)
 {
   unsigned long insn;
   bfd_vma sym_value;

@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 
 static bfd_boolean m88k_is_local_label_name PARAMS ((bfd *, const char *));
 static bfd_reloc_status_type m88k_special_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 static void rtype2howto PARAMS ((arelent *, struct internal_reloc *));
 static void reloc_processing
   PARAMS ((arelent *, struct internal_reloc *, asymbol **, bfd *, asection *));
@@ -52,7 +52,7 @@ m88k_is_local_label_name(bfd *abfd ATTRIBUTE_UNUSED, const char *name)
 static bfd_reloc_status_type
 m88k_special_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
                    PTR data, asection *input_section, bfd *output_bfd,
-                   char **error_message ATTRIBUTE_UNUSED)
+                   const char **error_message ATTRIBUTE_UNUSED)
 {
   reloc_howto_type *howto = reloc_entry->howto;
 

@@ -131,7 +131,7 @@ nlm_swap_variable_header_in(bfd *abfd)
 
 /* Add a section to the bfd: */
 static bfd_boolean
-add_bfd_section(bfd *abfd, char *name, file_ptr offset,
+add_bfd_section(bfd *abfd, const char *name, file_ptr offset,
                 bfd_size_type size, flagword flags)
 {
   asection *newsect;

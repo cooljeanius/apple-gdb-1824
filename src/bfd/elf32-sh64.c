@@ -513,7 +513,7 @@ shmedia_prepare_reloc (struct bfd_link_info *info, bfd *abfd,
 	 be a PTB that should change to a PTA; that indicates a toolchain
 	 error; a mismatch with GAS.  */
       {
-	char *msg = NULL;
+	const char *msg = NULL;
 	bfd_vma insn = bfd_get_32 (abfd, contents + rel->r_offset);
 
 	if (insn & (1 << 10))

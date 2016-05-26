@@ -561,7 +561,7 @@ VALUE:
  *----------------------------------------------------------------------
  */
 int
-TableSetCellValue(Table *tablePtr, int r, int c, char *value)
+TableSetCellValue(Table *tablePtr, int r, int c, const char *value)
 {
     register Tcl_Interp *interp = tablePtr->interp;
     char buf[INDEX_BUFSIZE];
@@ -715,8 +715,7 @@ TableMoveCellValue(Table *tablePtr, int fromr, int fromc, char *frombuf,
      * We have to do it the old way
      */
     return TableSetCellValue(tablePtr, tor, toc,
-	    (char *)TableGetCellValue(tablePtr, fromr, fromc));
-
+	    TableGetCellValue(tablePtr, fromr, fromc));
 }
 
 /*

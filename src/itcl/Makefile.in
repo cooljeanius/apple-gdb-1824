@@ -15,6 +15,7 @@
 
 prefix =	@prefix@
 exec_prefix =	@exec_prefix@
+datarootdir =   @datarootdir@
 
 subdirs =	@subdirs@
 
@@ -132,7 +133,7 @@ distclean:
 #
 
 # CYGNUS LOCAL
-#configure: configure.in
+#configure: configure.ac
 #	autoconf
 #	for dir in $(subdirs) ; do \
 #		if (cd $$dir; autoconf) ; then true ; else exit 1 ; fi ; \

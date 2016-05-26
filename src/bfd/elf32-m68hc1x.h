@@ -153,11 +153,11 @@ extern bfd_vma m68hc11_phys_page (struct m68hc11_page_info*, bfd_vma);
 bfd_reloc_status_type m68hc11_elf_ignore_reloc
   (bfd *abfd, arelent *reloc_entry,
    asymbol *symbol, void *data, asection *input_section,
-   bfd *output_bfd, char **error_message);
+   bfd *output_bfd, const char **error_message);
 bfd_reloc_status_type m68hc11_elf_special_reloc
   (bfd *abfd, arelent *reloc_entry,
     asymbol *symbol, void *data, asection *input_section,
-    bfd *output_bfd, char **error_message);
+    bfd *output_bfd, const char **error_message);
 
 /* GC mark and sweep.  */
 asection *elf32_m68hc11_gc_mark_hook

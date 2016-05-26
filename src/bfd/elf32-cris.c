@@ -35,7 +35,7 @@ static void cris_info_to_howto_rela
   PARAMS ((bfd *, arelent *, Elf_Internal_Rela *));
 
 static bfd_reloc_status_type cris_elf_pcrel_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 
 static bfd_boolean cris_elf_grok_prstatus
   PARAMS ((bfd *abfd, Elf_Internal_Note *note));
@@ -475,7 +475,7 @@ bfd_reloc_status_type
 cris_elf_pcrel_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
 		     asymbol *symbol, PTR data ATTRIBUTE_UNUSED,
 		     asection *input_section, bfd *output_bfd,
-		     char **error_message ATTRIBUTE_UNUSED)
+		     const char **error_message ATTRIBUTE_UNUSED)
 {
   /* By default (using only bfd_elf_generic_reloc when linking to
      non-ELF formats) PC-relative relocs are relative to the beginning

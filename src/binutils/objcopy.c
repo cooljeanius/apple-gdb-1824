@@ -2732,7 +2732,7 @@ copy_main (int argc, char *argv[])
 	    const char *s;
 	    size_t len;
 	    char *name;
-	    char *option = NULL;
+	    const char *option = NULL;
 	    bfd_vma val;
 	    enum change_action what = CHANGE_IGNORE;
 

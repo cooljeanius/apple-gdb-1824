@@ -85,22 +85,22 @@ reloc_howto_type MY(howto_table)[] =
 {
   /* ns32k immediate operands: */
   HOWTO(BFD_RELOC_NS32K_IMM_8, 0, 0, 8, FALSE, 0, complain_overflow_signed,
-        _bfd_ns32k_reloc_imm, (char *)"NS32K_IMM_8",
+        _bfd_ns32k_reloc_imm, "NS32K_IMM_8",
         TRUE, 0x000000ff, 0x000000ff, FALSE),
   HOWTO(BFD_RELOC_NS32K_IMM_16, 0, 1, 16, FALSE, 0, complain_overflow_signed,
-        _bfd_ns32k_reloc_imm,  (char *)"NS32K_IMM_16",
+        _bfd_ns32k_reloc_imm,  "NS32K_IMM_16",
         TRUE, 0x0000ffff, 0x0000ffff, FALSE),
   HOWTO(BFD_RELOC_NS32K_IMM_32, 0, 2, 32, FALSE, 0, complain_overflow_signed,
-        _bfd_ns32k_reloc_imm, (char *)"NS32K_IMM_32",
+        _bfd_ns32k_reloc_imm, "NS32K_IMM_32",
         TRUE, 0xffffffff, 0xffffffff, FALSE),
   HOWTO(BFD_RELOC_NS32K_IMM_8_PCREL, 0, 0, 8, TRUE, 0, complain_overflow_signed,
-        _bfd_ns32k_reloc_imm, (char *)"PCREL_NS32K_IMM_8",
+        _bfd_ns32k_reloc_imm, "PCREL_NS32K_IMM_8",
         TRUE, 0x000000ff, 0x000000ff, FALSE),
   HOWTO(BFD_RELOC_NS32K_IMM_16_PCREL, 0, 1, 16, TRUE, 0, complain_overflow_signed,
-        _bfd_ns32k_reloc_imm, (char *)"PCREL_NS32K_IMM_16",
+        _bfd_ns32k_reloc_imm, "PCREL_NS32K_IMM_16",
         TRUE, 0x0000ffff, 0x0000ffff, FALSE),
   HOWTO(BFD_RELOC_NS32K_IMM_32_PCREL, 0, 2, 32, TRUE, 0, complain_overflow_signed,
-        _bfd_ns32k_reloc_imm, (char *)"PCREL_NS32K_IMM_32",
+        _bfd_ns32k_reloc_imm, "PCREL_NS32K_IMM_32",
         TRUE, 0xffffffff, 0xffffffff, FALSE),
 
   /* ns32k displacements: */

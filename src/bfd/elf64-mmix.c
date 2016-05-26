@@ -163,7 +163,7 @@ static bfd_boolean mmix_elf_link_output_symbol_hook
 	   asection *, struct elf_link_hash_entry *));
 
 static bfd_reloc_status_type mmix_elf_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 
 static reloc_howto_type *bfd_elf64_bfd_reloc_type_lookup
   PARAMS ((bfd *, bfd_reloc_code_real_type));
@@ -1232,7 +1232,7 @@ mmix_info_to_howto_rela(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
 static bfd_reloc_status_type
 mmix_elf_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, PTR data,
                asection *input_section, bfd *output_bfd,
-               char **error_message ATTRIBUTE_UNUSED)
+               const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
   bfd_reloc_status_type r;

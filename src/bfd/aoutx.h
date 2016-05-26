@@ -2488,7 +2488,7 @@ NAME (aout, get_symbol_info) (bfd *ignore_abfd ATTRIBUTE_UNUSED,
 
       if (stab_name == NULL)
 	{
-	  sprintf (buf, "(%d)", type_code);
+	  snprintf(buf, sizeof(buf), "(%d)", type_code);
 	  stab_name = buf;
 	}
       ret->type = '-';

@@ -433,10 +433,10 @@ StringifyObjects(objc, objv)
  * This parses the "-class" option for the table.
  */
 static int
-Tk_ClassOptionObjCmd(Tk_Window tkwin, char *defaultclass,
+Tk_ClassOptionObjCmd(Tk_Window tkwin, const char *defaultclass,
 		     int objc, Tcl_Obj *CONST objv[])
 {
-    char *classname = defaultclass;
+    const char *classname = defaultclass;
     int offset = 0;
 
     if ((objc >= 4) && STREQ(Tcl_GetString(objv[2]),"-class")) {

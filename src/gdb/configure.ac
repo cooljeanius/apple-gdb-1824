@@ -1225,6 +1225,12 @@ AC_SUBST([zlibdir])dnl
 AC_SUBST([zlibinc])dnl
 ])dnl
 
+# On FreeBSD we may need libutil for kinfo_getvmmap (used by fbsd-nat.c).
+# On GNU/kFreeBSD systems, FreeBSD libutil is renamed to libutil-freebsd.
+AC_SEARCH_LIBS([kinfo_getvmmap],[util util-freebsd kern],
+   [AC_DEFINE([HAVE_KINFO_GETVMMAP],[1],
+              [Define to 1 if your system has the kinfo_getvmmap func])])
+
 # On HP/UX we may need libxpdl for dlgetmodinfo (used by solib-pa64.c).
 AC_SEARCH_LIBS([dlgetmodinfo],[dl xpdl dlcompat dyld ltdl])dnl
 

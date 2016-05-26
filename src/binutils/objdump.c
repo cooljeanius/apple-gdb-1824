@@ -296,7 +296,7 @@ static void
 dump_section_header(bfd *abfd, asection *section,
 		    void *ignored ATTRIBUTE_UNUSED)
 {
-  char *comma = "";
+  const char *comma = "";
   unsigned int opb = bfd_octets_per_byte(abfd);
 
   /* Ignore linker created section.  See elfNN_ia64_object_p in
@@ -2131,8 +2131,10 @@ find_stabs_section (bfd *abfd, asection *section, void *names)
     }
 }
 
+/* */
 static void
-dump_stabs_section (bfd *abfd, char *stabsect_name, char *strsect_name)
+dump_stabs_section(bfd *abfd, const char *stabsect_name,
+		   const char *strsect_name)
 {
   stab_section_names s;
 
@@ -2160,7 +2162,7 @@ dump_stabs (bfd *abfd)
 static void
 dump_bfd_header (bfd *abfd)
 {
-  char *comma = "";
+  const char *comma = "";
 
   printf (_("architecture: %s, "),
 	  bfd_printable_arch_mach (bfd_get_arch (abfd),
@@ -2740,8 +2742,9 @@ display_bfd (bfd *abfd)
     }
 }
 
+/* */
 static void
-display_file (char *filename, char *target)
+display_file(const char *filename, char *target)
 {
   bfd *file;
   bfd *arfile = NULL;
@@ -3015,3 +3018,5 @@ main (int argc, char **argv)
 
   return exit_status;
 }
+
+/* EOF */

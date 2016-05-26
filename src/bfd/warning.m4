@@ -6,17 +6,37 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wmissing-declarations -Wimplicit -Wparentheses -Wextra -Wc++-compat \
 -Wgcc-compat -Wasm -Wdangling-else -Wused-but-marked-unused \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
--Wmissing-parameter-type -Wshadow -Wabi -Wmissing-include-dirs \
--Wshadow -Wmisleading-indentation -Wformat=2 -Wmissing-format-attribute \
--Wswitch -Wswitch-default -Wpacked -Wnull-dereference -Wstack-usage=262144"
+-Wmissing-parameter-type -Wabi -Wmissing-include-dirs \
+-Wmisleading-indentation -Wformat=2 -Wmissing-format-attribute \
+-Wswitch -Wswitch-default -Wpacked -Wnull-dereference -Whsa"
 if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
   test -n "${WANT_CONVERSION_WARNS}"
   # "-Wconversion" and friends are because of a comment in libbfd.c
   WARN_CFLAGS="${WARN_CFLAGS} -Wnon-gcc -Wconversion -Wfloat-conversion \
   -Wsign-conversion -Wsign-compare -Wshorten-64-to-32 -Wdouble-promotion"
 fi
-WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint"
+WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint -DDEBUG_HASH -DDEBUG_GEN_RELOC \
+-DLINUX_LINK_DEBUG -DBFD_TRACK_OPEN_CLOSE"
 WARN_LDFLAGS=""
+
+# Add -Wshadow if the compiler is a sufficiently recent version of GCC.
+AC_EGREP_CPP([^[0-3]$],[__GNUC__],[],
+             [WARN_CFLAGS="${WARN_CFLAGS} -Wshadow"])dnl
+
+# Add -Wstack-usage if the compiler is a sufficiently recent version of GCC
+AC_EGREP_CPP([^[0-4]$],[__GNUC__],[],
+             [WARN_CFLAGS="${WARN_CFLAGS} -Wstack-usage=262144"])dnl
+
+if test "x${GCC_WARN_CFLAGS}" != "x"; then
+  if test "x${GCC}" = "xyes"; then
+    test -n "${GCC}" && test -n "${GCC_WARN_CFLAGS}" && export WARN_CFLAGS="${WARN_CFLAGS} ${GCC_WARN_CFLAGS}"
+  fi
+fi
+
+# Set WARN_WRITE_STRINGS if the compiler supports -Wwrite-strings.
+WARN_WRITE_STRINGS=""
+AC_EGREP_CPP([^[0-3]$],[__GNUC__],[],
+             [WARN_WRITE_STRINGS="-Wwrite-strings"])dnl
 
 AC_REQUIRE([AC_CANONICAL_HOST])dnl
 
@@ -191,6 +211,7 @@ AC_SUBST([WARN_CFLAGS])dnl
 AC_SUBST([WARN_DEFS])dnl
 AC_SUBST([WARN_LDFLAGS])dnl
 AC_SUBST([NO_WERROR])dnl
+AC_SUBST([WARN_WRITE_STRINGS])dnl
 ])dnl
 
 AC_DEFUN([AM_BINUTILS_CLANG_STATIC_ANALYSIS],[

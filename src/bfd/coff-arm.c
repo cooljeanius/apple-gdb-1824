@@ -89,7 +89,7 @@ static bfd_reloc_status_type
 coff_arm_reloc(bfd *abfd, arelent *reloc_entry,
                asymbol *symbol ATTRIBUTE_UNUSED, void *data,
                asection *input_section ATTRIBUTE_UNUSED, bfd *output_bfd,
-               char **error_message ATTRIBUTE_UNUSED)
+               const char **error_message ATTRIBUTE_UNUSED)
 {
   symvalue diff;
 
@@ -190,23 +190,23 @@ coff_arm_reloc(bfd *abfd, arelent *reloc_entry,
 #endif /* ARM_WINCE */
 
 static bfd_reloc_status_type aoutarm_fix_pcrel_26_done
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_reloc_status_type aoutarm_fix_pcrel_26
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_reloc_status_type coff_thumb_pcrel_12
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 #ifndef ARM_WINCE
 static bfd_reloc_status_type coff_thumb_pcrel_9
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_reloc_status_type coff_thumb_pcrel_23
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 #endif /* !ARM_WINCE */
 
 static reloc_howto_type aoutarm_std_reloc_howto[] =
   {
 #ifdef ARM_WINCE
     HOWTO(ARM_26D, 2, 2, 24, TRUE, 0, complain_overflow_dont,
-	  aoutarm_fix_pcrel_26_done, (char *)"ARM_26D", FALSE, 0x00ffffff,
+	  aoutarm_fix_pcrel_26_done, "ARM_26D", FALSE, 0x00ffffff,
 	  0x0, PCRELOFFSET),
     HOWTO (ARM_32,
 	   0,
@@ -532,7 +532,7 @@ aoutarm_fix_pcrel_26_done (bfd *abfd ATTRIBUTE_UNUSED,
 			   void * data ATTRIBUTE_UNUSED,
 			   asection *input_section ATTRIBUTE_UNUSED,
 			   bfd *output_bfd ATTRIBUTE_UNUSED,
-			   char **error_message ATTRIBUTE_UNUSED)
+			   const char **error_message ATTRIBUTE_UNUSED)
 {
   /* This is dead simple at present.  */
   return bfd_reloc_ok;
@@ -542,7 +542,7 @@ aoutarm_fix_pcrel_26_done (bfd *abfd ATTRIBUTE_UNUSED,
 static bfd_reloc_status_type
 aoutarm_fix_pcrel_26(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 		     void *data, asection *input_section, bfd *output_bfd,
-		     char **error_message ATTRIBUTE_UNUSED)
+		     const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
   bfd_size_type addr = reloc_entry->address;
@@ -597,7 +597,7 @@ static bfd_reloc_status_type
 coff_thumb_pcrel_common(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
                         void *data, asection *input_section,
                         bfd *output_bfd,
-                        char **error_message ATTRIBUTE_UNUSED,
+                        const char **error_message ATTRIBUTE_UNUSED,
                         thumb_pcrel_branchtype btype)
 {
   bfd_vma relocation = 0UL;
@@ -721,7 +721,7 @@ coff_thumb_pcrel_common(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 static bfd_reloc_status_type
 coff_thumb_pcrel_23(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 		    void * data, asection *input_section, bfd *output_bfd,
-		    char **error_message)
+		    const char **error_message)
 {
   return coff_thumb_pcrel_common(abfd, reloc_entry, symbol, data,
                                  input_section, output_bfd, error_message,
@@ -731,7 +731,7 @@ coff_thumb_pcrel_23(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 static bfd_reloc_status_type
 coff_thumb_pcrel_9(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 		   void *data, asection *input_section, bfd *output_bfd,
-		   char **error_message)
+		   const char **error_message)
 {
   return coff_thumb_pcrel_common(abfd, reloc_entry, symbol, data,
                                  input_section, output_bfd, error_message,
@@ -742,7 +742,7 @@ coff_thumb_pcrel_9(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 static bfd_reloc_status_type
 coff_thumb_pcrel_12(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 		    void *data, asection *input_section, bfd *output_bfd,
-		    char **error_message)
+		    const char **error_message)
 {
   return coff_thumb_pcrel_common(abfd, reloc_entry, symbol, data,
                                  input_section, output_bfd, error_message,

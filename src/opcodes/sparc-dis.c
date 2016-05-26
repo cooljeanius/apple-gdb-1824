@@ -1,4 +1,4 @@
-/* Print SPARC instructions.
+/* sparc-dis.c: Print SPARC instructions.
    Copyright 1989, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
@@ -896,6 +896,10 @@ print_insn_sparc (bfd_vma memaddr, disassemble_info *info)
 		    }
 		  }
 	      }
+	  }
+	  
+	  if (is_annulled) {
+	    ; /* ??? */
 	  }
 
 	  /* If we are adding or or'ing something to rs1, then

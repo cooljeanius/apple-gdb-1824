@@ -50,7 +50,7 @@
 
 struct sec_flags_struct
 {
-  char *name;			/* Name of section.  */
+  const char *name;		/* Name of section.  */
   int vflags_always;
   flagword flags_always;	/* Flags we set always.  */
   int vflags_hassize;
@@ -169,7 +169,7 @@ vms_secflag_by_name (bfd *abfd,
 /* Retrieve vms section flags by name and size: */
 static flagword
 vms_esecflag_by_name(struct sec_flags_struct *section_flags,
-		     char *name, int hassize)
+		     const char *name, int hassize)
 {
   int i = 0;
 
@@ -702,7 +702,7 @@ _bfd_vms_write_gsd (bfd *abfd, int objtype ATTRIBUTE_UNUSED)
   unsigned int symnum;
   int last_index = -1;
   char dummy_name[10];
-  char *sname;
+  const char *sname;
   flagword new_flags, old_flags;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
@@ -758,7 +758,7 @@ _bfd_vms_write_gsd (bfd *abfd, int objtype ATTRIBUTE_UNUSED)
 
       /* Don't know if this is necessary for the linker but for now it keeps
 	 vms_slurp_gsd happy  */
-      sname = (char *)section->name;
+      sname = section->name;
       if (*sname == '.')
 	{
 	  sname++;

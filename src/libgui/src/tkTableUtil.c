@@ -205,9 +205,9 @@ TableTagConfigureBd(Table *tablePtr, TableTag *tagPtr,
 		&argc, &argv);
 	if (result == TCL_OK) {
 	    if ((!nullOK && (argc == 0)) || (argc == 3) || (argc > 4)) {
-		Tcl_SetResult(tablePtr->interp,
-			"1, 2 or 4 values must be specified to -borderwidth",
-			TCL_STATIC);
+		char *tmpstr =
+		  (char *)"1, 2 or 4 values must be specified to -borderwidth";
+		Tcl_SetResult(tablePtr->interp, tmpstr, TCL_STATIC);
 		result = TCL_ERROR;
 	    } else {
 		for (i = 0; i < argc; i++) {

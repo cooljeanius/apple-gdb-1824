@@ -126,13 +126,9 @@ m32r_elf_do_10_pcrel_reloc(bfd *abfd, reloc_howto_type *howto,
 /* Handle the R_M32R_10_PCREL reloc.  */
 
 static bfd_reloc_status_type
-m32r_elf_10_pcrel_reloc (bfd * abfd,
-			 arelent * reloc_entry,
-			 asymbol * symbol,
-			 void * data,
-			 asection * input_section,
-			 bfd * output_bfd,
-			 char ** error_message ATTRIBUTE_UNUSED)
+m32r_elf_10_pcrel_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+			void *data, asection *input_section, bfd *output_bfd,
+			const char **error_message ATTRIBUTE_UNUSED)
 {
   /* This part is from bfd_elf_generic_reloc.  */
   if (output_bfd != NULL
@@ -168,7 +164,7 @@ m32r_elf_generic_reloc (bfd *input_bfd,
 			void * data,
 			asection *input_section,
 			bfd *output_bfd,
-			char **error_message ATTRIBUTE_UNUSED)
+			const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_reloc_status_type ret;
   bfd_vma relocation;
@@ -260,7 +256,7 @@ m32r_elf_sda16_reloc (bfd *abfd ATTRIBUTE_UNUSED,
 		      void * data ATTRIBUTE_UNUSED,
 		      asection *input_section,
 		      bfd *output_bfd,
-		      char **error_message ATTRIBUTE_UNUSED)
+		      const char **error_message ATTRIBUTE_UNUSED)
 {
   /* This part is from bfd_elf_generic_reloc.  */
   if (output_bfd != NULL
@@ -312,7 +308,8 @@ static struct m32r_hi16 *m32r_hi16_list;
 static bfd_reloc_status_type
 m32r_elf_hi16_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
 		    asymbol *symbol, void *data, asection *input_section,
-		    bfd *output_bfd, char **error_message ATTRIBUTE_UNUSED)
+		    bfd *output_bfd,
+		    const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_reloc_status_type ret;
   bfd_vma relocation;
@@ -399,13 +396,9 @@ m32r_elf_relocate_hi16 (bfd *input_bfd,
    R_M32R_HI16_[SU]LO relocation described above.  */
 
 static bfd_reloc_status_type
-m32r_elf_lo16_reloc (bfd *input_bfd,
-		     arelent *reloc_entry,
-		     asymbol *symbol,
-		     void * data,
-		     asection *input_section,
-		     bfd *output_bfd,
-		     char **error_message)
+m32r_elf_lo16_reloc(bfd *input_bfd, arelent *reloc_entry, asymbol *symbol,
+		    void *data, asection *input_section, bfd *output_bfd,
+		    const char **error_message)
 {
   /* This part is from bfd_elf_generic_reloc.
      If we're relocating, and this an external symbol, we don't want
@@ -459,7 +452,7 @@ m32r_elf_lo16_reloc (bfd *input_bfd,
      but we have partial_inplace set.  bfd_elf_generic_reloc will
      pass the handling back to bfd_install_relocation which will install
      a section relative addend which is wrong.  */
-  return m32r_elf_generic_reloc (input_bfd, reloc_entry, symbol, data,
+  return m32r_elf_generic_reloc(input_bfd, reloc_entry, symbol, data,
 				input_section, output_bfd, error_message);
 }
 

@@ -56,7 +56,7 @@ static bfd_boolean elf32_h8_relocate_section
    bfd_byte *, Elf_Internal_Rela *,
    Elf_Internal_Sym *, asection **);
 static bfd_reloc_status_type special
-  (bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **);
 
 /* This does not include any relocation information, but should be
    good enough for GDB or objdump to read the file.  */
@@ -295,7 +295,7 @@ special (bfd *abfd ATTRIBUTE_UNUSED,
 	 PTR data ATTRIBUTE_UNUSED,
 	 asection *input_section ATTRIBUTE_UNUSED,
 	 bfd *output_bfd,
-	 char **error_message ATTRIBUTE_UNUSED)
+	 const char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd == (bfd *) NULL)
     return bfd_reloc_continue;

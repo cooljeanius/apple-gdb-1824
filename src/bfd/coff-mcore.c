@@ -41,7 +41,7 @@ Boston, MA 02110-1301, USA.  */
 extern bfd_boolean mcore_bfd_coff_final_link
   PARAMS ((bfd *, struct bfd_link_info *));
 static bfd_reloc_status_type mcore_coff_unsupported_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 static bfd_boolean coff_mcore_relocate_section
   PARAMS ((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
 	   struct internal_reloc *, struct internal_syment *, asection **));
@@ -241,7 +241,7 @@ mcore_coff_unsupported_reloc(bfd *abfd, arelent *reloc_entry,
                              PTR data ATTRIBUTE_UNUSED,
                              asection *input_section ATTRIBUTE_UNUSED,
                              bfd *output_bfd ATTRIBUTE_UNUSED,
-                             char **error_message ATTRIBUTE_UNUSED)
+                             const char **error_message ATTRIBUTE_UNUSED)
 {
   BFD_ASSERT(reloc_entry->howto != (reloc_howto_type *)0);
 

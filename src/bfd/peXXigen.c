@@ -447,7 +447,7 @@ _bfd_XXi_swap_aouthdr_in(bfd *abfd, void *aouthdr_ext1, void *aouthdr_int1)
       {
         /* If data directory is empty, rva also should be 0.  */
 	int size =
-	  H_GET_32 (abfd, src->DataDirectory[idx][1]);
+	  (int)H_GET_32(abfd, src->DataDirectory[idx][1]);
 	a->DataDirectory[idx].Size = size;
 
 	if (size)
@@ -496,11 +496,8 @@ _bfd_XXi_swap_aouthdr_in(bfd *abfd, void *aouthdr_ext1, void *aouthdr_int1)
 /* A support function for below.  */
 
 static void
-add_data_entry (bfd * abfd,
-		struct internal_extra_pe_aouthdr *aout,
-		int idx,
-		char *name,
-		bfd_vma base)
+add_data_entry(bfd *abfd, struct internal_extra_pe_aouthdr *aout,
+	       int idx, const char *name, bfd_vma base)
 {
   asection *sec = bfd_get_section_by_name (abfd, name);
 
@@ -510,7 +507,7 @@ add_data_entry (bfd * abfd,
       && (pei_section_data (abfd, sec) != NULL))
     {
       /* If data directory is empty, rva also should be 0.  */
-      size_t size = pei_section_data(abfd, sec)->virt_size;
+      size_t size = (size_t)pei_section_data(abfd, sec)->virt_size;
       aout->DataDirectory[idx].Size = size;
 
       if (size)
@@ -1019,7 +1016,7 @@ _bfd_XXi_swap_scnhdr_out(bfd *abfd, void *in, void *out)
   return ret;
 }
 
-static char *dir_names[IMAGE_NUMBEROF_DIRECTORY_ENTRIES] =
+static const char *dir_names[IMAGE_NUMBEROF_DIRECTORY_ENTRIES] =
 {
   N_("Export Directory [.edata (or where ever we found it)]"),
   N_("Import Directory [parts of .idata]"),

@@ -50,9 +50,9 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 static bfd_reloc_status_type gprel32_with_gp
   (bfd *, asymbol *, arelent *, asection *, bfd_boolean, void *, bfd_vma);
 static bfd_reloc_status_type mips_elf_gprel32_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_reloc_status_type mips32_64bit_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static reloc_howto_type *bfd_elf32_bfd_reloc_type_lookup
   (bfd *, bfd_reloc_code_real_type);
 static reloc_howto_type *mips_elf32_rtype_to_howto
@@ -68,11 +68,11 @@ static bfd_boolean mips_elf32_object_p
 static bfd_boolean mips_elf_is_local_label_name
   (bfd *, const char *);
 static bfd_reloc_status_type mips16_jump_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_reloc_status_type mips16_gprel_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_reloc_status_type mips_elf_final_gp
-  (bfd *, asymbol *, bfd_boolean, char **, bfd_vma *);
+  (bfd *, asymbol *, bfd_boolean, const char **, bfd_vma *);
 static bfd_boolean mips_elf_assign_gp
   (bfd *, bfd_vma *);
 static bfd_boolean elf32_mips_grok_prstatus
@@ -913,8 +913,8 @@ mips_elf_assign_gp (bfd *output_bfd, bfd_vma *pgp)
    external symbol if we are producing relocatable output.  */
 
 static bfd_reloc_status_type
-mips_elf_final_gp (bfd *output_bfd, asymbol *symbol, bfd_boolean relocatable,
-		   char **error_message, bfd_vma *pgp)
+mips_elf_final_gp(bfd *output_bfd, asymbol *symbol, bfd_boolean relocatable,
+		  const char **error_message, bfd_vma *pgp)
 {
   if (bfd_is_und_section (symbol->section)
       && ! relocatable)
@@ -955,7 +955,7 @@ bfd_reloc_status_type
 _bfd_mips_elf32_gprel16_reloc (bfd *abfd, arelent *reloc_entry,
 			       asymbol *symbol, void *data,
 			       asection *input_section, bfd *output_bfd,
-			       char **error_message)
+			       const char **error_message)
 {
   bfd_boolean relocatable;
   bfd_reloc_status_type ret;
@@ -980,8 +980,8 @@ _bfd_mips_elf32_gprel16_reloc (bfd *abfd, arelent *reloc_entry,
       output_bfd = symbol->section->output_section->owner;
     }
 
-  ret = mips_elf_final_gp (output_bfd, symbol, relocatable, error_message,
-			   &gp);
+  ret = mips_elf_final_gp(output_bfd, symbol, relocatable, error_message,
+			  &gp);
   if (ret != bfd_reloc_ok)
     return ret;
 
@@ -996,7 +996,7 @@ _bfd_mips_elf32_gprel16_reloc (bfd *abfd, arelent *reloc_entry,
 static bfd_reloc_status_type
 mips_elf_gprel32_reloc (bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 			void *data, asection *input_section, bfd *output_bfd,
-			char **error_message)
+			const char **error_message)
 {
   bfd_boolean relocatable;
   bfd_reloc_status_type ret;
@@ -1080,7 +1080,7 @@ static bfd_reloc_status_type
 mips32_64bit_reloc (bfd *abfd, arelent *reloc_entry,
 		    asymbol *symbol ATTRIBUTE_UNUSED,
 		    void *data, asection *input_section,
-		    bfd *output_bfd, char **error_message)
+		    bfd *output_bfd, const char **error_message)
 {
   bfd_reloc_status_type r;
   arelent reloc32;
@@ -1115,7 +1115,7 @@ static bfd_reloc_status_type
 mips16_jump_reloc (bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
 		   asymbol *symbol, void *data ATTRIBUTE_UNUSED,
 		   asection *input_section, bfd *output_bfd,
-		   char **error_message ATTRIBUTE_UNUSED)
+		   const char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd != NULL
       && (symbol->flags & BSF_SECTION_SYM) == 0
@@ -1144,7 +1144,7 @@ mips16_jump_reloc (bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
 static bfd_reloc_status_type
 mips16_gprel_reloc (bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 		    void *data, asection *input_section, bfd *output_bfd,
-		    char **error_message)
+		    const char **error_message)
 {
   bfd_boolean relocatable;
   bfd_reloc_status_type ret;
@@ -1169,8 +1169,8 @@ mips16_gprel_reloc (bfd *abfd, arelent *reloc_entry, asymbol *symbol,
       output_bfd = symbol->section->output_section->owner;
     }
 
-  ret = mips_elf_final_gp (output_bfd, symbol, relocatable, error_message,
-			   &gp);
+  ret = mips_elf_final_gp(output_bfd, symbol, relocatable, error_message,
+			  &gp);
   if (ret != bfd_reloc_ok)
     return ret;
 

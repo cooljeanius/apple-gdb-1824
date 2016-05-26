@@ -612,10 +612,10 @@ i370_elf_size_dynamic_sections (bfd *output_bfd,
 	 dynamic sections, we will not actually use these entries.  Reset
 	 the size of .rela.got, et al, which will cause it to get
 	 stripped from the output file below.  */
-      static char *rela_sections[] = { ".rela.got", ".rela.sdata",
-				       ".rela.sdata2", ".rela.sbss",
-				       NULL };
-      char **p;
+      static const char *rela_sections[] = { ".rela.got", ".rela.sdata",
+					     ".rela.sdata2", ".rela.sbss",
+					     NULL };
+      const char **p;
 
       for (p = rela_sections; *p != NULL; p++)
 	{

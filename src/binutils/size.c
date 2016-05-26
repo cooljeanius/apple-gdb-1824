@@ -64,7 +64,7 @@ static char *target = NULL;
 
 /* Static declarations: */
 static ATTRIBUTE_NORETURN void usage(FILE *, int);
-static void display_file(char *);
+static void display_file(const char *);
 static void display_bfd(bfd *);
 static void display_archive(bfd *);
 static size_t size_number(bfd_size_type);
@@ -237,7 +237,7 @@ main(int argc, char **argv)
     display_file("a.out");
   } else {
     for (; optind < argc;) {
-      display_file (argv[optind++]);
+      display_file(argv[optind++]);
     }
   }
 
@@ -347,8 +347,9 @@ display_archive(bfd *file)
   }
 }
 
+/* */
 static void
-display_file(char *filename)
+display_file(const char *filename)
 {
   bfd *file;
 

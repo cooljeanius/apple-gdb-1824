@@ -268,7 +268,7 @@ enum mmo_sym_type { mmo_reg_sym, mmo_undef_sym, mmo_data_sym, mmo_abs_sym};
 struct mmo_symbol
   {
     struct mmo_symbol *next;
-    char *name;
+    const char *name;
     bfd_vma value;
     enum mmo_sym_type sym_type;
     unsigned int serno;
@@ -456,7 +456,7 @@ mmo_make_section (bfd *abfd, const char *secname)
 
   if (sec == NULL)
     {
-      char *newsecname = strdup (secname);
+      char *newsecname = xstrdup(secname);
 
       if (newsecname == NULL)
 	{
@@ -1167,11 +1167,11 @@ mmo_create_symbol(bfd *abfd, const char *symname, bfd_vma addr,
   if (n == NULL)
     return FALSE;
 
-  n->name = (char *)bfd_alloc(abfd, strlen (symname) + 1);
+  n->name = (const char *)bfd_alloc(abfd, (strlen(symname) + 1UL));
   if (n->name == NULL)
     return FALSE;
 
-  strcpy (n->name, symname);
+  strcpy((char *)n->name, symname);
 
   n->value = addr;
   n->sym_type = sym_type;

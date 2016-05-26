@@ -13,8 +13,9 @@
 
 #include "tkTable.h"
 
-static TableTag *TableTagGetEntry _ANSI_ARGS_((Table *tablePtr, char *name,
-	int objc, const char **argv));
+static TableTag *TableTagGetEntry _ANSI_ARGS_((Table *tablePtr,
+					       const char *name, int objc,
+					       const char **argv));
 static unsigned int	TableTagGetPriority _ANSI_ARGS_((Table *tablePtr,
 	TableTag *tagPtr));
 static void	TableImageProc _ANSI_ARGS_((ClientData clientData, int x,
@@ -436,7 +437,7 @@ TableGetTagBorders(TableTag *tagPtr,
  *----------------------------------------------------------------------
  */
 static TableTag *
-TableTagGetEntry(Table *tablePtr, char *name, int objc, const char **argv)
+TableTagGetEntry(Table *tablePtr, const char *name, int objc, const char **argv)
 {
     Tcl_HashEntry *entryPtr;
     TableTag *tagPtr = NULL;

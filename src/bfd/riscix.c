@@ -194,13 +194,13 @@ riscix_fix_pcrel_26_done(bfd *abfd ATTRIBUTE_UNUSED,
 			 void *data ATTRIBUTE_UNUSED,
 			 asection *input_section ATTRIBUTE_UNUSED,
 			 bfd *output_bfd ATTRIBUTE_UNUSED,
-			 char **error_message ATTRIBUTE_UNUSED)
+			 const char **error_message ATTRIBUTE_UNUSED)
 {
   /* This is dead simple at present: */
   return bfd_reloc_ok;
 }
 
-static bfd_reloc_status_type riscix_fix_pcrel_26(bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+static bfd_reloc_status_type riscix_fix_pcrel_26(bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static const bfd_target *riscix_callback(bfd *);
 
 static reloc_howto_type riscix_std_reloc_howto[] =
@@ -225,7 +225,7 @@ static reloc_howto_type riscix_std_reloc_howto[] =
 static bfd_reloc_status_type
 riscix_fix_pcrel_26(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
                     void *data, asection *input_section, bfd *output_bfd,
-                    char **error_message ATTRIBUTE_UNUSED)
+                    const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
   bfd_size_type addr = reloc_entry->address;

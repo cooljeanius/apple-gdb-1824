@@ -49,13 +49,9 @@ set_dlx_skip_hi16_flag (int flag)
 }
 
 static bfd_reloc_status_type
-_bfd_dlx_elf_hi16_reloc (bfd *abfd,
-			 arelent *reloc_entry,
-			 asymbol *symbol,
-			 void * data,
-			 asection *input_section,
-			 bfd *output_bfd,
-			 char **error_message)
+_bfd_dlx_elf_hi16_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+			void *data, asection *input_section, bfd *output_bfd,
+			const char **error_message)
 {
   bfd_reloc_status_type ret;
   bfd_vma relocation;
@@ -115,7 +111,7 @@ elf32_dlx_relocate16 (bfd *abfd,
 		      void * data,
 		      asection *input_section,
 		      bfd *output_bfd,
-		      char **error_message ATTRIBUTE_UNUSED)
+		      const char **error_message ATTRIBUTE_UNUSED)
 {
   unsigned long insn, vallo, allignment;
   int           val;
@@ -178,7 +174,7 @@ elf32_dlx_relocate26 (bfd *abfd,
 		      void * data,
 		      asection *input_section,
 		      bfd *output_bfd,
-		      char **error_message ATTRIBUTE_UNUSED)
+		      const char **error_message ATTRIBUTE_UNUSED)
 {
   unsigned long insn, vallo, allignment;
   int           val;

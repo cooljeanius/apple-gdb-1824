@@ -322,6 +322,26 @@ size_t strnlen(const char *, size_t);
 # define N_(String) (String)
 #endif /* ENABLE_NLS */
 
+/* poison some unwanted functions: */
+#if (defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ >= 3)) && \
+    !defined(NO_POISON) && !defined(FLEX_SCANNER)
+/* libiberty provides replacements: */
+# pragma GCC poison strdup strndup memdup strerror atexit exit
+# if defined(HAVE_STRLCPY) && defined(PREFER_BSDISMS)
+#  pragma GCC poison strcpy
+# endif /* HAVE_STRLCPY && PREFER_BSDISMS */
+# if defined(HAVE_STRLCAT) && defined(PREFER_BSDISMS)
+#  pragma GCC poison strcat
+# endif /* HAVE_STRLCAT && PREFER_BSDISMS */
+# if defined(HAVE_FGETS)
+#  pragma GCC poison gets
+# endif /* HAVE_FGETS */
+# if defined(HAVE_STRTOK_R) && defined(_REENTRANT)
+#  pragma GCC poison strtok
+# endif /* HAVE_STRTOK_R && _REENTRANT */
+# pragma GCC poison setlinebuf bcmp bzero strsave strnicmp
+#endif /* gcc3+ && !NO_POISON && !FLEX_SCANNER */
+
 #endif /* ! defined (BFD_SYSDEP_H) */
 
 /* EOF */

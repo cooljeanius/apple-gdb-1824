@@ -37,6 +37,7 @@
 #include "sysdep.h"
 
 #include "libbfd.h"
+#include "libiberty.h"
 
 #include "coff/powerpc.h"
 #include "coff/internal.h"
@@ -325,52 +326,52 @@ ppc_coff_link_hash_table_create(bfd *abfd)
 /* Static helper functions to make relocation work.  */
 /* (Work In Progress) */
 
-static bfd_reloc_status_type ppc_refhi_reloc PARAMS ((bfd *abfd,
-						      arelent *reloc,
-						      asymbol *symbol,
-						      PTR data,
-						      asection *section,
-						      bfd *output_bfd,
-						      char **error));
-static bfd_reloc_status_type ppc_pair_reloc PARAMS ((bfd *abfd,
+static bfd_reloc_status_type ppc_refhi_reloc PARAMS((bfd *abfd,
 						     arelent *reloc,
 						     asymbol *symbol,
 						     PTR data,
 						     asection *section,
 						     bfd *output_bfd,
-						     char **error));
+						     const char **error));
+static bfd_reloc_status_type ppc_pair_reloc PARAMS((bfd *abfd,
+						    arelent *reloc,
+						    asymbol *symbol,
+						    PTR data,
+						    asection *section,
+						    bfd *output_bfd,
+						    const char **error));
 
-static bfd_reloc_status_type ppc_toc16_reloc PARAMS ((bfd *abfd,
+static bfd_reloc_status_type ppc_toc16_reloc PARAMS((bfd *abfd,
+						     arelent *reloc,
+						     asymbol *symbol,
+						     PTR data,
+						     asection *section,
+						     bfd *output_bfd,
+						     const char **error));
+
+static bfd_reloc_status_type ppc_section_reloc PARAMS((bfd *abfd,
+						       arelent *reloc,
+						       asymbol *symbol,
+						       PTR data,
+						       asection *section,
+						       bfd *output_bfd,
+						       const char **error));
+
+static bfd_reloc_status_type ppc_secrel_reloc PARAMS((bfd *abfd,
 						      arelent *reloc,
 						      asymbol *symbol,
 						      PTR data,
 						      asection *section,
 						      bfd *output_bfd,
-						      char **error));
+						      const char **error));
 
-static bfd_reloc_status_type ppc_section_reloc PARAMS ((bfd *abfd,
-							arelent *reloc,
-							asymbol *symbol,
-							PTR data,
-							asection *section,
-							bfd *output_bfd,
-							char **error));
-
-static bfd_reloc_status_type ppc_secrel_reloc PARAMS ((bfd *abfd,
-						       arelent *reloc,
-						       asymbol *symbol,
-						       PTR data,
-						       asection *section,
-						       bfd *output_bfd,
-						       char **error));
-
-static bfd_reloc_status_type ppc_imglue_reloc PARAMS ((bfd *abfd,
-						       arelent *reloc,
-						       asymbol *symbol,
-						       PTR data,
-						       asection *section,
-						       bfd *output_bfd,
-						       char **error));
+static bfd_reloc_status_type ppc_imglue_reloc PARAMS((bfd *abfd,
+						      arelent *reloc,
+						      asymbol *symbol,
+						      PTR data,
+						      asection *section,
+						      bfd *output_bfd,
+						      const char **error));
 
 static bfd_boolean in_reloc_p PARAMS((bfd *abfd, reloc_howto_type *howto));
 
@@ -1150,8 +1151,8 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		else
 		  {
 		    /* Write out the toc entry.  */
-		    record_toc (toc_section, our_toc_offset, priv,
-				strdup (name));
+		    record_toc(toc_section, our_toc_offset, priv,
+			       xstrdup(name));
 
 		    bfd_put_32 (output_bfd, val,
 			       toc_section->contents + our_toc_offset);
@@ -1196,8 +1197,8 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 			return FALSE;
 		      }
 
-		    record_toc (toc_section, our_toc_offset, pub,
-				strdup (name));
+		    record_toc(toc_section, our_toc_offset, pub,
+			       xstrdup(name));
 		  }
 		else if (IS_WRITTEN (our_toc_offset))
 		  {
@@ -1209,7 +1210,7 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		else
 		  {
 		    record_toc(toc_section, our_toc_offset, pub,
-			       strdup (name));
+			       xstrdup(name));
 
 		    /* Write out the toc entry.  */
 		    bfd_put_32 (output_bfd, val,
@@ -1669,7 +1670,7 @@ ppc_refhi_reloc(bfd *abfd ATTRIBUTE_UNUSED,
                 asymbol *symbol ATTRIBUTE_UNUSED,
                 PTR data ATTRIBUTE_UNUSED,
 		asection *input_section ATTRIBUTE_UNUSED, bfd *output_bfd,
-                char **error_message ATTRIBUTE_UNUSED)
+                const char **error_message ATTRIBUTE_UNUSED)
 {
   UN_IMPL("REFHI");
   DUMP_RELOC("REFHI",reloc_entry);
@@ -1685,7 +1686,7 @@ ppc_pair_reloc(bfd *abfd ATTRIBUTE_UNUSED,
                arelent *reloc_entry ATTRIBUTE_UNUSED,
                asymbol *symbol ATTRIBUTE_UNUSED, PTR data ATTRIBUTE_UNUSED,
                asection *input_section ATTRIBUTE_UNUSED, bfd *output_bfd,
-               char **error_message ATTRIBUTE_UNUSED)
+               const char **error_message ATTRIBUTE_UNUSED)
 {
   UN_IMPL("PAIR");
   DUMP_RELOC("PAIR",reloc_entry);
@@ -1702,7 +1703,7 @@ ppc_toc16_reloc(bfd *abfd ATTRIBUTE_UNUSED,
                 asymbol *symbol ATTRIBUTE_UNUSED,
                 PTR data ATTRIBUTE_UNUSED,
                 asection *input_section ATTRIBUTE_UNUSED, bfd *output_bfd,
-                char **error_message ATTRIBUTE_UNUSED)
+                const char **error_message ATTRIBUTE_UNUSED)
 {
   UN_IMPL("TOCREL16");
   DUMP_RELOC("TOCREL16",reloc_entry);
@@ -1719,7 +1720,7 @@ ppc_secrel_reloc(bfd *abfd ATTRIBUTE_UNUSED,
                  asymbol *symbol ATTRIBUTE_UNUSED,
                  PTR data ATTRIBUTE_UNUSED,
 		 asection *input_section ATTRIBUTE_UNUSED, bfd *output_bfd,
-                 char **error_message ATTRIBUTE_UNUSED)
+                 const char **error_message ATTRIBUTE_UNUSED)
 {
   UN_IMPL("SECREL");
   DUMP_RELOC("SECREL",reloc_entry);
@@ -1736,7 +1737,7 @@ ppc_section_reloc(bfd *abfd ATTRIBUTE_UNUSED,
                   asymbol *symbol ATTRIBUTE_UNUSED,
                   PTR data ATTRIBUTE_UNUSED,
                   asection *input_section ATTRIBUTE_UNUSED,
-                  bfd *output_bfd, char **error_message ATTRIBUTE_UNUSED)
+                  bfd *output_bfd, const char **error_message ATTRIBUTE_UNUSED)
 {
   UN_IMPL("SECTION");
   DUMP_RELOC("SECTION",reloc_entry);
@@ -1753,7 +1754,7 @@ ppc_imglue_reloc(bfd *abfd ATTRIBUTE_UNUSED,
                  asymbol *symbol ATTRIBUTE_UNUSED,
                  PTR data ATTRIBUTE_UNUSED,
                  asection *input_section ATTRIBUTE_UNUSED, bfd *output_bfd,
-                 char **error_message ATTRIBUTE_UNUSED)
+                 const char **error_message ATTRIBUTE_UNUSED)
 {
   UN_IMPL("IMGLUE");
   DUMP_RELOC("IMGLUE",reloc_entry);

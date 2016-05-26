@@ -71,35 +71,37 @@
 
 
 static bfd_reloc_status_type
-  MY(fix_pcrel_26)(bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  MY(fix_pcrel_26)(bfd *, arelent *, asymbol *, void *, asection *, bfd *,
+		   const char **);
 static bfd_reloc_status_type
-  MY(fix_pcrel_26_done)(bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  MY(fix_pcrel_26_done)(bfd *, arelent *, asymbol *, void *, asection *, bfd *,
+			const char **);
 
 reloc_howto_type MY (howto_table)[] =
 {
   /* Type rs size bsz pcrel bitpos ovrf sf name part_inpl
    * readmask setmask pcdone.  */
-  HOWTO(0, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, 0, (char *)"8", TRUE,
+  HOWTO(0, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, 0, "8", TRUE,
 	0x000000ff, 0x000000ff, FALSE),
-  HOWTO(1, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, 0, (char *)"16",
+  HOWTO(1, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, 0, "16",
 	TRUE, 0x0000ffff, 0x0000ffff, FALSE),
-  HOWTO(2, 0, 2, 32, FALSE, 0, complain_overflow_bitfield, 0, (char *)"32",
+  HOWTO(2, 0, 2, 32, FALSE, 0, complain_overflow_bitfield, 0, "32",
 	TRUE, 0xffffffff, 0xffffffff, FALSE),
-  HOWTO(3, 2, 2, 26, TRUE, 0, complain_overflow_signed, MY (fix_pcrel_26),
-	(char *)"ARM26", TRUE, 0x00ffffff, 0x00ffffff, TRUE),
-  HOWTO(4, 0, 0, 8, TRUE, 0, complain_overflow_signed, 0, (char *)"DISP8", TRUE,
+  HOWTO(3, 2, 2, 26, TRUE, 0, complain_overflow_signed, MY(fix_pcrel_26),
+	"ARM26", TRUE, 0x00ffffff, 0x00ffffff, TRUE),
+  HOWTO(4, 0, 0, 8, TRUE, 0, complain_overflow_signed, 0, "DISP8", TRUE,
 	0x000000ff, 0x000000ff, TRUE),
-  HOWTO(5, 0, 1, 16, TRUE, 0, complain_overflow_signed, 0, (char *)"DISP16",
+  HOWTO(5, 0, 1, 16, TRUE, 0, complain_overflow_signed, 0, "DISP16",
 	TRUE, 0x0000ffff, 0x0000ffff, TRUE),
-  HOWTO(6, 0, 2, 32, TRUE, 0, complain_overflow_signed, 0, (char *)"DISP32",
+  HOWTO(6, 0, 2, 32, TRUE, 0, complain_overflow_signed, 0, "DISP32",
 	TRUE, 0xffffffff, 0xffffffff, TRUE),
   HOWTO(7, 2, 2, 26, FALSE, 0, complain_overflow_signed,
-	MY(fix_pcrel_26_done), (char *)"ARM26D", TRUE, 0x0, 0x0,
+	MY(fix_pcrel_26_done), "ARM26D", TRUE, 0x0, 0x0,
 	FALSE),
   EMPTY_HOWTO(-1),
-  HOWTO(9, 0, -1, 16, FALSE, 0, complain_overflow_bitfield, 0, (char *)"NEG16",
+  HOWTO(9, 0, -1, 16, FALSE, 0, complain_overflow_bitfield, 0, "NEG16",
 	TRUE, 0x0000ffff, 0x0000ffff, FALSE),
-  HOWTO(10, 0, -2, 32, FALSE, 0, complain_overflow_bitfield, 0, (char *)"NEG32",
+  HOWTO(10, 0, -2, 32, FALSE, 0, complain_overflow_bitfield, 0, "NEG32",
 	TRUE, 0xffffffff, 0xffffffff, FALSE)
 };
 
@@ -233,7 +235,7 @@ MY (fix_pcrel_26_done) (bfd *abfd ATTRIBUTE_UNUSED,
 			void * data ATTRIBUTE_UNUSED,
 			asection *input_section ATTRIBUTE_UNUSED,
 			bfd *output_bfd ATTRIBUTE_UNUSED,
-			char **error_message ATTRIBUTE_UNUSED)
+			const char **error_message ATTRIBUTE_UNUSED)
 {
   /* This is dead simple at present.  */
   return bfd_reloc_ok;
@@ -246,7 +248,7 @@ MY (fix_pcrel_26) (bfd *abfd,
 		   void * data,
 		   asection *input_section,
 		   bfd *output_bfd,
-		   char **error_message ATTRIBUTE_UNUSED)
+		   const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
   bfd_size_type addr = reloc_entry->address;

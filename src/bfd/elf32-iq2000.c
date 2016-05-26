@@ -25,7 +25,7 @@
 
 /* Forward declarations.  */
 
-static bfd_reloc_status_type iq2000_elf_howto_hi16_reloc (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+static bfd_reloc_status_type iq2000_elf_howto_hi16_reloc (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 
 
 static reloc_howto_type iq2000_elf_howto_table [] =
@@ -241,7 +241,7 @@ iq2000_elf_howto_hi16_reloc (bfd *abfd ATTRIBUTE_UNUSED,
 			     void * data,
 			     asection *input_section,
 			     bfd *output_bfd,
-			     char **error_message ATTRIBUTE_UNUSED)
+			     const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_reloc_status_type ret;
   bfd_vma relocation;

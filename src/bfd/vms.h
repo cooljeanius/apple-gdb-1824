@@ -645,7 +645,7 @@ extern void        _bfd_vms_output_byte (bfd *, unsigned);
 extern void        _bfd_vms_output_short (bfd *, unsigned);
 extern void        _bfd_vms_output_long (bfd *, unsigned long);
 extern void        _bfd_vms_output_quad (bfd *, uquad);
-extern void        _bfd_vms_output_counted (bfd *, char *);
+extern void        _bfd_vms_output_counted (bfd *, const char *);
 extern void        _bfd_vms_output_dump (bfd *, unsigned char *, int);
 extern void        _bfd_vms_output_fill (bfd *, int, int);
 extern char *      _bfd_vms_length_hash_symbol (bfd *, const char *, int);

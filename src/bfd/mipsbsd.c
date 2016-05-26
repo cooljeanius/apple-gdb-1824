@@ -80,7 +80,7 @@ static bfd_boolean MY(write_object_contents) PARAMS ((bfd *abfd));
 
 static bfd_reloc_status_type mips_fix_jmp_addr
   PARAMS((bfd *, arelent *, struct bfd_symbol *, PTR, asection *,
-	  bfd *, char **));
+	  bfd *, const char **));
 static reloc_howto_type *MY(reloc_howto_type_lookup)
   PARAMS((bfd *, bfd_reloc_code_real_type));
 
@@ -205,7 +205,7 @@ static bfd_reloc_status_type
 mips_fix_jmp_addr(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
                   struct bfd_symbol *symbol, PTR data ATTRIBUTE_UNUSED,
                   asection *input_section, bfd *output_bfd,
-                  char **error_message ATTRIBUTE_UNUSED)
+                  const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation, pc;
 
@@ -245,13 +245,13 @@ mips_fix_jmp_addr(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
 
 static bfd_reloc_status_type
 mips_fix_hi16_s PARAMS((bfd *, arelent *, asymbol *, PTR,
-                        asection *, bfd *, char **));
+                        asection *, bfd *, const char **));
 
 static bfd_reloc_status_type
 mips_fix_hi16_s(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
                 asymbol *symbol, PTR data ATTRIBUTE_UNUSED,
                 asection *input_section ATTRIBUTE_UNUSED,
-                bfd *output_bfd, char **error_message ATTRIBUTE_UNUSED)
+                bfd *output_bfd, const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
 

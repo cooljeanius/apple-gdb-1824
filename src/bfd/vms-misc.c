@@ -27,6 +27,7 @@
 #include "sysdep.h"
 #include "bfdlink.h"
 #include "libbfd.h"
+#include "libiberty.h"
 
 #include "vms.h"
 
@@ -468,7 +469,7 @@ _bfd_vms_push (bfd * abfd, uquad val, int psect)
     {
       bfd_set_error (bfd_error_bad_value);
       (*_bfd_error_handler) (_("Stack overflow (%d) in _bfd_vms_push"), PRIV (stackptr));
-      exit (1);
+      xexit(1);
     }
 }
 
@@ -483,7 +484,7 @@ _bfd_vms_pop (bfd * abfd, int *psect)
     {
       bfd_set_error (bfd_error_bad_value);
       (*_bfd_error_handler) (_("Stack underflow in _bfd_vms_pop"));
-      exit (1);
+      xexit(1);
     }
   PRIV (stackptr)--;
   value = PRIV (stack[PRIV (stackptr)]).value;
@@ -788,7 +789,7 @@ _bfd_vms_output_quad (bfd * abfd, uquad value)
 /* Output c-string as counted string.  */
 
 void
-_bfd_vms_output_counted (bfd * abfd, char *value)
+_bfd_vms_output_counted(bfd *abfd, const char *value)
 {
   size_t len;
 

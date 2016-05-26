@@ -52,7 +52,7 @@ coff_mips_reloc (bfd *abfd,
 		 void * data,
 		 asection *input_section ATTRIBUTE_UNUSED,
 		 bfd *output_bfd,
-		 char **error_message ATTRIBUTE_UNUSED)
+		 const char **error_message ATTRIBUTE_UNUSED)
 {
   symvalue diff;
 

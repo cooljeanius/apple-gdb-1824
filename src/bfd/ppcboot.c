@@ -95,7 +95,7 @@ static bfd_boolean ppcboot_set_arch_mach
 static bfd_boolean ppcboot_get_section_contents
   PARAMS ((bfd *, asection *, PTR, file_ptr, bfd_size_type));
 static long ppcboot_get_symtab_upper_bound PARAMS ((bfd *));
-static char *mangle_name PARAMS ((bfd *, char *));
+static char *mangle_name PARAMS((bfd *, const char *));
 static long ppcboot_canonicalize_symtab PARAMS ((bfd *, asymbol **));
 static void ppcboot_get_symbol_info PARAMS ((bfd *, asymbol *, symbol_info *));
 static bfd_boolean ppcboot_set_section_contents
@@ -245,7 +245,7 @@ ppcboot_get_symtab_upper_bound(bfd *abfd ATTRIBUTE_UNUSED)
 
 /* Create a symbol name based on the bfd's filename: */
 static char *
-mangle_name(bfd *abfd, char *suffix)
+mangle_name(bfd *abfd, const char *suffix)
 {
   bfd_size_type size;
   char *buf;

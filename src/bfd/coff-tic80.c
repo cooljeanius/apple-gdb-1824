@@ -53,13 +53,13 @@ Boston, MA 02110-1301, USA.  */
 static void rtype2howto
   PARAMS((arelent *cache_ptr, struct internal_reloc *dst));
 static bfd_reloc_status_type ppbase_reloc
-  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 static bfd_reloc_status_type glob15_reloc
-  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 static bfd_reloc_status_type glob16_reloc
-  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 static bfd_reloc_status_type local16_reloc
-  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 static bfd_boolean coff_tic80_relocate_section
   PARAMS((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
           struct internal_reloc *, struct internal_syment *, asection **));
@@ -379,7 +379,7 @@ ppbase_reloc(bfd *abfd ATTRIBUTE_UNUSED,
              PTR data ATTRIBUTE_UNUSED,
              asection *input_section ATTRIBUTE_UNUSED,
              bfd *output_bfd ATTRIBUTE_UNUSED,
-             char **error_message ATTRIBUTE_UNUSED)
+             const char **error_message ATTRIBUTE_UNUSED)
 {
   /* FIXME: */
   abort();
@@ -393,7 +393,7 @@ glob15_reloc(bfd *abfd ATTRIBUTE_UNUSED,
              PTR data ATTRIBUTE_UNUSED,
              asection *input_section ATTRIBUTE_UNUSED,
              bfd *output_bfd ATTRIBUTE_UNUSED,
-             char **error_message ATTRIBUTE_UNUSED)
+             const char **error_message ATTRIBUTE_UNUSED)
 {
   /* FIXME: */
   abort();
@@ -407,7 +407,7 @@ glob16_reloc(bfd *abfd ATTRIBUTE_UNUSED,
              PTR data ATTRIBUTE_UNUSED,
              asection *input_section ATTRIBUTE_UNUSED,
              bfd *output_bfd ATTRIBUTE_UNUSED,
-             char **error_message ATTRIBUTE_UNUSED)
+             const char **error_message ATTRIBUTE_UNUSED)
 {
   /* FIXME: */
   abort();
@@ -421,7 +421,7 @@ local16_reloc(bfd *abfd ATTRIBUTE_UNUSED,
               PTR data ATTRIBUTE_UNUSED,
               asection *input_section ATTRIBUTE_UNUSED,
               bfd *output_bfd ATTRIBUTE_UNUSED,
-	      char **error_message ATTRIBUTE_UNUSED)
+	      const char **error_message ATTRIBUTE_UNUSED)
 {
   /* FIXME: */
   abort();

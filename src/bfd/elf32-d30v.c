@@ -30,13 +30,9 @@
 #define MIN32 (- MAX32 - 1)
 
 static bfd_reloc_status_type
-bfd_elf_d30v_reloc (bfd *abfd,
-		    arelent *reloc_entry,
-		    asymbol *symbol,
-		    void * data,
-		    asection *input_section,
-		    bfd *output_bfd,
-		    char **error_message)
+bfd_elf_d30v_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+		   void *data, asection *input_section, bfd *output_bfd,
+		   const char **error_message)
 {
   bfd_signed_vma relocation;
   bfd_vma in1, in2, num;
@@ -139,13 +135,9 @@ bfd_elf_d30v_reloc (bfd *abfd,
 }
 
 static bfd_reloc_status_type
-bfd_elf_d30v_reloc_21 (bfd *abfd,
-		       arelent *reloc_entry,
-		       asymbol *symbol,
-		       void * data,
-		       asection *input_section,
-		       bfd *output_bfd,
-		       char **error_message)
+bfd_elf_d30v_reloc_21(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+		      void *data, asection *input_section, bfd *output_bfd,
+		      const char **error_message)
 {
   bfd_vma relocation;
   bfd_vma in1, num;

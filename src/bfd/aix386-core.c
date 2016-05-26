@@ -422,7 +422,7 @@ swap_abort(void)
 #define	NO_GETS64 ((bfd_int64_t (*)(const void *))swap_abort)
 
 const bfd_target aix386_core_vec = {
-  (char *)"aix386-core",
+  "aix386-core",
   bfd_target_unknown_flavour,
   BFD_ENDIAN_BIG,		/* target byte order */
   BFD_ENDIAN_BIG,		/* target headers byte order */

@@ -36,7 +36,7 @@ struct _bfd_sparc_elf_app_reg
   unsigned char bind;
   unsigned short shndx;
   bfd *abfd;
-  char *name;
+  const char *name;
 };
 
 /* Sparc ELF linker hash table.  */

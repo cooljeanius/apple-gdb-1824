@@ -297,6 +297,10 @@ check_move (unsigned char insn0, unsigned char insn8)
       return FALSE;
     }
 
+  if (first_reg == second_reg) {
+    ; /* ??? */
+  }
+
   return first;
 }
 
@@ -575,6 +579,10 @@ print_insn (bfd_vma memaddr, struct disassemble_info *info,
 
   insn8 = insn[1];
   insn0 = insn[0];
+
+  if (insn0 == insn8) {
+    ; /* ??? */
+  }
 
   /* FIXME: Endianness always little.  */
   if (endianess == BFD_ENDIAN_BIG)

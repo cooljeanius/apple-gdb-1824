@@ -102,10 +102,10 @@ _bfd_ecoff_mkobject(bfd *abfd)
    specific information.  */
 
 void *
-_bfd_ecoff_mkobject_hook (bfd *abfd, void * filehdr, void * aouthdr)
+_bfd_ecoff_mkobject_hook(bfd *abfd, void *filehdr, void *aouthdr)
 {
-  struct internal_filehdr *internal_f = (struct internal_filehdr *) filehdr;
-  struct internal_aouthdr *internal_a = (struct internal_aouthdr *) aouthdr;
+  struct internal_filehdr *internal_f = (struct internal_filehdr *)filehdr;
+  struct internal_aouthdr *internal_a = (struct internal_aouthdr *)aouthdr;
   ecoff_data_type *ecoff;
 
   if (! _bfd_ecoff_mkobject (abfd))
@@ -119,8 +119,9 @@ _bfd_ecoff_mkobject_hook (bfd *abfd, void * filehdr, void * aouthdr)
     {
       int i;
 
-      ecoff->text_start = internal_a->text_start;
-      ecoff->text_end = (internal_a->text_start + internal_a->tsize);
+      ecoff->text_start = (unsigned long)internal_a->text_start;
+      ecoff->text_end = (unsigned long)(internal_a->text_start
+					+ internal_a->tsize);
       ecoff->gp = internal_a->gp_value;
       ecoff->gprmask = internal_a->gprmask;
       for (i = 0; i < 4; i++)
@@ -1042,7 +1043,7 @@ ecoff_emit_aggregate (bfd *abfd,
 
 /* Convert the type information to string format.  */
 
-static char *
+static const char *
 ecoff_type_to_string (bfd *abfd, FDR *fdr, unsigned int indx)
 {
   union aux_ext *aux_ptr;
@@ -1253,11 +1254,11 @@ ecoff_type_to_string (bfd *abfd, FDR *fdr, unsigned int indx)
 	  if (qualifiers[i].type == tqArray)
 	    {
 	      qualifiers[i].low_bound =
-		AUX_GET_DNLOW (bigendian, &aux_ptr[indx+2]);
+		(int)AUX_GET_DNLOW(bigendian, &aux_ptr[indx + 2]);
 	      qualifiers[i].high_bound =
-		AUX_GET_DNHIGH (bigendian, &aux_ptr[indx+3]);
+		(int)AUX_GET_DNHIGH(bigendian, &aux_ptr[indx + 3]);
 	      qualifiers[i].stride =
-		AUX_GET_WIDTH (bigendian, &aux_ptr[indx+4]);
+		(int)AUX_GET_WIDTH(bigendian, &aux_ptr[indx + 4]);
 	      indx += 5;
 	    }
 	}

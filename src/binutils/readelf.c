@@ -10245,7 +10245,7 @@ typedef struct Frame_Chunk
   /* DW_CFA_{undefined,same_value,offset,register,unreferenced}  */
   short int *col_type;
   int *col_offset;
-  char *augmentation;
+  const char *augmentation;
   unsigned int code_factor;
   int data_factor;
   unsigned long pc_begin;

@@ -282,7 +282,7 @@ bfd_elf_get_str_section (bfd *abfd, unsigned int shindex)
   return (char *) shstrtab;
 }
 
-char *
+const char *
 bfd_elf_string_from_elf_section(bfd *abfd, unsigned int shindex,
                                 unsigned int strindex)
 {
@@ -954,7 +954,7 @@ bfd_elf_generic_reloc (bfd *abfd ATTRIBUTE_UNUSED,
 		       void *data ATTRIBUTE_UNUSED,
 		       asection *input_section,
 		       bfd *output_bfd,
-		       char **error_message ATTRIBUTE_UNUSED)
+		       const char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd != NULL
       && (symbol->flags & BSF_SECTION_SYM) == 0
@@ -7001,7 +7001,7 @@ _bfd_elf_rel_vtable_reloc_fn
   (bfd *abfd ATTRIBUTE_UNUSED, arelent *re ATTRIBUTE_UNUSED,
    struct bfd_symbol *symbol ATTRIBUTE_UNUSED,
    void *data ATTRIBUTE_UNUSED, asection *is ATTRIBUTE_UNUSED,
-   bfd *obfd ATTRIBUTE_UNUSED, char **errmsg ATTRIBUTE_UNUSED)
+   bfd *obfd ATTRIBUTE_UNUSED, const char **errmsg ATTRIBUTE_UNUSED)
 {
   return bfd_reloc_ok;
 }
@@ -7039,18 +7039,18 @@ elfcore_make_pid (bfd *abfd)
    overwrite it.  */
 
 static bfd_boolean
-elfcore_maybe_make_sect (bfd *abfd, char *name, asection *sect)
+elfcore_maybe_make_sect(bfd *abfd, const char *name, asection *sect)
 {
   asection *sect2;
 
-	if (bfd_get_section_by_name (abfd, name) != NULL) {
-		return TRUE;
-	}
+  if (bfd_get_section_by_name(abfd, name) != NULL) {
+    return TRUE;
+  }
 
   sect2 = bfd_make_section (abfd, name);
-	if (sect2 == NULL) {
-		return FALSE;
-	}
+  if (sect2 == NULL) {
+    return FALSE;
+  }
 
   sect2->size = sect->size;
   sect2->filepos = sect->filepos;
@@ -7067,7 +7067,7 @@ elfcore_maybe_make_sect (bfd *abfd, char *name, asection *sect)
      PID is elfcore_make_pid (abfd).
    Both pseudosections have identical contents. */
 bfd_boolean
-_bfd_elfcore_make_pseudosection(bfd *abfd, char *name, size_t size,
+_bfd_elfcore_make_pseudosection(bfd *abfd, const char *name, size_t size,
                                 ufile_ptr filepos)
 {
   char buf[100];
@@ -7091,7 +7091,7 @@ _bfd_elfcore_make_pseudosection(bfd *abfd, char *name, size_t size,
   sect->flags = SEC_HAS_CONTENTS;
   sect->alignment_power = 2;
 
-  return elfcore_maybe_make_sect (abfd, name, sect);
+  return elfcore_maybe_make_sect(abfd, name, sect);
 }
 
 /* prstatus_t exists on:
@@ -7176,12 +7176,11 @@ elfcore_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 
 /* Create a pseudosection containing the exact contents of NOTE.  */
 static bfd_boolean
-elfcore_make_note_pseudosection (bfd *abfd,
-				 char *name,
-				 Elf_Internal_Note *note)
+elfcore_make_note_pseudosection(bfd *abfd, const char *name,
+				Elf_Internal_Note *note)
 {
-  return _bfd_elfcore_make_pseudosection (abfd, name,
-					  note->descsz, note->descpos);
+  return _bfd_elfcore_make_pseudosection(abfd, name,
+					 note->descsz, note->descpos);
 }
 
 /* There is NOT a consistent prfpregset_t across platforms,
@@ -7189,9 +7188,9 @@ elfcore_make_note_pseudosection (bfd *abfd,
    data structure apart.  */
 
 static bfd_boolean
-elfcore_grok_prfpreg (bfd *abfd, Elf_Internal_Note *note)
+elfcore_grok_prfpreg(bfd *abfd, Elf_Internal_Note *note)
 {
-  return elfcore_make_note_pseudosection (abfd, ".reg2", note);
+  return elfcore_make_note_pseudosection(abfd, ".reg2", note);
 }
 
 /* Linux dumps the Intel SSE regs in a note named "LINUX" with a note
@@ -7745,7 +7744,7 @@ elfcore_grok_nto_status(bfd *abfd, Elf_Internal_Note *note, pid_t *tid)
 
 static bfd_boolean
 elfcore_grok_nto_regs(bfd *abfd, Elf_Internal_Note *note, pid_t tid,
-		      char *base)
+		      const char *base)
 {
   char buf[100];
   char *name;
@@ -7951,7 +7950,7 @@ char *
 elfcore_write_prfpreg(bfd *abfd, char *buf, int *bufsiz,
 		      const void *fpregs, int size)
 {
-  char *note_name = "CORE";
+  const char *note_name = "CORE";
   return elfcore_write_note(abfd, buf, bufsiz,
 			    note_name, NT_FPREGSET, fpregs, size);
 }
@@ -7960,7 +7959,7 @@ char *
 elfcore_write_prxfpreg(bfd *abfd, char *buf, int *bufsiz,
                        const void *xfpregs, int size)
 {
-  char *note_name = "LINUX";
+  const char *note_name = "LINUX";
   return elfcore_write_note(abfd, buf, bufsiz,
 			    note_name, NT_PRXFPREG, xfpregs, size);
 }

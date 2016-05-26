@@ -71,7 +71,7 @@ coff_amd64_reloc (bfd *abfd,
 		  void * data,
 		  asection *input_section ATTRIBUTE_UNUSED,
 		  bfd *output_bfd,
-		  char **error_message ATTRIBUTE_UNUSED)
+		  const char **error_message ATTRIBUTE_UNUSED)
 {
   symvalue diff;
 
@@ -138,8 +138,10 @@ coff_amd64_reloc (bfd *abfd,
     diff -= pe_data (output_bfd)->pe_opthdr.ImageBase;
 #endif
 
-#define DOIT(x) \
-  x = ((x & ~howto->dst_mask) | (((x & howto->src_mask) + diff) & howto->dst_mask))
+#define DOIT(x, t) \
+  x = (t)((x & (t)~howto->dst_mask) \
+	  | (((x & (t)howto->src_mask) + diff) \
+	     & howto->dst_mask))
 
     if (diff != 0)
       {
@@ -150,16 +152,16 @@ coff_amd64_reloc (bfd *abfd,
 	  {
 	  case 0:
 	    {
-	      char x = bfd_get_8 (abfd, addr);
-	      DOIT (x);
-	      bfd_put_8 (abfd, x, addr);
+	      char x = bfd_get_8(abfd, addr);
+	      DOIT(x, char);
+	      bfd_put_8(abfd, x, addr);
 	    }
 	    break;
 
 	  case 1:
 	    {
 	      short x = bfd_get_16(abfd, addr);
-	      DOIT(x);
+	      DOIT(x, short);
 	      bfd_put_16(abfd, (bfd_vma)x, addr);
 	    }
 	    break;
@@ -167,20 +169,20 @@ coff_amd64_reloc (bfd *abfd,
 	  case 2:
 	    {
 	      long x = (long)bfd_get_32(abfd, addr);
-	      DOIT(x);
+	      DOIT(x, long);
 	      bfd_put_32(abfd, (bfd_vma)x, addr);
 	    }
 	    break;
 	  case 4:
 	    {
-	      long long x = bfd_get_64 (abfd, addr);
-	      DOIT (x);
-	      bfd_put_64 (abfd, (bfd_vma) x, addr);
+	      long long x = bfd_get_64(abfd, addr);
+	      DOIT(x, long long);
+	      bfd_put_64(abfd, (bfd_vma)x, addr);
 	    }
 	    break;
 
 	  default:
-	    abort ();
+	    abort();
 	  }
       }
 

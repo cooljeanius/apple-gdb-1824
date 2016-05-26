@@ -1084,7 +1084,7 @@ reloc_nil (bfd * abfd ATTRIBUTE_UNUSED,
 	   void * data ATTRIBUTE_UNUSED,
 	   asection *sec ATTRIBUTE_UNUSED,
 	   bfd *output_bfd ATTRIBUTE_UNUSED,
-	   char **error_message ATTRIBUTE_UNUSED)
+	   const char **error_message ATTRIBUTE_UNUSED)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (1, "reloc_nil (abfd %p, output_bfd %p)\n", abfd, output_bfd);

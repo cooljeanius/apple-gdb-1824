@@ -73,7 +73,7 @@ aout_adobe_callback(bfd *abfd)
   struct internal_exec *execp = exec_hdr(abfd);
   asection *sect;
   struct external_segdesc ext[1];
-  char *section_name;
+  const char *section_name;
   char try_again[30];	/* Name and number.  */
   char *newname;
   int trynum;
@@ -97,17 +97,17 @@ aout_adobe_callback(bfd *abfd)
       }
       switch (ext->e_type[0]) {
 	case N_TEXT:
-	  section_name = (char *)".text";
+	  section_name = ".text";
 	  flags = (SEC_CODE | SEC_LOAD | SEC_ALLOC | SEC_HAS_CONTENTS);
 	  break;
 
 	case N_DATA:
-	  section_name = (char *)".data";
+	  section_name = ".data";
 	  flags = (SEC_DATA | SEC_LOAD | SEC_ALLOC | SEC_HAS_CONTENTS);
 	  break;
 
 	case N_BSS:
-	  section_name = (char *)".bss";
+	  section_name = ".bss";
 	  flags = (SEC_DATA | SEC_HAS_CONTENTS);
 	  break;
 
@@ -132,7 +132,8 @@ aout_adobe_callback(bfd *abfd)
 	      /* Some other error -- slide into the sunset.  */
 	      return NULL;
 	  }
-	  sprintf(try_again, "%s%d", section_name, ++trynum);
+	  snprintf(try_again, sizeof(try_again), "%s%d", section_name,
+		   ++trynum);
 	  sect = bfd_make_section(abfd, try_again);
       }
 
@@ -469,7 +470,7 @@ aout_adobe_sizeof_headers(bfd *ignore_abfd ATTRIBUTE_UNUSED,
 
 const bfd_target a_out_adobe_vec =
 {
-  (char *)"a.out.adobe",		/* Name.  */
+  "a.out.adobe",		/* Name.  */
   bfd_target_aout_flavour,
   BFD_ENDIAN_BIG,		/* Data byte order is unknown (big assumed).  */
   BFD_ENDIAN_BIG,		/* Header byte order is big.  */

@@ -31,15 +31,15 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 
 static long get_symbol_value PARAMS ((asymbol *));
 static bfd_reloc_status_type a29k_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 static bfd_boolean coff_a29k_relocate_section
-  PARAMS ((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
-	   struct internal_reloc *, struct internal_syment *, asection **));
+  PARAMS((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
+	  struct internal_reloc *, struct internal_syment *, asection **));
 static bfd_boolean coff_a29k_adjust_symndx
-  PARAMS ((bfd *, struct bfd_link_info *, bfd *, asection *,
-	   struct internal_reloc *, bfd_boolean *));
+  PARAMS((bfd *, struct bfd_link_info *, bfd *, asection *,
+	  struct internal_reloc *, bfd_boolean *));
 static void reloc_processing
-  PARAMS ((arelent *, struct internal_reloc *, asymbol **, bfd *, asection *));
+  PARAMS((arelent *, struct internal_reloc *, asymbol **, bfd *, asection *));
 
 #define COFF_DEFAULT_SECTION_ALIGNMENT_POWER (2)
 
@@ -69,7 +69,7 @@ get_symbol_value(asymbol *symbol)
 
 static bfd_reloc_status_type
 a29k_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
-           asection *input_section, bfd *output_bfd, char **error_message)
+           asection *input_section, bfd *output_bfd, const char **error_message)
 {
   /* The consth relocation comes in two parts, we have to remember the
    * state between calls, in these variables: */
@@ -214,7 +214,8 @@ a29k_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
 /*FIXME: I am not real sure about this table... */
 static reloc_howto_type howto_table[] =
   {
-    {R_ABS,     0, 3, 32, FALSE, 0, complain_overflow_bitfield,a29k_reloc,(char *)"ABS",     TRUE, 0xffffffff,0xffffffff, FALSE},
+    { R_ABS,     0, 3, 32, FALSE, 0, complain_overflow_bitfield, a29k_reloc,
+      "ABS",     TRUE, 0xffffffff, 0xffffffff, FALSE},
     EMPTY_HOWTO (1),
     EMPTY_HOWTO (2),
     EMPTY_HOWTO (3),
@@ -238,14 +239,14 @@ static reloc_howto_type howto_table[] =
     EMPTY_HOWTO (21),
     EMPTY_HOWTO (22),
     EMPTY_HOWTO (23),
-    {R_IREL,    0, 3, 32, TRUE,  0, complain_overflow_signed,a29k_reloc,(char *)"IREL",    TRUE, 0xffffffff,0xffffffff, FALSE},
-    {R_IABS,    0, 3, 32, FALSE, 0, complain_overflow_bitfield, a29k_reloc,(char *)"IABS",    TRUE, 0xffffffff,0xffffffff, FALSE},
-    {R_ILOHALF, 0, 3, 16, TRUE,  0, complain_overflow_signed, a29k_reloc,(char *)"ILOHALF", TRUE, 0x0000ffff,0x0000ffff, FALSE},
-    {R_IHIHALF, 0, 3, 16, TRUE,  16, complain_overflow_signed, a29k_reloc,(char *)"IHIHALF", TRUE, 0xffff0000,0xffff0000, FALSE},
-    {R_IHCONST, 0, 3, 16, TRUE,  0, complain_overflow_signed, a29k_reloc,(char *)"IHCONST", TRUE, 0xffff0000,0xffff0000, FALSE},
-    {R_BYTE,    0, 0, 8, FALSE, 0, complain_overflow_bitfield, a29k_reloc,(char *)"BYTE",    TRUE, 0x000000ff,0x000000ff, FALSE},
-    {R_HWORD,   0, 1, 16, FALSE, 0, complain_overflow_bitfield, a29k_reloc,(char *)"HWORD",   TRUE, 0x0000ffff,0x0000ffff, FALSE},
-    {R_WORD,    0, 2, 32, FALSE, 0, complain_overflow_bitfield, a29k_reloc,(char *)"WORD",    TRUE, 0xffffffff,0xffffffff, FALSE},
+    {R_IREL,    0, 3, 32, TRUE,  0, complain_overflow_signed,a29k_reloc, "IREL",    TRUE, 0xffffffff,0xffffffff, FALSE},
+    {R_IABS,    0, 3, 32, FALSE, 0, complain_overflow_bitfield, a29k_reloc, "IABS",    TRUE, 0xffffffff,0xffffffff, FALSE},
+    {R_ILOHALF, 0, 3, 16, TRUE,  0, complain_overflow_signed, a29k_reloc, "ILOHALF", TRUE, 0x0000ffff,0x0000ffff, FALSE},
+    {R_IHIHALF, 0, 3, 16, TRUE,  16, complain_overflow_signed, a29k_reloc, "IHIHALF", TRUE, 0xffff0000,0xffff0000, FALSE},
+    {R_IHCONST, 0, 3, 16, TRUE,  0, complain_overflow_signed, a29k_reloc, "IHCONST", TRUE, 0xffff0000,0xffff0000, FALSE},
+    {R_BYTE,    0, 0, 8, FALSE, 0, complain_overflow_bitfield, a29k_reloc, "BYTE",    TRUE, 0x000000ff,0x000000ff, FALSE},
+    {R_HWORD,   0, 1, 16, FALSE, 0, complain_overflow_bitfield, a29k_reloc, "HWORD",   TRUE, 0x0000ffff,0x0000ffff, FALSE},
+    {R_WORD,    0, 2, 32, FALSE, 0, complain_overflow_bitfield, a29k_reloc, "WORD",    TRUE, 0xffffffff,0xffffffff, FALSE},
   };
 
 #define BADMAG(x) A29KBADMAG(x)

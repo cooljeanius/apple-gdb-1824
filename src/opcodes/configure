@@ -636,6 +636,7 @@ ac_header_list=
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
+WARN_WRITE_STRINGS
 NO_WERROR
 WARN_LDFLAGS
 WARN_DEFS
@@ -22146,9 +22147,9 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wmissing-declarations -Wimplicit -Wparentheses -Wextra -Wc++-compat \
 -Wgcc-compat -Wasm -Wdangling-else -Wused-but-marked-unused \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
--Wmissing-parameter-type -Wshadow -Wabi -Wmissing-include-dirs \
--Wshadow -Wmisleading-indentation -Wformat=2 -Wmissing-format-attribute \
--Wswitch -Wswitch-default -Wpacked -Wnull-dereference -Wstack-usage=262144"
+-Wmissing-parameter-type -Wabi -Wmissing-include-dirs \
+-Wmisleading-indentation -Wformat=2 -Wmissing-format-attribute \
+-Wswitch -Wswitch-default -Wpacked -Wnull-dereference -Whsa"
 if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
   test -n "${WANT_CONVERSION_WARNS}"
   # "-Wconversion" and friends are because of a comment in libbfd.c
@@ -22157,6 +22158,52 @@ if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
 fi
 WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint"
 WARN_LDFLAGS=""
+
+# Add -Wshadow if the compiler is a sufficiently recent version of GCC.
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+__GNUC__
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "^[0-3]$" >/dev/null 2>&1; then :
+
+else
+  WARN_CFLAGS="${WARN_CFLAGS} -Wshadow"
+fi
+rm -f conftest*
+
+# Add -Wstack-usage if the compiler is a sufficiently recent version of GCC
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+__GNUC__
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "^[0-4]$" >/dev/null 2>&1; then :
+
+else
+  WARN_CFLAGS="${WARN_CFLAGS} -Wstack-usage=262144"
+fi
+rm -f conftest*
+
+if test "x${GCC_WARN_CFLAGS}" != "x"; then
+  if test "x${GCC}" = "xyes"; then
+    test -n "${GCC}" && test -n "${GCC_WARN_CFLAGS}" && export WARN_CFLAGS="${WARN_CFLAGS} ${GCC_WARN_CFLAGS}"
+  fi
+fi
+
+# Set WARN_WRITE_STRINGS if the compiler supports -Wwrite-strings.
+WARN_WRITE_STRINGS=""
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+__GNUC__
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "^[0-3]$" >/dev/null 2>&1; then :
+
+else
+  WARN_WRITE_STRINGS="-Wwrite-strings"
+fi
+rm -f conftest*
 
 
 if test "x${acl_cv_wl}" = "x"; then
@@ -22376,6 +22423,267 @@ fi
 
 else
       test -d ../cgen
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wall" >&5
+$as_echo_n "checking whether C compiler handles -Wall... " >&6; }
+if ${gl_cv_warn_c__Wall+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wall"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__Wall=yes
+else
+  gl_cv_warn_c__Wall=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wall" >&5
+$as_echo "$gl_cv_warn_c__Wall" >&6; }
+if test "x$gl_cv_warn_c__Wall" = xyes; then :
+  as_fn_append WARN_CFLAGS " -Wall"
+fi
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -fno-strict-aliasing" >&5
+$as_echo_n "checking whether C compiler handles -fno-strict-aliasing... " >&6; }
+if ${gl_cv_warn_c__fno_strict_aliasing+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -fno-strict-aliasing"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__fno_strict_aliasing=yes
+else
+  gl_cv_warn_c__fno_strict_aliasing=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__fno_strict_aliasing" >&5
+$as_echo "$gl_cv_warn_c__fno_strict_aliasing" >&6; }
+if test "x$gl_cv_warn_c__fno_strict_aliasing" = xyes; then :
+  as_fn_append WARN_CFLAGS " -fno-strict-aliasing"
+fi
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wno-unused-but-set-variable" >&5
+$as_echo_n "checking whether C compiler handles -Wno-unused-but-set-variable... " >&6; }
+if ${gl_cv_warn_c__Wno_unused_but_set_variable+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wunused-but-set-variable"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__Wno_unused_but_set_variable=yes
+else
+  gl_cv_warn_c__Wno_unused_but_set_variable=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wno_unused_but_set_variable" >&5
+$as_echo "$gl_cv_warn_c__Wno_unused_but_set_variable" >&6; }
+if test "x$gl_cv_warn_c__Wno_unused_but_set_variable" = xyes; then :
+  as_fn_append WARN_CFLAGS " -Wno-unused-but-set-variable"
+fi
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wno-enum-compare" >&5
+$as_echo_n "checking whether C compiler handles -Wno-enum-compare... " >&6; }
+if ${gl_cv_warn_c__Wno_enum_compare+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wenum-compare"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__Wno_enum_compare=yes
+else
+  gl_cv_warn_c__Wno_enum_compare=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wno_enum_compare" >&5
+$as_echo "$gl_cv_warn_c__Wno_enum_compare" >&6; }
+if test "x$gl_cv_warn_c__Wno_enum_compare" = xyes; then :
+  as_fn_append WARN_CFLAGS " -Wno-enum-compare"
+fi
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wextra" >&5
+$as_echo_n "checking whether C compiler handles -Wextra... " >&6; }
+if ${gl_cv_warn_c__Wextra+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wextra"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__Wextra=yes
+else
+  gl_cv_warn_c__Wextra=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wextra" >&5
+$as_echo "$gl_cv_warn_c__Wextra" >&6; }
+if test "x$gl_cv_warn_c__Wextra" = xyes; then :
+  as_fn_append WARN_CFLAGS " -Wextra"
+fi
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wno-missing-field-initializers" >&5
+$as_echo_n "checking whether C compiler handles -Wno-missing-field-initializers... " >&6; }
+if ${gl_cv_warn_c__Wno_missing_field_initializers+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wmissing-field-initializers"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__Wno_missing_field_initializers=yes
+else
+  gl_cv_warn_c__Wno_missing_field_initializers=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wno_missing_field_initializers" >&5
+$as_echo "$gl_cv_warn_c__Wno_missing_field_initializers" >&6; }
+if test "x$gl_cv_warn_c__Wno_missing_field_initializers" = xyes; then :
+  as_fn_append WARN_CFLAGS " -Wno-missing-field-initializers"
+fi
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wno-shift-negative-value" >&5
+$as_echo_n "checking whether C compiler handles -Wno-shift-negative-value... " >&6; }
+if ${gl_cv_warn_c__Wno_shift_negative_value+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wshift-negative-value"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__Wno_shift_negative_value=yes
+else
+  gl_cv_warn_c__Wno_shift_negative_value=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wno_shift_negative_value" >&5
+$as_echo "$gl_cv_warn_c__Wno_shift_negative_value" >&6; }
+if test "x$gl_cv_warn_c__Wno_shift_negative_value" = xyes; then :
+  as_fn_append WARN_CFLAGS " -Wno-shift-negative-value"
+fi
+
+
+
 fi
 
 ## Output.

@@ -1,8 +1,8 @@
-/* Instruction printing code for the ARM
+/* arm-dis.c: Instruction printing code for the ARM
    Copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
    2007, Free Software Foundation, Inc.
-   Contributed by Richard Earnshaw (rwe@pegasus.esprit.ec.org)
-   Modification by James G. Smith (jsmith@cygnus.co.uk)
+   Contributed by Richard Earnshaw <rwe@pegasus.esprit.ec.org>
+   Modification by James G. Smith <jsmith@cygnus.co.uk>
 
    This file is part of libopcodes.
 
@@ -1784,7 +1784,7 @@ print_insn_coprocessor (bfd_vma pc, struct disassemble_info *info, long given,
 
 			/* Is ``imm'' a negative number?  */
 			if (imm & 0x40)
-			  imm |= (-1 << 7);
+			  imm |= (-1U << 7);
 
 			func (stream, "%d", imm);
 		      }
@@ -2693,7 +2693,7 @@ print_insn_arm (bfd_vma pc, struct disassemble_info *info, long given)
     return;
 
   if (show_opcode_bytes)
-    func (stream, "%8.8x ", given);
+    func(stream, "%8.8x ", (unsigned int)given);
   for (insn = arm_opcodes; insn->assembler; insn++)
     {
       if (insn->value == FIRST_IWMMXT_INSN
@@ -3049,7 +3049,7 @@ print_insn_thumb16 (bfd_vma pc, struct disassemble_info *info, long given)
   fprintf_ftype func = info->fprintf_func;
 
   if (show_opcode_bytes)
-    func (stream, "%4.4x     ", given);
+    func(stream, "%4.4x     ", (unsigned int)given);
   for (insn = thumb_opcodes; insn->assembler; insn++)
     if ((given & insn->mask) == insn->value)
       {
@@ -3340,7 +3340,7 @@ print_insn_thumb32 (bfd_vma pc, struct disassemble_info *info, long given)
     return;
 
   if (show_opcode_bytes)
-    func (stream, "%8.8x ", given);
+    func(stream, "%8.8x ", (unsigned int)given);
   for (insn = thumb32_opcodes; insn->assembler; insn++)
     if ((given & insn->mask) == insn->value)
       {

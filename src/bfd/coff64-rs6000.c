@@ -2128,11 +2128,11 @@ xcoff64_generate_rtinit(bfd *abfd, const char *init, const char *fini,
   union internal_auxent auxent;
   struct internal_reloc reloc;
 
-  char *text_name = ".text";
-  char *data_name = ".data";
-  char *bss_name = ".bss";
-  char *rtinit_name = "__rtinit";
-  char *rtld_name = "__rtld";
+  const char *text_name = ".text";
+  const char *data_name = ".data";
+  const char *bss_name = ".bss";
+  const char *rtinit_name = "__rtinit";
+  const char *rtld_name = "__rtld";
 
   if (! bfd_xcoff_rtinit_size(abfd))
     return FALSE;

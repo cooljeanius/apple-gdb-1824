@@ -34,16 +34,16 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 #include <stdlib.h>
 
 static char writecode;
-static char *it;
+static const char *it;
 static int code;
-static char * repeat;
-static char *oldrepeat;
-static char *name;
+static const char *repeat;
+static const char *oldrepeat;
+static const char *name;
 static int rdepth;
-static char *names[] = { " ", "[n]", "[n][m]" };
-static char *pnames[] = { "", "*", "**" };
+static const char *names[] = { " ", "[n]", "[n][m]" };
+static const char *pnames[] = { "", "*", "**" };
 
-static int yyerror(char *s);
+static int yyerror(const char *s);
 extern int yylex(void);
 %}
 
@@ -116,11 +116,11 @@ it:
 	  case 'd':
 	    printf("\n\n\n#define IT_%s_CODE 0x%x\n", it,code);
 	    printf("struct IT_%s;\n", it);
-	    printf("extern void sysroff_swap_%s_in PARAMS ((struct IT_%s *));\n",
+	    printf("extern void sysroff_swap_%s_in PARAMS((struct IT_%s *));\n",
 		   $2, it);
-	    printf("extern void sysroff_swap_%s_out PARAMS ((FILE *, struct IT_%s *));\n",
+	    printf("extern void sysroff_swap_%s_out PARAMS((FILE *, struct IT_%s *));\n",
 		   $2, it);
-	    printf("extern void sysroff_print_%s_out PARAMS ((struct IT_%s *));\n",
+	    printf("extern void sysroff_print_%s_out PARAMS((struct IT_%s *));\n",
 		   $2, it);
 	    printf("struct IT_%s { \n", it);
 	    break;
@@ -140,11 +140,11 @@ it:
 	    printf("{\n");
 	    printf("\tunsigned char raw[255];\n");
 	    printf("\tint idx = 16 ;\n");
-	    printf("\tmemset (raw, 0, 255);\n");
+	    printf("\tmemset(raw, 0, 255);\n");
 	    printf("\tcode = IT_%s_CODE;\n", it);
 	    break;
 	  case 'o':
-	    printf("void sysroff_swap_%s_out(bfd * abfd, struct IT_%s *ptr)\n",
+	    printf("void sysroff_swap_%s_out(bfd *abfd, struct IT_%s *ptr)\n",
                    $2, it);
 	    printf("{\n");
 	    printf("\tint idx = 0;\n");
@@ -277,21 +277,21 @@ it_field:
 	  char *desc = $2;
 	  char *type = $4;
 	  int size = $5;
-	  char *id = $7;
-          char *p = names[rdepth];
-          char *ptr = pnames[rdepth];
+	  char *the_id = $7;
+          const char *p = names[rdepth];
+          const char *ptr = pnames[rdepth];
 	  switch (writecode)
 	    {
 	    case 'g':
 	      if (size % 8)
 		{
 		  printf("\twriteBITS(ptr->%s%s, raw, &idx, %d);\n",
-			 id, names[rdepth], size);
+			 the_id, names[rdepth], size);
 		}
 	      else
                 {
                   printf("\twrite%s(ptr->%s%s, raw, &idx, %d, file);\n",
-                         type, id, names[rdepth], (size / 8));
+                         type, the_id, names[rdepth], (size / 8));
 		}
 	      break;
 	    case 'i':
@@ -299,53 +299,53 @@ it_field:
 		if (rdepth >= 1)
 		  {
 		    printf("\tif (!ptr->%s) ptr->%s = (%s*)xcalloc(%s, sizeof(ptr->%s[0]));\n",
-			   id, id, type, repeat, id);
+			   the_id, the_id, type, repeat, the_id);
 		  }
 
 		if (rdepth == 2)
 		  {
 		    printf("\tif (!ptr->%s[n]) ptr->%s[n] = (%s**)xcalloc(%s[n], sizeof(ptr->%s[n][0]));\n",
-			   id, id, type, repeat, id);
+			   the_id, the_id, type, repeat, the_id);
 		  }
 	      }
 
 	      if (size % 8)
 		{
 		  printf("\tptr->%s%s = getBITS(raw, &idx, %d, size);\n",
-			 id, names[rdepth], size);
+			 the_id, names[rdepth], size);
 		}
 	      else
                 {
                   printf("\tptr->%s%s = get%s(raw, &idx, %d, size);\n",
-                         id, names[rdepth], type, (size / 8));
+                         the_id, names[rdepth], type, (size / 8));
 		}
 	      break;
 	    case 'o':
 	      printf("\tput%s(raw, %d, %d, &idx, ptr->%s%s);\n",
-                     type, (size / 8), (size % 8), id, names[rdepth]);
+                     type, (size / 8), (size % 8), the_id, names[rdepth]);
 	      break;
 	    case 'd':
 	      if (repeat)
 		printf("\t/* repeat %s */\n", repeat);
 
               if (type[0] == 'I') {
-                printf("\tint %s%s; \t/* %s */\n", ptr, id, desc);
+                printf("\tint %s%s; \t/* %s */\n", ptr, the_id, desc);
               } else if (type[0] =='C') {
-                printf("\tchar %s*%s;\t /* %s */\n", ptr, id, desc);
+                printf("\tchar %s*%s;\t /* %s */\n", ptr, the_id, desc);
               } else {
-                printf("\tbarray %s%s;\t /* %s */\n", ptr, id, desc);
+                printf("\tbarray %s%s;\t /* %s */\n", ptr, the_id, desc);
               }
               break;
             case 'c':
               printf("\ttabout();\n");
-              printf("\tprintf(\"/*%-30s*/ ptr->%s = \");\n", desc, id);
+              printf("\tprintf(\"/*%-30s*/ ptr->%s = \");\n", desc, the_id);
 
               if (type[0] == 'I') {
-                printf("\tprintf(\"%%d\\n\", ptr->%s%s);\n", id, p);
+                printf("\tprintf(\"%%d\\n\", ptr->%s%s);\n", the_id, p);
               } else if (type[0] == 'C') {
-                printf("\tprintf(\"%%s\\n\", ptr->%s%s);\n", id, p);
+                printf("\tprintf(\"%%s\\n\", ptr->%s%s);\n", the_id, p);
               } else if (type[0] == 'B') {
-                printf("\tpbarray(&ptr->%s%s);\n", id,p);
+                printf("\tpbarray(&ptr->%s%s);\n", the_id, p);
               } else {
                 abort();
               }
@@ -360,7 +360,7 @@ it_field:
 
 attr_type:
 	 TYPE { $$ = $1; }
- 	|  { $$ = "INT";}
+ 	|  { $$ = (char *)"INT";}
 	;
 
 attr_desc:
@@ -376,7 +376,7 @@ attr_size:
 
 attr_id:
 		'(' NAME ')'	{ $$ = $2; }
-	|	{ $$ = "dummy";}
+	|	{ $$ = (char *)"dummy";}
 	;
 
 enums:
@@ -423,15 +423,17 @@ main(int ac, char **av)
   if (writecode == 'd')
     {
       printf("typedef struct { unsigned char *data; int len; } barray; \n");
-      printf("typedef  int INT;\n");
-      printf("typedef  char * CHARS;\n");
+      printf("typedef int INT;\n");
+      printf("typedef char *CHARS;\n");
+      printf("\n/* End text from main() in sysinfo.y */");
     }
   yyparse();
   return 0;
 }
 
+/* */
 static int
-yyerror(char *s)
+yyerror(const char *s)
 {
   fprintf(stderr, "%s\n", s);
   return 0;

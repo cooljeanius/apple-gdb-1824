@@ -128,6 +128,7 @@ bindir = @bindir@
 sbindir = @sbindir@
 libexecdir = @libexecdir@
 datadir = @datadir@
+datarootdir = @datarootdir@
 sysconfdir = @sysconfdir@
 sharedstatedir = @sharedstatedir@
 localstatedir = @localstatedir@
@@ -299,6 +300,9 @@ test: $(TCLSH_PROG)
 	$(TCLSH_PROG) `@CYGPATH@ $(srcdir)/tests/all.tcl` \
 		-exedir `@CYGPATH@ $(bindir)` $(TESTFLAGS)
 
+check:
+	@echo "$(TCLSH_PROG)"
+
 depend:
 
 #========================================================================
@@ -445,7 +449,7 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
 
 #config.status: $(srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 #	$(SHELL) ./config.status --recheck
-#$(srcdir)/configure: $(srcdir)/configure.in $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCIES)
+#$(srcdir)/configure: $(srcdir)/configure.ac $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCIES)
 #	cd $(srcdir) && $(AUTOCONF)
 
 
@@ -462,7 +466,7 @@ installdirs:
 	$(mkinstalldirs)  $(ITK_LIBRARY)
 
 .PHONY: all binaries clean depend distclean doc install installdirs \
-libraries test
+libraries check test
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

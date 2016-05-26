@@ -300,10 +300,10 @@ struct reloc_howto_struct
      instructions).  */
   bfd_reloc_status_type (*special_function)
     (bfd *, arelent *, struct bfd_symbol *, void *, asection *,
-     bfd *, char **);
+     bfd *, const char **);
 
   /* The textual name of the relocation type.  */
-  char *name;
+  const char *name;
 
   /* Some formats record a relocation addend in the section contents
      rather than with the relocation.  For ELF formats this is the
@@ -446,7 +446,7 @@ bfd_reloc_status_type bfd_perform_relocation
     void *data,
     asection *input_section,
     bfd *output_bfd,
-    char **error_message);
+    const char **error_message);
 @end example
 @strong{Description}@*
 If @var{output_bfd} is supplied to this function, the
@@ -473,7 +473,7 @@ bfd_reloc_status_type bfd_install_relocation
     arelent *reloc_entry,
     void *data, bfd_vma data_start,
     asection *input_section,
-    char **error_message);
+    const char **error_message);
 @end example
 @strong{Description}@*
 This looks remarkably like @code{bfd_perform_relocation}, except it

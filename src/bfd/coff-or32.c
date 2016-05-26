@@ -28,17 +28,17 @@
 #include "libcoff.h"
 
 static long get_symbol_value
-  PARAMS ((asymbol *));
+  PARAMS((asymbol *));
 static bfd_reloc_status_type or32_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 static bfd_boolean coff_or32_relocate_section
-  PARAMS ((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
-	   struct internal_reloc *, struct internal_syment *, asection **));
+  PARAMS((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
+	  struct internal_reloc *, struct internal_syment *, asection **));
 static bfd_boolean coff_or32_adjust_symndx
-  PARAMS ((bfd *, struct bfd_link_info *, bfd *, asection *,
-	   struct internal_reloc *, bfd_boolean *));
+  PARAMS((bfd *, struct bfd_link_info *, bfd *, asection *,
+	  struct internal_reloc *, bfd_boolean *));
 static void reloc_processing
-  PARAMS ((arelent *, struct internal_reloc *, asymbol **, bfd *, asection *));
+  PARAMS((arelent *, struct internal_reloc *, asymbol **, bfd *, asection *));
 
 #define COFF_DEFAULT_SECTION_ALIGNMENT_POWER (2)
 
@@ -76,7 +76,7 @@ get_symbol_value(asymbol *symbol)
 static bfd_reloc_status_type
 or32_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
            asection *input_section, bfd *output_bfd,
-           char **error_message)
+           const char **error_message)
 {
   /* The consth relocation comes in two parts, we have to remember the
    * state between calls, in these variables.  */
@@ -432,7 +432,7 @@ coff_or32_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
           return FALSE;
 
         case R_IREL:
-          insn = bfd_get_32 (input_bfd, loc);
+          insn = (unsigned long)bfd_get_32(input_bfd, loc);
 
           /* Extract the addend.  */
           signed_value = EXTRACT_JUMPTARG (insn);
@@ -440,12 +440,12 @@ coff_or32_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
           signed_value <<= 2;
 
           /* Determine the destination of the jump.  */
-          signed_value += val;
+          signed_value += (long)val;
 
 	  /* Make the destination PC relative.  */
-	  signed_value -= (input_section->output_section->vma
-			   + input_section->output_offset
-			   + (rel->r_vaddr - input_section->vma));
+	  signed_value -= (long)(input_section->output_section->vma
+				 + input_section->output_offset
+				 + (rel->r_vaddr - input_section->vma));
 	  if (signed_value > 0x7ffffff || signed_value < - 0x8000000)
 	    {
 	      overflow = TRUE;
@@ -460,9 +460,9 @@ coff_or32_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
           break;
 
         case R_ILOHALF:
-          insn = bfd_get_32(input_bfd, loc);
+          insn = (unsigned long)bfd_get_32(input_bfd, loc);
           unsigned_value = EXTRACT_HWORD(insn);
-          unsigned_value += val;
+          unsigned_value += (unsigned long)val;
           insn = INSERT_HWORD(insn, unsigned_value);
           bfd_put_32(input_bfd, (bfd_vma)insn, loc);
           break;
@@ -483,8 +483,8 @@ coff_or32_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
               hihalf_val = 0;
             }
 
-          insn = bfd_get_32 (input_bfd, loc);
-          unsigned_value = rel->r_symndx + hihalf_val;
+          insn = (unsigned long)bfd_get_32(input_bfd, loc);
+          unsigned_value = (unsigned long)(rel->r_symndx + hihalf_val);
           unsigned_value >>= 16;
           insn = INSERT_HWORD (insn, unsigned_value);
           bfd_put_32 (input_bfd, (bfd_vma) insn, loc);

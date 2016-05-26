@@ -37,9 +37,9 @@
 /* RELA relocations are used here.  */
 
 static bfd_reloc_status_type ppc_elf_addr16_ha_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_reloc_status_type ppc_elf_unhandled_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 
 /* Branch prediction bit for branch taken relocs.  */
 #define BRANCH_PREDICT_BIT 0x200000
@@ -1601,7 +1601,7 @@ ppc_elf_addr16_ha_reloc (bfd *abfd ATTRIBUTE_UNUSED,
 			 void *data ATTRIBUTE_UNUSED,
 			 asection *input_section,
 			 bfd *output_bfd,
-			 char **error_message ATTRIBUTE_UNUSED)
+			 const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
 
@@ -1631,13 +1631,9 @@ ppc_elf_addr16_ha_reloc (bfd *abfd ATTRIBUTE_UNUSED,
 }
 
 static bfd_reloc_status_type
-ppc_elf_unhandled_reloc (bfd *abfd,
-			 arelent *reloc_entry,
-			 asymbol *symbol,
-			 void *data,
-			 asection *input_section,
-			 bfd *output_bfd,
-			 char **error_message)
+ppc_elf_unhandled_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+			void *data, asection *input_section, bfd *output_bfd,
+			const char **error_message)
 {
   /* If this is a relocatable link (output_bfd test tells us), just
      call the generic function.  Any adjustment will be done at final

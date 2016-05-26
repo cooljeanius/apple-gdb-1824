@@ -44,17 +44,17 @@ static void mips_adjust_reloc_in
 static void mips_adjust_reloc_out
   PARAMS ((bfd *, const arelent *, struct internal_reloc *));
 static bfd_reloc_status_type mips_generic_reloc
-  PARAMS ((bfd *abfd, arelent *reloc, asymbol *symbol, PTR data,
-	   asection *section, bfd *output_bfd, char **error));
+  PARAMS((bfd *abfd, arelent *reloc, asymbol *symbol, PTR data,
+	  asection *section, bfd *output_bfd, const char **error));
 static bfd_reloc_status_type mips_refhi_reloc
-  PARAMS ((bfd *abfd, arelent *reloc, asymbol *symbol, PTR data,
-	   asection *section, bfd *output_bfd, char **error));
+  PARAMS((bfd *abfd, arelent *reloc, asymbol *symbol, PTR data,
+	  asection *section, bfd *output_bfd, const char **error));
 static bfd_reloc_status_type mips_reflo_reloc
-  PARAMS ((bfd *abfd, arelent *reloc, asymbol *symbol, PTR data,
-	   asection *section, bfd *output_bfd, char **error));
+  PARAMS((bfd *abfd, arelent *reloc, asymbol *symbol, PTR data,
+	  asection *section, bfd *output_bfd, const char **error));
 static bfd_reloc_status_type mips_gprel_reloc
-  PARAMS ((bfd *abfd, arelent *reloc, asymbol *symbol, PTR data,
-	   asection *section, bfd *output_bfd, char **error));
+  PARAMS((bfd *abfd, arelent *reloc, asymbol *symbol, PTR data,
+	  asection *section, bfd *output_bfd, const char **error));
 static void mips_relocate_hi
   PARAMS ((struct internal_reloc *refhi, struct internal_reloc *reflo,
 	   bfd *input_bfd, asection *input_section, bfd_byte *contents,
@@ -399,7 +399,7 @@ static bfd_reloc_status_type
 mips_generic_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
 		   asymbol *symbol, PTR data ATTRIBUTE_UNUSED,
 		   asection *input_section, bfd *output_bfd,
-		   char **error_message ATTRIBUTE_UNUSED)
+		   const char **error_message ATTRIBUTE_UNUSED)
 {
   if ((output_bfd != (bfd *)NULL)
       && ((symbol->flags & BSF_SECTION_SYM) == 0)
@@ -434,7 +434,7 @@ static struct mips_hi *mips_refhi_list;
 static bfd_reloc_status_type
 mips_refhi_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
 		 asymbol *symbol, PTR data, asection *input_section,
-		 bfd *output_bfd, char **error_message ATTRIBUTE_UNUSED)
+		 bfd *output_bfd, const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_reloc_status_type ret;
   bfd_vma relocation;
@@ -489,7 +489,7 @@ mips_refhi_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
 static bfd_reloc_status_type
 mips_reflo_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 		 PTR data, asection *input_section, bfd *output_bfd,
-		 char **error_message)
+		 const char **error_message)
 {
   if (mips_refhi_list != NULL)
     {
@@ -548,7 +548,7 @@ mips_reflo_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 static bfd_reloc_status_type
 mips_gprel_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 		 PTR data, asection *input_section, bfd *output_bfd,
-		 char **error_message)
+		 const char **error_message)
 {
   bfd_boolean relocatable;
   bfd_vma gp;

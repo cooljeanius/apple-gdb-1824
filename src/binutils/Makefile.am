@@ -65,7 +65,7 @@ C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 
 WARN_CFLAGS = @WARN_CFLAGS@
 NO_WERROR = @NO_WERROR@
-AM_CFLAGS = $(WARN_CFLAGS) $(C_ARCHFLAGS)
+AM_CFLAGS = $(WARN_CFLAGS) $(C_ARCHFLAGS) @MAINT@ $(WARN_WRITE_STRINGS)
 AM_DEFS = @WARN_DEFS@
 AM_LDFLAGS = -framework CoreFoundation -L../readline -L../intl \
   -L../libiberty -L../bfd -L../opcodes @WARN_LDFLAGS@

@@ -3,7 +3,7 @@
    2005 Free Software Foundation, Inc.
 
    Contributed by the Center for Software Science at the
-   University of Utah (pa-gdb-bugs@cs.utah.edu).
+   University of Utah <pa-gdb-bugs@cs.utah.edu>.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -1102,7 +1102,7 @@ print_insn_hppa (bfd_vma memaddr, disassemble_info *info)
 		    int disp;
 
 		    if (sign)
-		      disp = (-1 << 10) | imm10;
+		      disp = ((-1U << 10) | imm10);
 		    else
 		      disp = imm10;
 
@@ -1118,7 +1118,7 @@ print_insn_hppa (bfd_vma memaddr, disassemble_info *info)
 		    int disp;
 
 		    if (sign)
-		      disp = (-1 << 11) | imm11;
+		      disp = ((-1U << 11) | imm11);
 		    else
 		      disp = imm11;
 

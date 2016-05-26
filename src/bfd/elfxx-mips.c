@@ -1276,7 +1276,7 @@ bfd_reloc_status_type
 _bfd_mips_elf_hi16_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
                          asymbol *symbol ATTRIBUTE_UNUSED, void *data,
                          asection *input_section, bfd *output_bfd,
-                         char **error_message ATTRIBUTE_UNUSED)
+                         const char **error_message ATTRIBUTE_UNUSED)
 {
   struct mips_hi16 *n;
 
@@ -1306,7 +1306,7 @@ _bfd_mips_elf_hi16_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
 bfd_reloc_status_type
 _bfd_mips_elf_got16_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 			  void *data, asection *input_section,
-			  bfd *output_bfd, char **error_message)
+			  bfd *output_bfd, const char **error_message)
 {
   if (((symbol->flags & (BSF_GLOBAL | BSF_WEAK)) != 0)
       || bfd_is_und_section(bfd_get_section(symbol))
@@ -1327,7 +1327,7 @@ _bfd_mips_elf_got16_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 bfd_reloc_status_type
 _bfd_mips_elf_lo16_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 			 void *data, asection *input_section,
-			 bfd *output_bfd, char **error_message)
+			 bfd *output_bfd, const char **error_message)
 {
   bfd_vma vallo;
   bfd_byte *location = ((bfd_byte *)data + reloc_entry->address);
@@ -1383,7 +1383,7 @@ bfd_reloc_status_type
 _bfd_mips_elf_generic_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
 			    asymbol *symbol, void *data ATTRIBUTE_UNUSED,
 			    asection *input_section, bfd *output_bfd,
-			    char **error_message ATTRIBUTE_UNUSED)
+			    const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_signed_vma val;
   bfd_reloc_status_type status;
@@ -4703,7 +4703,7 @@ _bfd_elf_mips_mach(flagword flags)
 }
 
 /* Return printable name for ABI: */
-static INLINE char *
+static INLINE const char *
 elf_mips_abi_name(bfd *abfd)
 {
   flagword flags;
@@ -8812,7 +8812,7 @@ _bfd_elf_mips_get_relocated_section_contents
       /* end mips */
       for (parent = reloc_vector; *parent != NULL; parent++)
 	{
-	  char *error_message = NULL;
+	  const char *error_message = NULL;
 	  bfd_reloc_status_type r;
 
 	  /* Specific to MIPS: Deal with relocation types that require
@@ -8823,8 +8823,8 @@ _bfd_elf_mips_get_relocated_section_contents
 	     function for the relocation then go ahead, else default
 	     to the generic handling.  */
 	  if (gp_found
-	      && (*parent)->howto->special_function
-	      == _bfd_mips_elf32_gprel16_reloc)
+	      && ((*parent)->howto->special_function
+		  == _bfd_mips_elf32_gprel16_reloc))
 	    r = _bfd_mips_elf_gprel16_with_gp (input_bfd, sym, *parent,
 					       input_section, relocatable,
 					       data, gp);

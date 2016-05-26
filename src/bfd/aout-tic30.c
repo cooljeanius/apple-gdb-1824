@@ -157,13 +157,11 @@ static bfd_reloc_status_type
    relocation to add on to the value in the object code.  */
 
 static bfd_reloc_status_type
-tic30_aout_fix_pcrel_16 (bfd *abfd,
-			 arelent *reloc_entry,
-			 asymbol *symbol ATTRIBUTE_UNUSED,
-			 void * data,
-			 asection *input_section ATTRIBUTE_UNUSED,
-			 bfd *output_bfd ATTRIBUTE_UNUSED,
-			 char **error_message ATTRIBUTE_UNUSED)
+tic30_aout_fix_pcrel_16(bfd *abfd, arelent *reloc_entry,
+			asymbol *symbol ATTRIBUTE_UNUSED,
+			void *data, asection *input_section ATTRIBUTE_UNUSED,
+			bfd *output_bfd ATTRIBUTE_UNUSED,
+			const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation = 1;
   bfd_byte offset_data = bfd_get_8 (abfd, (bfd_byte *) data + reloc_entry->address - 1);
@@ -187,13 +185,9 @@ tic30_aout_fix_pcrel_16 (bfd *abfd,
    that.  */
 
 static bfd_reloc_status_type
-tic30_aout_fix_16 (bfd *abfd,
-		   arelent *reloc_entry,
-		   asymbol *symbol,
-		   void * data,
-		   asection *input_section ATTRIBUTE_UNUSED,
-		   bfd *output_bfd,
-		   char **error_message ATTRIBUTE_UNUSED)
+tic30_aout_fix_16(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+		  void *data, asection *input_section ATTRIBUTE_UNUSED,
+		  bfd *output_bfd, const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
 
@@ -213,7 +207,7 @@ tic30_aout_fix_16 (bfd *abfd,
 static bfd_reloc_status_type
 tic30_aout_fix_32(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
                   void *data, asection *input_section ATTRIBUTE_UNUSED,
-                  bfd *output_bfd, char **error_message ATTRIBUTE_UNUSED)
+                  bfd *output_bfd, const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
 
@@ -234,17 +228,17 @@ tic30_aout_fix_32(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
    it.  */
 reloc_howto_type tic30_aout_howto_table[] =
 {
-  EMPTY_HOWTO (-1),
-  HOWTO (1, 2, 1, 16, FALSE, 0, 0, tic30_aout_fix_16,
-	 (char *)"16", FALSE, 0x0000FFFF, 0x0000FFFF, FALSE),
-  HOWTO (2, 2, 2, 24, FALSE, 0, complain_overflow_bitfield, NULL,
-	 (char *)"24", FALSE, 0x00FFFFFF, 0x00FFFFFF, FALSE),
-  HOWTO (3, 18, 3, 24, FALSE, 0, complain_overflow_bitfield, NULL,
-	 (char *)"LDP", FALSE, 0x00FF0000, 0x000000FF, FALSE),
-  HOWTO (4, 2, 4, 32, FALSE, 0, complain_overflow_bitfield, tic30_aout_fix_32,
-	 (char *)"32", FALSE, 0xFFFFFFFF, 0xFFFFFFFF, FALSE),
-  HOWTO (5, 2, 1, 16, TRUE, 0, complain_overflow_signed,
-	 tic30_aout_fix_pcrel_16, (char *)"PCREL", TRUE, 0x0000FFFF, 0x0000FFFF, TRUE),
+  EMPTY_HOWTO(-1),
+  HOWTO(1, 2, 1, 16, FALSE, 0, 0, tic30_aout_fix_16,
+	"16", FALSE, 0x0000FFFF, 0x0000FFFF, FALSE),
+  HOWTO(2, 2, 2, 24, FALSE, 0, complain_overflow_bitfield, NULL,
+	"24", FALSE, 0x00FFFFFF, 0x00FFFFFF, FALSE),
+  HOWTO(3, 18, 3, 24, FALSE, 0, complain_overflow_bitfield, NULL,
+	"LDP", FALSE, 0x00FF0000, 0x000000FF, FALSE),
+  HOWTO(4, 2, 4, 32, FALSE, 0, complain_overflow_bitfield, tic30_aout_fix_32,
+	"32", FALSE, 0xFFFFFFFF, 0xFFFFFFFF, FALSE),
+  HOWTO(5, 2, 1, 16, TRUE, 0, complain_overflow_signed,
+	tic30_aout_fix_pcrel_16, "PCREL", TRUE, 0x0000FFFF, 0x0000FFFF, TRUE),
   EMPTY_HOWTO(-1),
   EMPTY_HOWTO(-1),
   EMPTY_HOWTO(-1),

@@ -30,6 +30,7 @@ exec_prefix =	@exec_prefix@
 
 srcdir = @srcdir@
 bindir = @bindir@
+datarootdir = @datarootdir@
 
 # The following definition can be set to non-null for special systems
 # like AFS with replication.  It allows the pathnames used for installation
@@ -126,6 +127,15 @@ test:
 	$(TCLSH_PROG) `@CYGPATH@ $(srcdir)/tests/all.tcl` \
 		-exedir `@CYGPATH@ $(TK_SRC_DIR)/unix` $(TESTFLAGS)
 
+check:
+	LD_LIBRARY_PATH=$(ITCL_LIB_DIR):$(ITK_LIB_DIR):$(LD_LIBRARY_PATH); export LD_LIBRARY_PATH ; \
+	TCL_LIBRARY=$(TCL_SRC_DIR)/library; export TCL_LIBRARY; \
+	ITCL_LIBRARY=$(ITCL_LIB_DIR); export ITCL_LIBRARY; \
+	TK_LIBRARY=$(TK_SRC_DIR)/library; export TK_LIBRARY; \
+	ITK_LIBRARY=$(ITK_LIB_DIR); export ITK_LIBRARY; \
+	IWIDGETS_LIBRARY=@IWIDGETS_SRC_DIR@; export IWIDGETS_LIBRARY; \
+	echo "$(TCLSH_PROG)"
+
 install-libraries:
 	@$(MKINSTALLDIRS) $(SCRIPT_INSTALL_DIR) $(LIB_INSTALL_DIR)
 	@rm -f $(LIB_INSTALL_DIR)/iwidgets
@@ -193,7 +203,9 @@ distclean: clean
 depend:
 	makedepend -- $(CC_SWITCHES) -- $(SRCS)
 
-configure: configure.in
+configure: configure.ac
 	autoconf
+
+.PHONY: check test
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

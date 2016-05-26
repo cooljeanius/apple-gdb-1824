@@ -246,7 +246,7 @@ process_esd (bfd *abfd, struct ext_esd *esd, int pass)
 
       /* Declare this section.  */
       sprintf (name, "%d", scn);
-      sec = bfd_make_section_old_way (abfd, strdup (name));
+      sec = bfd_make_section_old_way(abfd, xstrdup(name));
       sec->target_index = scn;
       EDATA (abfd, scn).section = sec;
       ptr++;

@@ -50,7 +50,7 @@ static bfd_boolean sh_align_load_span
 
 /* Internal functions.  */
 static bfd_reloc_status_type sh_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 static long get_symbol_value PARAMS ((asymbol *));
 static bfd_boolean sh_relax_section
   PARAMS ((bfd *, asection *, struct bfd_link_info *, bfd_boolean *));
@@ -549,7 +549,7 @@ sh_coff_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
 static bfd_reloc_status_type
 sh_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
          asection *input_section, bfd *output_bfd,
-	 char **error_message ATTRIBUTE_UNUSED)
+	 const char **error_message ATTRIBUTE_UNUSED)
 {
   unsigned long insn;
   bfd_vma sym_value;

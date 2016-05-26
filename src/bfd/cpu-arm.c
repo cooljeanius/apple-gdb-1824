@@ -61,7 +61,7 @@ compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b)
 static struct
 {
   unsigned int mach;
-  char *       name;
+  const char *name;
 }
 processors[] =
 {
@@ -292,7 +292,7 @@ bfd_arm_update_notes(bfd *abfd, const char *note_section)
   bfd_size_type buffer_size;
   bfd_byte *buffer;
   char *arch_string;
-  char *expected;
+  const char *expected;
 
   /* Look for a note section.  If one is present check the architecture
      string encoded in it, and set it to the current architecture if it is

@@ -1407,7 +1407,7 @@ find_separate_debug_file(bfd *abfd, const char *debug_file_directory)
       return NULL;
     }
 
-  dir = strdup(abfd->filename);
+  dir = xstrdup(abfd->filename);
   if (dir == NULL)
     {
       free(basename_str);

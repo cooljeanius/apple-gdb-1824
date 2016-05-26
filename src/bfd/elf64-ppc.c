@@ -34,23 +34,23 @@
 #include "elf64-ppc.h"
 
 static bfd_reloc_status_type ppc64_elf_ha_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_reloc_status_type ppc64_elf_branch_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_reloc_status_type ppc64_elf_brtaken_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_reloc_status_type ppc64_elf_sectoff_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_reloc_status_type ppc64_elf_sectoff_ha_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_reloc_status_type ppc64_elf_toc_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_reloc_status_type ppc64_elf_toc_ha_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_reloc_status_type ppc64_elf_toc64_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_reloc_status_type ppc64_elf_unhandled_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_vma opd_entry_value
   (asection *, bfd_vma, asection **, bfd_vma *);
 
@@ -2130,7 +2130,7 @@ ppc64_elf_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
 static bfd_reloc_status_type
 ppc64_elf_ha_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 		   void *data, asection *input_section,
-		   bfd *output_bfd, char **error_message)
+		   bfd *output_bfd, const char **error_message)
 {
   /* If this is a relocatable link (output_bfd test tells us), just
      call the generic function.  Any adjustment will be done at final
@@ -2149,7 +2149,7 @@ ppc64_elf_ha_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 static bfd_reloc_status_type
 ppc64_elf_branch_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
                        void *data, asection *input_section,
-                       bfd *output_bfd, char **error_message)
+                       bfd *output_bfd, const char **error_message)
 {
   if (output_bfd != NULL)
     return bfd_elf_generic_reloc(abfd, reloc_entry, symbol, data,
@@ -2172,7 +2172,7 @@ ppc64_elf_branch_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 static bfd_reloc_status_type
 ppc64_elf_brtaken_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
                         void *data, asection *input_section,
-                        bfd *output_bfd, char **error_message)
+                        bfd *output_bfd, const char **error_message)
 {
   long insn;
   enum elf_ppc64_reloc_type r_type;
@@ -2235,7 +2235,7 @@ ppc64_elf_brtaken_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 static bfd_reloc_status_type
 ppc64_elf_sectoff_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
                         void *data, asection *input_section,
-                        bfd *output_bfd, char **error_message)
+                        bfd *output_bfd, const char **error_message)
 {
   /* If this is a relocatable link (output_bfd test tells us), just
      call the generic function.  Any adjustment will be done at final
@@ -2252,7 +2252,7 @@ ppc64_elf_sectoff_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 static bfd_reloc_status_type
 ppc64_elf_sectoff_ha_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 			   void *data, asection *input_section,
-			   bfd *output_bfd, char **error_message)
+			   bfd *output_bfd, const char **error_message)
 {
   /* If this is a relocatable link (output_bfd test tells us), just
      call the generic function.  Any adjustment will be done at final
@@ -2272,7 +2272,7 @@ ppc64_elf_sectoff_ha_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 static bfd_reloc_status_type
 ppc64_elf_toc_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 		    void *data, asection *input_section,
-		    bfd *output_bfd, char **error_message)
+		    bfd *output_bfd, const char **error_message)
 {
   bfd_vma TOCstart;
 
@@ -2295,7 +2295,7 @@ ppc64_elf_toc_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 static bfd_reloc_status_type
 ppc64_elf_toc_ha_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
                        void *data, asection *input_section,
-                       bfd *output_bfd, char **error_message)
+                       bfd *output_bfd, const char **error_message)
 {
   bfd_vma TOCstart;
 
@@ -2321,7 +2321,7 @@ ppc64_elf_toc_ha_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 static bfd_reloc_status_type
 ppc64_elf_toc64_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 		      void *data, asection *input_section,
-		      bfd *output_bfd, char **error_message)
+		      bfd *output_bfd, const char **error_message)
 {
   bfd_vma TOCstart;
   bfd_size_type octets;
@@ -2345,7 +2345,7 @@ ppc64_elf_toc64_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 static bfd_reloc_status_type
 ppc64_elf_unhandled_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 			  void *data, asection *input_section,
-			  bfd *output_bfd, char **error_message)
+			  bfd *output_bfd, const char **error_message)
 {
   /* If this is a relocatable link (output_bfd test tells us), just
      call the generic function.  Any adjustment will be done at final

@@ -43,12 +43,12 @@
 #endif /* 0 */
 
 static int addrsize;
-static char *toolname;
+static const char *toolname;
 static const char **rnames;
 
 static int get_member_id (int);
 static int get_ordinary_id (int);
-static char *section_translate (char *);
+static const char *section_translate(char *);
 static char *strip_suffix (char *);
 static void checksum (FILE *, unsigned char *, int, int);
 static void writeINT (int, unsigned char *, int *, int, FILE *);
@@ -131,14 +131,14 @@ get_ordinary_id (int x)
   return ids1[x];
 }
 
-static char *
+static const char *
 section_translate(char *n)
 {
-  if (strcmp (n, ".text") == 0)
+  if (strcmp(n, ".text") == 0)
     return "P";
-  if (strcmp (n, ".data") == 0)
+  if (strcmp(n, ".data") == 0)
     return "D";
-  if (strcmp (n, ".bss") == 0)
+  if (strcmp(n, ".bss") == 0)
     return "B";
   return n;
 }

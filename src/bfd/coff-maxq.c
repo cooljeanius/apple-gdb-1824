@@ -75,13 +75,10 @@ get_symbol_value (asymbol *symbol)
    relocations types.  */
 
 static bfd_reloc_status_type
-coff_maxq20_reloc (bfd *      abfd,
-		   arelent *  reloc_entry,
-		   asymbol *  symbol_in,
-		   void *     data,
-		   asection * input_section ATTRIBUTE_UNUSED,
-		   bfd *      output_bfd    ATTRIBUTE_UNUSED,
-		   char **    error_message ATTRIBUTE_UNUSED)
+coff_maxq20_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
+		  void *data, asection *input_section ATTRIBUTE_UNUSED,
+		  bfd *output_bfd ATTRIBUTE_UNUSED,
+		  const char **error_message ATTRIBUTE_UNUSED)
 {
   reloc_howto_type *howto = (reloc_howto_type *)NULL;
   unsigned char *addr = (unsigned char *)NULL;

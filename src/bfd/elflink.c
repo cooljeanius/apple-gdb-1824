@@ -530,7 +530,7 @@ bfd_elf_link_record_local_dynamic_symbol(struct bfd_link_info *info,
   struct elf_link_hash_table *eht;
   struct elf_strtab_hash *dynstr;
   unsigned long dynstr_index;
-  char *name;
+  const char *name;
   Elf_External_Sym_Shndx eshndx;
   char esym[sizeof(Elf64_External_Sym)];
 
@@ -571,9 +571,10 @@ bfd_elf_link_record_local_dynamic_symbol(struct bfd_link_info *info,
 	}
     }
 
-  name = (bfd_elf_string_from_elf_section
-	  (input_bfd, elf_tdata (input_bfd)->symtab_hdr.sh_link,
-	   entry->isym.st_name));
+  name =
+    (bfd_elf_string_from_elf_section(input_bfd,
+				     elf_tdata(input_bfd)->symtab_hdr.sh_link,
+				     entry->isym.st_name));
 
   dynstr = elf_hash_table (info)->dynstr;
   if (dynstr == NULL)
@@ -3346,7 +3347,8 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 	      if (dyn.d_tag == DT_NEEDED)
 		{
 		  struct bfd_link_needed_list *n, **pn;
-		  char *fnm, *anm;
+		  const char *fnm;
+		  char *anm;
 		  unsigned int tagv = dyn.d_un.d_val;
 
 		  amt = sizeof(struct bfd_link_needed_list);
@@ -3371,7 +3373,8 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 	      if (dyn.d_tag == DT_RUNPATH)
 		{
 		  struct bfd_link_needed_list *n, **pn;
-		  char *fnm, *anm;
+		  const char *fnm;
+		  char *anm;
 		  unsigned int tagv = dyn.d_un.d_val;
 
 		  amt = sizeof(struct bfd_link_needed_list);
@@ -3397,7 +3400,8 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 	      if (!runpath && dyn.d_tag == DT_RPATH)
 		{
 		  struct bfd_link_needed_list *n, **pn;
-		  char *fnm, *anm;
+		  const char *fnm;
+		  char *anm;
 		  unsigned int tagv = dyn.d_un.d_val;
 
 		  amt = sizeof(struct bfd_link_needed_list);

@@ -62,7 +62,7 @@ struct coff_reloc
 
 struct coff_section
 {
-  char *name;
+  const char *name;
   int code;
   int data;
   int address;

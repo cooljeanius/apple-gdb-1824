@@ -364,7 +364,7 @@ typedef struct Tk_ConfigSpec {
     int type;			/* Type of option, such as TK_CONFIG_COLOR;
 				 * see definitions below.  Last option in
 				 * table must have type TK_CONFIG_END. */
-    char *argvName;		/* Switch used to specify option in argv.
+    const char *argvName;	/* Switch used to specify option in argv.
 				 * NULL means this spec is part of a group. */
     Tk_Uid dbName;		/* Name for option in option database. */
     Tk_Uid dbClass;		/* Class for option in database. */
@@ -621,7 +621,7 @@ typedef void (Tk_GeomLostSlaveProc) _ANSI_ARGS_((ClientData clientData,
 	Tk_Window tkwin));
 
 typedef struct Tk_GeomMgr {
-    char *name;			/* Name of the geometry manager (command
+    const char *name;		/* Name of the geometry manager (command
 				 * used to invoke it, or name of widget
 				 * class that allows embedded widgets). */
     Tk_GeomRequestProc *requestProc;

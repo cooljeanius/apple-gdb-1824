@@ -918,7 +918,7 @@ bfd_ecoff_debug_accumulate(PTR handle, bfd *output_bfd,
 				 input_bfd, pos, (unsigned long) fdr.cbSs))
 	    return FALSE;
 	  fdr.issBase = output_symhdr->issMax;
-	  output_symhdr->issMax += fdr.cbSs;
+	  output_symhdr->issMax += (long)fdr.cbSs;
 	}
 
       if (output_bfd->xvec->header_byteorder
@@ -1080,7 +1080,7 @@ ecoff_add_string(struct accumulate *ainfo, struct bfd_link_info *info,
       ret = sh->val;
     }
 
-  return ret;
+  return (long)ret;
 }
 
 /* Add debugging information from a non-ECOFF file.  */
@@ -1164,7 +1164,7 @@ bfd_ecoff_debug_accumulate_other(PTR handle, bfd *output_bfd,
       internal_sym.index = indexNil;
 
       external_sym = (PTR)objalloc_alloc(ainfo->memory,
-                                         output_swp->external_sym_size);
+                                         (unsigned long)output_swp->external_sym_size);
       if (!external_sym)
 	{
 	  bfd_set_error(bfd_error_no_memory);
@@ -1185,7 +1185,7 @@ bfd_ecoff_debug_accumulate_other(PTR handle, bfd *output_bfd,
      indicate little endian format, but it doesn't matter because
      it only applies to aux fields and there are none.  */
   external_fdr = (PTR)objalloc_alloc(ainfo->memory,
-                                     output_swp->external_fdr_size);
+                                     (unsigned long)output_swp->external_fdr_size);
   if (!external_fdr)
     {
       bfd_set_error(bfd_error_no_memory);
@@ -1333,7 +1333,7 @@ ecoff_align_debug(bfd *abfd ATTRIBUTE_UNUSED,
   aux_align = debug_align / sizeof (union aux_ext);
   rfd_align = debug_align / swap->external_rfd_size;
 
-  add = debug_align - (symhdr->cbLine & (debug_align - 1));
+  add = (size_t)(debug_align - (symhdr->cbLine & (debug_align - 1UL)));
   if (add != debug_align)
     {
       if (debug->line != (unsigned char *) NULL)
@@ -1341,7 +1341,7 @@ ecoff_align_debug(bfd *abfd ATTRIBUTE_UNUSED,
       symhdr->cbLine += add;
     }
 
-  add = debug_align - (symhdr->issMax & (debug_align - 1));
+  add = (size_t)(debug_align - (symhdr->issMax & (debug_align - 1UL)));
   if (add != debug_align)
     {
       if (debug->ss != (char *) NULL)
@@ -1349,7 +1349,7 @@ ecoff_align_debug(bfd *abfd ATTRIBUTE_UNUSED,
       symhdr->issMax += add;
     }
 
-  add = debug_align - (symhdr->issExtMax & (debug_align - 1));
+  add = (size_t)(debug_align - (symhdr->issExtMax & (debug_align - 1UL)));
   if (add != debug_align)
     {
       if (debug->ssext != (char *) NULL)
@@ -1357,7 +1357,7 @@ ecoff_align_debug(bfd *abfd ATTRIBUTE_UNUSED,
       symhdr->issExtMax += add;
     }
 
-  add = aux_align - (symhdr->iauxMax & (aux_align - 1));
+  add = (size_t)(aux_align - (symhdr->iauxMax & (aux_align - 1UL)));
   if (add != aux_align)
     {
       if (debug->external_aux != (union aux_ext *) NULL)
@@ -1366,7 +1366,7 @@ ecoff_align_debug(bfd *abfd ATTRIBUTE_UNUSED,
       symhdr->iauxMax += add;
     }
 
-  add = rfd_align - (symhdr->crfd & (rfd_align - 1));
+  add = (size_t)(rfd_align - (symhdr->crfd & (rfd_align - 1UL)));
   if (add != rfd_align)
     {
       if (debug->external_rfd != (PTR) NULL)
@@ -1545,7 +1545,8 @@ ecoff_write_shuffle(bfd *abfd, const struct ecoff_debug_swap *swap,
       unsigned int i;
       bfd_byte *s;
 
-      i = swap->debug_align - (total & (swap->debug_align - 1));
+      i = (unsigned int)(swap->debug_align
+			 - (total & (swap->debug_align - 1U)));
       s = (bfd_byte *) bfd_zmalloc ((bfd_size_type) i);
       if (s == NULL && i != 0)
 	return FALSE;
@@ -1628,7 +1629,8 @@ bfd_ecoff_write_accumulated_debug(PTR handle, bfd *abfd,
 	  unsigned int i;
 	  bfd_byte *s;
 
-	  i = swap->debug_align - (total & (swap->debug_align - 1));
+	  i = (unsigned int)(swap->debug_align
+			     - (total & (swap->debug_align - 1U)));
 	  s = (bfd_byte *) bfd_zmalloc ((bfd_size_type) i);
 	  if (s == NULL && i != 0)
 	    goto error_return;
@@ -1652,8 +1654,9 @@ bfd_ecoff_write_accumulated_debug(PTR handle, bfd *abfd,
       unsigned int i;
       bfd_byte *s;
 
-      i = (swap->debug_align
-	   - (debug->symbolic_header.issExtMax & (swap->debug_align - 1)));
+      i = (unsigned int)(swap->debug_align
+			 - (debug->symbolic_header.issExtMax
+			    & (swap->debug_align - 1U)));
       s = (bfd_byte *) bfd_zmalloc ((bfd_size_type) i);
       if (s == NULL && i != 0)
 	goto error_return;

@@ -55,7 +55,7 @@ or32_elf_32_reloc (bfd *abfd,
 		   void * data,
 		   asection *input_section,
 		   bfd *output_bfd,
-		   char **error_message ATTRIBUTE_UNUSED)
+		   const char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd != NULL)
     {
@@ -83,7 +83,7 @@ or32_elf_16_reloc (bfd *abfd,
 		   void * data,
 		   asection *input_section,
 		   bfd *output_bfd,
-		   char **error_message ATTRIBUTE_UNUSED)
+		   const char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd != NULL)
     {
@@ -111,7 +111,7 @@ or32_elf_8_reloc (bfd *abfd ATTRIBUTE_UNUSED,
 		  void * data,
 		  asection *input_section,
 		  bfd *output_bfd,
-		  char **error_message ATTRIBUTE_UNUSED)
+		  const char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd != NULL)
     {
@@ -159,7 +159,7 @@ or32_elf_consth_reloc (bfd *abfd ATTRIBUTE_UNUSED,
 		       void * data,
 		       asection *input_section,
 		       bfd *output_bfd,
-		       char **error_message ATTRIBUTE_UNUSED)
+		       const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_reloc_status_type ret;
   bfd_vma relocation;
@@ -202,13 +202,9 @@ or32_elf_consth_reloc (bfd *abfd ATTRIBUTE_UNUSED,
    R_OR32_CONSTH relocation described above.  */
 
 static bfd_reloc_status_type
-or32_elf_const_reloc (bfd *abfd,
-		      arelent *reloc_entry,
-		      asymbol *symbol,
-		      void * data,
-		      asection *input_section,
-		      bfd *output_bfd,
-		      char **error_message)
+or32_elf_const_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+		     void *data, asection *input_section, bfd *output_bfd,
+		     const char **error_message)
 {
   if (or32_consth_list != NULL)
     {
@@ -272,7 +268,7 @@ or32_elf_jumptarg_reloc (bfd *abfd,
 			 void * data,
 			 asection *input_section,
 			 bfd *output_bfd,
-			 char **error_message ATTRIBUTE_UNUSED)
+			 const char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd != NULL)
     {

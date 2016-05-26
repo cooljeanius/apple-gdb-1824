@@ -49,7 +49,7 @@ extern char *custom_file;
 /* Whether to generate debugging information (DEBUG).  */
 extern bfd_boolean debug_info;
 /* Procedure named by EXIT.  */
-extern char *exit_procedure;
+extern const char *exit_procedure;
 /* Exported symbols (EXPORT).  */
 extern struct string_list *export_symbols;
 /* List of files from INPUT.  */
@@ -71,7 +71,7 @@ extern char *output_file;
 /* File named by SHARELIB.  */
 extern char *sharelib_file;
 /* Start procedure name (START).  */
-extern char *start_procedure;
+extern const char *start_procedure;
 /* VERBOSE.  */
 extern bfd_boolean verbose;
 /* RPC description file (XDCDATA).  */

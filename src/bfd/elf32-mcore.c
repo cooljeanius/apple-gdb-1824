@@ -85,13 +85,12 @@ mcore_elf_merge_private_bfd_data (bfd * ibfd, bfd * obfd)
 /* Don't pretend we can deal with unsupported relocs.  */
 
 static bfd_reloc_status_type
-mcore_elf_unsupported_reloc (bfd * abfd,
-			     arelent * reloc_entry,
-			     asymbol * symbol ATTRIBUTE_UNUSED,
-			     PTR data ATTRIBUTE_UNUSED,
-			     asection * input_section ATTRIBUTE_UNUSED,
-			     bfd * output_bfd ATTRIBUTE_UNUSED,
-			     char ** error_message ATTRIBUTE_UNUSED)
+mcore_elf_unsupported_reloc(bfd *abfd, arelent *reloc_entry,
+			    asymbol *symbol ATTRIBUTE_UNUSED,
+			    PTR data ATTRIBUTE_UNUSED,
+			    asection *input_section ATTRIBUTE_UNUSED,
+			    bfd *output_bfd ATTRIBUTE_UNUSED,
+			    const char **error_message ATTRIBUTE_UNUSED)
 {
   BFD_ASSERT (reloc_entry->howto != (reloc_howto_type *)0);
 

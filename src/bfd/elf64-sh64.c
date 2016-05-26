@@ -111,9 +111,9 @@ struct elf_sh64_link_hash_table
   ((struct elf_sh64_link_hash_table *) ((p)->hash))
 
 static bfd_reloc_status_type sh_elf64_ignore_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 static bfd_reloc_status_type sh_elf64_reloc
-  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, const char **);
 
 static reloc_howto_type sh_elf64_howto_table[] = {
   /* No relocation.  */
@@ -1245,7 +1245,7 @@ sh_elf64_ignore_reloc (bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
 		       asymbol *symbol ATTRIBUTE_UNUSED,
 		       void *data ATTRIBUTE_UNUSED, asection *input_section,
 		       bfd *output_bfd,
-		       char **error_message ATTRIBUTE_UNUSED)
+		       const char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd != NULL)
     reloc_entry->address += input_section->output_offset;
@@ -1260,7 +1260,7 @@ sh_elf64_ignore_reloc (bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
 static bfd_reloc_status_type
 sh_elf64_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
                void *data, asection *input_section, bfd *output_bfd,
-               char **error_message ATTRIBUTE_UNUSED)
+               const char **error_message ATTRIBUTE_UNUSED)
 {
   unsigned long insn;
   bfd_vma sym_value;

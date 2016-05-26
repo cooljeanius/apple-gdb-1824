@@ -60,11 +60,11 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 #define RELOC_SPECIAL_FN 0
 #else
 static bfd_reloc_status_type m68kcoff_common_addend_special_fn
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 static reloc_howto_type *m68kcoff_common_addend_rtype_to_howto
-  PARAMS ((bfd *, asection *, struct internal_reloc *,
-	   struct coff_link_hash_entry *, struct internal_syment *,
-	   bfd_vma *));
+  PARAMS((bfd *, asection *, struct internal_reloc *,
+	  struct coff_link_hash_entry *, struct internal_syment *,
+	  bfd_vma *));
 #define RELOC_SPECIAL_FN m68kcoff_common_addend_special_fn
 #endif
 
@@ -251,7 +251,7 @@ m68kcoff_common_addend_special_fn(bfd *abfd, arelent *reloc_entry,
                                   asymbol *symbol, PTR data,
 				  asection *input_section ATTRIBUTE_UNUSED,
                                   bfd *output_bfd,
-                                  char **error_message ATTRIBUTE_UNUSED)
+                                  const char **error_message ATTRIBUTE_UNUSED)
 {
   symvalue diff;
 

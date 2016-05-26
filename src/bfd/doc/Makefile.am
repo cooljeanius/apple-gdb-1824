@@ -103,10 +103,12 @@ build_MKDOC = $(builddir)/$(MKDOC)
 
 ## also build chew with automake to have automake generate rules for
 ## compiling C code for us, but rename it to try to avoid conflicts:
+AM_CFLAGS = $(WARN_WRITE_STRINGS) $(C_ARCHFLAGS)
 noinst_PROGRAMS = chew_am
 chew_am_SOURCES = $(srcdir)/chew.c $(srcdir_high)/include/ansidecl.h
 chew_am_CFLAGS = $(AM_CFLAGS) $(CFLAGS_FOR_BUILD) $(H_CFLAGS)
-chew_am_LDFLAGS = -L$(srcdir_high)/intl -L../../intl $(LDFLAGS_FOR_BUILD)
+chew_am_LDFLAGS = -L$(srcdir_high)/intl -L../../intl $(LDFLAGS_FOR_BUILD) \
+  $(WARN_LDFLAGS)
 EXTRA_chew_am_DEPENDENCIES = Makefile $(srcdir_up)/config.h
 
 chew_am-chew.o: chew.c $(srcdir_high)/include/ansidecl.h Makefile

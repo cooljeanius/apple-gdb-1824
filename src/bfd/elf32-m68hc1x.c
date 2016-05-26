@@ -775,7 +775,7 @@ m68hc11_elf_ignore_reloc (bfd *abfd ATTRIBUTE_UNUSED,
                           void *data ATTRIBUTE_UNUSED,
                           asection *input_section,
                           bfd *output_bfd,
-                          char **error_message ATTRIBUTE_UNUSED)
+                          const char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd != NULL)
     reloc_entry->address += input_section->output_offset;
@@ -789,7 +789,7 @@ m68hc11_elf_special_reloc (bfd *abfd ATTRIBUTE_UNUSED,
                            void *data ATTRIBUTE_UNUSED,
                            asection *input_section,
                            bfd *output_bfd,
-                           char **error_message ATTRIBUTE_UNUSED)
+                           const char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd != (bfd *) NULL
       && (symbol->flags & BSF_SECTION_SYM) == 0

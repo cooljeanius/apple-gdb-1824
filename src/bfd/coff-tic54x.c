@@ -34,7 +34,7 @@
 static void tic54x_reloc_processing
   PARAMS ((arelent *, struct internal_reloc *, asymbol **, bfd *, asection *));
 static bfd_reloc_status_type tic54x_relocation
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, const char **));
 static bfd_boolean tic54x_set_section_contents
   PARAMS ((bfd *, sec_ptr, const PTR, file_ptr, bfd_size_type));
 static reloc_howto_type *coff_tic54x_rtype_to_howto
@@ -141,7 +141,7 @@ static bfd_reloc_status_type
 tic54x_relocation(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
                   asymbol *symbol ATTRIBUTE_UNUSED,
                   PTR data ATTRIBUTE_UNUSED, asection *input_section,
-                  bfd *output_bfd, char **error_message ATTRIBUTE_UNUSED)
+                  bfd *output_bfd, const char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd != (bfd *)NULL)
     {

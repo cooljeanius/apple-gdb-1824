@@ -358,7 +358,8 @@ static bfd_reloc_status_type
 elf64_alpha_reloc_nil (bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc,
 		       asymbol *sym ATTRIBUTE_UNUSED,
 		       PTR data ATTRIBUTE_UNUSED, asection *sec,
-		       bfd *output_bfd, char **error_message ATTRIBUTE_UNUSED)
+		       bfd *output_bfd,
+		       const char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd)
     reloc->address += sec->output_offset;
@@ -371,7 +372,8 @@ static bfd_reloc_status_type
 elf64_alpha_reloc_bad (bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc,
 		       asymbol *sym ATTRIBUTE_UNUSED,
 		       PTR data ATTRIBUTE_UNUSED, asection *sec,
-		       bfd *output_bfd, char **error_message ATTRIBUTE_UNUSED)
+		       bfd *output_bfd,
+		       const char **error_message ATTRIBUTE_UNUSED)
 {
   if (output_bfd)
     reloc->address += sec->output_offset;
@@ -423,7 +425,7 @@ static bfd_reloc_status_type
 elf64_alpha_reloc_gpdisp(bfd *abfd, arelent *reloc_entry,
 			 asymbol *sym ATTRIBUTE_UNUSED, PTR data,
 			 asection *input_section, bfd *output_bfd,
-			 char **err_msg)
+			 const char **err_msg)
 {
   bfd_reloc_status_type ret;
   bfd_vma gp, relocation;
