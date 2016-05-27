@@ -587,7 +587,7 @@ move_section_contents (bfd *abfd,
 		       bfd_boolean get)
 {
   bfd_vma addr;
-  char *location = (char *) locationp;
+  char *location = (char *)locationp;
   bfd_vma prev_number = 1;	/* Nothing can have this as a high bit.  */
   struct data_struct *d = NULL;
 
@@ -980,7 +980,7 @@ extern const bfd_target tekhex_vec;
 #endif /* __clang__ */
 const bfd_target tekhex_vec =
 {
-  (char *)"tekhex",			/* Name.  */
+  "tekhex",			/* Name.  */
   bfd_target_tekhex_flavour,
   BFD_ENDIAN_UNKNOWN,		/* Target byte order.  */
   BFD_ENDIAN_UNKNOWN,		/* Target headers byte order.  */

@@ -710,12 +710,12 @@ _bfd_stringtab_emit (bfd *abfd, struct bfd_strtab_hash *tab)
 	  bfd_byte buf[2];
 
 	  /* The output length includes the null byte.  */
-	  bfd_put_16 (abfd, (bfd_vma) len, buf);
-	  if (bfd_bwrite ((void *) buf, (bfd_size_type) 2, abfd) != 2)
+	  bfd_put_16(abfd, (bfd_vma)len, buf);
+	  if (bfd_bwrite((void *)buf, (bfd_size_type)2UL, abfd) != 2)
 	    return FALSE;
 	}
 
-      if (bfd_bwrite ((void *) str, (bfd_size_type) len, abfd) != len)
+      if (bfd_bwrite((const void *)str, (bfd_size_type)len, abfd) != len)
 	return FALSE;
     }
 

@@ -740,7 +740,7 @@ static const asymbol global_syms[] =
 };
 
 #define STD_SECTION(SEC, FLAGS, SYM, NAME, IDX)				\
-  const asymbol * const SYM = (asymbol *)&global_syms[IDX]; 		\
+  const asymbol *const SYM = (const asymbol *const)&global_syms[IDX]; 	\
   asection SEC = BFD_FAKE_SECTION(SEC, FLAGS, &global_syms[IDX], &SYM,	\
 				  NAME, IDX)
 
@@ -956,7 +956,7 @@ bfd_get_unique_section_name(bfd *abfd, const char *templat, int *count)
   char *sname;
 
   len = strlen(templat);
-  sname = (char *)bfd_malloc(len + 8UL);
+  sname = (char *)bfd_malloc((bfd_size_type)(len + 8UL));
   if (sname == NULL)
     return NULL;
   memcpy(sname, templat, len);
@@ -1560,7 +1560,7 @@ bfd_malloc_and_get_section (bfd *abfd, sec_ptr sec, bfd_byte **buf)
     return FALSE;
   *buf = p;
 
-  return bfd_get_section_contents(abfd, sec, p, 0, sz);
+  return bfd_get_section_contents(abfd, sec, p, (file_ptr)0L, sz);
 }
 /*
 FUNCTION

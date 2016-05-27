@@ -835,7 +835,7 @@ extern bfd_boolean bfd_coff_set_symbol_class
 
 extern bfd_boolean bfd_m68k_coff_create_embedded_relocs
   (bfd *, struct bfd_link_info *, struct bfd_section *,
-   struct bfd_section *, char **);
+   struct bfd_section *, const char **);
 
 /* ARM VFP11 erratum workaround support.  */
 typedef enum

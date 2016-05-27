@@ -644,7 +644,7 @@ const bfd_target
 #ifdef TARGET_NAME
   TARGET_NAME,
 #else
-  (char *)"coff-i860",			/* name */
+  "coff-i860",			/* name */
 #endif /* TARGET_NAME */
   bfd_target_coff_flavour,
   BFD_ENDIAN_LITTLE,		/* data byte order is little */

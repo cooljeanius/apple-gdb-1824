@@ -952,7 +952,7 @@ extern const bfd_target ihex_vec;
 #endif /* __clang__ */
 const bfd_target ihex_vec =
 {
-  (char *)"ihex",			/* Name.  */
+  "ihex",			/* Name.  */
   bfd_target_ihex_flavour,
   BFD_ENDIAN_UNKNOWN,		/* Target byte order.  */
   BFD_ENDIAN_UNKNOWN,		/* Target headers byte order.  */

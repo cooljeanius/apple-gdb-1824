@@ -1825,7 +1825,7 @@ sunos_scan_dynamic_symbol (struct sunos_link_hash_entry *h, void * data)
       asection *s;
       size_t len;
       bfd_byte *contents;
-      unsigned char *name;
+      const unsigned char *name;
       unsigned long hash;
       bfd *dynobj;
 
@@ -1856,7 +1856,7 @@ sunos_scan_dynamic_symbol (struct sunos_link_hash_entry *h, void * data)
       s->size += len + 1;
 
       /* Add it to the dynamic hash table: */
-      name = (unsigned char *)h->root.root.root.string;
+      name = (const unsigned char *)h->root.root.root.string;
       hash = 0;
       while (*name != '\0')
 	hash = (hash << 1) + *name++;

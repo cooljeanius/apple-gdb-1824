@@ -117,7 +117,7 @@ DESCRIPTION
 bfd_boolean
 bfd_check_format_matches(bfd *abfd, bfd_format format, char ***matching)
 {
-  const bfd_target * const *target;
+  const bfd_target *const *target;
   const bfd_target **matching_vector = (const bfd_target **)NULL;
   const bfd_target *save_targ, *right_targ, *ar_right_targ;
   int match_count;
@@ -307,7 +307,7 @@ bfd_check_format_matches(bfd *abfd, bfd_format format, char ***matching)
       && bfd_associated_vector != NULL
       && matching)
     {
-      const bfd_target * const *assoc = bfd_associated_vector;
+      const bfd_target *const *assoc = bfd_associated_vector;
 
       while ((right_targ = *assoc++) != NULL)
 	{
@@ -359,7 +359,7 @@ bfd_check_format_matches(bfd *abfd, bfd_format format, char ***matching)
 
       if (matching)
 	{
-	  *matching = (char **) matching_vector;
+	  *matching = (char **)matching_vector;
 	  matching_vector[match_count] = NULL;
 	  /* Return target names.  This is a little nasty.  Maybe we
 	     should do another bfd_malloc?  */

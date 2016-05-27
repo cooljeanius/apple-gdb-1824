@@ -48,8 +48,8 @@
    level is also indentation level. Indentation is performed
    if level > 0.  */
 
-void
-_bfd_vms_debug (int level, char *format, ...)
+void ATTRIBUTE_PRINTF_2
+_bfd_vms_debug(int level, const char *format, ...)
 {
   static int min_level = -1;
   static FILE *output = NULL;
@@ -84,10 +84,7 @@ _bfd_vms_debug (int level, char *format, ...)
    hex dump 'size' bytes starting at 'ptr'.  */
 
 void
-_bfd_hexdump (int level,
-	      unsigned char *ptr,
-	      int size,
-	      int offset)
+_bfd_hexdump(int level, unsigned char *ptr, int size, int offset)
 {
   unsigned char *lptr = ptr;
   int count = 0;
@@ -139,7 +136,8 @@ _bfd_vms_hash_newfunc (struct bfd_hash_entry *entry,
   vms_symbol_entry *ret;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  vms_debug (5, "_bfd_vms_hash_newfunc (%p, %p, %s)\n", entry, table, string);
+  vms_debug(5, "_bfd_vms_hash_newfunc (%p, %p, %s)\n", (void *)entry,
+	    (void *)table, string);
 #endif
 
   if (entry == NULL)
@@ -157,7 +155,7 @@ _bfd_vms_hash_newfunc (struct bfd_hash_entry *entry,
   /* Call the allocation method of the base class.  */
   ret = (vms_symbol_entry *) bfd_hash_newfunc (entry, table, string);
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  vms_debug (6, "_bfd_vms_hash_newfunc ret %p\n", ret);
+  vms_debug(6, "_bfd_vms_hash_newfunc ret %p\n", (void *)ret);
 #endif
 
   ret->symbol = NULL;
@@ -456,7 +454,8 @@ _bfd_vms_push (bfd * abfd, uquad val, int psect)
   static int last_psect;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  vms_debug (4, "<push %016lx (%d) at %d>\n", val, psect, PRIV (stackptr));
+  vms_debug(4, "<push %016lx (%d) at %d>\n", (unsigned long)val, psect,
+	    PRIV(stackptr));
 #endif
 
   if (psect >= 0)
@@ -492,7 +491,8 @@ _bfd_vms_pop (bfd * abfd, int *psect)
     *psect = PRIV (stack[PRIV (stackptr)]).psect;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  vms_debug (4, "<pop %016lx(%d)>\n", value, PRIV (stack[PRIV (stackptr)]).psect);
+  vms_debug(4, "<pop %016lx(%d)>\n", (unsigned long)value,
+	    PRIV(stack[PRIV(stackptr)]).psect);
 #endif
 
   return value;
@@ -779,7 +779,7 @@ void
 _bfd_vms_output_quad (bfd * abfd, uquad value)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  vms_debug (6, "_bfd_vms_output_quad (%016lx)\n", value);
+  vms_debug(6, "_bfd_vms_output_quad (%016lx)\n", (unsigned long)value);
 #endif
 
   bfd_put_64(abfd, value, PRIV (output_buf) + PRIV (output_size));
@@ -813,11 +813,8 @@ _bfd_vms_output_counted(bfd *abfd, const char *value)
 }
 
 /* Output character area.  */
-
 void
-_bfd_vms_output_dump (bfd * abfd,
-		      unsigned char *data,
-		      int length)
+_bfd_vms_output_dump(bfd *abfd, const unsigned char *data, int length)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "_bfd_vms_output_dump (%d)\n", length);
@@ -918,7 +915,7 @@ _bfd_vms_length_hash_symbol (bfd * abfd, const char *in, int maxlen)
   }
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  vms_debug(4, "--> [%d]\"%s\"\n", strlen (outbuf), outbuf);
+  vms_debug(4, "--> [%d]\"%s\"\n", (int)strlen(outbuf), outbuf);
 #endif /* VMS_DEBUG */
 
   if (((int)in_len > maxlen)
@@ -994,7 +991,8 @@ _bfd_vms_enter_symbol (bfd * abfd, char *name)
     }
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (7, "-> entry %p, entry->symbol %p\n", entry, entry->symbol);
+  _bfd_vms_debug(7, "-> entry %p, entry->symbol %p\n", (void *)entry,
+		 (void *)entry->symbol);
 #endif
   return entry;
 }

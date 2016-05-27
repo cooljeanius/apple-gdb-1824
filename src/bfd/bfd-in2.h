@@ -842,7 +842,7 @@ extern bfd_boolean bfd_coff_set_symbol_class
 
 extern bfd_boolean bfd_m68k_coff_create_embedded_relocs
   (bfd *, struct bfd_link_info *, struct bfd_section *,
-   struct bfd_section *, char **);
+   struct bfd_section *, const char **);
 
 /* ARM VFP11 erratum workaround support.  */
 typedef enum
@@ -2415,14 +2415,14 @@ struct reloc_howto_struct
 };
 
 #define HOWTO(C, R, S, B, P, BI, O, SF, NAME, INPLACE, MASKSRC, MASKDST, PC) \
-  { (unsigned)C, R, S, B, P, BI, O, SF, (char *)NAME, INPLACE, MASKSRC, MASKDST, PC }
+  { (unsigned int)C, R, S, B, P, BI, O, SF, NAME, INPLACE, MASKSRC, MASKDST, PC }
 #define NEWHOWTO(FUNCTION, NAME, SIZE, REL, IN) \
-  HOWTO (0, 0, SIZE, 0, REL, 0, complain_overflow_dont, FUNCTION, \
-         NAME, FALSE, 0, 0, IN)
+  HOWTO(0, 0, SIZE, 0, REL, 0, complain_overflow_dont, FUNCTION, \
+        NAME, FALSE, 0, 0, IN)
 
 #define EMPTY_HOWTO(C) \
-  HOWTO ((C), 0, 0, 0, FALSE, 0, complain_overflow_dont, NULL, \
-         NULL, FALSE, 0, 0, FALSE)
+  HOWTO((C), 0, 0, 0, FALSE, 0, complain_overflow_dont, NULL, \
+        NULL, FALSE, 0, 0, FALSE)
 
 #define HOWTO_PREPARE(relocation, symbol)               \
   {                                                     \

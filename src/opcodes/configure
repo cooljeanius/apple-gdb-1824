@@ -22156,7 +22156,10 @@ if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
   WARN_CFLAGS="${WARN_CFLAGS} -Wnon-gcc -Wconversion -Wfloat-conversion \
   -Wsign-conversion -Wsign-compare -Wshorten-64-to-32 -Wdouble-promotion"
 fi
-WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint"
+WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint -DDEBUG_GEN_RELOC -DDEBUG_HASH \
+-DDEBUG_PIC -DDEBUG_RELAX -DDEBUG_RELOC -DDJDEBUG -DFATAL_DEBUG \
+-DLINUX_LINK_DEBUG -DVMS_DEBUG=1 \
+-DBFD_AOUT_DEBUG -DBFD_TRACK_OPEN_CLOSE"
 WARN_LDFLAGS=""
 
 # Add -Wshadow if the compiler is a sufficiently recent version of GCC.

@@ -144,7 +144,7 @@ static const bfd_mach_o_backend_data TARGET_NAME_BACKEND =
 
 const bfd_target TARGET_NAME =
 {
-  (char *)TARGET_STRING,		/* Name.  */
+  TARGET_STRING,		/* Name.  */
   bfd_target_mach_o_flavour,
 #if TARGET_BIG_ENDIAN
   BFD_ENDIAN_BIG,		/* Target byte order.  */

@@ -158,13 +158,13 @@ static void init_string(string_type *buffer)
 static int find(string_type *str, const char *what)
 {
   unsigned int i;
-  char *p;
-  p = (char *)what;
+  const char *p;
+  p = what;
   for ((i = 0); (i < str->write_idx) && *p; i++) {
       if (*p == str->ptr[i]) {
 	  p++;
       } else {
-	  p = (char *)what;
+	  p = what;
       }
   }
   return (*p == 0);
@@ -266,7 +266,7 @@ typedef int *word_type;
 
 struct dict_struct
 {
-  char *word;
+  const char *word;
   struct dict_struct *next;
   stinst_type *code;
   int code_length;
@@ -1134,14 +1134,14 @@ static void perform(void)
 
 static dict_type *newentry(const char *word)
 {
-  dict_type *new = (dict_type *)malloc(sizeof(dict_type));
-  new->word = (char *)word;
-  new->next = root;
-  root = new;
-  new->code = (stinst_type *)malloc(sizeof(stinst_type));
-  new->code_length = 1;
-  new->code_end = 0;
-  return new;
+  dict_type *newdict = (dict_type *)malloc(sizeof(dict_type));
+  newdict->word = word;
+  newdict->next = root;
+  root = newdict;
+  newdict->code = (stinst_type *)malloc(sizeof(stinst_type));
+  newdict->code_length = 1;
+  newdict->code_end = 0;
+  return newdict;
 }
 
 static unsigned int add_to_definition(dict_type *entry, stinst_type word)

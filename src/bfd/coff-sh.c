@@ -3091,7 +3091,7 @@ extern const bfd_target shlcoff_small_vec;
 
 const bfd_target shcoff_small_vec =
 {
-  (char *)"coff-sh-small",		/* name */
+  "coff-sh-small",		/* name */
   bfd_target_coff_flavour,
   BFD_ENDIAN_BIG,		/* data byte order is big */
   BFD_ENDIAN_BIG,		/* header byte order is big */

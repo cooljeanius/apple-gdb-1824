@@ -540,7 +540,8 @@ NAME(aout, some_aout_object_p)(bfd *abfd,
   bfd_get_start_address(abfd) = execp->a_entry;
 
   obj_aout_symbols(abfd) = NULL;
-  bfd_get_symcount(abfd) = (execp->a_syms / sizeof(struct external_nlist));
+  bfd_get_symcount(abfd) = (unsigned int)((size_t)execp->a_syms
+					  / sizeof(struct external_nlist));
 
   /* The default relocation entry size is that of traditional V7 Unix: */
   obj_reloc_entry_size(abfd) = RELOC_SIZE;
@@ -1083,25 +1084,27 @@ NAME (aout, adjust_sizes_and_vmas) (bfd *abfd,
     adata(abfd).magic = o_magic;
 
 #ifdef BFD_AOUT_DEBUG /* requires gcc2 */
-#if __GNUC__ >= 2
-  fprintf (stderr, "%s text=<%x,%x,%x> data=<%x,%x,%x> bss=<%x,%x,%x>\n",
-	   ({ char *str;
-	      switch (adata(abfd).magic) {
-	      case n_magic: str = "NMAGIC"; break;
-	      case o_magic: str = "OMAGIC"; break;
-	      case z_magic: str = "ZMAGIC"; break;
-	      default: abort ();
-	      }
-	      str;
-	    }),
-	   obj_textsec(abfd)->vma, obj_textsec(abfd)->size,
-	   	obj_textsec(abfd)->alignment_power,
-	   obj_datasec(abfd)->vma, obj_datasec(abfd)->size,
-	   	obj_datasec(abfd)->alignment_power,
-	   obj_bsssec(abfd)->vma, obj_bsssec(abfd)->size,
-	   	obj_bsssec(abfd)->alignment_power);
-#endif
-#endif
+# if __GNUC__ >= 2
+  fprintf(stderr,
+	  "%s text=<%"BFD_VMA_FMT"x,%lx,%x> data=<%"BFD_VMA_FMT"x,%lx,%x> bss=<%"BFD_VMA_FMT"x,%lx,%x>\n",
+	  __extension__
+	  ({ const char *str;
+	     switch (adata(abfd).magic) {
+	     case n_magic: str = "NMAGIC"; break;
+	     case o_magic: str = "OMAGIC"; break;
+	     case z_magic: str = "ZMAGIC"; break;
+	     default: abort();
+	     }
+	     str;
+	   }),
+	  obj_textsec(abfd)->vma, (unsigned long)obj_textsec(abfd)->size,
+	  obj_textsec(abfd)->alignment_power,
+	  obj_datasec(abfd)->vma, (unsigned long)obj_datasec(abfd)->size,
+	  obj_datasec(abfd)->alignment_power,
+	  obj_bsssec(abfd)->vma, (unsigned long)obj_bsssec(abfd)->size,
+	  obj_bsssec(abfd)->alignment_power);
+# endif /* gcc 2+ */
+#endif /* BFD_AOUT_DEBUG */
 
   switch (adata(abfd).magic)
     {
@@ -1119,12 +1122,12 @@ NAME (aout, adjust_sizes_and_vmas) (bfd *abfd,
     }
 
 #ifdef BFD_AOUT_DEBUG
-  fprintf (stderr, "       text=<%x,%x,%x> data=<%x,%x,%x> bss=<%x,%x>\n",
-	   obj_textsec(abfd)->vma, obj_textsec(abfd)->size,
-	   	obj_textsec(abfd)->filepos,
-	   obj_datasec(abfd)->vma, obj_datasec(abfd)->size,
-	   	obj_datasec(abfd)->filepos,
-	   obj_bsssec(abfd)->vma, obj_bsssec(abfd)->size);
+  fprintf(stderr, "       text=<%"BFD_VMA_FMT"x,%lx,%lx> data=<%"BFD_VMA_FMT"x,%lx,%lx> bss=<%"BFD_VMA_FMT"x,%lx>\n",
+	  obj_textsec(abfd)->vma, (unsigned long)obj_textsec(abfd)->size,
+	  (unsigned long)obj_textsec(abfd)->filepos,
+	  obj_datasec(abfd)->vma, (unsigned long)obj_datasec(abfd)->size,
+	  (unsigned long)obj_datasec(abfd)->filepos,
+	  obj_bsssec(abfd)->vma, (unsigned long)obj_bsssec(abfd)->size);
 #endif
 
   return TRUE;
@@ -1561,7 +1564,7 @@ NAME(aout, slurp_symbol_table)(bfd *abfd)
       return FALSE;
     }
 
-  bfd_get_symcount(abfd) = obj_aout_external_sym_count(abfd);
+  bfd_get_symcount(abfd) = (unsigned int)obj_aout_external_sym_count(abfd);
 
   obj_aout_symbols(abfd) = cached;
 
@@ -2036,17 +2039,17 @@ NAME (aout, get_reloc_upper_bound) (bfd *abfd, sec_ptr asect)
     }
 
   if (asect->flags & SEC_CONSTRUCTOR)
-    return (sizeof (arelent *) * (asect->reloc_count + 1));
+    return (sizeof(arelent *) * (asect->reloc_count + 1));
 
-  if (asect == obj_datasec (abfd))
-    return (sizeof (arelent *)
-	    * ((exec_hdr (abfd)->a_drsize / obj_reloc_entry_size (abfd))
-	       + 1));
+  if (asect == obj_datasec(abfd))
+    return (sizeof(arelent *)
+	    * ((size_t)(exec_hdr(abfd)->a_drsize / obj_reloc_entry_size(abfd))
+	       + 1UL));
 
-  if (asect == obj_textsec (abfd))
-    return (sizeof (arelent *)
-	    * ((exec_hdr (abfd)->a_trsize / obj_reloc_entry_size (abfd))
-	       + 1));
+  if (asect == obj_textsec(abfd))
+    return (sizeof(arelent *)
+	    * ((size_t)(exec_hdr(abfd)->a_trsize / obj_reloc_entry_size(abfd))
+	       + 1UL));
 
   /* TODO: why are there two if statements for obj_bsssec()? */
 
@@ -3016,8 +3019,8 @@ aout_link_write_other_symbol (struct aout_link_hash_entry *h, void * data)
     abort ();
 
   finfo->symoff += amt;
-  h->indx = obj_aout_external_sym_count (output_bfd);
-  ++obj_aout_external_sym_count (output_bfd);
+  h->indx = (int)obj_aout_external_sym_count(output_bfd);
+  ++obj_aout_external_sym_count(output_bfd);
 
   return TRUE;
 }
@@ -3951,13 +3954,13 @@ NAME (aout, final_link) (bfd *abfd,
     }
 
   /* Update the header information.  */
-  abfd->symcount = obj_aout_external_sym_count(abfd);
-  exec_hdr (abfd)->a_syms = abfd->symcount * EXTERNAL_NLIST_SIZE;
-  obj_str_filepos (abfd) = obj_sym_filepos (abfd) + exec_hdr (abfd)->a_syms;
+  abfd->symcount = (unsigned int)obj_aout_external_sym_count(abfd);
+  exec_hdr(abfd)->a_syms = (abfd->symcount * EXTERNAL_NLIST_SIZE);
+  obj_str_filepos(abfd) = (obj_sym_filepos(abfd) + exec_hdr(abfd)->a_syms);
   obj_textsec(abfd)->reloc_count =
-    (exec_hdr(abfd)->a_trsize / obj_reloc_entry_size(abfd));
+    (unsigned int)(exec_hdr(abfd)->a_trsize / obj_reloc_entry_size(abfd));
   obj_datasec(abfd)->reloc_count =
-    (exec_hdr(abfd)->a_drsize / obj_reloc_entry_size(abfd));
+    (unsigned int)(exec_hdr(abfd)->a_drsize / obj_reloc_entry_size(abfd));
 
   /* Write out the string table, unless there are no symbols.  */
   if (abfd->symcount > 0)
@@ -4522,7 +4525,7 @@ bfd_putp32(bfd_vma data, void *p)
 
 const bfd_target MY(vec) =
 {
-  (char *)TARGETNAME,			/* Name.  */
+  TARGETNAME,			/* Name.  */
   bfd_target_aout_flavour,
   BFD_ENDIAN_LITTLE,		/* Target byte order (little).  */
   BFD_ENDIAN_LITTLE,		/* Target headers byte order (little).  */

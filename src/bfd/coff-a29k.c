@@ -111,7 +111,7 @@ a29k_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
   if ((part1_consth_active) && (r_type != R_IHCONST))
     {
       part1_consth_active = FALSE;
-      *error_message = (char *) _("Missing IHCONST");
+      *error_message = _("Missing IHCONST");
 
       return bfd_reloc_dangerous;
     }
@@ -172,7 +172,7 @@ a29k_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
 	 Now relocate the reference.  */
       if (! part1_consth_active)
 	{
-	  *error_message = (char *) _("Missing IHIHALF");
+	  *error_message = _("Missing IHIHALF");
 	  return bfd_reloc_dangerous;
 	}
       /* sym_ptr_ptr = r_symndx, in coff_slurp_reloc_table() */
@@ -204,7 +204,7 @@ a29k_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
       bfd_put_32(abfd, (bfd_vma)insn, hit_data);
       break;
     default:
-      *error_message = _((char *)"Unrecognized reloc");
+      *error_message = _("Unrecognized reloc");
       return bfd_reloc_dangerous;
     }
 

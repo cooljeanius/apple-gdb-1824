@@ -309,8 +309,8 @@ create_go32_stub(bfd *abfd)
 	  close (f);
 	  goto stub_end;
 	}
-      exe_start = _H (4) * 16;
-      if ((long) lseek (f, exe_start, SEEK_SET) != exe_start)
+      exe_start = (long)(_H(4) * 16L);
+      if ((long)lseek(f, (off_t)exe_start, SEEK_SET) != exe_start)
 	{
 	  close (f);
 	  goto stub_end;
@@ -333,7 +333,7 @@ create_go32_stub(bfd *abfd)
 	  close (f);
 	  return;
 	}
-      lseek (f, 0L, SEEK_SET);
+      lseek(f, (off_t)0L, SEEK_SET);
       if ((unsigned long) read (f, bfd_coff_go32stub (abfd), coff_start)
 	  != coff_start)
 	{

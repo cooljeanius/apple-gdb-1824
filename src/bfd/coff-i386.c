@@ -602,9 +602,9 @@ const bfd_target
 #endif /* TARGET_SYM */
 {
 #ifdef TARGET_NAME
-  (char *)TARGET_NAME,
+  TARGET_NAME,
 #else
-  (char *)"coff-i386",	/* name */
+  "coff-i386",	/* name */
 #endif /* TARGET_NAME */
   bfd_target_coff_flavour,
   BFD_ENDIAN_LITTLE,		/* data byte order is little */

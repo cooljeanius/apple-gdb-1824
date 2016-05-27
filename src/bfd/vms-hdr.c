@@ -187,7 +187,7 @@ _bfd_vms_write_hdr (bfd *abfd, int objtype)
   int had_file = 0;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  vms_debug (2, "vms_write_hdr (%p)\n", abfd);
+  vms_debug(2, "vms_write_hdr (%p)\n", (void *)abfd);
 #endif
 
   _bfd_vms_output_alignment (abfd, 2);
@@ -236,20 +236,20 @@ _bfd_vms_write_hdr (bfd *abfd, int objtype)
       _bfd_vms_output_counted(abfd, fout);
     }
   else
-    _bfd_vms_output_counted(abfd, (char *)"NONAME");
+    _bfd_vms_output_counted(abfd, "NONAME");
 
-  _bfd_vms_output_counted(abfd, (char *)BFD_VERSION_STRING);
+  _bfd_vms_output_counted(abfd, BFD_VERSION_STRING);
   _bfd_vms_output_dump(abfd, get_vms_time_string(), 17);
   _bfd_vms_output_fill(abfd, 0, 17);
   _bfd_vms_output_flush(abfd);
 
   /* LMN.  */
-  _bfd_vms_output_begin (abfd, EOBJ_S_C_EMH, EMH_S_C_LNM);
-  _bfd_vms_output_dump (abfd, (unsigned char *)"GAS proGIS", 10);
-  _bfd_vms_output_flush (abfd);
+  _bfd_vms_output_begin(abfd, EOBJ_S_C_EMH, EMH_S_C_LNM);
+  _bfd_vms_output_dump(abfd, (const unsigned char *)"GAS proGIS", 10);
+  _bfd_vms_output_flush(abfd);
 
   /* SRC.  */
-  _bfd_vms_output_begin (abfd, EOBJ_S_C_EMH, EMH_S_C_SRC);
+  _bfd_vms_output_begin(abfd, EOBJ_S_C_EMH, EMH_S_C_SRC);
 
   for (symnum = 0; symnum < abfd->symcount; symnum++)
     {
@@ -257,7 +257,7 @@ _bfd_vms_write_hdr (bfd *abfd, int objtype)
 
       if (symbol->flags & BSF_FILE)
 	{
-	  if (strncmp ((char *)symbol->name, "<CASE:", 6) == 0)
+	  if (strncmp(symbol->name, "<CASE:", 6) == 0)
 	    {
 	      PRIV (flag_hash_long_names) = symbol->name[6] - '0';
 	      PRIV (flag_show_after_trunc) = symbol->name[7] - '0';
@@ -268,8 +268,8 @@ _bfd_vms_write_hdr (bfd *abfd, int objtype)
 	      continue;
 	    }
 
-	  _bfd_vms_output_dump (abfd, (unsigned char *) symbol->name,
-				(int) strlen (symbol->name));
+	  _bfd_vms_output_dump(abfd, (const unsigned char *)symbol->name,
+			       (int)strlen(symbol->name));
 	  if (had_case)
 	    break;
 	  had_file = 1;
@@ -277,21 +277,21 @@ _bfd_vms_write_hdr (bfd *abfd, int objtype)
     }
 
   if (symnum == abfd->symcount)
-    _bfd_vms_output_dump (abfd, (unsigned char *)"noname", 6);
+    _bfd_vms_output_dump(abfd, (const unsigned char *)"noname", 6);
 
-  _bfd_vms_output_flush (abfd);
+  _bfd_vms_output_flush(abfd);
 
   /* TTL.  */
-  _bfd_vms_output_begin (abfd, EOBJ_S_C_EMH, EMH_S_C_TTL);
-  _bfd_vms_output_dump (abfd, (unsigned char *)"TTL", 3);
-  _bfd_vms_output_flush (abfd);
+  _bfd_vms_output_begin(abfd, EOBJ_S_C_EMH, EMH_S_C_TTL);
+  _bfd_vms_output_dump(abfd, (const unsigned char *)"TTL", 3);
+  _bfd_vms_output_flush(abfd);
 
   /* CPR.  */
-  _bfd_vms_output_begin (abfd, EOBJ_S_C_EMH, EMH_S_C_CPR);
-  _bfd_vms_output_dump (abfd,
-			 (unsigned char *)"GNU BFD ported by Klaus K‰mpf 1994-1996",
-			 39);
-  _bfd_vms_output_flush (abfd);
+  _bfd_vms_output_begin(abfd, EOBJ_S_C_EMH, EMH_S_C_CPR);
+  _bfd_vms_output_dump(abfd,
+		       (const unsigned char *)"GNU BFD ported by Klaus K‰mpf 1994-1996",
+		       39);
+  _bfd_vms_output_flush(abfd);
 
   return 0;
 }
@@ -346,7 +346,7 @@ int
 _bfd_vms_write_eom (bfd *abfd, int objtype)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  vms_debug (2, "vms_write_eom (%p, %d)\n", abfd, objtype);
+  vms_debug(2, "vms_write_eom (%p, %d)\n", (void *)abfd, objtype);
 #endif
 
   _bfd_vms_output_begin (abfd, objtype, -1);

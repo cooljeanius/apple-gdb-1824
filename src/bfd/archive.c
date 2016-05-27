@@ -330,18 +330,18 @@ bfd_archive_free_cached_info (bfd *archive)
 
 /* END APPLE LOCAL */
 static hashval_t
-hash_file_ptr (const PTR p)
+hash_file_ptr(const PTR p)
 {
-  return (hashval_t)(((struct ar_cache *)p)->ptr);
+  return (hashval_t)(((const struct ar_cache *)p)->ptr);
 }
 
 /* Returns non-zero if P1 and P2 are equal: */
 static int
-eq_file_ptr (const PTR p1, const PTR p2)
+eq_file_ptr(const PTR p1, const PTR p2)
 {
-  struct ar_cache *arc1 = (struct ar_cache *)p1;
-  struct ar_cache *arc2 = (struct ar_cache *)p2;
-  return arc1->ptr == arc2->ptr;
+  const struct ar_cache *arc1 = (const struct ar_cache *)p1;
+  const struct ar_cache *arc2 = (const struct ar_cache *)p2;
+  return (arc1->ptr == arc2->ptr);
 }
 
 /* Kind of stupid to call cons for each one, but we do NOT do too many: */

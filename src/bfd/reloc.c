@@ -378,23 +378,23 @@ DESCRIPTION
 	The HOWTO define is horrible and will go away.
 
 .#define HOWTO(C, R, S, B, P, BI, O, SF, NAME, INPLACE, MASKSRC, MASKDST, PC) \
-.  { (unsigned)C, R, S, B, P, BI, O, SF, (char *)NAME, INPLACE, MASKSRC, MASKDST, PC }
+.  { (unsigned int)C, R, S, B, P, BI, O, SF, NAME, INPLACE, MASKSRC, MASKDST, PC }
 
 DESCRIPTION
 	And will be replaced with the totally magic way. But for the
 	moment, we are compatible, so do it this way.
 
 .#define NEWHOWTO(FUNCTION, NAME, SIZE, REL, IN) \
-.  HOWTO (0, 0, SIZE, 0, REL, 0, complain_overflow_dont, FUNCTION, \
-.         NAME, FALSE, 0, 0, IN)
+.  HOWTO(0, 0, SIZE, 0, REL, 0, complain_overflow_dont, FUNCTION, \
+.        NAME, FALSE, 0, 0, IN)
 .
 
 DESCRIPTION
 	This is used to fill in an empty howto entry in an array.
 
 .#define EMPTY_HOWTO(C) \
-.  HOWTO ((C), 0, 0, 0, FALSE, 0, complain_overflow_dont, NULL, \
-.         NULL, FALSE, 0, 0, FALSE)
+.  HOWTO((C), 0, 0, 0, FALSE, 0, complain_overflow_dont, NULL, \
+.        NULL, FALSE, 0, 0, FALSE)
 .
 
 DESCRIPTION
@@ -5815,7 +5815,7 @@ bfd_reloc_type_lookup(bfd *abfd, bfd_reloc_code_real_type code)
 
 static reloc_howto_type bfd_howto_32 =
 HOWTO(0, 00, 2, 32, FALSE, 0, complain_overflow_bitfield, 0,
-      (char *)"VRT32", FALSE, 0xffffffff, 0xffffffff, TRUE);
+      "VRT32", FALSE, 0xffffffff, 0xffffffff, TRUE);
 
 /*
 INTERNAL_FUNCTION

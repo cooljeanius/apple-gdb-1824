@@ -95,7 +95,7 @@ static bfd_boolean ppcboot_set_arch_mach
 static bfd_boolean ppcboot_get_section_contents
   PARAMS ((bfd *, asection *, PTR, file_ptr, bfd_size_type));
 static long ppcboot_get_symtab_upper_bound PARAMS ((bfd *));
-static char *mangle_name PARAMS((bfd *, const char *));
+static const char *mangle_name PARAMS((bfd *, const char *));
 static long ppcboot_canonicalize_symtab PARAMS ((bfd *, asymbol **));
 static void ppcboot_get_symbol_info PARAMS ((bfd *, asymbol *, symbol_info *));
 static bfd_boolean ppcboot_set_section_contents
@@ -244,7 +244,7 @@ ppcboot_get_symtab_upper_bound(bfd *abfd ATTRIBUTE_UNUSED)
 
 
 /* Create a symbol name based on the bfd's filename: */
-static char *
+static const char *
 mangle_name(bfd *abfd, const char *suffix)
 {
   bfd_size_type size;
@@ -257,7 +257,7 @@ mangle_name(bfd *abfd, const char *suffix)
 
   buf = (char *)bfd_alloc(abfd, size);
   if (buf == NULL)
-    return (char *)"";
+    return "";
 
   sprintf(buf, "_ppcboot_%s_%s", bfd_get_filename(abfd), suffix);
 
@@ -474,7 +474,7 @@ ppcboot_bfd_print_private_bfd_data(bfd *abfd, PTR farg)
 
 const bfd_target ppcboot_vec =
 {
-  (char *)"ppcboot",		/* name */
+  "ppcboot",		/* name */
   bfd_target_unknown_flavour,	/* flavour */
   BFD_ENDIAN_BIG,		/* byteorder is big endian for code */
   BFD_ENDIAN_LITTLE,		/* header_byteorder */

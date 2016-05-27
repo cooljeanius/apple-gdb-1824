@@ -459,7 +459,7 @@ extern const bfd_target aout_arm_big_vec;
 
 const bfd_target aout_arm_little_vec =
 {
-  (char *)"a.out-arm-little",           /* Name.  */
+  "a.out-arm-little",           /* Name.  */
   bfd_target_aout_flavour,
   BFD_ENDIAN_LITTLE,            /* Target byte order (little).  */
   BFD_ENDIAN_LITTLE,            /* Target headers byte order (little).  */
@@ -500,7 +500,7 @@ const bfd_target aout_arm_little_vec =
 
 const bfd_target aout_arm_big_vec =
 {
-  (char *)"a.out-arm-big",              /* Name.  */
+  "a.out-arm-big",              /* Name.  */
   bfd_target_aout_flavour,
   BFD_ENDIAN_BIG,               /* Target byte order (big).  */
   BFD_ENDIAN_BIG,               /* Target headers byte order (big).  */

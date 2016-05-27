@@ -765,9 +765,9 @@ static reloc_howto_type ppc_coff_howto_table[] =
 
 #define DUMP_RELOC(n,r)                              \
 {                                                    \
-   fprintf (stderr,"%s sym %d, addr %d, addend %d\n", \
+   fprintf(stderr,"%s sym %s, addr %lx, addend %"BFD_VMA_FMT"x\n", \
 	   n, (*(r->sym_ptr_ptr))->name,             \
-	   r->address, r->addend);                   \
+	   (unsigned long)r->address, r->addend);    \
 }
 
 /* Given a reloc name, n, and a pointer to an internal_reloc,
@@ -779,10 +779,10 @@ static reloc_howto_type ppc_coff_howto_table[] =
 
 #define DUMP_RELOC2(n,r)                     		\
 {                                            		\
-   fprintf (stderr,"%s sym %d, r_vaddr %d %s\n", 	\
-	   n, r->r_symndx, r->r_vaddr,			\
+   fprintf(stderr, "%s sym %d, r_vaddr %"BFD_VMA_FMT"x %s\n", 	\
+	   n, (int)r->r_symndx, r->r_vaddr,		\
 	   (((r->r_type) & IMAGE_REL_PPC_TOCDEFN) == 0) \
-	   ?" ":" TOCDEFN"  );      			\
+	    ? " " : " TOCDEFN");      			\
 }
 
 #else

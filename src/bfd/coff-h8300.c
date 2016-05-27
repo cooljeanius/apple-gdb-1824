@@ -247,37 +247,37 @@ special (bfd *abfd ATTRIBUTE_UNUSED,
 }
 
 static reloc_howto_type howto_table[] = {
-  HOWTO(R_RELBYTE, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, special, (char *)"8", FALSE, 0x000000ff, 0x000000ff, FALSE),
-  HOWTO(R_RELWORD, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, special, (char *)"16", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
-  HOWTO(R_RELLONG, 0, 2, 32, FALSE, 0, complain_overflow_bitfield, special, (char *)"32", FALSE, 0xffffffff, 0xffffffff, FALSE),
-  HOWTO(R_PCRBYTE, 0, 0, 8, TRUE, 0, complain_overflow_signed, special, (char *)"DISP8", FALSE, 0x000000ff, 0x000000ff, TRUE),
-  HOWTO(R_PCRWORD, 0, 1, 16, TRUE, 0, complain_overflow_signed, special, (char *)"DISP16", FALSE, 0x0000ffff, 0x0000ffff, TRUE),
-  HOWTO(R_PCRLONG, 0, 2, 32, TRUE, 0, complain_overflow_signed, special, (char *)"DISP32", FALSE, 0xffffffff, 0xffffffff, TRUE),
-  HOWTO(R_MOV16B1, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, special, (char *)"relaxable mov.b:16", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
-  HOWTO(R_MOV16B2, 0, 1, 8, FALSE, 0, complain_overflow_bitfield, special, (char *)"relaxed mov.b:16", FALSE, 0x000000ff, 0x000000ff, FALSE),
-  HOWTO(R_JMP1, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, special, (char *)"16/pcrel", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
-  HOWTO(R_JMP2, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, special, (char *)"pcrecl/16", FALSE, 0x000000ff, 0x000000ff, FALSE),
-  HOWTO(R_JMPL1, 0, 2, 32, FALSE, 0, complain_overflow_bitfield, special, (char *)"24/pcrell", FALSE, 0x00ffffff, 0x00ffffff, FALSE),
-  HOWTO(R_JMPL2, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, special, (char *)"pc8/24", FALSE, 0x000000ff, 0x000000ff, FALSE),
-  HOWTO(R_MOV24B1, 0, 1, 32, FALSE, 0, complain_overflow_bitfield, special, (char *)"relaxable mov.b:24", FALSE, 0xffffffff, 0xffffffff, FALSE),
-  HOWTO(R_MOV24B2, 0, 1, 8, FALSE, 0, complain_overflow_bitfield, special, (char *)"relaxed mov.b:24", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
+  HOWTO(R_RELBYTE, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, special, "8", FALSE, 0x000000ff, 0x000000ff, FALSE),
+  HOWTO(R_RELWORD, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, special, "16", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
+  HOWTO(R_RELLONG, 0, 2, 32, FALSE, 0, complain_overflow_bitfield, special, "32", FALSE, 0xffffffff, 0xffffffff, FALSE),
+  HOWTO(R_PCRBYTE, 0, 0, 8, TRUE, 0, complain_overflow_signed, special, "DISP8", FALSE, 0x000000ff, 0x000000ff, TRUE),
+  HOWTO(R_PCRWORD, 0, 1, 16, TRUE, 0, complain_overflow_signed, special, "DISP16", FALSE, 0x0000ffff, 0x0000ffff, TRUE),
+  HOWTO(R_PCRLONG, 0, 2, 32, TRUE, 0, complain_overflow_signed, special, "DISP32", FALSE, 0xffffffff, 0xffffffff, TRUE),
+  HOWTO(R_MOV16B1, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, special, "relaxable mov.b:16", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
+  HOWTO(R_MOV16B2, 0, 1, 8, FALSE, 0, complain_overflow_bitfield, special, "relaxed mov.b:16", FALSE, 0x000000ff, 0x000000ff, FALSE),
+  HOWTO(R_JMP1, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, special, "16/pcrel", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
+  HOWTO(R_JMP2, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, special, "pcrecl/16", FALSE, 0x000000ff, 0x000000ff, FALSE),
+  HOWTO(R_JMPL1, 0, 2, 32, FALSE, 0, complain_overflow_bitfield, special, "24/pcrell", FALSE, 0x00ffffff, 0x00ffffff, FALSE),
+  HOWTO(R_JMPL2, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, special, "pc8/24", FALSE, 0x000000ff, 0x000000ff, FALSE),
+  HOWTO(R_MOV24B1, 0, 1, 32, FALSE, 0, complain_overflow_bitfield, special, "relaxable mov.b:24", FALSE, 0xffffffff, 0xffffffff, FALSE),
+  HOWTO(R_MOV24B2, 0, 1, 8, FALSE, 0, complain_overflow_bitfield, special, "relaxed mov.b:24", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
 
   /* An indirect reference to a function.  This causes the function's address
      to be added to the function vector in lo-mem and puts the address of
      the function vector's entry in the jsr instruction.  */
-  HOWTO(R_MEM_INDIRECT, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, special, (char *)"8/indirect", FALSE, 0x000000ff, 0x000000ff, FALSE),
+  HOWTO(R_MEM_INDIRECT, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, special, "8/indirect", FALSE, 0x000000ff, 0x000000ff, FALSE),
 
   /* Internal reloc for relaxing.  This is created when a 16-bit pc-relative
      branch is turned into an 8-bit pc-relative branch.  */
-  HOWTO(R_PCRWORD_B, 0, 0, 8, TRUE, 0, complain_overflow_bitfield, special, (char *)"relaxed bCC:16", FALSE, 0x000000ff, 0x000000ff, FALSE),
+  HOWTO(R_PCRWORD_B, 0, 0, 8, TRUE, 0, complain_overflow_bitfield, special, "relaxed bCC:16", FALSE, 0x000000ff, 0x000000ff, FALSE),
 
-  HOWTO(R_MOVL1, 0, 2, 32, FALSE, 0, complain_overflow_bitfield,special, (char *)"32/24 relaxable move", FALSE, 0xffffffff, 0xffffffff, FALSE),
+  HOWTO(R_MOVL1, 0, 2, 32, FALSE, 0, complain_overflow_bitfield,special, "32/24 relaxable move", FALSE, 0xffffffff, 0xffffffff, FALSE),
 
-  HOWTO(R_MOVL2, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, special, (char *)"32/24 relaxed move", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
+  HOWTO(R_MOVL2, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, special, "32/24 relaxed move", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
 
-  HOWTO(R_BCC_INV, 0, 0, 8, TRUE, 0, complain_overflow_signed, special, (char *)"DISP8 inverted", FALSE, 0x000000ff, 0x000000ff, TRUE),
+  HOWTO(R_BCC_INV, 0, 0, 8, TRUE, 0, complain_overflow_signed, special, "DISP8 inverted", FALSE, 0x000000ff, 0x000000ff, TRUE),
 
-  HOWTO(R_JMP_DEL, 0, 0, 8, TRUE, 0, complain_overflow_signed, special, (char *)"Deleted jump", FALSE, 0x000000ff, 0x000000ff, TRUE),
+  HOWTO(R_JMP_DEL, 0, 0, 8, TRUE, 0, complain_overflow_signed, special, "Deleted jump", FALSE, 0x000000ff, 0x000000ff, TRUE),
 };
 
 /* Turn a howto into a reloc number.  */

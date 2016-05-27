@@ -22,7 +22,9 @@
 #include "bfd.h"
 #include "sysdep.h"
 #include "libbfd.h"
-#include "libiberty.h"
+#ifndef LIBIBERTY_H
+# include "libiberty.h"
+#endif /* !LIBIBERTY_H */
 
 #define bfd_sym_close_and_cleanup                   _bfd_generic_close_and_cleanup
 #define bfd_sym_bfd_free_cached_info                _bfd_generic_bfd_free_cached_info
@@ -2639,7 +2641,7 @@ int bfd_sym_sizeof_headers(bfd *abfd ATTRIBUTE_UNUSED,
 
 const bfd_target sym_vec =
 {
-  (char *)"sym",			/* Name.  */
+  "sym",			/* Name.  */
   bfd_target_sym_flavour,	/* Flavour.  */
   BFD_ENDIAN_BIG,		/* Byteorder.  */
   BFD_ENDIAN_BIG,		/* Header byteorder.  */

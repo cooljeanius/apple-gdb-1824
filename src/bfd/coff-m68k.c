@@ -422,7 +422,7 @@ m68kcoff_common_addend_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED,
 bfd_boolean
 bfd_m68k_coff_create_embedded_relocs(bfd *abfd, struct bfd_link_info *info,
                                      asection *datasec, asection *relsec,
-                                     char **errmsg)
+                                     const char **errmsg)
 {
   char *extsyms;
   bfd_size_type symesz;
@@ -466,7 +466,7 @@ bfd_m68k_coff_create_embedded_relocs(bfd *abfd, struct bfd_link_info *info,
       /* We can only relocate absolute longword relocs at run time.  */
       if (irel->r_type != R_RELLONG)
 	{
-	  *errmsg = (char *)_("unsupported reloc type");
+	  *errmsg = _("unsupported reloc type");
 	  bfd_set_error (bfd_error_bad_value);
 	  return FALSE;
 	}

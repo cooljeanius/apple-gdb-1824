@@ -71,8 +71,8 @@ static void
 image_set_ptr (bfd * abfd, int psect, uquad offset)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (4, "image_set_ptr (%d=%s, %d)\n",
-		  psect, PRIV (sections)[psect]->name, offset);
+  _bfd_vms_debug(4, "image_set_ptr (%d=%s, %d)\n",
+		 psect, PRIV(sections)[psect]->name, (int)offset);
 #endif
 
   PRIV (image_ptr) = PRIV (sections)[psect]->contents + offset;
@@ -85,7 +85,7 @@ static void
 image_inc_ptr (bfd * abfd, uquad offset)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (4, "image_inc_ptr (%d)\n", offset);
+  _bfd_vms_debug(4, "image_inc_ptr (%d)\n", (int)offset);
 #endif
 
   PRIV (image_ptr) += offset;
@@ -165,7 +165,7 @@ static void
 image_write_q (bfd * abfd, uquad value)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (6, "image_write_q (%016lx)\n", value);
+  _bfd_vms_debug (6, "image_write_q (%016lx)\n", (unsigned long)value);
 #endif
 
   if (PRIV (is_vax) && check_section (abfd, 8))
@@ -1795,7 +1795,7 @@ static void sto_imm(bfd *abfd, vms_section *sptr, bfd_vma vaddr, int my_index)
   unsigned char *cptr;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug(8, "sto_imm %d bytes\n", sptr->size);
+  _bfd_vms_debug(8, "sto_imm %d bytes\n", (int)sptr->size);
   _bfd_hexdump(9, sptr->contents, (int)sptr->size, (int)vaddr);
 #endif /* VMS_DEBUG */
 
@@ -1844,8 +1844,8 @@ _bfd_vms_write_tir (bfd * abfd, int objtype ATTRIBUTE_UNUSED)
   int nextoffset;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (2, "vms_write_tir (%p, %d)\n", abfd, objtype);
-#endif
+  _bfd_vms_debug(2, "vms_write_tir (%p, %d)\n", (void *)abfd, objtype);
+#endif /* VMS_DEBUG */
 
   _bfd_vms_output_alignment (abfd, 4);
 
@@ -1879,13 +1879,14 @@ _bfd_vms_write_tir (bfd * abfd, int objtype ATTRIBUTE_UNUSED)
 	      rptr = section->orelocation;
 	      while (i-- > 0)
 		{
-		  _bfd_vms_debug (4, "sym %s in sec %s, value %08lx, addr %08lx, off %08lx, len %d: %s\n",
-				  (*(*rptr)->sym_ptr_ptr)->name,
-				  (*(*rptr)->sym_ptr_ptr)->section->name,
-				  (long) (*(*rptr)->sym_ptr_ptr)->value,
-				  (*rptr)->address, (*rptr)->addend,
-				  bfd_get_reloc_size ((*rptr)->howto),
-				  (*rptr)->howto->name);
+		  _bfd_vms_debug(4, "sym %s in sec %s, value %08lx, addr %08lx, off %08"BFD_VMA_FMT"x, len %d: %s\n",
+				 (*(*rptr)->sym_ptr_ptr)->name,
+				 (*(*rptr)->sym_ptr_ptr)->section->name,
+				 (long)(*(*rptr)->sym_ptr_ptr)->value,
+				 (unsigned long)(*rptr)->address,
+				 (*rptr)->addend,
+				 bfd_get_reloc_size((*rptr)->howto),
+				 (*rptr)->howto->name);
 		  rptr++;
 		}
 	    }
@@ -2215,27 +2216,25 @@ _bfd_vms_write_tir (bfd * abfd, int objtype ATTRIBUTE_UNUSED)
 }
 
 /* Write traceback data for bfd abfd.  */
-
 int
-_bfd_vms_write_tbt (bfd * abfd ATTRIBUTE_UNUSED,
-		    int objtype ATTRIBUTE_UNUSED)
+_bfd_vms_write_tbt(bfd *abfd ATTRIBUTE_UNUSED,
+		   int objtype ATTRIBUTE_UNUSED)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (2, "vms_write_tbt (%p, %d)\n", abfd, objtype);
-#endif
+  _bfd_vms_debug(2, "vms_write_tbt (%p, %d)\n", (void *)abfd, objtype);
+#endif /* VMS_DEBUG */
 
   return 0;
 }
 
 /* Write debug info for bfd abfd.  */
-
 int
-_bfd_vms_write_dbg (bfd * abfd ATTRIBUTE_UNUSED,
-		    int objtype ATTRIBUTE_UNUSED)
+_bfd_vms_write_dbg(bfd *abfd ATTRIBUTE_UNUSED,
+		   int objtype ATTRIBUTE_UNUSED)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (2, "vms_write_dbg (%p, objtype)\n", abfd, objtype);
-#endif
+  _bfd_vms_debug(2, "vms_write_dbg (%p, objtype: %d)\n", (void *)abfd, objtype);
+#endif /* VMS_DEBUG */
 
   return 0;
 }

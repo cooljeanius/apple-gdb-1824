@@ -843,9 +843,9 @@ const bfd_target
 #endif /* TARGET_SYM */
 {
 #ifdef TARGET_NAME
-  (char *)TARGET_NAME,
+  TARGET_NAME,
 #else
-  (char *)"pe-mips",			/* Name.  */
+  "pe-mips",			/* Name.  */
 #endif /* TARGET_NAME */
   bfd_target_coff_flavour,
   BFD_ENDIAN_LITTLE,		/* Data byte order is little.  */

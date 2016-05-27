@@ -2440,8 +2440,8 @@ v850_elf_relax_section (bfd *abfd,
 	  toaddr = irel->r_offset;
 
 #ifdef DEBUG_RELAX
-      fprintf (stderr, "relax region 0x%x to 0x%x align pad %d\n",
-	       addr, toaddr, align_pad_size);
+      fprintf(stderr, "relax region 0x%"BFD_VMA_FMT"x to 0x%"BFD_VMA_FMT"x align pad %d\n",
+	      addr, toaddr, align_pad_size);
 #endif
       if (irelalign)
 	{
@@ -2457,8 +2457,8 @@ v850_elf_relax_section (bfd *abfd,
 
 	      align_pad_size = alignto - alignmoveto;
 #ifdef DEBUG_RELAX
-	      fprintf (stderr, "relax move region 0x%x to 0x%x delete size 0x%x\n",
-		       alignmoveto, toaddr, align_pad_size);
+	      fprintf(stderr, "relax move region 0x%"BFD_VMA_FMT"x to 0x%"BFD_VMA_FMT"x delete size 0x%x\n",
+		      alignmoveto, toaddr, align_pad_size);
 #endif
 	      if (!v850_elf_relax_delete_bytes (abfd, sec, alignmoveto,
 						toaddr, align_pad_size))
@@ -2492,10 +2492,9 @@ v850_elf_relax_section (bfd *abfd,
 	    continue;
 
 #ifdef DEBUG_RELAX
-	  fprintf (stderr, "relax check r_info 0x%x r_offset 0x%x r_addend 0x%x\n",
-		   irel->r_info,
-		   irel->r_offset,
-		   irel->r_addend );
+	  fprintf(stderr,
+		  "relax check r_info 0x%"BFD_VMA_FMT"x r_offset 0x%"BFD_VMA_FMT"x r_addend 0x%"BFD_VMA_FMT"x\n",
+		  irel->r_info, irel->r_offset, irel->r_addend);
 #endif
 
 	  /* Get the section contents.  */
@@ -2698,12 +2697,16 @@ v850_elf_relax_section (bfd *abfd,
 			 + sec->output_offset
 			 + 4));
 #ifdef DEBUG_RELAX
-	      fprintf (stderr, "relax longcall r_offset 0x%x ptr 0x%x symbol 0x%x addend 0x%x distance 0x%x\n",
-		       irel->r_offset,
-		       (irel->r_offset
-			+ sec->output_section->vma
-			+ sec->output_offset),
-		       symval, addend, foff);
+	      fprintf(stderr,
+		      "relax longcall r_offset "
+		      "0x%"BFD_VMA_FMT"x ptr 0x%"BFD_VMA_FMT"x "
+		      "symbol 0x%"BFD_VMA_FMT"x addend 0x%"BFD_VMA_FMT"x "
+		      "distance 0x%"BFD_VMA_FMT"d\n",
+		      irel->r_offset,
+		      (irel->r_offset
+		       + sec->output_section->vma
+		       + sec->output_offset),
+		      symval, addend, foff);
 #endif
 
 	      if (foff < -0x100000 || foff >= 0x100000)
@@ -2839,14 +2842,18 @@ v850_elf_relax_section (bfd *abfd,
 			    + sym_sec->output_offset);
 #ifdef DEBUG_RELAX
 		  {
-		    char * name = bfd_elf_string_from_elf_section
-		      (abfd, symtab_hdr->sh_link, isym->st_name);
+		    const char *name =
+		      bfd_elf_string_from_elf_section(abfd, symtab_hdr->sh_link,
+						      isym->st_name);
 
-		    fprintf (stderr, "relax long jump local: sec: %s, sym: %s (%d), value: %x + %x + %x addend %x\n",
-			     sym_sec->name, name, isym->st_name,
-			     sym_sec->output_section->vma,
-			     sym_sec->output_offset,
-			     isym->st_value, irel->r_addend);
+		    fprintf(stderr,
+			    "relax long jump local: sec: %s, sym: %s (%lu), "
+			    "value: %"BFD_VMA_FMT"x + %"BFD_VMA_FMT"x + %"BFD_VMA_FMT"x "
+			    "addend %"BFD_VMA_FMT"x\n",
+			    sym_sec->name, name, isym->st_name,
+			    sym_sec->output_section->vma,
+			    sym_sec->output_offset,
+			    isym->st_value, irel->r_addend);
 		  }
 #endif
 		}
@@ -2871,10 +2878,12 @@ v850_elf_relax_section (bfd *abfd,
 			    + h->root.u.def.section->output_section->vma
 			    + h->root.u.def.section->output_offset);
 #ifdef DEBUG_RELAX
-		  fprintf (stderr,
-			   "relax longjump defined: sec: %s, name: %s, value: %x + %x + %x addend %x\n",
-			   sec->name, h->root.root.string, h->root.u.def.value,
-			   sec->output_section->vma, sec->output_offset, irel->r_addend);
+		  fprintf(stderr,
+			  "relax longjump defined: sec: %s, name: %s, "
+			  "value: %"BFD_VMA_FMT"x + %"BFD_VMA_FMT"x + %"BFD_VMA_FMT"x "
+			  "addend %"BFD_VMA_FMT"x\n",
+			  sec->name, h->root.root.string, h->root.u.def.value,
+			  sec->output_section->vma, sec->output_offset, irel->r_addend);
 #endif
 		}
 
@@ -2886,12 +2895,14 @@ v850_elf_relax_section (bfd *abfd,
 			 + sec->output_offset
 			 + 4));
 #ifdef DEBUG_RELAX
-	      fprintf (stderr, "relax longjump r_offset 0x%x ptr 0x%x symbol 0x%x addend 0x%x distance 0x%x\n",
-		       irel->r_offset,
-		       (irel->r_offset
-			+ sec->output_section->vma
-			+ sec->output_offset),
-		       symval, addend, foff);
+	      fprintf(stderr,
+		      "relax longjump r_offset 0x%"BFD_VMA_FMT"x "
+		      "ptr 0x%"BFD_VMA_FMT"x symbol 0x%"BFD_VMA_FMT"x "
+		      "addend 0x%"BFD_VMA_FMT"x distance 0x%"BFD_VMA_FMT"d\n",
+		      irel->r_offset,
+		      (irel->r_offset + sec->output_section->vma
+		       + sec->output_offset),
+		      symval, addend, foff);
 #endif
 	      if (foff < -0x100000 || foff >= 0x100000)
 		/* After all that work, we can't shorten this function call.  */
@@ -2996,10 +3007,9 @@ v850_elf_relax_section (bfd *abfd,
   if (!irelalign)
     {
 #ifdef DEBUG_RELAX
-      fprintf (stderr, "relax pad %d shorten %d -> %d\n",
-	       align_pad_size,
-	       sec->size,
-	       sec->size - align_pad_size);
+      fprintf(stderr, "relax pad %d shorten %lx -> %lx\n",
+	      align_pad_size, (unsigned long)sec->size,
+	      (unsigned long)(sec->size - align_pad_size));
 #endif
       sec->size -= align_pad_size;
     }

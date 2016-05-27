@@ -814,12 +814,12 @@ _bfd_generic_read_minisymbols(bfd *abfd, bfd_boolean dynamic,
    we just return the asymbol the minisymbol points to.  */
 
 asymbol *
-_bfd_generic_minisymbol_to_symbol (bfd *abfd ATTRIBUTE_UNUSED,
-				   bfd_boolean dynamic ATTRIBUTE_UNUSED,
-				   const void *minisym,
-				   asymbol *sym ATTRIBUTE_UNUSED)
+_bfd_generic_minisymbol_to_symbol(bfd *abfd ATTRIBUTE_UNUSED,
+				  bfd_boolean dynamic ATTRIBUTE_UNUSED,
+				  const void *minisym,
+				  asymbol *sym ATTRIBUTE_UNUSED)
 {
-  return *(asymbol **) minisym;
+  return *(asymbol *const *)minisym;
 }
 
 /* Look through stabs debugging information in .stab and .stabstr

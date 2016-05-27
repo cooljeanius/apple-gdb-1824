@@ -384,7 +384,7 @@ bfd_perror(const char *message)
 {
   if (bfd_get_error() == bfd_error_system_call)
     /* Must be a system error then: */
-    perror((char *)message);
+    perror(message);
   else
     {
       if ((message == NULL) || (*message == '\0'))

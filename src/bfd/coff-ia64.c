@@ -140,9 +140,9 @@ const bfd_target
 #endif
 {
 #ifdef TARGET_NAME
-  (char *)TARGET_NAME,
+  TARGET_NAME,
 #else
-  (char *)"coff-ia64",			/* name */
+  "coff-ia64",			/* name */
 #endif
   bfd_target_coff_flavour,
   BFD_ENDIAN_LITTLE,		/* data byte order is little */

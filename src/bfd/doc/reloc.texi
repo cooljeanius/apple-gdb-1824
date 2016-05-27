@@ -352,7 +352,7 @@ struct reloc_howto_struct
 The HOWTO define is horrible and will go away.
 @example
 #define HOWTO(C, R, S, B, P, BI, O, SF, NAME, INPLACE, MASKSRC, MASKDST, PC) \
-  @{ (unsigned)C, R, S, B, P, BI, O, SF, (char *)NAME, INPLACE, MASKSRC, MASKDST, PC @}
+  @{ (unsigned int)C, R, S, B, P, BI, O, SF, NAME, INPLACE, MASKSRC, MASKDST, PC @}
 @end example
 
 @strong{Description}@*
@@ -360,8 +360,8 @@ And will be replaced with the totally magic way. But for the
 moment, we are compatible, so do it this way.
 @example
 #define NEWHOWTO(FUNCTION, NAME, SIZE, REL, IN) \
-  HOWTO (0, 0, SIZE, 0, REL, 0, complain_overflow_dont, FUNCTION, \
-         NAME, FALSE, 0, 0, IN)
+  HOWTO(0, 0, SIZE, 0, REL, 0, complain_overflow_dont, FUNCTION, \
+        NAME, FALSE, 0, 0, IN)
 
 @end example
 
@@ -369,8 +369,8 @@ moment, we are compatible, so do it this way.
 This is used to fill in an empty howto entry in an array.
 @example
 #define EMPTY_HOWTO(C) \
-  HOWTO ((C), 0, 0, 0, FALSE, 0, complain_overflow_dont, NULL, \
-         NULL, FALSE, 0, 0, FALSE)
+  HOWTO((C), 0, 0, 0, FALSE, 0, complain_overflow_dont, NULL, \
+        NULL, FALSE, 0, 0, FALSE)
 
 @end example
 

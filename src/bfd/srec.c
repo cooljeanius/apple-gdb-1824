@@ -940,8 +940,8 @@ srec_write_header(bfd *abfd)
     len = 40UL;
 
   return srec_write_record(abfd, 0, (bfd_vma)0L,
-			   (bfd_byte *)abfd->filename,
-			   (bfd_byte *)abfd->filename + len);
+			   (const bfd_byte *)abfd->filename,
+			   (const bfd_byte *)abfd->filename + len);
 }
 
 static bfd_boolean
@@ -1202,7 +1202,7 @@ extern const bfd_target srec_vec;
 #endif /* __clang__ */
 const bfd_target srec_vec =
 {
-  (char *)"srec",			/* Name.  */
+  "srec",			/* Name.  */
   bfd_target_srec_flavour,
   BFD_ENDIAN_UNKNOWN,		/* Target byte order.  */
   BFD_ENDIAN_UNKNOWN,		/* Target headers byte order.  */
@@ -1260,7 +1260,7 @@ extern const bfd_target symbolsrec_vec;
 #endif /* __clang__ */
 const bfd_target symbolsrec_vec =
 {
-  (char *)"symbolsrec",			/* Name.  */
+  "symbolsrec",			/* Name.  */
   bfd_target_srec_flavour,
   BFD_ENDIAN_UNKNOWN,		/* Target byte order.  */
   BFD_ENDIAN_UNKNOWN,		/* Target headers byte order.  */

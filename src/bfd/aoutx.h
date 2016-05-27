@@ -188,35 +188,35 @@ DESCRIPTION
 reloc_howto_type howto_table_ext[] =
 {
   /* Type rs size bsz pcrel bitpos ovrf sf name part_inpl readmask setmask pcdone */
-  HOWTO(RELOC_8, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, 0, (char *)"8",
+  HOWTO(RELOC_8, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, 0, "8",
 	FALSE, 0, 0x000000ff, FALSE),
-  HOWTO(RELOC_16, 0,  1, 	16, FALSE, 0, complain_overflow_bitfield, 0, (char *)"16",          FALSE, 0, 0x0000ffff, FALSE),
-  HOWTO(RELOC_32, 0,  2, 	32, FALSE, 0, complain_overflow_bitfield, 0, (char *)"32",          FALSE, 0, 0xffffffff, FALSE),
-  HOWTO(RELOC_DISP8,   0,  0, 	8,  TRUE,  0, complain_overflow_signed,   0, (char *)"DISP8", 	    FALSE, 0, 0x000000ff, FALSE),
-  HOWTO(RELOC_DISP16,  0,  1, 	16, TRUE,  0, complain_overflow_signed,   0, (char *)"DISP16", 	    FALSE, 0, 0x0000ffff, FALSE),
-  HOWTO(RELOC_DISP32,  0,  2, 	32, TRUE,  0, complain_overflow_signed,   0, (char *)"DISP32", 	    FALSE, 0, 0xffffffff, FALSE),
-  HOWTO(RELOC_WDISP30, 2,  2, 	30, TRUE,  0, complain_overflow_signed,   0, (char *)"WDISP30",     FALSE, 0, 0x3fffffff, FALSE),
-  HOWTO(RELOC_WDISP22, 2,  2, 	22, TRUE,  0, complain_overflow_signed,   0, (char *)"WDISP22",     FALSE, 0, 0x003fffff, FALSE),
-  HOWTO(RELOC_HI22,   10,  2, 	22, FALSE, 0, complain_overflow_bitfield, 0, (char *)"HI22",	    FALSE, 0, 0x003fffff, FALSE),
-  HOWTO(RELOC_22,      0,  2, 	22, FALSE, 0, complain_overflow_bitfield, 0, (char *)"22",          FALSE, 0, 0x003fffff, FALSE),
-  HOWTO(RELOC_13,      0,  2, 	13, FALSE, 0, complain_overflow_bitfield, 0, (char *)"13",          FALSE, 0, 0x00001fff, FALSE),
-  HOWTO(RELOC_LO10,    0,  2, 	10, FALSE, 0, complain_overflow_dont,     0, (char *)"LO10",        FALSE, 0, 0x000003ff, FALSE),
-  HOWTO(RELOC_SFA_BASE,0,  2, 	32, FALSE, 0, complain_overflow_bitfield, 0, (char *)"SFA_BASE",    FALSE, 0, 0xffffffff, FALSE),
-  HOWTO(RELOC_SFA_OFF13,0, 2, 	32, FALSE, 0, complain_overflow_bitfield, 0, (char *)"SFA_OFF13",   FALSE, 0, 0xffffffff, FALSE),
-  HOWTO(RELOC_BASE10,  0,  2, 	10, FALSE, 0, complain_overflow_dont,     0, (char *)"BASE10",      FALSE, 0, 0x000003ff, FALSE),
-  HOWTO(RELOC_BASE13,  0,  2,	13, FALSE, 0, complain_overflow_signed,   0, (char *)"BASE13",      FALSE, 0, 0x00001fff, FALSE),
-  HOWTO(RELOC_BASE22, 10,  2,	22, FALSE, 0, complain_overflow_bitfield, 0, (char *)"BASE22",      FALSE, 0, 0x003fffff, FALSE),
-  HOWTO(RELOC_PC10,    0,  2,	10, TRUE,  0, complain_overflow_dont,     0, (char *)"PC10",	    FALSE, 0, 0x000003ff, TRUE),
-  HOWTO(RELOC_PC22,   10,  2,	22, TRUE,  0, complain_overflow_signed,   0, (char *)"PC22",  	    FALSE, 0, 0x003fffff, TRUE),
-  HOWTO(RELOC_JMP_TBL, 2,  2, 	30, TRUE,  0, complain_overflow_signed,   0, (char *)"JMP_TBL",     FALSE, 0, 0x3fffffff, FALSE),
-  HOWTO(RELOC_SEGOFF16,0,  2,	0,  FALSE, 0, complain_overflow_bitfield, 0, (char *)"SEGOFF16",    FALSE, 0, 0x00000000, FALSE),
-  HOWTO(RELOC_GLOB_DAT,0,  2,	0,  FALSE, 0, complain_overflow_bitfield, 0, (char *)"GLOB_DAT",    FALSE, 0, 0x00000000, FALSE),
-  HOWTO(RELOC_JMP_SLOT,0,  2,	0,  FALSE, 0, complain_overflow_bitfield, 0, (char *)"JMP_SLOT",    FALSE, 0, 0x00000000, FALSE),
-  HOWTO(RELOC_RELATIVE,0,  2,	0,  FALSE, 0, complain_overflow_bitfield, 0, (char *)"RELATIVE",    FALSE, 0, 0x00000000, FALSE),
-  HOWTO(0,             0,  0,  0,  FALSE, 0, complain_overflow_dont,     0, (char *)"R_SPARC_NONE",FALSE, 0, 0x00000000, TRUE),
-  HOWTO(0,             0,  0,  0,  FALSE, 0, complain_overflow_dont,     0, (char *)"R_SPARC_NONE",FALSE, 0, 0x00000000, TRUE),
+  HOWTO(RELOC_16, 0,  1, 	16, FALSE, 0, complain_overflow_bitfield, 0, "16",          FALSE, 0, 0x0000ffff, FALSE),
+  HOWTO(RELOC_32, 0,  2, 	32, FALSE, 0, complain_overflow_bitfield, 0, "32",          FALSE, 0, 0xffffffff, FALSE),
+  HOWTO(RELOC_DISP8,   0,  0, 	8,  TRUE,  0, complain_overflow_signed,   0, "DISP8", 	    FALSE, 0, 0x000000ff, FALSE),
+  HOWTO(RELOC_DISP16,  0,  1, 	16, TRUE,  0, complain_overflow_signed,   0, "DISP16", 	    FALSE, 0, 0x0000ffff, FALSE),
+  HOWTO(RELOC_DISP32,  0,  2, 	32, TRUE,  0, complain_overflow_signed,   0, "DISP32", 	    FALSE, 0, 0xffffffff, FALSE),
+  HOWTO(RELOC_WDISP30, 2,  2, 	30, TRUE,  0, complain_overflow_signed,   0, "WDISP30",     FALSE, 0, 0x3fffffff, FALSE),
+  HOWTO(RELOC_WDISP22, 2,  2, 	22, TRUE,  0, complain_overflow_signed,   0, "WDISP22",     FALSE, 0, 0x003fffff, FALSE),
+  HOWTO(RELOC_HI22,   10,  2, 	22, FALSE, 0, complain_overflow_bitfield, 0, "HI22",	    FALSE, 0, 0x003fffff, FALSE),
+  HOWTO(RELOC_22,      0,  2, 	22, FALSE, 0, complain_overflow_bitfield, 0, "22",          FALSE, 0, 0x003fffff, FALSE),
+  HOWTO(RELOC_13,      0,  2, 	13, FALSE, 0, complain_overflow_bitfield, 0, "13",          FALSE, 0, 0x00001fff, FALSE),
+  HOWTO(RELOC_LO10,    0,  2, 	10, FALSE, 0, complain_overflow_dont,     0, "LO10",        FALSE, 0, 0x000003ff, FALSE),
+  HOWTO(RELOC_SFA_BASE,0,  2, 	32, FALSE, 0, complain_overflow_bitfield, 0, "SFA_BASE",    FALSE, 0, 0xffffffff, FALSE),
+  HOWTO(RELOC_SFA_OFF13,0, 2, 	32, FALSE, 0, complain_overflow_bitfield, 0, "SFA_OFF13",   FALSE, 0, 0xffffffff, FALSE),
+  HOWTO(RELOC_BASE10,  0,  2, 	10, FALSE, 0, complain_overflow_dont,     0, "BASE10",      FALSE, 0, 0x000003ff, FALSE),
+  HOWTO(RELOC_BASE13,  0,  2,	13, FALSE, 0, complain_overflow_signed,   0, "BASE13",      FALSE, 0, 0x00001fff, FALSE),
+  HOWTO(RELOC_BASE22, 10,  2,	22, FALSE, 0, complain_overflow_bitfield, 0, "BASE22",      FALSE, 0, 0x003fffff, FALSE),
+  HOWTO(RELOC_PC10,    0,  2,	10, TRUE,  0, complain_overflow_dont,     0, "PC10",	    FALSE, 0, 0x000003ff, TRUE),
+  HOWTO(RELOC_PC22,   10,  2,	22, TRUE,  0, complain_overflow_signed,   0, "PC22",  	    FALSE, 0, 0x003fffff, TRUE),
+  HOWTO(RELOC_JMP_TBL, 2,  2, 	30, TRUE,  0, complain_overflow_signed,   0, "JMP_TBL",     FALSE, 0, 0x3fffffff, FALSE),
+  HOWTO(RELOC_SEGOFF16,0,  2,	0,  FALSE, 0, complain_overflow_bitfield, 0, "SEGOFF16",    FALSE, 0, 0x00000000, FALSE),
+  HOWTO(RELOC_GLOB_DAT,0,  2,	0,  FALSE, 0, complain_overflow_bitfield, 0, "GLOB_DAT",    FALSE, 0, 0x00000000, FALSE),
+  HOWTO(RELOC_JMP_SLOT,0,  2,	0,  FALSE, 0, complain_overflow_bitfield, 0, "JMP_SLOT",    FALSE, 0, 0x00000000, FALSE),
+  HOWTO(RELOC_RELATIVE,0,  2,	0,  FALSE, 0, complain_overflow_bitfield, 0, "RELATIVE",    FALSE, 0, 0x00000000, FALSE),
+  HOWTO(0,             0,  0,  0,  FALSE, 0, complain_overflow_dont,     0, "R_SPARC_NONE",FALSE, 0, 0x00000000, TRUE),
+  HOWTO(0,             0,  0,  0,  FALSE, 0, complain_overflow_dont,     0, "R_SPARC_NONE",FALSE, 0, 0x00000000, TRUE),
 #define RELOC_SPARC_REV32 RELOC_WDISP19
-  HOWTO (RELOC_SPARC_REV32, 0, 2, 32, FALSE, 0, complain_overflow_dont,   0,(char *)"R_SPARC_REV32",FALSE, 0, 0xffffffff, FALSE),
+  HOWTO (RELOC_SPARC_REV32, 0, 2, 32, FALSE, 0, complain_overflow_dont,   0,"R_SPARC_REV32",FALSE, 0, 0xffffffff, FALSE),
 };
 
 /* Convert standard reloc records to "arelent" format (incl byte swap).  */
@@ -224,29 +224,23 @@ reloc_howto_type howto_table_ext[] =
 reloc_howto_type howto_table_std[] =
 {
   /* type              rs size bsz  pcrel bitpos ovrf                     sf name     part_inpl readmask  setmask    pcdone.  */
-HOWTO( 0,	       0,  0,  	8,  FALSE, 0, complain_overflow_bitfield,0,(char *)"8",		TRUE, 0x000000ff,0x000000ff, FALSE),
-HOWTO( 1,	       0,  1, 	16, FALSE, 0, complain_overflow_bitfield,0,(char *)"16",	TRUE, 0x0000ffff,0x0000ffff, FALSE),
-HOWTO( 2,	       0,  2, 	32, FALSE, 0, complain_overflow_bitfield,0,(char *)"32",	TRUE, 0xffffffff,0xffffffff, FALSE),
-HOWTO( 3,	       0,  4, 	64, FALSE, 0, complain_overflow_bitfield,0,(char *)"64",	TRUE, 0xdeaddead,0xdeaddead, FALSE),
-HOWTO( 4,	       0,  0, 	8,  TRUE,  0, complain_overflow_signed,  0,(char *)"DISP8",	TRUE, 0x000000ff,0x000000ff, FALSE),
-HOWTO( 5,	       0,  1, 	16, TRUE,  0, complain_overflow_signed,  0,(char *)"DISP16",	TRUE, 0x0000ffff,0x0000ffff, FALSE),
-HOWTO( 6,	       0,  2, 	32, TRUE,  0, complain_overflow_signed,  0,(char *)"DISP32",	TRUE, 0xffffffff,0xffffffff, FALSE),
-HOWTO( 7,	       0,  4, 	64, TRUE,  0, complain_overflow_signed,  0,(char *)"DISP64",	TRUE, 0xfeedface,0xfeedface, FALSE),
-HOWTO( 8,	       0,  2,    0, FALSE, 0, complain_overflow_bitfield,0,(char *)"GOT_REL",	FALSE,         0,0x00000000, FALSE),
-HOWTO( 9,	       0,  1,   16, FALSE, 0, complain_overflow_bitfield,0,(char *)"BASE16",	FALSE,0xffffffff,0xffffffff, FALSE),
-HOWTO(10,	       0,  2,   32, FALSE, 0, complain_overflow_bitfield,0,(char *)"BASE32",	FALSE,0xffffffff,0xffffffff, FALSE),
+HOWTO( 0,	       0,  0,  	8,  FALSE, 0, complain_overflow_bitfield,0,"8",		TRUE, 0x000000ff,0x000000ff, FALSE),
+HOWTO( 1,	       0,  1, 	16, FALSE, 0, complain_overflow_bitfield,0,"16",	TRUE, 0x0000ffff,0x0000ffff, FALSE),
+HOWTO( 2,	       0,  2, 	32, FALSE, 0, complain_overflow_bitfield,0,"32",	TRUE, 0xffffffff,0xffffffff, FALSE),
+HOWTO( 3,	       0,  4, 	64, FALSE, 0, complain_overflow_bitfield,0,"64",	TRUE, 0xdeaddead,0xdeaddead, FALSE),
+HOWTO( 4,	       0,  0, 	8,  TRUE,  0, complain_overflow_signed,  0,"DISP8",	TRUE, 0x000000ff,0x000000ff, FALSE),
+HOWTO( 5,	       0,  1, 	16, TRUE,  0, complain_overflow_signed,  0,"DISP16",	TRUE, 0x0000ffff,0x0000ffff, FALSE),
+HOWTO( 6,	       0,  2, 	32, TRUE,  0, complain_overflow_signed,  0,"DISP32",	TRUE, 0xffffffff,0xffffffff, FALSE),
+HOWTO( 7,	       0,  4, 	64, TRUE,  0, complain_overflow_signed,  0,"DISP64",	TRUE, 0xfeedface,0xfeedface, FALSE),
+HOWTO( 8,	       0,  2,    0, FALSE, 0, complain_overflow_bitfield,0,"GOT_REL",	FALSE,         0,0x00000000, FALSE),
+HOWTO( 9,	       0,  1,   16, FALSE, 0, complain_overflow_bitfield,0,"BASE16",	FALSE,0xffffffff,0xffffffff, FALSE),
+HOWTO(10,	       0,  2,   32, FALSE, 0, complain_overflow_bitfield,0,"BASE32",	FALSE,0xffffffff,0xffffffff, FALSE),
 EMPTY_HOWTO(-1),
 EMPTY_HOWTO(-1),
 EMPTY_HOWTO(-1),
 EMPTY_HOWTO(-1),
 EMPTY_HOWTO(-1),
-  HOWTO (16,	       0,  2,	 0, FALSE, 0, complain_overflow_bitfield,0,(char *)"JMP_TABLE", FALSE,         0,0x00000000, FALSE),
-EMPTY_HOWTO(-1),
-EMPTY_HOWTO(-1),
-EMPTY_HOWTO(-1),
-EMPTY_HOWTO(-1),
-EMPTY_HOWTO(-1),
-EMPTY_HOWTO(-1),
+  HOWTO (16,	       0,  2,	 0, FALSE, 0, complain_overflow_bitfield,0,"JMP_TABLE", FALSE,         0,0x00000000, FALSE),
 EMPTY_HOWTO(-1),
 EMPTY_HOWTO(-1),
 EMPTY_HOWTO(-1),
@@ -256,7 +250,13 @@ EMPTY_HOWTO(-1),
 EMPTY_HOWTO(-1),
 EMPTY_HOWTO(-1),
 EMPTY_HOWTO(-1),
-  HOWTO(32, 0, 2, 0, FALSE, 0, complain_overflow_bitfield, 0, (char *)"RELATIVE", FALSE, 0, 0x00000000, FALSE),
+EMPTY_HOWTO(-1),
+EMPTY_HOWTO(-1),
+EMPTY_HOWTO(-1),
+EMPTY_HOWTO(-1),
+EMPTY_HOWTO(-1),
+EMPTY_HOWTO(-1),
+  HOWTO(32, 0, 2, 0, FALSE, 0, complain_overflow_bitfield, 0, "RELATIVE", FALSE, 0, 0x00000000, FALSE),
 EMPTY_HOWTO(-1),
 EMPTY_HOWTO(-1),
 EMPTY_HOWTO(-1),
@@ -264,7 +264,7 @@ EMPTY_HOWTO(-1),
 EMPTY_HOWTO(-1),
 EMPTY_HOWTO(-1),
 EMPTY_HOWTO(-1),
-  HOWTO(40, 0, 2, 0, FALSE, 0, complain_overflow_bitfield, 0, (char *)"BASEREL", FALSE, 0, 0x00000000, FALSE),
+  HOWTO(40, 0, 2, 0, FALSE, 0, complain_overflow_bitfield, 0, "BASEREL", FALSE, 0, 0x00000000, FALSE),
 };
 
 #define TABLE_SIZE(TABLE)	(sizeof (TABLE) / sizeof (TABLE[0]))
@@ -1156,26 +1156,28 @@ NAME(aout, adjust_sizes_and_vmas)(bfd *abfd, bfd_size_type *text_size,
     adata (abfd).magic = o_magic;
 
 #ifdef BFD_AOUT_DEBUG /* requires gcc2 */
-#if __GNUC__ >= 2
-  fprintf (stderr, "%s text=<%x,%x,%x> data=<%x,%x,%x> bss=<%x,%x,%x>\n",
-	   ({ char *str;
-	      switch (adata (abfd).magic)
+# if __GNUC__ >= 2
+    fprintf(stderr,
+	    "%s text=<%"BFD_VMA_FMT"x,%lx,%x> data=<%"BFD_VMA_FMT"x,%lx,%x> bss=<%"BFD_VMA_FMT"x,%lx,%x>\n",
+	    __extension__
+	    ({ const char *str;
+	       switch (adata(abfd).magic)
 		{
-		case n_magic: str = "NMAGIC"; break;
-		case o_magic: str = "OMAGIC"; break;
-		case z_magic: str = "ZMAGIC"; break;
-		default: abort ();
+		  case n_magic: str = "NMAGIC"; break;
+		  case o_magic: str = "OMAGIC"; break;
+		  case z_magic: str = "ZMAGIC"; break;
+		  default: abort();
 		}
 	      str;
 	    }),
-	   obj_textsec (abfd)->vma, obj_textsec (abfd)->size,
-	   	obj_textsec (abfd)->alignment_power,
-	   obj_datasec (abfd)->vma, obj_datasec (abfd)->size,
-	   	obj_datasec (abfd)->alignment_power,
-	   obj_bsssec (abfd)->vma, obj_bsssec (abfd)->size,
-	   	obj_bsssec (abfd)->alignment_power);
-#endif
-#endif
+	    obj_textsec(abfd)->vma, (unsigned long)obj_textsec(abfd)->size,
+	    obj_textsec(abfd)->alignment_power,
+	    obj_datasec(abfd)->vma, (unsigned long)obj_datasec(abfd)->size,
+	    obj_datasec(abfd)->alignment_power,
+	    obj_bsssec(abfd)->vma, (unsigned long)obj_bsssec(abfd)->size,
+	    obj_bsssec(abfd)->alignment_power);
+# endif /* gcc 2+ */
+#endif /* BFD_AOUT_DEBUG */
 
   switch (adata (abfd).magic)
     {
@@ -1193,13 +1195,14 @@ NAME(aout, adjust_sizes_and_vmas)(bfd *abfd, bfd_size_type *text_size,
     }
 
 #ifdef BFD_AOUT_DEBUG
-  fprintf (stderr, "       text=<%x,%x,%x> data=<%x,%x,%x> bss=<%x,%x>\n",
-	   obj_textsec (abfd)->vma, obj_textsec (abfd)->size,
-	   	obj_textsec (abfd)->filepos,
-	   obj_datasec (abfd)->vma, obj_datasec (abfd)->size,
-	   	obj_datasec (abfd)->filepos,
-	   obj_bsssec (abfd)->vma, obj_bsssec (abfd)->size);
-#endif
+  fprintf(stderr,
+	  "       text=<%"BFD_VMA_FMT"x,%lx,%lx> data=<%"BFD_VMA_FMT"x,%lx,%lx> bss=<%"BFD_VMA_FMT"x,%lx>\n",
+	  obj_textsec(abfd)->vma, (unsigned long)obj_textsec(abfd)->size,
+	  (unsigned long)obj_textsec(abfd)->filepos,
+	  obj_datasec(abfd)->vma, (unsigned long)obj_datasec(abfd)->size,
+	  (unsigned long)obj_datasec(abfd)->filepos,
+	  obj_bsssec(abfd)->vma, (unsigned long)obj_bsssec(abfd)->size);
+#endif /* BFD_AOUT_DEBUG */
 
   return TRUE;
 }

@@ -1135,7 +1135,7 @@ extern const bfd_target pef_vec;
 #endif /* __clang__ */
 const bfd_target pef_vec =
 {
-  (char *)"pef",		/* Name.  */
+  "pef",		/* Name.  */
   bfd_target_pef_flavour,	/* Flavour.  */
   BFD_ENDIAN_BIG,		/* Byteorder.  */
   BFD_ENDIAN_BIG,		/* Header_byteorder.  */
@@ -1293,7 +1293,7 @@ extern const bfd_target pef_xlib_vec;
 #endif /* __clang__ */
 const bfd_target pef_xlib_vec =
 {
-  (char *)"pef-xlib",		/* Name.  */
+  "pef-xlib",		/* Name.  */
   bfd_target_pef_xlib_flavour,	/* Flavour.  */
   BFD_ENDIAN_BIG,		/* Byteorder */
   BFD_ENDIAN_BIG,		/* Header_byteorder.  */

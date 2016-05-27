@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-26 10:29-0400\n"
+"POT-Creation-Date: 2016-05-26 20:24-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,22 +34,22 @@ msgstr ""
 msgid "%B: Bad relocation record imported: %d"
 msgstr ""
 
-#: aoutx.h:1285 aoutx.h:1618
+#: aoutx.h:1288 aoutx.h:1621
 #, c-format
 msgid "%s: can not represent section `%s' in a.out object file format"
 msgstr ""
 
-#: aoutx.h:1584
+#: aoutx.h:1587
 #, c-format
 msgid ""
 "%s: can not represent section for symbol `%s' in a.out object file format"
 msgstr ""
 
-#: aoutx.h:1586 vms-alpha.c:7564
+#: aoutx.h:1589 vms-alpha.c:7564
 msgid "*unknown*"
 msgstr ""
 
-#: aoutx.h:5302
+#: aoutx.h:5305
 #, c-format
 msgid "%s: relocatable link from %s to %s not supported"
 msgstr ""
@@ -3149,7 +3149,7 @@ msgstr ""
 msgid "%B: warning: duplicate section `%A' has different size\n"
 msgstr ""
 
-#: merge.c:818
+#: merge.c:822
 #, c-format
 msgid "%s: access beyond end of merged section (%ld)"
 msgstr ""
@@ -3456,12 +3456,12 @@ msgstr ""
 msgid "Unknown EGSD subtype %d"
 msgstr ""
 
-#: vms-alpha.c:1325 vms-misc.c:471
+#: vms-alpha.c:1325 vms-misc.c:470
 #, c-format
 msgid "Stack overflow (%d) in _bfd_vms_push"
 msgstr ""
 
-#: vms-alpha.c:1338 vms-misc.c:486
+#: vms-alpha.c:1338 vms-misc.c:485
 msgid "Stack underflow in _bfd_vms_pop"
 msgstr ""
 
@@ -3526,7 +3526,7 @@ msgstr ""
 msgid "Spurious ALPHA_R_BSR reloc"
 msgstr ""
 
-#: vms-alpha.c:3909 vms-tir.c:2156
+#: vms-alpha.c:3909 vms-tir.c:2157
 #, c-format
 msgid "Unhandled relocation %s"
 msgstr ""
@@ -5358,7 +5358,7 @@ msgstr ""
 msgid "Size mismatch section %s=%lx, %s=%lx"
 msgstr ""
 
-#: vms-gsd.c:678
+#: vms-gsd.c:681
 #, c-format
 msgid "unknown gsd/egsd subtype %d"
 msgstr ""
@@ -5376,12 +5376,12 @@ msgstr ""
 msgid "_bfd_vms_output_counted called with too many bytes"
 msgstr ""
 
-#: vms-misc.c:927
+#: vms-misc.c:924
 #, c-format
 msgid "Symbol %s replaced by %s\n"
 msgstr ""
 
-#: vms-misc.c:987
+#: vms-misc.c:984
 #, c-format
 msgid "failed to enter %s"
 msgstr ""

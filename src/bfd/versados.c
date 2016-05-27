@@ -834,7 +834,7 @@ versados_canonicalize_reloc (bfd *abfd,
 
 const bfd_target versados_vec =
 {
-  (char *)"versados",			/* Name.  */
+  "versados",			/* Name.  */
   bfd_target_versados_flavour,
   BFD_ENDIAN_BIG,		/* Target byte order.  */
   BFD_ENDIAN_BIG,		/* Target headers byte order.  */

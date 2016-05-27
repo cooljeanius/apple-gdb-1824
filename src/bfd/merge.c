@@ -526,10 +526,12 @@ error_return:
 }
 
 static int
-strrevcmp (const void *a, const void *b)
+strrevcmp(const void *a, const void *b)
 {
-  struct sec_merge_hash_entry *A = *(struct sec_merge_hash_entry **)a;
-  struct sec_merge_hash_entry *B = *(struct sec_merge_hash_entry **)b;
+  const struct sec_merge_hash_entry *A =
+    *(const struct sec_merge_hash_entry *const *)a;
+  const struct sec_merge_hash_entry *B =
+    *(const struct sec_merge_hash_entry *const *)b;
   unsigned int lenA = A->len;
   unsigned int lenB = B->len;
   const unsigned char *s = ((const unsigned char *)A->root.string + lenA - 1U);
@@ -552,8 +554,10 @@ strrevcmp (const void *a, const void *b)
 static int
 strrevcmp_align(const void *a, const void *b)
 {
-  struct sec_merge_hash_entry *A = *(struct sec_merge_hash_entry **)a;
-  struct sec_merge_hash_entry *B = *(struct sec_merge_hash_entry **)b;
+  const struct sec_merge_hash_entry *A =
+    *(const struct sec_merge_hash_entry *const *)a;
+  const struct sec_merge_hash_entry *B =
+    *(const struct sec_merge_hash_entry *const *)b;
   unsigned int lenA = A->len;
   unsigned int lenB = B->len;
   const unsigned char *s = ((const unsigned char *)A->root.string + lenA - 1U);

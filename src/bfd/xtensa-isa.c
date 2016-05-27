@@ -380,8 +380,8 @@ xtensa_isa_free (xtensa_isa isa)
 int
 xtensa_isa_name_compare (const void *v1, const void *v2)
 {
-  xtensa_lookup_entry *e1 = (xtensa_lookup_entry *) v1;
-  xtensa_lookup_entry *e2 = (xtensa_lookup_entry *) v2;
+  const xtensa_lookup_entry *e1 = (const xtensa_lookup_entry *)v1;
+  const xtensa_lookup_entry *e2 = (const xtensa_lookup_entry *)v2;
 
   return strcasecmp (e1->key, e2->key);
 }

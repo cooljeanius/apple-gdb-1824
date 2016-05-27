@@ -603,7 +603,7 @@ MY_bfd_final_link(bfd *abfd, struct bfd_link_info *info)
 #ifndef MY_BFD_TARGET
 const bfd_target MY(vec) =
 {
-  (char *)TARGETNAME,			/* Name.  */
+  TARGETNAME,			/* Name.  */
   bfd_target_aout_flavour,
 #ifdef TARGET_IS_BIG_ENDIAN_P
   BFD_ENDIAN_BIG,		/* Target byte order (big).  */
