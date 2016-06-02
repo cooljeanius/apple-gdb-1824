@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-26 20:24-0400\n"
+"POT-Creation-Date: 2016-06-02 10:58-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -480,7 +480,7 @@ msgstr ""
 msgid "%B: illegal relocation type %d at address 0x%lx"
 msgstr ""
 
-#: coffgen.c:1498
+#: coffgen.c:1503
 msgid "%B: bad string table size %lu"
 msgstr ""
 
@@ -2613,11 +2613,11 @@ msgid ""
 "  Please report this bug."
 msgstr ""
 
-#: elf64-ppc.c:2495 libbfd.c:1030
+#: elf64-ppc.c:2495 libbfd.c:1042
 msgid "%B: compiled for a big endian system and target is little endian"
 msgstr ""
 
-#: elf64-ppc.c:2498 libbfd.c:1032
+#: elf64-ppc.c:2498 libbfd.c:1044
 msgid "%B: compiled for a little endian system and target is big endian"
 msgstr ""
 
@@ -3122,30 +3122,30 @@ msgstr ""
 msgid "%s: address 0x%s out of range for Intel Hex file"
 msgstr ""
 
-#: libbfd.c:1057
+#: libbfd.c:1069
 #, c-format
 msgid "Deprecated %s called at %s line %d in %s\n"
 msgstr ""
 
-#: libbfd.c:1060
+#: libbfd.c:1072
 #, c-format
 msgid "Deprecated %s called\n"
 msgstr ""
 
-#: linker.c:1877
+#: linker.c:1878
 msgid "%B: indirect symbol `%s' to `%s' is a loop"
 msgstr ""
 
-#: linker.c:2749
+#: linker.c:2750
 #, c-format
 msgid "Attempt to do relocatable link with %s input and %s output"
 msgstr ""
 
-#: linker.c:3046
+#: linker.c:3047
 msgid "%B: warning: ignoring duplicate section `%A'\n"
 msgstr ""
 
-#: linker.c:3060
+#: linker.c:3061
 msgid "%B: warning: duplicate section `%A' has different size\n"
 msgstr ""
 

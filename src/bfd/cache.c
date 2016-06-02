@@ -3,7 +3,7 @@
    Copyright 1990, 1991, 1992, 1993, 1994, 1996, 2000, 2001, 2002,
    2003, 2004 Free Software Foundation, Inc.
 
-   Hacked by Steve Chamberlain of Cygnus Support (steve@cygnus.com).
+   Hacked by Steve Chamberlain of Cygnus Support <steve@cygnus.com>.
 
 This file is part of BFD, the Binary File Descriptor library.
 
@@ -230,6 +230,7 @@ DESCRIPTION
 static void
 insert(bfd *abfd)
 {
+  BFD_ASSERT(abfd != NULL);
   BFD_ASSERT((abfd->flags & BFD_IN_MEMORY) == 0);
   if (bfd_last_cache == NULL)
     {
@@ -240,7 +241,9 @@ insert(bfd *abfd)
     {
       abfd->lru_next = bfd_last_cache;
       abfd->lru_prev = bfd_last_cache->lru_prev;
+      BFD_ASSERT(abfd->lru_prev != NULL);
       abfd->lru_prev->lru_next = abfd;
+      BFD_ASSERT(abfd->lru_next != NULL);
       abfd->lru_next->lru_prev = abfd;
     }
   bfd_last_cache = abfd;

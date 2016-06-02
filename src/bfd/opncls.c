@@ -713,6 +713,7 @@ bfd_openr_iovec(const char *filename, const char *target,
 
   vec = (struct opncls *)bfd_zalloc(nbfd,
                                     (bfd_size_type)sizeof(struct opncls));
+  BFD_ASSERT(vec != NULL);
   vec->stream = stream;
   vec->pread = pread;
   vec->close = close;

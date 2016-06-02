@@ -20,20 +20,24 @@
 
 #include "sysdep.h"
 #include "bfd.h"
+#include "libiberty.h"
 
+/* */
 static void
 die(const char *s)
 {
-  printf("oops: %s\n", s);
-  exit(1);
+  fprintf(stderr, "oops: %s\n", s);
+  xexit(1);
 }
 
+/* */
 static void *
 iovec_open(struct bfd *nbfd ATTRIBUTE_UNUSED, void *open_closure)
 {
   return open_closure;
 }
 
+/* */
 static file_ptr iovec_read(struct bfd *nbfd ATTRIBUTE_UNUSED,
 			   void *stream, void *buf, file_ptr nbytes,
 			   file_ptr offset)
@@ -56,6 +60,7 @@ iovec_stat(struct bfd *abfd ATTRIBUTE_UNUSED,
 }
 #endif /* 0 */
 
+/* */
 static bfd_boolean
 check_format_any(struct bfd *abfd, bfd_format format)
 {
@@ -74,6 +79,7 @@ check_format_any(struct bfd *abfd, bfd_format format)
   return FALSE;
 }
 
+/* */
 int
 main(int argc, const char** argv)
 {
@@ -81,11 +87,11 @@ main(int argc, const char** argv)
   bfd *abfd, *mbfd;
 
   if (argc < 2)
-    die ("Usage: test archivefile");
+    die("Usage: test archivefile");
 
   file = fopen(argv[1], "rb");
   if (!file)
-    die ("file not found");
+    die("file not found");
 
   abfd = bfd_openr_iovec(argv[1], 0, iovec_open, file,
 			 iovec_read, NULL

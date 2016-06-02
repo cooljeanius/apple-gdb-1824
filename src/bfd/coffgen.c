@@ -539,6 +539,9 @@ coff_symbol_type *
 coff_symbol_from(bfd *ignore_abfd ATTRIBUTE_UNUSED,
 		 asymbol *symbol)
 {
+  if (symbol == NULL)
+    return (coff_symbol_type *)NULL;
+
   if (!bfd_family_coff(bfd_asymbol_bfd(symbol)))
     return (coff_symbol_type *)NULL;
 
@@ -662,7 +665,9 @@ coff_renumber_symbols(bfd *bfd_ptr, int *first_undef)
 
   for (symbol_index = 0; symbol_index < symbol_count; symbol_index++)
     {
-      coff_symbol_type *coff_symbol_ptr = coff_symbol_from(bfd_ptr, symbol_ptr_ptr[symbol_index]);
+      coff_symbol_type *coff_symbol_ptr =
+	coff_symbol_from(bfd_ptr, symbol_ptr_ptr[symbol_index]);
+      BFD_ASSERT(symbol_ptr_ptr[symbol_index] != NULL);
       symbol_ptr_ptr[symbol_index]->udata.i = symbol_index;
       if (coff_symbol_ptr && coff_symbol_ptr->native)
 	{
@@ -969,17 +974,17 @@ coff_write_alien_symbol(bfd *abfd, asymbol *symbol, bfd_vma *written,
   native = &dummy;
   native->u.syment.n_type = T_NULL;
   native->u.syment.n_flags = 0;
-  if (bfd_is_und_section(symbol->section))
+  if ((symbol != NULL) && bfd_is_und_section(symbol->section))
     {
       native->u.syment.n_scnum = N_UNDEF;
       native->u.syment.n_value = symbol->value;
     }
-  else if (bfd_is_com_section(symbol->section))
+  else if ((symbol != NULL) && bfd_is_com_section(symbol->section))
     {
       native->u.syment.n_scnum = N_UNDEF;
       native->u.syment.n_value = symbol->value;
     }
-  else if (symbol->flags & BSF_DEBUGGING)
+  else if ((symbol != NULL) && (symbol->flags & BSF_DEBUGGING))
     {
       /* There is NOT much point to writing out a debugging symbol
          unless we are prepared to convert it into COFF debugging
@@ -988,7 +993,7 @@ coff_write_alien_symbol(bfd *abfd, asymbol *symbol, bfd_vma *written,
       symbol->name = "";
       return TRUE;
     }
-  else
+  else if (symbol != NULL)
     {
       native->u.syment.n_scnum =
 	(short)symbol->section->output_section->target_index;
@@ -1005,11 +1010,18 @@ coff_write_alien_symbol(bfd *abfd, asymbol *symbol, bfd_vma *written,
 	  native->u.syment.n_flags = (unsigned short)bfd_asymbol_bfd(&c->symbol)->flags;
       }
     }
+  else
+    {
+      native->u.syment.n_scnum = 0;
+      native->u.syment.n_value = 0;
+      native->u.syment.n_flags = 0;
+    }
+    
 
   native->u.syment.n_type = 0;
-  if (symbol->flags & BSF_LOCAL)
+  if ((symbol != NULL) && (symbol->flags & BSF_LOCAL))
     native->u.syment.n_sclass = C_STAT;
-  else if (symbol->flags & BSF_WEAK)
+  else if ((symbol != NULL) && (symbol->flags & BSF_WEAK))
     native->u.syment.n_sclass = (obj_pe(abfd) ? C_NT_WEAK : C_WEAKEXT);
   else
     native->u.syment.n_sclass = C_EXT;

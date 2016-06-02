@@ -490,6 +490,10 @@ display_problems(void)
 	  printf("%.14s : %s\n", elist[i]->full_name, mpath(elist[i]));
 	}
     }
+
+  if (((sizeof(ENT *) * ecount) > 0UL) && (elist != NULL)) {
+    free(elist);
+  }
 }
 
 /****************************************************************\
@@ -509,6 +513,10 @@ main(int argc, char **argv)
 	  exit(1);
 	}
     }
+  else if (argc <= 1)
+    {
+      printf("No filename provided; reading from stdin.\n");
+    }
   while (1)
     {
       char line[500];
@@ -523,6 +531,7 @@ main(int argc, char **argv)
       handle_input(line);
     }
   display_problems();
+  printf("Done.\n");
   return 0;
 }
 

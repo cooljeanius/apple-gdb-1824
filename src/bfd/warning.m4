@@ -8,7 +8,9 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
 -Wmissing-parameter-type -Wabi -Wmissing-include-dirs \
 -Wmisleading-indentation -Wformat=2 -Wmissing-format-attribute \
--Wswitch -Wswitch-default -Wpacked -Wnull-dereference -Whsa"
+-Wswitch -Wswitch-default -Wpacked -Wnull-dereference -Whsa \
+-Wduplicate-decl-specifier -Wmemset-elt-size -Wswitch-unreachable \
+-Wscalar-storage-order"
 if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
   test -n "${WANT_CONVERSION_WARNS}"
   # "-Wconversion" and friends are because of a comment in libbfd.c

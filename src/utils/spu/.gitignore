@@ -11,3 +11,4 @@ filelib.c
 filelib.h
 file.out
 file.mk
+clang_static_analysis/*.plist

@@ -200,6 +200,10 @@ bfd_malloc2(bfd_size_type nmemb, bfd_size_type size)
       return NULL;
     }
 
+  if (size == 0UL) {
+    size++;
+  }
+
   ptr = malloc((size_t)size);
   if ((ptr == NULL) && ((size_t)size != 0UL))
     bfd_set_error(bfd_error_no_memory);
@@ -251,6 +255,10 @@ bfd_realloc2(void *ptr, bfd_size_type nmemb, bfd_size_type size)
       bfd_set_error(bfd_error_no_memory);
       return NULL;
     }
+  
+  if (size == 0UL) {
+    size++;
+  }
 
   if (ptr == NULL)
     ret = malloc((size_t)size);
@@ -337,6 +345,10 @@ bfd_zmalloc2(bfd_size_type nmemb, bfd_size_type size)
       bfd_set_error(bfd_error_no_memory);
       return NULL;
     }
+
+  if (size == 0UL) {
+    size++;
+  }
 
   ptr = malloc((size_t)size);
 

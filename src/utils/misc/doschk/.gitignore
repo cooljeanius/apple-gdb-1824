@@ -6,3 +6,4 @@ confdefs.h
 core
 a.out
 doschk
+CFE_S_A/*.plist

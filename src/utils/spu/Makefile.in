@@ -71,7 +71,8 @@ INCLUDE_CFLAGS = -I. -I${srcdir} -I${srcdir}/config -I$(INCLUDE_DIR)
 # Warnings:
 WARN_CFLAGS = -Wall -Wextra -Wstrict-prototypes -Wmissing-prototypes \
 -Wconversion -Wold-style-definition -Wshadow -Wundef -Wwrite-strings \
--Wformat=2 -Wc++-compat -Wno-unused-parameter -std=gnu89 -pedantic
+-Wformat=2 -Wc++-compat -Wcast-align -Wno-unused-parameter \
+-std=gnu89 -pedantic
 
 # ALL_CFLAGS is the aggregate of all other *CFLAGS macros:
 ALL_CFLAGS = $(DEFS) $(INCLUDE_CFLAGS) $(CFLAGS) $(WARN_CFLAGS)

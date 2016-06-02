@@ -702,7 +702,9 @@ random_type(int libonly)
     }
 }
 
-/* Given a numbered type, return its name: */
+/* Given a numbered type, return its name.
+ * Calls copy_string(), which allocates memory, so callers will need to free
+ * the result: */
 const char *
 name_from_type(int n)
 {
@@ -711,11 +713,11 @@ name_from_type(int n)
 
   if (n < t_first_user)
     {
-      return typenames[n];
+      return copy_string(typenames[n]);
     }
   else if ((n >= 1000000) && ((n - 1000000) < t_first_user))
     {
-      sprintf(tmpbuf, "%s *", typenames[n - 1000000]);
+      snprintf(tmpbuf, sizeof(tmpbuf), "%s *", typenames[n - 1000000]);
       return copy_string(tmpbuf);
     }
   else
@@ -724,7 +726,7 @@ name_from_type(int n)
 	{
 	  if (structs[i].id == (n - t_first_user))
 	    {
-	      sprintf(tmpbuf, "struct %s *", structs[i].name);
+	      snprintf(tmpbuf, sizeof(tmpbuf), "struct %s *", structs[i].name);
 	      return copy_string(tmpbuf);
 	    }
 	}
@@ -732,12 +734,13 @@ name_from_type(int n)
 	{
 	  if (lib_structs[i].id == (n - t_first_user))
 	    {
-	      sprintf(tmpbuf, "struct %s *", lib_structs[i].name);
+	      snprintf(tmpbuf, sizeof(tmpbuf), "struct %s *",
+		       lib_structs[i].name);
 	      return copy_string(tmpbuf);
 	    }
 	}
     }
-  return "?type?";
+  return copy_string("?type?");
 }
 
 void
@@ -937,13 +940,14 @@ create_struct(struct struct_desc *structdesc, int lib)
   structdesc->use = 1;
 }
 
+/* Returns memory allocated by copy_string(), needs to be freed: */
 char *
 gen_random_field_name(int n)
 {
   char namebuf[100];
 
   /* (should have more variety) */
-  sprintf(namebuf, "field%d", n);
+  snprintf(namebuf, sizeof(namebuf), "field%d", n);
   return copy_string(namebuf);
 }
 
@@ -1100,6 +1104,7 @@ create_function(struct function_desc *fndesc, int lib)
   fndesc->use = 1;
 }
 
+/* */
 int
 compare_entries(const void *x1, const void *x2)
 {
@@ -1113,6 +1118,7 @@ compare_entries(const void *x1, const void *x2)
   return (e1->seq - e2->seq);
 }
 
+/* */
 void
 write_header_file(int n)
 {
@@ -1120,7 +1126,7 @@ write_header_file(int n)
   char tmpbuf[100];
   FILE *fp;
 
-  sprintf(tmpbuf, "%s%d.h", file_base_name, n);
+  snprintf(tmpbuf, sizeof(tmpbuf), "%s%d.h", file_base_name, n);
   fp = fopen(tmpbuf, "w");
   if (fp == NULL)
     return;
@@ -1167,6 +1173,7 @@ write_header_file(int n)
   fclose(fp);
 }
 
+/* */
 void
 write_lib_header_file(void)
 {
@@ -1174,7 +1181,7 @@ write_lib_header_file(void)
   char tmpbuf[100];
   FILE *fp;
 
-  sprintf(tmpbuf, "%slib.h", file_base_name);
+  snprintf(tmpbuf, sizeof(tmpbuf), "%slib.h", file_base_name);
   fp = fopen(tmpbuf, "w");
   if (fp == NULL)
     return;
@@ -1348,8 +1355,8 @@ write_source_file(int n)
   int j;
   FILE *fp;
 
-  sprintf(tmpbuf, "%s%d.%s",
-	  file_base_name, n, extensions[language]);
+  snprintf(tmpbuf, sizeof(tmpbuf), "%s%d.%s",
+	   file_base_name, n, extensions[language]);
   fp = fopen(tmpbuf, "w");
   if (fp == NULL)
     return;
@@ -1388,17 +1395,28 @@ void
 write_function(FILE *fp, struct function_desc *fndesc)
 {
   int i, k;
+  const char *tmpstr0 = name_from_type(fndesc->return_type);
 
   if (fndesc->classdesc)
     fprintf(fp, "  ");
-  fprintf(fp, "%s", name_from_type(fndesc->return_type));
+  fprintf(fp, "%s", tmpstr0);
+  /* pacify clang; actually calling free() here leads to errors: */
+#ifdef __clang_analyzer__
+  if (tmpstr0 != NULL) {
+    free((void *)tmpstr0);
+  }
+#endif /* __clang_analyzer__ */
   fprintf(fp, (fndesc->classdesc ? " " : "\n"));
   fprintf(fp, "%s (", fndesc->name);
   for (i = 0; i < fndesc->numargs; ++i)
     {
       if (language != knr)
 	{
-	  fprintf(fp, "%s ", name_from_type(fndesc->args[i].type));
+	  const char *tmpstr1 = name_from_type(fndesc->args[i].type);
+	  fprintf(fp, "%s ", tmpstr1);
+	  if ((strlen(tmpstr1) > 0UL) && (tmpstr1 != NULL)) {
+	    free((void *)tmpstr1);
+	  }
 	}
       fprintf(fp, "%s", fndesc->args[i].name);
       if ((i + 1) < fndesc->numargs)
@@ -1452,7 +1470,8 @@ write_lib_source_file(void)
   int j;
   FILE *fp;
 
-  sprintf(tmpbuf, "%slib.%s", file_base_name, extensions[language]);
+  snprintf(tmpbuf, sizeof(tmpbuf), "%slib.%s", file_base_name,
+	   extensions[language]);
   fp = fopen(tmpbuf, "w");
   if (fp == NULL)
     return;
@@ -1778,7 +1797,7 @@ write_makefile(void)
   int i, j;
   FILE *fp;
 
-  sprintf(tmpbuf, "%s.mk", file_base_name);
+  snprintf(tmpbuf, sizeof(tmpbuf), "%s.mk", file_base_name);
   fp = fopen(tmpbuf, "w");
   if (fp)
     {
@@ -1924,7 +1943,7 @@ gen_random_global_name(const char *root, char *namebuf)
       break;
     case 1:
       strcat(namebuf, "_");
-      sprintf(smallbuf, "%d", abs(xrandom(10000)));
+      snprintf(smallbuf, sizeof(smallbuf), "%d", abs(xrandom(10000)));
       strcat(namebuf, smallbuf);
       break;
     case 2:
@@ -1948,7 +1967,7 @@ gen_random_global_name(const char *root, char *namebuf)
   if (xrandom(5) == 0)
     {
       strcat(namebuf, "_");
-      sprintf(smallbuf, "%d", abs(xrandom(10000)));
+      snprintf(smallbuf, sizeof(smallbuf), "%d", abs(xrandom(10000)));
       strcat(namebuf, smallbuf);
     }
   /* enable to study random name distribution: */
@@ -1963,9 +1982,9 @@ gen_random_local_name(int numothers, char **others)
 {
   char namebuf[100];
 
-  sprintf(namebuf, "%s%d",
-	  ((xrandom(2) == 0) ? random_computer_word() : "arg"),
-	  (numothers + 1));
+  snprintf(namebuf, sizeof(namebuf), "%s%d",
+	   ((xrandom(2) == 0) ? random_computer_word() : "arg"),
+	   (numothers + 1));
   return copy_string(namebuf);
 }
 
@@ -1984,12 +2003,14 @@ hash_string(const char *str)
   return rslt;
 }
 
+/* */
 struct hash_entry *
 get_hash_entry(void)
 {
   return (struct hash_entry *)xmalloc(sizeof(struct hash_entry));
 }
 
+/* */
 const char *
 add_to_hash_table(const char *buf, struct hash_table *table)
 {
@@ -2148,7 +2169,8 @@ xmalloc(size_t amt)
   return value;
 }
 
-/* Copy a string to newly-allocated space; the new space is never freed: */
+/* Copy a string to newly-allocated space; the new space is never freed in this
+ * function; it is the responsibility of the caller to free it: */
 char *
 copy_string(const char *str)
 {

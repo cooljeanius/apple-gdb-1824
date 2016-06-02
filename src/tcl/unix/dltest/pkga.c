@@ -12,6 +12,9 @@
  * RCS: @(#) pkga.c,v 1.5 2003/01/21 19:40:21 hunt Exp
  */
 #include "tcl.h"
+#if defined(HAVE_STRING_H) || defined(STDC_HEADERS) || defined(__STDC__)
+# include <string.h>
+#endif /* HAVE_STRING_H || STDC_HEADERS || __STDC__ */
 
 /*
  * Prototypes for procedures defined later in this file:

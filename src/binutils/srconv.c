@@ -348,7 +348,7 @@ wr_un(struct coff_ofile *ptr, struct coff_sfile *sfile, int first,
 	    un.nextrefs++;
 	}
     }
-  un.tool = toolname;
+  un.tool = (char *)toolname;
   un.tcd = DATE;
   un.linker = "L_GX00";
   un.lcd = DATE;
@@ -1525,7 +1525,7 @@ wr_sc(struct coff_ofile *ptr, struct coff_sfile *sfile)
   for (i = 1; i < total_sec; i++)
     {
       struct IT_sc sc;
-      char *name;
+      const char *name;
 
       symbol = info[i].symbol;
       sc.spare = 0;
@@ -1566,9 +1566,9 @@ wr_sc(struct coff_ofile *ptr, struct coff_sfile *sfile)
       sc.spare = 0;
       sc.segadd = 0;
       sc.spare1 = 0;		/* If not zero, then it does NOT work. */
-      sc.name = section_translate (name);
+      sc.name = (char *)section_translate(name);
 
-      if (strlen (sc.name) == 1)
+      if (strlen(sc.name) == 1UL)
 	{
 	  switch (sc.name[0])
 	    {

@@ -303,14 +303,14 @@ srec_scan (bfd *abfd)
   asection *sec = NULL;
   char *symbuf = NULL;
 
-  if (bfd_seek (abfd, (file_ptr) 0, SEEK_SET) != 0)
+  if (bfd_seek(abfd, (file_ptr)0L, SEEK_SET) != 0)
     goto error_return;
 
-  while ((c = srec_get_byte (abfd, &error)) != EOF)
+  while ((c = srec_get_byte(abfd, &error)) != EOF)
     {
       /* We only build sections from contiguous S-records, so if this
 	 is not an S-record, then stop building a section.  */
-      if (c != 'S' && c != '\r' && c != '\n')
+      if ((c != 'S') && (c != '\r') && (c != '\n'))
 	sec = NULL;
 
       switch (c)
@@ -488,6 +488,7 @@ srec_scan (bfd *abfd)
 
 	    address = 0;
 	    data = buf;
+	    BFD_ASSERT(data != NULL);
 	    switch (hdr[0])
 	      {
 	      case '0':
@@ -556,6 +557,10 @@ srec_scan (bfd *abfd)
 		address = ((address << 8) | HEX(data));
 		data += 2;
 
+		if (data == NULL) {
+		  ; /* ??? */
+		}
+
 		/* This is a termination record: */
 		abfd->start_address = address;
 
@@ -567,6 +572,9 @@ srec_scan (bfd *abfd)
               default:
                 break;
 	      }
+	    if (data == NULL) {
+	      ; /* ??? */
+	    }
 	  }
 	  break;
 	}
@@ -576,15 +584,15 @@ srec_scan (bfd *abfd)
     goto error_return;
 
   if (buf != NULL)
-    free (buf);
+    free(buf);
 
   return TRUE;
 
  error_return:
   if (symbuf != NULL)
-    free (symbuf);
+    free(symbuf);
   if (buf != NULL)
-    free (buf);
+    free(buf);
   return FALSE;
 }
 
@@ -702,11 +710,12 @@ srec_read_section(bfd *abfd, asection *section, bfd_byte *contents)
 	  bufsize = (bytes * 2U);
 	}
 
-      if (bfd_bread(buf, (bfd_size_type)bytes * 2UL, abfd) != (bytes * 2U))
+      if (bfd_bread(buf, ((bfd_size_type)bytes * 2UL), abfd) != (bytes * 2U))
 	goto error_return;
 
       address = 0UL;
       data = buf;
+      BFD_ASSERT(data != NULL);
       switch (hdr[0])
 	{
 	default:
@@ -1119,7 +1128,7 @@ srec_canonicalize_symtab(bfd *abfd, asymbol **alocation)
       abfd->tdata.srec_data->csymbols = csymbols;
 
       for (s = abfd->tdata.srec_data->symbols, c = csymbols;
-	   s != NULL;
+	   (s != NULL) && (c != NULL);
 	   s = s->next, ++c)
 	{
 	  c->the_bfd = abfd;
