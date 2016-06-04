@@ -32,8 +32,8 @@
 #include "gdbcmd.h"
 #include "regcache.h"
 #include "gdb_assert.h"
-#include "i386-tdep.h"
-#include "i387-tdep.h"
+#include "target/i386-tdep.h"
+#include "target/i387-tdep.h"
 #include "gdbarch.h"
 #include "arch-utils.h"
 

@@ -74,7 +74,7 @@
 #include "filenames.h"
 
 #if defined(TARGET_I386)
-# include "i386-tdep.h"
+# include "target/i386-tdep.h"
 #endif /* TARGET_I386 */
 
 #ifdef MACOSX_DYLD

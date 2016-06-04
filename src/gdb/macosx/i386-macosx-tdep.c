@@ -33,9 +33,9 @@
 #include "libbfd.h"
 #include "objfiles.h"
 
-#include "i387-tdep.h"
-#include "i386-tdep.h"
-#include "amd64-tdep.h"
+#include "target/i387-tdep.h"
+#include "target/i386-tdep.h"
+#include "target/amd64-tdep.h"
 #include "osabi.h"
 #include "ui-out.h"
 #include "symtab.h"

@@ -45,7 +45,7 @@ struct type *java_int_type;
 struct type *java_byte_type;
 struct type *java_short_type;
 struct type *java_long_type;
-struct type *java_boolean_type;
+struct type *java_boolean_type = NULL;
 struct type *java_char_type;
 struct type *java_float_type;
 struct type *java_double_type;
@@ -1140,6 +1140,7 @@ const struct language_defn java_language_defn =
   LANG_MAGIC
 };
 
+/* */
 void
 _initialize_java_language(void)
 {

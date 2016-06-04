@@ -92,8 +92,8 @@
 #if defined(TARGET_POWERPC)
 # include "ppc-tdep.h"
 #elif defined(TARGET_I386)
-# include "amd64-tdep.h"
-# include "i386-tdep.h"
+# include "target/amd64-tdep.h"
+# include "target/i386-tdep.h"
 #elif defined(TARGET_ARM)
 # include "arm-tdep.h"
 #elif defined(TARGET_AARCH64)

@@ -94,7 +94,7 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include "macosx-nat-utils.h"
 
-#include "x86-shared-tdep.h"
+#include "target/x86-shared-tdep.h"
 #include "osabi.h"
 
 #include <mach-o/loader.h>
@@ -104,8 +104,8 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #if defined(TARGET_POWERPC)
 # include "ppc-tdep.h"
 #elif defined(TARGET_I386)
-# include "amd64-tdep.h"
-# include "i386-tdep.h"
+# include "target/amd64-tdep.h"
+# include "target/i386-tdep.h"
 # include "macosx/tm-i386-macosx.h"
 #elif defined(TARGET_ARM)
 # include "arm-tdep.h"
