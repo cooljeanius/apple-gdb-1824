@@ -119,10 +119,12 @@
 #endif /* GCC (non-c++) */
 
 /* in case the popping failed: */
-#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__) && \
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__clang__) && \
     !defined(__cplusplus)
- # pragma GCC diagnostic ignored "-Wtraditional"
-#endif /* gcc 4+ && !__clang__ && !__cplusplus */
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2)) 
+ #  pragma GCC diagnostic ignored "-Wtraditional"
+# endif /* gcc 4.2+ */
+#endif /* gcc && !__clang__ && !__cplusplus */
 
 #ifdef __cplusplus
 extern "C" {

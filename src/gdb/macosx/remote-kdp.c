@@ -2277,10 +2277,10 @@ kdp_remove_hw_breakpoint(CORE_ADDR unused1 ATTRIBUTE_UNUSED,
   return 0;
 }
 
-static CORE_ADDR
+static NORETURN CORE_ADDR ATTR_NORETURN
 kdp_allocate_memory(int size ATTRIBUTE_UNUSED)
 {
-  error("KDP cannot allocate memory in the kernel being debugged.");
+  error(_("KDP cannot allocate memory in the kernel being debugged."));
 }
 
 static void

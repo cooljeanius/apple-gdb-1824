@@ -589,6 +589,9 @@
 /* Define to 1 if the system has the type `kern_return_t'. */
 #undef HAVE_KERN_RETURN_T
 
+/* Define to 1 if your system has the kinfo_getvmmap func */
+#undef HAVE_KINFO_GETVMMAP
+
 /* Define to 1 if you have the `langinfo' function. */
 #undef HAVE_LANGINFO
 

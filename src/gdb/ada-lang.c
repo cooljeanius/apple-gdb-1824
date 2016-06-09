@@ -3930,11 +3930,11 @@ defns_collected(struct obstack *obstackp, int finish)
    Do wild-card match if WILD.  */
 
 static struct partial_symbol *
-ada_lookup_partial_symbol (struct partial_symtab *pst, const char *name,
-                           int global, domain_enum anamespace, int wild)
+ada_lookup_partial_symbol(struct partial_symtab *pst, const char *name,
+                          int global, domain_enum anamespace, int wild)
 {
   struct partial_symbol **start;
-  int name_len = strlen (name);
+  int name_len = ((name != NULL) ? strlen(name) : 0);
   int length = (global ? pst->n_global_syms : pst->n_static_syms);
   int i;
 
@@ -3987,18 +3987,20 @@ ada_lookup_partial_symbol (struct partial_symtab *pst, const char *name,
         {
           struct partial_symbol *psym = start[i];
 
-          if (SYMBOL_DOMAIN (psym) == anamespace)
+          if (SYMBOL_DOMAIN(psym) == anamespace)
             {
-              int cmp = strncmp (name, SYMBOL_LINKAGE_NAME (psym), name_len);
+              int cmp = ((name != NULL)
+			 ? strncmp(name, SYMBOL_LINKAGE_NAME(psym), name_len)
+			 : -1);
 
               if (cmp < 0)
                 {
                   if (global)
                     break;
                 }
-              else if (cmp == 0
-                       && is_name_suffix (SYMBOL_LINKAGE_NAME (psym)
-                                          + name_len))
+              else if ((cmp == 0)
+                       && is_name_suffix(SYMBOL_LINKAGE_NAME(psym)
+                                         + name_len))
                 return psym;
             }
           i += 1;
@@ -4034,13 +4036,13 @@ ada_lookup_partial_symbol (struct partial_symtab *pst, const char *name,
             {
               int cmp;
 
-              cmp = (int) '_' - (int) SYMBOL_LINKAGE_NAME (psym)[0];
+              cmp = ((int)'_' - (int)SYMBOL_LINKAGE_NAME(psym)[0]);
               if (cmp == 0)
                 {
-                  cmp = strncmp ("_ada_", SYMBOL_LINKAGE_NAME (psym), 5);
-                  if (cmp == 0)
-                    cmp = strncmp (name, SYMBOL_LINKAGE_NAME (psym) + 5,
-                                   name_len);
+                  cmp = strncmp("_ada_", SYMBOL_LINKAGE_NAME(psym), 5);
+                  if ((cmp == 0) && (name != NULL))
+                    cmp = strncmp(name, (SYMBOL_LINKAGE_NAME(psym) + 5),
+                                  name_len);
                 }
 
               if (cmp < 0)
@@ -4861,22 +4863,23 @@ wild_match (const char *patn0, int patn_len, const char *name0)
      if present.  We then perform the match on the resulting strings.  */
   {
     char *dot;
-    name_len = strlen (name0);
+    name_len = strlen(name0);
 
-    name = (char *) alloca ((name_len + 1) * sizeof (char));
-    strcpy (name, name0);
-    dot = strrchr (name, '.');
-    if (dot != NULL && is_dot_digits_suffix (dot))
+    name = (char *)alloca((name_len + 1) * sizeof(char));
+    strcpy(name, name0);
+    dot = strrchr(name, '.');
+    if ((dot != NULL) && is_dot_digits_suffix(dot))
       *dot = '\0';
 
-    patn = (char *) alloca ((patn_len + 1) * sizeof (char));
-    strncpy (patn, patn0, patn_len);
+    patn = (char *)alloca((patn_len + 1) * sizeof(char));
+    gdb_assert(patn0 != NULL);
+    strncpy(patn, patn0, patn_len);
     patn[patn_len] = '\0';
-    dot = strrchr (patn, '.');
-    if (dot != NULL && is_dot_digits_suffix (dot))
+    dot = strrchr(patn, '.');
+    if ((dot != NULL) && is_dot_digits_suffix(dot))
       {
         *dot = '\0';
-        patn_len = dot - patn;
+        patn_len = (dot - patn);
       }
   }
 
@@ -4929,13 +4932,13 @@ wild_match (const char *patn0, int patn_len, const char *name0)
    SYMTAB is recorded with each symbol added.  */
 
 static void
-ada_add_block_symbols (struct obstack *obstackp,
-                       struct block *block, const char *name,
-                       domain_enum domain, struct objfile *objfile,
-                       struct symtab *symtab, int wild)
+ada_add_block_symbols(struct obstack *obstackp,
+                      struct block *block, const char *name,
+                      domain_enum domain, struct objfile *objfile,
+                      struct symtab *symtab, int wild)
 {
   struct dict_iterator iter;
-  int name_len = strlen (name);
+  int name_len = ((name != NULL) ? strlen(name) : 0);
   /* A matching argument symbol, if any.  */
   struct symbol *arg_sym;
   /* Set true when we find a matching non-argument symbol.  */
@@ -4977,15 +4980,17 @@ ada_add_block_symbols (struct obstack *obstackp,
     }
   else
     {
-      ALL_BLOCK_SYMBOLS (block, iter, sym)
+      ALL_BLOCK_SYMBOLS(block, iter, sym)
       {
-        if (SYMBOL_DOMAIN (sym) == domain)
+        if (SYMBOL_DOMAIN(sym) == domain)
           {
-            int cmp = strncmp (name, SYMBOL_LINKAGE_NAME (sym), name_len);
-            if (cmp == 0
-                && is_name_suffix (SYMBOL_LINKAGE_NAME (sym) + name_len))
+            int cmp = ((name != NULL)
+		       ? strncmp(name, SYMBOL_LINKAGE_NAME(sym), name_len)
+		       : -1);
+            if ((cmp == 0)
+                && is_name_suffix(SYMBOL_LINKAGE_NAME(sym) + name_len))
               {
-                switch (SYMBOL_CLASS (sym))
+                switch (SYMBOL_CLASS(sym))
                   {
                   case LOC_ARG:
                   case LOC_LOCAL_ARG:
@@ -5022,25 +5027,25 @@ ada_add_block_symbols (struct obstack *obstackp,
       arg_sym = NULL;
       found_sym = 0;
 
-      ALL_BLOCK_SYMBOLS (block, iter, sym)
+      ALL_BLOCK_SYMBOLS(block, iter, sym)
       {
-        if (SYMBOL_DOMAIN (sym) == domain)
+        if (SYMBOL_DOMAIN(sym) == domain)
           {
             int cmp;
 
-            cmp = (int) '_' - (int) SYMBOL_LINKAGE_NAME (sym)[0];
+            cmp = ((int)'_' - (int)SYMBOL_LINKAGE_NAME(sym)[0]);
             if (cmp == 0)
               {
-                cmp = strncmp ("_ada_", SYMBOL_LINKAGE_NAME (sym), 5);
-                if (cmp == 0)
-                  cmp = strncmp (name, SYMBOL_LINKAGE_NAME (sym) + 5,
-                                 name_len);
+                cmp = strncmp("_ada_", SYMBOL_LINKAGE_NAME(sym), 5);
+                if ((cmp == 0) && (name != NULL))
+                  cmp = strncmp(name, (SYMBOL_LINKAGE_NAME(sym) + 5),
+				name_len);
               }
 
-            if (cmp == 0
-                && is_name_suffix (SYMBOL_LINKAGE_NAME (sym) + name_len + 5))
+            if ((cmp == 0)
+                && is_name_suffix(SYMBOL_LINKAGE_NAME(sym) + name_len + 5))
               {
-                switch (SYMBOL_CLASS (sym))
+                switch (SYMBOL_CLASS(sym))
                   {
                   case LOC_ARG:
                   case LOC_LOCAL_ARG:

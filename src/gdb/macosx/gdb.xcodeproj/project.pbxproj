@@ -2159,8 +2159,8 @@
 		2609D8360E82C40D008125DE /* symmisc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = symmisc.c; sourceTree = "<group>"; };
 		2609D8370E82C40D008125DE /* symtab.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = symtab.c; sourceTree = "<group>"; };
 		2609D8380E82C40D008125DE /* symtab.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = symtab.h; sourceTree = "<group>"; };
-		2609D8390E82C40D008125DE /* target.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = target.c; path = target/target.c; sourceTree = "<group>"; };
-		2609D83A0E82C40D008125DE /* target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = target.h; sourceTree = "<group>"; };
+		2609D8390E82C40D008125DE /* target.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = target.c; sourceTree = "<group>"; };
+		2609D83A0E82C40D008125DE /* target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = target.h; path = "/var/root/apple-gdb-1824/src/gdb/target.h"; sourceTree = "<absolute>"; };
 		2609D83B0E82C40D008125DE /* terminal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = terminal.h; sourceTree = "<group>"; };
 		2609DC930E82C410008125DE /* thread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = thread.c; sourceTree = "<group>"; };
 		2609DC940E82C410008125DE /* top.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = top.c; sourceTree = "<group>"; };
@@ -6853,12 +6853,6 @@
 				A5159C5E1987186F0079DD4F /* target */,
 				A5159C63198718890079DD4F /* tui */,
 				A5159C87198718A90079DD4F /* vx-share */,
-				A5A673AE1A589D7700EDD221 /* aarch64-linux-nat.c */,
-				A5A673AF1A589D7700EDD221 /* aarch64-linux-tdep.c */,
-				A5A673B01A589D7700EDD221 /* aarch64-linux-tdep.h */,
-				A5A673B11A589D7700EDD221 /* aarch64-newlib-tdep.c */,
-				A5A673B21A589D7700EDD221 /* aarch64-tdep.c */,
-				A5A673B31A589D7700EDD221 /* aarch64-tdep.h */,
 				2609D2AE0E82C409008125DE /* abug-rom.c */,
 				A5A673B41A589D8A00EDD221 /* ada-exp.y */,
 				2609D2B20E82C409008125DE /* ada-lang.c */,
@@ -7654,14 +7648,6 @@
 				2609D8370E82C40D008125DE /* symtab.c */,
 				2609D8380E82C40D008125DE /* symtab.h */,
 				A5AFD1491A58ADD2006C21FE /* SysTypes.r */,
-				A5A673FC1A589F9E00EDD221 /* target-dcache.c */,
-				A5A673FD1A589F9E00EDD221 /* target-dcache.h */,
-				A5A673FE1A589F9E00EDD221 /* target-delegates.c */,
-				A5A673FF1A589F9E00EDD221 /* target-descriptions.c */,
-				A5A674001A589F9E00EDD221 /* target-descriptions.h */,
-				A5A674011A589F9E00EDD221 /* target-memory.c */,
-				2609D8390E82C40D008125DE /* target.c */,
-				2609D83A0E82C40D008125DE /* target.h */,
 				2609D83B0E82C40D008125DE /* terminal.h */,
 				2609DC930E82C410008125DE /* thread.c */,
 				A5A673F51A589F7800EDD221 /* tic6x-linux-tdep.c */,
@@ -11054,6 +11040,7 @@
 		A5159B5A1987163D0079DD4F /* nat */ = {
 			isa = PBXGroup;
 			children = (
+				A5A673AE1A589D7700EDD221 /* aarch64-linux-nat.c */,
 				A5159B5B1987163D0079DD4F /* linux-nat.h */,
 				A5159B5C1987163D0079DD4F /* linux-waitpid.c */,
 				A5159B5D1987163D0079DD4F /* linux-waitpid.h */,
@@ -11278,7 +11265,20 @@
 		A5159C5E1987186F0079DD4F /* target */ = {
 			isa = PBXGroup;
 			children = (
+				A5A673AF1A589D7700EDD221 /* aarch64-linux-tdep.c */,
+				A5A673B01A589D7700EDD221 /* aarch64-linux-tdep.h */,
+				A5A673B11A589D7700EDD221 /* aarch64-newlib-tdep.c */,
+				A5A673B21A589D7700EDD221 /* aarch64-tdep.c */,
+				A5A673B31A589D7700EDD221 /* aarch64-tdep.h */,
 				A5159C5F1987186F0079DD4F /* resume.h */,
+				A5A673FC1A589F9E00EDD221 /* target-dcache.c */,
+				A5A673FD1A589F9E00EDD221 /* target-dcache.h */,
+				A5A673FE1A589F9E00EDD221 /* target-delegates.c */,
+				A5A673FF1A589F9E00EDD221 /* target-descriptions.c */,
+				A5A674001A589F9E00EDD221 /* target-descriptions.h */,
+				A5A674011A589F9E00EDD221 /* target-memory.c */,
+				2609D8390E82C40D008125DE /* target.c */,
+				2609D83A0E82C40D008125DE /* target.h */,
 				A5159C601987186F0079DD4F /* wait.h */,
 				A5159C611987186F0079DD4F /* waitstatus.c */,
 				A5159C621987186F0079DD4F /* waitstatus.h */,

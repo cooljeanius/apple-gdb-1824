@@ -36645,7 +36645,7 @@ return dlgetmodinfo ();
   return 0;
 }
 _ACEOF
-for ac_lib in '' dl xpdl dlcompat dyld ltdl; do
+for ac_lib in '' dl xpdl dlcompat dyld ltdl zrldsrl; do
   if test -z "$ac_lib"; then
     ac_res="none required"
   else
@@ -42427,7 +42427,7 @@ return alloca ();
   return 0;
 }
 _ACEOF
-for ac_lib in '' iberty; do
+for ac_lib in '' iberty gnu; do
   if test -z "$ac_lib"; then
     ac_res="none required"
   else
@@ -46955,7 +46955,7 @@ return dlopen ();
   return 0;
 }
 _ACEOF
-for ac_lib in '' dl; do
+for ac_lib in '' dl zrldsrl; do
   if test -z "$ac_lib"; then
     ac_res="none required"
   else

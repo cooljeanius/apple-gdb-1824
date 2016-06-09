@@ -837,15 +837,17 @@ done:
 
    Else, this functions returns 0, and FULL_PATHNAME is set to NULL.  */
 int
-source_full_path_of (char *filename, char **full_pathname)
+source_full_path_of(char *filename, char **full_pathname)
 {
   int fd;
 
-  fd = openp(source_path, OPF_TRY_CWD_FIRST | OPF_SEARCH_IN_PATH, filename,
+  fd = openp(source_path, (OPF_TRY_CWD_FIRST | OPF_SEARCH_IN_PATH), filename,
 	     O_RDONLY, 0, full_pathname);
   if (fd < 0)
     {
-      *full_pathname = NULL;
+      if (full_pathname != NULL) {
+	*full_pathname = NULL;
+      }
       return 0;
     }
 
@@ -1269,7 +1271,7 @@ find_source_lines (struct symtab *s, int desc)
   {
     struct cleanup *old_cleanups;
     int eol = 0;
-    char oldc;
+    char oldc = 0;
     register char *data, *p, *end;
 
     /* st_size might be a large type, but we only support source files whose
@@ -1432,7 +1434,7 @@ print_source_lines_base (struct symtab *s, int line, int nlines, int noerror)
   int desc;
   FILE *stream;
   int stopline = line + nlines;
-  int c, oldc;
+  int c, oldc = 0;
   int eol;
   int just_kidding_about_error = 0;
 

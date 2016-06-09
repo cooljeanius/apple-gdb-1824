@@ -49,7 +49,7 @@ struct gdbtk_interp_data
 static struct gdbtk_interp_data *gdbtk_data;
 
 /* See note in gdbtk_interpreter_init */
-static void
+static NORETURN void ATTR_NORETURN
 hack_disable_interpreter_exec(const char *args, int from_tty)
 {
   error(_("interpreter-exec not available when running Insight"));

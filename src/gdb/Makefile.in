@@ -305,6 +305,8 @@ GDB_WARN_CFLAGS_NO_FORMAT = `echo " $(GDB_WARN_CFLAGS) " \
              | $(SED) "s/ -Wformat-nonliteral / -Wno-format-nonliteral /g"`
 GDB_WARN_CFLAGS_NO_DEFS = `echo " $(GDB_WARN_CFLAGS) " \
        | $(SED) "s/ -Wold-style-definition / -Wno-old-style-definition /g"`
+GDB_WARN_CFLAGS_NO_OVERLENGTH_STRINGS = `echo " $(GDB_WARN_CFLAGS) " \
+       | $(SED) "s/ -Woverlength-strings / /g"`
 
 RDYNAMIC = @RDYNAMIC@
 
@@ -2069,7 +2071,7 @@ ALLDEPFILES = \
 # Provide explicit rule/dependency - works for more makes.
 copying.o: $(srcdir)/copying.c @MAINT@ $(defs_h) $(command_h) $(gdbcmd_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
-	  -Wno-overlength-strings $(srcdir)/copying.c
+	  $(GDB_WARN_CFLAGS_NO_OVERLENGTH_STRINGS) $(srcdir)/copying.c
 	$(POSTCOMPILE)
 
 hpux-thread.o: $(srcdir)/hpux-thread.c @MAINT@ $(defs_h)

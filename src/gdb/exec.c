@@ -1003,8 +1003,10 @@ Show writing into executable and core files."), NULL,
   add_target(&exec_ops);
 }
 
-static char *
-exec_make_note_section(bfd *obfd, int *note_size)
+/* */
+static NORETURN char *
+exec_make_note_section(bfd *obfd ATTRIBUTE_UNUSED,
+		       int *note_size ATTRIBUTE_UNUSED)
 {
   error(_("Cannot create a corefile"));
 }

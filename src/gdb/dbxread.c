@@ -3619,7 +3619,7 @@ open_bfd_from_oso(struct partial_symtab *pst, int *cached)
   if ((retval != NULL) && mtime && oso_mtime && (mtime != oso_mtime))
     {
       const char *name;
-      if (pst->objfile->name != NULL)
+      if ((pst->objfile != NULL) && (pst->objfile->name != NULL))
 	name = pst->objfile->name;
       else
 	name = "<Unknown objfile>";

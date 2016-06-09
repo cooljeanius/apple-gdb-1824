@@ -264,15 +264,20 @@ read_mem(void *baton, gdb_byte *buf, CORE_ADDR addr, size_t len)
   read_memory(addr, buf, len);
 }
 
+/* */
 static void ATTR_NORETURN
-no_get_frame_base(void *baton, gdb_byte **start, size_t *length)
+no_get_frame_base(void *baton ATTRIBUTE_UNUSED,
+		  gdb_byte **start ATTRIBUTE_UNUSED,
+		  size_t *length ATTRIBUTE_UNUSED)
 {
   internal_error(__FILE__, __LINE__,
 		 _("Support for DW_OP_fbreg is unimplemented"));
 }
 
-static CORE_ADDR
-no_get_tls_address(void *baton, CORE_ADDR offset)
+/* */
+static NORETURN CORE_ADDR ATTR_NORETURN
+no_get_tls_address(void *baton ATTRIBUTE_UNUSED,
+		   CORE_ADDR offset ATTRIBUTE_UNUSED)
 {
   internal_error(__FILE__, __LINE__,
 		 _("Support for DW_OP_GNU_push_tls_address is unimplemented"));

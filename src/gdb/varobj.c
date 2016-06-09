@@ -2765,6 +2765,7 @@ path_expr_of_child(struct varobj *var, int index)
   return (*var->root->lang->path_expr_of_child)(var, index);
 }
 
+/* */
 int
 varobj_type_is_equal_p(struct varobj *old_var, struct varobj *new_var)
 {
@@ -2782,7 +2783,9 @@ varobj_type_is_equal_p(struct varobj *old_var, struct varobj *new_var)
   old_type = varobj_get_type(old_var);
   new_type = varobj_get_type(new_var);
 
-  result = (strcmp(old_type, new_type) == 0);
+  result = (((old_type != NULL) && (new_type != NULL))
+	    ? (strcmp(old_type, new_type) == 0)
+	    : 0);
 
   xfree(old_type);
   xfree(new_type);
@@ -4272,26 +4275,27 @@ cplus_path_expr_of_child (struct varobj *parent, int index)
     return c_path_expr_of_child (parent, index);
 
   path_expr = NULL;
-  switch (TYPE_CODE (type))
+  switch (TYPE_CODE(type))
     {
     case TYPE_CODE_STRUCT:
     case TYPE_CODE_UNION:
-      cplus_class_num_children (type, children);
+      cplus_class_num_children(type, children);
 
-      if (CPLUS_FAKE_CHILD (parent))
+      if (CPLUS_FAKE_CHILD(parent))
 	{
           int index_in_type;
           enum vsections prot;
-	  char *parent_name = name_of_variable (parent);
+	  char *parent_name = name_of_variable(parent);
 	  int child_is_ptr;
 	  int dynamic_expr_len, join_expr_len;
-	  const char *dynamic_expr, *join_expr;
+	  const char *dynamic_expr = (const char *)NULL;
+	  const char *join_expr;
 
-	  if (strcmp (parent_name, "private") == 0)
+	  if (strcmp(parent_name, "private") == 0)
             prot = v_private;
-          else if (strcmp (parent_name, "protected") == 0)
+          else if (strcmp(parent_name, "protected") == 0)
             prot = v_protected;
-	  else if (strcmp (parent_name, "public") == 0)
+	  else if (strcmp(parent_name, "public") == 0)
             prot = v_public;
           else
             {

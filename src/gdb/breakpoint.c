@@ -9394,7 +9394,7 @@ breakpoint_re_set_one(void *bint)
   /* get past catch_errs */
   struct breakpoint *b = (struct breakpoint *)bint;
   struct value *mark;
-  int i;
+  int i = 0;
   /* APPLE LOCAL begin dealing correctly with multiple sals.  */
   int found;
   int j;

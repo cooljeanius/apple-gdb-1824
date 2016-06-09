@@ -1789,7 +1789,7 @@ yquery(const char *ctlstr, ...)
    \^mumble sequence in a string or character constant.  START and END
    indicate a substring of some larger string that contains the
    erroneous backslash sequence, missing the initial backslash.  */
-static NORETURN int
+static NORETURN int ATTR_NORETURN
 no_control_char_error(const char *start, const char *end)
 {
   size_t len = (size_t)(end - start);

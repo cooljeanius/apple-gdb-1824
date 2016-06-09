@@ -1232,7 +1232,7 @@ AC_SEARCH_LIBS([kinfo_getvmmap],[util util-freebsd kern],
               [Define to 1 if your system has the kinfo_getvmmap func])])
 
 # On HP/UX we may need libxpdl for dlgetmodinfo (used by solib-pa64.c).
-AC_SEARCH_LIBS([dlgetmodinfo],[dl xpdl dlcompat dyld ltdl])dnl
+AC_SEARCH_LIBS([dlgetmodinfo],[dl xpdl dlcompat dyld ltdl zrldsrl])dnl
 
 # For the TUI, we need enhanced curses functionality.
 #
@@ -2003,7 +2003,7 @@ if test -f Makefile.in; then
       test -n "${ac_cv_func_alloca_works}" && unset ac_cv_func_alloca_works
       AC_FUNC_ALLOCA
       if test "x${ac_cv_func_alloca_works}" = "xno"; then
-        AC_SEARCH_LIBS([alloca],[iberty])
+        AC_SEARCH_LIBS([alloca],[iberty gnu])
       fi
     else
       test -n "${ac_cv_working_alloca_h}"
@@ -3463,7 +3463,7 @@ m4_ifdef([GDB_AC_CHECK_BFD],[
     # -ldl is provided by bfd/Makfile.am (LIBDL) <PLUGINS>.
     if test "x${plugins}" = "xyes" && test "x${ac_cv_search_dlopen}" = "x"; then
       test -z "${ac_cv_search_dlopen}"
-      AC_SEARCH_LIBS([dlopen],[dl])
+      AC_SEARCH_LIBS([dlopen],[dl zrldsrl])
     fi
   fi
 

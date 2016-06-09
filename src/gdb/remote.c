@@ -1832,8 +1832,9 @@ pack_string (char *pkt, char *string)
 }
 #endif /* 0 (unused) */
 
+/* */
 static char *
-unpack_string (char *src, char *dest, int length)
+unpack_string(char *src, char *dest, int length)
 {
   while (length--)
     *dest++ = *src++;
@@ -1841,16 +1842,17 @@ unpack_string (char *src, char *dest, int length)
   return src;
 }
 
+/* */
 static char *
-pack_threadid (char *pkt, threadref *id)
+pack_threadid(char *pkt, threadref *id)
 {
   char *limit;
-  unsigned char *altid;
+  unsigned char *altid = (unsigned char *)NULL;
 
-  altid = (unsigned char *) id;
-  limit = pkt + BUF_THREAD_ID_SIZE;
+  altid = (unsigned char *)id;
+  limit = (pkt + BUF_THREAD_ID_SIZE);
   while (pkt < limit)
-    pkt = pack_hex_byte (pkt, *altid++);
+    pkt = pack_hex_byte(pkt, *altid++);
   return pkt;
 }
 

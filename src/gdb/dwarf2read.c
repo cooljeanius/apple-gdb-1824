@@ -956,10 +956,6 @@ static void scan_partial_inlined_function_symbols(struct dwarf2_cu *);
 static void fix_inlined_subroutine_symbols(void);
 /* APPLE LOCAL end debug inlined section  */
 
-#if 0 || 1
-static void dwarf2_build_psymtabs_easy(struct objfile *, int);
-#endif /* 0 || 1 */
-
 static void dwarf2_create_include_psymtab(char *, struct partial_symtab *,
                                           struct objfile *);
 
@@ -1206,7 +1202,6 @@ static const char *dwarf_bool_name(unsigned int);
 static const char *dwarf_type_encoding_name(unsigned int);
 
 #if 0 || 1
-static const char *dwarf_cfi_name(unsigned int);
 struct die_info *copy_die(struct die_info *);
 #endif /* 0 || 1 */
 
@@ -1962,59 +1957,6 @@ dwarf2_scan_pubtype_for_psymbols(struct partial_symtab *pst,
   if (maint_use_timers)
     do_cleanups(timing_cleanup);
 }
-
-#if 0 || 1
-/* Build the partial symbol table from the information in the
- * .debug_pubnames and .debug_aranges sections.  */
-static void ATTRIBUTE_USED
-dwarf2_build_psymtabs_easy(struct objfile *objfile, int mainline)
-{
-  bfd *abfd = objfile->obfd;
-  char *aranges_buffer, *pubnames_buffer;
-  char *pubnames_ptr;
-  unsigned int entry_length, version, info_offset, info_size;
-
-  /* APPLE LOCAL debug map: pass the bfd explicitly: */
-  pubnames_buffer = dwarf2_read_section(objfile, objfile->obfd,
-                                        dwarf_pubnames_section);
-  pubnames_ptr = pubnames_buffer;
-  while ((size_t)(pubnames_ptr - pubnames_buffer) < dwarf2_per_objfile->pubnames_size)
-    {
-      struct comp_unit_head cu_header;
-      int bytes_read;
-
-      entry_length = read_initial_length(abfd, pubnames_ptr, &cu_header,
-                                         &bytes_read);
-      if (entry_length == 0U) {
-        ; /* ??? */
-      }
-      pubnames_ptr += bytes_read;
-      version = read_1_byte(abfd, pubnames_ptr);
-      if (version == 0U) {
-        ; /* ??? */
-      }
-      pubnames_ptr += 1;
-      info_offset = read_4_bytes(abfd, pubnames_ptr);
-      if (info_offset == 0U) {
-        ; /* ??? */
-      }
-      pubnames_ptr += 4;
-      info_size = read_4_bytes(abfd, pubnames_ptr);
-      if (info_size == 0U) {
-        ; /* ??? */
-      }
-      pubnames_ptr += 4;
-    }
-
-  /* APPLE LOCAL debug map: pass the bfd explicitly: */
-  aranges_buffer = dwarf2_read_section(objfile, objfile->obfd,
-                                       dwarf_aranges_section);
-
-  if (aranges_buffer == NULL) {
-    ; /* ??? */
-  }
-}
-#endif /* 0 || 1 */
 
 /* Read in the comp unit header information from the debug_info at
  * info_ptr: */
@@ -11693,60 +11635,16 @@ dwarf_type_encoding_name(unsigned int enc)
     }
 }
 
-/* Convert a DWARF call frame info operation to its string name: */
-#if 0 || 1
-static ATTRIBUTE_USED const char *
-dwarf_cfi_name(unsigned int cfi_opc)
-{
-  switch (cfi_opc)
-    {
-    case DW_CFA_advance_loc: return "DW_CFA_advance_loc";
-    case DW_CFA_offset: return "DW_CFA_offset";
-    case DW_CFA_restore: return "DW_CFA_restore";
-    case DW_CFA_nop: return "DW_CFA_nop";
-    case DW_CFA_set_loc: return "DW_CFA_set_loc";
-    case DW_CFA_advance_loc1: return "DW_CFA_advance_loc1";
-    case DW_CFA_advance_loc2: return "DW_CFA_advance_loc2";
-    case DW_CFA_advance_loc4: return "DW_CFA_advance_loc4";
-    case DW_CFA_offset_extended: return "DW_CFA_offset_extended";
-    case DW_CFA_restore_extended: return "DW_CFA_restore_extended";
-    case DW_CFA_undefined: return "DW_CFA_undefined";
-    case DW_CFA_same_value: return "DW_CFA_same_value";
-    case DW_CFA_register: return "DW_CFA_register";
-    case DW_CFA_remember_state: return "DW_CFA_remember_state";
-    case DW_CFA_restore_state: return "DW_CFA_restore_state";
-    case DW_CFA_def_cfa: return "DW_CFA_def_cfa";
-    case DW_CFA_def_cfa_register: return "DW_CFA_def_cfa_register";
-    case DW_CFA_def_cfa_offset: return "DW_CFA_def_cfa_offset";
-
-    /* DWARF 3: */
-    case DW_CFA_def_cfa_expression: return "DW_CFA_def_cfa_expression";
-    case DW_CFA_expression: return "DW_CFA_expression";
-    case DW_CFA_offset_extended_sf: return "DW_CFA_offset_extended_sf";
-    case DW_CFA_def_cfa_sf: return "DW_CFA_def_cfa_sf";
-    case DW_CFA_def_cfa_offset_sf: return "DW_CFA_def_cfa_offset_sf";
-
-      /* SGI/MIPS specific: */
-    case DW_CFA_MIPS_advance_loc8: return "DW_CFA_MIPS_advance_loc8";
-
-    /* GNU extensions: */
-    case DW_CFA_GNU_window_save: return "DW_CFA_GNU_window_save";
-    case DW_CFA_GNU_args_size: return "DW_CFA_GNU_args_size";
-    case DW_CFA_GNU_negative_offset_extended:
-      return "DW_CFA_GNU_negative_offset_extended";
-
-    default: return "DW_CFA_<unknown>";
-    }
-}
-#endif /* 0 || 1 */
-
+/* */
 static void
 dump_die(struct die_info *die)
 {
   unsigned int i;
 
   fprintf_unfiltered(gdb_stderr, "Die: %s (abbrev = %d, offset = %d)\n",
-		     dwarf_tag_name(die->tag), die->abbrev, die->offset);
+		     dwarf_tag_name(die->tag),
+		     ((die != NULL) ? die->abbrev : 0),
+		     ((die != NULL) ? die->offset : 0));
   fprintf_unfiltered(gdb_stderr, "\thas children: %s\n",
 		     dwarf_bool_name(die->child != NULL));
 
@@ -13556,7 +13454,7 @@ rb_tree_remove_node (struct rb_tree_node **root, struct rb_tree_node *node)
   struct rb_tree_node *x;
   struct rb_tree_node *y;
   struct rb_tree_node *y_parent;
-  int x_child_pos;  /* 0 == left child; 1 == right child  */
+  int x_child_pos = -1;  /* 0 == left child; 1 == right child  */
 
   if (dwarf2_debug_inlined_stepping)
     gdb_assert (verify_rb_tree (*root));

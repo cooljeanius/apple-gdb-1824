@@ -1147,7 +1147,7 @@ unk_lang_print_type(struct type *type ATTRIBUTE_UNUSED,
   error(_("internal error - unimplemented function unk_lang_print_type called."));
 }
 
-static int
+static NORETURN int ATTR_NORETURN
 unk_lang_val_print(struct type *type ATTRIBUTE_UNUSED,
 		   const gdb_byte *valaddr ATTRIBUTE_UNUSED,
 		   int embedded_offset ATTRIBUTE_UNUSED,
@@ -1160,7 +1160,7 @@ unk_lang_val_print(struct type *type ATTRIBUTE_UNUSED,
   error(_("internal error - unimplemented function unk_lang_val_print called."));
 }
 
-static int
+static NORETURN int ATTR_NORETURN
 unk_lang_value_print(struct value *val ATTRIBUTE_UNUSED,
 		     struct ui_file *stream ATTRIBUTE_UNUSED,
 		     int format ATTRIBUTE_UNUSED,
