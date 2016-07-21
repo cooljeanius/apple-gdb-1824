@@ -628,9 +628,9 @@ static struct obstack temp_parse_space;
 #define qsort __qsort__dummy
 #include "ada-lex.c"
 
-#ifdef obstack_free
+#if defined(obstack_free) && defined(WITH_GNULIB_BUILDDIR)
 # undef obstack_free
-#endif /* obstack_free */
+#endif /* obstack_free && WITH_GNULIB_BUILDDIR */
 
 int
 ada_parse(void)

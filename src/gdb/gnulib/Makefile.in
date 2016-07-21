@@ -103,7 +103,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = build-gnulib
+subdir = gnulib
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/absolute-header.m4 \
 	$(top_srcdir)/m4/ax_check_compile_flag.m4 \
@@ -132,7 +132,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/absolute-header.m4 \
 	$(top_srcdir)/m4/ccstdc.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-DIST_COMMON = $(top_srcdir)/gnulib/Makefile.am $(noinst_HEADERS)
+DIST_COMMON = $(srcdir)/Makefile.am $(noinst_HEADERS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/../mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
@@ -812,7 +812,7 @@ all: $(BUILT_SOURCES)
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
-$(top_srcdir)/gnulib/Makefile.in: @MAINTAINER_MODE_TRUE@ $(top_srcdir)/gnulib/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -821,10 +821,10 @@ $(top_srcdir)/gnulib/Makefile.in: @MAINTAINER_MODE_TRUE@ $(top_srcdir)/gnulib/Ma
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnits build-gnulib/Makefile:gnulib/Makefile.in'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnits gnulib/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnits build-gnulib/Makefile:gnulib/Makefile.in
-Makefile: $(top_srcdir)/gnulib/Makefile.in $(top_builddir)/config.status
+	  $(AUTOMAKE) --gnits gnulib/Makefile
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \

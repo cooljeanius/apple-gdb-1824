@@ -2335,11 +2335,11 @@ objfile_section_offset(struct objfile *objfile, int sect_idx)
 
   if (err_str != NULL)
     {
-      internal_error (__FILE__, __LINE__, "%s (exec_objfile '%s' objfile '%s')",
-                      err_str,
-                      (exec_objfile ? exec_objfile->name : ""),
-                      objfile->name);
-      return (CORE_ADDR) -1;
+      internal_error(__FILE__, __LINE__, "%s (exec_objfile '%s' objfile '%s')",
+                     err_str,
+                     (exec_objfile ? exec_objfile->name : ""),
+                     (objfile ? objfile->name : ""));
+      return (CORE_ADDR)(-1L);
     }
 
   /* APPLE LOCAL shared cache begin.  */

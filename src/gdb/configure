@@ -7122,11 +7122,12 @@ elif test -d ../libintl; then
   fi
 fi
 
-# Configure gnulib.  We need to build gnulib under some other
-# directory not "gnulib", to avoid the problem of both GDB and
-# GDBserver wanting to build it in the same directory, when building
-# in the source dir.
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
+if test "x${recurse_into_gnulib}" = "xyes"; then
+  # Configure gnulib.  We need to build gnulib under some other
+  # directory not "gnulib", to avoid the problem of both GDB and
+  # GDBserver wanting to build it in the same directory, when building
+  # in the source dir.
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
 $as_echo_n "checking for a sed that does not truncate output... " >&6; }
 if ${ac_cv_path_SED+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -7292,6 +7293,8 @@ $as_echo "$as_me: running $SHELL $ac_sub_configure $ac_sub_configure_args --cach
     as_fn_error $? "$ac_sub_configure failed for $ac_dir" "$LINENO" 5
 
   cd "$ac_popdir"
+  ##FIXME: broken
+fi
 
 CONFIG_OBS=""
 CONFIG_DEPS=""
@@ -50577,7 +50580,8 @@ if test "x${gl_LIBOBJS}" = "x"; then
   fi
 fi
 
-ac_config_files="$ac_config_files Makefile data-directory/Makefile .gdbinit:gdbinit.in gnulib/Makefile build-gnulib/Makefile:gnulib/Makefile.in gdb-gdb.gdb"
+ac_config_files="$ac_config_files Makefile data-directory/Makefile .gdbinit:gdbinit.in gnulib/Makefile gdb-gdb.gdb"
+  ##FIXME: add build-gnulib/Makefile:gnulib/Makefile.in once it works
 ac_config_files="$ac_config_files gcore"
 ac_config_commands="$ac_config_commands default"
 
@@ -52176,7 +52180,6 @@ do
     "data-directory/Makefile") CONFIG_FILES="$CONFIG_FILES data-directory/Makefile" ;;
     ".gdbinit") CONFIG_FILES="$CONFIG_FILES .gdbinit:gdbinit.in" ;;
     "gnulib/Makefile") CONFIG_FILES="$CONFIG_FILES gnulib/Makefile" ;;
-    "build-gnulib/Makefile") CONFIG_FILES="$CONFIG_FILES build-gnulib/Makefile:gnulib/Makefile.in" ;;
     "gdb-gdb.gdb") CONFIG_FILES="$CONFIG_FILES gdb-gdb.gdb" ;;
     "gcore") CONFIG_FILES="$CONFIG_FILES gcore" ;;
     "default") CONFIG_COMMANDS="$CONFIG_COMMANDS default" ;;

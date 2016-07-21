@@ -146,11 +146,14 @@ elif test -d ../libintl; then
   fi
 fi
 
-# Configure gnulib.  We need to build gnulib under some other
-# directory not "gnulib", to avoid the problem of both GDB and
-# GDBserver wanting to build it in the same directory, when building
-# in the source dir.
-ACX_CONFIGURE_DIR(["gnulib"],["build-gnulib"])dnl
+if test "x${recurse_into_gnulib}" = "xyes"; then
+  # Configure gnulib.  We need to build gnulib under some other
+  # directory not "gnulib", to avoid the problem of both GDB and
+  # GDBserver wanting to build it in the same directory, when building
+  # in the source dir.
+  ACX_CONFIGURE_DIR(["gnulib"],["build-gnulib"])dnl
+  ##FIXME: broken
+fi
 
 dnl# List of object files and targets accumulated by configure:
 CONFIG_OBS=""
@@ -4116,8 +4119,8 @@ AC_CONFIG_FILES([Makefile \
                  data-directory/Makefile \
                  .gdbinit:gdbinit.in \
                  gnulib/Makefile \
-                 build-gnulib/Makefile:gnulib/Makefile.in \
                  gdb-gdb.gdb])dnl
+  ##FIXME: add build-gnulib/Makefile:gnulib/Makefile.in once it works
 AC_CONFIG_FILES([gcore],[chmod +x gcore])dnl
 AC_CONFIG_COMMANDS([default],[
 dnl# Autoconf does NOT provide a mechanism for modifying definitions 

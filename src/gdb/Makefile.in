@@ -272,7 +272,9 @@ GNULIB_CFLAGS=-I$(srcdir)/gnulib/gnulib -I$(srcdir)/gnulib/import \
 # This is essentially the header file directory for the library
 # routines in libiberty.
 INCLUDE_DIR =  $(srcdir)/../include
-INCLUDE_CFLAGS = $(GNULIB_CFLAGS) -I$(INCLUDE_DIR)
+@MAKE_SHOULD_RECURSE_INTO_GNULIB_TRUE@INCLUDE_CFLAGS = -I$(INCLUDE_DIR) \
+@MAKE_SHOULD_RECURSE_INTO_GNULIB_TRUE@ -I. @MAINT@ $(GNULIB_CFLAGS)
+@MAKE_SHOULD_RECURSE_INTO_GNULIB_FALSE@INCLUDE_CFLAGS = -I$(INCLUDE_DIR)
 
 # Where is the "-liberty" library?  Typically in ../libiberty.
 LIBIBERTY_DIR = ../libiberty
@@ -382,7 +384,7 @@ GDB_DATADIR = @GDB_DATADIR@
 GDBFLAGS =
 
 # Helper code from gnulib.
-GNULIB_BUILDDIR = build-gnulib
+## $(GNULIB_BUILDDIR) is already set above
 LIBGNU = $(GNULIB_BUILDDIR)/import/libgnu.a
 INCGNU = -I$(srcdir)/gnulib/import -I$(GNULIB_BUILDDIR)/import
 
@@ -1699,14 +1701,13 @@ LINK = $(LIBTOOL) $(AM_V_lt) $(TAG_FOR_LIBTOOL) $(LIBTOOLFLAGS) --mode=link $(LI
 TMPDIR = /tmp
 
 # Removing the old gdb 1st works better if running, at least on SunOS.
-gdb$(EXEEXT): gdb.o libgdb.a $(LIBGNU) $(CONFIG_OBS) $(ADD_DEPS) $(CDEPS) \
-  $(TDEPLIBS)
+gdb$(EXEEXT): gdb.o libgdb.a $(CONFIG_OBS) $(ADD_DEPS) $(CDEPS) $(TDEPLIBS)
 	$(MAKE) version.o
 	$(AM_V_at)rm -f $(AM_V_v) gdb$(EXEEXT)
 	$(AM_V_at)rm -f -r $(AM_V_v) gdb$(EXEEXT).dSYM
 	$(AM_V_LINKER)$(LINK) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
 		$(ADD_INFO_PLIST) \
-		-o gdb$(EXEEXT) gdb.o $(CONFIG_OBS) libgdb.a $(LIBGNU) \
+		-o gdb$(EXEEXT) gdb.o $(CONFIG_OBS) libgdb.a \
 		$(TDEPLIBS) $(TUI_LIBRARY) $(CLIBS) $(LOADLIBES)
 	@echo "stripping __objcInit from $@";
 	echo "__objcInit" > $(TMPDIR)/macosx-syms-to-remove;
@@ -1880,16 +1881,18 @@ Makefile: Makefile.in config.status @frags@
 gnulib/Makefile: gnulib/Makefile.in config.status @frags@
 	CONFIG_FILES="gnulib/Makefile" \
 	  CONFIG_COMMANDS="depfiles" \
-	  CONFIG_HEADERS= \
-	  CONFIG_LINKS= \
+	  CONFIG_HEADERS="" \
+	  CONFIG_LINKS="" \
 	  $(SHELL) config.status
 
 $(GNULIB_BUILDDIR)/Makefile: gnulib/Makefile.in config.status @frags@
-	@cd $(GNULIB_BUILDDIR); CONFIG_FILES="Makefile" \
+	@if test -d $(GNULIB_BUILDDIR); then \
+	  cd $(GNULIB_BUILDDIR); CONFIG_FILES="Makefile" \
 	  CONFIG_COMMANDS="depfiles" \
-	  CONFIG_HEADERS= \
-	  CONFIG_LINKS= \
-	  $(SHELL) config.status
+	  CONFIG_HEADERS="" \
+	  CONFIG_LINKS="" \
+	  $(SHELL) config.status; \
+	else echo "skipping missing $(GNULIB_BUILDDIR)"; fi
 
 am--refresh:
 	@echo "making '$@'"
