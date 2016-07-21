@@ -117,10 +117,13 @@ GNULIB_BUILDDIR = ../gnulib
 LIBGNU = $(GNULIB_BUILDDIR)/import/libgnu.a
 INCGNU = -I$(srcdir)/../gnulib -I$(srcdir)/../gnulib/import \
   -I$(GNULIB_BUILDDIR)/import
+GNULIB_CFLAGS = -I$(srcdir)/../gnulib -I$(GNULIB_BUILDDIR)/gnulib \
+  -I$(GNULIB_BUILDDIR)/import
+GNULIB_LIB = $(GNULIB_BUILDDIR)/import/libgnu.a
 
 # Generated headers in the gnulib directory. These must be listed
 # so that they are generated before other files are compiled.
-GNULIB_H = $(GNULIB_BUILDDIR)/import/string.h
+GNULIB_H = $(GNULIB_BUILDDIR)/import/string.h @GNULIB_STDINT_H@
 
 # Where is the BFD library? Typically in ../../bfd:
 BFD_DIR = ../../bfd
@@ -194,7 +197,7 @@ am__v_CXXLD_1 =
 PLATFORM_INCLUDE = @GDBSERVER_PLATFORM_INCLUDE@
 INCLUDE_CFLAGS = -I. -I.. -I../common -I${srcdir} -I$(srcdir)/../common \
 	 -I$(regformat_dir) -I$(srcdir)/.. \
-	 $(PLATFORM_INCLUDE) -I$(INCLUDE_DIR) $(INCGNU)
+	 $(PLATFORM_INCLUDE) -I$(INCLUDE_DIR) $(INCGNU) $(GNULIB_CFLAGS)
 
 # M{H,T}_CFLAGS, if defined, has host- and target-dependent CFLAGS
 # from the config/ directory.
@@ -324,6 +327,15 @@ XML_BUILTIN = @srv_xmlbuiltin@
 IPA_DEPFILES = @IPA_DEPFILES@
 extra_libraries = @extra_libraries@
 
+SUBDIRS = $(GNULIB_BUILDDIR)
+CLEANDIRS = $(SUBDIRS)
+
+# List of subdirectories in the build tree that must exist.
+# This is used to force build failures in existing trees when
+# a new directory is added.
+# The format here is for the `case' shell command.
+REQUIRED_SUBDIRS = $(GNULIB_BUILDDIR)
+
 # If we ever treat gnulib as a subdir as FSF gdb does, these will be
 # necessary. It is okay to put them even when not using subdirs though,
 # even if it is kind of pointless...
@@ -371,6 +383,7 @@ generated_files = config.h $(GNULIB_H)
 ## Old rule was: $(AM_V_CC)${CC} -c $(CPPFLAGS) ${INTERNAL_CFLAGS} $<
 
 all: gdbserver$(EXEEXT) gdbreplay$(EXEEXT) $(extra_libraries)
+	@$(MAKE) $(FLAGS_TO_PASS) DO=$@ "DODIRS=$(SUBDIRS)" subdir_do
 
 # Traditionally "install" depends on "all".  But it may be useful
 # not to; for example, if the user has made some trivial change to a 
@@ -393,6 +406,7 @@ install-only:
 	$(INSTALL_PROGRAM) gdbserver$(EXEEXT) $(DESTDIR)$(bindir)/$${n}$(EXEEXT); \
 	$(RUN_MKINSTALLDIRS) $(DESTDIR)$(man1dir); \
 	$(INSTALL_DATA) $(srcdir)/gdbserver.1 $(DESTDIR)$(man1dir)/$${n}.1
+	@$(MAKE) $(FLAGS_TO_PASS) DO=$@ "DODIRS=$(SUBDIRS)" subdir_do
 
 uninstall: force
 	n=`echo gdbserver | $(SED) '$(program_transform_name)'`; \
@@ -402,6 +416,7 @@ uninstall: force
 	  echo "n is set to $${n}"; \
 	fi; \
 	rm -f $(AM_V_v) $(bindir)/$${n}$(EXEEXT) $(DESTDIR)$(man1dir)/$${n}.1
+	@$(MAKE) $(FLAGS_TO_PASS) DO=$@ "DODIRS=$(SUBDIRS)" subdir_do
 
 installcheck:
 check:
@@ -411,6 +426,7 @@ install-pdf:
 html:
 install-html:
 clean-info: force
+	@$(MAKE) $(FLAGS_TO_PASS) DO=$@ "DODIRS=$(SUBDIRS)" subdir_do
 
 gdbserver$(EXEEXT): $(OBS) ${ADD_DEPS} ${CDEPS}
 	$(AM_V_at)rm -f $(AM_V_v) gdbserver$(EXEEXT)
@@ -419,6 +435,7 @@ gdbserver$(EXEEXT): $(OBS) ${ADD_DEPS} ${CDEPS}
 
 $(LIBGNU) $(GNULIB_H): all-lib
 all-lib: $(GNULIB_BUILDDIR)/Makefile
+	@$(MAKE) $(FLAGS_TO_PASS) DO=all DODIRS=$(GNULIB_BUILDDIR) subdir_do
 .PHONY: all-lib
 
 # Depend on, but do NOT actually link against LIBGNU here, because while it
@@ -465,6 +482,7 @@ tags: TAGS
 mostlyclean:
 	rm -f $(AM_V_v) $(ORIG_OBS) $(GDBREPLAY_OBS)
 clean: mostlyclean
+	@$(MAKE) $(FLAGS_TO_PASS) DO=$@ "DODIRS=$(SUBDIRS)" subdir_do
 	rm -f $(AM_V_v) *.o ${ADD_FILES} *~
 	rm -f version.c
 	rm -f $(AM_V_v) gdbserver$(EXEEXT) gdbreplay$(EXEEXT) core make.log
@@ -511,9 +529,27 @@ clean: mostlyclean
 # actual source directory for gnulib here, unlike FSF gdb, which creates
 # a separate build directory for it.
 maintainer-clean realclean distclean: clean
+	@$(MAKE) $(FLAGS_TO_PASS) DO=$@ "DODIRS=$(SUBDIRS)" subdir_do
 	rm -f nm.h tm.h xm.h config.status config.h stamp-h config.log
 	rm -f Makefile
 	-rm -f .DS_Store
+
+subdir_do: force
+	@for i in $(DODIRS); do \
+		case $${i} in \
+		$(REQUIRED_SUBDIRS)) \
+			if [ ! -f ./$${i}/Makefile ]; then \
+				echo "Missing $${i}/Makefile" >&2; \
+				exit 1; \
+			fi ;; \
+		esac ; \
+		if [ -f ./$${i}/Makefile ] ; then \
+			if (cd ./$${i}; \
+				$(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
+				echo "'$@' succeeded for '$${i}'"; \
+			else exit 1; fi; \
+		else echo "no Makefile for '$${i}'"; fi; \
+	done
 
 STAGESTUFF=${OBS} ${TSOBS} ${NTSOBS} ${ADD_FILES} init.c init.o version.c \
   gdb
@@ -527,6 +563,11 @@ Makefile: Makefile.in config.status
 	CONFIG_HEADERS="" $(SHELL) ./config.status
 
 $(GNULIB_BUILDDIR)/Makefile: $(srcdir)/../gnulib/Makefile.in config.status
+	@cd $(GNULIB_BUILDDIR); CONFIG_FILES="Makefile" \
+ 	  CONFIG_COMMANDS="depfiles" \
+ 	  CONFIG_HEADERS= \
+ 	  CONFIG_LINKS= \
+	  $(SHELL) config.status
 
 config.status: configure configure.srv $(srcdir)/../development.sh
 	$(SHELL) ./config.status --recheck

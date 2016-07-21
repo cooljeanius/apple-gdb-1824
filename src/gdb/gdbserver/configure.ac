@@ -186,6 +186,13 @@ esac
 AM_CONDITIONAL([GMAKE],[test "x${MAKE_IS_GNU}" = "xyes"])dnl
 AC_PROG_MAKE_SET
 
+# Configure gnulib.  We can't use AC_CONFIG_SUBDIRS as that'd expect
+# to find the the source subdir to be configured directly under
+# gdbserver/.  We need to build gnulib under some other directory not
+# "gnulib", to avoid the problem of both GDB and GDBserver wanting to
+# build it in the same directory, when building in the source dir.
+ACX_CONFIGURE_DIR(["../gnulib"],["build-gnulib"])dnl
+
 # Check for a way of listing symbols:
 GDB_PATH_NM
 AC_CHECK_TOOL([NMEDIT],[nmedit],[:])dnl
@@ -212,6 +219,11 @@ AC_SEARCH_LIBS([xmalloc],[iberty c gnu])dnl
 AC_SEARCH_LIBS([xsnprintf],[iberty c gnu])dnl
 AC_SEARCH_LIBS([xstrdup],[iberty c gnu])dnl
 dnl# libdl is checked lower below
+
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+AC_SUBST([acl_cv_wl])dnl
 
 # Checks for header files.
 AC_MSG_CHECKING([headers])
@@ -268,6 +280,7 @@ esac
 AC_MSG_CHECKING([declarations])
 AC_MSG_RESULT([ ])
 AC_CHECK_DECLS([child_get_pagesize])dnl
+AC_CHECK_DECLS([gmtime, localtime, localtime_r])dnl
 AC_CHECK_DECLS([strerror, strstr, perror, vasprintf, vsnprintf])dnl
 AC_CHECK_DECLS([NULL])dnl
   ## try to avoid redefinition warnings:
@@ -435,11 +448,11 @@ AC_FUNC_REALLOC
 AC_FUNC_SELECT_ARGTYPES
 AC_FUNC_SETPGRP
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([atexit basename child_get_pagesize gettimeofday inet_ntoa \
-                memset minus_one_ptid pread pread64 pwrite readlink \
-                select setenv socket strchr strdup strerror strlen \
-                strncmp strrchr strstr strtol strtoul strtoull \
-                xfree xmalloc xsnprintf xstrdup])dnl
+AC_CHECK_FUNCS([atexit basename child_get_pagesize gettimeofday gmtime \
+                inet_ntoa localtime localtime_r memset minus_one_ptid \
+                pread pread64 pwrite readlink select setenv socket strchr \
+                strdup strerror strlen strncmp strrchr strstr strtol \
+                strtoul strtoull xfree xmalloc xsnprintf xstrdup])dnl
 dnl# the makefile gets the sources for these libobjs from libiberty:
 AC_REPLACE_FUNCS([vasprintf vsnprintf])
 dnl# dladdr is glibc-specific. It is used by thread-db.c but only for
@@ -803,6 +816,15 @@ AC_SUBST([extra_libraries])dnl
 AC_SUBST([USE_THREAD_DB])dnl
 AC_SUBST([CPPFLAGS])dnl
 
+GNULIB_IMPORT_DIR=build-gnulib/import
+# For Makefile dependencies.
+GNULIB_STDINT_H=""
+if test x"${STDINT_H}" != x""; then
+  test -n "${STDINT_H}" && test -n "${GNULIB_IMPORT_DIR}"
+  export GNULIB_STDINT_H=${GNULIB_IMPORT_DIR}/${STDINT_H}
+fi
+AC_SUBST([GNULIB_STDINT_H])dnl
+
 dnl# warning flags get set at the bottom, to try to prevent them from
 dnl# messing with the other conftets:
 build_warnings="-Wmain -Wpointer-arith -Wformat-security \
@@ -883,7 +905,9 @@ WERROR_CFLAGS=""
 if test "x${GCC}" = "xyes"
 then
     AC_MSG_CHECKING([compiler warning flags])
+    AC_MSG_RESULT([(will report full results at end)])
     for w in ${build_warnings}; do
+	AC_MSG_CHECKING([if compiler supports ${w}])
 	case ${w} in
 	-Werr*)
 	    dnl# (just ignoring this completely for now)
@@ -894,9 +918,25 @@ then
             dnl# Use "_SOURCE" instead of "_PROGRAM" here to keep us from
             dnl# having a bad "main()" function:
 	    AC_COMPILE_IFELSE([AC_LANG_SOURCE([[]])],
-                              [WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
-                              [BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
+                              [AC_MSG_RESULT([yes])
+                               WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
+                              [AC_MSG_RESULT([no])
+                               BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
 	    CFLAGS="${saved_CFLAGS}"
+            ;;
+        -Wformat-nonliteral|-Wformat-y2k|-Wformat-security)
+            ## (These would be ignored without also using -Wformat)
+	    saved_CFLAGS="${CFLAGS}"
+	    CFLAGS="${CFLAGS} ${w} -Werror -Wformat"
+	    saved_CXXFLAGS="${CXXFLAGS}"
+	    CXXFLAGS="${CXXFLAGS} ${w} -Werror -Wformat"
+	    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+                              [AC_MSG_RESULT([yes])
+                               WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
+                              [AC_MSG_RESULT([no])
+                               BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
+	    CFLAGS="${saved_CFLAGS}"
+	    CXXFLAGS="${saved_CXXFLAGS}"
             ;;
 	*) # Check that GCC accepts it:
 	    saved_CFLAGS="${CFLAGS}"
@@ -904,8 +944,10 @@ then
 	    saved_CXXFLAGS="${CXXFLAGS}"
 	    CXXFLAGS="${CXXFLAGS} ${w} -Werror"
 	    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
-	                      [WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
-	                      [BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
+                              [AC_MSG_RESULT([yes])
+                               WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
+                              [AC_MSG_RESULT([no])
+                               BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
 	    CFLAGS="${saved_CFLAGS}"
 	    CXXFLAGS="${saved_CXXFLAGS}"
 	    ;;
@@ -954,3 +996,5 @@ x*)
 esac
 ],[])dnl
 AC_OUTPUT
+
+echo "Done with the gdbserver configure script."

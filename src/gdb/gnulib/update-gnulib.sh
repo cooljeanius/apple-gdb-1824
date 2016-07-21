@@ -59,7 +59,7 @@ IMPORTED_GNULIB_MODULES="\
     streq strerror strerror_r-posix strerror-override string strncat strndup \
     strnlen strnlen1 strstr strstr-simple strtok_r sys_select sys_stat \
     sys_time sys_types sys_wait \
-    tempname time \
+    tempname time time_r time_rz timegm \
     unistd unistd-safer unlink unlink-busy update-copyright usleep \
     vc-list-files verify \
     warnings wchar wcsncasecmp wctype-h winsz-ioctl winsz-termios \

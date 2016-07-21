@@ -121,12 +121,12 @@ static int find_line_common(struct linetable *, int, int *);
 
 const char *operator_chars(const char *p, const char **end);
 
-static struct symbol *lookup_symbol_aux (const char *name,
-					 const char *linkage_name,
-					 const struct block *block,
-					 const domain_enum domain,
-					 int *is_a_field_of_this,
-					 struct symtab **symtab);
+static struct symbol *lookup_symbol_aux(const char *name,
+					const char *linkage_name,
+					const struct block *block,
+					const domain_enum domain,
+					int *is_a_field_of_this,
+					struct symtab **symtab);
 
 static
 struct symbol *lookup_symbol_aux_local (const char *name,
@@ -145,24 +145,22 @@ struct symbol *lookup_symbol_aux_symtabs (int block_index,
 					  struct symbol_search **sym_list,
 					  int find_all_occurrences);
 
-static
-struct symbol *lookup_symbol_aux_psymtabs (int block_index,
-					   const char *name,
-					   const char *linkage_name,
-					   const domain_enum domain,
-					   struct symtab **symtab,
-					   struct symbol_search **sym_list,
-					   int find_all_occurrences);
+static struct symbol *lookup_symbol_aux_psymtabs(int block_index,
+						 const char *name,
+						 const char *linkage_name,
+						 const domain_enum domain,
+						 struct symtab **symtab,
+						 struct symbol_search **symlist,
+						 int find_all_occurrences);
 /* APPLE LOCAL end return multiple symbols  */
 
-#if 0
-static
-struct symbol *lookup_symbol_aux_minsyms (const char *name,
-					  const char *linkage_name,
-					  const domain_enum domain,
-					  int *is_a_field_of_this,
-					  struct symtab **symtab);
-#endif /* 0 */
+#ifdef ALLOW_UNUSED_FUNCTIONS
+static struct symbol *lookup_symbol_aux_minsyms(const char *name,
+						const char *linkage_name,
+						const domain_enum domain,
+						int *is_a_field_of_this,
+						struct symtab **symtab);
+#endif /* ALLOW_UNUSED_FUNCTIONS */
 
 /* This flag is used in hppa-tdep.c, and set in hp-symtab-read.c.
    Signals the presence of objects compiled by HP compilers.  */
@@ -189,7 +187,6 @@ void _initialize_symtab(void);
 static int
 skip_non_matching_bfd (asection *section, struct objfile *objfile)
 {
-
   /* No section info, don't skip.  */
   if (section == NULL)
     return 0;
@@ -958,13 +955,13 @@ symbol_set_names(struct general_symbol_info *gsymbol, const char *linkage_name,
     {
       char *demangled_name = symbol_find_demangled_name(gsymbol,
                                                         linkage_name_copy);
-      size_t demangled_len = (demangled_name ? strlen(demangled_name) : 0);
+      size_t demangled_len = (demangled_name ? strlen(demangled_name) : 0UL);
 
       /* If there is a demangled name, place it right after the mangled name.
 	 Otherwise, just place a second zero byte after the end of the mangled
 	 name.  */
       *slot = (char *)obstack_alloc(&objfile->objfile_obstack,
-                                    (lookup_len + demangled_len + 2UL));
+                                    (lookup_len + demangled_len + 3UL));
       memcpy(*slot, lookup_name, (lookup_len + 1UL));
       if (demangled_name != NULL)
 	{
@@ -2295,7 +2292,7 @@ lookup_symbol_aux_psymtabs (int block_index, const char *name,
     }
 }
 
-#if 0
+#ifdef ALLOW_UNUSED_FUNCTIONS
 /* Check for the possibility of the symbol being a function or a
    mangled variable that is stored in one of the minimal symbol
    tables.  Eventually, all global symbols might be resolved in this
@@ -2421,7 +2418,7 @@ lookup_symbol_aux_minsyms (const char *name,
 
   return NULL;
 }
-#endif /* 0 */
+#endif /* ALLOW_UNUSED_FUNCTIONS */
 
 /* A default version of lookup_symbol_nonlocal for use by languages
    that can't think of anything better to do.  This implements the C
@@ -5682,13 +5679,13 @@ make_source_files_completion_list(const char *text, const char *word)
     {
       if (not_interesting_fname (s->filename))
 	continue;
-      if (!filename_seen (s->filename, 1, &first)
+      if (!filename_seen(s->filename, 1, &first)
 #if HAVE_DOS_BASED_FILE_SYSTEM
-	  && strncasecmp (s->filename, text, text_len) == 0
+	  && (strncasecmp(s->filename, text, text_len) == 0)
 #else
-	  && strncmp (s->filename, text, text_len) == 0
-#endif
-	  )
+	  && (strncmp(s->filename, text, text_len) == 0)
+#endif /* HAVE_DOS_BASED_FILE_SYSTEM */
+	  && (text_len > 0UL))
 	{
 	  /* This file matches for a completion; add it to the current
 	     list of matches.  */
@@ -5702,14 +5699,14 @@ make_source_files_completion_list(const char *text, const char *word)
 	     way around.  This is what subroutines of breakpoint
 	     command do when they parse file names.  */
 	  base_name = lbasename (s->filename);
-	  if (base_name != s->filename
-	      && !filename_seen (base_name, 1, &first)
+	  if ((base_name != s->filename)
+	      && !filename_seen(base_name, 1, &first)
 #if HAVE_DOS_BASED_FILE_SYSTEM
-	      && strncasecmp (base_name, text, text_len) == 0
+	      && (strncasecmp(base_name, text, text_len) == 0)
 #else
-	      && strncmp (base_name, text, text_len) == 0
-#endif
-	      )
+	      && (strncmp(base_name, text, text_len) == 0)
+#endif /* HAVE_DOS_BASED_FILE_SYSTEM */
+	      && (text_len > 0UL))
 	    add_filename_to_list (base_name, text, word,
 				  &list, &list_used, &list_alloced);
 	}
@@ -5721,13 +5718,13 @@ make_source_files_completion_list(const char *text, const char *word)
 	continue;
       if (!ps->readin)
 	{
-	  if (!filename_seen (ps->filename, 1, &first)
+	  if (!filename_seen(ps->filename, 1, &first)
 #if HAVE_DOS_BASED_FILE_SYSTEM
-	      && strncasecmp (ps->filename, text, text_len) == 0
+	      && (strncasecmp(ps->filename, text, text_len) == 0)
 #else
-	      && strncmp (ps->filename, text, text_len) == 0
-#endif
-	      )
+	      && (strncmp(ps->filename, text, text_len) == 0)
+#endif /* HAVE_DOS_BASED_FILE_SYSTEM */
+	      && (text_len > 0UL))
 	    {
 	      /* This file matches for a completion; add it to the
 		 current list of matches.  */
@@ -5737,15 +5734,15 @@ make_source_files_completion_list(const char *text, const char *word)
 	    }
 	  else
 	    {
-	      base_name = lbasename (ps->filename);
-	      if (base_name != ps->filename
+	      base_name = lbasename(ps->filename);
+	      if ((base_name != ps->filename)
 		  && !filename_seen (base_name, 1, &first)
 #if HAVE_DOS_BASED_FILE_SYSTEM
-		  && strncasecmp (base_name, text, text_len) == 0
+		  && (strncasecmp(base_name, text, text_len) == 0)
 #else
-		  && strncmp (base_name, text, text_len) == 0
-#endif
-		  )
+		  && (strncmp(base_name, text, text_len) == 0)
+#endif /* HAVE_DOS_BASED_FILE_SYSTEM */
+		  && (text_len > 0UL))
 		add_filename_to_list (base_name, text, word,
 				      &list, &list_used, &list_alloced);
 	    }

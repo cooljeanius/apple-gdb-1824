@@ -68,6 +68,18 @@
 /* Define to 1 if you have the declaration of `ffs', and to 0 if you don't. */
 #undef HAVE_DECL_FFS
 
+/* Define to 1 if you have the declaration of `gmtime', and to 0 if you don't.
+   */
+#undef HAVE_DECL_GMTIME
+
+/* Define to 1 if you have the declaration of `localtime', and to 0 if you
+   don't. */
+#undef HAVE_DECL_LOCALTIME
+
+/* Define to 1 if you have the declaration of `localtime_r', and to 0 if you
+   don't. */
+#undef HAVE_DECL_LOCALTIME_R
+
 /* Define to 1 if you have the declaration of `NULL', and to 0 if you don't.
    */
 #undef HAVE_DECL_NULL
@@ -169,6 +181,9 @@
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
 
+/* Define to 1 if you have the `gmtime' function. */
+#undef HAVE_GMTIME
+
 /* Define to 1 if the system has the type `gregset_t'. */
 #undef HAVE_GREGSET_T
 
@@ -207,6 +222,12 @@
 
 /* Define to 1 if you have the <locale.h> header file. */
 #undef HAVE_LOCALE_H
+
+/* Define to 1 if you have the `localtime' function. */
+#undef HAVE_LOCALTIME
+
+/* Define to 1 if you have the `localtime_r' function. */
+#undef HAVE_LOCALTIME_R
 
 /* Define if you have the `long long' type. */
 #undef HAVE_LONG_LONG

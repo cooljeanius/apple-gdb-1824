@@ -53,7 +53,9 @@ extern int disable_aslr_flag;
 # define SHELL_FILE "/bin/sh"
 #endif /* !SHELL_FILE */
 
+#ifndef environ
 extern char **environ;
+#endif /* !environ */
 
 extern void _initialize_fork_child(void);
 

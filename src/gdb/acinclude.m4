@@ -2,6 +2,8 @@ dnl# gdb/acinclude.m4                                      -*- Autoconf -*-
 dnl# written by Rob Savoye <rob@cygnus.com> for Cygnus Support
 dnl# major rewriting for Tcl 7.5 by Don Libes <libes@nist.gov>
 
+sinclude(acx_configure_dir.m4)
+
 dnl# gdb/configure.ac uses BFD_NEED_DECLARATION, so get its definition.
 sinclude(../bfd/bfd.m4)
 

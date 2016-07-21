@@ -63,6 +63,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "objfiles.h" /* For have_full_symbols and have_partial_symbols */
 #include "frame.h"
 #include "block.h"
+#include "../include/obstack.h"
   
 #ifndef ADA_EXP_Y
 # define ADA_EXP_Y 1
@@ -626,6 +627,10 @@ static struct obstack temp_parse_space;
 /* defs.h and non-standard stdlib.h files.  */
 #define qsort __qsort__dummy
 #include "ada-lex.c"
+
+#ifdef obstack_free
+# undef obstack_free
+#endif /* obstack_free */
 
 int
 ada_parse(void)

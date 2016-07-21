@@ -1019,7 +1019,6 @@ ac_ct_AR
 AR
 REPORT_BUGS_TEXI
 REPORT_BUGS_TO
-SED
 PKGVERSION
 TAG_FOR_LIBTOOL
 AM_V_LINKER
@@ -1060,6 +1059,7 @@ LD_ARCHFLAGS
 acl_cv_wl
 MACH_EXC_SERVER_PREFACE
 want64
+SED
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
@@ -7107,6 +7107,192 @@ rm -f conftest.file
                 ## should now have it...
 fi
 
+##FIXME: this is probably a bad idea:
+if test -d ../intl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L. -L../intl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../intl"
+  fi
+elif test -d ../libintl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L. -L../libintl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../libintl"
+  fi
+fi
+
+# Configure gnulib.  We need to build gnulib under some other
+# directory not "gnulib", to avoid the problem of both GDB and
+# GDBserver wanting to build it in the same directory, when building
+# in the source dir.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
+$as_echo_n "checking for a sed that does not truncate output... " >&6; }
+if ${ac_cv_path_SED+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+            ac_script=s/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/
+     for ac_i in 1 2 3 4 5 6 7; do
+       ac_script="$ac_script$as_nl$ac_script"
+     done
+     echo "$ac_script" 2>/dev/null | sed 99q >conftest.sed
+     { ac_script=; unset ac_script;}
+     if test -z "$SED"; then
+  ac_path_SED_found=false
+  # Loop through the user's path and test for each of PROGNAME-LIST
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_prog in sed gsed; do
+    for ac_exec_ext in '' $ac_executable_extensions; do
+      ac_path_SED="$as_dir/$ac_prog$ac_exec_ext"
+      as_fn_executable_p "$ac_path_SED" || continue
+# Check for GNU ac_path_SED and select it if it is found.
+  # Check for GNU $ac_path_SED
+case `"$ac_path_SED" --version 2>&1` in
+*GNU*)
+  ac_cv_path_SED="$ac_path_SED" ac_path_SED_found=:;;
+*)
+  ac_count=0
+  $as_echo_n 0123456789 >"conftest.in"
+  while :
+  do
+    cat "conftest.in" "conftest.in" >"conftest.tmp"
+    mv "conftest.tmp" "conftest.in"
+    cp "conftest.in" "conftest.nl"
+    $as_echo '' >> "conftest.nl"
+    "$ac_path_SED" -f conftest.sed < "conftest.nl" >"conftest.out" 2>/dev/null || break
+    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
+    as_fn_arith $ac_count + 1 && ac_count=$as_val
+    if test $ac_count -gt ${ac_path_SED_max-0}; then
+      # Best one so far, save it but keep looking for a better one
+      ac_cv_path_SED="$ac_path_SED"
+      ac_path_SED_max=$ac_count
+    fi
+    # 10*(2^10) chars as input seems more than enough
+    test $ac_count -gt 10 && break
+  done
+  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
+esac
+
+      $ac_path_SED_found && break 3
+    done
+  done
+  done
+IFS=$as_save_IFS
+  if test -z "$ac_cv_path_SED"; then
+    as_fn_error $? "no acceptable sed could be found in \$PATH" "$LINENO" 5
+  fi
+else
+  ac_cv_path_SED=$SED
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_SED" >&5
+$as_echo "$ac_cv_path_SED" >&6; }
+ SED="$ac_cv_path_SED"
+  rm -f conftest.sed
+
+
+  in_src="gnulib"
+  in_build="build-gnulib"
+
+
+
+  # Remove --cache-file, --srcdir, and --disable-option-checking arguments
+  # so they do not pile up.
+  ac_sub_configure_args=
+  ac_prev=
+  eval "set x $ac_configure_args"
+  shift
+  for ac_arg
+  do
+    if test -n "$ac_prev"; then
+      ac_prev=
+      continue
+    fi
+    case $ac_arg in
+    -cache-file | --cache-file | --cache-fil | --cache-fi \
+    | --cache-f | --cache- | --cache | --cach | --cac | --ca | --c)
+      ac_prev=cache_file ;;
+    -cache-file=* | --cache-file=* | --cache-fil=* | --cache-fi=* \
+    | --cache-f=* | --cache-=* | --cache=* | --cach=* | --cac=* | --ca=* \
+    | --c=*)
+      ;;
+    --config-cache | -C)
+      ;;
+    -srcdir | --srcdir | --srcdi | --srcd | --src | --sr)
+      ac_prev=srcdir ;;
+    -srcdir=* | --srcdir=* | --srcdi=* | --srcd=* | --src=* | --sr=*)
+      ;;
+    -prefix | --prefix | --prefi | --pref | --pre | --pr | --p)
+      ac_prev=prefix ;;
+    -prefix=* | --prefix=* | --prefi=* | --pref=* | --pre=* | --pr=* | --p=*)
+      ;;
+    --disable-option-checking)
+      ;;
+    *)
+      case $ac_arg in
+      *\'*) ac_arg=`$as_echo "$ac_arg" | sed "s/'/'\\\\\\\\''/g"` ;;
+      esac
+      as_fn_append ac_sub_configure_args " '$ac_arg'" ;;
+    esac
+  done
+
+  # Always prepend --prefix to ensure using the same prefix
+  # in subdir configurations.
+  ac_arg="--prefix=$prefix"
+  case $ac_arg in
+  *\'*) ac_arg=`$as_echo "$ac_arg" | sed "s/'/'\\\\\\\\''/g"` ;;
+  esac
+  ac_sub_configure_args="'$ac_arg' $ac_sub_configure_args"
+
+  # Pass --silent
+  if test "$silent" = yes; then
+    ac_sub_configure_args="--silent $ac_sub_configure_args"
+  fi
+
+  # Always prepend --disable-option-checking to silence warnings, since
+  # different subdirs can have different --enable and --with options.
+  ac_sub_configure_args="--disable-option-checking $ac_sub_configure_args"
+
+  ac_popdir=`pwd`
+  ac_dir=$in_build
+
+  ac_msg="=== configuring in $ac_dir (`pwd`/$ac_dir)"
+  $as_echo "$as_me:${as_lineno-$LINENO}: $ac_msg" >&5
+  $as_echo "$ac_msg" >&6
+  as_dir="$ac_dir"; as_fn_mkdir_p
+
+  case $srcdir in
+  [\\/]* | ?:[\\/]* )
+    ac_srcdir=$srcdir/$in_src ;;
+  *) # Relative name.
+    ac_srcdir=../$srcdir/$in_src ;;
+  esac
+
+  cd "$ac_dir"
+
+  ac_sub_configure=$ac_srcdir/configure
+
+  # Make the cache file name correct relative to the subdirectory.
+  case $cache_file in
+  [\\/]* | ?:[\\/]* ) ac_sub_cache_file=$cache_file ;;
+  *) # Relative name.
+    ac_sub_cache_file=$ac_top_build_prefix$cache_file ;;
+  esac
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: running $SHELL $ac_sub_configure $ac_sub_configure_args --cache-file=$ac_sub_cache_file --srcdir=$ac_srcdir" >&5
+$as_echo "$as_me: running $SHELL $ac_sub_configure $ac_sub_configure_args --cache-file=$ac_sub_cache_file --srcdir=$ac_srcdir" >&6;}
+  # The eval makes quoting arguments work.
+  eval "\$SHELL \"\$ac_sub_configure\" $ac_sub_configure_args \
+       --cache-file=\"\$ac_sub_cache_file\" --srcdir=\"\$ac_srcdir\"" ||
+    as_fn_error $? "$ac_sub_configure failed for $ac_dir" "$LINENO" 5
+
+  cd "$ac_popdir"
+
 CONFIG_OBS=""
 CONFIG_DEPS=""
 CONFIG_SRCS=""
@@ -7533,19 +7719,6 @@ $as_echo "$as_me: done with first batch of APPLE_LOCAL checks" >&6;}
 $as_echo_n "checking gettext-related things (Cygnus-style)... " >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
 $as_echo " " >&6; }
-if test -d ../intl; then
-  if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L. -L../intl"
-  else
-    export LDFLAGS="${LDFLAGS} -L../intl"
-  fi
-elif test -d ../libintl; then
-  if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L. -L../libintl"
-  else
-    export LDFLAGS="${LDFLAGS} -L../libintl"
-  fi
-fi
 ALL_LINGUAS=""
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
@@ -10002,75 +10175,6 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
   ## end definition
 fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
-$as_echo_n "checking for a sed that does not truncate output... " >&6; }
-if ${ac_cv_path_SED+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-            ac_script=s/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/
-     for ac_i in 1 2 3 4 5 6 7; do
-       ac_script="$ac_script$as_nl$ac_script"
-     done
-     echo "$ac_script" 2>/dev/null | sed 99q >conftest.sed
-     { ac_script=; unset ac_script;}
-     if test -z "$SED"; then
-  ac_path_SED_found=false
-  # Loop through the user's path and test for each of PROGNAME-LIST
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_prog in sed gsed; do
-    for ac_exec_ext in '' $ac_executable_extensions; do
-      ac_path_SED="$as_dir/$ac_prog$ac_exec_ext"
-      as_fn_executable_p "$ac_path_SED" || continue
-# Check for GNU ac_path_SED and select it if it is found.
-  # Check for GNU $ac_path_SED
-case `"$ac_path_SED" --version 2>&1` in
-*GNU*)
-  ac_cv_path_SED="$ac_path_SED" ac_path_SED_found=:;;
-*)
-  ac_count=0
-  $as_echo_n 0123456789 >"conftest.in"
-  while :
-  do
-    cat "conftest.in" "conftest.in" >"conftest.tmp"
-    mv "conftest.tmp" "conftest.in"
-    cp "conftest.in" "conftest.nl"
-    $as_echo '' >> "conftest.nl"
-    "$ac_path_SED" -f conftest.sed < "conftest.nl" >"conftest.out" 2>/dev/null || break
-    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
-    as_fn_arith $ac_count + 1 && ac_count=$as_val
-    if test $ac_count -gt ${ac_path_SED_max-0}; then
-      # Best one so far, save it but keep looking for a better one
-      ac_cv_path_SED="$ac_path_SED"
-      ac_path_SED_max=$ac_count
-    fi
-    # 10*(2^10) chars as input seems more than enough
-    test $ac_count -gt 10 && break
-  done
-  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
-esac
-
-      $ac_path_SED_found && break 3
-    done
-  done
-  done
-IFS=$as_save_IFS
-  if test -z "$ac_cv_path_SED"; then
-    as_fn_error $? "no acceptable sed could be found in \$PATH" "$LINENO" 5
-  fi
-else
-  ac_cv_path_SED=$SED
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_SED" >&5
-$as_echo "$ac_cv_path_SED" >&6; }
- SED="$ac_cv_path_SED"
-  rm -f conftest.sed
 
 
 
@@ -35772,6 +35876,12 @@ case ${host_os} in
       as_fn_error $? "MIG not found but required for ${host} hosts" "$LINENO" 5
     fi
     ;;
+  darwin*)
+    if test x"${MIG}" = x""; then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: MIG not found but needed on ${host} hosts to regenerate sources made from .defs files" >&5
+$as_echo "$as_me: WARNING: MIG not found but needed on ${host} hosts to regenerate sources made from .defs files" >&2;}
+    fi
+    ;;
 esac
 
 # Tools for docs:
@@ -36585,7 +36695,7 @@ return kinfo_getvmmap ();
   return 0;
 }
 _ACEOF
-for ac_lib in '' util util-freebsd kern; do
+for ac_lib in '' util util-freebsd kern kinfo kmod; do
   if test -z "$ac_lib"; then
     ac_res="none required"
   else
@@ -36893,6 +37003,9 @@ else
 $as_echo "$as_me: WARNING: no curses library found" >&2;}
 fi
 
+    ;;
+  darwin*)
+    test -d ${srcdir}/libtermcap && stat ../libtermcap
     ;;
 esac
 
@@ -40209,6 +40322,36 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
   ## end better check for sys_siglist
 fi
+ac_fn_c_check_decl "$LINENO" "gmtime" "ac_cv_have_decl_gmtime" "$ac_includes_default"
+if test "x$ac_cv_have_decl_gmtime" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_GMTIME $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "localtime" "ac_cv_have_decl_localtime" "$ac_includes_default"
+if test "x$ac_cv_have_decl_localtime" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_LOCALTIME $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "localtime_r" "ac_cv_have_decl_localtime_r" "$ac_includes_default"
+if test "x$ac_cv_have_decl_localtime_r" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_LOCALTIME_R $ac_have_decl
+_ACEOF
 ac_fn_c_check_decl "$LINENO" "free" "ac_cv_have_decl_free" "$ac_includes_default"
 if test "x$ac_cv_have_decl_free" = xyes; then :
   ac_have_decl=1
@@ -43908,16 +44051,16 @@ unset ac_cv_func_strchr
 for ac_func in atof alarm assert atexit bcopy bsearch bzero \
                 clnt_pcreateerror dup2 exit fflush fgets fprintf fwrite \
                 getcwd gethostbyaddr gethostbyname gethostname getpass \
-                gets gettimeofday inet_addr inet_ntoa isascii ishexnumber \
-                isnumber isspace mach_error_string memchr memcmp memcpy \
-                memmove mempcpy memset mkdir netname_look_up nl_langinfo \
-                pathconf pclose popen pow qsort qsort_r readdir recv \
-                re_comp regcomp select send setitimer socket strcasecmp \
-                strcat strchr strcpy strcspn strdup strerror strlcat \
-                strlcpy strlen strncasecmp strncat strncmp strncpy \
-                strndup strpbrk strrchr strspn strstr strtok strtok_r \
-                strtol strtoul timeradd timerclear timersub uname \
-                vasprintf wcwidth
+                gets gettimeofday gmtime inet_addr inet_ntoa isascii \
+                ishexnumber isnumber isspace localtime localtime_r \
+                mach_error_string memchr memcmp memcpy memmove mempcpy \
+                memset mkdir netname_look_up nl_langinfo pathconf pclose \
+                popen pow qsort qsort_r readdir recv re_comp regcomp \
+                select send setitimer socket strcasecmp strcat strchr \
+                strcpy strcspn strdup strerror strlcat strlcpy strlen \
+                strncasecmp strncat strncmp strncpy strndup strpbrk \
+                strrchr strspn strstr strtok strtok_r strtol strtoul \
+                timeradd timerclear timersub uname vasprintf wcwidth
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -46076,6 +46219,10 @@ $as_echo "${gdb_cv_have_aix_thread_debug}" >&6; }
          CONFIG_LDFLAGS="${CONFIG_LDFLAGS} -lpthdebug"
       fi
       ;;
+   darwin*)
+      { $as_echo "$as_me:${as_lineno-$LINENO}: skipping checks for thread library on darwin" >&5
+$as_echo "$as_me: skipping checks for thread library on darwin" >&6;}
+      ;;
    esac
       ## 3...
 else
@@ -46364,7 +46511,7 @@ fi
 # gdb/doc/gdbint.texinfo.
 build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wparentheses -Wpointer-arith -Wchar-subscripts \
--Wunused-value -Wunused-label -Wunused-result -Wunused-local-typedefs  \
+-Wunused-value -Wunused-label -Wunused-result \
 -Wunused-variable -Wunused-but-set-variable -Wunused-but-set-parameter \
 -Wunused-function -Wempty-body -Wmissing-declarations \
 -Wignored-qualifiers -Wmissing-format-attribute -Waddress -Wattributes \
@@ -46544,6 +46691,8 @@ fi
 #  * -Wsuggest-attribute=pure (less obvious than its const counterpart)
 #  * -Wstack-usage=262144 (as in bfd/binutils)
 #  * -Wconditionally-supported (for C++)
+#  * -Wunused-local-typedefs (`mig` sometimes generates code triggering
+#    this, but it is inconsistent though)
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)
@@ -46563,7 +46712,6 @@ fi
 #    others such as -Wformat-nonliteral, so I added it back)
 #  * -Wnested-externs (if it gets redundant with -Wimplicit again)
 #  * -Wwrite-strings (in case all the const-ifying gets to be too much)
-#  * -Wunused-local-typedefs (`mig` used to generate code triggering this)
 # Up for debate in some other way:
 #  * -Wstrict-overflow (i.e., could change the value assigned to it. We use
 #    "1" now because that is the default for "-Wall", but "2" is the
@@ -46851,6 +46999,7 @@ case ${host} in
   *go32* ) SER_HARDWIRE=ser-go32.o ;;
   *djgpp* ) SER_HARDWIRE=ser-go32.o ;;
   *mingw32*) SER_HARDWIRE="ser-base.o ser-tcp.o" ;;
+  *e7kpc*|*e7000pc*) SER_HARDWIRE=ser-e7kpc.o ;;
 esac
 
 # libreadline needs libuser32.a in a cygwin environment
@@ -50428,7 +50577,7 @@ if test "x${gl_LIBOBJS}" = "x"; then
   fi
 fi
 
-ac_config_files="$ac_config_files Makefile data-directory/Makefile .gdbinit:gdbinit.in gnulib/Makefile gdb-gdb.gdb"
+ac_config_files="$ac_config_files Makefile data-directory/Makefile .gdbinit:gdbinit.in gnulib/Makefile build-gnulib/Makefile:gnulib/Makefile.in gdb-gdb.gdb"
 ac_config_files="$ac_config_files gcore"
 ac_config_commands="$ac_config_commands default"
 
@@ -52027,6 +52176,7 @@ do
     "data-directory/Makefile") CONFIG_FILES="$CONFIG_FILES data-directory/Makefile" ;;
     ".gdbinit") CONFIG_FILES="$CONFIG_FILES .gdbinit:gdbinit.in" ;;
     "gnulib/Makefile") CONFIG_FILES="$CONFIG_FILES gnulib/Makefile" ;;
+    "build-gnulib/Makefile") CONFIG_FILES="$CONFIG_FILES build-gnulib/Makefile:gnulib/Makefile.in" ;;
     "gdb-gdb.gdb") CONFIG_FILES="$CONFIG_FILES gdb-gdb.gdb" ;;
     "gcore") CONFIG_FILES="$CONFIG_FILES gcore" ;;
     "default") CONFIG_COMMANDS="$CONFIG_COMMANDS default" ;;
@@ -54277,7 +54427,9 @@ echo "CONFIG_HEADERS are ${CONFIG_HEADERS}"
 
 case x${CONFIG_HEADERS} in
 xconfig.h:config.in)
-echo "" > stamp-h ;;
+echo "warning: using wrong config header" | tee stamp-h ;;
+xconfig.h)
+echo "stamp" > stamp-h ;;
 esac
  ;;
     "config_status_vpath_build_fix":C)

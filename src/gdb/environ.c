@@ -55,7 +55,9 @@ free_environ(struct gdb_environ *e)
 
 #if defined(__APPLE__) && defined(NM_NEXTSTEP) && defined(HAVE_CRT_EXTERNS_H)
 # include <crt_externs.h>
-# define environ (*_NSGetEnviron())
+# ifndef environ
+#  define environ (*_NSGetEnviron())
+# endif /* !environ */
 #else
 extern char **environ;
 #endif /* __APPLE__ && NM_NEXTSTEP && HAVE_CRT_EXTERNS_H */

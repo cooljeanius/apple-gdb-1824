@@ -68,6 +68,20 @@ analysisdir = $(builddir)/clang_static_analysis
 
 ACLOCAL_AMFLAGS = -I./m4 -I./gnulib/m4 -I./gnulib/import/m4 --install
 
+# Keep these in sync with the includes in acinclude.m4.
+aclocal_m4_deps = \
+	configure.ac \
+	acx_configure_dir.m4 \
+	../bfd/bfd.m4 \
+	../config/acinclude.m4 \
+	../config/acx.m4 \
+	../config/zlib.m4 \
+	../libiberty/m4/libiberty.m4 \
+	m4/build-with-cxx.m4 \
+	../lcmessage.m4 \
+	../gettext.m4 \
+	m4/ccstdc.m4
+
 SHELL = @SHELL@
 EXEEXT = @EXEEXT@
 
@@ -250,11 +264,15 @@ CC_LD=$(CC)
 CXX_LD=$(CXX)
 COMPILER_LD=$(COMPILER)
 
+GNULIB_BUILDDIR = build-gnulib
+GNULIB_CFLAGS=-I$(srcdir)/gnulib/gnulib -I$(srcdir)/gnulib/import \
+  -I$(GNULIB_BUILDDIR)/import -DWITH_GNULIB_BUILDDIR
+
 # Where is our "include" directory?  Typically $(srcdir)/../include.
 # This is essentially the header file directory for the library
 # routines in libiberty.
 INCLUDE_DIR =  $(srcdir)/../include
-INCLUDE_CFLAGS = -I$(INCLUDE_DIR)
+INCLUDE_CFLAGS = $(GNULIB_CFLAGS) -I$(INCLUDE_DIR)
 
 # Where is the "-liberty" library?  Typically in ../libiberty.
 LIBIBERTY_DIR = ../libiberty
@@ -367,6 +385,10 @@ GDBFLAGS =
 GNULIB_BUILDDIR = build-gnulib
 LIBGNU = $(GNULIB_BUILDDIR)/import/libgnu.a
 INCGNU = -I$(srcdir)/gnulib/import -I$(GNULIB_BUILDDIR)/import
+
+# Generated headers in the gnulib directory.  These must be listed
+ # so that they are generated before other files are compiled.
+GNULIB_H = $(GNULIB_BUILDDIR)/import/string.h @GNULIB_STDINT_H@
 
 #
 # CLI sub directory definitons
@@ -1384,6 +1406,14 @@ TSOBS = inflow.o
 # The configure script does not add gnulib to subdirs by default yet:
 @MAKE_SHOULD_RECURSE_INTO_GNULIB_TRUE@SUBDIRS = @subdirs@ @MAINT@ gnulib
 @MAKE_SHOULD_RECURSE_INTO_GNULIB_FALSE@SUBDIRS = @subdirs@
+@MAKE_SHOULD_RECURSE_INTO_GNULIB_TRUE@CLEANDIRS = $(SUBDIRS) @MAINT@ gnulib
+@MAKE_SHOULD_RECURSE_INTO_GNULIB_FALSE@CLEANDIRS = $(SUBDIRS)
+
+# List of subdirectories in the build tree that must exist.
+# This is used to force build failures in existing trees when
+# a new directory is added.
+# The format here is for the `case' shell command.
+REQUIRED_SUBDIRS = doc | testsuite | $(GNULIB_BUILDDIR) | data-directory
 
 # For now, shortcut the "configure GDB for fewer languages" stuff.
 YYFILES = c-exp.c \
@@ -1420,6 +1450,12 @@ all: gdb$(EXEEXT) $(CONFIG_ALL)
 	  "DODIRS=`echo $(SUBDIRS) | $(SED) 's/testsuite//'`" subdir_do
 .PHONY: all-tui
 all-tui: $(TUI)$(EXEEXT)
+
+# Convenience rule to handle recursion.
+$(LIBGNU) $(GNULIB_H): all-lib
+all-lib: $(GNULIB_BUILDDIR)/Makefile
+	@$(MAKE) $(FLAGS_TO_PASS) DO=all DODIRS=$(GNULIB_BUILDDIR) subdir_do
+.PHONY: all-lib
 
 installcheck:
 
@@ -1663,13 +1699,14 @@ LINK = $(LIBTOOL) $(AM_V_lt) $(TAG_FOR_LIBTOOL) $(LIBTOOLFLAGS) --mode=link $(LI
 TMPDIR = /tmp
 
 # Removing the old gdb 1st works better if running, at least on SunOS.
-gdb$(EXEEXT): gdb.o libgdb.a $(CONFIG_OBS) $(ADD_DEPS) $(CDEPS) $(TDEPLIBS)
+gdb$(EXEEXT): gdb.o libgdb.a $(LIBGNU) $(CONFIG_OBS) $(ADD_DEPS) $(CDEPS) \
+  $(TDEPLIBS)
 	$(MAKE) version.o
 	$(AM_V_at)rm -f $(AM_V_v) gdb$(EXEEXT)
 	$(AM_V_at)rm -f -r $(AM_V_v) gdb$(EXEEXT).dSYM
 	$(AM_V_LINKER)$(LINK) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
 		$(ADD_INFO_PLIST) \
-		-o gdb$(EXEEXT) gdb.o $(CONFIG_OBS) libgdb.a \
+		-o gdb$(EXEEXT) gdb.o $(CONFIG_OBS) libgdb.a $(LIBGNU) \
 		$(TDEPLIBS) $(TUI_LIBRARY) $(CLIBS) $(LOADLIBES)
 	@echo "stripping __objcInit from $@";
 	echo "__objcInit" > $(TMPDIR)/macosx-syms-to-remove;
@@ -1788,6 +1825,7 @@ distclean: clean clean-tui clean-gdbtk @MAINT@ clean-po
 	-rm -f autoscan.log macosx/gdb.log
 	-rm -rf .libs || rmdir .libs
 	-rm -rf autom4te.cache || rmdir autom4te.cache
+	-rm -rf $(GNULIB_BUILDDIR) || rmdir $(GNULIB_BUILDDIR)
 	-find . -name .DS_Store -delete
 
 maintainer-clean: local-maintainer-clean do-maintainer-clean distclean
@@ -1818,7 +1856,7 @@ diststuff: $(DISTSTUFF) $(PACKAGE).pot $(CATALOGS)
 
 subdir_do: force
 	@for i in $(DODIRS); do \
-	  if [ "x$${i}" = "xgnulib" ]; then \
+	  if [ "x$${i}" = "xgnulib" -o "x$${i}" = "xbuild-gnulib" ]; then \
 	   if [ -f ./$${i}/Makefile -a -f ./$${i}/import/Makefile ]; then \
 	     if (cd ./$${i}; \
 	       $(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
@@ -1838,6 +1876,20 @@ subdir_do: force
 Makefile: Makefile.in config.status @frags@
 	$(SHELL) config.status
 	touch Makefile stamp-h
+
+gnulib/Makefile: gnulib/Makefile.in config.status @frags@
+	CONFIG_FILES="gnulib/Makefile" \
+	  CONFIG_COMMANDS="depfiles" \
+	  CONFIG_HEADERS= \
+	  CONFIG_LINKS= \
+	  $(SHELL) config.status
+
+$(GNULIB_BUILDDIR)/Makefile: gnulib/Makefile.in config.status @frags@
+	@cd $(GNULIB_BUILDDIR); CONFIG_FILES="Makefile" \
+	  CONFIG_COMMANDS="depfiles" \
+	  CONFIG_HEADERS= \
+	  CONFIG_LINKS= \
+	  $(SHELL) config.status
 
 am--refresh:
 	@echo "making '$@'"

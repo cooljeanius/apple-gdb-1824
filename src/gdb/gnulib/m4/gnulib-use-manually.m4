@@ -3,6 +3,7 @@ dnl# Instead of using gnulib-tool, copy the macros we need from modules
 dnl# manually.  This macro is dependent on the exact set of modules used
 dnl# here, and as such, would not make much sense elsewhere.
 AC_DEFUN([gl_INIT_MANUALLY],[
+AC_REQUIRE([AC_PROG_CXX])dnl
 AC_REQUIRE([AC_PROG_LN_S])dnl
 AC_REQUIRE([AC_PROG_RANLIB])dnl
 AC_REQUIRE([AC_PROG_SED])dnl
@@ -14,6 +15,7 @@ AC_REQUIRE([AC_C_RESTRICT])dnl
 AC_REQUIRE([AC_TYPE_SIZE_T])dnl
 AC_REQUIRE([AC_FUNC_ALLOCA])dnl
 AC_REQUIRE([AC_FUNC_MEMCMP])dnl
+AC_REQUIRE([AC_FUNC_MKTIME])dnl
 dnl# from gnulib module alloca-opt:
 AC_REQUIRE([gl_FUNC_ALLOCA])dnl
 dnl# from gnulib module assert:
@@ -595,6 +597,30 @@ dnl# from gnulib module sys_wait:
 AC_REQUIRE([gl_SYS_WAIT_H])dnl
 dnl# from gnulib module time:
 AC_REQUIRE([gl_HEADER_TIME_H])dnl
+dnl# from gnulib module time_r:
+AC_REQUIRE([gl_TIME_R])dnl
+  ## set up libobj if needed:
+if test ${HAVE_LOCALTIME_R} = 0 || test ${REPLACE_LOCALTIME_R} = 1; then
+  AC_LIBOBJ([time_r])dnl
+  gl_PREREQ_TIME_R
+fi
+gl_TIME_MODULE_INDICATOR([time_r])dnl
+dnl# from gnulib module time_rz:
+AC_REQUIRE([gl_TIME_RZ])dnl
+  ## set up libobj if needed:
+if test "${HAVE_TIMEZONE_T}" = 0; then
+  AC_LIBOBJ([time_rz])dnl
+  ## end libobj
+fi
+gl_TIME_MODULE_INDICATOR([time_rz])dnl
+dnl# from gnulib module timegm:
+AC_REQUIRE([gl_FUNC_TIMEGM])dnl
+  ## set up libobj if needed:
+if test ${HAVE_TIMEGM} = 0 || test ${REPLACE_TIMEGM} = 1; then
+  AC_LIBOBJ([timegm])dnl
+  gl_PREREQ_TIMEGM
+fi
+gl_TIME_MODULE_INDICATOR([timegm])dnl
 dnl# from gnulib module unistd:
 AC_REQUIRE([gl_UNISTD_H])dnl
 dnl# from gnulib module unistd-safer:

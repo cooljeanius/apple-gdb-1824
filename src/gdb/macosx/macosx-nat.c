@@ -21,6 +21,8 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#include "defs.h"
+
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -32,7 +34,6 @@
 #include <sys/socket.h>
 
 #include "bfd.h"
-#include "defs.h"
 #include "gdbcore.h"
 #include "serial.h"
 #include "ser-base.h"
@@ -321,6 +322,7 @@ attach_to_classic_process(pid_t pid)
   update_current_target();
 }
 
+/* */
 void
 _initialize_macosx_nat(void)
 {
@@ -329,8 +331,8 @@ _initialize_macosx_nat(void)
   memset(ops, 0, sizeof(struct serial_ops));
   ops->name = "unix";
   ops->next = 0;
-  ops->open = macosx_classic_unix_open;
-  ops->close = macosx_classic_unix_close;
+  ops->so_open = macosx_classic_unix_open;
+  ops->so_close = macosx_classic_unix_close;
   ops->readchar = ser_base_readchar;
   ops->write = ser_base_write;
   ops->flush_output = ser_base_flush_output;

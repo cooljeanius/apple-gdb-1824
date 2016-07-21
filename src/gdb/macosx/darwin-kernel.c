@@ -22,6 +22,8 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#include "defs.h"
+
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/uio.h>
@@ -45,7 +47,6 @@
 # include "arm-macosx-regnums.h"
 #endif /* TARGET_ARM */
 
-#include "defs.h"
 #include "inferior.h"
 #include "gdbcmd.h"
 #include "event-loop.h"

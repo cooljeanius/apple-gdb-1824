@@ -15,7 +15,30 @@
 ACLOCAL_AMFLAGS = -I./import/m4 -I./m4 --install
 AUTOMAKE_OPTIONS = 1.11.6 gnits -Wall no-dist
 
+# Keep these in sync with the includes in acinclude.m4.
+aclocal_m4_deps = \
+	configure.ac \
+	m4/extensions.m4 \
+	../m4/build-with-cxx.m4
+
+tooldir = $(libdir)/$(target_alias)
+man1dir = $(mandir)/man1
+man2dir = $(mandir)/man2
+man3dir = $(mandir)/man3
+man4dir = $(mandir)/man4
+man5dir = $(mandir)/man5
+man6dir = $(mandir)/man6
+man7dir = $(mandir)/man7
+man8dir = $(mandir)/man8
+man9dir = $(mandir)/man9
+
+DESTDIR =
+
+AR_FLAGS = qv
+
 SUBDIRS = import
+CLEANDIRS = $(SUBDIRS)
+REQUIRED_SUBDIRS = $(SUBDIRS)
 
 noinst_HEADERS = str-two-way.h
 noinst_LIBRARIES =
@@ -37,9 +60,45 @@ DISTCLEANFILES += config.h config.status stamp-h1
 MAINTAINERCLEANFILES = autoscan*.log configure.scan
 nodist_noinst_DATA = @MAINT@ configure.scan
 
+CC_LD=$(CC)
+
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_CFLAGS = $(C_ARCHFLAGS)
 AM_CPPFLAGS = -Iimport -I$(top_srcdir)/import
+
+FLAGS_TO_PASS = \
+	"prefix=$(prefix)" \
+	"exec_prefix=$(exec_prefix)" \
+	"infodir=$(infodir)" \
+	"datarootdir=$(datarootdir)" \
+	"docdir=$(docdir)" \
+	"htmldir=$(htmldir)" \
+	"pdfdir=$(pdfdir)" \
+	"libdir=$(libdir)" \
+	"mandir=$(mandir)" \
+	"datadir=$(datadir)" \
+	"includedir=$(includedir)" \
+	"against=$(against)" \
+	"DESTDIR=$(DESTDIR)" \
+	"AR=$(AR)" \
+	"AR_FLAGS=$(AR_FLAGS)" \
+	"CC=$(CC)" \
+	"CFLAGS=$(CFLAGS)" \
+	"CXX=$(CXX)" \
+	"CXXFLAGS=$(CXXFLAGS)" \
+	"DLLTOOL=$(DLLTOOL)" \
+	"LDFLAGS=$(LDFLAGS)" \
+	"RANLIB=$(RANLIB)" \
+	"MAKEINFO=$(MAKEINFO)" \
+	"MAKEINFOFLAGS=$(MAKEINFOFLAGS)" \
+	"MAKEINFO_EXTRA_FLAGS=$(MAKEINFO_EXTRA_FLAGS)" \
+	"MAKEHTML=$(MAKEHTML)" \
+	"MAKEHTMLFLAGS=$(MAKEHTMLFLAGS)" \
+	"INSTALL=$(INSTALL)" \
+	"INSTALL_PROGRAM=$(INSTALL_PROGRAM)" \
+	"INSTALL_DATA=$(INSTALL_DATA)" \
+	"RUNTEST=$(RUNTEST)" \
+	"RUNTESTFLAGS=$(RUNTESTFLAGS)"
 
 noinst_LIBRARIES += libgnu.a
 
@@ -109,7 +168,7 @@ BUILT_SOURCES += $(STDINT_H)
 # We need the following in order to create <stdint.h> when the system
 # does NOT have one that works with the given compiler.
 if GL_GENERATE_STDINT_H
-stdint.h: stdint.in.h $(top_builddir)/config.status
+stdint.h: $(srcdir)/stdint.in.h $(top_builddir)/config.status
 	$(AM_V_GEN)rm -f $@-t $@ && \
 	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
 	  $(SED) -e 's|@''GUARD_PREFIX''@|${gl_include_guard_prefix}|g' \
@@ -158,7 +217,7 @@ BUILT_SOURCES += string.h
 
 # We need the following in order to create <string.h> when the system
 # does NOT have one that works with the given compiler.
-string.h: string.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(ARG_NONNULL_H) $(WARN_ON_USE_H)
+string.h: $(srcdir)/string.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(ARG_NONNULL_H) $(WARN_ON_USE_H)
 	$(AM_V_GEN)rm -f $@-t $@ && \
 	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */' && \
 	  $(SED) -e 's|@''GUARD_PREFIX''@|${gl_include_guard_prefix}|g' \
@@ -258,7 +317,7 @@ BUILT_SOURCES += $(WCHAR_H)
 
 # We need the following in order to create <wchar.h> when the system
 # version does not work standalone.
-wchar.h: wchar.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(ARG_NONNULL_H) $(WARN_ON_USE_H)
+wchar.h: $(srcdir)/wchar.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(ARG_NONNULL_H) $(WARN_ON_USE_H)
 	$(AM_V_GEN)rm -f $@-t $@ && \
 	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
 	  $(SED) -e 's|@''GUARD_PREFIX''@|${gl_include_guard_prefix}|g' \
@@ -379,182 +438,182 @@ libgnu_a_SOURCES += dummy.c
 
 ## end gnulib module dummy
 
-alignof.h: import/alignof.h
+alignof.h: $(srcdir)/import/alignof.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += alignof.h
 
-chdir-long.c: import/chdir-long.c
+chdir-long.c: $(srcdir)/import/chdir-long.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += chdir-long.c
 
-dosname.h: import/dosname.h
+dosname.h: $(srcdir)/import/dosname.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += dosname.h
 
-error.c: import/error.c
+error.c: $(srcdir)/import/error.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += error.c
 
-exitfail.h: import/exitfail.h
+exitfail.h: $(srcdir)/import/exitfail.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += exitfail.h
 
-fcntl.c: import/fcntl.c
+fcntl.c: $(srcdir)/import/fcntl.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-fdopendir.c: import/fdopendir.c
+fdopendir.c: $(srcdir)/import/fdopendir.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += fcntl.c fdopendir.c
 
-float+.h: import/float+.h
+float+.h: $(srcdir)/import/float+.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += float+.h
 
-fnmatch_loop.c: import/fnmatch_loop.c
+fnmatch_loop.c: $(srcdir)/import/fnmatch_loop.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-fnmatch.c: import/fnmatch.c
+fnmatch.c: $(srcdir)/import/fnmatch.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-fnmatch.h: import/fnmatch.h
+fnmatch.h: $(srcdir)/import/fnmatch.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-import/fnmatch.h: import/fnmatch.in.h
-	$(MAKE) -C import fnmatch.h
+import/fnmatch.h: $(srcdir)/import/fnmatch.in.h
+	$(MAKE) -C $(srcdir)/import fnmatch.h
 
 BUILT_SOURCES += fnmatch_loop.c fnmatch.c fnmatch.h
 
-fstatat.c: import/fstatat.c
+fstatat.c: $(srcdir)/import/fstatat.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += fstatat.c
 
-fts.c: import/fts.c
+fts.c: $(srcdir)/import/fts.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += fts.c
 
-getcwd.c: import/getcwd.c
+getcwd.c: $(srcdir)/import/getcwd.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-getcwd-lgpl.c: import/getcwd-lgpl.c
+getcwd-lgpl.c: $(srcdir)/import/getcwd-lgpl.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += getcwd.c getcwd-lgpl.c
 
-gettext.h: import/gettext.h
+gettext.h: $(srcdir)/import/gettext.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-gettimeofday.c: import/gettimeofday.c
+gettimeofday.c: $(srcdir)/import/gettimeofday.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += gettext.h gettimeofday.c
 
-isnan.c: import/isnan.c
+isnan.c: $(srcdir)/import/isnan.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-isnanl.c: import/isnanl.c
+isnanl.c: $(srcdir)/import/isnanl.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-iswctype.c: import/iswctype.c
+iswctype.c: $(srcdir)/import/iswctype.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += isnan.c isnanl.c iswctype.c
 
-lstat.c: import/lstat.c
+lstat.c: $(srcdir)/import/lstat.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += lstat.c
 
-mbrtowc.c: import/mbrtowc.c
+mbrtowc.c: $(srcdir)/import/mbrtowc.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-mbsinit.c: import/mbsinit.c
+mbsinit.c: $(srcdir)/import/mbsinit.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-mbsrtowcs.c: import/mbsrtowcs.c
+mbsrtowcs.c: $(srcdir)/import/mbsrtowcs.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-mbsrtowcs-state.c: import/mbsrtowcs-state.c
+mbsrtowcs-state.c: $(srcdir)/import/mbsrtowcs-state.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += mbrtowc.c mbsinit.c mbsrtowcs.c mbsrtowcs-state.c
 
-mempcpy.c: import/mempcpy.c
+mempcpy.c: $(srcdir)/import/mempcpy.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-memrchr.c: import/memrchr.c
+memrchr.c: $(srcdir)/import/memrchr.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += mempcpy.c memrchr.c
 
-obstack.c: import/obstack.c
+obstack.c: $(srcdir)/import/obstack.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-obstack.h: import/obstack.h
+obstack.h: $(srcdir)/import/obstack.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += obstack.c obstack.h
 
-open.c: import/open.c
+open.c: $(srcdir)/import/open.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-openat.c: import/openat.c
+openat.c: $(srcdir)/import/openat.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-openat-proc.c: import/openat-proc.c
+openat-proc.c: $(srcdir)/import/openat-proc.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += open.c openat.c openat-proc.c
 
-readlink.c: import/readlink.c
+readlink.c: $(srcdir)/import/readlink.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += readlink.c
 
-secure_getenv.c: import/secure_getenv.c
+secure_getenv.c: $(srcdir)/import/secure_getenv.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += secure_getenv.c
 
-stat.c: import/stat.c
+stat.c: $(srcdir)/import/stat.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-strerror.c: import/strerror.c
+strerror.c: $(srcdir)/import/strerror.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-strerror_r.c: import/strerror_r.c
+strerror_r.c: $(srcdir)/import/strerror_r.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-strerror-override.c: import/strerror-override.c
+strerror-override.c: $(srcdir)/import/strerror-override.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += stat.c strerror.c strerror_r.c strerror-override.c
 
-strnlen.c: import/strnlen.c
+strnlen.c: $(srcdir)/import/strnlen.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-strstr.c: import/strstr.c
+strstr.c: $(srcdir)/import/strstr.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += strnlen.c strstr.c
 
-unlink.c: import/unlink.c
+unlink.c: $(srcdir)/import/unlink.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += unlink.c
 
-wcsncasecmp.c: import/wcsncasecmp.c
+wcsncasecmp.c: $(srcdir)/import/wcsncasecmp.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
-wcsncasecmp-impl.h: import/wcsncasecmp-impl.h
+wcsncasecmp-impl.h: $(srcdir)/import/wcsncasecmp-impl.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += wcsncasecmp.c wcsncasecmp-impl.h
@@ -595,7 +654,76 @@ am--refresh:
 .PHONY: am--refresh
 ## (a case study in "recursive automake considered harmful")
 
+force:
+
+force_update:
+
 configure.scan:
 	autoscan || touch $@
+
+# Traditionally "install" depends on "all".  But it may be useful
+# not to; for example, if the user has made some trivial change to a
+# source file and doesn't care about rebuilding or just wants to save the
+# time it takes for make to check that all is up to date.
+# install-only is intended to address that need.
+install-only: $(CONFIG_INSTALL)
+	@$(MAKE) DO=install "DODIRS=$(SUBDIRS)" $(FLAGS_TO_PASS) subdir_do
+
+# Convenience rule to handle recursion.
+$(LIBGNU) $(GNULIB_H): all-lib
+all-lib: import/Makefile
+	@$(MAKE) $(FLAGS_TO_PASS) DO=all DODIRS=import subdir_do
+.PHONY: all-lib
+
+realclean: maintainer-clean
+
+local-maintainer-clean:
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+	rm -f config.status
+
+do-maintainer-clean:
+	@$(MAKE) $(FLAGS_TO_PASS) DO=maintainer-clean \
+		"DODIRS=$(CLEANDIRS)" subdir_do
+
+subdir_do: force
+	@for i in $(DODIRS); do \
+		case $${i} in \
+		$(REQUIRED_SUBDIRS)) \
+			if [ ! -f ./$${i}/Makefile ]; then \
+				echo "Missing $${i}/Makefile" >&2; \
+				exit 1; \
+			fi ;; \
+		esac; \
+		if [ -f ./$${i}/Makefile ]; then \
+			if (cd ./$${i}; \
+				$(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
+				echo "'$@' succeeded for '$${i}'"; \
+			else exit 1; fi; \
+		else echo "no Makefile for '$${i}'"; fi; \
+	done
+
+gnulib/Makefile: gnulib/Makefile.in config.status
+	CONFIG_FILES="gnulib/Makefile" \
+	  CONFIG_COMMANDS="depfiles" \
+	  CONFIG_HEADERS= \
+	  CONFIG_LINKS= \
+	  $(SHELL) config.status
+
+stamp-h: $(srcdir)/config.h.in config.status
+	CONFIG_HEADERS=config.h \
+	  CONFIG_COMMANDS="default depdir" \
+	  CONFIG_FILES= \
+	  CONFIG_LINKS= \
+	  $(SHELL) config.status
+	touch stamp-h
+
+UNCONFIGURED_AUTOCONF = autoconf
+configure_deps = $(srcdir)/configure.ac $(srcdir)/aclocal.m4
+UNCONFIGURED_AUTOHEADER = autoheader
+
+# GNU Make 3.63 has a problem: it keeps tacking command line overrides
+# onto the definition of $(MAKE).  This variable setting will remove them:
+MAKEOVERRIDES=
 
 # end of the gnulib Makefile

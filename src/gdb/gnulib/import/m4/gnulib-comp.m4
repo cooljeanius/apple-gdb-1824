@@ -164,6 +164,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module mempcpy:
   # Code from module memrchr:
   # Code from module mkdtemp:
+  # Code from module mktime:
+  # Code from module mktime-internal:
   # Code from module msvc-inval:
   # Code from module multiarch:
   # Code from module nextafter:
@@ -197,6 +199,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module save-cwd:
   # Code from module secure_getenv:
   # Code from module send:
+  # Code from module setenv:
   # Code from module sig2str:
   # Code from module sigaction:
   # Code from module signal:
@@ -248,6 +251,9 @@ AC_DEFUN([gl_EARLY],
   # Code from module sys_wait:
   # Code from module tempname:
   # Code from module time:
+  # Code from module time_r:
+  # Code from module time_rz:
+  # Code from module timegm:
   # Code from module unistd:
   # Code from module unistd-safer:
   # Code from module unitypes:
@@ -255,6 +261,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module uniwidth/width:
   # Code from module unlink:
   # Code from module unlink-busy:
+  # Code from module unsetenv:
   # Code from module update-copyright:
   # Code from module usleep:
   # Code from module vc-list-files:
@@ -606,6 +613,17 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_MKDTEMP
   fi
   gl_STDLIB_MODULE_INDICATOR([mkdtemp])
+  gl_FUNC_MKTIME
+  if test $REPLACE_MKTIME = 1; then
+    AC_LIBOBJ([mktime])
+    gl_PREREQ_MKTIME
+  fi
+  gl_TIME_MODULE_INDICATOR([mktime])
+  gl_FUNC_MKTIME_INTERNAL
+  if test $REPLACE_MKTIME = 1; then
+    AC_LIBOBJ([mktime])
+    gl_PREREQ_MKTIME
+  fi
   AC_REQUIRE([gl_MSVC_INVAL])
   if test $HAVE_MSVC_INVALID_PARAMETER_HANDLER = 1; then
     AC_LIBOBJ([msvc-inval])
@@ -719,6 +737,11 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([send])
   fi
   gl_SYS_SOCKET_MODULE_INDICATOR([send])
+  gl_FUNC_SETENV
+  if test $HAVE_SETENV = 0 || test $REPLACE_SETENV = 1; then
+    AC_LIBOBJ([setenv])
+  fi
+  gl_STDLIB_MODULE_INDICATOR([setenv])
   gl_FUNC_SIG2STR
   if test $ac_cv_func_sig2str = no; then
     AC_LIBOBJ([sig2str])
@@ -860,6 +883,23 @@ AC_DEFUN([gl_INIT],
   AC_PROG_MKDIR_P
   gl_FUNC_GEN_TEMPNAME
   gl_HEADER_TIME_H
+  gl_TIME_R
+  if test $HAVE_LOCALTIME_R = 0 || test $REPLACE_LOCALTIME_R = 1; then
+    AC_LIBOBJ([time_r])
+    gl_PREREQ_TIME_R
+  fi
+  gl_TIME_MODULE_INDICATOR([time_r])
+  gl_TIME_RZ
+  if test "$HAVE_TIMEZONE_T" = 0; then
+    AC_LIBOBJ([time_rz])
+  fi
+  gl_TIME_MODULE_INDICATOR([time_rz])
+  gl_FUNC_TIMEGM
+  if test $HAVE_TIMEGM = 0 || test $REPLACE_TIMEGM = 1; then
+    AC_LIBOBJ([timegm])
+    gl_PREREQ_TIMEGM
+  fi
+  gl_TIME_MODULE_INDICATOR([timegm])
   gl_UNISTD_H
   gl_UNISTD_SAFER
   gl_LIBUNISTRING_LIBHEADER([0.9.4], [unitypes.h])
@@ -871,6 +911,12 @@ AC_DEFUN([gl_INIT],
   fi
   gl_UNISTD_MODULE_INDICATOR([unlink])
   gl_FUNC_UNLINK_BUSY_TEXT
+  gl_FUNC_UNSETENV
+  if test $HAVE_UNSETENV = 0 || test $REPLACE_UNSETENV = 1; then
+    AC_LIBOBJ([unsetenv])
+    gl_PREREQ_UNSETENV
+  fi
+  gl_STDLIB_MODULE_INDICATOR([unsetenv])
   gl_FUNC_USLEEP
   if test $HAVE_USLEEP = 0 || test $REPLACE_USLEEP = 1; then
     AC_LIBOBJ([usleep])
@@ -1188,6 +1234,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/mempcpy.c
   lib/memrchr.c
   lib/mkdtemp.c
+  lib/mktime-internal.h
+  lib/mktime.c
   lib/msvc-inval.c
   lib/msvc-inval.h
   lib/nl_langinfo.c
@@ -1230,6 +1278,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/save-cwd.h
   lib/secure_getenv.c
   lib/send.c
+  lib/setenv.c
   lib/sig-handler.c
   lib/sig-handler.h
   lib/sig2str.c
@@ -1280,7 +1329,11 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/sys_wait.in.h
   lib/tempname.c
   lib/tempname.h
+  lib/time-internal.h
   lib/time.in.h
+  lib/time_r.c
+  lib/time_rz.c
+  lib/timegm.c
   lib/unistd--.h
   lib/unistd-safer.h
   lib/unistd.c
@@ -1290,6 +1343,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/uniwidth/cjk.h
   lib/uniwidth/width.c
   lib/unlink.c
+  lib/unsetenv.c
   lib/usleep.c
   lib/verify.h
   lib/w32sock.h
@@ -1433,6 +1487,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/mempcpy.m4
   m4/memrchr.m4
   m4/mkdtemp.m4
+  m4/mktime.m4
   m4/mmap-anon.m4
   m4/mode_t.m4
   m4/msvc-inval.m4
@@ -1463,6 +1518,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/rmdir.m4
   m4/save-cwd.m4
   m4/secure_getenv.m4
+  m4/setenv.m4
   m4/sig2str.m4
   m4/sigaction.m4
   m4/signal_h.m4
@@ -1505,6 +1561,9 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/tempname.m4
   m4/threadlib.m4
   m4/time_h.m4
+  m4/time_r.m4
+  m4/time_rz.m4
+  m4/timegm.m4
   m4/uintmax_t.m4
   m4/unistd-safer.m4
   m4/unistd_h.m4

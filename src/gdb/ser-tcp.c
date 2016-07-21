@@ -265,12 +265,12 @@ _initialize_ser_tcp (void)
     /* WinSock is unavailable.  */
     return;
 #endif /* USE_WIN32API */
-  ops = XMALLOC (struct serial_ops);
-  memset (ops, 0, sizeof (struct serial_ops));
+  ops = XMALLOC(struct serial_ops);
+  memset(ops, 0, sizeof(struct serial_ops));
   ops->name = "tcp";
   ops->next = 0;
-  ops->open = net_open;
-  ops->close = net_close;
+  ops->so_open = net_open;
+  ops->so_close = net_close;
   ops->readchar = ser_base_readchar;
   ops->write = ser_base_write;
   ops->flush_output = ser_base_flush_output;

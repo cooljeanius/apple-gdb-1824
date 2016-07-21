@@ -633,6 +633,7 @@ gltests_LIBOBJS
 gl_LTLIBOBJS
 LTLIBOBJS
 EXTRA_DEFS
+acl_cv_wl
 ifGNUmake
 GMAKE_FALSE
 GMAKE_TRUE
@@ -700,22 +701,6 @@ SYS_TIME_H_DEFINES_STRUCT_TIMESPEC
 TIME_H_DEFINES_STRUCT_TIMESPEC
 NEXT_AS_FIRST_DIRECTIVE_TIME_H
 NEXT_TIME_H
-REPLACE_LOCALTIME
-REPLACE_GMTIME
-REPLACE_TIMEGM
-REPLACE_NANOSLEEP
-REPLACE_MKTIME
-REPLACE_LOCALTIME_R
-HAVE_TIMEGM
-HAVE_STRPTIME
-HAVE_NANOSLEEP
-HAVE_DECL_LOCALTIME_R
-GNULIB_TIME_RZ
-GNULIB_TIME_R
-GNULIB_TIMEGM
-GNULIB_STRPTIME
-GNULIB_NANOSLEEP
-GNULIB_MKTIME
 NEXT_AS_FIRST_DIRECTIVE_SYS_WAIT_H
 NEXT_SYS_WAIT_H
 GNULIB_WAITPID
@@ -879,6 +864,22 @@ GNULIB_DPRINTF
 OPENMP_CFLAGS
 NO_CXX
 NEXTAFTER_LIBM
+REPLACE_LOCALTIME
+REPLACE_GMTIME
+REPLACE_TIMEGM
+REPLACE_NANOSLEEP
+REPLACE_MKTIME
+REPLACE_LOCALTIME_R
+HAVE_TIMEGM
+HAVE_STRPTIME
+HAVE_NANOSLEEP
+HAVE_DECL_LOCALTIME_R
+GNULIB_TIME_RZ
+GNULIB_TIME_R
+GNULIB_TIMEGM
+GNULIB_STRPTIME
+GNULIB_NANOSLEEP
+GNULIB_MKTIME
 UNDEFINE_STRTOK_R
 REPLACE_STRTOK_R
 REPLACE_STRSIGNAL
@@ -1861,9 +1862,9 @@ CPPFLAGS
 CPP
 CXX
 CXXFLAGS
+CCC
 CCAS
 CCASFLAGS
-CCC
 CXXCPP
 YACC
 YFLAGS'
@@ -3837,6 +3838,7 @@ gl_func_list="${gl_func_list} popen"
 gl_func_list="${gl_func_list} readlink"
 gl_header_list="${gl_header_list} malloc.h"
 gl_func_list="${gl_func_list} secure_getenv"
+gl_func_list="${gl_func_list} setenv"
 gl_func_list="${gl_func_list} sigaction"
 gl_func_list="${gl_func_list} sigaltstack"
 gl_func_list="${gl_func_list} siginterrupt"
@@ -3852,11 +3854,15 @@ gl_func_list="${gl_func_list} strndup"
 gl_header_list="${gl_header_list} sys/select.h"
 gl_header_list="${gl_header_list} sys/uio.h"
 gl_header_list="${gl_header_list} sys/wait.h"
+gl_func_list="${gl_func_list} localtime_r"
+gl_func_list="${gl_func_list} tzset"
+gl_func_list="${gl_func_list} timegm"
 gl_func_list="${gl_func_list} pipe"
 gl_func_list="${gl_func_list} usleep"
 gl_func_list="${gl_func_list} wcrtomb"
 gl_func_list="${gl_func_list} wcsncasecmp"
 gl_func_list="${gl_func_list} wcwidth"
+gl_func_list="${gl_func_list} alarm"
 # Check that the precious variables saved in the cache have kept the same
 # value.
 ac_cache_corrupted=false
@@ -6355,6 +6361,8 @@ $as_echo "$as_me: autobuild timestamp... $date" >&6;}
   # Code from module mempcpy:
   # Code from module memrchr:
   # Code from module mkdtemp:
+  # Code from module mktime:
+  # Code from module mktime-internal:
   # Code from module msvc-inval:
   # Code from module multiarch:
   # Code from module nextafter:
@@ -6388,6 +6396,7 @@ $as_echo "$as_me: autobuild timestamp... $date" >&6;}
   # Code from module save-cwd:
   # Code from module secure_getenv:
   # Code from module send:
+  # Code from module setenv:
   # Code from module sig2str:
   # Code from module sigaction:
   # Code from module signal:
@@ -6439,6 +6448,9 @@ $as_echo "$as_me: autobuild timestamp... $date" >&6;}
   # Code from module sys_wait:
   # Code from module tempname:
   # Code from module time:
+  # Code from module time_r:
+  # Code from module time_rz:
+  # Code from module timegm:
   # Code from module unistd:
   # Code from module unistd-safer:
   # Code from module unitypes:
@@ -6446,6 +6458,7 @@ $as_echo "$as_me: autobuild timestamp... $date" >&6;}
   # Code from module uniwidth/width:
   # Code from module unlink:
   # Code from module unlink-busy:
+  # Code from module unsetenv:
   # Code from module update-copyright:
   # Code from module usleep:
   # Code from module vc-list-files:
@@ -13630,6 +13643,59 @@ _ACEOF
 
 
 
+  GNULIB_MKTIME=0;
+  GNULIB_NANOSLEEP=0;
+  GNULIB_STRPTIME=0;
+  GNULIB_TIMEGM=0;
+  GNULIB_TIME_R=0;
+  GNULIB_TIME_RZ=0;
+    HAVE_DECL_LOCALTIME_R=1;
+  HAVE_NANOSLEEP=1;
+  HAVE_STRPTIME=1;
+  HAVE_TIMEGM=1;
+        REPLACE_LOCALTIME_R=GNULIB_PORTCHECK;
+  REPLACE_MKTIME=GNULIB_PORTCHECK;
+  REPLACE_NANOSLEEP=GNULIB_PORTCHECK;
+  REPLACE_TIMEGM=GNULIB_PORTCHECK;
+
+      : ${GNULIB_GETTIMEOFDAY=0};
+        REPLACE_GMTIME=0;
+  REPLACE_LOCALTIME=0;
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether time_t is signed" >&5
+$as_echo_n "checking whether time_t is signed... " >&6; }
+if ${gl_cv_time_t_is_signed+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <time.h>
+                          char time_t_signed[(time_t) -1 < 0 ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_time_t_is_signed=yes
+else
+  gl_cv_time_t_is_signed=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_time_t_is_signed" >&5
+$as_echo "$gl_cv_time_t_is_signed" >&6; }
+  if test $gl_cv_time_t_is_signed = yes; then
+
+$as_echo "#define TIME_T_IS_SIGNED 1" >>confdefs.h
+
+  fi
+
+
 
 
 
@@ -13831,6 +13897,78 @@ $as_echo "$gl_cv_header_signal_h_SIGPIPE" >&6; }
 
 
 
+
+
+
+
+      ac_fn_c_check_decl "$LINENO" "setenv" "ac_cv_have_decl_setenv" "$ac_includes_default"
+if test "x$ac_cv_have_decl_setenv" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_SETENV $ac_have_decl
+_ACEOF
+
+
+
+
+
+
+
+
+
+
+  :
+
+
+
+
+
+  if test $ac_cv_have_decl_setenv = no; then
+    HAVE_DECL_SETENV=0
+  fi
+
+  :
+
+
+
+
+
+
+
+
+
+  :
+
+
+
+
+
+  for ac_header in search.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "search.h" "ac_cv_header_search_h" "$ac_includes_default"
+if test "x$ac_cv_header_search_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_SEARCH_H 1
+_ACEOF
+
+fi
+
+done
+
+  for ac_func in tsearch
+do :
+  ac_fn_c_check_func "$LINENO" "tsearch" "ac_cv_func_tsearch"
+if test "x$ac_cv_func_tsearch" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_TSEARCH 1
+_ACEOF
+
+fi
+done
 
 
 
@@ -15269,26 +15407,6 @@ $as_echo "$gl_cv_next_sys_types_h" >&6; }
 
 
 
-  GNULIB_MKTIME=0;
-  GNULIB_NANOSLEEP=0;
-  GNULIB_STRPTIME=0;
-  GNULIB_TIMEGM=0;
-  GNULIB_TIME_R=0;
-  GNULIB_TIME_RZ=0;
-    HAVE_DECL_LOCALTIME_R=1;
-  HAVE_NANOSLEEP=1;
-  HAVE_STRPTIME=1;
-  HAVE_TIMEGM=1;
-        REPLACE_LOCALTIME_R=GNULIB_PORTCHECK;
-  REPLACE_MKTIME=GNULIB_PORTCHECK;
-  REPLACE_NANOSLEEP=GNULIB_PORTCHECK;
-  REPLACE_TIMEGM=GNULIB_PORTCHECK;
-
-      : ${GNULIB_GETTIMEOFDAY=0};
-        REPLACE_GMTIME=0;
-  REPLACE_LOCALTIME=0;
-
-
 
   :
 
@@ -15506,6 +15624,123 @@ $as_echo "$gl_cv_next_time_h" >&6; }
 
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether struct tm is in sys/time.h or time.h" >&5
+$as_echo_n "checking whether struct tm is in sys/time.h or time.h... " >&6; }
+if ${ac_cv_struct_tm+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+#include <time.h>
+
+int
+main ()
+{
+struct tm tm;
+				     int *p = &tm.tm_sec;
+				     return !p;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_struct_tm=time.h
+else
+  ac_cv_struct_tm=sys/time.h
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_struct_tm" >&5
+$as_echo "$ac_cv_struct_tm" >&6; }
+if test $ac_cv_struct_tm = sys/time.h; then
+
+$as_echo "#define TM_IN_SYS_TIME 1" >>confdefs.h
+
+fi
+
+ac_fn_c_check_member "$LINENO" "struct tm" "tm_zone" "ac_cv_member_struct_tm_tm_zone" "#include <sys/types.h>
+#include <$ac_cv_struct_tm>
+
+"
+if test "x$ac_cv_member_struct_tm_tm_zone" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_STRUCT_TM_TM_ZONE 1
+_ACEOF
+
+
+fi
+
+if test "$ac_cv_member_struct_tm_tm_zone" = yes; then
+
+$as_echo "#define HAVE_TM_ZONE 1" >>confdefs.h
+
+else
+  ac_fn_c_check_decl "$LINENO" "tzname" "ac_cv_have_decl_tzname" "#include <time.h>
+"
+if test "x$ac_cv_have_decl_tzname" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_TZNAME $ac_have_decl
+_ACEOF
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for tzname" >&5
+$as_echo_n "checking for tzname... " >&6; }
+if ${ac_cv_var_tzname+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <time.h>
+#if !HAVE_DECL_TZNAME
+extern char *tzname[];
+#endif
+
+int
+main ()
+{
+return tzname[0][0];
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_var_tzname=yes
+else
+  ac_cv_var_tzname=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_var_tzname" >&5
+$as_echo "$ac_cv_var_tzname" >&6; }
+  if test $ac_cv_var_tzname = yes; then
+
+$as_echo "#define HAVE_TZNAME 1" >>confdefs.h
+
+  fi
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 for ac_prog in gawk mawk nawk awk
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -15576,6 +15811,19 @@ q
     LIBUNISTRING_VERSION_MINOR=`echo "$LIBUNISTRING_VERSION" | sed -n -e "$gl_libunistring_sed_extract_minor"`
     LIBUNISTRING_VERSION_SUBMINOR=`echo "$LIBUNISTRING_VERSION" | sed -n -e "$gl_libunistring_sed_extract_subminor"`
   fi
+
+
+      ac_fn_c_check_decl "$LINENO" "unsetenv" "ac_cv_have_decl_unsetenv" "$ac_includes_default"
+if test "x$ac_cv_have_decl_unsetenv" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_UNSETENV $ac_have_decl
+_ACEOF
+
 
 
 
@@ -24476,6 +24724,315 @@ $as_echo "#define GNULIB_TEST_MKDTEMP 1" >>confdefs.h
 
 
 
+
+
+
+
+  :
+
+
+
+
+
+
+  :
+
+
+
+
+
+
+  if test $APPLE_UNIVERSAL_BUILD = 1; then
+    # A universal build on Apple Mac OS X platforms.
+    # The test result would be 'yes' in 32-bit mode and 'no' in 64-bit mode.
+    # But we need a configuration result that is valid in both modes.
+    gl_cv_func_working_mktime=no
+  fi
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for working mktime" >&5
+$as_echo_n "checking for working mktime... " >&6; }
+if ${gl_cv_func_working_mktime+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  gl_cv_func_working_mktime=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+/* Test program from Paul Eggert and Tony Leneis.  */
+#include <limits.h>
+#include <stdlib.h>
+#include <time.h>
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#if HAVE_DECL_ALARM
+# include <signal.h>
+#endif
+
+/* Work around redefinition to rpl_putenv by other config tests.  */
+#undef putenv
+
+static time_t time_t_max;
+static time_t time_t_min;
+
+/* Values we'll use to set the TZ environment variable.  */
+static char *tz_strings[] = {
+  (char *) 0, "TZ=GMT0", "TZ=JST-9",
+  "TZ=EST+3EDT+2,M10.1.0/00:00:00,M2.3.0/00:00:00"
+};
+#define N_STRINGS (sizeof (tz_strings) / sizeof (tz_strings[0]))
+
+/* Return 0 if mktime fails to convert a date in the spring-forward gap.
+   Based on a problem report from Andreas Jaeger.  */
+static int
+spring_forward_gap ()
+{
+  /* glibc (up to about 1998-10-07) failed this test. */
+  struct tm tm;
+
+  /* Use the portable POSIX.1 specification "TZ=PST8PDT,M4.1.0,M10.5.0"
+     instead of "TZ=America/Vancouver" in order to detect the bug even
+     on systems that don't support the Olson extension, or don't have the
+     full zoneinfo tables installed.  */
+  putenv ("TZ=PST8PDT,M4.1.0,M10.5.0");
+
+  tm.tm_year = 98;
+  tm.tm_mon = 3;
+  tm.tm_mday = 5;
+  tm.tm_hour = 2;
+  tm.tm_min = 0;
+  tm.tm_sec = 0;
+  tm.tm_isdst = -1;
+  return mktime (&tm) != (time_t) -1;
+}
+
+static int
+mktime_test1 (time_t now)
+{
+  struct tm *lt;
+  return ! (lt = localtime (&now)) || mktime (lt) == now;
+}
+
+static int
+mktime_test (time_t now)
+{
+  return (mktime_test1 (now)
+          && mktime_test1 ((time_t) (time_t_max - now))
+          && mktime_test1 ((time_t) (time_t_min + now)));
+}
+
+static int
+irix_6_4_bug ()
+{
+  /* Based on code from Ariel Faigon.  */
+  struct tm tm;
+  tm.tm_year = 96;
+  tm.tm_mon = 3;
+  tm.tm_mday = 0;
+  tm.tm_hour = 0;
+  tm.tm_min = 0;
+  tm.tm_sec = 0;
+  tm.tm_isdst = -1;
+  mktime (&tm);
+  return tm.tm_mon == 2 && tm.tm_mday == 31;
+}
+
+static int
+bigtime_test (int j)
+{
+  struct tm tm;
+  time_t now;
+  tm.tm_year = tm.tm_mon = tm.tm_mday = tm.tm_hour = tm.tm_min = tm.tm_sec = j;
+  now = mktime (&tm);
+  if (now != (time_t) -1)
+    {
+      struct tm *lt = localtime (&now);
+      if (! (lt
+             && lt->tm_year == tm.tm_year
+             && lt->tm_mon == tm.tm_mon
+             && lt->tm_mday == tm.tm_mday
+             && lt->tm_hour == tm.tm_hour
+             && lt->tm_min == tm.tm_min
+             && lt->tm_sec == tm.tm_sec
+             && lt->tm_yday == tm.tm_yday
+             && lt->tm_wday == tm.tm_wday
+             && ((lt->tm_isdst < 0 ? -1 : 0 < lt->tm_isdst)
+                  == (tm.tm_isdst < 0 ? -1 : 0 < tm.tm_isdst))))
+        return 0;
+    }
+  return 1;
+}
+
+static int
+year_2050_test ()
+{
+  /* The correct answer for 2050-02-01 00:00:00 in Pacific time,
+     ignoring leap seconds.  */
+  unsigned long int answer = 2527315200UL;
+
+  struct tm tm;
+  time_t t;
+  tm.tm_year = 2050 - 1900;
+  tm.tm_mon = 2 - 1;
+  tm.tm_mday = 1;
+  tm.tm_hour = tm.tm_min = tm.tm_sec = 0;
+  tm.tm_isdst = -1;
+
+  /* Use the portable POSIX.1 specification "TZ=PST8PDT,M4.1.0,M10.5.0"
+     instead of "TZ=America/Vancouver" in order to detect the bug even
+     on systems that don't support the Olson extension, or don't have the
+     full zoneinfo tables installed.  */
+  putenv ("TZ=PST8PDT,M4.1.0,M10.5.0");
+
+  t = mktime (&tm);
+
+  /* Check that the result is either a failure, or close enough
+     to the correct answer that we can assume the discrepancy is
+     due to leap seconds.  */
+  return (t == (time_t) -1
+          || (0 < t && answer - 120 <= t && t <= answer + 120));
+}
+
+int
+main ()
+{
+  int result = 0;
+  time_t t, delta;
+  int i, j;
+  int time_t_signed_magnitude = (time_t) ~ (time_t) 0 < (time_t) -1;
+
+#if HAVE_DECL_ALARM
+  /* This test makes some buggy mktime implementations loop.
+     Give up after 60 seconds; a mktime slower than that
+     isn't worth using anyway.  */
+  signal (SIGALRM, SIG_DFL);
+  alarm (60);
+#endif
+
+  time_t_max = (! TIME_T_IS_SIGNED
+                ? (time_t) -1
+                : ((((time_t) 1 << (sizeof (time_t) * CHAR_BIT - 2)) - 1)
+                   * 2 + 1));
+  time_t_min = (! TIME_T_IS_SIGNED
+                ? (time_t) 0
+                : time_t_signed_magnitude
+                ? ~ (time_t) 0
+                : ~ time_t_max);
+
+  delta = time_t_max / 997; /* a suitable prime number */
+  for (i = 0; i < N_STRINGS; i++)
+    {
+      if (tz_strings[i])
+        putenv (tz_strings[i]);
+
+      for (t = 0; t <= time_t_max - delta && (result & 1) == 0; t += delta)
+        if (! mktime_test (t))
+          result |= 1;
+      if ((result & 2) == 0
+          && ! (mktime_test ((time_t) 1)
+                && mktime_test ((time_t) (60 * 60))
+                && mktime_test ((time_t) (60 * 60 * 24))))
+        result |= 2;
+
+      for (j = 1; (result & 4) == 0; j <<= 1)
+        {
+          if (! bigtime_test (j))
+            result |= 4;
+          if (INT_MAX / 2 < j)
+            break;
+        }
+      if ((result & 8) == 0 && ! bigtime_test (INT_MAX))
+        result |= 8;
+    }
+  if (! irix_6_4_bug ())
+    result |= 16;
+  if (! spring_forward_gap ())
+    result |= 32;
+  if (! year_2050_test ())
+    result |= 64;
+  return result;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gl_cv_func_working_mktime=yes
+else
+  gl_cv_func_working_mktime=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_working_mktime" >&5
+$as_echo "$gl_cv_func_working_mktime" >&6; }
+
+  if test $gl_cv_func_working_mktime = no; then
+    REPLACE_MKTIME=1
+  else
+    REPLACE_MKTIME=0
+  fi
+
+  if test $REPLACE_MKTIME = 1; then
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS mktime.$ac_objext"
+
+    :
+  fi
+
+
+
+
+
+          GNULIB_MKTIME=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_MKTIME 1" >>confdefs.h
+
+
+
+
+
+  if test $REPLACE_MKTIME = 0; then
+        ac_fn_c_check_func "$LINENO" "__mktime_internal" "ac_cv_func___mktime_internal"
+if test "x$ac_cv_func___mktime_internal" = xyes; then :
+
+$as_echo "#define mktime_internal __mktime_internal" >>confdefs.h
+
+
+else
+                REPLACE_MKTIME=1
+
+fi
+
+  fi
+
+  if test $REPLACE_MKTIME = 1; then
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS mktime.$ac_objext"
+
+    :
+  fi
+
   if test $HAVE_MSVC_INVALID_PARAMETER_HANDLER = 1; then
 
 
@@ -26373,6 +26930,102 @@ $as_echo "#define GNULIB_TEST_SECURE_GETENV 1" >>confdefs.h
 
 
 $as_echo "#define GNULIB_TEST_SEND 1" >>confdefs.h
+
+
+
+
+
+     if test $ac_cv_func_setenv = no; then
+    HAVE_SETENV=0
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether setenv validates arguments" >&5
+$as_echo_n "checking whether setenv validates arguments... " >&6; }
+if ${gl_cv_func_setenv_works+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  case "$host_os" in
+                 # Guess yes on glibc systems.
+         *-gnu*) gl_cv_func_setenv_works="guessing yes" ;;
+                 # If we don't know, assume the worst.
+         *)      gl_cv_func_setenv_works="guessing no" ;;
+       esac
+
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+       #include <stdlib.h>
+       #include <errno.h>
+       #include <string.h>
+
+int
+main ()
+{
+
+       int result = 0;
+       {
+         if (setenv ("", "", 0) != -1)
+           result |= 1;
+         else if (errno != EINVAL)
+           result |= 2;
+       }
+       {
+         if (setenv ("a", "=", 1) != 0)
+           result |= 4;
+         else if (strcmp (getenv ("a"), "=") != 0)
+           result |= 8;
+       }
+       return result;
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gl_cv_func_setenv_works=yes
+else
+  gl_cv_func_setenv_works=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_setenv_works" >&5
+$as_echo "$gl_cv_func_setenv_works" >&6; }
+    case "$gl_cv_func_setenv_works" in
+      *yes) ;;
+      *)
+        REPLACE_SETENV=1
+        ;;
+    esac
+  fi
+
+  if test $HAVE_SETENV = 0 || test $REPLACE_SETENV = 1; then
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS setenv.$ac_objext"
+
+  fi
+
+
+
+
+
+          GNULIB_SETENV=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_SETENV 1" >>confdefs.h
 
 
 
@@ -29391,6 +30044,214 @@ fi
 
 
 
+      ac_fn_c_check_decl "$LINENO" "localtime_r" "ac_cv_have_decl_localtime_r" "#include <time.h>
+"
+if test "x$ac_cv_have_decl_localtime_r" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_LOCALTIME_R $ac_have_decl
+_ACEOF
+
+  if test $ac_cv_have_decl_localtime_r = no; then
+    HAVE_DECL_LOCALTIME_R=0
+  fi
+
+
+  :
+
+
+
+
+
+  if test $ac_cv_func_localtime_r = yes; then
+    HAVE_LOCALTIME_R=1
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether localtime_r is compatible with its POSIX signature" >&5
+$as_echo_n "checking whether localtime_r is compatible with its POSIX signature... " >&6; }
+if ${gl_cv_time_r_posix+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <time.h>
+int
+main ()
+{
+/* We don't need to append 'restrict's to the argument types,
+                 even though the POSIX signature has the 'restrict's,
+                 since C99 says they can't affect type compatibility.  */
+              struct tm * (*ptr) (time_t const *, struct tm *) = localtime_r;
+              if (ptr) return 0;
+              /* Check the return type is a pointer.
+                 On HP-UX 10 it is 'int'.  */
+              *localtime_r (0, 0);
+  ;
+  return 0;
+}
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_time_r_posix=yes
+else
+  gl_cv_time_r_posix=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_time_r_posix" >&5
+$as_echo "$gl_cv_time_r_posix" >&6; }
+    if test $gl_cv_time_r_posix = yes; then
+      REPLACE_LOCALTIME_R=0
+    else
+      REPLACE_LOCALTIME_R=1
+    fi
+  else
+    HAVE_LOCALTIME_R=0
+  fi
+
+  if test $HAVE_LOCALTIME_R = 0 || test $REPLACE_LOCALTIME_R = 1; then
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS time_r.$ac_objext"
+
+
+  :
+
+  fi
+
+
+
+
+
+          GNULIB_TIME_R=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_TIME_R 1" >>confdefs.h
+
+
+
+
+
+
+
+
+  :
+
+
+
+
+
+
+  ac_fn_c_check_type "$LINENO" "timezone_t" "ac_cv_type_timezone_t" "#include <time.h>
+"
+if test "x$ac_cv_type_timezone_t" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_TIMEZONE_T 1
+_ACEOF
+
+
+fi
+
+  if test "$ac_cv_type_timezone_t" = yes; then
+    HAVE_TIMEZONE_T=1
+  fi
+
+  if test "$HAVE_TIMEZONE_T" = 0; then
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS time_rz.$ac_objext"
+
+  fi
+
+
+
+
+
+          GNULIB_TIME_RZ=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_TIME_RZ 1" >>confdefs.h
+
+
+
+
+
+
+  REPLACE_TIMEGM=0
+
+  :
+
+
+
+
+
+  if test $ac_cv_func_timegm = yes; then
+    if test $gl_cv_func_working_mktime = no; then
+      # Assume that timegm is buggy if mktime is.
+      REPLACE_TIMEGM=1
+    fi
+  else
+    HAVE_TIMEGM=0
+  fi
+
+  if test $HAVE_TIMEGM = 0 || test $REPLACE_TIMEGM = 1; then
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS timegm.$ac_objext"
+
+
+  :
+
+  fi
+
+
+
+
+
+          GNULIB_TIMEGM=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_TIMEGM 1" >>confdefs.h
+
+
+
+
+
+
+
+
+
 
 
 
@@ -29858,6 +30719,176 @@ $as_echo "$gl_cv_func_unlink_busy_text" >&6; }
   if test $gl_cv_func_unlink_busy_text = no; then
     INSTALL=$ac_install_sh
   fi
+
+
+
+
+  :
+
+
+
+
+
+  if test $ac_cv_have_decl_unsetenv = no; then
+    HAVE_DECL_UNSETENV=0
+  fi
+  for ac_func in unsetenv
+do :
+  ac_fn_c_check_func "$LINENO" "unsetenv" "ac_cv_func_unsetenv"
+if test "x$ac_cv_func_unsetenv" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_UNSETENV 1
+_ACEOF
+
+fi
+done
+
+  if test $ac_cv_func_unsetenv = no; then
+    HAVE_UNSETENV=0
+  else
+    HAVE_UNSETENV=1
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for unsetenv() return type" >&5
+$as_echo_n "checking for unsetenv() return type... " >&6; }
+if ${gt_cv_func_unsetenv_ret+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#undef _BSD
+#define _BSD 1 /* unhide unsetenv declaration in OSF/1 5.1 <stdlib.h> */
+#include <stdlib.h>
+extern
+#ifdef __cplusplus
+"C"
+#endif
+int unsetenv (const char *name);
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gt_cv_func_unsetenv_ret='int'
+else
+  gt_cv_func_unsetenv_ret='void'
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gt_cv_func_unsetenv_ret" >&5
+$as_echo "$gt_cv_func_unsetenv_ret" >&6; }
+    if test $gt_cv_func_unsetenv_ret = 'void'; then
+
+$as_echo "#define VOID_UNSETENV 1" >>confdefs.h
+
+      REPLACE_UNSETENV=1
+    fi
+
+                { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether unsetenv obeys POSIX" >&5
+$as_echo_n "checking whether unsetenv obeys POSIX... " >&6; }
+if ${gl_cv_func_unsetenv_works+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  case "$host_os" in
+                 # Guess yes on glibc systems.
+         *-gnu*) gl_cv_func_unsetenv_works="guessing yes" ;;
+                 # If we don't know, assume the worst.
+         *)      gl_cv_func_unsetenv_works="guessing no" ;;
+       esac
+
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+       #include <stdlib.h>
+       #include <errno.h>
+       extern char **environ;
+
+int
+main ()
+{
+
+       char entry1[] = "a=1";
+       char entry2[] = "b=2";
+       char *env[] = { entry1, entry2, NULL };
+       if (putenv ((char *) "a=1")) return 1;
+       if (putenv (entry2)) return 2;
+       entry2[0] = 'a';
+       unsetenv ("a");
+       if (getenv ("a")) return 3;
+       if (!unsetenv ("") || errno != EINVAL) return 4;
+       entry2[0] = 'b';
+       environ = env;
+       if (!getenv ("a")) return 5;
+       entry2[0] = 'a';
+       unsetenv ("a");
+       if (getenv ("a")) return 6;
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gl_cv_func_unsetenv_works=yes
+else
+  gl_cv_func_unsetenv_works=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_unsetenv_works" >&5
+$as_echo "$gl_cv_func_unsetenv_works" >&6; }
+    case "$gl_cv_func_unsetenv_works" in
+      *yes) ;;
+      *)
+        REPLACE_UNSETENV=1
+        ;;
+    esac
+  fi
+
+  if test $HAVE_UNSETENV = 0 || test $REPLACE_UNSETENV = 1; then
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS unsetenv.$ac_objext"
+
+
+
+
+  :
+
+
+
+
+
+
+  fi
+
+
+
+
+
+          GNULIB_UNSETENV=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_UNSETENV 1" >>confdefs.h
+
+
 
 
 
@@ -31199,6 +32230,263 @@ $as_echo "#define WINSIZE_IN_PTEM 1" >>confdefs.h
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: doing some extra gnulib initialization checks" >&5
 $as_echo "$as_me: doing some extra gnulib initialization checks" >&6;}
+ac_ext=cpp
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+if test -z "$CXX"; then
+  if test -n "$CCC"; then
+    CXX=$CCC
+  else
+    if test -n "$ac_tool_prefix"; then
+  for ac_prog in g++ c++ gpp aCC CC cxx cc++ cl.exe FCC KCC RCC xlC_r xlC
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_CXX+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$CXX"; then
+  ac_cv_prog_CXX="$CXX" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_CXX="$ac_tool_prefix$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+CXX=$ac_cv_prog_CXX
+if test -n "$CXX"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CXX" >&5
+$as_echo "$CXX" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+    test -n "$CXX" && break
+  done
+fi
+if test -z "$CXX"; then
+  ac_ct_CXX=$CXX
+  for ac_prog in g++ c++ gpp aCC CC cxx cc++ cl.exe FCC KCC RCC xlC_r xlC
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_ac_ct_CXX+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$ac_ct_CXX"; then
+  ac_cv_prog_ac_ct_CXX="$ac_ct_CXX" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ac_ct_CXX="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+ac_ct_CXX=$ac_cv_prog_ac_ct_CXX
+if test -n "$ac_ct_CXX"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_CXX" >&5
+$as_echo "$ac_ct_CXX" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$ac_ct_CXX" && break
+done
+
+  if test "x$ac_ct_CXX" = x; then
+    CXX="g++"
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    CXX=$ac_ct_CXX
+  fi
+fi
+
+  fi
+fi
+# Provide some information about the compiler.
+$as_echo "$as_me:${as_lineno-$LINENO}: checking for C++ compiler version" >&5
+set X $ac_compile
+ac_compiler=$2
+for ac_option in --version -v -V -qversion; do
+  { { ac_try="$ac_compiler $ac_option >&5"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
+$as_echo "$ac_try_echo"; } >&5
+  (eval "$ac_compiler $ac_option >&5") 2>conftest.err
+  ac_status=$?
+  if test -s conftest.err; then
+    sed '10a\
+... rest of stderr output deleted ...
+         10q' conftest.err >conftest.er1
+    cat conftest.er1 >&5
+  fi
+  rm -f conftest.er1 conftest.err
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }
+done
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether we are using the GNU C++ compiler" >&5
+$as_echo_n "checking whether we are using the GNU C++ compiler... " >&6; }
+if ${ac_cv_cxx_compiler_gnu+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+#ifndef __GNUC__
+       choke me
+#endif
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"; then :
+  ac_compiler_gnu=yes
+else
+  ac_compiler_gnu=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ac_cv_cxx_compiler_gnu=$ac_compiler_gnu
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_cxx_compiler_gnu" >&5
+$as_echo "$ac_cv_cxx_compiler_gnu" >&6; }
+if test $ac_compiler_gnu = yes; then
+  GXX=yes
+else
+  GXX=
+fi
+ac_test_CXXFLAGS=${CXXFLAGS+set}
+ac_save_CXXFLAGS=$CXXFLAGS
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX accepts -g" >&5
+$as_echo_n "checking whether $CXX accepts -g... " >&6; }
+if ${ac_cv_prog_cxx_g+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_save_cxx_werror_flag=$ac_cxx_werror_flag
+   ac_cxx_werror_flag=yes
+   ac_cv_prog_cxx_g=no
+   CXXFLAGS="-g"
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"; then :
+  ac_cv_prog_cxx_g=yes
+else
+  CXXFLAGS=""
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"; then :
+
+else
+  ac_cxx_werror_flag=$ac_save_cxx_werror_flag
+	 CXXFLAGS="-g"
+	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"; then :
+  ac_cv_prog_cxx_g=yes
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+   ac_cxx_werror_flag=$ac_save_cxx_werror_flag
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_prog_cxx_g" >&5
+$as_echo "$ac_cv_prog_cxx_g" >&6; }
+if test "$ac_test_CXXFLAGS" = set; then
+  CXXFLAGS=$ac_save_CXXFLAGS
+elif test $ac_cv_prog_cxx_g = yes; then
+  if test "$GXX" = yes; then
+    CXXFLAGS="-g -O2"
+  else
+    CXXFLAGS="-g"
+  fi
+else
+  if test "$GXX" = yes; then
+    CXXFLAGS="-O2"
+  else
+    CXXFLAGS=
+  fi
+fi
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ln -s works" >&5
 $as_echo_n "checking whether ln -s works... " >&6; }
 LN_S=$as_ln_s
@@ -31549,6 +32837,251 @@ test $ac_cv_func_memcmp_working = no && case " $LIBOBJS " in
  ;;
 esac
 
+
+
+
+
+
+
+
+  :
+
+
+
+
+
+
+
+
+
+  :
+
+
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for working mktime" >&5
+$as_echo_n "checking for working mktime... " >&6; }
+if ${ac_cv_func_working_mktime+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_working_mktime=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+/* Test program from Paul Eggert and Tony Leneis.  */
+#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# ifdef HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
+
+#include <limits.h>
+#include <stdlib.h>
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifndef HAVE_ALARM
+# define alarm(X) /* empty */
+#endif
+
+/* Work around redefinition to rpl_putenv by other config tests.  */
+#undef putenv
+
+static time_t time_t_max;
+static time_t time_t_min;
+
+/* Values we'll use to set the TZ environment variable.  */
+static const char *tz_strings[] = {
+  (const char *) 0, "TZ=GMT0", "TZ=JST-9",
+  "TZ=EST+3EDT+2,M10.1.0/00:00:00,M2.3.0/00:00:00"
+};
+#define N_STRINGS (sizeof (tz_strings) / sizeof (tz_strings[0]))
+
+/* Return 0 if mktime fails to convert a date in the spring-forward gap.
+   Based on a problem report from Andreas Jaeger.  */
+static int
+spring_forward_gap ()
+{
+  /* glibc (up to about 1998-10-07) failed this test. */
+  struct tm tm;
+
+  /* Use the portable POSIX.1 specification "TZ=PST8PDT,M4.1.0,M10.5.0"
+     instead of "TZ=America/Vancouver" in order to detect the bug even
+     on systems that don't support the Olson extension, or don't have the
+     full zoneinfo tables installed.  */
+  putenv ((char*) "TZ=PST8PDT,M4.1.0,M10.5.0");
+
+  tm.tm_year = 98;
+  tm.tm_mon = 3;
+  tm.tm_mday = 5;
+  tm.tm_hour = 2;
+  tm.tm_min = 0;
+  tm.tm_sec = 0;
+  tm.tm_isdst = -1;
+  return mktime (&tm) != (time_t) -1;
+}
+
+static int
+mktime_test1 (time_t now)
+{
+  struct tm *lt;
+  return ! (lt = localtime (&now)) || mktime (lt) == now;
+}
+
+static int
+mktime_test (time_t now)
+{
+  return (mktime_test1 (now)
+	  && mktime_test1 ((time_t) (time_t_max - now))
+	  && mktime_test1 ((time_t) (time_t_min + now)));
+}
+
+static int
+irix_6_4_bug ()
+{
+  /* Based on code from Ariel Faigon.  */
+  struct tm tm;
+  tm.tm_year = 96;
+  tm.tm_mon = 3;
+  tm.tm_mday = 0;
+  tm.tm_hour = 0;
+  tm.tm_min = 0;
+  tm.tm_sec = 0;
+  tm.tm_isdst = -1;
+  mktime (&tm);
+  return tm.tm_mon == 2 && tm.tm_mday == 31;
+}
+
+static int
+bigtime_test (int j)
+{
+  struct tm tm;
+  time_t now;
+  tm.tm_year = tm.tm_mon = tm.tm_mday = tm.tm_hour = tm.tm_min = tm.tm_sec = j;
+  now = mktime (&tm);
+  if (now != (time_t) -1)
+    {
+      struct tm *lt = localtime (&now);
+      if (! (lt
+	     && lt->tm_year == tm.tm_year
+	     && lt->tm_mon == tm.tm_mon
+	     && lt->tm_mday == tm.tm_mday
+	     && lt->tm_hour == tm.tm_hour
+	     && lt->tm_min == tm.tm_min
+	     && lt->tm_sec == tm.tm_sec
+	     && lt->tm_yday == tm.tm_yday
+	     && lt->tm_wday == tm.tm_wday
+	     && ((lt->tm_isdst < 0 ? -1 : 0 < lt->tm_isdst)
+		  == (tm.tm_isdst < 0 ? -1 : 0 < tm.tm_isdst))))
+	return 0;
+    }
+  return 1;
+}
+
+static int
+year_2050_test ()
+{
+  /* The correct answer for 2050-02-01 00:00:00 in Pacific time,
+     ignoring leap seconds.  */
+  unsigned long int answer = 2527315200UL;
+
+  struct tm tm;
+  time_t t;
+  tm.tm_year = 2050 - 1900;
+  tm.tm_mon = 2 - 1;
+  tm.tm_mday = 1;
+  tm.tm_hour = tm.tm_min = tm.tm_sec = 0;
+  tm.tm_isdst = -1;
+
+  /* Use the portable POSIX.1 specification "TZ=PST8PDT,M4.1.0,M10.5.0"
+     instead of "TZ=America/Vancouver" in order to detect the bug even
+     on systems that don't support the Olson extension, or don't have the
+     full zoneinfo tables installed.  */
+  putenv ((char*) "TZ=PST8PDT,M4.1.0,M10.5.0");
+
+  t = mktime (&tm);
+
+  /* Check that the result is either a failure, or close enough
+     to the correct answer that we can assume the discrepancy is
+     due to leap seconds.  */
+  return (t == (time_t) -1
+	  || (0 < t && answer - 120 <= t && t <= answer + 120));
+}
+
+int
+main ()
+{
+  time_t t, delta;
+  int i, j;
+
+  /* This test makes some buggy mktime implementations loop.
+     Give up after 60 seconds; a mktime slower than that
+     isn't worth using anyway.  */
+  alarm (60);
+
+  for (;;)
+    {
+      t = (time_t_max << 1) + 1;
+      if (t <= time_t_max)
+	break;
+      time_t_max = t;
+    }
+  time_t_min = - ((time_t) ~ (time_t) 0 == (time_t) -1) - time_t_max;
+
+  delta = time_t_max / 997; /* a suitable prime number */
+  for (i = 0; i < N_STRINGS; i++)
+    {
+      if (tz_strings[i])
+	putenv ((char*) tz_strings[i]);
+
+      for (t = 0; t <= time_t_max - delta; t += delta)
+	if (! mktime_test (t))
+	  return 1;
+      if (! (mktime_test ((time_t) 1)
+	     && mktime_test ((time_t) (60 * 60))
+	     && mktime_test ((time_t) (60 * 60 * 24))))
+	return 1;
+
+      for (j = 1; ; j <<= 1)
+	if (! bigtime_test (j))
+	  return 1;
+	else if (INT_MAX / 2 < j)
+	  break;
+      if (! bigtime_test (INT_MAX))
+	return 1;
+    }
+  return ! (irix_6_4_bug () && spring_forward_gap () && year_2050_test ());
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_working_mktime=yes
+else
+  ac_cv_func_working_mktime=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_working_mktime" >&5
+$as_echo "$ac_cv_func_working_mktime" >&6; }
+if test $ac_cv_func_working_mktime = no; then
+  case " $LIBOBJS " in
+  *" mktime.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS mktime.$ac_objext"
+ ;;
+esac
+
+fi
 
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether mbrtowc and mbstate_t are properly declared" >&5
@@ -33230,6 +34763,79 @@ $as_echo "#define GNULIB_TEST_STRTOK_R 1" >>confdefs.h
 
 
   ## set up libobj if needed:
+if test ${HAVE_LOCALTIME_R} = 0 || test ${REPLACE_LOCALTIME_R} = 1; then
+  case " $LIBOBJS " in
+  *" time_r.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS time_r.$ac_objext"
+ ;;
+esac
+
+  :
+
+fi
+
+
+
+
+
+          GNULIB_TIME_R=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_TIME_R 1" >>confdefs.h
+
+
+  ## set up libobj if needed:
+if test "${HAVE_TIMEZONE_T}" = 0; then
+  case " $LIBOBJS " in
+  *" time_rz.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS time_rz.$ac_objext"
+ ;;
+esac
+  ## end libobj
+fi
+
+
+
+
+
+          GNULIB_TIME_RZ=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_TIME_RZ 1" >>confdefs.h
+
+
+  ## set up libobj if needed:
+if test ${HAVE_TIMEGM} = 0 || test ${REPLACE_TIMEGM} = 1; then
+  case " $LIBOBJS " in
+  *" timegm.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS timegm.$ac_objext"
+ ;;
+esac
+
+  :
+
+fi
+
+
+
+
+
+          GNULIB_TIMEGM=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_TIMEGM 1" >>confdefs.h
+
+
+  ## set up libobj if needed:
 if test ${HAVE_USLEEP} = 0 || test ${REPLACE_USLEEP} = 1; then
   case " $LIBOBJS " in
   *" usleep.$ac_objext "* ) ;;
@@ -33857,6 +35463,134 @@ else
 fi
 
 
+depcc="$CXX"  am_compiler_list=
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking dependency style of $depcc" >&5
+$as_echo_n "checking dependency style of $depcc... " >&6; }
+if ${am_cv_CXX_dependencies_compiler_type+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -z "$AMDEP_TRUE" && test -f "$am_depcomp"; then
+  # We make a subdir and do the tests there.  Otherwise we can end up
+  # making bogus files that we don't know about and never remove.  For
+  # instance it was reported that on HP-UX the gcc test will end up
+  # making a dummy file named 'D' -- because '-MD' means "put the output
+  # in D".
+  rm -rf conftest.dir
+  mkdir conftest.dir
+  # Copy depcomp to subdir because otherwise we won't find it if we're
+  # using a relative directory.
+  cp "$am_depcomp" conftest.dir
+  cd conftest.dir
+  # We will build objects and dependencies in a subdirectory because
+  # it helps to detect inapplicable dependency modes.  For instance
+  # both Tru64's cc and ICC support -MD to output dependencies as a
+  # side effect of compilation, but ICC will put the dependencies in
+  # the current directory while Tru64 will put them in the object
+  # directory.
+  mkdir sub
+
+  am_cv_CXX_dependencies_compiler_type=none
+  if test "$am_compiler_list" = ""; then
+     am_compiler_list=`sed -n 's/^#*\([a-zA-Z0-9]*\))$/\1/p' < ./depcomp`
+  fi
+  am__universal=false
+  case " $depcc " in #(
+     *\ -arch\ *\ -arch\ *) am__universal=true ;;
+     esac
+
+  for depmode in $am_compiler_list; do
+    # Setup a source with many dependencies, because some compilers
+    # like to wrap large dependency lists on column 80 (with \), and
+    # we should not choose a depcomp mode which is confused by this.
+    #
+    # We need to recreate these files for each test, as the compiler may
+    # overwrite some of them when testing with obscure command lines.
+    # This happens at least with the AIX C compiler.
+    : > sub/conftest.c
+    for i in 1 2 3 4 5 6; do
+      echo '#include "conftst'$i'.h"' >> sub/conftest.c
+      # Using ": > sub/conftst$i.h" creates only sub/conftst1.h with
+      # Solaris 10 /bin/sh.
+      echo '/* dummy */' > sub/conftst$i.h
+    done
+    echo "${am__include} ${am__quote}sub/conftest.Po${am__quote}" > confmf
+
+    # We check with '-c' and '-o' for the sake of the "dashmstdout"
+    # mode.  It turns out that the SunPro C++ compiler does not properly
+    # handle '-M -o', and we need to detect this.  Also, some Intel
+    # versions had trouble with output in subdirs.
+    am__obj=sub/conftest.${OBJEXT-o}
+    am__minus_obj="-o $am__obj"
+    case $depmode in
+    gcc)
+      # This depmode causes a compiler race in universal mode.
+      test "$am__universal" = false || continue
+      ;;
+    nosideeffect)
+      # After this tag, mechanisms are not by side-effect, so they'll
+      # only be used when explicitly requested.
+      if test "x$enable_dependency_tracking" = xyes; then
+	continue
+      else
+	break
+      fi
+      ;;
+    msvc7 | msvc7msys | msvisualcpp | msvcmsys)
+      # This compiler won't grok '-c -o', but also, the minuso test has
+      # not run yet.  These depmodes are late enough in the game, and
+      # so weak that their functioning should not be impacted.
+      am__obj=conftest.${OBJEXT-o}
+      am__minus_obj=
+      ;;
+    none) break ;;
+    esac
+    if depmode=$depmode \
+       source=sub/conftest.c object=$am__obj \
+       depfile=sub/conftest.Po tmpdepfile=sub/conftest.TPo \
+       $SHELL ./depcomp $depcc -c $am__minus_obj sub/conftest.c \
+         >/dev/null 2>conftest.err &&
+       grep sub/conftst1.h sub/conftest.Po > /dev/null 2>&1 &&
+       grep sub/conftst6.h sub/conftest.Po > /dev/null 2>&1 &&
+       grep $am__obj sub/conftest.Po > /dev/null 2>&1 &&
+       ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
+      # icc doesn't choke on unknown options, it will just issue warnings
+      # or remarks (even with -Werror).  So we grep stderr for any message
+      # that says an option was ignored or not supported.
+      # When given -MP, icc 7.0 and 7.1 complain thusly:
+      #   icc: Command line warning: ignoring option '-M'; no argument required
+      # The diagnosis changed in icc 8.0:
+      #   icc: Command line remark: option '-MP' not supported
+      if (grep 'ignoring option' conftest.err ||
+          grep 'not supported' conftest.err) >/dev/null 2>&1; then :; else
+        am_cv_CXX_dependencies_compiler_type=$depmode
+        break
+      fi
+    fi
+  done
+
+  cd ..
+  rm -rf conftest.dir
+else
+  am_cv_CXX_dependencies_compiler_type=none
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_CXX_dependencies_compiler_type" >&5
+$as_echo "$am_cv_CXX_dependencies_compiler_type" >&6; }
+CXXDEPMODE=depmode=$am_cv_CXX_dependencies_compiler_type
+
+ if
+  test "x$enable_dependency_tracking" != xno \
+  && test "$am_cv_CXX_dependencies_compiler_type" = gcc3; then
+  am__fastdepCXX_TRUE=
+  am__fastdepCXX_FALSE='#'
+else
+  am__fastdepCXX_TRUE='#'
+  am__fastdepCXX_FALSE=
+fi
+
+
 
 # POSIX will say in a future version that running "rm -f" with no argument
 # is OK; and we want to be able to make that assumption in our Makefile
@@ -34366,391 +36100,6 @@ ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-if test -z "$CXX"; then
-  if test -n "$CCC"; then
-    CXX=$CCC
-  else
-    if test -n "$ac_tool_prefix"; then
-  for ac_prog in g++ c++ gpp aCC CC cxx cc++ cl.exe FCC KCC RCC xlC_r xlC
-  do
-    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
-set dummy $ac_tool_prefix$ac_prog; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_CXX+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$CXX"; then
-  ac_cv_prog_CXX="$CXX" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_CXX="$ac_tool_prefix$ac_prog"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-CXX=$ac_cv_prog_CXX
-if test -n "$CXX"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CXX" >&5
-$as_echo "$CXX" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-    test -n "$CXX" && break
-  done
-fi
-if test -z "$CXX"; then
-  ac_ct_CXX=$CXX
-  for ac_prog in g++ c++ gpp aCC CC cxx cc++ cl.exe FCC KCC RCC xlC_r xlC
-do
-  # Extract the first word of "$ac_prog", so it can be a program name with args.
-set dummy $ac_prog; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_ac_ct_CXX+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$ac_ct_CXX"; then
-  ac_cv_prog_ac_ct_CXX="$ac_ct_CXX" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_CXX="$ac_prog"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-ac_ct_CXX=$ac_cv_prog_ac_ct_CXX
-if test -n "$ac_ct_CXX"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_CXX" >&5
-$as_echo "$ac_ct_CXX" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-  test -n "$ac_ct_CXX" && break
-done
-
-  if test "x$ac_ct_CXX" = x; then
-    CXX="g++"
-  else
-    case $cross_compiling:$ac_tool_warned in
-yes:)
-{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
-$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
-ac_tool_warned=yes ;;
-esac
-    CXX=$ac_ct_CXX
-  fi
-fi
-
-  fi
-fi
-# Provide some information about the compiler.
-$as_echo "$as_me:${as_lineno-$LINENO}: checking for C++ compiler version" >&5
-set X $ac_compile
-ac_compiler=$2
-for ac_option in --version -v -V -qversion; do
-  { { ac_try="$ac_compiler $ac_option >&5"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
-$as_echo "$ac_try_echo"; } >&5
-  (eval "$ac_compiler $ac_option >&5") 2>conftest.err
-  ac_status=$?
-  if test -s conftest.err; then
-    sed '10a\
-... rest of stderr output deleted ...
-         10q' conftest.err >conftest.er1
-    cat conftest.er1 >&5
-  fi
-  rm -f conftest.er1 conftest.err
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }
-done
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether we are using the GNU C++ compiler" >&5
-$as_echo_n "checking whether we are using the GNU C++ compiler... " >&6; }
-if ${ac_cv_cxx_compiler_gnu+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-int
-main ()
-{
-#ifndef __GNUC__
-       choke me
-#endif
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_compile "$LINENO"; then :
-  ac_compiler_gnu=yes
-else
-  ac_compiler_gnu=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-ac_cv_cxx_compiler_gnu=$ac_compiler_gnu
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_cxx_compiler_gnu" >&5
-$as_echo "$ac_cv_cxx_compiler_gnu" >&6; }
-if test $ac_compiler_gnu = yes; then
-  GXX=yes
-else
-  GXX=
-fi
-ac_test_CXXFLAGS=${CXXFLAGS+set}
-ac_save_CXXFLAGS=$CXXFLAGS
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX accepts -g" >&5
-$as_echo_n "checking whether $CXX accepts -g... " >&6; }
-if ${ac_cv_prog_cxx_g+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_save_cxx_werror_flag=$ac_cxx_werror_flag
-   ac_cxx_werror_flag=yes
-   ac_cv_prog_cxx_g=no
-   CXXFLAGS="-g"
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_compile "$LINENO"; then :
-  ac_cv_prog_cxx_g=yes
-else
-  CXXFLAGS=""
-      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_compile "$LINENO"; then :
-
-else
-  ac_cxx_werror_flag=$ac_save_cxx_werror_flag
-	 CXXFLAGS="-g"
-	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_compile "$LINENO"; then :
-  ac_cv_prog_cxx_g=yes
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-   ac_cxx_werror_flag=$ac_save_cxx_werror_flag
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_prog_cxx_g" >&5
-$as_echo "$ac_cv_prog_cxx_g" >&6; }
-if test "$ac_test_CXXFLAGS" = set; then
-  CXXFLAGS=$ac_save_CXXFLAGS
-elif test $ac_cv_prog_cxx_g = yes; then
-  if test "$GXX" = yes; then
-    CXXFLAGS="-g -O2"
-  else
-    CXXFLAGS="-g"
-  fi
-else
-  if test "$GXX" = yes; then
-    CXXFLAGS="-O2"
-  else
-    CXXFLAGS=
-  fi
-fi
-ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
-depcc="$CXX"  am_compiler_list=
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking dependency style of $depcc" >&5
-$as_echo_n "checking dependency style of $depcc... " >&6; }
-if ${am_cv_CXX_dependencies_compiler_type+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -z "$AMDEP_TRUE" && test -f "$am_depcomp"; then
-  # We make a subdir and do the tests there.  Otherwise we can end up
-  # making bogus files that we don't know about and never remove.  For
-  # instance it was reported that on HP-UX the gcc test will end up
-  # making a dummy file named 'D' -- because '-MD' means "put the output
-  # in D".
-  rm -rf conftest.dir
-  mkdir conftest.dir
-  # Copy depcomp to subdir because otherwise we won't find it if we're
-  # using a relative directory.
-  cp "$am_depcomp" conftest.dir
-  cd conftest.dir
-  # We will build objects and dependencies in a subdirectory because
-  # it helps to detect inapplicable dependency modes.  For instance
-  # both Tru64's cc and ICC support -MD to output dependencies as a
-  # side effect of compilation, but ICC will put the dependencies in
-  # the current directory while Tru64 will put them in the object
-  # directory.
-  mkdir sub
-
-  am_cv_CXX_dependencies_compiler_type=none
-  if test "$am_compiler_list" = ""; then
-     am_compiler_list=`sed -n 's/^#*\([a-zA-Z0-9]*\))$/\1/p' < ./depcomp`
-  fi
-  am__universal=false
-  case " $depcc " in #(
-     *\ -arch\ *\ -arch\ *) am__universal=true ;;
-     esac
-
-  for depmode in $am_compiler_list; do
-    # Setup a source with many dependencies, because some compilers
-    # like to wrap large dependency lists on column 80 (with \), and
-    # we should not choose a depcomp mode which is confused by this.
-    #
-    # We need to recreate these files for each test, as the compiler may
-    # overwrite some of them when testing with obscure command lines.
-    # This happens at least with the AIX C compiler.
-    : > sub/conftest.c
-    for i in 1 2 3 4 5 6; do
-      echo '#include "conftst'$i'.h"' >> sub/conftest.c
-      # Using ": > sub/conftst$i.h" creates only sub/conftst1.h with
-      # Solaris 10 /bin/sh.
-      echo '/* dummy */' > sub/conftst$i.h
-    done
-    echo "${am__include} ${am__quote}sub/conftest.Po${am__quote}" > confmf
-
-    # We check with '-c' and '-o' for the sake of the "dashmstdout"
-    # mode.  It turns out that the SunPro C++ compiler does not properly
-    # handle '-M -o', and we need to detect this.  Also, some Intel
-    # versions had trouble with output in subdirs.
-    am__obj=sub/conftest.${OBJEXT-o}
-    am__minus_obj="-o $am__obj"
-    case $depmode in
-    gcc)
-      # This depmode causes a compiler race in universal mode.
-      test "$am__universal" = false || continue
-      ;;
-    nosideeffect)
-      # After this tag, mechanisms are not by side-effect, so they'll
-      # only be used when explicitly requested.
-      if test "x$enable_dependency_tracking" = xyes; then
-	continue
-      else
-	break
-      fi
-      ;;
-    msvc7 | msvc7msys | msvisualcpp | msvcmsys)
-      # This compiler won't grok '-c -o', but also, the minuso test has
-      # not run yet.  These depmodes are late enough in the game, and
-      # so weak that their functioning should not be impacted.
-      am__obj=conftest.${OBJEXT-o}
-      am__minus_obj=
-      ;;
-    none) break ;;
-    esac
-    if depmode=$depmode \
-       source=sub/conftest.c object=$am__obj \
-       depfile=sub/conftest.Po tmpdepfile=sub/conftest.TPo \
-       $SHELL ./depcomp $depcc -c $am__minus_obj sub/conftest.c \
-         >/dev/null 2>conftest.err &&
-       grep sub/conftst1.h sub/conftest.Po > /dev/null 2>&1 &&
-       grep sub/conftst6.h sub/conftest.Po > /dev/null 2>&1 &&
-       grep $am__obj sub/conftest.Po > /dev/null 2>&1 &&
-       ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
-      # icc doesn't choke on unknown options, it will just issue warnings
-      # or remarks (even with -Werror).  So we grep stderr for any message
-      # that says an option was ignored or not supported.
-      # When given -MP, icc 7.0 and 7.1 complain thusly:
-      #   icc: Command line warning: ignoring option '-M'; no argument required
-      # The diagnosis changed in icc 8.0:
-      #   icc: Command line remark: option '-MP' not supported
-      if (grep 'ignoring option' conftest.err ||
-          grep 'not supported' conftest.err) >/dev/null 2>&1; then :; else
-        am_cv_CXX_dependencies_compiler_type=$depmode
-        break
-      fi
-    fi
-  done
-
-  cd ..
-  rm -rf conftest.dir
-else
-  am_cv_CXX_dependencies_compiler_type=none
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_CXX_dependencies_compiler_type" >&5
-$as_echo "$am_cv_CXX_dependencies_compiler_type" >&6; }
-CXXDEPMODE=depmode=$am_cv_CXX_dependencies_compiler_type
-
- if
-  test "x$enable_dependency_tracking" != xno \
-  && test "$am_cv_CXX_dependencies_compiler_type" = gcc3; then
-  am__fastdepCXX_TRUE=
-  am__fastdepCXX_FALSE='#'
-else
-  am__fastdepCXX_TRUE='#'
-  am__fastdepCXX_FALSE=
-fi
-
-
-ac_ext=cpp
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking how to run the C++ preprocessor" >&5
 $as_echo_n "checking how to run the C++ preprocessor... " >&6; }
 if test -z "$CXXCPP"; then
@@ -35083,6 +36432,11 @@ $as_echo "Not found" >&6; }
 # ---------------------- #
 # Checks for libraries.  #
 # ---------------------- #
+
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for printf in -lc" >&5
 $as_echo_n "checking for printf in -lc... " >&6; }
 if ${ac_cv_lib_c_printf+:} false; then :
@@ -36524,41 +37878,6 @@ fi
 
 
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether struct tm is in sys/time.h or time.h" >&5
-$as_echo_n "checking whether struct tm is in sys/time.h or time.h... " >&6; }
-if ${ac_cv_struct_tm+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <sys/types.h>
-#include <time.h>
-
-int
-main ()
-{
-struct tm tm;
-				     int *p = &tm.tm_sec;
-				     return !p;
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  ac_cv_struct_tm=time.h
-else
-  ac_cv_struct_tm=sys/time.h
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_struct_tm" >&5
-$as_echo "$ac_cv_struct_tm" >&6; }
-if test $ac_cv_struct_tm = sys/time.h; then
-
-$as_echo "#define TM_IN_SYS_TIME 1" >>confdefs.h
-
-fi
-
 ac_fn_c_check_member "$LINENO" "struct tm" "tm_zone" "ac_cv_member_struct_tm_tm_zone" "#include <sys/types.h>
 #include <$ac_cv_struct_tm>
 
@@ -37469,6 +38788,48 @@ fi
 done
 
 fi
+if test "x${ac_cv_func_gmtime}" = "x"; then
+  test -z "${ac_cv_func_gmtime}"
+  for ac_func in gmtime
+do :
+  ac_fn_c_check_func "$LINENO" "gmtime" "ac_cv_func_gmtime"
+if test "x$ac_cv_func_gmtime" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_GMTIME 1
+_ACEOF
+
+fi
+done
+
+fi
+if test "x${ac_cv_func_localtime}" = "x"; then
+  test -z "${ac_cv_func_localtime}"
+  for ac_func in localtime
+do :
+  ac_fn_c_check_func "$LINENO" "localtime" "ac_cv_func_localtime"
+if test "x$ac_cv_func_localtime" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LOCALTIME 1
+_ACEOF
+
+fi
+done
+
+fi
+if test "x${ac_cv_func_localtime_r}" = "x"; then
+  test -z "${ac_cv_func_localtime_r}"
+  for ac_func in localtime_r
+do :
+  ac_fn_c_check_func "$LINENO" "localtime_r" "ac_cv_func_localtime_r"
+if test "x$ac_cv_func_localtime_r" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LOCALTIME_R 1
+_ACEOF
+
+fi
+done
+
+fi
 if test "x${ac_cv_func_memchr}" = "x"; then
   test -z "${ac_cv_func_memchr}"
   for ac_func in memchr
@@ -37533,6 +38894,20 @@ do :
 if test "x$ac_cv_func_nl_langinfo" = xyes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_NL_LANGINFO 1
+_ACEOF
+
+fi
+done
+
+fi
+if test "x${ac_cv_func_setenv}" = "x"; then
+  test -z "${ac_cv_func_setenv}"
+  for ac_func in setenv
+do :
+  ac_fn_c_check_func "$LINENO" "setenv" "ac_cv_func_setenv"
+if test "x$ac_cv_func_setenv" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_SETENV 1
 _ACEOF
 
 fi
@@ -37609,6 +38984,63 @@ fi
 done
 
 fi
+
+      ac_fn_c_check_decl "$LINENO" "gmtime" "ac_cv_have_decl_gmtime" "$ac_includes_default"
+if test "x$ac_cv_have_decl_gmtime" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_GMTIME $ac_have_decl
+_ACEOF
+
+
+
+  :
+
+
+
+
+
+      ac_fn_c_check_decl "$LINENO" "localtime" "ac_cv_have_decl_localtime" "$ac_includes_default"
+if test "x$ac_cv_have_decl_localtime" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_LOCALTIME $ac_have_decl
+_ACEOF
+
+
+
+  :
+
+
+
+
+
+      ac_fn_c_check_decl "$LINENO" "localtime_r" "ac_cv_have_decl_localtime_r" "$ac_includes_default"
+if test "x$ac_cv_have_decl_localtime_r" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_LOCALTIME_R $ac_have_decl
+_ACEOF
+
+
+
+  :
+
+
+
+
 
       ac_fn_c_check_decl "$LINENO" "strerror" "ac_cv_have_decl_strerror" "$ac_includes_default"
 if test "x$ac_cv_have_decl_strerror" = xyes; then :
@@ -37909,6 +39341,10 @@ if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
+if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
+  as_fn_error $? "conditional \"am__fastdepCXX\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
  if test -n "$EXEEXT"; then
   am__EXEEXT_TRUE=
   am__EXEEXT_FALSE='#'
@@ -37919,10 +39355,6 @@ fi
 
 if test -z "${am__fastdepCCAS_TRUE}" && test -z "${am__fastdepCCAS_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCCAS\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
-  as_fn_error $? "conditional \"am__fastdepCXX\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${GMAKE_TRUE}" && test -z "${GMAKE_FALSE}"; then
@@ -39221,6 +40653,8 @@ $as_echo X"$file" |
     "default":C)
 case x${CONFIG_HEADERS} in
 xconfig.h:config.in)
+echo "warning: using wrong config header" | tee stamp-h ;;
+xconfig.h)
 echo "stamp" > stamp-h ;;
 esac
  ;;
@@ -39271,5 +40705,7 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
+
+echo "Done with the gnulib configure script."
 
 exit 0

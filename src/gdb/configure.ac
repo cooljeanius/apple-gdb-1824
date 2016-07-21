@@ -131,6 +131,27 @@ if test -x ${srcdir}/missing; then
   ## should now have it...
 fi
 
+##FIXME: this is probably a bad idea:
+if test -d ../intl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L. -L../intl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../intl"
+  fi
+elif test -d ../libintl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L. -L../libintl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../libintl"
+  fi
+fi
+
+# Configure gnulib.  We need to build gnulib under some other
+# directory not "gnulib", to avoid the problem of both GDB and
+# GDBserver wanting to build it in the same directory, when building
+# in the source dir.
+ACX_CONFIGURE_DIR(["gnulib"],["build-gnulib"])dnl
+
 dnl# List of object files and targets accumulated by configure:
 CONFIG_OBS=""
 CONFIG_DEPS=""
@@ -373,19 +394,6 @@ AC_MSG_NOTICE([done with first batch of APPLE_LOCAL checks])dnl
 dnl# Set up for gettext. PACKAGE is used when we call bindtextdomain.
 AC_MSG_CHECKING([gettext-related things (Cygnus-style)])
 AC_MSG_RESULT([ ])
-if test -d ../intl; then
-  if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L. -L../intl"
-  else
-    export LDFLAGS="${LDFLAGS} -L../intl"
-  fi
-elif test -d ../libintl; then
-  if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L. -L../libintl"
-  else
-    export LDFLAGS="${LDFLAGS} -L../libintl"
-  fi
-fi
 ALL_LINGUAS=""
 CY_GNU_GETTEXT
 AC_CHECK_FUNCS([gettext _gettext])dnl
@@ -1025,6 +1033,11 @@ case ${host_os} in
       AC_MSG_ERROR([MIG not found but required for ${host} hosts])
     fi
     ;;
+  darwin*)
+    if test x"${MIG}" = x""; then
+      AC_MSG_WARN([MIG not found but needed on ${host} hosts to regenerate sources made from .defs files])
+    fi
+    ;;
 esac
 
 # Tools for docs:
@@ -1227,7 +1240,7 @@ AC_SUBST([zlibinc])dnl
 
 # On FreeBSD we may need libutil for kinfo_getvmmap (used by fbsd-nat.c).
 # On GNU/kFreeBSD systems, FreeBSD libutil is renamed to libutil-freebsd.
-AC_SEARCH_LIBS([kinfo_getvmmap],[util util-freebsd kern],
+AC_SEARCH_LIBS([kinfo_getvmmap],[util util-freebsd kern kinfo kmod],
    [AC_DEFINE([HAVE_KINFO_GETVMMAP],[1],
               [Define to 1 if your system has the kinfo_getvmmap func])])
 
@@ -1281,6 +1294,9 @@ case ${host_os} in
             [AC_MSG_WARN([wborder function not found, disabling tui...])
              export enable_tui=no])
         ],[AC_MSG_WARN([no curses library found])])
+    ;;
+  darwin*)
+    test -d ${srcdir}/libtermcap && stat ../libtermcap
     ;;
 esac
 
@@ -1640,6 +1656,7 @@ if test "x${ac_cv_have_decl_sys_siglist}" != "xyes"; then
   ])dnl
   ## end better check for sys_siglist
 fi
+AC_CHECK_DECLS([gmtime, localtime, localtime_r])dnl
 AC_CHECK_DECLS([free, malloc, realloc])dnl
 AC_CHECK_DECLS([strerror, strstr, getopt])dnl
   ## the libiberty macro might have already checked these for us:
@@ -2079,16 +2096,16 @@ unset ac_cv_func_strchr
 AC_CHECK_FUNCS([atof alarm assert atexit bcopy bsearch bzero \
                 clnt_pcreateerror dup2 exit fflush fgets fprintf fwrite \
                 getcwd gethostbyaddr gethostbyname gethostname getpass \
-                gets gettimeofday inet_addr inet_ntoa isascii ishexnumber \
-                isnumber isspace mach_error_string memchr memcmp memcpy \
-                memmove mempcpy memset mkdir netname_look_up nl_langinfo \
-                pathconf pclose popen pow qsort qsort_r readdir recv \
-                re_comp regcomp select send setitimer socket strcasecmp \
-                strcat strchr strcpy strcspn strdup strerror strlcat \
-                strlcpy strlen strncasecmp strncat strncmp strncpy \
-                strndup strpbrk strrchr strspn strstr strtok strtok_r \
-                strtol strtoul timeradd timerclear timersub uname \
-                vasprintf wcwidth])dnl
+                gets gettimeofday gmtime inet_addr inet_ntoa isascii \
+                ishexnumber isnumber isspace localtime localtime_r \
+                mach_error_string memchr memcmp memcpy memmove mempcpy \
+                memset mkdir netname_look_up nl_langinfo pathconf pclose \
+                popen pow qsort qsort_r readdir recv re_comp regcomp \
+                select send setitimer socket strcasecmp strcat strchr \
+                strcpy strcspn strdup strerror strlcat strlcpy strlen \
+                strncasecmp strncat strncmp strncpy strndup strpbrk \
+                strrchr strspn strstr strtok strtok_r strtol strtoul \
+                timeradd timerclear timersub uname vasprintf wcwidth])dnl
 
 dnl# Use as a replacement for just-plain sprintf:
 if test "x${ac_cv_func_snprintf}" = "x"; then
@@ -2866,6 +2883,9 @@ if test "x${build}" = "x${host}" -a "x${host}" = "x${target}"; then
          CONFIG_LDFLAGS="${CONFIG_LDFLAGS} -lpthdebug"
       fi
       ;;
+   darwin*)
+      AC_MSG_NOTICE([skipping checks for thread library on darwin])
+      ;;
    esac
    AC_SUBST([CONFIG_LDFLAGS])dnl
    ## 3...
@@ -3027,7 +3047,7 @@ AC_SUBST([TARGET_SYSTEM_ROOT_DEFINE])dnl
 # gdb/doc/gdbint.texinfo.
 build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wparentheses -Wpointer-arith -Wchar-subscripts \
--Wunused-value -Wunused-label -Wunused-result -Wunused-local-typedefs  \
+-Wunused-value -Wunused-label -Wunused-result \
 -Wunused-variable -Wunused-but-set-variable -Wunused-but-set-parameter \
 -Wunused-function -Wempty-body -Wmissing-declarations \
 -Wignored-qualifiers -Wmissing-format-attribute -Waddress -Wattributes \
@@ -3208,6 +3228,8 @@ fi
 #  * -Wsuggest-attribute=pure (less obvious than its const counterpart)
 #  * -Wstack-usage=262144 (as in bfd/binutils)
 #  * -Wconditionally-supported (for C++)
+#  * -Wunused-local-typedefs (`mig` sometimes generates code triggering
+#    this, but it is inconsistent though)
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)
@@ -3227,7 +3249,6 @@ fi
 #    others such as -Wformat-nonliteral, so I added it back)
 #  * -Wnested-externs (if it gets redundant with -Wimplicit again)
 #  * -Wwrite-strings (in case all the const-ifying gets to be too much)
-#  * -Wunused-local-typedefs (`mig` used to generate code triggering this)
 # Up for debate in some other way:
 #  * -Wstrict-overflow (i.e., could change the value assigned to it. We use
 #    "1" now because that is the default for "-Wall", but "2" is the
@@ -3426,6 +3447,7 @@ case ${host} in
   *go32* ) SER_HARDWIRE=ser-go32.o ;;
   *djgpp* ) SER_HARDWIRE=ser-go32.o ;;
   *mingw32*) SER_HARDWIRE="ser-base.o ser-tcp.o" ;;
+  *e7kpc*|*e7000pc*) SER_HARDWIRE=ser-e7kpc.o ;;
 esac
 AC_SUBST([SER_HARDWIRE])dnl
 
@@ -4094,6 +4116,7 @@ AC_CONFIG_FILES([Makefile \
                  data-directory/Makefile \
                  .gdbinit:gdbinit.in \
                  gnulib/Makefile \
+                 build-gnulib/Makefile:gnulib/Makefile.in \
                  gdb-gdb.gdb])dnl
 AC_CONFIG_FILES([gcore],[chmod +x gcore])dnl
 AC_CONFIG_COMMANDS([default],[
@@ -4112,7 +4135,9 @@ echo "CONFIG_HEADERS are ${CONFIG_HEADERS}"
 
 case x${CONFIG_HEADERS} in
 xconfig.h:config.in)
-echo "" > stamp-h ;;
+echo "warning: using wrong config header" | tee stamp-h ;;
+xconfig.h)
+echo "stamp" > stamp-h ;;
 esac
 ],[
 gdb_host_cpu=${gdb_host_cpu}

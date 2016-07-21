@@ -291,6 +291,9 @@
 /* Define to 1 when the gnulib module mkdtemp should be tested. */
 #undef GNULIB_TEST_MKDTEMP
 
+/* Define to 1 when the gnulib module mktime should be tested. */
+#undef GNULIB_TEST_MKTIME
+
 /* Define to 1 when the gnulib module nl_langinfo should be tested. */
 #undef GNULIB_TEST_NL_LANGINFO
 
@@ -339,6 +342,9 @@
 /* Define to 1 when the gnulib module send should be tested. */
 #undef GNULIB_TEST_SEND
 
+/* Define to 1 when the gnulib module setenv should be tested. */
+#undef GNULIB_TEST_SETENV
+
 /* Define to 1 when the gnulib module sigaction should be tested. */
 #undef GNULIB_TEST_SIGACTION
 
@@ -378,8 +384,20 @@
 /* Define to 1 when the gnulib module strtok_r should be tested. */
 #undef GNULIB_TEST_STRTOK_R
 
+/* Define to 1 when the gnulib module timegm should be tested. */
+#undef GNULIB_TEST_TIMEGM
+
+/* Define to 1 when the gnulib module time_r should be tested. */
+#undef GNULIB_TEST_TIME_R
+
+/* Define to 1 when the gnulib module time_rz should be tested. */
+#undef GNULIB_TEST_TIME_RZ
+
 /* Define to 1 when the gnulib module unlink should be tested. */
 #undef GNULIB_TEST_UNLINK
+
+/* Define to 1 when the gnulib module unsetenv should be tested. */
+#undef GNULIB_TEST_UNSETENV
 
 /* Define to 1 when the gnulib module usleep should be tested. */
 #undef GNULIB_TEST_USLEEP
@@ -398,6 +416,9 @@
 
 /* Define if your system defines TIOCGWINSZ in sys/ioctl.h. */
 #undef GWINSZ_IN_SYS_IOCTL
+
+/* Define to 1 if you have the `alarm' function. */
+#undef HAVE_ALARM
 
 /* Define to 1 if you have 'alloca' after including <alloca.h>, a header that
    may be supplied by this distribution. */
@@ -459,6 +480,10 @@
    don't. */
 #undef HAVE_DECL_GETDTABLESIZE
 
+/* Define to 1 if you have the declaration of `gmtime', and to 0 if you don't.
+   */
+#undef HAVE_DECL_GMTIME
+
 /* Define to 1 if you have the declaration of `isblank', and to 0 if you
    don't. */
 #undef HAVE_DECL_ISBLANK
@@ -466,6 +491,14 @@
 /* Define to 1 if you have the declaration of `iswblank', and to 0 if you
    don't. */
 #undef HAVE_DECL_ISWBLANK
+
+/* Define to 1 if you have the declaration of `localtime', and to 0 if you
+   don't. */
+#undef HAVE_DECL_LOCALTIME
+
+/* Define to 1 if you have the declaration of `localtime_r', and to 0 if you
+   don't. */
+#undef HAVE_DECL_LOCALTIME_R
 
 /* Define to 1 if you have the declaration of `mbrtowc', and to 0 if you
    don't. */
@@ -486,6 +519,10 @@
 /* Define to 1 if you have the declaration of `memrchr', and to 0 if you
    don't. */
 #undef HAVE_DECL_MEMRCHR
+
+/* Define to 1 if you have the declaration of `setenv', and to 0 if you don't.
+   */
+#undef HAVE_DECL_SETENV
 
 /* Define to 1 if you have the declaration of `sleep', and to 0 if you don't.
    */
@@ -522,6 +559,10 @@
 /* Define to 1 if you have the declaration of `tzname', and to 0 if you don't.
    */
 #undef HAVE_DECL_TZNAME
+
+/* Define to 1 if you have the declaration of `unsetenv', and to 0 if you
+   don't. */
+#undef HAVE_DECL_UNSETENV
 
 /* Define to 1 if you have the declaration of `wcrtomb', and to 0 if you
    don't. */
@@ -607,6 +648,9 @@
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
 
+/* Define to 1 if you have the `gmtime' function. */
+#undef HAVE_GMTIME
+
 /* Define to 1 if the compiler supports one of the keywords 'inline',
    '__inline__', '__inline' and effectively inlines functions marked as such.
    */
@@ -665,6 +709,12 @@
 
 /* Define to 1 if you have the <locale.h> header file. */
 #undef HAVE_LOCALE_H
+
+/* Define to 1 if you have the `localtime' function. */
+#undef HAVE_LOCALTIME
+
+/* Define to 1 if you have the `localtime_r' function. */
+#undef HAVE_LOCALTIME_R
 
 /* Define to 1 if the system has the type 'long long int'. */
 #undef HAVE_LONG_LONG_INT
@@ -1723,11 +1773,17 @@
 /* Define to 1 if the system has the type `sa_family_t'. */
 #undef HAVE_SA_FAMILY_T
 
+/* Define to 1 if you have the <search.h> header file. */
+#undef HAVE_SEARCH_H
+
 /* Define to 1 if you have the `secure_getenv' function. */
 #undef HAVE_SECURE_GETENV
 
 /* Define to 1 if you have the `setdtablesize' function. */
 #undef HAVE_SETDTABLESIZE
+
+/* Define to 1 if you have the `setenv' function. */
+#undef HAVE_SETENV
 
 /* Define to 1 if you have the `setlocale' function. */
 #undef HAVE_SETLOCALE
@@ -1947,6 +2003,12 @@
 /* Define to 1 if you have <sys/wait.h> that is POSIX.1 compatible. */
 #undef HAVE_SYS_WAIT_H
 
+/* Define to 1 if you have the `timegm' function. */
+#undef HAVE_TIMEGM
+
+/* Define to 1 if the system has the type `timezone_t'. */
+#undef HAVE_TIMEZONE_T
+
 /* Define to 1 if you have the <time.h> header file. */
 #undef HAVE_TIME_H
 
@@ -1956,6 +2018,9 @@
 
 /* Define to 1 if you have the `towlower' function. */
 #undef HAVE_TOWLOWER
+
+/* Define to 1 if you have the `tsearch' function. */
+#undef HAVE_TSEARCH
 
 /* Define to 1 if you don't have `tm_zone' but do have the external array
    `tzname'. */
@@ -1969,6 +2034,9 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* Define to 1 if you have the `unsetenv' function. */
+#undef HAVE_UNSETENV
 
 /* Define to 1 if the system has the type 'unsigned long long int'. */
 #undef HAVE_UNSIGNED_LONG_LONG_INT
@@ -2187,6 +2255,9 @@
 /* Define to 1 if strerror_r returns char *. */
 #undef STRERROR_R_CHAR_P
 
+/* Define to 1 if time_t is signed. */
+#undef TIME_T_IS_SIGNED
+
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
 
@@ -2239,6 +2310,9 @@
 # undef __EXTENSIONS__
 #endif /* !__EXTENSIONS__ */
 
+
+/* Define to 1 if unsetenv returns void instead of int. */
+#undef VOID_UNSETENV
 
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
    'wchar_t'. */
@@ -2481,6 +2555,9 @@
 
 /* Define to rpl_memcmp if the replacement function should be used. */
 #undef memcmp
+
+/* Define to the real name of the mktime_internal function. */
+#undef mktime_internal
 
 /* Define to `int' if <sys/types.h> does not define. */
 #undef mode_t

@@ -96,7 +96,9 @@ extern void init_child_ops(void);
 extern char *child_pid_to_str(ptid_t);
 #endif /* !CHILD_PID_TO_STR */
 
+#ifndef environ
 extern char **environ;
+#endif /* !environ */
 
 int child_suppress_run = 0;  /* Non-zero if inftarg should pretend not to
                               * be a runnable target.  Used by targets

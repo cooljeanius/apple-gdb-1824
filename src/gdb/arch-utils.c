@@ -671,14 +671,14 @@ extern const bfd_arch_info_type DEFAULT_BFD_ARCH;
 static const bfd_arch_info_type *default_bfd_arch = &DEFAULT_BFD_ARCH;
 #else
 static const bfd_arch_info_type *default_bfd_arch;
-#endif
+#endif /* DEFAULT_BFD_ARCH */
 
 #ifdef DEFAULT_BFD_VEC
 extern const bfd_target DEFAULT_BFD_VEC;
 static const bfd_target *default_bfd_vec = &DEFAULT_BFD_VEC;
 #else
 static const bfd_target *default_bfd_vec;
-#endif
+#endif /* DEFAULT_BFD_VEC */
 
 void
 initialize_current_architecture(void)
@@ -745,7 +745,7 @@ initialize_current_architecture(void)
       info.byte_order = BFD_ENDIAN_BIG;
     }
 
-  if (! gdbarch_update_p (info))
+  if (!gdbarch_update_p(info))
     internal_error(__FILE__, __LINE__,
 		   _("initialize_current_architecture: Selection of "
 		     "initial architecture failed"));

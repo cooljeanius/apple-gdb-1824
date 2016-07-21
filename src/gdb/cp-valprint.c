@@ -265,7 +265,8 @@ cp_print_value_fields (struct type *type, struct type *real_type,
 {
   int i, len, n_baseclasses;
   struct obstack tmp_obstack;
-  char *last_dont_print = obstack_next_free (&dont_print_statmem_obstack);
+  char *last_dont_print =
+    (char *)obstack_next_free(&dont_print_statmem_obstack);
   int fields_seen = 0;
 
   CHECK_TYPEDEF (type);

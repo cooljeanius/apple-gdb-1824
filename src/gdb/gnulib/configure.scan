@@ -11,6 +11,8 @@ AC_PROG_YACC
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
+AC_PROG_CXX
+AC_PROG_RANLIB
 
 # Checks for libraries.
 
@@ -45,10 +47,11 @@ AC_FUNC_ERROR_AT_LINE
 AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 AC_FUNC_MALLOC
 AC_FUNC_MBRTOWC
+AC_FUNC_MKTIME
 AC_FUNC_REALLOC
 AC_FUNC_STRERROR_R
 AC_FUNC_STRNLEN
-AC_CHECK_FUNCS([atexit btowc dup2 fchdir getcwd getpagesize gettimeofday isascii iswprint localeconv memchr memmove mempcpy memset nl_langinfo putenv re_comp regcomp rmdir setlocale strcasecmp strchr strdup strerror strncasecmp strndup strpbrk strrchr strspn strstr strtol tzset wcwidth])
+AC_CHECK_FUNCS([atexit btowc dup2 fchdir getcwd getpagesize gettimeofday isascii iswprint localeconv localtime_r memchr memmove mempcpy memset nl_langinfo putenv re_comp regcomp rmdir setenv setlocale strcasecmp strchr strdup strerror strncasecmp strndup strpbrk strrchr strspn strstr strtol tzset wcwidth])
 
 AC_CONFIG_FILES([Makefile
                  import/Makefile])

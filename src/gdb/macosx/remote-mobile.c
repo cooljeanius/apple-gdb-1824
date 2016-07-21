@@ -24,6 +24,8 @@
 
 #define _DARWIN_C_SOURCE /* for CMSG_LEN */
 
+#include "defs.h"
+
 #include <sys/socket.h>
 #include <fcntl.h>
 #include <sys/un.h>
@@ -31,7 +33,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "defs.h"
 #include "target.h"
 #include "remote.h"
 #include "serial.h"
@@ -271,8 +272,8 @@ _initialize_remote_mobile(void)
   memset(ops, 0, sizeof(struct serial_ops));
   ops->name = "filedesc";
   ops->next = 0;
-  ops->open = filedesc_open;
-  ops->close = filedesc_close;
+  ops->so_open = filedesc_open;
+  ops->so_close = filedesc_close;
   ops->readchar = ser_base_readchar;
   ops->write = ser_base_write;
   ops->flush_output = ser_base_flush_output;

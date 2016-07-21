@@ -28,6 +28,8 @@
 # endif /* !_DARWIN_C_SOURCE */
 #endif /* S_SPLINT_S */
 
+#include "defs.h"
+
 #include <errno.h>
 #include <netdb.h>
 #include <stdio.h>
@@ -45,7 +47,6 @@
 
 #include "kdp-udp.h"
 
-#include "defs.h"
 #include "event-loop.h"
 
 #ifndef assert

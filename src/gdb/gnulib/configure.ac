@@ -135,6 +135,12 @@ AX_CHECK_GNU_MAKE
 # ---------------------- #
 # Checks for libraries.  #
 # ---------------------- #
+
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+AC_SUBST([acl_cv_wl])dnl
+
 AC_CHECK_LIB([c],[printf])dnl
 
 # Solaris requires -lintl if you want strerror (which calls dgettext)
@@ -381,6 +387,18 @@ if test "x${ac_cv_func_gettimeofday}" = "x"; then
   test -z "${ac_cv_func_gettimeofday}"
   AC_CHECK_FUNCS([gettimeofday])
 fi
+if test "x${ac_cv_func_gmtime}" = "x"; then
+  test -z "${ac_cv_func_gmtime}"
+  AC_CHECK_FUNCS([gmtime])
+fi
+if test "x${ac_cv_func_localtime}" = "x"; then
+  test -z "${ac_cv_func_localtime}"
+  AC_CHECK_FUNCS([localtime])
+fi
+if test "x${ac_cv_func_localtime_r}" = "x"; then
+  test -z "${ac_cv_func_localtime_r}"
+  AC_CHECK_FUNCS([localtime_r])
+fi
 if test "x${ac_cv_func_memchr}" = "x"; then
   test -z "${ac_cv_func_memchr}"
   AC_CHECK_FUNCS([memchr])
@@ -400,6 +418,10 @@ fi
 if test "x${ac_cv_func_nl_langinfo}" = "x"; then
   test -z "${ac_cv_func_nl_langinfo}"
   AC_CHECK_FUNCS([nl_langinfo])
+fi
+if test "x${ac_cv_func_setenv}" = "x"; then
+  test -z "${ac_cv_func_setenv}"
+  AC_CHECK_FUNCS([setenv])
 fi
 if test "x${ac_cv_func_strdup}" = "x"; then
   test -z "${ac_cv_func_strdup}"
@@ -421,6 +443,9 @@ if test "x${ac_cv_func_wcwidth}" = "x"; then
   test -z "${ac_cv_func_wcwidth}"
   AC_CHECK_FUNCS([wcwidth])
 fi
+AC_CHECK_DECLS_ONCE([gmtime])dnl
+AC_CHECK_DECLS_ONCE([localtime])dnl
+AC_CHECK_DECLS_ONCE([localtime_r])dnl
 AC_CHECK_DECLS_ONCE([strerror])dnl
   ## force this check to be done again:
 unset ac_cv_have_decl_wctype
@@ -460,6 +485,8 @@ AC_CONFIG_FILES([Makefile Makefile_orig import/Makefile])dnl
 AC_CONFIG_COMMANDS([default],[
 case x${CONFIG_HEADERS} in
 xconfig.h:config.in)
+echo "warning: using wrong config header" | tee stamp-h ;;
+xconfig.h)
 echo "stamp" > stamp-h ;;
 esac
 ],[])dnl
@@ -475,5 +502,7 @@ fi
 ],[])dnl
 
 AC_OUTPUT
+
+echo "Done with the gnulib configure script."
 
 exit 0

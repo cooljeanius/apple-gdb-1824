@@ -202,21 +202,21 @@ serial_open (const char *name)
       open_name = name + 1; /* discard ``|'' */
     }
   else
-    ops = serial_interface_lookup ("hardwire");
+    ops = serial_interface_lookup("hardwire");
 
   if (!ops)
     return NULL;
 
-  scb = XMALLOC (struct serial);
+  scb = XMALLOC(struct serial);
 
   scb->ops = ops;
 
   scb->bufcnt = 0;
   scb->bufp = scb->buf;
 
-  if (scb->ops->open (scb, open_name))
+  if (scb->ops->so_open(scb, open_name))
     {
-      xfree (scb);
+      xfree(scb);
       return NULL;
     }
 
@@ -311,13 +311,13 @@ do_serial_close (struct serial *scb, int really_close)
 
   /* ensure that the FD has been taken out of async mode */
   if (scb->async_handler != NULL)
-    serial_async (scb, NULL, NULL);
+    serial_async(scb, NULL, NULL);
 
   if (really_close)
-    scb->ops->close (scb);
+    scb->ops->so_close(scb);
 
   if (scb->name)
-    xfree (scb->name);
+    xfree(scb->name);
 
   if (scb_base == scb)
     scb_base = scb_base->next;

@@ -627,6 +627,7 @@ ac_subst_vars='LTLIBOBJS
 WERROR_CFLAGS
 WARN_CFLAGS
 WARN_COMPILER_FLAGS
+GNULIB_STDINT_H
 USE_THREAD_DB
 extra_libraries
 IPA_DEPFILES
@@ -639,6 +640,7 @@ GDBSERVER_PLATFORM_INCLUDE
 RDYNAMIC
 LIBOBJS
 ALLOCA
+acl_cv_wl
 gdb_cv_sys_global_symbol_to_c_name_address_lib_prefix
 gdb_cv_sys_global_symbol_to_c_name_address
 gdb_cv_sys_global_symbol_to_cdecl
@@ -5050,6 +5052,109 @@ $as_echo "no" >&6; }
 fi
 
 
+# Configure gnulib.  We can't use AC_CONFIG_SUBDIRS as that'd expect
+# to find the the source subdir to be configured directly under
+# gdbserver/.  We need to build gnulib under some other directory not
+# "gnulib", to avoid the problem of both GDB and GDBserver wanting to
+# build it in the same directory, when building in the source dir.
+
+  in_src="../gnulib"
+  in_build="build-gnulib"
+
+
+
+  # Remove --cache-file, --srcdir, and --disable-option-checking arguments
+  # so they do not pile up.
+  ac_sub_configure_args=
+  ac_prev=
+  eval "set x $ac_configure_args"
+  shift
+  for ac_arg
+  do
+    if test -n "$ac_prev"; then
+      ac_prev=
+      continue
+    fi
+    case $ac_arg in
+    -cache-file | --cache-file | --cache-fil | --cache-fi \
+    | --cache-f | --cache- | --cache | --cach | --cac | --ca | --c)
+      ac_prev=cache_file ;;
+    -cache-file=* | --cache-file=* | --cache-fil=* | --cache-fi=* \
+    | --cache-f=* | --cache-=* | --cache=* | --cach=* | --cac=* | --ca=* \
+    | --c=*)
+      ;;
+    --config-cache | -C)
+      ;;
+    -srcdir | --srcdir | --srcdi | --srcd | --src | --sr)
+      ac_prev=srcdir ;;
+    -srcdir=* | --srcdir=* | --srcdi=* | --srcd=* | --src=* | --sr=*)
+      ;;
+    -prefix | --prefix | --prefi | --pref | --pre | --pr | --p)
+      ac_prev=prefix ;;
+    -prefix=* | --prefix=* | --prefi=* | --pref=* | --pre=* | --pr=* | --p=*)
+      ;;
+    --disable-option-checking)
+      ;;
+    *)
+      case $ac_arg in
+      *\'*) ac_arg=`$as_echo "$ac_arg" | sed "s/'/'\\\\\\\\''/g"` ;;
+      esac
+      as_fn_append ac_sub_configure_args " '$ac_arg'" ;;
+    esac
+  done
+
+  # Always prepend --prefix to ensure using the same prefix
+  # in subdir configurations.
+  ac_arg="--prefix=$prefix"
+  case $ac_arg in
+  *\'*) ac_arg=`$as_echo "$ac_arg" | sed "s/'/'\\\\\\\\''/g"` ;;
+  esac
+  ac_sub_configure_args="'$ac_arg' $ac_sub_configure_args"
+
+  # Pass --silent
+  if test "$silent" = yes; then
+    ac_sub_configure_args="--silent $ac_sub_configure_args"
+  fi
+
+  # Always prepend --disable-option-checking to silence warnings, since
+  # different subdirs can have different --enable and --with options.
+  ac_sub_configure_args="--disable-option-checking $ac_sub_configure_args"
+
+  ac_popdir=`pwd`
+  ac_dir=$in_build
+
+  ac_msg="=== configuring in $ac_dir (`pwd`/$ac_dir)"
+  $as_echo "$as_me:${as_lineno-$LINENO}: $ac_msg" >&5
+  $as_echo "$ac_msg" >&6
+  as_dir="$ac_dir"; as_fn_mkdir_p
+
+  case $srcdir in
+  [\\/]* | ?:[\\/]* )
+    ac_srcdir=$srcdir/$in_src ;;
+  *) # Relative name.
+    ac_srcdir=../$srcdir/$in_src ;;
+  esac
+
+  cd "$ac_dir"
+
+  ac_sub_configure=$ac_srcdir/configure
+
+  # Make the cache file name correct relative to the subdirectory.
+  case $cache_file in
+  [\\/]* | ?:[\\/]* ) ac_sub_cache_file=$cache_file ;;
+  *) # Relative name.
+    ac_sub_cache_file=$ac_top_build_prefix$cache_file ;;
+  esac
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: running $SHELL $ac_sub_configure $ac_sub_configure_args --cache-file=$ac_sub_cache_file --srcdir=$ac_srcdir" >&5
+$as_echo "$as_me: running $SHELL $ac_sub_configure $ac_sub_configure_args --cache-file=$ac_sub_cache_file --srcdir=$ac_srcdir" >&6;}
+  # The eval makes quoting arguments work.
+  eval "\$SHELL \"\$ac_sub_configure\" $ac_sub_configure_args \
+       --cache-file=\"\$ac_sub_cache_file\" --srcdir=\"\$ac_srcdir\"" ||
+    as_fn_error $? "$ac_sub_configure failed for $ac_dir" "$LINENO" 5
+
+  cd "$ac_popdir"
+
 # Check for a way of listing symbols:
 
 
@@ -5889,6 +5994,10 @@ if test "$ac_res" != no; then :
 
 fi
 
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+
 # Checks for header files.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking headers" >&5
 $as_echo_n "checking headers... " >&6; }
@@ -6522,6 +6631,36 @@ fi
 
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_CHILD_GET_PAGESIZE $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "gmtime" "ac_cv_have_decl_gmtime" "$ac_includes_default"
+if test "x$ac_cv_have_decl_gmtime" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_GMTIME $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "localtime" "ac_cv_have_decl_localtime" "$ac_includes_default"
+if test "x$ac_cv_have_decl_localtime" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_LOCALTIME $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "localtime_r" "ac_cv_have_decl_localtime_r" "$ac_includes_default"
+if test "x$ac_cv_have_decl_localtime_r" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_LOCALTIME_R $ac_have_decl
 _ACEOF
 ac_fn_c_check_decl "$LINENO" "strerror" "ac_cv_have_decl_strerror" "$ac_includes_default"
 if test "x$ac_cv_have_decl_strerror" = xyes; then :
@@ -8901,11 +9040,11 @@ fi
 done
 
 
-for ac_func in atexit basename child_get_pagesize gettimeofday inet_ntoa \
-                memset minus_one_ptid pread pread64 pwrite readlink \
-                select setenv socket strchr strdup strerror strlen \
-                strncmp strrchr strstr strtol strtoul strtoull \
-                xfree xmalloc xsnprintf xstrdup
+for ac_func in atexit basename child_get_pagesize gettimeofday gmtime \
+                inet_ntoa localtime localtime_r memset minus_one_ptid \
+                pread pread64 pwrite readlink select setenv socket strchr \
+                strdup strerror strlen strncmp strrchr strstr strtol \
+                strtoul strtoull xfree xmalloc xsnprintf xstrdup
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -10034,6 +10173,14 @@ fi
 
 
 
+GNULIB_IMPORT_DIR=build-gnulib/import
+# For Makefile dependencies.
+GNULIB_STDINT_H=""
+if test x"${STDINT_H}" != x""; then
+  test -n "${STDINT_H}" && test -n "${GNULIB_IMPORT_DIR}"
+  export GNULIB_STDINT_H=${GNULIB_IMPORT_DIR}/${STDINT_H}
+fi
+
 build_warnings="-Wmain -Wpointer-arith -Wformat-security \
 -Wno-char-subscripts -Wempty-body -Wno-unused-parameter -Wundef -Wswitch \
 -Wparentheses -Winline -Wvolatile-register-var -Warray-bounds \
@@ -10117,7 +10264,11 @@ if test "x${GCC}" = "xyes"
 then
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking compiler warning flags" >&5
 $as_echo_n "checking compiler warning flags... " >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: (will report full results at end)" >&5
+$as_echo "(will report full results at end)" >&6; }
     for w in ${build_warnings}; do
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if compiler supports ${w}" >&5
+$as_echo_n "checking if compiler supports ${w}... " >&6; }
 	case ${w} in
 	-Werr*)
 	    	    ;;
@@ -10129,12 +10280,46 @@ $as_echo_n "checking compiler warning flags... " >&6; }
 
 _ACEOF
 if ac_fn_cxx_try_compile "$LINENO"; then :
-  WARN_CFLAGS="${WARN_CFLAGS} ${w}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+                               WARN_CFLAGS="${WARN_CFLAGS} ${w}"
 else
-  BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+                               BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 	    CFLAGS="${saved_CFLAGS}"
+            ;;
+        -Wformat-nonliteral|-Wformat-y2k|-Wformat-security)
+            ## (These would be ignored without also using -Wformat)
+	    saved_CFLAGS="${CFLAGS}"
+	    CFLAGS="${CFLAGS} ${w} -Werror -Wformat"
+	    saved_CXXFLAGS="${CXXFLAGS}"
+	    CXXFLAGS="${CXXFLAGS} ${w} -Werror -Wformat"
+	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+                               WARN_CFLAGS="${WARN_CFLAGS} ${w}"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+                               BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+	    CFLAGS="${saved_CFLAGS}"
+	    CXXFLAGS="${saved_CXXFLAGS}"
             ;;
 	*) # Check that GCC accepts it:
 	    saved_CFLAGS="${CFLAGS}"
@@ -10153,9 +10338,13 @@ main ()
 }
 _ACEOF
 if ac_fn_cxx_try_compile "$LINENO"; then :
-  WARN_CFLAGS="${WARN_CFLAGS} ${w}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+                               WARN_CFLAGS="${WARN_CFLAGS} ${w}"
 else
-  BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+                               BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 	    CFLAGS="${saved_CFLAGS}"
@@ -11523,3 +11712,5 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
+
+echo "Done with the gdbserver configure script."

@@ -22,12 +22,13 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#include "defs.h"
+
 #include "kdp-transactions.h"
 #include "kdp-protocol.h"
 
 #include <stdlib.h>
 
-#include "defs.h"
 #ifndef assert
 # define assert CHECK_FATAL
 #endif /* !assert */

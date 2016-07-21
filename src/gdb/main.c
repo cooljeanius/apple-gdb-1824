@@ -115,7 +115,9 @@ captured_command_loop(void *data)
 
 /* Keep this condition the same as where it is used: */
 #ifdef HAVE_SBRK
+# ifndef environ
 extern char **environ;
+# endif /* !environ */
 #endif /* HAVE_SBRK */
 /* Likewise: */
 #ifdef GDBTK

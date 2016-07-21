@@ -4074,6 +4074,7 @@ static int rebuf_needs_freeing = 0;
 
 static int regex_fmt = REG_BASIC;
 
+#if !(defined(_REGEX_H) && (defined(_GNU_SOURCE) || defined(__USE_GNU)))
 /* newflags is a bitmask of:
  * REG_EXTENDED, REG_BASIC, REG_NOSPEC, REG_ICASE, REG_NOSUB, REG_NEWLINE,
  * REG_PEND used for subsequent re_comp's */
@@ -4084,6 +4085,7 @@ re_set_syntax(int newflags)
   regex_fmt = newflags;
   return oldflags;
 }
+#endif /* !(_REGEX_H && (_GNU_SOURCE || __USE_GNU)) */
 
 /* */
 const char *

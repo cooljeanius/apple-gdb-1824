@@ -348,6 +348,18 @@
    */
 #undef HAVE_DECL_GETOPT
 
+/* Define to 1 if you have the declaration of `gmtime', and to 0 if you don't.
+   */
+#undef HAVE_DECL_GMTIME
+
+/* Define to 1 if you have the declaration of `localtime', and to 0 if you
+   don't. */
+#undef HAVE_DECL_LOCALTIME
+
+/* Define to 1 if you have the declaration of `localtime_r', and to 0 if you
+   don't. */
+#undef HAVE_DECL_LOCALTIME_R
+
 /* Define to 1 if you have the declaration of `malloc', and to 0 if you don't.
    */
 #undef HAVE_DECL_MALLOC
@@ -544,6 +556,9 @@
 /* Define to 1 if you have the `getuid' function. */
 #undef HAVE_GETUID
 
+/* Define to 1 if you have the `gmtime' function. */
+#undef HAVE_GMTIME
+
 /* Define to 1 if you have the <gnu/libc-version.h> header file. */
 #undef HAVE_GNU_LIBC_VERSION_H
 
@@ -691,6 +706,12 @@
 
 /* Define to 1 if you have the <locale.h> header file. */
 #undef HAVE_LOCALE_H
+
+/* Define to 1 if you have the `localtime' function. */
+#undef HAVE_LOCALTIME
+
+/* Define to 1 if you have the `localtime_r' function. */
+#undef HAVE_LOCALTIME_R
 
 /* Define to 1 if the compiler supports long double. */
 #undef HAVE_LONG_DOUBLE

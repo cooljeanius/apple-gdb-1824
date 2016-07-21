@@ -866,16 +866,16 @@ hardwire_close(struct serial *scb)
   scb->fd = -1;
 }
 
-
+/* */
 void
-_initialize_ser_hardwire (void)
+_initialize_ser_hardwire(void)
 {
-  struct serial_ops *ops = XMALLOC (struct serial_ops);
-  memset (ops, 0, sizeof (struct serial_ops));
+  struct serial_ops *ops = XMALLOC(struct serial_ops);
+  memset(ops, 0, sizeof(struct serial_ops));
   ops->name = "hardwire";
   ops->next = 0;
-  ops->open = hardwire_open;
-  ops->close = hardwire_close;
+  ops->so_open = hardwire_open;
+  ops->so_close = hardwire_close;
   /* FIXME: Don't replace this with the equivalent ser_base*() until
      the old TERMIOS/SGTTY/... timer code has been flushed. cagney
      1999-09-16. */

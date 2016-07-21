@@ -210,30 +210,30 @@ struct serial_ops
   {
     const char *name;
     struct serial_ops *next;
-    int (*open) (struct serial *, const char *name);
-    void (*close) (struct serial *);
-    int (*readchar) (struct serial *, int timeout);
-    int (*write) (struct serial *, const char *str, int len);
+    int (*so_open)(struct serial *, const char *name);
+    void (*so_close)(struct serial *);
+    int (*readchar)(struct serial *, int timeout);
+    int (*write)(struct serial *, const char *str, int len);
     /* Discard pending output */
-    int (*flush_output) (struct serial *);
+    int (*flush_output)(struct serial *);
     /* Discard pending input */
-    int (*flush_input) (struct serial *);
-    int (*send_break) (struct serial *);
-    void (*go_raw) (struct serial *);
-    serial_ttystate (*get_tty_state) (struct serial *);
-    int (*set_tty_state) (struct serial *, serial_ttystate);
-    void (*print_tty_state) (struct serial *, serial_ttystate,
-			     struct ui_file *);
-    int (*noflush_set_tty_state) (struct serial *, serial_ttystate,
-				  serial_ttystate);
-    int (*setbaudrate) (struct serial *, int rate);
-    int (*setstopbits) (struct serial *, int num);
+    int (*flush_input)(struct serial *);
+    int (*send_break)(struct serial *);
+    void (*go_raw)(struct serial *);
+    serial_ttystate (*get_tty_state)(struct serial *);
+    int (*set_tty_state)(struct serial *, serial_ttystate);
+    void (*print_tty_state)(struct serial *, serial_ttystate,
+			    struct ui_file *);
+    int (*noflush_set_tty_state)(struct serial *, serial_ttystate,
+				 serial_ttystate);
+    int (*setbaudrate)(struct serial *, int rate);
+    int (*setstopbits)(struct serial *, int num);
     /* Wait for output to drain */
-    int (*drain_output) (struct serial *);
+    int (*drain_output)(struct serial *);
     /* Change the serial device into/out of asynchronous mode, call
        the specified function when ever there is something
        interesting.  */
-    void (*async) (struct serial *scb, int async_p);
+    void (*async)(struct serial *scb, int async_p);
     /* Perform a low-level read operation, reading (at most) COUNT
        bytes into SCB->BUF.  */
     int (*read_prim)(struct serial *scb, size_t count);

@@ -775,13 +775,14 @@ pascal_object_print_value_fields (struct type *type, const gdb_byte *valaddr,
 {
   int i, len, n_baseclasses;
   struct obstack tmp_obstack;
-  char *last_dont_print = obstack_next_free (&dont_print_statmem_obstack);
+  char *last_dont_print =
+    (char *)obstack_next_free(&dont_print_statmem_obstack);
 
-  CHECK_TYPEDEF (type);
+  CHECK_TYPEDEF(type);
 
-  fprintf_filtered (stream, "{");
-  len = TYPE_NFIELDS (type);
-  n_baseclasses = TYPE_N_BASECLASSES (type);
+  fprintf_filtered(stream, "{");
+  len = TYPE_NFIELDS(type);
+  n_baseclasses = TYPE_N_BASECLASSES(type);
 
   /* Print out baseclasses such that we don't print
      duplicates of virtual baseclasses.  */

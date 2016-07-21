@@ -22,6 +22,8 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#include "defs.h"
+
 #include <errno.h>
 #include <netdb.h>
 #include <stdio.h>
@@ -33,7 +35,6 @@
 #include "kdp-protocol.h"
 #include "kdp-udp.h"
 
-#include "defs.h"
 #ifndef assert
 # define assert CHECK_FATAL
 #endif /* !assert */
