@@ -232,15 +232,16 @@ extern const char *spaces(int count) ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
    string.  */
 extern int errno_max(void) ATTRIBUTE_W_U_R;
 
-/* Return the name of an errno value (e.g., strerrno (EINVAL) returns
+/* Return the name of an errno value (e.g., strerrno(EINVAL) returns
    "EINVAL").  */
 extern const char *strerrno(int) ATTRIBUTE_W_U_R;
 
 /* Given the name of an errno value, return the value: */
 extern int strtoerrno(const char *) ATTRIBUTE_W_U_R;
 
-/* ANSI's strerror(), but more robust: */
-extern char *xstrerror(int) ATTRIBUTE_W_U_R;
+/* The strerror() function from ANSI, but more robust in that it will never
+ * return a NULL pointer: */
+extern char *xstrerror(int) ATTRIBUTE_W_U_R ATTRIBUTE_RETURNS_NONNULL;
 
 /* Return the maximum signal number for which strsignal will return a
    string.  */

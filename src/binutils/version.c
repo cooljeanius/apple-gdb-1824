@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -36,6 +36,9 @@
 #include "bfdver.h"
 #include "bucomm.h"
 
+#include "libiberty.h" /* for xexit() */
+#include "sysdep.h"
+
 /* Print the version number and copyright information, and exit.  This
  * implements the --version option for the various programs.  */
 void ATTRIBUTE_NORETURN
@@ -48,7 +51,7 @@ print_version(const char *name)
   printf(_("\
 This program is free software; you may redistribute it under the terms of\n\
 the GNU General Public License.  This program has absolutely no warranty.\n"));
-  exit(0);
+  xexit(0);
 }
 
 /* EOF */

@@ -219,7 +219,8 @@ Itcl_CreateEnsemble(interp, ensName)
     /*
      *  Split the ensemble name into its path components.
      */
-    if (Tcl_SplitList(interp, ensName, &nameArgc, &nameArgv) != TCL_OK) {
+    if (Tcl_SplitList(interp, ensName, &nameArgc,
+		      (CONST84 char ***)&nameArgv) != TCL_OK) {
         goto ensCreateFail;
     }
     if (nameArgc < 1) {
@@ -242,7 +243,8 @@ Itcl_CreateEnsemble(interp, ensName)
         }
 
         if (parentEnsData == NULL) {
-            char *pname = Tcl_Merge(nameArgc-1, nameArgv);
+            char *pname = Tcl_Merge((nameArgc - 1),
+				    (CONST84 char *CONST *)nameArgv);
             Tcl_AppendStringsToObj(Tcl_GetObjResult(interp),
                 "invalid ensemble name \"", pname, "\"",
                 (char*)NULL);
@@ -326,7 +328,8 @@ Itcl_AddEnsemblePart(interp, ensName, partName, usageInfo,
     /*
      *  Parse the ensemble name and look for a containing ensemble.
      */
-    if (Tcl_SplitList(interp, ensName, &nameArgc, &nameArgv) != TCL_OK) {
+    if (Tcl_SplitList(interp, ensName, &nameArgc,
+		      (CONST84 char ***)&nameArgv) != TCL_OK) {
         goto ensPartFail;
     }
     if (FindEnsemble(interp, nameArgv, nameArgc, &ensData) != TCL_OK) {
@@ -334,7 +337,7 @@ Itcl_AddEnsemblePart(interp, ensName, partName, usageInfo,
     }
 
     if (ensData == NULL) {
-        char *pname = Tcl_Merge(nameArgc, nameArgv);
+        char *pname = Tcl_Merge(nameArgc, (CONST84 char *CONST *)nameArgv);
         Tcl_AppendStringsToObj(Tcl_GetObjResult(interp),
             "invalid ensemble name \"", pname, "\"",
             (char*)NULL);
@@ -407,7 +410,8 @@ Itcl_GetEnsemblePart(interp, ensName, partName, infoPtr)
      */
     state = Itcl_SaveInterpState(interp, TCL_OK);
 
-    if (Tcl_SplitList(interp, ensName, &nameArgc, &nameArgv) != TCL_OK) {
+    if (Tcl_SplitList(interp, ensName, &nameArgc,
+		      (CONST84 char ***)&nameArgv) != TCL_OK) {
         goto ensGetFail;
     }
     if (FindEnsemble(interp, nameArgv, nameArgc, &ensData) != TCL_OK) {
@@ -516,7 +520,8 @@ Itcl_GetEnsembleUsage(interp, ensName, objPtr)
      */
     state = Itcl_SaveInterpState(interp, TCL_OK);
 
-    if (Tcl_SplitList(interp, ensName, &nameArgc, &nameArgv) != TCL_OK) {
+    if (Tcl_SplitList(interp, ensName, &nameArgc,
+		      (CONST84 char ***)&nameArgv) != TCL_OK) {
         goto ensUsageFail;
     }
     if (FindEnsemble(interp, nameArgv, nameArgc, &ensData) != TCL_OK) {
@@ -1010,7 +1015,7 @@ FindEnsemble(interp, nameArgv, nameArgc, ensDataPtr)
             return TCL_ERROR;
         }
         if (ensPart == NULL) {
-            char *pname = Tcl_Merge(i, nameArgv);
+            char *pname = Tcl_Merge(i, (CONST84 char *CONST *)nameArgv);
             Tcl_AppendStringsToObj(Tcl_GetObjResult(interp),
                 "invalid ensemble name \"", pname, "\"",
                 (char*)NULL);
@@ -1707,8 +1712,10 @@ Itcl_EnsembleCmd(clientData, interp, objc, objv)
      *  Otherwise, the offending command is reported twice.
      */
     if (status == TCL_ERROR) {
-        char *errInfo = Tcl_GetVar2(ensInfo->parser, "::errorInfo",
-            (char*)NULL, TCL_GLOBAL_ONLY);
+        CONST84_RETURN char *errInfo = Tcl_GetVar2(ensInfo->parser,
+						   "::errorInfo",
+						   (char *)NULL,
+						   TCL_GLOBAL_ONLY);
 
         if (errInfo) {
             Tcl_AddObjErrorInfo(interp, errInfo, -1);

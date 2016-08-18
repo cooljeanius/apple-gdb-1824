@@ -28,6 +28,8 @@
 #include "libiberty.h"
 #include "windres.h"
 
+#include "sysdep.h"
+
 #include <assert.h>
 #include <time.h>
 
@@ -88,7 +90,7 @@ read_res_file(const char *fn)
   filename = fn;
   fres = fopen(filename, "rb");
   if (fres == NULL)
-    fatal("cannot open `%s' for output: %s", filename, strerror(errno));
+    fatal("cannot open `%s' for output: %s", filename, xstrerror(errno));
 
   skip_null_resource();
 
@@ -116,7 +118,7 @@ write_res_file(const char *fn, const struct res_directory *resdir)
 
   fres = fopen(filename, "wb");
   if (fres == NULL)
-    fatal("cannot open `%s' for output: %s", filename, strerror(errno));
+    fatal("cannot open `%s' for output: %s", filename, xstrerror(errno));
 
   /* Write 32 bit resource signature: */
   write_res_data (sign, sizeof(sign), 1);

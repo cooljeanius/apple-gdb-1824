@@ -2,6 +2,8 @@ dnl	This file is an input file used by the GNU "autoconf" program to
 dnl	generate the file "configure", which is run during [incr Tcl]
 dnl installation to configure the system for the local environment.
 
+sinclude(acinclude.m4)
+
 AC_INIT([iwidgets],[4.0.1],[])
 AC_CONFIG_SRCDIR([generic/buttonbox.itk])
 # RCS: $Id: configure.ac,v 1.2.4.2 2001/05/25 00:11:35 mdejong Exp $
@@ -12,7 +14,7 @@ AC_CONFIG_SRCDIR([generic/buttonbox.itk])
 #--------------------------------------------------------------------
 
 ITCL_VERSION=3.2
-AC_SUBST(ITCL_VERSION)
+AC_SUBST([ITCL_VERSION])dnl
 
 PACKAGE=iwidgets
 MAJOR_VERSION=4
@@ -21,10 +23,11 @@ PATCHLEVEL=.1
 
 VERSION=${MAJOR_VERSION}.${MINOR_VERSION}${PATCHLEVEL}
 
-AC_SUBST(PACKAGE)
-AC_SUBST(VERSION)
+AC_SUBST([PACKAGE])dnl
+AC_SUBST([VERSION])dnl
 
-AC_CONFIG_AUX_DIR(../config)
+AC_CONFIG_AUX_DIR([../config])
+AC_CONFIG_MACRO_DIR([.])
 AC_PREREQ([2.0])
 
 AC_PROG_INSTALL
@@ -109,7 +112,19 @@ fi
 #--------------------------------------------------------------------
 
 # CYGNUS LOCAL
-dnl SC_PROG_TCLSH
+if test "x${bootstrapping}" != "xyes"; then
+    m4_ifdef([SC_PROG_TCLSH],[
+      SC_PROG_TCLSH
+    ],[
+      AC_PATH_PROGS([TCLSH_PROG],[tclsh tclsh8.4],[],[])dnl
+      ## just in case:
+      if test "x${TCLSH_PROG}" = "x"; then
+        test -z "${TCLSH_PROG}" && test -x /usr/bin/false && export TCLSH_PROG="/usr/bin/false"
+      fi
+      AC_SUBST([TCLSH_PROG])dnl
+    ])dnl
+    ## enough?
+fi
 # END CYGNUS LOCAL
 
 #--------------------------------------------------------------------

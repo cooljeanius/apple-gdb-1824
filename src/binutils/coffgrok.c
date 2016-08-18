@@ -37,6 +37,9 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA.  */
 #include "coff/internal.h"
 #include "../bfd/libcoff.h"
 #include "coffgrok.h"
+
+#include "sysdep.h"
+
 static int lofile = 1;
 static struct coff_scope *top_scope;
 static struct coff_scope *file_scope;

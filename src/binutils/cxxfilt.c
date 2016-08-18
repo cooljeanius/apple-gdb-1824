@@ -31,6 +31,8 @@ Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA
 #include "getopt.h"
 #include "safe-ctype.h"
 
+#include "sysdep.h"
+
 static int flags = (DMGL_PARAMS | DMGL_ANSI | DMGL_VERBOSE);
 
 static void demangle_it (char *);
@@ -68,6 +70,7 @@ print_demangler_list(FILE *stream)
   fprintf(stream, "}");
 }
 
+/* */
 static void
 usage(FILE *stream, int status)
 {
@@ -88,7 +91,7 @@ Usage: %s [-_] [-n] [--strip-underscores] [--no-strip-underscores]\n\
 
   fprintf(stream, "\
        [--help] [--version] [arg...]\n");
-  exit(status);
+  xexit(status);
 }
 
 static char mbuffer[32767];

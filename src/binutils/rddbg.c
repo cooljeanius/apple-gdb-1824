@@ -30,6 +30,8 @@
 #include "debug.h"
 #include "budbg.h"
 
+#include "sysdep.h"
+
 static bfd_boolean read_section_stabs_debugging_info
   (bfd *, asymbol **, long, void *, bfd_boolean *);
 static bfd_boolean read_symbol_stabs_debugging_info

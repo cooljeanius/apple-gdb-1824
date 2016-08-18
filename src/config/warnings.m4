@@ -1,4 +1,4 @@
-# warnings.m4 serial 1                                     -*- Autoconf -*-
+# warnings.m4 serial 2                                     -*- Autoconf -*-
 
 # Autoconf include file defining macros related to compile-time warnings.
 
@@ -46,9 +46,20 @@ for real_option in $1; do
   AS_VAR_PUSHDEF([acx_Woption],[acx_cv_prog_cc_warning_$option])
   AC_CACHE_CHECK([whether ${CC} supports ${option}],[acx_Woption],
     [CFLAGS="${option} ${WERROR_CFLAGS}"
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
-      [AS_VAR_SET(acx_Woption, yes)],
-      [AS_VAR_SET(acx_Woption, no)])
+     case ${option} in
+      -Wold-style-definition|-Wstrict-prototypes|-Wsuggest-attribute=const)
+       dnl# Use "_SOURCE" instead of "_PROGRAM" here to keep us from
+       dnl# having a bad "main()" function:
+       AC_COMPILE_IFELSE([AC_LANG_SOURCE([[]])],
+        [AS_VAR_SET(acx_Woption, yes)],
+        [AS_VAR_SET(acx_Woption, no)])
+       ;;
+      *)
+       AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+        [AS_VAR_SET(acx_Woption, yes)],
+        [AS_VAR_SET(acx_Woption, no)])
+       ;;
+     esac
   ])
   AS_IF([test AS_VAR_GET(acx_Woption) = yes],
         [acx_Var="$acx_Var${acx_Var:+ }$real_option"])

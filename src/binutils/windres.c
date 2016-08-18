@@ -36,8 +36,8 @@
 
 #include "config.h"
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
 #include <assert.h>
 #include <time.h>
 #include "bfd.h"
@@ -47,6 +47,8 @@
 #include "safe-ctype.h"
 #include "obstack.h"
 #include "windres.h"
+
+#include "sysdep.h"
 
 /* Used by resrc.c at least.  */
 
@@ -201,7 +203,7 @@ open_file_search (const char *filename, const char *mode, const char *errmsg,
 	}
     }
 
-  fatal (_("can't open %s `%s': %s"), errmsg, filename, strerror (errno));
+  fatal(_("cannot open %s `%s': %s"), errmsg, filename, xstrerror(errno));
 
   /* Return a value to avoid a compiler warning.  */
   return NULL;
@@ -583,7 +585,7 @@ format_from_filename (const char *filename, int input)
      it is.  */
   e = fopen (filename, FOPEN_RB);
   if (e == NULL)
-    fatal ("%s: %s", filename, strerror (errno));
+    fatal("%s: %s", filename, xstrerror(errno));
 
   b1 = getc (e);
   b2 = getc (e);
@@ -670,7 +672,7 @@ No input-file is stdin, default rc.  No output-file is stdout, default rc.\n"));
   if (status == 0)
     fprintf(stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
 
-  exit(status);
+  xexit(status);
 }
 
 /* Quote characters that will confuse the shell when we run the preprocessor.  */

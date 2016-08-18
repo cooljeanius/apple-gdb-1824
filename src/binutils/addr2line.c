@@ -39,6 +39,8 @@
 #include "bucomm.h"
 #include "budemang.h"
 
+#include "sysdep.h"
+
 static bfd_boolean unwind_inlines;	/* -i, unwind inlined functions. */
 static bfd_boolean with_functions;	/* -f, show function names.  */
 static bfd_boolean do_demangle;		/* -C, demangle names.  */
@@ -89,7 +91,7 @@ usage(FILE *stream, int status)
   list_supported_targets(program_name, stream);
   if (status == 0)
     fprintf(stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
-  exit(status);
+  xexit(status);
 }
 
 /* Read in the symbol table: */

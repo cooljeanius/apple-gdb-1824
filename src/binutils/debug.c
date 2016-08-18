@@ -34,6 +34,8 @@
 #include "libiberty.h"
 #include "debug.h"
 
+#include "sysdep.h"
+
 /* Global information we keep for debugging.  A pointer to this
    structure is the debugging handle passed to all the routines.  */
 
@@ -3348,3 +3350,5 @@ debug_class_type_samep (struct debug_handle *info, struct debug_type *t1,
 
   return TRUE;
 }
+
+/* EOF */

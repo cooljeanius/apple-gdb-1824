@@ -34,6 +34,8 @@
 #include "bucomm.h"
 #include "getopt.h"
 
+#include "sysdep.h"
+
 static int atnl;
 
 static void tab (int);
@@ -526,9 +528,10 @@ show_usage(FILE *file, int status)
     fprintf(file, _("Report bugs to %s\n"), REPORT_BUGS_TO);
   }
 
-  exit(status);
+  xexit(status);
 }
 
+/* */
 int
 main(int ac, char **av)
 {
@@ -563,12 +566,12 @@ main(int ac, char **av)
 	{
 	case 'H':
 	case 'h':
-	  show_usage (stdout, 0);
+	  show_usage(stdout, 0);
 	  break;
 	case 'v':
 	case 'V':
 	  print_version("coffdump");
-	  exit(0);
+	  xexit(0);
 	case 0:
 	  break;
 	default:
@@ -599,7 +602,7 @@ main(int ac, char **av)
 	  list_matching_formats(matching);
 	  free(matching);
 	}
-      exit(1);
+      xexit(1);
     }
 
   tree = coff_grok(abfd);

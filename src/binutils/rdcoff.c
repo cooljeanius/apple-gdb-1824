@@ -28,6 +28,8 @@
 #include "debug.h"
 #include "budbg.h"
 
+#include "sysdep.h"
+
 /* FIXME: We should not need this BFD internal file.  We need it for
    the N_BTMASK, etc., values.  */
 #include "libcoff.h"

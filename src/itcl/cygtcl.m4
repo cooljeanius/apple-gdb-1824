@@ -28,7 +28,7 @@
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(TCL_TOOL_PATH, [
+AC_DEFUN([TCL_TOOL_PATH],[
   val=$2
 
   if test "$val" = "" ; then
@@ -93,7 +93,7 @@ AC_DEFUN(TCL_TOOL_PATH, [
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(TCL_TOOL_STATIC_LIB_LONGNAME, [
+AC_DEFUN([TCL_TOOL_STATIC_LIB_LONGNAME],[
   libname=$2
   suffix=$3
 
@@ -151,7 +151,7 @@ AC_DEFUN(TCL_TOOL_STATIC_LIB_LONGNAME, [
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(TCL_TOOL_SHARED_LIB_LONGNAME, [
+AC_DEFUN([TCL_TOOL_SHARED_LIB_LONGNAME],[
   libname=$2
   suffix=$3
 
@@ -209,7 +209,7 @@ AC_DEFUN(TCL_TOOL_SHARED_LIB_LONGNAME, [
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(TCL_TOOL_LIB_SHORTNAME, [
+AC_DEFUN([TCL_TOOL_LIB_SHORTNAME],[
   libname=$2
   version=$3
 
@@ -247,7 +247,7 @@ AC_DEFUN(TCL_TOOL_LIB_SHORTNAME, [
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(TCL_TOOL_LIB_SPEC, [
+AC_DEFUN([TCL_TOOL_LIB_SPEC],[
   case "${host}" in
     *windows32* | *mingw32*)
       if test "$GCC" != yes; then
@@ -289,6 +289,6 @@ AC_DEFUN(TCL_TOOL_LIB_SPEC, [
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(TCL_TOOL_LIB_PATH, [
+AC_DEFUN([TCL_TOOL_LIB_PATH],[
   TCL_TOOL_PATH($1, "$2/$3")
 ])

@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* Objdump overview.
 
@@ -48,6 +48,10 @@
    disassembling is done by the libopcodes library, via a function pointer
    supplied by the disassembler() function.  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "bfd.h"
 #include "bfdver.h"
 #include "progress.h"
@@ -61,14 +65,16 @@
 #include "debug.h"
 #include "budbg.h"
 
+#include "sysdep.h"
+
 /* Internal headers for the ELF .stab-dump code - sorry.  */
 #define	BYTES_IN_WORD	32
 #include "aout/aout64.h"
 
 #if !HAVE_DECL_FPRINTF
 /* This is needed by init_disassemble_info().  */
-extern int fprintf (FILE *, const char *, ...);
-#endif
+extern int fprintf(FILE *, const char *, ...);
+#endif /* !HAVE_DECL_FPRINTF */
 
 /* Exit status.  */
 static int exit_status = 0;
@@ -230,7 +236,7 @@ usage(FILE *stream, int status)
     }
   if (status == 0)
     fprintf(stream, _("Report bugs to %s.\n"), REPORT_BUGS_TO);
-  exit(status);
+  xexit(status);
 }
 
 /* 150 is NOT special; it is just an arbitrary non-ASCII char value: */

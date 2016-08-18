@@ -1527,7 +1527,7 @@ Itk_ArchOptUsualCmd(clientData, interp, objc, objv)
 {
     ArchMergeInfo *mergeInfo = (ArchMergeInfo*)clientData;
 
-    char *tag;
+    CONST84_RETURN char *tag;
     Tcl_HashEntry *entry;
     Tcl_Obj *codePtr;
 

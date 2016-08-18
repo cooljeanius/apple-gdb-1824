@@ -27,7 +27,7 @@
 #				the tclConfig.sh file
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_PATH_TCLCONFIG, [
+AC_DEFUN([SC_PATH_TCLCONFIG],[
     #
     # Ok, lets find the tcl configuration
     # First, look for one uninstalled.
@@ -120,7 +120,7 @@ AC_DEFUN(SC_PATH_TCLCONFIG, [
 #				the tkConfig.sh file
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_PATH_TKCONFIG, [
+AC_DEFUN([SC_PATH_TKCONFIG],[
     #
     # Ok, lets find the tk configuration
     # First, look for one uninstalled.
@@ -212,7 +212,7 @@ AC_DEFUN(SC_PATH_TKCONFIG, [
 #
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_LOAD_TCLCONFIG, [
+AC_DEFUN([SC_LOAD_TCLCONFIG],[
     AC_MSG_CHECKING([for existence of $TCL_BIN_DIR/tclConfig.sh])
 
     if test -f "$TCL_BIN_DIR/tclConfig.sh" ; then
@@ -263,7 +263,7 @@ AC_DEFUN(SC_LOAD_TCLCONFIG, [
 #		TK_BIN_DIR
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_LOAD_TKCONFIG, [
+AC_DEFUN([SC_LOAD_TKCONFIG],[
     AC_MSG_CHECKING([for existence of $TK_BIN_DIR/tkConfig.sh])
 
     if test -f "$TK_BIN_DIR/tkConfig.sh" ; then
@@ -296,7 +296,7 @@ AC_DEFUN(SC_LOAD_TKCONFIG, [
 #		CC	Command to use for the compiler
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_ENABLE_GCC, [
+AC_DEFUN([SC_ENABLE_GCC],[
     AC_ARG_ENABLE(gcc, [  --enable-gcc            allow use of gcc if available [--disable-gcc]],
 	[ok=$enableval], [ok=no])
     if test "$ok" = "yes"; then
@@ -335,7 +335,7 @@ AC_DEFUN(SC_ENABLE_GCC, [
 #		SHARED_BUILD	Value of 1 or 0
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_ENABLE_SHARED, [
+AC_DEFUN([SC_ENABLE_SHARED],[
     AC_MSG_CHECKING([how to build libraries])
     AC_ARG_ENABLE(shared,
 	[  --enable-shared         build and link with shared libraries [--enable-shared]],
@@ -380,7 +380,7 @@ AC_DEFUN(SC_ENABLE_SHARED, [
 #
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_ENABLE_THREADS, [
+AC_DEFUN([SC_ENABLE_THREADS],[
     AC_MSG_CHECKING(for building with threads)
     AC_ARG_ENABLE(threads, [  --enable-threads        build with threads],
 	[tcl_ok=$enableval], [tcl_ok=no])
@@ -442,7 +442,7 @@ AC_DEFUN(SC_ENABLE_THREADS, [
 #
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_ENABLE_SYMBOLS, [
+AC_DEFUN([SC_ENABLE_SYMBOLS],[
     case "`uname -s`" in
 	*win32* | *WIN32* | *CYGWIN_NT* | *CYGWIN_98* | *CYGWIN_95*)
 	    tcl_dbgx=d
@@ -554,7 +554,7 @@ AC_DEFUN(SC_ENABLE_SYMBOLS, [
 #		CFLAGS_OPTIMIZE
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_CONFIG_CFLAGS, [
+AC_DEFUN([SC_CONFIG_CFLAGS],[
 
     # Step 0: Enable 64 bit support?
 
@@ -1182,7 +1182,7 @@ AC_DEFUN(SC_CONFIG_CFLAGS, [
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_SERIAL_PORT, [
+AC_DEFUN([SC_SERIAL_PORT],[
     AC_MSG_CHECKING([termios vs. termio vs. sgtty])
 
     AC_TRY_RUN([
@@ -1270,7 +1270,7 @@ main()
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_MISSING_POSIX_HEADERS, [
+AC_DEFUN([SC_MISSING_POSIX_HEADERS],[
 
     AC_MSG_CHECKING(dirent.h)
     AC_TRY_LINK([#include <sys/types.h>
@@ -1351,7 +1351,7 @@ closedir(d);
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_PATH_X, [
+AC_DEFUN([SC_PATH_X],[
     AC_PATH_X
     not_really_there=""
     if test "$no_x" = ""; then
@@ -1437,7 +1437,7 @@ AC_DEFUN(SC_PATH_X, [
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_BLOCKING_STYLE, [
+AC_DEFUN([SC_BLOCKING_STYLE],[
     AC_CHECK_HEADERS(sys/ioctl.h)
     AC_CHECK_HEADERS(sys/filio.h)
     AC_MSG_CHECKING([FIONBIO vs. O_NONBLOCK for nonblocking I/O])
@@ -1502,7 +1502,7 @@ AC_DEFUN(SC_BLOCKING_STYLE, [
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_HAVE_VFORK, [
+AC_DEFUN([SC_HAVE_VFORK],[
     AC_TYPE_SIGNAL()
     AC_CHECK_FUNC(vfork, tcl_ok=1, tcl_ok=0)
     if test "$tcl_ok" = 1; then
@@ -1564,7 +1564,7 @@ main()
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_TIME_HANDLER, [
+AC_DEFUN([SC_TIME_HANDLER],[
     AC_CHECK_HEADERS(sys/time.h)
     AC_HEADER_TIME
     AC_STRUCT_TIMEZONE
@@ -1643,7 +1643,7 @@ AC_DEFUN(SC_TIME_HANDLER, [
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_BUGGY_STRTOD, [
+AC_DEFUN([SC_BUGGY_STRTOD],[
     AC_CHECK_FUNC(strtod, tk_strtod=1, tk_strtod=0)
     if test "$tk_strtod" = 1; then
 	AC_MSG_CHECKING([for Solaris 2.4 strtod bug])
@@ -1695,7 +1695,7 @@ AC_DEFUN(SC_BUGGY_STRTOD, [
 #
 #--------------------------------------------------------------------
 
-AC_DEFUN(SC_TCL_LINK_LIBS, [
+AC_DEFUN([SC_TCL_LINK_LIBS],[
     #--------------------------------------------------------------------
     # On a few very rare systems, all of the libm.a stuff is
     # already in libc.a.  Set compiler flags accordingly.
@@ -1790,7 +1790,7 @@ AC_DEFUN(SC_TCL_LINK_LIBS, [
 #				library
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_MAKE_LIB, [
+AC_DEFUN([SC_MAKE_LIB],[
     case "`uname -s`" in
 	*win32* | *WIN32* | *CYGWIN_NT* |*CYGWIN_98*|*CYGWIN_95*)
 	    if test "${CC-cc}" = "cl"; then
@@ -1838,7 +1838,7 @@ AC_DEFUN(SC_MAKE_LIB, [
 #		${basename}_LIB_SPEC	The computed linker flags.
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_LIB_SPEC, [
+AC_DEFUN([SC_LIB_SPEC],[
     AC_MSG_CHECKING(for $1 library)
 
     # Look in exec-prefix and prefix for the library.  If neither of
@@ -1921,7 +1921,7 @@ AC_DEFUN(SC_LIB_SPEC, [
 #		TCL_INCLUDES
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_PRIVATE_TCL_HEADERS, [
+AC_DEFUN([SC_PRIVATE_TCL_HEADERS],[
     AC_MSG_CHECKING(for Tcl private include files)
 
     case "`uname -s`" in
@@ -1980,7 +1980,7 @@ AC_DEFUN(SC_PRIVATE_TCL_HEADERS, [
 #		TCL_INCLUDES
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_PUBLIC_TCL_HEADERS, [
+AC_DEFUN([SC_PUBLIC_TCL_HEADERS],[
     AC_MSG_CHECKING(for Tcl public headers)
 
     AC_ARG_WITH(tclinclude, [ --with-tclinclude      directory containing the public Tcl header files.], with_tclinclude=${withval})
@@ -2047,7 +2047,7 @@ AC_DEFUN(SC_PUBLIC_TCL_HEADERS, [
 #		TK_INCLUDES
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_PRIVATE_TK_HEADERS, [
+AC_DEFUN([SC_PRIVATE_TK_HEADERS],[
     AC_MSG_CHECKING(for Tk private include files)
 
     case "`uname -s`" in
@@ -2100,7 +2100,7 @@ AC_DEFUN(SC_PRIVATE_TK_HEADERS, [
 #		TK_INCLUDES
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_PUBLIC_TK_HEADERS, [
+AC_DEFUN([SC_PUBLIC_TK_HEADERS],[
     AC_MSG_CHECKING(for Tk public headers)
 
     AC_ARG_WITH(tkinclude, [ --with-tkinclude      directory containing the public Tk header files.], with_tkinclude=${withval})
@@ -2164,7 +2164,7 @@ AC_DEFUN(SC_PUBLIC_TK_HEADERS, [
 #		EXEEXT
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_SIMPLE_EXEEXT, [
+AC_DEFUN([SC_SIMPLE_EXEEXT],[
     AC_MSG_CHECKING(executable extension based on host type)
 
     case "`uname -s`" in
@@ -2197,7 +2197,7 @@ AC_DEFUN(SC_SIMPLE_EXEEXT, [
 #		TCLSH_PROG
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_PROG_TCLSH, [
+AC_DEFUN([SC_PROG_TCLSH],[
     AC_MSG_CHECKING([for tclsh])
 
     AC_CACHE_VAL(ac_cv_path_tclsh, [
@@ -2241,7 +2241,7 @@ AC_DEFUN(SC_PROG_TCLSH, [
 #		WISH_PROG
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_PROG_WISH, [
+AC_DEFUN([SC_PROG_WISH],[
     AC_MSG_CHECKING([for wish])
 
     AC_CACHE_VAL(ac_cv_path_wish, [

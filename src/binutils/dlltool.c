@@ -257,6 +257,8 @@
 #include "dlltool.h"
 #include "safe-ctype.h"
 
+#include "sysdep.h"
+
 #include <time.h>
 #include <sys/stat.h>
 #include <stdarg.h>
@@ -1189,9 +1191,9 @@ run(const char *what, char *args)
   int i;
   const char **argv;
   char *errmsg_fmt, *errmsg_arg;
-  char *temp_base = choose_temp_base ();
+  char *temp_base = choose_temp_base();
 
-  inform ("run: %s %s", what, args);
+  inform("run: %s %s", what, args);
 
   /* Count the args */
   i = 0;
@@ -1208,7 +1210,7 @@ run(const char *what, char *args)
       while (*s == ' ')
 	++s;
       argv[i++] = s;
-      while (*s != ' ' && *s != 0)
+      while ((*s != ' ') && (*s != 0))
 	s++;
       if (*s == 0)
 	break;
@@ -1216,37 +1218,37 @@ run(const char *what, char *args)
     }
   argv[i++] = NULL;
 
-  pid = pexecute (argv[0], (char * const *) argv, program_name, temp_base,
-		  &errmsg_fmt, &errmsg_arg, PEXECUTE_ONE | PEXECUTE_SEARCH);
+  pid = pexecute(argv[0], (char *const *)argv, program_name, temp_base,
+		 &errmsg_fmt, &errmsg_arg, (PEXECUTE_ONE | PEXECUTE_SEARCH));
 
   if (pid == -1)
     {
-      inform("%s", strerror(errno));
+      inform("%s", xstrerror(errno));
 
       fatal(errmsg_fmt, errmsg_arg);
     }
 
-  pid = pwait (pid, & wait_status, 0);
+  pid = pwait(pid, &wait_status, 0);
 
   if (pid == -1)
     {
       /* xgettext:c-format */
-      fatal (_("wait: %s"), strerror (errno));
+      fatal(_("wait: %s"), xstrerror(errno));
     }
-  else if (WIFSIGNALED (wait_status))
+  else if (WIFSIGNALED(wait_status))
     {
       /* xgettext:c-format */
-      fatal (_("subprocess got fatal signal %d"), WTERMSIG (wait_status));
+      fatal(_("subprocess got fatal signal %d"), WTERMSIG(wait_status));
     }
-  else if (WIFEXITED (wait_status))
+  else if (WIFEXITED(wait_status))
     {
-      if (WEXITSTATUS (wait_status) != 0)
+      if (WEXITSTATUS(wait_status) != 0)
 	/* xgettext:c-format */
-	non_fatal (_("%s exited with status %d"),
-		   what, WEXITSTATUS (wait_status));
+	non_fatal(_("%s exited with status %d"),
+		  what, WEXITSTATUS(wait_status));
     }
   else
-    abort ();
+    abort();
 }
 
 /* keep the condition the same as where we push: */
@@ -1962,7 +1964,7 @@ gen_exp_file(void)
      without using the import library.  */
   if (add_indirect)
     {
-      fprintf (f, "\t.section\t.rdata\n");
+      fprintf(f, "\t.section\t.rdata\n");
       for (i = 0, exp = d_exports; exp; i++, exp = exp->next)
 	if (!exp->noname || show_allnames)
 	  {
@@ -1970,12 +1972,12 @@ gen_exp_file(void)
                double underscore for backward compatibility with old
                cygwin releases.  */
 	    if (create_compat_implib)
-	      fprintf (f, "\t%s\t__imp_%s\n", ASM_GLOBAL, exp->name);
-	    fprintf (f, "\t%s\t_imp__%s\n", ASM_GLOBAL, exp->name);
+	      fprintf(f, "\t%s\t__imp_%s\n", ASM_GLOBAL, exp->name);
+	    fprintf(f, "\t%s\t_imp__%s\n", ASM_GLOBAL, exp->name);
 	    if (create_compat_implib)
-	      fprintf (f, "__imp_%s:\n", exp->name);
-	    fprintf (f, "_imp__%s:\n", exp->name);
-	    fprintf (f, "\t%s\t%s\n", ASM_LONG, exp->name);
+	      fprintf(f, "__imp_%s:\n", exp->name);
+	    fprintf(f, "_imp__%s:\n", exp->name);
+	    fprintf(f, "\t%s\t%s\n", ASM_LONG, exp->name);
 	  }
     }
 
@@ -1990,24 +1992,24 @@ gen_exp_file(void)
       long *copy;
       int j;
       int on_page;
-      fprintf (f, "\t.section\t.init\n");
-      fprintf (f, "lab:\n");
+      fprintf(f, "\t.section\t.init\n");
+      fprintf(f, "lab:\n");
 
-      fseek (base_file, 0, SEEK_END);
-      numbytes = ftell (base_file);
-      fseek (base_file, 0, SEEK_SET);
+      fseek(base_file, 0, SEEK_END);
+      numbytes = ftell(base_file);
+      fseek(base_file, 0, SEEK_SET);
       copy = (long *)xmalloc(numbytes);
-      fread (copy, 1, numbytes, base_file);
-      num_entries = numbytes / sizeof (long);
+      fread(copy, 1, numbytes, base_file);
+      num_entries = (numbytes / sizeof(long));
 
 
-      fprintf (f, "\t.section\t.reloc\n");
-      if (num_entries)
+      fprintf(f, "\t.section\t.reloc\n");
+      if (num_entries > 0)
 	{
 	  int src;
 	  int dst = 0;
 	  int last = -1;
-	  qsort (copy, num_entries, sizeof (long), sfunc);
+	  qsort(copy, num_entries, sizeof(long), sfunc);
 	  /* Delete duplicates */
 	  for (src = 0; src < num_entries; src++)
 	    {
@@ -2016,38 +2018,42 @@ gen_exp_file(void)
 	    }
 	  num_entries = dst;
 	  addr = copy[0];
-	  page_addr = addr & PAGE_MASK;		/* work out the page addr */
+	  page_addr = (addr & PAGE_MASK);	/* work out the page addr */
 	  on_page = 0;
+	  assert(num_entries > 0);
 	  for (j = 0; j < num_entries; j++)
 	    {
 	      addr = copy[j];
 	      if ((addr & PAGE_MASK) != page_addr)
 		{
-		  flush_page (f, need, page_addr, on_page);
+		  flush_page(f, need, page_addr, on_page);
 		  on_page = 0;
-		  page_addr = addr & PAGE_MASK;
+		  page_addr = (addr & PAGE_MASK);
 		}
 	      need[on_page++] = addr;
 	    }
-	  flush_page (f, need, page_addr, on_page);
+	  flush_page(f, need, page_addr, on_page);
 
-/*	  fprintf (f, "\t%s\t0,0\t%s End\n", ASM_LONG, ASM_C);*/
+#if defined(ASM_LONG) && defined(ASM_C) && defined(COMPILE_IFDEF_ZEROED_CODE)
+	  fprintf(f, "\t%s\t0,0\t%s End\n", ASM_LONG, ASM_C);
+#endif /* ASM_LONG && ASM_C && COMPILE_IFDEF_ZEROED_CODE */
 	}
     }
 
-  generate_idata_ofile (f);
+  generate_idata_ofile(f);
 
-  fclose (f);
+  fclose(f);
 
-  /* Assemble the file.  */
-  assemble_file (TMP_ASM, exp_name);
+  /* Assemble the file: */
+  assemble_file(TMP_ASM, exp_name);
 
   if (dontdeltemps == 0)
-    unlink (TMP_ASM);
+    unlink(TMP_ASM);
 
-  inform (_("Generated exports file"));
+  inform(_("Generated exports file"));
 }
 
+/* */
 static const char *
 xlate (const char *name)
 {
@@ -2856,16 +2862,16 @@ gen_lib_file(void)
           if (exp->pvt)
 	    continue;
 	  snprintf(name, namelen, "%s%05d.o", TMP_STUB, i);
-	  if (unlink (name) < 0)
+	  if (unlink(name) < 0)
 	    /* xgettext:c-format */
-	    non_fatal (_("cannot delete %s: %s"), name, strerror (errno));
+	    non_fatal(_("cannot delete %s: %s"), name, xstrerror(errno));
 	  if (ext_prefix_alias)
 	    {
 	      snprintf(name, namelen, "%s%05d.o", TMP_STUB,
 		       (i + PREFIX_ALIAS_BASE));
-	      if (unlink (name) < 0)
+	      if (unlink(name) < 0)
 		/* xgettext:c-format */
-		non_fatal (_("cannot delete %s: %s"), name, strerror (errno));
+		non_fatal(_("cannot delete %s: %s"), name, xstrerror(errno));
 	    }
 	}
     }
@@ -3135,7 +3141,7 @@ usage(FILE *file, int status)
   fprintf(file, _("   -L --linker <name>        Use <name> as the linker.\n"));
   fprintf(file, _("   -F --linker-flags <flags> Pass <flags> to the linker.\n"));
 #endif /* DLLTOOL_MCORE_ELF */
-  exit(status);
+  xexit(status);
 }
 
 #define OPTION_EXPORT_ALL_SYMS		150

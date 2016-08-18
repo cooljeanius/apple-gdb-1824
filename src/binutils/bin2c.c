@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include "binary-io.h"
 
+#include "sysdep.h"
+
 int
 main (int argc, char *argv[])
 {
@@ -64,3 +66,5 @@ main (int argc, char *argv[])
 
   exit (0);
 }
+
+/* EOF */

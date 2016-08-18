@@ -17562,6 +17562,186 @@ if test x"${silent}" != x"yes" && test x"${WARN_LDFLAGS}" != x""; then
 fi
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wstrict-overflow=2" >&5
+$as_echo_n "checking whether C compiler handles -Wstrict-overflow=2... " >&6; }
+if ${gl_cv_warn_c__Wstrict_overflow_2+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wstrict-overflow=2"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__Wstrict_overflow_2=yes
+else
+  gl_cv_warn_c__Wstrict_overflow_2=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wstrict_overflow_2" >&5
+$as_echo "$gl_cv_warn_c__Wstrict_overflow_2" >&6; }
+if test "x$gl_cv_warn_c__Wstrict_overflow_2" = xyes; then :
+  WARN_CFLAGS="${WARN_CFLAGS} -Wstrict-overflow=2"
+else
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wstrict-overflow" >&5
+$as_echo_n "checking whether C compiler handles -Wstrict-overflow... " >&6; }
+if ${gl_cv_warn_c__Wstrict_overflow+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wstrict-overflow"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__Wstrict_overflow=yes
+else
+  gl_cv_warn_c__Wstrict_overflow=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wstrict_overflow" >&5
+$as_echo "$gl_cv_warn_c__Wstrict_overflow" >&6; }
+if test "x$gl_cv_warn_c__Wstrict_overflow" = xyes; then :
+  as_fn_append WARN_CFLAGS " -Wstrict-overflow"
+fi
+
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wsign-compare" >&5
+$as_echo_n "checking whether C compiler handles -Wsign-compare... " >&6; }
+if ${gl_cv_warn_c__Wsign_compare+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wsign-compare"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__Wsign_compare=yes
+else
+  gl_cv_warn_c__Wsign_compare=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wsign_compare" >&5
+$as_echo "$gl_cv_warn_c__Wsign_compare" >&6; }
+if test "x$gl_cv_warn_c__Wsign_compare" = xyes; then :
+  as_fn_append WARN_CFLAGS " -Wsign-compare"
+fi
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wfloat-conversion" >&5
+$as_echo_n "checking whether C compiler handles -Wfloat-conversion... " >&6; }
+if ${gl_cv_warn_c__Wfloat_conversion+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wfloat-conversion"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__Wfloat_conversion=yes
+else
+  gl_cv_warn_c__Wfloat_conversion=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wfloat_conversion" >&5
+$as_echo "$gl_cv_warn_c__Wfloat_conversion" >&6; }
+if test "x$gl_cv_warn_c__Wfloat_conversion" = xyes; then :
+  as_fn_append WARN_CFLAGS " -Wfloat-conversion"
+fi
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wno-missed-loop-optimizations" >&5
+$as_echo_n "checking whether C compiler handles -Wno-missed-loop-optimizations... " >&6; }
+if ${gl_cv_warn_c__Wno_missed_loop_optimizations+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wmissed-loop-optimizations"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__Wno_missed_loop_optimizations=yes
+else
+  gl_cv_warn_c__Wno_missed_loop_optimizations=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wno_missed_loop_optimizations" >&5
+$as_echo "$gl_cv_warn_c__Wno_missed_loop_optimizations" >&6; }
+if test "x$gl_cv_warn_c__Wno_missed_loop_optimizations" = xyes; then :
+  as_fn_append WARN_CFLAGS " -Wno-missed-loop-optimizations"
+fi
+
 
 ac_config_headers="$ac_config_headers config.h"
 

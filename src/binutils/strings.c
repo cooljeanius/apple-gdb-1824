@@ -70,6 +70,7 @@
 #include "bucomm.h"
 #include "libiberty.h"
 #include "safe-ctype.h"
+#include "sysdep.h"
 #include <sys/stat.h>
 
 #ifdef HAVE_AVAILABILITYMACROS_H
@@ -470,7 +471,7 @@ strings_file (char *file)
 	non_fatal(_("'%s': No such file"), file);
       else
 	non_fatal(_("Warning: failed to locate '%s'.  reason: %s"),
-                  file, strerror(errno));
+                  file, xstrerror(errno));
       return FALSE;
     }
 
@@ -743,6 +744,7 @@ integer_arg(char *s)
   return value;
 }
 
+/* */
 static ATTRIBUTE_NORETURN void
 usage(FILE *stream, int status)
 {
@@ -774,7 +776,7 @@ usage(FILE *stream, int status)
   if (status == 0) {
     fprintf(stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
   }
-  exit(status);
+  xexit(status);
 }
 
 /* EOF */

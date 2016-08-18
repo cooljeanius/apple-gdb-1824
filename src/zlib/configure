@@ -20602,7 +20602,21 @@ if eval \${$as_acx_Woption+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   CFLAGS="${option} ${WERROR_CFLAGS}"
-    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+     case ${option} in
+      -Wold-style-definition|-Wstrict-prototypes|-Wsuggest-attribute=const)
+                     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$as_acx_Woption=yes"
+else
+  eval "$as_acx_Woption=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+       ;;
+      *)
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
 int
@@ -20619,6 +20633,8 @@ else
   eval "$as_acx_Woption=no"
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+       ;;
+     esac
 
 fi
 eval ac_res=\$$as_acx_Woption

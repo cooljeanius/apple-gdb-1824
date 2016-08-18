@@ -653,6 +653,7 @@ ItclClass*
 Itcl_FindClass(interp, path, autoload)
     Tcl_Interp* interp;      /* interpreter containing class */
     char* path;              /* path name for class */
+    int autoload;            /* ??? */
 {
     Tcl_Namespace* classNs;
 

@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <limits.h>
 
 #include "bfd.h"
 #include "ieee.h"
@@ -33,8 +34,9 @@
 #include "budbg.h"
 #include "filenames.h"
 
-/* This structure holds an entry on the block stack.  */
+#include "sysdep.h"
 
+/* This structure holds an entry on the block stack: */
 struct ieee_block
 {
   /* The kind of block.  */
@@ -1289,17 +1291,24 @@ parse_ieee_be(struct ieee_info *info, const bfd_byte **pp)
 	  struct ieee_block *bl;
 
 	  bl = info->blockstack.bsp;
-	  do
-	    {
-	      --bl;
-	      if (bl->kind == 5)
-		{
-		  if (! debug_start_source (info->dhandle, bl->filename))
-		    return FALSE;
-		  break;
-		}
+	  do {
+	    if (info == NULL) {
+	      break;
 	    }
-	  while (bl != info->blockstack.stack);
+	    --bl;
+	    if ((bl == NULL) || (bl > (struct ieee_block *)UINTPTR_MAX)) {
+	      break;
+	    }
+	    if (bl->kind == 5)
+	      {
+		if (!debug_start_source(info->dhandle, bl->filename))
+		  return FALSE;
+		break;
+	      }
+	    if (info == NULL) {
+	      break;
+	    }
+	  } while (bl != info->blockstack.stack);
 	}
       break;
 

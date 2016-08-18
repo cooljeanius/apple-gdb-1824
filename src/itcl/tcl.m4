@@ -27,7 +27,7 @@
 #				the tclConfig.sh file
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_PATH_TCLCONFIG, [
+AC_DEFUN([SC_PATH_TCLCONFIG],[
     #
     # Ok, lets find the tcl configuration
     # First, look for one uninstalled.
@@ -128,7 +128,7 @@ AC_DEFUN(SC_PATH_TCLCONFIG, [
 #				the tkConfig.sh file
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_PATH_TKCONFIG, [
+AC_DEFUN([SC_PATH_TKCONFIG],[
     #
     # Ok, lets find the tk configuration
     # First, look for one uninstalled.
@@ -228,7 +228,7 @@ AC_DEFUN(SC_PATH_TKCONFIG, [
 #
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_LOAD_TCLCONFIG, [
+AC_DEFUN([SC_LOAD_TCLCONFIG],[
     AC_MSG_CHECKING([for existence of $TCL_BIN_DIR/tclConfig.sh])
 
     if test -f "$TCL_BIN_DIR/tclConfig.sh" ; then
@@ -279,7 +279,7 @@ AC_DEFUN(SC_LOAD_TCLCONFIG, [
 #		TK_BIN_DIR
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_LOAD_TKCONFIG, [
+AC_DEFUN([SC_LOAD_TKCONFIG],[
     AC_MSG_CHECKING([for existence of $TK_BIN_DIR/tkConfig.sh])
 
     if test -f "$TK_BIN_DIR/tkConfig.sh" ; then
@@ -316,7 +316,7 @@ AC_DEFUN(SC_LOAD_TKCONFIG, [
 #		SHARED_BUILD	Value of 1 or 0
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_ENABLE_SHARED, [
+AC_DEFUN([SC_ENABLE_SHARED],[
     AC_MSG_CHECKING([how to build libraries])
     AC_ARG_ENABLE(shared,
 	[  --enable-shared         build and link with shared libraries [--enable-shared]],
@@ -365,7 +365,7 @@ AC_DEFUN(SC_ENABLE_SHARED, [
 #
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_ENABLE_THREADS, [
+AC_DEFUN([SC_ENABLE_THREADS],[
     AC_MSG_CHECKING(for building with threads)
     AC_ARG_ENABLE(threads, [  --enable-threads        build with threads],
 	[tcl_ok=$enableval], [tcl_ok=no])
@@ -427,7 +427,7 @@ AC_DEFUN(SC_ENABLE_THREADS, [
 #
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_ENABLE_SYMBOLS, [
+AC_DEFUN([SC_ENABLE_SYMBOLS],[
     case "${host}" in
 	*mingw32* | *windows32*)
 	    tcl_dbgx=d
@@ -478,7 +478,7 @@ AC_DEFUN(SC_ENABLE_SYMBOLS, [
 #				library
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_MAKE_LIB, [
+AC_DEFUN([SC_MAKE_LIB],[
     case "${host}" in
 	*mingw32* | *windows32*)
 	    if test "${CC}" = "cl"; then
@@ -536,7 +536,7 @@ AC_DEFUN(SC_MAKE_LIB, [
 #		TCL_INCLUDES
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_PRIVATE_TCL_HEADERS, [
+AC_DEFUN([SC_PRIVATE_TCL_HEADERS],[
     AC_MSG_CHECKING(for Tcl private include files)
 
     case "${host}" in
@@ -592,7 +592,7 @@ AC_DEFUN(SC_PRIVATE_TCL_HEADERS, [
 #		TK_INCLUDES
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_PRIVATE_TK_HEADERS, [
+AC_DEFUN([SC_PRIVATE_TK_HEADERS],[
     AC_MSG_CHECKING(for Tk private include files)
 
     case "${host}" in

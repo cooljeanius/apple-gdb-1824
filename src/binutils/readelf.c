@@ -71,6 +71,13 @@
 #  warning "readelf.c expects <libintl.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LIBINTL_H */
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "readelf.c expects <limits.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_LIMITS_H */
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
@@ -7135,14 +7142,14 @@ process_symbol_table(FILE *file)
 	  unsigned long i;
 	  printf("      0  %-10lu (%5.1f%%)\n",
                  counts[0], (counts[0] * (double)100.0f) / nbuckets);
-	  for (i = 1; i <= maxlength; ++i)
+	  for (i = 1UL; (i <= maxlength) && (i < ULONG_MAX); ++i)
 	    {
 	      nzero_counts += (counts[i] * i);
 	      printf("%7lu  %-10lu (%5.1f%%)    %5.1f%%\n",
                      i, counts[i], (counts[i] * (double)100.0f) / nbuckets,
                      (nzero_counts * (double)100.0f) / nsyms);
-              if (i == INFINITY) {
-                break; /* silence '-Wunsafe-loop-optimizations' */
+              if (i == (unsigned long)INFINITY) {
+                break; /* attempt to silence '-Wunsafe-loop-optimizations' */
               }
 	    }
 	}

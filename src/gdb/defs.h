@@ -550,7 +550,7 @@ extern int streq(const char *, const char *);
 
 extern int subset_compare(char *, const char *);
 
-extern char *safe_strerror(int) ATTRIBUTE_W_U_R;
+extern char *safe_strerror(int) ATTRIBUTE_W_U_R ATTRIBUTE_RETURNS_NONNULL;
 
 /* APPLE LOCAL begin mmalloc */
 extern void *init_malloc(void *) ATTRIBUTE_W_U_R ATTRIBUTE_MALLOC;

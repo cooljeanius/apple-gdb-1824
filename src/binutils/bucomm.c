@@ -33,6 +33,8 @@
 #include "filenames.h"
 #include "libbfd.h"
 
+#include "sysdep.h"
+
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #else
@@ -477,22 +479,21 @@ parse_vma (const char *s, const char *arg)
 /* Returns the size of the named file.  If the file does not
    exist, or if it is not a real file, then a suitable non-fatal
    error message is printed and zero is returned.  */
-
 off_t
-get_file_size (const char * file_name)
+get_file_size(const char * file_name)
 {
   struct stat statbuf;
 
-  if (stat (file_name, &statbuf) < 0)
+  if (stat(file_name, &statbuf) < 0)
     {
       if (errno == ENOENT)
-	non_fatal (_("'%s': No such file"), file_name);
+	non_fatal(_("'%s': No such file"), file_name);
       else
-	non_fatal (_("Warning: could not locate '%s'.  reason: %s"),
-		   file_name, strerror (errno));
+	non_fatal(_("Warning: could not locate '%s'.  reason: %s"),
+		  file_name, xstrerror(errno));
     }
-  else if (! S_ISREG (statbuf.st_mode))
-    non_fatal (_("Warning: '%s' is not an ordinary file"), file_name);
+  else if (!S_ISREG(statbuf.st_mode))
+    non_fatal(_("Warning: '%s' is not an ordinary file"), file_name);
   else
     return statbuf.st_size;
 

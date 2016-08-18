@@ -3068,7 +3068,8 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wmisleading-indentation -Wlto-type-mismatch -Wtautological-compare \
 -Wduplicated-cond -Wwrite-strings -Wenum-compare -Wnonnull-compare \
 -Wdangling-else -Wduplicate-decl-specifier -Wmemset-elt-size \
--Wswitch-unreachable -Whsa -Wscalar-storage-order"
+-Wswitch-unreachable -Whsa -Wscalar-storage-order \
+-Wimplicit-fallthrough -Wformat-length=2"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -3099,6 +3100,14 @@ fi
 # similarly with VLAs:
 if test "x${ac_cv_c_vararrays}" != "xyes" || test "x${enable_build_with_cxx}" = "xyes"; then
   build_warnings="${build_warnings} -Wvla"
+elif test "x${ac_cv_c_vararrays}" = "xyes"; then
+  build_warnings="${build_warnings} -Wvla-larger-than=9999"
+fi
+# ...and alloca:
+if test "x${ac_cv_func_alloca_works}" = "xno"; then
+  build_warnings="${build_warnings} -Walloca"
+elif test "x${ac_cv_func_alloca_works}" = "xyes"; then
+  build_warnings="${build_warnings} -Walloca-larger-than=9999"
 fi
 
 # clang-specific warnings are now moved to after the host-specific ones.

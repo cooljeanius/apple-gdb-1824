@@ -32,6 +32,8 @@
 #include "demangle.h"
 #include "budemang.h"
 
+#include "sysdep.h"
+
 /* Wrapper around cplus_demangle.  Strips leading underscores and
  * other such chars that would otherwise confuse the demangler: */
 char *

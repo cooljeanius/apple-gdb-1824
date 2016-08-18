@@ -123,6 +123,12 @@ AC_DEFINE_UNQUOTED([DEFAULT_STRINGS_ALL],[${default_strings_all}],
 		   [Should strings use -a behavior by default?])dnl
 
 AM_BINUTILS_WARNINGS
+gl_COMPILER_OPTION_IF([-Wstrict-overflow=2],
+                      [WARN_CFLAGS="${WARN_CFLAGS} -Wstrict-overflow=2"],
+                      [gl_WARN_ADD([-Wstrict-overflow])])dnl
+gl_WARN_ADD([-Wsign-compare])dnl
+gl_WARN_ADD([-Wfloat-conversion])dnl
+gl_WARN_ADD([-Wno-missed-loop-optimizations])dnl
 		   
 AC_CONFIG_HEADERS([config.h])dnl
 AH_VERBATIM([00_CONFIG_H_CHECK],[

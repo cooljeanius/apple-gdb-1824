@@ -22,6 +22,8 @@ Foundation, 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA.  */
 #include <stdio.h>
 #include <string.h>
 
+#include "sysdep.h"
+
 #if defined(__GNUC__) && (__GNUC__ >= 2)
 /* Define BFD64 here, even if our default architecture is 32 bit ELF
  * as this will allow us to read in and parse 64bit and 32bit ELF files.
@@ -173,7 +175,7 @@ unw_print_xyreg(char *cp, unsigned int x, unsigned int ytreg)
 
 typedef bfd_vma unw_word;
 
-/* in case popping this off failed in a header: */
+/* in case popping this off failed in a header (FIXME): */
 #if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__clang__)
  # pragma GCC diagnostic ignored "-Wtraditional"
 #endif /* gcc 4+ && !__clang__ */

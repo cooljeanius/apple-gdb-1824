@@ -20,6 +20,8 @@
 #include "bfd.h"
 #include "bucomm.h"
 
+#include "sysdep.h"
+
 static char ftypelet (unsigned long);
 static void setst (unsigned long, char *);
 

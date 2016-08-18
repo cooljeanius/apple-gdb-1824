@@ -21,6 +21,9 @@
 #include "bfd.h"
 #include "bucomm.h"
 
+#include "libiberty.h" /* for xstrerror() */
+#include "sysdep.h"
+
 #include <sys/stat.h>
 
 #ifdef HAVE_GOOD_UTIME_H
@@ -126,7 +129,7 @@ set_times (const char *destination, const struct stat *statbuf)
   }
 
   if (result != 0)
-    non_fatal (_("%s: cannot set time: %s"), destination, strerror (errno));
+    non_fatal(_("%s: cannot set time: %s"), destination, xstrerror(errno));
 }
 
 #ifndef S_ISLNK
@@ -203,7 +206,8 @@ smart_rename(const char *from, const char *to, int preserve_dates)
       else
 	{
 	  /* We have to clean up here: */
-	  non_fatal(_("unable to rename '%s' reason: %s"), to, strerror(errno));
+	  non_fatal(_("unable to rename '%s' reason: %s"), to,
+		    xstrerror(errno));
 	  unlink(from);
 	}
     }
@@ -211,7 +215,8 @@ smart_rename(const char *from, const char *to, int preserve_dates)
     {
       ret = simple_copy(from, to);
       if (ret != 0)
-	non_fatal(_("unable to copy file '%s' reason: %s"), to, strerror(errno));
+	non_fatal(_("unable to copy file '%s' reason: %s"), to,
+		  xstrerror(errno));
 
       if (preserve_dates)
 	set_times(to, &s);

@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <limits.h>
 
 #include "bfd.h"
 #include "bucomm.h"
@@ -34,6 +35,8 @@
 #include "budbg.h"
 #include "aout/aout64.h"
 #include "aout/stab_gnu.h"
+
+#include "sysdep.h"
 
 /* The size of a stabs symbol.  This presumes 32 bit values.  */
 
@@ -333,30 +336,29 @@ string_hash_newfunc (struct bfd_hash_entry *entry,
   ((struct string_hash_entry *) \
    bfd_hash_lookup (&(t)->table, (string), (create), (copy)))
 
-/* Add a symbol to the stabs debugging information we are building.  */
-
+/* Add a symbol to the stabs debugging information we are building: */
 static bfd_boolean
-stab_write_symbol (struct stab_write_handle *info, int type, int desc,
-		   bfd_vma value, const char *string)
+stab_write_symbol(struct stab_write_handle *info, int type, int desc,
+		  bfd_vma value, const char *string)
 {
   bfd_size_type strx;
   bfd_byte sym[STAB_SYMBOL_SIZE];
 
   if (string == NULL)
-    strx = 0;
+    strx = 0UL;
   else
     {
       struct string_hash_entry *h;
 
-      h = string_hash_lookup (&info->strhash, string, TRUE, TRUE);
+      h = string_hash_lookup(&info->strhash, string, TRUE, TRUE);
       if (h == NULL)
 	{
-	  non_fatal (_("string_hash_lookup failed: %s"),
-		     bfd_errmsg (bfd_get_error ()));
+	  non_fatal(_("string_hash_lookup failed: %s"),
+		    bfd_errmsg(bfd_get_error()));
 	  return FALSE;
 	}
       if (h->index != -1)
-	strx = h->index;
+	strx = (bfd_size_type)h->index;
       else
 	{
 	  strx = info->strings_size;
@@ -1134,14 +1136,15 @@ stab_offset_type (void *p)
 /* Push a method type.  */
 
 static bfd_boolean
-stab_method_type (void *p, bfd_boolean domainp, int argcount,
-		  bfd_boolean varargs)
+stab_method_type(void *p, bfd_boolean domainp, int argcount,
+		 bfd_boolean varargs)
 {
-  struct stab_write_handle *info = (struct stab_write_handle *) p;
+  struct stab_write_handle *info = (struct stab_write_handle *)p;
   bfd_boolean definition;
   char *domain, *return_type, *buf;
   char **args;
   int i;
+  unsigned int j;
   size_t len;
 
   /* We don't bother with stub method types, because that would
@@ -1152,12 +1155,12 @@ stab_method_type (void *p, bfd_boolean domainp, int argcount,
      anyhow.  */
   if (! domainp)
     {
-      if (! stab_empty_type (p))
+      if (! stab_empty_type(p))
 	return FALSE;
     }
 
   definition = info->type_stack->definition;
-  domain = stab_pop_type (info);
+  domain = stab_pop_type(info);
 
   /* A non-varargs function is indicated by making the last parameter
      type be void.  */
@@ -1173,59 +1176,60 @@ stab_method_type (void *p, bfd_boolean domainp, int argcount,
 	args = NULL;
       else
 	{
-	  args = (char **) xmalloc (1 * sizeof (*args));
-	  if (! stab_empty_type (p))
+	  args = (char **)xmalloc(1UL * sizeof(*args));
+	  if (! stab_empty_type(p))
 	    return FALSE;
-	  definition = definition || info->type_stack->definition;
-	  args[0] = stab_pop_type (info);
+	  definition = (definition || info->type_stack->definition);
+	  args[0] = stab_pop_type(info);
 	  argcount = 1;
 	}
     }
   else
     {
-      args = (char **) xmalloc ((argcount + 1) * sizeof (*args));
-      for (i = argcount - 1; i >= 0; i--)
+      args = (char **)xmalloc(((size_t)argcount + 1UL) * sizeof(*args));
+      for (i = (argcount - 1); i >= 0; i--)
 	{
-	  definition = definition || info->type_stack->definition;
-	  args[i] = stab_pop_type (info);
+	  definition = (definition || info->type_stack->definition);
+	  args[i] = stab_pop_type(info);
 	}
       if (! varargs)
 	{
-	  if (! stab_empty_type (p))
+	  if (! stab_empty_type(p))
 	    return FALSE;
-	  definition = definition || info->type_stack->definition;
-	  args[argcount] = stab_pop_type (info);
+	  definition = (definition || info->type_stack->definition);
+	  args[argcount] = stab_pop_type(info);
 	  ++argcount;
 	}
     }
 
-  definition = definition || info->type_stack->definition;
-  return_type = stab_pop_type (info);
+  definition = (definition || info->type_stack->definition);
+  return_type = stab_pop_type(info);
 
-  len = strlen (domain) + strlen (return_type) + 10;
-  for (i = 0; i < argcount; i++)
-    len += strlen (args[i]);
+  len = (strlen(domain) + strlen(return_type) + 10UL);
+  assert(argcount > 0);
+  for (j = 0; j < (unsigned int)argcount; j++)
+    len += strlen(args[j]);
 
   buf = (char *)xmalloc(len);
 
-  sprintf (buf, "#%s,%s", domain, return_type);
-  free (domain);
-  free (return_type);
+  snprintf(buf, len, "#%s,%s", domain, return_type);
+  free(domain);
+  free(return_type);
   for (i = 0; i < argcount; i++)
     {
-      strcat (buf, ",");
-      strcat (buf, args[i]);
-      free (args[i]);
+      strcat(buf, ",");
+      strcat(buf, args[i]);
+      free(args[i]);
     }
-  strcat (buf, ";");
+  strcat(buf, ";");
 
   if (args != NULL)
-    free (args);
+    free(args);
 
-  if (! stab_push_string (info, buf, 0, definition, 0))
+  if (! stab_push_string(info, buf, 0, definition, 0))
     return FALSE;
 
-  free (buf);
+  free(buf);
 
   return TRUE;
 }
@@ -2270,3 +2274,5 @@ stab_lineno (void *p, const char *file, unsigned long lineno, bfd_vma addr)
   return stab_write_symbol (info, N_SLINE, lineno, addr - info->fnaddr,
 			    (const char *) NULL);
 }
+
+/* EOF */

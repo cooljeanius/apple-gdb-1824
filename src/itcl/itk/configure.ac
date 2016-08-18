@@ -3,6 +3,8 @@
 # need to modify this file are marked by the string __CHANGE__
 #--------------------------------------------------------------------
 
+sinclude(acinclude.m4)
+
 #--------------------------------------------------------------------
 # __CHANGE__
 # This very first macro is used to verify that the configure script can 
@@ -13,11 +15,13 @@
 # AC_CONFIG_SRCDIR([../generic/tcl.h])
 #--------------------------------------------------------------------
 
+AC_PREREQ([2.61])
 AC_INIT([itk],[3.2.1],[])
 AC_CONFIG_SRCDIR([generic/itk.h])
 # CYGNUS LOCAL
-AC_CONFIG_AUX_DIR(../..)
+AC_CONFIG_AUX_DIR([../..])
 # END CYGNUS LOCAL
+AC_CONFIG_MACRO_DIR([..])
 
 #--------------------------------------------------------------------
 # __CHANGE__
@@ -67,7 +71,10 @@ fi
 #--------------------------------------------------------------------
 
 # CYGNUS LOCAL
-dnl SC_ENABLE_GCC
+m4_ifdef([SC_ENABLE_GCC],[
+  SC_ENABLE_GCC
+])dnl
+  ## generic autoconf version:
 AC_PROG_CC
 # END CYGNUS LOCAL
 AC_PROG_INSTALL
@@ -203,10 +210,16 @@ AC_SUBST(tkstub_LIB_SPEC)
 # of private headers
 #--------------------------------------------------------------------
 
-#SC_PUBLIC_TCL_HEADERS
+m4_ifdef([SC_PUBLIC_TCL_HEADERS],[
+  SC_PUBLIC_TCL_HEADERS
+])dnl
+  ## just these:
 SC_PRIVATE_TCL_HEADERS
 
-#SC_PUBLIC_TK_HEADERS
+m4_ifdef([SC_PUBLIC_TK_HEADERS],[
+  SC_PUBLIC_TK_HEADERS
+])dnl
+  ## just these:
 SC_PRIVATE_TK_HEADERS
 
 #--------------------------------------------------------------------
@@ -401,7 +414,19 @@ AC_SUBST(SHLIB_LD_LIBS)
 
 # CYGNUS LOCAL
 # A Tcl shell is not available when bootstrapping!
-dnl SC_PROG_TCLSH
+if test "x${bootstrapping}" != "xyes"; then
+    m4_ifdef([SC_PROG_TCLSH],[
+      SC_PROG_TCLSH
+    ],[
+      AC_PATH_PROGS([TCLSH_PROG],[tclsh tclsh8.4],[],[])dnl
+      ## just in case:
+      if test "x${TCLSH_PROG}" = "x"; then
+        test -z "${TCLSH_PROG}" && test -x /usr/bin/false && export TCLSH_PROG="/usr/bin/false"
+      fi
+      AC_SUBST([TCLSH_PROG])dnl
+    ])dnl
+    ## enough?
+fi
 # END CYGNUS LOCAL
 
 #--------------------------------------------------------------------
@@ -410,7 +435,19 @@ dnl SC_PROG_TCLSH
 
 # CYGNUS LOCAL
 # A Wish shell is not available when bootstrapping!
-dnl SC_PROG_WISH
+if test "x${bootstrapping}" != "xyes"; then
+    m4_ifdef([SC_PROG_WISH],[
+      SC_PROG_WISH
+    ],[
+      AC_PATH_PROGS([WISH_PROG],[wish],[],[])dnl
+      ## just in case:
+      if test "x${WISH_PROG}" = "x"; then
+        test -z "${WISH_PROG}" && test -x /usr/bin/false && export WISH_PROG="/usr/bin/false"
+      fi
+      AC_SUBST([WISH_PROG])dnl
+    ])dnl
+    ## enough?
+fi
 # END CYGNUS LOCAL
 
 #--------------------------------------------------------------------

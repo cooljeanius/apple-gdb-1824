@@ -46,6 +46,7 @@
 #include "filenames.h"
 #include "binemul.h"
 #include "plugin.h"
+#include <limits.h>
 #include <sys/stat.h>
 
 #ifdef __GO32__
@@ -1537,12 +1538,12 @@ replace_members(bfd *arch, char **files_to_move, bfd_boolean quick)
   bfd *current;
   bfd **current_ptr;
 
-  while (files_to_move && *files_to_move)
+  while ((files_to_move != NULL) && (*files_to_move != NULL))
     {
       if (! quick)
 	{
 	  current_ptr = &arch->next;
-	  while (*current_ptr)
+	  while ((current_ptr != NULL) && (*current_ptr != NULL))
 	    {
 	      current = *current_ptr;
 
@@ -1599,6 +1600,9 @@ replace_members(bfd *arch, char **files_to_move, bfd_boolean quick)
     next_file:;
 
       files_to_move++;
+      if (files_to_move > (char **)UINTPTR_MAX) {
+	break;
+      }
     }
 
   if (changed) {

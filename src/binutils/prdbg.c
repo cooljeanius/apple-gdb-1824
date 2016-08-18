@@ -33,8 +33,9 @@
 #include "debug.h"
 #include "budbg.h"
 
-/* This is the structure we use as a handle for these routines.  */
+#include "sysdep.h"
 
+/* This is the structure we use as a handle for these routines: */
 struct pr_handle
 {
   /* File to print information to.  */
@@ -1928,7 +1929,7 @@ translate_addresses(bfd *abfd, char *addr_hex, FILE *f, asymbol **syms)
 
 /* Start a new compilation unit: */
 static bfd_boolean
-tg_start_compilation_unit(void * p, const char *afilename ATTRIBUTE_UNUSED)
+tg_start_compilation_unit(void *p, const char *afilename ATTRIBUTE_UNUSED)
 {
   /* (assuming since "afilename" is marked as unused, all uses
    * of "filename" in this function must refer to the global variable...
@@ -1940,7 +1941,7 @@ tg_start_compilation_unit(void * p, const char *afilename ATTRIBUTE_UNUSED)
 
   free(info->filename);
   /* Should it be relative? best way to do it here?.  */
-  info->filename = strdup(filename);
+  info->filename = xstrdup(filename);
 
   return TRUE;
 }
@@ -1953,7 +1954,7 @@ tg_start_source(void *p, const char *sfilename)
 
   free(info->filename);
   /* Should it be relative? best way to do it here?.  */
-  info->filename = strdup(sfilename);
+  info->filename = xstrdup(sfilename);
 
   return TRUE;
 }
@@ -2268,20 +2269,20 @@ tg_class_method_variant (void *p, const char *physname ATTRIBUTE_UNUSED,
   /* Put the const and volatile qualifiers on the type.  */
   if (volatilep)
     {
-      if (! append_type (info, " volatile"))
+      if (!append_type(info, " volatile"))
 	return FALSE;
     }
   if (constp)
     {
-      if (! append_type (info, " const"))
+      if (!append_type(info, " const"))
 	return FALSE;
     }
 
-  method_name = strdup (context ? info->stack->next->next->method
+  method_name = xstrdup(context ? info->stack->next->next->method
 			: info->stack->next->method);
 
-  /* Stick the name of the method into its type.  */
-  if (! substitute_type (info, method_name))
+  /* Stick the name of the method into its type: */
+  if (!substitute_type(info, method_name))
     return FALSE;
 
   /* Get the type.  */
@@ -2331,26 +2332,26 @@ tg_class_static_method_variant (void *p,
   /* Put the const and volatile qualifiers on the type.  */
   if (volatilep)
     {
-      if (! append_type (info, " volatile"))
+      if (!append_type(info, " volatile"))
 	return FALSE;
     }
   if (constp)
     {
-      if (! append_type (info, " const"))
+      if (!append_type(info, " const"))
 	return FALSE;
     }
 
-  /* Mark it as static.  */
-  if (! prepend_type (info, "static "))
+  /* Mark it as static: */
+  if (!prepend_type(info, "static "))
     return FALSE;
 
-  method_name = strdup (info->stack->next->method);
-  /* Stick the name of the method into its type.  */
-  if (! substitute_type (info, info->stack->next->method))
+  method_name = xstrdup(info->stack->next->method);
+  /* Stick the name of the method into its type: */
+  if (!substitute_type(info, info->stack->next->method))
     return FALSE;
 
-  /* Get the type.  */
-  method_type = pop_type (info);
+  /* Get the type: */
+  method_type = pop_type(info);
   if (method_type == NULL)
     return FALSE;
 
@@ -2637,7 +2638,7 @@ tg_start_function (void *p, const char *name, bfd_boolean global)
 	  info->stack->method = "";
 	  name = dname;
 	}
-      sep = strchr (name, '(');
+      sep = strchr(name, '(');
       if (sep)
 	*sep = 0;
       /* Obscure functions as type_info function.  */
@@ -2645,9 +2646,9 @@ tg_start_function (void *p, const char *name, bfd_boolean global)
   else
     info->stack->method = NULL;
 
-  info->stack->parents = strdup (name);
+  info->stack->parents = xstrdup(name);
 
-  if (! info->stack->method && ! append_type (info, "("))
+  if (!info->stack->method && !append_type(info, "("))
     return FALSE;
 
   info->parameter = 1;
@@ -2787,8 +2788,10 @@ visibility_name (enum debug_visibility visibility)
       s = "/* ignore */";
       break;
     default:
-      abort ();
+      abort();
       return FALSE;
     }
   return s;
 }
+
+/* EOF */

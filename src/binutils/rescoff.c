@@ -28,6 +28,8 @@
 #include "libiberty.h"
 #include "windres.h"
 
+#include "sysdep.h"
+
 #include <assert.h>
 
 /* In order to use the address of a resource data entry, we need to

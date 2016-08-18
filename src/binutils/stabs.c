@@ -38,6 +38,8 @@
 #include "aout/aout64.h"
 #include "aout/stab_gnu.h"
 
+#include "sysdep.h"
+
 /* The number of predefined XCOFF types.  */
 
 #define XCOFF_TYPE_COUNT 34
@@ -5409,3 +5411,5 @@ stab_demangle_v3_arg (void *dhandle, struct stab_handle *info,
       }
     }
 }
+
+/* EOF */

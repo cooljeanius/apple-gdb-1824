@@ -32,6 +32,8 @@
 #include "elf-bfd.h"
 #include "elf/common.h"
 
+#include "sysdep.h"
+
 /* When sorting by size, we use this structure to hold the size and a
    pointer to the minisymbol.  */
 
@@ -257,10 +259,10 @@ usage(FILE *stream, int status)
   -h, --help             Display this information\n\
   -V, --version          Display this program's version number\n\
 \n"));
-  list_supported_targets (program_name, stream);
+  list_supported_targets(program_name, stream);
   if (status == 0)
-    fprintf (stream, _("Report bugs to %s.\n"), REPORT_BUGS_TO);
-  exit (status);
+    fprintf(stream, _("Report bugs to %s.\n"), REPORT_BUGS_TO);
+  xexit(status);
 }
 
 /* Set the radix for the symbol value and size according to RADIX.  */
@@ -1641,13 +1643,13 @@ main (int argc, char **argv)
 
   retval = 0;
 
-  if (argc - optind > 1)
+  if ((argc - optind) > 1)
     filename_per_file = 1;
 
   /* We were given several filenames to do.  */
   while (optind < argc)
     {
-      PROGRESS (1);
+      PROGRESS(1);
       if (!display_file(argv[optind++]))
 	retval++;
     }
@@ -1663,7 +1665,7 @@ main (int argc, char **argv)
     }
 #endif /* HAVE_SBRK */
 
-  exit(retval);
+  xexit(retval);
 #if !defined(__clang__)
   return retval;
 #endif /* !__clang__ */

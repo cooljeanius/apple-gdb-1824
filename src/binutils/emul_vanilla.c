@@ -1,4 +1,4 @@
-/* Binutils emulation layer.
+/* emul_vanilla.c: Binutils emulation layer.
    Copyright (C) 2002 Free Software Foundation, Inc.
    Written by Tom Rix, Red Hat Inc.
 
@@ -16,9 +16,10 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "binemul.h"
+#include "sysdep.h"
 
 struct bin_emulation_xfer_struct bin_vanilla_emulation =
 {
@@ -27,3 +28,5 @@ struct bin_emulation_xfer_struct bin_vanilla_emulation =
   ar_emul_default_replace,
   ar_emul_default_parse_arg,
 };
+
+/* EOF */

@@ -1,7 +1,10 @@
+#                                               -*- Autoconf -*-
 #--------------------------------------------------------------------
 # Sample configure.ac for Tcl Extensions.  The only places you should
 # need to modify this file are marked by the string __CHANGE__
 #--------------------------------------------------------------------
+
+sinclude(acinclude.m4)
 
 #--------------------------------------------------------------------
 # __CHANGE__
@@ -13,11 +16,13 @@
 # AC_CONFIG_SRCDIR([../generic/tcl.h])
 #--------------------------------------------------------------------
 
+AC_PREREQ([2.61])
 AC_INIT([itcl],[3.2.1],[])
 AC_CONFIG_SRCDIR([generic/itcl.h])
 # CYGNUS LOCAL
-AC_CONFIG_AUX_DIR(../..)
+AC_CONFIG_AUX_DIR([../..])
 # END CYGNUS LOCAL
+AC_CONFIG_MACRO_DIR([..])
 
 #--------------------------------------------------------------------
 # __CHANGE__
@@ -37,8 +42,8 @@ VERSION=${MAJOR_VERSION}.${MINOR_VERSION}
 NODOT_VERSION=${MAJOR_VERSION}${MINOR_VERSION}
 
 
-AC_SUBST(PACKAGE)
-AC_SUBST(VERSION)
+AC_SUBST([PACKAGE])dnl
+AC_SUBST([VERSION])dnl
 
 #--------------------------------------------------------------------
 # We put this here so that you can compile with -DVERSION="1.2" to
@@ -67,7 +72,10 @@ fi
 #--------------------------------------------------------------------
 
 # CYGNUS LOCAL
-dnl SC_ENABLE_GCC
+m4_ifdef([SC_ENABLE_GCC],[
+  SC_ENABLE_GCC
+])dnl
+  ## generic autoconf version:
 AC_PROG_CC
 # END CYGNUS LOCAL
 AC_PROG_INSTALL
@@ -130,8 +138,8 @@ case "${host}" in
     ;;
 esac
 
-AC_SUBST(CYGPATH)
-AC_SUBST(RELPATH)
+AC_SUBST([CYGPATH])dnl
+AC_SUBST([RELPATH])dnl
 
 #--------------------------------------------------------------------
 # Includes for this package
@@ -156,10 +164,10 @@ esac
 
 ITCL_INCLUDES="-I\"${ITCL_GENERIC_DIR_NATIVE}\" -I\"${ITCL_PLATFORM_DIR_NATIVE}\""
 
-AC_SUBST(ITCL_GENERIC_DIR_NATIVE)
-AC_SUBST(ITCL_WIN_DIR_NATIVE)
-AC_SUBST(ITCL_UNIX_DIR_NATIVE)
-AC_SUBST(ITCL_INCLUDES)
+AC_SUBST([ITCL_GENERIC_DIR_NATIVE])dnl
+AC_SUBST([ITCL_WIN_DIR_NATIVE])dnl
+AC_SUBST([ITCL_UNIX_DIR_NATIVE])dnl
+AC_SUBST([ITCL_INCLUDES])dnl
 
 #--------------------------------------------------------------------
 # Load the tclConfig.sh file
@@ -179,7 +187,10 @@ SC_LOAD_TCLCONFIG
 # of private headers
 #--------------------------------------------------------------------
 
-#SC_PUBLIC_TCL_HEADERS
+m4_ifdef([SC_PUBLIC_TCL_HEADERS],[
+  SC_PUBLIC_TCL_HEADERS
+])dnl
+  ## just these:
 SC_PRIVATE_TCL_HEADERS
 
 #--------------------------------------------------------------------
@@ -208,17 +219,17 @@ case "${host}" in
 	PLATFORM_DIR='$(WIN_DIR)'
     ;;
     *)
-	CLEANFILES=
+	CLEANFILES=""
 	PLATFORM_SOURCES='$(UNIX_SOURCES)'
 	PLATFORM_OBJECTS='$(UNIX_OBJECTS)'
 	PLATFORM_DIR='$(UNIX_DIR)'
     ;;
 esac
 
-AC_SUBST(CLEANFILES)
-AC_SUBST(PLATFORM_SOURCES)
-AC_SUBST(PLATFORM_OBJECTS)
-AC_SUBST(PLATFORM_DIR)
+AC_SUBST([CLEANFILES])dnl
+AC_SUBST([PLATFORM_SOURCES])dnl
+AC_SUBST([PLATFORM_OBJECTS])dnl
+AC_SUBST([PLATFORM_DIR])dnl
 
 #--------------------------------------------------------------------
 # Check whether --enable-threads or --disable-threads was given.
@@ -248,12 +259,12 @@ SHLIB_LD=${TCL_SHLIB_LD}
 STLIB_LD=${TCL_STLIB_LD}
 SHLIB_CFLAGS=${TCL_SHLIB_CFLAGS}
 
-AC_SUBST(CFLAGS_DEBUG)
-AC_SUBST(CFLAGS_OPTIMIZE)
-AC_SUBST(STLIB_LD)
-AC_SUBST(SHLIB_LD)
-AC_SUBST(SHLIB_CFLAGS)
-AC_SUBST(SHLIB_LDFLAGS)
+AC_SUBST([CFLAGS_DEBUG])dnl
+AC_SUBST([CFLAGS_OPTIMIZE])dnl
+AC_SUBST([STLIB_LD])dnl
+AC_SUBST([SHLIB_LD])dnl
+AC_SUBST([SHLIB_CFLAGS])dnl
+AC_SUBST([SHLIB_LDFLAGS])dnl
 
 #--------------------------------------------------------------------
 # Set the default compiler switches based on the --enable-symbols 
@@ -356,9 +367,9 @@ itcl_LIB_FILE=${ITCL_TARGET_FILE}
 # library.
 #--------------------------------------------------------------------
 
-AC_SUBST(itclstub_LIB_FILE)
-AC_SUBST(itcl_LIB_FILE)
-AC_SUBST(SHLIB_LD_LIBS)
+AC_SUBST([itclstub_LIB_FILE])dnl
+AC_SUBST([itcl_LIB_FILE])dnl
+AC_SUBST([SHLIB_LD_LIBS])dnl
 
 #--------------------------------------------------------------------
 # Cache the stub library name so that the itk configure script can pick
@@ -377,7 +388,19 @@ AC_CACHE_VAL(ac_cv_itclstub_LIB_FILE, ac_cv_itclstub_LIB_FILE=${itclstub_LIB_FIL
 
 # CYGNUS LOCAL
 # A Tcl shell is not available when bootstrapping!
-dnl SC_PROG_TCLSH
+if test "x${bootstrapping}" != "xyes"; then
+    m4_ifdef([SC_PROG_TCLSH],[
+      SC_PROG_TCLSH
+    ],[
+      AC_PATH_PROGS([TCLSH_PROG],[tclsh tclsh8.4],[],[])dnl
+      ## just in case:
+      if test "x${TCLSH_PROG}" = "x"; then
+        test -z "${TCLSH_PROG}" && test -x /usr/bin/false && export TCLSH_PROG="/usr/bin/false"
+      fi
+      AC_SUBST([TCLSH_PROG])dnl
+    ])dnl
+    ## enough?
+fi
 # END CYGNUS LOCAL
 
 #--------------------------------------------------------------------
@@ -391,24 +414,24 @@ dnl SC_PROG_TCLSH
 # version of itclConfig.sh.
 
 ITCL_VERSION=${VERSION}
-AC_SUBST(ITCL_VERSION)
+AC_SUBST([ITCL_VERSION])dnl
 
 ITCL_MAJOR_VERSION=${MAJOR_VERSION}
-AC_SUBST(ITCL_MAJOR_VERSION)
+AC_SUBST([ITCL_MAJOR_VERSION])dnl
 
 ITCL_MINOR_VERSION=${MINOR_VERSION}
-AC_SUBST(ITCL_MINOR_VERSION)
+AC_SUBST([ITCL_MINOR_VERSION])dnl
 
 ITCL_RELEASE_LEVEL=${PATCHLEVEL}
-AC_SUBST(ITCL_RELEASE_LEVEL)
+AC_SUBST([ITCL_RELEASE_LEVEL])dnl
 
 ITCL_SRC_DIR=${ITCL_SRC_DIR_NATIVE}
-AC_SUBST(ITCL_SRC_DIR)
+AC_SUBST([ITCL_SRC_DIR])dnl
 
 ITCL_SH=NONE
-AC_SUBST(ITCL_SH)
+AC_SUBST([ITCL_SH])dnl
 
-
+# Output.
 AC_CONFIG_FILES([Makefile \
 	itclConfig.sh \
 	pkgIndex.tcl])

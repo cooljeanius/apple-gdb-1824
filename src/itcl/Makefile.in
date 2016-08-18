@@ -24,80 +24,96 @@ subdirs =	@subdirs@
 SHELL =		/bin/sh
 
 all:
-	for dir in $(subdirs) ; do \
-		if test -d $$dir ; then \
-		    echo "$$dir: $(MAKE) $@" ;\
-		    if (cd $$dir; $(MAKE) $@) ; then true ; else exit 1 ; fi ; \
+	for dir in $(subdirs); do \
+		if test -d $${dir}; then \
+		    echo "$${dir}: $(MAKE) $@"; \
+		    if (cd $${dir}; $(MAKE) $@); then \
+		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    else exit 1; fi; \
 		else \
 		    exit 1; \
 		fi \
 	done;
 
 test check:
-	for dir in itcl itk iwidgets ; do \
-		if test -d $$dir ; then \
-		    echo "$$dir: $(MAKE) $@" ;\
-		    if (cd $$dir; $(MAKE) $@) ; then true ; else exit 1 ; fi ; \
+	for dir in itcl itk iwidgets; do \
+		if test -d $${dir}; then \
+		    echo "$${dir}: $(MAKE) $@"; \
+		    if (cd $${dir}; $(MAKE) $@); then \
+		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    else exit 1; fi; \
 		else \
 		    exit 1; \
 		fi \
 	done;
 
 static:
-	for dir in $(subdirs) ; do \
-		if test -d $$dir ; then \
-		    echo "$$dir: $(MAKE) $@" ;\
-		    if (cd $$dir; $(MAKE) $@) ; then true ; else exit 1 ; fi ; \
+	for dir in $(subdirs); do \
+		if test -d $${dir}; then \
+		    echo "$${dir}: $(MAKE) $@"; \
+		    if (cd $${dir}; $(MAKE) $@); then \
+		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    else exit 1; fi; \
 		else \
 		    exit 1; \
 		fi \
 	done;
 
 standalone:
-	for dir in $(subdirs) ; do \
-		if test -d $$dir ; then \
-		    echo "$$dir: $(MAKE) $@" ;\
-		    if (cd $$dir; $(MAKE) $@) ; then true ; else exit 1 ; fi ; \
+	for dir in $(subdirs); do \
+		if test -d $${dir}; then \
+		    echo "$${dir}: $(MAKE) $@"; \
+		    if (cd $${dir}; $(MAKE) $@); then \
+		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    else exit 1; fi; \
 		else \
 		    exit 1; \
 		fi \
 	done;
 
 plusplus:
-	for dir in $(subdirs) ; do \
-		if test -d $$dir ; then \
-		    echo "$$dir: $(MAKE) $@" ;\
-		    if (cd $$dir; $(MAKE) $@) ; then true ; else exit 1 ; fi ; \
+	for dir in $(subdirs); do \
+		if test -d $${dir}; then \
+		    echo "$${dir}: $(MAKE) $@"; \
+		    if (cd $${dir}; $(MAKE) $@); then \
+		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    else exit 1; fi; \
 		else \
 		    exit 1; \
 		fi \
 	done;
 
 install:
-	for dir in $(subdirs) ; do \
-		if test -d $$dir ; then \
-		    echo "$$dir: $(MAKE) $@" ;\
-		    if (cd $$dir; $(MAKE) $@) ; then true ; else exit 1 ; fi ; \
+	for dir in $(subdirs); do \
+		if test -d $${dir}; then \
+		    echo "$${dir}: $(MAKE) $@"; \
+		    if (cd $${dir}; $(MAKE) $@); then \
+		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    else exit 1; fi; \
 		else \
 		    exit 1; \
 		fi \
 	done;
 
 install-binaries:
-	for dir in $(subdirs) ; do \
-		if test -d $$dir ; then \
-		    echo "$$dir: $(MAKE) $@" ;\
-		    if (cd $$dir; $(MAKE) $@) ; then true ; else exit 1 ; fi ; \
+	for dir in $(subdirs); do \
+		if test -d $${dir}; then \
+		    echo "$${dir}: $(MAKE) $@"; \
+		    if (cd $${dir}; $(MAKE) $@); then \
+		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    else exit 1; fi; \
 		else \
 		    exit 1; \
 		fi \
 	done;
 
 install-libraries:
-	for dir in $(subdirs) ; do \
-		if test -d $$dir ; then \
-		    echo "$$dir: $(MAKE) $@" ;\
-		    if (cd $$dir; $(MAKE) $@) ; then true ; else exit 1 ; fi ; \
+	for dir in $(subdirs); do \
+		if test -d $${dir}; then \
+		    echo "$${dir}: $(MAKE) $@"; \
+		    if (cd $${dir}; $(MAKE) $@); then \
+		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    else exit 1; fi; \
 		else \
 		    exit 1; \
 		fi \
@@ -106,10 +122,12 @@ install-libraries:
 install-info info install-check:
 
 clean:
-	for dir in $(subdirs) ; do \
-		if test -d $$dir ; then \
-		    echo "$$dir: $(MAKE) $@" ;\
-		    if (cd $$dir; $(MAKE) $@) ; then true ; else exit 1 ; fi ; \
+	for dir in $(subdirs); do \
+		if test -d $${dir}; then \
+		    echo "$${dir}: $(MAKE) $@"; \
+		    if (cd $${dir}; $(MAKE) $@); then \
+		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    else exit 1; fi; \
 		else \
 		    exit 1; \
 		fi \
@@ -117,10 +135,12 @@ clean:
 
 distclean:
 	rm -f Makefile config.log config.status config.cache
-	for dir in $(subdirs) ; do \
-		if test -d $$dir ; then \
-		    echo "$$dir: $(MAKE) $@" ;\
-		    if (cd $$dir; $(MAKE) $@) ; then true ; else exit 1 ; fi ; \
+	for dir in $(subdirs); do \
+		if test -d $${dir}; then \
+		    echo "$${dir}: $(MAKE) $@"; \
+		    if (cd $${dir}; $(MAKE) $@); then \
+		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    else exit 1; fi; \
 		else \
 		    exit 1; \
 		fi \
@@ -133,11 +153,15 @@ distclean:
 #
 
 # CYGNUS LOCAL
-#configure: configure.ac
-#	autoconf
-#	for dir in $(subdirs) ; do \
-#		if (cd $$dir; autoconf) ; then true ; else exit 1 ; fi ; \
-#	done;
+AUTOCONF = autoconf
+cygnus_local_configure: configure.ac
+	$(AUTOCONF)
+	for dir in $(subdirs); do \
+		if (cd $${dir}; $(AUTOCONF)); then \
+		  echo "$(AUTOCONF) succeeded for $${dir}"; \
+		else exit 1; fi; \
+	done;
+.PHONY: cygnus_local_configure
 # END CYGNUS LOCAL
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

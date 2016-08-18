@@ -1,0 +1,5 @@
+Log.txt
+*.cache
+*.o
+*~
+*.log

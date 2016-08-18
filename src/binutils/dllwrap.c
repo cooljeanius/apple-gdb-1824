@@ -36,6 +36,8 @@
 #include "getopt.h"
 #include "dyn-string.h"
 
+#include "sysdep.h"
+
 #include <time.h>
 #include <sys/stat.h>
 #include <stdarg.h>
@@ -334,11 +336,12 @@ delete_temp_files(void)
     }
 }
 
-static void
-cleanup_and_exit (int status)
+/* */
+static void ATTRIBUTE_NORETURN
+cleanup_and_exit(int status)
 {
-  delete_temp_files ();
-  exit (status);
+  delete_temp_files();
+  xexit(status);
 }
 
 /* FIXME: -Wstack-usage */
@@ -392,21 +395,36 @@ run(const char *what, char *args)
   pid = pexecute(argv[0], (char *const *)argv, g_prog_name, temp_base,
 		 &errmsg_fmt, &errmsg_arg, (PEXECUTE_ONE | PEXECUTE_SEARCH));
 
+  /* FIXME: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wformat-nonliteral"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
   if (pid == -1)
     {
       int errno_val = errno;
 
       fprintf(stderr, "%s: ", g_prog_name);
       fprintf(stderr, errmsg_fmt, errmsg_arg);
-      fprintf(stderr, ": %s\n", strerror(errno_val));
+      fprintf(stderr, ": %s\n", xstrerror(errno_val));
       return 1;
     }
+
+  /* keep the condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
   retcode = 0;
   pid = pwait(pid, &wait_status, 0);
   if (pid == -1)
     {
-      warn("wait: %s", strerror(errno));
+      warn("wait: %s", xstrerror(errno));
       retcode = 1;
     }
   else if (WIFSIGNALED(wait_status))
@@ -469,7 +487,7 @@ strhash (const char *str)
 
 /**********************************************************************/
 
-static void
+static void ATTRIBUTE_NORETURN
 usage(FILE *file, int status)
 {
   fprintf(file, _("Usage %s <option(s)> <object-file(s)>\n"), g_prog_name);
@@ -509,7 +527,7 @@ usage(FILE *file, int status)
   fprintf(file, _("   --nodelete             Keep temp files.\n"));
   fprintf(file, _("  Rest are passed unmodified to the language driver\n"));
   fprintf(file, "\n\n");
-  exit(status);
+  xexit(status);
 }
 
 #define OPTION_START		149
@@ -750,43 +768,43 @@ main(int argc, char **argv)
 
       /* Handle passing through --option=value case.  */
       if (optarg
-	  && saved_argv[optind-1][0] == '-'
-	  && saved_argv[optind-1][1] == '-'
-	  && strchr (saved_argv[optind-1], '='))
+	  && (saved_argv[optind - 1][0] == '-')
+	  && (saved_argv[optind - 1][1] == '-')
+	  && strchr(saved_argv[optind - 1], '='))
 	single_word_option_value_pair = 1;
 
       if (dlltool_arg)
 	{
-	  dlltool_arg_indices[optind-1] = 1;
-	  if (optarg && ! single_word_option_value_pair)
+	  dlltool_arg_indices[optind - 1] = 1;
+	  if (optarg && !single_word_option_value_pair)
 	    {
-	      dlltool_arg_indices[optind-2] = 1;
+	      dlltool_arg_indices[optind - 2] = 1;
 	    }
 	}
 
-      if (! driver_arg)
+      if (!driver_arg)
 	{
-	  driver_arg_indices[optind-1] = 0;
-	  if (optarg && ! single_word_option_value_pair)
+	  driver_arg_indices[optind - 1] = 0;
+	  if (optarg && !single_word_option_value_pair)
 	    {
-	      driver_arg_indices[optind-2] = 0;
+	      driver_arg_indices[optind - 2] = 0;
 	    }
 	}
     }
 
-  /* Sanity checks.  */
-  if (! dll_name && ! dll_file_name)
+  /* Sanity checks: */
+  if (!dll_name && !dll_file_name)
     {
-      warn (_("Must provide at least one of -o or --dllname options"));
-      exit (1);
+      warn(_("Must provide at least one of -o or --dllname options"));
+      xexit(1);
     }
-  else if (! dll_name)
+  else if (!dll_name)
     {
-      dll_name = xstrdup (mybasename (dll_file_name));
+      dll_name = xstrdup(mybasename(dll_file_name));
     }
-  else if (! dll_file_name)
+  else if (!dll_file_name)
     {
-      dll_file_name = xstrdup (dll_name);
+      dll_file_name = xstrdup(dll_name);
     }
 
   /* Deduce driver-name and dlltool-name from our own.  */

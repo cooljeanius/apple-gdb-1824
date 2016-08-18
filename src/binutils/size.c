@@ -33,6 +33,8 @@
 #include "libiberty.h"
 #include "getopt.h"
 
+#include "sysdep.h"
+
 #ifndef BSD_DEFAULT
 # define BSD_DEFAULT 1
 #endif /* !BSD_DEFAULT */
@@ -99,7 +101,7 @@ usage(FILE *stream, int status)
   list_supported_targets(program_name, stream);
   if (status == 0)
     fprintf(stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
-  exit(status);
+  xexit(status);
 }
 
 static struct option long_options[] =

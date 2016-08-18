@@ -31,6 +31,8 @@
 #include "elf-bfd.h"
 #include <sys/stat.h>
 
+#include "sysdep.h"
+
 /* A list of symbols to explicitly strip out, or to keep.  A linked
    list is good enough for a small number from the command line, but
    this will slow things down a lot if many symbols are being
@@ -486,9 +488,10 @@ copy_usage(FILE *stream, int exit_status)
   if (exit_status == 0) {
     fprintf(stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
   }
-  exit(exit_status);
+  xexit(exit_status);
 }
 
+/* */
 static ATTRIBUTE_NORETURN void
 strip_usage(FILE *stream, int exit_status)
 {
@@ -520,7 +523,7 @@ strip_usage(FILE *stream, int exit_status)
   list_supported_targets(program_name, stream);
   if (exit_status == 0)
     fprintf(stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
-  exit(exit_status);
+  xexit(exit_status);
 }
 
 /* Parse section flags into a flagword, with a fatal error if the
@@ -642,7 +645,7 @@ add_specific_symbols(const char *filename, struct symlist **list)
   f = fopen(filename, FOPEN_RT);
   if (f == NULL)
     fatal(_("cannot open '%s': %s (error number '%d')"),
-          filename, strerror(errno), errno);
+          filename, xstrerror(errno), errno);
 
   if ((fread(buffer, 1UL, (size_t)size, f) == 0) || ferror(f))
     fatal(_("%s: fread failed"), filename);
@@ -660,12 +663,12 @@ add_specific_symbols(const char *filename, struct symlist **list)
       char *name_end;
       int finished = FALSE;
 
-      for (eol = line;; eol++)
+      for (eol = line; eol != NULL; eol++)
 	{
-	  switch (* eol)
+	  switch (*eol)
 	    {
 	    case '\n':
-	      * eol = '\0';
+	      *eol = '\0';
 	      /* Cope with \n\r.  */
 	      if (eol[1] == '\r')
 		++eol;
@@ -673,7 +676,7 @@ add_specific_symbols(const char *filename, struct symlist **list)
 	      break;
 
 	    case '\r':
-	      * eol = '\0';
+	      *eol = '\0';
 	      /* Cope with \r\n.  */
 	      if (eol[1] == '\n')
 		++eol;
@@ -702,27 +705,27 @@ add_specific_symbols(const char *filename, struct symlist **list)
       /* A name may now exist somewhere between 'line' and 'eol'.
 	 Strip off leading whitespace and trailing whitespace,
 	 then add it to the list.  */
-      for (name = line; IS_WHITESPACE(* name); name++)
+      for (name = line; IS_WHITESPACE(*name); name++)
 	;
       for (name_end = name;
-	   (! IS_WHITESPACE(* name_end))
-	   && (! IS_LINE_TERMINATOR(* name_end));
+	   (!IS_WHITESPACE(*name_end))
+	   && (!IS_LINE_TERMINATOR(*name_end));
 	   name_end++)
 	;
 
-      if (! IS_LINE_TERMINATOR(* name_end))
+      if (!IS_LINE_TERMINATOR(*name_end))
 	{
-	  char * extra;
+	  char *extra;
 
-	  for (extra = (name_end + 1); IS_WHITESPACE(* extra); extra++)
+	  for (extra = (name_end + 1); IS_WHITESPACE(*extra); extra++)
 	    ;
 
-	  if (! IS_LINE_TERMINATOR(* extra))
+	  if (!IS_LINE_TERMINATOR(*extra))
 	    non_fatal(_("%s:%d: Ignoring rubbish found on this line"),
 		      filename, line_count);
 	}
 
-      * name_end = '\0';
+      *name_end = '\0';
 
       if (name_end > name)
 	add_specific_symbol(name, list);
@@ -1000,8 +1003,8 @@ redefine_list_append (const char *cause, const char *source, const char *target)
 
   new_node = (struct redefine_node *)xmalloc(sizeof(struct redefine_node));
 
-  new_node->source = strdup(source);
-  new_node->target = strdup(target);
+  new_node->source = xstrdup(source);
+  new_node->target = xstrdup(target);
   new_node->next = NULL;
 
   *p = new_node;
@@ -1023,7 +1026,7 @@ add_redefine_syms_file(const char *filename)
   file = fopen(filename, "r");
   if (file == NULL)
     fatal(_("failed to open symbol redefinition file %s (error: %d, %s)"),
-          filename, errno, strerror(errno));
+          filename, errno, xstrerror(errno));
 
   bufsize = 100;
   buf = (char *)xmalloc(bufsize);
@@ -1631,7 +1634,7 @@ copy_archive(bfd *ibfd, bfd *obfd, const char *output_target)
   /* Make a temp directory to hold the contents: */
   if (MKDIR(dir, 0700) != 0)
     fatal(_("cannot mkdir %s for archive copying (error: %d, %s)"),
-          dir, errno, strerror(errno));
+          dir, errno, xstrerror(errno));
 
   obfd->has_armap = ibfd->has_armap;
 
@@ -1661,9 +1664,9 @@ copy_archive(bfd *ibfd, bfd *obfd, const char *output_target)
 	  output_name = make_tempname(output_name);
 	  if (MKDIR(output_name, 0700) != 0)
 	    fatal(_("cannot mkdir %s for archive copying (error: %d, %s)"),
-                  output_name, errno, strerror(errno));
+                  output_name, errno, xstrerror(errno));
 
-	  l =(struct name_list *)xmalloc(sizeof(struct name_list));
+	  l = (struct name_list *)xmalloc(sizeof(struct name_list));
 	  l->name = output_name;
 	  l->next = list;
 	  l->obfd = NULL;
@@ -2708,7 +2711,7 @@ copy_main (int argc, char *argv[])
 
 	    if (f == NULL)
 	      fatal(_("cannot open: %s: %s (error number '%d')"),
-                    pa->filename, strerror(errno), errno);
+                    pa->filename, xstrerror(errno), errno);
 
 	    if ((fread(pa->contents, 1UL, pa->size, f) == 0)
 		|| ferror(f))
@@ -3094,7 +3097,7 @@ copy_main (int argc, char *argv[])
   if (preserve_dates)
     if (stat(input_filename, & statbuf) < 0)
       fatal(_("warning: could not locate '%s'.  System error message: %s"),
-	    input_filename, strerror(errno));
+	    input_filename, xstrerror(errno));
 
   /* If there is no destination file, or the source and destination files
      are the same, then create a temp and rename the result into the input.  */

@@ -29,6 +29,16 @@
 #include "libiberty.h"
 #include "windres.h"
 
+#include "sysdep.h"
+
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "resbin.c expects <limits.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_LIMITS_H */
+
 /* Macros to swap in values.  */
 
 #define get_8(s)      (*((unsigned char *)(s)))
@@ -37,7 +47,7 @@
 
 /* Local functions.  */
 
-static void toosmall (const char *);
+static void toosmall(const char *) ATTRIBUTE_NORETURN;
 
 static unichar *get_unicode
   (const unsigned char *, unsigned long, int, int *);
@@ -131,29 +141,31 @@ toosmall(const char *msg)
   fatal(_("%s: not enough binary data"), msg);
 }
 
-/* Swap in a NULL terminated unicode string.  */
-
+/* Swap in a NULL terminated unicode string: */
 static unichar *
-get_unicode (const unsigned char *data, unsigned long length,
-	     int big_endian, int *retlen)
+get_unicode(const unsigned char *data, unsigned long length,
+	    int big_endian, int *retlen)
 {
   int c, i;
   unichar *ret;
 
   c = 0;
-  while (1)
+  while ((c < INT_MAX) && (c > INT_MIN))
     {
-      if (length < (unsigned long) c * 2 + 2)
-	toosmall (_("null terminated unicode string"));
-      if (get_16 (big_endian, data + c * 2) == 0)
+      if (length < (((unsigned long)c * 2UL) + 2UL))
+	toosmall(_("null terminated unicode string"));
+      if (get_16(big_endian, (data + (c * 2))) == 0)
 	break;
       ++c;
+      if (c >= INT_MAX) {
+	break;
+      }
     }
 
-  ret = (unichar *) res_alloc ((c + 1) * sizeof (unichar));
+  ret = (unichar *)res_alloc((c + 1) * sizeof(unichar));
 
   for (i = 0; i < c; i++)
-    ret[i] = get_16 (big_endian, data + i * 2);
+    ret[i] = get_16(big_endian, (data + (i * 2)));
   ret[i] = 0;
 
   if (retlen != NULL)
@@ -1081,29 +1093,29 @@ bin_to_res_version (const unsigned char *data, unsigned long length,
              since we round the subvariables in the loop.  */
 	  verlen = (verlen + 3) &~ 3;
 
-	  while (verlen > 0)
+	  while (verlen > 1)
 	    {
 	      struct ver_stringinfo *vs;
 	      int subverlen, vslen, valoff;
 
-	      vs = (struct ver_stringinfo *) res_alloc (sizeof *vs);
+	      vs = (struct ver_stringinfo *)res_alloc(sizeof(*vs));
 
-	      get_version_header (data, length, big_endian,
-				  (const char *) NULL, &vs->key, &subverlen,
-				  &vallen, &type, &off);
+	      get_version_header(data, length, big_endian,
+				 (const char *)NULL, &vs->key, &subverlen,
+				 &vallen, &type, &off);
 
-	      subverlen = (subverlen + 3) &~ 3;
+	      subverlen = ((subverlen + 3) &~ 3);
 
 	      data += off;
 	      length -= off;
 
-	      vs->value = get_unicode (data, length, big_endian, &vslen);
-	      valoff = vslen * 2 + 2;
-	      valoff = (valoff + 3) &~ 3;
+	      vs->value = get_unicode(data, length, big_endian, &vslen);
+	      valoff = ((vslen * 2) + 2);
+	      valoff = ((valoff + 3) &~ 3);
 
-	      if (off + valoff != subverlen)
-		fatal (_("unexpected version string length %d != %d + %d"),
-		       subverlen, off, valoff);
+	      if ((off + valoff) != subverlen)
+		fatal(_("unexpected version string length %d != %d + %d"),
+		      subverlen, off, valoff);
 
 	      vs->next = NULL;
 	      *ppvs = vs;
@@ -1113,8 +1125,8 @@ bin_to_res_version (const unsigned char *data, unsigned long length,
 	      length -= valoff;
 
 	      if (verlen < subverlen)
-		fatal (_("unexpected version string length %d < %d"),
-		       verlen, subverlen);
+		fatal(_("unexpected version string length %d < %d"),
+		      verlen, subverlen);
 
 	      verlen -= subverlen;
 	    }
@@ -1125,18 +1137,18 @@ bin_to_res_version (const unsigned char *data, unsigned long length,
 
 	  vi->type = VERINFO_VAR;
 
-	  get_version_header (data, length, big_endian, "VarFileInfo",
-			      (unichar **) NULL, &verlen, &vallen, &type,
-			      &off);
+	  get_version_header(data, length, big_endian, "VarFileInfo",
+			     (unichar **)NULL, &verlen, &vallen, &type,
+			     &off);
 
 	  if (vallen != 0)
-	    fatal (_("unexpected varfileinfo value length %d"), vallen);
+	    fatal(_("unexpected varfileinfo value length %d"), vallen);
 
 	  data += off;
 	  length -= off;
 
-	  get_version_header (data, length, big_endian, (const char *) NULL,
-			      &vi->u.var.key, &verlen, &vallen, &type, &off);
+	  get_version_header(data, length, big_endian, (const char *)NULL,
+			     &vi->u.var.key, &verlen, &vallen, &type, &off);
 
 	  data += off;
 	  length -= off;
@@ -2300,18 +2312,19 @@ res_to_bin_versioninfo (const struct versioninfo *versioninfo, int big_endian)
   return first;
 }
 
-/* Convert a generic resource to binary.  */
-
+/* Convert a generic resource to binary: */
 static struct bindata *
-res_to_bin_generic (unsigned long length, const unsigned char *data)
+res_to_bin_generic(unsigned long length, const unsigned char *data)
 {
   struct bindata *d;
 
-  d = (struct bindata *) reswr_alloc (sizeof *d);
+  d = (struct bindata *)reswr_alloc(sizeof(*d));
   d->length = length;
-  d->data = (unsigned char *) data;
+  d->data = (unsigned char *)data;
 
   d->next = NULL;
 
   return d;
 }
+
+/* EOF */
