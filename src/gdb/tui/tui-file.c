@@ -234,5 +234,7 @@ tui_file_flush(struct ui_file *file)
     case afile:
       fflush(stream->ts_filestream);
       break;
+    default:
+      break;
     }
 }

@@ -5,7 +5,7 @@ AC_PREREQ([2.61])
 AC_INIT([libgui],[0.0],[/dev/null])
 AC_CONFIG_SRCDIR([src/subcommand.h])
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.11.6 gnits no-dist dejagnu])
+AM_INIT_AUTOMAKE([1.11.6 gnits no-dependencies no-dist dejagnu])
 AC_CONFIG_HEADERS([config.h])
 AM_MAINTAINER_MODE
 

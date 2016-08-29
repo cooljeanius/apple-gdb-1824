@@ -499,7 +499,6 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
-runstatedir = @runstatedir@
 sb_build_profile = @sb_build_profile@
 sbindir = @sbindir@
 selarchs = @selarchs@
@@ -526,6 +525,7 @@ zlibdir = @zlibdir@
 zlibinc = @zlibinc@
 AUTOMAKE_OPTIONS = 1.11.6 no-dist gnits dejagnu -Wall -Wno-override
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
+TEXINFO_TEX = ../texinfo/texinfo.tex
 ACLOCAL_AMFLAGS = -I m4 --install
 
 # APPLE LOCAL dynamiclib building method:

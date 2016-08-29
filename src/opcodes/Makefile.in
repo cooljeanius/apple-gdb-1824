@@ -446,7 +446,6 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
-runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -462,6 +461,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = 1.11.6 gnits no-dist dejagnu -Wall -Wno-override
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
+TEXINFO_TEX = ../texinfo/texinfo.tex
 ACLOCAL_AMFLAGS = -I m4 -I ../bfd --install
 
 # APPLE LOCAL: dynamiclib building method:

@@ -1,13 +1,14 @@
 ## automake Makefile for cgen
 ## Process this file with automake to generate Makefile.in
 
-AUTOMAKE_OPTIONS = 1.11.6 gnits no-dist
+AUTOMAKE_OPTIONS = 1.11.6 gnits no-dependencies no-dist
 ## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
+TEXINFO_TEX = ../texinfo/texinfo.tex
 
 SUBDIRS = doc
 
-GUILE = "`if test -f ../guile/libguile/guile ; then echo ../guile/libguile/guile; else echo guile ; fi`" -l $(srcdir)/guile.scm -s
+GUILE = "`if test -f ../guile/libguile/guile; then echo ../guile/libguile/guile; else echo guile; fi`" -l $(srcdir)/guile.scm -s
 CGENFLAGS = -v
 CPU_ARCH = @cpu_arch@
 ARCHFILE = $(srcroot)/cpu/$(CPU_ARCH).cpu

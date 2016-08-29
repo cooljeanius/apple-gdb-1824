@@ -11,6 +11,7 @@ dnl# directory, according to the Changelog-Apple in this directory.
 AC_CONFIG_SRCDIR([ar.c])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([..])
+AC_REQUIRE_AUX_FILE([depcomp])dnl
 AC_REQUIRE_AUX_FILE([mkinstalldirs])dnl
 
 # target stuff:
@@ -49,7 +50,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu])
+AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu no-dist info-in-builddir])dnl
 AM_SANITY_CHECK
 
 # Make sure that sed is checked early:
@@ -59,6 +60,7 @@ AC_DEFUN([AC_REQUIRE_SED],[
 AC_REQUIRE_SED
 
 if test -e ./config.cache; then
+  echo "hacking ./config.cache"
   sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
   sed -i "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
   sed -i "s|ac_cv_exeext|bad_exeext|g" ./config.cache

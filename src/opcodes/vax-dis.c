@@ -1,4 +1,4 @@
-/* Print VAX instructions.
+/* vax-dis.c: Print VAX instructions.
    Copyright 1995, 1998, 2000, 2001, 2002, 2005
    Free Software Foundation, Inc.
    Contributed by Pauline Middelink <middelin@polyware.iaf.nl>
@@ -168,13 +168,13 @@ free_entry_array (void)
       entry_addr_occupied_slots = entry_addr_total_slots = 0;
     }
 }
-#endif
+#endif /* 0 */
+
 /* Check if the given address is a known function entry. Either there must
    be a symbol of function type at this address, or the address must be
    a forced entry point.  The later helps in disassembling ROM images, because
    there's no symbol table at all.  Forced entry points can be given by
    supplying several -M options to objdump: -M entry:0xffbb7730.  */
-
 static bfd_boolean
 is_function_entry (struct disassemble_info *info, bfd_vma addr)
 {
@@ -276,6 +276,7 @@ print_insn_mode (const char *d,
       break;
     case 0xB0: /* Displacement byte deferred:	*displ(Rn).  */
       (*info->fprintf_func) (info->stream, "*");
+      break; /* -Wimplicit-fallthrough */
     case 0xA0: /* Displacement byte:		displ(Rn).  */
       if (reg == 0xF)
 	(*info->print_address_func) (addr + 2 + NEXTBYTE (p), info);
@@ -285,6 +286,7 @@ print_insn_mode (const char *d,
       break;
     case 0xD0: /* Displacement word deferred:	*displ(Rn).  */
       (*info->fprintf_func) (info->stream, "*");
+      break; /* -Wimplicit-fallthrough */
     case 0xC0: /* Displacement word:		displ(Rn).  */
       if (reg == 0xF)
 	(*info->print_address_func) (addr + 3 + NEXTWORD (p), info);
@@ -294,6 +296,7 @@ print_insn_mode (const char *d,
       break;
     case 0xF0: /* Displacement long deferred:	*displ(Rn).  */
       (*info->fprintf_func) (info->stream, "*");
+      break; /* -Wimplicit-fallthrough */
     case 0xE0: /* Displacement long:		displ(Rn).  */
       if (reg == 0xF)
 	(*info->print_address_func) (addr + 5 + NEXTLONG (p), info);
@@ -452,3 +455,4 @@ print_insn_vax (bfd_vma memaddr, disassemble_info *info)
   return arg - buffer;
 }
 
+/* EOF */

@@ -1,9 +1,10 @@
 ## automake Makefile for zlib
 ## Process this file with automake to create Makefile.in.
 
-AUTOMAKE_OPTIONS = 1.11.6 foreign dejagnu no-dist
+AUTOMAKE_OPTIONS = 1.11.6 foreign dejagnu no-dist no-installinfo
 ## "cygnus" == "foreign no-dist"
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
+TEXINFO_TEX = ../texinfo/texinfo.tex
 
 ACLOCAL_AMFLAGS = -I m4 -I.. -I../config --install
 

@@ -740,8 +740,9 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 zlibdir = @zlibdir@
 zlibinc = @zlibinc@
-AUTOMAKE_OPTIONS = 1.11.6 gnits dejagnu no-dist
+AUTOMAKE_OPTIONS = 1.11.6 gnits dejagnu no-dist info-in-builddir
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
+TEXINFO_TEX = ../texinfo/texinfo.tex
 ACLOCAL_AMFLAGS = -I m4 --install
 ACLOCAL_EXTRA_AMFLAGS = -I .. -I ../config -I ../bfd
 

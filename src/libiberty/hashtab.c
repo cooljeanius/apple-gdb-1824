@@ -963,20 +963,20 @@ iterative_hash(const PTR k_in /* the key */,
   c += length;
   switch (len)              /* all the case statements fall through */
     {
-    case 11: c += ((hashval_t)k[10] << 24);
-    case 10: c += ((hashval_t)k[9] << 16);
-    case 9: c += ((hashval_t)k[8] << 8);
+    case 11: c += ((hashval_t)k[10] << 24); ATTRIBUTE_FALLTHROUGH;
+    case 10: c += ((hashval_t)k[9] << 16); ATTRIBUTE_FALLTHROUGH;
+    case 9: c += ((hashval_t)k[8] << 8); ATTRIBUTE_FALLTHROUGH;
       /* the first byte of c is reserved for the length */
-    case 8: b += ((hashval_t)k[7] << 24);
-    case 7: b += ((hashval_t)k[6] << 16);
-    case 6: b += ((hashval_t)k[5] << 8);
-    case 5: b += k[4];
-    case 4: a += ((hashval_t)k[3] << 24);
-    case 3: a += ((hashval_t)k[2] << 16);
-    case 2: a += ((hashval_t)k[1] << 8);
-    case 1: a += k[0];
-    case 0: a += 0; /* nothing left to add */
-    default:;
+    case 8: b += ((hashval_t)k[7] << 24); ATTRIBUTE_FALLTHROUGH;
+    case 7: b += ((hashval_t)k[6] << 16); ATTRIBUTE_FALLTHROUGH;
+    case 6: b += ((hashval_t)k[5] << 8); ATTRIBUTE_FALLTHROUGH;
+    case 5: b += k[4]; ATTRIBUTE_FALLTHROUGH;
+    case 4: a += ((hashval_t)k[3] << 24); ATTRIBUTE_FALLTHROUGH;
+    case 3: a += ((hashval_t)k[2] << 16); ATTRIBUTE_FALLTHROUGH;
+    case 2: a += ((hashval_t)k[1] << 8); ATTRIBUTE_FALLTHROUGH;
+    case 1: a += k[0]; ATTRIBUTE_FALLTHROUGH;
+    case 0: a += 0; ATTRIBUTE_FALLTHROUGH; /* nothing left to add */
+    default: ATTRIBUTE_FALLTHROUGH;
     }
   mix(a,b,c);
   /*-------------------------------------------- report the result */

@@ -1506,8 +1506,10 @@ demangle_signature (struct work_stuff *work,
 	      break;
 	    }
 	  else
-	    /* fall through */
-	    {;}
+	    {
+	      /* Fall through: */
+	      ATTRIBUTE_FALLTHROUGH;
+	    }
 
 	default:
 	  if (AUTO_DEMANGLING || GNU_DEMANGLING)
@@ -3850,11 +3852,12 @@ demangle_fund_type (struct work_stuff *work,
       break;
     case 'G':
       (*mangled)++;
-      if (!ISDIGIT ((unsigned char)**mangled))
+      if (!ISDIGIT((unsigned char)**mangled))
 	{
 	  success = 0;
 	  break;
 	}
+      ATTRIBUTE_FALLTHROUGH;
     case 'I':
       (*mangled)++;
       if (**mangled == '_')

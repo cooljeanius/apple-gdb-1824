@@ -1,6 +1,7 @@
 /* ==> Do not modify this file!!  It is created automatically
    by copying.awk.  Modify copying.awk instead.  <== */
 /* (but that no longer seems to happen though?) */
+/* (I would rather edit this manually...) */
 
 #include "defs.h"
 #include "command.h"
@@ -25,7 +26,8 @@ show_copying_command(const char *ignore ATTRIBUTE_UNUSED, int from_tty)
                        59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\n\
  Everyone is permitted to copy and distribute verbatim copies\n\
  of this license document, but changing it is not allowed.\n\
-\n\
+		    \n"));
+  printf_filtered(_("\
 			    Preamble\n\
 \n\
   The licenses for most software are designed to take away your\n\
@@ -75,7 +77,8 @@ patent must be licensed for everyone's free use or not licensed at all.\n\
 \n\
   The precise terms and conditions for copying, distribution and\n\
 modification follow.\n\
-\n\
+		    \n"));
+  printf_filtered(_("\
                     GNU GENERAL PUBLIC LICENSE\n\
    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION\n\
 \n\
@@ -95,7 +98,8 @@ running the Program is not restricted, and the output from the Program\n\
 is covered only if its contents constitute a work based on the\n\
 Program (independent of having been made by running the Program).\n\
 Whether that is true depends on what the Program does.\n\
-\n\
+		    \n"));
+  printf_filtered(_("\
   1. You may copy and distribute verbatim copies of the Program's\n\
 source code as you receive it, in any medium, provided that you\n\
 conspicuously and appropriately publish on each copy an appropriate\n\
@@ -106,7 +110,8 @@ along with the Program.\n\
 \n\
 You may charge a fee for the physical act of transferring a copy, and\n\
 you may at your option offer warranty protection in exchange for a fee.\n\
-\n\
+		    \n"));
+  printf_filtered(_("\
   2. You may modify your copy or copies of the Program or any portion\n\
 of it, thus forming a work based on the Program, and copy and\n\
 distribute such modifications or work under the terms of Section 1\n\
@@ -150,7 +155,8 @@ In addition, mere aggregation of another work not based on the Program\n\
 with the Program (or with a work based on the Program) on a volume of\n\
 a storage or distribution medium does not bring the other work under\n\
 the scope of this License.\n\
-\n\
+		    \n"));
+  printf_filtered(_("\
   3. You may copy and distribute the Program (or a work based on it,\n\
 under Section 2) in object code or executable form under the terms of\n\
 Sections 1 and 2 above provided that you also do one of the following:\n\
@@ -188,7 +194,8 @@ access to copy from a designated place, then offering equivalent\n\
 access to copy the source code from the same place counts as\n\
 distribution of the source code, even though third parties are not\n\
 compelled to copy the source along with the object code.\n\
-\n\
+		    \n"));
+  printf_filtered(_("\
   4. You may not copy, modify, sublicense, or distribute the Program\n\
 except as expressly provided under this License.  Any attempt\n\
 otherwise to copy, modify, sublicense or distribute the Program is\n\
@@ -196,7 +203,8 @@ void, and will automatically terminate your rights under this License.\n\
 However, parties who have received copies, or rights, from you under\n\
 this License will not have their licenses terminated so long as such\n\
 parties remain in full compliance.\n\
-\n\
+		    \n"));
+  printf_filtered(_("\
   5. You are not required to accept this License, since you have not\n\
 signed it.  However, nothing else grants you permission to modify or\n\
 distribute the Program or its derivative works.  These actions are\n\
@@ -205,7 +213,8 @@ modifying or distributing the Program (or any work based on the\n\
 Program), you indicate your acceptance of this License to do so, and\n\
 all its terms and conditions for copying, distributing or modifying\n\
 the Program or works based on it.\n\
-\n\
+		    \n"));
+  printf_filtered(_("\
   6. Each time you redistribute the Program (or any work based on the\n\
 Program), the recipient automatically receives a license from the\n\
 original licensor to copy, distribute or modify the Program subject to\n\
@@ -213,7 +222,8 @@ these terms and conditions.  You may not impose any further\n\
 restrictions on the recipients' exercise of the rights granted herein.\n\
 You are not responsible for enforcing compliance by third parties to\n\
 this License.\n\
-\n\
+		    \n"));
+  printf_filtered(_("\
   7. If, as a consequence of a court judgment or allegation of patent\n\
 infringement or for any other reason (not limited to patent issues),\n\
 conditions are imposed on you (whether by court order, agreement or\n\
@@ -245,7 +255,8 @@ impose that choice.\n\
 \n\
 This section is intended to make thoroughly clear what is believed to\n\
 be a consequence of the rest of this License.\n\
-\n\
+		    \n"));
+  printf_filtered(_("\
   8. If the distribution and/or use of the Program is restricted in\n\
 certain countries either by patents or by copyrighted interfaces, the\n\
 original copyright holder who places the Program under this License\n\
@@ -253,7 +264,8 @@ may add an explicit geographical distribution limitation excluding\n\
 those countries, so that distribution is permitted only in or among\n\
 countries not thus excluded.  In such case, this License incorporates\n\
 the limitation as if written in the body of this License.\n\
-\n\
+		    \n"));
+  printf_filtered(_("\
   9. The Free Software Foundation may publish revised and/or new versions\n\
 of the General Public License from time to time.  Such new versions will\n\
 be similar in spirit to the present version, but may differ in detail to\n\
@@ -266,7 +278,8 @@ either of that version or of any later version published by the Free\n\
 Software Foundation.  If the Program does not specify a version number of\n\
 this License, you may choose any version ever published by the Free Software\n\
 Foundation.\n\
-\n\
+		    \n"));
+  printf_filtered(_("\
   10. If you wish to incorporate parts of the Program into other free\n\
 programs whose distribution conditions are different, write to the author\n\
 to ask for permission.  For software which is copyrighted by the Free\n\

@@ -859,7 +859,7 @@ if test -x `which automake`; then
   AM_PROG_AR
 else
   test -z "${AR}"
-  AC_CHECK_TOOLS([AR],[ar gar])
+  AC_CHECK_TOOLS([AR],[ar gar],[],[${PATH}:./../binutils])
 fi
 if test -e ./config.cache; then
   echo "hacking ./config.cache"
@@ -886,7 +886,7 @@ LT_LANG([C++])dnl
 LT_LANG([Go])dnl
   ## gcj is slow:
 if test "x${GO_SLOWLY}" = "xyes"; then
-  test -n "${GO_SLOWLY}"
+  test -n "${GO_SLOWLY}" && echo "Going slowly."
   LT_LANG([Java])dnl
   ## OK
 fi
@@ -924,7 +924,7 @@ if test "x${OBJCPP}" = "x" && test -e /lib/cpp; then
   test -z "${OBJCPP}" && test -x /lib/cpp
   AC_PROG_OBJCPP
 else
-  test -n "${OBJCPP}"
+  test -n "${OBJCPP}" && test -x "${OBJCPP}" && stat "${OBJCPP}"
   AC_SUBST([OBJCPP])dnl
   ## just in case... I do something further here? idk...
 fi
@@ -1013,18 +1013,26 @@ m4_ifdef([BISON_I18N],[
   ])dnl
 ])dnl
 
-AC_CHECK_TOOLS([DLLTOOL],[dlltool gdlltool])dnl
+AC_CHECK_TOOLS([DLLTOOL],[dlltool gdlltool],[],[${PATH}:./../binutils])dnl
   ## duplicate that:
 if test "x${ac_ct_DLLTOOL}" = "x" && test "x${ac_cv_prog_DLLTOOL}" = "x" && test "x${ac_cv_prog_ac_ct_DLLTOOL}" = "x" && test "x${DLLTOOL}" = "x"; then
   test -z "${ac_ct_DLLTOOL}" && test -z "${ac_cv_prog_DLLTOOL}" && test -z "${ac_cv_prog_ac_ct_DLLTOOL}" && test -z "${DLLTOOL}"
   dnl# in case the differences introduced by the pluralized version of the
   dnl# macro caused this check to get skipped:
-  AC_CHECK_TOOL([DLLTOOL],[dlltool])dnl
+  AC_CHECK_TOOL([DLLTOOL],[dlltool],[],[${PATH}:./../binutils])dnl
   ## (the orignal)
 else
-  AC_MSG_NOTICE([dlltool already checked])
+  if test "x${DLLTOOL}" = "xdlltool"; then
+    test -n "${DLLTOOL}" && echo "configure: ${DLLTOOL} already checked"
+  elif test "x${DLLTOOL}" != "x"; then
+    test -n "${DLLTOOL}" && test -x "${DLLTOOL}" && ${DLLTOOL} --version
+    AC_MSG_NOTICE([dlltool already checked. Value is ${DLLTOOL}.])
+  else
+    test -z "${DLLTOOL}"
+    AC_MSG_NOTICE([dlltool already checked])
+  fi
 fi
-AC_CHECK_TOOLS([WINDRES],[windres gwindres])dnl
+AC_CHECK_TOOLS([WINDRES],[windres gwindres],[],[${PATH}:./../binutils])dnl
 
 # Needed for GNU/Hurd hosts.
 # (and for separate but similar reasons for OS X)
@@ -1206,10 +1214,11 @@ AC_CHECK_FUNC([wctype],[],
   [AC_CHECK_LIB([w],[wctype])])dnl
 
 # Some systems (e.g. Solaris) have `gethostbyname' in libnsl.
-AC_SEARCH_LIBS([gethostbyname],[nsl])dnl
+# Others have it in libresolv or libc.
+AC_SEARCH_LIBS([gethostbyname],[nsl resolv c])dnl
 
 # Some systems (e.g. Solaris) have `socketpair' in libsocket.
-AC_SEARCH_LIBS([socketpair],[socket])dnl
+AC_SEARCH_LIBS([socketpair],[socket c])dnl
 
 # Link in zlib if we can. This allows us to read compressed debug sections:
 m4_ifdef([AM_ZLIB],[
@@ -1243,7 +1252,7 @@ AC_SUBST([zlibinc])dnl
 
 # On FreeBSD we may need libutil for kinfo_getvmmap (used by fbsd-nat.c).
 # On GNU/kFreeBSD systems, FreeBSD libutil is renamed to libutil-freebsd.
-AC_SEARCH_LIBS([kinfo_getvmmap],[util util-freebsd kern kinfo kmod],
+AC_SEARCH_LIBS([kinfo_getvmmap],[util util-freebsd bsd kern kinfo kmod],
    [AC_DEFINE([HAVE_KINFO_GETVMMAP],[1],
               [Define to 1 if your system has the kinfo_getvmmap func])])
 
@@ -1589,6 +1598,14 @@ if test "x${NEXT_STRING_H}" = "x"; then
   test -z "${NEXT_STRING_H}" && export NEXT_STRING_H="<string.h>"
   AC_SUBST([NEXT_STRING_H])dnl
   ## (gnulib should be happy now)
+fi
+if test "x${enable_gdbtk}" = "xyes"; then
+  if test "x${ac_cv_header_X11_Xlib_h}" = "x"; then
+    test -z "${ac_cv_header_X11_Xlib_h}"
+    AC_CHECK_HEADERS([X11/Xlib.h])
+  else
+    test -n "${ac_cv_header_X11_Xlib_h}" && test -f /usr/X11/include/X11/Xlib.h && test -r /usr/X11/include/X11/Xlib.h && stat /usr/X11/include/X11/Xlib.h
+  fi
 fi
 
 # ------------------------- #
@@ -2023,7 +2040,7 @@ if test -f Makefile.in; then
       test -n "${ac_cv_func_alloca_works}" && unset ac_cv_func_alloca_works
       AC_FUNC_ALLOCA
       if test "x${ac_cv_func_alloca_works}" = "xno"; then
-        AC_SEARCH_LIBS([alloca],[iberty gnu])
+        AC_SEARCH_LIBS([alloca],[iberty gnu gcc c alloca])
       fi
     else
       test -n "${ac_cv_working_alloca_h}"
@@ -2056,7 +2073,7 @@ AC_FUNC_STRTOD
 AC_FUNC_VPRINTF
 m4_ifdef([AC_FUNC_WAIT3],[
   if test "x${GO_SLOWLY}" = "xyes"; then
-    test -n "${GO_SLOWLY}"
+    test -n "${GO_SLOWLY}" && echo "Going slowly."
     AC_FUNC_WAIT3
   fi
 ])dnl
@@ -3056,7 +3073,7 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wignored-qualifiers -Wmissing-format-attribute -Waddress -Wattributes \
 -Wignored-attributes -Wswitch -Wswitch-default -Wclobbered \
 -Wcoverage-mismatch -Wdiv-by-zero -Wdouble-promotion \
--Wfree-nonheap-object -Wsign-compare \
+-Wfree-nonheap-object -Wrestrict -Wsign-compare \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
 -Wmissing-include-dirs -Woverflow -Woverlength-strings -Wpragmas \
 -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
@@ -3069,7 +3086,7 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wduplicated-cond -Wwrite-strings -Wenum-compare -Wnonnull-compare \
 -Wdangling-else -Wduplicate-decl-specifier -Wmemset-elt-size \
 -Wswitch-unreachable -Whsa -Wscalar-storage-order \
--Wimplicit-fallthrough -Wformat-length=2"
+-Wimplicit-fallthrough -Wformat-length=2 -Wexpansion-to-defined"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -3086,9 +3103,14 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
 -Wpointer-sign -Wmissing-prototypes -Wdeclaration-after-statement \
--Wc++-compat -Woverride-init -Woverride-init-side-effects \
+-Woverride-init -Woverride-init-side-effects \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
 -Wstrict-prototypes -Wnested-externs -Wc99-c11-compat"
+  if test -f /usr/X11/include/X11/Xlib.h && test "x${enable_gdbtk}" = "xyes"; then
+    AC_MSG_WARN([Disabling C++ compatibility warnings for gdbtk])
+  else
+    c_warnings="${c_warnings} -Wc++-compat"
+  fi
   build_warnings="${build_warnings} ${c_warnings}"
 fi
 
@@ -3206,13 +3228,13 @@ if test x${CFLAGS+set} = xset; then
       ## case, so turn them into runtime errors instead, for debugging:
       build_warnings="${build_warnings} -ftrapv"
     ;;
-    *"-O2"* )
+    *"-O2"* | *"-O3"* | *"-Ofast"* | *"-ftree-vrp"* )
       build_warnings="${build_warnings} ${opt_warnings_plus}"
     ;;
-    *"-O"* )
+    *"-O"* | *"-O1"* | *"-Og"* )
       build_warnings="${build_warnings} ${opt_warnings}"
     ;;
-    *"-Os"* )
+    *"-Os"* | *"-Oz"* )
       build_warnings="${build_warnings} -Wlarger-than=262144"
     ;;
     *"-fstack-protector"* )

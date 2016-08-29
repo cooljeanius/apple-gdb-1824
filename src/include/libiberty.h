@@ -375,6 +375,19 @@ extern void hex_init(void);
 
 /* Save files used for communication between processes: */
 #define PEX_SAVE_TEMPS		0x4
+  
+/* Max number of alloca bytes per call before we must switch to malloc.
+   
+   ?? Swiped from gnulib's regex_internal.h header.  Is this actually
+   the case?  This number seems arbitrary, though sane.
+   
+   The OS usually guarantees only one guard page at the bottom of the stack,
+   and a page size can be as small as 4096 bytes.  So we cannot safely
+   allocate anything larger than 4096 bytes.  Also care for the possibility
+   of a few compiler-allocated temporary stack slots.  */
+#ifndef MAX_ALLOCA_SIZE
+# define MAX_ALLOCA_SIZE 4032
+#endif /* !MAX_ALLOCA_SIZE */
 
 /* Prepare to execute one or more programs, with standard output of
    each program fed to standard input of the next.

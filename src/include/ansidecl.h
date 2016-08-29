@@ -498,6 +498,15 @@ So instead we use the macro below and test it against specific values.  */
 #ifndef ATTRIBUTE_W_U_R
 # define ATTRIBUTE_W_U_R __attribute__((warn_unused_result))
 #endif /* ATTRIBUTE_W_U_R */
+  
+/* Added in gcc 7: */
+#ifndef ATTRIBUTE_FALLTHROUGH
+# if (GCC_VERSION >= 7000)
+#  define ATTRIBUTE_FALLTHROUGH __attribute__((fallthrough))
+# else
+#  define ATTRIBUTE_FALLTHROUGH /* FALLTHRU */
+# endif /* gcc 7+ */
+#endif /* !ATTRIBUTE_FALLTHROUGH */
 
 /* We use __extension__ in some places to suppress -pedantic warnings about
  * GCC extensions. This feature did NOT work properly before gcc 2.8. */

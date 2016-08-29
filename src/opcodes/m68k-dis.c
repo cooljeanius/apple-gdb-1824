@@ -1,4 +1,4 @@
-/* Print Motorola 68k instructions.
+/* m68k-dis.c: Print Motorola 68k instructions.
    Copyright 1986, 1987, 1989, 1991, 1992, 1993, 1994, 1995, 1996, 1997,
    1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -1106,6 +1106,7 @@ print_insn_arg (const char *d,
 
     case 'X':
       place = '8';
+      break; /* -Wimplicit-fallthrough (is this correct?) */
     case 'Y':
     case 'Z':
     case 'W':

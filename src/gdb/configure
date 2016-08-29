@@ -10413,7 +10413,8 @@ else
   ac_cv_prog_AR="$AR" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
+as_dummy="${PATH}:./../binutils"
+for as_dir in $as_dummy
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
@@ -10457,7 +10458,8 @@ else
   ac_cv_prog_ac_ct_AR="$ac_ct_AR" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
+as_dummy="${PATH}:./../binutils"
+for as_dir in $as_dummy
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
@@ -23922,7 +23924,7 @@ CC=$lt_save_CC
 CFLAGS=$lt_save_CFLAGS
   ## gcj is slow:
 if test "x${GO_SLOWLY}" = "xyes"; then
-  test -n "${GO_SLOWLY}"
+  test -n "${GO_SLOWLY}" && echo "Going slowly."
   if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}gcj", so it can be a program name with args.
 set dummy ${ac_tool_prefix}gcj; ac_word=$2
@@ -34025,7 +34027,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 else
-  test -n "${OBJCPP}"
+  test -n "${OBJCPP}" && test -x "${OBJCPP}" && stat "${OBJCPP}"
     ## just in case... I do something further here? idk...
 fi
 ac_ext=mm
@@ -35495,7 +35497,8 @@ else
   ac_cv_prog_DLLTOOL="$DLLTOOL" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
+as_dummy="${PATH}:./../binutils"
+for as_dir in $as_dummy
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
@@ -35539,7 +35542,8 @@ else
   ac_cv_prog_ac_ct_DLLTOOL="$ac_ct_DLLTOOL" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
+as_dummy="${PATH}:./../binutils"
+for as_dir in $as_dummy
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
@@ -35595,7 +35599,8 @@ else
   ac_cv_prog_DLLTOOL="$DLLTOOL" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
+as_dummy="${PATH}:./../binutils"
+for as_dir in $as_dummy
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
@@ -35635,7 +35640,8 @@ else
   ac_cv_prog_ac_ct_DLLTOOL="$ac_ct_DLLTOOL" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
+as_dummy="${PATH}:./../binutils"
+for as_dir in $as_dummy
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
@@ -35676,8 +35682,17 @@ else
 fi
   ## (the orignal)
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: dlltool already checked" >&5
+  if test "x${DLLTOOL}" = "xdlltool"; then
+    test -n "${DLLTOOL}" && echo "configure: ${DLLTOOL} already checked"
+  elif test "x${DLLTOOL}" != "x"; then
+    test -n "${DLLTOOL}" && test -x "${DLLTOOL}" && ${DLLTOOL} --version
+    { $as_echo "$as_me:${as_lineno-$LINENO}: dlltool already checked. Value is ${DLLTOOL}." >&5
+$as_echo "$as_me: dlltool already checked. Value is ${DLLTOOL}." >&6;}
+  else
+    test -z "${DLLTOOL}"
+    { $as_echo "$as_me:${as_lineno-$LINENO}: dlltool already checked" >&5
 $as_echo "$as_me: dlltool already checked" >&6;}
+  fi
 fi
 if test -n "$ac_tool_prefix"; then
   for ac_prog in windres gwindres
@@ -35693,7 +35708,8 @@ else
   ac_cv_prog_WINDRES="$WINDRES" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
+as_dummy="${PATH}:./../binutils"
+for as_dir in $as_dummy
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
@@ -35737,7 +35753,8 @@ else
   ac_cv_prog_ac_ct_WINDRES="$ac_ct_WINDRES" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
+as_dummy="${PATH}:./../binutils"
+for as_dir in $as_dummy
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
@@ -36450,6 +36467,7 @@ fi
 fi
 
 # Some systems (e.g. Solaris) have `gethostbyname' in libnsl.
+# Others have it in libresolv or libc.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing gethostbyname" >&5
 $as_echo_n "checking for library containing gethostbyname... " >&6; }
 if ${ac_cv_search_gethostbyname+:} false; then :
@@ -36474,7 +36492,7 @@ return gethostbyname ();
   return 0;
 }
 _ACEOF
-for ac_lib in '' nsl; do
+for ac_lib in '' nsl resolv c; do
   if test -z "$ac_lib"; then
     ac_res="none required"
   else
@@ -36531,7 +36549,7 @@ return socketpair ();
   return 0;
 }
 _ACEOF
-for ac_lib in '' socket; do
+for ac_lib in '' socket c; do
   if test -z "$ac_lib"; then
     ac_res="none required"
   else
@@ -36698,7 +36716,7 @@ return kinfo_getvmmap ();
   return 0;
 }
 _ACEOF
-for ac_lib in '' util util-freebsd kern kinfo kmod; do
+for ac_lib in '' util util-freebsd bsd kern kinfo kmod; do
   if test -z "$ac_lib"; then
     ac_res="none required"
   else
@@ -39949,6 +39967,25 @@ if test "x${NEXT_STRING_H}" = "x"; then
   test -z "${NEXT_STRING_H}" && export NEXT_STRING_H="<string.h>"
     ## (gnulib should be happy now)
 fi
+if test "x${enable_gdbtk}" = "xyes"; then
+  if test "x${ac_cv_header_X11_Xlib_h}" = "x"; then
+    test -z "${ac_cv_header_X11_Xlib_h}"
+    for ac_header in X11/Xlib.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "X11/Xlib.h" "ac_cv_header_X11_Xlib_h" "$ac_includes_default"
+if test "x$ac_cv_header_X11_Xlib_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_X11_XLIB_H 1
+_ACEOF
+
+fi
+
+done
+
+  else
+    test -n "${ac_cv_header_X11_Xlib_h}" && test -f /usr/X11/include/X11/Xlib.h && test -r /usr/X11/include/X11/Xlib.h && stat /usr/X11/include/X11/Xlib.h
+  fi
+fi
 
 # ------------------------- #
 # Checks for declarations.  #
@@ -42573,7 +42610,7 @@ return alloca ();
   return 0;
 }
 _ACEOF
-for ac_lib in '' iberty gnu; do
+for ac_lib in '' iberty gnu gcc c alloca; do
   if test -z "$ac_lib"; then
     ac_res="none required"
   else
@@ -43718,7 +43755,7 @@ done
 
 
   if test "x${GO_SLOWLY}" = "xyes"; then
-    test -n "${GO_SLOWLY}"
+    test -n "${GO_SLOWLY}" && echo "Going slowly."
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for wait3 that fills in rusage" >&5
 $as_echo_n "checking for wait3 that fills in rusage... " >&6; }
@@ -46520,7 +46557,7 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wignored-qualifiers -Wmissing-format-attribute -Waddress -Wattributes \
 -Wignored-attributes -Wswitch -Wswitch-default -Wclobbered \
 -Wcoverage-mismatch -Wdiv-by-zero -Wdouble-promotion \
--Wfree-nonheap-object -Wsign-compare \
+-Wfree-nonheap-object -Wrestrict -Wsign-compare \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
 -Wmissing-include-dirs -Woverflow -Woverlength-strings -Wpragmas \
 -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
@@ -46533,7 +46570,7 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wduplicated-cond -Wwrite-strings -Wenum-compare -Wnonnull-compare \
 -Wdangling-else -Wduplicate-decl-specifier -Wmemset-elt-size \
 -Wswitch-unreachable -Whsa -Wscalar-storage-order \
--Wimplicit-fallthrough -Wformat-length=2"
+-Wimplicit-fallthrough -Wformat-length=2 -Wexpansion-to-defined"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -46550,9 +46587,15 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
 -Wpointer-sign -Wmissing-prototypes -Wdeclaration-after-statement \
--Wc++-compat -Woverride-init -Woverride-init-side-effects \
+-Woverride-init -Woverride-init-side-effects \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
 -Wstrict-prototypes -Wnested-externs -Wc99-c11-compat"
+  if test -f /usr/X11/include/X11/Xlib.h && test "x${enable_gdbtk}" = "xyes"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Disabling C++ compatibility warnings for gdbtk" >&5
+$as_echo "$as_me: WARNING: Disabling C++ compatibility warnings for gdbtk" >&2;}
+  else
+    c_warnings="${c_warnings} -Wc++-compat"
+  fi
   build_warnings="${build_warnings} ${c_warnings}"
 fi
 
@@ -46669,13 +46712,13 @@ if test x${CFLAGS+set} = xset; then
       ## case, so turn them into runtime errors instead, for debugging:
       build_warnings="${build_warnings} -ftrapv"
     ;;
-    *"-O2"* )
+    *"-O2"* | *"-O3"* | *"-Ofast"* | *"-ftree-vrp"* )
       build_warnings="${build_warnings} ${opt_warnings_plus}"
     ;;
-    *"-O"* )
+    *"-O"* | *"-O1"* | *"-Og"* )
       build_warnings="${build_warnings} ${opt_warnings}"
     ;;
-    *"-Os"* )
+    *"-Os"* | *"-Oz"* )
       build_warnings="${build_warnings} -Wlarger-than=262144"
     ;;
     *"-fstack-protector"* )
@@ -48528,6 +48571,8 @@ if test x"${ac_cv_c_itclh}" = x""; then
   as_fn_error $? "Cannot find Itcl private headers" "$LINENO" 5
 fi
 if test x"${ac_cv_c_itclh}" != x""; then
+     { $as_echo "$as_me:${as_lineno-$LINENO}: result: found in ${ac_cv_c_itclh}" >&5
+$as_echo "found in ${ac_cv_c_itclh}" >&6; }
      ITCLHDIR="-idirafter ${ac_cv_c_itclh}"
 fi
 
@@ -48547,6 +48592,8 @@ if test x"${ac_cv_c_itkh}" = x""; then
   as_fn_error $? "Cannot find Itk private headers" "$LINENO" 5
 fi
 if test x"${ac_cv_c_itkh}" != x""; then
+     { $as_echo "$as_me:${as_lineno-$LINENO}: result: found in ${ac_cv_c_itkh}" >&5
+$as_echo "found in ${ac_cv_c_itkh}" >&6; }
      ITKHDIR="-idirafter ${ac_cv_c_itkh}"
 fi
 

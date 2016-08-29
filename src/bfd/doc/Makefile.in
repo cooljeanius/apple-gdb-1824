@@ -488,7 +488,6 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
-runstatedir = @runstatedir@
 sb_build_profile = @sb_build_profile@
 sbindir = @sbindir@
 selarchs = @selarchs@

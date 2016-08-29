@@ -1,4 +1,4 @@
-/* Disassemble SH64 instructions.
+/* sh64-dis.c: Disassemble SH64 instructions.
    Copyright 2000, 2001, 2002, 2003, 2005 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include <stdio.h>
 
@@ -327,16 +327,19 @@ print_insn_shmedia (bfd_vma memaddr, struct disassemble_info *info)
 	case A_IMMS10BY8:
 	  by_number++;
 	  /* Fall through.  */
+	  ATTRIBUTE_FALLTHROUGH;
 
 	  /* A signed 10-bit number, multiplied by 4 when used.  */
 	case A_IMMS10BY4:
 	  by_number++;
 	  /* Fall through.  */
+	  ATTRIBUTE_FALLTHROUGH;
 
 	  /* A signed 10-bit number, multiplied by 2 when used.  */
 	case A_IMMS10BY2:
 	  by_number++;
 	  /* Fall through.  */
+	  ATTRIBUTE_FALLTHROUGH;
 
 	  /* A signed 10-bit number.  */
 	case A_IMMS10:

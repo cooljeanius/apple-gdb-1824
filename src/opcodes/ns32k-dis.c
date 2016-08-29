@@ -1,4 +1,4 @@
-/* Print National Semiconductor 32000 instructions.
+/* ns32k-dis.c: Print National Semiconductor 32000 instructions.
    Copyright 1986, 1988, 1991, 1992, 1994, 1998, 2001, 2002, 2005
    Free Software Foundation, Inc.
 
@@ -475,6 +475,7 @@ print_insn_arg (int d,
     case 'f':
       /* A "gen" operand but 5 bits from the end of instruction.  */
       ioffset -= 5;
+      break; /* -Wimplicit-fallthrough (is this the correct fix?) */
     case 'Z':
     case 'F':
     case 'L':

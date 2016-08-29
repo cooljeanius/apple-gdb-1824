@@ -600,6 +600,7 @@ if test x"${ac_cv_c_itclh}" = x""; then
   AC_MSG_ERROR([Cannot find Itcl private headers])
 fi
 if test x"${ac_cv_c_itclh}" != x""; then
+     AC_MSG_RESULT([found in ${ac_cv_c_itclh}])
      ITCLHDIR="-idirafter ${ac_cv_c_itclh}"
 fi
 AC_SUBST([ITCLHDIR])dnl
@@ -710,6 +711,7 @@ if test x"${ac_cv_c_itkh}" = x""; then
   AC_MSG_ERROR([Cannot find Itk private headers])
 fi
 if test x"${ac_cv_c_itkh}" != x""; then
+     AC_MSG_RESULT([found in ${ac_cv_c_itkh}])
      ITKHDIR="-idirafter ${ac_cv_c_itkh}"
 fi
 AC_SUBST([ITKHDIR])dnl

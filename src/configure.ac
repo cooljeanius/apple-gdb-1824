@@ -45,6 +45,9 @@ dnl# directory, according to the Changelog-Apple in this directory.
 AC_CONFIG_SRCDIR([move-if-change])
 AC_DISABLE_OPTION_CHECKING
 AC_CONFIG_AUX_DIR([config])
+m4_ifdef([AC_REQUIRE_AUX_FILE],[
+  AC_REQUIRE_AUX_FILE([depcomp])dnl
+])dnl
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])dnl
 

@@ -748,12 +748,15 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState * state)
 
     case op_BC:
       instrName = "b";
+      break; /* -Wimplicit-fallthrough; most other cases break */
     case op_BLC:
       if (!instrName)
 	instrName = "bl";
+      break; /* -Wimplicit-fallthrough; most other cases break */
     case op_LPC:
       if (!instrName)
 	instrName = "lp";
+      break; /* -Wimplicit-fallthrough; most other cases break */
     case op_JC:
       if (!instrName)
 	{
@@ -814,7 +817,9 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState * state)
 
     default:
       instrName = instruction_name (state,state->_opcode,0,&flags);
-      /* if (instrName) printf("FLAGS=0x%x\n", flags);  */
+#if 0
+      if (instrName) printf("FLAGS=0x%x\n", flags);
+#endif /* 0 */
       if (!instrName)
 	{
 	  instrName = "???";

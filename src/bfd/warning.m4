@@ -10,7 +10,8 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wmisleading-indentation -Wformat=2 -Wmissing-format-attribute \
 -Wswitch -Wswitch-default -Wpacked -Wnull-dereference -Whsa \
 -Wduplicate-decl-specifier -Wmemset-elt-size -Wswitch-unreachable \
--Wscalar-storage-order"
+-Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough \
+-Walloca-larger-than=9999 -Wvla-larger-than=9999 -Wformat-length=2"
 if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
   test -n "${WANT_CONVERSION_WARNS}"
   # "-Wconversion" and friends are because of a comment in libbfd.c
@@ -114,6 +115,8 @@ if test "x${PEDANTIC_WARNINGS}" = "xyes"; then
     if test "x${want64}" = "xtrue" && test "x${bfd_cv_has_long_long}" = "xyes" && test "x${BFD_HOST_64BIT_LONG_LONG}" = "x1"; then
       ## add something else to make up for the removed warnings:
       WARN_CFLAGS="${WARN_CFLAGS} -Wno-long-long -Wpointer-arith"
+    else
+      WARN_CFLAGS="${WARN_CFLAGS} -Wexpansion-to-defined"
     fi
     ## fake the '-ansi' flag; actually using it has additional effects:
     WARN_CFLAGS="${WARN_CFLAGS} -D__STRICT_ANSI__"
