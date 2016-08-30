@@ -20,7 +20,7 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ACLOCAL_AMFLAGS = -I../m4 --install
-AUTOMAKE_OPTIONS = 1.11.6 foreign no-dist
+AUTOMAKE_OPTIONS = 1.11.6 foreign no-dist no-installinfo
 ## "cygnus" == "foreign no-dist"
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 upsrcdir = ${srcdir}/..

@@ -642,7 +642,7 @@ module(void)
 
 const char *program_name;
 
-static void
+static void ATTRIBUTE_NORETURN
 show_usage(FILE *the_file, int status)
 {
   fprintf(the_file, _("Usage: %s [option(s)] in-file\n"), program_name);

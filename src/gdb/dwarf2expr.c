@@ -234,13 +234,13 @@ dwarf2_read_address (gdb_byte *buf, gdb_byte *buf_end, int *bytes_read)
 {
   CORE_ADDR result;
 
-  if (buf_end - buf < TARGET_ADDR_BIT / TARGET_CHAR_BIT)
-    error (_("dwarf2_read_address: Corrupted DWARF expression."));
+  if ((buf_end - buf) < (ptrdiff_t)(TARGET_ADDR_BIT / (int)TARGET_CHAR_BIT))
+    error(_("dwarf2_read_address: Corrupted DWARF expression."));
 
-  *bytes_read = TARGET_ADDR_BIT / TARGET_CHAR_BIT;
+  *bytes_read = (TARGET_ADDR_BIT / TARGET_CHAR_BIT);
   /* NOTE: cagney/2003-05-22: This extract is assuming that a DWARF 2
      address is always unsigned.  That may or may not be true.  */
-  result = extract_unsigned_integer (buf, TARGET_ADDR_BIT / TARGET_CHAR_BIT);
+  result = extract_unsigned_integer(buf, (TARGET_ADDR_BIT / TARGET_CHAR_BIT));
   return result;
 }
 
@@ -584,8 +584,11 @@ execute_stack_op(struct dwarf_expr_context *ctx,
 	    {
 	    case DW_OP_deref:
 	      {
-		gdb_byte *buf =
-		  (gdb_byte *)alloca(TARGET_ADDR_BIT / TARGET_CHAR_BIT);
+		const size_t buflen = min((size_t)(TARGET_ADDR_BIT
+						   / TARGET_CHAR_BIT),
+					  MAX_ALLOCA_SIZE);
+		gdb_byte *buf = (gdb_byte *)alloca(min(buflen,
+						       MAX_ALLOCA_SIZE));
 		int bytes_read;
 
 		(ctx->read_mem)(ctx->baton, buf, result,
@@ -599,8 +602,11 @@ execute_stack_op(struct dwarf_expr_context *ctx,
 
 	    case DW_OP_deref_size:
 	      {
-		gdb_byte *buf =
-		  (gdb_byte *)alloca(TARGET_ADDR_BIT / TARGET_CHAR_BIT);
+		const size_t buflen = min((size_t)(TARGET_ADDR_BIT
+						   / TARGET_CHAR_BIT),
+					  MAX_ALLOCA_SIZE);
+		gdb_byte *buf = (gdb_byte *)alloca(min(buflen,
+						       MAX_ALLOCA_SIZE));
 		int bytes_read;
 
 		(ctx->read_mem)(ctx->baton, buf, result, *op_ptr++);

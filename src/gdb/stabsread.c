@@ -1405,20 +1405,23 @@ define_symbol(CORE_ADDR valu, const char *string, const char *prefix,
 	    }
 	  else
 	    {
-	      struct type *symtype = SYMBOL_TYPE (sym);
-	      TYPE_NAME (SYMBOL_TYPE (sym)) = DEPRECATED_SYMBOL_NAME (sym);
-	      /* APPLE LOCAL: This is a bit of a hack.  On Mac OS X, there are two
-		 possible long double's , the 8 byte one from gcc-3.3, and the 16 byte
-		 one from gcc-4.0.  I don't have the time to extend gdb's default float
-		 format handling right now to take care of this.  So if I see a long
-		 double type that's different from the TARGET one, I fix it up here.
-		 Turns out the ieee long doubl format works for all types, so this
-		 is trivial...  */
-	      if (TYPE_CODE (symtype) == TYPE_CODE_FLT
-		  && TYPE_NAME (symtype) != NULL
-		  && strcmp (TYPE_NAME (symtype), "long double") == 0
-		  && TYPE_LENGTH (symtype) * TARGET_CHAR_BIT != TARGET_LONG_DOUBLE_BIT)
-		TYPE_FLOATFORMAT (symtype) = gdbarch_long_double_format (current_gdbarch);
+	      struct type *symtype = SYMBOL_TYPE(sym);
+	      TYPE_NAME(SYMBOL_TYPE(sym)) = DEPRECATED_SYMBOL_NAME(sym);
+	      /* APPLE LOCAL: This is a bit of a hack.  On Mac OS X, there are
+	       * two possible 'long double' types, the 8 byte one from gcc-3.3,
+	       * and the 16 byte one from gcc-4.0.  I do NOT have the time
+	       * to extend gdb's default float format handling right now
+	       * to take care of this.  So if I see a long double type that is
+	       * different from the TARGET one, I fix it up here.  Turns out
+	       * the ieee long double format works for all types, so this is
+	       * actually trivial...  */
+	      if ((TYPE_CODE(symtype) == TYPE_CODE_FLT)
+		  && (TYPE_NAME(symtype) != NULL)
+		  && (strcmp(TYPE_NAME(symtype), "long double") == 0)
+		  && ((TYPE_LENGTH(symtype) * (int)TARGET_CHAR_BIT)
+		      != TARGET_LONG_DOUBLE_BIT))
+		TYPE_FLOATFORMAT(symtype) =
+		  gdbarch_long_double_format(current_gdbarch);
 	    }
 	}
 
@@ -4374,9 +4377,9 @@ read_range_type(const char **pp, int typenums[2], int type_size,
   /* I think this is for Convex "long long".  Since I don't know whether
      Convex sets self_subrange, I also accept that particular size regardless
      of self_subrange.  */
-  else if (n3 == 0 && n2 < 0
+  else if ((n3 == 0) && (n2 < 0)
 	   && (self_subrange
-	       || n2 == -TARGET_LONG_LONG_BIT / TARGET_CHAR_BIT))
+	       || (n2 == (-TARGET_LONG_LONG_BIT / (int)TARGET_CHAR_BIT))))
     return init_type (TYPE_CODE_INT, -n2, 0, NULL, objfile);
   else if (n2 == -n3 - 1)
     {

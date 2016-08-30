@@ -781,23 +781,24 @@ bfd_set_file_flags(bfd *abfd, flagword flags)
   return TRUE;
 }
 
-void
-#ifdef __clang_analyzer__
-ATTRIBUTE_NORETURN
-#endif /* __clang_analyzer__ */
-bfd_assert(const char *file, int line)
-{
-  (*_bfd_error_handler)(_("BFD %s assertion fail %s:%d"),
-                        BFD_VERSION_STRING, file, line);
-}
-
-/* A more or less friendly abort message.  In libbfd.h abort is
-   defined to call this function.  */
-
+/* */
 #ifndef EXIT_FAILURE
 # define EXIT_FAILURE 1
 #endif /* !EXIT_FAILURE */
 
+void
+#if defined(__clang_analyzer__) || (defined(__GNUC__) && (__GNUC__ >= 7))
+ATTRIBUTE_NORETURN
+#endif /* __clang_analyzer__ || gcc 7+ */
+bfd_assert(const char *file, int line)
+{
+  (*_bfd_error_handler)(_("BFD %s assertion fail %s:%d"),
+                        BFD_VERSION_STRING, file, line);
+  xexit(EXIT_FAILURE);
+}
+
+/* A more or less friendly abort message.  In libbfd.h abort is
+   defined to call this function.  */
 void ATTRIBUTE_NORETURN
 _bfd_abort(const char *file, int line, const char *fn)
 {

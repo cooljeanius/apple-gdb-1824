@@ -258,7 +258,8 @@ value_subscript(struct value *array, struct value *idx)
       offset = (index / TARGET_CHAR_BIT);
       byte = *((char *)value_contents(array) + offset);
       bit_index = (int)(index % TARGET_CHAR_BIT);
-      byte >>= (BITS_BIG_ENDIAN ? (TARGET_CHAR_BIT - 1 - bit_index) : bit_index);
+      byte >>= (BITS_BIG_ENDIAN
+		? ((int)TARGET_CHAR_BIT - 1 - bit_index) : bit_index);
       v = value_from_longest(LA_BOOL_TYPE, byte & 1);
       set_value_bitpos(v, bit_index);
       set_value_bitsize(v, 1);

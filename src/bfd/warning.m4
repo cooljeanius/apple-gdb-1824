@@ -11,7 +11,8 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wswitch -Wswitch-default -Wpacked -Wnull-dereference -Whsa \
 -Wduplicate-decl-specifier -Wmemset-elt-size -Wswitch-unreachable \
 -Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough \
--Walloca-larger-than=9999 -Wvla-larger-than=9999 -Wformat-length=2"
+-Walloca-larger-than=4032 -Wvla-larger-than=4032 -Wformat-length=2"
+# (4032 is MAX_ALLOCA_SIZE in "libiberty.h")
 if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
   test -n "${WANT_CONVERSION_WARNS}"
   # "-Wconversion" and friends are because of a comment in libbfd.c

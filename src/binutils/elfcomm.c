@@ -21,6 +21,7 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
    02110-1301, USA.  */
 
+#include "ansidecl.h"
 #include "sysdep.h"
 #include "libiberty.h"
 #include "filenames.h"
@@ -72,16 +73,20 @@ byte_put_little_endian(unsigned char *field, elf_vma value, int size)
       field[6] = ((value >> 24) >> 24) & 0xff;
       field[5] = ((value >> 24) >> 16) & 0xff;
       field[4] = ((value >> 24) >> 8) & 0xff;
-      /* Fall through to: */
+      /* Fall through to 4: */
+      ATTRIBUTE_FALLTHROUGH;
     case 4:
       field[3] = (value >> 24) & 0xff;
-      /* Fall through to: */
+      /* Fall through to 3: */
+      ATTRIBUTE_FALLTHROUGH;
     case 3:
       field[2] = (value >> 16) & 0xff;
-      /* Fall through to: */
+      /* Fall through to 2: */
+      ATTRIBUTE_FALLTHROUGH;
     case 2:
       field[1] = (value >> 8) & 0xff;
-      /* Fall through to: */
+      /* Fall through to 1: */
+      ATTRIBUTE_FALLTHROUGH;
     case 1:
       field[0] = value & 0xff;
       break;
@@ -104,19 +109,23 @@ byte_put_big_endian(unsigned char *field, elf_vma value, int size)
       field[4] = (value >> 24) & 0xff;
       value >>= 16;
       value >>= 16;
-      /* Fall through to: */
+      /* Fall through to 4: */
+      ATTRIBUTE_FALLTHROUGH;
     case 4:
       field[3] = value & 0xff;
       value >>= 8;
-      /* Fall through to: */
+      /* Fall through to 3: */
+      ATTRIBUTE_FALLTHROUGH;
     case 3:
       field[2] = value & 0xff;
       value >>= 8;
-      /* Fall through to: */
+      /* Fall through to 2: */
+      ATTRIBUTE_FALLTHROUGH;
     case 2:
       field[1] = value & 0xff;
       value >>= 8;
-      /* Fall through to: */
+      /* Fall through to 1: */
+      ATTRIBUTE_FALLTHROUGH;
     case 1:
       field[0] = value & 0xff;
       break;
@@ -138,89 +147,109 @@ byte_get_little_endian(unsigned char *field, int size)
       return *field;
 
     case 2:
-      return  ((unsigned int) (field[0]))
-	|    (((unsigned int) (field[1])) << 8);
+      return (((unsigned int)(field[0]))
+	      | (((unsigned int)(field[1])) << 8));
 
     case 3:
-      return  ((unsigned long) (field[0]))
-	|    (((unsigned long) (field[1])) << 8)
-	|    (((unsigned long) (field[2])) << 16);
+      return (((unsigned long)(field[0]))
+	      | (((unsigned long)(field[1])) << 8)
+	      | (((unsigned long)(field[2])) << 16));
 
     case 4:
-      return  ((unsigned long) (field[0]))
-	|    (((unsigned long) (field[1])) << 8)
-	|    (((unsigned long) (field[2])) << 16)
-	|    (((unsigned long) (field[3])) << 24);
+      return (((unsigned long)(field[0]))
+	      | (((unsigned long)(field[1])) << 8)
+	      | (((unsigned long)(field[2])) << 16)
+	      | (((unsigned long)(field[3])) << 24));
 
     case 5:
-      if (sizeof (elf_vma) == 8)
-	return  ((elf_vma) (field[0]))
-	  |    (((elf_vma) (field[1])) << 8)
-	  |    (((elf_vma) (field[2])) << 16)
-	  |    (((elf_vma) (field[3])) << 24)
-	  |    (((elf_vma) (field[4])) << 32);
-      else if (sizeof (elf_vma) == 4)
+      if (sizeof(elf_vma) == 8UL)
+	return (((elf_vma)(field[0]))
+		| (((elf_vma)(field[1])) << 8)
+		| (((elf_vma)(field[2])) << 16)
+		| (((elf_vma)(field[3])) << 24)
+		| (((elf_vma)(field[4])) << 32));
+      else if (sizeof(elf_vma) == 4UL)
 	/* We want to extract data from an 8 byte wide field and
 	   place it into a 4 byte wide field.  Since this is a little
 	   endian source we can just use the 4 byte extraction code.  */
-	return  ((unsigned long) (field[0]))
-	  |    (((unsigned long) (field[1])) << 8)
-	  |    (((unsigned long) (field[2])) << 16)
-	  |    (((unsigned long) (field[3])) << 24);
+	return (((unsigned long)(field[0]))
+		| (((unsigned long)(field[1])) << 8)
+		| (((unsigned long)(field[2])) << 16)
+		| (((unsigned long)(field[3])) << 24));
+      else
+      {
+	error(_("Unhandled elf_vma size: %lu\n"), sizeof(elf_vma));
+	abort();
+      }
 
     case 6:
-      if (sizeof (elf_vma) == 8)
-	return  ((elf_vma) (field[0]))
-	  |    (((elf_vma) (field[1])) << 8)
-	  |    (((elf_vma) (field[2])) << 16)
-	  |    (((elf_vma) (field[3])) << 24)
-	  |    (((elf_vma) (field[4])) << 32)
-	  |    (((elf_vma) (field[5])) << 40);
-      else if (sizeof (elf_vma) == 4)
+      if (sizeof(elf_vma) == 8UL)
+	return (((elf_vma)(field[0]))
+		| (((elf_vma)(field[1])) << 8)
+		| (((elf_vma)(field[2])) << 16)
+		| (((elf_vma)(field[3])) << 24)
+		| (((elf_vma)(field[4])) << 32)
+		| (((elf_vma)(field[5])) << 40));
+      else if (sizeof(elf_vma) == 4UL)
 	/* We want to extract data from an 8 byte wide field and
 	   place it into a 4 byte wide field.  Since this is a little
 	   endian source we can just use the 4 byte extraction code.  */
-	return  ((unsigned long) (field[0]))
-	  |    (((unsigned long) (field[1])) << 8)
-	  |    (((unsigned long) (field[2])) << 16)
-	  |    (((unsigned long) (field[3])) << 24);
+	return (((unsigned long)(field[0]))
+		| (((unsigned long)(field[1])) << 8)
+		| (((unsigned long)(field[2])) << 16)
+		| (((unsigned long)(field[3])) << 24));
+      else
+      {
+	error(_("Unhandled elf_vma size: %lu\n"), sizeof(elf_vma));
+	abort();
+      }
 
     case 7:
-      if (sizeof (elf_vma) == 8)
-	return  ((elf_vma) (field[0]))
-	  |    (((elf_vma) (field[1])) << 8)
-	  |    (((elf_vma) (field[2])) << 16)
-	  |    (((elf_vma) (field[3])) << 24)
-	  |    (((elf_vma) (field[4])) << 32)
-	  |    (((elf_vma) (field[5])) << 40)
-	  |    (((elf_vma) (field[6])) << 48);
-      else if (sizeof (elf_vma) == 4)
+      if (sizeof(elf_vma) == 8UL)
+	return (((elf_vma)(field[0]))
+		| (((elf_vma)(field[1])) << 8)
+		| (((elf_vma)(field[2])) << 16)
+		| (((elf_vma)(field[3])) << 24)
+		| (((elf_vma)(field[4])) << 32)
+		| (((elf_vma)(field[5])) << 40)
+		| (((elf_vma)(field[6])) << 48));
+      else if (sizeof(elf_vma) == 4UL)
 	/* We want to extract data from an 8 byte wide field and
 	   place it into a 4 byte wide field.  Since this is a little
 	   endian source we can just use the 4 byte extraction code.  */
-	return  ((unsigned long) (field[0]))
-	  |    (((unsigned long) (field[1])) << 8)
-	  |    (((unsigned long) (field[2])) << 16)
-	  |    (((unsigned long) (field[3])) << 24);
+	return (((unsigned long)(field[0]))
+		| (((unsigned long)(field[1])) << 8)
+		| (((unsigned long)(field[2])) << 16)
+		| (((unsigned long)(field[3])) << 24));
+      else
+      {
+	error(_("Unhandled elf_vma size: %lu\n"), sizeof(elf_vma));
+	abort();
+      }
 
     case 8:
-      if (sizeof (elf_vma) == 8)
-	return  ((elf_vma) (field[0]))
-	  |    (((elf_vma) (field[1])) << 8)
-	  |    (((elf_vma) (field[2])) << 16)
-	  |    (((elf_vma) (field[3])) << 24)
-	  |    (((elf_vma) (field[4])) << 32)
-	  |    (((elf_vma) (field[5])) << 40)
-	  |    (((elf_vma) (field[6])) << 48)
-	  |    (((elf_vma) (field[7])) << 56);
-      else if (sizeof (elf_vma) == 4)
+      if (sizeof(elf_vma) == 8UL)
+	return (((elf_vma)(field[0]))
+		| (((elf_vma)(field[1])) << 8)
+		| (((elf_vma)(field[2])) << 16)
+		| (((elf_vma)(field[3])) << 24)
+		| (((elf_vma)(field[4])) << 32)
+		| (((elf_vma)(field[5])) << 40)
+		| (((elf_vma)(field[6])) << 48)
+		| (((elf_vma)(field[7])) << 56));
+      else if (sizeof(elf_vma) == 4UL)
 	/* We want to extract data from an 8 byte wide field and
 	   place it into a 4 byte wide field.  Since this is a little
 	   endian source we can just use the 4 byte extraction code.  */
-	return  ((unsigned long) (field[0]))
-	  |    (((unsigned long) (field[1])) << 8)
-	  |    (((unsigned long) (field[2])) << 16)
-	  |    (((unsigned long) (field[3])) << 24);
+	return (((unsigned long)(field[0]))
+		| (((unsigned long)(field[1])) << 8)
+		| (((unsigned long)(field[2])) << 16)
+		| (((unsigned long)(field[3])) << 24));
+      else
+      {
+	error(_("Unhandled elf_vma size: %lu\n"), sizeof(elf_vma));
+	abort();
+      }
 
     default:
       error(_("Unhandled data length: %d\n"), size);
@@ -253,11 +282,13 @@ byte_get_big_endian(unsigned char *field, int size)
 
     case 5:
       if (sizeof(elf_vma) == 8UL)
-	return (((elf_vma)(field[4]))
-                | (((elf_vma)(field[3])) << 8)
-                | (((elf_vma)(field[2])) << 16)
-                | (((elf_vma)(field[1])) << 24)
-                | (((elf_vma)(field[0])) << 32));
+	{
+	  return (((elf_vma)(field[4]))
+		  | (((elf_vma)(field[3])) << 8)
+		  | (((elf_vma)(field[2])) << 16)
+		  | (((elf_vma)(field[1])) << 24)
+		  | (((elf_vma)(field[0])) << 32));
+	}
       else if (sizeof(elf_vma) == 4UL)
 	{
 	  /* Although we are extracting data from an 8 byte wide field,
@@ -268,15 +299,22 @@ byte_get_big_endian(unsigned char *field, int size)
                   | (((unsigned long)(field[1])) << 16)
                   | (((unsigned long)(field[0])) << 24));
 	}
+      else
+	{
+	  error(_("Unhandled elf_vma size: %lu\n"), sizeof(elf_vma));
+	  abort();
+	}
 
     case 6:
       if (sizeof(elf_vma) == 8UL)
-	return (((elf_vma)(field[5]))
-                | (((elf_vma)(field[4])) << 8)
-                | (((elf_vma)(field[3])) << 16)
-                | (((elf_vma)(field[2])) << 24)
-                | (((elf_vma)(field[1])) << 32)
-                | (((elf_vma)(field[0])) << 40));
+	{
+	  return (((elf_vma)(field[5]))
+		  | (((elf_vma)(field[4])) << 8)
+		  | (((elf_vma)(field[3])) << 16)
+		  | (((elf_vma)(field[2])) << 24)
+		  | (((elf_vma)(field[1])) << 32)
+		  | (((elf_vma)(field[0])) << 40));
+	}
       else if (sizeof(elf_vma) == 4UL)
 	{
 	  /* Although we are extracting data from an 8 byte wide field,
@@ -287,16 +325,23 @@ byte_get_big_endian(unsigned char *field, int size)
                   | (((unsigned long)(field[1])) << 16)
                   | (((unsigned long)(field[0])) << 24));
 	}
+      else
+	{
+	  error(_("Unhandled elf_vma size: %lu\n"), sizeof(elf_vma));
+	  abort();
+	}
 
     case 7:
       if (sizeof(elf_vma) == 8UL)
-	return (((elf_vma)(field[6]))
-                | (((elf_vma)(field[5])) << 8)
-                | (((elf_vma)(field[4])) << 16)
-                | (((elf_vma)(field[3])) << 24)
-                | (((elf_vma)(field[2])) << 32)
-                | (((elf_vma)(field[1])) << 40)
-                | (((elf_vma)(field[0])) << 48));
+	{
+	  return (((elf_vma)(field[6]))
+		  | (((elf_vma)(field[5])) << 8)
+		  | (((elf_vma)(field[4])) << 16)
+		  | (((elf_vma)(field[3])) << 24)
+		  | (((elf_vma)(field[2])) << 32)
+		  | (((elf_vma)(field[1])) << 40)
+		  | (((elf_vma)(field[0])) << 48));
+	}
       else if (sizeof(elf_vma) == 4UL)
 	{
 	  /* Although we are extracting data from an 8 byte wide field,
@@ -307,7 +352,11 @@ byte_get_big_endian(unsigned char *field, int size)
                   | (((unsigned long)(field[1])) << 16)
                   | (((unsigned long)(field[0])) << 24));
 	}
-
+      else
+	{
+	  error(_("Unhandled elf_vma size: %lu\n"), sizeof(elf_vma));
+	  abort();
+	}
     case 8:
       if (sizeof(elf_vma) == 8UL)
 	return (((elf_vma)(field[7]))
@@ -328,7 +377,11 @@ byte_get_big_endian(unsigned char *field, int size)
                   | (((unsigned long)(field[1])) << 16)
                   | (((unsigned long)(field[0])) << 24));
 	}
-
+      else
+	{
+	  error(_("Unhandled elf_vma size: %lu\n"), sizeof(elf_vma));
+	  abort();
+	}
     default:
       error(_("Unhandled data length: %d\n"), size);
       abort();

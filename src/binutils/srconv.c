@@ -1566,7 +1566,7 @@ wr_sc(struct coff_ofile *ptr, struct coff_sfile *sfile)
       sc.spare = 0;
       sc.segadd = 0;
       sc.spare1 = 0;		/* If not zero, then it does NOT work. */
-      sc.name = (char *)section_translate(name);
+      sc.name = (char *)section_translate((char *)name);
 
       if (strlen(sc.name) == 1UL)
 	{
@@ -1740,7 +1740,7 @@ prescan(struct coff_ofile *the_tree)
 const char *program_name;
 
 /* */
-static void
+static void ATTRIBUTE_NORETURN
 show_usage(FILE *the_file, int status)
 {
   fprintf(the_file, _("Usage: %s [option(s)] in-file [out-file]\n"),

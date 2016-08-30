@@ -60,7 +60,7 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 2053 of yacc.c  */
-#line 51 "sysinfo.y"
+#line 59 "sysinfo.y"
 
  int i;
  char *s;

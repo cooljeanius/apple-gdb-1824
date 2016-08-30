@@ -2990,8 +2990,9 @@ main (int argc, char **argv)
 	  seenflag = TRUE;
 	  break;
 	case 'H':
-	  usage (stdout, 0);
+	  usage(stdout, 0);
 	  seenflag = TRUE;
+	  break; /* -Wimplicit-fallthrough */
 	case 'v':
 	case 'V':
 	  show_version = TRUE;

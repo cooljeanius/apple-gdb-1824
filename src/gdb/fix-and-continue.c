@@ -808,6 +808,7 @@ load_fixed_objfile(const char *name)
 {
   struct value **libraryvec, *val, **args;
   int i, librarylen;
+  size_t libraryveclen;
   struct value *ref_to_dlopen;
 
   ref_to_dlopen = find_function_in_inferior("dlopen",
@@ -817,8 +818,14 @@ load_fixed_objfile(const char *name)
 #else
   librarylen = (int)min(strlen(name), (size_t)PATH_MAX);
 #endif /* HAVE_STRNLEN */
+  libraryveclen = (sizeof(struct value *) * (librarylen + 2UL));
+  if (libraryveclen > MAX_ALLOCA_SIZE)
+    {
+      warning(_("Unable to allocate enough space for library vector.\n"));
+      libraryveclen = MAX_ALLOCA_SIZE;
+    }
   libraryvec =
-    (struct value **)alloca(sizeof(struct value *) * (librarylen + 2UL));
+    (struct value **)alloca(libraryveclen);
   for (i = 0; (i < (librarylen + 1)) && (i < INT_MAX) && (i > INT_MIN); i++)
     {
       libraryvec[i] = value_from_longest(builtin_type_char, name[i]);
@@ -1078,7 +1085,8 @@ redirect_statics(struct file_static_fixups *indirect_entries,
                  int indirect_entry_count)
 {
   int i;
-  gdb_byte *buf = (gdb_byte *)alloca(TARGET_ADDRESS_BYTES);
+  gdb_byte *buf = (gdb_byte *)alloca(min(TARGET_ADDRESS_BYTES,
+					 MAX_ALLOCA_SIZE));
 
   for (i = 0; i < indirect_entry_count; i++)
     {

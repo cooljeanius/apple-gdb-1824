@@ -412,7 +412,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 zlibdir = @zlibdir@
 zlibinc = @zlibinc@
-AUTOMAKE_OPTIONS = 1.9.6 gnits no-dist
+AUTOMAKE_OPTIONS = 1.9.6 gnits no-dist info-in-builddir
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 # What version of the manual you want; "all" includes everything

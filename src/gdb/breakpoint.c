@@ -2272,7 +2272,8 @@ bpstat_copy (bpstat bs)
 	p->next = tmp;
       p = tmp;
     }
-  p->next = NULL;
+  if (p != NULL)
+    p->next = NULL;
   return retval;
 }
 

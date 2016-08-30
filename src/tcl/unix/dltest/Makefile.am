@@ -6,7 +6,7 @@
 
 ACLOCAL_AMFLAGS = -I../m4 --install
 
-AUTOMAKE_OPTIONS = 1.14 foreign dejagnu no-dist
+AUTOMAKE_OPTIONS = 1.14 foreign dejagnu no-dist info-in-builddir
 
 TCL_DBGX = @TCL_DBGX@
 CC = @CC@

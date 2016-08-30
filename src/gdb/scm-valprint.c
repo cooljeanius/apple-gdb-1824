@@ -188,7 +188,7 @@ taloop:
 	    {
 #if 0
 	      SCM name;
-#endif
+#endif /* 0 */
 	      fputs_filtered ("#<latte ", stream);
 #if 1
 	      fputs_filtered ("???", stream);
@@ -198,10 +198,13 @@ taloop:
 			   (sizet) sizeof (char),
 			     (sizet) LENGTH (name),
 			   port);
-#endif
+#endif /* 1 */
 	      fprintf_filtered (stream, " #X%s>", paddr_nz (svalue));
 	      break;
 	    }
+	  /* -Wimplicit-fallthrough vs. -Wdeclaration-after-statement: */
+	  goto imcar_noncase_label;
+	imcar_noncase_label:
 	case scm_tcs_cons_imcar:
 	case scm_tcs_cons_nimcar:
 	  fputs_filtered ("(", stream);
@@ -237,20 +240,22 @@ taloop:
 		    {
 		    case '\"':
 		    case '\\':
-		      fputs_filtered ("\\", stream);
+		      fputs_filtered("\\", stream);
+		      goto the_default_label;
+		    the_default_label:
 		    default:
-		      fprintf_filtered (stream, "%c", buffer[i]);
+		      fprintf_filtered(stream, "%c", buffer[i]);
 		    }
 	      }
-	    fputs_filtered (truncate ? "...\"" : "\"", stream);
+	    fputs_filtered((truncate ? "...\"" : "\""), stream);
 	    break;
 	  }
 	  break;
 	case scm_tcs_symbols:
 	  {
-	    int len = SCM_LENGTH(svalue);
+	    const size_t len = min(SCM_LENGTH(svalue), MAX_ALLOCA_SIZE);
 
-	    char *str = (char *)alloca(len);
+	    char *str = (char *)alloca(min(len, MAX_ALLOCA_SIZE));
 	    read_memory(SCM_CDR(svalue), (gdb_byte *)str, (len + 1));
 	    /* Should handle weird characters, FIXME: do it. */
 	    str[len] = '\0';

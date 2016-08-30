@@ -115,13 +115,14 @@ bfd_free_window(bfd_window *windowp)
   switch (i->mapped) {
 
   case 2:
-      i->data = NULL;
-      break;
+    i->data = NULL;
+    break;
 
   case 1:
 #if HAVE_MMAP
     munmap(i->data, (size_t)i->size);
     i->data = NULL;
+    break; /* -Wimplicit-fallthrough */
 #else
     abort();
 #endif /* HAVE_MMAP */

@@ -32,6 +32,14 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include <stdio.h>
 #include <stdlib.h>
+  
+#ifndef ATTRIBUTE_FALLTHROUGH
+# if defined(__GNUC__) && (__GNUC__ >= 7)
+#  define ATTRIBUTE_FALLTHROUGH __attribute__((fallthrough))
+# else
+#  define ATTRIBUTE_FALLTHROUGH /* FALLTHRU */
+# endif /* gcc 7+ */
+#endif /* !ATTRIBUTE_FALLTHROUGH */
 
 static char writecode;
 static const char *it;
@@ -172,13 +180,13 @@ it:
     break;
   case 'g':
     printf("\tchecksum(file, raw, idx, IT_%s_CODE);\n", it);
-
+    ATTRIBUTE_FALLTHROUGH;
   case 'i':
 
   case 'o':
   case 'c':
     printf("}\n");
-
+    ATTRIBUTE_FALLTHROUGH;
   default:;
   }
 }
@@ -203,6 +211,7 @@ repeat_it_field: '(' REPEAT NAME
                 printf("\tprintf(\"repeat %%d\\n\", %s);\n", $3);
 	      if (rdepth == 2)
                 printf("\tprintf(\"repeat %%d\\n\", %s[n]);\n", $3);
+	      ATTRIBUTE_FALLTHROUGH;
 	    case 'i':
 	    case 'g':
 	    case 'o':

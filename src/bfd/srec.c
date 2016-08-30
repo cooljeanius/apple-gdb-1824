@@ -502,12 +502,14 @@ srec_scan (bfd *abfd)
 		address = HEX(data);
 		data += 2;
 		--bytes;
-		/* Fall through to: */
+		/* Fall through to '2': */
+		ATTRIBUTE_FALLTHROUGH;
 	      case '2':
 		address = ((address << 8) | HEX(data));
 		data += 2;
 		--bytes;
-		/* Fall through.  */
+		/* Fall through to '1': */
+		ATTRIBUTE_FALLTHROUGH;
 	      case '1':
 		address = ((address << 8) | HEX(data));
 		data += 2;
@@ -546,11 +548,13 @@ srec_scan (bfd *abfd)
 	      case '7':
 		address = HEX(data);
 		data += 2;
-		/* Fall through to: */
+		/* Fall through to '8': */
+		ATTRIBUTE_FALLTHROUGH;
 	      case '8':
 		address = ((address << 8) | HEX(data));
 		data += 2;
-		/* Fall through to: */
+		/* Fall through to '9': */
+		ATTRIBUTE_FALLTHROUGH;
 	      case '9':
 		address = ((address << 8) | HEX(data));
 		data += 2;
@@ -728,12 +732,14 @@ srec_read_section(bfd *abfd, asection *section, bfd_byte *contents)
 	  address = HEX(data);
 	  data += 2;
 	  --bytes;
-	  /* Fall through to: */
+	  /* Fall through to '2': */
+	  ATTRIBUTE_FALLTHROUGH;
 	case '2':
 	  address = ((address << 8) | HEX(data));
 	  data += 2;
 	  --bytes;
-	  /* Fall through to: */
+	  /* Fall through to '1': */
+	  ATTRIBUTE_FALLTHROUGH;
 	case '1':
 	  address = ((address << 8) | HEX(data));
 	  data += 2;
@@ -904,10 +910,12 @@ srec_write_record(bfd *abfd, unsigned int type, bfd_vma address,
     case 7:
       TOHEX(dst, (address >> 24), check_sum, unsigned int);
       dst += 2;
+      ATTRIBUTE_FALLTHROUGH;
     case 8:
     case 2:
       TOHEX(dst, (address >> 16), check_sum, unsigned int);
       dst += 2;
+      ATTRIBUTE_FALLTHROUGH;
     case 9:
     case 1:
     case 0:

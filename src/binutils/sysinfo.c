@@ -79,6 +79,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+  
+#ifndef ATTRIBUTE_FALLTHROUGH
+# if defined(__GNUC__) && (__GNUC__ >= 7)
+#  define ATTRIBUTE_FALLTHROUGH __attribute__((fallthrough))
+# else
+#  define ATTRIBUTE_FALLTHROUGH /* FALLTHRU */
+# endif /* gcc 7+ */
+#endif /* !ATTRIBUTE_FALLTHROUGH */
 
 static char writecode;
 static const char *it;
@@ -94,7 +102,7 @@ static int yyerror(const char *s);
 extern int yylex(void);
 
 /* Line 371 of yacc.c  */
-#line 98 "sysinfo.c"
+#line 106 "sysinfo.c"
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -144,14 +152,14 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 387 of yacc.c  */
-#line 51 "sysinfo.y"
+#line 59 "sysinfo.y"
 
  int i;
  char *s;
 
 
 /* Line 387 of yacc.c  */
-#line 155 "sysinfo.c"
+#line 163 "sysinfo.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -179,7 +187,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 183 "sysinfo.c"
+#line 191 "sysinfo.c"
 
 #ifdef short
 # undef short
@@ -485,13 +493,13 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    65,    65,    65,   106,   107,   112,   111,   190,   191,
-     192,   193,   197,   196,   244,   243,   274,   273,   362,   363,
-     367,   372,   378,   379,   382,   383,   385,   387
+       0,    73,    73,    73,   114,   115,   120,   119,   198,   199,
+     200,   201,   205,   204,   253,   252,   283,   282,   371,   372,
+     376,   381,   387,   388,   391,   392,   394,   396
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE || 1
+#if YYDEBUG || YYERROR_VERBOSE || 0
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
@@ -1398,7 +1406,7 @@ yyreduce:
     {
         case 2:
 /* Line 1787 of yacc.c  */
-#line 65 "sysinfo.y"
+#line 73 "sysinfo.y"
     {
   switch (writecode)
     {
@@ -1427,7 +1435,7 @@ yyreduce:
 
   case 3:
 /* Line 1787 of yacc.c  */
-#line 89 "sysinfo.y"
+#line 97 "sysinfo.y"
     {
   switch (writecode) {
   case 'i':
@@ -1445,7 +1453,7 @@ yyreduce:
 
   case 6:
 /* Line 1787 of yacc.c  */
-#line 112 "sysinfo.y"
+#line 120 "sysinfo.y"
     {
 	it = (yyvsp[(2) - (3)].s); code = (yyvsp[(3) - (3)].i);
 	switch (writecode)
@@ -1504,7 +1512,7 @@ yyreduce:
 
   case 7:
 /* Line 1787 of yacc.c  */
-#line 168 "sysinfo.y"
+#line 176 "sysinfo.y"
     {
   switch (writecode) {
   case 'd':
@@ -1512,13 +1520,13 @@ yyreduce:
     break;
   case 'g':
     printf("\tchecksum(file, raw, idx, IT_%s_CODE);\n", it);
-
+    ATTRIBUTE_FALLTHROUGH;
   case 'i':
 
   case 'o':
   case 'c':
     printf("}\n");
-
+    ATTRIBUTE_FALLTHROUGH;
   default:;
   }
 }
@@ -1526,7 +1534,7 @@ yyreduce:
 
   case 12:
 /* Line 1787 of yacc.c  */
-#line 197 "sysinfo.y"
+#line 205 "sysinfo.y"
     {
 	  rdepth++;
 	  switch (writecode)
@@ -1536,6 +1544,7 @@ yyreduce:
                 printf("\tprintf(\"repeat %%d\\n\", %s);\n", (yyvsp[(3) - (3)].s));
 	      if (rdepth == 2)
                 printf("\tprintf(\"repeat %%d\\n\", %s[n]);\n", (yyvsp[(3) - (3)].s));
+	      ATTRIBUTE_FALLTHROUGH;
 	    case 'i':
 	    case 'g':
 	    case 'o':
@@ -1557,7 +1566,7 @@ yyreduce:
 
   case 13:
 /* Line 1787 of yacc.c  */
-#line 226 "sysinfo.y"
+#line 235 "sysinfo.y"
     {
 	  repeat = oldrepeat;
 	  oldrepeat =0;
@@ -1576,7 +1585,7 @@ yyreduce:
 
   case 14:
 /* Line 1787 of yacc.c  */
-#line 244 "sysinfo.y"
+#line 253 "sysinfo.y"
     {
 	  switch (writecode)
 	    {
@@ -1594,7 +1603,7 @@ yyreduce:
 
   case 15:
 /* Line 1787 of yacc.c  */
-#line 259 "sysinfo.y"
+#line 268 "sysinfo.y"
     {
 	  switch (writecode)
 	    {
@@ -1610,13 +1619,13 @@ yyreduce:
 
   case 16:
 /* Line 1787 of yacc.c  */
-#line 274 "sysinfo.y"
+#line 283 "sysinfo.y"
     {name = (yyvsp[(7) - (7)].s); }
     break;
 
   case 17:
 /* Line 1787 of yacc.c  */
-#line 276 "sysinfo.y"
+#line 285 "sysinfo.y"
     {
 	  char *desc = (yyvsp[(2) - (10)].s);
 	  char *type = (yyvsp[(4) - (10)].s);
@@ -1702,43 +1711,43 @@ yyreduce:
 
   case 18:
 /* Line 1787 of yacc.c  */
-#line 362 "sysinfo.y"
+#line 371 "sysinfo.y"
     { (yyval.s) = (yyvsp[(1) - (1)].s); }
     break;
 
   case 19:
 /* Line 1787 of yacc.c  */
-#line 363 "sysinfo.y"
+#line 372 "sysinfo.y"
     { (yyval.s) = (char *)"INT";}
     break;
 
   case 20:
 /* Line 1787 of yacc.c  */
-#line 368 "sysinfo.y"
+#line 377 "sysinfo.y"
     { (yyval.s) = (yyvsp[(2) - (3)].s); }
     break;
 
   case 21:
 /* Line 1787 of yacc.c  */
-#line 373 "sysinfo.y"
+#line 382 "sysinfo.y"
     { (yyval.i) = (yyvsp[(1) - (2)].i) * (yyvsp[(2) - (2)].i); }
     break;
 
   case 22:
 /* Line 1787 of yacc.c  */
-#line 378 "sysinfo.y"
+#line 387 "sysinfo.y"
     { (yyval.s) = (yyvsp[(2) - (3)].s); }
     break;
 
   case 23:
 /* Line 1787 of yacc.c  */
-#line 379 "sysinfo.y"
+#line 388 "sysinfo.y"
     { (yyval.s) = (char *)"dummy";}
     break;
 
   case 27:
 /* Line 1787 of yacc.c  */
-#line 387 "sysinfo.y"
+#line 396 "sysinfo.y"
     {
 	  switch (writecode)
 	    {
@@ -1755,7 +1764,7 @@ yyreduce:
 
 
 /* Line 1787 of yacc.c  */
-#line 1759 "sysinfo.c"
+#line 1768 "sysinfo.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1987,7 +1996,7 @@ yyreturn:
 
 
 /* Line 2050 of yacc.c  */
-#line 404 "sysinfo.y"
+#line 413 "sysinfo.y"
 
 /* four modes
 

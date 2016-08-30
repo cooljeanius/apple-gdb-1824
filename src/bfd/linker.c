@@ -2266,8 +2266,9 @@ _bfd_generic_link_output_symbols(bfd *output_bfd, bfd *input_bfd,
 		  sym->flags |= BSF_WEAK;
 		  break;
 		case bfd_link_hash_indirect:
-		  h = (struct generic_link_hash_entry *) h->root.u.i.link;
-		  /* fall through to: */
+		  h = (struct generic_link_hash_entry *)h->root.u.i.link;
+		  /* fall through to bfd_link_hash_defined: */
+		  ATTRIBUTE_FALLTHROUGH;
 		case bfd_link_hash_defined:
 		  sym->flags |= BSF_GLOBAL;
 		  sym->flags &= (flagword)~BSF_CONSTRUCTOR;

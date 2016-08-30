@@ -2068,7 +2068,7 @@ init_type (enum type_code code, int length, int flags, const char *name,
      So we have to patch another one into the format here.  */
   if (code == TYPE_CODE_FLT && name && strcmp (name, "long double") == 0)
     {
-      if (length * TARGET_CHAR_BIT != TARGET_LONG_DOUBLE_BIT)
+      if ((length * (int)TARGET_CHAR_BIT) != TARGET_LONG_DOUBLE_BIT)
 	{
 	  TYPE_FLOATFORMAT(type) = gdbarch_long_double_format (current_gdbarch);
 	}

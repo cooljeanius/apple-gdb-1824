@@ -448,8 +448,9 @@ first_phase (bfd *abfd, int type, char *src)
 		  newsym->symbol.flags = BSF_LOCAL;
 		if (!getvalue(&src, &val))
 		  return FALSE;
-		newsym->symbol.value = val - section->vma;
+		newsym->symbol.value = (val - section->vma);
 	      }
+	      break; /* -Wimplicit-fallthrough */
 	    default:
 	      return FALSE;
 	    }

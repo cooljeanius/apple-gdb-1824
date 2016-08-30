@@ -3404,6 +3404,7 @@ stab_xcoff_builtin_type (void *dhandle, struct stab_handle *info,
     case 9:
       name = "unsigned";
       rettype = debug_make_int_type (dhandle, 4, TRUE);
+      break; /* -Wimplicit-fallthrough */
     case 10:
       name = "unsigned long";
       rettype = debug_make_int_type (dhandle, 4, TRUE);

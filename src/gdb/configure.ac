@@ -3129,7 +3129,9 @@ fi
 if test "x${ac_cv_func_alloca_works}" = "xno"; then
   build_warnings="${build_warnings} -Walloca"
 elif test "x${ac_cv_func_alloca_works}" = "xyes"; then
-  build_warnings="${build_warnings} -Walloca-larger-than=9999"
+  # 4032 is MAX_ALLOCA_SIZE in "libiberty.h":
+  build_warnings="${build_warnings} -Walloca-larger-than=4032"
+  #FIXME: possibly too many?
 fi
 
 # clang-specific warnings are now moved to after the host-specific ones.

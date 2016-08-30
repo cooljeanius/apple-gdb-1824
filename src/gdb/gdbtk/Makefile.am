@@ -2,8 +2,8 @@
 ## Process this file with automake to produce Makefile.in
 
 ACLOCAL_AMFLAGS = -I../m4 --install
-AUTOMAKE_OPTIONS = 1.11.6 foreign dejagnu no-dist
-## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
+AUTOMAKE_OPTIONS = 1.11.6 foreign dejagnu no-dist no-installinfo
+## "cygnus" == "foreign no-dist" (might harden from foreign to gnits tho)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 SUBDIRS = plugins
 

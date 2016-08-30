@@ -47,7 +47,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([${srcdir}/config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu -Wall -Wno-portability])dnl
+AM_INIT_AUTOMAKE([1.11.6 no-dist gnits dejagnu -Wall -Wno-portability])dnl
   ## maintainer mode is used kind of hackishly in the Makefiles here:
 AM_MAINTAINER_MODE
 AM_PROG_INSTALL_STRIP

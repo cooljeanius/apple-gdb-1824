@@ -1669,12 +1669,13 @@ packed_array_type(struct type *type, long *elt_bits)
 /* The array type encoded by TYPE, where ada_is_packed_array_type (TYPE).  */
 
 static struct type *
-decode_packed_array_type (struct type *type)
+decode_packed_array_type(struct type *type)
 {
   struct symbol *sym;
-  const char *raw_name = ada_type_name (ada_check_typedef (type));
-  char *name = (char *) alloca (strlen (raw_name) + 1);
-  char *tail = strstr (raw_name, "___XP");
+  const char *raw_name = ada_type_name(ada_check_typedef(type));
+  const size_t namelen = min((strlen(raw_name) + 1UL), MAX_ALLOCA_SIZE);
+  char *name = (char *)alloca(min(namelen, MAX_ALLOCA_SIZE));
+  char *tail = strstr(raw_name, "___XP");
   struct type *shadow_type;
   long bits;
 
@@ -1859,7 +1860,7 @@ ada_value_primitive_packed_val(struct value *obj, const gdb_byte *valaddr,
   unsigned char *unpacked;
   unsigned long accum;          /* Staging area for bits being transferred */
   unsigned char sign;
-  int len = ((bit_size + bit_offset + HOST_CHAR_BIT - 1) / 8);
+  size_t len = ((bit_size + bit_offset + HOST_CHAR_BIT - 1U) / 8UL);
   /* Transmit bytes from least to most significant; delta is the direction
      the indices move.  */
   int delta = (BITS_BIG_ENDIAN ? -1 : 1);
@@ -1875,7 +1876,12 @@ ada_value_primitive_packed_val(struct value *obj, const gdb_byte *valaddr,
     {
       v = value_at(type,
                    (VALUE_ADDRESS(obj) + value_offset(obj) + offset));
-      bytes = (unsigned char *)alloca(max(len, 1));
+      if (len > MAX_ALLOCA_SIZE)
+	{
+	  warning(_("Unable to allocate enough space for bytes.\n"));
+	  len = MAX_ALLOCA_SIZE;
+	}
+      bytes = (unsigned char *)alloca(max(len, 1UL));
       read_memory(VALUE_ADDRESS(v), bytes, len);
     }
   else
@@ -2081,10 +2087,16 @@ ada_value_assign(struct value *toval, struct value *fromval)
       && ((TYPE_CODE(type) == TYPE_CODE_FLT)
           || (TYPE_CODE(type) == TYPE_CODE_STRUCT)))
     {
-      int len = ((value_bitpos(toval)
-                  + bits + HOST_CHAR_BIT - 1) / HOST_CHAR_BIT);
-      char *buffer = (char *)alloca(len);
+      size_t len = ((value_bitpos(toval)
+		     + bits + HOST_CHAR_BIT - 1U) / HOST_CHAR_BIT);
+      char *buffer;
       struct value *val;
+      if (len > MAX_ALLOCA_SIZE)
+	{
+	  warning(_("Unable to allocate enough space for buffer.\n"));
+	  len = MAX_ALLOCA_SIZE;
+	}
+      buffer = (char *)alloca(len);
 
       if (TYPE_CODE(type) == TYPE_CODE_FLT)
         fromval = value_cast(type, fromval);
@@ -2690,7 +2702,7 @@ resolve_subexp (struct expression **expp, int *pos, int deprocedure_p,
 
   argvec_size = (sizeof(struct value *) * (nargs + 1));
 #if defined(HAVE_ALLOCA) && !defined(__clang_analyzer__)
-  argvec = (struct value **)alloca(argvec_size);
+  argvec = (struct value **)alloca(min(argvec_size, MAX_ALLOCA_SIZE));
 #else
   argvec = (struct value **)xmalloc(argvec_size);
 #endif /* HAVE_ALLOCA && !__clang_analyzer__ */
@@ -3147,21 +3159,20 @@ sort_choices (struct ada_symbol_info syms[], int nsyms)
 
 /* NOTE: Adapted from decode_line_2 in symtab.c, with which it ought
    to be re-integrated one of these days.  */
-
 int
-user_select_syms (struct ada_symbol_info *syms, int nsyms, int max_results)
+user_select_syms(struct ada_symbol_info *syms, int nsyms, int max_results)
 {
   int i;
-  int *chosen = (int *) alloca (sizeof (int) * nsyms);
+  int *chosen = (int *)alloca(sizeof(int) * (const size_t)nsyms);
   int n_chosen;
-  int first_choice = (max_results == 1) ? 1 : 2;
+  int first_choice = ((max_results == 1) ? 1 : 2);
 
   if (max_results < 1)
-    error (_("Request to select 0 symbols!"));
+    error(_("Request to select 0 symbols!"));
   if (nsyms <= 1)
     return nsyms;
 
-  printf_unfiltered (_("[0] cancel\n"));
+  printf_unfiltered(_("[0] cancel\n"));
   if (max_results > 1)
     printf_unfiltered (_("[1] all\n"));
 
@@ -3965,19 +3976,24 @@ ada_lookup_partial_symbol(struct partial_symtab *pst, const char *name,
         {
           int U;
           i = 0;
-          U = length - 1;
-          while (U - i > 4)
+          U = (length - 1);
+          while ((U - i) > 4)
             {
-              int M = (U + i) >> 1;
+              int M = ((U + i) >> 1);
               struct partial_symbol *psym = start[M];
-              if (SYMBOL_LINKAGE_NAME (psym)[0] < name[0])
-                i = M + 1;
-              else if (SYMBOL_LINKAGE_NAME (psym)[0] > name[0])
-                U = M - 1;
-              else if (strcmp (SYMBOL_LINKAGE_NAME (psym), name) < 0)
-                i = M + 1;
-              else
-                U = M;
+	      if ((psym != NULL) && (name != NULL))
+		{
+		  if (SYMBOL_LINKAGE_NAME(psym)[0] < name[0])
+		    i = (M + 1);
+		  else if (SYMBOL_LINKAGE_NAME(psym)[0] > name[0])
+		    U = (M - 1);
+		  else if (strcmp(SYMBOL_LINKAGE_NAME(psym), name) < 0)
+		    i = (M + 1);
+		  else
+		    U = M;
+		}
+	      else
+		U = M;
             }
         }
       else
@@ -4833,11 +4849,10 @@ is_dot_digits_suffix (const char *str)
    PATN[0..PATN_LEN-1] = Ak.Ak+1.....An for some k >= 1.  Ignores
    informational suffixes of NAME (i.e., for which is_name_suffix is
    true).  */
-
 static int
-wild_match (const char *patn0, int patn_len, const char *name0)
+wild_match(const char *patn0, int patn_len, const char *name0)
 {
-  int name_len;
+  size_t name_len;
   char *name;
   char *patn;
 
@@ -4865,15 +4880,15 @@ wild_match (const char *patn0, int patn_len, const char *name0)
     char *dot;
     name_len = strlen(name0);
 
-    name = (char *)alloca((name_len + 1) * sizeof(char));
+    name = (char *)alloca((name_len + 1UL) * sizeof(char));
     strcpy(name, name0);
     dot = strrchr(name, '.');
     if ((dot != NULL) && is_dot_digits_suffix(dot))
       *dot = '\0';
 
-    patn = (char *)alloca((patn_len + 1) * sizeof(char));
+    patn = (char *)alloca(((const size_t)patn_len + 1UL) * sizeof(char));
     gdb_assert(patn0 != NULL);
-    strncpy(patn, patn0, patn_len);
+    strncpy(patn, patn0, (size_t)patn_len);
     patn[patn_len] = '\0';
     dot = strrchr(patn, '.');
     if ((dot != NULL) && is_dot_digits_suffix(dot))
@@ -4883,41 +4898,39 @@ wild_match (const char *patn0, int patn_len, const char *name0)
       }
   }
 
-  /* Now perform the wild match.  */
-
-  name_len = strlen (name);
-  if (name_len >= patn_len + 5 && strncmp (name, "_ada_", 5) == 0
-      && strncmp (patn, name + 5, patn_len) == 0
-      && is_name_suffix (name + patn_len + 5))
+  /* Now perform the wild match: */
+  name_len = strlen(name);
+  if ((name_len >= ((size_t)patn_len + 5UL))
+      && (strncmp(name, "_ada_", 5UL) == 0)
+      && (strncmp(patn, (name + 5), (size_t)patn_len) == 0)
+      && is_name_suffix(name + patn_len + 5))
     return 1;
 
-  while (name_len >= patn_len)
+  while (name_len >= (size_t)patn_len)
     {
-      if (strncmp (patn, name, patn_len) == 0
-          && is_name_suffix (name + patn_len))
+      if ((strncmp(patn, name, (size_t)patn_len) == 0)
+          && is_name_suffix(name + patn_len))
         return 1;
-      do
-        {
-          name += 1;
-          name_len -= 1;
-        }
-      while (name_len > 0
-             && name[0] != '.' && (name[0] != '_' || name[1] != '_'));
-      if (name_len <= 0)
+      do {
+	name += 1;
+	name_len -= 1UL;
+      } while ((name_len > 0UL)
+	       && (name[0] != '.') && ((name[0] != '_') || (name[1] != '_')));
+      if (name_len <= 0UL)
         return 0;
       if (name[0] == '_')
         {
-          if (!islower (name[2]))
+          if (!islower(name[2]))
             return 0;
           name += 2;
-          name_len -= 2;
+          name_len -= 2UL;
         }
       else
         {
-          if (!islower (name[1]))
+          if (!islower(name[1]))
             return 0;
           name += 1;
-          name_len -= 1;
+          name_len -= 1UL;
         }
     }
 
@@ -6043,15 +6056,16 @@ ada_find_renaming_symbol (const char *name, struct block *block)
           && strstr(function_name, "_ada_") == function_name)
         function_name = (function_name + 5);
 
-      total_rename_len = (rename_len * sizeof(char));
-      rename = (char *)alloca(total_rename_len);
+      total_rename_len = min((rename_len * sizeof(char)), MAX_ALLOCA_SIZE);
+      rename = (char *)alloca(min(total_rename_len, MAX_ALLOCA_SIZE));
       snprintf(rename, total_rename_len, "%s__%s___XR", function_name, name);
     }
   else
     {
       const size_t rename_len = (strlen(name) + 6UL);
-      size_t total_rename_len = (rename_len * sizeof(char));
-      rename = (char *)alloca(total_rename_len);
+      size_t total_rename_len = min((rename_len * sizeof(char)),
+				    MAX_ALLOCA_SIZE);
+      rename = (char *)alloca(min(total_rename_len, MAX_ALLOCA_SIZE));
       snprintf(rename, total_rename_len, "%s___XR", name);
     }
 
@@ -7505,7 +7519,7 @@ ada_evaluate_subexp(struct type *expect_type, struct expression *exp,
            * called in argvec[0] and a terminating NULL: */
           nargs = longest_to_int(exp->elts[pc + 1].longconst);
           argvec =
-            (struct value **)alloca(sizeof(struct value *) * (nargs + 2));
+            (struct value **)alloca(sizeof(struct value *) * (nargs + 2UL));
 
           if ((exp->elts[*pos].opcode == OP_VAR_VALUE)
               && (SYMBOL_DOMAIN(exp->elts[pc + 5].symbol) == UNDEF_DOMAIN))

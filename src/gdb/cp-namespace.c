@@ -380,7 +380,7 @@ lookup_namespace_scope(const char *name, const char *linkage_name,
   /* Okay, we did NOT find a match in our children, so look for the
    * name in the current namespace: */
   cp_namespace = (char *)alloca(scope_len + 1UL);
-  strncpy(cp_namespace, scope, scope_len);
+  strncpy(cp_namespace, scope, (scope_len - 1UL));
   cp_namespace[scope_len] = '\0';
   return cp_lookup_symbol_namespace(cp_namespace, name, linkage_name,
 				    block, domain, symtab);

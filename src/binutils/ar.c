@@ -899,7 +899,8 @@ main(int argc, char **argv)
               }
               break;
             }
-          /* Fall through to: */
+          /* Fall through to replace: */
+	  ATTRIBUTE_FALLTHROUGH;
 	case replace:
 	case quick_append:
           if ((files != NULL) || (write_armap > 0)) {

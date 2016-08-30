@@ -101,7 +101,7 @@ AM_SANITY_CHECK
 AM_MAINTAINER_MODE
 test -e ${srcdir}/missing
 AM_MISSING_PROG([AUTOMAKE114],[automake-1.14])dnl
-AM_INIT_AUTOMAKE([1.14 foreign dejagnu])dnl
+AM_INIT_AUTOMAKE([1.14 foreign dejagnu no-dist no-installinfo])dnl
 AM_PROG_INSTALL_STRIP
 LT_INIT([dlopen])dnl
 LT_LIB_M

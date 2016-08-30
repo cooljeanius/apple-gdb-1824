@@ -790,9 +790,12 @@ AC_DEFUN([SC_CONFIG_CFLAGS],[
     CFLAGS_OPTIMIZE=-O1
     if test "x${GCC}" = "xyes"; then
 	# FIXME: '-Wconversion' changed semantics in newer gcc versions.
+	# '-Wtraditional-conversion' is the new name for the old
+        # '-Wconversion'.
+        # We need to choose which one to add based on gcc version.
 	# Also we should be checking these flags to see if they are
 	# actually supported or not:
-	CFLAGS_WARNING="-Wall -Wconversion -Wno-implicit-int"
+	CFLAGS_WARNING="-Wall -Wno-implicit-int"
 	CFLAGS_WARNING="${CFLAGS_WARNING} -Wno-deprecated-declarations"
     else
 	CFLAGS_WARNING=""

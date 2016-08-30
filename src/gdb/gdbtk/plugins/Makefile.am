@@ -2,7 +2,7 @@
 ## Process this file with automake to produce Makefile.in
 
 ACLOCAL_AMFLAGS = -I../../m4 --install
-AUTOMAKE_OPTIONS = 1.11.6 foreign no-dist dejagnu
+AUTOMAKE_OPTIONS = 1.11.6 foreign no-dist no-installinfo dejagnu
 ## "cygnus" == "foreign no-dist"
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 SUBDIRS = @make_subdirs@

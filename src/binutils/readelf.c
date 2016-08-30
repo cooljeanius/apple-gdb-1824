@@ -599,8 +599,9 @@ print_vma(bfd_vma vma, print_mode mode)
 	case LONG_HEX: return printf("%8.8lx", (unsigned long)vma);
 	case DEC_5:
 	  if (vma <= 99999)
-	    return printf("%5ld", (long) vma);
-	  /* Drop through.  */
+	    return printf("%5ld", (long)vma);
+	  /* Drop through: */
+	  ATTRIBUTE_FALLTHROUGH;
 	case PREFIX_HEX: return printf("0x%lx", (unsigned long)vma);
 	case HEX: return printf("%lx", (unsigned long)vma);
 	case DEC: return printf("%ld", (unsigned long)vma);
@@ -617,16 +618,16 @@ print_vma(bfd_vma vma, print_mode mode)
 	{
 	case FULL_HEX:
 	  nc = printf("0x");
-	  /* Drop through.  */
-
+	  /* Drop through: */
+	  ATTRIBUTE_FALLTHROUGH;
 	case LONG_HEX:
 	  printf_vma(vma);
 	  return (nc + 16);
 
 	case PREFIX_HEX:
 	  nc = printf("0x");
-	  /* Drop through.  */
-
+	  /* Drop through: */
+	  ATTRIBUTE_FALLTHROUGH;
 	case HEX:
 # if BFD_HOST_64BIT_LONG
 	  return (nc + printf("%lx", vma));
@@ -2827,7 +2828,7 @@ parse_args (int argc, char **argv)
 		  case 'P': do_debug_pubnames = 1;  break;
 		  case 'r': do_debug_aranges = 1; break;
 		  case 'R': do_debug_ranges = 1; break;
-		  case 'F': do_debug_frames_interp = 1;
+		  case 'F': do_debug_frames_interp = 1; break; /* ...right? */
 		  case 'f': do_debug_frames = 1; break;
 		  case 'm': /* fall through to: */
 		  case 'M': do_debug_macinfo = 1; break;
@@ -2930,8 +2931,9 @@ parse_args (int argc, char **argv)
 	default:
 	oops:
 	  /* xgettext:c-format */
-	  error (_("Invalid option '-%c'\n"), c);
-	  /* Drop through.  */
+	  error(_("Invalid option '-%c'\n"), c);
+	  /* Drop through: */
+	  ATTRIBUTE_FALLTHROUGH;
 	case '?': usage();
 	}
     }
@@ -6071,16 +6073,17 @@ process_dynamic_section (FILE *file)
 	  break;
 
 	case DT_PLTRELSZ:
-	case DT_RELASZ	:
-	case DT_STRSZ	:
-	case DT_RELSZ	:
-	case DT_RELAENT	:
-	case DT_SYMENT	:
-	case DT_RELENT	:
+	case DT_RELASZ:
+	case DT_STRSZ:
+	case DT_RELSZ:
+	case DT_RELAENT:
+	case DT_SYMENT:
+	case DT_RELENT:
 	  dynamic_info[entry->d_tag] = entry->d_un.d_val;
+	  ATTRIBUTE_FALLTHROUGH; /* ??? */
 	case DT_PLTPADSZ:
-	case DT_MOVEENT	:
-	case DT_MOVESZ	:
+	case DT_MOVEENT:
+	case DT_MOVESZ:
 	case DT_INIT_ARRAYSZ:
 	case DT_FINI_ARRAYSZ:
 	case DT_GNU_CONFLICTSZ:
@@ -8516,7 +8519,7 @@ read_and_display_attr_value(unsigned long attribute, unsigned long form,
       switch (attribute)
 	{
 	case DW_AT_frame_base:
-	  have_frame_base = 1;
+	  have_frame_base = 1; break; /* -Wimplicit-fallthrough */
 	case DW_AT_location:
 	case DW_AT_data_member_location:
 	case DW_AT_vtable_elem_location:
@@ -8728,7 +8731,7 @@ read_and_display_attr_value(unsigned long attribute, unsigned long form,
       break;
 
     case DW_AT_frame_base:
-      have_frame_base = 1;
+      have_frame_base = 1; break; /* -Wimplicit-fallthrough */
     case DW_AT_location:
     case DW_AT_data_member_location:
     case DW_AT_vtable_elem_location:

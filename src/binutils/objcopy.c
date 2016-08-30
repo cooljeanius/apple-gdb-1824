@@ -2778,7 +2778,7 @@ copy_main (int argc, char *argv[])
 	    switch (*s)
 	      {
 	      case '=': what = CHANGE_SET; break;
-	      case '-': val = (0 - val); /* Drop through.  */
+	      case '-': val = (0 - val); /* Drop thru: */ ATTRIBUTE_FALLTHROUGH;
 	      case '+': what = CHANGE_MODIFY; break;
               default:;
 	      }
@@ -2788,8 +2788,8 @@ copy_main (int argc, char *argv[])
 	      case OPTION_CHANGE_SECTION_ADDRESS:
 		p->change_vma = what;
 		p->vma_val = val;
-		/* Drop through.  */
-
+		/* Drop through: */
+		ATTRIBUTE_FALLTHROUGH;
 	      case OPTION_CHANGE_SECTION_LMA:
 		p->change_lma = what;
 		p->lma_val = val;

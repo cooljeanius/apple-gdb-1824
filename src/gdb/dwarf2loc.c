@@ -1051,8 +1051,11 @@ print_single_dwarf_location(struct ui_file *stream, gdb_byte **loc_ptr,
 
 	    case DW_OP_deref_size:
 	      {
-		gdb_byte *buf =
-		  (gdb_byte *)alloca(TARGET_ADDR_BIT / TARGET_CHAR_BIT);
+		const size_t buflen = min((size_t)(TARGET_ADDR_BIT
+						   / TARGET_CHAR_BIT),
+					  MAX_ALLOCA_SIZE);
+		gdb_byte *buf = (gdb_byte *)alloca(min(buflen,
+						       MAX_ALLOCA_SIZE));
 
 		(ctx->read_mem)(ctx->baton, buf, result, *op_ptr++);
 		fprintf_filtered(stream, "at address 0x%s",

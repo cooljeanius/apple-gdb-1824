@@ -43,7 +43,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu])dnl
+AM_INIT_AUTOMAKE([1.11.6 gnits no-dist dejagnu info-in-builddir])dnl
 dnl# (maintainer mode macro is called farther below)
   ## whitespace...
 

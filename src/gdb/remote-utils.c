@@ -528,6 +528,7 @@ gr_multi_scan(const char *list[], int passthrough)
   int string_count;
   size_t max_length;
   const char **plist;
+  size_t plistlen;
 
   /* Look through the strings.  Count them.  Find the largest one so we can
      allocate a holding area.  */
@@ -554,14 +555,21 @@ gr_multi_scan(const char *list[], int passthrough)
      copies of our largest string.  */
   swallowed_p = swallowed = (char *)alloca(max_length << 1);
 
+  plistlen = (string_count * sizeof(*plist));
+  if (plistlen > MAX_ALLOCA_SIZE)
+    {
+      warning(_("Unable to allocate enough space for plist.\n"));
+      plistlen = MAX_ALLOCA_SIZE;
+    }
+
   /* and a list of pointers to current scan points. */
-  plist = (const char **)alloca(string_count * sizeof(*plist));
+  plist = (const char **)alloca(plistlen);
 
   /* and initialize */
   for (i = 0; i < string_count; ++i)
     plist[i] = list[i];
 
-  for (ch = sr_readchar (); /* loop forever */ ; ch = sr_readchar ())
+  for (ch = sr_readchar(); /* loop forever */ ; ch = sr_readchar())
     {
       QUIT;		/* Let user quit and leave process running */
       ch_handled = 0;

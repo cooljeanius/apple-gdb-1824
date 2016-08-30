@@ -1399,7 +1399,7 @@ enum { MAX_REGISTER_SIZE = 16 };
 /* Number of bits in a char or unsigned char for the target machine.
    Just like CHAR_BIT in <limits.h> but describes the target machine.  */
 #if !defined(TARGET_CHAR_BIT)
-# define TARGET_CHAR_BIT 8
+# define TARGET_CHAR_BIT 8U
 #endif /* !TARGET_CHAR_BIT */
 
 /* If we picked up a copy of CHAR_BIT from a configuration file

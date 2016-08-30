@@ -103,7 +103,10 @@ print_optional_low_bound(struct ui_file *stream, struct type *type)
       index_type = TYPE_TARGET_TYPE(index_type);
     }
   else
-    return 0;
+    {
+      (void)low_bound;
+      return 0;
+    }
   
   if (low_bound > 0L) {
     ; /* ??? */

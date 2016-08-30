@@ -778,11 +778,11 @@ static const struct floatformat *
 floatformat_from_length(int len)
 {
   const struct floatformat *format;
-  if ((len * TARGET_CHAR_BIT) == TARGET_FLOAT_BIT)
+  if ((len * (int)TARGET_CHAR_BIT) == TARGET_FLOAT_BIT)
     format = TARGET_FLOAT_FORMAT;
-  else if ((len * TARGET_CHAR_BIT) == TARGET_DOUBLE_BIT)
+  else if ((len * (int)TARGET_CHAR_BIT) == TARGET_DOUBLE_BIT)
     format = TARGET_DOUBLE_FORMAT;
-  else if ((len * TARGET_CHAR_BIT) == TARGET_LONG_DOUBLE_BIT)
+  else if ((len * (int)TARGET_CHAR_BIT) == TARGET_LONG_DOUBLE_BIT)
     format = TARGET_LONG_DOUBLE_FORMAT;
   /* On i386 the 'long double' type takes 96 bits,
      while the real number of used bits is only 80,

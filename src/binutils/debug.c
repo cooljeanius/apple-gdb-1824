@@ -3133,10 +3133,11 @@ debug_type_samep (struct debug_handle *info, struct debug_type *t1,
       break;
 
     case DEBUG_KIND_RANGE:
-      ret = (t1->u.krange->lower == t2->u.krange->lower
-	     && t1->u.krange->upper == t2->u.krange->upper
-	     && debug_type_samep (info, t1->u.krange->type,
-				  t2->u.krange->type));
+      ret = ((t1->u.krange->lower == t2->u.krange->lower)
+	     && (t1->u.krange->upper == t2->u.krange->upper)
+	     && debug_type_samep(info, t1->u.krange->type,
+				 t2->u.krange->type));
+      break; /* -Wimplicit-fallthrough */
 
     case DEBUG_KIND_ARRAY:
       ret = (t1->u.karray->lower == t2->u.karray->lower
