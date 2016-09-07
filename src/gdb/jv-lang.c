@@ -688,6 +688,7 @@ java_primitive_type_from_name(const char *name, int namelen)
     case 'c':
       if ((namelen == 4) && (memcmp(name, "char", 4) == 0))
 	return java_char_type;
+      break; /* -Wimplicit-fallthrough */
     case 'd':
       if ((namelen == 6) && (memcmp(name, "double", 6) == 0))
 	return java_double_type;

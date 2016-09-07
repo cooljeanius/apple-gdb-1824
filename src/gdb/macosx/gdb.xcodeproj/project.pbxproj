@@ -7187,7 +7187,6 @@
 				2609D6380E82C40B008125DE /* i386-linux-nat.c */,
 				2609D6390E82C40B008125DE /* i386-linux-tdep.c */,
 				2609D63A0E82C40B008125DE /* i386-linux-tdep.h */,
-				2609D63B0E82C40B008125DE /* i386-nat.c */,
 				2609D63C0E82C40B008125DE /* i386-nto-tdep.c */,
 				2609D63D0E82C40B008125DE /* i386-sol2-nat.c */,
 				2609D63E0E82C40B008125DE /* i386-sol2-tdep.c */,
@@ -11041,6 +11040,7 @@
 			isa = PBXGroup;
 			children = (
 				A5A673AE1A589D7700EDD221 /* aarch64-linux-nat.c */,
+				2609D63B0E82C40B008125DE /* i386-nat.c */,
 				A5159B5B1987163D0079DD4F /* linux-nat.h */,
 				A5159B5C1987163D0079DD4F /* linux-waitpid.c */,
 				A5159B5D1987163D0079DD4F /* linux-waitpid.h */,

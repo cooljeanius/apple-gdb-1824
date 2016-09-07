@@ -328,10 +328,10 @@ Invalid hardware breakpoint type %d in i386_length_and_rw_bits.\n"),
       case 4:
 	return (DR_LEN_4 | rw);
       case 8:
-        if (wordsize () == 8)
+        if (wordsize() == 8)
  	  return (DR_LEN_8 | rw);
       default:
-	internal_error (__FILE__, __LINE__, _("\
+	internal_error(__FILE__, __LINE__, _("\
 Invalid hardware breakpoint length %d in i386_length_and_rw_bits.\n"), len);
     }
 }

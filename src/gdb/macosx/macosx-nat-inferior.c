@@ -1779,26 +1779,26 @@ macosx_lookup_task(const char *args, task_t *ptask, int *ppid)
       pid_str = argv[0];
       break;
     case 2:
-      if (strcmp ("-waitfor", argv[0]) == 0
-          || strcmp ("--waitfor", argv[0]) == 0)
+      if ((strcmp("-waitfor", argv[0]) == 0)
+          || (strcmp("--waitfor", argv[0]) == 0))
         {
            /* If the user-provided process name string is long than the
               proc name string provided by the kernel we will need to truncate
               the user's string if we are going to find a match.  */
            pid_str = argv[1];
-           if (strlen (pid_str) > MAXCOMLEN)
+           if (strlen(pid_str) > MAXCOMLEN)
              pid_str[MAXCOMLEN] = '\0';
-           ignorepids = find_existing_processes_by_name (pid_str);
+           ignorepids = find_existing_processes_by_name(pid_str);
            if (ignorepids)
              {
-               make_cleanup (xfree, ignorepids->pids);
-               make_cleanup (xfree, ignorepids);
+               make_cleanup(xfree, ignorepids->pids);
+               make_cleanup(xfree, ignorepids);
              }
            wait_for_process_by_name(pid_str, ignorepids);
 	   break;
         }
     default:
-      error("Usage: attach <-waitfor procname>|<pid>|<procname>.");
+      error(_("Usage: attach <-waitfor procname>|<pid>|<procname>."));
       break;
     }
 

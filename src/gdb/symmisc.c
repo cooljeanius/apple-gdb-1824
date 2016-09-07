@@ -136,7 +136,7 @@ free_symtab (struct symtab *s)
     case free_contents:
       /* Here all the contents were malloc'ed structure by structure
          and must be freed that way.  */
-      /* First free the blocks (and their symbols.  */
+      /* First free the blocks (and their symbols).  */
       bv = BLOCKVECTOR (s);
       n = BLOCKVECTOR_NBLOCKS (bv);
       for (i = 0; i < n; i++)

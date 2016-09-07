@@ -3129,9 +3129,10 @@ fi
 if test "x${ac_cv_func_alloca_works}" = "xno"; then
   build_warnings="${build_warnings} -Walloca"
 elif test "x${ac_cv_func_alloca_works}" = "xyes"; then
-  # 4032 is MAX_ALLOCA_SIZE in "libiberty.h":
-  build_warnings="${build_warnings} -Walloca-larger-than=4032"
-  #FIXME: possibly too many?
+  if test "x${AVOID_LARGE_ALLOCAS}" = "xyes"; then
+    # 4032 is MAX_ALLOCA_SIZE in "libiberty.h":
+    build_warnings="${build_warnings} -Walloca-larger-than=4032"
+  fi
 fi
 
 # clang-specific warnings are now moved to after the host-specific ones.
@@ -3436,6 +3437,7 @@ then
 fi
 AC_SUBST([WARN_LDFLAGS])dnl
 
+## section for checking mmalloc usage:
 MMALLOC_CFLAGS=""
 MMALLOC=""
 AC_SUBST([MMALLOC_CFLAGS])dnl
@@ -3843,7 +3845,7 @@ s/NAT_FILE[ 	]*=[ 	]*\([^ 	]*\)/\1/p
 fi
 changequote([,])
 
-if test x"${gdb_osabi}" != x"" ; then
+if test x"${gdb_osabi}" != x""; then
     AC_DEFINE_UNQUOTED([GDB_OSABI_DEFAULT],[${gdb_osabi}],
 		    [Define to the default OS ABI for this configuration.])
 fi
@@ -3861,7 +3863,7 @@ AC_ARG_ENABLE([multi-ice],
 if test "x${enable_multi_ice}" = "xyes"; then
    if test -d multi-ice; then
      AC_CONFIG_SUBDIRS([multi-ice])
-     :
+     test -r multi-ice && test -w multi-ice && stat multi-ice
    else
      AC_MSG_WARN([multi-ice is requested but the subdir for it is missing])
    fi
@@ -3875,7 +3877,7 @@ fi
 if test "x${enable_multi_ice}" != "xno"; then
    if test -d rem-multi_old; then
      AC_CONFIG_SUBDIRS([rem-multi_old])
-     :
+     test -r rem-multi_old && test -w rem-multi_old && stat rem-multi_old
    elif test -d rem-multi; then
      AC_MSG_WARN([rem-multi remains un-renamed])
    fi

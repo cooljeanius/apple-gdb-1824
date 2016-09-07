@@ -46614,9 +46614,10 @@ fi
 if test "x${ac_cv_func_alloca_works}" = "xno"; then
   build_warnings="${build_warnings} -Walloca"
 elif test "x${ac_cv_func_alloca_works}" = "xyes"; then
-  # 4032 is MAX_ALLOCA_SIZE in "libiberty.h":
-  build_warnings="${build_warnings} -Walloca-larger-than=4032"
-  #FIXME: possibly too many?
+  if test "x${AVOID_LARGE_ALLOCAS}" = "xyes"; then
+    # 4032 is MAX_ALLOCA_SIZE in "libiberty.h":
+    build_warnings="${build_warnings} -Walloca-larger-than=4032"
+  fi
 fi
 
 # clang-specific warnings are now moved to after the host-specific ones.
@@ -46987,6 +46988,7 @@ rm -f core conftest.err conftest.$ac_objext \
 $as_echo "${WARN_LDFLAGS}" >&6; }
 fi
 
+## section for checking mmalloc usage:
 MMALLOC_CFLAGS=""
 MMALLOC=""
 
@@ -49663,7 +49665,7 @@ s/NAT_FILE[ 	]*=[ 	]*\([^ 	]*\)/\1/p
 fi
 
 
-if test x"${gdb_osabi}" != x"" ; then
+if test x"${gdb_osabi}" != x""; then
 
 cat >>confdefs.h <<_ACEOF
 #define GDB_OSABI_DEFAULT ${gdb_osabi}
@@ -49686,7 +49688,7 @@ if test "x${enable_multi_ice}" = "xyes"; then
    if test -d multi-ice; then
      subdirs="$subdirs multi-ice"
 
-     :
+     test -r multi-ice && test -w multi-ice && stat multi-ice
    else
      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: multi-ice is requested but the subdir for it is missing" >&5
 $as_echo "$as_me: WARNING: multi-ice is requested but the subdir for it is missing" >&2;}
@@ -49703,7 +49705,7 @@ if test "x${enable_multi_ice}" != "xno"; then
    if test -d rem-multi_old; then
      subdirs="$subdirs rem-multi_old"
 
-     :
+     test -r rem-multi_old && test -w rem-multi_old && stat rem-multi_old
    elif test -d rem-multi; then
      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: rem-multi remains un-renamed" >&5
 $as_echo "$as_me: WARNING: rem-multi remains un-renamed" >&2;}

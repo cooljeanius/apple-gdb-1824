@@ -356,6 +356,7 @@ do_setshow_command(const char *arg, int from_tty, struct cmd_list_element *c)
 	      break;
 	    }
 	  /* else fall through */
+	  ATTRIBUTE_FALLTHROUGH;
 	case var_zinteger:
 	  fprintf_filtered(stb->stream, "%u", *(unsigned int *)c->var);
 	  break;
