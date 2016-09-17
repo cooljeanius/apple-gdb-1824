@@ -22693,6 +22693,43 @@ fi
 
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wno-format-length" >&5
+$as_echo_n "checking whether C compiler handles -Wno-format-length... " >&6; }
+if ${gl_cv_warn_c__Wno_format_length+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wformat-length"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__Wno_format_length=yes
+else
+  gl_cv_warn_c__Wno_format_length=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wno_format_length" >&5
+$as_echo "$gl_cv_warn_c__Wno_format_length" >&6; }
+if test "x$gl_cv_warn_c__Wno_format_length" = xyes; then :
+  as_fn_append WARN_CFLAGS " -Wno-format-length"
+fi
+
+
+
 fi
 
 ## Output.

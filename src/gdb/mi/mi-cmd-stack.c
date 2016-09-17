@@ -171,13 +171,10 @@ mi_cmd_stack_list_frames (char *command, char **argv, int argc)
    that is printed in addition to the concrete frame.  */
 
 static void
-mi_print_frame_info_lite_base (struct ui_out *uiout,
-			       int with_names,
-			       int *frame_num,
-			       CORE_ADDR pc,
-			       CORE_ADDR fp)
+mi_print_frame_info_lite_base(struct ui_out *uiout, int with_names,
+			      int *frame_num, CORE_ADDR pc, CORE_ADDR fp)
 {
-  char num_buf[8];
+  char num_buf[12]; /* big enough for -Wformat-length */
   struct cleanup *list_cleanup;
   struct obj_section *osect;
 
@@ -1234,29 +1231,27 @@ print_syms_for_block (struct block *block,
       if (print_me)
 	{
           struct symbol *sym2;
-	  int len = strlen (SYMBOL_NATURAL_NAME (sym));
+	  size_t ilen = strlen(SYMBOL_NATURAL_NAME(sym));
 
 	  /* If we are about to print, compare against the regexp.
              If there's a match, skip this symbol.  */
-	  if (filter && re_search_oneshot (filter, SYMBOL_NATURAL_NAME (sym),
-				   len, 0, len,
-				   (struct re_registers *) 0) >= 0)
+	  if (filter
+	      && re_search_oneshot(filter, SYMBOL_NATURAL_NAME(sym), ilen,
+				   0, ilen, (struct re_registers *)0) >= 0)
 	    continue;
 
 	  if (values == PRINT_NO_VALUES)
 	    {
 	      struct cleanup *tuple_cleanup;
-	      tuple_cleanup = make_cleanup_ui_out_tuple_begin_end (uiout, NULL);
-	      ui_out_field_string (uiout, "name", SYMBOL_NATURAL_NAME (sym));
-	      do_cleanups (tuple_cleanup);
+	      tuple_cleanup = make_cleanup_ui_out_tuple_begin_end(uiout, NULL);
+	      ui_out_field_string(uiout, "name", SYMBOL_NATURAL_NAME(sym));
+	      do_cleanups(tuple_cleanup);
 	      continue;
 	    }
 
 	  if (!locals)
-	    sym2 = lookup_symbol (SYMBOL_NATURAL_NAME (sym),
-				  block, VAR_DOMAIN,
-				  (int *) NULL,
-				  (struct symtab **) NULL);
+	    sym2 = lookup_symbol(SYMBOL_NATURAL_NAME(sym), block, VAR_DOMAIN,
+				 (int *)NULL, (struct symtab **)NULL);
 	  else
 	    sym2 = sym;
 
@@ -1273,12 +1268,12 @@ print_syms_for_block (struct block *block,
 	      if (strstr(expr, "::") != NULL)
 		{
 		  char *tmp;
-		  size_t len = strlen(expr);
-		  tmp = (char *)xmalloc(len + 3UL);
+		  size_t newlen = strlen(expr);
+		  tmp = (char *)xmalloc(newlen + 3UL);
 		  tmp[0] = '\'';
-		  memcpy(tmp + 1, expr, len);
-		  tmp[len + 1] = '\'';
-		  tmp[len + 2] = '\0';
+		  memcpy((tmp + 1), expr, newlen);
+		  tmp[newlen + 1] = '\'';
+		  tmp[newlen + 2] = '\0';
 		  expr = tmp;
 		  expr_cleanup = make_cleanup(xfree, (void *)expr);
 		}

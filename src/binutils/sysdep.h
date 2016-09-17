@@ -193,6 +193,9 @@ extern int vsnprintf(char *, size_t, const char *, va_list);
 #endif /* ENABLE_NLS */
 
 /* Used by ar.c and objcopy.c.  */
+#ifdef BUFSIZE
+# undef BUFSIZE
+#endif /* !BUFSIZE */
 #define BUFSIZE 8192
 
 /* For PATH_MAX.  */

@@ -696,6 +696,7 @@ else
     gl_WARN_ADD([-Wextra])
     gl_WARN_ADD([-Wno-missing-field-initializers])
     gl_WARN_ADD([-Wno-shift-negative-value])
+    gl_WARN_ADD([-Wno-format-length])
   ])
 fi
 dnl# (I uncommented it to add it back in anyways, but conditionally)

@@ -5373,7 +5373,7 @@ dynamic_section_mips_val(Elf_Internal_Dyn *entry)
 
     case DT_MIPS_TIME_STAMP:
       {
-	char timebuf[20];
+	char timebuf[66]; /* big enough for -Wformat-length */
 	struct tm *tmp;
 
 	time_t time = (time_t)entry->d_un.d_val;
@@ -11271,7 +11271,7 @@ process_mips_specific(FILE *file)
 	    {
 	      Elf32_Lib liblist;
 	      time_t time;
-	      char timebuf[20];
+	      char timebuf[66]; /* big enough for -Wformat-length */
 	      struct tm *tmp;
 
 	      liblist.l_name = (unsigned long)BYTE_GET(elib[cnt].l_name);
@@ -11666,7 +11666,7 @@ process_gnu_liblist(FILE *file)
 	    {
 	      Elf32_Lib liblist;
 	      time_t time;
-	      char timebuf[20];
+	      char timebuf[66]; /* big enough for -Wformat-length */
 	      struct tm *tmp;
 
 	      liblist.l_name = (unsigned long)BYTE_GET(elib[cnt].l_name);

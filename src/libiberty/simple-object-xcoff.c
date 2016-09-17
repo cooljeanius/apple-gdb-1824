@@ -86,7 +86,7 @@ struct external_filehdr
 
 struct external_scnhdr
 {
-  unsigned char s_name[8];	/* section name				*/
+  unsigned char s_name[12];	/* section name				*/
   union
   {
     struct
@@ -121,7 +121,7 @@ struct external_scnhdr
 
 /* The length of the s_name field in struct external_scnhdr.  */
 
-#define SCNNMLEN	(8)
+#define SCNNMLEN	(12)
 
 /* Bits for scnhdr s_flags field.  */
 
@@ -679,7 +679,7 @@ simple_object_xcoff_write_scnhdr(simple_object_write *sobj,
 	    name, SCNNMLEN);
   else
     {
-      snprintf((char *)hdr + offsetof(struct external_scnhdr, s_name),
+      snprintf(((char *)hdr + offsetof(struct external_scnhdr, s_name)),
                SCNNMLEN, "/%lu", (unsigned long)*name_offset);
       *name_offset += (namelen + 1);
     }

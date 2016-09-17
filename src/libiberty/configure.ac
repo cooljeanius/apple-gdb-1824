@@ -293,9 +293,10 @@ m4_ifdef([ACX_PROG_CC_WARNING_OPTS],[
   ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings -Wc++-compat \
 -Wodr -Wstrict-prototypes -Wmissing-prototypes -Wmissing-parameter-type \
 -Wmissing-declarations -Wnested-externs -Wundef -Wshadow -Wformat=2 \
--Wold-style-definition -Wold-style-declaration -Wfloat-conversion -Wabi \
--Wc99-c11-compat -Wout-of-line-declaration -Wno-extended-offsetof \
--Wmisleading-indentation -Wnull-dereference],[ac_libiberty_warn_cflags])dnl
+-Wformat-length=2 -Wold-style-definition -Wold-style-declaration \
+-Wfloat-conversion -Wabi -Wc99-c11-compat -Wout-of-line-declaration \
+-Wno-extended-offsetof -Wmisleading-indentation -Wnull-dereference \
+-Wpointer-compare -Wbool-operation],[ac_libiberty_warn_cflags])dnl
   m4_ifdef([ACX_PROG_CC_WARNING_ALMOST_PEDANTIC],[
     ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([],[ac_libiberty_warn_cflags])dnl
   ])dnl
@@ -313,7 +314,7 @@ m4_ifdef([ACX_PROG_CC_WARNING_OPTS],[
 ],[
 AC_MSG_CHECKING([warning flags to use])
 if test "x${GCC}" = "xyes"; then
-  ac_libiberty_warn_cflags='-Wall -Wextra -pedantic -Wwrite-strings -Wc++-compat -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition -Wundef'
+  ac_libiberty_warn_cflags='-Wall -Wextra -pedantic -Wwrite-strings -Wc++-compat -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition -Wundef -Wshadow'
 else
   ac_libiberty_warn_cflags=''
 fi

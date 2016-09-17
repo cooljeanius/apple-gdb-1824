@@ -46,6 +46,9 @@
 #endif /* HAVE_SYS_TYPES_H */
 
 #include "bin-bugs.h"
+#ifndef _BIN_SYSDEP_H
+# include "sysdep.h"
+#endif /* !_BIN_SYSDEP_H */
 
 #ifdef HAVE_STDARG_H
 # include <stdarg.h>
@@ -183,7 +186,9 @@ void *alloca ();
 #ifdef HAVE_LOCALE_H
 # include <locale.h>
 #else
-# define NOT_PRINTING_A_WARNING_HERE 1 /* actually printing a warning causes too many, I think... */
+# ifndef NOT_PRINTING_A_WARNING_HERE
+#  define NOT_PRINTING_A_WARNING_HERE 1 /* actually printing a warning causes too many, I think... */
+# endif /* !NOT_PRINTING_A_WARNING_HERE */
 #endif /* HAVE_LOCALE_H */
 
 #ifdef ENABLE_NLS
@@ -234,7 +239,9 @@ void *alloca ();
 #endif /* ENABLE_NLS */
 
 /* Used by ar.c and objcopy.c.  */
-#define BUFSIZE 8192
+#ifndef BUFSIZE
+# define BUFSIZE 8192
+#endif /* !BUFSIZE */
 
 /* bucomm.c */
 

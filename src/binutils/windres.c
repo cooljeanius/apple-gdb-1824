@@ -838,10 +838,12 @@ main(int argc, char **argv)
 	  else
 	    {
 	      char *n;
+	      size_t nlen;
 
 	      quotedarg = quot(optarg);
-	      n = (char *)xmalloc(strlen(preprocargs) + strlen(quotedarg) + 4);
-	      sprintf(n, "%s -%c%s", preprocargs, c, quotedarg);
+	      nlen = (strlen(preprocargs) + strlen(quotedarg) + 4UL);
+	      n = (char *)xmalloc(nlen);
+	      snprintf(n, nlen, "%s -%c%s", preprocargs, c, quotedarg);
 	      free(preprocargs);
 	      preprocargs = n;
 	    }
@@ -875,10 +877,12 @@ main(int argc, char **argv)
 	  else
 	    {
 	      char *n;
+	      size_t nlen;
 
 	      quotedarg = quot(optarg);
-	      n = (char *)xmalloc(strlen(preprocargs) + strlen(quotedarg) + 4);
-	      sprintf(n, "%s -I%s", preprocargs, quotedarg);
+	      nlen = (strlen(preprocargs) + strlen(quotedarg) + 4UL);
+	      n = (char *)xmalloc(nlen);
+	      snprintf(n, nlen, "%s -I%s", preprocargs, quotedarg);
 	      free(preprocargs);
 	      preprocargs = n;
 	    }

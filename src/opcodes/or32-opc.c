@@ -320,7 +320,7 @@ const struct or32_opcode or32_opcodes[] =
   { "l.cust8_1",   "rD",	       "11 0xF  DDDDD ----- ---- ---- ---- ----", EFI, 0 },
   { "l.cust8_2",   "rD,rA"   ,   "11 0xF  DDDDD AAAAA ---- ---- ---- ----", EFI, 0 },
   { "l.cust8_3",   "rD,rA,rB",   "11 0xF  DDDDD AAAAA BBBB B--- ---- ----", EFI, 0 },
-#endif
+#endif /* HAS_CUST */
 
   /* Dummy entry, not included in num_opcodes.  This
      lets code examine entry i+1 without checking
@@ -843,8 +843,13 @@ insn_decode (unsigned int insn)
     return -1;
 }
 
-static char disassembled_str[50];
+#define DISASSEMBLED_STR_LEN 50
+static char disassembled_str[DISASSEMBLED_STR_LEN];
 char *disassembled = &disassembled_str[0];
+
+#if (defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ >= 3))
+# pragma GCC poison sprintf
+#endif /* gcc 3+ */
 
 /* Automagically does zero- or sign- extension and also finds correct
    sign bit position if sign extension is correct extension. Which extension
@@ -946,34 +951,36 @@ or32_extract (char param_ch, char *enc_initial, unsigned long insn)
   return ret;
 }
 
-/* Print register. Used only by print_insn.  */
-
+/* Print register. Used only by print_insn: */
 static void
-or32_print_register (char param_ch, char *encoding, unsigned long insn)
+or32_print_register(char param_ch, char *encoding, unsigned long insn)
 {
   int regnum = or32_extract(param_ch, encoding, insn);
 
-  sprintf (disassembled, "%sr%d", disassembled, regnum);
+  snprintf(disassembled, DISASSEMBLED_STR_LEN, "%sr%d", disassembled_str,
+	   regnum);
 }
 
-/* Print immediate. Used only by print_insn.  */
-
+/* Print immediate. Used only by print_insn: */
 static void
-or32_print_immediate (char param_ch, char *encoding, unsigned long insn)
+or32_print_immediate(char param_ch, char *encoding, unsigned long insn)
 {
-  int imm = or32_extract (param_ch, encoding, insn);
+  int imm = or32_extract(param_ch, encoding, insn);
 
-  imm = extend_imm (imm, param_ch);
+  imm = extend_imm(imm, param_ch);
 
-  if (letter_signed (param_ch))
+  if (letter_signed(param_ch))
     {
       if (imm < 0)
-        sprintf (disassembled, "%s%d", disassembled, imm);
+        snprintf(disassembled, DISASSEMBLED_STR_LEN, "%s%d",
+		 disassembled_str, imm);
       else
-        sprintf (disassembled, "%s0x%x", disassembled, imm);
+        snprintf(disassembled, DISASSEMBLED_STR_LEN, "%s0x%x",
+		 disassembled_str, imm);
     }
   else
-    sprintf (disassembled, "%s%#x", disassembled, imm);
+    snprintf(disassembled, DISASSEMBLED_STR_LEN, "%s%#x", disassembled_str,
+	     imm);
 }
 
 /* Disassemble one instruction from insn to disassemble.
@@ -990,7 +997,7 @@ disassemble_insn (unsigned long insn)
       struct or32_opcode const *opcode = &or32_opcodes[index];
       char *s;
 
-      sprintf (disassembled, "%s ", opcode->name);
+      snprintf(disassembled, DISASSEMBLED_STR_LEN, "%s ", opcode->name);
       for (s = opcode->args; *s != '\0'; ++s)
         {
           switch (*s)
@@ -1006,14 +1013,16 @@ disassemble_insn (unsigned long insn)
               if (strchr (opcode->encoding, *s))
                 or32_print_immediate (*s, opcode->encoding, insn);
               else
-                sprintf (disassembled, "%s%c", disassembled, *s);
+                snprintf(disassembled, DISASSEMBLED_STR_LEN, "%s%c",
+			 disassembled_str, *s);
             }
         }
     }
   else
     {
-      /* This used to be %8x for binutils.  */
-      sprintf (disassembled, "%s.word 0x%08lx", disassembled, insn);
+      /* This used to be %8x for binutils: */
+      snprintf(disassembled, DISASSEMBLED_STR_LEN, "%s.word 0x%08lx",
+	       disassembled_str, insn);
     }
 
   return insn_len (insn);

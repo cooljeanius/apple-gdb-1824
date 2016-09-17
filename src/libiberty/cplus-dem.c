@@ -1022,7 +1022,7 @@ ada_demangle(const char *mangled, int option ATTRIBUTE_UNUSED)
   if (mangled[0] == '<')
     strcpy(demangled, mangled);
   else
-    snprintf(demangled, demangled_size, "<%s>", mangled);
+    snprintf(demangled, (demangled_size + 1), "<%s>", mangled);
 
   return demangled;
 }

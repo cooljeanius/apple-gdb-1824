@@ -592,7 +592,7 @@ gdbtk_source_start_file (void)
 {
   /* find the gdb tcl library and source main.tcl */
 #ifdef NO_TCLPRO_DEBUGGER
-  static char script[] = "\
+  static char script_arr[] = "\
 proc gdbtk_find_main {} {\n\
     global Paths GDBTK_LIBRARY\n\
     rename gdbtk_find_main {}\n\
@@ -601,7 +601,7 @@ proc gdbtk_find_main {} {\n\
 }\n\
 gdbtk_find_main";
 #else
-    static char script[] = "\
+    static char script_arr[] = "\
 proc gdbtk_find_main {} {\n\
     global Paths GDBTK_LIBRARY env\n\
     rename gdbtk_find_main {}\n\
@@ -621,31 +621,31 @@ gdbtk_find_main";
   /* now enable gdbtk to parse the output from gdb */
   gdbtk_disable_fputs = 0;
 
-  if (Tcl_GlobalEval (gdbtk_interp, (char *) script) != TCL_OK)
+  if (Tcl_GlobalEval(gdbtk_interp, (char *)script_arr) != TCL_OK)
     {
       const char *msg;
 
       /* Force errorInfo to be set up propertly.  */
-      Tcl_AddErrorInfo (gdbtk_interp, "");
-      msg = Tcl_GetVar (gdbtk_interp, "errorInfo", TCL_GLOBAL_ONLY);
+      Tcl_AddErrorInfo(gdbtk_interp, "");
+      msg = Tcl_GetVar(gdbtk_interp, "errorInfo", TCL_GLOBAL_ONLY);
 
 #ifdef _WIN32
       /* On windows, display the error using a pop-up message box.
 	 If GDB wasn't started from the DOS prompt, the user won't
 	 get to see the failure reason.  */
-      MessageBox (NULL, msg, NULL, MB_OK | MB_ICONERROR | MB_TASKMODAL);
+      MessageBox(NULL, msg, NULL, (MB_OK | MB_ICONERROR | MB_TASKMODAL));
       {
         struct gdb_exception e;
-        e.reason  = RETURN_ERROR;
-        e.error   = GENERIC_ERROR;
+        e.reason = RETURN_ERROR;
+        e.error = GENERIC_ERROR;
         e.message = msg;
-        throw_exception (e);
+        throw_exception(e);
       }
 #else
       /* FIXME: cagney/2002-04-17: Wonder what the lifetime of
 	 ``msg'' is - does it need a cleanup?  */
-      error ("%s", msg);
-#endif
+      error("%s", msg);
+#endif /* _WIN32 */
     }
 
   /* Now source in the filename provided by the --tclcommand option.
@@ -654,10 +654,10 @@ gdbtk_find_main";
   if (gdbtk_source_filename != NULL)
     {
       const char *s = "after idle source ";
-      char *script = concat(s, gdbtk_source_filename, (char *)NULL);
-      Tcl_Eval(gdbtk_interp, script);
+      char *script_ptr = concat(s, gdbtk_source_filename, (char *)NULL);
+      Tcl_Eval(gdbtk_interp, script_ptr);
       xfree(gdbtk_source_filename);
-      xfree(script);
+      xfree(script_ptr);
     }
 }
 

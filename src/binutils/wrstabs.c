@@ -702,7 +702,7 @@ stab_float_type (void *p, unsigned int size)
     {
       long index;
       char *int_type;
-      char buf[50];
+      char buf[sizeof(long) + 50UL + sizeof(unsigned int)];
 
       /* Floats are defined as a subrange of int.  */
       if (! stab_int_type (info, 4, FALSE))
@@ -712,16 +712,16 @@ stab_float_type (void *p, unsigned int size)
       index = info->type_index;
       ++info->type_index;
 
-      if (size > 0
-	  && size - 1 < (sizeof info->type_cache.float_types
-			 / sizeof info->type_cache.float_types[0]))
+      if ((size > 0)
+	  && ((size - 1) < (sizeof(info->type_cache.float_types)
+			    / sizeof(info->type_cache.float_types[0]))))
 	info->type_cache.float_types[size - 1] = index;
 
-      sprintf (buf, "%ld=r%s;%u;0;", index, int_type, size);
+      snprintf(buf, sizeof(buf), "%ld=r%s;%u;0;", index, int_type, size);
 
-      free (int_type);
+      free(int_type);
 
-      return stab_push_string (info, buf, index, TRUE, size);
+      return stab_push_string(info, buf, index, TRUE, size);
     }
 }
 
@@ -818,8 +818,8 @@ stab_enum_type (void *p, const char *tag, const char **names,
     }
 
   for (pn = names, pv = vals; *pn != NULL; pn++, pv++)
-    sprintf (buf + strlen (buf), "%s:%ld,", *pn, (long) *pv);
-  strcat (buf, ";");
+    snprintf((buf + strlen(buf)), SIZE_T_MAX, "%s:%ld,", *pn, (long)*pv);
+  strcat(buf, ";");
 
   if (tag == NULL)
     {
@@ -1468,18 +1468,21 @@ stab_start_class_type (void *p, const char *tag, unsigned int id, bfd_boolean st
   if (vptr)
     {
       char *vtable;
+      size_t vtable_len;
 
       if (ownvptr)
 	{
-	  assert (info->type_stack->index > 0);
-	  vtable = (char *) xmalloc (20);
-	  sprintf (vtable, "~%%%ld", info->type_stack->index);
+	  assert(info->type_stack->index > 0);
+	  vtable_len = 20UL;
+	  vtable = (char *)xmalloc(vtable_len);
+	  snprintf(vtable, vtable_len, "~%%%ld", info->type_stack->index);
 	}
       else
 	{
-	  vtable = (char *) xmalloc (strlen (vstring) + 3);
-	  sprintf (vtable, "~%%%s", vstring);
-	  free (vstring);
+	  vtable_len = (strlen(vstring) + 3UL);
+	  vtable = (char *)xmalloc(vtable_len);
+	  snprintf(vtable, vtable_len, "~%%%s", vstring);
+	  free(vstring);
 	}
 
       info->type_stack->vtable = vtable;
@@ -2020,6 +2023,7 @@ stab_variable (void *p, const char *name, enum debug_var_kind kind,
 {
   struct stab_write_handle *info = (struct stab_write_handle *) p;
   char *s, *buf;
+  size_t buf_len;
   int stab_type;
   const char *kindstr;
 
@@ -2070,9 +2074,10 @@ stab_variable (void *p, const char *name, enum debug_var_kind kind,
       break;
     }
 
-  buf = (char *) xmalloc (strlen (name) + strlen (s) + 3);
-  sprintf (buf, "%s:%s%s", name, kindstr, s);
-  free (s);
+  buf_len = (strlen(name) + strlen(s) + 3UL);
+  buf = (char *)xmalloc(buf_len);
+  snprintf(buf, buf_len, "%s:%s%s", name, kindstr, s);
+  free(s);
 
   if (! stab_write_symbol (info, stab_type, 0, val, buf))
     return FALSE;

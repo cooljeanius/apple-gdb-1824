@@ -816,15 +816,16 @@ main(int argc, char **argv)
 
   if (! def_file_seen)
     {
-      char *fileprefix = choose_temp_base ();
+      char *fileprefix = choose_temp_base();
+      const size_t def_file_name_len = (strlen(fileprefix) + 5UL);
 
-      def_file_name = (char *) xmalloc (strlen (fileprefix) + 5);
-      sprintf (def_file_name, "%s.def",
-	       (dontdeltemps) ? mybasename (fileprefix) : fileprefix);
+      def_file_name = (char *)xmalloc(def_file_name_len);
+      snprintf(def_file_name, def_file_name_len, "%s.def",
+	       ((dontdeltemps) ? mybasename (fileprefix) : fileprefix));
       delete_def_file = 1;
-      free (fileprefix);
+      free(fileprefix);
       delete_def_file = 1;
-      warn (_("no export definition file provided.\n\
+      warn(_("no export definition file provided.\n\
 Creating one, but that may not be what you want"));
     }
 
@@ -999,12 +1000,13 @@ Creating one, but that may not be what you want"));
 
   if (! base_file_name)
     {
-      char *fileprefix = choose_temp_base ();
-      base_file_name = (char *) xmalloc (strlen (fileprefix) + 6);
-      sprintf (base_file_name, "%s.base",
-	       (dontdeltemps) ? mybasename (fileprefix) : fileprefix);
+      char *fileprefix = choose_temp_base();
+      const size_t base_file_name_len = (strlen(fileprefix) + 6UL);
+      base_file_name = (char *)xmalloc(base_file_name_len);
+      snprintf(base_file_name, base_file_name_len, "%s.base",
+	       ((dontdeltemps) ? mybasename (fileprefix) : fileprefix));
       delete_base_file = 1;
-      free (fileprefix);
+      free(fileprefix);
     }
 
   {

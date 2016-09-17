@@ -1573,7 +1573,7 @@ pr_tag_type (void *p, const char *name, unsigned int id,
 {
   struct pr_handle *info = (struct pr_handle *) p;
   const char *t, *tag;
-  char idbuf[20];
+  char idbuf[21]; /* remember to leave room for trailing '\0' */
 
   switch (kind)
     {
@@ -1603,7 +1603,7 @@ pr_tag_type (void *p, const char *name, unsigned int id,
     tag = name;
   else
     {
-      sprintf (idbuf, "%%anon%u", id);
+      snprintf(idbuf, sizeof(idbuf), "%%anon%u", id);
       tag = idbuf;
     }
 
@@ -1611,7 +1611,7 @@ pr_tag_type (void *p, const char *name, unsigned int id,
     return FALSE;
   if (name != NULL && kind != DEBUG_KIND_ENUM)
     {
-      sprintf (idbuf, " /* id %u */", id);
+      snprintf(idbuf, sizeof(idbuf), " /* id %u */", id);
       if (! append_type (info, idbuf))
 	return FALSE;
     }

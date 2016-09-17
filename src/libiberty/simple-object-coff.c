@@ -67,7 +67,7 @@ struct external_filehdr
 
 struct external_scnhdr
 {
-  unsigned char s_name[8];	/* section name				*/
+  unsigned char s_name[12];	/* section name				*/
   unsigned char s_paddr[4];	/* physical address, aliased s_nlib 	*/
   unsigned char s_vaddr[4];	/* virtual address			*/
   unsigned char s_size[4];	/* section size				*/
@@ -81,7 +81,7 @@ struct external_scnhdr
 
 /* The length of the s_name field in struct external_scnhdr.  */
 
-#define SCNNMLEN (8)
+#define SCNNMLEN (12)
 
 /* Bits for scnhdr s_flags field.  This includes some bits defined
    only for PE.  This may need to be moved into coff_magic.  */
@@ -567,7 +567,7 @@ simple_object_coff_write_scnhdr(simple_object_write *sobj, int descriptor,
 	    SCNNMLEN);
   else
     {
-      snprintf((char *)hdr + offsetof(struct external_scnhdr, s_name),
+      snprintf(((char *)hdr + offsetof(struct external_scnhdr, s_name)),
                SCNNMLEN, "/%lu", (unsigned long)*name_offset);
       *name_offset += (namelen + 1);
     }

@@ -248,10 +248,10 @@ srec_bad_byte(bfd *abfd, unsigned int lineno, int c, bfd_boolean error)
     }
   else
     {
-      char buf[10];
+      char buf[14]; /* big enough for -Wformat-length */
 
-      if (! ISPRINT (c))
-	sprintf(buf, "\\%03o", (unsigned int)c);
+      if (!ISPRINT(c))
+	snprintf(buf, sizeof(buf), "\\%03o", (unsigned int)c);
       else
 	{
 	  buf[0] = (char)c;

@@ -669,8 +669,7 @@ typedef struct export_struct
   }
 export_type;
 
-/* A list of symbols which we should not export.  */
-
+/* A list of symbols which we should not export: */
 struct string_list
 {
   struct string_list *next;
@@ -1388,29 +1387,32 @@ add_excludes (const char *new_excludes)
   char *local_copy;
   char *exclude_string;
 
-  local_copy = xstrdup (new_excludes);
+  local_copy = xstrdup(new_excludes);
 
-  exclude_string = strtok (local_copy, ",:");
-  for (; exclude_string; exclude_string = strtok (NULL, ",:"))
+  exclude_string = strtok(local_copy, ",:");
+  for (; exclude_string; exclude_string = strtok(NULL, ",:"))
     {
       struct string_list *new_exclude;
+      size_t exclude_string_len = (strlen(exclude_string) + 2UL);
 
       new_exclude = ((struct string_list *)
-		     xmalloc (sizeof (struct string_list)));
-      new_exclude->string = (char *) xmalloc (strlen (exclude_string) + 2);
+		     xmalloc(sizeof(struct string_list)));
+      new_exclude->string = (char *)xmalloc(exclude_string_len);
       /* Don't add a leading underscore for fastcall symbols.  */
       if (*exclude_string == '@')
-	sprintf (new_exclude->string, "%s", exclude_string);
+	snprintf(new_exclude->string, exclude_string_len, "%s",
+		 exclude_string);
       else
-	sprintf (new_exclude->string, "_%s", exclude_string);
+	snprintf(new_exclude->string, exclude_string_len, "_%s",
+		 exclude_string);
       new_exclude->next = excludes;
       excludes = new_exclude;
 
       /* xgettext:c-format */
-      inform (_("Excluding symbol: %s"), exclude_string);
+      inform(_("Excluding symbol: %s"), exclude_string);
     }
 
-  free (local_copy);
+  free(local_copy);
 }
 
 /* See if STRING is on the list of symbols to exclude.  */

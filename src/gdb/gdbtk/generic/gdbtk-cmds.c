@@ -1036,21 +1036,20 @@ gdb_get_function_command (ClientData clientData, Tcl_Interp *interp,
 *    The full path to the file, an empty string if the file was not
 *    available or an error message if the file is not found in the symtab.
 */
-
 static int
-gdb_find_file_command (ClientData clientData, Tcl_Interp *interp,
-		       int objc, Tcl_Obj *CONST objv[])
+gdb_find_file_command(ClientData clientData, Tcl_Interp *interp,
+		      int objc, Tcl_Obj *CONST objv[])
 {
-  struct symtab *st;
+  struct symtab *symtab_st;
   char *filename, *fullname = NULL;
 
   if (objc != 2)
     {
-      Tcl_WrongNumArgs (interp, 1, objv, "filename");
+      Tcl_WrongNumArgs(interp, 1, objv, "filename");
       return TCL_ERROR;
     }
 
-  filename = Tcl_GetStringFromObj (objv[1], NULL);
+  filename = Tcl_GetStringFromObj(objv[1], NULL);
 
   /* Shortcut: There seems to be some mess in gdb dealing with
      files. While we should let gdb sort it out, it doesn't hurt
@@ -1060,39 +1059,40 @@ gdb_find_file_command (ClientData clientData, Tcl_Interp *interp,
      to stat it. If it's not found, then ask gdb to find it for us. */
   if (IS_ABSOLUTE_PATH (filename))
     {
-      struct stat st;
-      const int status = stat (filename, &st);
+      struct stat stat_st;
+      const int status = stat(filename, &stat_st);
 
       if (status == 0)
 	{
-	  if (S_ISREG (st.st_mode))
+	  if (S_ISREG(stat_st.st_mode))
 	    fullname = filename;
 	}
     }
   else
     {
       /* Ask gdb to find the file for us. */
-      st = lookup_symtab (filename);
+      symtab_st = lookup_symtab(filename);
 
       /* We should always get a symtab. */
-      if (!st)
+      if (!symtab_st)
 	{
-	  gdbtk_set_result (interp, "File not found in symtab (2)");
+	  gdbtk_set_result(interp, "File not found in symtab (2)");
 	  return TCL_ERROR;
 	}
 
       fullname =
-	(st->fullname == NULL ? symtab_to_filename (st) : st->fullname);
+	((symtab_st->fullname == NULL)
+	 ? symtab_to_filename(symtab_st) : symtab_st->fullname);
     }
 
   /* We may not be able to open the file (not available). */
   if (fullname == NULL)
     {
-      Tcl_SetStringObj (result_ptr->obj_ptr, "", -1);
+      Tcl_SetStringObj(result_ptr->obj_ptr, "", -1);
       return TCL_OK;
     }
 
-  Tcl_SetStringObj (result_ptr->obj_ptr, fullname, -1);
+  Tcl_SetStringObj(result_ptr->obj_ptr, fullname, -1);
 
   return TCL_OK;
 }
@@ -2352,7 +2352,7 @@ gdb_update_mem(ClientData clientData, Tcl_Interp *interp,
 	       int objc, Tcl_Obj *CONST objv[])
 {
   long dummy;
-  char index[20];
+  char index[24]; /* big enough for -Wformat-length */
   CORE_ADDR addr;
   int nbytes, rnum, bpr;
   int size, asize, i, j, bc;

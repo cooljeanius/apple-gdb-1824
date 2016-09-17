@@ -2569,9 +2569,11 @@ PREFIX(regex_compile) (const char *ARG_PREFIX(pattern),
 
 	case '+':
         case '?':
-          if ((syntax & RE_BK_PLUS_QM)
-              || (syntax & RE_LIMITED_OPS))
-            goto normal_char;
+          if ((syntax & RE_BK_PLUS_QM) || (syntax & RE_LIMITED_OPS))
+	    {
+	      goto normal_char;
+	    }
+	  ATTRIBUTE_FALLTHROUGH;
         handle_plus:
         case '*':
           /* If there is no previous pattern... */
@@ -6794,6 +6796,7 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
                 {
                   case jump_n:
 		    is_a_jump_n = true;
+		    ATTRIBUTE_FALLTHROUGH;
                   case pop_failure_jump:
 		  case maybe_pop_jump:
 		  case jump:
@@ -7222,8 +7225,8 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
               DEBUG_PRINT1 ("  Match => jump.\n");
 	      goto unconditional_jump;
 	    }
-        /* Note fall through.  */
-
+	  /* Note fall through: */
+	  ATTRIBUTE_FALLTHROUGH;
 
 	/* The end of a simple repeat has a pop_failure_jump back to
            its matching on_failure_jump, where the latter will push a
@@ -7251,7 +7254,8 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
                                dummy_low_reg, dummy_high_reg,
                                reg_dummy, reg_dummy, reg_info_dummy);
           }
-	  /* Note fall through.  */
+	  /* Note fall through: */
+	  ATTRIBUTE_FALLTHROUGH;
 
 	unconditional_jump:
 #ifdef _LIBC
@@ -7554,6 +7558,7 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
                 {
                 case jump_n:
                   is_a_jump_n = true;
+		  ATTRIBUTE_FALLTHROUGH;
                 case maybe_pop_jump:
                 case pop_failure_jump:
                 case jump:
@@ -7818,7 +7823,8 @@ PREFIX(common_op_match_null_string_p) (UCHAR_T **p, UCHAR_T *end,
       break;
 
     case set_number_at:
-      p1 += 2 * OFFSET_ADDRESS_SIZE;
+      p1 += (2 * OFFSET_ADDRESS_SIZE);
+      break; /* -Wimplicit-fallthrough */
 
     default:
       /* All other opcodes mean we cannot match the empty string.  */

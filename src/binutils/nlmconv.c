@@ -57,10 +57,8 @@
 # include "coff/ecoff.h"
 #endif /* NLMCONV_ALPHA */
 
-/* If strerror is just a macro, we want to use the one from libiberty
-   since it will handle undefined values.  */
-#undef strerror
-extern char *strerror(int);
+/* We should already be using xstrerror() from libiberty instead of the plain
+ * strerror(), so no need to redeclare it here.  */
 
 #ifndef SEEK_SET
 # define SEEK_SET 0
@@ -310,7 +308,7 @@ main(int argc, char **argv)
       if (!nlmlex_file(header_file)
 	  || (yyparse() != 0)
 	  || (parse_errors != 0))
-	exit(1);
+	xexit(1);
     }
 
   if (input_files != NULL)
@@ -342,7 +340,7 @@ main(int argc, char **argv)
 	  list_matching_formats (matching);
 	  free (matching);
 	}
-      exit (1);
+      xexit(1);
     }
 
   if (output_format == NULL)
@@ -418,9 +416,9 @@ main(int argc, char **argv)
      which must be at the same location as other entries in the TOC
      section, we must do this before determining where the TOC section
      goes in setup_sections.  */
-  if (bfd_get_arch (inbfd) == bfd_arch_powerpc)
-    powerpc_build_stubs (inbfd, outbfd, &symbols, &symcount);
-#endif
+  if (bfd_get_arch(inbfd) == bfd_arch_powerpc)
+    powerpc_build_stubs(inbfd, outbfd, &symbols, &symcount);
+#endif /* NLMCONV_POWERPC */
 
   /* Set up the sections.  */
   bfd_map_over_sections (inbfd, setup_sections, (void *) outbfd);
@@ -707,8 +705,8 @@ main(int argc, char **argv)
       if (custom_data == NULL
 	  || fstat (fileno (custom_data), &st) < 0)
 	{
-	  fprintf (stderr, "%s:%s: %s\n", program_name, custom_file,
-		   strerror (errno));
+	  fprintf(stderr, "%s:%s: %s\n", program_name, custom_file,
+		  xstrerror(errno));
 	  custom_file = NULL;
 	}
       else
@@ -728,8 +726,8 @@ main(int argc, char **argv)
       if (help_data == NULL
 	  || fstat (fileno (help_data), &st) < 0)
 	{
-	  fprintf (stderr, "%s:%s: %s\n", program_name, help_file,
-		   strerror (errno));
+	  fprintf(stderr, "%s:%s: %s\n", program_name, help_file,
+		  xstrerror(errno));
 	  help_file = NULL;
 	}
       else
@@ -750,8 +748,8 @@ main(int argc, char **argv)
       if (message_data == NULL
 	  || fstat (fileno (message_data), &st) < 0)
 	{
-	  fprintf (stderr, "%s:%s: %s\n", program_name, message_file,
-		   strerror (errno));
+	  fprintf(stderr, "%s:%s: %s\n", program_name, message_file,
+		  xstrerror(errno));
 	  message_file = NULL;
 	}
       else
@@ -786,8 +784,8 @@ main(int argc, char **argv)
       if (rpc_data == NULL
 	  || fstat (fileno (rpc_data), &st) < 0)
 	{
-	  fprintf (stderr, "%s:%s: %s\n", program_name, rpc_file,
-		   strerror (errno));
+	  fprintf(stderr, "%s:%s: %s\n", program_name, rpc_file,
+		  xstrerror(errno));
 	  rpc_file = NULL;
 	}
       else
@@ -820,8 +818,8 @@ main(int argc, char **argv)
 	  if (shared_data == NULL
 	      || (fstat (fileno (shared_data), &st) < 0))
 	    {
-	      fprintf (stderr, "%s:%s: %s\n", program_name, sharelib_file,
-		       strerror (errno));
+	      fprintf(stderr, "%s:%s: %s\n", program_name, sharelib_file,
+		      xstrerror(errno));
 	      sharelib_file = NULL;
 	    }
 	  else
@@ -888,10 +886,10 @@ main(int argc, char **argv)
     }
 
 #ifdef NLMCONV_POWERPC
-  /* Resolve the stubs we build for PowerPC NetWare.  */
-  if (bfd_get_arch (inbfd) == bfd_arch_powerpc)
-    powerpc_resolve_stubs (inbfd, outbfd);
-#endif
+  /* Resolve the stubs we build for PowerPC NetWare: */
+  if (bfd_get_arch(inbfd) == bfd_arch_powerpc)
+    powerpc_resolve_stubs(inbfd, outbfd);
+#endif /* NLMCONV_POWERPC */ 
 
   /* Copy over the sections.  */
   bfd_map_over_sections (inbfd, copy_sections, (void *) outbfd);
@@ -903,7 +901,7 @@ main(int argc, char **argv)
 
       data = xmalloc (custom_size);
       if (fread (data, 1, custom_size, custom_data) != custom_size)
-	non_fatal (_("%s: read: %s"), custom_file, strerror (errno));
+	non_fatal(_("%s: read: %s"), custom_file, xstrerror(errno));
       else
 	{
 	  if (! bfd_set_section_contents (outbfd, custom_section, data,
@@ -932,7 +930,7 @@ main(int argc, char **argv)
 
       data = xmalloc (help_size);
       if (fread (data, 1, help_size, help_data) != help_size)
-	non_fatal (_("%s: read: %s"), help_file, strerror (errno));
+	non_fatal(_("%s: read: %s"), help_file, xstrerror(errno));
       else
 	{
 	  if (! bfd_set_section_contents (outbfd, help_section, data,
@@ -948,17 +946,17 @@ main(int argc, char **argv)
     {
       void *data;
 
-      data = xmalloc (message_size);
-      if (fread (data, 1, message_size, message_data) != message_size)
-	non_fatal (_("%s: read: %s"), message_file, strerror (errno));
+      data = xmalloc(message_size);
+      if (fread(data, 1, message_size, message_data) != message_size)
+	non_fatal(_("%s: read: %s"), message_file, xstrerror(errno));
       else
 	{
-	  if (! bfd_set_section_contents (outbfd, message_section, data,
-					  (file_ptr) 0, message_size))
-	    bfd_fatal (_("message section"));
-	  nlm_extended_header (outbfd)->messageFileOffset =
+	  if (!bfd_set_section_contents(outbfd, message_section, data,
+					(file_ptr)0L, message_size))
+	    bfd_fatal(_("message section"));
+	  nlm_extended_header(outbfd)->messageFileOffset =
 	    message_section->filepos;
-	  nlm_extended_header (outbfd)->messageFileLength = message_size;
+	  nlm_extended_header(outbfd)->messageFileLength = message_size;
 
 	  /* FIXME: Are these offsets correct on all platforms?  Are
 	     they 32 bits on all platforms?  What endianness?  */
@@ -997,17 +995,17 @@ main(int argc, char **argv)
     {
       void *data;
 
-      data = xmalloc (rpc_size);
-      if (fread (data, 1, rpc_size, rpc_data) != rpc_size)
-	non_fatal (_("%s: read: %s"), rpc_file, strerror (errno));
+      data = xmalloc(rpc_size);
+      if (fread(data, 1, rpc_size, rpc_data) != rpc_size)
+	non_fatal(_("%s: read: %s"), rpc_file, xstrerror(errno));
       else
 	{
-	  if (! bfd_set_section_contents (outbfd, rpc_section, data,
-					  (file_ptr) 0, rpc_size))
-	    bfd_fatal (_("rpc section"));
-	  nlm_extended_header (outbfd)->RPCDataOffset =
+	  if (!bfd_set_section_contents(outbfd, rpc_section, data,
+					(file_ptr)0L, rpc_size))
+	    bfd_fatal(_("rpc section"));
+	  nlm_extended_header(outbfd)->RPCDataOffset =
 	    rpc_section->filepos;
-	  nlm_extended_header (outbfd)->RPCDataLength = rpc_size;
+	  nlm_extended_header(outbfd)->RPCDataLength = rpc_size;
 	}
       free (data);
     }
@@ -1018,12 +1016,12 @@ main(int argc, char **argv)
       data = xmalloc (shared_size);
       if (fseek (shared_data, shared_offset, SEEK_SET) != 0
 	  || fread (data, 1, shared_size, shared_data) != shared_size)
-	non_fatal (_("%s: read: %s"), sharelib_file, strerror (errno));
+	non_fatal (_("%s: read: %s"), sharelib_file, xstrerror(errno));
       else
 	{
-	  if (! bfd_set_section_contents (outbfd, shared_section, data,
-					  (file_ptr) 0, shared_size))
-	    bfd_fatal (_("shared section"));
+	  if (!bfd_set_section_contents(outbfd, shared_section, data,
+					(file_ptr)0L, shared_size))
+	    bfd_fatal(_("shared section"));
 	}
       nlm_extended_header (outbfd)->sharedCodeOffset =
 	sharedhdr.codeImageOffset - shared_offset + shared_section->filepos;
@@ -1113,7 +1111,7 @@ show_usage(FILE *file, int status)
 "));
   if (status == 0)
     fprintf(file, _("Report bugs to %s\n"), REPORT_BUGS_TO);
-  exit(status);
+  xexit(status);
 }
 
 /* Select the output format based on the input architecture, machine,
@@ -2118,32 +2116,32 @@ link_inputs(struct string_list *inputs, char *ld, char *the_map_file)
   if (debug)
     {
       for (i = 0; argv[i] != NULL; i++)
-	fprintf (stderr, " %s", argv[i]);
-      fprintf (stderr, "\n");
+	fprintf(stderr, " %s", argv[i]);
+      fprintf(stderr, "\n");
     }
 
-  pid = pexecute (ld, argv, program_name, (char *) NULL, &errfmt, &errarg,
-		  PEXECUTE_SEARCH | PEXECUTE_ONE);
+  pid = pexecute(ld, argv, program_name, (char *)NULL, &errfmt, &errarg,
+		 (PEXECUTE_SEARCH | PEXECUTE_ONE));
   if (pid == -1)
     {
-      fprintf (stderr, _("%s: execution of %s failed: "), program_name, ld);
-      fprintf (stderr, errfmt, errarg);
-      unlink (unlink_on_exit);
-      exit (1);
+      fprintf(stderr, _("%s: execution of %s failed: "), program_name, ld);
+      fprintf(stderr, errfmt, errarg);
+      unlink(unlink_on_exit);
+      xexit(1);
     }
 
-  if (pwait (pid, &status, 0) < 0)
+  if (pwait(pid, &status, 0) < 0)
     {
-      perror ("pwait");
-      unlink (unlink_on_exit);
-      exit (1);
+      perror("pwait");
+      unlink(unlink_on_exit);
+      xexit(1);
     }
 
   if (status != 0)
     {
-      non_fatal (_("Execution of %s failed"), ld);
-      unlink (unlink_on_exit);
-      exit (1);
+      non_fatal(_("Execution of %s failed"), ld);
+      unlink(unlink_on_exit);
+      xexit(1);
     }
 
   return unlink_on_exit;

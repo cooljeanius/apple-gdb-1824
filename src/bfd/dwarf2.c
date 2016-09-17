@@ -879,7 +879,7 @@ concat_filename(struct line_info_table *table, unsigned int file)
 
 	  name = (char *)bfd_malloc((bfd_size_type)len);
 	  if (name)
-	    sprintf(name, "%s/%s", dirname, filename);
+	    snprintf(name, len, "%s/%s", dirname, filename);
 	  return name;
 	}
     }
