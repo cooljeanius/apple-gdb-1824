@@ -994,11 +994,11 @@ yylex(void)
       return c;
 
     case '.':
-      /* Might be a floating point number.  */
-      if (lexptr[1] < '0' || lexptr[1] > '9')
+      /* Might be a floating point number: */
+      if ((lexptr[1] < '0') || (lexptr[1] > '9'))
 	goto symbol;		/* Nope, must be a symbol. */
-      /* FALL THRU into number case.  */
-
+      /* FALL THRU into number case: */
+      ATTRIBUTE_FALLTHROUGH;
     case '0':
     case '1':
     case '2':

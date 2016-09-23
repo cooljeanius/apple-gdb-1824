@@ -56,6 +56,15 @@
                         (1 << serial_ESC))
 #define SERPAR_ESC_SET (SERPAR_FC_SET | SERPAR_CTL_SET)
 
+/* This attribute was added in gcc 7: */
+#ifndef ATTRIBUTE_FALLTHROUGH
+# if defined(__GNUC__) && (__GNUC__ >= 7)
+#  define ATTRIBUTE_FALLTHROUGH __attribute__((fallthrough))
+# else
+#  define ATTRIBUTE_FALLTHROUGH /* FALLTHRU */
+# endif /* gcc 7+ */
+#endif /* !ATTRIBUTE_FALLTHROUGH */
+
 static const struct re_config config = {
     serial_STX, serial_ETX, serial_ESC, /* self-explanatory?               */
     SERPAR_FC_SET,                      /* set of flow-control characters  */
@@ -388,11 +397,11 @@ static int SerparRead(DriverCall *dc, bool block)
         printf("\n");
 #endif /* DO_TRACE */
 
-        switch(restatus) {
+        switch (restatus) {
           case RS_GOOD_PKT:
               ret_code = 1;
-              /* fall through to: */
-
+              /* fall through to RS_BAD_PKT: */
+	      ATTRIBUTE_FALLTHROUGH;
           case RS_BAD_PKT:
               /*
                * We now need to shuffle any left over data down to the

@@ -432,77 +432,77 @@ add_path(const char *dirname, char **which_path, int parse_separators)
 
 	if (parse_separators)
 	  {
-	    separator = strchr (name, DIRNAME_SEPARATOR);
-	    space = strchr (name, ' ');
-	    tab = strchr (name, '\t');
+	    separator = strchr(name, DIRNAME_SEPARATOR);
+	    space = strchr(name, ' ');
+	    tab = strchr(name, '\t');
 	  }
 
-	if (separator == 0 && space == 0 && tab == 0)
+	if ((separator == 0) && (space == 0) && (tab == 0))
 	  {
 	    dirname = (name + strlen(name));
 	    p = (char *)dirname;
 	  }
 	/* APPLE LOCAL begin huh? */
-	else if (parse_separators && *name == '"')
+	else if (parse_separators && (*name == '"'))
 	  {
 	    p = (char *)(name + 1UL);
 
 	    while (*p != '\0')
 	      {
-		if (p[0] == '"' && p[-1] != '\\')
+		if ((p[0] == '"') && (p[-1] != '\\'))
 		  {
-		    dirname = p + 1;
+		    dirname = (p + 1);
 		    name += 1;
 		    break;
 		  }
 		p++;
 	      }
 	    if (*p == '\0')
-	      error ("Unmatched separators in dir pathname");
-	    while (*dirname == DIRNAME_SEPARATOR
-		   || *dirname == ' '
-		   || *dirname == '\t')
+	      error(_("Unmatched separators in dir pathname"));
+	    while ((*dirname == DIRNAME_SEPARATOR)
+		   || (*dirname == ' ')
+		   || (*dirname == '\t'))
 	      ++dirname;
 	  }
 	/* APPLE LOCAL end huh? */
 	else
 	  {
 	    p = 0;
-	    if (separator != 0 && (p == 0 || separator < p))
+	    if ((separator != 0) && ((p == 0) || (separator < p)))
 	      p = separator;
-	    if (space != 0 && (p == 0 || space < p))
+	    if ((space != 0) && ((p == 0) || (space < p)))
 	      p = space;
-	    if (tab != 0 && (p == 0 || tab < p))
+	    if ((tab != 0) && ((p == 0) || (tab < p)))
 	      p = tab;
-	    dirname = p + 1;
-	    while (*dirname == DIRNAME_SEPARATOR
-		   || *dirname == ' '
-		   || *dirname == '\t')
+	    dirname = (p + 1);
+	    while ((*dirname == DIRNAME_SEPARATOR)
+		   || (*dirname == ' ')
+		   || (*dirname == '\t'))
 	      ++dirname;
 	  }
       }
 
-      if (!(IS_DIR_SEPARATOR (*name) && p <= name + 1)	 /* "/" */
+      if (!(IS_DIR_SEPARATOR(*name) && (p <= (name + 1)))  /* "/" */
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
       /* On MS-DOS and MS-Windows, h:\ is different from h: */
-	  && !(p == name + 3 && name[1] == ':') 	 /* "d:/" */
+	  && !((p == (name + 3)) && (name[1] == ':')) 	 /* "d:/" */
 #endif /* HAVE_DOS_BASED_FILE_SYSTEM */
-	  && IS_DIR_SEPARATOR (p[-1]))
+	  && IS_DIR_SEPARATOR(p[-1]))
 	/* Sigh. "foo/" => "foo" */
 	--p;
       *p = '\0';
 
-      while (p > name && p[-1] == '.')
+      while ((p > name) && (p[-1] == '.'))
 	{
 	  if (p - name == 1)
 	    {
-	      /* "." => getwd ().  */
+	      /* "." => getwd().  */
 	      name = current_directory;
 	      goto append;
 	    }
-	  else if (p > name + 1 && IS_DIR_SEPARATOR (p[-2]))
+	  else if ((p > (name + 1)) && IS_DIR_SEPARATOR(p[-2]))
 	    {
-	      if (p - name == 2)
+	      if ((p - name) == 2)
 		{
 		  /* "/." => "/".  */
 		  *--p = '\0';
@@ -521,15 +521,15 @@ add_path(const char *dirname, char **which_path, int parse_separators)
 	}
 
       if (name[0] == '~')
-	name = tilde_expand (name);
+	name = tilde_expand(name);
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
-      else if (IS_ABSOLUTE_PATH (name) && p == name + 2) /* "d:" => "d:." */
-	name = concat (name, ".", (char *)NULL);
+      else if (IS_ABSOLUTE_PATH(name) && (p == (name + 2))) /* "d:" => "d:." */
+	name = concat(name, ".", (char *)NULL);
 #endif /* HAVE_DOS_BASED_FILE_SYSTEM */
-      else if (!IS_ABSOLUTE_PATH (name) && name[0] != '$')
-	name = concat (current_directory, SLASH_STRING, name, (char *)NULL);
+      else if (!IS_ABSOLUTE_PATH(name) && (name[0] != '$'))
+	name = concat(current_directory, SLASH_STRING, name, (char *)NULL);
       else
-	name = savestring (name, p - name);
+	name = savestring(name, p - name);
       make_cleanup(xfree, (void *)name);
 
       /* Unless it is/was a variable, check existence: */
@@ -544,14 +544,14 @@ add_path(const char *dirname, char **which_path, int parse_separators)
 	     or whatever.  If the directory continues to not exist/not be
 	     a directory/etc, then having them in the path should be
 	     harmless.  */
-	  if (stat (name, &st) < 0)
+	  if (stat(name, &st) < 0)
 	    {
 	      int save_errno = errno;
-	      fprintf_unfiltered (gdb_stderr, "Warning: ");
-	      print_sys_errmsg (name, save_errno);
+	      fprintf_unfiltered(gdb_stderr, "Warning: ");
+	      print_sys_errmsg(name, save_errno);
 	    }
 	  else if ((st.st_mode & S_IFMT) != S_IFDIR)
-	    warning (_("%s is not a directory."), name);
+	    warning(_("%s is not a directory."), name);
 	}
 
     append:
@@ -569,17 +569,17 @@ add_path(const char *dirname, char **which_path, int parse_separators)
 	       Actually, even on Unix I would use realpath() or its work-
 	       alike before comparing.  Then all the code above which
 	       removes excess slashes and dots could simply go away.  */
-	    if (!strncmp (p, name, len)
-		&& (p[len] == '\0' || p[len] == DIRNAME_SEPARATOR))
+	    if (!strncmp(p, name, len)
+		&& ((p[len] == '\0') || (p[len] == DIRNAME_SEPARATOR)))
 	      {
 		/* Found it in the search path, remove old copy */
 		if (p > *which_path)
 		  p--;		/* Back over leading separator */
-		if (prefix > p - *which_path)
+		if (prefix > (p - *which_path))
 		  goto skip_dup;	/* Same dir twice in one cmd */
-		strcpy (p, &p[len + 1]);	/* Copy from next \0 or  : */
+		strcpy(p, &p[len + 1]);	/* Copy from next \0 or  : */
 	      }
-	    p = strchr (p, DIRNAME_SEPARATOR);
+	    p = strchr(p, DIRNAME_SEPARATOR);
 	    if (p != 0)
 	      ++p;
 	    else
@@ -588,31 +588,33 @@ add_path(const char *dirname, char **which_path, int parse_separators)
 	if (p == 0)
 	  {
 	    char tinybuf[2];
+	    char buf8[8] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
+	    (void)buf8;
 
 	    tinybuf[0] = DIRNAME_SEPARATOR;
 	    tinybuf[1] = '\0';
 
-	    /* If we have already tacked on a name(s) in this command, be sure they stay
-	       on the front as we tack on some more.  */
+	    /* If we have already tacked on a name(s) in this command, then be
+	     * sure they stay on the front as we tack on some more: */
 	    if (prefix)
 	      {
 		char *temp, c;
 
 		c = old[prefix];
 		old[prefix] = '\0';
-		temp = concat (old, tinybuf, name, (char *)NULL);
+		temp = concat(old, tinybuf, name, (char *)NULL);
 		old[prefix] = c;
-		*which_path = concat (temp, "", &old[prefix], (char *)NULL);
-		prefix = strlen (temp);
-		xfree (temp);
+		*which_path = concat(temp, "", &old[prefix], (char *)NULL);
+		prefix = strlen(temp);
+		xfree(temp);
 	      }
 	    else
 	      {
-		*which_path = concat (name, (old[0] ? tinybuf : old),
-				      old, (char *)NULL);
-		prefix = strlen (name);
+		*which_path = concat(name, (old[0] ? tinybuf : old),
+				     old, (char *)NULL);
+		prefix = strlen(name);
 	      }
-	    xfree (old);
+	    xfree(old);
 	    old = *which_path;
 	  }
       }

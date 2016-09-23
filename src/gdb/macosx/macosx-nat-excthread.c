@@ -523,10 +523,13 @@ macosx_exception_thread(void *arg)
   for (;;)
     {
       unsigned char buf[1];
+      char backup_buffer[8];
       mach_msg_option_t receive_options;
       kern_return_t kret;
       int counter;
 
+      backup_buffer[0] = '\0';
+      (void)backup_buffer;
       excthread_debug_re(1, "waiting for exceptions\n");
       receive_options = MACH_RCV_MSG | MACH_RCV_INTERRUPT;
       next_msg_ctr = 0;

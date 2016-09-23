@@ -2183,7 +2183,7 @@ redirect_old_function(struct fixinfo *fixinfo, struct symbol *new_sym,
 
 #if defined(TARGET_I386)
   {
-    unsigned char buf[6];
+    unsigned char buf[8]; /* big enough for -Wstack-protector */
     uint32_t relative_offset;
 
     buf[0] = 0xe9;  /* jmp <imm32-relative-addr> */
@@ -2230,7 +2230,7 @@ decode_fix_and_continue_trampoline(CORE_ADDR pc)
 {
 #if defined(TARGET_I386)
   /* Detect the x86 F&C trampoline sequence: */
-  unsigned char buf[6];
+  unsigned char buf[8]; /* big enough for -Wstack-protector */
   uint32_t relative_offset;
   target_read_memory(pc, buf, 6);
 
@@ -2246,6 +2246,9 @@ decode_fix_and_continue_trampoline(CORE_ADDR pc)
   pc += 5;  /* the relative offset is computed from next instruction */
   return (pc + relative_offset);
 #else
+# if defined(__GNUC__) && defined(__APPLE__) && defined(__APPLE_CC__)
+#  pragma unused (pc)
+# endif /* __GNUC__ && __APPLE__ && __APPLE_CC__ */
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
   __asm__("");
 # endif /* __GNUC__ && !__STRICT_ANSI__ */

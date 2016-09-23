@@ -1047,6 +1047,7 @@ do_setshow_command (arg, from_tty, c)
 	  break;
 	}
 	/* else fall through */
+	ATTRIBUTE_FALLTHROUGH;
       case var_zinteger:
 	fprintf_filtered (stdout, "%d", *(unsigned int *) c->var);
 	break;

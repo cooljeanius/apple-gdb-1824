@@ -1641,7 +1641,7 @@ yylex (void)
 	  return '-';
 	}
       /* FALL THRU into number case.  */
-
+      ATTRIBUTE_FALLTHROUGH;
     try_number:
     case '0':
     case '1':

@@ -1,3 +1,4 @@
+# -*- coding:utf-8; mode:shell-script; -*-
 # Copyright (C) 2012-2013 Free Software Foundation, Inc.
 #
 # This file is part of GDB.

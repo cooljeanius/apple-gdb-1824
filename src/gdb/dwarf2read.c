@@ -541,11 +541,11 @@ struct dwarf2_per_cu_data
      bytes should suffice to store the length of any compilation unit
      - if it doesn't, GDB will fall over anyway.  */
   unsigned long offset;
-  unsigned long length : 31;
+  __extension__ unsigned long length : 31;
 
   /* Flag indicating this compilation unit will be read in before
      any of the current compilation units are processed.  */
-  unsigned long queued : 1;
+  __extension__ unsigned long queued : 1;
 
   /* Set iff currently read in: */
   struct dwarf2_cu *cu;

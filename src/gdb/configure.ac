@@ -89,6 +89,16 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   AC_SUBST([TARGET_ARCHITECTURE])
 fi
 
+m4_ifdef([ACX_NONCANONICAL_BUILD],[
+  ACX_NONCANONICAL_BUILD
+])dnl
+m4_ifdef([ACX_NONCANONICAL_HOST],[
+  ACX_NONCANONICAL_HOST
+])dnl
+m4_ifdef([ACX_NONCANONICAL_TARGET],[
+  ACX_NONCANONICAL_TARGET
+])dnl
+
 m4_ifdef([gl_HOST_OS],[
   gl_HOST_OS
 ])dnl
@@ -872,6 +882,9 @@ fi
 AN_PROGRAM([as],[AM_PROG_AS])dnl
 AN_MAKEVAR([AS],[AM_PROG_AS])dnl
 AM_PROG_AS
+m4_ifdef([NCN_STRICT_CHECK_TOOLS],[
+  NCN_STRICT_CHECK_TOOLS([ASSEMBLER],[as gas],[],[${PATH}:./../binutils])
+])dnl
 AC_PROG_CPP
 
 AC_MSG_CHECKING([libtool things])
@@ -1626,7 +1639,7 @@ AC_CHECK_DECLS([atof],[],[],[
 ])dnl
 
 unset ac_cv_have_decl_strpbrk
-AC_CHECK_DECLS([strchr, strpbrk],[],[],[
+AC_CHECK_DECLS([strchr, strpbrk, strlcpy, strlcat],[],[],[
 #ifdef HAVE_STRING_H
 # include <string.h>
 #else
@@ -1634,6 +1647,16 @@ AC_CHECK_DECLS([strchr, strpbrk],[],[],[
 #  warning "This conftest expects <string.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STRING_H */
+])dnl
+
+AC_CHECK_DECLS([strcasecmp, strncasecmp],[],[],[
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest expects <strings.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STRINGS_H */
 ])dnl
 
 m4_ifdef([libiberty_INIT],[
@@ -1676,13 +1699,30 @@ if test "x${ac_cv_have_decl_sys_siglist}" != "xyes"; then
   ])dnl
   ## end better check for sys_siglist
 fi
-AC_CHECK_DECLS([gmtime, localtime, localtime_r])dnl
+AC_CHECK_DECLS([bcopy, bzero, qsort_r, realpath])dnl
+AC_CHECK_DECLS([gettimeofday, gmtime, localtime, localtime_r, setitimer],[
+],[],[
+#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# ifdef HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  ifdef HAVE_TIME_H
+#   include <time.h>
+#  endif /* HAVE_TIME_H */
+# endif /* HAVE_SYS_TIME_H */
+#endif /* TIME_WITH_SYS_TIME */
+])dnl
 AC_CHECK_DECLS([free, malloc, realloc])dnl
 AC_CHECK_DECLS([strerror, strstr, getopt])dnl
   ## the libiberty macro might have already checked these for us:
+unset ac_cv_have_decl_asprintf
 unset ac_cv_have_decl_snprintf
+unset ac_cv_have_decl_vasprintf
 unset ac_cv_have_decl_vsnprintf
-AC_CHECK_DECLS([snprintf, vsnprintf])dnl
+AC_CHECK_DECLS([asprintf, snprintf, vasprintf, vsnprintf])dnl
 dnl# these should probably be done above with the rest of the libunwind
 dnl# checks:
 AC_CHECK_DECLS([UNW_SLT_NONE],[],[],[
@@ -3084,10 +3124,9 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wshift-count-overflow -Wshift-negative-value -Wshift-overflow=2 \
 -Wmisleading-indentation -Wlto-type-mismatch -Wtautological-compare \
 -Wduplicated-cond -Wwrite-strings -Wenum-compare -Wnonnull-compare \
--Wdangling-else -Wduplicate-decl-specifier -Wmemset-elt-size \
--Wswitch-unreachable -Whsa -Wscalar-storage-order \
--Wimplicit-fallthrough -Wformat-length=2 -Wexpansion-to-defined \
--Wint-in-bool-context -Wbool-operation"
+-Wdangling-else -Wmemset-elt-size -Wswitch-unreachable -Whsa \
+-Wscalar-storage-order -Wimplicit-fallthrough -Wformat-length=2 \
+-Wexpansion-to-defined -Wint-in-bool-context -Wbool-operation"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -3100,14 +3139,15 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Wmultiple-inheritance -Wvirtual-inheritance -Wpmf-conversions \
 -Wtemplates -Wvirtual-move-assign -Wconversion-null -Weffc++ \
 -Wsized-deallocation -Wplacement-new=2 -Wshadow-compatible-local \
--Wbuiltin-function-redefined"
+-Wbuiltin-function-redefined -Wdeprecated -Waligned-new=all"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
 -Wpointer-sign -Wmissing-prototypes -Wdeclaration-after-statement \
--Woverride-init -Woverride-init-side-effects -Wshadow-local \
+-Woverride-init -Woverride-init-side-effects -Wduplicate-decl-specifier \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
--Wstrict-prototypes -Wnested-externs -Wc99-c11-compat"
+-Wstrict-prototypes -Wnested-externs -Wc99-c11-compat \
+-Wshadow-local -Wno-shadow-compatible-local"
   if test -f /usr/X11/include/X11/Xlib.h && test "x${enable_gdbtk}" = "xyes"; then
     AC_MSG_WARN([Disabling C++ compatibility warnings for gdbtk])
   else
@@ -3232,18 +3272,35 @@ if test x${CFLAGS+set} = xset; then
       ## we will miss out on warnings about signed integer overflow in this
       ## case, so turn them into runtime errors instead, for debugging:
       build_warnings="${build_warnings} -ftrapv"
+      AC_DEFINE([OPTIMIZATION_LEVEL],[0],
+                [0 is none, 1 is some, and 2 is anything higher])
     ;;
     *"-O2"* | *"-O3"* | *"-Ofast"* | *"-ftree-vrp"* )
       build_warnings="${build_warnings} ${opt_warnings_plus}"
+      AC_DEFINE([OPTIMIZATION_LEVEL],[2],
+                [0 is none, 1 is some, and 2 is anything higher])
+      case "${CFLAGS}" in
+        *"-Ofast"* )
+          build_warnings="${build_warnings} -fmath-errno"
+        ;;
+      esac
     ;;
-    *"-O"* | *"-O1"* | *"-Og"* )
+    *"-O "* | *"-O1"* | *"-Og"* )
       build_warnings="${build_warnings} ${opt_warnings}"
+      AC_DEFINE([OPTIMIZATION_LEVEL],[1],
+                [0 is none, 1 is some, and 2 is anything higher])
     ;;
     *"-Os"* | *"-Oz"* )
       build_warnings="${build_warnings} -Wlarger-than=262144"
+      AC_DEFINE([OPTIMIZATION_LEVEL],[1],
+                [0 is none, 1 is some, and 2 is anything higher])
     ;;
     *"-fstack-protector"* )
       build_warnings="${build_warnings} -Wstack-protector"
+      AC_DEFINE([HAVE_STACK_PROTECTION],[1],[1 if the stack is protected])
+    ;;
+    *"-flto-odr-type-merging"* )
+      build_warnings="${build_warnings} -Wodr"
     ;;
   esac
 else
@@ -3254,6 +3311,7 @@ fi
 #  * -trigraphs (only assuming we leave -Wtrigraphs in, see below)
 #  * -Wshadow (noisy, but usually easy enough to fix if you use an IDE)
 #  * -Wcast-qual (casting can silence other warnings, so this can conflict)
+#  * -Wbad-function-cast (likewise) (C-only, not C++)
 #  * -Wconversion (would require a lot of casting)
 #  * -Wsign-conversion (likewise)
 #  * -Wtraditional-conversion (likewise) (C-only, not C++)
@@ -3439,6 +3497,7 @@ then
 fi
 AC_SUBST([WARN_LDFLAGS])dnl
 
+###########################################################################
 ## section for checking mmalloc usage:
 MMALLOC_CFLAGS=""
 MMALLOC=""

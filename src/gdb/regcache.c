@@ -820,17 +820,17 @@ deprecated_write_register_bytes(int myregstart, gdb_byte *myaddr, int inlen)
     {
       int regstart, regend;
 
-      regstart = DEPRECATED_REGISTER_BYTE (regnum);
-      regend = regstart + register_size (current_gdbarch, regnum);
+      regstart = DEPRECATED_REGISTER_BYTE(regnum);
+      regend = (regstart + register_size(current_gdbarch, regnum));
 
       /* Is this register completely outside the range the user is writing?  */
-      if (myregend <= regstart || regend <= myregstart)
+      if ((myregend <= regstart) || (regend <= myregstart)) {
 	/* do nothing */ ;
-
+      }
       /* Is this register completely within the range the user is writing?  */
-      else if (myregstart <= regstart && regend <= myregend)
-	deprecated_write_register_gen (regnum, myaddr + (regstart - myregstart));
-
+      else if ((myregstart <= regstart) && (regend <= myregend)) {
+	deprecated_write_register_gen(regnum, myaddr + (regstart - myregstart));
+      }
       /* The register partially overlaps the range being written.  */
       else
 	{

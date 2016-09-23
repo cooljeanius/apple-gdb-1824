@@ -35,6 +35,15 @@
 # define UNUSED(x) ((x)=(x))
 #endif /* !UNUSED */
 
+/* This attribute was added in gcc 7: */
+#ifndef ATTRIBUTE_FALLTHROUGH
+# if defined(__GNUC__) && (__GNUC__ >= 7)
+#  define ATTRIBUTE_FALLTHROUGH __attribute__((fallthrough))
+# else
+#  define ATTRIBUTE_FALLTHROUGH /* FALLTHRU */
+# endif /* gcc 7+ */
+#endif /* !ATTRIBUTE_FALLTHROUGH */
+
 #ifndef TARGET
 
 extern unsigned int Armsd_BufferSize;
@@ -110,7 +119,7 @@ unsigned int vmsgbuild(unsigned char *buffer, const char *format, va_list args)
                    *
                    * fall through to the normal character processing
                    */
-
+		  ATTRIBUTE_FALLTHROUGH;
               case '%':
               default:
                   /* normal '%' character, or a different normal character */
@@ -260,7 +269,7 @@ extern unsigned int unpack_message(unsigned char *buffer, const char *format, ..
                    *
                    * fall through to the normal character processing.
                    */
-
+		  ATTRIBUTE_FALLTHROUGH;
               case '%':
               default:
                   /* normal '%' character, or a different normal character */

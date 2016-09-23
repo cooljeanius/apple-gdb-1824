@@ -113,7 +113,7 @@ null_file_write(struct ui_file *file, const char *buf, long sizeof_buf)
          fputc does exactly the below.  By having a write function it
          is possible to clean up that code.  */
       int i;
-      char b[2];
+      char b[8]; /* big enough for -Wstack-protector */
       b[1] = '\0';
       for (i = 0; i < sizeof_buf; i++)
 	{

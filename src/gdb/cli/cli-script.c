@@ -681,47 +681,47 @@ locate_arg(char *p)
    arguments found in line, with the updated copy being placed into nline.  */
 
 static char *
-insert_args (char *line)
+insert_args(char *line)
 {
   char *p, *save_line, *new_line;
-  size_t len;
-  unsigned int i;
+  size_t sz_len;
+  unsigned int u_i;
 
   /* First we need to know how much memory to allocate for the new line: */
   save_line = line;
-  len = 0;
-  while ((p = locate_arg(line)))
+  sz_len = 0UL;
+  while ((p = locate_arg(line)) != NULL)
     {
-      len += (p - line);
+      sz_len += (p - line);
 
       if (p[4] == 'c')          /* $argc */
         {
           if (user_args->count > 9)
-            len += 2;           /* $argc expands to '10' or greater */
+            sz_len += 2UL;           /* $argc expands to '10' or greater */
           else
-            len += 1;           /* $argc expands to '0'..'9' */
+            sz_len += 1UL;           /* $argc expands to '0'..'9' */
         }
       else
 	{
 	  /* APPLE LOCAL huh? */
-	  len += (p - line);
-	  i = (p[4] - '0');
+	  sz_len += (p - line);
+	  u_i = (p[4] - '0');
 
-	  if (i >= (unsigned int)user_args->count)
+	  if (u_i >= (unsigned int)user_args->count)
 	    {
-	      error(_("Missing argument %u in user function.\n"), i);
+	      error(_("Missing argument %u in user function.\n"), u_i);
 	      return NULL;
 	    }
-	  len += user_args->a[i].len;
+	  sz_len += user_args->a[u_i].len;
 	}
       line = (p + 5);
     }
 
   /* Do NOT forget the tail: */
-  len += strlen(line);
+  sz_len += strlen(line);
 
   /* Allocate space for the new line and fill it in: */
-  new_line = (char *)xmalloc(len + 1UL);
+  new_line = (char *)xmalloc(sz_len + 1UL);
   if (new_line == NULL)
     return NULL;
 
@@ -731,36 +731,36 @@ insert_args (char *line)
   /* Save pointer to beginning of new line: */
   save_line = new_line;
 
-  while ((p = locate_arg (line)))
+  while ((p = locate_arg(line)) != NULL)
     {
-      int i, len;
+      int i_i, newlen;
 
-      memcpy (new_line, line, p - line);
-      new_line += p - line;
+      memcpy(new_line, line, (p - line));
+      new_line += (p - line);
 
       if (p[4] == 'c')          /* $argc */
         {
-          if (user_args->count > 9)     /* $argc expands to 1 or 2 characters, '0'..'10' */
+          if (user_args->count > 9) /* $argc expands to 1 or 2 characters, '0'..'10' */
             *(new_line++) = (char)('0' + (user_args->count / 10));
           *(new_line++) = (char)('0' + (user_args->count % 10));
         }
       else
         {
-	  i = p[4] - '0';
+	  i_i = (p[4] - '0');
 
-	  len = user_args->a[i].len;
-	  if (len)
+	  newlen = user_args->a[i_i].len;
+	  if (newlen)
 	    {
-	      memcpy (new_line, user_args->a[i].arg, len);
-	      new_line += len;
+	      memcpy(new_line, user_args->a[i_i].arg, newlen);
+	      new_line += newlen;
 	    }
 	}
-      line = p + 5;
+      line = (p + 5);
     }
-  /* Don't forget the tail.  */
-  strcpy (new_line, line);
+  /* Remember about the tail: */
+  strcpy(new_line, line);
 
-  /* Return a pointer to the beginning of the new line.  */
+  /* Return a pointer to the beginning of the new line: */
   return save_line;
 }
 

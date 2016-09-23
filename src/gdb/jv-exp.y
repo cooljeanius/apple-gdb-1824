@@ -701,33 +701,35 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
   ULONGEST n = 0;
   ULONGEST limit, limit_div_base;
 
-  int c;
+  int i_c;
   int base = input_radix;
 
   struct type *type;
 
   if (parsed_float)
     {
-      /* It's a float since it contains a point or an exponent.  */
-      char c;
+      /* It is a float since it contains a point or an exponent.  */
+      char c_c;
       int num = 0;	/* number of tokens scanned by scanf */
       char saved_char = p[len];
 
       p[len] = 0;	/* null-terminate the token */
-      if (sizeof (putithere->typed_val_float.dval) <= sizeof (float))
-	num = sscanf (p, "%g%c", (float *) &putithere->typed_val_float.dval, &c);
-      else if (sizeof (putithere->typed_val_float.dval) <= sizeof (double))
-	num = sscanf (p, "%lg%c", (double *) &putithere->typed_val_float.dval, &c);
+      if (sizeof(putithere->typed_val_float.dval) <= sizeof(float))
+	num = sscanf(p, "%g%c", (float *)&putithere->typed_val_float.dval,
+		     &c_c);
+      else if (sizeof(putithere->typed_val_float.dval) <= sizeof(double))
+	num = sscanf(p, "%lg%c", (double *)&putithere->typed_val_float.dval,
+		     &c_c);
       else
 	{
 #ifdef SCANF_HAS_LONG_DOUBLE
-	  num = sscanf(p, "%Lg%c", &putithere->typed_val_float.dval, &c);
+	  num = sscanf(p, "%Lg%c", &putithere->typed_val_float.dval, &c_c);
 #else
 	  /* Scan it into a double, then assign it to the long double.
 	     This at least wins with values representable in the range
 	     of doubles. */
 	  double temp;
-	  num = sscanf(p, "%lg%c", &temp, &c);
+	  num = sscanf(p, "%lg%c", &temp, &c_c);
 	  putithere->typed_val_float.dval = temp;
 #endif /* SCANF_HAS_LONG_DOUBLE */
 	}
@@ -736,11 +738,11 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 	return ERROR;
       /* See if it has `f' or `d' suffix (float or double).  */
 
-      c = (char)tolower(p[len - 1]);
+      c_c = (char)tolower(p[len - 1]);
 
-      if (c == 'f' || c == 'F')
+      if ((c_c == 'f') || (c_c == 'F'))
 	putithere->typed_val_float.type = builtin_type_float;
-      else if (isdigit (c) || c == '.' || c == 'd' || c == 'D')
+      else if (isdigit(c_c) || (c_c == '.') || (c_c == 'd') || (c_c == 'D'))
 	putithere->typed_val_float.type = builtin_type_double;
       else
 	return ERROR;
@@ -779,11 +781,11 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 	break;
       }
 
-  c = p[len-1];
+  i_c = p[len - 1];
   /* A paranoid calculation of (1<<64)-1. */
   limit = (ULONGEST)0xffffffff;
-  limit = ((limit << 16) << 16) | limit;
-  if (c == 'l' || c == 'L')
+  limit = (((limit << 16) << 16) | limit);
+  if ((i_c == 'l') || (i_c == 'L'))
     {
       type = java_long_type;
       len--;
@@ -792,33 +794,33 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
     {
       type = java_int_type;
     }
-  limit_div_base = limit / (ULONGEST) base;
+  limit_div_base = (limit / (ULONGEST)base);
 
   while (--len >= 0)
     {
-      c = *p++;
-      if (c >= '0' && c <= '9')
-	c -= '0';
-      else if (c >= 'A' && c <= 'Z')
-	c -= 'A' - 10;
-      else if (c >= 'a' && c <= 'z')
-	c -= 'a' - 10;
+      i_c = *p++;
+      if ((i_c >= '0') && (i_c <= '9'))
+	i_c -= '0';
+      else if ((i_c >= 'A') && (i_c <= 'Z'))
+	i_c -= ('A' - 10);
+      else if ((i_c >= 'a') && (i_c <= 'z'))
+	i_c -= ('a' - 10);
       else
 	return ERROR;	/* Char not a digit */
-      if (c >= base)
+      if (i_c >= base)
 	return ERROR;
-      if (n > limit_div_base
-	  || (n *= base) > limit - c)
-	error (_("Numeric constant too large"));
-      n += c;
-	}
+      if ((n > limit_div_base)
+	  || ((n *= base) > (limit - i_c)))
+	error(_("Numeric constant too large"));
+      n += i_c;
+    }
 
   /* If the type is bigger than a 32-bit signed integer can be, implicitly
      promote to long.  Java does not do this, so mark it as builtin_type_uint64
      rather than java_long_type.  0x80000000 will become -0x80000000 instead
      of 0x80000000L, because we don't know the sign at this point.
   */
-  if (type == java_int_type && n > (ULONGEST)0x80000000)
+  if ((type == java_int_type) && (n > (ULONGEST)0x80000000))
     type = builtin_type_uint64;
 
   putithere->typed_val_int.val = n;
@@ -868,7 +870,7 @@ yylex(void)
 {
   int c;
   int namelen;
-  unsigned int i;
+  unsigned int u_i;
   char *tokstart;
   const char *tokptr;
   int tempbufindex;
@@ -881,21 +883,21 @@ yylex(void)
 
   tokstart = (char *)lexptr;
   /* See if it is a special token of length 3.  */
-  for (i = 0; i < (sizeof(tokentab3) / sizeof(tokentab3[0])); i++)
-    if (strncmp(tokstart, tokentab3[i].joperator, 3) == 0)
+  for (u_i = 0U; u_i < (sizeof(tokentab3) / sizeof(tokentab3[0])); u_i++)
+    if (strncmp(tokstart, tokentab3[u_i].joperator, 3) == 0)
       {
 	lexptr += 3;
-	yylval.opcode = tokentab3[i].opcode;
-	return tokentab3[i].token;
+	yylval.opcode = tokentab3[u_i].opcode;
+	return tokentab3[u_i].token;
       }
 
   /* See if it is a special token of length 2.  */
-  for (i = 0; i < (sizeof(tokentab2) / sizeof(tokentab2[0])); i++)
-    if (strncmp(tokstart, tokentab2[i].joperator, 2) == 0)
+  for (u_i = 0U; u_i < (sizeof(tokentab2) / sizeof(tokentab2[0])); u_i++)
+    if (strncmp(tokstart, tokentab2[u_i].joperator, 2) == 0)
       {
 	lexptr += 2;
-	yylval.opcode = tokentab2[i].opcode;
-	return tokentab2[i].token;
+	yylval.opcode = tokentab2[u_i].opcode;
+	return tokentab2[u_i].token;
       }
 
   switch (c = *tokstart)
@@ -959,11 +961,11 @@ yylex(void)
       return c;
 
     case '.':
-      /* Might be a floating point number.  */
-      if (lexptr[1] < '0' || lexptr[1] > '9')
+      /* Might be a floating point number: */
+      if ((lexptr[1] < '0') || (lexptr[1] > '9'))
 	goto symbol;		/* Nope, must be a symbol. */
-      /* FALL THRU into number case.  */
-
+      /* FALL THRU into number case: */
+      ATTRIBUTE_FALLTHROUGH;
     case '0':
     case '1':
     case '2':
@@ -1122,10 +1124,10 @@ yylex(void)
     {
       if (c == '<')
 	{
-	  int i = namelen;
-	  while (tokstart[++i] && tokstart[i] != '>');
-	  if (tokstart[i] == '>')
-	    namelen = i;
+	  int i_i = namelen;
+	  while (tokstart[++i_i] && (tokstart[i_i] != '>'));
+	  if (tokstart[i_i] == '>')
+	    namelen = i_i;
 	}
        c = tokstart[++namelen];
      }

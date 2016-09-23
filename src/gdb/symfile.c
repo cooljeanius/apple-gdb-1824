@@ -4445,7 +4445,7 @@ cashier_psymtab(struct partial_symtab *pst)
       /* Unhook it from the chain.  */
       if (ps == pst->objfile->psymtabs)
 	pst->objfile->psymtabs = ps->next;
-      else
+      else if (pprev != NULL)
 	pprev->next = ps->next;
 
       /* FIXME: we cannot conveniently deallocate the entries in the
@@ -4584,7 +4584,7 @@ again2:
   /* FIXME: what about the minimal symbol table? */
   return blewit;
 #else
-  struct partial_symtab *ps = (struct partial_symtab *)NULL;
+  struct partial_symtab *ps = lookup_partial_symtab("/dev/null");
   warning(_("free_named_symtabs() needs work."));
   cashier_psymtab(ps);
   return (0);
@@ -4922,6 +4922,7 @@ overlay_is_mapped (struct obj_section *osect)
 	    (*target_overlay_update) (osect);
 	}
       /* fall thru to manual case */
+      ATTRIBUTE_FALLTHROUGH;
     case ovly_on:		/* overlay debugging manual */
       return osect->ovly_mapped == 1;
     }

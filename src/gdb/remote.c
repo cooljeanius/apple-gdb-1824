@@ -71,6 +71,14 @@
 #ifdef HAVE_LIBGEN_H
 # include <libgen.h> /* for basename() on some systems */
 #endif /* HAVE_LIBGEN_H */
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
+#ifndef SIZE_T_MAX
+# ifdef ULONG_MAX
+#  define SIZE_T_MAX ULONG_MAX	/* max value for a size_t */
+# endif /* ULONG_MAX */
+#endif /* !SIZE_T_MAX */
 
 /* Prototypes for local functions: */
 static void cleanup_sigint_signal_handler(void *dummy);
@@ -3371,10 +3379,13 @@ remote_console_output(char *msg)
 
   for (p = msg; p[0] && p[1]; p += 2)
     {
-      char tb[2];
+      char tb[8]; /* big enough for -Wstack-protector */
       char c = (char)((fromhex(p[0]) * 16) + fromhex(p[1]));
+      int ii;
       tb[0] = c;
       tb[1] = 0;
+      for (ii = 2; ii < 8; ii++)
+	tb[ii] = '\0';
       fputs_unfiltered(tb, gdb_stdtarg);
     }
   gdb_flush(gdb_stdtarg);
@@ -3587,7 +3598,8 @@ Packet: '%s'\n"),
 	      putpkt((const char *)buf);
 	      continue;
 	    }
-	  /* else fallthrough to: */
+	  /* else fallthrough to default: */
+	  ATTRIBUTE_FALLTHROUGH;
 	default:
 	  warning(_("Invalid remote reply: %s"), buf);
 	  continue;
@@ -3783,7 +3795,8 @@ Packet: '%s'\n"),
 	      putpkt((const char *)buf);
 	      continue;
 	    }
-	  /* else fallthrough to: */
+	  /* else fallthrough to default: */
+	  ATTRIBUTE_FALLTHROUGH;
 	default:
 	  warning(_("Invalid remote reply: %s"), buf);
 	  continue;
@@ -3854,7 +3867,7 @@ remote_fetch_registers(int regnum)
   struct remote_state *rs = get_remote_state();
   size_t buflen = rs->remote_packet_size;
   char *buf = (char *)alloca(buflen);
-  size_t i = 0UL;
+  size_t sz_i = 0UL;
   char *p;
   char *regs = (char *)alloca(rs->sizeof_g_packet);
 
@@ -3928,7 +3941,7 @@ remote_fetch_registers(int regnum)
      register cacheing/storage mechanism.  */
 
   p = buf;
-  for (i = 0UL; i < rs->sizeof_g_packet; i++)
+  for (sz_i = 0UL; sz_i < rs->sizeof_g_packet; sz_i++)
     {
       if (p[0] == 0)
 	break;
@@ -3940,25 +3953,25 @@ remote_fetch_registers(int regnum)
 	  goto supply_them;
 	}
       if ((p[0] == 'x') && (p[1] == 'x'))
-	regs[i] = 0;		/* 'x' */
+	regs[sz_i] = 0;		/* 'x' */
       else
-	regs[i] = (char)((fromhex(p[0]) * 16) + fromhex(p[1]));
+	regs[sz_i] = (char)((fromhex(p[0]) * 16) + fromhex(p[1]));
       p += 2;
     }
 
-  if (i != (size_t)register_bytes_found)
+  if (sz_i != (size_t)register_bytes_found)
     {
-      register_bytes_found = i;
-      if (REGISTER_BYTES_OK_P() && !REGISTER_BYTES_OK(i))
+      register_bytes_found = sz_i;
+      if (REGISTER_BYTES_OK_P() && !REGISTER_BYTES_OK(sz_i))
 	warning(_("Remote reply is too short: %s"), buf);
     }
 
  supply_them:
   {
-    int i;
-    for (i = 0; i < (NUM_REGS + NUM_PSEUDO_REGS); i++)
+    int i_i;
+    for (i_i = 0; i_i < (NUM_REGS + NUM_PSEUDO_REGS); i_i++)
       {
-	struct packet_reg *r = &rs->regs[i];
+	struct packet_reg *r = &rs->regs[i_i];
 	if (r->in_g_packet)
 	  {
 	    if ((r->offset * 2UL) >= strlen(buf))
@@ -3973,7 +3986,7 @@ remote_fetch_registers(int regnum)
 		/* The register is NOT available, mark it as such (at
                    the same time setting the value to zero).  */
 		regcache_raw_supply(current_regcache, r->regnum, NULL);
-		set_register_cached(i, -1);
+		set_register_cached(i_i, -1);
 	      }
 	    else
 	      regcache_raw_supply(current_regcache, r->regnum,
@@ -4110,9 +4123,9 @@ hexnumlen(ULONGEST num)
 {
   int i;
   
-#if defined(__GNUC__) && defined(ATTRIBUTE_CONST)
-  asm("");
-#endif /* __GNUC__ && ATTRIBUTE_CONST */
+#if defined(__GNUC__) && defined(ATTRIBUTE_CONST) && !defined(__STRICT_ANSI__)
+  __asm__("");
+#endif /* __GNUC__ && ATTRIBUTE_CONST && !__STRICT_ANSI__ */
 
   for (i = 0; num != 0; i++)
     num >>= 4;
@@ -4657,6 +4670,7 @@ putpkt_binary(const char *buf, int cnt)
 	    case '-':
 	      if (remote_debug)
 		fprintf_unfiltered(gdb_stdlog, "Nak\n");
+	      break; /* -Wimplicit-fallthrough */
 	    case SERIAL_TIMEOUT:
 	      tcount++;
 	      if (tcount > 3)
@@ -5288,21 +5302,32 @@ watchpoint_to_Z_packet (int type)
     }
 }
 
+/* */
 static int
 remote_insert_watchpoint(CORE_ADDR addr, int len, int type)
 {
   struct remote_state *rs = get_remote_state();
-  size_t buflen = rs->remote_packet_size;
+  const size_t buflen = rs->remote_packet_size;
   char *buf = (char *)alloca(buflen);
   char *p;
   enum Z_packet_type packet = (enum Z_packet_type)watchpoint_to_Z_packet(type);
+  unsigned int u_packet;
 
   if (remote_protocol_Z[packet].support == PACKET_DISABLE)
     error(_("Cannot set hardware watchpoints without the '%s' (%s) packet."),
 	  remote_protocol_Z[packet].name,
 	  remote_protocol_Z[packet].title);
+  
+  u_packet = (unsigned int)packet;
+  if (u_packet > (unsigned int)INT_MAX) {
+    warning(_("packet is too big"));
+    u_packet = (unsigned int)INT_MAX;
+  }
+  if (buflen > (const size_t)INT_MAX) {
+    warning(_("buflen is too big"));
+  }
 
-  snprintf(buf, buflen, "Z%x,", packet);
+  snprintf(buf, buflen, "Z%x,", u_packet);
   p = strchr(buf, '\0');
   addr = remote_address_masked(addr);
   p += hexnumstr(p, (ULONGEST)addr);
@@ -5325,22 +5350,32 @@ remote_insert_watchpoint(CORE_ADDR addr, int len, int type)
 		 _("remote_insert_watchpoint: reached end of function"));
 }
 
-
+/* */
 static int
 remote_remove_watchpoint(CORE_ADDR addr, int len, int type)
 {
   struct remote_state *rs = get_remote_state();
-  size_t buflen = rs->remote_packet_size;
+  const size_t buflen = rs->remote_packet_size;
   char *buf = (char *)alloca(buflen);
   char *p;
   enum Z_packet_type packet = (enum Z_packet_type)watchpoint_to_Z_packet(type);
+  unsigned int u_packet;
 
   if (remote_protocol_Z[packet].support == PACKET_DISABLE)
     error(_("Cannot clear hardware watchpoints without the '%s' (%s) packet."),
 	  remote_protocol_Z[packet].name,
 	  remote_protocol_Z[packet].title);
 
-  snprintf(buf, buflen, "z%x,", packet);
+  u_packet = (unsigned int)packet;
+  if (u_packet > (unsigned int)INT_MAX) {
+    warning(_("packet is too big"));
+    u_packet = (unsigned int)INT_MAX;
+  }
+  if (buflen > (const size_t)INT_MAX) {
+    warning(_("buflen is too big"));
+  }
+
+  snprintf(buf, buflen, "z%x,", u_packet);
   p = strchr(buf, '\0');
   addr = remote_address_masked(addr);
   p += hexnumstr(p, (ULONGEST)addr);
@@ -6015,11 +6050,11 @@ Fetch and print the remote list of thread identifiers, one pkt only"));
    buffer.  */
 
 static char *
-remote_pid_to_str (ptid_t ptid)
+remote_pid_to_str(ptid_t ptid)
 {
   static char buf[32];
 
-  xsnprintf (buf, sizeof buf, "thread %d", ptid_get_pid (ptid));
+  xsnprintf(buf, sizeof(buf), "thread %d", ptid_get_pid(ptid));
   return buf;
 }
 
@@ -6034,7 +6069,7 @@ remote_get_thread_local_address(ptid_t ptid, CORE_ADDR lm, CORE_ADDR offset)
       struct remote_state *rs = get_remote_state();
       char *buf = (char *)alloca(rs->remote_packet_size);
       char *p = buf;
-      enum packet_result result;
+      enum packet_result e_result;
 
       strcpy(p, "qGetTLSAddr:");
       p += strlen(p);
@@ -6047,15 +6082,15 @@ remote_get_thread_local_address(ptid_t ptid, CORE_ADDR lm, CORE_ADDR offset)
 
       putpkt(buf);
       getpkt(buf, rs->remote_packet_size, 0);
-      result = packet_ok(buf, &remote_protocol_qGetTLSAddr);
-      if (result == PACKET_OK)
+      e_result = packet_ok(buf, &remote_protocol_qGetTLSAddr);
+      if (e_result == PACKET_OK)
 	{
-	  ULONGEST result;
+	  ULONGEST ul_result;
 
-	  unpack_varlen_hex(buf, &result);
-	  return result;
+	  unpack_varlen_hex(buf, &ul_result);
+	  return ul_result;
 	}
-      else if (result == PACKET_UNKNOWN)
+      else if (e_result == PACKET_UNKNOWN)
 	throw_error(TLS_GENERIC_ERROR,
 		    _("Remote target doesn't support qGetTLSAddr packet"));
       else

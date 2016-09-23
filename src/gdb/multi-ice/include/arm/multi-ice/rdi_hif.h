@@ -106,7 +106,7 @@ struct RDI_HostosInterface {
     RDI_Hif_WriteC *writec;
     RDI_Hif_ReadC *readc;
     RDI_Hif_Write *write;
-    RDI_Hif_GetS *gets;
+    RDI_Hif_GetS *gets_f;
     RDI_Hif_HostosArg *hostosarg;
 
     RDI_Hif_ResetProc *reset;

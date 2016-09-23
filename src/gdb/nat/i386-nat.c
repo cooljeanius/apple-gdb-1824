@@ -290,9 +290,9 @@ i386_show_dr (const char *func, CORE_ADDR addr,
    have the value of 1, 2, or 4.  */
 
 static unsigned
-i386_length_and_rw_bits (int len, enum target_hw_bp_type type)
+i386_length_and_rw_bits(int len, enum target_hw_bp_type type)
 {
-  unsigned rw;
+  unsigned int rw;
 
   switch (type)
     {
@@ -314,9 +314,9 @@ i386_length_and_rw_bits (int len, enum target_hw_bp_type type)
 	break;
 #endif /* DR_RW_IORW && NOW_SUPPORTED */
       default:
-	internal_error (__FILE__, __LINE__, _("\
+	internal_error(__FILE__, __LINE__, _("\
 Invalid hardware breakpoint type %d in i386_length_and_rw_bits.\n"),
-			(int) type);
+		       (int)type);
     }
 
   switch (len)
@@ -330,6 +330,10 @@ Invalid hardware breakpoint type %d in i386_length_and_rw_bits.\n"),
       case 8:
         if (wordsize() == 8)
  	  return (DR_LEN_8 | rw);
+	else
+	  internal_error(__FILE__, __LINE__, _("\
+Invalid wordsize (%d) for length of 8 in i386_length_and_rw_bits.\n"),
+			 wordsize());
       default:
 	internal_error(__FILE__, __LINE__, _("\
 Invalid hardware breakpoint length %d in i386_length_and_rw_bits.\n"), len);

@@ -345,6 +345,16 @@ enum array_bound_type
   BOUND_CANNOT_BE_DETERMINED
 };
 
+/* Move this up here since the struct we un-nested is space-critical, too: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic warning "-Wpadded"
+#  pragma GCC diagnostic warning "-Wpacked"
+/* "-Wpacked-bitfield-compat" is already on by default. */
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* un-nested for C++ usage: */
 struct field
 {
@@ -391,16 +401,6 @@ struct field
    * arguments: */
   const char *name;
 };
-
-
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic warning "-Wpadded"
-#  pragma GCC diagnostic warning "-Wpacked"
-/* "-Wpacked-bitfield-compat" is already on by default. */
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
 
 /* This structure is space-critical.
    Its layout has been tweaked to reduce the space used.  */

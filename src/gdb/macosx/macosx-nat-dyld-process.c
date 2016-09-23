@@ -1806,7 +1806,7 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
       commsec = bfd_get_section_by_name(e->objfile->obfd, segname);
       if (commsec != NULL)
         {
-          char *buf;
+          char *bufstr;
           bfd_size_type len;
           char *bfdname;
 	  size_t buf_len;
@@ -1814,7 +1814,7 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
 
           len = bfd_section_size(e->objfile->obfd, commsec);
 	  buf_len = ((size_t)len * sizeof(char));
-          buf = (char *)xmalloc(buf_len);
+          bufstr = (char *)xmalloc(buf_len);
 	  gdb_assert(e->objfile->obfd != NULL);
 	  bfdnamelen = (strlen(e->objfile->obfd->filename) + 128UL);
           bfdname = (char *)xmalloc(bfdnamelen);
@@ -1826,11 +1826,12 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
 	  printf_filtered(_("bfdname: %s.\n"), bfdname);
 #endif /* DEBUG || _DEBUG || GDB_DEBUG */
 
-          if (bfd_get_section_contents(e->objfile->obfd, commsec, buf,
+          if (bfd_get_section_contents(e->objfile->obfd, commsec, bufstr,
                                        0, len) != TRUE)
             warning(_("unable to read commpage data"));
 
-          e->commpage_bfd = bfd_memopenr(bfdname, NULL, (bfd_byte *)buf, len);
+          e->commpage_bfd = bfd_memopenr(bfdname, NULL, (bfd_byte *)bufstr,
+					 len);
 
           if (!bfd_check_format(e->commpage_bfd, bfd_object))
             {

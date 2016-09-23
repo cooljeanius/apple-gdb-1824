@@ -187,10 +187,11 @@ GDB_val_print (struct type *type,
   return call_wrapped_function ((catch_errors_ftype *) wrap_val_print, &args);
 }
 
+/* */
 static int
-wrap_val_print (char *a)
+wrap_val_print(char *a)
 {
-  struct gdb_wrapper_arguments **args = (struct gdb_wrapper_arguments **) a;
+  struct gdb_wrapper_arguments **args = (struct gdb_wrapper_arguments **)a;
   struct type *type;
   const gdb_byte *valaddr;
   CORE_ADDR address;
@@ -200,17 +201,17 @@ wrap_val_print (char *a)
   int recurse;
   enum val_prettyprint pretty;
 
-  type = (struct type *) (*args)->args[0];
-  valaddr = (gdb_byte *) (*args)->args[1];
-  address = *(CORE_ADDR *) (*args)->args[2];
-  stream = (struct ui_file *) (*args)->args[3];
-  format = (int) (*args)->args[4];
-  deref_ref = (int) (*args)->args[5];
-  recurse = (int) (*args)->args[6];
-  pretty = (enum val_prettyprint) (*args)->args[7];
+  type = (struct type *)(*args)->args[0];
+  valaddr = (gdb_byte *)(*args)->args[1];
+  address = *(CORE_ADDR *)(*args)->args[2];
+  stream = (struct ui_file *)(*args)->args[3];
+  format = (int)*(*args)->args[4];
+  deref_ref = (int)*(*args)->args[5];
+  recurse = (int)*(*args)->args[6];
+  pretty = (enum val_prettyprint)*(*args)->args[7];
 
-  val_print (type, valaddr, 0, address, stream, format, deref_ref,
-	     recurse, pretty);
+  val_print(type, valaddr, 0, address, stream, format, deref_ref,
+	    recurse, pretty);
   return 1;
 }
 
@@ -271,23 +272,25 @@ GDB_value_equal(value_ptr val1, value_ptr val2, int *result)
   if (r != GDB_OK)
     return r;
 
-  *result = (int) args.result;
+  *result = (int)args.result;
   return GDB_OK;
 }
 
+/* */
 static int
-wrap_value_equal (char *a)
+wrap_value_equal(char *a)
 {
-  struct gdb_wrapper_arguments **args = (struct gdb_wrapper_arguments **) a;
+  struct gdb_wrapper_arguments **args = (struct gdb_wrapper_arguments **)a;
   value_ptr val1, val2;
 
-  val1 = (value_ptr) (*args)->args[0];
-  val2 = (value_ptr) (*args)->args[1];
+  val1 = (value_ptr)(*args)->args[0];
+  val2 = (value_ptr)(*args)->args[1];
 
-  (*args)->result = (char *) value_equal (val1, val2);
+  (*args)->result = (char *)(intptr_t)value_equal(val1, val2);
   return 1;
 }
 
+/* */
 gdb_result
 GDB_parse_exp_1 (char **stringptr, struct block *block,
 		 int comma, struct expression **result)

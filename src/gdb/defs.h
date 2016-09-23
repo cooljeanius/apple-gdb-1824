@@ -41,6 +41,23 @@
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
+#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# ifdef HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  ifdef HAVE_TIME_H
+#   include <time.h>
+#  else
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #    warning "defs.h expects a time-related header to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
+#  endif /* HAVE_TIME_H */
+# endif /* HAVE_SYS_TIME_H */
+#endif /* TIME_WITH_SYS_TIME */
+
 #if defined(HAVE_SYS_TYPES_H) || defined(STDC_HEADERS) || defined(__STDC__) || defined(__GNUC__) || defined(__APPLE__)
 # include <sys/types.h>
 #else
@@ -313,7 +330,7 @@ typedef bfd_vma CORE_ADDR;
 #define DEPRECATED_STREQ(a,b) (strcmp((a), (b)) == 0)
 #define DEPRECATED_STREQN(a,b,c) (strncmp((a), (b), (c)) == 0)
 
-/* Check if a character is one of the commonly used C++ marker characters.  */
+/* Check if a character is one of the commonly used C++ marker characters: */
 extern int is_cplus_marker(int);
 
 /* enable xdb commands if set */
@@ -342,6 +359,9 @@ extern void quit(void);
 /* do twice to force compiler warning */
 # define QUIT_FIXME "FIXME"
 # define QUIT_FIXME "ignoring redefinition of QUIT"
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "FIXME: ignoring redefinition of QUIT"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #else
 # if defined(deprecated_interactive_hook)
 #  define QUIT { \
@@ -470,9 +490,18 @@ struct cleanup
 # if defined(__GNUC__) && ((__GNUC__ > 2) || ((__GNUC__ == 2) && (__GNUC_MINOR__ >= 7)))
 #  define ATTR_NORETURN __attribute__((noreturn))
 # else
-#  define ATTR_NORETURN		/* nothing */
+#  define ATTR_NORETURN /* nothing */
 # endif /* __GNUC__ version check */
 #endif /* !ATTR_NORETURN */
+
+/* Added in gcc 7: */
+#ifndef ATTR_FALLTHROUGH
+# if defined(__GNUC__) && (__GNUC__ >= 7)
+#  define ATTR_FALLTHROUGH __attribute__((fallthrough))
+# else
+#  define ATTR_FALLTHROUGH /* FALLTHRU */
+# endif /* gcc 7+ */
+#endif /* !ATTR_FALLTHROUGH */
 
 #ifndef ATTR_FORMAT
 # if defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 4))
@@ -489,6 +518,16 @@ struct cleanup
 #  define ATTR_FORMAT_ARG(arg)	/* nothing */
 # endif /* __GNUC__ version check */
 #endif /* !ATTR_FORMAT_ARG */
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ >= 4)
+#  define ATTRIBUTE_OPTIMIZE(foo) __attribute__((optimize(#foo)))
+# else
+#  define ATTRIBUTE_OPTIMIZE(foo) /* nothing */
+# endif /* gcc 4+ */
+#else
+# define ATTRIBUTE_OPTIMIZE /* (nothing) */
+#endif /* any gcc */
 
 /* FIXME: dirty hack: */
 #ifndef gnu_printf
@@ -1268,7 +1307,8 @@ extern void *xzalloc(size_t)
 
 
 /* Like asprintf/vasprintf but get an internal_error if the call fails: */
-extern void xasprintf(char **ret, const char *format, ...) ATTR_FORMAT(printf, 2, 3);
+extern void xasprintf(char **ret, const char *format, ...)
+     ATTR_FORMAT(printf, 2, 3);
 #ifndef LIBIBERTY_H
 extern void xvasprintf(char **ret, const char *format, va_list ap)
      ATTR_FORMAT(printf, 2, 0);
@@ -1276,9 +1316,10 @@ extern void xvasprintf(char **ret, const char *format, va_list ap)
 
 /* Like asprintf and vasprintf, but return the string, throw an error
    if no memory.  */
-extern char *xstrprintf(const char *format, ...) ATTR_FORMAT(printf, 1, 2);
+extern char *xstrprintf(const char *format, ...) ATTR_FORMAT(printf, 1, 2)
+     ATTRIBUTE_W_U_R;
 extern char *xstrvprintf(const char *format, va_list ap)
-     ATTR_FORMAT(gnu_printf, 1, 0);
+     ATTR_FORMAT(gnu_printf, 1, 0) ATTRIBUTE_W_U_R;
 
 /* Like snprintf, but throw an error if the output buffer is too small.  */
 extern int xsnprintf(char *str, size_t size, const char *format, ...)
@@ -1365,6 +1406,62 @@ extern void vwarning(const char *, va_list args) ATTR_FORMAT(printf, 1, 0);
                        (defined(HAVE_DECL_ATOF) && !HAVE_DECL_ATOF))
 extern double atof(const char *);	/* X3.159-1989  4.10.1.1 */
 #endif /* !atof && !HAVE_DECL_ATOF */
+
+#if !defined(_STRING_H_) || defined(S_SPLINT_S)
+# if !defined(strlcat) && (!defined(HAVE_DECL_STRLCAT) || !HAVE_DECL_STRLCAT)
+extern size_t strlcat(char *, const char *, size_t);
+# endif /* !strlcat && !HAVE_DECL_STRLCAT */
+# if !defined(strlcpy) && (!defined(HAVE_DECL_STRLCPY) || !HAVE_DECL_STRLCPY)
+extern size_t strlcpy(char *, const char *, size_t);
+# endif /* !strlcpy && !HAVE_DECL_STRLCPY */
+#endif /* !_STRING_H_ || S_SPLINT_S */
+
+#if !defined(_STRINGS_H_) || defined(S_SPLINT_S)
+# if !defined(bcopy) && (!defined(HAVE_DECL_BCOPY) || !HAVE_DECL_BCOPY)
+extern void bcopy(const void *, void *, size_t);
+# endif /* !bcopy && !HAVE_DECL_BCOPY */
+# if !defined(bzero) && (!defined(HAVE_DECL_BZERO) || !HAVE_DECL_BZERO)
+extern void bzero(void *, size_t);
+# endif /* !bzero && !HAVE_DECL_BZERO */
+# if !defined(strcasecmp) && (!defined(HAVE_DECL_STRCASECMP) || !HAVE_DECL_STRCASECMP)
+extern int strcasecmp(const char *, const char *);
+# endif /* !strcasecmp && !HAVE_DECL_STRCASECMP */
+# if !defined(strncasecmp) && (!defined(HAVE_DECL_STRNCASECMP) || !HAVE_DECL_STRNCASECMP)
+extern int strncasecmp(const char *, const char *, size_t);
+# endif /* !strncasecmp && !HAVE_DECL_STRNCASECMP */
+#endif /* !_STRINGS_H_ || S_SPLINT_S */
+
+#if !defined(_STDLIB_H_) || defined(S_SPLINT_S)
+# if !defined(qsort_r) && (!defined(HAVE_DECL_QSORT_R) || !HAVE_DECL_QSORT_R)
+extern void qsort_r(void *, size_t, size_t, void *,
+		    int (*)(void *, const void *, const void *));
+# endif /* !qsort_r && !HAVE_DECL_QSORT_R */
+# if !defined(realpath) && (!defined(HAVE_DECL_REALPATH) || !HAVE_DECL_REALPATH)
+extern char *realpath(const char *restrict, char *restrict);
+# endif /* !realpath && !HAVE_DECL_REALPATH */
+#endif /* !_STDLIB_H_ || S_SPLINT_S */
+
+#if !defined(_SYS_TIME_H_) || defined(S_SPLINT_S)
+# if !defined(gettimeofday) && (!defined(HAVE_DECL_GETTIMEOFDAY) || !HAVE_DECL_GETTIMEOFDAY)
+extern int gettimeofday(struct timeval *restrict, void *restrict);
+# endif /* !gettimeofday && !HAVE_DECL_GETTIMEOFDAY */
+# if !defined(setitimer) && (!defined(HAVE_DECL_SETITIMER) || !HAVE_DECL_SETITIMER)
+extern int setitimer(int, const struct itimerval *restrict,
+		     struct itimerval *restrict);
+# endif /* !setititmer && !HAVE_DECL_SETITIMER */
+#endif /* !_SYS_TIME_H_ || S_SPLINT_S */
+
+#if !defined(_TIME_H_) || defined(S_SPLINT_S)
+# if !defined(gmtime) && (!defined(HAVE_DECL_GMTIME) || !HAVE_DECL_GMTIME)
+extern struct tm *gmtime(const time_t *);
+# endif /* !gmtime && !HAVE_DECL_GMTIME */
+# if !defined(localtime) && (!defined(HAVE_DECL_LOCALTIME) || !HAVE_DECL_LOCALTIME)
+extern struct tm *localtime(const time_t *);
+# endif /* !localtime && !HAVE_DECL_LOCALTIME */
+# if !defined(localtime_r) && (!defined(HAVE_DECL_LOCALTIME_R) || !HAVE_DECL_LOCALTIME_R)
+extern struct tm *localtime_r(const time_t *restrict, struct tm *restrict);
+# endif /* !localtime_r && !HAVE_DECL_LOCALTIME_R */
+#endif /* !_TIME_H_ || S_SPLINT_S */
 
 /* Various possibilities for alloca: */
 #ifndef alloca
@@ -1599,8 +1696,9 @@ extern void (*deprecated_error_begin_hook)(void)
   ATTRIBUTE_DEPRECATED;
 
 /* APPLE LOCAL begin hooks */
-/* called when the run command is issued; return 1 means do the run; 0 means do not */
-extern int (*run_command_hook)(void);
+/* called when the run command is issued;
+ * return 1 means do the run; 0 means do not: */
+extern int (*run_command_hook)(void) ATTRIBUTE_W_U_R;
 extern void (*hand_call_function_hook)(void);
 /* APPLE LOCAL end hooks */
 

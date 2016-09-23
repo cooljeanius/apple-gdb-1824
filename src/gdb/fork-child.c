@@ -225,9 +225,14 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
 	  (void)arch_string;
 # endif /* TARGET_[POWERPC|I386|ARM] */
 	if (arch_string != NULL)
-	  snprintf(shell_command, shell_cmd_len,
-		   "%s exec /usr/bin/arch -arch %s ", shell_command,
-		   arch_string);
+	  {
+	    /* hack around -Wrestrict: */
+	    const char *shell_cmd_ptr = &shell_command[0];
+	    /* FIXME: verify correctness? */
+	    snprintf(shell_command, shell_cmd_len,
+		     "%s exec /usr/bin/arch -arch %s ", shell_cmd_ptr,
+		     arch_string);
+	  }
 	else
 	  strcat(shell_command, "exec ");
       }

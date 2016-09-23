@@ -802,9 +802,14 @@ value_concat (struct value *arg1, struct value *arg2)
    Does not support addition and subtraction on pointers;
    use value_add or value_sub if you want to handle those possibilities.  */
 
-struct value *
+struct value * ATTRIBUTE_OPTIMIZE(Os) ATTRIBUTE_OPTIMIZE(no-fast-math)
 value_binop(struct value *arg1, struct value *arg2, enum exp_opcode op)
 {
+#ifdef __FAST_MATH__
+# if defined(__GNUC__) && (__GNUC__ == 7) && !defined(__STRICT_ANSI__)
+#  warning "GCC PR 71009"
+# endif /* (__GNUC__ == 7) && !__STRICT_ANSI__ */
+#endif /* __FAST_MATH__ */
   struct value *val = NULL;
   struct type *type1, *type2;
 

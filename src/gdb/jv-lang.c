@@ -908,9 +908,12 @@ evaluate_subexp_java (struct type *expect_type, struct expression *exp,
 	  long length, index;
 	  struct type *el_type;
 	  gdb_byte buf4[4];
+	  gdb_byte buf8[8];
 
 	  struct value *clas = java_class_from_object (arg1);
 	  struct value *temp = clas;
+	  buf8[0] = '\0';
+	  (void)buf8;
 	  /* Get CLASS_ELEMENT_TYPE of the array type. */
 	  temp = value_struct_elt (&temp, NULL, "methods",
 				   NULL, "structure");

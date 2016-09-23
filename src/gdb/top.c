@@ -868,6 +868,8 @@ dummy_func_to_use_unused_top_c_funcs(void)
 #endif /* STOP_SIGNAL */
   do_nothing(local_signo);
   float_handler(local_signo);
+  /*NOTREACHED*/
+  error(_("Reached end of noreturn function."));
 }
 
 /* The current saved history number from operate-and-get-next.
@@ -1370,13 +1372,14 @@ show_commands(const char *args, int from_tty)
 
   if (args)
     {
-      if ((args[0] == '+') && (args[1] == '\0'))
+      if ((args[0] == '+') && (args[1] == '\0')) {
 	/* "info editing +" should print from the stored position.  */
 	;
-      else
+      } else {
 	/* "info editing <exp>" should print around command number <exp>.  */
 	num = (int)((parse_and_eval_long(args) - history_base)
                     - (Hist_print / 2));
+      }
     }
   /* "show commands" means print the last Hist_print commands.  */
   else

@@ -715,11 +715,13 @@ kdp_attach(const char *args, int from_tty)
   set_internalvar (lookup_internalvar ("gdb_kdp_support_level"),
                    value_from_longest (builtin_type_int, (LONGEST)GDB_KDP_SUPPORT_LEVEL));
 
-  // retrieve the cpu type & cpusubtype, set kdp_cpu_type kdp_host_type globals
-  kdp_hostinfo ();
+  /* retrieve the cpu type & cpusubtype, set kdp_cpu_type kdp_host_type
+   * globals: */
+  kdp_hostinfo();
 
-  // See if the kdp_versioninfo tells us where the kernel is loaded in memory
-  kdp_uuid_and_load_addr ();
+  /* See if the kdp_versioninfo tells us where the kernel is loaded in
+   * memory: */
+  kdp_uuid_and_load_addr();
 
   /* Use breakpoint packets only if the kernel supports them */
   if ((remote_kdp_version >= 10) && (remote_kdp_feature & KDP_FEATURE_BP))

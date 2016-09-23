@@ -1427,21 +1427,20 @@ in which its expression is valid.\n"),
    remove_breakpoints is used when the program stops.
    Both return zero if successful,
    or an `errno' value if could not write the inferior.  */
-
 int
-insert_breakpoints (void)
+insert_breakpoints(void)
 {
   struct bp_location *b, *temp;
   int return_val = 0;	/* return success code. */
-  int val = 0;
+  int i_val = 0;
   int disabled_breaks = 0;
   int hw_breakpoint_error = 0;
   int process_warning = 0;
-  /* APPLE LOCAL: This is to check watchpoint setting returns.  */
+  /* APPLE LOCAL: This is to check watchpoint setting returns: */
   int retval;
 
-  struct ui_file *tmp_error_stream = mem_fileopen ();
-  make_cleanup_ui_file_delete (tmp_error_stream);
+  struct ui_file *tmp_error_stream = mem_fileopen();
+  make_cleanup_ui_file_delete(tmp_error_stream);
 
   /* Explicitly mark the warning -- this will only be printed if
      there was an error.  */
@@ -1460,7 +1459,8 @@ insert_breakpoints (void)
       if (!breakpoint_enabled (b->owner))
 	continue;
 
-      /* APPLE LOCAL: The watchpoint code will set this to 0 if there's an error.  */
+      /* APPLE LOCAL: The watchpoint code will set this to 0 if there is/was an
+       * error: */
       retval = 1;
 
       /* FIXME drow/2003-10-07: This code should be pushed elsewhere when
@@ -1468,37 +1468,37 @@ insert_breakpoints (void)
       if ((b->loc_type == bp_loc_hardware_watchpoint
 	   || b->owner->type == bp_watchpoint) && !b->owner->val)
 	{
-	  struct value *val;
+	  struct value *valptr;
 
-	  val = evaluate_expression (b->owner->exp);
-	  release_value (val);
-	  /* APPLE LOCAL: Don't throw an error here if we can't read
+	  valptr = evaluate_expression(b->owner->exp);
+	  release_value(valptr);
+	  /* APPLE LOCAL: Don't throw an error here if we cannot read
 	     memory at the breakpoint site.  If we do this when starting
 	     up the target, we just stall.  */
-	  if (value_lazy (val))
+	  if (value_lazy(valptr))
 	    {
-	      retval = gdb_value_fetch_lazy (val);
+	      retval = gdb_value_fetch_lazy(valptr);
 	      if (retval == 0)
-		warning ("Could not set watchpoint %d", b->owner->number);
+		warning("Could not set watchpoint %d", b->owner->number);
 	      else
-		b->owner->val = val;
+		b->owner->val = valptr;
 	    }
 	}
 
       if (retval)
 	{
-	  val = insert_bp_location (b, tmp_error_stream,
-				    &disabled_breaks, &process_warning,
-				    &hw_breakpoint_error);
-	  if (val)
-	    return_val = val;
+	  i_val = insert_bp_location(b, tmp_error_stream,
+				     &disabled_breaks, &process_warning,
+				     &hw_breakpoint_error);
+	  if (i_val)
+	    return_val = i_val;
 	}
     }
   /* APPLE LOCAL begin breakpoint notices on one line */
   /* We changed the printing code to emit all the disabled breakpoints
      on one line, so we have to wrap it here.  */
   if (disabled_breaks)
-    fprintf_unfiltered (tmp_error_stream, "\n");
+    fprintf_unfiltered(tmp_error_stream, "\n");
   /* APPLE LOCAL end breakpoint notices on one line */
 
   if (return_val)
@@ -4092,7 +4092,7 @@ print_one_breakpoint(struct breakpoint *b, CORE_ADDR *last_addr)
 	    ui_out_field_int (uiout, "what", b->forked_inferior_pid);
 	    ui_out_spaces (uiout, 1);
 	  }
-
+	ATTRIBUTE_FALLTHROUGH; /* XXX really fallthrough? */
       case bp_catch_exec:
 	/* Field 4, the address, is omitted (which makes the columns
 	   not line up too nicely with the headers, but the effect
@@ -4112,8 +4112,8 @@ print_one_breakpoint(struct breakpoint *b, CORE_ADDR *last_addr)
       case bp_gnu_v3_catch_catch:
       case bp_catch_throw:
       case bp_gnu_v3_catch_throw:
-	print_one_exception_catchpoint (b, 0);
-
+	print_one_exception_catchpoint(b, 0);
+	ATTRIBUTE_FALLTHROUGH; /* XXX really fallthrough? */
       case bp_breakpoint:
       /* APPLE LOCAL begin subroutine inlining  */
       case bp_inlined_breakpoint:
@@ -5174,9 +5174,9 @@ remove_solib_event_breakpoints(void)
 {
   struct breakpoint *b, *temp;
 
-#if defined(__GNUC__) && defined(__APPLE__)
-  asm("");
-#endif /* __GNUC__ && __APPLE__ */
+#if defined(__GNUC__) && defined(__APPLE__) && !defined(__STRICT_ANSI__)
+  __asm__("");
+#endif /* __GNUC__ && __APPLE__ && !__STRICT_ANSI__ */
 
   return; /* APPLE LOCAL: return early */
   /*NOTREACHED*/
@@ -5287,29 +5287,31 @@ void
 re_enable_breakpoints_in_shlibs(int silent)
 {
   struct breakpoint *b, *tmp;
+  char buf8[8] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
+  (void)buf8;
 
   ALL_BREAKPOINTS_SAFE(b, tmp)
   {
     if (b->enable_state == bp_shlib_disabled)
       {
 	gdb_byte buf[1];
-	/* APPLE LOCAL we don't use lib */
+	/* APPLE LOCAL we do NOT use lib */
 
 	/* Do not reenable the breakpoint if the shared library is
 	   still not mapped in.  */
 	/* APPLE LOCAL begin don't use PC_SOLIB */
 	/* We can't use the PC_SOLIB test here, because the Mac OS X
 	   version currently just returns NULL...  */
-	if (target_read_memory (b->loc->address, buf, 1) == 0)
+	if (target_read_memory(b->loc->address, buf, 1) == 0)
 	  /* APPLE LOCAL end don't use PC_SOLIB */
 	  {
 	    b->enable_state = bp_enabled;
 	    /* APPLE LOCAL begin control silencing of breakpoint re-enable */
 	    if (!silent)
 	      {
-		target_terminal_ours_for_output ();
-		printf_filtered ("Re-enabling shared library breakpoint %d\n",
-				 b->number);
+		target_terminal_ours_for_output();
+		printf_filtered("Re-enabling shared library breakpoint %d\n",
+				b->number);
 	      }
 	    /* APPLE LOCAL end control silencing of breakpoint re-enable */
 	  }
@@ -6924,6 +6926,7 @@ break_command_2(const char *arg, int flag, int from_tty,
 	      exception_print(gdb_stderr, e);
 	      return e.reason;
 	    }
+	  ATTRIBUTE_FALLTHROUGH; /* XXX really fallthrough? */
 	case NOT_FOUND_ERROR:
 	  /* If called to resolve pending breakpoint, just return
 	     error code.  */
@@ -8372,23 +8375,23 @@ create_exception_catchpoint(int tempflag, const char *cond_string,
   return b;
 }
 
+/* */
 static enum print_stop_action
-print_exception_catchpoint (struct breakpoint *b)
+print_exception_catchpoint(struct breakpoint *b)
 {
   switch (b->type)
     {
     case bp_gnu_v3_catch_catch:
-      printf_filtered ("\nCatchpoint %d (exception caught).",
-                       b->number);
-
+      printf_filtered("\nCatchpoint %d (exception caught).", b->number);
+      ATTRIBUTE_FALLTHROUGH; /* XXX really fallthrough? */
     case bp_catch_catch:
       if (current_exception_event &&
           (CURRENT_EXCEPTION_KIND == EX_EVENT_CATCH))
         {
-          annotate_catchpoint (b->number);
-          print_catch_info (b);
+          annotate_catchpoint(b->number);
+          print_catch_info(b);
 	  ui_out_print_annotation_string(uiout, 0, "reason", "catch-exception");
-          if (ui_out_is_mi_like_p (uiout))
+          if (ui_out_is_mi_like_p(uiout))
             {
               return PRINT_SRC_AND_LOC;
             }
@@ -8406,9 +8409,8 @@ print_exception_catchpoint (struct breakpoint *b)
       break;
 
     case bp_gnu_v3_catch_throw:
-      printf_filtered ("\nCatchpoint %d (exception thrown).",
-                       b->number);
-
+      printf_filtered("\nCatchpoint %d (exception thrown).", b->number);
+      ATTRIBUTE_FALLTHROUGH; /* XXX really fallthrough? */
     case bp_catch_throw:
       if (current_exception_event &&
           (CURRENT_EXCEPTION_KIND == EX_EVENT_THROW))
@@ -9430,12 +9432,14 @@ breakpoint_re_set_one(void *bint)
       /* This breakpoint is special, it's set up when the inferior
          starts and we really don't want to touch it.  */
       /* APPLE LOCAL: if it has an addr_string, we should be able
-	 to reset it.  I need this 'cause I'm reusing the bp_shilb_event
-	 for other purposes since it's such a PITA to add new breakpoint
+	 to reset it.  I need this because I am reusing the bp_shilb_event
+	 for other purposes since it is such a PITA to add new breakpoint
 	 types...  */
     case bp_shlib_event:
       if (b->addr_string == NULL)
 	break;
+      /* else fall through, I guess? */
+      ATTRIBUTE_FALLTHROUGH;
     case bp_thread_event:
       if (b->addr_string == NULL)
 	{
@@ -9859,8 +9863,9 @@ breakpoint_re_set_one(void *bint)
       break;
 
     default:
-      printf_filtered (_("Deleting unknown breakpoint type %d\n"), b->type);
+      printf_filtered(_("Deleting unknown breakpoint type %d\n"), b->type);
       /* fall through */
+      ATTRIBUTE_FALLTHROUGH;
       /* Delete longjmp and overlay event breakpoints; they will be
          reset later by breakpoint_re_set.  */
     case bp_longjmp:
@@ -10266,16 +10271,18 @@ disable_command(const char *args, int from_tty)
       case bp_hardware_watchpoint:
       case bp_read_watchpoint:
       case bp_access_watchpoint:
-	disable_breakpoint (bpt);
+	disable_breakpoint(bpt);
+	ATTRIBUTE_FALLTHROUGH; /* XXX really fallthrough? */
       default:
 	continue;
       }
   else
-    map_breakpoint_numbers (args, disable_breakpoint);
+    map_breakpoint_numbers(args, disable_breakpoint);
 }
 
+/* */
 static void
-do_enable_breakpoint (struct breakpoint *bpt, enum bpdisp disposition)
+do_enable_breakpoint(struct breakpoint *bpt, enum bpdisp disposition)
 {
   int target_resources_ok, other_type_used;
   struct value *mark;
@@ -10434,12 +10441,13 @@ enable_command(const char *args, int from_tty)
       case bp_hardware_watchpoint:
       case bp_read_watchpoint:
       case bp_access_watchpoint:
-	enable_breakpoint (bpt);
+	enable_breakpoint(bpt);
+	ATTRIBUTE_FALLTHROUGH; /* XXX really fallthrough? */
       default:
 	continue;
       }
   else
-    map_breakpoint_numbers (args, enable_breakpoint);
+    map_breakpoint_numbers(args, enable_breakpoint);
 }
 
 /* */
@@ -10700,11 +10708,12 @@ save_breakpoints_command(const char *arg, int from_tty)
               if (l)
                 {
                   char *orig_locale;
-                  orig_locale = strcpy((char*)xmalloc(strlen(l) + 1UL), l);
+                  orig_locale = strcpy((char *)xmalloc(strlen(l) + 1UL), l);
                   setlocale(LC_ALL, "");
                   if (strftime(buf, sizeof(buf), "%a %b %e %H:%M:%S %Z %Y",
 			       localtime(&t)))
-                    fprintf_unfiltered(stream, "# Saved breakpoints file created on %s\n\n", buf);
+                    fprintf_unfiltered(stream, "# Saved breakpoints file created on %s\n\n",
+				       buf);
                   setlocale(LC_ALL, orig_locale);
                 }
             }

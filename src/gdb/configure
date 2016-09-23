@@ -1010,6 +1010,7 @@ DUMPBIN
 LD
 FGREP
 LIBTOOL
+ASSEMBLER
 am__fastdepCCAS_FALSE
 am__fastdepCCAS_TRUE
 CCASDEPMODE
@@ -1106,6 +1107,9 @@ GMAKE_TRUE
 MAKE_IS_GNU
 MAKE
 HOST_CPU_C_ABI
+target_noncanonical
+host_noncanonical
+build_noncanonical
 TARGET_ARCHITECTURE
 HOST_ARCHITECTURE
 BUILD_ARCHITECTURE
@@ -5806,6 +5810,31 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   export TARGET_ARCHITECTURE="${target_cpu}"
 
 fi
+
+
+   case ${build_alias} in
+  "") build_noncanonical=${build} ;;
+  *) build_noncanonical=${build_alias} ;;
+esac
+
+
+
+
+   case ${host_alias} in
+  "") host_noncanonical=${build_noncanonical} ;;
+  *) host_noncanonical=${host_alias} ;;
+esac
+
+
+
+
+   case ${target_alias} in
+  "") target_noncanonical=${host_noncanonical} ;;
+  *) target_noncanonical=${target_alias} ;;
+esac
+
+
+
 
 
 
@@ -10642,6 +10671,107 @@ else
   am__fastdepCCAS_FALSE=
 fi
 
+
+
+
+
+ncn_tool_prefix=""
+test -n "${host_alias}" && ncn_tool_prefix="${host_alias}-"
+ncn_target_tool_prefix=""
+test -n "${target_alias}" && ncn_target_tool_prefix="${target_alias}-"
+
+ for ncn_progname in as gas; do
+  if test -n "${ncn_tool_prefix}"; then
+    # Extract the first word of "${ncn_tool_prefix}${ncn_progname}", so it can be a program name with args.
+set dummy ${ncn_tool_prefix}${ncn_progname}; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_ASSEMBLER+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$ASSEMBLER"; then
+  ac_cv_prog_ASSEMBLER="$ASSEMBLER" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+as_dummy="${PATH}:./../binutils"
+for as_dir in $as_dummy
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ASSEMBLER="${ncn_tool_prefix}${ncn_progname}"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+ASSEMBLER=$ac_cv_prog_ASSEMBLER
+if test -n "$ASSEMBLER"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ASSEMBLER" >&5
+$as_echo "$ASSEMBLER" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  fi
+  if test -z "$ac_cv_prog_ASSEMBLER" && test "x${build}" = "x${host}"; then
+    # Extract the first word of "${ncn_progname}", so it can be a program name with args.
+set dummy ${ncn_progname}; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_ASSEMBLER+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$ASSEMBLER"; then
+  ac_cv_prog_ASSEMBLER="$ASSEMBLER" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+as_dummy="${PATH}:./../binutils"
+for as_dir in $as_dummy
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ASSEMBLER="${ncn_progname}"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+ASSEMBLER=$ac_cv_prog_ASSEMBLER
+if test -n "$ASSEMBLER"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ASSEMBLER" >&5
+$as_echo "$ASSEMBLER" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  fi
+  test -n "$ac_cv_prog_ASSEMBLER" && break
+done
+
+if test -z "$ac_cv_prog_ASSEMBLER" ; then
+  set dummy as gas
+  if test "x${build}" = "x${host}"; then
+    ASSEMBLER="$2"
+  else
+    ASSEMBLER="${ncn_tool_prefix}$2"
+  fi
+fi
 
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -40054,6 +40184,83 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_STRPBRK $ac_have_decl
 _ACEOF
+ac_fn_c_check_decl "$LINENO" "strlcpy" "ac_cv_have_decl_strlcpy" "
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"This conftest expects <string.h> to be included.\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STRING_H */
+
+"
+if test "x$ac_cv_have_decl_strlcpy" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_STRLCPY $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "strlcat" "ac_cv_have_decl_strlcat" "
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"This conftest expects <string.h> to be included.\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STRING_H */
+
+"
+if test "x$ac_cv_have_decl_strlcat" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_STRLCAT $ac_have_decl
+_ACEOF
+
+ac_fn_c_check_decl "$LINENO" "strcasecmp" "ac_cv_have_decl_strcasecmp" "
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"This conftest expects <strings.h> to be included.\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STRINGS_H */
+
+"
+if test "x$ac_cv_have_decl_strcasecmp" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_STRCASECMP $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "strncasecmp" "ac_cv_have_decl_strncasecmp" "
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"This conftest expects <strings.h> to be included.\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STRINGS_H */
+
+"
+if test "x$ac_cv_have_decl_strncasecmp" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_STRNCASECMP $ac_have_decl
+_ACEOF
 
 
   ac_fn_c_check_decl "$LINENO" "alloca" "ac_cv_have_decl_alloca" "$ac_includes_default"
@@ -40362,7 +40569,89 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
   ## end better check for sys_siglist
 fi
-ac_fn_c_check_decl "$LINENO" "gmtime" "ac_cv_have_decl_gmtime" "$ac_includes_default"
+ac_fn_c_check_decl "$LINENO" "bcopy" "ac_cv_have_decl_bcopy" "$ac_includes_default"
+if test "x$ac_cv_have_decl_bcopy" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_BCOPY $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "bzero" "ac_cv_have_decl_bzero" "$ac_includes_default"
+if test "x$ac_cv_have_decl_bzero" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_BZERO $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "qsort_r" "ac_cv_have_decl_qsort_r" "$ac_includes_default"
+if test "x$ac_cv_have_decl_qsort_r" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_QSORT_R $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "realpath" "ac_cv_have_decl_realpath" "$ac_includes_default"
+if test "x$ac_cv_have_decl_realpath" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_REALPATH $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "gettimeofday" "ac_cv_have_decl_gettimeofday" "
+#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# ifdef HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  ifdef HAVE_TIME_H
+#   include <time.h>
+#  endif /* HAVE_TIME_H */
+# endif /* HAVE_SYS_TIME_H */
+#endif /* TIME_WITH_SYS_TIME */
+
+"
+if test "x$ac_cv_have_decl_gettimeofday" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_GETTIMEOFDAY $ac_have_decl
+_ACEOF
+if test $ac_have_decl = 1; then :
+
+
+fi
+ac_fn_c_check_decl "$LINENO" "gmtime" "ac_cv_have_decl_gmtime" "
+#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# ifdef HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  ifdef HAVE_TIME_H
+#   include <time.h>
+#  endif /* HAVE_TIME_H */
+# endif /* HAVE_SYS_TIME_H */
+#endif /* TIME_WITH_SYS_TIME */
+
+"
 if test "x$ac_cv_have_decl_gmtime" = xyes; then :
   ac_have_decl=1
 else
@@ -40372,7 +40661,25 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_GMTIME $ac_have_decl
 _ACEOF
-ac_fn_c_check_decl "$LINENO" "localtime" "ac_cv_have_decl_localtime" "$ac_includes_default"
+if test $ac_have_decl = 1; then :
+
+
+fi
+ac_fn_c_check_decl "$LINENO" "localtime" "ac_cv_have_decl_localtime" "
+#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# ifdef HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  ifdef HAVE_TIME_H
+#   include <time.h>
+#  endif /* HAVE_TIME_H */
+# endif /* HAVE_SYS_TIME_H */
+#endif /* TIME_WITH_SYS_TIME */
+
+"
 if test "x$ac_cv_have_decl_localtime" = xyes; then :
   ac_have_decl=1
 else
@@ -40382,7 +40689,25 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_LOCALTIME $ac_have_decl
 _ACEOF
-ac_fn_c_check_decl "$LINENO" "localtime_r" "ac_cv_have_decl_localtime_r" "$ac_includes_default"
+if test $ac_have_decl = 1; then :
+
+
+fi
+ac_fn_c_check_decl "$LINENO" "localtime_r" "ac_cv_have_decl_localtime_r" "
+#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# ifdef HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  ifdef HAVE_TIME_H
+#   include <time.h>
+#  endif /* HAVE_TIME_H */
+# endif /* HAVE_SYS_TIME_H */
+#endif /* TIME_WITH_SYS_TIME */
+
+"
 if test "x$ac_cv_have_decl_localtime_r" = xyes; then :
   ac_have_decl=1
 else
@@ -40392,6 +40717,38 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_LOCALTIME_R $ac_have_decl
 _ACEOF
+if test $ac_have_decl = 1; then :
+
+
+fi
+ac_fn_c_check_decl "$LINENO" "setitimer" "ac_cv_have_decl_setitimer" "
+#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# ifdef HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  ifdef HAVE_TIME_H
+#   include <time.h>
+#  endif /* HAVE_TIME_H */
+# endif /* HAVE_SYS_TIME_H */
+#endif /* TIME_WITH_SYS_TIME */
+
+"
+if test "x$ac_cv_have_decl_setitimer" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_SETITIMER $ac_have_decl
+_ACEOF
+if test $ac_have_decl = 1; then :
+
+
+fi
 ac_fn_c_check_decl "$LINENO" "free" "ac_cv_have_decl_free" "$ac_includes_default"
 if test "x$ac_cv_have_decl_free" = xyes; then :
   ac_have_decl=1
@@ -40453,8 +40810,20 @@ cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_GETOPT $ac_have_decl
 _ACEOF
   ## the libiberty macro might have already checked these for us:
+unset ac_cv_have_decl_asprintf
 unset ac_cv_have_decl_snprintf
+unset ac_cv_have_decl_vasprintf
 unset ac_cv_have_decl_vsnprintf
+ac_fn_c_check_decl "$LINENO" "asprintf" "ac_cv_have_decl_asprintf" "$ac_includes_default"
+if test "x$ac_cv_have_decl_asprintf" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_ASPRINTF $ac_have_decl
+_ACEOF
 ac_fn_c_check_decl "$LINENO" "snprintf" "ac_cv_have_decl_snprintf" "$ac_includes_default"
 if test "x$ac_cv_have_decl_snprintf" = xyes; then :
   ac_have_decl=1
@@ -40464,6 +40833,16 @@ fi
 
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_SNPRINTF $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "vasprintf" "ac_cv_have_decl_vasprintf" "$ac_includes_default"
+if test "x$ac_cv_have_decl_vasprintf" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_VASPRINTF $ac_have_decl
 _ACEOF
 ac_fn_c_check_decl "$LINENO" "vsnprintf" "ac_cv_have_decl_vsnprintf" "$ac_includes_default"
 if test "x$ac_cv_have_decl_vsnprintf" = xyes; then :
@@ -46568,10 +46947,9 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wshift-count-overflow -Wshift-negative-value -Wshift-overflow=2 \
 -Wmisleading-indentation -Wlto-type-mismatch -Wtautological-compare \
 -Wduplicated-cond -Wwrite-strings -Wenum-compare -Wnonnull-compare \
--Wdangling-else -Wduplicate-decl-specifier -Wmemset-elt-size \
--Wswitch-unreachable -Whsa -Wscalar-storage-order \
--Wimplicit-fallthrough -Wformat-length=2 -Wexpansion-to-defined \
--Wint-in-bool-context -Wbool-operation"
+-Wdangling-else -Wmemset-elt-size -Wswitch-unreachable -Whsa \
+-Wscalar-storage-order -Wimplicit-fallthrough -Wformat-length=2 \
+-Wexpansion-to-defined -Wint-in-bool-context -Wbool-operation"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -46584,14 +46962,15 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Wmultiple-inheritance -Wvirtual-inheritance -Wpmf-conversions \
 -Wtemplates -Wvirtual-move-assign -Wconversion-null -Weffc++ \
 -Wsized-deallocation -Wplacement-new=2 -Wshadow-compatible-local \
--Wbuiltin-function-redefined"
+-Wbuiltin-function-redefined -Wdeprecated -Waligned-new=all"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
 -Wpointer-sign -Wmissing-prototypes -Wdeclaration-after-statement \
--Woverride-init -Woverride-init-side-effects -Wshadow-local \
+-Woverride-init -Woverride-init-side-effects -Wduplicate-decl-specifier \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
--Wstrict-prototypes -Wnested-externs -Wc99-c11-compat"
+-Wstrict-prototypes -Wnested-externs -Wc99-c11-compat \
+-Wshadow-local -Wno-shadow-compatible-local"
   if test -f /usr/X11/include/X11/Xlib.h && test "x${enable_gdbtk}" = "xyes"; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Disabling C++ compatibility warnings for gdbtk" >&5
 $as_echo "$as_me: WARNING: Disabling C++ compatibility warnings for gdbtk" >&2;}
@@ -46716,18 +47095,41 @@ if test x${CFLAGS+set} = xset; then
       ## we will miss out on warnings about signed integer overflow in this
       ## case, so turn them into runtime errors instead, for debugging:
       build_warnings="${build_warnings} -ftrapv"
+
+$as_echo "#define OPTIMIZATION_LEVEL 0" >>confdefs.h
+
     ;;
     *"-O2"* | *"-O3"* | *"-Ofast"* | *"-ftree-vrp"* )
       build_warnings="${build_warnings} ${opt_warnings_plus}"
+
+$as_echo "#define OPTIMIZATION_LEVEL 2" >>confdefs.h
+
+      case "${CFLAGS}" in
+        *"-Ofast"* )
+          build_warnings="${build_warnings} -fmath-errno"
+        ;;
+      esac
     ;;
-    *"-O"* | *"-O1"* | *"-Og"* )
+    *"-O "* | *"-O1"* | *"-Og"* )
       build_warnings="${build_warnings} ${opt_warnings}"
+
+$as_echo "#define OPTIMIZATION_LEVEL 1" >>confdefs.h
+
     ;;
     *"-Os"* | *"-Oz"* )
       build_warnings="${build_warnings} -Wlarger-than=262144"
+
+$as_echo "#define OPTIMIZATION_LEVEL 1" >>confdefs.h
+
     ;;
     *"-fstack-protector"* )
       build_warnings="${build_warnings} -Wstack-protector"
+
+$as_echo "#define HAVE_STACK_PROTECTION 1" >>confdefs.h
+
+    ;;
+    *"-flto-odr-type-merging"* )
+      build_warnings="${build_warnings} -Wodr"
     ;;
   esac
 else
@@ -46738,6 +47140,7 @@ fi
 #  * -trigraphs (only assuming we leave -Wtrigraphs in, see below)
 #  * -Wshadow (noisy, but usually easy enough to fix if you use an IDE)
 #  * -Wcast-qual (casting can silence other warnings, so this can conflict)
+#  * -Wbad-function-cast (likewise) (C-only, not C++)
 #  * -Wconversion (would require a lot of casting)
 #  * -Wsign-conversion (likewise)
 #  * -Wtraditional-conversion (likewise) (C-only, not C++)
@@ -46990,6 +47393,7 @@ rm -f core conftest.err conftest.$ac_objext \
 $as_echo "${WARN_LDFLAGS}" >&6; }
 fi
 
+###########################################################################
 ## section for checking mmalloc usage:
 MMALLOC_CFLAGS=""
 MMALLOC=""

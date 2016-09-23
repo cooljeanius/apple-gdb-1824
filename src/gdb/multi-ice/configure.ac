@@ -168,8 +168,8 @@ AC_HEADER_TIOCGWINSZ
 AC_SYS_POSIX_TERMIOS
 unset ac_cv_header_sys_types_h
 AC_CHECK_HEADERS([arpa/inet.h basetsd.h errno.h fcntl.h getopt.h \
-                  intsafe.h limits.h locale.h mach/vm_types.h \
-                  netdb.h netinet/in.h netinet/tcp.h \
+                  intsafe.h limits.h locale.h mach/mach_vm.h \
+                  mach/vm_types.h netdb.h netinet/in.h netinet/tcp.h \
                   signal.h stdarg.h stddef.h stdio.h \
                   sys/file.h sys/ioctl.h sys/signal.h sys/time.h \
                   sys/types.h termios.h termio.h unix.h \
@@ -245,9 +245,9 @@ AC_CHECK_DECLS([SIGINT, SIGTERM, SIGQUIT])dnl
 
 dnl# Checks for compiler warning flags:
 build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
--Wparentheses -Wdeclaration-after-statement \
--Wpointer-arith -Wpointer-sign \
--Wno-unused -Wunused-label -Wunused-macros -Wswitch \
+-Wparentheses -Wdangling-else -Wdeclaration-after-statement \
+-Wpointer-arith -Wpointer-sign -Wpointer-compare -Wimplicit-fallthrough \
+-Wno-unused -Wunused-label -Wunused-macros -Wswitch -Wswitch-unreachable \
 -Wempty-body -Wmissing-parameter-type -Wmissing-declarations \
 -Wold-style-declaration -Wold-style-definition -Wstrict-prototypes \
 -Wabi -Wmissing-noreturn -Waddress -Warray-bounds -Wattributes \
@@ -258,13 +258,13 @@ build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Wpragmas -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
 -Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc -Wnull-dereference \
 -Wunsuffixed-float-constants -Wstrict-overflow -Wjump-misses-init \
--Wmisleading-indentation -Wno-format-security -Wno-format"
+-Wmisleading-indentation -Wno-format-security -Wno-format -Wformat-length"
 
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
     # APPLE_LOCAL
     build_warnings="${build_warnings} -Wextra-tokens -Wnewline-eof \
--Wshorten-64-to-32 -std=gnu89"
+-Wendif-labels -Wshorten-64-to-32 -Wnonportable-cfstrings -std=gnu89"
   ;;
 esac
 

@@ -3609,12 +3609,18 @@ varobj_get_type_index_from_fake_child(struct varobj *parent, int index)
     {
       while (index >= 0)
 	{
-	  if (TYPE_VPTR_BASETYPE (type) == type
-	      && type_index == TYPE_VPTR_FIELDNO (type))
-	    ; /* ignore vptr */
-	  else if (TYPE_FIELD_STATIC (type, type_index))
-	    ; /* APPLE LOCAL: ignore static fields.  */
-	  else if (TYPE_FIELD_PROTECTED (type, type_index))
+	  if ((TYPE_VPTR_BASETYPE(type) == type)
+	      && (type_index == TYPE_VPTR_FIELDNO(type)))
+	    {
+	      int vptr0 = 0;
+	      (void)vptr0; /* ignore vptr */
+	    }
+	  else if (TYPE_FIELD_STATIC(type, type_index))
+	    {
+	      int ignore_static_field = 0;
+	      (void)ignore_static_field; /* APPLE LOCAL: ignore static fields */
+	    }
+	  else if (TYPE_FIELD_PROTECTED(type, type_index))
 	    --index;
 	  ++type_index;
 	}
@@ -3626,9 +3632,15 @@ varobj_get_type_index_from_fake_child(struct varobj *parent, int index)
 	{
 	  if ((TYPE_VPTR_BASETYPE(type) == type)
 	      && (type_index == TYPE_VPTR_FIELDNO(type)))
-	    ; /* ignore vptr */
+	    {
+	      int vptr1 = 0;
+	      (void)vptr1; /* ignore vptr */
+	    }
 	  else if (TYPE_FIELD_STATIC(type, type_index))
-	    ; /* APPLE LOCAL: ignore static fields.  */
+	    {
+	      int ignore_static_field = 0;
+	      (void)ignore_static_field; /* APPLE LOCAL: ignore static fields */
+	    }
 	  else if ((type != NULL) && (TYPE_CPLUS_SPECIFIC_NONULL(type) != NULL)
 		   && (TYPE_CPLUS_SPECIFIC_NONULL(type)->private_field_bits != NULL)
 		   && (!TYPE_FIELD_PRIVATE(type, type_index)
@@ -4398,20 +4410,24 @@ cplus_path_expr_of_child (struct varobj *parent, int index)
 		  path_expr = (char *)"public";
 		  break;
 		}
+	      ATTRIBUTE_FALLTHROUGH; /* XXX really fallthrough? */
 	    case 1:
 	      if (children[v_private] != 0)
 		{
 		  path_expr = (char *)"private";
 		  break;
 		}
+	      ATTRIBUTE_FALLTHROUGH; /* XXX really fallthrough? */
 	    case 2:
 	      if (children[v_protected] != 0)
 		{
 		  path_expr = (char *)"protected";
 		  break;
 		}
+	      ATTRIBUTE_FALLTHROUGH; /* XXX really fallthrough? */
 	    default:
 	      /* error! */
+	      warning(_("Unhandled case! (%d)"), index);
 	      break;
 	    }
 	}

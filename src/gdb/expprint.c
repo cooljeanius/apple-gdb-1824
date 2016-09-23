@@ -577,9 +577,9 @@ op_name_standard(enum exp_opcode opcode)
     {
     default:
       {
-	static char buf[30];
+	static char buf[32];
 
-	snprintf(buf, sizeof(buf), "<unknown %d>", opcode);
+	snprintf(buf, sizeof(buf), "<unknown %d>", (int)opcode);
 	return buf;
       }
     case OP_NULL:
@@ -844,7 +844,8 @@ dump_subexp_body_standard (struct expression *exp,
     case TERNOP_COND:
     case TERNOP_SLICE:
     case TERNOP_SLICE_COUNT:
-      elt = dump_subexp (exp, stream, elt);
+      elt = dump_subexp(exp, stream, elt);
+      ATTRIBUTE_FALLTHROUGH; /* ??? */
     case BINOP_ADD:
     case BINOP_SUB:
     case BINOP_MUL:
@@ -880,7 +881,8 @@ dump_subexp_body_standard (struct expression *exp,
     case BINOP_IN:
     case BINOP_RANGE:
     case BINOP_END:
-      elt = dump_subexp (exp, stream, elt);
+      elt = dump_subexp(exp, stream, elt);
+      ATTRIBUTE_FALLTHROUGH; /* ??? */
     case UNOP_NEG:
     case UNOP_LOGICAL_NOT:
     case UNOP_COMPLEMENT:

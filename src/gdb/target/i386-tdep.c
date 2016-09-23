@@ -499,7 +499,7 @@ i386_sigtramp_frame_cache(struct frame_info *next_frame, void **this_cache)
   struct x86_frame_cache *cache;
   struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
   CORE_ADDR addr;
-  gdb_byte buf[4];
+  gdb_byte buf[8]; /* big enough for -Wstack-protector */
 
   if (*this_cache)
     return (struct x86_frame_cache *)*this_cache;
@@ -618,7 +618,7 @@ static const struct frame_base i386_frame_base =
 static struct frame_id
 i386_unwind_dummy_id (struct gdbarch *gdbarch, struct frame_info *next_frame)
 {
-  gdb_byte buf[4];
+  gdb_byte buf[8]; /* big enough for -Wstack-protector */
   CORE_ADDR fp;
 
   frame_unwind_register (next_frame, I386_EBP_REGNUM, buf);
@@ -672,7 +672,7 @@ i386_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
                      int nargs, struct value **args, CORE_ADDR sp,
                      int struct_return, CORE_ADDR struct_addr)
 {
-  gdb_byte buf[4];
+  gdb_byte buf[8]; /* big enough for -Wstack-protector */
   int i;
   int argument_bytes = 0;
   int alignment_pad_bytes;

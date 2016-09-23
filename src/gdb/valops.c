@@ -1867,21 +1867,21 @@ value_struct_elt(struct value **argp, struct value **args,
       return v;
     }
 
-  if (destructor_name_p (name, t))
+  if (destructor_name_p(name, t))
     {
       if (!args[1])
 	{
 	  /* Destructors are a special case.  */
-	  int m_index, f_index;
+	  int method_index, f_index;
 
 	  v = NULL;
-	  if (get_destructor_fn_field (t, &m_index, &f_index))
+	  if (get_destructor_fn_field(t, &method_index, &f_index))
 	    {
-	      v = value_fn_field (NULL, TYPE_FN_FIELDLIST1 (t, m_index),
-				  f_index, NULL, 0);
+	      v = value_fn_field(NULL, TYPE_FN_FIELDLIST1(t, method_index),
+				 f_index, NULL, 0);
 	    }
 	  if (v == NULL)
-	    error (_("could not find destructor function named %s."), name);
+	    error(_("could not find destructor function named %s."), name);
 	  else
 	    return v;
 	}
@@ -2548,9 +2548,9 @@ check_field_in(struct type *type, const char *name)
   /* Destructors are a special case: */
   if (destructor_name_p(name, type))
     {
-      int m_index, f_index;
+      int method_index, f_index;
 
-      return get_destructor_fn_field(type, &m_index, &f_index);
+      return get_destructor_fn_field(type, &method_index, &f_index);
     }
 
   for (i = (TYPE_NFN_FIELDS(type) - 1); i >= 0; --i)

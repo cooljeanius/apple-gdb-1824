@@ -324,7 +324,7 @@ cp_func_name (const char *full_name)
   char *ret;
   struct demangle_component *ret_comp;
 
-  // APPLE LOCAL: test for NULL full_name to not crash
+  /* APPLE LOCAL: test for NULL full_name to not crash: */
   if (!full_name)
     return NULL;
 

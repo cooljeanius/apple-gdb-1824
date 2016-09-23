@@ -421,10 +421,11 @@ int low_open_target(char *target_port, char *byte_sex, int query)
     {
       char buffer[256];
       /* This is the Multi-ICE DLL < 1.3 version: */
-      sprintf(buffer, "MICESERVER=%s", target_port);
+      snprintf(buffer, sizeof(buffer), "MICESERVER=%s", target_port);
       ToolConf_Update(gdb_config, buffer);
       /* This is the Multi-ICE DLL >= 1.3 version: */
-      sprintf(buffer, "Multi-ICE_Server_Location=%s", target_port);
+      snprintf(buffer, sizeof(buffer), "Multi-ICE_Server_Location=%s",
+	       target_port);
       ToolConf_Update(gdb_config, buffer);
   }
 
@@ -442,13 +443,14 @@ int low_open_target(char *target_port, char *byte_sex, int query)
 	}
     }
 
-  sprintf(driver, "Multi-ICE_Driver0_Name=%s", target_driver_name);
-  ToolConf_Update (gdb_config, driver);
+  snprintf(driver, sizeof(driver), "Multi-ICE_Driver0_Name=%s",
+	   target_driver_name);
+  ToolConf_Update(gdb_config, driver);
   /* There seems to be some confusion about the real name here */
-  sprintf(driver, "MICEDRIVER0=%s", target_driver_name);
-  ToolConf_Update (gdb_config, driver);
+  snprintf(driver, sizeof(driver), "MICEDRIVER0=%s", target_driver_name);
+  ToolConf_Update(gdb_config, driver);
 
-  main_win = get_main_window ();
+  main_win = get_main_window();
 
   if (main_win == NULL)
     {
@@ -490,9 +492,9 @@ int low_open_target(char *target_port, char *byte_sex, int query)
   gdb_IO_struct.writec = my_IO_writec;
   gdb_IO_struct.readc = my_IO_readc;
   gdb_IO_struct.write = my_IO_write;
-  gdb_IO_struct.gets = my_IO_gets;
+  gdb_IO_struct.gets_f = my_IO_gets;
 
-  result = rdi_proc_vec->openagent (&gdb_agent, open_type, gdb_config,
+  result = rdi_proc_vec->openagent(&gdb_agent, open_type, gdb_config,
 				   &gdb_IO_struct, gdb_debug_state);
 
   if (result != RDIError_NoError) {
@@ -521,8 +523,8 @@ int low_open_target(char *target_port, char *byte_sex, int query)
       return 0;
     }
 
-  proc_desc_array = (RDI_ModuleDesc *)
-    malloc(sizeof(RDI_ModuleDesc) * num_procs);
+  proc_desc_array = ((RDI_ModuleDesc *)
+		     xmalloc(sizeof(RDI_ModuleDesc) * num_procs));
   result = rdi_proc_vec->info(gdb_agent, RDIInfo_Modules,
 			      (ARMword *) &num_procs,
 			      (ARMword *) proc_desc_array);
@@ -745,7 +747,7 @@ int low_open_target(char *target_port, char *byte_sex, int query)
   output("\n");
 
   if (!aregisters)
-      aregisters = malloc( REGISTER_BYTES );
+    aregisters = xmalloc(REGISTER_BYTES);
 
   return 1;
 }
@@ -786,7 +788,7 @@ low_close_target(void)
     rdi_proc_vec->close(proc_desc_array[i].handle);
   }
   rdi_proc_vec->closeagent(gdb_agent);
-  free (proc_desc_array);
+  xfree(proc_desc_array);
   return 1;
 }
 
@@ -1077,7 +1079,7 @@ low_set_breakpoint(CORE_ADDR bp_addr, int size)
   struct rdi_points *new_point;
   int result, type;
 
-  new_point = (struct rdi_points *)malloc(sizeof(struct rdi_points));
+  new_point = (struct rdi_points *)xmalloc(sizeof(struct rdi_points));
 
   new_point->addr = bp_addr;
   new_point->handle = RDI_NoPointHandle;
@@ -1099,18 +1101,21 @@ low_set_breakpoint(CORE_ADDR bp_addr, int size)
   switch (result)
     {
     case RDIError_NoMorePoints:
-      output ("This breakpoint exhausted the available points.\n");
+      output("This breakpoint exhausted the available points.\n");
     case RDIError_NoError:
       break; /* Success branches break here */
     case RDIError_ConflictingPoint:
-      output_error ("RDI Error: Conflicting breakpoint.\n");
+      output_error("RDI Error: Conflicting breakpoint.\n");
+      ATTRIBUTE_FALLTHROUGH;
     case RDIError_CantSetPoint:
-      output_error ("RDI Error: No more breakpoint resources left.\n");
+      output_error("RDI Error: No more breakpoint resources left.\n");
+      ATTRIBUTE_FALLTHROUGH;
     case RDIError_PointInUse:
-      output_error ("RDI Error: Breakpoint in use.\n");
+      output_error("RDI Error: Breakpoint in use.\n");
+      ATTRIBUTE_FALLTHROUGH;
     default:
-      output_error ("RDI Error: %s.\n", rdi_error_message (result));
-      free (new_point);
+      output_error("RDI Error: %s.\n", rdi_error_message(result));
+      xfree(new_point);
       return 0; /* All errors fall through to here. */
     }
 
@@ -1204,7 +1209,7 @@ low_delete_breakpoint (CORE_ADDR bp_addr, int size)
       prev_ptr->next = point_ptr->next;
     }
 
-  free (point_ptr);
+  xfree(point_ptr);
 
   if (debug_on)
     {
@@ -1223,7 +1228,7 @@ low_set_watchpoint(CORE_ADDR watch_addr, int size, enum watch_type mode)
   struct rdi_points *new_point;
   int result, type, watch_mode;
 
-  new_point = (struct rdi_points *)malloc(sizeof(struct rdi_points));
+  new_point = (struct rdi_points *)xmalloc(sizeof(struct rdi_points));
 
   new_point->addr = watch_addr;
   new_point->handle = RDI_NoPointHandle;
@@ -1254,14 +1259,17 @@ low_set_watchpoint(CORE_ADDR watch_addr, int size, enum watch_type mode)
     case RDIError_NoError:
       break; /* Success branches break here */
     case RDIError_ConflictingPoint:
-      output_error ("RDI Error: Conflicting watchpoint.\n");
+      output_error("RDI Error: Conflicting watchpoint.\n");
+      ATTRIBUTE_FALLTHROUGH;
     case RDIError_CantSetPoint:
-      output_error ("RDI Error: No more watchpoint resources left.\n");
+      output_error("RDI Error: No more watchpoint resources left.\n");
+      ATTRIBUTE_FALLTHROUGH;
     case RDIError_PointInUse:
-      output_error ("RDI Error: Watchpoint in use.\n");
+      output_error("RDI Error: Watchpoint in use.\n");
+      ATTRIBUTE_FALLTHROUGH;
     default:
-      output_error ("RDI Error: %s.\n", rdi_error_message (result));
-      free (new_point);
+      output_error("RDI Error: %s.\n", rdi_error_message(result));
+      xfree(new_point);
       return 0; /* All errors fall through to here. */
     }
 
@@ -1355,7 +1363,7 @@ low_delete_watchpoint (CORE_ADDR watch_addr, int size, enum watch_type type)
       prev_ptr->next = point_ptr->next;
     }
 
-  free(point_ptr);
+  xfree(point_ptr);
 
   if (debug_on)
     {
@@ -1483,6 +1491,7 @@ low_resume (enum resume_mode mode, int signo)
 
 	  break;
 	}
+      ATTRIBUTE_FALLTHROUGH;
     case RESUME_CONTINUE:
       currently_running = 1;
       result = rdi_proc_vec->execute (gdb_agent,

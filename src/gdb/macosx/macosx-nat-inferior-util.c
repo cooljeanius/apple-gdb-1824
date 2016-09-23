@@ -241,6 +241,9 @@ kern_return_t
 macosx_inferior_resume_mach(macosx_inferior_status *s, int count)
 {
   kern_return_t kret;
+  char stack_protection_buffer[8];
+  stack_protection_buffer[0] = '\0';
+  (void)stack_protection_buffer;
 
   CHECK(s != NULL);
   CHECK(macosx_task_valid(s->task));

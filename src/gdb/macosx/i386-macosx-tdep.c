@@ -71,7 +71,7 @@ extern void _initialize_i386_macosx_tdep(void);
 void
 i386_macosx_fetch_gp_registers(gdb_i386_thread_state_t *sp_regs)
 {
-  gdb_byte buf[4];
+  gdb_byte buf[8]; /* big enough for -Wstack-protector */
   supply_unsigned_int(0, sp_regs->eax);
   supply_unsigned_int(1, sp_regs->ecx);
   supply_unsigned_int(2, sp_regs->edx);
@@ -114,7 +114,7 @@ i386_macosx_fetch_gp_registers_raw(gdb_i386_thread_state_t *sp_regs)
 void
 i386_macosx_store_gp_registers(gdb_i386_thread_state_t *sp_regs)
 {
-  unsigned char buf[4];
+  unsigned char buf[8]; /* big enough for -Wstack-protector */
   collect_unsigned_int(0, &sp_regs->eax);
   collect_unsigned_int(1, &sp_regs->ecx);
   collect_unsigned_int(2, &sp_regs->edx);
@@ -359,18 +359,19 @@ i386_macosx_thread_state_addr_1(CORE_ADDR start_of_func, CORE_ADDR pc,
    (defined in <mach/i386/thread_status.h>) inside the struct mcontext.  */
 
 static CORE_ADDR
-i386_macosx_thread_state_addr (struct frame_info *frame)
+i386_macosx_thread_state_addr(struct frame_info *frame)
 {
-  gdb_byte buf[4];
+  gdb_byte buf[8]; /* big enough for -Wstack-protector */
   CORE_ADDR esp, ebp;
-  frame_unwind_register (frame, I386_ESP_REGNUM, buf);
-  esp = extract_unsigned_integer (buf, 4);
-  frame_unwind_register (frame, I386_EBP_REGNUM, buf);
-  ebp = extract_unsigned_integer (buf, 4);
-  return i386_macosx_thread_state_addr_1 (get_frame_func (frame),
-                                          get_frame_pc (frame), ebp, esp);
+  frame_unwind_register(frame, I386_ESP_REGNUM, buf);
+  esp = extract_unsigned_integer(buf, 4);
+  frame_unwind_register(frame, I386_EBP_REGNUM, buf);
+  ebp = extract_unsigned_integer(buf, 4);
+  return i386_macosx_thread_state_addr_1(get_frame_func(frame),
+                                         get_frame_pc(frame), ebp, esp);
 }
 
+/* */
 static CORE_ADDR
 i386_macosx_thread_state_addr_1(CORE_ADDR start_of_func, CORE_ADDR pc,
                                 CORE_ADDR ebp, CORE_ADDR esp)

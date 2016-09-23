@@ -779,6 +779,8 @@ macho_read_indirect_symbols(bfd *abfd,
           CORE_ADDR stubaddr = (section->addr + (i * section->reserved2));
           const char *sname = (const char *)NULL;
           char nname[4096];
+	  char sname_arr[4096];
+	  int i_i;
 	  int printed;
 	  void *nameptr;
 	  struct minimal_symbol *myminsym = (struct minimal_symbol *)NULL;
@@ -814,7 +816,16 @@ macho_read_indirect_symbols(bfd *abfd,
             }
 
           CHECK_FATAL((strlen(sname) + sizeof("dyld_stub_") + 1UL) < 4096UL);
-          printed = snprintf(nname, sizeof(nname), "dyld_stub_%s", sname);
+	  /* Try to pacify -Wformat-length by putting sname into an equivalent
+	   * array: */
+	  for (i_i = 0; i_i < 4096; i_i++) {
+	    sname_arr[i_i] = *sname;
+	    sname++;
+	    if (sname_arr[i_i] == '\0') {
+	      break;
+	    }
+	  }
+          printed = snprintf(nname, sizeof(nname), "dyld_stub_%s", sname_arr);
 	  CHECK_FATAL((size_t)printed == strlen(nname));
 #if (defined(DEBUG) || defined(_DEBUG) || defined(GDB_DEBUG))
 	  if (i == 0) {

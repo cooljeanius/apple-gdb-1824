@@ -45,9 +45,9 @@ void perror_with_name(const char *string)
   char *err;
   char *combined;
 
-  err = strerror(errno);
+  err = xstrerror(errno);
 
-  combined = (char *)alloca(strlen(err) + strlen(string) + 3);
+  combined = (char *)alloca(strlen(err) + strlen(string) + 3UL);
   strcpy(combined, string);
   strcat(combined, ": ");
   strcat(combined, err);

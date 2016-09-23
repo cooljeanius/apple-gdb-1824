@@ -675,7 +675,10 @@ CLANG_ANALYZER = @CLANG_ANALYZER@
 
 RUN_CLANG_ANALYZER = $(CLANG_ANALYZER) $(DEFS) $(INCLUDE_CFLAGS) \
   $(CXREF_FLAGS) $(INTERNAL_CPPFLAGS) $(MYCPPFLAGS) $(MT_CFLAGS) \
-  $(C_ARCHFLAGS) $(MMALLOC_CFLAGS) -DDEBUG -D_DEBUG -Dlint -I. --analyze
+  $(C_ARCHFLAGS) $(MMALLOC_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) \
+  $(ITCL_CFLAGS) $(ITK_CFLAGS) $(X11_CFLAGS) $(IDE_CFLAGS) \
+  -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\" -DSRC_DIR=\"$(GDBTK_SRC_DIR)\" \
+  -DDEBUG -D_DEBUG -Dlint -I. --analyze
 
 RUNTEST = `if [ -f $${rootsrc}/../dejagnu/runtest ]; then \
 		echo $${rootsrc}/../dejagnu/runtest; else echo runtest; \
@@ -2003,12 +2006,22 @@ configured_lint: $(LINTFILES)
 	  if test -e $${f}; then \
 	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) $${f}; \
 	  elif test -e ${srcdir}/mi/$${f}; then \
-	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) ${srcdir}/mi/$${f}; \
+	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) \
+	      -DIN_MI_SUBDIR ${srcdir}/mi/$${f}; \
 	  elif test -e ${srcdir}/cli/$${f}; then \
-	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) ${srcdir}/cli/$${f}; \
+	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) \
+	      -DIN_CLI_SUBDIR ${srcdir}/cli/$${f}; \
 	  elif test -e ${srcdir}/macosx/$${f}; then \
-	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) ${srcdir}/macosx/$${f}; \
+	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) \
+	      -DIN_MACOSX_SUBDIR ${srcdir}/macosx/$${f}; \
+	  elif test -e ${srcdir}/gdbtk/generic/$${f}; then \
+	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) \
+	      $(X11_CFLAGS) $(IDE_CFLAGS) \
+	      -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\" \
+	      -DSRC_DIR=\"$(GDBTK_SRC_DIR)\" \
+	      ${srcdir}/gdbtk/generic/$${f}; \
 	  fi; \
+	  echo "done with $${f}"; \
 	done
 
 # clang analysis output:

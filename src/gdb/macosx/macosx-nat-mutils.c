@@ -1460,7 +1460,7 @@ malloc_history_info_command(const char *arg, int from_tty)
 # elif HAVE_32_BIT_STACK_LOGGING
   vm_address_t addr;
 # endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
-  volatile kern_return_t kret = KERN_FAILURE;
+  volatile kern_return_t vkret = KERN_FAILURE;
   volatile struct gdb_exception except;
   struct cleanup *cleanup;
   /* APPLE LOCAL - Make "-exact" the default, since there is no way to
@@ -1471,22 +1471,22 @@ malloc_history_info_command(const char *arg, int from_tty)
   volatile struct current_record_state *volatile passed_state;
 
   if (macosx_status == NULL)
-    error("No target");
+    error(_("No target"));
 
   if (arg == NULL)
-    error("Argument required (expression to compute).");
+    error(_("Argument required (expression to compute)."));
 
   if (strstr(arg, "-exact") == arg)
     {
       exact = 1;
-      arg += (sizeof("-exact") - 1);
+      arg += (sizeof("-exact") - 1UL);
       while (*arg == ' ')
 	arg++;
     }
   else if (strstr(arg, "-range") == arg)
     {
       exact = 0;
-      arg += (sizeof("-range") - 1);
+      arg += (sizeof("-range") - 1UL);
       while (*arg == ' ')
 	arg++;
     }
@@ -1498,14 +1498,14 @@ malloc_history_info_command(const char *arg, int from_tty)
 # endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
 
   if (!target_has_execution)
-    error("Cannot get malloc history: target is not running");
+    error(_("Cannot get malloc history: target is not running"));
 
   if ((inferior_environ == NULL)
       || (get_in_environ(inferior_environ,
                          "MallocStackLoggingNoCompact") == NULL))
     {
-      warning("MallocStackLoggingNoCompact not set in target's environment"
-	      " so the malloc history will not be available.");
+      warning(_("MallocStackLoggingNoCompact not set in target's environment"
+                " so the malloc history will not be available."));
     }
   cleanup = make_cleanup_ui_out_list_begin_end(uiout, "stacks");
 
@@ -1562,12 +1562,13 @@ malloc_history_info_command(const char *arg, int from_tty)
                 }
               if (except.reason == (volatile enum return_reason)NO_ERROR)
                 {
-                  kern_return_t kret = logging_file_path_fn(macosx_status->task,
-                                                            malloc_path_string_buffer);
-                  if (kret != KERN_SUCCESS)
+                  kern_return_t kern_ret =
+                    logging_file_path_fn(macosx_status->task,
+                                         malloc_path_string_buffer);
+                  if (kern_ret != KERN_SUCCESS)
                     {
                       warning("Got an error setting the logging file path: %d.",
-                              kret);
+                              kern_ret);
                     }
                 }
               else
@@ -1590,16 +1591,16 @@ malloc_history_info_command(const char *arg, int from_tty)
   TRY_CATCH(except, RETURN_MASK_ERROR)
     {
 # if HAVE_64_BIT_STACK_LOGGING
-      kret = __mach_stack_logging_enumerate_records(macosx_status->task,
-                                                    passed_addr,
-                                                    do_over_unique_frames,
-                                                    (void *)passed_state);
+      vkret = __mach_stack_logging_enumerate_records(macosx_status->task,
+                                                     passed_addr,
+                                                     do_over_unique_frames,
+                                                     (void *)passed_state);
 # elif HAVE_32_BIT_STACK_LOGGING
-      kret = stack_logging_enumerate_records(macosx_status->task,
-                                             gdb_malloc_reader,
-                                             passed_addr,
-                                             do_over_unique_frames,
-                                             (void *)passed_state);
+      vkret = stack_logging_enumerate_records(macosx_status->task,
+                                              gdb_malloc_reader,
+                                              passed_addr,
+                                              do_over_unique_frames,
+                                              (void *)passed_state);
 # endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
     }
 
@@ -1607,21 +1608,21 @@ malloc_history_info_command(const char *arg, int from_tty)
   /* Remember to reset the memory copy areas.  */
   free_malloc_history_buffers();
 # endif /* HAVE_32_BIT_STACK_LOGGING */
-  do_cleanups (cleanup);
+  do_cleanups(cleanup);
 
   if (except.reason < 0)
     {
-      error("Caught an error while enumerating stack logging records: %s",
+      error(_("Caught an error while enumerating stack logging records: %s"),
             except.message);
     }
 
-  if (kret != KERN_SUCCESS)
+  if (vkret != KERN_SUCCESS)
     {
-      error("Unable to enumerate stack logging records: %s (ox%lx).",
-            MACH_ERROR_STRING(kret), (unsigned long)kret);
+      error(_("Unable to enumerate stack logging records: %s (ox%lx)."),
+            MACH_ERROR_STRING(vkret), (unsigned long)vkret);
     }
 #else  /* HAVE_64_BIT_STACK_LOGGING || HAVE_32_BIT_STACK_LOGGING  */
-  error("Stack logging not supported for this target.");
+  error(_("Stack logging not supported for this target."));
 #endif /* "" */
 }
 

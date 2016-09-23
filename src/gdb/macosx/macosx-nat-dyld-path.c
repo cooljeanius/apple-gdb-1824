@@ -596,15 +596,15 @@ dyld_resolve_image (const struct dyld_path_info *d, const char *dylib_name)
             }
           else
             {
-              warning("Executable filename not a path, "
-                      "cannot resolve \"@executable_path load command.");
+              warning(_("Executable filename not a path, "
+			"cannot resolve \"@executable_path load command."));
               return NULL;
             }
         }
       else
         {
-          warning ("Couldn't find executable filename while trying to"
-                   " resolve \"@executable_path\" load command.");
+          warning(_("Failed to find executable filename while trying to"
+		    " resolve \"@executable_path\" load command."));
         }
     }
 

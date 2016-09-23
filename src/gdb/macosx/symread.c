@@ -143,7 +143,7 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
   char *sym_typename = (char *)NULL;
   struct type *target = (struct type *)NULL;
   const char *targname = (const char *)NULL;
-  unsigned long value = 0UL;
+  unsigned long the_value = 0UL;
   int retval = 0;
   int ret = retval;
 
@@ -167,30 +167,30 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
     {
     case 1:
       {
-        long value;
+        long another_value;
 
-        ret = bfd_sym_fetch_long(buf, len, offset, &offset, &value);
+        ret = bfd_sym_fetch_long(buf, len, offset, &offset, &another_value);
         if (ret < 0)
           {
             sym_complaint();
             break;
           }
-        if (value < 0L)
+        if (another_value < 0L)
           {
             sym_complaint();
             break;
           }
-        if ((size_t)value >= ntypes)
+        if ((size_t)another_value >= ntypes)
           {
             sym_complaint();
             break;
           }
-        if (typevec[value] == NULL)
+        if (typevec[another_value] == NULL)
           {
             sym_complaint();
             break;
           }
-        type = typevec[value];
+        type = typevec[another_value];
 
         break;
       }
@@ -224,7 +224,7 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
             sym_complaint();
             break;
           }
-        ret = bfd_sym_fetch_long(buf, len, offset, &offset, (long*)&value);
+        ret = bfd_sym_fetch_long(buf, len, offset, &offset, (long*)&the_value);
         if (ret < 0)
           {
             sym_complaint();
@@ -258,7 +258,7 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
           {
             ret =
               sym_parse_type(objfile, typevec, ntypes, buf, len, offset,
-                             &offset, &target, &targname, &value);
+                             &offset, &target, &targname, &the_value);
             if ((ret < 0) || (target == NULL))
               {
                 sym_complaint();
@@ -273,7 +273,7 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
 
             TYPE_FIELD_TYPE(type, i) = target;
             TYPE_FIELD_NAME(type, i) = (char *)targname;
-            TYPE_FIELD_BITPOS_ASSIGN(type, i) = value;
+            TYPE_FIELD_BITPOS_ASSIGN(type, i) = the_value;
             TYPE_FIELD_BITSIZE(type, i) = 0;
           }
 
@@ -409,10 +409,11 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
 
     case 11:
       {
-        long value;
+        long yet_another_value;
         const unsigned char *name;
 
-        ret = bfd_sym_fetch_long(buf, len, offset, &offset, &value);
+        ret = bfd_sym_fetch_long(buf, len, offset, &offset,
+				 &yet_another_value);
         if (ret < 0)
           {
             sym_complaint();
@@ -427,11 +428,11 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
             break;
           }
 
-        name = bfd_sym_symbol_name(objfile->obfd, value);
+        name = bfd_sym_symbol_name(objfile->obfd, yet_another_value);
         sym_typename =
-          (char *)obstack_alloc(&objfile->objfile_obstack, name[0] + 1);
+          (char *)obstack_alloc(&objfile->objfile_obstack, (name[0] + 1));
 
-        snprintf(sym_typename, SIZE_T_MAX, "%.*s", name[0], name + 1);
+        snprintf(sym_typename, SIZE_T_MAX, "%.*s", name[0], (name + 1));
         break;
       }
 
@@ -478,7 +479,7 @@ end:
     }
   if (vptr != NULL)
     {
-      *vptr = value;
+      *vptr = the_value;
     }
   /* and finally: */
   if (retval == 0)

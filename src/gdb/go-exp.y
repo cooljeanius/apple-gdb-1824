@@ -1129,7 +1129,7 @@ lex_one_token (void)
 	  goto symbol;		/* Nope, must be a symbol. */
 	}
       /* FALL THRU into number case.  */
-
+      ATTRIBUTE_FALLTHROUGH;
     case '0':
     case '1':
     case '2':

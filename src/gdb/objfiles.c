@@ -2410,7 +2410,7 @@ objfile_bss_section_offset(struct objfile *objfile)
 struct objfile_hitlist
 {
   int num_elem;
-  struct objfile *ofiles[];
+  __extension__ struct objfile *ofiles[FLEXIBLE_ARRAY_MEMBER];
 };
 
 static struct objfile_hitlist *cur_objfile_hitlist;

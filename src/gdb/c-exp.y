@@ -1168,7 +1168,7 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
   ULONGEST un;
 
   int i = 0;
-  int c;
+  int i_c;
   int base = input_radix;
   int unsigned_p = 0;
 
@@ -1185,50 +1185,54 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
   if (parsed_float)
     {
       /* It's a float since it contains a point or an exponent.  */
-      char c;
+      char c_c;
       int num = 0;	/* number of tokens scanned by scanf */
       char saved_char = p[len];
 
       p[len] = 0;	/* null-terminate the token */
-      if (sizeof (putithere->typed_val_float.dval) <= sizeof (float))
-	num = sscanf (p, "%g%c", (float *) &putithere->typed_val_float.dval,&c);
-      else if (sizeof (putithere->typed_val_float.dval) <= sizeof (double))
-	num = sscanf (p, "%lg%c", (double *) &putithere->typed_val_float.dval,&c);
+      if (sizeof(putithere->typed_val_float.dval) <= sizeof(float))
+	num = sscanf(p, "%g%c", (float *)&putithere->typed_val_float.dval,
+		     &c_c);
+      else if (sizeof (putithere->typed_val_float.dval) <= sizeof(double))
+	num = sscanf(p, "%lg%c", (double *)&putithere->typed_val_float.dval,
+		     &c_c);
       else
 	{
 #ifdef SCANF_HAS_LONG_DOUBLE
-	  num = sscanf (p, "%Lg%c", &putithere->typed_val_float.dval,&c);
+	  num = sscanf(p, "%Lg%c", &putithere->typed_val_float.dval, &c_c);
 #else
 	  /* Scan it into a double, then assign it to the long double.
 	     This at least wins with values representable in the range
 	     of doubles. */
 	  double temp;
-	  num = sscanf (p, "%lg%c", &temp,&c);
+	  num = sscanf(p, "%lg%c", &temp, &c_c);
 	  putithere->typed_val_float.dval = temp;
-#endif
+#endif /* SCANF_HAS_LONG_DOUBLE */
 	}
       p[len] = saved_char;	/* restore the input stream */
       if (num == 1) 		/* check scanf found ONLY a float ... */
         putithere->typed_val_float.type =
-          builtin_type (current_gdbarch)->builtin_double;
+          builtin_type(current_gdbarch)->builtin_double;
       else if (num == 2)
 	{
 	  /* See if it has `f' or `l' suffix (float or long double).  */
 
-	  c = (char)tolower(c);
+	  c_c = (char)tolower(c_c);
 	  /* There's no way to tell, using sscanf, whether we actually
 	     did ingest all the input.  But this check will catch things
 	     like: 123fghi.jklmn, though of course it will be fooled by
 	     123fghi.jklmf.  I'm not really all that worried about this,
 	     however.  */
 
-	  if (c != p[len - 1])
+	  if (c_c != p[len - 1])
 	    return ERROR;
 
-	  if (c == 'f')
-	    putithere->typed_val_float.type = builtin_type (current_gdbarch)->builtin_float;
-	  else if (c == 'l')
-	    putithere->typed_val_float.type = builtin_type (current_gdbarch)->builtin_long_double;
+	  if (c_c == 'f')
+	    putithere->typed_val_float.type =
+	      builtin_type(current_gdbarch)->builtin_float;
+	  else if (c_c == 'l')
+	    putithere->typed_val_float.type =
+	      builtin_type(current_gdbarch)->builtin_long_double;
 	  else
 	    return ERROR;
 	}
@@ -1271,31 +1275,31 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 
   while (len-- > 0)
     {
-      c = *p++;
-      if (c >= 'A' && c <= 'Z')
-	c += 'a' - 'A';
-      if (c != 'l' && c != 'u')
+      i_c = *p++;
+      if ((i_c >= 'A') && (i_c <= 'Z'))
+	i_c += ('a' - 'A');
+      if ((i_c != 'l') && (i_c != 'u'))
 	n *= base;
-      if (c >= '0' && c <= '9')
+      if ((i_c >= '0') && (i_c <= '9'))
 	{
 	  if (found_suffix)
 	    return ERROR;
-	  n += i = c - '0';
+	  n += i = (i_c - '0');
 	}
       else
 	{
-	  if (base > 10 && c >= 'a' && c <= 'f')
+	  if ((base > 10) && (i_c >= 'a') && (i_c <= 'f'))
 	    {
 	      if (found_suffix)
 		return ERROR;
-	      n += i = c - 'a' + 10;
+	      n += i = (i_c - 'a' + 10);
 	    }
-	  else if (c == 'l')
+	  else if (i_c == 'l')
 	    {
 	      ++long_p;
 	      found_suffix = 1;
 	    }
-	  else if (c == 'u')
+	  else if (i_c == 'u')
 	    {
 	      unsigned_p = 1;
 	      found_suffix = 1;
@@ -1309,16 +1313,16 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
       /* Portably test for overflow (only works for nonzero values, so make
 	 a second check for zero).  FIXME: Can't we just make n and prevn
 	 unsigned and avoid this?  */
-      if (c != 'l' && c != 'u' && (prevn >= n) && n != 0)
+      if ((i_c != 'l') && (i_c != 'u') && (prevn >= n) && (n != 0))
 	unsigned_p = 1;		/* Try something unsigned */
 
       /* Portably test for unsigned overflow.
 	 FIXME: This check is wrong; for example it doesn't find overflow
 	 on 0x123456789 when LONGEST is 32 bits.  */
-      if (c != 'l' && c != 'u' && n != 0)
+      if ((i_c != 'l') && (i_c != 'u') && (n != 0))
 	{
-	  if ((unsigned_p && (ULONGEST) prevn >= (ULONGEST) n))
-	    error ("Numeric constant too large.");
+	  if (unsigned_p && ((ULONGEST)prevn >= (ULONGEST)n))
+	    error(_("Numeric constant too large."));
 	}
       prevn = n;
     }
@@ -1335,11 +1339,11 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
      the case where it is we just always shift the value more than
      once, with fewer bits each time.  */
 
-  un = (ULONGEST)n >> 2;
+  un = ((ULONGEST)n >> 2);
   if (long_p == 0
       && (un >> (TARGET_INT_BIT - 2)) == 0)
     {
-      high_bit = ((ULONGEST)1) << (TARGET_INT_BIT-1);
+      high_bit = ((ULONGEST)1UL) << (TARGET_INT_BIT - 1);
 
       /* A large decimal (not hex or octal) constant (between INT_MAX
 	 and UINT_MAX) is a long or unsigned long, according to ANSI,
@@ -1572,7 +1576,7 @@ yylex(void)
       if (input_radix == 16 && !ishexnumber (lexptr[1]))
         goto symbol;            /* Nope, must be a symbol. */
       /* FALL THRU into number case.  */
-
+      ATTRIBUTE_FALLTHROUGH;
     case '0':
     case '1':
     case '2':
@@ -1713,7 +1717,7 @@ yylex(void)
         }
       /* ObjC NSString constant: fall through and parse like STRING. */
       tokstart++;
-
+      ATTRIBUTE_FALLTHROUGH;
     case '"':
 
       /* Build the gdb internal form of the input string in tempbuf,

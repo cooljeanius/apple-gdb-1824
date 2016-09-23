@@ -1,4 +1,4 @@
-/* Read dbx symbol tables and convert to internal format, for GDB.
+/* dbxread.c: Read dbx symbol tables and convert to internal format, for GDB.
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
    1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004.
    Free Software Foundation, Inc.
@@ -814,18 +814,20 @@ dbx_new_init(struct objfile *ignore)
 #define DBX_STRINGTAB_SIZE_SIZE sizeof(long)	/* FIXME */
 
 static void
-dbx_symfile_init (struct objfile *objfile)
+dbx_symfile_init(struct objfile *objfile)
 {
   int val;
   bfd *sym_bfd = objfile->obfd;
-  char *name = bfd_get_filename (sym_bfd);
+  char *name = bfd_get_filename(sym_bfd);
   asection *text_sect;
   unsigned char size_temp[DBX_STRINGTAB_SIZE_SIZE];
+  char buf8[8] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
+  (void)buf8;
 
   /* Allocate struct to keep track of the symfile */
-  objfile->deprecated_sym_stab_info = (struct dbx_symfile_info *)
-    xmalloc (sizeof (struct dbx_symfile_info));
-  memset (objfile->deprecated_sym_stab_info, 0, sizeof (struct dbx_symfile_info));
+  objfile->deprecated_sym_stab_info =
+    (struct dbx_symfile_info *)xmalloc(sizeof(struct dbx_symfile_info));
+  memset(objfile->deprecated_sym_stab_info, 0, sizeof(struct dbx_symfile_info));
 
   /* APPLE LOCAL: We put struct obj_sections in the DBX_TEXT_SECTION etc
      instead of BFD asections.  Conveniently, we also never execute this
@@ -2553,7 +2555,8 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
 	  case N_NBLCS:		/* symbols.  */
 	    if (!read_type_psym_p)
 	      break;
-
+	    /* else fall through, I guess? */
+	    ATTRIBUTE_FALLTHROUGH;
 	  case N_FUN:
 	  case N_GSYM:			/* Global (extern) variable; can be
 					   data or bss (sigh FIXME).  */
@@ -2561,10 +2564,9 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
 	  /* Following may probably be ignored; I'll leave them here
 	     for now (until I do Pascal and Modula 2 extensions).  */
 
-	  case N_PC:			/* I may or may not need this; I
-					   suspect not.  */
-	  case N_M2C:			/* I suspect that I can ignore this here. */
-	  case N_SCOPE:		/* Same.   */
+	  case N_PC:	 /* I may or may not need this; I suspect not.  */
+	  case N_M2C:	 /* I suspect that I can ignore this here. */
+	  case N_SCOPE:	 /* Same.   */
 
 	    /* APPLE LOCAL symbol prefixes */
 	  namestring = set_namestring (objfile, nlist, NULL);
@@ -4913,6 +4915,7 @@ read_ofile_symtab_from_oso(struct partial_symtab *pst, struct bfd *oso_bfd)
 		  strncpy(cur_fun_name, namestring, namelen);
 		  cur_fun_name[namelen] = '\0';
 		}
+	      ATTRIBUTE_FALLTHROUGH; /* XXX really fallthrough? */
 	    case N_SO:
 	    case N_RBRAC:
 	    case N_LBRAC:
@@ -5576,7 +5579,7 @@ no enclosing block"));
     case N_NBLCS:
       unknown_symtype_complaint(hex_string(type));
       /* FALLTHROUGH */
-
+      ATTRIBUTE_FALLTHROUGH;
       /* The following symbol types don't need the address field
          relocated, since it is either unused, or is absolute.  */
     define_a_symbol:
@@ -6130,9 +6133,9 @@ add_dyld_shared_cache_local_symbols(struct objfile *objfile, uint8_t *nlist_reco
       i++;
     }
 #else
-# if defined(__GNUC__)
-  asm("");
-# endif /* __GNUC__ */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+  __asm__("");
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
   return;
 #endif /* TARGET_ARM && NM_NEXTSTEP */
 }

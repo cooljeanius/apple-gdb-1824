@@ -51,6 +51,10 @@ extern void end_inferior_call_checkpoints(void);
 # define INFCALL_C_NOT_ON_NEXTSTEP 1
 #endif /* NM_NEXTSTEP || TM_NEXTSTEP */
 
+#ifndef ITIMER_REAL
+# define ITIMER_REAL 0
+#endif /* !ITIMER_REAL */
+
 /* Whether to allow inferior function calls to be made or not.
    e.g. translated processes cannot do inferior function calls (or changing
    the PC in any way) and can terminate the inferior if you try.

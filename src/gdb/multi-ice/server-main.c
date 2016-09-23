@@ -38,6 +38,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "low.h"
 #include "remote-utils.h"
 
+#ifndef REGISTER_RAW_SIZE
+# ifdef DEPRECATED_REGISTER_RAW_SIZE
+#  define REGISTER_RAW_SIZE(foo) DEPRECATED_REGISTER_RAW_SIZE(foo)
+# endif /* DEPRECATED_REGISTER_RAW_SIZE */
+#endif /* !REGISTER_RAW_SIZE */
+
 /*
  * These variables are used to track command-line options.
  */
@@ -348,7 +354,6 @@ update_current_thread(void)
  * handles whatever response the message requires before returning.
  * ------------------------------------------------------------
  */
-
 int
 dispatch (char *input_buffer, int message_length)
 {
@@ -367,7 +372,6 @@ dispatch (char *input_buffer, int message_length)
 
     switch (key)
       {
-
       case 'H': /* Set thread */
 	return handle_thread (input_buffer, THREAD_SET);
       case 'g': /* read registers */
@@ -409,6 +413,7 @@ dispatch (char *input_buffer, int message_length)
 	/* return handle_write_memory (input_buffer); */
       case 'z': /* This is the breakpoint delete packet */
 	bp_action = BREAKPOINT_DELETE;
+	ATTRIBUTE_FALLTHROUGH; /* XXX really fallthru? */
       case 'Z': /* This is the breakpoint set packet */
 	key = input_buffer[0];
 	input_buffer++;
@@ -422,12 +427,12 @@ dispatch (char *input_buffer, int message_length)
 	switch (key)
 	  {
 	  case '0':
-	    /* JT's breakpoint patches don't explicitly request
-	       a HW breakpoint.  We will do our best on this side...
-
-	       putpkt ("ENN");
-	       output_error ("Can't do software breakpoints on this side.\n");
-	    */
+	    /* JT's breakpoint patches do NOT explicitly request
+	       a HW breakpoint.  We will do our best on this side...  */
+#if 0
+	       putpkt("ENN");
+	       output_error("Cannot do software breakpoints on this side.\n");
+#endif /* 0 */
 	  case '1':
 	    return handle_breakpoint (bp_action, input_buffer);
 	  case '2':
@@ -726,10 +731,10 @@ handle_read_memory (char *input_buffer)
       output ("Reading %d bytes starting at 0x%x\n", nbytes, start_addr);
     }
 
-  nchars = 2 * nbytes + 1;
-  if (nchars > 1024)
+  nchars = ((2U * nbytes) + 1U);
+  if (nchars > 1024U)
     {
-      buffer = (char *) malloc (nchars);
+      buffer = (char *)xmalloc(nchars);
     }
 
   len = low_read_memory (buffer, start_addr, nbytes);
@@ -754,7 +759,7 @@ handle_read_memory (char *input_buffer)
 
   if (buffer != static_buf)
     {
-      free (buffer);
+      xfree(buffer);
     }
 
   return result;
@@ -867,7 +872,7 @@ handle_resume (char *input_buffer, enum resume_mode mode, int signo)
   registers_are_dirty = 0;
 
   /* Now write the return signal. */
-  sprintf (return_pkt, "S%02x", stop_signal);
+  snprintf(return_pkt, sizeof(return_pkt), "S%02x", stop_signal);
 
   update_current_thread();
   if (current_thread != 0) {
@@ -878,11 +883,12 @@ handle_resume (char *input_buffer, enum resume_mode mode, int signo)
       convert_bytes_to_ascii(&aregisters[REGISTER_BYTE (SP_REGNUM)],
                              SP_reg,
                              REGISTER_RAW_SIZE (SP_REGNUM), 0);
-      sprintf (return_pkt, "T%02xthread:%08x;%02x:%s;%02x:%s;",
-               stop_signal, current_thread, PC_REGNUM, PC_reg, SP_REGNUM, SP_reg);
+      snprintf(return_pkt, sizeof(return_pkt),
+	       "T%02xthread:%08x;%02x:%s;%02x:%s;", stop_signal,
+	       current_thread, PC_REGNUM, PC_reg, SP_REGNUM, SP_reg);
   } else {
       /* Now write the return signal. */
-      sprintf (return_pkt, "S%02x", stop_signal);
+      snprintf(return_pkt, sizeof(return_pkt), "S%02x", stop_signal);
   }
 
   putpkt (return_pkt);
@@ -895,16 +901,15 @@ handle_resume (char *input_buffer, enum resume_mode mode, int signo)
  *
  * Actually, this returns the last reason for stopping.
  */
-
 int
-handle_last_signal (char *input_buffer)
+handle_last_signal(char *input_buffer)
 {
   enum target_signal signal;
   char buffer[8];
 
-  signal = low_query_last_signal ();
-  sprintf (buffer, "S%02x", signal);
-  putpkt (buffer);
+  signal = low_query_last_signal();
+  snprintf(buffer, sizeof(buffer), "S%02x", signal);
+  putpkt(buffer);
   return 1;
 }
 
@@ -1034,8 +1039,9 @@ handle_general_query (char *input_buffer)
 
 	if (low_get_offsets (&text, &data, &bss))
 	  {
-	    sprintf (buffer, "Text=%x;Data=%x;Bss=%x", text, data, bss);
-	    putpkt (buffer);
+	    snprintf(buffer, sizeof(buffer), "Text=%x;Data=%x;Bss=%x", text,
+		     data, bss);
+	    putpkt(buffer);
 	    return 1;
 	  }
 	else

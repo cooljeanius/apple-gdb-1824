@@ -333,6 +333,14 @@
    don't. */
 #undef HAVE_DECL_BASENAME
 
+/* Define to 1 if you have the declaration of `bcopy', and to 0 if you don't.
+   */
+#undef HAVE_DECL_BCOPY
+
+/* Define to 1 if you have the declaration of `bzero', and to 0 if you don't.
+   */
+#undef HAVE_DECL_BZERO
+
 /* Define to 1 if you have the declaration of `close', and to 0 if you don't.
    */
 #undef HAVE_DECL_CLOSE
@@ -347,6 +355,10 @@
 /* Define to 1 if you have the declaration of `getopt', and to 0 if you don't.
    */
 #undef HAVE_DECL_GETOPT
+
+/* Define to 1 if you have the declaration of `gettimeofday', and to 0 if you
+   don't. */
+#undef HAVE_DECL_GETTIMEOFDAY
 
 /* Define to 1 if you have the declaration of `gmtime', and to 0 if you don't.
    */
@@ -376,13 +388,29 @@
    */
 #undef HAVE_DECL_PTRACE
 
+/* Define to 1 if you have the declaration of `qsort_r', and to 0 if you
+   don't. */
+#undef HAVE_DECL_QSORT_R
+
 /* Define to 1 if you have the declaration of `realloc', and to 0 if you
    don't. */
 #undef HAVE_DECL_REALLOC
 
+/* Define to 1 if you have the declaration of `realpath', and to 0 if you
+   don't. */
+#undef HAVE_DECL_REALPATH
+
+/* Define to 1 if you have the declaration of `setitimer', and to 0 if you
+   don't. */
+#undef HAVE_DECL_SETITIMER
+
 /* Define to 1 if you have the declaration of `snprintf', and to 0 if you
    don't. */
 #undef HAVE_DECL_SNPRINTF
+
+/* Define to 1 if you have the declaration of `strcasecmp', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRCASECMP
 
 /* Define to 1 if you have the declaration of `strchr', and to 0 if you don't.
    */
@@ -391,6 +419,18 @@
 /* Define to 1 if you have the declaration of `strerror', and to 0 if you
    don't. */
 #undef HAVE_DECL_STRERROR
+
+/* Define to 1 if you have the declaration of `strlcat', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRLCAT
+
+/* Define to 1 if you have the declaration of `strlcpy', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRLCPY
+
+/* Define to 1 if you have the declaration of `strncasecmp', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRNCASECMP
 
 /* Define to 1 if you have the declaration of `strpbrk', and to 0 if you
    don't. */
@@ -1209,6 +1249,9 @@
 /* Define to 1 if you have the `stack_logging_enumerate_records' function. */
 #undef HAVE_STACK_LOGGING_ENUMERATE_RECORDS
 
+/* 1 if the stack is protected */
+#undef HAVE_STACK_PROTECTION
+
 /* Define to 1 if `stat' has the bug that it succeeds when given the
    zero-length file name argument. */
 #undef HAVE_STAT_EMPTY_STRING_BUG
@@ -1671,6 +1714,9 @@
 /* Define if you want to use new multi-fd /proc interface (replaces
    HAVE_MULTIPLE_PROC_FDS and other macros) */
 #undef NEW_PROC_API
+
+/* 0 is none, 1 is some, and 2 is anything higher */
+#undef OPTIMIZATION_LEVEL
 
 /* Name of this package. */
 #undef PACKAGE

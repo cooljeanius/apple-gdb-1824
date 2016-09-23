@@ -140,34 +140,34 @@ typedef struct gdb_x86_thread_state gdb_x86_thread_state_t;
 
 
 typedef struct gdb_fp_control {
-    unsigned short invalid :1,
-                   denorm  :1,
-                   zdiv    :1,
-                   ovrfl   :1,
-                   undfl   :1,
-                   precis  :1,
-                   /*???*/ :2,
-                   pc      :2,
-                   rc      :2,
-                   /*inf*/ :1,
-                   /*???*/ :3;
+    __extension__ unsigned short invalid :1,
+				 denorm  :1,
+				 zdiv    :1,
+				 ovrfl   :1,
+				 undfl   :1,
+				 precis  :1,
+				 /*???*/ :2,
+				 pc      :2,
+				 rc      :2,
+				 /*inf*/ :1,
+				 /*???*/ :3;
 } gdb_fp_control_t;
 
 typedef struct gdb_fp_status {
-    unsigned short invalid :1,
-                   denorm  :1,
-                   zdiv    :1,
-                   ovrfl   :1,
-                   undfl   :1,
-                   precis  :1,
-                   stkflt  :1,
-                   errsumm :1,
-                   c0      :1,
-                   c1      :1,
-                   c2      :1,
-                   tos     :3,
-                   c3      :1,
-                   busy    :1;
+    __extension__ unsigned short invalid :1,
+				 denorm  :1,
+				 zdiv    :1,
+				 ovrfl   :1,
+				 undfl   :1,
+				 precis  :1,
+				 stkflt  :1,
+				 errsumm :1,
+				 c0      :1,
+				 c1      :1,
+				 c2      :1,
+				 tos     :3,
+				 c3      :1,
+				 busy    :1;
 } gdb_fp_status_t;
 
 struct gdb_mmst_reg {

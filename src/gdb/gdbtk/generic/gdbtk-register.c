@@ -53,14 +53,15 @@ static char *old_regs = NULL;
 static int *regformat = (int *)NULL;
 static struct type **regtype = (struct type **)NULL;
 
+/* */
 int
-Gdbtk_Register_Init (Tcl_Interp *interp)
+Gdbtk_Register_Init(Tcl_Interp *interp)
 {
-  Tcl_CreateObjCommand (interp, "gdb_reginfo", gdbtk_call_wrapper,
-                        gdb_register_info, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_reginfo", gdbtk_call_wrapper,
+		       (ClientData)gdb_register_info, NULL);
 
   /* Register/initialize any architecture specific data */
-  setup_architecture_data ();
+  setup_architecture_data();
 
   deprecated_register_gdbarch_swap (&old_regs, sizeof (old_regs), NULL);
   deprecated_register_gdbarch_swap (&regformat, sizeof (regformat), NULL);
@@ -471,23 +472,24 @@ setup_architecture_data(void)
 /* Usage: gdb_reginfo format regno typeaddr format */
 
 static int
-gdb_regformat (ClientData clientData, Tcl_Interp *interp,
-	       int objc, Tcl_Obj **objv)
+gdb_regformat(ClientData clientData, Tcl_Interp *interp,
+	      int objc, Tcl_Obj **objv)
 {
   int fm, regno;
   struct type *type;
 
   if (objc != 3)
     {
-      Tcl_WrongNumArgs (interp, 0, objv, "gdb_reginfo regno type format");
+      Tcl_WrongNumArgs(interp, 0, objv, "gdb_reginfo regno type format");
       return TCL_ERROR;
     }
 
-  if (Tcl_GetIntFromObj (interp, objv[0], &regno) != TCL_OK)
+  if (Tcl_GetIntFromObj(interp, objv[0], &regno) != TCL_OK)
     return TCL_ERROR;
 
-  type = (struct type *)strtol (Tcl_GetStringFromObj (objv[1], NULL), NULL, 16);
-  fm = (int)*(Tcl_GetStringFromObj (objv[2], NULL));
+  type = (struct type *)(intptr_t)strtol(Tcl_GetStringFromObj(objv[1], NULL),
+					 NULL, 16);
+  fm = (int)*(Tcl_GetStringFromObj(objv[2], NULL));
 
   if (regno >= NUM_REGS + NUM_PSEUDO_REGS)
     {

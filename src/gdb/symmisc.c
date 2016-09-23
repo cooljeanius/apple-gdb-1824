@@ -141,16 +141,16 @@ free_symtab (struct symtab *s)
       n = BLOCKVECTOR_NBLOCKS (bv);
       for (i = 0; i < n; i++)
 	free_symtab_block (s->objfile, BLOCKVECTOR_BLOCK (bv, i));
-      /* Free the blockvector itself.  */
-      xfree (bv);
-      /* Also free the linetable.  */
-
+      /* Free the blockvector itself: */
+      xfree(bv);
+      /* Also free the linetable by falling through to the next case: */
+      ATTRIBUTE_FALLTHROUGH;
     case free_linetable:
       /* Everything will be freed either by our `free_func'
          or by some other symtab, except for our linetable.
          Free that now.  */
-      if (LINETABLE (s))
-	xfree (LINETABLE (s));
+      if (LINETABLE(s))
+	xfree(LINETABLE(s));
       break;
 
     default:

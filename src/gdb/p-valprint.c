@@ -61,7 +61,7 @@ pascal_val_print(struct type *type, const gdb_byte *valaddr,
 		 struct ui_file *stream, int format, int deref_ref,
 		 int recurse, enum val_prettyprint pretty)
 {
-  unsigned int i = 0U;	/* Number of characters printed */
+  unsigned int u_i = 0U;	/* Number of characters printed */
   unsigned long len;
   struct type *elttype;
   unsigned eltlen;
@@ -105,8 +105,8 @@ pascal_val_print(struct type *type, const gdb_byte *valaddr,
 		}
 
 	      LA_PRINT_STRING (stream, valaddr + embedded_offset, len, 1, 0);
-	      i = len;
-	      if (i > 0) {
+	      u_i = len;
+	      if (u_i > 0U) {
 		; /* ??? */
 	      }
 	    }
@@ -117,17 +117,17 @@ pascal_val_print(struct type *type, const gdb_byte *valaddr,
 	         entry specially, and the rest of the members normally.  */
 	      if (pascal_object_is_vtbl_ptr_type(elttype))
 		{
-		  i = 1;
+		  u_i = 1U;
 		  fprintf_filtered(stream, "%lu vtable entries",
                                    (len - 1UL));
 		}
 	      else
 		{
-		  i = 0;
+		  u_i = 0U;
 		}
 	      val_print_array_elements(type, (valaddr + embedded_offset),
                                        address, stream, format, deref_ref,
-                                       recurse, pretty, i);
+                                       recurse, pretty, u_i);
 	      fprintf_filtered(stream, "}");
 	    }
 	  break;
@@ -190,7 +190,7 @@ pascal_val_print(struct type *type, const gdb_byte *valaddr,
 	      && addr != 0)
 	    {
 	      /* no wide string yet */
-	      i = val_print_string (addr, -1, 1, stream);
+	      u_i = val_print_string(addr, -1, 1, stream);
 	    }
 	  /* also for pointers to pascal strings */
 	  /* Note: this is Free Pascal specific:
@@ -209,8 +209,8 @@ pascal_val_print(struct type *type, const gdb_byte *valaddr,
 	      string_length = extract_unsigned_integer((const gdb_byte *)buffer,
                                                        length_size);
               xfree(buffer);
-              i = val_print_string((addr + string_pos),
-                                   (int)string_length, char_size, stream);
+              u_i = val_print_string((addr + string_pos),
+				     (int)string_length, char_size, stream);
 	    }
 	  else if (pascal_object_is_vtbl_member(type))
 	    {
@@ -261,7 +261,7 @@ pascal_val_print(struct type *type, const gdb_byte *valaddr,
 	  /* Return number of characters printed, including the terminating
 	     '\0' if we reached the end.  val_print_string takes care including
 	     the terminating '\0' if necessary.  */
-	  return i;
+	  return u_i;
 	}
       break;
 
@@ -360,21 +360,21 @@ pascal_val_print(struct type *type, const gdb_byte *valaddr,
 	}
       len = TYPE_NFIELDS(type);
       val = unpack_long(type, (valaddr + embedded_offset));
-      for (i = 0; i < len; i++)
+      for (u_i = 0U; u_i < len; u_i++)
 	{
 	  QUIT;
-	  if (val == TYPE_FIELD_BITPOS(type, i))
+	  if (val == TYPE_FIELD_BITPOS(type, u_i))
 	    {
 	      break;
 	    }
 	}
-      if (i < len)
+      if (u_i < len)
 	{
-	  fputs_filtered (TYPE_FIELD_NAME (type, i), stream);
+	  fputs_filtered(TYPE_FIELD_NAME(type, u_i), stream);
 	}
       else
 	{
-	  print_longest (stream, 'd', 0, val);
+	  print_longest(stream, 'd', 0, val);
 	}
       break;
 
@@ -477,7 +477,7 @@ pascal_val_print(struct type *type, const gdb_byte *valaddr,
 	{
 	  struct type *range = elttype;
 	  LONGEST low_bound, high_bound;
-	  long i;
+	  long l_i;
 	  int is_bitstring = (TYPE_CODE(type) == TYPE_CODE_BITSTRING);
 	  int need_comma = 0;
 
@@ -486,22 +486,22 @@ pascal_val_print(struct type *type, const gdb_byte *valaddr,
 	  else
 	    fputs_filtered("[", stream);
 
-	  i = get_discrete_bounds(range, &low_bound, &high_bound);
+	  l_i = get_discrete_bounds(range, &low_bound, &high_bound);
 	maybe_bad_bstring:
-	  if (i < 0)
+	  if (l_i < 0)
 	    {
 	      fputs_filtered("<error value>", stream);
 	      goto done;
 	    }
 
-	  for (i = (long)low_bound; i <= high_bound; i++)
+	  for (l_i = (long)low_bound; l_i <= high_bound; l_i++)
 	    {
 	      int element;
               element = value_bit_index(type,
-                                        (valaddr + embedded_offset), i);
+                                        (valaddr + embedded_offset), l_i);
 	      if (element < 0)
 		{
-		  i = element;
+		  l_i = element;
 		  goto maybe_bad_bstring;
 		}
 	      if (is_bitstring)
@@ -510,20 +510,20 @@ pascal_val_print(struct type *type, const gdb_byte *valaddr,
 		{
 		  if (need_comma)
 		    fputs_filtered(", ", stream);
-		  print_type_scalar(range, i, stream);
+		  print_type_scalar(range, l_i, stream);
 		  need_comma = 1;
 
-		  if (((i + 1L) <= high_bound)
+		  if (((l_i + 1L) <= high_bound)
                       && value_bit_index(type, (valaddr + embedded_offset),
-                                         ++i))
+                                         ++l_i))
 		    {
-		      int j = i;
+		      int j = (int)l_i;
 		      fputs_filtered("..", stream);
-		      while (((i + 1L) <= high_bound)
+		      while (((l_i + 1L) <= high_bound)
 			     && value_bit_index(type,
                                                 (valaddr
-                                                 + embedded_offset), ++i))
-			j = i;
+                                                 + embedded_offset), ++l_i))
+			j = (int)l_i;
 		      print_type_scalar(range, j, stream);
 		    }
 		}

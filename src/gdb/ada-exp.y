@@ -812,6 +812,7 @@ write_object_renaming (struct block *orig_left_context,
         break;
       case 'L':
 	slice_state = LOWER_BOUND;
+	break; /* for -Wimplicit-fallthrough */
       case 'S':
 	suffix += 1;
 	if (isdigit (*suffix))
@@ -910,7 +911,7 @@ write_object_renaming (struct block *orig_left_context,
 static LONGEST
 convert_char_literal(struct type *type, LONGEST val)
 {
-  char name[7];
+  char name[11]; /* Big enough for -Wformat-length */
   int f;
 
   if ((type == NULL) || (TYPE_CODE(type) != TYPE_CODE_ENUM))

@@ -70,6 +70,7 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
 AC_REQUIRE_HEADER_STDC
 AC_HEADER_DIRENT
 AC_HEADER_SYS_WAIT
+AC_HEADER_TIME
 unset ac_cv_header_sys_types_h
 AC_CHECK_HEADERS([a.out.h errno.h fcntl.h limits.h locale.h mach/mach.h \
                   mach/vm_types.h machine/reg.h sgtty.h signal.h stdarg.h \

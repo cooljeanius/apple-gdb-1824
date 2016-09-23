@@ -52,6 +52,16 @@
 #include <signal.h>
 #include "gdb_string.h"
 
+#ifdef HAVE_ERRNO_H
+# include <errno.h>
+#endif /* HAVE_ERRNO_H */
+#ifndef EINPROGRESS
+# define EINPROGRESS 36		/* Operation now in progress */
+#endif /* !EINPROGRESS */
+#ifndef ETIMEDOUT
+# define ETIMEDOUT 60		/* Operation timed out */
+#endif /* !ETIMEDOUT */
+
 #ifndef HAVE_SOCKLEN_T
 typedef int socklen_t;
 #endif /* !HAVE_SOCKLEN_T */

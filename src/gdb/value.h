@@ -26,6 +26,10 @@
 
 #include "ansidecl.h"
 
+#if !defined(DEFS_H) && !defined(__GDB_DEFS_H__) && !defined(ATTRIBUTE_OPTIMIZE)
+# include "defs.h"
+#endif /* !DEFS_H && !__GDB_DEFS_H__ && !ATTRIBUTE_OPTIMIZE */
+
 #include "doublest.h"
 
 /* APPLE LOCAL: For check_safe_call.  */
@@ -352,32 +356,36 @@ extern void value_free_to_mark (struct value *mark);
 extern struct value *value_string(const char *ptr, int len);
 extern struct value *value_bitstring(char *ptr, int len);
 
-extern struct value *value_array (int lowbound, int highbound,
-				  struct value **elemvec);
+extern struct value *value_array(int lowbound, int highbound,
+				 struct value **elemvec);
 
-extern struct value *value_concat (struct value *arg1, struct value *arg2);
+extern struct value *value_concat(struct value *arg1, struct value *arg2);
 
-extern struct value *value_binop (struct value *arg1, struct value *arg2,
-				  enum exp_opcode op);
+extern struct value *value_binop(struct value *arg1, struct value *arg2,
+				 enum exp_opcode op)
+#if defined(__GNUC__) && !defined(S_SPLINT_S)
+  ATTRIBUTE_OPTIMIZE(Os) ATTRIBUTE_OPTIMIZE(no-fast-math)
+#endif /* __GNUC__ && !S_SPLINT_S */
+  ATTRIBUTE_W_U_R;
 
-extern struct value *value_add (struct value *arg1, struct value *arg2);
+extern struct value *value_add(struct value *arg1, struct value *arg2);
 
-extern struct value *value_sub (struct value *arg1, struct value *arg2);
+extern struct value *value_sub(struct value *arg1, struct value *arg2);
 
-extern struct value *value_coerce_array (struct value *arg1);
+extern struct value *value_coerce_array(struct value *arg1);
 
-extern struct value *value_coerce_function (struct value *arg1);
+extern struct value *value_coerce_function(struct value *arg1);
 
-extern struct value *value_ind (struct value *arg1);
+extern struct value *value_ind(struct value *arg1);
 
-extern struct value *value_addr (struct value *arg1);
+extern struct value *value_addr(struct value *arg1);
 
-extern struct value *value_assign (struct value *toval,
-				   struct value *fromval);
+extern struct value *value_assign(struct value *toval,
+				  struct value *fromval);
 
-extern struct value *value_pos (struct value *arg1);
+extern struct value *value_pos(struct value *arg1);
 
-extern struct value *value_neg (struct value *arg1);
+extern struct value *value_neg(struct value *arg1);
 
 extern struct value *value_complement(struct value *arg1);
 

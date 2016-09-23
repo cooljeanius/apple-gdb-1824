@@ -132,38 +132,41 @@ static void breakpoint_notify (int, const char *);
 static void tracepoint_notify (int, const char *);
 
 int
-Gdbtk_Breakpoint_Init (Tcl_Interp *interp)
+Gdbtk_Breakpoint_Init(Tcl_Interp *interp)
 {
+  size_t blsz;
   /* Breakpoint commands */
-  Tcl_CreateObjCommand (interp, "gdb_find_bp_at_addr", gdbtk_call_wrapper,
-			gdb_find_bp_at_addr, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_find_bp_at_line", gdbtk_call_wrapper,
-			gdb_find_bp_at_line, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_get_breakpoint_info", gdbtk_call_wrapper,
-			gdb_get_breakpoint_info, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_get_breakpoint_list", gdbtk_call_wrapper,
-			gdb_get_breakpoint_list, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_set_bp", gdbtk_call_wrapper, gdb_set_bp, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_set_bp_addr", gdbtk_call_wrapper,
-			gdb_set_bp_addr, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_find_bp_at_addr", gdbtk_call_wrapper,
+		       (ClientData)gdb_find_bp_at_addr, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_find_bp_at_line", gdbtk_call_wrapper,
+		       (ClientData)gdb_find_bp_at_line, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_get_breakpoint_info", gdbtk_call_wrapper,
+		       (ClientData)gdb_get_breakpoint_info, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_get_breakpoint_list", gdbtk_call_wrapper,
+		       (ClientData)gdb_get_breakpoint_list, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_set_bp", gdbtk_call_wrapper,
+		       (ClientData)gdb_set_bp, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_set_bp_addr", gdbtk_call_wrapper,
+		       (ClientData)gdb_set_bp_addr, NULL);
 
   /* Tracepoint commands */
-  Tcl_CreateObjCommand (interp, "gdb_actions",
-			gdbtk_call_wrapper, gdb_actions_command, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_get_trace_frame_num",
-			gdbtk_call_wrapper, gdb_get_trace_frame_num, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_get_tracepoint_info",
-			gdbtk_call_wrapper, gdb_get_tracepoint_info, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_get_tracepoint_list",
-			gdbtk_call_wrapper, gdb_get_tracepoint_list, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_is_tracing",
-			gdbtk_call_wrapper, gdb_trace_status,	NULL);
-  Tcl_CreateObjCommand (interp, "gdb_tracepoint_exists",
-			gdbtk_call_wrapper, gdb_tracepoint_exists_command, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_actions", gdbtk_call_wrapper,
+		       (ClientData)gdb_actions_command, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_get_trace_frame_num", gdbtk_call_wrapper,
+		       (ClientData)gdb_get_trace_frame_num, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_get_tracepoint_info", gdbtk_call_wrapper,
+		       (ClientData)gdb_get_tracepoint_info, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_get_tracepoint_list", gdbtk_call_wrapper,
+		       (ClientData)gdb_get_tracepoint_list, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_is_tracing", gdbtk_call_wrapper,
+		       (ClientData)gdb_trace_status, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_tracepoint_exists", gdbtk_call_wrapper,
+		       (ClientData)gdb_tracepoint_exists_command, NULL);
 
   /* Initialize our tables of BPs. */
-  breakpoint_list = (struct breakpoint **) xmalloc (breakpoint_list_size * sizeof (struct breakpoint *));
-  memset (breakpoint_list, 0, breakpoint_list_size * sizeof (struct breakpoint *));
+  blsz = (breakpoint_list_size * sizeof(struct breakpoint *));
+  breakpoint_list = (struct breakpoint **)xmalloc(blsz);
+  memset(breakpoint_list, 0, blsz);
 
   return TCL_OK;
 }

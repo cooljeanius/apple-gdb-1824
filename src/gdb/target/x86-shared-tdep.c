@@ -973,6 +973,8 @@ x86_quickie_analyze_prologue(CORE_ADDR func_start_addr, CORE_ADDR limit,
   /* Should we look for Fix & Continue nop paddings?  */
   gdb_byte i386_pat[3] = { 0x55, 0x89, 0xe5 };
   gdb_byte x86_64_pat[4] = { 0x55, 0x48, 0x89, 0xe5 };
+  gdb_byte stack_protect_buf[8] = { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
+  (void)stack_protect_buf;
 
   cache->func_start_addr = func_start_addr;
   cache->pc = limit;

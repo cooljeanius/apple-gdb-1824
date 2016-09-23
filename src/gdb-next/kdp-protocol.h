@@ -5,11 +5,11 @@
  * Definition of remote debugger protocol.
  *
  * HISTORY
- * July 2001    Derek Kumar (drk@mit.edu, dkumar@apple.com)
+ * July 2001    Derek Kumar <drk@mit.edu>, <dkumar@apple.com>
  *              Added KDP_REATTACH, KDP_BREAKPOINT_SET, KDP_BREAKPOINT_REMOVE
  *              packet definitions.
- * 17-Aug-1997  Klee Dienes  (klee@mit.edu)
- * 27-Oct-1991  Mike DeMoney (mike@next.com)
+ * 17-Aug-1997  Klee Dienes <klee@mit.edu>
+ * 27-Oct-1991  Mike DeMoney <mike@next.com>
  * Created
  */
 
@@ -56,7 +56,7 @@ typedef enum kdp_req_t {
 
 /* Common KDP packet header */
 
-typedef struct {
+typedef struct kdp_hdr_s {
   kdp_req_t request;		/* request type */
   unsigned char is_reply;	/* 0 => request, 1 => reply */
   unsigned char seq;		/* sequence number within session */
@@ -65,7 +65,7 @@ typedef struct {
 
 /* KDP errors */
 
-typedef enum {
+typedef enum kdp_errors_e {
   KDP_PROTERR_SUCCESS = 0,
   KDP_PROTERR_ALREADY_CONNECTED,
   KDP_PROTERR_BAD_NBYTES,
@@ -76,14 +76,14 @@ typedef enum {
 
 /* KDP_CONNECT */
 
-typedef struct {
+typedef struct kdp_connect_req_s {
   kdp_hdr_t hdr;
   unsigned short req_reply_port; /* udp port which to send replies */
   unsigned short exc_note_port;  /* udp port which to send exc notes */
   char greeting[0];		 /* "greetings", null-terminated */
 } kdp_connect_req_t;
 
-typedef struct {
+typedef struct kdp_connect_reply_s {
   kdp_hdr_t hdr;
   kdp_error_t error;
 } kdp_connect_reply_t;
@@ -264,7 +264,7 @@ typedef struct {
 } kdp_resumecpus_reply_t;
 
 /* KDP_BREAKPOINT_SET, KDP_BREAKPOINT_REMOVE */
-typedef struct {
+typedef struct kdp_bkpt_req_s {
   kdp_hdr_t hdr;
   unsigned long address;
 #if 0
@@ -272,7 +272,7 @@ typedef struct {
 #endif /* 0 */
 } kdp_breakpoint_req_t;
 
-typedef struct {
+typedef struct kdp_bkpt_reply_s {
   kdp_hdr_t hdr;
   kdp_error_t error;
 } kdp_breakpoint_reply_t;
@@ -360,14 +360,14 @@ typedef union kdp_pkt_t {
   kdp_reattach_req_t reattach_req;
 } kdp_pkt_t;
 
-typedef enum {
+typedef enum kdp_logging_levels_e {
   KDP_LOG_ERROR = 1,
   KDP_LOG_WARNING = 2,
   KDP_LOG_INFO = 3,
   KDP_LOG_DEBUG = 4
 } kdp_log_level;
 
-typedef enum {
+typedef enum kdp_retvals_e {
   RR_SUCCESS = 0,
   RR_ALREADY_CONNECTED = KDP_PROTERR_ALREADY_CONNECTED,
   RR_BAD_NBYTES = KDP_PROTERR_BAD_NBYTES,

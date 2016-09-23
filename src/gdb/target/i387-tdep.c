@@ -411,7 +411,7 @@ i387_supply_fsave(struct regcache *regcache, int regnum, const void *fsave)
 	if (i >= I387_FCTRL_REGNUM
 	    && i != I387_FIOFF_REGNUM && i != I387_FOOFF_REGNUM)
 	  {
-	    gdb_byte val[4];
+	    gdb_byte val[8]; /* big enough for -Wstack-protector */
 
 	    memcpy (val, FSAVE_ADDR (regs, i), 2);
 	    val[2] = val[3] = 0;
@@ -465,7 +465,7 @@ i387_collect_fsave(const struct regcache *regcache, int regnum, void *fsave)
 	if (i >= I387_FCTRL_REGNUM
 	    && i != I387_FIOFF_REGNUM && i != I387_FOOFF_REGNUM)
 	  {
-	    gdb_byte buf[4];
+	    gdb_byte buf[8]; /* big enough for -Wstack-protector */
 
 	    regcache_raw_collect (regcache, i, buf);
 
@@ -610,7 +610,7 @@ i387_supply_fxsave(struct regcache *regcache, int regnum, const void *fxsave)
 	if (i >= I387_FCTRL_REGNUM && i < I387_XMM0_REGNUM
 	    && i != I387_FIOFF_REGNUM && i != I387_FOOFF_REGNUM)
 	  {
-	    gdb_byte val[4];
+	    gdb_byte val[8]; /* big enough for -Wstack-protector */
 
 	    memcpy (val, FXSAVE_ADDR (regs, i), 2);
 	    val[2] = val[3] = 0;
@@ -694,7 +694,7 @@ i387_collect_fxsave(const struct regcache *regcache, int regnum, void *fxsave)
 	if (i >= I387_FCTRL_REGNUM && i < I387_XMM0_REGNUM
 	    && i != I387_FIOFF_REGNUM && i != I387_FOOFF_REGNUM)
 	  {
-	    gdb_byte buf[4];
+	    gdb_byte buf[8]; /* big enough for -Wstack-protector */
 
 	    regcache_raw_collect (regcache, i, buf);
 

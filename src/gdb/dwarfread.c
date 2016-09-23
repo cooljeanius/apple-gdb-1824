@@ -2261,6 +2261,9 @@ read_ofile_symtab(struct partial_symtab *pst)
   file_ptr foffset;
   bfd *abfd;
   char lnsizedata[SIZEOF_LINETBL_LENGTH];
+  char stackprotectiondata[8];
+  stackprotectiondata[0] = '\0';
+  (void)stackprotectiondata;
 
   abfd = pst->objfile->obfd;
   current_objfile = pst->objfile;

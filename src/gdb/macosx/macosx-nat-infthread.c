@@ -84,43 +84,44 @@ macosx_setup_registers_before_hand_call(void)
 kern_return_t
 modify_trace_bit(thread_t thread, int value)
 {
-  gdb_x86_thread_state_t state;
+  gdb_x86_thread_state_t x86_state;
   unsigned int state_count = GDB_x86_THREAD_STATE_COUNT;
   kern_return_t kret;
 
   kret = thread_get_state(thread, GDB_x86_THREAD_STATE,
-			  (thread_state_t) &state, &state_count);
+			  (thread_state_t)&x86_state, &state_count);
   if ((kret == KERN_SUCCESS) &&
-      ((state.tsh.flavor == GDB_x86_THREAD_STATE32) ||
-       (state.tsh.flavor == GDB_x86_THREAD_STATE64))) {
-      if ((state.tsh.flavor == GDB_x86_THREAD_STATE32)
-          && ((state.uts.ts32.eflags & 0x100UL) != (value ? 1 : 0))) {
-          state.uts.ts32.eflags =
-                    (state.uts.ts32.eflags & ~0x100UL) | (value ? 0x100UL : 0);
+      ((x86_state.tsh.flavor == GDB_x86_THREAD_STATE32) ||
+       (x86_state.tsh.flavor == GDB_x86_THREAD_STATE64))) {
+      if ((x86_state.tsh.flavor == GDB_x86_THREAD_STATE32)
+          && ((x86_state.uts.ts32.eflags & 0x100UL) != (value ? 1 : 0))) {
+          x86_state.uts.ts32.eflags =
+	    (x86_state.uts.ts32.eflags & ~0x100UL) | (value ? 0x100UL : 0);
           kret = thread_set_state(thread, GDB_x86_THREAD_STATE32,
-				  (thread_state_t) & state.uts.ts32,
+				  (thread_state_t)&x86_state.uts.ts32,
 				  GDB_x86_THREAD_STATE32_COUNT);
           MACH_PROPAGATE_ERROR(kret);
-      } else if ((state.tsh.flavor == GDB_x86_THREAD_STATE64)
-		 && (state.uts.ts64.rflags & 0x100UL) != (value ? 1 : 0)) {
-          state.uts.ts64.rflags =
-                     (state.uts.ts64.rflags & ~0x100UL) | (value ? 0x100UL : 0);
+      } else if ((x86_state.tsh.flavor == GDB_x86_THREAD_STATE64)
+		 && (x86_state.uts.ts64.rflags & 0x100UL) != (value ? 1 : 0)) {
+          x86_state.uts.ts64.rflags =
+	    (x86_state.uts.ts64.rflags & ~0x100UL) | (value ? 0x100UL : 0);
           kret = thread_set_state(thread, GDB_x86_THREAD_STATE,
-				  (thread_state_t)&state, state_count);
+				  (thread_state_t)&x86_state, state_count);
           MACH_PROPAGATE_ERROR(kret);
       }
   } else {
-      gdb_i386_thread_state_t state;
+      gdb_i386_thread_state_t i386_state;
 
       state_count = GDB_i386_THREAD_STATE_COUNT;
       kret = thread_get_state(thread, GDB_i386_THREAD_STATE,
-			      (thread_state_t)&state, &state_count);
+			      (thread_state_t)&i386_state, &state_count);
       MACH_PROPAGATE_ERROR(kret);
 
-      if ((state.eflags & 0x100UL) != (value ? 1 : 0)) {
-          state.eflags = ((state.eflags & ~0x100UL) | (value ? 0x100UL : 0));
+      if ((i386_state.eflags & 0x100UL) != (value ? 1 : 0)) {
+          i386_state.eflags = ((i386_state.eflags & ~0x100UL)
+			       | (value ? 0x100UL : 0));
           kret = thread_set_state(thread, GDB_i386_THREAD_STATE,
-				  (thread_state_t) &state, state_count);
+				  (thread_state_t)&i386_state, state_count);
           MACH_PROPAGATE_ERROR(kret);
       }
   }

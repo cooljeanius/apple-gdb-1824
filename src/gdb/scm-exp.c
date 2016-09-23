@@ -203,7 +203,8 @@ scm_read_token(int c, int weird)
 	case '\n':
 	  if (weird)
 	    goto default_case;
-	case '\0':		/* End of line */
+	  ATTRIBUTE_FALLTHROUGH; /* XXX really fallthrough? */
+	case '\0': /* End of line */
 	eof_case:
 	  --lexptr;
 	  return;

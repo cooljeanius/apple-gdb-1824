@@ -52,22 +52,24 @@ static int gdb_stack (ClientData, Tcl_Interp *, int, Tcl_Obj * CONST[]);
 static void get_frame_name (Tcl_Interp *interp, Tcl_Obj *list,
 			    struct frame_info *fi);
 
+/* */
 int
-Gdbtk_Stack_Init (Tcl_Interp *interp)
+Gdbtk_Stack_Init(Tcl_Interp *interp)
 {
-  Tcl_CreateObjCommand (interp, "gdb_block_variables", gdbtk_call_wrapper,
-			gdb_block_vars, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_get_blocks", gdbtk_call_wrapper,
-			gdb_get_blocks, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_get_args", gdbtk_call_wrapper,
-			gdb_get_args_command, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_get_locals", gdbtk_call_wrapper,
-			gdb_get_locals_command, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_selected_block", gdbtk_call_wrapper,
-			gdb_selected_block, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_selected_frame", gdbtk_call_wrapper,
-			gdb_selected_frame, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_stack", gdbtk_call_wrapper, gdb_stack, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_block_variables", gdbtk_call_wrapper,
+		       (ClientData)gdb_block_vars, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_get_blocks", gdbtk_call_wrapper,
+		       (ClientData)gdb_get_blocks, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_get_args", gdbtk_call_wrapper,
+		       (ClientData)gdb_get_args_command, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_get_locals", gdbtk_call_wrapper,
+		       (ClientData)gdb_get_locals_command, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_selected_block", gdbtk_call_wrapper,
+		       (ClientData)gdb_selected_block, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_selected_frame", gdbtk_call_wrapper,
+		       (ClientData)gdb_selected_frame, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_stack", gdbtk_call_wrapper,
+		       (ClientData)gdb_stack, NULL);
 
   return TCL_OK;
 }
@@ -486,7 +488,8 @@ static int
 gdb_stack (ClientData clientData, Tcl_Interp *interp,
 	   int objc, Tcl_Obj *CONST objv[])
 {
-  int start, count;
+  int start = 0;
+  int count;
 
   if (objc < 3)
     {
@@ -508,7 +511,7 @@ gdb_stack (ClientData clientData, Tcl_Interp *interp,
   if (target_has_stack)
     {
       gdb_result r;
-      struct frame_info *top;
+      struct frame_info *top = NULL;
       struct frame_info *fi;
 
       /* Find the outermost frame */

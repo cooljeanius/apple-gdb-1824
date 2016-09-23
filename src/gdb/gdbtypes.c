@@ -872,6 +872,7 @@ get_discrete_bounds (struct type *type, LONGEST *lowp, LONGEST *highp)
 	  return 0;
 	}
       /* ... fall through for unsigned ints ... */
+      ATTRIBUTE_FALLTHROUGH;
     case TYPE_CODE_CHAR:
       *lowp = 0;
       /* This round-about calculation is to avoid shifting by
@@ -2898,6 +2899,7 @@ rank_one_type (struct type *parm, struct type *arg)
 	  else if (TYPE_LENGTH (arg) < TYPE_LENGTH (parm))
 	    return INTEGER_PROMOTION_BADNESS;
 	  /* >>> !! else fall through !! <<< */
+	  ATTRIBUTE_FALLTHROUGH;
 	case TYPE_CODE_CHAR:
 	  /* Deal with signed, unsigned, and plain chars for C++
 	     and with int cases falling through from previous case */
@@ -2994,6 +2996,7 @@ rank_one_type (struct type *parm, struct type *arg)
 	  if (is_ancestor (parm, arg))
 	    return BASE_CONVERSION_BADNESS;
 	  /* else fall through */
+	  ATTRIBUTE_FALLTHROUGH;
 	default:
 	  return INCOMPATIBLE_TYPE_BADNESS;
 	}

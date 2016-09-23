@@ -1339,7 +1339,7 @@ yylex ()
       if (lexptr[1] < '0' || lexptr[1] > '9')
 	goto symbol;		/* Nope, must be a symbol. */
       /* FALL THRU into number case.  */
-
+      ATTRIBUTE_FALLTHROUGH;
     case '0':
     case '1':
     case '2':

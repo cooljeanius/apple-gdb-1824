@@ -166,14 +166,14 @@ struct block
    struct dict_iterator.  SYM points to the current symbol.  */
 
 #define ALL_BLOCK_SYMBOLS(block, iter, sym)			\
-	ALL_DICT_SYMBOLS (BLOCK_DICT (block), iter, sym)
+	ALL_DICT_SYMBOLS(BLOCK_DICT(block), iter, sym)
 
 struct blockvector
 {
   /* Number of blocks in the list: */
   int nblocks;
   /* The blocks themselves: */
-  struct block *block[FLEXIBLE_ARRAY_MEMBER];
+  __extension__ struct block *block[FLEXIBLE_ARRAY_MEMBER];
 };
 
 #define BLOCKVECTOR_NBLOCKS(blocklist) (blocklist)->nblocks

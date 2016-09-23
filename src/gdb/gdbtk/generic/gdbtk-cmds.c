@@ -213,68 +213,71 @@ static int fromhex(int a);
  * Result:
  *     A standard Tcl result.
  */
-
 int
-Gdbtk_Init (Tcl_Interp *interp)
+Gdbtk_Init(Tcl_Interp *interp)
 {
-  Tcl_CreateObjCommand (interp, "gdb_cmd", gdbtk_call_wrapper, gdb_cmd, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_immediate", gdbtk_call_wrapper,
-			gdb_immediate_command, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_loc", gdbtk_call_wrapper, gdb_loc, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_path_conv", gdbtk_call_wrapper, gdb_path_conv,
-			NULL);
-  Tcl_CreateObjCommand (interp, "gdb_listfiles", gdbtk_call_wrapper, gdb_listfiles,
-			NULL);
-  Tcl_CreateObjCommand (interp, "gdb_listfuncs", gdbtk_call_wrapper, gdb_listfuncs,
-			NULL);
-  Tcl_CreateObjCommand (interp, "gdb_entry_point", gdbtk_call_wrapper,
-			gdb_entry_point, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_update_mem", gdbtk_call_wrapper, gdb_update_mem,
-			NULL);
-  Tcl_CreateObjCommand (interp, "gdb_set_mem", gdbtk_call_wrapper, gdb_set_mem,
-			NULL);
-  Tcl_CreateObjCommand (interp, "gdb_stop", gdbtk_call_wrapper, gdb_stop, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_restore_fputs", gdbtk_call_wrapper, gdb_restore_fputs,
-			NULL);
-  Tcl_CreateObjCommand (interp, "gdb_eval", gdbtk_call_wrapper, gdb_eval, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_incr_addr", gdbtk_call_wrapper, gdb_incr_addr, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_CA_to_TAS", gdbtk_call_wrapper, gdb_CA_to_TAS, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_clear_file", gdbtk_call_wrapper,
-			gdb_clear_file, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_confirm_quit", gdbtk_call_wrapper,
-			gdb_confirm_quit, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_force_quit", gdbtk_call_wrapper,
-			gdb_force_quit, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_target_has_execution",
-			gdbtk_call_wrapper,
-			gdb_target_has_execution_command, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_load_info", gdbtk_call_wrapper, gdb_load_info,
-			NULL);
-  Tcl_CreateObjCommand (interp, "gdb_get_function", gdbtk_call_wrapper,
-			gdb_get_function_command, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_get_line", gdbtk_call_wrapper,
-			gdb_get_line_command, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_get_file", gdbtk_call_wrapper,
-			gdb_get_file_command, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_prompt",
-			gdbtk_call_wrapper, gdb_prompt_command, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_find_file",
-			gdbtk_call_wrapper, gdb_find_file_command, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_loadfile", gdbtk_call_wrapper, gdb_loadfile,
-			NULL);
-  Tcl_CreateObjCommand (interp, "gdb_load_disassembly", gdbtk_call_wrapper,
-			gdb_load_disassembly,  NULL);
-  Tcl_CreateObjCommand (gdbtk_interp, "gdb_search", gdbtk_call_wrapper,
-			gdb_search, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_get_inferior_args", gdbtk_call_wrapper,
-			gdb_get_inferior_args, NULL);
-  Tcl_CreateObjCommand (interp, "gdb_set_inferior_args", gdbtk_call_wrapper,
-			gdb_set_inferior_args, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_cmd", gdbtk_call_wrapper,
+		       (ClientData)gdb_cmd, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_immediate", gdbtk_call_wrapper,
+		       (ClientData)gdb_immediate_command, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_loc", gdbtk_call_wrapper,
+		       (ClientData)gdb_loc, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_path_conv", gdbtk_call_wrapper,
+		       (ClientData)gdb_path_conv, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_listfiles", gdbtk_call_wrapper,
+		       (ClientData)gdb_listfiles, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_listfuncs", gdbtk_call_wrapper,
+		       (ClientData)gdb_listfuncs, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_entry_point", gdbtk_call_wrapper,
+		       (ClientData)gdb_entry_point, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_update_mem", gdbtk_call_wrapper,
+		       (ClientData)gdb_update_mem, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_set_mem", gdbtk_call_wrapper,
+		       (ClientData)gdb_set_mem, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_stop", gdbtk_call_wrapper,
+		       (ClientData)gdb_stop, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_restore_fputs", gdbtk_call_wrapper,
+		       (ClientData)gdb_restore_fputs, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_eval", gdbtk_call_wrapper,
+		       (ClientData)gdb_eval, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_incr_addr", gdbtk_call_wrapper,
+		       (ClientData)gdb_incr_addr, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_CA_to_TAS", gdbtk_call_wrapper,
+		       (ClientData)gdb_CA_to_TAS, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_clear_file", gdbtk_call_wrapper,
+		       (ClientData)gdb_clear_file, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_confirm_quit", gdbtk_call_wrapper,
+		       (ClientData)gdb_confirm_quit, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_force_quit", gdbtk_call_wrapper,
+		       (ClientData)gdb_force_quit, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_target_has_execution", gdbtk_call_wrapper,
+		       (ClientData)gdb_target_has_execution_command, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_load_info", gdbtk_call_wrapper,
+		       (ClientData)gdb_load_info, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_get_function", gdbtk_call_wrapper,
+		       (ClientData)gdb_get_function_command, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_get_line", gdbtk_call_wrapper,
+		       (ClientData)gdb_get_line_command, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_get_file", gdbtk_call_wrapper,
+		       (ClientData)gdb_get_file_command, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_prompt", gdbtk_call_wrapper,
+		       (ClientData)gdb_prompt_command, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_find_file", gdbtk_call_wrapper,
+		       (ClientData)gdb_find_file_command, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_loadfile", gdbtk_call_wrapper,
+		       (ClientData)gdb_loadfile, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_load_disassembly", gdbtk_call_wrapper,
+		       (ClientData)gdb_load_disassembly,  NULL);
+  Tcl_CreateObjCommand(gdbtk_interp, "gdb_search", gdbtk_call_wrapper,
+		       (ClientData)gdb_search, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_get_inferior_args", gdbtk_call_wrapper,
+		       (ClientData)gdb_get_inferior_args, NULL);
+  Tcl_CreateObjCommand(interp, "gdb_set_inferior_args", gdbtk_call_wrapper,
+		       (ClientData)gdb_set_inferior_args, NULL);
 
   /* gdb_context is used for debugging multiple threads or tasks */
-  Tcl_LinkVar (interp, "gdb_context_id",
-	       (char *) &gdb_context,
-	       TCL_LINK_INT | TCL_LINK_READ_ONLY);
+  Tcl_LinkVar(interp, "gdb_context_id", (char *)&gdb_context,
+	      (TCL_LINK_INT | TCL_LINK_READ_ONLY));
 
   /* Make gdb's notion of the pwd visible.  This is read-only because
      (1) it doesn't make sense to change it directly and (2) it is
@@ -346,7 +349,6 @@ gdbtk_call_wrapper (ClientData clientData, Tcl_Interp *interp,
 
   if (!catch_errors (wrapped_call, &wrapped_args, "", RETURN_MASK_ALL))
     {
-
       wrapped_args.val = TCL_ERROR;	/* Flag an error for TCL */
 
       /* Make sure the timer interrupts are turned off.  */
@@ -368,7 +370,6 @@ gdbtk_call_wrapper (ClientData clientData, Tcl_Interp *interp,
 
       running_now = 0;
       Tcl_Eval (interp, "gdbtk_tcl_idle");
-
     }
   else
     {
@@ -410,10 +411,11 @@ gdbtk_call_wrapper (ClientData clientData, Tcl_Interp *interp,
  */
 
 static int
-wrapped_call (PTR opaque_args)
+wrapped_call(PTR opaque_args)
 {
-  struct wrapped_call_args *args = (struct wrapped_call_args *) opaque_args;
-  args->val = (*args->func) (args->func, args->interp, args->objc, args->objv);
+  struct wrapped_call_args *args = (struct wrapped_call_args *)opaque_args;
+  args->val = (*args->func)((ClientData)args->func, args->interp, args->objc,
+			    args->objv);
   return 1;
 }
 
@@ -1708,12 +1710,12 @@ gdb_load_disassembly (ClientData clientData, Tcl_Interp *interp,
   /* Finally, if we were successful, stick the low & high addresses
      into the Tcl result. */
 
-  if (ret_val == TCL_OK)
+  if ((ret_val == TCL_OK) && (result_ptr != NULL))
     {
-      Tcl_ListObjAppendElement (NULL, result_ptr->obj_ptr,
-				Tcl_NewStringObj (core_addr_to_string (low), -1));
-      Tcl_ListObjAppendElement (NULL, result_ptr->obj_ptr,
-				Tcl_NewStringObj (core_addr_to_string (high), -1));
+      Tcl_ListObjAppendElement(NULL, result_ptr->obj_ptr,
+			       Tcl_NewStringObj(core_addr_to_string(low), -1));
+      Tcl_ListObjAppendElement(NULL, result_ptr->obj_ptr,
+			       Tcl_NewStringObj(core_addr_to_string(high), -1));
     }
   return ret_val;
 }
@@ -1853,55 +1855,55 @@ gdbtk_load_source (ClientData clientData, struct symtab *symtab,
 
 /* FIXME: cagney/2003-09-08: "di" is not used and unneeded.  */
 static CORE_ADDR
-gdbtk_load_asm (ClientData clientData, CORE_ADDR pc,
-		struct disassemble_info *di)
+gdbtk_load_asm(ClientData clientData, CORE_ADDR pc,
+	       struct disassemble_info *di ATTRIBUTE_UNUSED)
 {
-  struct disassembly_client_data * client_data
-    = (struct disassembly_client_data *) clientData;
+  struct disassembly_client_data *client_data =
+    (struct disassembly_client_data *)clientData;
   const char **text_argv;
   int i, pc_to_line_len, line_to_pc_len;
-  gdbtk_result new_result;
+  gdbtk_result new_result, *old_result_ptr;
   int insn;
   struct cleanup *old_chain = NULL;
 
-  pc_to_line_len = Tcl_DStringLength (&client_data->pc_to_line_prefix);
-  line_to_pc_len = Tcl_DStringLength (&client_data->line_to_pc_prefix);
+  pc_to_line_len = Tcl_DStringLength(&client_data->pc_to_line_prefix);
+  line_to_pc_len = Tcl_DStringLength(&client_data->line_to_pc_prefix);
 
   text_argv = client_data->asm_argv;
 
   /* Preserve the current Tcl result object, print out what we need, and then
      suck it out of the result, and replace... */
 
-  old_chain = make_cleanup (gdbtk_restore_result_ptr, (void *) result_ptr);
+  old_chain = make_cleanup(gdbtk_restore_result_ptr, (void *)result_ptr);
+  old_result_ptr = result_ptr;
   result_ptr = &new_result;
   result_ptr->obj_ptr = client_data->result_obj[0];
   result_ptr->flags = GDBTK_TO_RESULT;
 
-  /* Null out the three return objects we will use. */
-
+  /* Null out the three return objects we will use: */
   for (i = 0; i < 3; i++)
-    Tcl_SetObjLength (client_data->result_obj[i], 0);
+    Tcl_SetObjLength(client_data->result_obj[i], 0);
 
-  deprecated_print_address_numeric (pc, 1, gdb_stdout);
-  gdb_flush (gdb_stdout);
+  deprecated_print_address_numeric(pc, 1, gdb_stdout);
+  gdb_flush(gdb_stdout);
 
   result_ptr->obj_ptr = client_data->result_obj[1];
-  print_address_symbolic (pc, gdb_stdout, 1, "\t");
-  gdb_flush (gdb_stdout);
+  print_address_symbolic(pc, gdb_stdout, 1, "\t");
+  gdb_flush(gdb_stdout);
 
   result_ptr->obj_ptr = client_data->result_obj[2];
-  /* FIXME: cagney/2003-09-08: This should use gdb_disassembly.  */
-  insn = gdb_print_insn (pc, gdb_stdout);
-  gdb_flush (gdb_stdout);
+  /* FIXME: cagney/2003-09-08: This should use gdb_disassembly: */
+  insn = gdb_print_insn(pc, gdb_stdout);
+  gdb_flush(gdb_stdout);
 
   client_data->widget_line_no++;
 
-  text_argv[5] = Tcl_GetStringFromObj (client_data->result_obj[0], NULL);
-  text_argv[7] = Tcl_GetStringFromObj (client_data->result_obj[1], NULL);
-  text_argv[11] = Tcl_GetStringFromObj (client_data->result_obj[2], NULL);
+  text_argv[5] = Tcl_GetStringFromObj(client_data->result_obj[0], NULL);
+  text_argv[7] = Tcl_GetStringFromObj(client_data->result_obj[1], NULL);
+  text_argv[11] = Tcl_GetStringFromObj(client_data->result_obj[2], NULL);
 
-  client_data->cmd.proc (client_data->cmd.clientData,
-			 client_data->interp, 14, text_argv);
+  client_data->cmd.proc(client_data->cmd.clientData, client_data->interp, 14,
+			text_argv);
 
   if (*client_data->map_arr != '\0')
     {
@@ -1910,43 +1912,46 @@ gdbtk_load_asm (ClientData clientData, CORE_ADDR pc,
       /* Run the command, then add an entry to the map array in
 	 the caller's scope. */
 
-      Tcl_DStringAppend (&client_data->pc_to_line_prefix, core_addr_to_string (pc), -1);
+      Tcl_DStringAppend(&client_data->pc_to_line_prefix,
+			core_addr_to_string(pc), -1);
 
       /* FIXME: Convert to Tcl_SetVar2Ex when we move to 8.2.  This
 	 will allow us avoid converting widget_line_no into a string. */
 
-      xasprintf (&buffer, "%d", client_data->widget_line_no);
+      xasprintf(&buffer, "%d", client_data->widget_line_no);
 
-      Tcl_SetVar2 (client_data->interp, client_data->map_arr,
-		   Tcl_DStringValue (&client_data->pc_to_line_prefix),
-		   buffer, 0);
+      Tcl_SetVar2(client_data->interp, client_data->map_arr,
+		  Tcl_DStringValue(&client_data->pc_to_line_prefix),
+		  buffer, 0);
 
-      Tcl_DStringAppend (&client_data->line_to_pc_prefix, buffer, -1);
+      Tcl_DStringAppend(&client_data->line_to_pc_prefix, buffer, -1);
 
 
-      Tcl_SetVar2 (client_data->interp, client_data->map_arr,
-		   Tcl_DStringValue (&client_data->line_to_pc_prefix),
-		   core_addr_to_string (pc), 0);
+      Tcl_SetVar2(client_data->interp, client_data->map_arr,
+		  Tcl_DStringValue(&client_data->line_to_pc_prefix),
+		  core_addr_to_string(pc), 0);
 
-      /* Restore the prefixes to their initial state. */
+      /* Restore the prefixes to their initial state: */
+      Tcl_DStringSetLength(&client_data->pc_to_line_prefix, pc_to_line_len);
+      Tcl_DStringSetLength(&client_data->line_to_pc_prefix, line_to_pc_len);
 
-      Tcl_DStringSetLength (&client_data->pc_to_line_prefix, pc_to_line_len);
-      Tcl_DStringSetLength (&client_data->line_to_pc_prefix, line_to_pc_len);
-
-      xfree (buffer);
+      xfree(buffer);
     }
 
-  do_cleanups (old_chain);
+  do_cleanups(old_chain);
 
-  return pc + insn;
+  result_ptr = old_result_ptr;
+  return (pc + insn);
 }
 
+/* */
 static int
-gdb_disassemble_driver (CORE_ADDR low, CORE_ADDR high,
-			int mixed_source_and_assembly,
-			ClientData clientData,
-			void (*print_source_fn) (ClientData, struct symtab *, int, int),
-			CORE_ADDR (*print_asm_fn) (ClientData, CORE_ADDR, struct disassemble_info *))
+gdb_disassemble_driver(CORE_ADDR low, CORE_ADDR high,
+		       int mixed_source_and_assembly, ClientData clientData,
+		       void (*print_source_fn)(ClientData, struct symtab *,
+					       int, int),
+		       CORE_ADDR (*print_asm_fn)(ClientData, CORE_ADDR,
+						 struct disassemble_info *))
 {
   CORE_ADDR pc;
 
@@ -2846,9 +2851,9 @@ gdb_path_conv (ClientData clientData, Tcl_Interp *interp,
     Tcl_SetStringObj (result_ptr->obj_ptr, pathname, -1);
   }
 #else
-  Tcl_SetStringObj (result_ptr->obj_ptr, Tcl_GetStringFromObj (objv[1], NULL),
-		    -1);
-#endif
+  Tcl_SetStringObj(result_ptr->obj_ptr, Tcl_GetStringFromObj(objv[1], NULL),
+		   -1);
+#endif /* __CYGWIN__ */
 
   return TCL_OK;
 }
@@ -3011,7 +3016,6 @@ int find_and_open_source (struct objfile *objfile, const char *filename,
 char *
 symtab_to_filename (struct symtab *s)
 {
-
   int r;
 
   if (!s)

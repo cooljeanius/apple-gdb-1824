@@ -797,7 +797,7 @@ struct linetable
   /* Actually NITEMS elements.  If you don't like this use of the
      `struct hack', you can shove it up your ANSI (seriously, if the
      committee tells us how to do it, we can probably go along).  */
-  struct linetable_entry item[FLEXIBLE_ARRAY_MEMBER];
+  __extension__ struct linetable_entry item[FLEXIBLE_ARRAY_MEMBER];
 };
 
 /* How to relocate the symbols from each section in a symbol file.
@@ -1315,7 +1315,7 @@ extern void clear_pc_function_cache(void);
 
 /* lookup partial symbol table by filename */
 
-extern struct partial_symtab *lookup_partial_symtab (const char *);
+extern struct partial_symtab *lookup_partial_symtab(const char *);
 
 /* APPLE LOCAL: This version returns all the matches to the argument: */
 extern struct partial_symtab **lookup_partial_symtab_all(const char *, int)

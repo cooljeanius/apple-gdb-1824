@@ -1213,11 +1213,12 @@ define_symbol(CORE_ADDR valu, const char *string, const char *prefix,
 	    }
 	  break;
 	}
+      /*FALLTHROUGH */
 
     case 'P':
       /* acc seems to use P to declare the prototypes of functions that
          are referenced by this file.  gdb is not prepared to deal
-         with this extra information.  FIXME, it ought to.  */
+         with this extra information.  FIXME: it ought to be prepared.  */
       if (type == N_FUN)
 	{
 	  SYMBOL_TYPE (sym) = read_type (&p, objfile);
@@ -2745,7 +2746,7 @@ read_member_functions(struct field_info *fip, const char **pp,
 	      complaint(&symfile_complaints,
 			_("member function type missing, got '%c'"), (*pp)[-1]);
 	      /* Fall through into normal member function.  */
-
+	      ATTRIBUTE_FALLTHROUGH;
 	    case '.':
 	      /* normal member function.  */
 	      new_sublist->fn_field.voffset = 0;
@@ -4152,15 +4153,15 @@ read_huge_number(const char **pp, int end, int *bits, int twos_complement_bits)
 	{
 	  if (nbits == 0)
 	    {
-	      if (c == '0')
-		/* Ignore leading zeroes.  */
-		;
-	      else if (c == '1')
+	      if (c == '0') {
+		; /* Ignore leading zeroes */
+	      } else if (c == '1') {
 		nbits = 1;
-	      else if (c == '2' || c == '3')
+	      } else if ((c == '2') || (c == '3')) {
 		nbits = 2;
-	      else
+	      } else {
 		nbits = 3;
+	      }
 	    }
 	  else
 	    nbits += 3;

@@ -808,6 +808,8 @@ target_read_string(CORE_ADDR memaddr, char **string, int len, int *errnop)
   int buffer_allocated;
   char *bufptr;
   unsigned int nbytes_read = 0U;
+  char buf8[8] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
+  (void)buf8;
 
   /* Small for testing: */
   buffer_allocated = 4;

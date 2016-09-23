@@ -201,9 +201,9 @@ close_exec_file(void)
   if (exec_bfd)
     bfd_tempclose(exec_bfd);
 #else
-# ifdef __GNUC__
-  asm("");
-# endif /* __GNUC__ */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+  __asm__("");
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_BFD_TEMPCLOSE */
 }
 

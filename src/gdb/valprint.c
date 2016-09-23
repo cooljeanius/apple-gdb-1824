@@ -1005,13 +1005,14 @@ val_elt_addr(struct type *type, const gdb_byte *valaddr,
   LONGEST lowerbound, upperbound, stride;
 
   get_array_bounds(type, &lowerbound, &upperbound, &stride);
-  if (stride == 1L)
-    ;
-  else if (stride == -1L)
+  if (stride == 1L) {
+    ; /* ??? */
+  } else if (stride == -1L) {
     i = (unsigned int)(upperbound - i);
-  else
+  } else {
     internal_error(__FILE__, __LINE__, _("unsupported stride %ld"),
                    (long)stride);
+  }
 
   elttype = TYPE_TARGET_TYPE(type);
   eltlen = TYPE_LENGTH(check_typedef(elttype));

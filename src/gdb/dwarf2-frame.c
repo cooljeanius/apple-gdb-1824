@@ -1667,22 +1667,22 @@ static gdb_byte *
 decode_frame_entry_1(struct comp_unit *unit, gdb_byte *start, int eh_frame_p)
 {
   gdb_byte *buf, *end;
-  LONGEST length;
+  LONGEST llength;
   unsigned int bytes_read;
   int dwarf64_p;
   ULONGEST cie_id;
   ULONGEST cie_pointer;
 
   buf = start;
-  length = read_initial_length(unit->abfd, buf, &bytes_read);
+  llength = read_initial_length(unit->abfd, buf, &bytes_read);
   buf += bytes_read;
-  end = (buf + length);
+  end = (buf + llength);
 
   /* Are we still within the section? */
   if (end > (unit->dwarf_frame_buffer + unit->dwarf_frame_size))
     return NULL;
 
-  if (length == 0)
+  if (llength == 0L)
     return end;
 
   /* Distinguish between 32 and 64-bit encoded frame info.  */
@@ -1787,13 +1787,13 @@ decode_frame_entry_1(struct comp_unit *unit, gdb_byte *start, int eh_frame_p)
       cie->saw_z_augmentation = (*augmentation == 'z');
       if (cie->saw_z_augmentation)
 	{
-	  ULONGEST length;
+	  ULONGEST ulength;
 
-	  length = read_unsigned_leb128 (unit->abfd, buf, &bytes_read);
+	  ulength = read_unsigned_leb128(unit->abfd, buf, &bytes_read);
 	  buf += bytes_read;
 	  if (buf > end)
 	    return NULL;
-	  cie->initial_instructions = buf + length;
+	  cie->initial_instructions = (buf + ulength);
 	  augmentation++;
 	}
 
@@ -1896,10 +1896,10 @@ decode_frame_entry_1(struct comp_unit *unit, gdb_byte *start, int eh_frame_p)
 	 can skip the whole thing.  */
       if (fde->cie->saw_z_augmentation)
 	{
-	  ULONGEST length;
+	  ULONGEST ulength;
 
-	  length = read_unsigned_leb128 (unit->abfd, buf, &bytes_read);
-	  buf += bytes_read + length;
+	  ulength = read_unsigned_leb128(unit->abfd, buf, &bytes_read);
+	  buf += (bytes_read + ulength);
 	  if (buf > end)
 	    return NULL;
 	}

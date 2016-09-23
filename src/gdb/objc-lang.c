@@ -867,7 +867,7 @@ struct objc_trampoline_region
   CORE_ADDR trampoline_end;     /* can quickly tell if we are in this region.       */
   struct objc_trampoline_region *next;  /* The link to OUR next region.  */
   int num_records;
-  struct objc_trampoline_record records[];
+  __extension__ struct objc_trampoline_record records[FLEXIBLE_ARRAY_MEMBER];
 };
 
 struct objc_trampolines
@@ -1802,14 +1802,15 @@ parse_selector(char *method, char **selector)
   s2 = s1;
 
   for (;;) {
-    if (isalnum(*s2) || (*s2 == '_') || (*s2 == ':'))
+    if (isalnum(*s2) || (*s2 == '_') || (*s2 == ':')) {
       *s1++ = *s2;
-    else if (isspace(*s2))
+    } else if (isspace(*s2)) {
       ;
-    else if ((*s2 == '\0') || (*s2 == '\''))
+    } else if ((*s2 == '\0') || (*s2 == '\'')) {
       break;
-    else
+    } else {
       return NULL;
+    }
     s2++;
   }
   *s1++ = '\0';
@@ -1896,14 +1897,15 @@ parse_method(char *method, char *type, char **class_str,
   s1 = s2;
 
   for (;;) {
-    if (isalnum(*s2) || (*s2 == '_') || (*s2 == ':'))
+    if (isalnum(*s2) || (*s2 == '_') || (*s2 == ':')) {
       *s1++ = *s2;
-    else if (isspace(*s2))
+    } else if (isspace(*s2)) {
       ;
-    else if (*s2 == ']')
+    } else if (*s2 == ']') {
       break;
-    else
+    } else {
       return NULL;
+    }
     s2++;
   }
   *s1++ = '\0';

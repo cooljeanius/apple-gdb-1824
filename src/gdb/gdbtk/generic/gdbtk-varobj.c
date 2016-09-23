@@ -499,9 +499,9 @@ variable_format (Tcl_Interp *interp, int objc,
       Tcl_Obj *fmt;
 
       /* FIXME: Use varobj_format_string[] instead */
-      fmt = Tcl_NewStringObj (
-			      format_string[(int) varobj_get_display_format (var)], -1);
-      Tcl_SetObjResult (interp, fmt);
+      fmt = Tcl_NewStringObj(format_string[(int)varobj_get_display_format(var)],
+			     -1);
+      Tcl_SetObjResult(interp, fmt);
     }
 
   return TCL_OK;

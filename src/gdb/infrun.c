@@ -2425,7 +2425,7 @@ process_event_stop_test:
 	if (what.main_action == BPSTAT_WHAT_CLEAR_LONGJMP_RESUME)
 	  break;
 	/* else fallthrough */
-
+	ATTRIBUTE_FALLTHROUGH;
       case BPSTAT_WHAT_SINGLE:
         if (debug_infrun)
 	  fprintf_unfiltered(gdb_stdlog, "infrun: BPSTATE_WHAT_SINGLE\n");

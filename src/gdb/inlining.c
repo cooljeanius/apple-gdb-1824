@@ -3675,7 +3675,7 @@ void
 print_inlined_frames_lite(struct ui_out *uiout, int with_names,
                           int *frame_num, CORE_ADDR pc, CORE_ADDR fp)
 {
-  char num_buf[8];
+  char num_buf[12]; /* big enough for -Wformat-length */
   struct cleanup *list_cleanup;
   struct inlined_function_data *stack_ptr = NULL;
   int i;

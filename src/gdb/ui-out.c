@@ -718,9 +718,9 @@ int
 ui_out_get_verblvl(struct ui_out *uiout ATTRIBUTE_UNUSED)
 {
   /* FIXME: not implemented yet */
-#if defined(__GNUC__)
-  asm("");
-#endif /* __GNUC__ */
+#if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+  __asm__("");
+#endif /* __GNUC__ && !__STRICT_ANSI__ */
   return 0;
 }
 

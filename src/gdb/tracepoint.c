@@ -57,6 +57,23 @@
 # include <unistd.h>
 #endif /* HAVE_UNISTD_H */
 
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
+#ifndef SIZE_T_MAX
+# ifdef ULONG_MAX
+#  define SIZE_T_MAX ULONG_MAX	/* max value for a size_t */
+# endif /* ULONG_MAX */
+#endif /* !SIZE_T_MAX */
+
+#if (defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ >= 3)) && \
+    !defined(NO_POISON) && !defined(FLEX_SCANNER)
+# ifdef sprintf_vma
+#  undef sprintf_vma
+# endif /* sprintf_vma */
+# pragma GCC poison sprintf_vma
+#endif /* gcc3+ && !NO_POISON && !FLEX_SCANNER */
+
 /* Maximum length of an agent aexpression.
    This accounts for the fact that packets are limited to 400 bytes
    (which includes everything -- including the checksum), and assumes
@@ -1228,7 +1245,7 @@ collect_symbol(struct collection_list *collect,
 	{
 	  char tmp[40];
 
-	  sprintf_vma(tmp, offset);
+	  snprintf_vma(tmp, sizeof(tmp), offset);
 	  printf_filtered("LOC_STATIC %s: collect %ld bytes at %s.\n",
 			  DEPRECATED_SYMBOL_NAME(sym), len,
 			  tmp /* address */);
@@ -1333,8 +1350,9 @@ add_local_symbols (struct collection_list *collect, CORE_ADDR pc,
 	  switch (SYMBOL_CLASS (sym))
 	    {
 	    default:
-	      warning (_("don't know how to trace local symbol %s"),
-		       DEPRECATED_SYMBOL_NAME (sym));
+	      warning(_("do NOT know how to trace local symbol %s"),
+		      DEPRECATED_SYMBOL_NAME(sym));
+	      break; /* -Wimplicit-fallthrough */
 	    case LOC_LOCAL:
 	    case LOC_STATIC:
 	    case LOC_REGISTER:
@@ -1428,7 +1446,7 @@ stringify_collection_list(struct collection_list *list, char *string)
   for (i = 0, count = 0, end = temp_buf; i < list->next_memrange; i++)
     {
       QUIT;			/* allow user to bail out with ^C */
-      sprintf_vma (tmp2, list->list[i].start);
+      snprintf_vma(tmp2, sizeof(tmp2), list->list[i].start);
       if (info_verbose)
 	{
 	  printf_filtered ("(%d, %s, %ld)\n",
@@ -1713,16 +1731,18 @@ remote_set_transparent_ranges(void)
     {
       char tmp1[40], tmp2[40];
 
-      if ((s->flags & SEC_LOAD) == 0 ||
-      /* (s->flags & SEC_CODE)     == 0 || */
-	  (s->flags & SEC_READONLY) == 0)
+      if (((s->flags & SEC_LOAD) == 0) ||
+#ifdef SEC_CODE
+          ((s->flags & SEC_CODE) == 0) ||
+#endif /* SEC_CODE */
+	  ((s->flags & SEC_READONLY) == 0))
 	continue;
 
       anysecs = 1;
       lma = s->lma;
-      size = bfd_get_section_size (s);
-      sprintf_vma (tmp1, lma);
-      sprintf_vma (tmp2, lma + size);
+      size = bfd_get_section_size(s);
+      snprintf_vma(tmp1, sizeof(tmp1), lma);
+      snprintf_vma(tmp2, sizeof(tmp2), (lma + size));
       snprintf((target_buf + strlen(target_buf)),
 	       (sizeof(target_buf) + strlen(target_buf)),
 	       ":%s,%s", tmp1, tmp2);
@@ -1764,7 +1784,7 @@ trace_start_command(const char *args, int from_tty)
       {
 	char tmp[40];
 
-	sprintf_vma(tmp, t->address);
+	snprintf_vma(tmp, sizeof(tmp), t->address);
 	snprintf(buf, sizeof(buf), "QTDP:%x:%s:%c:%lx:%x", t->number,
 		 tmp, /* address */
 		 t->enabled_p ? 'E' : 'D',
@@ -2088,7 +2108,7 @@ trace_find_pc_command(const char *args, int from_tty)
       else
 	pc = parse_and_eval_address(args);
 
-      sprintf_vma(tmp, pc);
+      snprintf_vma(tmp, sizeof(tmp), pc);
       snprintf(target_buf, sizeof(target_buf), "QTFrame:pc:%s", tmp);
       finish_tfind_command(target_buf, sizeof(target_buf), from_tty);
     }
@@ -2203,8 +2223,8 @@ trace_find_line_command(const char *args, int from_tty)
 	error(_("Line number %d is out of range for \"%s\"."),
 	      sal.line, sal.symtab->filename);
 
-      sprintf_vma(startpc_str, start_pc);
-      sprintf_vma(endpc_str, end_pc - 1);
+      snprintf_vma(startpc_str, sizeof(startpc_str), start_pc);
+      snprintf_vma(endpc_str, sizeof(endpc_str), (end_pc - 1));
       /* Find within range of stated line: */
       if (args && *args)
 	snprintf(target_buf, sizeof(target_buf), "QTFrame:range:%s:%s",
@@ -2251,8 +2271,8 @@ trace_find_range_command(const char *args, int from_tty)
 	  stop = (start + 1);	/* ??? */
 	}
 
-      sprintf_vma(start_str, start);
-      sprintf_vma(stop_str, stop);
+      snprintf_vma(start_str, sizeof(start_str), start);
+      snprintf_vma(stop_str, sizeof(stop_str), stop);
       snprintf(target_buf, sizeof(target_buf), "QTFrame:range:%s:%s",
 	       start_str, stop_str);
       finish_tfind_command(target_buf, sizeof(target_buf), from_tty);
@@ -2291,8 +2311,8 @@ trace_find_outside_command(const char *args, int from_tty)
 	  stop = (start + 1);	/* ??? */
 	}
 
-      sprintf_vma(start_str, start);
-      sprintf_vma(stop_str, stop);
+      snprintf_vma(start_str, sizeof(start_str), start);
+      snprintf_vma(stop_str, sizeof(stop_str), stop);
       snprintf(target_buf, sizeof(target_buf), "QTFrame:outside:%s:%s",
 	       start_str, stop_str);
       finish_tfind_command(target_buf, sizeof(target_buf), from_tty);
@@ -2336,7 +2356,7 @@ tracepoint_save_command(const char *args, int from_tty)
       fprintf(fp, "trace %s\n", tp->addr_string);
     else
       {
-	sprintf_vma(tmp, tp->address);
+	snprintf_vma(tmp, sizeof(tmp), tp->address);
 	fprintf(fp, "trace *0x%s\n", tmp);
       }
 

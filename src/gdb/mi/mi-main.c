@@ -66,6 +66,15 @@
 /* APPLE LOCAL Disable breakpoints while updating data formatters.  */
 #include "breakpoint.h"
 
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
+#ifndef SIZE_T_MAX
+# ifdef ULONG_MAX
+#  define SIZE_T_MAX ULONG_MAX	/* max value for a size_t */
+# endif /* ULONG_MAX */
+#endif /* !SIZE_T_MAX */
+
 enum
   {
     FROM_TTY = 0

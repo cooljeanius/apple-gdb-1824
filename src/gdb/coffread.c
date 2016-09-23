@@ -822,6 +822,8 @@ coff_symtab_read(long symtab_offset, unsigned int nsyms,
 	     so filter them out (from <phdm@macqel.be>). */
 	  if (within_function)
 	    break;
+	  /* else fall through, I guess? */
+	  ATTRIBUTE_FALLTHROUGH;
 	case C_STAT:
 	case C_THUMBLABEL:
 	case C_THUMBSTAT:
@@ -858,6 +860,7 @@ coff_symtab_read(long symtab_offset, unsigned int nsyms,
 	       that look like this.  Ignore them.  */
 	    break;
 	  /* fall in for static symbols that do NOT start with '.' */
+	  ATTRIBUTE_FALLTHROUGH;
 	case C_THUMBEXT:
 	case C_THUMBEXTFUNC:
 	case C_EXT:
@@ -1206,6 +1209,8 @@ init_stringtab(bfd *abfd, long offset)
   size_t length;
   bfd_size_type val;
   unsigned char lengthbuf[4];
+  char buf8[8] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
+  (void)buf8;
 
   free_stringtab();
 
@@ -1398,9 +1403,13 @@ enter_linenos(long file_offset, int first_line,
 #if defined(bfd_coff_swap_lineno_in) || !defined(__cplusplus)
       bfd_coff_swap_lineno_in(symfile_bfd, rawptr, &lptr);
 #else
-# if defined(HAVE_BZERO)
+# if defined(HAVE_MEMSET)
+      memset((void *)&lptr, 0, sizeof(lptr));
+# else
+#  if defined(HAVE_BZERO)
       bzero((void *)&lptr, sizeof(lptr));
-# endif /* HAVE_BZERO */
+#  endif /* HAVE_BZERO */
+# endif /* HAVE_MEMSET */
 #endif /* bfd_coff_swap_lineno_in || !__cplusplus */
       rawptr += local_linesz;
       /* The next function, or the sentinel, will have L_LNNO32 zero;

@@ -1797,6 +1797,7 @@ macosx_lookup_task(const char *args, task_t *ptask, int *ppid)
            wait_for_process_by_name(pid_str, ignorepids);
 	   break;
         }
+      break; /* -Wimplicit-fallthrough */
     default:
       error(_("Usage: attach <-waitfor procname>|<pid>|<procname>."));
       break;

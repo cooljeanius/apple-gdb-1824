@@ -62,6 +62,15 @@ extern int baud_rate;   /* From gdb/top.c */
 #define SERIAL_CTL_SET ((1<<serial_STX)|(1<<serial_ETX)|(1<<serial_ESC))
 #define SERIAL_ESC_SET (SERIAL_FC_SET|SERIAL_CTL_SET)
 
+/* This attribute was added in gcc 7: */
+#ifndef ATTRIBUTE_FALLTHROUGH
+# if defined(__GNUC__) && (__GNUC__ >= 7)
+#  define ATTRIBUTE_FALLTHROUGH __attribute__((fallthrough))
+# else
+#  define ATTRIBUTE_FALLTHROUGH /* FALLTHRU */
+# endif /* gcc 7+ */
+#endif /* !ATTRIBUTE_FALLTHROUGH */
+
 static const struct re_config config = {
     serial_STX, serial_ETX, serial_ESC, /* self-explanatory?               */
     SERIAL_FC_SET,                      /* set of flow-control characters  */
@@ -355,16 +364,15 @@ static int SerialRead(DriverCall *dc, bool block) {
 
 #ifdef DO_TRACE
 	  if (c % 16) {
-        printf("\n");
+	    printf("\n");
 	  }
 #endif /* DO_TRACE */
 
-    switch(restatus) {
-
+    switch (restatus) {
       case RS_GOOD_PKT:
         ret_code = 1;
-        /* fall through to: */
-
+        /* fall through to RS_BAD_PKT: */
+	ATTRIBUTE_FALLTHROUGH;
       case RS_BAD_PKT:
         /*
          * We now need to shuffle any left over data down to the

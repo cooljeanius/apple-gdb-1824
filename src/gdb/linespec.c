@@ -461,7 +461,8 @@ add_matching_methods (int method_counter, struct type *t,
 
       if (phys_name[0] != '_')
         {
-	  size_t d_n_len = (strlen(TYPE_NAME(t)) + strlen(phys_name) + 3UL);
+	  const size_t d_n_len = (strlen(TYPE_NAME(t)) + strlen(phys_name)
+				  + 3UL);
           char *demangled_name = (char *)alloca(d_n_len);
           snprintf(demangled_name, d_n_len, "%s::%s", TYPE_NAME(t), phys_name);
 	  /* APPLE LOCAL begin return multiple symbols  */
@@ -2215,11 +2216,11 @@ collect_methods(char *copy, struct type *t,
   if (destructor_name_p(copy, t))
     {
       /* Destructors are a special case.  */
-      int m_index, f_index;
+      int method_index, f_index;
 
-      if (get_destructor_fn_field(t, &m_index, &f_index))
+      if (get_destructor_fn_field(t, &method_index, &f_index))
 	{
-	  struct fn_field *f = TYPE_FN_FIELDLIST1(t, m_index);
+	  struct fn_field *f = TYPE_FN_FIELDLIST1(t, method_index);
 	  /* APPLE LOCAL: More fallout from the fact that the DWARF
 	     doesn't have the mangled name, so the PHYSNAME is the
 	     bare ctor or dtor.  */
@@ -2521,7 +2522,7 @@ decode_all_digits_exhaustive(const char **argptr, int funfirstline,
     int cur_inlined_call_site = 0;    /* For inlined subroutine CALL SITE  */
     int exact = 0;
     int best = 0;
-    int i;
+    int i_i;
 
     l = LINETABLE (file_symtab);
 
@@ -2535,9 +2536,9 @@ decode_all_digits_exhaustive(const char **argptr, int funfirstline,
 
     if (lineno != 0)
       {
-        for (i = 0; i < l->nitems; i++)
+        for (i_i = 0; i_i < l->nitems; i_i++)
           {
-            struct linetable_entry *item = &(l->item[i]);
+            struct linetable_entry *item = &(l->item[i_i]);
 	    /* APPLE LOCAL radar 6557594  */
 	    int inlined_entry = 0;  /* For actual inlined subroutine  */
 
@@ -2560,7 +2561,7 @@ decode_all_digits_exhaustive(const char **argptr, int funfirstline,
 		/* APPLE LOCAL end radar 6557594  */
 		else
 		  {
-		    int j = i + 1;
+		    int j = (i_i + 1);
 
 		    /* Peek ahead at the next few (if any) line table entries
 		       with the same line number to see if any of them are for
@@ -2651,10 +2652,10 @@ decode_all_digits_exhaustive(const char **argptr, int funfirstline,
        funfirstline is set.  */
     if (funfirstline)
       {
-	volatile int i;
-	for (i = 0; i < values.nelts; i++)
+	volatile int v_i;
+	for (v_i = 0; v_i < values.nelts; v_i++)
 	  {
-	    struct symtab_and_line *val = &(values.sals[i]);
+	    struct symtab_and_line *val = &(values.sals[v_i]);
 	    struct symbol *volatile func_sym = (struct symbol *volatile)NULL;
 	    
 	    /* If we have an objfile for the pc, then be careful to only look

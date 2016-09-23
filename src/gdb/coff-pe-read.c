@@ -1,4 +1,4 @@
-/* Read the export table symbols from a portable executable and
+/* coff-pe-read.c: Read the export table symbols from a portable executable and
    convert to internal format, for GDB. Used as a last resort if no
    debugging symbols recognized.
 
@@ -146,6 +146,8 @@ static unsigned int
 pe_get16(bfd *abfd, int where)
 {
   unsigned char b[2];
+  char buf8[8] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
+  (void)buf8;
 
   bfd_seek(abfd, (file_ptr)where, SEEK_SET);
   bfd_bread(b, (bfd_size_type)2UL, abfd);
@@ -156,6 +158,8 @@ static unsigned int
 pe_get32(bfd *abfd, int where)
 {
   unsigned char b[4];
+  char buf8[8] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
+  (void)buf8;
 
   bfd_seek(abfd, (file_ptr)where, SEEK_SET);
   bfd_bread(b, (bfd_size_type)4UL, abfd);
@@ -338,3 +342,5 @@ read_pe_exported_syms(struct objfile *objfile)
   /* discard expdata. */
   do_cleanups (back_to);
 }
+
+/* EOF */

@@ -780,7 +780,7 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
   ULONGEST un;
 
   int i = 0;
-  int c;
+  int i_c;
   int base = input_radix;
   int unsigned_p = 0;
 
@@ -797,25 +797,27 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
   if (parsed_float)
     {
       /* It is a float since it contains a point or an exponent.  */
-      char c;
+      char c_c;
       int num = 0;	/* number of tokens scanned by scanf */
       char saved_char = p[len];
 
       p[len] = 0;	/* null-terminate the token */
-      if (sizeof (putithere->typed_val_float.dval) <= sizeof (float))
-	num = sscanf(p, "%g%c", (float *)&putithere->typed_val_float.dval, &c);
-      else if (sizeof (putithere->typed_val_float.dval) <= sizeof(double))
-	num = sscanf(p, "%lg%c", (double *)&putithere->typed_val_float.dval, &c);
+      if (sizeof(putithere->typed_val_float.dval) <= sizeof(float))
+	num = sscanf(p, "%g%c", (float *)&putithere->typed_val_float.dval,
+		     &c_c);
+      else if (sizeof(putithere->typed_val_float.dval) <= sizeof(double))
+	num = sscanf(p, "%lg%c", (double *)&putithere->typed_val_float.dval,
+		     &c_c);
       else
 	{
 #ifdef SCANF_HAS_LONG_DOUBLE
-	  num = sscanf(p, "%Lg%c", &putithere->typed_val_float.dval,&c);
+	  num = sscanf(p, "%Lg%c", &putithere->typed_val_float.dval, &c_c);
 #else
 	  /* Scan it into a double, then assign it to the long double.
 	     This at least wins with values representable in the range
 	     of doubles. */
 	  double temp;
-	  num = sscanf(p, "%lg%c", &temp,&c);
+	  num = sscanf(p, "%lg%c", &temp, &c_c);
 	  putithere->typed_val_float.dval = temp;
 #endif /* SCANF_HAS_LONG_DOUBLE */
 	}
@@ -824,13 +826,13 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 	return ERROR;
       /* See if it has `f' or `l' suffix (float or long double).  */
 
-      c = (char)tolower(p[len - 1]);
+      c_c = (char)tolower(p[len - 1]);
 
-      if (c == 'f')
+      if (c_c == 'f')
 	putithere->typed_val_float.type = builtin_type_float;
-      else if (c == 'l')
+      else if (c_c == 'l')
 	putithere->typed_val_float.type = builtin_type_long_double;
-      else if (isdigit(c) || (c == '.'))
+      else if (isdigit(c_c) || (c_c == '.'))
 	putithere->typed_val_float.type = builtin_type_double;
       else
 	return ERROR;
@@ -871,31 +873,31 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 
   while (len-- > 0)
     {
-      c = *p++;
-      if ((c >= 'A') && (c <= 'Z'))
-	c += ('a' - 'A');
-      if ((c != 'l') && (c != 'u'))
+      i_c = *p++;
+      if ((i_c >= 'A') && (i_c <= 'Z'))
+	i_c += ('a' - 'A');
+      if ((i_c != 'l') && (i_c != 'u'))
 	n *= base;
-      if ((c >= '0') && (c <= '9'))
+      if ((i_c >= '0') && (i_c <= '9'))
 	{
 	  if (found_suffix)
 	    return ERROR;
-	  n += i = (c - '0');
+	  n += i = (i_c - '0');
 	}
       else
 	{
-	  if ((base > 10) && (c >= 'a') && (c <= 'f'))
+	  if ((base > 10) && (i_c >= 'a') && (i_c <= 'f'))
 	    {
 	      if (found_suffix)
 		return ERROR;
-	      n += i = (c - 'a' + 10);
+	      n += i = (i_c - 'a' + 10);
 	    }
-	  else if (c == 'l')
+	  else if (i_c == 'l')
 	    {
 	      ++long_p;
 	      found_suffix = 1;
 	    }
-	  else if (c == 'u')
+	  else if (i_c == 'u')
 	    {
 	      unsigned_p = 1;
 	      found_suffix = 1;
@@ -909,13 +911,13 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
       /* Portably test for overflow (only works for nonzero values, so make
 	 a second check for zero).  FIXME: Can we not just make n and prevn
 	 unsigned and avoid this?  */
-      if ((c != 'l') && (c != 'u') && (prevn >= n) && (n != 0))
+      if ((i_c != 'l') && (i_c != 'u') && (prevn >= n) && (n != 0))
 	unsigned_p = 1;		/* Try something unsigned */
 
       /* Portably test for unsigned overflow.
 	 FIXME: This check is wrong; for example it does NOT find overflow
 	 on 0x123456789 when LONGEST is 32 bits.  */
-      if ((c != 'l') && (c != 'u') && (n != 0))
+      if ((i_c != 'l') && (i_c != 'u') && (n != 0))
 	{
 	  if (unsigned_p && ((ULONGEST)prevn >= (ULONGEST)n))
 	    error("Numeric constant too large.");
@@ -1072,7 +1074,7 @@ yylex(void)
 {
   int c;
   size_t namelen = 0UL;
-  unsigned int i;
+  unsigned int u_i;
   char *tokstart;
   char *uptokstart;
   const char *tokptr;
@@ -1088,26 +1090,26 @@ yylex(void)
   explen = strlen(lexptr);
   /* See if it is a special token of length 3.  */
   if (explen > 2)
-    for (i = 0UL; i < (sizeof(tokentab3) / sizeof(tokentab3[0])); i++)
-      if ((strncasecmp(tokstart, tokentab3[i].poperator, 3) == 0)
-          && (!isalpha(tokentab3[i].poperator[0]) || (explen == 3)
+    for (u_i = 0UL; u_i < (sizeof(tokentab3) / sizeof(tokentab3[0])); u_i++)
+      if ((strncasecmp(tokstart, tokentab3[u_i].poperator, 3) == 0)
+          && (!isalpha(tokentab3[u_i].poperator[0]) || (explen == 3)
               || (!isalpha(tokstart[3]) && !isdigit(tokstart[3]) && (tokstart[3] != '_'))))
         {
           lexptr += 3;
-          yylval.opcode = tokentab3[i].opcode;
-          return tokentab3[i].token;
+          yylval.opcode = tokentab3[u_i].opcode;
+          return tokentab3[u_i].token;
         }
 
   /* See if it is a special token of length 2: */
   if (explen > 1)
-    for (i = 0UL; i < (sizeof(tokentab2) / sizeof(tokentab2[0])); i++)
-      if ((strncasecmp(tokstart, tokentab2[i].poperator, 2) == 0)
-          && (!isalpha(tokentab2[i].poperator[0]) || (explen == 2)
+    for (u_i = 0UL; u_i < (sizeof(tokentab2) / sizeof(tokentab2[0])); u_i++)
+      if ((strncasecmp(tokstart, tokentab2[u_i].poperator, 2) == 0)
+          && (!isalpha(tokentab2[u_i].poperator[0]) || (explen == 2)
               || (!isalpha(tokstart[2]) && !isdigit(tokstart[2]) && (tokstart[2] != '_'))))
         {
           lexptr += 2;
-          yylval.opcode = tokentab2[i].opcode;
-          return tokentab2[i].token;
+          yylval.opcode = tokentab2[u_i].opcode;
+          return tokentab2[u_i].token;
         }
 
   switch (c = *tokstart)
@@ -1172,11 +1174,11 @@ yylex(void)
       return c;
 
     case '.':
-      /* Might be a floating point number.  */
-      if (lexptr[1] < '0' || lexptr[1] > '9')
+      /* Might be a floating point number: */
+      if ((lexptr[1] < '0') || (lexptr[1] > '9'))
 	goto symbol;		/* Nope, must be a symbol. */
-      /* FALL THRU into number case.  */
-
+      /* FALL THRU into number case: */
+      ATTRIBUTE_FALLTHROUGH;
     case '0':
     case '1':
     case '2':
@@ -1336,20 +1338,20 @@ yylex(void)
 	 FIXME: This mishandles `print $a<4&&$a>3'.  */
       if (c == '<')
 	{
-	  size_t i = namelen;
+	  size_t sz_i = namelen;
 	  int nesting_level = 1;
-	  while (tokstart[++i])
+	  while (tokstart[++sz_i])
 	    {
-	      if (tokstart[i] == '<')
+	      if (tokstart[sz_i] == '<')
 		nesting_level++;
-	      else if (tokstart[i] == '>')
+	      else if (tokstart[sz_i] == '>')
 		{
 		  if (--nesting_level == 0)
 		    break;
 		}
 	    }
-	  if (tokstart[i] == '>')
-	    namelen = i;
+	  if (tokstart[sz_i] == '>')
+	    namelen = sz_i;
 	  else
 	    break;
 	}
@@ -1451,10 +1453,10 @@ yylex(void)
     /* second chance uppercased (as Free Pascal does): */
     if (!sym && !is_a_field_of_this && !is_a_field)
       {
-       for (i = 0U; (i <= namelen) && (i < UINT_MAX); i++)
+       for (u_i = 0U; (u_i <= namelen) && (u_i < UINT_MAX); u_i++)
          {
-           if ((tmp[i] >= 'a') && (tmp[i] <= 'z'))
-             tmp[i] -= ('a' - 'A');
+           if ((tmp[u_i] >= 'a') && (tmp[u_i] <= 'z'))
+             tmp[u_i] -= ('a' - 'A');
          }
        if (search_field && current_type)
 	 is_a_field = (lookup_struct_elt_type(current_type, tmp, 1) != NULL);
@@ -1465,26 +1467,26 @@ yylex(void)
                              VAR_DOMAIN, &is_a_field_of_this,
                              (struct symtab **)NULL);
        if (sym || is_a_field_of_this || is_a_field)
-         for (i = 0U; (i <= namelen) && (i < UINT_MAX); i++)
+         for (u_i = 0U; (u_i <= namelen) && (u_i < UINT_MAX); u_i++)
            {
-             if ((tokstart[i] >= 'a') && (tokstart[i] <= 'z'))
-               tokstart[i] -= ('a' - 'A');
+             if ((tokstart[u_i] >= 'a') && (tokstart[u_i] <= 'z'))
+               tokstart[u_i] -= ('a' - 'A');
            }
       }
     /* Third chance Capitalized (as GPC does): */
     if (!sym && !is_a_field_of_this && !is_a_field)
       {
-       for (i = 0U; (i <= namelen) && (i < UINT_MAX); i++)
+       for (u_i = 0U; (u_i <= namelen) && (u_i < UINT_MAX); u_i++)
          {
-           if (i == 0U)
+           if (u_i == 0U)
              {
-              if ((tmp[i] >= 'a') && (tmp[i] <= 'z'))
-                tmp[i] -= ('a' - 'A');
+              if ((tmp[u_i] >= 'a') && (tmp[u_i] <= 'z'))
+                tmp[u_i] -= ('a' - 'A');
              }
            else
              {
-              if ((tmp[i] >= 'A') && (tmp[i] <= 'Z'))
-                tmp[i] -= ('A' - 'a');
+              if ((tmp[u_i] >= 'A') && (tmp[u_i] <= 'Z'))
+                tmp[u_i] -= ('A' - 'a');
              }
           }
        if (search_field && current_type)
@@ -1496,17 +1498,17 @@ yylex(void)
                              VAR_DOMAIN, &is_a_field_of_this,
                              (struct symtab **)NULL);
        if (sym || is_a_field_of_this || is_a_field)
-          for (i = 0U; (i <= namelen) && (i < UINT_MAX); i++)
+          for (u_i = 0U; (u_i <= namelen) && (u_i < UINT_MAX); u_i++)
             {
-              if (i == 0U)
+              if (u_i == 0U)
                 {
-                  if ((tokstart[i] >= 'a') && (tokstart[i] <= 'z'))
-                    tokstart[i] -= ('a' - 'A');
+                  if ((tokstart[u_i] >= 'a') && (tokstart[u_i] <= 'z'))
+                    tokstart[u_i] -= ('a' - 'A');
                 }
               else
                 {
-                  if ((tokstart[i] >= 'A') && (tokstart[i] <= 'Z'))
-                    tokstart[i] -= ('A' - 'a');
+                  if ((tokstart[u_i] >= 'A') && (tokstart[u_i] <= 'Z'))
+                    tokstart[u_i] -= ('A' - 'a');
                 }
             }
       }

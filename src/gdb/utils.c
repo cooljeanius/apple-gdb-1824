@@ -1325,7 +1325,7 @@ xmfree(void *md, void *ptr)
 PTR				/* OK: PTR */
 xmalloc(size_t size)
 {
-  void *val;
+  void *volatile val;
 
   /* See libiberty/xmalloc.c.  This function needs to match that one's
      semantics.  It never returns NULL.  */
@@ -2487,14 +2487,16 @@ fputc_unfiltered(int c, struct ui_file *stream)
   return c;
 }
 
+/* */
 int
 fputc_filtered(int c, struct ui_file *stream)
 {
-  char buf[2];
+  char buf[8]; /* big enough for -Wstack-protector */
 
   buf[0] = (char)c;
   buf[1] = (char)0;
-  fputs_filtered (buf, stream);
+  buf[2] = '\0';
+  fputs_filtered(buf, stream);
   return c;
 }
 

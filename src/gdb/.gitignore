@@ -50,6 +50,7 @@ conf*/*.awk
 *.rsrc
 clang_static_analysis/*.plist
 clang_static_analysis/*/*.plist
+clang_static_analysis/*/*/*.plist
 valarith.ii
 valarith.s
 valarith.dumpfiles/*
