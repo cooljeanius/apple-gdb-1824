@@ -99,6 +99,7 @@ TAGS:
 clean:
 	rm -f *.o *~ core a.out doschk
 	rm -rf autom4te.cache || rmdir autom4te.cache
+	rm -rf *.dSYM || rmdir *.dSYM
 
 mostlyclean: clean
 

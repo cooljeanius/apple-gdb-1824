@@ -25161,7 +25161,10 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 GCC=$lt_save_GCC
 CC=$lt_save_CC
 CFLAGS=$lt_save_CFLAGS
-if test -n "$ac_tool_prefix"; then
+  ## gcj is slow:
+if test "x${GO_SLOWLY}" = "xyes"; then
+  test -n "${GO_SLOWLY}" && echo "Going slowly."
+  if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}gcj", so it can be a program name with args.
 set dummy ${ac_tool_prefix}gcj; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -27257,6 +27260,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 GCC=$lt_save_GCC
 CC=$lt_save_CC
 CFLAGS=$lt_save_CFLAGS
+  ## OK
+fi
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}windres", so it can be a program name with args.
 set dummy ${ac_tool_prefix}windres; ac_word=$2

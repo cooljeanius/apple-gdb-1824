@@ -154,6 +154,7 @@ mostlyclean-local: mostlyclean-multi
 clean-local: clean-multi
 distclean-local: distclean-multi
 	rm -rf autom4te.cache || rmdir autom4te.cache
+	rm -rf *.dSYM || rmdir *.dSYM
 maintainer-clean-local: maintainer-clean-multi
 .PHONY: mostlyclean-local clean-local distclean-local
 .PHONY: maintainer-clean-local

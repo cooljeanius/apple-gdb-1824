@@ -2961,6 +2961,13 @@ local-distclean:
 	-find . -name config.cache -exec rm -f {} \; \; 2>/dev/null
 	-rm -rf autom4te.cache || rmdir autom4te.cache
 	-rm -f .DS_Store
+	-for dir in @notsupp@; do \
+	  if test -d $${dir} && test -e $${dir}/Makefile; then \
+	    cd $${dir} && $(MAKE) $(FLAGS_TO_PASS) distclean; \
+	  else \
+	    echo "Skipping making $${dir} be distclean"; \
+	  fi; \
+	done
 
 local-maintainer-clean:
 	@echo "This command is intended for maintainers to use;"

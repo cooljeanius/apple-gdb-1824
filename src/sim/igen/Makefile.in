@@ -167,6 +167,7 @@ TAGS:
 
 clean mostlyclean:
 	rm -f tmp-* *.[oasi] core igen
+	rm -rf *.dSYM || rmdir *.dSYM
 
 distclean realclean: clean
 	rm -f TAGS Makefile config.cache config.status config.h defines.h stamp-h config.log

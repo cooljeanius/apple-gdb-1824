@@ -6,3 +6,7 @@ AUTOMAKE_OPTIONS = 1.11.6 gnits no-dependencies no-dist dejagnu
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 TEXINFO_TEX = ../texinfo/texinfo.tex
 SUBDIRS = library src
+DISTCLEANFILES = *~ autoscan*.log .DS_Store
+
+distclean-local:
+	rm -rf autom4te.cache || rmdir autom4te.cache

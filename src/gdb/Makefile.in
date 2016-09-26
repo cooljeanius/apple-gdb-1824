@@ -1413,6 +1413,7 @@ TSOBS = inflow.o
 @MAKE_SHOULD_RECURSE_INTO_GNULIB_FALSE@SUBDIRS = @subdirs@
 @MAKE_SHOULD_RECURSE_INTO_GNULIB_TRUE@CLEANDIRS = $(SUBDIRS) @MAINT@ gnulib
 @MAKE_SHOULD_RECURSE_INTO_GNULIB_FALSE@CLEANDIRS = $(SUBDIRS)
+UNUSED_SUBDIRS = @unused_subdirs@
 
 # List of subdirectories in the build tree that must exist.
 # This is used to force build failures in existing trees when
@@ -1794,6 +1795,24 @@ tags: TAGS
 # 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:: $(CONFIG_CLEAN)
 	@$(MAKE) $(FLAGS_TO_PASS) DO=clean "DODIRS=$(SUBDIRS)" subdir_do
+	-for dir in $(CLEANDIRS); do \
+	  if test -d $${dir} && test -e $${dir}/Makefile; then \
+	    cd $${dir} && $(MAKE) $(FLAGS_TO_PASS) clean; \
+	  else \
+	    echo "skipping cleaning $${dir}"; \
+	  fi; \
+	done
+	-if test "x$(CLEANDIRS)" != "x$(UNUSED_SUBDIRS)"; then \
+	  for dir in $(UNUSED_SUBDIRS); do \
+	    if test -d $${dir} && test -e $${dir}/Makefile; then \
+	      cd $${dir} && $(MAKE) $(FLAGS_TO_PASS) clean; \
+	    else \
+	      echo "skipping cleaning $${dir}"; \
+	    fi; \
+	  done; \
+	else \
+	  echo "CLEANDIRS and UNUSED_SUBDIRS are the same"; \
+	fi
 	rm -f $(AM_V_v) *.o *.a $(ADD_FILES) *~
 	rm -f init.c-tmp init.l-tmp version.c-tmp init.c version.c
 	rm -f $(AM_V_v) gdb$(EXEEXT) core make.log
@@ -1803,10 +1822,12 @@ clean mostlyclean:: $(CONFIG_CLEAN)
 	if test -e insight$(EXEEXT); then $(MAKE) clean-gdbtk; fi
 	rm -f $(AM_V_v) test-cp-name-parser$(EXEEXT)
 	rm -f $(AM_V_v) *.rsrc
+	-rm -rf $(AM_V_v) *.dSYM || rmdir *.dSYM
 
 .PHONY: clean-tui
 clean-tui:
 	rm -f $(AM_V_v) $(TUI)$(EXEEXT) || echo "$(TUI)$(EXEEXT) missing"
+	$(AM_V_at)rm -f -r $(AM_V_v) $(TUI)$(EXEEXT).dSYM
 
 # This used to depend on c-exp.c m2-exp.c TAGS
 # I believe this is wrong; the makefile standards for distclean just
@@ -1817,10 +1838,19 @@ clean-tui:
 distclean: clean clean-tui clean-gdbtk @MAINT@ clean-po
 	@$(MAKE) $(FLAGS_TO_PASS) DO=distclean "DODIRS=$(SUBDIRS)" \
 	  subdir_do
+	-for dir in $(UNUSED_SUBDIRS); do \
+	  if test -d $${dir} && test -e $${dir}/Makefile; then \
+	    cd $${dir} && $(MAKE) $(FLAGS_TO_PASS) distclean; \
+	  else \
+	    echo "Skipping making $${dir} be distclean"; \
+	  fi; \
+	done
 	rm -f gdbserver/config.status gdbserver/config.log
 	rm -f gdbserver/tm.h gdbserver/xm.h gdbserver/nm.h
 	rm -f gdbserver/Makefile gdbserver/config.cache
+	rm -f data-directory/Makefile
 	rm -f nm.h tm.h xm.h config.status config.h stamp-h .gdbinit
+	rm -f $(AM_V_v) stamp-h* stamp-*1 gdb-gdb.gdb gcore
 	rm -f y.output yacc.acts yacc.tmp y.tab.h
 	rm -f config.log config.cache
 	rm -f Makefile
@@ -1829,7 +1859,9 @@ distclean: clean clean-tui clean-gdbtk @MAINT@ clean-po
 	-rm -f autoscan.log macosx/gdb.log
 	-rm -rf .libs || rmdir .libs
 	-rm -rf autom4te.cache || rmdir autom4te.cache
+	-rm -rf gdbserver/autom4te.cache || rmdir gdbserver/autom4te.cache
 	-rm -rf $(GNULIB_BUILDDIR) || rmdir $(GNULIB_BUILDDIR)
+	-rm -rf gdbserver/build-gnulib || rmdir gdbserver/build-gnulib
 	-find . -name .DS_Store -delete
 
 maintainer-clean: local-maintainer-clean do-maintainer-clean distclean
@@ -3650,6 +3682,7 @@ uninstall-gdbtk:
 .PHONY: clean-gdbtk
 clean-gdbtk:
 	rm -f $(AM_V_v) insight$(EXEEXT) || echo "insight$(EXEEXT) missing"
+	$(AM_V_at)rm -f -r $(AM_V_v) insight$(EXEEXT).dSYM
 
 # Removing the old gdb first works better if it is running,
 # at least on SunOS:

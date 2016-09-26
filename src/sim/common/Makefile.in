@@ -118,6 +118,7 @@ clean:
 	rm -f *.[oa] *~ core
 	rm -f $(ALL)
 	rm -f ansi2knr
+	rm -rf *.dSYM || rmdir *.dSYM
 
 distclean mostlyclean maintainer-clean realclean: clean
 	rm -f TAGS

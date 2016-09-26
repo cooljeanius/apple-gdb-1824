@@ -225,7 +225,12 @@ LT_LANG([C++])dnl
 LT_LANG([Fortran 77])dnl
 LT_LANG([Fortran])dnl
 LT_LANG([Go])dnl
-LT_LANG([Java])dnl
+  ## gcj is slow:
+if test "x${GO_SLOWLY}" = "xyes"; then
+  test -n "${GO_SLOWLY}" && echo "Going slowly."
+  LT_LANG([Java])dnl
+  ## OK
+fi
 LT_LANG([Windows Resource])dnl
 
 # Ensure the correct file name (and path) conversion function

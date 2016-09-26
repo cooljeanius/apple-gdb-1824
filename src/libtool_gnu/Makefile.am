@@ -965,4 +965,14 @@ DISTCLEANFILES += tests/defs
 
 distclean-local:
 	-rm -rf autom4te.cache || rmdir autom4te.cache
+	-if test -d ./tests; then \
+	  rm -rf ./tests/*/autom4te.cache || rmdir ./*/*/autom4te.cache; \
+	  rm -rf ./tests/*/*.dSYM || rmdir ./tests/*/*.dSYM; \
+	fi
+	-for dir in $(CONF_SUBDIRS); do \
+	  if test ! -f $${dir}/Makefile; then \
+	    $(mkinstalldirs) $${dir}; \
+	    echo 'distclean: ; rm -f Makefile' > $${dir}/Makefile; \
+	  else echo "distclean is not applicable for $${dir}"; fi; \
+	done
 .PHONY: distclean-local

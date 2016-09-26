@@ -767,6 +767,9 @@ CXXFLAGS_FOR_TARGET
 CFLAGS_FOR_TARGET
 DEBUG_PREFIX_CFLAGS_FOR_TARGET
 SYSROOT_CFLAGS_FOR_TARGET
+notsupp
+noconfigdirs
+skipdirs
 UNIQ_BIN
 extra_host_libiberty_configure_flags
 bootstrap_target_libs

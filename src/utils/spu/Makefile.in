@@ -108,6 +108,7 @@ mostlyclean:
 
 clean: mostlyclean
 	rm -f *.o spu *~ .DS_Store
+	rm -rf *.dSYM || rmdir *.dSYM
 
 distclean: clean
 	rm -f Makefile config.status config.log config.cache

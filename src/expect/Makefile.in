@@ -581,6 +581,7 @@ distclean: clean
 	-rm -f Makefile *config.status config.cache config.log expect_cf.h
 	-rm -f Dbg_cf.h DbgMkfl pkgIndex .DS_Store
 	-rm -rf autom4te.cache || rmdir autom4te.cache
+	-rm -rf *.dSYM || rmdir *.dSYM
 
 # like "clean", but does NOT delete test utilities or massaged scripts
 # because most people do NOT have to worry about them

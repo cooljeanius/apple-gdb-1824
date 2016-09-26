@@ -19,8 +19,8 @@ AC_ARG_ENABLE([install-libgui],
 AM_CONDITIONAL([CROSS_COMPILING],[test "x${cross_compiling}" = "xyes"])
 AM_CONDITIONAL([INSTALL_LIBGUI],
                [test "x${enable_install_libgui}" = "xyes"])
-AC_CHECK_TOOL([RANLIB],[ranlib],[:])
-AC_CHECK_TOOL([AR],[ar],[:])
+AC_CHECK_TOOLS([RANLIB],[ranlib granlib],[:],[${PATH}:./../binutils])
+AC_CHECK_TOOLS([AR],[ar gar],[:],[${PATH}:./../binutils])
 AC_CHECK_PROG([ITCL_SH],[itcl_sh],[itcl_sh],
 	[\$\$here/\$(top_builddir)/../itcl/itcl/unix/itcl_sh\$(EXEEXT)])
 AC_PROG_SED
@@ -55,7 +55,7 @@ AC_ARG_ENABLE([ide],[AS_HELP_STRING([--enable-ide],[Enable IDE support])],
   *)   AC_MSG_ERROR([bad value ${enableval} for enable-ide option]) ;;
 esac],
 [ide=no])
-AM_CONDITIONAL([IDE_ENABLED],[test x$ide = xyes])
+AM_CONDITIONAL([IDE_ENABLED],[test "x${ide}" = "xyes"])
 if test "x${ide}" = "xyes"; then
   AC_DEFINE([IDE_ENABLED])
 fi

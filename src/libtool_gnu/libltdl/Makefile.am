@@ -194,3 +194,8 @@ argz.h: argz_.h
 	mv $@-t $@
 MOSTLYCLEANFILES += argz.h \
 		    argz.h-t
+
+## extra distclean target:
+distclean-local:
+	if test -e config.h.in~; then rm -f config.h.in~; fi
+	-rm -rf autom4te.cache || rmdir autom4te.cache

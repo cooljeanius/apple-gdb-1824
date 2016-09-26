@@ -94,7 +94,7 @@ TARGET_FLAGS_TO_PASS = \
         "RUNTEST=$(RUNTEST)" \
         "RUNTESTFLAGS=$(RUNTESTFLAGS)"
 
-all: @MAINT@ $(EXTRA_RULES)
+all: read1 @MAINT@ $(EXTRA_RULES)
 	@echo "Nothing to be done for all..."
 
 .NOEXPORT:

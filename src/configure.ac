@@ -2596,6 +2596,8 @@ for dir in . ${skipdirs} ${noconfigdirs}; do
     fi
   fi
 done
+AC_SUBST([skipdirs])dnl
+AC_SUBST([noconfigdirs])dnl
 
 # Sometimes the tools are distributed with libiberty but with no other
 # libraries. In that case, we do NOT want to build target-libiberty.
@@ -2710,6 +2712,7 @@ else
     echo "No recursion: ${norecursion}"
   fi
 fi
+AC_SUBST([notsupp])dnl
 
 case "${host}" in
   *msdosdjgpp*)
