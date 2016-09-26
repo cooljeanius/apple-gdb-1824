@@ -288,10 +288,13 @@ clean-local: mostlyclean-local @MAINT@ config.status
 .PHONY: clean-local
 
 distclean-local: clean-local @MAINT@ config.status
-	rm -f po2msg.sed po2tbl.sed po/Makevars
+	rm -f po2msg.sed po2tbl.sed @MAINT@ po/Makevars
+	if test -e config.status && test -x config.status; then \
+	  if test -e po; then ./config.status po/Makevars; fi \
+	fi
 	rm -f config.log config.intl config.h @MAINT@ libintl.h
-	rm -f Makefile ID TAGS
-	rm -f $(AM_V_v) *.status *.output Makefile*orig *~ m4/*~ po/*~
+	rm -f $(AM_V_v) Makefile ID TAGS @MAINT@ *.status
+	rm -f $(AM_V_v) *.output Makefile*orig *~ m4/*~ po/*~
 	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 	-rm -f .DS_Store
 .PHONY: distclean-local

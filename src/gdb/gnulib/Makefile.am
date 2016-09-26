@@ -628,6 +628,7 @@ mostlyclean-local: mostlyclean-generic
 
 distclean-local:
 	rm -rf autom4te.cache || rmdir autom4te.cache
+	if test -e config.h.in~; then rm -f config.h.in~; fi
 
 maintainer-clean-local:
 	-(unlink fnmatch.h || rm fnmatch.h)
@@ -706,15 +707,15 @@ subdir_do: force
 gnulib/Makefile: gnulib/Makefile.in config.status
 	CONFIG_FILES="gnulib/Makefile" \
 	  CONFIG_COMMANDS="depfiles" \
-	  CONFIG_HEADERS= \
-	  CONFIG_LINKS= \
+	  CONFIG_HEADERS="" \
+	  CONFIG_LINKS="" \
 	  $(SHELL) config.status
 
 stamp-h: $(srcdir)/config.h.in config.status
 	CONFIG_HEADERS=config.h \
 	  CONFIG_COMMANDS="default depdir" \
-	  CONFIG_FILES= \
-	  CONFIG_LINKS= \
+	  CONFIG_FILES="" \
+	  CONFIG_LINKS="" \
 	  $(SHELL) config.status
 	touch stamp-h
 

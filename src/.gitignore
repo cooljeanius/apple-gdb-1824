@@ -42,6 +42,8 @@ TAGS.sub
 TEMP
 \#*
 *#
+stamp-*
+*.stamp
 bfd/bfd-in3.h
 bfd/doc/chew
 bfd/po/*POTFILES

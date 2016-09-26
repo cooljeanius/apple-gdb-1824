@@ -205,6 +205,8 @@ distclean maintainer-clean realclean: clean
 	-rm -fv Makefile config.status *-init.exp
 	-rm -frv *.log summary detail *.plog *.sum *.psum site.*
 	-rm -frv autom4te.cache || rmdir autom4te.cache
+	-rm -fv lib/pdtrace cell*.c cell*-spu.c conf*/*.awk
+	-(unlink vforked-prog.c || rm vforked-prog.c)
 	if [ x"${ALL_SUBDIRS}" != x"" ]; then \
 	    for dir in ${ALL_SUBDIRS}; \
 	    do \

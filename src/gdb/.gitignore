@@ -64,11 +64,13 @@ ada-exp.c
 ada-lex.c
 c-exp.c
 cp-name-parser.c
+d-exp.c
 f-exp.c
 jv-exp.c
 m2-exp.c
 objc-exp.c
 p-exp.c
+rust-exp.c
 
 # artifacts of codesigning:
 _CodeSignature/*
