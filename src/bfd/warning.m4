@@ -1,6 +1,26 @@
 dnl# Common configure.ac fragment
 
+# AC_EGREP_CPP_FOR_BUILD(PATTERN, PROGRAM,
+#              [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
+# ------------------------------------------------------
+AC_DEFUN([AC_EGREP_CPP_FOR_BUILD],
+[AC_LANG_PREPROC_REQUIRE()dnl
+AC_REQUIRE([AC_PROG_EGREP])dnl
+AC_LANG_CONFTEST([AC_LANG_SOURCE([[$2]])])
+AS_IF([dnl# eval is necessary to expand ac_cpp_for_build.
+dnl# Ultrix/Pyramid sh refuse to redirect output of eval, so use subshell.
+(eval "$ac_cpp_for_build conftest.$ac_ext") 2>&AS_MESSAGE_LOG_FD |
+dnl# Quote $1 to prevent m4 from eating character classes
+  $EGREP "[$1]" >/dev/null 2>&1],
+  [$3],
+  [$4])
+rm -f conftest*
+])dnl# AC_EGREP_CPP_FOR_BUILD
+
 AC_DEFUN([AM_BINUTILS_WARNINGS],[
+# Set acp_cpp_for_build variable
+ac_cpp_for_build="${CC_FOR_BUILD} -E ${CPPFLAGS_FOR_BUILD}"
+
 # "-W" and "-Wextra" are redundant.
 WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wmissing-declarations -Wimplicit -Wparentheses -Wextra -Wc++-compat \
@@ -24,6 +44,8 @@ WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint -DDEBUG_GEN_RELOC -DDEBUG_HASH \
 -DLINUX_LINK_DEBUG -DVMS_DEBUG=1 \
 -DBFD_AOUT_DEBUG -DBFD_TRACK_OPEN_CLOSE"
 WARN_LDFLAGS=""
+GCC_WARN_CFLAGS_FOR_BUILD="-Wall -Wextra -Wstrict-prototypes \
+-Wmissing-prototypes"
 
 # Add -Wshadow if the compiler is a sufficiently recent version of GCC.
 AC_EGREP_CPP([^[0-3]$],[__GNUC__],[],
@@ -32,6 +54,12 @@ AC_EGREP_CPP([^[0-3]$],[__GNUC__],[],
 # Add -Wstack-usage if the compiler is a sufficiently recent version of GCC
 AC_EGREP_CPP([^[0-4]$],[__GNUC__],[],
              [WARN_CFLAGS="${WARN_CFLAGS} -Wstack-usage=262144"])dnl
+
+# Verify CC_FOR_BUILD to be compatible with warning flags
+
+# Add -Wshadow if the compiler is a sufficiently recent version of GCC.
+AC_EGREP_CPP_FOR_BUILD([^[0-3]$],[__GNUC__],[],
+[GCC_WARN_CFLAGS_FOR_BUILD="${GCC_WARN_CFLAGS_FOR_BUILD} -Wshadow"])dnl
 
 if test "x${GCC_WARN_CFLAGS}" != "x"; then
   if test "x${GCC}" = "xyes"; then
@@ -107,6 +135,7 @@ fi
 NO_WERROR=""
 if test "x${ERROR_ON_WARNING}" = "xyes"; then
     WARN_CFLAGS="${WARN_CFLAGS} -Werror"
+    GCC_WARN_CFLAGS_FOR_BUILD="${GCC_WARN_CFLAGS_FOR_BUILD} -Werror"
     NO_WERROR="-Wno-error"
 fi
 
@@ -188,6 +217,10 @@ then
       test -n "${BAD_WARN_CFLAGS}"
       AC_MSG_WARN([compiler failed to accept: ${BAD_WARN_CFLAGS}])
     fi
+    # Also:
+    if test "x${WARN_CFLAGS_FOR_BUILD}" = "x"; then
+      test -z "${WARN_CFLAGS_FOR_BUILD}" && export WARN_CFLAGS_FOR_BUILD="${GCC_WARN_CFLAGS_FOR_BUILD}"
+    fi
 fi
 
 if test "x${WARN_LDFLAGS}" != "x" -a "x${GCC}" = "xyes"
@@ -216,6 +249,7 @@ if test x"${silent}" != x"yes" && test x"${WARN_LDFLAGS}" != x""; then
 fi
 
 AC_SUBST([WARN_CFLAGS])dnl
+AC_SUBST([WARN_CFLAGS_FOR_BUILD])dnl
 AC_SUBST([WARN_DEFS])dnl
 AC_SUBST([WARN_LDFLAGS])dnl
 AC_SUBST([NO_WERROR])dnl

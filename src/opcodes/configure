@@ -640,6 +640,7 @@ WARN_WRITE_STRINGS
 NO_WERROR
 WARN_LDFLAGS
 WARN_DEFS
+WARN_CFLAGS_FOR_BUILD
 WARN_CFLAGS
 acl_cv_wl
 GUILE_VERSION
@@ -22142,6 +22143,9 @@ else
 fi
 
 
+# Set acp_cpp_for_build variable
+ac_cpp_for_build="${CC_FOR_BUILD} -E ${CPPFLAGS_FOR_BUILD}"
+
 # "-W" and "-Wextra" are redundant.
 WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wmissing-declarations -Wimplicit -Wparentheses -Wextra -Wc++-compat \
@@ -22165,6 +22169,8 @@ WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint -DDEBUG_GEN_RELOC -DDEBUG_HASH \
 -DLINUX_LINK_DEBUG -DVMS_DEBUG=1 \
 -DBFD_AOUT_DEBUG -DBFD_TRACK_OPEN_CLOSE"
 WARN_LDFLAGS=""
+GCC_WARN_CFLAGS_FOR_BUILD="-Wall -Wextra -Wstrict-prototypes \
+-Wmissing-prototypes"
 
 # Add -Wshadow if the compiler is a sufficiently recent version of GCC.
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -22189,6 +22195,21 @@ if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
 
 else
   WARN_CFLAGS="${WARN_CFLAGS} -Wstack-usage=262144"
+fi
+rm -f conftest*
+
+# Verify CC_FOR_BUILD to be compatible with warning flags
+
+# Add -Wshadow if the compiler is a sufficiently recent version of GCC.
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+__GNUC__
+_ACEOF
+if (eval "$ac_cpp_for_build conftest.$ac_ext") 2>&5 |
+  $EGREP "^[0-3]$" >/dev/null 2>&1; then :
+
+else
+  GCC_WARN_CFLAGS_FOR_BUILD="${GCC_WARN_CFLAGS_FOR_BUILD} -Wshadow"
 fi
 rm -f conftest*
 
@@ -22274,6 +22295,7 @@ fi
 NO_WERROR=""
 if test "x${ERROR_ON_WARNING}" = "xyes"; then
     WARN_CFLAGS="${WARN_CFLAGS} -Werror"
+    GCC_WARN_CFLAGS_FOR_BUILD="${GCC_WARN_CFLAGS_FOR_BUILD} -Werror"
     NO_WERROR="-Wno-error"
 fi
 
@@ -22385,6 +22407,10 @@ $as_echo "using: ${WARN_CFLAGS}" >&6; }
       test -n "${BAD_WARN_CFLAGS}"
       { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: compiler failed to accept: ${BAD_WARN_CFLAGS}" >&5
 $as_echo "$as_me: WARNING: compiler failed to accept: ${BAD_WARN_CFLAGS}" >&2;}
+    fi
+    # Also:
+    if test "x${WARN_CFLAGS_FOR_BUILD}" = "x"; then
+      test -z "${WARN_CFLAGS_FOR_BUILD}" && export WARN_CFLAGS_FOR_BUILD="${GCC_WARN_CFLAGS_FOR_BUILD}"
     fi
 fi
 

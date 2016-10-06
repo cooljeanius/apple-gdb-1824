@@ -148,10 +148,10 @@ darwin*|macosx*)
 	SHOBJ_LDFLAGS='-dynamiclib'
     if test "x${HOST_ARCHITECTURE}" != "x"; then
         test -n "${HOST_ARCHITECTURE}"
-        SHLIB_XLDFLAGS='-arch ${HOST_ARCHITECTURE} -install_name $(libdir)/$@ -current_version $(SHLIB_MAJOR)$(SHLIB_MINOR) -compatibility_version $(SHLIB_MAJOR)'
+        SHLIB_XLDFLAGS='-arch ${HOST_ARCHITECTURE} -install_name $(libdir)/$@ -current_version $(SHLIB_MAJOR)$(SHLIB_MINOR) -compatibility_version $(SHLIB_MAJOR)$(SHLIB_MINOR)'
     else
         test -z "${HOST_ARCHITECTURE}"
-        SHLIB_XLDFLAGS='-arch_only `/usr/bin/arch` -install_name $(libdir)/$@ -current_version $(SHLIB_MAJOR)$(SHLIB_MINOR) -compatibility_version $(SHLIB_MAJOR)'
+        SHLIB_XLDFLAGS='-arch_only `/usr/bin/arch` -install_name $(libdir)/$@ -current_version $(SHLIB_MAJOR)$(SHLIB_MINOR) -compatibility_version $(SHLIB_MAJOR)$(SHLIB_MINOR)'
     fi
 	SHLIB_EXTRA_XLDFLAGS='-v'
 

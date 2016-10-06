@@ -648,18 +648,18 @@ free_abbrevs (struct backtrace_state *state, struct abbrevs *abbrevs,
    forms, because we don't care about them.  */
 
 static int
-read_attribute (enum dwarf_form form, struct dwarf_buf *buf,
-		int is_dwarf64, int version, int addrsize,
-		const unsigned char *dwarf_str, size_t dwarf_str_size,
-		struct attr_val *val)
+read_attribute(enum dwarf_form dwform, struct dwarf_buf *buf,
+	       int is_dwarf64, int version, int addrsize,
+	       const unsigned char *dwarf_str, size_t dwarf_str_size,
+	       struct attr_val *val)
 {
   /* Avoid warnings about val.u.FIELD may be used uninitialized if
      this function is inlined.  The warnings aren't valid but can
      occur because the different fields are set and used
      conditionally.  */
-  memset (val, 0, sizeof *val);
+  memset(val, 0, sizeof(*val));
 
-  switch (form)
+  switch (dwform)
     {
     case DW_FORM_addr:
       val->encoding = ATTR_VAL_ADDRESS;
@@ -752,12 +752,12 @@ read_attribute (enum dwarf_form form, struct dwarf_buf *buf,
       return 1;
     case DW_FORM_indirect:
       {
-	uint64_t form;
+	uint64_t uform;
 
-	form = read_uleb128 (buf);
-	return read_attribute ((enum dwarf_form) form, buf, is_dwarf64,
-			       version, addrsize, dwarf_str, dwarf_str_size,
-			       val);
+	uform = read_uleb128(buf);
+	return read_attribute((enum dwarf_form)uform, buf, is_dwarf64,
+			      version, addrsize, dwarf_str, dwarf_str_size,
+			      val);
       }
     case DW_FORM_sec_offset:
       val->encoding = ATTR_VAL_REF_SECTION;

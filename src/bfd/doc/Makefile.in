@@ -408,6 +408,7 @@ USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 WARN_CFLAGS = @WARN_CFLAGS@
+WARN_CFLAGS_FOR_BUILD = @WARN_CFLAGS_FOR_BUILD@
 WARN_DEFS = @WARN_DEFS@
 WARN_LDFLAGS = @WARN_LDFLAGS@
 WARN_WRITE_STRINGS = @WARN_WRITE_STRINGS@
@@ -504,7 +505,8 @@ top_srcdir = @top_srcdir@
 wordsize = @wordsize@
 zlibdir = @zlibdir@
 zlibinc = @zlibinc@
-AUTOMAKE_OPTIONS = 1.9 gnits -Wno-override no-dependencies subdir-objects
+AUTOMAKE_OPTIONS = 1.9 gnits -Wno-override no-dependencies \
+	subdir-objects no-dist info-in-builddir
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 AM_V_redir = $(am__v_redir_@AM_V@)
 am__v_redir_ = $(am__v_redir_@AM_DEFAULT_V@)
@@ -1501,6 +1503,7 @@ clean-local: Makefile @MAINT@ apple-clean
 .PHONY: clean-local
 
 all-local: clean-local $(build_MKDOC) protos
+	-if test -d chew_am.dSYM; then $(MAKE) apple-clean; fi
 .PHONY: all-local
 
 # We want install to imply install-info as per GNU standards, despite the

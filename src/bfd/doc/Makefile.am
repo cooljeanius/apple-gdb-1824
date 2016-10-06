@@ -20,6 +20,7 @@
 
 ## no-dependencies is because of how we override the rule for chew.o:
 AUTOMAKE_OPTIONS = 1.9 gnits -Wno-override no-dependencies subdir-objects
+AUTOMAKE_OPTIONS += no-dist info-in-builddir
 ## "cygnus" == "foreign no-dist" (no room for all that though)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
@@ -500,6 +501,7 @@ clean-local: Makefile @MAINT@ apple-clean
 .PHONY: clean-local
 
 all-local: clean-local $(build_MKDOC) protos
+	-if test -d chew_am.dSYM; then $(MAKE) apple-clean; fi
 .PHONY: all-local
 
 DISTCLEANFILES = bfd.?? bfd.??? bfd.h libbfd.h libcoff.h texput.log

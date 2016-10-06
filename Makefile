@@ -144,6 +144,9 @@ export MAKE     = $(shell xcrun -find make)
 export NM       = $(shell xcrun -find nm)
 export RANLIB   = $(shell xcrun -find ranlib)
 export TAR      = $(shell xcrun -find gnutar)
+ifndef RM
+export RM       = rm
+endif
 
 export CC_FOR_BUILD      = $(shell (xcrun -find clang 2>/dev/null || xcrun -find gcc))
 export CCFLAGS_FOR_BUILD = -I$(SDKROOT_FOR_BUILD)/usr/include
@@ -808,15 +811,15 @@ clean: mostlyclean
 	if test -e src/Makefile; then \
 	  unset CPP && $(MAKE) -i -C src clean; fi
 	$(RM) -r $(OBJROOT)
-	$(RM) *~
+	$(RM) *~ stamp-*
 	$(RM) .DS_Store
-	$(RM) -r autom4te.cache
+	$(RM) -r autom4te.cache || rmdir autom4te.cache
 	$(RM) autoscan.log
 
 distclean: clean
 	if test -e src/Makefile; then \
 	  unset CPP && $(MAKE) -i -C src distclean; fi
-	$(RM) configure config.log
+	$(RM) configure config.log config.h.*
 .PHONY: mostlyclean distclean
 
 check-args:

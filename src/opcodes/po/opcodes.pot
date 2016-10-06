@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-25 11:42-0400\n"
+"POT-Creation-Date: 2016-10-05 13:12-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -683,12 +683,12 @@ msgstr ""
 msgid "Invalid size specifier"
 msgstr ""
 
-#: m68k-dis.c:1162
+#: m68k-dis.c:1163
 #, c-format
 msgid "<function code %d>"
 msgstr ""
 
-#: m68k-dis.c:1313
+#: m68k-dis.c:1314
 #, c-format
 msgid "<internal error in opcode table: %s %s>\n"
 msgstr ""
@@ -837,7 +837,7 @@ msgstr ""
 #. an immediate either. We don't know how much to increase
 #. aoffsetp by since whatever generated this is broken
 #. anyway!
-#: ns32k-dis.c:535
+#: ns32k-dis.c:536
 #, c-format
 msgid "$<undefined>"
 msgstr ""

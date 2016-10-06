@@ -127,7 +127,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11 gnits dejagnu \
+AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu \
                   dist-bzip2 dist-xz dist-zip dist-tarZ])dnl
   ## make sure this is in the right place:
 if test -x ${srcdir}/missing; then
@@ -2524,6 +2524,8 @@ int main(void)
             [gdb_cv_prfpregset_t_broken=yes])
     ])
     AC_MSG_RESULT([${gdb_cv_prfpregset_t_broken}])
+    AC_CHECK_SIZEOF([prfpregset_t],[],[#include <sys/procfs.h>])
+    AC_CHECK_SIZEOF([void *])
     if test "x${gdb_cv_prfpregset_t_broken}" = "xyes"; then
       AC_DEFINE([PRFPREGSET_T_BROKEN],[1],
                 [Define if the prfpregset_t type is broken.])

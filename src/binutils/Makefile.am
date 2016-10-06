@@ -65,8 +65,10 @@ TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 
 WARN_CFLAGS = @WARN_CFLAGS@
+WARN_CFLAGS_FOR_BUILD = @WARN_CFLAGS_FOR_BUILD@
 NO_WERROR = @NO_WERROR@
 AM_CFLAGS = $(WARN_CFLAGS) $(C_ARCHFLAGS) @MAINT@ $(WARN_WRITE_STRINGS)
+AM_CFLAGS_FOR_BUILD = $(WARN_CFLAGS_FOR_BUILD) $(ZLIBINC)
 AM_DEFS = @WARN_DEFS@
 AM_LDFLAGS = -framework CoreFoundation -L../readline -L../intl \
   -L../libiberty -L../bfd -L../opcodes @WARN_LDFLAGS@
@@ -460,26 +462,27 @@ sysinfo$(EXEEXT_FOR_BUILD): sysinfo.@OBJEXT@ syslex_wrap.@OBJEXT@ sysinfo.h
 
 syslex.@OBJEXT@: config.h syslex.c sysinfo.h
 	$(AM_V_CC)if [ -r syslex.c ]; then \
-	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS) $(CFLAGS) $(DEFS) syslex.c -Wno-error; \
+	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(DEFS) syslex.c -Wno-error; \
 	else \
-	  $(CC_FOR_BUILD) -c -I. -I$(srcdir) $(AM_CFLAGS) $(CFLAGS) $(DEFS) $(srcdir)/syslex.c -Wno-error; \
+	  $(CC_FOR_BUILD) -c -I. -I$(srcdir) $(AM_CFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(DEFS) $(srcdir)/syslex.c -Wno-error; \
 	fi
 
 syslex_wrap.@OBJEXT@: syslex_wrap.c syslex.c sysinfo.h config.h
-	$(AM_V_CC)$(CC_FOR_BUILD) -c -I. -I$(srcdir) $(AM_CFLAGS) $(DEFS) \
-	  $(CFLAGS_FOR_BUILD) $(NO_WERROR) $(srcdir)/syslex_wrap.c \
-	  -Wno-error
+	$(AM_V_CC)$(CC_FOR_BUILD) -c -I. -I$(srcdir) $(DEFS) \
+	  $(AM_CFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(NO_WERROR) \
+	  $(srcdir)/syslex_wrap.c -Wno-error
 
 sysinfo.@OBJEXT@: sysinfo.c @MAINT@ sysinfo.h
 	$(AM_V_CC)if [ -r sysinfo.c ]; then \
-	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS) $(CFLAGS_FOR_BUILD) $(DEFS) $(NO_WERROR) sysinfo.c; \
+	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(DEFS) $(NO_WERROR) sysinfo.c; \
 	else \
-	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS) $(CFLAGS_FOR_BUILD) $(DEFS) $(NO_WERROR) $(srcdir)/sysinfo.c; \
+	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(DEFS) $(NO_WERROR) $(srcdir)/sysinfo.c; \
 	fi
 
 bin2c$(EXEEXT_FOR_BUILD): bin2c.c $(INCDIR)/binary-io.h
-	$(AM_V_CC)$(CC_FOR_BUILD) -o $@ $(AM_CPPFLAGS) $(AM_CFLAGS) \
-	  $(CFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) $(srcdir)/bin2c.c
+	$(AM_V_CC)$(CC_FOR_BUILD) -o $@ $(AM_CPPFLAGS) \
+	  $(AM_CFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) \
+	  $(srcdir)/bin2c.c
 
 embedspu: embedspu.sh Makefile
 	$(AWK) '/^program_transform_name=/ {print "program_transform_name=\"$(program_transform_name)\""; next} {print}' < $< > $@

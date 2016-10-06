@@ -1,6 +1,8 @@
 # Makefile for libcheckpoint library of helper functions for the inferior
 # process.
 
+AUTOMAKE_OPTIONS = foreign no-dist dejagnu no-define no-dependencies
+
 SRCROOT = .
 OBJROOT = $(SRCROOT)
 SYMROOT = $(OBJROOT)

@@ -8,7 +8,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([build-aux])dnl
 
-if test -x `which sw_vers`; then
+if test -x "`which sw_vers 2>/dev/null`"; then
   if test ! -z "$(sw_vers -productVersion | cut -d\. -f2 2>/dev/null)"; then
     if test "$(sw_vers -productVersion | cut -d\. -f2 2>/dev/null)" = "6"; then
       if test -e ./.profile_snowleopard; then
@@ -62,26 +62,28 @@ AC_ARG_ENABLE([opts-test],
 AC_MSG_CHECKING([programs])
 AC_MSG_RESULT([ ])
 AM_PROG_AR
-if test "x${AWK}" = "x" && test "x${ac_cv_prog_AWK}" = "x"; then
+AS_IF([test "x${AWK}" = "x" && test "x${ac_cv_prog_AWK}" = "x"],[
   test -z "${AWK}" && test -z "${ac_cv_prog_AWK}"
   AC_PROG_AWK
-fi
-if test "x${CC}" = "x"; then
+])dnl
+  ##FIXME: might need to move some stuff in here:
+AS_IF([test "x${CC}" = "x"],[
   test -z "${CC}"
   AC_PROG_CC
-else
+],[
   test ! -z "${CC}"
   AC_PROG_GCC_TRADITIONAL
-fi
+])dnl
+  ## ...uh... this comment is apparently necessary.
 AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_INSTALL
 AM_PROG_LEX
 AC_PROG_LN_S
-if test "x${ac_cv_prog_make_make_set}" = "x"; then
+AS_IF([test "x${ac_cv_prog_make_make_set}" = "x"],[
   test -z "${ac_cv_prog_make_make_set}"
   AC_PROG_MAKE_SET
-fi
+])dnl
 AC_PROG_MKDIR_P
 AC_PROG_OBJC
 AC_PROG_OBJCPP
@@ -260,7 +262,7 @@ AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify bzero \
 AC_MSG_CHECKING([gettext])
 AC_MSG_RESULT([ ])
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.19.4])dnl
+AM_GNU_GETTEXT_VERSION([0.19.7])dnl
 
 # Output:
 AC_CONFIG_FILES([libcheckpoint/Makefile])

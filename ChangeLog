@@ -1,3 +1,150 @@
+2016-09-26  cooljeanius  <egall@gwmail.gwu.edu>
+
+	distclean harder; should have noticed before prev. commit
+
+	Change-Id: Ifea390dc1044db5e2a752d3280fe1a2f82d30212
+
+2016-09-26  cooljeanius  <egall@gwmail.gwu.edu>
+
+	distcleaning, September 26, 2016
+
+	Change-Id: I26e4cd2bd9ee29291e5d1cbe88e1123c8445eefd
+
+2016-09-23  cooljeanius  <egall@gwmail.gwu.edu>
+
+	gcc 7 warning fixes, September 23 2016
+
+	Change-Id: Ib2ec1ec749c8f68181bd30328fef8d9b79c9503a
+
+2016-09-16  cooljeanius  <egall@gwmail.gwu.edu>
+
+	warnings warnings warnings
+
+	Change-Id: Ibfd9769ad4d81677a3340916a8d637118327bec1
+
+2016-09-07  cooljeanius  <egall@gwmail.gwu.edu>
+
+	GCC needs to be patched before I can deal with more warnings
+
+	Change-Id: I717985ec211a6fd4dc8f0f0c80306d1a742fdda3
+
+2016-08-29  cooljeanius  <egall@gwmail.gwu.edu>
+
+	mainly Walloca-larger-than and Wimplicit-fallthrough stuff
+
+	Change-Id: I80e5bbf92d2e10ca6df5758b2cf3a2d37e3cd4f3
+
+2016-08-29  cooljeanius  <egall@gwmail.gwu.edu>
+
+	new gcc 7 warnings for August 2016
+
+	Change-Id: Ib47c301aa09dc4a14bb5baf4094f95f553389a8b
+
+2016-08-18  cooljeanius  <egall@gwmail.gwu.edu>
+
+	Oops, should have committed earlier than August 18, 2016
+
+	Change-Id: I84ebbae9440c764f9cb9faa12f8e84d835331d3b
+
+2016-07-21  cooljeanius  <egall@gwmail.gwu.edu>
+
+	Disable gnulib stuff again
+
+	Change-Id: Ibc48f4563b8b3c1740a4c767198cf5287ef598f3
+
+2016-07-21  cooljeanius  <egall@gwmail.gwu.edu>
+
+	try actually having gdb use gnulib (i.e. build-gnulib)
+
+	unfortunately the Makefile for it seems unable to understand
+	where $(srcdir) is, when $(srcdir) != $(builddir)
+
+	Change-Id: I883fa3c9ec1925ef655c860f833c8637572a8922
+
+2016-06-09  cooljeanius  <egall@gwmail.gwu.edu>
+
+	Break stuff in a new way
+
+	Change-Id: I454518a4354a58175931b2b8a8b10f474b887430
+
+2016-06-04  cooljeanius  <egall@gwmail.gwu.edu>
+
+	Reorganize; move tdeps to target and natfiles to nat
+
+	Change-Id: I717ebeaf48d03ab3803c1fd05a1334d2bf133642
+
+2016-06-02  cooljeanius  <egall@gwmail.gwu.edu>
+
+	Trying running make check in some subdirs; June 2, 2016
+
+	Change-Id: I1242f41f30cd3f219bbffb61c2cae8222771f588
+
+2016-05-26  cooljeanius  <egall@gwmail.gwu.edu>
+
+	more constifying of bfd and stuff, May 26, 2016
+
+	Change-Id: I2acdbff891a12b94043136670d5740ee738ed68f
+
+2016-05-26  cooljeanius  <egall@gwmail.gwu.edu>
+
+	deal with writable strings
+
+	Change-Id: I20b466aa2958ad34af2758660d66f3521fae6d0a
+
+2016-05-24  cooljeanius  <egall@gwmail.gwu.edu>
+
+	libgui stuff, May 24, 2016
+
+	Change-Id: I5fb0edd011728f12906bc929892baa8fe4790a76
+
+2016-05-24  cooljeanius  <egall@gwmail.gwu.edu>
+
+	More Tk stuff, May 24, 2016
+
+	Change-Id: Ibfa5045958df524ed6a9da03a2a468b89adbfd09
+
+2016-05-20  cooljeanius  <egall@gwmail.gwu.edu>
+
+	Mess around with Tk; its Xcode project is so badly broken...
+
+	Change-Id: Ie02f82e4c46d786e63aeb26c6e68b50ec0d94917
+
+2016-05-19  cooljeanius  <egall@gwmail.gwu.edu>
+
+	gdbtk now builds
+
+	Change-Id: I8e5d7eab054493edf1a695fc6f34ace8140e1e02
+
+2016-05-19  cooljeanius  <egall@gwmail.gwu.edu>
+
+	Add gui stuff for gdbtk and expectk
+
+	Change-Id: Ic07116b8ab441f9abd4630463e2775d103a4d3eb
+
+2016-05-19  cooljeanius  <egall@gwmail.gwu.edu>
+
+	More targets from src, May 19 2016
+
+	Change-Id: I83b32a1971ef1b7c23179f3f9dbf5f9cc3f17b96
+
+2016-05-17  cooljeanius  <egall@gwmail.gwu.edu>
+
+	Targets from src
+
+	Change-Id: I27883f7dbdc31b8bbd2d114ff8957ae0f2d4ea2f
+
+2016-05-15  cooljeanius  <egall@gwmail.gwu.edu>
+
+	Now to try different targets from src; i.e. up one dir
+
+	Change-Id: I56f0c81a851b3cdb63d632eec0ee88a80c5aa427
+
+2016-05-10  cooljeanius  <egall@gwmail.gwu.edu>
+
+	improve lint rules
+
+	Change-Id: Ia78986e13625f02312a97af6e485ef9742fff7cc
+
 2016-05-09  cooljeanius  <egall@gwmail.gwu.edu>
 
 	More warnings and stuff, May 9, 2016

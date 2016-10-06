@@ -569,6 +569,9 @@ chr *start;
 
 	/* clear out its inarcs, including self-referential ones */
 	ap = ss->ins;
+	if (ss != NULL) {
+		lastap = ap;
+	}
 	while ((p = ap.ss) != NULL) {
 		co = ap.co;
 		FDEBUG(("zapping c%d's %ld outarc\n", p - d->ssets, (long)co));
