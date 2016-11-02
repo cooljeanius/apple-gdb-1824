@@ -773,6 +773,9 @@
    zero-length file name argument. */
 #undef HAVE_LSTAT_EMPTY_STRING_BUG
 
+/* 1 if... yeah. */
+#undef HAVE_LTO_ODR_TYPE_MERGING
+
 /* Define if <sys/procfs.h> has lwpid_t. */
 #undef HAVE_LWPID_T
 

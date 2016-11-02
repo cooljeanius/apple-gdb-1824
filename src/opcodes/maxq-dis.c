@@ -208,7 +208,7 @@ check_move (unsigned char insn0, unsigned char insn8)
   bfd_boolean first = FALSE;
   bfd_boolean second = FALSE;
   char *first_reg;
-  char *second_reg;
+  char *second_reg = NULL;
   reg_entry const *reg_x;
   const unsigned char module1 = insn0 & MASK_LOW_BYTE;
   const unsigned char index1 = ((insn0 & 0x70) >> 4);

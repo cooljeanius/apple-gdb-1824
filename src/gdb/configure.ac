@@ -3128,12 +3128,13 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wduplicated-cond -Wwrite-strings -Wenum-compare -Wnonnull-compare \
 -Wdangling-else -Wmemset-elt-size -Wswitch-unreachable -Whsa \
 -Wscalar-storage-order -Wimplicit-fallthrough -Wformat-length=2 \
--Wexpansion-to-defined -Wint-in-bool-context -Wbool-operation"
+-Wexpansion-to-defined -Wint-in-bool-context -Wbool-operation \
+-Wduplicated-branches -Wstringop-overflow"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
   ## Special warnings only for C++ compilations:
-  cxx_warnings="-Wabi -Wabi-tag -Woverloaded-virtual -Wsign-promo -Wodr \
+  cxx_warnings="-Wabi -Wabi-tag -Woverloaded-virtual -Wsign-promo \
 -Wsubobject-linkage -Wctor-dtor-privacy -Wterminate -Wc++11-compat \
 -Wdelete-incomplete -Wdelete-non-virtual-dtor -Wglobal-constructors \
 -Winherited-variadic-ctor -Winvalid-offsetof -Wliteral-suffix -Wnoexcept \
@@ -3148,8 +3149,7 @@ else
 -Wpointer-sign -Wmissing-prototypes -Wdeclaration-after-statement \
 -Woverride-init -Woverride-init-side-effects -Wduplicate-decl-specifier \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
--Wstrict-prototypes -Wnested-externs -Wc99-c11-compat \
--Wshadow-local -Wno-shadow-compatible-local"
+-Wstrict-prototypes -Wnested-externs -Wc99-c11-compat"
   if test -f /usr/X11/include/X11/Xlib.h && test "x${enable_gdbtk}" = "xyes"; then
     AC_MSG_WARN([Disabling C++ compatibility warnings for gdbtk])
   else
@@ -3281,6 +3281,7 @@ if test x${CFLAGS+set} = xset; then
       build_warnings="${build_warnings} ${opt_warnings_plus}"
       AC_DEFINE([OPTIMIZATION_LEVEL],[2],
                 [0 is none, 1 is some, and 2 is anything higher])
+      ## Work around GCC bug 71009:
       case "${CFLAGS}" in
         *"-Ofast"* )
           build_warnings="${build_warnings} -fmath-errno"
@@ -3303,6 +3304,7 @@ if test x${CFLAGS+set} = xset; then
     ;;
     *"-flto-odr-type-merging"* )
       build_warnings="${build_warnings} -Wodr"
+      AC_DEFINE([HAVE_LTO_ODR_TYPE_MERGING],[1],[1 if... yeah.])
     ;;
   esac
 else

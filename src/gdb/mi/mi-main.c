@@ -1132,7 +1132,7 @@ get_register (int regnum, int format)
 	  int idx =
 	    ((TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
 	     ? j : (register_size(current_gdbarch, regnum) - 1 - j));
-	  snprintf(ptr, SIZE_T_MAX, "%02x", (unsigned char)buffer[idx]);
+	  snprintf(ptr, (SIZE_T_MAX - 1UL), "%02x", (unsigned char)buffer[idx]);
 	  ptr += 2;
 	}
       ui_out_field_string(uiout, "value", buf);

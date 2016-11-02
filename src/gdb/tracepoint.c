@@ -1433,7 +1433,7 @@ stringify_collection_list(struct collection_list *list, char *string)
 	  QUIT;			/* allow user to bail out with ^C */
 	  if (info_verbose)
 	    printf_filtered ("%02X", list->regs_mask[i]);
-	  snprintf(end, SIZE_T_MAX, "%02X", list->regs_mask[i]);
+	  snprintf(end, (SIZE_T_MAX - 1UL), "%02X", list->regs_mask[i]);
 	  end += 2;
 	}
       (*str_list)[ndx] = savestring (temp_buf, end - temp_buf);
@@ -1462,7 +1462,7 @@ stringify_collection_list(struct collection_list *list, char *string)
 	  end = temp_buf;
 	}
 
-      snprintf(end, SIZE_T_MAX, "M%X,%s,%lX", list->list[i].type, tmp2,
+      snprintf(end, (SIZE_T_MAX - 1UL), "M%X,%s,%lX", list->list[i].type, tmp2,
 	       (long)(list->list[i].end - list->list[i].start));
 
       count += strlen(end);
@@ -1479,7 +1479,7 @@ stringify_collection_list(struct collection_list *list, char *string)
 	  count = 0;
 	  end = temp_buf;
 	}
-      snprintf(end, SIZE_T_MAX, "X%08X,",
+      snprintf(end, (SIZE_T_MAX - 1UL), "X%08X,",
 	       (unsigned int)list->aexpr_list[i]->len);
       end += 10;		/* 'X' + 8 hex digits + ',' */
       count += 10;

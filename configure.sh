@@ -5815,7 +5815,7 @@ $as_echo "$ac_cv_prog_gcc_traditional" >&6; }
 fi
 
 
-fi  ## ...uh...
+fi  ## ...uh... this comment is apparently necessary.
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'

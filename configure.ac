@@ -65,6 +65,8 @@ AM_PROG_AR
 AS_IF([test "x${AWK}" = "x" && test "x${ac_cv_prog_AWK}" = "x"],[
   test -z "${AWK}" && test -z "${ac_cv_prog_AWK}"
   AC_PROG_AWK
+],[
+  test -n "${AWK}" || test -n "${ac_cv_prog_AWK}"
 ])dnl
   ##FIXME: might need to move some stuff in here:
 AS_IF([test "x${CC}" = "x"],[

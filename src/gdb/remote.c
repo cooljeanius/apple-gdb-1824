@@ -5212,7 +5212,7 @@ remote_insert_breakpoint(CORE_ADDR addr, bfd_byte *contents_cache)
       *(p++) = ',';
       p += hexnumstr(p, (ULONGEST)addr);
       BREAKPOINT_FROM_PC(&addr, &bp_size);
-      snprintf(p, SIZE_T_MAX, ",%d", bp_size);
+      snprintf(p, (SIZE_T_MAX - 1UL), ",%d", bp_size);
 
       putpkt(buf);
       getpkt(buf, (rs->remote_packet_size), 0);
@@ -5267,7 +5267,7 @@ remote_remove_breakpoint(CORE_ADDR addr, bfd_byte *contents_cache)
       addr = remote_address_masked(addr);
       p += hexnumstr(p, (ULONGEST)addr);
       BREAKPOINT_FROM_PC(&addr, &bp_size);
-      snprintf(p, SIZE_T_MAX, ",%d", bp_size);
+      snprintf(p, (SIZE_T_MAX - 1UL), ",%d", bp_size);
 
       putpkt(buf);
       getpkt(buf, (rs->remote_packet_size), 0);
@@ -5331,7 +5331,7 @@ remote_insert_watchpoint(CORE_ADDR addr, int len, int type)
   p = strchr(buf, '\0');
   addr = remote_address_masked(addr);
   p += hexnumstr(p, (ULONGEST)addr);
-  snprintf(p, SIZE_T_MAX, ",%x", len);
+  snprintf(p, (SIZE_T_MAX - 1UL), ",%x", len);
 
   putpkt(buf);
   getpkt(buf, buflen, 0);
@@ -5379,7 +5379,7 @@ remote_remove_watchpoint(CORE_ADDR addr, int len, int type)
   p = strchr(buf, '\0');
   addr = remote_address_masked(addr);
   p += hexnumstr(p, (ULONGEST)addr);
-  snprintf(p, SIZE_T_MAX, ",%x", len);
+  snprintf(p, (SIZE_T_MAX - 1UL), ",%x", len);
   putpkt(buf);
   getpkt(buf, buflen, 0);
 
@@ -5474,7 +5474,7 @@ remote_insert_hw_breakpoint(CORE_ADDR addr, gdb_byte *shadow)
 
   addr = remote_address_masked(addr);
   p += hexnumstr (p, (ULONGEST)addr);
-  snprintf(p, SIZE_T_MAX, ",%x", len);
+  snprintf(p, (SIZE_T_MAX - 1UL), ",%x", len);
 
   putpkt(buf);
   getpkt(buf, (rs->remote_packet_size), 0);
@@ -5518,7 +5518,7 @@ remote_remove_hw_breakpoint(CORE_ADDR addr, gdb_byte *shadow)
 
   addr = remote_address_masked(addr);
   p += hexnumstr(p, (ULONGEST)addr);
-  snprintf(p, SIZE_T_MAX, ",%x", len);
+  snprintf(p, (SIZE_T_MAX - 1UL), ",%x", len);
 
   putpkt(buf);
   getpkt(buf, (rs->remote_packet_size), 0);

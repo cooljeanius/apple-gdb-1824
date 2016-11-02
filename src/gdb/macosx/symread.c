@@ -432,7 +432,7 @@ sym_parse_type(struct objfile *objfile, struct type **typevec,
         sym_typename =
           (char *)obstack_alloc(&objfile->objfile_obstack, (name[0] + 1));
 
-        snprintf(sym_typename, SIZE_T_MAX, "%.*s", name[0], (name + 1));
+        snprintf(sym_typename, (SIZE_T_MAX - 1UL), "%.*s", name[0], (name + 1));
         break;
       }
 
@@ -571,7 +571,8 @@ sym_read_type(struct objfile *objfile, struct type **typevec,
     {
       ntypename =
         (char *)obstack_alloc(&objfile->objfile_obstack, otypename[0] + 1);
-      snprintf(ntypename, SIZE_T_MAX, "%.*s", otypename[0], otypename + 1);
+      snprintf(ntypename, (SIZE_T_MAX - 1UL), "%.*s", otypename[0],
+	       (otypename + 1));
     }
   else
     {
@@ -791,8 +792,8 @@ sym_read_contained_variables(struct objfile *objfile,
               FIELD_NAME(argvec[nargs]) =
                 (char *)obstack_alloc(&objfile->objfile_obstack,
                                       nname[0] + 1);
-              snprintf((char *)FIELD_NAME(argvec[nargs]), SIZE_T_MAX, "%.*s",
-		       nname[0], (nname + 1));
+              snprintf((char *)FIELD_NAME(argvec[nargs]), (SIZE_T_MAX - 1UL),
+		       "%.*s", nname[0], (nname + 1));
               FIELD_BITPOS(argvec[nargs]) = 0;
               FIELD_BITSIZE(argvec[nargs]) = 0;
             }
@@ -810,8 +811,8 @@ sym_read_contained_variables(struct objfile *objfile,
           SYMBOL_TYPE(lsym) = typevec[cventry.entry.tte_index];
           SYMBOL_LINKAGE_NAME(lsym) =
             (char *)obstack_alloc(&objfile->objfile_obstack, nname[0] + 1);
-          snprintf((char *)SYMBOL_LINKAGE_NAME(lsym), SIZE_T_MAX, "%.*s",
-		   nname[0], (nname + 1));
+          snprintf((char *)SYMBOL_LINKAGE_NAME(lsym), (SIZE_T_MAX - 1UL),
+		   "%.*s", nname[0], (nname + 1));
           SYMBOL_LANGUAGE(lsym) = language_cplus;
           SYMBOL_SECTION(lsym) = 0;
           SYMBOL_BFD_SECTION(lsym) = 0;
@@ -1042,13 +1043,13 @@ sym_read_functions(struct objfile *objfile, struct type **typevec,
         (char *)obstack_alloc(&objfile->objfile_obstack, (name[0] + 1));
       if ((name[0] > 0) && (name[1] == '.'))
         {
-          snprintf((char *)SYMBOL_LINKAGE_NAME(fsymbol), SIZE_T_MAX, "%.*s",
-		   (name[0] - 1), (name + 2));
+          snprintf((char *)SYMBOL_LINKAGE_NAME(fsymbol), (SIZE_T_MAX - 1UL),
+		   "%.*s", (name[0] - 1), (name + 2));
         }
       else
         {
-          snprintf((char *)SYMBOL_LINKAGE_NAME(fsymbol), SIZE_T_MAX, "%.*s",
-		   name[0], (name + 1));
+          snprintf((char *)SYMBOL_LINKAGE_NAME(fsymbol), (SIZE_T_MAX - 1UL),
+		   "%.*s", name[0], (name + 1));
         }
       SYMBOL_BLOCK_VALUE(fsymbol) = fblock;
       SYMBOL_LANGUAGE(fsymbol) = language_cplus;
@@ -1120,7 +1121,7 @@ convert_path(unsigned char *dst,
   switch (version)
     {
     case BFD_SYM_VERSION_3_3R0:
-      snprintf((char *)dst, SIZE_T_MAX, "%.*s", (int)len, src);
+      snprintf((char *)dst, (SIZE_T_MAX - 1UL), "%.*s", (int)len, src);
       break;
     case BFD_SYM_VERSION_3_5:
     case BFD_SYM_VERSION_3_4:

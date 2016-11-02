@@ -994,7 +994,7 @@ Suppress:
   if (encoded[0] == '<')
     strcpy(decoded, encoded);
   else
-    snprintf(decoded, SIZE_T_MAX, "<%s>", encoded);
+    snprintf(decoded, (SIZE_T_MAX - 1UL), "<%s>", encoded);
   return decoded;
 }
 
@@ -7102,11 +7102,11 @@ ada_enum_name(const char *name)
 
       GROW_VECT(result, result_len, 16UL, char);
       if (isascii(v) && isprint(v))
-        snprintf(result, SIZE_T_MAX, "'%c'", v);
+        snprintf(result, (SIZE_T_MAX - 1UL), "'%c'", v);
       else if (name[1] == 'U')
-        snprintf(result, SIZE_T_MAX, "[\"%02x\"]", (unsigned int)v);
+        snprintf(result, (SIZE_T_MAX - 1UL), "[\"%02x\"]", (unsigned int)v);
       else
-        snprintf(result, SIZE_T_MAX, "[\"%04x\"]", (unsigned int)v);
+        snprintf(result, (SIZE_T_MAX - 1UL), "[\"%04x\"]", (unsigned int)v);
 
       return result;
     }

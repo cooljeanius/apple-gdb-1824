@@ -4898,6 +4898,10 @@ fi
 done
 
 
+else
+
+  test -n "${AWK}" || test -n "${ac_cv_prog_AWK}"
+
 fi  ##FIXME: might need to move some stuff in here:
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
